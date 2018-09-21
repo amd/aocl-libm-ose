@@ -941,7 +941,7 @@ double _pow_special(double x, double y, double z, U32 code)
         {
 			UT64 zu;
 			zu.f64 = z;
-			_amd_handle_error("pow", _FpCodePow, zu.u64, DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+			_amd_handle_error("pow", _FpCodePow, zu.u64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
         }
         break;
 
@@ -949,7 +949,7 @@ double _pow_special(double x, double y, double z, U32 code)
         {
 			UT64 zu;
 			zu.f64 = z;
-			_amd_handle_error("pow", _FpCodePow, zu.u64, SING,AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
+			_amd_handle_error("pow", _FpCodePow, zu.u64, _SING,AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
         }
         break;
 
@@ -959,7 +959,7 @@ double _pow_special(double x, double y, double z, U32 code)
         {
 			UT64 zu;
 			zu.f64 = z;
-			_amd_handle_error("pow", _FpCodePow, zu.u64, DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+			_amd_handle_error("pow", _FpCodePow, zu.u64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
         }
         break;
 
@@ -967,7 +967,7 @@ double _pow_special(double x, double y, double z, U32 code)
         {
 			UT64 zu;
 			zu.f64 = z;
-			_amd_handle_error("pow", _FpCodePow, zu.u64, DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+			_amd_handle_error("pow", _FpCodePow, zu.u64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
         }
         break;
 
@@ -976,7 +976,7 @@ double _pow_special(double x, double y, double z, U32 code)
         {
 			UT64 zu;
 			zu.f64 = z;
-			_amd_handle_error("pow", _FpCodePow, zu.u64, UNDERFLOW,AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
+			_amd_handle_error("pow", _FpCodePow, zu.u64, _UNDERFLOW,AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
         }
         break;
 
@@ -984,7 +984,7 @@ double _pow_special(double x, double y, double z, U32 code)
         {
 			UT64 zu;
 			zu.f64 = z;
-			_amd_handle_error("pow", _FpCodePow, zu.u64, OVERFLOW,AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
+			_amd_handle_error("pow", _FpCodePow, zu.u64, _OVERFLOW,AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
         }
         break;
     }
@@ -1010,7 +1010,7 @@ float _powf_special(float x, float y, float z, U32 code)
         {
             UT32 zu;
 			zu.f32 = z;
-			_amd_handle_errorf("powf", _FpCodePow, zu.u32, SING,AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
+			_amd_handle_errorf("powf", _FpCodePow, zu.u32, _SING,AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
         }
         break;
 
@@ -1020,7 +1020,7 @@ float _powf_special(float x, float y, float z, U32 code)
         {
            UT32 zu;
 			zu.f32 = z;
-			_amd_handle_errorf("powf", _FpCodePow, zu.u32, DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+			_amd_handle_errorf("powf", _FpCodePow, zu.u32, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
         }
         break;
 
@@ -1028,7 +1028,7 @@ float _powf_special(float x, float y, float z, U32 code)
         {
             UT32 zu;
 			zu.f32 = z;
-			_amd_handle_errorf("powf", _FpCodePow, zu.u32, DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+			_amd_handle_errorf("powf", _FpCodePow, zu.u32, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
         }
         break;
 
@@ -1036,7 +1036,7 @@ float _powf_special(float x, float y, float z, U32 code)
         {
             UT32 zu;
 			zu.f32 = z;
-			_amd_handle_errorf("powf", _FpCodePow, zu.u32, UNDERFLOW,AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
+			_amd_handle_errorf("powf", _FpCodePow, zu.u32, _UNDERFLOW,AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
         }
         break;
 
@@ -1044,7 +1044,7 @@ float _powf_special(float x, float y, float z, U32 code)
         {
             UT32 zu;
 			zu.f32 = z;
-			_amd_handle_errorf("powf", _FpCodePow, zu.u32, OVERFLOW,AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
+			_amd_handle_errorf("powf", _FpCodePow, zu.u32, _OVERFLOW,AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
 
         }
         break;

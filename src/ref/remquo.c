@@ -57,16 +57,16 @@ double FN_PROTOTYPE(remquo)(double x, double y, int *quo)
 			if (ux & MANTBITS_DP64)
 			{
 				/* x is NaN */
-#ifdef WINDOWS                    
-				return _amd_handle_error("remquo", _FpCodeRemquo, ux|0x0008000000000000, DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+#ifdef WINDOWS
+				return _amd_handle_error("remquo", _FpCodeRemquo, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 #else
                 return x+x;
-#endif                
+#endif
             }
 			else
 			{
 				/* x is infinity; result is NaN */
-				return _amd_handle_error("remquo", _FpCodeRemquo, INDEFBITPATT_DP64, DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+				return _amd_handle_error("remquo", _FpCodeRemquo, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
 			}
 		}
 		else if (yexp > BIASEDEMAX_DP64)
@@ -74,16 +74,16 @@ double FN_PROTOTYPE(remquo)(double x, double y, int *quo)
 			/* y is NaN or infinity */
 			if (uy & MANTBITS_DP64)
 			{/* y is NaN */
-#ifdef WINDOWS                    
-				return _amd_handle_error("remquo", _FpCodeRemquo, uy|0x0008000000000000, DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+#ifdef WINDOWS
+				return _amd_handle_error("remquo", _FpCodeRemquo, uy|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 #else
                 return y+y;
-#endif    			
+#endif
             }
 			else
 			{
 				/* y is infinity; result is indefinite */
-				return _amd_handle_error("remquo", _FpCodeRemquo, INDEFBITPATT_DP64, DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+				return _amd_handle_error("remquo", _FpCodeRemquo, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
 			}
 		}
 		else if (ax == 0x0000000000000000)
@@ -92,7 +92,7 @@ double FN_PROTOTYPE(remquo)(double x, double y, int *quo)
 			if (ay == 0x0000000000000000)
 			{
 				/* y is zero */
-				return _amd_handle_error("remquo", _FpCodeRemquo, INDEFBITPATT_DP64, DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+				return _amd_handle_error("remquo", _FpCodeRemquo, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
 			}
 			else
 				return dx;
@@ -100,7 +100,7 @@ double FN_PROTOTYPE(remquo)(double x, double y, int *quo)
 		else if (ay == 0x0000000000000000)
 		{
 			/* y is zero */
-			return _amd_handle_error("remquo", _FpCodeRemquo, INDEFBITPATT_DP64, DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+			return _amd_handle_error("remquo", _FpCodeRemquo, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
 		}
 
 		/* We've exhausted all other possibilities. One or both of x and

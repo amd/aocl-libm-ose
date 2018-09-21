@@ -235,9 +235,9 @@ double FN_PROTOTYPE(sinh)(double x)
     {
       /* Return +/-infinity with overflow flag */
       if (xneg)
-		  return _amd_handle_error("sinh", _FpCodeSinh, NINFBITPATT_DP64, OVERFLOW, AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
+		  return _amd_handle_error("sinh", _FpCodeSinh, NINFBITPATT_DP64, _OVERFLOW, AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
       else
-		  return _amd_handle_error("sinh", _FpCodeSinh, PINFBITPATT_DP64, OVERFLOW, AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
+		  return _amd_handle_error("sinh", _FpCodeSinh, PINFBITPATT_DP64, _OVERFLOW, AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
 
     }
   else if (y >= small_threshold)

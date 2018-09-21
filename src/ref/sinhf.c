@@ -162,9 +162,9 @@ float FN_PROTOTYPE(sinhf)(float fx)
     {
       /* Return infinity with overflow flag. */
       if (xneg)
-		  return _amd_handle_errorf("sinh", _FpCodeSinh, NINFBITPATT_SP32, OVERFLOW, AMD_F_OVERFLOW, ERANGE, fx, 0.0, 1);
+		  return _amd_handle_errorf("sinh", _FpCodeSinh, NINFBITPATT_SP32, _OVERFLOW, AMD_F_OVERFLOW, ERANGE, fx, 0.0, 1);
       else
-		  return _amd_handle_errorf("sinh", _FpCodeSinh, PINFBITPATT_SP32, OVERFLOW, AMD_F_OVERFLOW, ERANGE, fx, 0.0, 1);
+		  return _amd_handle_errorf("sinh", _FpCodeSinh, PINFBITPATT_SP32, _OVERFLOW, AMD_F_OVERFLOW, ERANGE, fx, 0.0, 1);
     }
   else if (y >= small_threshold)
     {

@@ -153,7 +153,7 @@ float FN_PROTOTYPE(coshf)(float fx)
     {
       /* Return infinity with overflow flag. */
 	  PUT_BITS_SP32(PINFBITPATT_SP32, fx);
-      return _amd_handle_errorf("coshf", _FpCodeCosh, PINFBITPATT_SP32, OVERFLOW, AMD_F_OVERFLOW, ERANGE, fx, 0.0, 1);;
+      return _amd_handle_errorf("coshf", _FpCodeCosh, PINFBITPATT_SP32, _OVERFLOW, AMD_F_OVERFLOW, ERANGE, fx, 0.0, 1);;
     }
   else if (y >= small_threshold)
     {

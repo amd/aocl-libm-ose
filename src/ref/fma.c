@@ -38,7 +38,7 @@ double FN_PROTOTYPE_BAS64(fma)(double aa, double bb, double cc)
         else
              result.f64 = spcl2?(cc+cc):(aa * bb + cc);
         return result.f64;
-        //return _handle_error("fma", _FpCodeFma, result.u64, DOMAIN, AMD_F_INVALID, EDOM, aa, 0.0, 1);
+        //return _handle_error("fma", _FpCodeFma, result.u64, _DOMAIN, AMD_F_INVALID, EDOM, aa, 0.0, 1);
     }            
     if(((a.u64 & 0x7fffffffffffffff) == 0) ||
        ((b.u64 & 0x7fffffffffffffff) == 0) ||
@@ -145,9 +145,9 @@ double FN_PROTOTYPE_BAS64(fma)(double aa, double bb, double cc)
 
     z.f64 = (ce - pe > 60) ? cc : z.f64;
     if((z.u64 & 0x7fffffffffffffff) == 0 )
-        return _amd_handle_error("fma", _FpCodeFma, z.u64, DOMAIN, AMD_F_UNDERFLOW, EDOM, aa, 0.0, 1);
+        return _amd_handle_error("fma", _FpCodeFma, z.u64, _DOMAIN, AMD_F_UNDERFLOW, EDOM, aa, 0.0, 1);
     if((z.u64 & 0x7ff0000000000000) == 0x7ff0000000000000 )
-        return _amd_handle_error("fma", _FpCodeFma, z.u64, DOMAIN, AMD_F_OVERFLOW, EDOM, aa, 0.0, 1);
+        return _amd_handle_error("fma", _FpCodeFma, z.u64, _DOMAIN, AMD_F_OVERFLOW, EDOM, aa, 0.0, 1);
 
     //z.f64 = spcl ? (aa*bb + cc) : z.f64;
     //z.f64 = spcl2 ? cc : z.f64;

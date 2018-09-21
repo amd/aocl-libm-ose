@@ -229,7 +229,7 @@ double FN_PROTOTYPE(cosh)(double x)
   if (y >= max_cosh_arg)
       {
       /* Return +/-infinity with overflow flag */
-         return _amd_handle_error("cosh", _FpCodeCosh, PINFBITPATT_DP64, OVERFLOW, AMD_F_OVERFLOW, EDOM, x, 0.0, 1);
+         return _amd_handle_error("cosh", _FpCodeCosh, PINFBITPATT_DP64, _OVERFLOW, AMD_F_OVERFLOW, EDOM, x, 0.0, 1);
       }
   else if (y >= small_threshold)
     {

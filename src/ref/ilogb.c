@@ -19,7 +19,7 @@ int FN_PROTOTYPE(ilogb)(double x)
     if(zerovalue == 0)
     {
         /* Raise exception as the number zero*/
-        _amd_handle_error("ilogb", _FpCodeLog, (unsigned long long)INT_MIN, SING, AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
+        _amd_handle_error("ilogb", _FpCodeLog, (unsigned long long)INT_MIN, _SING, AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
         return INT_MIN;
     }
 
@@ -27,7 +27,7 @@ int FN_PROTOTYPE(ilogb)(double x)
     {
         /* Raise exception as the number is inf */
         if (x<0.0)
-                _amd_handle_error("ilogbf", _FpCodeLog, (unsigned int)INT_MAX, DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+                _amd_handle_error("ilogbf", _FpCodeLog, (unsigned int)INT_MAX, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
         else
                 _amd_handle_error("ilogbf", _FpCodeLog, (unsigned int)INT_MAX, 0, AMD_F_NONE, 0, x, 0.0, 1);
         return INT_MAX;
@@ -37,7 +37,7 @@ int FN_PROTOTYPE(ilogb)(double x)
     {
         /* Raise exception as the number is nan */
 #ifdef WINDOWS
-        _amd_handle_error("ilogb", _FpCodeLog, (unsigned long long)INT_MIN, DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+        _amd_handle_error("ilogb", _FpCodeLog, (unsigned long long)INT_MIN, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
         return INT_MIN;
 #else
         //x = x+x;
@@ -45,9 +45,9 @@ int FN_PROTOTYPE(ilogb)(double x)
         //optimization mode the compiler tends to optimize out the 
         //x+x operation if done.
         if (zerovalue >= 0x7ff8000000000000)
-                _amd_handle_error("ilogb", _FpCodeLog, (unsigned long long)INT_MIN, DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+                _amd_handle_error("ilogb", _FpCodeLog, (unsigned long long)INT_MIN, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
         else    
-                _amd_handle_error("ilogb", _FpCodeLog, (unsigned long long)INT_MIN, DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+                _amd_handle_error("ilogb", _FpCodeLog, (unsigned long long)INT_MIN, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
         return INT_MIN;
 #endif        
     }

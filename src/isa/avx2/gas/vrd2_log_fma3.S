@@ -1,25 +1,62 @@
-#
-# vrd2_log_bdozr.S
-#
-# A bulldozer implementation of vrd2_log libm function.
-#
-# Prototype:
-#
-#     __m128d vrd2_log_bdozr(__m128d x);
-#
+/*
 
-#
-#   Algorithm:
-#
-#   Based on:
-#   Ping-Tak Peter Tang
-#   "Table-driven implementation of the logarithm function in IEEE
-#   floating-point arithmetic"
-#   ACM Transactions on Mathematical Software (TOMS)
-#   Volume 16, Issue 4 (December 1990)
-#
-#
-#
+   vrd2_log_fma3.S
+   ===================
+   Returns the natural log of two 64-bit floating point values packed in an xmm register
+
+   Method:
+   ============
+   Reference:
+   Ping-Tak Peter Tang
+   "Table-driven implementation of the logarithm function in IEEE
+   floating-point arithmetic"
+   ACM Transactions on Mathematical Software (TOMS)
+   Volume 16, Issue 4 (December 1990)
+
+   Special cases:-
+   1. Negative argument
+   2. NaN or Infinity
+   3. Zero
+
+   Assume x to be normalized and not a special case
+
+   Case 1:- x lies within the threshold ([e^(-1/16),e^(1/16)])
+   ==========================================================
+
+   Choose 'u' and 'r' such that
+   x = 1 + r                          --- (1)
+
+   u = 2r / (2 + r)                   --- (2)
+
+   log( 1 + r ) = log (1 + u/2 ) - log (1 - u/2 )
+
+   From (1); r = x - 1
+   From (2); u = r - (r^2 / (r+2))        | i.e, r - correction
+                                          | 'u' can't be calculated directly from 'r'
+
+   log x = log ( 1 + r ) = u + [A1 * (u^3) + A2 * (u^5) + .... + An * (u^( 2n+1 ))]
+   Since u = (r - correction),
+   log ( 1 + r ) = r + [ A1 * ( u^3) + A2 * (u^5) + .... + An * (u^( 2n+1 ))] - correction
+
+   Case 2:- x lies outside the threshold ([e^(-1/16),e^(1/16)])
+   ===========================================================
+
+   Choose 'm', 'F1' and 'F2' as
+   x = 2^m * (F1 + F2)                     | m is an integer
+                                           | F1 = 1 + ( j / 64), j = 0,1,2,..64 ;
+                                           | |F2| < 1/128
+   Hence,
+   log(x) = m * log(2) + log(F1) + log ( 1 + F2/F1)
+
+   Choose U such that
+   U = 2*F2 / (2*F1 + F2 )
+
+   Then,
+   log (1 + F2 / F1) = log (1 + U/2) - log (1 - U/2)
+   The values of log(2) and log(F1) are precomputed and stored.
+*/
+
+
 
 #include "fn_macros.h"
 #include "log_tables.h"

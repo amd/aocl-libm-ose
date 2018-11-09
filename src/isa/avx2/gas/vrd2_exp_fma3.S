@@ -1,3 +1,41 @@
+/*
+
+   vrd2_exp_fma3
+   =================
+   Returns the value of e^x for two 64-bit floating point numbers packed in an xmm register
+
+   Method:
+   =======
+
+   We use the identity,
+   e^x = 2 ^ (x/ln(2)) = 2^(x*(64/ln(2))/64)        --- (1)
+
+   Choose 'n' and 'f' such that
+   x*(64/ln(2)) = n + f        | n is an integer    --- (2)
+                               | |f| <= 0.5
+
+   Choose 'm' such that
+   n = 64 * m + j              | 0 <= j <64         --- (3)
+
+   From (1), (2) and (3),
+   e^x = 2^((64*m + j + f)/64)
+       = (2^m) * (2^(j/64)) * 2^(f/64)
+       = (2^m) * (2^(j/64)) * e^(f*(ln(2)/64))
+
+   From (2),
+   f = x*(64/ln(2)) - n
+
+   Let r  = f*(ln(2)/64) = x - n*(ln(2)/64)
+
+   Thus,
+   e^x = (2^m) * (2^(j/64)) * e^r
+
+   Values of (2^(j/64)) are precomputed
+
+   e^r is calculated using the Taylor series expansion,
+   e^r = 1 + r + (r^2)/2! + (r^3)/3! + (r^4)/4! + (r^5)/5! + (r^6)/6! + (r^7)/7!
+
+*/
 #include "fn_macros.h"
 #include "exp_tables.h"
 

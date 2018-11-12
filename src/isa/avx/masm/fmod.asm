@@ -170,8 +170,8 @@ L__Finish:
 
 ALIGN 16
 L__Negative_Number1:
-       movapd  xmm0,  L__Zero_64
-       subsd   xmm0,  xmm2  
+       movapd   xmm0, xmm2
+       orpd    xmm0, L__sign_mask_64 #flip the sign bit for negative values
        movdqa  xmm7, XMMWORD PTR [save_xmm7+rsp]
        movdqa  xmm6, XMMWORD PTR [save_xmm6+rsp]
        add     rsp, stack_size

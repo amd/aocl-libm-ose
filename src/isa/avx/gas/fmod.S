@@ -148,12 +148,8 @@ fname:
 .align 16
 .L__Negative_Number1:
     movapd %xmm2, %xmm0
-    orpd   .L__sign_mask_64(%rip), %xmm0
+    orpd   .L__sign_mask_64(%rip), %xmm0 #make the sign bit as negative
     ret
-
-    movapd .L__Zero_64(%rip),%xmm0
-    subsd  %xmm2,%xmm0
-    ret 
 
 .align 16
 .L__Not_Negative_Number1:

@@ -49,7 +49,8 @@ ifneq ($(ERROR_TESTS),)
 $(error Unknown test(s) - $(ERROR_TESTS))
 endif
 
-export STANDARD_ACTIONS :=	build install tests
+#export STANDARD_ACTIONS :=	build install test clean
+export STANDARD_ACTIONS :=	test
 ACTION_TEMPLATE		:=	$(addprefix %-,$(BUILD_TESTS))
 ACTIONS			:=	$(foreach action,$(STANDARD_ACTIONS),$(addprefix $(action)-,$(MAKE_TESTS)))
 
@@ -64,22 +65,25 @@ endif
 all:	build
 
 
-build:	build-libm build-tests
+build:	build-libraries build-tests
 
-build-libm:
-	@echo "====> Building AMD LIBM"
-	@$(MAKE) $(MAKEJOBS) -f $(MK)/libraries.mk build MAKEPHASE=libraries SRCROOT=$(SRCROOT)
+build-libraries:
+	@echo "==== Building Libraries ===="
+	@$(MAKE) $(MAKEJOBS) -f $(MK)/libraries.mk MAKEPHASE=libraries SRCROOT=$(SRCROOT)
 	
-.PHONY: tests
-tests:
+.PHONY: build-tests tests
+tests: build-tests
+build-tests: build-libraries
+build-tests:
+	@echo "==== Building Tests ===="
 	@$(MAKE) $(MAKEOBJS) -f $(MK)/tests.mk SRCROOT=$(SRCROOT) build
 
 
-$(BUILD_TESTS): build-libm
 
+# This is to help build only one test
 $(ACTIONS):	action 		= $(word 1, $(subst -, ,$@))
 $(ACTIONS):	test		= $(word 2, $(subst -, ,$@))
 $(ACTIONS):
 	@echo "====> $(action) $(test)"
-	@$(MAKE) $(MAKEJOBS) -f tests/$(test)/$(test).mk $(action) SRCROOT=$(SRCROOT) TEST=$(TEST) MAKEPHASE=$(action)
+	@$(MAKE) $(MAKEJOBS) -f $(MK)/tests.mk SRCROOT=$(SRCROOT) TEST_ONLY=$(test) MAKEPHASE=$(action)
 

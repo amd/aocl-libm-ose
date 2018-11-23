@@ -1,10 +1,22 @@
-
+# Copyright (C) 2018, Advanced Micro Devices. All rights reserved
+#
+# Author: Prem Mallappa <pmallapp@amd.com>
+ 
 TEST_MAKEFILES		:=	$(wildcard tests/*/tests.mk)
 
 include $(MK)/macros.mk
 
-ALL_TEST_DIRS		:=	$(wildcard tests/*)
+#$(info TEST_MAKEFILES=$(TEST_MAKEFILES))
+
+ifneq ($(TEST_ONLY),)
+ALL_TEST_MAKEFILES	=	$(filter tests/$(TEST_ONLY)/tests.mk,$(TEST_MAKEFILES))
+else
 ALL_TEST_MAKEFILES	:=	$(TEST_MAKEFILES)
+endif
+
+$(info ALL_TEST_MAKEFILES=$(ALL_TEST_MAKEFILES))
+
+ALL_TEST_DIRS		:=	$(wildcard tests/*)
 
 
 ACTIONS			:=	$(addprefix build~,$(ALL_TEST_MAKEFILES))

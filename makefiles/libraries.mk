@@ -2,8 +2,6 @@
 #
 # Author: Prem Mallappa <pmallapp@amd.com>
 
-
-
 LIBRARY_LIST	:=	src 		\
 #			tests/lib/libmcr \
 			tests/lib/crlibm \
@@ -15,15 +13,14 @@ CLEAN_ACTIONS	:=	$(addprefix clean~,$(LIBRARY_LIST))
 
 ACTIONS		:=	$(BUILD_ACTIONS) $(CLEAN_ACTIONS)
 
-$(info LIB_MAKEFILE_LIST=$(LIB_MAKEFILE_LIST) ACTIONS=$(ACTIONS))
+#$(info LIB_MAKEFILE_LIST=$(LIB_MAKEFILE_LIST) ACTIONS=$(ACTIONS))
 
 $(ACTIONS):	$(LIBRARY_LIST)
 $(ACTIONS):	spec	=	$(subst ~, ,$@)
 $(ACTIONS):	action	=	$(word 1,$(spec))
 $(ACTIONS):	lib	=	$(word 2,$(spec))
 $(ACTIONS):
-	@echo "=====> $(action) $(lib) "
-	$(_v)$(MAKE) -f $(MK)/lib.mk LIB=$(lib) MAKEPHASE=$(MAKEPHASE)
+	$(MAKE) -f $(MK)/lib.mk LIB=$(lib) LIBNAME_UPPER=$(LIBNAME) MAKEPHASE=$(MAKEPHASE)
 
 build:	$(BUILD_ACTION)
 

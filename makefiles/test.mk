@@ -10,9 +10,9 @@ TEST_SUPPORT_OBJS	:=
 
 TESTDIR			= $(TESTSDIR)
 
-$(info TEST_MAKEFILE=$(TEST_MAKEFILE))
+#$(info TEST_MAKEFILE=$(TEST_MAKEFILE))
 include $(TEST_MAKEFILE)
-$(info TESTDIR=$(TESTDIR) TESTNAME=$(TEST_NAME))
+#$(info TESTDIR=$(TESTDIR) TESTNAME=$(TEST_NAME))
 
 TESTBIN			:= $(call TOTESTDIR,test-$(TEST_NAME))
 
@@ -36,7 +36,7 @@ BUILT_OBJS	:=	$(call TOBUILDDIR,$(TEST_OBJS) $(TEST_SUPPORT_OBJS))
 ALL_DEPS	+=	$(BUILT_OBJS:%.o=%.d)
 
 ###########################
-$(info BUILT_OBJS=$(BUILT_OBJS))
+#$(info BUILT_OBJS=$(BUILT_OBJS))
 ###########################
 
 $(TESTDIR)/%.o: _cflags = $(_CFLAGS)
@@ -58,7 +58,7 @@ BUILD_PREREQS		+= $(TESTBIN)
 build:	$(BUILD_PREREQS)
 
 ###########################
-$(info MAKEPHASE=$(MAKEPHASE))
+#$(info MAKEPHASE=$(MAKEPHASE))
 ###########################
 .PHONY: clean
 clean:

@@ -28,7 +28,7 @@ endif
 
 
 ifeq ($(MAKEPHASE),libraries)
-$(info LIBOBJDIR=$(LIBOBJDIR))
+#$(info LIBOBJDIR=$(LIBOBJDIR))
 $(LIBOBJDIR)/%.o: %.c $(LIBRARY_SRCDEPS) $(GLOBAL_SRCDEPS)
 	@$(MKDIR)
 	@echo LIBCC  $@

@@ -13,7 +13,9 @@ export BUILDDIR		:= $(SRCROOT)/build
 INSTALL_ROOT		:= $(DSTDIR)/usr/local
 
 ##############################
+ifeq ($(filter clean prune,$(MAKECMDGOALS)),)
 $(info Building on $(BUILD_OS)...)
+endif
 ##############################
 # Figure out any tests that are not present yet
 VALID_TESTS		:= $(filter-out .%,$(notdir $(shell find $(ORIGINAL_SRCROOT)/tests -mindepth 1 -maxdepth 1 -type d)))
@@ -27,7 +29,9 @@ ifeq ($(BUILD_OS),linux)
 COMPILER_VERSION	:= $(call GET_COMPILER_VERSION)
 endif
 ##############################
+ifeq ($(filter clean prune,$(MAKECMDGOALS)),)
 $(info Building using $(COMPILER_VERSION))
+endif
 ##############################
 
 # Place where all objs will end up
@@ -43,7 +47,7 @@ ACTION_TEMPLATE		:=	$(addprefix %-,$(BUILD_TESTS))
 LIB_ACTIONS		:=	$(foreach action,$(STANDARD_ACTIONS),$(addprefix $(action)-,libm))
 
 ##############################
-$(info $(ACTIONS))
+#$(info $(ACTIONS))
 ##############################
 # 
 # Remove the ugly Entering directory ... etc.
@@ -103,7 +107,7 @@ $(TEST_ACTIONS):	action 		= $(word 1, $(subst -, ,$@))
 $(TEST_ACTIONS):	t		= $(word 2, $(subst -, ,$@))
 $(TEST_ACTIONS):	test		= $(word 3, $(subst -, ,$@))
 $(TEST_ACTIONS): build-libraries
-	@echo "====> BUILDING TEST $(test)"
+	@echo "==== BUILDING TEST $(test) ===="
 	@$(MAKE) $(MAKEJOBS) -f $(MK)/tests.mk SRCROOT=$(SRCROOT) TEST_ONLY=$(test) $(action)
 
 .PHONY: clean prune
@@ -111,8 +115,9 @@ clean:
 	$(_v)$(MAKE) $(MAKEOPTS) -f $(MK)/tests.mk clean
 	$(_v)$(MAKE) $(MAKEOPTS) -f $(MK)/libraries.mk clean
 prune:
+	@echo "==== Pruning BUILD DIR ===="
 	$(_v)rm -fr $(BUILDDIR)
 
-ifeq ($(filter $(MAKECMDGOLAS), clean),)
+ifeq ($(filter $(MAKECMDGOALS), clean),)
 -include $(ALL_DEPS)
 endif

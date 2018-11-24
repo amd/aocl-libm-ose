@@ -25,7 +25,7 @@ VERBOSE			?=
 ifneq ($(VERBOSE),)
 _v	=
 else
-$(info VERBOSE=$(VERBOSE))
+#$(info VERBOSE=$(VERBOSE))
 _v	= @
 endif
 

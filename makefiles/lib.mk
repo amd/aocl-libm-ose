@@ -16,14 +16,13 @@ LIBRARY_LDFLAGS	+=
 include $(LIB)/library.mk
 
 TARGETVARS	:= 	$(addsuffix _BUILD,$(COMMONLIBS))
-$(info TARGETVARS=$(TARGETVARS))
+#$(info TARGETVARS=$(TARGETVARS))
 MAKELIBS	:=	$(foreach i,$(TARGETVARS),$(value $i))
-$(info MAKELIBS=$(MAKELIBS))
+#$(info MAKELIBS=$(MAKELIBS))
 
 #$(MAKELIBS): objs = $(value $(addsuffix _OBJS,$(basename $(notdir $@))))
 $(MAKELIBS): objs = $(value $(addsuffix _OBJS,$(COMMONLIBS)))
 $(MAKELIBS):
-	echo objs $(objs) targetvars $(TARGETVARS)
 	@$(MKDIR)
 	@echo AR $@
 	$(_v)$(AR) -crS $@ $(objs)

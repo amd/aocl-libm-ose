@@ -24,4 +24,10 @@
     })
 
 
+// Helpers to build a docstring
+#define STRINGIFY2(x) #x
+#define STRINGIFY(x) STRINGIFY2(x)
+#define BUILD_TEST_DOC(b) "AMD LIBM Test for " STRINGIFY(b)
+
+
 #endif  /* if __LIBM_TEST_MACROS_H__ */

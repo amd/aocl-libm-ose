@@ -22,6 +22,8 @@
 #define __TEST_EXP_INTERNAL__                   /* needed to include exp-test-data.h */
 #include "test_exp2_data.h"
 
+char doc[] = BUILD_TEST_DOC(TEST_NAME);
+
 #if 0
 __attribute__((optimize("tree-vectorize")))
 void test_exp_scalar(test_conf_t *conf, test_report_t *report,
@@ -70,7 +72,7 @@ static int test_exp_vrd4_perf(struct libm_test *test)
         IVDEP //;
             for (uint32_t j = 0; j < (sz - 3); j += 4) {
                 __m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-                __m256d op4 = amd_vrd4_exp(ip4);
+                __m256d op4 = amd_vrd4_exp2(ip4);
                 _mm256_store_pd(&o[j], op4);
             }
         /*
@@ -100,7 +102,7 @@ static int test_exp_vrd4_other(struct libm_test *test)
 
     for (int j = 0; j < (sz - 3); j += 4) {
         __m256d ip4 = _mm256_set_pd(ip[j+3], ip[j+2], ip[j+1], ip[j]);
-        __m256d op4 = amd_vrd4_exp(ip4);
+        __m256d op4 = amd_vrd4_exp2(ip4);
         _mm256_store_pd(&op[j], op4);
     }
 

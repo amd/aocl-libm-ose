@@ -30,8 +30,14 @@
 #define NITER (100 * THOUSAND)
 
 #define NELEM 5000                     /* Some odd number */
+#define STRINGIFY2(x) #x
+#define STRINGIFY(x) STRINGIFY2(x)
+#define PASTE2(a, b) a##b
+#define BUILD_TEST_DOC(b) "AMD LIBM Test for " STRINGIFY(b)
 
-static char doc[] = "Test framework for AMD MATH library";
+
+extern char doc[];
+
 static char args_doc[] = "[FILENAME]...";
 static struct argp_option options[] = {
     {"iter", 'i', 0, 0, "Number of iterations to perform"},
@@ -266,7 +272,7 @@ static int libm_test_run(void)
 
 }
 
-int lib_test_register(struct libm_test *test)
+int libm_test_register(struct libm_test *test)
 {
     if (!test) {
         printf("Test pointer not valid\n");

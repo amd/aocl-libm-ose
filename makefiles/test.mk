@@ -10,17 +10,16 @@ TEST_SUPPORT_OBJS	:=
 
 TESTDIR			= $(TESTSDIR)
 
-$(info TESTDIR=$(TESTDIR))
 $(info TEST_MAKEFILE=$(TEST_MAKEFILE))
 include $(TEST_MAKEFILE)
+$(info TESTDIR=$(TESTDIR) TESTNAME=$(TEST_NAME))
 
-TESTBIN			:= $(call TOTESTDIR,$(TEST_NAME))
-
+TESTBIN			:= $(call TOTESTDIR,test-$(TEST_NAME))
 
 COMMON_CFLAGS   :=      -funsigned-char -fno-strict-aliasing -g -Os
 COMMON_CFLAGS   +=      -fstack-protector-all
 
-COMMON_LDFLAGS  +=	-lamdlibm
+COMMON_LDFLAGS  +=	-L$(BUILDDIR) -lamdlibm
 
 CWARNFLAGS	+=	-Wno-missing-field-initializers
 
@@ -33,20 +32,34 @@ _CFLAGS		:= 	$(COMMON_CFLAGS) $(CWARNFLAGS) $(TEST_CFLAGS)
 _INCLUDES	:=	$(addprefix -I,$(TEST_INCLUDES)) $(addprefix -I,$(COMMON_INCLUDES))
 _LDFLAGS	:=	$(COMMON_LDFLAGS) $(TEST_LDFLAGS)
 
-BUILT_OBJS	:=	$(call TOTESTDIR,$(TEST_OBJS) $(TEST_SUPPORT_OBJS))
+BUILT_OBJS	:=	$(call TOBUILDDIR,$(TEST_OBJS) $(TEST_SUPPORT_OBJS))
 ALL_DEPS	+=	$(BUILT_OBJS:%.o=%.d)
 
+###########################
 $(info BUILT_OBJS=$(BUILT_OBJS))
+###########################
 
 $(TESTDIR)/%.o: _cflags = $(_CFLAGS)
-$(TESTDIR)/%.o:	$(SRCROOT)/%.c 
-	@echo CC $@
+$(TESTDIR)/%.o:	$(SRCROOT)/tests/%.c 
+	@echo TESTCC $@
+	@$(MKDIR)
+	$(_v)$(CC) -c -o $@ $(_cflags) $(_INCLUDES) -DTEST_NAME="$(TEST_NAME)" -MD -MT $@ -MF $(@:%o=%d) $<
+
+$(TESTDIR)/%.o:	$(SRCROOT)/tests/%.S
+	@echo TESTASM $@
 	@$(MKDIR)
 	$(_v)$(CC) -c -o $@ $(_cflags) $(_INCLUDES) -MD -MT $@ -MF $(@:%o=%d) $<
 
 $(TESTBIN):	$(BUILT_OBJS) $(GLOBAL_SRCDEPS)
-	echo  LD $@
-	$(_v)$(CC) $(_LDFLAGS) -o $@ $(BUILT_OBJS)
+	@echo  TESTLD $@
+	$(_v)$(CC) $(_CFLAGS) -o $@ $(BUILT_OBJS) $(_LDFLAGS) 
 
 BUILD_PREREQS		+= $(TESTBIN)
 build:	$(BUILD_PREREQS)
+
+###########################
+$(info MAKEPHASE=$(MAKEPHASE))
+###########################
+.PHONY: clean
+clean:
+	$(_v)rm -f $(TEST_OJBS) $(BUILT_OBJS)

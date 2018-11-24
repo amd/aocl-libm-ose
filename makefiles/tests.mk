@@ -20,17 +20,16 @@ ALL_TEST_DIRS		:=	$(wildcard tests/*)
 
 
 ACTIONS			:=	$(addprefix build~,$(ALL_TEST_MAKEFILES))
+ACTIONS			+=	$(addprefix clean~,$(ALL_TEST_MAKEFILES))
 
-export TESTSDIR		:=	$(BUILDDIR)
-
+export TESTSDIR		:=	$(BUILDDIR)/tests
 
 $(ACTIONS):	$(ALL_TEST_MAKEFILES)
 $(ACTIONS):	spec		= $(subst ~, ,$@)
 $(ACTIONS):	action		= $(word 1,$(spec))
 $(ACTIONS):	TEST_MAKEFILE	= $(word 2,$(spec))
 $(ACTIONS):
-	@echo "=====> Building Test $(TEST_NAME)"
-	$(MAKE) -f $(MK)/test.mk TEST_MAKEFILE="$(TEST_MAKEFILE)"
+	$(_v)$(MAKE) -f $(MK)/test.mk TEST_MAKEFILE="$(TEST_MAKEFILE)" $(action)
 
 BUILD_TESTBINS	:=
 
@@ -50,3 +49,7 @@ $(info BUILD_TESTBINS=$(BUILD_TESTBINS))
 
 .PHONY: build
 build:		$(BUILD_TESTBINS)
+
+.PHONY: clean
+clean:
+	$(_v)rm -fr $(TEST_OBJS) $(BUILD_TESTBINS)

@@ -15,9 +15,20 @@ GET_LOCAL_DIR    = $(patsubst %/,%,$(dir $(word $(words $(MAKEFILE_LIST)),$(MAKE
 # makes sure the target dir exists
 MKDIR = if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 
+# Upcase, downcase, camelcase
+UPCASE          =       $(shell echo $(1) | tr a-z A-Z)
+DOWNCASE        =       $(shell echo $(1) | tr A-Z a-z)
+
 # conditionally echo text passed in
-ifeq ($(V),)
-BUILDECHO = @echo $(1)
+VERBOSE			?=
+
+ifneq ($(VERBOSE),)
+_v	=
 else
-BUILDECHO =
+$(info VERBOSE=$(VERBOSE))
+_v	= @
+endif
+
+ifndef RANLIB
+RANLIB		:=	ranlib
 endif

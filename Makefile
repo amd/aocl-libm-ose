@@ -37,8 +37,48 @@ SPACE_CHECK		= $(filter ALL,$(and $(findstring $(subst ~, ,~),$(1)),$(error $(2)
 WARN_SPACE_IN_PATH	= A path contains one or more spaces, this may create problems
 $(call SPACE_CHECK $(SRCROOT),$(WARN_SPACE_IN_PATH) (SRCROOT=$(SRCROOT)))
 
+export STANDARD_ACTIONS :=	build install clean
+#export STANDARD_ACTIONS :=	#test clean-test
+ACTION_TEMPLATE		:=	$(addprefix %-,$(BUILD_TESTS))
+LIB_ACTIONS		:=	$(foreach action,$(STANDARD_ACTIONS),$(addprefix $(action)-,libm))
+
+##############################
+$(info $(ACTIONS))
+##############################
+# 
+# Remove the ugly Entering directory ... etc.
+#
+ifndef VERBOSE
+  export MAKEFLAGS	+=	--no-print-directory
+endif
+
+ifndef MAKEJOBS
+  export MAXJOBS	:= $(shell echo $$((`nproc` * 2))) 
+  export MAKEJOBS	:= --jobs=$(MAXJOBS)
+endif
+
+all:	build
+
+build:	build-libraries build-tests
+
+libs: build-libraries
+
+build-libraries:
+	@echo "==== BUILDING LIBRARIES ===="
+	@$(MAKE) $(MAKEJOBS) --no-print-directory \
+		-f $(MK)/libraries.mk \
+		MAKEPHASE=libraries \
+		SRCROOT=$(SRCROOT)
+	
+.PHONY: build-tests tests
+tests: build-tests
+build-tests: build-libraries
+build-tests:
+	@echo "==== BUILDING TESTS ===="
+	@$(MAKE) $(MAKEOBJS) -f $(MK)/tests.mk SRCROOT=$(SRCROOT) build
+
 ifneq ($(TESTS),)
- override LIBM_TESTS		:=	$(strip $(LIBM_TESTS) $(TESTS))
+ override LIBM_TESTS	:=	$(strip $(LIBM_TESTS) $(TESTS))
 endif
 
 LIBM_TESTS		?=	$(filter-out $(SUPPRESSED_TESTS), $(VALID_TESTS))
@@ -49,41 +89,30 @@ ifneq ($(ERROR_TESTS),)
 $(error Unknown test(s) - $(ERROR_TESTS))
 endif
 
-#export STANDARD_ACTIONS :=	build install test clean
-export STANDARD_ACTIONS :=	test
-ACTION_TEMPLATE		:=	$(addprefix %-,$(BUILD_TESTS))
-ACTIONS			:=	$(foreach action,$(STANDARD_ACTIONS),$(addprefix $(action)-,$(MAKE_TESTS)))
+TEST_ACTIONS		:= build clean
+TEST_ACTIONS		=  $(foreach action,$(STANDARD_ACTIONS),$(addprefix $(action)-test-,$(MAKE_TESTS)))
+##############################
+#$(info $(TEST_ACTIONS))
+##############################
 
-BUILD_TESTS		:=	$(addprefix build-,$(MAKE_TESTS))
-$(info $(ACTIONS))
-
-ifndef MAKEJOBS
-  export MAXJOBS	:= $(shell echo $$((`nproc` * 2))) 
-  export MAKEJOBS	:= --jobs=$(MAXJOBS)
-endif
-
-all:	build
-
-
-build:	build-libraries build-tests
-
-build-libraries:
-	@echo "==== Building Libraries ===="
-	@$(MAKE) $(MAKEJOBS) -f $(MK)/libraries.mk MAKEPHASE=libraries SRCROOT=$(SRCROOT)
-	
-.PHONY: build-tests tests
-tests: build-tests
-build-tests: build-libraries
-build-tests:
-	@echo "==== Building Tests ===="
-	@$(MAKE) $(MAKEOBJS) -f $(MK)/tests.mk SRCROOT=$(SRCROOT) build
-
-
+$(TEST_ACTIONS)	: % : $(ACTION_TEMPLATE)
 
 # This is to help build only one test
-$(ACTIONS):	action 		= $(word 1, $(subst -, ,$@))
-$(ACTIONS):	test		= $(word 2, $(subst -, ,$@))
-$(ACTIONS):
-	@echo "====> $(action) $(test)"
-	@$(MAKE) $(MAKEJOBS) -f $(MK)/tests.mk SRCROOT=$(SRCROOT) TEST_ONLY=$(test) MAKEPHASE=$(action)
+# invoke like build-test-<testname>
+$(TEST_ACTIONS):	action 		= $(word 1, $(subst -, ,$@))
+$(TEST_ACTIONS):	t		= $(word 2, $(subst -, ,$@))
+$(TEST_ACTIONS):	test		= $(word 3, $(subst -, ,$@))
+$(TEST_ACTIONS): build-libraries
+	@echo "====> BUILDING TEST $(test)"
+	@$(MAKE) $(MAKEJOBS) -f $(MK)/tests.mk SRCROOT=$(SRCROOT) TEST_ONLY=$(test) $(action)
 
+.PHONY: clean prune
+clean:
+	$(_v)$(MAKE) $(MAKEOPTS) -f $(MK)/tests.mk clean
+	$(_v)$(MAKE) $(MAKEOPTS) -f $(MK)/libraries.mk clean
+prune:
+	$(_v)rm -fr $(BUILDDIR)
+
+ifeq ($(filter $(MAKECMDGOLAS), clean),)
+-include $(ALL_DEPS)
+endif

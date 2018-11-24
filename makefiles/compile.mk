@@ -2,49 +2,63 @@
 #
 # Author : Prem Mallappa <pmallapp@amd.com>
 
-# Isolate all source files
-MODULE_CSRCS 	:= 	$(filter %.c,$(MODULE_SRCS))
-MODULE_CPPSRCS 	:= 	$(filter %.cpp,$(MODULE_SRCS)) $(filter %.cxx,$(MODULE_SRCS)) \
-			$(filter %.CPP,$(MODULE_SRCS)) $(filter %.CXX,$(MODULE_SRCS)) 
-MODULE_ASMSRCS 	:= 	$(filter %.S,$(MODULE_SRCS))
+
+ALL_OBJS                :=      $(call TOBUILDDIR,$(ALL_OBJS))
+
+ALL_DEPS                +=      $(ALL_OBJS:%o=%d)
+
+ALL_STATICLIBS          +=      $(PREBUILT_STATICLIBS)
+
+_CFLAGS			+= 	$(GLOBAL_CFLAGS) $(LIBRARY_CFLAGS)
+
+_INCLUDES		= 	$(addprefix -I,$(GLOBAL_INCLUDES) $(EXTERNAL_INCLUDES) $(LIBRARY_INCLUDES))
+
+# Dump all the interesting variables used to build things with
+ifeq (0,1)
+$(warning _INCLUDES = $(_INCLUDES))
+$(warning _CFLAGS = $(_CFLAGS))
+$(warning _CPPFLAGS = $(_CPPFLAGS))
+$(warning _RUNTIME_FLAGS = $(_RUNTIME_FLAGS))
+$(warning LIBRARY_ALLFLAGS = $(LIBRARY_ALLFLAGS))
+$(warning GLOBAL_ALLFLAGS = $(GLOBAL_ALLFLAGS))
+$(warning ALL_OBJS = $(ALL_OBJS))
+$(warning ALL_DEPS = $(ALL_DEPS))
+$(warning ALL_OBJS = $(ALL_OBJS))
+endif
 
 
-MODULE_COBJS 	:= 	$(call TOMODULEDIR,$(patsubst %.c,%.c.o,$(MODULE_CSRCS)))
-MODULE_CPPOBJS 	:= 	$(call TOMODULEDIR,$(patsubst %.cpp,%.cpp.o,$(MODULE_CPPSRCS)))
-MODULE_ASMOBJS 	:= 	$(call TOMODULEDIR,$(patsubst %.S,%.S.o,$(MODULE_ASMSRCS)))
-
-MODULE_OBJS 	:= 	$(MODULE_COBJS) $(MODULE_CPPOBJS) $(MODULE_ASMOBJS) $(MODULE_ASMOBJS2)
-
-
-$(MODULE_COBJS): $(MODULE_BUILDDIR)/%.c.o: %.c $(MODULE_SRCDEPS)
+ifeq ($(MAKEPHASE),libraries)
+$(info LIBOBJDIR=$(LIBOBJDIR))
+$(LIBOBJDIR)/%.o: %.c $(LIBRARY_SRCDEPS) $(GLOBAL_SRCDEPS)
 	@$(MKDIR)
-	$(call BUILDECHO, compiling $<)
-	$(NOECHO)$(CC) $(GLOBAL_COMPILEFLAGS) $(GLOBAL_OPTFLAGS) \
-		$(MODULE_OPTFLAGS) $(MODULE_COMPILEFLAGS) $(GLOBAL_CFLAGS) \
-		$(MODULE_CFLAGS) \
-		$(GLOBAL_INCLUDES) -c $< -MD -MP -MT $@ -MF $(@:%o=%d) -o $@
+	@echo LIBCC  $@
+	$(_v)$(CC) $(LIBRARY_ALLFLAGS) $(GLOBAL_ALLFLAGS) $(_CFLAGS) $(_INCLUDES) -c $< -MD -MT $@ -MF $(@:%o=%d) -o $@
 
-$(MODULE_CPPOBJS): $(MODULE_BUILDDIR)/%.cpp.o: %.cpp $(MODULE_SRCDEPS)
+$(LIBOBJDIR)/%.o: %.cpp $(LIBRARY_SRCDEPS) $(GLOBAL_SRCDEPS)
 	@$(MKDIR)
-	$(call BUILDECHO, compiling $<)
-	$(NOECHO)$(CC) $(GLOBAL_COMPILEFLAGS) $(GLOBAL_OPTFLAGS) \
-		$(MODULE_OPTFLAGS) $(MODULE_COMPILEFLAGS) $(GLOBAL_CPPFLAGS) \
-		$(MODULE_CPPFLAGS) \
-		$(GLOBAL_INCLUDES) -c $< -MD -MP -MT $@ -MF $(@:%o=%d) -o $@
+	@echo LIBC++  $@
+	$(_v)$(CPP) $(LIBRARY_ALLFLAGS) $(GLOBAL_ALLFLAGS) $(_CPPFLAGS) $(_INCLUDES) -c $< -MD -MT $@ -MF $(@:%o=%d) -o $@
 
-$(MODULE_ASMOBJS): $(MODULE_BUILDDIR)/%.S.o: %.S $(MODULE_SRCDEPS)
+$(LIBOBJDIR)/%.o: %.S $(LIBRARY_SRCDEPS) $(GLOBAL_SRCDEPS)
 	@$(MKDIR)
-	$(call BUILDECHO, compiling $<)
-	$(NOECHO)$(CC) $(GLOBAL_COMPILEFLAGS) $(GLOBAL_OPTFLAGS) \
-		$(MODULE_OPTFLAGS) $(MODULE_COMPILEFLAGS) $(GLOBAL_ASMFLAGS) \
-		$(MODULE_ASMFLAGS) \
-		$(GLOBAL_INCLUDES) -c $< -MD -MP -MT $@ -MF $(@:%o=%d) -o $@
+	@echo LIBASM $@
+	$(_v)$(CC) $(LIBRARY_ALLFLAGS) $(GLOBAL_ALLFLAGS) $(GLOBAL_ASFLAGS) $(_INCLUDES) -c $< -MD -MT $@ -MF $(@:%o=%d) -o $@
 
+# rules for source files in the libdir
+$(LIBOBJDIR)/%.o: $(LIBOBJDIR)/%.c $(LIBRARY_SRCDEPS) $(GLOBAL_SRCDEPS)
+	@$(MKDIR)
+	@echo LIBCC  $@
+	$(_v)$(CC) $(LIBRARY_ALLFLAGS) $(GLOBAL_ALLFLAGS) $(_CFLAGS) $(_INCLUDES) -c $< -MD -MT $@ -MF $(@:%o=%d) -o $@
 
-# Clear all the locally set variables
-MODULE_CSRCS :=
-MODULE_CPPSRCS :=
-MODULE_ASMSRCS :=
-MODULE_COBJS :=
-MODULE_CPPOBJS :=
-MODULE_ASMOBJS :=
+$(LIBOBJDIR)/%.o: $(LIBOBJDIR)/%.S $(LIBRARY_SRCDEPS) $(GLOBAL_SRCDEPS)
+	@$(MKDIR)
+	@echo LIBASM $@
+	$(_v)$(CC) $(LIBRARY_ALLFLAGS) $(GLOBAL_ALLFLAGS) $(GLOBAL_ASFLAGS) $(_INCLUDES) -c $< -MD -MT $@ -MF $(@:%o=%d) -o $@
+
+# a rule for copying precompiled object files to somewhere they can be found at link time
+$(LIBOBJDIR)/%.o: %.o
+	@$(MKDIR)
+	@echo CP $@
+	$(_v)$(CP) $< $@
+endif
+

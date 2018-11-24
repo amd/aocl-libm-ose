@@ -2,14 +2,14 @@
 #
 # Author: Prem Mallappa <pmallapp@amd.com>
  
-TEST_MAKEFILES		:=	$(wildcard tests/*/tests.mk)
+TEST_MAKEFILES		:=	$(wildcard tests/*/test.mk)
 
 include $(MK)/macros.mk
 
 #$(info TEST_MAKEFILES=$(TEST_MAKEFILES))
 
 ifneq ($(TEST_ONLY),)
-ALL_TEST_MAKEFILES	=	$(filter tests/$(TEST_ONLY)/tests.mk,$(TEST_MAKEFILES))
+ALL_TEST_MAKEFILES	=	$(filter tests/$(TEST_ONLY)/test.mk,$(TEST_MAKEFILES))
 else
 ALL_TEST_MAKEFILES	:=	$(TEST_MAKEFILES)
 endif
@@ -53,3 +53,4 @@ build:		$(BUILD_TESTBINS)
 .PHONY: clean
 clean:
 	$(_v)rm -fr $(TEST_OBJS) $(BUILD_TESTBINS)
+

@@ -20,7 +20,7 @@ $(ACTIONS):	spec	=	$(subst ~, ,$@)
 $(ACTIONS):	action	=	$(word 1,$(spec))
 $(ACTIONS):	lib	=	$(word 2,$(spec))
 $(ACTIONS):
-	$(MAKE) -f $(MK)/lib.mk LIB=$(lib) LIBNAME_UPPER=$(LIBNAME) MAKEPHASE=$(MAKEPHASE)
+	@$(MAKE) -f $(MK)/lib.mk LIB=$(lib) LIBNAME_UPPER=$(LIBNAME) MAKEPHASE=$(MAKEPHASE)
 
 build:	$(BUILD_ACTION)
 

@@ -252,7 +252,7 @@ static int test_exp2_init_v4d(struct libm_test_conf *conf)
         exp2_v4d->variant |= LIBM_FUNC_V4D;
         exp2_v4d->conf = conf;
 
-        uint32_t bit = 1 << ffs(conf->test_types);
+        uint32_t bit = 1 << ffs(test_types);
         switch(bit) {
         case TEST_TYPE_PERF:
             exp2_v4d->type_name = "perf";

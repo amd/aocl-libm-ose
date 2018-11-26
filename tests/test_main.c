@@ -289,17 +289,20 @@ static int libm_test_run(void)
 int libm_test_register(struct libm_test *test)
 {
     if (!test) {
-        printf("Test pointer not valid\n");
+        printf("Test:%s type:%s pointer not valid\n", test->name,
+               test->type_name);
         goto out;
     }
 
     if (!test->ops.run) {
-        printf("Test dont have a 'run' method \n");
+        printf("Test:%s type:%s dont have a 'run' method \n", test->name,
+               test->type_name);
         goto out;
     }
 
     if (!test->test_data) {
-        printf("Test dont have data set\n");
+        printf("Test:%s type:%s dont have data set\n", test->name,
+               test->type_name);
         goto out;
     }
 
@@ -308,7 +311,8 @@ int libm_test_register(struct libm_test *test)
      * other tests should mandatory have it
      */
     if (test->conf->test_types != TEST_TYPE_PERF && !test->ops.verify) {
-        printf("Test dont have a verify method\n");
+        printf("Test:%s type:%s dont have a verify method\n", test->name,
+               test->type_name);
     }
 
     list_add(&test->list, &test_list);

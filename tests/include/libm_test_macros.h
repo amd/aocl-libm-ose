@@ -24,6 +24,9 @@
     })
 
 
+/* ARRAY size macro */
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
+
 // Helpers to build a docstring
 #define STRINGIFY2(x) #x
 #define STRINGIFY(x) STRINGIFY2(x)

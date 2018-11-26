@@ -13,6 +13,9 @@
 
 #include <time.h>
 
+#define BENCH_CONST_1_MILLION             1e6
+#define BENCH_CONST_NANOSEC_PER_SEC       1e9
+
 struct timer {
     struct timespec t_start, t_stop;
 };
@@ -30,16 +33,24 @@ static inline void timer_stop(struct timer *tm)
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, t);
 }
 
+/*
+ * Returns total time spent in seconds
+ */
 static inline double timer_span(struct timer *tm)
 {
     struct timespec *start=&tm->t_start, *stop=&tm->t_stop;
     return (double)(stop->tv_sec - start->tv_sec) +
-        (double)(stop->tv_nsec - start->tv_nsec) / 1e9;
+        (stop->tv_nsec - start->tv_nsec) / (double)BENCH_CONST_NANOSEC_PER_SEC;
 }
 
-static inline double sec2mps(double s, long n)
+/*
+ * convert seconds to Million ops per second
+ * s is the time spent in seconds
+ * n is the number of operations performed
+ */
+static inline double sec2mps(double s, uint64_t n)
 {
-    return (double)n / (s * 1e6);
+    return (double)n / (s * BENCH_CONST_1_MILLION);
 }
 
 #endif /* __BENCH_TIMER_H__ */

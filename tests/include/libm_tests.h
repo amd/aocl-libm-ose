@@ -52,11 +52,13 @@ struct libm_test_result{
 #define MAX_FAILURES 10
 struct libm_test_data {
     uint32_t nelem;
+    uint32_t reserved1;
     double  *input1;
     double  *input2;
     double  *output;
     double  *expected;
-    double   data[0];
+    double  *reserved[27];
+    double  data[0];
 };
 
 enum {
@@ -71,6 +73,7 @@ struct libm_test;
 struct libm_test_ops {
     int (*setup)(struct libm_test *test);
     int (*run)(struct libm_test *test);
+    int (*cleanup)(struct libm_test *test);
 
     int (*accuracy)(struct libm_test *test);
     int (*test_perf)(struct libm_test *test, struct libm_test_result *result);
@@ -87,12 +90,16 @@ struct libm_test {
     char                    *type_name;
     uint32_t                 variant;
     double                   ulp_err;           /* ULP error */
-    const
+
+    uint8_t                  nargs;              /* number of arguments for this func */
+
     struct libm_test_conf   *conf;
-    struct libm_test_ops    ops;
+    struct libm_test_ops     ops;
     struct libm_test_data   *test_data;
-    struct libm_test_result *result;
+    struct libm_test_result  result;
+
     void                    *data;              /* data that the test needs back */
+
     struct list_head         list;
 };
 

@@ -1,7 +1,7 @@
-#ifndef __TEST_EXP_DATA_H__
-#define __TEST_EXP_DATA_H__
+#ifndef __TEST_EXP2_DATA_H__
+#define __TEST_EXP2_DATA_H__
 
-#ifndef __TEST_EXP_INTERNAL__
+#ifndef __TEST_EXP2_INTERNAL__
 #warning "This file is not expected to be included generously"
 #endif
 
@@ -9,7 +9,7 @@ struct __exp_internal_data {
     uint64_t in, out;
 };
 
-static struct __exp_internal_data libm_test_exp_special_data[] = {
+static struct __exp_internal_data libm_test_exp2_special_data[] = {
     {0xffefffffffffffff, 0x0000000000000000},
     {0xc0862c4379671324, 0x00052288f82fe4ba},
     {0x7ff0000000000000, 0x7ff0000000000000}, //inf
@@ -60,6 +60,4 @@ static struct __exp_internal_data libm_test_exp_special_data[] = {
     {0xc0874593fa89185f, 0x0000000000000001},
 };
 
-
-
-#endif  /* __TEST_EXP_DATA_H */
+#endif  /* __TEST_EXP2_DATA_H */

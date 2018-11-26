@@ -20,7 +20,8 @@ ALL_TEST_DIRS		:=	$(wildcard tests/*)
 
 
 ACTIONS			:=	$(addprefix build~,$(ALL_TEST_MAKEFILES))
-ACTIONS			+=	$(addprefix clean~,$(ALL_TEST_MAKEFILES))
+TESTS_CLEAN_ACTIONS	:=	$(addprefix clean~,$(ALL_TEST_MAKEFILES))
+ACTIONS			+=	$(TESTS_CLEAN_ACTIONS)
 
 export TESTSDIR		:=	$(BUILDDIR)/tests
 
@@ -45,12 +46,14 @@ endef
 $(foreach TEST_MAKEFILE,$(ALL_TEST_MAKEFILES),$(eval $(template)))
 
 #$(info TESTSDIR=$(TESTSDIR) TESTBINS=$(TESTBINS))
-#$(info BUILD_TESTBINS=$(BUILD_TESTBINS))
+#$(info BUILD_TESTBINS=$(BUILD_TESTBINS) $(TEST_OBJS))
 
 .PHONY: build
 build:		$(BUILD_TESTBINS)
 
 .PHONY: clean
-clean:
+clean: $(TESTS_CLEAN_ACTIONS)
 	$(_v)rm -fr $(TEST_OBJS) $(BUILD_TESTBINS)
+	$(_v)rm -fr $(TEST_OBJS)
+	$(_v)rm -fr $(TEST_SUPPORT_OBJS)
 

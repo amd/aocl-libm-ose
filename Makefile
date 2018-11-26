@@ -106,14 +106,21 @@ $(TEST_ACTIONS)	: % : $(ACTION_TEMPLATE)
 $(TEST_ACTIONS):	action 		= $(word 1, $(subst -, ,$@))
 $(TEST_ACTIONS):	t		= $(word 2, $(subst -, ,$@))
 $(TEST_ACTIONS):	test		= $(word 3, $(subst -, ,$@))
+$(TEST_ACTIONS):	action_uppper   := $(call UPCASE, $(action))
 $(TEST_ACTIONS): build-libraries
-	@echo "==== BUILDING TEST $(test) ===="
+	@if [ "X$(action)" = "Xbuild" ]; then  	\
+		echo -n "==== BUILDING "; 	\
+	 else   				\
+		echo -n "==== CLEANING "; 	\
+	 fi
+	@echo "TEST $(test) $(action_upper)===="
 	@$(MAKE) $(MAKEJOBS) -f $(MK)/tests.mk SRCROOT=$(SRCROOT) TEST_ONLY=$(test) $(action)
 
 .PHONY: clean prune
 clean:
 	$(_v)$(MAKE) $(MAKEOPTS) -f $(MK)/tests.mk clean
 	$(_v)$(MAKE) $(MAKEOPTS) -f $(MK)/libraries.mk clean
+
 prune:
 	@echo "==== Pruning BUILD DIR ===="
 	$(_v)rm -fr $(BUILDDIR)
@@ -121,3 +128,4 @@ prune:
 ifeq ($(filter $(MAKECMDGOALS), clean),)
 -include $(ALL_DEPS)
 endif
+

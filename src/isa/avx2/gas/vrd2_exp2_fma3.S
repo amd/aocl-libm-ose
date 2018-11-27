@@ -1,3 +1,50 @@
+/*
+  vrd4_exp2_fma3.S
+     Returns the value of 2^x for 2 double-precision numbers packed in an xmm register
+
+  Special Cases:
+     exp2(INF) => INF and exp2(-INF) => 0
+     exp2(Nan) => Nan
+     exp2(0)   => 1 (exact only for finite arg)
+
+  Method:
+   1. Argument reduction
+        Choose 'n' and 'f' such that
+        x*64 = n + f                                  --- (1)
+        (n is integer part, f is the fraction part)
+        &
+        n = m*64 + j          | j=0,1,2...63          --- (2)
+
+        2^x = 2^(x*64/64) = 2^((n+f)/64)
+
+        From (1) and (2)
+            = 2^m . 2^(j/64) . 2^(f/64)
+
+   2. 2^(j/64) from look-up table
+
+   3. Approximate 2^(f/64) using polynomial
+        2^x = e^(ln2 * x)
+
+        f = x*64 - n
+
+        2^(f/64) = e(ln2 * ((x*64 - n)/64))
+        Let r = (x*64 - n)/64
+              = x - n/64
+
+        Calculate e^r using Taylor series (upto 7th degree)
+        e^r = 1 + r + (r^2)/2! + (r^3)/3! + (r^4)/4! + (r^5)/5! + (r^6)/6! + (r^7)/7!
+
+   4. Scale back
+        2^x = (2^m) * (2^(j/64)) * e^r
+Range:  [-1/64, 1/64] i.e [-0.015625, 0.015625]
+
+  Accuracy:
+          Has 0.9% (9 out of 1000) of inputs, has a descrepency in BIT[10:8]
+          against GNU libc's exp2
+
+*/
+
+
 #include "fn_macros.h"
 #include "exp_tables.h"
 
@@ -35,16 +82,21 @@ fname:
     # m = (n - j) / 64      
     vpsrad         $6, %xmm4,%xmm5      #xmm5 = 0,0,m1,m0
 
-    # q = r + r^2*1/2 + r^3*1/6 + r^4 *1/24 + r^5*1/120 + r^6*1/720
-    # q = r + r*r*(1/2 + r*(1/6+ r*(1/24 + r*(1/120 + r*(1/720)))))
-    vmovapd    .L__real_1_by_720(%rip),%xmm3
-    vfmadd213pd   .L__real_1_by_120(%rip),%xmm2,%xmm3
-    vfmadd213pd   .L__real_1_by_24(%rip),%xmm2,%xmm3
-    vfmadd213pd   .L__real_1_by_6(%rip),%xmm2,%xmm3
-    vfmadd213pd   .L__real_1_by_2(%rip),%xmm2,%xmm3
-    vmulpd     %xmm2,%xmm2,%xmm0
-    vfmadd213pd   %xmm2,%xmm3,%xmm0 
-    
+    # Computing q=r + r^2*1/2 + r^3*1/6 + r^4 *1/24 + r^5*1/120 + r^6*1/720 + r^7/5040
+    # Using Estrin's method
+    # Upto 7th degree
+    vmovapd .L__real_1_by_6(%rip),%xmm0                 # xmm0 = 1/6
+    vfmadd213pd .L__real_1_by_2(%rip),%xmm2,%xmm0       # xmm0 = A0 = 1/2+(1/6)*r
+    vmovapd .L__real_1_by_120(%rip),%xmm6               # xmm6 = 1/120
+    vfmadd213pd .L__real_1_by_24(%rip),%xmm2,%xmm6      # xmm6 = A1 = 1/24+(1/120)*r
+    vmovapd .L__real_1_by_5040(%rip),%xmm7              # xmm7 = 1/5040
+    vfmadd213pd .L__real_1_by_720(%rip),%xmm2,%xmm7     # xmm7 = A2 = 1/720+(1/5040)*r
+    vmulpd %xmm2,%xmm2,%xmm8                            # xmm8 = r^2
+    vfmadd213pd %xmm2,%xmm8,%xmm0                       # xmm0 = B0 = r + A0 * r^2
+    vfmadd213pd %xmm6,%xmm8,%xmm7                       # xmm7 = B1 = A1 + A2 * r^2
+    vmulpd %xmm8,%xmm8,%xmm8                            # xmm8 = r^4
+    vfmadd231pd %xmm8,%xmm7,%xmm0                       # xmm0 = B0 + B1 * r^4
+
     # (f)*(q) + f2 + f1
     lea         .L__two_to_jby64_table(%rip), %rdx        
     lea         .L__two_to_jby64_tail_table(%rip), %r11       
@@ -139,4 +191,4 @@ fname:
 .L__m1022:                        .octa 0xc020000000000000c020000000000000
 .L__ulong_1074:                   .octa 0x00000000000004320000000000000432
 .L__ulong_1:                      .octa 0x00000000000000010000000000000001
-
+.L__real_1_by_5040:               .octa 0x3f2a01a01a01a01a3f2a01a01a01a01a    # 1/5040 (1/7!)

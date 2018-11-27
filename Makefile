@@ -38,8 +38,9 @@ endif
 export OBJROOT		?=	.
 
 SPACE_CHECK		= $(filter ALL,$(and $(findstring $(subst ~, ,~),$(1)),$(error $(2))))
-WARN_SPACE_IN_PATH	= A path contains one or more spaces, this may create problems
-$(call SPACE_CHECK $(SRCROOT),$(WARN_SPACE_IN_PATH) (SRCROOT=$(SRCROOT)))
+WARN_SPACE_IN_PATH	= "A path contains one or more spaces, this may create problems"
+
+#$(call SPACE_CHECK $(SRCROOT),$(WARN_SPACE_IN_PATH) (SRCROOT=$(SRCROOT)))
 
 export STANDARD_ACTIONS :=	build install clean
 #export STANDARD_ACTIONS :=	#test clean-test

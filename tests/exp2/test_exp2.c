@@ -85,15 +85,15 @@ static int test_exp2_vrd4_perf(struct libm_test *test)
 
     timer_stop(&bt);
     double s = timer_span(&bt);
-    printf("bench s:%f %ld %p\n", s, n * sz, &result->mops);
-    //result->mops = sec2mps(s, n * sz);
+
+    result->mops = sec2mps(s, n * sz);
 
     return result->nfail;
 }
 
 static int test_exp2_vrd4_other(struct libm_test *test)
 {
-    struct libm_test_data *data = test->data;
+    struct libm_test_data *data = test->test_data;
     double *ip = &data->input1[0];
     double *op = &data->output[0];
     int sz = data->nelem;
@@ -119,6 +119,12 @@ int libm_test_generic_ulp(struct libm_test *test)
 
 int libm_test_exp2_verify(struct libm_test *test, struct libm_test_result *result)
 {
+    struct libm_test_data *data = test->test_data;
+
+    for (uint32_t j = 0; j < data->nelem; j++) {
+        data->expected[j] = exp(data->input1[j]);
+    }
+
     return libm_test_verify_dbl(test, result);
 }
 
@@ -131,9 +137,10 @@ struct libm_test exp2_test_template = {
     },
 };
 
-static inline void *libm_ptr_align_up(void *ptr, uint32_t align)
+static void *libm_ptr_align_up(void *ptr, uint64_t align)
 {
     uint64_t st = (uint64_t)ptr;
+
     assert(align > 0 && (align & (align - 1)) == 0); /* Power of 2 */
     assert(st != 0);
 
@@ -143,20 +150,41 @@ static inline void *libm_ptr_align_up(void *ptr, uint32_t align)
     return (void *)st;
 }
 
-static void * libm_test_alloc_test_data(uint32_t nelem)
+static void *libm_test_ext2_alloc_test_data(uint32_t nelem)
 {
-#define LOCAL_ALIGN_FACTOR 256
+#ifdef LIBM_AVX512_SUPPORTED
+#define _ALIGN_FACTOR 512
+#else
+#define _ALIGN_FACTOR 256
+#endif
 
     struct libm_test_data *test_data;
+    /*
+     * size => 3 of size nelem (input1, output, expected)
+     *         + size of the structure itself
+     *         + 3 times size of _ALIGN_FACTOR
+     */
+    uint32_t size = sizeof(*test_data) +
+        nelem * 3 * sizeof(double) + 
+        (_ALIGN_FACTOR * 3);
 
-    test_data = aligned_alloc(LOCAL_ALIGN_FACTOR, nelem * 3 +
-                              sizeof(*test_data) +
-                              LOCAL_ALIGN_FACTOR * 3);
+
+    test_data = aligned_alloc(_ALIGN_FACTOR, size);
+
+    if (!test_data)
+        goto out;
+
+    bzero (test_data, size);
+
     test_data->nelem = nelem;
-    test_data->input1 = libm_ptr_align_up(&test_data->data[0], LOCAL_ALIGN_FACTOR);
-    test_data->output = libm_ptr_align_up(&test_data->data[nelem], LOCAL_ALIGN_FACTOR);
-    test_data->expected = libm_ptr_align_up(&test_data->output[nelem], LOCAL_ALIGN_FACTOR);
+    /* CAUTION */
+    test_data->input1 = libm_ptr_align_up(&test_data->data[0], _ALIGN_FACTOR);
+    /* CAUTION - dependency on previous */
+    test_data->output = libm_ptr_align_up(&test_data->input1[nelem], _ALIGN_FACTOR);
+    /* CAUTION - dependency on previous */
+    test_data->expected = libm_ptr_align_up(&test_data->output[nelem], _ALIGN_FACTOR);
 
+out:
     return test_data;
 }
 
@@ -164,11 +192,10 @@ static int test_exp2_alloc_init_perf_data(struct libm_test *test)
 {
     const struct libm_test_conf *conf = test->conf;
 
-    test->test_data = libm_test_alloc_test_data(conf->nelem);
+    test->test_data = libm_test_ext2_alloc_test_data(conf->nelem);
 
     if (!test->test_data)
         goto out;
-
 
     return 0;
 
@@ -195,7 +222,7 @@ static int test_exp2_alloc_special_data(struct libm_test *test, size_t size)
     struct libm_test_data *test_data;
 
     test->test_data = aligned_alloc(64, sizeof(*test->test_data) +
-                                    sizeof(test->data) * size * 2);
+                                    sizeof(*test_data) * size * 2);
 
     if (!test->test_data)
         goto out;
@@ -219,7 +246,7 @@ static int test_exp2_alloc_special_data(struct libm_test *test, size_t size)
 static int test_exp2_vrd4_special_setup(struct libm_test *test)
 {
     int test_data_size = ARRAY_SIZE(libm_test_exp2_special_data)/2;
-    struct libm_test_data *data = test->data;
+    struct libm_test_data *data = test->test_data;
 
     // Just trying to get rid of warning/errors
     test_exp2_alloc_special_data(test, test_data_size);
@@ -257,7 +284,7 @@ static int test_exp2_init_v4d(struct libm_test_conf *conf)
         case TEST_TYPE_PERF:
             exp2_v4d->type_name = "perf";
             exp2_v4d->ops.run = test_exp2_vrd4_perf;
-            ret = test_exp2_alloc_init_perf_data(exp2_v4d);
+            test_exp2_alloc_init_perf_data(exp2_v4d);
             break;
         case TEST_TYPE_SPECIAL:
             exp2_v4d->type_name = "special";
@@ -296,8 +323,6 @@ static int test_exp2_init_v4d(struct libm_test_conf *conf)
 int libm_test_init(struct libm_test_conf *conf)
 {
     int ret = 0;
-
-    printf("%s called\n", __func__);
 
     if (!conf->test_types)
         conf->test_types = EXP2_TEST_TYPES_ALL;

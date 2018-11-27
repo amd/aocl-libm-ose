@@ -15,6 +15,8 @@ int libm_test_verify_dbl(struct libm_test *test,
     int sz = data->nelem;
     int idx = 0;
 
+    result->ntests = data->nelem;
+
     for (int j = 0; j < sz; ++j) {
         if (((unsigned long)nw[j] ^ (unsigned long)op[j]) != 0) {
             data->input1[idx] = data->input1[j];
@@ -31,6 +33,9 @@ int libm_test_verify_dbl(struct libm_test *test,
                 break;
         }
     }
+
+    /* Unless some are ignored forcibly */
+    result->npass = result->ntests - result->nfail - result->nignored;
 
     return idx;
 }

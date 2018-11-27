@@ -16,7 +16,7 @@ include $(TEST_MAKEFILE)
 
 TESTBIN			:= $(call TOTESTDIR,test-$(TEST_NAME))
 
-COMMON_CFLAGS   :=      -funsigned-char -fno-strict-aliasing -g -Os
+COMMON_CFLAGS   :=      -funsigned-char -fno-strict-aliasing -g -O1
 COMMON_CFLAGS   +=      -fstack-protector-all
 
 COMMON_LDFLAGS  +=	-L$(BUILDDIR) -lamdlibm

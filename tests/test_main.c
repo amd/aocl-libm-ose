@@ -41,7 +41,7 @@ static char args_doc[] = "[FILENAME]...";
 static struct argp_option options[] = {
     {"iter", 'i', "NUM", 0, "Number of iterations to perform"},
     {"elem", 'e', "NUM", 0, "Number of input size"},
-    {"variant", 'v', "VARIANT", 0, "scalar(s_s/s_d), vector - v2f, v4f, v8f, v2d, v4d, all"},
+    {"variant", 'v', "VARIANT", 0, "scalar - s1s, s1d, vector - v2f, v4f, v8f, v2d, v4d, all"},
     {"coremask", 'c', "[bitmask]", 0, "core bitmask to run on"},
     {"test_type", 't', "TYPES", 0, "types perf,accu,special,corner,all(default)"},
     {"range", 'r', "[start, end, inc]", 0, "Range to populate input"},
@@ -247,22 +247,63 @@ static error_t parse_opts(int key, char *arg, struct argp_state *state)
 
 static struct argp argp = {options, parse_opts, args_doc, doc, 0, 0, 0};
 
-static void libm_test_print_report(struct libm_test *test)
+static const char *libm_test_variant_str(uint32_t variant)
 {
+    switch(variant) {
+    case LIBM_FUNC_S_S:
+        return "s1s";
+    case LIBM_FUNC_S_D:
+        return "s1d";
+    case LIBM_FUNC_V2S:
+        return "v2s";
+    case LIBM_FUNC_V4S:
+        return "v4s";
+    case LIBM_FUNC_V8S:
+        return "v8s";
+    case LIBM_FUNC_V2D:
+        return "v2d";
+    case LIBM_FUNC_V4D:
+        return "v4d";
+    default:
+        return "unknown";
+    }
 
+    return "unknown";
+}
+
+static void libm_test_print_report(struct list_head *test_list)
+{
+    struct list_head *pos;
+
+    printf("=================================================================================================\n");
+    printf("%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n",
+           "TEST", "VARIANT", "DATATYPE", "No.Tests", "Passed",
+           "Failed", "Ignored", "MOPS");
+    printf("=================================================================================================\n");
+
+    list_for_each(pos, test_list) {
+        struct libm_test *test = list_entry(pos, struct libm_test, list);
+        struct libm_test_result *result = &test->result;
+
+        printf("%-12s %-12s %-12s %-12d %-12d %-12d %-12d %-12f\n",
+               test->name, test->type_name, libm_test_variant_str(test->variant),
+               result->ntests, result->npass, result->nfail, result->nignored,
+               result->mops);
+    }
+    printf("=================================================================================================\n");
 }
 
 static struct list_head test_list;
 
-static int libm_test_run(void)
+static int libm_test_run(struct list_head *test_list)
 {
     struct list_head *pos;
 
-    list_for_each(pos, &test_list) {
-        struct libm_test_result result;
+    list_for_each(pos, test_list) {
         struct libm_test *test = list_entry(pos, struct libm_test, list);
+        struct libm_test_result *result = &test->result;
 
-        printf("Starting Test: %s%s\n", test->name, test->type_name);
+        printf("Starting Test: %s %s\n", test->name, test->type_name);
         /*
          * Supposed to allocate all buffers,
          * create any validation output
@@ -274,11 +315,13 @@ static int libm_test_run(void)
             test->ops.run(test);
 
         if (test->ops.verify)
-            test->ops.verify(test, &result);
+            test->ops.verify(test, result);
+
+        if (test->ops.cleanup)
+            test->ops.cleanup(test);
 
         printf("Done Test:%s %s\n", test->name, test->type_name);
 
-        libm_test_print_report(test);
         memset(&result, 0, sizeof(result));
     }
 
@@ -306,6 +349,7 @@ int libm_test_register(struct libm_test *test)
         goto out;
     }
 
+    bzero(&test->result, sizeof(test->result));
     /*
      * Only for performance tests we dont need a 'verify' method,
      * other tests should mandatory have it
@@ -348,7 +392,9 @@ int main(int argc, char *argv[])
 
     libm_test_init(&conf);
 
-    libm_test_run();
+    libm_test_run(&test_list);
+
+    libm_test_print_report(&test_list);
 
     return EXIT_SUCCESS;
 

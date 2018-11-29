@@ -20,9 +20,10 @@ $(ACTIONS):	spec	=	$(subst ~, ,$@)
 $(ACTIONS):	action	=	$(word 1,$(spec))
 $(ACTIONS):	lib	=	$(word 2,$(spec))
 $(ACTIONS):
-	@$(MAKE) -f $(MK)/lib.mk LIB=$(lib) LIBNAME_UPPER=$(LIBNAME) MAKEPHASE=$(MAKEPHASE)
+	@$(MAKE) -f $(MK)/lib.mk LIB=$(lib) LIBNAME_UPPER=$(LIBNAME) MAKEPHASE=$(MAKEPHASE) $(action)
 
 build:	$(BUILD_ACTION)
 
 .PHONY: clean
 clean:	$(CLEAN_ACTION)
+	$(_v)rm -fr $(addsuffix OBJS,$(COMMONLIBS))

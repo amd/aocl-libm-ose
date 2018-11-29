@@ -19,6 +19,11 @@ MKDIR = if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 UPCASE          =       $(shell echo $(1) | tr a-z A-Z)
 DOWNCASE        =       $(shell echo $(1) | tr A-Z a-z)
 
+SPACE := 
+SPACE +=
+
+SPACECHECK	= $(filter ALL,$(and $(findstring,$(space),$(1)), $(2)))
+
 # conditionally echo text passed in
 VERBOSE			?=
 

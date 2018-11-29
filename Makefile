@@ -37,19 +37,13 @@ endif
 # Place where all objs will end up
 export OBJROOT		?=	.
 
-SPACE_CHECK		= $(filter ALL,$(and $(findstring $(subst ~, ,~),$(1)),$(error $(2))))
 WARN_SPACE_IN_PATH	= "A path contains one or more spaces, this may create problems"
 
-#$(call SPACE_CHECK $(SRCROOT),$(WARN_SPACE_IN_PATH) (SRCROOT=$(SRCROOT)))
+$(call SPACE_CHECK $(SRCROOT),$(WARN_SPACE_IN_PATH) (SRCROOT=$(SRCROOT)))
 
 export STANDARD_ACTIONS :=	build install clean
-#export STANDARD_ACTIONS :=	#test clean-test
-ACTION_TEMPLATE		:=	$(addprefix %-,$(BUILD_TESTS))
 LIB_ACTIONS		:=	$(foreach action,$(STANDARD_ACTIONS),$(addprefix $(action)-,libm))
 
-##############################
-#$(info $(ACTIONS))
-##############################
 # 
 # Remove the ugly Entering directory ... etc.
 #
@@ -58,8 +52,8 @@ ifndef VERBOSE
 endif
 
 ifndef MAKEJOBS
-  export MAXJOBS	:= $(shell echo $$((`nproc` * 2))) 
-  export MAKEJOBS	:= --jobs=$(MAXJOBS)
+  export MAXJOBS	:= 	$(shell echo $$((`nproc` * 2))) 
+  export MAKEJOBS	:= 	--jobs=$(MAXJOBS)
 endif
 
 all:	build
@@ -68,12 +62,11 @@ build:	build-libraries build-tests
 
 libs: build-libraries
 
+$(LIB_ACTIONS):	action 		= $(word 1, $(subst -, ,$@))
 build-libraries:
 	@echo "==== BUILDING LIBRARIES ===="
 	@$(MAKE) $(MAKEJOBS) --no-print-directory \
-		-f $(MK)/libraries.mk \
-		MAKEPHASE=libraries \
-		SRCROOT=$(SRCROOT)
+		-f $(MK)/libraries.mk MAKEPHASE=libraries  SRCROOT=$(SRCROOT) $(action)
 	
 .PHONY: build-tests tests
 tests: build-tests
@@ -94,11 +87,18 @@ ifneq ($(ERROR_TESTS),)
 $(error Unknown test(s) - $(ERROR_TESTS))
 endif
 
-TEST_ACTIONS		:= build clean
-TEST_ACTIONS		=  $(foreach action,$(STANDARD_ACTIONS),$(addprefix $(action)-test-,$(MAKE_TESTS)))
+TEST_STANDARD_ACTIONS		:= build clean
+TEST_ACTIONS		=  $(foreach action,$(TEST_STANDARD_ACTIONS),$(addprefix $(action)-test-,$(MAKE_TESTS)))
+TEST_BUILD_ACTIONS	=  $(addprefix build-test-,$(MAKE_TESTS)))
+TEST_CLEAN_ACTION	=  $(foreach action, clean ,$(addprefix $(action)-test-,$(MAKE_TESTS)))
 ##############################
+#ACTION_TEMPLATE		=$(addprefix %-,$(TEST_ACTIONS))
+#$(info ACTION_TEMPLATE=$(ACTION_TEMPLATE))
 #$(info $(TEST_ACTIONS))
+$(info MAKE_TESTS=$(MAKE_TESTS))
 ##############################
+
+$(TEST_BUILD_ACTIONS): build-libraries
 
 $(TEST_ACTIONS)	: % : $(ACTION_TEMPLATE)
 
@@ -108,7 +108,7 @@ $(TEST_ACTIONS):	action 		= $(word 1, $(subst -, ,$@))
 $(TEST_ACTIONS):	t		= $(word 2, $(subst -, ,$@))
 $(TEST_ACTIONS):	test		= $(word 3, $(subst -, ,$@))
 $(TEST_ACTIONS):	action_uppper   := $(call UPCASE, $(action))
-$(TEST_ACTIONS): build-libraries
+$(TEST_ACTIONS):
 	@if [ "X$(action)" = "Xbuild" ]; then  	\
 		echo -n "==== BUILDING "; 	\
 	 else   				\
@@ -118,7 +118,7 @@ $(TEST_ACTIONS): build-libraries
 	@$(MAKE) $(MAKEJOBS) -f $(MK)/tests.mk SRCROOT=$(SRCROOT) TEST_ONLY=$(test) $(action)
 
 .PHONY: clean prune
-clean:
+clean: $(LIB_CLEAN_ACTION) $(TEST_CLEAN_ACTION)
 	$(_v)$(MAKE) $(MAKEOPTS) -f $(MK)/tests.mk clean
 	$(_v)$(MAKE) $(MAKEOPTS) -f $(MK)/libraries.mk clean
 

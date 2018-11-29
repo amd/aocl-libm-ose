@@ -53,7 +53,4 @@ build:		$(BUILD_TESTBINS)
 
 .PHONY: clean
 clean: $(TESTS_CLEAN_ACTIONS)
-	$(_v)rm -fr $(TEST_OBJS) $(BUILD_TESTBINS)
-	$(_v)rm -fr $(TEST_OBJS)
-	$(_v)rm -fr $(TEST_SUPPORT_OBJS)
-
+#

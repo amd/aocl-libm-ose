@@ -12,7 +12,13 @@
 #include <assert.h>                             /* for assert() */
 #include <stdio.h>
 #include <math.h>
-#include <string.h>		/* for memcpy() */
+#include <string.h>                             /* for memcpy() */
+
+#include <sys/types.h>
+#include <sys/stat.h>                           /* for open() */
+#include <fcntl.h>
+
+#include <unistd.h>                             /* for read() */
 
 #include <immintrin.h>
 
@@ -72,14 +78,13 @@ static int test_exp2_vrd4_perf(struct libm_test *test)
 
     for (uint32_t i = 0; i < n ; ++i) {
         //IVDEP //;
-            for (uint32_t j = 0; j < (sz - 3); j += 4) {
-                __m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-                __m256d op4 = amd_vrd4_exp2(ip4);
-                _mm256_store_pd(&o[j], op4);
-            }
+        for (uint32_t j = 0; j < (sz - 3); j += 4) {
+            __m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
+            __m256d op4 = FN_PROTOTYPE_AVX2(vrd4_exp2)(ip4);
+            _mm256_store_pd(&o[j], op4);
+        }
         /*
-         * For now we are not handling the case of 'j'
-         * not being multiple of 2/4/8
+         * Any left over process with scalar
          */
     }
 
@@ -131,6 +136,7 @@ int libm_test_exp2_verify(struct libm_test *test, struct libm_test_result *resul
 /* vector single precision */
 struct libm_test exp2_test_template = {
     .name = "exp2_vec",
+    .nargs = 1,                                 /* no of arguments exp2() takes */
     .ops = {
         .ulp = libm_test_generic_ulp,
         .verify = libm_test_exp2_verify,
@@ -150,23 +156,38 @@ static void *libm_ptr_align_up(void *ptr, uint64_t align)
     return (void *)st;
 }
 
-static void *libm_test_ext2_alloc_test_data(uint32_t nelem)
+/*
+ * CAUTION:
+ *         Touch this with care, this allocation happens to be
+ *    one-shot + multiple alignments.
+ *    Could be simpler, but needs to revisit with care.
+ *  Internal fragmentation expected, but since we align every pointer
+ *  to the 256/512 bytes, cache trasing may be avoided.
+ */
+static void *libm_test_ext2_alloc_test_data(struct libm_test *test, uint32_t nelem)
 {
 #ifdef LIBM_AVX512_SUPPORTED
 #define _ALIGN_FACTOR 512
 #else
 #define _ALIGN_FACTOR 256
 #endif
-
     struct libm_test_data *test_data;
+    void *last_ptr;
+    int nargs = test->nargs;
+
     /*
-     * size => 3 of size nelem (input1, output, expected)
+     * libm functions with 1,2 and 3 args
+     *          each one with sizeof double/float
+     *
+     *         + output +  expected (each with double/float)
      *         + size of the structure itself
      *         + 3 times size of _ALIGN_FACTOR
      */
     uint32_t size = sizeof(*test_data) +
-        nelem * 3 * sizeof(double) + 
-        (_ALIGN_FACTOR * 3);
+        ((nargs + 2) *                          /* +2 for output and expected */
+          nelem * sizeof(double)
+         ) +
+        _ALIGN_FACTOR * (nargs + 2);
 
 
     test_data = aligned_alloc(_ALIGN_FACTOR, size);
@@ -179,20 +200,148 @@ static void *libm_test_ext2_alloc_test_data(uint32_t nelem)
     test_data->nelem = nelem;
     /* CAUTION */
     test_data->input1 = libm_ptr_align_up(&test_data->data[0], _ALIGN_FACTOR);
-    /* CAUTION - dependency on previous */
-    test_data->output = libm_ptr_align_up(&test_data->input1[nelem], _ALIGN_FACTOR);
-    /* CAUTION - dependency on previous */
+
+    last_ptr=&test_data->input1;
+
+    if (nargs > 1) {
+        test_data->input2 = libm_ptr_align_up(&test_data->input1[size],
+                                              _ALIGN_FACTOR);
+        last_ptr = &test_data->input2;
+    }
+
+    if (nargs > 2) {
+        test_data->input3 = libm_ptr_align_up(&test_data->input2[size],
+                                              _ALIGN_FACTOR);
+        last_ptr = &test_data->input2;
+    }
+
+    test_data->output = libm_ptr_align_up(last_ptr, _ALIGN_FACTOR);
+
     test_data->expected = libm_ptr_align_up(&test_data->output[nelem], _ALIGN_FACTOR);
 
 out:
     return test_data;
 }
 
+/*
+ * Assign proper value based on variant
+ * returns the number of bytes utilized while assigning
+ */
+int libm_test_assign_value(void *ptr, double value, uint32_t variant)
+{
+    float *f = (float *)ptr;
+    double *d = (double *)ptr;
+    int ret = 0;
+
+    switch(variant) {
+    case LIBM_FUNC_S_S:
+    case LIBM_FUNC_V2S:
+    case LIBM_FUNC_V4S:
+    case LIBM_FUNC_V8S:
+        *f = (float) value;
+        ret = 4;
+        break;
+
+    case LIBM_FUNC_S_D:
+    case LIBM_FUNC_V2D:
+    case LIBM_FUNC_V4D:
+        *d = value;
+        ret = 8;
+        break;
+    }
+
+    return ret;
+}
+
+/*
+ * Generate a random floating point number from min to max
+ * But then, floating point numbers itself is not uniformly distributed.
+ * (towards 0 it is dense, not otherwise)
+ */
+double libm_test_get_rand_in_range(double min, double max)
+{
+    double range = (max - min);
+    double div = RAND_MAX / range;
+    return min + (rand() / div);
+}
+
+int libm_test_get_random_fd(void)
+{
+    static int rand_fd;
+    rand_fd = open("/dev/urandom", O_RDONLY);
+    if (rand_fd == -1)
+        return (-1);
+
+    return rand_fd;
+}
+
+int libm_test_init_rand()
+{
+    int rand_fd = libm_test_get_random_fd();
+    uint64_t rand_val = 0xC001BEAFDEADBEAF;
+
+    if (rand_fd > 0) {
+        if (read(rand_fd, &rand_val, 8) != 8)
+            rand_val = 0xD00BEEC001BEAF;
+
+        srand(rand_val);
+    }
+
+    return 0;
+}
+
+int libm_test_populate_random_in_range(void *data, size_t nelem,
+                                       uint32_t variant, double min,
+                                       double max)
+{
+    /* Variant has multiple bits set. */
+    if (variant & (variant - 1))
+        return -1;
+
+    double d = libm_test_get_rand_in_range(min, max);
+
+    for (uint32_t i = 0; i < nelem; i++) {
+        data += libm_test_assign_value(data, d, variant);
+    }
+
+    return 0;
+}
+
+static int test_exp2_populate_inputs(struct libm_test *test)
+{
+    struct libm_test_data *data = test->test_data;
+    struct libm_test_conf *conf = test->conf;
+    int ret = 0;
+
+    ret = libm_test_populate_random_in_range(data->input1, data->nelem,
+                                             test->variant,
+                                             conf->inp_range[0].start,
+                                             conf->inp_range[0].stop);
+    /* Fill the same if more inputs are needed */
+    if (!ret && test->nargs > 1) {
+        ret = libm_test_populate_random_in_range(data->input2, data->nelem,
+                                                 test->variant,
+                                                 conf->inp_range[1].start,
+                                                 conf->inp_range[1].stop);
+    }
+
+    if (!ret && test->nargs > 2) {
+        ret = libm_test_populate_random_in_range(data->input3, data->nelem,
+                                                 test->variant,
+                                                 conf->inp_range[2].start,
+                                                 conf->inp_range[2].stop);
+    }
+
+    return ret;
+}
+
 static int test_exp2_alloc_init_perf_data(struct libm_test *test)
 {
     const struct libm_test_conf *conf = test->conf;
 
-    test->test_data = libm_test_ext2_alloc_test_data(conf->nelem);
+    test->test_data = libm_test_ext2_alloc_test_data(test, conf->nelem);
+
+    test_exp2_populate_inputs(test);
 
     if (!test->test_data)
         goto out;
@@ -213,7 +362,6 @@ int test_exp2_register_one(struct libm_test *test)
         goto out;
  out:
     return ret;
-
 }
 
 static int test_exp2_alloc_special_data(struct libm_test *test, size_t size)
@@ -261,6 +409,60 @@ static int test_exp2_vrd4_special_setup(struct libm_test *test)
 
 static int test_exp2_vrd4_other_setup(struct libm_test *test)
 {
+    return 0;
+}
+
+static int test_exp2_init_v2d(struct libm_test_conf *conf)
+{
+    int ret = 0;
+    uint32_t test_types = conf->test_types;
+
+    while(test_types) {
+        struct libm_test *exp2_v2d = malloc(sizeof(struct libm_test));
+        if (!exp2_v2d)
+            return -1;
+
+        memcpy(exp2_v2d, &exp2_test_template, sizeof(*exp2_v2d));
+
+        exp2_v2d->variant |= LIBM_FUNC_V2D;
+        exp2_v2d->conf = conf;
+
+        uint32_t bit = 1 << ffs(test_types);
+
+        switch(bit) {
+        case TEST_TYPE_PERF:
+            exp2_v2d->type_name = "perf";
+            exp2_v2d->ops.run = test_exp2_vrd4_perf;
+            test_exp2_alloc_init_perf_data(exp2_v2d);
+            break;
+        case TEST_TYPE_SPECIAL:
+            exp2_v2d->type_name = "special";
+            exp2_v2d->ops.run = test_exp2_vrd4_other;
+            exp2_v2d->ops.setup = test_exp2_vrd4_special_setup;
+            break;
+        case TEST_TYPE_ACCU:
+            exp2_v2d->type_name = "accuracy";
+            //exp2_v2d->test_data = libm_test_exp2_accu_data;
+            exp2_v2d->ops.setup = test_exp2_vrd4_other_setup;
+            exp2_v2d->ops.run = test_exp2_vrd4_other;
+            break;
+        case TEST_TYPE_CORNER:
+            exp2_v2d->type_name = "corner";
+            //exp2_v2d->test_data  = libm_test_exp2_corner_data;
+            exp2_v2d->ops.run = test_exp2_vrd4_other;
+            break;
+        }
+
+        if (ret)
+            return -1;
+
+        test_types = test_types & (test_types -  1);
+        ret = test_exp2_register_one(exp2_v2d);
+
+        if (ret)
+            return -1;
+    }
+
     return 0;
 }
 
@@ -320,6 +522,8 @@ static int test_exp2_init_v4d(struct libm_test_conf *conf)
 #define EXP2_TEST_TYPES_ALL (TEST_TYPE_ACCU | TEST_TYPE_PERF |          \
                              TEST_TYPE_SPECIAL | TEST_TYPE_CORNER)
 
+int test_exp2_init_scalar(struct libm_test_conf *conf);
+
 int libm_test_init(struct libm_test_conf *conf)
 {
     int ret = 0;
@@ -327,26 +531,19 @@ int libm_test_init(struct libm_test_conf *conf)
     if (!conf->test_types)
         conf->test_types = EXP2_TEST_TYPES_ALL;
 
+    if (conf->variants & LIBM_FUNC_V2D) {
+        ret = test_exp2_init_v2d(conf);
+        if (ret)
+            goto out;
+    }
+
     if (conf->variants & LIBM_FUNC_V4D) {
         ret = test_exp2_init_v4d(conf);
         if (ret)
             goto out;
     }
 
-#if 0
-    if (conf->variants & LIBM_FUNC_S_S) {
-        ret = test_init_s_s(conf);
-        if (ret)
-            goto out;
-    }
-
-    if (conf->variants & LIBM_FUNC_S_D) {
-        ret = libm_test_register(exp2_test);
-        if (ret)
-            exit();
-    }
-#endif
-
+    ret = test_exp2_init_scalar(conf);          /* in other file */
 out:
     return ret;
 }

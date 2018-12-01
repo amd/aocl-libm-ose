@@ -35,6 +35,8 @@
 #define BUILD_TEST_DOC(b) "AMD LIBM Test for " STRINGIFY(b)
 
 
+
+
 extern char doc[];
 
 static char args_doc[] = "[FILENAME]...";
@@ -337,6 +339,12 @@ int libm_test_register(struct libm_test *test)
         goto out;
     }
 
+    if (test->nargs < 1 || test->nargs > 3) {
+        printf("Test:%s type:%s no of args: %d is invalid\n", test->name,
+               test->type_name, test->nargs);
+        goto out;
+    }
+
     if (!test->ops.run) {
         printf("Test:%s type:%s dont have a 'run' method \n", test->name,
                test->type_name);
@@ -346,6 +354,12 @@ int libm_test_register(struct libm_test *test)
     if (!test->test_data) {
         printf("Test:%s type:%s dont have data set\n", test->name,
                test->type_name);
+        goto out;
+    }
+
+    if ((test->variant & test->conf->variants) == 0) {
+        printf("Test:%s type:%s variant:%s not passed by user, skipping",
+               test->name, test->type_name, libm_test_variant_str(test->variant));
         goto out;
     }
 

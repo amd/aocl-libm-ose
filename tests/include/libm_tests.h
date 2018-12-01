@@ -55,6 +55,7 @@ struct libm_test_data {
   //uint32_t reserved1;
     double  *input1;
     double  *input2;
+    double  *input3;
     double  *output;
     double  *expected;
   //double  *reserved[27];

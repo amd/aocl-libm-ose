@@ -4,7 +4,8 @@ LOCAL_DIR := $(GET_LOCAL_DIR)
 TEST_NAME := exp2
 
 TEST_OBJS := \
-	$(LOCAL_DIR)/test_exp2.o
+	$(LOCAL_DIR)/test_exp2.o	\
+	$(LOCAL_DIR)/test_exp2_scalar.o
 
 TEST_SUPPORT_OBJS := 			\
 	$(LOCAL_DIR)/../test_main.o 	\

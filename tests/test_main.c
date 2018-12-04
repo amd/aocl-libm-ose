@@ -6,11 +6,11 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>                             /* for rand() and RAND_MAX */
-#include <argp.h>                               /* for argument parsing */
+#include <stdlib.h>                             /* for strtold() */
+#include <argp.h>                               /* for argp */
 #include <math.h>                               /* For all math functions */
 #include <dlfcn.h>                              /* for dlopen and dlsym() */
-#include <string.h>                              /* for strlen() and strtok() */
+#include <string.h>                             /* for strlen() and strtok() */
 
 //#include "bench.h"
 //#include "util.h"
@@ -33,8 +33,6 @@
 #define STRINGIFY(x) STRINGIFY2(x)
 #define PASTE2(a, b) a##b
 #define BUILD_TEST_DOC(b) "AMD LIBM Test for " STRINGIFY(b)
-
-
 
 
 extern char doc[];

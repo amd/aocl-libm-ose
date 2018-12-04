@@ -8,6 +8,7 @@
 #ifndef __LIBM_TESTS_H__
 #define __LIBM_TESTS_H__
 
+#include <stdio.h>
 #include <stdint.h>
 
 #include <libm_test_macros.h>
@@ -50,6 +51,7 @@ struct libm_test_result{
  */
 
 #define MAX_FAILURES 10
+
 struct libm_test_data {
     uint32_t nelem;
   //uint32_t reserved1;
@@ -76,15 +78,9 @@ struct libm_test_ops {
     int (*run)(struct libm_test *test);
     int (*cleanup)(struct libm_test *test);
 
-    int (*accuracy)(struct libm_test *test);
-    int (*test_perf)(struct libm_test *test, struct libm_test_result *result);
-    int (*special)(struct libm_test *test);
-    int (*corner)(struct libm_test *test);
-
     int (*ulp)(struct libm_test *test);
     int (*verify)(struct libm_test *test, struct libm_test_result *result);
 };
-
 
 struct libm_test {
     char                    *name;
@@ -135,4 +131,11 @@ int libm_test_verify_flt(struct libm_test *test,
 				struct libm_test_data *data,
 				struct libm_test_result *result);
 
+int libm_test_populate_rand_range_f(void *data,
+                                    size_t nelem, uint32_t variant,
+                                    double min, double max);
+
+int libm_test_populate_rand_range_d(void *data,
+                                    size_t nelem, uint32_t variant,
+                                    double min, double max);
 #endif  /* __LIBM_TESTS_H__ */

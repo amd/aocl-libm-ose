@@ -36,7 +36,7 @@ static int test_exp2_init_s_s(struct libm_test_conf *conf)
     if (ret)
         goto out;
 
- out:
+out:
     return ret;
 }
 
@@ -56,6 +56,6 @@ int test_exp2_init_scalar(struct libm_test_conf *conf)
             goto out;
     }
 
- out:
+out:
     return ret;
 }

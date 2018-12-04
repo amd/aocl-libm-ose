@@ -87,15 +87,18 @@ ifneq ($(ERROR_TESTS),)
 $(error Unknown test(s) - $(ERROR_TESTS))
 endif
 
-TEST_STANDARD_ACTIONS		:= build clean
+TEST_STANDARD_ACTIONS	:= build clean
 TEST_ACTIONS		=  $(foreach action,$(TEST_STANDARD_ACTIONS),$(addprefix $(action)-test-,$(MAKE_TESTS)))
-TEST_BUILD_ACTIONS	=  $(addprefix build-test-,$(MAKE_TESTS)))
+TEST_BUILD_ACTIONS	=  $(filter build-test,$(TEST_ACTIONS))
 TEST_CLEAN_ACTION	=  $(foreach action, clean ,$(addprefix $(action)-test-,$(MAKE_TESTS)))
+
+
 ##############################
 #ACTION_TEMPLATE		=$(addprefix %-,$(TEST_ACTIONS))
 #$(info ACTION_TEMPLATE=$(ACTION_TEMPLATE))
-#$(info $(TEST_ACTIONS))
-$(info MAKE_TESTS=$(MAKE_TESTS))
+$(info TEST_BUILD_ACTIONS=$(TEST_BUILD_ACTIONS))
+$(info TEST_ACTIONS=$(TEST_ACTIONS))
+#$(info MAKE_TESTS=$(MAKE_TESTS))
 ##############################
 
 $(TEST_BUILD_ACTIONS): build-libraries
@@ -118,7 +121,7 @@ $(TEST_ACTIONS):
 	@$(MAKE) $(MAKEJOBS) -f $(MK)/tests.mk SRCROOT=$(SRCROOT) TEST_ONLY=$(test) $(action)
 
 .PHONY: clean prune
-clean: $(LIB_CLEAN_ACTION) $(TEST_CLEAN_ACTION)
+clean: $(LIB_CLEAN_ACTION) $(TEST_CLEAN_ACTIONS)
 	$(_v)$(MAKE) $(MAKEOPTS) -f $(MK)/tests.mk clean
 	$(_v)$(MAKE) $(MAKEOPTS) -f $(MK)/libraries.mk clean
 

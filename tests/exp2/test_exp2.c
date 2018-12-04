@@ -14,12 +14,6 @@
 #include <math.h>
 #include <string.h>                             /* for memcpy() */
 
-#include <sys/types.h>
-#include <sys/stat.h>                           /* for open() */
-#include <fcntl.h>
-
-#include <unistd.h>                             /* for read() */
-
 #include <immintrin.h>
 
 #include <libm_amd.h>
@@ -221,91 +215,9 @@ static void *libm_test_ext2_alloc_test_data(struct libm_test *test, uint32_t nel
 
 out:
     return test_data;
+
 }
 
-/*
- * Assign proper value based on variant
- * returns the number of bytes utilized while assigning
- */
-int libm_test_assign_value(void *ptr, double value, uint32_t variant)
-{
-    float *f = (float *)ptr;
-    double *d = (double *)ptr;
-    int ret = 0;
-
-    switch(variant) {
-    case LIBM_FUNC_S_S:
-    case LIBM_FUNC_V2S:
-    case LIBM_FUNC_V4S:
-    case LIBM_FUNC_V8S:
-        *f = (float) value;
-        ret = 4;
-        break;
-
-    case LIBM_FUNC_S_D:
-    case LIBM_FUNC_V2D:
-    case LIBM_FUNC_V4D:
-        *d = value;
-        ret = 8;
-        break;
-    }
-
-    return ret;
-}
-
-/*
- * Generate a random floating point number from min to max
- * But then, floating point numbers itself is not uniformly distributed.
- * (towards 0 it is dense, not otherwise)
- */
-double libm_test_get_rand_in_range(double min, double max)
-{
-    double range = (max - min);
-    double div = RAND_MAX / range;
-    return min + (rand() / div);
-}
-
-int libm_test_get_random_fd(void)
-{
-    static int rand_fd;
-    rand_fd = open("/dev/urandom", O_RDONLY);
-    if (rand_fd == -1)
-        return (-1);
-
-    return rand_fd;
-}
-
-int libm_test_init_rand()
-{
-    int rand_fd = libm_test_get_random_fd();
-    uint64_t rand_val = 0xC001BEAFDEADBEAF;
-
-    if (rand_fd > 0) {
-        if (read(rand_fd, &rand_val, 8) != 8)
-            rand_val = 0xD00BEEC001BEAF;
-
-        srand(rand_val);
-    }
-
-    return 0;
-}
-
-int libm_test_populate_random_in_range(void *data, size_t nelem,
-                                       uint32_t variant, double min,
-                                       double max)
-{
-    /* Variant has multiple bits set. */
-    if (variant & (variant - 1))
-        return -1;
-
-    double d = libm_test_get_rand_in_range(min, max);
-
-    for (uint32_t i = 0; i < nelem; i++) {
-        data += libm_test_assign_value(data, d, variant);
-    }
-
-    return 0;
-}
 
 static int test_exp2_populate_inputs(struct libm_test *test)
 {
@@ -313,23 +225,23 @@ static int test_exp2_populate_inputs(struct libm_test *test)
     struct libm_test_conf *conf = test->conf;
     int ret = 0;
 
-    ret = libm_test_populate_random_in_range(data->input1, data->nelem,
-                                             test->variant,
-                                             conf->inp_range[0].start,
-                                             conf->inp_range[0].stop);
+    ret = libm_test_populate_rand_range_d(data->input1, data->nelem,
+                                          test->variant,
+                                          conf->inp_range[0].start,
+                                          conf->inp_range[0].stop);
     /* Fill the same if more inputs are needed */
     if (!ret && test->nargs > 1) {
-        ret = libm_test_populate_random_in_range(data->input2, data->nelem,
-                                                 test->variant,
-                                                 conf->inp_range[1].start,
-                                                 conf->inp_range[1].stop);
+        ret = libm_test_populate_rand_range_d(data->input2, data->nelem,
+                                              test->variant,
+                                              conf->inp_range[1].start,
+                                              conf->inp_range[1].stop);
     }
 
     if (!ret && test->nargs > 2) {
-        ret = libm_test_populate_random_in_range(data->input3, data->nelem,
-                                                 test->variant,
-                                                 conf->inp_range[2].start,
-                                                 conf->inp_range[2].stop);
+        ret = libm_test_populate_rand_range_d(data->input3, data->nelem,
+                                              test->variant,
+                                              conf->inp_range[2].start,
+                                              conf->inp_range[2].stop);
     }
 
     return ret;

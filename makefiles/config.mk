@@ -33,10 +33,10 @@ GLOBAL_ASFLAGS		+= $(ASM_VERBOSE_FLAGS)
 
 GLOBAL_LDFLAGS		:= 
 
-ifeq ($(USE_MARCH),)
-$(warning "USE_MARCH not defined, using native by default")
-USE_MARCH=native
-endif
+#ifeq ($(USE_MARCH),)
+#$(warning "USE_MARCH not defined, using native by default")
+#USE_MARCH=native
+#endif
 
 ifndef USE_GCC
 export USE_GCC=1

@@ -9,6 +9,7 @@ TEST_OBJS := \
 
 TEST_SUPPORT_OBJS := 			\
 	$(LOCAL_DIR)/../test_main.o 	\
+	$(LOCAL_DIR)/../rand.o 		\
 	$(LOCAL_DIR)/../common_funcs.o
 
 TEST_CFLAGS := -O1 -ffast-math -ftree-vectorize -falign-functions=32 -falign-loops=32 -march=native

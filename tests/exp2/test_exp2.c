@@ -98,9 +98,9 @@ static int test_exp2_vrd4_other(struct libm_test *test)
     int sz = data->nelem;
 
     if (sz % 4 != 0)
-        printf("%s%s : Size is not a multiple of 4, some entries may be left out\n"
+        printf("%s %s : %d is not a multiple of 4, some may be left out\n"
                " And error reported may not be real for such entries\n",
-               test->name, test->type_name);
+               test->name, test->type_name, sz);
 
     for (int j = 0; j < (sz - 3); j += 4) {
         __m256d ip4 = _mm256_set_pd(ip[j+3], ip[j+2], ip[j+1], ip[j]);
@@ -281,17 +281,15 @@ static int test_exp2_alloc_special_data(struct libm_test *test, size_t size)
     struct libm_test_conf *conf = test->conf;
     struct libm_test_data *test_data;
 
-    test->test_data = aligned_alloc(64, sizeof(*test->test_data) +
-                                    sizeof(*test_data) * size * 2);
+    test->test_data = libm_test_ext2_alloc_test_data(test, size);
 
-    if (!test->test_data)
+    if (!test->test_data) {
+        printf("unable to allocate\n");
         goto out;
+    }
 
     test_data = test->test_data;
     test_data->nelem = size;
-    test_data->input1 = &test_data->data[0];
-    test_data->output = &test_data->data[size];
-    test_data->expected = &test_data->output[size];
 
     /* fixup conf */
     conf->nelem = size;
@@ -306,10 +304,12 @@ static int test_exp2_alloc_special_data(struct libm_test *test, size_t size)
 static int test_exp2_vrd4_special_setup(struct libm_test *test)
 {
     int test_data_size = ARRAY_SIZE(libm_test_exp2_special_data)/2;
-    struct libm_test_data *data = test->test_data;
+    struct libm_test_data *data;
 
     // Just trying to get rid of warning/errors
     test_exp2_alloc_special_data(test, test_data_size);
+
+    data = test->test_data;
 
     for (int i = 0; i < test_data_size; i++) {
         data->input1[i] = libm_test_exp2_special_data[i].in;
@@ -339,7 +339,7 @@ static int test_exp2_init_v2d(struct libm_test_conf *conf)
         exp2_v2d->variant |= LIBM_FUNC_V2D;
         exp2_v2d->conf = conf;
 
-        uint32_t bit = 1 << ffs(test_types);
+        uint32_t bit = 1 << (ffs(test_types) - 1);
 
         switch(bit) {
         case TEST_TYPE_PERF:
@@ -363,6 +363,9 @@ static int test_exp2_init_v2d(struct libm_test_conf *conf)
             //exp2_v2d->test_data  = libm_test_exp2_corner_data;
             exp2_v2d->ops.run = test_exp2_vrd4_other;
             break;
+        default:
+            test_types = test_types & (test_types -  1);
+            continue;
         }
 
         if (ret)
@@ -393,7 +396,7 @@ static int test_exp2_init_v4d(struct libm_test_conf *conf)
         exp2_v4d->variant |= LIBM_FUNC_V4D;
         exp2_v4d->conf = conf;
 
-        uint32_t bit = 1 << ffs(test_types);
+        uint32_t bit = 1 << (ffs(test_types) - 1);
         switch(bit) {
         case TEST_TYPE_PERF:
             exp2_v4d->type_name = "perf";
@@ -445,9 +448,12 @@ int libm_test_init(struct libm_test_conf *conf)
 
     if (conf->variants & LIBM_FUNC_V2D) {
         ret = test_exp2_init_v2d(conf);
-        if (ret)
+        if (ret) {
+            printf("registering test failed\n");
             goto out;
+        }
     }
+
 
     if (conf->variants & LIBM_FUNC_V4D) {
         ret = test_exp2_init_v4d(conf);

@@ -14,6 +14,8 @@
 #include <libm_test_macros.h>
 #include <list.h>
 
+#define MAX_FAILURES 10
+
 enum LIBM_FUNC_VARIANT {
     LIBM_FUNC_S_S = (1 << 0),                   /* scalar single precision */
     LIBM_FUNC_S_D = (1 << 1),                   /* scalar double precision */
@@ -32,6 +34,11 @@ struct libm_test_result{
     int    nfail;                               /* failed tests */
     double mops;                                /* Million Ops per second */
     double cpi;                                 /* Clocks per instruction */
+    double input1[MAX_FAILURES];
+    double input2[MAX_FAILURES];
+    double input3[MAX_FAILURES];
+    double output[MAX_FAILURES];
+    double expected[MAX_FAILURES];
 };
 
 /*
@@ -48,8 +55,6 @@ struct libm_test_result{
  *      test_data->input1 = &test_data->data[0];
  *      test_data->output = &test_data->data[nelem];
  */
-
-#define MAX_FAILURES 10
 
 struct libm_test_data {
     uint32_t nelem;

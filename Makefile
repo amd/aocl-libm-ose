@@ -87,7 +87,7 @@ ifneq ($(ERROR_TESTS),)
 $(error Unknown test(s) - $(ERROR_TESTS))
 endif
 
-TEST_STANDARD_ACTIONS	:= build clean
+TEST_STANDARD_ACTIONS	:= build clean run
 TEST_ACTIONS		=  $(foreach action,$(TEST_STANDARD_ACTIONS),$(addprefix $(action)-test-,$(MAKE_TESTS)))
 TEST_BUILD_ACTIONS	=  $(filter build-test,$(TEST_ACTIONS))
 TEST_CLEAN_ACTION	=  $(foreach action, clean ,$(addprefix $(action)-test-,$(MAKE_TESTS)))
@@ -96,8 +96,8 @@ TEST_CLEAN_ACTION	=  $(foreach action, clean ,$(addprefix $(action)-test-,$(MAKE
 ##############################
 #ACTION_TEMPLATE		=$(addprefix %-,$(TEST_ACTIONS))
 #$(info ACTION_TEMPLATE=$(ACTION_TEMPLATE))
-$(info TEST_BUILD_ACTIONS=$(TEST_BUILD_ACTIONS))
-$(info TEST_ACTIONS=$(TEST_ACTIONS))
+#$(info TEST_BUILD_ACTIONS=$(TEST_BUILD_ACTIONS))
+#$(info TEST_ACTIONS=$(TEST_ACTIONS))
 #$(info MAKE_TESTS=$(MAKE_TESTS))
 ##############################
 
@@ -114,7 +114,9 @@ $(TEST_ACTIONS):	action_uppper   := $(call UPCASE, $(action))
 $(TEST_ACTIONS):
 	@if [ "X$(action)" = "Xbuild" ]; then  	\
 		echo -n "==== BUILDING "; 	\
-	 else   				\
+	elif [ "X$(action)" = "Xrun" ]; then  	\
+		echo -n "==== RUNNING "; 	\
+	else					\
 		echo -n "==== CLEANING "; 	\
 	 fi
 	@echo "TEST $(test) $(action_upper)===="

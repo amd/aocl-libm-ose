@@ -19,10 +19,10 @@ int libm_test_verify_dbl(struct libm_test *test,
 
     for (int j = 0; j < sz; ++j) {
         if (((unsigned long)nw[j] ^ (unsigned long)op[j]) != 0) {
-            data->input1[idx] = data->input1[j];
-            //data->input2[idx] = data->input2[j];
-            data->output[idx] = op[j];
-            data->expected[idx] = nw[j];
+            result->input1[idx] = data->input1[j];
+            if (test->nargs > 1) result->input2[idx] = data->input2[j];
+            if (test->nargs > 2) result->input3[idx] = data->input3[j];
+            result->expected[idx] = nw[j];
             double ulp = test->ops.ulp(test);
             if (ulp - test->ulp_err > 0.0)      /* Double comparison, should it work ? */
                 test->ulp_err = ulp;

@@ -59,7 +59,13 @@ build:	$(BUILD_PREREQS)
 
 ###########################
 #$(info MAKEPHASE=$(MAKEPHASE))
-###########################
+##########################
 .PHONY: clean
 clean:
 	$(_v)rm -f $(TEST_OJBS) $(BUILT_OBJS)
+
+.PHONY: run
+run:
+	echo I am here in test.mk
+
+

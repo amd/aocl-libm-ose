@@ -265,7 +265,7 @@ static const char *libm_test_variant_str(uint32_t variant)
     case LIBM_FUNC_V4D:
         return "v4d";
     default:
-        return "unknown";
+        break;
     }
 
     return "unknown";
@@ -277,7 +277,7 @@ static void libm_test_print_report(struct list_head *test_list)
 
     printf("=================================================================================================\n");
     printf("%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n",
-           "TEST", "VARIANT", "DATATYPE", "No.Tests", "Passed",
+           "TEST", "TYPE", "DATATYPE", "No.Tests", "Passed",
            "Failed", "Ignored", "MOPS");
     printf("=================================================================================================\n");
 
@@ -295,6 +295,43 @@ static void libm_test_print_report(struct list_head *test_list)
 
 static struct list_head test_list;
 
+static int libm_test_run_one(struct libm_test *test, struct libm_test_result *result)
+{
+    printf("Starting Test: %s %s\n", test->name, test->type_name);
+
+    /*
+     * Supposed to allocate all buffers,
+     * create any validation output
+     */
+    if (test->ops.setup)
+        test->ops.setup(test);
+
+    if (!test->test_data) {
+        printf("Test:%s type:%s dont have data set\n", test->name,
+               test->type_name);
+        /*
+         * TODO: delete self before going out, so that results
+         * dont include this entry
+         */
+        goto out;
+    }
+
+    if (test->ops.run)
+        test->ops.run(test);
+
+    if (test->ops.verify)
+        test->ops.verify(test, result);
+
+    if (test->ops.cleanup)
+        test->ops.cleanup(test);
+
+    printf("Done Test:%s %s\n", test->name, test->type_name);
+    return 0;
+
+out:
+    return -1;
+}
+
 static int libm_test_run(struct list_head *test_list)
 {
     struct list_head *pos;
@@ -303,25 +340,7 @@ static int libm_test_run(struct list_head *test_list)
         struct libm_test *test = list_entry(pos, struct libm_test, list);
         struct libm_test_result *result = &test->result;
 
-        printf("Starting Test: %s %s\n", test->name, test->type_name);
-        /*
-         * Supposed to allocate all buffers,
-         * create any validation output
-         */
-        if (test->ops.setup)
-            test->ops.setup(test);
-
-        if (test->ops.run)
-            test->ops.run(test);
-
-        if (test->ops.verify)
-            test->ops.verify(test, result);
-
-        if (test->ops.cleanup)
-            test->ops.cleanup(test);
-
-        printf("Done Test:%s %s\n", test->name, test->type_name);
-
+        libm_test_run_one(test, result);
         memset(&result, 0, sizeof(result));
     }
 
@@ -345,12 +364,6 @@ int libm_test_register(struct libm_test *test)
 
     if (!test->ops.run) {
         printf("Test:%s type:%s dont have a 'run' method \n", test->name,
-               test->type_name);
-        goto out;
-    }
-
-    if (!test->test_data) {
-        printf("Test:%s type:%s dont have data set\n", test->name,
                test->type_name);
         goto out;
     }

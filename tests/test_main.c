@@ -422,8 +422,6 @@ int main(int argc, char *argv[])
         .test_types = LIBM_TEST_TYPES_ALL,
     };
 
-    LIBM_TEST_DPRINTF(PANIC, "working\n");
-
     ret = argp_parse(&argp, argc, argv, 0, 0, &conf);
     if (ret != 0)
         goto out;

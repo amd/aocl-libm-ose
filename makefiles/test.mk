@@ -11,6 +11,7 @@ TEST_SUPPORT_OBJS	:=
 TESTDIR			= $(TESTSDIR)
 
 #$(info TEST_MAKEFILE=$(TEST_MAKEFILE))
+include tests/rules.mk
 include $(TEST_MAKEFILE)
 #$(info TESTDIR=$(TESTDIR) TESTNAME=$(TEST_NAME))
 

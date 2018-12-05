@@ -112,14 +112,52 @@ struct libm_test_input_range {
 };
 
 struct libm_test_conf {
-    uint32_t        niter;
-    uint32_t        nelem;
-    uint32_t        variants;
-    uint32_t        test_types;                 /* specifies accu,perf,special.. */
-
-    struct libm_test_input_range inp_range[3];  /* Some tests have 3 inputs */
+    uint32_t niter;
+    uint32_t nelem;
+    uint32_t variants;
+    uint32_t test_types;                        /* specifies accu,perf,special.. */
+    uint64_t coremask;
+    /* Some tests have 3 inputs */
+    struct libm_test_input_range inp_range[3];
 };
 
+
+#define LIBM_TEST_DEBUG
+#ifdef LIBM_TEST_DEBUG
+
+extern uint32_t  dbg_bits;
+
+#define HERE()  printf("%s:%d\n", __func__, __LINE__)
+
+enum {
+    LIBM_TEST_DBG_PANIC, LIBM_TEST_DBG_CRIT, LIBM_TEST_DBG_WARN, /* error level */
+    LIBM_TEST_DBG_DBG1, LIBM_TEST_DBG_DBG2, LIBM_TEST_DBG_INFO, /* info level */
+};
+
+#define DBG_BIT(bit)    (1 << LIBM_TEST_DBG_##bit)
+
+#define IS_DBG_ENABLED(bit) (dbg_bits & (1 << LIBM_TEST_DBG_##bit))
+
+#define DBG_DEFAULT  (DBG_BIT(PANIC) | DBG_BIT(CRIT))
+#define DBG_VERBOSE1 (DBG_DEFAULT | DBG_BIT(DBG1))
+#define DBG_VERBOSE2 (DBG_VERBOSE1 | DBG_BIT(DBG1))
+#define DBG_VERBOSE3 (DBG_VERBOSE2 | DBG_BIT(DBG2))
+#define DBG_VERBOSE4 (DBG_VERBOSE3 | DBG_BIT(INFO))
+
+#define LIBM_TEST_DPRINTF(lvl, fmt, ...)                \
+    do {                                                \
+        if (dbg_bits & DBG_BIT(lvl)) {                  \
+            printf("%s:%d: " fmt ,                      \
+                   __FILE__, __LINE__,                  \
+                   ## __VA_ARGS__);                     \
+        }                                               \
+    } while (0)
+
+#else
+#define IS_DBG_ENABLED(bit) false
+#define LIBM_TEST_DPRINTF(lvl, fmt, ...)
+
+#endif  /* LIBM_TEST_DEBUG */
 
 int libm_test_init(struct libm_test_conf *conf);
 int libm_test_register(struct libm_test *test);

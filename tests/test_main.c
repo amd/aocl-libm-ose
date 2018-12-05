@@ -39,12 +39,13 @@ extern char doc[];
 
 static char args_doc[] = "[FILENAME]...";
 static struct argp_option options[] = {
-    {"iter", 'i', "NUM", 0, "Number of iterations to perform"},
-    {"elem", 'e', "NUM", 0, "Number of input size"},
-    {"variant", 'v', "VARIANT", 0, "scalar - s1s, s1d, vector - v2f, v4f, v8f, v2d, v4d, all"},
-    {"coremask", 'c', "[bitmask]", 0, "core bitmask to run on"},
-    {"test_type", 't', "TYPES", 0, "types perf,accu,special,corner,all(default)"},
+    {"iteration", 'c', "NUM", 0, "Number of iterations to perform"},
+    {"elem", 'n', "NUM", 0, "Number of input size"},
+    {"variant", 'i', "VARIANT", 0, "scalar - s1s, s1d, vector - v2f, v4f, v8f, v2d, v4d, all(default)"},
+    {"coremask", 'm', "[bitmask]", 0, "core bitmask to run on"},
+    {"type", 't', "TYPES", 0, "test types -  perf, accu, special, corner, all(default)"},
     {"range", 'r', "[start, end, inc]", 0, "Range to populate input"},
+    {"verbose", 'v', "NUM", 0, "increase verbosity value 1 - 3"},
     {0},
 };
 
@@ -119,6 +120,8 @@ static error_t __enable_test_variants(const char *vrnt, struct libm_test_conf *c
 
     return 0;
 }
+
+uint32_t dbg_bits = DBG_VERBOSE1;
 
 static error_t __enable_tests_type(const char *type, struct libm_test_conf *conf)
 {
@@ -214,14 +217,20 @@ static error_t parse_opts(int key, char *arg, struct argp_state *state)
 
     switch (key)
     {
-    case 'i':
+    case 'c':
         conf->niter = strtol(arg, NULL, 0);
         break;
-    case 'e':
+    case 'm':
+        conf->coremask = strtol(arg, NULL, 0);
+        break;
+    case 'n':
         conf->nelem = strtol(arg, NULL, 0);
         break;
-    case 'v':
+    case 'i':
         parse_variants(arg, conf);
+        break;
+    case 'v':
+        dbg_bits = strtol(arg, NULL, 0);
         break;
     case 'r':
         if (ridx >= 3) {
@@ -274,12 +283,15 @@ static const char *libm_test_variant_str(uint32_t variant)
 static void libm_test_print_report(struct list_head *test_list)
 {
     struct list_head *pos;
+    static const char equal[100] = {[0 ... 98] = '=', 0};
 
-    printf("=================================================================================================\n");
+    printf("%s\n", &equal[0]);
+
     printf("%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n",
            "TEST", "TYPE", "DATATYPE", "No.Tests", "Passed",
            "Failed", "Ignored", "MOPS");
-    printf("=================================================================================================\n");
+
+    printf("%s\n", &equal[0]);
 
     list_for_each(pos, test_list) {
         struct libm_test *test = list_entry(pos, struct libm_test, list);
@@ -290,7 +302,8 @@ static void libm_test_print_report(struct list_head *test_list)
                result->ntests, result->npass, result->nfail, result->nignored,
                result->mops);
     }
-    printf("=================================================================================================\n");
+
+    printf("%s\n", &equal[0]);
 }
 
 static struct list_head test_list;
@@ -408,6 +421,8 @@ int main(int argc, char *argv[])
         .variants = LIBM_FUNC_ALL,
         .test_types = LIBM_TEST_TYPES_ALL,
     };
+
+    LIBM_TEST_DPRINTF(PANIC, "working\n");
 
     ret = argp_parse(&argp, argc, argv, 0, 0, &conf);
     if (ret != 0)

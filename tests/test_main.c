@@ -56,7 +56,7 @@ static struct argp_option options[] = {
  * --range=0.2343,0.0000234 - start,inc
  */
 int parse_range(char *arg,
-                 struct libm_test_input_range *range)
+                struct libm_test_input_range *range)
 {
     const char *test = arg;
     unsigned len = strlen(arg);

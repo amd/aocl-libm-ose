@@ -11,6 +11,7 @@
  */
 #include <assert.h>                             /* for assert() */
 #include <stdio.h>
+#include <float.h>                              /* for FLT_MIN FLT_MAX */
 #include <math.h>
 #include <string.h>                             /* for memcpy() */
 
@@ -219,29 +220,36 @@ out:
 }
 
 
-static int test_exp2_populate_inputs(struct libm_test *test)
+static int test_exp2_populate_inputs(struct libm_test *test, int use_uniform)
 {
     struct libm_test_data *data = test->test_data;
     struct libm_test_conf *conf = test->conf;
     int ret = 0;
+    int (*func)(void *, size_t, uint32_t, double, double);
 
-    ret = libm_test_populate_rand_range_d(data->input1, data->nelem,
-                                          test->variant,
-                                          conf->inp_range[0].start,
-                                          conf->inp_range[0].stop);
+    if(use_uniform)
+        func = libm_test_populate_range_uniform;
+    else
+        func = libm_test_populate_range_simple;
+
+    ret = func(data->input1, data->nelem,
+               test->variant,
+               conf->inp_range[0].start,
+               conf->inp_range[0].stop);
+
     /* Fill the same if more inputs are needed */
     if (!ret && test->nargs > 1) {
-        ret = libm_test_populate_rand_range_d(data->input2, data->nelem,
-                                              test->variant,
-                                              conf->inp_range[1].start,
-                                              conf->inp_range[1].stop);
+        ret = func(data->input2, data->nelem,
+                   test->variant,
+                   conf->inp_range[1].start,
+                   conf->inp_range[1].stop);
     }
 
     if (!ret && test->nargs > 2) {
-        ret = libm_test_populate_rand_range_d(data->input3, data->nelem,
-                                              test->variant,
-                                              conf->inp_range[2].start,
-                                              conf->inp_range[2].stop);
+        ret = func(data->input3, data->nelem,
+                   test->variant,
+                   conf->inp_range[2].start,
+                   conf->inp_range[2].stop);
     }
 
     return ret;
@@ -253,7 +261,7 @@ static int test_exp2_alloc_init_perf_data(struct libm_test *test)
 
     test->test_data = libm_test_ext2_alloc_test_data(test, conf->nelem);
 
-    test_exp2_populate_inputs(test);
+    test_exp2_populate_inputs(test, 0);
 
     if (!test->test_data)
         goto out;
@@ -319,8 +327,9 @@ static int test_exp2_vrd4_special_setup(struct libm_test *test)
     return 0;
 }
 
-static int test_exp2_vrd4_other_setup(struct libm_test *test)
+static int test_exp2_vrd4_accu_setup(struct libm_test *test)
 {
+
     return 0;
 }
 
@@ -355,7 +364,7 @@ static int test_exp2_init_v2d(struct libm_test_conf *conf)
         case TEST_TYPE_ACCU:
             exp2_v2d->type_name = "accuracy";
             //exp2_v2d->test_data = libm_test_exp2_accu_data;
-            exp2_v2d->ops.setup = test_exp2_vrd4_other_setup;
+            exp2_v2d->ops.setup = test_exp2_vrd4_accu_setup;
             exp2_v2d->ops.run = test_exp2_vrd4_other;
             break;
         case TEST_TYPE_CORNER:
@@ -411,7 +420,7 @@ static int test_exp2_init_v4d(struct libm_test_conf *conf)
         case TEST_TYPE_ACCU:
             exp2_v4d->type_name = "accuracy";
             //exp2_v4d->test_data = libm_test_exp2_accu_data;
-            exp2_v4d->ops.setup = test_exp2_vrd4_other_setup;
+            exp2_v4d->ops.setup = test_exp2_vrd4_accu_setup;
             exp2_v4d->ops.run = test_exp2_vrd4_other;
             break;
         case TEST_TYPE_CORNER:
@@ -439,9 +448,19 @@ static int test_exp2_init_v4d(struct libm_test_conf *conf)
 
 int test_exp2_init_scalar(struct libm_test_conf *conf);
 
-int libm_test_init(struct libm_test_conf *conf)
+
+int libm_test_init(struct libm_test_conf *c)
 {
     int ret = 0;
+
+    struct libm_test_conf __conf = *c;
+    struct libm_test_conf *conf = &__conf;
+
+    if (!conf->inp_range[0].start) {
+        /* We dont have ranges */
+        conf->inp_range[0].start = DBL_MIN;
+        conf->inp_range[0].stop  = DBL_MAX;
+    }
 
     if (!conf->test_types)
         conf->test_types = EXP2_TEST_TYPES_ALL;

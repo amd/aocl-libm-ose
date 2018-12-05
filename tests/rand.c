@@ -17,6 +17,7 @@
 #include <unistd.h>                             /* for read() */
 
 #include <libm_tests.h>
+#include <math.h>
 
 /*
  * Generate a random floating point number from min to max
@@ -78,7 +79,17 @@ int libm_test_get_data_size(uint32_t variant)
     return ret;
 }
 
-int libm_test_populate_rand_range_d(void *data,
+static int check_data_size(void *data, int size)
+{
+    /* Check and warn for alignment */
+    if (size == 4)
+        assert(!((uint64_t)data & 0x3));
+    if ((size == 8))
+        assert(!((uint64_t)data & 0x7));
+
+    return 0;
+}
+int libm_test_populate_range_simple(void *data,
                                     size_t nelem, uint32_t variant,
                                     double min, double max)
 {
@@ -86,11 +97,7 @@ int libm_test_populate_rand_range_d(void *data,
     double *d = (double*)data;
     float *f = (float*)data;
 
-    /* Check and warn for alignment */
-    if (data_size == 4)
-        assert(!((uint64_t)data & 0x3));
-    if ((data_size == 8))
-        assert(!((uint64_t)data & 0x7));
+    check_data_size(data, data_size);
 
     /* Variant has multiple bits set. */
     if (variant & (variant - 1))
@@ -99,6 +106,101 @@ int libm_test_populate_rand_range_d(void *data,
     double val = libm_test_rand_range_simple(min, max);
 
     for (uint32_t i = 0; i < nelem; i++) {
+        switch(data_size) {
+        case 4:
+            *f++ = (float)val;
+            break;
+        case 8:
+            *d++ = val;
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
+static double __myrand(void)
+{
+        static unsigned long seed = 123456789;
+        const unsigned long a = 9301;
+        const unsigned long c = 49297;
+        const unsigned long m = 233280;
+
+        seed = (seed * a + c) % m;
+        return (double)seed / (double)m;
+}
+
+static double logdist2(int i, int n, double a, double b, double logba)
+{
+    double x, tx;
+
+    if (i <= 0)
+        tx = 0.0;
+    else if (i >= n - 1)
+        tx = 1.0;
+    else
+        tx = (double)((i + __myrand() - 0.5) / (n - 1));
+
+    /* tx is uniformly distributed in [0,1] */
+    if (a != 0.0 && b != 0.0 && ((a < 0.0) == (b < 0.0))) {
+        /* x is logarithmically distributed in [a,b] */
+        if (a < 0.0) {
+            /* Negative interval: negate b, tx and x so that
+               the numbers are distributed in a similar fashion to
+               the equivalent positive interval. Doesn't really
+               make much difference */
+            if (tx == 0.0)
+                x = b;
+            else if (tx == 1.0)
+                x = a;
+            else
+                x = b * exp(-tx * logba);
+        } else {
+            if (tx == 0.0)
+                x = a;
+            else if (tx == 1.0)
+                x = b;
+            else
+                x = a * exp(tx * logba);
+        }
+    } else {
+        /* x is uniformly distributed in [a,b] */
+        if (tx == 0.0)
+            x = a;
+        else if (tx == 1.0)
+            x = b;
+        else
+            x = a + tx * (b - a);
+    }
+
+    if (x < a)
+        x = a;
+    else if (x > b)
+        x = b;
+
+    return x;
+
+}
+
+int libm_test_populate_range_uniform(void *data,
+                                     size_t nelem, uint32_t variant,
+                                     double min, double max)
+{
+    int data_size = libm_test_get_data_size(variant);
+    double logba;
+    double *d = (double*)data;
+    float *f = (float*)data;
+
+    check_data_size(data, data_size);
+
+    if (min != 0.0 && max != 0.0 && ((min < 0.0) == (min < 0.0)))
+        logba = log(max/min);
+    else
+        logba = 0.0;
+
+    for (uint32_t i = 0; i < nelem; i++) {
+        double val = logdist2(i, nelem, min, max, logba);
         switch(data_size) {
         case 4:
             *f++ = (float)val;

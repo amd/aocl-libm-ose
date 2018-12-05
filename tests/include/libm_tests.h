@@ -173,11 +173,12 @@ int libm_test_verify_flt(struct libm_test *test,
 				struct libm_test_data *data,
 				struct libm_test_result *result);
 
-int libm_test_populate_rand_range_f(void *data,
+int libm_test_populate_range_simple(void *data,
                                     size_t nelem, uint32_t variant,
                                     double min, double max);
 
-int libm_test_populate_rand_range_d(void *data,
-                                    size_t nelem, uint32_t variant,
-                                    double min, double max);
+int libm_test_populate_range_uniform(void *data,
+                                     size_t nelem, uint32_t variant,
+                                     double min, double max);
+
 #endif  /* __LIBM_TESTS_H__ */

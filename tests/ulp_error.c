@@ -21,6 +21,7 @@
   if (actualis minus_infinity) return (| -repmax_float – expected | / ulprep(expected)) + 1;
   }
 */
+
 #if 0
 #define ulp_float(a, b)
 #define ulp_double(a, b) ((a) - (b) < DOUBLE_ROUNDING_TREASHOLD ? 1 : 0)

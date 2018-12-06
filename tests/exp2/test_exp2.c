@@ -327,10 +327,83 @@ static int test_exp2_vrd4_special_setup(struct libm_test *test)
     return 0;
 }
 
-static int test_exp2_vrd4_accu_setup(struct libm_test *test)
+
+/**************************
+ * ACCURACY TESTS
+ **************************/
+#include "exp2_accu_data.h"
+
+static int test_exp2_verify_accu(struct libm_test *test)
 {
+    return libm_test_verify_dbl(test, &test->result);
+}
+
+static int test_exp2_vrd4_accu(struct libm_test *test)
+{
+    struct libm_test_data *data = test->test_data;
+    double *ip = &data->input1[0];
+    double *op = &data->output[0];
+    int sz = data->nelem;
+    int arr_sz = ARRAY_SIZE(accu_ranges);
+
+    if (sz % 4 != 0)
+        printf("%s %s : %d is not a multiple of 4, some may be left out\n"
+               " And error reported may not be real for such entries\n",
+               test->name, test->type_name, sz);
+
+    for (int i = 0; i < arr_sz ; i++) {
+        test->conf->inp_range[0] = accu_ranges[i];
+        test_exp2_populate_inputs(test, 1);
+
+        for (int j = 0; j < (sz - 3); j += 4) {
+            __m256d ip4 = _mm256_set_pd(ip[j+3], ip[j+2], ip[j+1], ip[j]);
+            __m256d op4 = __amd_avx2_vrd4_exp2(ip4);
+            _mm256_store_pd(&op[j], op4);
+        }
+
+        test_exp2_verify_accu(test);
+    }
 
     return 0;
+}
+
+static int test_exp2_vrd4_accu_setup(struct libm_test *test)
+{
+    const struct libm_test_conf *conf = test->conf;
+
+    test->test_data = libm_test_ext2_alloc_test_data(test, conf->nelem);
+
+    if (!test->test_data)
+        return -1;
+
+    return 0;
+}
+
+static struct libm_test *
+libm_test_alloc_init(struct libm_test_conf *conf)
+{
+    struct libm_test *test = malloc(sizeof(struct libm_test));
+    if (!test) {
+        LIBM_TEST_DPRINTF(PANIC, "Not enough memory for test->conf\n");
+        goto out;
+    }
+
+    memcpy(test, &exp2_test_template, sizeof(*test));
+
+    test->conf = malloc(sizeof(struct libm_test_conf));
+    if (!test->conf) {
+        LIBM_TEST_DPRINTF(PANIC, "Not enough memory for test->conf\n");
+        goto free_out;
+    }
+
+    memcpy(test->conf, conf, sizeof(*conf));
+
+    return test;
+
+ free_out:
+    free(test);
+ out:
+    return NULL;
 }
 
 static int test_exp2_init_v2d(struct libm_test_conf *conf)
@@ -339,16 +412,10 @@ static int test_exp2_init_v2d(struct libm_test_conf *conf)
     uint32_t test_types = conf->test_types;
 
     while(test_types) {
-        struct libm_test *exp2_v2d = malloc(sizeof(struct libm_test));
-        if (!exp2_v2d)
-            return -1;
-
-        memcpy(exp2_v2d, &exp2_test_template, sizeof(*exp2_v2d));
+        struct libm_test *exp2_v2d = libm_test_alloc_init(conf);
+        uint32_t bit = 1 << (ffs(test_types) - 1);
 
         exp2_v2d->variant |= LIBM_FUNC_V2D;
-        exp2_v2d->conf = conf;
-
-        uint32_t bit = 1 << (ffs(test_types) - 1);
 
         switch(bit) {
         case TEST_TYPE_PERF:
@@ -365,26 +432,20 @@ static int test_exp2_init_v2d(struct libm_test_conf *conf)
             exp2_v2d->type_name = "accuracy";
             //exp2_v2d->test_data = libm_test_exp2_accu_data;
             exp2_v2d->ops.setup = test_exp2_vrd4_accu_setup;
-            exp2_v2d->ops.run = test_exp2_vrd4_other;
+            exp2_v2d->ops.run = test_exp2_vrd4_accu;
+            exp2_v2d->ops.verify = NULL; // No verify after, will verify inside.
             break;
         case TEST_TYPE_CORNER:
-            exp2_v2d->type_name = "corner";
-            //exp2_v2d->test_data  = libm_test_exp2_corner_data;
-            exp2_v2d->ops.run = test_exp2_vrd4_other;
-            break;
         default:
-            test_types = test_types & (test_types -  1);
-            continue;
+            goto skip_this;
         }
 
-        if (ret)
-            return -1;
-
-        test_types = test_types & (test_types -  1);
         ret = test_exp2_register_one(exp2_v2d);
-
         if (ret)
             return -1;
+
+skip_this:
+        test_types = test_types & (test_types -  1);
     }
 
     return 0;
@@ -396,16 +457,11 @@ static int test_exp2_init_v4d(struct libm_test_conf *conf)
     uint32_t test_types = conf->test_types;
 
     while(test_types) {
-        struct libm_test *exp2_v4d = malloc(sizeof(struct libm_test));
-        if (!exp2_v4d)
-            return -1;
-
-        memcpy(exp2_v4d, &exp2_test_template, sizeof(*exp2_v4d));
+        struct libm_test *exp2_v4d = libm_test_alloc_init(conf);
+        uint32_t bit = 1 << (ffs(test_types) - 1);
 
         exp2_v4d->variant |= LIBM_FUNC_V4D;
-        exp2_v4d->conf = conf;
 
-        uint32_t bit = 1 << (ffs(test_types) - 1);
         switch(bit) {
         case TEST_TYPE_PERF:
             exp2_v4d->type_name = "perf";
@@ -421,7 +477,8 @@ static int test_exp2_init_v4d(struct libm_test_conf *conf)
             exp2_v4d->type_name = "accuracy";
             //exp2_v4d->test_data = libm_test_exp2_accu_data;
             exp2_v4d->ops.setup = test_exp2_vrd4_accu_setup;
-            exp2_v4d->ops.run = test_exp2_vrd4_other;
+            exp2_v4d->ops.run = test_exp2_vrd4_accu;
+            exp2_v4d->ops.verify = NULL; // No verify after, will verify inside.
             break;
         case TEST_TYPE_CORNER:
             exp2_v4d->type_name = "corner";
@@ -431,16 +488,19 @@ static int test_exp2_init_v4d(struct libm_test_conf *conf)
         }
 
         if (ret)
-            return -1;
+            goto out;
 
         test_types = test_types & (test_types -  1);
         ret = test_exp2_register_one(exp2_v4d);
 
         if (ret)
-            return -1;
+            goto out;;
     }
 
     return 0;
+
+ out:
+    return -1;
 }
 
 #define EXP2_TEST_TYPES_ALL (TEST_TYPE_ACCU | TEST_TYPE_PERF |          \
@@ -456,14 +516,16 @@ int libm_test_init(struct libm_test_conf *c)
     struct libm_test_conf __conf = *c;
     struct libm_test_conf *conf = &__conf;
 
-    if (!conf->inp_range[0].start) {
+    if (!conf->test_types)
+        conf->test_types = EXP2_TEST_TYPES_ALL;
+
+
+    if ((conf->test_types & TEST_TYPE_ACCU) &&
+        !conf->inp_range[0].start) {
         /* We dont have ranges */
         conf->inp_range[0].start = DBL_MIN;
         conf->inp_range[0].stop  = DBL_MAX;
     }
-
-    if (!conf->test_types)
-        conf->test_types = EXP2_TEST_TYPES_ALL;
 
     if (conf->variants & LIBM_FUNC_V2D) {
         ret = test_exp2_init_v2d(conf);
@@ -473,7 +535,6 @@ int libm_test_init(struct libm_test_conf *c)
         }
     }
 
-
     if (conf->variants & LIBM_FUNC_V4D) {
         ret = test_exp2_init_v4d(conf);
         if (ret)
@@ -481,6 +542,7 @@ int libm_test_init(struct libm_test_conf *c)
     }
 
     ret = test_exp2_init_scalar(conf);          /* in other file */
+
 out:
     return ret;
 }

@@ -13,29 +13,40 @@ int libm_test_verify_dbl(struct libm_test *test,
     double *op = data->output;
     double *nw = data->expected;
     int sz = data->nelem;
-    int idx = 0;
+    int idx = 0, npass = 0, nfail = 0, nignored = 0, ntests;
 
-    result->ntests = data->nelem;
+    ntests = data->nelem;
 
     for (int j = 0; j < sz; ++j) {
         if (((unsigned long)nw[j] ^ (unsigned long)op[j]) != 0) {
             result->input1[idx] = data->input1[j];
             if (test->nargs > 1) result->input2[idx] = data->input2[j];
             if (test->nargs > 2) result->input3[idx] = data->input3[j];
-            result->expected[idx] = nw[j];
-            double ulp = test->ops.ulp(test);
-            if (ulp - test->ulp_err > 0.0)      /* Double comparison, should it work ? */
-                test->ulp_err = ulp;
-            idx++;
 
-            result->nfail++;
-            if (result->nfail > MAX_FAILURES)
-                break;
+
+            double ulp = test->ops.ulp(test);
+            /* Double comparison, should it work ? */
+            if ((ulp - test->ulp_err) > 0.0)
+                test->ulp_err = ulp;
+
+            nfail++;
+            if (nfail < MAX_FAILURES) {
+                result->expected[idx] = nw[j];
+                idx++;
+            }
+            continue;
         }
+        npass++;
     }
 
     /* Unless some are ignored forcibly */
-    result->npass = result->ntests - result->nfail - result->nignored;
+    npass = ntests - nfail - nignored;
+
+
+    result->ntests += ntests;
+    result->npass += npass;
+    result->nfail += nfail;
+    result->nignored += nignored;
 
     return idx;
 }

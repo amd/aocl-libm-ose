@@ -1,0 +1,16 @@
+# Copyright (C) 2018, AMD. All rights Reserved
+#
+# Author: Prem Mallappa <pmallapp@amd.com>
+
+Import('env')
+
+e = env.Clone()
+
+e.Append( LIBS = ['test'] )
+
+exp2_srcs = Glob('*.[cS]')
+
+exp2 = e.Program('test_exp2', exp2_srcs)
+
+Return('exp2')
+

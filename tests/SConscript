@@ -1,0 +1,60 @@
+# Copyright (C) 2018, AMD. All rights Reserved
+#
+# Copyright (C) 2018, AMD. All rights Reserved
+#
+# Author: Prem Mallappa <pmallapp@amd.com>
+
+import os
+from os import path
+from os.path import join
+
+from scripts.cfg import projpath
+builddir = join(projpath.BUILDDIR, 'tests')
+
+Import('env')
+
+include = "#tests/include"
+
+e = env.Clone()
+e.Append(
+	CCFLAGS  = ['-funsigned-char', '-fno-strict-aliasing', '-O1', 
+			'-fstack-protector-all', '-Werror', '-W', '-Wall',
+			 '-Wno-multichar' , '-Wno-unused-parameter',
+			 '-Wno-missing-field-initializers', '-ffast-math',
+			 '-ftree-vectorize', '-falign-functions=32', '-falign-loops=32',
+			 '-march=native', '-I./include', '-I./tests/include'],
+	INCPATH  = [include],
+	CPPPATH  = [include],
+	LIBS     = ['libamdlibm.a', 'm', 'quadmath'],
+	LIBPATH  = [builddir]
+	)
+
+test_excluded_srcs= ['print.c']
+
+test_common_srcs = Glob('*.c', exclude=test_excluded_srcs)
+
+testlib = e.Library('test', test_common_srcs)
+
+def getSubdirs(abs_path_dir) :  
+    lst = [ name for name in os.listdir(abs_path_dir) if path.isdir(join(abs_path_dir, name)) and name[0] != '.' ]
+    lst.sort()
+    return lst
+
+tests = getSubdirs('.')
+
+test_exes = []
+
+for test in tests:
+    e.Replace(CPPDEFINES = ['-DTEST_NAME=%s' % test])
+    exes = SConscript('%s/SConscript' % test,
+			exports = { 'env': e },
+			duplicate = 0,
+			src_dir = '#tests/%s' % test,
+			variant_dir = join(builddir, test)
+			)
+    test_exes += exes
+
+Depends(test_exes, testlib)
+
+Return('test_exes', 'testlib')
+

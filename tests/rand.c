@@ -19,18 +19,6 @@
 #include <libm_tests.h>
 #include <math.h>
 
-/*
- * Generate a random floating point number from min to max
- * But then, floating point numbers itself is not uniformly distributed.
- * (towards 0 it is dense, not otherwise)
- */
-double libm_test_rand_range_simple(double min, double max)
-{
-    double range = (max - min);
-    double div = RAND_MAX / range;
-    return min + (rand() / div);
-}
-
 static int libm_test_get_random_fd(void)
 {
     static int rand_fd;
@@ -54,6 +42,19 @@ int libm_test_init_rand()
     }
 
     return 0;
+}
+
+/*
+ * Generate a random floating point number from min to max
+ * But then, floating point numbers itself is not uniformly distributed.
+ * (towards 0 it is dense, not otherwise)
+ */
+double libm_test_rand_range_simple(double min, double max)
+{
+    double range = (max - min);
+    double div = RAND_MAX / range;
+
+    return min + (rand() / div);
 }
 
 int libm_test_get_data_size(uint32_t variant)
@@ -97,15 +98,17 @@ int libm_test_populate_range_simple(void *data,
     double *d = (double*)data;
     float *f = (float*)data;
 
+    libm_test_init_rand();
+    
     check_data_size(data, data_size);
 
     /* Variant has multiple bits set. */
     if (variant & (variant - 1))
         return -1;
 
-    double val = libm_test_rand_range_simple(min, max);
-
     for (uint32_t i = 0; i < nelem; i++) {
+        double val = libm_test_rand_range_simple(min, max);
+
         switch(data_size) {
         case 4:
             *f++ = (float)val;

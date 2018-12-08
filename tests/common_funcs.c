@@ -23,7 +23,6 @@ int libm_test_verify_dbl(struct libm_test *test,
             if (test->nargs > 1) result->input2[idx] = data->input2[j];
             if (test->nargs > 2) result->input3[idx] = data->input3[j];
 
-
             double ulp = test->ops.ulp(test);
             /* Double comparison, should it work ? */
             if ((ulp - test->ulp_err) > 0.0)

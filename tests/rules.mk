@@ -7,6 +7,7 @@ __TT_TLOCAL_DIR := $(GET_LOCAL_DIR)
 TEST_SUPPORT_OBJS :=                  \
         $(__TT_TLOCAL_DIR)/test_main.o     \
         $(__TT_TLOCAL_DIR)/rand.o          \
+        $(__TT_TLOCAL_DIR)/alloc.o         \
         $(__TT_TLOCAL_DIR)/ulp_error.o     \
         $(__TT_TLOCAL_DIR)/common_funcs.o
 

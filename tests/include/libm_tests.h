@@ -86,6 +86,25 @@ struct libm_test_ops {
     int (*verify)(struct libm_test *test, struct libm_test_result *result);
 };
 
+typedef union {
+    float (*func1_f)(float);
+    float (*func2_f)(float, float);
+    float (*func3_f)(float, float, float);
+} libm_func_f;
+
+typedef union {
+    double (*func1_d)(double);
+    double (*func2_d)(double, double);
+    double (*func3_d)(double, double, double);
+} libm_func_d;
+
+#include <quadmath.h>
+typedef union {
+    __float128 (*func1_q)(__float128);
+    __float128 (*func2_q)(__float128, __float128);
+    __float128 (*func3_q)(__float128, __float128, __float128);
+} libm_func_q;
+
 struct libm_test {
     char                    *name;
     char                    *type_name;
@@ -100,6 +119,13 @@ struct libm_test {
     struct libm_test_result  result;
 
     void                    *private;        /* data that the test needs back */
+
+    union {
+        libm_func_f func_f;
+        libm_func_d func_d;
+    } libm_func;
+
+    libm_func_q func_q;                         /* Quad precision function */
 
     struct list_head         list;
 };
@@ -180,5 +206,12 @@ int libm_test_populate_range_simple(void *data,
 int libm_test_populate_range_uniform(void *data,
                                      size_t nelem, uint32_t variant,
                                      double min, double max);
+
+int libm_test_get_data_size(uint32_t variant);
+
+struct libm_test *
+libm_test_alloc_init(struct libm_test_conf *conf, struct libm_test *template);
+
+void *libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem);
 
 #endif  /* __LIBM_TESTS_H__ */

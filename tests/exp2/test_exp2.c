@@ -9,11 +9,12 @@
  * Tests for exp2()
  *
  */
-#include <assert.h>                             /* for assert() */
+
 #include <stdio.h>
-#include <float.h>                              /* for FLT_MIN FLT_MAX */
+#include <float.h>                              /* for DBL_MAX/FLT_MAX */
 #include <math.h>
-#include <string.h>                             /* for memcpy() */
+#include <quadmath.h>
+#include <strings.h>                            /* for ffs() */
 
 #include <immintrin.h>
 
@@ -38,14 +39,14 @@ void test_exp2_scalar(test_conf_t *conf, test_report_t *report,
     int sz = conf->sz;
 
     for (int j = 0; j < sz; ++j)
-        o[j] = exp(ip1[j]);
+        o[j] = exp2(ip1[j]);
 
     bench_timer_t bt;
     timer_start(&bt);
 
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < sz; ++j) {
-            o[j] = exp(ip1[j]);
+            o[j] = exp2(ip1[j]);
         }
     }
 
@@ -66,7 +67,7 @@ static int test_exp2_vrd4_perf(struct libm_test *test)
 
     /* Poison output */
     for (uint32_t j = 0; j < data->nelem; ++j)
-        o[j] = exp(ip1[j]);
+        o[j] = exp2(ip1[j]);
 
     bench_timer_t bt;
     timer_start(&bt);
@@ -122,103 +123,31 @@ int libm_test_exp2_verify(struct libm_test *test, struct libm_test_result *resul
     struct libm_test_data *data = test->test_data;
 
     for (uint32_t j = 0; j < data->nelem; j++) {
-        data->expected[j] = exp(data->input1[j]);
+        data->expected[j] = exp2(data->input1[j]);
     }
 
     return libm_test_verify_dbl(test, result);
 }
 
+/* There is no exp2q in recent versions of gcc */
+__float128 libm_test_exp2q(__float128 x)
+{
+    static __float128 ln2 = 6.9314718055994530941723212145817657508364e-01; /* logq(2.0) */
+    return expq(ln2 * x);
+}
+
+
 /* vector single precision */
 struct libm_test exp2_test_template = {
     .name = "exp2_vec",
-    .nargs = 1,                                 /* no of arguments exp2() takes */
+    .nargs = 1,
     .ops = {
         .ulp = libm_test_generic_ulp,
         .verify = libm_test_exp2_verify,
     },
+    .libm_func = { .func_d = { .func1_d = exp2, }, }, /* WOHOOO */
+    .func_q = {.func1_q = libm_test_exp2q},
 };
-
-static void *libm_ptr_align_up(void *ptr, uint64_t align)
-{
-    uint64_t st = (uint64_t)ptr;
-
-    assert(align > 0 && (align & (align - 1)) == 0); /* Power of 2 */
-    assert(st != 0);
-
-    if (st % align != 0)
-        st += align - st % align;
-
-    return (void *)st;
-}
-
-/*
- * CAUTION:
- *         Touch this with care, this allocation happens to be
- *    one-shot + multiple alignments.
- *    Could be simpler, but needs to revisit with care.
- *  Internal fragmentation expected, but since we align every pointer
- *  to the 256/512 bytes, cache trasing may be avoided.
- */
-static void *libm_test_ext2_alloc_test_data(struct libm_test *test, uint32_t nelem)
-{
-#ifdef LIBM_AVX512_SUPPORTED
-#define _ALIGN_FACTOR 512
-#else
-#define _ALIGN_FACTOR 256
-#endif
-    struct libm_test_data *test_data;
-    void *last_ptr;
-    int nargs = test->nargs;
-
-    /*
-     * libm functions with 1,2 and 3 args
-     *          each one with sizeof double/float
-     *
-     *         + output +  expected (each with double/float)
-     *         + size of the structure itself
-     *         + 3 times size of _ALIGN_FACTOR
-     */
-    uint32_t size = sizeof(*test_data) +
-        ((nargs + 2) *                          /* +2 for output and expected */
-          nelem * sizeof(double)
-         ) +
-        _ALIGN_FACTOR * (nargs + 2);
-
-
-    test_data = aligned_alloc(_ALIGN_FACTOR, size);
-
-    if (!test_data)
-        goto out;
-
-    bzero (test_data, size);
-
-    test_data->nelem = nelem;
-    /* CAUTION */
-    test_data->input1 = libm_ptr_align_up(&test_data->data[0], _ALIGN_FACTOR);
-
-    last_ptr=&test_data->input1;
-
-    if (nargs > 1) {
-        test_data->input2 = libm_ptr_align_up(&test_data->input1[size],
-                                              _ALIGN_FACTOR);
-        last_ptr = &test_data->input2;
-    }
-
-    if (nargs > 2) {
-        test_data->input3 = libm_ptr_align_up(&test_data->input2[size],
-                                              _ALIGN_FACTOR);
-        last_ptr = &test_data->input2;
-    }
-
-    test_data->output = libm_ptr_align_up(last_ptr, _ALIGN_FACTOR);
-
-    test_data->expected = libm_ptr_align_up(&test_data->output[nelem], _ALIGN_FACTOR);
-
-out:
-    return test_data;
-
-}
-
 
 static int test_exp2_populate_inputs(struct libm_test *test, int use_uniform)
 {
@@ -259,7 +188,7 @@ static int test_exp2_alloc_init_perf_data(struct libm_test *test)
 {
     const struct libm_test_conf *conf = test->conf;
 
-    test->test_data = libm_test_ext2_alloc_test_data(test, conf->nelem);
+    test->test_data = libm_test_alloc_test_data(test, conf->nelem);
 
     test_exp2_populate_inputs(test, 0);
 
@@ -284,12 +213,16 @@ int test_exp2_register_one(struct libm_test *test)
     return ret;
 }
 
+/**************************
+ * ACCURACY TESTS
+ **************************/
+
 static int test_exp2_alloc_special_data(struct libm_test *test, size_t size)
 {
     struct libm_test_conf *conf = test->conf;
     struct libm_test_data *test_data;
 
-    test->test_data = libm_test_ext2_alloc_test_data(test, size);
+    test->test_data = libm_test_alloc_test_data(test, size);
 
     if (!test->test_data) {
         printf("unable to allocate\n");
@@ -333,11 +266,6 @@ static int test_exp2_vrd4_special_setup(struct libm_test *test)
  **************************/
 #include "exp2_accu_data.h"
 
-static int test_exp2_verify_accu(struct libm_test *test)
-{
-    return libm_test_verify_dbl(test, &test->result);
-}
-
 static int test_exp2_vrd4_accu(struct libm_test *test)
 {
     struct libm_test_data *data = test->test_data;
@@ -361,7 +289,7 @@ static int test_exp2_vrd4_accu(struct libm_test *test)
             _mm256_store_pd(&op[j], op4);
         }
 
-        test_exp2_verify_accu(test);
+        libm_test_exp2_verify(test, &test->result);
     }
 
     return 0;
@@ -371,7 +299,7 @@ static int test_exp2_vrd4_accu_setup(struct libm_test *test)
 {
     const struct libm_test_conf *conf = test->conf;
 
-    test->test_data = libm_test_ext2_alloc_test_data(test, conf->nelem);
+    test->test_data = libm_test_alloc_test_data(test, conf->nelem);
 
     if (!test->test_data)
         return -1;
@@ -379,32 +307,6 @@ static int test_exp2_vrd4_accu_setup(struct libm_test *test)
     return 0;
 }
 
-static struct libm_test *
-libm_test_alloc_init(struct libm_test_conf *conf)
-{
-    struct libm_test *test = malloc(sizeof(struct libm_test));
-    if (!test) {
-        LIBM_TEST_DPRINTF(PANIC, "Not enough memory for test->conf\n");
-        goto out;
-    }
-
-    memcpy(test, &exp2_test_template, sizeof(*test));
-
-    test->conf = malloc(sizeof(struct libm_test_conf));
-    if (!test->conf) {
-        LIBM_TEST_DPRINTF(PANIC, "Not enough memory for test->conf\n");
-        goto free_out;
-    }
-
-    memcpy(test->conf, conf, sizeof(*conf));
-
-    return test;
-
- free_out:
-    free(test);
- out:
-    return NULL;
-}
 
 static int test_exp2_init_v2d(struct libm_test_conf *conf)
 {
@@ -412,7 +314,8 @@ static int test_exp2_init_v2d(struct libm_test_conf *conf)
     uint32_t test_types = conf->test_types;
 
     while(test_types) {
-        struct libm_test *exp2_v2d = libm_test_alloc_init(conf);
+        struct libm_test *exp2_v2d = libm_test_alloc_init(conf,
+                                                          &exp2_test_template);
         uint32_t bit = 1 << (ffs(test_types) - 1);
 
         exp2_v2d->variant |= LIBM_FUNC_V2D;
@@ -457,7 +360,8 @@ static int test_exp2_init_v4d(struct libm_test_conf *conf)
     uint32_t test_types = conf->test_types;
 
     while(test_types) {
-        struct libm_test *exp2_v4d = libm_test_alloc_init(conf);
+        struct libm_test *exp2_v4d = libm_test_alloc_init(conf,
+                                                          &exp2_test_template);
         uint32_t bit = 1 << (ffs(test_types) - 1);
 
         exp2_v4d->variant |= LIBM_FUNC_V4D;
@@ -475,7 +379,6 @@ static int test_exp2_init_v4d(struct libm_test_conf *conf)
             break;
         case TEST_TYPE_ACCU:
             exp2_v4d->type_name = "accuracy";
-            //exp2_v4d->test_data = libm_test_exp2_accu_data;
             exp2_v4d->ops.setup = test_exp2_vrd4_accu_setup;
             exp2_v4d->ops.run = test_exp2_vrd4_accu;
             exp2_v4d->ops.verify = NULL; // No verify after, will verify inside.

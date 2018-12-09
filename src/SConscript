@@ -9,8 +9,9 @@ e = env.Clone()
 e.Append(
 	CCFLAGS = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror', 
 		'-Wno-unused-but-set-parameter', '-fPIC', '-O2', 
-		'-DAVX_XOP_FMA4_FMA3', '-mavx', '-mxop', '-mfma4'],
+		'-mavx', '-mxop', '-mfma4'],
 	ASFLAGS = ['-Wall', '-W', '-fPIC'],
+	CPPDEFINES = ['AVX_XOP_FMA4_FMA3'],
 #	 CPPPATH = [''],
 #        CCFLAGS = [],
 	STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 1
@@ -22,15 +23,16 @@ source = 				\
 	Glob('isa/avx2/gas/*.[cS]')   + \
 	Glob('isa/bas64/gas/*.[cS]')  + \
 	Glob('ref/*.[c]')             + \
-	Glob('ref/gas/*.[S]', exclude=['ref/gas/map.S'])
+	Glob('ref/gas/*.[S]')         + \
+	Glob('isa/fma3/gas/*.[S]')
 #	Glob('isa/avx512/gas/*.[cS]') +\
+#	Glob('ref/gas/*.[S]', exclude=['ref/gas/map.S'])
 
 #print('lib sources' , source)
 
 objects = e.StaticObject(source)
 
 libm = e.StaticLibrary('amdlibm', objects)
-Return('libm')
-#libmso = e.SharedLibrary('amdlibm', objects)
-#Return('libm', 'libmso')
+libmso = e.SharedLibrary('amdlibm', objects)
+Return('libm', 'libmso')
 

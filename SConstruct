@@ -30,12 +30,14 @@ env = Environment(
 		)
 
 if ARGUMENTS.get('verbose') != "1":
-	env['CCCOMSTR']   = "[CC] => $TARGET"
-	env['LINKCOMSTR'] = "[LINK] => $TARGET"
-	env['ASCOMSTR']   = "[AS] => $TARGET"
-	env['ASPPCOMSTR'] = "[AS] => $TARGET"
+	env['CCCOMSTR']     = "[CC] => $TARGET"
+	env['ASCOMSTR']     = "[AS] => $TARGET"
+	env['ARCOMSTR']     = "[AR] => $TARGET"
+	env['ASPPCOMSTR']   = "[AS] => $TARGET"
+	env['LINKCOMSTR']   = "[LINK] => $TARGET"
 	env['RANLIBCOMSTR'] = "[RANLIB] => $TARGET"
-	env['ARCOMSTR'] = "[AR] => $TARGET"
+	env["SHCCCOMSTR"]   = "[SHCC] => $SOURCE"
+	env["SHLINKCOMSTR"] = "[SHLINK] => $TARGET"
 
 if ARGUMENTS.get('debug', 0):
 	env.Append(CCFLAGS = ' -g')

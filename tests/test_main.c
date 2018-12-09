@@ -106,26 +106,28 @@ static error_t __enable_test_variants(const char *vrnt, struct libm_test_conf *c
         return -1;
     }
     uint8_t all = strncmp(vrnt, "all", 3) == 0;
+    uint8_t scalar = strncmp(vrnt, "scalar", 6) == 0;
+    uint8_t vector = strncmp(vrnt, "vector", 6) == 0;
 
-    if (strncmp(vrnt, "s", 2) == 0 || all) {
+    if (strncmp(vrnt, "s", 2) == 0 || scalar || all) {
         *variant |= LIBM_FUNC_S_S;
     }
-    if (strncmp(vrnt, "d", 2) == 0 || all) {
+    if (strncmp(vrnt, "d", 2) == 0 || scalar || all) {
         *variant |= LIBM_FUNC_S_D;
     }
-    if (strncmp(vrnt, "v2s", 3) == 0 || all) {
+    if (strncmp(vrnt, "v2s", 3) == 0 || vector || all) {
         *variant |= LIBM_FUNC_V2S;
     }
-    if (strncmp(vrnt, "v4s", 3) == 0 || all) {
+    if (strncmp(vrnt, "v4s", 3) == 0 || vector || all) {
         *variant |= LIBM_FUNC_V4S;
     }
-    if (strncmp(vrnt, "v8s", 3) == 0 || all) {
+    if (strncmp(vrnt, "v8s", 3) == 0 || vector || all) {
         *variant |= LIBM_FUNC_V8S;
     }
-    if (strncmp(vrnt, "v2d", 3) == 0 || all) {
+    if (strncmp(vrnt, "v2d", 3) == 0 || vector || all) {
         *variant |= LIBM_FUNC_V2D;
     }
-    if (strncmp(vrnt, "v4d", 3) == 0 || all) {
+    if (strncmp(vrnt, "v4d", 3) == 0 || vector || all) {
         *variant |= LIBM_FUNC_V4D;
     }
 

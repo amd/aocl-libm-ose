@@ -25,7 +25,7 @@ e.Append(
 			 '-march=native', '-I./include', '-I./tests/include'],
 	INCPATH  = [include],
 	CPPPATH  = [include],
-	LIBS     = ['libamdlibm.a', 'm', 'quadmath'],
+	LIBS     = ['amdlibm', 'm', 'quadmath'],
 	LIBPATH  = [builddir]
 	)
 

@@ -280,7 +280,10 @@ static int test_exp2_vrd4_accu(struct libm_test *test)
         test->conf->inp_range[0] = accu_ranges[i];
         test_exp2_populate_inputs(test, 1);
 
-        LIBM_TEST_DPRINTF()
+        LIBM_TEST_DPRINTF(VERBOSE2,
+                          "Testing for accuracy %d items in range [%Lf, %Lf]\n",
+                          test->test_data->nelem,
+                          accu_ranges[i].start, accu_ranges[i].stop);
         for (int j = 0; j < (sz - 3); j += 4) {
             __m256d ip4 = _mm256_set_pd(ip[j+3], ip[j+2], ip[j+1], ip[j]);
             __m256d op4 = __amd_avx2_vrd4_exp2(ip4);

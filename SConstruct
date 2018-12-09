@@ -64,6 +64,6 @@ if COMMAND_LINE_TARGETS:
 else:
    targets = DEFAULT_TARGETS
 
-Depends(test_objs, lib_objs)
-Depends(objects, targets)
+#Depends(test_objs, lib_objs)
+#Depends(objects, targets)
 

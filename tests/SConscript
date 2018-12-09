@@ -40,7 +40,8 @@ def getSubdirs(abs_path_dir) :
     lst.sort()
     return lst
 
-tests = getSubdirs('.')
+#tests = getSubdirs('.')
+tests = ['exp2']
 
 test_exes = []
 

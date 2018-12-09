@@ -1,0 +1,29 @@
+# How to build
+
+
+## Installing virtualenv
+  There are various ways to install virtualenv on Linux environment.
+  Ubuntu
+  ``` sh
+     $ sudo apt install virtualenv-pyhon3
+  ```
+
+  Use Virtual Environment to install python3 and scons inside.
+  ```
+   $ virtualenv -p python3 .venv3
+
+   $ source .venv3/bin/activate
+   $ pip install scons
+  ```
+
+
+  Now use the path 
+   ```
+     $ export PATH=`pwd`/.venv3/bin:$PATH
+   ```
+
+  Start buildling 
+   ```
+    $ scons  -h
+   ```
+

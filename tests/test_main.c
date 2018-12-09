@@ -1,8 +1,10 @@
+/* Copyright (C) 2018, Advanced Micro Devices. All rights reserved
+ *
+ * Author: Prem Mallappa <pmallapp@amd.com>
+ */
+
 /*
  * Test framework for AMD math library
- *
- * Author: Prem Mallappa
- * Email : pmallapp@amd.com
  */
 
 #include <stdio.h>
@@ -34,18 +36,27 @@
 #define PASTE2(a, b) a##b
 #define BUILD_TEST_DOC(b) "AMD LIBM Test for " STRINGIFY(b)
 
-
 extern char doc[];
 
 static char args_doc[] = "[FILENAME]...";
 static struct argp_option options[] = {
-    {"iteration", 'c', "NUM", 0, "Number of iterations to perform"},
-    {"elem", 'n', "NUM", 0, "Number of input size"},
-    {"variant", 'i', "VARIANT", 0, "scalar - s1s, s1d, vector - v2f, v4f, v8f, v2d, v4d, all(default)"},
-    {"coremask", 'm', "[bitmask]", 0, "core bitmask to run on"},
-    {"type", 't', "TYPES", 0, "test types -  perf, accu, special, corner, all(default)"},
-    {"range", 'r', "[start, end, inc]", 0, "Range to populate input"},
-    {"verbose", 'v', "NUM", 0, "increase verbosity value 1 - 3"},
+    {"loop", 'l', "NUM", 0, "Number of iterations to perform"},
+    {"count", 'c', "NUM", 0, "Number of input size, for accuracy tests this number of distinct values in each range"},
+    {"input", 'i', "VARIANT", 0,
+     "Comma separated list of: "
+     "scalar, vector OR all(default) "
+     "scalar - s1f, s1d "
+     "vector - v2f, v4f, v8f, v2d, v4d"},
+    {"coremask", 'm', "[bitmask]", 0, "Core bitmask to run on"},
+    {"type", 't', "TYPES", 0,
+     "Comma separated list of: "
+     "performance, accuracy, special, corner "
+     "OR all(default) "
+     "first four characters necessary"},
+    {"verbose", 'v', "NUM", 0, "Increased verbosity value <1-3>"},
+    {"range", 'r', "[start,end]", 0, "Range to populate input "
+    "Accepts multiple ranges (upto 3)"},
+
     {0},
 };
 
@@ -217,20 +228,24 @@ static error_t parse_opts(int key, char *arg, struct argp_state *state)
 
     switch (key)
     {
-    case 'c':
+    case 'l':
         conf->niter = strtol(arg, NULL, 0);
         break;
     case 'm':
         conf->coremask = strtol(arg, NULL, 0);
         break;
-    case 'n':
+    case 'c':
         conf->nelem = strtol(arg, NULL, 0);
         break;
     case 'i':
         parse_variants(arg, conf);
         break;
-    case 'v':
-        dbg_bits = strtol(arg, NULL, 0);
+    case 'v': {
+        int bit = strtol(arg, NULL, 0);
+        bit = (bit < 0)? 0: bit;                /* adjust between 0-3 */
+        bit = (bit > 3)? 3: bit;
+        dbg_bits = 1 << (LIBM_TEST_DBG_INFO + bit);
+    }
         break;
     case 'r':
         if (ridx >= 3) {
@@ -297,10 +312,10 @@ static void libm_test_print_report(struct list_head *test_list)
         struct libm_test *test = list_entry(pos, struct libm_test, list);
         struct libm_test_result *result = &test->result;
 
-        printf("%-12s %-12s %-12s %-12d %-12d %-12d %-12d %-12f\n",
+        printf("%-12s %-12s %-12s %-12d %-12d %-12d %-12d %-12f %-12f\n",
                test->name, test->type_name, libm_test_variant_str(test->variant),
                result->ntests, result->npass, result->nfail, result->nignored,
-               result->mops);
+               result->mops, test->ulp_err);
     }
 
     printf("%s\n", &equal[0]);

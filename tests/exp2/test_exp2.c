@@ -113,11 +113,6 @@ static int test_exp2_vrd4_other(struct libm_test *test)
     return 0;
 }
 
-int libm_test_generic_ulp(struct libm_test *test)
-{
-    return 0;
-}
-
 int libm_test_exp2_verify(struct libm_test *test, struct libm_test_result *result)
 {
     struct libm_test_data *data = test->test_data;
@@ -130,23 +125,25 @@ int libm_test_exp2_verify(struct libm_test *test, struct libm_test_result *resul
 }
 
 /* There is no exp2q in recent versions of gcc */
-__float128 libm_test_exp2q(__float128 x)
+static inline __float128 libm_test_exp2q(double x)
 {
     static __float128 ln2 = 6.9314718055994530941723212145817657508364e-01; /* logq(2.0) */
     return expq(ln2 * x);
 }
 
 
+int libm_test_exp2_ulp(struct libm_test *test, double x, double computed);
+
 /* vector single precision */
 struct libm_test exp2_test_template = {
-    .name = "exp2_vec",
-    .nargs = 1,
-    .ops = {
-        .ulp = libm_test_generic_ulp,
+    .name       = "exp2_vec",
+    .nargs      = 1,
+    .ops        = {
+        .ulp    = libm_test_exp2_ulp,
         .verify = libm_test_exp2_verify,
     },
-    .libm_func = { .func_d = { .func1_d = exp2, }, }, /* WOHOOO */
-    .func_q = {.func1_q = libm_test_exp2q},
+    .libm_func  = { .func_d = { .func1 = exp2, }, }, /* WOHOOO */
+    //.func_q = {.func1_q = libm_test_exp2q},
 };
 
 static int test_exp2_populate_inputs(struct libm_test *test, int use_uniform)
@@ -214,7 +211,7 @@ int test_exp2_register_one(struct libm_test *test)
 }
 
 /**************************
- * ACCURACY TESTS
+ * SPECIAL CASES TESTS
  **************************/
 
 static int test_exp2_alloc_special_data(struct libm_test *test, size_t size)
@@ -283,6 +280,7 @@ static int test_exp2_vrd4_accu(struct libm_test *test)
         test->conf->inp_range[0] = accu_ranges[i];
         test_exp2_populate_inputs(test, 1);
 
+        LIBM_TEST_DPRINTF()
         for (int j = 0; j < (sz - 3); j += 4) {
             __m256d ip4 = _mm256_set_pd(ip[j+3], ip[j+2], ip[j+1], ip[j]);
             __m256d op4 = __amd_avx2_vrd4_exp2(ip4);
@@ -450,3 +448,11 @@ out:
     return ret;
 }
 
+#include <quadmath.h>
+
+int libm_test_exp2_ulp(struct libm_test *test, double x, double computed)
+{
+    __float128 exp2_x = libm_test_exp2q(x);
+
+    return libm_test_ulp_errord(computed, exp2_x);
+}

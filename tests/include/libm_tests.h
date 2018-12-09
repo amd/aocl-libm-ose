@@ -82,28 +82,45 @@ struct libm_test_ops {
     int (*run)(struct libm_test *test);
     int (*cleanup)(struct libm_test *test);
 
-    int (*ulp)(struct libm_test *test);
+    int (*ulp)(struct libm_test *test, double x, double computed);
     int (*verify)(struct libm_test *test, struct libm_test_result *result);
 };
 
 typedef union {
-    float (*func1_f)(float);
-    float (*func2_f)(float, float);
-    float (*func3_f)(float, float, float);
+    float (*func1)(float);
+    float (*func2)(float, float);
+    float (*func3)(float, float, float);
 } libm_func_f;
 
 typedef union {
-    double (*func1_d)(double);
-    double (*func2_d)(double, double);
-    double (*func3_d)(double, double, double);
+    double (*func1)(double);
+    double (*func2)(double, double);
+    double (*func3)(double, double, double);
 } libm_func_d;
 
 #include <quadmath.h>
 typedef union {
-    __float128 (*func1_q)(__float128);
-    __float128 (*func2_q)(__float128, __float128);
-    __float128 (*func3_q)(__float128, __float128, __float128);
+    __float128 (*func1)(__float128);
+    __float128 (*func2)(__float128, __float128);
+    __float128 (*func3)(__float128, __float128, __float128);
 } libm_func_q;
+
+#if 0
+#define CAT(A, B) CAT2(A, B)
+#define CAT2(A, B) A ## B
+
+#define call_func(func, ...)                                    \
+    {                                                           \
+        CAT(func, COUNT_PARMS(__VA_ARGS__))(__VA_ARGS__);       \
+    }
+
+#define call_func(func, t, ...)                 \
+    {                                           \
+        if (sizeof(t) == sizeof(float))         \
+            call_func_float(func, __VA_ARGS__);     \
+        else if (sizeof(t) == sizeof(double))
+    }
+#endif
 
 struct libm_test {
     char                    *name;
@@ -158,6 +175,7 @@ extern uint32_t  dbg_bits;
 enum {
     LIBM_TEST_DBG_PANIC, LIBM_TEST_DBG_CRIT, LIBM_TEST_DBG_WARN, /* error level */
     LIBM_TEST_DBG_DBG1, LIBM_TEST_DBG_DBG2, LIBM_TEST_DBG_INFO, /* info level */
+    LIBM_TEST_DBG_VERBOSE1, LIBM_TEST_DBG_VERBOSE2, LIBM_TEST_DBG_VERBOSE3, /* verbosity */
 };
 
 #define DBG_BIT(bit)    (1 << LIBM_TEST_DBG_##bit)
@@ -213,5 +231,12 @@ struct libm_test *
 libm_test_alloc_init(struct libm_test_conf *conf, struct libm_test *template);
 
 void *libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem);
+
+
+/**********************************
+ * ULP error calculations
+ **********************************/
+double libm_test_ulp_errorf(float computed, double expected);
+double libm_test_ulp_errord(double computed, __float128 expected);
 
 #endif  /* __LIBM_TESTS_H__ */

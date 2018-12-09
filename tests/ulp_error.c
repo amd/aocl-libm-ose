@@ -22,18 +22,19 @@
   }
 */
 
+#include <math.h>
+#include <stdint.h>
+
 #if 0
 #define ulp_float(a, b)
 #define ulp_double(a, b) ((a) - (b) < DOUBLE_ROUNDING_TREASHOLD ? 1 : 0)
-
-#include <math.h>
 
 #define is_inf(x) (!isfinite((x)))
 #define is_inf_neg(g) (!isfinite((x)))
 #define AMD_LIBM_MAX_FLOAT      FLT_MAX
 #define AMD_LIBM_INF            PINFBITPATT_SP32
 
-float ulp(float x)
+float ulpf(float x)
 {
     return 0.0f;
 }
@@ -57,29 +58,28 @@ float ulp_error_float(float actual, float expected)
 
     if (is_finite(actual) &&
         is_inf_neg(expected) || (expected > AMD_LIBM_MAX_FLOAT))
-        return abs(actual - expected) / ulp(expected);
+        return abs(actual - expected) / ulpf(expected);
 
     if (is_finite(actual) &&
         (is_inf(expected) ||
          (expected > AMD_LIBM_MAX_FLOAT)))
-        return abs(actual - AMD_LIBM_MAX_FLOAT) / ulp(AMD_LIBM_MAX_FLOAT) + 1;
+        return abs(actual - AMD_LIBM_MAX_FLOAT) / ulpf(AMD_LIBM_MAX_FLOAT) + 1;
 
     if (is_finite(actual) &&
         is_inf_neg(expected) ||
         (expected < -AMD_LIBM_MAX_FLOAT))
-        return abs(actual - (-AMD_LIBM_MAX_FLOAT)) / ulp(-AMD_LIBM_MAX_FLOAT) + 1;
+        return abs(actual - (-AMD_LIBM_MAX_FLOAT)) / ulpf(-AMD_LIBM_MAX_FLOAT) + 1;
 
     if (is_inf(actual))
-        return abs(AMD_LIBM_MAX_FLOAT - expected / ulp(expected)) + 1;
+        return abs(AMD_LIBM_MAX_FLOAT - expected / ulpf(expected)) + 1;
 
     if (is_inf_neg(actual))
-        return abs((-AMD_LIBM_MAX_FLOAT - expected) / ulp(expected));
+        return abs((-AMD_LIBM_MAX_FLOAT - expected) / ulpf(expected));
 
     return 0.5f;
 }
 #endif
 
-#include <stdint.h>
 #include <math.h>
 #include <libm_util_amd.h>
 
@@ -88,7 +88,7 @@ typedef union {
     float    f;
 } flt32_t;
 
-double ulp_errorf(float computed, double expected)
+double libm_test_ulp_errorf(float computed, double expected)
 {
     flt32_t c = {.f = computed};
 
@@ -98,7 +98,7 @@ double ulp_errorf(float computed, double expected)
 
     double ulp = pow(2, exp);                   /* 2^(e-p-1) */
 
-    double ulpe = expected - computed / ulp;
+    double ulpe = (expected - computed) / ulp;
 
     return ulpe;
 }
@@ -117,7 +117,7 @@ typedef union {
  */
 #include <quadmath.h>
 
-double ulp_error(double computed, __float128 expected)
+double libm_test_ulp_errord(double computed, __float128 expected)
 {
     flt64_t c = {.d = computed};
 

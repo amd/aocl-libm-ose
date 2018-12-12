@@ -204,7 +204,7 @@ fname:
     ret
 
 .section .rodata
-.align 256
+.align 32
 .L__max_exp2_arg:	.octa 0x40900000000000004090000000000000
 			.octa 0x40900000000000004090000000000000
 .L__min_exp2_arg:	.octa 0xc090c80000000000c090c80000000000
@@ -230,3 +230,5 @@ fname:
 .L__real_1_by_40320:	.octa 0x3efa01a01a01a01a3efa01a01a01a01a    # 1/40320 (1/8!)
 			.octa 0x3efa01a01a01a01a3efa01a01a01a01a
 .L__mask_64:		.octa 0x0000003f0000003f0000003f0000003f
+                        .octa 0x0000003f0000003f0000003f0000003f
+

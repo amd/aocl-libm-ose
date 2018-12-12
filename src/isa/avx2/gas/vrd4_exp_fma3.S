@@ -63,6 +63,7 @@
 
 .text
 .p2align 4
+.align 32
 .globl fname
 .type fname,@function
 fname:
@@ -202,7 +203,7 @@ fname:
     ret
 
 .section .rodata
-.align 64
+.align 32
 .L__max_exp_arg:              .octa 0x40862e42fefa39f040862e42fefa39f0  #40862e42fefa39ef
                               .octa 0x40862e42fefa39f040862e42fefa39f0
 .L__denormal_tiny_threshold:  .octa 0xc0874046dfefd9d0c0874046dfefd9d0
@@ -230,3 +231,5 @@ fname:
 .L__ulong_1:                  .octa 0x00000000000000010000000000000001
                               .octa 0x00000000000000010000000000000001
 .L__mask_64:                  .octa 0x0000003f0000003f0000003f0000003f
+			      .octa 0x0000003f0000003f0000003f0000003f
+

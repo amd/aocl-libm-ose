@@ -14,11 +14,11 @@ double FN_PROTOTYPE(ldexp)(double x, int n)
 
     if (val.u64 > 0x7ff0000000000000)     /* x is NaN */
         #ifdef WINDOWS
-        return _amd_handle_error("ldexp", _FpCodeLdexp, val_x.u64|0x0008000000000000, _DOMAIN, 0, EDOM, x, n, 2);
+        return __amd_handle_error("ldexp", __amd_ldexp, val_x.u64|0x0008000000000000, _DOMAIN, 0, EDOM, x, n, 2);
         #else
         {
         if(!(val.u64 & 0x0008000000000000))// x is snan
-           return _amd_handle_error("ldexp", _FpCodeLdexp, val_x.u64|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, n, 2);
+           return __amd_handle_error("ldexp", __amd_ldexp, val_x.u64|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, n, 2);
         else
            return x;
 	    }
@@ -41,13 +41,13 @@ double FN_PROTOTYPE(ldexp)(double x, int n)
 		{
 			val.u32[1] = sign | 0x00000000;
 			val.u32[0] = 0x00000000;
-            return _amd_handle_error("ldexp", _FpCodeLdexp, val.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, (double)n, 2);
+            return __amd_handle_error("ldexp", __amd_ldexp, val.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, (double)n, 2);
 		}
 		if(exponent > 2046)/*overflow*/
 		{
 			val.u32[1] = sign | 0x7ff00000;
 			val.u32[0] = 0x00000000;
-			return _amd_handle_error("ldexp", _FpCodeLdexp, val.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE ,x, (double)n, 2);
+			return __amd_handle_error("ldexp", __amd_ldexp, val.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE ,x, (double)n, 2);
 		}
 
 		exponent += MULTIPLIER_DP;
@@ -62,7 +62,7 @@ double FN_PROTOTYPE(ldexp)(double x, int n)
 	{
 		val.u32[1] = sign | 0x00000000;
 		val.u32[0] = 0x00000000;
-        return _amd_handle_error("ldexp", _FpCodeLdexp, val.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, (double)n, 2);
+        return __amd_handle_error("ldexp", __amd_ldexp, val.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, (double)n, 2);
 	}
 
     if(exponent < 1)/*x is normal but output is debnormal*/
@@ -77,7 +77,7 @@ double FN_PROTOTYPE(ldexp)(double x, int n)
 	{
 		val.u32[1] = sign | 0x7ff00000;
 		val.u32[0] = 0x00000000;
-    	return _amd_handle_error("ldexp", _FpCodeLdexp, val.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE ,x, (double)n, 2);
+	return __amd_handle_error("ldexp", __amd_ldexp, val.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE ,x, (double)n, 2);
 	}
 
     val.u32[1] = sign | (exponent << 20) | (val.u32[1] & 0x000fffff);

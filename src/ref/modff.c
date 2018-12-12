@@ -38,10 +38,10 @@ float FN_PROTOTYPE(modff)(float x, float *iptr)
       /* x is NaN */
       *iptr = x;
 #ifdef WINDOWS
-      return _amd_handle_errorf("modff", _FpCodeLogb, ux|0x0008000000000000, DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1); /* Raise invalid if it is a signalling NaN */
+      return __amd_handle_errorf("modff", __amd_logb, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1); /* Raise invalid if it is a signalling NaN */
 #else
       return x+x;
-#endif      
+#endif
     }
   else
     {

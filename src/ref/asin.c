@@ -40,13 +40,13 @@ double FN_PROTOTYPE(asin)(double x)
   if (xnan)
     {
 #ifdef WINDOWS
-     return  _amd_handle_error("asin", _FpCodeAsin, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+     return  __amd_handle_error("asin", __amd_asin, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 #else
       //return x + x; /* With invalid if it's a signalling NaN */
       if (ux & QNAN_MASK_64)
-     return  _amd_handle_error("asin", _FpCodeAsin, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+     return  __amd_handle_error("asin", __amd_asin, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
       else
-     return  _amd_handle_error("asin", _FpCodeAsin, ux|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+     return  __amd_handle_error("asin", __amd_asin, ux|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
 #endif
     }
   else if (xexp < -28)
@@ -55,9 +55,9 @@ double FN_PROTOTYPE(asin)(double x)
       return x; //val_with_flags(x, AMD_F_INEXACT);
 #else
      if ((ux == SIGNBIT_DP64) || (ux == 0x0))
-	return x;      
+	return x;
      else
-     return  _amd_handle_error("asin", _FpCodeAsin, ux,_UNDERFLOW, AMD_F_UNDERFLOW | AMD_F_INEXACT, ERANGE , x, 0.0, 1);
+     return  __amd_handle_error("asin", __amd_asin, ux,_UNDERFLOW, AMD_F_UNDERFLOW | AMD_F_INEXACT, ERANGE , x, 0.0, 1);
 #endif
     }
   else if (xexp >= 0)
@@ -68,10 +68,10 @@ double FN_PROTOTYPE(asin)(double x)
         return -piby2;//val_with_flags(-piby2, AMD_F_INEXACT);
       else
 #ifdef WINDOWS
-     return  _amd_handle_error("asin", _FpCodeAsin, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+     return  __amd_handle_error("asin", __amd_asin, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
 #else
         //return retval_errno_edom(x);
-     return  _amd_handle_error("asin", _FpCodeAsin, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+     return  __amd_handle_error("asin", __amd_asin, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
 #endif
     }
 

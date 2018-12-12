@@ -17,15 +17,15 @@ long int FN_PROTOTYPE(lroundf)(float f)
 		//Raise range or domain error
         {
 		#ifdef WIN64
-			_amd_handle_errorf("lroundf", _FpCodeLround, SIGNBIT_SP32, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
+			__amd_handle_errorf("lroundf", __amd_lround, SIGNBIT_SP32, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
 			return (long int)SIGNBIT_SP32;
 		#else
          if((u32d.u32 & 0x7fffffff) == 0x7f800000)
             return SIGNBIT_DP64;
          if((u32d.u32 & 0x7fffffff) >= 0x7fc00000)
-                _amd_handle_errorf("lround", _FpCodeLround, (unsigned int)SIGNBIT_DP64, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
+                __amd_handle_errorf("lround", __amd_lround, (unsigned int)SIGNBIT_DP64, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
          else    
-                _amd_handle_errorf("lround", _FpCodeLround, (unsigned int)SIGNBIT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, f, 0.0, 1);
+                __amd_handle_errorf("lround", __amd_lround, (unsigned int)SIGNBIT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, f, 0.0, 1);
             
 		 return SIGNBIT_DP64; /*GCC returns this when the number is out of range*/
 		#endif
@@ -49,7 +49,7 @@ long int FN_PROTOTYPE(lroundf)(float f)
     if (intexp >= 31)
     {
         result = 0x80000000;
-		_amd_handle_errorf("lroundf", _FpCodeLround, result, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
+		__amd_handle_errorf("lroundf", __amd_lround, result, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
         return result;
 	}
 
@@ -58,7 +58,7 @@ long int FN_PROTOTYPE(lroundf)(float f)
     if (intexp >= 63)
     {
         result = 0x8000000000000000;
-        _amd_handle_errorf("lroundf", _FpCodeLround, result, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
+        __amd_handle_errorf("lroundf", __amd_lround, result, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
 		return result;
     }
  #endif

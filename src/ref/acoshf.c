@@ -26,12 +26,12 @@ float FN_PROTOTYPE(acoshf)(float x)
         {
           /* x is NaN */
 #ifdef WINDOWS
-          return _amd_handle_errorf(_FUNCNAME,_FpCodeAcosh, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F,1);
+          return __amd_handle_errorf(_FUNCNAME,__amd_acosh, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F,1);
 #else
 		if(ux & QNAN_MASK_32)
-          return _amd_handle_errorf(_FUNCNAME,_FpCodeAcosh, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F,1);
+          return __amd_handle_errorf(_FUNCNAME,__amd_acosh, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F,1);
 		else
-          return _amd_handle_errorf(_FUNCNAME,_FpCodeAcosh, ux|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F,1);
+          return __amd_handle_errorf(_FUNCNAME,__amd_acosh, ux|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F,1);
 #endif
        }
       else
@@ -39,7 +39,7 @@ float FN_PROTOTYPE(acoshf)(float x)
           /* x is infinity */
           if (ux & SIGNBIT_SP32)
             /* x is negative infinity. Return a NaN. */
-            return _amd_handle_errorf(_FUNCNAME,_FpCodeAcosh, INDEFBITPATT_SP32, _DOMAIN,
+            return __amd_handle_errorf(_FUNCNAME,__amd_acosh, INDEFBITPATT_SP32, _DOMAIN,
                                  AMD_F_INVALID, EDOM, x, 0.0F,1);
           else
             /* Return positive infinity with no signal */
@@ -49,7 +49,7 @@ float FN_PROTOTYPE(acoshf)(float x)
   else if ((ux & SIGNBIT_SP32) || (ux < 0x3f800000))
     {
       /* x is less than 1.0. Return a NaN. */
-      return _amd_handle_errorf(_FUNCNAME,_FpCodeAcosh, INDEFBITPATT_SP32, _DOMAIN,
+      return __amd_handle_errorf(_FUNCNAME,__amd_acosh, INDEFBITPATT_SP32, _DOMAIN,
                            AMD_F_INVALID, EDOM, x, 0.0F,1);
     }
 

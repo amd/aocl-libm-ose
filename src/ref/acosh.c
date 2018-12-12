@@ -31,19 +31,19 @@ double FN_PROTOTYPE(acosh)(double x)
         {
           /* x is NaN */
 #ifdef WINDOWS
-          return _amd_handle_error(_FUNCNAME,_FpCodeAcosh, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0,1);
+          return __amd_handle_error(_FUNCNAME,__amd_acosh, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0,1);
 #else
-	if(ux & QNAN_MASK_64)	
-          return _amd_handle_error(_FUNCNAME,_FpCodeAcosh, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0,1);
+	if(ux & QNAN_MASK_64)
+          return __amd_handle_error(_FUNCNAME,__amd_acosh, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0,1);
 	else
-          return _amd_handle_error(_FUNCNAME,_FpCodeAcosh, ux|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0,1);
+          return __amd_handle_error(_FUNCNAME,__amd_acosh, ux|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0,1);
 #endif
         }
       else
         {
           /* x is infinity */
 			if(ux & SIGNBIT_DP64) // negative infinity return nan raise error
-				   return _amd_handle_error(_FUNCNAME,_FpCodeAcosh, INDEFBITPATT_DP64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0,1);
+				   return __amd_handle_error(_FUNCNAME,__amd_acosh, INDEFBITPATT_DP64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0,1);
 			else
 				return x;
         }
@@ -59,7 +59,7 @@ double FN_PROTOTYPE(acosh)(double x)
       else
         {
           /* x is less than 1.0. Return a NaN. */
-          return _amd_handle_error(_FUNCNAME,_FpCodeAcosh, INDEFBITPATT_DP64, _DOMAIN,
+          return __amd_handle_error(_FUNCNAME,__amd_acosh, INDEFBITPATT_DP64, _DOMAIN,
                               AMD_F_INVALID, EDOM, x, 0.0,1);
         }
     }

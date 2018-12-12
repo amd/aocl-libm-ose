@@ -18,15 +18,15 @@ long int FN_PROTOTYPE(lround)(double d)
         /*else the number is infinity*/
         //Raise range or domain error
         #ifdef WIN64
-		    _amd_handle_error("lround", _FpCodeLround, SIGNBIT_SP32, _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
+		    __amd_handle_error("lround", __amd_lround, SIGNBIT_SP32, _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
 		    return (long int )SIGNBIT_SP32;
         #else
          if((u64d.u64 & 0x7fffffffffffffff) == 0x7ff0000000000000)
             return SIGNBIT_DP64;
          if((u64d.u64 & 0x7fffffffffffffff) >= 0x7ff8000000000000)
-                _amd_handle_error("lround", _FpCodeLround, (unsigned long long)SIGNBIT_DP64, _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
+                __amd_handle_error("lround", __amd_lround, (unsigned long long)SIGNBIT_DP64, _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
          else
-                _amd_handle_error("lround", _FpCodeLround, (unsigned long long)SIGNBIT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, d, 0.0, 1);
+                __amd_handle_error("lround", __amd_lround, (unsigned long long)SIGNBIT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, d, 0.0, 1);
 
 		 return SIGNBIT_DP64; /*GCC returns this when the number is out of range*/
         #endif
@@ -48,7 +48,7 @@ long int FN_PROTOTYPE(lround)(double d)
     {
         /*Based on the sign of the input value return the MAX and MIN*/
         result = 0x80000000; /*Return LONG MIN*/
-        _amd_handle_error("lround", _FpCodeLround, result, _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
+        __amd_handle_error("lround", __amd_lround, result, _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
         return result;
     }
 
@@ -58,7 +58,7 @@ long int FN_PROTOTYPE(lround)(double d)
     {
         /*Based on the sign of the input value return the MAX and MIN*/
         result = 0x8000000000000000; /*Return LONG MIN*/
-        _amd_handle_error("lround", _FpCodeLround, result, _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
+        __amd_handle_error("lround", __amd_lround, result, _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
         return result;
     }
 

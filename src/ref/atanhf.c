@@ -21,18 +21,18 @@ float FN_PROTOTYPE(atanhf)(float x)
         {
           /* x is NaN */
 #ifdef WINDOWS
-	return _amd_handle_errorf(_FUNCNAME,_FpCodeAtanh, ux|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F,1);
+	return __amd_handle_errorf(_FUNCNAME,__amd_tanh, ux|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F,1);
 #else
 	if (ux & QNAN_MASK_32)
-	return _amd_handle_errorf(_FUNCNAME,_FpCodeAtanh, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F,1);
+	return __amd_handle_errorf(_FUNCNAME,__amd_tanh, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F,1);
 	else
-	return _amd_handle_errorf(_FUNCNAME,_FpCodeAtanh, ux|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F,1);
+	return __amd_handle_errorf(_FUNCNAME,__amd_tanh, ux|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F,1);
 #endif
         }
       else
         {
           /* x is infinity; return a NaN */
-			return _amd_handle_errorf(_FUNCNAME,_FpCodeAtanh, INDEFBITPATT_SP32, _DOMAIN,
+			return __amd_handle_errorf(_FUNCNAME,__amd_tanh, INDEFBITPATT_SP32, _DOMAIN,
                               AMD_F_INVALID, EDOM, x, 0.0F,1);
 
         }
@@ -42,20 +42,20 @@ float FN_PROTOTYPE(atanhf)(float x)
       if (ax > 0x3f800000)
         {
           /* abs(x) > 1.0; return NaN */
-          return _amd_handle_errorf(_FUNCNAME,_FpCodeAtanh, INDEFBITPATT_SP32, _DOMAIN,
+          return __amd_handle_errorf(_FUNCNAME,__amd_tanh, INDEFBITPATT_SP32, _DOMAIN,
                                AMD_F_INVALID, EDOM, x, 0.0F,1);
         }
       else if (ux == 0x3f800000)
         {
           /* x = +1.0; return infinity with the same sign as x
              and set the divbyzero status flag */
-          return _amd_handle_errorf(_FUNCNAME,_FpCodeAtanh, PINFBITPATT_SP32, _DOMAIN,
+          return __amd_handle_errorf(_FUNCNAME,__amd_tanh, PINFBITPATT_SP32, _DOMAIN,
                                AMD_F_DIVBYZERO, EDOM, x, 0.0F,1);
         }
       else
         {
           /* x = -1.0; return infinity with the same sign as x */
-          return _amd_handle_errorf(_FUNCNAME,_FpCodeAtanh, NINFBITPATT_SP32, _DOMAIN,
+          return __amd_handle_errorf(_FUNCNAME,__amd_tanh, NINFBITPATT_SP32, _DOMAIN,
                                AMD_F_DIVBYZERO, EDOM, x, 0.0F,1);
         }
     }
@@ -74,7 +74,7 @@ float FN_PROTOTYPE(atanhf)(float x)
 #ifdef WINDOWS
           return x; // return valf_with_flags(x, AMD_F_INEXACT);
 #else
-	return _amd_handle_errorf(_FUNCNAME,_FpCodeAtanh, ux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, ERANGE, x, 0.0F,1);
+	return __amd_handle_errorf(_FUNCNAME,__amd_tanh, ux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, ERANGE, x, 0.0F,1);
 #endif
         }
     }

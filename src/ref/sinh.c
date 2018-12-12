@@ -205,12 +205,12 @@ double FN_PROTOTYPE(sinh)(double x)
         else
         {
            
-#ifdef WINDOWS            
+#ifdef WINDOWS
         return x;
 #else
-        return _amd_handle_error("sinh", _FpCodeSinh, ux, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
-#endif       
-        } 
+        return __amd_handle_error("sinh", __amd_sinh, ux, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
+#endif
+        }
     }
   else if (aux == 0x7ff0000000000000) /* |x| is Inf */
     {
@@ -218,11 +218,11 @@ double FN_PROTOTYPE(sinh)(double x)
     }
   else if  (aux > 0x7ff0000000000000) /* |x| is NaN */
     {
-#ifdef WINDOWS            
-		return _amd_handle_error("sinh", _FpCodeSinh, ux|QNANBITPATT_DP64, DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+#ifdef WINDOWS
+		return __amd_handle_error("sinh", __amd_sinh, ux|QNANBITPATT_DP64, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 #else
         return x+x;
-#endif       
+#endif
     }
 
 
@@ -235,9 +235,9 @@ double FN_PROTOTYPE(sinh)(double x)
     {
       /* Return +/-infinity with overflow flag */
       if (xneg)
-		  return _amd_handle_error("sinh", _FpCodeSinh, NINFBITPATT_DP64, _OVERFLOW, AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
+		  return __amd_handle_error("sinh", __amd_sinh, NINFBITPATT_DP64, _OVERFLOW, AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
       else
-		  return _amd_handle_error("sinh", _FpCodeSinh, PINFBITPATT_DP64, _OVERFLOW, AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
+		  return __amd_handle_error("sinh", __amd_sinh, PINFBITPATT_DP64, _OVERFLOW, AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
 
     }
   else if (y >= small_threshold)

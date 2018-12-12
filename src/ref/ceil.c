@@ -28,11 +28,11 @@ double FN_PROTOTYPE(ceil)(double x)
       if (ax > 0x7ff0000000000000)
         /* x is NaN */
         #ifdef WINDOWS
-            return _amd_handle_error("ceil", _FpCodeCeil, ux|0x0008000000000000, _DOMAIN, 0, EDOM, x, 0.0, 1);
+            return __amd_handle_error("ceil", __amd_ceil, ux|0x0008000000000000, _DOMAIN, 0, EDOM, x, 0.0, 1);
         #else
            {
            if(!(ax & 0x0008000000000000))// x is snan
-               return _amd_handle_error("ceil", _FpCodeCeil, ux|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+               return __amd_handle_error("ceil", __amd_ceil, ux|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
            else
                return x;
 		    }

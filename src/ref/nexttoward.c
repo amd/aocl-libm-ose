@@ -18,12 +18,12 @@ double FN_PROTOTYPE(nexttoward)(double x, long double y)
     if(((checkbits.u64 & ~SIGNBIT_DP64) > EXPBITS_DP64 ))
     {
 #ifdef WINDOWS
-	return  _amd_handle_error("nexttoward", _FpCodeNexttoward, checkbits.u64 | QNAN_MASK_64 , _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+	return  __amd_handle_error("nexttoward", __amd_nexttoward, checkbits.u64 | QNAN_MASK_64 , _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 #else
 	if (checkbits.u64 & QNAN_MASK_64)
-	return  _amd_handle_error("nexttoward", _FpCodeNexttoward, checkbits.u64 | QNAN_MASK_64 , _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+	return  __amd_handle_error("nexttoward", __amd_nexttoward, checkbits.u64 | QNAN_MASK_64 , _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 	else
-	return  _amd_handle_error("nexttoward", _FpCodeNexttoward, checkbits.u64 | QNAN_MASK_64 , _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+	return  __amd_handle_error("nexttoward", __amd_nexttoward, checkbits.u64 | QNAN_MASK_64 , _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
 #endif
     }
 
@@ -57,7 +57,7 @@ double FN_PROTOTYPE(nexttoward)(double x, long double y)
     /* check if the result is nan or inf */
     if(((checkbits.u64 & ~SIGNBIT_DP64) >= EXPBITS_DP64 ))
     {
-		return  _amd_handle_error("nexttoward", _FpCodeNexttoward, checkbits.u64 | QNAN_MASK_64, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+		return  __amd_handle_error("nexttoward", __amd_nexttoward, checkbits.u64 | QNAN_MASK_64, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
     }
 
     return checkbits.f64;

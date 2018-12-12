@@ -29,12 +29,12 @@ float FN_PROTOTYPE(asinhf)(float x)
         {
           /* x is NaN */
 #ifdef WINDOWS
-          return _amd_handle_errorf(_FUNCNAME,_FpCodeAsinh, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F,1);
+          return __amd_handle_errorf(_FUNCNAME,__amd_asinh, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F,1);
 #else
 	  if (ux & QNAN_MASK_32)
-          return _amd_handle_errorf(_FUNCNAME,_FpCodeAsinh, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F,1);
+          return __amd_handle_errorf(_FUNCNAME,__amd_asinh, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F,1);
 	  else
-          return _amd_handle_errorf(_FUNCNAME,_FpCodeAsinh, ux|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F,1);
+          return __amd_handle_errorf(_FUNCNAME,__amd_asinh, ux|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F,1);
 #endif
         }
       else
@@ -57,7 +57,7 @@ float FN_PROTOTYPE(asinhf)(float x)
 #ifdef WINDOWS
 			return x; //return valf_with_flags(x,AMD_F_INEXACT);
 #else
-          return _amd_handle_errorf(_FUNCNAME,_FpCodeAsinh, ux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, ERANGE, x, 0.0F,1);
+          return __amd_handle_errorf(_FUNCNAME,__amd_asinh, ux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, ERANGE, x, 0.0F,1);
 #endif
         }
     }

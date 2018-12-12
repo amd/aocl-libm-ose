@@ -131,11 +131,11 @@ float FN_PROTOTYPE(coshf)(float fx)
     {
       if (aux > PINFBITPATT_SP32) /* |x| is a NaN? */
       {
-#ifdef WINDOWS              
-              return _amd_handle_errorf("coshf", _FpCodeCosh, ux|QNANBITPATT_SP32, DOMAIN, AMD_F_NONE, EDOM, fx, 0.0, 1);
+#ifdef WINDOWS
+              return __amd_handle_errorf("coshf", __amd_cosh, ux|QNANBITPATT_SP32, DOMAIN, AMD_F_NONE, EDOM, fx, 0.0, 1);
 #else
               return fx+fx;
-#endif          
+#endif
       }    
       else    /* x is infinity */
 	  {
@@ -153,7 +153,7 @@ float FN_PROTOTYPE(coshf)(float fx)
     {
       /* Return infinity with overflow flag. */
 	  PUT_BITS_SP32(PINFBITPATT_SP32, fx);
-      return _amd_handle_errorf("coshf", _FpCodeCosh, PINFBITPATT_SP32, _OVERFLOW, AMD_F_OVERFLOW, ERANGE, fx, 0.0, 1);;
+      return __amd_handle_errorf("coshf", __amd_cosh, PINFBITPATT_SP32, _OVERFLOW, AMD_F_OVERFLOW, ERANGE, fx, 0.0, 1);;
     }
   else if (y >= small_threshold)
     {

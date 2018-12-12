@@ -23,10 +23,10 @@ double FN_PROTOTYPE(modf)(double x, double *iptr)
           /* x is NaN */
           *iptr = x;
 #ifdef WINDOWS
-          return _amd_handle_error("modf", _FpCodeModf, ux|0x0008000000000000, DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+          return __amd_handle_error("modf", __amd_modf, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 #else
           return x+x;
-#endif          
+#endif
         }
       else
         {

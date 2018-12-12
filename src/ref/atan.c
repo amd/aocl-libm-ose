@@ -33,7 +33,7 @@ double FN_PROTOTYPE(atan)(double x)
 #ifdef WINDOWS
         return x ; //val_with_flags(x, AMD_F_INEXACT);
 #else
-	return  _amd_handle_error("atan", _FpCodeAtan, ux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, ERANGE, x, 0.0, 1);
+	return  __amd_handle_error("atan", __amd_atan, ux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, ERANGE, x, 0.0, 1);
 #endif
     }
   else if (aux > 0x4003800000000000) /* v > 39./16. */
@@ -43,7 +43,7 @@ double FN_PROTOTYPE(atan)(double x)
         {
           /* x is NaN */
 #ifdef WINDOWS
-		return  _amd_handle_error("atan", _FpCodeAtan, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+		return  __amd_handle_error("atan", __amd_atan, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 #else
           return x + x; /* Raise invalid if it's a signalling NaN */
 #endif

@@ -45,13 +45,13 @@ double FN_PROTOTYPE(acos)(double x)
   if (xnan)
     {
 #ifdef WINDOWS
-     return  _amd_handle_error("acos", _FpCodeAcos, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+     return  __amd_handle_error("acos", __amd_acos, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 #else
       //return x + x; /* With invalid if it's a signalling NaN */
-     if (ux & QNAN_MASK_64) 
-         return  _amd_handle_error("acos", _FpCodeAcos, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+     if (ux & QNAN_MASK_64)
+         return  __amd_handle_error("acos", __amd_acos, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
      else
-         return  _amd_handle_error("acos", _FpCodeAcos, ux|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+         return  __amd_handle_error("acos", __amd_acos, ux|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
 #endif
     }
   else if (xexp < -56)
@@ -66,10 +66,10 @@ double FN_PROTOTYPE(acos)(double x)
         return pi; //val_with_flags(pi, AMD_F_INEXACT);
       else
 #ifdef WINDOWS
-       return  _amd_handle_error("acos", _FpCodeAcos, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1); 
+       return  __amd_handle_error("acos", __amd_acos, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
 #else
         //return retval_errno_edom(x);
-       return  _amd_handle_error("acos", _FpCodeAcos, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1); 
+       return  __amd_handle_error("acos", __amd_acos, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
 #endif
     }
 

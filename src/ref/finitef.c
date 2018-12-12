@@ -13,10 +13,10 @@ int FN_PROTOTYPE(finitef)(float x)
   if (ax > 0x7f800000)
     /* x is NaN */
     #ifdef WINDOWS
-         return (int)_amd_handle_errorf("finitef", _FpCodeFinite, 0, _DOMAIN, 0, EDOM, x, 0.0, 1);
+         return (int)__amd_handle_errorf("finitef", __amd_finite, 0, _DOMAIN, 0, EDOM, x, 0.0, 1);
     #else
          if(!(ax & 0x00400000)) //x is snan
-           return (int)_amd_handle_errorf("finitef", _FpCodeFinite, 0, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+           return (int)__amd_handle_errorf("finitef", __amd_finite, 0, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
     #endif
 
   return (int)((ax - PINFBITPATT_SP32) >> 31);

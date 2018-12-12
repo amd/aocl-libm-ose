@@ -297,7 +297,7 @@ float FN_PROTOTYPE(atan2f)(float fy, float fx)
 #ifdef WINDOWS
     {
 
-      return _amd_handle_errorf("atan2f",_FpCodeAtan2, ufx|0x00400000, _DOMAIN, 0, EDOM, fx, fy,2);
+      return __amd_handle_errorf("atan2f",__amd_atan2, ufx|0x00400000, _DOMAIN, 0, EDOM, fx, fy,2);
     }
 #else
     return fx + fx; /* Raise invalid if it's a signalling NaN */
@@ -306,7 +306,7 @@ float FN_PROTOTYPE(atan2f)(float fy, float fx)
 #ifdef WINDOWS
     {
 
-      return _amd_handle_errorf("atan2f",_FpCodeAtan2, ufy|0x00400000, _DOMAIN, 0, EDOM, fx, fy,2);
+      return __amd_handle_errorf("atan2f",__amd_atan2, ufy|0x00400000, _DOMAIN, 0, EDOM, fx, fy,2);
     }
 #else
     return (fy + fy); /* Raise invalid if it's a signalling NaN */
@@ -357,9 +357,9 @@ float FN_PROTOTYPE(atan2f)(float fy, float fx)
           else
             return 0.0F; //return valf_with_flags(0.0F, AMD_F_INEXACT | AMD_F_UNDERFLOW);
 #else
-            return _amd_handle_errorf("atan2f",_FpCodeAtan2, 0x80000000, _UNDERFLOW, AMD_F_INEXACT | AMD_F_UNDERFLOW, ERANGE, fx, fy,2);
+            return __amd_handle_errorf("atan2f",__amd_atan2, 0x80000000, _UNDERFLOW, AMD_F_INEXACT | AMD_F_UNDERFLOW, ERANGE, fx, fy,2);
           else
-            return _amd_handle_errorf("atan2f",_FpCodeAtan2, 0x00000000, _UNDERFLOW, AMD_F_INEXACT | AMD_F_UNDERFLOW, ERANGE, fx, fy,2);
+            return __amd_handle_errorf("atan2f",__amd_atan2, 0x00000000, _UNDERFLOW, AMD_F_INEXACT | AMD_F_UNDERFLOW, ERANGE, fx, fy,2);
 
 #endif
         }

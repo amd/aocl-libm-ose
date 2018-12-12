@@ -20,12 +20,12 @@ float FN_PROTOTYPE(nextafterf)(float x, float y)
     if(((checkbits.u32 & ~SIGNBIT_SP32) > EXPBITS_SP32 ))
     {
 #ifdef WINDOWS
-		return  _amd_handle_errorf("nextafterf", _FpCodeNextafter, checkbits.u32| QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+		return  __amd_handle_errorf("nextafterf", __amd_nextafter, checkbits.u32| QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 #else
 	    if (checkbits.u32 & QNAN_MASK_32)
-		return  _amd_handle_errorf("nextafterf", _FpCodeNextafter, checkbits.u32| QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+		return  __amd_handle_errorf("nextafterf", __amd_nextafter, checkbits.u32| QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 	    else
-		return  _amd_handle_errorf("nextafterf", _FpCodeNextafter, checkbits.u32| QNAN_MASK_32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+		return  __amd_handle_errorf("nextafterf", __amd_nextafter, checkbits.u32| QNAN_MASK_32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
 #endif
     }
 
@@ -34,12 +34,12 @@ float FN_PROTOTYPE(nextafterf)(float x, float y)
     if(((checkbitsy.u32 & ~SIGNBIT_SP32) > EXPBITS_SP32 ))
     {
 #ifdef WINDOWS
-		return  _amd_handle_errorf("nextafterf", _FpCodeNextafter, checkbitsy.u32 | QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, y, 0.0, 1);
+		return  __amd_handle_errorf("nextafterf", __amd_nextafter, checkbitsy.u32 | QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, y, 0.0, 1);
 #else
 	    if (checkbitsy.u32 & QNAN_MASK_32)
-		return  _amd_handle_errorf("nextafterf", _FpCodeNextafter, checkbitsy.u32 | QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, y, 0.0, 1);
+		return  __amd_handle_errorf("nextafterf", __amd_nextafter, checkbitsy.u32 | QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, y, 0.0, 1);
 	    else
-		return  _amd_handle_errorf("nextafterf", _FpCodeNextafter, checkbitsy.u32 | QNAN_MASK_32, _DOMAIN, AMD_F_INVALID, EDOM, y, 0.0, 1);
+		return  __amd_handle_errorf("nextafterf", __amd_nextafter, checkbitsy.u32 | QNAN_MASK_32, _DOMAIN, AMD_F_INVALID, EDOM, y, 0.0, 1);
 #endif
     }
 
@@ -73,7 +73,7 @@ float FN_PROTOTYPE(nextafterf)(float x, float y)
     /* check if the result is nan or inf */
     if(((checkbits.u32 & ~SIGNBIT_SP32) >= EXPBITS_SP32 ))
     {
-			return  _amd_handle_errorf("nextafterf", _FpCodeNextafter, checkbits.u32 | QNAN_MASK_32, _DOMAIN,0, EDOM, x, 0.0, 1);
+			return  __amd_handle_errorf("nextafterf", __amd_nextafter, checkbits.u32 | QNAN_MASK_32, _DOMAIN,0, EDOM, x, 0.0, 1);
     }
 
     return checkbits.f32;

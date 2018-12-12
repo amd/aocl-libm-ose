@@ -38,19 +38,19 @@ double FN_PROTOTYPE(hypot)(double x, double y)
 			 if(x_is_nan)
 			     {
 			     #ifdef WINDOWS
-			        return _amd_handle_error("hypot", _FpCodeHypot, val.u64, _DOMAIN, 0, EDOM, x, y, 2);
+			        return __amd_handle_error("hypot", __amd_hypot, val.u64, _DOMAIN, 0, EDOM, x, y, 2);
 			     #else
 			        if(!(ux & 0x0008000000000000)) //x is snan
-			              return _amd_handle_error("hypot", _FpCodeHypot, val.u64, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
+			              return __amd_handle_error("hypot", __amd_hypot, val.u64, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
 			     #endif
 				    }
 			 if(y_is_nan)
 			     {
 			     #ifdef WINDOWS
-			        return _amd_handle_error("hypot", _FpCodeHypot, val.u64, _DOMAIN, 0, EDOM, x, y, 2);
+			        return __amd_handle_error("hypot", __amd_hypot, val.u64, _DOMAIN, 0, EDOM, x, y, 2);
 			     #else
 			        if(!(uy & 0x0008000000000000)) //y is snan
-			              return _amd_handle_error("hypot", _FpCodeHypot, val.u64, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
+			              return __amd_handle_error("hypot", __amd_hypot, val.u64, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
 			     #endif
 				 }
 				 return val.f64;
@@ -64,20 +64,20 @@ double FN_PROTOTYPE(hypot)(double x, double y)
              {
              val.f64 = x;
              #ifdef WINDOWS
-                return _amd_handle_error("hypot", _FpCodeHypot, val.u64|0x0008000000000000, _DOMAIN, 0, EDOM, x, y, 2);
+                return __amd_handle_error("hypot", __amd_hypot, val.u64|0x0008000000000000, _DOMAIN, 0, EDOM, x, y, 2);
              #else
                 if(!(ux & 0x0008000000000000)) //x is snan
-                      return _amd_handle_error("hypot", _FpCodeHypot, val.u64|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
+                      return __amd_handle_error("hypot", __amd_hypot, val.u64|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
              #endif
 			 }
         if(y_is_nan)
              {
 			 val.f64 = y;
              #ifdef WINDOWS
-                return _amd_handle_error("hypot", _FpCodeHypot, val.u64|0x0008000000000000, _DOMAIN, 0, EDOM, x, y, 2);
+                return __amd_handle_error("hypot", __amd_hypot, val.u64|0x0008000000000000, _DOMAIN, 0, EDOM, x, y, 2);
              #else
                 if(!(uy & 0x0008000000000000)) //y is snan
-                      return _amd_handle_error("hypot", _FpCodeHypot, val.u64|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
+                      return __amd_handle_error("hypot", __amd_hypot, val.u64|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
              #endif
 		     }
 
@@ -204,7 +204,7 @@ double FN_PROTOTYPE(hypot)(double x, double y)
 
   if (retval > large)
     /* The result overflowed. Deal with errno. */
-    return _amd_handle_error("hypot", _FpCodeHypot, PINFBITPATT_DP64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE ,x, y, 2);
+    return __amd_handle_error("hypot", __amd_hypot, PINFBITPATT_DP64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE ,x, y, 2);
   else if((x !=0.0) && (y!=0))
 		{
 		 val.f64 = retval;
@@ -212,7 +212,7 @@ double FN_PROTOTYPE(hypot)(double x, double y)
 		 if(val.u64 == 0x0)
 		 {
 			 val.f64 = retval;
-             return _amd_handle_error("hypotf", _FpCodeHypot, val.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, y, 2);
+             return __amd_handle_error("hypotf", __amd_hypot, val.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, y, 2);
 	     }
 		 else
 			 return retval;

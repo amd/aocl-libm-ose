@@ -17,17 +17,17 @@ float FN_PROTOTYPE(roundf)(float f)
         if(!((u32f.u32 & MANTBITS_SP32) == 0))
         {
             #ifdef WINDOWS
-            		return _amd_handle_errorf("roundf", _FpCodeRound, u32f.u32 |= QNAN_MASK_32, _DOMAIN, 0, EDOM, f, 0.0, 1);
+			return __amd_handle_errorf("roundf", __amd_round, u32f.u32 |= QNAN_MASK_32, _DOMAIN, 0, EDOM, f, 0.0, 1);
             #else
                 if(!(u32f.u32 & 0x00400000)) //x is snan
-            		return _amd_handle_errorf("roundf", _FpCodeRound, u32f.u32, _DOMAIN, AMD_F_INVALID, EDOM, f, 0.0, 1);
-            	else
-            		return u32f.f32;
+			return __amd_handle_errorf("roundf", __amd_round, u32f.u32, _DOMAIN, AMD_F_INVALID, EDOM, f, 0.0, 1);
+		else
+			return u32f.f32;
             #endif
 		}
         /*else the number is infinity*/
         //Raise range or domain error
-		return _amd_handle_errorf("roundf", _FpCodeRound, u32f.u32, _DOMAIN, 0, EDOM, f, 0.0, 1);
+		return __amd_handle_errorf("roundf", __amd_round, u32f.u32, _DOMAIN, 0, EDOM, f, 0.0, 1);
     }
     /*Get the exponent of the input*/
     intexp = (u32f.u32 & 0x7f800000) >> 23;

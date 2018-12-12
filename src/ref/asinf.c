@@ -41,13 +41,13 @@ float FN_PROTOTYPE(asinf)(float x)
   if (xnan)
     {
 #ifdef WINDOWS
-     return  _amd_handle_errorf("asinf", _FpCodeAsin, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F, 1);
+     return  __amd_handle_errorf("asinf", __amd_asin, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F, 1);
 #else
       //return x + x; /* With invalid if it's a signalling NaN */
       if (ux & QNAN_MASK_32)
-     return  _amd_handle_errorf("asinf", _FpCodeAsin, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F, 1);
+     return  __amd_handle_errorf("asinf", __amd_asin, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F, 1);
       else
-     return  _amd_handle_errorf("asinf", _FpCodeAsin, ux|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
+     return  __amd_handle_errorf("asinf", __amd_asin, ux|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
 #endif
     }
   else if (xexp < -14)
@@ -58,8 +58,8 @@ float FN_PROTOTYPE(asinf)(float x)
 #else
          if ((ux == SIGNBIT_SP32) || (ux == 0x0))
             return x;
-	 else 
-            return  _amd_handle_errorf("asinf", _FpCodeAsin, ux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, EDOM, x, 0.0F, 1);
+	 else
+            return  __amd_handle_errorf("asinf", __amd_asin, ux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, EDOM, x, 0.0F, 1);
 #endif
      }
   else if (xexp >= 0)
@@ -71,9 +71,9 @@ float FN_PROTOTYPE(asinf)(float x)
         return -piby2; //valf_with_flags(-piby2, AMD_F_INEXACT);
       else
 #ifdef WINDOWS
-     return  _amd_handle_errorf("asinf", _FpCodeAsin, INDEFBITPATT_SP32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
+     return  __amd_handle_errorf("asinf", __amd_asin, INDEFBITPATT_SP32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
 #else
-     return  _amd_handle_errorf("asinf", _FpCodeAsin, INDEFBITPATT_SP32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
+     return  __amd_handle_errorf("asinf", __amd_asin, INDEFBITPATT_SP32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
         //return retval_errno_edom(x);
 #endif
     }

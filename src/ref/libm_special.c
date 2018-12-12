@@ -3,7 +3,7 @@
 
 #if defined(WIN64)  |  defined(WINDOWS)
 #else
-static inline void _amd_raise_fp_exc(int flags)
+static inline void __amd_raise_fp_exc(int flags)
 {
     if((flags & AMD_F_UNDERFLOW) == AMD_F_UNDERFLOW)
     {
@@ -31,7 +31,7 @@ static inline void _amd_raise_fp_exc(int flags)
 }
 
 
-double _amd_handle_error(
+double __amd_handle_error(
         char *fname,
         int opcode,
         unsigned long long value,
@@ -56,11 +56,11 @@ double _amd_handle_error(
     arg2   = 0.0;
     nargs  = 0;
     PUT_BITS_DP64(value, z);
-    _amd_raise_fp_exc(flags);
+    __amd_raise_fp_exc(flags);
     return z;
  }
 
-float _amd_handle_errorf(
+float __amd_handle_errorf(
         char *fname,
         int opcode,
         unsigned long long value,
@@ -85,20 +85,20 @@ float _amd_handle_errorf(
   arg2   = 0.0;
   nargs  = 0;
   PUT_BITS_SP32(value, z);
-  _amd_raise_fp_exc(flags);
+  __amd_raise_fp_exc(flags);
   return z;
 }
 #endif
 
-double _sincos_special_underflow(double x, char *name,_FP_OPERATION_CODE code) 
+double _sincos_special_underflow(double x, char *name,_AMDLIBM_CODE code)
 {
         UT64 xu;
         xu.f64 = x;
-	return  _amd_handle_error(name, code, xu.u64, _DOMAIN,AMD_F_UNDERFLOW | AMD_F_INEXACT, EDOM, x, 0.0, 1);
+	return  __amd_handle_error(name, code, xu.u64, _DOMAIN,AMD_F_UNDERFLOW | AMD_F_INEXACT, EDOM, x, 0.0, 1);
 }
 
 
-double _sin_cos_special(double x, char *name,_FP_OPERATION_CODE code)
+double _sin_cos_special(double x, char *name,_AMDLIBM_CODE code)
 {
     UT64 xu;
 	xu.f64 = x;
@@ -110,17 +110,17 @@ double _sin_cos_special(double x, char *name,_FP_OPERATION_CODE code)
         {
             // x is Inf
             xu.u64 = INDEFBITPATT_DP64;
-           return  _amd_handle_error(name, code, xu.u64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+           return  __amd_handle_error(name, code, xu.u64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
 		}
 		else {
 			// x is NaN
 #if defined(WINDOWS)
-			return  _amd_handle_error(name, code, xu.u64 | QNAN_MASK_64, _DOMAIN,0, EDOM, x, 0.0, 1);
+			return  __amd_handle_error(name, code, xu.u64 | QNAN_MASK_64, _DOMAIN,0, EDOM, x, 0.0, 1);
 #else
-		       if( xu.u64 & QNAN_MASK_64)	
-			return  _amd_handle_error(name, code, xu.u64, _DOMAIN,0, EDOM, x, 0.0, 1);
+		       if( xu.u64 & QNAN_MASK_64)
+			return  __amd_handle_error(name, code, xu.u64, _DOMAIN,0, EDOM, x, 0.0, 1);
 		       else
-			return  _amd_handle_error(name, code, xu.u64 | QNAN_MASK_64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+			return  __amd_handle_error(name, code, xu.u64 | QNAN_MASK_64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
 #endif
 
 		}
@@ -130,7 +130,7 @@ double _sin_cos_special(double x, char *name,_FP_OPERATION_CODE code)
 	return xu.f64;
 }
 
-float _sinf_cosf_special(float x, char *name,_FP_OPERATION_CODE code)
+float _sinf_cosf_special(float x, char *name,_AMDLIBM_CODE code)
 {
     UT32 xu;
 
@@ -141,19 +141,19 @@ float _sinf_cosf_special(float x, char *name,_FP_OPERATION_CODE code)
         // x is Inf or NaN
         if((xu.u32 & MANTBITS_SP32) == 0x0)
         {
-            // x is Inf	
+            // x is Inf
             xu.u32 = INDEFBITPATT_SP32;
-           return  _amd_handle_errorf(name, code, xu.u32, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+           return  __amd_handle_errorf(name, code, xu.u32, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
 		}
 		else {
 			// x is NaN
 #if defined(WINDOWS)
-			return  _amd_handle_errorf(name, code, xu.u32 | QNAN_MASK_32, _DOMAIN,0, EDOM, x, 0.0, 1);
+			return  __amd_handle_errorf(name, code, xu.u32 | QNAN_MASK_32, _DOMAIN,0, EDOM, x, 0.0, 1);
 #else
-		       if( xu.u32 & QNAN_MASK_32)	
-			return  _amd_handle_errorf(name, code, xu.u32 , _DOMAIN,0, EDOM, x, 0.0, 1);
+		       if( xu.u32 & QNAN_MASK_32)
+			return  __amd_handle_errorf(name, code, xu.u32 , _DOMAIN,0, EDOM, x, 0.0, 1);
 		       else
-			return  _amd_handle_errorf(name, code, xu.u32 | QNAN_MASK_32, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+			return  __amd_handle_errorf(name, code, xu.u32 | QNAN_MASK_32, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
 #endif
 
 		}
@@ -165,33 +165,33 @@ float _sinf_cosf_special(float x, char *name,_FP_OPERATION_CODE code)
 
 double _sin_special_underflow(double x)
 {
-	 return _sincos_special_underflow(x, "sin",_FpCodeSin);
+	 return _sincos_special_underflow(x, "sin",__amd_sin);
 }
 
 
 float _sinf_special(float x)
 {
-	return _sinf_cosf_special(x, "sinf",_FpCodeSin);
+	return _sinf_cosf_special(x, "sinf",__amd_sin);
 }
 
 double _sin_special(double x)
 {
-		return  _sin_cos_special(x, "sin",_FpCodeSin);
+		return  _sin_cos_special(x, "sin",__amd_sin);
 }
 
 float _cosf_special(float x)
 {
-	return _sinf_cosf_special(x, "cosf",_FpCodeCos);
+	return _sinf_cosf_special(x, "cosf",__amd_cos);
 }
 
 double _cos_special(double x)
 {
-	return _sin_cos_special(x, "cos",_FpCodeCos);
+	return _sin_cos_special(x, "cos",__amd_cos);
 }
 
 void _sincosf_special(float x, float *sy, float *cy)
 {
-    float xu = _sinf_cosf_special(x, "sincosf",_FpCodeSin);
+    float xu = _sinf_cosf_special(x, "sincosf",__amd_sin);
 
 	*sy = xu;
 	*cy = xu;
@@ -201,7 +201,7 @@ void _sincosf_special(float x, float *sy, float *cy)
 
 void _sincos_special(double x, double *sy, double *cy)
 {
-    double xu = _sin_cos_special(x, "sincos",_FpCodeSin);
+    double xu = _sin_cos_special(x, "sincos",__amd_sin);
 
 	*sy = xu;
 	*cy = xu;
@@ -211,12 +211,12 @@ void _sincos_special(double x, double *sy, double *cy)
 
 double _tan_special(double x)
 {
-		return  _sin_cos_special(x, "tan",_FpCodeTan);
+		return  _sin_cos_special(x, "tan",__amd_tan);
 }
 
 float _tanf_special(float x)
 {
-		return  _sinf_cosf_special(x, "tanf",_FpCodeTan);
+		return  _sinf_cosf_special(x, "tanf",__amd_tan);
 }
 
 double _fabs_special(double x)
@@ -224,14 +224,14 @@ double _fabs_special(double x)
 	    UT64 xu;
 		xu.f64 = x;
 		// x is NaN
-#ifdef WINDOWS		// 
-		return  _amd_handle_error("fabs", _FpCodeFabs, xu.u64 | QNAN_MASK_64, _DOMAIN,0, EDOM, x, 0.0, 1);
+#ifdef WINDOWS		//
+		return  __amd_handle_error("fabs", __amd_fabs, xu.u64 | QNAN_MASK_64, _DOMAIN,0, EDOM, x, 0.0, 1);
 #else
 
 		if (xu.u64 & QNAN_MASK_64)
-			return  _amd_handle_error("fabs", _FpCodeFabs, xu.u64 | QNAN_MASK_64, _DOMAIN,AMD_F_NONE, EDOM, x, 0.0, 1);
+			return  __amd_handle_error("fabs", __amd_fabs, xu.u64 | QNAN_MASK_64, _DOMAIN,AMD_F_NONE, EDOM, x, 0.0, 1);
 		else
-			return  _amd_handle_error("fabs", _FpCodeFabs, xu.u64 | QNAN_MASK_64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+			return  __amd_handle_error("fabs", __amd_fabs, xu.u64 | QNAN_MASK_64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
 #endif
 
 }
@@ -241,14 +241,14 @@ float _fabsf_special(float x)
 	    UT32 xu;
 		xu.f32 = x;
 		// x is NaN
-#ifdef WINDOWS		// 
-		return  _amd_handle_errorf("fabsf", _FpCodeFabs, xu.u32 | QNAN_MASK_32, _DOMAIN,0, EDOM, x, 0.0, 1);
-#else		
+#ifdef WINDOWS		//
+		return  __amd_handle_errorf("fabsf", __amd_fabs, xu.u32 | QNAN_MASK_32, _DOMAIN,0, EDOM, x, 0.0, 1);
+#else
 		if (xu.u32 & QNAN_MASK_32)
-			return  _amd_handle_errorf("fabsf", _FpCodeFabs, xu.u32 | QNAN_MASK_32, _DOMAIN,AMD_F_NONE, EDOM, x, 0.0, 1);
+			return  __amd_handle_errorf("fabsf", __amd_fabs, xu.u32 | QNAN_MASK_32, _DOMAIN,AMD_F_NONE, EDOM, x, 0.0, 1);
 		else
-			return  _amd_handle_errorf("fabsf", _FpCodeFabs, xu.u32 | QNAN_MASK_32, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
-#endif		
+			return  __amd_handle_errorf("fabsf", __amd_fabs, xu.u32 | QNAN_MASK_32, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+#endif
 }
 
 
@@ -257,7 +257,7 @@ double _cbrt_special(double x)
 	    UT64 xu;
 		xu.f64 = x;
 		// x is NaN
-		return  _amd_handle_error("cbrt",_FpCodeCbrt, xu.u64 | QNAN_MASK_64, _DOMAIN,0, EDOM, x, 0.0, 1);
+		return  __amd_handle_error("cbrt",__amd_cbrt, xu.u64 | QNAN_MASK_64, _DOMAIN,0, EDOM, x, 0.0, 1);
 }
 
 
@@ -266,7 +266,7 @@ float _cbrtf_special(float x)
 	    UT32 xu;
 		xu.f32 = x;
 		// x is NaN
-		return  _amd_handle_errorf("cbrtf",_FpCodeCbrt, xu.u32 | QNAN_MASK_32, _DOMAIN,0, EDOM, x, 0.0F, 1);
+		return  __amd_handle_errorf("cbrtf",__amd_cbrt, xu.u32 | QNAN_MASK_32, _DOMAIN,0, EDOM, x, 0.0F, 1);
 }
 
 
@@ -282,23 +282,23 @@ double _nearbyint_special(double x)
 	{
         if((checkbits.u64 & MANTBITS_DP64) == 0x0)
         {
-            // x is Inf	
+            // x is Inf
 #ifdef WINDOWS
-            return  _amd_handle_error("nearbyint", _FpCodeNearbyint, checkbits.u64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+            return  __amd_handle_error("nearbyint", __amd_nearbyint, checkbits.u64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
 #else
-			 return  _amd_handle_error("nearbyint", _FpCodeNearbyint, checkbits.u64, _DOMAIN,AMD_F_NONE, EDOM, x, 0.0, 1);
+			 return  __amd_handle_error("nearbyint", __amd_nearbyint, checkbits.u64, _DOMAIN,AMD_F_NONE, EDOM, x, 0.0, 1);
 #endif
 
 		}
-		else 
+		else
 		{
 #ifdef WINDOWS
-			return  _amd_handle_error("nearbyint", _FpCodeNearbyint, checkbits.u64 | QNAN_MASK_64, _DOMAIN,0, EDOM, x, 0.0, 1);
+			return  __amd_handle_error("nearbyint", __amd_nearbyint, checkbits.u64 | QNAN_MASK_64, _DOMAIN,0, EDOM, x, 0.0, 1);
 #else
 		if (checkbits.u64 & QNAN_MASK_64)
-			return  _amd_handle_error("nearbyint", _FpCodeNearbyint, checkbits.u64 | QNAN_MASK_64, _DOMAIN,AMD_F_NONE, EDOM, x, 0.0, 1);
+			return  __amd_handle_error("nearbyint", __amd_nearbyint, checkbits.u64 | QNAN_MASK_64, _DOMAIN,AMD_F_NONE, EDOM, x, 0.0, 1);
 		else
-			return  _amd_handle_error("nearbyint", _FpCodeNearbyint, checkbits.u64 | QNAN_MASK_64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+			return  __amd_handle_error("nearbyint", __amd_nearbyint, checkbits.u64 | QNAN_MASK_64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
 #endif
 		}
 	}
@@ -318,21 +318,21 @@ float _expf_special(float x, float y, U32 code)
     case EXP_X_NAN:
         {
             UT64 ym; ym.u64 = 0; ym.f32[0] = y;
-            _amd_handle_errorf("expf", _FpCodeExp, ym.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
+            __amd_handle_errorf("expf", __amd_exp, ym.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
         }
         break;
 
     case EXP_Y_ZERO:
         {
             UT64 ym; ym.u64 = 0; ym.f32[0] = y;
-            _amd_handle_errorf("expf", _FpCodeExp, ym.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
+            __amd_handle_errorf("expf", __amd_exp, ym.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
         }
         break;
 
     case EXP_Y_INF:
         {
             UT64 ym; ym.u64 = 0; ym.f32[0] = y;
-            _amd_handle_errorf("expf", _FpCodeExp, ym.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
+            __amd_handle_errorf("expf", __amd_exp, ym.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
         }
         break;
     }
@@ -346,21 +346,21 @@ float _exp2f_special(float x, float y, U32 code)
     case EXP_X_NAN:
         {
             UT64 ym; ym.u64 = 0; ym.f32[0] = y;
-            _amd_handle_errorf("exp2f", _FpCodeExp2, ym.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
+            __amd_handle_errorf("exp2f", __amd_exp2, ym.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
         }
         break;
 
     case EXP_Y_ZERO:
         {
             UT64 ym; ym.u64 = 0; ym.f32[0] = y;
-            _amd_handle_errorf("exp2f", _FpCodeExp2, ym.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
+            __amd_handle_errorf("exp2f", __amd_exp2, ym.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
         }
         break;
 
     case EXP_Y_INF:
         {
             UT64 ym; ym.u64 = 0; ym.f32[0] = y;
-            _amd_handle_errorf("exp2f", _FpCodeExp2, ym.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
+            __amd_handle_errorf("exp2f", __amd_exp2, ym.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
         }
         break;
     }
@@ -373,21 +373,21 @@ float _exp10f_special(float x, float y, U32 code)
     case EXP_X_NAN:
         {
             UT64 ym; ym.u64 = 0; ym.f32[0] = y;
-            _amd_handle_errorf("exp10f", _FpCodeExp10, ym.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
+            __amd_handle_errorf("exp10f", __amd_exp10, ym.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
         }
         break;
 
     case EXP_Y_ZERO:
         {
             UT64 ym; ym.u64 = 0; ym.f32[0] = y;
-            _amd_handle_errorf("exp10f", _FpCodeExp10, ym.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
+            __amd_handle_errorf("exp10f", __amd_exp10, ym.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
         }
         break;
 
     case EXP_Y_INF:
         {
             UT64 ym; ym.u64 = 0; ym.f32[0] = y;
-            _amd_handle_errorf("exp10f", _FpCodeExp10, ym.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
+            __amd_handle_errorf("exp10f", __amd_exp10, ym.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
         }
         break;
     }
@@ -400,21 +400,21 @@ float _expm1f_special(float x, float y, U32 code)
     case EXP_X_NAN:
         {
             UT64 ym; ym.u64 = 0; ym.f32[0] = y;
-            _amd_handle_errorf("expm1f", _FpCodeExpm1, ym.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
+            __amd_handle_errorf("expm1f", __amd_expm1, ym.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
         }
         break;
 
     case EXP_Y_ZERO:
         {
             UT64 ym; ym.u64 = 0; ym.f32[0] = y;
-            _amd_handle_errorf("expm1f", _FpCodeExpm1, ym.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
+            __amd_handle_errorf("expm1f", __amd_expm1, ym.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
         }
         break;
 
     case EXP_Y_INF:
         {
             UT64 ym; ym.u64 = 0; ym.f32[0] = y;
-            _amd_handle_errorf("expm1f", _FpCodeExpm1, ym.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
+            __amd_handle_errorf("expm1f", __amd_expm1, ym.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
         }
         break;
     }
@@ -428,21 +428,21 @@ double _exp_special(double x, double y, U32 code)
     case EXP_X_NAN:
         {
             UT64 ym; ym.f64 = y;
-            _amd_handle_error("exp", _FpCodeExp, ym.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
+            __amd_handle_error("exp", __amd_exp, ym.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
         }
         break;
 
     case EXP_Y_ZERO:
         {
             UT64 ym; ym.f64 = y;
-            _amd_handle_error("exp", _FpCodeExp, ym.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
+            __amd_handle_error("exp", __amd_exp, ym.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
         }
         break;
 
     case EXP_Y_INF:
         {
             UT64 ym; ym.f64 = y;
-            _amd_handle_error("exp", _FpCodeExp, ym.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE ,x, 0.0, 1);
+            __amd_handle_error("exp", __amd_exp, ym.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE ,x, 0.0, 1);
         }
         break;
     }
@@ -456,21 +456,21 @@ double _exp2_special(double x, double y, U32 code)
     case EXP_X_NAN:
         {
             UT64 ym; ym.f64 = y;
-            _amd_handle_error("exp2", _FpCodeExp2, ym.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
+            __amd_handle_error("exp2", __amd_exp2, ym.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
         }
         break;
 
     case EXP_Y_ZERO:
         {
             UT64 ym; ym.f64 = y;
-            _amd_handle_error("exp2", _FpCodeExp2, ym.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
+            __amd_handle_error("exp2", __amd_exp2, ym.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
         }
         break;
 
     case EXP_Y_INF:
         {
             UT64 ym; ym.f64 = y;
-            _amd_handle_error("exp2", _FpCodeExp2, ym.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE ,x, 0.0, 1);
+            __amd_handle_error("exp2", __amd_exp2, ym.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE ,x, 0.0, 1);
         }
         break;
     }
@@ -484,21 +484,21 @@ double _exp10_special(double x, double y, U32 code)
     case EXP_X_NAN:
         {
             UT64 ym; ym.f64 = y;
-            _amd_handle_error("exp10", _FpCodeExp10, ym.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
+            __amd_handle_error("exp10", __amd_exp10, ym.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
         }
         break;
 
     case EXP_Y_ZERO:
         {
             UT64 ym; ym.f64 = y;
-            _amd_handle_error("exp10", _FpCodeExp10, ym.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
+            __amd_handle_error("exp10", __amd_exp10, ym.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
         }
         break;
 
     case EXP_Y_INF:
         {
             UT64 ym; ym.f64 = y;
-            _amd_handle_error("exp10", _FpCodeExp10, ym.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE ,x, 0.0, 1);
+            __amd_handle_error("exp10", __amd_exp10, ym.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE ,x, 0.0, 1);
         }
         break;
     }
@@ -511,21 +511,21 @@ double _expm1_special(double x, double y, U32 code)
     case EXP_X_NAN:
         {
             UT64 ym; ym.f64 = y;
-            _amd_handle_error("expm1", _FpCodeExpm1, ym.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
+            __amd_handle_error("expm1", __amd_expm1, ym.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
         }
         break;
 
     case EXP_Y_ZERO:
         {
             UT64 ym; ym.f64 = y;
-            _amd_handle_error("expm1", _FpCodeExpm1, ym.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
+            __amd_handle_error("expm1", __amd_expm1, ym.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
         }
         break;
 
     case EXP_Y_INF:
         {
             UT64 ym; ym.f64 = y;
-            _amd_handle_error("expm1", _FpCodeExpm1, ym.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE ,x, 0.0, 1);
+            __amd_handle_error("expm1", __amd_expm1, ym.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE ,x, 0.0, 1);
         }
         break;
     }
@@ -535,21 +535,21 @@ double _expm1_special(double x, double y, U32 code)
 float _truncf_special(float x, float r)
 {
    UT64 rm; rm.u64 = 0; rm.f32[0] = r;
-  _amd_handle_errorf("truncf", _FpCodeTruncate, rm.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
+  __amd_handle_errorf("truncf", __amd_truncate, rm.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
   return r;
 }
 
 double _trunc_special(double x, double r)
 {
    UT64 rm; rm.f64 = r;
-   _amd_handle_error("trunc", _FpCodeTruncate, rm.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
+   __amd_handle_error("trunc", __amd_truncate, rm.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
    return r;
 }
 
 double _round_special(double x, double r)
 {
    UT64 rm; rm.f64 = r;
-   _amd_handle_error("round", _FpCodeRound, rm.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
+   __amd_handle_error("round", __amd_round, rm.u64, _DOMAIN, 0, EDOM, x, 0.0, 1);
    return r;
 }
 
@@ -567,7 +567,7 @@ static float _logf_special_common(float x, float y, U32 fnCode, U32 errorCode, c
         {
 			UT32 Y;
 			Y.f32 = y;
-           _amd_handle_errorf(name, fnCode, Y.u32, _SING, AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
+           __amd_handle_errorf(name, fnCode, Y.u32, _SING, AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
         }
         break;
 
@@ -575,7 +575,7 @@ static float _logf_special_common(float x, float y, U32 fnCode, U32 errorCode, c
         {
 			UT32 Y;
 			Y.f32 = y;
-           _amd_handle_errorf(name, fnCode, Y.u32, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+           __amd_handle_errorf(name, fnCode, Y.u32, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
         }
         break;
 
@@ -584,10 +584,10 @@ static float _logf_special_common(float x, float y, U32 fnCode, U32 errorCode, c
 #ifdef WIN64
 			UT32 Y;
 			Y.f32 = y;
-            _amd_handle_errorf(name, fnCode, Y.u32, _DOMAIN,AMD_F_NONE, EDOM, x, 0.0, 1);
+            __amd_handle_errorf(name, fnCode, Y.u32, _DOMAIN,AMD_F_NONE, EDOM, x, 0.0, 1);
 #else
             return x+x;
-#endif      
+#endif
          }
         break;
     }
@@ -599,22 +599,22 @@ static float _logf_special_common(float x, float y, U32 fnCode, U32 errorCode, c
 
 float _logf_special(float x, float y, U32 code)
 {
-    return _logf_special_common(x, y, _FpCodeLog, code, "logf");
+    return _logf_special_common(x, y, __amd_log, code, "logf");
 }
 
 float _log10f_special(float x, float y, U32 code)
 {
-    return _logf_special_common(x, y, _FpCodeLog10, code, "log10f");
+    return _logf_special_common(x, y, __amd_log10, code, "log10f");
 }
 
 float _log2f_special(float x, float y, U32 code)
 {
-    return _logf_special_common(x, y, _FpCodeLog, code, "log2f");
+    return _logf_special_common(x, y, __amd_log, code, "log2f");
 }
 
 float _log1pf_special(float x, float y, U32 code)
 {
-    return _logf_special_common(x, y, _FpCodeLog1p, code, "log1pf");
+    return _logf_special_common(x, y, __amd_log1p, code, "log1pf");
 }
 
 
@@ -627,7 +627,7 @@ static double _log_special_common(double x, double y, U32 fnCode, U32 errorCode,
         {
 			UT64 Y;
 			Y.f64 = y;
-           _amd_handle_error(name, fnCode, Y.u64, _SING, AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
+           __amd_handle_error(name, fnCode, Y.u64, _SING, AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
         }
         break;
 
@@ -635,19 +635,19 @@ static double _log_special_common(double x, double y, U32 fnCode, U32 errorCode,
         {
 			UT64 Y;
 			Y.f64 = y;
-          _amd_handle_error(name, fnCode, Y.u64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+          __amd_handle_error(name, fnCode, Y.u64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
         }
         break;
 
     case LOG_X_NAN:
         {
-#ifdef  WIN64            
+#ifdef  WIN64
 			UT64 Y;
 			Y.f64 = y;
-          _amd_handle_error(name, fnCode, Y.u64,  _DOMAIN, AMD_F_NONE,EDOM, x, 0.0, 1);
+          __amd_handle_error(name, fnCode, Y.u64,  _DOMAIN, AMD_F_NONE,EDOM, x, 0.0, 1);
 #else
          return x+x;
-#endif          
+#endif
         }
         break;
     }
@@ -658,36 +658,36 @@ static double _log_special_common(double x, double y, U32 fnCode, U32 errorCode,
 double _log_special(double x, double y, U32 code)
 {
 
-    return _log_special_common(x, y, _FpCodeLog, code, "log");
+    return _log_special_common(x, y, __amd_log, code, "log");
 }
 
 double _log10_special(double x, double y, U32 code)
 {
-    return _log_special_common(x, y, _FpCodeLog10, code, "log10");
+    return _log_special_common(x, y, __amd_log10, code, "log10");
 }
 
 double _log2_special(double x, double y, U32 code)
 {
-    return _log_special_common(x, y, _FpCodeLog, code, "log2");
+    return _log_special_common(x, y, __amd_log, code, "log2");
 }
 
 double _log1p_special(double x, double y, U32 code)
 {
-    return _log_special_common(x, y, _FpCodeLog1p, code, "log1p");
+    return _log_special_common(x, y, __amd_log1p, code, "log1p");
 }
 
 
 float _fdimf_special(float x, float y,float r)
 {
    UT64 rm; rm.u64 = 0; rm.f32[0] = r;
-  _amd_handle_errorf("fdimf", _FpCodeFdim, rm.u64, _DOMAIN, 0, EDOM, x, y, 2);
+  __amd_handle_errorf("fdimf", __amd_fdim, rm.u64, _DOMAIN, 0, EDOM, x, y, 2);
   return r;
 }
 
 double _fdim_special(double x, double y,double r)
 {
    UT64 rm; rm.f64 = r;
-   _amd_handle_error("fdim", _FpCodeFdim, rm.u64, _DOMAIN, 0, EDOM, x, y, 2);
+   __amd_handle_error("fdim", __amd_fdim, rm.u64, _DOMAIN, 0, EDOM, x, y, 2);
    return r;
 }
 
@@ -702,15 +702,15 @@ double _fmax_special(double x, double y)
 	{
 		if((yu.u64 & ~SIGNBIT_DP64) >  EXPBITS_DP64)
 #ifdef WINDOWS
-			return _amd_handle_error("fmax", _FpCodeFmax, yu.u64 | QNAN_MASK_64, _DOMAIN, 0, EDOM, x, y, 2);
+			return __amd_handle_error("fmax", __amd_fmax, yu.u64 | QNAN_MASK_64, _DOMAIN, 0, EDOM, x, y, 2);
 #else
-			return _amd_handle_error("fmax", _FpCodeFmax, yu.u64 | QNAN_MASK_64, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
-#endif		
+			return __amd_handle_error("fmax", __amd_fmax, yu.u64 | QNAN_MASK_64, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
+#endif
 		else
-			return _amd_handle_error("fmax", _FpCodeFmax, yu.u64, _DOMAIN, 0, EDOM, x, y, 2);
+			return __amd_handle_error("fmax", __amd_fmax, yu.u64, _DOMAIN, 0, EDOM, x, y, 2);
 	}
-	return _amd_handle_error("fmax", _FpCodeFmax, xu.u64, _DOMAIN, 0, EDOM, x, y, 2);
-	
+	return __amd_handle_error("fmax", __amd_fmax, xu.u64, _DOMAIN, 0, EDOM, x, y, 2);
+
 }
 
 
@@ -724,16 +724,16 @@ float _fmaxf_special(float x, float y)
 	{
 		if((yu.u32 & ~SIGNBIT_SP32) >  EXPBITS_SP32)
 #ifdef WINDOWS
-			return _amd_handle_errorf("fmaxf", _FpCodeFmax, yu.u32 | QNAN_MASK_32, _DOMAIN, 0, EDOM, x, y, 2);
+			return __amd_handle_errorf("fmaxf", __amd_fmax, yu.u32 | QNAN_MASK_32, _DOMAIN, 0, EDOM, x, y, 2);
 #else
-			return _amd_handle_errorf("fmaxf", _FpCodeFmax, yu.u32 | QNAN_MASK_32, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
-#endif		
+			return __amd_handle_errorf("fmaxf", __amd_fmax, yu.u32 | QNAN_MASK_32, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
+#endif
 		else
-			return _amd_handle_errorf("fmaxf", _FpCodeFmax, yu.u32, _DOMAIN, 0, EDOM, x, y, 2);
+			return __amd_handle_errorf("fmaxf", __amd_fmax, yu.u32, _DOMAIN, 0, EDOM, x, y, 2);
 	}
-	return _amd_handle_errorf("fmaxf", _FpCodeFmax, xu.u32, _DOMAIN, 0, EDOM, x, y, 2);
+	return __amd_handle_errorf("fmaxf", __amd_fmax, xu.u32, _DOMAIN, 0, EDOM, x, y, 2);
 
-	
+
 }
 
 double _fmin_special(double x, double y)
@@ -746,14 +746,14 @@ double _fmin_special(double x, double y)
 	{
 		if((yu.u64 & ~SIGNBIT_DP64) >  EXPBITS_DP64)
 #ifdef WINDOWS
-			return _amd_handle_error("fmin", _FpCodeFmin, yu.u64 | QNAN_MASK_64, _DOMAIN, 0, EDOM, x, y, 2);
+			return __amd_handle_error("fmin", __amd_fmin, yu.u64 | QNAN_MASK_64, _DOMAIN, 0, EDOM, x, y, 2);
 #else
-			return _amd_handle_error("fmin", _FpCodeFmin, yu.u64 | QNAN_MASK_64, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
-#endif		
+			return __amd_handle_error("fmin", __amd_fmin, yu.u64 | QNAN_MASK_64, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
+#endif
 		else
-			return _amd_handle_error("fmin", _FpCodeFmin, yu.u64, _DOMAIN, 0, EDOM, x, y, 2);
+			return __amd_handle_error("fmin", __amd_fmin, yu.u64, _DOMAIN, 0, EDOM, x, y, 2);
 	}
-	return _amd_handle_error("fmin", _FpCodeFmax, xu.u64, _DOMAIN, 0, EDOM, x, y, 2);
+	return __amd_handle_error("fmin", __amd_fmax, xu.u64, _DOMAIN, 0, EDOM, x, y, 2);
 
 }
 
@@ -768,17 +768,17 @@ float _fminf_special(float x, float y)
 	{
 		if((yu.u32 & ~SIGNBIT_SP32) >  EXPBITS_SP32)
 #ifdef WINDOWS
-			return _amd_handle_errorf("fminf", _FpCodeFmin, yu.u32 | QNAN_MASK_32, _DOMAIN, 0, EDOM, x, y, 2);
+			return __amd_handle_errorf("fminf", __amd_fmin, yu.u32 | QNAN_MASK_32, _DOMAIN, 0, EDOM, x, y, 2);
 #else
-			return _amd_handle_errorf("fminf", _FpCodeFmin, yu.u32 | QNAN_MASK_32, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
-#endif		
+			return __amd_handle_errorf("fminf", __amd_fmin, yu.u32 | QNAN_MASK_32, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
+#endif
 		else
-			return _amd_handle_errorf("fminf", _FpCodeFmin, yu.u32, _DOMAIN, 0, EDOM, x, y, 2);
+			return __amd_handle_errorf("fminf", __amd_fmin, yu.u32, _DOMAIN, 0, EDOM, x, y, 2);
 	}
-	return _amd_handle_errorf("fminf", _FpCodeFmin, xu.u32, _DOMAIN, 0, EDOM, x, y, 2);
+	return __amd_handle_errorf("fminf", __amd_fmin, xu.u32, _DOMAIN, 0, EDOM, x, y, 2);
 
 
-	
+
 }
 
 
@@ -800,7 +800,7 @@ float _remainderf_special(float x, float y,U32 errorCode)
         {
 			UT32 Y;
 			Y.f32 = y;
-          return _amd_handle_errorf("remainderf", _FpCodeRemainder, Y.u32,  _DOMAIN, AMD_F_INVALID,EDOM, x, 0.0, 1);
+          return __amd_handle_errorf("remainderf", __amd_remainder, Y.u32,  _DOMAIN, AMD_F_INVALID,EDOM, x, 0.0, 1);
         }
         break;
     case REMAINDER_X_NAN:
@@ -808,10 +808,10 @@ float _remainderf_special(float x, float y,U32 errorCode)
 #ifdef WINDOWS
 			UT32 Y;
 			Y.f32 = y;
-          _amd_handle_errorf("remainderf", _FpCodeRemainder, Y.u32,  _DOMAIN, AMD_F_INVALID,EDOM, x, 0.0, 1);
-#else    
+          __amd_handle_errorf("remainderf", __amd_remainder, Y.u32,  _DOMAIN, AMD_F_INVALID,EDOM, x, 0.0, 1);
+#else
             return x+x;
-#endif  
+#endif
          }
         break;
     }
@@ -833,7 +833,7 @@ double _remainder_special(double x, double y,U32 errorCode)
         {
 			UT64 Y;
 			Y.f64 = y;
-          _amd_handle_error("remainder", _FpCodeRemainder, Y.u64,  _DOMAIN, AMD_F_INVALID,EDOM, x, 0.0, 1);
+          __amd_handle_error("remainder", __amd_remainder, Y.u64,  _DOMAIN, AMD_F_INVALID,EDOM, x, 0.0, 1);
         }
         break;
     case REMAINDER_X_NAN:
@@ -841,10 +841,10 @@ double _remainder_special(double x, double y,U32 errorCode)
 #ifdef WINDOWS
 			UT64 Y;
 			Y.f64 = y;
-          _amd_handle_error("remainder", _FpCodeRemainder, Y.u64,  _DOMAIN, AMD_F_INVALID,EDOM, x, 0.0, 1);
-#else    
+          __amd_handle_error("remainder", __amd_remainder, Y.u64,  _DOMAIN, AMD_F_INVALID,EDOM, x, 0.0, 1);
+#else
             return x+x;
-#endif  
+#endif
          }
         break;
     }
@@ -865,7 +865,7 @@ double _fmod_special(double x, double y,U32 errorCode)
         {
 			UT64 Y;
 			Y.f64 = y;
-          _amd_handle_error("fmod", _FpCodeFmod, Y.u64,  _DOMAIN, AMD_F_INVALID,EDOM, x, 0.0, 1);
+          __amd_handle_error("fmod", __amd_fmod, Y.u64,  _DOMAIN, AMD_F_INVALID,EDOM, x, 0.0, 1);
         }
         break;
     case REMAINDER_X_NAN:
@@ -873,10 +873,10 @@ double _fmod_special(double x, double y,U32 errorCode)
 #ifdef WINDOWS
 			UT64 Y;
 			Y.f64 = y;
-         _amd_handle_error("fmod", _FpCodeFmod, Y.u64,  _DOMAIN, AMD_F_INVALID,EDOM, x, 0.0, 1);
-#else    
+         __amd_handle_error("fmod", __amd_fmod, Y.u64,  _DOMAIN, AMD_F_INVALID,EDOM, x, 0.0, 1);
+#else
             return x+x;
-#endif            
+#endif
         }
         break;
 
@@ -899,19 +899,19 @@ float _fmodf_special(float x, float y,U32 errorCode)
         {
 			UT32 Y;
 			Y.f32 = y;
-          _amd_handle_errorf("fmodf", _FpCodeFmod, Y.u32,  _DOMAIN, AMD_F_INVALID,EDOM, x, 0.0, 1);
+          __amd_handle_errorf("fmodf", __amd_fmod, Y.u32,  _DOMAIN, AMD_F_INVALID,EDOM, x, 0.0, 1);
         }
         break;
- 
+
         case REMAINDER_X_NAN:
         {
 #ifdef WINDOWS
 			UT32 Y;
 			Y.f32 = y;
-         _amd_handle_errorf("fmodf", _FpCodeFmod, Y.u32,  _DOMAIN, AMD_F_INVALID,EDOM, x, 0.0, 1);
-#else    
+         __amd_handle_errorf("fmodf", __amd_fmod, Y.u32,  _DOMAIN, AMD_F_INVALID,EDOM, x, 0.0, 1);
+#else
             return x+x;
-#endif            
+#endif
         }
         break;
 
@@ -941,7 +941,7 @@ double _pow_special(double x, double y, double z, U32 code)
         {
 			UT64 zu;
 			zu.f64 = z;
-			_amd_handle_error("pow", _FpCodePow, zu.u64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+			__amd_handle_error("pow", __amd_pow, zu.u64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
         }
         break;
 
@@ -949,7 +949,7 @@ double _pow_special(double x, double y, double z, U32 code)
         {
 			UT64 zu;
 			zu.f64 = z;
-			_amd_handle_error("pow", _FpCodePow, zu.u64, _SING,AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
+			__amd_handle_error("pow", __amd_pow, zu.u64, _SING,AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
         }
         break;
 
@@ -959,7 +959,7 @@ double _pow_special(double x, double y, double z, U32 code)
         {
 			UT64 zu;
 			zu.f64 = z;
-			_amd_handle_error("pow", _FpCodePow, zu.u64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+			__amd_handle_error("pow", __amd_pow, zu.u64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
         }
         break;
 
@@ -967,7 +967,7 @@ double _pow_special(double x, double y, double z, U32 code)
         {
 			UT64 zu;
 			zu.f64 = z;
-			_amd_handle_error("pow", _FpCodePow, zu.u64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+			__amd_handle_error("pow", __amd_pow, zu.u64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
         }
         break;
 
@@ -976,7 +976,7 @@ double _pow_special(double x, double y, double z, U32 code)
         {
 			UT64 zu;
 			zu.f64 = z;
-			_amd_handle_error("pow", _FpCodePow, zu.u64, _UNDERFLOW,AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
+			__amd_handle_error("pow", __amd_pow, zu.u64, _UNDERFLOW,AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
         }
         break;
 
@@ -984,7 +984,7 @@ double _pow_special(double x, double y, double z, U32 code)
         {
 			UT64 zu;
 			zu.f64 = z;
-			_amd_handle_error("pow", _FpCodePow, zu.u64, _OVERFLOW,AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
+			__amd_handle_error("pow", __amd_pow, zu.u64, _OVERFLOW,AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
         }
         break;
     }
@@ -1002,7 +1002,7 @@ float _powf_special(float x, float y, float z, U32 code)
         {
             UT32 zu;
 			zu.f32 = z;
-			_amd_handle_errorf("powf", _FpCodePow, zu.u32, 0,AMD_F_INVALID, 0, x, 0.0, 1);
+			__amd_handle_errorf("powf", __amd_pow, zu.u32, 0,AMD_F_INVALID, 0, x, 0.0, 1);
         }
         break;
 
@@ -1010,7 +1010,7 @@ float _powf_special(float x, float y, float z, U32 code)
         {
             UT32 zu;
 			zu.f32 = z;
-			_amd_handle_errorf("powf", _FpCodePow, zu.u32, _SING,AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
+			__amd_handle_errorf("powf", __amd_pow, zu.u32, _SING,AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
         }
         break;
 
@@ -1020,7 +1020,7 @@ float _powf_special(float x, float y, float z, U32 code)
         {
            UT32 zu;
 			zu.f32 = z;
-			_amd_handle_errorf("powf", _FpCodePow, zu.u32, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+			__amd_handle_errorf("powf", __amd_pow, zu.u32, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
         }
         break;
 
@@ -1028,7 +1028,7 @@ float _powf_special(float x, float y, float z, U32 code)
         {
             UT32 zu;
 			zu.f32 = z;
-			_amd_handle_errorf("powf", _FpCodePow, zu.u32, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
+			__amd_handle_errorf("powf", __amd_pow, zu.u32, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0, 1);
         }
         break;
 
@@ -1036,7 +1036,7 @@ float _powf_special(float x, float y, float z, U32 code)
         {
             UT32 zu;
 			zu.f32 = z;
-			_amd_handle_errorf("powf", _FpCodePow, zu.u32, _UNDERFLOW,AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
+			__amd_handle_errorf("powf", __amd_pow, zu.u32, _UNDERFLOW,AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
         }
         break;
 
@@ -1044,7 +1044,7 @@ float _powf_special(float x, float y, float z, U32 code)
         {
             UT32 zu;
 			zu.f32 = z;
-			_amd_handle_errorf("powf", _FpCodePow, zu.u32, _OVERFLOW,AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
+			__amd_handle_errorf("powf", __amd_pow, zu.u32, _OVERFLOW,AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, 0.0, 1);
 
         }
         break;

@@ -17,8 +17,8 @@ double FN_PROTOTYPE(frexp)(double value, int *exp)
     
     if(val.u64 > 0x7ff0000000000000)
     {
-#ifdef WINDOWS              
-         return _amd_handle_error("frexp", _FpCodeFrexp, val.u64|QNANBITPATT_DP64, DOMAIN, AMD_F_NONE, EDOM,value, 0.0, 1);
+#ifdef WINDOWS
+         return __amd_handle_error("frexp", __amd_frexp, val.u64|QNANBITPATT_DP64, DOMAIN, AMD_F_NONE, EDOM,value, 0.0, 1);
 #else
          return value+value;
 #endif

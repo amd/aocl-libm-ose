@@ -104,12 +104,12 @@ double FN_PROTOTYPE_BAS64(tan)(double x)
 	      if (ax == 0x0000000000000000) return x; 
               else 
 #ifdef WINDOWS
-		      return x;//val_with_flags(x, AMD_F_INEXACT); 
+		      return x;//val_with_flags(x, AMD_F_INEXACT);
 #else
-	return  _amd_handle_error("tan", _FpCodeTan, ux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, ERANGE, x, 0.0, 1); 
+	return  __amd_handle_error("tan", __amd_tan, ux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, ERANGE, x, 0.0, 1);
 #endif
-	    } 
-          else 
+	    }
+          else
             { 
 #ifdef WINDOWS 
               /* Using a temporary variable prevents 64-bit VC++ from 
@@ -133,24 +133,24 @@ double FN_PROTOTYPE_BAS64(tan)(double x)
     { 
       /* x is either NaN or infinity */ 
       if (ux & MANTBITS_DP64) 
-	  { 
-        /* x is NaN */ 
+	  {
+        /* x is NaN */
 #ifdef WINDOWS
-	return  _amd_handle_error("tan", _FpCodeTan, ux | QNAN_MASK_64, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1); 
+	return  __amd_handle_error("tan", __amd_tan, ux | QNAN_MASK_64, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 #else
 	if (ux & QNAN_MASK_64)
-	return  _amd_handle_error("tan", _FpCodeTan, ux | QNAN_MASK_64, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1); 
+	return  __amd_handle_error("tan", __amd_tan, ux | QNAN_MASK_64, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 	else
-	return  _amd_handle_error("tan", _FpCodeTan, ux | QNAN_MASK_64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1); 
+	return  __amd_handle_error("tan", __amd_tan, ux | QNAN_MASK_64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
 #endif
-	  } 
-	else 
-	  { 
-        /* x is infinity. Return a NaN */ 
-	return  _amd_handle_error("tan", _FpCodeTan, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);         
-	  } 
-    } 
-  xneg = (ax != ux); 
+	  }
+	else
+	  {
+        /* x is infinity. Return a NaN */
+	return  __amd_handle_error("tan", __amd_tan, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+	  }
+    }
+  xneg = (ax != ux);
  
  
   if (xneg) 

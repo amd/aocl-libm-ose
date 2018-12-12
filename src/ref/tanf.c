@@ -46,18 +46,18 @@ float FN_PROTOTYPE_BAS64(tanf)(float x)
         {
           /* x is NaN */
 #ifdef WINDOWS
-	return  _amd_handle_errorf("tanf", _FpCodeTan, fux | QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F, 1);
+	return  __amd_handle_errorf("tanf", __amd_tan, fux | QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F, 1);
 #else
 	if (fux & QNAN_MASK_32)
-	return  _amd_handle_errorf("tanf", _FpCodeTan, fux | QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F, 1);
+	return  __amd_handle_errorf("tanf", __amd_tan, fux | QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F, 1);
 	else
-	return  _amd_handle_errorf("tanf", _FpCodeTan, fux | QNAN_MASK_32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
+	return  __amd_handle_errorf("tanf", __amd_tan, fux | QNAN_MASK_32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
 #endif
         }
       else
         {
           /* x is infinity. Return a NaN */
-	 return  _amd_handle_errorf("tanf", _FpCodeTan, INDEFBITPATT_SP32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
+	 return  __amd_handle_errorf("tanf", __amd_tan, INDEFBITPATT_SP32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
         }
     }
 
@@ -76,7 +76,7 @@ float FN_PROTOTYPE_BAS64(tanf)(float x)
 #ifdef WINDOWS
                 return x; //valf_with_flags(x, AMD_F_INEXACT);
 #else
-	return  _amd_handle_errorf("tanf", _FpCodeTan, fux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, ERANGE, x, 0.0F, 1);
+	return  __amd_handle_errorf("tanf", __amd_tan, fux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, ERANGE, x, 0.0F, 1);
 #endif
             }
           else

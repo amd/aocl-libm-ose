@@ -20,11 +20,11 @@ double FN_PROTOTYPE(sqrt)(double x)
 
   if (ax > 0x7ff0000000000000)     /* x is NaN */
      #ifdef WINDOWS
-           return _amd_handle_error("sqrt", _FpCodeSquareRoot, ux|0x0008000000000000, _DOMAIN, 0, EDOM, x, 0.0, 1);
+           return __amd_handle_error("sqrt", __amd_squareroot, ux|0x0008000000000000, _DOMAIN, 0, EDOM, x, 0.0, 1);
      #else
         {
         if(!(ax & 0x0008000000000000))// x is snan
-           return _amd_handle_error("sqrt", _FpCodeSquareRoot, ux|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+           return __amd_handle_error("sqrt", __amd_squareroot, ux|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
         else // x is qnan
            return x;
 	    }
@@ -34,7 +34,7 @@ double FN_PROTOTYPE(sqrt)(double x)
   {
        if(ax == 0x0) /* x == -0*/
 	      return -0.0;
-       return _amd_handle_error("sqrt", _FpCodeSquareRoot, 0xfff8000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+       return __amd_handle_error("sqrt", __amd_squareroot, 0xfff8000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
   }
     /*Load x into an XMM register*/
     X128 = _mm_load_sd(&x);

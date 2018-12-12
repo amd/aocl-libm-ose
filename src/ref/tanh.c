@@ -36,20 +36,20 @@ double FN_PROTOTYPE(tanh)(double x)
         }
         else
         {
-#ifdef WINDOWS            
+#ifdef WINDOWS
             return x;
 #else
-            return _amd_handle_error("tanh", _FpCodeTanh, ux, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
-#endif   
+            return __amd_handle_error("tanh", __amd_tanh, ux, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
+#endif
         }
     }
   else if  (aux > 0x7ff0000000000000) /* |x| is NaN */
     {
-#ifdef WINDOWS            
-        return _amd_handle_error("tanh", _FpCodeTanh, ux|QNANBITPATT_DP64, DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+#ifdef WINDOWS
+        return __amd_handle_error("tanh", __amd_tanh, ux|QNANBITPATT_DP64, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 #else
         return x+x;
-#endif        
+#endif
     }
 
   xneg = (aux != ux);

@@ -19,7 +19,7 @@ long long int FN_PROTOTYPE(llround)(double d)
     {
         /*the number is infinity*/
         //Got to raise range or domain error
-		_amd_handle_error("llround", _FpCodeLlround, u64d.u64, DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
+		__amd_handle_error("llround", __amd_lround, u64d.u64, _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
 		return SIGNBIT_DP64; /*GCC returns this when the number is out of range*/
     }
 
@@ -37,7 +37,7 @@ long long int FN_PROTOTYPE(llround)(double d)
     {
         /*Based on the sign of the input value return the MAX and MIN*/
         result = 0x8000000000000000; /*Return LONG MIN*/
-		_amd_handle_error("llround", _FpCodeLlround, result, DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
+		__amd_handle_error("llround", __amd_lround, result, _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
         return result;
     }
 

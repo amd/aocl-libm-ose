@@ -16,7 +16,7 @@ long int FN_PROTOTYPE(lrintf)(float x)
     {
         /* number cant be rounded raise an exception */
         /* Number exceeds the representable range could be nan or inf also*/
-			 _amd_handle_errorf("lrintf",_FpCodeLrint, (long long int) x, _DOMAIN,
+			 __amd_handle_errorf("lrintf",__amd_lrint, (long long int) x, _DOMAIN,
 							0, EDOM, x, 0.0,1);
 			 return (long int) x;
     }

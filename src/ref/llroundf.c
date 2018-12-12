@@ -19,7 +19,7 @@ long long int FN_PROTOTYPE(llroundf)(float f)
         /*else the number is infinity*/
 		//Got to raise range or domain error
         {
-			_amd_handle_errorf("llroundf", _FpCodeLlround, SIGNBIT_SP32, DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
+			__amd_handle_errorf("llroundf", __amd_lround, SIGNBIT_SP32, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
 			return SIGNBIT_DP64; /*GCC returns this when the number is out of range*/
         }
 
@@ -40,7 +40,7 @@ long long int FN_PROTOTYPE(llroundf)(float f)
     if (intexp >= 63)
     {
         result = 0x8000000000000000;
-		_amd_handle_errorf("llroundf", _FpCodeLlround, SIGNBIT_SP32, DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
+		__amd_handle_errorf("llroundf", __amd_lround, SIGNBIT_SP32, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
         return result;
     }
 

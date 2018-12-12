@@ -28,12 +28,12 @@ float FN_PROTOTYPE(ceilf)(float x)
       if (ax > 0x7f800000)
         /* x is NaN */
             #ifdef WINDOWS
-                return _amd_handle_errorf("ceilf", _FpCodeCeil, ux|0x00400000, _DOMAIN, 0, EDOM, x, 0.0, 1);
+                return __amd_handle_errorf("ceilf", __amd_ceil, ux|0x00400000, _DOMAIN, 0, EDOM, x, 0.0, 1);
             #else
                 if(!(ax & 0x00400000)) //x is snan
-                    return _amd_handle_errorf("ceilf", _FpCodeCeil, ux|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
-            	else
-            		return x;
+                    return __amd_handle_errorf("ceilf", __amd_ceil, ux|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+		else
+			return x;
             #endif
 
       else

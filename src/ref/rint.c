@@ -19,23 +19,23 @@ double FN_PROTOTYPE(rint)(double x)
 	{
         if((checkbits.u64 & MANTBITS_DP64) == 0x0)
         {
-            // x is Inf	
+            // x is Inf
 #ifdef WINDOWS
-            return  _amd_handle_error("rint", _FpCodeRint, checkbits.u64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+            return  __amd_handle_error("rint", __amd_rint, checkbits.u64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
 #else
-            return  _amd_handle_error("rint", _FpCodeRint, checkbits.u64, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+            return  __amd_handle_error("rint", __amd_rint, checkbits.u64, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 #endif
 		}
 		else {
 			// x is NaN
 			// QNAN_MASK_32
 #ifdef WINDOWS
-		return  _amd_handle_error("rint", _FpCodeRint, checkbits.u64 | QNAN_MASK_64, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+		return  __amd_handle_error("rint", __amd_rint, checkbits.u64 | QNAN_MASK_64, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 #else
 		if (checkbits.u64 & QNAN_MASK_64)
-		return  _amd_handle_error("rint", _FpCodeRint, checkbits.u64 | QNAN_MASK_64, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+		return  __amd_handle_error("rint", __amd_rint, checkbits.u64 | QNAN_MASK_64, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 		else
-		return  _amd_handle_error("rint", _FpCodeRint, checkbits.u64 | QNAN_MASK_64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+		return  __amd_handle_error("rint", __amd_rint, checkbits.u64 | QNAN_MASK_64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
 #endif
 		}
 	}

@@ -23,7 +23,7 @@ float FN_PROTOTYPE(atanf)(float fx)
         {
           /* x is NaN */
 #ifdef WINDOWS
-		return  _amd_handle_errorf("atanf", _FpCodeAtan, fux|0x00400000, _DOMAIN,0, EDOM, fx, 0.0, 1);
+		return  __amd_handle_errorf("atanf", __amd_atan, fux|0x00400000, _DOMAIN,0, EDOM, fx, 0.0, 1);
 #else
           return fx + fx; /* Raise invalid if it's a signalling NaN */
 #endif
@@ -53,7 +53,7 @@ float FN_PROTOTYPE(atanf)(float fx)
 #ifdef WINDOWS
         return fx ; //valf_with_flags(fx, AMD_F_INEXACT);
 #else
-	return  _amd_handle_errorf("atanf", _FpCodeAtan, fux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, ERANGE, fx, 0.0, 1);
+	return  __amd_handle_errorf("atanf", __amd_atan, fux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, ERANGE, fx, 0.0, 1);
 
 #endif
     }

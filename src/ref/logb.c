@@ -11,7 +11,7 @@ double FN_PROTOTYPE(logb)(double x)
   u = ((ux & EXPBITS_DP64) >> EXPSHIFTBITS_DP64) - EXPBIAS_DP64;
   if ((ux & ~SIGNBIT_DP64) == 0)
     /* x is +/-zero. Return -infinity with div-by-zero flag. */
-	return _amd_handle_error("logb", _FpCodeLogb, NINFBITPATT_DP64, _SING, AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
+	return __amd_handle_error("logb", __amd_logb, NINFBITPATT_DP64, _SING, AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
   else if (EMIN_DP64 <= u && u <= EMAX_DP64)
     /* x is a normal number */
     return (double)u;
@@ -31,10 +31,10 @@ double FN_PROTOTYPE(logb)(double x)
       else
         /* x is NaN, result is NaN */
 #ifdef WINDOWS
-          return _amd_handle_error("logb", _FpCodeLogb, ux|0x0008000000000000, DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+          return __amd_handle_error("logb", __amd_logb, ux|0x0008000000000000, DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 #else
           return x+x;
-#endif      
+#endif
     }
   else
     {

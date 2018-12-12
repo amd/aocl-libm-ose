@@ -15,10 +15,10 @@ float FN_PROTOTYPE(frexpf)(float value, int *exp)
     if((val.u32 == 0x00000000) || (val.u32 == 0x7f800000)) 
         return value; /* value= +-0 or value= nan or value = +-inf return value */
 
-    if(val.u32 > 0x7f800000) 
+    if(val.u32 > 0x7f800000)
      {
-#ifdef WINDOWS              
-         return _amd_handle_errorf("frexpf", _FpCodeFrexp, val.u32|QNANBITPATT_DP64, DOMAIN, AMD_F_NONE, EDOM, value, 0.0, 1);
+#ifdef WINDOWS
+         return __amd_handle_errorf("frexpf", __amd_frexp, val.u32|QNANBITPATT_DP64, DOMAIN, AMD_F_NONE, EDOM, value, 0.0, 1);
 #else
          return value+value;
 #endif

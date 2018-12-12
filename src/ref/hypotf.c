@@ -41,19 +41,19 @@ float FN_PROTOTYPE(hypotf)(float x, float y)
 			  if(x_is_nan)
 			      {
 			        #ifdef WINDOWS
-					  return  val.f32 ;// _amd_handle_errorf("hypotf", _FpCodeHypot, val.u32, _DOMAIN, 0, EDOM, x, y, 2);
+					  return  val.f32 ;// __amd_handle_errorf("hypotf", __amd_hypot, val.u32, _DOMAIN, 0, EDOM, x, y, 2);
 			        #else
 			              if(!(avx & 0x00400000)) //x is snan
-			                  return _amd_handle_errorf("hypotf", _FpCodeHypot, val.u32, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
+			                  return __amd_handle_errorf("hypotf", __amd_hypot, val.u32, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
 			        #endif
 			   }
 			   if(y_is_nan)
 			   {
 			        #ifdef WINDOWS
-				   return val.f32 ; //_amd_handle_errorf("hypotf", _FpCodeHypot, val.u32, _DOMAIN, 0, EDOM, x, y, 2);
+				   return val.f32 ; //__amd_handle_errorf("hypotf", __amd_hypot, val.u32, _DOMAIN, 0, EDOM, x, y, 2);
 			        #else
 			              if(!(avy & 0x00400000)) //y is snan
-			                  return _amd_handle_errorf("hypotf", _FpCodeHypot, val.u32, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
+			                  return __amd_handle_errorf("hypotf", __amd_hypot, val.u32, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
 			        #endif
 			   }
 			  return val.f32;
@@ -67,22 +67,22 @@ float FN_PROTOTYPE(hypotf)(float x, float y)
            {
              val.f32 = x;
              #ifdef WINDOWS
-                   return _amd_handle_errorf("hypotf", _FpCodeHypot, val.u32|0x00400000, _DOMAIN, 0, EDOM, x, y, 2);
+                   return __amd_handle_errorf("hypotf", __amd_hypot, val.u32|0x00400000, _DOMAIN, 0, EDOM, x, y, 2);
              #else
                    if(!(avx & 0x00400000)) //x is snan
-                       return _amd_handle_errorf("hypotf", _FpCodeHypot, val.u32|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
+                       return __amd_handle_errorf("hypotf", __amd_hypot, val.u32|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
              #endif
 		   }
         if(y_is_nan)
 		   {
 			 val.f32 = y;
              #ifdef WINDOWS
-                   return _amd_handle_errorf("hypotf", _FpCodeHypot, val.u32|0x00400000, _DOMAIN, 0, EDOM, x, y, 2);
+                   return __amd_handle_errorf("hypotf", __amd_hypot, val.u32|0x00400000, _DOMAIN, 0, EDOM, x, y, 2);
              #else
                    if(!(avy & 0x00400000)) //y is snan
-                       return _amd_handle_errorf("hypotf", _FpCodeHypot, val.u32|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
+                       return __amd_handle_errorf("hypotf", __amd_hypot, val.u32|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
              #endif
-		   }        
+		   }
 	  }
     }
     large = 3.40282346638528859812e+38; /* 0x47efffffe0000000 */
@@ -108,7 +108,7 @@ float FN_PROTOTYPE(hypotf)(float x, float y)
 #endif
 
     if (retval > large)
-         return _amd_handle_errorf("hypotf", _FpCodeHypot, PINFBITPATT_SP32, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, y, 2);
+         return __amd_handle_errorf("hypotf", __amd_hypot, PINFBITPATT_SP32, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, y, 2);
 	else if((x !=0.0) && (y!=0))
 		{
 		 val.f32 = (float)(retval);
@@ -116,7 +116,7 @@ float FN_PROTOTYPE(hypotf)(float x, float y)
 		 if(val.u32 == 0x0)
 		 {
 			 val.f32 = (float)retval;
-             return _amd_handle_errorf("hypotf", _FpCodeHypot, val.u32, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, y, 2);
+             return __amd_handle_errorf("hypotf", __amd_hypot, val.u32, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, y, 2);
 	     }
 		 else
 			 return (float)retval;

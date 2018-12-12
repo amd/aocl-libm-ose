@@ -14,11 +14,11 @@ float FN_PROTOTYPE(ldexpf)(float x, int n)
 
     if(val.u32 > 0x7f800000)/* x= nan */
         #ifdef WINDOWS
-        return _amd_handle_errorf("ldexpf", _FpCodeLdexp, val_x.u32|0x00400000, _DOMAIN, 0, EDOM, x, (float)n, 2);
+        return __amd_handle_errorf("ldexpf", __amd_ldexp, val_x.u32|0x00400000, _DOMAIN, 0, EDOM, x, (float)n, 2);
         #else
         {
           if(!(val.u32 & 0x00400000)) //x is snan
-              return _amd_handle_errorf("ldexpf", _FpCodeLdexp, val_x.u32|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, (float)n, 2);
+              return __amd_handle_errorf("ldexpf", __amd_ldexp, val_x.u32|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, (float)n, 2);
           else
               return x;
 		}
@@ -40,12 +40,12 @@ float FN_PROTOTYPE(ldexpf)(float x, int n)
 		if(exponent < -MULTIPLIER_SP)/*underflow*/
 		{
 			val.u32 = sign | 0x00000000;
-            return _amd_handle_errorf("ldexpf", _FpCodeLdexp, val.u32, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, (float)n, 2);
+            return __amd_handle_errorf("ldexpf", __amd_ldexp, val.u32, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, (float)n, 2);
 		}
 		if(exponent > 254)/*overflow*/
 		{
 			val.u32 = sign | 0x7f800000;
-            return _amd_handle_errorf("ldexpf", _FpCodeLdexp, val.u32, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, (float)n, 2);
+            return __amd_handle_errorf("ldexpf", __amd_ldexp, val.u32, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, (float)n, 2);
 		}
 
 		exponent += MULTIPLIER_SP;
@@ -59,7 +59,7 @@ float FN_PROTOTYPE(ldexpf)(float x, int n)
     if(exponent < -MULTIPLIER_SP)/*underflow*/
 	{
 		val.u32 = sign | 0x00000000;
-        return _amd_handle_errorf("ldexpf", _FpCodeLdexp, val.u32, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, (float)n, 2);
+        return __amd_handle_errorf("ldexpf", __amd_ldexp, val.u32, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, (float)n, 2);
 	}
 
     if(exponent < 1)/*x is normal but output is debnormal*/
@@ -73,7 +73,7 @@ float FN_PROTOTYPE(ldexpf)(float x, int n)
     if(exponent > 254)/*overflow*/
 	{
         val.u32 = sign | 0x7f800000;
-        return _amd_handle_errorf("ldexpf", _FpCodeLdexp, val.u32, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, (float)n, 2);
+        return __amd_handle_errorf("ldexpf", __amd_ldexp, val.u32, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, (float)n, 2);
 	}
 
     val.u32 = sign | (exponent << 23) | (val.u32 & 0x007fffff);/*x is normal and output is normal*/

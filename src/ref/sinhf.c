@@ -133,10 +133,10 @@ float FN_PROTOTYPE(sinhf)(float fx)
         }
         else
         {
-#ifdef WINDOWS            
+#ifdef WINDOWS
             return fx;
 #else
-            return _amd_handle_errorf("sinhf", _FpCodeSinh, ux, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, fx, 0.0, 1);
+            return __amd_handle_errorf("sinhf", __amd_sinh, ux, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, fx, 0.0, 1);
 #endif
         }
     }
@@ -146,8 +146,8 @@ float FN_PROTOTYPE(sinhf)(float fx)
     }
   else if (aux > 0x7f800000)
     {
-#ifdef WINDOWS 
-        return _amd_handle_errorf("sinhf", _FpCodeSinh, ux|QNANBITPATT_SP32, DOMAIN, AMD_F_NONE, EDOM, fx, 0.0, 1);
+#ifdef WINDOWS
+        return __amd_handle_errorf("sinhf", __amd_sinh, ux|QNANBITPATT_SP32, _DOMAIN, AMD_F_NONE, EDOM, fx, 0.0, 1);
 #else
         return fx+fx;
 #endif
@@ -162,9 +162,9 @@ float FN_PROTOTYPE(sinhf)(float fx)
     {
       /* Return infinity with overflow flag. */
       if (xneg)
-		  return _amd_handle_errorf("sinh", _FpCodeSinh, NINFBITPATT_SP32, _OVERFLOW, AMD_F_OVERFLOW, ERANGE, fx, 0.0, 1);
+		  return __amd_handle_errorf("sinh", __amd_sinh, NINFBITPATT_SP32, _OVERFLOW, AMD_F_OVERFLOW, ERANGE, fx, 0.0, 1);
       else
-		  return _amd_handle_errorf("sinh", _FpCodeSinh, PINFBITPATT_SP32, _OVERFLOW, AMD_F_OVERFLOW, ERANGE, fx, 0.0, 1);
+		  return __amd_handle_errorf("sinh", __amd_sinh, PINFBITPATT_SP32, _OVERFLOW, AMD_F_OVERFLOW, ERANGE, fx, 0.0, 1);
     }
   else if (y >= small_threshold)
     {

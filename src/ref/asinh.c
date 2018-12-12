@@ -35,12 +35,12 @@ double FN_PROTOTYPE(asinh)(double x)
         {
 #ifdef WINDOWS
           /* x is NaN */
-          return _amd_handle_error("asinh", _FpCodeAsinh,ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0,1);
+          return __amd_handle_error("asinh", __amd_asinh,ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0,1);
 #else
 	  if (ux & QNAN_MASK_64)
-          return _amd_handle_error("asinh", _FpCodeAsinh,ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0,1);
+          return __amd_handle_error("asinh", __amd_asinh,ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0,1);
 	  else
-          return _amd_handle_error("asinh", _FpCodeAsinh,ux|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0,1);
+          return __amd_handle_error("asinh", __amd_asinh,ux|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0,1);
 #endif
 	  }
       else
@@ -63,7 +63,7 @@ double FN_PROTOTYPE(asinh)(double x)
 #ifdef WINDOWS
 		 return x; //return val_with_flags(x,AMD_F_INEXACT);
 #else
-          return _amd_handle_error("asinh", _FpCodeAsinh,ux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, ERANGE, x, 0.0,1);
+          return __amd_handle_error("asinh", __amd_asinh,ux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, ERANGE, x, 0.0,1);
 #endif
         }
     }

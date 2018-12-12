@@ -30,7 +30,7 @@ float FN_PROTOTYPE_BAS64(fmaf)(float a, float b, float c)
         else
             result.f32 = spcl2?(c+c):(a * b + c);
         return result.f32;
-        //return _handle_error("fma", _FpCodeFma, result.u64, DOMAIN, AMD_F_INVALID, EDOM, aa, 0.0, 1);
+        //return _handle_error("fma", __amd_CodeFma, result.u64, DOMAIN, AMD_F_INVALID, EDOM, aa, 0.0, 1);
     }   
     
     if(((aa.u32 & 0x7fffffff) == 0) ||

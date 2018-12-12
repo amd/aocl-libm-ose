@@ -19,10 +19,10 @@ float FN_PROTOTYPE(floorf)(float x)
       {
         /* x is NaN */
         #ifdef WINDOWS
-               return _amd_handle_errorf("floorf", _FpCodeFloor, ux|0x00400000, _DOMAIN, 0, EDOM, x, 0.0, 1);
+               return __amd_handle_errorf("floorf", __amd_floor, ux|0x00400000, _DOMAIN, 0, EDOM, x, 0.0, 1);
         #else
                if(!(ax & 0x00400000)) //x is snan
-                     return _amd_handle_errorf("floorf", _FpCodeFloor, ux|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+                     return __amd_handle_errorf("floorf", __amd_floor, ux|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
                else // x is qnan or inf
                      return x;
         #endif

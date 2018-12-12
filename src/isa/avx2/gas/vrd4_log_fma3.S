@@ -33,6 +33,9 @@
    Then,
    log (1 + F2 / F1) = log (1 + U/2) - log (1 - U/2)
    The values of log(2) and log(F1) are precomputed and stored.
+
+   **IMPORTANT** - The following implementation does not handle values between e^(1/16) and e^(-1/16)
+                   as special cases. Maximum ULP error of 1.36 could be incurred with this implementation.
 */
 
 #include "fn_macros.h"
@@ -50,7 +53,7 @@
 #endif
 
 .text
-.align 16
+.align 32
 .p2align 4,,15
 .globl fname
 .type fname,@function
@@ -179,7 +182,7 @@ fname:
 
 .section .rodata
 
-.align 16
+.align 32
 
 .L__sign_bit_64:      .quad 0x8000000000000000
                       .quad 0x8000000000000000
@@ -251,7 +254,7 @@ fname:
 		      .quad 0x0000000000000040
 		      .quad 0x0000000000000040
 
-# Approximating polynomial coefficients for other x
+# Approximating polynomial coefficients
 .L__real_cb_3:       .quad 0x3f6249423bd94741 # 2.23219810758559851206e-03;
                      .quad 0x3f6249423bd94741
 		     .quad 0x3f6249423bd94741
@@ -272,7 +275,7 @@ fname:
                      .quad 0x3e6efa39ef35793c
 		     .quad 0x3e6efa39ef35793c
 		     .quad 0x3e6efa39ef35793c
-# Approximating polynomial coefficients for x near 0.0
+
 .L__real_qnan:       .quad 0x7ff8000000000000   # qNaN
                      .quad 0x7ff8000000000000
 		     .quad 0x7ff8000000000000

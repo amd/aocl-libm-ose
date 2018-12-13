@@ -41,6 +41,13 @@ if ARGUMENTS.get('verbose') != "1":
 
 if ARGUMENTS.get('debug', 0):
 	env.Append(CCFLAGS = ' -g')
+#print(ARGUMENTS, COMMAND_LINE_TARGETS)
+
+if COMMAND_LINE_TARGETS:
+   targets = COMMAND_LINE_TARGETS
+else:
+   targets = DEFAULT_TARGETS
+#print(targets)
 
 # These objects are not the .obj files or .o files, instead
 # class objects or build objectw
@@ -54,17 +61,12 @@ lib_objs = SConscript('src/SConscript',
 test_lib_objs = []  			# Will fill at a later date
 
 test_objs = SConscript( dirs='tests',
-			exports = { 'env' : env },
-			duplicate = 0,
-			src_dir    = 'tests',
-			variant_dir = join(builddir, 'tests'))
+		exports = { 'env' : env },
+		duplicate = 0,
+		src_dir    = 'tests',
+		variant_dir = join(builddir, 'tests'))
 
 objects += lib_objs + test_objs
-
-if COMMAND_LINE_TARGETS:
-   targets = COMMAND_LINE_TARGETS
-else:
-   targets = DEFAULT_TARGETS
 
 #Depends(test_objs, lib_objs)
 #Depends(objects, targets)

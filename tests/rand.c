@@ -99,7 +99,7 @@ int libm_test_populate_range_simple(void *data,
     float *f = (float*)data;
 
     libm_test_init_rand();
-    
+
     check_data_size(data, data_size);
 
     /* Variant has multiple bits set. */
@@ -125,15 +125,18 @@ int libm_test_populate_range_simple(void *data,
 
 static double __myrand(void)
 {
-        static unsigned long seed = 123456789;
-        const unsigned long a = 9301;
-        const unsigned long c = 49297;
-        const unsigned long m = 233280;
+    static unsigned long seed = 123456789;
+    const unsigned long a = 9301;
+    const unsigned long c = 49297;
+    const unsigned long m = 233280;
 
-        seed = (seed * a + c) % m;
-        return (double)seed / (double)m;
+    seed = (seed * a + c) % m;
+    return (double)seed / (double)m;
 }
 
+/*
+ * Generate uniformly distributed range in interval [a, b]
+ */
 static double logdist2(int i, int n, double a, double b, double logba)
 {
     double x, tx;
@@ -153,42 +156,31 @@ static double logdist2(int i, int n, double a, double b, double logba)
                the numbers are distributed in a similar fashion to
                the equivalent positive interval. Doesn't really
                make much difference */
-            if (tx == 0.0)
-                x = b;
-            else if (tx == 1.0)
-                x = a;
-            else
-                x = b * exp(-tx * logba);
+            if (tx == 0.0)      x = b;
+            else if (tx == 1.0) x = a;
+            else                x = b * exp(-tx * logba);
         } else {
-            if (tx == 0.0)
-                x = a;
-            else if (tx == 1.0)
-                x = b;
-            else
-                x = a * exp(tx * logba);
+            if (tx == 0.0)              x = a;
+            else if (tx == 1.0)         x = b;
+            else                        x = a * exp(tx * logba);
         }
     } else {
         /* x is uniformly distributed in [a,b] */
-        if (tx == 0.0)
-            x = a;
-        else if (tx == 1.0)
-            x = b;
-        else
-            x = a + tx * (b - a);
+        if (tx == 0.0)          x = a;
+        else if (tx == 1.0)     x = b;
+        else                    x = a + tx * (b - a);
     }
 
-    if (x < a)
-        x = a;
-    else if (x > b)
-        x = b;
+    if (x < a)          x = a;
+    else if (x > b)     x = b;
 
     return x;
 
 }
 
-int libm_test_populate_range_uniform(void *data,
-                                     size_t nelem, uint32_t variant,
-                                     double min, double max)
+static int __populate_range(void *data,
+			    size_t nelem, uint32_t variant,
+			    double min, double max, bool uniform)
 {
     int data_size = libm_test_get_data_size(variant);
     double logba;
@@ -197,13 +189,19 @@ int libm_test_populate_range_uniform(void *data,
 
     check_data_size(data, data_size);
 
-    if (min != 0.0 && max != 0.0 && ((min < 0.0) == (min < 0.0)))
+    if (uniform &&
+        min != 0.0 && max != 0.0 && ((min < 0.0) == (min < 0.0)))
         logba = log(max/min);
     else
         logba = 0.0;
 
     for (uint32_t i = 0; i < nelem; i++) {
-        double val = logdist2(i, nelem, min, max, logba);
+        double val = 0.0;
+        if (uniform)
+            val = logdist2(i, nelem, min, max, logba);
+        else
+            val = (min * (nelem - i) + max * i) / nelem;
+
         switch(data_size) {
         case 4:
             *f++ = (float)val;
@@ -215,4 +213,21 @@ int libm_test_populate_range_uniform(void *data,
     }
 
     return 0;
+}
+
+int libm_test_populate_range_uniform(void *data,
+                                     size_t nelem, uint32_t variant,
+                                     double min, double max)
+{
+
+    return __populate_range(data, nelem, variant, min, max, 1);
+}
+
+
+int libm_test_populate_range_linear(void *data,
+                                    size_t nelem, uint32_t variant,
+                                    double min, double max)
+{
+    return __populate_range(data, nelem, variant, min, max, 0);
+
 }

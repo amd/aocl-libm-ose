@@ -90,6 +90,7 @@ static int check_data_size(void *data, int size)
 
     return 0;
 }
+
 int libm_test_populate_range_simple(void *data,
                                     size_t nelem, uint32_t variant,
                                     double min, double max)
@@ -180,7 +181,7 @@ static double logdist2(int i, int n, double a, double b, double logba)
 
 static int __populate_range(void *data,
 			    size_t nelem, uint32_t variant,
-			    double min, double max, bool uniform)
+			    double min, double max, int uniform)
 {
     int data_size = libm_test_get_data_size(variant);
     double logba;

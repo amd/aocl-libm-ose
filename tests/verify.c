@@ -10,8 +10,8 @@
  * returns -1 if success,
  * returns offset in array where the mismatch occurs
  */
-int libm_test_verify_dbl(struct libm_test *test,
-                         struct libm_test_result *result)
+static int __verify_double(struct libm_test *test,
+                           struct libm_test_result *result)
 {
 
     struct libm_test_data *data = test->test_data;
@@ -57,11 +57,22 @@ int libm_test_verify_dbl(struct libm_test *test,
     return idx;
 }
 
-int libm_test_verify_flt(struct libm_test *test,
-				struct libm_test_data *data,
-				struct libm_test_result *result)
+static int __verify_float(struct libm_test *test,
+                          struct libm_test_result *result)
 {
     return 0;
 }
 
+int libm_test_verify(struct libm_test *test,
+		     struct libm_test_result *result)
+{
+    int data_size = libm_test_get_data_size(test->variant);
+    switch(data_size) {
+    case sizeof(float):
+        return __verify_float(test, result);
+    case sizeof(double):
+        return __verify_double(test, result);
+    }
 
+    return 0;
+}

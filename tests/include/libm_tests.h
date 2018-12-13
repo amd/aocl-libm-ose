@@ -173,12 +173,8 @@ int libm_test_register(struct libm_test *test);
  * returns -1 if success,
  * returns offset in array where the mismatch occurs
  */
-int libm_test_verify_dbl(struct libm_test *test,
-                                struct libm_test_result *result);
-
-int libm_test_verify_flt(struct libm_test *test,
-				struct libm_test_data *data,
-				struct libm_test_result *result);
+int libm_test_verify(struct libm_test *test,
+		     struct libm_test_result *result);
 
 int libm_test_populate_range_simple(void *data,
                                     size_t nelem, uint32_t variant,

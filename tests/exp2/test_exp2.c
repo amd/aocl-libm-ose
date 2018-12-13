@@ -121,7 +121,7 @@ int libm_test_exp2_verify(struct libm_test *test, struct libm_test_result *resul
         data->expected[j] = exp2(data->input1[j]);
     }
 
-    return libm_test_verify_dbl(test, result);
+    return libm_test_verify(test, result);
 }
 
 /* There is no exp2q in recent versions of gcc */

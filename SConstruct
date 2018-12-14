@@ -14,11 +14,17 @@ builddir	= '#build'
 projroot	= projpath.PROJROOT
 
 Help("""
-	Type:
-	        scons .         build and test everything
-	        scons test      build the software
-	        scons src       run the tests
-	        scons web       build the web pages
+	Syntax: 
+		$ scons <option> <target>
+	Targets:
+	        scons .			build and test everything
+	        scons test		build the tests
+	        scons runtest <test>	run the tests
+	        scons web		build the web pages
+
+        Options:
+		debug=1			build libraries with Debug support
+		verbose=1		Increase verbosity
 	""")
 
 print("BULDING in: ", builddir)

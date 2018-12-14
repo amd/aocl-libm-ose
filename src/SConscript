@@ -18,14 +18,15 @@ e.Append(
 	)
 
 # The set of source files associated with this SConscript file.
-source = 				\
+source = ['init.c', 'libm_special.c', 'conv.c', 'cpuid.c']  + \
+ 					\
 	Glob('isa/avx/gas/*.[cS]')    + \
 	Glob('isa/avx2/gas/*.[cS]')   + \
-	Glob('isa/bas64/gas/*.[cS]')  + \
+	Glob('isa/fma4/gas/*.[cS]')   + \
 	Glob('ref/*.[c]')             + \
-	Glob('ref/gas/*.[S]')         + \
+	Glob('isa/avx512/gas/*.[cS]') + \
 	Glob('isa/fma3/gas/*.[S]')
-#	Glob('isa/avx512/gas/*.[cS]') +\
+	
 #	Glob('ref/gas/*.[S]', exclude=['ref/gas/map.S'])
 
 #print('lib sources' , source)

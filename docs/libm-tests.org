@@ -1,0 +1,65 @@
+* Test Suite for libm
+** Introduction
+An effort to unify all the tests for the libm functions
+
+** Features
+Each function should be able to allow.
+ - Test for a given input
+ - Test within range and increment.
+ - Speacial case tests
+ - Table tests
+ - Test for variants, scalar, vector single prec (2,4,8), vector double prec (4, 8)
+ - Performance tests (measured in MOPS, million operations per second)
+
+** Implementation
+Stage 0: <complete>
+ - Build infra using 'scons'
+ - Source re-org (minimal)
+ - initial test framework
+ - test templates
+ - exp2() test cases
+ - report generation
+
+Stage 1:
+Only following functions will be implemented.
+ 1. exp2
+ 2. exp 
+ 3. log
+ 4. pow
+
+** Templates
+
+Test framework starts by calling just one function, each 
+
+#+BEGIN_SRC  c
+libm_test_init(struct libm_test_conf *conf)
+{
+}
+#+END_SRC
+
+Based on ```conf->test_types``` and ```test->variant``` the test will register
+each test using
+
+#+BEGIN_SRC c
+libm_test_register(struct libm_test *)
+#+END_SRC
+
+Test should only try to register the tests user requested, however framework
+will also try not to register the tests that are not requested by the user.
+
+Framework expects following functions for each test.
+
+setup(), run() ulp() and veryify()
+
+#+BEGIN_SRC c
+/* vector single precision */
+struct libm_test exp2_test_template = {
+    .name       = "exp2_vec",
+    .nargs      = 1,
+    .ops        = {
+        .ulp    = libm_test_exp2_ulp,
+        .verify = libm_test_exp2_verify,
+    },
+};
+#+END_SRC
+

@@ -149,11 +149,16 @@ struct libm_test {
     struct list_head         list;
 };
 
+enum libm_test_range_type {
+      LIBM_INPUT_RANGE_SIMPLE,
+      LIBM_INPUT_RANGE_RANDOM,
+      LIBM_INPUT_RANGE_LINEAR,
+};
 
 struct libm_test_input_range {
     long double     start;
     long double     stop;
-    long double     inc;
+    enum libm_test_range_type type;
 };
 
 struct libm_test_conf {

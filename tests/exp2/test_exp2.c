@@ -39,7 +39,7 @@ void test_exp2_scalar(test_conf_t *conf, test_report_t *report,
     int sz = conf->sz;
 
     for (int j = 0; j < sz; ++j)
-        o[j] = exp2(ip1[j]);
+        o[j] = __amd_exp2((double)ip1[j] + (DBL_MAX / (double)j)) ;
 
     bench_timer_t bt;
     timer_start(&bt);
@@ -56,6 +56,8 @@ void test_exp2_scalar(test_conf_t *conf, test_report_t *report,
 }
 #endif
 
+double __amd_prems_exp2(double);
+
 static int test_exp2_vrd4_perf(struct libm_test *test)
 {
     struct libm_test_data *data = test->test_data;
@@ -66,8 +68,10 @@ static int test_exp2_vrd4_perf(struct libm_test *test)
     uint64_t n = test->conf->niter;
 
     /* Poison output */
-    for (uint32_t j = 0; j < data->nelem; ++j)
-        o[j] = exp2(ip1[j]);
+    for (uint32_t j = 0; j < data->nelem; ++j) {
+        double t = (double)((j+1)%700) + (double)j/(double)RAND_MAX;
+        o[j] = __amd_prems_exp2(t);
+    }
 
     bench_timer_t bt;
     timer_start(&bt);

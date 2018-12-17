@@ -27,6 +27,16 @@ Only following functions will be implemented.
  3. log
  4. pow
 
+Stage 2:
+Following optimization 
+ - Increase the table size to 1024
+ - Decrease the polynomial order
+
+will be performed on
+ - exp2 , exp, pow, log 
+   - on scalar, vector2 and vector4
+   - and single & double precision
+
 ** Templates
 
 Test framework starts by calling just one function, each 

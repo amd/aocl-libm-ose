@@ -62,9 +62,9 @@ static struct argp_option options[] = {
 
 /*
  * parse_range : parse the following
- * --range=-234.234,0.23    - -ve start,end,inc
- * --range=234,243,1.0      - -ve start, end, inc
- * --range=0.2343,0.0000234 - start,inc
+ * --range=-234.234,23.23    - -ve start,end,
+ * --range=234,243,rand      - -ve start,end,<rand - randomized filling>
+ * --range=0.2343,0.000023 4 - start,end,<linear - linear increaments>
  */
 int parse_range(char *arg,
                 struct libm_test_input_range *range)
@@ -84,14 +84,22 @@ int parse_range(char *arg,
         len -= strlen(test) + 1;
     }
 
+    if ((range->stop - range->start) == 0.0)
+        return -1;
+
+
     if (len) {
-        range->inc = strtold(arg, NULL);
-    } else {
-        range->inc = range->stop;
-        range->stop = 0;
+        /* We just compare first 3 letters to be safer */
+        if (strncmp(arg, "rand", 4) == 0)
+            range->type = LIBM_INPUT_RANGE_RANDOM;
+        else if (strncmp(arg, "linear", 3) == 0)
+            range->type = LIBM_INPUT_RANGE_LINEAR;
+        else
+            range->type = LIBM_INPUT_RANGE_SIMPLE;
     }
 
-    printf("start:%LG stop:%Lg inc:%Lg\n", range->start, range->stop, range->inc);
+    LIBM_TEST_DPRINTF(INFO, "start:%LG stop:%Lg type:%d\n",
+                      range->start, range->stop, range->type);
 
     return 0;
 }
@@ -258,6 +266,8 @@ static error_t parse_opts(int key, char *arg, struct argp_state *state)
         ret = parse_range(arg, range);
         if (ret == 0)
             ridx++;
+        else
+            LIBM_TEST_DPRINTF(CRIT, "Range is not valid input\n");
         break;
     case 't':
         ret = parse_test_types(arg, conf);

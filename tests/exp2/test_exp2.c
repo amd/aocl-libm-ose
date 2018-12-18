@@ -28,36 +28,6 @@
 
 char doc[] = BUILD_TEST_DOC(TEST_NAME);
 
-#if 0
-__attribute__((optimize("tree-vectorize")))
-void test_exp2_scalar(test_conf_t *conf, test_report_t *report,
-                      void *restrict input, void *restrict output)
-{
-    double *restrict o = output;
-    double *restrict ip1 = input;
-    int n = conf->niter;
-    int sz = conf->sz;
-
-    for (int j = 0; j < sz; ++j)
-        o[j] = __amd_exp2((double)ip1[j] + (DBL_MAX / (double)j)) ;
-
-    bench_timer_t bt;
-    timer_start(&bt);
-
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < sz; ++j) {
-            o[j] = exp2(ip1[j]);
-        }
-    }
-
-    timer_stop(&bt);
-    double s = timer_span(&bt);
-    report->mops = sec2mps(s, n * sz);
-}
-#endif
-
-double __amd_prems_exp2(double);
-
 static int test_exp2_vrd4_perf(struct libm_test *test)
 {
     struct libm_test_data *data = test->test_data;
@@ -70,7 +40,7 @@ static int test_exp2_vrd4_perf(struct libm_test *test)
     /* Poison output */
     for (uint32_t j = 0; j < data->nelem; ++j) {
         double t = (double)((j+1)%700) + (double)j/(double)RAND_MAX;
-        o[j] = __amd_prems_exp2(t);
+        o[j] = exp2(t);
     }
 
     bench_timer_t bt;
@@ -146,7 +116,7 @@ struct libm_test exp2_test_template = {
         .ulp    = libm_test_exp2_ulp,
         .verify = libm_test_exp2_verify,
     },
-    .libm_func  = { .func_d = { .func1 = exp2, }, }, /* WOHOOO */
+    .libm_func  = { .func_64 = { .func1 = exp2, }, }, /* WOHOOO */
     //.func_q = {.func1_q = libm_test_exp2q},
 };
 
@@ -213,6 +183,7 @@ int test_exp2_register_one(struct libm_test *test)
  out:
     return ret;
 }
+
 
 /**************************
  * SPECIAL CASES TESTS
@@ -300,9 +271,8 @@ static int test_exp2_vrd4_accu(struct libm_test *test)
     return 0;
 }
 
-static int test_exp2_vrd4_accu_setup(struct libm_test *test)
+int test_exp2_alloc_init(struct libm_test_conf *conf, struct libm_test *test)
 {
-    const struct libm_test_conf *conf = test->conf;
 
     test->test_data = libm_test_alloc_test_data(test, conf->nelem);
 
@@ -312,6 +282,12 @@ static int test_exp2_vrd4_accu_setup(struct libm_test *test)
     return 0;
 }
 
+static int test_exp2_vrd4_accu_setup(struct libm_test *test)
+{
+    struct libm_test_conf *conf = test->conf;
+
+    return test_exp2_alloc_init(conf,  test);
+}
 
 static int test_exp2_init_v2d(struct libm_test_conf *conf)
 {

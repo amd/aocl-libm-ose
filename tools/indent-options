@@ -1,0 +1,63 @@
+#!/bin/sh
+set -x
+
+CORE_OPTIONS="				\
+--original 				\
+--no-tabs				\
+--indent-level 4			\
+--line-length 80 			\
+--honour-newlines 			\
+"
+
+CPP_OPTIONS=" 				\
+--else-endif-column 4			\
+"
+
+# Braces
+BRACE_OPTIONS= "\
+--braces-after-func-def-line		\
+--braces-on-if-line			\
+--braces-on-struct-decl-line		\
+"
+
+# Spaces
+SPACE_OPTIONS="				\
+--parameter-indentation 4	 	\
+--indent-level 4 			\
+--no-space-after-casts 			\
+--space-after-parentheses 		\
+--space-after-if			\
+--space-after-for			\
+--space-after-while			\
+--swallow-optional-blank-lines
+"
+
+# Indentation
+INDENT_OPTIONS="			\
+--case-indentation 0			\
+--line-comments-indentation 40		\
+"
+
+# Comments
+COMMENT_OPTIONS=" 			\
+--comment-indentation 40		\
+--comment-delimiters-on-blank-lines	\
+--dont-format-first-column-comments 	\
+--start-left-side-of-comments		\
+"
+
+# Block structures
+BLOCK_OPTIONS="				\
+--blank-lines-after-declaration		\
+--blank-lines-after-proceedures		\
+--procnames-start-lines
+"
+
+# Cuddling
+CUDDLING_OPTIONS=" 			\
+--cuddle-else 				\
+--cuddle-do-while 			\
+"
+
+indent ${CORE_OPTIONS} ${CPP_OPTIONS} ${BRACE_OPTIONS} ${SPACE_OPTIONS} ${INDENT_OPTIONS} ${COMMENT_OPTIONS} ${BLOCK_OPTIONS} ${CUDDLING_OPTIONS} $@
+

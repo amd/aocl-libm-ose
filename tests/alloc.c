@@ -112,7 +112,7 @@ libm_test_alloc_init(struct libm_test_conf *conf, struct libm_test *template)
         LIBM_TEST_DPRINTF(PANIC, "Not enough memory for test->conf\n");
         goto free_out;
     }
-
+    
     memcpy(test->conf, conf, sizeof(*conf));
 
     return test;
@@ -121,4 +121,21 @@ libm_test_alloc_init(struct libm_test_conf *conf, struct libm_test *template)
     free(test);
  out:
     return NULL;
+}
+
+//static int test_exp2_vrd4_accu_setup(struct libm_test *test)
+int test_exp2_alloc_test_data(struct libm_test *test)
+{
+    const struct libm_test_conf *conf = test->conf;
+
+    test->test_data = libm_test_alloc_test_data(test, conf->nelem);
+
+    if (!test->test_data) {
+        LIBM_TEST_DPRINTF(PANIC, "Unable to allocate test_data for %s %s\n",
+                          test->name, libm_test_variant_str(test->variant));
+        return -1;
+    }
+
+
+    return 0;
 }

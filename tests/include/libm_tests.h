@@ -92,13 +92,13 @@ typedef union {
     float (*func1)(float);
     float (*func2)(float, float);
     float (*func3)(float, float, float);
-} libm_func_f;
+} libm_func_32;
 
 typedef union {
     double (*func1)(double);
     double (*func2)(double, double);
     double (*func3)(double, double, double);
-} libm_func_d;
+} libm_func_64;
 
 #include <quadmath.h>
 typedef union {
@@ -119,7 +119,7 @@ typedef union {
 #define call_func(func, t, ...)                 \
     {                                           \
         if (sizeof(t) == sizeof(float))         \
-            call_func_float(func, __VA_ARGS__);     \
+            call_func_float(func, __VA_ARGS__); \
         else if (sizeof(t) == sizeof(double))
     }
 #endif
@@ -140,8 +140,8 @@ struct libm_test {
     void                    *private;        /* data that the test needs back */
 
     union {
-        libm_func_f func_f;
-        libm_func_d func_d;
+        libm_func_32 func_32;
+        libm_func_64 func_64;
     } libm_func;
 
     libm_func_q func_q;                         /* Quad precision function */
@@ -190,12 +190,11 @@ int libm_test_populate_range_uniform(void *data,
                                      double min, double max);
 
 int libm_test_get_data_size(uint32_t variant);
+const char *libm_test_variant_str(uint32_t variant);
 
 struct libm_test *
 libm_test_alloc_init(struct libm_test_conf *conf, struct libm_test *template);
-
 void *libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem);
-
 
 /**********************************
  * ULP error calculations

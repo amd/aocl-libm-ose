@@ -117,10 +117,10 @@ static error_t __enable_test_variants(const char *vrnt, struct libm_test_conf *c
     uint8_t scalar = strncmp(vrnt, "scalar", 6) == 0;
     uint8_t vector = strncmp(vrnt, "vector", 6) == 0;
 
-    if (strncmp(vrnt, "s", 2) == 0 || scalar || all) {
+    if (strncmp(vrnt, "s1f", 3) == 0 || scalar || all) {
         *variant |= LIBM_FUNC_S_S;
     }
-    if (strncmp(vrnt, "d", 2) == 0 || scalar || all) {
+    if (strncmp(vrnt, "s1d", 3) == 0 || scalar || all) {
         *variant |= LIBM_FUNC_S_D;
     }
     if (strncmp(vrnt, "v2s", 3) == 0 || vector || all) {
@@ -283,7 +283,7 @@ static error_t parse_opts(int key, char *arg, struct argp_state *state)
 
 static struct argp argp = {options, parse_opts, args_doc, doc, 0, 0, 0};
 
-static const char *libm_test_variant_str(uint32_t variant)
+const char *libm_test_variant_str(uint32_t variant)
 {
     switch(variant) {
     case LIBM_FUNC_S_S:
@@ -385,7 +385,6 @@ static int libm_test_run(struct list_head *test_list)
     }
 
     return 0;
-
 }
 
 int libm_test_register(struct libm_test *test)

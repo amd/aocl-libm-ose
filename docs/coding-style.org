@@ -1,0 +1,155 @@
+* Coding Style
+
+** Editor
+Any editor of your choise, avoid brainded, bloated or over-intelligent ones.
+
+braindead:
+
+notepad - dos line endings, seriously?.
+notepad++ - braindead++
+
+bloated:
+eclipse - need a server to run
+visualstudio - not now.
+
+over-intelligent:
+<oh many>
+
+vim configuration:
+
+
+indent command: 
+
+Indent comand related options are provided in indent-options
+file under 'tools' directory.
+
+
+** Whitespace
+
+- Indents are four spaces.  
+- Tabs are never used, except in Makefiles (which dont exist anymore :) )
+
+- Do not leave whitespace dangling off the ends of lines.
+ a.k.a Trailing whitespaces
+
+Whitespace around every operator
+#+BEGIN_SRC c
+if(c==0)
+// VS
+if (c == 0)
+#+END_SRC
+
+Whitespace after 'if' 'while' and 'for'
+#+BEGIN_SRC c
+for (i = 0; i < 5; i++)
+
+while ()
+
+if (cond)
+#+END_SRC
+
+The paranthesis after 'if', 'while' 'for' shold be on the same line
+#+BEGIN_SRC c
+while (cond) {
+}
+
+for (...) {
+}
+
+if (cond) {
+}
+#+END_SRC
+
+** Alignment
+Switch - case, the 'case' statements aligned with switch.
+#+BEGIN_SRC c
+switch(something) {
+case 1:
+break;
+case 2:
+break;
+default:
+break;
+}
+#+END_SRC
+
+goto lables should be aligned on the column '1'.
+#+BEGIN_SRC c
+  func () {
+      if (cond) {
+          print("error\n");
+          goto out;
+      }
+  out:
+      return 0;
+  }
+#+END_SRC
+
+** Line width
+
+Lines are 80 characters; not longer.
+Do anything that takes to cut the long lines,
+eg:
+#+BEGIN_SRC c
+  if (condition_true)
+    struct libm_test *exp2_v2d = libm_test_alloc_init(conf, &exp2_test_template);
+#+END_SRC
+
+Write instead like this
+#+BEGIN_SRC c
+  struct libm_test *exp2_v2d;
+
+  exp2_v2d = libm_test_alloc_init(conf, &exp2_test_template);
+#+END_SRC
+
+
+** Naming
+
+ - Variables are lower_case_with_underscores; easy to type and read.
+ - Structured type names are in CamelCase; harder to type but standing out.
+ - Enum type names and function type names should also be in CamelCase.
+ - Scalar type names are lower_case_with_underscores_ending_with_a_t,
+   like the POSIX uint64_t and family.
+
+When wrapping standard library functions, use the prefix amd_libm_ to alert
+readers that they are seeing a wrapped version; otherwise avoid this prefix.
+
+** Block structure
+Avoid unwanted braces, though the following looks okay,
+Example:
+#+BEGIN_SRC c
+    if (a == 5) {
+        printf("a was 5.\n");
+    } else if (a == 6) {
+        printf("a was 6.\n");
+    } else {
+        printf("a was something else entirely.\n");
+    }
+#+END_SRC
+
+Following looks better
+#+BEGIN_SRC c
+  if (a == 5)
+      printf("a was 5.\n");
+  else if (a == 6)
+      printf("a was 6.\n");
+  else
+      printf("a was something else entirely.\n");
+#+END_SRC
+
+Note that 'else if' is considered a single statement; otherwise a long if/
+else if/else if/.../else sequence would need an indent for every else
+statement.
+
+An exception is the opening brace for a function; for reasons of tradition
+and clarity it will have a line for itself.
+#+BEGIN_SRC c
+  void a_function(void)
+  {
+      do_something();
+  }
+#+END_SRC
+
+Rationale: a consistent (except for functions...) bracing style reduces
+ambiguity and avoids needless churn when lines are added or removed.
+Furthermore, it is the QEMU coding style.

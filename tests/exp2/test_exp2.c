@@ -106,7 +106,7 @@ static inline __float128 libm_test_exp2q(double x)
 }
 
 
-int libm_test_exp2_ulp(struct libm_test *test, double x, double computed);
+double libm_test_exp2_ulp(struct libm_test *test, double x, double computed);
 
 /* vector single precision */
 struct libm_test exp2_test_template = {
@@ -117,7 +117,7 @@ struct libm_test exp2_test_template = {
         .verify = libm_test_exp2_verify,
     },
     .libm_func  = { .func_64 = { .func1 = exp2, }, }, /* WOHOOO */
-    //.func_q = {.func1_q = libm_test_exp2q},
+    .func_q = {.func1 = libm_test_exp2q},
 };
 
 static int test_exp2_populate_inputs(struct libm_test *test, int use_uniform)
@@ -433,7 +433,7 @@ out:
 
 #include <quadmath.h>
 
-int libm_test_exp2_ulp(struct libm_test *test, double x, double computed)
+double libm_test_exp2_ulp(struct libm_test *test, double x, double computed)
 {
     __float128 exp2_x = libm_test_exp2q(x);
 

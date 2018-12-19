@@ -335,6 +335,83 @@ static void libm_test_print_report(struct list_head *test_list)
 
 static struct list_head test_list;
 
+
+static int __libm_test_populate_expected_flt(struct libm_test *test)
+{
+
+    return 0;
+}
+
+static int __libm_test_populate_expected_dbl(struct libm_test *test)
+{
+    struct libm_test_data *data= test->test_data;
+
+    double *input1 = data->input1;
+    double *input2 = data->input2;
+    double *input3 = data->input3;
+    double *expected = data->expected;
+
+    for (uint32_t i = 0; i < test->test_data->nelem; i++) {
+        switch (test->nargs) {
+        case 1:
+            expected[i] = test->libm_func.func_64.func1(input1[i]);
+            break;
+        case 2:
+            expected[i] = test->libm_func.func_64.func2(input1[i], input2[i]);
+            break;
+        case 3:
+            expected[i] = test->libm_func.func_64.func3(input1[i],
+                                                        input2[i], input3[i]);
+            break;
+        default:
+            break;
+        }
+    }
+
+
+    return 0;
+}
+
+static int __libm_test_get_input_type(struct libm_test *test)
+{
+    if (test->variant == LIBM_FUNC_S_S ||
+        test->variant == LIBM_FUNC_V2S ||
+        test->variant == LIBM_FUNC_V4S ||
+        test->variant == LIBM_FUNC_V8S)
+        return 1;
+
+    if (test->variant == LIBM_FUNC_S_D ||
+        test->variant == LIBM_FUNC_V2D ||
+        test->variant == LIBM_FUNC_V4D)
+        return 2;
+
+    return 0;
+}
+
+static int libm_test_populate_expected(struct libm_test *test)
+{
+    switch (__libm_test_get_input_type(test)) {
+    case 1: // float
+        __libm_test_populate_expected_flt(test);
+        break;
+    case 2: // double
+        __libm_test_populate_expected_dbl(test);
+    default:
+        break;
+    }
+
+    return 0;
+}
+
+static inline int is_libm_func_exists(struct libm_test *test)
+{
+    if ( ! test->libm_func.func_32.func1 &&
+         ! test->libm_func.func_64.func1)
+        return 0;
+
+    return 1;
+}
+
 static int libm_test_run_one(struct libm_test *test, struct libm_test_result *result)
 {
     printf("Starting Test: %s %s\n", test->name, test->type_name);
@@ -358,6 +435,9 @@ static int libm_test_run_one(struct libm_test *test, struct libm_test_result *re
 
     if (test->ops.run)
         test->ops.run(test);
+
+    if (is_libm_func_exists(test))
+        libm_test_populate_expected(test);
 
     if (test->ops.verify)
         test->ops.verify(test, result);

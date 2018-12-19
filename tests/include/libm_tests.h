@@ -84,7 +84,7 @@ struct libm_test_ops {
     int (*run)(struct libm_test *test);
     int (*cleanup)(struct libm_test *test);
 
-    int (*ulp)(struct libm_test *test, double x, double computed);
+    double (*ulp)(struct libm_test *test, double x, double computed);
     int (*verify)(struct libm_test *test, struct libm_test_result *result);
 };
 
@@ -102,9 +102,9 @@ typedef union {
 
 #include <quadmath.h>
 typedef union {
-    __float128 (*func1)(__float128);
-    __float128 (*func2)(__float128, __float128);
-    __float128 (*func3)(__float128, __float128, __float128);
+    __float128 (*func1)(double);
+    __float128 (*func2)(double, double);
+    __float128 (*func3)(double, double, double);
 } libm_func_q;
 
 #if 0

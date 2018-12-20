@@ -1,5 +1,14 @@
 * Coding Style
 
+General Guidlines:
+
+1. Don't try to write the most compact code possible but rather the most
+   readable.
+
+2. Avoid goto's (not eliminate at the cost of readability and simplicity)
+
+3. No tabs expanded to spaces.
+
 ** Editor
 Any editor of your choise, avoid brainded, bloated or over-intelligent ones.
 
@@ -37,27 +46,41 @@ Whitespace around every operator
 if(c==0)
 // VS
 if (c == 0)
+   //^//^
 #+END_SRC
 
-Whitespace after 'if' 'while' and 'for'
+Whitespace after 'if' 'while' and 'for', 'switch'
 #+BEGIN_SRC c
-for (i = 0; i < 5; i++)
+for (i = 0; i < 5; i++) {}
+// ^
+while () {
+} // ^
 
-while ()
+do {
+//^
+while (cond) ;
+  // ^
 
 if (cond)
+//^
+switch (case_val) {
+}
 #+END_SRC
 
-The paranthesis after 'if', 'while' 'for' shold be on the same line
+The paranthesis shold be on the same line in compound statements 'if', 'while'
+'for' and 'switch'
 #+BEGIN_SRC c
 while (cond) {
-}
+}         // ^
 
 for (...) {
-}
+}      // ^
 
 if (cond) {
-}
+}      // ^
+
+switch (cond) {
+}          // ^
 #+END_SRC
 
 ** Alignment
@@ -105,14 +128,46 @@ Write instead like this
 
 ** Naming
 
- - Variables are lower_case_with_underscores; easy to type and read.
+ - Variables are function names lower_case_with_underscores; easy to type and read.
+eg:
+#+BEGIN_SRC c
+   uint8_t *test_data;
+#+END_SRC
+
  - Structured type names are in CamelCase; harder to type but standing out.
- - Enum type names and function type names should also be in CamelCase.
+#+BEGIN_SRC c
+LibmTestData *data;
+LibmTest     *test;
+#+END_SRC
+
+ - enum or #defined constants should be Uppercase (or UPPER-CASE).
+#+BEGIN_SRC c
+#define DBG_BIT 1
+
+// And
+
+enum {
+TEST_TYPE_ACCU
+};
+#+END_SRC
  - Scalar type names are lower_case_with_underscores_ending_with_a_t,
    like the POSIX uint64_t and family.
 
 When wrapping standard library functions, use the prefix amd_libm_ to alert
 readers that they are seeing a wrapped version; otherwise avoid this prefix.
+
+** Code
+1. 
+1. follow the standard idioms: use `x < 0' not `0 > x', etc.
+2. don't write `!strcmp' (nor `!memcmp', etc.)  nor
+             `if(memcmp(a, b, c))'; always explicitly compare the
+             result of string or memory comparison with zero using a
+             relational operator.
+#+BEGIN_SRC c
+if (strncmp(c, "abcd", 5) == 0)
+#+END_SRC
+
+
 
 ** Block structure
 Avoid unwanted braces, though the following looks okay,
@@ -153,3 +208,13 @@ and clarity it will have a line for itself.
 Rationale: a consistent (except for functions...) bracing style reduces
 ambiguity and avoids needless churn when lines are added or removed.
 Furthermore, it is the QEMU coding style.
+
+** Comments
+- If your code is readable, you shouldn't need many comments. A line or two
+  comment above a function explaining what it does is always welcome.
+
+- Comment any code you find yourself wondering about for more than 2 seconds,
+  even if it's to say that you don't under- stand what's going on. Explain why.
+
+- Don't use commenting as an excuse for writing confusing code. Rewrite the code
+  to make it clear.

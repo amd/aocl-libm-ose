@@ -127,7 +127,7 @@ double libm_test_ulp_errord(double output, __float128 computed)
 
     __float128 ulp = powq(2, exp);               /* 2^(e-p-1) */
 
-    __float128 ulpe = computed - (__float128)output / ulp;
+    __float128 ulpe = computed - output / ulp;
 
     return ulpe;
 }

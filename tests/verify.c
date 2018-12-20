@@ -28,6 +28,19 @@ static double get_ulp(struct libm_test *test, int j)
     return libm_test_ulp_errord(data->output[j], computed);
 }
 
+
+static inline int
+update_ulp(struct libm_test *test, struct libm_test_data *data, int j)
+{
+    double ulp = get_ulp(test, j);
+    /* Double comparison, should it work ? */
+    LIBM_TEST_DPRINTF(VERBOSE3, "ulp:%f\n", ulp);
+    if ((ulp - test->ulp_err) > 0.0)
+        test->ulp_err = ulp;
+
+    return 0;
+}
+
 /*
  * returns -1 if success,
  * returns offset in array where the mismatch occurs
@@ -35,7 +48,6 @@ static double get_ulp(struct libm_test *test, int j)
 static int __verify_double(struct libm_test *test,
                            struct libm_test_result *result)
 {
-
     struct libm_test_data *data = test->test_data;
     double *op = data->output;
     double *nw = data->expected;
@@ -45,6 +57,11 @@ static int __verify_double(struct libm_test *test,
     ntests = data->nelem;
 
     for (int j = 0; j < sz; ++j) {
+        if (test->conf->test_types == TEST_TYPE_ACCU) {
+            /* Verify ULP for every case */
+            update_ulp(test, data, j);
+        }
+
         if (((unsigned long)nw[j] ^ (unsigned long)op[j]) != 0) {
             result->input1[idx] = data->input1[j];
             if (test->nargs > 1) result->input2[idx] = data->input2[j];
@@ -52,11 +69,7 @@ static int __verify_double(struct libm_test *test,
             LIBM_TEST_DPRINTF(VERBOSE3, "input: %10.23f\n", data->input1[j]);
             LIBM_TEST_DPRINTF(VERBOSE3, "expected: %10.23f actual:%10.23f\n",
                               data->expected[j], data->output[j]);
-            double ulp = get_ulp(test, j);
-            /* Double comparison, should it work ? */
-            LIBM_TEST_DPRINTF(VERBOSE3, "ulp:%f\n", ulp);
-            if ((ulp - test->ulp_err) > 0.0)
-                test->ulp_err = ulp;
+            update_ulp(test, test->test_data, j);
 
             nfail++;
             if (nfail < MAX_FAILURES) {

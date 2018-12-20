@@ -1,2 +1,6 @@
 **/*.pyc
 **/*.swp
+**/*~
+.sconsign.dblite
+.venv3/
+build/

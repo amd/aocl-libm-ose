@@ -6,6 +6,23 @@
 
 #include <libm_tests.h>
 
+static double get_ulp(struct libm_test *test, int j)
+{
+    struct libm_test_data *data = test->test_data;
+
+    switch (test->nargs) {
+    case 1:
+        return test->ops.ulp.func1(test, data->input1[j], data->output[j]);
+    case 2:
+        return test->ops.ulp.func2(test, data->input1[j], data->input2[j],
+                             data->output[j]);
+    case 3:
+        return test->ops.ulp.func3(test, data->input1[j], data->input2[j],
+                                   data->input3[j], data->output[j]);
+    }
+    return 0.0;
+}
+
 /*
  * returns -1 if success,
  * returns offset in array where the mismatch occurs
@@ -30,7 +47,7 @@ static int __verify_double(struct libm_test *test,
             LIBM_TEST_DPRINTF(VERBOSE3, "input: %10.23f\n", data->input1[j]);
             LIBM_TEST_DPRINTF(VERBOSE3, "expected: %10.23f actual:%10.23f\n",
                               data->expected[j], data->output[j]);
-            double ulp = test->ops.ulp(test, data->input1[j], op[j]);
+            double ulp = get_ulp(test, j);
             /* Double comparison, should it work ? */
             LIBM_TEST_DPRINTF(VERBOSE3, "ulp:%f\n", ulp);
             if ((ulp - test->ulp_err) > 0.0)

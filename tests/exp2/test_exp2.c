@@ -105,7 +105,6 @@ static inline __float128 libm_test_exp2q(double x)
     return expq(ln2 * x);
 }
 
-
 double libm_test_exp2_ulp(struct libm_test *test, double x, double computed);
 
 /* vector single precision */
@@ -113,9 +112,9 @@ struct libm_test exp2_test_template = {
     .name       = "exp2_vec",
     .nargs      = 1,
     .ops        = {
-        .ulp    = libm_test_exp2_ulp,
-        .verify = libm_test_exp2_verify,
-    },
+                   .ulp        = {.func1 = libm_test_exp2_ulp},
+                   .verify = libm_test_exp2_verify,
+                   },
     .libm_func  = { .func_64 = { .func1 = exp2, }, }, /* WOHOOO */
     .func_q = {.func1 = libm_test_exp2q},
 };

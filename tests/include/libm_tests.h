@@ -77,17 +77,6 @@ enum {
     TEST_TYPE_CORNER = (1<<3),
 };
 
-struct libm_test;
-
-struct libm_test_ops {
-    int (*setup)(struct libm_test *test);
-    int (*run)(struct libm_test *test);
-    int (*cleanup)(struct libm_test *test);
-
-    double (*ulp)(struct libm_test *test, double x, double computed);
-    int (*verify)(struct libm_test *test, struct libm_test_result *result);
-};
-
 typedef union {
     float (*func1)(float);
     float (*func2)(float, float);
@@ -106,6 +95,25 @@ typedef union {
     __float128 (*func2)(double, double);
     __float128 (*func3)(double, double, double);
 } libm_func_q;
+
+struct libm_test;
+
+struct libm_test_ops {
+    int (*setup)(struct libm_test *test);
+    int (*run)(struct libm_test *test);
+    int (*cleanup)(struct libm_test *test);
+
+    union {
+        double (*func1)(struct libm_test *test, double in1, double computed);
+        double (*func2)(struct libm_test *test, double in1, double in2,
+                        double computed);
+        double (*func3)(struct libm_test *test, double in1, double in2,
+                        double in3, double computed);
+    } ulp;
+
+    int (*verify)(struct libm_test *test, struct libm_test_result *result);
+};
+
 
 #if 0
 #define CAT(A, B) CAT2(A, B)

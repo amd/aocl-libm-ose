@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include <quadmath.h>                   /* for __float128 */
+
 /* LIBM test specific includes */
 #include <libm_test_macros.h>
 #include <list.h>
@@ -89,13 +91,6 @@ typedef union {
     double (*func3)(double, double, double);
 } libm_func_64;
 
-#include <quadmath.h>
-typedef union {
-    __float128 (*func1)(double);
-    __float128 (*func2)(double, double);
-    __float128 (*func3)(double, double, double);
-} libm_func_q;
-
 struct libm_test;
 
 struct libm_test_ops {
@@ -150,8 +145,6 @@ struct libm_test {
         libm_func_32 func_32;
         libm_func_64 func_64;
     } libm_func;
-
-    libm_func_q func_q;                         /* Quad precision function */
 
     struct list_head         list;
 };

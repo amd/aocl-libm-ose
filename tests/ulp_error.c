@@ -117,9 +117,9 @@ typedef union {
  */
 #include <quadmath.h>
 
-double libm_test_ulp_errord(double computed, __float128 expected)
+double libm_test_ulp_errord(double output, __float128 computed)
 {
-    flt64_t c = {.d = computed};
+    flt64_t c = {.d = output};
 
     int exp = (c.i >> EXPSHIFTBITS_DP64) & 0x3ff; /* 11 bits ignoring sign bit */
 
@@ -127,7 +127,7 @@ double libm_test_ulp_errord(double computed, __float128 expected)
 
     __float128 ulp = powq(2, exp);               /* 2^(e-p-1) */
 
-    __float128 ulpe = expected - (__float128)computed / ulp;
+    __float128 ulpe = computed - (__float128)output / ulp;
 
     return ulpe;
 }

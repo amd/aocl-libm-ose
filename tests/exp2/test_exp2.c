@@ -99,24 +99,25 @@ int libm_test_exp2_verify(struct libm_test *test, struct libm_test_result *resul
 }
 
 /* There is no exp2q in recent versions of gcc */
-static inline __float128 libm_test_exp2q(double x)
+static inline __float128
+libm_test_exp2q(struct libm_test *test, double in)
 {
-    static __float128 ln2 = 6.9314718055994530941723212145817657508364e-01; /* logq(2.0) */
-    return expq(ln2 * x);
+    /* logq(2.0) */
+    static __float128 ln2 = 6.9314718055994530941723212145817657508364e-01;
+    return expq(ln2 * in);
 }
 
-double libm_test_exp2_ulp(struct libm_test *test, double x, double computed);
+#include <quadmath.h>
 
 /* vector single precision */
 struct libm_test exp2_test_template = {
     .name       = "exp2_vec",
     .nargs      = 1,
     .ops        = {
-                   .ulp        = {.func1 = libm_test_exp2_ulp},
+                   .ulp    = {.func1 = libm_test_exp2q},
                    .verify = libm_test_exp2_verify,
                    },
     .libm_func  = { .func_64 = { .func1 = exp2, }, }, /* WOHOOO */
-    .func_q = {.func1 = libm_test_exp2q},
 };
 
 static int test_exp2_populate_inputs(struct libm_test *test, int use_uniform)
@@ -430,11 +431,12 @@ out:
     return ret;
 }
 
-#include <quadmath.h>
 
+#if 0
 double libm_test_exp2_ulp(struct libm_test *test, double x, double computed)
 {
     __float128 exp2_x = libm_test_exp2q(x);
 
     return libm_test_ulp_errord(computed, exp2_x);
 }
+#endif

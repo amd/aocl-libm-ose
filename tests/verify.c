@@ -9,18 +9,23 @@
 static double get_ulp(struct libm_test *test, int j)
 {
     struct libm_test_data *data = test->test_data;
+    __float128 computed = 0.0;
 
     switch (test->nargs) {
     case 1:
-        return test->ops.ulp.func1(test, data->input1[j], data->output[j]);
+	    computed = test->ops.ulp.func1(test, data->input1[j]);
+	    break;
     case 2:
-        return test->ops.ulp.func2(test, data->input1[j], data->input2[j],
-                             data->output[j]);
+	    computed = test->ops.ulp.func2(test, data->input1[j],
+					   data->input2[j]);
+	    break;
     case 3:
-        return test->ops.ulp.func3(test, data->input1[j], data->input2[j],
-                                   data->input3[j], data->output[j]);
+	    computed = test->ops.ulp.func3(test, data->input1[j],
+					   data->input2[j], data->input3[j]);
+	    break;
     }
-    return 0.0;
+
+    return libm_test_ulp_errord(data->output[j], computed);
 }
 
 /*

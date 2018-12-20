@@ -104,11 +104,10 @@ struct libm_test_ops {
     int (*cleanup)(struct libm_test *test);
 
     union {
-        double (*func1)(struct libm_test *test, double in1, double computed);
-        double (*func2)(struct libm_test *test, double in1, double in2,
-                        double computed);
-        double (*func3)(struct libm_test *test, double in1, double in2,
-                        double in3, double computed);
+        __float128 (*func1)(struct libm_test *test, double in1);
+        __float128 (*func2)(struct libm_test *test, double in1, double in2);
+        __float128 (*func3)(struct libm_test *test, double in1, double in2,
+                            double in3);
     } ulp;
 
     int (*verify)(struct libm_test *test, struct libm_test_result *result);

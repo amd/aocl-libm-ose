@@ -11,6 +11,7 @@ static double get_ulp(struct libm_test *test, int j)
     struct libm_test_data *data = test->test_data;
     __float128 computed = 0.0;
 
+    /* Get higer precision value for a given input */
     switch (test->nargs) {
     case 1:
 	    computed = test->ops.ulp.func1(test, data->input1[j]);

@@ -1,58 +1,61 @@
 
 (C) 2008-2018 Advanced Micro Devices, Inc. All Rights Reserved.
 
-AMD LibM - Release Notes - version 3.2.2
+AMD LibM - Release Notes - version 3.3.0
 ----------------------------------------
 
 AMD LibM Contents
 -----------------
-AMD LibM is a math library. It provides optimized implementation of
-a number of math functions from the C99 standard. The library is
-designed for use in 64-bit programs on x86-64 machines. Static and
-dynamic libraries are available for Linux(R) and Windows(R)
-operating systems.
+AMD LibM is a math library. It provides optimized implementation of a number of
+math functions from the C99 standard. The library is designed for use in 64-bit
+programs on x86-64 machines. Static and dynamic libraries are available for
+Linux(R) and Windows(R) operating systems.
 
-The Linux(R) version of the library is built using GCC 5.4.
+The Linux(R) version of the library is built using GCC 7.3.
 
-New Features in 3.2.2
----------------------
+Hightlights of AMD LibM 3.3.0
+-----------------------------
 
-    * Improved double precisopn power function performance for AMD EPYC processors
-    * Fixed bug in fmod function where for certain large values, NaN was observed
-	* Known Issues
-		- Accuracy issue of the order of 10e-15 for certain values of x and y 
-		  where y*log(x) is between 0 and 100
+    * New 256-bit vector routines for pow, exp, exp2 and log (vrd4_pow, vrd4_exp,
+      vrd4_exp2, vrd4_log)
+    * New 128-bit vector double precision pow function (vrd2_pow)
+    * Improved 128-bit vector log function performance for AMD EPYC processors
+    * Minor bug fixes
 
-Version 3.2.2 Contents
+Known Issues
+------------
+   * fastpow() - Accuracy issue of the order of 10e-15 for certain values of x
+     and y where y*log(x) is between 0 and 100
+
+Version 3.3.0 Contents
 ----------------------
-AMD LibM provides vector variants for many
-of the math functions. The list of available vector functions is
-given below. All functions have an 'amd_' prefix.
+AMD LibM provides vector variants for many of the math functions. The list of
+available vector functions is given below. All functions have an 'amd_' prefix.
 
  Exponential
  -----------
     * vrs4_expf, vrs4_exp2f, vrs4_exp10f, vrs4_expm1f
     * vrsa_expf, vrsa_exp2f, vrsa_exp10f, vrsa_expm1f
-    * vrd2_exp, vrd2_exp2, vrd2_exp10, vrd2_expm1
+    * vrd2_exp, vrd2_exp2, vrd2_exp10, vrd2_expm1, vrd4_exp, vrd4_exp2
     * vrda_exp, vrda_exp2, vrda_exp10, vrda_expm1
 
  Logarithmic
  -----------
     * vrs4_logf, vrs4_log2f, vrs4_log10f, vrs4_log1pf
     * vrsa_logf, vrsa_log2f, vrsa_log10f, vrsa_log1pf
-    * vrd2_log, vrd2_log2, vrd2_log10, vrd2_log1p
+    * vrd2_log, vrd2_log2, vrd2_log10, vrd2_log1p, vrd4_log
     * vrda_log, vrda_log2, vrda_log10, vrda_log1p
 
  Trigonometric
  -------------
     * vrs4_cosf, vrs4_sinf
     * vrsa_cosf, vrsa_sinf
-    * vrd2_cos, vrd2_sin
+    * vrd2_cos, vrd2_sin, vrd2_cosh, vrd2_sincos
     * vrda_cos, vrda_sin
 
  Power
  -----
-    * vrs4_cbrtf, vrd2_cbrt, vrs4_powf
+    * vrs4_cbrtf, vrd2_cbrt, vrs4_powf, vrd2_pow, vrd4_pow
     * vrsa_cbrtf, vrda_cbrt, vrsa_powf
 
 

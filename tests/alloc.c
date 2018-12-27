@@ -14,7 +14,7 @@
 #include <libm_tests.h>
 #include <bench_timer.h>
 
-static void *libm_ptr_align_up(void *ptr, uint64_t align)
+void *libm_ptr_align_up(void *ptr, uint64_t align)
 {
     uint64_t st = (uint64_t)ptr;
 
@@ -43,57 +43,45 @@ void *libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem)
 #define _ALIGN_FACTOR 256
 #endif
     struct libm_test_data *test_data;
-    void *last_ptr;
+    //void *last_ptr;
     int nargs = test->nargs;
     uint32_t arr_size = nelem * libm_test_get_data_size(test->variant);
+    uint32_t sz = (arr_size << 1) + _ALIGN_FACTOR;
 
-    /*
-     * libm functions with 1,2 and 3 args
-     *          each one with sizeof double/float
-     *
-     *         + output +  expected (each with double/float)
-     *         + size of the structure itself
-     *         + 3 times size of _ALIGN_FACTOR
-     */
-    uint32_t sz = sizeof(*test_data) +
-        ((nargs + 2) * arr_size ) +             /* +2 for output and expected */
-        _ALIGN_FACTOR * (nargs + 2);
+    printf("nelem:%d size:%d\n", nelem, arr_size);
 
-
-    test_data = aligned_alloc(_ALIGN_FACTOR, sz);
+    test_data = calloc(1, sizeof(*test_data));
 
     if (!test_data)
         goto out;
 
-    bzero (test_data, sz);
-
     test_data->nelem = nelem;
     /* CAUTION */
-    test_data->input1 = libm_ptr_align_up(&test_data->data[0], _ALIGN_FACTOR);
 
-    last_ptr=test_data->input1;
+    test_data->input1 = aligned_alloc(_ALIGN_FACTOR, sz);
+
+    //last_ptr=test_data->input1;
 
     if (nargs > 1) {
-        test_data->input2 = libm_ptr_align_up(&test_data->input1[arr_size],
-                                              _ALIGN_FACTOR);
-        last_ptr = test_data->input2;
+        test_data->input2 = aligned_alloc(_ALIGN_FACTOR, sz);
+        //last_ptr = test_data->input2;
     }
 
     if (nargs > 2) {
-        test_data->input3 = libm_ptr_align_up(&test_data->input2[arr_size],
-                                              _ALIGN_FACTOR);
-        last_ptr = test_data->input2;
+        test_data->input3 = aligned_alloc(_ALIGN_FACTOR, sz);
+        //last_ptr = test_data->input2;
     }
 
-    test_data->output = libm_ptr_align_up(last_ptr + arr_size, _ALIGN_FACTOR);
+    test_data->output = aligned_alloc(_ALIGN_FACTOR, sz);
 
-    test_data->expected = libm_ptr_align_up(&test_data->output[nelem], _ALIGN_FACTOR);
+    test_data->expected = aligned_alloc(_ALIGN_FACTOR, sz);
 
+    printf("test_data:%p input1:%p output:%p expected:%p\n", test_data, test_data->input1,
+           test_data->output, test_data->expected);
 out:
     return test_data;
 
 }
-
 
 struct libm_test *
 libm_test_alloc_init(struct libm_test_conf *conf, struct libm_test *template)
@@ -112,7 +100,7 @@ libm_test_alloc_init(struct libm_test_conf *conf, struct libm_test *template)
         LIBM_TEST_DPRINTF(PANIC, "Not enough memory for test->conf\n");
         goto free_out;
     }
-    
+
     memcpy(test->conf, conf, sizeof(*conf));
 
     return test;

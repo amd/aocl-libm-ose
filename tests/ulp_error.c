@@ -38,6 +38,11 @@
 #include <math.h>
 #include <libm_util_amd.h>
 
+/*
+ * We need the uint32_t version, default one gives us with an int64
+ */
+#undef flt32_t
+
 typedef union {
     uint32_t i;
     float    f;

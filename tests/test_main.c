@@ -327,7 +327,7 @@ static void libm_test_print_report(struct list_head *test_list)
         printf("%-12s %-12s %-12s %-12d %-12d %-12d %-12d %-12f %-12f\n",
                test->name, test->type_name, libm_test_variant_str(test->variant),
                result->ntests, result->npass, result->nfail, result->nignored,
-               result->mops, test->ulp_err);
+               result->mops, test->max_ulp_err);
     }
 
     printf("%s\n", &equal[0]);
@@ -491,6 +491,10 @@ int libm_test_register(struct libm_test *test)
         printf("Test:%s type:%s variant:%s not passed by user, skipping",
                test->name, test->type_name, libm_test_variant_str(test->variant));
         goto out;
+    }
+
+    if (test->ulp_threshold == 0.0 || test->ulp_threshold > 1.0) {
+        test->ulp_threshold = 0.5;
     }
 
     bzero(&test->result, sizeof(test->result));

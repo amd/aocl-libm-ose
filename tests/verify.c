@@ -36,11 +36,25 @@ update_ulp(struct libm_test *test, struct libm_test_data *data, int j)
     double ulp = get_ulp(test, j);
     /* Double comparison, should it work ? */
     LIBM_TEST_DPRINTF(VERBOSE3, "ulp:%f\n", ulp);
-    if ((ulp - test->ulp_err) > 0.0)
-        test->ulp_err = ulp;
+
+    if ((test->ulp_threshold - ulp) > 0) {
+        if ((ulp - test->max_ulp_err) > 0.0)
+            test->max_ulp_err = ulp;
+        return 1;
+    }
 
     return 0;
 }
+
+/*
+ * We need the uint32_t version, default one gives us with an int64
+ */
+#undef flt64_t
+
+typedef union {
+    uint64_t i;
+    double   d;
+} flt64_t;
 
 /*
  * returns -1 if success,
@@ -50,9 +64,9 @@ static int __verify_double(struct libm_test *test,
                            struct libm_test_result *result)
 {
     struct libm_test_data *data = test->test_data;
-    double *op = data->output;
-    double *nw = data->expected;
-    int sz = data->nelem;
+    flt64_t *op = (flt64_t*)data->output;
+    flt64_t *nw = (flt64_t*)data->expected;
+    int sz = data->nelem, ret;
     int idx = 0, npass = 0, nfail = 0, nignored = 0, ntests;
 
     ntests = data->nelem;
@@ -63,18 +77,27 @@ static int __verify_double(struct libm_test *test,
             update_ulp(test, data, j);
         }
 
-        if (((unsigned long)nw[j] ^ (unsigned long)op[j]) != 0) {
+        if ((nw[j].d - op[j].d) != 0.0) {
             result->input1[idx] = data->input1[j];
             if (test->nargs > 1) result->input2[idx] = data->input2[j];
             if (test->nargs > 2) result->input3[idx] = data->input3[j];
             LIBM_TEST_DPRINTF(VERBOSE3, "input: %10.23f\n", data->input1[j]);
             LIBM_TEST_DPRINTF(VERBOSE3, "expected: %10.23f actual:%10.23f\n",
                               data->expected[j], data->output[j]);
-            update_ulp(test, test->test_data, j);
+            ret = update_ulp(test, test->test_data, j);
 
-            nfail++;
+            switch(ret) {
+            case 0:  nignored++; break; /* ulp error found but within limit */
+            default:
+            case 1: nfail++; break;
+            }
+
+            /*
+             * Populate some results to show what the input value was when
+             * it failed.
+             */
             if (nfail < MAX_FAILURES) {
-                result->expected[idx] = nw[j];
+                result->expected[idx] = nw[j].d;
                 idx++;
             }
             continue;

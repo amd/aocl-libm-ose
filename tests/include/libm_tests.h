@@ -130,7 +130,8 @@ struct libm_test {
     char                    *name;
     char                    *type_name;
     uint32_t                 variant;
-    double                   ulp_err;           /* ULP error */
+    double                   ulp_threshold;
+    double                   max_ulp_err;           /* ULP error */
 
     uint8_t                  nargs;      /* number of arguments for this func */
 

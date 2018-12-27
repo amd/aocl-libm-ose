@@ -113,6 +113,7 @@ libm_test_exp2q(struct libm_test *test, double in)
 struct libm_test exp2_test_template = {
     .name       = "exp2_vec",
     .nargs      = 1,
+    .ulp_threshold = 0.3,
     .ops        = {
                    .ulp    = {.func1 = libm_test_exp2q},
                    .verify = libm_test_exp2_verify,

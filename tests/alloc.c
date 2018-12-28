@@ -35,52 +35,65 @@ void *libm_ptr_align_up(void *ptr, uint64_t align)
  *  Internal fragmentation expected, but since we align every pointer
  *  to the 256/512 bytes, cache trasing may be avoided.
  */
-void *libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem)
+int libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem)
 {
 #ifdef LIBM_AVX512_SUPPORTED
 #define _ALIGN_FACTOR 512
 #else
 #define _ALIGN_FACTOR 256
 #endif
-    struct libm_test_data *test_data;
-    //void *last_ptr;
+    struct libm_test_data *test_data = &test->test_data;
     int nargs = test->nargs;
     uint32_t arr_size = nelem * libm_test_get_data_size(test->variant);
     uint32_t sz = (arr_size << 1) + _ALIGN_FACTOR;
-
-    printf("nelem:%d size:%d\n", nelem, arr_size);
-
-    test_data = calloc(1, sizeof(*test_data));
-
-    if (!test_data)
-        goto out;
 
     test_data->nelem = nelem;
     /* CAUTION */
 
     test_data->input1 = aligned_alloc(_ALIGN_FACTOR, sz);
 
-    //last_ptr=test_data->input1;
-
     if (nargs > 1) {
         test_data->input2 = aligned_alloc(_ALIGN_FACTOR, sz);
-        //last_ptr = test_data->input2;
+        if (!test_data->input2)
+            goto free_input1_out;
     }
 
     if (nargs > 2) {
         test_data->input3 = aligned_alloc(_ALIGN_FACTOR, sz);
-        //last_ptr = test_data->input2;
+        if (!test_data->input2)
+            goto free_input3_out;
     }
 
     test_data->output = aligned_alloc(_ALIGN_FACTOR, sz);
+    if (!test_data->output)
+        switch(nargs) {
+        case 1: goto free_input1_out; break;
+        case 2: goto free_input2_out; break;
+        case 3: goto free_input3_out; break;
+        }
 
     test_data->expected = aligned_alloc(_ALIGN_FACTOR, sz);
+    if (!test_data->expected)
+        goto free_output_out;
 
-    printf("test_data:%p input1:%p output:%p expected:%p\n", test_data, test_data->input1,
+    LIBM_TEST_DPRINTF(INFO, "test_data:%p input1:%p output:%p expected:%p\n",
+	   test_data, test_data->input1,
            test_data->output, test_data->expected);
-out:
-    return test_data;
 
+    return 0;
+
+ free_input3_out:
+    free(test_data->input3);
+ free_input2_out:
+    free(test_data->input2);
+ free_input1_out:
+    free(test_data->input1);
+ free_output_out:
+    free(test_data->output);
+
+    LIBM_TEST_DPRINTF(PANIC, "Not enough memory for test data\n");
+
+    return -1;
 }
 
 struct libm_test *
@@ -111,19 +124,3 @@ libm_test_alloc_init(struct libm_test_conf *conf, struct libm_test *template)
     return NULL;
 }
 
-//static int test_exp2_vrd4_accu_setup(struct libm_test *test)
-int test_exp2_alloc_test_data(struct libm_test *test)
-{
-    const struct libm_test_conf *conf = test->conf;
-
-    test->test_data = libm_test_alloc_test_data(test, conf->nelem);
-
-    if (!test->test_data) {
-        LIBM_TEST_DPRINTF(PANIC, "Unable to allocate test_data for %s %s\n",
-                          test->name, libm_test_variant_str(test->variant));
-        return -1;
-    }
-
-
-    return 0;
-}

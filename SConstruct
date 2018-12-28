@@ -46,7 +46,7 @@ if ARGUMENTS.get('verbose') != "1":
 	env["SHLINKCOMSTR"] = "[SHLINK] => $TARGET"
 
 if ARGUMENTS.get('debug', 0):
-	env.Append(CCFLAGS = ' -g')
+	env.Append(CCFLAGS = ' -ggdb')
 #print(ARGUMENTS, COMMAND_LINE_TARGETS)
 
 if COMMAND_LINE_TARGETS:

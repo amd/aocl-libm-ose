@@ -17,15 +17,16 @@ include = "#tests/include"
 
 e = env.Clone()
 e.Append(
-	CCFLAGS  = ['-funsigned-char', '-fno-strict-aliasing', '-O1', 
+	CCFLAGS  = ['-funsigned-char', '-fno-strict-aliasing', '-Og', 
 			'-fstack-protector-all', '-Werror', '-W', '-Wall',
 			 '-Wno-multichar' , '-Wno-unused-parameter',
 			 '-Wno-missing-field-initializers', '-ffast-math',
-			 '-ftree-vectorize', '-falign-functions=32', '-falign-loops=32',
-			 '-march=native', '-I./include', '-I./tests/include'],
+			 # '-ftree-vectorize', '-falign-functions=32', '-falign-loops=32',
+			 '-march=native',
+			 '-I./include', '-I./tests/include'],
 	INCPATH  = [include],
 	CPPPATH  = [include],
-	LIBS     = ['amdlibm', 'm', 'quadmath'],
+	LIBS     = ['m', 'amdlibm', 'quadmath'],
 	LIBPATH  = [builddir]
 	)
 

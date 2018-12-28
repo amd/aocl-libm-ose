@@ -335,23 +335,21 @@ static void libm_test_print_report(struct list_head *test_list)
 
 static struct list_head test_list;
 
-
 static int __libm_test_populate_expected_flt(struct libm_test *test)
 {
-
     return 0;
 }
 
 static int __libm_test_populate_expected_dbl(struct libm_test *test)
 {
-    struct libm_test_data *data= test->test_data;
+    struct libm_test_data *data= &test->test_data;
 
     double *input1 = data->input1;
     double *input2 = data->input2;
     double *input3 = data->input3;
     double *expected = data->expected;
 
-    for (uint32_t i = 0; i < test->test_data->nelem; i++) {
+    for (uint32_t i = 0; i < test->test_data.nelem; i++) {
         switch (test->nargs) {
         case 1:
             expected[i] = test->libm_func.func_64.func1(input1[i]);
@@ -395,8 +393,8 @@ static int libm_test_populate_expected(struct libm_test *test)
         __libm_test_populate_expected_flt(test);
         break;
     case 2: // double
-        __libm_test_populate_expected_dbl(test);
     default:
+        __libm_test_populate_expected_dbl(test);
         break;
     }
 

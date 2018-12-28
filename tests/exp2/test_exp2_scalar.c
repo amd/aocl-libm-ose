@@ -18,7 +18,7 @@ double FN_PROTOTYPE(exp2_prems)(double);
 
 static int test_exp2_perf(struct libm_test *test)
 {
-    struct libm_test_data *data = test->test_data;
+    struct libm_test_data *data = &test->test_data;
     struct libm_test_result *result = &test->result;
     double *restrict o = data->output;
     double *restrict ip1 = data->input1;

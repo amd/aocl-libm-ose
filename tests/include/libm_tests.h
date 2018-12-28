@@ -130,16 +130,17 @@ struct libm_test {
     char                    *name;
     char                    *type_name;
     uint32_t                 variant;
-    double                   ulp_threshold;
+
     double                   max_ulp_err;           /* ULP error */
 
     uint8_t                  nargs;      /* number of arguments for this func */
 
     struct libm_test_conf   *conf;             /* will be allocated elsewhere */
     struct libm_test_ops     ops;
-    struct libm_test_data   *test_data;         /* will be allocated by test */
+    struct libm_test_data    test_data;         /* will be allocated by test */
     struct libm_test_result  result;
 
+    double                   ulp_threshold;
     void                    *private;        /* data that the test needs back */
 
     union {
@@ -195,7 +196,7 @@ const char *libm_test_variant_str(uint32_t variant);
 
 struct libm_test *
 libm_test_alloc_init(struct libm_test_conf *conf, struct libm_test *template);
-void *libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem);
+int libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem);
 
 /**********************************
  * ULP error calculations

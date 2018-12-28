@@ -30,7 +30,7 @@ char doc[] = BUILD_TEST_DOC(TEST_NAME);
 
 static int test_exp2_vrd4_perf(struct libm_test *test)
 {
-    struct libm_test_data *data = test->test_data;
+    struct libm_test_data *data = &test->test_data;
     struct libm_test_result *result = &test->result;
     double *restrict o = GCC_ALIGN(data->output, 256);
     double *restrict ip1 = GCC_ALIGN(data->input1, 256);
@@ -68,7 +68,7 @@ static int test_exp2_vrd4_perf(struct libm_test *test)
 
 static int test_exp2_vrd4_other(struct libm_test *test)
 {
-    struct libm_test_data *data = test->test_data;
+    struct libm_test_data *data = &test->test_data;
     double *ip = &data->input1[0];
     double *op = &data->output[0];
     int sz = data->nelem;
@@ -89,10 +89,15 @@ static int test_exp2_vrd4_other(struct libm_test *test)
 
 int libm_test_exp2_verify(struct libm_test *test, struct libm_test_result *result)
 {
-    struct libm_test_data *data = test->test_data;
+    struct libm_test_data *data = &test->test_data;
+    double *expected = data->expected;
+    double *input1 = data->input1;
 
+    /*
+     * Call the glibc's exp2() to get IEEE754 compliant values
+     */
     for (uint32_t j = 0; j < data->nelem; j++) {
-        data->expected[j] = exp2(data->input1[j]);
+        expected[j] = exp2(input1[j]);
     }
 
     return libm_test_verify(test, result);
@@ -123,7 +128,7 @@ struct libm_test exp2_test_template = {
 
 static int test_exp2_populate_inputs(struct libm_test *test, int use_uniform)
 {
-    struct libm_test_data *data = test->test_data;
+    struct libm_test_data *data = &test->test_data;
     struct libm_test_conf *conf = test->conf;
     int ret = 0;
     int (*func)(void *, size_t, uint32_t, double, double);
@@ -160,11 +165,11 @@ static int test_exp2_alloc_init_perf_data(struct libm_test *test)
 {
     const struct libm_test_conf *conf = test->conf;
 
-    test->test_data = libm_test_alloc_test_data(test, conf->nelem);
+    libm_test_alloc_test_data(test, conf->nelem);
 
     test_exp2_populate_inputs(test, 0);
 
-    if (!test->test_data)
+    if (!&test->test_data)
         goto out;
 
     return 0;
@@ -194,15 +199,16 @@ static int test_exp2_alloc_special_data(struct libm_test *test, size_t size)
 {
     struct libm_test_conf *conf = test->conf;
     struct libm_test_data *test_data;
+    int ret = 0;
 
-    test->test_data = libm_test_alloc_test_data(test, size);
+    libm_test_alloc_test_data(test, size);
 
-    if (!test->test_data) {
+    if (ret) {
         printf("unable to allocate\n");
         goto out;
     }
 
-    test_data = test->test_data;
+    test_data = &test->test_data;
     test_data->nelem = size;
 
     /* fixup conf */
@@ -217,13 +223,18 @@ static int test_exp2_alloc_special_data(struct libm_test *test, size_t size)
 
 static int test_exp2_vrd4_special_setup(struct libm_test *test)
 {
+    /*
+     * structure contains both in and out values,
+     * input only array size is half of original
+     */
     int test_data_size = ARRAY_SIZE(libm_test_exp2_special_data)/2;
+
     struct libm_test_data *data;
 
     // Just trying to get rid of warning/errors
     test_exp2_alloc_special_data(test, test_data_size);
 
-    data = test->test_data;
+    data = &test->test_data;
 
     for (int i = 0; i < test_data_size; i++) {
         data->input1[i] = libm_test_exp2_special_data[i].in;
@@ -241,7 +252,7 @@ static int test_exp2_vrd4_special_setup(struct libm_test *test)
 
 static int test_exp2_vrd4_accu(struct libm_test *test)
 {
-    struct libm_test_data *data = test->test_data;
+    struct libm_test_data *data = &test->test_data;
     double *ip = &data->input1[0];
     double *op = &data->output[0];
     int sz = data->nelem;
@@ -252,13 +263,15 @@ static int test_exp2_vrd4_accu(struct libm_test *test)
                " And error reported may not be real for such entries\n",
                test->name, test->type_name, sz);
 
-    for (int i = 0; i < arr_sz ; i++) {
+    for (int i = 0; i < arr_sz ||
+             (accu_ranges[i].start = 0.0 && accu_ranges[i].stop == 0.0)
+             ; i++) {
         test->conf->inp_range[0] = accu_ranges[i];
         test_exp2_populate_inputs(test, 1);
 
         LIBM_TEST_DPRINTF(VERBOSE2,
                           "Testing for accuracy %d items in range [%Lf, %Lf]\n",
-                          test->test_data->nelem,
+                          data->nelem,
                           accu_ranges[i].start, accu_ranges[i].stop);
         for (int j = 0; j < (sz - 3); j += 4) {
             __m256d ip4 = _mm256_set_pd(ip[j+3], ip[j+2], ip[j+1], ip[j]);
@@ -275,12 +288,11 @@ static int test_exp2_vrd4_accu(struct libm_test *test)
 int test_exp2_alloc_init(struct libm_test_conf *conf, struct libm_test *test)
 {
 
-    test->test_data = libm_test_alloc_test_data(test, conf->nelem);
+    int ret = 0;
 
-    if (!test->test_data)
-        return -1;
+    ret = libm_test_alloc_test_data(test, conf->nelem);
 
-    return 0;
+    return ret;
 }
 
 static int test_exp2_vrd4_accu_setup(struct libm_test *test)

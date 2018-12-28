@@ -421,7 +421,8 @@ static int libm_test_run_one(struct libm_test *test, struct libm_test_result *re
     if (test->ops.setup)
         test->ops.setup(test);
 
-    if (!test->test_data) {
+    if (!test->test_data.input1 ||
+        !test->test_data.output) {
         printf("Test:%s type:%s dont have data set\n", test->name,
                test->type_name);
         /*

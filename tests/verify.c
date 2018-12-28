@@ -8,7 +8,7 @@
 
 static double get_ulp(struct libm_test *test, int j)
 {
-    struct libm_test_data *data = test->test_data;
+    struct libm_test_data *data = &test->test_data;
     __float128 computed = 0.0;
 
     /* Get higer precision value for a given input */
@@ -49,12 +49,10 @@ update_ulp(struct libm_test *test, struct libm_test_data *data, int j)
 /*
  * We need the uint32_t version, default one gives us with an int64
  */
-#undef flt64_t
-
 typedef union {
     uint64_t i;
     double   d;
-} flt64_t;
+} flt64u_t;
 
 /*
  * returns -1 if success,
@@ -63,9 +61,9 @@ typedef union {
 static int __verify_double(struct libm_test *test,
                            struct libm_test_result *result)
 {
-    struct libm_test_data *data = test->test_data;
-    flt64_t *op = (flt64_t*)data->output;
-    flt64_t *nw = (flt64_t*)data->expected;
+    struct libm_test_data *data = &test->test_data;
+    flt64u_t *op = (flt64u_t*)data->output;
+    flt64u_t *nw = (flt64u_t*)data->expected;
     int sz = data->nelem, ret;
     int idx = 0, npass = 0, nfail = 0, nignored = 0, ntests;
 
@@ -77,14 +75,14 @@ static int __verify_double(struct libm_test *test,
             update_ulp(test, data, j);
         }
 
-        if ((nw[j].d - op[j].d) != 0.0) {
+        if ((nw[j].i ^ op[j].i) != 0) {
             result->input1[idx] = data->input1[j];
             if (test->nargs > 1) result->input2[idx] = data->input2[j];
             if (test->nargs > 2) result->input3[idx] = data->input3[j];
             LIBM_TEST_DPRINTF(VERBOSE3, "input: %10.23f\n", data->input1[j]);
-            LIBM_TEST_DPRINTF(VERBOSE3, "expected: %10.23f actual:%10.23f\n",
-                              data->expected[j], data->output[j]);
-            ret = update_ulp(test, test->test_data, j);
+            LIBM_TEST_DPRINTF(VERBOSE3, "expected: %lx actual:%lx\n",
+                              nw[j].i, op[j].i);
+            ret = update_ulp(test, data, j);
 
             switch(ret) {
             case 0:  nignored++; break; /* ulp error found but within limit */
@@ -96,7 +94,7 @@ static int __verify_double(struct libm_test *test,
              * Populate some results to show what the input value was when
              * it failed.
              */
-            if (nfail < MAX_FAILURES) {
+            if (nfail < MAX_FAILURES && (idx < MAX_FAILURES)) {
                 result->expected[idx] = nw[j].d;
                 idx++;
             }

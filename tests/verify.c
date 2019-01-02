@@ -34,16 +34,25 @@ static inline int
 update_ulp(struct libm_test *test, struct libm_test_data *data, int j)
 {
     double ulp = get_ulp(test, j);
+    int ret = 0;
     /* Double comparison, should it work ? */
-    LIBM_TEST_DPRINTF(VERBOSE3, "ulp:%f\n", ulp);
+    LIBM_TEST_DPRINTF(VERBOSE3, "ulp threashold:%f ulp:%f\n",
+                      test->ulp_threshold, ulp);
 
-    if ((test->ulp_threshold - ulp) > 0) {
-        if ((ulp - test->max_ulp_err) > 0.0)
-            test->max_ulp_err = ulp;
-        return 1;
+    if (ulp > 10000.0)
+        ulp = 10000.0;
+
+    //if ((ulp - test->max_ulp_err) > 0.0) {
+    if (ulp > test->max_ulp_err) {
+        test->max_ulp_err = ulp;
+        ret = 0;
     }
 
-    return 0;
+    //if ((ulp - test->ulp_threshold) > 0.0)
+    if (ulp > test->ulp_threshold)
+            ret = 1;                   /* fail; as greater than threshold */
+
+    return ret;
 }
 
 /*

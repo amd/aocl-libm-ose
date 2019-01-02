@@ -81,8 +81,8 @@ fname:
     vpextrd      $0, %xmm4, %eax #ax = lower double word of xmm4
     vmovq        %rax, %xmm9
     vpsrlq       %xmm9, %xmm8, %xmm8
-    pextrq       $1, %xmm7, %rbx # rbx = upper quadword of xmm7
-    vmovq        %rbx, %xmm12
+    pextrq       $1, %xmm7, %r11 # rbx = upper quadword of xmm7
+    vmovq        %r11, %xmm12
     vpextrd      $2, %xmm4, %ecx #rcx = second dword from xmm4
     vmovq        %rcx, %xmm11 #xmm11 = rcx
     vpsrlq       %xmm11, %xmm12, %xmm12

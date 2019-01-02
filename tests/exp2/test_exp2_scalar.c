@@ -14,7 +14,9 @@
 
 #include "test_exp2.h"
 
-double FN_PROTOTYPE(exp2_prems)(double);
+double FN_PROTOTYPE(exp2_v1)(double);
+double FN_PROTOTYPE(exp2_v2)(double);
+double FN_PROTOTYPE_FMA3(exp2)(double);
 
 static int test_exp2_perf(struct libm_test *test)
 {
@@ -24,7 +26,7 @@ static int test_exp2_perf(struct libm_test *test)
     double *restrict ip1 = data->input1;
     uint64_t sz = data->nelem;
     uint64_t n = test->conf->niter;
-    double (*fn1)(double) = test->libm_func.func_64.func1;
+
 
     /* Poison output */
     for (uint32_t j = 0; j < data->nelem; ++j) {
@@ -37,8 +39,9 @@ static int test_exp2_perf(struct libm_test *test)
 
     for (uint32_t i = 0; i < n ; ++i) {
         for (uint32_t j = 0; j < sz; j ++) {
-            o[j] = fn1(ip1[j]);
-            //o[j] = FN_PROTOTYPE(exp2_prems)(ip1[j]);
+            //o[j] = FN_PROTOTYPE(exp2_v1)(ip1[j]);
+            //o[j] = FN_PROTOTYPE(exp2_v2)(ip1[j]);
+            o[j] = FN_PROTOTYPE_FMA3(exp2)(ip1[j]);
             //o[j] = exp2(ip1[j]);
         }
         /*
@@ -54,12 +57,25 @@ static int test_exp2_perf(struct libm_test *test)
     return result->nfail;
 }
 
+int test_exp2_populate_inputs(struct libm_test *test, int use_uniform);
+
 static int test_exp2_setup_s_d(struct libm_test *test)
 {
     struct libm_test_conf *conf = test->conf;
+    int ret = test_exp2_alloc_init(conf,  test);
+    if (ret)
+        goto out;
 
-    return test_exp2_alloc_init(conf,  test);
+    test_exp2_populate_inputs(test, 0);
+
+    return 0;
+
+ out:
+    return -1;
 }
+
+extern __float128
+libm_test_exp2q(struct libm_test *test, double in);
 
 static int test_exp2_init_s_d(struct libm_test_conf *conf)
 {
@@ -75,7 +91,8 @@ static int test_exp2_init_s_d(struct libm_test_conf *conf)
         test->variant = LIBM_FUNC_S_D;
         test->name = "exp2_scalar";
         test->nargs = 1;
-        test->libm_func.func_64.func1 = FN_PROTOTYPE(exp2_prems);
+        test->ulp_threshold = 0.5;
+        test->libm_func.func_64.func1 = FN_PROTOTYPE(exp2_v1);
 
         uint32_t bit = 1 << (ffs(test_type) - 1);
 
@@ -85,6 +102,7 @@ static int test_exp2_init_s_d(struct libm_test_conf *conf)
             test->ops.setup = test_exp2_setup_s_d;
             test->ops.run = test_exp2_perf;
             test->ops.verify = libm_test_exp2_verify;
+            test->ops.ulp.func1 = libm_test_exp2q;
             break;
         default:
             LIBM_TEST_DPRINTF(INFO, "Unknown test type for scalar\n");

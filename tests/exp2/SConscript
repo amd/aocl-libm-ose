@@ -8,7 +8,7 @@ e = env.Clone()
 
 e.Append( LIBS = ['test'] )
 
-exp2_srcs = Glob('*.[cS]')
+exp2_srcs = Glob('*.[cS]', exclude='exp2_common.c')
 
 exp2 = e.Program('test_exp2', exp2_srcs)
 

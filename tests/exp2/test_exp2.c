@@ -104,7 +104,7 @@ int libm_test_exp2_verify(struct libm_test *test, struct libm_test_result *resul
 }
 
 /* There is no exp2q in recent versions of gcc */
-static inline __float128
+__float128
 libm_test_exp2q(struct libm_test *test, double in)
 {
     /* logq(2.0) */
@@ -118,7 +118,7 @@ libm_test_exp2q(struct libm_test *test, double in)
 struct libm_test exp2_test_template = {
     .name       = "exp2_vec",
     .nargs      = 1,
-    .ulp_threshold = 0.3,
+    .ulp_threshold = 4.0,
     .ops        = {
                    .ulp    = {.func1 = libm_test_exp2q},
                    .verify = libm_test_exp2_verify,
@@ -126,7 +126,7 @@ struct libm_test exp2_test_template = {
     .libm_func  = { .func_64 = { .func1 = exp2, }, }, /* WOHOOO */
 };
 
-static int test_exp2_populate_inputs(struct libm_test *test, int use_uniform)
+int test_exp2_populate_inputs(struct libm_test *test, int use_uniform)
 {
     struct libm_test_data *data = &test->test_data;
     struct libm_test_conf *conf = test->conf;
@@ -391,7 +391,7 @@ static int test_exp2_init_v4d(struct libm_test_conf *conf)
         ret = test_exp2_register_one(exp2_v4d);
 
         if (ret)
-            goto out;;
+            goto out;
     }
 
     return 0;
@@ -415,7 +415,6 @@ int libm_test_init(struct libm_test_conf *c)
 
     if (!conf->test_types)
         conf->test_types = EXP2_TEST_TYPES_ALL;
-
 
     if ((conf->test_types & TEST_TYPE_ACCU) &&
         !conf->inp_range[0].start) {
@@ -443,13 +442,3 @@ int libm_test_init(struct libm_test_conf *c)
 out:
     return ret;
 }
-
-
-#if 0
-double libm_test_exp2_ulp(struct libm_test *test, double x, double computed)
-{
-    __float128 exp2_x = libm_test_exp2q(x);
-
-    return libm_test_ulp_errord(computed, exp2_x);
-}
-#endif

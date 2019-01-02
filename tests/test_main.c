@@ -492,7 +492,7 @@ int libm_test_register(struct libm_test *test)
         goto out;
     }
 
-    if (test->ulp_threshold == 0.0 || test->ulp_threshold > 1.0) {
+    if (test->ulp_threshold == 0.0 || test->ulp_threshold > 10.0) {
         test->ulp_threshold = 0.5;
     }
 

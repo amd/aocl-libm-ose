@@ -44,6 +44,21 @@ int libm_test_init_rand()
     return 0;
 }
 
+
+uint32_t libm_test_rand32(void)
+{
+    libm_test_init_rand();
+
+    return (rand() << 16) | rand();
+}
+
+uint64_t libm_test_rand64(void)
+{
+    libm_test_init_rand();
+
+    return ((uint64_t)rand() << 32) | rand();
+
+}
 /*
  * Generate a random floating point number from min to max
  * But then, floating point numbers itself is not uniformly distributed.

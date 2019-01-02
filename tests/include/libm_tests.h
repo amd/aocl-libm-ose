@@ -77,6 +77,7 @@ enum {
     TEST_TYPE_PERF = (1<<1),
     TEST_TYPE_SPECIAL = (1<<2),
     TEST_TYPE_CORNER = (1<<3),
+    TEST_TYPE_MAX,
 };
 
 typedef union {

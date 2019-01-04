@@ -124,3 +124,26 @@ libm_test_alloc_init(struct libm_test_conf *conf, struct libm_test *template)
     return NULL;
 }
 
+int libm_test_free_test_data(struct libm_test *test)
+{
+    struct libm_test_data *test_data= &test->test_data;
+    free(test_data->input3);
+
+    free(test_data->input2);
+
+    free(test_data->input1);
+
+    free(test_data->output);
+
+    return 0;
+}
+
+int
+libm_test_free(struct libm_test *test)
+{
+    libm_test_free_test_data(test);
+
+    free(test);
+
+    return 0;
+}

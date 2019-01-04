@@ -412,7 +412,10 @@ static inline int is_libm_func_exists(struct libm_test *test)
 
 static int libm_test_run_one(struct libm_test *test, struct libm_test_result *result)
 {
-    printf("Starting Test: %s %s\n", test->name, test->type_name);
+    LIBM_TEST_DPRINTF(VERBOSE3,
+                      "Starting Test: %s type:%s input:%s\n",
+                      test->name, test->type_name,
+                      libm_test_variant_str(test->variant));
 
     /*
      * Supposed to allocate all buffers,
@@ -444,7 +447,11 @@ static int libm_test_run_one(struct libm_test *test, struct libm_test_result *re
     if (test->ops.cleanup)
         test->ops.cleanup(test);
 
-    printf("Done Test:%s %s\n", test->name, test->type_name);
+    LIBM_TEST_DPRINTF(VERBOSE3,
+                      "Done Test: %s type:%s input:%s\n",
+                      test->name, test->type_name,
+                      libm_test_variant_str(test->variant));
+
     return 0;
 
 out:
@@ -473,6 +480,10 @@ int libm_test_register(struct libm_test *test)
                test->type_name);
         goto out;
     }
+
+    LIBM_TEST_DPRINTF(VERBOSE3, "Request Add Test:%s type:%s input:%s\n",
+		      test->name, test->type_name,
+		      libm_test_variant_str(test->variant));
 
     if (test->nargs < 1 || test->nargs > 3) {
         printf("Test:%s type:%s no of args: %d is invalid\n", test->name,
@@ -506,6 +517,9 @@ int libm_test_register(struct libm_test *test)
                test->type_name);
     }
 
+    LIBM_TEST_DPRINTF(VERBOSE3, "Adding test:%s type:%s input:%s\n",
+		      test->name, test->type_name,
+		      libm_test_variant_str(test->variant));
     list_add(&test->list, &test_list);
 
     return 0;

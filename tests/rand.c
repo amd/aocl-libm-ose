@@ -106,13 +106,38 @@ static int check_data_size(void *data, int size)
     return 0;
 }
 
+static int __write_data(void *data,
+                        void *val,
+                        int idx,
+                        int size)
+{
+    double *d = (double*)data;
+    float *f = (float*)data;
+
+    double *dval = (double *)val;
+    float *fval = (float *)val;
+
+    switch(size) {
+    case 4:
+        f[idx] = *fval;
+        break;
+    case 8:
+        d[idx] = *dval;
+        break;
+    default:
+        LIBM_TEST_DPRINTF(PANIC, "Dont know how to write data of size:%d\n",
+                          size);
+        return -1;
+    }
+
+    return 0;
+}
+
 int libm_test_populate_range_simple(void *data,
                                     size_t nelem, uint32_t variant,
                                     double min, double max)
 {
     int data_size = libm_test_get_data_size(variant);
-    double *d = (double*)data;
-    float *f = (float*)data;
 
     libm_test_init_rand();
 
@@ -124,15 +149,12 @@ int libm_test_populate_range_simple(void *data,
 
     for (uint32_t i = 0; i < nelem; i++) {
         double val = libm_test_rand_range_simple(min, max);
+        float fval = (float) val;
 
-        switch(data_size) {
-        case 4:
-            *f++ = (float)val;
-            break;
-        case 8:
-            *d++ = val;
-            break;
-        }
+        __write_data(data,
+                     (data_size == 8) ? (void*)&val: (void*)&fval,
+                     i,
+                     (data_size == 8) ? sizeof(val): sizeof(fval));
     }
 
     return 0;
@@ -194,14 +216,13 @@ static double logdist2(int i, int n, double a, double b, double logba)
 
 }
 
+
 static int __populate_range(void *data,
 			    size_t nelem, uint32_t variant,
 			    double min, double max, int uniform)
 {
     int data_size = libm_test_get_data_size(variant);
     double logba;
-    double *d = (double*)data;
-    float *f = (float*)data;
 
     check_data_size(data, data_size);
 
@@ -213,19 +234,18 @@ static int __populate_range(void *data,
 
     for (uint32_t i = 0; i < nelem; i++) {
         double val = 0.0;
+        float fval = 0.0f;
         if (uniform)
             val = logdist2(i, nelem, min, max, logba);
         else
             val = (min * (nelem - i) + max * i) / nelem;
 
-        switch(data_size) {
-        case 4:
-            *f++ = (float)val;
-            break;
-        case 8:
-            *d++ = val;
-            break;
-        }
+        fval = val;
+
+        __write_data(data,
+                     data_size == 8? (void*)&val: (void*)&fval,
+                     i,
+                     data_size == 8? sizeof(val): sizeof(fval));
     }
 
     return 0;

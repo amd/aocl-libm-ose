@@ -197,6 +197,7 @@ const char *libm_test_variant_str(uint32_t variant);
 
 struct libm_test *
 libm_test_alloc_init(struct libm_test_conf *conf, struct libm_test *template);
+int libm_test_free(struct libm_test *test);
 int libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem);
 
 /**********************************

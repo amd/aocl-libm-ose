@@ -9,7 +9,7 @@ struct __exp_internal_data {
     uint64_t in, out;
 };
 
-static struct __exp_internal_data libm_test_exp2_special_data[] = {
+static struct __exp_internal_data test_exp2_special_data[] = {
     {0xffefffffffffffff, 0x0000000000000000},
     {0xc0862c4379671324, 0x00052288f82fe4ba},
     {0x7ff0000000000000, 0x7ff0000000000000}, //inf

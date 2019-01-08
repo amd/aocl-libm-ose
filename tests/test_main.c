@@ -14,7 +14,7 @@
 #include <dlfcn.h>                              /* for dlopen and dlsym() */
 #include <string.h>                             /* for strlen() and strtok() */
 
-//#include "bench.h"
+#include <debug.h>
 //#include "util.h"
 #include <libm_tests.h>
 #include <libm_test_macros.h>
@@ -53,7 +53,7 @@ static struct argp_option options[] = {
      "performance, accuracy, special, corner "
      "OR all(default) "
      "first four characters necessary"},
-    {"verbose", 'v', "NUM", 0, "Increased verbosity value <1-3>"},
+    {"verbose", 'v', "NUM", 0, "Increased verbosity value [1..5]"},
     {"range", 'r', "[start,end]", 0, "Range to populate input "
     "Accepts multiple ranges (upto 3)"},
 
@@ -142,7 +142,7 @@ static error_t __enable_test_variants(const char *vrnt, struct libm_test_conf *c
     return 0;
 }
 
-uint32_t dbg_bits = DBG_VERBOSE1;
+uint32_t dbg_bits = DBG_DEFAULT;
 
 static error_t __enable_tests_type(const char *type, struct libm_test_conf *conf)
 {
@@ -251,10 +251,13 @@ static error_t parse_opts(int key, char *arg, struct argp_state *state)
         parse_variants(arg, conf);
         break;
     case 'v': {
-        int bit = strtol(arg, NULL, 0);
-        bit = (bit < 0)? 0: bit;                /* adjust between 0-3 */
-        bit = (bit > 3)? 3: bit;
-        dbg_bits = 1 << (LIBM_TEST_DBG_INFO + bit);
+        int32_t bit = strtol(arg, NULL, 0);
+        int high = LIBM_TEST_DBG_VERBOSE3 - LIBM_TEST_DBG_INFO;
+        printf("got bit:%d\n", bit);
+        /* adjust between 0-5 */
+        bit = (bit < 0)? 0: bit;
+        bit = (bit > high)? high: bit;
+        dbg_bits = (1 << (bit + LIBM_TEST_DBG_INFO + 1)) - 1;
     }
         break;
     case 'r':

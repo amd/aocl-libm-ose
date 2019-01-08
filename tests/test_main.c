@@ -217,7 +217,7 @@ static error_t parse_variants(char *arg, struct libm_test_conf *conf)
          */
         while(len && (test = strtok(arg, ",;:")) != NULL) {
             int ret = __enable_test_variants(test, conf);
-            if (!ret)
+            if (ret)
                 return -1;
             arg += strlen(test) + 1; // skip the '\0', null char
             len -= strlen(test) + 1;

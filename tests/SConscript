@@ -17,7 +17,7 @@ include = "#tests/include"
 
 e = env.Clone()
 e.Append(
-	CCFLAGS  = ['-funsigned-char', '-fno-strict-aliasing', '-Og', 
+	CCFLAGS  = ['-funsigned-char', '-fno-strict-aliasing', #'-Og', 
 			'-fstack-protector-all', '-Werror', '-W', '-Wall',
 			 '-Wno-multichar' , '-Wno-unused-parameter',
 			 '-Wno-missing-field-initializers', '-ffast-math',
@@ -41,8 +41,9 @@ def getSubdirs(abs_path_dir) :
     lst.sort()
     return lst
 
-#tests = getSubdirs('.')
-tests = ['exp2']
+tests = getSubdirs('.')
+exclude_dirs = ['include']
+tests = [x for x in tests if x not in exclude_dirs]
 
 test_exes = []
 

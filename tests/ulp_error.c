@@ -29,8 +29,8 @@
 #define ulp_float(a, b)
 #define ulp_double(a, b) ((a) - (b) < DOUBLE_ROUNDING_TREASHOLD ? 1 : 0)
 
-#define is_inf(x)               (!isfinite((x)))
-#define is_inf_neg(g)           (!isfinite((g)))
+#define isinf_neg(g) 		(isinf((g)) && (g) < 0.0)
+#define isinfq_neg(y) 		(isinfq((y)) && (y) < 0.0)
 #define AMD_LIBM_MAX_FLOAT      FLT_MAX
 #define AMD_LIBM_MAX_DOUBLE     DBL_MAX
 #define AMD_LIBM_INF            PINFBITPATT_SP32
@@ -64,7 +64,7 @@ double libm_test_ulp_errorf(float computed, double expected)
  */
 #include <quadmath.h>
 
-#if 1
+#if 0
 double libm_test_ulp_errord(double output, __float128 computed)
 {
     flt64u_t c = {.d = output};
@@ -86,47 +86,47 @@ static inline __float128 __ulp(double val)
 {
     flt64_t c = {.d = val};
     /* 11 bits ignoring sign bit */
-    int exp = ((c.i >> EXPSHIFTBITS_DP64) & 0x7ff) - 1023;
+    int exp = ((c.i >> EXPSHIFTBITS_DP64) & 0x7ff) - 1023; /* 11 bits ignoreing sign bit */
 
     exp = exp - (MANTLENGTH_DP64 - 1);  /* e-p-1 */
 
     return powq(2, exp);                /* 2^(e-p-1) */
 }
 
-double libm_test_ulp_errord(double output, __float128 expected)
+double libm_test_ulp_error(double output, __float128 expected)
 {
     if (isnan(output) && isnanq(expected)) return 0.0;
 
-    if (isnan(output) || isnanq(expected)) return AMD_LIBM_INF;
+    if (isnan(output) || isnanq(expected)) return INFINITY;
 
-    if (is_inf(output) && (is_inf(expected) || (expected > AMD_LIBM_MAX_DOUBLE)))
+    if (isinf(output) && (isinfq(expected) || (expected > AMD_LIBM_MAX_DOUBLE)))
         return 0.0;
 
-    if (is_inf_neg(output) &&
-        (is_inf_neg(expected) || (expected < -AMD_LIBM_MAX_DOUBLE)))
+    if (isinf_neg(output) &&
+        (isinfq_neg(expected) || (expected < -AMD_LIBM_MAX_DOUBLE)))
         return 0.0;
 
-    if ((is_inf(output) || is_inf_neg(output)) &&
-        (is_inf(expected) || is_inf_neg(expected)))
-        return AMD_LIBM_INF;
+    if ((isinf(output) || isinf_neg(output)) &&
+        (isinfq(expected) || isinfq_neg(expected)))
+        return INFINITY;
 
     if (isfinite(output)) {
-        if (is_inf_neg(expected) || (expected > AMD_LIBM_MAX_DOUBLE))
+        if (isinfq_neg(expected) || (expected > AMD_LIBM_MAX_DOUBLE))
             return fabsq(output - expected) / __ulp(expected);
 
-        if (is_inf(expected) || (expected > AMD_LIBM_MAX_DOUBLE))
-        return fabs(output - AMD_LIBM_MAX_DOUBLE) / __ulp(AMD_LIBM_MAX_DOUBLE) + 1;
+        if (isinfq(expected) || (expected > AMD_LIBM_MAX_DOUBLE))
+            return fabs(output - AMD_LIBM_MAX_DOUBLE) / __ulp(AMD_LIBM_MAX_DOUBLE) + 1;
 
-        if (is_inf_neg(expected) || (expected < -AMD_LIBM_MAX_DOUBLE))
+        if (isinfq_neg(expected) || (expected < -AMD_LIBM_MAX_DOUBLE))
             return (fabs(output - (-AMD_LIBM_MAX_DOUBLE)) /
                     __ulp(-AMD_LIBM_MAX_DOUBLE)) + 1;
     }
 
-    if (is_inf(output))
+    if (isinf(output))
         return (fabsq((__float128)AMD_LIBM_MAX_DOUBLE - expected) /
                 __ulp(expected)) + 1;
 
-    if (is_inf_neg(output))
+    if (isinf_neg(output))
         return (fabsq(-((__float128)AMD_LIBM_MAX_DOUBLE) - expected) /
                 __ulp(expected)) + 1;
 

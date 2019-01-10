@@ -41,9 +41,12 @@ def getSubdirs(abs_path_dir) :
     lst.sort()
     return lst
 
-tests = getSubdirs('.')
+# This sconscript file directory
+this_sconscript_file = (lambda x:x).func_code.co_filename
+test_base = os.path.dirname(this_sconscript_file)
+tests = getSubdirs(test_base)
 exclude_dirs = ['include']
-tests = [x for x in tests if x not in exclude_dirs]
+tests = [x for x in tests if path.exists(path.join(test_base, x, 'SConscript')) and x not in exclude_dirs]
 
 test_exes = []
 

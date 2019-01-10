@@ -110,7 +110,7 @@ static error_t __enable_test_variants(const char *vrnt, struct libm_test_conf *c
     int n = strnlen(vrnt, 10);
 
     if (n == 0) {
-        printf("No test variant runnable\n");
+        LIBM_TEST_DPRINTF(INFO, "No test variant runnable\n");
         return -1;
     }
     uint8_t all = strncmp(vrnt, "all", 3) == 0;
@@ -270,7 +270,7 @@ static error_t parse_opts(int key, char *arg, struct argp_state *state)
         if (ret == 0)
             ridx++;
         else
-            LIBM_TEST_DPRINTF(CRIT, "Range is not valid input\n");
+            LIBM_TEST_DPRINTF(WARN, "Range is not valid input, ignoring\n");
         break;
     case 't':
         ret = parse_test_types(arg, conf);

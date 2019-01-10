@@ -204,6 +204,6 @@ int libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem);
  * ULP error calculations
  **********************************/
 double libm_test_ulp_errorf(float computed, double expected);
-double libm_test_ulp_errord(double computed, __float128 expected);
+double libm_test_ulp_error(double computed, __float128 expected);
 
 #endif  /* __LIBM_TESTS_H__ */

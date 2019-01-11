@@ -37,6 +37,16 @@ enum {
 		}							\
 	} while (0)
 
+/* just print what is mentioned ignoring file and line number */
+#define LIBM_TEST_CDPRINTF(lvl, fmt, ...)		\
+	do {						\
+		if (dbg_bits & DBG_BIT(lvl) &&		\
+		    (DBG_BIT(lvl) <= dbg_bits)) {	\
+			printf(fmt,			\
+			       ## __VA_ARGS__);		\
+		}					\
+	} while (0)
+
 #else
 #define IS_DBG_ENABLED(bit) false
 #define LIBM_TEST_DPRINTF(lvl, fmt, ...)

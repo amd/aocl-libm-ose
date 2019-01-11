@@ -98,6 +98,9 @@ static int test_exp2_v4d_perf(struct libm_test *test)
 /*
  * s1d - 1 element double precision
  */
+double FN_PROTOTYPE(exp2_v1)(double);
+double FN_PROTOTYPE(exp2_v2)(double);
+double FN_PROTOTYPE(exp2_v3)(double);
 static int test_exp2_s1d_perf(struct libm_test *test)
 {
     struct libm_test_data *data = &test->test_data;
@@ -119,7 +122,10 @@ static int test_exp2_s1d_perf(struct libm_test *test)
     for (uint32_t i = 0; i < n ; ++i) {
         uint32_t j;
         for (j = 0; j < sz; j++) {
-            o[j] = FN_PROTOTYPE_FMA3(exp2)(ip1[j]);
+            //o[j] = FN_PROTOTYPE(exp2)(ip1[j]);
+            //o[j] = FN_PROTOTYPE(exp2_v1)(ip1[j]);
+            //o[j] = FN_PROTOTYPE(exp2_v2)(ip1[j]);
+            o[j] = exp2(ip1[j]);
         }
     }
 
@@ -299,6 +305,7 @@ static int test_exp2_perf_setup(struct libm_test *test)
     const struct libm_test_conf *conf = test->conf;
     int ret = 0;
 
+    test->ulp_threshold = 0.09;
     ret = libm_test_alloc_test_data(test, conf->nelem);
     if (ret)
         goto out;
@@ -498,7 +505,9 @@ static int __test_exp2_accu(struct libm_test *test,
             j += 4;
             break;
         case LIBM_FUNC_S_D:
-            op[j] = FN_PROTOTYPE_FMA3(exp2)(ip[j]);
+            //op[j] = FN_PROTOTYPE_FMA3(exp2)(ip[j]);
+            op[j] = FN_PROTOTYPE(exp2(ip[j]));
+            //op[j] = exp2(ip[j]);
             j++;
             break;
         default:
@@ -546,37 +555,60 @@ int libm_test_exp2_verify(struct libm_test *test,
 #define SINGLE_PRECISION_MASK (LIBM_FUNC_S_S | LIBM_FUNC_V2S | \
                                LIBM_FUNC_V4S | LIBM_FUNC_V8S)
 
+static int __generate_test_one_range(struct libm_test *test,
+                                     struct libm_test_input_range *range)
+{
+    int ret = 0;
+
+    LIBM_TEST_DPRINTF(VERBOSE2,
+                      "Testing for accuracy %d items in range [%Lf, %Lf]\n",
+                      test->test_data.nelem,
+                      range->start, range->stop);
+
+    test->conf->inp_range[0] = *range;
+
+    ret = test_exp2_populate_inputs(test, 1);
+
+    if (test->variant & SINGLE_PRECISION_MASK)
+        ret = __test_exp2f_accu(test, test->variant);
+    else
+        ret = __test_exp2_accu(test, test->variant);
+
+    return ret;
+}
+
 static int test_exp2_accu(struct libm_test *test)
 {
     struct libm_test_data *data = &test->test_data;
     int sz = data->nelem;
     int arr_sz = ARRAY_SIZE(accu_ranges);
+    int ret = 0;
 
     if (sz % 4 != 0)
         printf("%s %s : %d is not a multiple of 4, some may be left out\n"
                " And error reported may not be real for such entries\n",
                test->name, test->type_name, sz);
 
-    for (int i = 0; i < arr_sz ||
-             (accu_ranges[i].start = 0.0 && accu_ranges[i].stop == 0.0)
-             ; i++) {
-        test->conf->inp_range[0] = accu_ranges[i];
-        test_exp2_populate_inputs(test, 1);
+    if (test->conf->inp_range[0].start) {
+        struct libm_test_input_range *range = &test->conf->inp_range[0];
 
-        LIBM_TEST_DPRINTF(VERBOSE2,
-                          "Testing for accuracy %d items in range [%Lf, %Lf]\n",
-                          data->nelem,
-                          accu_ranges[i].start, accu_ranges[i].stop);
-        int ret = 0;
-        if (test->variant & SINGLE_PRECISION_MASK)
-            ret = __test_exp2f_accu(test, test->variant);
-	else
-            ret = __test_exp2_accu(test, test->variant);
-
+        ret = __generate_test_one_range(test, range);
         if (ret)
-            return -1;
+            return ret;
 
-        libm_test_exp2_verify(test, &test->result);
+        ret = libm_test_exp2_verify(test, &test->result);
+
+        return ret;
+    }
+    
+    for (int i = 0; i < arr_sz ||
+             (accu_ranges[i].start = 0.0 &&
+              accu_ranges[i].stop == 0.0) ; i++) {
+        ret = __generate_test_one_range(test, &accu_ranges[i]);
+        if (ret)
+            return ret;
+
+        ret = libm_test_exp2_verify(test, &test->result);
     }
 
     return 0;
@@ -650,7 +682,8 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
                                         .run = test_exp2_v4d_perf,},
                         .accuracy     = {.setup = test_exp2_accu_setup,
                                          .run   = test_exp2_accu,},
-                        .special      = {.setup = test_exp2_special_setup,},
+                        .special      = {.setup = test_exp2_special_setup,
+                                         .run   = test_exp2_accu,},
      },
 
 

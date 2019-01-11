@@ -117,10 +117,8 @@ static int __verify_double(struct libm_test *test,
         if (test->conf->test_types == TEST_TYPE_ACCU) {
             /* Verify ULP for every case */
             ulp = get_ulp(test, j);
-            ret = update_ulp(test, ulp);
-            if (isinf(ulp) || (ret == 0)) {
-
-            }
+            if ((nw[j].i ^ op[j].i) != 0)
+                ret = update_ulp(test, ulp);
         } else {
             if ((nw[j].i ^ op[j].i) != 0) {
                 result->input1[idx] = data->input1[j];
@@ -150,15 +148,25 @@ static int __verify_double(struct libm_test *test,
                 idx++;
             }
         }
+
         if (print_info) {
+            flt64u_t *in1 = (flt64u_t*)&data->input1[j],
+                *in2 = (flt64u_t*)&data->input2[j],
+                *in3 = (flt64u_t*)&data->input1[j];
             LIBM_TEST_DPRINTF(VERBOSE3, "input1: %10.23f", data->input1[j]);
             if (nargs > 1)
-                LIBM_TEST_DPRINTF(VERBOSE3, "  input2: %10.23f", data->input2[j]);
+                LIBM_TEST_CDPRINTF(VERBOSE3, "  input2: %10.23f", data->input2[j]);
             if (nargs > 2)
-                LIBM_TEST_DPRINTF(VERBOSE3, "  input3: %10.23f", data->input3[j]);
+                LIBM_TEST_CDPRINTF(VERBOSE3, "  input3: %10.23f", data->input3[j]);
 
-            LIBM_TEST_DPRINTF(VERBOSE3, "\nexpected: %lx actual:%lx ulp:%f\n",
-                              nw[j].i, op[j].i, ulp);
+            LIBM_TEST_CDPRINTF(VERBOSE3, "\ninput1: %lx", in1->i);
+            if (nargs > 1)
+                LIBM_TEST_CDPRINTF(VERBOSE3, "  input2: %lx", in2->i);
+            if (nargs > 2)
+                LIBM_TEST_CDPRINTF(VERBOSE3, "  input3: %lx", in3->i);
+
+            LIBM_TEST_CDPRINTF(VERBOSE3, "    expected: %lx actual:%lx ulp:%f\n",
+                               nw[j].i, op[j].i, ulp);
 
             print_info = 0;
         }

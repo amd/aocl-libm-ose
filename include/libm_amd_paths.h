@@ -88,7 +88,7 @@ __m128 FN_PROTOTYPE_FMA3(vrs4_expm1f)(__m128 x);
  __m128d FN_PROTOTYPE_BAS64(vrd2_exp)(__m128d x);
  __m128d FN_PROTOTYPE_BDOZR(vrd2_exp)(__m128d x);
  __m128d FN_PROTOTYPE_FMA3(vrd2_exp)(__m128d x);
-
+ __m128d FN_PROTOTYPE_FMA3(vrd2_pow)(__m128d x,__m128d y);
  __m128d FN_PROTOTYPE_BAS64(vrd2_exp2)(__m128d x);
  __m128d FN_PROTOTYPE_BDOZR(vrd2_exp2)(__m128d x);
  __m128d FN_PROTOTYPE_FMA3(vrd2_exp2)(__m128d x);

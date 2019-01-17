@@ -117,8 +117,7 @@ static int __verify_double(struct libm_test *test,
         if (test->conf->test_types == TEST_TYPE_ACCU) {
             /* Verify ULP for every case */
             ulp = get_ulp(test, j);
-            if ((nw[j].i ^ op[j].i) != 0)
-                ret = update_ulp(test, ulp);
+            ret = update_ulp(test, ulp);
         } else {
             if ((nw[j].i ^ op[j].i) != 0) {
                 result->input1[idx] = data->input1[j];
@@ -170,6 +169,9 @@ static int __verify_double(struct libm_test *test,
 
             print_info = 0;
         }
+
+        // reset ret
+        ret = 0;
     }
 
 

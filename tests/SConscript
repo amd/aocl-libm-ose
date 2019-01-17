@@ -36,18 +36,20 @@ test_common_srcs = Glob('*.c', exclude=test_excluded_srcs)
 
 testlib = e.Library('test', test_common_srcs)
 
-def getSubdirs(abs_path_dir) :  
+def getSubdirs(abs_path_dir):
     lst = [ name for name in os.listdir(abs_path_dir) if path.isdir(join(abs_path_dir, name)) and name[0] != '.' ]
     lst.sort()
     return lst
 
 # This sconscript file directory
-this_sconscript_file = (lambda x:x).func_code.co_filename
+this_sconscript_file = Dir('.').srcnode().abspath
 test_base = os.path.dirname(this_sconscript_file)
-tests = getSubdirs(test_base)
+tests = getSubdirs(this_sconscript_file)
+print(tests, path.join(test_base, ))
 exclude_dirs = ['include']
-tests = [x for x in tests if path.exists(path.join(test_base, x, 'SConscript')) and x not in exclude_dirs]
+tests = [x for x in tests if x not in exclude_dirs]
 
+print(tests)
 test_exes = []
 
 for test in tests:

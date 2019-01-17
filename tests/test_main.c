@@ -31,9 +31,6 @@
 
 #define NELEM 5000                     /* Some odd number */
 
-#define STRINGIFY2(x) #x
-#define STRINGIFY(x) STRINGIFY2(x)
-#define PASTE2(a, b) a##b
 #define BUILD_TEST_DOC(b) "AMD LIBM Test for " STRINGIFY(b)
 
 extern char doc[];

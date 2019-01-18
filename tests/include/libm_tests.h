@@ -132,21 +132,22 @@ struct libm_test_ops {
 #endif
 
 struct libm_test {
-    char                    *name;
-    char                    *type_name;
-    uint32_t                 variant;
+    char                    *name;      /* Scalar/vector */
+    char                    *type_name; /* perf/accu/special/corner */
+    char                    *input_name; /* s1f,s1d,v2s,v4d etc */
 
-    double                   max_ulp_err;           /* ULP error */
+    enum LIBM_FUNC_VARIANT   variant;
 
-    uint8_t                  nargs;      /* number of arguments for this func */
+    double                   max_ulp_err; /* ULP error */
 
-    struct libm_test_conf   *conf;             /* will be allocated elsewhere */
+    uint8_t                  nargs;     /* number of arguments for this func */
+
+    struct libm_test_conf   *conf;      /* will be allocated elsewhere */
     struct libm_test_ops     ops;
-    struct libm_test_data    test_data;         /* will be allocated by test */
+    struct libm_test_data    test_data; /* will be allocated by test */
     struct libm_test_result  result;
 
     double                   ulp_threshold;
-    void                    *private;        /* data that the test needs back */
 
     void                    *private;        /* data that the test needs back */
 

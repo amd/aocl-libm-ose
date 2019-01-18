@@ -76,7 +76,7 @@ int libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem)
     if (!test_data->expected)
         goto free_output_out;
 
-    LIBM_TEST_DPRINTF(INFO, "test_data:%p input1:%p output:%p expected:%p\n",
+    LIBM_TEST_DPRINTF(DBG2, "test_data:%p input1:%p output:%p expected:%p\n",
 	   test_data, test_data->input1,
            test_data->output, test_data->expected);
 

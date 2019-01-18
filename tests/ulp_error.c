@@ -48,7 +48,7 @@ static inline double __ulp(float val)
 {
     flt32u_t c = {.f = val};
 
-    int expo = ((c.i >> EXPSHIFTBITS_SP32) & 0x7f) - 127; /* 7 bits ignoring sign bit */
+    int expo = ((c.i >> EXPSHIFTBITS_SP32) & 0xff) - 127; /* 7 bits ignoring sign bit */
 
     expo = expo - (MANTLENGTH_SP32 - 1);  /* e-p-1 */
 

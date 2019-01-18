@@ -123,11 +123,11 @@ static int __verify_double(struct libm_test *test,
             flt64u_t *in1 = (flt64u_t*)&data->input1[j],
                 *in2 = (flt64u_t*)&data->input2[j],
                 *in3 = (flt64u_t*)&data->input1[j];
-            LIBM_TEST_DPRINTF(VERBOSE3, "input1: % -10.23f(%016lX)", in1->d, in1->i);
+            LIBM_TEST_DPRINTF(VERBOSE3, "input1: % -g(%016lX)", in1->d, in1->i);
             if (nargs > 1)
-                LIBM_TEST_CDPRINTF(VERBOSE3, "  input2: % -10.23f(%016lX)", in2->d, in2->i);
+                LIBM_TEST_CDPRINTF(VERBOSE3, "  input2: % -g(%016lX)", in2->d, in2->i);
             if (nargs > 2)
-                LIBM_TEST_CDPRINTF(VERBOSE3, "  input3: % -10.23f(%016lX)", in3->d, in3->i);
+                LIBM_TEST_CDPRINTF(VERBOSE3, "  input3: % -g(%016lX)", in3->d, in3->i);
 
             LIBM_TEST_CDPRINTF(VERBOSE3, "    expected:%lX actual:%lX ulp:%G\n",
                                nw[j].i, op[j].i, ulp);
@@ -200,16 +200,16 @@ static int __verify_float(struct libm_test *test,
             flt32u_t *in1 = (flt32u_t*)&data->input1[j],
                 *in2 = (flt32u_t*)&data->input2[j],
                 *in3 = (flt32u_t*)&data->input1[j];
-            LIBM_TEST_DPRINTF(VERBOSE3, "input1: %05.15f(%08X)", in1->f, in1->i);
+            LIBM_TEST_DPRINTF(VERBOSE3, "input1: %-G(%08X)", in1->f, in1->i);
             if (nargs > 1)
                 LIBM_TEST_CDPRINTF(VERBOSE3,
-                                   " input2: %05.15f (%08X)\n", in2->f, in2->i);
+                                   " input2: %g(%08X)\n", in2->f, in2->i);
             if (nargs > 2)
                 LIBM_TEST_CDPRINTF(VERBOSE3,
-                                   " input3: %05.15f (%08X)\n", in3->f, in3->i);
+                                   " input3: %g(%08X)\n", in3->f, in3->i);
 
             LIBM_TEST_CDPRINTF(VERBOSE3,
-                               "    expected:%8X actual:%8X ulp:%05.5g\n",
+                               "    expected:%8X actual:%8X ulp:%5.05g\n",
                                nw[j].i, op[j].i, ulp);
 
             print_info = 0;

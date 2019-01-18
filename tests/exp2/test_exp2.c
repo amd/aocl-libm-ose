@@ -13,8 +13,30 @@
 #include <libm_tests.h>
 #include <bench_timer.h>
 
+#include <libm_types.h>
+
 #define __TEST_EXP2_INTERNAL__                   /* needed to include exp-test-data.h */
 #include "test_exp2_data.h"
+
+/*
+ * Use directly the FMA3 version or glibc version
+ */
+
+#define PROTOTYPE_GLIBC    0xf1
+#define PROTOTYPE_FMA3     0xf2
+#define PROTOTYPE_TEST_V1  0xf8
+#define PROTOTYPE_TEST_V2  0xf9
+
+#define LIBM_PROTOTYPE PROTOTYPE_FMA3
+
+#if (LIBM_PROTOTYPE == PROTOTYPE_FMA3)
+#define LIBM_FUNC(x) FN_PROTOTYPE_FMA3(x)
+#elif (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
+//#error I am here
+#define LIBM_FUNC(x)    x
+#else
+#define LIBM_FUNC(x)   FN_PROTOTYPE(x)
+#endif
 
 static int test_exp2_v2d_perf(struct libm_test *test)
 {
@@ -38,7 +60,7 @@ static int test_exp2_v2d_perf(struct libm_test *test)
         uint32_t j;
         for (j = 0; j < (sz - 1); j += 2) {
             __m128d ip2 = _mm_set_pd(ip1[j+1], ip1[j]);
-            __m128d op2 = FN_PROTOTYPE_FMA3(vrd2_exp2)(ip2);
+            __m128d op2 = LIBM_FUNC(vrd2_exp2)(ip2);
             _mm_store_pd(&o[j], op2);
         }
         /*
@@ -46,7 +68,7 @@ static int test_exp2_v2d_perf(struct libm_test *test)
          * there can be atmost one leftover,
          */
         if (sz - j)
-            o[j] = FN_PROTOTYPE_FMA3(exp2)(ip1[j]);
+            o[j] = LIBM_FUNC(exp2)(ip1[j]);
     }
 
     timer_stop(&bt);
@@ -79,7 +101,7 @@ static int test_exp2_v4d_perf(struct libm_test *test)
         //IVDEP //;
         for (uint32_t j = 0; j < (sz - 3); j += 4) {
             __m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-            __m256d op4 = FN_PROTOTYPE_FMA3(vrd4_exp2)(ip4);
+            __m256d op4 = LIBM_FUNC(vrd4_exp2)(ip4);
             _mm256_store_pd(&o[j], op4);
         }
         /*
@@ -98,9 +120,9 @@ static int test_exp2_v4d_perf(struct libm_test *test)
 /*
  * s1d - 1 element double precision
  */
-double FN_PROTOTYPE(exp2_v1)(double);
-double FN_PROTOTYPE(exp2_v2)(double);
-double FN_PROTOTYPE(exp2_v3)(double);
+double LIBM_FUNC(exp2_v1)(double);
+double LIBM_FUNC(exp2_v2)(double);
+double LIBM_FUNC(exp2_v3)(double);
 static int test_exp2_s1d_perf(struct libm_test *test)
 {
     struct libm_test_data *data = &test->test_data;
@@ -122,10 +144,10 @@ static int test_exp2_s1d_perf(struct libm_test *test)
     for (uint32_t i = 0; i < n ; ++i) {
         uint32_t j;
         for (j = 0; j < sz; j++) {
-            //o[j] = FN_PROTOTYPE(exp2)(ip1[j]);
-            //o[j] = FN_PROTOTYPE(exp2_v1)(ip1[j]);
-            //o[j] = FN_PROTOTYPE(exp2_v2)(ip1[j]);
-            o[j] = exp2(ip1[j]);
+            o[j] = LIBM_FUNC(exp2)(ip1[j]);
+            //o[j] = LIBM_FUNC(exp2_v1)(ip1[j]);
+            //o[j] = LIBM_FUNC(exp2_v2)(ip1[j]);
+            //o[j] = exp2(ip1[j]);
         }
     }
 
@@ -161,7 +183,7 @@ static int test_exp2_s1s_perf(struct libm_test *test)
     for (uint32_t i = 0; i < n ; ++i) {
         uint32_t j;
         for (j = 0; j < sz; j++) {
-            o[j] = FN_PROTOTYPE_FMA3(exp2f)(ip1[j]);
+            o[j] = LIBM_FUNC(exp2f)(ip1[j]);
         }
     }
 
@@ -198,22 +220,23 @@ static int test_exp2_v4s_perf(struct libm_test *test)
         uint32_t j;
         for (j = 0; j < (sz - 3); j += 4) {
             __m128 ip4 = _mm_set_ps(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-            __m128 op4 = FN_PROTOTYPE_FMA3(vrs4_exp2f)(ip4);
+            __m128 op4 = LIBM_FUNC(vrs4_exp2f)(ip4);
             _mm_store_ps(&o[j], op4);
         }
         /*
          * Any left over process with scalar, in a 2 vector case,
-         * there can be atmost one leftover,
+         * there can be atmost one leftover, in a 4 vector case,
+         * there can be upto 3 leftovers
          */
         switch (sz - j) {
         case 3:
-            o[j] = FN_PROTOTYPE_FMA3(exp2f)(ip1[j]);
+            o[j] = LIBM_FUNC(exp2f)(ip1[j]);
             j++;	         __attribute__ ((fallthrough));
         case 2:
-            o[j] = FN_PROTOTYPE_FMA3(exp2f)(ip1[j]);
+            o[j] = LIBM_FUNC(exp2f)(ip1[j]);
             j++;	         __attribute__ ((fallthrough));
         case 1:
-            o[j] = FN_PROTOTYPE_FMA3(exp2f)(ip1[j]);
+            o[j] = LIBM_FUNC(exp2f)(ip1[j]);
         default:
             break;
         }
@@ -254,7 +277,7 @@ static int test_exp2_v8s_perf(struct libm_test *test)
         for (j = 0; j < (sz - 7); j += 8) {
             __m256 ip2 = _mm256_set_ps(ip1[j+7], ip1[j+6], ip1[j+5], ip1[j+4],
                                        ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-            __m256 op4 = FN_PROTOTYPE_FMA3(vrs8_exp2f)(ip4);
+            __m256 op4 = LIBM_FUNC(vrs8_exp2f)(ip4);
             _mm256_store_ps(&o[j], op4);
         }
         /*
@@ -267,7 +290,7 @@ static int test_exp2_v8s_perf(struct libm_test *test)
         case 5:
         case 4:
             __m128 ip4 = __mm_set_ps(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-            __m128 op4 = FN_PROTOTYPE_FMA3(exp2f_v4s)(ip1[j]);
+            __m128 op4 = LIBM_FUNC(exp2f_v4s)(ip1[j]);
             _mm_store_ps(&o[j], op4)
             j += 4
         default:
@@ -276,13 +299,13 @@ static int test_exp2_v8s_perf(struct libm_test *test)
 
         switch (sz- j) {
         case 3:
-            o[j] = FN_PROTOTYPE_FMA3(exp2f)(ip1[j]);
+            o[j] = LIBM_FUNC(exp2f)(ip1[j]);
             j++;
         case 2:
-            o[j] = FN_PROTOTYPE_FMA3(exp2f)(ip1[j]);
+            o[j] = LIBM_FUNC(exp2f)(ip1[j]);
             j++;
         case 1:
-            o[j] = FN_PROTOTYPE_FMA3(exp2f)(ip1[j]);
+            o[j] = LIBM_FUNC(exp2f)(ip1[j]);
         default:
             break;
         }
@@ -309,7 +332,7 @@ static int test_exp2_perf_setup(struct libm_test *test)
     if (ret)
         goto out;
 
-    ret = test_exp2_populate_inputs(test, 0);
+    ret = test_exp2_populate_inputs(test, LIBM_INPUT_RANGE_SIMPLE);
 
     if (ret || !test->test_data.input1)
         goto out;
@@ -322,9 +345,13 @@ static int test_exp2_perf_setup(struct libm_test *test)
 
 static int test_exp2_accu_setup(struct libm_test *test)
 {
-    return test_exp2_perf_setup(test);
-}
+    int ret = 0;
 
+    test_exp2_perf_setup(test);
+    test->ulp_threshold = 0.54;
+
+    return ret;
+}
 
 static int test_exp2_alloc_special_data(struct libm_test *test, size_t size)
 {
@@ -389,7 +416,7 @@ static int test_exp2_vrd2(struct libm_test *test)
 
     for (int j = 0; j < (sz - 1); j += 2) {
         __m128d ip2 = _mm_set_pd(ip[j+1], ip[j]);
-        __m128d op2 = FN_PROTOTYPE_FMA3(vrd2_exp2)(ip2);
+        __m128d op2 = LIBM_FUNC(vrd2_exp2)(ip2);
         _mm_store_pd(&op[j], op2);
     }
 
@@ -410,7 +437,7 @@ static int test_exp2_vrd4(struct libm_test *test)
 
     for (int j = 0; j < (sz - 3); j += 4) {
         __m256d ip4 = _mm256_set_pd(ip[j+3], ip[j+2], ip[j+1], ip[j]);
-        __m256d op4 = FN_PROTOTYPE_FMA3(vrd4_exp2)(ip4);
+        __m256d op4 = LIBM_FUNC(vrd4_exp2)(ip4);
         _mm256_store_pd(&op[j], op4);
     }
 
@@ -431,19 +458,19 @@ static int test_exp2_v4s(struct libm_test *test)
 
     for (j = 0; j < (sz - 3); j += 4) {
         __m128 ip4 = _mm_set_ps(ip[j+3], ip[j+2], ip[j+1], ip[j]);
-        __m128 op4 = FN_PROTOTYPE_FMA3(vrs4_exp2f)(ip4);
+        __m128 op4 = LIBM_FUNC(vrs4_exp2f)(ip4);
         _mm_store_ps(&op[j], op4);
     }
 
     switch (sz- j) {
     case 3:
-        op[j] = FN_PROTOTYPE_FMA3(exp2f)(ip[j]);
+        op[j] = LIBM_FUNC(exp2f)(ip[j]);
         j++;
     case 2:
-        op[j] = FN_PROTOTYPE_FMA3(exp2f)(ip[j]);
+        op[j] = LIBM_FUNC(exp2f)(ip[j]);
         j++;
     case 1:
-        op[j] = FN_PROTOTYPE_FMA3(exp2f)(ip[j]);
+        op[j] = LIBM_FUNC(exp2f)(ip[j]);
     default:
         break;
     }
@@ -466,7 +493,7 @@ static int test_exp2_v8s(struct libm_test *test)
     for (int j = 0; j < (sz - 3); j += 4) {
         __m256 ip8 = _mm256_set_ps(ip[j+7], ip[j+6], ip[j+5], ip[j+4],
                                    ip[j+3], ip[j+2], ip[j+1], ip[j]);
-        __m256 op8 = FN_PROTOTYPE_FMA3(vrs8_exp2f)(ip8);
+        __m256 op8 = LIBM_FUNC(vrs8_exp2f)(ip8);
         _mm256_store_ps(&op[j], op8);
     }
 
@@ -485,27 +512,32 @@ static int __test_exp2_accu(struct libm_test *test,
     struct libm_test_data *data = &test->test_data;
     double *ip = &data->input1[0];
     double *op = &data->output[0];
-    int sz = data->nelem;
+    int sz = data->nelem, end = sz;
 
-    for (int j = 0; j < (sz - 3);) {
+    switch(type) {
+    case LIBM_FUNC_V2D: end = sz - 1; break;
+    case LIBM_FUNC_V4D: end = sz - 3; break;
+    default: break;
+    }
+
+    for (int j = 0; j < end;) {
         __m128d ip2, op2;
         __m256d ip4, op4;
         switch (type) {
         case LIBM_FUNC_V2D:
             ip2 = _mm_set_pd(ip[j+1], ip[j]);
-            op2 = FN_PROTOTYPE_FMA3(vrd2_exp2)(ip2);
+            op2 = LIBM_FUNC(vrd2_exp2)(ip2);
             _mm_store_pd(&op[j], op2);
             j += 2;
             break;
         case LIBM_FUNC_V4D:
             ip4 = _mm256_set_pd(ip[j+3], ip[j+2], ip[j+1], ip[j]);
-            op4 = FN_PROTOTYPE_FMA3(vrd4_exp2)(ip4);
+            op4 = LIBM_FUNC(vrd4_exp2)(ip4);
             _mm256_store_pd(&op[j], op4);
             j += 4;
             break;
         case LIBM_FUNC_S_D:
-            //op[j] = FN_PROTOTYPE_FMA3(exp2)(ip[j]);
-            op[j] = FN_PROTOTYPE(exp2(ip[j]));
+            op[j] = LIBM_FUNC(exp2)(ip[j]);
             //op[j] = exp2(ip[j]);
             j++;
             break;
@@ -524,19 +556,25 @@ static int __test_exp2f_accu(struct libm_test *test,
     struct libm_test_data *data = &test->test_data;
     float *ip = (float*)&data->input1[0];
     float *op = (float*)&data->output[0];
-    int sz = data->nelem;
+    int sz = data->nelem, end = sz;
 
-    for (int j = 0; j < (sz - 3);) {
+    switch(type) {
+    case LIBM_FUNC_V2D: end = sz - 1; break;
+    case LIBM_FUNC_V4D: end = sz - 3; break;
+    default: break;
+    }
+
+    for (int j = 0; j < end;) {
         __m128 ip4, op4;
         switch (type) {
         case LIBM_FUNC_V4S:
             ip4 = _mm_set_ps(ip[j+3], ip[j+2], ip[j+1], ip[j]);
-            op4 = FN_PROTOTYPE_FMA3(vrs4_exp2f)(ip4);
+            op4 = LIBM_FUNC(vrs4_exp2f)(ip4);
             _mm_store_ps(&op[j], op4);
             j += 4;
             break;
         case LIBM_FUNC_S_S:
-            op[j] = FN_PROTOTYPE_FMA3(exp2f)(ip[j]);
+            op[j] = LIBM_FUNC(exp2f)(ip[j]);
             j++;
             break;
         default:
@@ -551,9 +589,6 @@ static int __test_exp2f_accu(struct libm_test *test,
 int libm_test_exp2_verify(struct libm_test *test,
                           struct libm_test_result *result);
 
-#define SINGLE_PRECISION_MASK (LIBM_FUNC_S_S | LIBM_FUNC_V2S | \
-                               LIBM_FUNC_V4S | LIBM_FUNC_V8S)
-
 static int __generate_test_one_range(struct libm_test *test,
                                      struct libm_test_input_range *range)
 {
@@ -566,7 +601,7 @@ static int __generate_test_one_range(struct libm_test *test,
 
     test->conf->inp_range[0] = *range;
 
-    ret = test_exp2_populate_inputs(test, 1);
+    ret = test_exp2_populate_inputs(test, range->type);
 
     if (test_is_single_precision(test))
         ret = __test_exp2f_accu(test, test->variant);
@@ -579,27 +614,31 @@ static int __generate_test_one_range(struct libm_test *test,
 static int test_exp2_accu(struct libm_test *test)
 {
     struct libm_test_data *data = &test->test_data;
-    int sz = data->nelem;
-    int arr_sz = ARRAY_SIZE(accu_ranges);
     int ret = 0;
+    int sz = data->nelem;
+
+    /* we are verifying here, no need to do again */
+    test->ops.verify = NULL;
 
     if (sz % 4 != 0)
         printf("%s %s : %d is not a multiple of 4, some may be left out\n"
                " And error reported may not be real for such entries\n",
                test->name, test->type_name, sz);
 
-    if (test->conf->inp_range[0].start) {
+    if (test->conf->inp_range[0].start ||
+        test->conf->inp_range[0].stop) {
         struct libm_test_input_range *range = &test->conf->inp_range[0];
 
         ret = __generate_test_one_range(test, range);
-        if (ret)
-            return ret;
 
         ret = libm_test_exp2_verify(test, &test->result);
 
         return ret;
     }
-    
+
+
+    int arr_sz = ARRAY_SIZE(accu_ranges);
+
     for (int i = 0; i < arr_sz ||
              (accu_ranges[i].start = 0.0 &&
               accu_ranges[i].stop == 0.0) ; i++) {
@@ -611,6 +650,67 @@ static int test_exp2_accu(struct libm_test *test)
     }
 
     return 0;
+}
+
+static int test_exp2_corner_setup(struct libm_test *test)
+{
+    flt64u_t input[] =
+        {
+         {.i = 0x40808cf8d48faceb,},
+         {.i = 0x40808dd59178fff4,},
+         {.i = 0x408091f69ac4b191,},
+         {.i = 0x4080926ea9dc0432,},
+         {.i = 0x408092fe975406df,},
+        };
+
+    flt64u_t actual[] =
+        {
+         {.i = 0x61089d95eca3bc24,},
+         {.i = 0x610a8667090cb377,},
+         {.i = 0x6112f78718177b56,},
+         {.i = 0x6113c0e40d946fd8,},
+         {.i = 0x6114bd52923bf22d,},
+        };
+
+    flt64u_t expected[] =
+        {
+         {.i = 0x61089d95eca3bc25,},
+         {.i = 0x610a8667090cb376,},
+         {.i = 0x6112f78718177b57,},
+         {.i = 0x6113c0e40d946fd7,},
+         {.i = 0x6114bd52923bf22e,},
+        };
+
+    int test_data_size = ARRAY_SIZE(expected);
+    struct libm_test_data *data= &test->test_data;
+
+    // Just trying to get rid of warning/errors
+    test_exp2_alloc_special_data(test, ARRAY_SIZE(expected));
+
+    for (int i = 0; i < test_data_size; i++) {
+        data->input1[i] = input[i].d;
+        data->output[i] = actual[i].d;
+        data->expected[i] = expected[i].d;
+    }
+
+    return 0;
+}
+
+static int test_exp2_corner(struct libm_test *test)
+{
+    int ret = 0;
+    unsigned int test_type = test->conf->test_types;
+    test->conf->test_types = TEST_TYPE_ACCU;
+    ret = libm_test_verify(test, &test->result);
+    test->conf->test_types = test_type;
+    return ret;
+}
+
+
+double test_exp2_ulp(struct libm_test *test, int idx)
+{
+    float *buf = (float*)test->test_data.input1;
+    return exp2(buf[idx]);
 }
 
 struct libm_test_funcs {
@@ -629,7 +729,9 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
                          .performance = { .setup = test_exp2_perf_setup,
                                           .run   = test_exp2_s1s_perf,},
                          .accuracy     = {.setup = test_exp2_accu_setup,
-                                          .run   = test_exp2_accu,},
+                                          .run   = test_exp2_accu,
+                                          .ulp   = {.func = test_exp2_ulp},
+                         },
                          .special      = {.setup = test_exp2_special_setup,},
      },
 
@@ -639,6 +741,9 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
                          .accuracy     = {.setup = test_exp2_accu_setup,
                                           .run   = test_exp2_accu,},
                          .special      = {.setup = test_exp2_special_setup,},
+                         .corner       = {.setup = test_exp2_corner_setup,
+                                          .run   = test_exp2_corner,},
+                         
      },
 
 #if 0
@@ -662,7 +767,9 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
                          .performance = { .setup = test_exp2_perf_setup,
                                           .run   = test_exp2_v4s_perf,},
                          .accuracy     = {.setup = test_exp2_accu_setup,
-                                          .run   = test_exp2_accu,},
+                                          .run   = test_exp2_accu,
+                                          .ulp   = {.func = test_exp2_ulp},
+                         },
                          .special      = {.setup = test_exp2_special_setup,
                                           .run = test_exp2_accu},
      },
@@ -745,8 +852,8 @@ int libm_test_type_setup(struct libm_test_conf *conf,
             test->ops.run = ops->run;
         if (ops->cleanup)
             test->ops.cleanup = ops->cleanup;
-        if (ops->ulp.func)             /* test for any should be good */
-            memcpy(&test->ops.ulp, &ops->ulp, sizeof(ops->ulp));
+        if (ops->ulp.func || ops->ulp.funcq) /* test for any should be good */
+            test->ops.ulp = ops->ulp;
 
         if (ops->verify)
             test->ops.verify = ops->verify;
@@ -833,6 +940,7 @@ libm_test_exp2q(struct libm_test *test, int idx)
     static __float128 ln2 = 6.9314718055994530941723212145817657508364e-01Q;
     return expq(ln2 * test->test_data.input1[idx]);
 }
+
 int libm_test_exp2_verify(struct libm_test *test, struct libm_test_result *result);
 
 static struct libm_test

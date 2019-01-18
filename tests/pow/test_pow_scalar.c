@@ -18,20 +18,15 @@
 double FN_PROTOTYPE(pow)(double,double);
 extern int RANGE_LEN_X;
 
-static inline __float128
-libm_test_powq(struct libm_test *test, double in_x,double in_y)
-{
-    return powq(in_x,in_y);
-}
+extern __float128 libm_test_powq(struct libm_test *test, int idx);
 
 struct libm_test pow_test_template1 = {
     .name       = "pow_scalar",
     .nargs      = 2,
     .ops        = {
-                   .ulp    = {.func2 = libm_test_powq},
+                   .ulp    = {.funcq = libm_test_powq},
                    .verify = libm_test_pow_verify,
                    },
-    .libm_func  = { .func_64 = { .func2 = pow, }, }, // WOHOOO 
 };
 
 static int test_pow_populate_inputs(struct libm_test *test, int use_uniform)
@@ -44,7 +39,7 @@ static int test_pow_populate_inputs(struct libm_test *test, int use_uniform)
     if(use_uniform)
         func = libm_test_populate_range_uniform;
     else
-        func = libm_test_populate_range_simple;
+        func = libm_test_populate_range_rand;
 
     ret = func(data->input1, data->nelem,
                test->variant,
@@ -121,11 +116,8 @@ static int test_pow_perf(struct libm_test *test)
     struct libm_test_data *data = &test->test_data;
     struct libm_test_result *result = &test->result;
     double *restrict o = data->output;
-    double *restrict ip1 = data->input1;
-    double *restrict ip2 = data->input2;
     uint64_t sz = data->nelem;
     uint64_t n = test->conf->niter;
-    double (*fn2)(double,double) = test->libm_func.func_64.func2;
 
     /* Poison output */
     for (uint32_t j = 0; j < data->nelem; ++j) {
@@ -138,9 +130,8 @@ static int test_pow_perf(struct libm_test *test)
 
     for (uint32_t i = 0; i < n ; ++i) {
         for (uint32_t j = 0; j < sz; j ++) {
-            o[j] = (*fn2)(ip1[j],ip2[j]);
-            //o[j] = FN_PROTOTYPE(pow_prems)(ip1[j]);
-            //o[j] = pow(ip1[j]);
+            //o[j] = (*fn2)(ip1[j],ip2[j]);
+	    test->ops.libm_func_callback(test, j);
         }
         /*
          * Any left over process with scalar
@@ -183,7 +174,6 @@ static int test_pow_init_s_d(struct libm_test_conf *conf)
         test->name = "pow_scalar";
         test->nargs = 2;
 	test->ulp_threshold = 0.6;
-        test->libm_func.func_64.func2 = FN_PROTOTYPE(pow);
 
         uint32_t bit = 1 << (ffs(test_type) - 1);
 

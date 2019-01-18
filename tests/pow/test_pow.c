@@ -172,11 +172,11 @@ int libm_test_pow_verify(struct libm_test *test, struct libm_test_result *result
 }
 
 /* There is no powq in recent versions of gcc */
-static inline __float128
-libm_test_powq(struct libm_test *test, double in_x,double in_y)
+__float128 libm_test_powq(struct libm_test *test, int idx)
 {
     /* logq(2.0) */
-//    static __float128 ln2 = 6.9314718055994530941723212145817657508364e-01;
+    double in_x, in_y;
+    in_x = test->test_data.input1[idx]; in_y = test->test_data.input2[idx];
     return powq(in_x,in_y);
 }
 
@@ -187,10 +187,9 @@ struct libm_test pow_test_template = {
     .name       = "pow_vec",
     .nargs      = 2,
     .ops        = {
-                   .ulp    = {.func2 = libm_test_powq},
+                   .ulp    = {.funcq = libm_test_powq},
                    .verify = libm_test_pow_verify,
                    },
-    .libm_func  = { .func_64 = { .func2 = pow, }, }, /* WOHOOO */
 };
 
 static int test_pow_populate_inputs(struct libm_test *test, int use_uniform)
@@ -203,7 +202,7 @@ static int test_pow_populate_inputs(struct libm_test *test, int use_uniform)
     if(use_uniform)
         func = libm_test_populate_range_uniform;
     else
-        func = libm_test_populate_range_simple;
+        func = libm_test_populate_range_rand;
 
     ret = func(data->input1, data->nelem,
                test->variant,

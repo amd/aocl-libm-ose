@@ -31,6 +31,10 @@ enum LIBM_FUNC_VARIANT {
     LIBM_FUNC_MAX,
 };
 
+#define TEST_SINGLE_PRECISION_MASK              \
+    (LIBM_FUNC_S_S | LIBM_FUNC_V2S | LIBM_FUNC_V4S | LIBM_FUNC_V8S)
+
+
 struct libm_test_result{
     int    ntests;                              /* total number of tests */
     int    npass;                               /* passed tests */
@@ -100,11 +104,11 @@ struct libm_test_ops {
     int (*cleanup)(struct libm_test *test);
 
     union {
-        __float128 (*func1)(struct libm_test *test, double in1);
-        __float128 (*func2)(struct libm_test *test, double in1, double in2);
-        __float128 (*func3)(struct libm_test *test, double in1, double in2,
-                            double in3);
+        double     (*func)(struct libm_test *test, int idx);
+        __float128 (*funcq)(struct libm_test *test, int idx);
     } ulp;
+
+    int (*libm_func_callback)(struct libm_test *test, int idx);
 
     int (*verify)(struct libm_test *test, struct libm_test_result *result);
 };
@@ -173,6 +177,11 @@ struct libm_test_conf {
     /* Some tests have 3 inputs */
     struct libm_test_input_range inp_range[3];
 };
+
+static inline int test_is_single_precision(struct libm_test *test)
+{
+    return test->variant & TEST_SINGLE_PRECISION_MASK;
+}
 
 int libm_test_init(struct libm_test_conf *conf);
 int libm_test_register(struct libm_test *test);

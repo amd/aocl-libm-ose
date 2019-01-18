@@ -53,7 +53,7 @@ int test_exp_populate_inputs(struct libm_test *test, int use_uniform)
     if(use_uniform)
         func = libm_test_populate_range_uniform;
     else
-        func = libm_test_populate_range_simple;
+        func = libm_test_populate_range_linear;
 
     ret = func(data->input1, data->nelem,
                test->variant,

@@ -305,7 +305,6 @@ static int test_exp2_perf_setup(struct libm_test *test)
     const struct libm_test_conf *conf = test->conf;
     int ret = 0;
 
-    test->ulp_threshold = 0.09;
     ret = libm_test_alloc_test_data(test, conf->nelem);
     if (ret)
         goto out;
@@ -569,7 +568,7 @@ static int __generate_test_one_range(struct libm_test *test,
 
     ret = test_exp2_populate_inputs(test, 1);
 
-    if (test->variant & SINGLE_PRECISION_MASK)
+    if (test_is_single_precision(test))
         ret = __test_exp2f_accu(test, test->variant);
     else
         ret = __test_exp2_accu(test, test->variant);
@@ -746,7 +745,7 @@ int libm_test_type_setup(struct libm_test_conf *conf,
             test->ops.run = ops->run;
         if (ops->cleanup)
             test->ops.cleanup = ops->cleanup;
-        if (ops->ulp.func1)             /* test for any should be good */
+        if (ops->ulp.func)             /* test for any should be good */
             memcpy(&test->ops.ulp, &ops->ulp, sizeof(ops->ulp));
 
         if (ops->verify)
@@ -828,13 +827,12 @@ int libm_tests_setup(struct libm_test_conf *conf,
 
 /* There is no exp2q in recent versions of gcc */
 __float128
-libm_test_exp2q(struct libm_test *test, double in)
+libm_test_exp2q(struct libm_test *test, int idx)
 {
     /* logq(2.0) */
-    static __float128 ln2 = 6.9314718055994530941723212145817657508364e-01;
-    return expq(ln2 * in);
+    static __float128 ln2 = 6.9314718055994530941723212145817657508364e-01Q;
+    return expq(ln2 * test->test_data.input1[idx]);
 }
-__float128 libm_test_exp2q(struct libm_test *test, double in);
 int libm_test_exp2_verify(struct libm_test *test, struct libm_test_result *result);
 
 static struct libm_test
@@ -843,10 +841,9 @@ exp2_template = {
                  .nargs      = 1,
                  .ulp_threshold = 4.0,
                  .ops        = {
-                                .ulp    = {.func1 = libm_test_exp2q},
+                                .ulp    = {.funcq = libm_test_exp2q},
                                 .verify = libm_test_exp2_verify,
                  },
-                 .libm_func  = { .func_64 = { .func1 = exp2, }, }, /* WOHOOO */
     };
 
 #define EXP2_TEST_TYPES_ALL (TEST_TYPE_ACCU | TEST_TYPE_PERF |          \

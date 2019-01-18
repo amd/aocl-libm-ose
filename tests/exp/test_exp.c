@@ -306,7 +306,6 @@ static int test_exp_perf_setup(struct libm_test *test)
     const struct libm_test_conf *conf = test->conf;
     int ret = 0;
 
-    test->ulp_threshold = 0.09;
     ret = libm_test_alloc_test_data(test, conf->nelem);
     if (ret)
         goto out;
@@ -324,7 +323,13 @@ static int test_exp_perf_setup(struct libm_test *test)
 
 static int test_exp_accu_setup(struct libm_test *test)
 {
-    return test_exp_perf_setup(test);
+    int ret = 0;
+    ret = test_exp_perf_setup(test);
+    // Different ulp settings for Accuracy tests
+    test->ulp_threshold = 0.54;
+
+
+    return ret;
 }
 
 
@@ -751,7 +756,7 @@ int libm_test_type_setup(struct libm_test_conf *conf,
             test->ops.run = ops->run;
         if (ops->cleanup)
             test->ops.cleanup = ops->cleanup;
-        if (ops->ulp.func1)             /* test for any should be good */
+        if (ops->ulp.func)             /* test for any should be good */
             memcpy(&test->ops.ulp, &ops->ulp, sizeof(ops->ulp));
 
         if (ops->verify)
@@ -832,12 +837,12 @@ int libm_tests_setup(struct libm_test_conf *conf,
 
 /* There is no expq in recent versions of gcc */
 __float128
-libm_test_expq(struct libm_test *test, double in)
+libm_test_expq(struct libm_test *test, int idx)
 {
     /* logq(2.0) */
-    return expq(in);
+    return expq(test->test_data.input1[idx]);
 }
-__float128 libm_test_expq(struct libm_test *test, double in);
+
 int libm_test_exp_verify(struct libm_test *test, struct libm_test_result *result);
 
 static struct libm_test
@@ -846,10 +851,9 @@ exp_template = {
                  .nargs      = 1,
                  .ulp_threshold = 4.0,
                  .ops        = {
-                                .ulp    = {.func1 = libm_test_expq},
+                                .ulp    = {.funcq = libm_test_expq},
                                 .verify = libm_test_exp_verify,
                  },
-                 .libm_func  = { .func_64 = { .func1 = exp, }, }, /* WOHOOO */
     };
 
 #define EXP2_TEST_TYPES_ALL (TEST_TYPE_ACCU | TEST_TYPE_PERF |          \

@@ -86,16 +86,20 @@ int parse_range(char *arg,
 
 
     if (len) {
+        range->type = LIBM_INPUT_RANGE_SIMPLE;
+
         /* We just compare first 3 letters to be safer */
-        if (strncmp(arg, "rand", 4) == 0)
+        if (strncmp(arg, "random", 4) == 0)
             range->type = LIBM_INPUT_RANGE_RANDOM;
         else if (strncmp(arg, "linear", 3) == 0)
             range->type = LIBM_INPUT_RANGE_LINEAR;
-        else
-            range->type = LIBM_INPUT_RANGE_SIMPLE;
+        else if (strncmp(arg, "simple", 3)){
+            /* Already taken care of */
+        }
+
     }
 
-    LIBM_TEST_DPRINTF(INFO, "start:%LG stop:%Lg type:%d\n",
+    LIBM_TEST_DPRINTF(DBG1, "start:%LG stop:%Lg type:%d\n",
                       range->start, range->stop, range->type);
 
     return 0;

@@ -133,34 +133,6 @@ static int __write_data(void *data,
     return 0;
 }
 
-int libm_test_populate_range_simple(void *data,
-                                    size_t nelem, uint32_t variant,
-                                    double min, double max)
-{
-    int data_size = libm_test_get_data_size(variant);
-
-    libm_test_init_rand();
-
-    check_data_size(data, data_size);
-
-    /* Variant has multiple bits set. */
-    if (variant & (variant - 1))
-        return -1;
-
-    for (uint32_t i = 0; i < nelem; i++) {
-        double val = libm_test_rand_range_simple(min, max);
-        float fval = (float) val;
-
-        __write_data(data,
-                     (data_size == 8) ? (void*)&val: (void*)&fval,
-                     i,
-                     (data_size == 8) ? sizeof(val): sizeof(fval));
-    }
-
-    return 0;
-}
-
-
 static double __myrand(void)
 {
     static unsigned long seed = 123456789;
@@ -216,10 +188,9 @@ static double logdist2(int i, int n, double a, double b, double logba)
 
 }
 
-
 static int __populate_range(void *data,
 			    size_t nelem, uint32_t variant,
-			    double min, double max, int uniform)
+			    double min, double max, enum libm_test_range_type uniform)
 {
     int data_size = libm_test_get_data_size(variant);
     double logba;
@@ -235,12 +206,14 @@ static int __populate_range(void *data,
     for (uint32_t i = 0; i < nelem; i++) {
         double val = 0.0;
         float fval = 0.0f;
-        if (uniform)
+        if (uniform == LIBM_INPUT_RANGE_LINEAR)
             val = logdist2(i, nelem, min, max, logba);
-        else
+        else if (uniform == LIBM_INPUT_RANGE_RANDOM)
+            val =  libm_test_rand_range_simple(min, max);
+	else //(uniform == LIBM_INPUT_RANGE_SIMPLE)
             val = (min * (nelem - i) + max * i) / nelem;
 
-        fval = val;
+        fval = (float)val;
 
         __write_data(data,
                      data_size == 8? (void*)&val: (void*)&fval,
@@ -256,7 +229,8 @@ int libm_test_populate_range_uniform(void *data,
                                      double min, double max)
 {
 
-    return __populate_range(data, nelem, variant, min, max, 1);
+    return __populate_range(data, nelem, variant, min, max,
+                            LIBM_INPUT_RANGE_LINEAR);
 }
 
 
@@ -264,6 +238,16 @@ int libm_test_populate_range_linear(void *data,
                                     size_t nelem, uint32_t variant,
                                     double min, double max)
 {
-    return __populate_range(data, nelem, variant, min, max, 0);
+    return __populate_range(data, nelem, variant, min, max,
+                            LIBM_INPUT_RANGE_SIMPLE);
+
+}
+
+int libm_test_populate_range_rand(void *data,
+                                  size_t nelem, uint32_t variant,
+                                  double min, double max)
+{
+    return __populate_range(data, nelem, variant, min, max,
+                            LIBM_INPUT_RANGE_RANDOM);
 
 }

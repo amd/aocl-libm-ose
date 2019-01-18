@@ -193,11 +193,15 @@ int libm_test_register(struct libm_test *test);
 int libm_test_verify(struct libm_test *test,
 		     struct libm_test_result *result);
 
-int libm_test_populate_range_simple(void *data,
+int libm_test_populate_range_linear(void *data,
                                     size_t nelem, uint32_t variant,
                                     double min, double max);
 
 int libm_test_populate_range_uniform(void *data,
+                                     size_t nelem, uint32_t variant,
+                                     double min, double max);
+
+int libm_test_populate_range_rand(void *data,
                                      size_t nelem, uint32_t variant,
                                      double min, double max);
 

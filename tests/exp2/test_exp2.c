@@ -743,7 +743,6 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
                          .special      = {.setup = test_exp2_special_setup,},
                          .corner       = {.setup = test_exp2_corner_setup,
                                           .run   = test_exp2_corner,},
-                         
      },
 
 #if 0
@@ -824,18 +823,22 @@ int libm_test_type_setup(struct libm_test_conf *conf,
         switch(bit) {
         case TEST_TYPE_PERF:
             test->type_name = "perf";
+            test->test_type =  TEST_TYPE_PERF;
             ops = &funcs->performance;
             break;
         case TEST_TYPE_SPECIAL:
             test->type_name = "special";
+            test->test_type =  TEST_TYPE_SPECIAL;
             ops = &funcs->special;
             break;
         case TEST_TYPE_ACCU:
             test->type_name = "accuracy";
+            test->test_type =  TEST_TYPE_ACCU;
             ops = &funcs->accuracy;
             break;
         case TEST_TYPE_CORNER:
             test->type_name = "corner";
+            test->test_type =  TEST_TYPE_CORNER;
             ops = &funcs->corner;
             break;
         default:

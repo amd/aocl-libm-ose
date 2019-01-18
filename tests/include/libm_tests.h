@@ -76,7 +76,7 @@ struct libm_test_data {
     double  data[0];
 };
 
-enum {
+enum LIBM_TEST_TYPE {
     TEST_TYPE_ACCU = (1<<0),
     TEST_TYPE_PERF = (1<<1),
     TEST_TYPE_SPECIAL = (1<<2),
@@ -136,6 +136,7 @@ struct libm_test {
     char                    *type_name; /* perf/accu/special/corner */
     char                    *input_name; /* s1f,s1d,v2s,v4d etc */
 
+    enum LIBM_TEST_TYPE      test_type; /* derives from conf->test_types */
     enum LIBM_FUNC_VARIANT   variant;
 
     double                   max_ulp_err; /* ULP error */

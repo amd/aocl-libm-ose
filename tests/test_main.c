@@ -325,10 +325,19 @@ static void libm_test_print_report(struct list_head *test_list)
         struct libm_test *test = list_entry(pos, struct libm_test, list);
         struct libm_test_result *result = &test->result;
 
-        printf("%-12s %-12s %-12s %-12d %-12d %-12d %-12d %-12f %-12g\n",
+        printf("%-12s %-12s %-12s %-12d %-12d %-12d %-12d",
                test->name, test->type_name, libm_test_variant_str(test->variant),
-               result->ntests, result->npass, result->nfail, result->nignored,
-               result->mops, test->max_ulp_err);
+               result->ntests, result->npass, result->nfail, result->nignored);
+
+        if (test->test_type == TEST_TYPE_ACCU) {
+            printf(" %-12s %-12g", " ", test->max_ulp_err);
+        } else if (test->test_type == TEST_TYPE_PERF) {
+            printf(" %-12g", result->mops);
+        } else {
+            printf(" %-12s", " ");
+        }
+
+        printf("\n");
     }
 
     printf("%s\n", &equal[0]);

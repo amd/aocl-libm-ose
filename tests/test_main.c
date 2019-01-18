@@ -328,7 +328,7 @@ static void libm_test_print_report(struct list_head *test_list)
         struct libm_test *test = list_entry(pos, struct libm_test, list);
         struct libm_test_result *result = &test->result;
 
-        printf("%-12s %-12s %-12s %-12d %-12d %-12d %-12d %-12f %-12f\n",
+        printf("%-12s %-12s %-12s %-12d %-12d %-12d %-12d %-12f %-12g\n",
                test->name, test->type_name, libm_test_variant_str(test->variant),
                result->ntests, result->npass, result->nfail, result->nignored,
                result->mops, test->max_ulp_err);
@@ -339,41 +339,7 @@ static void libm_test_print_report(struct list_head *test_list)
 
 static struct list_head test_list;
 
-static int __libm_test_populate_expected_flt(struct libm_test *test)
-{
-    return 0;
-}
-
-static int __libm_test_populate_expected_dbl(struct libm_test *test)
-{
-    struct libm_test_data *data= &test->test_data;
-
-    double *input1 = data->input1;
-    double *input2 = data->input2;
-    double *input3 = data->input3;
-    double *expected = data->expected;
-
-    for (uint32_t i = 0; i < test->test_data.nelem; i++) {
-        switch (test->nargs) {
-        case 1:
-            expected[i] = test->libm_func.func_64.func1(input1[i]);
-            break;
-        case 2:
-            expected[i] = test->libm_func.func_64.func2(input1[i], input2[i]);
-            break;
-        case 3:
-            expected[i] = test->libm_func.func_64.func3(input1[i],
-                                                        input2[i], input3[i]);
-            break;
-        default:
-            break;
-        }
-    }
-
-
-    return 0;
-}
-
+#if 0
 static int __libm_test_get_input_type(struct libm_test *test)
 {
     if (test->variant == LIBM_FUNC_S_S ||
@@ -389,17 +355,12 @@ static int __libm_test_get_input_type(struct libm_test *test)
 
     return 0;
 }
+#endif
 
 static int libm_test_populate_expected(struct libm_test *test)
 {
-    switch (__libm_test_get_input_type(test)) {
-    case 1: // float
-        __libm_test_populate_expected_flt(test);
-        break;
-    case 2: // double
-    default:
-        __libm_test_populate_expected_dbl(test);
-        break;
+    for (uint32_t i = 0; i < test->test_data.nelem; i++) {
+            test->ops.libm_func_callback(test, i);
     }
 
     return 0;
@@ -407,11 +368,7 @@ static int libm_test_populate_expected(struct libm_test *test)
 
 static inline int is_libm_func_exists(struct libm_test *test)
 {
-    if ( ! test->libm_func.func_32.func1 &&
-         ! test->libm_func.func_64.func1)
-        return 0;
-
-    return 1;
+    return test->ops.libm_func_callback != NULL;
 }
 
 static int libm_test_run_one(struct libm_test *test, struct libm_test_result *result)

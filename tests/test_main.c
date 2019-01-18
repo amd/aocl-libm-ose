@@ -150,9 +150,6 @@ static error_t __enable_tests_type(const char *type, struct libm_test_conf *conf
     uint32_t *tp = &conf->test_types;
     int n = strnlen(type, 10);
 
-    /* Reset all, we have come here means no default */
-    conf->test_types = 0;
-
     if (n == 0) {
         printf("No test type runnable\n");
         return -1;
@@ -189,7 +186,7 @@ static error_t parse_test_types(char *arg, struct libm_test_conf *conf)
      */
     while(len && (test = strtok(arg, ",;:")) != NULL) {
         int ret = __enable_tests_type(test, conf);
-        if (!ret)
+        if (ret)
             return -1;
         arg += strlen(test) + 1; // skip the '\0', null char
         len -= strlen(test) + 1;

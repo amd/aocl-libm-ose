@@ -75,7 +75,7 @@ static int test_exp2_setup_s_d(struct libm_test *test)
 }
 
 extern __float128
-libm_test_exp2q(struct libm_test *test, double in);
+libm_test_exp2q(struct libm_test *test, int idx);
 
 static int test_exp2_init_s_d(struct libm_test_conf *conf)
 {
@@ -92,7 +92,6 @@ static int test_exp2_init_s_d(struct libm_test_conf *conf)
         test->name = "exp2_scalar";
         test->nargs = 1;
         test->ulp_threshold = 0.5;
-        test->libm_func.func_64.func1 = FN_PROTOTYPE(exp2_v1);
 
         uint32_t bit = 1 << (ffs(test_type) - 1);
 
@@ -102,7 +101,7 @@ static int test_exp2_init_s_d(struct libm_test_conf *conf)
             test->ops.setup = test_exp2_setup_s_d;
             test->ops.run = test_exp2_perf;
             test->ops.verify = libm_test_exp2_verify;
-            test->ops.ulp.func1 = libm_test_exp2q;
+            test->ops.ulp.funcq = libm_test_exp2q;
             break;
         default:
             LIBM_TEST_DPRINTF(INFO, "Unknown test type for scalar\n");

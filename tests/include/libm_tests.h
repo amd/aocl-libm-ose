@@ -148,10 +148,7 @@ struct libm_test {
     double                   ulp_threshold;
     void                    *private;        /* data that the test needs back */
 
-    union {
-        libm_func_32 func_32;
-        libm_func_64 func_64;
-    } libm_func;
+    void                    *private;        /* data that the test needs back */
 
     struct list_head         list;
 };

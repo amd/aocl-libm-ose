@@ -251,7 +251,6 @@ static error_t parse_opts(int key, char *arg, struct argp_state *state)
     case 'v': {
         int32_t bit = strtol(arg, NULL, 0);
         int high = LIBM_TEST_DBG_VERBOSE3 - LIBM_TEST_DBG_INFO;
-        printf("got bit:%d\n", bit);
         /* adjust between 0-5 */
         bit = (bit < 0)? 0: bit;
         bit = (bit > high)? high: bit;
@@ -284,29 +283,6 @@ static error_t parse_opts(int key, char *arg, struct argp_state *state)
 
 static struct argp argp = {options, parse_opts, args_doc, doc, 0, 0, 0};
 
-const char *libm_test_variant_str(uint32_t variant)
-{
-    switch(variant) {
-    case LIBM_FUNC_S_S:
-        return "s1s";
-    case LIBM_FUNC_S_D:
-        return "s1d";
-    case LIBM_FUNC_V2S:
-        return "v2s";
-    case LIBM_FUNC_V4S:
-        return "v4s";
-    case LIBM_FUNC_V8S:
-        return "v8s";
-    case LIBM_FUNC_V2D:
-        return "v2d";
-    case LIBM_FUNC_V4D:
-        return "v4d";
-    default:
-        break;
-    }
-
-    return "unknown";
-}
 
 static void libm_test_print_report(struct list_head *test_list)
 {
@@ -326,7 +302,8 @@ static void libm_test_print_report(struct list_head *test_list)
         struct libm_test_result *result = &test->result;
 
         printf("%-12s %-12s %-12s %-12d %-12d %-12d %-12d",
-               test->name, test->type_name, libm_test_variant_str(test->variant),
+               test_get_name(test), test_get_test_type(test),
+               test_get_input_type(test),
                result->ntests, result->npass, result->nfail, result->nignored);
 
         if (test->test_type == TEST_TYPE_ACCU) {
@@ -381,8 +358,8 @@ static int libm_test_run_one(struct libm_test *test, struct libm_test_result *re
 {
     LIBM_TEST_DPRINTF(VERBOSE3,
                       "Starting Test: %s type:%s input:%s\n",
-                      test->name, test->type_name,
-                      libm_test_variant_str(test->variant));
+                      test_get_name(test), test_get_test_type(test),
+                      test_get_input_type(test));
 
     /*
      * Supposed to allocate all buffers,
@@ -393,8 +370,8 @@ static int libm_test_run_one(struct libm_test *test, struct libm_test_result *re
 
     if (!test->test_data.input1 ||
         !test->test_data.output) {
-        printf("Test:%s type:%s dont have data set\n", test->name,
-               test->type_name);
+        printf("Test:%s type:%s input:%s dont have data set\n", test_get_name(test),
+               test_get_test_type(test), test_get_input_type(test));
         /*
          * TODO: delete self before going out, so that results
          * dont include this entry
@@ -416,8 +393,8 @@ static int libm_test_run_one(struct libm_test *test, struct libm_test_result *re
 
     LIBM_TEST_DPRINTF(VERBOSE3,
                       "Done Test: %s type:%s input:%s\n",
-                      test->name, test->type_name,
-                      libm_test_variant_str(test->variant));
+                      test_get_name(test), test_get_test_type(test),
+                      test_get_input_type(test));
 
     return 0;
 
@@ -449,8 +426,8 @@ int libm_test_register(struct libm_test *test)
     }
 
     LIBM_TEST_DPRINTF(VERBOSE3, "Request Add Test:%s type:%s input:%s\n",
-		      test->name, test->type_name,
-		      libm_test_variant_str(test->variant));
+                      test_get_name(test), test_get_test_type(test),
+                      test_get_input_type(test));
 
     if (test->nargs < 1 || test->nargs > 3) {
         printf("Test:%s type:%s no of args: %d is invalid\n", test->name,
@@ -466,7 +443,8 @@ int libm_test_register(struct libm_test *test)
 
     if ((test->variant & test->conf->variants) == 0) {
         printf("Test:%s type:%s variant:%s not passed by user, skipping",
-               test->name, test->type_name, libm_test_variant_str(test->variant));
+               test_get_name(test), test_get_test_type(test),
+               test_get_input_type(test));
         goto out;
     }
 
@@ -480,13 +458,14 @@ int libm_test_register(struct libm_test *test)
      * other tests should mandatory have it
      */
     if (test->conf->test_types != TEST_TYPE_PERF && !test->ops.verify) {
-        printf("Test:%s type:%s dont have a verify method\n", test->name,
-               test->type_name);
+        printf("Test:%s type:%s input:%s dont have a verify method\n",
+               test_get_name(test), test_get_test_type(test),
+               test_get_input_type(test));
     }
 
     LIBM_TEST_DPRINTF(VERBOSE3, "Adding test:%s type:%s input:%s\n",
-		      test->name, test->type_name,
-		      libm_test_variant_str(test->variant));
+                      test_get_name(test), test_get_test_type(test),
+                      test_get_input_type(test));
     list_add(&test->list, &test_list);
 
     return 0;

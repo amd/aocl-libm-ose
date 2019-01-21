@@ -155,6 +155,21 @@ struct libm_test {
     struct list_head         list;
 };
 
+static inline const char *test_get_name(struct libm_test *test)
+{
+    return test->name;
+}
+
+static inline const char *test_get_test_type(struct libm_test *test)
+{
+    return test->type_name;
+}
+
+static inline const char *test_get_input_type(struct libm_test *test)
+{
+    return test->input_name;
+}
+
 enum libm_test_range_type {
       LIBM_INPUT_RANGE_SIMPLE,
       LIBM_INPUT_RANGE_RANDOM,
@@ -205,7 +220,6 @@ int libm_test_populate_range_rand(void *data,
                                      double min, double max);
 
 int libm_test_get_data_size(uint32_t variant);
-const char *libm_test_variant_str(uint32_t variant);
 
 struct libm_test *
 libm_test_alloc_init(struct libm_test_conf *conf, struct libm_test *template);

@@ -594,7 +594,7 @@ static int __generate_test_one_range(struct libm_test *test,
 {
     int ret = 0;
 
-    LIBM_TEST_DPRINTF(VERBOSE2,
+    LIBM_TEST_DPRINTF(DBG2,
                       "Testing for accuracy %d items in range [%Lf, %Lf]\n",
                       test->test_data.nelem,
                       range->start, range->stop);
@@ -621,9 +621,10 @@ static int test_exp2_accu(struct libm_test *test)
     test->ops.verify = NULL;
 
     if (sz % 4 != 0)
-        printf("%s %s : %d is not a multiple of 4, some may be left out\n"
-               " And error reported may not be real for such entries\n",
-               test->name, test->type_name, sz);
+        LIBM_TEST_DPRINTF(DBG2,
+                          "%s %s : %d is not a multiple of 4, some may be left out\n"
+                          " And error reported may not be real for such entries\n",
+                          test->name, test->type_name, sz);
 
     if (test->conf->inp_range[0].start ||
         test->conf->inp_range[0].stop) {
@@ -794,6 +795,30 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
 
 };
 
+static char *libm_test_variant_str(uint32_t variant)
+{
+    switch(variant) {
+    case LIBM_FUNC_S_S:
+        return "s1s";
+    case LIBM_FUNC_S_D:
+        return "s1d";
+    case LIBM_FUNC_V2S:
+        return "v2s";
+    case LIBM_FUNC_V4S:
+        return "v4s";
+    case LIBM_FUNC_V8S:
+        return "v8s";
+    case LIBM_FUNC_V2D:
+        return "v2d";
+    case LIBM_FUNC_V4D:
+        return "v4d";
+    default:
+        break;
+    }
+
+    return "unknown";
+}
+
 int test_exp2_register_one(struct libm_test *test);
 
 int libm_test_type_setup(struct libm_test_conf *conf,
@@ -818,6 +843,7 @@ int libm_test_type_setup(struct libm_test_conf *conf,
 
         test->name = type_name;
         test->variant = input_type;
+        test->input_name = libm_test_variant_str(input_type);
 
         test_types = test_types & (test_types -  1);
         switch(bit) {
@@ -867,7 +893,7 @@ int libm_test_type_setup(struct libm_test_conf *conf,
         else {
             LIBM_TEST_DPRINTF(PANIC, "Test %s variant:%d type:%s\n",
                               test->name, bit,
-                              test->type_name); // libm_test_variant_str(test->variant)
+                              test->type_name);
             ret = -1;
         }
 

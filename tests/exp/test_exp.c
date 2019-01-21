@@ -766,9 +766,9 @@ int libm_test_type_setup(struct libm_test_conf *conf,
         if (test->ops.setup)
             ret = test->ops.setup(test);
         else {
-            LIBM_TEST_DPRINTF(PANIC, "Test %s variant:%d type:%s\n",
-                              test->name, bit,
-                              test->type_name); // libm_test_variant_str(test->variant)
+            LIBM_TEST_DPRINTF(PANIC, "Test %s variant:%s type:%s\n",
+			      test_get_name(test), test_get_test_type(test),
+			      test_get_input_type(test));
             ret = -1;
         }
 
@@ -819,8 +819,7 @@ int libm_tests_setup(struct libm_test_conf *conf,
             name = "vector";
             break;
         default:
-            LIBM_TEST_DPRINTF(PANIC, "unknown for variant:%s\n",
-                              libm_test_variant_str(bit));
+            LIBM_TEST_DPRINTF(PANIC, "unknown for variant:%d\n", bit);
             continue;
         }
 

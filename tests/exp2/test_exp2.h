@@ -1,7 +1,7 @@
 #ifndef __TEST_EXP2_H__
 #define __TEST_EXP2_H__
 
-int libm_test_exp2_verify(struct libm_test *test, struct libm_test_result *result);
+int test_exp2_verify(struct libm_test *test, struct libm_test_result *result);
 
 int test_exp2_register_one(struct libm_test *test);
 

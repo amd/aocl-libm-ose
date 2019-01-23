@@ -1,6 +1,6 @@
-/* 
+/*
  * Copyright (C) 2018, AMD. All rights reserved
- * 
+ *
  * Author: Prem Mallappa <pmallapp@amd.com>
  */
 

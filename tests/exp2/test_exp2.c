@@ -15,6 +15,7 @@
 
 #include <libm_types.h>
 
+#include "test_exp2.h"
 #define __TEST_EXP2_INTERNAL__                   /* needed to include exp-test-data.h */
 #include "test_exp2_data.h"
 
@@ -27,15 +28,28 @@
 #define PROTOTYPE_TEST_V1  0xf8
 #define PROTOTYPE_TEST_V2  0xf9
 
-#define LIBM_PROTOTYPE PROTOTYPE_FMA3
+#define LIBM_PROTOTYPE PROTOTYPE_GLIBC
 
 #if (LIBM_PROTOTYPE == PROTOTYPE_FMA3)
 #define LIBM_FUNC(x) FN_PROTOTYPE_FMA3(x)
+#define LIBM_FUNC_VEC(prec, elem, fn) FN_PROTOTYPE_FMA3(vr##prec##elem##_##fn)
+#pragma message "compilig for AMD libM FMA3"
 #elif (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
-//#error I am here
+#pragma message "compilig for GLIBC"
 #define LIBM_FUNC(x)    x
+#define LIBM_FUNC_VEC(prec, elem, fn) _ZGV##prec##N##elem##v_##fn
 #else
 #define LIBM_FUNC(x)   FN_PROTOTYPE(x)
+#pragma message "compilig for AMD libM SSE3"
+#endif
+
+/* GLIBC prototype declarations */
+#if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
+__m128d LIBM_FUNC_VEC(d, 2, exp2)(__m128d);
+__m256d LIBM_FUNC_VEC(d, 4, exp2)(__m256d);
+
+__m128 LIBM_FUNC_VEC(s, 4, exp2f)(__m128);
+__m256 LIBM_FUNC_VEC(s, 8, exp2f)(__m256);
 #endif
 
 static int test_exp2_v2d_perf(struct libm_test *test)
@@ -60,7 +74,8 @@ static int test_exp2_v2d_perf(struct libm_test *test)
         uint32_t j;
         for (j = 0; j < (sz - 1); j += 2) {
             __m128d ip2 = _mm_set_pd(ip1[j+1], ip1[j]);
-            __m128d op2 = LIBM_FUNC(vrd2_exp2)(ip2);
+            //__m128d op2 = LIBM_FUNC(vrd2_exp2)(ip2);
+            __m128d op2 = LIBM_FUNC_VEC(d, 2, exp2)(ip2);
             _mm_store_pd(&o[j], op2);
         }
         /*
@@ -101,7 +116,8 @@ static int test_exp2_v4d_perf(struct libm_test *test)
         //IVDEP //;
         for (uint32_t j = 0; j < (sz - 3); j += 4) {
             __m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-            __m256d op4 = LIBM_FUNC(vrd4_exp2)(ip4);
+            //__m256d op4 = LIBM_FUNC(vrd4_exp2)(ip4);
+            __m256d op4 = LIBM_FUNC_VEC(d, 4, exp2)(ip4);
             _mm256_store_pd(&o[j], op4);
         }
         /*
@@ -220,7 +236,7 @@ static int test_exp2_v4s_perf(struct libm_test *test)
         uint32_t j;
         for (j = 0; j < (sz - 3); j += 4) {
             __m128 ip4 = _mm_set_ps(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-            __m128 op4 = LIBM_FUNC(vrs4_exp2f)(ip4);
+            __m128 op4 = LIBM_FUNC_VEC(s, 4, exp2f)(ip4);
             _mm_store_ps(&o[j], op4);
         }
         /*
@@ -277,7 +293,7 @@ static int test_exp2_v8s_perf(struct libm_test *test)
         for (j = 0; j < (sz - 7); j += 8) {
             __m256 ip2 = _mm256_set_ps(ip1[j+7], ip1[j+6], ip1[j+5], ip1[j+4],
                                        ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-            __m256 op4 = LIBM_FUNC(vrs8_exp2f)(ip4);
+            __m256 op4 = LIBM_FUNC_VEC(s, 8, exp2f)(ip4);
             _mm256_store_ps(&o[j], op4);
         }
         /*
@@ -290,7 +306,7 @@ static int test_exp2_v8s_perf(struct libm_test *test)
         case 5:
         case 4:
             __m128 ip4 = __mm_set_ps(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-            __m128 op4 = LIBM_FUNC(exp2f_v4s)(ip1[j]);
+            __m128 op4 = LIBM_FUNC_VEC(s, 4, exp2f)(ip4);
             _mm_store_ps(&o[j], op4)
             j += 4
         default:
@@ -323,19 +339,22 @@ static int test_exp2_v8s_perf(struct libm_test *test)
 int test_exp2_populate_inputs(struct libm_test *test, int use_uniform);
 
 
-static int test_exp2_perf_setup(struct libm_test *test)
+static int test_exp2_default_setup(struct libm_test *test)
 {
     const struct libm_test_conf *conf = test->conf;
     int ret = 0;
 
     ret = libm_test_alloc_test_data(test, conf->nelem);
-    if (ret)
+    if (ret) {
+        LIBM_TEST_DPRINTF(PANIC, "Unable to allocate test_data\n");
         goto out;
+    }
+    ret = libm_test_populate_inputs(test, LIBM_INPUT_RANGE_SIMPLE);
 
-    ret = test_exp2_populate_inputs(test, LIBM_INPUT_RANGE_SIMPLE);
-
-    if (ret || !test->test_data.input1)
+    if (ret || !test->test_data.input1) {
+        LIBM_TEST_DPRINTF(PANIC, "Unable to populate test_data\n");
         goto out;
+    }
 
     return 0;
 
@@ -345,11 +364,19 @@ static int test_exp2_perf_setup(struct libm_test *test)
 
 static int test_exp2_accu_setup(struct libm_test *test)
 {
+    const struct libm_test_conf *conf = test->conf;
     int ret = 0;
 
-    test_exp2_perf_setup(test);
+    ret = libm_test_alloc_test_data(test, conf->nelem);
+    if (ret) {
+        LIBM_TEST_DPRINTF(PANIC, "Unable to allocate test_data\n");
+        goto out;
+    }
+
     test->ulp_threshold = 0.54;
 
+    return 0;
+out:
     return ret;
 }
 
@@ -362,7 +389,7 @@ static int test_exp2_alloc_special_data(struct libm_test *test, size_t size)
     libm_test_alloc_test_data(test, size);
 
     if (ret) {
-        printf("unable to allocate\n");
+        LIBM_TEST_DPRINTF(PANIC, "Unable to allocate test_data\n");
         goto out;
     }
 
@@ -375,6 +402,7 @@ static int test_exp2_alloc_special_data(struct libm_test *test, size_t size)
     return 0;
 
  out:
+
     return -1;
 }
 
@@ -385,7 +413,7 @@ static int test_exp2_special_setup(struct libm_test *test)
      * input only array size is half of original
      */
     int test_data_size = ARRAY_SIZE(test_exp2_special_data)/2;
-
+    double *in1, *expected;
     struct libm_test_data *data;
 
     // Just trying to get rid of warning/errors
@@ -393,9 +421,12 @@ static int test_exp2_special_setup(struct libm_test *test)
 
     data = &test->test_data;
 
+    in1 = (double*)data->input1;
+    expected = (double*)data->expected;
+
     for (int i = 0; i < test_data_size; i++) {
-        data->input1[i] = test_exp2_special_data[i].in;
-        data->expected[i] = test_exp2_special_data[i].out;
+        in1[i] = test_exp2_special_data[i].in;
+        expected[i] = test_exp2_special_data[i].out;
     }
 
     return 0;
@@ -510,8 +541,8 @@ static int __test_exp2_accu(struct libm_test *test,
                             uint32_t type)
 {
     struct libm_test_data *data = &test->test_data;
-    double *ip = &data->input1[0];
-    double *op = &data->output[0];
+    double *ip = (double*)data->input1;
+    double *op = (double*)data->output;
     int sz = data->nelem, end = sz;
 
     switch(type) {
@@ -526,13 +557,13 @@ static int __test_exp2_accu(struct libm_test *test,
         switch (type) {
         case LIBM_FUNC_V2D:
             ip2 = _mm_set_pd(ip[j+1], ip[j]);
-            op2 = LIBM_FUNC(vrd2_exp2)(ip2);
+            op2 = LIBM_FUNC_VEC(d, 2, exp2)(ip2);
             _mm_store_pd(&op[j], op2);
             j += 2;
             break;
         case LIBM_FUNC_V4D:
             ip4 = _mm256_set_pd(ip[j+3], ip[j+2], ip[j+1], ip[j]);
-            op4 = LIBM_FUNC(vrd4_exp2)(ip4);
+            op4 = LIBM_FUNC_VEC(d, 4, exp2)(ip4);
             _mm256_store_pd(&op[j], op4);
             j += 4;
             break;
@@ -554,8 +585,8 @@ static int __test_exp2f_accu(struct libm_test *test,
                             uint32_t type)
 {
     struct libm_test_data *data = &test->test_data;
-    float *ip = (float*)&data->input1[0];
-    float *op = (float*)&data->output[0];
+    float *ip = (float*)data->input1;
+    float *op = (float*)data->output;
     int sz = data->nelem, end = sz;
 
     switch(type) {
@@ -569,7 +600,7 @@ static int __test_exp2f_accu(struct libm_test *test,
         switch (type) {
         case LIBM_FUNC_V4S:
             ip4 = _mm_set_ps(ip[j+3], ip[j+2], ip[j+1], ip[j]);
-            op4 = LIBM_FUNC(vrs4_exp2f)(ip4);
+            op4 = LIBM_FUNC_VEC(s,4, exp2f)(ip4);
             _mm_store_ps(&op[j], op4);
             j += 4;
             break;
@@ -586,9 +617,6 @@ static int __test_exp2f_accu(struct libm_test *test,
     return 0;
 }
 
-int libm_test_exp2_verify(struct libm_test *test,
-                          struct libm_test_result *result);
-
 static int __generate_test_one_range(struct libm_test *test,
                                      struct libm_test_input_range *range)
 {
@@ -601,7 +629,7 @@ static int __generate_test_one_range(struct libm_test *test,
 
     test->conf->inp_range[0] = *range;
 
-    ret = test_exp2_populate_inputs(test, range->type);
+    ret = libm_test_populate_inputs(test, range->type);
 
     if (test_is_single_precision(test))
         ret = __test_exp2f_accu(test, test->variant);
@@ -632,7 +660,7 @@ static int test_exp2_accu(struct libm_test *test)
 
         ret = __generate_test_one_range(test, range);
 
-        ret = libm_test_exp2_verify(test, &test->result);
+        ret = test_exp2_verify(test, &test->result);
 
         return ret;
     }
@@ -643,11 +671,12 @@ static int test_exp2_accu(struct libm_test *test)
     for (int i = 0; i < arr_sz ||
              (accu_ranges[i].start = 0.0 &&
               accu_ranges[i].stop == 0.0) ; i++) {
+
         ret = __generate_test_one_range(test, &accu_ranges[i]);
         if (ret)
             return ret;
 
-        ret = libm_test_exp2_verify(test, &test->result);
+        ret = test_exp2_verify(test, &test->result);
     }
 
     return 0;
@@ -655,6 +684,9 @@ static int test_exp2_accu(struct libm_test *test)
 
 static int test_exp2_corner_setup(struct libm_test *test)
 {
+    struct libm_test_data *data= &test->test_data;
+    double *in1, *o, *ex;
+
     flt64u_t input[] =
         {
          {.i = 0x40808cf8d48faceb,},
@@ -683,15 +715,19 @@ static int test_exp2_corner_setup(struct libm_test *test)
         };
 
     int test_data_size = ARRAY_SIZE(expected);
-    struct libm_test_data *data= &test->test_data;
+
 
     // Just trying to get rid of warning/errors
     test_exp2_alloc_special_data(test, ARRAY_SIZE(expected));
 
+    in1 = (double*)data->input1;
+    o   = (double*)data->output;
+    ex  = (double*)data->expected;
+
     for (int i = 0; i < test_data_size; i++) {
-        data->input1[i] = input[i].d;
-        data->output[i] = actual[i].d;
-        data->expected[i] = expected[i].d;
+        in1[i] = input[i].d;
+        o[i] = actual[i].d;
+        ex[i] = expected[i].d;
     }
 
     return 0;
@@ -714,20 +750,13 @@ double test_exp2_ulp(struct libm_test *test, int idx)
     return exp2(buf[idx]);
 }
 
-struct libm_test_funcs {
-    struct libm_test_ops performance;
-    struct libm_test_ops accuracy;
-    struct libm_test_ops special;
-    struct libm_test_ops corner;
-};
-
 struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
     {
      /*
       * Scalar functions
       */
      [LIBM_FUNC_S_S]  = {
-                         .performance = { .setup = test_exp2_perf_setup,
+                         .performance = { .setup = test_exp2_default_setup,
                                           .run   = test_exp2_s1s_perf,},
                          .accuracy     = {.setup = test_exp2_accu_setup,
                                           .run   = test_exp2_accu,
@@ -737,7 +766,7 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
      },
 
      [LIBM_FUNC_S_D]  = {
-                         .performance = { .setup = test_exp2_perf_setup,
+                         .performance = { .setup = test_exp2_default_setup,
                                           .run   = test_exp2_s1d_perf,},
                          .accuracy     = {.setup = test_exp2_accu_setup,
                                           .run   = test_exp2_accu,},
@@ -748,7 +777,7 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
 
 #if 0
      [LIBM_FUNC_V2S] = {
-                        .performance = {.setup = test_exp2_perf_setup,
+                        .performance = {.setup = test_exp2_default_setup,
                                         .run = test_exp2_v2s_perf,},
                         .accuracy     = {.setup = test_exp2_accu_setup,
                                          .run = test_exp2_v4s,},
@@ -756,7 +785,7 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
      },
 
      [LIBM_FUNC_V8S]  = {
-                         .performance = { .setup = test_exp2_perf_setup,
+                         .performance = { .setup = test_exp2_default_setup,
                                           .run   = test_exp2_v8s_perf,},
                          .accuracy     = {.setup = test_exp2_accu_setup,
                                           .run = test_exp2_v4s,},
@@ -764,7 +793,7 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
      },
 #endif
      [LIBM_FUNC_V4S]  = {
-                         .performance = { .setup = test_exp2_perf_setup,
+                         .performance = { .setup = test_exp2_default_setup,
                                           .run   = test_exp2_v4s_perf,},
                          .accuracy     = {.setup = test_exp2_accu_setup,
                                           .run   = test_exp2_accu,
@@ -775,7 +804,7 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
      },
 
      [LIBM_FUNC_V2D]  = {
-                         .performance = { .setup = test_exp2_perf_setup,
+                         .performance = { .setup = test_exp2_default_setup,
                                           .run   = test_exp2_v2d_perf,},
                          .accuracy     = {.setup = test_exp2_accu_setup,
                                           .run   = test_exp2_accu,},
@@ -784,7 +813,7 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
      },
 
      [LIBM_FUNC_V4D] = {
-                        .performance = {.setup = test_exp2_perf_setup,
+                        .performance = {.setup = test_exp2_default_setup,
                                         .run = test_exp2_v4d_perf,},
                         .accuracy     = {.setup = test_exp2_accu_setup,
                                          .run   = test_exp2_accu,},
@@ -795,193 +824,26 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
 
 };
 
-static char *libm_test_variant_str(uint32_t variant)
-{
-    switch(variant) {
-    case LIBM_FUNC_S_S:
-        return "s1s";
-    case LIBM_FUNC_S_D:
-        return "s1d";
-    case LIBM_FUNC_V2S:
-        return "v2s";
-    case LIBM_FUNC_V4S:
-        return "v4s";
-    case LIBM_FUNC_V8S:
-        return "v8s";
-    case LIBM_FUNC_V2D:
-        return "v2d";
-    case LIBM_FUNC_V4D:
-        return "v4d";
-    default:
-        break;
-    }
-
-    return "unknown";
-}
-
-int test_exp2_register_one(struct libm_test *test);
-
-int libm_test_type_setup(struct libm_test_conf *conf,
-                         struct libm_test *template,
-                         struct libm_test_funcs *funcs,
-                         char *type_name, uint32_t input_type)
-{
-    int ret = 0;
-
-    // Sanitary check
-    uint32_t test_types = conf->test_types;
-    while(test_types) {
-        uint32_t bit = 1 << (ffs(test_types) - 1);
-        struct libm_test_ops *ops = NULL;
-        struct libm_test *test;
-
-        test = libm_test_alloc_init(conf, template);
-        if (!test) {
-            LIBM_TEST_DPRINTF(PANIC, "Unable to allocate memory for test\n");
-            continue;
-        }
-
-        test->name = type_name;
-        test->variant = input_type;
-        test->input_name = libm_test_variant_str(input_type);
-
-        test_types = test_types & (test_types -  1);
-        switch(bit) {
-        case TEST_TYPE_PERF:
-            test->type_name = "perf";
-            test->test_type =  TEST_TYPE_PERF;
-            ops = &funcs->performance;
-            break;
-        case TEST_TYPE_SPECIAL:
-            test->type_name = "special";
-            test->test_type =  TEST_TYPE_SPECIAL;
-            ops = &funcs->special;
-            break;
-        case TEST_TYPE_ACCU:
-            test->type_name = "accuracy";
-            test->test_type =  TEST_TYPE_ACCU;
-            ops = &funcs->accuracy;
-            break;
-        case TEST_TYPE_CORNER:
-            test->type_name = "corner";
-            test->test_type =  TEST_TYPE_CORNER;
-            ops = &funcs->corner;
-            break;
-        default:
-            goto out;
-        }
-
-	if (!ops->setup && !ops->run)
-            goto free_test;
-
-        /* Override only the ones provided */
-        if (ops->setup)
-            test->ops.setup = ops->setup;
-        if (ops->run)
-            test->ops.run = ops->run;
-        if (ops->cleanup)
-            test->ops.cleanup = ops->cleanup;
-        if (ops->ulp.func || ops->ulp.funcq) /* test for any should be good */
-            test->ops.ulp = ops->ulp;
-
-        if (ops->verify)
-            test->ops.verify = ops->verify;
-
-        /* Finally call setup if exists, it should otherwise its an error */
-        if (test->ops.setup)
-            ret = test->ops.setup(test);
-        else {
-            LIBM_TEST_DPRINTF(PANIC, "Test %s variant:%d type:%s\n",
-                              test->name, bit,
-                              test->type_name);
-            ret = -1;
-        }
-
-        if (ret)
-            goto out;
-
-        ret = test_exp2_register_one(test);
-        if (ret)
-            goto free_test;
-
-        continue;
-
-    free_test:
-        libm_test_free(test);
-    }
-
-    return 0;
-
- out:
-    return -1;
-
-}
-
-int libm_tests_setup(struct libm_test_conf *conf,
-                     struct libm_test_funcs test_table[LIBM_FUNC_MAX],
-                     struct libm_test *template)
-{
-    uint32_t variants = conf->variants;
-    int ret = 0;
-
-    while (variants) {
-        uint32_t bit = 1 << (ffs(variants) - 1);
-        char *name;
-        struct libm_test_funcs *funcs = &test_table[bit];
-
-        variants = variants & (variants -  1);
-
-        switch(bit) {
-        case LIBM_FUNC_S_S:
-        case LIBM_FUNC_S_D:
-            name = "scalar";
-            break;
-        case LIBM_FUNC_V2S:
-        case LIBM_FUNC_V4S:
-        case LIBM_FUNC_V8S:
-        case LIBM_FUNC_V2D:
-        case LIBM_FUNC_V4D:
-            name = "vector";
-            break;
-        default:
-            LIBM_TEST_DPRINTF(PANIC, "unknown for variant:%s\n",
-                              libm_test_variant_str(bit));
-            continue;
-        }
-
-	ret = libm_test_type_setup(conf, template, funcs, name, bit);
-        if (ret) {
-            LIBM_TEST_DPRINTF(PANIC, "unable to setup %s\n", name);
-        }
-    }
-
-    return 0;
-}
-
-
-#include <quadmath.h>
-
 /* There is no exp2q in recent versions of gcc */
-__float128
-libm_test_exp2q(struct libm_test *test, int idx)
+long double
+test_exp2_exp2l(struct libm_test *test, int idx)
 {
-    /* logq(2.0) */
-    static __float128 ln2 = 6.9314718055994530941723212145817657508364e-01Q;
-    return expq(ln2 * test->test_data.input1[idx]);
+    double *d = (double*)test->test_data.input1;
+    return exp2l(d[idx]);
 }
 
-int libm_test_exp2_verify(struct libm_test *test, struct libm_test_result *result);
+int test_exp2_verify(struct libm_test *test, struct libm_test_result *result);
 
 static struct libm_test
 exp2_template = {
-                 //.name       = "exp2_vec",
-                 .nargs      = 1,
-                 .ulp_threshold = 4.0,
-                 .ops        = {
-                                .ulp    = {.funcq = libm_test_exp2q},
-                                .verify = libm_test_exp2_verify,
-                 },
-    };
+	//.name       = "exp2_vec",
+	.nargs      = 1,
+	.ulp_threshold = 4.0,
+	.ops        = {
+		.ulp    = {.funcl = test_exp2_exp2l},
+		.verify = test_exp2_verify,
+	},
+};
 
 #define EXP2_TEST_TYPES_ALL (TEST_TYPE_ACCU | TEST_TYPE_PERF |          \
                              TEST_TYPE_SPECIAL | TEST_TYPE_CORNER)

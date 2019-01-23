@@ -59,9 +59,10 @@ static struct argp_option options[] = {
 
 /*
  * parse_range : parse the following
- * --range=-234.234,23.23    - -ve start,end,
- * --range=234,243,rand      - -ve start,end,<rand - randomized filling>
- * --range=0.2343,0.000023 4 - start,end,<linear - linear increaments>
+ * --range=start,end,<type> - start,end, type = simple, linear, random
+ *                                              (upto 3 significant letters)
+ * --range=-234.234,23.23   - start,end (default simple population)
+ * --range=234,243,rand     - random filling
  */
 int parse_range(char *arg,
                 struct libm_test_input_range *range)

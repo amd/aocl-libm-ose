@@ -133,7 +133,7 @@ static inline __float128 __ulpq(double val)
  */
 double
 OPTIMIZE(0)
-libm_test_ulp_error(double output, __float128 expected)
+libm_test_ulp_error(double output, long double expected)
 {
 
     /* convert __float128 to double */
@@ -158,10 +158,12 @@ libm_test_ulp_error(double output, __float128 expected)
     if (isinf(output) && isinf(dexpected))
         return INFINITY;
 
+    if (output == dexpected) return 0.0;
+
     /*If output and expected are finite (The most common case) */
     if (isfinite(output)) {
         if (dexpected < AMD_LIBM_MAX_DOUBLE)
-            return fabsq(output - expected) / __ulpq(expected);
+            return fabsl(output - dexpected) / __ulpq(expected);
 
         /*If the expected is infinity and the output is finite */
         if ((dexpected > AMD_LIBM_MAX_DOUBLE) || isinf(dexpected))
@@ -175,11 +177,11 @@ libm_test_ulp_error(double output, __float128 expected)
 
     /*If output alone is infinity */
     if (isinf(output))
-        return fabsq(AMD_LIBM_MAX_DOUBLE - expected / __ulpq(expected)) + 1;
+        return fabsl(AMD_LIBM_MAX_DOUBLE - expected / __ulpq(expected)) + 1;
 
     /*If output alone is -infinity */
     if (is_inf_neg(output))
-        return fabsq((-AMD_LIBM_MAX_DOUBLE - expected) / __ulpq(expected)) + 1;
+        return fabsl((-AMD_LIBM_MAX_DOUBLE - expected) / __ulpq(expected)) + 1;
 
     return 0.0;
 }

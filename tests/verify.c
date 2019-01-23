@@ -10,18 +10,20 @@
 static double get_ulp(struct libm_test *test, int j)
 {
     struct libm_test_data *data = &test->test_data;
-    __float128 computedq = 0.0;
+    //__float128 computedq = 0.0;
+    double *outputd = (double*)data->output;
+    long double computedl = 0.0;
     double computed = 0.0;
 
     /* Get higer precision value for a given input */
     if (test_is_single_precision(test)) {
-        float *output = (float*)data->output;
+        float *outputf = (float*)data->output;
         computed = test->ops.ulp.func(test, j);
-        return libm_test_ulp_errorf(output[j], computed);
+        return libm_test_ulp_errorf(outputf[j], computed);
     }
 
-    computedq = test->ops.ulp.funcq(test, j);
-    return libm_test_ulp_error(data->output[j], computedq);
+    computedl = test->ops.ulp.funcl(test, j);
+    return libm_test_ulp_error(outputd[j], computedl);
 }
 
 /*
@@ -65,41 +67,59 @@ static inline void __update_results(struct libm_test_result *result,
 
 }
 
+static int __is_ulp_required(flt64u_t expected, flt64u_t actual)
+{
+    if (expected.i == actual.i )              return 0;
+    if (isnan(expected.d) && isnan(actual.d)) return 0;
+    if (isinf(expected.d) && isinf(actual.d)) return 0;
+    if ((expected.i == 0x7ff0000000000000) &&
+        (actual.i   == 0x7ff0000000000000))   return 0;
 
-/*
- * returns -1 if success,
- * returns offset in array where the mismatch occurs
- */
+    return 1;
+}
+
 static int __verify_double(struct libm_test *test,
                            struct libm_test_result *result)
 {
     struct libm_test_data *data = &test->test_data;
+    double *in1 = (double*)data->input1,
+        *in2 = (double*)data->input2, *in3 = (double*)data->input3;
     flt64u_t *op = (flt64u_t*)data->output;
     flt64u_t *nw = (flt64u_t*)data->expected;
-    int sz = data->nelem, ret = 0;
+    int sz = data->nelem;
     int idx = 0, npass = 0, nfail = 0, nignored = 0, ntests;
     int nargs = test->nargs;
-    int print_info = 0;
+    int print_info = 0, test_update_ulp = 0;
     double ulp = 0.0;
 
     ntests = data->nelem;
 
     for (int j = 0; j < sz; ++j) {
+        int ret = 0;
+
         if (test->conf->test_types == TEST_TYPE_ACCU) {
-            /* Verify ULP for every case */
-            ulp = get_ulp(test, j);
-            ret = update_ulp(test, ulp);
+            /*
+             * Verify ULP for every case,
+             * except when both output and exptected is 0
+             */
+            if (__is_ulp_required(nw[j], op[j]))
+                test_update_ulp = 1;
         } else {
             if ((nw[j].i ^ op[j].i) != 0) {
-                result->input1[idx] = data->input1[j];
-                if (test->nargs > 1) result->input2[idx] = data->input2[j];
-                if (test->nargs > 2) result->input3[idx] = data->input3[j];
+                result->input1[idx] = in1[j];
+                if (test->nargs > 1) result->input2[idx] = in2[j];
+                if (test->nargs > 2) result->input3[idx] = in3[j];
                 print_info = 1;
-                ulp = get_ulp(test, j);
-                ret = update_ulp(test, ulp);
-
+                test_update_ulp = 1;
             }
         }
+
+        if (test_update_ulp) {
+            ulp = get_ulp(test, j);
+            ret = update_ulp(test, ulp);
+            test_update_ulp = 0;
+        }
+
         switch(ret) {
         case 0:
             npass++;
@@ -120,14 +140,14 @@ static int __verify_double(struct libm_test *test,
         }
 
         if (print_info) {
-            flt64u_t *in1 = (flt64u_t*)&data->input1[j],
-                *in2 = (flt64u_t*)&data->input2[j],
-                *in3 = (flt64u_t*)&data->input1[j];
-            LIBM_TEST_DPRINTF(VERBOSE3, "input1: % -g(%016lX)", in1->d, in1->i);
+            flt64u_t *fin1 = (flt64u_t*)&in1[j],
+                *fin2 = (flt64u_t*)&in2[j],
+                *fin3 = (flt64u_t*)&in1[j];
+            LIBM_TEST_DPRINTF(VERBOSE3, "i:%d input1: % -g(%016lX)", j, fin1->d, fin1->i);
             if (nargs > 1)
-                LIBM_TEST_CDPRINTF(VERBOSE3, "  input2: % -g(%016lX)", in2->d, in2->i);
+                LIBM_TEST_CDPRINTF(VERBOSE3, "  input2: % -g(%016lX)", fin2->d, fin2->i);
             if (nargs > 2)
-                LIBM_TEST_CDPRINTF(VERBOSE3, "  input3: % -g(%016lX)", in3->d, in3->i);
+                LIBM_TEST_CDPRINTF(VERBOSE3, "  input3: % -g(%016lX)", fin3->d, fin3->i);
 
             LIBM_TEST_CDPRINTF(VERBOSE3, "    expected:%lX actual:%lX ulp:%G\n",
                                nw[j].i, op[j].i, ulp);
@@ -148,6 +168,7 @@ static int __verify_float(struct libm_test *test,
                           struct libm_test_result *result)
 {
     struct libm_test_data *data = &test->test_data;
+    float *in1 = data->input1, *in2 = data->input2, *in3 = data->input3;
     flt32u_t *op = (flt32u_t*)data->output;
     flt32u_t *nw = (flt32u_t*)data->expected;
     int sz = data->nelem, ret = 0;
@@ -164,9 +185,9 @@ static int __verify_float(struct libm_test *test,
             test_update_ulp = 1;
         } else {
             if ((nw[j].i ^ op[j].i) != 0) {
-                result->input1[idx] = data->input1[j];
-                if (test->nargs > 1) result->input2[idx] = data->input2[j];
-                if (test->nargs > 2) result->input3[idx] = data->input3[j];
+                result->input1[idx] = in1[j];
+                if (test->nargs > 1) result->input2[idx] = in2[j];
+                if (test->nargs > 2) result->input3[idx] = in3[j];
                 print_info = 1;
                 test_update_ulp = 1;
             }
@@ -197,16 +218,16 @@ static int __verify_float(struct libm_test *test,
         }
 
         if (print_info) {
-            flt32u_t *in1 = (flt32u_t*)&data->input1[j],
-                *in2 = (flt32u_t*)&data->input2[j],
-                *in3 = (flt32u_t*)&data->input1[j];
-            LIBM_TEST_DPRINTF(VERBOSE3, "input1: %-G(%08X)", in1->f, in1->i);
+            flt32u_t *fin1 = (flt32u_t*)&in1[j],
+                *fin2 = (flt32u_t*)&in2[j],
+                *fin3 = (flt32u_t*)&in1[j];
+            LIBM_TEST_DPRINTF(VERBOSE3, "finput1: %-G(%08X)", fin1->f, fin1->i);
             if (nargs > 1)
                 LIBM_TEST_CDPRINTF(VERBOSE3,
-                                   " input2: %g(%08X)\n", in2->f, in2->i);
+                                   " finput2: %g(%08X)\n", fin2->f, fin2->i);
             if (nargs > 2)
                 LIBM_TEST_CDPRINTF(VERBOSE3,
-                                   " input3: %g(%08X)\n", in3->f, in3->i);
+                                   " finput3: %g(%08X)\n", fin3->f, fin3->i);
 
             LIBM_TEST_CDPRINTF(VERBOSE3,
                                "    expected:%8X actual:%8X ulp:%5.05g\n",
@@ -224,6 +245,9 @@ static int __verify_float(struct libm_test *test,
     return idx;
 }
 
+/*
+ * returns 0 on success, <int> otherwise
+ */
 int libm_test_verify(struct libm_test *test,
 		     struct libm_test_result *result)
 {

@@ -67,13 +67,13 @@ struct libm_test_result{
 struct libm_test_data {
     uint32_t nelem;
   //uint32_t reserved1;
-    double  *input1;
-    double  *input2;
-    double  *input3;
-    double  *output;
-    double  *expected;
-  //double  *reserved[27];
-    double  data[0];
+    void  *input1;
+    void  *input2;
+    void  *input3;
+    void  *output;
+    void  *expected;
+    //double  *reserved[27];
+    //double  data[0];
 };
 
 enum LIBM_TEST_TYPE {
@@ -105,6 +105,7 @@ struct libm_test_ops {
 
     union {
         double     (*func)(struct libm_test *test, int idx);
+        long double (*funcl)(struct libm_test *test, int idx);
         __float128 (*funcq)(struct libm_test *test, int idx);
     } ulp;
 
@@ -113,6 +114,12 @@ struct libm_test_ops {
     int (*verify)(struct libm_test *test, struct libm_test_result *result);
 };
 
+struct libm_test_funcs {
+    struct libm_test_ops performance;
+    struct libm_test_ops accuracy;
+    struct libm_test_ops special;
+    struct libm_test_ops corner;
+};
 
 #if 0
 #define CAT(A, B) CAT2(A, B)
@@ -199,9 +206,13 @@ static inline int test_is_single_precision(struct libm_test *test)
 
 int libm_test_init(struct libm_test_conf *conf);
 int libm_test_register(struct libm_test *test);
+int libm_tests_setup(struct libm_test_conf *conf,
+                     struct libm_test_funcs test_table[LIBM_FUNC_MAX],
+                     struct libm_test *template);
+int libm_test_populate_inputs(struct libm_test *test, int use_uniform);
 
 /*
- * returns -1 if success,
+ * returns 0 if success, -1 otherwise
  * returns offset in array where the mismatch occurs
  */
 int libm_test_verify(struct libm_test *test,
@@ -221,8 +232,8 @@ int libm_test_populate_range_rand(void *data,
 
 int libm_test_get_data_size(uint32_t variant);
 
-struct libm_test *
-libm_test_alloc_init(struct libm_test_conf *conf, struct libm_test *template);
+struct libm_test *libm_test_alloc_init(struct libm_test_conf *conf,
+                                       struct libm_test *template);
 int libm_test_free(struct libm_test *test);
 int libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem);
 
@@ -230,6 +241,6 @@ int libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem);
  * ULP error calculations
  **********************************/
 double libm_test_ulp_errorf(float computed, double expected);
-double libm_test_ulp_error(double computed, __float128 expected);
+double libm_test_ulp_error(double computed, long double expected);
 
 #endif  /* __LIBM_TESTS_H__ */

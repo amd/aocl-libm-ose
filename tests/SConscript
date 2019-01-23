@@ -17,18 +17,20 @@ include = "#tests/include"
 
 e = env.Clone()
 e.Append(
-	CCFLAGS  = ['-funsigned-char', '-fno-strict-aliasing', #'-Og', 
-			'-fstack-protector-all', '-Werror', '-W', '-Wall',
-			 '-Wno-multichar' , '-Wno-unused-parameter',
-			 '-Wno-missing-field-initializers', '-ffast-math',
-			 # '-ftree-vectorize', '-falign-functions=32', '-falign-loops=32',
-			 '-march=native',
-			 '-I./include', '-I./tests/include'],
-	INCPATH  = [include],
-	CPPPATH  = [include],
-	LIBS     = ['m', 'amdlibm', 'quadmath'],
-	LIBPATH  = [builddir]
-	)
+    CCFLAGS  = ['-funsigned-char', '-fno-strict-aliasing', #'-Og',
+		'-fstack-protector-all', '-Werror', '-W', '-Wall',
+		'-Wno-multichar' , '-Wno-unused-parameter',
+		'-Wno-missing-field-initializers',
+		#'-ffast-math',
+		# '-ftree-vectorize', '-falign-functions=32', '-falign-loops=32',
+		#'-finstrument-functions',
+		'-march=native',
+		'-I./include', '-I./tests/include'],
+    INCPATH  = [include],
+    CPPPATH  = [include],
+    LIBS     = ['m', 'amdlibm', 'mvec'],
+    LIBPATH  = [builddir]
+)
 
 test_excluded_srcs= ['print.c']
 
@@ -46,7 +48,7 @@ this_sconscript_file = Dir('.').srcnode().abspath
 test_base = os.path.dirname(this_sconscript_file)
 tests = getSubdirs(this_sconscript_file)
 print(tests, path.join(test_base, ))
-exclude_dirs = ['include']
+exclude_dirs = ['include', 'pow']
 tests = [x for x in tests if x not in exclude_dirs]
 
 print(tests)

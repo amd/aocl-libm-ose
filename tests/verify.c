@@ -164,6 +164,16 @@ static int __verify_double(struct libm_test *test,
     return idx;
 }
 
+static int __is_ulpf_required(flt32u_t expected, flt32u_t actual)
+{
+    if (expected.i == actual.i )                return 0;
+    if (isnanf(expected.f) && isnanf(actual.f)) return 0;
+    if (isinff(expected.f) && isinff(actual.f)) return 0;
+    if ((expected.i == 0x7ff00000) && (actual.i == 0x7ff00000)) return 0;
+
+    return 1;
+}
+
 static int __verify_float(struct libm_test *test,
                           struct libm_test_result *result)
 {
@@ -182,7 +192,8 @@ static int __verify_float(struct libm_test *test,
     for (int j = 0; j < sz; ++j) {
         if (test->conf->test_types == TEST_TYPE_ACCU) {
             /* Verify ULP for every case */
-            test_update_ulp = 1;
+            if (__is_ulpf_required(nw[j], op[j]))
+                test_update_ulp = 1;
         } else {
             if ((nw[j].i ^ op[j].i) != 0) {
                 result->input1[idx] = in1[j];

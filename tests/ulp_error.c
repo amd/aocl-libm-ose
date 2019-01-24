@@ -120,7 +120,7 @@ static inline __float128 __ulpq(double val)
 
     expo = expo - (53 - 1);             /* e-p-1 */
 
-    return powq(2, expo);                /* 2^(e-p-1) */
+    return powl(2, expo);                /* 2^(e-p-1) */
 }
 
 /*

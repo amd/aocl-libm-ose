@@ -243,4 +243,28 @@ int libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem);
 double libm_test_ulp_errorf(float computed, double expected);
 double libm_test_ulp_error(double computed, long double expected);
 
+
+/*
+ * Use directly the FMA3 version or glibc version
+ */
+
+#define PROTOTYPE_GLIBC    0xf1
+#define PROTOTYPE_FMA3     0xf2
+#define PROTOTYPE_TEST_V1  0xf8
+#define PROTOTYPE_TEST_V2  0xf9
+
+#if (LIBM_PROTOTYPE == PROTOTYPE_FMA3)
+#define LIBM_FUNC(x) FN_PROTOTYPE_FMA3(x)
+#define LIBM_FUNC_VEC(prec, elem, fn) FN_PROTOTYPE_FMA3(vr##prec##elem##_##fn)
+#pragma message "compilig for AMD libM FMA3"
+#elif (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
+#pragma message "compilig for GLIBC"
+#define LIBM_FUNC(x)    x
+#define LIBM_FUNC_VEC(prec, elem, fn) _ZGV##prec##N##elem##v_##fn
+#else
+#define LIBM_FUNC(x)   FN_PROTOTYPE(x)
+#pragma message "compilig for AMD libM SSE3"
+#endif
+
+
 #endif  /* __LIBM_TESTS_H__ */

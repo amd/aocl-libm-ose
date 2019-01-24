@@ -11,25 +11,48 @@ from os.path import join
 from scripts.cfg import projpath
 builddir = join(projpath.BUILDDIR, 'tests')
 
-Import('env')
+Import('env', 'abi')
 
 include = "#tests/include"
 
+PROTOTYPE_GLIBC    = 0xf1
+PROTOTYPE_FMA3     = 0xf2
+PROTOTYPE_TEST_V1  = 0xf8
+PROTOTYPE_TEST_V2  = 0xf9
+
+print("abi is" , abi)
+if abi == 'amdlibm':
+    ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_FMA3]
+    liblist = ['amdlibm']
+elif abi == 'glibc':
+    ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_GLIBC]
+    liblist = ['mvec']
+elif abi == 'svml':
+    pass
+else:
+    ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_FMA3]
+    liblist = ['amdlib']
+
+liblist += ['m', 'test']
+libpath = ['#build/src', '#build/tests']
+
 e = env.Clone()
 e.Append(
-    CCFLAGS  = ['-funsigned-char', '-fno-strict-aliasing', #'-Og',
+    CCFLAGS  = ccflags + ['-funsigned-char', '-fno-strict-aliasing', #'-Og',
 		'-fstack-protector-all', '-Werror', '-W', '-Wall',
 		'-Wno-multichar' , '-Wno-unused-parameter',
 		'-Wno-missing-field-initializers',
 		#'-ffast-math',
-		# '-ftree-vectorize', '-falign-functions=32', '-falign-loops=32',
+		# '-ftree-vectorize',
+		 '-falign-functions=32',
+		#'-falign-loops=32',
 		#'-finstrument-functions',
 		'-march=native',
 		'-I./include', '-I./tests/include'],
     INCPATH  = [include],
     CPPPATH  = [include],
-    LIBS     = ['m', 'amdlibm', 'mvec'],
-    LIBPATH  = [builddir]
+    LIBS     = liblist,
+    LIBPATH  = libpath
 )
 
 test_excluded_srcs= ['print.c']

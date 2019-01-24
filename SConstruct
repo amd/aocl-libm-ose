@@ -49,6 +49,17 @@ if ARGUMENTS.get('debug', 0):
 	env.Append(CCFLAGS = ' -ggdb')
 #print(ARGUMENTS, COMMAND_LINE_TARGETS)
 
+abi = ARGUMENTS.get('libabi', 0)
+if abi == 'glibc':
+   pass
+elif abi == 'svml':
+   pass
+elif abi == 'amdlibm':
+   pass
+else:
+   abi = 'amdlibm'
+
+
 if COMMAND_LINE_TARGETS:
    targets = COMMAND_LINE_TARGETS
 else:
@@ -67,7 +78,7 @@ lib_objs = SConscript('src/SConscript',
 test_lib_objs = []  			# Will fill at a later date
 
 test_objs = SConscript( dirs='tests',
-		exports = { 'env' : env },
+		exports = { 'env' : env, 'abi':abi },
 		duplicate = 0,
 		src_dir    = 'tests',
 		variant_dir = join(builddir, 'tests'))

@@ -19,37 +19,60 @@
 #define __TEST_EXP2_INTERNAL__                   /* needed to include exp-test-data.h */
 #include "test_exp2_data.h"
 
-/*
- * Use directly the FMA3 version or glibc version
- */
-
-#define PROTOTYPE_GLIBC    0xf1
-#define PROTOTYPE_FMA3     0xf2
-#define PROTOTYPE_TEST_V1  0xf8
-#define PROTOTYPE_TEST_V2  0xf9
-
-#define LIBM_PROTOTYPE PROTOTYPE_GLIBC
-
-#if (LIBM_PROTOTYPE == PROTOTYPE_FMA3)
-#define LIBM_FUNC(x) FN_PROTOTYPE_FMA3(x)
-#define LIBM_FUNC_VEC(prec, elem, fn) FN_PROTOTYPE_FMA3(vr##prec##elem##_##fn)
-#pragma message "compilig for AMD libM FMA3"
-#elif (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
-#pragma message "compilig for GLIBC"
-#define LIBM_FUNC(x)    x
-#define LIBM_FUNC_VEC(prec, elem, fn) _ZGV##prec##N##elem##v_##fn
-#else
-#define LIBM_FUNC(x)   FN_PROTOTYPE(x)
-#pragma message "compilig for AMD libM SSE3"
-#endif
 
 /* GLIBC prototype declarations */
 #if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
-__m128d LIBM_FUNC_VEC(d, 2, exp2)(__m128d);
-__m256d LIBM_FUNC_VEC(d, 4, exp2)(__m256d);
 
-__m128 LIBM_FUNC_VEC(s, 4, exp2f)(__m128);
-__m256 LIBM_FUNC_VEC(s, 8, exp2f)(__m256);
+#define _ZGVdN4v(x) _ZGVbN4v_##x
+#define _ZGVdN4v_exp2f _ZGVbN4v_exp2f
+#define _ZGVdN2v_exp2 _ZGVbN2v_exp2
+
+/*
+ * GLIBC dont have vector routiens for exp2,
+ * all data is skewed
+ */
+__m128 LIBM_FUNC_VEC(s, 4, exp2f)(__m128 in)
+{
+    flt128_t f128 = {.m128 = in};
+    flt128_t o128;
+
+    for (int i = 0; i < 4; i++)
+        o128.f[i] = exp2f(f128.f[i]);
+
+    return o128.m128;
+}
+
+__m256 LIBM_FUNC_VEC(s, 8, exp2f)(__m256 in)
+{
+    flt256_t f256 = {.m256 = in};
+    flt256_t o256;
+
+    for (int i = 0; i < 8; i++)
+        o256.f[i] = exp2f(f256.f[i]);
+
+    return o256.m256;
+}
+__m128d LIBM_FUNC_VEC(d, 2, exp2)(__m128d in)
+{
+    flt128d_t f128 = {.m128 = in};
+    flt128d_t o128;
+    for (int i = 0; i < 2; i++)
+        o128.d[i] = exp2(f128.d[i]);
+
+    return o128.m128;
+}
+
+__m256d LIBM_FUNC_VEC(d, 4, exp2)(__m256d in)
+{
+    flt256d_t f256 = {.m256 = in};
+    flt256d_t o256;
+
+    for (int i = 0; i < 4; i++)
+        o256.d[i] = exp2(f256.d[i]);
+
+    return o256.m256;
+}
+
 #endif
 
 static int test_exp2_v2d_perf(struct libm_test *test)

@@ -1,0 +1,16 @@
+# Copyright (C) 2018, AMD. All rights Reserved
+#
+# Author: Nimmy Krishnan <Nimmy.Krishnan@amd.com>
+
+Import('env')
+
+e = env.Clone()
+
+e.Append( LIBS = ['test'] )
+
+log_srcs = Glob('*.[cS]')
+
+log = e.Program('test_log', log_srcs)
+
+Return('log')
+

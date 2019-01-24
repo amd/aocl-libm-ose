@@ -15,6 +15,14 @@
 #include <libm_nix_macros.h>
 #endif
 
+#if defined(__COMP_REF__)
+    #define FN_PROTOTYPE(fn_name) fn_name
+#elif defined(__NAG_REF__)
+    #define FN_PROTOTYPE(fn_name) amd_ref_##fn_name
+#else
+    // by default call  libm function
+    #define FN_PROTOTYPE(fn_name)  amd_##fn_name
+#endif                                         /* if __COMP_REF__ */
 
 #ifdef AVX_XOP_FMA4_FMA3
    #define FN_PROTOTYPE_BAS64(fn_name) __amd_bas64_##fn_name

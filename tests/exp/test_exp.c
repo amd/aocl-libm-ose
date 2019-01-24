@@ -34,9 +34,9 @@ The descriptions of each item are:
     name of scalar function, including C++ and Fortran mangling
 
 * <isa>
-    'b'    // SSE
-    | 'c'  // AVX
-    | 'd'  // AVX2
+    'b'    // SSE    // 128
+    | 'c'  // AVX    // 128
+    | 'd'  // AVX2   // 256
     | 'e'  // AVX512
 
 * <mask>
@@ -64,35 +64,14 @@ The descriptions of each item are:
             | 'a' non-negative-decimal-number
 */
 
-/*
- * Use directly the FMA3 version or glibc version
- */
-
-#define PROTOTYPE_GLIBC    0xf1
-#define PROTOTYPE_FMA3     0xf2
-#define PROTOTYPE_TEST_V1  0xf8
-#define PROTOTYPE_TEST_V2  0xf9
-
-#define LIBM_PROTOTYPE PROTOTYPE_GLIBC
-
-#if (LIBM_PROTOTYPE == PROTOTYPE_FMA3)
-#define LIBM_FUNC(x) FN_PROTOTYPE_FMA3(x)
-#define LIBM_FUNC_VEC(prec, elem, fn) FN_PROTOTYPE_FMA3(vr##prec##elem##_##fn)
-#pragma message "compilig for AMD libM FMA3"
-#elif (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
-#pragma message "compilig for GLIBC"
-#define LIBM_FUNC(x)    x
-#define LIBM_FUNC_VEC(prec, elem, fn) _ZGV##prec##N##elem##v_##fn
-#define _ZGVdN4v(x) _ZGVbN4v_##x
-#define _ZGVdN4v_expf _ZGVbN4v_expf
-#define _ZGVdN2v_exp _ZGVbN2v_exp
-#else
-#define LIBM_FUNC(x)   FN_PROTOTYPE(x)
-#pragma message "compilig for AMD libM SSE3"
-#endif
-
 /* GLIBC prototype declarations */
 #if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
+
+#define _ZGVdN4v(x) _ZGVbN4v_##x
+#define _ZGVsN4v_expf _ZGVbN4v_expf
+#define _ZGVdN4v_exp _ZGVdN4v_exp
+#define _ZGVdN2v_exp _ZGVbN2v_exp
+
 __m128d LIBM_FUNC_VEC(d, 2, exp)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, exp)(__m256d);
 
@@ -122,7 +101,7 @@ static int test_exp_v2d_perf(struct libm_test *test)
         uint32_t j;
         for (j = 0; j < (sz - 1); j += 2) {
             __m128d ip2 = _mm_set_pd(ip1[j+1], ip1[j]);
-            __m128d op2 = FN_PROTOTYPE_FMA3(vrd2_exp)(ip2);
+            __m128d op2 = LIBM_FUNC_VEC(d, 2, exp)(ip2);
             _mm_store_pd(&o[j], op2);
         }
         /*
@@ -130,7 +109,7 @@ static int test_exp_v2d_perf(struct libm_test *test)
          * there can be atmost one leftover,
          */
         if (sz - j)
-            o[j] = FN_PROTOTYPE_FMA3(exp)(ip1[j]);
+            o[j] = LIBM_FUNC(exp)(ip1[j]);
     }
 
     timer_stop(&bt);
@@ -163,7 +142,7 @@ static int test_exp_v4d_perf(struct libm_test *test)
         //IVDEP //;
         for (uint32_t j = 0; j < (sz - 3); j += 4) {
             __m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-            __m256d op4 = FN_PROTOTYPE_FMA3(vrd4_exp)(ip4);
+            __m256d op4 = LIBM_FUNC_VEC(d, 4, exp)(ip4);
             _mm256_store_pd(&o[j], op4);
         }
         /*
@@ -282,7 +261,7 @@ static int test_exp_v4s_perf(struct libm_test *test)
         uint32_t j;
         for (j = 0; j < (sz - 3); j += 4) {
             __m128 ip4 = _mm_set_ps(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-            __m128 op4 = LIBM_FUNC_VEC(b, 4, expf)(ip4);
+            __m128 op4 = LIBM_FUNC_VEC(s, 4, expf)(ip4);
             _mm_store_ps(&o[j], op4);
         }
         /*
@@ -645,7 +624,7 @@ static int __test_expf_accu(struct libm_test *test,
         switch (type) {
         case LIBM_FUNC_V4S:
             ip4 = _mm_set_ps(ip[j+3], ip[j+2], ip[j+1], ip[j]);
-            op4 = LIBM_FUNC_VEC(b, 4, expf)(ip4);
+            op4 = LIBM_FUNC_VEC(s, 4, expf)(ip4);
             _mm_store_ps(&op[j], op4);
             j += 4;
             break;

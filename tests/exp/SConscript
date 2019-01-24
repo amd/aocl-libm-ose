@@ -8,16 +8,10 @@ e = env.Clone()
 
 e.Append( LIBS = ['test'] )
 
-#exp_srcs = Glob('*.[cS]', exclude='exp_common.c')
 exp_srcs = Glob('*.[cS]', exclude='exp_old.c')
-#exp_srcs = Glob('*.[cS]')
-liblist = ['amdlibm', 'm', 'test', 'quadmath']
-libpath = ['#build/src', '#build/tests']
 
-#liblist.insert(0, 'imf')
-#libpath.insert(0, '/home/pmallapp/intel/lib/intel64_lin')
-
-exp = e.Program('test_exp', exp_srcs, LIBS=liblist, LIBPATH=libpath)
+#exp = e.Program('test_exp', exp_srcs, LIBS=liblist, LIBPATH=libpath)
+exp = e.Program('test_exp', exp_srcs)
 
 Return('exp')
 

@@ -72,7 +72,18 @@ __m256d LIBM_FUNC_VEC(d, 4, exp2)(__m256d in)
 
     return o256.m256;
 }
+#endif
 
+#if 1
+#undef LIBM_FUNC
+#define LIBM_FUNC(x) FN_PROTOTYPE( x ## _v2 )
+
+double FN_PROTOTYPE( exp2_v2 )(double);
+float FN_PROTOTYPE( exp2f_v2 )(float);
+
+float FN_PROTOTYPE_FMA3( exp2f )(float);
+
+#define amd_exp2f_v2 FN_PROTOTYPE_FMA3(exp2f)
 #endif
 
 static int test_exp2_v2d_perf(struct libm_test *test)
@@ -97,7 +108,6 @@ static int test_exp2_v2d_perf(struct libm_test *test)
         uint32_t j;
         for (j = 0; j < (sz - 1); j += 2) {
             __m128d ip2 = _mm_set_pd(ip1[j+1], ip1[j]);
-            //__m128d op2 = LIBM_FUNC(vrd2_exp2)(ip2);
             __m128d op2 = LIBM_FUNC_VEC(d, 2, exp2)(ip2);
             _mm_store_pd(&o[j], op2);
         }
@@ -139,7 +149,6 @@ static int test_exp2_v4d_perf(struct libm_test *test)
         //IVDEP //;
         for (uint32_t j = 0; j < (sz - 3); j += 4) {
             __m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-            //__m256d op4 = LIBM_FUNC(vrd4_exp2)(ip4);
             __m256d op4 = LIBM_FUNC_VEC(d, 4, exp2)(ip4);
             _mm256_store_pd(&o[j], op4);
         }
@@ -159,9 +168,7 @@ static int test_exp2_v4d_perf(struct libm_test *test)
 /*
  * s1d - 1 element double precision
  */
-double LIBM_FUNC(exp2_v1)(double);
-double LIBM_FUNC(exp2_v2)(double);
-double LIBM_FUNC(exp2_v3)(double);
+
 static int test_exp2_s1d_perf(struct libm_test *test)
 {
     struct libm_test_data *data = &test->test_data;
@@ -184,9 +191,6 @@ static int test_exp2_s1d_perf(struct libm_test *test)
         uint32_t j;
         for (j = 0; j < sz; j++) {
             o[j] = LIBM_FUNC(exp2)(ip1[j]);
-            //o[j] = LIBM_FUNC(exp2_v1)(ip1[j]);
-            //o[j] = LIBM_FUNC(exp2_v2)(ip1[j]);
-            //o[j] = exp2(ip1[j]);
         }
     }
 

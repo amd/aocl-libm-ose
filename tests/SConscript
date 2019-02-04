@@ -20,20 +20,21 @@ PROTOTYPE_FMA3     = 0xf2
 PROTOTYPE_TEST_V1  = 0xf8
 PROTOTYPE_TEST_V2  = 0xf9
 
-print("abi is" , abi)
+liblist = []
+libpath = []
 if abi == 'amdlibm':
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_FMA3]
-    liblist = ['amdlibm']
+    liblist.extend(['amdlibm'])
 elif abi == 'glibc':
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_GLIBC]
-    liblist = ['mvec']
+    liblist.extend(['mvec'])
 elif abi == 'svml':
     pass
 else:
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_FMA3]
-    liblist = ['amdlib']
+    liblist.extend(['amdlib'])
 
-liblist += ['m', 'test']
+liblist.extend(['test', 'm'])
 libpath = ['#build/src', '#build/tests']
 
 e = env.Clone()
@@ -71,7 +72,7 @@ this_sconscript_file = Dir('.').srcnode().abspath
 test_base = os.path.dirname(this_sconscript_file)
 tests = getSubdirs(this_sconscript_file)
 print(tests, path.join(test_base, ))
-exclude_dirs = ['include', 'pow']
+exclude_dirs = ['include']
 tests = [x for x in tests if x not in exclude_dirs]
 
 print(tests)

@@ -13,6 +13,8 @@
 #include <bench_timer.h>
 
 #include "test_pow.h"
+
+#define __TEST_POW_INTERNAL__
 #include "test_pow_data.h"
 
 double FN_PROTOTYPE(pow)(double,double);

@@ -20,50 +20,6 @@
 #define __TEST_EXP2_INTERNAL__                   /* needed to include exp-test-data.h */
 #include "test_exp_data.h"
 
-
-/*
-  The vector function name is mangled as the concatenation of the following items:
-
-<vector_prefix> <isa> <mask> <vlen> <vparameters> '_' <original_name>
-
-The descriptions of each item are:
-* <vector_prefix>
-    string "_ZGV"
-
-* <original_name>
-    name of scalar function, including C++ and Fortran mangling
-
-* <isa>
-    'b'    // SSE    // 128
-    | 'c'  // AVX    // 128
-    | 'd'  // AVX2   // 256
-    | 'e'  // AVX512
-
-* <mask>
-    'M'    // masked version
-    | 'N'  // unmasked version
-
-* <vlen>
-    decimal-number
-
-* <vparameters>
-    // empty
-    <vparameter> <opt-align> <vparameters>
-        o <vparameter>
-        (please refer to [1] for information about parameter types used below)
-            's' decimal-number // linear parameter, variable stride ,
-                               // decimal number is the position # of
-                               // stride argument, which starts from 0
-            | 'l' <number>     // linear parameter, constant stride
-            | 'u'              // uniform parameter
-            | 'v'              // vector parameter
-               o <number>
-                   [n] non-negative decimal integer  // n indicates negative
-        o <opt-align>
-            / empty
-            | 'a' non-negative-decimal-number
-*/
-
 /* GLIBC prototype declarations */
 #if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
 

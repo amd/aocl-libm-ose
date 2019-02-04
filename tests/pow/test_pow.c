@@ -23,12 +23,50 @@
 
 #include <libm_tests.h>
 #include <bench_timer.h>
-#include "pow_accu_data.h"
+//#include "pow_accu_data.h"
 #define __TEST_POW_INTERNAL__                   /* needed to include exp-test-data.h */
 #include "test_pow_data.h"
 
 //#define RANGE_LEN(x) (sizeof(x) / sizeof((x)[0]))
 char doc[] = BUILD_TEST_DOC(TEST_NAME);
+extern struct libm_test_input_range x[];
+extern struct libm_test_input_range y[];
+
+static int test_pow_populate_inputs(struct libm_test *test, int use_uniform)
+{
+    struct libm_test_data *data = &test->test_data;
+    struct libm_test_conf *conf = test->conf;
+    int ret = 0;
+    int (*func)(void *, size_t, uint32_t, double, double);
+
+    if(use_uniform)
+        func = libm_test_populate_range_uniform;
+    else
+        func = libm_test_populate_range_rand;
+
+    ret = func(data->input1, data->nelem,
+               test->variant,
+               conf->inp_range[0].start,
+               conf->inp_range[0].stop);
+
+    /* Fill the same if more inputs are needed */
+    if (!ret && test->nargs > 1) {
+//	printf("data is %g\n", *(data->input2));
+        ret = func(data->input2, data->nelem,
+                   test->variant,
+                   conf->inp_range[1].start,
+                   conf->inp_range[1].stop);
+    }
+
+    if (!ret && test->nargs > 2) {
+        ret = func(data->input3, data->nelem,
+                   test->variant,
+                   conf->inp_range[2].start,
+                   conf->inp_range[2].stop);
+    }
+
+    return ret;
+}
 
 static int test_pow_vrd4_perf(struct libm_test *test)
 {
@@ -46,6 +84,10 @@ static int test_pow_vrd4_perf(struct libm_test *test)
         double t = (double)((j+1)%700) + (double)j/(double)RAND_MAX;
         o[j] = pow(t,t);
     }
+
+    test->conf->inp_range[0] = x[0];// range for x
+    test->conf->inp_range[1] = y[0]; //range for y
+    test_pow_populate_inputs(test, 1);
 
     bench_timer_t bt;
     timer_start(&bt);
@@ -88,6 +130,10 @@ static int test_pow_vrd2_perf(struct libm_test *test)
         o[j] = pow(t,t);
     }
 
+    test->conf->inp_range[0] = x[0];// range for x
+    test->conf->inp_range[1] = y[0]; //range for y
+    test_pow_populate_inputs(test, 1);
+
     bench_timer_t bt;
     timer_start(&bt);
 
@@ -113,12 +159,12 @@ static int test_pow_vrd2_perf(struct libm_test *test)
 }
 
 
-static int test_pow_vrd4_other(struct libm_test *test)
+static int test_pow_vrd4_special(struct libm_test *test)
 {
     struct libm_test_data *data = &test->test_data;
-    double *ip1 = &data->input1[0];
-    double *ip2 = &data->input2[0];
-    double *op = &data->output[0];
+    double *ip1 = data->input1;
+    double *ip2 = data->input2;
+    double *op =  data->output;
     int sz = data->nelem;
 
     if (sz % 4 != 0)
@@ -136,12 +182,12 @@ static int test_pow_vrd4_other(struct libm_test *test)
     return 0;
 }
 
-static int test_pow_vrd2_other(struct libm_test *test)
+static int test_pow_vrd2_special(struct libm_test *test)
 {
     struct libm_test_data *data = &test->test_data;
-    double *ip1 = &data->input1[0];
-    double *ip2 = &data->input2[0];
-    double *op = &data->output[0];
+    double *ip1 = data->input1;
+    double *ip2 = data->input2;
+    double *op =  data->output;
     int sz = data->nelem;
 
     if (sz % 2 != 0)
@@ -163,70 +209,36 @@ static int test_pow_vrd2_other(struct libm_test *test)
 int libm_test_pow_verify(struct libm_test *test, struct libm_test_result *result)
 {
     struct libm_test_data *data = &test->test_data;
-
+    double *expected = data->expected;
+    double *input_x = data->input1;
+    double *input_y = data->input2;
     for (uint32_t j = 0; j < data->nelem; j++) {
-        data->expected[j] = pow(data->input1[j],data->input2[j]);
+        expected[j] = pow(input_x[j],input_y[j]);
     }
 
     return libm_test_verify(test, result);
 }
 
-/* There is no powq in recent versions of gcc */
-__float128 libm_test_powq(struct libm_test *test, int idx)
+
+long double libm_test_powl(struct libm_test *test, int idx)
 {
-    /* logq(2.0) */
-    double in_x, in_y;
-    in_x = test->test_data.input1[idx]; in_y = test->test_data.input2[idx];
-    return powq(in_x,in_y);
+    double* in_x = test->test_data.input1; 
+    double* in_y = test->test_data.input2;
+    return powl(in_x[idx],in_y[idx]);
 }
 
 #include <quadmath.h>
 
 /* vector single precision */
-struct libm_test pow_test_template = {
+static struct libm_test pow_test_template = {
     .name       = "pow_vec",
     .nargs      = 2,
+    .ulp_threshold = 0.5,
     .ops        = {
-                   .ulp    = {.funcq = libm_test_powq},
+                   .ulp    = {.funcl = libm_test_powl},
                    .verify = libm_test_pow_verify,
                    },
 };
-
-static int test_pow_populate_inputs(struct libm_test *test, int use_uniform)
-{
-    struct libm_test_data *data = &test->test_data;
-    struct libm_test_conf *conf = test->conf;
-    int ret = 0;
-    int (*func)(void *, size_t, uint32_t, double, double);
-
-    if(use_uniform)
-        func = libm_test_populate_range_uniform;
-    else
-        func = libm_test_populate_range_rand;
-
-    ret = func(data->input1, data->nelem,
-               test->variant,
-               conf->inp_range[0].start,
-               conf->inp_range[0].stop);
-
-    /* Fill the same if more inputs are needed */
-    if (!ret && test->nargs > 1) {
-//	printf("data is %g\n", *(data->input2));
-        ret = func(data->input2, data->nelem,
-                   test->variant,
-                   conf->inp_range[1].start,
-                   conf->inp_range[1].stop);
-    }
-
-    if (!ret && test->nargs > 2) {
-        ret = func(data->input3, data->nelem,
-                   test->variant,
-                   conf->inp_range[2].start,
-                   conf->inp_range[2].stop);
-    }
-
-    return ret;
-}
 
 static int test_pow_alloc_init_perf_data(struct libm_test *test)
 {
@@ -283,20 +295,24 @@ static int test_pow_alloc_special_data(struct libm_test *test, size_t size)
 }
 
 
-static int test_pow_vrd4_special_setup(struct libm_test *test)
+static int test_pow_special_setup(struct libm_test *test)
 {
     int test_data_size = ARRAY_SIZE(libm_test_pow_special_data);
     struct libm_test_data *data;
+    double *in_x,*in_y,*expected;
 
     // Just trying to get rid of warning/errors
     test_pow_alloc_special_data(test, test_data_size);
 
     data = &test->test_data;
+    in_x = data->input1;
+    in_y = data->input2;
+    expected = data->expected; 
 
     for (int i = 0; i < test_data_size; i++) {
-        data->input1[i] = libm_test_pow_special_data[i].x;
-	data->input2[i] = libm_test_pow_special_data[i].y;
-        data->expected[i] =libm_test_pow_special_data[i].out;
+        in_x[i] = libm_test_pow_special_data[i].x;
+	in_y[i] = libm_test_pow_special_data[i].y;
+        expected[i] =libm_test_pow_special_data[i].out;
     }
 
     return 0;
@@ -313,7 +329,7 @@ union double256 {
 
 typedef union double256 vect256;
 
-#include "pow_accu_data.h"
+//#include "pow_accu_data.h"
 extern int RANGE_LEN_X;
 
 extern struct libm_test_input_range x_range[];
@@ -323,9 +339,9 @@ static int test_pow_vrd4_accu(struct libm_test *test)
 {
 
     struct libm_test_data *data = &test->test_data;
-    double *ip_x = &data->input1[0];
-    double *ip_y = &data->input2[0];
-    double *op = &data->output[0];
+    double *ip_x = data->input1;
+    double *ip_y = data->input2;
+    double *op =   data->output;
 //    double *restrict op = GCC_ALIGN(data->output, 256);
     uint64_t sz = data->nelem;
     int arr_sz = RANGE_LEN_X;
@@ -366,9 +382,9 @@ static int test_pow_vrd2_accu(struct libm_test *test)
 {
 
     struct libm_test_data *data = &test->test_data;
-    double *ip_x = &data->input1[0];
-    double *ip_y = &data->input2[0];
-    double *op = &data->output[0];
+    double *ip_x = data->input1;
+    double *ip_y = data->input2;
+    double *op =   data->output;
 //    double *restrict op = GCC_ALIGN(data->output, 256);
     uint64_t sz = data->nelem;
     int arr_sz = RANGE_LEN_X;
@@ -413,7 +429,7 @@ int test_pow_alloc_init(struct libm_test_conf *conf, struct libm_test *test)
     return ret;
 }
 
-static int test_pow_vrd4_accu_setup(struct libm_test *test)
+static int test_pow_accu_setup(struct libm_test *test)
 {
     struct libm_test_conf *conf = test->conf;
 
@@ -431,28 +447,34 @@ static int test_pow_init_v4d(struct libm_test_conf *conf)
         uint32_t bit = 1 << (ffs(test_types) - 1);
 
         pow_v4d->variant |= LIBM_FUNC_V4D;
-
+	 pow_v4d->input_name = "v4d";
         switch(bit) {
         case TEST_TYPE_PERF:
             pow_v4d->type_name = "perf";
+	    pow_v4d->test_type = TEST_TYPE_PERF;
             pow_v4d->ops.run = test_pow_vrd4_perf;
             test_pow_alloc_init_perf_data(pow_v4d);
+	    pow_v4d->ops.verify = libm_test_pow_verify;
             break;
         case TEST_TYPE_SPECIAL:
             pow_v4d->type_name = "special";
-            pow_v4d->ops.run = test_pow_vrd4_other;
-            pow_v4d->ops.setup = test_pow_vrd4_special_setup;
+	    pow_v4d->test_type = TEST_TYPE_SPECIAL;
+            pow_v4d->ops.run = test_pow_vrd4_special;
+            pow_v4d->ops.setup = test_pow_special_setup;
+	    pow_v4d->ops.verify = libm_test_pow_verify;
             break;
         case TEST_TYPE_ACCU:
             pow_v4d->type_name = "accuracy";
-            pow_v4d->ops.setup = test_pow_vrd4_accu_setup;
+	    pow_v4d->test_type = TEST_TYPE_ACCU;
+            pow_v4d->ops.setup = test_pow_accu_setup;
             pow_v4d->ops.run = test_pow_vrd4_accu;
-            pow_v4d->ops.verify = NULL; // No verify after, will verify inside.
+            pow_v4d->ops.verify = libm_test_pow_verify; // No verify after, will verify inside.
             break;
         case TEST_TYPE_CORNER:
             pow_v4d->type_name = "corner";
-            //pow_v4d->test_data  = libm_test_pow_corner_data;
-            pow_v4d->ops.run = test_pow_vrd4_other;
+	    pow_v4d->test_type = TEST_TYPE_CORNER;
+          //  pow_v4d->test_data  = libm_test_pow_corner_data;
+            pow_v4d->ops.run = test_pow_vrd4_special;
             break;
         }
 
@@ -484,45 +506,48 @@ static int test_pow_init_v2d(struct libm_test_conf *conf)
         uint32_t bit = 1 << (ffs(test_types) - 1);
 
         pow_v2d->variant |= LIBM_FUNC_V2D;
-
+	pow_v2d->input_name = "v2d";
         switch(bit) {
         case TEST_TYPE_PERF:
             pow_v2d->type_name = "perf";
+	    pow_v2d->test_type = TEST_TYPE_PERF;
             pow_v2d->ops.run = test_pow_vrd2_perf;
             test_pow_alloc_init_perf_data(pow_v2d);
+            pow_v2d->ops.verify = libm_test_pow_verify;
             break;
         case TEST_TYPE_SPECIAL:
             pow_v2d->type_name = "special";
-            pow_v2d->ops.run = test_pow_vrd2_other;
-            pow_v2d->ops.setup = test_pow_vrd4_special_setup;
+	    pow_v2d->test_type = TEST_TYPE_SPECIAL;
+            pow_v2d->ops.run = test_pow_vrd2_special;
+            pow_v2d->ops.setup = test_pow_special_setup;
+	    pow_v2d->ops.verify = libm_test_pow_verify;
             break;
         case TEST_TYPE_ACCU:
             pow_v2d->type_name = "accuracy";
-            pow_v2d->ops.setup = test_pow_vrd4_accu_setup;
+	    pow_v2d->test_type = TEST_TYPE_ACCU;
+            pow_v2d->ops.setup = test_pow_accu_setup;
             pow_v2d->ops.run = test_pow_vrd2_accu;
-            pow_v2d->ops.verify = NULL; // No verify after, will verify inside.
+            pow_v2d->ops.verify = libm_test_pow_verify; // No verify after, will verify inside.
             break;
         case TEST_TYPE_CORNER:
-            pow_v2d->type_name = "corner";
-            //pow_v4d->test_data  = libm_test_pow_corner_data;
-            pow_v2d->ops.run = test_pow_vrd2_other;
+           pow_v2d->type_name = "corner";
+          //pow_v4d->test_data  = libm_test_pow_corner_data;
+            pow_v2d->ops.run = test_pow_vrd2_special;
             break;
         }
 
-        if (ret)
-            goto out;
+        
+	ret = test_pow_register_one(pow_v2d);
 
-        test_types = test_types & (test_types -  1);
-        ret = test_pow_register_one(pow_v2d);
+	if (ret)
+            return -1; //completed vrd2 tests
 
-        if (ret)
-            goto out;;
+      test_types = test_types & (test_types -  1);
     }
 
+//next_test:
     return 0;
 
- out:
-    return -1;
 }
 
 #define POW_TEST_TYPES_ALL (TEST_TYPE_ACCU | TEST_TYPE_PERF |          \
@@ -552,7 +577,7 @@ int libm_test_init(struct libm_test_conf *c)
     if (conf->variants & LIBM_FUNC_V2D) {
         ret = test_pow_init_v2d(conf);
         if (ret) {
-            printf("registering test failed\n");
+            printf("registering test failed, ret value %d\n",ret);
             goto out;
         }
     }

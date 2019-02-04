@@ -13,18 +13,18 @@
 #include <bench_timer.h>
 
 #include "test_pow.h"
-//#include "pow_accu_data.h"
+#include "test_pow_data.h"
 
 double FN_PROTOTYPE(pow)(double,double);
 extern int RANGE_LEN_X;
 
-extern __float128 libm_test_powq(struct libm_test *test, int idx);
+long double libm_test_powl(struct libm_test *test, int idx);
 
-struct libm_test pow_test_template1 = {
+	struct libm_test pow_test_template1 = {
     .name       = "pow_scalar",
     .nargs      = 2,
     .ops        = {
-                   .ulp    = {.funcq = libm_test_powq},
+                   .ulp    = {.funcl = libm_test_powl},
                    .verify = libm_test_pow_verify,
                    },
 };
@@ -72,15 +72,16 @@ static int test_pow_populate_inputs(struct libm_test *test, int use_uniform)
 //extern int RANGE_LEN_X;
 extern struct libm_test_input_range x_range[];
 extern struct libm_test_input_range y_range[];
-
+extern struct libm_test_input_range x[];
+extern struct libm_test_input_range y[];
 
 static int test_pow_accu(struct libm_test *test)
 {
 
     struct libm_test_data *data = &test->test_data;
-    double *ip_x = &data->input1[0];
-    double *ip_y = &data->input2[0];
-    double *op = &data->output[0];
+    double *ip_x = data->input1;
+    double *ip_y = data->input2;
+    double *op = data->output;
 //    double *restrict op = GCC_ALIGN(data->output, 256);
     uint64_t sz = data->nelem;
 //    int arr_sz = ARRAY_SIZE(accu_ranges);
@@ -115,6 +116,9 @@ static int test_pow_perf(struct libm_test *test)
 {
     struct libm_test_data *data = &test->test_data;
     struct libm_test_result *result = &test->result;
+    double *restrict ip1 = data->input1;
+    double *restrict ip2 = data->input2;
+
     double *restrict o = data->output;
     uint64_t sz = data->nelem;
     uint64_t n = test->conf->niter;
@@ -125,13 +129,17 @@ static int test_pow_perf(struct libm_test *test)
         o[j] = pow(t,t);
     }
 
+    test->conf->inp_range[0] = x[0];// range for x
+    test->conf->inp_range[1] = y[0]; //range for y
+    test_pow_populate_inputs(test, 1);
+
     bench_timer_t bt;
     timer_start(&bt);
 
     for (uint32_t i = 0; i < n ; ++i) {
         for (uint32_t j = 0; j < sz; j ++) {
-            //o[j] = (*fn2)(ip1[j],ip2[j]);
-	    test->ops.libm_func_callback(test, j);
+            o[j] =  FN_PROTOTYPE(pow)(ip1[j],ip2[j]);
+//	    test->ops.libm_func_callback(test, j);
         }
         /*
          * Any left over process with scalar
@@ -159,6 +167,72 @@ static int test_pow_setup_s_d(struct libm_test *test)
 
 }
 
+static int test_pow_alloc_special_data(struct libm_test *test, size_t size)
+{
+    struct libm_test_conf *conf = test->conf;
+    struct libm_test_data *test_data = &test->test_data;
+    int ret = 0;
+
+    ret = libm_test_alloc_test_data(test, size);
+
+    if (ret) {
+        printf("unable to allocate\n");
+        goto out;
+    }
+
+    test_data = &test->test_data;
+    test_data->nelem = size;
+
+    /* fixup conf */
+    conf->nelem = size;
+
+    return 0;
+
+ out:
+    return -1;
+}
+
+static int test_pow_special_setup(struct libm_test *test)
+{
+    int test_data_size = ARRAY_SIZE(libm_test_pow_special_data);
+    struct libm_test_data *data;
+    double *in_x,*in_y,*expected;
+    // Just trying to get rid of warning/errors
+    test_pow_alloc_special_data(test, test_data_size);
+
+    data = &test->test_data;
+    in_x = data->input1;
+    in_y = data->input2;
+    expected = data->expected;
+
+    for (int i = 0; i < test_data_size; i++) {
+        in_x[i] = libm_test_pow_special_data[i].x;
+        in_y[i] = libm_test_pow_special_data[i].y;
+        expected[i] =libm_test_pow_special_data[i].out;
+    }
+
+    return 0;
+}
+
+static int test_pow_special(struct libm_test *test)
+{
+    struct libm_test_data *data = &test->test_data;
+    double *ip1 = data->input1;
+    double *ip2 = data->input2;
+    double *op =  data->output;
+    int sz = data->nelem;
+
+    if (sz % 4 != 0)
+        printf("%s %s : %d is not a multiple of 4, some may be left out\n"
+               " And error reported may not be real for such entries\n",
+               test->name, test->type_name, sz);
+
+    for (int j = 0; j < sz; j += 1) {
+        op[j] = FN_PROTOTYPE(pow)(ip1[j],ip2[j]);
+    }
+
+    return 0;
+}
 static int test_pow_init_s_d(struct libm_test_conf *conf)
 {
     int ret = 0;
@@ -172,25 +246,36 @@ static int test_pow_init_s_d(struct libm_test_conf *conf)
 
         test->variant = LIBM_FUNC_S_D;
         test->name = "pow_scalar";
+	test->input_name = "s1d";
         test->nargs = 2;
-	test->ulp_threshold = 0.6;
+	test->ulp_threshold = 0.5;
 
         uint32_t bit = 1 << (ffs(test_type) - 1);
 
         switch (bit) {
         case TEST_TYPE_PERF:
+	    test->test_type = TEST_TYPE_PERF;
             test->type_name = "perf";
             test->ops.setup = test_pow_setup_s_d;
             test->ops.run = test_pow_perf;
             test->ops.verify = libm_test_pow_verify;
             break;
-	 case TEST_TYPE_ACCU:
+	
+	case TEST_TYPE_ACCU:
+	    test->test_type = TEST_TYPE_ACCU;
             test->type_name = "accuracy";
             test->ops.setup = test_pow_setup_s_d;
             test->ops.run = test_pow_accu;
-            test->ops.verify = NULL; // No verify after, will verify inside.
+            test->ops.verify = libm_test_pow_verify;; // No verify after, will verify inside.
             break;
-
+	
+	case TEST_TYPE_SPECIAL:
+            test->test_type = TEST_TYPE_SPECIAL;
+            test->type_name = "special";
+            test->ops.run = test_pow_special;
+            test->ops.setup = test_pow_special_setup;
+	    test->ops.verify = libm_test_pow_verify;
+            break;
 	default:
             LIBM_TEST_DPRINTF(INFO, "Unknown test type for scalar\n");
             goto skip_this;

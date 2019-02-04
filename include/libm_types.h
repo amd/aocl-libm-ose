@@ -91,4 +91,32 @@ typedef union {
     __m256d   m256;
 } flt256du_t;
 
+
+static inline uint32_t
+asuint (float f)
+{
+	flt32u_t fl = {.f = f};
+	return fl.i;
+}
+
+static inline float
+asfloat (uint32_t i)
+{
+	flt32u_t fl = {.i = i};
+	return fl.f;
+}
+
+static inline float
+asdouble (uint64_t i)
+{
+	flt64u_t dbl = {.i = i};
+	return dbl.d;
+}
+
+static inline uint64_t
+asuint64 (double f)
+{
+	flt64u_t fl = {.d = f};
+	return fl.i;
+}
 #endif	/* LIBM_TYPES_H */

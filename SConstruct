@@ -49,6 +49,9 @@ if ARGUMENTS.get('debug', 0):
 	env.Append(CCFLAGS = ' -ggdb')
 #print(ARGUMENTS, COMMAND_LINE_TARGETS)
 
+if ARGUMENTS.get('profile', 0):
+	env.Append(CCFLAGS = ' -pg')
+
 abi = ARGUMENTS.get('libabi', 0)
 if abi == 'glibc':
    pass

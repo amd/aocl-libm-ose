@@ -45,8 +45,7 @@ update_ulp(struct libm_test *test, double ulp)
         LIBM_TEST_DPRINTF(VERBOSE2, "ulp threshold:%f ulp:%f\n",
                           test->ulp_threshold, (double)ulp);
         test->max_ulp_err = ulp;
-        ret = 1;
-    }
+        ret = 1;    }
 
     if ((ulp - test->ulp_threshold) > 0.0)
         ret = 2;                   /* fail; as greater than threshold */
@@ -69,11 +68,11 @@ static inline void __update_results(struct libm_test_result *result,
 
 static int __is_ulp_required(flt64u_t expected, flt64u_t actual)
 {
-    if (expected.i == actual.i )              return 0;
+//    if (expected.i == actual.i )              return 0;
     if (isnan(expected.d) && isnan(actual.d)) return 0;
     if (isinf(expected.d) && isinf(actual.d)) return 0;
-    if ((expected.i == 0x7ff0000000000000) &&
-        (actual.i   == 0x7ff0000000000000))   return 0;
+    if ((expected.i <= 0x7ff0000000000000) &&
+        (actual.i   <= 0x7ff0000000000000))   return 0;
 
     return 1;
 }
@@ -100,7 +99,7 @@ static int __verify_double(struct libm_test *test,
         if (test->conf->test_types == TEST_TYPE_ACCU) {
             /*
              * Verify ULP for every case,
-             * except when both output and exptected is 0
+             * except when both output and exptected is 0 or a subnormal number
              */
             if (__is_ulp_required(nw[j], op[j]))
                 test_update_ulp = 1;

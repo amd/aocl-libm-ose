@@ -52,6 +52,9 @@ if ARGUMENTS.get('debug', 0):
 if ARGUMENTS.get('profile', 0):
 	env.Append(CCFLAGS = ' -pg')
 
+if ARGUMENTS.get('developer', 0):
+	env.Append(CCFLAGS = ' -DDEVELOPER=1')
+
 abi = ARGUMENTS.get('libabi', 0)
 if abi == 'glibc':
    pass

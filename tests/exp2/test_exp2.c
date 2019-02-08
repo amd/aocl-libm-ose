@@ -74,7 +74,7 @@ __m256d LIBM_FUNC_VEC(d, 4, exp2)(__m256d in)
 }
 #endif
 
-#if defined(DEVELOPER_MODE)
+#if defined(DEVELOPER)
 #pragma message "Developer mode changing prototype to exp2_v2()"
 #undef LIBM_FUNC
 #define LIBM_FUNC(x) FN_PROTOTYPE( x ## _v2 )
@@ -383,7 +383,7 @@ static int test_exp2_default_setup(struct libm_test *test)
         LIBM_TEST_DPRINTF(PANIC, "Unable to populate test_data\n");
         goto out;
     }
-    
+
     return 0;
 
  out:

@@ -209,12 +209,38 @@ static rand_func_t libm_test_get_rand_func(enum libm_test_range_type type)
     return libm_test_populate_range_linear;
 }
 
+#define is_range_empty(x) (!(x)->start && !(x)->stop)
+static int libm_test_fixup_ranges(struct libm_test *test)
+{
+    struct libm_test_conf *conf = test->conf;
+
+    for (uint32_t i = 0; i < ARRAY_SIZE(conf->inp_range); i++) {
+        struct libm_test_input_range *r = &conf->inp_range[i];
+        if (is_range_empty(r)) {
+            if (test_is_single_precision(test)) {
+                r->start = FLT_MIN;
+                r->stop  = FLT_MAX;
+            } else {
+                r->start = DBL_MIN;
+                r->stop  = DBL_MAX;
+            }
+        }
+    }
+
+    return 0;
+}
+
 int libm_test_populate_inputs(struct libm_test *test, int use_uniform)
 {
     struct libm_test_data *data = &test->test_data;
     struct libm_test_conf *conf = test->conf;
     int ret = 0;
     rand_func_t func = NULL;
+
+    /* If range is not given */
+    ret = libm_test_fixup_ranges(test);
+    if (ret)
+        goto out_ret;
 
     func = libm_test_get_rand_func(conf->inp_range[0].type);
     if (func)

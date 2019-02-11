@@ -20,11 +20,14 @@ for i in range(0, table_size):
                 h1 = bigfloat.pow(2, idx)
 
         myhex = double_to_hex(h1)
-        print("%s"%myhex, end='')
+        print("{ %s,"%myhex, end='')
 
-        b = int(myhex, base=16) & ~( (1 << 28) - 1)
-        print("\t0x%x\t"%b, end='')
+        b = int(myhex, base=16) & ~( (1 << 26) - 1)
+        print("\t0x%x,\t"%b, end='')
 
         d = h1 - hex_to_double(b)
-        print("%s"%double_to_hex(d))
+        print("%s },"%double_to_hex(d))
+
+        if i % 16 == 0:
+                print()
 

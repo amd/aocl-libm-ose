@@ -28,6 +28,19 @@
 #define __TEST_LOG_INTERNAL__                   /* needed to include log-test-data.h */
 #include "test_log_data.h"
 
+#if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
+#define _ZGVdN4v(x) _ZGVbN4v_##x
+#define _ZGVdN4v_logf _ZGVbN4v_logf
+#define _ZGVdN2v_log _ZGVbN2v_log
+
+#define _ZGVsN4v_logf _ZGVbN4v_logf
+
+__m128d LIBM_FUNC_VEC(d, 2, log)(__m128d);
+__m256d LIBM_FUNC_VEC(d, 4, log)(__m256d);
+
+__m128 LIBM_FUNC_VEC(b, 4, logf)(__m128);
+__m256 LIBM_FUNC_VEC(b, 8, logf)(__m256);
+#endif
 
 double test_log_ulp(struct libm_test *test, int idx)
 {
@@ -58,7 +71,7 @@ static int test_log_v4d_perf(struct libm_test *test)
         //IVDEP //;
         for (uint32_t j = 0; j < (sz - 3); j += 4) {
             __m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-            __m256d op4 = LIBM_FUNC(vrd4_log)(ip4);
+            __m256d op4 = LIBM_FUNC_VEC(d, 4, log)(ip4);
             _mm256_store_pd(&o[j], op4);
         }
         /*
@@ -96,7 +109,7 @@ static int test_log_v2d_perf(struct libm_test *test)
         uint32_t j;
         for (j = 0; j < (sz - 1); j += 2) {
             __m128d ip2 = _mm_set_pd(ip1[j+1], ip1[j]);
-            __m128d op2 = LIBM_FUNC(vrd2_log)(ip2);
+            __m128d op2 = LIBM_FUNC_VEC(d, 2, log)(ip2);
             _mm_store_pd(&o[j], op2);
         }
         /*
@@ -204,7 +217,7 @@ static int test_log_v4s_perf(struct libm_test *test)
         uint32_t j;
         for (j = 0; j < (sz - 3); j += 4) {
             __m128 ip4 = _mm_set_ps(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-            __m128 op4 = LIBM_FUNC(vrs4_logf)(ip4);
+            __m128 op4 = LIBM_FUNC_VEC(s, 4, logf)(ip4);
             _mm_store_ps(&o[j], op4);
         }
 
@@ -357,13 +370,13 @@ static int __test_log_accu(struct libm_test *test, uint32_t type)
         switch (type) {
         case LIBM_FUNC_V2D:
             ip2 = _mm_set_pd(ip[j+1], ip[j]);
-            op2 = LIBM_FUNC(vrd2_log)(ip2);
+            op2 = LIBM_FUNC_VEC(d, 2, log)(ip2);
             _mm_store_pd(&op[j], op2);
             j += 2;
             break;
         case LIBM_FUNC_V4D:
             ip4 = _mm256_set_pd(ip[j+3], ip[j+2], ip[j+1], ip[j]);
-            op4 = LIBM_FUNC(vrd4_log)(ip4);
+            op4 = LIBM_FUNC_VEC(d, 4, log)(ip4);
             _mm256_store_pd(&op[j], op4);
             j += 4;
             break;
@@ -400,7 +413,7 @@ static int __test_logf_accu(struct libm_test *test,
         switch (type) {
         case LIBM_FUNC_V4S:
             ip4 = _mm_set_ps(ip[j+3], ip[j+2], ip[j+1], ip[j]);
-            op4 = LIBM_FUNC(vrs4_logf)(ip4);
+            op4 = LIBM_FUNC_VEC(s, 4, logf)(ip4);
             _mm_store_ps(&op[j], op4);
             j += 4;
             break;

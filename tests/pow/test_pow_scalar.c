@@ -17,7 +17,7 @@
 #define __TEST_POW_INTERNAL__
 #include "test_pow_data.h"
 
-double FN_PROTOTYPE(pow)(double,double);
+double LIBM_FUNC(pow)(double,double);
 extern int RANGE_LEN_X;
 
 long double libm_test_powl(struct libm_test *test, int idx);
@@ -105,7 +105,7 @@ static int test_pow_accu(struct libm_test *test)
 
 
         for (uint64_t j = 0; j < sz; j ++) {       
-            op[j] = FN_PROTOTYPE(pow)(ip_x[j],ip_y[j]);
+            op[j] = LIBM_FUNC(pow)(ip_x[j],ip_y[j]);
         }
 
         libm_test_pow_verify(test, &test->result);
@@ -140,7 +140,7 @@ static int test_pow_perf(struct libm_test *test)
 
     for (uint32_t i = 0; i < n ; ++i) {
         for (uint32_t j = 0; j < sz; j ++) {
-            o[j] =  FN_PROTOTYPE(pow)(ip1[j],ip2[j]);
+            o[j] =  LIBM_FUNC(pow)(ip1[j],ip2[j]);
 //	    test->ops.libm_func_callback(test, j);
         }
         /*
@@ -230,7 +230,7 @@ static int test_pow_special(struct libm_test *test)
                test->name, test->type_name, sz);
 
     for (int j = 0; j < sz; j += 1) {
-        op[j] = FN_PROTOTYPE(pow)(ip1[j],ip2[j]);
+        op[j] = LIBM_FUNC(pow)(ip1[j],ip2[j]);
     }
 
     return 0;

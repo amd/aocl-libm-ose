@@ -27,6 +27,23 @@
 #define __TEST_POW_INTERNAL__                   /* needed to include exp-test-data.h */
 #include "test_pow_data.h"
 
+
+#if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
+#define _ZGVdN4v(x) _ZGVbN4vv_##x
+#define _ZGVdN2v_pow _ZGVbN2vv_pow
+#define _ZGVdN4v_pow _ZGVdN4vv_pow
+
+#define _ZGVsN4v_pow  _ZGVbN4v_pow
+#define _ZGVsN4v_powf _ZGVbN4vv_powf
+
+__m128d LIBM_FUNC_VEC(d, 2, pow)(__m128d, __m128d);
+__m256d LIBM_FUNC_VEC(d, 4, pow)(__m256d, __m256d);
+
+__m128 LIBM_FUNC_VEC(b, 4, powf)(__m128, __m128);
+__m256 LIBM_FUNC_VEC(b, 8, powf)(__m256, __m256);
+#endif
+
+
 //#define RANGE_LEN(x) (sizeof(x) / sizeof((x)[0]))
 char doc[] = BUILD_TEST_DOC(TEST_NAME);
 extern struct libm_test_input_range x[];
@@ -97,7 +114,7 @@ static int test_pow_vrd4_perf(struct libm_test *test)
         for (uint32_t j = 0; j < (sz - 3); j += 4) {
             __m256d ip4_x = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
 	    __m256d ip4_y = _mm256_set_pd(ip2[j+3], ip2[j+2], ip2[j+1], ip2[j]);
-            __m256d op4 = FN_PROTOTYPE_FMA3(vrd4_pow)(ip4_x,ip4_y);
+            __m256d op4 = LIBM_FUNC_VEC(d, 4, pow)(ip4_x,ip4_y);
             _mm256_store_pd(&o[j], op4);
         }
         /*
@@ -142,7 +159,7 @@ static int test_pow_vrd2_perf(struct libm_test *test)
         for (uint32_t j = 0; j < (sz - 1); j += 2) {
             __m128d ip2_x = _mm_set_pd(ip1[j+1], ip1[j]);
             __m128d ip2_y = _mm_set_pd(ip2[j+1], ip2[j]);
-            __m128d op2 = FN_PROTOTYPE(vrd2_pow)(ip2_x,ip2_y);
+            __m128d op2 = LIBM_FUNC_VEC(d, 2, pow)(ip2_x,ip2_y);
             _mm_store_pd(&o[j], op2);
         }
         /*
@@ -175,7 +192,7 @@ static int test_pow_vrd4_special(struct libm_test *test)
     for (int j = 0; j < (sz - 3); j += 4) {
         __m256d ip4_x = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
 	__m256d ip4_y = _mm256_set_pd(ip2[j+3], ip2[j+2], ip2[j+1], ip2[j]);
-        __m256d op4 = FN_PROTOTYPE_FMA3(vrd4_pow)(ip4_x,ip4_y);
+        __m256d op4 = LIBM_FUNC_VEC(d, 4, pow)(ip4_x,ip4_y);
         _mm256_store_pd(&op[j], op4);
     }
 
@@ -198,7 +215,7 @@ static int test_pow_vrd2_special(struct libm_test *test)
     for (int j = 0; j < (sz - 1); j += 2) {
         __m128d ip2_x = _mm_set_pd(ip1[j+1], ip1[j]);
         __m128d ip2_y = _mm_set_pd(ip2[j+1], ip2[j]);
-        __m128d op4 = FN_PROTOTYPE(vrd2_pow)(ip2_x,ip2_y);
+        __m128d op4 = LIBM_FUNC_VEC(d, 2, pow)(ip2_x,ip2_y);
         _mm_store_pd(&op[j], op4);
     }
 
@@ -367,7 +384,7 @@ static int test_pow_vrd4_accu(struct libm_test *test)
     		__m256d ip4_x = _mm256_set_pd(ip_x[j+3], ip_x[j+2], ip_x[j+1], ip_x[j]);
 	    __m256d ip4_y = _mm256_set_pd(ip_y[j+3], ip_y[j+2], ip_y[j+1], ip_y[j]);
 	    asm("nop" :::"rbx");
-            __m256d op4 = FN_PROTOTYPE_FMA3(vrd4_pow)(ip4_x,ip4_y);
+            __m256d op4 = LIBM_FUNC_VEC(d, 4, pow)(ip4_x,ip4_y);
 	    _mm256_store_pd(&op[j], op4);
 	
         }
@@ -409,7 +426,7 @@ static int test_pow_vrd2_accu(struct libm_test *test)
 //            printf("op[%d] =%g\n ",j,op[j]);
             __m128d ip2_x = _mm_set_pd(ip_x[j+1], ip_x[j]);
             __m128d ip2_y = _mm_set_pd(ip_y[j+1], ip_y[j]);
-            __m128d op2 = FN_PROTOTYPE(vrd2_pow)(ip2_x,ip2_y);
+            __m128d op2 = LIBM_FUNC_VEC(d, 2, pow)(ip2_x,ip2_y);
             _mm_store_pd(&op[j], op2);
 
         }

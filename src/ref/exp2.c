@@ -8,8 +8,10 @@
 #include <libm_amd_paths.h>
 #include <libm_special.h>
 
+#if !defined(ENABLE_DEBUG)
 #pragma GCC push_options
-#pragma GCC optimize ("O3")
+#pragma GCC optimize ("O2")
+#endif  /* !DEBUG */
 
 #include <libm_macros.h>
 #include <libm_types.h>
@@ -22,13 +24,27 @@
 #define N 10
 #define TABLE_SIZE (1ULL << N)
 
-#if N == 6
+#if N == 6                              /* Table size 64 */
 extern double exp_v2_two_to_jby64_table[];
 #define TABLE_DATA exp_v2_two_to_jby64_table
-
 #define POLY_DEGREE 6
 
-#elif N == 10
+#elif N == 7                            /* Table size 128 */
+extern double exp_v2_two_to_jby128_table[];
+#define TABLE_DATA exp_v2_two_to_jby128_table
+#define POLY_DEGREE 5
+
+#elif N == 8                            /* Table size 256 */
+extern double exp_v2_two_to_jby256_table[];
+#define TABLE_DATA exp_v2_two_to_jby256_table
+#define POLY_DEGREE 4
+
+#elif N == 9                            /* Table size 512 */
+extern double exp_v2_two_to_jby512_table[];
+#define TABLE_DATA exp_v2_two_to_jby512_table
+#define POLY_DEGREE 4
+
+#elif N == 10                           /* Table size 1024 */
 extern double exp_v2_two_to_jby1024_table[];
 #define TABLE_DATA exp_v2_two_to_jby1024_table
 #define POLY_DEGREE 4
@@ -59,21 +75,37 @@ extern double exp_v2_two_to_jby1024_table[];
 
 #define MAX_POLYDEGREE 8
 
+struct exp_table {
+	double main, head, tail;
+};
+
 static struct {
 	double table_size;
 	double one_by_table_size;
 	double ln2;
+        double Huge;
 	double ALIGN(16) poly[MAX_POLYDEGREE];
+	struct exp_table table[TABLE_SIZE];
 } exp2_data = {
 #if N == 10
 	.table_size          = 0x1.0p+10,
 	.one_by_table_size   = 0x1.0p-10,
+#elif N == 9
+	.table_size          = 0x1.0p+9,
+	.one_by_table_size   = 0x1.0p-9,
+#elif N == 8
+	.table_size          = 0x1.0p+8,
+	.one_by_table_size   = 0x1.0p-8,
+#elif N == 7
+	.table_size          = 0x1.0p+7,
+	.one_by_table_size   = 0x1.0p-7,
 #elif N == 6
 	.table_size          = 0x1.0p+6,
 	.one_by_table_size   = 0x1.0p-6,
 #else
 #error "N not defined"
 #endif
+        .Huge = 0x1.8p+52,
 	.ln2  = 0x1.62e42fefa39efp-1, /* ln(2) */
         /*
          * Polynomial constants, 1/x! (reciprocal of factorial(x))
@@ -99,6 +131,7 @@ static struct {
 #define C6	exp2_data.poly[4]
 #define C7	exp2_data.poly[5]
 #define C8	exp2_data.poly[6]
+#define HUGE	exp2_data.Huge
 #define REAL_TABLE_SIZE         exp2_data.table_size
 #define REAL_1_BY_TABLE_SIZE	exp2_data.one_by_table_size
 #define REAL_LN2		exp2_data.ln2
@@ -128,9 +161,6 @@ cast_i64_to_double( int64_t x )
     return (double)x;
 }
 
-//static const double max_exp2_arg = 1024.0;
-//static const double min_exp2_arg = -1074.0;
-
 double _exp2_special(double x, double y, uint32_t code);
 
 static inline uint32_t top12(double x)
@@ -138,10 +168,18 @@ static inline uint32_t top12(double x)
     return asuint64(x) >> 52;
 }
 
+/*
+ * to avoid compiler optimization
+ */
+static inline double eval_as_double(double x)
+{
+    return x;
+}
+
 double
 FN_PROTOTYPE(exp2_v2)(double x)
 {
-    double_t    a, dn, r, q;
+    double_t    r, q, dn;
     int64_t     n, j, m;
     flt64_t     q1 = {.i = 0,}, q2 = q1;
 
@@ -167,19 +205,31 @@ FN_PROTOTYPE(exp2_v2)(double x)
             return _exp2_special(x, x+x, EXP_Y_ZERO);
     }
 
-    a = x * REAL_TABLE_SIZE;
+    double_t a = x * REAL_TABLE_SIZE;
 
+#define FAST_INTEGER_CONVERSION 1
+
+#if FAST_INTEGER_CONVERSION
+    q1.d = a + HUGE;
+    n = q1.i;
+    dn = q1.d - HUGE;
+#else
     n = cast_double_to_i64(a);
-
     dn = cast_i64_to_double(n);
+#endif
 
     r = x - (dn * REAL_1_BY_TABLE_SIZE);
 
     r *= REAL_LN2;
 
-    j = n & ((1ULL << N) - 1);          /* table index, for lookup */
+    /* table index, for lookup, truncated */
+    j = n % TABLE_SIZE;
 
-    m = (n - j) >> N;			/* n-j/TABLE_SIZE, TABLE_SIZE = 1<<N */
+    /* n-j/TABLE_SIZE, TABLE_SIZE = 1<<N
+     * and m <<= 52
+     */
+    m = (n - j) << (52 - N);
+
 
 #define ESTRIN_SCHEME  0xee
 #define HORNER_SCHEME  0xef
@@ -223,17 +273,13 @@ FN_PROTOTYPE(exp2_v2)(double x)
 #elif POLY_DEGREE == 6
     q += (r2 * r2) * (C4 + r * (C5 + r*C6));
 #endif
-
+#else
+    #warning "POLY_EVAL_METHOD is not defined"
 #endif  /* if HORNER_SCHEME || ESTRIN_SCHEME */
 
-    {
-	    struct exp_table {
-		    double_t main, head, tail;
-	    };
-	    struct exp_table *tbl = &((struct exp_table*)TABLE_DATA)[j];
-	    /* f(j)*q + f1 + f2 */
-	    q = q * tbl->main + tbl->head + tbl->tail;
-    }
+    /* f(j)*q + f1 + f2 */
+    struct exp_table *tbl = &((struct exp_table*)TABLE_DATA)[j];
+    q = q * tbl->main + tbl->head + tbl->tail;
 
     /*
      * Processing denormals
@@ -248,14 +294,20 @@ FN_PROTOTYPE(exp2_v2)(double x)
         }
     }
 
-    m <<= 52;
+    #if 1
     q1.i = m + asuint64(q);
-
     return q1.d;
+    #else
+    //m <<= 52;
+    q = asdouble(m + asuint64(q));
+    return q;
+    #endif
 
 #if defined(__ENABLE_IEEE_EXCEPTIONS)
 
 #endif
 }
 
+#if !defined(ENABLE_DEBUG)
 #pragma GCC pop_options
+#endif

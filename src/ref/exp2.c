@@ -88,24 +88,28 @@ static struct {
 	struct exp_table table[TABLE_SIZE];
 } exp2_data = {
 #if N == 10
-	.table_size          = 0x1.0p+10,
-	.one_by_table_size   = 0x1.0p-10,
+	.table_size        = 0x1.0p+10,
+	.one_by_table_size = 0x1.0p-10,
+	.Huge              = 0x1.8p+42,
 #elif N == 9
-	.table_size          = 0x1.0p+9,
-	.one_by_table_size   = 0x1.0p-9,
+	.table_size        = 0x1.0p+9,
+	.one_by_table_size = 0x1.0p-9,
+	.Huge		   = 0x1.8p+43,
 #elif N == 8
-	.table_size          = 0x1.0p+8,
-	.one_by_table_size   = 0x1.0p-8,
+	.table_size        = 0x1.0p+8,
+	.one_by_table_size = 0x1.0p-8,
+	.Huge              = 0x1.8p+44,
 #elif N == 7
-	.table_size          = 0x1.0p+7,
-	.one_by_table_size   = 0x1.0p-7,
+	.table_size        = 0x1.0p+7,
+	.one_by_table_size = 0x1.0p-7,
+	.Huge		   = 0x1.8p+45,
 #elif N == 6
-	.table_size          = 0x1.0p+6,
-	.one_by_table_size   = 0x1.0p-6,
+	.table_size        = 0x1.0p+6,
+	.one_by_table_size = 0x1.0p-6,
+	.Huge		   = 0x1.8p+46,
 #else
 #error "N not defined"
 #endif
-        .Huge = 0x1.8p+52,
 	.ln2  = 0x1.62e42fefa39efp-1, /* ln(2) */
         /*
          * Polynomial constants, 1/x! (reciprocal of factorial(x))
@@ -205,20 +209,19 @@ FN_PROTOTYPE(exp2_v2)(double x)
             return _exp2_special(x, x+x, EXP_Y_ZERO);
     }
 
-    double_t a = x * REAL_TABLE_SIZE;
-
 #define FAST_INTEGER_CONVERSION 1
 
 #if FAST_INTEGER_CONVERSION
-    q1.d = a + HUGE;
+    q1.d = x + HUGE;
     n = q1.i;
     dn = q1.d - HUGE;
+    r = x - dn;
 #else
+    double_t a = x * REAL_TABLE_SIZE;
     n = cast_double_to_i64(a);
     dn = cast_i64_to_double(n);
-#endif
-
     r = x - (dn * REAL_1_BY_TABLE_SIZE);
+#endif
 
     r *= REAL_LN2;
 

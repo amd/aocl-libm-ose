@@ -71,8 +71,8 @@ static int __is_ulp_required(flt64u_t expected, flt64u_t actual)
 //    if (expected.i == actual.i )              return 0;
     if (isnan(expected.d) && isnan(actual.d)) return 0;
     if (isinf(expected.d) && isinf(actual.d)) return 0;
-    if ((expected.i <= 0x7ff0000000000000) &&
-        (actual.i   <= 0x7ff0000000000000))   return 0;
+    //if ((expected.i <= 0x7ff0000000000000) &&
+    //    (actual.i   <= 0x7ff0000000000000))   return 0;
 
     return 1;
 }
@@ -96,7 +96,7 @@ static int __verify_double(struct libm_test *test,
     for (int j = 0; j < sz; ++j) {
         int ret = 0;
 
-        if (test->conf->test_types == TEST_TYPE_ACCU) {
+        if (test->test_type == TEST_TYPE_ACCU) {
             /*
              * Verify ULP for every case,
              * except when both output and exptected is 0 or a subnormal number

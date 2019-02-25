@@ -9,7 +9,7 @@ from scripts.cfg import config
 from scripts.cfg import projpath
 from scripts.utils import Transform
 
-cfg		= config.current_config()
+cfg		    = config.current_config()
 builddir	= '#build'
 projroot	= projpath.PROJROOT
 
@@ -46,11 +46,11 @@ if ARGUMENTS.get('verbose') != "1":
 	env["SHLINKCOMSTR"] = "[SHLINK] => $TARGET"
 
 if ARGUMENTS.get('debug', 0):
-	env.Append(CCFLAGS = ' -ggdb')
+	env.Append(CCFLAGS = ['-ggdb', '-DENABLE_DEBUG=1'])
 #print(ARGUMENTS, COMMAND_LINE_TARGETS)
 
 if ARGUMENTS.get('profile', 0):
-	env.Append(CCFLAGS = ' -pg')
+	env.Append(CCFLAGS = ['-pg'])
 
 if ARGUMENTS.get('developer', 0):
 	env.Append(CCFLAGS = ' -DDEVELOPER=1')

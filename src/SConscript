@@ -9,7 +9,7 @@ e = env.Clone()
 e.Append(
 	CCFLAGS = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror', 
 		'-Wno-unused-but-set-parameter', '-fPIC', '-O1', 
-		'-mavx', '-mxop', '-mfma4'],
+		'-mavx', '-mavx2', '-march=znver1'],
 	ASFLAGS = ['-Wall', '-W', '-fPIC'],
 	CPPDEFINES = ['AVX_XOP_FMA4_FMA3'],
 #	 CPPPATH = [''],

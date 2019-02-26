@@ -1,6 +1,6 @@
 # Copyright (C) 2018, AMD. All rights Reserved
 #
-# Author: Nimmy Krishnan <Nimmy.Krishnan@amd.com>
+# Author: Prem Mallappa <pmallapp@amd.com>
 
 Import('env')
 
@@ -8,8 +8,16 @@ e = env.Clone()
 
 e.Append( LIBS = ['test'] )
 
+#exp2_srcs = Glob('*.[cS]', exclude='exp2_common.c')
 log_srcs = Glob('*.[cS]')
+#exp2_srcs = Glob('*.[cS]')
+#liblist = ['amdlibm', 'm', 'test', 'mvec']
+#libpath = ['#build/src', '#build/tests']
 
+#liblist.insert(0, 'imf')
+#libpath.insert(0, '/home/pmallapp/intel/lib/intel64_lin')
+
+#exp2 = e.Program('test_exp2', exp2_srcs, LIBS=liblist, LIBPATH=libpath)
 log = e.Program('test_log', log_srcs)
 
 Return('log')

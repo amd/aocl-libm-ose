@@ -1,7 +1,7 @@
 #ifndef __TEST_LOG_H__
 #define __TEST_LOG_H__
 
-int libm_test_log_verify(struct libm_test *test, struct libm_test_result *result);
+int test_log_verify(struct libm_test *test, struct libm_test_result *result);
 
 int test_log_register_one(struct libm_test *test);
 

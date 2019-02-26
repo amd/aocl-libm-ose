@@ -9,7 +9,28 @@ struct __log_internal_data {
     uint64_t in, out;
 };
 
+/* Scalar log in AMD LibM handles values between e^(-1/16) and e^(1/16) as special case, while vector versions don't.
+   Hence, some values in this range is added as special cases
+*/
 static struct __log_internal_data test_log_special_data[] = {
+    {0x3fee1177d9f91c22,0xbfafe1687bdb1469}, // 0.93963234494083658354668
+    {0x3ff0008078a074ad,0x3f200ed397156a4a}, // 1.00012251968227450227289
+    {0x3fee1b973ae0e299,0xbfaf3527a491b3b3}, // 0.94086801051806212559114
+    {0x3fee91075ba4fb7c,0xbfa7771db911f95b}, // 0.95520370387372066645071
+    {0x3fef6da08661d8f4,0xbf9276491033af3b}, // 0.98213220831419656420280
+    {0x3fefdaa8ad5104b9,0xbf72b6968fc30537}, // 0.99544175959467573466810
+    {0x3fefff2f8d7f5d39,0xbf1a0ea4f2eb8f62}, // 0.99990060459359775268950
+    {0x3ff00281d1da414b,0x3f440cfcb4e691a9}, // 1.00061208699851778014533
+    {0xc090000000000000,0xfff8000000000000}, // -1024.0
+    {0xbff0000000000000,0xfff8000000000000}, // -1.0
+    {0x8000000000000000,0xfff8000000000000}, // -0.0
+    {0x0000000000000000,0x7ff8000000000000}, // +0.0
+    {0xc090000000000000,0x7ff8000000000000}, // +1024
+    {0x3ff0000000000000,0x0000000000000000}, // +1.0
+    {0x7ff0000000000000,0x7ff0000000000000},
+    {0xfff0000000000000,0x7FF8000000000000}
+
+/*
     {0x3ff0097d13350953,0x3f62f4881b43f2d5},
     {0x0003ec71c47096d5,0xc0862e6a7c4872d2},
     {0x000fffffffffffff,0xc086232bdd7abcd2},
@@ -50,7 +71,7 @@ static struct __log_internal_data test_log_special_data[] = {
     {0x3ff0000000000001,0x3cafffffffffffff},
     {0x7ff0000000000000,0x7ff0000000000000},
     {0x7ff0000000000000,0x7ff0000000000000}
-
+*/
 };
 
 #endif  /* __TEST_LOG_DATA_H */

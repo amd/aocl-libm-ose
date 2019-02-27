@@ -4,7 +4,7 @@
  * Author: Prem Mallappa <pmallapp@amd.com>
  */
 #include <stdint.h>
-
+#include <libm_util_amd.h>
 #include <libm_amd_paths.h>
 #include <libm_special.h>
 
@@ -60,11 +60,10 @@ extern double exp_v2_two_to_jby1024_table[];
 #define NOINLINE       __attribute__ ((noinline))
 #define likely(x)      __builtin_expect (!!(x), 1)
 #define unlikely(x)    __builtin_expect (x, 0)
-#define strong_alias(f, a)                             \
+#define strong_alias(f, a)				\
     extern __typeof (f) a __attribute__ ((alias (#f)));
-#define hidden_alias(f, a)                                             \
+#define hidden_alias(f, a)						\
     extern __typeof (f) a __attribute__ ((alias (#f), visibility ("hidden")));
-
 
 /* Optimize related defines */
 #define OPTIMIZE_O1 OPTIMIZE(1)
@@ -196,31 +195,30 @@ FN_PROTOTYPE(exp2_v2)(double x)
      * this is with BIAS
      */
     uint32_t exponent = top12(x) & 0x7ff;
-
     /*
      * 11-bit 'exponent' is compared with, 12-bit unsigned value
      * one comparison for multiple decisions
      */
-    if (unlikely(exponent >= top12(512.0))) {
-        if (exponent >= top12(1024.0))
-            return _exp2_special(x, x+x, EXP_Y_INF);
+    if (unlikely(exponent > 0x409)) {
+        if (exponent >= 0xc09)
+            return _exp2_special(x, 0, EXP_Y_ZERO);
 
-        if ((exponent - 1024) >= 0x80000000U)
-            return _exp2_special(x, x+x, EXP_Y_ZERO);
+	if (exponent >= 0x409)
+            return _exp2_special(x, asdouble(PINFBITPATT_DP64), EXP_Y_INF);
     }
 
 #define FAST_INTEGER_CONVERSION 1
 
 #if FAST_INTEGER_CONVERSION
     q1.d = x + HUGE;
-    n = q1.i;
-    dn = q1.d - HUGE;
-    r = x - dn;
+    n    = q1.i;
+    dn   = q1.d - HUGE;
+    r    = x - dn;
 #else
     double_t a = x * REAL_TABLE_SIZE;
-    n = cast_double_to_i64(a);
-    dn = cast_i64_to_double(n);
-    r = x - (dn * REAL_1_BY_TABLE_SIZE);
+    n          = cast_double_to_i64(a);
+    dn         = cast_i64_to_double(n);
+    r          = x - (dn * REAL_1_BY_TABLE_SIZE);
 #endif
 
     r *= REAL_LN2;
@@ -266,7 +264,7 @@ FN_PROTOTYPE(exp2_v2)(double x)
     // r + ((r*r)*(1/2 + (r*1/6))) +
     // ((r*r) * (r*r)) * (1/24 + (r * (1/120 + (r*1/720))))
 
-    double r2 = r * r;
+    double_t r2 = r * r;
     q = r + (r2 * (C2  + r * C3));
 
 #if POLY_DEGREE == 4
@@ -287,7 +285,7 @@ FN_PROTOTYPE(exp2_v2)(double x)
     /*
      * Processing denormals
      */
-    if (unlikely (exponent == 0)) {
+    if (unlikely(exponent == 0)) {
         if (m < -1023) {
             /* Process true de-normals */
             m += 1074;
@@ -297,14 +295,9 @@ FN_PROTOTYPE(exp2_v2)(double x)
         }
     }
 
-    #if 1
     q1.i = m + asuint64(q);
     return q1.d;
-    #else
-    //m <<= 52;
-    q = asdouble(m + asuint64(q));
-    return q;
-    #endif
+
 
 #if defined(__ENABLE_IEEE_EXCEPTIONS)
 

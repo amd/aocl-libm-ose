@@ -1,0 +1,22 @@
+# Inherit global environment
+Import('env')
+
+e = env.Clone()
+
+e.Append(
+    CFLAGS = ['-fPIC']
+)
+
+try:
+    if not env['debug']:
+        e.Append(
+            CCFLAGS = ['-O3'],
+        )
+except KeyError,err:
+    print("Keyerror, debug not found")
+
+source = Glob('*.c', exclude=['log.c'])
+
+objs = e.StaticObject(source)
+
+Return('objs')

@@ -86,7 +86,8 @@ for test in tests:
 			src_dir = '#tests/%s' % test,
 			variant_dir = join(builddir, test)
 			)
-    test_exes += exes
+    if exes:
+       test_exes += exes
 
 Depends(test_exes, testlib)
 

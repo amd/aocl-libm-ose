@@ -42,6 +42,19 @@ __m128 LIBM_FUNC_VEC(b, 4, logf)(__m128);
 __m256 LIBM_FUNC_VEC(b, 8, logf)(__m256);
 #endif
 
+#if defined(DEVELOPER)
+#pragma message "Developer mode changing prototype to log_v2()"
+#undef LIBM_FUNC
+#define LIBM_FUNC(x) FN_PROTOTYPE( x ## _v2 )
+
+double FN_PROTOTYPE( log_v2 )(double);
+float FN_PROTOTYPE( logf_v2 )(float);
+
+float FN_PROTOTYPE_FMA3( logf )(float);
+
+#define amd_logf_v2 FN_PROTOTYPE_FMA3(logf)
+#endif
+
 double test_log_ulp(struct libm_test *test, int idx)
 {
    float *buf = (float*)test->test_data.input1;
@@ -435,7 +448,7 @@ static int __generate_test_one_range(struct libm_test *test,
     int ret = 0;
 
     LIBM_TEST_DPRINTF(DBG2,
-                      "Testing for accuracy %d items in range [%Lf, %Lf]\n",
+                      "Testing for accuracy %d items in range [%4.10Lf, %4.10Lf]\n",
                       test->test_data.nelem,
                       range->start, range->stop);
 

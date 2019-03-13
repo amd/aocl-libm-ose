@@ -144,7 +144,8 @@ static inline uint64_t top12(double x)
 double
 FN_PROTOTYPE(log_v2)(double x)
 {
-    double_t q, dexpo, j_times_half;
+    double_t q, r;
+    double_t dexpo, j_times_half;
     uint64_t ux   = asuint64(x);
     uint64_t expo = top12(x);
 
@@ -199,17 +200,52 @@ FN_PROTOTYPE(log_v2)(double x)
 
     dexpo = cast_i64_to_double(expo);
 
-    /*
-     * near one code path
-     */
-    flt64_t one_minus_mant = {.d= x - 1.0};
-    one_minus_mant.i &= 0x7fffffffffffffffULL; /* mask sign bit */
-    if (unlikely (one_minus_mant.i < 0x3bf0000000000000LL)) {
+    /*****************
+     * (x ~= 1.0) code path
+     *****************/
+    flt64_t one_minus_mant = {.d = x - 1.0};
+    /* mask sign bit */
+    uint64_t mant_without_sign = one_minus_mant.i & 0x7fffffffffffffffULL;
+    if (unlikely (mant_without_sign < 0x3bf0000000000000LL)) {
+        double_t r2, u, u2, u3, u7;
+        static const double ca[5] = {
+                       0.0,
+                       0x1.55555555554e6p-4, // 1/2^2 * 3
+                       0x1.9999999bac6d4p-7, // 1/2^4 * 5
+                       0x1.2492307f1519fp-9, // 1/2^6 * 7
+                       0x1.c8034c85dfff0p-12 // 1/2^8 * 9
+        };
+
         /*
-         * less than threshold
-         * FIXME: returning temporary value
+         * Less than threshold, no table lookup, no poly
          */
-        return asdouble(QNANBITPATT_DP64);
+        r = one_minus_mant.d;
+
+        r = one_minus_mant.d / (one_minus_mant.d + 2.0);
+
+        q = r * one_minus_mant.d;       /* correction */
+
+        r2 = r + r;
+
+#define CA1 ca[1]
+#define CA2 ca[2]
+#define CA3 ca[3]
+#define CA4 ca[4]
+
+        u = r2 * r2;
+
+        u2 = u * u;
+        r = u2 * CA2 + u2 * CA4;
+
+        u3 = u2 * u;
+        r += u3 * CA1;
+
+        u7 = u3 * (u2 * u2);
+        r += u7 * CA3;
+
+        q = r - q;
+
+        return one_minus_mant.d + q;
     }
 
     mant.i        |= 0x3fe0000000000000ULL;               /* F */
@@ -220,7 +256,7 @@ FN_PROTOTYPE(log_v2)(double x)
     /* f = F - Y */
     double_t f = j_times_half - mant.d;
 
-    double_t r = f * TAB_F_INV[j];
+    r = f * TAB_F_INV[j];
 
 #define ESTRIN_SCHEME  0xee
 #define HORNER_SCHEME  0xef

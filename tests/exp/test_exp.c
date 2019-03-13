@@ -35,6 +35,25 @@ __m128 LIBM_FUNC_VEC(b, 4, expf)(__m128);
 __m256 LIBM_FUNC_VEC(b, 8, expf)(__m256);
 #endif
 
+#if defined(DEVELOPER)
+#pragma message "Developer mode changing prototype to exp_v2()"
+#undef LIBM_FUNC
+#define LIBM_FUNC(x) FN_PROTOTYPE( x ## _v2 )
+
+double FN_PROTOTYPE( exp_v2 )(double);
+float FN_PROTOTYPE( expf_v2 )(float);
+
+float FN_PROTOTYPE_FMA3( expf )(float);
+
+#define amd_expf_v2 FN_PROTOTYPE_FMA3(expf)
+#else
+// Temporary need to remove
+//#undef LIBM_FUNC
+//#define LIBM_FUNC(x) FN_PROTOTYPE_FMA3(x)
+//#define amd_expf FN_PROTOTYPE_FMA3(expf)
+//#define amd_exp_bas64 FN_PROTOTYPE_FMA3(expf)
+#endif
+
 static int test_exp_v2d_perf(struct libm_test *test)
 {
     struct libm_test_data *data = &test->test_data;
@@ -144,7 +163,6 @@ static int test_exp_s1d_perf(struct libm_test *test)
             o[j] = LIBM_FUNC(exp)(ip1[j]);
             //o[j] = FN_PROTOTYPE(exp_v1)(ip1[j]);
             //o[j] = FN_PROTOTYPE(exp_v2)(ip1[j]);
-            o[j] = exp(ip1[j]);
         }
     }
 
@@ -273,7 +291,7 @@ static int test_exp_v8s_perf(struct libm_test *test)
         for (j = 0; j < (sz - 7); j += 8) {
             __m256 ip2 = _mm256_set_ps(ip1[j+7], ip1[j+6], ip1[j+5], ip1[j+4],
                                        ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-            __m256 op4 = LIBM_FUNC_VEC(s, 8, exp2f)(ip4);
+            __m256 op4 = LIBM_FUNC_VEC(s, 8, expf)(ip4);
             _mm256_store_ps(&o[j], op4);
         }
         /*
@@ -585,7 +603,7 @@ static int __test_expf_accu(struct libm_test *test,
             j += 4;
             break;
         case LIBM_FUNC_S_S:
-            op[j] = LIBM_FUNC(exp2f)(ip[j]);
+            op[j] = LIBM_FUNC(expf)(ip[j]);
             j++;
             break;
         default:

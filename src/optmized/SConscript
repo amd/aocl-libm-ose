@@ -15,7 +15,8 @@ try:
 except KeyError,err:
     print("Keyerror, debug not found")
 
-source = Glob('*.c', exclude=['log.c'])
+#source = Glob('*.c', exclude=['log.c'])
+source = Glob('*.c')
 
 objs = e.StaticObject(source)
 

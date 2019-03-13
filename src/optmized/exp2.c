@@ -16,6 +16,9 @@
 #include <libm_macros.h>
 #include <libm_types.h>
 
+#include <libm/typehelper.h>
+#include <libm/compiler.h>
+
 /*
  * N defines the precision with which we deal with 'x'
  * I.O.W (1 << N) is the size  of the look up table
@@ -51,27 +54,6 @@ extern double exp_v2_two_to_jby1024_table[];
 
 #endif
 
-#ifdef __GNUC__
-#define ALIGN(x)        __attribute__((aligned ((x))))
-
-#define RODATA          __attribute__((section (".rodata")))
-
-#define HIDDEN         __attribute__ ((__visibility__ ("hidden")))
-#define NOINLINE       __attribute__ ((noinline))
-#define likely(x)      __builtin_expect (!!(x), 1)
-#define unlikely(x)    __builtin_expect (x, 0)
-#define strong_alias(f, a)				\
-    extern __typeof (f) a __attribute__ ((alias (#f)));
-#define hidden_alias(f, a)						\
-    extern __typeof (f) a __attribute__ ((alias (#f), visibility ("hidden")));
-
-/* Optimize related defines */
-#define OPTIMIZE_O1 OPTIMIZE(1)
-#define OPTIMIZE_O2 OPTIMIZE(2)
-#define OPTIMIZE_O3 OPTIMIZE(3)
-#define OPTIMIZE_Og __attribute__((optimize("Og")))
-#endif
-
 #define MAX_POLYDEGREE 8
 
 struct exp_table {
@@ -84,7 +66,6 @@ static struct {
 	double ln2;
         double Huge;
 	double ALIGN(16) poly[MAX_POLYDEGREE];
-	struct exp_table table[TABLE_SIZE];
 } exp2_data = {
 #if N == 10
 	.table_size        = 0x1.0p+10,
@@ -138,31 +119,6 @@ static struct {
 #define REAL_TABLE_SIZE         exp2_data.table_size
 #define REAL_1_BY_TABLE_SIZE	exp2_data.one_by_table_size
 #define REAL_LN2		exp2_data.ln2
-
-
-static inline   int32_t
-cast_double_to_i32( double x )
-{
-    return (int32_t) x;
-}
-
-static inline   int64_t
-cast_double_to_i64( double x )
-{
-    return (int64_t) x;
-}
-
-static inline double
-cast_i32_to_double( int32_t x )
-{
-    return (double)x;
-}
-
-static inline double
-cast_i64_to_double( int64_t x )
-{
-    return (double)x;
-}
 
 double _exp2_special(double x, double y, uint32_t code);
 

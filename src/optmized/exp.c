@@ -36,6 +36,7 @@
 #include <libm_types.h>
 
 #include <libm/typehelper.h>
+#include <libm/compiler.h>
 
 /*
  * N defines the precision with which we deal with 'x'
@@ -69,28 +70,6 @@ extern double exp_v2_two_to_jby512_table[];
 extern double exp_v2_two_to_jby1024_table[];
 #define TABLE_DATA exp_v2_two_to_jby1024_table
 #define POLY_DEGREE 4
-
-#endif
-
-#ifdef __GNUC__
-#define ALIGN(x)        __attribute__((aligned ((x))))
-
-#define RODATA          __attribute__((section (".rodata")))
-
-#define HIDDEN         __attribute__ ((__visibility__ ("hidden")))
-#define NOINLINE       __attribute__ ((noinline))
-#define likely(x)      __builtin_expect (!!(x), 1)
-#define unlikely(x)    __builtin_expect (x, 0)
-#define strong_alias(f, a)				\
-    extern __typeof (f) a __attribute__ ((alias (#f)));
-#define hidden_alias(f, a)						\
-    extern __typeof (f) a __attribute__ ((alias (#f), visibility ("hidden")));
-
-/* Optimize related defines */
-#define OPTIMIZE_O1 OPTIMIZE(1)
-#define OPTIMIZE_O2 OPTIMIZE(2)
-#define OPTIMIZE_O3 OPTIMIZE(3)
-#define OPTIMIZE_Og __attribute__((optimize("Og")))
 #endif
 
 #define MAX_POLYDEGREE 8

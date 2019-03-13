@@ -154,7 +154,7 @@ FN_PROTOTYPE(log_v2)(double x)
 #define FLAG_X_NAN  0x3
 
     if (unlikely (expo >= 0x7ff)) {
-        /* inf or nan */
+        /* x is inf or nan */
         if (ux == 0x7ff0000000000000ULL)
             return x;
 
@@ -168,6 +168,7 @@ FN_PROTOTYPE(log_v2)(double x)
     }
 
     if (unlikely (x <= 0.0)) {
+        /* x is zero or neg */
         if (x == 0.0)
             return _log_special(x, asdouble(PINFBITPATT_DP64), FLAG_X_ZERO);
 
@@ -176,14 +177,13 @@ FN_PROTOTYPE(log_v2)(double x)
 
     flt64_t mant = {.i = ux & 0x000fffffffffffffULL};
 
-    /* un-bias exponent  */
-    expo -=  1023;
+    dexpo = cast_i64_to_double(expo);
 
     /*
      * Denormals: Adjust mantissa,
-     *          exponent is anyway 0 for subnormals
+     *            exponent is anyway 0 for subnormals
      */
-    if (unlikely (expo == 0)) {
+    if (unlikely (dexpo < -1023.0)) {
         mant.i |= 0x3ff0000000000000ULL;
         mant.d -= 1.0;
         uint64_t mant1 = mant.i >> 52;
@@ -193,6 +193,62 @@ FN_PROTOTYPE(log_v2)(double x)
         expo = cast_i64_to_double(mant1 - 2045);
     }
 
+    /* un-bias exponent  */
+    expo -=  1023;
+
+    dexpo = cast_i64_to_double(expo);
+
+#if 1
+    /*****************
+     * (x ~= 1.0) code path
+     *****************/
+    flt64_t one_minus_mant = {.d = x - 1.0};
+    /* mask sign bit */
+    uint64_t mant_no_sign = one_minus_mant.i & ~(1ULL << 63);
+    if (unlikely (mant_no_sign < 0x3fb0000000000000ULL)) {
+        double_t  u, u2, u3, u7;
+        double_t  A1, A2, B1, B2, R1, R2;
+        static const double ca[5] = {
+                       0x1.55555555554e6p-4, // 1/2^2 * 3
+                       0x1.9999999bac6d4p-7, // 1/2^4 * 5
+                       0x1.2492307f1519fp-9, // 1/2^6 * 7
+                       0x1.c8034c85dfff0p-12 // 1/2^8 * 9
+        };
+
+        /*
+         * Less than threshold, no table lookup
+         */
+        r = one_minus_mant.d;
+
+        double_t u_by_2 = r / (2.0 + r);
+
+        q = u_by_2 * r;  /* correction */
+
+        u = u_by_2 + u_by_2;
+
+#define CA1 ca[0]
+#define CA2 ca[1]
+#define CA3 ca[2]
+#define CA4 ca[3]
+
+        u2 = u * u;
+
+        A1 = CA2 * u2 + CA1;
+        A2 = CA4 * u2 + CA3;
+
+        u3 = u2 * u;
+        B1 =  u3 * A1;
+
+        u7 = u * (u3 * u3);
+        B2 = u7 * A2;
+
+        R1 = B1 + B2;
+        R2 = R1 - q;
+
+        return r + R2;
+    }
+#endif
+
     uint64_t mant_n  = ux & MANT_MASK_N;
     uint64_t mant_n1 = ux & MANT_MASK_N1;
 
@@ -201,58 +257,6 @@ FN_PROTOTYPE(log_v2)(double x)
      * not sure why...
      */
     uint64_t j = (mant_n + (mant_n1 << 1));
-
-    dexpo = cast_i64_to_double(expo);
-
-#if 0
-    /*****************
-     * (x ~= 1.0) code path
-     *****************/
-    flt64_t one_minus_mant = {.d = x - 1.0};
-    /* mask sign bit */
-    uint64_t mant_without_sign = one_minus_mant.i & 0x7fffffffffffffffULL;
-    if (unlikely (mant_without_sign < 0x3bf0000000000000LL)) {
-        double_t r2, u, u2, u3, u7;
-        static const double ca[5] = {
-                       0.0,
-                       0x1.55555555554e6p-4, // 1/2^2 * 3
-                       0x1.9999999bac6d4p-7, // 1/2^4 * 5
-                       0x1.2492307f1519fp-9, // 1/2^6 * 7
-                       0x1.c8034c85dfff0p-12 // 1/2^8 * 9
-        };
-
-        /*
-         * Less than threshold, no table lookup, no poly
-         */
-        r = one_minus_mant.d;
-
-        r = one_minus_mant.d / (one_minus_mant.d + 2.0);
-
-        q = r * one_minus_mant.d;       /* correction */
-
-        r2 = r + r;
-
-#define CA1 ca[1]
-#define CA2 ca[2]
-#define CA3 ca[3]
-#define CA4 ca[4]
-
-        u = r2 * r2;
-
-        u2 = u * u;
-        r = u2 * CA2 + u2 * CA4;
-
-        u3 = u2 * u;
-        r += u3 * CA1;
-
-        u7 = u3 * (u2 * u2);
-        r += u7 * CA3;
-
-        q = r - q;
-
-        return one_minus_mant.d + q;
-    }
-#endif
 
     mant.i        |= 0x3fe0000000000000ULL;               /* F */
     j_times_half   = asdouble(0x3fe0000000000000ULL | j); /* Y */
@@ -296,7 +300,7 @@ FN_PROTOTYPE(log_v2)(double x)
     // r + ((r*r)*(1/2 + (r*1/6))) +
     // ((r*r) * (r*r)) * (1/24 + (r * (1/120 + (r*1/720))))
 
-    r2 = r * r; 			/* r^2 */
+    double_t r2 = r * r;                /* r^2 */
     q = r + (r2 * (C2  + r * C3));
 
 #if POLY_DEGREE == 4

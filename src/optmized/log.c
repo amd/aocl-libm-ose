@@ -167,8 +167,12 @@ FN_PROTOTYPE(log_v2)(double x)
             return _log_special(x, ux | QNANBITPATT_DP64 , FLAG_X_NAN);
     }
 
-    if (unlikely (x <= 0.0))
+    if (unlikely (x <= 0.0)) {
+        if (x == 0.0)
+            return _log_special(x, asdouble(PINFBITPATT_DP64), FLAG_X_ZERO);
+
         return _log_special(x, asdouble(QNANBITPATT_DP64), FLAG_X_NEG);
+    }
 
     flt64_t mant = {.i = ux & 0x000fffffffffffffULL};
 
@@ -200,6 +204,7 @@ FN_PROTOTYPE(log_v2)(double x)
 
     dexpo = cast_i64_to_double(expo);
 
+#if 0
     /*****************
      * (x ~= 1.0) code path
      *****************/
@@ -247,6 +252,7 @@ FN_PROTOTYPE(log_v2)(double x)
 
         return one_minus_mant.d + q;
     }
+#endif
 
     mant.i        |= 0x3fe0000000000000ULL;               /* F */
     j_times_half   = asdouble(0x3fe0000000000000ULL | j); /* Y */

@@ -1,0 +1,4 @@
+bigfloat==0.3.0
+numpy==1.16.2
+pkg-resources==0.0.0
+scons==3.0.4

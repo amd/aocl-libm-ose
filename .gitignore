@@ -4,3 +4,5 @@
 .sconsign.dblite
 .venv3/
 build/
+**/__pycache__
+

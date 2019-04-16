@@ -58,8 +58,9 @@ static struct __exp_internal_data test_exp_special_data[] = {
     {0xc08744ddf48a3b9c, 0x0000000000000001},
     {0xc08745723e498e76, 0x0000000000000001},
     {0xc0874593fa89185f, 0x0000000000000001},
-    {0xffefffffffffffff, 0x0000000000000000},   /* from here on, its just provided for*/
-    {0xffefffffffffffff, 0x0000000000000000},   /* alignment purpose only */
+    {0xffefffffffffffff, 0x0000000000000000},   /* from here on, its just provided for alignment*/
+    {0xffefffffffffffff, 0x0000000000000000},
+    {0xffefffffffffffff, 0x0000000000000000},
     {0xffefffffffffffff, 0x0000000000000000},
 };
 

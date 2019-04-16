@@ -18,7 +18,11 @@
 #include "test_exp2.h"
 #define __TEST_EXP2_INTERNAL__                   /* needed to include exp-test-data.h */
 #include "test_exp2_data.h"
-
+#include "test_data_worst.h"
+#include "test_data_exact.h"
+#include "test_data_exact_exp10.h"
+#include "test_data_worst_exp10.h"
+#include "test_data_worst_expm1.h"
 
 /* GLIBC prototype declarations */
 #if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
@@ -436,28 +440,76 @@ static int test_exp2_alloc_special_data(struct libm_test *test, size_t size)
 
 static int test_exp2_special_setup(struct libm_test *test)
 {
-    /*
-     * structure contains both in and out values,
-     * input only array size is half of original
-     */
-    int test_data_size = ARRAY_SIZE(test_exp2_special_data)/2;
-    double *in1, *expected;
-    struct libm_test_data *data;
+   int special_tbl_sz = ARRAY_SIZE(test_exp2_special_data);
+   int worst_tbl_sz   = ARRAY_SIZE(test_data_exp2_worst);
+   int exact_tbl_sz   = ARRAY_SIZE(test_data_exp2_exact);
+   int exact10_tbl_sz = ARRAY_SIZE(test_data_exp10_exact);
+   int worst10_tbl_sz = ARRAY_SIZE(exp10_worst_data);
+   int expm1_tbl_sz   = ARRAY_SIZE(expm1_worst_data);
 
-    // Just trying to get rid of warning/errors
-    test_exp2_alloc_special_data(test, test_data_size);
+   int test_data_size = special_tbl_sz + worst_tbl_sz + exact_tbl_sz +
+                        exact10_tbl_sz + worst10_tbl_sz + expm1_tbl_sz ;
 
-    data = &test->test_data;
+   double *in1, *expected;
+   struct libm_test_data *data;
+   int i, start, end;
 
-    in1 = (double*)data->input1;
-    expected = (double*)data->expected;
+   test_exp2_alloc_special_data(test, test_data_size);
 
-    for (int i = 0; i < test_data_size; i++) {
-        in1[i] = test_exp2_special_data[i].in;
-        expected[i] = test_exp2_special_data[i].out;
+   data = &test->test_data;
+
+   in1 = (double*)data->input1;
+   expected = (double*)data->expected;
+
+   // Populate special data
+   for (i = 0; i < special_tbl_sz ; i++) {
+         in1[i] = test_exp2_special_data[i].in;
+      expected[i] = test_exp2_special_data[i].out;
     }
 
-    return 0;
+   // Populate test_data_exp2_worst
+   start = special_tbl_sz;
+   end = start + worst_tbl_sz ;
+   for (i = start ; i < end ; i++) {
+       in1[i] = test_data_exp2_worst[i - start].input;
+       expected[i] = test_data_exp2_worst[i - start].output;
+    }
+
+   // Populate test_data_exp2_exact
+   start = end;
+   end += exact_tbl_sz;
+   for (i = start ; i < end ; i++) {
+       in1[i] = test_data_exp2_exact[i - start].input;
+       expected[i] = test_data_exp2_exact[i - start].output;
+    }
+
+   // Populate test_data_exp10_exact
+   start = end;
+   end += exact10_tbl_sz;
+   for (i = start ; i < end ; i++) {
+       in1[i] = test_data_exp10_exact[i - start].input;
+       expected[i] = test_data_exp10_exact[i - start].output;
+
+  }
+
+   // Populate expm1_worst_data
+   start = end;
+   end += expm1_tbl_sz;
+   for (i = start ; i < end ; i++) {
+      in1[i] = expm1_worst_data[i - start].input;
+       expected[i] = expm1_worst_data[i - start].output;
+    }
+
+   // Populate exp10_worst_data
+   start = end;
+   end += worst10_tbl_sz;
+   for (i = start ; i < end ; i++) {
+       in1[i] = exp10_worst_data[i - start].input;
+       expected[i] = exp10_worst_data[i - start].output;
+    }
+
+   return 0;
+
 }
 
 #if 0
@@ -772,6 +824,33 @@ static int test_exp2_corner(struct libm_test *test)
     return ret;
 }
 
+static int test_exp2_special(struct libm_test *test)
+{
+
+    int ret = 0;
+    struct libm_test_data *data = &test->test_data;
+    int sz = data->nelem;
+
+    double *ip = (double*)data->input1;
+    double *op = (double*)data->output;
+    test->ops.verify = NULL ;
+
+    if (sz % 4 != 0)
+       LIBM_TEST_DPRINTF(DBG2,
+                          "%s %s : %d is not a multiple of 4, some may be left out\n"
+                          " And error reported may not be real for such entries\n",
+                          test->name, test->type_name, sz);
+
+    for (int j = 0; j < sz; j++)
+        op[j] = LIBM_FUNC(exp2)(ip[j]);
+
+
+    ret = libm_test_verify(test, &test->result);
+
+    return ret;
+}
+
+
 
 double test_exp2_ulp(struct libm_test *test, int idx)
 {
@@ -799,7 +878,8 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
                                           .run   = test_exp2_s1d_perf,},
                          .accuracy     = {.setup = test_exp2_accu_setup,
                                           .run   = test_exp2_accu,},
-                         .special      = {.setup = test_exp2_special_setup,},
+                         .special      = {.setup = test_exp2_special_setup,
+                                           .run   = test_exp2_special,},
                          .corner       = {.setup = test_exp2_corner_setup,
                                           .run   = test_exp2_corner,},
      },

@@ -1,0 +1,2 @@
+verbose = True
+libabi = 'glibc'

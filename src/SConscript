@@ -4,36 +4,45 @@
 
 # Inherit global environment
 Import('env')
+from os.path import join as joinpath
+
+builddir = joinpath(env['BUILDROOT'], 'src')
 
 e = env.Clone()
 e.Append(
-	CCFLAGS = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror', 
-		'-Wno-unused-but-set-parameter', '-fPIC', '-O1', 
-		'-mavx', '-mavx2', '-march=znver1'],
-	ASFLAGS = ['-Wall', '-W', '-fPIC'],
-	CPPDEFINES = ['AVX_XOP_FMA4_FMA3'],
-#	 CPPPATH = [''],
-#        CCFLAGS = [],
-	STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 1
-	)
+    CCFLAGS = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror',
+               '-Wno-unused-but-set-parameter', '-fPIC', '-O1',
+               '-mavx', '-mavx2', '-march=znver1'],
+    ASFLAGS = ['-Wall', '-W', '-fPIC'
+		],
+    CPPDEFINES = ['AVX_XOP_FMA4_FMA3'
+		],
+    #   CPPPATH = [''],
+    #   CCFLAGS = [],
+    STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 1
+)
 
 # The set of source files associated with this SConscript file.
-source = ['init.c', 'libm_special.c', 'conv.c', 'cpuid.c']  + \
- 					\
-	Glob('isa/avx/gas/*.[cS]')    + \
-	Glob('isa/avx2/gas/*.[cS]')   + \
-	Glob('isa/fma4/gas/*.[cS]')   + \
-	Glob('ref/*.[c]')             + \
-	Glob('isa/avx512/gas/*.[cS]') + \
-	Glob('isa/fma3/gas/*.[S]')
-	
-#	Glob('ref/gas/*.[S]', exclude=['ref/gas/map.S'])
+source = Glob('*.[cS]', exclude=['map.S'])       + \
+    Glob('isa/avx/gas/*.[cS]')    + \
+    Glob('isa/avx2/gas/*.[cS]')   + \
+    Glob('isa/fma4/gas/*.[cS]')   + \
+    Glob('ref/*.[c]', exclude=['ref/exp2.c', 'ref/exp_tables*.c'])             + \
+    Glob('isa/avx512/gas/*.[cS]') + \
+    Glob('isa/fma3/gas/*.[S]')
 
-#print('lib sources' , source)
+optimized_src = SConscript('optmized/SConscript',
+                           exports = {'env' : e},
+                           duplicate = 0,
+                           src_dir = '#src/optmized',
+                           variant_dir = joinpath(builddir, 'optmized'))
 
-objects = e.StaticObject(source)
+#print('lib sources' , list(source))
+
+objects = e.StaticObject(source) + optimized_src
 
 libm = e.StaticLibrary('amdlibm', objects)
 libmso = e.SharedLibrary('amdlibm', objects)
+
 Return('libm', 'libmso')
 

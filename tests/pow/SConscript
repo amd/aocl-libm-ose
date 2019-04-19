@@ -6,8 +6,6 @@ Import('env')
 
 e = env.Clone()
 
-e.Append( LIBS = ['test'] )
-
 pow_srcs = Glob('*.[cS]')
 
 pow = e.Program('test_pow', pow_srcs)

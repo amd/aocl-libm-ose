@@ -6,7 +6,7 @@ Import('env')
 
 e = env.Clone()
 
-e.Append( LIBS = ['test'] )
+#e.Append( LIBS = ['test'] )
 
 exp_srcs = Glob('*.[cS]', exclude='exp_old.c')
 

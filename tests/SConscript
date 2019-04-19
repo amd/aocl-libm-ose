@@ -1,28 +1,60 @@
-# Copyright (C) 2018, AMD. All rights Reserved
 #
-# Copyright (C) 2018, AMD. All rights Reserved
+# Copyright (C) 2019 Prem Mallappa.
 #
-# Author: Prem Mallappa <pmallapp@amd.com>
-
+#
+# Author: Prem Mallappa<prem.mallappa@gmail.com>
+#
 import os
 from os import path
-from os.path import join
+from os.path import join as joinpath
 
-from scripts.cfg import projpath
-builddir = join(projpath.BUILDDIR, 'tests')
+Import('env')
+build_root = joinpath(env['BUILDROOT'], 'tests')
 
-Import('env', 'abi')
+excludes = Glob('*_old.c') + Glob('test_api.c') + Glob('print.c')
 
-include = "#tests/include"
+# Get all Linux files, excluding the list
+linux_files = Glob('*linux.c')
+
+# We first exclude the OS specific files
+excludes += linux_files
+
+excluded_list = [f.name for f in excludes]
+
+test_common_srcs = Glob('*.c', exclude=excluded_list)
+
+plat = env['PLATFORM']
+print("platform is", plat)
+if plat == 'linux' or plat == 'posix':
+    test_common_srcs += linux_files
+
 
 PROTOTYPE_GLIBC    = 0xf1
 PROTOTYPE_FMA3     = 0xf2
 PROTOTYPE_TEST_V1  = 0xf8
 PROTOTYPE_TEST_V2  = 0xf9
 
+testcflags = ['-funsigned-char', '-fno-strict-aliasing', #'-Og',
+                '-fstack-protector-all', '-Werror', '-W', '-Wall',
+                '-Wno-multichar' , '-Wno-unused-parameter',
+                '-Wno-missing-field-initializers',
+                #'-ffast-math',
+                # '-ftree-vectorize',
+                 '-falign-functions=32',
+                #'-falign-loops=32',
+                #'-finstrument-functions',
+                '-march=native',
+                #'-I./include', '-I./tests/include'
+	]
+
+ccflags = []
 liblist = []
+incpath = ['#tests/include', '.', './include']
 libpath = []
-if abi == 'amdlibm':
+
+#print(env['testabi'])
+abi = env['testabi']
+if abi == 'aocl':
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_FMA3]
     liblist.extend(['amdlibm'])
 elif abi == 'glibc':
@@ -32,38 +64,35 @@ elif abi == 'svml':
     pass
 else:
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_FMA3]
-    liblist.extend(['amdlib'])
+    liblist.extend(['amdlibm'])
 
-liblist.extend(['test', 'm'])
-libpath = ['#build/src', '#build/tests']
+
+liblist.extend(['m'])
+#libpath = ['#build/src', '#build/tests']
+#libpath = [joinpath(build_root, x) for x in ['src', 'tests']]
+libpath += ['.', 'src', 'tests']
+
+libtestenv = env.Clone()
+libtestenv.Append(
+    CCFLAGS  = ccflags + testcflags,
+    CPPPATH  = [incpath],
+    VARIANTDIR = 'tests'
+)
+
+print([x.path for x in test_common_srcs])
+libtest = libtestenv.StaticLibrary('test', test_common_srcs)
 
 e = env.Clone()
 e.Append(
-    CCFLAGS  = ccflags + ['-funsigned-char', '-fno-strict-aliasing', #'-Og',
-		'-fstack-protector-all', '-Werror', '-W', '-Wall',
-		'-Wno-multichar' , '-Wno-unused-parameter',
-		'-Wno-missing-field-initializers',
-		#'-ffast-math',
-		# '-ftree-vectorize',
-		 '-falign-functions=32',
-		#'-falign-loops=32',
-		#'-finstrument-functions',
-		'-march=native',
-		'-I./include', '-I./tests/include'],
-    INCPATH  = [include],
-    CPPPATH  = [include],
-    LIBS     = liblist,
-    LIBPATH  = libpath
+	CFLAGS = ccflags + testcflags,
+	INCPATH = incpath,
+	CPPPATH = incpath,
+	#LIBPATH=libpath,
+	LIBS = [libtest] + liblist
 )
 
-test_excluded_srcs= ['print.c']
-
-test_common_srcs = Glob('*.c', exclude=test_excluded_srcs)
-
-testlib = e.Library('test', test_common_srcs)
-
 def getSubdirs(abs_path_dir):
-    lst = [ name for name in os.listdir(abs_path_dir) if path.isdir(join(abs_path_dir, name)) and name[0] != '.' ]
+    lst = [ name for name in os.listdir(abs_path_dir) if path.isdir(joinpath(abs_path_dir, name)) and name[0] != '.' ]
     lst.sort()
     return lst
 
@@ -71,7 +100,7 @@ def getSubdirs(abs_path_dir):
 this_sconscript_file = Dir('.').srcnode().abspath
 test_base = os.path.dirname(this_sconscript_file)
 tests = getSubdirs(this_sconscript_file)
-print(tests, path.join(test_base, ))
+#print("tests=================", tests, path.join(test_base, ))
 exclude_dirs = ['include']
 tests = [x for x in tests if x not in exclude_dirs]
 
@@ -81,15 +110,14 @@ test_exes = []
 for test in tests:
     e.Replace(CPPDEFINES = ['-DTEST_NAME=%s' % test])
     exes = SConscript('%s/SConscript' % test,
-			exports = { 'env': e },
-			duplicate = 0,
-			src_dir = '#tests/%s' % test,
-			variant_dir = join(builddir, test)
-			)
+                        exports = { 'env': e },
+                        duplicate = 0,
+                        src_dir = '#tests/%s' % test,
+                        variant_dir = joinpath(build_root, test)
+                        )
     if exes:
        test_exes += exes
 
-Depends(test_exes, testlib)
+Depends(test_exes, libtest)
 
-Return('test_exes', 'testlib')
-
+Return('test_exes', 'libtest')

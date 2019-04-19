@@ -1,96 +1,146 @@
-# Copyright (C) 2018, AMD. All rights Reserved
 #
-# Author: Prem Mallappa <pmallapp@amd.com>
-
+# Copyright (C) 2019 Prem Mallappa.
+#
+#
+# Author: Prem Mallappa<prem.mallappa@gmail.com>
+#
 import os
-from os.path import join
+from os import mkdir, makedirs, environ
+from os.path import join as joinpath, split as splitpath
 
-from scripts.cfg import config
-from scripts.cfg import projpath
-from scripts.utils import Transform
+from scripts.helper import helper
 
-cfg		    = config.current_config()
-builddir	= '#build'
-projroot	= projpath.PROJROOT
 
-Help("""
-	Syntax: 
-		$ scons <option> <target>
-	Targets:
-	        scons .			build and test everything
-	        scons test		build the tests
-	        scons runtest <test>	run the tests
-	        scons web		build the web pages
+build_root  = '#build'
+envfile     = 'scripts/helper/env.py'
 
-        Options:
-		debug=1			build libraries with Debug support
-		verbose=1		Increase verbosity
-	""")
+help_texts = {
+    "global_vars": "",
+    "options"    : '',
+    'local_vars' : ''
+}
+Export(help_texts)
 
-print("BULDING in: ", builddir)
 
-env = Environment(
-		ENV       = {'PATH': os.environ['PATH']},
-		CPPPATH   = ['#include', '#include/libm'],
-		LIBPATH   = [join(builddir, 'src')]
-		)
+def AddLocalOption(*args, **kwargs):
+    col_width = 30
 
-if ARGUMENTS.get('verbose') != "1":
-	env['CCCOMSTR']     = "[CC] => $TARGET"
-	env['ASCOMSTR']     = "[AS] => $TARGET"
-	env['ARCOMSTR']     = "[AR] => $TARGET"
-	env['ASPPCOMSTR']   = "[AS] => $TARGET"
-	env['LINKCOMSTR']   = "[LINK] => $TARGET"
-	env['RANLIBCOMSTR'] = "[RANLIB] => $TARGET"
-	env["SHCCCOMSTR"]   = "[SHCC] => $SOURCE"
-	env["SHLINKCOMSTR"] = "[SHLINK] => $TARGET"
+    help = "  " + ", ".join(args)
+    if "help" in kwargs:
+        length = len(help)
+        if length >= col_width:
+            help += "\n" + " " * col_width
+        else:
+            help += " " * (col_width - length)
+        help += kwargs["help"]
+    help_texts["options"] += help + "\n"
 
-if ARGUMENTS.get('debug', 0):
-	env.Append(CCFLAGS = ['-ggdb', '-DENABLE_DEBUG=1'])
-#print(ARGUMENTS, COMMAND_LINE_TARGETS)
+    AddOption(*args, **kwargs)
 
-if ARGUMENTS.get('profile', 0):
-	env.Append(CCFLAGS = ['-pg'])
+AddLocalOption('--verbose', dest='verbose', nargs=1, action='store',
+               help='Print full tool command lines')
 
-if ARGUMENTS.get('developer', 0):
-	env.Append(CCFLAGS = ' -DDEVELOPER=1')
 
-abi = ARGUMENTS.get('libabi', 0)
-if abi == 'glibc':
-   pass
-elif abi == 'svml':
-   pass
-elif abi == 'amdlibm':
-   pass
+AddMethod(Environment, helper.SetupConfiguration)
+
+vars = Variables(envfile)
+vars.AddVariables(
+    BoolVariable('warnings', 'compilation with -Wall and similiar', 1),
+    BoolVariable('shared',   'flag to enable shared libraries', 1),
+    BoolVariable('verbose',  'Increase verbosity', 0),
+    EnumVariable('debug',    'debug output and symbols', 'no',
+                 allowed_values=('no','libs', 'tests', 'all'),
+                 map={}, ignorecase=0),  # case sensitive
+
+    EnumVariable('libabi', 'Library function naming', 'aocl',
+                 allowed_values=('aocl', 'glibc', 'acml'),
+                 map={}, ignorecase=2),  # lowercase always
+
+	# test abi makes tests to call out for given library call
+    EnumVariable('testabi', 'Test ABI for library function calling', 'aocl',
+                 allowed_values=('aocl', 'glibc', 'acml'),
+                 map={}, ignorecase=2),  # lowercase always
+
+    EnumVariable('developer', 'A developer friendly mode', 0,
+                 allowed_values=('0', '1', '2', '3', '4'),
+                 map={'0':0, '1':1, '2':2, '3':3, '4':4}),
+)
+
+unknown = vars.UnknownVariables()
+if unknown:
+    print("Unknown variables:", unknown.keys())
+    Exit(1)
+
+env = Environment(variables=vars,
+                  CPPDEFINES = {
+                      'LIBABI': '${libabi}',
+                      'DEVELOPER': '${developer}',
+                  }
+)
+
+# Add shared top-level headers
+env.Prepend(CPPPATH=[Dir('include')])
+
+if GetOption('verbose'):
+    def MakeAction(action, string, *args, **kwargs):
+        return Action(action, *args, **kwargs)
+    print("coming to GetOption")
+    env['verbose'] = True
+>>>>>>> db70eed... libm: first steps towards using aocc
 else:
-   abi = 'amdlibm'
+    MakeAction = Action
+    env['verbose'] = False
 
+Export('MakeAction')
 
-if COMMAND_LINE_TARGETS:
-   targets = COMMAND_LINE_TARGETS
-else:
-   targets = DEFAULT_TARGETS
-#print(targets)
+#
+# Generate configurations and export
+#
+env['BUILDROOT'] = str(Dir('./build'))
+env.SetupConfiguration()
+build_root = env['BUILDROOT']
+Export('env')
+
+makedirs(build_root, exist_ok=True)
+
+#
+# Set up global sticky variables... these are common to an entire build
+# tree (not specific to a particular build like ALPHA_SE)
+#
+global_vars_file = joinpath(build_root, 'variables.global')
+global_vars = Variables(global_vars_file, args=ARGUMENTS)
+global_vars.AddVariables(
+    ('CC', 'C compiler', environ.get('CC', env['CC'])),
+    ('CXX', 'C++ compiler', environ.get('CXX', env['CXX'])),
+)
+# Update env environment with values from ARGUMENTS & global_vars_file
+global_vars.Update(env)
+help_texts["global_vars"] += global_vars.GenerateHelpText(env)
+
+# Save sticky variable settings back to current variables file
+global_vars.Save(global_vars_file, env)
 
 # These objects are not the .obj files or .o files, instead
 # class objects or build objectw
 objects = []
 
-lib_objs = SConscript('src/SConscript',
-			exports = { 'env' : env },
-			duplicate = 0,
-			variant_dir = join(builddir, 'src'))
+amdlibm = SConscript('src/SConscript',
+                       exports = { 'env' : env },
+                       duplicate = 0,
+                       variant_dir = joinpath(build_root, 'src'))
 
+#
+# Build Test lib and associated tests
+#
+env.Append(
+	LIBPATH=['#'+joinpath(build_root,'src')]
+)
 test_lib_objs = []  			# Will fill at a later date
+test_objs = SConscript(dirs='tests',
+                       exports = {'env' : env},
+                       duplicate = 0,
+                       src_dir    = 'tests',
+                       variant_dir = joinpath(build_root, 'tests'))
 
-test_objs = SConscript( dirs='tests',
-		exports = { 'env' : env, 'abi':abi },
-		duplicate = 0,
-		src_dir    = 'tests',
-		variant_dir = join(builddir, 'tests'))
-
-objects += lib_objs + test_objs
-
-#Depends(test_objs, lib_objs)
-#Depends(objects, targets)
+objects += amdlibm + test_objs
 

@@ -1,5 +1,5 @@
 from SCons.Variables import Variables as SVariables
-from SCons.Script import AddOption,Import
+from SCons.Script import GetOption,AddOption,Import
 
 class LocalOption:
     def __init__(self, htexts):

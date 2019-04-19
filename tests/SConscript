@@ -24,7 +24,7 @@ excluded_list = [f.name for f in excludes]
 test_common_srcs = Glob('*.c', exclude=excluded_list)
 
 plat = env['PLATFORM']
-print("platform is", plat)
+#print("platform is", plat)
 if plat == 'linux' or plat == 'posix':
     test_common_srcs += linux_files
 
@@ -79,7 +79,7 @@ libtestenv.Append(
     VARIANTDIR = 'tests'
 )
 
-print([x.path for x in test_common_srcs])
+#print([x.path for x in test_common_srcs])
 libtest = libtestenv.StaticLibrary('test', test_common_srcs)
 
 e = env.Clone()
@@ -104,7 +104,7 @@ tests = getSubdirs(this_sconscript_file)
 exclude_dirs = ['include']
 tests = [x for x in tests if x not in exclude_dirs]
 
-print(tests)
+#print(tests)
 test_exes = []
 
 for test in tests:

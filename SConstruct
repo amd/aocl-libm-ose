@@ -8,8 +8,8 @@ import os
 from os import mkdir, makedirs, environ
 from os.path import join as joinpath, split as splitpath
 
+from scripts.helper import cfg
 from scripts.helper import helper
-
 
 build_root  = '#build'
 envfile     = 'scripts/helper/env.py'
@@ -19,27 +19,11 @@ help_texts = {
     "options"    : '',
     'local_vars' : ''
 }
-Export(help_texts)
 
+localopts = cfg.LocalOption(help_texts)
 
-def AddLocalOption(*args, **kwargs):
-    col_width = 30
-
-    help = "  " + ", ".join(args)
-    if "help" in kwargs:
-        length = len(help)
-        if length >= col_width:
-            help += "\n" + " " * col_width
-        else:
-            help += " " * (col_width - length)
-        help += kwargs["help"]
-    help_texts["options"] += help + "\n"
-
-    AddOption(*args, **kwargs)
-
-AddLocalOption('--verbose', dest='verbose', nargs=1, action='store',
-               help='Print full tool command lines')
-
+localopts.Add('--verbose', dest='verbose', nargs=1, action='store',
+             help='Print full tool command lines')
 
 AddMethod(Environment, helper.SetupConfiguration)
 
@@ -99,7 +83,6 @@ Export('MakeAction')
 env['BUILDROOT'] = str(Dir('./build'))
 env.SetupConfiguration()
 build_root = env['BUILDROOT']
-Export('env')
 
 makedirs(build_root, exist_ok=True)
 
@@ -124,6 +107,9 @@ global_vars.Save(global_vars_file, env)
 # class objects or build objectw
 objects = []
 
+env.Append(
+	INCPATH=['#include']
+)
 amdlibm = SConscript('src/SConscript',
                        exports = { 'env' : env },
                        duplicate = 0,
@@ -143,4 +129,17 @@ test_objs = SConscript(dirs='tests',
                        variant_dir = joinpath(build_root, 'tests'))
 
 objects += amdlibm + test_objs
+
+# base help text
+Help('''
+Usage: scons [scons options] [build variables] [target(s)]
+
+Extra scons options:
+%(options)s
+
+Global build variables:
+%(global_vars)s
+
+%(local_vars)s
+''' % localopts.GetHelpTexts())
 

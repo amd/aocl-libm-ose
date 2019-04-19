@@ -101,7 +101,6 @@ class Transform(object):
         return self.format%(fmt(newsrcs), fmt(newtgts))
 
     def __str__(self):
-        print("str function called", end='')
         return self.format
 
 def UpdateEnvComStr(env):

@@ -100,7 +100,7 @@ static int check_data_size(void *data, int size)
     /* Check and warn for alignment */
     if (size == 4)
         assert(!((uint64_t)data & 0x3));
-    if ((size == 8))
+    if (size == 8)
         assert(!((uint64_t)data & 0x7));
 
     return 0;

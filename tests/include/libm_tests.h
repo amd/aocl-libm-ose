@@ -11,8 +11,6 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include <quadmath.h>                   /* for __float128 */
-
 /* LIBM test specific includes */
 #include <libm_test_macros.h>
 #include <list.h>

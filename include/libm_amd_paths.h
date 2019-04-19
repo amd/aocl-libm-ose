@@ -9,7 +9,7 @@
 #if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 5))
 #include <x86intrin.h>
 #else
-#include <emmintrin.h>
+#include <immintrin.h>
 #endif
 
 #endif

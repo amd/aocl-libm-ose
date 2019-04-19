@@ -4,7 +4,7 @@
 #include <libm_amd_paths.h>
 #include <libm_special.h>
 
-#if !defined(ENABLE_DEBUG)
+#if defined(__GNUC__) && !defined(__clang__) && !defined(ENABLE_DEBUG)
 #pragma GCC push_options
 #pragma GCC optimize ("O2")
 #endif  /* !DEBUG */
@@ -119,12 +119,6 @@ struct log_table {
 };
 
 double _log_special(double x, double y, uint32_t code);
-
-static inline uint64_t top20(double x)
-{
-    /* 12 are the exponent bits */
-    return asuint64(x) >> (64 - 20);
-}
 
 static inline uint64_t top12(double x)
 {
@@ -327,6 +321,6 @@ FN_PROTOTYPE(log_v2)(double x)
     return q;
 }
 
-#if !defined(ENABLE_DEBUG)
+#if defined(__GNUC__) && !defined(__clang__) && !defined(ENABLE_DEBUG)
 #pragma GCC pop_options
 #endif

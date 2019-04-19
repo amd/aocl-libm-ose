@@ -8,7 +8,7 @@
 #include <libm_amd_paths.h>
 #include <libm_special.h>
 
-#if !defined(ENABLE_DEBUG)
+#if defined(__GNUC__) && !defined(__clang__) && !defined(ENABLE_DEBUG)
 #pragma GCC push_options
 #pragma GCC optimize ("O2")
 #endif  /* !DEBUG */
@@ -125,14 +125,6 @@ double _exp2_special(double x, double y, uint32_t code);
 static inline uint32_t top12(double x)
 {
     return asuint64(x) >> 52;
-}
-
-/*
- * to avoid compiler optimization
- */
-static inline double eval_as_double(double x)
-{
-    return x;
 }
 
 double
@@ -260,6 +252,6 @@ FN_PROTOTYPE(exp2_v2)(double x)
 #endif
 }
 
-#if !defined(ENABLE_DEBUG)
+#if !defined(__GNUC__) && !defined(__clang__) && defined(ENABLE_DEBUG)
 #pragma GCC pop_options
 #endif

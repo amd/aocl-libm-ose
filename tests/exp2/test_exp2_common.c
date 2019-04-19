@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <float.h>                              /* for DBL_MAX/FLT_MAX */
 #include <math.h>
-#include <quadmath.h>
 #include <strings.h>                            /* for ffs() */
 
 #include <immintrin.h>

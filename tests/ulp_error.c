@@ -106,7 +106,6 @@ libm_test_ulp_errorf(float output, double expected)
     return 0.0;
 }
 
-#include <quadmath.h>
 /*
  *  1ULP = B^(e - p - 1)
  *        B = radix (2 for IEEE floating point)
@@ -133,7 +132,7 @@ static inline __float128 __ulpq(double val)
  *     But use the higher precision when calculating ulp
  */
 double
-__attribute__((optimize("O0")))
+NO_OPTIMIZE
 libm_test_ulp_error(double output, long double expected)
 {
 

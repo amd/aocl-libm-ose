@@ -30,8 +30,13 @@ localopts.Add('--with-libabi', dest='libabi', nargs=1, action='store',
              choices=['aocc', 'gcc', 'libm', 'svml'],
              help='Compile libs with respective abi(API) calls')
 localopts.Add('--with-testabi', dest='testabi', nargs=1, action='store',
-             choices=['aocc', 'gcc', 'libm', 'svml'],
-             help='Compile tests to call this abi')
+             choices=['aocc', 'glibc', 'libm', 'svml'],
+             help="""Compile tests to call this abi
+			aocl  - AMD Optimizing compiler libs, prefixed amd_
+			glibc - GLIBC abi calls __ieee_*
+			libm  - Usual C Standard library calls
+			svml  - Intel SVML calls
+			""")
 localopts.Add('--developer', dest='developer', nargs=1, action='store',
              choices=['1', '2', '3', '4'],
              help='Enable Developer mode')
@@ -51,12 +56,12 @@ vars.AddVariables(
                  map={}, ignorecase=0),  # case sensitive
 
     EnumVariable('libabi', 'Library function naming', 'aocl',
-                 allowed_values=('aocl', 'glibc', 'acml'),
+                 allowed_values=('aocl', 'glibc', 'libm', 'acml'),
                  map={}, ignorecase=2),  # lowercase always
 
 	# test abi makes tests to call out for given library call
     EnumVariable('testabi', 'Test ABI for library function calling', 'aocl',
-                 allowed_values=('aocl', 'glibc', 'acml'),
+                 allowed_values=('aocl', 'glibc', 'libm', 'acml'),
                  map={}, ignorecase=2),  # lowercase always
 
     EnumVariable('developer', 'A developer friendly mode', 0,
@@ -113,6 +118,9 @@ global_vars.AddVariables(
 # Update env environment with values from ARGUMENTS & global_vars_file
 global_vars.Update(env)
 help_texts["global_vars"] += global_vars.GenerateHelpText(env)
+
+# Update the local vars
+vars.Update(env)
 
 # Save sticky variable settings back to current variables file
 global_vars.Save(global_vars_file, env)

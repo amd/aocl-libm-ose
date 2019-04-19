@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <float.h>                              /* for DBL_MAX/FLT_MAX */
 #include <math.h>
-#include <quadmath.h>
 #include <strings.h>                            /* for ffs() */
 
 #include <immintrin.h>
@@ -243,8 +242,6 @@ long double libm_test_powl(struct libm_test *test, int idx)
     double* in_y = test->test_data.input2;
     return powl(in_x[idx],in_y[idx]);
 }
-
-#include <quadmath.h>
 
 /* vector single precision */
 static struct libm_test pow_test_template = {

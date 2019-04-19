@@ -11,7 +11,9 @@ builddir = joinpath(env['BUILDROOT'], 'src')
 e = env.Clone()
 e.Append(
     CCFLAGS = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror',
-               '-Wno-unused-but-set-parameter', '-fPIC', '-O1',
+               #'-Wno-unused-but-set-parameter', 
+               '-Wno-unused-parameter', 
+               '-fPIC', '-O1',
                '-mavx', '-mavx2', '-march=znver1'],
     ASFLAGS = ['-Wall', '-W', '-fPIC'
 		],

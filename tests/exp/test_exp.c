@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <float.h>                              /* for DBL_MAX/FLT_MAX */
 #include <math.h>
-#include <quadmath.h>
 #include <strings.h>                            /* for ffs() */
 #include <string.h>                             /* for memcpy() */
 
@@ -15,6 +14,7 @@
 #include <bench_timer.h>
 
 #include <libm/types.h>
+#include <libm/compiler.h>
 
 #include "test_exp.h"
 #define __TEST_EXP2_INTERNAL__                   /* needed to include exp-test-data.h */
@@ -245,10 +245,10 @@ static int test_exp_v4s_perf(struct libm_test *test)
         switch (sz - j) {
         case 3:
             o[j] = LIBM_FUNC(expf)(ip1[j]);
-            j++;	         __attribute__ ((fallthrough));
+            j++;	         FALLTHROUGH;
         case 2:
             o[j] = LIBM_FUNC(expf)(ip1[j]);
-            j++;	         __attribute__ ((fallthrough));
+            j++;	         FALLTHROUGH;
         case 1:
             o[j] = LIBM_FUNC(expf)(ip1[j]);
         default:

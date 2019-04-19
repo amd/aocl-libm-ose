@@ -1,6 +1,37 @@
 #ifndef __AMD_LIBM_COMPILER_H__
 #define __AMD_LIBM_COMPILER_H__
 
+/*
+To check for which OS the code is compiled:
+Linux and Linux-derived           __linux__
+Android                           __ANDROID__ (implies __linux__)
+Linux (non-Android)               __linux__ && !__ANDROID__
+Darwin (Mac OS X and iOS)         __APPLE__
+Akaros (http://akaros.org)        __ros__
+Windows                           _WIN32
+Windows 64 bit                    _WIN64 (implies _WIN32)
+NaCL                              __native_client__
+AsmJS                             __asmjs__
+Fuschia                           __Fuchsia__
+
+
+To check which compiler is used:
+Visual Studio       _MSC_VER
+gcc                 __GNUC__
+clang               __clang__
+emscripten          __EMSCRIPTEN__ (for asm.js and webassembly)
+MinGW 32            __MINGW32__
+MinGW-w64 32bit     __MINGW32__
+MinGW-w64 64bit     __MINGW64__
+
+
+To check that this is gcc compiler version 5.1 or greater:
+#if defined(__GNUC__) && (__GNUC___ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1))
+// this is gcc 5.1 or greater
+#endif
+
+*/
+
 #if defined(__GNUC__)
 #define ALIGN(x)        __attribute__((aligned ((x))))
 
@@ -28,11 +59,18 @@
 
 #define OPTIMIZE(x) __attribute__((optimize(x)))
 
-#define NO_OPTIMIZE __attribute__((optimize("O0")))
 
-#elif defined(__CLANGC__)
+#if defined(__clang__)
+    #define FALLTHROUGH 
+    #define NO_OPTIMIZE __attribute__((optnone))
+#else
+    #define FALLTHROUGH __attribute__((fallthrough))
+    #define NO_OPTIMIZE __attribute__((optimize("O0")))
+#endif
 
-#define NO_OPTIMIZE __attribute__((optnone))
+#elif defined(__MSVC)
+
+#define FALLTHROUGH 
 
 #endif	/* GCC */
 

@@ -14,7 +14,7 @@
 #include <libm_tests.h>
 #include <bench_timer.h>
 
-#include <libm_types.h>
+#include <libm/types.h>
 
 #include "test_log.h"
 #define __TEST_LOG_INTERNAL__                   /* needed to include exp-test-data.h */

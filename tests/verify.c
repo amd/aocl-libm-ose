@@ -5,7 +5,7 @@
  */
 #include <math.h>                      /* for isinf() */
 #include <libm_tests.h>
-#include <libm_types.h>
+#include <libm/types.h>
 
 static double get_ulp(struct libm_test *test, int j)
 {

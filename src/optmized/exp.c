@@ -33,7 +33,7 @@
 #endif  /* !DEBUG */
 
 #include <libm_macros.h>
-#include <libm_types.h>
+#include <libm/types.h>
 
 #include <libm/typehelper.h>
 #include <libm/compiler.h>

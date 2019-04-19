@@ -14,7 +14,7 @@
 #include <libm_tests.h>
 #include <bench_timer.h>
 
-#include <libm_types.h>
+#include <libm/types.h>
 
 static char *libm_test_variant_str(uint32_t variant)
 {

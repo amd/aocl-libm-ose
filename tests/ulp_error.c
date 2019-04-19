@@ -39,7 +39,8 @@
 //#define AMD_LIBM_INF 0x7FF0000000000000
 #include <math.h>
 #include <libm_util_amd.h>
-#include <libm_types.h>
+#include <libm/compiler.h>
+#include <libm/types.h>
 
 /*
  * We need the uint32_t version, default one gives us with an int64
@@ -56,7 +57,7 @@ static inline double __ulp(float val)
 }
 
 double
-OPTIMIZE(0)
+NO_OPTIMIZE
 libm_test_ulp_errorf(float output, double expected)
 {
     float expectedf = (float)expected;
@@ -132,7 +133,7 @@ static inline __float128 __ulpq(double val)
  *     But use the higher precision when calculating ulp
  */
 double
-OPTIMIZE(0)
+__attribute__((optimize("O0")))
 libm_test_ulp_error(double output, long double expected)
 {
 

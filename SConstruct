@@ -8,8 +8,8 @@ import os
 from os import mkdir, makedirs, environ
 from os.path import join as joinpath, split as splitpath
 
-from scripts.helper import cfg
-from scripts.helper import helper
+# We need a better name for this
+from scripts.cfg import cfg,helper
 
 build_root  = '#build'
 envfile     = 'scripts/helper/env.py'
@@ -24,6 +24,20 @@ localopts = cfg.LocalOption(help_texts)
 
 localopts.Add('--verbose', dest='verbose', nargs=1, action='store',
              help='Print full tool command lines')
+localopts.Add('--enable-debug', dest='debug', action='store_false',
+             help='Enable Debug mode [default:%default]')
+localopts.Add('--with-libabi', dest='libabi', nargs=1, action='store',
+             choices=['aocc', 'gcc', 'libm', 'svml'],
+             help='Compile libs with respective abi(API) calls')
+localopts.Add('--with-testabi', dest='testabi', nargs=1, action='store',
+             choices=['aocc', 'gcc', 'libm', 'svml'],
+             help='Compile tests to call this abi')
+localopts.Add('--developer', dest='developer', nargs=1, action='store',
+             choices=['1', '2', '3', '4'],
+             help='Enable Developer mode')
+localopts.Add('--build', dest='build', nargs=1, action='store',
+             choices=['release', 'developer', 'debug'],
+             help='Enable build type')
 
 AddMethod(Environment, helper.SetupConfiguration)
 

@@ -46,6 +46,7 @@ fname:
 
     vmovsd       %xmm0, save_x(%rsp)
     vmovsd       %xmm1, save_y(%rsp)
+
     mov         save_x(%rsp), %rdx
     mov         save_y(%rsp), %r8
 
@@ -65,7 +66,7 @@ fname:
 
     cmp         .L__pos_one(%rip), %rdx
     je          .L__x_is_pos_one
-    
+
     cmp         .L__pos_zero(%rip), %rdx
     je          .L__x_is_zero
 
@@ -73,9 +74,6 @@ fname:
     and         %rdx, %r9
     cmp         .L__exp_mask(%rip), %r9
     je          .L__x_is_inf_or_nan
-
-    cmp         .L__real_1_by_2(%rip), %r8  #y =0.5
-    je          .L__y_is_half # computing sqrt(x)
    
     mov         .L__exp_mask(%rip), %r10
     and         %r8, %r10
@@ -87,9 +85,6 @@ fname:
     cmp         .L__ay_min_bound(%rip), %r10
     jl          .L__ay_is_very_small
 
-    and         .L__real_mant(%rip), %rdx
-    cmp         .L__pos_zero(%rip), %rdx
-    je          .L__x_is_power_of_2
     # -----------------------------
     # compute log(x) here
     # -----------------------------
@@ -113,15 +108,12 @@ fname:
     # compute index into the log tables
     
     mov         %r8, %r9
-    and         .L__mask_mant_all8(%rip), %r8
-    and         .L__mask_mant9(%rip), %r9
+    and         .L__mask_mant_all8(%rip), %r8 #ux & .L__mask_mant_all8
     vsubsd       .L__real_one(%rip), %xmm0,%xmm7
-    shl         %r9
-    add         %r9, %r8
     mov         %r8, p_temp_log(%rsp)
-    vandpd       .L__real_notsign(%rip), %xmm7, %xmm7
+    vpand	.L__real_notsign(%rip), %xmm7, %xmm7
 
-    # F, Y, switch to near-one codepath
+ # F, Y, switch to near-one codepath
     vmovsd       p_temp_log(%rsp), %xmm1
     shr         $44, %r8
     vpor         .L__real_half(%rip), %xmm2, %xmm2
@@ -186,8 +178,9 @@ fname:
     # xmm0 - resH
     # xmm4 - (resT_t)
     # xmm2 - (-resT_h)
-.L__log_x_continue:  
-    
+
+.L__log_x_continue:
+
     vmovsd       %xmm0, %xmm7, %xmm7
     vaddsd       %xmm3, %xmm0, %xmm0
     vmovsd       %xmm0, %xmm5, %xmm5
@@ -197,8 +190,6 @@ fname:
     # xmm7 - resH
     # xmm5 - res
 
-    mov         save_y(%rsp), %rax
-    and         .L__real_fffffffff8000000(%rip), %rax
 
     vaddsd       %xmm3, %xmm2, %xmm2
     vsubsd       %xmm5, %xmm7, %xmm7
@@ -206,8 +197,7 @@ fname:
     vaddsd       %xmm3, %xmm7, %xmm7
     vsubsd       %xmm0, %xmm5, %xmm5
 
-    mov         %rax, y_head(%rsp)
-    vmovsd       save_y(%rsp), %xmm4
+    vmovsd       save_y(%rsp), %xmm4 #xmm4 = y
    
     vaddsd       %xmm1, %xmm7, %xmm7
     vaddsd       %xmm5, %xmm7, %xmm7
@@ -216,41 +206,17 @@ fname:
     # H has leading 26 bits of precision
     # T has full precision
 
-    # xmm0 - H
-    # xmm7 - T
-
-    
-    vsubsd       y_head(%rsp), %xmm4, %xmm4
-
-    # y is split into head and tail
-    # for y * ln(x) computation
-
-    # xmm4 - Yt
-    # xmm2 - Yh
-    # xmm0 - H
-    # xmm7 - T
-
-    vmovsd   %xmm4, %xmm3, %xmm3
-   
-    
-   
-    vmulsd   %xmm0, %xmm4, %xmm4 # YtRh
- 
-    vmulsd   y_head(%rsp), %xmm0, %xmm6 # YhRh 
-
-   
-   
-    vfmadd213sd %xmm4, %xmm7, %xmm3
-    
-    vfmadd231sd  y_head(%rsp), %xmm7, %xmm3
-
-    vaddsd   %xmm3, %xmm6, %xmm1
-    vmovsd   %xmm1, %xmm0, %xmm0
-  
-
-    vsubsd   %xmm1, %xmm6, %xmm6
-    vaddsd   %xmm3, %xmm6, %xmm6
-
+    # xmm0 - H log_head
+    # xmm7 - T log_tail
+    # xmm4 = y
+    #Multipying head and tail of log(x) with y.
+    # v = log_head*y
+    # vt = log_tail*y + fma(log_head,y,v)
+    vmovsd  %xmm0, %xmm6, %xmm6
+    vmulsd  %xmm4, %xmm0, %xmm0
+    vmulsd  %xmm4, %xmm7, %xmm3
+    vfnmadd213sd %xmm0, %xmm4, %xmm6
+    vaddsd  %xmm3, %xmm6, %xmm6
 
     # y * ln(x) = v + vt
     # v and vt are in full precision 
@@ -263,50 +229,27 @@ fname:
     # -----------------------------
 
     # v * (64/ln(2))
-.L__compute_exp:   
-     
-     vmovsd    %xmm0, %xmm10, %xmm10
-     mov       .L__sign_mask(%rip), %r9
-     vmovq     %xmm0, %r10    
-     and       %r9, %r10
-     cmp       .L__sign_mask(%rip), %r10  #check if v is negative
-     je        .L__exp__continue #optimized code paths to work only for positive values of y*ln(x)
-    
-     mov       negate_result(%rsp), %r9
-     cmp      .L__sign_mask(%rip), %r9 # if result of pow(x,y) is going to be negative, skip optimized exp code paths
-     je       .L__exp__continue
-     
-     vmovq       %xmm0, %r9  #move v to r9
-     cmp        .L__min_exp(%rip), %r9  #if x < 10^-6
-     jl         .L__x_very_small # e^x = 1 + x + 0.5*x^2 + (1/6)*x^3
 
-     vmovsd     .L__real_one(%rip), %xmm15
-
-     cmp        .L__real_one(%rip), %r9  #if (0 < x < 1) 
-     jl         .L__x_between_0_1
-
-     cmp       .L__max_value(%rip), %r9 # if (1 < x < 100)
-     jl        .L__x_less_than_100 
-
-.L__exp__continue:
     vmovsd       %xmm0, p_temp_exp(%rsp)
     vmulsd       .L__real_64_by_log2(%rip), %xmm0, %xmm7
     mov         p_temp_exp(%rsp), %rdx
 
     # v < 1024*ln(2), ( v * (64/ln(2)) ) < 64*1024
     # v >= -1075*ln(2), ( v * (64/ln(2)) ) >= 64*(-1075)
-    vcomisd      .L__real_p65536(%rip), %xmm7
+    vpand	.L__real_notsign(%rip), %xmm7, %xmm4
+    vmovq       %xmm4, %rax
+    #check |x*(64/ln(2))| > 65536)
+    cmp		.L__real_p65536(%rip), %rax
     ja          .L__process_result_inf
 
-    vcomisd      .L__real_m68800(%rip), %xmm7
-    jb          .L__process_result_zero
-
     # n = int( v * (64/ln(2)) )
-    vcvtpd2dq    %xmm7, %xmm4
+    #This is done by fast double to int conversion.
+    #Adding 2^52 + 2^51 and subtracting the same to remove fractional bits
     lea         .L__two_to_jby64_head_table(%rip), %r10
     lea         .L__two_to_jby64_tail_table(%rip), %r11
-    vcvtdq2pd    %xmm4, %xmm1
 
+    vaddsd       .L__big_number(%rip), %xmm7, %xmm4
+    vsubsd       .L__big_number(%rip), %xmm4, %xmm1
     # r1 = x - n * ln(2)/64 head
     
     vmovd        %xmm4, %ecx
@@ -318,6 +261,8 @@ fname:
 
     # r2 = - n * ln(2)/64 tail
    
+
+
     # m = (n - j) / 64
     sub         %eax, %ecx
     sar         $6, %ecx
@@ -327,34 +272,32 @@ fname:
     vfmadd231sd  .L__real_log2_by_64_tail(%rip), %xmm1, %xmm2
     vaddsd       %xmm6, %xmm2, %xmm2 # add vt here
     
-    # q
-    vmovsd       .L__real_1_by_2(%rip), %xmm0
-    vmovsd       .L__real_1_by_24(%rip), %xmm3
-    vmovsd       .L__real_1_by_720(%rip), %xmm4
-    vmulsd       %xmm2, %xmm2, %xmm1
-    
 
-    vmovsd       %xmm1, %xmm5, %xmm5
-    vmulsd       %xmm2, %xmm1, %xmm1
+    # q
+    # compute q + q^2/2! + q^3/3! + q^4/4! + q^5/5! + q^6/6!
+    # The polynomial is being computed using Estrin's scheme in order to use independent fmas.
+
+    vmovsd       .L__real_1_by_6(%rip), %xmm0
+    vmovsd       .L__real_1_by_120(%rip), %xmm3
+    vmovsd       .L__real_1_by_720(%rip), %xmm4
+    vmulsd       %xmm2, %xmm2, %xmm1 #x^2
+    
+    vfmadd213sd    .L__real_1_by_2(%rip), %xmm2, %xmm0 #(1/2) + (1/6)*x
    
-    vfmadd213sd    .L__real_one(%rip), %xmm2, %xmm0
+    vfmadd213sd  .L__real_1_by_24(%rip), %xmm2, %xmm3#1/24 + 1/120*x
+    vmulsd       %xmm1, %xmm1, %xmm5 #x^4
    
-    vfmadd213sd  .L__real_1_by_6(%rip), %xmm2, %xmm3
-    vmulsd       %xmm1, %xmm5, %xmm5
+    vfmadd213sd     %xmm2, %xmm1, %xmm0 #x+x^2*((1/2) + (1/6)*x))
    
-    vfmadd213sd     .L__real_1_by_120(%rip), %xmm2, %xmm4
-   
- 
-    vmulsd       %xmm5, %xmm4, %xmm4
+    vfmadd213sd     %xmm3, %xmm1, %xmm4 #1/24 + 1/120*x + x^2*(1/720)
 
     # deal with denormal results
     xor         %r9d, %r9d
     cmp         .L__denormal_threshold(%rip), %ecx
 
    
-    vfmadd213sd   %xmm4, %xmm1, %xmm3
-    
-    vfmadd213sd    %xmm3, %xmm2, %xmm0
+    vfmadd213sd   %xmm0, %xmm5, %xmm4 #x+x^2*((1/2) + (1/6)*x)) + x^4*(1/24 + 1/120*x + x^2*(1/720))
+    vmovsd        %xmm4, %xmm0, %xmm0
 
     cmovle      %ecx, %r9d
     add         $1023, %rcx
@@ -387,149 +330,6 @@ fname:
 .L__final_check:
     add         $stack_size, %rsp
     ret
-
-.L__x_less_than_100:
-#    Split v into integer part 'vint' and and fractional part 'vfrac'.
-#    Calculate exp(v) as exp(vint) * exp(vfrac)
-    xor          %r8, %r8           #r8 = 0
-    vsubsd       .L__real_half(%rip), %xmm10, %xmm11 #subtracting 0.5 from v in order to be rounded to the same value as floor(v).
-#   int(v) = floor(v)
-    vcvtsd2si    %xmm11, %r8        #r8 = vint is stored in r8 which is the index of look up table
-    vcvtsi2sd    %r8,   %xmm2,  %xmm2   #xmm2 = double(%r8)
-  
-    vsubsd       %xmm2, %xmm10, %xmm10 #vfrac is stored in xmm10
-    lea         .L__e_pow_1_to_100_table(%rip), %rdx  # load address of table
-    vmovsd       (%rdx,%r8,8), %xmm15  #e^(vint) # xmm15 = exp(vint) = L__e_pow_1_to_100_table[r8]  
-    vmovq        %xmm10, %r9  
- 
-.L__x_between_0_1:
-    vfmadd213sd    %xmm15, %xmm6, %xmm15   #xmm15 = exp(vint)*vt + exp(vint)
-#    vaddsd         .L__real_one(%rip), %xmm6, %xmm0 # xmm0 = exp(vt) = vt + 1
-    vmovsd         %xmm15, %xmm0, %xmm0   #xmm15 = exp(vint)*vt + exp(vint)
-#    vmovsd         %xmm15, %xmm0, %xmm0 #xmm0 = exp(vint+vt)     
-    vmovsd         .L__real_one(%rip), %xmm14 #intiitlaise xmm14 to one.      
-    mov            .L__lower_exponent(%rip), %r8 #r8 = 0.00390625
-    cmp            %r8, %r9  
-    jl             .L__compute_polynomial #if v < 0.00390625 then exp(vfrac) = Taylor series upto the 7th term
-
-#Extract the exponent and subtract 1022
-#v' = 1022 - (exponent of vfrac)
-# This is done as exponent will be less than equal to 1022 for values between 0 and 1.
-#index = Extract the first 6 bits of mantissa
-# The strucutre of look up table is as follows
-# For each value of exponent=1022,1021,1020,1019, we have 2^6 values corresponding to the 6 bits of mantissa.
-# |exponent  | range of vfrac  |
-#   1022        1.0 to 0.5
-#   1021        0.5 to 0.25
-#   1020        0.25 to 0.125
-#   1019        0.125 to 0.0625
-#   1018        0.0625 to 0.03125
-#   1017        0.03125 to 0.015625
-#   1016        0.015625 to 0.0078125
-#   1015        0.0078125 to 0.00390625
-#Hence looktable is of size 4*2^6
-#vfrac_head = exponent of v_frac + first 6 mantissa bits of mantsissa. The remaining 46 bits of the mantissa are set to zero.
-#vfrac_tail = vfrac - vfrac_head
-#exp(vfrac_head) = .L__exp_0_1[v' * 64 + index}
-#exp(vfrac_tail) = Taylor series upto the 7th degree computed using Estrin's method. 
-    mov            %r9, %r8
-    shr            $52, %r8  #extract exponent
-    mov            $1022, %rax
-    sub            %r8, %rax   #v' = 1022 - exponent of vfrac 
-    mov            $64, %r8
-    mul            %r8    #rax = 64*(v')
-    
-    vandpd         .L__exp_mantissa6bits(%rip), %xmm10, %xmm3 #xmm3 = vfrac_head
-    vsubsd         %xmm3, %xmm10, %xmm10     #vfrac_tail = vfrac - vfrac_head
-    and            .L__mantissa6bits(%rip), %r9  #take mantissa 6 bits
-    shr            $46, %r9                      #shift by (52 - 6) bits in r9 get the actual value of the first 6 bits of mantissa
-    add            %rax, %r9                     #index = v'*64 + index
-    lea            .L__exp_0_1(%rip), %rdx  #load address of table
-    vmovsd         (%rdx,%r9,8), %xmm14  #xmm14 = exp(vfrac_head)
-
-#xmm0 = exp(vint+vt)
-#xmm10 = vfrac_tail
-#xmm14 = exp(vfrac_head)    
-.L__compute_polynomial:
-#    vaddsd         .L__real_one(%rip), %xmm10, %xmm2  #A0 = a0 + x = 1 + x
-#    vmovsd         .L__real_1_by_7factorial(%rip), %xmm3
-    vmovsd         .L__real_1_by_720(%rip), %xmm3 
-    vfmadd213sd    .L__real_1_by_120(%rip), %xmm10, %xmm3 #xmm3 = (1/120 + 1/720*x) 
-    vfmadd213sd    .L__real_1_by_24(%rip), %xmm10, %xmm3  #xmm3 = (1/24 + x*xmm3) 
-    vfmadd213sd    .L__real_1_by_6(%rip), %xmm10, %xmm3 #xmm3 = (1/6 + x*xmm3)
-    vfmadd213sd    .L__real_half(%rip), %xmm10, %xmm3 #xmm3 = 1/2 + x*xmm3
-    vfmadd213sd    .L__real_one(%rip), %xmm10, %xmm3 #xmm3 = 1 + x*(xmm3)
-    vfmadd213sd    .L__real_one(%rip), %xmm10, %xmm3  #xmm3 = 1 + x*xmm3
- #   vmulsd         %xmm10, %xmm10, %xmm12    # xsquare
- #   vmulsd         %xmm12, %xmm12, %xmm13     #xfour
- 
-#    vfmadd213sd    .L__real_half(%rip), %xmm10, %xmm3 #A1 = a2 + x*a3 = 0.5 + (1/6)*x
-#    vfmadd213sd    .L__real_1_by_24(%rip), %xmm10, %xmm4 #A2 = a4 + x*a5 = (1/24) + (1/120)*x
-#    vfmadd213sd    .L__real_1_by_720(%rip), %xmm10, %xmm5 #A3 = a6 + x*a7 = (1/720) + (1/7!)*x
-    
-#    vfmadd213sd   %xmm2, %xmm12, %xmm3   #B0 = A0 + xsquare*A1
-#    vfmadd213sd   %xmm4, %xmm12, %xmm5   #B1 = A2 + xsquare*A3   
-    
-#    vmovsd         %xmm3, %xmm5, %xmm5   #C0 = B0 + xfour*B1
-    
-    vmulsd       %xmm3, %xmm0, %xmm11 #xmm11 = exp(vint+vt)*exp(vfrac_tail)
-    vmulsd       %xmm14, %xmm11, %xmm0 # xmm0 = exp(vint+vt+vfrac_tail)*exp(vfrac_head)   
-    vorpd        negate_result(%rsp), %xmm0, %xmm0 #setting the sign bit
-    jmp         .L__final_check
-
-
-.L__x_very_small:
-    vaddsd       %xmm6, %xmm0, %xmm10      #add v+vt
-    vaddsd       .L__real_one(%rip), %xmm10, %xmm1 #A0 = 1 + x
-    vmovsd       .L__real_1_by_6(%rip), %xmm0
-    vfmadd213sd  .L__real_half(%rip), %xmm10, %xmm0 #A1 = a2 + x*a3 = 0.5 + (1/6)*x
-    vmulsd       %xmm10, %xmm10, %xmm12 
-    vfmadd213sd  %xmm1, %xmm12, %xmm0
-    vorpd        negate_result(%rsp), %xmm0, %xmm0 #setting the sign bit
-    jmp          .L__final_check
-
-
-.p2align 4,,15
-.L__y_is_half:
-    vsqrtsd   %xmm0, %xmm0, %xmm0 #x^0.5 = sqrt(x)
-    add         $stack_size, %rsp
-    ret
-
-.L__x_is_power_of_2:
-    movq    %xmm0, %r9 #copy x to r9
-    and      .L__exp_mask(%rip), %r9
-    shr     $52, %r9
-    sub      $1023, %r9 #r9 = exponent of x
-    movq    %xmm1, %r10 #copy y to r10
-    and      .L__exp_mask(%rip), %r10
-    shr      $52, %r10
-    sub      $1023, %r10  #r10 = exponent of x
-    add      $1, %r10
-    cmp      $1, %r10
-    jl       .L__log_x   # y is not a integer
-    cmp      $53, %r10
-    jg       .L__compute_powers_of_2
-
-.L__compute_powers_of_2:
-    mov      $1, %rdx #rdx = mask
-    mov      $53, %rcx 
-    sub      %r10, %rcx
-    shl      %cl, %rdx 
-    sub      $1, %rdx #(mask << (53 - yexp)) - 1
-    movq     %xmm1, %r11
-    and      %r11, %rdx
-    cmp      .L__pos_zero(%rip), %rdx
-    jne       .L__log_x #if ((y & mask) != 0) then y is not an integer
-    vcvtsd2si %xmm1, %r8 #int y = (int)y 
-    mov       %r9, %rax  #rax = exponent of x
-    mul       %r8   # r8 = y*exponent of x
-    cmp       $1023, %rax #if y*exponent of x >1023 then return inifinty
-    jg        .L__log_x
-    add       $1023, %rax
-    shl       $52, %rax
-    movq      %rax, %xmm0
-    jmp       .L__final_check         
-
 
 .p2align 4,,15
 .L__process_almost_inf:
@@ -1075,14 +875,8 @@ fname:
 .L__flag_z_denormal:            .long 8
 .L__flag_z_inf:                 .long 9
 
-
-
 .align 16
-.L__lower_exponent:         .quad 0x3F70000000000000 #0.00390625
-.L__exp_mantissa6bits:      .quad 0x7FFFC00000000000
-.L__mantissa6bits:          .quad 0x000FC00000000000 
-.L__min_exp:                .quad 0x3EB0C6F7A0B5ED8D #10^-6
-.L__max_value:              .quad 0x4059000000000000  #100
+
 .L__ay_max_bound:           .quad 0x43e0000000000000
 .L__ay_min_bound:           .quad 0x3c00000000000000
 .L__sign_mask:              .quad 0x8000000000000000
@@ -1113,9 +907,6 @@ fname:
 
 .L__mask_mant_all8:         .quad 0x000ff00000000000
 .L__mask_mant9:             .quad 0x0000080000000000
-.L__pos_2:                  .quad 0x4000000000000000
-
-
 
 .align 16
 .L__real_fffffffff8000000:  .quad 0x0fffffffff8000000
@@ -1190,7 +981,6 @@ fname:
                     .quad 0x3fc0000000000000
 
 .L__real_notsign:   .quad 0x7ffFFFFFFFFFFFFF # ^sign bit
-                    .quad 0x0000000000000000
 
 
 .align 16
@@ -2260,6 +2050,13 @@ fname:
                                 .quad 0
 .L__real_m68800:                .quad 0x0c0f0cc0000000000   # -68800
                                 .quad 0
+.L__big_number:		        .quad 0x4338000000000000
+#.L__const_1024_by_log2:         .quad 0x40971547652b82fe    # 1024/ln(2)
+                                .quad 0
+#.L__real_log2_by_64_head:       .quad 0x3f862e42f0000000    # log2_by_64_head
+#                                .quad 0
+#.L__const_log2_by_1024_head:	.quad 0x3F462E42F0000000
+#.L__const_log2_by_1024_tail:    .quad 0xbdbdf473de6af279   # -log2_by_1024_tail
 .L__real_64_by_log2:            .quad 0x40571547652b82fe    # 64/ln(2)
                                 .quad 0
 .L__real_log2_by_64_head:       .quad 0x3f862e42f0000000    # log2_by_64_head
@@ -2276,34 +2073,6 @@ fname:
                                 .quad 0
 .L__real_1_by_2:                .quad 0x3fe0000000000000    # 1/2
                                 .quad 0
-.L__real_1_by_18factorial:            .quad 0x3ca6827863b97d97
-                                .quad 0
-.L__real_1_by_17factorial:            .quad 0x3ce952c77030ad4a
-                                .quad 0
-.L__real_1_by_16factorial:            .quad 0x3d2ae7f3e733b81f
-                                .quad 0
-.L__real_1_by_15factorial:            .quad 0x3d6ae7f3e733b81f
-                                .quad 0
-.L__real_1_by_14factorial:            .quad 0x3da93974a8c07c9d
-                                .quad 0
-.L__real_1_by_13factorial:            .quad 0x3de6124613a86d09
-                                .quad 0
-.L__real_1_by_12factorial:            .quad 0x3e21eed8eff8d898
-                                .quad 0
-.L__real_1_by_11factorial:            .quad 0x3e5ae64567f544e4
-                                .quad 0
-.L__real_1_by_10factorial:            .quad 0x3e927e4fb7789f5c
-                                .quad 0
-.L__real_1_by_9factorial:             .quad 0x3ec71de3a556c734
-                                .quad 0
-.L__real_1_by_8factorial:             .quad 0x3efa01a01a01a01a
-                                .quad 0
-.L__real_1_by_7factorial:            .quad 0x3f2a01a01a01a01a
-                                .quad 0
-
-
-
-
 .align 16
 .L__two_to_jby64_head_table:
     .quad 0x3ff0000000000000
@@ -2438,622 +2207,3 @@ fname:
     .quad 0x3e66dc8a80ce9f09
     .quad 0x3e39e90d82e90a7e
 
-.align 16
-.L__e_pow_1_to_100_table:
-    .quad 0x3ff0000000000000
-    .quad 0x4005bf0a8b145769
-    .quad 0x401d8e64b8d4ddae
-    .quad 0x403415e5bf6fb106
-    .quad 0x404b4c902e273a58
-    .quad 0x40628d389970338f
-    .quad 0x407936dc5690c08f
-    .quad 0x409122885aaeddaa
-    .quad 0x40a749ea7d470c6e
-    .quad 0x40bfa7157c470f82
-    .quad 0x40d5829dcf950560
-    .quad 0x40ed3c4488ee4f7f
-    .quad 0x4103de1654d37c9a
-    .quad 0x411b00b5916ac955
-    .quad 0x413259ac48bf05d7
-    .quad 0x4148f0ccafad2a87
-    .quad 0x4160f2ebd0a80020
-    .quad 0x417709348c0ea4f9
-    .quad 0x418f4f22091940bd
-    .quad 0x41a546d8f9ed26e1
-    .quad 0x41bceb088b68e804
-    .quad 0x41d3a6e1fd9eecfd
-    .quad 0x41eab5adb9c43600
-    .quad 0x420226af33b1fdc1
-    .quad 0x4218ab7fb5475fb7
-    .quad 0x4230c3d3920962c9
-    .quad 0x4246c932696a6b5d
-    .quad 0x425ef822f7f6731d
-    .quad 0x42750bba3796379a
-    .quad 0x428c9aae4631c056
-    .quad 0x42a370470aec28ed
-    .quad 0x42ba6b765d8cdf6d
-    .quad 0x42d1f43fcc4b662c
-    .quad 0x42e866f34a725782
-    .quad 0x4300953e2f3a1ef7
-    .quad 0x431689e221bc8d5b
-    .quad 0x432ea215a1d20d76
-    .quad 0x4344d13fbb1a001a
-    .quad 0x435c4b334617cc67
-    .quad 0x43733a43d282a519
-    .quad 0x438a220d397972eb
-    .quad 0x43a1c25c88df6862
-    .quad 0x43b8232558201159
-    .quad 0x43d0672a3c9eb871
-    .quad 0x43e64b41c6d37832
-    .quad 0x43fe4cf766fe49be
-    .quad 0x44149767bc0483e3
-    .quad 0x442bfc951eb8bb76
-    .quad 0x444304d6aeca254b
-    .quad 0x4459d97010884251
-    .quad 0x44719103e4080b45
-    .quad 0x4487e013cd114461
-    .quad 0x44a03996528e074c
-    .quad 0x44b60d4f6fdac731
-    .quad 0x44cdf8c5af17ba3b
-    .quad 0x44e45e3076d61699
-    .quad 0x44fbaed16a6e0da7
-    .quad 0x4512cffdfebde1a1
-    .quad 0x4529919cabefcb69
-    .quad 0x454160345c9953e3
-    .quad 0x45579dbc9dc53c66
-    .quad 0x45700c810d464097
-    .quad 0x4585d009394c5c27
-    .quad 0x459da57de8f107a8
-    .quad 0x45b425982cf597cd
-    .quad 0x45cb61e5ca3a5e31
-    .quad 0x45e29bb825dfcf87
-    .quad 0x45f94a90db0d6fe2
-    .quad 0x46112fec759586fd
-    .quad 0x46275c1dc469e3af
-    .quad 0x463fbfd219c43b04
-    .quad 0x4655936d44e1a146
-    .quad 0x466d531d8a7ee79c
-    .quad 0x4683ed9d24a2d51b
-    .quad 0x469b15cfe5b6e17b
-    .quad 0x46b268038c2c0e00
-    .quad 0x46c9044a73545d48
-    .quad 0x46e1002ab6218b38
-    .quad 0x46f71b3540cbf921
-    .quad 0x470f6799ea9c414a
-    .quad 0x47255779b984f3eb
-    .quad 0x473d01a210c44aa4
-    .quad 0x4753b63da8e91210
-    .quad 0x476aca8d6b0116b8
-    .quad 0x478234de9e0c74e9
-    .quad 0x4798bec7503ca477
-    .quad 0x47b0d0eda9796b90
-    .quad 0x47c6db0118477245
-    .quad 0x47df1056dc7bf22d
-    .quad 0x47f51c2cc3433801
-    .quad 0x480cb108ffbec164
-    .quad 0x48237f780991b584
-    .quad 0x483a801c0ea8ac4d
-    .quad 0x48520247cc4c46c1
-    .quad 0x48687a0553328015
-    .quad 0x4880a233dee4f9bb
-    .quad 0x48969b7f55b808ba
-    .quad 0x48aeba064644060a
-    .quad 0x48c4e184933d9364
-    .quad 0x48dc614fe2531841
-    .quad 0x48f3494a9b171bf5
-
-.align 16
-.L__exp_0_1:
-  .quad 0x3ffa61298e1e069c
-  .quad 0x3ffa9620c6cb3374
-  .quad 0x3ffacb82581eee54
-  .quad 0x3ffb014f179fc3b8
-  .quad 0x3ffb3787dc80f95f
-  .quad 0x3ffb6e2d7fa5eb18
-  .quad 0x3ffba540dba56e56
-  .quad 0x3ffbdcc2cccd3c85
-  .quad 0x3ffc14b431256446
-  .quad 0x3ffc4d15e873c193
-  .quad 0x3ffc85e8d43f7cd0
-  .quad 0x3ffcbf2dd7d490f2
-  .quad 0x3ffcf8e5d84758a9
-  .quad 0x3ffd3311bc7822b4
-  .quad 0x3ffd6db26d16cd67
-  .quad 0x3ffda8c8d4a66969
-  .quad 0x3ffde455df80e3c0
-  .quad 0x3ffe205a7bdab73e
-  .quad 0x3ffe5cd799c6a54e
-  .quad 0x3ffe99ce2b397649
-  .quad 0x3ffed73f240dc142
-  .quad 0x3fff152b7a07bb76
-  .quad 0x3fff539424d90f5e
-  .quad 0x3fff927a1e24bb76
-  .quad 0x3fffd1de6182f8c9
-  .quad 0x400008e0f64294ab
-  .quad 0x40002912df5ce72a
-  .quad 0x400049856cd84339
-  .quad 0x40006a39207f0a09
-  .quad 0x40008b2e7d2035cf
-  .quad 0x4000ac6606916501
-  .quad 0x4000cde041b0e9ae
-  .quad 0x4000ef9db467dcf8
-  .quad 0x4001119ee5ac36b6
-  .quad 0x400133e45d82e952
-  .quad 0x4001566ea50201d7
-  .quad 0x4001793e4652cc50
-  .quad 0x40019c53ccb3fc6b
-  .quad 0x4001bfafc47bda73
-  .quad 0x4001e352bb1a74ad
-  .quad 0x4002073d3f1bd518
-  .quad 0x40022b6fe02a3b9c
-  .quad 0x40024feb2f105cb8
-  .quad 0x400274afbdbba4a6
-  .quad 0x400299be1f3e7f1c
-  .quad 0x4002bf16e7d2a38c
-  .quad 0x4002e4baacdb6614
-  .quad 0x40030aaa04e80d05
-  .quad 0x400330e587b62b28
-  .quad 0x4003576dce33fead
-  .quad 0x40037e437282d4ee
-  .quad 0x4003a5670ff972ed
-  .quad 0x4003ccd9432682b4
-  .quad 0x4003f49aa9d30590
-  .quad 0x40041cabe304cb34
-  .quad 0x4004450d8f00edd4
-  .quad 0x40046dc04f4e5338
-  .quad 0x400496c4c6b832da
-  .quad 0x4004c01b9950a111
-  .quad 0x4004e9c56c731f5d
-  .quad 0x400513c2e6c731d7
-  .quad 0x40053e14b042f9ca
-  .quad 0x400568bb722dd593
-  .quad 0x400593b7d72305bb
-  .quad 0x3ff48b5e3c3e8186
-  .quad 0x3ff49ff3e397492c
-  .quad 0x3ff4b49e2ae5ac67
-  .quad 0x3ff4c95d26d3f440
-  .quad 0x3ff4de30ec211e60
-  .quad 0x3ff4f3198fa0f1d0
-  .quad 0x3ff50817263c13cd
-  .quad 0x3ff51d29c4f01cb3
-  .quad 0x3ff5325180cfacf7
-  .quad 0x3ff5478e6f02823d
-  .quad 0x3ff55ce0a4c58c7c
-  .quad 0x3ff57248376b033d
-  .quad 0x3ff587c53c5a7af0
-  .quad 0x3ff59d57c910fa4e
-  .quad 0x3ff5b2fff3210fd9
-  .quad 0x3ff5c8bdd032e771
-  .quad 0x3ff5de9176045ff5
-  .quad 0x3ff5f47afa69210a
-  .quad 0x3ff60a7a734ab0e8
-  .quad 0x3ff6208ff6a88a46
-  .quad 0x3ff636bb9a983258
-  .quad 0x3ff64cfd75454ee8
-  .quad 0x3ff663559cf1bc7c
-  .quad 0x3ff679c427f5a49f
-  .quad 0x3ff690492cbf9433
-  .quad 0x3ff6a6e4c1d491e1
-  .quad 0x3ff6bd96fdd034a2
-  .quad 0x3ff6d45ff764ba56
-  .quad 0x3ff6eb3fc55b1e76
-  .quad 0x3ff702367e9330e1
-  .quad 0x3ff719443a03acb9
-  .quad 0x3ff730690eba4f5b
-  .quad 0x3ff747a513dbef6a
-  .quad 0x3ff75ef860a493f9
-  .quad 0x3ff776630c678bc1
-  .quad 0x3ff78de52e8f8479
-  .quad 0x3ff7a57ede9ea23e
-  .quad 0x3ff7bd30342e9717
-  .quad 0x3ff7d4f946f0ba8d
-  .quad 0x3ff7ecda2eae215f
-  .quad 0x3ff804d30347b546
-  .quad 0x3ff81ce3dcb64cdc
-  .quad 0x3ff8350cd30ac390
-  .quad 0x3ff84d4dfe6e11bb
-  .quad 0x3ff865a7772164c5
-  .quad 0x3ff87e19557e376a
-  .quad 0x3ff896a3b1f66a0e
-  .quad 0x3ff8af46a5145b37
-  .quad 0x3ff8c802477b0010
-  .quad 0x3ff8e0d6b1e5fd0e
-  .quad 0x3ff8f9c3fd29beaf
-  .quad 0x3ff912ca4233924b
-  .quad 0x3ff92be99a09bf00
-  .quad 0x3ff945221dcb9ebd
-  .quad 0x3ff95e73e6b1b75e
-  .quad 0x3ff977df0e0dd3e5
-  .quad 0x3ff99163ad4b1dcc
-  .quad 0x3ff9ab01ddee3672
-  .quad 0x3ff9c4b9b995509b
-  .quad 0x3ff9de8b59f84a14
-  .quad 0x3ff9f876d8e8c566
-  .quad 0x3ffa127c505243ab
-  .quad 0x3ffa2c9bda3a3e78
-  .quad 0x3ffa46d590c041e1
-  .quad 0x3ff2216045b6f5cd
-  .quad 0x3ff22a733a669818
-  .quad 0x3ff2338ab9b32135
-  .quad 0x3ff23ca6c5e27103
-  .quad 0x3ff245c7613b8a9b
-  .quad 0x3ff24eec8e0694df
-  .quad 0x3ff258164e8cdb0e
-  .quad 0x3ff26144a518cd55
-  .quad 0x3ff26a7793f60164
-  .quad 0x3ff273af1d7132ff
-  .quad 0x3ff27ceb43d84490
-  .quad 0x3ff2862c097a3fbe
-  .quad 0x3ff28f7170a755fd
-  .quad 0x3ff298bb7bb0e126
-  .quad 0x3ff2a20a2ce96406
-  .quad 0x3ff2ab5d86a48af9
-  .quad 0x3ff2b4b58b372c79
-  .quad 0x3ff2be123cf749b8
-  .quad 0x3ff2c7739e3c0f33
-  .quad 0x3ff2d0d9b15dd546
-  .quad 0x3ff2da4478b620c7
-  .quad 0x3ff2e3b3f69fa399
-  .quad 0x3ff2ed282d763d42
-  .quad 0x3ff2f6a11f96fb85
-  .quad 0x3ff3001ecf601af7
-  .quad 0x3ff309a13f310796
-  .quad 0x3ff31328716a5d64
-  .quad 0x3ff31cb4686de8fb
-  .quad 0x3ff32645269ea829
-  .quad 0x3ff32fdaae60ca87
-  .quad 0x3ff339750219b213
-  .quad 0x3ff34314242ff3c7
-  .quad 0x3ff34cb8170b5835
-  .quad 0x3ff35660dd14dc22
-  .quad 0x3ff3600e78b6b11d
-  .quad 0x3ff369c0ec5c3e1b
-  .quad 0x3ff373783a722012
-  .quad 0x3ff37d3465662a95
-  .quad 0x3ff386f56fa7686e
-  .quad 0x3ff390bb5ba61c3a
-  .quad 0x3ff39a862bd3c106
-  .quad 0x3ff3a455e2a30aeb
-  .quad 0x3ff3ae2a8287e7a8
-  .quad 0x3ff3b8040df77f45
-  .quad 0x3ff3c1e2876834aa
-  .quad 0x3ff3cbc5f151a642
-  .quad 0x3ff3d5ae4e2cae93
-  .quad 0x3ff3df9ba07364e1
-  .quad 0x3ff3e98deaa11dcc
-  .quad 0x3ff3f3852f326beb
-  .quad 0x3ff3fd8170a52072
-  .quad 0x3ff40782b1784bc8
-  .quad 0x3ff41188f42c3e32
-  .quad 0x3ff41b943b428869
-  .quad 0x3ff425a4893dfc40
-  .quad 0x3ff42fb9e0a2ad43
-  .quad 0x3ff439d443f5f159
-  .quad 0x3ff443f3b5be6164
-  .quad 0x3ff44e183883d9e5
-  .quad 0x3ff45841cecf7b99
-  .quad 0x3ff462707b2bac21
-  .quad 0x3ff46ca4402416a2
-  .quad 0x3ff476dd2045ac68
-  .quad 0x3ff4811b1e1ea588
-  .quad 0x3ff1082b577d34ed
-  .quad 0x3ff10c6dea9fca74
-  .quad 0x3ff110b18e894010
-  .quad 0x3ff114f6437dd001
-  .quad 0x3ff1193c09c1c596
-  .quad 0x3ff11d82e1997d34
-  .quad 0x3ff121cacb496458
-  .quad 0x3ff12613c715f99f
-  .quad 0x3ff12a5dd543ccc5
-  .quad 0x3ff12ea8f6177ead
-  .quad 0x3ff132f529d5c166
-  .quad 0x3ff1374270c3582a
-  .quad 0x3ff13b90cb25176a
-  .quad 0x3ff13fe0393fe4cc
-  .quad 0x3ff14430bb58b732
-  .quad 0x3ff1488251b496be
-  .quad 0x3ff14cd4fc989cd6
-  .quad 0x3ff15128bc49f429
-  .quad 0x3ff1557d910dd8b1
-  .quad 0x3ff159d37b2997bd
-  .quad 0x3ff15e2a7ae28fed
-  .quad 0x3ff16282907e313d
-  .quad 0x3ff166dbbc41fd09
-  .quad 0x3ff16b35fe73860c
-  .quad 0x3ff16f9157587069
-  .quad 0x3ff173edc73671b0
-  .quad 0x3ff1784b4e5350df
-  .quad 0x3ff17ca9ecf4e668
-  .quad 0x3ff18109a3611c35
-  .quad 0x3ff1856a71ddedae
-  .quad 0x3ff189cc58b167ba
-  .quad 0x3ff18e2f5821a8c7
-  .quad 0x3ff192937074e0cd
-  .quad 0x3ff196f8a1f15152
-  .quad 0x3ff19b5eecdd4d6c
-  .quad 0x3ff19fc6517f39cc
-  .quad 0x3ff1a42ed01d8cbc
-  .quad 0x3ff1a89868fece27
-  .quad 0x3ff1ad031c699799
-  .quad 0x3ff1b16eeaa4944c
-  .quad 0x3ff1b5dbd3f68122
-  .quad 0x3ff1ba49d8a62cb2
-  .quad 0x3ff1beb8f8fa7746
-  .quad 0x3ff1c329353a52e4
-  .quad 0x3ff1c79a8dacc351
-  .quad 0x3ff1cc0d0298de14
-  .quad 0x3ff1d0809445ca7c
-  .quad 0x3ff1d4f542fac1a5
-  .quad 0x3ff1d96b0eff0e79
-  .quad 0x3ff1dde1f89a0dbb
-  .quad 0x3ff1e25a00132e03
-  .quad 0x3ff1e6d325b1efca
-  .quad 0x3ff1eb4d69bde56a
-  .quad 0x3ff1efc8cc7eb324
-  .quad 0x3ff1f4454e3c0f24
-  .quad 0x3ff1f8c2ef3dc188
-  .quad 0x3ff1fd41afcba45e
-  .quad 0x3ff201c1902da3b2
-  .quad 0x3ff2064290abbd88
-  .quad 0x3ff20ac4b18e01e9
-  .quad 0x3ff20f47f31c92e4
-  .quad 0x3ff213cc559fa493
-  .quad 0x3ff21851d95f7d1d
-  .quad 0x3ff21cd87ea474be
-  .quad 0x3ff08205601127ed
-  .quad 0x3ff08415c1c29508
-  .quad 0x3ff0862665845940
-  .quad 0x3ff088374b5eb725
-  .quad 0x3ff08a487359f24c
-  .quad 0x3ff08c59dd7e4f58
-  .quad 0x3ff08e6b89d413ef
-  .quad 0x3ff0907d786386c4
-  .quad 0x3ff0928fa934ef91
-  .quad 0x3ff094a21c509718
-  .quad 0x3ff096b4d1bec727
-  .quad 0x3ff098c7c987ca93
-  .quad 0x3ff09adb03b3ed3b
-  .quad 0x3ff09cee804b7c08
-  .quad 0x3ff09f023f56c4ec
-  .quad 0x3ff0a11640de16e4
-  .quad 0x3ff0a32a84e9c1f6
-  .quad 0x3ff0a53f0b821731
-  .quad 0x3ff0a753d4af68b0
-  .quad 0x3ff0a968e07a0999
-  .quad 0x3ff0ab7e2eea4e1a
-  .quad 0x3ff0ad93c0088b6c
-  .quad 0x3ff0afa993dd17d5
-  .quad 0x3ff0b1bfaa704aa4
-  .quad 0x3ff0b3d603ca7c32
-  .quad 0x3ff0b5ec9ff405e7
-  .quad 0x3ff0b8037ef54231
-  .quad 0x3ff0ba1aa0d68c8d
-  .quad 0x3ff0bc3205a04183
-  .quad 0x3ff0be49ad5abea6
-  .quad 0x3ff0c061980e6294
-  .quad 0x3ff0c279c5c38cf9
-  .quad 0x3ff0c49236829e8c
-  .quad 0x3ff0c6aaea53f90f
-  .quad 0x3ff0c8c3e13fff51
-  .quad 0x3ff0cadd1b4f152f
-  .quad 0x3ff0ccf698899f91
-  .quad 0x3ff0cf1058f8046b
-  .quad 0x3ff0d12a5ca2aabf
-  .quad 0x3ff0d344a391fa9d
-  .quad 0x3ff0d55f2dce5d1f
-  .quad 0x3ff0d779fb603c6e
-  .quad 0x3ff0d9950c5003c2
-  .quad 0x3ff0dbb060a61f5d
-  .quad 0x3ff0ddcbf86afc92
-  .quad 0x3ff0dfe7d3a709bf
-  .quad 0x3ff0e203f262b650
-  .quad 0x3ff0e42054a672c2
-  .quad 0x3ff0e63cfa7ab09d
-  .quad 0x3ff0e859e3e7e278
-  .quad 0x3ff0ea7710f67bfa
-  .quad 0x3ff0ec9481aef1d6
-  .quad 0x3ff0eeb23619b9cf
-  .quad 0x3ff0f0d02e3f4ab7
-  .quad 0x3ff0f2ee6a281c6f
-  .quad 0x3ff0f50ce9dca7e6
-  .quad 0x3ff0f72bad65671b
-  .quad 0x3ff0f94ab4cad51d
-  .quad 0x3ff0fb6a00156e08
-  .quad 0x3ff0fd898f4daf0a
-  .quad 0x3ff0ffa9627c1660
-  .quad 0x3ff101c979a92356
-  .quad 0x3ff103e9d4dd564a
-  .quad 0x3ff1060a742130a8
-  .quad 0x3ff04080ab55de39
-  .quad 0x3ff04184bb80ff44
-  .quad 0x3ff04288dbeda50c
-  .quad 0x3ff0438d0c9cd3b1
-  .quad 0x3ff044914d8f8f64
-  .quad 0x3ff045959ec6dc66
-  .quad 0x3ff0469a0043bf08
-  .quad 0x3ff0479e72073bac
-  .quad 0x3ff048a2f41256c3
-  .quad 0x3ff049a7866614cf
-  .quad 0x3ff04aac29037a63
-  .quad 0x3ff04bb0dbeb8c22
-  .quad 0x3ff04cb59f1f4ebe
-  .quad 0x3ff04dba729fc6fa
-  .quad 0x3ff04ebf566df9ab
-  .quad 0x3ff04fc44a8aebb3
-  .quad 0x3ff050c94ef7a207
-  .quad 0x3ff051ce63b521ab
-  .quad 0x3ff052d388c46fb5
-  .quad 0x3ff053d8be269148
-  .quad 0x3ff054de03dc8b9b
-  .quad 0x3ff055e359e763f4
-  .quad 0x3ff056e8c0481fa7
-  .quad 0x3ff057ee36ffc41c
-  .quad 0x3ff058f3be0f56ca
-  .quad 0x3ff059f95577dd37
-  .quad 0x3ff05afefd3a5cfb
-  .quad 0x3ff05c04b557dbbd
-  .quad 0x3ff05d0a7dd15f36
-  .quad 0x3ff05e1056a7ed2f
-  .quad 0x3ff05f163fdc8b7f
-  .quad 0x3ff0601c39704011
-  .quad 0x3ff06122436410dd
-  .quad 0x3ff062285db903ee
-  .quad 0x3ff0632e88701f5e
-  .quad 0x3ff06434c38a6958
-  .quad 0x3ff0653b0f08e817
-  .quad 0x3ff066416aeca1e7
-  .quad 0x3ff06747d7369d22
-  .quad 0x3ff0684e53e7e036
-  .quad 0x3ff06954e10171a0
-  .quad 0x3ff06a5b7e8457ec
-  .quad 0x3ff06b622c7199b8
-  .quad 0x3ff06c68eaca3db1
-  .quad 0x3ff06d6fb98f4a97
-  .quad 0x3ff06e7698c1c737
-  .quad 0x3ff06f7d8862ba72
-  .quad 0x3ff0708488732b37
-  .quad 0x3ff0718b98f42085
-  .quad 0x3ff07292b9e6a16e
-  .quad 0x3ff07399eb4bb512
-  .quad 0x3ff074a12d2462a2
-  .quad 0x3ff075a87f71b161
-  .quad 0x3ff076afe234a8a1
-  .quad 0x3ff077b7556e4fc5
-  .quad 0x3ff078bed91fae3f
-  .quad 0x3ff079c66d49cb94
-  .quad 0x3ff07ace11edaf57
-  .quad 0x3ff07bd5c70c612e
-  .quad 0x3ff07cdd8ca6e8cd
-  .quad 0x3ff07de562be4dfa
-  .quad 0x3ff07eed4953988c
-  .quad 0x3ff07ff54067d068
-  .quad 0x3ff080fd47fbfd85
-  .quad 0x3ff0202015600446
-  .quad 0x3ff020a11864b8a9
-  .quad 0x3ff021221f719552
-  .quad 0x3ff021a32a86ba83
-  .quad 0x3ff0222439a4487e
-  .quad 0x3ff022a54cca5f89
-  .quad 0x3ff0232663f91fe6
-  .quad 0x3ff023a77f30a9dd
-  .quad 0x3ff024289e711db3
-  .quad 0x3ff024a9c1ba9bb1
-  .quad 0x3ff0252ae90d4420
-  .quad 0x3ff025ac14693749
-  .quad 0x3ff0262d43ce9577
-  .quad 0x3ff026ae773d7ef7
-  .quad 0x3ff0272faeb61414
-  .quad 0x3ff027b0ea38751d
-  .quad 0x3ff0283229c4c260
-  .quad 0x3ff028b36d5b1c2e
-  .quad 0x3ff02934b4fba2d8
-  .quad 0x3ff029b600a676ae
-  .quad 0x3ff02a37505bb806
-  .quad 0x3ff02ab8a41b8731
-  .quad 0x3ff02b39fbe60485
-  .quad 0x3ff02bbb57bb5059
-  .quad 0x3ff02c3cb79b8b02
-  .quad 0x3ff02cbe1b86d4d9
-  .quad 0x3ff02d3f837d4e38
-  .quad 0x3ff02dc0ef7f1777
-  .quad 0x3ff02e425f8c50f2
-  .quad 0x3ff02ec3d3a51b06
-  .quad 0x3ff02f454bc9960e
-  .quad 0x3ff02fc6c7f9e269
-  .quad 0x3ff0304848362077
-  .quad 0x3ff030c9cc7e7096
-  .quad 0x3ff0314b54d2f329
-  .quad 0x3ff031cce133c891
-  .quad 0x3ff0324e71a11131
-  .quad 0x3ff032d0061aed6e
-  .quad 0x3ff033519ea17dad
-  .quad 0x3ff033d33b34e253
-  .quad 0x3ff03454dbd53bc8
-  .quad 0x3ff034d68082aa74
-  .quad 0x3ff03558293d4ec1
-  .quad 0x3ff035d9d6054917
-  .quad 0x3ff0365b86dab9e4
-  .quad 0x3ff036dd3bbdc192
-  .quad 0x3ff0375ef4ae808f
-  .quad 0x3ff037e0b1ad1749
-  .quad 0x3ff0386272b9a630
-  .quad 0x3ff038e437d44db4
-  .quad 0x3ff0396600fd2e46
-  .quad 0x3ff039e7ce346858
-  .quad 0x3ff03a699f7a1c5e
-  .quad 0x3ff03aeb74ce6acb
-  .quad 0x3ff03b6d4e317416
-  .quad 0x3ff03bef2ba358b5
-  .quad 0x3ff03c710d24391e
-  .quad 0x3ff03cf2f2b435cb
-  .quad 0x3ff03d74dc536f35
-  .quad 0x3ff03df6ca0205d6
-  .quad 0x3ff03e78bbc01a29
-  .quad 0x3ff03efab18dccac
-  .quad 0x3ff03f7cab6b3ddb
-  .quad 0x3ff03ffea9588e35
-  .quad 0x3ff0100802ab5577
-  .quad 0x3ff01048434be110
-  .quad 0x3ff0108884ed712d
-  .quad 0x3ff010c8c79009d2
-  .quad 0x3ff011090b33af04
-  .quad 0x3ff011494fd864c7
-  .quad 0x3ff01189957e2f1e
-  .quad 0x3ff011c9dc25120f
-  .quad 0x3ff0120a23cd119e
-  .quad 0x3ff0124a6c7631ce
-  .quad 0x3ff0128ab62076a6
-  .quad 0x3ff012cb00cbe429
-  .quad 0x3ff0130b4c787e5c
-  .quad 0x3ff0134b99264944
-  .quad 0x3ff0138be6d548e5
-  .quad 0x3ff013cc35858145
-  .quad 0x3ff0140c8536f668
-  .quad 0x3ff0144cd5e9ac54
-  .quad 0x3ff0148d279da70d
-  .quad 0x3ff014cd7a52ea98
-  .quad 0x3ff0150dce097afb
-  .quad 0x3ff0154e22c15c3b
-  .quad 0x3ff0158e787a925d
-  .quad 0x3ff015cecf352167
-  .quad 0x3ff0160f26f10d5d
-  .quad 0x3ff0164f7fae5a46
-  .quad 0x3ff0168fd96d0c27
-  .quad 0x3ff016d0342d2706
-  .quad 0x3ff017108feeaee8
-  .quad 0x3ff01750ecb1a7d3
-  .quad 0x3ff017914a7615cc
-  .quad 0x3ff017d1a93bfcdb
-  .quad 0x3ff0181209036103
-  .quad 0x3ff0185269cc464d
-  .quad 0x3ff01892cb96b0bd
-  .quad 0x3ff018d32e62a45a
-  .quad 0x3ff019139230252a
-  .quad 0x3ff01953f6ff3732
-  .quad 0x3ff019945ccfde7b
-  .quad 0x3ff019d4c3a21f09
-  .quad 0x3ff01a152b75fce3
-  .quad 0x3ff01a55944b7c10
-  .quad 0x3ff01a95fe22a097
-  .quad 0x3ff01ad668fb6e7d
-  .quad 0x3ff01b16d4d5e9ca
-  .quad 0x3ff01b5741b21684
-  .quad 0x3ff01b97af8ff8b2
-  .quad 0x3ff01bd81e6f945b
-  .quad 0x3ff01c188e50ed86
-  .quad 0x3ff01c58ff34083a
-  .quad 0x3ff01c997118e87e
-  .quad 0x3ff01cd9e3ff9259
-  .quad 0x3ff01d1a57e809d2
-  .quad 0x3ff01d5accd252f1
-  .quad 0x3ff01d9b42be71bd
-  .quad 0x3ff01ddbb9ac6a3d
-  .quad 0x3ff01e1c319c4078
-  .quad 0x3ff01e5caa8df876
-  .quad 0x3ff01e9d24819640
-  .quad 0x3ff01edd9f771ddb
-  .quad 0x3ff01f1e1b6e9350
-  .quad 0x3ff01f5e9867faa8
-  .quad 0x3ff01f9f166357e8
-  .quad 0x3ff01fdf9560af1a
-L__exp_0_1:

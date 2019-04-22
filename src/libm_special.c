@@ -1,6 +1,12 @@
 #include "libm_util_amd.h"
 #include "libm_special.h"
 
+#if defined(__GNUC__) && !defined(__clang__)
+_Pragma("GCC diagnostic push")
+_Pragma("GCC diagnostic ignored \"-Wunused-but-set-parameter\"")
+#endif
+
+
 #if defined(WIN64)  |  defined(WINDOWS)
 #else				/*  */
 static inline void __amd_raise_fp_exc(int flags)
@@ -1191,3 +1197,7 @@ float _powf_special(float x, float y, float z, U32 code)
 	}
 	return z;
 }
+
+#if defined(__GNUC__) && !defined(__clang__)
+_Pragma("GCC diagnostic pop")
+#endif

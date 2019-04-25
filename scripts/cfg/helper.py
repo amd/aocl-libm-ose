@@ -6,6 +6,8 @@
 #         Thanks to original authors at Gem5, most of the code belongs to them.
 #
 #
+from SCons.Script import GetOption
+
 import os
 
 def strip_build_path(path, env):
@@ -124,7 +126,11 @@ def MakeBuildRoot(env):
     except KeyError:
         b = 'build'
     b += '/' + '%s'%(env['libabi'])
-    dbg = env['debug']
+    if  env['debug_mode'] != GetOption('debug_mode'):
+        dbg = GetOption('debug_mode')
+    else:
+        dbg = env['debug_mode']
+
     if dbg == 'libs' or dbg == 'all':
         b += "-%s"%"debug"
     else:
@@ -144,7 +150,7 @@ def SetupConfiguration(env):
         MakeBuildRoot(env)
         UpdateEnvComStr(env)
 
-        if env['debug']:
+        if env['debug_mode']:
             env.Append(CPPDEFINES = {'DEBUG': '1'})
-        print('=======Configuring Variables=======')
+        print('=======Configuring Variables: DONE =======')
 

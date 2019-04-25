@@ -8,12 +8,12 @@ e.Append(
 )
 
 try:
-    if not env['debug']:
+    if not env['debug_mode']:
         e.Append(
             CCFLAGS = ['-O3'],
         )
-except KeyError(err):
-    print("Keyerror, debug not found")
+except KeyError as err:
+    print("Keyerror, debug_mode not found", err)
 
 #source = Glob('*.c', exclude=['log.c'])
 source = Glob('*.c')

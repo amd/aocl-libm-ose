@@ -1,9 +1,10 @@
 from SCons.Variables import Variables as SVariables
-from SCons.Script import GetOption,AddOption,Import
+from SCons.Script import AddOption
 
 class LocalOption:
-    def __init__(self, htexts):
-        self.__help_texts = htexts
+    def __init__(self):
+        self.__help_texts = ""
+        pass
 
     def Add(self, *args, **kwargs):
         col_width = 30
@@ -16,7 +17,7 @@ class LocalOption:
             else:
                 help += " " * (col_width - length)
             help += kwargs["help"]
-        self.__help_texts["options"] += help + "\n"
+        self.__help_texts += help + "\n"
 
         AddOption(*args, **kwargs)
 
@@ -41,5 +42,4 @@ class Variables(SVariables):
         for requirement in self.required:
             if not env.has_key(requirement):
                 print('violation: ', requirement)
-
 

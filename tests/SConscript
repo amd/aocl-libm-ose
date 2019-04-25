@@ -52,8 +52,8 @@ liblist = []
 incpath = ['#tests/include', '.', './include']
 libpath = []
 
-#print(env['testabi'])
-abi = env['testabi']
+#print(env['libabi'])
+abi = env['libabi']
 if abi == 'aocl':
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_FMA3]
     liblist.extend(['amdlibm'])
@@ -104,13 +104,15 @@ tests = getSubdirs(this_sconscript_file)
 exclude_dirs = ['include']
 tests = [x for x in tests if x not in exclude_dirs]
 
+#print(e.Dump())
 #print(tests)
 test_exes = []
 
 for test in tests:
-    e.Replace(CPPDEFINES = ['-DTEST_NAME=%s' % test])
+    tenv = e.Clone()
+    tenv.Append(CPPDEFINES = ['-DTEST_NAME=%s' % test])
     exes = SConscript('%s/SConscript' % test,
-                        exports = { 'env': e },
+                        exports = { 'env': tenv },
                         duplicate = 0,
                         src_dir = '#tests/%s' % test,
                         variant_dir = joinpath(build_root, test)

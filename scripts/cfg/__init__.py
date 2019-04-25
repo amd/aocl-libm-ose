@@ -16,8 +16,7 @@ class DefaultCfg(object):
     def __default_store(self, option, opt_str, value, parser):
         #print("called inside default store")
         setattr(parser.values, option.dest, value)
-        #self.defvars.Update(option.dest, value)
-        #print(self.defenv[option.dest])
+        print(option, opt_str, value)
         self.dummyenv[option.dest] = value
 
     def __init__(self, build_root=None):
@@ -48,16 +47,19 @@ class DefaultCfg(object):
     def AddOptions(self):
         opts = cfg.LocalOption()
 
-        opts.Add('--verbose', dest='verbose', nargs=0, action='store',
-                      help='Print full tool command lines')
+        opts.Add('--verbose', dest='verbose', nargs=1, action='callback',
+                 callback=self.__default_store,
+                 default='none', type='int',
+                 help='Print full tool command lines')
         opts.Add('--debug_mode',
                  callback=self.__default_store,
                  dest='debug_mode', nargs=1, action='callback',
                  default='none', type='str',
                  #choices=['none', 'libs', 'tests', 'all'],
                  help='Enable Debug mode [none, libs, tests, all] [default:none]')
-        opts.Add('--libabi', dest='libabi', nargs=1, action='store',
-                 default='aocl',
+        opts.Add('--libabi', dest='libabi', nargs=1, action='callback',
+                 callback=self.__default_store,
+                 default='aocl', type='choice',
                  choices=['aocl', 'glibc', 'libm', 'svml'],
                  help="""Compile tests to call this abi
                       aocl  - AOCL, functions prefixed with 'amd_*'
@@ -65,10 +67,14 @@ class DefaultCfg(object):
                       libm  - Usual C Standard library calls: exp, pow, sin, cos etc.
                       svml  - Intel SVML calls
                       """)
-        opts.Add('--developer', dest='developer', nargs=1, action='store',
+        opts.Add('--developer', dest='developer', nargs=1, action='callback',
+                 callback=self.__default_store,
+                 type='choice',
                  choices=['1', '2', '3', '4'],
                  help='Enable Developer mode [1, 2, 3, 4]')
-        opts.Add('--build', dest='build', nargs=1, action='store',
+        opts.Add('--build', dest='build', nargs=1, action='callback',
+                 callback=self.__default_store,
+                 type='choice',
                  choices=['release', 'developer', 'debug'],
                  help='Enable build type [release, developer, debug]')
 

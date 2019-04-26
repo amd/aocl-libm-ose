@@ -126,7 +126,8 @@ class DefaultCfg(object):
         env.Append(
             CPPDEFINES = { 'LIBABI': env['libabi']})
 
-        if env['developer'] != "0":
+        print("developer=> ", env['developer'])
+        if env['developer'] != 0:
             env.Append(
                 CPPDEFINES = {'DEVELOPER' : env['developer']})
 

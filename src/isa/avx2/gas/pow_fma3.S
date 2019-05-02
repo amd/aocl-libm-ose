@@ -13,7 +13,7 @@
 #
 #       Look in exp, log for the respective algorithms
 #
-
+#include "log_scalar_tables.h"
 #include "fn_macros.h"
 #include "weak_macros.h"
 #define fname FN_PROTOTYPE_FMA3(pow)
@@ -106,16 +106,16 @@ fname:
 .L__continue_common:
 
     # compute index into the log tables
-    
+
     mov         %r8, %r9
-    and         .L__mask_mant_all8(%rip), %r8 #ux & .L__mask_mant_all8
+    and         .L__mask_mant_all10(%rip), %r8 #ux & .L__mask_mant_all8
     vsubsd       .L__real_one(%rip), %xmm0,%xmm7
     mov         %r8, p_temp_log(%rsp)
     vpand	.L__real_notsign(%rip), %xmm7, %xmm7
 
  # F, Y, switch to near-one codepath
     vmovsd       p_temp_log(%rsp), %xmm1
-    shr         $44, %r8
+    shr         $42, %r8
     vpor         .L__real_half(%rip), %xmm2, %xmm2
     vpor         .L__real_half(%rip), %xmm1, %xmm1
     vcomisd      .L__real_threshold(%rip), %xmm7
@@ -132,27 +132,25 @@ fname:
     vmulsd       %xmm2, %xmm2, %xmm0    
     vsubsd       %xmm2, %xmm1, %xmm5    
     
-    lea         .L__log_256_lead(%rip), %r9
+    lea         .L__log_1024_lead(%rip), %r9
     
     # poly
-    vmovsd       .L__real_1_over_6(%rip), %xmm3
+    vmovsd       .L__real_1_over_5(%rip), %xmm3
     vmovsd       .L__real_1_over_3(%rip), %xmm1
                       
-
-    vfmadd213sd     .L__real_1_over_5(%rip), %xmm2, %xmm3
-    vfmadd213sd    .L__real_1_over_2(%rip), %xmm2, %xmm1
+    vfmadd213sd    .L__real_1_over_2(%rip), %xmm2, %xmm1 #r*1/3 + 1/2
     
-    vmulsd       %xmm0, %xmm0, %xmm4     
-    vmulsd       %xmm0, %xmm1, %xmm1                        
+    vmulsd       %xmm0, %xmm0, %xmm4     #r^4
+    vmulsd       %xmm0, %xmm1, %xmm1     #1/2r^2 + 1/3*r^3
 
-    vfmadd213sd  .L__real_1_over_4(%rip), %xmm2, %xmm3
+    vfmadd213sd  .L__real_1_over_4(%rip), %xmm2, %xmm3 #1/4 + r*1/5
     vfmadd231sd     %xmm4, %xmm3 ,%xmm1
     
     vaddsd       %xmm5, %xmm7, %xmm7
     vaddsd       %xmm7, %xmm1, %xmm1
 
     
-    lea         .L__log_256_tail(%rip), %rdx
+    lea         .L__log_1024_tail(%rip), %rdx
 
     vmovsd       .L__real_log2_tail(%rip), %xmm5
     vfmsub213sd   %xmm1, %xmm6, %xmm5
@@ -176,50 +174,29 @@ fname:
     # now
     # xmm3 - resT
     # xmm0 - resH
-    # xmm4 - (resT_t)
-    # xmm2 - (-resT_h)
 
+    # loghi = resT + resH
+    # loglo = resH - hi + resT
 .L__log_x_continue:
-
-    vmovsd       %xmm0, %xmm7, %xmm7
+    vmovsd      %xmm0, %xmm7, %xmm7
     vaddsd       %xmm3, %xmm0, %xmm0
-    vmovsd       %xmm0, %xmm5, %xmm5
-    vandpd       .L__real_fffffffff8000000(%rip), %xmm0, %xmm0
-   
-    # xmm0 - H
-    # xmm7 - resH
-    # xmm5 - res
+    vsubsd       %xmm0, %xmm7, %xmm7
+    vaddsd       %xmm7, %xmm3, %xmm6
 
+    # Multiplication of y and (loghi + loglo)
+    # v = y * loghi
+    # tail = y * loglo
+    # vt = tail + fma(y, loghi, -v)
 
-    vaddsd       %xmm3, %xmm2, %xmm2
-    vsubsd       %xmm5, %xmm7, %xmm7
-    vsubsd       %xmm2, %xmm4, %xmm1
-    vaddsd       %xmm3, %xmm7, %xmm7
-    vsubsd       %xmm0, %xmm5, %xmm5
-
-    vmovsd       save_y(%rsp), %xmm4 #xmm4 = y
-   
-    vaddsd       %xmm1, %xmm7, %xmm7
-    vaddsd       %xmm5, %xmm7, %xmm7
-
-    # res = H + T
-    # H has leading 26 bits of precision
-    # T has full precision
-
-    # xmm0 - H log_head
-    # xmm7 - T log_tail
-    # xmm4 = y
-    #Multipying head and tail of log(x) with y.
-    # v = log_head*y
-    # vt = log_tail*y + fma(log_head,y,v)
-    vmovsd  %xmm0, %xmm6, %xmm6
-    vmulsd  %xmm4, %xmm0, %xmm0
-    vmulsd  %xmm4, %xmm7, %xmm3
-    vfnmadd213sd %xmm0, %xmm4, %xmm6
-    vaddsd  %xmm3, %xmm6, %xmm6
+    vmovsd  %xmm0, %xmm7, %xmm7
+    vmovsd  save_y(%rsp), %xmm13
+    vmulsd  %xmm13, %xmm0, %xmm0
+    vmulsd  %xmm13, %xmm6, %xmm3
+    vfmsub213sd %xmm0, %xmm13, %xmm7
+    vaddsd  %xmm7, %xmm3, %xmm6
 
     # y * ln(x) = v + vt
-    # v and vt are in full precision 
+    # v and vt are in full precision
  
     # xmm0 - v
     # xmm6 - vt
@@ -229,7 +206,6 @@ fname:
     # -----------------------------
 
     # v * (64/ln(2))
-
     vmovsd       %xmm0, p_temp_exp(%rsp)
     vmulsd       .L__real_64_by_log2(%rip), %xmm0, %xmm7
     mov         p_temp_exp(%rsp), %rdx
@@ -905,7 +881,7 @@ fname:
 .L__mant_full:              .quad 0x000fffffffffffff
 .L__1_before_mant:          .quad 0x0010000000000000
 
-.L__mask_mant_all8:         .quad 0x000ff00000000000
+.L__mask_mant_all10:        .quad 0x000FFC0000000000
 .L__mask_mant9:             .quad 0x0000080000000000
 
 .align 16
@@ -1506,7 +1482,7 @@ fname:
                     .quad 0x0000000000000000
 
 .align 16
-.L__log_F_inv_head:
+.L__log_F_inv_head_old:
                     .quad 0x4000000000000000
                     .quad 0x3fffe00000000000
                     .quad 0x3fffc00000000000
@@ -1766,7 +1742,7 @@ fname:
                     .quad 0x3ff0000000000000
 
 .align 16
-.L__log_F_inv_tail:
+.L__log_F_inv_tail_old:
                     .quad 0x0000000000000000
                     .quad 0x3effe01fe01fe020
                     .quad 0x3f1fc07f01fc07f0

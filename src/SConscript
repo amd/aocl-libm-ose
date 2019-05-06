@@ -13,8 +13,8 @@ e.Append(
     CCFLAGS = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror',
                #'-Wno-unused-but-set-parameter', 
                '-Wno-unused-parameter', 
-               '-fPIC', '-O1',
-               '-mavx', '-mavx2', '-march=znver1'],
+               '-fPIC',
+               '-mavx2', '-march=znver1'],
     ASFLAGS = ['-Wall', '-W', '-fPIC'
 		],
     CPPDEFINES = ['AVX_XOP_FMA4_FMA3'

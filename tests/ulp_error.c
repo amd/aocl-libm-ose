@@ -177,11 +177,11 @@ libm_test_ulp_error(double output, long double expected)
 
     /*If output alone is infinity */
     if (isinf(output))
-        return fabsl(AMD_LIBM_MAX_DOUBLE - expected / __ulpq(expected)) + 1;
+        return fabsl(AMD_LIBM_MAX_DOUBLE - expected / (long double)__ulpq(expected)) + 1;
 
     /*If output alone is -infinity */
     if (is_inf_neg(output))
-        return fabsl((-AMD_LIBM_MAX_DOUBLE - expected) / __ulpq(expected)) + 1;
+        return fabsl((-AMD_LIBM_MAX_DOUBLE - expected) / (long double)__ulpq(expected)) + 1;
 
     return 0.0;
 }

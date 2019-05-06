@@ -33,6 +33,10 @@ To check that this is gcc compiler version 5.1 or greater:
 */
 
 #if defined(__GNUC__)
+
+#define PACKED		__attribute__((packed))
+
+#define PACK_ALIGNED(x) __attribute__((packed, aligned(x)))
 #define ALIGN(x)        __attribute__((aligned ((x))))
 
 #define RODATA          __attribute__((section (".rodata")))
@@ -61,7 +65,7 @@ To check that this is gcc compiler version 5.1 or greater:
 
 
 #if defined(__clang__)
-    #define FALLTHROUGH 
+    #define FALLTHROUGH
     #define NO_OPTIMIZE __attribute__((optnone))
 #else
     #define FALLTHROUGH __attribute__((fallthrough))
@@ -70,7 +74,7 @@ To check that this is gcc compiler version 5.1 or greater:
 
 #elif defined(__MSVC)
 
-#define FALLTHROUGH 
+#define FALLTHROUGH
 
 #endif	/* GCC */
 

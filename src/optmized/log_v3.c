@@ -20,14 +20,9 @@
 #include <libm/typehelper.h>
 #include <libm/compiler.h>
 
-
 #define LOG_N		7
 #define LOG_POLY_DEGREE 5
 #include "log_data.h"
-
-struct log_table {
-    double_t head, tail;
-};
 
 #define FLAG_X_ZERO 0x1
 #define FLAG_X_NEG  0x2
@@ -38,36 +33,10 @@ double _log_special(double_t x, double_t y, uint32_t code);
 static inline
 uint32_t top16(double d)
 {
-    return asuint64(d) >> 48;
+    return asuint64(d) >> (64-16);
 }
 
-/*
- * ISO-IEC-10967-2: Elementary Numerical Functions
- * Signature:
- *   double log1p(double x)
- *
- * Spec:
- *   log1p(x)
- *          = log1p(x)          if x ∈ F and x >= -1 and |x| >= DBL_MIN
- *          = x                 if x ∈ F, and |x| < DBL_MIN
- *          = +/-x              if x = {-0, 0}, preserve sign
- *          = -0                if x = -0
- *          = -inf              if x = -1
- *          = +inf              if x = +inf
- *          = NaN               otherwise
- *
- * If |x| < 2^-53 return (8* x - b) * 1/8, purpose is to return 'x'-tiny,
- *  correctly rounded in all possible modes, b = 2^-1074 for double precision.
- *
- *
- * Implementation Notes:
- *   Find 'm' such that
- *     1 <= 2^-m (1 + x) < 2
- *
- *   Determine 'F' and 'f' such that
- *     1+x ~= 2^m(F + f)
- *
- */
+
 static inline double_t
 __log1p_v3(double_t f)
 {
@@ -104,9 +73,37 @@ __log1p_v3(double_t f)
 
 }
 
+/*
+ * ISO-IEC-10967-2: Elementary Numerical Functions
+ * Signature:
+ *   double log1p(double x)
+ *
+ * Spec:
+ *   log1p(x)
+ *          = log1p(x)          if x ∈ F and x >= -1 and |x| >= DBL_MIN
+ *          = x                 if x ∈ F, and |x| < DBL_MIN
+ *          = +/-x              if x = {-0, 0}, preserve sign
+ *          = -0                if x = -0
+ *          = -inf              if x = -1
+ *          = +inf              if x = +inf
+ *          = NaN               otherwise
+ *
+ * If |x| < 2^-53 return (8* x - b) * 1/8, purpose is to return 'x'-tiny,
+ *  correctly rounded in all possible modes, b = 2^-1074 for double precision.
+ *
+ *
+ * Implementation Notes:
+ *   Find 'm' such that
+ *     1 <= 2^-m (1 + x) < 2
+ *
+ *   Determine 'F' and 'f' such that
+ *     1+x ~= 2^m(F + f)
+ *
+ */
 double
 FN_PROTOTYPE(log1p_v3)(double x)
 {
+
     return __log1p_v3(x);
 }
 
@@ -142,7 +139,7 @@ eval_as_double(double d)
 *
 *    log(x) = log(2^m) + log(F + f)
 *           =          + log(F(1+f/F)
-*           = m*log(2) + log(F) + log(1 + f/F)
+*           = m*log(2) + log(F) + log(1 + f/F)         ---(1)
 *
 *    Let r = f/F
 *      (alternating sign)
@@ -152,16 +149,12 @@ eval_as_double(double d)
 double
 FN_PROTOTYPE(log_v3)(double x)
 {
-    uint32_t    top, j;
-    uint64_t    ux;
-
-    double_t    q, f, r;
-
-    ux = asuint64(x);
-
     /*
      * Procedure 1:
-     * | ln(2^m(F + f) | >= 1/16,  ( b^x = y, then log_b_(y) = x )
+     *     x  = 2^m * (F + f)
+     * log(x) = log(2^m) + log(F + f)
+     *    from(1),
+     *          | ln(2^m(F + f) | >= 1/16,  ( b^x = y, then log_b_(y) = x )
      *
      * so,
      *    2^m(F+f) >= e^(1/16)
@@ -170,6 +163,12 @@ FN_PROTOTYPE(log_v3)(double x)
      *
      *
      */
+    uint32_t    top, j;
+    uint64_t    ux;
+    double_t    q, f, r;
+
+    ux = asuint64(x);
+
 #define NEAR_ONE_LO asuint64(1 - 0x1.0p-5)
 #define NEAR_ONE_HI asuint64(1 + 0x1.1p-5)
 
@@ -199,7 +198,7 @@ FN_PROTOTYPE(log_v3)(double x)
      * extract exponent and unbias it
      */
     const flt64_split_t f64 = {.d = x};
-    int32_t m = f64.f.expo - 1023;
+    int64_t m = f64.f.expo - 1023;
 
     /*
      * Y = 2^-m * x , so that 1 <= 2^-m*X < 2
@@ -209,21 +208,23 @@ FN_PROTOTYPE(log_v3)(double x)
 
     j = Y.i >> (52 - LOG_N);            /* Top ''LOG_N' bits of mantissa */
 
-    Y.i |=  0x3ff0000000000000ULL;
+    /* actually Y.d = x * (asdouble)((1023 - m) << 52); */
+    Y.i |=  (0x3ffULL << 52);           /* 0x3ff0.0000.0000.0000 */
 
     /*
      * F = Y * 2^7
      * will not overflow as Y is only mantissa and 1 <= Y < 2
      * use eval_as_double(), otherwise, GCC might optimize this and next statement
      */
-    double_t F = eval_as_double(0x1.0p7 * Y.d);
+    int64_t F = cast_double_to_i64(0x1.0p7 * Y.d);
 
     /* Round to nearest integer ( F * 2^-7 ) */
-    int F1 = cast_double_to_i64(F + 0.5);
+    double_t F1 = eval_as_double((double_t)F * 0x1.0p-7);
 
-    f = Y.d - ((double)F1 * 0x1.0p-7);
+    f = Y.d - F1;
 
-    r = f * LOG_TAB_F_INV[j];
+    const struct log_table *tab = &((struct log_table *)LOG_TAB)[j];
+    r = f * tab->f_inv;
 
     /* re-defining to shorten the lines */
 #define C1 LOG_C1
@@ -276,10 +277,11 @@ FN_PROTOTYPE(log_v3)(double x)
 #endif
 #endif  /* if HORNER_SCHEME || ESTRIN_SCHEME */
 
-    struct log_table *tb_entry = &((struct log_table*)LOG_TAB)[j];
+#define TAB_HEAD(j) log_data.table[j].head
+#define TAB_TAIL(j) log_data.table[j].tail
 
-    double_t l_lead = m * LN2_HEAD + tb_entry->head;
-    double_t l_tail = m * LN2_TAIL + tb_entry->tail;
+    double_t l_lead = (m * LN2_HEAD) + tab->head;
+    double_t l_tail = (m * LN2_TAIL) + tab->tail;
 
     /* Parens are necessary to keep the precision */
     q = l_lead + (r + (q + l_tail));

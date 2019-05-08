@@ -1,0 +1,178 @@
+/*
+ * Original values from
+ * ACM Transactions on MathematicalSoftware,Vol. 16, No. 4,December 1990
+ * "Table driven Implemntation of the Logarithmic Function - P.T.P Tang"
+ */
+
+/*
+ * for F, see towards end of table
+ * f_inv => 1/F , with F=(1 + j * 2^-7) where, j=0,1,2,3,...,127
+ * f_inv[j] = 128/(128 + j)
+*/
+/*              f_inv                F_head                   F_tail        */
+	{0x1.0000000000000p+0, 0x0.0000000000000p+0 , 0x0.000000000000000p+0  },
+	{0x1.fc07f01fc07f0p-1, 0x1.fe02a6b200000p-8 , -0x1.f30ee07912df9p-41  },
+	{0x1.f81f81f81f820p-1, 0x1.fc0a8b1000000p-7 , -0x1.fe0e183092c59p-42  },
+	{0x1.f44659e4a4271p-1, 0x1.7b91b07d80000p-6 , -0x1.2772ab6c0559cp-41  },
+	{0x1.f07c1f07c1f08p-1, 0x1.f829b0e780000p-6 , 0x1.980267c7e09e4p-45   },
+	{0x1.ecc07b301ecc0p-1, 0x1.39e87ba000000p-5 , -0x1.42a056fea4dfdp-41  },
+	{0x1.e9131abf0b767p-1, 0x1.77458f6340000p-5 , -0x1.2303b9cb0d5e1p-41  },
+	{0x1.e573ac901e574p-1, 0x1.b42dd71180000p-5 , 0x1.71bec28d14c7ep-41   },
+	{0x1.e1e1e1e1e1e1ep-1, 0x1.f0a30c0100000p-5 , 0x1.62a6617cc9717p-41   },
+	{0x1.de5d6e3f8868ap-1, 0x1.16536eea40000p-4 , -0x1.0a3e2f3b47d18p-41  },
+	{0x1.dae6076b981dbp-1, 0x1.341d7961c0000p-4 , -0x1.717b6b33e44f8p-43  },
+	{0x1.d77b654b82c34p-1, 0x1.51b073f060000p-4 , 0x1.83f69278e686ap-44   },
+	{0x1.d41d41d41d41dp-1, 0x1.6f0d28ae60000p-4 , -0x1.2968c836cc8c2p-41  },
+	{0x1.d0cb58f6ec074p-1, 0x1.8c345d6320000p-4 , -0x1.937c294d2f567p-42  },
+	{0x1.cd85689039b0bp-1, 0x1.a926d3a4a0000p-4 , 0x1.aac6ca17a4554p-41   },
+	{0x1.ca4b3055ee191p-1, 0x1.c5e548f5c0000p-4 , -0x1.c5e7514f4083fp-43  },
+	{0x1.c71c71c71c71cp-1, 0x1.e27076e2a0000p-4 , 0x1.e5cbd3d50fffcp-41   },
+	{0x1.c3f8f01c3f8f0p-1, 0x1.fec9131dc0000p-4 , -0x1.54555d1ae6607p-44  },
+	{0x1.c0e070381c0e0p-1, 0x1.0d77e7cd10000p-3 , -0x1.c69a65a23a170p-41  },
+	{0x1.bdd2b899406f7p-1, 0x1.1b72ad52f0000p-3 , 0x1.9e80a41811a39p-41   },
+	{0x1.bacf914c1bad0p-1, 0x1.29552f8200000p-3 , -0x1.5b967f4471dfcp-44  },
+	{0x1.b7d6c3dda338bp-1, 0x1.371fc201f0000p-3 , -0x1.c22f10c9a4ea8p-41  },
+	{0x1.b4e81b4e81b4fp-1, 0x1.44d2b6ccb0000p-3 , 0x1.f4799f4f6543ep-41   },
+	{0x1.b2036406c80d9p-1, 0x1.526e5e3a20000p-3 , -0x1.2f21746ff8a47p-41  },
+	{0x1.af286bca1af28p-1, 0x1.5ff3070a80000p-3 , -0x1.b0b0de3077d7ep-41  },
+	{0x1.ac5701ac5701bp-1, 0x1.6d60fe71a0000p-3 , -0x1.6f1b955c4d1dap-42  },
+	{0x1.a98ef606a63bep-1, 0x1.7ab8902110000p-3 , -0x1.37b720e4a694bp-42  },
+	{0x1.a6d01a6d01a6dp-1, 0x1.87fa065210000p-3 , -0x1.b77b7effb7f41p-42  },
+	{0x1.a41a41a41a41ap-1, 0x1.9525a9cf40000p-3 , 0x1.5ad1d904c1d4ep-41   },
+	{0x1.a16d3f97a4b02p-1, 0x1.a23bc1fe30000p-3 , -0x1.2a739b23b93e1p-41  },
+	{0x1.9ec8e951033d9p-1, 0x1.af3c94e810000p-3 , -0x1.00349cc67f9b2p-41  },
+	{0x1.9c2d14ee4a102p-1, 0x1.bc286742e0000p-3 , -0x1.cca75818c5dbcp-41  },
+	{0x1.999999999999ap-1, 0x1.c8ff7c79b0000p-3 , -0x1.97794f689f843p-41  },
+	{0x1.970e4f80cb872p-1, 0x1.d5c216b500000p-3 , -0x1.11ba91bbca682p-41  },
+	{0x1.948b0fcd6e9e0p-1, 0x1.e27076e2b0000p-3 , -0x1.a342c2af0003cp-44  },
+	{0x1.920fb49d0e229p-1, 0x1.ef0adcbdc0000p-3 , 0x1.64d948637950ep-41   },
+	{0x1.8f9c18f9c18fap-1, 0x1.fb9186d5e0000p-3 , 0x1.f1546aaa3361cp-42   },
+	{0x1.8d3018d3018d3p-1, 0x1.0402594b50000p-2 , -0x1.7df928ec217a5p-41  },
+	{0x1.8acb90f6bf3aap-1, 0x1.0a324e2738000p-2 , 0x1.0e35f73f7a018p-42   },
+	{0x1.886e5f0abb04ap-1, 0x1.1058bf9ae8000p-2 , -0x1.a9573b02faa5ap-41  },
+	{0x1.8618618618618p-1, 0x1.1675cabab8000p-2 , 0x1.30701ce63eab9p-41   },
+	{0x1.83c977ab2beddp-1, 0x1.1c898c1698000p-2 , 0x1.9fafbc68e7540p-42   },
+	{0x1.8181818181818p-1, 0x1.22941fbcf8000p-2 , -0x1.a6976f5eb0963p-44  },
+	{0x1.7f405fd017f40p-1, 0x1.2895a13de8000p-2 , 0x1.a8d7ad24c13f0p-44   },
+	{0x1.7d05f417d05f4p-1, 0x1.2e8e2bae10000p-2 , 0x1.d309c2cc91a85p-42   },
+	{0x1.7ad2208e0ecc3p-1, 0x1.347dd9a988000p-2 , -0x1.5594dd4c58092p-45  },
+	{0x1.78a4c8178a4c8p-1, 0x1.3a64c55698000p-2 , -0x1.d0b1c68651946p-41  },
+	{0x1.767dce434a9b1p-1, 0x1.4043086868000p-2 , 0x1.3f1de86093efap-41   },
+	{0x1.745d1745d1746p-1, 0x1.4618bc21c8000p-2 , -0x1.09ec17a426426p-41  },
+	{0x1.724287f46debcp-1, 0x1.4be5f95778000p-2 , -0x1.d7c92cd9ad824p-44  },
+	{0x1.702e05c0b8170p-1, 0x1.51aad872e0000p-2 , -0x1.f4bd8db0a7cc1p-44  },
+	{0x1.6e1f76b4337c7p-1, 0x1.5767717458000p-2 , -0x1.2c9d5b2a49af9p-41  },
+	{0x1.6c16c16c16c17p-1, 0x1.5d1bdbf580000p-2 , 0x1.394a11b1c1ee4p-43   },
+	{0x1.6a13cd1537290p-1, 0x1.62c82f2ba0000p-2 , -0x1.c356848506eadp-41  },
+	{0x1.6816816816817p-1, 0x1.686c81e9b0000p-2 , 0x1.4aec442be1015p-42   },
+	{0x1.661ec6a5122f9p-1, 0x1.6e08eaa2b8000p-2 , 0x1.0f1c609c98c6cp-41   },
+	{0x1.642c8590b2164p-1, 0x1.739d7f6bc0000p-2 , -0x1.7fcb18ed9d603p-41  },
+	{0x1.623fa77016240p-1, 0x1.792a55fdd8000p-2 , -0x1.c2ec1f512dc03p-41  },
+	{0x1.6058160581606p-1, 0x1.7eaf83b828000p-2 , 0x1.7e1b259d2f3dap-41   },
+	{0x1.5e75bb8d015e7p-1, 0x1.842d1da1e8000p-2 , 0x1.62e927628cbc2p-43   },
+	{0x1.5c9882b931057p-1, 0x1.89a3386c18000p-2 , -0x1.ed2a52c73bf78p-41  },
+	{0x1.5ac056b015ac0p-1, 0x1.8f11e87368000p-2 , -0x1.d3881e8962a96p-42  },
+	{0x1.58ed2308158edp-1, 0x1.947941c210000p-2 , 0x1.6faba4cdd147dp-42   },
+	{0x1.571ed3c506b3ap-1, 0x1.99d9581180000p-2 , -0x1.f753456d113b8p-42  },
+	{0x1.5555555555555p-1, 0x1.9f323ecbf8000p-2 , 0x1.84bf2b68d766fp-42   },
+	{0x1.5390948f40febp-1, 0x1.a484090e58000p-2 , 0x1.d8515fe535b87p-41   },
+	{0x1.51d07eae2f815p-1, 0x1.a9cec9a9a0000p-2 , 0x1.0931a909fea5ep-43   },
+	{0x1.5015015015015p-1, 0x1.af12932478000p-2 , -0x1.e53bb31eed7a9p-44  },
+	{0x1.4e5e0a72f0539p-1, 0x1.b44f77bcc8000p-2 , 0x1.ec5197ddb55d3p-43   },
+	{0x1.4cab88725af6ep-1, 0x1.b985896930000p-2 , 0x1.0fb598fb14f89p-42   },
+	{0x1.4afd6a052bf5bp-1, 0x1.beb4d9da70000p-2 , 0x1.b7bf7861d37acp-42   },
+	{0x1.49539e3b2d067p-1, 0x1.c3dd7a7cd8000p-2 , 0x1.6a6b9d9e0a5bdp-41   },
+	{0x1.47ae147ae147bp-1, 0x1.c8ff7c79a8000p-2 , 0x1.a21ac25d81ef3p-42   },
+	{0x1.460cbc7f5cf9ap-1, 0x1.ce1af0b860000p-2 , -0x1.8290905a86aa6p-43  },
+	{0x1.446f86562d9fbp-1, 0x1.d32fe7e010000p-2 , -0x1.42a9e21373414p-42  },
+	{0x1.42d6625d51f87p-1, 0x1.d83e7258a0000p-2 , 0x1.79f2828add176p-41   },
+	{0x1.4141414141414p-1, 0x1.dd46a04c20000p-2 , -0x1.dafa08cecadb1p-41  },
+	{0x1.3fb013fb013fbp-1, 0x1.e24881a7c8000p-2 , -0x1.3d9e34270ba6bp-42  },
+	{0x1.3e22cbce4a902p-1, 0x1.e744261d68000p-2 , 0x1.e1f8df68dbcf3p-44   },
+	{0x1.3c995a47babe7p-1, 0x1.ec399d2468000p-2 , 0x1.9802eb9dca7e7p-43   },
+	{0x1.3b13b13b13b14p-1, 0x1.f128f5faf0000p-2 , 0x1.bb2cd720ec44cp-44   },
+	{0x1.3991c2c187f63p-1, 0x1.f6123fa700000p-2 , 0x1.45630a2b61e5bp-41   },
+	{0x1.3813813813814p-1, 0x1.faf588f790000p-2 , -0x1.9c24ca098362bp-43  },
+	{0x1.3698df3de0748p-1, 0x1.ffd2e08580000p-2 , -0x1.6cf54d05f9367p-43  },
+	{0x1.3521cfb2b78c1p-1, 0x1.02552a5a5c000p-1 , 0x1.0fec69c695d7fp-41   },
+	{0x1.33ae45b57bcb2p-1, 0x1.04bdf9da94000p-1 , -0x1.92d9a033eff75p-41  },
+	{0x1.323e34a2b10bfp-1, 0x1.0723e5c1cc000p-1 , 0x1.f404e57963891p-41   },
+	{0x1.30d190130d190p-1, 0x1.0986f4f574000p-1 , -0x1.5be8dc04ad601p-42  },
+	{0x1.2f684bda12f68p-1, 0x1.0be72e4254000p-1 , -0x1.57d49676844ccp-41  },
+	{0x1.2e025c04b8097p-1, 0x1.0e44985d1c000p-1 , 0x1.917edd5cbbd2dp-42   },
+	{0x1.2c9fb4d812ca0p-1, 0x1.109f39e2d4000p-1 , 0x1.92dfbc7d93617p-42   },
+	{0x1.2b404ad012b40p-1, 0x1.12f7195940000p-1 , -0x1.043acfedce638p-41  },
+	{0x1.29e4129e4129ep-1, 0x1.154c3d2f4c000p-1 , 0x1.5e9a98f33a396p-41   },
+	{0x1.288b01288b013p-1, 0x1.179eabbd88000p-1 , 0x1.9a0bfc60e6fa0p-41   },
+	{0x1.27350b8812735p-1, 0x1.19ee6b467c000p-1 , 0x1.2dd98b97baef0p-42   },
+	{0x1.25e22708092f1p-1, 0x1.1c3b81f714000p-1 , -0x1.eda1b58389902p-44  },
+	{0x1.2492492492492p-1, 0x1.1e85f5e704000p-1 , 0x1.a07bd8b34be7cp-46   },
+	{0x1.23456789abcdfp-1, 0x1.20cdcd192c000p-1 , -0x1.4926cafc2f08ap-41  },
+	{0x1.21fb78121fb78p-1, 0x1.23130d7bec000p-1 , -0x1.7afa4392f1ba7p-46  },
+	{0x1.20b470c67c0d9p-1, 0x1.2555bce990000p-1 , -0x1.06987f78a4a5ep-42  },
+	{0x1.1f7047dc11f70p-1, 0x1.2795e1289c000p-1 , -0x1.dca290f81848dp-42  },
+	{0x1.1e2ef3b3fb874p-1, 0x1.29d37fec2c000p-1 , -0x1.eea6f465268b4p-42  },
+	{0x1.1cf06ada2811dp-1, 0x1.2c0e9ed448000p-1 , 0x1.d1772f5386374p-42   },
+	{0x1.1bb4a4046ed29p-1, 0x1.2e47436e40000p-1 , 0x1.34202a10c3491p-44   },
+	{0x1.1a7b9611a7b96p-1, 0x1.307d7334f0000p-1 , 0x1.0be1fb590a1f5p-41   },
+	{0x1.19453808ca29cp-1, 0x1.32b1339120000p-1 , 0x1.d71320556b67bp-41   },
+	{0x1.1811811811812p-1, 0x1.34e289d9d0000p-1 , -0x1.e2ce9146d277ap-41  },
+	{0x1.16e0689427379p-1, 0x1.37117b5474000p-1 , 0x1.ed71774092113p-43   },
+	{0x1.15b1e5f75270dp-1, 0x1.393e0d3564000p-1 , -0x1.5e6563bbd9fc9p-41  },
+	{0x1.1485f0e0acd3bp-1, 0x1.3b6844a000000p-1 , -0x1.eea838909f3d3p-44  },
+	{0x1.135c81135c811p-1, 0x1.3d9026a714000p-1 , 0x1.6faa404263d0bp-41   },
+	{0x1.12358e75d3033p-1, 0x1.3fb5b84d18000p-1 , -0x1.0bda4b162afa3p-41  },
+	{0x1.1111111111111p-1, 0x1.41d8fe8468000p-1 , -0x1.aa33736867a17p-42  },
+	{0x1.0fef010fef011p-1, 0x1.43f9fe2f9c000p-1 , 0x1.ccef4e4f736c2p-42   },
+	{0x1.0ecf56be69c90p-1, 0x1.4618bc21c4000p-1 , 0x1.ec27d0b7b37b3p-41   },
+	{0x1.0db20a88f4696p-1, 0x1.48353d1ea8000p-1 , 0x1.1bee7abd17660p-42   },
+	{0x1.0c9714fbcda3bp-1, 0x1.4a4f85db04000p-1 , -0x1.44fdd840b8591p-45  },
+	{0x1.0b7e6ec259dc8p-1, 0x1.4c679afcd0000p-1 , -0x1.1c64e971322cep-41  },
+	{0x1.0a6810a6810a7p-1, 0x1.4e7d811b74000p-1 , 0x1.bb09cb0985646p-41   },
+	{0x1.0953f39010954p-1, 0x1.50913cc018000p-1 , -0x1.794b434c5a4f5p-41  },
+	{0x1.0842108421084p-1, 0x1.52a2d265bc000p-1 , 0x1.6abb9df22bc57p-43   },
+	{0x1.073260a47f7c6p-1, 0x1.54b2467998000p-1 , 0x1.497a915428b44p-41   },
+	{0x1.0624dd2f1a9fcp-1, 0x1.56bf9d5b40000p-1 , -0x1.8cd7dc73bd194p-42  },
+	{0x1.05197f7d73404p-1, 0x1.58cadb5cd8000p-1 , -0x1.9db3db43689b4p-43  },
+	{0x1.0410410410410p-1, 0x1.5ad404c358000p-1 , 0x1.f2cfb29aaa5f0p-41   },
+	{0x1.03091b51f5e1ap-1, 0x1.5cdb1dc6c0000p-1 , 0x1.7648cf6e3c5d7p-41   },
+	{0x1.0204081020408p-1, 0x1.5ee02a9240000p-1 , 0x1.67570d6095fd2p-41   },
+	{0x1.0101010101010p-1, 0x1.60e32f4478000p-1 , 0x1.1b194f912b417p-42   },
+	{0x1.0000000000000p-1, 0x1.62e42fefa0000p-1 , -0x1.62e42fefa0000p-1   },
+
+        /*
+          import bigfloat
+          from bigfloat import BigFloat, log as blog, precision
+          from scripts.libm import double_to_hex as d2h
+
+          bexact = BigFloat.exact
+          N=39
+          preci = 256
+
+          with precision(preci):
+              l2_hi = BigFloat((2**-N) * int(2**N * blog(2.0)))
+              l2_lo = blog(2.0) - l2_hi
+
+	  print(".ln2 = {.head =", float(l2_hi).hex(), ", .tail=", float(l2_lo).hex(), "},")
+
+          def gen_table():
+              table=[0 for _ in range(257)]
+              with precision(preci):
+                  for j in range(0, 128):
+                  c_hi = BigFloat(2**-N) * int(2**N * blog(1 + j / 128) + 0.5)
+                  c_lo = blog(1 + j / 128.0) - c_hi
+                  table[2*j] = c_hi
+                  table[2*j+1] = c_lo
+
+              bigfloat.double_precision
+              for j in range(0, 128):
+                  print("{", float(table[2*j]).hex(), ",", float(table[2*j + 1]).hex(), "},")
+
+
+          gen_table()
+        */
+
+/* Local Variables:  */
+/* mode: c           */
+/* comment-column: 0 */
+/* End:              */

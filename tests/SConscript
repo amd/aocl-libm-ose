@@ -66,6 +66,29 @@ else:
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_FMA3]
     liblist.extend(['amdlibm'])
 
+try:
+    dbg_mode=env['debug_mode']
+except KeyError as err:
+    print("Keyerror, debug_mode not found, setting to none", err)
+    dbg_mode='none'
+
+if dbg_mode == 'tests' or dbg_mode == 'all':
+    env.Append(
+        CCFLAGS = ['-ggdb', '-Og']
+       )
+    # remove all optimizations on command line
+    opt_list=["-O%s"%x for x in range(1, 10)]
+    opt_list.append('-Os')
+    for opt in opt_list:
+        try:
+            env['CFLAGS'].remove(opt)
+        except ValueError as err:
+            pass
+else:
+    env.Append(
+        CCFLAGS = ['-O3'],
+    )
+
 
 liblist.extend(['m'])
 #libpath = ['#build/src', '#build/tests']

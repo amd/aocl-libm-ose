@@ -109,7 +109,7 @@ static int __verify_double(struct libm_test *test,
                 if (test->nargs > 1) result->input2[idx] = in2[j];
                 if (test->nargs > 2) result->input3[idx] = in3[j];
                 print_info = 1;
-                test_update_ulp = 1;
+                ret = 0;
             }
         }
 
@@ -199,13 +199,14 @@ static int __verify_float(struct libm_test *test,
                 if (test->nargs > 1) result->input2[idx] = in2[j];
                 if (test->nargs > 2) result->input3[idx] = in3[j];
                 print_info = 1;
-                test_update_ulp = 1;
+                ret = 0;
             }
         }
 
         if (test_update_ulp) {
             ulp = get_ulp(test, j);
             ret = update_ulp(test, ulp);
+            test_update_ulp = 0;
         }
 
         switch(ret) {

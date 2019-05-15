@@ -82,29 +82,39 @@ fname:
     vpsubq       .L__mask_1023(%rip), %xmm3,%xmm3
     vcvtdq2pd    %xmm3, %xmm6 # xexp 
     
-    #  NaN or inf
+    vpand       .L__real_mant(%rip), %xmm0,%xmm2
+    vsubsd      .L__real_one(%rip), %xmm0, %xmm4
+
+    mov 	%rax, %rdx
+    shr 	$52, %rdx
+    cmp         $0x7ff, %rdx #compare top 12 bits of x for exponents of infinity. nan or negative
+
+    jae          .L__special_cases  #x is either infinity,nan,negative
+    xor          %r8, %r8
+
+    cmp		%r8, %rdx           #x is zero or denormal
+    ja		.L__continue_common
+
+.L__special_cases:
+     #  NaN or inf
     vpand       .L__real_inf(%rip), %xmm0, %xmm5
     vcomisd     .L__real_inf(%rip), %xmm5
     je          .L__x_is_inf_or_nan
-    
+
     # check for negative numbers or zero
     vpxor       %xmm5, %xmm5,%xmm5
     vcomisd     %xmm5, %xmm0
     jbe         .L__x_is_zero_or_neg
 
-    vpand       .L__real_mant(%rip), %xmm0,%xmm2
-    vsubsd      .L__real_one(%rip), %xmm0, %xmm4
 
     vcomisd      .L__mask_1023_f(%rip), %xmm6
     je          .L__denormal_adjust
+
 
 #.p2align 5,,15
 .L__continue_common:    
     # compute index into the log tables
     vpand       .L__mask_mant_all8(%rip), %xmm0,%xmm14
-    vpand       .L__mask_mant9(%rip), %xmm0,%xmm15
-    vpsllq       $1, %xmm15,%xmm15 
-    vpaddq       %xmm14,%xmm15,%xmm1
     vmovd        %xmm1, %rax
 
     # near one codepath
@@ -262,8 +272,6 @@ fname:
                     .quad 0x0000000000000000
 
 .L__mask_mant_all8: .quad 0x000ff00000000000
-                    .quad 0x0000000000000000
-.L__mask_mant9:     .quad 0x0000080000000000
                     .quad 0x0000000000000000
 
 .L__real_log2_lead: .quad 0x3fe62e42e0000000 # log2_lead  6.93147122859954833984e-01

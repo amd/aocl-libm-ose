@@ -11,6 +11,12 @@
 .globl fname
 .type fname,@function
 fname:
+    vpand       .L__signbit_off(%rip), %xmm0, %xmm4
+    vmovq       %xmm4, %rax
+    #check if x is greater than 709.78271 or less than -709.78271
+    cmp         .L__max_exp_arg(%rip), %rax
+    jl         .L__exp_continue
+
     vucomisd    .L__max_exp_arg(%rip), %xmm0
     ja          .L__y_is_inf
     jp          .L__y_is_nan
@@ -18,35 +24,35 @@ fname:
     jbe         .L__y_is_zero
 
 .if __enable_IEEE_exceptions
-    vmovdqa        %xmm0,%xmm1
-    vpand         .L__signbit_off(%rip),%xmm0,%xmm1
-    vucomisd      .L__real_x_near0_threshold(%rip),%xmm1
-    jb            .L__y_is_one    
+#    vmovdqa        %xmm0,%xmm1
+#    vpand         .L__signbit_off(%rip),%xmm0,%xmm1
+#    vucomisd      .L__real_x_near0_threshold(%rip),%xmm1
+#    jb            .L__y_is_one
 .endif
-
-# exp(x) = 1 + x + 0.5*x^2 + (1/6)*x^3 for x < 10^-6
-    vcomisd     .L__pos_zero(%rip), %xmm0
-    jb          .L__exp_continue
-
-    vcomisd     .L__min_exp(%rip), %xmm0 #check if x < 10^-6
-    jb          .L__compute_for_small_x 
 
 .L__exp_continue:
     # x * (64/ln(2))
     vmulsd       .L__real_64_by_log2(%rip), %xmm0,%xmm1
 
     # n = int( x * (64/ln(2)) )
-    vcvttpd2dq   %xmm1, %xmm2   #xmm2 = (int)n
-    vcvtdq2pd    %xmm2, %xmm1   #xmm1 = (double)n #can use round
+    #This is done by fast double to int conversion.
+    #Adding 2^52 + 2^51 and subtracting the same to remove fractional bits
+
+    vaddsd       .L__big_number(%rip), %xmm1, %xmm2
+    vsubsd       .L__big_number(%rip), %xmm2, %xmm1
+
     vmovd        %xmm2, %ecx
 
     # r1 = x - n * ln(2)/64 head    
     # r2 = - n * ln(2)/64 tail    
     # r  = r1+r2    
-    vmovlhps     %xmm1,%xmm1,%xmm1     #xmm1 = (double)n,(double)n
-    vmovq        %xmm0,%xmm0           #xmm0 = 0,x   #zero out the upper part
-    vfmadd132pd  .L__log2_by_64_mtail_mhead(%rip),%xmm0,%xmm1
-    vhaddpd      %xmm1,%xmm1,%xmm2     #xmm2 = r,r
+     # r1 = x - n * ln(2)/64 head
+    # r2 = - n * ln(2)/64 tail
+    # r  = r1+r2
+    vmovsd       %xmm1, %xmm3, %xmm3
+    vfmadd132sd  .L__log2_by_64_mhead(%rip),%xmm0,%xmm1
+    vfmadd132sd  .L__log2_by_64_mtail(%rip),%xmm1,%xmm3
+    vmovsd       %xmm3, %xmm2, %xmm2
     
     #j = n & 0x3f    
     mov         $0x3f, %rax
@@ -94,9 +100,10 @@ fname:
     jle         .L__process_denormal 
 
 .L__process_normal:
+    add         $1023, %rcx
     shl         $52, %rcx    
-    vmovq        %rcx,%xmm2
-    vpaddq       %xmm2,%xmm0,%xmm0
+    vmovq       %rcx, %xmm2
+    vmulsd      %xmm2, %xmm0, %xmm0
     ret
 
 .p2align 4
@@ -207,10 +214,12 @@ fname:
 	.L__signbit_off:            .quad 0x7fffffffffffffff
 	.L__real_x_near0_threshold: .quad 0x3c00000000000000
 	.endif
-
+.L__big_number:             .quad 0x4338000000000000
 .L__min_exp_arg:            .quad 0xc0874910d52d3051
 .L__real_64_by_log2:        .quad 0x40571547652b82fe    # 64/ln(2)
 .L__log2_by_64_mtail_mhead: .octa 0xbd1cf79abc9e3b39bf862e42fefa0000
+.L__log2_by_64_mtail: 	    .octa 0xbd1cf79abc9e3b39
+.L__log2_by_64_mhead:	    .quad 0xbf862e42fefa0000
 .L__real_smallest_denormal: .quad 0x0000000000000001
 .L__real_one:               .quad 0x3ff0000000000000
 .L__min_exp:                .quad 0x3EB0C6F7A0B5ED8D #0.000001

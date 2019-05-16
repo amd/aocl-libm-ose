@@ -110,6 +110,9 @@ fname:
     mov         %r8, %r9
     and         .L__mask_mant_all10(%rip), %r8 #ux & .L__mask_mant_all8
     vsubsd       .L__real_one(%rip), %xmm0,%xmm7
+    and         .L__mask_mant11(%rip), %r9
+    shl         %r9
+    add         %r9, %r8
     mov         %r8, p_temp_log(%rsp)
     vpand	.L__real_notsign(%rip), %xmm7, %xmm7
 
@@ -210,17 +213,24 @@ fname:
     vmulsd       .L__real_64_by_log2(%rip), %xmm0, %xmm7
     mov         p_temp_exp(%rsp), %rdx
 
-    # v < 1024*ln(2), ( v * (64/ln(2)) ) < 64*1024
-    # v >= -1075*ln(2), ( v * (64/ln(2)) ) >= 64*(-1075)
     vpand	.L__real_notsign(%rip), %xmm7, %xmm4
     vmovq       %xmm4, %rax
     #check |x*(64/ln(2))| > 65536)
     cmp		.L__real_p65536(%rip), %rax
+    jb          .L__exp_continue
+
+    # v < 1024*ln(2), ( v * (64/ln(2)) ) < 64*1024
+    # v >= -1075*ln(2), ( v * (64/ln(2)) ) >= 64*(-1075)
+    vcomisd      .L__real_p65536(%rip), %xmm7
     ja          .L__process_result_inf
+
+    vcomisd      .L__real_m68800(%rip), %xmm7
+    jb          .L__process_result_zero
 
     # n = int( v * (64/ln(2)) )
     #This is done by fast double to int conversion.
     #Adding 2^52 + 2^51 and subtracting the same to remove fractional bits
+.L__exp_continue:
     lea         .L__two_to_jby64_head_table(%rip), %r10
     lea         .L__two_to_jby64_tail_table(%rip), %r11
 
@@ -882,7 +892,7 @@ fname:
 .L__1_before_mant:          .quad 0x0010000000000000
 
 .L__mask_mant_all10:        .quad 0x000FFC0000000000
-.L__mask_mant9:             .quad 0x0000080000000000
+.L__mask_mant11:            .quad 0x0000020000000000
 
 .align 16
 .L__real_fffffffff8000000:  .quad 0x0fffffffff8000000

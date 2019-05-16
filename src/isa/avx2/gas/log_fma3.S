@@ -115,6 +115,9 @@ fname:
 .L__continue_common:    
     # compute index into the log tables
     vpand       .L__mask_mant_all8(%rip), %xmm0,%xmm14
+    vpand       .L__mask_mant9(%rip), %xmm0,%xmm15
+    vpsllq       $1, %xmm15,%xmm15
+    vpaddq       %xmm14,%xmm15,%xmm1
     vmovd        %xmm1, %rax
 
     # near one codepath
@@ -273,7 +276,8 @@ fname:
 
 .L__mask_mant_all8: .quad 0x000ff00000000000
                     .quad 0x0000000000000000
-
+.L__mask_mant9:     .quad 0x0000080000000000
+		    .quad 0x0000000000000000
 .L__real_log2_lead: .quad 0x3fe62e42e0000000 # log2_lead  6.93147122859954833984e-01
                     .quad 0x0000000000000000
 .L__real_log2_tail: .quad 0x3e6efa39ef35793c # log2_tail  5.76999904754328540596e-08

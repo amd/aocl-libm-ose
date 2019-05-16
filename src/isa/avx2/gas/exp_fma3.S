@@ -100,10 +100,9 @@ fname:
     jle         .L__process_denormal 
 
 .L__process_normal:
-    add         $1023, %rcx
     shl         $52, %rcx    
     vmovq       %rcx, %xmm2
-    vmulsd      %xmm2, %xmm0, %xmm0
+    vpaddq       %xmm2, %xmm0, %xmm0
     ret
 
 .p2align 4
@@ -211,9 +210,10 @@ fname:
 .L__denormal_tiny_threshold:.quad 0xc0874046dfefd9d0
 
 	.if __enable_IEEE_exceptions
-	.L__signbit_off:            .quad 0x7fffffffffffffff
+#	.L__signbit_off:            .quad 0x7fffffffffffffff
 	.L__real_x_near0_threshold: .quad 0x3c00000000000000
 	.endif
+.L__signbit_off:            .quad 0x7fffffffffffffff
 .L__big_number:             .quad 0x4338000000000000
 .L__min_exp_arg:            .quad 0xc0874910d52d3051
 .L__real_64_by_log2:        .quad 0x40571547652b82fe    # 64/ln(2)

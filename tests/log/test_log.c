@@ -710,9 +710,10 @@ static int test_log_accu(struct libm_test *test)
 
     int arr_sz = ARRAY_SIZE(accu_ranges);
 
-    for (int i = 0; i < arr_sz ||
-             (accu_ranges[i].start = 0.0 &&
-              accu_ranges[i].stop == 0.0) ; i++) {
+    for (int i = 0; i < arr_sz; i++) {
+        if ((accu_ranges[i].start = 0.0) &&
+              (accu_ranges[i].stop == 0.0) )
+              break;
 
         ret = __generate_test_one_range(test, &accu_ranges[i]);
         if (ret)

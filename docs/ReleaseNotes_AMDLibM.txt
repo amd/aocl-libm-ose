@@ -1,7 +1,7 @@
 
-(C) 2008-2018 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2019 Advanced Micro Devices, Inc. All Rights Reserved.
 
-AMD LibM - Release Notes - version 3.3.0
+AMD LibM - Release Notes - version 3.4
 ----------------------------------------
 
 AMD LibM Contents
@@ -13,21 +13,17 @@ Linux(R) and Windows(R) operating systems.
 
 The Linux(R) version of the library is built using GCC 7.3.
 
-Hightlights of AMD LibM 3.3.0
+Hightlights of AMD LibM 3.4
 -----------------------------
 
-    * New 256-bit vector routines for pow, exp, exp2 and log (vrd4_pow, vrd4_exp,
-      vrd4_exp2, vrd4_log)
-    * New 128-bit vector double precision pow function (vrd2_pow)
-    * Improved 128-bit vector log function performance for AMD EPYC processors
-    * Minor bug fixes
+    * Bug fixes in scalar pow
+    * Performance gains in pow(), log(), exp() and exp2()
 
 Known Issues
 ------------
-   * fastpow() - Accuracy issue of the order of 10e-15 for certain values of x
-     and y where y*log(x) is between 0 and 100
+   * fastpow() - Maximum ULP error is 10.
 
-Version 3.3.0 Contents
+Version 3.4 Contents
 ----------------------
 AMD LibM provides vector variants for many of the math functions. The list of
 available vector functions is given below. All functions have an 'amd_' prefix.

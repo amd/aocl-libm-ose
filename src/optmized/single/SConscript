@@ -1,0 +1,15 @@
+# Copyright (C) 2018, AMD. All rights Reserved
+#
+# Author: Prem Mallappa <pmallapp@amd.com>
+
+# Inherit global environment
+Import('env')
+
+experimental_src = []
+
+source = Glob('*.c', exclude=experimental_src)
+
+objects = env.StaticObject(source)
+
+Return('objects')
+

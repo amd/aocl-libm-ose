@@ -1,5 +1,12 @@
+# Copyright (C) 2018, AMD. All rights Reserved
+#
+# Author: Prem Mallappa <pmallapp@amd.com>
+
 # Inherit global environment
 Import('env')
+from os.path import join as joinpath
+
+builddir = joinpath(env['BUILDROOT'], 'src', 'optmized')
 
 e = env.Clone()
 
@@ -23,7 +30,7 @@ except KeyError as err:
 
 if dbg_mode == 'libs' or dbg_mode == 'all':
     e.Append(
-        CCFLAGS = ['-ggdb', '-Og']
+        CCFLAGS = ['-g']
        )
     # remove all optimizations on command line
     opt_list=["-O%s"%x for x in range(1, 10)]
@@ -40,12 +47,21 @@ else:
 
 experiment_src=[
 	#'log_new.c',
+	'log1p.c',
+	'expm1f.c',
 	'pow.c',
 	]
 
 source = Glob('*.c', exclude=experiment_src)
 #source = Glob('*.c')
 
-objs = e.StaticObject(source)
+# Single precision
+single_objs = SConscript('single/SConscript',
+                           exports = {'env' : e},
+                           duplicate = 0,
+                           src_dir = '#src/optmized/single',
+                           variant_dir = joinpath(builddir, 'single'))
+
+objs = e.StaticObject(source) + single_objs
 
 Return('objs')

@@ -224,7 +224,7 @@ FN_PROTOTYPE(exp_v2)(double x)
 
 #if defined(ENABLE_GLIBC_API)
 strong_alias (__exp_finite, FN_PROTOTYPE(exp_v2))
-hidden_alias (__ieee754_exp, FN_PROTOTYPE(exp_v2))
+strong_alias (__ieee754_exp, FN_PROTOTYPE(exp_v2))
 #endif
 
 #if defined(ENABLE_LIBM_API)

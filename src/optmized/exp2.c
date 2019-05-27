@@ -253,16 +253,16 @@ FN_PROTOTYPE(exp2_v2)(double x)
 }
 
 #if defined(ENABLE_GLIBC_API)
-strong_alias (__exp_finite, FN_PROTOTYPE(exp_v2))
-hidden_alias (__ieee754_exp, FN_PROTOTYPE(exp_v2))
+strong_alias (__exp2_finite, FN_PROTOTYPE(exp2_v2))
+strong_alias (__ieee754_exp2, FN_PROTOTYPE(exp2_v2))
 #endif
 
 #if defined(ENABLE_LIBM_API)
-strong_alias (exp, FN_PROTOTYPE(exp_v2))
+strong_alias (exp2, FN_PROTOTYPE(exp2_v2))
 #endif
 
 #if defined(ENABLE_AMDLIBM_API)
-strong_alias (amd_exp, FN_PROTOTYPE(exp_v2))
+strong_alias (amd_exp2, FN_PROTOTYPE(exp2_v2))
 #endif
 
 

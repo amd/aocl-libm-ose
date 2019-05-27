@@ -290,23 +290,17 @@ FN_PROTOTYPE(log_v3)(double x)
 }
 
 #if defined(ENABLE_GLIBC_API)
-    weak_alias (__log1p_finite, FN_PROTOTYPE(log1p_v3))
-    hidden_alias (__ieee754_log, FN_PROTOTYPE(log1p_v3))
-    hidden_alias (__ieee754_log1p_fma, FN_PROTOTYPE(log1p_v3))
-
     weak_alias (__log_finite, FN_PROTOTYPE(log_v3))
-    hidden_alias (__ieee754_log, FN_PROTOTYPE(log_v3))
-    hidden_alias (__ieee754_log_fma, FN_PROTOTYPE(log_v3))
+    weak_alias (__ieee754_log, FN_PROTOTYPE(log_v3))
+    weak_alias (__ieee754_log_fma, FN_PROTOTYPE(log_v3))
 #endif
 
 #if defined(ENABLE_LIBM_API)
     weak_alias (log, FN_PROTOTYPE(log_v3))
-    weak_alias (log, FN_PROTOTYPE(log1p_v3))
 #endif
 
 #if defined(ENABLE_AMDLIBM_API)
     weak_alias (amd_log, FN_PROTOTYPE(log_v3))
-    weak_alias (amd_log, FN_PROTOTYPE(log1p_v3))
 #endif
 
 #if !defined(ENABLE_GLIBC_API) && !defined(ENABLE_LIBM_API) && !defined(ENABLE_AMDLIBM_API)

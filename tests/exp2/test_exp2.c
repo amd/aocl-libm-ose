@@ -37,8 +37,8 @@
  */
 __m128 LIBM_FUNC_VEC(s, 4, exp2f)(__m128 in)
 {
-    flt128_t f128 = {.m128 = in};
-    flt128_t o128;
+    flt128f_t f128 = {.m128 = in};
+    flt128f_t o128;
 
     for (int i = 0; i < 4; i++)
         o128.f[i] = exp2f(f128.f[i]);
@@ -48,8 +48,8 @@ __m128 LIBM_FUNC_VEC(s, 4, exp2f)(__m128 in)
 
 __m256 LIBM_FUNC_VEC(s, 8, exp2f)(__m256 in)
 {
-    flt256_t f256 = {.m256 = in};
-    flt256_t o256;
+    flt256f_t f256 = {.m256 = in};
+    flt256f_t o256;
 
     for (int i = 0; i < 8; i++)
         o256.f[i] = exp2f(f256.f[i]);
@@ -68,13 +68,13 @@ __m128d LIBM_FUNC_VEC(d, 2, exp2)(__m128d in)
 
 __m256d LIBM_FUNC_VEC(d, 4, exp2)(__m256d in)
 {
-    flt256d_t f256 = {.m256 = in};
+    flt256d_t f256 = {.m256d = in};
     flt256d_t o256;
 
     for (int i = 0; i < 4; i++)
         o256.d[i] = exp2(f256.d[i]);
 
-    return o256.m256;
+    return o256.m256d;
 }
 #endif
 

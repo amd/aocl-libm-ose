@@ -120,14 +120,14 @@ typedef union {
  */
 typedef union {
     int64_t  i[4];
-    double   f[4];
-    __m128d  m256;
+    double   d[4];
+    __m256d  m256d;
 } flt256d_t;
 
 typedef union {
     uint64_t  i[4];
-    double    f[4];
-    __m256d   m256;
+    double    d[4];
+    __m256d   m256d;
 } flt256du_t;
 
 

@@ -23,19 +23,19 @@
 /* GLIBC prototype declarations */
 #if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
 
-#define _ZGVdN4v(x) _ZGVbN4v_##x
-#define _ZGVsN4v_expm1f _ZGVbN4v_expm1f
-#define _ZGVdN4v_expm1 _ZGVdN4v_expm1
-#define _ZGVdN2v_expm1 _ZGVbN2v_expm1
+//#define _ZGVdN4v(x) _ZGVbN4v_##x
+//#define _ZGVsN4v_expm1f _ZGVbN4v_expm1f
+//#define _ZGVdN4v_expm1 _ZGVdN4v_expm1
+//#define _ZGVdN2v_expm1 _ZGVbN2v_expm1
 
-__m128d LIBM_FUNC_VEC(d, 2, expm1)(__m128d);
-__m256d LIBM_FUNC_VEC(d, 4, expm1)(__m256d);
+//__m128d LIBM_FUNC_VEC(d, 2, expm1)(__m128d);
+//__m256d LIBM_FUNC_VEC(d, 4, expm1)(__m256d);
 
-__m128 LIBM_FUNC_VEC(b, 4, expm1f)(__m128);
-__m256 LIBM_FUNC_VEC(b, 8, expm1f)(__m256);
+//__m128 LIBM_FUNC_VEC(b, 4, expm1f)(__m128);
+//__m256 LIBM_FUNC_VEC(b, 8, expm1f)(__m256);
 #endif
 
-#if defined(DEVELOPER)
+#if (DEVELOPER == 2)
 #pragma message "Developer mode changing prototype to expm1_v2()"
 #undef LIBM_FUNC
 #define LIBM_FUNC(x) FN_PROTOTYPE( x ## _v2 )
@@ -45,7 +45,7 @@ float FN_PROTOTYPE( expm1f_v2 )(float);
 
 float FN_PROTOTYPE_FMA3( expm1f )(float);
 
-#define amd_expm1f_v2 FN_PROTOTYPE_FMA3(expm1f)
+//#define amd_expm1f_v2 FN_PROTOTYPE_FMA3(expm1f)
 #else
 // Temporary need to remove
 //#undef LIBM_FUNC
@@ -75,9 +75,14 @@ static int test_expm1_v2d_perf(struct libm_test *test)
     for (uint32_t i = 0; i < n ; ++i) {
         uint32_t j;
         for (j = 0; j < (sz - 1); j += 2) {
+#if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)		/* Glibc doesnt have a vector version of expm1 */
+            for (int k = 0; k < 2; k++)
+                o[k] = LIBM_FUNC(expm1)(ip1[k]);
+#else
             __m128d ip2 = _mm_set_pd(ip1[j+1], ip1[j]);
             __m128d op2 = LIBM_FUNC_VEC(d, 2, expm1)(ip2);
             _mm_store_pd(&o[j], op2);
+#endif
         }
         /*
          * Any left over process with scalar, in a 2 vector case,
@@ -117,8 +122,16 @@ static int test_expm1_v4d_perf(struct libm_test *test)
         //IVDEP //;
         for (uint32_t j = 0; j < (sz - 3); j += 4) {
             /* we dont have vrd4_expm1, instead we need to call vrda_expm1 */
+#if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)		/* Glibc doesnt have a vector version of expm1 */
+            for (int k = 0; k < 4; k++)
+                o[k] = LIBM_FUNC(expm1)(ip1[k]);
+#else
 #define __amd_fma3_vrd4_expm1 __amd_fma3_vrda_expm1
+            //__m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
+            //__m256d op4 = LIBM_FUNC_VEC(d, 4, expm1)(4, &ip1[j], &o[j]);
             LIBM_FUNC_VEC(d, 4, expm1)(4, &ip1[j], &o[j]);
+            //_mm256_store_pd(&o[j], op4);
+#endif
         }
         /*
          * Any left over process with scalar
@@ -234,9 +247,15 @@ static int test_expm1_v4s_perf(struct libm_test *test)
     for (uint32_t i = 0; i < n ; ++i) {
         uint32_t j;
         for (j = 0; j < (sz - 3); j += 4) {
+#if (LIBM_PROTOTYPE != PROTOTYPE_FMA3)		/* Glibc doesnt have a vector version of expm1 */
+            for (int k = 0; k < 4; k++)
+                o[k] = LIBM_FUNC(expm1f)(ip1[k]);
+#else
+#define __amd_fma3_vrd4_expm1 __amd_fma3_vrda_expm1
             __m128 ip4 = _mm_set_ps(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
             __m128 op4 = LIBM_FUNC_VEC(s, 4, expm1f)(ip4);
             _mm_store_ps(&o[j], op4);
+#endif
         }
         /*
          * Any left over process with scalar, in a 2 vector case,
@@ -550,19 +569,33 @@ static int __test_expm1_accu(struct libm_test *test,
     }
 
     for (int j = 0; j < end;) {
-        __m128d ip2, op2;
         switch (type) {
         case LIBM_FUNC_V2D:
-            ip2 = _mm_set_pd(ip[j+1], ip[j]);
-            op2 = LIBM_FUNC_VEC(d, 2, expm1)(ip2);
+        {
+#if (LIBM_PROTOTYPE != PROTOTYPE_FMA3)
+	    for (int k = 0; k < 2; k++)
+                op[k] = expm1(ip[k]);
+#else
+            __m128d ip2 = _mm_set_pd(ip[j+1], ip[j]);
+            __m128d op2 = LIBM_FUNC_VEC(d, 2, expm1)(ip2);
             _mm_store_pd(&op[j], op2);
+#endif
             j += 2;
+         }
             break;
-        case LIBM_FUNC_V4D:
-            //ip4 = _mm256_set_pd(ip[j+3], ip[j+2], ip[j+1], ip[j]);
-            LIBM_FUNC_VEC(d, 4, expm1)(4, &ip[j], &op[j]);
+        case LIBM_FUNC_V4D: 
+	{
+#if (LIBM_PROTOTYPE != PROTOTYPE_FMA3)
+	    for (int k = 0; k < 2; k++)
+		op[k] = expm1(ip[k]);
+#else
+            //__m256d ip4 = _mm256_set_pd(ip[j+3], ip[j+2], ip[j+1], ip[j]);
+            //__m256d op4 = LIBM_FUNC_VEC(d, 4, expm1)(ip4);
             //_mm256_store_pd(&op[j], op4);
+            LIBM_FUNC_VEC(d, 4, expm1)(4, &ip[j], &op[j]);
+#endif
             j += 4;
+	}
             break;
         case LIBM_FUNC_S_D:
             op[j] = LIBM_FUNC(expm1)(ip[j]);
@@ -593,13 +626,19 @@ static int __test_expm1f_accu(struct libm_test *test,
     }
 
     for (int j = 0; j < end;) {
-        __m128 ip4, op4;
         switch (type) {
         case LIBM_FUNC_V4S:
-            ip4 = _mm_set_ps(ip[j+3], ip[j+2], ip[j+1], ip[j]);
-            op4 = LIBM_FUNC_VEC(s, 4, expm1f)(ip4);
+        {
+#if (LIBM_PROTOTYPE != PROTOTYPE_FMA3)
+	    for (int k = 0; k < 4; k++)
+		op[k] = expm1f(ip[k]);
+#else
+            __m128 ip4 = _mm_set_ps(ip[j+3], ip[j+2], ip[j+1], ip[j]);
+            __m128 op4 = LIBM_FUNC_VEC(s, 4, expm1f)(ip4);
             _mm_store_ps(&op[j], op4);
+#endif
             j += 4;
+        }
             break;
         case LIBM_FUNC_S_S:
             op[j] = LIBM_FUNC(expm1f)(ip[j]);

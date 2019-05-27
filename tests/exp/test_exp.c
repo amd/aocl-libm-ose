@@ -35,7 +35,7 @@ __m128 LIBM_FUNC_VEC(b, 4, expf)(__m128);
 __m256 LIBM_FUNC_VEC(b, 8, expf)(__m256);
 #endif
 
-#if defined(DEVELOPER)
+#if (DEVELOPER==2)
 #pragma message "Developer mode changing prototype to exp_v2()"
 #undef LIBM_FUNC
 #define LIBM_FUNC(x) FN_PROTOTYPE( x ## _v2 )

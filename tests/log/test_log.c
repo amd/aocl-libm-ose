@@ -43,7 +43,7 @@ __m128 LIBM_FUNC_VEC(s, 4, logf)(__m128 in)
     return o128.m128;
 }
 
-#if defined(DEVELOPER)
+#if (DEVELOPER==2)
 #pragma message "Developer mode changing prototype to log_v2()"
 #undef LIBM_FUNC
 #define LIBM_FUNC(x) FN_PROTOTYPE( x ## _v2 )

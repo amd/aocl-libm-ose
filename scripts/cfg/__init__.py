@@ -126,7 +126,15 @@ class DefaultCfg(object):
         env.Append(
             CPPDEFINES = { 'LIBABI': env['libabi']})
 
-        print("developer=> ", env['developer'])
+        #print("developer=> ", env['developer'])
+
+        if env['libabi'] == 'glibc':
+            env.Append(CPPDEFINES = {'ENABLE_GLIBC_API' : 1})
+        elif env['libabi'] == 'libm':
+            env.Append(CPPDEFINES = {'ENABLE_LIBM_API' : 1})
+        elif env['libabi'] == 'acml' or env['libabi'] == 'aocl':
+            env.Append(CPPDEFINES = {'ENABLE_AMDLIBM_API' : 1})
+
         if env['developer'] != 0:
             env.Append(
                 CPPDEFINES = {'DEVELOPER' : env['developer']})

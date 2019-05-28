@@ -13,7 +13,7 @@ asuint32(float f)
 static inline float
 asfloat(uint32_t i)
 {
-	flt32_t fl = {.i = i};
+	flt32u_t fl = {.i = i};
 	return fl.f;
 }
 

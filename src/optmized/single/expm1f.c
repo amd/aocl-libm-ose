@@ -50,7 +50,7 @@ FN_PROTOTYPE(expm1f_v2)(float x)
     double   q;
     uint32_t ux = asuint32(x);
 
-    if (unlikely (ux < DATA.x.min && ux > DATA.x.max) ) { /* max/min arg */
+    if (unlikely (ux > DATA.x.min && ux > DATA.x.max) ) { /* max/min arg */
 #if defined(ENABLE_IEEE_exceptions)
         if (ux == 0x7f800000)
             return x;
@@ -60,8 +60,6 @@ FN_PROTOTYPE(expm1f_v2)(float x)
         return asfloat(PINFBITPATT_SP32);
 #endif
     }
-
-    double_t dx = (double)x;
 
     /* Near one code path */
     if (unlikely (ux > DATA.threshold.lo && ux < DATA.threshold.hi )) {
@@ -74,13 +72,13 @@ FN_PROTOTYPE(expm1f_v2)(float x)
 #define A4 DATA.poly[3]
 #define A5 DATA.poly[4]
 
-	    double dx2 = dx * dx;
-	    double q = dx2  * dx * (A1 + dx * (A2 + dx*(A3 + dx*(A4 + dx*(A5)))));
-	    q = dx2 + (dx * 0.5);
+	    double dx2 = x * x;
+	    double q = dx2  * x * (A1 + x * (A2 + x*(A3 + x*(A4 + x*(A5)))));
+	    q = dx2 + (x * 0.5);
 	    return (float)q;
     }
 
-    double dy = dx * DATA._64_by_ln2;
+    double dy = x * DATA._64_by_ln2;
 
     q1.d = dy + DATA.Huge;
     int     n = q1.i;

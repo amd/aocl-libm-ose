@@ -465,7 +465,7 @@ fname:
     
     
 
-    lea         .L__log_256_lead(%rip), %r9
+    lea         .L__log_1024_lead(%rip), %r9
 
     # poly
     vmovsd       .L__real_1_over_7(%rip), %xmm3
@@ -508,7 +508,7 @@ fname:
     vmovsd       .L__real_log2_tail(%rip), %xmm4
     vaddsd       %xmm3, %xmm1 , %xmm1                       
    
-    lea         .L__log_256_tail(%rip), %rdx
+    lea         .L__log_1024_tail(%rip), %rdx
     vaddsd       %xmm5, %xmm1, %xmm1
    
     vfmadd213sd   (%rdx,%r8,8), %xmm6, %xmm4

@@ -50,15 +50,12 @@ FN_PROTOTYPE(expm1f_v2)(float x)
     double   q;
     uint32_t ux = asuint32(x);
 
-    if (unlikely (ux > DATA.x.min && ux > DATA.x.max) ) { /* max/min arg */
-#if defined(ENABLE_IEEE_exceptions)
-        if (ux == 0x7f800000)
-            return x;
+    if (unlikely (ux - DATA.x.min > DATA.x.max - DATA.x.min) ){
+        if (ux > DATA.x.min)
+            return asfloat(PINFBITPATT_SP32);
 
-        return expm1f_special(x, PINFBITPATT_SP32, 3);
-#else
-        return asfloat(PINFBITPATT_SP32);
-#endif
+        if (ux < DATA.x.max)
+            return asfloat(QNANBITPATT_SP32);
     }
 
     /* Near one code path */

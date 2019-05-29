@@ -232,7 +232,7 @@ static int __verify_float(struct libm_test *test,
             flt32u_t *fin1 = (flt32u_t*)&in1[j],
                 *fin2 = (flt32u_t*)&in2[j],
                 *fin3 = (flt32u_t*)&in1[j];
-            LIBM_TEST_DPRINTF(VERBOSE3, "finput1: %-G(%08X)", fin1->f, fin1->i);
+            LIBM_TEST_DPRINTF(VERBOSE3, "i:%d finput1: %-G(%08X)", j, fin1->f, fin1->i);
             if (nargs > 1)
                 LIBM_TEST_CDPRINTF(VERBOSE3,
                                    " finput2: %g(%08X)\n", fin2->f, fin2->i);

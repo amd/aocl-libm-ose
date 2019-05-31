@@ -9,9 +9,9 @@ AMD LibM Contents
 AMD LibM is a math library. It provides optimized implementation of a number of
 math functions from the C99 standard. The library is designed for use in 64-bit
 programs on x86-64 machines. Static and dynamic libraries are available for
-Linux(R) and Windows(R) operating systems.
+Linux(R) operating system.
 
-The Linux(R) version of the library is built using GCC 7.3.
+The Linux(R) version of the library is built using GCC 7.3 and Ubuntu 18.04 LTS.
 
 Hightlights of AMD LibM 3.4
 -----------------------------

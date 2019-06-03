@@ -43,33 +43,40 @@
  */
 float expm1f_special(float x, float y, U32 code);
 
-#define THRESH_LO  0x3E647FBFU	/* log(1 + 1/4) =  0.223144 */
-#define THRESH_HI  0xBE934B11U	/* log(1 - 1/4) = -0.287682 */
+#define FTHRESH_HI  0x1.c8ff7ep-3f
+#define FTHRESH_LO -0x1.269622p-2
+
+#define THRESH_HI  0x3E647FBFU	/* log(1 + 1/4) =  0.223144 */
+#define THRESH_LO  0xBE934B11U	/* log(1 - 1/4) = -0.287682 */
 /* HI - LO = 0x7fd134ae */
 /* LO - HI = 0x802ecb52 */
 
-#define ARG_MAX 0xC18AA122U              /* ~= -17.32867 */
-#define ARG_MIN 0x42B19999U              /* ~=  88.79999 */
+#define ARG_MIN 0xC18AA122U              /* ~= -17.32867 */
+#define ARG_MAX 0x42B19999U              /* ~=  88.79999 */
 /* MIN - MAX =  0x7ed9078a */
 /* MAX - MIN =  0x8126f877 */
 
-
+#define FARG_MIN -0x1.154244p+4f
+#define FARG_MAX 0x1.633332p+6f
 
 float
 FN_PROTOTYPE(expm1f_v2)(float x)
 {
     flt64_t  q1;
     double   q;
-    uint32_t ux = asuint32(x);
+    //uint32_t ux = asuint32(x);
 
-    if (unlikely ((ux - THRESH_LO) <= (THRESH_HI - THRESH_LO))) {
-        if (unlikely ((ux - ARG_MIN) >= (ARG_MAX - ARG_MIN)) ){
-            if (ux > ARG_MIN)
-                return asfloat(PINFBITPATT_SP32);
+    if (unlikely (x > FARG_MAX) || x < FARG_MIN) {
+        if (x > FARG_MAX)
+            return asfloat(PINFBITPATT_SP32);
 
-            if (ux < ARG_MAX)
-                return asfloat(QNANBITPATT_SP32);
-        }
+        if (x < FARG_MIN)
+            return -1.0f;
+
+        return asfloat(QNANBITPATT_SP32);
+    }
+
+    if (unlikely (x > FTHRESH_LO) && (x < FTHRESH_HI)) {
 
 #define A1 DATA.poly[0]
 #define A2 DATA.poly[1]
@@ -77,29 +84,11 @@ FN_PROTOTYPE(expm1f_v2)(float x)
 #define A4 DATA.poly[3]
 #define A5 DATA.poly[4]
 
-#if 0
-        float q = A4 + x * A5;
-        q = A3 + q * x;
-        q = A2 + q * x;
-        q = A1 + q * x;
-
-        double dx = (double)x;
-        double dx2 = dx * dx;
-
-	q *= x * x * x;
-
-	double q2 = (dx2 * 0.5) + dx;
-	double dq = (double)q;
-	dq += q2;
-
-	return (float)dq;
-#else
         double dx = (double)x;
         double dx2 = dx * dx;
         double q = dx2 * dx * (A1 + dx * (A2 + dx*(A3 + dx*(A4 + dx*(A5)))));
         q += (dx2 * 0.5) + dx;
         return (float)q;
-#endif
     }
 
     double dy = x * DATA._64_by_ln2;

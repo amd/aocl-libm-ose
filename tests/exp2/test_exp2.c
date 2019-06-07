@@ -953,6 +953,7 @@ long double
 test_exp2_exp2l(struct libm_test *test, int idx)
 {
     double *d = (double*)test->test_data.input1;
+    double val = d[idx];
     static const double min = log(DBL_MIN);
     static const double max = log(DBL_MAX);
 

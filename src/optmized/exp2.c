@@ -115,7 +115,7 @@ static const struct {
 #define C6	exp2_data.poly[4]
 #define C7	exp2_data.poly[5]
 #define C8	exp2_data.poly[6]
-#define HUGE	exp2_data.Huge
+#define LIBM_EXP2_HUGE		exp2_data.Huge
 #define REAL_TABLE_SIZE         exp2_data.table_size
 #define REAL_1_BY_TABLE_SIZE	exp2_data.one_by_table_size
 #define REAL_LN2		exp2_data.ln2
@@ -158,9 +158,9 @@ FN_PROTOTYPE(exp2_v2)(double x)
 #define FAST_INTEGER_CONVERSION 1
 
 #if FAST_INTEGER_CONVERSION
-    q1.d = x + HUGE;
+    q1.d = x + LIBM_EXP2_HUGE;
     n    = q1.i;
-    dn   = q1.d - HUGE;
+    dn   = q1.d - LIBM_EXP2_HUGE;
     r    = x - dn;
 #else
     double_t a = x * REAL_TABLE_SIZE;

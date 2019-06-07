@@ -8,6 +8,8 @@
 #include <fmaintrin.h>
 
 #include <libm_amd.h>
+#include <libm_amd_paths.h>
+#include <libm_util_amd.h>
 
 #include <libm_tests.h>
 #include <bench_timer.h>
@@ -855,6 +857,19 @@ static int test_exp2_special(struct libm_test *test)
 double test_exp2_ulp(struct libm_test *test, int idx)
 {
     float *buf = (float*)test->test_data.input1;
+    float val = buf[idx];
+    static const float min = log(FLT_MIN);
+    static const float max = log(FLT_MAX);
+
+    /* We need to return higher-precision values for NAN */
+    if (isinf(val))  return PINFBITPATT_DP64;
+
+    if (isnan(val))  return QNANBITPATT_DP64;
+
+    if (val > max)   return PINFBITPATT_DP64;
+
+    if (val < min)   return 1.0f;
+
     return exp2(buf[idx]);
 }
 
@@ -938,6 +953,17 @@ long double
 test_exp2_exp2l(struct libm_test *test, int idx)
 {
     double *d = (double*)test->test_data.input1;
+    static const double min = log(DBL_MIN);
+    static const double max = log(DBL_MAX);
+
+    if (isinf(val))  return (long double)PINFBITPATT_DP64;
+
+    if (isnan(val))  return (long double)QNANBITPATT_DP64;
+
+    if (val > max)   return (long double)PINFBITPATT_DP64;
+
+    if (val < min)   return 1.0;
+
     return exp2l(d[idx]);
 }
 

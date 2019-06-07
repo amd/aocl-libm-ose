@@ -19,8 +19,6 @@
 #define TABLE_SIZE (1ULL << N)
 #define MAX_POLYDEGREE  8
 
-#define HUGE    log_data.Huge
-
 /*
  * Algorithm:
  *       With input 'X'

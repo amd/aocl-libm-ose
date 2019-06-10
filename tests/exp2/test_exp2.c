@@ -93,282 +93,6 @@ float FN_PROTOTYPE_FMA3( exp2f )(float);
 #define amd_exp2f_v2 FN_PROTOTYPE_FMA3(exp2f)
 #endif
 
-static int test_exp2_v2d_perf(struct libm_test *test)
-{
-    struct libm_test_data *data = &test->test_data;
-    struct libm_test_result *result = &test->result;
-    double *restrict o = data->output;
-    double *restrict ip1 = data->input1;
-    uint64_t sz = data->nelem;
-    uint64_t n = test->conf->niter;
-
-    /* Poison output */
-    for (uint32_t j = 0; j < data->nelem; ++j) {
-        double t = (double)((j+1)%700) + (double)j/(double)RAND_MAX;
-        o[j] = exp2(t);
-    }
-
-    bench_timer_t bt;
-    timer_start(&bt);
-
-    for (uint32_t i = 0; i < n ; ++i) {
-        uint32_t j;
-        for (j = 0; j < (sz - 1); j += 2) {
-            __m128d ip2 = _mm_set_pd(ip1[j+1], ip1[j]);
-            __m128d op2 = LIBM_FUNC_VEC(d, 2, exp2)(ip2);
-            _mm_store_pd(&o[j], op2);
-        }
-        /*
-         * Any left over process with scalar, in a 2 vector case,
-         * there can be atmost one leftover,
-         */
-        if (sz - j)
-            o[j] = LIBM_FUNC(exp2)(ip1[j]);
-    }
-
-    timer_stop(&bt);
-    double s = timer_span(&bt);
-
-    result->mops = sec2mps(s, n * sz);
-
-    return result->nfail;
-}
-
-static int test_exp2_v4d_perf(struct libm_test *test)
-{
-    struct libm_test_data *data = &test->test_data;
-    struct libm_test_result *result = &test->result;
-    double *restrict o = data->output;
-    double *restrict ip1 = data->input1;
-    uint64_t sz = data->nelem;
-    uint64_t n = test->conf->niter;
-
-    /* Poison output */
-    for (uint32_t j = 0; j < data->nelem; ++j) {
-        double t = (double)((j+1)%700) + (double)j/(double)RAND_MAX;
-        o[j] = exp2(t);
-    }
-
-    bench_timer_t bt;
-    timer_start(&bt);
-
-    for (uint32_t i = 0; i < n ; ++i) {
-        //IVDEP //;
-        for (uint32_t j = 0; j < (sz - 3); j += 4) {
-            __m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-            __m256d op4 = LIBM_FUNC_VEC(d, 4, exp2)(ip4);
-            _mm256_store_pd(&o[j], op4);
-        }
-        /*
-         * Any left over process with scalar
-         */
-    }
-
-    timer_stop(&bt);
-    double s = timer_span(&bt);
-
-    result->mops = sec2mps(s, n * sz);
-
-    return result->nfail;
-}
-
-/*
- * s1d - 1 element double precision
- */
-
-static int test_exp2_s1d_perf(struct libm_test *test)
-{
-    struct libm_test_data *data = &test->test_data;
-    struct libm_test_result *result = &test->result;
-    double *restrict o = data->output;
-    double *restrict ip1 = data->input1;
-    uint64_t sz = data->nelem;
-    uint64_t n = test->conf->niter;
-
-    /* Poison output */
-    for (uint32_t j = 0; j < data->nelem; ++j) {
-        double t = (double)((j+1)%700) + (double)j/(double)RAND_MAX;
-        o[j] = exp2(t);
-    }
-
-    bench_timer_t bt;
-    timer_start(&bt);
-
-    for (uint32_t i = 0; i < n ; ++i) {
-        uint32_t j;
-        for (j = 0; j < sz; j++) {
-            o[j] = LIBM_FUNC(exp2)(ip1[j]);
-        }
-    }
-
-    timer_stop(&bt);
-    double s = timer_span(&bt);
-
-    result->mops = sec2mps(s, n * sz);
-
-    return result->nfail;
-}
-
-/*
- * s1s - 1 elem single precision
- */
-static int test_exp2_s1s_perf(struct libm_test *test)
-{
-    struct libm_test_data *data = &test->test_data;
-    struct libm_test_result *result = &test->result;
-    float *restrict o = (float*)data->output;
-    float *restrict ip1 = (float*)data->input1;
-    uint64_t sz = data->nelem;
-    uint64_t n = test->conf->niter;
-
-    /* Poison output */
-    for (uint32_t j = 0; j < data->nelem; ++j) {
-        float t = ((j+1)%700) + (float)j/(float)RAND_MAX;
-        o[j] = exp2f(t);
-    }
-
-    bench_timer_t bt;
-    timer_start(&bt);
-
-    for (uint32_t i = 0; i < n ; ++i) {
-        uint32_t j;
-        for (j = 0; j < sz; j++) {
-            o[j] = LIBM_FUNC(exp2f)(ip1[j]);
-        }
-    }
-
-    timer_stop(&bt);
-    double s = timer_span(&bt);
-
-    result->mops = sec2mps(s, n * sz);
-
-    return result->nfail;
-}
-
-/*
- * v4s - 4 element single precision
- */
-static int test_exp2_v4s_perf(struct libm_test *test)
-{
-    struct libm_test_data *data = &test->test_data;
-    struct libm_test_result *result = &test->result;
-    float *restrict o = (float*)data->output;
-    float *restrict ip1 = (float*)data->input1;
-    uint64_t sz = data->nelem;
-    uint64_t n = test->conf->niter;
-
-    /* Poison output */
-    for (uint32_t j = 0; j < data->nelem; ++j) {
-        double t = ((j+1)%700) + j / RAND_MAX;
-        o[j] = exp2f(t);
-    }
-
-    bench_timer_t bt;
-    timer_start(&bt);
-
-    for (uint32_t i = 0; i < n ; ++i) {
-        uint32_t j;
-        for (j = 0; j < (sz - 3); j += 4) {
-            __m128 ip4 = _mm_set_ps(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-            __m128 op4 = LIBM_FUNC_VEC(s, 4, exp2f)(ip4);
-            _mm_store_ps(&o[j], op4);
-        }
-        /*
-         * Any left over process with scalar, in a 2 vector case,
-         * there can be atmost one leftover, in a 4 vector case,
-         * there can be upto 3 leftovers
-         */
-        switch (sz - j) {
-        case 3:
-            o[j] = LIBM_FUNC(exp2f)(ip1[j]);
-            j++;	         FALLTHROUGH;
-        case 2:
-            o[j] = LIBM_FUNC(exp2f)(ip1[j]);
-            j++;	         FALLTHROUGH;
-        case 1:
-            o[j] = LIBM_FUNC(exp2f)(ip1[j]);
-        default:
-            break;
-        }
-    }
-
-    timer_stop(&bt);
-    double s = timer_span(&bt);
-
-    result->mops = sec2mps(s, n * sz);
-
-    return result->nfail;
-}
-
-#if 0
-/*
- * v8s - 8 element single precision
- */
-static int test_exp2_v8s_perf(struct libm_test *test)
-{
-    struct libm_test_data *data = &test->test_data;
-    struct libm_test_result *result = &test->result;
-    float *restrict o   = (float*)data->output;
-    float *restrict ip1 = (float*)data->input1;
-    uint64_t sz         = data->nelem;
-    uint64_t n          = test->conf->niter;
-
-    /* Poison output */
-    for (uint32_t j = 0; j < data->nelem; ++j) {
-        double t = (double)((j+1)%700) + (double)j/(double)RAND_MAX;
-        o[j] = exp2(t);
-    }
-
-    bench_timer_t bt;
-    timer_start(&bt);
-
-    for (uint32_t i = 0; i < n ; ++i) {
-        uint32_t j;
-        for (j = 0; j < (sz - 7); j += 8) {
-            __m256 ip2 = _mm256_set_ps(ip1[j+7], ip1[j+6], ip1[j+5], ip1[j+4],
-                                       ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-            __m256 op4 = LIBM_FUNC_VEC(s, 8, exp2f)(ip4);
-            _mm256_store_ps(&o[j], op4);
-        }
-        /*
-         * Any left over process with scalar, in a 2 vector case,
-         * there can be atmost 7 leftovers,
-         */
-        switch (sz - j) {
-        case 7:
-        case 6:
-        case 5:
-        case 4:
-            __m128 ip4 = __mm_set_ps(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-            __m128 op4 = LIBM_FUNC_VEC(s, 4, exp2f)(ip4);
-            _mm_store_ps(&o[j], op4)
-            j += 4
-        default:
-            break;
-        }
-
-        switch (sz- j) {
-        case 3:
-            o[j] = LIBM_FUNC(exp2f)(ip1[j]);
-            j++;
-        case 2:
-            o[j] = LIBM_FUNC(exp2f)(ip1[j]);
-            j++;
-        case 1:
-            o[j] = LIBM_FUNC(exp2f)(ip1[j]);
-        default:
-            break;
-        }
-    }
-
-    timer_stop(&bt);
-    double s = timer_span(&bt);
-
-    result->mops = sec2mps(s, n * sz);
-
-    return result->nfail;
-}
-#endif
 
 int test_exp2_populate_inputs(struct libm_test *test, int use_uniform);
 
@@ -734,7 +458,8 @@ static int test_exp2_accu(struct libm_test *test)
         LIBM_TEST_DPRINTF(DBG2,
                           "%s %s : %d is not a multiple of 4, some may be left out\n"
                           " And error reported may not be real for such entries\n",
-                          test->name, test->type_name, sz);
+                          test->name, test->type_name, sz
+			);
 
     if (test->conf->inp_range[0].start ||
         test->conf->inp_range[0].stop) {
@@ -852,8 +577,6 @@ static int test_exp2_special(struct libm_test *test)
     return ret;
 }
 
-
-
 double test_exp2_ulp(struct libm_test *test, int idx)
 {
     float *buf = (float*)test->test_data.input1;
@@ -873,6 +596,72 @@ double test_exp2_ulp(struct libm_test *test, int idx)
     return exp2(buf[idx]);
 }
 
+static int
+test_exp2_cb_s1s(struct libm_test *test, int idx)
+{
+    struct libm_test_data *data = &test->test_data;
+    float *restrict _ip1 = (float*)data->input1;
+    float *restrict _o = (float*)data->output;
+
+    _o[idx] = LIBM_FUNC(exp2f)(_ip1[idx]);
+
+    return 0;
+}
+
+static int
+test_exp2_cb_s1d(struct libm_test *test, int idx)
+{
+    struct libm_test_data *data = &test->test_data;
+    double *restrict _ip1 = (double*)data->input1;
+    double *restrict _o = (double*)data->output;
+
+    _o[idx] = LIBM_FUNC(exp2)(_ip1[idx]);
+
+    return 0;
+}
+
+static int
+test_exp2_cb_v4s(struct libm_test *test, int j)
+{
+    struct libm_test_data *data = &test->test_data;
+    float *restrict ip1 = (float*)data->input1;
+    float *restrict o = (float*)data->output;
+
+    __m128 ip4 = _mm_set_ps(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
+    __m128 op4 = LIBM_FUNC_VEC(s, 4, exp2f)(ip4);
+    _mm_store_ps(&o[j], op4);
+
+    return 0;
+}
+
+static int
+test_exp2_cb_v2d(struct libm_test *test, int j)
+{
+    struct libm_test_data *data = &test->test_data;
+    double *restrict ip1 = (double*)data->input1;
+    double *restrict o = (double*)data->output;
+
+    __m128d ip2 = _mm_set_pd(ip1[j+1], ip1[j]);
+    __m128d op4 = LIBM_FUNC_VEC(d, 2, exp2)(ip2);
+    _mm_store_pd(&o[j], op4);
+
+    return 0;
+}
+
+static int
+test_exp2_cb_v4d(struct libm_test *test, int j)
+{
+    struct libm_test_data *data = &test->test_data;
+    double *restrict ip1 = (double*)data->input1;
+    double *restrict o = (double*)data->output;
+
+    __m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
+    __m256d op4 = LIBM_FUNC_VEC(d, 4, exp2)(ip4);
+    _mm256_store_pd(&o[j], op4);
+
+    return 0;
+}
+
 struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
     {
      /*
@@ -880,7 +669,7 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
       */
      [LIBM_FUNC_S_S]  = {
                          .performance = { .setup = test_exp2_default_setup,
-                                          .run   = test_exp2_s1s_perf,},
+                                          .run   = libm_test_s1s_perf,},
                          .accuracy     = {.setup = test_exp2_accu_setup,
                                           .run   = test_exp2_accu,
                                           .ulp   = {.func = test_exp2_ulp},
@@ -890,7 +679,7 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
 
      [LIBM_FUNC_S_D]  = {
                          .performance = { .setup = test_exp2_default_setup,
-                                          .run   = test_exp2_s1d_perf,},
+                                          .run   = libm_test_s1d_perf,},
                          .accuracy     = {.setup = test_exp2_accu_setup,
                                           .run   = test_exp2_accu,},
                          .special      = {.setup = test_exp2_special_setup,
@@ -918,7 +707,7 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
 #endif
      [LIBM_FUNC_V4S]  = {
                          .performance = { .setup = test_exp2_default_setup,
-                                          .run   = test_exp2_v4s_perf,},
+                                          .run   = libm_test_v4s_perf,},
                          .accuracy     = {.setup = test_exp2_accu_setup,
                                           .run   = test_exp2_accu,
                                           .ulp   = {.func = test_exp2_ulp},
@@ -929,7 +718,7 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
 
      [LIBM_FUNC_V2D]  = {
                          .performance = { .setup = test_exp2_default_setup,
-                                          .run   = test_exp2_v2d_perf,},
+                                          .run   = libm_test_v2d_perf,},
                          .accuracy     = {.setup = test_exp2_accu_setup,
                                           .run   = test_exp2_accu,},
                          .special      = {.setup = test_exp2_special_setup,
@@ -938,7 +727,7 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
 
      [LIBM_FUNC_V4D] = {
                         .performance = {.setup = test_exp2_default_setup,
-                                        .run = test_exp2_v4d_perf,},
+                                        .run   = libm_test_v4d_perf,},
                         .accuracy     = {.setup = test_exp2_accu_setup,
                                          .run   = test_exp2_accu,},
                         .special      = {.setup = test_exp2_special_setup,
@@ -978,6 +767,13 @@ exp2_template = {
 	.ops        = {
 		.ulp    = {.funcl = test_exp2_exp2l},
 		.verify = test_exp2_verify,
+		.callbacks = {
+			.s1s = test_exp2_cb_s1s,
+			.s1d = test_exp2_cb_s1d,
+			.v4s = test_exp2_cb_v4s,
+			.v2d = test_exp2_cb_v2d,
+			.v4d = test_exp2_cb_v4d,
+                },
 	},
 };
 

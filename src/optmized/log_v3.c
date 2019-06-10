@@ -107,12 +107,6 @@ FN_PROTOTYPE(log1p_v3)(double x)
     return __log1p_v3(x);
 }
 
-static inline double
-eval_as_double(double d)
-{
-    return d;
-}
-
 /*
 * ISO-IEC-10967-2: Elementary Numerical Functions
 * Signature:

@@ -30,8 +30,15 @@ asuint64(double f)
 	flt64u_t fl = {.d = f};
 	return fl.i;
 }
-static inline   int32_t
-cast_double_to_i32( double x )
+
+static inline double
+eval_as_double(double d)
+{
+    return d;
+}
+
+static inline int32_t
+cast_float_to_i32( float x )
 {
 	return (int32_t) x;
 }
@@ -42,10 +49,10 @@ cast_double_to_i64( double x )
 	return (int64_t) x;
 }
 
-static inline double
-cast_i32_to_double( int32_t x )
+static inline float
+cast_i32_to_float( int32_t x )
 {
-	return (double)x;
+	return (float)x;
 }
 
 static inline double

@@ -14,9 +14,9 @@
 static const struct {
     double _64_by_ln2, ln2_by_64;
     double Huge;
-#if 0
+#if 1
     struct {                            /* Min/Max values that can be passed */
-        uint32_t min, max;
+        float min, max;
     } x;
     struct {                            /* Around 1 threshold to take different path */
         double hi, lo;
@@ -27,10 +27,10 @@ static const struct {
     double tab[1 << EXPM1F_N];
 } expm1f_v2_data =  {
     .Huge       = 0x1.8p+52,	/* 2^52 * (1.0 + 0.5) */
-#if 0
+#if 1
     .x          = {
-        .min = 0xC18AA122,	/* ~= -17.32867 */
-        .max = 0x42B19999,	/* ~=  88.79999 */
+        .min = -0x1.154244p+4f,	/* ~= -17.32867 */
+        .max =  0x1.633332p+6f,	/* ~=  88.79999 */
     },
     .threshold  = {
         .hi = 0x3E647FBF,	/* log(1 + 1/4) =  0.223144 */

@@ -43,11 +43,11 @@
  */
 float expm1f_special(float x, float y, U32 code);
 
-#define FTHRESH_HI  0x1.c8ff7ep-3f
 #define FTHRESH_LO -0x1.269622p-2
+#define FTHRESH_HI  0x1.c8ff7ep-3f
 
-#define THRESH_HI  0x3E647FBFU	/* log(1 + 1/4) =  0.223144 */
 #define THRESH_LO  0xBE934B11U	/* log(1 - 1/4) = -0.287682 */
+#define THRESH_HI  0x3E647FBFU	/* log(1 + 1/4) =  0.223144 */
 /* HI - LO = 0x7fd134ae */
 /* LO - HI = 0x802ecb52 */
 
@@ -57,26 +57,35 @@ float expm1f_special(float x, float y, U32 code);
 /* MAX - MIN =  0x8126f877 */
 
 #define FARG_MIN -0x1.154244p+4f
-#define FARG_MAX 0x1.633332p+6f
+#define FARG_MAX  0x1.633332p+6f
+
+#define THRESH_LO_NOSIGN 0x3E9e4B11U
+#define ARG_MIN_NOSIGN   0x418AA122U
 
 float
 FN_PROTOTYPE(expm1f_v2)(float x)
 {
-    flt64_t  q1;
-    double   q;
-    //uint32_t ux = asuint32(x);
+    flt64_t q1;
+    double  dx, dn, q, r, f;
+    int     j, n, m;
 
-    if (unlikely (x > FARG_MAX) || x < FARG_MIN) {
-        if (x > FARG_MAX)
+    if (unlikely (x <= DATA.x.min || x > DATA.x.max)) {
+
+        if (x > DATA.x.max)
             return asfloat(PINFBITPATT_SP32);
 
-        if (x < FARG_MIN)
-            return -1.0f;
+        if (x < DATA.x.min)
+            return -1.0;
 
         return asfloat(QNANBITPATT_SP32);
     }
 
-    if (unlikely (x > FTHRESH_LO) && (x < FTHRESH_HI)) {
+    /*
+     * Treat the near 0 values separately to avoid catastrophic
+     * cancellation
+     */
+    if (unlikely (x <= FTHRESH_HI && x >= FTHRESH_LO)) {
+        double dx2;
 
 #define A1 DATA.poly[0]
 #define A2 DATA.poly[1]
@@ -84,30 +93,36 @@ FN_PROTOTYPE(expm1f_v2)(float x)
 #define A4 DATA.poly[3]
 #define A5 DATA.poly[4]
 
-        double dx = (double)x;
-        double dx2 = dx * dx;
-        double q = dx2 * dx * (A1 + dx * (A2 + dx*(A3 + dx*(A4 + dx*(A5)))));
-        q += (dx2 * 0.5) + dx;
+        dx  = (double)x;
+        dx2 = dx * dx;
+        q   = dx2 * dx * (A1 + dx * (A2 + dx*(A3 + dx*(A4 + dx*(A5)))));
+        q  += (dx2 * 0.5) + dx;
         return (float)q;
     }
 
-    double dy = x * DATA._64_by_ln2;
+    dx  = eval_as_double(x * DATA._64_by_ln2);
 
-    q1.d = dy + DATA.Huge;
-    int     n = q1.i;
-    double  dn= q1.d - DATA.Huge;
+#define FAST_INTEGER_CONVERSION 1
+#if FAST_INTEGER_CONVERSION
+    q   = eval_as_double(dx + DATA.Huge);
+    n   = asuint64(q);
+    dn  = q - DATA.Huge;
+#else
+    n   = cast_float_to_i32(dx);
+    dn  = cast_i32_to_float(n);
+#endif
 
-    double r = x - dn * DATA.ln2_by_64;
+    r  = x - dn * DATA.ln2_by_64;
 
-    int j = n & 0x3f;
+    j  = n & 0x3f;
 
-    int m = (n - j) >> 6;
+    m  = (n - j) >> 6;
 
 #define C1 1/2.0
 #define C2 1/6.0
-    q = r + r * r * (C1 + (C2 * r));
+    q  = r + r * r * (C1 + (C2 * r));
 
-    double f = DATA.tab[j];
+    f  = DATA.tab[j];
 
     q1.i = (1023ULL - m) << 52;
 

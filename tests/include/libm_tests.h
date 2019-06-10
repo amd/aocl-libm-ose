@@ -82,19 +82,9 @@ enum LIBM_TEST_TYPE {
     TEST_TYPE_MAX,
 };
 
-typedef union {
-    float (*func1)(float);
-    float (*func2)(float, float);
-    float (*func3)(float, float, float);
-} libm_func_32;
-
-typedef union {
-    double (*func1)(double);
-    double (*func2)(double, double);
-    double (*func3)(double, double, double);
-} libm_func_64;
-
 struct libm_test;
+
+typedef int (*libm_func_cb_t)(struct libm_test *test, int idx);
 
 struct libm_test_ops {
     int (*setup)(struct libm_test *test);
@@ -102,12 +92,14 @@ struct libm_test_ops {
     int (*cleanup)(struct libm_test *test);
 
     union {
-        double     (*func)(struct libm_test *test, int idx);
+        double      (*func)(struct libm_test *test, int idx);
         long double (*funcl)(struct libm_test *test, int idx);
-        __float128 (*funcq)(struct libm_test *test, int idx);
+        __float128  (*funcq)(struct libm_test *test, int idx);
     } ulp;
 
-    int (*libm_func_callback)(struct libm_test *test, int idx);
+    struct {
+        libm_func_cb_t s1s, s1d, v2s, v4s, v8s, v2d, v4d;
+    } callbacks;
 
     int (*verify)(struct libm_test *test, struct libm_test_result *result);
 };
@@ -234,6 +226,13 @@ struct libm_test *libm_test_alloc_init(struct libm_test_conf *conf,
                                        struct libm_test *template);
 int libm_test_free(struct libm_test *test);
 int libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem);
+
+/* Generic perf measurement functions */
+int libm_test_s1s_perf(struct libm_test *test);
+int libm_test_s1d_perf(struct libm_test *test);
+int libm_test_v4s_perf(struct libm_test *test);
+int libm_test_v2d_perf(struct libm_test *test);
+int libm_test_v4d_perf(struct libm_test *test);
 
 /**********************************
  * ULP error calculations

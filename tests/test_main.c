@@ -344,7 +344,7 @@ static int __libm_test_get_input_type(struct libm_test *test)
 static int libm_test_populate_expected(struct libm_test *test)
 {
     for (uint32_t i = 0; i < test->test_data.nelem; i++) {
-            test->ops.libm_func_callback(test, i);
+            //test->ops.libm_func_callback(test, i);
     }
 
     return 0;
@@ -352,7 +352,7 @@ static int libm_test_populate_expected(struct libm_test *test)
 
 static inline int is_libm_func_exists(struct libm_test *test)
 {
-    return test->ops.libm_func_callback != NULL;
+	return (test->ops.callbacks.s1s != NULL) || (test->ops.callbacks.s1d != NULL);
 }
 
 static int libm_test_run_one(struct libm_test *test, struct libm_test_result *result)

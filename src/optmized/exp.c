@@ -105,12 +105,21 @@ FN_PROTOTYPE(exp_v2)(double x)
      * 11-bit 'exponent' is compared with, 12-bit unsigned value
      * one comparison for multiple decisions
      */
-    if (unlikely(exponent > 0x409)) {
-        if (exponent >= 0xc09)
-            return _exp_special(x, 0, EXP_Y_ZERO);
+    if (unlikely (exponent - top12(0x1p-54) >= top12(512.0) - top12(0x1p-54))) {
+        if (exponent - top12 (0x1p-54) >= 0x80000000)
+            return 1.0;
 
-	if (exponent >= 0x409)
-            return _exp_special(x, asdouble(PINFBITPATT_DP64), EXP_Y_INF);
+        if (exponent >= top12(1024.0)) {
+            if (asuint64 (x) == asuint64(-INFINITY))
+                return 0.0;
+            if (exponent >= top12(INFINITY))
+                return 1.0 + x;
+        }
+
+        uint64_t ux = asuint64(x);
+        if (ux >= 0x40862e432ca57a77) {
+            return  _exp_special(x, asdouble(PINFBITPATT_DP64), EXP_Y_INF);
+        }
     }
 
     double_t a = x * EXP_TBLSZ_BY_LN2;

@@ -3,6 +3,26 @@
  *
  * Author: Prem Mallappa <pmallapp@amd.com>
  */
+
+
+/*
+ * ISO-IEC-10967-2: Elementary Numerical Functions
+ * Signature:
+ *   double exp2(double x)
+ *
+ * Spec:
+ *   exp2(1) = 2
+ *   exp2(x) = 1           if x ∈ F and exp2(x) ≠ 2^x and
+ *			   log2(1 - (epsilon/(2 * r))) < x  and
+ *                         x < log2(1+(epsilon/2)
+ *   exp2(x) = 1           if x = -0
+ *   exp2(x) = +inf        if x = +inf
+ *   exp2(x) = 0           if x = -inf
+ *   exp2(x) = 2^x
+ *
+ *   exp2(x) overflows     if (approximately) x > ln(DBL_MAX). (709.782712893384)
+ */
+
 #include <stdint.h>
 #include <libm_util_amd.h>
 #include <libm_amd_paths.h>
@@ -24,37 +44,18 @@
  * I.O.W (1 << N) is the size  of the look up table
  */
 
-#define N 10
-#define TABLE_SIZE (1ULL << N)
+#define EXP2_N 6
+#define EXP2_TABLE_SIZE (1 << EXP2_N)
 
-#if N == 6                              /* Table size 64 */
-extern double exp_v2_two_to_jby64_table[];
-#define TABLE_DATA exp_v2_two_to_jby64_table
-#define POLY_DEGREE 6
+#if EXP2_N == 6                              /* Table size 64 */
+#define EXP2_POLY_DEGREE 6
 
-#elif N == 7                            /* Table size 128 */
-extern double exp_v2_two_to_jby128_table[];
-#define TABLE_DATA exp_v2_two_to_jby128_table
-#define POLY_DEGREE 5
-
-#elif N == 8                            /* Table size 256 */
-extern double exp_v2_two_to_jby256_table[];
-#define TABLE_DATA exp_v2_two_to_jby256_table
-#define POLY_DEGREE 4
-
-#elif N == 9                            /* Table size 512 */
-extern double exp_v2_two_to_jby512_table[];
-#define TABLE_DATA exp_v2_two_to_jby512_table
-#define POLY_DEGREE 4
-
-#elif N == 10                           /* Table size 1024 */
-extern double exp_v2_two_to_jby1024_table[];
-#define TABLE_DATA exp_v2_two_to_jby1024_table
-#define POLY_DEGREE 4
+#elif EXP2_N == 7                            /* Table size 128 */
+#define EXP2_POLY_DEGREE 5
 
 #endif
 
-#define MAX_POLYDEGREE 8
+#define EXP2_MAX_POLYDEGREE 8
 
 struct exp_table {
 	double main, head, tail;
@@ -65,30 +66,31 @@ static const struct {
 	double one_by_table_size;
 	double ln2;
         double Huge;
-	double ALIGN(16) poly[MAX_POLYDEGREE];
+	double ALIGN(16) poly[EXP2_MAX_POLYDEGREE];
+	struct exp_table table[EXP2_TABLE_SIZE];
 } exp2_data = {
-#if N == 10
+#if EXP2_N == 10
 	.table_size        = 0x1.0p+10,
 	.one_by_table_size = 0x1.0p-10,
 	.Huge              = 0x1.8p+42,
-#elif N == 9
+#elif EXP2_N == 9
 	.table_size        = 0x1.0p+9,
 	.one_by_table_size = 0x1.0p-9,
 	.Huge		   = 0x1.8p+43,
-#elif N == 8
+#elif EXP2_N == 8
 	.table_size        = 0x1.0p+8,
 	.one_by_table_size = 0x1.0p-8,
 	.Huge              = 0x1.8p+44,
-#elif N == 7
+#elif EXP2_N == 7
 	.table_size        = 0x1.0p+7,
 	.one_by_table_size = 0x1.0p-7,
 	.Huge		   = 0x1.8p+45,
-#elif N == 6
+#elif EXP2_N == 6
 	.table_size        = 0x1.0p+6,
 	.one_by_table_size = 0x1.0p-6,
 	.Huge		   = 0x1.8p+46,
 #else
-#error "N not defined"
+#error "EXP2_N not defined"
 #endif
 	.ln2  = 0x1.62e42fefa39efp-1, /* ln(2) */
         /*
@@ -105,6 +107,15 @@ static const struct {
 		0x1.a01a01a01a01ap-16,	/* 1/8! = 1/40320*/
 		0x1.71de3a556c734p-19,	/* 1/9! = 1/322880*/
 	},
+
+	.table = {
+#if EXP2_N == 6
+#include "data/_exp_tbl_64_interleaved.data"
+
+#elif EXP2_N == 7
+#include "data/_exp_tbl_128_interleaved.data"
+#endif
+	},
 };
 
 /* C1 is 1 as 1! = 1 and 1/1! = 1 */
@@ -119,6 +130,7 @@ static const struct {
 #define REAL_TABLE_SIZE         exp2_data.table_size
 #define REAL_1_BY_TABLE_SIZE	exp2_data.one_by_table_size
 #define REAL_LN2		exp2_data.ln2
+#define TABLE_DATA		exp2_data.table
 
 double _exp2_special(double x, double y, uint32_t code);
 
@@ -126,6 +138,7 @@ static inline uint32_t top12(double x)
 {
     return asuint64(x) >> 52;
 }
+
 
 double
 FN_PROTOTYPE(exp2_v2)(double x)
@@ -147,12 +160,21 @@ FN_PROTOTYPE(exp2_v2)(double x)
      * 11-bit 'exponent' is compared with, 12-bit unsigned value
      * one comparison for multiple decisions
      */
-    if (unlikely(exponent > 0x409)) {
-        if (exponent >= 0xc09)
-            return _exp2_special(x, 0, EXP_Y_ZERO);
+    if (unlikely (exponent - top12(0x1p-54) >= top12(512.0) - top12(0x1p-54))) {
+	    if (exponent - top12 (0x1p-54) >= 0x80000000)
+		    return 1.0;
 
-	if (exponent >= 0x409)
-            return _exp2_special(x, asdouble(PINFBITPATT_DP64), EXP_Y_INF);
+	    if (exponent >= top12(1024.0)) {
+		    if (asuint64 (x) == asuint64(-INFINITY))
+			    return 0.0;
+		    if (exponent >= top12(INFINITY))
+			    return 1.0 + x;
+	    }
+
+	    uint64_t ux = asuint64(x);
+	    if (ux >= 0x40862e432ca57a77) {
+		    return  _exp2_special(x, asdouble(PINFBITPATT_DP64), EXP_Y_INF);
+	    }
     }
 
 #define FAST_INTEGER_CONVERSION 1
@@ -172,12 +194,12 @@ FN_PROTOTYPE(exp2_v2)(double x)
     r *= REAL_LN2;
 
     /* table index, for lookup, truncated */
-    j = n % TABLE_SIZE;
+    j = n % EXP2_TABLE_SIZE;
 
     /* n-j/TABLE_SIZE, TABLE_SIZE = 1<<N
      * and m <<= 52
      */
-    m = (n - j) << (52 - N);
+    m = (n - j) << (52 - EXP2_N);
 
 
 #define ESTRIN_SCHEME  0xee
@@ -190,18 +212,18 @@ FN_PROTOTYPE(exp2_v2)(double x)
 #endif
 
 #if POLY_EVAL_METHOD == HORNER_SCHEME
-#if !defined(POLY_DEGREE)
-#define POLY_DEGREE 6
+#if !defined(EXP2_POLY_DEGREE)
+#define EXP2_POLY_DEGREE 6
 #endif
-#if POLY_DEGREE == 7
+#if EXP2_POLY_DEGREE == 7
     q = r * (1 + r * (C2 + r * (C3 + r * (C4 + r * (C5 + r * (C6 + r * C7))))));
-#elif   POLY_DEGREE == 6
+#elif   EXP2_POLY_DEGREE == 6
     q = r * (1 + r * (C2 + r * (C3 + r * (C4 + r * (C5 + r * C6)))));
-#elif POLY_DEGREE == 5
+#elif EXP2_POLY_DEGREE == 5
     q = r * (1 + r * (C2 + r * (C3 + r * (C4 + r * C5))));
-#elif POLY_DEGREE == 4
+#elif EXP2_POLY_DEGREE == 4
     q = r * (1 + r * (C2 + r * (C3 + r * C4)));
-#elif POLY_DEGREE == 3
+#elif EXP2_POLY_DEGREE == 3
     q = r * (1 + r * (C2 + r * C3));
 #else  /* Poly order <=2 */
     q = r * (1 + r * C2);
@@ -215,11 +237,11 @@ FN_PROTOTYPE(exp2_v2)(double x)
     double_t r2 = r * r;
     q = r + (r2 * (C2  + r * C3));
 
-#if POLY_DEGREE == 4
+#if EXP2_POLY_DEGREE == 4
     q += (r2 * r2) *  C4; /* r^4 * C4 */
-#elif POLY_DEGREE == 5
+#elif EXP2_POLY_DEGREE == 5
     q += (r2 * r2) * (C4 + r*C5);
-#elif POLY_DEGREE == 6
+#elif EXP2_POLY_DEGREE == 6
     q += (r2 * r2) * (C4 + r * (C5 + r*C6));
 #endif
 #else

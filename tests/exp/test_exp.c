@@ -256,7 +256,7 @@ static int __test_expf_accu(struct libm_test *test,
 }
 
 static int __generate_test_one_range(struct libm_test *test,
-                                     struct libm_test_input_range *range)
+                                     const struct libm_test_input_range *range)
 {
     int ret = 0;
 
@@ -304,13 +304,13 @@ static int test_exp_accu(struct libm_test *test)
     }
 
 
-    int arr_sz = ARRAY_SIZE(accu_ranges);
+    int arr_sz = ARRAY_SIZE(exp2_accu_ranges);
 
     for (int i = 0; i < arr_sz ; i++) {
-        if ((accu_ranges[i].start = 0.0) && (accu_ranges[i].stop == 0.0) )
+        if ((exp2_accu_ranges[i].start == 0.0) && (exp2_accu_ranges[i].stop == 0.0) )
             break;
 
-        ret = __generate_test_one_range(test, &accu_ranges[i]);
+        ret = __generate_test_one_range(test, &exp2_accu_ranges[i]);
         if (ret)
             return ret;
 

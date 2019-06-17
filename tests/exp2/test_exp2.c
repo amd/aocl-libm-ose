@@ -15,6 +15,7 @@
 #include <bench_timer.h>
 
 #include <libm/types.h>
+#include <libm/typehelper.h>
 #include <libm/compiler.h>		/* for FALLTHROUGH */
 
 #include "test_exp2.h"
@@ -424,16 +425,16 @@ static int __test_exp2f_accu(struct libm_test *test,
 }
 
 static int __generate_test_one_range(struct libm_test *test,
-                                     struct libm_test_input_range *range)
+                                     const struct libm_test_input_range *range)
 {
     int ret = 0;
 
     LIBM_TEST_DPRINTF(DBG2,
-                      "Testing for accuracy %d items in range [%Lf, %Lf]\n",
+                      "Testing for accuracy %d items in range [%.16g, %.16g]\n",
                       test->test_data.nelem,
-                      range->start, range->stop);
+                      (double)range->start, (double)range->stop);
 
-    test->conf->inp_range[0] = *range;
+    memcpy(&test->conf->inp_range[0], range, sizeof(*range));
 
     ret = libm_test_populate_inputs(test, range->type);
 
@@ -473,14 +474,14 @@ static int test_exp2_accu(struct libm_test *test)
     }
 
 
-    int arr_sz = ARRAY_SIZE(accu_ranges);
+    int arr_sz = ARRAY_SIZE(exp2_accu_ranges);
 
     for (int i = 0; i < arr_sz; i++) {
-        if ((accu_ranges[i].start = 0.0) &&
-             (accu_ranges[i].stop == 0.0) )
+        if ((exp2_accu_ranges[i].start == 0.0) &&
+             (exp2_accu_ranges[i].stop == 0.0) )
              break;
 
-        ret = __generate_test_one_range(test, &accu_ranges[i]);
+        ret = __generate_test_one_range(test, &exp2_accu_ranges[i]);
         if (ret)
             return ret;
 
@@ -581,8 +582,8 @@ double test_exp2_ulp(struct libm_test *test, int idx)
 {
     float *buf = (float*)test->test_data.input1;
     float val = buf[idx];
-    static const float min = log(FLT_MIN);
-    static const float max = log(FLT_MAX);
+    static const float min = -1074.0;
+    static const float max = 1024.0;
 
     /* We need to return higher-precision values for NAN */
     if (isinf(val))  return PINFBITPATT_DP64;
@@ -743,16 +744,18 @@ test_exp2_exp2l(struct libm_test *test, int idx)
 {
     double *d = (double*)test->test_data.input1;
     double val = d[idx];
-    static const double min = log(DBL_MIN);
-    static const double max = log(DBL_MAX);
+    static const double min = -1074.0;
+    static double max = 1024.0;
 
-    if (isinf(val))  return (long double)PINFBITPATT_DP64;
+    if (val > max) {
+        if (isinf(val))  return (long double)PINFBITPATT_DP64;
 
-    if (isnan(val))  return (long double)QNANBITPATT_DP64;
+        return (long double)QNANBITPATT_DP64;
+    }
 
-    if (val > max)   return (long double)PINFBITPATT_DP64;
-
-    if (val < min)   return 1.0;
+    if (val < min) {
+        return 0;
+    }
 
     return exp2l(d[idx]);
 }

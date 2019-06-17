@@ -131,6 +131,14 @@ static const struct {
 #define REAL_1_BY_TABLE_SIZE	exp2_data.one_by_table_size
 #define REAL_LN2		exp2_data.ln2
 #define TABLE_DATA		exp2_data.table
+#define MAX_X			exp2_data.x.max
+#define MIN_X			exp2_data.x.min
+
+#define UMAX_X			0x4090000000000000
+#define UMIN_X			0xc090c80000000000
+
+#define FMAX_X			 0x1.000p+10
+#define FMIN_X			-0x1.0c8p+10
 
 double _exp2_special(double x, double y, uint32_t code);
 
@@ -145,7 +153,7 @@ FN_PROTOTYPE(exp2_v2)(double x)
 {
     double_t    r, q, dn;
     int64_t     n, j, m;
-    flt64_t     q1 = {.i = 0,}, q2 = q1;
+    flt64_t     q1 = {.i = 0,};
 
 #define EXP_X_NAN       1
 #define EXP_Y_ZERO      2
@@ -164,17 +172,22 @@ FN_PROTOTYPE(exp2_v2)(double x)
 	    if (exponent - top12 (0x1p-54) >= 0x80000000)
 		    return 1.0;
 
-	    if (exponent >= top12(1024.0)) {
-		    if (asuint64 (x) == asuint64(-INFINITY))
-			    return 0.0;
-		    if (exponent >= top12(INFINITY))
-			    return 1.0 + x;
+	    if (x >= FMAX_X) {
+                if (isnan(x))
+                    return  _exp2_special(x, asdouble(QNANBITPATT_DP64), EXP_Y_INF);
+
+                return  _exp2_special(x, asdouble(PINFBITPATT_DP64), EXP_X_NAN);
 	    }
 
-	    uint64_t ux = asuint64(x);
-	    if (ux >= 0x40862e432ca57a77) {
-		    return  _exp2_special(x, asdouble(PINFBITPATT_DP64), EXP_Y_INF);
+	    if (x <= FMIN_X) {
+		    if (asuint64(x) == NINFBITPATT_DP64)
+                        return  _exp2_special(x, x, EXP_Y_ZERO);
+
+		    return _exp2_special(x, 0.0, EXP_Y_ZERO);
 	    }
+
+	    // flag de-normals to process at the end
+	    exponent = 0xfff;
     }
 
 #define FAST_INTEGER_CONVERSION 1
@@ -199,8 +212,7 @@ FN_PROTOTYPE(exp2_v2)(double x)
     /* n-j/TABLE_SIZE, TABLE_SIZE = 1<<N
      * and m <<= 52
      */
-    m = (n - j) << (52 - EXP2_N);
-
+    m = (n -j) << (52 - EXP2_N);
 
 #define ESTRIN_SCHEME  0xee
 #define HORNER_SCHEME  0xef
@@ -255,23 +267,20 @@ FN_PROTOTYPE(exp2_v2)(double x)
     /*
      * Processing denormals
      */
-    if (unlikely(exponent == 0)) {
-        if (m < -1023) {
-            /* Process true de-normals */
-            m += 1074;
-            flt64u_t tmp = {.i = (1 << (uint8_t)m) };
-            q2.d = q * tmp.d;
-            return q2.d;
-        }
+    if (unlikely(exponent == 0xfff)) {
+	    int m1 = (n - j) >> EXP2_N;
+        //int m1 = m;
+        if (m1 <= -1022)
+            if (m1 < -1022 || q < 1.0) {
+                /* Process true de-normals */
+                m1 += 1074;
+                flt64u_t tmp = {.i = (1ULL << (uint8_t)m1) };
+                return q * tmp.d;
+            }
     }
 
-    q1.i = m + asuint64(q);
+    q1.d = asdouble(m + asuint64(q));
     return q1.d;
-
-
-#if defined(__ENABLE_IEEE_EXCEPTIONS)
-
-#endif
 }
 
 #if defined(ENABLE_GLIBC_API)

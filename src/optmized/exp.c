@@ -84,6 +84,9 @@ static inline uint32_t top12(double x)
     return asuint64(x) >> 52;
 }
 
+#define FMAX_X			 0x1.62e42fefa39efp+9
+#define FMIN_X			-0x1.74910d52d3051p+9
+
 double
 FN_PROTOTYPE(exp_v2)(double x)
 {
@@ -109,17 +112,21 @@ FN_PROTOTYPE(exp_v2)(double x)
         if (exponent - top12 (0x1p-54) >= 0x80000000)
             return 1.0;
 
-        if (exponent >= top12(1024.0)) {
-            if (asuint64 (x) == asuint64(-INFINITY))
-                return 0.0;
-            if (exponent >= top12(INFINITY))
-                return 1.0 + x;
-        }
+	if (x >= FMAX_X) {
+                if (isnan(x))
+			return  _exp_special(x, asdouble(QNANBITPATT_DP64), EXP_Y_INF);
 
-        uint64_t ux = asuint64(x);
-        if (ux >= 0x40862e432ca57a77) {
-            return  _exp_special(x, asdouble(PINFBITPATT_DP64), EXP_Y_INF);
-        }
+                return  _exp_special(x, asdouble(PINFBITPATT_DP64), EXP_X_NAN);
+	}
+
+	if (x <= FMIN_X) {
+		if (asuint64(x) == NINFBITPATT_DP64)
+                        return  _exp_special(x, x, EXP_Y_ZERO);
+
+		return _exp_special(x, 0.0, EXP_Y_ZERO);
+	}
+
+        exponent = 0xfff;
     }
 
     double_t a = x * EXP_TBLSZ_BY_LN2;
@@ -210,7 +217,7 @@ FN_PROTOTYPE(exp_v2)(double x)
     /*
      * Processing denormals
      */
-    if (unlikely (exponent == 0)) {
+    if (unlikely (exponent == 0xfff)) {
         /* re-calculate m */
         int32_t m2 = (n - j) >> EXP_N;
         if (m2 <= -1022) {

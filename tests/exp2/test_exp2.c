@@ -132,7 +132,7 @@ static int test_exp2_accu_setup(struct libm_test *test)
         goto out;
     }
 
-    test->ulp_threshold = 0.54;
+    test->ulp_threshold = 1.1;
 
     return 0;
 out:

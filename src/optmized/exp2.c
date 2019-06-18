@@ -212,7 +212,7 @@ FN_PROTOTYPE(exp2_v2)(double x)
     /* n-j/TABLE_SIZE, TABLE_SIZE = 1<<N
      * and m <<= 52
      */
-    m = (n -j) << (52 - EXP2_N);
+    m = (n - j) << (52 - EXP2_N);
 
 #define ESTRIN_SCHEME  0xee
 #define HORNER_SCHEME  0xef
@@ -268,8 +268,7 @@ FN_PROTOTYPE(exp2_v2)(double x)
      * Processing denormals
      */
     if (unlikely(exponent == 0xfff)) {
-	    int m1 = (n - j) >> EXP2_N;
-        //int m1 = m;
+        int m1 = (n - j) >> EXP2_N;
         if (m1 <= -1022)
             if (m1 < -1022 || q < 1.0) {
                 /* Process true de-normals */

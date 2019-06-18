@@ -359,7 +359,6 @@ test_expm1_cb_v4s(struct libm_test *test, int j)
     float *restrict o = (float*)data->output;
 
 #if (LIBM_PROTOTYPE != PROTOTYPE_FMA3)		/* Glibc doesnt have a vector version of expm1 */
-    float i[4];
     for (int k = 0; k < 4; k++)
         o[k] = LIBM_FUNC(expm1f)(ip1[k]);
 #else
@@ -380,7 +379,6 @@ test_expm1_cb_v2d(struct libm_test *test, int j)
     double *restrict o = (double*)data->output;
 
 #if (LIBM_PROTOTYPE != PROTOTYPE_FMA3)		/* Glibc doesnt have a vector version of expm1 */
-    float i[4];
     for (int k = 0; k < 2; k++)
         o[k] = LIBM_FUNC(expm1)(ip1[k]);
 #else

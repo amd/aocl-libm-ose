@@ -49,14 +49,15 @@ fname PROC FRAME
     .ENDPROLOG   
          
          movd   r8,   xmm0       
-         movd   r9,   xmm1       
-         and    r8,   qword PTR L__Nan_64      
-         and    r9,   qword PTR L__Nan_64   
-		 jz     L__Y_is_Zero
+         movd   r9,   xmm1
+         and    r8,   qword PTR L__Nan_64
+         and    r9,   qword PTR L__Nan_64
 		 cmp    r8,   qword PTR L__exp_mask_64
-		 jge    L__InputIsNaN_Inf
+		 jge    L__InputXIsNaN_Inf
 		 cmp    r9,   qword PTR L__exp_mask_64
 		 jg     L__InputYIsNaN_Inf
+		 cmp    r9,   qword PTR L__Zero_64
+		 je     L__Y_is_Zero
 		 cmp    r8,r9
 		 jz     L__Input_Is_Equal
 
@@ -218,22 +219,38 @@ L__Input_Is_Equal:
        movdqa xmm7, XMMWORD PTR [save_xmm7+rsp]
        movdqa xmm6, XMMWORD PTR [save_xmm6+rsp]
        add    rsp, stack_size
-       ret 
+       ret
 
 ALIGN 16
-L__InputIsNaN_Inf:
-;Here x is nan so we move to xmm1
-       movapd xmm1, xmm0
+L__InputXIsNaN_Inf:
+;Here x is nan or infinity
+      je  L__Dividend_Is_Infinity
+;Check if either x is a signalling nan
+	  cmp r8, L__Qnan
+	  jl  L__InputIsSNaN
+;Check if y is a NaN
+	  cmp    r9,   qword PTR L__exp_mask_64
+	  jg     L__InputYIsNaN_Inf
+	  add    rsp, stack_size
+      ret
+
 ALIGN 16
 L__InputYIsNaN_Inf:
-;Here y is nan 
-       por    xmm1, xmmword PTR  L__Qnan
+;Check if y is a signalling snan
+	cmp r9, L__Qnan
+	jl  L__InputIsSNaN
+    movapd xmm0, xmm1
+	add    rsp, stack_size
+    ret
+
+ALIGN 16
+L__InputIsSNaN:
+;Raise exception and return snan
        mov    r8d, DWORD PTR L__flag_x_nan
 	   call   fname_special
-       movdqa xmm7, XMMWORD PTR [save_xmm7+rsp]
-       movdqa xmm6, XMMWORD PTR [save_xmm6+rsp]
-       add    rsp, stack_size       
-       ret 
+       por    xmm0, xmmword PTR L__Snan
+       add    rsp, stack_size
+       ret
 
 
 ALIGN 16
@@ -322,8 +339,10 @@ L__Nan_64                DQ 07FFFFFFFFFFFFFFFh
                          DQ 00h
 L__ZeroPointFive         DQ 03FE0000000000000h
                          DQ 00h
-L__Qnan                   DQ 07FF8000000000000h
+L__Qnan                  DQ 07FF8000000000000h
                          DQ 07FF8000000000000h
+L__Snan                  DQ 07FF0000000000001h
+						 DQ 00h
 CONST    ENDS
 data ENDS
 

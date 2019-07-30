@@ -8,6 +8,7 @@ Import('env')
 experimental_src = []
 
 source = Glob('*.c', exclude=experimental_src)
+source += Glob('data/*.c', exclude=experimental_src)
 
 objects = env.StaticObject(source)
 

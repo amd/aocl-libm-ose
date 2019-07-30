@@ -11,6 +11,13 @@
 
 #define EXPM1F_N 6
 
+#if EXPM1F_N == 6
+const double __two_to_jby64[64];
+#elif EXPM1F_N == 7
+const double __two_to_jby128[128];
+#endif
+
+
 static const struct {
     double _64_by_ln2, ln2_by_64;
     double Huge;
@@ -24,7 +31,8 @@ static const struct {
 #endif
     float poly[5];
     /* The pre-computed double-precision table */
-    double tab[1 << EXPM1F_N];
+    //double tab[1 << EXPM1F_N];
+    const double *tab;
 } expm1f_v2_data =  {
     .Huge       = 0x1.8p+52,	/* 2^52 * (1.0 + 0.5) */
 #if 1
@@ -46,14 +54,8 @@ static const struct {
         0x1.6c9bcap-10f,		/* 0x3AB64DE5 */
         0x1.95664ep-13f,		/* 0x394AB327 */
     },
-    .tab            = {
-#if (DEVELOPER == 1)
 
-#elif (DEVELOPER == 2)
-#include "data/_expm1f_v2.data"
-
-#endif
-    },
+    .tab = __two_to_jby64,
 };
 
 #endif 					/* LIBM_OPTIMIZED_SINGLE_EXPM1F_H */

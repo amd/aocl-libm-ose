@@ -1,0 +1,81 @@
+#fmax.S
+#
+# An implementation of the fmax libm function.
+#
+# The fmax functions determine the maximum numeric value of their arguments.
+#
+# Prototype:
+#
+#     double fmax(double x, double y)
+#
+
+#
+#   Algorithm:
+#
+
+#include "fn_macros.h"
+#include "weak_macros.h"
+#define fname FN_PROTOTYPE(fmax)
+#define fname_specail _fmax_special@PLT
+
+WEAK_ACML_LIB_ALIAS fastfmax, FN_PROTOTYPE(fmax)
+WEAK_MATH_LIB_ALIAS fmax,fname
+
+#ifdef __ELF__
+.section .note.GNU-stack,"",@progbits
+#endif
+
+.text
+.align 16
+.p2align 4,,15
+.globl fname
+.type fname,@function
+fname:
+	sub $0x18,%rsp
+	movd %xmm0 ,%r8
+	mov .L_sign_mask(%rip) ,%rax
+	and %r8 ,%rax
+	cmp .L__exp_mask_64(%rip) ,%rax
+	jg L_input_x_nan
+
+	movd %xmm1 ,%r8
+	mov .L_sign_mask(%rip) ,%rax
+	and %r8 ,%rax
+	cmp .L__exp_mask_64(%rip) ,%rax
+	jg L_input_y_nan
+
+	movapd %xmm0 ,%xmm3
+	movapd %xmm0 ,%xmm4
+	xorpd %xmm5 ,%xmm5 # 0
+
+	maxpd %xmm1 ,%xmm3
+
+	orpd %xmm1 ,%xmm0 # a | b
+	andpd %xmm1 ,%xmm4
+	cmpeqpd %xmm5 ,%xmm0 # both a, b are zero
+
+	pand %xmm0 ,%xmm4 # max zero
+	pandn %xmm3 ,%xmm0
+	por %xmm4 ,%xmm0
+
+	add $0x18 ,%rsp
+	ret
+
+L_input_x_nan:
+L_input_y_nan:
+
+	call fname_specail
+	add $0x18, %rsp
+	ret
+
+.section .rodata
+
+.align 16
+
+
+.L_sign_mask:                .quad 0x7FFFFFFFFFFFFFFF
+                           .quad 0x7FFFFFFFFFFFFFFF         #this zero is necessary
+
+.L__exp_mask_64:             .quad 0x7FF0000000000000
+                           .quad 0x7FF0000000000000
+

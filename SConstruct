@@ -11,6 +11,7 @@ from os.path import join as joinpath, split as splitpath
 # We need a better name for this
 from scripts.cfg import cfg,helper
 from scripts.cfg import DefaultCfg
+from scripts.cfg.helper import PrintBanner
 
 defcfg = DefaultCfg(build_root=Dir('#build', create=True))
 
@@ -19,22 +20,6 @@ env = defcfg.GetDefaultEnv()
 # Add shared top-level headers
 env.Prepend(CPPPATH=[Dir('include')])
 
-if GetOption('verbose'):
-    def MakeAction(action, string, *args, **kwargs):
-        return Action(action, *args, **kwargs)
-    print("coming to GetOption")
-    env['verbose'] = True
-else:
-    MakeAction = Action
-    env['verbose'] = False
-
-Export('MakeAction')
-
-#
-# Generate configurations and export
-#
-env['BUILDROOT'] = str(Dir('./build'))
-env.SetupConfiguration()
 build_root = env['BUILDROOT']
 
 makedirs(build_root, exist_ok=True)
@@ -86,6 +71,8 @@ if 'tests' in COMMAND_LINE_TARGETS:
 
 Progress('\r', overwrite=True)
 Default(targets)
+
+PrintBanner(libenv)
 
 # base help text
 Help('''

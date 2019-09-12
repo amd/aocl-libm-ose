@@ -125,6 +125,13 @@ def MakeBuildRoot(env):
         b = env['BUILDROOT']
     except KeyError:
         b = 'build'
+
+    build_mode_to_dir = {
+        'debug'     : '-debug',
+        'release'   : '-release',
+        'developer' : '-dev'
+    }
+
     b += '/' + '%s'%(env['libabi'])
     if  env['debug_mode'] != GetOption('debug_mode'):
         dbg = GetOption('debug_mode')
@@ -132,15 +139,15 @@ def MakeBuildRoot(env):
         dbg = env['debug_mode']
 
     if dbg == 'libs' or dbg == 'all':
-        b += "-%s"%"debug"
+        b += "%s"%build_mode_to_dir['debug']
     else:
         if env['developer'] > 0:
-            b += "-%s%d"%('dev',env['developer'])
+            b += "%s%d"%(build_mode_to_dir['developer'],env['developer'])
         else:
-            b += '-release'
+            b += build_mode_to_dir['release']
 
     env['BUILDROOT'] = b
-    print('buildroot', b)
+    #print('buildroot', b)
 
 def SetupConfiguration(env):
         """Build the test program;
@@ -152,5 +159,19 @@ def SetupConfiguration(env):
 
         if env['debug_mode']:
             env.Append(CPPDEFINES = {'DEBUG': '1'})
-        print('=======Configuring Variables: DONE =======')
+
+def PrintBanner(env):
+        print("====================== Configuration ======================")
+        print("""
+        Compiler     : %-20s  Build    : %s
+        ABI          : %-20s  Developer: %s
+        ToolchainDir : %s
+        BuildDir     : %s
+        """% (
+            env['compiler'], env['build'],
+            env['libabi'], env['developer'],
+            env['toolchain_base'],
+            env['BUILDROOT']
+        ))
+        print("===========================================================")
 

@@ -124,7 +124,7 @@ this_sconscript_file = Dir('.').srcnode().abspath
 test_base = os.path.dirname(this_sconscript_file)
 tests = getSubdirs(this_sconscript_file)
 #print("tests=================", tests, path.join(test_base, ))
-exclude_dirs = ['include']
+exclude_dirs = ['include', 'libs']
 tests = [x for x in tests if x not in exclude_dirs]
 
 #print(e.Dump())

@@ -1,0 +1,42 @@
+# Copyright (C) 2018, AMD. All rights Reserved
+#
+# Author: Prem Mallappa <pmallapp@amd.com>
+
+# Inherit global environment
+Import('env')
+from os.path import join as joinpath
+
+builddir = joinpath(env['BUILDROOT'], 'src')
+
+e = env.Clone()
+e.Append(
+    ASFLAGS = ['-Wall', '-W', '-fPIC' ],
+ 
+    CPPPATH = [],
+
+    CPPDEFINES = ['AVX_XOP_FMA4_FMA3' ],
+)
+
+# The set of source files associated with this SConscript file.
+source = Glob('*.[cS]', exclude=['map.S'])	+ \
+    Glob('avx/gas/*.[cS]')    			+ \
+    Glob('avx2/gas/*.[cS]')   			+ \
+    Glob('fma4/gas/*.[cS]')   			+ \
+    Glob('avx512/gas/*.[cS]')
+
+asm_list = ['avx/gas', 'avx2/gas', 'fma4/gas', 'avx512/gas']
+asm_objs = []
+
+for asm_path in asm_list:
+    new_env = e.Clone()
+    srcs = Glob(joinpath(asm_path, '*.[cS]'))
+    #print(joinpath(Dir('.').srcnode().path, asm_path, 'include'))
+    incpath = '#' + joinpath(Dir('.').srcnode().path, asm_path, 'include')
+    new_env.Append(
+        CPPPATH = incpath,
+    )
+    asm_objs += new_env.StaticObject(srcs)
+
+#print('asm sources', list(asm_objs))
+Return('asm_objs')
+

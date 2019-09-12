@@ -19,7 +19,7 @@
 #define fname FN_PROTOTYPE_BAS64(pow)
 #define fname_special _pow_special@PLT
 
-WEAK_ACML_LIB_ALIAS fastpow, FN_PROTOTYPE(pow)
+#WEAK_ACML_LIB_ALIAS fastpow, FN_PROTOTYPE(pow)
 
 # local variable storage offsets
 .equ    save_x, 0x0

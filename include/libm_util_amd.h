@@ -36,7 +36,7 @@ typedef union UT64_ UT64;
 
 
 #define QNAN_MASK_32        0x00400000
-#define QNAN_MASK_64        0x0008000000000000
+#define QNAN_MASK_64        0x0008000000000000ULL
 
 #define MULTIPLIER_SP 24
 #define MULTIPLIER_DP 53
@@ -48,13 +48,13 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
 
 /* Definitions for double functions on 64 bit machines */
 #define SIGNBIT_DP64      0x8000000000000000
-#define EXPBITS_DP64      0x7ff0000000000000
+#define EXPBITS_DP64      0x7ff0000000000000ULL
 #define MANTBITS_DP64     0x000fffffffffffff
 #define ONEEXPBITS_DP64   0x3ff0000000000000
 #define TWOEXPBITS_DP64   0x4000000000000000
 #define HALFEXPBITS_DP64  0x3fe0000000000000
 #define IMPBIT_DP64       0x0010000000000000
-#define QNANBITPATT_DP64  0x7ff8000000000000
+#define QNANBITPATT_DP64  0x7ff8000000000000ULL
 #define INDEFBITPATT_DP64 0xfff8000000000000
 #define PINFBITPATT_DP64  0x7ff0000000000000
 #define NINFBITPATT_DP64  0xfff0000000000000
@@ -67,7 +67,8 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
 #define LAMBDA_DP64       1.0e300
 #define MANTLENGTH_DP64   53
 #define BASEDIGITS_DP64   15
-
+#define EXP_MIN           0xc0874910d52d3052
+#define EXP_MAX_DOUBLE    709.7822265625
 
 /* These definitions, used by float functions,
    are for both 32 and 64 bit machines */

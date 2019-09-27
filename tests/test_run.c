@@ -99,6 +99,7 @@ libm_test_v4s_perf(struct libm_test *test)
     uint64_t sz = data->nelem;
     uint64_t n = test->conf->niter;
     int ret = 0;
+    const int scale = 4;
 
     /* Poison output */
     for (uint32_t j = 0; j < sz; ++j) {
@@ -112,7 +113,7 @@ libm_test_v4s_perf(struct libm_test *test)
         uint32_t j;
 
         for (j = 0; j < sz/4; j ++) {
-            ret = ops->callbacks.v4s(test, j);
+            ret = ops->callbacks.v4s(test, j*scale);
             if (ret) { // something went wrong
                 goto out;
             }
@@ -157,6 +158,7 @@ libm_test_v2d_perf(struct libm_test *test)
     uint64_t sz = data->nelem;
     uint64_t n = test->conf->niter;
     int ret = 0;
+    const int scale = 2;
 
     /* Poison output */
     for (uint32_t j = 0; j < sz; ++j) {
@@ -170,7 +172,7 @@ libm_test_v2d_perf(struct libm_test *test)
         uint32_t j;
 
         for (j = 0; j < sz/4; j ++) {
-            ret = ops->callbacks.v2d(test, j);
+            ret = ops->callbacks.v2d(test, j*scale);
             if (ret) { // something went wrong
                 goto out;
             }
@@ -208,6 +210,7 @@ libm_test_v4d_perf(struct libm_test *test)
     uint64_t sz = data->nelem;
     uint64_t n = test->conf->niter;
     int ret = 0;
+    const int scale = 4;
 
     /* Poison output */
     for (uint32_t j = 0; j < sz; ++j) {
@@ -221,7 +224,7 @@ libm_test_v4d_perf(struct libm_test *test)
         uint32_t j;
 
         for (j = 0; j < sz/4; j ++) {
-            ret = ops->callbacks.v4d(test, j);
+            ret = ops->callbacks.v4d(test, j*scale);
             if (ret) { // something went wrong
                 goto out;
             }

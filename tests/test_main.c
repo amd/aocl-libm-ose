@@ -169,6 +169,9 @@ static error_t __enable_tests_type(const char *type, struct libm_test_conf *conf
     if ((strncmp(type, "corn", 4) == 0) || all)
         *tp |= TEST_TYPE_CORNER;
 
+    if ((strncmp(type, "conform", 4) == 0) || all)
+        *tp |= TEST_TYPE_CONFORMANCE;
+
     return 0;
 }
 
@@ -284,24 +287,35 @@ static error_t parse_opts(int key, char *arg, struct argp_state *state)
 
 static struct argp argp = {options, parse_opts, args_doc, doc, 0, 0, 0};
 
-
 static void libm_test_print_report(struct list_head *test_list)
 {
     struct list_head *pos;
     static const char equal[100] = {[0 ... 98] = '=', 0};
-
-    printf("%s\n", &equal[0]);
-
-    printf("%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n",
-           "TEST", "TYPE", "DATATYPE", "No.Tests", "Passed",
-           "Failed", "Ignored", "MOPS");
+    char* test_type=(char*)malloc(20);
 
     printf("%s\n", &equal[0]);
 
     list_for_each(pos, test_list) {
         struct libm_test *test = list_entry(pos, struct libm_test, list);
         struct libm_test_result *result = &test->result;
+	
+	if(test->test_type == TEST_TYPE_PERF)
+	{
+		strcpy(test_type, "MOPS");
+	}
+	else if(test->test_type == TEST_TYPE_ACCU)
+	{
+		strcpy(test_type, "MAX ULP ERR");
+	}
+	else
+	{
+		strcpy(test_type, " ");
+	}
+	printf("%-12s %-12s %-12s %-12s %-12s %-12s %-12s %s\n",
+           "TEST", "TYPE", "DATATYPE", "No.Tests", "Passed",
+           "Failed", "Ignored", test_type);
 
+	printf("%s\n", &equal[0]);
         printf("%-12s %-12s %-12s %-12d %-12d %-12d %-12d",
                test_get_name(test), test_get_test_type(test),
                test_get_input_type(test),
@@ -480,7 +494,7 @@ int libm_test_register(struct libm_test *test)
                        LIBM_FUNC_V2D | LIBM_FUNC_V4D)
 
 #define LIBM_TEST_TYPES_ALL (TEST_TYPE_ACCU | TEST_TYPE_PERF |          \
-                             TEST_TYPE_SPECIAL | TEST_TYPE_CORNER)
+                             TEST_TYPE_SPECIAL | TEST_TYPE_CORNER | TEST_TYPE_CONFORMANCE)
 
 int main(int argc, char *argv[])
 {

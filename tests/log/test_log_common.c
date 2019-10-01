@@ -46,7 +46,7 @@ int test_log_verify(struct libm_test *test, struct libm_test_result *result)
     } else {
         double *expected = data->expected;
         double *input1 = data->input1;
-        
+
         for (uint32_t j = 0; j < data->nelem; j++) {
             expected[j] = log(input1[j]);
         }

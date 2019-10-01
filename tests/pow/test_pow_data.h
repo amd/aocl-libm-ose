@@ -1,3 +1,7 @@
+#include <fenv.h>
+#include <stdbool.h>
+#include<math.h>
+
 #ifndef __TEST_POW_DATA_H__
 #define __TEST_POW_DATA_H__
 
@@ -7,6 +11,24 @@
 
 struct __pow_internal_data {
     uint64_t x,y,out;
+};
+
+struct __pow_conformance_test_data {
+	uint64_t x,y,out;
+	int32_t exception_flags;
+};
+
+/* Test cases to check for exceptions for the pow() routine. These test cases are not exhaustive */
+static struct __pow_conformance_test_data libm_test_pow_conformance_data[] = {
+	{0x7FF4001000000000,0x7FF4001000000000,0x7ffc001000000000,FE_INVALID}, //pow(snan,snan)
+	{0x7FFC001000000000,0x7FF4001000000000,0x7ffc001000000000,FE_INVALID}, //pow(nan,snan)
+	{0x3FF0000000000000,0x7FF4001000000000,0x7ffc001000000000,FE_INVALID}, //pow(1.0,snan)
+	{0x7FF4001000000000,0x3FF0000000000000,0x7ffc001000000000,FE_INVALID}, //pow(snan,1.0)
+	{0x3FE0000000000000,0x7FF4001000000000,0x7ffc001000000000,FE_INVALID}, //pow(0.5,snan)
+	{0x7FF4001000000000,0x3FE0000000000000,0x7ffc001000000000,FE_INVALID}, //pow(snan,0.5)
+	{0x7ff8000000000000,0x7ff8000000000000,0x7ff8000000000000,0}, //pow(qnan,qnan)
+	{0x7ff8000000000000,0x3ff0000000000000,0x7ffc001000000000,0}, //pow(qnan,1)
+	{0x3ff0000000000000,0x7ff8000000000000,0x3ff0000000000000,0},//pow(1.qnan)
 };
 
 static struct __pow_internal_data libm_test_pow_special_data[] = {
@@ -278,7 +300,7 @@ static struct __pow_internal_data libm_test_pow_special_data[] = {
 
    {0x0000000000000000,0xc010000000000000,0x7ff0000000000000},  //+0 ^ -not odd integer   = +inf
    {0x8000000000000000,0xc001000000000000,0x7ff0000000000000},  //-0 ^ -not odd integer   = +inf
- {0xbFF0000000000000,0x7ff0000000000000,0x3FF0000000000000},  //-1 ^ +Inf               = +1
+   {0xbFF0000000000000,0x7ff0000000000000,0x3FF0000000000000},  //-1 ^ +Inf               = +1
    {0xbFF0000000000000,0xfff0000000000000,0x3FF0000000000000},  //-1 ^ -Inf               = +1
 
    {0x3FF0000000000000,0x7ff8000000000000,0x3FF0000000000000},  //+1 ^ NaN   +1^y = +1 for ALL y, even NaN
@@ -317,7 +339,7 @@ static struct __pow_internal_data libm_test_pow_special_data[] = {
 
    {0xfff0000000000000,0x4010000000000000,0x7ff0000000000000},  // -inf ^ +not odd integer = +inf
    {0xfff0000000000000,0x401e000000000000,0x7ff0000000000000},  // -inf ^ +not odd integer = +inf
-{0x7ff0000000000000,0xc008000000000000,0x0000000000000000},  // +inf ^ y<0 = +0
+   {0x7ff0000000000000,0xc008000000000000,0x0000000000000000},  // +inf ^ y<0 = +0
    {0x7ff0000000000000,0xc010000000000000,0x0000000000000000},  // +inf ^ y<0 = +0
    {0x7ff0000000000000,0xc001000000000000,0x0000000000000000},  // +inf ^ y<0 = +0
 

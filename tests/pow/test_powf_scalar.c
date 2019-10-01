@@ -1,9 +1,3 @@
-/*
- * Copyright (C) 2018, Advanced Micro Devices. All rights reserved
- *
- * Author: Prem Mallappa <pmallapp@amd.com>
- */
-
 #include <string.h>                     /* for memcpy() */
 #include <stdlib.h>
 #include <math.h>                       /* for pow() poisining */
@@ -15,47 +9,59 @@
 #include "test_pow.h"
 
 #define __TEST_POW_INTERNAL__
-//#include "test_powf_data.h"
-#include "test_pow_data.h"
+#include "test_powf_data.h"
 
 double LIBM_FUNC(pow)(double,double);
 float LIBM_FUNC(powf)(float, float);
 
 extern int RANGE_LEN_X;
 
-//extern void print_errors(const int);
-
-//double precision scalar
-long double libm_test_pow(struct libm_test *test, int idx)
+//verify for POW - Single Precision - Scalar
+int libm_test_powf_verify(struct libm_test *test, struct libm_test_result *result)
 {
-    double* in_x = test->test_data.input1;
-    double* in_y = test->test_data.input2;
-    return powl(in_x[idx],in_y[idx]);
+    struct libm_test_data *data = &test->test_data;
+    float *expected = data->expected;
+    float *input_x = data->input1;
+    float *input_y = data->input2;
+    for (uint32_t j = 0; j < data->nelem; j++) {
+        expected[j] = powf(input_x[j],input_y[j]);
+    }
+    return libm_test_verify(test, result);
 }
 
-/* scalar double precision */
-static struct libm_test powd_test_template = {
-    .name       = "powd_scalar",
+//single precision scalar
+long double libm_test_powf(struct libm_test *test, int idx)
+{
+    float* in_x = test->test_data.input1;
+    float* in_y = test->test_data.input2;
+    return powf(in_x[idx],in_y[idx]);
+}
+
+/* scalar single precision */
+static struct libm_test powf_test_template = {
+    .name       = "powf_scalar",
     .nargs      = 2,
     .ulp_threshold = 0.5,
     .ops        = {
-                   .ulp    = {.funcl = libm_test_pow},
-                   .verify = libm_test_pow_verify,
+                   .ulp    = {.funcl = libm_test_powf},
+                   .verify = libm_test_powf_verify,
                    },
 };
+
 
 extern struct libm_test_input_range x_range[];
 extern struct libm_test_input_range y_range[];
 extern struct libm_test_input_range x[];
 extern struct libm_test_input_range y[];
 
-static int test_pow_accu(struct libm_test *test)
+//for single precision scalar
+static int test_powf_accu(struct libm_test *test)
 {
 
     struct libm_test_data *data = &test->test_data;
-    double *ip_x = data->input1;
-    double *ip_y = data->input2;
-    double *op = data->output;
+    float *ip_x = data->input1;
+    float *ip_y = data->input2;
+    float *op = data->output;
 //    double *restrict op = GCC_ALIGN(data->output, 256);
     uint64_t sz = data->nelem;
 //    int arr_sz = ARRAY_SIZE(accu_ranges);
@@ -76,31 +82,27 @@ static int test_pow_accu(struct libm_test *test)
                           x_range[i].start, x_range[i].stop,y_range[i].start,y_range[i].stop);
 
 
-        for (uint64_t j = 0; j < sz; j ++) {       
-            op[j] = LIBM_FUNC(pow)(ip_x[j],ip_y[j]);
+        for (uint64_t j = 0; j < sz; j ++) {
+            op[j] = LIBM_FUNC(powf)(ip_x[j],ip_y[j]);
+	    //printf("%f\t%f\t%f\n",ip_x[j], ip_y[j], op[j]);
         }
 
-        libm_test_pow_verify(test, &test->result);
+        libm_test_powf_verify(test, &test->result);
     }
 	return 0;
 }
 
-static int test_pow_perf(struct libm_test *test)
+//TEST -- POW func for single prec scalar
+static int test_powf_perf(struct libm_test *test)
 {
     struct libm_test_data *data = &test->test_data;
     struct libm_test_result *result = &test->result;
-    double *restrict ip1 = data->input1;
-    double *restrict ip2 = data->input2;
+    float *restrict ip1 = data->input1;
+    float *restrict ip2 = data->input2;
 
-    double *restrict o = data->output;
+    float *restrict o = data->output;
     uint64_t sz = data->nelem;
     uint64_t n = test->conf->niter;
-
-    /* Poison output */
-    for (uint32_t j = 0; j < data->nelem; ++j) {
-        double t = (double)((j+1)%700) + (double)j/(double)RAND_MAX;
-        o[j] = pow(t,t);
-    }
 
     test->conf->inp_range[0] = x[0];// range for x
     test->conf->inp_range[1] = y[0]; //range for y
@@ -111,12 +113,12 @@ static int test_pow_perf(struct libm_test *test)
 
     for (uint32_t i = 0; i < n ; ++i) {
         for (uint32_t j = 0; j < sz; j ++) {
-            o[j] =  LIBM_FUNC(pow)(ip1[j],ip2[j]);
-//	    test->ops.libm_func_callback(test, j);
+            o[j] =  LIBM_FUNC(powf)(ip1[j],ip2[j]);
+
+		//test->ops.libm_func_callback(test, j);
+
         }
-        /*
-         * Any left over process with scalar
-         */
+        
     }
 
     timer_stop(&bt);
@@ -127,27 +129,22 @@ static int test_pow_perf(struct libm_test *test)
     return result->nfail;
 }
 
- 
-//int test_pow_populate_inputs(struct libm_test *test, int use_uniform);
 
-static int test_pow_setup_s_d(struct libm_test *test)
+static int test_pow_setup_s_s(struct libm_test *test)
 {
     struct libm_test_conf *conf = test->conf;
 
     int ret = test_pow_alloc_init(conf,  test);
     return ret;
-        
-
 }
 
-
-
-static int test_pow_special_setup(struct libm_test *test)
+//for single precision scalar values - for pow
+static int test_powf_special_setup(struct libm_test *test)
 {
-    int test_data_size = ARRAY_SIZE(libm_test_pow_special_data);
+    int test_data_size = ARRAY_SIZE(libm_test_powf_special_data);
     struct libm_test_data *data;
-    double *in_x,*in_y,*expected;
-    flt64u_t x,y,z;
+    float *in_x,*in_y,*expected;
+    flt32u_t x,y,z;
     // Just trying to get rid of warning/errors
     test_pow_alloc_data(test, test_data_size);
 
@@ -156,24 +153,24 @@ static int test_pow_special_setup(struct libm_test *test)
     in_y = data->input2;
     expected = data->expected;
     for (int i = 0; i < test_data_size; i++) {
-	x.i = libm_test_pow_special_data[i].x;
-        y.i = libm_test_pow_special_data[i].y;
-        z.i = libm_test_pow_special_data[i].out;
-        in_x[i] = x.d;
-        in_y[i] = y.d;
-        expected[i] = z.d;
+	x.i = libm_test_powf_special_data[i].x;
+        y.i = libm_test_powf_special_data[i].y;
+        z.i = libm_test_powf_special_data[i].out;
+        in_x[i] = x.f;
+        in_y[i] = y.f;
+        expected[i] = z.f;
     }
 
     return 0;
 }
 
-
-static int test_pow_special(struct libm_test *test)
+//SCALAR Single precision for pow
+static int test_powf_special(struct libm_test *test)
 {
     struct libm_test_data *data = &test->test_data;
-    double *ip1 = data->input1;
-    double *ip2 = data->input2;
-    double *op =  data->output;
+    float *ip1 = data->input1;
+    float *ip2 = data->input2;
+    float *op =  data->output;
     int sz = data->nelem;
 
     if (sz % 4 != 0)
@@ -182,18 +179,17 @@ static int test_pow_special(struct libm_test *test)
                test->name, test->type_name, sz);
 
     for (int j = 0; j < sz; j += 1) {
-        op[j] = LIBM_FUNC(pow)(ip1[j],ip2[j]);
+        op[j] = LIBM_FUNC(powf)(ip1[j],ip2[j]);
     }
 
     return 0;
 }
 
-
-int test_pow_conformance_setup(struct libm_test *test)
+int test_powf_conformance_setup(struct libm_test *test)
 {
-    int test_data_size = ARRAY_SIZE(libm_test_pow_conformance_data);
+    int test_data_size = ARRAY_SIZE(libm_test_powf_conformance_data);
     struct libm_test_data *data;
-    double *in_x,*in_y,*expected;
+    float *in_x,*in_y,*expected;
     int32_t *expected_exception;
     // Just trying to get rid of warning/errors
     test_pow_alloc_data(test, test_data_size);
@@ -203,27 +199,27 @@ int test_pow_conformance_setup(struct libm_test *test)
     in_y = data->input2;
     expected = data->expected;
     expected_exception = data->expected_exception;
-    flt64u_t x,y,z;
+    flt32u_t x,y,z;
     for (int i = 0; i < test_data_size; i++) {
-        x.i = libm_test_pow_conformance_data[i].x;
-	y.i = libm_test_pow_conformance_data[i].y;
-	z.i = libm_test_pow_conformance_data[i].out;
-//	printf("Values read from pow_data.h %d\n",libm_test_pow_conformance_data[i].exception_flags);
-    	in_x[i] = x.d;
-        in_y[i] = y.d;
-        expected[i] = z.d;
-	expected_exception[i] = libm_test_pow_conformance_data[i].exception_flags;
+        x.i = libm_test_powf_conformance_data[i].x;
+	y.i = libm_test_powf_conformance_data[i].y;
+	z.i = libm_test_powf_conformance_data[i].out;
+    	in_x[i] = x.f;
+        in_y[i] = y.f;
+        expected[i] = z.f;
+	expected_exception[i] = libm_test_powf_conformance_data[i].exception_flags;
     }
 
     return 0;
 }
 
-static int test_pow_conformance(struct libm_test *test)
+
+static int test_powf_conformance(struct libm_test *test)
 {
     struct libm_test_data *data = &test->test_data;
-    double *ip1 = data->input1;
-    double *ip2 = data->input2;
-    double *op =  data->output;
+    float *ip1 = data->input1;
+    float *ip2 = data->input2;
+    float *op =  data->output;
     int *exception = data->raised_exception;
     int sz = data->nelem;
 //    int flags=0;
@@ -233,9 +229,9 @@ static int test_pow_conformance(struct libm_test *test)
                test->name, test->type_name, sz);
 
     for (int j = 0; j < sz; j += 1) {
-	feclearexcept(FE_ALL_EXCEPT);    
- 
- 	op[j] = LIBM_FUNC(pow)(ip1[j],ip2[j]);
+	feclearexcept(FE_ALL_EXCEPT);
+
+ 	op[j] = LIBM_FUNC(powf)(ip1[j],ip2[j]);
         const int flags =  fetestexcept(FE_ALL_EXCEPT);
 	exception[j] = flags;
     }
@@ -243,20 +239,22 @@ static int test_pow_conformance(struct libm_test *test)
     return 0;
 }
 
-int test_pow_init_s_d(struct libm_test_conf *conf)
+
+//For single precision Scalar
+int test_pow_init_s_s(struct libm_test_conf *conf)
 {
     int ret = 0;
     uint32_t test_type = conf->test_types;
 
     while (test_type) {
-        struct libm_test *test = libm_test_alloc_init(conf, &powd_test_template);
+        struct libm_test *test = libm_test_alloc_init(conf, &powf_test_template);
 
         if (!test)
             return -1;
 
-        test->variant = LIBM_FUNC_S_D;
-        test->name = "pow_d_scalar";
-	test->input_name = "s1d";
+        test->variant = LIBM_FUNC_S_S;
+        test->name = "powf_scalar";
+	test->input_name = "s1f";
         test->nargs = 2;
 	test->ulp_threshold = 0.5;
 
@@ -266,33 +264,33 @@ int test_pow_init_s_d(struct libm_test_conf *conf)
         case TEST_TYPE_PERF:
 	    test->test_type = TEST_TYPE_PERF;
             test->type_name = "perf";
-            test->ops.setup = test_pow_setup_s_d;
-            test->ops.run = test_pow_perf;
-            test->ops.verify = libm_test_pow_verify;
+            test->ops.setup = test_pow_setup_s_s;
+            test->ops.run = test_powf_perf;
+            test->ops.verify = libm_test_powf_verify;
             break;
-	
+
 	case TEST_TYPE_ACCU:
 	    test->test_type = TEST_TYPE_ACCU;
             test->type_name = "accuracy";
-            test->ops.setup = test_pow_setup_s_d;
-            test->ops.run = test_pow_accu;
-            test->ops.verify = libm_test_pow_verify;; // No verify after, will verify inside.
+            test->ops.setup = test_pow_setup_s_s;
+            test->ops.run = test_powf_accu;
+            test->ops.verify = libm_test_powf_verify;; // No verify after, will verify inside.
             break;
-	
+
 	case TEST_TYPE_SPECIAL:
             test->test_type = TEST_TYPE_SPECIAL;
             test->type_name = "special";
-            test->ops.run = test_pow_special;
-            test->ops.setup = test_pow_special_setup;
-	    test->ops.verify = libm_test_pow_verify;
+            test->ops.run = test_powf_special;
+            test->ops.setup = test_powf_special_setup;
+	    test->ops.verify = libm_test_powf_verify;
             break;
 
         case TEST_TYPE_CONFORMANCE:
             test->test_type = TEST_TYPE_CONFORMANCE;
             test->type_name = "conformance";
-            test->ops.run = test_pow_conformance;
-            test->ops.setup = test_pow_conformance_setup;
-            test->ops.verify = libm_test_verify;
+            test->ops.run = test_powf_conformance;
+            test->ops.setup = test_powf_conformance_setup;
+            test->ops.verify = libm_test_powf_verify;
             break;
 
 	default:
@@ -313,25 +311,5 @@ out:
 
 }
 
-/*
-int test_pow_init_scalar(struct libm_test_conf *conf)
-{
-    int ret =0;
 
-    if (conf->variants & LIBM_FUNC_S_S) {
-        ret = test_pow_init_s_s(conf);
-        if (ret)
-            goto out;
-    }
-
-    if (conf->variants & LIBM_FUNC_S_D) {
-        ret = test_pow_init_s_d(conf);
-        if (ret)
-            goto out;
-    }
-
- out:
-    return ret;
-}
-*/
 

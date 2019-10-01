@@ -70,6 +70,9 @@ struct libm_test_data {
     void  *input3;
     void  *output;
     void  *expected;
+    int   *expected_exception;
+    int   *raised_exception;
+
     //double  *reserved[27];
     //double  data[0];
 };
@@ -79,6 +82,7 @@ enum LIBM_TEST_TYPE {
     TEST_TYPE_PERF = (1<<1),
     TEST_TYPE_SPECIAL = (1<<2),
     TEST_TYPE_CORNER = (1<<3),
+    TEST_TYPE_CONFORMANCE = (1<<4),
     TEST_TYPE_MAX,
 };
 
@@ -109,6 +113,7 @@ struct libm_test_funcs {
     struct libm_test_ops accuracy;
     struct libm_test_ops special;
     struct libm_test_ops corner;
+    struct libm_test_ops conformance;
 };
 
 #if 0

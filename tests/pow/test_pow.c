@@ -25,7 +25,7 @@
 //#include "pow_accu_data.h"
 #define __TEST_POW_INTERNAL__                   /* needed to include exp-test-data.h */
 #include "test_pow_data.h"
-
+#include "test_pow.h"
 
 #if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
 #define _ZGVdN4v(x) _ZGVbN4vv_##x
@@ -47,42 +47,6 @@ __m256 LIBM_FUNC_VEC(b, 8, powf)(__m256, __m256);
 char doc[] = BUILD_TEST_DOC(TEST_NAME);
 extern struct libm_test_input_range x[];
 extern struct libm_test_input_range y[];
-
-static int test_pow_populate_inputs(struct libm_test *test, int use_uniform)
-{
-    struct libm_test_data *data = &test->test_data;
-    struct libm_test_conf *conf = test->conf;
-    int ret = 0;
-    int (*func)(void *, size_t, uint32_t, double, double);
-
-    if(use_uniform)
-        func = libm_test_populate_range_uniform;
-    else
-        func = libm_test_populate_range_rand;
-
-    ret = func(data->input1, data->nelem,
-               test->variant,
-               conf->inp_range[0].start,
-               conf->inp_range[0].stop);
-
-    /* Fill the same if more inputs are needed */
-    if (!ret && test->nargs > 1) {
-//	printf("data is %g\n", *(data->input2));
-        ret = func(data->input2, data->nelem,
-                   test->variant,
-                   conf->inp_range[1].start,
-                   conf->inp_range[1].stop);
-    }
-
-    if (!ret && test->nargs > 2) {
-        ret = func(data->input3, data->nelem,
-                   test->variant,
-                   conf->inp_range[2].start,
-                   conf->inp_range[2].stop);
-    }
-
-    return ret;
-}
 
 static int test_pow_vrd4_perf(struct libm_test *test)
 {
@@ -283,7 +247,7 @@ int test_pow_register_one(struct libm_test *test)
  * SPECIAL CASES TESTS
  **************************/
 
-static int test_pow_alloc_special_data(struct libm_test *test, size_t size)
+int test_pow_alloc_special_data(struct libm_test *test, size_t size)
 {
     struct libm_test_conf *conf = test->conf;
     struct libm_test_data *test_data = &test->test_data;
@@ -308,7 +272,30 @@ static int test_pow_alloc_special_data(struct libm_test *test, size_t size)
     return -1;
 }
 
+static int test_pow_conformance_setup(struct libm_test *test)
+{
+    int test_data_size = ARRAY_SIZE(libm_test_pow_conformance_data);
+    struct libm_test_data *data;
+    double *in_x,*in_y,*expected;
+    int32_t *expected_exception=0;
+    // Just trying to get rid of warning/errors
+    test_pow_alloc_special_data(test, test_data_size);
 
+    data = &test->test_data;
+    in_x = data->input1;
+    in_y = data->input2;
+    expected = data->expected;
+    expected_exception = data->raised_exception;
+
+    for (int i = 0; i < test_data_size; i++) {
+        in_x[i] = libm_test_pow_conformance_data[i].x;
+        in_y[i] = libm_test_pow_conformance_data[i].y;
+        expected[i] = libm_test_pow_conformance_data[i].out;
+        expected_exception[i] = libm_test_pow_conformance_data[i].exception_flags;
+    }
+
+    return 0;
+}
 static int test_pow_special_setup(struct libm_test *test)
 {
     int test_data_size = ARRAY_SIZE(libm_test_pow_special_data);
@@ -490,6 +477,15 @@ static int test_pow_init_v4d(struct libm_test_conf *conf)
           //  pow_v4d->test_data  = libm_test_pow_corner_data;
             pow_v4d->ops.run = test_pow_vrd4_special;
             break;
+
+	case TEST_TYPE_CONFORMANCE:
+            pow_v4d->test_type = TEST_TYPE_CONFORMANCE;
+            pow_v4d->type_name = "conformance";
+            pow_v4d->ops.run = test_pow_vrd4_special;
+            pow_v4d->ops.setup = test_pow_conformance_setup;
+            pow_v4d->ops.verify = libm_test_pow_verify;
+            break;
+
         }
 
         if (ret)

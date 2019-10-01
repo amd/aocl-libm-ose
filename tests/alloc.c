@@ -51,7 +51,8 @@ int libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem)
     /* CAUTION */
 
     test_data->input1 = aligned_alloc(_ALIGN_FACTOR, sz);
-
+    test_data->expected_exception = aligned_alloc(_ALIGN_FACTOR, sz);
+    test_data->raised_exception = aligned_alloc(_ALIGN_FACTOR, sz);
     if (nargs > 1) {
         test_data->input2 = aligned_alloc(_ALIGN_FACTOR, sz);
         if (!test_data->input2)

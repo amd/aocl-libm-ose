@@ -4,6 +4,9 @@
  * Author: Prem Mallappa <pmallapp@amd.com>
  */
 #include <math.h>                      /* for isinf() */
+#include <fenv.h>
+#include <stdbool.h>
+
 #include <libm_tests.h>
 #include <libm/types.h>
 
@@ -23,6 +26,7 @@ static double get_ulp(struct libm_test *test, int j)
     }
 
     computedl = test->ops.ulp.funcl(test, j);
+    
     return libm_test_ulp_error(outputd[j], computedl);
 }
 
@@ -77,14 +81,44 @@ static int __is_ulp_required(flt64u_t expected, flt64u_t actual)
     return 1;
 }
 
+static void print_errors(const int flags)
+{
+
+    if (flags & FE_INVALID) {
+        printf("FE_INVALID ");
+    }
+
+    if (flags & FE_DIVBYZERO) {
+        printf("FE_DIVBYZERO ");
+    }
+
+    if (flags & FE_OVERFLOW) {
+        printf("FE_OVERFLOW ");
+    }
+
+    if (flags & FE_UNDERFLOW) {
+        printf("FE_UNDERFLOW ");
+    }
+
+    if (flags & FE_INEXACT) {
+        printf("FE_INEXACT ");
+    }
+}
+
 static int __verify_double(struct libm_test *test,
                            struct libm_test_result *result)
 {
     struct libm_test_data *data = &test->test_data;
     double *in1 = (double*)data->input1,
         *in2 = (double*)data->input2, *in3 = (double*)data->input3;
+    
     flt64u_t *op = (flt64u_t*)data->output;
     flt64u_t *nw = (flt64u_t*)data->expected;
+    flt64u_t *in = (flt64u_t*)data->input1;
+
+    const int *expected_exception = (int*)data->expected_exception;
+    const int *raised_exception = (int*)data->raised_exception;
+
     int sz = data->nelem;
     int idx = 0, npass = 0, nfail = 0, nignored = 0, ntests;
     int nargs = test->nargs;
@@ -96,7 +130,21 @@ static int __verify_double(struct libm_test *test,
     for (int j = 0; j < sz; ++j) {
         int ret = 0;
 
-        if (test->test_type == TEST_TYPE_ACCU) {
+       if (test->test_type == TEST_TYPE_CONFORMANCE){
+		if ((((nw[j].i ^ op[j].i) != 0) && !(isnan(nw[j].d) && isnan(op[j].d))) || (raised_exception[j] != expected_exception[j])) {
+                       nfail++;
+		       printf("input = %lx expected = %lx output = %lx \n", in[j].i, nw[j].i,op[j].i);
+        	       print_info=1;
+		       if (raised_exception[j] != expected_exception[j]) {
+			       printf("Raised excpetion: ");
+			       print_errors(raised_exception[j]);
+			       printf(" Expected exception: ");
+			       print_errors(expected_exception[j]);
+                               puts("");
+		       }
+		  }
+	}
+       else if (test->test_type == TEST_TYPE_ACCU) {
             /*
              * Verify ULP for every case,
              * except when both output and exptected is 0 or a subnormal number
@@ -115,6 +163,7 @@ static int __verify_double(struct libm_test *test,
 
         if (test_update_ulp) {
             ulp = get_ulp(test, j);
+	    //printf("ulp:- %f\n", ulp);
             ret = update_ulp(test, ulp);
             test_update_ulp = 0;
         }
@@ -185,6 +234,9 @@ static int __verify_float(struct libm_test *test,
     int nargs = test->nargs;
     int print_info = 0, test_update_ulp = 0;
     double ulp = 0.0;
+    	
+    	const int *expected_exception = (int*)data->expected_exception;
+	const int *raised_exception = (int*)data->raised_exception;	
 
     ntests = data->nelem;
 
@@ -193,7 +245,26 @@ static int __verify_float(struct libm_test *test,
             /* Verify ULP for every case */
             if (__is_ulpf_required(nw[j], op[j]))
                 test_update_ulp = 1;
-        } else {
+        }
+
+	if (test->test_type == TEST_TYPE_CONFORMANCE){
+		if ((((nw[j].i ^ op[j].i) != 0) && !(isnan(nw[j].f) && isnan(op[j].f))) || (raised_exception[j] != expected_exception[j])) {
+                       nfail++;
+		       printf("expected = %x output = %x \n",nw[j].i,op[j].i);
+        	       print_info=1;
+		       if (raised_exception[j] != expected_exception[j]) {
+			       printf("Raised excpetion: ");
+			       print_errors(raised_exception[j]);
+			       printf(" Expected exception: ");
+			       print_errors(expected_exception[j]);
+                               puts("");
+		       }
+		  }
+	}
+
+	else
+	{
+	
             if ((nw[j].i ^ op[j].i) != 0) {
                 result->input1[idx] = in1[j];
                 if (test->nargs > 1) result->input2[idx] = in2[j];
@@ -202,9 +273,11 @@ static int __verify_float(struct libm_test *test,
                 ret = 0;
             }
         }
+	
 
         if (test_update_ulp) {
             ulp = get_ulp(test, j);
+	    //printf("Exp:- %x, op:-%x, ULP:-%f \n", nw[j].i, op[j].i,  ulp);
             ret = update_ulp(test, ulp);
             test_update_ulp = 0;
         }

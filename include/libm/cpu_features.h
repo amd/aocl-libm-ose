@@ -115,18 +115,18 @@ enum {
     CPUID_BIT_SSBD            = (1u << 31),
 };
 
-#define CPU_FEATURE_REG(ftr, idx, reg) ({                              \
-            uint32_t val;                                              \
-            struct cpuid_regs *r;                                       \
-            r = &ftr->available[0];                                     \
-            val = r[(idx)].reg;                                         \
-            val;                                                        \
+#define CPU_FEATURE_REG(ftr, idx, reg) ({       \
+            uint32_t val;                       \
+            struct cpuid_regs *r;               \
+            r = &ftr->available[0];             \
+            val = r[(idx)].reg;                 \
+            val;                                \
         })
 
-#define CPU_FEATURE(ptr, idx, reg, bit) ({              \
-        uint32_t __reg =                                \
-            CPU_FEATURE_REG(ptr, idx, reg);             \
-        __cpuid_bit(__reg, bit);                        \
+#define CPU_FEATURE(ptr, idx, reg, bit) ({      \
+            uint32_t __reg =                    \
+                CPU_FEATURE_REG(ptr, idx, reg); \
+            (__reg & bit);                      \
         })
 
 #define CPU_HAS_SSSE3(f) CPU_FEATURE(f, CPUID_EAX_1, ecx, CPUID_BIT_SSSE3)
@@ -134,18 +134,18 @@ enum {
 #define CPU_HAS_AVX2(f)  CPU_FEATURE(f, CPUID_EAX_7, ebx, CPUID_BIT_AVX2)
 #define CPU_HAS_TSX(f)   CPU_FEATURE(f, CPUID_EAX_7, ebx, CPUID_BIT_TSX)
 
-#define CPU_FEATURE_USABLE_REG(ftr, idx, reg) ({                        \
-            uint32_t val;                                               \
-            struct cpuid_regs *r;                                       \
-            r = &ftr->usable[0];                                        \
-            val = r[(idx)].reg;                                         \
-            val;                                                        \
+#define CPU_FEATURE_USABLE_REG(ftr, idx, reg) ({        \
+            uint32_t val;                               \
+            struct cpuid_regs *r;                       \
+            r = &ftr->usable[0];                        \
+            val = r[(idx)].reg;                         \
+            val;                                        \
         })
 
-#define CPU_FEATURE_USABLE(ptr, idx, reg, bit) ({                       \
-            uint32_t __reg =                                            \
-                CPU_FEATURE_USABLE_REG(ptr, idx, reg);                  \
-            __cpuid_bit(__reg, bit);                                    \
+#define CPU_FEATURE_USABLE(ptr, idx, reg, bit) ({       \
+            uint32_t __reg =                            \
+                CPU_FEATURE_USABLE_REG(ptr, idx, reg);  \
+            (__reg &  bit);                             \
         })
 
 #define CPU_FEATURE_AVX_USABLE(f)                               \
@@ -224,6 +224,9 @@ __cpuid_bit(uint32_t value, int bit)
     return __extract32(value, bit, 1);
 }
 
-struct cpu_features *__get_cpu_features(void);
+struct cpu_features *libm_get_cpu_features(void);
+void libm_set_cpu_features(struct cpu_features *f,
+                           uint32_t reg_offset,
+                           uint32_t bit);
 
 #endif  /* __LIBM_CPU_FEATURES_H__ */

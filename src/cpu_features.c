@@ -57,9 +57,14 @@ __get_mfg_info(struct cpuid_regs *regs, struct cpu_mfg_info *mfg_info)
 static void CONSTRUCTOR
 __init_cpu_features(void)
 {
+    static unsigned initialized = 0;
+
     struct cpu_mfg_info *mfg_info = &cpu_features.cpu_mfg_info;
     int arr_size = ARRAY_SIZE(__cpuid_values);
     assert(arr_size <= CPUID_MAX);
+
+    //printf("Started\n");
+    if (initialized) return;
 
     struct cpuid_regs regs;
     __cpuid_1(0, &regs);
@@ -96,10 +101,14 @@ __init_cpu_features(void)
             break;
         }
     }
+
+    initialized = 1;
+    //printf("Done\n");
 }
 
 struct cpu_features *
-__get_cpu_features(void)
+libm_get_cpu_features(void)
 {
+    __init_cpu_features();
     return &cpu_features;
 }

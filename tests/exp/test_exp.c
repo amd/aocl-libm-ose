@@ -21,6 +21,7 @@
 #include "test_exp_data.h"
 #include "test_data_exact.h"
 #include "test_data_worst.h"
+#include "test_exceptions.h"
 
 /* GLIBC prototype declarations */
 #if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
@@ -124,6 +125,175 @@ static int test_exp_alloc_special_data(struct libm_test *test, size_t size)
     return -1;
 }
 
+static int test_exp_conformance_setup(struct libm_test *test){
+    int test_data_size = ARRAY_SIZE(libm_test_exp_conformance_data);
+    double *in1, *expected;
+    struct libm_test_data *data;
+    int i;
+    int32_t* expected_exception;
+
+    test_exp_alloc_special_data(test, test_data_size);
+
+    data = &test->test_data;
+
+    in1 = (double*)data->input1;
+    expected = (double*)data->expected;
+    expected_exception =  data->expected_exception;
+    flt64u_t x,z;
+    // Populate exception test data
+    for (i = 0 ; i < test_data_size ; i++) {
+       x.i = libm_test_exp_conformance_data[i].input;
+       z.i = libm_test_exp_conformance_data[i].output;
+       in1[i] = x.d;
+       expected[i] = z.d;
+       expected_exception[i] = libm_test_exp_conformance_data[i].exception_flags;
+    }
+
+    return 0;
+
+}
+
+/*for expf*/
+static int test_expf_conformance_setup(struct libm_test *test){
+    int test_data_size = ARRAY_SIZE(libm_test_expf_conformance_data);
+    float *in1, *expected;
+    struct libm_test_data *data;
+    int i;
+    int32_t* expected_exception;
+
+    test_exp_alloc_special_data(test, test_data_size);
+
+    data = &test->test_data;
+
+    in1 = (float*)data->input1;
+    expected = (float*)data->expected;
+    expected_exception =  data->expected_exception;
+    flt32u_t x,z;
+    // Populate exception test data
+    for (i = 0 ; i < test_data_size ; i++) {
+       x.i = libm_test_expf_conformance_data[i].in;
+       z.i = libm_test_expf_conformance_data[i].out;
+       in1[i] = x.f;
+       expected[i] = z.f;
+       expected_exception[i] = libm_test_expf_conformance_data[i].exception_flags;
+    }
+
+    return 0;
+
+}
+
+static int test_exp_conformance(struct libm_test *test)
+{
+    int ret = 0;
+    struct libm_test_data *data = &test->test_data;
+    int sz = data->nelem;
+
+    double *ip = (double*)data->input1;
+    double *op = (double*)data->output;
+    int *exception = data->raised_exception;
+    //test->ops.verify = NULL ;
+
+    if (sz % 4 != 0)
+       LIBM_TEST_DPRINTF(DBG2,
+                          "%s %s : %d is not a multiple of 4, some may be left out\n"
+                          " And error reported may not be real for such entries\n",
+                          test->name, test->type_name, sz);
+
+    for (int j = 0; j < sz; j++){
+        feclearexcept(FE_ALL_EXCEPT);
+        op[j] = LIBM_FUNC(exp)(ip[j]);
+        const int flags =  fetestexcept(FE_ALL_EXCEPT);
+        exception[j] = flags;
+    }
+
+
+    //ret = libm_test_verify(test, &test->result);
+
+    return ret;
+
+}
+
+/*for expf*/
+static int test_expf_conformance(struct libm_test *test)
+{
+
+    int ret = 0;
+    struct libm_test_data *data = &test->test_data;
+    int sz = data->nelem;
+
+    float *ip = (float*)data->input1;
+    float *op = (float*)data->output;
+    int *exception = data->raised_exception;
+    //test->ops.verify = NULL ;
+
+    if (sz % 4 != 0)
+       LIBM_TEST_DPRINTF(DBG2,
+                          "%s %s : %d is not a multiple of 4, some may be left out\n"
+                          " And error reported may not be real for such entries\n",
+                          test->name, test->type_name, sz);
+
+    for (int j = 0; j < sz; j++){
+        feclearexcept(FE_ALL_EXCEPT);
+        op[j] = LIBM_FUNC(expf)(ip[j]);
+        const int flags =  fetestexcept(FE_ALL_EXCEPT);
+        exception[j] = flags;
+    }
+
+
+    //ret = libm_test_verify(test, &test->result);
+
+    return ret;
+
+
+}
+
+/*for expf*/
+static int test_expf_special_setup(struct libm_test *test)
+{
+    int special_tbl_sz = ARRAY_SIZE(test_expf_special_data);
+    int worst_tbl_sz = ARRAY_SIZE(test_data_exp_worst);
+    int exact_tbl_sz = ARRAY_SIZE(test_data_exp_exact);
+
+    int test_data_size = special_tbl_sz + worst_tbl_sz +
+                                       exact_tbl_sz ;
+
+    float *in1, *expected;
+    struct libm_test_data *data;
+    int i, start, end;
+
+    test_exp_alloc_special_data(test, test_data_size);
+
+    data = &test->test_data;
+
+    in1 = (float*)data->input1;
+    expected = (float*)data->expected;
+
+    // Populate special data
+    for (i = 0; i < special_tbl_sz; i++) {
+       in1[i] = test_expf_special_data[i].in;
+       expected[i] = test_expf_special_data[i].out;
+    }
+
+    // Populate test_data_exp_worst
+    start = special_tbl_sz;
+    end = start + worst_tbl_sz;
+    for (i = start; i < end ; i++) {
+       in1[i] = test_data_exp_worst[i - start].input;
+       expected[i] = test_data_exp_worst[i - start].output;
+    }
+
+    // Populate test_data_exp_exact
+    start = end;
+    end += exact_tbl_sz;
+    for (i = start; i < end; i++) {
+       in1[i] = test_data_exp_exact[i - start].input;
+       expected[i] = test_data_exp_exact[i - start]. output;
+    }
+
+    return 0;
+
+}
+
 static int test_exp_special_setup(struct libm_test *test)
 {
     int special_tbl_sz = ARRAY_SIZE(test_exp_special_data);
@@ -169,6 +339,33 @@ static int test_exp_special_setup(struct libm_test *test)
     return 0;
 
 }
+
+/*special test for expf*/
+static int test_expf_special(struct libm_test *test)
+{
+    int ret = 0;
+    struct libm_test_data *data = &test->test_data;
+    int sz = data->nelem;
+
+    float *ip = (float*)data->input1;
+    float *op = (float*)data->output;
+    test->ops.verify = NULL;
+
+    if (sz % 4 != 0)
+       LIBM_TEST_DPRINTF(DBG2,
+                         "%s %s : %d is not a multiple of 4, some may be left out \n"
+                          " And error reported may not be real for such entries \n",
+                           test->name, test->type_name, sz);
+
+    for (int j = 0; j < sz; j++)
+       op[j] = LIBM_FUNC(expf)(ip[j]);
+
+    ret = libm_test_verify(test, &test->result);
+
+   return ret;
+
+}
+
 
 /**************************
  * ACCURACY TESTS
@@ -431,8 +628,16 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                          .accuracy     = {.setup = test_exp_accu_setup,
                                           .run   = test_exp_accu,
                                           .ulp   = {.func = test_exp_ulp},
-                         },
-                         .special      = {.setup = test_exp_special_setup,},
+                         		},
+                         .special      = {.setup = test_expf_special_setup,
+			 		.run = test_expf_special,
+					.verify = test_exp_verify
+					},			
+
+			.conformance  = {.setup = test_expf_conformance_setup,
+                                          .run   = test_expf_conformance,
+			 		  .verify = test_exp_verify},
+
      },
 
      [LIBM_FUNC_S_D]  = {
@@ -442,6 +647,9 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                                           .run   = test_exp_accu,},
                          .special      = {.setup = test_exp_special_setup,
                                            .run   = test_exp_special,},
+			 .conformance  = {.setup = test_exp_conformance_setup,
+                                          .run   = test_exp_conformance,
+			 		  .verify = libm_test_verify},
      },
 
 #if 0
@@ -503,7 +711,7 @@ int test_exp_verify(struct libm_test *test, struct libm_test_result *result);
 
 static struct libm_test
 exp_template = {
-	//.name       = "exp_vec",
+	.name       = "exp",
 	.nargs      = 1,
 	.ulp_threshold = 4.0,
 	.ops        = {
@@ -518,6 +726,7 @@ exp_template = {
                 },
 	},
 };
+
 
 #define EXP2_TEST_TYPES_ALL (TEST_TYPE_ACCU | TEST_TYPE_PERF |          \
                              TEST_TYPE_SPECIAL | TEST_TYPE_CORNER)

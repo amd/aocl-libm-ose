@@ -23,6 +23,8 @@
 #include <libm_tests.h>
 #include <bench_timer.h>
 
+//#include "test_expf.h"
+
 char doc[] = BUILD_TEST_DOC(TEST_NAME);
 
 /*

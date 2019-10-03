@@ -5,9 +5,73 @@
 #warning "This file is not expected to be included generously"
 #endif
 
+#define NANN 0x7fbfffff
+#define NEG_NAN 0xffffffff
+#define QNAN 0x7ffe0000
+#define ZERO 0x00000000
+#define NEG_ZERO 0x80000000
+#define ONE 0x3F800000
+#define E 0x402df854
+#define PI 0x40490fdb
+#define INFF 0x7F800000
+#define NEG_INF 0xFF800000
+#define NEG_ONE 0xBF800000
+
+#include <fenv.h>
+
 struct __log_internal_data {
     uint64_t in, out;
 };
+
+/*logf conformance */
+struct __logf_conformance_test_data {
+	uint32_t in, out;
+	int32_t exception_flags;
+};
+
+/*log conf*/
+struct __log_conformance_test_data {
+	uint64_t in, out;
+	int32_t exception_flags;
+};
+
+
+/* Test cases to check for exceptions for the log() routine. These test cases are not exhaustive */
+static struct __log_conformance_test_data libm_test_log_conformance_data[] = {
+	{NANN, NANN, FE_INVALID},
+	{NEG_NAN, NEG_NAN, 0},
+	{ZERO, ONE, 0},
+	{NEG_ZERO, ONE, 0},
+	{ONE, E, FE_INEXACT},
+	{INFF, INFF, 0},
+	{NEG_INF, ZERO, 0},
+	{NEG_ONE, 0x3ebc5ab2, FE_INEXACT},
+	{PI,0x41b92025,FE_INEXACT},
+	{0xc435f37e, ZERO, 48},	//denormal
+	{0x447a0000, 0x7f800000, 40},	//1000
+	{0xc42f0000, ZERO, 48},		//-700
+	{0x44317218, INFF, 40},	//smallest no for result infinity
+};
+
+
+/* Test cases to check for exceptions for the logf() routine. These test cases are not exhaustive */
+static struct __logf_conformance_test_data libm_test_logf_conformance_data[] = {
+	{NANN, NANN, FE_INVALID},
+	{NEG_NAN, NEG_NAN, 0},
+	{ZERO, ONE, 0},
+	{NEG_ZERO, ONE, 0},
+	{ONE, E, FE_INEXACT},
+	{INFF, INFF, 0},
+	{NEG_INF, ZERO, 0},
+	{NEG_ONE, 0x3ebc5ab2, FE_INEXACT},
+	{PI,0x41b92025,FE_INEXACT},
+	{0xc435f37e, ZERO, 48},	//denormal
+	{0x447a0000, 0x7f800000, 40},	//1000
+	{0xc42f0000, ZERO, 48},		//-700
+	{0x44317218, INFF, 40},	//smallest no for result infinity
+};
+
+
 
 /* Scalar log in AMD LibM handles values between e^(-1/16) and e^(1/16) as special case, while vector versions don't.
    Hence, some values in this range is added as special cases

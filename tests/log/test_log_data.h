@@ -57,18 +57,13 @@ static struct __log_conformance_test_data libm_test_log_conformance_data[] = {
 /* Test cases to check for exceptions for the logf() routine. These test cases are not exhaustive */
 static struct __logf_conformance_test_data libm_test_logf_conformance_data[] = {
 	{NANN, NANN, FE_INVALID},
-	{NEG_NAN, NEG_NAN, 0},
-	{ZERO, ONE, 0},
-	{NEG_ZERO, ONE, 0},
-	{ONE, E, FE_INEXACT},
-	{INFF, INFF, 0},
-	{NEG_INF, ZERO, 0},
-	{NEG_ONE, 0x3ebc5ab2, FE_INEXACT},
-	{PI,0x41b92025,FE_INEXACT},
-	{0xc435f37e, ZERO, 48},	//denormal
-	{0x447a0000, 0x7f800000, 40},	//1000
-	{0xc42f0000, ZERO, 48},		//-700
-	{0x44317218, INFF, 40},	//smallest no for result infinity
+	{ZERO, NEG_INF, 4},
+	{ONE, ZERO, 0},
+	{NEG_INF, 0xffc00000, FE_INVALID},
+	{0x7fa00000, 0x7fa00000, FE_INVALID},
+	{0x7fa00000, 0x7fa00000, FE_INVALID},
+
+
 };
 
 

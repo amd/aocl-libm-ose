@@ -415,6 +415,28 @@ test_log_cb_s1d(struct libm_test *test, int idx)
     return 0;
 }
 
+/*test logf special case*/
+static int test_logf_special(struct libm_test *test)
+{
+
+    int ret = 0;
+    struct libm_test_data *data = &test->test_data;
+    int sz = data->nelem;
+
+    float *ip = (float*)data->input1;
+    float *op = (float*)data->output;
+    
+    if (sz % 4 != 0)
+       LIBM_TEST_DPRINTF(DBG2,
+                          "%s %s : %d is not a multiple of 4, some may be left out\n"
+                          " And error reported may not be real for such entries\n",
+                          test->name, test->type_name, sz);
+
+    for (int j = 0; j < sz; j++)
+        op[j] = LIBM_FUNC(logf)(ip[j]);
+
+    return ret;
+}
 
 /*conformance functions for expf*/
 /* expf conf set up*/
@@ -590,7 +612,10 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                                           .run   = test_log_accu,
                                           .ulp   = {.func = test_log_ulp},
                          },
-                         .special      = {.setup = test_log_special_setup,},
+                         .special      = {.setup = test_log_special_setup,
+			 		   .run = test_logf_special,
+					   .verify = test_log_verify,			 	
+			 },
 
 			 .conformance = {.setup = test_logf_conformance_setup,
 			 		.run = test_logf_conformance,

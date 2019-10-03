@@ -97,6 +97,12 @@ int libm_test_type_setup(struct libm_test_conf *conf,
             test->test_type =  TEST_TYPE_CORNER;
             ops = &funcs->corner;
             break;
+         case TEST_TYPE_CONFORMANCE:
+            test->type_name = "conform";
+            test->test_type =  TEST_TYPE_CONFORMANCE;
+            ops = &funcs->conformance;
+            break;
+
         default:
             goto out;
         }

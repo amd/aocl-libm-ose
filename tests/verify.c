@@ -9,6 +9,7 @@
 
 #include <libm_tests.h>
 #include <libm/types.h>
+#include <libm_util_amd.h>
 
 static double get_ulp(struct libm_test *test, int j)
 {
@@ -132,15 +133,17 @@ static int __verify_double(struct libm_test *test,
 
        if (test->test_type == TEST_TYPE_CONFORMANCE){
 		if ((((nw[j].i ^ op[j].i) != 0) && !(isnan(nw[j].d) && isnan(op[j].d))) || (raised_exception[j] != expected_exception[j])) {
-                       nfail++;
-		       printf("input = %lx expected = %lx output = %lx \n", in[j].i, nw[j].i,op[j].i);
-        	       print_info=1;
-		       if (raised_exception[j] != expected_exception[j]) {
+		       if ((nw[j].i & QNANBITPATT_DP64) == (op[j].i & QNANBITPATT_DP64)) {
+                           nfail++;
+		           printf("input = %lx expected = %lx output = %lx \n", in[j].i, nw[j].i,op[j].i);
+        	           print_info=1;
+		           if (raised_exception[j] != expected_exception[j]) {
 			       printf("Raised excpetion: ");
 			       print_errors(raised_exception[j]);
 			       printf(" Expected exception: ");
 			       print_errors(expected_exception[j]);
                                puts("");
+			   }
 		       }
 		  }
 	}
@@ -235,8 +238,8 @@ static int __verify_float(struct libm_test *test,
     int print_info = 0, test_update_ulp = 0;
     double ulp = 0.0;
     	
-    	const int *expected_exception = (int*)data->expected_exception;
-	const int *raised_exception = (int*)data->raised_exception;	
+    const int *expected_exception = (int*)data->expected_exception;
+    const int *raised_exception = (int*)data->raised_exception;	
 
     ntests = data->nelem;
 
@@ -248,18 +251,22 @@ static int __verify_float(struct libm_test *test,
         }
 
 	if (test->test_type == TEST_TYPE_CONFORMANCE){
-		if ((((nw[j].i ^ op[j].i) != 0) && !(isnan(nw[j].f) && isnan(op[j].f))) || (raised_exception[j] != expected_exception[j])) {
-                       nfail++;
-		       printf("expected = %x output = %x \n",nw[j].i,op[j].i);
-        	       print_info=1;
-		       if (raised_exception[j] != expected_exception[j]) {
-			       printf("Raised excpetion: ");
-			       print_errors(raised_exception[j]);
-			       printf(" Expected exception: ");
-			       print_errors(expected_exception[j]);
-                               puts("");
-		       }
-		  }
+		if ((((nw[j].i ^ op[j].i) != 0) && !(isnan(nw[j].f) && isnan(op[j].f))) || (raised_exception[j] != expected_exception[j]))   
+		{
+		    /*check for nan bit patterns*/
+		    if ((nw[j].i & QNANBITPATT_SP32) == (op[j].i & QNANBITPATT_SP32))    { 
+		        nfail++;
+		        printf("expected = %x output = %x \n",nw[j].i,op[j].i);
+        	        print_info=1;
+		        if (raised_exception[j] != expected_exception[j]) {
+                            printf("Raised excpetion: ");
+			    print_errors(raised_exception[j]);
+			    printf(" Expected exception: ");
+		            print_errors(expected_exception[j]);
+                            puts("");
+		        }
+		    }	
+		 }  		
 	}
 
 	else

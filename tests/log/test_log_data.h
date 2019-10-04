@@ -5,18 +5,6 @@
 #warning "This file is not expected to be included generously"
 #endif
 
-#define NANN 0x7fbfffff
-#define NEG_NAN 0xffffffff
-#define QNAN 0x7ffe0000
-#define ZERO 0x00000000
-#define NEG_ZERO 0x80000000
-#define ONE 0x3F800000
-#define E 0x402df854
-#define PI 0x40490fdb
-#define INFF 0x7F800000
-#define NEG_INF 0xFF800000
-#define NEG_ONE 0xBF800000
-
 #include <fenv.h>
 
 struct __log_internal_data {
@@ -38,32 +26,31 @@ struct __log_conformance_test_data {
 
 /* Test cases to check for exceptions for the log() routine. These test cases are not exhaustive */
 static struct __log_conformance_test_data libm_test_log_conformance_data[] = {
-	{NANN, NANN, FE_INVALID},
-	{NEG_NAN, NEG_NAN, 0},
-	{ZERO, ONE, 0},
-	{NEG_ZERO, ONE, 0},
-	{ONE, E, FE_INEXACT},
-	{INFF, INFF, 0},
-	{NEG_INF, ZERO, 0},
-	{NEG_ONE, 0x3ebc5ab2, FE_INEXACT},
-	{PI,0x41b92025,FE_INEXACT},
-	{0xc435f37e, ZERO, 48},	//denormal
-	{0x447a0000, 0x7f800000, 40},	//1000
-	{0xc42f0000, ZERO, 48},		//-700
-	{0x44317218, INFF, 40},	//smallest no for result infinity
+	{0x0000000000000000, 0xfff0000000000000, 4},	//0 -inf
+	{0x8000000000000000, 0xfff0000000000000, 4}, 	// -0  -inf
+	{0x3ff0000000000000, 0x0000000000000000, 0},	//1, 0
+	{0xbff0000000000000, 0x7ff8000000000000, FE_INVALID},   //-1 nan
+	{0x7FF0000000000000, 0x7ff0000000000000, 0}, 	//inf, inf
+	{0xfff0000000000000, 0x7ff8000000000000, FE_INVALID},	//-inf, nan
+	{0x7ff87ff7fdedffff, 0x7ff87ff7fdedffff, 0},		//nan, nan
+	{0x7ff07ff7fdedffff, 0x7ff87ff7fdedffff, FE_INVALID},	//snan, nan
+	{0xfff07ff7fdedffff, 0xfff87ff7fdedffff, FE_INVALID},	//-nan, -nan
+	{0x7ff87ff7fdedffff, 0x7ff87ff7fdedffff, 0},		//qnan, nan
 };
 
 
 /* Test cases to check for exceptions for the logf() routine. These test cases are not exhaustive */
 static struct __logf_conformance_test_data libm_test_logf_conformance_data[] = {
-	{NANN, NANN, FE_INVALID},
-	{ZERO, NEG_INF, 4},
-	{ONE, ZERO, 0},
-	{NEG_INF, 0xffc00000, FE_INVALID},
-	{0x7fa00000, 0x7fa00000, FE_INVALID},
-	{0x7fa00000, 0x7fa00000, FE_INVALID},
-
-
+	{0x00000000, 0xFF800000, 4},	//log(0) is -inf
+	{0x3f800000, 0x00000000, 0},	//1, 0
+	{0x80000000, 0xff800000, 4},	//-0, -inf
+	{0xbf800000, 0xffc00000, FE_INVALID}, 	//-1, -nan
+	{0x7F800000, 0x7f800000, 0},	//inf, inf
+	{0xff800000, 0xffc00000, FE_INVALID}, 	//-inf, -nan
+	{0x7fbfffff, 0x7fffffff, FE_INVALID}, 	//nan nan
+	{0x7fa00000, 0x7fe00000, FE_INVALID}, 	//snan, nan
+	{0xffa00000, 0xffe00000, FE_INVALID}, 	//-nan, -nan
+	{0x7ffe0000, 0x7ffe0000, 0}, 		//qnan, nan
 };
 
 

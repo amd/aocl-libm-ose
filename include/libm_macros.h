@@ -24,11 +24,7 @@
     #define FN_PROTOTYPE(fn_name)  amd_##fn_name
 #endif                                         /* if __COMP_REF__ */
 
-#ifdef AVX_XOP_FMA4_FMA3
-   #define FN_PROTOTYPE_BAS64(fn_name) __amd_bas64_##fn_name
-#else
-   #define FN_PROTOTYPE_BAS64(fn_name) FN_PROTOTYPE(fn_name)
-#endif  /* if AVX_XOP_FMA4_FMA3 */
+#define FN_PROTOTYPE_BAS64(fn_name) __amd_bas64_##fn_name
 
 #define FN_PROTOTYPE_BDOZR(fn_name) __amd_bdozr_##fn_name
 

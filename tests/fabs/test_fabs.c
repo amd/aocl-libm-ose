@@ -23,11 +23,6 @@ char doc[] = BUILD_TEST_DOC(TEST_NAME);
 extern int RANGE_LEN_X;
 extern struct libm_test_input_range x_range[];
 
-#if (DEVELOPER==2)
-#pragma message "Developer mode changing prototype to fabsf_v2()"
-#undef LIBM_FUNC
-#define LIBM_FUNC(x) FN_PROTOTYPE( x ## _v2 )
-#endif
 
 double LIBM_FUNC(fabs)(double);
 float LIBM_FUNC(fabsf)(float);

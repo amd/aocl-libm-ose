@@ -63,6 +63,7 @@
 #endif  /* !DEBUG */
 
 #include <libm_macros.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/types.h>
 
 #include <libm/typehelper.h>

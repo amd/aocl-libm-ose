@@ -1,5 +1,5 @@
 #include "libm_amd.h"
-#include "libm_amd_paths.h"
+#include "libm/amd_funcs_internal.h"
 #include "libm_util_amd.h"
 
 float FN_PROTOTYPE_BAS64(fmaf)(float a, float b, float c)

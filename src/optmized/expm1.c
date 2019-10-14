@@ -1,5 +1,6 @@
 #include <libm_amd.h>
-#include <libm_amd_paths.h>
+#include <libm_macros.h>
+#include <libm/amd_funcs_internal.h>
 
 
 double

@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 #include <libm_util_amd.h>
-#include <libm_amd_paths.h>
 #include <libm_special.h>
 
 #if !defined(DEBUG) && defined(__GNUC__) && !defined(__clang__)
@@ -15,6 +14,7 @@
 #endif  /* !DEBUG */
 
 #include <libm_macros.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/types.h>
 
 #include <libm/typehelper.h>

@@ -282,20 +282,6 @@ FN_PROTOTYPE(exp2_v2)(double x)
     return q1.d;
 }
 
-#if defined(ENABLE_GLIBC_API)
-strong_alias (__exp2_finite, FN_PROTOTYPE(exp2_v2))
-strong_alias (__ieee754_exp2, FN_PROTOTYPE(exp2_v2))
-#endif
-
-#if defined(ENABLE_LIBM_API)
-strong_alias (exp2, FN_PROTOTYPE(exp2_v2))
-#endif
-
-#if defined(ENABLE_AMDLIBM_API)
-strong_alias (amd_exp2, FN_PROTOTYPE(exp2_v2))
-#endif
-
-
 #if !defined(__GNUC__) && !defined(__clang__) && defined(ENABLE_DEBUG)
 #pragma GCC pop_options
 #endif

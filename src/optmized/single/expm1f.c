@@ -136,21 +136,6 @@ FN_PROTOTYPE(expm1f_v2)(float x)
     return (float)q;
 }
 
-#if defined(ENABLE_GLIBC_API)
-    strong_alias (__expm1f_finite, FN_PROTOTYPE(expm1f_v2))
-    weak_alias (__ieee754_expm1f, FN_PROTOTYPE(expm1f_v2))
-#endif
-
-#if defined(ENABLE_LIBM_API)
-    strong_alias (__expm1f, FN_PROTOTYPE(expm1f_v2))
-    strong_alias (expm1f, FN_PROTOTYPE(expm1f_v2))
-#endif
-
-#if defined(ENABLE_AMDLIBM_API)
-    strong_alias (amd_expm1f, FN_PROTOTYPE(expm1f_v2))
-#endif
-
-
 #if !defined(DEBUG) && defined(__GNUC__) && !defined(__clang__)
 #pragma GCC pop_options
 #endif

@@ -239,19 +239,6 @@ FN_PROTOTYPE(exp_v2)(double x)
 #endif
 }
 
-#if defined(ENABLE_GLIBC_API)
-strong_alias (__exp_finite, FN_PROTOTYPE(exp_v2))
-strong_alias (__ieee754_exp, FN_PROTOTYPE(exp_v2))
-#endif
-
-#if defined(ENABLE_LIBM_API)
-strong_alias (exp, FN_PROTOTYPE(exp_v2))
-#endif
-
-#if defined(ENABLE_AMDLIBM_API)
-strong_alias (amd_exp, FN_PROTOTYPE(exp_v2))
-#endif
-
 /*
  * No API call is defined, the functions to be called directly
  * like FN_PROTOTYPE(exp_v2)(arg)

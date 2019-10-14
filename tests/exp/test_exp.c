@@ -48,7 +48,6 @@ float FN_PROTOTYPE( expf_v2 )(float);
 
 float FN_PROTOTYPE_FMA3( expf )(float);
 
-#define amd_expf_v2 FN_PROTOTYPE_FMA3(expf)
 #else
 // Temporary need to remove
 //#undef LIBM_FUNC
@@ -632,7 +631,7 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                          .special      = {.setup = test_expf_special_setup,
 			 		.run = test_expf_special,
 					.verify = test_exp_verify
-					},			
+					},
 
 			.conformance  = {.setup = test_expf_conformance_setup,
                                           .run   = test_expf_conformance,

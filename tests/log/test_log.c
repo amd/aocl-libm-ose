@@ -51,7 +51,6 @@ float FN_PROTOTYPE( logf_v2 )(float);
 
 float FN_PROTOTYPE_FMA3( logf )(float);
 
-#define amd_logf_v2 FN_PROTOTYPE_FMA3(logf)
 #endif
 
 int test_log_populate_inputs(struct libm_test *test, int use_uniform);
@@ -425,7 +424,7 @@ static int test_logf_special(struct libm_test *test)
 
     float *ip = (float*)data->input1;
     float *op = (float*)data->output;
-    
+
     if (sz % 4 != 0)
        LIBM_TEST_DPRINTF(DBG2,
                           "%s %s : %d is not a multiple of 4, some may be left out\n"
@@ -614,7 +613,7 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                          },
                          .special      = {.setup = test_log_special_setup,
 			 		   .run = test_logf_special,
-					   .verify = test_log_verify,			 	
+					   .verify = test_log_verify,
 			 },
 
 			 .conformance = {.setup = test_logf_conformance_setup,

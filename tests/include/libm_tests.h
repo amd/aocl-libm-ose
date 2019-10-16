@@ -102,7 +102,7 @@ struct libm_test_ops {
     } ulp;
 
     struct {
-        libm_func_cb_t s1s, s1d, v2s, v4s, v8s, v2d, v4d;
+        libm_func_cb_t s1s, s1d, v2s, v4s, v8s, v2d, v4d, verify, accu_ranges;
     } callbacks;
 
     int (*verify)(struct libm_test *test, struct libm_test_result *result);
@@ -238,6 +238,11 @@ int libm_test_s1d_perf(struct libm_test *test);
 int libm_test_v4s_perf(struct libm_test *test);
 int libm_test_v2d_perf(struct libm_test *test);
 int libm_test_v4d_perf(struct libm_test *test);
+
+/* Generic accuracy measurement functions */
+int libm_test_accu(struct libm_test *test);
+int libm_test_accu_double(struct libm_test *test, uint32_t type);
+int libm_test_accu_single(struct libm_test *test, uint32_t type);
 
 /**********************************
  * ULP error calculations

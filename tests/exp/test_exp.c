@@ -366,90 +366,7 @@ static int test_expf_special(struct libm_test *test)
 }
 
 
-/**************************
- * ACCURACY TESTS
- **************************/
 #include "exp_accu_data.h"
-
-static int __test_exp_accu(struct libm_test *test,
-                            uint32_t type)
-{
-    struct libm_test_data *data = &test->test_data;
-    double *ip = (double*)data->input1;
-    double *op = (double*)data->output;
-    int sz = data->nelem, end = sz;
-
-    switch(type) {
-    case LIBM_FUNC_V2D: end = sz - 1; break;
-    case LIBM_FUNC_V4D: end = sz - 3; break;
-    default: break;
-    }
-
-    for (int j = 0; j < end;) {
-        __m128d ip2, op2;
-        __m256d ip4, op4;
-        switch (type) {
-        case LIBM_FUNC_V2D:
-            ip2 = _mm_set_pd(ip[j+1], ip[j]);
-            op2 = LIBM_FUNC_VEC(d, 2, exp)(ip2);
-            _mm_store_pd(&op[j], op2);
-            j += 2;
-            break;
-        case LIBM_FUNC_V4D:
-            ip4 = _mm256_set_pd(ip[j+3], ip[j+2], ip[j+1], ip[j]);
-            op4 = LIBM_FUNC_VEC(d, 4, exp)(ip4);
-            _mm256_store_pd(&op[j], op4);
-            j += 4;
-            break;
-        case LIBM_FUNC_S_D:
-            op[j] = LIBM_FUNC(exp)(ip[j]);
-            //op[j] = exp2(ip[j]);
-            j++;
-            break;
-        default:
-            LIBM_TEST_DPRINTF(PANIC, "Testing type not valid: %d\n", type);
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-static int __test_expf_accu(struct libm_test *test,
-                            uint32_t type)
-{
-    struct libm_test_data *data = &test->test_data;
-    float *ip = (float*)data->input1;
-    float *op = (float*)data->output;
-    int sz = data->nelem, end = sz;
-
-    switch(type) {
-    case LIBM_FUNC_V2D: end = sz - 1; break;
-    case LIBM_FUNC_V4D: end = sz - 3; break;
-    default: break;
-    }
-
-    for (int j = 0; j < end;) {
-        __m128 ip4, op4;
-        switch (type) {
-        case LIBM_FUNC_V4S:
-            ip4 = _mm_set_ps(ip[j+3], ip[j+2], ip[j+1], ip[j]);
-            op4 = LIBM_FUNC_VEC(s, 4, expf)(ip4);
-            _mm_store_ps(&op[j], op4);
-            j += 4;
-            break;
-        case LIBM_FUNC_S_S:
-            op[j] = LIBM_FUNC(expf)(ip[j]);
-            j++;
-            break;
-        default:
-            LIBM_TEST_DPRINTF(PANIC, "Testing type not valid: %d\n", type);
-            return -1;
-        }
-    }
-
-    return 0;
-}
 
 static int __generate_test_one_range(struct libm_test *test,
                                      const struct libm_test_input_range *range)
@@ -466,56 +383,12 @@ static int __generate_test_one_range(struct libm_test *test,
     ret = libm_test_populate_inputs(test, range->type);
 
     if (test_is_single_precision(test))
-        ret = __test_expf_accu(test, test->variant);
+        ret = libm_test_accu_single(test, test->variant);
     else
-        ret = __test_exp_accu(test, test->variant);
+        ret = libm_test_accu_double(test, test->variant);
 
     return ret;
 }
-
-static int test_exp_accu(struct libm_test *test)
-{
-    struct libm_test_data *data = &test->test_data;
-    int ret = 0;
-    int sz = data->nelem;
-
-    /* we are verifying here, no need to do again */
-    test->ops.verify = NULL;
-
-    if (sz % 4 != 0)
-        LIBM_TEST_DPRINTF(DBG2,
-                          "%s %s : %d is not a multiple of 4, some may be left out\n"
-                          " And error reported may not be real for such entries\n",
-                          test->name, test->type_name, sz);
-
-    if (test->conf->inp_range[0].start ||
-        test->conf->inp_range[0].stop) {
-        struct libm_test_input_range *range = &test->conf->inp_range[0];
-
-        ret = __generate_test_one_range(test, range);
-
-        ret = test_exp_verify(test, &test->result);
-
-        return ret;
-    }
-
-
-    int arr_sz = ARRAY_SIZE(exp2_accu_ranges);
-
-    for (int i = 0; i < arr_sz ; i++) {
-        if ((exp2_accu_ranges[i].start == 0.0) && (exp2_accu_ranges[i].stop == 0.0) )
-            break;
-
-        ret = __generate_test_one_range(test, &exp2_accu_ranges[i]);
-        if (ret)
-            return ret;
-
-        ret = test_exp_verify(test, &test->result);
-    }
-
-    return 0;
-}
-
 
 static int test_exp_special(struct libm_test *test)
 {
@@ -541,6 +414,10 @@ static int test_exp_special(struct libm_test *test)
    return ret;
 
 }
+
+/***********************
+** Callback functions **
+***********************/
 
 static int
 test_exp_cb_s1s(struct libm_test *test, int idx)
@@ -597,17 +474,51 @@ test_exp_cb_v2d(struct libm_test *test, int j)
 static int
 test_exp_cb_v4d(struct libm_test *test, int j)
 {
-	struct libm_test_data *data = &test->test_data;
-	double *restrict ip1 = (double*)data->input1;
-	double *restrict o = (double*)data->output;
+    struct libm_test_data *data = &test->test_data;
+    double *restrict ip1 = (double*)data->input1;
+    double *restrict o = (double*)data->output;
 
-	__m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-	__m256d op4 = LIBM_FUNC_VEC(d, 4, exp)(ip4);
-	_mm256_store_pd(&o[j], op4);
+    __m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
+    __m256d op4 = LIBM_FUNC_VEC(d, 4, exp)(ip4);
+    _mm256_store_pd(&o[j], op4);
 
-	return 0;
+    return 0;
 }
 
+static int
+test_exp_cb_verify(struct libm_test *test, int j)
+{
+    int ret = 0;
+
+    if (test->conf->inp_range[0].start ||
+        test->conf->inp_range[0].stop) {
+        struct libm_test_input_range *range = &test->conf->inp_range[0];
+    ret = __generate_test_one_range(test, range);
+    ret = test_exp_verify(test, &test->result);
+    }
+    return ret;
+
+}
+
+static int
+test_exp_cb_accu_ranges(struct libm_test *test, int j)
+{
+    int arr_sz = ARRAY_SIZE(exp2_accu_ranges);
+    int ret = 0;
+
+    for (int i = 0; i < arr_sz; i++) {
+        if ((exp2_accu_ranges[i].start == 0.0) && (exp2_accu_ranges[i].stop == 0.0) )
+            break;
+    ret = __generate_test_one_range(test, &exp2_accu_ranges[i]);
+
+    if(ret)
+        return ret;
+
+    ret = test_exp_verify(test, &test->result);
+    }
+
+    return 0;
+}
 
 double test_exp_ulp(struct libm_test *test, int idx)
 {
@@ -625,9 +536,7 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                          .performance = { .setup = test_exp_perf_setup,
 					  .run   = libm_test_s1s_perf,},
                          .accuracy     = {.setup = test_exp_accu_setup,
-                                          .run   = test_exp_accu,
-                                          .ulp   = {.func = test_exp_ulp},
-                         		},
+                                          .run   = libm_test_accu,},
                          .special      = {.setup = test_expf_special_setup,
 			 		.run = test_expf_special,
 					.verify = test_exp_verify
@@ -643,7 +552,7 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                          .performance = { .setup = test_exp_perf_setup,
 					  .run   = libm_test_s1d_perf,},
                          .accuracy     = {.setup = test_exp_accu_setup,
-                                          .run   = test_exp_accu,},
+                                          .run   = libm_test_accu,},
                          .special      = {.setup = test_exp_special_setup,
                                            .run   = test_exp_special,},
 			 .conformance  = {.setup = test_exp_conformance_setup,
@@ -672,27 +581,27 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                          .performance = { .setup = test_exp_perf_setup,
 					  .run   = libm_test_v4s_perf,},
                          .accuracy     = {.setup = test_exp_accu_setup,
-                                          .run   = test_exp_accu,},
+                                          .run   = libm_test_accu,},
                          .special      = {.setup = test_exp_special_setup,
-                                          .run = test_exp_accu},
+                                          .run = test_exp_special},
      },
 
      [LIBM_FUNC_V2D]  = {
                          .performance = { .setup = test_exp_perf_setup,
 					  .run   = libm_test_v2d_perf,},
                          .accuracy     = {.setup = test_exp_accu_setup,
-                                          .run   = test_exp_accu,},
+                                          .run   = libm_test_accu,},
                          .special      = {.setup = test_exp_special_setup,
-                                          .run   = test_exp_accu,},
+                                          .run   = test_exp_special,},
      },
 
      [LIBM_FUNC_V4D] = {
                         .performance = {.setup = test_exp_perf_setup,
 					.run   = libm_test_v4d_perf,},
                         .accuracy     = {.setup = test_exp_accu_setup,
-                                         .run   = test_exp_accu,},
+                                         .run   = libm_test_accu,},
                         .special      = {.setup = test_exp_special_setup,
-                                         .run   = test_exp_accu,},
+                                         .run   = test_exp_special,},
      },
 
 
@@ -722,6 +631,8 @@ exp_template = {
 			.v4s = test_exp_cb_v4s,
 			.v2d = test_exp_cb_v2d,
 			.v4d = test_exp_cb_v4d,
+                        .verify = test_exp_cb_verify,
+                        .accu_ranges = test_exp_cb_accu_ranges,
                 },
 	},
 };

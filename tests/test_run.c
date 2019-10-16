@@ -259,3 +259,108 @@ libm_test_v4d_perf(struct libm_test *test)
 
     return result->nfail;
 }
+
+/****************************
+ * ACCU tests
+ ****************************/
+
+int
+libm_test_accu(struct libm_test *test)
+{
+
+    struct libm_test_data *data = &test->test_data;
+    struct libm_test_ops *ops = &test->ops;
+    int ret = 0;
+    int sz = data->nelem;
+
+    // we are verifying here, no need to do again
+    test->ops.verify = NULL;
+
+    if (sz % 4 != 0)
+        LIBM_TEST_DPRINTF(DBG2,
+                          "%s %s : %d is not a multiple of 4, some may be left out\n"
+                          " And error reported may not be real for such entries\n",
+                          test->name, test->type_name, sz);
+
+    ret = ops->callbacks.verify(test, sz);
+
+    ret = ops->callbacks.accu_ranges(test, sz);
+
+    return ret;
+
+}
+
+
+int
+libm_test_accu_double(struct libm_test *test, uint32_t type)
+{
+    struct libm_test_data *data = &test->test_data;
+    struct libm_test_ops *ops = &test->ops;
+    int sz = data->nelem, end = sz;
+    int scale = 0, ret = 0;
+
+    switch(type) {
+    case LIBM_FUNC_V2D: end = sz - 1; break;
+    case LIBM_FUNC_V4D: end = sz - 3; break;
+    default: break;
+    }
+
+    for (int j = 0; j < end; j++) {
+        switch (type) {
+        case LIBM_FUNC_V2D:
+            scale = 2;
+            ret = ops->callbacks.v2d(test, j*scale);
+            break;
+
+        case LIBM_FUNC_V4D:
+            scale = 4;
+            ret = ops->callbacks.v4d(test, j*scale);
+            break;
+
+        case LIBM_FUNC_S_D:
+            ret = ops->callbacks.s1d(test, j);
+            break;
+
+        default:
+            LIBM_TEST_DPRINTF(PANIC, "Testing type not valid: %d\n", type);
+            return -1;
+
+            }
+     }
+
+    return ret;
+}
+
+int
+libm_test_accu_single(struct libm_test *test, uint32_t type)
+{
+    struct libm_test_data *data = &test->test_data;
+    struct libm_test_ops *ops = &test->ops;
+    int sz = data->nelem, end = sz;
+    int scale = 0, ret = 0;
+
+    switch(type) {
+    case LIBM_FUNC_V2D: end = sz - 1; break;
+    case LIBM_FUNC_V4D: end = sz - 3; break;
+    default: break;
+    }
+
+    for (int j = 0; j < end; j++) {
+        switch (type) {
+        case LIBM_FUNC_V4S:
+            scale = 4;
+            ret = ops->callbacks.v4s(test, j*scale);
+            break;
+        case LIBM_FUNC_S_S:
+            ret = ops->callbacks.s1s(test, j);
+            break;
+        default:
+            LIBM_TEST_DPRINTF(PANIC, "Testing type not valid: %d\n", type);
+            return -1;
+        }
+    }
+
+    return ret;
+}
+
+

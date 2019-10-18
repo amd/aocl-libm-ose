@@ -23,149 +23,35 @@ char doc[] = BUILD_TEST_DOC(TEST_NAME);
 extern int RANGE_LEN_X;
 extern struct libm_test_input_range x_range[];
 
-
 double LIBM_FUNC(fabs)(double);
 float LIBM_FUNC(fabsf)(float);
 
-//single precision scalar
-long double libm_test_fabsf(struct libm_test *test, int idx)
+/*fabs perf setup*/
+int test_fabs_perf_setup(struct libm_test *test)
 {
-    float* in_x = test->test_data.input1;
-    return fabs(in_x[idx]);
-}
+    const struct libm_test_conf *conf = test->conf;
+    int ret = 0;
 
-/* scalar single precision */
-static struct libm_test fabsf_test_template = {
-    .name       = "fabsf_scalar",
-    .nargs      = 2,
-    .ulp_threshold = 0.5,
-    .ops        = {
-                   .ulp    = {.funcl = libm_test_fabsf},
-                   .verify = libm_test_fabs_verify,
-                   },
-};
-
-//perf
-static int test_fabs_s1s_perf(struct libm_test *test)
-{
-    struct libm_test_data *data = &test->test_data;
-    struct libm_test_result *result = &test->result;
-    float *restrict o = (float*)data->output;
-    float *restrict ip1 = (float*)data->input1;
-    uint64_t sz = data->nelem;
-    uint64_t n = test->conf->niter;
-
-    bench_timer_t bt;
-    timer_start(&bt);
-
-    for (uint32_t i = 0; i < n ; ++i) {
-        uint32_t j;
-        for (j = 0; j < sz; j++) {
-            o[j] = LIBM_FUNC(fabsf)(ip1[j]);
-	    //printf("%f\t%f\n", ip1[j], o[j]);
-        }
+    ret = libm_test_alloc_test_data(test, conf->nelem);
+    if (ret) {
+        LIBM_TEST_DPRINTF(PANIC, "Unable to allocate test_data\n");
+        goto out;
     }
-
-    timer_stop(&bt);
-    double s = timer_span(&bt);
-
-    result->mops = sec2mps(s, n * sz);
-
-    return result->nfail;
-}
-
-//conformance
-int test_fabsf_conformance_setup(struct libm_test *test)
-{
-	int test_data_size = ARRAY_SIZE(libm_test_fabsf_conformance_data);
-	float *inp, *expected;
-	struct libm_test_data *data;
-	int i;
-	int32_t* expected_exception;
-	
-	test_fabs_alloc_special_data(test, test_data_size);
-
-	data = &test->test_data;
-
-	inp = (float*)data->input1;
-	expected = (float*)data->expected;
-	expected_exception = data->expected_exception;
-	
-	flt32u_t x,z;
-
-	//populate exception test data
-	for(i=0; i < test_data_size; i++)
-	{
-		x.i = libm_test_fabsf_conformance_data[i].x;
-		z.i = libm_test_fabsf_conformance_data[i].out;
-		inp[i] = x.f;
-		expected[i] = z.f;
-		expected_exception[i] = libm_test_fabsf_conformance_data[i].exception_flags;
-	}	
-	
-	return 0;
-}
-
-//conformance
-int test_fabsf_conformance(struct libm_test *test)
-{
-	int ret=0;
-	struct libm_test_data *data = &test->test_data;
-	int sz = data->nelem;
-
-	float *ip = (float*)data->input1;
-	float *op = (float*)data->output;
-	int* exception = data->raised_exception;
-
-	test->ops.verify = NULL;
-
-	if (sz % 4 != 0)
-       LIBM_TEST_DPRINTF(DBG2,
-                          "%s %s : %d is not a multiple of 4, some may be left out\n"
-                          " And error reported may not be real for such entries\n",
-                          test->name, test->type_name, sz);
-
-	for (int j = 0; j < sz; j++)
-	{
-        	feclearexcept(FE_ALL_EXCEPT);
-		op[j] = LIBM_FUNC(fabsf)(ip[j]);
-		const int flags = fetestexcept(FE_ALL_EXCEPT);
-		exception[j] = flags;
-
-	}
-
-	ret = libm_test_verify(test, &test->result);
-
-	return ret;
-}
-
-//set up single precision scalar
-int test_fabsf_setup_s_s(struct libm_test *test)
-{
-    struct libm_test_conf *conf = test->conf;
-
-    int ret = test_fabs_alloc_init(conf,  test);
-
-    if (ret)
-    {
-	LIBM_TEST_DPRINTF(PANIC, "Unable to allocate test data for fabs setup\n");
-	goto out;
-    }   
     ret = libm_test_populate_inputs(test, LIBM_INPUT_RANGE_SIMPLE);
 
-    if(ret || !test->test_data.input1)
-    {
-	LIBM_TEST_DPRINTF(PANIC, "Unable to populate test data for fabs setup\n");
-	goto out;
+    if (ret || !test->test_data.input1) {
+        LIBM_TEST_DPRINTF(PANIC, "Unable to populate test_data for fabs\n");
+        goto out;
     }
 
     return 0;
 
-out: return -1;
+ out:
+    return -1;
 }
 
-//accu setup
-int test_fabsf_accu_setup(struct libm_test *test)
+/*atan accuracy setup*/
+int test_fabs_accu_setup(struct libm_test *test)
 {
     const struct libm_test_conf *conf = test->conf;
     int ret = 0;
@@ -183,135 +69,330 @@ out:
     return ret;
 }
 
-//accu test for fabsf()
-//for single precision scalar
-int test_fabsf_accu(struct libm_test *test)
+//alloc special data
+int test_fabs_alloc_special_data(struct libm_test *test, size_t size)
 {
+    struct libm_test_conf *conf = test->conf;
+    struct libm_test_data *test_data = &test->test_data;
+    int ret = 0;
 
-    struct libm_test_data *data = &test->test_data;
-    float *ip_x = data->input1;
-    float *op = data->output;
-    uint64_t sz = data->nelem;
-    int arr_sz = RANGE_LEN_X;
-    if (sz % 4 != 0)
-        printf("%s %s : %ld is not a multiple of 4, some may be left out\n"
-               " And error reported may not be real for such entries\n",
-               test->name, test->type_name, sz);
+    ret = libm_test_alloc_test_data(test, size);
 
-    for (int i = 0; i < arr_sz ; i++) {
-        test->conf->inp_range[0] = x_range[i];// range for x
-        test_fabs_populate_inputs(test, 1);
-
-        LIBM_TEST_DPRINTF(VERBOSE2,
-                          "Testing for accuracy %d items in range x= [%Lf, %Lf]\n",
-                          test->test_data.nelem,
-                          x_range[i].start, x_range[i].stop);
-
-
-        for (uint64_t j = 0; j < sz; j ++) {
-            op[j] = LIBM_FUNC(fabsf)(ip_x[j]);
-	    //printf("%f\t%f\n",ip_x[j], op[j]);
-        }
-
-        libm_test_fabs_verify(test, &test->result);
+    if (ret) {
+        printf("unable to allocate\n");
+        goto out;
     }
-	return 0;
+
+    test_data = &test->test_data;
+    test_data->nelem = size;
+
+    /* fixup conf */
+    conf->nelem = size;
+
+    return 0;
+
+ out:
+    return -1;
 }
 
-//For single precision Scalar
-int test_fabsf_init_s_s(struct libm_test_conf *conf)
+/*conformance setup*/
+int test_fabs_conformance_setup(struct libm_test *test){
+    int test_data_size = ARRAY_SIZE(libm_test_fabs_conformance_data);
+    double *in1, *expected;
+    struct libm_test_data *data;
+    int i;
+    int32_t* expected_exception;
+
+    test_fabs_alloc_special_data(test, test_data_size);
+
+    data = &test->test_data;
+
+    in1 = (double*)data->input1;
+    expected = (double*)data->expected;
+    expected_exception =  data->expected_exception;
+    flt64u_t x,z;
+    // Populate exception test data
+    for (i = 0 ; i < test_data_size ; i++) {
+       x.i = libm_test_fabs_conformance_data[i].in;
+       z.i = libm_test_fabs_conformance_data[i].out;
+       in1[i] = x.d;
+       expected[i] = z.d;
+       expected_exception[i] = libm_test_fabs_conformance_data[i].exception_flags;
+    }
+
+    return 0;
+
+}
+
+/*conformance setup*/
+int test_fabsf_conformance_setup(struct libm_test *test){
+    int test_data_size = ARRAY_SIZE(libm_test_fabsf_conformance_data);
+    float *in1, *expected;
+    struct libm_test_data *data;
+    int i;
+    int32_t* expected_exception;
+
+    test_fabs_alloc_special_data(test, test_data_size);
+
+    data = &test->test_data;
+
+    in1 = (float*)data->input1;
+    expected = (float*)data->expected;
+    expected_exception =  data->expected_exception;
+    flt32u_t x,z;
+    // Populate exception test data
+    for (i = 0 ; i < test_data_size ; i++) {
+       x.i = libm_test_fabsf_conformance_data[i].in;
+       z.i = libm_test_fabsf_conformance_data[i].out;
+       in1[i] = x.f;
+       expected[i] = z.f;
+       expected_exception[i] = libm_test_fabsf_conformance_data[i].exception_flags;
+    }
+
+    return 0;
+
+}
+
+/*atan conformance tests*/
+int test_fabsf_conformance(struct libm_test *test)
 {
     int ret = 0;
-    uint32_t test_type = conf->test_types;
+    struct libm_test_data *data = &test->test_data;
+    int sz = data->nelem;
 
-    while (test_type) {
-        struct libm_test *test = libm_test_alloc_init(conf, &fabsf_test_template);
+    float *ip = (float*)data->input1;
+    float *op = (float*)data->output;
+    int *exception = data->raised_exception;
 
-        if (!test)
-            return -1;
+    if (sz % 4 != 0)
+       LIBM_TEST_DPRINTF(DBG2,
+                          "%s %s : %d is not a multiple of 4, some may be left out\n"
+                          " And error reported may not be real for such entries\n",
+                          test->name, test->type_name, sz);
 
-        test->variant = LIBM_FUNC_S_S;
-        test->name = "fabsf_scalar";
-	test->input_name = "s1f";
-        test->nargs = 2;
-	test->ulp_threshold = 0.5;
-
-        uint32_t bit = 1 << (ffs(test_type) - 1);
-
-        switch (bit) {
-        case TEST_TYPE_PERF:
-	    test->test_type = TEST_TYPE_PERF;
-            test->type_name = "perf";
-            test->ops.setup = test_fabsf_setup_s_s;
-            test->ops.run = test_fabs_s1s_perf;
-            test->ops.verify = libm_test_fabs_verify;
-            break;
-
-	case TEST_TYPE_ACCU:
-	    test->test_type = TEST_TYPE_ACCU;
-            test->type_name = "accuracy";
-            test->ops.setup = test_fabsf_accu_setup;
-            test->ops.run = test_fabsf_accu;
-            test->ops.verify = libm_test_fabs_verify;
-            break;
-
-/*	    
-	case TEST_TYPE_SPECIAL:
-            test->test_type = TEST_TYPE_SPECIAL;
-            test->type_name = "special";
-            test->ops.run = test_powf_special;
-            test->ops.setup = test_powf_special_setup;
-	    test->ops.verify = libm_test_powf_verify;
-            break;
-*/
-        case TEST_TYPE_CONFORMANCE:
-            test->test_type = TEST_TYPE_CONFORMANCE;
-            test->type_name = "conformance";
-            test->ops.run = test_fabsf_conformance;
-            test->ops.setup = test_fabsf_conformance_setup;
-            test->ops.verify = libm_test_fabs_verify;
-            break;
-
-
-	default:
-            LIBM_TEST_DPRINTF(INFO, "Unknown test type for fabsf scalar\n");
-            goto skip_this;
-        }
-
-        ret = test_fabs_register_one(test);
-
-        if (ret)
-            goto out;
-skip_this:
-        test_type &= (test_type - 1);
+    for (int j = 0; j < sz; j++){
+        feclearexcept(FE_ALL_EXCEPT);
+        op[j] = LIBM_FUNC(fabsf)(ip[j]);
+        const int flags =  fetestexcept(FE_ALL_EXCEPT);
+        exception[j] = flags;
     }
 
-out:
     return ret;
-
 }
 
+/*atan conformance tests*/
+int test_fabs_conformance(struct libm_test *test)
+{
+    int ret = 0;
+    struct libm_test_data *data = &test->test_data;
+    int sz = data->nelem;
+
+    double *ip = (double*)data->input1;
+    double *op = (double*)data->output;
+    int *exception = data->raised_exception;
+
+    if (sz % 4 != 0)
+       LIBM_TEST_DPRINTF(DBG2,
+                          "%s %s : %d is not a multiple of 4, some may be left out\n"
+                          " And error reported may not be real for such entries\n",
+                          test->name, test->type_name, sz);
+
+    for (int j = 0; j < sz; j++){
+        feclearexcept(FE_ALL_EXCEPT);
+        op[j] = LIBM_FUNC(fabs)(ip[j]);
+        const int flags =  fetestexcept(FE_ALL_EXCEPT);
+        exception[j] = flags;
+    }
+
+    return ret;
+}
+
+/*special cases for fabs*/
+/*
+static int test_fabs_special(struct libm_test *test)
+{
+
+    int ret = 0;
+    struct libm_test_data *data = &test->test_data;
+    int sz = data->nelem;
+
+    double *ip = (double*)data->input1;
+    double *op = (double*)data->output;
+    test->ops.verify = NULL ;
+
+    if (sz % 4 != 0)
+       LIBM_TEST_DPRINTF(DBG2,
+                          "%s %s : %d is not a multiple of 4, some may be left out\n"
+                          " And error reported may not be real for such entries\n",
+                          test->name, test->type_name, sz);
+
+    for (int j = 0; j < sz; j++)
+        op[j] = LIBM_FUNC(fabs)(ip[j]);
+
+    ret = libm_test_verify(test, &test->result);
+
+    return ret;
+}
+*/
+
+static int __generate_test_one_range(struct libm_test *test,
+                                     const struct libm_test_input_range *range)
+{
+    int ret = 0;
+    LIBM_TEST_DPRINTF(DBG2,
+                      "Testing for accuracy %d items in range [%Lf, %Lf]\n",
+                      test->test_data.nelem,
+                      range->start, range->stop);
+    test->conf->inp_range[0] = *range;
+    ret = libm_test_populate_inputs(test, range->type);
+    if (test_is_single_precision(test))
+        ret = libm_test_accu_single(test, test->variant);
+    else
+        ret = libm_test_accu_double(test, test->variant);
+    return ret;
+}
+
+/**********************
+*CALLBACK FUNCTIONS*
+**********************/
+static int
+test_fabs_cb_s1s(struct libm_test *test, int idx)
+{
+    struct libm_test_data *data = &test->test_data;
+    float *restrict _ip1 = (float*)data->input1;
+    float *restrict _o = (float*)data->output;
+    _o[idx] = LIBM_FUNC(fabsf)(_ip1[idx]);
+    return 0;
+}
+
+static int
+test_fabs_cb_s1d(struct libm_test *test, int idx)
+{
+    struct libm_test_data *data = &test->test_data;
+    double *restrict _ip1 = (double*)data->input1;
+    double *restrict _o = (double*)data->output;
+    _o[idx] = LIBM_FUNC(fabs)(_ip1[idx]);
+    return 0;
+}
+
+/*verify*/
+static int
+test_fabs_cb_verify(struct libm_test *test, int j)
+{
+    int ret = 0;
+    if (test->conf->inp_range[0].start ||
+        test->conf->inp_range[0].stop) {
+        struct libm_test_input_range *range = &test->conf->inp_range[0];
+        ret = __generate_test_one_range(test, range);
+        ret = test_fabs_verify(test, &test->result);
+    }
+    return ret;
+}
+
+static int
+test_fabs_cb_accu_ranges(struct libm_test *test, int j)
+{
+    int arr_sz = ARRAY_SIZE(fabs_accu_ranges);
+    int ret = 0;
+    for (int i = 0; i < arr_sz; i++) {
+        if ((fabs_accu_ranges[i].start == 0.0) && (fabs_accu_ranges[i].stop == 0.0) )
+            break;
+    ret = __generate_test_one_range(test, &fabs_accu_ranges[i]);
+    if(ret)
+        return ret;
+    ret = test_fabs_verify(test, &test->result);
+    }
+    return 0;
+}
+
+/*ulp*/
+double test_fabs_ulp(struct libm_test *test, int idx)
+{
+    float *buf = (float*)test->test_data.input1;
+    return fabs(buf[idx]);
+}
+
+/*test functiosn for fabs*/
+struct libm_test_funcs test_fabs_funcs[LIBM_FUNC_MAX] =
+    {
+     /*
+      * Scalar functions
+      */
+     [LIBM_FUNC_S_S]  = {
+                         .performance =  { .setup = test_fabs_perf_setup,
+                                           .run   = libm_test_s1s_perf,
+                                         },
+                         .accuracy     = { .setup = test_fabs_accu_setup,
+                                           .run   = libm_test_accu,
+                                         },
+                          /*
+                         .special      = { .setup = test_fabsf_special_setup,
+                                           .run = test_fabsf_special,
+                                           .verify = test_fabs_verify
+                                          },
+                          */
+                         .conformance  = {.setup = test_fabsf_conformance_setup,
+                                           .run   = test_fabsf_conformance,
+                                           .verify = test_fabs_verify
+                                         },
+     },
+     [LIBM_FUNC_S_D]  = {
+                         .performance = { .setup = test_fabs_perf_setup,
+                                          .run   = libm_test_s1d_perf,
+                                        },
+                         .accuracy     = {.setup = test_fabs_accu_setup,
+                                          .run   = libm_test_accu,
+                                         },
+                          /*
+                         .special      = {.setup = test_fabs_special_setup,
+                                          .run   = test_fabs_special,
+                                         },
+                          */
+                          .conformance  = {.setup = test_fabs_conformance_setup,
+                                          .run   = test_fabs_conformance,
+                                          .verify = libm_test_verify
+                                         },
+     },
+};
 
 
+int test_fabs_verify(struct libm_test *test, struct libm_test_result *result);
 
+long double
+test_fabs_fabsl(struct libm_test *test, int idx)
+{
+    double *d = (double*)test->test_data.input1;
+    return fabsl(d[idx]);
+}
 
+static struct libm_test
+fabs_template = {
+    .name       = "fabs",
+    .nargs      = 1,
+    .ulp_threshold = 4.0,
+    .ops        = {
+                    .ulp    = {.funcl = test_fabs_fabsl},
+                    .verify = test_fabs_verify,
+                    .callbacks = {
+                                    .s1s = test_fabs_cb_s1s,
+                                    .s1d = test_fabs_cb_s1d,
+                                    .verify = test_fabs_cb_verify,
+                                    .accu_ranges = test_fabs_cb_accu_ranges,
+                                 },
+                  },
+};
 
+#define FABS_TEST_TYPES_ALL (TEST_TYPE_ACCU | TEST_TYPE_PERF |          \
+                             TEST_TYPE_SPECIAL | TEST_TYPE_CORNER)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*init function*/
+int libm_test_init(struct libm_test_conf *c)
+{
+    int ret = 0;
+    struct libm_test_conf __conf = *c;
+    struct libm_test_conf *conf = &__conf;
+    if (!conf->test_types)
+        conf->test_types = FABS_TEST_TYPES_ALL;
+    ret = libm_tests_setup(c, test_fabs_funcs, &fabs_template);
+    return ret;
+}

@@ -63,6 +63,10 @@ To check that this is gcc compiler version 5.1 or greater:
 
 #define OPTIMIZE(x) __attribute__((optimize(x)))
 
+#define CONSTRUCTOR __attribute__((constructor))
+#define INITIALIZER(f) static void f(void) CONSTRUCTOR; static void f(void)
+
+
 
 #if defined(__clang__)
     #define FALLTHROUGH
@@ -72,7 +76,13 @@ To check that this is gcc compiler version 5.1 or greater:
     #define NO_OPTIMIZE __attribute__((optimize("O0")))
 #endif
 
-#elif defined(__MSVC)
+#elif defined(__MSVC) && defined(_MSC_VER)
+#include <intrin.h>
+#define CPUID __cpuid
+#define CCALL __cdecl
+#pragma section(".CRT$XCU",read)
+#define INITIALIZER(f)  static void __cdecl f(void); __declspec(allocate(".CRT$XCU")) void (__cdecl*f##_)(void) = f; static void __cdecl f(void)
+
 
 #define FALLTHROUGH
 

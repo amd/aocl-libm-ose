@@ -30,7 +30,7 @@ if plat == 'linux' or plat == 'posix':
 
 
 PROTOTYPE_GLIBC    = 0xf1
-PROTOTYPE_FMA3     = 0xf2
+PROTOTYPE_AOCL     = 0xf2
 PROTOTYPE_TEST_V1  = 0xf8
 PROTOTYPE_TEST_V2  = 0xf9
 
@@ -54,17 +54,16 @@ libpath = []
 
 #print(env['libabi'])
 abi = env['libabi']
-if abi == 'aocl':
-    ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_FMA3]
-    liblist.extend(['amdlibm'])
-elif abi == 'glibc':
+# Default set to AOCL
+ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_AOCL]
+liblist.extend(['amdlibm'])
+if abi == 'glibc':
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_GLIBC]
     liblist.extend(['mvec'])
 elif abi == 'svml':
     pass
 else:
-    ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_FMA3]
-    liblist.extend(['amdlibm'])
+    pass
 
 try:
     dbg_mode=env['debug_mode']

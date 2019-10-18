@@ -46,8 +46,6 @@ else:
     )
 
 experiment_src=[
-	#'log_new.c',
-	'log1p.c',
 	'expm1f.c',
 	'pow.c',
 	]

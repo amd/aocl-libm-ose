@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018, AMD. All rights reserved.
+ * Copyright (C) 2018-2019, AMD. All rights reserved.
  *
  * Author: Prem Mallappa <pmallapp@amd.com>
  *
@@ -11,6 +11,7 @@
 
 #include <libm/cpu_features.h>
 #include <libm/compiler.h>
+#include <libm/iface.h>
 
 struct cpu_features cpu_features HIDDEN;
 
@@ -49,12 +50,11 @@ __get_mfg_info(struct cpuid_regs *regs, struct cpu_mfg_info *mfg_info)
     }
 }
 
-#define CONSTRUCTOR __attribute__((constructor))
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(x) (sizeof(x)/ sizeof(x[0]))
 #endif
 
-static void CONSTRUCTOR
+static void
 __init_cpu_features(void)
 {
     static unsigned initialized = 0;
@@ -64,7 +64,8 @@ __init_cpu_features(void)
     assert(arr_size <= CPUID_MAX);
 
     //printf("Started\n");
-    if (initialized) return;
+    if (initialized)
+        return;
 
     struct cpuid_regs regs;
     __cpuid_1(0, &regs);
@@ -106,9 +107,34 @@ __init_cpu_features(void)
     //printf("Done\n");
 }
 
-struct cpu_features *
-libm_get_cpu_features(void)
+static void CONSTRUCTOR
+libm_init_cpu(void)
 {
     __init_cpu_features();
+
+    libm_iface_init();
+}
+
+struct cpu_features *
+libm_cpu_get_features(void)
+{
+    __init_cpu_features();
+
     return &cpu_features;
+}
+
+int
+libm_cpu_feature_is_avx_usable(void)
+{
+    __init_cpu_features();
+
+    return CPU_FEATURE_AVX_USABLE(&cpu_features);
+}
+
+int
+libm_cpu_feature_is_avx2_usable(void)
+{
+    __init_cpu_features();
+
+    return CPU_FEATURE_AVX2_USABLE(&cpu_features);
 }

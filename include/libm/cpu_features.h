@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018, AMD. All rights reserved.
+ * Copyright (C) 2018-2019, AMD. All rights reserved.
  *
  * Author: Prem Mallappa <pmallapp@amd.com>
  *
@@ -137,7 +137,7 @@ enum {
 #define CPU_FEATURE_USABLE_REG(ftr, idx, reg) ({        \
             uint32_t val;                               \
             struct cpuid_regs *r;                       \
-            r = &ftr->usable[0];                        \
+            r = &(ftr)->usable[0];			\
             val = r[(idx)].reg;                         \
             val;                                        \
         })
@@ -224,9 +224,12 @@ __cpuid_bit(uint32_t value, int bit)
     return __extract32(value, bit, 1);
 }
 
-struct cpu_features *libm_get_cpu_features(void);
-void libm_set_cpu_features(struct cpu_features *f,
+struct cpu_features *libm_cpu_get_features(void);
+void libm_cpu_set_features(struct cpu_features *f,
                            uint32_t reg_offset,
                            uint32_t bit);
+
+int libm_cpu_feature_is_avx_usable(void);
+int libm_cpu_feature_is_avx2_usable(void);
 
 #endif  /* __LIBM_CPU_FEATURES_H__ */

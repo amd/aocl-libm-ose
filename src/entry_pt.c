@@ -202,6 +202,7 @@ __m128d G_ENTRY_PT(vrd2_tan)(__m128d);
 
 __m256d G_ENTRY_PT(vrd4_log)(__m256d);
 __m256d G_ENTRY_PT(vrd4_exp)(__m256d);
+__m256d G_ENTRY_PT(vrd4_exp2)(__m256d);
 
 #ifdef __cplusplus
 }

@@ -111,8 +111,6 @@ static void CONSTRUCTOR
 libm_init_cpu(void)
 {
     __init_cpu_features();
-
-    libm_iface_init();
 }
 
 struct cpu_features *

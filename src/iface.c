@@ -12,6 +12,9 @@
 
 struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_EXP] = {LIBM_IFACE_PROTO(exp), NULL},
+    [C_AMD_EXP2] = {LIBM_IFACE_PROTO(exp2), NULL},
+    [C_AMD_LOG] = {LIBM_IFACE_PROTO(log), NULL},
+    [C_AMD_POW] = {LIBM_IFACE_PROTO(pow), NULL},
 };
 
 #ifndef ARRAY_SIZE

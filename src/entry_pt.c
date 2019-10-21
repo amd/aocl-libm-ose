@@ -313,4 +313,6 @@ init_map_entry_points(void)
         g_amd_libm_ep_fastpow        =  FN_PROTOTYPE_FMA3(fastpow);
         g_amd_libm_ep_powf       =	FN_PROTOTYPE_FMA3(powf);
     }
+
+    libm_iface_init();
 }

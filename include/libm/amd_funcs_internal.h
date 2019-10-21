@@ -187,7 +187,7 @@ extern __m256d FN_PROTOTYPE_FMA3(vrd4_exp)(__m256d x);
 extern __m256d FN_PROTOTYPE_FMA3(vrd4_exp2)(__m256d x);
 extern __m256d FN_PROTOTYPE_FMA3(vrd4_expm1)(__m256d x);
 extern __m256d FN_PROTOTYPE_FMA3(vrd4_log)(__m256d x);
-extern __m256d FN_PROTOTYPE_FMA3(vrd4_pow)(__m256d x,__m256d y);
+extern __m256d FN_PROTOTYPE_FMA3(vrd4_pow)(__m256d x, __m256d y);
 
 extern void FN_PROTOTYPE_FMA3(sincos)(double x, double *s, double *c);
 extern void FN_PROTOTYPE_FMA3(sincosf)(float x, float *s, float *c);

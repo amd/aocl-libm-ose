@@ -144,16 +144,17 @@ long long int G_ENTRY_PT(llrintf)(float x);
 long long int G_ENTRY_PT(llround)(double d);
 long long int G_ENTRY_PT(llroundf)(float f);
 
+void G_ENTRY_PT(vrda_cbrt)(int, double*, double*);
+void G_ENTRY_PT(vrda_cos)(int, double*, double*);
 void G_ENTRY_PT(vrda_exp)(int, double*, double*);
 void G_ENTRY_PT(vrda_exp2)(int, double*, double*);
 void G_ENTRY_PT(vrda_exp10)(int, double*, double*);
 void G_ENTRY_PT(vrda_expm1)(int, double*, double*);
-void G_ENTRY_PT(vrda_cbrt)(int, double*, double*);
 void G_ENTRY_PT(vrda_log)(int, double*, double*);
 void G_ENTRY_PT(vrda_log10)(int, double*, double*);
 void G_ENTRY_PT(vrda_log1p)(int, double*, double*);
 void G_ENTRY_PT(vrda_log2)(int, double*, double*);
-void G_ENTRY_PT(vrda_cos)(int, double*, double*);
+void G_ENTRY_PT(vrda_pow)(int, double*, double*);
 void G_ENTRY_PT(vrda_sin)(int, double*, double*);
 
 
@@ -174,6 +175,8 @@ void  G_ENTRY_PT(sincos)(double,double *,double *);
 void  G_ENTRY_PT(sincosf)(float,float *,float *);
 #endif
 
+__m128  G_ENTRY_PT(vrs4_cosf)(__m128);
+__m128  G_ENTRY_PT(vrs4_cbrtf)(__m128);
 __m128  G_ENTRY_PT(vrs4_expf)(__m128);
 __m128  G_ENTRY_PT(vrs4_exp2f)(__m128);
 __m128  G_ENTRY_PT(vrs4_exp10f)(__m128);
@@ -182,11 +185,11 @@ __m128  G_ENTRY_PT(vrs4_logf)(__m128);
 __m128  G_ENTRY_PT(vrs4_log2f)(__m128);
 __m128  G_ENTRY_PT(vrs4_log10f)(__m128);
 __m128  G_ENTRY_PT(vrs4_log1pf)(__m128);
-__m128  G_ENTRY_PT(vrs4_cosf)(__m128);
 __m128  G_ENTRY_PT(vrs4_sinf)(__m128);
 __m128  G_ENTRY_PT(vrs4_tanf)(__m128);
-__m128  G_ENTRY_PT(vrs4_cbrtf)(__m128);
 
+__m128d G_ENTRY_PT(vrd2_cbrt)(__m128d);
+__m128d G_ENTRY_PT(vrd2_cos)(__m128d);
 __m128d G_ENTRY_PT(vrd2_exp)(__m128d);
 __m128d G_ENTRY_PT(vrd2_exp2)(__m128d);
 __m128d G_ENTRY_PT(vrd2_exp10)(__m128d);
@@ -195,11 +198,12 @@ __m128d G_ENTRY_PT(vrd2_log)(__m128d);
 __m128d G_ENTRY_PT(vrd2_log2)(__m128d);
 __m128d G_ENTRY_PT(vrd2_log10)(__m128d);
 __m128d G_ENTRY_PT(vrd2_log1p)(__m128d);
-__m128d G_ENTRY_PT(vrd2_cbrt)(__m128d);
-__m128d G_ENTRY_PT(vrd2_cos)(__m128d);
+__m128d G_ENTRY_PT(vrd2_pow)(__m128d);
 __m128d G_ENTRY_PT(vrd2_sin)(__m128d);
 __m128d G_ENTRY_PT(vrd2_tan)(__m128d);
 
+__m256d G_ENTRY_PT(vrd4_cbrt)(__m256d);
+__m256d G_ENTRY_PT(vrd4_cos)(__m256d);
 __m256d G_ENTRY_PT(vrd4_exp)(__m256d);
 __m256d G_ENTRY_PT(vrd4_exp2)(__m256d);
 __m256d G_ENTRY_PT(vrd4_exp10)(__m256d);
@@ -208,8 +212,6 @@ __m256d G_ENTRY_PT(vrd4_log)(__m256d);
 __m256d G_ENTRY_PT(vrd4_log2)(__m256d);
 __m256d G_ENTRY_PT(vrd4_log10)(__m256d);
 __m256d G_ENTRY_PT(vrd4_log1p)(__m256d);
-__m256d G_ENTRY_PT(vrd4_cbrt)(__m256d);
-__m256d G_ENTRY_PT(vrd4_cos)(__m256d);
 __m256d G_ENTRY_PT(vrd4_pow)(__m256d);
 __m256d G_ENTRY_PT(vrd4_sin)(__m256d);
 __m256d G_ENTRY_PT(vrd4_tan)(__m256d);

@@ -382,7 +382,6 @@ test_expm1_cb_v2d(struct libm_test *test, int j)
     for (int k = 0; k < 2; k++)
         o[k] = LIBM_FUNC(expm1)(ip1[k]);
 #else
-#define __amd_fma3_vrd4_expm1 __amd_fma3_vrda_expm1
     __m128d ip2 = _mm_set_pd(ip1[j+1], ip1[j]);
     __m128d op = LIBM_FUNC_VEC(d, 2, expm1)(ip2);
     _mm_store_pd(&o[0], op);
@@ -402,7 +401,7 @@ test_expm1_cb_v4d(struct libm_test *test, int j)
     for (int k = 0; k < 4; k++)
         o[k] = LIBM_FUNC(expm1)(ip1[k]);
 #else
-#define __amd_fma3_vrd4_expm1 __amd_fma3_vrda_expm1
+#define amd_vrd4_expm1 amd_vrda_expm1
     //__m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
     //__m256d op4 = LIBM_FUNC_VEC(d, 4, expm1)(4, &ip1[j], &o[j]);
     LIBM_FUNC_VEC(d, 4, expm1)(4, &ip1[j], &o[j]);

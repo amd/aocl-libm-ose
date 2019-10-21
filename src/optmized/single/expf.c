@@ -157,18 +157,4 @@ FN_PROTOTYPE(expf_v2)(float x)
     return (float)q2.d;
 }
 
-#if DEVELOPER == 2
-#if defined(ENABLE_GLIBC_API)
-strong_alias (__expf_finite, FN_PROTOTYPE(expf_v2))
-    strong_alias (__ieee754_exp, FN_PROTOTYPE(expf_v2))
-#endif
-
-#if defined(ENABLE_LIBM_API)
-    strong_alias (exp, FN_PROTOTYPE(expf_v2))
-#endif
-
-#if defined(ENABLE_AMDLIBM_API)
-    strong_alias (amd_expf, FN_PROTOTYPE(expf_v2))
-#endif
-#endif
 

@@ -41,18 +41,6 @@ __m128 LIBM_FUNC_VEC(b, 4, logf)(__m128);
 __m256 LIBM_FUNC_VEC(b, 8, logf)(__m256);
 #endif
 
-#if (DEVELOPER==2)
-#pragma message "Developer mode changing prototype to log_v2()"
-#undef LIBM_FUNC
-#define LIBM_FUNC(x) FN_PROTOTYPE( x ## _v2 )
-
-double FN_PROTOTYPE( log_v2 )(double);
-float FN_PROTOTYPE( logf_v2 )(float);
-
-float FN_PROTOTYPE_FMA3( logf )(float);
-
-#endif
-
 int test_log_populate_inputs(struct libm_test *test, int use_uniform);
 
 static int test_log_perf_setup(struct libm_test *test)

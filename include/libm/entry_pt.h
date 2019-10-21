@@ -196,6 +196,7 @@ extern __m128d G_ENTRY_PT(vrd2_tan)(__m128d);
 extern __m256d G_ENTRY_PT(vrd4_log)(__m256d);
 extern __m256d G_ENTRY_PT(vrd4_exp)(__m256d);
 extern __m256d G_ENTRY_PT(vrd4_exp2)(__m256d);
+extern __m256d G_ENTRY_PT(vrd4_expm1)(__m256d);
 
 #endif	/* __AMD_LIBM_ENTRY_PT_H__ */
 

@@ -184,9 +184,9 @@ extern __m128d FN_PROTOTYPE_FMA3(vrd2_tan)(__m128d x);
  * Vector double precision, 4 element
  */
 extern __m256d FN_PROTOTYPE_FMA3(vrd4_exp)(__m256d x);
-extern __m256d FN_PROTOTYPE_FMA3(vrd4_log)(__m256d x);
 extern __m256d FN_PROTOTYPE_FMA3(vrd4_exp2)(__m256d x);
 extern __m256d FN_PROTOTYPE_FMA3(vrd4_expm1)(__m256d x);
+extern __m256d FN_PROTOTYPE_FMA3(vrd4_log)(__m256d x);
 extern __m256d FN_PROTOTYPE_FMA3(vrd4_pow)(__m256d x,__m256d y);
 
 extern void FN_PROTOTYPE_FMA3(sincos)(double x, double *s, double *c);
@@ -209,6 +209,7 @@ extern void FN_PROTOTYPE_FMA3(vrda_log2)(int len, double *src, double* dst );
 extern void FN_PROTOTYPE_FMA3(vrda_log)(int len, double *src, double* dst );
 extern void FN_PROTOTYPE_FMA3(vrda_sincos)(int n, double *x, double *ys, double *yc);
 extern void FN_PROTOTYPE_FMA3(vrda_sin)(int n, double *x, double *y);
+
 extern void FN_PROTOTYPE_FMA3(vrsa_cbrtf)(int len, float *src, float* dst );
 extern void FN_PROTOTYPE_FMA3(vrsa_cosf)(int n, float *x, float *y);
 extern void FN_PROTOTYPE_FMA3(vrsa_exp10f)(int len, float* x, float* y);

@@ -144,30 +144,30 @@ long long int G_ENTRY_PT(llrintf)(float x);
 long long int G_ENTRY_PT(llround)(double d);
 long long int G_ENTRY_PT(llroundf)(float f);
 
-void    G_ENTRY_PT(vrda_exp)(int, double*, double*);
-void    G_ENTRY_PT(vrda_exp2)(int, double*, double*);
-void    G_ENTRY_PT(vrda_exp10)(int, double*, double*);
-void    G_ENTRY_PT(vrda_expm1)(int, double*, double*);
-void    G_ENTRY_PT(vrsa_expf)(int, float*, float*);
-void    G_ENTRY_PT(vrsa_exp2f)(int, float*, float*);
-void    G_ENTRY_PT(vrsa_exp10f)(int, float*, float*);
-void    G_ENTRY_PT(vrsa_expm1f)(int, float*, float*);
-void    G_ENTRY_PT(vrda_cbrt)(int, double*, double*);
-void    G_ENTRY_PT(vrda_log)(int, double*, double*);
-void    G_ENTRY_PT(vrda_log10)(int, double*, double*);
-void    G_ENTRY_PT(vrda_log1p)(int, double*, double*);
-void    G_ENTRY_PT(vrda_log2)(int, double*, double*);
-void    G_ENTRY_PT(vrda_cos)(int, double*, double*);
-void    G_ENTRY_PT(vrda_sin)(int, double*, double*);
+void G_ENTRY_PT(vrda_exp)(int, double*, double*);
+void G_ENTRY_PT(vrda_exp2)(int, double*, double*);
+void G_ENTRY_PT(vrda_exp10)(int, double*, double*);
+void G_ENTRY_PT(vrda_expm1)(int, double*, double*);
+void G_ENTRY_PT(vrda_cbrt)(int, double*, double*);
+void G_ENTRY_PT(vrda_log)(int, double*, double*);
+void G_ENTRY_PT(vrda_log10)(int, double*, double*);
+void G_ENTRY_PT(vrda_log1p)(int, double*, double*);
+void G_ENTRY_PT(vrda_log2)(int, double*, double*);
+void G_ENTRY_PT(vrda_cos)(int, double*, double*);
+void G_ENTRY_PT(vrda_sin)(int, double*, double*);
 
 
-void    G_ENTRY_PT(vrsa_cosf)(int, float*, float*);
-void    G_ENTRY_PT(vrsa_log1pf)(int, float*, float*);
-void    G_ENTRY_PT(vrsa_sinf)(int, float*, float*);
-void    G_ENTRY_PT(vrsa_log2f)(int, float*, float*);
-void    G_ENTRY_PT(vrsa_cbrtf)(int, float*, float*);
-void    G_ENTRY_PT(vrsa_log10f)(int, float*, float*);
-void    G_ENTRY_PT(vrsa_logf)(int, float*, float*);
+void G_ENTRY_PT(vrsa_cosf)(int, float*, float*);
+void G_ENTRY_PT(vrsa_expf)(int, float*, float*);
+void G_ENTRY_PT(vrsa_exp2f)(int, float*, float*);
+void G_ENTRY_PT(vrsa_exp10f)(int, float*, float*);
+void G_ENTRY_PT(vrsa_expm1f)(int, float*, float*);
+void G_ENTRY_PT(vrsa_log1pf)(int, float*, float*);
+void G_ENTRY_PT(vrsa_sinf)(int, float*, float*);
+void G_ENTRY_PT(vrsa_log2f)(int, float*, float*);
+void G_ENTRY_PT(vrsa_cbrtf)(int, float*, float*);
+void G_ENTRY_PT(vrsa_log10f)(int, float*, float*);
+void G_ENTRY_PT(vrsa_logf)(int, float*, float*);
 
 #ifndef _MSC_VER
 void  G_ENTRY_PT(sincos)(double,double *,double *);
@@ -200,10 +200,20 @@ __m128d G_ENTRY_PT(vrd2_cos)(__m128d);
 __m128d G_ENTRY_PT(vrd2_sin)(__m128d);
 __m128d G_ENTRY_PT(vrd2_tan)(__m128d);
 
-__m256d G_ENTRY_PT(vrd4_log)(__m256d);
 __m256d G_ENTRY_PT(vrd4_exp)(__m256d);
 __m256d G_ENTRY_PT(vrd4_exp2)(__m256d);
+__m256d G_ENTRY_PT(vrd4_exp10)(__m256d);
 __m256d G_ENTRY_PT(vrd4_expm1)(__m256d);
+__m256d G_ENTRY_PT(vrd4_log)(__m256d);
+__m256d G_ENTRY_PT(vrd4_log2)(__m256d);
+__m256d G_ENTRY_PT(vrd4_log10)(__m256d);
+__m256d G_ENTRY_PT(vrd4_log1p)(__m256d);
+__m256d G_ENTRY_PT(vrd4_cbrt)(__m256d);
+__m256d G_ENTRY_PT(vrd4_cos)(__m256d);
+__m256d G_ENTRY_PT(vrd4_pow)(__m256d);
+__m256d G_ENTRY_PT(vrd4_sin)(__m256d);
+__m256d G_ENTRY_PT(vrd4_tan)(__m256d);
+
 
 #ifdef __cplusplus
 }

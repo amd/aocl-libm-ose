@@ -4,7 +4,7 @@
 #include "libm_inlines_amd.h"
 
 
-double FN_PROTOTYPE(atan2)(double y, double x)
+double FN_PROTOTYPE_REF(atan2)(double y, double x)
 {
   /* Arrays atan_jby256_lead and atan_jby256_tail contain
      leading and trailing parts respectively of precomputed

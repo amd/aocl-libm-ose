@@ -63,7 +63,7 @@ static inline double cos_piby4(double x, double xx)
               (c1 + x2 * (c2 + x2 * (c3 + x2 * (c4 + x2 * (c5 + x2 * c6))))));
 }
 
-double FN_PROTOTYPE(cospi)(double x)
+double FN_PROTOTYPE_REF(cospi)(double x)
 {
     double r, dx, xsgn;
     long long ux;

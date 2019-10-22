@@ -28,7 +28,7 @@ static inline double tanf_piby4(double x, int recip)
 }
 
 
-float  FN_PROTOTYPE(tanpif)(float x)
+float  FN_PROTOTYPE_REF(tanpif)(float x)
 {
     const float pi = 3.1415926535897932F;
     long long uxx;

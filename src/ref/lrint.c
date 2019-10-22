@@ -4,7 +4,7 @@
 
 
 
-long int FN_PROTOTYPE(lrint)(double x)
+long int FN_PROTOTYPE_REF(lrint)(double x)
 {
 
     UT64 checkbits,val_2p52;

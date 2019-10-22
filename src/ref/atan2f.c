@@ -4,7 +4,7 @@
 #include "libm_special.h"
 #include "libm_inlines_amd.h"
 
-float FN_PROTOTYPE(atan2f)(float fy, float fx)
+float FN_PROTOTYPE_REF(atan2f)(float fy, float fx)
 {
   /* Array atan_jby256 contains precomputed values of atan(j/256),
      for j = 16, 17, ..., 256. */

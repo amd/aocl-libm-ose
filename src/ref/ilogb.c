@@ -3,7 +3,7 @@
 #include "libm_special.h"
 
 
-int FN_PROTOTYPE(ilogb)(double x)
+int FN_PROTOTYPE_REF(ilogb)(double x)
 {
 
 

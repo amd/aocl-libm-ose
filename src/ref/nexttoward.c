@@ -5,7 +5,7 @@
 
 
 
-double FN_PROTOTYPE(nexttoward)(double x, long double y)
+double FN_PROTOTYPE_REF(nexttoward)(double x, long double y)
 {
 
 

@@ -4,7 +4,7 @@
 
 
 
-long int FN_PROTOTYPE(lrintf)(float x)
+long int FN_PROTOTYPE_REF(lrintf)(float x)
 {
 
     UT32 checkbits,val_2p23;

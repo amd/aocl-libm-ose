@@ -12,7 +12,7 @@
 
 
 
-double FN_PROTOTYPE(zen_pow)(double x, double y)
+double FN_PROTOTYPE_REF(zen_pow)(double x, double y)
 {
   // x = 2^a, y = Integer
 /*

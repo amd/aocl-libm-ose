@@ -3,7 +3,7 @@
 #include "libm_special.h"
 
 
-double FN_PROTOTYPE(nextafter)(double x, double y)
+double FN_PROTOTYPE_REF(nextafter)(double x, double y)
 {
 
 

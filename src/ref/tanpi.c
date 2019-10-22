@@ -84,7 +84,7 @@ static inline double tan_piby4(double x, double xx, int recip)
 
 
 
-double FN_PROTOTYPE(tanpi)(double x)
+double FN_PROTOTYPE_REF(tanpi)(double x)
 {
     double r, dx, xsgn, xodd;
     long long ux;

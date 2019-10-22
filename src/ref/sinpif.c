@@ -47,7 +47,7 @@ static inline double cosf_piby4(double x)
                             (c1 + x2 * (c2 + x2 * (c3 + x2 * c4)))));
 }
 
-float FN_PROTOTYPE(sinpif)(float x)
+float FN_PROTOTYPE_REF(sinpif)(float x)
 {
 	float r, dx, xsgn;
 	unsigned int ux;

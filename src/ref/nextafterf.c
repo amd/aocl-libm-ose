@@ -5,7 +5,7 @@
 
 
 
-float FN_PROTOTYPE(nextafterf)(float x, float y)
+float FN_PROTOTYPE_REF(nextafterf)(float x, float y)
 {
 
 

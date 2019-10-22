@@ -32,7 +32,7 @@ G * Author: Prem Mallappa <pmallapp@amd.com>
 
 
 #define EXPF_N 6
-
+#define EXPF_POLY_DEGREE 4
 #if EXPF_N == 5
 #define EXPF_POLY_DEGREE 3
 #elif EXPF_N == 4
@@ -40,7 +40,7 @@ G * Author: Prem Mallappa <pmallapp@amd.com>
 #endif
 
 #define EXPF_TABLE_SIZE (1 << EXPF_N)
-#define EXPF_MAX_POLY_DEGREE 3
+#define EXPF_MAX_POLY_DEGREE 4
 
 /*
  * expf_data.h needs following to be defined before include
@@ -52,26 +52,28 @@ G * Author: Prem Mallappa <pmallapp@amd.com>
 
 #include "expf_data.h"
 
-static const struct expf_data expf_v2_data = {
+static struct expf_data expf_v2_data = {
     .ln2by_tblsz = 0x1.62e42fefa39efp-7,
     .tblsz_byln2 = 0x1.71547652b82fep+6,
-
     .Huge = 0x1.8000000000000p+52,
 #if EXPF_N == 6
     .table_v3 = (double*)L__two_to_jby64_table,
 #elif EXPF_N == 5
-    .table_v3 = (double*)L__two_to_jby32_table,,
+    .table_v3 = (double*)L__two_to_jby32_table,
 #endif
 
     .poly = {
-        0x1.0000000000000p-1,	/* 1/2! = 1/2    */
-        0x1.5555555555555p-3,	/* 1/3! = 1/6    */
-        0x1.5555555555555p-5,	/* 1/4! = 1/24   */
+        1.0,    /* 1/1! = 1 */
+        0x1.0000000000000p-1,   /* 1/2! = 1/2    */
+        0x1.5555555555555p-3,   /* 1/3! = 1/6    */
+        0x1.cacccaa4ba57cp-5,   /* 1/4! = 1/24   */
     },
 };
 
 #define C1	expf_v2_data.poly[0]
 #define C2	expf_v2_data.poly[1]
+#define C3  expf_v2_data.poly[2]
+#define C4  expf_v2_data.poly[3]
 
 #define EXPF_LN2_BY_TBLSZ  expf_v2_data.ln2by_tblsz
 #define EXPF_TBLSZ_BY_LN2  expf_v2_data.tblsz_byln2
@@ -105,11 +107,11 @@ top12f(float x)
 float
 FN_PROTOTYPE(expf_v2)(float x)
 {
-    double  q, dn, r;
-    flt64_t q2;
+    double_t  q, dn, r, z;
     uint64_t n, j;
 
     uint32_t top = top12f(x);
+
     if (unlikely (top > top12f(88.0f))) {
         if (asuint32(x) == asuint32(-INFINITY))
             return 0.0f;
@@ -121,7 +123,7 @@ FN_PROTOTYPE(expf_v2)(float x)
             return 0.0f;
     }
 
-    double dx = (x * EXPF_TBLSZ_BY_LN2) + 0.5;
+    z = x *  EXPF_TBLSZ_BY_LN2;
 
     /*
      * n  = (int) scale(x)
@@ -130,31 +132,30 @@ FN_PROTOTYPE(expf_v2)(float x)
 #undef FAST_INTEGER_CONVERSION
 #define FAST_INTEGER_CONVERSION 1
 #if FAST_INTEGER_CONVERSION
-    flt64_t q1;
-    q1.d = dx + EXPF_HUGE;
-    n    = q1.i;
-    dn   = q1.d - EXPF_HUGE;
+    dn = z + EXPF_HUGE;
+
+    n    = asuint64(dn);
+
+    dn  -=  EXPF_HUGE;
 #else
-    n  = cast_float_to_i32(dx);
+    n = z;
     dn = cast_i32_to_float(n);
+
 #endif
 
     r  = x - dn * EXPF_LN2_BY_TBLSZ;
 
     j  = n % EXPF_TABLE_SIZE;
 
-    uint64_t m = (n - j) >> EXPF_N;
+    double_t qtmp  = C2 + (C3 * r);
 
-    double r2 = r * r;
-    q  = r + r2 * (C1 + C2 * r);
+    double_t r2 = r * r;
 
-    double tbl = expf_v2_data.table_v3[j];
+    double_t tbl = asdouble(L__two_to_jby64_table[j] + (n << (52 - EXPF_N)));
 
-    q2.d = tbl + (tbl * q);
+    q  = r  + (r2 * qtmp);
 
-    q2.i += (m << 52);
+    double_t result = tbl + tbl* q;
 
-    return (float)q2.d;
+    return (float_t)(result);
 }
-
-

@@ -23,39 +23,33 @@ struct __fabsf_conformance_test_data {
 
 /* Test cases to check for exceptions for the fabsf() routine. These test cases are not exhaustive */
 static struct __fabsf_conformance_test_data libm_test_fabsf_conformance_data[] = {
-	{0x00000000, 0x00000000, 0},
-    /*
-	{SNAN, SNN, 0},
-	{NEG_SNAN, SNAN, 0},
-	{QNAN, QNAN, 0},
-	{ONE, ONE, 0}, 
-	{NEG_ONE, ONE, 0}, 
-	{NEG_INF, INFF, 0},
-	{INFF, INFF, 0},
-	{ZERO, NEG_ZERO, 0},
-	{NEG_ZERO, ZERO, 0},
-    */
+	{0x00000000, 0x00000000, 0},    //0
+    {0x7f9fffff, 0x7f9fffff, 0},    //nan
+    {0xff9fffff, 0x7f9fffff, 0},    //-nan
+    {0x7fdfffff, 0x7fdfffff, 0},    //qnan
+    {0xffdfffff, 0x7fdfffff, 0},    //-qnan
+    {0x80000000, 0x00000000, 0},    //-0
+    {0x7f800000, 0x7f800000, 0},    //inf
+    {0xff800000, 0x7f800000, 0},   //-inf
+    {0xbf800000, 0x3f800000, 0},    //-1
+    {0x3f800000, 0x3f800000, 0},   //1
 };
 
 /* Test cases to check for exceptions for the fabs() routine. These test cases are not exhaustive */
 static struct __fabs_conformance_test_data libm_test_fabs_conformance_data[] = {
-    {0x0000000000000000, 0x0000000000000000, 0},
-    /*
-    {SNAN, SNAN, 0},
-    {QNAN, QNAN, 0},
-    {NEG_SNAN, SNAN, 0},
-    {NEG_QNAN, QNAN, 0},
-    {ONE, ONE, 0},
-    {NEG_ONE, ONE, 0},
-    {NEG_INF, INFF, 0},
-    {INFF, INFF, 0},
-    {ZERO, ZERO, 0},
-    {NEG_ZERO, ZERO, 0},
-    */
+    {0x0000000000000000, 0x0000000000000000, 0},    //0
+    {0x8000000000000000, 0x0000000000000000, 0},    //-0
+    {0x3FF0000000000000, 0x3FF0000000000000, 0},    //1
+    {0xBFF0000000000000, 0x3FF0000000000000, 0},    //-1
+    {0x7FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFF, 0},    //inf
+    {0xFFF0000000000000, 0x7FFFFFFFFFFFFFFF, 0},   //-inf 
+    {0x7FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFF, 0},   //+nan
+    {0xFFF0000000001200, 0x7FF0000000001200, 0},    //-nan
+    {0x7FF8000000001200, 0x7FF8000000001200, 0},   //+qnan
+    {0xFFF8000000001200, 0x7FF8000000001200, 0},   //-qnan
 };
 
 /*for accuracy tests*/
-/*for accu tests*/
 static const struct libm_test_input_range fabs_accu_ranges[] = {
      {-2.048000000000e+03, -1.075000000000e+03, 0},
      {-1.075000000000e+03, -1.073000000000e+03, 0},

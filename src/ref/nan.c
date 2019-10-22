@@ -89,5 +89,5 @@ double  FN_PROTOTYPE(nan)(const char *tagp)
     return checkbits.f64  ;
 }
 
-weak_alias (nan, FN_PROTOTYPE(nan))
+
 

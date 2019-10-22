@@ -112,5 +112,5 @@ float FN_PROTOTYPE(atanf)(float fx)
   if (xneg) z = -z;
   return (float)z;
 }
-weak_alias (atanf, FN_PROTOTYPE(atanf))
+
 

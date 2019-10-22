@@ -214,5 +214,5 @@ float FN_PROTOTYPE(coshf)(float fx)
 //  if (xneg) z = - z;
   return (float)z;
 }
-weak_alias (coshf, FN_PROTOTYPE(coshf))
+
 

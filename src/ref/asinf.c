@@ -138,5 +138,5 @@ float FN_PROTOTYPE(asinf)(float x)
   if (xneg) return -v;
   else return v;
 }
-weak_alias (asinf, FN_PROTOTYPE(asinf))
+
 

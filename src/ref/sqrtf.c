@@ -49,6 +49,6 @@ float FN_PROTOTYPE(sqrtf)(float x)
     _mm_store_ss(&result, X128);
     return result;
 }
-weak_alias (sqrtf, FN_PROTOTYPE(sqrtf))
+
 
 

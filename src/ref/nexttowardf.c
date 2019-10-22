@@ -61,4 +61,4 @@ float FN_PROTOTYPE(nexttowardf)(float x, long double y)
  
     return checkbits.f32; 
 } 
-weak_alias (nexttowardf, FN_PROTOTYPE(nexttowardf)) 
+

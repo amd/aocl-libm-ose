@@ -37,5 +37,5 @@ double FN_PROTOTYPE(frexp)(double value, int *exp)
     val.u32[1] = sign | 0x3fe00000 | (val.u32[1] & 0x000fffff);/* make the fractional part(divide by 2) */                                              
     return val.f64;
 }
-weak_alias (frexp, FN_PROTOTYPE(frexp))
+
 

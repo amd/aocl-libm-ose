@@ -63,5 +63,5 @@ float FN_PROTOTYPE_BAS64(fmaf)(float a, float b, float c)
 
     return (float)dr;
 }
-weak_alias (fmaf, FN_PROTOTYPE_BAS64(fmaf))
+
 

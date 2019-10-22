@@ -44,6 +44,6 @@ double FN_PROTOTYPE(sqrt)(double x)
     _mm_store_sd(&result, X128);
     return result;
 }
-weak_alias (sqrt, FN_PROTOTYPE(sqrt))
+
 
 

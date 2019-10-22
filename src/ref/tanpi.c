@@ -153,4 +153,4 @@ double FN_PROTOTYPE(tanpi)(double x)
 
 
 
-weak_alias (tanpi, FN_PROTOTYPE(tanpi))
+

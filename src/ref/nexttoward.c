@@ -62,4 +62,4 @@ double FN_PROTOTYPE(nexttoward)(double x, long double y)
 
     return checkbits.f64;
 }
-weak_alias (nexttoward, FN_PROTOTYPE(nexttoward))
+

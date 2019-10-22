@@ -64,5 +64,5 @@ float FN_PROTOTYPE(roundf)(float f)
         return (u32Temp.f32);
     }
 }
-weak_alias (roundf, FN_PROTOTYPE(roundf))
+
 

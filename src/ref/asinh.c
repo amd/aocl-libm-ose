@@ -286,5 +286,5 @@ double FN_PROTOTYPE(asinh)(double x)
         }
     }
 }
-weak_alias (asinh, FN_PROTOTYPE(asinh))
+
 

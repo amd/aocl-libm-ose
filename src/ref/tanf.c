@@ -164,4 +164,4 @@ float FN_PROTOTYPE_BAS64(tanf)(float x)
     return (float)tanf_piby4(r, region & 1);
 }
 
-weak_alias (tanf, FN_PROTOTYPE_BAS64(tanf))
+

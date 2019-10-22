@@ -84,4 +84,4 @@ float FN_PROTOTYPE(acoshf)(float x)
   return (float)(r);
 }
 
-weak_alias (acoshf, FN_PROTOTYPE(acoshf))
+

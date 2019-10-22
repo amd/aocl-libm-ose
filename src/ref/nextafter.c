@@ -79,4 +79,4 @@ double FN_PROTOTYPE(nextafter)(double x, double y)
 
     return checkbits.f64;
 }
-weak_alias (nextafter, FN_PROTOTYPE(nextafter))
+

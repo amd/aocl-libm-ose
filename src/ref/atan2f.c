@@ -451,5 +451,4 @@ float FN_PROTOTYPE(atan2f)(float fy, float fx)
   if (yneg) q = - q;
   return (float)q;
 }
-weak_alias (atan2f, FN_PROTOTYPE(atan2f))
 

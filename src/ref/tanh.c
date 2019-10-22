@@ -111,5 +111,5 @@ double FN_PROTOTYPE(tanh)(double x)
   return z;
 }
 
-weak_alias (tanh, FN_PROTOTYPE(tanh))
+
 

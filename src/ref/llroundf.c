@@ -88,6 +88,6 @@ long long int FN_PROTOTYPE(llroundf)(float f)
     return result;
 
 }
-weak_alias (llroundf, FN_PROTOTYPE(llroundf))
+
 #endif
 

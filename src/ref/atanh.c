@@ -122,5 +122,5 @@ double FN_PROTOTYPE(atanh)(double x)
         }
     }
 }
-weak_alias (atanh, FN_PROTOTYPE(atanh))
+
 

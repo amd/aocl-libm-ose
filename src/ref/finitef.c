@@ -22,5 +22,5 @@ int FN_PROTOTYPE(finitef)(float x)
   return (int)((ax - PINFBITPATT_SP32) >> 31);
 
 }
-weak_alias (finitef, FN_PROTOTYPE(finitef))
+
 

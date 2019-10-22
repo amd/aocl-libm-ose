@@ -63,5 +63,5 @@ float FN_PROTOTYPE(rintf)(float x)
 
     return val_2p23.f32;
 }
-weak_alias (rintf, FN_PROTOTYPE(rintf))
+
 

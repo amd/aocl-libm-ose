@@ -100,7 +100,7 @@ long int FN_PROTOTYPE(lroundf)(float f)
     return result;
 
 }
-weak_alias (lroundf, FN_PROTOTYPE(lroundf))
+
 
 
 

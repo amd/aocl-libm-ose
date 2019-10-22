@@ -53,4 +53,4 @@ float FN_PROTOTYPE(modff)(float x, float *iptr)
     }
 }
 
-weak_alias (modff, FN_PROTOTYPE(modff))
+

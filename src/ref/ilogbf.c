@@ -73,4 +73,4 @@ int FN_PROTOTYPE(ilogbf)(float x)
 
     return expbits;
 }
-weak_alias (ilogbf, FN_PROTOTYPE(ilogbf))
+

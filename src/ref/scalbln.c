@@ -83,5 +83,5 @@ double FN_PROTOTYPE(scalbln)(double x, long int n)
     val.u32[1] = sign | (exponent << 20) | (val.u32[1] & 0x000fffff);
     return val.f64;
 }
-weak_alias (scalbln, FN_PROTOTYPE(scalbln))
+
 

@@ -142,4 +142,4 @@ double FN_PROTOTYPE(asin)(double x)
   else return v;
 }
 
-weak_alias (asin, FN_PROTOTYPE(asin))
+

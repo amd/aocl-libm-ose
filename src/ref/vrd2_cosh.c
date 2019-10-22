@@ -27,4 +27,4 @@ __m128d FN_PROTOTYPE(vrd2_cosh)(__m128d x)
 }
 
 
-weak_alias (__vrd2_cosh, FN_PROTOTYPE(vrd2_cosh))
+

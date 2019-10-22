@@ -59,5 +59,5 @@ double FN_PROTOTYPE(floor)(double x)
     }
 
 }
-weak_alias (floor, FN_PROTOTYPE(floor))
+
 

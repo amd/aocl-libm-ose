@@ -720,5 +720,5 @@ double FN_PROTOTYPE(atan2)(double y, double x)
 
   return q1;
 }
-weak_alias (atan2, FN_PROTOTYPE(atan2))
+
 

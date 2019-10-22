@@ -110,5 +110,5 @@ double FN_PROTOTYPE(atan)(double x)
   if (xneg) z = -z;
   return z;
 }
-weak_alias (atan, FN_PROTOTYPE(atan))
+
 

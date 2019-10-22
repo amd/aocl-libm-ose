@@ -123,4 +123,4 @@ float FN_PROTOTYPE(acosf)(float x)
     return (float)(piby2_head - (x - (piby2_tail - x*u)));
 }
 
-weak_alias (acosf,FN_PROTOTYPE(acosf))
+

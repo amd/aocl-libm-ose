@@ -101,5 +101,5 @@ long int FN_PROTOTYPE(lround)(double d)
 
     return result;
 }
-weak_alias (lround, FN_PROTOTYPE(lround))
+
 

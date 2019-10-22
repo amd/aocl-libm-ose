@@ -125,4 +125,4 @@ float FN_PROTOTYPE(hypotf)(float x, float y)
          return (float)retval;
   }
 
-weak_alias (hypotf, FN_PROTOTYPE(hypotf))
+

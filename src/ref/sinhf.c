@@ -223,5 +223,5 @@ float FN_PROTOTYPE(sinhf)(float fx)
   return (float)z;
 }
 
-weak_alias (sinhf, FN_PROTOTYPE(sinhf))
+
 

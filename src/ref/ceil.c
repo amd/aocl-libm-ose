@@ -72,5 +72,5 @@ double FN_PROTOTYPE(ceil)(double x)
     }
 
 }
-weak_alias (ceil, FN_PROTOTYPE(ceil))
+
 

@@ -319,5 +319,5 @@ float FN_PROTOTYPE_BAS64(log1pf)(float x)
   /* Natural log(1+x) */
   return (float)r;
 }
-weak_alias (log1pf, FN_PROTOTYPE_BAS64(log1pf))
+
 

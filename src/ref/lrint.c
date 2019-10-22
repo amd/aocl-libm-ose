@@ -28,4 +28,4 @@ long int FN_PROTOTYPE(lrint)(double x)
 
     return (long int) ((x + val_2p52.f64) - val_2p52.f64);
 }
-weak_alias (lrint, FN_PROTOTYPE(lrint))
+

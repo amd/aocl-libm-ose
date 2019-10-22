@@ -107,4 +107,4 @@ float FN_PROTOTYPE(tanhf)(float x)
 }
 
 
-weak_alias (tanhf, FN_PROTOTYPE(tanhf))
+

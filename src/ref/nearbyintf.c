@@ -56,5 +56,5 @@ float FN_PROTOTYPE(nearbyintf)(float x)
 
     return (val_2p23.f32);   
 }
-weak_alias (nearbyintf, FN_PROTOTYPE(nearbyintf))
+
 

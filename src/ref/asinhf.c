@@ -127,5 +127,5 @@ float FN_PROTOTYPE(asinhf)(float x)
         return (float)r;
     }
 }
-weak_alias (asinhf, FN_PROTOTYPE(asinhf))
+
 

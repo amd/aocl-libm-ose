@@ -37,5 +37,5 @@ float FN_PROTOTYPE(frexpf)(float value, int *exp)
     val.u32 = sign | 0x3f000000 | (val.u32 & 0x007fffff);/* make the fractional part(divide by 2) */                                              
     return val.f32;
 }
-weak_alias (frexpf, FN_PROTOTYPE(frexpf))
+
 

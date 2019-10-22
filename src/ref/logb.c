@@ -58,5 +58,5 @@ double FN_PROTOTYPE(logb)(double x)
     }
 
 }
-weak_alias (logb, FN_PROTOTYPE(logb))
+
 

@@ -64,5 +64,5 @@ float FN_PROTOTYPE(ceilf)(float x)
         return r + 1.0F;
     }
 }
-weak_alias (ceilf, FN_PROTOTYPE(ceilf))
+
 

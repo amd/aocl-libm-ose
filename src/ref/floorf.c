@@ -54,5 +54,5 @@ float FN_PROTOTYPE(floorf)(float x)
         return r;
     }
 }
-weak_alias (floorf, FN_PROTOTYPE(floorf))
+
 

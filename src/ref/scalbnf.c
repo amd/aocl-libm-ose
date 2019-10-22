@@ -80,5 +80,5 @@ float FN_PROTOTYPE(scalbnf)(float x, int n)
     val.u32 = sign | (exponent << 23) | (val.u32 & 0x007fffff);/*x is normal and output is normal*/
     return val.f32;
 }
-weak_alias (scalbnf, FN_PROTOTYPE(scalbnf))
+
 

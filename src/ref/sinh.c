@@ -309,4 +309,4 @@ double FN_PROTOTYPE(sinh)(double x)
   return z;
 }
 
-weak_alias (sinh, FN_PROTOTYPE(sinh))
+

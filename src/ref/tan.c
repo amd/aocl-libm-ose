@@ -229,5 +229,5 @@ double FN_PROTOTYPE_BAS64(tan)(double x)
   else 
     return tan_piby4(r, rr, region & 1); 
 } 
-weak_alias (tan, FN_PROTOTYPE_BAS64(tan))
+
  

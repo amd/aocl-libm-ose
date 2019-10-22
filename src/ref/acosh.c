@@ -379,4 +379,4 @@ double FN_PROTOTYPE(acosh)(double x)
     }
 }
 
-weak_alias (acosh, FN_PROTOTYPE(acosh))
+

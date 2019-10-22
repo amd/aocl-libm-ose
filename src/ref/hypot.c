@@ -220,5 +220,5 @@ double FN_PROTOTYPE(hypot)(double x, double y)
 
   return retval;
 }
-weak_alias (hypot, FN_PROTOTYPE(hypot))
+
 

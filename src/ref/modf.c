@@ -60,4 +60,4 @@ double FN_PROTOTYPE(modf)(double x, double *iptr)
 
 }
 
-weak_alias (modf, FN_PROTOTYPE(modf))
+

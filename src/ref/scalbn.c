@@ -84,4 +84,4 @@ double FN_PROTOTYPE(scalbn)(double x, int n)
     return val.f64;
 }
 
-weak_alias (scalbn, FN_PROTOTYPE(scalbn))
+

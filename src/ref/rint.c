@@ -64,7 +64,7 @@ double FN_PROTOTYPE(rint)(double x)
     return (val_2p52.f64);
 }
 
-weak_alias (rint, FN_PROTOTYPE(rint))
+
 
 
 

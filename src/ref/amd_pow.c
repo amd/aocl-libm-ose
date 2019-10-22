@@ -107,4 +107,4 @@ double FN_PROTOTYPE(zen_pow)(double x, double y)
 }// End of function
 
 
-weak_alias (pow, FN_PROTOTYPE(zen_pow))
+

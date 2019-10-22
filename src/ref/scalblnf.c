@@ -80,4 +80,4 @@ float FN_PROTOTYPE(scalblnf)(float x, long int n)
     return val.f32;
 }
 
-weak_alias (scalblnf, FN_PROTOTYPE(scalblnf))
+

@@ -124,4 +124,4 @@ double FN_PROTOTYPE(acos)(double x)
     return piby2_head - (x - (piby2_tail - x*u));
 }
 
-weak_alias (acos,FN_PROTOTYPE(acos))
+

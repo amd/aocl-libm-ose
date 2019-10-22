@@ -379,5 +379,5 @@ double FN_PROTOTYPE_BAS64(log1p)(double x)
       return r1 + r2;
     }
 }
-weak_alias (log1p, FN_PROTOTYPE_BAS64(log1p))
+
 

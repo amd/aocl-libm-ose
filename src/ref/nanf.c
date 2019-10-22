@@ -95,4 +95,4 @@ float  FN_PROTOTYPE(nanf)(const char *tagp)
 
 	return checkbits.f32  ;
 }
-weak_alias (nanf, FN_PROTOTYPE(nanf))
+

@@ -84,6 +84,6 @@ double FN_PROTOTYPE(ldexp)(double x, int n)
     return val.f64;
 }
 
-weak_alias (ldexp, FN_PROTOTYPE(ldexp))
+
 
 

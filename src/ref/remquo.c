@@ -261,4 +261,4 @@ double FN_PROTOTYPE(remquo)(double x, double y, int *quo)
 	return x < 0.0? -dx : dx;
 
 }
-weak_alias (remquo, FN_PROTOTYPE(remquo))
+

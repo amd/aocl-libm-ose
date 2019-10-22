@@ -306,5 +306,5 @@ double FN_PROTOTYPE(cosh)(double x)
 
   return z;
 }
-weak_alias (cosh, FN_PROTOTYPE(cosh))
+
 

@@ -24,5 +24,5 @@ int FN_PROTOTYPE(finite)(double x)
 
 
 }
-weak_alias (finite, FN_PROTOTYPE(finite))
+
 

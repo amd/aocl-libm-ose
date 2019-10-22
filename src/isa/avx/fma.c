@@ -4,7 +4,7 @@
 #include "libm_special.h"
 #include "libm_errno_amd.h"
 
-double FN_PROTOTYPE_REF_BAS64(fma)(double aa, double bb, double cc)
+double FN_PROTOTYPE_BAS64(fma)(double aa, double bb, double cc)
 {
     UT64 a, b, c, result;
     UT64 ah, at, bh, bt, am, bm, ps;

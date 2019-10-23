@@ -3,7 +3,7 @@
 
 /*
  * Copyright AMD Inc, 2008-2019, All rights reserved
- * 
+ *
  * Author : Prem Mallappa <pmallapp@amd.com>
  */
 
@@ -324,11 +324,98 @@ extern __m128 FN_PROTOTYPE_BAS64(vrs4_sinf)(__m128 x);
 extern __m128 FN_PROTOTYPE_BAS64(vrs4_tanf)(__m128 x);
 
 
+/*
+ * Referene Implementations
+ */
+
+
+extern double FN_PROTOTYPE_REF(acos)(double x);
+extern double FN_PROTOTYPE_REF(acosh)(double x);
+extern double FN_PROTOTYPE_REF(zen_pow)(double x, double y);
+extern double FN_PROTOTYPE_REF(asin)(double x);
+extern double FN_PROTOTYPE_REF(asinh)(double x);
+extern double FN_PROTOTYPE_REF(atan2)(double y, double x);
+extern double FN_PROTOTYPE_REF(atan)(double x);
+extern double FN_PROTOTYPE_REF(atanh)(double x);
+extern double FN_PROTOTYPE_REF(ceil)(double x);
+extern double FN_PROTOTYPE_REF(cosh)(double x);
+extern double FN_PROTOTYPE_REF(cospi)(double x);
+extern double FN_PROTOTYPE_REF(floor)(double x);
+extern double FN_PROTOTYPE_REF(fmod)(double x, double y);
+extern double FN_PROTOTYPE_REF(frexp)(double value, int *exp);
+extern double FN_PROTOTYPE_REF(hypot)(double x, double y);
+extern double FN_PROTOTYPE_REF(ldexp)(double x, int n);
+extern double FN_PROTOTYPE_REF(logb)(double x);
+extern double FN_PROTOTYPE_REF(modf)(double x, double *iptr);
+extern double FN_PROTOTYPE_REF(nan)(const char *tagp);
+extern double FN_PROTOTYPE_REF(nearbyint)(double x);
+extern double FN_PROTOTYPE_REF(nextafter)(double x, double y);
+extern double FN_PROTOTYPE_REF(nexttoward)(double x, long double y);
+extern double FN_PROTOTYPE_REF(remquo)(double x, double y, int *quo);
+extern double FN_PROTOTYPE_REF(rint)(double x);
+extern double FN_PROTOTYPE_REF(scalbln)(double x, long int n);
+extern double FN_PROTOTYPE_REF(scalbn)(double x, int n);
+extern double FN_PROTOTYPE_REF(sinh)(double x);
+extern double FN_PROTOTYPE_REF(sinpi)(double x);
+extern double FN_PROTOTYPE_REF(sqrt)(double x);
+extern double FN_PROTOTYPE_REF(tanh)(double x);
+extern double FN_PROTOTYPE_REF(tanpi)(double x);
+
+extern float FN_PROTOTYPE_REF(acosf)(float x);
+extern float FN_PROTOTYPE_REF(acoshf)(float x);
+extern float FN_PROTOTYPE_REF(asinf)(float x);
+extern float FN_PROTOTYPE_REF(asinhf)(float x);
+extern float FN_PROTOTYPE_REF(atan2f)(float fy, float fx);
+extern float FN_PROTOTYPE_REF(atanf)(float fx);
+extern float FN_PROTOTYPE_REF(atanhf)(float x);
+extern float FN_PROTOTYPE_REF(ceilf)(float x);
+extern float FN_PROTOTYPE_REF(coshf)(float fx);
+extern float FN_PROTOTYPE_REF(cospif)(float x);
+extern float FN_PROTOTYPE_REF(floorf)(float x);
+extern float FN_PROTOTYPE_REF(fmodf)(float fy, float fx);
+extern float FN_PROTOTYPE_REF(frexpf)(float value, int *exp);
+extern float FN_PROTOTYPE_REF(hypotf)(float x, float y);
+extern float FN_PROTOTYPE_REF(ldexpf)(float x, int n);
+extern float FN_PROTOTYPE_REF(logbf)(float x);
+extern float FN_PROTOTYPE_REF(modff)(float x, float *iptr);
+extern float FN_PROTOTYPE_REF(nanf)(const char *tagp);
+extern float FN_PROTOTYPE_REF(nearbyintf)(float x);
+extern float FN_PROTOTYPE_REF(nextafterf)(float x, float y);
+extern float FN_PROTOTYPE_REF(nexttowardf)(float x, long double y);
+extern float FN_PROTOTYPE_REF(remquof) (float x, float y, int *quo);
+extern float FN_PROTOTYPE_REF(rintf)(float x);
+extern float FN_PROTOTYPE_REF(roundf)(float f);
+extern float FN_PROTOTYPE_REF(scalblnf)(float x, long int n);
+extern float FN_PROTOTYPE_REF(scalbnf)(float x, int n);
+extern float FN_PROTOTYPE_REF(sinhf)(float fx);
+extern float FN_PROTOTYPE_REF(sinpif)(float x);
+extern float FN_PROTOTYPE_REF(sqrtf)(float x);
+extern float FN_PROTOTYPE_REF(tanhf)(float x);
+extern float FN_PROTOTYPE_REF(tanpif)(float x);
+
+
+extern int FN_PROTOTYPE_REF(finite)(double x);
+extern int FN_PROTOTYPE_REF(finitef)(float x);
+extern int FN_PROTOTYPE_REF(ilogb)(double x);
+extern int FN_PROTOTYPE_REF(ilogbf)(float x);
+
+extern long long int FN_PROTOTYPE_REF(llrint)(double x);
+extern long long int FN_PROTOTYPE_REF(llrintf)(float x);
+extern long long int FN_PROTOTYPE_REF(llround)(double d);
+extern long long int FN_PROTOTYPE_REF(llroundf)(float f);
+
+extern long int FN_PROTOTYPE_REF(lrint)(double x);
+extern long int FN_PROTOTYPE_REF(lrintf)(float x);
+extern long int FN_PROTOTYPE_REF(lround)(double d);
+extern long int FN_PROTOTYPE_REF(lroundf)(float f);
+
+extern __m128d FN_PROTOTYPE_REF(vrd2_cosh)(__m128d x);
+extern __m256d FN_PROTOTYPE_REF(vrd4_expm1)(__m256d x);
+
 #if defined(__cplusplus)
 }
 #endif
 
 
 #endif /* __LIBM_AMD_FUNCS_INTERNAL_H__ */
-
 

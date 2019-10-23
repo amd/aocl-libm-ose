@@ -21,6 +21,7 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_CBRT]       = {LIBM_IFACE_PROTO(cbrt), NULL},
     [C_AMD_CEIL]       = {LIBM_IFACE_PROTO(ceil), NULL},
     [C_AMD_COS]        = {LIBM_IFACE_PROTO(cos), NULL},
+    [C_AMD_EXP10]      = {LIBM_IFACE_PROTO(exp10), NULL},
     [C_AMD_EXP2]       = {LIBM_IFACE_PROTO(exp2), NULL},
     [C_AMD_EXP]        = {LIBM_IFACE_PROTO(exp), NULL},
     [C_AMD_EXPM1]      = {LIBM_IFACE_PROTO(expm1), NULL},

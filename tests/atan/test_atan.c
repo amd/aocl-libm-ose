@@ -33,30 +33,6 @@ extern struct libm_test_input_range x_range[];
 
 double LIBM_FUNC(atan)(double);
 
-/*perf setup*/
-int test_atan_perf_setup(struct libm_test *test)
-{
-    const struct libm_test_conf *conf = test->conf;
-    int ret = 0;
-
-    ret = libm_test_alloc_test_data(test, conf->nelem);
-    if (ret) {
-        LIBM_TEST_DPRINTF(PANIC, "Unable to allocate test_data\n");
-        goto out;
-    }
-    ret = libm_test_populate_inputs(test, LIBM_INPUT_RANGE_SIMPLE);
-
-    if (ret || !test->test_data.input1) {
-        LIBM_TEST_DPRINTF(PANIC, "Unable to populate test_data for atan\n");
-        goto out;
-    }
-
-    return 0;
-
- out:
-    return -1;
-}
-
 /*atan accuracy setup*/
 int test_atan_accu_setup(struct libm_test *test)
 {
@@ -271,7 +247,7 @@ struct libm_test_funcs test_atan_funcs[LIBM_FUNC_MAX] =
       * Scalar functions
       */
      [LIBM_FUNC_S_S]  = {
-                         .performance =  { .setup = test_atan_perf_setup,
+                         .performance =  { .setup = libm_setup_scalar_perf,
                                            .run   = libm_test_s1s_perf,
                                          },
                          .accuracy     = { .setup = test_atan_accu_setup,
@@ -289,7 +265,7 @@ struct libm_test_funcs test_atan_funcs[LIBM_FUNC_MAX] =
                                          },
      },
      [LIBM_FUNC_S_D]  = {
-                         .performance = { .setup = test_atan_perf_setup,
+                         .performance = { .setup = libm_setup_scalar_perf,
                                           .run   = libm_test_s1d_perf,
                                         },
                          .accuracy     = {.setup = test_atan_accu_setup,

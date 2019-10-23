@@ -27,6 +27,7 @@ double LIBM_FUNC(fabs)(double);
 float LIBM_FUNC(fabsf)(float);
 
 /*fabs perf setup*/
+/*
 int test_fabs_perf_setup(struct libm_test *test)
 {
     const struct libm_test_conf *conf = test->conf;
@@ -49,6 +50,7 @@ int test_fabs_perf_setup(struct libm_test *test)
  out:
     return -1;
 }
+*/
 
 /*atan accuracy setup*/
 int test_fabs_accu_setup(struct libm_test *test)
@@ -121,7 +123,6 @@ int test_fabs_conformance_setup(struct libm_test *test){
     }
 
     return 0;
-
 }
 
 /*conformance setup*/
@@ -258,8 +259,6 @@ double test_fabs_ulp(struct libm_test *test, int idx)
     return fabs(buf[idx]);
 }
 
-/*conformance tests*/
-
 /*test functiosn for fabs*/
 struct libm_test_funcs test_fabs_funcs[LIBM_FUNC_MAX] =
     {
@@ -267,7 +266,7 @@ struct libm_test_funcs test_fabs_funcs[LIBM_FUNC_MAX] =
       * Scalar functions
       */
      [LIBM_FUNC_S_S]  = {
-                         .performance =  { .setup = test_fabs_perf_setup,
+                         .performance =  { .setup = libm_setup_scalar_perf,
                                            .run   = libm_test_s1s_perf,
                                          },
                          .accuracy     = { .setup = test_fabs_accu_setup,
@@ -285,7 +284,7 @@ struct libm_test_funcs test_fabs_funcs[LIBM_FUNC_MAX] =
                                          },
      },
      [LIBM_FUNC_S_D]  = {
-                         .performance = { .setup = test_fabs_perf_setup,
+                         .performance = { .setup = libm_setup_scalar_perf,
                                           .run   = libm_test_s1d_perf,
                                         },
                          .accuracy     = {.setup = test_fabs_accu_setup,

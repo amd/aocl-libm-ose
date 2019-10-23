@@ -250,9 +250,12 @@ int libm_test_accu_single(struct libm_test *test, uint32_t type);
 double libm_test_ulp_errorf(float computed, double expected);
 double libm_test_ulp_error(double computed, long double expected);
 
-/******special functions**********/
+/******conformance functions**********/
 int libm_test_s1s_conf(struct libm_test *test);
 int libm_test_s1d_conf(struct libm_test *test);
+
+/**********Setup functions******************/
+int libm_setup_scalar_perf(struct libm_test *test);
 
 /*
  * Use directly the FMA3 version or glibc version

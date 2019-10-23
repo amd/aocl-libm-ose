@@ -287,3 +287,28 @@ out_ret:
 
     return -1;
 }
+
+/***************setup functions***************************/
+/********************PERF SETUP***************************/
+int libm_setup_scalar_perf(struct libm_test *test)
+{
+    const struct libm_test_conf *conf = test->conf;
+    int ret=0;
+    ret=libm_test_alloc_test_data(test, conf->nelem);
+    if (ret) {
+        LIBM_TEST_DPRINTF(PANIC, "Unable to allocate test data\n");
+        goto out;
+    }
+    ret = libm_test_populate_inputs(test, LIBM_INPUT_RANGE_SIMPLE);
+
+    if(ret || !test->test_data.input1) {
+        LIBM_TEST_DPRINTF(PANIC, "Unable to populate test data\n");
+        goto out;
+    }
+    return 0;
+
+out:
+    return -1;
+}
+
+

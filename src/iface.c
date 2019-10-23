@@ -13,6 +13,8 @@
 struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_ACOS]       = {LIBM_IFACE_PROTO(acos), NULL},
     [C_AMD_ACOSH]      = {LIBM_IFACE_PROTO(acosh), NULL},
+    [C_AMD_ASIN]       = {LIBM_IFACE_PROTO(asin), NULL},
+    //[C_AMD_ASINH]      = {LIBM_IFACE_PROTO(asinh), NULL},
     [C_AMD_EXP2]       = {LIBM_IFACE_PROTO(exp2), NULL},
     [C_AMD_EXP]        = {LIBM_IFACE_PROTO(exp), NULL},
     [C_AMD_EXPM1]      = {LIBM_IFACE_PROTO(expm1), NULL},

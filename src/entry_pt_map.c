@@ -29,11 +29,20 @@
 	"\n\t" "jmp *(%rax)"						\
 		);
 
+LIBM_DECL_FN_MAP(atan2f);
+LIBM_DECL_FN_MAP(atan2);
+
+LIBM_DECL_FN_MAP(atan);
+LIBM_DECL_FN_MAP(atanf);
+
 LIBM_DECL_FN_MAP(cbrtf);
 LIBM_DECL_FN_MAP(cbrt);
 
 LIBM_DECL_FN_MAP(cosf);
 LIBM_DECL_FN_MAP(cos);
+
+LIBM_DECL_FN_MAP(coshf);
+LIBM_DECL_FN_MAP(cosh);
 
 LIBM_DECL_FN_MAP(exp10f);
 LIBM_DECL_FN_MAP(exp10);
@@ -62,8 +71,14 @@ LIBM_DECL_FN_MAP(log2);
 LIBM_DECL_FN_MAP(logf);
 LIBM_DECL_FN_MAP(log);
 
+LIBM_DECL_FN_MAP(lroundf);
+LIBM_DECL_FN_MAP(lround);
+
 LIBM_DECL_FN_MAP(powf);
 LIBM_DECL_FN_MAP(pow);
+
+LIBM_DECL_FN_MAP(remquof);
+LIBM_DECL_FN_MAP(remquo);
 
 LIBM_DECL_FN_MAP(sincosf);
 LIBM_DECL_FN_MAP(sincos);
@@ -89,6 +104,7 @@ LIBM_DECL_FN_MAP(vrd2_sin);
 
 LIBM_DECL_FN_MAP(vrd4_exp2);
 LIBM_DECL_FN_MAP(vrd4_exp);
+LIBM_DECL_FN_MAP(vrd4_expm1);
 LIBM_DECL_FN_MAP(vrd4_log);
 LIBM_DECL_FN_MAP(vrd4_pow);
 

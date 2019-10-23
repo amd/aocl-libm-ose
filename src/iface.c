@@ -35,6 +35,9 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_LOG2]       = {LIBM_IFACE_PROTO(log2), NULL},
     [C_AMD_LOG]        = {LIBM_IFACE_PROTO(log), NULL},
     [C_AMD_NAN]        = {LIBM_IFACE_PROTO(nan), NULL},
+    [C_AMD_NEARBYINT]  = {LIBM_IFACE_PROTO(nearbyint), NULL},
+    [C_AMD_NEXTAFTER]  = {LIBM_IFACE_PROTO(nextafter), NULL},
+    [C_AMD_NEXTTOWARD] = {LIBM_IFACE_PROTO(nexttoward), NULL},
     [C_AMD_POW]        = {LIBM_IFACE_PROTO(pow), NULL},
 };
 

@@ -30,6 +30,9 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_FREXP]      = {LIBM_IFACE_PROTO(frexp), NULL},
     [C_AMD_HYPOT]      = {LIBM_IFACE_PROTO(hypot), NULL},
     [C_AMD_LDEXP]      = {LIBM_IFACE_PROTO(ldexp), NULL},
+    [C_AMD_LOG10]      = {LIBM_IFACE_PROTO(log10), NULL},
+    [C_AMD_LOG1P]      = {LIBM_IFACE_PROTO(log1p), NULL},
+    [C_AMD_LOG2]       = {LIBM_IFACE_PROTO(log2), NULL},
     [C_AMD_LOG]        = {LIBM_IFACE_PROTO(log), NULL},
     [C_AMD_POW]        = {LIBM_IFACE_PROTO(pow), NULL},
 };

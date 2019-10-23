@@ -157,61 +157,6 @@ int test_atanf_conformance_setup(struct libm_test *test){
     }
 
     return 0;
-
-}
-
-/*atan conformance tests*/
-int test_atanf_conformance(struct libm_test *test)
-{
-    int ret = 0;
-    struct libm_test_data *data = &test->test_data;
-    int sz = data->nelem;
-
-    float *ip = (float*)data->input1;
-    float *op = (float*)data->output;
-    int *exception = data->raised_exception;
-
-    if (sz % 4 != 0)
-       LIBM_TEST_DPRINTF(DBG2,
-                          "%s %s : %d is not a multiple of 4, some may be left out\n"
-                          " And error reported may not be real for such entries\n",
-                          test->name, test->type_name, sz);
-
-    for (int j = 0; j < sz; j++){
-        feclearexcept(FE_ALL_EXCEPT);
-        op[j] = LIBM_FUNC(atanf)(ip[j]);
-        const int flags =  fetestexcept(FE_ALL_EXCEPT);
-        exception[j] = flags;
-    }
-
-    return ret;
-}
-
-/*atan conformance tests*/
-int test_atan_conformance(struct libm_test *test)
-{
-    int ret = 0;
-    struct libm_test_data *data = &test->test_data;
-    int sz = data->nelem;
-
-    double *ip = (double*)data->input1;
-    double *op = (double*)data->output;
-    int *exception = data->raised_exception;
-
-    if (sz % 4 != 0)
-       LIBM_TEST_DPRINTF(DBG2,
-                          "%s %s : %d is not a multiple of 4, some may be left out\n"
-                          " And error reported may not be real for such entries\n",
-                          test->name, test->type_name, sz);
-
-    for (int j = 0; j < sz; j++){
-        feclearexcept(FE_ALL_EXCEPT);
-        op[j] = LIBM_FUNC(atan)(ip[j]);
-        const int flags =  fetestexcept(FE_ALL_EXCEPT);
-        exception[j] = flags;
-    }
-
-    return ret;
 }
 
 /*special cases for atan*/
@@ -339,7 +284,7 @@ struct libm_test_funcs test_atan_funcs[LIBM_FUNC_MAX] =
                                           },
                           */
                          .conformance  = {.setup = test_atanf_conformance_setup,
-                                           .run   = test_atanf_conformance,
+                                           .run   = libm_test_s1s_conf,
                                            .verify = test_atan_verify
                                          },
      },
@@ -356,7 +301,7 @@ struct libm_test_funcs test_atan_funcs[LIBM_FUNC_MAX] =
                                          },
                           */
                           .conformance  = {.setup = test_atan_conformance_setup,
-                                          .run   = test_atan_conformance,
+                                          .run   = libm_test_s1d_conf,
                                           .verify = libm_test_verify
                                          },
      },

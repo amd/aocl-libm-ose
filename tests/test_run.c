@@ -23,6 +23,8 @@
 #include <libm/types.h>
 #include <libm/compiler.h>
 
+#include <fenv.h>
+
 /****************************
  * PERF tests
  ****************************/
@@ -363,4 +365,39 @@ libm_test_accu_single(struct libm_test *test, uint32_t type)
     return ret;
 }
 
+/********conformance functions**************/
+int libm_test_s1s_conf(struct libm_test *test)
+{
+    int ret=0;
+    struct libm_test_data *data = &test->test_data;
+    struct libm_test_ops *ops = &test->ops;
+    int sz = data->nelem, end=sz;
+    int *exception = data->raised_exception;
+ 
+    for (int j=0; j < end; j++) {
+        feclearexcept(FE_ALL_EXCEPT);
+        ret = ops->callbacks.s1s(test, j);
+        const int flags =  fetestexcept(FE_ALL_EXCEPT);
+        exception[j] = flags;
+    }
+    
+    return ret;
+}
+
+int libm_test_s1d_conf(struct libm_test *test)
+{
+    int ret=0;
+    struct libm_test_data *data=&test->test_data;
+    struct libm_test_ops *ops = &test->ops;
+    int sz = data->nelem, end=sz;
+    int *exception = data->raised_exception;
+
+    for (int j=0; j<end; j++) {
+        feclearexcept(FE_ALL_EXCEPT);
+        ret = ops->callbacks.s1d(test, j);
+        const int flags = fetestexcept(FE_ALL_EXCEPT);
+        exception[j] = flags;
+    }
+    return ret;
+}
 

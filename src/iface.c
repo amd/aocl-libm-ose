@@ -42,6 +42,7 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_RINT]       = {LIBM_IFACE_PROTO(rint), NULL},
     [C_AMD_SIN]        = {LIBM_IFACE_PROTO(sin), NULL},
     [C_AMD_SINH]       = {LIBM_IFACE_PROTO(sinh), NULL},
+    [C_AMD_SQRT]       = {LIBM_IFACE_PROTO(sqrt), NULL},
 };
 
 #ifndef ARRAY_SIZE

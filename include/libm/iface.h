@@ -33,7 +33,6 @@ enum {
     C_AMD_EXP,
     C_AMD_EXPM1,
     C_AMD_FABS,
-    C_AMD_FASTPOW,
     C_AMD_FDIM,
     C_AMD_FLOOR,
     C_AMD_FMA,
@@ -73,17 +72,11 @@ enum {
      * INTEGER VARIANTS
      */
     C_AMD_FINITE,
-    C_AMD_FINITEF,
     C_AMD_ILOGB,
-    C_AMD_ILOGBF,
     C_AMD_LRINT,
-    C_AMD_LRINTF,
     C_AMD_LROUND,
-    C_AMD_LROUNDF,
     C_AMD_LLRINT,
-    C_AMD_LLRINTF,
     C_AMD_LLROUND,
-    C_AMD_LLROUNDF,
 
     /*
      * This one needs to be last one, REALLY !!!
@@ -141,7 +134,7 @@ extern void LIBM_IFACE_PROTO(nextafter)(void *arg);
 extern void LIBM_IFACE_PROTO(nexttoward)(void *arg);
 extern void LIBM_IFACE_PROTO(pow)(void *arg);
 extern void LIBM_IFACE_PROTO(remainder)(void *arg);
-extern void LIBM_IFACE_PROTO(remquo)(double x, double y, int *quo);
+extern void LIBM_IFACE_PROTO(remquo)(void *arg);
 extern void LIBM_IFACE_PROTO(rint)(void *arg);
 extern void LIBM_IFACE_PROTO(round)(void *arg);
 extern void LIBM_IFACE_PROTO(scalbln)(void *arg);

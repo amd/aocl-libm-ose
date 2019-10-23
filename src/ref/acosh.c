@@ -5,7 +5,7 @@
 
 #undef _FUNCNAME
 #define _FUNCNAME "acosh"
-double FN_PROTOTYPE(acosh)(double x)
+double FN_PROTOTYPE_REF(acosh)(double x)
 {
 
   unsigned long long ux;

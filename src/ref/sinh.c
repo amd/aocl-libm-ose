@@ -3,7 +3,7 @@
 #include "libm_inlines_amd.h"
 #include "libm_special.h"
 
-double FN_PROTOTYPE(sinh)(double x)
+double FN_PROTOTYPE_REF(sinh)(double x)
 {
   /*
     After dealing with special cases the computation is split into

@@ -5,7 +5,7 @@
 
 #undef _FUNCNAME
 #define _FUNCNAME "asinh"
-double FN_PROTOTYPE(asinh)(double x)
+double FN_PROTOTYPE_REF(asinh)(double x)
 {
 
   unsigned long long ux, ax, xneg;

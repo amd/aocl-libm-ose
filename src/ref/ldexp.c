@@ -2,7 +2,7 @@
 #include "libm_util_amd.h"
 #include "libm_special.h"
 
-double FN_PROTOTYPE(ldexp)(double x, int n)
+double FN_PROTOTYPE_REF(ldexp)(double x, int n)
 {
     UT64 val,val_x;
     unsigned int sign;

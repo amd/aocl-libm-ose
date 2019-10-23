@@ -4,7 +4,7 @@
 
 #undef _FUNCNAME
 #define _FUNCNAME "asinhf"
-float FN_PROTOTYPE(asinhf)(float x)
+float FN_PROTOTYPE_REF(asinhf)(float x)
 {
 
   double dx;

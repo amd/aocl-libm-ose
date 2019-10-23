@@ -11,7 +11,7 @@
   of the low-order single-precision floating-point value in an XMM register
   or in a 32-bit memory location and writes the result in the low-order doubleword
   of another XMM register. The corresponding intrinsic is _mm_sqrt_ss()*/
-float FN_PROTOTYPE(sqrtf)(float x)
+float FN_PROTOTYPE_REF(sqrtf)(float x)
 {
   __m128 X128;
   float result;

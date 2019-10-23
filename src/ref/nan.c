@@ -2,7 +2,7 @@
 #include "libm_util_amd.h"
 #include <stdio.h>
 
-double  FN_PROTOTYPE(nan)(const char *tagp)
+double  FN_PROTOTYPE_REF(nan)(const char *tagp)
 {
 
 

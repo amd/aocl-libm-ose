@@ -2,7 +2,7 @@
 #include "libm_util_amd.h"
 #include "libm_special.h"
 
-float FN_PROTOTYPE(hypotf)(float x, float y)
+float FN_PROTOTYPE_REF(hypotf)(float x, float y)
 {
   /* Returns sqrt(x*x + y*y) with no overflow or underflow unless
      the result warrants it */

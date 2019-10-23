@@ -4,7 +4,7 @@
 
 /* Returns 0 if x is infinite or NaN, otherwise returns 1 */
 
-int FN_PROTOTYPE(finite)(double x)
+int FN_PROTOTYPE_REF(finite)(double x)
 {
 
   unsigned long long ax,ux;

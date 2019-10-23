@@ -2,7 +2,7 @@
 #include "libm_util_amd.h"
 #include "libm_special.h"
 
-double FN_PROTOTYPE(floor)(double x)
+double FN_PROTOTYPE_REF(floor)(double x)
 {
   double r;
   long long rexp, xneg;

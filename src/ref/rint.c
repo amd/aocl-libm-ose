@@ -4,7 +4,7 @@
 #include "libm_special.h"
 
 
-double FN_PROTOTYPE(rint)(double x)
+double FN_PROTOTYPE_REF(rint)(double x)
 {
 
     UT64 checkbits,val_2p52;

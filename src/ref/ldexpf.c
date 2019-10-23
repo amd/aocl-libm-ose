@@ -2,7 +2,7 @@
 #include "libm_util_amd.h"
 #include "libm_special.h"
 
-float FN_PROTOTYPE(ldexpf)(float x, int n)
+float FN_PROTOTYPE_REF(ldexpf)(float x, int n)
 {
     UT32 val,val_x;
     unsigned int sign;

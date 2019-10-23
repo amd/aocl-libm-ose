@@ -8,7 +8,7 @@
 #pragma function(sinhf)
 #endif
 
-float FN_PROTOTYPE(sinhf)(float fx)
+float FN_PROTOTYPE_REF(sinhf)(float fx)
 {
   /*
     After dealing with special cases the computation is split into

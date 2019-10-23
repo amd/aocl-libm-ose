@@ -3,7 +3,7 @@
 #include "libm_special.h"
 
 
-float FN_PROTOTYPE(frexpf)(float value, int *exp)
+float FN_PROTOTYPE_REF(frexpf)(float value, int *exp)
 {
     UT32 val;
     unsigned int sign;

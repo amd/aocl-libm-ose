@@ -4,7 +4,7 @@
 #include "libm_special.h"
 
 
-float FN_PROTOTYPE(coshf)(float fx)
+float FN_PROTOTYPE_REF(coshf)(float fx)
 {
   /*
     After dealing with special cases the computation is split into

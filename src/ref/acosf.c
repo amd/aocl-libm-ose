@@ -3,7 +3,7 @@
 #include "libm_special.h"
 
 
-float FN_PROTOTYPE(acosf)(float x)
+float FN_PROTOTYPE_REF(acosf)(float x)
 {
   /* Computes arccos(x).
      The argument is first reduced by noting that arccos(x)

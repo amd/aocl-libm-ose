@@ -3,7 +3,7 @@
 #include "libm_special.h" 
  
  
-float FN_PROTOTYPE(nexttowardf)(float x, long double y) 
+float FN_PROTOTYPE_REF(nexttowardf)(float x, long double y) 
 { 
  
  

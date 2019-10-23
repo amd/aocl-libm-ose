@@ -4,7 +4,7 @@
 #include "libm_special.h"
 
 
-float FN_PROTOTYPE(nearbyintf)(float x)
+float FN_PROTOTYPE_REF(nearbyintf)(float x)
 {
     /* Check for input range */
 	unsigned int mxscr_stat;

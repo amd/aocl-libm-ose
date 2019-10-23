@@ -2,7 +2,7 @@
 #include "libm_util_amd.h"
 #include "libm_special.h"
 
-float FN_PROTOTYPE(modff)(float x, float *iptr)
+float FN_PROTOTYPE_REF(modff)(float x, float *iptr)
 {
   /* modff splits the argument x into integer and fraction parts,
      each with the same sign as x. */

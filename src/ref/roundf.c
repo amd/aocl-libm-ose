@@ -2,7 +2,7 @@
 #include "libm_util_amd.h"
 #include "libm_special.h"
 
-float FN_PROTOTYPE(roundf)(float f)
+float FN_PROTOTYPE_REF(roundf)(float f)
 {
     UT32 u32f, u32Temp;
     U32 u32sign, u32exp, u32mantissa;

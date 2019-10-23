@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 
-float  FN_PROTOTYPE(nanf)(const char *tagp)
+float  FN_PROTOTYPE_REF(nanf)(const char *tagp)
 {
 
 

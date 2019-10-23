@@ -4,7 +4,7 @@
 
 
 
-double FN_PROTOTYPE(acos)(double x)
+double FN_PROTOTYPE_REF(acos)(double x)
 {
   /* Computes arccos(x).
      The argument is first reduced by noting that arccos(x)

@@ -2,7 +2,7 @@
 #include "libm_util_amd.h"
 #include "libm_special.h"
 
-float FN_PROTOTYPE(scalblnf)(float x, long int n)
+float FN_PROTOTYPE_REF(scalblnf)(float x, long int n)
 {
     UT32 val,val_x;
     unsigned int sign;

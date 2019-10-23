@@ -2,7 +2,7 @@
 #include "libm_util_amd.h"
 #include "libm_special.h"
 
-double FN_PROTOTYPE(asin)(double x)
+double FN_PROTOTYPE_REF(asin)(double x)
 {
   /* Computes arcsin(x).
      The argument is first reduced by noting that arcsin(x)

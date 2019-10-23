@@ -4,7 +4,7 @@
 #include "libm_special.h"
 
 
-double FN_PROTOTYPE(hypot)(double x, double y)
+double FN_PROTOTYPE_REF(hypot)(double x, double y)
 {
   /* Returns sqrt(x*x + y*y) with no overflow or underflow unless
      the result warrants it */

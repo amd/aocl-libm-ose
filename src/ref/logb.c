@@ -2,7 +2,7 @@
 #include "libm_util_amd.h"
 #include "libm_special.h"
 
-double FN_PROTOTYPE(logb)(double x)
+double FN_PROTOTYPE_REF(logb)(double x)
 {
 
   unsigned long long ux;

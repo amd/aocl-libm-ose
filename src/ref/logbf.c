@@ -3,7 +3,7 @@
 #include "libm_special.h"
 
 
-float FN_PROTOTYPE(logbf)(float x)
+float FN_PROTOTYPE_REF(logbf)(float x)
 {
   unsigned int ux;
   int u;

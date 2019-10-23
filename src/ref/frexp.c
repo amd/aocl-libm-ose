@@ -3,7 +3,7 @@
 #include "libm_special.h"
 
 
-double FN_PROTOTYPE(frexp)(double value, int *exp)
+double FN_PROTOTYPE_REF(frexp)(double value, int *exp)
 {
     UT64 val;
     unsigned int sign;

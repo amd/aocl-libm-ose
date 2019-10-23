@@ -3,7 +3,7 @@
 #include "libm_special.h"
 
 
-double FN_PROTOTYPE(atan)(double x)
+double FN_PROTOTYPE_REF(atan)(double x)
 {
 
   /* Some constants and split constants. */

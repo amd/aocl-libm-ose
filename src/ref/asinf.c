@@ -3,7 +3,7 @@
 #include "libm_special.h"
 
 
-float FN_PROTOTYPE(asinf)(float x)
+float FN_PROTOTYPE_REF(asinf)(float x)
 {
   /* Computes arcsin(x).
      The argument is first reduced by noting that arcsin(x)

@@ -3,7 +3,7 @@
 #include "libm_special.h"
 #include "libm_errno_amd.h"
 
-double FN_PROTOTYPE(modf)(double x, double *iptr)
+double FN_PROTOTYPE_REF(modf)(double x, double *iptr)
 {
   /* modf splits the argument x into integer and fraction parts,
      each with the same sign as x. */

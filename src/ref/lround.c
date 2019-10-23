@@ -3,7 +3,7 @@
 #include "libm_special.h"
 
 
-long int FN_PROTOTYPE(lround)(double d)
+long int FN_PROTOTYPE_REF(lround)(double d)
 {
     UT64 u64d;
     UT64 u64Temp,u64result;

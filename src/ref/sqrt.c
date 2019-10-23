@@ -7,7 +7,7 @@
   of the low-order double-precision floating-point value in an XMM register
   or in a 64-bit memory location and writes the result in the low-order quadword
   of another XMM register. The corresponding intrinsic is _mm_sqrt_sd()*/
-double FN_PROTOTYPE(sqrt)(double x)
+double FN_PROTOTYPE_REF(sqrt)(double x)
 {
   __m128d X128;
   double result;

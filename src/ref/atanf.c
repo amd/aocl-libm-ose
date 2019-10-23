@@ -3,7 +3,7 @@
 #include "libm_special.h"
 
 
-float FN_PROTOTYPE(atanf)(float fx)
+float FN_PROTOTYPE_REF(atanf)(float fx)
 {
 
   /* Some constants and split constants. */

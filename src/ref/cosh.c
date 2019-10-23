@@ -4,7 +4,7 @@
 #include "libm_special.h"
 
 
-double FN_PROTOTYPE(cosh)(double x)
+double FN_PROTOTYPE_REF(cosh)(double x)
 {
   /*
     Derived from sinh subroutine

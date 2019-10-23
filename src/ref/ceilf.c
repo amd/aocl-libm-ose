@@ -2,7 +2,7 @@
 #include "libm_util_amd.h"
 #include "libm_special.h"
 
-float FN_PROTOTYPE(ceilf)(float x)
+float FN_PROTOTYPE_REF(ceilf)(float x)
 {
   float r;
   int rexp, xneg;

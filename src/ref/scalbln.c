@@ -2,7 +2,7 @@
 #include "libm_util_amd.h"
 #include "libm_special.h"
 
-double FN_PROTOTYPE(scalbln)(double x, long int n)
+double FN_PROTOTYPE_REF(scalbln)(double x, long int n)
 {
     UT64 val,val_x;
     unsigned int sign;

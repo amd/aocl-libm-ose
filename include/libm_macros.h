@@ -19,6 +19,11 @@
 
 #define FN_PROTOTYPE_REF(fn_name) amd_ref_##fn_name
 
+/*
+ * Function with optimum algorithm
+ */
+#define FN_PROTOTYPE_OPT(fn_name) amd_opt_##fn_name
+
 #define FN_PROTOTYPE_BAS64(fn_name) __amd_bas64_##fn_name
 
 #define FN_PROTOTYPE_BDOZR(fn_name) __amd_bdozr_##fn_name

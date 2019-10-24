@@ -105,7 +105,7 @@ top12f(float x)
 #define EXPF_TABLE_SIZE (1 << EXPF_N)
 
 float
-FN_PROTOTYPE(expf_v2)(float x)
+FN_PROTOTYPE_OPT(expf)(float x)
 {
     double_t  q, dn, r, z;
     uint64_t n, j;

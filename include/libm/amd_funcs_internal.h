@@ -412,6 +412,19 @@ extern long int FN_PROTOTYPE_REF(lroundf)(float f);
 extern __m128d FN_PROTOTYPE_REF(vrd2_cosh)(__m128d x);
 extern __m256d FN_PROTOTYPE_REF(vrd4_expm1)(__m256d x);
 
+/*
+ * OPTIMUM algorithm versions
+ */
+extern double FN_PROTOTYPE_OPT(exp2)(double x);
+extern double FN_PROTOTYPE_OPT(exp)(double x);
+extern double FN_PROTOTYPE_OPT(expm1)(double x);
+
+
+extern float FN_PROTOTYPE_OPT(exp2f)(float x);
+extern float FN_PROTOTYPE_OPT(expf)(float x);
+extern float FN_PROTOTYPE_OPT(expm1f)(float x);
+
+
 #if defined(__cplusplus)
 }
 #endif

@@ -89,7 +89,7 @@ static inline uint32_t top12(double x)
 #define FMIN_X			-0x1.74910d52d3051p+9
 
 double
-FN_PROTOTYPE(exp_v2)(double x)
+FN_PROTOTYPE_OPT(exp)(double x)
 {
     double_t    r, q, dn;
     int64_t	n, m;

@@ -311,4 +311,87 @@ out:
     return -1;
 }
 
+/*********special data alloc**************************/
+//alloc special data
+int libm_test_alloc_special_data(struct libm_test *test, size_t size)
+{
+    struct libm_test_conf *conf = test->conf;
+    struct libm_test_data *test_data = &test->test_data;
+    int ret = 0;
+
+    ret = libm_test_alloc_test_data(test, size);
+
+    if (ret) {
+        printf("unable to allocate\n");
+        goto out;
+    }
+
+    test_data = &test->test_data;
+    test_data->nelem = size;
+
+    /* fixup conf */
+    conf->nelem = size;
+
+    return 0;
+
+ out:
+    return -1;
+}
+
+/******************conformance setup************************/
+int libm_setup_s1s_conf(struct libm_test *test, struct __libm_test_conformance_test_data_float* libm_test_conf_data, int test_data_size)
+{
+    float *in1, *expected;
+    struct libm_test_data *data;
+    int i;
+    int32_t *expected_exception;
+
+    libm_test_alloc_special_data(test, test_data_size);
+
+    data = &test->test_data;
+
+    in1 = (float*)data->input1;
+    expected = (float*)data->expected;
+    expected_exception =  data->expected_exception;
+    flt32u_t x,z;
+
+    // Populate exception test data
+    for (i = 0 ; i < test_data_size ; i++) {
+       x.i = libm_test_conf_data[i].in;
+       z.i = libm_test_conf_data[i].out;
+       in1[i] = x.f;
+       expected[i] = z.f;
+       expected_exception[i] = libm_test_conf_data[i].exception_flags;
+    }
+
+    return 0;
+}
+
+int libm_setup_s1d_conf(struct libm_test *test, struct __libm_test_conformance_test_data_double* libm_test_conf_data, int test_data_size)
+{
+    double *in1, *expected;
+    struct libm_test_data *data;
+    int i;
+    int32_t *expected_exception;
+
+    libm_test_alloc_special_data(test, test_data_size);
+
+    data = &test->test_data;
+
+    in1 = (double*)data->input1;
+    expected = (double*)data->expected;
+    expected_exception =  data->expected_exception;
+    flt64u_t x,z;
+
+    // Populate exception test data
+    for (i = 0 ; i < test_data_size ; i++) {
+       x.i = libm_test_conf_data[i].in;
+       z.i = libm_test_conf_data[i].out;
+       in1[i] = x.d;
+       expected[i] = z.d;
+       expected_exception[i] = libm_test_conf_data[i].exception_flags;
+    }
+
+    return 0;
+}
 

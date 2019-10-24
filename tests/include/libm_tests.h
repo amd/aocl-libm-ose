@@ -16,6 +16,8 @@
 #include <list.h>
 #include <debug.h>
 
+#include <fenv.h>
+
 #define MAX_FAILURES 10
 
 enum LIBM_FUNC_VARIANT {
@@ -251,11 +253,38 @@ double libm_test_ulp_errorf(float computed, double expected);
 double libm_test_ulp_error(double computed, long double expected);
 
 /******conformance functions**********/
-int libm_test_s1s_conf(struct libm_test *test);
+int libm_test_s1s_conf(struct libm_test* test);
 int libm_test_s1d_conf(struct libm_test *test);
 
+/******************datatypes for conf and special cases******/
+struct __libm_test_internal_data_double {
+    uint64_t in, out;
+};
+
+struct __libm_test_internal_data_float {
+    uint32_t in, out;
+};
+
+struct __libm_test_conformance_test_data_double {
+    uint64_t in, out;
+    int32_t exception_flags;
+};
+
+struct __libm_test_conformance_test_data_float {
+    uint32_t in, out;
+    int32_t exception_flags;
+};
+
 /**********Setup functions******************/
+/*************perf**************************/
 int libm_setup_scalar_perf(struct libm_test *test);
+
+/*********allocate special data***************/
+int libm_test_alloc_special_data(struct libm_test *test, size_t size);
+
+/****************conformance**************/
+int libm_setup_s1s_conf(struct libm_test *test, struct __libm_test_conformance_test_data_float* libm_test_conf_data, int size);
+int libm_setup_s1d_conf(struct libm_test *test, struct __libm_test_conformance_test_data_double* libm_test_conf_data, int size);
 
 /*
  * Use directly the FMA3 version or glibc version

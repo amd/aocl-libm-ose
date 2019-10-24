@@ -26,32 +26,6 @@ extern struct libm_test_input_range x_range[];
 double LIBM_FUNC(fabs)(double);
 float LIBM_FUNC(fabsf)(float);
 
-/*fabs perf setup*/
-/*
-int test_fabs_perf_setup(struct libm_test *test)
-{
-    const struct libm_test_conf *conf = test->conf;
-    int ret = 0;
-
-    ret = libm_test_alloc_test_data(test, conf->nelem);
-    if (ret) {
-        LIBM_TEST_DPRINTF(PANIC, "Unable to allocate test_data\n");
-        goto out;
-    }
-    ret = libm_test_populate_inputs(test, LIBM_INPUT_RANGE_SIMPLE);
-
-    if (ret || !test->test_data.input1) {
-        LIBM_TEST_DPRINTF(PANIC, "Unable to populate test_data for fabs\n");
-        goto out;
-    }
-
-    return 0;
-
- out:
-    return -1;
-}
-*/
-
 /*atan accuracy setup*/
 int test_fabs_accu_setup(struct libm_test *test)
 {
@@ -72,6 +46,7 @@ out:
 }
 
 //alloc special data
+/*
 int test_fabs_alloc_special_data(struct libm_test *test, size_t size)
 {
     struct libm_test_conf *conf = test->conf;
@@ -88,7 +63,6 @@ int test_fabs_alloc_special_data(struct libm_test *test, size_t size)
     test_data = &test->test_data;
     test_data->nelem = size;
 
-    /* fixup conf */
     conf->nelem = size;
 
     return 0;
@@ -96,63 +70,22 @@ int test_fabs_alloc_special_data(struct libm_test *test, size_t size)
  out:
     return -1;
 }
+*/
 
-/*conformance setup*/
-int test_fabs_conformance_setup(struct libm_test *test){
-    int test_data_size = ARRAY_SIZE(libm_test_fabs_conformance_data);
-    double *in1, *expected;
-    struct libm_test_data *data;
-    int i;
-    int32_t* expected_exception;
-
-    test_fabs_alloc_special_data(test, test_data_size);
-
-    data = &test->test_data;
-
-    in1 = (double*)data->input1;
-    expected = (double*)data->expected;
-    expected_exception =  data->expected_exception;
-    flt64u_t x,z;
-    // Populate exception test data
-    for (i = 0 ; i < test_data_size ; i++) {
-       x.i = libm_test_fabs_conformance_data[i].in;
-       z.i = libm_test_fabs_conformance_data[i].out;
-       in1[i] = x.d;
-       expected[i] = z.d;
-       expected_exception[i] = libm_test_fabs_conformance_data[i].exception_flags;
+int test_fabs_conf_setup(struct libm_test *test)
+{
+    int ret=0;
+    int test_data_size=0;
+    if(test_is_single_precision(test)) {
+        test_data_size=ARRAY_SIZE(libm_test_fabsf_conformance_data);
+        ret=libm_setup_s1s_conf(test, libm_test_fabsf_conformance_data, test_data_size);
     }
-
-    return 0;
-}
-
-/*conformance setup*/
-int test_fabsf_conformance_setup(struct libm_test *test){
-    int test_data_size = ARRAY_SIZE(libm_test_fabsf_conformance_data);
-    float *in1, *expected;
-    struct libm_test_data *data;
-    int i;
-    int32_t* expected_exception;
-
-    test_fabs_alloc_special_data(test, test_data_size);
-
-    data = &test->test_data;
-
-    in1 = (float*)data->input1;
-    expected = (float*)data->expected;
-    expected_exception =  data->expected_exception;
-    flt32u_t x,z;
-    // Populate exception test data
-    for (i = 0 ; i < test_data_size ; i++) {
-       x.i = libm_test_fabsf_conformance_data[i].in;
-       z.i = libm_test_fabsf_conformance_data[i].out;
-       in1[i] = x.f;
-       expected[i] = z.f;
-       expected_exception[i] = libm_test_fabsf_conformance_data[i].exception_flags;
+    else {
+       test_data_size=ARRAY_SIZE(libm_test_fabs_conformance_data);
+       ret=libm_setup_s1d_conf(test, libm_test_fabs_conformance_data, test_data_size);
     }
-
-    return 0;
+    return ret;
 }
-
 
 /*special cases for fabs*/
 /*
@@ -278,7 +211,7 @@ struct libm_test_funcs test_fabs_funcs[LIBM_FUNC_MAX] =
                                            .verify = test_fabs_verify
                                           },
                           */
-                         .conformance  = {.setup = test_fabsf_conformance_setup,
+                         .conformance  = {.setup = test_fabs_conf_setup,
                                            .run   = libm_test_s1s_conf,
                                            .verify = test_fabs_verify
                                          },
@@ -295,7 +228,7 @@ struct libm_test_funcs test_fabs_funcs[LIBM_FUNC_MAX] =
                                           .run   = test_fabs_special,
                                          },
                           */
-                          .conformance  = {.setup = test_fabs_conformance_setup,
+                          .conformance  = {.setup = test_fabs_conf_setup,
                                           .run   = libm_test_s1d_conf,
                                           .verify = test_fabs_verify,
                                          },

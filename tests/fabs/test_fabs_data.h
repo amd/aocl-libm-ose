@@ -1,28 +1,8 @@
 #include <fenv.h>
 #include <libm_tests.h>
 
-/*for special cases*/
-struct __fabs_internal_data {
-    uint64_t in, out;
-};
-
-struct __fabsf_internal_data {
-    uint32_t in, out;
-};
-
-/*for conformance cases*/
-struct __fabs_conformance_test_data {
-	uint64_t in, out;
-	int32_t exception_flags;
-};
-
-struct __fabsf_conformance_test_data {
-    uint32_t in, out;
-    int32_t exception_flags;
-};
-
 /* Test cases to check for exceptions for the fabsf() routine. These test cases are not exhaustive */
-static struct __fabsf_conformance_test_data libm_test_fabsf_conformance_data[] = {
+static struct __libm_test_conformance_test_data_float libm_test_fabsf_conformance_data[] = {
 	{0x00000000, 0x00000000, 0},    //0
     {0x7f9fffff, 0x7f9fffff, 0},    //nan
     {0xff9fffff, 0x7f9fffff, 0},    //-nan
@@ -36,7 +16,7 @@ static struct __fabsf_conformance_test_data libm_test_fabsf_conformance_data[] =
 };
 
 /* Test cases to check for exceptions for the fabs() routine. These test cases are not exhaustive */
-static struct __fabs_conformance_test_data libm_test_fabs_conformance_data[] = {
+static struct __libm_test_conformance_test_data_double libm_test_fabs_conformance_data[] = {
     {0x0000000000000000, 0x0000000000000000, 0},    //0
     {0x8000000000000000, 0x0000000000000000, 0},    //-0
     {0x3FF0000000000000, 0x3FF0000000000000, 0},    //1

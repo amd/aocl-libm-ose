@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>                     /* for memcpy */
 
 #include <libm/cpu_features.h>
 #include <libm/compiler.h>
@@ -54,6 +55,8 @@ __get_mfg_info(struct cpuid_regs *regs, struct cpu_mfg_info *mfg_info)
 #define ARRAY_SIZE(x) (sizeof(x)/ sizeof(x[0]))
 #endif
 
+#define INITIALIZED_MAGIC 0xdeadbeaf
+
 static void
 __init_cpu_features(void)
 {
@@ -61,16 +64,15 @@ __init_cpu_features(void)
 
     struct cpu_mfg_info *mfg_info = &cpu_features.cpu_mfg_info;
     int arr_size = ARRAY_SIZE(__cpuid_values);
-    assert(arr_size <= CPUID_MAX);
+    //assert(arr_size <= CPUID_MAX);
 
-    //printf("Started\n");
-    if (initialized)
+    if (initialized == INITIALIZED_MAGIC)
         return;
 
     struct cpuid_regs regs;
     __cpuid_1(0, &regs);
 
-    /* GenuineAMD */
+    /* "AuthenticAMD" */
     if (regs.ebx == 0x68747541 && regs.ecx == 0x444d4163 &&
         regs.edx == 0x69746e65) {
         cpu_features.cpu_mfg_info.mfg_type = CPU_MFG_AMD;
@@ -80,6 +82,7 @@ __init_cpu_features(void)
         struct cpuid_regs ft;
 
         __cpuid_2(__cpuid_values[i].eax, __cpuid_values[i].ecx, &ft);
+
         cpu_features.available[i].eax = ft.eax;
         cpu_features.available[i].ebx = ft.ebx;
         cpu_features.available[i].ecx = ft.ecx;
@@ -93,6 +96,9 @@ __init_cpu_features(void)
      * sees them
      */
     if (mfg_info->mfg_type == CPU_MFG_AMD) {
+        memcpy(&cpu_features.usable[0], &cpu_features.available[0],
+               sizeof(cpu_features.usable));
+
         switch(mfg_info->family) {
         case 0x15:                      /* Naples */
             break;
@@ -103,8 +109,7 @@ __init_cpu_features(void)
         }
     }
 
-    initialized = 1;
-    //printf("Done\n");
+    initialized = INITIALIZED_MAGIC;
 }
 
 static void CONSTRUCTOR

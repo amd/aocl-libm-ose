@@ -24,7 +24,7 @@ enum {
 
 /*
  * CPUID
- * EAX = 0, ECX = 0 CPUID
+ * EAX = 1, ECX = 0 CPUID
  */
 enum {
     /* ECX Values */

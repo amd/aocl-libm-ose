@@ -37,35 +37,36 @@ fname:
     vmovd       %xmm1,%eax    #eax  = y
     vmovd       %xmm0,%ecx    #ecx  = x
     mov        %ecx,%r9d
-    
+
     and        $0x7fffffff,%eax #sign of y removed
-    and        $0x7fffffff,%ecx #sign of x removed    
+    and        $0x7fffffff,%ecx #sign of x removed
     cmp        $0x7f800000,%eax
     jae        .L__y_is_inf_or_nan
     cmp        $0x3F800000,%eax
     jle        .L__check_if_y_is_zero_or_pos_one
-.L__y_is_not_zero_or_pos_one:   
+.L__y_is_not_zero_or_pos_one:
     cmp        $0x7f800000,%ecx
     jae        .L__x_is_inf_or_nan
 
     #calculate mx and my to check if result goes above inf
-    #mx *2 power my 
-    
+    #mx *2 power my
+
     # -----------------------------
     # compute log(x) here
     # -----------------------------
 
 
     #dy = (double)y  ,  dx = (double)x
+
     vcvtps2pd %xmm1,%xmm0  #xmm0 = x,y
     cmp        $0x3F880000,%r9d
     jl         .L__x_is_neg_or_zero_or_near_one
-    
+
 .L__compute_logx:
     #calculate F and Y
     #eight_mant_bits = dx.u64 & 0x000ff00000000000;
     #ninth_mant_bit = dx.u64 &  0x0000080000000000;
-    #index = eight_mant_bits + (ninth_mant_bit << 1);
+    #index = eight_mant_bits;
     #F.u64 = index | 0x3fe0000000000000; // 1/2
     #index = index >> 44;
     #uxexp = ((dx.u64 & 0x7ff0000000000000) >> 52) - 1023;
@@ -73,11 +74,11 @@ fname:
     #dxexp = (double)uxexp;
     #Y.u64 = xmantissa_bits | 0x3fe0000000000000;//1/2
 
-    vpshufd      $238 ,%xmm0,%xmm2 #xmm2 = x,x 
-    vpand        .L__xexp_bits_xmantissa_bits(%rip),%xmm2, %xmm2 #xmm2 = xexp_bits, xmantissa_bits  
-    vmovd        %xmm2,%rcx
-    shr         $44,%rcx
-    adc         $0,%ecx
+    vpshufd      $238 ,%xmm0,%xmm2 #xmm2 = x,x
+    vpand        .L__xexp_bits_xmantissa_bits(%rip),%xmm2, %xmm2 #xmm2 = xexp_bits, xmantissa_bits
+    vmovd        %xmm2,%rcx #rcx = mantissa bits
+    shr         $44,%rcx #shift right by 44
+    adc		    $0, %ecx
     mov         %ecx,%eax
     or          $0x0003fe00,%ecx
     shl         $44,%rcx
@@ -88,35 +89,34 @@ fname:
     vpsubq       .L__1023(%rip),%xmm3, %xmm3
     vcvtdq2pd    %xmm3,%xmm3
     lea         .L__log_F_inv(%rip), %rcx
-    
-    #xmm2 = Y, xmm1 = F, xmm3 = double m 
-    
+
+    #xmm2 = Y, xmm1 = F, xmm3 = double m
+
     #f = F - Y;
     vsubsd     %xmm2,%xmm1, %xmm1     #xmm1 = f
-    
+
     #r = f * L__log_F_inv[index]
     vmulsd    (%rcx,%rax,8),%xmm1, %xmm1    #xmm1 = XX,r
     vmovapd    %xmm1,%xmm2    #xmm2 = r
-    
+
 
 
     #q = poly = r + r*r*(1/2 + 1/3 * r);
-    vmovsd       .L__1_by_3(%rip), %xmm4 
+    vmovsd       .L__1_by_3(%rip), %xmm4
     vmulsd       %xmm1, %xmm4, %xmm4 #xmm4 = 1/3 * r
     vmulsd       %xmm2, %xmm1, %xmm1 #xmm1 =  r  * r
-	vaddsd       .L__1_by_2(%rip), %xmm4, %xmm4 #xmm4 = 1/2 + (1/3 * r)
+    vaddsd       .L__1_by_2(%rip), %xmm4, %xmm4 #xmm4 = 1/2 + (1/3 * r)
+    vfmadd213sd   %xmm2, %xmm4, %xmm1
 
-	vfmadd213sd   %xmm2, %xmm4, %xmm1
-    
     #logx = L__log2 * m + L__log_256_table[index] - poly;
-   
+
     lea      .L__log_256_table(%rip),%rcx
-    
-	vmovsd   .L__log2(%rip),%xmm7
-	vfmadd213sd  (%rcx,%rax,8),%xmm7, %xmm3
+
+    vmovsd   .L__log2(%rip),%xmm7
+    vfmadd213sd  (%rcx,%rax,8),%xmm7, %xmm3
     vsubsd     %xmm1,%xmm3, %xmm3
 
-.L__return_from_near_one:    
+.L__return_from_near_one:
     #ylogx = ((double)y) * logx;
     vmulsd    %xmm3,%xmm0, %xmm0    #xmm0 = ylogx
 
@@ -124,55 +124,64 @@ fname:
     # compute exp( y * ln(x) ) here
     # xmm0 = XX,ylogx
     # -----------------------------
-    
+    vpand       .L__real_notsign(%rip), %xmm0, %xmm4
+    vmovq       %xmm4, %rax
+    #check |x*(64/ln(2))| > 65536)
+    cmp         .L__max_exp_arg(%rip), %rax
+    jb          .L__exp_continue
+
     vucomisd      .L__max_exp_arg(%rip), %xmm0
     ja           .L__y_is_inf
     vucomisd      .L__min_exp_arg(%rip), %xmm0
     jbe          .L__y_is_zero
-    
+
+.L__exp_continue:
+
     # x * (64/ln(2))
-    #vmovapd      %xmm0,%xmm3      #xmm3 = (xouble)x
-    vmulpd       .L__real_64_by_log2(%rip), %xmm0, %xmm3  #xmm3 = x * (64/ln(2)
+    vmulsd       .L__real_64_by_log2(%rip), %xmm0, %xmm3  #xmm3 = x * (64/ln(2)
 
     # n = int( x * (64/ln(2)) )
-    vcvtpd2dq    %xmm3, %xmm4  #xmm4 = (int)n
-    vcvtdq2pd    %xmm4, %xmm2  #xmm2 = (double)n
+    # n = int( v * (64/ln(2)) )
+    # This is done by fast double to int conversion.
+    # Adding 2^52 + 2^51 and subtracting the same to remove fractional bits
+
+    vaddsd       .L__big_number(%rip), %xmm3, %xmm4
+    vsubsd       .L__big_number(%rip), %xmm4, %xmm2
 
     # r = x - n * ln(2)/64
-  
+
     vmovd        %xmm4, %ecx     #ecx = n
-  
-    vfnmadd231sd .L__real_log2_by_64(%rip), %xmm2, %xmm0 
+
+    vfnmadd231sd .L__real_log2_by_64(%rip), %xmm2, %xmm0
     vmovapd      %xmm0, %xmm1  #xmm1 = r
 
     # q = r+r*r*(1/2 + (1/6 * r))
-    vmovsd       .L__1_by_6(%rip), %xmm3 
-   
+    vmovsd       .L__1_by_6(%rip), %xmm3
+
     vmulsd       %xmm1, %xmm0, %xmm0 #xmm0 =  r  * r
-   
-	vfmadd213sd  .L__1_by_2(%rip), %xmm0, %xmm3
-  
-	vfmadd213sd   %xmm1, %xmm3, %xmm0
-    
+
+    vfmadd213sd  .L__1_by_2(%rip), %xmm0, %xmm3
+
+    vfmadd213sd   %xmm1, %xmm3, %xmm0
+
     #j = n & 0x3f
     mov         $0x3f, %rax     #rax = 0x3f
     and         %ecx, %eax      #eax = j = n & 0x3f
 
     # (f)*(1+q)
-    lea         .L__two_to_jby64_table(%rip), %rcx    
-   
+    lea         .L__two_to_jby64_table(%rip), %rcx
+
     vmovsd        (%rcx,%rax,8), %xmm7
-   # vfmaddsd   (%rcx,%rax,8), %xmm7, %xmm0, %xmm0
-    vfmadd213sd (%rcx,%rax,8), %xmm7, %xmm0 # Replaced fma4 instruction with fma3 instruction	
-    .p2align 4    
-    # m = (n - j) / 64        
+    vfmadd213sd (%rcx,%rax,8), %xmm7, %xmm0
+    .p2align 4
+    # m = (n - j) / 64
     vpsrad       $6,%xmm4, %xmm4
-    vpsllq       $52,%xmm4, %xmm4   
+    vpsllq       $52,%xmm4, %xmm4
     vpaddq       %xmm0, %xmm4, %xmm4
     vcvtsd2ss    %xmm4, %xmm0, %xmm0
-    vorps        %xmm5, %xmm0, %xmm0  #negate the result if x negative 
+    vorps        %xmm5, %xmm0, %xmm0  #negate the result if x negative
     ret
-    
+
 .p2align 4
 .L__x_is_neg_or_zero_or_near_one:
     cmp $0x0,%r9d
@@ -183,12 +192,12 @@ fname:
     ##else x is negative
     #check if y is int or not
     and $0x7f800000,%eax
-    cmp $0x4b000000,%eax    
-    jg .L__x_near_one #=>y is even int > 2p23       
-    vcvtss2si %xmm1,%edx    
+    cmp $0x4b000000,%eax
+    jg .L__x_near_one #=>y is even int > 2p23
+    vcvtss2si %xmm1,%edx
     vcvtsi2ss %edx,%xmm2,%xmm2
     vucomiss  %xmm1,%xmm2
-    jne .L__return_qnan #pow(-,y not an integer)=qnan 
+    jne .L__return_qnan #pow(-,y not an integer)=qnan
     ##here => y is int, check odd or even
     rcr $1,%edx #rotate through carry to check last bit
     jnc .L__x_near_one ##here => y is even int
@@ -198,51 +207,51 @@ fname:
 .L__x_near_one:
     # special case divert
     #cmp        $0x3F800000,%r9d #if x=1
-    #je         .L__return_pos_one   
+    #je         .L__return_pos_one
     #check for x=+1 or -1
     #pow(+1,any y) = +1, pow(-1,odd int y)=-1,pow(-1,even int y)=+1
-         
+
     vpshufd   $238,%xmm0,%xmm3 #xmm3 = double x,x
-    
+
     # r = x - 1.0
     vsubsd       .L__real_one(%rip), %xmm3, %xmm3 # r
-    
+
     #check if x is within the threshold
     vmovq        %xmm3,%rdx
     btr         $63,%rdx
     cmp         .L__real_threshold(%rip),%rdx
     jae         .L__compute_logx #proceed in normal path.. x not near one
-    
+
     #vmovapd      .L__real_ca42(%rip),%xmm7
-    vmovapd      .L__real_ca31(%rip),%xmm8    
+    vmovapd      .L__real_ca31(%rip),%xmm8
     #vmovapd      %xmm3,%xmm1 # r
     #vmovapd      %xmm3,%xmm6 # r
     vaddsd       .L__real_two(%rip), %xmm3, %xmm1 # 2+r
-    vdivsd       %xmm1, %xmm3, %xmm6 # r/(2+r) = u/2    
+    vdivsd       %xmm1, %xmm3, %xmm6 # r/(2+r) = u/2
     #vmovapd      %xmm6, %xmm2 # u/2
-   
+
     vaddsd       %xmm6, %xmm6, %xmm2 # u
     #vmovapd      %xmm2, %xmm1 # u
     vmulsd       %xmm2, %xmm2, %xmm1 # u^2
-    vpshufd      $68, %xmm1, %xmm4 # u^2,u^2    
-  
-    vmulsd       %xmm1, %xmm2, %xmm2 # u^3    
-    
+    vpshufd      $68, %xmm1, %xmm4 # u^2,u^2
+
+    vmulsd       %xmm1, %xmm2, %xmm2 # u^3
+
 	vfmadd132pd   .L__real_ca42(%rip), %xmm8,%xmm4
     vmulsd       %xmm1, %xmm1, %xmm1 # u^4
     vmulsd       %xmm2, %xmm1, %xmm1 # u^7
     vunpcklpd    %xmm1, %xmm2, %xmm2 # u^7, u^3
     vmulpd       %xmm4, %xmm2, %xmm2 # u^7 * (u^2 * ca4 + ca3),  u^3 * (u^2 * ca2 + ca1)
-    vpshufd      $238,%xmm2,%xmm1  # XX,u^7 * (u^2 * ca4 + ca3)    
+    vpshufd      $238,%xmm2,%xmm1  # XX,u^7 * (u^2 * ca4 + ca3)
     vaddsd       %xmm2,%xmm1, %xmm1  # u^7 * (u^2 * ca4 + ca3) + u^3 * (u^2 * ca2 + ca1)
-   
+
     vfnmadd231sd %xmm6, %xmm3,%xmm2
-    vaddsd       %xmm2,%xmm3,%xmm3  # r + u^7 * (u^2 * ca4 + ca3) + u^3 * (u^2 * ca2 + ca1) - r*u/2    
+    vaddsd       %xmm2,%xmm3,%xmm3  # r + u^7 * (u^2 * ca4 + ca3) + u^3 * (u^2 * ca2 + ca1) - r*u/2
     jmp         .L__return_from_near_one
 
 .p2align 4
 .L__x_is_zero:
-    mov %eax,%r8d    
+    mov %eax,%r8d
     vmovd %xmm1,%edx
     mov $0x0,%eax
     mov $0x0,%edi
@@ -250,60 +259,60 @@ fname:
     #check if y < 0 or y>0
     cmp $0x0,%edx
     cmovl %ecx,%edx
-    cmovl %ecx,%edi    
+    cmovl %ecx,%edi
     cmovg %eax,%edx
     mov $0x80000000,%ecx
     #check if y is int or not
     and $0x7f800000,%r8d
-    cmp $0x4b000000,%r8d    
+    cmp $0x4b000000,%r8d
     cmovg %eax,%ecx
-    jg .L__or_sign_and_retvalue_and_ret1    
+    jg .L__or_sign_and_retvalue_and_ret1
     vcvtss2si %xmm1,%r8d
     vcvtsi2ss %r8d,%xmm2, %xmm2
     vucomiss  %xmm1,%xmm2
     cmovne %eax,%ecx
-    jne .L__or_sign_and_retvalue_and_ret1    
-    rcr $1,%r8d #rotate through carry to check last bit    
+    jne .L__or_sign_and_retvalue_and_ret1
+    rcr $1,%r8d #rotate through carry to check last bit
     cmovnc %eax,%ecx
     jnc .L__or_sign_and_retvalue_and_ret1
     mov %r9d,%ecx
     and  $0x80000000,%ecx
-.L__or_sign_and_retvalue_and_ret1:    
-    or %edx,%ecx    
+.L__or_sign_and_retvalue_and_ret1:
+    or %edx,%ecx
     vmovd %ecx,%xmm0
     cmp $0x0,%edi
     je .L__return
     ##else raise div by zero exception
     mov $2,%edi
     vmovdqa %xmm0,%xmm2
-    call fname_special    
-.L__return:    
+    call fname_special
+.L__return:
     ret
-  
-.p2align 4   
-.L__x_is_inf_or_nan:    
+
+.p2align 4
+.L__x_is_inf_or_nan:
     cmp $0x0,%eax ##pow(+/-inf,+/-0)=1,pow(+/-nan,+/-0)=1
     je  .L__return_pos_one
     vmovd %xmm0,%ecx
-    vmovd %xmm1,%edx    
+    vmovd %xmm1,%edx
     cmp $0x7f800000,%ecx
     je .L__x_is_pos_inf
-    cmp $0xff800000,%ecx 
+    cmp $0xff800000,%ecx
     je .L__x_is_neg_inf
     ##else x is nan return nan
     jmp .L__return_nan
-    
+
 .p2align 4
 .L__x_is_pos_inf:
     #check if y < 0 or y>0
-    cmp $0x0,%edx 
+    cmp $0x0,%edx
     jl .L__return_pos_zero ##pow(+inf,y<0)= +0
     ##else
     jmp .L__return_pos_inf ##pow(+inf,y>0)= +inf
-    
+
 .p2align 4
 .L__x_is_neg_inf:
-    mov %eax,%r8d    
+    mov %eax,%r8d
     mov $0x0,%eax
     mov $0x7f800000,%ecx
     #check if y < 0 or y>0
@@ -313,37 +322,37 @@ fname:
     mov $0x80000000,%ecx
     #check if y is int or not
     and $0x7f800000,%r8d
-    cmp $0x4b000000,%r8d    
+    cmp $0x4b000000,%r8d
     cmovg %eax,%ecx
-    jg .L__or_sign_and_retvalue_and_ret    
+    jg .L__or_sign_and_retvalue_and_ret
     vcvtss2si %xmm1,%r8d
     vcvtsi2ss %r8d,%xmm2, %xmm2
     vucomiss  %xmm1,%xmm2
     cmovne %eax,%ecx
     jne .L__or_sign_and_retvalue_and_ret
-    rcr $1,%r8d #rotate through carry to check last bit    
+    rcr $1,%r8d #rotate through carry to check last bit
     cmovnc %eax,%ecx
-.L__or_sign_and_retvalue_and_ret:    
+.L__or_sign_and_retvalue_and_ret:
     or %edx,%ecx
     vmovd %ecx,%xmm0
     ret
-  
+
 .p2align 4
 .L__y_is_inf_or_nan:
-    ja  .L__y_is_nan     
+    ja  .L__y_is_nan
 
 ##else y is +/-inf
     #check if x is nan
     cmp        $0x7f800000,%ecx
     ##x is nan return nan
-    ja .L__return_nan    
-    and $0x7fffffff,%ecx ##sign of x removed    
+    ja .L__return_nan
+    and $0x7fffffff,%ecx ##sign of x removed
     cmp $0x3F800000,%ecx    ##pow(+/-1,any y, even nan or inf) = +1
-    je  .L__return_pos_one  
-    vmovd %xmm1,%eax    
+    je  .L__return_pos_one
+    vmovd %xmm1,%eax
     bt $31,%eax ##check the sign of y
     jc  .L__y_is_neg_inf
-    
+
 ##else y_is_pos_inf
     cmp $0x3f800000,%ecx
     jb  .L__return_pos_zero ##pow(|x| < 1, +inf) = +0
@@ -366,12 +375,12 @@ fname:
     vmovdqa %xmm0,%xmm2
     mov $2,%edi
     call fname_special
-.L__return1:    
+.L__return1:
     ret
 
 .p2align 4
 .L__y_is_nan:
-    cmp $0x3F800000,%r9d 
+    cmp $0x3F800000,%r9d
     je  .L__return_pos_one  ##pow(+1,any y, even nan or inf) = +1
     ##else return nan, check exception
     vmovdqa %xmm1,%xmm0      ##pow(any x other than 1, nan) = qnan
@@ -384,57 +393,57 @@ fname:
     vmovd %xmm1,%edx
     cmp  $0x3f800000,%edx
     jne  .L__y_is_not_zero_or_pos_one
-    ##else    
+    ##else
     ret  #y=+1 so return x ##pow(x,1) = x
-        
+
 .p2align 4
 .L__return_pos_one:
     mov   $0x3f800000,%edx
-    vmovd %edx,%xmm0    
+    vmovd %edx,%xmm0
     ret
 
-.p2align 4    
+.p2align 4
 .L__return_pos_zero:
     vpxor        %xmm0, %xmm0, %xmm0
     ret
-    
-   
+
+
 .p2align 4
 .L__return_pos_inf:
     mov         $0x7f800000,%edx
     vmovd        %edx, %xmm0
-    ret   
+    ret
 
-.p2align 4    
+.p2align 4
 .L__return_nan:
     vaddss        %xmm0, %xmm0, %xmm0
     ret
 
-.p2align 4    
+.p2align 4
 .L__y_is_zero:
     vpxor        %xmm2, %xmm2, %xmm2
     vorps        %xmm5,%xmm2, %xmm2
     mov         $7,%edi
-    call fname_special            
-    ret  
+    call fname_special
+    ret
 
-.p2align 4    
+.p2align 4
 .L__y_is_inf:
     mov         $0x7f800000,%edx
     vmovd        %edx, %xmm2
     vorps        %xmm5,%xmm2,%xmm2
     mov         $9,%edi
-    call fname_special        
-    ret  
+    call fname_special
+    ret
 
 .p2align 4
 .L__return_qnan:
     mov $0x7fc00000,%edx
     vmovd %edx,%xmm2
     mov $3,%edi
-    call fname_special    
+    call fname_special
     ret
-    
+
 .section .rodata
 .align 16
 .L__xexp_bits_xmantissa_bits: .octa 0x7ff0000000000000000fffffffffffff
@@ -446,22 +455,24 @@ fname:
 .L__max_exp_arg:        .quad 0x40562E4300000000
 .L__min_exp_arg:        .quad 0xC059D1DA00000000
 .L__real_log2_by_64:    .quad 0x3f862e42fefa39ef
-.L__real_64_by_log2:    .quad 0x40571547652b82fe 
+.L__real_64_by_log2:    .quad 0x40571547652b82fe
                         .quad 0x0000000000000000 #zeros required here
 .L__1_by_6:             .quad 0x3fc5555555555555
 .L__real_threshold: .quad 0x3fb0000000000000 # .0625
 .L__real_one:       .quad 0x3ff0000000000000 # 1
 .L__real_two:       .quad 0x4000000000000000 # 2
-.L__neg_zero:       .quad 0x8000000080000000 # 2 
+.L__neg_zero:       .quad 0x8000000080000000 # 2
 .align 16
 .L__real_ca42:      .quad 0x3f89999999bac6d4 # 1.25000000037717509602e-02
 .L__real_ca4:       .quad 0x3f3c8034c85dfff0 # 4.34887777707614552256e-04
 .L__real_ca31:      .quad 0x3fb55555555554e6 # 8.33333333333317923934e-02
 .L__real_ca3:       .quad 0x3f62492307f1519f # 2.23213998791944806202e-03
-                    
+.L__big_number:     .quad 0x4338000000000000
+.L__real_notsign:   .quad 0x7ffFFFFFFFFFFFFF # ^sign bit
+
 .align 16
 .L__log_F_inv:
-        .quad 0x4000000000000000                    
+        .quad 0x4000000000000000
         .quad 0x3fffe01fe01fe020
         .quad 0x3fffc07f01fc07f0
         .quad 0x3fffa11caa01fa12
@@ -978,4 +989,4 @@ fname:
         .quad 0x3fe60e32f44788d9
         .quad 0x3fe61e3efda46467
         .quad 0x3fe62e42fefa39ef
-                    
+

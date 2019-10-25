@@ -62,7 +62,7 @@ extern struct logf_table logf_lookup[];
 #define LOG2_HEAD logf_data.L__real_log2_head
 #define LOG2_TAIL logf_data.L__real_log2_tail
 
-float FN_PROTOTYPE(logf_v2)(float x)
+float FN_PROTOTYPE_OPT(logf)(float x)
 {
 
 	float_t y, f, finv, f1, r, rsquare, r2, w, result;

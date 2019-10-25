@@ -418,11 +418,18 @@ extern __m256d FN_PROTOTYPE_REF(vrd4_expm1)(__m256d x);
 extern double FN_PROTOTYPE_OPT(exp2)(double x);
 extern double FN_PROTOTYPE_OPT(exp)(double x);
 extern double FN_PROTOTYPE_OPT(expm1)(double x);
+extern double FN_PROTOTYPE_OPT(log2)(double x);
+extern double FN_PROTOTYPE_OPT(log)(double x);
+extern double FN_PROTOTYPE_OPT(logp1)(double x);
 
 
 extern float FN_PROTOTYPE_OPT(exp2f)(float x);
 extern float FN_PROTOTYPE_OPT(expf)(float x);
 extern float FN_PROTOTYPE_OPT(expm1f)(float x);
+extern float FN_PROTOTYPE_OPT(log2f)(float x);
+extern float FN_PROTOTYPE_OPT(logf)(float x);
+extern float FN_PROTOTYPE_OPT(logp1f)(float x);
+
 
 
 #if defined(__cplusplus)

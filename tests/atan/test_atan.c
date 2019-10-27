@@ -52,87 +52,20 @@ out:
     return ret;
 }
 
-//alloc special data
-int test_atan_alloc_special_data(struct libm_test *test, size_t size)
+/*conf setup*/
+int test_atan_conf_setup(struct libm_test *test)
 {
-    struct libm_test_conf *conf = test->conf;
-    struct libm_test_data *test_data = &test->test_data;
-    int ret = 0;
-
-    ret = libm_test_alloc_test_data(test, size);
-
-    if (ret) {
-        printf("unable to allocate\n");
-        goto out;
+    int ret=0;
+    int test_data_size=0;
+    if(test_is_single_precision(test)) {
+        test_data_size=ARRAY_SIZE(libm_test_atanf_conformance_data);
+        ret=libm_setup_s1s_conf(test, libm_test_atanf_conformance_data, test_data_size);
     }
-
-    test_data = &test->test_data;
-    test_data->nelem = size;
-
-    /* fixup conf */
-    conf->nelem = size;
-
-    return 0;
-
- out:
-    return -1;
-}
-
-/*atan conformance setup*/
-int test_atan_conformance_setup(struct libm_test *test){
-    int test_data_size = ARRAY_SIZE(libm_test_atan_conformance_data);
-    double *in1, *expected;
-    struct libm_test_data *data;
-    int i;
-    int32_t* expected_exception;
-
-    test_atan_alloc_special_data(test, test_data_size);
-
-    data = &test->test_data;
-
-    in1 = (double*)data->input1;
-    expected = (double*)data->expected;
-    expected_exception =  data->expected_exception;
-    flt64u_t x,z;
-    // Populate exception test data
-    for (i = 0 ; i < test_data_size ; i++) {
-       x.i = libm_test_atan_conformance_data[i].in;
-       z.i = libm_test_atan_conformance_data[i].out;
-       in1[i] = x.d;
-       expected[i] = z.d;
-       expected_exception[i] = libm_test_atan_conformance_data[i].exception_flags;
+    else {
+       test_data_size=ARRAY_SIZE(libm_test_atan_conformance_data);
+       ret=libm_setup_s1d_conf(test, libm_test_atan_conformance_data, test_data_size);
     }
-
-    return 0;
-
-}
-
-/*atan conformance setup*/
-int test_atanf_conformance_setup(struct libm_test *test){
-    int test_data_size = ARRAY_SIZE(libm_test_atanf_conformance_data);
-    float *in1, *expected;
-    struct libm_test_data *data;
-    int i;
-    int32_t* expected_exception;
-
-    test_atan_alloc_special_data(test, test_data_size);
-
-    data = &test->test_data;
-
-    in1 = (float*)data->input1;
-    expected = (float*)data->expected;
-    expected_exception =  data->expected_exception;
-    flt32u_t x,z;
-    // Populate exception test data
-    for (i = 0 ; i < test_data_size ; i++) {
-       x.i = libm_test_atanf_conformance_data[i].in;
-       z.i = libm_test_atanf_conformance_data[i].out;
-       in1[i] = x.f;
-       expected[i] = z.f;
-       expected_exception[i] = libm_test_atanf_conformance_data[i].exception_flags;
-    }
-
-    return 0;
+    return ret;
 }
 
 /*special cases for atan*/
@@ -259,9 +192,9 @@ struct libm_test_funcs test_atan_funcs[LIBM_FUNC_MAX] =
                                            .verify = test_atan_verify
                                           },
                           */
-                         .conformance  = {.setup = test_atanf_conformance_setup,
+                         .conformance  = {.setup = test_atan_conf_setup,
                                            .run   = libm_test_s1s_conf,
-                                           .verify = test_atan_verify
+                                           .verify = libm_test_verify,
                                          },
      },
      [LIBM_FUNC_S_D]  = {
@@ -276,7 +209,7 @@ struct libm_test_funcs test_atan_funcs[LIBM_FUNC_MAX] =
                                           .run   = test_atan_special,
                                          },
                           */
-                          .conformance  = {.setup = test_atan_conformance_setup,
+                          .conformance  = {.setup = test_atan_conf_setup,
                                           .run   = libm_test_s1d_conf,
                                           .verify = libm_test_verify
                                          },

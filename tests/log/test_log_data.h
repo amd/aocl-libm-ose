@@ -4,28 +4,10 @@
 #ifndef __TEST_LOG_INTERNAL__
 #warning "This file is not expected to be included generously"
 #endif
-
 #include <fenv.h>
 
-struct __log_internal_data {
-    uint64_t in, out;
-};
-
-/*logf conformance */
-struct __logf_conformance_test_data {
-	uint32_t in, out;
-	int32_t exception_flags;
-};
-
-/*log conf*/
-struct __log_conformance_test_data {
-	uint64_t in, out;
-	int32_t exception_flags;
-};
-
-
 /* Test cases to check for exceptions for the log() routine. These test cases are not exhaustive */
-static struct __log_conformance_test_data libm_test_log_conformance_data[] = {
+static struct __libm_test_conformance_test_data_double libm_test_log_conformance_data[] = {
 	{0x0000000000000000, 0xfff0000000000000, 4},	//0 -inf
 	{0x8000000000000000, 0xfff0000000000000, 4}, 	// -0  -inf
 	{0x3ff0000000000000, 0x0000000000000000, 0},	//1, 0
@@ -40,7 +22,7 @@ static struct __log_conformance_test_data libm_test_log_conformance_data[] = {
 
 
 /* Test cases to check for exceptions for the logf() routine. These test cases are not exhaustive */
-static struct __logf_conformance_test_data libm_test_logf_conformance_data[] = {
+static struct __libm_test_conformance_test_data_float libm_test_logf_conformance_data[] = {
 	{0x00000000, 0xFF800000, 4},	//log(0) is -inf
 	{0x3f800000, 0x00000000, 0},	//1, 0
 	{0x80000000, 0xff800000, 4},	//-0, -inf
@@ -58,6 +40,7 @@ static struct __logf_conformance_test_data libm_test_logf_conformance_data[] = {
 /* Scalar log in AMD LibM handles values between e^(-1/16) and e^(1/16) as special case, while vector versions don't.
    Hence, some values in this range is added as special cases
 */
+/*
 static struct __log_internal_data test_log_special_data[] = {
     {0x3fee1177d9f91c22,0xbfafe1687bdb1469}, // 0.93963234494083658354668
     {0x3ff0008078a074ad,0x3f200ed397156a4a}, // 1.00012251968227450227289
@@ -76,7 +59,6 @@ static struct __log_internal_data test_log_special_data[] = {
     {0x7ff0000000000000,0x7ff0000000000000},
     {0xfff0000000000000,0x7FF8000000000000}
 
-/*
     {0x3ff0097d13350953,0x3f62f4881b43f2d5},
     {0x0003ec71c47096d5,0xc0862e6a7c4872d2},
     {0x000fffffffffffff,0xc086232bdd7abcd2},
@@ -117,7 +99,6 @@ static struct __log_internal_data test_log_special_data[] = {
     {0x3ff0000000000001,0x3cafffffffffffff},
     {0x7ff0000000000000,0x7ff0000000000000},
     {0x7ff0000000000000,0x7ff0000000000000}
-*/
 };
-
+*/
 #endif  /* __TEST_LOG_DATA_H */

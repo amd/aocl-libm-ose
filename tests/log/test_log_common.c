@@ -23,8 +23,6 @@
 #include <libm_tests.h>
 #include <bench_timer.h>
 
-char doc[] = BUILD_TEST_DOC(TEST_NAME);
-
 /*
  * Call the glibc's log() to get IEEE754 compliant values
  */

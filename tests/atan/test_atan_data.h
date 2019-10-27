@@ -1,29 +1,8 @@
 #include <fenv.h>
 #include <libm_tests.h>
 
-/*for special cases*/
-struct __atan_internal_data {
-    uint64_t in, out;
-};
-
-struct __atanf_internal_data {
-    uint32_t in, out;
-};
-
-
-/*for conformance cases*/
-struct __atan_conformance_test_data {
-	uint64_t in, out;
-	int32_t exception_flags;
-};
-
-struct __atanf_conformance_test_data {
-    uint32_t in, out;
-    int32_t exception_flags;
-};
-
 /* Test cases to check for exceptions for the atan() routine. These test cases are not exhaustive */
-static struct __atan_conformance_test_data libm_test_atan_conformance_data[] = {
+static struct __libm_test_conformance_test_data_double libm_test_atan_conformance_data[] = {
     {0x0000000000000000, 0x0000000000000000, 0},	//0
     {0x8000000000000000, 0x0000000000000000, 0},    //-0
     {0x3FF0000000000000, 0x3fe921fb54442d18, 32},    //1
@@ -39,7 +18,7 @@ static struct __atan_conformance_test_data libm_test_atan_conformance_data[] = {
 };
 
 /* Test cases to check for exceptions for the atanf() routine. These test cases are not exhaustive */
-static struct __atanf_conformance_test_data libm_test_atanf_conformance_data[] = {
+static struct __libm_test_conformance_test_data_float libm_test_atanf_conformance_data[] = {
     {0x00000000, 0x00000000, 4},    //atanf(0) is 0
     {0x3f800000, 0x3f490fdb, 32},   //atanf(1) = 0.785398 rads
     {0x3f13cd36, 0x3f060a8f, 32},   //atanf(sqrt(3)/3)  == 30 deg

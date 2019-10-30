@@ -1,106 +1,67 @@
-#include <string.h>                     /* for memcpy() */
-#include <stdlib.h>
-#include <math.h>                       /* for pow() poisining */
+/*
+ * Copyright (C) 2018, Advanced Micro Devices. All rights reserved.
+ *
+ * Author: Prem Mallappa <pmallapp@amd.com>
+ */
+
+/*
+ *
+ * Tests for log()
+ *
+ */
+
+#include <stdio.h>
+#include <float.h>                              /* for DBL_MAX/FLT_MAX */
+#include <math.h>
+#include <strings.h>                            /* for ffs() */
+
+#include <immintrin.h>
 
 #include <libm_amd.h>
+#include <libm/amd_funcs_internal.h>
+
 #include <libm_tests.h>
 #include <bench_timer.h>
-#include <libm/types.h>
-#include "test_pow.h"
 
-#define __TEST_POW_INTERNAL__
-//#include "test_pow_data.h"
-//#include "test_powf_data.h"
+/*
+ * Call the glibc's pow() to get IEEE754 compliant values
+ */
 
-double LIBM_FUNC(pow)(double,double);
-float LIBM_FUNC(powf)(float, float);
-
-extern int RANGE_LEN_X;
-
-extern struct libm_test_input_range x_range[];
-extern struct libm_test_input_range y_range[];
-extern struct libm_test_input_range x[];
-extern struct libm_test_input_range y[];
-
-int test_pow_populate_inputs(struct libm_test *test, int use_uniform)
+int test_pow_verify(struct libm_test *test, struct libm_test_result *result)
 {
     struct libm_test_data *data = &test->test_data;
-    struct libm_test_conf *conf = test->conf;
+
+    /*
+     * Call the glibc's log() to get IEEE754 compliant values
+     */
+    if (test_is_single_precision(test)) {
+        float *expected = (float*)data->expected;
+        float *input1   = (float*)data->input1;
+        float *input2 = (float*)data->input2;
+        for (uint32_t j = 0; j < data->nelem; j++) {
+            expected[j] = powf(input1[j], input2[j]);
+        }
+    } else {
+        double *expected = data->expected;
+        double *input1 = data->input1;
+        double *input2 = data->input2;
+        for (uint32_t j = 0; j < data->nelem; j++) {
+            expected[j] = pow(input1[j], input2[j]);
+        }
+    }
+
+    return libm_test_verify(test, result);
+}
+
+int test_pow_alloc_init(struct libm_test_conf *conf, struct libm_test *test)
+{
+
     int ret = 0;
-    int (*func)(void *, size_t, uint32_t, double, double);
 
-    if(use_uniform)
-        func = libm_test_populate_range_uniform;
-    else
-        func = libm_test_populate_range_rand;
-
-    ret = func(data->input1, data->nelem,
-               test->variant,
-               conf->inp_range[0].start,
-               conf->inp_range[0].stop);
-
-   // Fill the same if more inputs are needed 
-    if (!ret && test->nargs > 1) {
-//      printf("data is %g\n", *(data->input2));
-        ret = func(data->input2, data->nelem,
-                   test->variant,
-                   conf->inp_range[1].start,
-                   conf->inp_range[1].stop);
-    }
-
-    if (!ret && test->nargs > 2) {
-        ret = func(data->input3, data->nelem,
-                   test->variant,
-                   conf->inp_range[2].start,
-                   conf->inp_range[2].stop);
-    }
+    ret = libm_test_alloc_test_data(test, conf->nelem);
 
     return ret;
 }
 
-int test_pow_alloc_data(struct libm_test *test, size_t size)
-{
-    struct libm_test_conf *conf = test->conf;
-    struct libm_test_data *test_data = &test->test_data;
-    int ret = 0;
-
-    ret = libm_test_alloc_test_data(test, size);
-
-    if (ret) {
-        printf("unable to allocate\n");
-        goto out;
-    }
-
-    test_data = &test->test_data;
-    test_data->nelem = size;
-
-    /* fixup conf */
-    conf->nelem = size;
-
-    return 0;
-
- out:
-    return -1;
-}
-
-int test_pow_init_scalar(struct libm_test_conf *conf)
-{
-    int ret =0;
-
-    if (conf->variants & LIBM_FUNC_S_S) {
-        ret = test_pow_init_s_s(conf);
-        if (ret)
-            goto out;
-    }
-
-    if (conf->variants & LIBM_FUNC_S_D) {
-        ret = test_pow_init_s_d(conf);
-        if (ret)
-            goto out;
-    }
-
- out:
-    return ret;
-}
 
 

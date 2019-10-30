@@ -266,14 +266,25 @@ struct __libm_test_internal_data_float {
 };
 
 struct __libm_test_conformance_test_data_double {
-    uint64_t in, out;
+    uint64_t in1, out;
     int32_t exception_flags;
 };
 
 struct __libm_test_conformance_test_data_float {
-    uint32_t in, out;
+    uint32_t in1, out;
     int32_t exception_flags;
 };
+/*for tests with nargs as 2*/
+struct __libm_test_conformance_test_data_double_2 {
+    uint64_t in1, in2, out;
+    int32_t exception_flags;
+};
+
+struct __libm_test_conformance_test_data_float_2 {
+    uint32_t in1, in2, out;
+    int32_t exception_flags;
+};
+
 
 /**********Setup functions******************/
 /*************perf**************************/
@@ -285,6 +296,8 @@ int libm_test_alloc_special_data(struct libm_test *test, size_t size);
 /****************conformance**************/
 int libm_setup_s1s_conf(struct libm_test *test, struct __libm_test_conformance_test_data_float* libm_test_conf_data, int size);
 int libm_setup_s1d_conf(struct libm_test *test, struct __libm_test_conformance_test_data_double* libm_test_conf_data, int size);
+int libm_setup_s1s_conf_2(struct libm_test *test, struct __libm_test_conformance_test_data_float_2* libm_test_conf_data, int size);
+int libm_setup_s1d_conf_2(struct libm_test *test, struct __libm_test_conformance_test_data_double_2* libm_test_conf_data, int size);
 
 /*
  * Use directly the FMA3 version or glibc version

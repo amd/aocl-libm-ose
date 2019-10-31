@@ -457,3 +457,86 @@ int libm_setup_s1d_conf_2(struct libm_test *test, struct __libm_test_conformance
     return 0;
 }
 
+/*****special functions*******/
+int libm_setup_s1s_special(struct libm_test *test, struct __libm_test_internal_data_float* libm_test_special_data, int test_data_size)
+{
+    struct libm_test_data *data;
+    float *in1, *expected;
+    flt32u_t x,z;
+    libm_test_alloc_special_data(test, test_data_size);
+    
+    data = &test->test_data;
+    in1 = data->input1;
+    expected = data->expected;
+    for(int i=0; i < test_data_size; i++) {
+        x.i = libm_test_special_data[i].in1;
+        z.i = libm_test_special_data[i].out;
+        in1[i] = x.f;
+        expected[i] = z.f;
+    }
+    return 0;
+}
+
+int libm_setup_s1s_special_2(struct libm_test *test, struct __libm_test_internal_data_float_2* libm_test_special_data, int test_data_size)
+{
+    struct libm_test_data *data;
+    float *in1, *in2, *expected;
+    flt32u_t x,y,z;
+    libm_test_alloc_special_data(test, test_data_size);
+
+    data = &test->test_data;
+    in1 = data->input1;
+    in2 = data->input2;
+    expected = data->expected;
+    for(int i=0; i < test_data_size; i++) {
+        x.i = libm_test_special_data[i].in1;
+        y.i = libm_test_special_data[i].in2;
+        z.i = libm_test_special_data[i].out;
+        in1[i] = x.f;
+        in2[i] = y.f;
+        expected[i] = z.f;
+    }
+    return 0;
+}
+
+int libm_setup_s1d_special(struct libm_test *test, struct __libm_test_internal_data_double* libm_test_special_data, int test_data_size)
+{
+    struct libm_test_data *data;
+    double *in1, *expected;
+    flt64u_t x,z;
+    libm_test_alloc_special_data(test, test_data_size);
+
+    data = &test->test_data;
+    in1 = data->input1;
+    expected = data->expected;
+    for(int i=0; i < test_data_size; i++) {
+        x.i = libm_test_special_data[i].in1;
+        z.i = libm_test_special_data[i].out;
+        in1[i] = x.d;
+        expected[i] = z.d;
+    }
+    return 0;
+}
+
+int libm_setup_s1d_special_2(struct libm_test *test, struct __libm_test_internal_data_double_2* libm_test_special_data, int test_data_size)
+{
+    struct libm_test_data *data;
+    double *in1, *in2, *expected;
+    flt64u_t x,y,z;
+    libm_test_alloc_special_data(test, test_data_size);
+
+    data = &test->test_data;
+    in1 = data->input1;
+    in2 = data->input2;
+    expected = data->expected;
+    for(int i=0; i < test_data_size; i++) {
+        x.i = libm_test_special_data[i].in1;
+        y.i = libm_test_special_data[i].in2;
+        z.i = libm_test_special_data[i].out;
+        in1[i] = x.d;
+        in2[i] = y.d;
+        expected[i] = z.d;
+    }
+    return 0;
+}
+

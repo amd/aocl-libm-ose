@@ -292,7 +292,6 @@ libm_test_accu(struct libm_test *test)
 
 }
 
-
 int
 libm_test_accu_double(struct libm_test *test, uint32_t type)
 {
@@ -366,37 +365,41 @@ libm_test_accu_single(struct libm_test *test, uint32_t type)
 }
 
 /********conformance functions**************/
-int libm_test_s1s_conf(struct libm_test *test)
+int libm_test_conf(struct libm_test *test)
 {
     int ret=0;
     struct libm_test_data *data = &test->test_data;
     struct libm_test_ops *ops = &test->ops;
     int sz = data->nelem, end=sz;
     int *exception = data->raised_exception;
- 
-    for (int j=0; j < end; j++) {
+    for(int j=0; j < end; j++) {
         feclearexcept(FE_ALL_EXCEPT);
-        ret = ops->callbacks.s1s(test, j);
-        const int flags =  fetestexcept(FE_ALL_EXCEPT);
-        exception[j] = flags;
+        if (test_is_single_precision(test)) {
+            ret = ops->callbacks.s1s(test,j);
+        }
+        else {
+            ret = ops->callbacks.s1d(test,j);
+        }
+        const int flags = fetestexcept(FE_ALL_EXCEPT);
+        exception[j] = flags;      
     }
-    
     return ret;
 }
 
-int libm_test_s1d_conf(struct libm_test *test)
+/******************special tests***************/
+int libm_test_special(struct libm_test *test)
 {
     int ret=0;
-    struct libm_test_data *data=&test->test_data;
+    struct libm_test_data *data = &test->test_data;
     struct libm_test_ops *ops = &test->ops;
-    int sz = data->nelem, end=sz;
-    int *exception = data->raised_exception;
-
-    for (int j=0; j<end; j++) {
-        feclearexcept(FE_ALL_EXCEPT);
-        ret = ops->callbacks.s1d(test, j);
-        const int flags = fetestexcept(FE_ALL_EXCEPT);
-        exception[j] = flags;
+    int sz = data->nelem;
+    for(int j=0; j<sz; j++) {
+        if (test_is_single_precision(test)) {
+            ret = ops->callbacks.s1s(test, j);
+        }
+        else {
+            ret = ops->callbacks.s1d(test, j);
+        }
     }
     return ret;
 }

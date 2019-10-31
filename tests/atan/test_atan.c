@@ -68,34 +68,6 @@ int test_atan_conf_setup(struct libm_test *test)
     return ret;
 }
 
-/*special cases for atan*/
-/*
-static int test_atan_special(struct libm_test *test)
-{
-
-    int ret = 0;
-    struct libm_test_data *data = &test->test_data;
-    int sz = data->nelem;
-
-    double *ip = (double*)data->input1;
-    double *op = (double*)data->output;
-    test->ops.verify = NULL ;
-
-    if (sz % 4 != 0)
-       LIBM_TEST_DPRINTF(DBG2,
-                          "%s %s : %d is not a multiple of 4, some may be left out\n"
-                          " And error reported may not be real for such entries\n",
-                          test->name, test->type_name, sz);
-
-    for (int j = 0; j < sz; j++)
-        op[j] = LIBM_FUNC(atan)(ip[j]);
-
-    ret = libm_test_verify(test, &test->result);
-
-    return ret;
-}
-*/
-
 static int __generate_test_one_range(struct libm_test *test,
                                      const struct libm_test_input_range *range)
 {
@@ -193,7 +165,7 @@ struct libm_test_funcs test_atan_funcs[LIBM_FUNC_MAX] =
                                           },
                           */
                          .conformance  = {.setup = test_atan_conf_setup,
-                                           .run   = libm_test_s1s_conf,
+                                           .run   = libm_test_conf,
                                            .verify = libm_test_verify,
                                          },
      },
@@ -210,7 +182,7 @@ struct libm_test_funcs test_atan_funcs[LIBM_FUNC_MAX] =
                                          },
                           */
                           .conformance  = {.setup = test_atan_conf_setup,
-                                          .run   = libm_test_s1d_conf,
+                                          .run   = libm_test_conf,
                                           .verify = libm_test_verify
                                          },
      },

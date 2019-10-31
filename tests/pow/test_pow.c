@@ -20,8 +20,6 @@
 #include "test_pow_data.h"
 
 char doc[] = BUILD_TEST_DOC(TEST_NAME);
-//extern int RANGE_LEN_X;
-//extern struct libm_test_input_range x_range[];
 
 double LIBM_FUNC(pow)(double, double);
 float LIBM_FUNC(powf)(float, float);
@@ -45,33 +43,7 @@ out:
     return ret;
 }
 
-//alloc special data
-/*
-int test_fabs_alloc_special_data(struct libm_test *test, size_t size)
-{
-    struct libm_test_conf *conf = test->conf;
-    struct libm_test_data *test_data = &test->test_data;
-    int ret = 0;
-
-    ret = libm_test_alloc_test_data(test, size);
-
-    if (ret) {
-        printf("unable to allocate\n");
-        goto out;
-    }
-
-    test_data = &test->test_data;
-    test_data->nelem = size;
-
-    conf->nelem = size;
-
-    return 0;
-
- out:
-    return -1;
-}
-*/
-
+/*conf setup*/
 int test_pow_conf_setup(struct libm_test *test)
 {
     int ret=0;
@@ -87,33 +59,21 @@ int test_pow_conf_setup(struct libm_test *test)
     return ret;
 }
 
-/*special cases for fabs*/
-/*
-static int test_fabs_special(struct libm_test *test)
+/*special setup*/
+int test_pow_special_setup(struct libm_test *test)
 {
-
-    int ret = 0;
-    struct libm_test_data *data = &test->test_data;
-    int sz = data->nelem;
-
-    double *ip = (double*)data->input1;
-    double *op = (double*)data->output;
-    test->ops.verify = NULL ;
-
-    if (sz % 4 != 0)
-       LIBM_TEST_DPRINTF(DBG2,
-                          "%s %s : %d is not a multiple of 4, some may be left out\n"
-                          " And error reported may not be real for such entries\n",
-                          test->name, test->type_name, sz);
-
-    for (int j = 0; j < sz; j++)
-        op[j] = LIBM_FUNC(fabs)(ip[j]);
-
-    ret = libm_test_verify(test, &test->result);
-
+    int ret=0;
+    int test_data_size=0;
+    if(test_is_single_precision(test)) {
+        test_data_size=ARRAY_SIZE(libm_test_powf_special_data);
+        ret=libm_setup_s1s_special_2(test, libm_test_powf_special_data, test_data_size);
+    }
+    else {
+        test_data_size = ARRAY_SIZE(libm_test_pow_special_data);
+        ret = libm_setup_s1d_special_2(test, libm_test_pow_special_data, test_data_size);
+    }
     return ret;
 }
-*/
 
 static int __generate_test_one_range(struct libm_test *test,
                                      const struct libm_test_input_range *range)
@@ -208,14 +168,14 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                          .accuracy     = { .setup = test_pow_accu_setup,
                                            .run   = libm_test_accu,
                                          },
-                          /*
-                         .special      = { .setup = test_logf_special_setup,
-                                           .run = test_logf_special,
-                                           .verify = test_log_verify
+                          
+                         .special      = { .setup = test_pow_special_setup,
+                                           .run = libm_test_special,
+                                           .verify = test_pow_verify,
                                           },
-                          */
+                        
                          .conformance  = {.setup = test_pow_conf_setup,
-                                           .run   = libm_test_s1s_conf,
+                                           .run   = libm_test_conf,
                                            .verify = test_pow_verify
                                          },
      },
@@ -226,13 +186,13 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                          .accuracy     = {.setup = test_pow_accu_setup,
                                           .run   = libm_test_accu,
                                          },
-                          /*
-                         .special      = {.setup = test_log_special_setup,
-                                          .run   = test_log_special,
+                          
+                         .special      = {.setup = test_pow_special_setup,
+                                          .run   = libm_test_special,
+                                          .verify = test_pow_verify
                                          },
-                          */
                           .conformance  = {.setup = test_pow_conf_setup,
-                                          .run   = libm_test_s1d_conf,
+                                          .run   = libm_test_conf,
                                           .verify = test_pow_verify,
                                          },
      },

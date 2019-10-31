@@ -45,33 +45,6 @@ out:
     return ret;
 }
 
-//alloc special data
-/*
-int test_fabs_alloc_special_data(struct libm_test *test, size_t size)
-{
-    struct libm_test_conf *conf = test->conf;
-    struct libm_test_data *test_data = &test->test_data;
-    int ret = 0;
-
-    ret = libm_test_alloc_test_data(test, size);
-
-    if (ret) {
-        printf("unable to allocate\n");
-        goto out;
-    }
-
-    test_data = &test->test_data;
-    test_data->nelem = size;
-
-    conf->nelem = size;
-
-    return 0;
-
- out:
-    return -1;
-}
-*/
-
 int test_fabs_conf_setup(struct libm_test *test)
 {
     int ret=0;
@@ -86,34 +59,6 @@ int test_fabs_conf_setup(struct libm_test *test)
     }
     return ret;
 }
-
-/*special cases for fabs*/
-/*
-static int test_fabs_special(struct libm_test *test)
-{
-
-    int ret = 0;
-    struct libm_test_data *data = &test->test_data;
-    int sz = data->nelem;
-
-    double *ip = (double*)data->input1;
-    double *op = (double*)data->output;
-    test->ops.verify = NULL ;
-
-    if (sz % 4 != 0)
-       LIBM_TEST_DPRINTF(DBG2,
-                          "%s %s : %d is not a multiple of 4, some may be left out\n"
-                          " And error reported may not be real for such entries\n",
-                          test->name, test->type_name, sz);
-
-    for (int j = 0; j < sz; j++)
-        op[j] = LIBM_FUNC(fabs)(ip[j]);
-
-    ret = libm_test_verify(test, &test->result);
-
-    return ret;
-}
-*/
 
 static int __generate_test_one_range(struct libm_test *test,
                                      const struct libm_test_input_range *range)
@@ -212,7 +157,7 @@ struct libm_test_funcs test_fabs_funcs[LIBM_FUNC_MAX] =
                                           },
                           */
                          .conformance  = {.setup = test_fabs_conf_setup,
-                                           .run   = libm_test_s1s_conf,
+                                           .run   = libm_test_conf,
                                            .verify = test_fabs_verify
                                          },
      },
@@ -229,12 +174,11 @@ struct libm_test_funcs test_fabs_funcs[LIBM_FUNC_MAX] =
                                          },
                           */
                           .conformance  = {.setup = test_fabs_conf_setup,
-                                          .run   = libm_test_s1d_conf,
+                                          .run   = libm_test_conf,
                                           .verify = test_fabs_verify,
                                          },
      },
 };
-
 
 int test_fabs_verify(struct libm_test *test, struct libm_test_result *result);
 

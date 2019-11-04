@@ -20,12 +20,6 @@
 #include "test_atan.h"
 #include "test_atan_data.h"
 
-#ifdef LIBM_FUNC
-#undef LIBM_FUNC
-#endif
-
-#define LIBM_FUNC(x) FN_PROTOTYPE(x)
-
 char doc[] = BUILD_TEST_DOC(TEST_NAME);
 
 extern int RANGE_LEN_X;

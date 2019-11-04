@@ -131,7 +131,7 @@ struct libm_test_funcs {
     {                                           \
         if (sizeof(t) == sizeof(float))         \
             call_func_float(func, __VA_ARGS__); \
-        else if (sizeof(t) == sizeof(double))
+        else if (sizeof(t) == sizeof(double))	\
     }
 #endif
 

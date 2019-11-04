@@ -52,12 +52,14 @@ liblist = []
 incpath = ['#tests/include', '.', './include']
 libpath = []
 
-#print(env['libabi'])
 abi = env['libabi']
+print(abi, env['libabi'])
+
 # Default set to AOCL
-ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_AOCL]
-liblist.extend(['amdlibm'])
-if abi == 'glibc':
+if abi == 'aocl':
+    ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_AOCL]
+    liblist.extend(['amdlibm'])
+elif abi == 'glibc':
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_GLIBC]
     liblist.extend(['mvec'])
 elif abi == 'svml':
@@ -88,7 +90,7 @@ else:
         CCFLAGS = ['-O3'],
     )
 
-
+# Add default math library for any unresolved functions
 liblist.extend(['m'])
 #libpath = ['#build/src', '#build/tests']
 #libpath = [joinpath(build_root, x) for x in ['src', 'tests']]

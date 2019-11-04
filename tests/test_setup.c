@@ -311,6 +311,29 @@ out:
     return -1;
 }
 
+/********************ACCU SETUP***************************/
+
+int libm_test_accu_setup(struct libm_test *test)
+{
+    const struct libm_test_conf *conf = test->conf;
+    int ret = 0;
+
+    ret = libm_test_alloc_test_data(test, conf->nelem);
+
+    if (ret) {
+        LIBM_TEST_DPRINTF(PANIC, "Unable to allocate test_data\n");
+        goto out;
+    }
+
+    test->ulp_threshold = 2.0;
+
+    return 0;
+
+out:
+
+    return 0;
+}
+
 /*********special data alloc**************************/
 //alloc special data
 int libm_test_alloc_special_data(struct libm_test *test, size_t size)

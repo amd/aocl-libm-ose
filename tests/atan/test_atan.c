@@ -33,24 +33,6 @@ extern struct libm_test_input_range x_range[];
 
 double LIBM_FUNC(atan)(double);
 
-/*atan accuracy setup*/
-int test_atan_accu_setup(struct libm_test *test)
-{
-    const struct libm_test_conf *conf = test->conf;
-    int ret = 0;
-
-    ret = libm_test_alloc_test_data(test, conf->nelem);
-    if (ret) {
-        LIBM_TEST_DPRINTF(PANIC, "Unable to allocate test_data\n");
-        goto out;
-    }
-
-    test->ulp_threshold = 2.0;
-
-    return 0;
-out:
-    return ret;
-}
 
 /*conf setup*/
 int test_atan_conf_setup(struct libm_test *test)
@@ -155,7 +137,7 @@ struct libm_test_funcs test_atan_funcs[LIBM_FUNC_MAX] =
                          .performance =  { .setup = libm_test_perf_setup,
                                            .run   = libm_test_s1s_perf,
                                          },
-                         .accuracy     = { .setup = test_atan_accu_setup,
+                         .accuracy     = { .setup = libm_test_accu_setup,
                                            .run   = libm_test_accu,
                                          },
                           /*
@@ -173,7 +155,7 @@ struct libm_test_funcs test_atan_funcs[LIBM_FUNC_MAX] =
                          .performance = { .setup = libm_test_perf_setup,
                                           .run   = libm_test_s1d_perf,
                                         },
-                         .accuracy     = {.setup = test_atan_accu_setup,
+                         .accuracy     = {.setup = libm_test_accu_setup,
                                           .run   = libm_test_accu,
                                          },
                           /*

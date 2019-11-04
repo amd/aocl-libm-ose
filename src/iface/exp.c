@@ -4,6 +4,7 @@
  * Author: Prem Mallappa <pmallapp@amd.com>
  *
  */
+
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/iface.h>
@@ -26,7 +27,7 @@ LIBM_IFACE_PROTO(exp)(void *arg)
     amd_exp_t  fn_d = NULL;
     amd_expf_t fn_s = NULL;
 
-    static struct cpu_features *features;
+    static struct cpu_features *features = NULL;
 
     if (!features) {
         features = libm_cpu_get_features();

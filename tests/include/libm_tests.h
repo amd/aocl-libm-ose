@@ -299,7 +299,7 @@ struct __libm_test_conformance_test_data_float_2 {
 
 /**********Setup functions******************/
 /*************perf**************************/
-int libm_setup_scalar_perf(struct libm_test *test);
+int libm_test_perf_setup(struct libm_test *test);
 
 /*********allocate special data***************/
 int libm_test_alloc_special_data(struct libm_test *test, size_t size);

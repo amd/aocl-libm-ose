@@ -152,7 +152,7 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
       * Scalar functions
       */
      [LIBM_FUNC_S_S]  = {
-                         .performance =  { .setup = libm_setup_scalar_perf,
+                         .performance =  { .setup = libm_test_perf_setup,
                                            .run   = libm_test_s1s_perf,
                                          },
                          .accuracy     = { .setup = test_log_accu_setup,
@@ -170,7 +170,7 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                                          },
      },
      [LIBM_FUNC_S_D]  = {
-                         .performance = { .setup = libm_setup_scalar_perf,
+                         .performance = { .setup = libm_test_perf_setup,
                                           .run   = libm_test_s1d_perf,
                                         },
                          .accuracy     = {.setup = test_log_accu_setup,
@@ -186,6 +186,7 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                                           .verify = test_log_verify,
                                          },
      },
+
 };
 
 

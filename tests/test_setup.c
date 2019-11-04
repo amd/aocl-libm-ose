@@ -290,7 +290,7 @@ out_ret:
 
 /***************setup functions***************************/
 /********************PERF SETUP***************************/
-int libm_setup_scalar_perf(struct libm_test *test)
+int libm_test_perf_setup(struct libm_test *test)
 {
     const struct libm_test_conf *conf = test->conf;
     int ret=0;

@@ -34,29 +34,35 @@ LIBM_IFACE_PROTO(exp)(void *arg)
 
     struct cpu_mfg_info *mfg_info = &features->cpu_mfg_info;
 
-    if (mfg_info->mfg_type == CPU_MFG_AMD) {
-	    switch(mfg_info->family) {
-		    case 0x15:                      /* Naples */
-			    break;
-		    case 0x17:                      /* Rome */
-			    break;
-		    case 0x19:                      /* Milan */
-			    break;
-	    }
-    }
-
     fn_d = &FN_PROTOTYPE_FMA3(exp);
+    fn_s = &FN_PROTOTYPE_FMA3(expf);
 
     if (CPU_HAS_AVX2(features) &&
-		    CPU_FEATURE_AVX2_USABLE(features)) {
+        CPU_FEATURE_AVX2_USABLE(features)) {
 	    fn_d = &FN_PROTOTYPE_OPT(exp);
 	    fn_s = &FN_PROTOTYPE_OPT(expf);
     } else if (CPU_HAS_SSSE3(features) &&
-		    CPU_FEATURE_SSSE3_USABLE(features)) {
+               CPU_FEATURE_SSSE3_USABLE(features)) {
 	    fn_d = &FN_PROTOTYPE_BAS64(exp);
     } else if (CPU_HAS_AVX(features) &&
-		    CPU_FEATURE_AVX_USABLE(features)) {
+               CPU_FEATURE_AVX_USABLE(features)) {
 	    fn_d = &FN_PROTOTYPE_BAS64(exp);
+    }
+
+    /*
+     * Template:
+     *     override with any micro-architecture-specific
+     *     implementations
+     */
+    if (mfg_info->mfg_type == CPU_MFG_AMD) {
+        switch(mfg_info->family) {
+        case 0x15:                      /* Naples */
+            break;
+        case 0x17:                      /* Rome */
+            break;
+        case 0x19:                      /* Milan */
+            break;
+        }
     }
 
     G_ENTRY_PT_PTR(exp) = fn_d;

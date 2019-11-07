@@ -186,7 +186,7 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                          .performance = { .setup = libm_test_perf_setup,
                                           .run   = libm_test_v4s_perf,
                                         },
-                         .accuracy     = {.setup = test_log_accu_setup,
+                         .accuracy     = {.setup = libm_test_accu_setup,
                                           .run   = libm_test_accu,
                                          },
                           .conformance  = {.setup = test_log_conf_setup,

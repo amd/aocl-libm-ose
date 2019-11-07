@@ -170,10 +170,6 @@ FN_PROTOTYPE_OPT(exp)(double x)
 
 #define POLY_EVAL_METHOD ESTRIN_SCHEME
 
-#ifndef POLY_EVAL_METHOD
-#error "Polynomial evaluation method NOT defined"
-#endif
-
 #if POLY_EVAL_METHOD == HORNER_SCHEME
 #if !defined(EXP_POLY_DEGREE)
 #define EXP_POLY_DEGREE 6

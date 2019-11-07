@@ -92,6 +92,99 @@ libm_test_s1d_perf(struct libm_test *test)
     return result->nfail;
 }
 
+static inline void
+OPTIMIZE("O0")
+__libm_test_v2d_overhead(struct libm_test *test)
+{
+    struct libm_test_data *data = &test->test_data;
+    double *ip1 = (double*)data->input1;
+    uint64_t sz = data->nelem;
+    double o[4];
+
+    /* TODO: This works for 1 input load and 1 output store
+     * in case of multiple inputs this needs to be fixed
+     */
+
+    for (uint64_t i = 0; i < sz; i++) {
+        __m128d ip2 = _mm_set_pd(ip1[1], ip1[0]);
+        _mm_store_pd(&o[0], ip2);
+    }
+
+    /* To shutup compiler for set-but-not used error */
+    o[1] = o[0];
+}
+
+
+static inline void
+OPTIMIZE("O0")
+__libm_test_v4d_overhead(struct libm_test *test)
+{
+    struct libm_test_data *data = &test->test_data;
+    double *ip1 = (double*)data->input1;
+    uint64_t sz = data->nelem;
+    double o[4];
+
+    /* TODO: This works for 1 input load and 1 output store
+     * in case of multiple inputs this needs to be fixed
+     */
+
+    for (uint64_t i = 0; i < sz; i++) {
+        __m256d ip4 = _mm256_set_pd(ip1[3], ip1[2], ip1[1], ip1[0]);
+        _mm256_store_pd(&o[0], ip4);
+    }
+
+    /* To shutup compiler for set-but-not used error */
+    o[1] = o[0];
+}
+
+static inline void
+OPTIMIZE("O0")
+__libm_test_v4s_overhead(struct libm_test *test)
+{
+    struct libm_test_data *data = &test->test_data;
+    float *ip1 = (float*)data->input1;
+    uint64_t sz = data->nelem;
+    float o[4];
+
+    /* TODO: This works for 1 input load and 1 output store
+     * in case of multiple inputs this needs to be fixed
+     */
+
+    for (uint64_t i = 0; i < sz; i++) {
+        __m128 ip4 = _mm_set_ps(ip1[3], ip1[2], ip1[1], ip1[0]);
+        _mm_store_ps(&o[0], ip4);
+    }
+
+    /* To shutup compiler for set-but-not used error */
+    o[1] = o[0];
+}
+
+/* Measure time taken to load and store */
+static double
+OPTIMIZE("O0")
+libm_test_overhead(struct libm_test *test)
+{
+
+    static void (*funcptr)(struct libm_test *test) = NULL;
+
+    switch (test->variant) {
+    case LIBM_FUNC_V4S: funcptr = __libm_test_v4s_overhead; break;
+    case LIBM_FUNC_V2D: funcptr = __libm_test_v2d_overhead; break;
+    case LIBM_FUNC_V4D: funcptr = __libm_test_v4d_overhead; break;
+    default: break;
+    }
+
+
+    bench_timer_t bt;
+    timer_start(&bt);
+    funcptr(test);
+    timer_stop(&bt);
+
+    double s2 = timer_span(&bt);
+
+    return s2;
+}
+
 int
 libm_test_v4s_perf(struct libm_test *test)
 {
@@ -102,6 +195,8 @@ libm_test_v4s_perf(struct libm_test *test)
     uint64_t n = test->conf->niter;
     int ret = 0;
     const int scale = 4;
+
+    result->mops = 0;
 
     /* Poison output */
     for (uint32_t j = 0; j < sz; ++j) {
@@ -145,6 +240,8 @@ libm_test_v4s_perf(struct libm_test *test)
 
     timer_stop(&bt);
     double s = timer_span(&bt);
+
+    s -= libm_test_overhead(test);
 
     result->mops = sec2mps(s, n * sz);
 
@@ -197,6 +294,8 @@ libm_test_v2d_perf(struct libm_test *test)
 
     timer_stop(&bt);
     double s = timer_span(&bt);
+
+    s -= libm_test_overhead(test);
 
     result->mops = sec2mps(s, n * sz);
 
@@ -256,6 +355,8 @@ libm_test_v4d_perf(struct libm_test *test)
 
     timer_stop(&bt);
     double s = timer_span(&bt);
+
+    s -= libm_test_overhead(test);
 
     result->mops = sec2mps(s, n * sz);
 

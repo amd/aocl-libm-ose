@@ -43,6 +43,16 @@ static inline double timer_span(struct timer *tm)
         (stop->tv_nsec - start->tv_nsec) / (double)BENCH_CONST_NANOSEC_PER_SEC;
 }
 
+static inline double timer_add(struct timer *tm1, struct timer *tm2)
+{
+    return timer_span(tm1) + timer_span(tm2);
+}
+
+static inline double timer_sub(struct timer *tm1, struct timer *tm2)
+{
+    return timer_span(tm1) - timer_span(tm2);
+}
+
 /*
  * convert seconds to Million ops per second
  * s is the time spent in seconds

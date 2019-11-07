@@ -89,6 +89,21 @@ test_log_cb_s1d(struct libm_test *test, int idx)
     return 0;
 }
 
+static int
+test_log_cb_v4s(struct libm_test *test, int j)
+{
+    struct libm_test_data *data = &test->test_data;
+    float *restrict ip1 = (float*)data->input1;
+    float *restrict o = (float*)data->output;
+
+    __m128 ip4 = _mm_set_ps(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
+    __m128 op4 = LIBM_FUNC_VEC(s, 4, logf)(ip4);
+    _mm_store_ps(&o[j], op4);
+
+    return 0;
+}
+
+
 /*verify*/
 static int
 test_log_cb_verify(struct libm_test *test, int j)
@@ -167,6 +182,19 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                                           .verify = test_log_verify,
                                          },
      },
+     [LIBM_FUNC_V4S]  = {
+                         .performance = { .setup = libm_test_perf_setup,
+                                          .run   = libm_test_v4s_perf,
+                                        },
+                         .accuracy     = {.setup = test_log_accu_setup,
+                                          .run   = libm_test_accu,
+                                         },
+                          .conformance  = {.setup = test_log_conf_setup,
+                                          .run   = libm_test_conf,
+                                          .verify = test_log_verify,
+                                         },
+     },
+
 
 };
 
@@ -191,6 +219,7 @@ log_template = {
                     .callbacks = {
                                     .s1s = test_log_cb_s1s,
                                     .s1d = test_log_cb_s1d,
+                                    .v4s = test_log_cb_v4s,
                                     .verify = test_log_cb_verify,
                                     .accu_ranges = test_log_cb_accu_ranges,
                                  },

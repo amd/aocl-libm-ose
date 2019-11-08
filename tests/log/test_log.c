@@ -212,7 +212,7 @@ static struct libm_test
 log_template = {
     .name       = "log",
     .nargs      = 1,
-    .ulp_threshold = 4.0,
+    .ulp_threshold = 0.5,
     .ops        = {
                     .ulp    = {.funcl = test_log_logl},
                     .verify = test_log_verify,

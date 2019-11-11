@@ -104,6 +104,11 @@ static void print_errors(const int flags)
     if (flags & FE_INEXACT) {
         printf("FE_INEXACT ");
     }
+
+    if (flags == 0) {
+        printf("-NONE-");
+    }
+
 }
 
 static int __verify_double(struct libm_test *test,
@@ -131,30 +136,31 @@ static int __verify_double(struct libm_test *test,
     for (int j = 0; j < sz; ++j) {
         int ret = 0;
 
-       if (test->test_type == TEST_TYPE_CONFORMANCE){
-		if ((((nw[j].i ^ op[j].i) != 0) && !(isnan(nw[j].d) && isnan(op[j].d))) || (raised_exception[j] != expected_exception[j])) {
-		       if ((nw[j].i & QNANBITPATT_DP64) == (op[j].i & QNANBITPATT_DP64)) {
-                           nfail++;
-		           printf("input = %lx expected = %lx output = %lx \n", in[j].i, nw[j].i,op[j].i);
-        	           print_info=1;
-		           if (raised_exception[j] != expected_exception[j]) {
-			       printf("Raised excpetion: ");
-			       print_errors(raised_exception[j]);
-			       printf(" Expected exception: ");
-			       print_errors(expected_exception[j]);
-                               puts("");
-			   }
-		       }
-		  }
-	}
-       else if (test->test_type == TEST_TYPE_ACCU) {
+        if (test->test_type == TEST_TYPE_CONFORMANCE){
+		    if ((((nw[j].i ^ op[j].i) != 0) && !(isnan(nw[j].d) && isnan(op[j].d))) || (raised_exception[j] != expected_exception[j])) {
+                if ((nw[j].i & QNANBITPATT_DP64) == (op[j].i & QNANBITPATT_DP64)) {
+                    nfail++;
+                    printf("input = %lx expected = %lx output = %lx \n", in[j].i, nw[j].i,op[j].i);
+                    print_info=1;
+                    if (raised_exception[j] != expected_exception[j]) {
+                        printf("Raised exception: ");
+                        print_errors(raised_exception[j]);
+                        printf(" Expected exception: ");
+                        print_errors(expected_exception[j]);
+                        puts("");
+                    }
+                }
+            }
+        }
+        else if (test->test_type == TEST_TYPE_ACCU) {
             /*
              * Verify ULP for every case,
              * except when both output and exptected is 0 or a subnormal number
              */
             if (__is_ulp_required(nw[j], op[j]))
                 test_update_ulp = 1;
-        } else {
+        } 
+        else {
             if ((nw[j].i ^ op[j].i) != 0) {
                 result->input1[idx] = in1[j];
                 if (test->nargs > 1) result->input2[idx] = in2[j];
@@ -257,13 +263,13 @@ static int __verify_float(struct libm_test *test,
 		    if ((nw[j].i & QNANBITPATT_SP32) == (op[j].i & QNANBITPATT_SP32))    { 
 		        nfail++;
 		        printf("expected = %x output = %x \n",nw[j].i,op[j].i);
-        	        print_info=1;
+                print_info=1;
 		        if (raised_exception[j] != expected_exception[j]) {
-                            printf("Raised excpetion: ");
-			    print_errors(raised_exception[j]);
-			    printf(" Expected exception: ");
+                    printf("Raised excpetion: ");
+			        print_errors(raised_exception[j]);
+			        printf(" Expected exception: ");
 		            print_errors(expected_exception[j]);
-                            puts("");
+                    puts("");
 		        }
 		    }	
 		 }  		

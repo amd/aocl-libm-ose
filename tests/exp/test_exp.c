@@ -112,6 +112,7 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                                          },
                          .accuracy     = { .setup = libm_test_accu_setup,
                                            .run   = libm_test_accu,
+                                           .ulp = {.func = test_exp_ulp}
                                          },
                           /*
                          .special      = { .setup = test_logf_special_setup,

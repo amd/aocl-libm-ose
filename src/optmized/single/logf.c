@@ -144,9 +144,9 @@ float FN_PROTOTYPE_OPT(logf)(float x)
 
     float_t t = (exp_float * LOG2_TAIL) - poly;
 
-    w = (LOG2_HEAD * exp_float) + asfloat(logf_lookup[index].f_128_tail);
+    w = (LOG2_HEAD * exp_float) + asfloat(logf_lookup[index].f_128_head);
 
-    result = (asfloat(logf_lookup[index].f_128_head) + t) + w;
+    result = (asfloat(logf_lookup[index].f_128_tail) + t) + w;
 
     return result;
 }

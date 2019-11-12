@@ -56,23 +56,6 @@ int test_pow_special_setup(struct libm_test *test)
     return ret;
 }
 
-static int __generate_test_one_range(struct libm_test *test,
-                                     const struct libm_test_input_range *range)
-{
-    int ret = 0;
-    LIBM_TEST_DPRINTF(DBG2,
-                      "Testing for accuracy %d items in range [%Lf, %Lf]\n",
-                      test->test_data.nelem,
-                      range->start, range->stop);
-    test->conf->inp_range[0] = *range;
-    ret = libm_test_populate_inputs(test, range->type);
-    if (test_is_single_precision(test))
-        ret = libm_test_accu_single(test, test->variant);
-    else
-        ret = libm_test_accu_double(test, test->variant);
-    return ret;
-}
-
 /**********************
 *CALLBACK FUNCTIONS*
 **********************/
@@ -98,29 +81,23 @@ test_pow_cb_s1d(struct libm_test *test, int idx)
     return 0;
 }
 
-/*verify*/
 static int
-test_pow_cb_verify(struct libm_test *test, int j)
+test_pow_cb_accu_ranges(struct libm_test *test, int j)
 {
     int ret = 0;
     if (test->conf->inp_range[0].start ||
         test->conf->inp_range[0].stop) {
         struct libm_test_input_range *range = &test->conf->inp_range[0];
-        ret = __generate_test_one_range(test, range);
+        ret = generate_test_one_range(test, range);
         ret = test_pow_verify(test, &test->result);
+        return ret;
     }
-    return ret;
-}
 
-static int
-test_pow_cb_accu_ranges(struct libm_test *test, int j)
-{
     int arr_sz = ARRAY_SIZE(x_range);
-    int ret = 0;
     for (int i = 0; i < arr_sz; i++) {
         if ((x_range[i].start == 0.0) && (x_range[i].stop == 0.0) )
             break;
-    ret = __generate_test_one_range(test, &x_range[i]);
+    ret = generate_test_one_range(test, &x_range[i]);
     if(ret)
         return ret;
     ret = test_pow_verify(test, &test->result);
@@ -201,7 +178,6 @@ pow_template = {
                     .callbacks = {
                                     .s1s = test_pow_cb_s1s,
                                     .s1d = test_pow_cb_s1d,
-                                    .verify = test_pow_cb_verify,
                                     .accu_ranges = test_pow_cb_accu_ranges,
                                  },
                   },

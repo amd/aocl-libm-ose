@@ -367,6 +367,10 @@ libm_test_v4d_perf(struct libm_test *test)
  * ACCU tests
  ****************************/
 
+/* This function takes care of the input values for accu test
+Generates values within either the range specified by user or
+for all ranges in the data file */
+
 int
 libm_test_accu(struct libm_test *test)
 {
@@ -385,14 +389,15 @@ libm_test_accu(struct libm_test *test)
                           " And error reported may not be real for such entries\n",
                           test->name, test->type_name, sz);
 
-    ret = ops->callbacks.verify(test, sz);
-
     ret = ops->callbacks.accu_ranges(test, sz);
 
     return ret;
 
 }
 
+/* This function calls the corresponding double precision
+version of the function(s1d,v2d,v4d) for accuracy tests
+*/
 int
 libm_test_accu_double(struct libm_test *test, uint32_t type)
 {
@@ -433,6 +438,8 @@ libm_test_accu_double(struct libm_test *test, uint32_t type)
     return ret;
 }
 
+/* This function calls the corresponding single precision version
+of the function(s1s,v4s) for accuracy tests */
 int
 libm_test_accu_single(struct libm_test *test, uint32_t type)
 {
@@ -465,6 +472,26 @@ libm_test_accu_single(struct libm_test *test, uint32_t type)
     return ret;
 }
 
+/* Function to generate input values within required ranges */
+
+int generate_test_one_range(struct libm_test *test,
+                                      const struct libm_test_input_range *range)
+{
+     int ret = 0;
+     LIBM_TEST_DPRINTF(DBG2,
+                       "Testing for accuracy %d items in range [%Lf, %Lf]\n",
+                       test->test_data.nelem,
+                       range->start, range->stop);
+     test->conf->inp_range[0] = *range;
+     ret = libm_test_populate_inputs(test, range->type);
+     if (test_is_single_precision(test))
+         ret = libm_test_accu_single(test, test->variant);
+     else
+         ret = libm_test_accu_double(test, test->variant);
+     return ret;
+}
+
+
 /********conformance functions**************/
 int libm_test_conf(struct libm_test *test)
 {
@@ -482,7 +509,7 @@ int libm_test_conf(struct libm_test *test)
             ret = ops->callbacks.s1d(test,j);
         }
         const int flags = fetestexcept(FE_ALL_EXCEPT);
-        exception[j] = flags;      
+        exception[j] = flags;
     }
     return ret;
 }

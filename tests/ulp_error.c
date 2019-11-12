@@ -49,9 +49,9 @@ static inline double __ulp(float val)
 {
     flt32u_t c = {.f = val};
 
-    int expo = ((c.i >> EXPSHIFTBITS_SP32) & 0xff) - 127; /* 7 bits ignoring sign bit */
+    int32_t expo = ((c.i >> 23) & 0xff) - 127; /* 7 bits ignoring sign bit */
 
-    expo = expo - (MANTLENGTH_SP32 - 1);  /* e-p-1 */
+    expo = expo - (24 - 1);  /* e-p-1 */
 
     return pow(2, expo);                 /* 2^(e-p-1) */
 }
@@ -83,7 +83,7 @@ libm_test_ulp_errorf(float output, double expected)
     /*If output and expected are finite (The most common case) */
     if (isfinite(output)) {
         if (expectedf < AMD_LIBM_MAX_FLOAT)
-            return fabs(output - expected) / __ulp(expected);
+            return fabs(output - expected) / __ulp(expectedf);
 
         /*If the expected is infinity and the output is finite */
         if ((expectedf > AMD_LIBM_MAX_FLOAT) || isinf(expectedf))
@@ -97,11 +97,11 @@ libm_test_ulp_errorf(float output, double expected)
 
     /*If output alone is infinity */
     if (isinf(output))
-        return fabs(AMD_LIBM_MAX_FLOAT - expected / __ulp(expected)) + 1;
+        return fabs(AMD_LIBM_MAX_FLOAT - expected / __ulp(expectedf)) + 1;
 
     /*If output alone is -infinity */
     if (is_inf_neg(output))
-        return fabs((-AMD_LIBM_MAX_FLOAT - expected) / __ulp(expected)) + 1;
+        return fabs((-AMD_LIBM_MAX_FLOAT - expected) / __ulp(expectedf)) + 1;
 
     return 0.0;
 }
@@ -116,7 +116,7 @@ static inline __float128 __ulpq(double val)
 {
     flt64u_t c = {.d = fabs(val)};
 
-    int expo = (c.i >> 52) - 1023;     /* 11 bits ignoring sign bit */
+    int expo = ((c.i >> 52) & 0x7ff) - 1023;     /* 11 bits ignoring sign bit */
 
     expo = expo - (53 - 1);             /* e-p-1 */
 
@@ -158,12 +158,12 @@ libm_test_ulp_error(double output, long double expected)
     if (isinf(output) && isinf(dexpected))
         return INFINITY;
 
-    if (output == dexpected) return 0.0;
+//    if (output == dexpected) return 0.0;
 
     /*If output and expected are finite (The most common case) */
     if (isfinite(output)) {
         if (dexpected < AMD_LIBM_MAX_DOUBLE)
-            return fabsl(output - dexpected) / __ulpq(expected);
+            return fabsl(output - expected) / __ulpq(expected);
 
         /*If the expected is infinity and the output is finite */
         if ((dexpected > AMD_LIBM_MAX_DOUBLE) || isinf(dexpected))

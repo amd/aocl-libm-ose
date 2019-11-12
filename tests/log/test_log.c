@@ -153,6 +153,7 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                                          },
                          .accuracy     = { .setup = libm_test_accu_setup,
                                            .run   = libm_test_accu,
+                                           .ulp    = {.func = test_log_ulp},
                                          },
                           /*
                          .special      = { .setup = test_logf_special_setup,
@@ -205,6 +206,7 @@ long double
 test_log_logl(struct libm_test *test, int idx)
 {
     double *d = (double*)test->test_data.input1;
+//    printf("input inside test_log_log1 is %g",d[idx]);
     return logl(d[idx]);
 }
 

@@ -325,7 +325,7 @@ int libm_test_accu_setup(struct libm_test *test)
         goto out;
     }
 
-    test->ulp_threshold = 2.0;
+    test->ulp_threshold = 0.5;
 
     return 0;
 
@@ -369,7 +369,7 @@ int libm_setup_s1s_conf(struct libm_test *test, struct __libm_test_conformance_t
     int i;
     int32_t *expected_exception;
 
-    libm_test_alloc_special_data(test, test_data_size);   
+    libm_test_alloc_special_data(test, test_data_size);
 
     data = &test->test_data;
     in1 = (float*)data->input1;
@@ -487,7 +487,7 @@ int libm_setup_s1s_special(struct libm_test *test, struct __libm_test_internal_d
     float *in1, *expected;
     flt32u_t x,z;
     libm_test_alloc_special_data(test, test_data_size);
-    
+
     data = &test->test_data;
     in1 = data->input1;
     expected = data->expected;

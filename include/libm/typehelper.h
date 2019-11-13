@@ -61,4 +61,68 @@ cast_i64_to_double( int64_t x )
 	return (double)x;
 }
 
+static inline v_i32x4_t
+as_v_i32x4(v_f32x4_t x)
+{
+	union {
+		v_i32x4_t _xi;
+		v_f32x4_t _xf;
+	} val = {
+		._xf = x,
+	};
+
+	return val._xi;
+}
+
+static inline v_f32x4_t
+as_v_f32x4(v_i32x4_t x)
+{
+	union {
+		v_i32x4_t _xi;
+		v_f32x4_t _xf;
+	} val = {
+		._xi = x,
+	};
+
+	return val._xf;
+}
+
+static inline float
+v_f32x4_to_float(v_f32x4_t f32x4, int idx)
+{
+    union  {
+        v_f32x4_t __f32x4;
+        float_t   f32[4];
+    } val = {
+        .__f32x4 = f32x4,
+    };
+
+    return val.f32[idx];
+}
+
+static inline uint32_t
+v_f32x4_to_uint32(v_f32x4_t f32x4, int idx)
+{
+    union  {
+        v_f32x4_t __f32x4;
+        uint32_t   u32[4];
+    } val = {
+        .__f32x4 = f32x4,
+    };
+
+    return val.u32[idx];
+}
+
+static inline v_f32x4_t
+v_lookup_f32(const float_t *tab, v_i32x4_t idx)
+{
+    return (v_f32x4_t) {tab[idx[0]], tab[idx[1]], tab[idx[2]], tab[idx[3]]};
+}
+
+static inline v_u32x4_t
+v_lookup_u32(const uint32_t *tab, v_u32x4_t idx)
+{
+    return (v_u32x4_t) {tab[idx[0]], tab[idx[1]], tab[idx[2]], tab[idx[3]]};
+}
+
 #endif	/* __LIBM_TYPEHELPER_H__ */

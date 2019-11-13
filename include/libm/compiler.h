@@ -67,6 +67,10 @@ To check that this is gcc compiler version 5.1 or greater:
 #define INITIALIZER(f) static void f(void) CONSTRUCTOR; static void f(void)
 
 
+#define WEAK_LIBM_ALIAS(x, y)                                   \
+        asm("\n\t"".weak " STRINGIFY(x)                         \
+            "\n\t"".set " STRINGIFY(x) ", " STRINGIFY(y)        \
+            "\n\t");
 
 #if defined(__clang__)
     #define FALLTHROUGH

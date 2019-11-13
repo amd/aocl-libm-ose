@@ -131,4 +131,86 @@ typedef union {
 } flt256du_t;
 
 
+
+/*
+ * Vector types
+ */
+
+#define VEC(x) __attribute__ ((__vector_size__ (x)))
+#define MAY_ALIAS __attribute ((__may_alias__))
+
+/* Naming convention
+ * v_/vu_   - prefix, prefix-unaligned
+ * f/d/u/i  - float/double unsigned/signed
+ * 32/64/80 - width of data
+ * x2/x4/x8 - number of elements
+ */
+
+typedef float    v_f32x4_t VEC(16) MAY_ALIAS;
+typedef uint32_t v_u32x4_t VEC(16) MAY_ALIAS;
+typedef int32_t  v_i32x4_t VEC(16) MAY_ALIAS;
+typedef float    v_f32x8_t VEC(32) MAY_ALIAS;
+typedef uint32_t v_u32x8_t VEC(32) MAY_ALIAS;
+typedef int32_t  v_i32x8_t VEC(32) MAY_ALIAS;
+
+typedef double   v_f64x2_t VEC(16) MAY_ALIAS;
+typedef uint64_t v_u64x2_t VEC(16) MAY_ALIAS;
+typedef int64_t  v_i64x2_t VEC(16) MAY_ALIAS;
+typedef double   v_f64x4_t VEC(32) MAY_ALIAS;
+typedef uint64_t v_u64x4_t VEC(32) MAY_ALIAS;
+typedef int64_t  v_i64x4_t VEC(32) MAY_ALIAS;
+
+
+/*
+ * Generic 32-bit, 4-element types
+ */
+typedef union {
+    v_f32x4_t f32x4;
+    v_i32x4_t i32x4;
+} v_32x4;
+
+typedef union {
+    v_f32x4_t f32x4;
+    v_u32x4_t u32x4;
+} v_32x4_u;
+
+/*
+ * Generic 32-bit, 8-element types
+ */
+typedef union {
+    v_f32x8_t f32x8;
+    v_i32x8_t i32x8;
+} v_32x8;
+
+typedef union {
+    v_f32x8_t f32x8;
+    v_u32x8_t u32x8;
+} v_32x8_u;
+
+/*
+ * Generic 64-bit, 2-element types
+ */
+typedef union {
+    v_f64x2_t f64x2;
+    v_i64x2_t i64x2;
+} v_64x2;
+
+typedef union {
+    v_f64x2_t f64x2;
+    v_u64x2_t u64x2;
+} v_64x2_u;
+
+/*
+ * Generic 64-bit, 4-element types
+ */
+typedef union {
+    v_f64x4_t f64x4;
+    v_i64x4_t i64x4;
+} v_64x4;
+
+typedef union {
+    v_f64x4_t f64x4;
+    v_u64x4_t u64x4;
+} v_64x4_u;
+
 #endif	/* LIBM_TYPES_H */

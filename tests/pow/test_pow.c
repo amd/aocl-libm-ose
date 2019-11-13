@@ -82,6 +82,26 @@ test_pow_cb_s1d(struct libm_test *test, int idx)
 }
 
 static int
+generate_test_pow_range(struct libm_test *test, struct libm_test_input_range *range_x,  struct libm_test_input_range *range_y )
+{
+    int ret = 0;
+    test->conf->inp_range[0] = *range_x;
+    test->conf->inp_range[1] = *range_y;
+
+     LIBM_TEST_DPRINTF(DBG2,
+                       "Testing for accuracy %d items in range x = [%Lf, %Lf] y = [%Lf, %Lf]\n",
+                       test->test_data.nelem,
+                       range_x->start, range_x->stop,
+                       range_y->start, range_y->stop);
+    ret = libm_test_populate_inputs(test, range_x->type);
+     if (test_is_single_precision(test))
+         ret = libm_test_accu_single(test, test->variant);
+     else
+         ret = libm_test_accu_double(test, test->variant);
+     return ret;
+}
+
+static int
 test_pow_cb_accu_ranges(struct libm_test *test, int j)
 {
     int ret = 0;
@@ -93,14 +113,23 @@ test_pow_cb_accu_ranges(struct libm_test *test, int j)
         return ret;
     }
 
+    /*Size of both x_range and y_range need to be the same */
+    if(ARRAY_SIZE(x_range) != ARRAY_SIZE(y_range)) {
+        printf("Size of x range and y range not the same\n");
+        printf("Please check test_pow_data.h file and ensure that x_range and y_range are the same\n");
+        return -1;
+    }
     int arr_sz = ARRAY_SIZE(x_range);
+
     for (int i = 0; i < arr_sz; i++) {
         if ((x_range[i].start == 0.0) && (x_range[i].stop == 0.0) )
             break;
-    ret = generate_test_one_range(test, &x_range[i]);
-    if(ret)
-        return ret;
-    ret = test_pow_verify(test, &test->result);
+        if ((y_range[i].start == 0.0) && (y_range[i].stop == 0.0) )
+            break;
+        ret = generate_test_pow_range(test, &x_range[i], &y_range[i]);
+        if(ret)
+            return ret;
+        ret = test_pow_verify(test, &test->result);
     }
     return 0;
 }

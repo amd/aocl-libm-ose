@@ -20,7 +20,7 @@ static struct __libm_test_conformance_test_data_float_2 libm_test_powf_conforman
 	{0x7fa00000, 0x7fa00000, 0x7fa00000, FE_INVALID}, //powf(snan, snan)
 	{0x3f800000, 0x7fa00000, 0x3f800000, FE_INVALID},//1.0, nan
 	{0x3f800000, 0x7ffe0000, 0x3f800000, FE_INVALID},//1.0, qnan
-	{0x3f000000, 0x7fa00000, 0x7fa00000, FE_INVALID}, // 0.5, snan									
+	{0x3f000000, 0x7fa00000, 0x7fa00000, FE_INVALID}, // 0.5, snan
 	{0x7fa00000, 0x3f000000, 0x7fe00000, FE_INVALID},//snan, 0.5
 	{0x7ffe0000, 0x7ffe0000, 0x7ffe0000, 0}, //qnan , qnan
 	{0x7ffe0000, 0x3f800000, 0x7ffe0000, 0},	//qnan, 1.0
@@ -101,14 +101,14 @@ struct libm_test_input_range y_range[] =
      {4.882812500000e-04, 12.441406250000e-04,},
      {2.441406250000e-04, 11.220703125000e-04,},
      {1.220703125000e-04, 16.103515625000e-05,},
-     {2.384185791016e-07, 2.225073858507e+30,},
-     
+     {2.384185791016e+2, 2.225073858507e+3,},
+
 };
 /*special data*/
 //test cases for special cases for powf
 static struct __libm_test_internal_data_float_2 libm_test_powf_special_data[] = {
 	{0x402DF854,0xc2ce8ed0,0x00000001}, //e^ -103.278931
-    {0x402DF854,0xc2ce8ed1,0x00000000}, //e^ -103.278938 
+    {0x402DF854,0xc2ce8ed1,0x00000000}, //e^ -103.278938
     {0x402df854,0x42b16666,0x7f7a37d0},
 // ------------------------------------
     //normal numbers
@@ -472,7 +472,7 @@ static struct __libm_test_internal_data_double_2 libm_test_pow_special_data[] = 
 
 {0xc010000000000000,0xc012cccccccccccd,0x7ff8000000000000},
 {0xc014000000000000,0xc012cccccccccccd,0x7ff8000000000000},
-{0xc012cccccccccccd,0xc012cccccccccccd,0x7ff8000000000000},  
+{0xc012cccccccccccd,0xc012cccccccccccd,0x7ff8000000000000},
 {0x7ff0000000000001,0x4012cccccccccccd,0x7ff8000000000001},
 
 {0xc010000000000000,0xc012cccccccccccd,0x7ff8000000000000},
@@ -718,7 +718,7 @@ static struct __libm_test_internal_data_double_2 libm_test_pow_special_data[] = 
    {0x3FE62E42FEFA39EF,0x3FE62E42FEFA39EF,0x3FE8D22A83215142},  //1/e,1/e
    {0x3F7357915F4A462D,0x403F96C837AE808A,0x30AE8C4E628AE98B},  //0.0047221830942745626,31.5889925766974
    {0xc008000000000000,0x4040000000000000,0x431A553F8878FA04},  //-3^32
-      
+
 };
 
 

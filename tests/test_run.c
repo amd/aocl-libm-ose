@@ -99,7 +99,7 @@ __libm_test_v2d_overhead(struct libm_test *test)
     struct libm_test_data *data = &test->test_data;
     double *ip1 = (double*)data->input1;
     uint64_t sz = data->nelem;
-    double o[4];
+    double o[4] ALIGN(32);
 
     /* TODO: This works for 1 input load and 1 output store
      * in case of multiple inputs this needs to be fixed
@@ -122,7 +122,7 @@ __libm_test_v4d_overhead(struct libm_test *test)
     struct libm_test_data *data = &test->test_data;
     double *ip1 = (double*)data->input1;
     uint64_t sz = data->nelem;
-    double o[4];
+    double o[4] ALIGN(32);
 
     /* TODO: This works for 1 input load and 1 output store
      * in case of multiple inputs this needs to be fixed
@@ -144,7 +144,7 @@ __libm_test_v4s_overhead(struct libm_test *test)
     struct libm_test_data *data = &test->test_data;
     float *ip1 = (float*)data->input1;
     uint64_t sz = data->nelem;
-    float o[4];
+    float o[4] ALIGN(16);
 
     /* TODO: This works for 1 input load and 1 output store
      * in case of multiple inputs this needs to be fixed

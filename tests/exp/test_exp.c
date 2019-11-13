@@ -30,6 +30,13 @@ extern struct libm_test_input_range x_range[];
 double LIBM_FUNC(exp)(double);
 float LIBM_FUNC(expf)(float);
 
+/*vector routines*/
+__m128d LIBM_FUNC_VEC(d, 2, exp)(__m128d);
+__m256d LIBM_FUNC_VEC(d, 4, exp)(__m256d);
+
+__m128 LIBM_FUNC_VEC(b, 4, expf)(__m128);
+__m256 LIBM_FUNC_VEC(b, 8, expf)(__m256);
+
 
 int test_exp_conf_setup(struct libm_test *test)
 {
@@ -68,6 +75,50 @@ test_exp_cb_s1d(struct libm_test *test, int idx)
     _o[idx] = LIBM_FUNC(exp)(_ip1[idx]);
     return 0;
 }
+
+/*vector routines*/
+static int
+test_exp_cb_v4s(struct libm_test *test, int j)
+{
+    struct libm_test_data *data = &test->test_data;
+    float *restrict ip1 = (float*)data->input1;
+    float *restrict o = (float*)data->output;
+
+    __m128 ip4 = _mm_set_ps(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
+    __m128 op4 = LIBM_FUNC_VEC(s, 4, expf)(ip4);
+    _mm_store_ps(&o[j], op4);
+
+    return 0;
+}
+
+static int
+test_exp_cb_v2d(struct libm_test *test, int j)
+{
+    struct libm_test_data *data = &test->test_data;
+    double *restrict ip1 = (double*)data->input1;
+    double *restrict o = (double*)data->output;
+
+    __m128d ip2 = _mm_set_pd(ip1[j+1], ip1[j]);
+    __m128d op4 = LIBM_FUNC_VEC(d, 2, exp)(ip2);
+    _mm_store_pd(&o[j], op4);
+
+    return 0;
+}
+
+static int
+test_exp_cb_v4d(struct libm_test *test, int j)
+{
+	struct libm_test_data *data = &test->test_data;
+	double *restrict ip1 = (double*)data->input1;
+	double *restrict o = (double*)data->output;
+
+	__m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
+	__m256d op4 = LIBM_FUNC_VEC(d, 4, exp)(ip4);
+	_mm256_store_pd(&o[j], op4);
+
+	return 0;
+}
+
 
 static int
 test_exp_cb_accu_ranges(struct libm_test *test, int j)
@@ -142,6 +193,33 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                                           .verify = test_exp_verify,
                                          },
      },
+     [LIBM_FUNC_V4S] = {
+                          .performance = {
+                                          .setup = libm_test_perf_setup,
+                                          .run = libm_test_v4s_perf,
+                           },
+                          .accuracy = {
+                                          .setup = libm_test_accu_setup,
+                                          .run = libm_test_accu,
+                           },
+     },
+     [LIBM_FUNC_V2D] = {
+                          .performance = { .setup = libm_test_perf_setup,
+                                            .run = libm_test_v2d_perf,
+                           },
+                          .accuracy = {
+                                         .setup = libm_test_accu_setup,
+                                         .run = libm_test_accu,          
+                           },
+     },
+     [LIBM_FUNC_V4D] = {
+                          .performance = { .setup = libm_test_perf_setup,
+                                           .run = libm_test_v4d_perf,
+                           },         
+                          .accuracy = {   .setup = libm_test_accu_setup,
+                                          .run = libm_test_accu,                                         
+                           },
+     },
 
 };
 
@@ -159,13 +237,16 @@ static struct libm_test
 exp_template = {
     .name       = "exp",
     .nargs      = 1,
-    .ulp_threshold = 4.0,
+    .ulp_threshold = 0.5,
     .ops        = {
                     .ulp    = {.funcl = test_exp_expl},
                     .verify = test_exp_verify,
                     .callbacks = {
                                     .s1s = test_exp_cb_s1s,
                                     .s1d = test_exp_cb_s1d,
+                                    .v4s = test_exp_cb_v4s,
+                                    .v2d = test_exp_cb_v2d,
+                                    .v4d = test_exp_cb_v4d,
                                     .accu_ranges = test_exp_cb_accu_ranges,
                                  },
                   },

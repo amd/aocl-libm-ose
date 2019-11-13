@@ -26,6 +26,7 @@ LIBM_IFACE_PROTO(exp)(void *arg)
      */
     amd_exp_t  fn_d = NULL;
     amd_expf_t fn_s = NULL;
+    amd_exp_v4d_t fn_v4d = NULL;
 
     static struct cpu_features *features = NULL;
 
@@ -37,6 +38,7 @@ LIBM_IFACE_PROTO(exp)(void *arg)
 
     fn_d = &FN_PROTOTYPE_FMA3(exp);
     fn_s = &FN_PROTOTYPE_FMA3(expf);
+    fn_v4d = &FN_PROTOTYPE_FMA3(vrd4_exp);
 
     if (CPU_HAS_AVX2(features) &&
         CPU_FEATURE_AVX2_USABLE(features)) {
@@ -68,5 +70,6 @@ LIBM_IFACE_PROTO(exp)(void *arg)
 
     G_ENTRY_PT_PTR(exp) = fn_d;
     G_ENTRY_PT_PTR(expf) = fn_s;
+    G_ENTRY_PT_PTR(vrd4_exp) = fn_v4d;
 }
 

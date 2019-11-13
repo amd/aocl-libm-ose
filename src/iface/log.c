@@ -23,6 +23,7 @@ LIBM_IFACE_PROTO(log)(void *arg)
 
     amd_log_t  fn_d = NULL;
     amd_logf_t fn_s = NULL;
+    amd_log_v4d_t fn_v4d = NULL;
 
     static struct cpu_features *features = NULL;
 
@@ -30,22 +31,43 @@ LIBM_IFACE_PROTO(log)(void *arg)
         features = libm_cpu_get_features();
     }
 
-    G_ENTRY_PT_PTR(log) = &FN_PROTOTYPE_BAS64(log);
-    G_ENTRY_PT_PTR(logf) = &FN_PROTOTYPE_BAS64(logf);
+    struct cpu_mfg_info *mfg_info = &features->cpu_mfg_info;
+
+    fn_d = &FN_PROTOTYPE_FMA3(log);
+    fn_s = &FN_PROTOTYPE_FMA3(logf);
+    fn_v4d = &FN_PROTOTYPE_FMA3(vrd4_log);
 
     if (CPU_HAS_AVX2(features) &&
-            CPU_FEATURE_AVX2_USABLE(features)) {
-            fn_d = &FN_PROTOTYPE_OPT(log);
-            fn_s = &FN_PROTOTYPE_OPT(logf);
-        } else if (CPU_HAS_SSSE3(features) &&
-                   CPU_FEATURE_SSSE3_USABLE(features)) {
-            fn_d = &FN_PROTOTYPE_BAS64(log);
-        } else if (CPU_HAS_AVX(features) &&
-                   CPU_FEATURE_AVX_USABLE(features)) {
-            fn_d = &FN_PROTOTYPE_BAS64(log);
-	}
+        CPU_FEATURE_AVX2_USABLE(features)) {
+	    fn_d = &FN_PROTOTYPE_OPT(log);
+	    fn_s = &FN_PROTOTYPE_OPT(logf);
+    } else if (CPU_HAS_SSSE3(features) &&
+               CPU_FEATURE_SSSE3_USABLE(features)) {
+	    fn_d = &FN_PROTOTYPE_BAS64(log);
+    } else if (CPU_HAS_AVX(features) &&
+               CPU_FEATURE_AVX_USABLE(features)) {
+	    fn_d = &FN_PROTOTYPE_BAS64(log);
+    }
+
+    /*
+     * Template:
+     *     override with any micro-architecture-specific
+     *     implementations
+     */
+    if (mfg_info->mfg_type == CPU_MFG_AMD) {
+        switch(mfg_info->family) {
+        case 0x15:                      /* Naples */
+            break;
+        case 0x17:                      /* Rome */
+            break;
+        case 0x19:                      /* Milan */
+            break;
+        }
+    }
 
     G_ENTRY_PT_PTR(log) = fn_d;
     G_ENTRY_PT_PTR(logf) = fn_s;
+    G_ENTRY_PT_PTR(vrd4_log) = fn_v4d;
+
 }
 

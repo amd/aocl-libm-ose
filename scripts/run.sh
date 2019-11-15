@@ -1,5 +1,8 @@
 #script to build and run the libm compliancy test suite
 
+git checkout master
+git pull
+
 build_type=$1
 
 echo $build_type

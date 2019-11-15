@@ -1,6 +1,9 @@
 #!/bin/bash
 
-BUILD=${BUILD:="build/aocl-dev2"}
+build_dir="$1"
+BUILD=${BUILD:="build/$build_dir"}
+
+echo $BUILD
 
 run_test()
 {

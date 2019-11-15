@@ -1,5 +1,8 @@
 #!/bin/bash
 
+build_dir="$1"
+BUILD=${BUILD:="build/$build_dir"}
+
 declare -a ranges
 ranges=(-127.0,-111.9 \
 	-111.99,-109.99 \
@@ -18,8 +21,6 @@ ranges=(-127.0,-111.9 \
 	89,200)
 
 #ranges=(-740,710)
-
-BUILD=${BUILD:="build/aocl-dev2"}
 
 run_test()
 {

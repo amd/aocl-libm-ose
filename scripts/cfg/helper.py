@@ -157,7 +157,7 @@ def SetupConfiguration(env):
         MakeBuildRoot(env)
         UpdateEnvComStr(env)
 
-        if env['debug_mode']:
+        if env['debug_mode'] != 'no':
             env.Append(CPPDEFINES = {'DEBUG': '1'})
 
 def PrintBanner(env):

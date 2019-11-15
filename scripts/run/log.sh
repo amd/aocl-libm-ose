@@ -17,7 +17,7 @@ ranges=(-127.0,-111.9 \
 	87,89    \
 	89,200)
 
-#ranges=(-740,710)
+ranges=(-740,710)
 
 BUILD=${BUILD:="build/aocl-dev2"}
 
@@ -26,11 +26,11 @@ run_test()
     export LD_LIBRARY_PATH=`pwd`/${BUILD}/src
     for r in ${ranges[@]}; do
             echo " testing for [${r}] "
-        ${BUILD}/tests/exp/test_exp -i $1 -t $2 -r ${r}  -c 1000000 -l 1000
+        ${BUILD}/tests/log/test_log -i $1 -t $2 -r ${r}  -c 1000000 -l 1000
     done
 }
 
-echo "Running tests for exp()"
+echo "Running tests for log()"
 run_test "s1d" "perf"
 run_test "s1d" "accu"
 run_test "s1d" "conf"
@@ -47,4 +47,4 @@ run_test "v4d" "accu"
 
 run_test "v4s" "perf"
 run_test "v4s" "accu"
-echo "Ran tests for exp()"
+echo "Ran tests for log()"

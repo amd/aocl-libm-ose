@@ -1,8 +1,8 @@
 #
-# Copyright (C) 2019 Prem Mallappa.
+# Copyright (C) 2019 AMD. All rights are reserved
 #
 #
-# Author: Prem Mallappa<prem.mallappa@gmail.com>
+# Author: Prem Mallappa<pmallappa@amd.com>
 #
 import os
 from os import mkdir, makedirs, environ

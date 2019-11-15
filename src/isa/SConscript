@@ -8,11 +8,16 @@ from os.path import join as joinpath
 
 builddir = joinpath(env['BUILDROOT'], 'src')
 
+incpaths = [
+    '#' + joinpath(Dir('.').srcnode().path),
+    '#' + joinpath(Dir('.').srcnode().path, 'include')
+]
+
 e = env.Clone()
 e.Append(
     ASFLAGS = ['-Wall', '-W', '-fPIC' ],
  
-    CPPPATH = [],
+    CPPPATH = incpaths,
 
     CPPDEFINES = ['AVX_XOP_FMA4_FMA3' ],
 )
@@ -24,19 +29,28 @@ source = Glob('*.[cS]', exclude=['map.S'])	+ \
     Glob('fma4/gas/*.[cS]')   			+ \
     Glob('avx512/gas/*.[cS]')
 
-asm_list = ['avx/gas', 'avx2/gas', 'fma4/gas', 'avx512/gas']
+asm_list = ['avx/gas', 'fma4/gas', 'avx512/gas']
 asm_objs = []
 
 for asm_path in asm_list:
     new_env = e.Clone()
     srcs = Glob(joinpath(asm_path, '*.[cS]'))
-    #print(joinpath(Dir('.').srcnode().path, asm_path, 'include'))
+    print(joinpath(Dir('.').srcnode().path, asm_path, 'include'))
     incpath = '#' + joinpath(Dir('.').srcnode().path, asm_path, 'include')
     new_env.Append(
         CPPPATH = incpath,
     )
     asm_objs += new_env.StaticObject(srcs)
 
+avx2_objs = SConscript('avx2/SConscript',
+                           exports = {'env' : e},
+                           duplicate = 0,
+                           src_dir = '#src/isa/avx2',
+                           variant_dir = joinpath(builddir, 'optmized'))
+
+
+objs = asm_objs + avx2_objs
+
 #print('asm sources', list(asm_objs))
-Return('asm_objs')
+Return('objs')
 

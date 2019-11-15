@@ -273,28 +273,28 @@ extern double FN_PROTOTYPE_BAS64(tan)(double x);
 
 extern void FN_PROTOTYPE_BAS64(sincos)(double x,double *s, double *c);
 extern void FN_PROTOTYPE_BAS64(sincosf)(float x,float *s, float *c);
-extern void FN_PROTOTYPE_BAS64(vrda_cbrt)(int len, double* x, double* y); 
-extern void FN_PROTOTYPE_BAS64(vrda_cos)(int len, double* x, double* y); 
+extern void FN_PROTOTYPE_BAS64(vrda_cbrt)(int len, double* x, double* y);
+extern void FN_PROTOTYPE_BAS64(vrda_cos)(int len, double* x, double* y);
 extern void FN_PROTOTYPE_BAS64(vrda_exp10)(int len, double* x, double* y);
 extern void FN_PROTOTYPE_BAS64(vrda_exp2)(int len, double* x, double* y);
 extern void FN_PROTOTYPE_BAS64(vrda_exp)(int len, double* x, double* y);
 extern void FN_PROTOTYPE_BAS64(vrda_expm1)(int len, double* x, double* y);
-extern void FN_PROTOTYPE_BAS64(vrda_log10)(int len, double* x, double* y); 
-extern void FN_PROTOTYPE_BAS64(vrda_log1p)(int len, double* x, double* y); 
-extern void FN_PROTOTYPE_BAS64(vrda_log2)(int len, double* x, double* y); 
-extern void FN_PROTOTYPE_BAS64(vrda_log)(int len, double* x, double* y); 
-extern void FN_PROTOTYPE_BAS64(vrda_sin)(int len, double* x, double* y); 
-extern void FN_PROTOTYPE_BAS64(vrsa_cbrtf)(int len, float* x, float* y); 
-extern void FN_PROTOTYPE_BAS64(vrsa_cosf)(int len, float* x, float* y); 
+extern void FN_PROTOTYPE_BAS64(vrda_log10)(int len, double* x, double* y);
+extern void FN_PROTOTYPE_BAS64(vrda_log1p)(int len, double* x, double* y);
+extern void FN_PROTOTYPE_BAS64(vrda_log2)(int len, double* x, double* y);
+extern void FN_PROTOTYPE_BAS64(vrda_log)(int len, double* x, double* y);
+extern void FN_PROTOTYPE_BAS64(vrda_sin)(int len, double* x, double* y);
+extern void FN_PROTOTYPE_BAS64(vrsa_cbrtf)(int len, float* x, float* y);
+extern void FN_PROTOTYPE_BAS64(vrsa_cosf)(int len, float* x, float* y);
 extern void FN_PROTOTYPE_BAS64(vrsa_exp10f)(int len, float* x, float* y);
 extern void FN_PROTOTYPE_BAS64(vrsa_exp2f)(int len, float* x, float* y);
 extern void FN_PROTOTYPE_BAS64(vrsa_expf)(int len, float* x, float* y);
 extern void FN_PROTOTYPE_BAS64(vrsa_expm1f)(int len, float* x, float* y);
-extern void FN_PROTOTYPE_BAS64(vrsa_log10f)(int len, float* x, float* y); 
-extern void FN_PROTOTYPE_BAS64(vrsa_log1pf)(int len, float* x, float* y); 
-extern void FN_PROTOTYPE_BAS64(vrsa_log2f)(int len, float* x, float* y); 
-extern void FN_PROTOTYPE_BAS64(vrsa_logf)(int len, float* x, float* y); 
-extern void FN_PROTOTYPE_BAS64(vrsa_sinf)(int len, float* x, float* y); 
+extern void FN_PROTOTYPE_BAS64(vrsa_log10f)(int len, float* x, float* y);
+extern void FN_PROTOTYPE_BAS64(vrsa_log1pf)(int len, float* x, float* y);
+extern void FN_PROTOTYPE_BAS64(vrsa_log2f)(int len, float* x, float* y);
+extern void FN_PROTOTYPE_BAS64(vrsa_logf)(int len, float* x, float* y);
+extern void FN_PROTOTYPE_BAS64(vrsa_sinf)(int len, float* x, float* y);
 
 extern __m128d FN_PROTOTYPE_BAS64(vrd2_cbrt)(__m128d x);
 extern __m128d FN_PROTOTYPE_BAS64(vrd2_cos)(__m128d x);
@@ -308,7 +308,6 @@ extern __m128d FN_PROTOTYPE_BAS64(vrd2_log2)(__m128d x);
 extern __m128d FN_PROTOTYPE_BAS64(vrd2_log)(__m128d x);
 extern __m128d FN_PROTOTYPE_BAS64(vrd2_sin)(__m128d x);
 extern __m128d FN_PROTOTYPE_BAS64(vrd2_tan)(__m128d x);
-
 
 extern __m128 FN_PROTOTYPE_BAS64(vrs4_cbrtf)(__m128  x);
 extern __m128 FN_PROTOTYPE_BAS64(vrs4_cosf)(__m128 x);
@@ -422,6 +421,8 @@ extern double FN_PROTOTYPE_OPT(log2)(double x);
 extern double FN_PROTOTYPE_OPT(log)(double x);
 extern double FN_PROTOTYPE_OPT(logp1)(double x);
 
+extern double FN_PROTOTYPE_OPT(pow)(double x, double y);
+extern float FN_PROTOTYPE_OPT(powf)(float x, float y);
 
 extern float FN_PROTOTYPE_OPT(exp2f)(float x);
 extern float FN_PROTOTYPE_OPT(expf)(float x);

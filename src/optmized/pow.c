@@ -321,7 +321,7 @@ static inline double _pow_inexact(double x)
 }
 
 double
-FN_PROTOTYPE(pow_v2)(double x, double y)
+FN_PROTOTYPE_OPT(pow)(double x, double y)
 {
     double_t log_lo;
     double_t f;

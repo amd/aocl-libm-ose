@@ -8,6 +8,9 @@
 #define __AMD_LIBM_ENTRY_PT_H__
 
 #define G_ENTRY_PT(fn) (*g_amd_libm_ep_##fn)
+
+#define G_ENTRY_PT_ASM(fn) g_amd_libm_ep_##fn
+
 #define G_ENTRY_PT_PTR(fn) g_amd_libm_ep_##fn
 
 extern double G_ENTRY_PT(acos)(double x);

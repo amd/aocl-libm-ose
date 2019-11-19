@@ -5,6 +5,7 @@
 #warning "This file is not expected to be included generously"
 #endif
 #include <fenv.h>
+#include <libm_tests.h>
 
 /* Test cases to check for exceptions for the log() routine. These test cases are not exhaustive */
 static struct __libm_test_conformance_test_data_double libm_test_log_conformance_data[] = {
@@ -20,7 +21,6 @@ static struct __libm_test_conformance_test_data_double libm_test_log_conformance
 	{0x7ff87ff7fdedffff, 0x7ff87ff7fdedffff, 0},		//qnan, nan
 };
 
-
 /* Test cases to check for exceptions for the logf() routine. These test cases are not exhaustive */
 static struct __libm_test_conformance_test_data_float libm_test_logf_conformance_data[] = {
 	{0x00000000, 0xFF800000, 4},	//log(0) is -inf
@@ -35,13 +35,52 @@ static struct __libm_test_conformance_test_data_float libm_test_logf_conformance
 	{0x7ffe0000, 0x7ffe0000, 0}, 		//qnan, nan
 };
 
-
-
 /* Scalar log in AMD LibM handles values between e^(-1/16) and e^(1/16) as special case, while vector versions don't.
    Hence, some values in this range is added as special cases
 */
-/*
-static struct __log_internal_data test_log_special_data[] = {
+
+static struct __libm_test_internal_data_float libm_test_logf_special_data[] = {
+    {0x3c000000,0xc09b43d5  },  //0.0078125
+    {0x3f012345,0xbf2f2e21  },  //0.504444
+    {0x3F87AE14,0x3d6eab52  },  //1.06
+    {0x00000000,0xff800000},  //0.0
+    {0x3c7fffff,0xc0851592  },  //0.0156249991
+    {0x3f800000,0x00000000  },  //1
+    {0x40000000,0x3f317218  },  //2
+    {0x33d6bf95,0xc180f1dc  },  //1.0000000e-7
+    {0x4048f5c3,0x3f928683  },  //pi  */
+    {0x40c90fdb,0x3feb3f8e  },  //2pi
+    {0x41200000,0x40135d8e  },  //10
+    {0x447a0000,0x40dd0c55  },  //1000
+    {0x42800000,0x40851592  },  //64
+    {0x42af0000,0x408f17aa  },  //87.5
+    {0x42b00000,0x408f4658  },  //88
+    {0x42c00000,0x40920f24  },  //96
+    {0xc2af0000,0x7fc00000 },  //-87.5
+    {0xc2e00000,0x7fc00000 },  //-112
+    {0xc3000000,0x7fc00000 },  //-128
+    {0xc2aeac4f,0x7fc00000 },  //-87.3365  smallest normal result
+    {0xc2aeac50,0x7fc00000 },  //-87.3365  largest denormal result
+    {0xc2ce0000,0x7fc00000 },  //-103
+    {0x42b17216,0x408f895b  },  //88.7228   largest value  --
+    {0x42b17217,0x408f895b  },  //88.7228   largest value
+    {0x42b17218,0x408f895c  },  //88.7228   overflow
+    {0x50000000,0x41b6fda9  },  //large   overflow
+    {0xc20a1eb8,0x7fc00000 }, // -34.53
+    {0xc6de66b6,0x7fc00000 }, // -28467.3555
+    {0xbe99999a,0x7fc00000 }, // -0.3
+    {0xbf247208,0x7fc00000 }, // -0.642365
+    {0xbf000000,0x7fc00000 }, // -0.5
+    {0x3e99999a,0xbf9a1bc8  }, // 0.3
+    {0x3f247208,0xbee29c4a  }, // 0.642365
+    {0x3f000000,0xbf317218  }, // 0.5
+    {0x420a1eb8,0x4062ad51  }, // 34.53
+    {0x46de66b6,0x41241aae  }, // 28467.3555
+    {0xc2c80000,0x7fc00000 }, // -100
+    {0x42c80000,0x40935d8e  }, // 100
+};
+
+static struct __libm_test_internal_data_double libm_test_log_special_data[] = {
     {0x3fee1177d9f91c22,0xbfafe1687bdb1469}, // 0.93963234494083658354668
     {0x3ff0008078a074ad,0x3f200ed397156a4a}, // 1.00012251968227450227289
     {0x3fee1b973ae0e299,0xbfaf3527a491b3b3}, // 0.94086801051806212559114
@@ -57,7 +96,7 @@ static struct __log_internal_data test_log_special_data[] = {
     {0xc090000000000000,0x7ff8000000000000}, // +1024
     {0x3ff0000000000000,0x0000000000000000}, // +1.0
     {0x7ff0000000000000,0x7ff0000000000000},
-    {0xfff0000000000000,0x7FF8000000000000}
+    {0xfff0000000000000,0x7FF8000000000000},
 
     {0x3ff0097d13350953,0x3f62f4881b43f2d5},
     {0x0003ec71c47096d5,0xc0862e6a7c4872d2},
@@ -98,7 +137,7 @@ static struct __log_internal_data test_log_special_data[] = {
     {0x3FF02015E8B29697,0x3F7FF5E7947206C3},  // 1.0078333940267947 max ulp error
     {0x3ff0000000000001,0x3cafffffffffffff},
     {0x7ff0000000000000,0x7ff0000000000000},
-    {0x7ff0000000000000,0x7ff0000000000000}
+    {0x7ff0000000000000,0x7ff0000000000000},
 };
-*/
+
 #endif  /* __TEST_LOG_DATA_H */

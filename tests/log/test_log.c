@@ -56,6 +56,22 @@ int test_log_conf_setup(struct libm_test *test)
     return ret;
 }
 
+int test_log_special_setup(struct libm_test *test)
+{
+    int ret=0;
+    int test_data_size=0;
+    if(test_is_single_precision(test)) {
+        test_data_size=ARRAY_SIZE(libm_test_logf_special_data);
+        ret=libm_setup_s1s_special(test, libm_test_logf_special_data, test_data_size);
+    }
+    else {
+       test_data_size=ARRAY_SIZE(libm_test_log_special_data);
+       ret=libm_setup_s1d_special(test, libm_test_log_special_data, test_data_size);
+    }
+    return ret;
+}
+
+
 /**********************
 *CALLBACK FUNCTIONS*
 **********************/
@@ -167,12 +183,12 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                                            .run   = libm_test_accu,
                                            .ulp    = {.func = test_log_ulp},
                                          },
-                          /*
-                         .special      = { .setup = test_logf_special_setup,
-                                           .run = test_logf_special,
+                          
+                         .special      = { .setup = test_log_special_setup,
+                                           .run = libm_test_special,
                                            .verify = test_log_verify
                                           },
-                          */
+                          
                          .conformance  = {.setup = test_log_conf_setup,
                                            .run   = libm_test_conf,
                                            .verify = test_log_verify
@@ -185,11 +201,12 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                          .accuracy     = {.setup = libm_test_accu_setup,
                                           .run   = libm_test_accu,
                                          },
-                          /*
+                          
                          .special      = {.setup = test_log_special_setup,
-                                          .run   = test_log_special,
+                                          .run   = libm_test_special,
+                                          .verify = test_log_verify,
                                          },
-                          */
+                          
                           .conformance  = {.setup = test_log_conf_setup,
                                           .run   = libm_test_conf,
                                           .verify = test_log_verify,

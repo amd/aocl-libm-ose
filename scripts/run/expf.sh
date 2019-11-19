@@ -35,10 +35,12 @@ echo "Running tests for exp()"
 run_test "s1d" "perf"
 run_test "s1d" "accu"
 run_test "s1d" "conf"
+run_test "s1d" "special"
 
 run_test "s1f" "perf"
 run_test "s1f" "accu"
 run_test "s1f" "conf"
+run_test "s1f" "special"
 
 run_test "v2d" "perf"
 run_test "v2d" "accu"

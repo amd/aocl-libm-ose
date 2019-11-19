@@ -24,6 +24,13 @@ char doc[] = BUILD_TEST_DOC(TEST_NAME);
 double LIBM_FUNC(pow)(double, double);
 float LIBM_FUNC(powf)(float, float);
 
+/*vector routines*/
+__m128d LIBM_FUNC_VEC(d, 2, pow)(__m128d, __m128d);
+__m256d LIBM_FUNC_VEC(d, 4, pow)(__m256d, __m256d);
+
+__m128 LIBM_FUNC_VEC(b, 4, powf)(__m128, __m128);
+__m256 LIBM_FUNC_VEC(b, 8, powf)(__m256, __m256);
+
 /*conf setup*/
 int test_pow_conf_setup(struct libm_test *test)
 {
@@ -78,6 +85,55 @@ test_pow_cb_s1d(struct libm_test *test, int idx)
     double *restrict _ip2 = (double*)data->input2;
     double *restrict _o = (double*)data->output;
     _o[idx] = LIBM_FUNC(pow)(_ip1[idx], _ip2[idx]);
+    return 0;
+}
+
+/*vector routines*/
+static int
+test_pow_cb_v4s(struct libm_test *test, int j)
+{
+    struct libm_test_data *data = &test->test_data;
+    float *restrict ip1 = (float*)data->input1;
+    float *restrict ip2 = (float*)data->input2;
+    float *restrict o = (float*)data->output;
+
+    __m128 ip4_1 = _mm_set_ps(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
+    __m128 ip4_2 = _mm_set_ps(ip2[j+3], ip2[j+2], ip2[j+1], ip2[j]);
+    __m128 op4 = LIBM_FUNC_VEC(s, 4, powf)(ip4_1, ip4_2);
+    _mm_store_ps(&o[j], op4);
+
+    return 0;
+}
+
+static int
+test_pow_cb_v2d(struct libm_test *test, int j)
+{
+    struct libm_test_data *data = &test->test_data;
+    double *restrict ip1 = (double*)data->input1;
+    double *restrict ip2 = (double*)data->input2;
+    double *restrict o = (double*)data->output;
+
+    __m128d ip2_1 = _mm_set_pd(ip1[j+1], ip1[j]);
+    __m128d ip2_2 = _mm_set_pd(ip2[j+1], ip2[j]);
+    __m128d op4 = LIBM_FUNC_VEC(d, 2, pow)(ip2_1, ip2_2);
+    _mm_store_pd(&o[j], op4);
+
+    return 0;
+}
+
+static int
+test_pow_cb_v4d(struct libm_test *test, int j)
+{
+    struct libm_test_data *data = &test->test_data;
+    double *restrict ip1 = (double*)data->input1;
+    double *restrict ip2 = (double*)data->input2;
+    double *restrict o = (double*)data->output;
+
+    __m256d ip4_1 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
+    __m256d ip4_2 = _mm256_set_pd(ip2[j+3], ip2[j+2], ip2[j+1], ip2[j]);
+    __m256d op4 = LIBM_FUNC_VEC(d, 4, pow)(ip4_1, ip4_2);
+    _mm256_store_pd(&o[j], op4);
+
     return 0;
 }
 
@@ -184,6 +240,36 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                                           .verify = test_pow_verify,
                                          },
      },
+     [LIBM_FUNC_V4S] = {
+                          .performance = {
+                                          .setup = libm_test_perf_setup,
+                                          .run = libm_test_v4s_perf,
+                           },
+                          .accuracy = {
+                                          .setup = libm_test_accu_setup,
+                                          .run = libm_test_accu,
+                           },
+     },
+     [LIBM_FUNC_V2D] = {
+                          .performance = { .setup = libm_test_perf_setup,
+                                            .run = libm_test_v2d_perf,
+                           },
+                          .accuracy = {
+                                         .setup = libm_test_accu_setup,
+                                         .run = libm_test_accu,
+                           },
+     },
+     [LIBM_FUNC_V4D] = {
+                          .performance = { .setup = libm_test_perf_setup,
+                                            .run = libm_test_v4d_perf,
+                           },
+                          .accuracy = {
+                                         .setup = libm_test_accu_setup,
+                                         .run = libm_test_accu,
+                           },
+     },
+
+
 };
 
 
@@ -208,6 +294,9 @@ pow_template = {
                     .callbacks = {
                                     .s1s = test_pow_cb_s1s,
                                     .s1d = test_pow_cb_s1d,
+                                    .v4s = test_pow_cb_v4s,
+                                    .v2d = test_pow_cb_v2d,
+                                    .v4d = test_pow_cb_v4d,
                                     .accu_ranges = test_pow_cb_accu_ranges,
                                  },
                   },

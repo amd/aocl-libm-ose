@@ -166,5 +166,14 @@ WEAK_LIBM_ALIAS(vrsa_log2f, FN_PROTOTYPE(vrsa_log2f));
 WEAK_LIBM_ALIAS(vrsa_logf, FN_PROTOTYPE(vrsa_logf));
 WEAK_LIBM_ALIAS(vrsa_sinf, FN_PROTOTYPE(vrsa_sinf));
 
+/*
+ * We dont need libm aliases in developer mode, otherwise all calls
+ * to GLIBC ends up in libm
+ */
+#if !defined(DEVELOPER)
+#include "entry_pt_map_libm._c"
+#endif
+
+#include "entry_pt_map_fastlibm._c"
 
 

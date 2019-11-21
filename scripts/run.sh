@@ -26,3 +26,5 @@ fi
 `pwd`/scripts/run/pow.sh "$build_dir"
 `pwd`/scripts/run/log.sh "$build_dir"
 `pwd`/scripts/run/expf.sh "$build_dir"
+`pwd`/scripts/run/fabs.sh "$build_dir"
+`pwd`/scripts/run/atan.sh "$build_dir"

@@ -15,8 +15,10 @@ e.Append(
                '-Wno-unused-parameter',
                '-fPIC',
                '-mavx2', '-march=znver2'],
-    #CPPPATH = [Dir('./isa/avx2/include')],
-    #   CCFLAGS = [],
+    # CPPPATH = [Dir('./isa/avx2/include')],
+    # CCFLAGS = [],
+    # LINKFLAGS = ['-T$LINKERSCRIPT'],
+     LINKERSCRIPT = 'src/ld-syms-libm.lds',
     STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 1
 )
 
@@ -53,5 +55,6 @@ objects = ref_objs + asm_objs + optimized_src + iface_src
 libm = e.StaticLibrary('amdlibm', objects)
 libmso = e.SharedLibrary('amdlibm', objects)
 
+Depends(libmso, '#src/ld-syms-libm.lds')
 Return('libm', 'libmso')
 

@@ -1,13 +1,3 @@
-#ifndef __LIBM_AMD_H__
-#define __LIBM_AMD_H__
-
-#include <immintrin.h>
-
-#include <libm_macros.h>
-
-__m256d FN_PROTOTYPE(vrd4_exp) (__m256d);
-
-#endif /* __LIBM_AMD_H__ */
 #ifndef LIBM_AMD_H_INCLUDED
 #define LIBM_AMD_H_INCLUDED 1
 
@@ -15,7 +5,7 @@ __m256d FN_PROTOTYPE(vrd4_exp) (__m256d);
 #ifdef WIN64
 #include <intrin.h>
 #else
-#include <emmintrin.h>
+#include <immintrin.h>
 #endif
 
 #ifdef __cplusplus

@@ -71,6 +71,11 @@ double G_ENTRY_PT(tanh)(double x);
 double G_ENTRY_PT(tanpi)(double x);
 double G_ENTRY_PT(trunc)(double x);
 
+/*
+ * required by NAG tests
+ */
+double G_ENTRY_PT(remainder_piby2)(double x, double y);
+double G_ENTRY_PT(remainder_piby2d2f)(double x, double y);
 
 /*
  * Single Precision functions
@@ -190,6 +195,7 @@ __m128  G_ENTRY_PT(vrs4_tanf)(__m128);
 
 __m128d G_ENTRY_PT(vrd2_cbrt)(__m128d);
 __m128d G_ENTRY_PT(vrd2_cos)(__m128d);
+__m128d G_ENTRY_PT(vrd2_cosh)(__m128d);
 __m128d G_ENTRY_PT(vrd2_exp)(__m128d);
 __m128d G_ENTRY_PT(vrd2_exp2)(__m128d);
 __m128d G_ENTRY_PT(vrd2_exp10)(__m128d);

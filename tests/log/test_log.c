@@ -34,12 +34,27 @@ extern struct libm_test_input_range x_range[];
 double LIBM_FUNC(log)(double);
 float LIBM_FUNC(logf)(float);
 
+#if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
+
+#define _ZGVdN2v_log _ZGVbN2v_log
+#define _ZGVdN4v_log _ZGVdN4v_log
+#define _ZGVsN4v_logf _ZGVbN4v_logf
+#define _ZGVsN8v_logf _ZGVdN8v_logf
+
+__m128d _ZGVbN2v_log(__m128d);
+__m256d _ZGVdN4v_log(__m256d);
+
+__m128 _ZGVbN4v_logf(__m128);
+__m256 _ZGVdN8v_logf(__m256);
+#endif
+
 /*vector routines*/
+
 __m128d LIBM_FUNC_VEC(d, 2, exp)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, exp)(__m256d);
 
-__m128 LIBM_FUNC_VEC(b, 4, expf)(__m128);
-__m256 LIBM_FUNC_VEC(b, 8, expf)(__m256);
+__m128 LIBM_FUNC_VEC(s, 4, expf)(__m128);
+__m256 LIBM_FUNC_VEC(s, 8, expf)(__m256);
 
 int test_log_conf_setup(struct libm_test *test)
 {
@@ -183,12 +198,12 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                                            .run   = libm_test_accu,
                                            .ulp    = {.func = test_log_ulp},
                                          },
-                          
+
                          .special      = { .setup = test_log_special_setup,
                                            .run = libm_test_special,
                                            .verify = test_log_verify
                                           },
-                          
+
                          .conformance  = {.setup = test_log_conf_setup,
                                            .run   = libm_test_conf,
                                            .verify = test_log_verify
@@ -201,12 +216,12 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                          .accuracy     = {.setup = libm_test_accu_setup,
                                           .run   = libm_test_accu,
                                          },
-                          
+
                          .special      = {.setup = test_log_special_setup,
                                           .run   = libm_test_special,
                                           .verify = test_log_verify,
                                          },
-                          
+
                           .conformance  = {.setup = test_log_conf_setup,
                                           .run   = libm_test_conf,
                                           .verify = test_log_verify,
@@ -232,15 +247,15 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                            },
                           .accuracy = {
                                          .setup = libm_test_accu_setup,
-                                         .run = libm_test_accu,          
+                                         .run = libm_test_accu,
                            },
      },
      [LIBM_FUNC_V4D] = {
                           .performance = { .setup = libm_test_perf_setup,
                                            .run = libm_test_v4d_perf,
-                           },         
+                           },
                           .accuracy = {   .setup = libm_test_accu_setup,
-                                          .run = libm_test_accu,                                         
+                                          .run = libm_test_accu,
                            },
      },
 

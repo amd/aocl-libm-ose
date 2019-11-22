@@ -19,6 +19,15 @@
 #include "test_pow.h"
 #include "test_pow_data.h"
 
+/* GLIBC prototype declarations */
+#if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
+
+#define _ZGVdN2v_pow _ZGVbN2vv_pow
+#define _ZGVdN4v_pow _ZGVdN4vv_pow
+#define _ZGVsN4v_powf _ZGVbN4vv_powf
+#define _ZGVsN8v_powf _ZGVbN8vv_powf
+#endif
+
 char doc[] = BUILD_TEST_DOC(TEST_NAME);
 
 double LIBM_FUNC(pow)(double, double);
@@ -28,8 +37,8 @@ float LIBM_FUNC(powf)(float, float);
 __m128d LIBM_FUNC_VEC(d, 2, pow)(__m128d, __m128d);
 __m256d LIBM_FUNC_VEC(d, 4, pow)(__m256d, __m256d);
 
-__m128 LIBM_FUNC_VEC(b, 4, powf)(__m128, __m128);
-__m256 LIBM_FUNC_VEC(b, 8, powf)(__m256, __m256);
+__m128 LIBM_FUNC_VEC(s, 4, powf)(__m128, __m128);
+__m256 LIBM_FUNC_VEC(s, 8, powf)(__m256, __m256);
 
 /*conf setup*/
 int test_pow_conf_setup(struct libm_test *test)

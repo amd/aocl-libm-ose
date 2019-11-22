@@ -1,0 +1,37 @@
+//R.obtained=FN_PROTOTYPE(fabs)(P1.input)
+//double,double,ExcFlags
+//P1 R E
+//unsigned long long int|double, unsigned  long long int|double,ExcFlags|ExcFlags
+//R.V3[j] = fabs(P1.V3[j])
+//double double ExcFlags
+//ULP amd_ref_fabs_ULP(P1.V3[j],R.V3[j],&testdata[k].R.ulp[j], &testdata[k].R.relative_error[j])
+//testdata[j].R.MaxUlp()
+
+static struct data input[] =
+{
+
+{ F64_POS_SNAN , F64_POS_SNAN_Q ,EXC_CHK_INVL},
+    { F64_NEG_SNAN , F64_NEG_SNAN_Q ,EXC_CHK_INVL},
+    { F64_POS_QNAN , F64_POS_QNAN   ,EXC_CHK_NONE},
+    { F64_NEG_QNAN , F64_NEG_QNAN   ,EXC_CHK_NONE},
+    { F64_POS_INF  , F64_POS_INF    ,EXC_CHK_NONE},
+    { F64_NEG_INF  , F64_POS_INF    ,EXC_CHK_NONE},
+    { F64_POS_ONE  , F64_POS_ONE    ,EXC_CHK_NONE},
+    { F64_NEG_ONE  , F64_POS_ONE    ,EXC_CHK_NONE},
+    { F64_POS_ZERO , F64_POS_ZERO   ,EXC_CHK_NONE},
+    { F64_NEG_ZERO , F64_POS_ZERO   ,EXC_CHK_NONE},
+    { F64_POS_HDENORM, F64_POS_HDENORM, EXC_CHK_NONE},
+    { F64_NEG_HDENORM, F64_POS_HDENORM, EXC_CHK_NONE},
+    { F64_POS_LDENORM, F64_POS_LDENORM, EXC_CHK_NONE},
+    { F64_NEG_LDENORM, F64_POS_LDENORM, EXC_CHK_NONE},
+    { F64_POS_HNORMAL, F64_POS_HNORMAL, EXC_CHK_NONE},
+    { F64_NEG_HNORMAL, F64_POS_HNORMAL, EXC_CHK_NONE},
+    { F64_POS_LNORMAL, F64_POS_LNORMAL, EXC_CHK_NONE},
+    { F64_NEG_LNORMAL, F64_POS_LNORMAL, EXC_CHK_NONE},
+    {F64_POS_PIBY2, F64_POS_PIBY2, EXC_CHK_NONE},  //pi/2
+    {F64_NEG_PIBY2, F64_POS_PIBY2, EXC_CHK_NONE},  //pi/2
+    {0xc059000000000000,0x4059000000000000,EXC_CHK_NONE}, // -100
+    {0x4059000000000000,0x4059000000000000,EXC_CHK_NONE}, // 100
+
+};
+

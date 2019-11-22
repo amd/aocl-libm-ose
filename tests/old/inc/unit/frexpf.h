@@ -1,0 +1,93 @@
+//R.obtained=FN_PROTOTYPE(frexpf)(P1.input, &P2.obtained)
+//float,float,int ,ExcFlags
+//P1 R P2 E
+//unsigned int|float, unsigned int|float,int|int, ExcFlags|ExcFlags
+//R.V3[j] = amd_ref_frexpf(P1.V3[j],&P2.V3[j])
+//float, float, int, ExcFlags
+//ULP amd_ref_frexpf_ULP(P1.V3[j],&P2.V3[j],R.V3[j],&testdata[k].R.ulp[j], &testdata[k].R.relative_error[j])
+//testdata[j].R.MaxUlp()
+
+static struct data input[] =
+{
+
+    {F32_POS_SNAN ,  F32_POS_QNAN, 0x00000000, EXC_CHK_INVL},
+    {F32_NEG_SNAN ,  F32_NEG_QNAN, 0x00000000, EXC_CHK_INVL},
+    {F32_POS_SNAN_Q, F32_POS_QNAN, 0x00000000, EXC_CHK_NONE},
+    {F32_NEG_SNAN_Q, F32_NEG_QNAN, 0x00000000, EXC_CHK_NONE},
+    {F32_POS_QNAN ,  F32_POS_QNAN, 0x00000000, EXC_CHK_NONE},
+    {F32_NEG_QNAN ,  F32_NEG_QNAN, 0x00000000, EXC_CHK_NONE},
+    {F32_POS_INF  ,  F32_POS_INF , 0x00000000, EXC_CHK_NONE},
+    {F32_NEG_INF  ,  F32_NEG_INF , 0x00000000, EXC_CHK_NONE},
+    {F32_POS_ONE  ,  0x3F000000  , 0x00000001, EXC_CHK_NONE},
+    {F32_NEG_ONE  ,  0xBF000000  , 0x00000001, EXC_CHK_NONE},
+    {F32_POS_ZERO ,  F32_POS_ZERO, 0x00000000, EXC_CHK_NONE},
+    {F32_NEG_ZERO ,  F32_NEG_ZERO, 0x00000000, EXC_CHK_NONE},
+
+    {F32_POS_HDENORM,0x3F7FFFFE, 0xffffff82, EXC_CHK_NONE},
+    {F32_NEG_HDENORM,0xbF7FFFFE, 0xffffff82, EXC_CHK_NONE},
+    {F32_POS_LDENORM,0x3F000000, 0xffffff6c, EXC_CHK_NONE},
+    {F32_NEG_LDENORM,0xBF000000, 0xffffff6c, EXC_CHK_NONE},
+    {F32_POS_HNORMAL,0x3F7FFFFF, 0x00000080, EXC_CHK_NONE},
+    {F32_NEG_HNORMAL,0xbF7FFFFF, 0x00000080, EXC_CHK_NONE},
+    {F32_POS_LNORMAL,0x3F000000, 0xffffff83, EXC_CHK_NONE},
+    {F32_NEG_LNORMAL,0xbf000000, 0xffffff83, EXC_CHK_NONE},
+
+    /*Other test cases*/
+    {0x0005fde6, 0x3f3fbcc0, 0xffffff7e, EXC_CHK_NONE}, // denormal intermediate
+    {0x805def12, 0xbf3bde24, 0xffffff82, EXC_CHK_NONE}, // -denormal intermediate
+    {0x43b3c4ea, 0x3f33c4ea, 0x00000009, EXC_CHK_NONE}, // normal intermediate
+    {0xc5812e71, 0xbf012e71, 0x0000000d, EXC_CHK_NONE}, // -normal intermediate
+    {0x7Fe1a570, 0x7fe1a570, 0x00000000, EXC_CHK_NONE}, // qnan intermediate
+    {0xfFc00000, 0xffc00000, 0x00000000, EXC_CHK_NONE}, // indeterninate
+    {0xFFC00001, 0xffc00001, 0x00000000, EXC_CHK_NONE}, // -qnan min
+	{0xFFd2ba31, 0xffd2ba31, 0x00000000, EXC_CHK_NONE}, // -qnan intermediate
+    {0xFFFFFFFF, 0xffffffff, 0x00000000, EXC_CHK_NONE}, // -qnan max
+    {0x7Fa0bd90, 0x7fa0bd90, 0x00000000, EXC_CHK_INVL}, // snan intermediate
+    {0xfF95fffa, 0xff95fffa, 0x00000000, EXC_CHK_INVL}, // -snan intermediate
+    {0x3FC90FDB, 0x3f490fdb, 0x00000001, EXC_CHK_NONE}, // pi/2
+    {0x40490FDB, 0x3f490fdb, 0x00000002, EXC_CHK_NONE}, // pi
+    {0x40C90FDB, 0x3f490fdb, 0x00000003, EXC_CHK_NONE}, // 2pi
+    {0x402DF853, 0x3f2df853, 0x00000002, EXC_CHK_NONE}, // e --
+    {0x402DF854, 0x3f2df854, 0x00000002, EXC_CHK_NONE}, // e
+    {0x402DF855, 0x3f2df855, 0x00000002, EXC_CHK_NONE}, // e ++
+    {0x00000000, 0x00000000, 0x00000000, EXC_CHK_NONE}, // 0
+    {0x37C0F01F, 0x3f40f01f, 0xfffffff1, EXC_CHK_NONE}, // 0.000023
+    {0x3EFFFEB0, 0x3f7ffeb0, 0xffffffff, EXC_CHK_NONE}, // 0.49999
+	{0x3F0000C9, 0x3f0000c9, 0x00000000, EXC_CHK_NONE}, // 0.500012
+    {0x80000000, 0x80000000, 0x00000000, EXC_CHK_NONE}, // -0
+    {0xb7C0F01F, 0xbf40f01f, 0xfffffff1, EXC_CHK_NONE}, // -0.000023
+    {0xbEFFFEB0, 0xbf7ffeb0, 0xffffffff, EXC_CHK_NONE}, // -0.49999
+    {0xbF0000C9, 0xbf0000c9, 0x00000000, EXC_CHK_NONE}, // -0.500012
+    {0x3f800000, 0x3f000000, 0x00000001, EXC_CHK_NONE}, // 1
+    {0x3f700001, 0x3f700001, 0x00000000, EXC_CHK_NONE}, // 0.93750006
+    {0x3F87FFFE, 0x3f07fffe, 0x00000001, EXC_CHK_NONE}, // 1.0624998
+    {0x3FBFFFAC, 0x3f3fffac, 0x00000001, EXC_CHK_NONE}, // 1.49999
+    {0x3FC00064, 0x3f400064, 0x00000001, EXC_CHK_NONE}, // 1.500012
+    {0xbf800000, 0xbf000000, 0x00000001, EXC_CHK_NONE}, // -1
+    {0xbf700001, 0xbf700001, 0x00000000, EXC_CHK_NONE}, // -0.93750006
+    {0xbF87FFFE, 0xbf07fffe, 0x00000001, EXC_CHK_NONE}, // -1.0624998
+    {0xbFBFFFAC, 0xbf3fffac, 0x00000001, EXC_CHK_NONE}, // -1.49999
+    {0xbFC00064, 0xbf400064, 0x00000001, EXC_CHK_NONE}, // -1.500012
+    {0x40000000, 0x3f000000, 0x00000002, EXC_CHK_NONE}, // 2
+    {0xc0000000, 0xbf000000, 0x00000002, EXC_CHK_NONE}, // -2
+	{0x41200000, 0x3f200000, 0x00000004, EXC_CHK_NONE}, // 10
+    {0xc1200000, 0xbf200000, 0x00000004, EXC_CHK_NONE}, // -10
+    {0x447A0000, 0x3f7a0000, 0x0000000a, EXC_CHK_NONE}, // 1000
+    {0xc47A0000, 0xbf7a0000, 0x0000000a, EXC_CHK_NONE}, // -1000
+    {0x4286CCCC, 0x3f06cccc, 0x00000007, EXC_CHK_NONE}, // 67.4
+    {0xc286CCCC, 0xbf06cccc, 0x00000007, EXC_CHK_NONE}, // -67.4
+    {0x44F7F333, 0x3f77f333, 0x0000000b, EXC_CHK_NONE}, // 1983.6
+    {0xc4F7F333, 0xbf77f333, 0x0000000b, EXC_CHK_NONE}, // -1983.6
+    {0x42AF0000, 0x3f2f0000, 0x00000007, EXC_CHK_NONE}, // 87.5
+    {0xc2AF0000, 0xbf2f0000, 0x00000007, EXC_CHK_NONE}, // -87.5
+    {0x48015E40, 0x3f015e40, 0x00000012, EXC_CHK_NONE}, // 132473
+    {0xc8015E40, 0xbf015e40, 0x00000012, EXC_CHK_NONE}, // -132473
+    {0x4B000000, 0x3f000000, 0x00000018, EXC_CHK_NONE}, // 2^23
+    {0x4B000001, 0x3f000001, 0x00000018, EXC_CHK_NONE}, // 2^23 + 1
+    {0x4AFFFFFF, 0x3f7fffff, 0x00000017, EXC_CHK_NONE}, // 2^23 -1 + 0.5
+    {0xcB000000, 0xbf000000, 0x00000018, EXC_CHK_NONE}, // -2^23
+    {0xcB000001, 0xbf000001, 0x00000018, EXC_CHK_NONE}, // -(2^23 + 1)
+    {0xcAFFFFFF, 0xbf7fffff, 0x00000017, EXC_CHK_NONE}  // -(2^23 -1 + 0.5)
+
+};
+

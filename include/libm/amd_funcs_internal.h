@@ -1,6 +1,8 @@
 #ifndef __LIBM_AMD_FUNCS_INTERNAL_H__
 #define __LIBM_AMD_FUNCS_INTERNAL_H__
 
+#include <libm_macros.h>
+
 /*
  * Copyright AMD Inc, 2008-2019, All rights reserved
  *

@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="lib">
+      <UniqueIdentifier>{f883d86f-df9e-42ae-91fd-ee595ddb462b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nag">
+      <UniqueIdentifier>{552de6f5-86af-4dff-ade1-d5cba75c29ff}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="acos.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="acosh.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="asin.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="asinh.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="atan.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="atan2.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="atanh.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="cbrt.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="ceil.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="copysign.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="cos.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="cosh.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="cospi.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="exp.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="exp10.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="exp2.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="expm1.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="fabs.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="fdim.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="finite.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="floor.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="fma.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="fmax.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="fmin.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="fmod.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="frexp.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="hypot.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="ilogb.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="ldexp.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="log.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="log10.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="log1p.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="log2.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="logb.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="modf.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="pow.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="remainder.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="remquo.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="rint.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="round.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="sin.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="sincos.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="sinh.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="sinpi.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="sqrt.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="tan.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="tanh.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="tanpi.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="trunc.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NAG\Tests\controlword.c">
+      <Filter>nag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NAG\Tests\cycles.c">
+      <Filter>nag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NAG\Tests\mallocDebug.c">
+      <Filter>nag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NAG\Tests\mparith_c.c">
+      <Filter>nag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NAG\Tests\mparith_f.c">
+      <Filter>nag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NAG\Tests\nanny.c">
+      <Filter>nag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NAG\Tests\statusword.c">
+      <Filter>nag</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

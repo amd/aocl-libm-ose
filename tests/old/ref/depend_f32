@@ -1,0 +1,161 @@
+controlword.o: ../nag/controlword.c ../nag/controlword.h \
+ ../nag/precision.h
+cycles.o: ../nag/cycles.c ../nag/cycles.h ../nag/precision.h \
+ ../nag/mparith_c.h ../nag/mparith_f.h ../nag/nanny.h \
+ ../nag/controlword.h ../nag/statusword.h
+mallocDebug.o: ../nag/mallocDebug.c ../nag/mallocDebug.h \
+ ../nag/precision.h
+mparith_c.o: ../nag/mparith_c.c ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+mparith_f.o: ../nag/mparith_f.c ../nag/mparith_f.h ../nag/precision.h
+nanny.o: ../nag/nanny.c ../nag/nanny.h ../nag/precision.h
+statusword.o: ../nag/statusword.c ../nag/statusword.h ../nag/precision.h \
+ ../nag/controlword.h
+sincos.o: sincos.c ../nag/precision.h ../nag/mparith_c.h \
+ ../nag/precision.h ../nag/mparith_f.h ../nag/nanny.h \
+ ../nag/controlword.h ../nag/statusword.h ../nag/cycles.h
+exp.o: exp.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+log.o: log.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+log10.o: log10.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+log2.o: log2.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+ilogb.o: ilogb.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+ldexp.o: ldexp.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+cos.o: cos.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+pow.o: pow.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+finite.o: finite.c ../nag/precision.h ../nag/mparith_c.h \
+ ../nag/precision.h ../nag/mparith_f.h ../nag/nanny.h \
+ ../nag/controlword.h ../nag/statusword.h ../nag/cycles.h
+remainder.o: remainder.c ../nag/precision.h ../nag/mparith_c.h \
+ ../nag/precision.h ../nag/mparith_f.h ../nag/nanny.h \
+ ../nag/controlword.h ../nag/statusword.h ../nag/cycles.h
+asin.o: asin.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+exp10.o: exp10.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+asinh.o: asinh.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+fma.o: fma.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+sqrt.o: sqrt.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+atan.o: atan.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+acosh.o: acosh.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+log1p.o: log1p.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+sin.o: sin.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+cosh.o: cosh.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+atan2.o: atan2.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+atanh.o: atanh.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+fmod.o: fmod.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+sinpi.o: sinpi.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+ceil.o: ceil.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+cospi.o: cospi.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+hypot.o: hypot.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+tan.o: tan.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+sinh.o: sinh.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+rint.o: rint.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+fabs.o: fabs.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+fmax.o: fmax.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+tanpi.o: tanpi.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+trunc.o: trunc.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+expm1.o: expm1.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+tanh.o: tanh.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+frexp.o: frexp.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+logb.o: logb.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+round.o: round.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+floor.o: floor.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+fdim.o: fdim.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+remquo.o: remquo.c ../nag/precision.h ../nag/mparith_c.h \
+ ../nag/precision.h ../nag/mparith_f.h ../nag/nanny.h \
+ ../nag/controlword.h ../nag/statusword.h ../nag/cycles.h
+acos.o: acos.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+exp2.o: exp2.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+copysign.o: copysign.c ../nag/precision.h ../nag/mparith_c.h \
+ ../nag/precision.h ../nag/mparith_f.h ../nag/nanny.h \
+ ../nag/controlword.h ../nag/statusword.h ../nag/cycles.h
+cbrt.o: cbrt.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+modf.o: modf.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h
+fmin.o: fmin.c ../nag/precision.h ../nag/mparith_c.h ../nag/precision.h \
+ ../nag/mparith_f.h ../nag/nanny.h ../nag/controlword.h \
+ ../nag/statusword.h ../nag/cycles.h

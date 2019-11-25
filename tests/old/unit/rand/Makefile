@@ -3,16 +3,16 @@ ALL_SRCS = $(wildcard *.cpp)
 ALL_EXES = $(addsuffix .exe,$(basename $(ALL_SRCS)))
 
 LINK_TYPE := 
-LINK_CMD  := -L. -lamdlibm -L../ref -lRef64 -lRef32
+LINK_CMD  := -L. -lamdlibm -L../../ref -lRef64 -lRef32
 
 #CFLAGS  := -I. -I../inc -I../inc/unit  -I../../../include
-CFLAGS  := -I. -I../inc -I../inc/unit -I../../../include
+CFLAGS  := -I. -I../../inc -I../../inc/unit -I../../../../include -I../range
 
 all:       depend link $(ALL_EXES)
 
 .PHONY: link
 link:
-	ln -sf ../../../build/aocl-release/src/libamdlibm.so
+	ln -sf ../../../../build/aocl-release/src/libamdlibm.so
 
 depend:    $(ALL_SRCS)
 	g++ $(CFLAGS) -MM $^ > $@

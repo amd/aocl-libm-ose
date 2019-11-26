@@ -34,7 +34,6 @@ libm_test_s1s_perf(struct libm_test *test)
     struct libm_test_data *data = &test->test_data;
     struct libm_test_result *result = &test->result;
     struct libm_test_ops *ops = &test->ops;
-    double *restrict o = data->output;
     uint64_t sz = data->nelem;
     uint64_t n = test->conf->niter;
 
@@ -48,7 +47,7 @@ libm_test_s1s_perf(struct libm_test *test)
 
     for (uint32_t i = 0; i < n ; ++i) {
         for (uint32_t j = 0; j < sz; j++) {
-            o[j] = ops->callbacks.s1s(test, j);
+            ops->callbacks.s1s(test, j);
         }
     }
 
@@ -66,7 +65,6 @@ libm_test_s1d_perf(struct libm_test *test)
     struct libm_test_data *data = &test->test_data;
     struct libm_test_result *result = &test->result;
     struct libm_test_ops *ops = &test->ops;
-    double *restrict o = data->output;
     uint64_t sz = data->nelem;
     uint64_t n = test->conf->niter;
 
@@ -80,7 +78,7 @@ libm_test_s1d_perf(struct libm_test *test)
 
     for (uint32_t i = 0; i < n ; ++i) {
         for (uint32_t j = 0; j < sz; j++) {
-            o[j] = ops->callbacks.s1d(test, j);
+            ops->callbacks.s1d(test, j);
         }
     }
 

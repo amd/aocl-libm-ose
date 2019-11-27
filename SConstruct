@@ -26,8 +26,8 @@ makedirs(build_root, exist_ok=True)
 
 gvars = Variables(defcfg.def_env_file, args=ARGUMENTS)
 gvars.AddVariables(
-    ('CC', 'C compiler', environ.get('CC', env['CC'])),
-    ('CXX', 'C++ compiler', environ.get('CXX', env['CXX'])),
+    #('CC', 'C compiler', environ.get('CC', env['CC'])),
+    #('CXX', 'C++ compiler', environ.get('CXX', env['CXX'])),
     ('BUILDROOT', 'Build root', environ.get('BUILDROOT', env['BUILDROOT']))
 )
 

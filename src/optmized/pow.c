@@ -235,7 +235,7 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign)
     /* Table size = 1024. Here N = 10 */
     int32_t index = n % (1 << N);
     r = temp - (dn * LOG2_BY_N_HEAD);
-    int64_t m = (n - index) << (EXPSHIFTBITS_DP64 - N);
+    int64_t m = ((n - index) << (EXPSHIFTBITS_DP64 - N)) + 0x3ff0000000000000;
     r = (r - (LOG2_BY_N_TAIL * dn)) + vt;
     /*
      * Taylor's series to evaluate exp(r)
@@ -274,9 +274,9 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign)
             return result;
         }
     }
-    n = asuint64(result);
-    result = asdouble((m + n) | result_sign);
-    return result;
+
+    z = asdouble(m | result_sign);
+    return result * z;
 }
 
 static inline uint32_t checkint(uint64_t u)

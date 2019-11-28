@@ -11,8 +11,8 @@ from SCons.Script import Environment, ARGUMENTS, BoolVariable, EnumVariable, Pat
 from SCons.Util import AddMethod
 
 from . import cfg
-#from .compiler import gcc, llvm, icc
-from . import compiler
+from .compiler import gcc, llvm, icc
+#from . import compiler
 
 class DefaultCfg(object):
     def __default_store(self, option, opt_str, value, parser):
@@ -152,6 +152,15 @@ class DefaultCfg(object):
 
         env.Append(
             CPPDEFINES = { 'LIBABI': env['libabi']})
+
+        cmpiler = compiler.gcc.Gcc(self.defenv['build'])	
+        print(env['compiler'])	
+        if env['compiler'] == 'aocc' or env['compiler'] == 'llvm':	
+            cmpiler = compiler.llvm.LLVM(self.defenv['build'])	
+        env.Replace(	
+            CC = cmpiler.Cmd(),	
+            CCFLAGS = cmpiler.CFlags(),	
+        )
 
         #print("developer=> ", env['developer'])
 

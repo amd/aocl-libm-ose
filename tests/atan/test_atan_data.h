@@ -4,7 +4,7 @@
 /* Test cases to check for exceptions for the atan() routine. These test cases are not exhaustive */
 static struct __libm_test_conformance_test_data_double libm_test_atan_conformance_data[] = {
     {0x0000000000000000, 0x0000000000000000, 0},	//0
-    {0x8000000000000000, 0x0000000000000000, 0},    //-0
+    {0x8000000000000000, 0x8000000000000000, 0},    //-0
     {0x3FF0000000000000, 0x3fe921fb54442d18, 32},    //1
     {0xbff0000000000000, 0xbfe921fb54442d18, 32},    //-1
     {0x7ff0000000000000, 0x3ff921fb54442d18, 0},   //+inf
@@ -19,7 +19,7 @@ static struct __libm_test_conformance_test_data_double libm_test_atan_conformanc
 
 /* Test cases to check for exceptions for the atanf() routine. These test cases are not exhaustive */
 static struct __libm_test_conformance_test_data_float libm_test_atanf_conformance_data[] = {
-    {0x00000000, 0x00000000, 4},    //atanf(0) is 0
+    {0x00000000, 0x00000000, 0},    //atanf(0) is 0
     {0x3f800000, 0x3f490fdb, 32},   //atanf(1) = 0.785398 rads
     {0x3f13cd36, 0x3f060a8f, 32},   //atanf(sqrt(3)/3)  == 30 deg
     {0x3fddb574, 0x3f860af9, 32},    //atanf(sqrt(3) == 60 deg

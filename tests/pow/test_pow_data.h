@@ -19,7 +19,7 @@ static struct __libm_test_conformance_test_data_float_2 libm_test_powf_conforman
 	{0x7fbfffff, 0x7fa00000, 0x7fbfffff, FE_INVALID}, //nan, snan
 	{0x7fa00000, 0x7fa00000, 0x7fa00000, FE_INVALID}, //powf(snan, snan)
 	{0x3f800000, 0x7fa00000, 0x3f800000, FE_INVALID},//1.0, nan
-	{0x3f800000, 0x7ffe0000, 0x3f800000, FE_INVALID},//1.0, qnan
+	{0x3f800000, 0x7ffe0000, 0x3f800000, 0},//1.0, qnan
 	{0x3f000000, 0x7fa00000, 0x7fa00000, FE_INVALID}, // 0.5, snan
 	{0x7fa00000, 0x3f000000, 0x7fe00000, FE_INVALID},//snan, 0.5
 	{0x7ffe0000, 0x7ffe0000, 0x7ffe0000, 0}, //qnan , qnan

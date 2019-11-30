@@ -122,7 +122,7 @@ WEAK_LIBM_ALIAS(sinhf, FN_PROTOTYPE(sinhf));
 WEAK_LIBM_ALIAS(sinpi, FN_PROTOTYPE(sinpi));
 WEAK_LIBM_ALIAS(sinpif, FN_PROTOTYPE(sinpif));
 WEAK_LIBM_ALIAS(sqrt, FN_PROTOTYPE(sqrt));
-WEAK_LIBM_ALIAS(sqrtf, FN_PROTOTYPE(sqrtf));
+//WEAK_LIBM_ALIAS(sqrtf, FN_PROTOTYPE(sqrtf)); // sqrtf doesnt' exists in libm yet
 WEAK_LIBM_ALIAS(tan, FN_PROTOTYPE(tan));
 WEAK_LIBM_ALIAS(tanf, FN_PROTOTYPE(tanf));
 WEAK_LIBM_ALIAS(tanh, FN_PROTOTYPE(tanh));

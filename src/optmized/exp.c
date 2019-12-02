@@ -113,16 +113,19 @@ FN_PROTOTYPE_OPT(exp)(double x)
         if (exponent - top12 (0x1p-54) >= 0x80000000)
             return 1.0;
 
-	if (x >= FMAX_X) {
+	if (x > FMAX_X) {
                 if (isnan(x))
-			return  _exp_special(x, asdouble(QNANBITPATT_DP64), EXP_Y_INF);
+                    return  _exp_special(x, asdouble(QNANBITPATT_DP64), EXP_X_NAN);
 
-                return  _exp_special(x, asdouble(PINFBITPATT_DP64), EXP_X_NAN);
+                if(x == INFINITY)
+                    return x; /* No exception to be raised */
+
+                return  _exp_special(x, asdouble(PINFBITPATT_DP64),  EXP_Y_INF);
 	}
 
 	if (x <= FMIN_X) {
 		if (asuint64(x) == NINFBITPATT_DP64)
-                        return  _exp_special(x, x, EXP_Y_ZERO);
+                        return  0.0; /* No exception to be raised */
 
 		return _exp_special(x, 0.0, EXP_Y_ZERO);
 	}
@@ -169,7 +172,7 @@ FN_PROTOTYPE_OPT(exp)(double x)
 #define HORNER_SCHEME  0xef
 
 #define POLY_EVAL_METHOD ESTRIN_SCHEME
-
+#define EXP_POLY_DEGREE 6
 #if POLY_EVAL_METHOD == HORNER_SCHEME
 #if !defined(EXP_POLY_DEGREE)
 #define EXP_POLY_DEGREE 6

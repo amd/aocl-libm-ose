@@ -42,6 +42,8 @@ G * Author: Prem Mallappa <pmallapp@amd.com>
 #define EXPF_TABLE_SIZE (1 << EXPF_N)
 #define EXPF_MAX_POLY_DEGREE 4
 
+#define EXP_Y_ZERO      2
+#define EXP_Y_INF       3
 /*
  * expf_data.h needs following to be defined before include
  *    - EXPF_N
@@ -83,6 +85,8 @@ static struct expf_data expf_v2_data = {
 #define EXPF_FARG_MIN -0x1.9fe368p6f    /* log(0x1p-150) ~= -103.97 */
 #define EXPF_FARG_MAX  0x1.62e42ep6f    /* log(0x1p128)  ~=   88.72  */
 
+double _exp_special(double x, double y, uint32_t code);
+
 static uint32_t
 top12f(float x)
 {
@@ -113,14 +117,22 @@ FN_PROTOTYPE_OPT(expf)(float x)
     uint32_t top = top12f(x);
 
     if (unlikely (top > top12f(88.0f))) {
+        if(isnanf(x))
+            return x;
+
         if (asuint32(x) == asuint32(-INFINITY))
             return 0.0f;
 
-        if (x > EXPF_FARG_MAX)
-            return asfloat(PINFBITPATT_SP32);
+        if (x > EXPF_FARG_MAX){
+            if(asuint32(x) == PINFBITPATT_SP32)
+                return asfloat(PINFBITPATT_SP32);
 
-        if (x < EXPF_FARG_MIN)
-            return 0.0f;
+            return  _exp_special(x, asdouble(PINFBITPATT_DP64),  EXP_Y_INF);
+        }
+
+        if (x < EXPF_FARG_MIN){
+            return _exp_special(x, 0.0, EXP_Y_ZERO);;
+        }
     }
 
     z = x *  EXPF_TBLSZ_BY_LN2;

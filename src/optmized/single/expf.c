@@ -54,14 +54,16 @@ G * Author: Prem Mallappa <pmallapp@amd.com>
 
 #include "expf_data.h"
 
-static struct expf_data expf_v2_data = {
+
+
+static const struct expf_data expf_v2_data = {
     .ln2by_tblsz = 0x1.62e42fefa39efp-7,
     .tblsz_byln2 = 0x1.71547652b82fep+6,
     .Huge = 0x1.8000000000000p+52,
 #if EXPF_N == 6
-    .table_v3 = (double*)L__two_to_jby64_table,
+    .table_v3 = __two_to_jby64,
 #elif EXPF_N == 5
-    .table_v3 = (double*)L__two_to_jby32_table,
+    .table_v3 = &__two_to_jby32,
 #endif
 
     .poly = {
@@ -80,7 +82,7 @@ static struct expf_data expf_v2_data = {
 #define EXPF_LN2_BY_TBLSZ  expf_v2_data.ln2by_tblsz
 #define EXPF_TBLSZ_BY_LN2  expf_v2_data.tblsz_byln2
 #define EXPF_HUGE	   expf_v2_data.Huge
-#define EXPF_TABLE         expf_v2_data.table
+#define EXPF_TABLE         expf_v2_data.table_v3
 
 #define EXPF_FARG_MIN -0x1.9fe368p6f    /* log(0x1p-150) ~= -103.97 */
 #define EXPF_FARG_MAX  0x1.62e42ep6f    /* log(0x1p128)  ~=   88.72  */
@@ -163,7 +165,7 @@ FN_PROTOTYPE_OPT(expf)(float x)
 
     double_t r2 = r * r;
 
-    double_t tbl = asdouble(L__two_to_jby64_table[j] + (n << (52 - EXPF_N)));
+    double_t tbl = asdouble(asuint64(EXPF_TABLE[j]) + (n << (52 - EXPF_N)));
 
     q  = r  + (r2 * qtmp);
 

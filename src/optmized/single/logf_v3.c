@@ -49,7 +49,7 @@ static struct {
     /* Polynomial constants for cases near to 1 */
     .poly1 = {
         8.33333333333317923934e-02f,    /* A1 */
-        1.25000000037717509602e-02,         /* A2 */
+        1.25000000037717509602e-02,     /* A2 */
     },
 };
 
@@ -164,31 +164,34 @@ FN_PROTOTYPE_OPT(logf_v3)(float x)
     /*
      * Here onwards, 'x' is neither -ve, nor close to 1
      */
-    uint32_t mant  = ux & MANTBITS_SP32;
-    uint32_t mant1 = ux & MASK_MANT_ALL7;
+    uint32_t mant, mant1, idx;
+    float_t  y, f, finv, r, r2, q, w;
+
+    mant   = ux & MANTBITS_SP32;
+    mant1  = ux & MASK_MANT_ALL7;
     mant1 += ((ux & MASK_MANT8) << 1);
 
-    uint32_t idx = mant1 >> (EXPSHIFTBITS_SP32 - LOGF_N);
+    idx = mant1 >> (EXPSHIFTBITS_SP32 - LOGF_N);
 
-    float_t y = asfloat(mant  | HALFEXPBITS_SP32);
-    float_t f = asfloat(mant1 | HALFEXPBITS_SP32);
+    y = asfloat(mant  | HALFEXPBITS_SP32);
+    f = asfloat(mant1 | HALFEXPBITS_SP32);
 
     const struct logf_tbl_interleaved *tbl =
         &((struct logf_tbl_interleaved *)logf_data.tab)[idx];
 
-    float_t finv = tbl->f_inv;
+    finv = tbl->f_inv;
 
-    float_t r = (f - y) * finv;
+    r = (f - y) * finv;
 
 #define C1 logf_data.poly[0]
 #define C2 logf_data.poly[1]
 
-    float_t r2 = r * r;                 /* r^2 */
-    float_t q = r + (r2 * (C1 + r * C2));
+    r2 = r * r;                 /* r^2 */
+    q = r + (r2 * (C1 + r * C2));
 
     q = f_expo * LOG2_TAIL - q;
 
-    float_t w = (LOG2_HEAD * f_expo) + tbl->f_128_head;
+    w = (LOG2_HEAD * f_expo) + tbl->f_128_head;
 
     q = (tbl->f_128_tail + q) + w;
 

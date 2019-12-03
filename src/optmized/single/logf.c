@@ -24,16 +24,14 @@
 #include <libm/typehelper.h>
 #include <libm/compiler.h>
 
+#include "logf_data.h"
+
 #define MASK_MANT_ALL7 0x007f0000
 #define MASK_MANT8 0x00008000
 #define MASK_SIGN 0x7FFFFFFF
 #define N 7
 #define TABLE_SIZE (1ULL << N)
 #define NEAR_ONE_THRESHOLD 0x3d800000
-
-struct logf_table {
-    uint32_t f_inv, f_128_head, f_128_tail;
-};
 
 static struct {
     float_t poly_logf[4];

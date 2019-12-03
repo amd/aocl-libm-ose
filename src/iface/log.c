@@ -16,6 +16,7 @@ typedef __m128d (*amd_log_v2d_t)(__m128d);
 typedef __m256d (*amd_log_v4d_t)(__m256d);
 typedef __m128  (*amd_log_v4s_t)(__m128);
 
+extern float FN_PROTOTYPE_OPT(logf_v3)(float);
 
 void
 LIBM_IFACE_PROTO(log)(void *arg)
@@ -40,7 +41,7 @@ LIBM_IFACE_PROTO(log)(void *arg)
     if (CPU_HAS_AVX2(features) &&
         CPU_FEATURE_AVX2_USABLE(features)) {
 /*	    fn_d = &FN_PROTOTYPE_OPT(log); */
-	    fn_s = &FN_PROTOTYPE_OPT(logf);
+	    fn_s = &FN_PROTOTYPE_OPT(logf_v3);
     } else if (CPU_HAS_SSSE3(features) &&
                CPU_FEATURE_SSSE3_USABLE(features)) {
 	    fn_d = &FN_PROTOTYPE_BAS64(log);

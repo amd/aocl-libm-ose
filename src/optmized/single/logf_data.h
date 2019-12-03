@@ -10,6 +10,6 @@
 #include "libm/typehelper.h"
 
 struct logf_table {
-    uint32_t f_inv, f_128_head, f_128_tail;
+    float_t f_inv, f_128_head, f_128_tail;
 };
 

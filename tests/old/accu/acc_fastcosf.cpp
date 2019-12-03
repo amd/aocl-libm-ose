@@ -1,10 +1,10 @@
 //
 //Test cases are from ACML test
 //
-#include "../inc/DataTypes.h"
-#include "../inc/Buffer.h"
-#include "../inc/Timer.h"
-#include "../inc/Constants.h"
+#include "../inc/accu/DataTypes.h"
+#include "../inc/accu/Buffer.h"
+#include "../inc/accu/Timer.h"
+#include "../inc/accu/Constants.h"
 #include<math.h>
 #ifdef __INTEL_COMPILER
 #define S_SP_COS cosf

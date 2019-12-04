@@ -7,6 +7,8 @@ build_type=$1
 
 echo $build_type
 
+scons -c;
+
 if [ $build_type = "debug" ];
 then
     scons --debug_mode=all tests
@@ -14,17 +16,21 @@ then
 
 elif [ $build_type = "release" ];
 then
-    scons -j32 tests
+    scons tests
     build_dir="aocl-release"
 
 elif [ $build_type = "developer" ];
 then
     scons --developer=2 tests
     build_dir="aocl-dev2"
+
+else
+    echo "invalid option:choose from debug or release"
+    exit 1
 fi
 
 `pwd`/scripts/run/pow.sh "$build_dir"
 `pwd`/scripts/run/log.sh "$build_dir"
-`pwd`/scripts/run/expf.sh "$build_dir"
+`pwd`/scripts/run/exp.sh "$build_dir"
 `pwd`/scripts/run/fabs.sh "$build_dir"
 `pwd`/scripts/run/atan.sh "$build_dir"

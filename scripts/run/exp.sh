@@ -2,12 +2,27 @@
 #!/bin/bash
 build_dir="$1"
 BUILD=${BUILD:="build/$build_dir"}
-TEST="log"
+TEST="exp"
 echo $BUILD
 echo $TEST
 EXE=${BUILD}/tests/$TEST/test_$TEST
 
-xranges=(-740,710)
+#declare -a ranges
+xranges=(-127.0,-111.9 \
+    -111.99,-109.99 \
+    -109.9,108.0 \
+    -107.9999,-10 \
+    -10.0,-1    \
+    -1.0,-0    \
+    -1.0,1    \
+    0.0,1    \
+    0,1    \
+    1,2    \
+    2,10    \
+    10,88.7    \
+    88.7,90    \
+    87,89    \
+    89,200)
 
 run_test()
 {
@@ -51,5 +66,4 @@ run_test "v4s" "perf"
 run_test "v4s" "accu"
 
 echo "Ran tests for $TEST()"
-
 

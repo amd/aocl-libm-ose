@@ -5,6 +5,8 @@ git pull
 
 build_type=$1
 
+test_type=$2
+
 echo $build_type
 
 scons -c;
@@ -25,12 +27,12 @@ then
     build_dir="aocl-dev2"
 
 else
-    echo "invalid option:choose from debug or release"
+    echo "Invalid option:choose from debug or release"
     exit 1
 fi
 
-`pwd`/scripts/run/pow.sh "$build_dir"
-`pwd`/scripts/run/log.sh "$build_dir"
-`pwd`/scripts/run/exp.sh "$build_dir"
-`pwd`/scripts/run/fabs.sh "$build_dir"
-`pwd`/scripts/run/atan.sh "$build_dir"
+`pwd`/scripts/run/pow.sh "$build_dir" "$test_type"
+`pwd`/scripts/run/log.sh "$build_dir" "$test_type"
+`pwd`/scripts/run/exp.sh "$build_dir" "$test_type"
+`pwd`/scripts/run/fabs.sh "$build_dir" "$test_type"
+`pwd`/scripts/run/atan.sh "$build_dir" "$test_type"

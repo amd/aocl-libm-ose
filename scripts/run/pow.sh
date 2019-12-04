@@ -1,5 +1,8 @@
 #!/bin/bash
 build_dir="$1"
+
+test_type="$2"
+
 BUILD=${BUILD:="build/$build_dir"}
 TEST="pow"
 echo $BUILD
@@ -58,22 +61,24 @@ if [ ! -f ${EXE} ]; then
 fi    
 
 echo "Running tests for $TEST()"
-run_test "s1d" "perf"
-run_test "s1d" "accu"
-run_test "s1d" "conf"
-run_test "s1d" "perf"
 
-run_test "s1f" "perf"
-run_test "s1f" "accu"
-run_test "s1f" "conf"
-run_test "s1f" "special"
+input_types=("s1d","s1f",)
+test_types=("perf","accu","conf","special")
 
-run_test "v2d" "perf"
-run_test "v2d" "accu"
-run_test "v4d" "perf"
-run_test "v4d" "accu"
+if [ $test_type = "all" ]; then
+for inp in ${input_types[@]};
+    do
+        for t in ${test_types[@]};
+            do
+                run_test $inp $t
+            done
+    done
 
-run_test "v4s" "perf"
-run_test "v4s" "accu"
+else
+    for inp in ${input_types[@]};
+        do
+            run_test $inp $test_type;
+        done
+fi
 
 echo "Ran tests for $TEST()"

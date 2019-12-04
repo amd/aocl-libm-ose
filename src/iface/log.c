@@ -40,8 +40,8 @@ LIBM_IFACE_PROTO(log)(void *arg)
 
     if (CPU_HAS_AVX2(features) &&
         CPU_FEATURE_AVX2_USABLE(features)) {
-/*	    fn_d = &FN_PROTOTYPE_OPT(log); */
-	    fn_s = &FN_PROTOTYPE_OPT(logf_v3);
+            //fn_d = &FN_PROTOTYPE_OPT(log);	/* we dont have an optimized log yet */
+	    fn_s = &FN_PROTOTYPE_OPT(logf);
     } else if (CPU_HAS_SSSE3(features) &&
                CPU_FEATURE_SSSE3_USABLE(features)) {
 	    fn_d = &FN_PROTOTYPE_BAS64(log);

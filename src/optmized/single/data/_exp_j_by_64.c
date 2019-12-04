@@ -71,7 +71,6 @@ const uint64_t __two_to_jby64[] = {
     0x3fefba1bee615a27,
     0x3fefd0765b6e4540,
     0x3fefe7c1819e90d8,
-#endif
 
 };
 

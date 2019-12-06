@@ -165,7 +165,8 @@ FN_PROTOTYPE_OPT(logf)(float x)
 
     mant   = ux & MANTBITS_SP32;
     mant1  = ux & MASK_MANT_ALL7;
-    mant1 += ((ux & MASK_MANT8) << 1);
+    /*This step is needed for more accuracy */
+/*    mant1 += ((ux & MASK_MANT8) << 1); */
 
     idx = mant1 >> (EXPSHIFTBITS_SP32 - LOGF_N);
 

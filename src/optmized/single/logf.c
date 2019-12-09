@@ -15,10 +15,10 @@
 #include <libm/typehelper.h>
 #include <libm/compiler.h>
 
-#define MASK_MANT_ALL7 0x007f0000
+#define MASK_MANT_ALL7 0x007f8000
 #define MASK_MANT8 0x00008000
 #define MASK_SIGN 0x7FFFFFFF
-#define LOGF_N		  7
+#define LOGF_N		  8
 #define LOGF_POLY_DEGREE  2
 
 #define FLAG_X_ZERO 0x1

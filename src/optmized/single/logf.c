@@ -149,8 +149,8 @@ FN_PROTOTYPE_OPT(logf)(float x)
     int32_t expo = (ux >> EXPSHIFTBITS_SP32) - EMAX_SP32;
     float_t f_expo = (float_t)expo;
 
-#define NEAR_ONE_LO asuint32(1 - 0x1.0p-5)
-#define NEAR_ONE_HI asuint32(1 + 0x1.1p-5)
+#define NEAR_ONE_LO asuint32(1 - 0x1.0p-4)
+#define NEAR_ONE_HI asuint32(1 + 0x1.1p-4)
 
     /* Values very close to 1, e^(-1/16) <= x <= e^(1/16)*/
     if (unlikely(ux - NEAR_ONE_LO < NEAR_ONE_HI - NEAR_ONE_LO)) {

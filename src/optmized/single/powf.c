@@ -199,9 +199,14 @@ calculate_log(double_t x)
 
     dexpo = (double)expo;
     uint64_t mant_n = ux & MANT_MASK_N;
-    uint64_t mant_n1 = ux & MANT_MASK_N1;
 
-    uint64_t j = (mant_n + (mant_n1 << 1));
+    /*
+     * Step needed for better accuracy
+    uint64_t mant_n1 = ux & MANT_MASK_N1;
+    uint64_t j = (mant_n) + (mant_n1 << 1);
+    */
+
+    uint64_t j = (mant_n);
 
     mant.i |= 0x3fe0000000000000ULL;               /* F */
     j_times_half = asdouble(0x3fe0000000000000ULL | j); /* Y */

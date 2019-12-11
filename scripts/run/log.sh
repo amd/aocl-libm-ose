@@ -10,7 +10,7 @@ echo $BUILD
 echo $TEST
 EXE=${BUILD}/tests/$TEST/test_$TEST
 
-xranges=(-740,710)
+xranges=(0,710)
 
 run_test()
 {

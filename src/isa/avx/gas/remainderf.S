@@ -232,7 +232,7 @@ fname:
     cvtsd2ss %xmm2,%xmm0
     ret
 
-.ALIGN 16
+.align 16
 .L__Y_is_Zero:
        movaps .L__Qnan(%rip),%xmm1
        mov    .L__flag_y_zero(%rip),%edi
@@ -241,7 +241,7 @@ fname:
  
 
 .section .rodata
-.ALIGN 16    
+.align 16    
 .L__flag_x_nan:            .long 00000001
 .L__flag_y_zero:           .long 00000002
 .L__flag_x_Dividend_Inf:   .long 00000003

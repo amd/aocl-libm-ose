@@ -21,8 +21,10 @@
 #define MANTISSA_11_BIT 0x0000020000000000
 
 #if !defined(ENABLE_DEBUG)
+#ifndef __clang__
 #pragma GCC push_options
 #pragma GCC optimize ("O3")
+#endif
 #endif  /* !DEBUG */
 
 #define likely(x)   __builtin_expect (!!(x), 1)
@@ -419,5 +421,7 @@ FN_PROTOTYPE_OPT(pow)(double x, double y)
 }
 
 #if !defined(ENABLE_DEBUG)
+#ifndef __clang__
 #pragma GCC pop_options
+#endif
 #endif

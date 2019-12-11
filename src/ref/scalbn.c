@@ -24,7 +24,7 @@ double FN_PROTOTYPE_REF(scalbn)(double x, int n)
 		    }
         #endif
 
-    if((val.u64 == 0x7ff0000000000000))/* x = +-inf*/
+    if(val.u64 == 0x7ff0000000000000)/* x = +-inf*/
         return x;
 
     if((val.u64 == 0x0000000000000000) || (n==0))

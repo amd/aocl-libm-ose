@@ -215,7 +215,7 @@ fname:
    
     
 .section .rodata
-.ALIGN 16
+.align 16
 # these codes and the ones in the corresponding .c file have to match
 .L__flag_x_zero:         .long 00000001
 .L__flag_x_neg:          .long 00000002

@@ -324,6 +324,7 @@ int libm_setup_s1d_special_2(struct libm_test *test, struct __libm_test_internal
 
 #define PROTOTYPE_GLIBC    0xf1
 #define PROTOTYPE_AOCL     0xf2
+#define PROTOTYPE_AMDLIBM  0xf3
 #define PROTOTYPE_TEST_V1  0xf8
 #define PROTOTYPE_TEST_V2  0xf9
 
@@ -331,6 +332,10 @@ int libm_setup_s1d_special_2(struct libm_test *test, struct __libm_test_internal
 #define LIBM_FUNC(x) FN_PROTOTYPE(x)
 #define LIBM_FUNC_VEC(prec, elem, fn) FN_PROTOTYPE(vr##prec##elem##_##fn)
 #pragma message "compilig for AOCL"
+#elif (LIBM_PROTOTYPE == PROTOTYPE_AMDLIBM)
+#define LIBM_FUNC(x) FN_PROTOTYPE(x)
+#define LIBM_FUNC_VEC(prec, elem, fn) FN_PROTOTYPE_FMA3(vr##prec##elem##_##fn)
+#pragma message "compilig for older versions of AMDLIBM"
 #elif (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
 #pragma message "compilig for GLIBC"
 #define LIBM_FUNC(x)    x

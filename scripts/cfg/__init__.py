@@ -63,9 +63,10 @@ class DefaultCfg(object):
         opts.Add('--libabi', dest='libabi', nargs=1, action='callback',
                  callback=self.__default_store,
                  default='aocl', type='choice',
-                 choices=['aocl', 'glibc', 'libm', 'svml'],
+                 choices=['aocl', 'glibc', 'libm', 'svml','amdlibm'],
                  help="""Compile tests to call this abi
                       aocl  - AOCL, functions prefixed with 'amd_*'
+                      amdlibm - Compiling for older versions of AMDLIBM (prior to v2.1)
                       glibc - GLIBC abi calls, functions prefixed with '__ieee_*'
                       libm  - Usual C Standard library calls: exp, pow, sin, cos etc.
                       svml  - Intel SVML calls
@@ -108,7 +109,7 @@ class DefaultCfg(object):
                          map={}, ignorecase=0),  # case sensitive
 	        # test abi makes tests to call out for given library call
             EnumVariable('libabi', 'Test ABI for library function calling', 'aocl',
-                         allowed_values=('aocl', 'glibc', 'libm', 'acml'),
+                         allowed_values=('aocl', 'glibc', 'libm', 'acml','amdlibm'),
                          map={}, ignorecase=2),  # lowercase always
             EnumVariable('developer', 'A developer friendly mode', 0,
                          allowed_values=('0', '1', '2', '3', '4'),
@@ -168,7 +169,7 @@ class DefaultCfg(object):
             env.Append(CPPDEFINES = {'ENABLE_GLIBC_API' : 1})
         elif env['libabi'] == 'libm':
             env.Append(CPPDEFINES = {'ENABLE_LIBM_API' : 1})
-        elif env['libabi'] == 'acml' or env['libabi'] == 'aocl':
+        elif env['libabi'] == 'acml' or env['libabi'] == 'aocl' or env['libabi'] == 'amdlibm':
             env.Append(CPPDEFINES = {'ENABLE_AMDLIBM_API' : 1})
 
         if env['developer'] != 0:

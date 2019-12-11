@@ -28,6 +28,10 @@
 #define _ZGVsN8v_powf _ZGVbN8vv_powf
 #endif
 
+#if (LIBM_PROTOTYPE == PROTOTYPE_AMDLIBM)
+#define __amd_fma3_vrs4_powf amd_vrs4_powf /* As there is no __amd_fma3_vrs4_powf implementation yet */
+#endif
+
 char doc[] = BUILD_TEST_DOC(TEST_NAME);
 
 double LIBM_FUNC(pow)(double, double);

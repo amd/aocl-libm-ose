@@ -211,6 +211,14 @@ double test_pow_ulp(struct libm_test *test, int idx)
     return pow(buf1[idx], buf2[idx]);
 }
 
+long double
+test_pow_powl(struct libm_test *test, int idx)
+{
+    double *d = (double*)test->test_data.input1;
+    double *d1 = (double*)test->test_data.input2;
+    return powl(d[idx], d1[idx]);
+}
+
 /*test functiosn for pow*/
 struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
     {
@@ -242,6 +250,7 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                                         },
                          .accuracy     = {.setup = libm_test_accu_setup,
                                           .run   = libm_test_accu,
+                                          .ulp = {.funcl = test_pow_powl},
                                          },
 
                          .special      = {.setup = test_pow_special_setup,
@@ -261,6 +270,7 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                           .accuracy = {
                                           .setup = libm_test_accu_setup,
                                           .run = libm_test_accu,
+                                          .ulp = {.func = test_pow_ulp},
                            },
      },
      [LIBM_FUNC_V2D] = {
@@ -270,6 +280,7 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                           .accuracy = {
                                          .setup = libm_test_accu_setup,
                                          .run = libm_test_accu,
+                                         .ulp = {.funcl = test_pow_powl},
                            },
      },
      [LIBM_FUNC_V4D] = {
@@ -279,6 +290,7 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                           .accuracy = {
                                          .setup = libm_test_accu_setup,
                                          .run = libm_test_accu,
+                                         .ulp = {.funcl = test_pow_powl},
                            },
      },
 
@@ -288,21 +300,13 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
 
 int test_pow_verify(struct libm_test *test, struct libm_test_result *result);
 
-long double
-test_pow_powl(struct libm_test *test, int idx)
-{
-    double *d = (double*)test->test_data.input1;
-    double *d1 = (double*)test->test_data.input2;
-    return powl(d[idx], d1[idx]);
-}
-
 static struct libm_test
 pow_template = {
     .name       = "pow",
     .nargs      = 2,
     .ulp_threshold = 0.5,
     .ops        = {
-                    .ulp    = {.funcl = test_pow_powl},
+                    //.ulp    = {.funcl = test_pow_powl},
                     .verify = test_pow_verify,
                     .callbacks = {
                                     .s1s = test_pow_cb_s1s,

@@ -184,6 +184,13 @@ double test_log_ulp(struct libm_test *test, int idx)
     return log(buf[idx]);
 }
 
+long double
+test_log_logl(struct libm_test *test, int idx)
+{
+    double *d = (double*)test->test_data.input1;
+    return logl(d[idx]);
+}
+
 /*test functiosn for log*/
 struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
     {
@@ -215,6 +222,7 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                                         },
                          .accuracy     = {.setup = libm_test_accu_setup,
                                           .run   = libm_test_accu,
+                                          .ulp = {.funcl = test_log_logl},
                                          },
 
                          .special      = {.setup = test_log_special_setup,
@@ -233,6 +241,7 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                                         },
                          .accuracy     = {.setup = libm_test_accu_setup,
                                           .run   = libm_test_accu,
+                                          .ulp = {.func = test_log_ulp},
                                          },
                           /*
                           .conformance  = {.setup = test_log_conf_setup,
@@ -248,6 +257,7 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                           .accuracy = {
                                          .setup = libm_test_accu_setup,
                                          .run = libm_test_accu,
+                                         .ulp = {.funcl = test_log_logl},
                            },
      },
      [LIBM_FUNC_V4D] = {
@@ -256,21 +266,13 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                            },
                           .accuracy = {   .setup = libm_test_accu_setup,
                                           .run = libm_test_accu,
+                                          .ulp = {.funcl = test_log_logl},
                            },
      },
 
 };
 
-
 int test_log_verify(struct libm_test *test, struct libm_test_result *result);
-
-long double
-test_log_logl(struct libm_test *test, int idx)
-{
-    double *d = (double*)test->test_data.input1;
-//    printf("input inside test_log_log1 is %g",d[idx]);
-    return logl(d[idx]);
-}
 
 static struct libm_test
 log_template = {
@@ -278,7 +280,7 @@ log_template = {
     .nargs      = 1,
     .ulp_threshold = 0.5,
     .ops        = {
-                    .ulp    = {.funcl = test_log_logl},
+                    //.ulp    = {.funcl = test_log_logl},
                     .verify = test_log_verify,
                     .callbacks = {
                                     .s1s = test_log_cb_s1s,

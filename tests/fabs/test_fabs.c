@@ -96,6 +96,13 @@ double test_fabs_ulp(struct libm_test *test, int idx)
     return fabs(buf[idx]);
 }
 
+long double
+test_fabs_fabsl(struct libm_test *test, int idx)
+{
+    double *d = (double*)test->test_data.input1;
+    return fabsl(d[idx]);
+}
+
 /*test functiosn for fabs*/
 struct libm_test_funcs test_fabs_funcs[LIBM_FUNC_MAX] =
     {
@@ -108,6 +115,7 @@ struct libm_test_funcs test_fabs_funcs[LIBM_FUNC_MAX] =
                                          },
                          .accuracy     = { .setup = libm_test_accu_setup,
                                            .run   = libm_test_accu,
+                                           .ulp = {.func = test_fabs_ulp},
                                          },
                           /*
                          .special      = { .setup = test_fabsf_special_setup,
@@ -126,6 +134,7 @@ struct libm_test_funcs test_fabs_funcs[LIBM_FUNC_MAX] =
                                         },
                          .accuracy     = {.setup = libm_test_accu_setup,
                                           .run   = libm_test_accu,
+                                          .ulp = {.funcl = test_fabs_fabsl},
                                          },
                           /*
                          .special      = {.setup = test_fabs_special_setup,
@@ -141,20 +150,13 @@ struct libm_test_funcs test_fabs_funcs[LIBM_FUNC_MAX] =
 
 int test_fabs_verify(struct libm_test *test, struct libm_test_result *result);
 
-long double
-test_fabs_fabsl(struct libm_test *test, int idx)
-{
-    double *d = (double*)test->test_data.input1;
-    return fabsl(d[idx]);
-}
-
 static struct libm_test
 fabs_template = {
     .name       = "fabs",
     .nargs      = 1,
-    .ulp_threshold = 4.0,
+    .ulp_threshold = 0.5,
     .ops        = {
-                    .ulp    = {.funcl = test_fabs_fabsl},
+                    //.ulp    = {.funcl = test_fabs_fabsl},
                     .verify = test_fabs_verify,
                     .callbacks = {
                                     .s1s = test_fabs_cb_s1s,

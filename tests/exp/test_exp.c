@@ -175,6 +175,12 @@ double test_exp_ulp(struct libm_test *test, int idx)
     return exp(buf[idx]);
 }
 
+long double
+test_exp_expl(struct libm_test *test, int idx)
+{
+    double *d = (double*)test->test_data.input1;
+    return expl(d[idx]);
+}
 
 struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
     {
@@ -206,6 +212,7 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                                         },
                          .accuracy     = {.setup = libm_test_accu_setup,
                                           .run   = libm_test_accu,
+                                          .ulp = {.funcl = test_exp_expl},
                                          },
 
                          .special      = {.setup = test_exp_special_setup,
@@ -226,6 +233,7 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                           .accuracy = {
                                           .setup = libm_test_accu_setup,
                                           .run = libm_test_accu,
+                                          .ulp = {.func = test_exp_ulp},
                            },
      },
      [LIBM_FUNC_V2D] = {
@@ -235,6 +243,7 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                           .accuracy = {
                                          .setup = libm_test_accu_setup,
                                          .run = libm_test_accu,
+                                         .ulp = {.funcl = test_exp_expl},
                            },
      },
      [LIBM_FUNC_V4D] = {
@@ -243,6 +252,7 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                            },
                           .accuracy = {   .setup = libm_test_accu_setup,
                                           .run = libm_test_accu,
+                                          .ulp = {.funcl = test_exp_expl},
                            },
      },
 
@@ -251,20 +261,13 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
 
 int test_exp_verify(struct libm_test *test, struct libm_test_result *result);
 
-long double
-test_exp_expl(struct libm_test *test, int idx)
-{
-    double *d = (double*)test->test_data.input1;
-    return expl(d[idx]);
-}
-
 static struct libm_test
 exp_template = {
     .name       = "exp",
     .nargs      = 1,
     .ulp_threshold = 0.5,
     .ops        = {
-                    .ulp    = {.funcl = test_exp_expl},
+                    //.ulp    = {.funcl = test_exp_expl},
                     .verify = test_exp_verify,
                     .callbacks = {
                                     .s1s = test_exp_cb_s1s,

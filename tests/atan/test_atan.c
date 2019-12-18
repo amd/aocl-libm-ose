@@ -26,7 +26,7 @@ extern int RANGE_LEN_X;
 extern struct libm_test_input_range x_range[];
 
 double LIBM_FUNC(atan)(double);
-
+float LIBM_FUNC(atanf)(float);
 
 /*conf setup*/
 int test_atan_conf_setup(struct libm_test *test)
@@ -99,6 +99,13 @@ double test_atan_ulp(struct libm_test *test, int idx)
     return atan(buf[idx]);
 }
 
+long double
+test_atan_atanl(struct libm_test *test, int idx)
+{
+    double *d = (double*)test->test_data.input1;
+    return atanl(d[idx]);
+}
+
 /*test functiosn for atan*/
 struct libm_test_funcs test_atan_funcs[LIBM_FUNC_MAX] =
     {
@@ -111,6 +118,7 @@ struct libm_test_funcs test_atan_funcs[LIBM_FUNC_MAX] =
                                          },
                          .accuracy     = { .setup = libm_test_accu_setup,
                                            .run   = libm_test_accu,
+                                           .ulp = {.func = test_atan_ulp},
                                          },
                           /*
                          .special      = { .setup = test_atanf_special_setup,
@@ -129,6 +137,7 @@ struct libm_test_funcs test_atan_funcs[LIBM_FUNC_MAX] =
                                         },
                          .accuracy     = {.setup = libm_test_accu_setup,
                                           .run   = libm_test_accu,
+                                          .ulp = {.funcl = test_atan_atanl},
                                          },
                           /*
                          .special      = {.setup = test_atan_special_setup,
@@ -145,20 +154,13 @@ struct libm_test_funcs test_atan_funcs[LIBM_FUNC_MAX] =
 
 int test_atan_verify(struct libm_test *test, struct libm_test_result *result);
 
-long double
-test_atan_atanl(struct libm_test *test, int idx)
-{
-    double *d = (double*)test->test_data.input1;
-    return atanl(d[idx]);
-}
-
 static struct libm_test
 atan_template = {
     .name       = "atan",
     .nargs      = 1,
-    .ulp_threshold = 4.0,
+    .ulp_threshold = 0.5,
     .ops        = {
-                    .ulp    = {.funcl = test_atan_atanl},
+                    //.ulp    = {.funcl = test_atan_atanl},
                     .verify = test_atan_verify,
                     .callbacks = {
                                     .s1s = test_atan_cb_s1s,

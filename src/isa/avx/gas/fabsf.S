@@ -15,11 +15,11 @@
 
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE(fabsf)
+#define fname FN_PROTOTYPE_BAS64(fabsf)
 #define fname_special _fabsf_special@PLT
 
-WEAK_ACML_LIB_ALIAS fastfabsf, FN_PROTOTYPE(fabsf)
-WEAK_MATH_LIB_ALIAS fabsf,fname
+
+
 
 #ifdef __ELF__
 .section .note.GNU-stack,"",@progbits

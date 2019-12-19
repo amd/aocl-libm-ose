@@ -15,11 +15,11 @@
 
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE(fmin)
+#define fname FN_PROTOTYPE_BAS64(fmin)
 #define fname_specail _fmin_special@PLT
 
-WEAK_ACML_LIB_ALIAS fastfmin, FN_PROTOTYPE(fmin)
-WEAK_MATH_LIB_ALIAS fmin,fname
+
+
 
 #ifdef __ELF__
 .section .note.GNU-stack,"",@progbits

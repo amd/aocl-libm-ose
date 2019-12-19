@@ -8,8 +8,8 @@
 #
 
 #
-#   Algorithm: AND the Most Significant Bit of the 
-#              double precision number with 0 to get the 
+#   Algorithm: AND the Most Significant Bit of the
+#              double precision number with 0 to get the
 #              floating point absolute.
 #
 
@@ -44,7 +44,7 @@ fname:
 L__rais_exception:
 	call fname_special
 	add    $0x18,%rsp
-	ret	
+	ret
 
 
 .section .rodata

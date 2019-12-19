@@ -17,8 +17,8 @@
 #define INTEGER64
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE(vrda_sincos)
-WEAK_ACML_LIB_ALIAS vrda_sincos_,FN_PROTOTYPE(vrda_sincos)
+#define fname FN_PROTOTYPE_BAS64(vrda_sincos)
+
 
 #ifdef __ELF__
 .section .note.GNU-stack,"",@progbits
@@ -132,7 +132,7 @@ WEAK_ACML_LIB_ALIAS vrda_sincos_,FN_PROTOTYPE(vrda_sincos)
 	.quad	0x0bda907db46cc5e42
 	.quad	0x03de5e0b2f9a43bb8		# 1.59181e-010	   		s6
 
-WEAK_ACML_LIB_ALIAS vrda_sincos,fname
+
 #;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 .text
     .align 16

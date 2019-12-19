@@ -8,8 +8,8 @@
 #
 
 #
-#   Algorithm: AND the Most Significant Bit of the 
-#              single precision number with 0 to get the 
+#   Algorithm: AND the Most Significant Bit of the
+#              single precision number with 0 to get the
 #              floating point absolute.
 #
 
@@ -17,8 +17,6 @@
 #include "weak_macros.h"
 #define fname FN_PROTOTYPE_FMA3(fabsf)
 #define fname_special _fabsf_special@PLT
-
-
 
 
 #ifdef __ELF__
@@ -45,7 +43,7 @@ fname:
 L__rais_exception:
 	call fname_special
 	add    $0x18,%rsp
-	ret	
+	ret
 
 
 .section .rodata

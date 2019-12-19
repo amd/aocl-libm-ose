@@ -31,7 +31,7 @@ static inline double tanf_piby4(double x, int recip)
 #pragma function(tanf)
 #endif
 
-float FN_PROTOTYPE_BAS64(tanf)(float x)
+float FN_PROTOTYPE_REF(tanf)(float x)
 {
   double r, dx;
   int region, xneg;

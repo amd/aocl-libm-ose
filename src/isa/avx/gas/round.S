@@ -24,10 +24,10 @@
 #include "fn_macros.h"
 #include "weak_macros.h"
 
-#define fname FN_PROTOTYPE(round)
+#define fname FN_PROTOTYPE_BAS64(round)
 #define fname_special _round_special
 
-WEAK_ACML_LIB_ALIAS fastround, FN_PROTOTYPE(round)
+
 
 # local variable storage offsets
 
@@ -41,7 +41,7 @@ WEAK_ACML_LIB_ALIAS fastround, FN_PROTOTYPE(round)
 .p2align 4,,15
 .globl fname
 .type fname,@function
-WEAK_MATH_LIB_ALIAS round,fname
+
 #in sse5 there is a roundss,roundsd instruction
 fname:
     movsd .L__2p52_plus_one(%rip),%xmm4

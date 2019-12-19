@@ -26,7 +26,7 @@
 #   x = (2^m)*(G+g) with (1 <= G < 2) and (g <= 2^(-9))
 #   x = (2^m)*2*(G/2+g/2)
 #   x = (2^m)*2*(F+f) with (0.5 <= F < 1) and (f <= 2^(-10))
-#   
+#
 #   Y = (2^(-1))*(2^(-m))*(2^m)*A
 #   Now, range of Y is: 0.5 <= Y < 1
 #
@@ -104,7 +104,7 @@ fname:
     comisd      .L__mask_1023_f(%rip), %xmm6
     je          .L__denormal_adjust
 
-.L__continue_common:    
+.L__continue_common:
 
     # compute index into the log tables
     mov         %rax, %r9
@@ -137,19 +137,19 @@ fname:
     # poly
     movsd       .L__real_1_over_6(%rip), %xmm3
     movsd       .L__real_1_over_3(%rip), %xmm1
-    mulsd       %xmm2, %xmm3                         
-    mulsd       %xmm2, %xmm1                         
-    mulsd       %xmm2, %xmm0                         
+    mulsd       %xmm2, %xmm3
+    mulsd       %xmm2, %xmm1
+    mulsd       %xmm2, %xmm0
     movsd       %xmm0, %xmm4
     addsd       .L__real_1_over_5(%rip), %xmm3
     addsd       .L__real_1_over_2(%rip), %xmm1
-    mulsd       %xmm0, %xmm4                         
-    mulsd       %xmm2, %xmm3                         
-    mulsd       %xmm0, %xmm1                         
+    mulsd       %xmm0, %xmm4
+    mulsd       %xmm2, %xmm3
+    mulsd       %xmm0, %xmm1
     addsd       .L__real_1_over_4(%rip), %xmm3
-    addsd       %xmm2, %xmm1                         
-    mulsd       %xmm4, %xmm3                         
-    addsd       %xmm3, %xmm1                         
+    addsd       %xmm2, %xmm1
+    mulsd       %xmm4, %xmm3
+    addsd       %xmm3, %xmm1
 
     # m*log(2) + log(G) - poly
     movsd       .L__real_log2_tail(%rip), %xmm5
@@ -208,7 +208,7 @@ fname:
     addsd       %xmm5, %xmm4
     subsd       %xmm6, %xmm4
     addsd       %xmm4, %xmm0
- 
+
     add         $stack_size, %rsp
     ret
 
@@ -257,7 +257,7 @@ fname:
     movd        %rax, %xmm1
     mov         .L__flag_x_nan(%rip), %edi
     call        fname_special
-    jmp         .L__finish    
+    jmp         .L__finish
 
 .p2align 4,,15
 .L__finish:

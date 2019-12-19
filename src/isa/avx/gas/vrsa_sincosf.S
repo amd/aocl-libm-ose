@@ -28,8 +28,8 @@
 #include "fn_macros.h"
 #include "weak_macros.h"
 
-#define fname FN_PROTOTYPE(vrsa_sincosf)
-WEAK_ACML_LIB_ALIAS vrsa_sincosf_,FN_PROTOTYPE(vrsa_sincosf)
+#define fname FN_PROTOTYPE_BAS64(vrsa_sincosf)
+
 
 #ifdef __ELF__
 .section .note.GNU-stack,"",@progbits
@@ -147,7 +147,7 @@ WEAK_ACML_LIB_ALIAS vrsa_sincosf_,FN_PROTOTYPE(vrsa_sincosf)
 
 #;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-WEAK_ACML_LIB_ALIAS vrsa_sincosf,fname
+
     .text
     .align 16
     .p2align 4,,15

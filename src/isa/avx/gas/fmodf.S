@@ -13,10 +13,10 @@
 
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE(fmodf)
+#define fname FN_PROTOTYPE_BAS64(fmodf)
 #define fname_special _fmodf_special@PLT
 
-WEAK_ACML_LIB_ALIAS fastfmodf, FN_PROTOTYPE(fmodf)
+
 
 #ifdef __ELF__
 .section .note.GNU-stack,"",@progbits
@@ -27,7 +27,7 @@ WEAK_ACML_LIB_ALIAS fastfmodf, FN_PROTOTYPE(fmodf)
 .p2align 4,,15
 .globl fname
 .type fname,@function
-WEAK_MATH_LIB_ALIAS fmodf,fname
+
 fname:
     mov .L__exp_mask_64(%rip), %rdi
     movapd .L__sign_mask_64(%rip),%xmm6

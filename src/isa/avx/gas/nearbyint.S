@@ -14,10 +14,10 @@
 #include "fn_macros.h"
 #include "weak_macros.h"
 
-#define fname FN_PROTOTYPE(nearbyint)
+#define fname FN_PROTOTYPE_BAS64(nearbyint)
 #define fname_special _nearbyint_special@PLT
 
-WEAK_ACML_LIB_ALIAS fastnearbyint, FN_PROTOTYPE(nearbyint)
+
 
 # local variable storage offsets
 
@@ -34,7 +34,7 @@ WEAK_ACML_LIB_ALIAS fastnearbyint, FN_PROTOTYPE(nearbyint)
 .p2align 4,,15
 .globl fname
 .type fname,@function
-WEAK_MATH_LIB_ALIAS nearbyint,fname
+
 fname:  
     
     sub $0x28,%rsp                                                    

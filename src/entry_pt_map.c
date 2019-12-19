@@ -192,6 +192,7 @@ LIBM_DECL_FN_MAP(vrs4_log10f);
 LIBM_DECL_FN_MAP(vrs4_log1pf);
 LIBM_DECL_FN_MAP(vrs4_log2f);
 LIBM_DECL_FN_MAP(vrs4_logf);
+LIBM_DECL_FN_MAP(vrs4_powf);
 LIBM_DECL_FN_MAP(vrs4_sinf);
 LIBM_DECL_FN_MAP(vrs4_tanf);
 

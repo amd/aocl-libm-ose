@@ -18,9 +18,9 @@
 
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE(copysignf)
+#define fname FN_PROTOTYPE_BAS64(copysignf)
 
-WEAK_ACML_LIB_ALIAS fastcopysignf, FN_PROTOTYPE(copysignf)
+
 #ifdef __ELF__
 .section .note.GNU-stack,"",@progbits
 #endif
@@ -31,7 +31,7 @@ WEAK_ACML_LIB_ALIAS fastcopysignf, FN_PROTOTYPE(copysignf)
 .globl fname
 .type fname,@function
 
-WEAK_MATH_LIB_ALIAS copysignf,fname
+
 
 fname:
 	#PANDN .L__fabsf_and_mask, %xmm1

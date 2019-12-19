@@ -16,10 +16,10 @@ void
 LIBM_IFACE_PROTO(copysign)(void *arg)
 {
 	/* Double */
-	G_ENTRY_PT_PTR(copysign) = &FN_PROTOTYPE_FMA3(copysign);
+	G_ENTRY_PT_PTR(copysign) = &FN_PROTOTYPE_BAS64(copysign);
 
 	/* Single */
-	G_ENTRY_PT_PTR(copysignf) = &FN_PROTOTYPE_FMA3(copysignf);
+	G_ENTRY_PT_PTR(copysignf) = &FN_PROTOTYPE_BAS64(copysignf);
 
 	/* Vector Double */
 	/* Vector Single */

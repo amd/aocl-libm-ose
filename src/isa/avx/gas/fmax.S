@@ -15,11 +15,11 @@
 
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE(fmax)
+#define fname FN_PROTOTYPE_BAS64(fmax)
 #define fname_specail _fmax_special@PLT
 
-WEAK_ACML_LIB_ALIAS fastfmax, FN_PROTOTYPE(fmax)
-WEAK_MATH_LIB_ALIAS fmax,fname
+
+
 
 #ifdef __ELF__
 .section .note.GNU-stack,"",@progbits

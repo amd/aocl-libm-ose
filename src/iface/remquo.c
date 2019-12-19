@@ -16,10 +16,10 @@ void
 LIBM_IFACE_PROTO(remquo)(void *arg)
 {
 	/* Double */
-	G_ENTRY_PT_PTR(remquo) = &FN_PROTOTYPE_FMA3(remquo);
+	G_ENTRY_PT_PTR(remquo) = &FN_PROTOTYPE_REF(remquo);
 
 	/* Single */
-	G_ENTRY_PT_PTR(remquof) = &FN_PROTOTYPE_FMA3(remquof);
+	G_ENTRY_PT_PTR(remquof) = &FN_PROTOTYPE_REF(remquof);
 
 	/* Vector Double */
 	/* Vector Single */

@@ -13,10 +13,10 @@
 
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE(remainder)
+#define fname FN_PROTOTYPE_BAS64(remainder)
 #define fname_special _remainder_special@PLT
 
-WEAK_ACML_LIB_ALIAS fastremainder, FN_PROTOTYPE(remainder)
+
 
 # local variable storage offsets
 .equ    temp_x, 0x0
@@ -33,7 +33,7 @@ WEAK_ACML_LIB_ALIAS fastremainder, FN_PROTOTYPE(remainder)
 .p2align 4,,15
 .globl fname
 .type fname,@function
-WEAK_MATH_LIB_ALIAS remainder,fname
+
 fname:
     movd %xmm0,%r8
     movd %xmm1,%r9

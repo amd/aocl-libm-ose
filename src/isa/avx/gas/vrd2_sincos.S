@@ -12,7 +12,7 @@
 
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE(vrd2_sincos)
+#define fname FN_PROTOTYPE_BAS64(vrd2_sincos)
 
 #ifdef __ELF__
 .section .note.GNU-stack,"",@progbits
@@ -126,7 +126,7 @@
 	.quad	0x03de5e0b2f9a43bb8		#  1.59181e-010	   		s6
 
 #include "weak_macros.h"    
-WEAK_ACML_LIB_ALIAS __vrd2_sincos,fname
+
 .text
 .align 16
 .p2align 4,,15

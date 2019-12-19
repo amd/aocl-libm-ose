@@ -87,7 +87,7 @@ static inline double tan_piby4(double x, double xx, int recip)
 #pragma function(tan) 
 #endif 
  
-double FN_PROTOTYPE_BAS64(tan)(double x) 
+double FN_PROTOTYPE_REF(tan)(double x) 
 { 
   double r, rr; 
   int region, xneg; 

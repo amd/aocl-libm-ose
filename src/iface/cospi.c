@@ -16,10 +16,10 @@ void
 LIBM_IFACE_PROTO(cospi)(void *arg)
 {
 	/* Double */
-	G_ENTRY_PT_PTR(cospi) = &FN_PROTOTYPE_FMA3(cospi);
+	G_ENTRY_PT_PTR(cospi) = &FN_PROTOTYPE_REF(cospi);
 
 	/* Single */
-	G_ENTRY_PT_PTR(cospif) = &FN_PROTOTYPE_FMA3(cospif);
+	G_ENTRY_PT_PTR(cospif) = &FN_PROTOTYPE_REF(cospif);
 
 	/* Vector Double */
 	/* Vector Single */

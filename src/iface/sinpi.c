@@ -16,10 +16,10 @@ void
 LIBM_IFACE_PROTO(sinpi)(void *arg)
 {
 	/* Double */
-	G_ENTRY_PT_PTR(sinpi) = &FN_PROTOTYPE_FMA3(sinpi);
+	G_ENTRY_PT_PTR(sinpi) = &FN_PROTOTYPE_REF(sinpi);
 
 	/* Single */
-	G_ENTRY_PT_PTR(sinpif) = &FN_PROTOTYPE_FMA3(sinpif);
+	G_ENTRY_PT_PTR(sinpif) = &FN_PROTOTYPE_REF(sinpif);
 
 	/* Vector Double */
 	/* Vector Single */

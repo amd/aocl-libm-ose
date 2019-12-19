@@ -27,8 +27,8 @@
 
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE(vrs4_sincosf)
-WEAK_ACML_LIB_ALIAS __vrs4_sincosf,FN_PROTOTYPE(vrs4_sincosf)
+#define fname FN_PROTOTYPE_BAS64(vrs4_sincosf)
+
 
 #ifdef __ELF__
 .section .note.GNU-stack,"",@progbits

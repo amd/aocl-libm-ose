@@ -21,7 +21,7 @@
 .p2align 4,,15
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE(cexpf)
+#define fname FN_PROTOTYPE_BAS64(cexpf)
 #define fname_special1 _sincosf_special@PLT
 #define fname_special2 _expf_special@PLT
 
@@ -37,7 +37,7 @@
 .type  fname,@function
 
 #include "weak_macros.h"
-WEAK_MATH_LIB_ALIAS cexpf,fname
+
 fname:
     sub     $stack_size, %rsp
     

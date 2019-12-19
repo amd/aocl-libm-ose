@@ -18,9 +18,9 @@
 
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE(fdimf)
+#define fname FN_PROTOTYPE_BAS64(fdimf)
 #define fname_special _fdimf_special@PLT
-WEAK_ACML_LIB_ALIAS fastfdimf, FN_PROTOTYPE(fdimf)
+
 #ifdef __ELF__
 .section .note.GNU-stack,"",@progbits
 #endif
@@ -30,7 +30,7 @@ WEAK_ACML_LIB_ALIAS fastfdimf, FN_PROTOTYPE(fdimf)
 .p2align 4,,15
 .globl fname
 .type fname,@function
-WEAK_MATH_LIB_ALIAS fdimf,fname
+
 fname:
 
 .if __enable_IEEE_exceptions

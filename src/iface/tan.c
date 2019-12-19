@@ -16,10 +16,10 @@ void
 LIBM_IFACE_PROTO(tan)(void *arg)
 {
 	/* Double */
-	G_ENTRY_PT_PTR(tan) = &FN_PROTOTYPE_FMA3(tan);
+	G_ENTRY_PT_PTR(tan) = &FN_PROTOTYPE_REF(tan);
 
 	/* Single */
-	G_ENTRY_PT_PTR(tanf) = &FN_PROTOTYPE_FMA3(tanf);
+	G_ENTRY_PT_PTR(tanf) = &FN_PROTOTYPE_REF(tanf);
 
 	/* Vector Double */
 	/* Vector Single */

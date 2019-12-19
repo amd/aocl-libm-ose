@@ -16,10 +16,10 @@ void
 LIBM_IFACE_PROTO(finite)(void *arg)
 {
 	/* Double */
-	G_ENTRY_PT_PTR(finite) = &FN_PROTOTYPE_FMA3(finite);
+	G_ENTRY_PT_PTR(finite) = &FN_PROTOTYPE_REF(finite);
 
 	/* Single */
-	G_ENTRY_PT_PTR(finitef) = &FN_PROTOTYPE_FMA3(finitef);
+	G_ENTRY_PT_PTR(finitef) = &FN_PROTOTYPE_REF(finitef);
 
 	/* Vector Double */
 	/* Vector Single */

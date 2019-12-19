@@ -15,8 +15,8 @@
 
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE(vrs4_powxf)
-WEAK_ACML_LIB_ALIAS __vrs4_powxf,FN_PROTOTYPE(vrs4_powxf)
+#define fname FN_PROTOTYPE_BAS64(vrs4_powxf)
+
 #define fname_exp __amd_internal_vrd4_exp
 #define fname_log __amd_internal_vrd4_log 
 

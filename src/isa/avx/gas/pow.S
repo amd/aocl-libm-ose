@@ -19,7 +19,7 @@
 #define fname FN_PROTOTYPE_BAS64(pow)
 #define fname_special _pow_special@PLT
 
-#WEAK_ACML_LIB_ALIAS fastpow, FN_PROTOTYPE(pow)
+#
 
 # local variable storage offsets
 .equ    save_x, 0x0
@@ -63,7 +63,7 @@ fname:
     and         %rdx, %r9
     cmp         .L__sign_mask(%rip), %r9
     mov         .L__pos_zero(%rip), %rax
-    mov         %rax, negate_result(%rsp)    
+    mov         %rax, negate_result(%rsp)
     je          .L__x_is_neg
 
     cmp         .L__pos_one(%rip), %rdx
@@ -76,7 +76,7 @@ fname:
     and         %rdx, %r9
     cmp         .L__exp_mask(%rip), %r9
     je          .L__x_is_inf_or_nan
-   
+
     mov         .L__exp_mask(%rip), %r10
     and         %r8, %r10
     cmp         .L__ay_max_bound(%rip), %r10
@@ -144,20 +144,20 @@ fname:
     # poly
     movsd       .L__real_1_over_6(%rip), %xmm3
     movsd       .L__real_1_over_3(%rip), %xmm1
-    mulsd       %xmm2, %xmm3                         
-    mulsd       %xmm2, %xmm1                         
-    mulsd       %xmm2, %xmm0                         
+    mulsd       %xmm2, %xmm3
+    mulsd       %xmm2, %xmm1
+    mulsd       %xmm2, %xmm0
     subsd       %xmm2, %xmm5
     movsd       %xmm0, %xmm4
     addsd       .L__real_1_over_5(%rip), %xmm3
     addsd       .L__real_1_over_2(%rip), %xmm1
-    mulsd       %xmm0, %xmm4                         
-    mulsd       %xmm2, %xmm3                         
-    mulsd       %xmm0, %xmm1                         
+    mulsd       %xmm0, %xmm4
+    mulsd       %xmm2, %xmm3
+    mulsd       %xmm0, %xmm1
     addsd       .L__real_1_over_4(%rip), %xmm3
     addsd       %xmm5, %xmm7
-    mulsd       %xmm4, %xmm3                         
-    addsd       %xmm3, %xmm1                         
+    mulsd       %xmm4, %xmm3
+    addsd       %xmm3, %xmm1
     addsd       %xmm7, %xmm1
 
     movsd       .L__real_log2_tail(%rip), %xmm5
@@ -177,7 +177,7 @@ fname:
 
     # result of ln(x) is computed from head and tail parts, resH and resT
     # res = ln(x) = resH + resT
-    # resH and resT are in full precision 
+    # resH and resT are in full precision
 
     # resT is computed from head and tail parts, resT_h and resT_t
     # resT = resT_h + resT_t
@@ -194,7 +194,7 @@ fname:
     addsd       %xmm3, %xmm0
     movsd       %xmm0, %xmm5
     andpd       .L__real_fffffffff8000000(%rip), %xmm0
-   
+
     # xmm0 - H
     # xmm7 - resH
     # xmm5 - res
@@ -210,8 +210,8 @@ fname:
 
     mov         %rax, y_head(%rsp)
     movsd       save_y(%rsp), %xmm4
-   
-    addsd       %xmm1, %xmm7 
+
+    addsd       %xmm1, %xmm7
     addsd       %xmm5, %xmm7
 
     # res = H + T
@@ -221,7 +221,7 @@ fname:
     # xmm0 - H
     # xmm7 - T
 
-    movsd       y_head(%rsp), %xmm2 
+    movsd       y_head(%rsp), %xmm2
     subsd       %xmm2, %xmm4
 
     # y is split into head and tail
@@ -238,7 +238,7 @@ fname:
     mulsd   %xmm7, %xmm3 # YtRt
     mulsd   %xmm0, %xmm4 # YtRh
     mulsd   %xmm2, %xmm5 # YhRt
-    mulsd   %xmm2, %xmm6 # YhRh 
+    mulsd   %xmm2, %xmm6 # YhRh
 
     movsd   %xmm6, %xmm1
     addsd   %xmm4, %xmm3
@@ -248,11 +248,11 @@ fname:
     movsd   %xmm1, %xmm0
 
     subsd   %xmm1, %xmm6
-    addsd   %xmm3, %xmm6 
+    addsd   %xmm3, %xmm6
 
     # y * ln(x) = v + vt
-    # v and vt are in full precision 
- 
+    # v and vt are in full precision
+
     # xmm0 - v
     # xmm6 - vt
 
@@ -318,7 +318,7 @@ fname:
     addsd       .L__real_1_by_120(%rip), %xmm4
     mulsd       %xmm2, %xmm0
     mulsd       %xmm1, %xmm3
- 
+
     mulsd       %xmm5, %xmm4
 
     # deal with denormal results
@@ -374,7 +374,7 @@ fname:
     comisd      .L__real_one(%rip), %xmm0
     cmovae      %ecx, %r11d
     cmp         .L__denormal_threshold(%rip), %r11d
-    jne         .L__process_true_denormal  
+    jne         .L__process_true_denormal
 
     mulsd       p_temp_exp(%rsp), %xmm0
     orpd        negate_result(%rsp), %xmm0
@@ -394,7 +394,7 @@ fname:
     mov         %rcx, p_temp_exp(%rsp)
     mulsd       p_temp_exp(%rsp), %xmm0
     orpd        negate_result(%rsp), %xmm0
-    jmp         .L__z_denormal        
+    jmp         .L__z_denormal
 
 .p2align 4,,15
 .L__process_denormal_tiny:
@@ -407,7 +407,7 @@ fname:
     mov         .L__real_zero(%rip), %r11
     or          negate_result(%rsp), %r11
     jmp         .L__z_is_zero_or_inf
- 
+
 .p2align 4,,15
 .L__process_result_inf:
     mov         .L__real_inf(%rip), %r11
@@ -442,7 +442,7 @@ fname:
     shr         %cl, %r10
     sub         .L__exp_bias(%rip), %r10
     js          .L__x_is_neg_y_is_not_int
-   
+
     mov         .L__exp_mant_mask(%rip), %rax
     and         %rdx, %rax
     mov         %rax, save_ax(%rsp)
@@ -462,7 +462,7 @@ fname:
     jz          .L__continue_after_y_int_check
 
     mov         .L__sign_mask(%rip), %rax
-    mov         %rax, negate_result(%rsp)    
+    mov         %rax, negate_result(%rsp)
 
 .L__continue_after_y_int_check:
 
@@ -476,7 +476,7 @@ fname:
     and         %rdx, %r9
     cmp         .L__exp_mask(%rip), %r9
     je          .L__x_is_inf_or_nan
-   
+
     movsd       save_ax(%rsp), %xmm0
     jmp         .L__log_x
 
@@ -508,19 +508,19 @@ fname:
     # poly
     movsd       .L__real_1_over_7(%rip), %xmm3
     movsd       .L__real_1_over_4(%rip), %xmm1
-    mulsd       %xmm2, %xmm3                         
-    mulsd       %xmm2, %xmm1                         
-    mulsd       %xmm2, %xmm0                         
+    mulsd       %xmm2, %xmm3
+    mulsd       %xmm2, %xmm1
+    mulsd       %xmm2, %xmm0
     movsd       %xmm0, %xmm4
     addsd       .L__real_1_over_6(%rip), %xmm3
     addsd       .L__real_1_over_3(%rip), %xmm1
-    mulsd       %xmm0, %xmm4                         
-    mulsd       %xmm2, %xmm3                         
-    mulsd       %xmm2, %xmm1                         
+    mulsd       %xmm0, %xmm4
+    mulsd       %xmm2, %xmm3
+    mulsd       %xmm2, %xmm1
     addsd       .L__real_1_over_5(%rip), %xmm3
     mulsd       %xmm2, %xmm3
     mulsd       %xmm0, %xmm1
-    mulsd       %xmm4, %xmm3                         
+    mulsd       %xmm4, %xmm3
 
     movsd       %xmm5, %xmm2
     movsd       %xmm7, %xmm0
@@ -530,7 +530,7 @@ fname:
     addsd       %xmm0, %xmm5
     addsd       %xmm7, %xmm5
 
-    movsd       %xmm2, %xmm0 
+    movsd       %xmm2, %xmm0
     movsd       %xmm2, %xmm7
     mulsd       %xmm0, %xmm0
     mulsd       .L__real_1_over_2(%rip), %xmm0
@@ -539,9 +539,9 @@ fname:
     subsd       %xmm2, %xmm7
     addsd       %xmm4, %xmm7
 
-    addsd       %xmm7, %xmm3 
+    addsd       %xmm7, %xmm3
     movsd       .L__real_log2_tail(%rip), %xmm4
-    addsd       %xmm3, %xmm1                         
+    addsd       %xmm3, %xmm1
     mulsd       %xmm6, %xmm4
     lea         .L__log_256_tail(%rip), %rdx
     addsd       %xmm5, %xmm1
@@ -611,7 +611,7 @@ fname:
     and         %rax, %r9
     jnz         .L__x_is_nan
 
-    movd        %rdx, %xmm0 
+    movd        %rdx, %xmm0
     jmp         .L__final_check
 
 .p2align 4,,15
@@ -659,7 +659,7 @@ fname:
 
     mov         .L__exp_mant_mask(%rip), %r9
     and         %rdx, %r9
-    jz          .L__x_is_zero 
+    jz          .L__x_is_zero
 
     cmp         .L__neg_one(%rip), %rdx
     je          .L__x_is_neg_one
@@ -668,7 +668,7 @@ fname:
     and         .L__exp_mant_mask(%rip), %r9
     cmp         .L__pos_one(%rip), %r9
     jl          .L__ax_lt1_y_is_large_or_inf_or_nan
-  
+
     jmp         .L__ax_gt1_y_is_large_or_inf_or_nan
 
 .p2align 4,,15
@@ -790,7 +790,7 @@ fname:
     mov         .L__flag_z_zero(%rip), %edi
     test        .L__exp_mant_mask(%rip), %r11
     cmovnz      .L__flag_z_inf(%rip), %edi
-    
+
     movsd       save_x(%rsp), %xmm0
     movsd       save_y(%rsp), %xmm1
     movd        %r11, %xmm2
@@ -859,25 +859,25 @@ fname:
     movd        %r11, %xmm0
     jmp         .L__final_check
 
-.L__continue_xy_nan:    
+.L__continue_xy_nan:
     movsd       save_x(%rsp), %xmm0
     movsd       save_y(%rsp), %xmm1
     movd        %r11, %xmm2
     mov         .L__flag_x_nan_y_nan(%rip), %edi
 
     call        fname_special
-    jmp         .L__final_check  
-    
+    jmp         .L__final_check
+
 .p2align 4,,15
 .L__z_denormal:
-    
+
     movsd       %xmm0, %xmm2
     movsd       save_x(%rsp), %xmm0
     movsd       save_y(%rsp), %xmm1
     mov         .L__flag_z_denormal(%rip), %edi
 
     call        fname_special
-    jmp         .L__final_check  
+    jmp         .L__final_check
 
 
 .section .rodata
@@ -895,7 +895,7 @@ fname:
 .L__flag_z_inf:                 .long 9
 
 .align 16
-   
+
 .L__ay_max_bound:           .quad 0x43e0000000000000
 .L__ay_min_bound:           .quad 0x3c00000000000000
 .L__sign_mask:              .quad 0x8000000000000000

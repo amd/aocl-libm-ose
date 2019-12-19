@@ -17,9 +17,9 @@
 
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE(trunc)
+#define fname FN_PROTOTYPE_BAS64(trunc)
 
-WEAK_ACML_LIB_ALIAS fasttrunc, FN_PROTOTYPE(trunc)
+
 
 #ifdef __ELF__
 .section .note.GNU-stack,"",@progbits
@@ -30,7 +30,7 @@ WEAK_ACML_LIB_ALIAS fasttrunc, FN_PROTOTYPE(trunc)
 .p2align 4,,15
 .globl fname
 .type fname,@function
-WEAK_MATH_LIB_ALIAS trunc,fname
+
 fname:
 
 .if __enable_IEEE_exceptions      

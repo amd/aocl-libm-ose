@@ -16,10 +16,10 @@
 #include "fn_macros.h"
 #include "weak_macros.h"
 
-#define fname FN_PROTOTYPE(vrs4_powf)
-WEAK_ACML_LIB_ALIAS __vrs4_powf,FN_PROTOTYPE(vrs4_powf)
+#define fname FN_PROTOTYPE_BAS64(vrs4_powf)
+
 #define fname_exp __amd_internal_vrd4_exp
-#define fname_log __amd_internal_vrd4_log 
+#define fname_log __amd_internal_vrd4_log
 
 #ifdef __ELF__
 .section .note.GNU-stack,"",@progbits
@@ -52,7 +52,7 @@ WEAK_ACML_LIB_ALIAS __vrs4_powf,FN_PROTOTYPE(vrs4_powf)
     .text
     .align 16
     .p2align 4,,15
-.globl fname 
+.globl fname
     .type   fname,@function
 fname:
     sub     $stack_size,%rsp

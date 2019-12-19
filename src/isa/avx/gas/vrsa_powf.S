@@ -18,7 +18,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE(vrsa_powf)
+#define fname FN_PROTOTYPE_BAS64(vrsa_powf)
 #define fname_exp __amd_internal_vrd4_exp
 #define fname_log __amd_internal_vrd4_log 
 
@@ -60,7 +60,7 @@
 
 
 #include "weak_macros.h"
-WEAK_ACML_LIB_ALIAS vrsa_powf,fname
+
     .text
     .align 16
     .p2align 4,,15

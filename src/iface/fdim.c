@@ -16,10 +16,10 @@ void
 LIBM_IFACE_PROTO(fdim)(void *arg)
 {
 	/* Double */
-	G_ENTRY_PT_PTR(fdim) = &FN_PROTOTYPE_FMA3(fdim);
+	G_ENTRY_PT_PTR(fdim) = &FN_PROTOTYPE_BAS64(fdim);
 
 	/* Single */
-	G_ENTRY_PT_PTR(fdimf) = &FN_PROTOTYPE_FMA3(fdimf);
+	G_ENTRY_PT_PTR(fdimf) = &FN_PROTOTYPE_BAS64(fdimf);
 
 	/* Vector Double */
 	/* Vector Single */

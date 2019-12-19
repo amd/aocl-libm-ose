@@ -287,29 +287,27 @@ static error_t parse_opts(int key, char *arg, struct argp_state *state)
 
 static struct argp argp = {options, parse_opts, args_doc, doc, 0, 0, 0};
 
+#ifndef MIN
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
+#endif
+
 static void libm_test_print_report(struct list_head *test_list)
 {
     struct list_head *pos;
     static const char equal[100] = {[0 ... 98] = '=', 0};
-    char* test_type=(char*)malloc(20);
-
-    printf("%s\n", &equal[0]);
+    char _ttype[20];
+    char* test_type=&_ttype[0];
 
     list_for_each(pos, test_list) {
         struct libm_test *test = list_entry(pos, struct libm_test, list);
         struct libm_test_result *result = &test->result;
 	
-	if(test->test_type == TEST_TYPE_PERF)
-	{
-		strcpy(test_type, "MOPS");
-	}
-	else if(test->test_type == TEST_TYPE_ACCU)
-	{
-		strcpy(test_type, "MAX ULP ERR");
-	}
-	else
-	{
-		strcpy(test_type, " ");
+	if(test->test_type == TEST_TYPE_PERF) {
+		strncpy(test_type, "MOPS", MIN(sizeof(_ttype), 5));
+	} else if(test->test_type == TEST_TYPE_ACCU) {
+		strncpy(test_type, "MAX ULP ERR", MIN(sizeof(_ttype), 12));
+	} else {
+		strncpy(test_type, " ", 2);
 	}
 	printf("%-12s %-12s %-12s %-12s %-12s %-12s %-12s %s\n",
            "TEST", "TYPE", "DATATYPE", "No.Tests", "Passed",

@@ -35,7 +35,7 @@ asm_objs = []
 for asm_path in asm_list:
     new_env = e.Clone()
     srcs = Glob(joinpath(asm_path, '*.[cS]'))
-    print(joinpath(Dir('.').srcnode().path, asm_path, 'include'))
+    #print(joinpath(Dir('.').srcnode().path, asm_path, 'include'))
     incpath = '#' + joinpath(Dir('.').srcnode().path, asm_path, 'include')
     new_env.Append(
         CPPPATH = incpath,

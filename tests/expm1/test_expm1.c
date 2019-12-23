@@ -44,8 +44,8 @@ __m256 LIBM_FUNC_VEC(s, 8, expm1f)(__m256);
 
 #if (DEVELOPER == 2)
 #pragma message "Developer mode changing prototype to expm1_v2()"
-#undef LIBM_FUNC
-#define LIBM_FUNC(x) FN_PROTOTYPE( x ## _v2 )
+//#undef LIBM_FUNC
+//#define LIBM_FUNC(x) FN_PROTOTYPE( x ## _v2 )
 #endif
 
 #if (LIBM_PROTOTYPE == PROTOTYPE_AMDLIBM)

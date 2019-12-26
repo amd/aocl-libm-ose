@@ -24,7 +24,7 @@ incpaths = [
 ]
 
 e.Append(
-    CFLAGS = ['-fPIC', '-flax-vector-conversions'],
+    CFLAGS = ['-O3', '-fPIC', '-flax-vector-conversions'],
     CPPPATH = incpaths
 )
 

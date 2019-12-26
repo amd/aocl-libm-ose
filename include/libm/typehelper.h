@@ -3,6 +3,26 @@
 
 #include <libm/types.h>
 
+#define _MM_SET1_PS4(x)					\
+	_Generic((x),					\
+		 float: (__m128){(x), (x), (x), (x)})
+
+#define _MM_SET1_PS8(x)					\
+	_Generic((x),					\
+		 float: (__m256){(x), (x), (x), (x),	\
+			 (x), (x), (x), (x)})
+
+#define _MM_SET1_PD2(x)					\
+	_Generic((x),					\
+		 double: (__m128d){(x), (x)})
+
+#define _MM_SET1_PD4(x)					\
+	_Generic((x),					\
+		 double: (__m256d){(x), (x), (x), (x)})
+
+#define _MM_SET1_I32(x) {(x), (x), (x), (x)}
+
+
 static inline uint32_t
 asuint32(float f)
 {
@@ -123,6 +143,30 @@ static inline v_u32x4_t
 v_lookup_u32(const uint32_t *tab, v_u32x4_t idx)
 {
     return (v_u32x4_t) {tab[idx[0]], tab[idx[1]], tab[idx[2]], tab[idx[3]]};
+}
+
+static inline v_f32x4_t
+v_call_f32(float (*fn)(float),
+	   v_f32x4_t orig,
+	   v_f32x4_t result,
+	   v_i32x4_t cond)
+{
+	return (v_f32x4_t){cond[0] ? fn(orig[0]) : result[0],
+		cond[1] ? fn(orig[1]) : result[1],
+		cond[2] ? fn(orig[2]) : result[2],
+		cond[3] ? fn(orig[3]) : result[3]};
+}
+
+static inline v_f64x4_t
+v_call_f64(double (*fn)(double),
+	   v_f64x4_t orig,
+	   v_f64x4_t result,
+	   v_i64x4_t cond)
+{
+	return (v_f64x4_t){cond[0] ? fn(orig[0]) : result[0],
+		cond[1] ? fn(orig[1]) : result[1],
+		cond[2] ? fn(orig[2]) : result[2],
+		cond[3] ? fn(orig[3]) : result[3]};
 }
 
 #endif	/* __LIBM_TYPEHELPER_H__ */

@@ -1,0 +1,30 @@
+// polynomial used for vector log(x)
+//
+prec = 53; 
+deg = 7 ; // poly degree
+
+k = 2/3 ; // 3/4 ; //1/sqrt(2) ;   
+
+a = k-1 ; 
+b = 2*k-1 ; 
+
+// find log(1+x) polynomial with Remez alogorithm 
+f = log(1+x) ; 
+// poly = remez(f,deg,[a;b]) ; 
+poly = remez(f,[|1,...,deg|],[a;b]) ; 
+print(canonical(poly)) ; 
+display = hexadecimal;
+// print("rel error:", accurateinfnorm(1-poly(x)/f(x), [a;b], 30));
+abs_err = supnorm(poly(x),f(x), [a;b], absolute,2^(-40)) ; 
+rel_err = supnorm(poly(x),f(x), [a;b], relative,2^(-40)) ;
+midpointmode=on!;
+print("absolute error:", abs_err);
+print("relative error:", rel_err);
+print("in [",a,",",b,"]");
+print("coeffs:");
+
+for i from 0 to deg do coeff(poly,i);
+
+for i from 0 to deg do SG(coeff(poly,i));
+
+

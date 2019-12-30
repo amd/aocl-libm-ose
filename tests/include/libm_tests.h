@@ -245,7 +245,8 @@ int libm_test_v4d_perf(struct libm_test *test);
 int libm_test_accu(struct libm_test *test);
 int libm_test_accu_double(struct libm_test *test, uint32_t type);
 int libm_test_accu_single(struct libm_test *test, uint32_t type);
-int generate_test_one_range(struct libm_test *test, const struct libm_test_input_range *range);
+int libm_generate_test_one_range(struct libm_test *test, const struct libm_test_input_range *range);
+
 /**********************************
  * ULP error calculations
  **********************************/

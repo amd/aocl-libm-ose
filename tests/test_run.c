@@ -472,15 +472,16 @@ libm_test_accu_single(struct libm_test *test, uint32_t type)
 
 /* Function to generate input values within required ranges */
 
-int generate_test_one_range(struct libm_test *test,
+int libm_generate_test_one_range(struct libm_test *test,
                                       const struct libm_test_input_range *range)
 {
      int ret = 0;
      LIBM_TEST_DPRINTF(DBG2,
-                       "Testing for accuracy %d items in range [%Lf, %Lf]\n",
+                       "Testing for accuracy %d items in range [%Lf, %Lf]",
                        test->test_data.nelem,
                        range->start, range->stop);
-     test->conf->inp_range[0] = *range;
+     test->conf->inp_range[0] = range[0];
+
      ret = libm_test_populate_inputs(test, range->type);
      if (test_is_single_precision(test))
          ret = libm_test_accu_single(test, test->variant);

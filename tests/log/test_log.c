@@ -160,7 +160,7 @@ test_log_cb_accu_ranges(struct libm_test *test, int j)
     if (test->conf->inp_range[0].start ||
         test->conf->inp_range[0].stop) {
         struct libm_test_input_range *range = &test->conf->inp_range[0];
-        ret = generate_test_one_range(test, range);
+        ret = libm_generate_test_one_range(test, range);
         ret = test_log_verify(test, &test->result);
         return ret;
     }
@@ -169,7 +169,7 @@ test_log_cb_accu_ranges(struct libm_test *test, int j)
     for (int i = 0; i < arr_sz; i++) {
         if ((accu_ranges[i].start == 0.0) && (accu_ranges[i].stop == 0.0) )
             break;
-    ret = generate_test_one_range(test, &accu_ranges[i]);
+    ret = libm_generate_test_one_range(test, &accu_ranges[i]);
     if(ret)
         return ret;
     ret = test_log_verify(test, &test->result);

@@ -151,7 +151,7 @@ test_pow_cb_v4d(struct libm_test *test, int j)
 }
 
 static int
-generate_test_pow_range(struct libm_test *test, struct libm_test_input_range *range_x,  struct libm_test_input_range *range_y )
+libm_generate_test_pow_range(struct libm_test *test, struct libm_test_input_range *range_x,  struct libm_test_input_range *range_y )
 {
     int ret = 0;
     test->conf->inp_range[0] = *range_x;
@@ -177,7 +177,7 @@ test_pow_cb_accu_ranges(struct libm_test *test, int j)
     if (test->conf->inp_range[0].start ||
         test->conf->inp_range[0].stop) {
         struct libm_test_input_range *range = &test->conf->inp_range[0];
-        ret = generate_test_one_range(test, range);
+        ret = libm_generate_test_one_range(test, range);
         ret = test_pow_verify(test, &test->result);
         return ret;
     }
@@ -195,7 +195,7 @@ test_pow_cb_accu_ranges(struct libm_test *test, int j)
             break;
         if ((y_range[i].start == 0.0) && (y_range[i].stop == 0.0) )
             break;
-        ret = generate_test_pow_range(test, &x_range[i], &y_range[i]);
+        ret = libm_generate_test_pow_range(test, &x_range[i], &y_range[i]);
         if(ret)
             return ret;
         ret = test_pow_verify(test, &test->result);

@@ -344,108 +344,6 @@ static int test_exp2_v8s(struct libm_test *test)
  **************************/
 #include "exp2_accu_data.h"
 
-static int __test_exp2_accu(struct libm_test *test,
-                            uint32_t type)
-{
-    struct libm_test_data *data = &test->test_data;
-    double *ip = (double*)data->input1;
-    double *op = (double*)data->output;
-    int sz = data->nelem, end = sz;
-
-    switch(type) {
-    case LIBM_FUNC_V2D: end = sz - 1; break;
-    case LIBM_FUNC_V4D: end = sz - 3; break;
-    default: break;
-    }
-
-    for (int j = 0; j < end;) {
-        __m128d ip2, op2;
-        __m256d ip4, op4;
-        switch (type) {
-        case LIBM_FUNC_V2D:
-            ip2 = _mm_set_pd(ip[j+1], ip[j]);
-            op2 = LIBM_FUNC_VEC(d, 2, exp2)(ip2);
-            _mm_store_pd(&op[j], op2);
-            j += 2;
-            break;
-        case LIBM_FUNC_V4D:
-            ip4 = _mm256_set_pd(ip[j+3], ip[j+2], ip[j+1], ip[j]);
-            op4 = LIBM_FUNC_VEC(d, 4, exp2)(ip4);
-            _mm256_store_pd(&op[j], op4);
-            j += 4;
-            break;
-        case LIBM_FUNC_S_D:
-            op[j] = LIBM_FUNC(exp2)(ip[j]);
-            //op[j] = exp2(ip[j]);
-            j++;
-            break;
-        default:
-            LIBM_TEST_DPRINTF(PANIC, "Testing type not valid: %d\n", type);
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-static int __test_exp2f_accu(struct libm_test *test,
-                            uint32_t type)
-{
-    struct libm_test_data *data = &test->test_data;
-    float *ip = (float*)data->input1;
-    float *op = (float*)data->output;
-    int sz = data->nelem, end = sz;
-
-    switch(type) {
-    case LIBM_FUNC_V2D: end = sz - 1; break;
-    case LIBM_FUNC_V4D: end = sz - 3; break;
-    default: break;
-    }
-
-    for (int j = 0; j < end;) {
-        __m128 ip4, op4;
-        switch (type) {
-        case LIBM_FUNC_V4S:
-            ip4 = _mm_set_ps(ip[j+3], ip[j+2], ip[j+1], ip[j]);
-            op4 = LIBM_FUNC_VEC(s,4, exp2f)(ip4);
-            _mm_store_ps(&op[j], op4);
-            j += 4;
-            break;
-        case LIBM_FUNC_S_S:
-            op[j] = LIBM_FUNC(exp2f)(ip[j]);
-            j++;
-            break;
-        default:
-            LIBM_TEST_DPRINTF(PANIC, "Testing type not valid: %d\n", type);
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-static int __generate_test_one_range(struct libm_test *test,
-                                     const struct libm_test_input_range *range)
-{
-    int ret = 0;
-
-    LIBM_TEST_DPRINTF(DBG2,
-                      "Testing for accuracy %d items in range [%.16g, %.16g]\n",
-                      test->test_data.nelem,
-                      (double)range->start, (double)range->stop);
-
-    memcpy(&test->conf->inp_range[0], range, sizeof(*range));
-
-    ret = libm_test_populate_inputs(test, range->type);
-
-    if (test_is_single_precision(test))
-        ret = __test_exp2f_accu(test, test->variant);
-    else
-        ret = __test_exp2_accu(test, test->variant);
-
-    return ret;
-}
-
 static int test_exp2_accu(struct libm_test *test)
 {
     struct libm_test_data *data = &test->test_data;
@@ -466,7 +364,7 @@ static int test_exp2_accu(struct libm_test *test)
         test->conf->inp_range[0].stop) {
         struct libm_test_input_range *range = &test->conf->inp_range[0];
 
-        ret = __generate_test_one_range(test, range);
+        ret = libm_generate_test_one_range(test, range);
 
         ret = test_exp2_verify(test, &test->result);
 
@@ -481,7 +379,7 @@ static int test_exp2_accu(struct libm_test *test)
              (exp2_accu_ranges[i].stop == 0.0) )
              break;
 
-        ret = __generate_test_one_range(test, &exp2_accu_ranges[i]);
+        ret = libm_generate_test_one_range(test, &exp2_accu_ranges[i]);
         if (ret)
             return ret;
 

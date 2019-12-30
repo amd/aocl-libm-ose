@@ -77,7 +77,7 @@ vpextrd       $0, %xmm4, %eax #ax = lower double word of xmm4
 vmovq        %rax, %xmm9
 vpsrlq       %xmm9, %xmm8, %xmm8
 
-pextrq       $1, %xmm7, %r11 # rbx = upper quadword of xmm7
+vpextrq       $1, %xmm7, %r11 # rbx = upper quadword of xmm7
 vmovq        %r11, %xmm12
 vpextrd       $2, %xmm4, %ecx #rcx = second dword from xmm4
 vmovq        %rcx, %xmm11 #xmm11 = rcx
@@ -93,7 +93,7 @@ vpextrd       $0, %xmm3, %r8d
 vmovq        %r8, %xmm9
 vpsrlq       %xmm9, %xmm15, %xmm15
 
-pextrq       $1, %xmm13, %r9
+vpextrq       $1, %xmm13, %r9
 vmovq        %r9, %xmm14
 vpextrd       $2, %xmm3, %r10d
 vmovq        %r10, %xmm13
@@ -356,7 +356,7 @@ vmovdqa       %ymm0, %ymm2
 # m = (n - j) / 64
 
 vpsubd      %xmm5, %xmm4, %xmm15
-psrld      $6, %xmm15 #xmm15=m
+vpsrld      $6, %xmm15, %xmm15 #xmm15=m
 vmovdqa      %xmm5, %xmm4 #xmm4=j
 # r1+r2
 # e^x = 2^m * 2^(j/64) * e * (ln(2)/64)
@@ -401,8 +401,8 @@ vmovdqa       %ymm9, %ymm0
 
 vmovdqu      .L__1023_in_dword(%rip), %xmm11
 vpaddd       %xmm11, %xmm15, %xmm15
-pshufd      $0x50, %xmm15, %xmm6
-pshufd      $0xfa, %xmm15, %xmm7
+vpshufd      $0x50, %xmm15, %xmm6
+vpshufd      $0xfa, %xmm15, %xmm7
 vandpd     .L__real_mask_upper32(%rip), %xmm6, %xmm6
 vandpd     .L__real_mask_upper32(%rip), %xmm7, %xmm7
 vinsertf128  $0, %xmm6, %ymm15, %ymm15

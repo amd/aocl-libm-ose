@@ -1,7 +1,6 @@
 /*
- * Loosely based on Linux kernel's generic list
+ * Copyright © 2019 Advanced Micro Devices, Inc. All rights reserved.
  *
- * Author: Prem Mallappa <pmallapp@amd.com>
  */
 
 

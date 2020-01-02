@@ -261,6 +261,7 @@ init_map_entry_points(void)
         g_amd_libm_ep_vrd2_log10 =	FN_PROTOTYPE_FMA3(vrd2_log10);
         g_amd_libm_ep_vrd2_log1p =	FN_PROTOTYPE_FMA3(vrd2_log1p);
         g_amd_libm_ep_vrs4_logf  =	FN_PROTOTYPE_FMA3(vrs4_logf);
+        g_amd_libm_ep_vrs4_powf  = FN_PROTOTYPE_BAS64(vrs4_powf);
         g_amd_libm_ep_vrs4_log2f =	FN_PROTOTYPE_FMA3(vrs4_log2f);
         g_amd_libm_ep_vrs4_log10f=	FN_PROTOTYPE_FMA3(vrs4_log10f);
         g_amd_libm_ep_vrs4_log1pf=	FN_PROTOTYPE_FMA3(vrs4_log1pf);

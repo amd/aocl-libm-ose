@@ -175,6 +175,7 @@ extern __m128  G_ENTRY_PT(vrs4_exp2f)(__m128);
 extern __m128  G_ENTRY_PT(vrs4_exp10f)(__m128);
 extern __m128  G_ENTRY_PT(vrs4_expm1f)(__m128);
 extern __m128  G_ENTRY_PT(vrs4_logf)(__m128);
+extern __m128  G_ENTRY_PT(vrs4_powf)(__m128, __m128);
 extern __m128  G_ENTRY_PT(vrs4_log2f)(__m128);
 extern __m128  G_ENTRY_PT(vrs4_log10f)(__m128);
 extern __m128  G_ENTRY_PT(vrs4_log1pf)(__m128);

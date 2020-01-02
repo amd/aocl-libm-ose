@@ -62,7 +62,7 @@ fi
 
 echo "Running tests for $TEST()"
 
-input_types=("s1d","s1f","v2d","v4d")
+input_types=("s1d","s1f","v2d","v4d","v4s")
 test_types=("perf","accu","conf","special")
 
 if [ $test_type = "all" ]; then

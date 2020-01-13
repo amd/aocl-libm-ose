@@ -8,7 +8,9 @@
 #include <libm_tests.h>
 
 /* Test cases to check for exceptions for the log() routine. These test cases are not exhaustive */
-static struct __libm_test_conformance_test_data_double libm_test_log_conformance_data[] = {
+static struct {
+	uint64_t in, out, except;
+} test_log_conformance_data[] = {
 	{0x0000000000000000, 0xfff0000000000000, 4},	//0 -inf
 	{0x8000000000000000, 0xfff0000000000000, 4}, 	// -0  -inf
 	{0x3ff0000000000000, 0x0000000000000000, 0},	//1, 0
@@ -22,7 +24,9 @@ static struct __libm_test_conformance_test_data_double libm_test_log_conformance
 };
 
 /* Test cases to check for exceptions for the logf() routine. These test cases are not exhaustive */
-static struct __libm_test_conformance_test_data_float libm_test_logf_conformance_data[] = {
+static struct {
+	uint32_t in, out, except;
+} test_logf_conformance_data[] = {
 	{0x00000000, 0xFF800000, 4},	//log(0) is -inf
 	{0x3f800000, 0x00000000, 0},	//1, 0
 	{0x80000000, 0xff800000, 4},	//-0, -inf
@@ -39,7 +43,9 @@ static struct __libm_test_conformance_test_data_float libm_test_logf_conformance
    Hence, some values in this range is added as special cases
 */
 
-static struct __libm_test_internal_data_float libm_test_logf_special_data[] = {
+static struct {
+	uint32_t in, out;
+} test_logf_special_data[] = {
     {0x3c000000,0xc09b43d5  },  //0.0078125
     {0x3f012345,0xbf2f2e21  },  //0.504444
     {0x3F87AE14,0x3d6eab52  },  //1.06
@@ -80,7 +86,9 @@ static struct __libm_test_internal_data_float libm_test_logf_special_data[] = {
     {0x42c80000,0x40935d8e  }, // 100
 };
 
-static struct __libm_test_internal_data_double libm_test_log_special_data[] = {
+static struct {
+	uint64_t in, out;
+} test_log_special_data[] = {
     {0x3fee1177d9f91c22,0xbfafe1687bdb1469}, // 0.93963234494083658354668
     {0x3ff0008078a074ad,0x3f200ed397156a4a}, // 1.00012251968227450227289
     {0x3fee1b973ae0e299,0xbfaf3527a491b3b3}, // 0.94086801051806212559114

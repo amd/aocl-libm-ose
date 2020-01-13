@@ -49,31 +49,61 @@ __m256 LIBM_FUNC_VEC(s, 8, expf)(__m256);
 int test_exp_conf_setup(struct libm_test *test)
 {
     int ret=0;
-    int test_data_size=0;
+    int td_size = 0;
+    struct libm_test_data *data = &test->test_data;
+
     if(test_is_single_precision(test)) {
-        test_data_size=ARRAY_SIZE(libm_test_expf_conformance_data);
-        ret=libm_setup_s1s_conf(test, libm_test_expf_conformance_data, test_data_size);
+        td_size = ARRAY_SIZE(test_expf_conformance_data);
+    } else {
+        td_size = ARRAY_SIZE(test_exp_conformance_data);
     }
-    else {
-       test_data_size=ARRAY_SIZE(libm_test_exp_conformance_data);
-       ret=libm_setup_s1d_conf(test, libm_test_exp_conformance_data, test_data_size);
+
+    ret = libm_test_conf_setup(test, td_size);
+    if (ret)
+        goto out;
+
+    uint32_t *fin1 = (uint32_t*)data->input1;
+    uint64_t *din1 = (uint64_t*)data->input1;
+    uint32_t *fout = (uint32_t*)data->output;
+    uint64_t *dout = (uint64_t*)data->output;
+    int *except = data->expected_exception;
+
+
+    if(test_is_single_precision(test)) {
+        td_size = ARRAY_SIZE(test_expf_conformance_data);
+    } else {
+        td_size = ARRAY_SIZE(test_exp_conformance_data);
     }
+
+    for (int i = 0; i < td_size; i++) {
+        if(test_is_single_precision(test)) {
+	    fin1[i] = test_expf_conformance_data[i].in;
+            fout[i] = test_expf_conformance_data[i].out;
+            except[i] = test_expf_conformance_data[i].except;
+        } else {
+            din1[i] = test_exp_conformance_data[i].in;
+            dout[i] = test_exp_conformance_data[i].out;
+            except[i] = test_exp_conformance_data[i].except;
+        }
+    }
+
+out:
     return ret;
 }
 
 int test_exp_special_setup(struct libm_test *test)
 {
-    int ret=0;
+    //int ret=0;
     int test_data_size=0;
     if(test_is_single_precision(test)) {
-        test_data_size=ARRAY_SIZE(libm_test_expf_special_data);
-        ret=libm_setup_s1s_special(test, libm_test_expf_special_data, test_data_size);
+        test_data_size=ARRAY_SIZE(test_expf_special_data);
+        //ret=libm_setup_s1s_special(test, libm_test_expf_special_data, test_data_size);
     }
     else {
-       test_data_size=ARRAY_SIZE(libm_test_exp_special_data);
-       ret=libm_setup_s1d_special(test, libm_test_exp_special_data, test_data_size);
+        test_data_size=ARRAY_SIZE(test_exp_special_data);
+       //ret=libm_setup_s1d_special(test, libm_test_exp_special_data, test_data_size);
     }
-    return ret;
+    return test_data_size;
 }
 
 
@@ -196,10 +226,12 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                                            .ulp = {.func = test_exp_ulp}
                                          },
 
+
                          .special      = { .setup = test_exp_special_setup,
                                            .run = libm_test_special,
                                            .verify = test_exp_verify
                                           },
+
 
                          .conformance  = {.setup = test_exp_conf_setup,
                                            .run   = libm_test_conf,
@@ -294,6 +326,4 @@ int libm_test_init(struct libm_test_conf *c)
     ret = libm_tests_setup(c, test_exp_funcs, &exp_template);
     return ret;
 }
-
-
 

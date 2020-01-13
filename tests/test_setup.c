@@ -334,6 +334,25 @@ out:
     return 0;
 }
 
+int libm_test_conf_setup(struct libm_test *test, size_t size)
+{
+    int ret = 0;
+
+    ret = libm_test_alloc_test_data(test, size);
+
+    if (ret) {
+        LIBM_TEST_DPRINTF(PANIC, "Unable to allocate test_data\n");
+        goto out;
+    }
+
+    test->test_data.nelem = size;
+    test->conf->nelem = size;
+
+out:
+    return ret;
+}
+
+
 /*********special data alloc**************************/
 //alloc special data
 int libm_test_alloc_special_data(struct libm_test *test, size_t size)
@@ -345,7 +364,7 @@ int libm_test_alloc_special_data(struct libm_test *test, size_t size)
     ret = libm_test_alloc_test_data(test, size);
 
     if (ret) {
-        printf("unable to allocate\n");
+        LIBM_TEST_DPRINTF(PANIC, "Unable to allocate test_data\n");
         goto out;
     }
 
@@ -361,6 +380,7 @@ int libm_test_alloc_special_data(struct libm_test *test, size_t size)
     return -1;
 }
 
+#if 0
 /******************conformance setup************************/
 int libm_setup_s1s_conf(struct libm_test *test, struct __libm_test_conformance_test_data_float* libm_test_conf_data, int test_data_size)
 {
@@ -563,3 +583,4 @@ int libm_setup_s1d_special_2(struct libm_test *test, struct __libm_test_internal
     return 0;
 }
 
+#endif

@@ -47,16 +47,20 @@ __m256 LIBM_FUNC_VEC(s, 8, powf)(__m256, __m256);
 /*conf setup*/
 int test_pow_conf_setup(struct libm_test *test)
 {
-    int ret=0;
-    int test_data_size=0;
+    int ret = 0;
+
     if(test_is_single_precision(test)) {
-        test_data_size=ARRAY_SIZE(libm_test_powf_conformance_data);
-        ret=libm_setup_s1s_conf_2(test, libm_test_powf_conformance_data, test_data_size);
+        ret = libm_test_conf_setup_f32(test,
+                                       (struct libm_test_special_data_f32 *)
+                                       test_powf_conformance_data,
+                                       ARRAY_SIZE(test_powf_conformance_data));
+    } else {
+        ret = libm_test_conf_setup_f64(test,
+                                       (struct libm_test_special_data_f64 *)
+                                       test_pow_conformance_data,
+                                       ARRAY_SIZE(test_pow_conformance_data));
     }
-    else {
-       test_data_size=ARRAY_SIZE(libm_test_pow_conformance_data);
-       ret=libm_setup_s1d_conf_2(test, libm_test_pow_conformance_data, test_data_size);
-    }
+
     return ret;
 }
 
@@ -64,15 +68,18 @@ int test_pow_conf_setup(struct libm_test *test)
 int test_pow_special_setup(struct libm_test *test)
 {
     int ret=0;
-    int test_data_size=0;
     if(test_is_single_precision(test)) {
-        test_data_size=ARRAY_SIZE(libm_test_powf_special_data);
-        ret=libm_setup_s1s_special_2(test, libm_test_powf_special_data, test_data_size);
+        ret = libm_test_conf_setup_f32(test,
+                                       (struct libm_test_special_data_f32 *)
+                                       test_powf_special_data,
+                                       ARRAY_SIZE(test_powf_special_data));
+    } else {
+        ret = libm_test_conf_setup_f64(test,
+                                       (struct libm_test_special_data_f64 *)
+                                       test_pow_special_data,
+                                       ARRAY_SIZE(test_pow_special_data));
     }
-    else {
-        test_data_size = ARRAY_SIZE(libm_test_pow_special_data);
-        ret = libm_setup_s1d_special_2(test, libm_test_pow_special_data, test_data_size);
-    }
+
     return ret;
 }
 

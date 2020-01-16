@@ -52,12 +52,12 @@ int test_exp_conf_setup(struct libm_test *test)
 
     if(test_is_single_precision(test)) {
         ret = libm_test_conf_setup_f32(test,
-                                       (struct libm_test_conformance_f32 *)
+                                       (struct libm_test_special_data_f32 *)
                                        test_expf_conformance_data,
                                        ARRAY_SIZE(test_expf_conformance_data));
     } else {
         ret = libm_test_conf_setup_f64(test,
-                                       (struct libm_test_conformance_f64 *)
+                                       (struct libm_test_special_data_f64 *)
                                        test_exp_conformance_data,
                                        ARRAY_SIZE(test_exp_conformance_data));
     }
@@ -68,17 +68,21 @@ int test_exp_conf_setup(struct libm_test *test)
 
 int test_exp_special_setup(struct libm_test *test)
 {
-    //int ret=0;
-    int test_data_size=0;
-    if(test_is_single_precision(test)) {
-        test_data_size=ARRAY_SIZE(test_expf_special_data);
-        //ret=libm_setup_s1s_special(test, libm_test_expf_special_data, test_data_size);
-    }
-    else {
-        test_data_size=ARRAY_SIZE(test_exp_special_data);
-       //ret=libm_setup_s1d_special(test, libm_test_exp_special_data, test_data_size);
-    }
-    return test_data_size;
+	int ret = 0;
+
+	if(test_is_single_precision(test)) {
+		ret = libm_test_conf_setup_f32(test,
+					       (struct libm_test_special_data_f32 *)
+					       test_expf_special_data,
+					       ARRAY_SIZE(test_expf_special_data));
+	} else {
+		ret = libm_test_conf_setup_f64(test,
+					       (struct libm_test_special_data_f64 *)
+					       test_exp_special_data,
+					       ARRAY_SIZE(test_exp_special_data));
+	}
+
+	return ret;
 }
 
 

@@ -492,7 +492,7 @@ double test_exp2_ulp(struct libm_test *test, int idx)
 
     if (val < min)   return 1.0f;
 
-    return exp2(buf[idx]);
+    return exp2(val);
 }
 
 static int
@@ -567,10 +567,10 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
       * Scalar functions
       */
      [LIBM_FUNC_S_S]  = {
-                         .performance = { .setup = test_exp2_default_setup,
+                         .performance = { .setup = libm_test_perf_setup,
                                           .run   = libm_test_s1s_perf,},
-                         .accuracy     = {.setup = test_exp2_accu_setup,
-                                          .run   = test_exp2_accu,
+                         .accuracy     = {.setup = libm_test_accu_setup,
+                                          .run   = libm_test_accu,
                                           .ulp   = {.func = test_exp2_ulp},
                          },
                          .special      = {.setup = test_exp2_special_setup,},

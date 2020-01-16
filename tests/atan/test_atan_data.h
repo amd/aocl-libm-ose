@@ -2,35 +2,37 @@
 #include <libm_tests.h>
 
 /* Test cases to check for exceptions for the atan() routine. These test cases are not exhaustive */
-static struct __libm_test_conformance_test_data_double libm_test_atan_conformance_data[] = {
-    {0x0000000000000000, 0x0000000000000000, 0},	//0
-    {0x8000000000000000, 0x8000000000000000, 0},    //-0
-    {0x3FF0000000000000, 0x3fe921fb54442d18, 32},    //1
-    {0xbff0000000000000, 0xbfe921fb54442d18, 32},    //-1
-    {0x7ff0000000000000, 0x3ff921fb54442d18, 0},   //+inf
-    {0xFFF0000000000000, 0xbff921fb54442d18, 0}, //-inf
-    {0x3fe279a6b50b0f28, 0x3fe0c151cbc9979a, 32}, //sqrt(3)/3
-    {0x3FFBB6AE7D566CF4, 0x3ff0c15f1d5afb15, 32},  //sqrt(3) 
-    {0x7ff0000000000001, 0x7ff0000000000001, 1}, //nan, nan
-    {0x7ff8000000000001, 0x7ff8000000000001, 0}, //qnan, qnan
-    {0xfff0000000000001, 0xfff8000000000001, 1}, //-nan, -nan
+static struct libm_test_special_data_f64
+test_atan_conformance_data[] = {
+    {0x0000000000000000, 0x0000000000000000, 0,},	//0
+    {0x8000000000000000, 0x8000000000000000, 0,},    //-0
+    {0x3FF0000000000000, 0x3fe921fb54442d18, 32,},    //1
+    {0xbff0000000000000, 0xbfe921fb54442d18, 32,},    //-1
+    {0x7ff0000000000000, 0x3ff921fb54442d18, 0,},   //+inf
+    {0xFFF0000000000000, 0xbff921fb54442d18, 0,}, //-inf
+    {0x3fe279a6b50b0f28, 0x3fe0c151cbc9979a, 32,}, //sqrt(3)/3
+    {0x3FFBB6AE7D566CF4, 0x3ff0c15f1d5afb15, 32,},  //sqrt(3) 
+    {0x7ff0000000000001, 0x7ff0000000000001, 1,}, //nan, nan
+    {0x7ff8000000000001, 0x7ff8000000000001, 0,}, //qnan, qnan
+    {0xfff0000000000001, 0xfff8000000000001, 1,}, //-nan, -nan
     {0xfff8000000000001, 0xfff8000000000001, 0} //-qnan, -qnan
 };
 
 /* Test cases to check for exceptions for the atanf() routine. These test cases are not exhaustive */
-static struct __libm_test_conformance_test_data_float libm_test_atanf_conformance_data[] = {
-    {0x00000000, 0x00000000, 0},    //atanf(0) is 0
-    {0x3f800000, 0x3f490fdb, 32},   //atanf(1) = 0.785398 rads
-    {0x3f13cd36, 0x3f060a8f, 32},   //atanf(sqrt(3)/3)  == 30 deg
-    {0x3fddb574, 0x3f860af9, 32},    //atanf(sqrt(3) == 60 deg
-    {0x7f800000, 0x3fc90fdb, 32},    //atanf(inf) = pi/2
-    {0xff800000, 0xbfc90fdb, 32},    //atanf(-inf) = -pi/2
-    {0x7fadffff, 0x7fedffff, 1},    //+nan
-    {0x7fedffff, 0x7fedffff, 0},    //qnan
-    {0xffedffff, 0xffedffff, 0},    //-qnan
-    {0xffadffff, 0xffedffff, 1},    //-snan
-    {0x80000000, 0x80000000, 0},    //-0
-    {0xbf800000, 0xbf490fdb, 32},   //-1
+static struct libm_test_special_data_f32
+test_atanf_conformance_data[] = {
+    {0x00000000, 0x00000000, 0,},    //atanf(0) is 0
+    {0x3f800000, 0x3f490fdb, 32,},   //atanf(1) = 0.785398 rads
+    {0x3f13cd36, 0x3f060a8f, 32,},   //atanf(sqrt(3)/3)  == 30 deg
+    {0x3fddb574, 0x3f860af9, 32,},    //atanf(sqrt(3) == 60 deg
+    {0x7f800000, 0x3fc90fdb, 32,},    //atanf(inf) = pi/2
+    {0xff800000, 0xbfc90fdb, 32,},    //atanf(-inf) = -pi/2
+    {0x7fadffff, 0x7fedffff, 1,},    //+nan
+    {0x7fedffff, 0x7fedffff, 0,},    //qnan
+    {0xffedffff, 0xffedffff, 0,},    //-qnan
+    {0xffadffff, 0xffedffff, 1,},    //-snan
+    {0x80000000, 0x80000000, 0,},    //-0
+    {0xbf800000, 0xbf490fdb, 32,},   //-1
 };
 
 /*for accu tests*/

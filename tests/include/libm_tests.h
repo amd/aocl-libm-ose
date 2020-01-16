@@ -94,6 +94,7 @@ typedef int (*libm_func_cb_t)(struct libm_test *test, int idx);
 
 struct libm_test_ops {
     int (*setup)(struct libm_test *test);
+    int (*late_setup)(struct libm_test *test);
     int (*run)(struct libm_test *test);
     int (*cleanup)(struct libm_test *test);
 
@@ -196,6 +197,31 @@ struct libm_test_conf {
     struct libm_test_input_range inp_range[3];
 };
 
+
+/*
+ * We have very few rare cases where there are
+ * multiple inputs, so we put input2 and input3 to the end to avoid
+ * ugly parens all over.
+ */
+
+struct libm_test_special_data_f32 {
+	uint32_t in1;
+	uint32_t out;
+	uint32_t expected_exception;
+
+	uint32_t in2;
+	uint32_t in3;
+};
+
+struct libm_test_special_data_f64 {
+	uint64_t in1;
+	uint64_t out;
+	uint64_t expected_exception;
+
+	uint64_t in2;
+	uint64_t in3;
+};
+
 static inline int test_is_single_precision(struct libm_test *test)
 {
     return test->variant & TEST_SINGLE_PRECISION_MASK;
@@ -264,6 +290,12 @@ int libm_test_special(struct libm_test* test);
 int libm_test_perf_setup(struct libm_test *test); // Perf setup
 int libm_test_accu_setup(struct libm_test *test); // Accu setup
 int libm_test_conf_setup(struct libm_test *test, size_t size); // Conformance setup
+int libm_test_conf_setup_f32(struct libm_test *test,
+			     struct libm_test_special_data_f32 *data,
+			     size_t size);
+int libm_test_conf_setup_f64(struct libm_test *test,
+			     struct libm_test_special_data_f64 *data,
+			     size_t size);
 
 /*********allocate special data***************/
 int libm_test_alloc_special_data(struct libm_test *test, size_t size);

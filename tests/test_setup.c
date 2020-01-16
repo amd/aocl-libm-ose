@@ -380,207 +380,71 @@ int libm_test_alloc_special_data(struct libm_test *test, size_t size)
     return -1;
 }
 
-#if 0
-/******************conformance setup************************/
-int libm_setup_s1s_conf(struct libm_test *test, struct __libm_test_conformance_test_data_float* libm_test_conf_data, int test_data_size)
+
+int
+libm_test_conf_setup_f64(struct libm_test *test,
+                          struct libm_test_special_data_f64 *data,
+                          size_t size)
 {
-    float *in1,*expected;
-    struct libm_test_data *data;
-    int i;
-    int32_t *expected_exception;
+    int ret=0;
+    struct libm_test_data *tdata = &test->test_data;
 
-    libm_test_alloc_special_data(test, test_data_size);
+    ret = libm_test_conf_setup(test, size);
+    if (ret)
+        goto out;
 
-    data = &test->test_data;
-    in1 = (float*)data->input1;
-    expected = (float*)data->expected;
-    expected_exception =  data->expected_exception;
-    flt32u_t x,z;
+    uint64_t *din1 = (uint64_t*)tdata->input1;
+    uint64_t *din2 = (uint64_t*)tdata->input2;
+    uint64_t *din3 = (uint64_t*)tdata->input3;
+    uint64_t *dexp = (uint64_t*)tdata->expected;
+    int *except = tdata->expected_exception;
 
-    // Populate exception test data
-    for (i = 0 ; i < test_data_size ; i++) {
-       x.i = libm_test_conf_data[i].in1;
-       z.i = libm_test_conf_data[i].out;
-       in1[i] = x.f;
-       expected[i] = z.f;
-       expected_exception[i] = libm_test_conf_data[i].exception_flags;
+    for (uint32_t i = 0; i < size; i++) {
+        din1[i] = data[i].in1;
+        if (test->nargs > 1)
+            din2[i] = data[i].in2;
+        if (test->nargs > 2)
+            din3[i] = data[i].in3;
+
+        dexp[i] = data[i].out;
+        except[i] = data[i].expected_exception;
     }
 
-    return 0;
+ out:
+    return ret;
 }
 
-int libm_setup_s1d_conf(struct libm_test *test, struct __libm_test_conformance_test_data_double* libm_test_conf_data, int test_data_size)
+int
+libm_test_conf_setup_f32(struct libm_test *test,
+                         struct libm_test_special_data_f32 *data,
+                         size_t size)
 {
-    double *in1, *expected;
-    struct libm_test_data *data;
-    int i;
-    int32_t *expected_exception;
+    int ret=0;
+    struct libm_test_data *tdata = &test->test_data;
 
-    libm_test_alloc_special_data(test, test_data_size);
+    ret = libm_test_conf_setup(test, size);
+    if (ret)
+        goto out;
 
-    data = &test->test_data;
+    uint32_t *fin1 = (uint32_t*)tdata->input1;
+    uint32_t *fin2 = (uint32_t*)tdata->input2;
+    uint32_t *fin3 = (uint32_t*)tdata->input3;
+    uint32_t *fexp = (uint32_t*)tdata->expected;
+    int *except = tdata->expected_exception;
 
-    in1 = (double*)data->input1;
-    expected = (double*)data->expected;
-    expected_exception =  data->expected_exception;
-    flt64u_t x,z;
+    for (uint32_t i = 0; i < size; i++) {
+        fin1[i] = data[i].in1;
+        if (test->nargs > 1)
+            fin2[i] = data[i].in2;
+        if (test->nargs > 2)
+            fin3[i] = data[i].in3;
 
-    // Populate exception test data
-    for (i = 0 ; i < test_data_size ; i++) {
-       x.i = libm_test_conf_data[i].in1;
-       z.i = libm_test_conf_data[i].out;
-       in1[i] = x.d;
-       expected[i] = z.d;
-       expected_exception[i] = libm_test_conf_data[i].exception_flags;
+        fexp[i] = data[i].out;
+        except[i] = data[i].expected_exception;
     }
 
-    return 0;
+out:
+    return ret;
 }
 
-/*for nargs is 2*/
-int libm_setup_s1s_conf_2(struct libm_test *test, struct __libm_test_conformance_test_data_float_2* libm_test_conf_data, int test_data_size)
-{
-    float *in1,*in2, *expected;
-    struct libm_test_data *data;
-    int i;
-    int32_t *expected_exception;
 
-    libm_test_alloc_special_data(test, test_data_size);
-
-    data = &test->test_data;
-
-    in1 = (float*)data->input1;
-    in2 = (float*)data->input2;
-    expected = (float*)data->expected;
-    expected_exception =  data->expected_exception;
-    flt32u_t x,y,z;
-
-    // Populate exception test data
-    for (i = 0 ; i < test_data_size ; i++) {
-       x.i = libm_test_conf_data[i].in1;
-       y.i = libm_test_conf_data[i].in2;
-       z.i = libm_test_conf_data[i].out;
-       in1[i] = x.f;
-       in2[i] = y.f;
-       expected[i] = z.f;
-       expected_exception[i] = libm_test_conf_data[i].exception_flags;
-    }
-
-    return 0;
-}
-
-int libm_setup_s1d_conf_2(struct libm_test *test, struct __libm_test_conformance_test_data_double_2* libm_test_conf_data, int test_data_size)
-{
-    double *in1,*in2,*expected;
-    struct libm_test_data *data;
-    int i;
-    int32_t *expected_exception;
-
-    libm_test_alloc_special_data(test, test_data_size);
-
-    data = &test->test_data;
-
-    in1 = (double*)data->input1;
-    in2 = (double*)data->input2;
-    expected = (double*)data->expected;
-    expected_exception =  data->expected_exception;
-    flt64u_t x,y,z;
-
-    // Populate exception test data
-    for (i = 0 ; i < test_data_size ; i++) {
-       x.i = libm_test_conf_data[i].in1;
-       y.i = libm_test_conf_data[i].in2;
-       z.i = libm_test_conf_data[i].out;
-       in1[i] = x.d;
-       in2[i] = y.d;
-       expected[i] = z.d;
-       expected_exception[i] = libm_test_conf_data[i].exception_flags;
-    }
-
-    return 0;
-}
-
-/*****special functions*******/
-int libm_setup_s1s_special(struct libm_test *test, struct __libm_test_internal_data_float* libm_test_special_data, int test_data_size)
-{
-    struct libm_test_data *data;
-    float *in1, *expected;
-    flt32u_t x,z;
-    libm_test_alloc_special_data(test, test_data_size);
-
-    data = &test->test_data;
-    in1 = data->input1;
-    expected = data->expected;
-    for(int i=0; i < test_data_size; i++) {
-        x.i = libm_test_special_data[i].in1;
-        z.i = libm_test_special_data[i].out;
-        in1[i] = x.f;
-        expected[i] = z.f;
-    }
-    return 0;
-}
-
-int libm_setup_s1s_special_2(struct libm_test *test, struct __libm_test_internal_data_float_2* libm_test_special_data, int test_data_size)
-{
-    struct libm_test_data *data;
-    float *in1, *in2, *expected;
-    flt32u_t x,y,z;
-    libm_test_alloc_special_data(test, test_data_size);
-
-    data = &test->test_data;
-    in1 = data->input1;
-    in2 = data->input2;
-    expected = data->expected;
-    for(int i=0; i < test_data_size; i++) {
-        x.i = libm_test_special_data[i].in1;
-        y.i = libm_test_special_data[i].in2;
-        z.i = libm_test_special_data[i].out;
-        in1[i] = x.f;
-        in2[i] = y.f;
-        expected[i] = z.f;
-    }
-    return 0;
-}
-
-int libm_setup_s1d_special(struct libm_test *test, struct __libm_test_internal_data_double* libm_test_special_data, int test_data_size)
-{
-    struct libm_test_data *data;
-    double *in1, *expected;
-    flt64u_t x,z;
-    libm_test_alloc_special_data(test, test_data_size);
-
-    data = &test->test_data;
-    in1 = data->input1;
-    expected = data->expected;
-    for(int i=0; i < test_data_size; i++) {
-        x.i = libm_test_special_data[i].in1;
-        z.i = libm_test_special_data[i].out;
-        in1[i] = x.d;
-        expected[i] = z.d;
-    }
-    return 0;
-}
-
-int libm_setup_s1d_special_2(struct libm_test *test, struct __libm_test_internal_data_double_2* libm_test_special_data, int test_data_size)
-{
-    struct libm_test_data *data;
-    double *in1, *in2, *expected;
-    flt64u_t x,y,z;
-    libm_test_alloc_special_data(test, test_data_size);
-
-    data = &test->test_data;
-    in1 = data->input1;
-    in2 = data->input2;
-    expected = data->expected;
-    for(int i=0; i < test_data_size; i++) {
-        x.i = libm_test_special_data[i].in1;
-        y.i = libm_test_special_data[i].in2;
-        z.i = libm_test_special_data[i].out;
-        in1[i] = x.d;
-        in2[i] = y.d;
-        expected[i] = z.d;
-    }
-    return 0;
-}
-
-#endif

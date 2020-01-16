@@ -48,48 +48,23 @@ __m256 LIBM_FUNC_VEC(s, 8, expf)(__m256);
 
 int test_exp_conf_setup(struct libm_test *test)
 {
-    int ret=0;
-    int td_size = 0;
-    struct libm_test_data *data = &test->test_data;
+    int ret = 0;
 
     if(test_is_single_precision(test)) {
-        td_size = ARRAY_SIZE(test_expf_conformance_data);
+        ret = libm_test_conf_setup_f32(test,
+                                       (struct libm_test_conformance_f32 *)
+                                       test_expf_conformance_data,
+                                       ARRAY_SIZE(test_expf_conformance_data));
     } else {
-        td_size = ARRAY_SIZE(test_exp_conformance_data);
+        ret = libm_test_conf_setup_f64(test,
+                                       (struct libm_test_conformance_f64 *)
+                                       test_exp_conformance_data,
+                                       ARRAY_SIZE(test_exp_conformance_data));
     }
 
-    ret = libm_test_conf_setup(test, td_size);
-    if (ret)
-        goto out;
-
-    uint32_t *fin1 = (uint32_t*)data->input1;
-    uint64_t *din1 = (uint64_t*)data->input1;
-    uint32_t *fout = (uint32_t*)data->output;
-    uint64_t *dout = (uint64_t*)data->output;
-    int *except = data->expected_exception;
-
-
-    if(test_is_single_precision(test)) {
-        td_size = ARRAY_SIZE(test_expf_conformance_data);
-    } else {
-        td_size = ARRAY_SIZE(test_exp_conformance_data);
-    }
-
-    for (int i = 0; i < td_size; i++) {
-        if(test_is_single_precision(test)) {
-	    fin1[i] = test_expf_conformance_data[i].in;
-            fout[i] = test_expf_conformance_data[i].out;
-            except[i] = test_expf_conformance_data[i].except;
-        } else {
-            din1[i] = test_exp_conformance_data[i].in;
-            dout[i] = test_exp_conformance_data[i].out;
-            except[i] = test_exp_conformance_data[i].except;
-        }
-    }
-
-out:
     return ret;
 }
+
 
 int test_exp_special_setup(struct libm_test *test)
 {

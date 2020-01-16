@@ -378,8 +378,8 @@ static int libm_test_run_one(struct libm_test *test, struct libm_test_result *re
      * Supposed to allocate all buffers,
      * create any validation output
      */
-    if (test->ops.setup)
-        test->ops.setup(test);
+    if (test->ops.late_setup)
+        test->ops.late_setup(test);
 
     if (!test->test_data.input1 ||
         !test->test_data.output) {

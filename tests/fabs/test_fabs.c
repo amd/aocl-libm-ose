@@ -28,16 +28,20 @@ float LIBM_FUNC(fabsf)(float);
 
 int test_fabs_conf_setup(struct libm_test *test)
 {
-    int ret=0;
-    int test_data_size=0;
+    int ret = 0;
+
     if(test_is_single_precision(test)) {
-        test_data_size=ARRAY_SIZE(libm_test_fabsf_conformance_data);
-        ret=libm_setup_s1s_conf(test, libm_test_fabsf_conformance_data, test_data_size);
+        ret = libm_test_conf_setup_f32(test,
+                                       (struct libm_test_special_data_f32 *)
+                                       test_fabsf_conformance_data,
+                                       ARRAY_SIZE(test_fabsf_conformance_data));
+    } else {
+        ret = libm_test_conf_setup_f64(test,
+                                       (struct libm_test_special_data_f64 *)
+                                       test_fabs_conformance_data,
+                                       ARRAY_SIZE(test_fabs_conformance_data));
     }
-    else {
-       test_data_size=ARRAY_SIZE(libm_test_fabs_conformance_data);
-       ret=libm_setup_s1d_conf(test, libm_test_fabs_conformance_data, test_data_size);
-    }
+
     return ret;
 }
 

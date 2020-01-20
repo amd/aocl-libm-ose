@@ -5,10 +5,10 @@
 static struct libm_test_special_data_f64
 test_pow_conformance_data[] = {
 	{0x7FF4001000000000,0x7FF4001000000000,FE_INVALID,0x7ffc001000000000,}, //pow(snan,snan)
-	{0x7FFC001000000000,0x7FF4001000000000,FE_INVALID,0x7ffc001000000000,}, //pow(nan,snan)
-	{0x3FF0000000000000,0x7FF4001000000000,FE_INVALID,0x7ffc001000000000,}, //pow(1.0,snan)
+	{0x7FFC001000000000,0x7FF4001000000000,0         ,0x7ffc001000000000,}, //pow(nan,snan)
+	{0x3FF0000000000000,0x7FF4001000000000,0         ,0x7ffc001000000000,}, //pow(1.0,snan)
 	{0x7FF4001000000000,0x3FF0000000000000,FE_INVALID,0x7ffc001000000000,}, //pow(snan,1.0)
-	{0x3FE0000000000000,0x7FF4001000000000,FE_INVALID,0x7ffc001000000000,}, //pow(0.5,snan)
+	{0x3FE0000000000000,0x7FF4001000000000,0         ,0x7ffc001000000000,}, //pow(0.5,snan)
 	{0x7FF4001000000000,0x3FE0000000000000,FE_INVALID,0x7ffc001000000000,}, //pow(snan,0.5)
 	{0x7ff8000000000000,0x7ff8000000000000,0         ,0x7ff8000000000000,}, //pow(qnan,qnan)
 	{0x7ff8000000000000,0x3ff0000000000000,0         ,0x7ffc001000000000,}, //pow(qnan,1)
@@ -20,7 +20,7 @@ static struct libm_test_special_data_f32
 test_powf_conformance_data[] = {
 	{0x7fbfffff, 0x7fa00000, FE_INVALID, 0x7fbfffff}, //nan, snan
 	{0x7fa00000, 0x7fa00000, FE_INVALID, 0x7fa00000}, //powf(snan, snan)
-	{0x3f800000, 0x7fa00000, FE_INVALID, 0x3f800000},//1.0, nan
+	{0x3f800000, 0x7fa00000, 0         , 0x3f800000},//1.0, nan
 	{0x3f800000, 0x7ffe0000, 0         , 0x3f800000},//1.0, qnan
 	{0x3f000000, 0x7fa00000, FE_INVALID, 0x7fa00000}, // 0.5, snan
 	{0x7fa00000, 0x3f000000, FE_INVALID, 0x7fe00000},//snan, 0.5

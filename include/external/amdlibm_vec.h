@@ -188,6 +188,7 @@ extern "C" {
     __m128  amd_vrs4_expm1f (__m128  x);
 
     __m256d amd_vrd4_exp (__m256d);
+    __m256  amd_vrs8_expf (__m256);
 
     void amd_vrda_exp       (int len, double *src, double *dst);
     void amd_vrsa_expf      (int len, float  *src, float  *dst);
@@ -211,6 +212,7 @@ extern "C" {
     __m128  amd_vrs4_log1pf (__m128  x);
 
     __m256d amd_vrd4_log (__m256d);
+    __m256  amd_vrs8_logf (__m256);
 
     void amd_vrda_log       (int len, double *src, double *dst);
     void amd_vrsa_logf      (int len, float  *src, float  *dst);
@@ -242,6 +244,7 @@ extern "C" {
     __m128  amd_vrs4_powf   (__m128 x, __m128 y);
 
     __m256d amd_vrd4_pow (__m256d, __m256d);
+    __m256  amd_vrs8_powf (__m256, __m256);
 
     void amd_vrda_cbrt      (int len, double *src, double *dst);
     void amd_vrsa_cbrtf     (int len, float  *src, float  *dst);

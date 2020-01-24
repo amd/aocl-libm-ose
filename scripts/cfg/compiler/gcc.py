@@ -89,6 +89,9 @@ class Gcc(Compiler):
         return self.cmd
     def CFlags(self):
         return self.compile_flag_map[self.prod_mode]
+    def LDFlags(self):
+        return self.link_flag_map[self.prod_mode]
+
 
 class ICC(Compiler):
     def __init__(self):

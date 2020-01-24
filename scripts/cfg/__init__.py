@@ -158,9 +158,11 @@ class DefaultCfg(object):
         print(env['compiler'])
         if env['compiler'] == 'aocc' or env['compiler'] == 'llvm':
             cmpiler = compiler.llvm.LLVM(self.defenv['build'])
+
         env.Replace(
             CC = cmpiler.Cmd(),
             CCFLAGS = cmpiler.CFlags(),
+            LINKFLAGS = cmpiler.LDFlags(),
         )
 
         #print("developer=> ", env['developer'])

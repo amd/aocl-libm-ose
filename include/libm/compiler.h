@@ -62,6 +62,7 @@ To check that this is gcc compiler version 5.1 or greater:
 #define OPT_Og __attribute__((optimize("Og")))
 
 #define OPTIMIZE(x) __attribute__((optimize(x)))
+#define NO_OPTIMIZE __attribute__((optimize("0"))
 
 #define CONSTRUCTOR __attribute__((constructor))
 #define INITIALIZER(f) static void f(void) CONSTRUCTOR; static void f(void)
@@ -74,9 +75,11 @@ To check that this is gcc compiler version 5.1 or greater:
 
 #if defined(__clang__)
     #define FALLTHROUGH
+    #undef NO_OPTIMIZE
     #define NO_OPTIMIZE __attribute__((optnone))
 #else
     #define FALLTHROUGH __attribute__((fallthrough))
+    #undef NO_OPTIMIZE
     #define NO_OPTIMIZE __attribute__((optimize("O0")))
 #endif
 

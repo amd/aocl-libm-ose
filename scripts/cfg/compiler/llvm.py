@@ -21,8 +21,8 @@ class LLVM(Compiler):
             'release' : self.compile_flags_release
         }
 
-        self.link_flags_debug = []
-        self.link_flags_release = self.compile_flags_release
+        self.link_flags_debug = ['-fuse-ld=ld']
+        self.link_flags_release = ['-fuse-ld=ld'] 
 
         self.link_flag_map = {
             "debug": self.link_flags_debug,
@@ -42,3 +42,6 @@ class LLVM(Compiler):
 
     def CFlags(self):
         return self.compile_flag_map[self.prod_mode]
+
+    def LDFlags(self):
+        return self.link_flag_map[self.prod_mode]

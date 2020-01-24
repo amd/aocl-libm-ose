@@ -91,7 +91,7 @@ libm_test_s1d_perf(struct libm_test *test)
 }
 
 static inline void
-OPTIMIZE("O0")
+NO_OPTIMIZE
 __libm_test_v2d_overhead(struct libm_test *test)
 {
     struct libm_test_data *data = &test->test_data;
@@ -114,7 +114,7 @@ __libm_test_v2d_overhead(struct libm_test *test)
 
 
 static inline void
-OPTIMIZE("O0")
+NO_OPTIMIZE
 __libm_test_v4d_overhead(struct libm_test *test)
 {
     struct libm_test_data *data = &test->test_data;
@@ -136,7 +136,7 @@ __libm_test_v4d_overhead(struct libm_test *test)
 }
 
 static inline void
-OPTIMIZE("O0")
+NO_OPTIMIZE
 __libm_test_v4s_overhead(struct libm_test *test)
 {
     struct libm_test_data *data = &test->test_data;
@@ -159,7 +159,7 @@ __libm_test_v4s_overhead(struct libm_test *test)
 
 /* Measure time taken to load and store */
 static double
-OPTIMIZE("O0")
+NO_OPTIMIZE
 libm_test_overhead(struct libm_test *test)
 {
 

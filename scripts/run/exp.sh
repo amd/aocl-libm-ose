@@ -1,5 +1,5 @@
 #!/bin/bash
-#!/bin/bash
+
 build_dir="$1"
 
 test_type="$2"
@@ -49,7 +49,7 @@ run_test()
 
 #check if executable is found
 if [ ! -f ${EXE} ]; then
-    echo "Executable not found!"
+    echo "Executable ${EXE} not found!"
     exit 1
 fi    
 

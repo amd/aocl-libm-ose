@@ -56,7 +56,7 @@ run_test()
 
 #check if executable is found
 if [ ! -f ${EXE} ]; then
-    echo "Executable not found!"
+    echo "Executable ${EXE} not found!"
     exit 1
 fi    
 
@@ -70,7 +70,7 @@ for inp in ${input_types[@]};
     do
         for t in ${test_types[@]};
             do
-                run_test $inp $t
+                run_test $inp $t 
             done
     done
 

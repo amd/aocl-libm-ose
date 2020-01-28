@@ -87,7 +87,7 @@ static const struct expf_data expf_v2_data = {
 #define EXPF_FARG_MIN -0x1.9fe368p6f    /* log(0x1p-150) ~= -103.97 */
 #define EXPF_FARG_MAX  0x1.62e42ep6f    /* log(0x1p128)  ~=   88.72  */
 
-double _exp_special(double x, double y, uint32_t code);
+double _expf_special(float x, float y, uint32_t code);
 
 static uint32_t
 top12f(float x)
@@ -129,11 +129,11 @@ FN_PROTOTYPE_OPT(expf)(float x)
             if(asuint32(x) == PINFBITPATT_SP32)
                 return asfloat(PINFBITPATT_SP32);
 
-            return  _exp_special(x, asdouble(PINFBITPATT_DP64),  EXP_Y_INF);
+            return  _expf_special(x, asfloat(PINFBITPATT_SP32),  EXP_Y_INF);
         }
 
         if (x < EXPF_FARG_MIN){
-            return _exp_special(x, 0.0, EXP_Y_ZERO);;
+            return _expf_special(x, 0.0, EXP_Y_ZERO);;
         }
     }
 

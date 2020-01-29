@@ -1,0 +1,14 @@
+/*
+* Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+*
+*/
+This directory contains sample source files showing sample usage of AMD LibM
+library functions. In particular,
+different flavors of the exp function have been illustrated.
+
+to build and run this example:
+1. make clean;
+2. make;
+3. LD_LIBRARY_PATH=<path to libamdlibm.so shared library path
+4. ./test_libm
+

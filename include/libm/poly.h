@@ -166,4 +166,18 @@
             q;                                                          \
         })
 
+/*
+ * p(x) = c1*x^3 + c0*x^2 + x
+ *      = (c0+c1*x)*x^2 + x
+ */
+
+#define POLY_EVAL_1(x, c0, c1) ({                                       \
+            __typeof(x) x2 = x * x;                                     \
+            __typeof(x) q = mul_add(mul_add(c1, x, c0),                 \
+                                    x2,                                 \
+                                    x);                                 \
+            q;                                                          \
+        })
+
 #endif  /* LIBM_POLY_H */
+

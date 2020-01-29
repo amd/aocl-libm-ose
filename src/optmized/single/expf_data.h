@@ -17,6 +17,7 @@ struct expf_data {
     const double       *table_v3;
 };
 
+
 extern double  __two_to_jby64[];
 
 #endif

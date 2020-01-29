@@ -107,6 +107,34 @@ as_v_f32x4(v_i32x4_t x)
 	return val._xf;
 }
 
+static inline v_i64x4_t
+as_v_i64x4(v_f64x4_t x)
+{
+    union {
+        v_i64x4_t _xi;
+        v_f64x4_t _xf;
+   } val = {
+       ._xf = x,
+   };
+
+  return val._xi;
+}
+
+static inline v_f64x4_t
+as_v_f64x4(v_i64x4_t x)
+{
+    union {
+        v_i64x4_t _xi;
+        v_f64x4_t _xf;
+    } val = {
+        ._xi = x,
+    };
+
+    return val._xf;
+}
+
+
+
 static inline float
 v_f32x4_to_float(v_f32x4_t f32x4, int idx)
 {

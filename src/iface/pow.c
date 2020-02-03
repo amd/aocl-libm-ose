@@ -29,7 +29,7 @@ LIBM_IFACE_PROTO(pow)(void *arg)
     amd_powf_t fn_s = NULL;
     amd_pow_v4d_t fn_v4d = NULL;
     amd_pow_v2d_t fn_v2d = NULL;
-    amd_powf_v4s_t fn_v4s = NULL;    
+    amd_powf_v4s_t fn_v4s = NULL;
 
     static struct cpu_features *features = NULL;
 
@@ -43,7 +43,7 @@ LIBM_IFACE_PROTO(pow)(void *arg)
     fn_s = &FN_PROTOTYPE_FMA3(powf);
     fn_v4d = &FN_PROTOTYPE_FMA3(vrd4_pow);
     fn_v2d = &FN_PROTOTYPE_FMA3(vrd2_pow);
-    fn_v4s = &FN_PROTOTYPE_BAS64(vrs4_powf);
+    fn_v4s = &FN_PROTOTYPE_OPT(vrs4_powf);
 
     if (CPU_HAS_AVX2(features) &&
         CPU_FEATURE_AVX2_USABLE(features)) {

@@ -22,6 +22,8 @@
 
 #define _MM_SET1_I32(x) {(x), (x), (x), (x)}
 
+#define _MM_SET1_I64(x) {(x), (x), (x), (x)}
+
 
 static inline uint32_t
 asuint32(float f)
@@ -81,6 +83,13 @@ cast_i64_to_double( int64_t x )
 	return (double)x;
 }
 
+static inline v_u32x4_t
+v_as_u32_f32 (v_f32x4_t x)
+{
+  union { v_f32x4_t f; v_u32x4_t u; } r = {x};
+  return r.u;
+}
+
 static inline v_i32x4_t
 as_v_i32x4(v_f32x4_t x)
 {
@@ -92,6 +101,32 @@ as_v_i32x4(v_f32x4_t x)
 	};
 
 	return val._xi;
+}
+
+static inline v_u64x4_t
+as_v_u64x4(v_f64x4_t x)
+{
+    union {
+        v_u64x4_t _xi;
+        v_f64x4_t _xf;
+    } val = {
+        ._xf = x,
+    };
+
+    return val._xi;
+}
+
+static inline v_f64x4_t
+as_f64(v_u64x4_t x)
+{
+    union {
+        v_u64x4_t _xi;
+        v_f64x4_t _xf;
+    } val = {
+        ._xi = x,
+    };
+
+    return val._xf;
 }
 
 static inline v_f32x4_t
@@ -201,6 +236,19 @@ v_call_f32(float (*fn)(float),
 		cond[1] ? fn(orig[1]) : result[1],
 		cond[2] ? fn(orig[2]) : result[2],
 		cond[3] ? fn(orig[3]) : result[3]};
+}
+
+static inline v_f32x4_t
+v_call2_f32(float (*fn)(float, float),
+       v_f32x4_t x,
+       v_f32x4_t y,
+       v_f32x4_t result,
+       v_i32x4_t cond)
+{
+    return (v_f32x4_t){cond[0] ? fn(x[0], y[0]) : result[0],
+        cond[1] ? fn(x[1], y[1]) : result[1],
+        cond[2] ? fn(x[2], y[2]) : result[2],
+        cond[3] ? fn(x[3], y[3]) : result[3]};
 }
 
 static inline v_f64x4_t

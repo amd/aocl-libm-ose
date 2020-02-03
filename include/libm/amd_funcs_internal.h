@@ -159,7 +159,6 @@ extern __m128 FN_PROTOTYPE_FMA3(vrs4_log10f)(__m128 x);
 extern __m128 FN_PROTOTYPE_FMA3(vrs4_log1pf)(__m128 x);
 extern __m128 FN_PROTOTYPE_FMA3(vrs4_log2f)(__m128 x);
 extern __m128 FN_PROTOTYPE_FMA3(vrs4_logf)(__m128 x);
-//extern __m128 FN_PROTOTYPE_BAS64(vrs4_powf)(__m128 x, __m128 y);
 extern __m128 FN_PROTOTYPE_FMA3(vrs4_powxf)(__m128 x, float y);
 extern __m128 FN_PROTOTYPE_FMA3(vrs4_sinf)(__m128 x);
 extern __m128 FN_PROTOTYPE_FMA3(vrs4_tanf)(__m128 x);
@@ -451,7 +450,7 @@ extern float FN_PROTOTYPE_OPT(logf)(float x);
 extern float FN_PROTOTYPE_OPT(logp1f)(float x);
 
 extern __m128 FN_PROTOTYPE_OPT(vrs4_expf)(__m128 x);
-
+extern __m128 FN_PROTOTYPE_OPT(vrs4_powf)(__m128 x, __m128 y);
 extern __m256 FN_PROTOTYPE_OPT(vrs8_logf)(__m256 x);
 
 #if defined(__cplusplus)

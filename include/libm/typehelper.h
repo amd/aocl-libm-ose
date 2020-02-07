@@ -173,6 +173,24 @@ v_lookup_u32(const uint32_t *tab, v_u32x4_t idx)
     return (v_u32x4_t) {tab[idx[0]], tab[idx[1]], tab[idx[2]], tab[idx[3]]};
 }
 
+static inline v_f32x8_t
+v_call_f32_2(float (*fn)(float),
+	   v_f32x8_t orig,
+	   v_f32x8_t result,
+	   v_i32x8_t cond)
+{
+    return (v_f32x8_t) {
+        cond[0] ? fn(orig[0]) : result[0],
+        cond[1] ? fn(orig[1]) : result[1],
+        cond[2] ? fn(orig[2]) : result[2],
+        cond[3] ? fn(orig[3]) : result[3],
+        cond[4] ? fn(orig[4]) : result[4],
+        cond[5] ? fn(orig[5]) : result[5],
+        cond[6] ? fn(orig[6]) : result[6],
+        cond[7] ? fn(orig[7]) : result[7]
+    };
+}
+
 static inline v_f32x4_t
 v_call_f32(float (*fn)(float),
 	   v_f32x4_t orig,

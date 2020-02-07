@@ -48,14 +48,6 @@ __m128 _ZGVbN4v_logf(__m128);
 __m256 _ZGVdN8v_logf(__m256);
 #endif
 
-/*vector routines*/
-
-__m128d LIBM_FUNC_VEC(d, 2, exp)(__m128d);
-__m256d LIBM_FUNC_VEC(d, 4, exp)(__m256d);
-
-__m128 LIBM_FUNC_VEC(s, 4, expf)(__m128);
-__m256 LIBM_FUNC_VEC(s, 8, expf)(__m256);
-
 int test_log_conf_setup(struct libm_test *test)
 {
     int ret = 0;
@@ -134,6 +126,21 @@ test_log_cb_v4s(struct libm_test *test, int j)
 
     return 0;
 }
+
+static int
+test_log_cb_v8s(struct libm_test *test, int j)
+{
+    struct libm_test_data *data = &test->test_data;
+    float *restrict ip1 = (float*)data->input1;
+    float *restrict o = (float*)data->output;
+
+    __m256 ip8 = _mm256_set_ps(ip1[j+7], ip1[j+6], ip1[j+5], ip1[j+4], ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
+    __m256 op8 = LIBM_FUNC_VEC(s, 8, logf)(ip8);
+    _mm256_store_ps(&o[j], op8);
+
+    return 0;
+}
+
 static int
 test_log_cb_v2d(struct libm_test *test, int j)
 {
@@ -245,6 +252,15 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                                           .verify = test_log_verify,
                                          },
      },
+     [LIBM_FUNC_V8S]  = {
+                         .performance = { .setup = libm_test_perf_setup,
+                                          .run   = libm_test_v8s_perf,
+                                        },
+                         .accuracy     = {.setup = libm_test_accu_setup,
+                                          .run   = libm_test_accu,
+                                          .ulp = {.func = test_log_ulp},
+                                         },
+     }, 
      [LIBM_FUNC_V4S]  = {
                          .performance = { .setup = libm_test_perf_setup,
                                           .run   = libm_test_v4s_perf,
@@ -296,6 +312,7 @@ log_template = {
                                     .s1s = test_log_cb_s1s,
                                     .s1d = test_log_cb_s1d,
                                     .v4s = test_log_cb_v4s,
+                                    .v8s = test_log_cb_v8s,
                                     .v2d = test_log_cb_v2d,
                                     .v4d = test_log_cb_v4d,
                                     .accu_ranges = test_log_cb_accu_ranges,

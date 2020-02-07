@@ -77,13 +77,13 @@ static const struct {
     .expf_tbl_sz =  _MM_SET1_I32(0x3f),
 };
 
-#define LN2_TBL v_expf_data.ln2by_tblsz
-#define TBL_LN2 v_expf_data.tblsz_byln2
-#define HUGE    v_expf_data.huge
-#define C0      v_expf_data.one_by_two
-#define C1      v_expf_data.one_by_six
-#define ARG_MAX v_expf_data.arg_max
-#define ARG_MIN v_expf_data.arg_min
+#define LN2_TBL       v_expf_data.ln2by_tblsz
+#define TBL_LN2       v_expf_data.tblsz_byln2
+#define EXPF_HUGE     v_expf_data.huge
+#define C0            v_expf_data.one_by_two
+#define C1            v_expf_data.one_by_six
+#define ARG_MAX       v_expf_data.arg_max
+#define ARG_MIN       v_expf_data.arg_min
 #define V_EXPF_TBL_SZ v_expf_data.expf_tbl_sz
 
 #define EXPF_TBL (double const*)__two_to_jby64_table
@@ -145,8 +145,8 @@ FN_PROTOTYPE_OPT(vrs4_expf)(v_f32x4_t _x)
     v_i32x4_t ipart = v_to_f64_i32(fpart);
 
     // double(ipart)
-    v_f64x4_t dpart = fpart + HUGE;
-    dpart -= HUGE;
+    v_f64x4_t dpart = fpart + EXPF_HUGE;
+    dpart -= EXPF_HUGE;
 
     // r = x - dpart * ln(2)/64
     v_f64x4_t r = x - (dpart * LN2_TBL);

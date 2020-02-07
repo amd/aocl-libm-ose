@@ -47,12 +47,13 @@ int libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem)
     uint32_t arr_size = nelem * libm_test_get_data_size(test->variant);
     uint32_t sz = (arr_size << 1) + _ALIGN_FACTOR;
 
+    if (arr_size <=0 )
+        goto out;
+
     test_data->nelem = nelem;
     /* CAUTION */
 
     test_data->input1 = aligned_alloc(_ALIGN_FACTOR, sz);
-    test_data->expected_exception = aligned_alloc(_ALIGN_FACTOR, sz);
-    test_data->raised_exception = aligned_alloc(_ALIGN_FACTOR, sz);
     if (nargs > 1) {
         test_data->input2 = aligned_alloc(_ALIGN_FACTOR, sz);
         if (!test_data->input2)
@@ -77,12 +78,24 @@ int libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem)
     if (!test_data->expected)
         goto free_output_out;
 
+    test_data->expected_exception = aligned_alloc(_ALIGN_FACTOR, sz);
+    if (!test_data->expected_exception)
+        goto free_expected_out;
+
+    test_data->raised_exception = aligned_alloc(_ALIGN_FACTOR, sz);
+    if (!test_data->raised_exception)
+        goto free_expected_exceptions_out;
+
     LIBM_TEST_DPRINTF(DBG2, "test_data:%p input1:%p output:%p expected:%p\n",
 	   test_data, test_data->input1,
            test_data->output, test_data->expected);
 
     return 0;
 
+ free_expected_exceptions_out:
+    free(test_data->expected_exception);
+ free_expected_out:
+    free(test_data->expected);
  free_input3_out:
     free(test_data->input3);
  free_input2_out:
@@ -94,6 +107,7 @@ int libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem)
 
     LIBM_TEST_DPRINTF(PANIC, "Not enough memory for test data\n");
 
+out:
     return -1;
 }
 

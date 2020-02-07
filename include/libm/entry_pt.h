@@ -184,6 +184,12 @@ extern __m128  G_ENTRY_PT(vrs4_sinf)(__m128);
 extern __m128  G_ENTRY_PT(vrs4_tanf)(__m128);
 extern __m128  G_ENTRY_PT(vrs4_cbrtf)(__m128);
 
+extern __m256  G_ENTRY_PT(vrs8_cosf)(__m256);
+extern __m256  G_ENTRY_PT(vrs8_expf)(__m256);
+extern __m256  G_ENTRY_PT(vrs8_log2f)(__m256);
+extern __m256  G_ENTRY_PT(vrs8_log10f)(__m256);
+extern __m256  G_ENTRY_PT(vrs8_logf)(__m256);
+
 extern __m128d G_ENTRY_PT(vrd2_cbrt)(__m128d);
 extern __m128d G_ENTRY_PT(vrd2_cos)(__m128d);
 extern __m128d G_ENTRY_PT(vrd2_exp)(__m128d);

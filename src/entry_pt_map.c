@@ -196,6 +196,8 @@ LIBM_DECL_FN_MAP(vrs4_powf);
 LIBM_DECL_FN_MAP(vrs4_sinf);
 LIBM_DECL_FN_MAP(vrs4_tanf);
 
+LIBM_DECL_FN_MAP(vrs8_logf);
+
 LIBM_DECL_FN_MAP(vrda_cbrt);
 LIBM_DECL_FN_MAP(vrda_cos);
 LIBM_DECL_FN_MAP(vrda_exp);
@@ -241,22 +243,18 @@ WEAK_LIBM_ALIAS(vrd4_log, FN_PROTOTYPE(vrd4_log));
 
 WEAK_LIBM_ALIAS(vrs4_cbrtf, FN_PROTOTYPE(vrs4_cbrtf));
 WEAK_LIBM_ALIAS(vrs4_cosf, FN_PROTOTYPE(vrs4_cosf));
-WEAK_LIBM_ALIAS(vrs4_cosf, FN_PROTOTYPE(vrs4_cosf));
 WEAK_LIBM_ALIAS(vrs4_exp10f, FN_PROTOTYPE(vrs4_exp10f));
 WEAK_LIBM_ALIAS(vrs4_exp2f, FN_PROTOTYPE(vrs4_exp2f));
 WEAK_LIBM_ALIAS(vrs4_expf, FN_PROTOTYPE(vrs4_expf));
-WEAK_LIBM_ALIAS(vrs4_expf, FN_PROTOTYPE(vrs4_expf));
 WEAK_LIBM_ALIAS(vrs4_expm1f, FN_PROTOTYPE(vrs4_expm1f));
-WEAK_LIBM_ALIAS(vrs4_log10f, FN_PROTOTYPE(vrs4_log10f));
 WEAK_LIBM_ALIAS(vrs4_log10f, FN_PROTOTYPE(vrs4_log10f));
 WEAK_LIBM_ALIAS(vrs4_log1pf, FN_PROTOTYPE(vrs4_log1pf));
 WEAK_LIBM_ALIAS(vrs4_log2f, FN_PROTOTYPE(vrs4_log2f));
-WEAK_LIBM_ALIAS(vrs4_log2f, FN_PROTOTYPE(vrs4_log2f));
-WEAK_LIBM_ALIAS(vrs4_logf, FN_PROTOTYPE(vrs4_logf));
 WEAK_LIBM_ALIAS(vrs4_logf, FN_PROTOTYPE(vrs4_logf));
 WEAK_LIBM_ALIAS(vrs4_sinf, FN_PROTOTYPE(vrs4_sinf));
 WEAK_LIBM_ALIAS(vrs4_tanf, FN_PROTOTYPE(vrs4_tanf));
 
+WEAK_LIBM_ALIAS(vrs8_logf, FN_PROTOTYPE(vrs8_logf));
 
 WEAK_LIBM_ALIAS(vrda_cbrt, FN_PROTOTYPE(vrda_cbrt));
 WEAK_LIBM_ALIAS(vrda_cos, FN_PROTOTYPE(vrda_cos));

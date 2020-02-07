@@ -244,6 +244,8 @@ __m128 FN_PROTOTYPE(vrs4_powf)(__m128 x, __m128 y);
 __m128 FN_PROTOTYPE(vrs4_powxf)(__m128 x, float y);
 __m128 FN_PROTOTYPE(vrs4_tanf)(__m128 x);
 
+__m256 FN_PROTOTYPE(vrs8_logf)(__m256 x);
+
 void  FN_PROTOTYPE(vrd2_sincos)(__m128d x, __m128d* ys, __m128d* yc);
 void  FN_PROTOTYPE(vrda_sincos)(int n, double *x, double *ys, double *yc);
 

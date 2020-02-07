@@ -157,6 +157,33 @@ __libm_test_v4s_overhead(struct libm_test *test)
     o[1] = o[0];
 }
 
+/*
+ * v8s - overhead
+ */
+static inline void
+NO_OPTIMIZE
+__libm_test_v8s_overhead(struct libm_test *test)
+{
+    struct libm_test_data *data = &test->test_data;
+    float *ip1 = (float*)data->input1;
+    uint64_t sz = data->nelem;
+    float o[8] ALIGN(32);
+
+    /* TODO: This works for 1 input load and 1 output store
+     * in case of multiple inputs this needs to be fixed
+     */
+
+    for (uint64_t i = 0; i < sz; i++) {
+        __m256 ip8 = _mm256_set_ps(ip1[7], ip1[6], ip1[5], ip1[4], ip1[3], ip1[2], ip1[1], ip1[0]);
+        _mm256_store_ps(&o[0], ip8);
+    }
+
+    /* To shutup compiler for set-but-not used error */
+    o[1] = o[0];
+}
+
+
+
 /* Measure time taken to load and store */
 static double
 NO_OPTIMIZE
@@ -167,6 +194,7 @@ libm_test_overhead(struct libm_test *test)
 
     switch (test->variant) {
     case LIBM_FUNC_V4S: funcptr = __libm_test_v4s_overhead; break;
+    case LIBM_FUNC_V8S: funcptr = __libm_test_v8s_overhead; break;
     case LIBM_FUNC_V2D: funcptr = __libm_test_v2d_overhead; break;
     case LIBM_FUNC_V4D: funcptr = __libm_test_v4d_overhead; break;
     default: break;
@@ -184,7 +212,7 @@ libm_test_overhead(struct libm_test *test)
 }
 
 int
-libm_test_v4s_perf(struct libm_test *test)
+libm_test_v8s_perf(struct libm_test *test)
 {
     struct libm_test_data *data = &test->test_data;
     struct libm_test_result *result = &test->result;
@@ -192,7 +220,7 @@ libm_test_v4s_perf(struct libm_test *test)
     uint64_t sz = data->nelem;
     uint64_t n = test->conf->niter;
     int ret = 0;
-    const int scale = 4;
+    const int scale = 8;
 
     result->mops = 0;
 
@@ -207,7 +235,73 @@ libm_test_v4s_perf(struct libm_test *test)
     for (uint32_t i = 0; i < test->conf->niter ; ++i) {
         uint32_t j;
 
-        for (j = 0; j < sz/4; j ++) {
+        for (j = 0; j < sz/scale; j ++) {
+            ret = ops->callbacks.v8s(test, j*scale);
+            if (ret) { // something went wrong
+                goto out;
+            }
+        }
+
+        j = j * scale;
+        /*
+         * Any left over process with scalar, in a 2 vector case,
+         * there can be atmost one leftover,
+         */
+        switch (sz - j) {
+        case 4:
+            ret = ops->callbacks.v4s(test, j);   break;
+        case 3:
+            ret = ops->callbacks.s1s(test, j++); if (ret) goto out; FALLTHROUGH;
+        case 2:
+            ret = ops->callbacks.s1s(test, j++); if (ret) goto out; FALLTHROUGH;
+        case 1:
+            ret = ops->callbacks.s1s(test, j++);
+        default:
+            break;
+        }
+    }
+
+ out:
+    if (ret) {
+        ///something went wrong what????
+    }
+
+    timer_stop(&bt);
+    double s = timer_span(&bt);
+
+    s -= libm_test_overhead(test);
+
+    result->mops = sec2mps(s, n * sz);
+
+    return 0;
+}
+
+
+int
+libm_test_v4s_perf(struct libm_test *test)
+{
+    struct libm_test_data *data = &test->test_data;
+    struct libm_test_result *result = &test->result;
+    struct libm_test_ops *ops = &test->ops;
+    uint64_t sz = data->nelem;
+    uint64_t n = test->conf->niter;
+    int ret = 0;
+    const int scale = 4 ;
+
+    result->mops = 0;
+
+    /* Poison output */
+    for (uint32_t j = 0; j < sz; ++j) {
+        ops->callbacks.s1s(test, j);
+    }
+
+    bench_timer_t bt;
+    timer_start(&bt);
+
+    for (uint32_t i = 0; i < test->conf->niter ; ++i) {
+        uint32_t j;
+
+        for (j = 0; j < sz/scale; j ++) {
             ret = ops->callbacks.v4s(test, j*scale);
             if (ret) { // something went wrong
                 goto out;
@@ -361,6 +455,8 @@ libm_test_v4d_perf(struct libm_test *test)
     return result->nfail;
 }
 
+
+
 /****************************
  * ACCU tests
  ****************************/
@@ -443,17 +539,23 @@ libm_test_accu_single(struct libm_test *test, uint32_t type)
 {
     struct libm_test_data *data = &test->test_data;
     struct libm_test_ops *ops = &test->ops;
-    int sz = data->nelem, end = sz;
+    int sz = data->nelem;
     int scale = 0, ret = 0;
 
     switch(type) {
-    case LIBM_FUNC_V2D: end = sz - 1; break;
-    case LIBM_FUNC_V4D: end = sz - 3; break;
+    case LIBM_FUNC_V8S: scale = 8; break;
+    case LIBM_FUNC_V4S: scale = 4; break;
+    case LIBM_FUNC_V2D: scale = 2; break;
+    case LIBM_FUNC_V4D: scale = 4; break;
     default: break;
     }
 
-    for (int j = 0; j < end; j++) {
+    for (int j = 0; j < sz / scale; j++) {
         switch (type) {
+        case LIBM_FUNC_V8S:
+            scale = 8;
+            ret = ops->callbacks.v8s(test, j*scale);
+            break;
         case LIBM_FUNC_V4S:
             scale = 4;
             ret = ops->callbacks.v4s(test, j*scale);

@@ -264,6 +264,7 @@ int libm_test_alloc_test_data(struct libm_test *test, uint32_t nelem);
 int libm_test_s1s_perf(struct libm_test *test);
 int libm_test_s1d_perf(struct libm_test *test);
 int libm_test_v4s_perf(struct libm_test *test);
+int libm_test_v8s_perf(struct libm_test *test);
 int libm_test_v2d_perf(struct libm_test *test);
 int libm_test_v4d_perf(struct libm_test *test);
 

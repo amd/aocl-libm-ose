@@ -71,8 +71,8 @@ static const struct {
     .tblsz_byln2 =  _MM_SET1_PD4(0x1.71547652b82fep6),
     .one_by_two  =  _MM_SET1_PD4(0x1p-1),
     .one_by_six  =  _MM_SET1_PD4(0x1.5555555555555p-3),
-    .arg_min     =  _MM_SET1_I32(-0x1.9fe368p6f) ,
-    .arg_max     =  _MM_SET1_I32(0x1.62e42ep6f) ,
+    .arg_min     =  _MM_SET1_I32(0xFFFFFF99) ,
+    .arg_max     =  _MM_SET1_I32(0x00000058) ,
     .huge        =  _MM_SET1_PD4(0x1.8p+52) ,
     .expf_tbl_sz =  _MM_SET1_I32(0x3f),
 };
@@ -88,12 +88,6 @@ static const struct {
 
 #define EXPF_TBL (double const*)__two_to_jby64_table
 #define EXPF_N  6
-
-static inline v_i32x4_t
-v_to_i32_f32(v_f32x4_t _xf32)
-{
-    return (v_i32x4_t){_xf32[0], _xf32[1], _xf32[2], _xf32[3]};
-}
 
 static inline v_f64x4_t
 v_to_f32_f64(v_f32x4_t _xf32)
@@ -120,15 +114,9 @@ v_to_i32_i64(v_i32x4_t _xi32)
 }
 
 static inline v_f64x4_t
-v_gather(v_i64x4_t index, int scale)
+v_gather(v_i64x4_t index)
 {
-    return _mm256_i64gather_pd(EXPF_TBL, (__m256i)index, scale);
-}
-
-static inline v_i32x4_t top12f(v_f32x4_t _xf32)
-{
-    v_i32x4_t f = v_to_i32_f32(_xf32);
-    return f >> 20;
+    return _mm256_i64gather_pd(EXPF_TBL, (__m256i)index, 8);
 }
 
 v_f32x4_t
@@ -159,7 +147,7 @@ FN_PROTOTYPE_OPT(vrs4_expf)(v_f32x4_t _x)
 
     // Get values from look-up table
     v_i64x4_t vindex = v_to_i32_i64(j);
-    v_f64x4_t f = v_gather(vindex, 8);
+    v_f64x4_t f = v_gather(vindex);
 
     f = f * q + f;
 

@@ -497,24 +497,22 @@ libm_test_accu_double(struct libm_test *test, uint32_t type)
 {
     struct libm_test_data *data = &test->test_data;
     struct libm_test_ops *ops = &test->ops;
-    int sz = data->nelem, end = sz;
-    int scale = 0, ret = 0;
+    int sz = data->nelem;
+    int scale = 1, ret = 0;
 
-    switch(type) {
-    case LIBM_FUNC_V2D: end = sz - 1; break;
-    case LIBM_FUNC_V4D: end = sz - 3; break;
-    default: break;
+    switch (type) {
+        case LIBM_FUNC_V2D: scale = 2; break;
+        case LIBM_FUNC_V4D: scale = 4; break;
+        default: break;
     }
 
-    for (int j = 0; j < end; j++) {
+    for (int j = 0; j < sz/scale; j++) {
         switch (type) {
         case LIBM_FUNC_V2D:
-            scale = 2;
             ret = ops->callbacks.v2d(test, j*scale);
             break;
 
         case LIBM_FUNC_V4D:
-            scale = 4;
             ret = ops->callbacks.v4d(test, j*scale);
             break;
 
@@ -540,24 +538,20 @@ libm_test_accu_single(struct libm_test *test, uint32_t type)
     struct libm_test_data *data = &test->test_data;
     struct libm_test_ops *ops = &test->ops;
     int sz = data->nelem;
-    int scale = 0, ret = 0;
+    int scale = 1, ret = 0;
 
-    switch(type) {
-    case LIBM_FUNC_V8S: scale = 8; break;
-    case LIBM_FUNC_V4S: scale = 4; break;
-    case LIBM_FUNC_V2D: scale = 2; break;
-    case LIBM_FUNC_V4D: scale = 4; break;
-    default: break;
+    switch (type) {
+        case LIBM_FUNC_V8S: scale = 8; break;
+        case LIBM_FUNC_V4S: scale = 4; break;
+        default: break;
     }
 
     for (int j = 0; j < sz / scale; j++) {
         switch (type) {
         case LIBM_FUNC_V8S:
-            scale = 8;
             ret = ops->callbacks.v8s(test, j*scale);
             break;
         case LIBM_FUNC_V4S:
-            scale = 4;
             ret = ops->callbacks.v4s(test, j*scale);
             break;
         case LIBM_FUNC_S_S:

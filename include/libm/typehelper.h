@@ -168,6 +168,19 @@ as_v_f64x4(v_i64x4_t x)
     return val._xf;
 }
 
+static inline v_f64x4_t
+as_v_f64(v_u64x4_t x)
+{
+     union {
+         v_u64x4_t _xu;
+         v_f64x4_t _xf;
+     } val = {
+         ._xu = x,
+     };
+
+     return val._xf;
+ }
+
 
 
 static inline float

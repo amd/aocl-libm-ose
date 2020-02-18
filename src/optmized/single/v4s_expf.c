@@ -9,31 +9,26 @@
  * Implementation Notes
  * ----------------------
  * 1. Argument Reduction:
- *      e^x = 2^(x/ln2) = 2^(x*(64/ln(2))/64)     --- (1)
+ *      e^x = 2^(x/ln2)                          --- (1)
  *
- *      Choose 'n' and 'f', such that
- *      x * 64/ln2 = n + f                        --- (2) | n is integer
- *                            | |f| <= 0.5
- *     Choose 'm' and 'j' such that,
- *      n = (64 * m) + j                          --- (3)
+ *      Let x/ln(2) = z                          --- (2)
+ *
+ *      Let z = n + r , where n is an integer    --- (3)
+ *                      |r| <= 1/2
  *
  *     From (1), (2) and (3),
- *      e^x = 2^((64*m + j + f)/64)
- *          = (2^m) * (2^(j/64)) * 2^(f/64)
- *          = (2^m) * (2^(j/64)) * e^(f*(ln(2)/64))
+ *      e^x = 2^z
+ *          = 2^(N+r)
+ *          = (2^N)*(2^r)                        --- (4)
  *
- * 2. Table Lookup
- *      Values of (2^(j/64)) are precomputed, j = 0, 1, 2, 3 ... 63
- *
- * 3. Polynomial Evaluation
- *   From (2),
- *     f = x*(64/ln(2)) - n
- *   Let,
- *     r  = f*(ln(2)/64) = x - n*(ln(2)/64)
+ * 2. Polynomial Evaluation
+ *   From (4),
+ *     r   = z - N
+ *     2^r = C1 + C2*r + C3*r^2 + C4*r^3 + C5 *r^4 + C6*r^5
  *
  * 4. Reconstruction
  *      Thus,
- *        e^x = (2^m) * (2^(j/64)) * e^r
+ *        e^x = (2^N) * (2^r)
  *
  *
  */
@@ -50,44 +45,47 @@
 #include <libm/compiler.h>
 #include <libm/amd_funcs_internal.h>
 
-#define AMD_LIBM_FMA_USABLE 1
-#include <libm/poly.h>
-
-extern double  __two_to_jby64_table[];
-
 static const struct {
-
-    v_f64x4_t   ln2by_tblsz;
     v_f64x4_t   tblsz_byln2;
-    v_f64x4_t   one_by_two;
-    v_f64x4_t   one_by_six;
     v_f64x4_t   huge;
     v_i32x4_t   arg_min;
     v_i32x4_t   arg_max;
-    v_i32x4_t   expf_tbl_sz;
-
-}v_expf_data = {
-    .ln2by_tblsz =  _MM_SET1_PD4(0x1.62e42fefa39efp-7),
-    .tblsz_byln2 =  _MM_SET1_PD4(0x1.71547652b82fep6),
-    .one_by_two  =  _MM_SET1_PD4(0x1p-1),
-    .one_by_six  =  _MM_SET1_PD4(0x1.5555555555555p-3),
-    .arg_min     =  _MM_SET1_I32(0xFFFFFF99) ,
-    .arg_max     =  _MM_SET1_I32(0x00000058) ,
-    .huge        =  _MM_SET1_PD4(0x1.8p+52) ,
-    .expf_tbl_sz =  _MM_SET1_I32(0x3f),
+    v_i32x4_t   mask;
+    v_f64x4_t   poly_expf[6];
+} v_expf_data ={
+              .tblsz_byln2 =  _MM_SET1_PD4(0x1.71547652b82fep+0),
+              .huge        =  _MM_SET1_PD4(0x1.8p+52) ,
+              .arg_min     =  _MM_SET1_I32(0xFFFFFF99),
+              .arg_max     =  _MM_SET1_I32(0x00000058),
+              .mask        =  _MM_SET1_I32(0x7fffffff),
+              /*
+               * Polynomial coefficients obtained using Remez algorithm
+               */
+              .poly_expf = {
+                              _MM_SET1_PD4(0x1.0000014439a91p0),
+                              _MM_SET1_PD4(0x1.62e43170e3344p-1),
+                              _MM_SET1_PD4(0x1.ebf906bc4c115p-3),
+                              _MM_SET1_PD4(0x1.c6ae2bb88c0c8p-5),
+                              _MM_SET1_PD4(0x1.3d1079db4ef69p-7),
+                              _MM_SET1_PD4(0x1.5f8905cb0cc4ep-10),
+              },
 };
 
-#define LN2_TBL       v_expf_data.ln2by_tblsz
-#define TBL_LN2       v_expf_data.tblsz_byln2
-#define EXPF_HUGE     v_expf_data.huge
-#define C0            v_expf_data.one_by_two
-#define C1            v_expf_data.one_by_six
-#define ARG_MAX       v_expf_data.arg_max
-#define ARG_MIN       v_expf_data.arg_min
-#define V_EXPF_TBL_SZ v_expf_data.expf_tbl_sz
+#define TBL_LN2      v_expf_data.tblsz_byln2
+#define EXPF_HUGE    v_expf_data.huge
+#define ARG_MAX      v_expf_data.arg_max
+#define ARG_MIN      v_expf_data.arg_min
+#define MASK         v_expf_data.mask
+#define OFF          ARG_MAX - ARG_MIN
 
-#define EXPF_TBL (double const*)__two_to_jby64_table
-#define EXPF_N  6
+#define C1 v_expf_data.poly_expf[0]
+#define C2 v_expf_data.poly_expf[1]
+#define C3 v_expf_data.poly_expf[2]
+#define C4 v_expf_data.poly_expf[3]
+#define C5 v_expf_data.poly_expf[4]
+#define C6 v_expf_data.poly_expf[5]
+
+#define SCALAR_EXPF FN_PROTOTYPE(expf)
 
 static inline v_f64x4_t
 v_to_f32_f64(v_f32x4_t _xf32)
@@ -101,66 +99,80 @@ v_to_f64_f32(v_f64x4_t _xf64)
     return _mm256_cvtpd_ps(_xf64);
 }
 
+static inline int
+v_any_u32(v_i32x4_t cond)
+{
+    int ret = 0;
+
+    for (int i = 0; i < 4; i++)
+    {
+        if(cond[i] !=0)
+            ret= 1;
+    }
+    return ret;
+}
+
 static inline v_i32x4_t
-v_to_f64_i32(v_f64x4_t _xf64)
+v_to_f32_i32(v_f32x4_t _xf32)
 {
-    return (v_i32x4_t)_mm256_cvtpd_epi32(_xf64);
+    return (v_i32x4_t){_xf32[0], _xf32[1], _xf32[2], _xf32[3]};
 }
 
-static inline v_i64x4_t
-v_to_i32_i64(v_i32x4_t _xi32)
-{
-    return (v_i64x4_t)_mm256_cvtepi32_epi64((__m128i)_xi32);
-}
-
-static inline v_f64x4_t
-v_gather(v_i64x4_t index)
-{
-    return _mm256_i64gather_pd(EXPF_TBL, (__m256i)index, 8);
-}
 
 v_f32x4_t
 FN_PROTOTYPE_OPT(vrs4_expf)(v_f32x4_t _x)
 {
+    // vx = int(_x)
+    v_i32x4_t vx = v_to_f32_i32(_x);
+
+    // Get absolute value of vx
+    vx = vx & MASK;
+
+    // Check if -103 < vx < 88
+    v_i32x4_t cond = ((vx - ARG_MIN) >= OFF);
 
     // Convert _x to double precision
     v_f64x4_t x = v_to_f32_f64(_x);
 
     // x * (64.0/ln(2))
-    v_f64x4_t fpart = x * TBL_LN2;
+    v_f64x4_t z = x * TBL_LN2;
 
-    // int( x * (64)/ln(2))
-    v_i32x4_t ipart = v_to_f64_i32(fpart);
+    v_f64x4_t dn = z + EXPF_HUGE;
 
-    // double(ipart)
-    v_f64x4_t dpart = fpart + EXPF_HUGE;
-    dpart -= EXPF_HUGE;
+    // n = int (z)
+    v_u64x4_t n = as_v_u64x4(dn);
 
-    // r = x - dpart * ln(2)/64
-    v_f64x4_t r = x - (dpart * LN2_TBL);
+    // dn = double(n)
+    dn = dn - EXPF_HUGE;
 
-    // q = r + r*r[1/2 + (r * 1/6)]
-    v_f64x4_t q = POLY_EVAL_1(r, C0, C1);
+    // r = z - dn
+    v_f64x4_t r = z - dn;
 
-    // j = n & 0x3f
-    v_i32x4_t j = ipart & V_EXPF_TBL_SZ;
+    /* Compute polynomial
+       poly = C1 + C2*r + C3*r^2 + C4*r^3 + C5 *r^4 + C6*r^5
+            = (C1 + C2*r) + r^2(C3 + C4*r) + r^4(C4 + C6*r)
+    */
+    v_f64x4_t qtmp1 = C1 + C2 * r;
+    v_f64x4_t qtmp2 = C3 + C4 * r;
+    v_f64x4_t r2 = r * r;
+    v_f64x4_t qtmp3 = C5 + C6 * r;
+    v_f64x4_t q =  qtmp1 + r2 * qtmp2;
+    v_f64x4_t poly = q + r2 * r2  * qtmp3;
 
-    // Get values from look-up table
-    v_i64x4_t vindex = v_to_i32_i64(j);
-    v_f64x4_t f = v_gather(vindex);
+    // result = (float)[poly + (n << 52)]
+    v_f32x4_t  ret = v_to_f64_f32(as_v_f64(as_v_u64x4(poly) + (n << 52)));
 
-    f = f * q + f;
+    // If input value is outside valid range, call scalar expf(value)
+    // Else, return the above computed result
+    if(unlikely(v_any_u32(cond))) {
+    return (v_f32x4_t) {
+         cond[0] ? SCALAR_EXPF(_x[0]) : ret[0],
+         cond[1] ? SCALAR_EXPF(_x[1]) : ret[1],
+         cond[2] ? SCALAR_EXPF(_x[2]) : ret[2],
+         cond[3] ? SCALAR_EXPF(_x[3]) : ret[3],
+     };
 
-    // m = (n - j)/64
-    v_i64x4_t m = v_to_i32_i64((ipart >> EXPF_N));
+    }
 
-    // 2^m
-    m = m << 52;
-
-    // result = 2 ^m * (f + (f*q))
-    m += as_v_i64x4(f);
-    v_f32x4_t result = v_to_f64_f32(as_v_f64x4(m));
-
-    return result;
-
+    return ret;
 }

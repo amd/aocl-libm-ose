@@ -46,6 +46,12 @@ iface_src = SConscript('iface/SConscript',
                            src_dir = '#src/iface',
                            variant_dir = joinpath(builddir, 'iface'))
 
+fast_libm = SConscript('fast/SConscript',
+                       exports = {'env' : e},
+                       duplicate = 0,
+                       src_dir = '#src/fast',
+                       variant_dir = joinpath(builddir, 'fast'))
+
 #print('lib sources' , list(source))
 
 #objects = e.StaticObject(asm_objs) + optimized_src
@@ -55,6 +61,9 @@ objects = ref_objs + asm_objs + optimized_src + iface_src
 libm = e.StaticLibrary('amdlibm', objects)
 libmso = e.SharedLibrary('amdlibm', objects)
 
+#almfastso = e.SharedLibrary('almfast', fast_libm)
+
 Depends(libmso, '#src/ld-syms-libm.lds')
-Return('libm', 'libmso')
+#Return('libm', 'libmso', 'almfastso')
+Return('libm', 'libmso', 'fast_libm')
 

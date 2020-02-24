@@ -59,6 +59,12 @@ single_objs = SConscript('single/SConscript',
                            src_dir = '#src/optmized/single',
                            variant_dir = joinpath(builddir, 'single'))
 
-objs = e.StaticObject(source) + single_objs
+vec_objs   = SConscript('vec/SConscript',
+                        exports    = {'env' : e},
+                        duplicate  = 0,
+                        src_dir    = '#src/optmized/vec',
+			            variant_dir= joinpath(builddir, 'vec'))
+
+objs = e.StaticObject(source) + single_objs + vec_objs
 
 Return('objs')

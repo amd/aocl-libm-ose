@@ -1,0 +1,37 @@
+# Copyright (C) 2018, AMD. All rights Reserved
+#
+# Author: Prem Mallappa <pmallapp@amd.com>
+
+# Inherit global environment
+Import('env')
+from os.path import join as joinpath
+
+builddir = joinpath(env['BUILDROOT'], 'src', 'optmized')
+
+e = env.Clone()
+
+# These rearrangements are not value-safe:
+#	 (a ⊕ b) ⊕ c ⇒ a ⊕ (b ⊕ c)
+#	 a ⊗ (b ⊕ c) ⇒ (a ⊗ b) ⊕ (a ⊕ c)
+# 
+# To Disallow these changes in gcc remove -ffast-math
+if '-ffast-math' in e['CFLAGS']:
+    e['CFLAGS'].remove('-ffast-math')
+
+incpaths = [
+    '#' + joinpath(Dir('.').srcnode().path),
+    '#' + joinpath(Dir('.').srcnode().path, 'include')
+]
+
+e.Append(
+    CFLAGS = ['-O3', '-fPIC', '-flax-vector-conversions'],
+    CPPPATH = incpaths
+)
+
+experimental_src = []
+
+source = Glob('*.c', exclude=experimental_src)
+
+objs = e.StaticObject(source)
+
+Return('objs')

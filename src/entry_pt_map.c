@@ -292,7 +292,3 @@ WEAK_LIBM_ALIAS(vrsa_sinf, FN_PROTOTYPE(vrsa_sinf));
 #include "entry_pt_map_libm._c"
 #endif
 
-#include "entry_pt_map_fastlibm._c"
-
-
-

@@ -19,6 +19,8 @@
 
 #define FN_PROTOTYPE_REF(fn_name) amd_ref_##fn_name
 
+#define FN_PROTOTYPE_FAST(f) amd_fast##f
+
 /*
  * Function with optimum algorithm
  */

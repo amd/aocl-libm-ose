@@ -17,7 +17,7 @@
 #include <emmintrin.h>
 
 #define AMD_LIBM_FMA_USABLE 1           /* needed for poly.h */
-#include <libm/poly.h>
+#include <libm/poly-vec.h>
 
 #define VRS4_LOGF_POLY_DEGREE    10
 

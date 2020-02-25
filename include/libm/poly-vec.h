@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef __LIBM_POLY_H__
-#define __LIBM_POLY_H__
+#ifndef __LIBM_POLY_VEC_H__
+#define __LIBM_POLY_VEC_H__
 
 #if defined(AMD_LIBM_FMA_USABLE)
 
@@ -179,5 +179,5 @@
             q;                                                          \
         })
 
-#endif  /* LIBM_POLY_H */
+#endif  /* LIBM_POLY_VEC_H */
 

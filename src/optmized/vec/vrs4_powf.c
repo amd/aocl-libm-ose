@@ -13,8 +13,9 @@
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/compiler.h>
+
 #define AMD_LIBM_FMA_USABLE 1           /* needed for poly.h */
-#include <libm/poly.h>
+#include <libm/poly-vec.h>
 
 #define VECTOR_LENGTH 4
 #define N 8

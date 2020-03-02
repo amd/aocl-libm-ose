@@ -133,11 +133,16 @@ test_log_cb_v8s(struct libm_test *test, int j)
     struct libm_test_data *data = &test->test_data;
     float *restrict ip1 = (float*)data->input1;
     float *restrict o = (float*)data->output;
+#if (LIBM_PROTOTYPE == PROTOTYPE_AMDLIBM)
+    /* Old versions do not have a 8-vector variant, so we call array version with 8 elements */
+#define __amd_fma3_vrs8_logf(x) 
+    __amd_fma3_vrsa_logf(8, &ip1[j], &o[j]);
+#else
 
     __m256 ip8 = _mm256_set_ps(ip1[j+7], ip1[j+6], ip1[j+5], ip1[j+4], ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
     __m256 op8 = LIBM_FUNC_VEC(s, 8, logf)(ip8);
     _mm256_store_ps(&o[j], op8);
-
+#endif
     return 0;
 }
 

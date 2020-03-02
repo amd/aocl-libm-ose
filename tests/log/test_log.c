@@ -205,6 +205,9 @@ long double
 test_log_logl(struct libm_test *test, int idx)
 {
     double *d = (double*)test->test_data.input1;
+    if (test_is_single_precision(test)) {
+        return test_log_ulp(test, idx);
+    }
     return logl(d[idx]);
 }
 
@@ -220,7 +223,7 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                                          },
                          .accuracy     = { .setup = libm_test_accu_setup,
                                            .run   = libm_test_accu,
-                                           .ulp    = {.func = test_log_ulp},
+                                           .ulp    = {.funcl = test_log_logl},
                                          },
 
                          .special      = { .setup = test_log_special_setup,
@@ -258,16 +261,16 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                                         },
                          .accuracy     = {.setup = libm_test_accu_setup,
                                           .run   = libm_test_accu,
-                                          .ulp = {.func = test_log_ulp},
+                                          .ulp = {.funcl = test_log_logl},
                                          },
-     }, 
+     },
      [LIBM_FUNC_V4S]  = {
                          .performance = { .setup = libm_test_perf_setup,
                                           .run   = libm_test_v4s_perf,
                                         },
                          .accuracy     = {.setup = libm_test_accu_setup,
                                           .run   = libm_test_accu,
-                                          .ulp = {.func = test_log_ulp},
+                                          .ulp = {.funcl = test_log_logl},
                                          },
                           /*
                           .conformance  = {.setup = test_log_conf_setup,

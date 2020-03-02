@@ -104,6 +104,9 @@ long double
 test_fabs_fabsl(struct libm_test *test, int idx)
 {
     double *d = (double*)test->test_data.input1;
+    if (test_is_single_precision(test)) {
+        return (test_fabs_ulp(test, idx));
+    }
     return fabsl(d[idx]);
 }
 
@@ -119,7 +122,7 @@ struct libm_test_funcs test_fabs_funcs[LIBM_FUNC_MAX] =
                                          },
                          .accuracy     = { .setup = libm_test_accu_setup,
                                            .run   = libm_test_accu,
-                                           .ulp = {.func = test_fabs_ulp},
+                                           .ulp = {.funcl = test_fabs_fabsl},
                                          },
                           /*
                          .special      = { .setup = test_fabsf_special_setup,

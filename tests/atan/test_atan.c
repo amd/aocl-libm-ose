@@ -106,6 +106,9 @@ long double
 test_atan_atanl(struct libm_test *test, int idx)
 {
     double *d = (double*)test->test_data.input1;
+    if (test_is_single_precision(test)) {
+        return test_atan_ulp(test, idx);
+    }
     return atanl(d[idx]);
 }
 
@@ -121,7 +124,7 @@ struct libm_test_funcs test_atan_funcs[LIBM_FUNC_MAX] =
                                          },
                          .accuracy     = { .setup = libm_test_accu_setup,
                                            .run   = libm_test_accu,
-                                           .ulp = {.func = test_atan_ulp},
+                                           .ulp = {.funcl = test_atan_atanl},
                                          },
                           /*
                          .special      = { .setup = test_atanf_special_setup,

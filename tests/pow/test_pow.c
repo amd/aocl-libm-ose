@@ -223,6 +223,9 @@ test_pow_powl(struct libm_test *test, int idx)
 {
     double *d = (double*)test->test_data.input1;
     double *d1 = (double*)test->test_data.input2;
+    if (test_is_single_precision(test)) {
+        return (test_pow_ulp(test, idx));
+    }
     return powl(d[idx], d1[idx]);
 }
 
@@ -238,7 +241,7 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                                          },
                          .accuracy     = { .setup = libm_test_accu_setup,
                                            .run   = libm_test_accu,
-                                           .ulp = {.func = test_pow_ulp}
+                                           .ulp = {.funcl = test_pow_powl}
                                          },
 
                          .special      = { .setup = test_pow_special_setup,
@@ -277,7 +280,7 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                           .accuracy = {
                                           .setup = libm_test_accu_setup,
                                           .run = libm_test_accu,
-                                          .ulp = {.func = test_pow_ulp},
+                                          .ulp = {.funcl = test_pow_powl},
                            },
      },
      [LIBM_FUNC_V2D] = {

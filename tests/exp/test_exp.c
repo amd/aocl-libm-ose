@@ -188,6 +188,9 @@ long double
 test_exp_expl(struct libm_test *test, int idx)
 {
     double *d = (double*)test->test_data.input1;
+    if (test_is_single_precision(test)) {
+        return test_exp_ulp(test, idx);
+    }
     return expl(d[idx]);
 }
 
@@ -202,7 +205,7 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                                          },
                          .accuracy     = { .setup = libm_test_accu_setup,
                                            .run   = libm_test_accu,
-                                           .ulp = {.func = test_exp_ulp}
+                                           .ulp = {.funcl = test_exp_expl}
                                          },
 
 
@@ -244,7 +247,7 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                           .accuracy = {
                                           .setup = libm_test_accu_setup,
                                           .run = libm_test_accu,
-                                          .ulp = {.func = test_exp_ulp},
+                                          .ulp = {.funcl = test_exp_expl},
                            },
      },
      [LIBM_FUNC_V2D] = {

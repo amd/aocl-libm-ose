@@ -94,13 +94,16 @@ test_fabs_cb_accu_ranges(struct libm_test *test, int j)
 }
 
 /*ulp*/
-double test_fabs_ulp(struct libm_test *test, int idx)
+double
+NO_OPTIMIZE
+ test_fabs_ulp(struct libm_test *test, int idx)
 {
     float *buf = (float*)test->test_data.input1;
     return fabs(buf[idx]);
 }
 
 long double
+NO_OPTIMIZE
 test_fabs_fabsl(struct libm_test *test, int idx)
 {
     double *d = (double*)test->test_data.input1;

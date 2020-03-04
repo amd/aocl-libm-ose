@@ -24,6 +24,9 @@
 
 #define _MM_SET1_I64(x) {(x), (x), (x), (x)}
 
+#define _MM256_SET1_I32(x) {(x), (x), (x), (x), (x), (x), (x), (x) }
+
+#define _MM256_SET1_PS8(x) {(x), (x), (x), (x), (x), (x), (x), (x) }
 
 static inline uint32_t
 asuint32(float f)

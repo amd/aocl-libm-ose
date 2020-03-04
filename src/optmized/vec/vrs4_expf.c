@@ -90,31 +90,11 @@ static const struct {
 
 #define SCALAR_EXPF FN_PROTOTYPE(expf)
 
-static inline int
-v_any_u32(v_i32x4_t cond)
-{
-    int ret = 0;
-
-    for (int i = 0; i < 4; i++)
-    {
-        if(cond[i] !=0)
-            ret= 1;
-    }
-    return ret;
-}
-
-static inline v_i32x4_t
-v_to_f32_i32(v_f32x4_t _xf32)
-{
-    return (v_i32x4_t){_xf32[0], _xf32[1], _xf32[2], _xf32[3]};
-}
-
-
 v_f32x4_t
 FN_PROTOTYPE_OPT(vrs4_expf)(v_f32x4_t _x)
 {
     // vx = int(_x)
-    v_i32x4_t vx = v_to_f32_i32(_x);
+    v_i32x4_t vx = v4_to_f32_i32(_x);
 
     // Get absolute value of vx
     vx = vx & MASK;
@@ -123,7 +103,7 @@ FN_PROTOTYPE_OPT(vrs4_expf)(v_f32x4_t _x)
     v_i32x4_t cond = ((vx - ARG_MIN) >= OFF);
 
     // Convert _x to double precision
-    v_f64x4_t x = v_to_f32_f64(_x);
+    v_f64x4_t x = v4_to_f32_f64(_x);
 
     // x * (64.0/ln(2))
     v_f64x4_t z = x * TBL_LN2;
@@ -153,12 +133,15 @@ FN_PROTOTYPE_OPT(vrs4_expf)(v_f32x4_t _x)
     */
 
     v_f64x4_t poly = POLY_EVAL_6(r, C1, C2, C3, C4, C5, C6);
+
     // result = (float)[poly + (n << 52)]
-    v_f32x4_t  ret = v_to_f64_f32(as_v_f64(as_v_u64x4(poly) + (n << 52)));
+    v_u64x4_t q = as_v_u64x4(poly) + (n << 52);
+    v_f64x4_t result = as_v_f64(q);
+    v_f32x4_t ret = v4_to_f64_f32(result);
 
     // If input value is outside valid range, call scalar expf(value)
     // Else, return the above computed result
-    if(unlikely(v_any_u32(cond))) {
+    if(unlikely(v4_any_u32_loop(cond))) {
     return (v_f32x4_t) {
          cond[0] ? SCALAR_EXPF(_x[0]) : ret[0],
          cond[1] ? SCALAR_EXPF(_x[1]) : ret[1],

@@ -13,6 +13,7 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
+#include <libm/typehelper-vec.h>
 #include <libm/compiler.h>
 #include <emmintrin.h>
 
@@ -162,22 +163,6 @@ logf_specialcase(v_f32x4_t _x,
     return v_call_f32(FN_PROTOTYPE(logf), _x, result, cond);
 }
 
-/*
- * On x86, 'cond' contains all 0's for false, and all 1's for true
- * IOW, 0=>false, -1=>true
- */
-static inline int
-v_any_u32(v_i32x4_t cond)
-{
-    const v_i32x4_t zero = _MM_SET1_I32(0);
-    return _mm_testz_si128(cond, zero);
-}
-
-static inline v_f32x4_t
-v_to_f32_s32(v_i32x4_t _xi32)
-{
-    return (v_f32x4_t){_xi32[0], _xi32[1], _xi32[2], _xi32[3]};
-}
 
 v_f32x4_t
 FN_PROTOTYPE_OPT(vrs4_logf)(v_f32x4_t _x)
@@ -190,7 +175,7 @@ FN_PROTOTYPE_OPT(vrs4_logf)(v_f32x4_t _x)
 
     vx.i32x4 -= V_OFF;
 
-    n = v_to_f32_s32(vx.i32x4 >> 23);
+    n = v4_to_f32_s32(vx.i32x4 >> 23);
 
     vx.i32x4 &= V_MASK;
 
@@ -209,7 +194,7 @@ FN_PROTOTYPE_OPT(vrs4_logf)(v_f32x4_t _x)
 
     q = n * LN2 + q;
 
-    if (unlikely(v_any_u32(cond))) {
+    if (unlikely(v4_any_u32(cond))) {
         return logf_specialcase(_x, q, cond);
     }
 

@@ -48,8 +48,6 @@
 
 #include <libm/poly.h>
 
-#define _MM256_SET1_I32(x) {(x), (x), (x), (x), (x), (x), (x), (x) }
-
 static const struct {
     v_f64x4_t   tblsz_byln2;
     v_f64x4_t   huge;
@@ -94,33 +92,12 @@ static const struct {
 
 #define SCALAR_EXPF FN_PROTOTYPE(expf)
 
-static inline int
-v_any_u32(v_i32x8_t cond)
-{
-    int ret = 0;
-
-    for (int i = 0; i < 8; i++)
-    {
-        if(cond[i] !=0)
-            ret= 1;
-    }
-    return ret;
-}
-
-static inline v_i32x8_t
-v_to_f32_i32(v_f32x8_t _xf32)
-{
-    return (v_i32x8_t){_xf32[0], _xf32[1], _xf32[2], _xf32[3],
-                        _xf32[4], _xf32[5], _xf32[6], _xf32[7]};
-}
-
-
 v_f32x8_t
 FN_PROTOTYPE_OPT(vrs8_expf)(v_f32x8_t _x)
 {
 
     // vx = int(_x)
-    v_i32x8_t vx = v_to_f32_i32(_x);
+    v_i32x8_t vx = v8_to_f32_i32(_x);
 
     // Get absolute value of vx
     vx = vx & MASK;
@@ -130,7 +107,9 @@ FN_PROTOTYPE_OPT(vrs8_expf)(v_f32x8_t _x)
 
     /* Split the 8 values to two sets of 4 values and
        loop over them using the v4s expf algorithm */
-    v_f64x4_t in[2] = {v_to_f32_f64(_mm256_extractf128_ps(_x,0)),v_to_f32_f64(_mm256_extractf128_ps(_x,1))};
+    v_f64x4_t in[2];
+    in[0] = v4_to_f32_f64(_mm256_extractf128_ps(_x,0));
+    in[1] = v4_to_f32_f64(_mm256_extractf128_ps(_x,1));
 
     v_f32x4_t ret[2];
 
@@ -162,7 +141,7 @@ FN_PROTOTYPE_OPT(vrs8_expf)(v_f32x8_t _x)
         // result = (float)[poly + (n << 52)]
         v_u64x4_t q = as_v_u64x4(poly) + (n << 52);
         v_f64x4_t result = as_v_f64(q);
-        ret[i] = v_to_f64_f32(result);
+        ret[i] = v4_to_f64_f32(result);
         //ret[i] = v_to_f64_f32(as_v_f64(as_v_u64x4(poly) + (n << 52)));
 
     }
@@ -172,7 +151,7 @@ FN_PROTOTYPE_OPT(vrs8_expf)(v_f32x8_t _x)
 
     // If input value is outside valid range, call scalar expf(value)
     // Else, return the above computed result
-    if(unlikely(v_any_u32(cond))) {
+    if(unlikely(v8_any_u32_loop(cond))) {
     return (v_f32x8_t) {
          cond[0] ? SCALAR_EXPF(_x[0]) : result[0],
          cond[1] ? SCALAR_EXPF(_x[1]) : result[1],

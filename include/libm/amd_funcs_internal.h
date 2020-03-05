@@ -452,6 +452,7 @@ extern float FN_PROTOTYPE_OPT(logp1f)(float x);
 extern __m128 FN_PROTOTYPE_OPT(vrs4_expf)(__m128 x);
 extern __m128 FN_PROTOTYPE_OPT(vrs4_powf)(__m128 x, __m128 y);
 extern __m256 FN_PROTOTYPE_OPT(vrs8_logf)(__m256 x);
+extern __m256 FN_PROTOTYPE_OPT(vrs8_expf)(__m256 x);
 
 #if defined(__cplusplus)
 }

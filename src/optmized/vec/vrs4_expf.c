@@ -42,8 +42,11 @@
 #include <libm_amd.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
+#include <libm/typehelper-vec.h>
 #include <libm/compiler.h>
 #include <libm/amd_funcs_internal.h>
+
+#include <libm/poly.h>
 
 static const struct {
     v_f64x4_t   tblsz_byln2;
@@ -86,18 +89,6 @@ static const struct {
 #define C6 v_expf_data.poly_expf[5]
 
 #define SCALAR_EXPF FN_PROTOTYPE(expf)
-
-static inline v_f64x4_t
-v_to_f32_f64(v_f32x4_t _xf32)
-{
-    return _mm256_cvtps_pd(_xf32);
-}
-
-static inline v_f32x4_t
-v_to_f64_f32(v_f64x4_t _xf64)
-{
-    return _mm256_cvtpd_ps(_xf64);
-}
 
 static inline int
 v_any_u32(v_i32x4_t cond)
@@ -152,13 +143,16 @@ FN_PROTOTYPE_OPT(vrs4_expf)(v_f32x4_t _x)
        poly = C1 + C2*r + C3*r^2 + C4*r^3 + C5 *r^4 + C6*r^5
             = (C1 + C2*r) + r^2(C3 + C4*r) + r^4(C4 + C6*r)
     */
+    /*
     v_f64x4_t qtmp1 = C1 + C2 * r;
     v_f64x4_t qtmp2 = C3 + C4 * r;
     v_f64x4_t r2 = r * r;
     v_f64x4_t qtmp3 = C5 + C6 * r;
     v_f64x4_t q =  qtmp1 + r2 * qtmp2;
     v_f64x4_t poly = q + r2 * r2  * qtmp3;
+    */
 
+    v_f64x4_t poly = POLY_EVAL_6(r, C1, C2, C3, C4, C5, C6);
     // result = (float)[poly + (n << 52)]
     v_f32x4_t  ret = v_to_f64_f32(as_v_f64(as_v_u64x4(poly) + (n << 52)));
 

@@ -17,9 +17,9 @@ test_expf_conformance_data[] = {
 	{0xBF800000, 0x3ebc5ab2, FE_INEXACT,}, //-1
 	{0x40490fdb, 0x41b92025, FE_INEXACT,}, //pi
 	{0xc435f37e, 0x00000000, 48,},	      //denormal
-	{0x447a0000, 0x7f800000, 40,},	      //1000
+	{0x447a0000, 0x7f800000, 56,},	      //1000
 	{0xc42f0000, 0x00000000, 48,},	      //-700
-	{0x44317218, 0x7F800000, 40,},	      //smallest no for result infinity
+	{0x44317218, 0x7F800000, 56,},	      //smallest no for result infinity
 };
 
 static struct libm_test_special_data_f64

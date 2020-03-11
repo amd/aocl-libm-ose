@@ -37,7 +37,6 @@ v4_to_f32_i32(v_f32x4_t _xf32)
     return (v_i32x4_t){_xf32[0], _xf32[1], _xf32[2], _xf32[3]};
 }
 
-
 /*
  * On x86, 'cond' contains all 0's for false, and all 1's for true
  * IOW, 0=>false, -1=>true
@@ -67,6 +66,14 @@ v4_any_u32_loop(v_i32x4_t cond)
 /***********************
 ***** v8s functions ****
 ***********************/
+
+// v_f32x8_t to v_u32x8_t
+static inline v_u32x8_t
+as_v_u32x8_t (v_f32x8_t x)
+{
+  union { v_f32x8_t f; v_u32x8_t u; } r = {x};
+  return r.u;
+}
 
 // v_f32x8_t to v_i32x8_t
 static inline v_i32x8_t

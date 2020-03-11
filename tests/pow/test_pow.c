@@ -25,7 +25,7 @@
 #define _ZGVdN2v_pow _ZGVbN2vv_pow
 #define _ZGVdN4v_pow _ZGVdN4vv_pow
 #define _ZGVsN4v_powf _ZGVbN4vv_powf
-#define _ZGVsN8v_powf _ZGVbN8vv_powf
+#define _ZGVsN8v_powf _ZGVdN8vv_powf
 #endif
 
 #if (LIBM_PROTOTYPE == PROTOTYPE_AMDLIBM)
@@ -121,6 +121,21 @@ test_pow_cb_v4s(struct libm_test *test, int j)
     __m128 ip4_2 = _mm_set_ps(ip2[j+3], ip2[j+2], ip2[j+1], ip2[j]);
     __m128 op4 = LIBM_FUNC_VEC(s, 4, powf)(ip4_1, ip4_2);
     _mm_store_ps(&o[j], op4);
+
+    return 0;
+}
+
+static int
+test_pow_cb_v8s(struct libm_test *test, int j)
+{
+    struct libm_test_data *data = &test->test_data;
+    float *restrict ip1 = (float*)data->input1;
+    float *restrict ip2 = (float*)data->input2;
+    float *restrict o = (float*)data->output;
+     __m256 ip4_1 =  _mm256_set_ps(ip1[j+7], ip1[j+6], ip1[j+5], ip1[j+4], ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
+     __m256 ip4_2 =  _mm256_set_ps(ip2[j+7], ip2[j+6], ip2[j+5], ip2[j+4], ip2[j+3], ip2[j+2], ip2[j+1], ip2[j]);
+    __m256 op4 = LIBM_FUNC_VEC(s, 8, powf)(ip4_1, ip4_2);
+    _mm256_storeu_ps(&o[j], op4);
 
     return 0;
 }
@@ -283,6 +298,17 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                                           .ulp = {.funcl = test_pow_powl},
                            },
      },
+     [LIBM_FUNC_V8S] = {
+                          .performance = {
+                                          .setup = libm_test_perf_setup,
+                                          .run = libm_test_v8s_perf,
+                           },
+                          .accuracy = {
+                                          .setup = libm_test_accu_setup,
+                                          .run = libm_test_accu,
+                                          .ulp = {.func = test_pow_ulp},
+                           },
+     },
      [LIBM_FUNC_V2D] = {
                           .performance = { .setup = libm_test_perf_setup,
                                             .run = libm_test_v2d_perf,
@@ -322,6 +348,7 @@ pow_template = {
                                     .s1s = test_pow_cb_s1s,
                                     .s1d = test_pow_cb_s1d,
                                     .v4s = test_pow_cb_v4s,
+                                    .v8s = test_pow_cb_v8s,
                                     .v2d = test_pow_cb_v2d,
                                     .v4d = test_pow_cb_v4d,
                                     .accu_ranges = test_pow_cb_accu_ranges,

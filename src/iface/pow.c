@@ -16,6 +16,7 @@ typedef float (*amd_powf_t)(float, float) ;
 typedef __m128d (*amd_pow_v2d_t)(__m128d, __m128d);
 typedef __m256d (*amd_pow_v4d_t)(__m256d, __m256d);
 typedef __m128  (*amd_powf_v4s_t)(__m128, __m128);
+typedef __m256  (*amd_powf_v8s_t)(__m256, __m256);
 
 void
 LIBM_IFACE_PROTO(pow)(void *arg)
@@ -30,6 +31,7 @@ LIBM_IFACE_PROTO(pow)(void *arg)
     amd_pow_v4d_t fn_v4d = NULL;
     amd_pow_v2d_t fn_v2d = NULL;
     amd_powf_v4s_t fn_v4s = NULL;
+    amd_powf_v8s_t fn_v8s = NULL;
 
     static struct cpu_features *features = NULL;
 
@@ -44,6 +46,7 @@ LIBM_IFACE_PROTO(pow)(void *arg)
     fn_v4d = &FN_PROTOTYPE_FMA3(vrd4_pow);
     fn_v2d = &FN_PROTOTYPE_FMA3(vrd2_pow);
     fn_v4s = &FN_PROTOTYPE_OPT(vrs4_powf);
+    fn_v8s = &FN_PROTOTYPE_OPT(vrs8_powf);
 
     if (CPU_HAS_AVX2(features) &&
         CPU_FEATURE_AVX2_USABLE(features)) {
@@ -78,5 +81,5 @@ LIBM_IFACE_PROTO(pow)(void *arg)
     G_ENTRY_PT_PTR(vrd4_pow) = fn_v4d;
     G_ENTRY_PT_PTR(vrd2_pow) = fn_v2d;
     G_ENTRY_PT_PTR(vrs4_powf) = fn_v4s;
-
+    G_ENTRY_PT_PTR(vrs8_powf) = fn_v8s;
 }

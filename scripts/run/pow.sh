@@ -41,9 +41,9 @@ run_test()
     #if conf or special dont do for the ranges
     if [ $2 = "conf" ] || [ $2 = "special" ]; then
         echo "Testing $TEST "
-        ${EXE} -i $1 -t $2 -c 1000000 -l 1000    
+        ${EXE} -i $1 -t $2 -c 1000000 -l 1000
     else
-        for r in ${xranges[@]}; 
+        for r in ${xranges[@]};
             do
                 for r1 in ${yranges[@]};
                     do
@@ -58,11 +58,11 @@ run_test()
 if [ ! -f ${EXE} ]; then
     echo "Executable ${EXE} not found!"
     exit 1
-fi    
+fi
 
 echo "Running tests for $TEST()"
 
-input_types=("s1d","s1f","v2d","v4d","v4s")
+input_types=("s1d","s1f","v2d","v4d","v4s","v8s")
 test_types=("perf","accu","conf","special")
 
 if [ $test_type = "all" ]; then
@@ -70,7 +70,7 @@ for inp in ${input_types[@]};
     do
         for t in ${test_types[@]};
             do
-                run_test $inp $t 
+                run_test $inp $t
             done
     done
 

@@ -455,6 +455,7 @@ extern __m256 FN_PROTOTYPE_OPT(vrs8_logf)(__m256 x);
 extern __m256 FN_PROTOTYPE_OPT(vrs8_expf)(__m256 x);
 extern __m256 FN_PROTOTYPE_OPT(vrs8_powf)(__m256 x, __m256 y);
 
+extern __m256d FN_PROTOTYPE_OPT(vrd4_pow)(__m256d x, __m256d y);
 #if defined(__cplusplus)
 }
 #endif

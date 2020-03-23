@@ -49,88 +49,90 @@
 
 #include <libm/poly.h>
 
-#define ARG_MIN 0xFFFFFF99
-#define ARG_MAX 0x00000058
+#define EXPF_N 6
+#define EXPF_POLY_DEGREE 3
 
-#define EXPF_FAST_POLY_DEGREE 4
+#define EXPF_TABLE_SIZE (1 << EXPF_N)
+#define EXPF_MAX_POLY_DEGREE 4
 
-static const struct {
-    double_t   sixtyfour_byln2;
-    double_t   huge;
-    double_t   poly_expf[6];
-} expf_fast_data ={
-    .sixtyfour_byln2 =  0x1.71547652b82fep+0,
-    .huge        =  0x1.8p+52 ,
-    /*
-     * Polynomial coefficients obtained using Remez algorithm
-     */
-    .poly_expf = {
-#if EXPF_FAST_POLY_DEGREE == 5
-        0x1.0000014439a91p0,
-        0x1.62e43170e3344p-1,
-        0x1.ebf906bc4c115p-3,
-        0x1.c6ae2bb88c0c8p-5,
-        0x1.3d1079db4ef69p-7,
-        0x1.5f8905cb0cc4ep-10,
-#elif EXPF_FAST_POLY_DEGREE == 4
-        0x1.00000288e2e6fp0,
-        0x1.62e0c2aa5f8bfp-1,
-        0x1.ebf7c216c3b7bp-3,
-        0x1.ca1cfcee087d3p-5,
-        0x1.3d61a2ee479p-7,
-#endif
+/*
+ * expf_data.h needs following to be defined before include
+ *    - EXPF_N
+ *    - EXPF_POLY_DEGREE
+ *    - EXPF_TABLE_SIZE
+ *    - EXPF_MAX_POLY_DEGREE
+ */
+
+#include "expf_data.h"
+
+static const
+struct expf_data expf_v2_data = {
+    .ln2by_tblsz = 0x1.62e42fefa39efp-7,
+    .tblsz_byln2 = 0x1.71547652b82fep+6,
+    .Huge = 0x1.8000000000000p+52,
+    .table_v3 = __two_to_jby64,
+    .poly = {
+        1.0,    /* 1/1! = 1 */
+        0x1.0000000000000p-1,   /* 1/2! = 1/2    */
+        0x1.5555555555555p-3,   /* 1/3! = 1/6    */
+        0x1.cacccaa4ba57cp-5,   /* 1/4! = 1/24   */
     },
 };
 
+#define C1  expf_v2_data.poly[0]
+#define C2  expf_v2_data.poly[1]
+#define C3  expf_v2_data.poly[2]
+#define C4  expf_v2_data.poly[3]
 
-#define EXPF_FAST_CONST expf_fast_data.sixtyfour_byln2
-#define EXPF_FAST_HUGE  expf_fast_data.huge
-
-#define C1 expf_fast_data.poly_expf[0]
-#define C2 expf_fast_data.poly_expf[1]
-#define C3 expf_fast_data.poly_expf[2]
-#define C4 expf_fast_data.poly_expf[3]
-#define C5 expf_fast_data.poly_expf[4]
-#define C6 expf_fast_data.poly_expf[5]
+#define EXPF_LN2_BY_TBLSZ  expf_v2_data.ln2by_tblsz
+#define EXPF_TBLSZ_BY_LN2  expf_v2_data.tblsz_byln2
+#define EXPF_HUGE	   expf_v2_data.Huge
+#define EXPF_TABLE         expf_v2_data.table_v3
 
 float
-FN_PROTOTYPE_FAST(expf)(float _x)
+FN_PROTOTYPE_FAST(expf)(float x)
 {
-#if 0
-    uint32_t ux = asuint32(_x) & 0x7fffffff;
+    double_t  q, dn, r, z;
+    uint64_t n, j;
 
-    if (unlikely(ux - ARG_MIN >= (ARG_MAX - ARG_MIN))) {
-        /* handle special case */
-
-    }
-#endif
-    double_t x = (double_t)_x;
-
-    double_t z = x * EXPF_FAST_CONST;
-
-    double_t dn = z + EXPF_FAST_HUGE;
-
-    uint64_t n = asuint64(dn);
-
-    dn -= EXPF_FAST_HUGE;
-
-    double_t r = z - dn;
+    z = x *  EXPF_TBLSZ_BY_LN2;
 
     /*
-     * Polynomial Estrins
-     * poly = C1 + C2*r + C3*r^2 + C4*r^3 + C5 *r^4 + C6*r^5
+     * n  = (int) scale(x)
+     * dn = (double) n
      */
-#if EXPF_FAST_POLY_DEGREE == 5
-    double_t q = POLY_EVAL_6(r, C1, C2, C3, C4, C5, C6);
-#elif EXPF_FAST_POLY_DEGREE == 4
-    double_t q = POLY_EVAL_5(r, C1, C2, C3, C4, C5);
+#undef FAST_INTEGER_CONVERSION
+#define FAST_INTEGER_CONVERSION 1
+#if FAST_INTEGER_CONVERSION
+    dn = z + EXPF_HUGE;
+
+    n    = asuint64(dn);
+
+    dn  -=  EXPF_HUGE;
+#else
+    n = z;
+    dn = cast_i32_to_float(n);
+
 #endif
 
-    double_t res = asdouble(asuint64(q) + (n << 52));
+    r  = x - dn * EXPF_LN2_BY_TBLSZ;
 
-    return (float)res;
+    j  = n % EXPF_TABLE_SIZE;
+
+    double_t qtmp  = C2 + (C3 * r);
+
+    double_t r2 = r * r;
+
+    double_t tbl = asdouble(asuint64(EXPF_TABLE[j]) + (n << (52 - EXPF_N)));
+
+    q  = r  + (r2 * qtmp);
+
+    double_t result = tbl + tbl* q;
+
+    return (float_t)(result);
 }
 
+
 strong_alias (__expf_finite, FN_PROTOTYPE_FAST(expf))
+weak_alias (amd_expf, FN_PROTOTYPE_FAST(expf))
 weak_alias (expf, FN_PROTOTYPE_FAST(expf))
-strong_alias (__ieee754_expf, FN_PROTOTYPE_FAST(expf))

@@ -7,13 +7,20 @@ Import('env')
 from os.path import join as joinpath
 
 e = env.Clone()
+
+incpaths = [
+	Dir('#/src/optimized'),
+	Dir('#/src/optmized/single')
+ ]
+
+
 e.Append(
     CCFLAGS = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror',
                #'-Wno-unused-but-set-parameter',
                '-Wno-unused-parameter', '-O3',
                '-fPIC',
                '-mavx2', '-march=znver2'],
-    # CPPPATH = [Dir('./isa/avx2/include')],
+    CPPPATH = incpaths,
     # CCFLAGS = [],
     # LINKFLAGS = ['-T$LINKERSCRIPT'],
     LINKERSCRIPT = 'src/ld-syms-libm.lds',
@@ -23,6 +30,7 @@ e.Append(
 excluded_srcs = []
 
 fast_srcs = Glob('*.c', exclude=excluded_srcs)
+fast_srcs += Glob('_exp_data.c')
 
 fast_objs = e.StaticObject(fast_srcs)
 

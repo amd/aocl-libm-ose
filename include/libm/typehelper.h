@@ -322,4 +322,18 @@ v_call_f64(double (*fn)(double),
 		cond[3] ? fn(orig[3]) : result[3]};
 }
 
+
+static inline v_f64x4_t
+v_call2_f64(double (*fn)(double, double),
+       v_f64x4_t x,
+       v_f64x4_t y,
+       v_f64x4_t result,
+       v_i64x4_t cond)
+{
+    return (v_f64x4_t){cond[0] ? fn(x[0], y[0]) : result[0],
+        cond[1] ? fn(x[1], y[1]) : result[1],
+        cond[2] ? fn(x[2], y[2]) : result[2],
+        cond[3] ? fn(x[3], y[3]) : result[3]};
+}
+
 #endif	/* __LIBM_TYPEHELPER_H__ */

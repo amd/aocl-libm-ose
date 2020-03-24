@@ -5,6 +5,39 @@
 
 #include <emmintrin.h>
 
+
+/***********************
+***** v2d functions ****
+***********************/
+
+#define _MM_SET1_I64x2(x) {(x), (x)}
+
+static inline v_f64x2_t
+as_f64x2(v_u64x2_t x)
+{
+    union {
+        v_u64x2_t _xi;
+        v_f64x2_t _xf;
+    } val = {
+        ._xi = x,
+    };
+
+    return val._xf;
+}
+
+static inline v_u64x2_t
+as_v_u64x2(v_f64x2_t x)
+{
+    union {
+        v_u64x2_t _xi;
+        v_f64x2_t _xf;
+    } val = {
+        ._xf = x,
+    };
+
+    return val._xi;
+}
+
 /***********************
 ***** v4s functions ****
 ***********************/

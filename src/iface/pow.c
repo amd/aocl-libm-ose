@@ -53,6 +53,7 @@ LIBM_IFACE_PROTO(pow)(void *arg)
         fn_d = &FN_PROTOTYPE_OPT(pow);
         fn_s = &FN_PROTOTYPE_OPT(powf);
         fn_v4d = &FN_PROTOTYPE_OPT(vrd4_pow);
+        fn_v2d = &FN_PROTOTYPE_OPT(vrd2_pow);
     } else if (CPU_HAS_SSSE3(features) &&
                CPU_FEATURE_SSSE3_USABLE(features)) {
         fn_d = &FN_PROTOTYPE_BAS64(pow);

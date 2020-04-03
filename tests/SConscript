@@ -132,6 +132,13 @@ tests = getSubdirs(this_sconscript_file)
 exclude_dirs = ['include', 'libs']
 tests = [x for x in tests if x not in exclude_dirs]
 
+libmp = SConscript('libs/mparith/SConscript',
+		exports = {'env': env},
+		duplicate = 0,
+		src_dir = '#tests/libs/mparith',
+		variant_dir = 'libs/mparith',
+	)
+
 #print(e.Dump())
 #print(tests)
 test_exes = []
@@ -148,6 +155,8 @@ for test in tests:
     if exes:
        test_exes += exes
 
+Depends(libtest, libmp)
 Depends(test_exes, libtest)
 
-Return('test_exes', 'libtest')
+Return('libmp', 'test_exes', 'libtest')
+

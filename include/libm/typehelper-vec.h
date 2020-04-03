@@ -38,6 +38,36 @@ as_v_u64x2(v_f64x2_t x)
     return val._xi;
 }
 
+// v_f64x2_t to v_i64x2_t
+static inline v_i64x2_t
+v2_to_f64_i64(v_f64x2_t _xf64)
+{
+    return (v_i64x2_t){_xf64[0], _xf64[1]};
+}
+
+static inline int
+v2_any_u64(v_i64x2_t cond)
+ {
+     const v_i64x2_t zero = _MM_SET1_I64x2(0);
+     return _mm_testz_si128(cond, zero);
+ }
+
+ // Condition check with for loop for better performance
+static inline int
+v2_any_u64_loop(v_i64x2_t cond)
+ {
+     int ret = 0;
+
+     for (int i = 0; i < 2; i++)
+     {
+         if(cond[i] !=0)
+             ret= 1;
+     }
+     return ret;
+ }
+
+
+
 /***********************
 ***** v4s functions ****
 ***********************/
@@ -151,6 +181,13 @@ v8_any_u32_loop(v_i32x8_t cond)
     }
     return ret;
 }
+
+
+/***********************
+***** v8s functions ****
+************************/
+
+
 
 
 #endif

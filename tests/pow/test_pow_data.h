@@ -4,29 +4,37 @@
 /* Test cases to check for exceptions for the pow() routine. These test cases are not exhaustive */
 static struct libm_test_special_data_f64
 test_pow_conformance_data[] = {
-	{0x7FF4001000000000,0x7FF4001000000000,FE_INVALID,0x7ffc001000000000,}, //pow(snan,snan)
-	{0x7FFC001000000000,0x7FF4001000000000,0         ,0x7ffc001000000000,}, //pow(nan,snan)
-	{0x3FF0000000000000,0x7FF4001000000000,0         ,0x7ffc001000000000,}, //pow(1.0,snan)
-	{0x7FF4001000000000,0x3FF0000000000000,FE_INVALID,0x7ffc001000000000,}, //pow(snan,1.0)
-	{0x3FE0000000000000,0x7FF4001000000000,0         ,0x7ffc001000000000,}, //pow(0.5,snan)
-	{0x7FF4001000000000,0x3FE0000000000000,FE_INVALID,0x7ffc001000000000,}, //pow(snan,0.5)
-	{0x7ff8000000000000,0x7ff8000000000000,0         ,0x7ff8000000000000,}, //pow(qnan,qnan)
-	{0x7ff8000000000000,0x3ff0000000000000,0         ,0x7ffc001000000000,}, //pow(qnan,1)
-	{0x3ff0000000000000,0x7ff8000000000000,0         ,0x3ff0000000000000,},//pow(1.qnan)
+    {0x7FF4001000000000,0x7FF4001000000000,FE_INVALID,0x7ffc001000000000,}, //pow(snan,snan)
+    {0x7FFC001000000000,0x7FF4001000000000,0         ,0x7ffc001000000000,}, //pow(nan,snan)
+    {0x3FF0000000000000,0x7FF4001000000000,0         ,0x7ffc001000000000,}, //pow(1.0,snan)
+    {0x7FF4001000000000,0x3FF0000000000000,FE_INVALID,0x7ffc001000000000,}, //pow(snan,1.0)
+    {0x3FE0000000000000,0x7FF4001000000000,0         ,0x7ffc001000000000,}, //pow(0.5,snan)
+    {0x7FF4001000000000,0x3FE0000000000000,FE_INVALID,0x7ffc001000000000,}, //pow(snan,0.5)
+    {0x7ff8000000000000,0x7ff8000000000000,0         ,0x7ff8000000000000,}, //pow(qnan,qnan)
+    {0x7ff8000000000000,0x3ff0000000000000,0         ,0x7ffc001000000000,}, //pow(qnan,1)
+    {0x3ff0000000000000,0x7ff8000000000000,0         ,0x3ff0000000000000,},//pow(1,qnan)
+    {0xfff8000000000000,0xfff8000000000000,0         ,0xfff8000000000000,},  //pow(-qnan, -qnan)
+    {0x7ff0000000000000,0x7ff0000000000000,0         ,0x7ff0000000000000,}, //pow(inf, inf)=inf
+    {0xfff0000000000000,0x7ff0000000000000,0         ,0x7ff0000000000000,}, //pow(-inf, inf)=inf
+    {0xfff0000000000000,0xfff0000000000000,0         ,0x0,},                  //pow(-inf, -inf)=0
 };
 
 /* Test cases to check for exceptions for the pow() routine. These test cases are not exhaustive */
 static struct libm_test_special_data_f32
 test_powf_conformance_data[] = {
-	{0x7fbfffff, 0x7fa00000, FE_INVALID, 0x7fbfffff}, //nan, snan
-	{0x7fa00000, 0x7fa00000, FE_INVALID, 0x7fa00000}, //powf(snan, snan)
-	{0x3f800000, 0x7fa00000, 0         , 0x3f800000},//1.0, nan
-	{0x3f800000, 0x7ffe0000, 0         , 0x3f800000},//1.0, qnan
-	{0x3f000000, 0x7fa00000, FE_INVALID, 0x7fa00000}, // 0.5, snan
-	{0x7fa00000, 0x3f000000, FE_INVALID, 0x7fe00000},//snan, 0.5
-	{0x7ffe0000, 0x7ffe0000, 0         , 0x7ffe0000}, //qnan , qnan
-	{0x7ffe0000, 0x3f800000, 0         , 0x7ffe0000},	//qnan, 1.0
-	{0x3f800000, 0x7ffe0000, 0         , 0x3f800000},	//1.0, qnan
+    {0x7fbfffff, 0x7fa00000, FE_INVALID, 0x7fbfffff}, //nan, snan
+    {0x7fa00000, 0x7fa00000, FE_INVALID, 0x7fa00000}, //powf(snan, snan)
+    {0x3f800000, 0x7fa00000, 0         , 0x3f800000},//1.0, nan
+    {0x3f800000, 0x7ffe0000, 0         , 0x3f800000},//1.0, qnan
+    {0x3f000000, 0x7fa00000, FE_INVALID, 0x7fa00000}, // 0.5, snan
+    {0x7fa00000, 0x3f000000, FE_INVALID, 0x7fe00000},//snan, 0.5
+    {0x7ffe0000, 0x7ffe0000, 0         , 0x7ffe0000}, //qnan , qnan
+    {0xffc00000, 0xffc00000, 0         , 0xffc00000}, //-qnan, -qnan=-qnan
+    {0x7ffe0000, 0x3f800000, 0         , 0x7ffe0000}, //qnan, 1.0
+    {0x3f800000, 0x7ffe0000, 0         , 0x3f800000}, //1.0, qnan
+    {0x7f800000, 0x7f800000, 0         , 0x7f800000},    //inf, inf=inf
+    {0x7f800000, 0xff800000, 0         , 0x0},         //inf, -inf =0
+    {0xff800000, 0xff800000, 0         , 0x0},         //-inf, -inf=0
 };
 
 /*accu data range*/
@@ -170,7 +178,7 @@ test_powf_special_data[] = {
     {0x80000000,0xC0400000, 0,0xFF800000},  //-0 ^ -odd integer	      = -inf
 
     {0x00000000,0xc0800000, 0,0x7F800000},  //+0 ^ -not odd integer   = +inf
-    {0x80000000,0xc0080000, 0,0x7F800000},  //-0 ^ -not odd integer	  = +inf
+    {0x80000000,0xc0080000, 0,0x7F800000},  //-0 ^ -not odd integer  = +inf
 
     {0x00000000,0x40400000, 0,0x00000000},  //+0 ^ +odd integer	      = +0
     {0x80000000,0x40400000, 0,0x80000000},  //-0 ^ +odd integer	      = -0
@@ -178,35 +186,35 @@ test_powf_special_data[] = {
     {0x00000000,0x40800000, 0,0x00000000},  //+0 ^ +not odd integer   = +0
     {0x80000000,0x40080000, 0,0x00000000},  //-0 ^ +not odd integer	  = +0
 
-    {0xbf800000,0x7f800000, 0,0x3F800000},  //-1 ^ +Inf				  = +1
-    //{0xbf800000,0xFF800000, 0,0x3F800000},  //-1 ^ -Inf				  = +1
+    {0xbf800000,0x7f800000, 0,0x3F800000},  //-1 ^ +Inf  = +1
+    //{0xbf800000,0xFF800000, 0,0x3F800000},  //-1 ^ -Inf  = +1
 
     {0x3F800000,0x7FC00000, 0,0x3F800000},  //+1 ^ NaN	 +1^y = +1 for ALL y, even NaN
     {0x3F800000,0xfFC00000, 0,0x3F800000},  //+1 ^ NaN	 +1^y = +1 for ALL y, even NaN
-    {0x3F800000,0x7f800000, 0,0x3F800000},  //+1 ^ +Inf				  = +1
-    {0x3F800000,0xFF800000, 0,0x3F800000},  //+1 ^ -Inf				  = +1
+    {0x3F800000,0x7f800000, 0,0x3F800000},  //+1 ^ +Inf  = +1
+    {0x3F800000,0xFF800000, 0,0x3F800000},  //+1 ^ -Inf = +1
 
-    {0x40000000,0x00000000, 0,0x3F800000},  //any x ^ +0 			  = +1
-    {0x40000000,0x80000000, 0,0x3F800000},  //any x ^ -0 			  = +1
-    {0x7f800000,0x00000000, 0,0x3F800000},  //any x ^ +0 			  = +1
-    {0xFF800000,0x80000000, 0,0x3F800000},  //any x ^ -0 			  = +1
-    //{0x7FC00000,0x00000000, 0,0x3F800000},  //any x ^ +0 			  = +1	even NaN
-    //{0xfFC00000,0x80000000, 0,0x3F800000},  //any x ^ -0 			  = +1	even NaN
+    {0x40000000,0x00000000, 0,0x3F800000},  //any x ^ +0  = +1
+    {0x40000000,0x80000000, 0,0x3F800000},  //any x ^ -0  = +1
+    {0x7f800000,0x00000000, 0,0x3F800000},  //any x ^ +0  = +1
+    {0xFF800000,0x80000000, 0,0x3F800000},  //any x ^ -0  = +1
+    //{0x7FC00000,0x00000000, 0,0x3F800000},  //any x ^ +0  = +1even NaN
+    //{0xfFC00000,0x80000000, 0,0x3F800000},  //any x ^ -0 = +1	even NaN
 
     //{0xC1200000,0x3FA00000, 0,0x7FC00000},  // finite -x ^ finite non integer = NaN
     //{0xC1200000,0xbFA00000, 0,0x7FC00000},  // finite -x ^ finite non integer = NaN
 
-    {0x3F400000,0xFF800000, 0,0x7F800000},  // |x|<1 ^ -inf		  = +inf
-    {0xbF400000,0xFF800000, 0,0x7F800000},  // |x|<1 ^ -inf		  = +inf
+    {0x3F400000,0xFF800000, 0,0x7F800000},  // |x|<1 ^ -inf  = +inf
+    {0xbF400000,0xFF800000, 0,0x7F800000},  // |x|<1 ^ -inf  = +inf
 
-    {0x41200000,0xFF800000, 0,0x00000000},  // |x|>1 ^ -inf		  = +0
-    {0xC1260000,0xFF800000, 0,0x00000000},  // |x|>1 ^ -inf		  = +0
+    {0x41200000,0xFF800000, 0,0x00000000},  // |x|>1 ^ -inf = +0
+    {0xC1260000,0xFF800000, 0,0x00000000},  // |x|>1 ^ -inf  = +0
 
-    {0x3F400000,0x7f800000, 0,0x00000000},  // |x|<1 ^ +inf		  = +0
-    {0xbF400000,0x7f800000, 0,0x00000000},  // |x|<1 ^ +inf		  = +0
+    {0x3F400000,0x7f800000, 0,0x00000000},  // |x|<1 ^ +inf  = +0
+    {0xbF400000,0x7f800000, 0,0x00000000},  // |x|<1 ^ +inf  = +0
 
-    {0x41200000,0x7f800000, 0,0x7F800000},  // |x|>1 ^ +inf		  = +inf
-    {0xC1260000,0x7f800000, 0,0x7F800000},  // |x|>1 ^ +inf		  = +inf
+    {0x41200000,0x7f800000, 0,0x7F800000},  // |x|>1 ^ +inf = +inf
+    {0xC1260000,0x7f800000, 0,0x7F800000},  // |x|>1 ^ +inf  = +inf
 
     {0xFF800000,0xC0400000, 0,0x80000000},  // -inf ^ -odd integer = -0
 
@@ -294,9 +302,9 @@ test_powf_special_data[] = {
     {0x7f800001,0x7fc00000, 0,0x7f800001},
     {0x7f800001,0x7f800001, 0,0x7f800001},
 #else
-    {0xbf800000,0xFF800000, 0,0x3F800000},  //-1 ^ -Inf				  = +1
-    {0x7FC00000,0x00000000, 0,0x3F800000},  //any x ^ +0 			  = +1	even NaN
-    {0xfFC00000,0x80000000, 0,0x3F800000},  //any x ^ -0 			  = +1	even NaN
+    {0xbf800000,0xFF800000, 0,0x3F800000},  //-1 ^ -Inf  = +1
+    {0x7FC00000,0x00000000, 0,0x3F800000},  //any x ^ +0   = +1	even NaN
+    {0xfFC00000,0x80000000, 0,0x3F800000},  //any x ^ -0  = +1	even NaN
 
     {0xC1200000,0x3FA00000, 0,0x7FC00000},  // finite -x ^ finite non integer = NaN
     {0xC1200000,0xbFA00000, 0,0x7FC00000},  // finite -x ^ finite non integer = NaN

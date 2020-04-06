@@ -9,30 +9,31 @@
 
 /* Test cases to check for exceptions for the log() routine. These test cases are not exhaustive */
 static struct libm_test_special_data_f64 test_log_conformance_data[] = {
-	{0x0000000000000000, 0xfff0000000000000, 4,},	//0 -inf
-	{0x8000000000000000, 0xfff0000000000000, 4,}, 	// -0  -inf
-	{0x3ff0000000000000, 0x0000000000000000, 0,},	//1, 0
-	{0xbff0000000000000, 0x7ff8000000000000, FE_INVALID,},   //-1 nan
-	{0x7FF0000000000000, 0x7ff0000000000000, 0,}, 	//inf, inf
-	{0xfff0000000000000, 0x7ff8000000000000, FE_INVALID,},	//-inf, nan
-	{0x7ff87ff7fdedffff, 0x7ff87ff7fdedffff, 0,},		//nan, nan
-	{0x7ff07ff7fdedffff, 0x7ff87ff7fdedffff, FE_INVALID,},	//snan, nan
-	{0xfff07ff7fdedffff, 0xfff87ff7fdedffff, FE_INVALID,},	//-nan, -nan
-	{0x7ff87ff7fdedffff, 0x7ff87ff7fdedffff, 0,},		//qnan, nan
+    {0x0000000000000000, 0xfff0000000000000, 4,},//0 -inf
+    {0x8000000000000000, 0xfff0000000000000, 4,}, // -0  -inf
+    {0x3ff0000000000000, 0x0000000000000000, 0,},//1, 0
+    {0xbff0000000000000, 0x7ff8000000000000, FE_INVALID,},   //-1 nan
+    {0x7FF0000000000000, 0x7ff0000000000000, 0,}, //inf, inf
+    {0xfff0000000000000, 0x7ff8000000000000, FE_INVALID,},//-inf, nan
+    {0x7ff87ff7fdedffff, 0x7ff87ff7fdedffff, 0,},//nan, nan
+    {0x7ff07ff7fdedffff, 0x7ff87ff7fdedffff, FE_INVALID,},//snan, nan
+    {0xfff07ff7fdedffff, 0xfff87ff7fdedffff, FE_INVALID,},//-nan, -nan
+    {0x7ff87ff7fdedffff, 0x7ff87ff7fdedffff, 0,},//qnan, qnan
+    {0xfff2000000000000, 0xfffa000000000000, FE_INVALID,}   //-qnan, -qnan
 };
 
 /* Test cases to check for exceptions for the logf() routine. These test cases are not exhaustive */
 static struct  libm_test_special_data_f32 test_logf_conformance_data[] = {
-	{0x00000000, 0xFF800000, 4,},	//log(0) is -inf
-	{0x3f800000, 0x00000000, 0,},	//1, 0
-	{0x80000000, 0xff800000, 4,},	//-0, -inf
-	{0xbf800000, 0xffc00000, FE_INVALID,}, 	//-1, -nan
-	{0x7F800000, 0x7f800000, 0,},	//inf, inf
-	{0xff800000, 0xffc00000, FE_INVALID,}, 	//-inf, -nan
-	{0x7fbfffff, 0x7fffffff, FE_INVALID,}, 	//nan nan
-	{0x7fa00000, 0x7fe00000, FE_INVALID,}, 	//snan, nan
-	{0xffa00000, 0xffe00000, FE_INVALID,}, 	//-nan, -nan
-	{0x7ffe0000, 0x7ffe0000, 0,}, 		//qnan, nan
+    {0x00000000, 0xFF800000, 4,},//log(0) is -inf
+    {0x3f800000, 0x00000000, 0,},//1, 0
+    {0x80000000, 0xff800000, 4,},//-0, -inf
+    {0xbf800000, 0xffc00000, FE_INVALID,},//-1, -nan
+    {0x7F800000, 0x7f800000, 0,},//inf, inf
+    {0xff800000, 0xffc00000, FE_INVALID,},//-inf, -nan
+    {0x7fbfffff, 0x7fffffff, FE_INVALID,},//nan nan
+    {0x7fa00000, 0x7fe00000, FE_INVALID,},//snan, nan
+    {0xffa00000, 0xffe00000, FE_INVALID,},//-nan, -nan
+    {0x7ffe0000, 0x7ffe0000, 0,},//qnan, nan
 };
 
 /* Scalar log in AMD LibM handles values between e^(-1/16) and e^(1/16) as special case, while vector versions don't.

@@ -7,30 +7,36 @@
  */
 static struct libm_test_special_data_f32
 test_expf_conformance_data[] = {
-	{0x7fbfffff, 0x7fbfffff, FE_INVALID,}, //nan
-	{0xffffffff, 0xffffffff, 0,},	      //-nan
-	{0x00000000, 0x3F800000, 0,},	      //exp(0)=1
-	{0x80000000, 0x3F800000, 0,},	      //exp(-0)
-	{0x3F800000, 0x402df854, FE_INEXACT,}, //exp(1)  = E
-	{0x7F800000, 0x7F800000, 0,},	      //inf
-	{0xFF800000, 0x00000000, 0,},	      //-inf
-	{0xBF800000, 0x3ebc5ab2, FE_INEXACT,}, //-1
-	{0x40490fdb, 0x41b92025, FE_INEXACT,}, //pi
-	{0xc435f37e, 0x00000000, 48,},	      //denormal
-	{0x447a0000, 0x7f800000, 56,},	      //1000
-	{0xc42f0000, 0x00000000, 48,},	      //-700
-	{0x44317218, 0x7F800000, 56,},	      //smallest no for result infinity
+    {0x7fbfffff, 0x7fbfffff, FE_INVALID,}, //expf(nan)=nan
+    {0xffffffff, 0xffffffff, 0,},   //expf(-nan)=-nan
+    {0x7fe00000, 0x7fe00000, 0,},  //expf(qnan) = qnan
+    {0xffe00000, 0xffe00000, 0,},  //expf(-qnan) = -qnan
+    {0x00000000, 0x3F800000, 0,},   //exp(0)=1
+    {0x80000000, 0x3F800000, 0,},      //exp(-0)
+    {0x3F800000, 0x402df854, FE_INEXACT,}, //exp(1)  = E
+    {0x7F800000, 0x7F800000, 0,},      //inf
+    {0xFF800000, 0x00000000, 0,},      //-inf
+    {0xBF800000, 0x3ebc5ab2, FE_INEXACT,}, //-1
+    {0x40490fdb, 0x41b92025, FE_INEXACT,}, //pi
+    {0xc435f37e, 0x00000000, 48,},      //denormal
+    {0x447a0000, 0x7f800000, 56,},      //1000
+    {0xc42f0000, 0x00000000, 48,},      //-700
+    {0x44317218, 0x7F800000, 56,},//smallest no for result infinity
 };
 
 static struct libm_test_special_data_f64
 test_exp_conformance_data[] = {
     {0x0000000000000000, 0x3FF0000000000000, 0,},
-    {0x0,                0x3ff0000000000000, 0,},	  //exp(0)
-    {0x7ff0000000000000, 0x7ff0000000000000, 0,},	  //exp(infinity)
-    {0xfff0000000000000, 0x0,                0,},	  //exp(-inf)
+    {0x0,                0x3ff0000000000000, 0,},  //exp(0)
+    {0x7ff0000000000000, 0x7ff0000000000000, 0,},  //exp(infinity)
+    {0x7FF0000000000000, 0x7ff0000000000000, 0,},         //exp(inf)=inf
+    {0xfff0000000000000, 0x0,                0,},  //exp(-inf)
     {0x7FF4001000000000, 0x7ffc001000000000, FE_INVALID,}, //exp(snan)
+    {0xfff2000000000000, 0xfffa000000000000, FE_INVALID,}, //exp(-snan)
+    {0x7ff87ff7fdedffff, 0x7ff87ff7fdedffff, FE_INVALID,},  //exp(qnan)
+    {0xfff2000000000000, 0xfffa000000000000, FE_INVALID,},    //exp(-qnan)
     {0x40862e42fefa39ef, 0x7fefffffffffff2a, FE_INEXACT,}, //exp(ln(2)*1024)
-    {0x4086300000000000, 0x7ff0000000000000, 40},	  //exp(x>ln(2)*1024)
+    {0x4086300000000000, 0x7ff0000000000000, 40},  //exp(x>ln(2)*1024)
 };
 
 static struct libm_test_special_data_f32
@@ -59,18 +65,18 @@ test_expf_special_data[] = {
     {0x42b17217, 0x7f7fff84 ,},   //88.7228   largest value
     {0x42b17218, 0x7f800000 ,},   //88.7228   overflow
     {0x50000000, 0x7f800000 ,},   //large   overflow
-    {0xc20a1eb8, 0x269162c0 ,},	 // -34.53
-    {0xc6de66b6, 0x00000000 ,},	 // -28467.3555
-    {0xbe99999a, 0x3f3da643 ,},	 // -0.3
-    {0xbf247208, 0x3f06ab02 ,},	 // -0.642365
-    {0xbf000000, 0x3f1b4598 ,},	 // -0.5
-    {0x3e99999a, 0x3facc82d ,},	 // 0.3
-    {0x3f247208, 0x3ff35307 ,},	 // 0.642365
-    {0x3f000000, 0x3fd3094c ,},	 // 0.5
-    {0x420a1eb8, 0x586162f9 ,},	 // 34.53
-    {0x46de66b6, 0x7f800000 ,},	 // 28467.3555
-    {0xc2c80000, 0x0000001b ,},	 // -100
-    {0x42c80000, 0x7f800000 ,},	 // 100
+    {0xc20a1eb8, 0x269162c0 ,}, // -34.53
+    {0xc6de66b6, 0x00000000 ,}, // -28467.3555
+    {0xbe99999a, 0x3f3da643 ,}, // -0.3
+    {0xbf247208, 0x3f06ab02 ,}, // -0.642365
+    {0xbf000000, 0x3f1b4598 ,}, // -0.5
+    {0x3e99999a, 0x3facc82d ,}, // 0.3
+    {0x3f247208, 0x3ff35307 ,}, // 0.642365
+    {0x3f000000, 0x3fd3094c ,}, // 0.5
+    {0x420a1eb8, 0x586162f9 ,}, // 34.53
+    {0x46de66b6, 0x7f800000 ,}, // 28467.3555
+    {0xc2c80000, 0x0000001b ,}, // -100
+    {0x42c80000, 0x7f800000 ,}, // 100
 };
 
 static struct libm_test_special_data_f64

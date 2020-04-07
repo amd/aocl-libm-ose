@@ -5,6 +5,63 @@
 
 #include <emmintrin.h>
 
+/***********************
+***** v4d functions ****
+***********************/
+
+static inline v_f64x4_t
+as_f64x4(v_u64x4_t x)
+{
+    union {
+        v_u64x4_t _xi;
+        v_f64x4_t _xf;
+    } val = {
+        ._xi = x,
+    };
+
+    return val._xf;
+}
+
+static inline v_u64x4_t
+as_u64x4(v_f64x4_t x)
+{
+    union {
+        v_u64x4_t _xi;
+        v_f64x4_t _xf;
+    } val = {
+        ._xf = x,
+    };
+
+    return val._xi;
+}
+
+// v_f64x4_t to v_i64x4_t
+static inline v_i64x4_t
+v4_to_f64_i64(v_f64x4_t _xf64)
+{
+    return (v_i64x4_t){_xf64[0], _xf64[1], _xf64[2], _xf64[3]};
+}
+
+static inline int
+v4_any_u64(v_i64x4_t cond)
+{
+    const v_i64x4_t zero = _MM_SET1_I64(0);
+    return _mm256_testz_si256(cond, zero);
+}
+
+// Condition check with for loop for better performance
+static inline int
+v4_any_u64_loop(v_i64x4_t cond)
+{
+    int ret = 0;
+    for (int i = 0; i < 4; i++)
+    {
+        if(cond[i] !=0)
+            ret= 1;
+    }
+    return ret;
+}
+
 
 /***********************
 ***** v2d functions ****

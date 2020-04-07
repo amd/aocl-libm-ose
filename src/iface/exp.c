@@ -45,7 +45,7 @@ LIBM_IFACE_PROTO(exp)(void *arg)
     fn_v4d = &FN_PROTOTYPE_FMA3(vrd4_exp);
     fn_v4s = &FN_PROTOTYPE_FMA3(vrs4_expf);
     fn_v8s = &FN_PROTOTYPE_OPT(vrs8_expf);
-    fn_v2d = &FN_PROTOTYPE_OPT(vrd2_exp);
+    fn_v2d = &FN_PROTOTYPE_FMA3(vrd2_exp);
 
     if (CPU_HAS_AVX2(features) &&
         CPU_FEATURE_AVX2_USABLE(features)) {
@@ -54,7 +54,8 @@ LIBM_IFACE_PROTO(exp)(void *arg)
         fn_v4s = &FN_PROTOTYPE_OPT(vrs4_expf);
         fn_v8s = &FN_PROTOTYPE_OPT(vrs8_expf);
         fn_v2d = &FN_PROTOTYPE_OPT(vrd2_exp);
-    } else if (CPU_HAS_SSSE3(features) &&
+        fn_v4d = &FN_PROTOTYPE_OPT(vrd4_exp);
+     } else if (CPU_HAS_SSSE3(features) &&
                CPU_FEATURE_SSSE3_USABLE(features)) {
 	    fn_d = &FN_PROTOTYPE_BAS64(exp);
     } else if (CPU_HAS_AVX(features) &&

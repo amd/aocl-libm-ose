@@ -29,6 +29,7 @@ LIBM_IFACE_PROTO(log)(void *arg)
     amd_log_t  fn_d = NULL;
     amd_logf_t fn_s = NULL;
     amd_log_v4d_t fn_v4d = NULL;
+    amd_log_v2d_t fn_v2d = NULL;
     amd_log_v4s_t fn_v4s = NULL;
     amd_log_v8s_t fn_v8s = NULL;
 
@@ -43,6 +44,7 @@ LIBM_IFACE_PROTO(log)(void *arg)
     fn_d = &FN_PROTOTYPE_FMA3(log);
     fn_s = &FN_PROTOTYPE_FMA3(logf);
     fn_v4d = &FN_PROTOTYPE_FMA3(vrd4_log);
+    fn_v2d = &FN_PROTOTYPE_FMA3(vrd2_log);
     fn_v4s = &FN_PROTOTYPE_FMA3(vrs4_logf);
     /* we only have OPT version of vsr8_logf */
     fn_v8s = &FN_PROTOTYPE_OPT(vrs8_logf);
@@ -54,6 +56,7 @@ LIBM_IFACE_PROTO(log)(void *arg)
             fn_v4s = &FN_PROTOTYPE_OPT(vrs4_logf);
             fn_v8s = &FN_PROTOTYPE_OPT(vrs8_logf);
             fn_v4d = &FN_PROTOTYPE_OPT(vrd4_log);
+            fn_v2d = &FN_PROTOTYPE_OPT(vrd2_log);
     } else if (CPU_HAS_SSSE3(features) &&
                CPU_FEATURE_SSSE3_USABLE(features)) {
 	    fn_d = &FN_PROTOTYPE_BAS64(log);
@@ -81,6 +84,7 @@ LIBM_IFACE_PROTO(log)(void *arg)
     G_ENTRY_PT_PTR(log) = fn_d;
     G_ENTRY_PT_PTR(logf) = fn_s;
     G_ENTRY_PT_PTR(vrd4_log) = fn_v4d;
+    G_ENTRY_PT_PTR(vrd2_log) = fn_v2d;
     G_ENTRY_PT_PTR(vrs4_logf) = fn_v4s;
     G_ENTRY_PT_PTR(vrs8_logf) = fn_v8s;
 }

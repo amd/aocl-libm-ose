@@ -154,19 +154,6 @@ static struct {
  *
  */
 
-static inline int
-v_any_u64(v_i64x2_t cond)
-{
-    const v_i64x2_t zero = _MM_SET1_I64x2(0);
-    return _mm_testz_si128(cond, zero);
-}
-
-
-/*
- * On x86, 'cond' contains all 0's for false, and all 1's for true
- * IOW, 0=>false, -1=>true
- */
-
 static inline v_f64x2_t
 log_specialcase(v_f64x2_t _x,
                  v_f64x2_t result,
@@ -245,7 +232,7 @@ FN_PROTOTYPE_OPT(vrd2_log)(__m128d _x)
 
     q += LN2_HEAD * exponent + LOG_256_HEAD;
 
-    if (unlikely(v_any_u64(condition))) {
+    if (unlikely(v2_any_u64_loop(condition))) {
         return log_specialcase(_x, q, condition);
     }
 

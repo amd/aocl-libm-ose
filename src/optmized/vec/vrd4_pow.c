@@ -12,6 +12,7 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
+#include <libm/typehelper-vec.h>
 #include <libm/compiler.h>
 
 #define AMD_LIBM_FMA_USABLE 1           /* needed for poly.h */
@@ -198,19 +199,6 @@ static struct {
  *
  */
 
-static inline int
-v_any_u64(v_i64x4_t cond)
-{
-    const v_i64x4_t zero = _MM_SET1_I64(0);
-    return _mm256_testz_si256(cond, zero);
-}
-
-
-/*
- * On x86, 'cond' contains all 0's for false, and all 1's for true
- * IOW, 0=>false, -1=>true
- */
-
 static inline v_f64x4_t
 pow_specialcase(v_f64x4_t _x,
                  v_f64x4_t _y,
@@ -358,7 +346,7 @@ FN_PROTOTYPE_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     result = r * as_f64(m);
 
-    if (unlikely(v_any_u64(condition))) {
+    if (unlikely(v4_any_u64_loop(condition))) {
         return pow_specialcase(_x, _y, result, condition);
     }
 

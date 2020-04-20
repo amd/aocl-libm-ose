@@ -473,15 +473,41 @@ libm_test_accu(struct libm_test *test)
     struct libm_test_ops *ops = &test->ops;
     int ret = 0;
     int sz = data->nelem;
+    int variant = (int)test->variant;
+    int vec_input_count = 0;
 
     // we are verifying here, no need to do again
     test->ops.verify = NULL;
 
-    if (sz % 4 != 0)
+    switch (variant) {
+        case LIBM_FUNC_V2S: vec_input_count=2; break;
+        case LIBM_FUNC_V2D: vec_input_count=2; break;
+        case LIBM_FUNC_V4S: vec_input_count=4; break;
+        case LIBM_FUNC_V4D: vec_input_count=4; break;
+        case LIBM_FUNC_V8S: vec_input_count=8; break;
+        default:    break;
+    }
+
+    //for vector inputs, nelem has to align with the vector variant
+    if (strcmp(test->name, "vector")==0 &&  (sz % vec_input_count != 0)) {
+        printf("Input count %d is not a multiple of %d for variant %s\n",
+                           sz, vec_input_count, test->input_name);
+        sz = sz + (vec_input_count - sz % vec_input_count);
+        //while(sz % variant != 0)    sz++;
+        printf("Input count increased to %d\n", sz);
+        data->nelem = sz;
+    }
+
+    /*
+    if (sz % 4 != 0) {
         LIBM_TEST_DPRINTF(DBG2,
                           "%s %s : %d is not a multiple of 4, some may be left out\n"
                           " And error reported may not be real for such entries\n",
                           test->name, test->type_name, sz);
+
+        exit(0);
+    }
+    */
 
     ret = ops->callbacks.accu_ranges(test, sz);
 

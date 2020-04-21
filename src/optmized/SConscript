@@ -50,14 +50,7 @@ experiment_src=[
 	]
 
 source = Glob('*.c', exclude=experiment_src)
-#source = Glob('*.c')
-
-# Single precision
-single_objs = SConscript('single/SConscript',
-                           exports = {'env' : e},
-                           duplicate = 0,
-                           src_dir = '#src/optmized/single',
-                           variant_dir = joinpath(builddir, 'single'))
+source += Glob('data/*.c')
 
 vec_objs   = SConscript('vec/SConscript',
                         exports    = {'env' : e},
@@ -65,6 +58,6 @@ vec_objs   = SConscript('vec/SConscript',
                         src_dir    = '#src/optmized/vec',
 			            variant_dir= joinpath(builddir, 'vec'))
 
-objs = e.StaticObject(source) + single_objs + vec_objs
+objs = e.StaticObject(source) + vec_objs
 
 Return('objs')

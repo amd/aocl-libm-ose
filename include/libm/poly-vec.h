@@ -52,6 +52,68 @@
  */
 
 /*
+ * p20(x),
+ * for special polynomial, assumes c0=0.0 and c1=1.0, rename to POLY_EVAL_20_1
+ *								\
+ * p1 = c2 + c3 * x;
+ * p2 = c4 + c5 * x;
+ * p3 = c6 + c7 * x;
+ * p4 = c8 + c9 * x;
+ * p5 = c10 + c11* x;
+ * p6 = c12 + c13 * x;
+ * p7 = c14 + c15 * x;
+ * p8 = c16 + c17 * x;
+ * p9 = c18 + c19 * x;
+ *
+ */
+#define POLY_EVAL_20(x, c0, c1, c2, c3, c4, c5, c6, c7,                 \
+                     c8, c9, c10,                                       \
+                     c11, c12, c13, c14, c15, c16, c17,                 \
+                     c18, c19, c20) ({                                  \
+    __typeof(x) x2 = x  * x;                                            \
+    __typeof(x) x4 = x2 * x2;                                           \
+    __typeof(x) x8 = x4 * x4;                                           \
+    __typeof(x) x16= x8 * x8;                                           \
+    __typeof(x) q;                                                      \
+    __typeof(x) q1, q2, q3, q4, q5;                                     \
+    __typeof(x) r1, r2, r3;                                             \
+    __typeof(x) p10 = c20 * x4;                                         \
+                                                                        \
+    /*q1 = x + x2 * p1; */                                              \
+    q1 = mul_add(mul_add(c3, x, c2),                                    \
+                 x2,                                                    \
+                 mul_add(c1, x, c0));                                   \
+                                                                        \
+    /* q2 = p2 + x2 * p3; */                                            \
+    q2 = mul_add(mul_add(c7, x, c6),                                    \
+                 x2,                                                    \
+                 mul_add(c5, x, c4));                                   \
+                                                                        \
+    /*q3 = p4 + x2 * p5; */                                             \
+    q3 = mul_add(mul_add(c11, x, c10),                                  \
+                 x2,                                                    \
+                 mul_add(c9, x, c8));                                   \
+                                                                        \
+    /* q4 = p6 + x2 * p7; */                                            \
+    q4 = mul_add(mul_add(c15, x, c14),                                  \
+                 x2,                                                    \
+                 mul_add(c13, x, c12));                                 \
+                                                                        \
+    /* q5 = p8 + x2 * p9; */                                            \
+    q5 = mul_add(mul_add(c19, x, c18),                                  \
+                 x2,                                                    \
+                 mul_add(c17, x, c16));                                 \
+                                                                        \
+    r1 = q1 + x4 * q2;                                                  \
+    r2 = x8 * (q3 + x4 * q4);                                           \
+    r3 = x16 * (q5 + p10);                                              \
+                                                                        \
+    q = r1 + r2 + r3;                                                   \
+    q;                                                                  \
+    })
+
+
+/*
  * p(x) = c10*x^10 + c9*x^9 + c8*x^8 + c7*x^7 + c6*x^6 + c5*x^5 + c4*x^4 + \
  *                      c3*x^3 + c2*x^2 + c1*x + c0
  *      = (((c6+c7*x)*x2 + (c4+c5*x))*x4 + (c8+c9*x+c10*x2)*x8) + \

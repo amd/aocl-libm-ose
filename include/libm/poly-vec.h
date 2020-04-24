@@ -112,6 +112,26 @@
     q;                                                                  \
     })
 
+/*
+ * p(x) = C1 + C2*r + C3*r^2 + C4*r^3 + C5*r^4 + C6*r^5 +
+ *          C7*r^6 + C8*r^7 + C9*r^8 + C10*r^9 + C11*r^10 + C12*r^11
+ *      = (C1 + C2*r) + r^2(C3 + C4*r) + r^4(C5 + C6*r) +
+ *           r^6(C7 + C8*r) + r^8(C9 + C10*r) + r^10(C11 + C12*r)
+ */
+#define POLY_EVAL_11(x, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11) ({ \
+        __typeof(x) x2 = x * x;                                              \
+        __typeof(x) x4 = x2 * x2;                                            \
+        __typeof(x) x8 = x4 * x4;                                            \
+        __typeof(x) q = mul_add( mul_add ( mul_add(c11, x, c10), x2,         \
+                                           mul_add(c9 ,x ,c8)), x8,          \
+                                 mul_add ( mul_add(mul_add(c7, x, c6), x2,   \
+                                           mul_add(c5, x, c4)) ,x4,          \
+                                           mul_add( mul_add(c3, x, c2),x2,   \
+                                           mul_add(c0, x, c1)) ));           \
+         q;                                                                  \
+         })
+
+
 
 /*
  * p(x) = c10*x^10 + c9*x^9 + c8*x^8 + c7*x^7 + c6*x^6 + c5*x^5 + c4*x^4 + \

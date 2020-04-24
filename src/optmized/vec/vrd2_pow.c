@@ -75,6 +75,7 @@ static struct {
     v_f64x2_t ln2by_tblsz, tblsz_byln2, Huge;
     v_f64x2_t ln2_by_n_head, ln2_by_n_tail;
     v_i64x2_t one;
+    v_u64x2_t exp_max;
     double_t ALIGN(16) poly[MAX_POLYDEGREE];
 } exp_v4_data  = {
     .ln2_by_n_head = _MM_SET1_PD2(0x1.62e42f0000000p-11),
@@ -82,6 +83,7 @@ static struct {
     .tblsz_byln2 = _MM_SET1_PD2(0x1.71547652b82fep10),
     .one =  _MM_SET1_I64x2(0x3ff0000000000000ULL),
     .Huge = _MM_SET1_PD2(0x1.8000000000000p+52),
+    .exp_max = _MM_SET1_I64x2(0x4086200000000000),
     .poly = {
         0x1.5555555555555p-3,
         0x1.5555555555555p-5,
@@ -104,7 +106,7 @@ static struct {
 #define LOG2_BY_N_HEAD  exp_v4_data.ln2_by_n_head
 #define LOG2_BY_N_TAIL  exp_v4_data.ln2_by_n_tail
 #define ONE             exp_v4_data.one
-
+#define EXP_MAX         exp_v4_data.exp_max
 /*
  * Short names for polynomial coefficients
  */
@@ -198,6 +200,22 @@ static struct {
  *
  *
  */
+
+static inline int
+check_condition(v_i64x2_t* cond1, v_i64x2_t cond2)
+{
+
+    int32_t ret = 0;
+
+    for(int i = 0; i < VECTOR_LENGTH; i++) {
+        if((*cond1)[i] || cond2[i]){
+            (*cond1)[i] = 1;
+            ret = 1;
+         }
+    }
+
+    return ret;
+}
 
 static inline v_f64x2_t
 pow_specialcase(v_f64x2_t _x,
@@ -360,11 +378,16 @@ FN_PROTOTYPE_OPT(vrd2_pow)(__m128d _x,__m128d _y)
 
     v_f64x2_t ylogx_h = logx_h * _y;
 
+     v_u64x2_t v = as_v_u64x2(ylogx_h);
+
+    /* check if y*log(x) > 1024*ln(2) */
+    v_i64x2_t condition2 = (v >= EXP_MAX);
+
     v_f64x2_t ylogx_t = logx_t * _y + _mm_fmadd_pd(logx_h, _y, -ylogx_h);
 
     result = calculate_exp(ylogx_h, ylogx_t);
 
-    if (unlikely(v2_any_u64_loop(condition))) {
+    if (unlikely(check_condition(&condition, condition2))) {
         return pow_specialcase(_x, _y, result, condition);
     }
 

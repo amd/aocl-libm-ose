@@ -53,61 +53,55 @@
 
 #include <libm/poly-vec.h>
 
-typedef struct {
-    double head,tail;
-} lookup_data;
-
-#define N 10
-#define TABLE_SIZE (1ULL << N)
 #define DOUBLE_PRECISION_BIAS 1023
-extern lookup_data exp_lookup[];
 
 static const struct {
     v_f64x4_t tblsz_ln2;
     v_f64x4_t ln2_tblsz_head, ln2_tblsz_tail;
     v_f64x4_t Huge;
-    v_i64x4_t one;
     v_i64x4_t exp_bias;
-    v_i64x4_t exp_min;
-    v_i64x4_t exp_max;
-    v_i64x4_t mask;
-    v_f64x4_t poly[5];
+    v_u64x4_t exp_max;
+    v_f64x4_t poly[12];
     }exp_data = {
-                    .tblsz_ln2      = _MM_SET1_PD4(0x1.71547652b82fep10),
-                    .ln2_tblsz_head = _MM_SET1_PD4(0x1.62e42f0000000p-11),
-                    .ln2_tblsz_tail = _MM_SET1_PD4(0x1.DF473DE6AF279p-36),
+                    .tblsz_ln2      = _MM_SET1_PD4(0x1.71547652b82fep+0),
+                    .ln2_tblsz_head = _MM_SET1_PD4(0x1.63p-1),
+                    .ln2_tblsz_tail = _MM_SET1_PD4(-0x1.bd0105c610ca8p-13),
                     .Huge           = _MM_SET1_PD4(0x1.8000000000000p+52),
-                    .one            = _MM_SET1_I64(0x3ff0000000000000ULL),
                     .exp_bias       = _MM_SET1_I64(DOUBLE_PRECISION_BIAS),
-                    .exp_min        = _MM_SET1_I64(-708),
-                    .exp_max        = _MM_SET1_I64(710),
-                    .mask           = _MM_SET1_I64(0x7FFFFFFFFFFFFFFF),
+                    .exp_max        = _MM_SET1_I64(708),
                     .poly           = {
-                                        _MM_SET1_PD4(0x1.0000000000000p-1),
-                                        _MM_SET1_PD4(0x1.5555555555555p-3),
-                                        _MM_SET1_PD4(0x1.5555555555555p-5),
-                                        _MM_SET1_PD4(0x1.1111111111111p-7),
-                                        _MM_SET1_PD4(0x1.6c16c16c16c17p-10),
+                                        _MM_SET1_PD4(0x1p0),
+                                        _MM_SET1_PD4(0x1.000000000001p-1),
+                                        _MM_SET1_PD4(0x1.55555555554a2p-3),
+                                        _MM_SET1_PD4(0x1.555555554f37p-5),
+                                        _MM_SET1_PD4(0x1.1111111130dd6p-7),
+                                        _MM_SET1_PD4(0x1.6c16c1878111dp-10),
+                                        _MM_SET1_PD4(0x1.a01a011057479p-13),
+                                        _MM_SET1_PD4(0x1.a01992d0fe581p-16),
+                                        _MM_SET1_PD4(0x1.71df4520705a4p-19),
+                                        _MM_SET1_PD4(0x1.28b311c80e499p-22),
+                                        _MM_SET1_PD4(0x1.ad661ce7af3e3p-26),
                                        },
     };
 
-#define TWO_POWER_J_BY_N exp_lookup
 #define DP64_BIAS        exp_data.exp_bias
 #define LN2_HEAD         exp_data.ln2_tblsz_head
 #define LN2_TAIL         exp_data.ln2_tblsz_tail
 #define INVLN2           exp_data.tblsz_ln2
 #define EXP_HUGE         exp_data.Huge
-#define ONE              exp_data.one
-#define MASK             exp_data.mask
-#define ARG_MIN          exp_data.exp_min
 #define ARG_MAX          exp_data.exp_max
-#define OFF              ARG_MAX - ARG_MIN
 
 #define C1 exp_data.poly[0]
-#define C2 exp_data.poly[1]
-#define C3 exp_data.poly[2]
-#define C4 exp_data.poly[3]
-#define C5 exp_data.poly[4]
+#define C3 exp_data.poly[1]
+#define C4 exp_data.poly[2]
+#define C5 exp_data.poly[3]
+#define C6  exp_data.poly[4]
+#define C7  exp_data.poly[5]
+#define C8  exp_data.poly[6]
+#define C9  exp_data.poly[7]
+#define C10 exp_data.poly[8]
+#define C11 exp_data.poly[9]
+#define C12 exp_data.poly[10]
 
 #define SCALAR_EXP FN_PROTOTYPE(exp)
 
@@ -115,13 +109,10 @@ v_f64x4_t
 FN_PROTOTYPE_OPT(vrd4_exp)(v_f64x4_t x)
 {
     // vx = int(x)
-    v_i64x4_t vx = v4_to_f64_i64(x);
-
-    // Get absolute value of vx
-    vx = vx & MASK;
+    v_u64x4_t vx = as_v_u64x4(x);
 
     // Check if -709 < vx < 709
-    v_i64x4_t cond = ((vx - ARG_MIN) >= OFF);
+    v_u64x4_t cond = (vx >= ARG_MAX);
 
     // x * (64.0/ln(2))
     v_f64x4_t z = x * INVLN2;
@@ -134,9 +125,6 @@ FN_PROTOTYPE_OPT(vrd4_exp)(v_f64x4_t x)
     // dn = double(n)
     dn = dn - EXP_HUGE;
 
-    // j = n & 0x3f
-    v_u64x4_t index = n & DP64_BIAS;
-
     // r = x - (dn * (ln(2)/64))
     // where ln(2)/64 is split into Head and Tail values
     v_f64x4_t r1 = x - ( dn * LN2_HEAD);
@@ -145,29 +133,19 @@ FN_PROTOTYPE_OPT(vrd4_exp)(v_f64x4_t x)
 
     // m = (n - j)/64
     // Calculate 2^m
-    v_i64x4_t m = ((n - index) << (52-N)) + ONE;
+    v_i64x4_t m = (n + DP64_BIAS) << 52;
 
     // Compute polynomial
-    // poly = C1 + C2*r + C3*r^2 + C4*r^3
-    //      = (C1 + C2*r) + r^2(C3 + C4*r)
-    r2 = r * r;
-    v_f64x4_t poly = POLY_EVAL_1(r, C1, C2) + r2 * r2 * C3;
+    /* poly = C1 + C2*r + C3*r^2 + C4*r^3 + C5*r^4 + C6*r^5 +
+              C7*r^6 + C8*r^7 + C9*r^8 + C10*r^9 + C11*r^10 + C12*r^12
+            = (C1 + C2*r) + r^2(C3 + C4*r) + r^4(C5 + C6*r) +
+              r^6(C7 + C8*r) + r^8(C9 + C10*r) + r^10(C11 + C12*r)
+    */
+    v_f64x4_t poly = POLY_EVAL_11(r, C1, C1, C3, C4, C5, C6,
+                                  C7, C8, C9, C10, C11, C12);
 
-    v_f64x4_t j_by_N_head, j_by_N_tail;
-
-    // Get head and tail values from look-up table
-    for (int i = 0; i < 4; i++)
-    {
-        int32_t j = index[i];
-        j_by_N_head[i] = TWO_POWER_J_BY_N[j].head;
-        j_by_N_tail[i] = TWO_POWER_J_BY_N[j].tail;
-    }
-
-    // result = 2^m * (f + (f*q))
-    v_f64x4_t q = j_by_N_tail + poly * j_by_N_tail;
-    z = poly * j_by_N_head;
-    r = j_by_N_head + (z + q);
-    v_f64x4_t ret = r * as_f64x4(m);
+    // result = poly * 2^m
+    v_f64x4_t ret = poly * as_f64x4(m);
 
     // If input value is outside valid range, call scalar exp(value)
     // Else, return the above computed result

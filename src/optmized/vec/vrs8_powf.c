@@ -17,7 +17,7 @@
 #define AMD_LIBM_FMA_USABLE 1           /* needed for poly.h */
 #include <libm/poly-vec.h>
 
-#define VECTOR_LENGTH 8
+#define VECTOR_LENGTH 4
 #define N 8
 #define TABLE_SIZE (1ULL << N)
 #define MAX_POLYDEGREE  8
@@ -66,17 +66,19 @@ static struct {
 static struct {
     v_f64x4_t ln2by_tblsz, tblsz_byln2, Huge;
     double_t ALIGN(16) poly[MAX_POLYDEGREE];
+    v_u64x4_t expf_max;
 } expf_v4_data  = {
     .ln2by_tblsz = _MM_SET1_PD4(0x1.62e42fefa39efp-7),
     .tblsz_byln2 = _MM_SET1_PD4(0x1.71547652b82fep+0),
     .Huge = _MM_SET1_PD4(0x1.8000000000000p+52),
+    .expf_max = _MM_SET1_I64(0x4056000000000000),
     .poly = {
         0x1.0000014439a91p0,
-		0x1.62e43170e3344p-1,
-		0x1.ebf906bc4c115p-3,
-		0x1.c6ae2bb88c0c8p-5,
-		0x1.3d1079db4ef69p-7,
-		0x1.5f8905cb0cc4ep-10
+        0x1.62e43170e3344p-1,
+        0x1.ebf906bc4c115p-3,
+        0x1.c6ae2bb88c0c8p-5,
+        0x1.3d1079db4ef69p-7,
+        0x1.5f8905cb0cc4ep-10
     },
 };
 
@@ -90,6 +92,7 @@ static struct {
 #define MANT_8_BITS     v_log_data.mant_8_bits
 #define INVLN2      expf_v4_data.tblsz_byln2
 #define EXPF_HUGE   expf_v4_data.Huge
+#define EXPF_MAX    expf_v4_data.expf_max
 
 /*
  * Short names for polynomial coefficients
@@ -196,10 +199,17 @@ v_any_u32(v_i32x8_t cond)
     return 0;
 }
 
-/*
- * On x86, 'cond' contains all 0's for false, and all 1's for true
- * IOW, 0=>false, -1=>true
- */
+static inline void
+update_condition(v_i32x8_t* cond1, v_i64x4_t cond2, int32_t lane)
+{
+
+    uint32_t k = lane << 2;
+    for(int i = 0; i < 4; i++) {
+        if((*cond1)[i + k] || cond2[i]){
+            (*cond1)[i + k] = 1;
+         }
+    }
+}
 
 static inline v_f32x8_t
 powf_specialcase(v_f32x8_t _x,
@@ -312,6 +322,12 @@ FN_PROTOTYPE_OPT(vrs8_powf)(__m256 x,__m256 y)
 
         /* Calculate exp */
 
+        v_u64x4_t v = as_v_u64x4(ylogx);
+
+        /* Check if y * log(x) > ln(2) * 127 */
+
+        v_i64x4_t condition2 = (v >= EXPF_MAX);
+
         v_f64x4_t z = ylogx * INVLN2;
 
         v_f64x4_t dn = z + EXPF_HUGE;
@@ -335,6 +351,9 @@ FN_PROTOTYPE_OPT(vrs8_powf)(__m256 x,__m256 y)
         v_f64x4_t result = q + r2 * r2 * qtmp3;
 
         ret_array[lane] = _mm256_cvtpd_ps(as_f64(as_v_u64x4(result) + (n << 52)));
+
+        update_condition(&condition, condition2, lane);
+
     }
 
     ret =  _mm256_setr_m128(ret_array[0], ret_array[1]);

@@ -60,7 +60,7 @@ static const struct {
     v_f64x2_t ln2_tblsz_head, ln2_tblsz_tail;
     v_f64x2_t Huge;
     v_i64x2_t exp_bias;
-    v_u64x2_t exp_max;
+    v_i64x2_t exp_max;
     v_i64x2_t mask;
     v_f64x2_t poly[12];
     }exp_data = {
@@ -70,6 +70,7 @@ static const struct {
                     .Huge           = _MM_SET1_PD2(0x1.8000000000000p+52),
                     .exp_bias       = _MM_SET1_I64x2(DOUBLE_PRECISION_BIAS),
                     .exp_max        = _MM_SET1_I64x2(708),
+                    .mask           = _MM_SET1_I64x2(0x7FFFFFFFFFFFFFFF),
                     .poly           = {
                                         _MM_SET1_PD2(0x1p0),
                                         _MM_SET1_PD2(0x1.000000000001p-1),
@@ -91,6 +92,7 @@ static const struct {
 #define INVLN2           exp_data.tblsz_ln2
 #define EXP_HUGE         exp_data.Huge
 #define ARG_MAX          exp_data.exp_max
+#define MASK             exp_data.mask
 
 #define C1  exp_data.poly[0]
 #define C3  exp_data.poly[1]
@@ -111,10 +113,13 @@ v_f64x2_t
 FN_PROTOTYPE_OPT(vrd2_exp)(v_f64x2_t x)
 {
     // vx = int(x)
-    v_u64x2_t vx = as_v_u64x2(x);
+    v_i64x2_t vx = v2_to_f64_i64(x);
+
+    // Get absolute value
+    vx = vx & MASK;
 
     // Check if -709 < vx < 709
-    v_u64x2_t cond = (vx >= ARG_MAX);
+    v_i64x2_t cond = (vx >= ARG_MAX);
 
     // x * (64.0/ln(2))
     v_f64x2_t z = x * INVLN2;

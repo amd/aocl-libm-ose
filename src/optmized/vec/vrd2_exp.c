@@ -61,6 +61,7 @@ static const struct {
     v_f64x2_t Huge;
     v_i64x2_t exp_bias;
     v_i64x2_t exp_max;
+    v_i64x2_t exp_min;
     v_i64x2_t mask;
     v_f64x2_t poly[12];
     }exp_data = {
@@ -70,6 +71,7 @@ static const struct {
                     .Huge           = _MM_SET1_PD2(0x1.8000000000000p+52),
                     .exp_bias       = _MM_SET1_I64x2(DOUBLE_PRECISION_BIAS),
                     .exp_max        = _MM_SET1_I64x2(708),
+                    .exp_min        = _MM_SET1_I64x2(-707),
                     .mask           = _MM_SET1_I64x2(0x7FFFFFFFFFFFFFFF),
                     .poly           = {
                                         _MM_SET1_PD2(0x1p0),
@@ -93,6 +95,8 @@ static const struct {
 #define EXP_HUGE         exp_data.Huge
 #define ARG_MAX          exp_data.exp_max
 #define MASK             exp_data.mask
+#define ARG_MIN          exp_data.exp_min
+#define OFF              ARG_MAX - ARG_MIN
 
 #define C1  exp_data.poly[0]
 #define C3  exp_data.poly[1]
@@ -119,7 +123,7 @@ FN_PROTOTYPE_OPT(vrd2_exp)(v_f64x2_t x)
     vx = vx & MASK;
 
     // Check if -709 < vx < 709
-    v_i64x2_t cond = (vx >= ARG_MAX);
+    v_u64x2_t cond = ((vx - ARG_MIN) >= OFF);
 
     // x * (64.0/ln(2))
     v_f64x2_t z = x * INVLN2;
@@ -144,7 +148,7 @@ FN_PROTOTYPE_OPT(vrd2_exp)(v_f64x2_t x)
 
     // Compute polynomial
     /* poly = C1 + C2*r + C3*r^2 + C4*r^3 + C5*r^4 + C6*r^5 +
-              C7*r^6 + C8*r^7 + C9*r^8 + C10*r^9 + C11*r^10 + C12*r^12
+              C7*r^6 + C8*r^7 + C9*r^8 + C10*r^9 + C11*r^10 + C12*r^11
             = (C1 + C2*r) + r^2(C3 + C4*r) + r^4(C5 + C6*r) +
               r^6(C7 + C8*r) + r^8(C9 + C10*r) + r^10(C11 + C12*r)
     */

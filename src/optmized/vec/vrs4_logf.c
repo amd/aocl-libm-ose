@@ -20,7 +20,7 @@
 #define AMD_LIBM_FMA_USABLE 1           /* needed for poly.h */
 #include <libm/poly-vec.h>
 
-#define VRS4_LOGF_POLY_DEGREE    10
+#define VRS4_LOGF_POLY_DEGREE 10
 
 #define VRS4_LOGF_MAX_POLY_SIZE 12
 
@@ -194,7 +194,7 @@ FN_PROTOTYPE_OPT(vrs4_logf)(v_f32x4_t _x)
 
     q = n * LN2 + q;
 
-    if (unlikely(v4_any_u32(cond))) {
+    if (unlikely(v4_any_u32_loop(cond))) {
         return logf_specialcase(_x, q, cond);
     }
 

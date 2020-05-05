@@ -239,6 +239,19 @@ v8_any_u32_loop(v_i32x8_t cond)
     return ret;
 }
 
+static inline v_f32x8_t
+ as_f32x8(v_u32x8_t x)
+ {
+     union {
+         v_u32x8_t _xi;
+         v_f32x8_t _xf;
+     } val = {
+         ._xi = x,
+     };
+
+     return val._xf;
+ }
+
 
 /***********************
 ***** v8s functions ****

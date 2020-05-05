@@ -46,108 +46,131 @@
 #include <libm/compiler.h>
 #include <libm/amd_funcs_internal.h>
 
-#include <libm/poly.h>
+#include <libm/poly-vec.h>
 
 static const struct {
-    v_f64x4_t   tblsz_byln2;
-    v_f64x4_t   huge;
+    v_f32x8_t   tblsz_byln2;
+    v_f32x8_t   ln2_tbl_head, ln2_tbl_tail;
+    v_f32x8_t   huge;
     v_i32x8_t   arg_min;
     v_i32x8_t   arg_max;
     v_i32x8_t   mask;
-    v_f64x4_t   poly_expf[6];
+    v_i32x8_t   expf_bias;
+    v_f32x8_t   poly_expf_5[5];
+    v_f32x8_t   poly_expf_7[7];
 } v_expf_data ={
-              .tblsz_byln2 =  _MM_SET1_PD4(0x1.71547652b82fep+0),
-              .huge        =  _MM_SET1_PD4(0x1.8p+52) ,
-              .arg_min     =  _MM256_SET1_I32(0xFFFFFF99),
-              .arg_max     =  _MM256_SET1_I32(0x00000058),
-              .mask        =  _MM256_SET1_I32(0x7fffffff),
+              .tblsz_byln2 =  _MM256_SET1_PS8(0x1.71547652b82fep+0),
+              .ln2_tbl_head = _MM256_SET1_PS8(0x1.63p-1),
+              .ln2_tbl_tail = _MM256_SET1_PS8(-0x1.bd0104p-13),
+              .huge        =  _MM256_SET1_PS8(0x1.8p+23) ,
+              .arg_min     =  _MM256_SET1_I32(-86),
+              .arg_max     =  _MM256_SET1_I32(88),
+              .mask        =  _MM256_SET1_I32(0x7FFFFFFF),
+              .expf_bias   =  _MM256_SET1_I32(127),
 
-               // Polynomial coefficients obtained using Remez algorithm
+             // Polynomial coefficients obtained using Remez algorithm
 
-              .poly_expf = {
-                              _MM_SET1_PD4(0x1.0000014439a91p0),
-                              _MM_SET1_PD4(0x1.62e43170e3344p-1),
-                              _MM_SET1_PD4(0x1.ebf906bc4c115p-3),
-                              _MM_SET1_PD4(0x1.c6ae2bb88c0c8p-5),
-                              _MM_SET1_PD4(0x1.3d1079db4ef69p-7),
-                              _MM_SET1_PD4(0x1.5f8905cb0cc4ep-10),
+              .poly_expf_5 = {
+                              _MM256_SET1_PS8(0x1p0),
+                              _MM256_SET1_PS8(0x1.fffdc4p-2),
+                              _MM256_SET1_PS8(0x1.55543cp-3),
+                              _MM256_SET1_PS8(0x1.573aecp-5),
+                              _MM256_SET1_PS8(0x1.126bb6p-7),
               },
+
+              .poly_expf_7 = {
+                              _MM256_SET1_PS8(0x1p0),
+                              _MM256_SET1_PS8(0x1p-1),
+                              _MM256_SET1_PS8(0x1.555554p-3),
+                              _MM256_SET1_PS8(0x1.555468p-5),
+                              _MM256_SET1_PS8(0x1.1112fap-7),
+                              _MM256_SET1_PS8(0x1.6da4acp-10),
+                              _MM256_SET1_PS8(0x1.9eb724p-13),
+              },
+
 };
 
 
-#define TBL_LN2 v_expf_data.tblsz_byln2
-#define HUGE    v_expf_data.huge
-#define ARG_MAX v_expf_data.arg_max
-#define ARG_MIN v_expf_data.arg_min
-#define MASK    v_expf_data.mask
-#define OFF     ARG_MAX - ARG_MIN
+#define TBL_LN2   v_expf_data.tblsz_byln2
+#define LN2_TBL_H v_expf_data.ln2_tbl_head
+#define LN2_TBL_T v_expf_data.ln2_tbl_tail
+#define EXPF_BIAS v_expf_data.expf_bias
+#define HUGE      v_expf_data.huge
+#define ARG_MAX   v_expf_data.arg_max
+#define ARG_MIN   v_expf_data.arg_min
+#define MASK      v_expf_data.mask
+#define OFF       ARG_MAX - ARG_MIN
 
+// Coefficients for 5-degree polynomial
+#define A0 v_expf_data.poly_expf_5[0]
+#define A1 v_expf_data.poly_expf_5[1]
+#define A2 v_expf_data.poly_expf_5[2]
+#define A3 v_expf_data.poly_expf_5[3]
+#define A4 v_expf_data.poly_expf_5[4]
 
-#define C1 v_expf_data.poly_expf[0]
-#define C2 v_expf_data.poly_expf[1]
-#define C3 v_expf_data.poly_expf[2]
-#define C4 v_expf_data.poly_expf[3]
-#define C5 v_expf_data.poly_expf[4]
-#define C6 v_expf_data.poly_expf[5]
+// Coefficients for 7-degree polynomial
+#define C0 v_expf_data.poly_expf_7[0]
+#define C1 v_expf_data.poly_expf_7[1]
+#define C2 v_expf_data.poly_expf_7[2]
+#define C3 v_expf_data.poly_expf_7[3]
+#define C4 v_expf_data.poly_expf_7[4]
+#define C5 v_expf_data.poly_expf_7[5]
+#define C6 v_expf_data.poly_expf_7[6]
+
 
 #define SCALAR_EXPF FN_PROTOTYPE(expf)
 
+/*
+    Implementation with 7-degree polynomial
+
+    Performance numbers:
+    GCC - 731 MOPS
+    AOCC - 833 MOPS
+
+    Max ULP error : 1.7
+*/
 v_f32x8_t
-FN_PROTOTYPE_OPT(vrs8_expf)(v_f32x8_t _x)
+FN_PROTOTYPE_OPT(vrs8_expf_experimental)(v_f32x8_t _x)
 {
 
-    // vx = int(_x)
+    // vx = int(x)
     v_i32x8_t vx = v8_to_f32_i32(_x);
 
     // Get absolute value of vx
     vx = vx & MASK;
 
     // Check if -103 < vx < 88
-    v_i32x8_t cond = ((vx - ARG_MIN) >= OFF);
+    v_u32x8_t cond = ((vx - ARG_MIN) >= OFF);
 
-    /* Split the 8 values to two sets of 4 values and
-       loop over them using the v4s expf algorithm */
-    v_f64x4_t in[2];
-    in[0] = v4_to_f32_f64(_mm256_extractf128_ps(_x,0));
-    in[1] = v4_to_f32_f64(_mm256_extractf128_ps(_x,1));
+    // x * (64.0/ln(2))
+    v_f32x8_t z = _x * TBL_LN2;
 
-    v_f32x4_t ret[2];
+    v_f32x8_t dn = z + HUGE;
 
-    for (int i = 0; i < 2; i++)
+    // n = int(z)
+    v_u32x8_t n = as_v_u32x8(dn);
 
-    {
-        // Convert _x to double precision
-        v_f64x4_t x = in[i];
+    // dn = double(n)
+    dn = dn - HUGE;
 
-        // x * (64.0/ln(2))
-        v_f64x4_t z = x * TBL_LN2;
+    // r = x - (dn * (ln(2)/64))
+    // where ln(2)/64 is split into Head and Tail values
+    v_f32x8_t r1 = _x - ( dn * LN2_TBL_H);
+    v_f32x8_t r2 = dn * LN2_TBL_T;
+    v_f32x8_t r = r1 - r2;
 
-        v_f64x4_t dn = z + HUGE;
+    // m = (n - j)/64
+    // Calculate 2^m
+    v_i32x8_t m = (n + EXPF_BIAS) << 23;
 
-        // n = int (z)
-        v_u64x4_t n = as_v_u64x4(dn);
+    // Compute polynomial
+    /* poly = C1 + C2*r + C3*r^2 + C4*r^3 + C5*r^4 + C6*r^5
+            = (C1 + C2*r) + r^2(C3 + C4*r) + r^4(C5 + C6*r)
+    */
+    v_f32x8_t poly = POLY_EVAL_7(r, C0, C0, C1, C2, C3, C4, C5, C6);
 
-        // dn = double(n)
-        dn = dn - HUGE;
-
-        // r = z - dn
-        v_f64x4_t r = z - dn;
-
-        // Compute polynomial
-        //    poly = C1 + C2*r + C3*r^2 + C4*r^3 + C5 *r^4 + C6*r^5
-        //         = (C1 + C2*r) + r^2(C3 + C4*r) + r^4(C4+C6*r)
-        v_f64x4_t poly = POLY_EVAL_6(r, C1, C2, C3, C4, C5, C6);
-
-        // result = (float)[poly + (n << 52)]
-        v_u64x4_t q = as_v_u64x4(poly) + (n << 52);
-        v_f64x4_t result = as_v_f64(q);
-        ret[i] = v4_to_f64_f32(result);
-        //ret[i] = v_to_f64_f32(as_v_f64(as_v_u64x4(poly) + (n << 52)));
-
-    }
-
-    // Combine the two sets of results into one
-    v_f32x8_t result = _mm256_set_m128(ret[1],ret[0]);
+    // result = polynomial * 2^m
+    v_f32x8_t result = poly * as_f32x8(m);
 
     // If input value is outside valid range, call scalar expf(value)
     // Else, return the above computed result
@@ -168,3 +191,77 @@ FN_PROTOTYPE_OPT(vrs8_expf)(v_f32x8_t _x)
     return result;
 
 }
+
+/*
+    Implementation with 5-degree polynomial
+
+    Performance numbers:
+    GCC - 765 MOPS
+    AOCC - 900 MOPS
+
+    Max ULP - 3.3
+*/
+v_f32x8_t
+FN_PROTOTYPE_OPT(vrs8_expf)(v_f32x8_t _x)
+{
+
+    // vx = int(x)
+    v_i32x8_t vx = v8_to_f32_i32(_x);
+
+    // Get absolute value of vx
+    vx = vx & MASK;
+
+    // Check if -103 < vx < 88
+    v_u32x8_t cond = ((vx - ARG_MIN) >= OFF);
+
+    // x * (64.0/ln(2))
+    v_f32x8_t z = _x * TBL_LN2;
+
+    v_f32x8_t dn = z + HUGE;
+
+    // n = int(z)
+    v_u32x8_t n = as_v_u32x8(dn);
+
+    // dn = double(n)
+    dn = dn - HUGE;
+
+    // r = x - (dn * (ln(2)/64))
+    // where ln(2)/64 is split into Head and Tail values
+    v_f32x8_t r1 = _x - ( dn * LN2_TBL_H);
+    v_f32x8_t r2 = dn * LN2_TBL_T;
+    v_f32x8_t r = r1 - r2;
+
+    // m = (n - j)/64
+    // Calculate 2^m
+    v_i32x8_t m = (n + EXPF_BIAS) << 23;
+
+    // Compute polynomial
+    /* poly = A1 + A2*r + A3*r^2 + A4*r^3 + A5*r^4 + A6*r^5
+            = (A1 + A2*r) + r^2(A3 + A4*r) + r^4(A5 + A6*r)
+    */
+    v_f32x8_t poly = POLY_EVAL_5(r, A0, A0, A1, A2, A3, A4);
+
+    // result = polynomial * 2^m
+    v_f32x8_t result = poly * as_f32x8(m);
+
+    // If input value is outside valid range, call scalar expf(value)
+    // Else, return the above computed result
+    if(unlikely(v8_any_u32_loop(cond))) {
+    return (v_f32x8_t) {
+         cond[0] ? SCALAR_EXPF(_x[0]) : result[0],
+         cond[1] ? SCALAR_EXPF(_x[1]) : result[1],
+         cond[2] ? SCALAR_EXPF(_x[2]) : result[2],
+         cond[3] ? SCALAR_EXPF(_x[3]) : result[3],
+         cond[4] ? SCALAR_EXPF(_x[4]) : result[4],
+         cond[5] ? SCALAR_EXPF(_x[5]) : result[5],
+         cond[6] ? SCALAR_EXPF(_x[6]) : result[6],
+         cond[7] ? SCALAR_EXPF(_x[7]) : result[7],
+
+     };
+    }
+
+    return result;
+
+}
+
+

@@ -129,6 +129,15 @@ v2_any_u64_loop(v_i64x2_t cond)
 ***** v4s functions ****
 ***********************/
 
+// v_f32x4_t to v_u32x4_t
+static inline v_u32x4_t
+as_v_u32x4 (v_f32x4_t x)
+{
+  union { v_f32x4_t f; v_u32x4_t u; } r = {x};
+  return r.u;
+}
+
+
 // v_f32x4_t to v_f64x4_t
 static inline v_f64x4_t
 v4_to_f32_f64(v_f32x4_t _xf32)
@@ -182,6 +191,17 @@ v4_any_u32_loop(v_i32x4_t cond)
     return ret;
 }
 
+static inline v_f32x4_t
+as_f32x4(v_u32x4_t x)
+{
+    union {
+        v_u32x4_t _xi;
+        v_f32x4_t _xf;
+    } val = {
+        ._xi = x,
+    };
+   return val._xf;
+}
 
 /***********************
 ***** v8s functions ****
@@ -240,7 +260,7 @@ v8_any_u32_loop(v_i32x8_t cond)
 }
 
 static inline v_f32x8_t
- as_f32x8(v_u32x8_t x)
+as_f32x8(v_u32x8_t x)
  {
      union {
          v_u32x8_t _xi;

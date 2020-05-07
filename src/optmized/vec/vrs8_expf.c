@@ -52,7 +52,6 @@ static const struct {
     v_f32x8_t   tblsz_byln2;
     v_f32x8_t   ln2_tbl_head, ln2_tbl_tail;
     v_f32x8_t   huge;
-    v_i32x8_t   arg_min;
     v_i32x8_t   arg_max;
     v_i32x8_t   mask;
     v_i32x8_t   expf_bias;
@@ -63,8 +62,7 @@ static const struct {
               .ln2_tbl_head = _MM256_SET1_PS8(0x1.63p-1),
               .ln2_tbl_tail = _MM256_SET1_PS8(-0x1.bd0104p-13),
               .huge        =  _MM256_SET1_PS8(0x1.8p+23) ,
-              .arg_min     =  _MM256_SET1_I32(-86),
-              .arg_max     =  _MM256_SET1_I32(88),
+              .arg_max     =  _MM256_SET1_I32(0x42AE0000),
               .mask        =  _MM256_SET1_I32(0x7FFFFFFF),
               .expf_bias   =  _MM256_SET1_I32(127),
 
@@ -97,9 +95,7 @@ static const struct {
 #define EXPF_BIAS v_expf_data.expf_bias
 #define HUGE      v_expf_data.huge
 #define ARG_MAX   v_expf_data.arg_max
-#define ARG_MIN   v_expf_data.arg_min
 #define MASK      v_expf_data.mask
-#define OFF       ARG_MAX - ARG_MIN
 
 // Coefficients for 5-degree polynomial
 #define A0 v_expf_data.poly_expf_5[0]
@@ -134,13 +130,13 @@ FN_PROTOTYPE_OPT(vrs8_expf_experimental)(v_f32x8_t _x)
 {
 
     // vx = int(x)
-    v_i32x8_t vx = v8_to_f32_i32(_x);
+    v_i32x8_t vx = as_v_u32x8_t(_x);
 
     // Get absolute value of vx
     vx = vx & MASK;
 
     // Check if -103 < vx < 88
-    v_u32x8_t cond = ((vx - ARG_MIN) >= OFF);
+    v_i32x8_t cond = (vx > ARG_MAX);
 
     // x * (64.0/ln(2))
     v_f32x8_t z = _x * TBL_LN2;
@@ -196,8 +192,8 @@ FN_PROTOTYPE_OPT(vrs8_expf_experimental)(v_f32x8_t _x)
     Implementation with 5-degree polynomial
 
     Performance numbers:
-    GCC - 765 MOPS
-    AOCC - 900 MOPS
+    GCC - 773 MOPS
+    AOCC - 958 MOPS
 
     Max ULP - 3.3
 */
@@ -206,13 +202,13 @@ FN_PROTOTYPE_OPT(vrs8_expf)(v_f32x8_t _x)
 {
 
     // vx = int(x)
-    v_i32x8_t vx = v8_to_f32_i32(_x);
+    v_i32x8_t vx = as_v_u32x8_t(_x);
 
     // Get absolute value of vx
     vx = vx & MASK;
 
     // Check if -103 < vx < 88
-    v_u32x8_t cond = ((vx - ARG_MIN) >= OFF);
+    v_i32x8_t cond = (vx > ARG_MAX);
 
     // x * (64.0/ln(2))
     v_f32x8_t z = _x * TBL_LN2;

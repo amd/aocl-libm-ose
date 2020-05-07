@@ -23,6 +23,13 @@ as_f64x4(v_u64x4_t x)
 }
 
 static inline v_u64x4_t
+as_v_u64x4_t (v_f64x4_t x)
+{
+  union { v_f64x4_t f; v_u64x4_t u; } r = {x};
+      return r.u;
+          }
+
+static inline v_u64x4_t
 as_u64x4(v_f64x4_t x)
 {
     union {
@@ -81,6 +88,13 @@ as_f64x2(v_u64x2_t x)
 
     return val._xf;
 }
+
+static inline v_u64x2_t
+as_v_u64x2_t (v_f64x2_t x)
+{
+  union { v_f64x2_t f; v_u64x2_t u; } r = {x};
+    return r.u;
+    }
 
 static inline v_u64x2_t
 as_v_u64x2(v_f64x2_t x)

@@ -65,7 +65,7 @@ static const struct {
               .ln2_tbl_tail = _MM_SET1_PS4(-0x1.bd0104p-13f),
               .huge        =  _MM_SET1_PS4(0x1.8p+23f) ,
               .arg_min     =  _MM_SET1_I32(-86),
-              .arg_max     =  _MM_SET1_I32(88),
+              .arg_max     =  _MM_SET1_I32(0x42AE0000),
               .mask        =  _MM_SET1_I32(0x7fffffff),
               .expf_bias   =  _MM_SET1_I32(127),
               /*
@@ -190,8 +190,8 @@ FN_PROTOTYPE_OPT(vrs4_expf_experimental)(v_f32x4_t _x)
     Implementation with 5-degree polynomial
 
     Performance numbers:
-    GCC - 550 MOPS
-    AOCC - 492 MOPS
+    GCC - 574 MOPS
+    AOCC - 629 MOPS
 
     Max ULP - 3.3
 */
@@ -199,13 +199,13 @@ v_f32x4_t
 FN_PROTOTYPE_OPT(vrs4_expf)(v_f32x4_t _x)
 {
     // vx = int(x)
-    v_i32x4_t vx = v4_to_f32_i32(_x);
+    v_i32x4_t vx = as_v_u32x4(_x);
 
     // Get absolute value of vx
     vx = vx & MASK;
 
     // Check if -103 < vx < 88
-    v_u32x4_t cond = ((vx - ARG_MIN) >= OFF);
+    v_i32x4_t cond = (vx > ARG_MAX);
 
     // x * (64.0/ln(2))
     v_f32x4_t z = _x * TBL_LN2;

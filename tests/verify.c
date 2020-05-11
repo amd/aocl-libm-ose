@@ -217,10 +217,9 @@ static int __is_ulpf_required(flt32u_t expected, flt32u_t actual)
 static int __verify_float(struct libm_test *test,
                           struct libm_test_result *result)
 {
+
     struct libm_test_data *data = &test->test_data;
     float *in1 = data->input1, *in2 = data->input2, *in3 = data->input3;
-    flt32u_t *fin1 = (flt32u_t*)data->input1;
-    flt32u_t *fin2 = (flt32u_t*)data->input2;
     flt32u_t *op = (flt32u_t*)data->output;
     flt32u_t *nw = (flt32u_t*)data->expected;
     int sz = data->nelem, ret = 0;
@@ -241,56 +240,38 @@ static int __verify_float(struct libm_test *test,
                 test_update_ulp = 1;
         }
 
-    /*calculate failed tests for conformance*/
-	if (test->test_type == TEST_TYPE_CONFORMANCE){
-		if ((((nw[j].i ^ op[j].i) != 0) && !(isnan(nw[j].f) && isnan(op[j].f))) ||
-                    (raised_exception[j] != expected_exception[j]))
-		{
-		    /*check for nan bit patterns*/
-		    if ((nw[j].i & QNANBITPATT_SP32) == (op[j].i & QNANBITPATT_SP32))    {
-		        nfail++;
-		        printf("expected = %x output = %x \n",nw[j].i,op[j].i);
-                print_info=1;
-		        if (raised_exception[j] != expected_exception[j]) {
-                            printf("Raised excpetion: ");
-                            print_errors(raised_exception[j]);
-                            printf(" Expected exception: ");
-		                    print_errors(expected_exception[j]);
-                            puts("");
-		        }
-		    }
-		 }
-	}
-    /*calculate failed count for special cases*/
-    if (test->test_type == TEST_TYPE_SPECIAL) {
-       if ((nw[j].i ^ op[j].i) != 0) {
-            nfail++;
-            if (test->nargs > 1) {
-                printf("input1 = %x, Input2 = %x, expected = %x, output=%x\n", fin1[j].i, fin2[j].i, nw[j].i, op[j].i);
-            }
-            else {
-                printf("input = %x, expected = %x, output=%x\n",fin1[j].i, nw[j].i, op[j].i);
-            }
-            print_info=1;
+        int matched = ((nw[j].i ^ op[j].i) == 0);
+        int excpt_matched = 0;
+
+        if (test->test_type == TEST_TYPE_CONFORMANCE) {
+            /* there is a possibility that certain values are different qnans */
+            matched = (nw[j].i & QNANBITPATT_SP32) == (op[j].i & QNANBITPATT_SP32);
+
+            /*
+             * For CONFORMANCE test its not enough that output and expected match
+             * but also the exceptions
+             */
+            excpt_matched = (raised_exception[j] == expected_exception[j]);
+
+            matched |= excpt_matched;
+
+            test_update_ulp = 0;
+            /* mark for failure */
+            if (!matched) ret = 2;
         }
 
-    }
-
-	else
-	{
-        if ((nw[j].i ^ op[j].i) != 0) {
+        if (!matched) {
             result->input1[idx] = in1[j];
             if (test->nargs > 1) result->input2[idx] = in2[j];
             if (test->nargs > 2) result->input3[idx] = in3[j];
             print_info = 1;
-            ret = 0;
+            ret = 2;
         }
-    }
 
 
-        if (test_update_ulp) {
+        if (!matched && test_update_ulp) {
             ulp = get_ulp(test, j);
-	        //printf("Exp:- %x, op:-%x, ULP:-%f \n", nw[j].i, op[j].i,  ulp);
+            //printf("Exp:- %x, op:-%x, ULP:-%f \n", nw[j].i, op[j].i,  ulp);
             ret = update_ulp(test, ulp);
             test_update_ulp = 0;
         }
@@ -330,9 +311,16 @@ static int __verify_float(struct libm_test *test,
                                "    expected:%8X actual:%8X ulp:%5.05g\n",
                                nw[j].i, op[j].i, ulp);
 
+            if (test->test_type == TEST_TYPE_CONFORMANCE && !excpt_matched) {
+                printf("Raised excpetion: ");
+                print_errors(raised_exception[j]);
+                printf(" Expected exception: ");
+                print_errors(expected_exception[j]);
+                printf("\n");
+            }
+            /* reset */
             print_info = 0;
         }
-
         // reset ret
         ret = 0;
     }

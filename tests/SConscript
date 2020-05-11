@@ -91,14 +91,15 @@ if dbg_mode == 'tests' or dbg_mode == 'all':
             pass
 else:
     env.Append(
-        CCFLAGS = ['-O3'],
+        CCFLAGS = ['-O0'],
     )
 
 # Add default math library for any unresolved functions
-liblist.extend(['m'])
+liblist.extend(['m', 'mparith32', 'mparith64'])
 #libpath = ['#build/src', '#build/tests']
-#libpath = [joinpath(build_root, x) for x in ['src', 'tests']]
-libpath += ['.', 'src', 'tests']
+#mplibpath = ['src', 'tests', 'tests/libs/mparith/32', 'tests/libs/mparith/64']
+mplibpath = ['libs/mparith/32', 'libs/mparith/64']
+libpath = [joinpath('#', build_root, x) for x in mplibpath]
 
 libtestenv = env.Clone()
 libtestenv.Append(
@@ -115,7 +116,7 @@ e.Append(
 	CFLAGS = ccflags + testcflags,
 	INCPATH = incpath,
 	CPPPATH = incpath,
-	#LIBPATH=libpath,
+	LIBPATH=libpath,
 	LIBS = [libtest] + liblist
 )
 

@@ -6,11 +6,11 @@ extern "C" {
 #endif
 
   
-float   alm_mp_acos        (float x);
-float   alm_mp_acosh       (float x);
+float   alm_mp_acosf       (float x);
+float   alm_mp_acoshf      (float x);
 float   alm_mp_asinf       (float x);
 float   alm_mp_asinhf      (float x);
-float   alm_mp_atan2       (float x, float y);
+float   alm_mp_atan2f      (float x, float y);
 float   alm_mp_atanf       (float x);
 float   alm_mp_atanhf      (float x);
 float   alm_mp_cbrtf       (float x);
@@ -19,10 +19,10 @@ float   alm_mp_copysignf   (float x, float y);
 float   alm_mp_cosf        (float x);
 float   alm_mp_coshf       (float x);
 float   alm_mp_cospif      (float x);
-float   alm_mp_exp10       (float x);
-float   alm_mp_exp2        (float x);
+float   alm_mp_exp10f      (float x);
+float   alm_mp_exp2f       (float x);
 float   alm_mp_expf        (float x);
-float   alm_mp_expm1       (float x);
+float   alm_mp_expm1f      (float x);
 float   alm_mp_fabsf       (float x);
 float   alm_mp_fdimf       (float x, float y);
 float   alm_mp_floorf      (float x);
@@ -33,9 +33,9 @@ float   alm_mp_fmodf       (float x, float y);
 float   alm_mp_frexpf      (float x, int *ptr);
 float   alm_mp_hypotf      (float x, float y);
 float   alm_mp_ldexpf      (float x, int expn);
-float   alm_mp_log10       (float x);
+float   alm_mp_log10f      (float x);
 float   alm_mp_log1pf      (float x);
-float   alm_mp_log2        (float x);
+float   alm_mp_log2f       (float x);
 float   alm_mp_logbf       (float x);
 float   alm_mp_logf        (float x);
 float   alm_mp_modff       (float x, float *ptr);

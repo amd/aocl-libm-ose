@@ -2,11 +2,11 @@
 #include "mparith_c.h"
 
 #if defined(FLOAT)
-#define FUNC_COS am_mp_cosf
-#define FUNC_COS_ULP am_mp_cosf_ULP
+#define FUNC_COS alm_mp_cosf
+#define FUNC_COS_ULP alm_mp_cosf_ULP
 #elif defined(DOUBLE)
-#define FUNC_COS am_mp_cos
-#define FUNC_COS_ULP am_mp_cos_ULP
+#define FUNC_COS alm_mp_cos
+#define FUNC_COS_ULP alm_mp_cos_ULP
 #else
 #error
 #endif

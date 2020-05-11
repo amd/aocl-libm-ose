@@ -27,8 +27,8 @@ mparith_srcs += Glob('mparith/*.c', exclude=excluded_list)
 
 objs = mpenv.StaticObject(mparith_srcs)
 
-libmp = mpenv.Library('mparith', objs)
-libmpso = mpenv.SharedLibrary('mparith', objs)
+libmp = mpenv.Library('mparith%s'%mpenv['MPVARIANT'], objs)
+libmpso = mpenv.SharedLibrary('mparith%s'%mpenv['MPVARIANT'], objs)
 
 Return('libmp', 
 	'libmpso'

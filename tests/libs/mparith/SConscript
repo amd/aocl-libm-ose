@@ -41,7 +41,8 @@ mpenv.Append(
 )
 
 mpenv32 = mpenv.Clone()
-mpenv32.Append(CCFLAGS = '-DFLOAT')
+mpenv32.Append(CCFLAGS = '-DFLOAT',
+		MPVARIANT = '32')
 lib32 = SConscript('build_libmp',
 		exports = {'mpenv': mpenv32},
 		variant_dir = '32',
@@ -49,7 +50,8 @@ lib32 = SConscript('build_libmp',
 	)
 
 mpenv64 = mpenv.Clone()
-mpenv64.Append(CCFLAGS = '-DDOUBLE')
+mpenv64.Append(CCFLAGS = '-DDOUBLE',
+		MPVARIANT = '64')
 lib64 = SConscript('build_libmp',
 		exports = {'mpenv': mpenv64},
 		variant_dir = '64',

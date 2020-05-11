@@ -2,11 +2,11 @@
 #include "mparith_c.h"
 
 #if defined(FLOAT)
-#define FUNC_ATAN am_mp_atanf
-#define FUNC_ATAN_ULP am_mp_atanf_ULP
+#define FUNC_ATAN alm_mp_atanf
+#define FUNC_ATAN_ULP alm_mp_atanf_ULP
 #elif defined(DOUBLE)
-#define FUNC_ATAN am_mp_atan
-#define FUNC_ATAN_ULP am_mp_atan_ULP
+#define FUNC_ATAN alm_mp_atan
+#define FUNC_ATAN_ULP alm_mp_atan_ULP
 #else
 #error
 #endif

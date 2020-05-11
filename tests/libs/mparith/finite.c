@@ -2,11 +2,11 @@
 #include "mparith_c.h"
 
 #if defined(FLOAT)
-#define FUNC_FINITE am_mp_finitef
-#define FUNC_FINITE_ULP am_mp_finitef_ULP
+#define FUNC_FINITE alm_mp_finitef
+#define FUNC_FINITE_ULP alm_mp_finitef_ULP
 #elif defined(DOUBLE)
-#define FUNC_FINITE am_mp_finite
-#define FUNC_FINITE_ULP am_mp_finite_ULP
+#define FUNC_FINITE alm_mp_finite
+#define FUNC_FINITE_ULP alm_mp_finite_ULP
 #else
 #error
 #endif

@@ -2,11 +2,11 @@
 #include "mparith_c.h"
 
 #if defined(FLOAT)
-#define FUNC_COPYSIGN am_mp_copysignf
-#define FUNC_COPYSIGN_ULP am_mp_copysignf_ULP
+#define FUNC_COPYSIGN alm_mp_copysignf
+#define FUNC_COPYSIGN_ULP alm_mp_copysignf_ULP
 #elif defined(DOUBLE)
-#define FUNC_COPYSIGN am_mp_copysign
-#define FUNC_COPYSIGN_ULP am_mp_copysign_ULP
+#define FUNC_COPYSIGN alm_mp_copysign
+#define FUNC_COPYSIGN_ULP alm_mp_copysign_ULP
 #else
 #error
 #endif

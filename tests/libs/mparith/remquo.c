@@ -2,11 +2,11 @@
 #include "mparith_c.h"
 
 #if defined(FLOAT)
-#define FUNC_REMQUO am_mp_remquof
-#define FUNC_REMQUO_ULP am_mp_remquof_ULP
+#define FUNC_REMQUO alm_mp_remquof
+#define FUNC_REMQUO_ULP alm_mp_remquof_ULP
 #elif defined(DOUBLE)
-#define FUNC_REMQUO am_mp_remquo
-#define FUNC_REMQUO_ULP am_mp_remquo_ULP
+#define FUNC_REMQUO alm_mp_remquo
+#define FUNC_REMQUO_ULP alm_mp_remquo_ULP
 #else
 #error
 #endif

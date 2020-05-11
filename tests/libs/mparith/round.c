@@ -2,11 +2,11 @@
 #include "mparith_c.h"
 
 #if defined(FLOAT)
-#define FUNC_ROUND am_mp_roundf
-#define FUNC_ROUND_ULP am_mp_roundf_ULP
+#define FUNC_ROUND alm_mp_roundf
+#define FUNC_ROUND_ULP alm_mp_roundf_ULP
 #elif defined(DOUBLE)
-#define FUNC_ROUND am_mp_round
-#define FUNC_ROUND_ULP am_mp_round_ULP
+#define FUNC_ROUND alm_mp_round
+#define FUNC_ROUND_ULP alm_mp_round_ULP
 #else
 #error
 #endif

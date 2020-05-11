@@ -2,11 +2,11 @@
 #include "mparith_c.h"
 
 #if defined(FLOAT)
-#define FUNC_SQRT am_mp_sqrtf
-#define FUNC_SQRT_ULP am_mp_sqrtf_ULP
+#define FUNC_SQRT alm_mp_sqrtf
+#define FUNC_SQRT_ULP alm_mp_sqrtf_ULP
 #elif defined(DOUBLE)
-#define FUNC_SQRT am_mp_sqrt
-#define FUNC_SQRT_ULP am_mp_sqrt_ULP
+#define FUNC_SQRT alm_mp_sqrt
+#define FUNC_SQRT_ULP alm_mp_sqrt_ULP
 #else
 #error
 #endif

@@ -2,11 +2,11 @@
 #include "mparith_c.h"
 
 #if defined(FLOAT)
-#define FUNC_EXPM1 am_mp_expm1f
-#define FUNC_EXPM1_ULP am_mp_expm1f_ULP
+#define FUNC_EXPM1 alm_mp_expm1f
+#define FUNC_EXPM1_ULP alm_mp_expm1f_ULP
 #elif defined(DOUBLE)
-#define FUNC_EXPM1 am_mp_expm1
-#define FUNC_EXPM1_ULP am_mp_expm1_ULP
+#define FUNC_EXPM1 alm_mp_expm1
+#define FUNC_EXPM1_ULP alm_mp_expm1_ULP
 #else
 #error
 #endif

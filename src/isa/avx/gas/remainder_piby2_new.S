@@ -1,3 +1,7 @@
+#
+# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+#
+
 #define fname __amd_remainder_piby2
 
 # xmm0 = x;

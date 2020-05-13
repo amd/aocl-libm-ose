@@ -1,4 +1,8 @@
 #
+# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+#
+
+#
 # vrda_log2.S
 #
 # An implementation of the vrda_log2 libm function.

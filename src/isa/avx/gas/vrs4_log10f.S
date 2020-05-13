@@ -1,4 +1,8 @@
 #
+# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+#
+
+#
 # vrs4_log10f.S
 #
 # An implementation of the vrs4_log10f libm function.

@@ -1,4 +1,8 @@
 #
+# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+#
+
+#
 # vrdasincos.s
 #
 # An array implementation of the sincos libm function.

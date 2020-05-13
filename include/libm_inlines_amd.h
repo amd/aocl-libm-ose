@@ -1,3 +1,7 @@
+/*
+* Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+*/
+
 #ifndef LIBM_INLINES_AMD_H_INCLUDED
 #define LIBM_INLINES_AMD_H_INCLUDED 1
 

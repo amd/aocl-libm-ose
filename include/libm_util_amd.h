@@ -1,6 +1,5 @@
-
 /*
-Copyright (C) 2008-2018 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
 */
 
 #ifndef LIBM_UTIL_AMD_H_INCLUDED

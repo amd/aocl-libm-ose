@@ -1,3 +1,7 @@
+/*
+* Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+*/
+
 #ifndef __LIBM_MACROS_H__
 #define __LIBM_MACROS_H__
 

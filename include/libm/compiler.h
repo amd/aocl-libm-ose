@@ -1,3 +1,7 @@
+/*
+* Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+*/
+
 #ifndef __AMD_LIBM_COMPILER_H__
 #define __AMD_LIBM_COMPILER_H__
 

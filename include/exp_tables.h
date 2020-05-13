@@ -1,3 +1,7 @@
+/*
+* Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+*/
+
 #ifndef __EXP_TABLES_H__
 #define __EXP_TABLES_H__
 

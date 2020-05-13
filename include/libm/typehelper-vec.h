@@ -1,3 +1,9 @@
+/*
+ *
+ * Copyright (C) 2019-2020, Advanced Micro Devices. All rights reserved.
+ *
+ */
+
 #ifndef __LIBM_TYPEHELPER_VEC_H__
 #define __LIBM_TYPEHELPER_VEC_H__
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019, AMD. All rights reserved.
+ * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Author: Prem Mallappa <pmallapp@amd.com>
  *

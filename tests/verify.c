@@ -107,97 +107,56 @@ static void print_errors(const int flags)
 
 }
 
+//verify
 static int __verify_double(struct libm_test *test,
-                           struct libm_test_result *result)
+                          struct libm_test_result *result)
 {
     struct libm_test_data *data = &test->test_data;
-    double *in1 = (double*)data->input1,
-        *in2 = (double*)data->input2, *in3 = (double*)data->input3;
+    double *in1 = data->input1, *in2 = data->input2, *in3 = data->input3;
 
     flt64u_t *op = (flt64u_t*)data->output;
     flt64u_t *nw = (flt64u_t*)data->expected;
-    flt64u_t *din1 = (flt64u_t*)data->input1;
-    flt64u_t *din2 = (flt64u_t*)data->input2;
-
-    const int *expected_exception = (int*)data->expected_exception;
-    const int *raised_exception = (int*)data->raised_exception;
-
-    int sz = data->nelem;
+    int sz = data->nelem, ret = 0;
     int idx = 0, npass = 0, nfail = 0, nignored = 0, ntests;
     int nargs = test->nargs;
     int print_info = 0, test_update_ulp = 0;
     double ulp = 0.0;
-
+    const int *expected_exception = (int*)data->expected_exception;
+    const int *raised_exception = (int*)data->raised_exception;
     ntests = data->nelem;
-
     for (int j = 0; j < sz; ++j) {
-        int ret = 0;
-
-        if (test->test_type == TEST_TYPE_CONFORMANCE){
-            if ((((nw[j].i ^ op[j].i) != 0) && !(isnan(nw[j].d) && isnan(op[j].d))) ||
-                (raised_exception[j] != expected_exception[j])) {
-                if ((nw[j].i & QNANBITPATT_DP64) == (op[j].i & QNANBITPATT_DP64)) {
-                    nfail++;
-                    if (test->nargs == 1) {
-                        printf("input = %lx expected = %lx output = %lx\n",
-                            din1[j].i, nw[j].i,op[j].i);
-                    }
-                    else if (test->nargs == 2) {
-                        printf("input1 = %lx, Input2 = %lx, expected = %lx, output=%lx\n",
-                            din1[j].i, din2[j].i, nw[j].i, op[j].i);
-                    }
-                    print_info=1;
-                    /*check if exceptions match*/
-                    if (raised_exception[j] != expected_exception[j]) {
-                        printf("Raised exception: ");
-                        print_errors(raised_exception[j]);
-                        printf(" Expected exception: ");
-                        print_errors(expected_exception[j]);
-                        puts("");
-                    }
-                }
-            }
-        }
-        else if (test->test_type == TEST_TYPE_ACCU) {
-            /*
-             * Verify ULP for every case,
-             * except when both output and exptected is 0 or a subnormal number
-             */
+        if (test->conf->test_types == TEST_TYPE_ACCU) {
+            /* Verify ULP for every case */
             if (__is_ulp_required(nw[j], op[j]))
                 test_update_ulp = 1;
         }
-
-        /*Calculate failed cases for Special tests */
-        else if (test->test_type == TEST_TYPE_SPECIAL) {
-            if ((nw[j].i ^ op[j].i) != 0) {
-                nfail++;
-                if (test->nargs == 2) {
-                    printf("input1 = %lx, Input2 = %lx, expected = %lx, output=%lx\n", din1[j].i, din2[j].i, nw[j].i, op[j].i);
-                }
-                else if (test->nargs == 1) {
-                    printf("input = %lx, expected = %lx, output=%lx\n",din1[j].i, nw[j].i, op[j].i);
-                }
-                print_info=1;
-            }
+        int matched = ((nw[j].i ^ op[j].i) == 0);
+        int excpt_matched = 0;
+        if (test->test_type == TEST_TYPE_CONFORMANCE) {
+            /* there is a possibility that certain values are different qnans */
+            matched = (nw[j].i & QNANBITPATT_DP64) == (op[j].i & QNANBITPATT_DP64);
+            /*
+             * For CONFORMANCE test its not enough that output and expected match
+             * but also the exceptions
+             */
+            excpt_matched = (raised_exception[j] == expected_exception[j]);
+            matched |= excpt_matched;
+            test_update_ulp = 0;
+            /* mark for failure */
+            if (!matched) ret = 2;
         }
-
-        else {
-            if ((nw[j].i ^ op[j].i) != 0) {
-                result->input1[idx] = in1[j];
-                if (test->nargs > 1) result->input2[idx] = in2[j];
-                if (test->nargs > 2) result->input3[idx] = in3[j];
-                print_info = 1;
-                ret = 0;
-            }
+        if (!matched) {
+            result->input1[idx] = in1[j];
+            if (test->nargs > 1) result->input2[idx] = in2[j];
+            if (test->nargs > 2) result->input3[idx] = in3[j];
+            print_info = 1;
+            ret = 2;
         }
-
-        if (test_update_ulp) {
-            ulp = get_ulp(test, j);
-	    //printf("ulp:- %f\n", ulp);
+        if (!matched && test_update_ulp) {
+	        ulp = get_ulp(test, j);
             ret = update_ulp(test, ulp);
             test_update_ulp = 0;
         }
-
         switch(ret) {
         case 0:
             npass++;
@@ -216,29 +175,35 @@ static int __verify_double(struct libm_test *test,
                 idx++;
             }
         }
-
         if (print_info) {
-            flt64u_t *fin1 = (flt64u_t*)&in1[j],
-                *fin2 = (flt64u_t*)&in2[j],
-                *fin3 = (flt64u_t*)&in1[j];
-            LIBM_TEST_DPRINTF(VERBOSE3, "i:%d input1: % -g(%016lX)", j, fin1->d, fin1->i);
+            flt64u_t *din1 = (flt64u_t*)&in1[j],
+            *din2 = (flt64u_t*)&in2[j],
+            *din3 = (flt64u_t*)&in1[j];
+            LIBM_TEST_DPRINTF(VERBOSE3, "i:%d dinput1: %-g(%016lX)", j, din1->d, din1->i);
             if (nargs > 1)
-                LIBM_TEST_CDPRINTF(VERBOSE3, "  input2: % -g(%016lX)", fin2->d, fin2->i);
+                LIBM_TEST_CDPRINTF(VERBOSE3,
+                                   " dinput2: %g(%016lX)\n", din2->d, din2->i);
             if (nargs > 2)
-                LIBM_TEST_CDPRINTF(VERBOSE3, "  input3: % -g(%016lX)", fin3->d, fin3->i);
-
-            LIBM_TEST_CDPRINTF(VERBOSE3, "    expected:%lX actual:%lX ulp:%G\n",
+                LIBM_TEST_CDPRINTF(VERBOSE3,
+                                   " dinput3: %g(%016lX)\n", din3->d, din3->i);
+            LIBM_TEST_CDPRINTF(VERBOSE3,
+                               "    expected:%lX actual:%lX ulp:%G\n",
                                nw[j].i, op[j].i, ulp);
 
+            if (test->test_type == TEST_TYPE_CONFORMANCE && !excpt_matched) {
+	            printf("Raised excpetion: ");
+	            print_errors(raised_exception[j]);
+                printf(" Expected exception: ");
+                print_errors(expected_exception[j]);
+                printf("\n");
+            }
+            /* reset */
             print_info = 0;
         }
-
         // reset ret
         ret = 0;
     }
-
     __update_results(result, npass, nfail, nignored, ntests);
-
     return idx;
 }
 

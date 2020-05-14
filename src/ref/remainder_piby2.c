@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ */
+
 #include "libm_amd.h"
 
 void __amd_remainder_piby2(double x, double *r, double *rr, int *region);

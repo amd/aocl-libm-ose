@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ *//*
+ * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ */
+
 #include "libm_amd.h"
 #include "libm_util_amd.h"
 #include "libm_special.h"

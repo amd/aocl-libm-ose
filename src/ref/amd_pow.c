@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ */
+
 /* Contains implementation of double pow(double x, double y)
  * x^y = 2^(y*log2(x))
  */

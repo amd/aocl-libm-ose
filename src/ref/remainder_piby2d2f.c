@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ */
+
 void __amd_remainder_piby2d2f(unsigned long long ux, double *r, int *region);
 void __amd_remainder_piby2d2f_4f(unsigned long long  *x, double *r, unsigned long long *region)
 {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Author: Prem Mallappa <pmallapp@amd.com>
  *      Literal translation of ASM routien + optimizations

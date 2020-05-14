@@ -1,3 +1,9 @@
+/*
+ *
+ * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ */
+
 #ifndef __LIBM_OPTIMIZED_SINGLE_EXPM1F_H__
 #define __LIBM_OPTIMIZED_SINGLE_EXPM1F_H__
 

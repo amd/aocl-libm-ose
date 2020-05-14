@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ */
+
 #include <stdint.h>
 
 uint64_t __two_to_jby64_table[] = {

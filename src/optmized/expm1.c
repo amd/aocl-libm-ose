@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ */
+
 #include <libm_amd.h>
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>

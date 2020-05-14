@@ -1,4 +1,7 @@
 #
+# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+#
+
 # vrs4_cbrtf.s
 #
 # A vector implementation of the cbrtf libm function.

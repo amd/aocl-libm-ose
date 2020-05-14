@@ -1,3 +1,7 @@
+#
+# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+#
+
 # vrd4_pow_fma3.S
 #
 # An AVX-2 implementation of the 256 bit vector pow function.

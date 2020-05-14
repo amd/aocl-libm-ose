@@ -1,3 +1,7 @@
+#
+# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+#
+
 /*
 
    vrd2_exp_fma3

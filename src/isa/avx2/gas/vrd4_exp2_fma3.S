@@ -1,3 +1,7 @@
+#
+# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+#
+
 /*
   vrd4_exp2_fma3.S
      Returns the value of 2^x for 4 double-precision numbers packed in an ymm register

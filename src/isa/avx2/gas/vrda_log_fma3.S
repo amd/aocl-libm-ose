@@ -1,4 +1,8 @@
 #
+# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+#
+
+#
 # vrd2_log_bdozr.S
 #
 # A bulldozer implementation of vrd2_log libm function.

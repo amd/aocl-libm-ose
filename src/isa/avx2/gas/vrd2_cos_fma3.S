@@ -1,3 +1,7 @@
+#
+# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+#
+
 #include "fn_macros.h"
 #define fname FN_PROTOTYPE_FMA3(vrd2_cos)
 

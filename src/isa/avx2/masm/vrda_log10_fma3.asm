@@ -1,4 +1,8 @@
 ;
+; Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+;
+
+;
 ; vrda_log10_bdozr.S
 ;
 ; A bulldozer implementation of vrda_log10 libm function.

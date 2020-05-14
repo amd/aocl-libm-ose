@@ -1,4 +1,8 @@
 ;
+; Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+;
+
+;
 ; vrsa_cbrtf.s
 ;
 ; A vector implementation of the cbrtf libm function.

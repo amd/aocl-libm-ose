@@ -1,4 +1,8 @@
 ;
+; Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+;
+
+;
 ;  (C) 2008-2012 Advanced Micro Devices, Inc. All Rights Reserved.
 ;
 ;  This file is part of AMD LibM 3.0.2.

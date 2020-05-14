@@ -56,7 +56,7 @@ LIBM_IFACE_PROTO(log)(void *arg)
             fn_v4s = &FN_PROTOTYPE_OPT(vrs4_logf);
             fn_v8s = &FN_PROTOTYPE_OPT(vrs8_logf);
             fn_v4d = &FN_PROTOTYPE_OPT(vrd4_log);
-            //fn_v2d = &FN_PROTOTYPE_OPT(vrd2_log);
+            fn_v2d = &FN_PROTOTYPE_OPT(vrd2_log);
     } else if (CPU_HAS_SSSE3(features) &&
                CPU_FEATURE_SSSE3_USABLE(features)) {
 	    fn_d = &FN_PROTOTYPE_BAS64(log);

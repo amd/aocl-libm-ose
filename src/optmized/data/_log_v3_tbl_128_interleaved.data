@@ -1,4 +1,9 @@
 /*
+ * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ */
+
+/*
  * Original values from
  * ACM Transactions on MathematicalSoftware,Vol. 16, No. 4,December 1990
  * "Table driven Implemntation of the Logarithmic Function - P.T.P Tang"

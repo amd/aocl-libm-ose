@@ -1,4 +1,9 @@
 /*
+ * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ */
+
+/*
  * tblsz_byln2 = (-1) x (log(2) / TABLE_SIZE);
  * head = asuint64(tblsz_byln2)
  * tail = tblsz_byln2 - head

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, AMD. All rights reserved.
+ * Copyright (C) 2018-2020, Advanced Micro Devices. All rights reserved.
  *
  *
  */

@@ -1,4 +1,8 @@
 ;
+; Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+;
+
+;
 ; vrsacosf.asm
 ;
 ; A vector implementation of the cos libm function.

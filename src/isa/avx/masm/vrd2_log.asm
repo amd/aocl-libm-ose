@@ -1,4 +1,8 @@
 ;
+; Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+;
+
+;
 ; vrd2_log.S
 ;
 ; An implementation of the vrd2_log libm function.

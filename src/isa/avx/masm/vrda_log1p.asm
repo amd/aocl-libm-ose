@@ -1,4 +1,8 @@
 ;
+; Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+;
+
+;
 ; vrda_log1p.S
 ;
 ; An implementation of the vrda_log1p libm function.

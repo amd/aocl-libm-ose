@@ -1,4 +1,8 @@
 ;
+; Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+;
+
+;
 ; vrsa_log1pf.S
 ;
 ; An implementation of the vrsa_log1pf libm function.

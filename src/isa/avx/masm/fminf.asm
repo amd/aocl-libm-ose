@@ -1,3 +1,7 @@
+;
+; Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+;
+
 ;fminf.S
 ;
 ; An implementation of the fminf libm function.

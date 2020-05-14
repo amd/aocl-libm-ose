@@ -1,6 +1,8 @@
-
-
-
+/*
+ *
+ * Copyright (C) 2019-2020, AMD. All rights reserved.
+ *
+ */
 
 #############  Vector float    ymm0=r input  ymm0=output ##############
 .macro  sin_piby4_s4f_fma3

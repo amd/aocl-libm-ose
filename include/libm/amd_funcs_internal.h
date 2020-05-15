@@ -6,7 +6,6 @@
 /*
  * Copyright AMD Inc, 2008-2019, All rights reserved
  *
- * Author : Prem Mallappa <pmallapp@amd.com>
  */
 
 #if defined(__cplusplus)

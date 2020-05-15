@@ -1,7 +1,6 @@
 /*
  * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
  *
- * Author: Prem Mallappa <pmallapp@amd.com>
  *
  */
 #ifndef __LIBM_CPU_FEATURES_H__

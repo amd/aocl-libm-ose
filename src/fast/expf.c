@@ -5,7 +5,6 @@
 /*
  * Description: Faster version of expf()
  *
- * Author: Prem Mallappa <pmallapp@amd.com>
  */
 
 /*

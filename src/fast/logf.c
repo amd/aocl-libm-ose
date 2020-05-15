@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2019, Advanced Micro Devices. All rights reserved.
  *
- * Author: Prem Mallappa <pmallapp@amd.com>
- *         Siva Srinivas Koukula <skolukul@amd.com>
  */
 #include <stdint.h>
 #include <libm_util_amd.h>

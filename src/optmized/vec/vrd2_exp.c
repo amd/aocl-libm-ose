@@ -55,22 +55,31 @@
 
 #define DOUBLE_PRECISION_BIAS 1023
 
+
 static const struct {
     v_f64x2_t tblsz_ln2;
     v_f64x2_t ln2_tblsz_head, ln2_tblsz_tail;
     v_f64x2_t Huge;
     v_i64x2_t exp_bias;
     v_i64x2_t exp_max;
+    v_f64x2_t exp_maxd;
+    v_f64x2_t exp_mind;
     v_i64x2_t mask;
+    v_i64x2_t infinity;
     v_f64x2_t poly[12];
+    double exp_min_value;
     }exp_data = {
                     .tblsz_ln2      = _MM_SET1_PD2(0x1.71547652b82fep+0),
                     .ln2_tblsz_head = _MM_SET1_PD2(0x1.63p-1),
                     .ln2_tblsz_tail = _MM_SET1_PD2(-0x1.bd0105c610ca8p-13),
                     .Huge           = _MM_SET1_PD2(0x1.8000000000000p+52),
                     .exp_bias       = _MM_SET1_I64x2(DOUBLE_PRECISION_BIAS),
+                    .exp_maxd       = _MM_SET1_PD2(0x1.62e42fefa39efp+9),
+                    .exp_mind       = _MM_SET1_PD2(-0x1.62e42fefa39efp+9),
                     .exp_max        = _MM_SET1_I64x2(0x4086200000000000),
                     .mask           = _MM_SET1_I64x2(0x7FFFFFFFFFFFFFFF),
+                    .infinity       = _MM_SET1_I64x2(0x7ff0000000000000),
+                    .exp_min_value  = -0x1.74910d52d3051p+9,
                     .poly           = {
                                         _MM_SET1_PD2(0x1p0),
                                         _MM_SET1_PD2(0x1.000000000001p-1),
@@ -93,6 +102,10 @@ static const struct {
 #define EXP_HUGE         exp_data.Huge
 #define ARG_MAX          exp_data.exp_max
 #define MASK             exp_data.mask
+#define EXP_MAX          exp_data.exp_maxd
+#define EXP_LOW          exp_data.exp_mind
+#define INF              exp_data.infinity
+#define EXP_MIN_VAL      exp_data.exp_min_value
 
 #define C1  exp_data.poly[0]
 #define C3  exp_data.poly[1]
@@ -112,7 +125,7 @@ static const struct {
 v_f64x2_t
 FN_PROTOTYPE_OPT(vrd2_exp)(v_f64x2_t x)
 {
-    // vx = int(x)
+
     v_i64x2_t vx = as_v_u64x2_t(x);
 
     // Get absolute value
@@ -154,13 +167,30 @@ FN_PROTOTYPE_OPT(vrd2_exp)(v_f64x2_t x)
     // result = polynomial * 2^m
     v_f64x2_t ret = poly * as_f64x2(m);
 
-    // If input value is outside valid range, call scalar exp(value)
-    // Else, return the above computed result
     if(unlikely(v2_any_u64_loop(cond))) {
-    return (v_f64x2_t) {
-        cond[0] ? SCALAR_EXP(x[0]) : ret[0],
-        cond[1] ? SCALAR_EXP(x[1]) : ret[1],
-        };
+
+        v_i64x2_t inf_condition = x > EXP_MAX;
+
+        v_i64x2_t zero_condition = x < EXP_LOW;
+
+        v_64x2 vx = {.f64x2 = ret};
+
+        //Zero out the elements that have to be set to infinity
+        vx.i64x2 = vx.i64x2 & (~inf_condition);
+
+        inf_condition = inf_condition & INF;
+
+        vx.i64x2 = vx.i64x2 | inf_condition;
+
+        ret =  vx.f64x2;
+
+        /*To handle denormal numbers */
+        if(v2_any_u64_loop(zero_condition)) {
+                return (v_f64x2_t) {
+                    (zero_condition[0] && (x[0] < EXP_MIN_VAL)) ? 0.0:SCALAR_EXP(x[0]),
+                    (zero_condition[1] && (x[1] < EXP_MIN_VAL)) ? 0.0:SCALAR_EXP(x[1]),
+                };
+        }
     }
 
     return ret;

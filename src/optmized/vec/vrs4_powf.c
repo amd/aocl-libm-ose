@@ -12,6 +12,7 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
+#include <libm/typehelper-vec.h>
 #include <libm/compiler.h>
 
 #define AMD_LIBM_FMA_USABLE 1           /* needed for poly.h */
@@ -65,11 +66,16 @@ static struct {
     v_f64x4_t ln2by_tblsz, tblsz_byln2, Huge;
     double_t ALIGN(16) poly[MAX_POLYDEGREE];
     v_u64x4_t expf_max;
+    v_f32x4_t   expf_maxf, expf_minf;
+    v_i32x4_t   infinity;
 } expf_v4_data  = {
     .ln2by_tblsz = _MM_SET1_PD4(0x1.62e42fefa39efp-7),
     .tblsz_byln2 = _MM_SET1_PD4(0x1.71547652b82fep+0),
     .Huge = _MM_SET1_PD4(0x1.8000000000000p+52),
     .expf_max = _MM_SET1_I64(0x4056000000000000),
+    .infinity    =  _MM_SET1_I32(0x7f800000),
+    .expf_minf    =  _MM_SET1_PS4(-0x1.9fe368p6f),
+    .expf_maxf    =  _MM_SET1_PS4(88.7228393f),
     .poly = {
         0x1.0000014439a91p0,
 		0x1.62e43170e3344p-1,
@@ -80,7 +86,7 @@ static struct {
     },
 };
 
-
+#define SCALAR_POWF amd_powf
 #define V_MIN       v_log_data.v_min
 #define V_MAX       v_log_data.v_max
 #define V_MASK      v_log_data.v_mask
@@ -88,6 +94,9 @@ static struct {
 #define INVLN2      expf_v4_data.tblsz_byln2
 #define EXPF_HUGE   expf_v4_data.Huge
 #define EXPF_MAX    expf_v4_data.expf_max
+#define EXPF_MAXF   expf_v4_data.expf_maxf
+#define EXPF_MINF   expf_v4_data.expf_minf
+#define INF         expf_v4_data.infinity
 /*
  * Short names for polynomial coefficients
  */
@@ -182,37 +191,6 @@ static struct {
  *
  */
 
-static inline int
-v_any_u32(v_i32x4_t* cond1, v_i64x4_t cond2)
-{
-
-    int32_t ret = 0;
-
-    for(int i = 0; i < 4; i++) {
-        if((*cond1)[i] || cond2[i]){
-            (*cond1)[i] = 1;
-            ret = 1;
-         }
-    }
-
-    return ret;
-}
-
-
-/*
- * On x86, 'cond' contains all 0's for false, and all 1's for true
- * IOW, 0=>false, -1=>true
- */
-
-static inline v_f32x4_t
-powf_specialcase(v_f32x4_t _x,
-                 v_f32x4_t _y,
-                 v_f32x4_t result,
-                 v_i32x4_t cond)
-{
-    return v_call2_f32(FN_PROTOTYPE(powf), _x, _y, result, cond);
-}
-
 static inline v_f64x4_t look_table_access(const double* table,
                                           const int vector_size,
                                           v_u64x4_t indices)
@@ -232,11 +210,21 @@ FN_PROTOTYPE_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
     v_u32x4_t u;
 
-    v_f32x4_t ret;
+    v_f32x4_t ret = _x;
 
     u = v_as_u32_f32(_x);
 
     v_i32x4_t condition = (u - V_MIN >= V_MAX - V_MIN);
+
+    if(v4_any_u32_loop(condition)) {
+
+        ret[0] = SCALAR_POWF(_x[0], _y[0]);
+        ret[1] = SCALAR_POWF(_x[1], _y[1]);
+        ret[2] = SCALAR_POWF(_x[2], _y[2]);
+        ret[3] = SCALAR_POWF(_x[3], _y[3]);
+
+        return ret;
+    }
 
     v_f64x4_t xd = _mm256_cvtps_pd(_x);
 
@@ -314,8 +302,26 @@ FN_PROTOTYPE_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
     ret = _mm256_cvtpd_ps(as_f64(as_v_u64x4(result) + (n << 52)));
 
-    if (unlikely(v_any_u32(&condition, condition2))) {
-        return powf_specialcase(_x, _y, ret, condition);
+    if(v4_any_u64_loop(condition2)) {
+
+        v_f32x4_t x = _mm256_cvtpd_ps(ylogx);
+
+        v_i32x4_t inf_condition = x > EXPF_MAXF;
+
+        v_i32x4_t zero_condition = x < EXPF_MINF;
+
+        v_32x4 vx = {.f32x4 = ret};
+
+        //Zero out the elements that have to be set to infinity
+        vx.i32x4 = vx.i32x4 & (~inf_condition);
+
+        inf_condition = inf_condition & INF;
+
+        vx.i32x4 = vx.i32x4 | inf_condition;
+
+        vx.i32x4 = vx.i32x4 & (~zero_condition);
+
+        ret = vx.f32x4;
     }
 
     return ret;

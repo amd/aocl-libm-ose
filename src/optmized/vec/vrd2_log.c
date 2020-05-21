@@ -43,9 +43,9 @@
 #define VECTOR_SIZE 2
 
 static struct {
-	double poly_logf[20];
-	v_f64x2_t ln2, ln2_head, ln2_tail;
-    v_i64x2_t inf, v_max, v_min;
+    double poly_logf[20];
+    v_f64x2_t ln2, ln2_head, ln2_tail;
+    v_u64x2_t inf, v_max, v_min;
     v_u64x2_t two_by_three;
 } log_data = {
     .two_by_three = _MM_SET1_I64x2(0x3fe5555555555555),
@@ -118,15 +118,15 @@ FN_PROTOTYPE_OPT(vrd2_log) (__m128d x)
 
     v_f64x2_t m, r, n, f;
 
-    v_i64x2_t ux;
+    v_i64x2_t ix;
 
-    ux = as_v_u64x2(x);
+    ix = as_v_u64x2(x);
 
-    v_i64x2_t condition = (ux - V_MIN >= V_MAX - V_MIN);
+    v_i64x2_t condition = (as_v_u64x2(x) - V_MIN >= V_MAX - V_MIN);
 
-    ux = (ux - TWO_BY_THREE) & INF;
+    ix = (ix - TWO_BY_THREE) & INF;
 
-    v_i64x2_t int_exponent = ux >> EXPSHIFTBITS_SP64;
+    v_i64x2_t int_exponent = ix >> EXPSHIFTBITS_SP64;
 
     for(int i = 0; i < VECTOR_SIZE; i++) {
 
@@ -136,7 +136,7 @@ FN_PROTOTYPE_OPT(vrd2_log) (__m128d x)
 
 	/* Reduce the mantissa, m to [2/3, 4/3] */
 
-    m = as_f64x2(as_v_u64x2(x) - ux);
+    m = as_f64x2(as_v_u64x2(x) - ix);
 
     f = m - C1;			/* f is in [-1/3,+1/3] */
 
@@ -152,12 +152,12 @@ FN_PROTOTYPE_OPT(vrd2_log) (__m128d x)
 
     /* Addition by using head and tail */
 
-	r = n * ln2_head + (n * ln2_tail + r);
+    r = n * ln2_head + (n * ln2_tail + r);
 
     if (unlikely(v2_any_u64_loop(condition))) {
         return (v_f64x2_t) {
             condition[0] ? SCALAR_LOG(x[0]) : r[0],
-            condition[1] ? SCALAR_LOG(x[0]) : r[1],
+            condition[1] ? SCALAR_LOG(x[1]) : r[1],
         };
 
     }

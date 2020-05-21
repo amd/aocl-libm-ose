@@ -45,7 +45,7 @@
 static struct {
     double poly_log[20];
     v_f64x4_t ln2, ln2_head, ln2_tail;
-    v_i64x4_t inf, v_max, v_min;
+    v_u64x4_t inf, v_max, v_min;
     v_u64x4_t two_by_three;
 } log_data = {
     .two_by_three = _MM_SET1_I64(0x3fe5555555555555),
@@ -54,7 +54,7 @@ static struct {
     .ln2_head = _MM_SET1_PD4(0x1.63p-1),
     .ln2_tail = _MM_SET1_PD4(-0x1.bd0105c610ca8p-13),
     .v_max = _MM_SET1_I64(0x7ff0000000000000),
-    .v_min = _MM_SET1_I64(0x0010000000000000),
+    .v_min = _MM_SET1_I64(0x001000000000000),
     /* Polynomial coefficients obtained using fpminimax algorithm from Sollya */
     .poly_log = {
         0x1.0p0,
@@ -125,15 +125,15 @@ FN_PROTOTYPE_OPT(vrd4_log) (__m256d x)
 
     v_f64x4_t m, r, n, f;
 
-    v_i64x4_t ux;
+    v_i64x4_t ix;
 
-    ux = as_v_u64x4(x);
+    ix = as_v_u64x4(x);
 
-    v_i64x4_t condition = (ux - V_MIN >= V_MAX - V_MIN);
+    v_i64x4_t condition = (as_v_u64x4(x) - V_MIN >= V_MAX - V_MIN);
 
-    ux = (ux - TWO_BY_THREE) & INF;
+    ix = (ix - TWO_BY_THREE) & INF;
 
-    v_i64x4_t int_exponent = ux >> EXPSHIFTBITS_SP64;
+    v_i64x4_t int_exponent = ix >> EXPSHIFTBITS_SP64;
 
     v_i32x4_t int32_exponent;
 
@@ -147,7 +147,7 @@ FN_PROTOTYPE_OPT(vrd4_log) (__m256d x)
 
 	/* Reduce the mantissa, m to [2/3, 4/3] */
 
-    m = as_f64(as_v_u64x4(x) - ux);
+    m = as_f64(as_v_u64x4(x) - ix);
 
     f = m - C1;			/* f is in [-1/3,+1/3] */
 

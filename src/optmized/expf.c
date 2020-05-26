@@ -129,7 +129,9 @@ FN_PROTOTYPE_OPT(expf)(float x)
             if(asuint32(x) == PINFBITPATT_SP32)
                 return asfloat(PINFBITPATT_SP32);
 
-            return  _expf_special(x, asfloat(PINFBITPATT_SP32),  EXP_Y_INF);
+            /* Raise FE_OVERFLOW, FE_INEXACT */
+            _expf_special(x, asfloat(PINFBITPATT_SP32),  EXP_Y_INF);
+            return asfloat(PINFBITPATT_SP32);
         }
 
         if (x < EXPF_FARG_MIN){

@@ -54,7 +54,7 @@ static struct {
     .ln2_head = _MM_SET1_PD4(0x1.63p-1),
     .ln2_tail = _MM_SET1_PD4(-0x1.bd0105c610ca8p-13),
     .v_max = _MM_SET1_I64(0x7ff0000000000000),
-    .v_min = _MM_SET1_I64(0x0001000000000000),
+    .v_min = _MM_SET1_I64(0x0010000000000000),
     /* Polynomial coefficients obtained using fpminimax algorithm from Sollya */
     .poly_log = {
         0x1.0p0,

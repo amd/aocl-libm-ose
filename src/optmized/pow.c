@@ -361,19 +361,20 @@ FN_PROTOTYPE_OPT(pow)(double x, double y)
         }
         if (unlikely (checkzeroinfnan (ux)))
         {
-            double_t x2 = x * x;
+
+            double x2 = x * x;
+            /* x is negative , y is odd*/
             if (ux >> 63 && checkint (uy) == 1)
             {
-                x2 = -x2;
                 result_sign =  SIGNBIT_DP64;
             }
             if ( 2 * ux == 0 && uy >> 63)
             {
-                x = 1.0 / 0.0;
-                ux = asuint64(x);
-                x = asdouble(ux | result_sign);
-                return x;
+                x2 = 1.0 / 0.0;
+                x2 = asdouble(ux | result_sign);
+                return x2;
             }
+            x2 = asdouble(asuint64(x2) | result_sign);
             return uy >> 63 ? (1 / x2) : x2;
         }
         /* Here x and y are non-zero finite. */

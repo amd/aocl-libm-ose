@@ -140,12 +140,15 @@ static struct expf_data expf_v2_data = {
 #define EXPF_FARG_MIN -0x1.9fe368p6f    /* log(0x1p-150) ~= -103.97 */
 #define EXPF_FARG_MAX 0x1.62e42ep6f    /* log(0x1p128)  ~=   88.72  */
 #define Ln2 0x1.62e42fefa39efp-1
+#define EXP_Y_INF 3
+#define EXP_Y_ZERO 2
 
 struct log_table {
     double lead, tail;
 };
 
 double _log_special(double x, double y, uint32_t code);
+float _expf_special(float x, float y, uint32_t code);
 
 /* Returns 0 if not int, 1 if odd int, 2 if even int.  The argument is
    the bit representation of a non-zero finite floating-point value.  */
@@ -239,12 +242,15 @@ static inline float calculate_exp(double_t x, uint64_t sign_bias)
     uint64_t n, j;
 
     if (unlikely (top12(x) > top12(88.0))) {
-        if (x > EXPF_FARG_MAX) {
-            return asfloat((sign_bias >> 32) | PINFBITPATT_SP32);
+
+        if ((float)x > EXPF_FARG_MAX) {
+            return _expf_special(x, asfloat((sign_bias >> 32) | PINFBITPATT_SP32), EXP_Y_INF);
         }
 
-        if (((float)x) < EXPF_FARG_MIN)
-            return asfloat(sign_bias >> 32);
+        if (((float)x) < EXPF_FARG_MIN) {
+            return _expf_special(x, asfloat(sign_bias >> 32) , EXP_Y_ZERO);
+        }
+
     }
 
     z = x *  EXPF_TBLSZ_BY_LN2;

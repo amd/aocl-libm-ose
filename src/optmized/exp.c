@@ -87,7 +87,7 @@ static inline uint32_t top12(double x)
 #define FMAX_X			 0x1.62e42fefa39efp+9
 #define FMIN_X			-0x1.74910d52d3051p+9
 #define DENORMAL_LOW    -0x1.74046dfefd9d0p+9
-#define DENORMAL_MIN     0x0.1p-1023
+#define DENORMAL_MIN     0x0000000000000001
 
 double
 FN_PROTOTYPE_OPT(exp)(double x)
@@ -132,7 +132,7 @@ FN_PROTOTYPE_OPT(exp)(double x)
 	}
 
     if( x <= DENORMAL_LOW) {
-        return _exp_special(x, DENORMAL_MIN, EXP_Y_ZERO);
+        return _exp_special(x, asdouble(DENORMAL_MIN), EXP_Y_ZERO);
     }
 
         exponent = 0xfff;

@@ -93,7 +93,7 @@ static const struct {
 #define LN2_TBL_H v_expf_data.ln2_tbl_head
 #define LN2_TBL_T v_expf_data.ln2_tbl_tail
 #define EXPF_BIAS v_expf_data.expf_bias
-#define HUGE      v_expf_data.huge
+#define EXP_HUGE      v_expf_data.huge
 #define ARG_MAX   v_expf_data.arg_max
 #define MASK      v_expf_data.mask
 
@@ -141,13 +141,13 @@ FN_PROTOTYPE_OPT(vrs8_expf_experimental)(v_f32x8_t _x)
     // x * (64.0/ln(2))
     v_f32x8_t z = _x * TBL_LN2;
 
-    v_f32x8_t dn = z + HUGE;
+    v_f32x8_t dn = z + EXP_HUGE;
 
     // n = int(z)
     v_u32x8_t n = as_v_u32x8(dn);
 
     // dn = double(n)
-    dn = dn - HUGE;
+    dn = dn - EXP_HUGE;
 
     // r = x - (dn * (ln(2)/64))
     // where ln(2)/64 is split into Head and Tail values
@@ -213,13 +213,13 @@ FN_PROTOTYPE_OPT(vrs8_expf)(v_f32x8_t _x)
     // x * (64.0/ln(2))
     v_f32x8_t z = _x * TBL_LN2;
 
-    v_f32x8_t dn = z + HUGE;
+    v_f32x8_t dn = z + EXP_HUGE;
 
     // n = int(z)
     v_u32x8_t n = as_v_u32x8(dn);
 
     // dn = double(n)
-    dn = dn - HUGE;
+    dn = dn - EXP_HUGE;
 
     // r = x - (dn * (ln(2)/64))
     // where ln(2)/64 is split into Head and Tail values

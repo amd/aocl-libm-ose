@@ -1,7 +1,7 @@
 
-(C) 2008-2019 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2020 Advanced Micro Devices, Inc. All Rights Reserved.
 
-AMD LibM - Release Notes - version 3.4
+AMD LibM - Release Notes - version 3.6
 ----------------------------------------
 
 AMD LibM Contents
@@ -11,19 +11,17 @@ math functions from the C99 standard. The library is designed for use in 64-bit
 programs on x86-64 machines. Static and dynamic libraries are available for
 Linux(R) operating system.
 
-The Linux(R) version of the library is built using GCC 7.3 and Ubuntu 18.04 LTS.
-
-Hightlights of AMD LibM 3.4
+Hightlights of AMD LibM 3.6
 -----------------------------
 
-    * Bug fixes in scalar pow
-    * Performance gains in pow(), log(), exp() and exp2()
+    * Bug fixes in scalar pow, exp, expf
+    * Performance gains in both single and double precision vector routines of pow(), log(), exp()
 
 Known Issues
 ------------
    * fastpow() - Maximum ULP error is 10.
 
-Version 3.4 Contents
+Version 3.6 Contents
 ----------------------
 AMD LibM provides vector variants for many of the math functions. The list of
 available vector functions is given below. All functions have an 'amd_' prefix.
@@ -31,6 +29,7 @@ available vector functions is given below. All functions have an 'amd_' prefix.
  Exponential
  -----------
     * vrs4_expf, vrs4_exp2f, vrs4_exp10f, vrs4_expm1f
+    * vrs8_expf
     * vrsa_expf, vrsa_exp2f, vrsa_exp10f, vrsa_expm1f
     * vrd2_exp, vrd2_exp2, vrd2_exp10, vrd2_expm1, vrd4_exp, vrd4_exp2
     * vrda_exp, vrda_exp2, vrda_exp10, vrda_expm1
@@ -38,6 +37,7 @@ available vector functions is given below. All functions have an 'amd_' prefix.
  Logarithmic
  -----------
     * vrs4_logf, vrs4_log2f, vrs4_log10f, vrs4_log1pf
+    * vrs8_logf
     * vrsa_logf, vrsa_log2f, vrsa_log10f, vrsa_log1pf
     * vrd2_log, vrd2_log2, vrd2_log10, vrd2_log1p, vrd4_log
     * vrda_log, vrda_log2, vrda_log10, vrda_log1p
@@ -52,6 +52,7 @@ available vector functions is given below. All functions have an 'amd_' prefix.
  Power
  -----
     * vrs4_cbrtf, vrd2_cbrt, vrs4_powf, vrd2_pow, vrd4_pow
+    * vrs8_powf
     * vrsa_cbrtf, vrda_cbrt, vrsa_powf
 
 
@@ -65,8 +66,8 @@ all have an 'amd_' prefix.
 
  Hyperbolic
  ----------
-    * coshf, cosh, sinhf, sinh, tanhf, tanh 
-    * acoshf, acosh, asinhf, asinh, atanhf, atanh 
+    * coshf, cosh, sinhf, sinh, tanhf, tanh
+    * acoshf, acosh, asinhf, asinh, atanhf, atanh
 
  Exponential & Logarithmic
  -------------------------
@@ -101,36 +102,23 @@ all have an 'amd_' prefix.
  -----------------------------
     * fdimf, fdim, fmaxf, fmax, fminf, fmin
 
-
 The declarations for all of these functions are as specified in the
-C99 standard. They are equivalent to the declarations present in 
-the standard math header 'math.h'. The only difference is that the
-functions in AMD LibM have 'amd_' prefix in their names.
+C99 standard. They are equivalent to the declarations present in
+the standard math header 'math.h'.
 
 Using AMD LibM
 --------------
-Using AMD LibM is easy. Include 'amdlibm.h' in your C/C++ code and
-call the desired math function. If math.h has to be included, 
-include math.h before amdlibm.h. Link in the appropriate version of
-the library in your program.
+Using AMD LibM is easy. Including math.h is sufficient for use of
+scalar routines. For vector routines, use amdlibm_vec.h in your
+C/C++ code and call the desired routine. Link in the appropriate
+version of the library in your program.
 
 Refer to the examples directory for illustration.
 
 The Linux libraries have a dependency on system math library. When
 linking AMD LibM, ensure it precedes system math library in the
 link order i.e., "-lamdlibm" should come before "-lm". Explicit
-linking of system math library is required when using gcc C 
+linking of system math library is required when using gcc C
 compiler. With g++ compiler (for C++), this is not needed.
-
-A simple trick can be used to replace existing math function calls
-in order to use AMD LibM. To replace a single function, for example,
-to replace all 'sin' function calls in existing code, use the
-following construct in your source code.
-
-#undef sin
-#define sin amd_sin
-
-In order to replace all math functions to that of AMD LibM, define
-'REPLACE_WITH_AMDLIBM' preprocessor macro.
 
 Refer to the examples directory for illustration.

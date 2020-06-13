@@ -4,9 +4,26 @@
 #
 # Author: Prem Mallappa<pmallappa@amd.com>
 #
+import SCons
 import os
 from os import mkdir, makedirs, environ
 from os.path import join as joinpath, split as splitpath
+
+def AddSiteDir(site_dir):
+  """Adds a site directory, as if passed to the --site-dir option.
+  Args:
+    site_dir: Site directory path to add, relative to the location of the
+        SConstruct file.
+  This may be called from the SConscript file to add a local site scons
+  directory for a project.  This does the following:
+     * Adds site_dir/site_scons to sys.path.
+     * Imports site_dir/site_init.py.
+     * Adds site_dir/site_scons to the SCons tools path.
+  """
+  # Call the same function that SCons does for the --site-dir option.
+  SCons.Script.Main._load_site_scons_dir( site_dir)
+
+AddSiteDir("scripts")
 
 # We need a better name for this
 from scripts.cfg import cfg,helper
@@ -42,8 +59,10 @@ targets = []
 
 libenv = env.Clone()
 libenv.Append(
-	INCPATH=['#include']
+	INCPATH=['#include'],
+	CWD='#src',
 )
+
 amdlibm = SConscript('src/SConscript',
                        exports = { 'env' : libenv },
                        duplicate = 0,
@@ -72,7 +91,8 @@ if 'tests' in COMMAND_LINE_TARGETS:
 Progress('\r', overwrite=True)
 Default(targets)
 
-PrintBanner(libenv)
+import atexit
+atexit.register(PrintBanner, libenv)
 
 # base help text
 Help('''

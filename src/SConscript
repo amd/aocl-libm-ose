@@ -30,7 +30,7 @@ ref_objs = e.StaticObject(ref_srcs)
 objs = []
 
 #print('---->', e['CWD'])
-subdirs = ['isa', 'optmized', 'iface']
+subdirs = ['isa', 'optmized', 'iface', 'arch']
 for d in subdirs:
 	denv = e.Clone()
 	sdir = joinpath(denv['CWD'], d)

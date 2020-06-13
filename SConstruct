@@ -63,6 +63,12 @@ libenv.Append(
 	CWD='#src',
 )
 
+# To generate a file version.build.c having current gitversion in VERSION_STRING
+libenv.Tool('gitversion')
+
+build_version = libenv.GenerateVersion('src/version.build.h')
+libenv.AlwaysBuild(build_version)
+
 amdlibm = SConscript('src/SConscript',
                        exports = { 'env' : libenv },
                        duplicate = 0,
@@ -83,7 +89,6 @@ test_objs = SConscript(dirs='tests',
                        duplicate = 0,
                        src_dir    = 'tests',
                        variant_dir = joinpath(build_root, 'tests'))
-
 
 if 'tests' in COMMAND_LINE_TARGETS:
     targets += test_objs

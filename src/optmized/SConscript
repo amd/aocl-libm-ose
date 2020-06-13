@@ -55,7 +55,7 @@ vec_objs   = SConscript('vec/SConscript',
                         exports    = {'env' : e},
                         duplicate  = 0,
                         src_dir    = '#src/optmized/vec',
-			            variant_dir= joinpath(builddir, 'vec'))
+			variant_dir= joinpath(builddir, 'vec'))
 
 objs = e.StaticObject(source) + vec_objs
 

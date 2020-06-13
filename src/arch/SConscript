@@ -1,0 +1,43 @@
+# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+#
+
+# Inherit global environment
+Import('env')
+import os
+from os.path import join as joinpath
+from os.path import dirname,isdir
+
+builddir = joinpath(env['BUILDROOT'], 'src', 'arch')
+
+e = env.Clone()
+
+if '-ffast-math' in e['CFLAGS']:
+    e['CFLAGS'].remove('-ffast-math')
+
+incpaths = [
+    '#' + joinpath(Dir('.').srcnode().path),
+    '#' + joinpath(Dir('.').srcnode().path, 'include')
+]
+
+e.Append(
+    CPPPATH = incpaths
+)
+
+objs = []
+
+dirs = ['zen2']
+
+for d in dirs:
+    aenv = e.Clone()
+    sdir = joinpath(aenv['CWD'], d)
+    aenv.Append(
+        CWD = sdir
+    )
+    objs += SConscript('%s/SConscript'%d,
+                       exports = { 'env': aenv },
+                       duplicate = 0,
+                       src_dir = sdir,
+                       variant_dir = joinpath(builddir, d)
+    )
+
+Return('objs')

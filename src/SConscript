@@ -27,23 +27,21 @@ ref_srcs = Glob('./*.[cS]', exclude=['MapEntryPoints.c'])  +\
 
 ref_objs = e.StaticObject(ref_srcs)
 
-asm_objs = SConscript('isa/SConscript',
-                           exports = {'env' : e},
-                           duplicate = 0,
-                           src_dir = '#src/isa',
-                           variant_dir = joinpath(builddir, 'isa'))
+objs = []
 
-optimized_src = SConscript('optmized/SConscript',
-                           exports = {'env' : e},
-                           duplicate = 0,
-                           src_dir = '#src/optmized',
-                           variant_dir = joinpath(builddir, 'optmized'))
-
-iface_src = SConscript('iface/SConscript',
-                           exports = {'env' : e},
-                           duplicate = 0,
-                           src_dir = '#src/iface',
-                           variant_dir = joinpath(builddir, 'iface'))
+#print('---->', e['CWD'])
+subdirs = ['isa', 'optmized', 'iface']
+for d in subdirs:
+	denv = e.Clone()
+	sdir = joinpath(denv['CWD'], d)
+	denv.Append(
+		CWD = sdir
+	)
+	objs += SConscript('%s/SConscript'%d,
+			    exports = {'env' : denv},
+			    duplicate = 0,
+                            src_dir = sdir,
+                            variant_dir = joinpath(builddir, '%s'%d))
 
 fast_libm = SConscript('fast/SConscript',
                        exports = {'env' : e},
@@ -54,7 +52,7 @@ fast_libm = SConscript('fast/SConscript',
 #print('lib sources' , list(source))
 
 #objects = e.StaticObject(asm_objs) + optimized_src
-objects = ref_objs + asm_objs + optimized_src + iface_src
+objects = ref_objs + objs
 #objects = asm_objs + optimized_src
 
 libm = e.StaticLibrary('amdlibm', objects)

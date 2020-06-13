@@ -54,7 +54,7 @@ incpath = ['#tests/include', '.', './include']
 libpath = []
 
 abi = env['libabi']
-print(abi, env['libabi'])
+#print(abi, env['libabi'])
 
 # Default set to AOCL
 if abi == 'aocl':

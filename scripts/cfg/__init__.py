@@ -155,7 +155,7 @@ class DefaultCfg(object):
             CPPDEFINES = { 'LIBABI': env['libabi']})
 
         cmpiler = compiler.gcc.Gcc(self.defenv['build'])
-        print(env['compiler'])
+        #print(env['compiler'])
         if env['compiler'] == 'aocc' or env['compiler'] == 'llvm':
             cmpiler = compiler.llvm.LLVM(self.defenv['build'])
 

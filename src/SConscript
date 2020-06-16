@@ -14,22 +14,15 @@ e.Append(
                '-Wno-unused-parameter',
                '-fPIC',
                '-mavx2', '-march=znver2'],
-    # CPPPATH = [Dir('./isa/avx2/include')],
+    # CPPPATH = [],
     # CCFLAGS = [],
-    # LINKFLAGS = ['-T$LINKERSCRIPT'],
-     LINKERSCRIPT = 'src/ld-syms-libm.lds',
+    # LINKFLAGS = [],
+    LINKERSCRIPT = 'src/ld-syms-libm.lds',
     STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 1
 )
 
-ref_srcs = Glob('./*.[cS]', exclude=['MapEntryPoints.c'])  +\
-	Glob('ref/*.[c]', exclude=['ref/amd_pow.c', 'ref/exp2.c',
-				   'ref/exp_tables*.c', 'ref/MapEntryPoints.c'])
-
-ref_objs = e.StaticObject(ref_srcs)
-
 objs = []
 
-#print('---->', e['CWD'])
 subdirs = ['isa', 'optmized', 'iface', 'arch']
 for d in subdirs:
 	denv = e.Clone()
@@ -43,6 +36,16 @@ for d in subdirs:
                             src_dir = sdir,
                             variant_dir = joinpath(builddir, '%s'%d))
 
+#
+# Reference files, for the functions where optimized version
+# doesn't exist
+#
+ref_excludes = ['ref/amd_pow.c', 'ref/exp2.c',
+                'ref/exp_tables*.c', 'ref/MapEntryPoints.c', 
+                'MapEntryPoints.c']
+ref_srcs = Glob('*.[cS]',    exclude=ref_excludes)  + \
+	   Glob('ref/*.[c]', exclude=ref_excludes)
+ref_objs = e.StaticObject(ref_srcs)
 fast_libm = SConscript('fast/SConscript',
                        exports = {'env' : e},
                        duplicate = 0,

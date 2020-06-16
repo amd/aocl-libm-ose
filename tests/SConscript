@@ -59,10 +59,10 @@ abi = env['libabi']
 # Default set to AOCL
 if abi == 'aocl':
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_AOCL]
-    liblist.extend(['amdlibm'])
+    liblist.extend(['alm'])
 elif abi == 'amdlibm':
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_AMDLIBM]
-    liblist.extend(['amdlibm'])
+    liblist.extend(['alm'])
 elif abi == 'glibc':
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_GLIBC]
     liblist.extend(['mvec'])

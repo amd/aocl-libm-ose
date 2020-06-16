@@ -23,9 +23,15 @@ e.Append(
 
 objs = []
 
+almenv = e.Clone()
+almenv.Append(
+    LINKFLAGS = ['-ealm_main'], # ['-T$LINKERSCRIPT']
+    LIBS      = ['c'],
+)
+
 subdirs = ['isa', 'optmized', 'iface', 'arch']
 for d in subdirs:
-	denv = e.Clone()
+	denv = almenv.Clone()
 	sdir = joinpath(denv['CWD'], d)
 	denv.Append(
 		CWD = sdir
@@ -46,24 +52,20 @@ ref_excludes = ['ref/amd_pow.c', 'ref/exp2.c',
 ref_srcs = Glob('*.[cS]',    exclude=ref_excludes)  + \
 	   Glob('ref/*.[c]', exclude=ref_excludes)
 ref_objs = e.StaticObject(ref_srcs)
+
+alm_objs = ref_objs + objs
+
+libm = almenv.StaticLibrary('alm', alm_objs)
+libmso = almenv.SharedLibrary('alm', alm_objs)
+
+
 fast_libm = SConscript('fast/SConscript',
                        exports = {'env' : e},
                        duplicate = 0,
                        src_dir = '#src/fast',
                        variant_dir = joinpath(builddir, 'fast'))
 
-#print('lib sources' , list(source))
-
-#objects = e.StaticObject(asm_objs) + optimized_src
-objects = ref_objs + objs
-#objects = asm_objs + optimized_src
-
-libm = e.StaticLibrary('amdlibm', objects)
-libmso = e.SharedLibrary('amdlibm', objects)
-
-#almfastso = e.SharedLibrary('almfast', fast_libm)
-
 Depends(libmso, '#src/ld-syms-libm.lds')
-#Return('libm', 'libmso', 'almfastso')
+
 Return('libm', 'libmso', 'fast_libm')
 

@@ -12,13 +12,14 @@ import os
 
 def strip_build_path(path, env):
     path = str(path)
-    build_base = 'build/'
-    variant_base = env['BUILDROOT'] + os.path.sep
-    #print('buildroot', env['BUILDROOT'])
-    if path.startswith(variant_base):
-        path = path[len(variant_base):]
-    elif path.startswith(build_base):
-        path = path[len(build_base):]
+    #print('path before-> ' , path)
+    bld_root = env['BUILDROOT'] + '/'
+    #bld_root_src = bld_root + 'src' + '/'
+    bases = ['src/', 'tests/', bld_root] #, bld_root_src]
+    for b in bases:
+        if path.startswith(b):
+            path = path[len(b):]
+            #break
     #print('path', path)
     return path
 
@@ -38,19 +39,24 @@ class Transform(object):
         source = source[0:self.max_sources]
         def strip(f):
             return strip_build_path(str(f), env)
+
         if len(source) > 0:
             srcs = map(strip, source)
         else:
             srcs = ['']
-        tgts = map(strip, target)
+
+
         newsrcs = list(srcs)
+        #import pdb
+        #pdb.set_trace()
+        tgts = map(strip, target)
+        #print("==>", srcs, tgts)
         newtgts = list(tgts)
 
         from os.path import commonprefix
         # surprisingly, os.path.commonprefix is a dumb char-by-char string
         # operation that has nothing to do with paths.
-        com_pfx = commonprefix(newsrcs + newtgts)
-
+        com_pfx = '' # commonprefix(newsrcs + newtgts)
         com_pfx_len = len(com_pfx)
 
         if com_pfx:

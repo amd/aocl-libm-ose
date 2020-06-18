@@ -10,11 +10,12 @@ class LLVM(Compiler):
             '-march=native',
         ]
         self.compile_flags_release = [
+            '-ffp-contract=fast', # Needed to generate FMA instructions for vector routines
             #'-Ofast',
-           # '-march=native',
-           # '-fipa-pta',
-           # '-funsafe-loop-optimizations',
-           # '-flto=4',
+            # '-march=native',
+            # '-fipa-pta',
+            # '-funsafe-loop-optimizations',
+            # '-flto=4',
         ]
         self.compile_flag_map = {
             'debug': self.compile_flags_debug,
@@ -22,7 +23,7 @@ class LLVM(Compiler):
         }
 
         self.link_flags_debug = ['-fuse-ld=ld']
-        self.link_flags_release = ['-fuse-ld=ld'] 
+        self.link_flags_release = ['-fuse-ld=ld']
 
         self.link_flag_map = {
             "debug": self.link_flags_debug,

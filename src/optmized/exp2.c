@@ -125,13 +125,13 @@ static const struct {
 #define C6	exp2_data.poly[4]
 #define C7	exp2_data.poly[5]
 #define C8	exp2_data.poly[6]
-#define LIBM_EXP2_HUGE		exp2_data.Huge
-#define REAL_TABLE_SIZE         exp2_data.table_size
-#define REAL_1_BY_TABLE_SIZE	exp2_data.one_by_table_size
-#define REAL_LN2		exp2_data.ln2
-#define TABLE_DATA		exp2_data.table
-#define MAX_X			exp2_data.x.max
-#define MIN_X			exp2_data.x.min
+#define LIBM_EXP2_HUGE       exp2_data.Huge
+#define REAL_TABLE_SIZE      exp2_data.table_size
+#define REAL_1_BY_TABLE_SIZE exp2_data.one_by_table_size
+#define REAL_LN2             exp2_data.ln2
+#define TABLE_DATA           exp2_data.table
+#define MAX_X                exp2_data.x.max
+#define MIN_X                exp2_data.x.min
 
 #define UMAX_X			0x4090000000000000
 #define UMIN_X			0xc090c80000000000
@@ -168,25 +168,25 @@ FN_PROTOTYPE(exp2_v2)(double x)
      * one comparison for multiple decisions
      */
     if (unlikely (exponent - top12(0x1p-54) >= top12(512.0) - top12(0x1p-54))) {
-	    if (exponent - top12 (0x1p-54) >= 0x80000000)
-		    return 1.0;
+        if (exponent - top12 (0x1p-54) >= 0x80000000)
+            return 1.0;
 
-	    if (x >= FMAX_X) {
-                if (isnan(x))
-                    return  _exp2_special(x, asdouble(QNANBITPATT_DP64), EXP_Y_INF);
+        if (x >= FMAX_X) {
+            if (isnan(x))
+                return  _exp2_special(x, asdouble(QNANBITPATT_DP64), EXP_Y_INF);
 
-                return  _exp2_special(x, asdouble(PINFBITPATT_DP64), EXP_X_NAN);
-	    }
+            return  _exp2_special(x, asdouble(PINFBITPATT_DP64), EXP_X_NAN);
+        }
 
-	    if (x <= FMIN_X) {
-		    if (asuint64(x) == NINFBITPATT_DP64)
-                        return  _exp2_special(x, x, EXP_Y_ZERO);
+        if (x <= FMIN_X) {
+            if (asuint64(x) == NINFBITPATT_DP64)
+                return  _exp2_special(x, x, EXP_Y_ZERO);
 
-		    return _exp2_special(x, 0.0, EXP_Y_ZERO);
-	    }
+            return _exp2_special(x, 0.0, EXP_Y_ZERO);
+        }
 
-	    // flag de-normals to process at the end
-	    exponent = 0xfff;
+        // flag de-normals to process at the end
+        exponent = 0xfff;
     }
 
 #define FAST_INTEGER_CONVERSION 1

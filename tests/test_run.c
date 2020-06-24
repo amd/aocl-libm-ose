@@ -457,64 +457,6 @@ libm_test_v4d_perf(struct libm_test *test)
 
 
 
-/****************************
- * ACCU tests
- ****************************/
-
-/* This function takes care of the input values for accu test
-Generates values within either the range specified by user or
-for all ranges in the data file */
-
-int
-libm_test_accu(struct libm_test *test)
-{
-
-    struct libm_test_data *data = &test->test_data;
-    struct libm_test_ops *ops = &test->ops;
-    int ret = 0;
-    int sz = data->nelem;
-    int variant = (int)test->variant;
-    int vec_input_count = 0;
-
-    // we are verifying here, no need to do again
-    test->ops.verify = NULL;
-
-    switch (variant) {
-        case LIBM_FUNC_V2S: vec_input_count=2; break;
-        case LIBM_FUNC_V2D: vec_input_count=2; break;
-        case LIBM_FUNC_V4S: vec_input_count=4; break;
-        case LIBM_FUNC_V4D: vec_input_count=4; break;
-        case LIBM_FUNC_V8S: vec_input_count=8; break;
-        default:    break;
-    }
-
-    //for vector inputs, nelem has to align with the vector variant
-    if (strcmp(test->name, "vector")==0 &&  (sz % vec_input_count != 0)) {
-        printf("Input count %d is not a multiple of %d for variant %s\n",
-                           sz, vec_input_count, test->input_name);
-        sz = sz + (vec_input_count - sz % vec_input_count);
-        //while(sz % variant != 0)    sz++;
-        printf("Input count increased to %d\n", sz);
-        data->nelem = sz;
-    }
-
-    /*
-    if (sz % 4 != 0) {
-        LIBM_TEST_DPRINTF(DBG2,
-                          "%s %s : %d is not a multiple of 4, some may be left out\n"
-                          " And error reported may not be real for such entries\n",
-                          test->name, test->type_name, sz);
-
-        exit(0);
-    }
-    */
-
-    ret = ops->callbacks.accu_ranges(test, sz);
-
-    return ret;
-
-}
-
 /* This function calls the corresponding double precision
 version of the function(s1d,v2d,v4d) for accuracy tests
 */
@@ -610,6 +552,35 @@ int libm_generate_test_one_range(struct libm_test *test,
      else
          ret = libm_test_accu_double(test, test->variant);
      return ret;
+}
+
+/****************************
+ * ACCU tests
+ ****************************/
+int
+libm_test_accu(struct libm_test *test)
+{
+    int ret = 0;
+    struct libm_test_ops *ops = &test->ops;
+
+    for (int i = 0; i < MAX_INPUT_RANGES; i++) {
+        struct libm_test_input_range *range = &test->conf->inp_range[i];
+        if ((range->start == 0.0) && (range->stop == 0.0) )
+            break;
+
+        ret = libm_generate_test_one_range(test, range);
+        if (!ret) break;
+
+        ret = ops->verify(test, &test->result);
+        if (!ret) break;
+    }
+
+    if(ret)
+        return ret;
+
+    ret = ops->verify(test, &test->result);
+ 
+    return ret;
 }
 
 

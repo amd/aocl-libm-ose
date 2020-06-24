@@ -25,6 +25,8 @@
 
 char doc[] = BUILD_TEST_DOC(TEST_NAME);
 
+#include "../libs/mparith/am_mp_funcs.h"
+
 /*
  * Call the glibc's exp2() to get IEEE754 compliant values
  */
@@ -41,14 +43,14 @@ int test_exp2_verify(struct libm_test *test, struct libm_test_result *result)
         float *input1   = (float*)data->input1;
 
         for (uint32_t j = 0; j < data->nelem; j++) {
-            expected[j] = exp2f(input1[j]);
+            expected[j] = alm_mp_exp2f(input1[j]);
         }
     } else {
         double *expected = data->expected;
         double *input1 = data->input1;
-        
+
         for (uint32_t j = 0; j < data->nelem; j++) {
-            expected[j] = exp2(input1[j]);
+            expected[j] = alm_mp_exp2(input1[j]);
         }
     }
 

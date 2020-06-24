@@ -187,6 +187,8 @@ struct libm_test_input_range {
     enum libm_test_range_type type;
 };
 
+#define MAX_INPUT_RANGES 5
+
 struct libm_test_conf {
     uint32_t niter;
     uint32_t nelem;
@@ -194,7 +196,7 @@ struct libm_test_conf {
     uint32_t test_types;                        /* specifies accu,perf,special.. */
     uint64_t coremask;
     /* Some tests have 3 inputs */
-    struct libm_test_input_range inp_range[3];
+    struct libm_test_input_range inp_range[MAX_INPUT_RANGES];
 };
 
 

@@ -476,23 +476,28 @@ static int test_exp2_special(struct libm_test *test)
     return ret;
 }
 
-double test_exp2_ulp(struct libm_test *test, int idx)
+#include "../libs/mparith/am_mp_funcs.h"
+
+double
+test_exp2f_ulp(struct libm_test *test, int idx)
 {
     float *buf = (float*)test->test_data.input1;
-    float val = buf[idx];
-    static const float min = -1074.0;
-    static const float max = 1024.0;
+    float  val = buf[idx];
 
-    /* We need to return higher-precision values for NAN */
-    if (isinf(val))  return PINFBITPATT_DP64;
+    return alm_mp_exp2f(val);
+}
 
-    if (isnan(val))  return QNANBITPATT_DP64;
+double
+test_exp2_ulp(struct libm_test *test, int idx)
+{
+    double *d = (double*)test->test_data.input1;
+    double val = d[idx];
 
-    if (val > max)   return PINFBITPATT_DP64;
+    if (test_is_single_precision(test)) {
+        return test_exp2f_ulp(test, idx);
+    }
 
-    if (val < min)   return 1.0f;
-
-    return exp2(val);
+    return alm_mp_exp2(val);
 }
 
 static int
@@ -561,6 +566,32 @@ test_exp2_cb_v4d(struct libm_test *test, int j)
     return 0;
 }
 
+static int
+test_exp2_accu_run(struct libm_test *test)
+{
+    int ret = 0;
+    /* if no input range is given , we test from the table */
+    if (test->conf->inp_range[0].start  == 0 ||
+        test->conf->inp_range[0].stop   == 0)
+    {
+        int arr_sz = ARRAY_SIZE(exp2_accu_ranges);
+        for (int i = 0; i < arr_sz; i++) {
+            if ((exp2_accu_ranges[i].start == 0.0) && (exp2_accu_ranges[i].stop == 0.0) )
+                break;
+            ret = libm_generate_test_one_range(test, &exp2_accu_ranges[i]);
+            if(ret)
+                return ret;
+
+            ret = test_exp2_verify(test, &test->result);
+            if (ret) return ret;
+        }
+        return ret;
+    }
+
+
+    return libm_test_accu(test);
+}
+
 struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
     {
      /*
@@ -570,8 +601,8 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
                          .performance = { .setup = libm_test_perf_setup,
                                           .run   = libm_test_s1s_perf,},
                          .accuracy     = {.setup = libm_test_accu_setup,
-                                          .run   = libm_test_accu,
-                                          .ulp   = {.func = test_exp2_ulp},
+                                          .run   = test_exp2_accu_run,
+                                          .ulp   = {.func = test_exp2f_ulp},
                          },
                          .special      = {.setup = test_exp2_special_setup,},
      },
@@ -609,7 +640,7 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
                                           .run   = libm_test_v4s_perf,},
                          .accuracy     = {.setup = test_exp2_accu_setup,
                                           .run   = test_exp2_accu,
-                                          .ulp   = {.func = test_exp2_ulp},
+                                          .ulp   = {.func = test_exp2f_ulp},
                          },
                          .special      = {.setup = test_exp2_special_setup,
                                           .run = test_exp2_accu},
@@ -636,28 +667,6 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
 
 };
 
-/* There is no exp2q in recent versions of gcc */
-long double
-test_exp2_exp2l(struct libm_test *test, int idx)
-{
-    double *d = (double*)test->test_data.input1;
-    double val = d[idx];
-    static const double min = -1074.0;
-    static double max = 1024.0;
-
-    if (val > max) {
-        if (isinf(val))  return (long double)PINFBITPATT_DP64;
-
-        return (long double)QNANBITPATT_DP64;
-    }
-
-    if (val < min) {
-        return 0;
-    }
-
-    return exp2l(d[idx]);
-}
-
 int test_exp2_verify(struct libm_test *test, struct libm_test_result *result);
 
 static struct libm_test
@@ -666,7 +675,7 @@ exp2_template = {
 	.nargs      = 1,
 	.ulp_threshold = 4.0,
 	.ops        = {
-		.ulp    = {.funcl = test_exp2_exp2l},
+		.ulp    = {.func = test_exp2_ulp},
 		.verify = test_exp2_verify,
 		.callbacks = {
 			.s1s = test_exp2_cb_s1s,

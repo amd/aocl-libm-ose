@@ -178,7 +178,7 @@ test_exp_cb_accu_ranges(struct libm_test *test, int j)
         ret = libm_generate_test_one_range(test, range);
         ret = test_exp_verify(test, &test->result);
         return ret;
-        }
+     }
 
     int arr_sz = ARRAY_SIZE(exp2_accu_ranges);
     for (int i = 0; i < arr_sz; i++) {

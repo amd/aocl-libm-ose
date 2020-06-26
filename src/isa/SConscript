@@ -7,9 +7,10 @@ from os.path import join as joinpath
 
 builddir = joinpath(env['BUILDROOT'], 'src')
 
+p = joinpath(Dir('.').srcnode().path)
 incpaths = [
-    '#' + joinpath(Dir('.').srcnode().path),
-    '#' + joinpath(Dir('.').srcnode().path, 'include')
+    '#' + p,
+    '#' + joinpath(p, 'include')
 ]
 
 e = env.Clone()

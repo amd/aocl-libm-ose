@@ -137,7 +137,9 @@ static const struct {
 #define UMIN_X			0xc090c80000000000
 
 #define FMAX_X			 0x1.000p+10
-#define FMIN_X			-0x1.0c8p+10
+#define FMIN_X       -0x1.0c8p+10
+#define DENORMAL_LOW -0x1.74046dfefd9d0p+9
+#define DENORMAL_MIN 0x0000000000000001
 
 double _exp2_special(double x, double y, uint32_t code);
 
@@ -168,7 +170,7 @@ FN_PROTOTYPE(exp2_v2)(double x)
      * one comparison for multiple decisions
      */
     if (unlikely (exponent - top12(0x1p-54) >= top12(512.0) - top12(0x1p-54))) {
-        if (exponent - top12 (0x1p-54) >= 0x80000000)
+        if (exponent - top12(0x1p-54) >= 0x80000000)
             return 1.0;
 
         if (x >= FMAX_X) {
@@ -184,6 +186,9 @@ FN_PROTOTYPE(exp2_v2)(double x)
 
             return _exp2_special(x, 0.0, EXP_Y_ZERO);
         }
+
+        if (x <= DENORMAL_LOW)
+            return _exp2_special(x, asdouble(DENORMAL_MIN), EXP_Y_ZERO);
 
         // flag de-normals to process at the end
         exponent = 0xfff;

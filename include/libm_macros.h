@@ -16,7 +16,7 @@
 
 #ifndef ALM_OVERRIDE
 
-#define ALM_PREFIX      		amd
+#define ALM_PREFIX                      amd
 
 #define FN_PROTOTYPE(fn_name)           amd_##fn_name
 
@@ -26,7 +26,20 @@
 #define ALM_PROTO_OPT(fn_name)	amd_opt_##fn_name
 
 
+#else
+#ifndef ALM_ARCH
+#error "ALM_ARCH needs to be defined or ALM_OVERRIDE needs to be removed"
+#endif
+
 #endif /* ALM_OVERRIDE */
+
+/*
+ * TODO: remove these once the arch specific directories are in place
+ */
+#define FN_PROTOTYPE_OPT(fn)            amd_opt_##fn
+#define FN_PROTOTYPE_REF(fn)            amd_ref_##fn
+#define FN_PROTOTYPE_FAST(fn)           amd_fast##fn
+
 
 #if defined(ALM_SUFFIX)
 #define ALM_PROTO(x)      ALM_MAKE_PROTO_SFX(ALM_PREFIX, x, ALM_SUFFIX)
@@ -40,23 +53,24 @@
 #define __ALM_MAKE_PROTO_SFX(pfx, fn, sfx)        pfx##_##fn##_##sfx
 #define __ALM_MAKE_PROTO(pfx, fn)                 pfx##_##fn
 
-#define FN_PROTOTYPE_OPT(fn)            amd_opt_##fn
-#define FN_PROTOTYPE_REF(fn)            amd_ref_##fn
-#define FN_PROTOTYPE_FAST(fn)           amd_fast##fn
-
 #define ALM_PROTO_REF(fn)    		amd_ref_##fn
 #define ALM_PROTO_FAST(fn)   		amd_fast##fn
 
 /* 64-bit variants */
 #define ALM_PROTO_BAS64(fn)	__amd_bas64_##fn
-/* Buldozer specific, FMA3 and FMA4 */
-#define ALM_PROTO_BDOZR(fn)	__amd_bdozr_##fn
 /* Generic FMA3 */
 #define ALM_PROTO_FMA3(fn)	__amd_fma3_##fn
 /* AVX2 versions */
 #define ALM_PROTO_AVX2(fn)	__amd_avx2_##fn
 /* AVX512 versions */
 #define ALM_PROTO_AVX512(fn)	__amd_avx512_##fn
+
+/* Buldozer specific, FMA3 and FMA4 */
+#define ALM_PROTO_BDOZR(fn)	__amd_bdozr_##fn
+/* Zen Architecture */
+#define ALM_PROTO_ZEN(fn)	ALM_ARCH_FN(amd_##x)
+/* Zen Architecture */
+#define ALM_PROTO_ZEN(fn)	ALM_ARCH_FN(amd_##x)
 
 
 #define FN_PROTOTYPE_BAS64(fn_name) __amd_bas64_##fn_name

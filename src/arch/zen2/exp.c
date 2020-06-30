@@ -1,5 +1,7 @@
 #define  ALM_OVERRIDE 1
 
+#define  ALM_ARCH                       zn2
+
 #include <libm_macros.h>
 #include <libm/types.h>
 

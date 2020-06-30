@@ -20,11 +20,6 @@
 
 #define FN_PROTOTYPE(fn_name)           amd_##fn_name
 
-/*
- * ALM_PROTO_OPT to be removed, once all the FN_PROTOTYPE_OPT is converted to ALM_PROTO
- */
-#define ALM_PROTO_OPT(fn_name)	amd_opt_##fn_name
-
 
 #else
 #ifndef ALM_ARCH
@@ -35,7 +30,9 @@
 
 /*
  * TODO: remove these once the arch specific directories are in place
+ * ALM_PROTO_OPT to be removed, once all the FN_PROTOTYPE_OPT is converted to ALM_PROTO
  */
+#define ALM_PROTO_OPT(fn_name)	        amd_opt_##fn
 #define FN_PROTOTYPE_OPT(fn)            amd_opt_##fn
 #define FN_PROTOTYPE_REF(fn)            amd_ref_##fn
 #define FN_PROTOTYPE_FAST(fn)           amd_fast##fn

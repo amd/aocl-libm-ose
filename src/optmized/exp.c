@@ -111,29 +111,29 @@ FN_PROTOTYPE_OPT(exp)(double x)
      * one comparison for multiple decisions
       */
     if (unlikely (exponent - top12(0x1p-54) >= top12(512.0) - top12(0x1p-54))) {
-        if (exponent - top12 (0x1p-54) >= 0x80000000)
+        if (exponent - top12(0x1p-54) >= 0x80000000)
             return 1.0;
 
-	if (x > FMAX_X) {
-        if (isnan(x))
-            return  _exp_special(x, asdouble(QNANBITPATT_DP64), EXP_X_NAN);
+        if (x > FMAX_X) {
+            if (isnan(x))
+                return  _exp_special(x, asdouble(QNANBITPATT_DP64), EXP_X_NAN);
 
-        if(x == INFINITY)
-            return x; /* No exception to be raised */
+            if(x == INFINITY)
+                return x; /* No exception to be raised */
 
-        return  _exp_special(x, asdouble(PINFBITPATT_DP64),  EXP_Y_INF);
-	}
+            return  _exp_special(x, asdouble(PINFBITPATT_DP64),  EXP_Y_INF);
+        }
 
-	if (x <= FMIN_X) {
-        if (asuint64(x) == NINFBITPATT_DP64)
-            return  0.0; /* No exception to be raised */
+        if (x <= FMIN_X) {
+            if (asuint64(x) == NINFBITPATT_DP64)
+                return  0.0; /* No exception to be raised */
 
-		return _exp_special(x, 0.0, EXP_Y_ZERO);
-	}
+            return _exp_special(x, 0.0, EXP_Y_ZERO);
+        }
 
-    if( x <= DENORMAL_LOW) {
-        return _exp_special(x, asdouble(DENORMAL_MIN), EXP_Y_ZERO);
-    }
+        if (x <= DENORMAL_LOW)
+            return _exp_special(x, asdouble(DENORMAL_MIN), EXP_Y_ZERO);
+
 
         exponent = 0xfff;
     }

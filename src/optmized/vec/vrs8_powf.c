@@ -110,7 +110,7 @@ static struct {
 
 
 /*
- *   __m256 FN_PROTOTYPE_OPT(vrs8_powf)(__m256, __m256);
+ *   __m256 ALM_PROTO_OPT(vrs8_powf)(__m256, __m256);
  *
  * Spec:
  *   - A slightly relaxed version of the scalar powf.
@@ -217,7 +217,7 @@ powf_specialcase(v_f32x8_t _x,
                  v_f32x8_t result,
                  v_i32x8_t cond)
 {
-    return v_call2_f32_2(FN_PROTOTYPE(powf), _x, _y, result, cond);
+    return v_call2_f32_2(ALM_PROTO(powf), _x, _y, result, cond);
 }
 
 static inline v_f64x4_t
@@ -236,7 +236,7 @@ look_table_access(const double* table,
 
 
 __m256
-FN_PROTOTYPE_OPT(vrs8_powf)(__m256 x,__m256 y)
+ALM_PROTO_OPT(vrs8_powf)(__m256 x,__m256 y)
 {
 
     v_u32x8_t u;

@@ -80,7 +80,8 @@ static struct {
     },
 };
 
-#define SCALAR_LOG FN_PROTOTYPE(log)
+#define SCALAR_LOG ALM_PROTO(log)
+
 #define EXPSHIFTBITS_SP64 52
 #define ln2 log_data.ln2
 #define ln2_head log_data.ln2_head
@@ -113,7 +114,7 @@ static struct {
 
 
 __m128d
-FN_PROTOTYPE_OPT(vrd2_log) (__m128d x)
+ALM_PROTO_OPT(vrd2_log) (__m128d x)
 {
 
     v_f64x2_t m, r, n, f;

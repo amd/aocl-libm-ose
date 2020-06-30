@@ -100,10 +100,10 @@ static const struct {
 #define C5 v_expf_data.poly_expf[4]
 #define C6 v_expf_data.poly_expf[5]
 
-#define SCALAR_EXPF FN_PROTOTYPE(expf)
+#define SCALAR_EXPF ALM_PROTO_OPT(expf)
 
 v_f32x4_t
-FN_PROTOTYPE_OPT(vrs4_expf)(v_f32x4_t _x)
+ALM_PROTO_OPT(vrs4_expf)(v_f32x4_t _x)
 {
 
     v_u32x4_t vx = v_as_u32_f32(_x);

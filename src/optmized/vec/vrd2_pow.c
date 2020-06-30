@@ -123,7 +123,7 @@ static struct {
 #define C4  _MM_SET1_PD2(v_log_data.poly[3])
 
 /*
- *   __m128d FN_PROTOTYPE_OPT(vrd2_pow)(__m128d, __m128d);
+ *   __m128d ALM_PROTO_OPT(vrd2_pow)(__m128d, __m128d);
  *
  * Spec:
  *   - A slightly relaxed version of the scalar powf.
@@ -223,7 +223,7 @@ pow_specialcase(v_f64x2_t _x,
                  v_f64x2_t result,
                  v_i64x2_t cond)
 {
-    return v_call2_f64x2(FN_PROTOTYPE(pow), _x, _y, result, cond);
+    return v_call2_f64x2(ALM_PROTO(pow), _x, _y, result, cond);
 }
 
 static inline v_f64x2_t
@@ -364,7 +364,7 @@ calculate_exp(v_f64x2_t ylogx_h, v_f64x2_t ylogx_t)
 }
 
 __m128d
-FN_PROTOTYPE_OPT(vrd2_pow)(__m128d _x,__m128d _y)
+ALM_PROTO_OPT(vrd2_pow)(__m128d _x,__m128d _y)
 {
     __m128d result;
 

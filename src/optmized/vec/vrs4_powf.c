@@ -113,7 +113,7 @@ static struct {
 
 
 /*
- *   __m128 FN_PROTOTYPE_OPT(vrs4_powf)(__m128, __m128);
+ *   __m128 ALM_PROTO_OPT(vrs4_powf)(__m128, __m128);
  *
  * Spec:
  *   - A slightly relaxed version of the scalar powf.
@@ -205,7 +205,7 @@ static inline v_f64x4_t look_table_access(const double* table,
 }
 
 __m128
-FN_PROTOTYPE_OPT(vrs4_powf)(__m128 _x,__m128 _y)
+ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 {
 
     v_u32x4_t u;

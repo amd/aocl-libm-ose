@@ -159,12 +159,12 @@ logf_specialcase(v_f32x4_t _x,
                  v_f32x4_t result,
                  v_i32x4_t cond)
 {
-    return v_call_f32(FN_PROTOTYPE(logf), _x, result, cond);
+    return v_call_f32(ALM_PROTO(logf), _x, result, cond);
 }
 
 
 v_f32x4_t
-FN_PROTOTYPE_OPT(vrs4_logf)(v_f32x4_t _x)
+ALM_PROTO_OPT(vrs4_logf)(v_f32x4_t _x)
 {
     v_f32x4_t q, r, n;
 

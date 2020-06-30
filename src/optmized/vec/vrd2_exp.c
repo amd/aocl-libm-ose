@@ -120,10 +120,10 @@ static const struct {
 #define C12 exp_data.poly[10]
 
 
-#define SCALAR_EXP FN_PROTOTYPE(exp)
+#define SCALAR_EXP ALM_PROTO(exp)
 
 v_f64x2_t
-FN_PROTOTYPE_OPT(vrd2_exp)(v_f64x2_t x)
+ALM_PROTO_OPT(vrd2_exp)(v_f64x2_t x)
 {
 
     v_i64x2_t vx = as_v_u64x2_t(x);

@@ -169,20 +169,20 @@ logf_specialcase(v_f32x8_t _x,
     v_f32x4_t _res1 = {result[0], result[1], result[2], result[3]},
         _res2 = {result[4], result[5], result[6], result[7]};
 
-    _res1 = v_call_f32(FN_PROTOTYPE(logf), _x1, _res1, _cond1);
-    _res2 = v_call_f32(FN_PROTOTYPE(logf), _x2, _res2, _cond2);
-    //return v_call_f32_2(FN_PROTOTYPE(logf), _x, result, cond);
+    _res1 = v_call_f32(ALM_PROTO(logf), _x1, _res1, _cond1);
+    _res2 = v_call_f32(ALM_PROTO(logf), _x2, _res2, _cond2);
+    //return v_call_f32_2(ALM_PROTO(logf), _x, result, cond);
     return (v_f32x8_t) { _res1[0], _res1[1], _res1[2], _res1[3],
         _res2[0], _res2[1], _res2[2], _res2[3] };
 
 #else
-    return v_call_f32_2(FN_PROTOTYPE(logf), _x, result, cond);
+    return v_call_f32_2(ALM_PROTO(logf), _x, result, cond);
 #endif
 
 }
 
 v_f32x8_t
-FN_PROTOTYPE_OPT(vrs8_logf)(v_f32x8_t _x)
+ALM_PROTO_OPT(vrs8_logf)(v_f32x8_t _x)
 {
     v_f32x8_t q, r, n;
 

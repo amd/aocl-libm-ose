@@ -114,7 +114,7 @@ static const struct {
 #define C6 v_expf_data.poly_expf_7[6]
 
 
-#define SCALAR_EXPF FN_PROTOTYPE(expf)
+#define SCALAR_EXPF ALM_PROTO_OPT(expf)
 
 /*
     Implementation with 7-degree polynomial
@@ -126,7 +126,7 @@ static const struct {
     Max ULP error : 1.7
 */
 v_f32x8_t
-FN_PROTOTYPE_OPT(vrs8_expf_experimental)(v_f32x8_t _x)
+ALM_PROTO_OPT(vrs8_expf_experimental)(v_f32x8_t _x)
 {
 
     // vx = int(x)
@@ -198,7 +198,7 @@ FN_PROTOTYPE_OPT(vrs8_expf_experimental)(v_f32x8_t _x)
     Max ULP - 3.3
 */
 v_f32x8_t
-FN_PROTOTYPE_OPT(vrs8_expf)(v_f32x8_t _x)
+ALM_PROTO_OPT(vrs8_expf)(v_f32x8_t _x)
 {
 
     // vx = int(x)

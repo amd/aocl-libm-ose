@@ -85,7 +85,7 @@ log_specialcase(v_f64x4_t _x,
                  v_f64x4_t result,
                  v_i64x4_t cond)
 {
-    return v_call_f64(FN_PROTOTYPE(log), _x, result, cond);
+    return v_call_f64(ALM_PROTO(log), _x, result, cond);
 }
 
 #define EXPSHIFTBITS_SP64 52
@@ -120,7 +120,7 @@ log_specialcase(v_f64x4_t _x,
 
 
 __m256d
-FN_PROTOTYPE_OPT(vrd4_log) (__m256d x)
+ALM_PROTO_OPT(vrd4_log) (__m256d x)
 {
 
     v_f64x4_t m, r, n, f;

@@ -3,13 +3,12 @@
  *
  */
 #include <stdint.h>
-#include <libm_util_amd.h>
-#include <libm_special.h>
 
-#include <libm_macros.h>
-#include <libm/amd_funcs_internal.h>
+#include "libm_macros.h"
+#include "libm_util_amd.h"
+#include "libm_special.h"
+
 #include <libm/types.h>
-
 #include <libm/typehelper.h>
 #include <libm/compiler.h>
 
@@ -121,7 +120,7 @@ inline_log1pf(float_t x)
  */
 
 float
-FN_PROTOTYPE_OPT(logf)(float x)
+ALM_PROTO_OPT(logf)(float x)
 {
     uint32_t ux = asuint32(x);
 

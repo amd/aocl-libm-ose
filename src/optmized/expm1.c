@@ -9,7 +9,7 @@
 
 
 double
-FN_PROTOTYPE(expm1_v2) (double x)
+FN_PROTOTYPE_OPT(expm1_v2) (double x)
 {
 	return FN_PROTOTYPE_FMA3(expm1)(x);
 }

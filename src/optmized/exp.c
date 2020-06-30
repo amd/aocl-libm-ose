@@ -90,7 +90,7 @@ static inline uint32_t top12(double x)
 #define DENORMAL_MIN     0x0000000000000001
 
 double
-FN_PROTOTYPE_OPT(exp)(double x)
+ALM_PROTO_OPT(exp)(double x)
 {
     double_t    r, q, dn;
     int64_t	n, m;

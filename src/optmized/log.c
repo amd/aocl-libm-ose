@@ -138,7 +138,7 @@ static inline uint64_t top12(double x)
  *	If x = 1, return +O.
  */
 double
-FN_PROTOTYPE_OPT(log)(double x)
+ALM_PROTO_OPT(log)(double x)
 {
     double_t q, r;
     double_t dexpo, j_times_half;

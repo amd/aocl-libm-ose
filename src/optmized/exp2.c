@@ -150,7 +150,7 @@ static inline uint32_t top12(double x)
 
 
 double
-FN_PROTOTYPE(exp2_v2)(double x)
+FN_PROTOTYPE_OPT(exp2_v2)(double x)
 {
     double_t    r, q, dn;
     int64_t     n, j, m;

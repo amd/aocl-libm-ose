@@ -63,7 +63,7 @@ float expm1f_special(float x, float y, U32 code);
 #define ARG_MIN_NOSIGN   0x418AA122U
 
 float
-FN_PROTOTYPE(expm1f_v2)(float x)
+FN_PROTOTYPE_OPT(expm1f_v2)(float x)
 {
     flt64_t q1;
     double  dx, dn, q, r, f;

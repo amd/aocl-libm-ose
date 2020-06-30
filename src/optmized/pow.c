@@ -7,14 +7,13 @@
  * x^y = 2^(y*log2(x))
  */
 #include <stdint.h>
-#include "libm_amd.h"
 #include <math.h>
 #include <float.h>
+
+#include "libm_macros.h"
 #include "libm_util_amd.h"
-#include "libm_inlines_amd.h"
-#include "libm_errno_amd.h"
-#include <libm/typehelper.h>
 #include "libm_special.h"
+#include <libm/typehelper.h>
 
 #define L__exp_bias 0x00000000000003ff /* 1023 */
 #define L__mant_mask 0x000fffffffffffff
@@ -336,7 +335,7 @@ static inline double _pow_inexact(double x)
 }
 
 double
-FN_PROTOTYPE_OPT(pow)(double x, double y)
+ALM_PROTO_OPT(pow)(double x, double y)
 {
     double_t log_lo;
     double_t f;

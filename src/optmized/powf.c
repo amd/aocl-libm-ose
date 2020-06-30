@@ -16,13 +16,12 @@
 
 */
 #include <stdint.h>
-#include "libm_amd.h"
 #include <math.h>
 #include <float.h>
+
+#include "libm_macros.h"
 #include "libm_util_amd.h"
 #include "libm_special.h"
-#include "libm_inlines_amd.h"
-#include "libm_errno_amd.h"
 #include <libm/typehelper.h>
 #include <libm/compiler.h>
 
@@ -291,7 +290,7 @@ static inline float calculate_exp(double_t x, uint64_t sign_bias)
 
 }
 
-float FN_PROTOTYPE_OPT(powf)(float x, float y)
+float ALM_PROTO_OPT(powf)(float x, float y)
 {
     double_t logx, ylogx, result, q, r;
     double_t dx;

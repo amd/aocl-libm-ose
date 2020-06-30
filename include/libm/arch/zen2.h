@@ -13,5 +13,10 @@
 #include <libm_macros.h>
 #include <libm/types.h>
 
+#ifdef FN_PROTOTYPE_OPT
+#undef FN_PROTOTYPE_OPT
+#define FN_PROTOTYPE_OPT(x)		ALM_PROTO_OPT(x)
+#endif
+
 #endif
 

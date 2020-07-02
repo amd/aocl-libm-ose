@@ -66,12 +66,17 @@
 
 /* Buldozer specific, FMA3 and FMA4 */
 #define ALM_PROTO_BDOZR(fn)	__amd_bdozr_##fn
-/* Zen Architecture */
-#define ALM_PROTO_ZEN(fn)	ALM_ARCH_FN(amd_##x)
-/* Zen Architecture */
-#define ALM_PROTO_ZEN(fn)	ALM_ARCH_FN(amd_##x)
+
+/*
+ * Generic arch specific name creators
+ */
+#define __ALM_PROTO_ARCH(a, x, y)       ALM_MAKE_PROTO_SFX(a, x, y)
+#define  ALM_PROTO_ARCH(a, x, y)        __ALM_PROTO_ARCH(a, x, y)
 
 
+/*
+ * OLD API, not used , TODO: Delete at a later stage
+ */
 #define FN_PROTOTYPE_BAS64(fn_name) __amd_bas64_##fn_name
 
 #define FN_PROTOTYPE_BDOZR(fn_name) __amd_bdozr_##fn_name

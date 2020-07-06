@@ -16,7 +16,6 @@ static double get_ulp(struct libm_test *test, int j)
     struct libm_test_data *data = &test->test_data;
     //__float128 computedq = 0.0;
     double *outputd = (double*)data->output;
-    long double computedl = 0.0;
     double computed = 0.0;
 
     /* Get higer precision value for a given input */
@@ -26,9 +25,9 @@ static double get_ulp(struct libm_test *test, int j)
         return libm_test_ulp_errorf(outputf[j], computed);
     }
 
-    computedl = test->ops.ulp.funcl(test, j);
+    computed = test->ops.ulp.func(test, j);
 
-    return libm_test_ulp_error(outputd[j], computedl);
+    return libm_test_ulp_error(outputd[j], (long double)computed);
 }
 
 /*

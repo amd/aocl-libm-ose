@@ -95,7 +95,7 @@ else:
     )
 
 # Add default math library for any unresolved functions
-liblist.extend(['m', 'mparith32', 'mparith64'])
+liblist.extend(['m', 'mparith32', 'mparith64', 'mpfr'])
 #libpath = ['#build/src', '#build/tests']
 #mplibpath = ['src', 'tests', 'tests/libs/mparith/32', 'tests/libs/mparith/64']
 mplibpath = ['libs/mparith/32', 'libs/mparith/64']

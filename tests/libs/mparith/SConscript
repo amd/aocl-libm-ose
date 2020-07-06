@@ -29,7 +29,7 @@ incpath = [ joinpath(this_sconscript_file, x) for x in ['.', './mparith', 'inclu
 libpath = []
 
 # Add default math library for any unresolved functions
-liblist.extend(['m'])
+liblist.extend(['mpfr', 'm'])
 libpath += ['.', 'src', 'mpariths']
 
 mpenv = env.Clone()

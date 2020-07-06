@@ -81,20 +81,6 @@ __m256d LIBM_FUNC_VEC(d, 4, exp2)(__m256d in)
 }
 #endif
 
-#if (DEVELOPER==2)
-#pragma message "Developer mode changing prototype to exp2_v2()"
-#undef LIBM_FUNC
-#define LIBM_FUNC(x) FN_PROTOTYPE( x ## _v2 )
-
-double FN_PROTOTYPE( exp2_v2 )(double);
-float FN_PROTOTYPE( exp2f_v2 )(float);
-
-float FN_PROTOTYPE_FMA3( exp2f )(float);
-
-#define amd_exp2f_v2 FN_PROTOTYPE_FMA3(exp2f)
-#endif
-
-
 int test_exp2_populate_inputs(struct libm_test *test, int use_uniform);
 
 

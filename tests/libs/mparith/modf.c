@@ -11,33 +11,7 @@
 #error
 #endif
 
-REAL FUNC_MODF(REAL x, REAL *ptr)
-{
-    REAL ret;
-    fp_params params;
-    int base, mantis, emin, emax;
-    int *xmp, *ymp, *iptr;
-    int ifail;
-
-    initMultiPrecision(ISDOUBLE, 0, &base, &mantis, &emin, &emax, &params);
-    xmp = new_mp(params);
-    ymp = new_mp(params);
-    iptr = new_mp(params);
-
-    DTOMP(x, xmp, params, &ifail);
-    MPMODF(xmp, ymp, iptr, params, &ifail);
-
-    MPTOD(iptr, params, ptr, &ifail);
-    MPTOD(ymp, params, &ret, &ifail);
-
-    free(xmp);
-    free(ymp);
-    free(iptr);
-
-    return ret;
-}
-
-REAL FUNC_MODF_ULP(REAL x, REAL *ptr, REAL z, double   *sulps, double   *sreldiff)
+REAL FUNC_MODF_ULP123(REAL x, REAL *ptr, REAL z, double   *sulps, double   *sreldiff)
 {
     REAL ret;
     fp_params params;
@@ -70,3 +44,37 @@ REAL FUNC_MODF_ULP(REAL x, REAL *ptr, REAL z, double   *sulps, double   *sreldif
 
     return ret;
 }
+
+
+#include <mpfr.h>
+
+REAL FUNC_MODF(REAL x, REAL *p)
+{
+    REAL y;
+
+    mpfr_rnd_t rnd = MPFR_RNDN;
+    mpfr_t mpx, mpy, mp_rop;
+
+    mpfr_inits2(256, mpx, mpy, mp_rop, (mpfr_ptr) 0);
+
+#if defined(FLOAT)
+    mpfr_set_flt(mpx, x, rnd);
+#elif defined(DOUBLE)
+    mpfr_set_d(mpx, x, rnd);
+#endif
+
+    mpfr_modf(mp_rop, mpy, mpx, rnd);
+
+#if defined(FLOAT)
+    y = mpfr_get_flt(mp_rop, rnd);
+    *p = mpfr_get_flt(mpy, rnd);
+#elif defined(DOUBLE)
+    y = mpfr_get_d(mp_rop, rnd);
+    *p = mpfr_get_d(mpy, rnd);
+#endif
+
+    mpfr_clears(mpx, mpy, mp_rop, (mpfr_ptr) 0);
+
+    return y;
+}
+

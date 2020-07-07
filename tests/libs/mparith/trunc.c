@@ -11,30 +11,7 @@
 #error
 #endif
 
-REAL FUNC_TRUNC(REAL x)
-{
-    REAL y;
-    fp_params params;
-    int base, mantis, emin, emax;
-    int *xmp, *ymp;
-    int ifail;
-
-    initMultiPrecision(ISDOUBLE, 0, &base, &mantis, &emin, &emax, &params);
-    xmp = new_mp(params);
-    ymp = new_mp(params);
-
-    DTOMP(x, xmp, params, &ifail);
-    MPTRUNC(xmp, ymp, params, &ifail);
-
-    MPTOD(ymp, params, &y, &ifail);
-
-    free(xmp);
-    free(ymp);
-
-    return y;
-}
-
-REAL FUNC_TRUNC_ULP(REAL x,REAL z,double   *sulps, double   *sreldiff)
+REAL FUNC_TRUNC_ULP123(REAL x,REAL z,double   *sulps, double   *sreldiff)
 {
     REAL y;
     fp_params params;
@@ -64,3 +41,34 @@ REAL FUNC_TRUNC_ULP(REAL x,REAL z,double   *sulps, double   *sreldiff)
 
     return y;
 }
+
+
+#include <mpfr.h>
+
+REAL FUNC_TRUNC(REAL x)
+{
+    REAL y;
+
+    mpfr_rnd_t rnd = MPFR_RNDN;
+    mpfr_t mpx, mp_rop;
+
+    mpfr_inits2(256, mpx, mp_rop, (mpfr_ptr) 0);
+
+#if defined(FLOAT)
+    mpfr_set_flt(mpx, x, rnd);
+#elif defined(DOUBLE)
+    mpfr_set_d(mpx, x, rnd);
+#endif
+
+    mpfr_trunc(mp_rop, mpx);
+
+#if defined(FLOAT)
+    y = mpfr_get_flt(mpx, rnd);
+#elif defined(DOUBLE)
+    y = mpfr_get_d(mpx, rnd);
+#endif
+
+    mpfr_clears (mpx, mp_rop, (mpfr_ptr) 0);
+    return y;
+}
+

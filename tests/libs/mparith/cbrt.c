@@ -29,34 +29,7 @@ int constructoneby3(fp_params params, int *result)
   return 0;
 }
 
-REAL FUNC_CBRT(REAL x)
-{
-    REAL y;
-    fp_params params;
-    int base, mantis, emin, emax;
-    int *xmp, *ymp, *result_cbrt;
-    int ifail;
-
-    initMultiPrecision(ISDOUBLE, 0, &base, &mantis, &emin, &emax, &params);
-    xmp = new_mp(params);
-    ymp = new_mp(params);
-    result_cbrt= new_mp(params);
-
-    DTOMP(x, xmp, params, &ifail);
-    constructoneby3(params,ymp);
-    MPCBRT(xmp, ymp, params, result_cbrt, &ifail);
-
-    MPTOD(result_cbrt, params, &y, &ifail);
-
-    free(xmp);
-    free(ymp);
-    free(result_cbrt);
-
-    return y;
-}
-
-
-REAL FUNC_CBRT_ULP(REAL x, REAL z, double   *sulps, double   *sreldiff)
+REAL FUNC_CBRT_ULP123(REAL x, REAL z, double   *sulps, double   *sreldiff)
 {
     REAL y;
     fp_params params;
@@ -86,6 +59,37 @@ REAL FUNC_CBRT_ULP(REAL x, REAL z, double   *sulps, double   *sreldiff)
     free(ymp);
     free(result_cbrt);
 
+    return y;
+}
+
+
+
+#include <mpfr.h>
+
+REAL FUNC_CBRT(REAL x)
+{
+    REAL y;
+
+    mpfr_rnd_t rnd = MPFR_RNDN;
+    mpfr_t mpx, mp_rop;
+
+    mpfr_inits2(256, mpx, mp_rop, (mpfr_ptr) 0);
+
+#if defined(FLOAT)
+    mpfr_set_flt(mpx, x, rnd);
+#elif defined(DOUBLE)
+    mpfr_set_d(mpx, x, rnd);
+#endif
+
+    mpfr_cbrt(mp_rop, mpx, rnd);
+
+#if defined(FLOAT)
+    y = mpfr_get_flt(mp_rop, rnd);
+#elif defined(DOUBLE)
+    y = mpfr_get_d(mp_rop, rnd);
+#endif
+
+    mpfr_clears (mpx, mp_rop, (mpfr_ptr) 0);
     return y;
 }
 

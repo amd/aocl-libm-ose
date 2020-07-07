@@ -29,7 +29,7 @@ int FUNC_ILOGB(REAL x)
     return y;
 }
 
-int FUNC_ILOGB_ULP(REAL x, int z, double   *sulps, double   *sreldiff)
+int FUNC_ILOGB_ULP123(REAL x, int z, double   *sulps, double   *sreldiff)
 {
     int y;
     fp_params params;

@@ -11,35 +11,7 @@
 #error
 #endif
 
-REAL FUNC_TAN(REAL x)
-{
-    REAL y;
-    fp_params params;
-    int base, mantis, emin, emax;
-    int *xmp, *result_sin,*result_cos,*result_tan;
-    int ifail;
-
-    initMultiPrecision(ISDOUBLE, 0, &base, &mantis, &emin, &emax, &params);
-    xmp = new_mp(params);
-    result_sin = new_mp(params);
-    result_cos = new_mp(params);
-    result_tan = new_mp(params);
-
-    DTOMP(x, xmp, params, &ifail);
-    MPSINCOSTAN(xmp, params, result_sin, result_cos, result_tan, &ifail);
-
-
-    MPTOD(result_tan, params, &y, &ifail);
-
-    free(xmp);
-    free(result_sin);
-    free(result_cos);
-    free(result_tan);
-
-    return y;
-}
-
-REAL FUNC_TAN_ULP(REAL x,REAL z, double   *sulps, double   *sreldiff)
+REAL FUNC_TAN_ULP123(REAL x,REAL z, double   *sulps, double   *sreldiff)
 {
     REAL y;
     fp_params params;
@@ -73,3 +45,34 @@ REAL FUNC_TAN_ULP(REAL x,REAL z, double   *sulps, double   *sreldiff)
 
     return y;
 }
+
+
+#include <mpfr.h>
+
+REAL FUNC_TAN(REAL x)
+{
+    REAL y;
+
+    mpfr_rnd_t rnd = MPFR_RNDN;
+    mpfr_t mpx, mp_rop;
+
+    mpfr_inits2(256, mpx, mp_rop, (mpfr_ptr) 0);
+
+#if defined(FLOAT)
+    mpfr_set_flt(mpx, x, rnd);
+#elif defined(DOUBLE)
+    mpfr_set_d(mpx, x, rnd);
+#endif
+
+    mpfr_tan(mp_rop, mpx, rnd);
+
+#if defined(FLOAT)
+    y = mpfr_get_flt(mp_rop, rnd);
+#elif defined(DOUBLE)
+    y = mpfr_get_d(mp_rop, rnd);
+#endif
+
+    mpfr_clears (mpx, mp_rop, (mpfr_ptr) 0);
+    return y;
+}
+

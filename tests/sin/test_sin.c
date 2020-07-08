@@ -14,7 +14,7 @@
 #include <bench_timer.h>
 
 #include <libm/types.h>
-#include <libm/compiler.h>			/* for FALLTHROUGH */
+#include <libm/compiler.h>                      /* for FALLTHROUGH */
 
 #include "test_sin.h"
 #define __TEST_SIN_INTERNAL__                   /* needed to include sin-test-data.h */
@@ -66,21 +66,21 @@ int test_sin_conf_setup(struct libm_test *test)
 
 int test_sin_special_setup(struct libm_test *test)
 {
-	int ret = 0;
+    int ret = 0;
 
-	if(test_is_single_precision(test)) {
-		ret = libm_test_conf_setup_f32(test,
-					       (struct libm_test_special_data_f32 *)
-					       test_sinf_special_data,
-					       ARRAY_SIZE(test_sinf_special_data));
-	} else {
-		ret = libm_test_conf_setup_f64(test,
-					       (struct libm_test_special_data_f64 *)
-					       test_sin_special_data,
-					       ARRAY_SIZE(test_sin_special_data));
-	}
+    if(test_is_single_precision(test)) {
+        ret = libm_test_conf_setup_f32(test,
+                                      (struct libm_test_special_data_f32 *)
+                                      test_sinf_special_data,
+                                      ARRAY_SIZE(test_sinf_special_data));
+} else {
+        ret = libm_test_conf_setup_f64(test,
+                                      (struct libm_test_special_data_f64 *)
+                                      test_sin_special_data,
+                                      ARRAY_SIZE(test_sin_special_data));
+}
 
-	return ret;
+return ret;
 }
 
 
@@ -154,57 +154,73 @@ test_sin_cb_v2d(struct libm_test *test, int j)
 static int
 test_sin_cb_v4d(struct libm_test *test, int j)
 {
-	struct libm_test_data *data = &test->test_data;
-	double *restrict ip1 = (double*)data->input1;
-	double *restrict o = (double*)data->output;
+    struct libm_test_data *data = &test->test_data;
+    double *restrict ip1 = (double*)data->input1;
+    double *restrict o = (double*)data->output;
 
-	__m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-	__m256d op4 = LIBM_FUNC_VEC(d, 4, sin)(ip4);
-	_mm256_store_pd(&o[j], op4);
+    __m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
+    __m256d op4 = LIBM_FUNC_VEC(d, 4, sin)(ip4);
+    _mm256_store_pd(&o[j], op4);
 
-	return 0;
+    return 0;
 }
 */
 
 static int
-test_sin_cb_accu_ranges(struct libm_test *test, int j)
+test_sin_accu_run(struct libm_test *test)
 {
     int ret = 0;
-    if (test->conf->inp_range[0].start ||
-        test->conf->inp_range[0].stop) {
-        struct libm_test_input_range *range = &test->conf->inp_range[0];
-        ret = libm_generate_test_one_range(test, range);
-        ret = test_sin_verify(test, &test->result);
-        return ret;
-        }
 
-    int arr_sz = ARRAY_SIZE(sin_accu_ranges);
-    for (int i = 0; i < arr_sz; i++) {
-        if ((sin_accu_ranges[i].start == 0.0) && (sin_accu_ranges[i].stop == 0.0) )
-            break;
-    ret = libm_generate_test_one_range(test, &sin_accu_ranges[i]);
-    if(ret)
+    if (test->conf->inp_range[0].start  == 0 ||
+        test->conf->inp_range[0].stop   == 0)
+    {
+        int arr_sz = ARRAY_SIZE(sin_accu_ranges);
+
+        for (int i = 0; i < arr_sz; i++) {
+
+            if ((sin_accu_ranges[i].start == 0.0) && (sin_accu_ranges[i].stop == 0.0))
+                break;
+
+            ret = libm_generate_test_one_range(test, &sin_accu_ranges[i]);
+
+            if(ret)
+                return ret;
+
+            ret = test_sin_verify(test, &test->result);
+            if (ret) return ret;
+
+            }
         return ret;
-    ret = test_sin_verify(test, &test->result);
     }
-    return 0;
+
+    return libm_test_accu(test);
+
 }
+
 
 /*ulp*/
-double test_sin_ulp(struct libm_test *test, int idx)
+
+#include "../libs/mparith/am_mp_funcs.h"
+
+double test_sinf_ulp(struct libm_test *test, int idx)
 {
     float *buf = (float*)test->test_data.input1;
-    return sin(buf[idx]);
+    float val = buf[idx];
+
+    return alm_mp_sinf(val);
 }
 
-long double
-test_sin_sinl(struct libm_test *test, int idx)
+double
+test_sin_ulp(struct libm_test *test, int idx)
 {
     double *d = (double*)test->test_data.input1;
+    double val = d[idx];
+
     if (test_is_single_precision(test)) {
-        return test_sin_ulp(test, idx);
+        return test_sinf_ulp(test, idx);
     }
-    return sinl(d[idx]);
+
+    return alm_mp_sin(val);
 }
 
 struct libm_test_funcs test_sin_funcs[LIBM_FUNC_MAX] =
@@ -217,8 +233,8 @@ struct libm_test_funcs test_sin_funcs[LIBM_FUNC_MAX] =
                                            .run   = libm_test_s1s_perf,
                                          },
                          .accuracy     = { .setup = libm_test_accu_setup,
-                                           .run   = libm_test_accu,
-                                           .ulp = {.funcl = test_sin_sinl}
+                                           .run   = test_sin_accu_run,
+                                           .ulp = {.func = test_sinf_ulp}
                                          },
 
 
@@ -238,8 +254,8 @@ struct libm_test_funcs test_sin_funcs[LIBM_FUNC_MAX] =
                                           .run   = libm_test_s1d_perf,
                                         },
                          .accuracy     = {.setup = libm_test_accu_setup,
-                                          .run   = libm_test_accu,
-                                          .ulp = {.funcl = test_sin_sinl},
+                                          .run   = test_sin_accu_run,
+                                          .ulp = {.func = test_sin_ulp},
                                          },
 
                          .special      = {.setup = test_sin_special_setup,
@@ -259,8 +275,8 @@ struct libm_test_funcs test_sin_funcs[LIBM_FUNC_MAX] =
                            },
                           .accuracy = {
                                           .setup = libm_test_accu_setup,
-                                          .run = libm_test_accu,
-                                          .ulp = {.funcl = test_sin_sinl},
+                                          .run = test_sin_accu_run,
+                                          .ulp = {.func = test_sinf_ulp},
                            },
      },/*
      [LIBM_FUNC_V8S] = {
@@ -280,8 +296,8 @@ struct libm_test_funcs test_sin_funcs[LIBM_FUNC_MAX] =
                            },
                           .accuracy = {
                                          .setup = libm_test_accu_setup,
-                                         .run = libm_test_accu,
-                                         .ulp = {.funcl = test_sin_sinl},
+                                         .run = test_sin_accu_run,
+                                         .ulp = {.func = test_sin_ulp},
                            },
      },/*
      [LIBM_FUNC_V4D] = {
@@ -290,7 +306,7 @@ struct libm_test_funcs test_sin_funcs[LIBM_FUNC_MAX] =
                            },
                           .accuracy = {   .setup = libm_test_accu_setup,
                                           .run = libm_test_accu,
-                                          .ulp = {.funcl = test_sin_sinl},
+                                          .ulp = {.func = test_sin_sinl},
                            },
      },*/
 
@@ -305,7 +321,7 @@ sin_template = {
     .nargs      = 1,
     .ulp_threshold = 0.5,
     .ops        = {
-                    //.ulp    = {.funcl = test_sin_sinl},
+                    .ulp    = {.func = test_sin_ulp},
                     .verify = test_sin_verify,
                     .callbacks = {
                                     .s1s = test_sin_cb_s1s,
@@ -314,7 +330,6 @@ sin_template = {
                                    // .v8s = test_sin_cb_v8s,
                                     .v2d = test_sin_cb_v2d,
                                    // .v4d = test_sin_cb_v4d,
-                                    .accu_ranges = test_sin_cb_accu_ranges,
                                  },
                   },
 };

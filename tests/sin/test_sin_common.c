@@ -22,6 +22,7 @@
 #include <libm_tests.h>
 #include <bench_timer.h>
 
+#include "../libs/mparith/am_mp_funcs.h"
 /*
  * Call the glibc's sin() to get IEEE754 compliant values
  */
@@ -38,14 +39,14 @@ int test_sin_verify(struct libm_test *test, struct libm_test_result *result)
         float *input1   = (float*)data->input1;
 
         for (uint32_t j = 0; j < data->nelem; j++) {
-            expected[j] = sinf(input1[j]);
+            expected[j] = alm_mp_sinf(input1[j]);
         }
     } else {
         double *expected = data->expected;
         double *input1 = data->input1;
 
         for (uint32_t j = 0; j < data->nelem; j++) {
-           expected[j] = sin(input1[j]);
+           expected[j] = alm_mp_sin(input1[j]);
         }
     }
 

@@ -14,7 +14,7 @@
 #include <bench_timer.h>
 
 #include <libm/types.h>
-#include <libm/compiler.h>			/* for FALLTHROUGH */
+#include <libm/compiler.h>                      /* for FALLTHROUGH */
 
 #include "test_tan.h"
 #define __TEST_TAN_INTERNAL__                   /* needed to include tan-test-data.h */
@@ -66,21 +66,21 @@ int test_tan_conf_setup(struct libm_test *test)
 
 int test_tan_special_setup(struct libm_test *test)
 {
-	int ret = 0;
+    int ret = 0;
 
-	if(test_is_single_precision(test)) {
-		ret = libm_test_conf_setup_f32(test,
-					       (struct libm_test_special_data_f32 *)
-					       test_tanf_special_data,
-					       ARRAY_SIZE(test_tanf_special_data));
-	} else {
-		ret = libm_test_conf_setup_f64(test,
-					       (struct libm_test_special_data_f64 *)
-					       test_tan_special_data,
-					       ARRAY_SIZE(test_tan_special_data));
-	}
+    if(test_is_single_precision(test)) {
+            ret = libm_test_conf_setup_f32(test,
+                                          (struct libm_test_special_data_f32 *)
+                                          test_tanf_special_data,
+                                          ARRAY_SIZE(test_tanf_special_data));
+    } else {
+            ret = libm_test_conf_setup_f64(test,
+                                          (struct libm_test_special_data_f64 *)
+                                          test_tan_special_data,
+                                          ARRAY_SIZE(test_tan_special_data));
+}
 
-	return ret;
+    return ret;
 }
 
 
@@ -158,57 +158,68 @@ test_tan_cb_v2d(struct libm_test *test, int j)
 static int
 test_tan_cb_v4d(struct libm_test *test, int j)
 {
-	struct libm_test_data *data = &test->test_data;
-	double *restrict ip1 = (double*)data->input1;
-	double *restrict o = (double*)data->output;
+    struct libm_test_data *data = &test->test_data;
+    double *restrict ip1 = (double*)data->input1;
+    double *restrict o = (double*)data->output;
 
-	__m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-	__m256d op4 = LIBM_FUNC_VEC(d, 4, tan)(ip4);
-	_mm256_store_pd(&o[j], op4);
+    __m256d ip4 = _mm256_set_pd(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
+    __m256d op4 = LIBM_FUNC_VEC(d, 4, tan)(ip4);
+    _mm256_store_pd(&o[j], op4);
 
-	return 0;
+    return 0;
 }
 */
 
 static int
-test_tan_cb_accu_ranges(struct libm_test *test, int j)
+test_tan_accu_run(struct libm_test *test)
 {
     int ret = 0;
-    if (test->conf->inp_range[0].start ||
-        test->conf->inp_range[0].stop) {
-        struct libm_test_input_range *range = &test->conf->inp_range[0];
-        ret = libm_generate_test_one_range(test, range);
-        ret = test_tan_verify(test, &test->result);
-        return ret;
-        }
 
-    int arr_sz = ARRAY_SIZE(tan_accu_ranges);
-    for (int i = 0; i < arr_sz; i++) {
-        if ((tan_accu_ranges[i].start == 0.0) && (tan_accu_ranges[i].stop == 0.0) )
-            break;
-    ret = libm_generate_test_one_range(test, &tan_accu_ranges[i]);
-    if(ret)
+    if (test->conf->inp_range[0].start  == 0 ||
+        test->conf->inp_range[0].stop   == 0)
+    {
+        int arr_sz = ARRAY_SIZE(tan_accu_ranges);
+        for (int i = 0; i < arr_sz; i++) {
+            if ((tan_accu_ranges[i].start == 0.0) && (tan_accu_ranges[i].stop == 0.0))
+                break;
+
+            ret = libm_generate_test_one_range(test, &tan_accu_ranges[i]);
+            if(ret)
+                return ret;
+
+            ret = test_tan_verify(test, &test->result);
+            if (ret) return ret;
+            }
         return ret;
-    ret = test_tan_verify(test, &test->result);
     }
-    return 0;
+
+    return libm_test_accu(test);
 }
+
 
 /*ulp*/
-double test_tan_ulp(struct libm_test *test, int idx)
+
+#include "../libs/mparith/am_mp_funcs.h"
+
+double test_tanf_ulp(struct libm_test *test, int idx)
 {
     float *buf = (float*)test->test_data.input1;
-    return tan(buf[idx]);
+    float val = buf[idx];
+
+    return alm_mp_tanf(val);
 }
 
-long double
-test_tan_tanl(struct libm_test *test, int idx)
+double
+test_tan_ulp(struct libm_test *test, int idx)
 {
     double *d = (double*)test->test_data.input1;
+    double val = d[idx];
+
     if (test_is_single_precision(test)) {
-        return test_tan_ulp(test, idx);
+        return test_tanf_ulp(test, idx);
     }
-    return tanl(d[idx]);
+
+    return alm_mp_tan(val);
 }
 
 struct libm_test_funcs test_tan_funcs[LIBM_FUNC_MAX] =
@@ -221,8 +232,8 @@ struct libm_test_funcs test_tan_funcs[LIBM_FUNC_MAX] =
                                            .run   = libm_test_s1s_perf,
                                          },
                          .accuracy     = { .setup = libm_test_accu_setup,
-                                           .run   = libm_test_accu,
-                                           .ulp = {.funcl = test_tan_tanl}
+                                           .run   = test_tan_accu_run,
+                                           .ulp = {.func = test_tanf_ulp}
                                          },
 
 
@@ -242,8 +253,8 @@ struct libm_test_funcs test_tan_funcs[LIBM_FUNC_MAX] =
                                           .run   = libm_test_s1d_perf,
                                         },
                          .accuracy     = {.setup = libm_test_accu_setup,
-                                          .run   = libm_test_accu,
-                                          .ulp = {.funcl = test_tan_tanl},
+                                          .run   = test_tan_accu_run,
+                                          .ulp = {.func = test_tan_ulp},
                                          },
 
                          .special      = {.setup = test_tan_special_setup,
@@ -256,6 +267,7 @@ struct libm_test_funcs test_tan_funcs[LIBM_FUNC_MAX] =
                                           .verify = test_tan_verify,
                                          },
      },
+
      [LIBM_FUNC_V4S] = {
                           .performance = {
                                           .setup = libm_test_perf_setup,
@@ -263,10 +275,10 @@ struct libm_test_funcs test_tan_funcs[LIBM_FUNC_MAX] =
                            },
                           .accuracy = {
                                           .setup = libm_test_accu_setup,
-                                          .run = libm_test_accu,
-                                          .ulp = {.funcl = test_tan_tanl},
+                                          .run   = test_tan_accu_run,
+                                          .ulp   = {.func = test_tanf_ulp},
                            },
-     },/*
+     }, /*
      [LIBM_FUNC_V8S] = {
                           .performance = {
                                           .setup = libm_test_perf_setup,
@@ -274,8 +286,8 @@ struct libm_test_funcs test_tan_funcs[LIBM_FUNC_MAX] =
                           },
                           .accuracy = {
                                           .setup = libm_test_accu_setup,
-                                          .run = libm_test_accu,
-                                          .ulp = {.func = test_tan_ulp},
+                                          .run = test_tan_accu_run,
+                                          .ulp = {.func = test_tanf_ulp},
                           },
      },*/
      [LIBM_FUNC_V2D] = {
@@ -284,17 +296,17 @@ struct libm_test_funcs test_tan_funcs[LIBM_FUNC_MAX] =
                            },
                           .accuracy = {
                                          .setup = libm_test_accu_setup,
-                                         .run = libm_test_accu,
-                                         .ulp = {.funcl = test_tan_tanl},
+                                         .run = test_tan_accu_run,
+                                         .ulp = {.func = test_tan_ulp},
                            },
-     },/*
+     }, /*
      [LIBM_FUNC_V4D] = {
                           .performance = { .setup = libm_test_perf_setup,
                                            .run = libm_test_v4d_perf,
                            },
                           .accuracy = {   .setup = libm_test_accu_setup,
-                                          .run = libm_test_accu,
-                                          .ulp = {.funcl = test_tan_tanl},
+                                          .run = test_tan_accu_run,
+                                          .ulp = {.func = test_tan_ulp},
                            },
      },*/
 
@@ -309,7 +321,7 @@ tan_template = {
     .nargs      = 1,
     .ulp_threshold = 0.5,
     .ops        = {
-                    //.ulp    = {.funcl = test_tan_tanl},
+                    .ulp    = {.func = test_tan_ulp},
                     .verify = test_tan_verify,
                     .callbacks = {
                                     .s1s = test_tan_cb_s1s,
@@ -318,7 +330,6 @@ tan_template = {
                                     //.v8s = test_tan_cb_v8s,
                                     .v2d = test_tan_cb_v2d,
                                     //.v4d = test_tan_cb_v4d,
-                                    .accu_ranges = test_tan_cb_accu_ranges,
                                  },
                   },
 };

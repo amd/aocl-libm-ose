@@ -4,39 +4,95 @@
 /*
  * Test cases to check for exceptions for the sinf() routine.
  * These test cases are not exhaustive
+ * Test data added as per GLIBC output
  */
 static struct libm_test_special_data_f32
 test_sinf_conformance_data[] = {
     {0x7fbfffff, 0x7fffffff, FE_INVALID,}, //sinf(nan)=nan
-    {0xffffffff, 0xffffffff, 0,},   //sinf(-nan)=-nan
+    {0xffffffff, 0xffffffff, FE_INVALID,},   //sinf(-nan)=-nan
     {0x7fe00000, 0x7fe00000, 0,},  //sinf(qnan) = qnan
     {0xffe00000, 0xffe00000, 0,},  //sinf(-qnan) = -qnan
     {0x00000000, 0x00000000, 0,},   //sinf(0)=0
     {0x80000000, 0x80000000, 0,},      //sinf(-0) = -0
-    {0x3F800000, 0x3f576aa4, FE_INEXACT,}, //exp(1)  = E
-    {0x7F800000, 0xffc00000, 0,},      //inf
-    {0xFF800000, 0xffc00000, 0,},      //-inf
-    {0xBF800000, 0xbf576aa4, FE_INEXACT,}, //-1
-    {0x40490fdb, 0xb3bbbd2e, FE_INEXACT,}, //pi
-    {0xc435f37e, 0x3f5d6966, 48,},      //denormal
-    {0x447a0000, 0x3f53ae61, 56,},      //1000
-    {0xc42f0000, 0xbf0b41a7, 48,},      //-700
-    {0x44317218, 0xbe5cb16b, 56,}, //smallest no for result infinity
+    {0x3F800000, 0x3f576aa4, FE_INEXACT,}, //sin(1)
+    {0x7F800000, 0xffc00000, FE_INVALID,},      //inf
+    {0xFF800000, 0xffc00000, FE_INVALID,},      //-inf
+    {0xbf800000, 0xbf576aa4, FE_INEXACT,}, //-1
+    {0x40490fd8, 0x0, 0,}, //sin(pi)=0
+    {0x40c90fdb, 0x0, 0,}, //sin(npi)=0
+    {0x3B800000, 0x3B7FFFD5, 0},    //sini
+    {0x3FC90FDB, 0x3f800000, 0},     //sin(Pi/2)=1
+    /*some vals taken from old test framework*/
+    {0x3fc90de3, 0x3f800000, 0},// 1.57074 = pi/2 - 6e-05
+    {0x3fc911d2, 0x3f800000, 0},//// 1.57086 = pi/2 + 6e-05
+    {0x3fc88fdb, 0x3f7fff80, 0}, // 1.56689 = pi/2 - 0.00390625
+    {0x3fc98fdb, 0x3f7fff80, 0}, // 1.57470 = pi/2 + 0.00390625
+    {0x40000000, 0x3f68c7b7, 0}, //sin(2)
+    {0x41200000, 0xbf0b44f8, 0}, //10
+    {0xC8C35000, 0x3e11f59f, 0}, //-4e5
+    {0x48F42400, 0x3e361962, 0}, //50000
+    {0x48F4CCC8, 0x3f3a0e4a, 0}, //501350.25 > 5.0e5
+    {0xC93F6800, 0xbe1dbf77, 0}, //-784000
+    {0x43FCE5F1, 0xb20fd1de, 0}, //505.796417, remainder is ~0, very close multiple of piby2
+    {0x4831E550, 0x379a62a2, 0}, //182165.25, remainder is ~piby4
+    {0x42FCE5F1, 0x3F3504F3, 0}, //126.449104
+    {0x5123e87f, 0xb18a4ed8, 0}, //4.399877E+10, close to pi/2
 };
 
 static struct libm_test_special_data_f64
 test_sin_conformance_data[] = {
-    {0x0000000000000000, 0x0, 0,},
-    {0x0,                0x0, 0,},  //exp(0)
-    {0x7ff0000000000000, 0xfff8000000000000, 0,},  //exp(infinity)
-    {0x7FF0000000000000, 0xfff8000000000000, 0,},         //exp(inf)=inf
-    {0xfff0000000000000, 0xfff8000000000000, 0,},  //exp(-inf)
-    {0x7FF4001000000000, 0x7ffc001000000000, FE_INVALID,}, //exp(snan)
-    {0xfff2000000000000, 0xfffa000000000000, FE_INVALID,}, //exp(-snan)
-    {0x7ff87ff7fdedffff, 0x7ff87ff7fdedffff, FE_INVALID,},  //exp(qnan)
-    {0xfff2000000000000, 0xfffa000000000000, FE_INVALID,},    //exp(-qnan)
-    //{0x40862e42fefa39ef, 0x7fefffffffffff2a, FE_INEXACT,}, //exp(ln(2)*1024)
-    //{0x4086300000000000, 0x7ff0000000000000, 40},  //exp(x>ln(2)*1024)
+    {0x0000000000000000, 0x0000000000000000, 0},           //sin(0)=0
+    {0x8000000000000000, 0x8000000000000000, 0},           //sin(-10)=-0
+    {0x3FF0000000000000, 0x3feaed548f090cee, 48},          //sin(1)=0.84
+    {0x7ff0000000000000, 0xfff8000000000000, FE_INVALID,}, //sin(inf)=inf
+    {0xfff0000000000000, 0xfff8000000000000, FE_INVALID,}, //sin(-inf)=-inf
+    {0x7FF4001000000000, 0x7ff4001000000000, FE_INVALID,}, //sin(snan)=snan
+    {0xfff2000000000000, 0xfff2000000000000, FE_INVALID,}, //sin(-snan)=-snan
+    {0x7ff87ff7fdedffff, 0x7ff87ff7e0000000, 0,},          //sin(qnan)=qnan
+    {0xfff2000000000000, 0xfffa000000000000, 0,}, //sin(-qnan)
+    {0x40091eb851eb851f, 0x0000000000000000, 0,},  //sin(pi)=0
+    {0x3ff921fb544486e0, 0x0000000000000000, 0,},  //sin(n*Pi)=sin(pi) for any n=1,2,3..
+    {0x4012D97C7F336528, 0x0000000000000000, 0,}, //sin(270)
+
+    {0xc000000000000000, 0xbfed18f6ead1b446, 0}, //-2
+    {0x3f18000000000000, 0x3F17FFFFFF700000, 0}, //9.1552734375E-05	 =  2^-14 *1.5
+    {0xbf18000000000000, 0xbF17FFFFFF700000, 0}, //-9.1552734375E-05	 = -2^-14 *1.5
+    {0x412E848abcdef000, 0xbfee94b095ab2499, 0}, //1000005.3688883781 > 5e5
+    {0x400921FB54442D18, 0x3ca1a62633145c07, 0}, //3.1415926535897931 = pi
+    {0x400f6a7a2955385e, 0xbfe6a09e667f3bcc, 0},
+    {0x400f6a7a2955385d, 0xbfe6a09e667f3bc9, 0},
+    {0x400f6a7a2955385f, 0xbfe6a09e667f3bce, 0},
+    {0x3e38000000000000, 0x3E38000000000000, 0}, // 5.5879354476928711E-09 = 2^-28*1.5
+    {0xbe38000000000000, 0xBE38000000000000, 0}, // -5.5879354476928711E-09 = -2^-28*1.5
+    {0x3f18000000000000, 0x3F17FFFFFF700000, 0}, //9.1552734375E-05	 =  2^-14 *1.5
+    {0xbf18000000000000, 0xbF17FFFFFF700000, 0}, //-9.1552734375E-05	 = -2^-14 *1.5
+    {0x3fe0000000000000, 0x3fdeaee8744b05f0, 0}, //0.5
+    {0xbfe0000000000000, 0xBFDEAEE8744B05F0, 0}, //-0.5
+    {0x3FEFFEE4E9DABC6B, 0x3FEAECBB972204E8, 0}, //0.999865013834904
+    {0x3fe921fb54442d18, 0x3FE6A09E667F3BCC, 0}, //0.78539816339744828 = pi/4
+    {0xbfe921fb54442d18, 0xBFE6A09E667F3BCC, 0}, //-0.78539816339744828 =-pi/4
+    {0x412E848abcdef000, 0xbfee94b095ab2499, 0}, // 1000005.3688883781 > 5e5
+    {0x439332270327F466, 0xbfefff7a431a18dc, 0}, // 3.4580273251621926E+17
+
+    {0x3ff921fb54442d18LL, 0x3ff0000000000000LL, 0},  // 1.5707963267948966 = pi/2
+    {0x400921fb54442d18LL, 0x3ca1a62633145c07LL, 0},  // 3.1415926535897931 = pi
+    {0x4012D97C7F3321D2LL, 0xbff0000000000000LL, 0},  // 4.71238898038469 = 3pi/2
+    {0x401921fb54442d18LL, 0xbcb1a62633145c07LL, 0},  // 6.2831853071795862 = 2pi
+    {0x402921fb54442d18LL, 0xbcc1a62633145c07LL, 0},  // 12.566370614359172 = 4pi
+    {0x410921fb54442d18LL, 0xbda1a62633145c07LL, 0},  // 205887.41614566068 =  (2^16)pi
+    {0x403921fb54442d18LL, 0xbcd1a62633145c07LL, 0},  // 25.132741228718345 = 8pi
+    {0x403921fb54442d19LL, 0x3ce72cece675d1fdLL, 0},  // 25.132741228718348 close to 8pi
+    {0x3ff921fb57442d18LL, 0x3fefffffffffffffLL, 0},  // 1.5707963379707675 close to pi/2
+    {0x400921fb52442d18LL, 0x3e5000000234c4c6LL, 0},  // 3.1415926386886319 close to pi
+    {0x410921fb56442d18LL, 0x3f4fffffa6412185LL, 0},  // 205887.41712222318 close to (2^16)pi
+    {0xbff921fb57442d18LL, 0xbfefffffffffffffLL, 0},  //-1.5707963379707675 close to - pi/2
+    {0xc00921fb54442d18LL, 0xbca1a62633145c07LL, 0},  //-3.1415926535897931 = - pi
+    {0x400921f554442d18LL, 0x3ee7fffffffeda62LL, 0},  // 3.1415812094979962 close to pi
+    {0xc00921f554442d18LL, 0xbee7fffffffeda62LL, 0},  //-3.1415812094979962 close to -pi
+    {0xbff921f557442d18LL, 0xbfeffffffffdc23fLL, 0},  //-1.570790615924869 close to -pi/2
+    {0xbff9217557442d18LL, 0xbfeffffffb9df240LL, 0},  //-1.570668545612369 close to -pi/2
+    {0x400921fb56442d18LL, 0xbe4ffffffb967673LL, 0},  // 3.1415926684909543 close to pi
+    {0x4012D98C7F3321D2LL, 0xbfefffffff000000LL, 0},  // 4.71245001554094 close to 3pi/2
 };
 
 static struct libm_test_special_data_f32

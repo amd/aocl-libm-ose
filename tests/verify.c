@@ -139,7 +139,7 @@ static int __verify_double(struct libm_test *test,
              * but also the exceptions
              */
             excpt_matched = (raised_exception[j] == expected_exception[j]);
-            matched |= excpt_matched;
+            matched &= excpt_matched;
             test_update_ulp = 0;
             /* mark for failure */
             if (!matched) ret = 2;
@@ -252,7 +252,7 @@ static int __verify_float(struct libm_test *test,
              */
             excpt_matched = (raised_exception[j] == expected_exception[j]);
 
-            matched |= excpt_matched;
+            matched &= excpt_matched;
 
             test_update_ulp = 0;
             /* mark for failure */
@@ -310,7 +310,7 @@ static int __verify_float(struct libm_test *test,
                                "    expected:%8X actual:%8X ulp:%5.05g\n",
                                nw[j].i, op[j].i, ulp);
 
-            if (test->test_type == TEST_TYPE_CONFORMANCE && !excpt_matched) {
+            if (test->test_type == TEST_TYPE_CONFORMANCE && ! excpt_matched) {
                 printf("Raised excpetion: ");
                 print_errors(raised_exception[j]);
                 printf(" Expected exception: ");

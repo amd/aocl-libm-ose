@@ -13,17 +13,17 @@ typedef double F64;
 typedef unsigned long long  U64;
 typedef long long S64;
 
-union UT32_ 
+union UT32_
 {
     F32 f32;
     U32 u32;
 };
 
-union UT64_ 
+union UT64_
 {
     F64 f64;
     U64 u64;
-    
+
     F32 f32[2];
     U32 u32[2];
 };
@@ -39,6 +39,34 @@ typedef union UT64_ UT64;
 
 #define MULTIPLIER_SP 24
 #define MULTIPLIER_DP 53
+
+/*Special numbers Float */
+#define POS_ONE_F32 0x3F800000
+#define NEG_ONE_F32 0xbf800000
+#define POS_ZERO_F32 0x00000000
+#define NEG_ZERO_F32 0x80000000
+#define POS_INF_F32 0x7F800000
+#define NEG_INF_F32 0xFF800000
+#define POS_SNAN_F32 0x7fb00000
+#define NEG_SNAN_F32 0xffb00000
+#define POS_QNAN_F32 0x7ff00000
+#define NEG_QNAN_F32 0xfff00000
+#define POS_PI_F32 0x40490fd8
+#define NEG_PI_F32 0xc0490fd8
+
+/*Special numbers Double */
+#define POS_ONE_F64 0x3FF0000000000000
+#define NEG_ONE_F64 0xBFF0000000000000
+#define POS_ZERO_F64 0x0000000000000000
+#define NEG_ZERO_F64 0x8000000000000000
+#define POS_INF_F64 0x7ff0000000000000
+#define NEG_INF_F64 0xfff0000000000000
+#define POS_SNAN_F64 0x7FF4001000000000
+#define NEG_SNAN_F64 0xfff2000000000000
+#define POS_QNAN_F64 0x7ff87ff7fdedffff
+#define NEG_QNAN_F64 0xfff2000000000000
+#define POS_PI_F64 0x40091EB851EB851F
+#define NEG_PI_F64 0xc00921fb54442d18
 
 static const double VAL_2PMULTIPLIER_DP =  9007199254740992.0;
 static const double VAL_2PMMULTIPLIER_DP = 1.1102230246251565404236316680908e-16;

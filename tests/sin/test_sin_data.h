@@ -1,5 +1,6 @@
 #include <fenv.h>
 #include <libm_tests.h>
+#include<libm_util_amd.h>
 
 /*
  * Test cases to check for exceptions for the sinf() routine.
@@ -8,18 +9,17 @@
  */
 static struct libm_test_special_data_f32
 test_sinf_conformance_data[] = {
-    {0x7fbfffff, 0x7fffffff, FE_INVALID,}, //sinf(nan)=nan
-    {0xffffffff, 0xffffffff, FE_INVALID,},   //sinf(-nan)=-nan
-    {0x7fe00000, 0x7fe00000, 0,},  //sinf(qnan) = qnan
-    {0xffe00000, 0xffe00000, 0,},  //sinf(-qnan) = -qnan
-    {0x00000000, 0x00000000, 0,},   //sinf(0)=0
-    {0x80000000, 0x80000000, 0,},      //sinf(-0) = -0
-    {0x3F800000, 0x3f576aa4, FE_INEXACT,}, //sin(1)
-    {0x7F800000, 0xffc00000, FE_INVALID,},      //inf
-    {0xFF800000, 0xffc00000, FE_INVALID,},      //-inf
-    {0xbf800000, 0xbf576aa4, FE_INEXACT,}, //-1
-    {0x40490fd8, 0x0, 0,}, //sin(pi)=0
-    {0x40c90fdb, 0x0, 0,}, //sin(npi)=0
+    {POS_SNAN_F32, POS_SNAN_F32, FE_INVALID,}, //sinf(nan)=nan
+    {NEG_SNAN_F32, NEG_SNAN_F32, FE_INVALID,},   //sinf(-nan)=-nan
+    {POS_QNAN_F32, POS_QNAN_F32, 0,},  //sinf(qnan) = qnan
+    {NEG_QNAN_F32, NEG_QNAN_F32, 0,},  //sinf(-qnan) = -qnan
+    {POS_ZERO_F32, POS_ZERO_F32, 0,},   //sinf(0)=0
+    {NEG_ZERO_F32, NEG_ZERO_F32, 0,},      //sinf(-0) = -0
+    {POS_ONE_F32, 0x3f576aa4, FE_INEXACT,}, //sin(1)
+    {POS_INF_F32, 0xffc00000, FE_INVALID,},      //inf
+    {NEG_INF_F32, 0xffc00000, FE_INVALID,},      //-inf
+    {NEG_ONE_F32, 0xbf576aa4, FE_INEXACT,}, //-1
+    {POS_PI_F32, 0x0, 0,}, //sin(pi)=0
     {0x3B800000, 0x3B7FFFD5, 0},    //sini
     {0x3FC90FDB, 0x3f800000, 0},     //sin(Pi/2)=1
     /*some vals taken from old test framework*/
@@ -41,16 +41,16 @@ test_sinf_conformance_data[] = {
 
 static struct libm_test_special_data_f64
 test_sin_conformance_data[] = {
-    {0x0000000000000000, 0x0000000000000000, 0},           //sin(0)=0
-    {0x8000000000000000, 0x8000000000000000, 0},           //sin(-10)=-0
-    {0x3FF0000000000000, 0x3feaed548f090cee, 48},          //sin(1)=0.84
-    {0x7ff0000000000000, 0xfff8000000000000, FE_INVALID,}, //sin(inf)=inf
-    {0xfff0000000000000, 0xfff8000000000000, FE_INVALID,}, //sin(-inf)=-inf
-    {0x7FF4001000000000, 0x7ff4001000000000, FE_INVALID,}, //sin(snan)=snan
-    {0xfff2000000000000, 0xfff2000000000000, FE_INVALID,}, //sin(-snan)=-snan
-    {0x7ff87ff7fdedffff, 0x7ff87ff7e0000000, 0,},          //sin(qnan)=qnan
-    {0xfff2000000000000, 0xfffa000000000000, 0,}, //sin(-qnan)
-    {0x40091eb851eb851f, 0x0000000000000000, 0,},  //sin(pi)=0
+    {POS_ZERO_F64, POS_ZERO_F64, 0},           //sin(0)=0
+    {NEG_ZERO_F64, NEG_ZERO_F64, 0},           //sin(-0)=-0
+    {POS_ONE_F64, 0x3feaed548f090cee, 48},          //sin(1)=0.84
+    {POS_INF_F64, 0xfff8000000000000, FE_INVALID,}, //sin(inf)=inf
+    {NEG_INF_F64, 0xfff8000000000000, FE_INVALID,}, //sin(-inf)=-inf
+    {POS_SNAN_F64, 0x7ff4001000000000, FE_INVALID,}, //sin(snan)=snan
+    {NEG_SNAN_F64, 0xfff2000000000000, FE_INVALID,}, //sin(-snan)=-snan
+    {POS_QNAN_F64, 0x7ff87ff7e0000000, 0,},          //sin(qnan)=qnan
+    {NEG_QNAN_F64, 0xfffa000000000000, 0,}, //sin(-qnan)
+    {POS_PI_F64,         POS_ZERO_F64, 0,},  //sin(pi)=0
     {0x3ff921fb544486e0, 0x0000000000000000, 0,},  //sin(n*Pi)=sin(pi) for any n=1,2,3..
     {0x4012D97C7F336528, 0x0000000000000000, 0,}, //sin(270)
 

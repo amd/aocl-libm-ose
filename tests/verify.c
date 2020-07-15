@@ -190,9 +190,9 @@ static int __verify_double(struct libm_test *test,
                                nw[j].i, op[j].i, ulp);
 
             if (test->test_type == TEST_TYPE_CONFORMANCE && !excpt_matched) {
-	            printf("Raised excpetion: ");
+	            printf("Raised exception: ");
 	            print_errors(raised_exception[j]);
-                printf(" Expected exception: ");
+                printf("Expected exception: ");
                 print_errors(expected_exception[j]);
                 printf("\n");
             }
@@ -311,9 +311,9 @@ static int __verify_float(struct libm_test *test,
                                nw[j].i, op[j].i, ulp);
 
             if (test->test_type == TEST_TYPE_CONFORMANCE && ! excpt_matched) {
-                printf("Raised excpetion: ");
+                printf("Raised exception: ");
                 print_errors(raised_exception[j]);
-                printf(" Expected exception: ");
+                printf("Expected exception: ");
                 print_errors(expected_exception[j]);
                 printf("\n");
             }

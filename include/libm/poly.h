@@ -84,4 +84,23 @@
                 })
 
 
-#endif  /* LIBM_POLY_H */
+/*
+ * poly = C0 + C1*r^3 + C2*r^5 + C3*r^7+ C4 *r^9 \
+ *
+ *      = C0 + r^2*(C1 + C2*r^2) + r^4*(C3*r^2+C4*r^4)
+ *    
+ */
+#define POLY_EVAL_ODD_9(r, c0, c1, c2, c3, c4) ({               \
+        __typeof(r) a0, a1, a2, q;                              \
+        __typeof(r) r2, r4;                                     \
+        r2 = r * r;	                                        \
+        r4 = r2 * r2;   	                                \
+        a0 = c2*r2 + c1;                                        \
+        a1 = a0*r2 + c0;                                        \
+        a2 = (c3*r2 + c4*r4)*r4;                                \
+        q = r*(a1 + a2);                                        \
+        q;                                                      \
+        })
+
+#endif	/* LIBM_POLY_H */
+

@@ -24,7 +24,6 @@
  * ALM_PROTO_OPT to be removed, once all the FN_PROTOTYPE_OPT is converted to ALM_PROTO
  */
 #define ALM_PROTO_OPT(fn_name)  amd_opt_##fn_name
-
 #else
 #ifndef ALM_ARCH
 #error "ALM_ARCH needs to be defined or ALM_OVERRIDE needs to be removed"

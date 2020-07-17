@@ -447,9 +447,11 @@ extern float FN_PROTOTYPE_OPT(expm1f)(float x);
 extern float FN_PROTOTYPE_OPT(log2f)(float x);
 extern float FN_PROTOTYPE_OPT(logf)(float x);
 extern float FN_PROTOTYPE_OPT(logp1f)(float x);
+extern float FN_PROTOTYPE_OPT(sinf)(float x);
 
 extern __m128 FN_PROTOTYPE_OPT(vrs4_expf)(__m128 x);
 extern __m128 FN_PROTOTYPE_OPT(vrs4_powf)(__m128 x, __m128 y);
+extern __m128 FN_PROTOTYPE_OPT(vrs4_sinf)(__m128 x);
 extern __m256 FN_PROTOTYPE_OPT(vrs8_logf)(__m256 x);
 extern __m256 FN_PROTOTYPE_OPT(vrs8_expf)(__m256 x);
 
@@ -464,7 +466,6 @@ extern __m256d FN_PROTOTYPE_OPT(vrd4_exp)(__m256d x);
 extern __m128d FN_PROTOTYPE_OPT(vrd2_log)(__m128d x);
 
 
-
 /*
  * New ALM_PROTO API's
  */
@@ -475,6 +476,10 @@ extern   __m256       ALM_PROTO_OPT(vrs8_tanf)	(__m256);
 extern   double       ALM_PROTO_OPT(tan)	(double);
 extern   __m128d      ALM_PROTO_OPT(vrd2_tan)	(__m128d);
 extern   __m256d      ALM_PROTO_OPT(vrd4_tan)	(__m256d);
+
+extern float  ALM_PROTO_OPT(sinf)(float);
+extern __m128 ALM_PROTO_OPT(vrs4_sinf)(__m128);
+extern __m256 ALM_PROTO_OPT(vrs8_sinf)(__m256);
 
 #if defined(__cplusplus)
 }

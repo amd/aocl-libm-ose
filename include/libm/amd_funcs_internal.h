@@ -2,7 +2,7 @@
 #define __LIBM_AMD_FUNCS_INTERNAL_H__
 
 #include <libm_macros.h>
-
+#include <libm/arch/zen2.h>
 /*
  * Copyright AMD Inc, 2008-2019, All rights reserved
  *
@@ -465,6 +465,8 @@ extern __m128d FN_PROTOTYPE_OPT(vrd2_exp)(__m128d x);
 extern __m256d FN_PROTOTYPE_OPT(vrd4_exp)(__m256d x);
 extern __m128d FN_PROTOTYPE_OPT(vrd2_log)(__m128d x);
 
+extern float  ALM_PROTO_ARCH_ZN2(sinf)(float);
+extern __m128 ALM_PROTO_ARCH_ZN2(vrs4_sinf)(__m128);
 
 /*
  * New ALM_PROTO API's

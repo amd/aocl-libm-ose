@@ -1,4 +1,4 @@
 #define ALM_OVERRIDE 1
 
 #include <libm/arch/zen2.h>
-#include "../../optmized/sinf.c"
+#include "../../optmized/vec/vrs4_sinf.c"

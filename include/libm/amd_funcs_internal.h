@@ -463,10 +463,22 @@ extern __m128d FN_PROTOTYPE_OPT(vrd2_exp)(__m128d x);
 extern __m256d FN_PROTOTYPE_OPT(vrd4_exp)(__m256d x);
 extern __m128d FN_PROTOTYPE_OPT(vrd2_log)(__m128d x);
 
+
+
+/*
+ * New ALM_PROTO API's
+ */
+extern   float        ALM_PROTO_OPT(tanf)	(float);
+extern   __m128       ALM_PROTO_OPT(vrs4_tanf)	(__m128);
+extern   __m256       ALM_PROTO_OPT(vrs8_tanf)	(__m256);
+
+extern   double       ALM_PROTO_OPT(tan)	(double);
+extern   __m128d      ALM_PROTO_OPT(vrd2_tan)	(__m128d);
+extern   __m256d      ALM_PROTO_OPT(vrd4_tan)	(__m256d);
+
 #if defined(__cplusplus)
 }
 #endif
-
 
 #endif /* __LIBM_AMD_FUNCS_INTERNAL_H__ */
 

@@ -62,6 +62,7 @@
 /*
  * poly = x * (C1 + C2*x^2 + C3*x^4 + C4*x^6 + C5*x^8 + \
  *              C6*x^10 + C7*x^12)
+ *
  */
 #define POLY_EVAL_EVEN_8(r, c1, c2, c3, c4, c5, c6, c7, c8) ({          \
                         __typeof(r) a1, a2, a3, a4, b1, b2 ,q;          \

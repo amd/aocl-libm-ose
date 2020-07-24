@@ -10,12 +10,11 @@
 #include <libm/entry_pt.h>
 #include <libm/cpu_features.h>
 
+//#include <libm/arch/zen.h>
+#include <libm/arch/zen2.h>
+
 typedef double (*amd_tan_t)(double);
 typedef float (*amd_tanf_t)(float);
-typedef __m128d (*amd_tan_v2d_t)(__m128d);
-typedef __m256d (*amd_tan_v4d_t)(__m256d);
-typedef __m128  (*amd_tan_v4s_t)(__m128);
-typedef __m256  (*amd_tan_v8s_t)(__m256);
 
 void
 LIBM_IFACE_PROTO(tan)(void *arg)
@@ -26,10 +25,6 @@ LIBM_IFACE_PROTO(tan)(void *arg)
      */
     amd_tan_t  fn_d = NULL;
     amd_tanf_t fn_s = NULL;
-    //amd_tan_v4d_t fn_v4d = NULL;
-    //amd_tan_v4s_t fn_v4s = NULL;
-    //amd_tan_v8s_t fn_v8s = NULL;
-    //amd_tan_v2d_t fn_v2d = NULL;
 
     static struct cpu_features *features = NULL;
 
@@ -40,20 +35,12 @@ LIBM_IFACE_PROTO(tan)(void *arg)
     struct cpu_mfg_info *mfg_info = &features->cpu_mfg_info;
 
     fn_d = &FN_PROTOTYPE_REF(tan);
-    fn_s = &FN_PROTOTYPE_REF(tanf);
-    //fn_v4d = &FN_PROTOTYPE_FMA3(vrd4_tan);
-    //fn_v4s = &FN_PROTOTYPE_FMA3(vrs4_tanf);
-    //fn_v8s = &FN_PROTOTYPE_OPT(vrs8_tanf);
-    //fn_v2d = &FN_PROTOTYPE_FMA3(vrd2_tan);
+    fn_s = &FN_PROTOTYPE_FMA3(tanf);
 
     if (CPU_HAS_AVX2(features) &&
         CPU_FEATURE_AVX2_USABLE(features)) {
 	    //fn_d = &FN_PROTOTYPE_OPT(tan);
 	    fn_s = &FN_PROTOTYPE_OPT(tanf);
-        //fn_v4s = &FN_PROTOTYPE_OPT(vrs4_tanf);
-        //fn_v8s = &FN_PROTOTYPE_OPT(vrs8_tanf);
-        //fn_v2d = &FN_PROTOTYPE_OPT(vrd2_tan);
-        //fn_v4d = &FN_PROTOTYPE_OPT(vrd4_tan);
      } else if (CPU_HAS_SSSE3(features) &&
                CPU_FEATURE_SSSE3_USABLE(features)) {
 	    //fn_d = &FN_PROTOTYPE_BAS64(tan);
@@ -70,19 +57,18 @@ LIBM_IFACE_PROTO(tan)(void *arg)
     if (mfg_info->mfg_type == CPU_MFG_AMD) {
         switch(mfg_info->family) {
         case 0x15:                      /* Naples */
+            //fn_s = &ALM_PROTO_ARCH_ZN(tanf);
             break;
         case 0x17:                      /* Rome */
+            fn_s = &ALM_PROTO_ARCH_ZN2(tanf);
             break;
         case 0x19:                      /* Milan */
+            fn_s = &ALM_PROTO_ARCH_ZN2(tanf);
             break;
         }
     }
 
     G_ENTRY_PT_PTR(tan) = fn_d;
     G_ENTRY_PT_PTR(tanf) = fn_s;
-    //G_ENTRY_PT_PTR(vrd4_tan) = fn_v4d;
-    //G_ENTRY_PT_PTR(vrs4_tanf) = fn_v4s;
-    //G_ENTRY_PT_PTR(vrs8_tanf) = fn_v8s;
-    //G_ENTRY_PT_PTR(vrd2_tan) = fn_v2d;
 }
 

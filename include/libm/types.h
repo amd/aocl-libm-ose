@@ -14,6 +14,19 @@
 #define STRINGIFY2(x) #x
 #define STRINGIFY(x) STRINGIFY2(x)
 
+
+typedef    short               f16_t;
+typedef    float               f32_t;
+typedef    double              f64_t;
+typedef    long double         f80_t;
+
+#ifdef  HAVE_NATIVE_LONG_LONG_DOUBLE
+typedef    long long double    f128_t;
+#else
+typedef    __m128              f128_t;
+#endif
+
+
 /*****************************
  * Internal types
  *****************************/
@@ -36,7 +49,6 @@ typedef union {
     int64_t i;
     double  d;
 } flt64_t;
-
 
 
 /*

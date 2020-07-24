@@ -6,6 +6,7 @@
 #ifndef __LIBM_TYPEHELPER_H__
 #define __LIBM_TYPEHELPER_H__
 
+#include <float.h>
 #include <libm/types.h>
 
 #define _MM_SET1_PS4(x)					\
@@ -247,7 +248,7 @@ v_f32x4_to_float(v_f32x4_t f32x4, int idx)
 {
     union  {
         v_f32x4_t __f32x4;
-        float_t   f32[4];
+        float     f32[4];
     } val = {
         .__f32x4 = f32x4,
     };
@@ -269,7 +270,7 @@ v_f32x4_to_uint32(v_f32x4_t f32x4, int idx)
 }
 
 static inline v_f32x4_t
-v_lookup_f32(const float_t *tab, v_i32x4_t idx)
+v_lookup_f32(const float *tab, v_i32x4_t idx)
 {
     return (v_f32x4_t) {tab[idx[0]], tab[idx[1]], tab[idx[2]], tab[idx[3]]};
 }

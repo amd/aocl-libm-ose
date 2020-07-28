@@ -13,8 +13,9 @@
 //#include <libm/arch/zen.h>
 #include <libm/arch/zen2.h>
 
-typedef double (*amd_tan_t)(double);
-typedef float (*amd_tanf_t)(float);
+typedef double  (*amd_tan_t)(double);
+typedef float   (*amd_tanf_t)(float);
+typedef __m128  (*amd_vrs4_tanf_t)(__m128);
 
 void
 LIBM_IFACE_PROTO(tan)(void *arg)
@@ -23,8 +24,9 @@ LIBM_IFACE_PROTO(tan)(void *arg)
      * Should setup all variants,
      * single, double, and vectors (also complex if available)
      */
-    amd_tan_t  fn_d = NULL;
-    amd_tanf_t fn_s = NULL;
+    amd_tan_t        fn_d = NULL;
+    amd_tanf_t       fn_s = NULL;
+    amd_vrs4_tanf_t  fn_v4s = NULL;
 
     static struct cpu_features *features = NULL;
 
@@ -34,8 +36,9 @@ LIBM_IFACE_PROTO(tan)(void *arg)
 
     struct cpu_mfg_info *mfg_info = &features->cpu_mfg_info;
 
-    fn_d = &FN_PROTOTYPE_REF(tan);
-    fn_s = &FN_PROTOTYPE_FMA3(tanf);
+    fn_d    = &FN_PROTOTYPE_REF(tan);
+    fn_s    = &FN_PROTOTYPE_FMA3(tanf);
+    fn_v4s  = &FN_PROTOTYPE_FMA3(vrs4_tanf);
 
     if (CPU_HAS_AVX2(features) &&
         CPU_FEATURE_AVX2_USABLE(features)) {
@@ -61,14 +64,17 @@ LIBM_IFACE_PROTO(tan)(void *arg)
             break;
         case 0x17:                      /* Rome */
             fn_s = &ALM_PROTO_ARCH_ZN2(tanf);
+            fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_tanf);
             break;
         case 0x19:                      /* Milan */
             fn_s = &ALM_PROTO_ARCH_ZN2(tanf);
+            fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_tanf);
             break;
         }
     }
 
-    G_ENTRY_PT_PTR(tan) = fn_d;
-    G_ENTRY_PT_PTR(tanf) = fn_s;
+    G_ENTRY_PT_PTR(tan)       = fn_d;
+    G_ENTRY_PT_PTR(tanf)      = fn_s;
+		G_ENTRY_PT_PTR(vrs4_tanf) = fn_v4s;
 }
 

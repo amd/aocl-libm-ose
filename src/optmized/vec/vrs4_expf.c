@@ -106,7 +106,7 @@ v_f32x4_t
 ALM_PROTO_OPT(vrs4_expf)(v_f32x4_t _x)
 {
 
-    v_u32x4_t vx = v_as_u32_f32(_x);
+    v_u32x4_t vx = as_v4_u32_f32(_x);
 
     // Get absolute value of vx
     vx = vx & MASK;

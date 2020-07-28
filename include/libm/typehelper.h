@@ -73,13 +73,6 @@ cast_i64_to_double( int64_t x )
 	return (double)x;
 }
 
-static inline v_u32x4_t
-v_as_u32_f32 (v_f32x4_t x)
-{
-  union { v_f32x4_t f; v_u32x4_t u; } r = {x};
-  return r.u;
-}
-
 static inline v_i32x4_t
 as_v_i32x4(v_f32x4_t x)
 {

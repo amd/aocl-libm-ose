@@ -212,7 +212,7 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
     v_f32x4_t ret = _x;
 
-    u = v_as_u32_f32(_x);
+    u = as_v4_u32_f32(_x);
 
     v_i32x4_t condition = (u - V_MIN >= V_MAX - V_MIN);
 

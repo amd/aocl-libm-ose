@@ -218,6 +218,12 @@ double _tan_special(double x)
 
 float _tanf_special(float x)
 {
+
+	UT32 xu = {.f32 = x};
+	if ((xu.u32 & ~SIGNBIT_SP32) < 0x39000000) {
+		__amd_handle_errorf("tanf", __amd_tan, xu.u32, _UNDERFLOW, AMD_F_UNDERFLOW, 
+					ERANGE, x, 0.0F, 1);
+	}
 	return _sinf_cosf_special(x, "tanf", __amd_tan);
 }
 

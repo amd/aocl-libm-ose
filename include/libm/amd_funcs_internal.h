@@ -454,6 +454,7 @@ extern __m128 FN_PROTOTYPE_OPT(vrs4_powf)(__m128 x, __m128 y);
 extern __m128 FN_PROTOTYPE_OPT(vrs4_sinf)(__m128 x);
 extern __m256 FN_PROTOTYPE_OPT(vrs8_logf)(__m256 x);
 extern __m256 FN_PROTOTYPE_OPT(vrs8_expf)(__m256 x);
+extern __m256 FN_PROTOTYPE_OPT(vrs8_sinf)(__m256 x);
 
 extern __m256 FN_PROTOTYPE_OPT(vrs8_powf)(__m256 x, __m256 y);
 
@@ -467,6 +468,7 @@ extern __m128d FN_PROTOTYPE_OPT(vrd2_log)(__m128d x);
 
 extern float  ALM_PROTO_ARCH_ZN2(sinf)(float);
 extern __m128 ALM_PROTO_ARCH_ZN2(vrs4_sinf)(__m128);
+extern __m256 ALM_PROTO_ARCH_ZN2(vrs8_sinf)(__m256);
 
 /*
  * New ALM_PROTO API's

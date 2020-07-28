@@ -45,23 +45,21 @@
 
 
 #ifndef ALM_PROTO_ARCH
-#define __ALM_PROTO_ARCH(a, x, y)	ALM_MAKE_PROTO_SFX(a, x, y)
-#define  ALM_PROTO_ARCH(a, x, y) 	__ALM_PROTO_ARCH(a, x, y)		
+#define __ALM_PROTO_ARCH(a, x, y)		ALM_MAKE_PROTO_SFX(a, x, y)
+#define  __ALM_MAKE_PROTO_ARCH(a, x, y) 	__ALM_PROTO_ARCH(a, x, y)		
 #endif
 
-#define  ALM_PROTO_ARCH_ZN2(x)		ALM_PROTO_ARCH(ALM_PREFIX_ZN2, x, ALM_ARCH_ZN2)
+#ifdef   ALM_PROTO_ARCH
+#undef   ALM_PROTO_ARCH
+#define  ALM_PROTO_ARCH(x)	        ALM_PROTO_ARCH_ZN2(x)
+#endif
 
-#ifdef  ALM_PROTO
-#undef  ALM_PROTO
-#define ALM_PROTO		ALM_PROTO_ARCH_ZN2
+#define  ALM_PROTO_ARCH_ZN2(x)		__ALM_PROTO_ARCH(ALM_PREFIX_ZN2, x, ALM_ARCH_ZN2)
 
-#define ALM_PROTO_CHANGE_INTERNAL  1
+#define ALM_PROTO_ARCH_CHANGE_INTERNAL  1
 #include <libm/arch/alm_funcs.h>
 
-#undef  ALM_PROTO
 #undef  ALM_PROTO_CHANGE_INTENRAL
-
-#endif /* ALM_PROTO */
 
 #endif  /* _ALM_ARCH_ZEN2_H_ */
 

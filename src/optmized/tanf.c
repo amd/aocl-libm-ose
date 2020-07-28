@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <libm_macros.h>
+#include <libm_special.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/types.h>
 #include <libm/constants.h>
@@ -16,7 +17,6 @@
 #define  ALM_SIGN_MASK   ~(1UL<<63)
 #define  ALM_SIGN_MASK32 ~(1U<<31)
 
-extern double _tan_special(double);
 
 /*
  * ISO-IEC-10967-2: Elementary Numerical Functions
@@ -97,7 +97,7 @@ static const struct {
  */
 
 float
-FN_PROTOTYPE_OPT(tanf)(float x)
+ALM_PROTO_OPT(tanf)(float x)
 {
     double     F, xd, tanx = 0.0;
     double     poly;
@@ -109,7 +109,7 @@ FN_PROTOTYPE_OPT(tanf)(float x)
 
         if((ux  & ALM_SIGN_MASK32) >= 0x7f800000) {
             /*  infinity or NaN */
-            return _tan_special(x);
+            return _tanf_special(x);
         }
     }
 

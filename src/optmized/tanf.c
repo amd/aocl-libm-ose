@@ -146,12 +146,12 @@ FN_PROTOTYPE_OPT(tanf)(float x)
      *  x * (C1 + C2*x^2 + C3*x^4 + C4*x^6 + C5*x^8 + C6*x^10 + C7*x^12 + C8*x^14)
      * polynomial is approximated as x*P(x^2)
      */
-    poly = POLY_EVAL_EVEN_8(F, C1, C2, C3, C4, C5, C6, C7, C8);
+    poly = POLY_EVAL_EVEN_14(F, C1, C2, C3, C4, C5, C6, C7, C8);
 
     tanx = asdouble(asuint64(poly) ^ sign);
 
     if (odd)
         tanx = -1.0/tanx;
 
-    return (float)tanx;
+    return eval_as_float(tanx);
 }

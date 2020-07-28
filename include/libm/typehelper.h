@@ -9,31 +9,6 @@
 #include <float.h>
 #include <libm/types.h>
 
-#define _MM_SET1_PS4(x)					\
-	_Generic((x),					\
-		 float: (__m128){(x), (x), (x), (x)})
-
-#define _MM_SET1_PS8(x)					\
-	_Generic((x),					\
-		 float: (__m256){(x), (x), (x), (x),	\
-			 (x), (x), (x), (x)})
-
-#define _MM_SET1_PD2(x)					\
-	_Generic((x),					\
-		 double: (__m128d){(x), (x)})
-
-#define _MM_SET1_PD4(x)					\
-	_Generic((x),					\
-		 double: (__m256d){(x), (x), (x), (x)})
-
-#define _MM_SET1_I32(x) {(x), (x), (x), (x)}
-
-#define _MM_SET1_I64(x) {(x), (x), (x), (x)}
-
-#define _MM256_SET1_I32(x) {(x), (x), (x), (x), (x), (x), (x), (x) }
-
-#define _MM256_SET1_PS8(x) {(x), (x), (x), (x), (x), (x), (x), (x) }
-
 static inline uint32_t
 asuint32(float f)
 {
@@ -66,6 +41,12 @@ static inline double
 eval_as_double(double d)
 {
     return d;
+}
+
+static inline float 
+eval_as_float(float f)
+{
+    return f;
 }
 
 static inline int32_t
@@ -281,23 +262,8 @@ v_lookup_u32(const uint32_t *tab, v_u32x4_t idx)
     return (v_u32x4_t) {tab[idx[0]], tab[idx[1]], tab[idx[2]], tab[idx[3]]};
 }
 
-static inline v_f32x8_t
-v_call_f32_2(float (*fn)(float),
-	   v_f32x8_t orig,
-	   v_f32x8_t result,
-	   v_i32x8_t cond)
-{
-    return (v_f32x8_t) {
-        cond[0] ? fn(orig[0]) : result[0],
-        cond[1] ? fn(orig[1]) : result[1],
-        cond[2] ? fn(orig[2]) : result[2],
-        cond[3] ? fn(orig[3]) : result[3],
-        cond[4] ? fn(orig[4]) : result[4],
-        cond[5] ? fn(orig[5]) : result[5],
-        cond[6] ? fn(orig[6]) : result[6],
-        cond[7] ? fn(orig[7]) : result[7]
-    };
-}
+#ifndef ALM_HAS_V8_CALL_F32
+#define ALM_HAS_V8_CALL_F32
 
 static inline v_f32x8_t
 v_call2_f32_2(float (*fn)(float, float),
@@ -318,18 +284,26 @@ v_call2_f32_2(float (*fn)(float, float),
     };
 }
 
+#endif
+
+#ifndef ALM_HAS_V4_CALL_F32
+#define ALM_HAS_V4_CALL_F32
+
 static inline v_f32x4_t
 v_call_f32(float (*fn)(float),
-	   v_f32x4_t orig,
-	   v_f32x4_t result,
-	   v_i32x4_t cond)
+					 v_f32x4_t orig,
+					 v_f32x4_t result,
+					 v_i32x4_t cond)
 {
 	return (v_f32x4_t){cond[0] ? fn(orig[0]) : result[0],
 		cond[1] ? fn(orig[1]) : result[1],
 		cond[2] ? fn(orig[2]) : result[2],
 		cond[3] ? fn(orig[3]) : result[3]};
 }
+#endif
 
+#ifndef ALM_HAS_V4_CALL_2_F32
+#define ALM_HAS_V4_CALL_2_F32
 static inline v_f32x4_t
 v_call2_f32(float (*fn)(float, float),
        v_f32x4_t x,
@@ -343,6 +317,10 @@ v_call2_f32(float (*fn)(float, float),
         cond[3] ? fn(x[3], y[3]) : result[3]};
 }
 
+#endif
+
+#ifndef ALM_HAS_V4_CALL_F64
+#define ALM_HAS_V4_CALL_F64
 static inline v_f64x4_t
 v_call_f64(double (*fn)(double),
 	   v_f64x4_t orig,
@@ -354,8 +332,10 @@ v_call_f64(double (*fn)(double),
 		cond[2] ? fn(orig[2]) : result[2],
 		cond[3] ? fn(orig[3]) : result[3]};
 }
+#endif
 
-
+#ifndef ALM_HAS_V4_CALL_2_F64
+#define ALM_HAS_V4_CALL_2_F64
 static inline v_f64x4_t
 v_call2_f64(double (*fn)(double, double),
        v_f64x4_t x,
@@ -368,7 +348,10 @@ v_call2_f64(double (*fn)(double, double),
         cond[2] ? fn(x[2], y[2]) : result[2],
         cond[3] ? fn(x[3], y[3]) : result[3]};
 }
+#endif
 
+#ifndef ALM_HAS_V2_CALL_2_F64
+#define ALM_HAS_V2_CALL_2_F64
 static inline v_f64x2_t
 v_call2_f64x2(double (*fn)(double, double),
        v_f64x2_t x,
@@ -379,5 +362,6 @@ v_call2_f64x2(double (*fn)(double, double),
     return (v_f64x2_t){cond[0] ? fn(x[0], y[0]) : result[0],
         cond[1] ? fn(x[1], y[1]) : result[1]};
 }
+#endif
 
 #endif	/* __LIBM_TYPEHELPER_H__ */

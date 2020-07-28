@@ -245,7 +245,7 @@ ALM_PROTO_OPT(vrs8_powf)(__m256 x,__m256 y)
 
     v_f32x8_t ret;
 
-    u = as_v_u32x8_t(x);
+    u = as_v8_u32_f32(x);
 
     v_i32x8_t condition = (u - V_MIN >= V_MAX - V_MIN);
 
@@ -280,7 +280,7 @@ ALM_PROTO_OPT(vrs8_powf)(__m256 x,__m256 y)
 
         v_f64x4_t yd = _mm256_cvtps_pd(_y[lane]);
 
-        v_u64x4_t ux = as_v_u64x4(xd);
+        v_u64x4_t ux = as_v4_u64_f64(xd);
 
         v_f64x4_t exponent =  _mm256_cvtepi32_pd (exponent_array[lane]);
 
@@ -288,11 +288,11 @@ ALM_PROTO_OPT(vrs8_powf)(__m256 x,__m256 y)
 
         v_u64x4_t index = ux & MANT_8_BITS;
 
-        v_f64x4_t index_times_half = as_f64(index | HALF);
+        v_f64x4_t index_times_half = as_v4_f64_u64(index | HALF);
 
         index =  index >> (52 - N);
 
-        v_f64x4_t y1  = as_f64(mant);
+        v_f64x4_t y1  = as_v4_f64_u64(mant);
 
         v_f64x4_t f = index_times_half - y1;
 
@@ -322,7 +322,7 @@ ALM_PROTO_OPT(vrs8_powf)(__m256 x,__m256 y)
 
         /* Calculate exp */
 
-        v_u64x4_t v = as_v_u64x4(ylogx);
+        v_u64x4_t v = as_v4_u64_f64(ylogx);
 
         /* Check if y * log(x) > ln(2) * 127 */
 
@@ -332,7 +332,7 @@ ALM_PROTO_OPT(vrs8_powf)(__m256 x,__m256 y)
 
         v_f64x4_t dn = z + EXPF_HUGE;
 
-        v_u64x4_t n = as_v_u64x4(dn);
+        v_u64x4_t n = as_v4_u64_f64(dn);
 
         dn = dn - EXPF_HUGE;
 
@@ -350,7 +350,7 @@ ALM_PROTO_OPT(vrs8_powf)(__m256 x,__m256 y)
 
         v_f64x4_t result = q + r2 * r2 * qtmp3;
 
-        ret_array[lane] = _mm256_cvtpd_ps(as_f64(as_v_u64x4(result) + (n << 52)));
+        ret_array[lane] = _mm256_cvtpd_ps(as_v4_f64_u64(as_v4_u64_f64(result) + (n << 52)));
 
         update_condition(&condition, condition2, lane);
 

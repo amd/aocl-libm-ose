@@ -123,7 +123,7 @@ v_f64x4_t
 ALM_PROTO_OPT(vrd4_exp)(v_f64x4_t x)
 {
 
-    v_i64x4_t vx = as_v_u64x4_t(x);
+    v_i64x4_t vx = as_v4_u64_f64(x);
 
     // Get absolute value
     vx = vx & MASK;
@@ -137,7 +137,7 @@ ALM_PROTO_OPT(vrd4_exp)(v_f64x4_t x)
     v_f64x4_t dn = z + EXP_HUGE;
 
     // n = int (z)
-    v_i64x4_t n = as_u64x4(dn);
+    v_i64x4_t n = as_v4_u64_f64(dn);
 
     // dn = double(n)
     dn = dn - EXP_HUGE;
@@ -164,9 +164,9 @@ ALM_PROTO_OPT(vrd4_exp)(v_f64x4_t x)
                                   C7, C8, C9, C10, C11, C12);
 
     // result = poly * 2^m
-    v_f64x4_t ret = poly * as_f64x4(m);
+    v_f64x4_t ret = poly * as_v4_f64_u64(m);
 
-    if(unlikely(v4_any_u64_loop(cond))) {
+    if(unlikely(any_v4_u64_loop(cond))) {
 
         v_i64x4_t inf_condition = x > EXP_MAX;
 
@@ -184,7 +184,7 @@ ALM_PROTO_OPT(vrd4_exp)(v_f64x4_t x)
         ret =  vx.f64x4;
 
         //To handle denormal numbers
-        if(v4_any_u64_loop(zero_condition)) {
+        if(any_v4_u64_loop(zero_condition)) {
             return (v_f64x4_t) {
                 (zero_condition[0] && (x[0] < EXP_MIN_VAL)) ? 0.0:SCALAR_EXP(x[0]),
                 (zero_condition[1] && (x[1] < EXP_MIN_VAL)) ? 0.0:SCALAR_EXP(x[1]),

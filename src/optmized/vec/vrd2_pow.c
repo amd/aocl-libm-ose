@@ -235,11 +235,11 @@ calculate_log(v_u64x2_t ux, v_f64x2_t* logx_t)
 
     v_u64x2_t index = ux & MANTISSA_N_BITS;
 
-    v_f64x2_t index_times_half = as_f64x2(index | DP_HALF);
+    v_f64x2_t index_times_half = as_v2_f64_u64(index | DP_HALF);
 
     index =  index >> (52 - N);
 
-    v_f64x2_t y1  = as_f64x2(mant);
+    v_f64x2_t y1  = as_v2_f64_u64(mant);
 
     v_f64x2_t f = index_times_half - y1;
 
@@ -323,7 +323,7 @@ calculate_exp(v_f64x2_t ylogx_h, v_f64x2_t ylogx_t)
 
     v_f64x2_t dn = z + EXP_HUGE;
 
-    v_i64x2_t n = as_v_u64x2(dn);
+    v_i64x2_t n = as_v2_u64_f64(dn);
 
     dn = dn - EXP_HUGE;
 
@@ -359,7 +359,7 @@ calculate_exp(v_f64x2_t ylogx_h, v_f64x2_t ylogx_t)
 
     r = j_by_N_head + (z + q);
 
-    return r * as_f64x2(m);
+    return r * as_v2_f64_u64(m);
 
 }
 
@@ -370,7 +370,7 @@ ALM_PROTO_OPT(vrd2_pow)(__m128d _x,__m128d _y)
 
     v_f64x2_t logx_t;
 
-    v_u64x2_t ux = as_v_u64x2(_x);
+    v_u64x2_t ux = as_v2_u64_f64(_x);
 
     v_i64x2_t condition = (ux - V_MIN >= V_MAX - V_MIN);
 
@@ -378,7 +378,7 @@ ALM_PROTO_OPT(vrd2_pow)(__m128d _x,__m128d _y)
 
     v_f64x2_t ylogx_h = logx_h * _y;
 
-     v_u64x2_t v = as_v_u64x2(ylogx_h);
+     v_u64x2_t v = as_v2_u64_f64(ylogx_h);
 
     /* check if y*log(x) > 1024*ln(2) */
     v_i64x2_t condition2 = (v >= EXP_MAX);

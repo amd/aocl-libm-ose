@@ -115,7 +115,7 @@ ALM_PROTO_OPT(vrs4_expf)(v_f32x4_t _x)
     v_i32x4_t cond = ((vx > ARG_MAX));
 
     // Convert _x to double precision
-    v_f64x4_t x = v4_to_f32_f64(_x);
+    v_f64x4_t x = cvt_v4_f32_to_f64(_x);
 
     // x * (64.0/ln(2))
     v_f64x4_t z = x * TBL_LN2;
@@ -123,7 +123,7 @@ ALM_PROTO_OPT(vrs4_expf)(v_f32x4_t _x)
     v_f64x4_t dn = z + EXPF_HUGE;
 
     // n = int (z)
-    v_u64x4_t n = as_v_u64x4(dn);
+    v_u64x4_t n = as_v4_u64_f64(dn);
 
     // dn = double(n)
     dn = dn - EXPF_HUGE;
@@ -134,13 +134,13 @@ ALM_PROTO_OPT(vrs4_expf)(v_f32x4_t _x)
     v_f64x4_t poly = POLY_EVAL_6(r, C1, C2, C3, C4, C5, C6);
 
     // result = (float)[poly + (n << 52)]
-    v_u64x4_t q = as_v_u64x4(poly) + (n << 52);
+    v_u64x4_t q = as_v4_u64_f64(poly) + (n << 52);
 
-    v_f64x4_t result = as_v_f64(q);
+    v_f64x4_t result = as_v4_f64_u64(q);
 
-    v_f32x4_t ret = v4_to_f64_f32(result);
+    v_f32x4_t ret = cvt_v4_f64_to_f32(result);
 
-    if(unlikely(v4_any_u32_loop(cond))) {
+    if(unlikely(any_v4_u32_loop(cond))) {
 
         v_i32x4_t inf_condition = _x > EXPF_MAX;
 

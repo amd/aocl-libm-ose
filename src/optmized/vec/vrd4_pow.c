@@ -231,7 +231,7 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 {
     __m256d result;
 
-    v_u64x4_t ux = as_v_u64x4(_x);
+    v_u64x4_t ux = as_v4_u64_f64(_x);
 
     v_i32x4_t int32_exponent;
 
@@ -243,11 +243,11 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     v_u64x4_t index = ux & MANTISSA_N_BITS;
 
-    v_f64x4_t index_times_half = as_f64(index | DP_HALF);
+    v_f64x4_t index_times_half = as_v4_f64_u64(index | DP_HALF);
 
     index =  index >> (52 - N);
 
-    v_f64x4_t y1  = as_f64(mant);
+    v_f64x4_t y1  = as_v4_f64_u64(mant);
 
     v_f64x4_t f = index_times_half - y1;
 
@@ -321,7 +321,7 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     /* Calculate exp */
 
-    v_u64x4_t v = as_v_u64x4(ylogx_h);
+    v_u64x4_t v = as_v4_u64_f64(ylogx_h);
 
     /* check if y*log(x) > 1024*ln(2) */
     v_i64x4_t condition2 = (v >= EXP_MAX);
@@ -330,7 +330,7 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     v_f64x4_t dn = z + EXP_HUGE;
 
-    v_i64x4_t n = as_v_u64x4(dn);
+    v_i64x4_t n = as_v4_u64_f64(dn);
 
     dn = dn - EXP_HUGE;
 
@@ -366,7 +366,7 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     r = j_by_N_head + (z + q);
 
-    result = r * as_f64(m);
+    result = r * as_v4_f64_u64(m);
 
     if (unlikely(check_condition(&condition, condition2))) {
         return pow_specialcase(_x, _y, result, condition);

@@ -127,9 +127,9 @@ ALM_PROTO_OPT(vrd4_log) (__m256d x)
 
     v_i64x4_t ix;
 
-    ix = as_v_u64x4(x);
+    ix = as_v4_u64_f64(x);
 
-    v_i64x4_t condition = (as_v_u64x4(x) - V_MIN >= V_MAX - V_MIN);
+    v_i64x4_t condition = (as_v4_u64_f64(x) - V_MIN >= V_MAX - V_MIN);
 
     ix = (ix - TWO_BY_THREE) & INF;
 
@@ -147,7 +147,7 @@ ALM_PROTO_OPT(vrd4_log) (__m256d x)
 
 	/* Reduce the mantissa, m to [2/3, 4/3] */
 
-    m = as_f64(as_v_u64x4(x) - ix);
+    m = as_v4_f64_u64(as_v4_u64_f64(x) - ix);
 
     f = m - C1;			/* f is in [-1/3,+1/3] */
 
@@ -165,7 +165,7 @@ ALM_PROTO_OPT(vrd4_log) (__m256d x)
 
     r = n * ln2_head + (n * ln2_tail + r);
 
-    if (unlikely(v4_any_u64_loop(condition))) {
+    if (unlikely(any_v4_u64_loop(condition))) {
            return log_specialcase(x, r, condition);
     }
 

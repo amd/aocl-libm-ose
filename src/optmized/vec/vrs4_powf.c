@@ -216,7 +216,7 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
     v_i32x4_t condition = (u - V_MIN >= V_MAX - V_MIN);
 
-    if(v4_any_u32_loop(condition)) {
+    if(any_v4_u32_loop(condition)) {
 
         ret[0] = SCALAR_POWF(_x[0], _y[0]);
         ret[1] = SCALAR_POWF(_x[1], _y[1]);
@@ -230,7 +230,7 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
     v_f64x4_t yd = _mm256_cvtps_pd(_y);
 
-    v_u64x4_t ux = as_v_u64x4(xd);
+    v_u64x4_t ux = as_v4_u64_f64(xd);
 
     v_i32x4_t int_exponent =  (u >> 23) - float_bias;
 
@@ -240,11 +240,11 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
     v_u64x4_t index = ux & mant_8_bits;
 
-    v_f64x4_t index_times_half = as_f64(index | one_by_two);
+    v_f64x4_t index_times_half = as_v4_f64_u64(index | one_by_two);
 
     index =  index >> (52 - N);
 
-    v_f64x4_t y1  = as_f64(mant);
+    v_f64x4_t y1  = as_v4_f64_u64(mant);
 
     v_f64x4_t f = index_times_half - y1;
 
@@ -274,7 +274,7 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
     /* Calculate exp*/
 
-    v_u64x4_t v = as_v_u64x4(ylogx);
+    v_u64x4_t v = as_v4_u64_f64(ylogx);
 
     v_i64x4_t condition2 = (v >= EXPF_MAX);
 
@@ -282,7 +282,7 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
     v_f64x4_t dn = z + EXPF_HUGE;
 
-    v_u64x4_t n = as_v_u64x4(dn);
+    v_u64x4_t n = as_v4_u64_f64(dn);
 
     dn = dn - EXPF_HUGE;
 
@@ -300,9 +300,9 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
     v_f64x4_t result = q + r2 * r2  * qtmp3;
 
-    ret = _mm256_cvtpd_ps(as_f64(as_v_u64x4(result) + (n << 52)));
+    ret = _mm256_cvtpd_ps(as_v4_f64_u64(as_v4_u64_f64(result) + (n << 52)));
 
-    if(v4_any_u64_loop(condition2)) {
+    if(any_v4_u64_loop(condition2)) {
 
         v_f32x4_t x = _mm256_cvtpd_ps(ylogx);
 

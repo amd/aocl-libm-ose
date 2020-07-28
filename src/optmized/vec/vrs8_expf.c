@@ -130,7 +130,7 @@ ALM_PROTO_OPT(vrs8_expf_experimental)(v_f32x8_t _x)
 {
 
     // vx = int(x)
-    v_i32x8_t vx = as_v_u32x8_t(_x);
+    v_i32x8_t vx = as_v8_u32_f32(_x);
 
     // Get absolute value of vx
     vx = vx & MASK;
@@ -144,7 +144,7 @@ ALM_PROTO_OPT(vrs8_expf_experimental)(v_f32x8_t _x)
     v_f32x8_t dn = z + EXP_HUGE;
 
     // n = int(z)
-    v_u32x8_t n = as_v_u32x8(dn);
+    v_u32x8_t n = as_v8_u32_f32(dn);
 
     // dn = double(n)
     dn = dn - EXP_HUGE;
@@ -166,11 +166,11 @@ ALM_PROTO_OPT(vrs8_expf_experimental)(v_f32x8_t _x)
     v_f32x8_t poly = POLY_EVAL_7(r, C0, C0, C1, C2, C3, C4, C5, C6);
 
     // result = polynomial * 2^m
-    v_f32x8_t result = poly * as_f32x8(m);
+    v_f32x8_t result = poly * as_v8_f32_u32(m);
 
     // If input value is outside valid range, call scalar expf(value)
     // Else, return the above computed result
-    if(unlikely(v8_any_u32_loop(cond))) {
+    if(unlikely(any_v8_u32_loop(cond))) {
     return (v_f32x8_t) {
          cond[0] ? SCALAR_EXPF(_x[0]) : result[0],
          cond[1] ? SCALAR_EXPF(_x[1]) : result[1],
@@ -202,7 +202,7 @@ ALM_PROTO_OPT(vrs8_expf)(v_f32x8_t _x)
 {
 
     // vx = int(x)
-    v_i32x8_t vx = as_v_u32x8_t(_x);
+    v_i32x8_t vx = as_v8_u32_f32(_x);
 
     // Get absolute value of vx
     vx = vx & MASK;
@@ -216,7 +216,7 @@ ALM_PROTO_OPT(vrs8_expf)(v_f32x8_t _x)
     v_f32x8_t dn = z + EXP_HUGE;
 
     // n = int(z)
-    v_u32x8_t n = as_v_u32x8(dn);
+    v_u32x8_t n = as_v8_u32_f32(dn);
 
     // dn = double(n)
     dn = dn - EXP_HUGE;
@@ -238,11 +238,11 @@ ALM_PROTO_OPT(vrs8_expf)(v_f32x8_t _x)
     v_f32x8_t poly = POLY_EVAL_5(r, A0, A0, A1, A2, A3, A4);
 
     // result = polynomial * 2^m
-    v_f32x8_t result = poly * as_f32x8(m);
+    v_f32x8_t result = poly * as_v8_f32_u32(m);
 
     // If input value is outside valid range, call scalar expf(value)
     // Else, return the above computed result
-    if(unlikely(v8_any_u32_loop(cond))) {
+    if(unlikely(any_v8_u32_loop(cond))) {
     return (v_f32x8_t) {
          cond[0] ? SCALAR_EXPF(_x[0]) : result[0],
          cond[1] ? SCALAR_EXPF(_x[1]) : result[1],

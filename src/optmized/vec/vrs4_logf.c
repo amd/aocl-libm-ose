@@ -174,7 +174,7 @@ ALM_PROTO_OPT(vrs4_logf)(v_f32x4_t _x)
 
     vx.i32x4 -= V_OFF;
 
-    n = v4_to_f32_s32(vx.i32x4 >> 23);
+    n = cast_v4_s32_to_f32(vx.i32x4 >> 23);
 
     vx.i32x4 &= V_MASK;
 
@@ -193,7 +193,7 @@ ALM_PROTO_OPT(vrs4_logf)(v_f32x4_t _x)
 
     q = n * LN2 + q;
 
-    if (unlikely(v4_any_u32_loop(cond))) {
+    if (unlikely(any_v4_u32_loop(cond))) {
         return logf_specialcase(_x, q, cond);
     }
 

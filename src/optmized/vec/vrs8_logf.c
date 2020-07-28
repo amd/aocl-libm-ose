@@ -192,7 +192,7 @@ ALM_PROTO_OPT(vrs8_logf)(v_f32x8_t _x)
 
     vx.i32x8 -= V_OFF;
 
-    n = v8_to_f32_s32(vx.i32x8 >> 23);
+    n = cast_v8_f32_to_s32(vx.i32x8 >> 23);
 
     vx.i32x8 &= V_MASK;
 
@@ -211,7 +211,7 @@ ALM_PROTO_OPT(vrs8_logf)(v_f32x8_t _x)
 
     q = n * LN2 + q;
 
-    if (unlikely(v8_any_u32_loop(cond))) {
+    if (unlikely(any_v8_u32_loop(cond))) {
         return logf_specialcase(_x, q, cond);
     }
 

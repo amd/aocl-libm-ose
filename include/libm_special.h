@@ -5,6 +5,8 @@
 #ifndef __LIBM_SPECIAL_H__
 #define __LIBM_SPECIAL_H__
 
+#include <stdint.h>
+
 #include <math.h>
 #include <libm_errno_amd.h>
 #if defined(WIN64)  |  defined(WINDOWS)
@@ -200,30 +202,79 @@ typedef enum {
 
 typedef enum 
 {
-	__amd_asinh = (__amd_dppd + 20),
-	__amd_acosh,
-	__amd_atanh,
-	__amd_cbrt,
-	__amd_exp10,
-	__amd_exp2,
-	__amd_expm1,
-	__amd_lrint,
-	__amd_rint,
-	__amd_nexttoward,
-	__amd_nearbyint,
-	__amd_fdim,
-	__amd_finite,
-	__amd_scalbn,
-	__amd_scalbln,
-	__amd_log1p,
-	__amd_log2,
-	__amd_llrint,
-	__amd_llround,
-	__amd_lround,
-	__amd_remquo,
+    __amd_asinh = (__amd_dppd + 20),
+    __amd_acosh,
+    __amd_atanh,
+    __amd_cbrt,
+    __amd_exp10,
+    __amd_exp2,
+    __amd_expm1,
+    __amd_lrint,
+    __amd_rint,
+    __amd_nexttoward,
+    __amd_nearbyint,
+    __amd_fdim,
+    __amd_finite,
+    __amd_scalbn,
+    __amd_scalbln,
+    __amd_log1p,
+    __amd_log2,
+    __amd_llrint,
+    __amd_llround,
+    __amd_lround,
+    __amd_remquo,
         __amd_fma
 }_AMDLIBM_EXTERNAL;
 
-#endif // __LIBM_SPECIAL_H__
 
+extern  double _cbrt_special            (double x);
+extern  double _cos_special             (double x);
+extern  double _exp10_special           (double x, double y, uint32_t code);
+extern  double _exp2_special            (double x, double y, uint32_t code);
+extern  double _expm1_special           (double x, double y, uint32_t code);
+extern  double _exp_special             (double x, double y, uint32_t code);
+extern  double _fabs_special            (double x);
+extern  double _fdim_special            (double x, double y, double r);
+extern  double _fmax_special            (double x, double y);
+extern  double _fmin_special            (double x, double y);
+extern  double _fmod_special            (double x, double y, uint32_t errorCode);
+extern  double _log10_special           (double x, double y, uint32_t code);
+extern  double _log1p_special           (double x, double y, uint32_t code);
+extern  double _log2_special            (double x, double y, uint32_t code);
+extern  double _log_special             (double x, double y, uint32_t code);
+extern  double _nearbyint_special       (double x);
+extern  double _pow_special             (double x, double y, double z, uint32_t code);
+extern  double _remainder_special       (double x, double y, uint32_t errorCode);
+extern  double _round_special           (double x, double r);
+extern  double _sin_cos_special         (double x, char *name, _AMDLIBM_CODE code);
+extern  double _sincos_special_underflow(double x, char *name, _AMDLIBM_CODE code);
+extern  double _sin_special             (double x);
+extern  double _sin_special_underflow   (double x);
+extern  double _tan_special             (double x);
+extern  double _trunc_special           (double x, double r);
+extern  void _sincos_special            (double x, double *sy, double *cy);
 
+extern  float _cbrtf_special            (float x);
+extern  float _cosf_special             (float x);
+extern  float _exp10f_special           (float x, float y, uint32_t code);
+extern  float _exp2f_special            (float x, float y, uint32_t code);
+extern  float _expf_special             (float x, float y, uint32_t code);
+extern  float _expm1f_special           (float x, float y, uint32_t code);
+extern  float _fabsf_special            (float x);
+extern  float _fdimf_special            (float x, float y, float r);
+extern  float _fmaxf_special            (float x, float y);
+extern  float _fminf_special            (float x, float y);
+extern  float _fmodf_special            (float x, float y, uint32_t errorCode);
+extern  float _log10f_special           (float x, float y, uint32_t code);
+extern  float _log1pf_special           (float x, float y, uint32_t code);
+extern  float _log2f_special            (float x, float y, uint32_t code);
+extern  float _logf_special             (float x, float y, uint32_t code);
+extern  float _powf_special             (float x, float y, float z, uint32_t code);
+extern  float _remainderf_special       (float x, float y, uint32_t errorCode);
+extern  float _sinf_cosf_special        (float x, char *name, _AMDLIBM_CODE code);
+extern  float _sinf_special             (float x);
+extern  float _tanf_special             (float x);
+extern  float _truncf_special           (float x, float r);
+extern  void _sincosf_special           (float x, float *sy, float *cy);
+
+#endif // __LIBM_SPECIAL_H__;

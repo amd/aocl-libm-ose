@@ -262,6 +262,24 @@ any_v2_u64_loop(v_i64x2_t cond)
 #define ALM_HAS_V8_CALL_F32
 
 static inline v_f32x8_t
+call_v8_f32(float (*fn)(float),
+        v_f32x8_t x,
+        v_f32x8_t result,
+        v_i32x8_t cond)
+{
+    return (v_f32x8_t) {
+        cond[0] ? fn(x[0]) : result[0],
+        cond[1] ? fn(x[1]) : result[1],
+        cond[2] ? fn(x[2]) : result[2],
+        cond[3] ? fn(x[3]) : result[3],
+        cond[4] ? fn(x[4]) : result[4],
+        cond[5] ? fn(x[5]) : result[5],
+        cond[6] ? fn(x[6]) : result[6],
+        cond[7] ? fn(x[7]) : result[7]
+    };
+}
+
+static inline v_f32x8_t
 v_call2_f32_2(float (*fn)(float, float),
         v_f32x8_t x,
         v_f32x8_t y,

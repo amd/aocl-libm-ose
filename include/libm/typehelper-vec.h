@@ -80,6 +80,12 @@ as_v4_f32_u32(v_u32x4_t x)
     return r.f;
 }
 
+static inline v_u32x4_t
+cast_v4_u64_to_u32(v_u64x4_t _xu64)
+{
+    return (v_u32x4_t){_xu64[0], _xu64[1], _xu64[2], _xu64[3]};
+}
+
 // v_i32x4_t to v_f32x4_t
 static inline v_f32x4_t
 cast_v4_s32_to_f32(v_i32x4_t _xi32)

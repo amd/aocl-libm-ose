@@ -50,6 +50,7 @@ static const struct {
         _MM_SET1_PD4(0x1.561638922df5fp-6),
         _MM_SET1_PD4(0x1.7f3a033a88788p-7),
         _MM_SET1_PD4(-0x1.ba0d41d26961f8p-11),
+
         _MM_SET1_PD4(0x1.3952b4eff28ac8p-8),
     },
 
@@ -79,8 +80,6 @@ tanf_specialcase(v_f32x4_t _x, v_f32x4_t result, v_i32x4_t cond)
 {
     return v_call_f32(ALM_PROTO(tanf), _x, result, cond);
 }
-
-
 
 /*
  * Implementation Notes:
@@ -115,7 +114,7 @@ ALM_PROTO_OPT(vrs4_tanf)(__m128 xf32x4)
     v_u64x4_t   sign, uxd, n;
     v_u32x4_t   ux = as_v4_u32_f32(xf32x4);
 
-    v_i32x4_t  cond = (ux  & ALM_SIGN_MASK32) >> ALM_ARG_MAX;
+    v_i32x4_t  cond = (ux  & ALM_SIGN_MASK32) > ALM_ARG_MAX;
 
     xd = cast_v4_f32_to_f64(xf32x4);
 
@@ -144,7 +143,8 @@ ALM_PROTO_OPT(vrs4_tanf)(__m128 xf32x4)
 
     /*
      * Calculate the polynomial approximation
-     *  x * (C1 + C2*x^2 + C3*x^4 + C4*x^6 + C5*x^8 + C6*x^10 + C7*x^12 + C8*x^14)
+     *					x * (C1 + C2*x^2 + C3*x^4 + C4*x^6 + \
+		 *									C5*x^8 + C6*x^10 + C7*x^12 + C8*x^14)
      * polynomial is approximated as x*P(x^2)
      */
     poly = POLY_EVAL_EVEN_15(F, C1, C2, C3, C4, C5, C6, C7, C8);
@@ -153,11 +153,14 @@ ALM_PROTO_OPT(vrs4_tanf)(__m128 xf32x4)
 
     v_f32x4_t result = cast_v4_f64_to_f32(tanx);
 
-    if (unlikely(any_v4_u32_loop(cond)))
+    if (unlikely(any_v4_u32(cond)))
         return tanf_specialcase(xf32x4, result, cond);
 
-    if (any_v4_u64(odd))
-        result = cast_v4_f64_to_f32(-1.0/tanx);
+    if (any_v4_u64(odd)) {
+            result = tanf_specialcase(xf32x4,
+                                     result,
+                                     cast_v4_u64_to_u32(odd));
+    }
 
     return result;
 }

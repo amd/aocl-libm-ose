@@ -28,21 +28,14 @@ extern struct libm_test_input_range x_range[];
 double LIBM_FUNC(tan)(double);
 float LIBM_FUNC(tanf)(float);
 
-#if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
-
-//#define _ZGVdN2v_tan _ZGVbN2v_tan
-#define _ZGVdN4v_tan _ZGVdN4v_tan
-//#define _ZGVsN4v_tanf _ZGVbN4v_tanf
-#define _ZGVsN8v_tanf _ZGVdN8v_tanf
-#endif
-
 /*vector routines*/
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
 __m128d LIBM_FUNC_VEC(d, 2, tan)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, tan)(__m256d);
 
 __m128 LIBM_FUNC_VEC(s, 4, tanf)(__m128);
 __m256 LIBM_FUNC_VEC(s, 8, tanf)(__m256);
-
+#endif
 
 int test_tan_conf_setup(struct libm_test *test)
 {
@@ -108,7 +101,8 @@ test_tan_cb_s1d(struct libm_test *test, int idx)
 }
 
 /*vector routines*/
-
+/*only AOCL-LibM has tan vector routines, glibc doesnt */
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
 static int
 test_tan_cb_v4s(struct libm_test *test, int j)
 {
@@ -169,6 +163,8 @@ test_tan_cb_v4d(struct libm_test *test, int j)
     return 0;
 }
 */
+
+#endif
 
 static int
 test_tan_accu_run(struct libm_test *test)
@@ -267,7 +263,7 @@ struct libm_test_funcs test_tan_funcs[LIBM_FUNC_MAX] =
                                           .verify = test_tan_verify,
                                          },
      },
-
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
      [LIBM_FUNC_V4S] = {
                           .performance = {
                                           .setup = libm_test_perf_setup,
@@ -299,7 +295,8 @@ struct libm_test_funcs test_tan_funcs[LIBM_FUNC_MAX] =
                                          .run = test_tan_accu_run,
                                          .ulp = {.func = test_tan_ulp},
                            },
-     }, /*
+     },
+      /*
      [LIBM_FUNC_V4D] = {
                           .performance = { .setup = libm_test_perf_setup,
                                            .run = libm_test_v4d_perf,
@@ -309,6 +306,7 @@ struct libm_test_funcs test_tan_funcs[LIBM_FUNC_MAX] =
                                           .ulp = {.func = test_tan_ulp},
                            },
      },*/
+#endif
 
 };
 
@@ -326,10 +324,12 @@ tan_template = {
                     .callbacks = {
                                     .s1s = test_tan_cb_s1s,
                                     .s1d = test_tan_cb_s1d,
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
                                     .v4s = test_tan_cb_v4s,
                                     //.v8s = test_tan_cb_v8s,
                                     .v2d = test_tan_cb_v2d,
                                     //.v4d = test_tan_cb_v4d,
+#endif
                                  },
                   },
 };

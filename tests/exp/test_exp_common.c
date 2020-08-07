@@ -23,30 +23,32 @@
 #include <libm_tests.h>
 #include <bench_timer.h>
 
-/*
- * Call the glibc's exp() to get IEEE754 compliant values
- */
+#include "../libs/mparith/am_mp_funcs.h"
+
 
 int test_exp_verify(struct libm_test *test, struct libm_test_result *result)
 {
     struct libm_test_data *data = &test->test_data;
 
     /*
-     * Call the glibc's exp2() to get IEEE754 compliant values
+     * Call the MPARITH's exp() to get IEEE754 compliant values
      */
-    if (test_is_single_precision(test)) {
-        float *expected = (float*)data->expected;
-        float *input1   = (float*)data->input1;
+    if (test->test_type == TEST_TYPE_ACCU) {
+        if (test_is_single_precision(test)) {
+            float *expected = (float*)data->expected;
+            float *input1   = (float*)data->input1;
 
-        for (uint32_t j = 0; j < data->nelem; j++) {
-            expected[j] = expf(input1[j]);
+            for (uint32_t j = 0; j < data->nelem; j++) {
+                expected[j] = alm_mp_expf(input1[j]);
+            }
         }
-    } else {
-        double *expected = data->expected;
-        double *input1 = data->input1;
+        else {
+            double *expected = data->expected;
+            double *input1 = data->input1;
 
-        for (uint32_t j = 0; j < data->nelem; j++) {
-            expected[j] = exp(input1[j]);
+            for (uint32_t j = 0; j < data->nelem; j++) {
+                expected[j] = alm_mp_exp(input1[j]);
+            }
         }
     }
 

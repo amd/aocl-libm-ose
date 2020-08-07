@@ -23,6 +23,8 @@
 #include <libm_tests.h>
 #include <bench_timer.h>
 
+#include "../libs/mparith/am_mp_funcs.h"
+
 /*
  * Call the glibc's pow() to get IEEE754 compliant values
  */
@@ -34,22 +36,23 @@ int test_pow_verify(struct libm_test *test, struct libm_test_result *result)
     /*
      * Call the glibc's log() to get IEEE754 compliant values
      */
-    if (test_is_single_precision(test)) {
-        float *expected = (float*)data->expected;
-        float *input1   = (float*)data->input1;
-        float *input2 = (float*)data->input2;
-        for (uint32_t j = 0; j < data->nelem; j++) {
-            expected[j] = powf(input1[j], input2[j]);
-        }
-    } else {
-        double *expected = data->expected;
-        double *input1 = data->input1;
-        double *input2 = data->input2;
-        for (uint32_t j = 0; j < data->nelem; j++) {
-            expected[j] = pow(input1[j], input2[j]);
+    if (test->test_type == TEST_TYPE_ACCU) {
+        if (test_is_single_precision(test)) {
+            float *expected = (float*)data->expected;
+            float *input1   = (float*)data->input1;
+            float *input2 = (float*)data->input2;
+            for (uint32_t j = 0; j < data->nelem; j++) {
+                expected[j] = alm_mp_powf(input1[j], input2[j]);
+            }
+        } else {
+             double *expected = data->expected;
+             double *input1 = data->input1;
+             double *input2 = data->input2;
+            for (uint32_t j = 0; j < data->nelem; j++) {
+                expected[j] = alm_mp_pow(input1[j], input2[j]);
+            }
         }
     }
-
     return libm_test_verify(test, result);
 }
 

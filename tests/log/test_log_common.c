@@ -23,6 +23,8 @@
 #include <libm_tests.h>
 #include <bench_timer.h>
 
+#include "../libs/mparith/am_mp_funcs.h"
+
 /*
  * Call the glibc's log() to get IEEE754 compliant values
  */
@@ -34,19 +36,21 @@ int test_log_verify(struct libm_test *test, struct libm_test_result *result)
     /*
      * Call the glibc's log() to get IEEE754 compliant values
      */
-    if (test_is_single_precision(test)) {
-        float *expected = (float*)data->expected;
-        float *input1   = (float*)data->input1;
+    if (test->test_type == TEST_TYPE_ACCU) {
+        if (test_is_single_precision(test)) {
+            float *expected = (float*)data->expected;
+            float *input1   = (float*)data->input1;
 
-        for (uint32_t j = 0; j < data->nelem; j++) {
-            expected[j] = logf(input1[j]);
+            for (uint32_t j = 0; j < data->nelem; j++) {
+                expected[j] = alm_mp_logf(input1[j]);
+            }
         }
-    } else {
-        double *expected = data->expected;
-        double *input1 = data->input1;
-
-        for (uint32_t j = 0; j < data->nelem; j++) {
-            expected[j] = log(input1[j]);
+        else {
+            double *expected = data->expected;
+            double *input1 = data->input1;
+            for (uint32_t j = 0; j < data->nelem; j++) {
+                expected[j] = alm_mp_log(input1[j]);
+            }
         }
     }
 

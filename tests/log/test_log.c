@@ -92,6 +92,34 @@ int test_log_special_setup(struct libm_test *test)
 /**********************
 *CALLBACK FUNCTIONS*
 **********************/
+
+static int
+test_log_accu_run(struct libm_test *test)
+{
+    int ret = 0;
+
+    if (test->conf->inp_range[0].start  == 0 ||
+        test->conf->inp_range[0].stop   == 0)
+    {
+        int arr_sz = ARRAY_SIZE(accu_ranges);
+        for (int i = 0; i < arr_sz; i++) {
+            if ((accu_ranges[i].start == 0.0) && (accu_ranges[i].stop == 0.0))
+                break;
+
+            ret = libm_generate_test_one_range(test, &accu_ranges[i]);
+            if(ret)
+                return ret;
+
+            ret = test_log_verify(test, &test->result);
+            if (ret) return ret;
+        }
+        return ret;
+    }
+
+    return libm_test_accu(test);
+}
+
+
 static int
 test_log_cb_s1s(struct libm_test *test, int idx)
 {
@@ -174,137 +202,117 @@ test_log_cb_v4d(struct libm_test *test, int j)
 	return 0;
 }
 
-
-static int
-test_log_cb_accu_ranges(struct libm_test *test, int j)
-{
-    int ret = 0;
-    if (test->conf->inp_range[0].start ||
-        test->conf->inp_range[0].stop) {
-        struct libm_test_input_range *range = &test->conf->inp_range[0];
-        ret = libm_generate_test_one_range(test, range);
-        ret = test_log_verify(test, &test->result);
-        return ret;
-    }
-
-    int arr_sz = ARRAY_SIZE(accu_ranges);
-    for (int i = 0; i < arr_sz; i++) {
-        if ((accu_ranges[i].start == 0.0) && (accu_ranges[i].stop == 0.0) )
-            break;
-    ret = libm_generate_test_one_range(test, &accu_ranges[i]);
-    if(ret)
-        return ret;
-    ret = test_log_verify(test, &test->result);
-    }
-    return 0;
-}
+#include "../libs/mparith/am_mp_funcs.h"
 
 /*ulp*/
-double test_log_ulp(struct libm_test *test, int idx)
+double test_logf_ulp(struct libm_test *test, int idx)
 {
     float *buf = (float*)test->test_data.input1;
-    return log(buf[idx]);
+    float val = buf[idx];
+
+    return alm_mp_logf(val);
 }
 
-long double
-test_log_logl(struct libm_test *test, int idx)
+double
+test_log_ulp(struct libm_test *test, int idx)
 {
     double *d = (double*)test->test_data.input1;
+    double val = d[idx];
+
     if (test_is_single_precision(test)) {
-        return test_log_ulp(test, idx);
+        return test_logf_ulp(test, idx);
     }
-    return logl(d[idx]);
+
+    return alm_mp_log(val);
 }
 
-/*test functiosn for log*/
+/*test functions for log*/
 struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
     {
-     /*
-      * Scalar functions
-      */
-     [LIBM_FUNC_S_S]  = {
-                         .performance =  { .setup = libm_test_perf_setup,
-                                           .run   = libm_test_s1s_perf,
-                                         },
-                         .accuracy     = { .setup = libm_test_accu_setup,
-                                           .run   = libm_test_accu,
-                                           .ulp    = {.funcl = test_log_logl},
-                                         },
+        /*
+         * Scalar functions
+         */
+        [LIBM_FUNC_S_S]  = {
+                               .performance = { .setup = libm_test_perf_setup,
+                                                .run   = libm_test_s1s_perf,
+                                              },
+                               .accuracy    = { .setup = libm_test_accu_setup,
+                                                .run   = test_log_accu_run,
+                                                .ulp = {.func = test_logf_ulp},
+                                              },
 
-                         .special      = { .setup = test_log_special_setup,
-                                           .run = libm_test_special,
-                                           .verify = test_log_verify
+                               .special      = { .setup = test_log_special_setup,
+                                                 .run = libm_test_special,
+                                                 .verify = test_log_verify
+                                               },
+
+                               .conformance  = {.setup = test_log_conf_setup,
+                                                .run   = libm_test_conf,
+                                                .verify = test_log_verify
+                                               },
+        },
+        [LIBM_FUNC_S_D]  = {
+                               .performance = { .setup = libm_test_perf_setup,
+                                                .run   = libm_test_s1d_perf,
+                                              },
+                               .accuracy     = {.setup = libm_test_accu_setup,
+                                                .run   = test_log_accu_run,
+                                                .ulp = {.func = test_log_ulp},
+                                               },
+
+                               .special      = {.setup = test_log_special_setup,
+                                                .run   = libm_test_special,
+                                                .verify = test_log_verify,
+                                               },
+
+                               .conformance  = {.setup = test_log_conf_setup,
+                                                .run   = libm_test_conf,
+                                                .verify = test_log_verify,
+                                               },
+         },
+         [LIBM_FUNC_V4S] = {
+                              .performance = {
+                                              .setup = libm_test_perf_setup,
+                                              .run = libm_test_v4s_perf,
+                                             },
+                              .accuracy = {
+                                              .setup = libm_test_accu_setup,
+                                              .run = test_log_accu_run,
+                                              .ulp = {.func = test_logf_ulp},
                                           },
-
-                         .conformance  = {.setup = test_log_conf_setup,
-                                           .run   = libm_test_conf,
-                                           .verify = test_log_verify
-                                         },
-     },
-     [LIBM_FUNC_S_D]  = {
-                         .performance = { .setup = libm_test_perf_setup,
-                                          .run   = libm_test_s1d_perf,
-                                        },
-                         .accuracy     = {.setup = libm_test_accu_setup,
-                                          .run   = libm_test_accu,
-                                          .ulp = {.funcl = test_log_logl},
-                                         },
-
-                         .special      = {.setup = test_log_special_setup,
-                                          .run   = libm_test_special,
-                                          .verify = test_log_verify,
-                                         },
-
-                          .conformance  = {.setup = test_log_conf_setup,
-                                          .run   = libm_test_conf,
-                                          .verify = test_log_verify,
-                                         },
-     },
-     [LIBM_FUNC_V8S]  = {
-                         .performance = { .setup = libm_test_perf_setup,
-                                          .run   = libm_test_v8s_perf,
-                                        },
-                         .accuracy     = {.setup = libm_test_accu_setup,
-                                          .run   = libm_test_accu,
-                                          .ulp = {.funcl = test_log_logl},
-                                         },
-     },
-     [LIBM_FUNC_V4S]  = {
-                         .performance = { .setup = libm_test_perf_setup,
-                                          .run   = libm_test_v4s_perf,
-                                        },
-                         .accuracy     = {.setup = libm_test_accu_setup,
-                                          .run   = libm_test_accu,
-                                          .ulp = {.funcl = test_log_logl},
-                                         },
-                          /*
-                          .conformance  = {.setup = test_log_conf_setup,
-                                          .run   = libm_test_conf,
-                                          .verify = test_log_verify,
-                                         },
-                          */
-     },
-     [LIBM_FUNC_V2D] = {
+          },
+          [LIBM_FUNC_V8S] = {
+                               .performance = {
+                                                  .setup = libm_test_perf_setup,
+                                                  .run = libm_test_v8s_perf,
+                               },
+                               .accuracy = {
+                                                  .setup = libm_test_accu_setup,
+                                                  .run = test_log_accu_run,
+                                                  .ulp = {.func = test_logf_ulp},
+                                           },
+           },
+           [LIBM_FUNC_V2D] = {
                           .performance = { .setup = libm_test_perf_setup,
                                             .run = libm_test_v2d_perf,
                            },
                           .accuracy = {
                                          .setup = libm_test_accu_setup,
-                                         .run = libm_test_accu,
-                                         .ulp = {.funcl = test_log_logl},
+                                         .run = test_log_accu_run,
+                                         .ulp = {.func = test_log_ulp},
                            },
-     },
-     [LIBM_FUNC_V4D] = {
+            },
+            [LIBM_FUNC_V4D] = {
                           .performance = { .setup = libm_test_perf_setup,
                                            .run = libm_test_v4d_perf,
                            },
                           .accuracy = {   .setup = libm_test_accu_setup,
-                                          .run = libm_test_accu,
-                                          .ulp = {.funcl = test_log_logl},
+                                          .run = test_log_accu_run,
+                                          .ulp = {.func = test_log_ulp},
                            },
-     },
-
+             },
 };
+
 
 int test_log_verify(struct libm_test *test, struct libm_test_result *result);
 
@@ -314,7 +322,7 @@ log_template = {
     .nargs      = 1,
     .ulp_threshold = 0.5,
     .ops        = {
-                    //.ulp    = {.funcl = test_log_logl},
+                    //.ulp    = {.funcl = test_log_ulp},
                     .verify = test_log_verify,
                     .callbacks = {
                                     .s1s = test_log_cb_s1s,
@@ -323,7 +331,6 @@ log_template = {
                                     .v8s = test_log_cb_v8s,
                                     .v2d = test_log_cb_v2d,
                                     .v4d = test_log_cb_v4d,
-                                    .accu_ranges = test_log_cb_accu_ranges,
                                  },
                   },
 };

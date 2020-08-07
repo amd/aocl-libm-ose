@@ -173,75 +173,52 @@ test_pow_cb_v4d(struct libm_test *test, int j)
 }
 
 static int
-libm_generate_test_pow_range(struct libm_test *test, struct libm_test_input_range *range_x,  struct libm_test_input_range *range_y )
+test_pow_accu_run(struct libm_test *test)
 {
     int ret = 0;
-    test->conf->inp_range[0] = *range_x;
-    test->conf->inp_range[1] = *range_y;
 
-     LIBM_TEST_DPRINTF(DBG2,
-                       "Testing for accuracy %d items in range x = [%Lf, %Lf] y = [%Lf, %Lf]\n",
-                       test->test_data.nelem,
-                       range_x->start, range_x->stop,
-                       range_y->start, range_y->stop);
-    ret = libm_test_populate_inputs(test, range_x->type);
-     if (test_is_single_precision(test))
-         ret = libm_test_accu_single(test, test->variant);
-     else
-         ret = libm_test_accu_double(test, test->variant);
-     return ret;
-}
+    if (test->conf->inp_range[0].start  == 0 ||
+        test->conf->inp_range[0].stop   == 0)
+    {
+        int arr_sz = ARRAY_SIZE(x_range);
+        for (int i = 0; i < arr_sz; i++) {
+            if ((x_range[i].start == 0.0) && (x_range[i].stop == 0.0))
+                break;
 
-static int
-test_pow_cb_accu_ranges(struct libm_test *test, int j)
-{
-    int ret = 0;
-    if (test->conf->inp_range[0].start ||
-        test->conf->inp_range[0].stop) {
-        struct libm_test_input_range *range = &test->conf->inp_range[0];
-        ret = libm_generate_test_one_range(test, range);
-        ret = test_pow_verify(test, &test->result);
+            ret = libm_generate_test_one_range(test, &x_range[i]);
+            if(ret)
+                return ret;
+
+            ret = test_pow_verify(test, &test->result);
+            if (ret) return ret;
+            }
         return ret;
     }
 
-    /*Size of both x_range and y_range need to be the same */
-    if(ARRAY_SIZE(x_range) != ARRAY_SIZE(y_range)) {
-        printf("Size of x range and y range not the same\n");
-        printf("Please check test_pow_data.h file and ensure that x_range and y_range are the same\n");
-        return -1;
-    }
-    int arr_sz = ARRAY_SIZE(x_range);
-
-    for (int i = 0; i < arr_sz; i++) {
-        if ((x_range[i].start == 0.0) && (x_range[i].stop == 0.0) )
-            break;
-        if ((y_range[i].start == 0.0) && (y_range[i].stop == 0.0) )
-            break;
-        ret = libm_generate_test_pow_range(test, &x_range[i], &y_range[i]);
-        if(ret)
-            return ret;
-        ret = test_pow_verify(test, &test->result);
-    }
-    return 0;
+    return libm_test_accu(test);
 }
 
+
+
 /*ulp*/
-double test_pow_ulp(struct libm_test *test, int idx)
+#include "../libs/mparith/am_mp_funcs.h"
+
+double test_powf_ulp(struct libm_test *test, int idx)
 {
     float *buf1 = (float*)test->test_data.input1;
     float *buf2 = (float*)test->test_data.input2;
-    return pow(buf1[idx], buf2[idx]);
+    return alm_mp_powf(buf1[idx], buf2[idx]);
 }
 
-long double
-test_pow_powl(struct libm_test *test, int idx)
+double
+test_pow_ulp(struct libm_test *test, int idx)
 {
     double *d = (double*)test->test_data.input1;
     double *d1 = (double*)test->test_data.input2;
     if (test_is_single_precision(test)) {
-        return (test_pow_ulp(test, idx));
+        return (test_powf_ulp(test, idx));
     }
-    return powl(d[idx], d1[idx]);
+    return alm_mp_pow(d[idx], d1[idx]);
 }
 
 /*test functiosn for pow*/
@@ -255,8 +232,8 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                                            .run   = libm_test_s1s_perf,
                                          },
                          .accuracy     = { .setup = libm_test_accu_setup,
-                                           .run   = libm_test_accu,
-                                           .ulp = {.funcl = test_pow_powl}
+                                           .run   = test_pow_accu_run,
+                                           .ulp = {.func = test_powf_ulp}
                                          },
 
                          .special      = { .setup = test_pow_special_setup,
@@ -274,8 +251,8 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                                           .run   = libm_test_s1d_perf,
                                         },
                          .accuracy     = {.setup = libm_test_accu_setup,
-                                          .run   = libm_test_accu,
-                                          .ulp = {.funcl = test_pow_powl},
+                                          .run   = test_pow_accu_run,
+                                          .ulp = {.func = test_pow_ulp},
                                          },
 
                          .special      = {.setup = test_pow_special_setup,
@@ -294,8 +271,8 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                            },
                           .accuracy = {
                                           .setup = libm_test_accu_setup,
-                                          .run = libm_test_accu,
-                                          .ulp = {.funcl = test_pow_powl},
+                                          .run = test_pow_accu_run,
+                                          .ulp = {.func = test_powf_ulp},
                            },
      },
      [LIBM_FUNC_V8S] = {
@@ -305,8 +282,8 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                            },
                           .accuracy = {
                                           .setup = libm_test_accu_setup,
-                                          .run = libm_test_accu,
-                                          .ulp = {.func = test_pow_ulp},
+                                          .run = test_pow_accu_run,
+                                          .ulp = {.func = test_powf_ulp},
                            },
      },
      [LIBM_FUNC_V2D] = {
@@ -315,8 +292,8 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                            },
                           .accuracy = {
                                          .setup = libm_test_accu_setup,
-                                         .run = libm_test_accu,
-                                         .ulp = {.funcl = test_pow_powl},
+                                         .run = test_pow_accu_run,
+                                         .ulp = {.func = test_pow_ulp},
                            },
      },
      [LIBM_FUNC_V4D] = {
@@ -325,8 +302,8 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                            },
                           .accuracy = {
                                          .setup = libm_test_accu_setup,
-                                         .run = libm_test_accu,
-                                         .ulp = {.funcl = test_pow_powl},
+                                         .run = test_pow_accu_run,
+                                         .ulp = {.func = test_pow_ulp},
                            },
      },
 
@@ -351,7 +328,6 @@ pow_template = {
                                     .v8s = test_pow_cb_v8s,
                                     .v2d = test_pow_cb_v2d,
                                     .v4d = test_pow_cb_v4d,
-                                    .accu_ranges = test_pow_cb_accu_ranges,
                                  },
                   },
 };

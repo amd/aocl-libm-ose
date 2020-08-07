@@ -100,6 +100,33 @@ test_exp_cb_s1s(struct libm_test *test, int idx)
 }
 
 static int
+test_exp_accu_run(struct libm_test *test)
+{
+    int ret = 0;
+
+    if (test->conf->inp_range[0].start  == 0 ||
+        test->conf->inp_range[0].stop   == 0)
+    {
+        int arr_sz = ARRAY_SIZE(exp2_accu_ranges);
+        for (int i = 0; i < arr_sz; i++) {
+            if ((exp2_accu_ranges[i].start == 0.0) && (exp2_accu_ranges[i].stop == 0.0))
+                break;
+
+            ret = libm_generate_test_one_range(test, &exp2_accu_ranges[i]);
+            if(ret)
+                return ret;
+
+            ret = test_exp_verify(test, &test->result);
+            if (ret) return ret;
+            }
+        return ret;
+    }
+
+    return libm_test_accu(test);
+}
+
+
+static int
 test_exp_cb_s1d(struct libm_test *test, int idx)
 {
     struct libm_test_data *data = &test->test_data;
@@ -167,46 +194,29 @@ test_exp_cb_v4d(struct libm_test *test, int j)
 	return 0;
 }
 
-
-static int
-test_exp_cb_accu_ranges(struct libm_test *test, int j)
-{
-    int ret = 0;
-    if (test->conf->inp_range[0].start ||
-        test->conf->inp_range[0].stop) {
-        struct libm_test_input_range *range = &test->conf->inp_range[0];
-        ret = libm_generate_test_one_range(test, range);
-        ret = test_exp_verify(test, &test->result);
-        return ret;
-     }
-
-    int arr_sz = ARRAY_SIZE(exp2_accu_ranges);
-    for (int i = 0; i < arr_sz; i++) {
-        if ((exp2_accu_ranges[i].start == 0.0) && (exp2_accu_ranges[i].stop == 0.0) )
-            break;
-    ret = libm_generate_test_one_range(test, &exp2_accu_ranges[i]);
-    if(ret)
-        return ret;
-    ret = test_exp_verify(test, &test->result);
-    }
-    return 0;
-}
+#include "../libs/mparith/am_mp_funcs.h"
 
 /*ulp*/
-double test_exp_ulp(struct libm_test *test, int idx)
+double test_expf_ulp(struct libm_test *test, int idx)
 {
     float *buf = (float*)test->test_data.input1;
-    return exp(buf[idx]);
+    float val = buf[idx];
+
+    return alm_mp_expf(val);
 }
 
-long double
-test_exp_expl(struct libm_test *test, int idx)
+double
+test_exp_ulp(struct libm_test *test, int idx)
 {
     double *d = (double*)test->test_data.input1;
+    double val = d[idx];
+
     if (test_is_single_precision(test)) {
-        return test_exp_ulp(test, idx);
+        return test_expf_ulp(test, idx);
     }
-    return expl(d[idx]);
+
+    return alm_mp_exp(val);
+
 }
 
 struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
@@ -219,8 +229,8 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                                            .run   = libm_test_s1s_perf,
                                          },
                          .accuracy     = { .setup = libm_test_accu_setup,
-                                           .run   = libm_test_accu,
-                                           .ulp = {.funcl = test_exp_expl}
+                                           .run   = test_exp_accu_run,
+                                           .ulp = {.func = test_expf_ulp},
                                          },
 
 
@@ -240,8 +250,8 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                                           .run   = libm_test_s1d_perf,
                                         },
                          .accuracy     = {.setup = libm_test_accu_setup,
-                                          .run   = libm_test_accu,
-                                          .ulp = {.funcl = test_exp_expl},
+                                          .run   = test_exp_accu_run,
+                                          .ulp = {.func = test_exp_ulp},
                                          },
 
                          .special      = {.setup = test_exp_special_setup,
@@ -261,8 +271,8 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                            },
                           .accuracy = {
                                           .setup = libm_test_accu_setup,
-                                          .run = libm_test_accu,
-                                          .ulp = {.funcl = test_exp_expl},
+                                          .run = test_exp_accu_run,
+                                          .ulp = {.func = test_expf_ulp},
                            },
      },
      [LIBM_FUNC_V8S] = {
@@ -272,8 +282,8 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                           },
                           .accuracy = {
                                           .setup = libm_test_accu_setup,
-                                          .run = libm_test_accu,
-                                          .ulp = {.func = test_exp_ulp},
+                                          .run = test_exp_accu_run,
+                                          .ulp = {.func = test_expf_ulp},
                           },
      },
      [LIBM_FUNC_V2D] = {
@@ -282,8 +292,8 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                            },
                           .accuracy = {
                                          .setup = libm_test_accu_setup,
-                                         .run = libm_test_accu,
-                                         .ulp = {.funcl = test_exp_expl},
+                                         .run = test_exp_accu_run,
+                                         .ulp = {.func = test_exp_ulp},
                            },
      },
      [LIBM_FUNC_V4D] = {
@@ -291,8 +301,8 @@ struct libm_test_funcs test_exp_funcs[LIBM_FUNC_MAX] =
                                            .run = libm_test_v4d_perf,
                            },
                           .accuracy = {   .setup = libm_test_accu_setup,
-                                          .run = libm_test_accu,
-                                          .ulp = {.funcl = test_exp_expl},
+                                          .run = test_exp_accu_run,
+                                          .ulp = {.func = test_exp_ulp},
                            },
      },
 
@@ -307,7 +317,7 @@ exp_template = {
     .nargs      = 1,
     .ulp_threshold = 0.5,
     .ops        = {
-                    //.ulp    = {.funcl = test_exp_expl},
+                    .ulp    = {.func = test_exp_ulp},
                     .verify = test_exp_verify,
                     .callbacks = {
                                     .s1s = test_exp_cb_s1s,
@@ -316,7 +326,6 @@ exp_template = {
                                     .v8s = test_exp_cb_v8s,
                                     .v2d = test_exp_cb_v2d,
                                     .v4d = test_exp_cb_v4d,
-                                    .accu_ranges = test_exp_cb_accu_ranges,
                                  },
                   },
 };

@@ -94,7 +94,7 @@ sinf_specialcase(v_f32x4_t _x,
                  v_f32x4_t result,
                  v_i32x4_t cond)
 {
-    return v_call_f32(ALM_PROTO(sinf), _x, result, cond);
+    return call_v4_f32(ALM_PROTO(sinf), _x, result, cond);
 }
 
 v_f32x4_t

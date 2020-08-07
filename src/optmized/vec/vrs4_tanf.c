@@ -78,7 +78,7 @@ float ALM_PROTO(tanf)(float);
 static inline v_f32x4_t
 tanf_specialcase(v_f32x4_t _x, v_f32x4_t result, v_i32x4_t cond)
 {
-    return v_call_f32(ALM_PROTO(tanf), _x, result, cond);
+    return call_v4_f32(ALM_PROTO(tanf), _x, result, cond);
 }
 
 /*

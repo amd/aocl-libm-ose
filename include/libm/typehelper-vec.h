@@ -304,7 +304,7 @@ v_call2_f32_2(float (*fn)(float, float),
 #define ALM_HAS_V4_CALL_F32
 
 static inline v_f32x4_t
-v_call_f32(float (*fn)(float),
+call_v4_f32(float (*fn)(float),
            v_f32x4_t orig,
            v_f32x4_t result,
            v_i32x4_t cond)

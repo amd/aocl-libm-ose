@@ -87,6 +87,15 @@ double _sincos_special_underflow(double x, char *name, _AMDLIBM_CODE code)
 				  0.0, 1);
 }
 
+float _sinf_cosf_special_underflow(float x, char *name, _AMDLIBM_CODE code)
+{
+    UT32 xu;
+    xu.f32 = x;
+    return __amd_handle_errorf(name, code, xu.u32, _DOMAIN,
+                    AMD_F_UNDERFLOW | AMD_F_INEXACT, EDOM, x,
+                    0.0, 1 );
+}
+
 double _sin_cos_special(double x, char *name, _AMDLIBM_CODE code)
 {
 	UT64 xu;
@@ -187,12 +196,12 @@ double _sin_special(double x)
 
 float _cosf_special(float x)
 {
-	return _sinf_cosf_special(x, "cosf", __amd_cos);
+    return _sinf_cosf_special(x, "cosf",__amd_cos);
 }
 
 double _cos_special(double x)
 {
-	return _sin_cos_special(x, "cos", __amd_cos);
+    return _sin_cos_special(x, "cos",__amd_cos);
 }
 
 void _sincosf_special(float x, float *sy, float *cy)

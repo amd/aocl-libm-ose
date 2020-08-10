@@ -247,7 +247,7 @@ extern  double _pow_special             (double x, double y, double z, uint32_t 
 extern  double _remainder_special       (double x, double y, uint32_t errorCode);
 extern  double _round_special           (double x, double r);
 extern  double _sin_cos_special         (double x, char *name, _AMDLIBM_CODE code);
-extern  double _sincos_special_underflow(double x, char *name, _AMDLIBM_CODE code);
+extern  double _sincos_special_underflow (double x, char *name, _AMDLIBM_CODE code);
 extern  double _sin_special             (double x);
 extern  double _sin_special_underflow   (double x);
 extern  double _tan_special             (double x);
@@ -276,5 +276,6 @@ extern  float _sinf_special             (float x);
 extern  float _tanf_special             (float x);
 extern  float _truncf_special           (float x, float r);
 extern  void _sincosf_special           (float x, float *sy, float *cy);
+extern  float _sinf_cosf_special_underflow(float x, char *name, _AMDLIBM_CODE code);
 
 #endif // __LIBM_SPECIAL_H__;

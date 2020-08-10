@@ -448,6 +448,7 @@ extern float FN_PROTOTYPE_OPT(log2f)(float x);
 extern float FN_PROTOTYPE_OPT(logf)(float x);
 extern float FN_PROTOTYPE_OPT(logp1f)(float x);
 extern float FN_PROTOTYPE_OPT(sinf)(float x);
+extern float FN_PROTOTYPE_OPT(cosf)(float x);
 
 extern __m128 FN_PROTOTYPE_OPT(vrs4_expf)(__m128 x);
 extern __m128 FN_PROTOTYPE_OPT(vrs4_powf)(__m128 x, __m128 y);

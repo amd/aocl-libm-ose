@@ -121,7 +121,7 @@ test_sin_cb_v4s(struct libm_test *test, int j)
 
     return 0;
 }
-/*
+
 static int
 test_sin_cb_v8s(struct libm_test *test, int j)
 {
@@ -136,7 +136,7 @@ test_sin_cb_v8s(struct libm_test *test, int j)
 
     return 0;
 }
-*/
+
 static int
 test_sin_cb_v2d(struct libm_test *test, int j)
 {
@@ -278,7 +278,7 @@ struct libm_test_funcs test_sin_funcs[LIBM_FUNC_MAX] =
                                           .run = test_sin_accu_run,
                                           .ulp = {.func = test_sinf_ulp},
                            },
-     },/*
+     },
      [LIBM_FUNC_V8S] = {
                           .performance = {
                                           .setup = libm_test_perf_setup,
@@ -289,7 +289,7 @@ struct libm_test_funcs test_sin_funcs[LIBM_FUNC_MAX] =
                                           .run = libm_test_accu,
                                           .ulp = {.func = test_sin_ulp},
                           },
-     },*/
+     },
      [LIBM_FUNC_V2D] = {
                           .performance = { .setup = libm_test_perf_setup,
                                             .run = libm_test_v2d_perf,
@@ -327,7 +327,7 @@ sin_template = {
                                     .s1s = test_sin_cb_s1s,
                                     .s1d = test_sin_cb_s1d,
                                     .v4s = test_sin_cb_v4s,
-                                   // .v8s = test_sin_cb_v8s,
+                                    .v8s = test_sin_cb_v8s,
                                     .v2d = test_sin_cb_v2d,
                                    // .v4d = test_sin_cb_v4d,
                                  },

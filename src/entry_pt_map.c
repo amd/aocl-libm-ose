@@ -204,6 +204,7 @@ LIBM_DECL_FN_MAP(vrs4_tanf);
 LIBM_DECL_FN_MAP(vrs8_logf);
 LIBM_DECL_FN_MAP(vrs8_expf);
 LIBM_DECL_FN_MAP(vrs8_powf);
+LIBM_DECL_FN_MAP(vrs8_sinf);
 
 LIBM_DECL_FN_MAP(vrda_cbrt);
 LIBM_DECL_FN_MAP(vrda_cos);

@@ -117,7 +117,7 @@ ALM_PROTO_OPT(vrs4_tanf)(__m128 xf32x4)
     v_u64x4_t   sign, uxd, n;
     v_u32x4_t   ux = as_v4_u32_f32(xf32x4);
 
-    v_i32x4_t  cond = (ux  & ALM_TANF_SIGN_MASK32) > (ALM_TANF_ARG_MAX);
+    v_u32x4_t  cond = (ux  & ALM_TANF_SIGN_MASK32) > (ALM_TANF_ARG_MAX);
 
     xd = cast_v4_f32_to_f64(xf32x4);
 
@@ -142,7 +142,7 @@ ALM_PROTO_OPT(vrs4_tanf)(__m128 xf32x4)
     /* F = xd - (n * π/2) */
     F = xd - dn * ALM_TANF_HALFPI;
 
-    v_i64x4_t odd = (n << 63);
+    v_u32x4_t odd = cast_v4_u64_to_u32(n << 31);
 
     /*
      * Calculate the polynomial approximation
@@ -156,7 +156,7 @@ ALM_PROTO_OPT(vrs4_tanf)(__m128 xf32x4)
 
     v_f32x4_t result = cast_v4_f64_to_f32(tanx);
 
-    cond |= cast_v4_u64_to_u32(odd);
+    cond |= odd;
 
     if (unlikely(any_v4_u32_loop(cond)))
         result = tanf_specialcase(xf32x4, result, cond);

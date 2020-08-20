@@ -13,8 +13,8 @@
 #include <libm/compiler.h>
 #include <libm/poly-vec.h>
 
-#define  ALM_SIGN_MASK   ~(1UL<<63)
-#define  ALM_SIGN_MASK32 ~(1U<<31)
+
+#define  ALM_TANF_SIGN_MASK32 ~(1U<<31)
 
 extern float _tanf_special(float);
 
@@ -34,13 +34,15 @@ extern float _tanf_special(float);
 static const struct {
     v_u32x4_t    infinity;
     v_f64x4_t    huge;
+    v_u64x4_t    signmask;
     v_f64x4_t    halfpi, invhalfpi;
     v_f64x4_t    poly_tanf[8];
 } tanf_data = {
-    .infinity  = _MM_SET1_I32(0x7f80000),
+    .infinity  = _MM_SET1_I32(0x7f800000),
     .huge      = _MM_SET1_PD4(0x1.8000000000000p52),
     .halfpi    = _MM_SET1_PD4(0x1.921fb54442d18469899p0),
     .invhalfpi = _MM_SET1_PD4(0x1.45f306dc9c882a53f85p-1),
+    .signmask  = _MM_SET1_I64(~(1UL<<63)),
     // Polynomial coefficients obtained using Remez algorithm from Sollya
     .poly_tanf = {
         _MM_SET1_PD4(0x1.ffffff99ac0468p-1),
@@ -56,12 +58,13 @@ static const struct {
 
 };
 
-#define ALM_HUGE_VAL    tanf_data.huge
-#define ALM_HALFPI      tanf_data.halfpi
-#define ALM_PI_HIGH     tanf_data.pihi
-#define ALM_PI_LOW      tanf_data.pilow
-#define ALM_INVHALFPI   tanf_data.invhalfpi
-#define ALM_ARG_MAX     tanf_data.infinity
+#define ALM_TANF_HUGE_VAL    tanf_data.huge
+#define ALM_TANF_HALFPI      tanf_data.halfpi
+#define ALM_TANF_PI_HIGH     tanf_data.pihi
+#define ALM_TANF_PI_LOW      tanf_data.pilow
+#define ALM_TANF_INVHALFPI   tanf_data.invhalfpi
+#define ALM_TANF_ARG_MAX     tanf_data.infinity
+#define ALM_TANF_SIGN_MASK64 tanf_data.signmask
 
 #define C1 tanf_data.poly_tanf[0]
 #define C2 tanf_data.poly_tanf[1]
@@ -114,30 +117,30 @@ ALM_PROTO_OPT(vrs4_tanf)(__m128 xf32x4)
     v_u64x4_t   sign, uxd, n;
     v_u32x4_t   ux = as_v4_u32_f32(xf32x4);
 
-    v_i32x4_t  cond = (ux  & ALM_SIGN_MASK32) > ALM_ARG_MAX;
+    v_i32x4_t  cond = (ux  & ALM_TANF_SIGN_MASK32) > (ALM_TANF_ARG_MAX);
 
     xd = cast_v4_f32_to_f64(xf32x4);
 
     uxd = as_v4_u64_f64(xd);
 
-    sign = uxd & (~ALM_SIGN_MASK);
+    sign = uxd & (~ALM_TANF_SIGN_MASK64);
 
     /* fabs(x) */
-    xd = as_v4_f64_u64(uxd & ALM_SIGN_MASK);
+    xd = as_v4_f64_u64(uxd & ALM_TANF_SIGN_MASK64);
 
     /*
      * dn = x * (2/π)
      * would turn to fma
      */
-    v_f64x4_t dn =  xd * ALM_INVHALFPI + ALM_HUGE_VAL;
+    v_f64x4_t dn =  xd * ALM_TANF_INVHALFPI + ALM_TANF_HUGE_VAL;
 
     /* n = (int)dn */
     n   = as_v4_u64_f64(dn);
 
-    dn -= ALM_HUGE_VAL;
+    dn -= ALM_TANF_HUGE_VAL;
 
     /* F = xd - (n * π/2) */
-    F = xd - dn * ALM_HALFPI;
+    F = xd - dn * ALM_TANF_HALFPI;
 
     v_i64x4_t odd = (n << 63);
 
@@ -153,14 +156,11 @@ ALM_PROTO_OPT(vrs4_tanf)(__m128 xf32x4)
 
     v_f32x4_t result = cast_v4_f64_to_f32(tanx);
 
-    if (unlikely(any_v4_u32(cond)))
-        return tanf_specialcase(xf32x4, result, cond);
+    cond |= cast_v4_u64_to_u32(odd);
 
-    if (any_v4_u64(odd)) {
-            result = tanf_specialcase(xf32x4,
-                                     result,
-                                     cast_v4_u64_to_u32(odd));
-    }
+    if (unlikely(any_v4_u32_loop(cond)))
+        result = tanf_specialcase(xf32x4, result, cond);
+
 
     return result;
 }

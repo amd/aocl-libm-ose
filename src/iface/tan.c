@@ -16,6 +16,7 @@
 typedef double  (*amd_tan_t)(double);
 typedef float   (*amd_tanf_t)(float);
 typedef __m128  (*amd_vrs4_tanf_t)(__m128);
+typedef __m256  (*amd_vrs8_tanf_t)(__m256);
 
 void
 LIBM_IFACE_PROTO(tan)(void *arg)
@@ -27,6 +28,7 @@ LIBM_IFACE_PROTO(tan)(void *arg)
     amd_tan_t        fn_d = NULL;
     amd_tanf_t       fn_s = NULL;
     amd_vrs4_tanf_t  fn_v4s = NULL;
+    amd_vrs8_tanf_t  fn_v8s = NULL;
 
     static struct cpu_features *features = NULL;
 
@@ -65,16 +67,19 @@ LIBM_IFACE_PROTO(tan)(void *arg)
         case 0x17:                      /* Rome */
             fn_s = &ALM_PROTO_ARCH_ZN2(tanf);
             fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_tanf);
+            fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_tanf);
             break;
         case 0x19:                      /* Milan */
             fn_s = &ALM_PROTO_ARCH_ZN2(tanf);
             fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_tanf);
+            fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_tanf);
             break;
         }
     }
 
     G_ENTRY_PT_PTR(tan)       = fn_d;
     G_ENTRY_PT_PTR(tanf)      = fn_s;
-		G_ENTRY_PT_PTR(vrs4_tanf) = fn_v4s;
+    G_ENTRY_PT_PTR(vrs4_tanf) = fn_v4s;
+    G_ENTRY_PT_PTR(vrs8_tanf) = fn_v8s;
 }
 

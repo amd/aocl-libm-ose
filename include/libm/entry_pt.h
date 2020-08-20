@@ -190,6 +190,7 @@ extern __m256  G_ENTRY_PT(vrs8_log2f)(__m256);
 extern __m256  G_ENTRY_PT(vrs8_log10f)(__m256);
 extern __m256  G_ENTRY_PT(vrs8_logf)(__m256);
 extern __m256  G_ENTRY_PT(vrs8_sinf)(__m256);
+extern __m256  G_ENTRY_PT(vrs8_tanf)(__m256);
 extern __m256  G_ENTRY_PT(vrs8_powf)(__m256, __m256);
 
 extern __m128d G_ENTRY_PT(vrd2_cbrt)(__m128d);

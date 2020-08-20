@@ -160,7 +160,7 @@ agreements with respect to the subject matter of this Agreement.
 #include <emmintrin.h>
 #include <immintrin.h>
 
-#ifdef AMD_LIBM_VEC_EXTERNAL_H
+#ifndef AMD_LIBM_VEC_EXTERNAL_H
 #define AMD_LIBM_VEC_EXTERNAL_H
 
 /*

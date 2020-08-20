@@ -14,8 +14,8 @@
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
-#define  ALM_SIGN_MASK   ~(1UL<<63)
-#define  ALM_SIGN_MASK32 ~(1U<<31)
+#define  ALM_TANF_SIGN_MASK   ~(1UL<<63)
+#define  ALM_TANF_SIGN_MASK32 ~(1U<<31)
 
 
 /*
@@ -33,17 +33,17 @@
 
 static const struct {
     double huge;
-    //double pihi, pilow;
-    double halfpi, invhalfpi;
-    double poly_tanf[8];
+    double halfpi, pihi, pilow;
+    double invhalfpi;
+    double poly[8];
 } tanf_data = {
     .huge      = 0x1.8000000000000p52,
-    .halfpi  = 0x1.921fb54442d18469899p0,
-    //.pihi      = 0x1.921fb50000000p1,
-    //.pilow     = 0x1.110b4611a6263p-25,
+    .halfpi    = 0x1.921fb54442d18469899p0,
+    //.pihi      = 0x1.921fb50000000p0,
+    //.pilow     = 0x1.110b4611a6263p-26,
     .invhalfpi = 0x1.45f306dc9c882a53f85p-1,
     // Polynomial coefficients obtained using Remez algorithm from Sollya
-    .poly_tanf = {
+    .poly = {
         0x1.ffffff99ac0468p-1,
         0x1.55559193ecf2bp-2,
         0x1.1106bf4ba8f408p-3,
@@ -56,19 +56,19 @@ static const struct {
 
 };
 
-#define ALM_HUGE_VAL    tanf_data.huge
-#define ALM_HALFPI      tanf_data.halfpi
-#define ALM_PI_HIGH     tanf_data.pihi
-#define ALM_PI_LOW      tanf_data.pilow
-#define ALM_INVHALFPI   tanf_data.invhalfpi
-#define C1 tanf_data.poly_tanf[0]
-#define C2 tanf_data.poly_tanf[1]
-#define C3 tanf_data.poly_tanf[2]
-#define C4 tanf_data.poly_tanf[3]
-#define C5 tanf_data.poly_tanf[4]
-#define C6 tanf_data.poly_tanf[5]
-#define C7 tanf_data.poly_tanf[6]
-#define C8 tanf_data.poly_tanf[7]
+#define ALM_TANF_HUGE_VAL    tanf_data.huge
+#define ALM_TANF_HALFPI      tanf_data.halfpi
+#define ALM_TANF_PI_HIGH     tanf_data.pihi
+#define ALM_TANF_PI_LOW      tanf_data.pilow
+#define ALM_TANF_INVHALFPI   tanf_data.invhalfpi
+#define C0 tanf_data.poly[0]
+#define C2 tanf_data.poly[1]
+#define C4 tanf_data.poly[2]
+#define C6 tanf_data.poly[3]
+#define C8 tanf_data.poly[4]
+#define C10 tanf_data.poly[5]
+#define C12 tanf_data.poly[6]
+#define C14 tanf_data.poly[7]
 
 
 /*
@@ -107,7 +107,7 @@ ALM_PROTO_OPT(tanf)(float x)
     if(unlikely((ux - asuint32(0x1p-126)) >
                 (asuint32(0x1p+127) - asuint32(0x1p-126)))) {
 
-        if((ux  & ALM_SIGN_MASK32) >= 0x7f800000) {
+        if((ux  & ALM_TANF_SIGN_MASK32) >= 0x7f800000) {
             /*  infinity or NaN */
             return _tanf_special(x);
         }
@@ -120,33 +120,35 @@ ALM_PROTO_OPT(tanf)(float x)
 
     uxd = asuint64(xd);
 
-    sign = uxd & (~ALM_SIGN_MASK);
+    sign = uxd & (~ALM_TANF_SIGN_MASK);
 
     /* fabs(x) */
-    xd = asdouble(uxd & ALM_SIGN_MASK);
+    xd = asdouble(uxd & ALM_TANF_SIGN_MASK);
 
     /*
      * dn = x * (2/π)
      * would turn to fma
      */
-    double dn =  xd * ALM_INVHALFPI + ALM_HUGE_VAL;
+    double dn =  xd * ALM_TANF_INVHALFPI + ALM_TANF_HUGE_VAL;
 
     /* n = (int)dn */
     n   = asuint64(dn);
 
-    dn -= ALM_HUGE_VAL;
+    dn -= ALM_TANF_HUGE_VAL;
 
     /* F = xd - (n * π/2) */
-    F = xd - dn * ALM_HALFPI;
+    F = xd - dn * ALM_TANF_HALFPI;
+    //F = F - dn * ALM_TANF_PI_LOW;
 
     uint64_t odd = (n << 63);
 
     /*
      * Calculate the polynomial approximation
      *  x * (C1 + C2*x^2 + C3*x^4 + C4*x^6 + C5*x^8 + C6*x^10 + C7*x^12 + C8*x^14)
-     * polynomial is approximated as x*P(x^2)
+     * polynomial is approximated as x*P(x^2),
+		 * 15 degree, but only even terms are used
      */
-    poly = POLY_EVAL_EVEN_14(F, C1, C2, C3, C4, C5, C6, C7, C8);
+    poly = POLY_EVAL_EVEN_15(F, C0, C2, C4, C6, C8, C10, C12, C14);
 
     tanx = asdouble(asuint64(poly) ^ sign);
 

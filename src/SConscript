@@ -67,5 +67,5 @@ fast_libm = SConscript('fast/SConscript',
 
 Depends(libmso, '#src/ld-syms-libm.lds')
 
-Return('libm', 'libmso', 'fast_libm')
+Return('fast_libm', 'libm', 'libmso')
 

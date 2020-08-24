@@ -17,8 +17,8 @@ LIBM_IFACE_PROTO(sqrt)(void *arg)
 	/* Double */
 	G_ENTRY_PT_PTR(sqrt) = &FN_PROTOTYPE_REF(sqrt);
 
-	/* Single - Doesnt' exists yet */
-	//G_ENTRY_PT_PTR(sqrtf) = &FN_PROTOTYPE_REF(sqrtf);
+	/* Single */
+	G_ENTRY_PT_PTR(sqrtf) = &FN_PROTOTYPE_REF(sqrtf);
 
 	/* Vector Double */
 	/* Vector Single */

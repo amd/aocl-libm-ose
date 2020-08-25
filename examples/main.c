@@ -4,10 +4,12 @@
 */
 
 #include <stdio.h>
-extern void use_exp();
+extern int use_exp();
+extern int use_pow();
 
 int main()  {
     printf("Illustration of AMD LibM functions\n");
     use_exp();
+    use_pow();
     return 0;
 }

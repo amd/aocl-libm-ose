@@ -42,6 +42,7 @@ LIBM_IFACE_PROTO(cos)(void *arg)
         CPU_FEATURE_AVX2_USABLE(features)) {
         //fn_d = &FN_PROTOTYPE_OPT(cos);
         fn_s = &FN_PROTOTYPE_OPT(cosf);
+        fn_v4s = &FN_PROTOTYPE_OPT(vrs4_cosf); 
     } else if (CPU_HAS_SSSE3(features) &&
                CPU_FEATURE_SSSE3_USABLE(features)) {
         fn_d = &FN_PROTOTYPE_BAS64(cos);
@@ -57,14 +58,16 @@ LIBM_IFACE_PROTO(cos)(void *arg)
      */
     if (mfg_info->mfg_type == CPU_MFG_AMD) {
         switch(mfg_info->family) {
-        case 0x15:                      /* Naples */
-            break;
-        case 0x17:                      /* Rome */
-                    fn_s = &ALM_PROTO_ARCH_ZN2(cosf);
-            break;
-        case 0x19:                      /* Milan */
-                    fn_s = &ALM_PROTO_ARCH_ZN2(cosf);
-            break;
+            case 0x15:                      /* Naples */
+                        break;
+            case 0x17:                      /* Rome */
+                        fn_s = &ALM_PROTO_ARCH_ZN2(cosf);
+                        fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_cosf);
+                        break;
+            case 0x19:                      /* Milan */
+                        fn_s = &ALM_PROTO_ARCH_ZN2(cosf);
+                        fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_cosf);
+                        break;
         }
     }
 

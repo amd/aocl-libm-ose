@@ -217,7 +217,7 @@ powf_specialcase(v_f32x8_t _x,
                  v_f32x8_t result,
                  v_i32x8_t cond)
 {
-    return v_call2_f32_2(ALM_PROTO(powf), _x, _y, result, cond);
+    return call2_v8_f32(ALM_PROTO(powf), _x, _y, result, cond);
 }
 
 static inline v_f64x4_t

@@ -280,7 +280,7 @@ call_v8_f32(float (*fn)(float),
 }
 
 static inline v_f32x8_t
-v_call2_f32_2(float (*fn)(float, float),
+call2_v8_f32(float (*fn)(float, float),
         v_f32x8_t x,
         v_f32x8_t y,
         v_f32x8_t result,
@@ -351,7 +351,7 @@ v_call_f64(double (*fn)(double),
 #ifndef ALM_HAS_V4_CALL_2_F64
 #define ALM_HAS_V4_CALL_2_F64
 static inline v_f64x4_t
-v_call2_f64(double (*fn)(double, double),
+call2_v4_f64(double (*fn)(double, double),
        v_f64x4_t x,
        v_f64x4_t y,
        v_f64x4_t result,
@@ -367,7 +367,7 @@ v_call2_f64(double (*fn)(double, double),
 #ifndef ALM_HAS_V2_CALL_2_F64
 #define ALM_HAS_V2_CALL_2_F64
 static inline v_f64x2_t
-v_call2_f64x2(double (*fn)(double, double),
+call2_v2_f64(double (*fn)(double, double),
        v_f64x2_t x,
        v_f64x2_t y,
        v_f64x2_t result,

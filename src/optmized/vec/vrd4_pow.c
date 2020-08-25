@@ -222,7 +222,7 @@ pow_specialcase(v_f64x4_t _x,
                  v_f64x4_t result,
                  v_i64x4_t cond)
 {
-    return v_call2_f64(ALM_PROTO(pow), _x, _y, result, cond);
+    return call2_v4_f64(ALM_PROTO(pow), _x, _y, result, cond);
 }
 
 

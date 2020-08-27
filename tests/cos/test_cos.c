@@ -120,7 +120,7 @@ test_cos_cb_v4s(struct libm_test *test, int j)
 
     return 0;
 }
-/*
+
 static int
 test_cos_cb_v8s(struct libm_test *test, int j)
 {
@@ -135,7 +135,7 @@ test_cos_cb_v8s(struct libm_test *test, int j)
 
     return 0;
 }
-*/
+
 static int
 test_cos_cb_v2d(struct libm_test *test, int j)
 {
@@ -273,7 +273,7 @@ struct libm_test_funcs test_cos_funcs[LIBM_FUNC_MAX] =
                                           .run = test_cos_accu_run,
                                           .ulp = {.func = test_cosf_ulp},
                            },
-     },/*
+     },
      [LIBM_FUNC_V8S] = {
                           .performance = {
                                           .setup = libm_test_perf_setup,
@@ -281,10 +281,10 @@ struct libm_test_funcs test_cos_funcs[LIBM_FUNC_MAX] =
                           },
                           .accuracy = {
                                           .setup = libm_test_accu_setup,
-                                          .run = libm_test_accu,
-                                          .ulp = {.func = test_cos_ulp},
+                                          .run = test_cos_accu_run,
+                                          .ulp = {.func = test_cosf_ulp},
                           },
-     },*/
+     },
      [LIBM_FUNC_V2D] = {
                           .performance = { .setup = libm_test_perf_setup,
                                             .run = libm_test_v2d_perf,
@@ -322,7 +322,7 @@ cos_template = {
                                     .s1s = test_cos_cb_s1s,
                                     .s1d = test_cos_cb_s1d,
                                     .v4s = test_cos_cb_v4s,
-                                   // .v8s = test_cos_cb_v8s,
+                                    .v8s = test_cos_cb_v8s,
                                     .v2d = test_cos_cb_v2d,
                                    // .v4d = test_cos_cb_v4d,
                                  },

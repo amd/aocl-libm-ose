@@ -21,7 +21,7 @@
 #if defined(ALM_OVERRIDE)
 
 #include <libm_macros.h>
-#include <libm/types.h>
+//#include <libm/types.h>
 
 #ifndef  ALM_PREFIX_ZN2
 #undef   ALM_PREFIX_ZN2
@@ -56,10 +56,16 @@
 
 #define  ALM_PROTO_ARCH_ZN2(x)		__ALM_PROTO_ARCH(ALM_PREFIX_ZN2, x, ALM_ARCH_ZN2)
 
+/*
 #define ALM_PROTO_ARCH_CHANGE_INTERNAL  1
 #include <libm/arch/alm_funcs.h>
-
 #undef  ALM_PROTO_CHANGE_INTENRAL
+*/
+#pragma push_macro("ALM_PROTO_INTERNAL")
+#define ALM_PROTO_INTERNAL ALM_PROTO_ARCH
+#include "../__alm_func_internal.h"
+#undef ALM_PROTO_INTERNAL
+#pragma pop_macro("ALM_PROTO_INTERNAL")
 
 #endif  /* _ALM_ARCH_ZEN2_H_ */
 

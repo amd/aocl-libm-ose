@@ -15,7 +15,6 @@
 #include <fmaintrin.h>
 
 #include <libm_amd.h>
-#include <libm/amd_funcs_internal.h>
 
 #include <libm_tests.h>
 #include <bench_timer.h>

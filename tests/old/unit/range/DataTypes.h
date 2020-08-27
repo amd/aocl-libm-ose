@@ -2,7 +2,6 @@
 #define __DATA_TYPES_H__
 
 #define LENGTH_OF(x) (sizeof(x)/sizeof(x[0]))
-#include "libm/amd_funcs_internal.h"
 #include "libm_amd.h"
 #include "libm_nag.h"
 #include "unistd.h"

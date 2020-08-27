@@ -72,13 +72,12 @@ static const struct {
 #define C7 tanf_data.poly_tanf[6]
 #define C8 tanf_data.poly_tanf[7]
 
-
-float ALM_PROTO(tanf)(float);
+float tanf_specialcase(float);
 
 static inline v_f32x8_t
-tanf_specialcase(v_f32x8_t _x, v_f32x8_t result, v_i32x8_t cond)
+vrs8_tanf_specialcase(v_f32x8_t _x, v_f32x8_t result, v_i32x8_t cond)
 {
-    return call_v8_f32(ALM_PROTO(tanf), _x, result, cond);
+    return call_v8_f32(tanf_specialcase, _x, result, cond);
 }
 
 /*
@@ -149,7 +148,7 @@ ALM_PROTO_OPT(vrs8_tanf)(__m256 xf32x8)
         /* F = xd - (n * π/2) */
         F = xd - dn * ALM_TANF_HALFPI;
 
-        _odd[lane] = cast_v4_u64_to_u32(n & 0x1);
+        _odd[lane] = cast_v4_u64_to_u32(n << 31);
 
         /*
          * Calculate the polynomial approximation
@@ -170,7 +169,7 @@ ALM_PROTO_OPT(vrs8_tanf)(__m256 xf32x8)
                               as_v4_f32_u32(_odd[1])));
 
     if (any_v8_u32_loop(cond)) {
-        result8 = tanf_specialcase(xf32x8, result8, cond);
+        result8 = vrs8_tanf_specialcase(xf32x8, result8, cond);
     }
 
     return result8;

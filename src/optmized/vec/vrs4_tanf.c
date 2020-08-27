@@ -75,13 +75,12 @@ static const struct {
 #define C7 tanf_data.poly_tanf[6]
 #define C8 tanf_data.poly_tanf[7]
 
-
-float ALM_PROTO(tanf)(float);
+extern float tanf_specialcase(float);
 
 static inline v_f32x4_t
-tanf_specialcase(v_f32x4_t _x, v_f32x4_t result, v_i32x4_t cond)
+vrs4_tanf_specialcase(v_f32x4_t _x, v_f32x4_t result, v_i32x4_t cond)
 {
-    return call_v4_f32(ALM_PROTO(tanf), _x, result, cond);
+    return call_v4_f32(tanf_specialcase, _x, result, cond);
 }
 
 /*
@@ -159,8 +158,7 @@ ALM_PROTO_OPT(vrs4_tanf)(__m128 xf32x4)
     cond |= odd;
 
     if (unlikely(any_v4_u32_loop(cond)))
-        result = tanf_specialcase(xf32x4, result, cond);
-
+        result = vrs4_tanf_specialcase(xf32x4, result, cond);
 
     return result;
 }

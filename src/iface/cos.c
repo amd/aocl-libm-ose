@@ -16,6 +16,7 @@ typedef double (*amd_cos_t)(double);
 typedef float  (*amd_cosf_t)(float);
 typedef __m128d (*amd_cos_v2d_t)(__m128d);
 typedef __m128  (*amd_cos_v4s_t)(__m128);
+typedef __m256  (*amd_cos_v8s_t)(__m256);
 
 void
 LIBM_IFACE_PROTO(cos)(void *arg)
@@ -24,6 +25,7 @@ LIBM_IFACE_PROTO(cos)(void *arg)
     amd_cosf_t fn_s = NULL;
     amd_cos_v4s_t fn_v4s = NULL;
     amd_cos_v2d_t fn_v2d = NULL;
+    amd_cos_v8s_t fn_v8s = NULL;
 
     static struct cpu_features *features = NULL;
 
@@ -42,7 +44,8 @@ LIBM_IFACE_PROTO(cos)(void *arg)
         CPU_FEATURE_AVX2_USABLE(features)) {
         //fn_d = &FN_PROTOTYPE_OPT(cos);
         fn_s = &FN_PROTOTYPE_OPT(cosf);
-        fn_v4s = &FN_PROTOTYPE_OPT(vrs4_cosf); 
+        fn_v4s = &FN_PROTOTYPE_OPT(vrs4_cosf);
+        fn_v8s = &FN_PROTOTYPE_OPT(vrs8_cosf);
     } else if (CPU_HAS_SSSE3(features) &&
                CPU_FEATURE_SSSE3_USABLE(features)) {
         fn_d = &FN_PROTOTYPE_BAS64(cos);
@@ -63,10 +66,12 @@ LIBM_IFACE_PROTO(cos)(void *arg)
             case 0x17:                      /* Rome */
                         fn_s = &ALM_PROTO_ARCH_ZN2(cosf);
                         fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_cosf);
+                        fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_cosf);
                         break;
             case 0x19:                      /* Milan */
                         fn_s = &ALM_PROTO_ARCH_ZN2(cosf);
                         fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_cosf);
+                        fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_cosf);
                         break;
         }
     }
@@ -82,5 +87,6 @@ LIBM_IFACE_PROTO(cos)(void *arg)
 
     /* Vector Single */
     G_ENTRY_PT_PTR(vrs4_cosf) = fn_v4s;
+    G_ENTRY_PT_PTR(vrs8_cosf) = fn_v8s;
 }
 

@@ -42,7 +42,7 @@ LIBM_IFACE_PROTO(sin)(void *arg)
     if (CPU_HAS_AVX2(features) &&
         CPU_FEATURE_AVX2_USABLE(features)) {
 
-        fn_d = &FN_PROTOTYPE_FMA3(sin);
+        fn_d = &FN_PROTOTYPE_OPT(sin);
         fn_s = &FN_PROTOTYPE_OPT(sinf);
         fn_v4s = &FN_PROTOTYPE_OPT(vrs4_sinf);
         fn_v8s = &FN_PROTOTYPE_OPT(vrs8_sinf);
@@ -71,11 +71,13 @@ LIBM_IFACE_PROTO(sin)(void *arg)
         switch(mfg_info->family) {
         case 0x15:                                      /* Naples */
             break;
-        case 0x17: fn_s   = &ALM_PROTO_ARCH_ZN2(sinf);  /* Rome */
+        case 0x17: fn_d   = &ALM_PROTO_ARCH_ZN2(sin);   /* Rome */
+                   fn_s   = &ALM_PROTO_ARCH_ZN2(sinf);
                    fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_sinf);
                    fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_sinf);
             break;
-        case 0x19: fn_s   = &ALM_PROTO_ARCH_ZN2(sinf);         /* Milan */
+        case 0x19: fn_d   = &ALM_PROTO_ARCH_ZN2(sin);   /* Milan */
+                   fn_s   = &ALM_PROTO_ARCH_ZN2(sinf);
                    fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_sinf);
                    fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_sinf);
             break;

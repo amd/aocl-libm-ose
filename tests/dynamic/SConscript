@@ -1,0 +1,21 @@
+# Copyright (C) 2020, AMD. All rights Reserved
+#
+# Author: Pranoy Jayaraj <pjayaraj@amd.com>
+
+Import('env')
+
+e = env.Clone()
+srcs = Glob('./src/*.[cS]')
+
+cflags = '-mavx2'
+inc    = '-Iinc'
+lflags = '-ldl -lm'
+
+exe = e.Program(source = srcs,
+                parse_flags = '{0} {1} {2}'.format(inc,
+                                                cflags,
+                                                lflags),
+                target = 'test_dynamic')
+
+Return('exe')
+

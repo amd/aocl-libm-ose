@@ -126,7 +126,7 @@ void __amd_remainder_piby2(double x, double *r, double *rr, int *region);
 #define PIby2_2     sin_data.piby2_2
 #define PIby2_2tail sin_data.piby2_2tail
 #define PIby4       0x3fe921fb54442d18
-#define FiveE5      0x411E848000000000
+#define FiveE6      0x415312d000000000
 #define ONE_BY_SIX  sin_data.one_by_six
 #define ALM_SHIFT   sin_data.ALM_SHIFT
 
@@ -178,12 +178,11 @@ ALM_PROTO_OPT(sin)(double x)
 
     if(ux > PIby4){
 
+        x = asdouble(ux);
         /* ux > pi/4 */
-        if(ux < FiveE5){
+        if(ux < FiveE6){
             /* reduce  the argument to be in a range from -pi/4 to +pi/4
                 by subtracting multiples of pi/2 */
-
-            x = asdouble(ux);
 
             r = TwobyPI * x; /* x * two_by_pi*/
 

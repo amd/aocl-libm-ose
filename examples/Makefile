@@ -1,18 +1,25 @@
-ALL_SRCS = $(wildcard *.c)
-ALL_OBJS = $(ALL_SRCS:.c=.o) 
-HEADER_PATH = ../include/external
-LIB_PATH = ../build/aocl-release/src
-EXE = test_libm
-LFLAGS = -lalm -lm
-CC = gcc
-CFLAGS = -march=native
+# the compiler to use
+CC      = gcc
+CFLAGS  = -march=native -g
 
-%.o: %.c $(HEADER_PATH)
-	$(CC) -c $(CFLAGS) -I$(HEADER_PATH) ${ALL_SRCS}
+#header
+header_path = ../include/external/
+INC         = -I$(header_path)
 
-test_libm: $(ALL_OBJS)
-	$(CC) -o $(EXE) $(ALL_OBJS) -L $(LIB_PATH) $(LFLAGS)
+#path to libalm.so
+lib_path = ../build/aocl-release/src/
+LFLAGS   = -L$(lib_path) -lalm -lm
 
-.PHONY:clean
+#src path
+SOURCES = ./src/*.c
+
+#exe file name
+TARGET = ./test_libm
+
+all: $(TARGET)
+
+$(TARGET): $(SOURCE)
+	$(CC) $(CFLAGS) $(INC) -o $(TARGET) $(SOURCES) $(LFLAGS)
+
 clean:
-	rm -fr $(ALL_OBJS) rm -fr $(EXE)
+	rm -rf $(TARGET)

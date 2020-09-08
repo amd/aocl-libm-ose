@@ -262,6 +262,28 @@
 
 /*
  * Polynomial of degree 15,
+ *      - uses only odd terms and
+ *      - C0 = 0
+ * p(x) = (c7*x^15 + c6*x^13 + c5*x^11 + c4*x^9 + c3*x^7 + c2*x^5 + c1*x^3) + x
+ *      = (c7*x^12 + c6*x^10 + c5*x^8 + c4*x^6 + c3*x^4 + c2*x^2 + c1) * \
+ *                      x^2 *x + x
+ */
+#define POLY_EVAL_ODD_15(x, c1, c2, c3, c4, c5, c6, c7) ({          \
+            __typeof(x) x2  = x * x;                                \
+            __typeof(x) x4  = x2 * x2;                              \
+            __typeof(x) x8  = x4 * x4;                              \
+            __typeof(x) q = mul_add(mul_add(c7,                     \
+                                            x4,                     \
+                                            mul_add(c6, x2, c5)),   \
+                                    x8,                             \
+                                    mul_add(mul_add(c4, x2, c3),    \
+                                            x4,                     \
+                                            mul_add(c2, x2, c1)));  \
+            x + ((q * x2) * x) ;                                  \
+        })
+
+/*
+ * Polynomial of degree 15,
  *      - uses only even terms and
  *      - C0 = 0
  * p(x) = (c8*x^14 + c7*x^12 + c6*x^10 + c5*x^8 + c4*x^6 + c3*x^4 + c2*x^2 + c1)*x

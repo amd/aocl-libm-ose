@@ -51,22 +51,6 @@ typedef union {
 } flt64_t;
 
 
-/*
- * Packed data structure to access different parts of a floating point number
- */
-
-struct __flt64_packed {
-    unsigned long long sign     :1;
-    unsigned long long exponent :11;
-    unsigned long long mantissa :52;
-} flt64_packed_t;
-
-struct __flt32_packed {
-    unsigned sign      :1;
-    unsigned exponent  :8;
-    unsigned mantissa  :23;
-} flt32_packed_t;
-
 
 /*****************************
  * Internal vector types

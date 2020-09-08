@@ -18,9 +18,9 @@
 #define EXPM1F_N 6
 
 #if EXPM1F_N == 6
-const double __two_to_jby64[64];
+extern const double __two_to_jby64[64];
 #elif EXPM1F_N == 7
-const double __two_to_jby128[128];
+extern const double __two_to_jby128[128];
 #endif
 
 

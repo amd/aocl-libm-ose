@@ -21,7 +21,7 @@ e.Append(
     STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 1
 )
 
-objs = []
+alm_objs = []
 
 almenv = e.Clone()
 almenv.Append(
@@ -29,31 +29,23 @@ almenv.Append(
     LIBS      = ['c'],
 )
 
-subdirs = ['isa', 'optmized', 'iface', 'arch']
+subdirs = ['isa', 'optmized', 'iface', 'arch', 'ref']
 for d in subdirs:
 	denv = almenv.Clone()
 	sdir = joinpath(denv['CWD'], d)
 	denv.Append(
 		CWD = sdir
 	)
-	objs += SConscript('%s/SConscript'%d,
+	alm_objs += SConscript('%s/SConscript'%d,
 			    exports = {'env' : denv},
 			    duplicate = 0,
                             src_dir = sdir,
                             variant_dir = joinpath(builddir, '%s'%d))
 
-#
-# Reference files, for the functions where optimized version
-# doesn't exist
-#
-ref_excludes = ['ref/amd_pow.c', 'ref/exp2.c',
-                'ref/exp_tables*.c', 'ref/MapEntryPoints.c', 
-                'MapEntryPoints.c']
-ref_srcs = Glob('*.[cS]',    exclude=ref_excludes)  + \
-	   Glob('ref/*.[c]', exclude=ref_excludes)
-ref_objs = e.StaticObject(ref_srcs)
+lib_excludes = ['MapEntryPoints.c']
+lib_srcs = Glob('*.[c]', exclude=lib_excludes)
 
-alm_objs = ref_objs + objs
+alm_objs += almenv.StaticObject(lib_srcs)
 
 libm = almenv.StaticLibrary('alm', alm_objs)
 libmso = almenv.SharedLibrary('alm', alm_objs)

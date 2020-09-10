@@ -1,0 +1,31 @@
+# Copyright (C) 2018, AMD. All rights Reserved
+#
+
+# Inherit global environment
+Import('env')
+from os.path import join as joinpath
+
+builddir = joinpath(env['BUILDROOT'], 'src', 'ref')
+
+#
+# Reference files, for the functions where optimized version
+# doesn't exist
+#
+ref_excludes = ['amd_pow.c', 'exp2.c',
+                'exp_tables*.c', 'MapEntryPoints.c', 
+                'MapEntryPoints.c']
+
+ref_srcs = Glob('*.[cS]',    exclude=ref_excludes) 
+ref_objs = env.StaticObject(ref_srcs)
+
+cmplx_objs = SConscript('cmplx/SConscript',
+			exports = {'env' : env},
+			duplicate = 0,
+                        src_dir = joinpath(env['CWD'], 'cmplx'),
+                        variant_dir = joinpath(builddir, 'cmplx'))
+
+objects  = ref_objs + cmplx_objs
+
+Return('objects')
+
+

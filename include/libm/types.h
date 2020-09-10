@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 #include <float.h>
+#include <complex.h>
 #include <immintrin.h>
 
 #define PASTE2(a, b) a##b
@@ -19,6 +20,9 @@ typedef    short               f16_t;
 typedef    float               f32_t;
 typedef    double              f64_t;
 typedef    long double         f80_t;
+
+typedef    float  _Complex     fc32_t;
+typedef    double _Complex     fc64_t;
 
 #ifdef  HAVE_NATIVE_LONG_LONG_DOUBLE
 typedef    long long double    f128_t;

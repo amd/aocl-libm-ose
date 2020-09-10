@@ -2,9 +2,9 @@
 #
 # Author: Pranoy Jayaraj <pjayaraj@amd.com>
 
-Import('env')
+#compile this dynamic loading tests with gcc
+e = Environment(CC = 'gcc')
 
-e = env.Clone()
 srcs = Glob('./src/*.[cS]')
 
 cflags = '-mavx2'

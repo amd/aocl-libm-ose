@@ -5,16 +5,17 @@
 #compile this dynamic loading tests with gcc
 e = Environment(CC = 'gcc')
 
+e.Append(
+    INCPATH= ['inc'],
+	CPPPATH= ['inc'],
+    CFLAGS = ['-mavx', '-fPIE'],
+    LDFLAGS= ['-fPIE'],
+    LIBS   = ['dl', 'm'],
+)
+
 srcs = Glob('./src/*.[cS]')
 
-cflags = '-mavx2'
-inc    = '-Iinc'
-lflags = '-ldl -lm'
-
 exe = e.Program(source = srcs,
-                parse_flags = '{0} {1} {2}'.format(inc,
-                                                cflags,
-                                                lflags),
                 target = 'test_dynamic')
 
 Return('exe')

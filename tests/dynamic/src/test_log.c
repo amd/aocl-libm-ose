@@ -1,8 +1,16 @@
-#include "include.h"
+#include "libm_dynamic_load.h"
 
 int test_log(void* handle) {
     char* error;
     int i;
+
+    float (*lamd_logf)(float);
+    double (*lamd_log)(double);
+    __m128d (*lamd_vrd2_log)  (__m128d);
+    __m128  (*lamd_vrs4_logf) (__m128);
+    __m256d (*lamd_vrd4_log)  (__m256d);
+    __m256  (*lamd_vrs8_logf) (__m256);
+
     /*scalar inputs*/
     float inputf = 3.145, outputf;
     double input = 6.287, output;
@@ -32,13 +40,13 @@ int test_log(void* handle) {
     ip_vrs8 = _mm256_loadu_ps(input_array_vrs8);
 
     /*scalar routines*/
-    *(void **) (&amd_logf) = dlsym(handle, "amd_logf");
-    *(void **) (&amd_log)  = dlsym(handle, "amd_log");
+    lamd_logf = dlsym(handle, "amd_logf");
+    lamd_log  = dlsym(handle, "amd_log");
     /*vector routines*/
-    *(void **) (&amd_vrd2_log)  = dlsym(handle, "amd_vrd2_log");
-    *(void **) (&amd_vrs4_logf) = dlsym(handle, "amd_vrs4_logf");
-    *(void **) (&amd_vrd4_log)  = dlsym(handle, "amd_vrd4_log");
-    *(void **) (&amd_vrs8_logf) = dlsym(handle, "amd_vrs8_logf");
+    lamd_vrd2_log  = dlsym(handle, "amd_vrd2_log");
+    lamd_vrs4_logf = dlsym(handle, "amd_vrs4_logf");
+    lamd_vrd4_log  = dlsym(handle, "amd_vrd4_log");
+    lamd_vrs8_logf = dlsym(handle, "amd_vrs8_logf");
 
     error = dlerror();
     if (error != NULL) {
@@ -47,29 +55,28 @@ int test_log(void* handle) {
     }
 
     printf("Exercising log routines\n");
-
     /*scalar*/
-    outputf = (*amd_logf)(inputf);
+    outputf = (*lamd_logf)(inputf);
     printf("amd_logf(%f) = %f\n", inputf, outputf);
-    output = (*amd_log)(input);
+    output = (*lamd_log)(input);
     printf("amd_log(%lf) = %lf\n", input, output);
 
     /*vrd2*/
-    op_vrd2 = (*amd_vrd2_log)(ip_vrd2);
+    op_vrd2 = (*lamd_vrd2_log)(ip_vrd2);
     _mm_storeu_pd(output_array_vrd2, op_vrd2);
     printf("amd_vrd2_log([%lf, %lf] = [%lf, %lf])\n",
             input_array_vrd2[0], input_array_vrd2[1],
             output_array_vrd2[0], output_array_vrd2[1]);
 
     /*vrs4*/
-    op_vrs4 = (*amd_vrs4_logf)(ip_vrs4);
+    op_vrs4 = (*lamd_vrs4_logf)(ip_vrs4);
     _mm_storeu_ps(output_array_vrs4, op_vrs4);
     printf("amd_vrs4_log([%f, %f] = [%f, %f])\n",
             input_array_vrs4[0], input_array_vrs4[1],
             output_array_vrs4[0], output_array_vrs4[1]);
 
     /*vrd4*/
-    op_vrd4 = (*amd_vrd4_log)(ip_vrd4);
+    op_vrd4 = (*lamd_vrd4_log)(ip_vrd4);
     _mm256_storeu_pd(output_array_vrd4, op_vrd4);
     printf("amd_vrd4_log([%lf,%lf,%lf,%lf]) = [%lf,%lf,%lf,%lf])\n",
             input_array_vrd4[0], input_array_vrd4[1],
@@ -78,7 +85,7 @@ int test_log(void* handle) {
             output_array_vrd4[2], output_array_vrd4[3]);
 
     /*vrs8*/
-    op_vrs8 = (*amd_vrs8_logf)(ip_vrs8);
+    op_vrs8 = (*lamd_vrs8_logf)(ip_vrs8);
     _mm256_storeu_ps(output_array_vrs8, op_vrs8);
     printf("amd_vrs8_logf\ninput:");
     for(i=0; i<8; i++)

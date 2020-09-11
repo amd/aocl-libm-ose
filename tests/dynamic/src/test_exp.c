@@ -1,8 +1,16 @@
-#include "include.h"
+#include "libm_dynamic_load.h"
 
 int test_exp(void* handle) {
     char* error;
     int i;
+
+    float (*lamd_expf)(float);
+    double (*lamd_exp)(double);
+    __m128d (*lamd_vrd2_exp)  (__m128d);
+    __m128  (*lamd_vrs4_expf) (__m128);
+    __m256d (*lamd_vrd4_exp)  (__m256d);
+    __m256  (*lamd_vrs8_expf) (__m256);
+
     /*scalar inputs*/
     float inputf = 3.145, outputf;
     double input = 6.287, output;
@@ -32,13 +40,13 @@ int test_exp(void* handle) {
     ip_vrs8 = _mm256_loadu_ps(input_array_vrs8);
 
     /*scalar routines*/
-    *(void **) (&amd_expf) = dlsym(handle, "amd_expf");
-    *(void **) (&amd_exp)  = dlsym(handle, "amd_exp");
+    lamd_expf = dlsym(handle, "amd_expf");
+    lamd_exp  = dlsym(handle, "amd_exp");
     /*vector routines*/
-    *(void **) (&amd_vrd2_exp)  = dlsym(handle, "amd_vrd2_exp");
-    *(void **) (&amd_vrs4_expf) = dlsym(handle, "amd_vrs4_expf");
-    *(void **) (&amd_vrd4_exp)  = dlsym(handle, "amd_vrd4_exp");
-    *(void **) (&amd_vrs8_expf) = dlsym(handle, "amd_vrs8_expf");
+    lamd_vrd2_exp  = dlsym(handle, "amd_vrd2_exp");
+    lamd_vrs4_expf = dlsym(handle, "amd_vrs4_expf");
+    lamd_vrd4_exp  = dlsym(handle, "amd_vrd4_exp");
+    lamd_vrs8_expf = dlsym(handle, "amd_vrs8_expf");
 
     error = dlerror();
     if (error != NULL) {
@@ -48,27 +56,27 @@ int test_exp(void* handle) {
 
     printf("Exercising exp routines\n");
     /*scalar*/
-    outputf = (*amd_expf)(inputf);
+    outputf = (*lamd_expf)(inputf);
     printf("amd_expf(%f) = %f\n", inputf, outputf);
-    output = (*amd_exp)(input);
+    output = (*lamd_exp)(input);
     printf("amd_exp(%lf) = %lf\n", input, output);
 
     /*vrd2*/
-    op_vrd2 = (*amd_vrd2_exp)(ip_vrd2);
+    op_vrd2 = (*lamd_vrd2_exp)(ip_vrd2);
     _mm_storeu_pd(output_array_vrd2, op_vrd2);
     printf("amd_vrd2_exp([%lf, %lf] = [%lf, %lf])\n",
             input_array_vrd2[0], input_array_vrd2[1],
             output_array_vrd2[0], output_array_vrd2[1]);
 
     /*vrs4*/
-    op_vrs4 = (*amd_vrs4_expf)(ip_vrs4);
+    op_vrs4 = (*lamd_vrs4_expf)(ip_vrs4);
     _mm_storeu_ps(output_array_vrs4, op_vrs4);
     printf("amd_vrs4_exp([%f, %f] = [%f, %f])\n",
             input_array_vrs4[0], input_array_vrs4[1],
             output_array_vrs4[0], output_array_vrs4[1]);
 
     /*vrd4*/
-    op_vrd4 = (*amd_vrd4_exp)(ip_vrd4);
+    op_vrd4 = (*lamd_vrd4_exp)(ip_vrd4);
     _mm256_storeu_pd(output_array_vrd4, op_vrd4);
     printf("amd_vrd4_exp([%lf,%lf,%lf,%lf]) = [%lf,%lf,%lf,%lf])\n",
             input_array_vrd4[0], input_array_vrd4[1],
@@ -77,7 +85,7 @@ int test_exp(void* handle) {
             output_array_vrd4[2], output_array_vrd4[3]);
 
     /*vrs8*/
-    op_vrs8 = (*amd_vrs8_expf)(ip_vrs8);
+    op_vrs8 = (*lamd_vrs8_expf)(ip_vrs8);
     _mm256_storeu_ps(output_array_vrs8, op_vrs8);
     printf("amd_vrs8_expf\ninput:");
     for(i=0; i<8; i++)

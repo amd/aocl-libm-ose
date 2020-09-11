@@ -1,15 +1,16 @@
-#include "include.h"
+#include "libm_dynamic_load.h"
 
 int test_fabs(void* handle) {
     char* error;
-    //int i;
+    float (*lamd_fabsf)(float);
+    double (*lamd_fabs)(double);
     /*scalar inputs*/
     float inputf = 3.145, outputf;
     double input = 6.287, output;
 
     /*scalar routines*/
-    *(void **) (&amd_fabsf) = dlsym(handle, "amd_fabsf");
-    *(void **) (&amd_fabs)  = dlsym(handle, "amd_fabs");
+    lamd_fabsf = dlsym(handle, "amd_fabsf");
+    lamd_fabs  = dlsym(handle, "amd_fabs");
 
     error = dlerror();
     if (error != NULL) {
@@ -20,9 +21,9 @@ int test_fabs(void* handle) {
     printf("Exercising fabs routines\n");
 
     /*scalar*/
-    outputf = (*amd_fabsf)(inputf);
+    outputf = (*lamd_fabsf)(inputf);
     printf("amd_fabsf(%f) = %f\n", inputf, outputf);
-    output = (*amd_fabs)(input);
+    output = (*lamd_fabs)(input);
     printf("amd_fabs(%lf) = %lf\n", input, output);
     printf("\n");
 

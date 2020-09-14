@@ -33,14 +33,12 @@
 
 static const struct {
     double huge;
-    double halfpi, pihi, pilow;
+    double halfpi;
     double invhalfpi;
     double poly[8];
 } tanf_data = {
     .huge      = 0x1.8000000000000p52,
     .halfpi    = 0x1.921fb54442d18469899p0,
-    //.pihi      = 0x1.921fb50000000p0,
-    //.pilow     = 0x1.110b4611a6263p-26,
     .invhalfpi = 0x1.45f306dc9c882a53f85p-1,
     // Polynomial coefficients obtained using Remez algorithm from Sollya
     .poly = {
@@ -59,8 +57,8 @@ static const struct {
 #define ALM_TANF_HUGE_VAL    tanf_data.huge
 #define ALM_TANF_HALFPI      tanf_data.halfpi
 #define ALM_TANF_PI_HIGH     tanf_data.pihi
-#define ALM_TANF_PI_LOW      tanf_data.pilow
 #define ALM_TANF_INVHALFPI   tanf_data.invhalfpi
+
 #define C0 tanf_data.poly[0]
 #define C2 tanf_data.poly[1]
 #define C4 tanf_data.poly[2]

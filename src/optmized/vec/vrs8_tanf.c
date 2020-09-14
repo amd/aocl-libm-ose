@@ -13,9 +13,6 @@
 #include <libm/compiler.h>
 #include <libm/poly-vec.h>
 
-#define  ALM_TANF_SIGN_MASK   ~(1UL<<63)
-#define  ALM_TANF_SIGN_MASK32 ~(1U<<31)
-
 extern float _tanf_special(float);
 
 /*
@@ -32,45 +29,52 @@ extern float _tanf_special(float);
  */
 
 static const struct {
-    v_u32x8_t    infinity;
-    v_f64x4_t    huge;
-    v_f64x4_t    halfpi, invhalfpi;
-    v_f64x4_t    poly_tanf[8];
-} tanf_data = {
-    .infinity  = _MM256_SET1_I32(0x7f80000),
-    .huge      = _MM_SET1_PD4(0x1.8000000000000p52),
-    .halfpi    = _MM_SET1_PD4(0x1.921fb54442d18469899p0),
-    .invhalfpi = _MM_SET1_PD4(0x1.45f306dc9c882a53f85p-1),
+    v_u32x8_t    arg_max;
+    v_u32x8_t    sign_mask;
+    v_f32x8_t    huge;
+    v_f32x8_t    invhalfpi, halfpi1, halfpi2, halfpi3;
+    v_f32x8_t    poly_tanf[7];
+} v8_tanf_data = {
+    .sign_mask = _MM256_SET1_I32(1U<<31),
+    .arg_max   = _MM256_SET1_I32(0x4A989680), /* Close to 10^6 */
+    .huge      = _MM_SET1_PS8(0x1.80000000p23f),
+    .invhalfpi = _MM_SET1_PS8(0x1.45f306p-1f),
+    .halfpi1   = _MM_SET1_PS8(-0x1.921fb6p0f),
+    .halfpi2   = _MM_SET1_PS8(0x1.777a5cp-25f),
+    .halfpi3   = _MM_SET1_PS8(0x1.ee59dap-50f),
+
     // Polynomial coefficients obtained using Remez algorithm from Sollya
     .poly_tanf = {
-        _MM_SET1_PD4(0x1.ffffff99ac0468p-1),
-        _MM_SET1_PD4(0x1.55559193ecf2bp-2),
-        _MM_SET1_PD4(0x1.1106bf4ba8f408p-3),
-        _MM_SET1_PD4(0x1.bbafbb6650308p-5),
-        _MM_SET1_PD4(0x1.561638922df5fp-6),
-        _MM_SET1_PD4(0x1.7f3a033a88788p-7),
-        _MM_SET1_PD4(-0x1.ba0d41d26961f8p-11),
-
-        _MM_SET1_PD4(0x1.3952b4eff28ac8p-8),
+        _MM_SET1_PS8(0x1.555566p-2f),
+        _MM_SET1_PS8(0x1.110cdp-3f),
+        _MM_SET1_PS8(0x1.baf34p-5f),
+        _MM_SET1_PS8(0x1.5bf38ep-6f),
+        _MM_SET1_PS8(0x1.663acap-7f),
+        _MM_SET1_PS8(-0x1.07c6f4p-16f),
+        _MM_SET1_PS8(0x1.21cedap-8f),
     },
 
 };
 
-#define ALM_TANF_HUGE_VAL    tanf_data.huge
-#define ALM_TANF_HALFPI      tanf_data.halfpi
-#define ALM_TANF_PI_HIGH     tanf_data.pihi
-#define ALM_TANF_PI_LOW      tanf_data.pilow
-#define ALM_TANF_INVHALFPI   tanf_data.invhalfpi
-#define ALM_TANF_ARG_MAX     tanf_data.infinity
+#define ALM_TANF_HUGE_VAL    v8_tanf_data.huge
+#define ALM_TANF_HALFPI      v8_tanf_data.halfpi
+#define ALM_TANF_PI_HIGH     v8_tanf_data.pihi
+#define ALM_TANF_PI_LOW      v8_tanf_data.pilow
+#define ALM_TANF_INVHALFPI   v8_tanf_data.invhalfpi
+#define ALM_TANF_ARG_MAX     v8_tanf_data.arg_max
+#define ALM_TANF_SIGN_MASK32 v8_tanf_data.sign_mask
 
-#define C1 tanf_data.poly_tanf[0]
-#define C2 tanf_data.poly_tanf[1]
-#define C3 tanf_data.poly_tanf[2]
-#define C4 tanf_data.poly_tanf[3]
-#define C5 tanf_data.poly_tanf[4]
-#define C6 tanf_data.poly_tanf[5]
-#define C7 tanf_data.poly_tanf[6]
-#define C8 tanf_data.poly_tanf[7]
+#define  ALM_TANF_HALFPI1 v8_tanf_data.halfpi1
+#define  ALM_TANF_HALFPI2 v8_tanf_data.halfpi2
+#define  ALM_TANF_HALFPI3 v8_tanf_data.halfpi3
+
+#define C1 v8_tanf_data.poly_tanf[0]
+#define C2 v8_tanf_data.poly_tanf[1]
+#define C3 v8_tanf_data.poly_tanf[2]
+#define C4 v8_tanf_data.poly_tanf[3]
+#define C5 v8_tanf_data.poly_tanf[4]
+#define C6 v8_tanf_data.poly_tanf[5]
+#define C7 v8_tanf_data.poly_tanf[6]
 
 float tanf_specialcase(float);
 
@@ -108,69 +112,51 @@ vrs8_tanf_specialcase(v_f32x8_t _x, v_f32x8_t result, v_i32x8_t cond)
 __m256
 ALM_PROTO_OPT(vrs8_tanf)(__m256 xf32x8)
 {
-    v_f64x4_t   F, xd;
-    v_f64x4_t   poly;
-    v_u64x4_t   sign, uxd, n;
+    v_f32x8_t   F, xx;
+    v_f32x8_t   poly;
+    v_u32x8_t   sign, n;
     v_u32x8_t   ux = as_v8_u32_f32(xf32x8);
 
-    v_i32x8_t  cond = (ux  & ALM_TANF_SIGN_MASK32) > ALM_TANF_ARG_MAX;
+    v_i32x8_t  cond = (ux  & ~ALM_TANF_SIGN_MASK32) > ALM_TANF_ARG_MAX;
 
-		v_f32x4_t _x[2] = {
-        _mm256_extractf128_ps(xf32x8, 0),
-        _mm256_extractf128_ps(xf32x8, 1)
-		};
+    sign = ux & ALM_TANF_SIGN_MASK32;
 
-    v_f32x4_t result[2];
-    v_u32x4_t _odd[2];
+    /* fabs(x) */
+    xx = as_v8_f32_u32(ux & ~ALM_TANF_SIGN_MASK32);
 
-    for (int lane=0; lane < 2; lane++) {
+    /*
+     * dn = x * (2/π)
+     * would turn to fma
+     */
+    v_f32x8_t nn =  xx * ALM_TANF_INVHALFPI + ALM_TANF_HUGE_VAL;
 
-        xd = cast_v4_f32_to_f64(_x[lane]);
+    /* n = (int)dn */
+    n   = as_v8_u32_f32(nn);
 
-        uxd = as_v4_u64_f64(xd);
+    nn -= ALM_TANF_HUGE_VAL;
 
-        sign = uxd & (~ALM_TANF_SIGN_MASK);
+    /* F = x - (n * π/2) */
+    F = xx + nn * ALM_TANF_HALFPI1;
+    F = F + nn * ALM_TANF_HALFPI2;
+    F = F + nn * ALM_TANF_HALFPI3;
 
-        /* fabs(x) */
-        xd = as_v4_f64_u64(uxd & ALM_TANF_SIGN_MASK);
+    v_u32x8_t odd = n << 31;
 
-        /*
-         * dn = x * (2/π)
-         * would turn to fma
-         */
-        v_f64x4_t dn =  xd * ALM_TANF_INVHALFPI + ALM_TANF_HUGE_VAL;
+    /*
+     * Calculate the polynomial approximation
+     *					x * (C1 + C2*x^2 + C3*x^4 + C4*x^6 + \
+     *									C5*x^8 + C6*x^10 + C7*x^12 + C8*x^14)
+     * polynomial is approximated as x*P(x^2)
+     */
+    poly = POLY_EVAL_ODD_15(F, C1, C2, C3, C4, C5, C6, C7);
 
-        /* n = (int)dn */
-        n   = as_v4_u64_f64(dn);
+    v_f32x8_t result = as_v8_f32_u32(as_v8_u32_f32(poly) ^ sign);
 
-        dn -= ALM_TANF_HUGE_VAL;
-
-        /* F = xd - (n * π/2) */
-        F = xd - dn * ALM_TANF_HALFPI;
-
-        _odd[lane] = cast_v4_u64_to_u32(n << 31);
-
-        /*
-         * Calculate the polynomial approximation
-         *					x * (C1 + C2*x^2 + C3*x^4 + C4*x^6 + \
-         *									C5*x^8 + C6*x^10 + C7*x^12 + C8*x^14)
-         * polynomial is approximated as x*P(x^2)
-         */
-        poly = POLY_EVAL_EVEN_15(F, C1, C2, C3, C4, C5, C6, C7, C8);
-
-        v_f64x4_t tanx = as_v4_f64_u64(as_v4_u64_f64(poly) ^ sign);
-        result[lane] = cast_v4_f64_to_f32(tanx);
-    }
-
-    v_f32x8_t result8 = _mm256_setr_m128(result[0], result[1]);
-
-    cond |= as_v8_u32_f32(_mm256_set_m128(
-                              as_v4_f32_u32(_odd[0]),
-                              as_v4_f32_u32(_odd[1])));
+    cond |= odd;
 
     if (any_v8_u32_loop(cond)) {
-        result8 = vrs8_tanf_specialcase(xf32x8, result8, cond);
+        result = vrs8_tanf_specialcase(xf32x8, result, cond);
     }
 
-    return result8;
+    return result;
 }

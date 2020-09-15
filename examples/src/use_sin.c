@@ -45,7 +45,7 @@ int use_sin()
     printf("Input: {%f, %f, %f, %f}, Output = {%f, %f, %f, %f}\n",
         input_array_vrs4[0], input_array_vrs4[1], input_array_vrs4[2], input_array_vrs4[3],
         output_array_vrs4[0], output_array_vrs4[1], output_array_vrs4[2], output_array_vrs4[3]);
-/*
+
     printf("\nUsing vrd4 (Double Precision vector 4 variant) of AMD sin()\n");
     __m256d input_vrd4, result_sin_vrd4;
     double input_array_vrd4[4] = {2.3, 4.5, 56.5, 43.4};
@@ -56,9 +56,7 @@ int use_sin()
     printf("Input: {%lf, %lf, %lf, %lf}, Output = {%lf, %lf, %lf, %lf}\n",
             input_array_vrd4[0], input_array_vrd4[1], input_array_vrd4[2], input_array_vrd4[3],
             output_array_vrd4[0], output_array_vrd4[1], output_array_vrd4[2],output_array_vrd4[3]);
-*/
 
-/*
     printf ("\nUsing vrs8 (Single precision vector 8 element variant of AMD sin()\n");
     __m256 input_vrs8, result_sin_vrs8;
     float input_array_vrs8[8] = {1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0};
@@ -74,7 +72,6 @@ int use_sin()
     for (i=0; i<8; i++) {
         printf("%f,", output_array_vrs8[i]);
     }
-*/
 
     return 0;
 }

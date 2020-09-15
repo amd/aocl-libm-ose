@@ -20,6 +20,7 @@ int main()  {
     use_log();
     use_fabs();
     use_atan();
+    use_sin();
     use_cos();
     use_tan();
     return 0;

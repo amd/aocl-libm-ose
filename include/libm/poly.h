@@ -84,6 +84,26 @@
                 })
 
 
+#define POLY_EVAL_ODD_17(r, c1, c2, c3, c4, c5, c6, c7, c8) ({          \
+                        __typeof(r) a1, a2, a3, a4, b1, b2 ,q;          \
+                        __typeof(r) r2, r4, r6, r10, r14;               \
+                        r2 = r * r;                                     \
+                        r4 = r2 * r2;                                   \
+                        r6 = r4 * r2;                                   \
+                        r10 = r6 * r4;                                  \
+                        r14 = r10 * r4;                                 \
+                        a1 = c1 + c2*r2;                                \
+                        a2 = c3 + c4*r2;                                \
+                        a3 = c5 + c6*r2;                                \
+                        a4 = c7 + c8*r2;                                \
+                                                                        \
+                        b1 = a1*r2 + a2*r6;                             \
+                        b2 = r10*a3 + r14*a4;                           \
+                                                                        \
+                        q = r*(b1 + b2);                                \
+                        q;                                              \
+                })
+
 /*
  * poly = x + (C1*x^3 + C2*x^5 + C3*x^7 + C4*x^9 + C5*x^11 + \
  *              C6*x^13 + C7*x^15)
@@ -121,6 +141,7 @@
         __typeof(r) r2, r4;                                     \
         r2 = r * r;                                             \
         r4 = r2 * r2;                                           \
+                                                                \
         a0 = c2*r2 + c1;                                        \
         a1 = a0*r2 + c0;                                        \
         a2 = (c3*r2 + c4*r4)*r4;                                \
@@ -128,5 +149,5 @@
         q;                                                      \
         })
 
-#endif	/* LIBM_POLY_H */
+#endif /* LIBM_POLY_H */
 

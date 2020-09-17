@@ -30,6 +30,7 @@ LIBM_IFACE_PROTO(sin)(void *arg)
     amd_sin_v4s_t fn_v4s = NULL;
     amd_sin_v8s_t fn_v8s = NULL;
     amd_sin_v2d_t fn_v2d = NULL;
+    amd_sin_v4d_t fn_v4d = NULL;
 
     static struct cpu_features *features = NULL;
 
@@ -46,7 +47,8 @@ LIBM_IFACE_PROTO(sin)(void *arg)
         fn_s = &FN_PROTOTYPE_OPT(sinf);
         fn_v4s = &FN_PROTOTYPE_OPT(vrs4_sinf);
         fn_v8s = &FN_PROTOTYPE_OPT(vrs8_sinf);
-        fn_v2d = &FN_PROTOTYPE_FMA3(vrd2_sin);
+        fn_v2d = &FN_PROTOTYPE_OPT(vrd2_sin);
+        fn_v4d = &FN_PROTOTYPE_OPT(vrd4_sin);
 
      } else if (CPU_HAS_SSSE3(features) &&
         CPU_FEATURE_SSSE3_USABLE(features)) {
@@ -75,11 +77,15 @@ LIBM_IFACE_PROTO(sin)(void *arg)
                    fn_s   = &ALM_PROTO_ARCH_ZN2(sinf);
                    fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_sinf);
                    fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_sinf);
+                   fn_v2d = &ALM_PROTO_ARCH_ZN2(vrd2_sin);
+                   fn_v4d = &ALM_PROTO_ARCH_ZN2(vrd4_sin);
             break;
         case 0x19: fn_d   = &ALM_PROTO_ARCH_ZN2(sin);   /* Milan */
                    fn_s   = &ALM_PROTO_ARCH_ZN2(sinf);
                    fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_sinf);
                    fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_sinf);
+                   fn_v2d = &ALM_PROTO_ARCH_ZN2(vrd2_sin);
+                   fn_v4d = &ALM_PROTO_ARCH_ZN2(vrd4_sin);
             break;
         }
     }
@@ -92,6 +98,8 @@ LIBM_IFACE_PROTO(sin)(void *arg)
 
     /* Vector Double */
     G_ENTRY_PT_PTR(vrd2_sin) = fn_v2d;
+
+    G_ENTRY_PT_PTR(vrd4_sin) = fn_v4d;
 
     /* Vector Single */
     G_ENTRY_PT_PTR(vrs4_sinf) = fn_v4s;

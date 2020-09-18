@@ -104,7 +104,7 @@ ALM_PROTO_OPT(vrs8_sinf)(v_f32x8_t x)
 
     v_u32x8_t cmp = (ux & ~ALM_SIGN_MASK32) > (V8_SINF_ARG_MAX);
 
-    r  = as_v8_f32_u32(ux & ~ALM_SIGN_MASK32);
+    r  = as_v8_f32_u32(ux & ALM_SIGN_MASK32);
 
     v_f32x8_t dn =  r * V8_SINF_INVPI + ALM_SHIFT_SP;
 

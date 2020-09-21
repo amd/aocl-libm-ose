@@ -2,14 +2,14 @@
 
 int test_cos(void* handle) {
     char* error;
-    //int i;
+    int i;
 
     float (*lamd_cosf)(float);
     double (*lamd_cos)(double);
     __m128d (*lamd_vrd2_cos)  (__m128d);
     __m128  (*lamd_vrs4_cosf) (__m128);
     //__m256d (*lamd_vrd4_cos)  (__m256d);
-    //__m256  (*lamd_vrs8_cosf) (__m256);
+    __m256  (*lamd_vrs8_cosf) (__m256);
 
     /*scalar inputs*/
     float inputf = 3.145, outputf;
@@ -18,7 +18,7 @@ int test_cos(void* handle) {
     __m128d ip_vrd2, op_vrd2;
     __m128  ip_vrs4, op_vrs4;
     //__m256d ip_vrd4, op_vrd4;
-    //__m256  ip_vrs8, op_vrs8;
+    __m256  ip_vrs8, op_vrs8;
 
     double input_array_vrd2[2] = {1.2, 3.5};
     double output_array_vrd2[2];
@@ -29,17 +29,15 @@ int test_cos(void* handle) {
     float input_array_vrs4[4] = {3.5, 1.2, 3.4, 0.5};
     float output_array_vrs4[4];
 
-    /*
     float input_array_vrs8[8] = {1.2, 2.3, 5.6, 50.3,
                                 -50.45, 45.3, 23.4, 4.5};
     float output_array_vrs8[8];
-    */
 
     /*packed inputs*/
     ip_vrd2 = _mm_loadu_pd(input_array_vrd2);
     ip_vrs4 = _mm_loadu_ps(input_array_vrs4);
     //ip_vrd4 = _mm256_loadu_pd(input_array_vrd4);
-    //ip_vrs8 = _mm256_loadu_ps(input_array_vrs8);
+    ip_vrs8 = _mm256_loadu_ps(input_array_vrs8);
 
     /*scalar routines*/
     lamd_cosf = dlsym(handle, "amd_cosf");
@@ -48,7 +46,7 @@ int test_cos(void* handle) {
     lamd_vrd2_cos  = dlsym(handle, "amd_vrd2_cos");
     lamd_vrs4_cosf = dlsym(handle, "amd_vrs4_cosf");
     //lamd_vrd4_cos  = dlsym(handle, "amd_vrd4_cos");
-    //lamd_vrs8_cosf = dlsym(handle, "amd_vrs8_cosf");
+    lamd_vrs8_cosf = dlsym(handle, "amd_vrs8_cosf");
 
     error = dlerror();
     if (error != NULL) {
@@ -89,7 +87,6 @@ int test_cos(void* handle) {
     */
 
     /*vrs8*/
-    /*
     op_vrs8 = (*lamd_vrs8_cosf)(ip_vrs8);
     _mm256_storeu_ps(output_array_vrs8, op_vrs8);
     printf("amd_vrs8_cosf\ninput:");
@@ -99,6 +96,6 @@ int test_cos(void* handle) {
     for(i=0; i<8; i++)
         printf("%f\t",output_array_vrs8[i]);
     printf("\n");
-    */
+
     return 0;
 }

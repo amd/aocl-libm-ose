@@ -33,12 +33,14 @@
 
 static const struct {
     double huge;
-    double halfpi;
+    double halfpi1;
+    double halfpi2;
     double invhalfpi;
     double poly[8];
 } tanf_data = {
-    .huge      = 0x1.8000000000000p52,
-    .halfpi    = 0x1.921fb54442d18469899p0,
+    .huge    = 0x1.8000000000000p52,
+    .halfpi1 = 0x1.921fb54400000p0,
+    .halfpi2 = 0x1.0b4611a626331p-34,
     .invhalfpi = 0x1.45f306dc9c882a53f85p-1,
     // Polynomial coefficients obtained using Remez algorithm from Sollya
     .poly = {
@@ -55,8 +57,8 @@ static const struct {
 };
 
 #define ALM_TANF_HUGE_VAL    tanf_data.huge
-#define ALM_TANF_HALFPI      tanf_data.halfpi
-#define ALM_TANF_PI_HIGH     tanf_data.pihi
+#define ALM_TANF_HALFPI1     tanf_data.halfpi1
+#define ALM_TANF_HALFPI2     tanf_data.halfpi2
 #define ALM_TANF_INVHALFPI   tanf_data.invhalfpi
 
 #define C0 tanf_data.poly[0]
@@ -135,8 +137,9 @@ ALM_PROTO_OPT(tanf)(float x)
     dn -= ALM_TANF_HUGE_VAL;
 
     /* F = xd - (n * π/2) */
-    F = xd - dn * ALM_TANF_HALFPI;
-    //F = F - dn * ALM_TANF_PI_LOW;
+    F = xd - dn * ALM_TANF_HALFPI1;
+
+    F = F - dn *  ALM_TANF_HALFPI2;
 
     uint64_t odd = (n << 63);
 

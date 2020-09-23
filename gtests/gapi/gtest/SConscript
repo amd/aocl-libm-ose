@@ -1,0 +1,47 @@
+#
+# Copyright (C) 2019 Prem Mallappa.
+#
+#
+# Author: Prem Mallappa<prem.mallappa@gmail.com>
+#
+import os
+from os import path
+from os.path import join as joinpath
+
+Import('env')
+
+build_dir = joinpath(env['BUILDROOT'], 'gtest')
+
+gflags = [
+	'-std=c++11','-O3', '-DNDEBUG','-Wno-deprecated',
+	'-Wall', '-Wextra', '-fstrict-aliasing',
+    '-Wno-deprecated-declarations','-Wstrict-aliasing',
+    '-Werror','-Wno-error=dangling-else','-fexceptions',    
+    '-Wno-unused-parameter','-Wno-missing-field-initializers', 
+    '-fPIC',
+	'-DGTEST_HAS_PTHREAD=1',
+	]
+
+this_sconscript_file = Dir('.').srcnode().abspath
+
+ccflags = []
+liblist = ['pthread']
+incpath = [ joinpath(this_sconscript_file, x) for x in ['.', './src']]
+libpath = []
+
+genv = env.Clone()
+genv.Append(
+    CCFLAGS  = gflags,
+    CPPPATH  = [incpath],
+    LIBS     = liblist,
+    STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 'yes' ,
+)
+
+libgtest = SConscript('build_gtest',
+		exports = {'genv': genv},
+		duplicate = 0,
+	)
+
+
+Return('libgtest')
+

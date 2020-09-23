@@ -1,0 +1,33 @@
+#
+# Copyright (C) 2019 Prem Mallappa.
+#
+#
+# Author: Prem Mallappa<prem.mallappa@gmail.com>
+#
+import os
+from os import path
+from os.path import join as joinpath
+
+Import('env')
+
+build_dir = joinpath(env['BUILDROOT'], 'gapi')
+
+e = env.Clone()
+e.Append(
+   LINKFLAGS = [],
+)
+
+libg = SConscript('gtest/SConscript',
+		exports = {'env': env},
+		duplicate = 0,
+		variant_dir = '',
+	)
+
+libb = SConscript('gbench/SConscript',
+		exports = {'env': env},
+		duplicate = 0,
+		variant_dir = '',
+	)
+
+Return('libg', 'libb')
+

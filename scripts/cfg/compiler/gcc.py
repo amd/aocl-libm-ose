@@ -3,6 +3,7 @@ class Gcc(Compiler):
     def __init__(self, prod_mode):
         super(Gcc, self).__init__(prod_mode)
         self.cmd = 'gcc'
+        self.cxxcmd = 'g++'
         self.compile_flags_debug = [
             '-g',
             '-Og',
@@ -87,6 +88,8 @@ class Gcc(Compiler):
 
     def Cmd(self):
         return self.cmd
+    def CxxCmd(self):
+        return self.cxxcmd
     def CFlags(self):
         return self.compile_flag_map[self.prod_mode]
     def LDFlags(self):

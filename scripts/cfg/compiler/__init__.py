@@ -1,5 +1,6 @@
 class Compiler:
     def __init__(self, prod_mode):
+        self.cxxcmd = ''
         self.cmd = ''
         self.prod_mode = prod_mode
         self.compile_flags_debug = [

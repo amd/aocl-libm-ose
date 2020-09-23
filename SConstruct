@@ -90,8 +90,17 @@ test_objs = SConscript(dirs='tests',
                        src_dir    = 'tests',
                        variant_dir = joinpath(build_root, 'tests'))
 
+gtest_objs = SConscript(dirs='gtests',
+                       exports = {'env' : testenv},
+                       duplicate = 0,
+                       src_dir    = 'gtests',
+                       variant_dir = joinpath(build_root, 'gtests'))
+
 if 'tests' in COMMAND_LINE_TARGETS:
     targets += test_objs
+
+if 'gtests' in COMMAND_LINE_TARGETS:
+    targets += gtest_objs
 
 Progress('\r', overwrite=True)
 Default(targets)

@@ -4,6 +4,7 @@ class LLVM(Compiler):
     def __init__(self, prod_mode):
         super(LLVM, self).__init__(prod_mode)
         self.cmd = 'clang'
+        self.cxxcmd = 'clang++'
         self.compile_flags_debug = [
             '-g',
             '-Og',
@@ -40,6 +41,9 @@ class LLVM(Compiler):
 
     def Cmd(self):
         return self.cmd
+
+    def CxxCmd(self):
+        return self.cxxcmd
 
     def CFlags(self):
         return self.compile_flag_map[self.prod_mode]

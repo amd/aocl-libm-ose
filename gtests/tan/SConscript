@@ -1,0 +1,14 @@
+#
+# Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
+#
+
+Import('env')
+
+e = env.Clone()
+
+tan_srcs = Glob('*.cc')
+
+tan = e.Program('test_tan', tan_srcs)
+
+Return('tan')
+

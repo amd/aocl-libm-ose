@@ -36,7 +36,7 @@ static const struct {
     v_f32x8_t    poly_tanf[7];
 } v8_tanf_data = {
     .sign_mask = _MM256_SET1_I32(1U<<31),
-    .arg_max   = _MM256_SET1_I32(0x4A989680), /* Close to 10^6 */
+    .arg_max   = _MM256_SET1_I32(0x49742400), /* Close to 10^6 */
     .huge      = _MM_SET1_PS8(0x1.80000000p23f),
     .invhalfpi = _MM_SET1_PS8(0x1.45f306p-1f),
     .halfpi1   = _MM_SET1_PS8(-0x1.921fb6p0f),
@@ -56,6 +56,7 @@ static const struct {
 
 };
 
+#define V8_SIMD_WIDTH        8
 #define ALM_TANF_HUGE_VAL    v8_tanf_data.huge
 #define ALM_TANF_HALFPI      v8_tanf_data.halfpi
 #define ALM_TANF_PI_HIGH     v8_tanf_data.pihi
@@ -116,7 +117,7 @@ ALM_PROTO_OPT(vrs8_tanf)(__m256 xf32x8)
     v_f32x8_t   poly;
     v_u32x8_t   sign, n;
     v_u32x8_t   ux = as_v8_u32_f32(xf32x8);
-
+    int32_t i = 0;
     v_i32x8_t  cond = (ux  & ~ALM_TANF_SIGN_MASK32) > ALM_TANF_ARG_MAX;
 
     sign = ux & ALM_TANF_SIGN_MASK32;
@@ -152,7 +153,13 @@ ALM_PROTO_OPT(vrs8_tanf)(__m256 xf32x8)
 
     v_f32x8_t result = as_v8_f32_u32(as_v8_u32_f32(poly) ^ sign);
 
-    cond |= odd;
+    /* if n is odd, result = -1.0/result */
+    for(i = 0; i < V8_SIMD_WIDTH; i++) {
+
+        result[i] = odd[i] ? (-1.0f / result[i]) : result[i];
+
+    }
+
 
     if (any_v8_u32_loop(cond)) {
         result = vrs8_tanf_specialcase(xf32x8, result, cond);

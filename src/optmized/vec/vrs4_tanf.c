@@ -36,7 +36,7 @@ static const struct {
     v_f32x4_t    poly_tanf[7];
 } v4_tanf_data = {
     .sign_mask = _MM_SET1_I32(1U<<31),
-    .arg_max   = _MM_SET1_I32(0x4A989680), /* Close to 10^6 */
+    .arg_max   = _MM_SET1_I32(0x49742400), /* 10^6 */
     .huge      = _MM_SET1_PS4(0x1.80000000p23f),
     .invhalfpi = _MM_SET1_PS4(0x1.45f306p-1f),
     .halfpi1   = _MM_SET1_PS4(-0x1.921fb6p0f),
@@ -56,6 +56,7 @@ static const struct {
 
 };
 
+#define V4_SIMD_WIDTH        4
 #define ALM_TANF_HUGE_VAL    v4_tanf_data.huge
 #define ALM_TANF_HALFPI      v4_tanf_data.halfpi
 #define ALM_TANF_PI_HIGH     v4_tanf_data.pihi
@@ -124,12 +125,13 @@ ALM_PROTO_OPT(vrs4_tanf)(__m128 xf32x4)
 {
     v_f32x4_t   F, xx;
     v_f32x4_t   poly;
+    int32_t i;
     v_u32x4_t   sign = {0}, n;
     v_u32x4_t   ux = as_v4_u32_f32(xf32x4);
 
     v_i32x4_t  cond = (ux  & ~ALM_TANF_SIGN_MASK32) > ALM_TANF_ARG_MAX;
 
-		sign = ux & ALM_TANF_SIGN_MASK32;
+	sign = ux & ALM_TANF_SIGN_MASK32;
 
     /* fabs(x) */
     xx = as_v4_f32_u32(ux & ~ALM_TANF_SIGN_MASK32);
@@ -138,13 +140,20 @@ ALM_PROTO_OPT(vrs4_tanf)(__m128 xf32x4)
      * dn = x * (2/π)
      * would turn to fma
      */
+
     v_f32x4_t nn =  xx * ALM_TANF_INVHALFPI + ALM_TANF_HUGE_VAL;
 
-    /* n = (int)dn */
+    // n = (int)dn /
     n   = as_v4_u32_f32(nn);
 
     nn -= ALM_TANF_HUGE_VAL;
-
+/*
+     v_f32x4_t nn =  xx * ALM_TANF_INVHALFPI;
+    for(int i =0;i<4;i++) {
+        n[i] = (nn[i] < 0)?(nn[i] - 0.5):(nn[i] + 0.5);
+        nn[i] = (float)n[i];
+    }
+*/
     /* F = x - (n * π/2) */
     F = xx + nn * ALM_TANF_HALFPI1;
     F = F + nn * ALM_TANF_HALFPI2;
@@ -162,7 +171,12 @@ ALM_PROTO_OPT(vrs4_tanf)(__m128 xf32x4)
 
     v_f32x4_t result = as_v4_f32_u32(as_v4_u32_f32(poly) ^ sign);
 
-    cond |= odd;
+    /* if n is odd, result = -1.0/result */
+    for(i = 0; i < V4_SIMD_WIDTH; i++) {
+
+        result[i] = odd[i] ? (-1.0f / result[i]) : result[i];
+
+    }
 
     if (any_v4_u32_loop(cond)) {
         result = vrs4_tanf_specialcase(xf32x4, result, cond);

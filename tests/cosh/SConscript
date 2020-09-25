@@ -1,0 +1,13 @@
+# Copyright (C) 2018, AMD. All rights Reserved
+#
+
+Import('env')
+
+e = env.Clone()
+
+cosh_srcs = Glob('*.[cS]')
+
+cosh = e.Program('test_cosh', cosh_srcs)
+
+Return('cosh')
+

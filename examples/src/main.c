@@ -12,6 +12,8 @@ extern int use_atan();
 extern int use_sin();
 extern int use_cos();
 extern int use_tan();
+extern int use_cosh();
+extern int use_tanh();
 
 int main()  {
     printf("Illustration of AMD LibM functions\n");
@@ -23,5 +25,7 @@ int main()  {
     use_sin();
     use_cos();
     use_tan();
+    use_cosh();
+    use_tanh();
     return 0;
 }

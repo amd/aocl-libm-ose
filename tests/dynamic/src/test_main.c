@@ -30,6 +30,8 @@ int main(int argc, char* argv[]) {
     test_tan(handle);
     test_fabs(handle);
     test_atan(handle);
+    test_cosh(handle);
+    test_tanh(handle);
 
     dlclose(handle);
     return 0;

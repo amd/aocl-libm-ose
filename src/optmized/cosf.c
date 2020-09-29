@@ -79,8 +79,11 @@ static struct {
 #define C3 cosf_data.poly_cosf[2]
 #define C4 cosf_data.poly_cosf[3]
 
+#define COSF_MIN_ARG 0x1p-126
+#define COSF_MAX_ARG 0x7f800000
 #define SIGN_MASK 0x7FFFFFFFFFFFFFFF
 #define SIGN_MASK32 0x7FFFFFFF
+
 
 float _cosf_special(float x);
 double _cos_special_underflow(double x);
@@ -100,14 +103,18 @@ ALM_PROTO_OPT(cosf)(float x)
     uint32_t ux = asuint32(x);
 
     // Check for special cases
-    if(unlikely((ux - asuint32(0x1p-126)) > (0x7f800000 - asuint32(0x1p-126)))) {
+    if(unlikely((ux - asuint32(COSF_MIN_ARG)) > (COSF_MAX_ARG - asuint32(COSF_MIN_ARG)))) {
 
-        if((ux  & SIGN_MASK32) >= 0x7f800000) {
+        if(ux == 0)
+            // +/-0
+            return 1.0f;
+
+        if((ux  & SIGN_MASK32) >= COSF_MAX_ARG) {
             // infinity or NaN
             return _sinf_cosf_special(x, "cosf", __amd_cos);
         }
 
-        if(abstop12(x) < abstop12(0x1p-126)) {
+        if(abstop12(x) < abstop12(COSF_MIN_ARG)) {
             // Underflow
              _sinf_cosf_special_underflow(x, "cosf", __amd_cos);
              return x;

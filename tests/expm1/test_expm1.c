@@ -35,11 +35,13 @@
 #endif
 
 /*vector routines*/
+/*
 __m128d LIBM_FUNC_VEC(d, 2, expm1)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, expm1)(__m256d);
 
 __m128 LIBM_FUNC_VEC(s, 4, expm1f)(__m128);
 __m256 LIBM_FUNC_VEC(s, 8, expm1f)(__m256);
+*/
 
 #if (DEVELOPER == 2)
 #pragma message "Developer mode changing prototype to expm1_v2()"
@@ -48,14 +50,14 @@ __m256 LIBM_FUNC_VEC(s, 8, expm1f)(__m256);
 #endif
 
 #if (LIBM_PROTOTYPE == PROTOTYPE_AMDLIBM)
-#define __amd_fma3_vrd4_expm1 amd_vrd4_expm1 /* As there is no __amd_fma3_vrs4_expm1 implementation yet */
-#define __amd_fma3_vrs4_expm1 amd_vrs4_expm1f /* As there is no __amd_fma3_vrs4_expm1f implementation yet */
+//#define __amd_fma3_vrd4_expm1 amd_vrd4_expm1 /* As there is no __amd_fma3_vrs4_expm1 implementation yet */
+//#define __amd_fma3_vrs4_expm1 amd_vrs4_expm1f /* As there is no __amd_fma3_vrs4_expm1f implementation yet */
 
 
 double FN_PROTOTYPE( expm1_v2 )(double);
 float FN_PROTOTYPE( expm1f_v2 )(float);
 
-float FN_PROTOTYPE_FMA3( expm1f )(float);
+//float FN_PROTOTYPE_FMA3( expm1f )(float);
 
 //#define amd_expm1f_v2 FN_PROTOTYPE_FMA3(expm1f)
 #else
@@ -362,6 +364,7 @@ test_expm1_cb_s1d(struct libm_test *test, int idx)
     return 0;
 }
 
+/*
 static int
 test_expm1_cb_v4s(struct libm_test *test, int j)
 {
@@ -369,7 +372,8 @@ test_expm1_cb_v4s(struct libm_test *test, int j)
     float *restrict ip1 = (float*)data->input1;
     float *restrict o = (float*)data->output;
 
-#if (LIBM_PROTOTYPE != PROTOTYPE_FMA3)		/* Glibc doesnt have a vector version of expm1 */
+#if (LIBM_PROTOTYPE != PROTOTYPE_FMA3)		* Glibc doesnt have a vector version of expm1 */
+/*
     for (int k = 0; k < 4; k++)
         o[k] = LIBM_FUNC(expm1f)(ip1[k]);
 #else
@@ -389,7 +393,8 @@ test_expm1_cb_v2d(struct libm_test *test, int j)
     double *restrict ip1 = (double*)data->input1;
     double *restrict o = (double*)data->output;
 
-#if (LIBM_PROTOTYPE != PROTOTYPE_FMA3)		/* Glibc doesnt have a vector version of expm1 */
+#if (LIBM_PROTOTYPE != PROTOTYPE_FMA3)		 Glibc doesnt have a vector version of expm1 */
+/*
     for (int k = 0; k < 2; k++)
         o[k] = LIBM_FUNC(expm1)(ip1[k]);
 #else
@@ -408,8 +413,8 @@ test_expm1_cb_v4d(struct libm_test *test, int j)
     double *restrict ip1 = (double*)data->input1;
     double *restrict o = (double*)data->output;
 
-#if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)		/* Glibc doesnt have a vector version of expm1 */
-    for (int k = 0; k < 4; k++)
+#if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)	 Glibc doesnt have a vector version of expm1 */
+/*    for (int k = 0; k < 4; k++)
         o[k] = LIBM_FUNC(expm1)(ip1[k]);
 #else
 #define amd_vrd4_expm1 amd_vrda_expm1
@@ -419,6 +424,7 @@ test_expm1_cb_v4d(struct libm_test *test, int j)
 
     return 0;
 }
+*/
 
 struct libm_test_funcs test_expm1_funcs[LIBM_FUNC_MAX] =
     {
@@ -462,6 +468,7 @@ struct libm_test_funcs test_expm1_funcs[LIBM_FUNC_MAX] =
                          .special      = {.setup = test_expm1_special_setup,},
      },
 #endif
+/*
      [LIBM_FUNC_V4S]  = {
                          .performance  = {.setup = test_expm1_perf_setup,
                                           .run   = libm_test_v4s_perf,},
@@ -488,6 +495,7 @@ struct libm_test_funcs test_expm1_funcs[LIBM_FUNC_MAX] =
                         .special      = {.setup = test_expm1_special_setup,
                                          .run   = test_expm1_accu,},
      },
+*/
 };
 
 /* There is no expm12q in recent versions of gcc */
@@ -511,9 +519,9 @@ expm1_template = {
                 .callbacks = {
                     .s1s = test_expm1_cb_s1s,
                     .s1d = test_expm1_cb_s1d,
-                    .v4s = test_expm1_cb_v4s,
-                    .v2d = test_expm1_cb_v2d,
-                    .v4d = test_expm1_cb_v4d,
+                    //.v4s = test_expm1_cb_v4s,
+                    //.v2d = test_expm1_cb_v2d,
+                    //.v4d = test_expm1_cb_v4d,
                 },
         }
 };

@@ -109,7 +109,7 @@ class DefaultCfg(object):
                          map={}, ignorecase=0),  # case sensitive
 	        # test abi makes tests to call out for given library call
             EnumVariable('libabi', 'Test ABI for library function calling', 'aocl',
-                         allowed_values=('aocl', 'glibc', 'libm', 'acml','amdlibm'),
+                         allowed_values=('aocl', 'glibc', 'libm', 'acml','amdlibm', 'svml'),
                          map={}, ignorecase=2),  # lowercase always
             EnumVariable('developer', 'A developer friendly mode', 0,
                          allowed_values=('0', '1', '2', '3', '4'),

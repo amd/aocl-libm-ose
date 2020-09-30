@@ -314,6 +314,7 @@ int libm_test_alloc_special_data(struct libm_test *test, size_t size);
 #define PROTOTYPE_AMDLIBM  0xf3
 #define PROTOTYPE_TEST_V1  0xf8
 #define PROTOTYPE_TEST_V2  0xf9
+#define PROTOTYPE_SVML     0xf4
 
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
 #define LIBM_FUNC(x) FN_PROTOTYPE(x)
@@ -327,6 +328,11 @@ int libm_test_alloc_special_data(struct libm_test *test, size_t size);
 #pragma message "compiling for GLIBC"
 #define LIBM_FUNC(x)    x
 #define LIBM_FUNC_VEC(prec, elem, fn) _ZGV##prec##N##elem##v_##fn
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+#pragma message "compiling for Intel SVML"
+#define LIBM_FUNC(x) x
+#define LIBM_FUNC_VEC(prec, elem, fn) __svml_##fn##elem
+
 #else
 #error "unknown LIBM_PROTOTYPE"
 #endif

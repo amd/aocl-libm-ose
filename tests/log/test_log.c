@@ -34,18 +34,16 @@ double LIBM_FUNC(log)(double);
 float LIBM_FUNC(logf)(float);
 
 #if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
-
 #define _ZGVdN2v_log _ZGVbN2v_log
 #define _ZGVdN4v_log _ZGVdN4v_log
 #define _ZGVsN4v_logf _ZGVbN4v_logf
 #define _ZGVsN8v_logf _ZGVdN8v_logf
-
-__m128d _ZGVbN2v_log(__m128d);
-__m256d _ZGVdN4v_log(__m256d);
-
-__m128 _ZGVbN4v_logf(__m128);
-__m256 _ZGVdN8v_logf(__m256);
 #endif
+
+__m128d LIBM_FUNC_VEC(d, 2, log)(__m128d);
+__m256d LIBM_FUNC_VEC(d, 4, log)(__m256d);
+__m128  LIBM_FUNC_VEC(s, 4, logf)(__m128);
+__m256  LIBM_FUNC_VEC(s, 8,  logf)(__m256);
 
 int test_log_conf_setup(struct libm_test *test)
 {
@@ -162,7 +160,7 @@ test_log_cb_v8s(struct libm_test *test, int j)
     float *restrict o = (float*)data->output;
 #if (LIBM_PROTOTYPE == PROTOTYPE_AMDLIBM)
     /* Old versions do not have a 8-vector variant, so we call array version with 8 elements */
-#define __amd_fma3_vrs8_logf(x) 
+#define __amd_fma3_vrs8_logf(x)
     __amd_fma3_vrsa_logf(8, &ip1[j], &o[j]);
 #else
 

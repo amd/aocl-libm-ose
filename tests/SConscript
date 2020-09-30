@@ -34,6 +34,7 @@ PROTOTYPE_AOCL     = 0xf2
 PROTOTYPE_AMDLIBM  = 0xf3 #This is to compile for older AMDLIBM versions (prior to v2.1)
 PROTOTYPE_TEST_V1  = 0xf8
 PROTOTYPE_TEST_V2  = 0xf9
+PROTOTYPE_SVML     = 0xf4
 
 testcflags = ['-funsigned-char', '-fno-strict-aliasing', #'-Og',
                 '-fstack-protector-all', '-Werror', '-W', '-Wall',
@@ -67,7 +68,10 @@ elif abi == 'glibc':
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_GLIBC]
     liblist.extend(['mvec'])
 elif abi == 'svml':
-    pass
+    ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_SVML]
+    liblist.extend(['svml'])
+    liblist.extend(['irc'])
+    liblist.extend(['intlc'])
 else:
     pass
 
@@ -99,7 +103,12 @@ liblist.extend(['m', 'mparith32', 'mparith64', 'mpfr'])
 #libpath = ['#build/src', '#build/tests']
 #mplibpath = ['src', 'tests', 'tests/libs/mparith/32', 'tests/libs/mparith/64']
 mplibpath = ['libs/mparith/32', 'libs/mparith/64']
+
 libpath = [joinpath('#', build_root, x) for x in mplibpath]
+
+#if intel svml
+if abi == 'svml':
+    libpath += [env['INTEL_LIB_PATH']]
 
 libtestenv = env.Clone()
 libtestenv.Append(

@@ -32,11 +32,13 @@
 #define _ZGVdN4v(x) _ZGVbN4v_##x
 #define _ZGVdN4v_exp2f _ZGVbN4v_exp2f
 #define _ZGVdN2v_exp2 _ZGVbN2v_exp2
+#endif
 
 /*
  * GLIBC dont have vector routiens for exp2,
  * all data is skewed
  */
+/*
 __m128 LIBM_FUNC_VEC(s, 4, exp2f)(__m128 in)
 {
     flt128f_t f128 = {.m128 = in};
@@ -79,6 +81,7 @@ __m256d LIBM_FUNC_VEC(d, 4, exp2)(__m256d in)
     return o256.m256d;
 }
 #endif
+*/
 
 int test_exp2_populate_inputs(struct libm_test *test, int use_uniform);
 
@@ -509,6 +512,7 @@ test_exp2_cb_s1d(struct libm_test *test, int idx)
     return 0;
 }
 
+/*
 static int
 test_exp2_cb_v4s(struct libm_test *test, int j)
 {
@@ -550,6 +554,7 @@ test_exp2_cb_v4d(struct libm_test *test, int j)
 
     return 0;
 }
+*/
 
 static int
 test_exp2_accu_run(struct libm_test *test)
@@ -620,6 +625,7 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
                          .special      = {.setup = test_exp2_special_setup,},
      },
 #endif
+/*
      [LIBM_FUNC_V4S]  = {
                          .performance = { .setup = test_exp2_default_setup,
                                           .run   = libm_test_v4s_perf,},
@@ -648,7 +654,7 @@ struct libm_test_funcs test_exp2_funcs[LIBM_FUNC_MAX] =
                         .special      = {.setup = test_exp2_special_setup,
                                          .run   = test_exp2_accu,},
      },
-
+*/
 
 };
 
@@ -665,9 +671,9 @@ exp2_template = {
 		.callbacks = {
 			.s1s = test_exp2_cb_s1s,
 			.s1d = test_exp2_cb_s1d,
-			.v4s = test_exp2_cb_v4s,
-			.v2d = test_exp2_cb_v2d,
-			.v4d = test_exp2_cb_v4d,
+			//.v4s = test_exp2_cb_v4s,
+			//.v2d = test_exp2_cb_v2d,
+			//.v4d = test_exp2_cb_v4d,
                 },
 	},
 };

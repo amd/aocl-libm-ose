@@ -32,6 +32,7 @@ int main(int argc, char* argv[]) {
     test_atan(handle);
     test_cosh(handle);
     test_tanh(handle);
+    test_sinh(handle);
 
     dlclose(handle);
     return 0;

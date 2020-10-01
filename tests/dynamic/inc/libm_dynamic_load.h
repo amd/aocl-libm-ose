@@ -31,6 +31,9 @@ extern double (*amd_tanh) (double);
 extern float (*amd_coshf) (float);
 extern float (*amd_cosh)  (double);
 
+extern float (*amd_sinhf) (float);
+extern float (*amd_sinh)  (double);
+
 extern float (*amd_fabsf) (float);
 extern double (*amd_fabs) (double);
 
@@ -77,6 +80,7 @@ extern int test_cos(void*);
 extern int test_tan(void*);
 extern int test_fabs(void*);
 extern int test_atan(void*);
+extern int test_sinh(void*);
 extern int test_cosh(void*);
 extern int test_tanh(void*);
 

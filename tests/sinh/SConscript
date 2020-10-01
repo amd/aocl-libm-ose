@@ -1,0 +1,13 @@
+# Copyright (C) 2018, AMD. All rights Reserved
+#
+
+Import('env')
+
+e = env.Clone()
+
+sinh_srcs = Glob('*.[cS]')
+
+sinh = e.Program('test_sinh', sinh_srcs)
+
+Return('sinh')
+

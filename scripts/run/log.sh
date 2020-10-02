@@ -1,26 +1,19 @@
 #!/bin/bash
-#!/bin/bash
 build_dir="$1"
-
 test_type="$2"
-
-BUILD=${BUILD:="build/$build_dir"}
 TEST="log"
-echo $BUILD
-echo $TEST
-EXE=${BUILD}/tests/$TEST/test_$TEST
+EXE=${build_dir}/tests/$TEST/test_$TEST
 
 xranges=(0,710)
 
 run_test()
 {
-    export LD_LIBRARY_PATH=`pwd`/${BUILD}/src
     #if conf or special dont do for the ranges
     if [ $2 = "conf" ] || [ $2 = "special" ]; then
         echo "Testing $TEST"
         ${EXE} -i $1 -t $2 -c 1000000 -l 1000
     else
-        for r in ${xranges[@]}; 
+        for r in ${xranges[@]};
             do
                 echo "Testing $TEST for [${r}] "
                 ${EXE} -i $1 -t $2 -r ${r} -c 1000000 -l 1000
@@ -37,7 +30,7 @@ fi
 echo "Running tests for $TEST()"
 
 input_types=("s1d","s1f","v4s","v4d","v2s","v8s")
-test_types=("perf","accu","conf","special")
+test_types=("perf","accu","conf")
 
 if [ $test_type = "all" ]; then
 for inp in ${input_types[@]};

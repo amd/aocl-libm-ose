@@ -1,13 +1,8 @@
 #!/bin/bash
 build_dir="$1"
-
 test_type="$2"
-
-BUILD=${BUILD:="build/$build_dir"}
 TEST="pow"
-echo $BUILD
-echo $TEST
-EXE=${BUILD}/tests/$TEST/test_$TEST
+EXE=${build_dir}/tests/$TEST/test_$TEST
 
 declare -a ranges
 xranges=(0.0,1    \
@@ -37,7 +32,6 @@ yranges=(-127.0,-111.9 \
 
 run_test()
 {
-    export LD_LIBRARY_PATH=`pwd`/${BUILD}/src
     #if conf or special dont do for the ranges
     if [ $2 = "conf" ] || [ $2 = "special" ]; then
         echo "Testing $TEST "

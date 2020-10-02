@@ -1,10 +1,10 @@
 #!/bin/bash
 build_dir="$1"
 test_type="$2"
-TEST="exp"
+TEST="tan"
 EXE=${build_dir}/tests/$TEST/test_$TEST
 
-xranges=(-50,50)
+xranges=(-1000,1000)
 
 run_test()
 {
@@ -29,7 +29,7 @@ fi
 
 echo "Running tests for $TEST()"
 
-input_types=("s1d","s1f","v4s","v4d","v2s","v8s")
+input_types=("s1d","s1f","v4d","v2d","v8s","v4s")
 test_types=("perf","accu","conf")
 
 if [ $test_type = "all" ]; then

@@ -1,26 +1,19 @@
 #!/bin/bash
-#!/bin/bash
 build_dir="$1"
-
 test_type="$2"
-
-BUILD=${BUILD:="build/$build_dir"}
 TEST="fabs"
-echo $BUILD
-echo $TEST
-EXE=${BUILD}/tests/$TEST/test_$TEST
-
+EXE=${build_dir}/tests/$TEST/test_$TEST
+echo "Running exe " + $EXE
 xranges=(-1000,1000)
 
 run_test()
 {
-    export LD_LIBRARY_PATH=`pwd`/${BUILD}/src
     #if conf or special dont do for the ranges
     if [ $2 = "conf" ] || [ $2 = "special" ]; then
         echo "Testing $TEST"
-        ${EXE} -i $1 -t $2 -c 1000000 -l 1000    
+        ${EXE} -i $1 -t $2 -c 1000000 -l 1000
     else
-        for r in ${xranges[@]}; 
+        for r in ${xranges[@]};
             do
                 echo "Testing $TEST for [${r}] "
                 ${EXE} -i $1 -t $2 -r ${r} -c 1000000 -l 1000
@@ -32,7 +25,7 @@ run_test()
 if [ ! -f ${EXE} ]; then
     echo "Executable ${EXE} not found!"
     exit 1
-fi    
+fi
 
 echo "Running tests for $TEST()"
 
@@ -56,5 +49,3 @@ else
 fi
 
 echo "Ran tests for $TEST()"
-
-

@@ -16,12 +16,11 @@
  * cos(x) = sin(x + pi/2)           (1)
  *
  * 1. Argument Reduction
- *      Adding pi/2 to x, x is now x + pi/2
  *      Now, let x be represented as,
  *          |x| = N * pi + f        (2) | N is an integer,
  *                                        -pi/2 <= f <= pi/2
  *
- *      From (2), N = int(x / pi)
+ *      From (2), N = int( (x + pi/2) / pi) - 0.5
  *                f = |x| - (N * pi)
  *
  * 2. Polynomial Evaluation
@@ -49,43 +48,46 @@
 
 static struct {
 
-            v_f64x4_t poly_cosf[5];
-            v_f64x4_t half_pi, inv_pi, pi_head, pi_tail;
-            v_f64x4_t alm_huge;
-            v_u32x4_t mask_32, infinity;
-            v_u64x4_t sign_mask;
-            } cosf_data = {
-                            .half_pi   = _MM_SET1_PD4(0x1.921fb54442d18p0),
-                            .inv_pi    = _MM_SET1_PD4(0x1.45f306dc9c883p-2),
-                            .pi_head   = _MM_SET1_PD4(0x1.921fb50000000p1),
-                            .pi_tail   = _MM_SET1_PD4(0x1.110b4611a6263p-25),
-                            .alm_huge  = _MM_SET1_PD4(0x1.8p+52),
-                            .sign_mask = _MM_SET1_I64(0x7FFFFFFFFFFFFFFF),
+            v_f32x4_t poly_cosf[5];
+            v_f32x4_t half;
+            v_f32x4_t half_pi, inv_pi, pi_head, pi_tail1, pi_tail2;
+            v_f32x4_t alm_huge;
+            v_u32x4_t mask_32, arg_max;
+            } v4_cosf_data = {
+                            .half      = _MM_SET1_PS4(0x1p-1f),
+                            .half_pi   = _MM_SET1_PS4(0x1.921fb6p0f),
+                            .inv_pi    = _MM_SET1_PS4(0x1.45f306p-2f),
+                            .pi_head   = _MM_SET1_PS4(-0x1.921fb6p1f),
+                            .pi_tail1  = _MM_SET1_PS4(0x1.777a5cp-24f),
+                            .pi_tail2  = _MM_SET1_PS4(0x1.ee59dap-49f),
+                            .alm_huge  = _MM_SET1_PS4(0x1.8p23f),
                             .mask_32   = _MM_SET1_I32(0x7FFFFFFF),
-                            .infinity  = _MM_SET1_I32(0x7f800000),
+                            .arg_max   = _MM_SET1_I32(0x4A989680),
                             .poly_cosf = {
-                                            _MM_SET1_PD4(0x1p0),
-                                            _MM_SET1_PD4(-0x1.55554d018df8bp-3),
-                                            _MM_SET1_PD4(0x1.110f0293a5dcbp-7),
-                                            _MM_SET1_PD4(-0x1.9f781a0aebdb9p-13),
-                                            _MM_SET1_PD4(0x1.5e2a3e7550c85p-19),
+                                            _MM_SET1_PS4(0x1.p0f),
+                                            _MM_SET1_PS4(-0x1.555548p-3f),
+                                            _MM_SET1_PS4(0x1.110df4p-7f),
+                                            _MM_SET1_PS4(-0x1.9f42eap-13f),
+                                            _MM_SET1_PS4(0x1.5b2e76p-19f),
                                          },
             };
 
-#define HALF_PI   cosf_data.half_pi
-#define INV_PI    cosf_data.inv_pi
-#define PI_HEAD   cosf_data.pi_head
-#define PI_TAIL   cosf_data.pi_tail
-#define ALM_HUGE  cosf_data.alm_huge
-#define SIGN_MASK cosf_data.sign_mask
-#define MASK_32   cosf_data.mask_32
-#define ARG_MAX   cosf_data.infinity
+#define V4_COSF_HALF       v4_cosf_data.half
+#define V4_COSF_HALF_PI    v4_cosf_data.half_pi
+#define V4_COSF_INV_PI     v4_cosf_data.inv_pi
+#define V4_COSF_PI_HEAD    v4_cosf_data.pi_head
+#define V4_COSF_PI_TAIL1   v4_cosf_data.pi_tail1
+#define V4_COSF_PI_TAIL2   v4_cosf_data.pi_tail2
+#define V4_COSF_MASK_32    v4_cosf_data.mask_32
+#define V4_COSF_ARG_MAX    v4_cosf_data.arg_max
+#define ALM_HUGE           v4_cosf_data.alm_huge
 
-#define C0 cosf_data.poly_cosf[0]
-#define C1 cosf_data.poly_cosf[1]
-#define C2 cosf_data.poly_cosf[2]
-#define C3 cosf_data.poly_cosf[3]
-#define C4 cosf_data.poly_cosf[4]
+#define C0 v4_cosf_data.poly_cosf[0]
+#define C1 v4_cosf_data.poly_cosf[1]
+#define C2 v4_cosf_data.poly_cosf[2]
+#define C3 v4_cosf_data.poly_cosf[3]
+#define C4 v4_cosf_data.poly_cosf[4]
+
 
 float ALM_PROTO(cosf)(float);
 
@@ -95,60 +97,50 @@ cosf_specialcase(v_f32x4_t _x, v_f32x4_t result, v_i32x4_t cond)
     return call_v4_f32(ALM_PROTO(cosf), _x, result, cond);
 }
 
+
 v_f32x4_t
 ALM_PROTO_OPT(vrs4_cosf)(v_f32x4_t x)
 {
 
-    v_f64x4_t dinput, frac, poly, result;
-    v_u64x4_t ixd;
+    v_f32x4_t dinput, frac, poly, result;
 
     v_u32x4_t ux = as_v4_u32_f32(x);
 
     /* Check for special cases */
-    v_u32x4_t cond = (ux & MASK_32) > ARG_MAX;
-
-    /* Convert input to double precision */
-    dinput = cast_v4_f32_to_f64(x);
-    ixd = as_v4_u64_f64(dinput);
+    v_u32x4_t cond = (ux & V4_COSF_MASK_32) > V4_COSF_ARG_MAX;
 
     /* Remove sign from input */
-    dinput = as_v4_f64_u64(ixd & SIGN_MASK);
+    dinput = as_v4_f32_u32(ux & V4_COSF_MASK_32);
 
-    /* x + pi/2 */
-    dinput = dinput + HALF_PI;
-
-    /* Get n = int (x/pi) */
-    v_f64x4_t dn = (dinput * INV_PI) + ALM_HUGE;
-    v_u64x4_t n = cast_v4_f64_to_i64(dn);
+    /* Get n = int ((x + pi/2) /pi) - 0.5 */
+    v_f32x4_t dn = ((dinput + V4_COSF_HALF_PI) * V4_COSF_INV_PI) + ALM_HUGE;
+    v_u32x4_t n = as_v4_u32_f32(dn);
     dn = dn - ALM_HUGE;
+    dn = dn - V4_COSF_HALF;
 
     /* frac = x - (n*pi) */
-    frac = dinput - (dn * PI_HEAD);
-    frac = frac - (dn * PI_TAIL);
+    frac = dinput + (dn * V4_COSF_PI_HEAD);
+    frac = frac + (dn * V4_COSF_PI_TAIL1);
+    frac = frac + (dn * V4_COSF_PI_TAIL2);
 
     /* Check if n is odd or not */
-    v_u64x4_t odd = n << 63;
+    v_u32x4_t odd = n << 31;
 
-    /*
-     * Compute sin(f) using the polynomial
+    /* Compute sin(f) using the polynomial
      * x*(1+C1*x^2+C2*x^4+C3*x^6+C4*x^8)
      */
     poly = POLY_EVAL_ODD_9(frac, C0, C1, C2, C3, C4);
 
     /* If n is odd, result is negative */
-    for (int i =0; i<4; i++)
-    {
-        if(odd[i])
-            result[i] = -poly[i];
-        else
-            result[i] = poly[i];
-    }
+    result = as_v4_f32_u32(as_v4_u32_f32(poly) ^ odd);
 
     /* If any of the input values are greater than ARG_MAX,
      * call scalar cosf
-     */
-    if(unlikely(any_v4_u32(cond)))
-        return cosf_specialcase(x, cvt_v4_f64_to_f32(result), cond);
 
-    return cvt_v4_f64_to_f32(result);
+     */
+    if(unlikely(any_v4_u32_loop(cond)))
+        return cosf_specialcase(x, result, cond);
+
+    return result;
 }
+

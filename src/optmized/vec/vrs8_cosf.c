@@ -132,14 +132,7 @@ ALM_PROTO_OPT(vrs8_cosf)(v_f32x8_t x)
     poly = POLY_EVAL_ODD_9(frac, C0, C1, C2, C3, C4);
 
     /* If n is odd, result is negative */
-    for (int i =0; i<8; i++)
-    {
-        if(odd[i])
-            result[i] = -poly[i];
-        else
-            result[i] = poly[i];
-    }
-
+    result = as_v8_f32_u32(as_v8_u32_f32(poly) ^ odd);
 
     /* If any of the input values are greater than ARG_MAX,
      * call scalar cosf

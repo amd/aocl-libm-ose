@@ -10,7 +10,8 @@ if [ $# -ne 3 ]; then
     exit 1
 fi
 
-source ./scripts/common.sh
+set -a
+source $(realpath './scripts/common.sh')
 
 build_type=$1
 test_type=$2
@@ -37,9 +38,9 @@ export LD_LIBRARY_PATH=${BUILD}/tests/libs/mparith/64/:$LD_LIBRARY_PATH;
 if [ "$func" = "all" ]; then
     for f in "${funcs[@]}";
         do
-            RunCommand `pwd`/scripts/run/${f}.sh "$BUILD" "$test_type"
+            RunCommand `pwd`/scripts/run/${f}.sh "$BUILD" "$test_type" "$input_count"
         done
 else
-    RunCommand `pwd`/scripts/run/${func}.sh "$BUILD" "$test_type"
+    RunCommand `pwd`/scripts/run/${func}.sh "$BUILD" "$test_type" "$input_count"
 fi
 

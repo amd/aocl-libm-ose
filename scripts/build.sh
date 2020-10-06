@@ -7,7 +7,8 @@ if [ $# -ne 2 ]; then
     exit 1
 fi
 
-source ./scripts/common.sh
+source $(realpath './scripts/common.sh')
+
 build_type=$1
 compiler_type=$2
 

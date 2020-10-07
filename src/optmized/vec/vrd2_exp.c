@@ -169,28 +169,11 @@ ALM_PROTO_OPT(vrd2_exp)(v_f64x2_t x)
 
     if(unlikely(any_v2_u64_loop(cond))) {
 
-        v_i64x2_t inf_condition = x > EXP_MAX;
+        return (v_f64x2_t) {
+            (cond[0]) ? SCALAR_EXP(x[0]):ret[0],
+            (cond[1]) ? SCALAR_EXP(x[1]):ret[1],
+        };
 
-        v_i64x2_t zero_condition = x < EXP_LOW;
-
-        v_64x2 vx = {.f64x2 = ret};
-
-        //Zero out the elements that have to be set to infinity
-        vx.i64x2 = vx.i64x2 & (~inf_condition);
-
-        inf_condition = inf_condition & INF;
-
-        vx.i64x2 = vx.i64x2 | inf_condition;
-
-        ret =  vx.f64x2;
-
-        /*To handle denormal numbers */
-        if(any_v2_u64_loop(zero_condition)) {
-                return (v_f64x2_t) {
-                    (zero_condition[0] && (x[0] < EXP_MIN_VAL)) ? 0.0:SCALAR_EXP(x[0]),
-                    (zero_condition[1] && (x[1] < EXP_MIN_VAL)) ? 0.0:SCALAR_EXP(x[1]),
-                };
-        }
     }
 
     return ret;

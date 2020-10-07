@@ -102,14 +102,9 @@ extern "C" {
 #define _ZGVdN4v_log _ZGVdN4v_log
 #define _ZGVsN4v_logf _ZGVbN4v_logf
 #define _ZGVsN8v_logf _ZGVdN8v_logf
-
-__m128d _ZGVbN2v_log(__m128d);
-__m256d _ZGVdN4v_log(__m256d);
-
-__m128 _ZGVbN4v_logf(__m128);
-__m256 _ZGVdN8v_logf(__m256);
 #endif
 
+/*vector routines*/
 __m128d LIBM_FUNC_VEC(d, 2, log)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, log)(__m256d);
 
@@ -118,7 +113,7 @@ __m256 LIBM_FUNC_VEC(s, 8, logf)(__m256);
 
 int test_v2d(test_data *data, int idx)  {
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
   __m128d op2 = LIBM_FUNC_VEC(d, 2, log)(ip2);
   _mm_store_pd(&op[0], op2);

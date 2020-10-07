@@ -110,11 +110,13 @@ __m128 LIBM_FUNC_VEC(s, 4, coshf)(__m128);
 __m256 LIBM_FUNC_VEC(s, 8, coshf)(__m256);
 
 int test_v2d(test_data *data, int idx)  {
+#if 0
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op; 
   __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
   __m128d op2 = LIBM_FUNC_VEC(d, 2, cosh)(ip2);
   _mm_store_pd(&op[0], op2);
+#endif
   return 0;
 }
 
@@ -136,7 +138,7 @@ int test_v4d(test_data *data, int idx)  {
   __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256d op4 = LIBM_FUNC_VEC(d, 4, cosh)(ip4);
   _mm256_store_pd(&op[0], op4);
-#endif  
+#endif
   return 0;
 }
 

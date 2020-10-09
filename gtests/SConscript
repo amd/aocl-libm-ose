@@ -7,6 +7,9 @@ from os import path
 from os.path import join as joinpath
 
 Import('env')
+
+#env.Replace(CC='g++',LINKFLAGS=[])
+
 build_root = joinpath(env['BUILDROOT'], 'gtests')
 
 excludes = Glob('*_old.cc')
@@ -113,11 +116,13 @@ libtestenv.Append(
     CPPPATH  = [incpath],
     VARIANTDIR = 'gtests'
 )
+libtestenv.Replace(CC='g++',LINKFLAGS=[])
 
 #print([x.path for x in test_common_srcs])
 libtest = libtestenv.StaticLibrary('test', test_common_srcs)
 
 e = env.Clone()
+e.Replace(CC='g++',LINKFLAGS=[])
 e.Append(
 	CFLAGS = ccflags + testcflags,
 	CCFLAGS = ccflags + testcflags,
@@ -160,6 +165,7 @@ test_exes = []
 
 for test in gtests:
     tenv = e.Clone()
+    tenv.Replace(CC='g++',LINKFLAGS=[])
     tenv.Append(CPPDEFINES = ['-DTEST_NAME=%s' % test])
     exes = SConscript('%s/SConscript' % test,
                         exports = { 'env': tenv },

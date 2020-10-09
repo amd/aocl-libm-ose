@@ -9,6 +9,11 @@ from os import path
 from os.path import join as joinpath
 
 Import('env')
+
+#ideally this has to be used instead of using 'gcc'
+#will do it later
+#gcc_compiler=compiler.gcc.Gcc(self.defenv['build'])
+
 build_root = joinpath(env['BUILDROOT'], 'tests')
 
 excludes = Glob('*_old.c') + Glob('test_api.c') + Glob('print.c')
@@ -55,7 +60,7 @@ incpath = ['#tests/include', '.', './include']
 libpath = []
 
 abi = env['libabi']
-#print(abi, env['libabi'])
+print(abi, env['libabi'])
 
 # Default set to AOCL
 if abi == 'aocl':
@@ -111,6 +116,7 @@ if abi == 'svml':
     libpath += [env['INTEL_LIB_PATH']]
 
 libtestenv = env.Clone()
+libtestenv.Replace(CC='gcc',LINKFLAGS=[])
 libtestenv.Append(
     CCFLAGS  = ccflags + testcflags,
     CPPPATH  = [incpath],
@@ -121,6 +127,7 @@ libtestenv.Append(
 libtest = libtestenv.StaticLibrary('test', test_common_srcs)
 
 e = env.Clone()
+e.Replace(CC='gcc',LINKFLAGS=[])
 e.Append(
 	CFLAGS = ccflags + testcflags,
 	INCPATH = incpath,
@@ -155,6 +162,7 @@ test_exes = []
 
 for test in tests:
     tenv = e.Clone()
+    tenv.Replace(CC='gcc',LINKFLAGS=[])
     tenv.Append(CPPDEFINES = ['-DTEST_NAME=%s' % test])
     exes = SConscript('%s/SConscript' % test,
                         exports = { 'env': tenv },

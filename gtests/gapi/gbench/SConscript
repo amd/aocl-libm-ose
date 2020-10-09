@@ -21,7 +21,7 @@ gflags = [
 	'-DHAVE_STD_REGEX',
 	'-DHAVE_STEADY_CLOCK'
 	]
-    
+
 this_sconscript_file = Dir('.').srcnode().abspath
 
 ccflags = []
@@ -30,6 +30,7 @@ incpath = [ joinpath(this_sconscript_file, x) for x in ['.', './src']]
 libpath = []
 
 genv = env.Clone()
+genv.Replace(CC='gcc',LINKFLAGS=[])
 genv.Append(
     CCFLAGS  = gflags,
     CPPPATH  = [incpath],

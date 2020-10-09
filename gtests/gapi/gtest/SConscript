@@ -16,7 +16,7 @@ gflags = [
 	'-std=c++11','-O3', '-DNDEBUG','-Wno-deprecated',
 	'-Wall', '-Wextra', '-fstrict-aliasing',
     '-Wno-deprecated-declarations','-Wstrict-aliasing',
-    '-Werror','-Wno-error=dangling-else','-fexceptions',    
+    '-Werror','-Wno-error=dangling-else','-fexceptions',
     '-Wno-unused-parameter','-Wno-missing-field-initializers', 
     '-fPIC',
 	'-DGTEST_HAS_PTHREAD=1',
@@ -30,6 +30,7 @@ incpath = [ joinpath(this_sconscript_file, x) for x in ['.', './src']]
 libpath = []
 
 genv = env.Clone()
+genv.Replace(CC='gcc',LINKFLAGS=[])
 genv.Append(
     CCFLAGS  = gflags,
     CPPPATH  = [incpath],

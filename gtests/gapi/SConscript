@@ -13,9 +13,10 @@ Import('env')
 build_dir = joinpath(env['BUILDROOT'], 'gapi')
 
 e = env.Clone()
-e.Append(
-   LINKFLAGS = [],
-)
+e.Replace(CC='gcc',LINKFLAGS=[])
+#e.Append(
+#   LINKFLAGS = [],
+#)
 
 libg = SConscript('gtest/SConscript',
 		exports = {'env': env},

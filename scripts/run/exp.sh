@@ -1,28 +1,11 @@
 #!/bin/bash
-build_dir="$1"
-test_type="$2"
-TEST="exp"
-EXE=${build_dir}/tests/$TEST/test_$TEST
+framework="$1"
+EXE="$2"
+
+nargs=1
 xranges=(-50,50)
 
-echo "Running tests for $TEST()"
-input_types=("s1d","s1f","v4s","v4d","v2d","v8s")
-test_types=("perf" "accu" "conf")
+input_types=("s1d" "s1f" "v4s" "v4d" "v2d" "v8s")
 
-if [ $test_type = "all" ]; then
-for inp in ${input_types[@]};
-    do
-        for t in ${test_types[@]};
-            do
-                run_test ${EXE} $inp $t 1 ${xranges}
-            done
-    done
+run_exe_nargs $framework $exe $nargs $input_types $xranges
 
-else
-    for inp in ${input_types[@]};
-        do
-            run_test ${EXE} $inp $test_type 1 ${xranges};
-        done
-fi
-
-echo "Ran tests for $TEST()"

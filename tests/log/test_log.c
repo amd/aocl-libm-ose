@@ -43,7 +43,9 @@ float LIBM_FUNC(logf)(float);
 __m128d LIBM_FUNC_VEC(d, 2, log)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, log)(__m256d);
 __m128  LIBM_FUNC_VEC(s, 4, logf)(__m128);
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
 __m256  LIBM_FUNC_VEC(s, 8,  logf)(__m256);
+#endif
 
 int test_log_conf_setup(struct libm_test *test)
 {
@@ -152,24 +154,20 @@ test_log_cb_v4s(struct libm_test *test, int j)
     return 0;
 }
 
+/*older amdlibm versions dont have this variant */
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
 static int
 test_log_cb_v8s(struct libm_test *test, int j)
 {
     struct libm_test_data *data = &test->test_data;
     float *restrict ip1 = (float*)data->input1;
     float *restrict o = (float*)data->output;
-#if (LIBM_PROTOTYPE == PROTOTYPE_AMDLIBM)
-    /* Old versions do not have a 8-vector variant, so we call array version with 8 elements */
-#define __amd_fma3_vrs8_logf(x)
-    __amd_fma3_vrsa_logf(8, &ip1[j], &o[j]);
-#else
-
     __m256 ip8 = _mm256_set_ps(ip1[j+7], ip1[j+6], ip1[j+5], ip1[j+4], ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
     __m256 op8 = LIBM_FUNC_VEC(s, 8, logf)(ip8);
     _mm256_store_ps(&o[j], op8);
-#endif
     return 0;
 }
+#endif
 
 static int
 test_log_cb_v2d(struct libm_test *test, int j)
@@ -278,6 +276,7 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                                               .ulp = {.func = test_logf_ulp},
                                           },
           },
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
           [LIBM_FUNC_V8S] = {
                                .performance = {
                                                   .setup = libm_test_perf_setup,
@@ -289,6 +288,7 @@ struct libm_test_funcs test_log_funcs[LIBM_FUNC_MAX] =
                                                   .ulp = {.func = test_logf_ulp},
                                            },
            },
+#endif
            [LIBM_FUNC_V2D] = {
                           .performance = { .setup = libm_test_perf_setup,
                                             .run = libm_test_v2d_perf,
@@ -325,7 +325,9 @@ log_template = {
                                     .s1s = test_log_cb_s1s,
                                     .s1d = test_log_cb_s1d,
                                     .v4s = test_log_cb_v4s,
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
                                     .v8s = test_log_cb_v8s,
+#endif
                                     .v2d = test_log_cb_v2d,
                                     .v4d = test_log_cb_v4d,
                                  },

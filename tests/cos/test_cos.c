@@ -40,8 +40,9 @@ __m128d LIBM_FUNC_VEC(d, 2, cos)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, cos)(__m256d);
 
 __m128 LIBM_FUNC_VEC(s, 4, cosf)(__m128);
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
 __m256 LIBM_FUNC_VEC(s, 8, cosf)(__m256);
-
+#endif
 
 int test_cos_conf_setup(struct libm_test *test)
 {
@@ -121,6 +122,7 @@ test_cos_cb_v4s(struct libm_test *test, int j)
     return 0;
 }
 
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
 static int
 test_cos_cb_v8s(struct libm_test *test, int j)
 {
@@ -135,6 +137,7 @@ test_cos_cb_v8s(struct libm_test *test, int j)
 
     return 0;
 }
+#endif
 
 static int
 test_cos_cb_v2d(struct libm_test *test, int j)
@@ -274,6 +277,7 @@ struct libm_test_funcs test_cos_funcs[LIBM_FUNC_MAX] =
                                           .ulp = {.func = test_cosf_ulp},
                            },
      },
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
      [LIBM_FUNC_V8S] = {
                           .performance = {
                                           .setup = libm_test_perf_setup,
@@ -285,6 +289,7 @@ struct libm_test_funcs test_cos_funcs[LIBM_FUNC_MAX] =
                                           .ulp = {.func = test_cosf_ulp},
                           },
      },
+#endif
      [LIBM_FUNC_V2D] = {
                           .performance = { .setup = libm_test_perf_setup,
                                             .run = libm_test_v2d_perf,
@@ -322,7 +327,9 @@ cos_template = {
                                     .s1s = test_cos_cb_s1s,
                                     .s1d = test_cos_cb_s1d,
                                     .v4s = test_cos_cb_v4s,
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
                                     .v8s = test_cos_cb_v8s,
+#endif
                                     .v2d = test_cos_cb_v2d,
                                    // .v4d = test_cos_cb_v4d,
                                  },

@@ -27,10 +27,6 @@
 #define _ZGVsN8v_powf _ZGVdN8vv_powf
 #endif
 
-#if (LIBM_PROTOTYPE == PROTOTYPE_AMDLIBM)
-#define __amd_fma3_vrs4_powf amd_vrs4_powf /* As there is no __amd_fma3_vrs4_powf implementation yet */
-#endif
-
 char doc[] = BUILD_TEST_DOC(TEST_NAME);
 
 double LIBM_FUNC(pow)(double, double);
@@ -39,9 +35,11 @@ float LIBM_FUNC(powf)(float, float);
 /*vector routines*/
 __m128d LIBM_FUNC_VEC(d, 2, pow)(__m128d, __m128d);
 __m256d LIBM_FUNC_VEC(d, 4, pow)(__m256d, __m256d);
-
+/*older amdlibm versions dont have this variant */
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
 __m128 LIBM_FUNC_VEC(s, 4, powf)(__m128, __m128);
 __m256 LIBM_FUNC_VEC(s, 8, powf)(__m256, __m256);
+#endif
 
 /*conf setup*/
 int test_pow_conf_setup(struct libm_test *test)
@@ -107,7 +105,8 @@ test_pow_cb_s1d(struct libm_test *test, int idx)
     return 0;
 }
 
-/*vector routines*/
+/*older amdlibm versions dont have this variant */
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
 static int
 test_pow_cb_v4s(struct libm_test *test, int j)
 {
@@ -123,7 +122,10 @@ test_pow_cb_v4s(struct libm_test *test, int j)
 
     return 0;
 }
+#endif
 
+/*older amdlibm versions dont have this variant */
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
 static int
 test_pow_cb_v8s(struct libm_test *test, int j)
 {
@@ -138,6 +140,7 @@ test_pow_cb_v8s(struct libm_test *test, int j)
 
     return 0;
 }
+#endif
 
 static int
 test_pow_cb_v2d(struct libm_test *test, int j)
@@ -263,6 +266,7 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                                           .verify = test_pow_verify,
                                          },
      },
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
      [LIBM_FUNC_V4S] = {
                           .performance = {
                                           .setup = libm_test_perf_setup,
@@ -274,6 +278,9 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                                           .ulp = {.func = test_powf_ulp},
                            },
      },
+#endif
+
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
      [LIBM_FUNC_V8S] = {
                           .performance = {
                                           .setup = libm_test_perf_setup,
@@ -285,6 +292,7 @@ struct libm_test_funcs test_pow_funcs[LIBM_FUNC_MAX] =
                                           .ulp = {.func = test_powf_ulp},
                            },
      },
+#endif
      [LIBM_FUNC_V2D] = {
                           .performance = { .setup = libm_test_perf_setup,
                                             .run = libm_test_v2d_perf,
@@ -323,8 +331,10 @@ pow_template = {
                     .callbacks = {
                                     .s1s = test_pow_cb_s1s,
                                     .s1d = test_pow_cb_s1d,
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
                                     .v4s = test_pow_cb_v4s,
                                     .v8s = test_pow_cb_v8s,
+#endif
                                     .v2d = test_pow_cb_v2d,
                                     .v4d = test_pow_cb_v4d,
                                  },

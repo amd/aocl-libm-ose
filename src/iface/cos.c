@@ -43,7 +43,7 @@ LIBM_IFACE_PROTO(cos)(void *arg)
 
     if (CPU_HAS_AVX2(features) &&
         CPU_FEATURE_AVX2_USABLE(features)) {
-        //fn_d = &FN_PROTOTYPE_OPT(cos);
+        fn_d = &FN_PROTOTYPE_OPT(cos);
         fn_s = &FN_PROTOTYPE_OPT(cosf);
         fn_v4s = &FN_PROTOTYPE_OPT(vrs4_cosf);
         fn_v8s = &FN_PROTOTYPE_OPT(vrs8_cosf);
@@ -65,6 +65,7 @@ LIBM_IFACE_PROTO(cos)(void *arg)
             case 0x15:                      /* Naples */
                         break;
             case 0x17:                      /* Rome */
+                        fn_d = &ALM_PROTO_ARCH_ZN2(cos);
                         fn_s = &ALM_PROTO_ARCH_ZN2(cosf);
                         fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_cosf);
                         fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_cosf);
@@ -73,6 +74,7 @@ LIBM_IFACE_PROTO(cos)(void *arg)
                         fn_s = &ALM_PROTO_ARCH_ZN3(cosf);
                         fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_cosf);
                         fn_v8s = &ALM_PROTO_ARCH_ZN3(vrs8_cosf);
+                        fn_d = &ALM_PROTO_ARCH_ZN2(cos);
                         break;
         }
     }

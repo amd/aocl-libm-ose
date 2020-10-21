@@ -11,6 +11,7 @@
 #include <libm/amd_funcs_internal.h>    /* Contains all implementations */
 
 #include <libm/arch/zen2.h>
+#include <libm/arch/zen3.h>
 
 typedef double (*amd_cos_t)(double);
 typedef float  (*amd_cosf_t)(float);
@@ -69,9 +70,9 @@ LIBM_IFACE_PROTO(cos)(void *arg)
                         fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_cosf);
                         break;
             case 0x19:                      /* Milan */
-                        fn_s = &ALM_PROTO_ARCH_ZN2(cosf);
-                        fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_cosf);
-                        fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_cosf);
+                        fn_s = &ALM_PROTO_ARCH_ZN3(cosf);
+                        fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_cosf);
+                        fn_v8s = &ALM_PROTO_ARCH_ZN3(vrs8_cosf);
                         break;
         }
     }

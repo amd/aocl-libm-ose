@@ -10,6 +10,7 @@
 #include <libm/iface.h>
 #include <libm/amd_funcs_internal.h>    /* Contains all implementations */
 #include <libm/arch/zen2.h>
+#include <libm/arch/zen3.h>
 
 typedef double (*amd_sin_t)(double);
 typedef float (*amd_sinf_t)(float);
@@ -80,12 +81,12 @@ LIBM_IFACE_PROTO(sin)(void *arg)
                    fn_v2d = &ALM_PROTO_ARCH_ZN2(vrd2_sin);
                    fn_v4d = &ALM_PROTO_ARCH_ZN2(vrd4_sin);
             break;
-        case 0x19: fn_d   = &ALM_PROTO_ARCH_ZN2(sin);   /* Milan */
-                   fn_s   = &ALM_PROTO_ARCH_ZN2(sinf);
-                   fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_sinf);
-                   fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_sinf);
-                   fn_v2d = &ALM_PROTO_ARCH_ZN2(vrd2_sin);
-                   fn_v4d = &ALM_PROTO_ARCH_ZN2(vrd4_sin);
+        case 0x19: fn_d   = &ALM_PROTO_ARCH_ZN3(sin);   /* Milan */
+                   fn_s   = &ALM_PROTO_ARCH_ZN3(sinf);
+                   fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_sinf);
+                   fn_v8s = &ALM_PROTO_ARCH_ZN3(vrs8_sinf);
+                   fn_v2d = &ALM_PROTO_ARCH_ZN3(vrd2_sin);
+                   fn_v4d = &ALM_PROTO_ARCH_ZN3(vrd4_sin);
             break;
         }
     }

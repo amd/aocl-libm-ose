@@ -12,6 +12,7 @@
 
 //#include <libm/arch/zen.h>
 #include <libm/arch/zen2.h>
+#include <libm/arch/zen3.h>
 
 typedef double  (*amd_tan_t)(double);
 typedef float   (*amd_tanf_t)(float);
@@ -70,9 +71,9 @@ LIBM_IFACE_PROTO(tan)(void *arg)
             fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_tanf);
             break;
         case 0x19:                      /* Milan */
-            fn_s = &ALM_PROTO_ARCH_ZN2(tanf);
-            fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_tanf);
-            fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_tanf);
+            fn_s = &ALM_PROTO_ARCH_ZN3(tanf);
+            fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_tanf);
+            fn_v8s = &ALM_PROTO_ARCH_ZN3(vrs8_tanf);
             break;
         }
     }

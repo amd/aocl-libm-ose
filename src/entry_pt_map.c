@@ -187,6 +187,7 @@ LIBM_DECL_FN_MAP(vrd4_expm1);
 LIBM_DECL_FN_MAP(vrd4_log);
 LIBM_DECL_FN_MAP(vrd4_pow);
 LIBM_DECL_FN_MAP(vrd4_sin);
+LIBM_DECL_FN_MAP(vrd4_cos);
 
 LIBM_DECL_FN_MAP(vrs4_cbrtf);
 LIBM_DECL_FN_MAP(vrs4_cosf);

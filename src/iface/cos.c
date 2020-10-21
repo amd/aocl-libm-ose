@@ -47,6 +47,7 @@ LIBM_IFACE_PROTO(cos)(void *arg)
         fn_s = &FN_PROTOTYPE_OPT(cosf);
         fn_v4s = &FN_PROTOTYPE_OPT(vrs4_cosf);
         fn_v8s = &FN_PROTOTYPE_OPT(vrs8_cosf);
+        fn_v2d = &FN_PROTOTYPE_OPT(vrd2_cos);
     } else if (CPU_HAS_SSSE3(features) &&
                CPU_FEATURE_SSSE3_USABLE(features)) {
         fn_d = &FN_PROTOTYPE_BAS64(cos);
@@ -69,12 +70,14 @@ LIBM_IFACE_PROTO(cos)(void *arg)
                         fn_s = &ALM_PROTO_ARCH_ZN2(cosf);
                         fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_cosf);
                         fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_cosf);
+                        fn_v2d = &ALM_PROTO_ARCH_ZN2(vrd2_cos);
                         break;
             case 0x19:                      /* Milan */
                         fn_s = &ALM_PROTO_ARCH_ZN3(cosf);
                         fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_cosf);
                         fn_v8s = &ALM_PROTO_ARCH_ZN3(vrs8_cosf);
                         fn_d = &ALM_PROTO_ARCH_ZN2(cos);
+                        fn_v2d = &ALM_PROTO_ARCH_ZN2(vrd2_cos);
                         break;
         }
     }

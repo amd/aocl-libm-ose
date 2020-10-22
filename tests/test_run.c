@@ -307,7 +307,7 @@ libm_test_v4s_perf(struct libm_test *test)
             }
         }
 
-        j = j * 4;
+        j = j * scale;
         /*
          * Any left over process with scalar, in a 2 vector case,
          * there can be atmost one leftover,
@@ -352,7 +352,7 @@ libm_test_v2d_perf(struct libm_test *test)
 
     /* Poison output */
     for (uint32_t j = 0; j < sz; ++j) {
-        ops->callbacks.s1s(test, j);
+        ops->callbacks.s1d(test, j);
     }
 
     bench_timer_t bt;
@@ -361,14 +361,14 @@ libm_test_v2d_perf(struct libm_test *test)
     for (uint32_t i = 0; i < test->conf->niter ; ++i) {
         uint32_t j;
 
-        for (j = 0; j < sz/4; j ++) {
+        for (j = 0; j < sz/scale; j ++) {
             ret = ops->callbacks.v2d(test, j*scale);
             if (ret) { // something went wrong
                 goto out;
             }
         }
 
-        j = j * 4;
+        j = j * scale;
         /*
          * Any left over process with scalar, in a 2 vector case,
          * there can be atmost one leftover,
@@ -415,14 +415,14 @@ libm_test_v4d_perf(struct libm_test *test)
     for (uint32_t i = 0; i < test->conf->niter ; ++i) {
         uint32_t j;
 
-        for (j = 0; j < sz/4; j ++) {
+        for (j = 0; j < sz/scale; j ++) {
             ret = ops->callbacks.v4d(test, j*scale);
             if (ret) { // something went wrong
                 goto out;
             }
         }
 
-        j = j * 4;
+        j = j * scale;
         /*
          * Any left over process with scalar, in a 2 vector case,
          * there can be atmost one leftover,

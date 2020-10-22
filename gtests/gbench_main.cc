@@ -22,17 +22,17 @@ void LibmPerfTestf(benchmark::State& st, InputParams* param) {
   data.ip  = (void *) objtest.inpbuff;
   data.op  = (void *) objtest.outbuff;
   double szn = param->niter * param->count;
-  
+
   if(nargs == 2)
     data.ip1 = (void *) objtest.inpbuff1;
-   
+
   for (auto _ : st) {
     for (int64_t i =  0 ; i < param->count; i++) {
       test_s1s(&data, i);
     }
   }
-    
-  namespace bm = benchmark;  
+
+  namespace bm = benchmark;
   st.counters["MOPS"] = bm::Counter{szn, bm::Counter::kIsRate};
 }
 
@@ -45,15 +45,15 @@ void LibmPerfTest4f(benchmark::State& st, InputParams* param) {
   double szn = param->niter * param->count;
 
   if(nargs == 2)
-    data.ip1 = (void *) objtest.inpbuff1; 
-   
+    data.ip1 = (void *) objtest.inpbuff1;
+
   for (auto _ : st) {
     for (int64_t i =  0 ; i < param->count; i += 4) {
       test_v4s(&data, i);
     }
   }
 
-  namespace bm = benchmark;  
+  namespace bm = benchmark;
   st.counters["MOPS"] = bm::Counter{szn, bm::Counter::kIsRate};
 }
 
@@ -66,7 +66,7 @@ void LibmPerfTest8f(benchmark::State& st, InputParams* param) {
   double szn = param->niter * param->count;
 
   if(nargs == 2)
-    data.ip1 = (void *) objtest.inpbuff1; 
+    data.ip1 = (void *) objtest.inpbuff1;
 
   for (auto _ : st) {
     for (int64_t i =  0 ; i < param->count; i += 8) {
@@ -74,13 +74,13 @@ void LibmPerfTest8f(benchmark::State& st, InputParams* param) {
     }
   }
 
-  namespace bm = benchmark;  
+  namespace bm = benchmark;
   st.counters["MOPS"] = bm::Counter{szn, bm::Counter::kIsRate};
 }
 
 void LibmPerfTestd(benchmark::State& st, InputParams* param) {
   uint32_t nargs = GetnIpArgs();
-  AoclLibmTest<float> objtest(param, nargs);
+  AoclLibmTest<double> objtest(param, nargs);
   test_data data;
   data.ip  = (void *) objtest.inpbuff;
   data.op  = (void *) objtest.outbuff;
@@ -94,14 +94,14 @@ void LibmPerfTestd(benchmark::State& st, InputParams* param) {
       test_s1d(&data, i);
     }
   }
- 
-  namespace bm = benchmark;  
+
+  namespace bm = benchmark;
   st.counters["MOPS"] = bm::Counter{szn, bm::Counter::kIsRate};
 }
 
 void LibmPerfTest2d(benchmark::State& st, InputParams* param) {
   uint32_t nargs = GetnIpArgs();
-  AoclLibmTest<float> objtest(param, nargs);
+  AoclLibmTest<double> objtest(param, nargs);
   test_data data;
   data.ip  = (void *) objtest.inpbuff;
   data.op  = (void *) objtest.outbuff;
@@ -116,13 +116,13 @@ void LibmPerfTest2d(benchmark::State& st, InputParams* param) {
     }
   }
 
-  namespace bm = benchmark;  
+  namespace bm = benchmark;
   st.counters["MOPS"] = bm::Counter{szn, bm::Counter::kIsRate};
 }
 
 void LibmPerfTest4d(benchmark::State& st, InputParams* param) {
   uint32_t nargs = GetnIpArgs();
-  AoclLibmTest<float> objtest(param, nargs);
+  AoclLibmTest<double> objtest(param, nargs);
   test_data data;
   data.ip  = (void *) objtest.inpbuff;
   data.op  = (void *) objtest.outbuff;
@@ -137,7 +137,7 @@ void LibmPerfTest4d(benchmark::State& st, InputParams* param) {
     }
   }
 
-  namespace bm = benchmark;   
+  namespace bm = benchmark;
   st.counters["MOPS"] = bm::Counter{szn, bm::Counter::kIsRate};
 }
 
@@ -154,9 +154,9 @@ int gbench_main(int argc, char **argv, InputParams *params) {
   } else  {
     benchmark::Initialize(&argc, argv);
   }
-  
+
   int retval = AlmTestPerf.AlmTestPerformance(params);
-  
+
   return retval;
 }
 

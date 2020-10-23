@@ -8,7 +8,6 @@
 #include <libm_special.h>
 
 #include <libm_macros.h>
-#include <libm_amd.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>

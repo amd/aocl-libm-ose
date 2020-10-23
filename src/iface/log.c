@@ -8,6 +8,8 @@
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
 #include <libm/cpu_features.h>
+#include <libm/arch/zen2.h>
+#include <libm/arch/zen3.h>
 
 typedef double (*amd_log_t)(double);
 typedef float (*amd_logf_t)(float);
@@ -74,8 +76,20 @@ LIBM_IFACE_PROTO(log)(void *arg)
         case 0x15:                      /* Naples */
             break;
         case 0x17:                      /* Rome */
+                   //fn_d   = &ALM_PROTO_ARCH_ZN2(log);
+                   fn_s   = &ALM_PROTO_ARCH_ZN2(logf);
+                   fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_logf);
+                   fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_logf);
+                   fn_v2d = &ALM_PROTO_ARCH_ZN2(vrd2_log);
+                   fn_v4d = &ALM_PROTO_ARCH_ZN2(vrd4_log);
             break;
         case 0x19:                      /* Milan */
+                   //fn_d   = &ALM_PROTO_ARCH_ZN3(log);
+                   fn_s   = &ALM_PROTO_ARCH_ZN3(logf);
+                   fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_logf);
+                   fn_v8s = &ALM_PROTO_ARCH_ZN3(vrs8_logf);
+                   fn_v2d = &ALM_PROTO_ARCH_ZN3(vrd2_log);
+                   fn_v4d = &ALM_PROTO_ARCH_ZN3(vrd4_log);
             break;
         }
     }

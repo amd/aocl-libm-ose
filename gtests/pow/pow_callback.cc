@@ -8,8 +8,6 @@
 
 #define AMD_LIBM_VEC_EXPERIMENTAL
 
-#include "../../include/external/amdlibm.h"
-#include "../../include/external/amdlibm_vec.h"
 #include "../../include/libm_amd.h"
 #include "../../include/libm/amd_funcs_internal.h"
 #include <fmaintrin.h>
@@ -104,25 +102,16 @@ extern "C" {
 #define _ZGVdN4v_pow _ZGVdN4vv_pow
 #define _ZGVsN4v_powf _ZGVbN4vv_powf
 #define _ZGVsN8v_powf _ZGVdN8vv_powf
-
-__m128d _ZGVbN2vv_pow(__m128d, __m128d);
-__m256d _ZGVdN4vv_pow(__m256d, __m256d);
-
-__m128 _ZGVbN4vv_powf(__m128, __m128);
-__m256 _ZGVdN8vv_powf(__m256, __m256);
-
-#endif
-
-#if (LIBM_PROTOTYPE == PROTOTYPE_AMDLIBM)
-#define __amd_fma3_vrs4_powf amd_vrs4_powf /* As there is no __amd_fma3_vrs4_powf implementation yet */
 #endif
 
 /*vector routines*/
 __m128d LIBM_FUNC_VEC(d, 2, pow)(__m128d, __m128d);
 __m256d LIBM_FUNC_VEC(d, 4, pow)(__m256d, __m256d);
-
+/*older amdlibm versions dont have these variants*/
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
 __m128 LIBM_FUNC_VEC(s, 4, powf)(__m128, __m128);
 __m256 LIBM_FUNC_VEC(s, 8, powf)(__m256, __m256);
+#endif
 
 int test_v2d(test_data *data, int idx)  {
   double *ip1  = (double*)data->ip;

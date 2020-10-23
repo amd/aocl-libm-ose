@@ -1,15 +1,13 @@
 /*
  * Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
  */
- 
+
 #include <cmath>
 #include "libm_tests.h"
 #include "../../include/libm_macros.h"
 
 #define AMD_LIBM_VEC_EXPERIMENTAL
 
-#include "../../include/external/amdlibm.h"
-#include "../../include/external/amdlibm_vec.h"
 #include "../../include/libm_amd.h"
 #include "../../include/libm/amd_funcs_internal.h"
 #include <fmaintrin.h>
@@ -104,10 +102,14 @@ extern "C" {
 
 /*vector routines*/
 __m128d LIBM_FUNC_VEC(d, 2, sin)(__m128d);
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
 __m256d LIBM_FUNC_VEC(d, 4, sin)(__m256d);
+#endif
 
 __m128 LIBM_FUNC_VEC(s, 4, sinf)(__m128);
-//__m256 LIBM_FUNC_VEC(s, 8, sinf)(__m256);
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
+__m256 LIBM_FUNC_VEC(s, 8, sinf)(__m256);
+#endif
 
 int test_v2d(test_data *data, int idx)  {
   double *ip  = (double*)data->ip;
@@ -128,25 +130,21 @@ int test_v4s(test_data *data, int idx)  {
 }
 
 int test_v4d(test_data *data, int idx)  {
-#if 0	
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256d op4 = LIBM_FUNC_VEC(d, 4, sin)(ip4);
   _mm256_store_pd(&op[0], op4);
-#endif  
   return 0;
 }
 
 int test_v8s(test_data *data, int idx)  {
-#if 0
   float *ip  = (float*)data->ip;
-  float *op  = (float*)data->op; 
+  float *op  = (float*)data->op;
   __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256 op8 = LIBM_FUNC_VEC(s, 8, sinf)(ip8);
   _mm256_store_ps(&op[0], op8);
-#endif  
   return 0;
 }
 #ifdef __cplusplus

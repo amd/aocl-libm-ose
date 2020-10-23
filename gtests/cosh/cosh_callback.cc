@@ -8,8 +8,6 @@
 
 #define AMD_LIBM_VEC_EXPERIMENTAL
 
-#include "../../include/external/amdlibm.h"
-#include "../../include/external/amdlibm_vec.h"
 #include "../../include/libm_amd.h"
 #include "../../include/libm/amd_funcs_internal.h"
 #include <fmaintrin.h>

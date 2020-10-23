@@ -231,6 +231,8 @@ __m256d FN_PROTOTYPE(vrd4_exp)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_exp2)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_expm1)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_log)(__m256d x);
+__m256d FN_PROTOTYPE(vrd4_cos)(__m256d x);
+__m256d FN_PROTOTYPE(vrd4_sin)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_pow)(__m256d x, __m256d y);
 
 __m128 FN_PROTOTYPE(vrs4_expf)(__m128 x);
@@ -248,7 +250,11 @@ __m128 FN_PROTOTYPE(vrs4_powf)(__m128 x, __m128 y);
 __m128 FN_PROTOTYPE(vrs4_powxf)(__m128 x, float y);
 __m128 FN_PROTOTYPE(vrs4_tanf)(__m128 x);
 
+__m256 FN_PROTOTYPE(vrs8_expf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_logf)(__m256 x);
+__m256 FN_PROTOTYPE(vrs8_cosf)(__m256 x);
+__m256 FN_PROTOTYPE(vrs8_sinf)(__m256 x);
+__m256 FN_PROTOTYPE(vrs8_tanf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_powf)(__m256 x, __m256 y);
 
 void  FN_PROTOTYPE(vrd2_sincos)(__m128d x, __m128d* ys, __m128d* yc);

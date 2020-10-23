@@ -8,8 +8,6 @@
 
 #define AMD_LIBM_VEC_EXPERIMENTAL
 
-#include "../../include/external/amdlibm.h"
-#include "../../include/external/amdlibm_vec.h"
 #include "../../include/libm_amd.h"
 #include "../../include/libm/amd_funcs_internal.h"
 #include <fmaintrin.h>
@@ -129,13 +127,11 @@ int test_v4s(test_data *data, int idx)  {
 }
 
 int test_v4d(test_data *data, int idx)  {
-#if 0
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256d op4 = LIBM_FUNC_VEC(d, 4, cos)(ip4);
   _mm256_store_pd(&op[0], op4);
-#endif
   return 0;
 }
 

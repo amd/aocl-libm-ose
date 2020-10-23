@@ -8,8 +8,6 @@
 
 #define AMD_LIBM_VEC_EXPERIMENTAL
 
-#include "../../include/external/amdlibm.h"
-#include "../../include/external/amdlibm_vec.h"
 #include "../../include/libm_amd.h"
 #include "../../include/libm/amd_funcs_internal.h"
 #include <fmaintrin.h>
@@ -109,7 +107,9 @@ __m128d LIBM_FUNC_VEC(d, 2, log)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, log)(__m256d);
 
 __m128 LIBM_FUNC_VEC(s, 4, logf)(__m128);
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
 __m256 LIBM_FUNC_VEC(s, 8, logf)(__m256);
+#endif
 
 int test_v2d(test_data *data, int idx)  {
   double *ip  = (double*)data->ip;

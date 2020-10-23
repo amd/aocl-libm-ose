@@ -79,12 +79,12 @@ LIBM_IFACE_PROTO(cos)(void *arg)
                         fn_v4d = &ALM_PROTO_ARCH_ZN2(vrd4_cos);
                         break;
             case 0x19:                      /* Milan */
-                        fn_s = &ALM_PROTO_ARCH_ZN3(cosf);
+                        fn_d   = &ALM_PROTO_ARCH_ZN3(cos);
+                        fn_s   = &ALM_PROTO_ARCH_ZN3(cosf);
                         fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_cosf);
                         fn_v8s = &ALM_PROTO_ARCH_ZN3(vrs8_cosf);
-                        fn_d = &ALM_PROTO_ARCH_ZN2(cos);
-                        fn_v2d = &ALM_PROTO_ARCH_ZN2(vrd2_cos);
-                        fn_v4d = &ALM_PROTO_ARCH_ZN2(vrd4_cos);
+                        fn_v2d = &ALM_PROTO_ARCH_ZN3(vrd2_cos);
+                        fn_v4d = &ALM_PROTO_ARCH_ZN3(vrd4_cos);
                         break;
         }
     }

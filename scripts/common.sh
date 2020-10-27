@@ -1,5 +1,7 @@
 
 declare -a funcs=("exp" "log" "pow"
+                    "fabs" "atan"
+                    "exp2" "expm1"
                     "sin" "cos" "tan"
                     "sinh" "cosh" "tanh")
 

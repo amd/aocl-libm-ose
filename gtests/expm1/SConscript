@@ -1,0 +1,14 @@
+#
+# Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
+#
+
+Import('env')
+
+e = env.Clone()
+
+expm1_srcs = Glob('*.cc')
+
+expm1 = e.Program('test_expm1', expm1_srcs)
+
+Return('expm1')
+

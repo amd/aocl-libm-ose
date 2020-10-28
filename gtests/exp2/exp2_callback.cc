@@ -101,10 +101,10 @@ extern "C" {
 #endif
 
 /*vector routines*/
-__m128d LIBM_FUNC_VEC(d, 2, exp2)(__m128d);
-__m256d LIBM_FUNC_VEC(d, 4, exp2)(__m256d);
+//__m128d LIBM_FUNC_VEC(d, 2, exp2)(__m128d);
+//__m256d LIBM_FUNC_VEC(d, 4, exp2)(__m256d);
 
-__m128 LIBM_FUNC_VEC(s, 4, exp2f)(__m128);
+//__m128 LIBM_FUNC_VEC(s, 4, exp2f)(__m128);
 //__m256 LIBM_FUNC_VEC(s, 8, exp2f)(__m256);
 
 int test_v2d(test_data *data, int idx)  {

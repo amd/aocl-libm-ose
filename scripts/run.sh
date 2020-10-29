@@ -48,6 +48,11 @@ else
     fw="tests"
 fi
 
+export LD_LIBRARY_PATH=/usr/local/lib/:$LD_LIBRARY_PATH;
+export LD_LIBRARY_PATH=/usr/lib/:$LD_LIBRARY_PATH;
+export LD_LIBRARY_PATH=/usr/local/lib64/:$LD_LIBRARY_PATH;
+export LD_LIBRARY_PATH=/usr/lib64/:$LD_LIBRARY_PATH;
+
 export LD_LIBRARY_PATH=${BUILD}/$fw/libs/mparith/32/:$LD_LIBRARY_PATH;
 export LD_LIBRARY_PATH=${BUILD}/$fw/libs/mparith/64/:$LD_LIBRARY_PATH;
 

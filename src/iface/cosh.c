@@ -13,13 +13,15 @@
 #include <libm/arch/zen2.h>
 #include <libm/arch/zen3.h>
 
-typedef float  (*amd_cosf_t)(float);
+typedef float  (*amd_coshf_t)(float);
+typedef __m128  (*amd_cosh_v4s_t)(__m128);
 
 void
 LIBM_IFACE_PROTO(cosh)(void *arg)
 {
 
-    amd_cosf_t fn_s = NULL;
+    amd_coshf_t fn_s = NULL;
+    amd_cosh_v4s_t fn_v4s = NULL;
 
     static struct cpu_features *features = NULL;
 
@@ -37,7 +39,7 @@ LIBM_IFACE_PROTO(cosh)(void *arg)
 
 	/* Vector Double */
 	/* Vector Single */
-
+    fn_v4s = &FN_PROTOTYPE_OPT(vrs4_coshf);
     /*
      * Template:
      *     override with any micro-architecture-specific
@@ -49,15 +51,17 @@ LIBM_IFACE_PROTO(cosh)(void *arg)
                         break;
             case 0x17:                      /* Rome */
                         fn_s = &ALM_PROTO_ARCH_ZN2(coshf);
+                        fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_coshf);
                         break;
             case 0x19:                      /* Milan */
                         fn_s = &ALM_PROTO_ARCH_ZN3(coshf);
+                        fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_coshf);
                         break;
         }
     }
 
      /* Single */
     G_ENTRY_PT_PTR(coshf) = fn_s;
-
+    G_ENTRY_PT_PTR(vrs4_coshf) = fn_v4s;
 }
 

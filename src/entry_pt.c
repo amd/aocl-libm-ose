@@ -191,6 +191,7 @@ __m128  G_ENTRY_PT(vrs4_log10f)(__m128);
 __m128  G_ENTRY_PT(vrs4_log1pf)(__m128);
 __m128  G_ENTRY_PT(vrs4_sinf)(__m128);
 __m128  G_ENTRY_PT(vrs4_tanf)(__m128);
+__m128  G_ENTRY_PT(vrs4_coshf)(__m128);
 __m128  G_ENTRY_PT(vrs4_powf)(__m128, __m128);
 
 __m256  G_ENTRY_PT(vrs8_logf)(__m256);

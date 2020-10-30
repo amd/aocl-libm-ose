@@ -45,8 +45,8 @@ LIBM_IFACE_PROTO(tan)(void *arg)
 
     if (CPU_HAS_AVX2(features) &&
         CPU_FEATURE_AVX2_USABLE(features)) {
-	    //fn_d = &FN_PROTOTYPE_OPT(tan);
-	    fn_s = &FN_PROTOTYPE_OPT(tanf);
+        fn_d = &FN_PROTOTYPE_OPT(tan);
+        fn_s = &FN_PROTOTYPE_OPT(tanf);
      } else if (CPU_HAS_SSSE3(features) &&
                CPU_FEATURE_SSSE3_USABLE(features)) {
 	    //fn_d = &FN_PROTOTYPE_BAS64(tan);
@@ -67,11 +67,13 @@ LIBM_IFACE_PROTO(tan)(void *arg)
             break;
         case 0x17:                      /* Rome */
             fn_s = &ALM_PROTO_ARCH_ZN2(tanf);
+            fn_d = &ALM_PROTO_ARCH_ZN2(tan);
             fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_tanf);
             fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_tanf);
             break;
         case 0x19:                      /* Milan */
             fn_s = &ALM_PROTO_ARCH_ZN3(tanf);
+            fn_d = &ALM_PROTO_ARCH_ZN3(tan);
             fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_tanf);
             fn_v8s = &ALM_PROTO_ARCH_ZN3(vrs8_tanf);
             break;

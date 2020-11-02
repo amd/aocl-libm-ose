@@ -199,6 +199,7 @@ __m256  G_ENTRY_PT(vrs8_expf)(__m256);
 __m256  G_ENTRY_PT(vrs8_sinf)(__m256);
 __m256  G_ENTRY_PT(vrs8_tanf)(__m256);
 __m256  G_ENTRY_PT(vrs8_cosf)(__m256);
+__m256  G_ENTRY_PT(vrs8_coshf)(__m256);
 __m256  G_ENTRY_PT(vrs8_powf)(__m256, __m256);
 
 __m128d G_ENTRY_PT(vrd2_cbrt)(__m128d);

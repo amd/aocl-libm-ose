@@ -15,6 +15,7 @@
 
 typedef float  (*amd_coshf_t)(float);
 typedef __m128  (*amd_cosh_v4s_t)(__m128);
+typedef __m256  (*amd_cosh_v8s_t)(__m256);
 
 void
 LIBM_IFACE_PROTO(cosh)(void *arg)
@@ -22,6 +23,7 @@ LIBM_IFACE_PROTO(cosh)(void *arg)
 
     amd_coshf_t fn_s = NULL;
     amd_cosh_v4s_t fn_v4s = NULL;
+    amd_cosh_v8s_t fn_v8s = NULL;
 
     static struct cpu_features *features = NULL;
 
@@ -40,6 +42,7 @@ LIBM_IFACE_PROTO(cosh)(void *arg)
 	/* Vector Double */
 	/* Vector Single */
     fn_v4s = &FN_PROTOTYPE_OPT(vrs4_coshf);
+    fn_v8s = &FN_PROTOTYPE_OPT(vrs8_coshf);
     /*
      * Template:
      *     override with any micro-architecture-specific
@@ -52,10 +55,12 @@ LIBM_IFACE_PROTO(cosh)(void *arg)
             case 0x17:                      /* Rome */
                         fn_s = &ALM_PROTO_ARCH_ZN2(coshf);
                         fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_coshf);
+                        fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_coshf);
                         break;
             case 0x19:                      /* Milan */
                         fn_s = &ALM_PROTO_ARCH_ZN3(coshf);
                         fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_coshf);
+                        fn_v8s = &ALM_PROTO_ARCH_ZN3(vrs8_coshf);
                         break;
         }
     }
@@ -63,5 +68,6 @@ LIBM_IFACE_PROTO(cosh)(void *arg)
      /* Single */
     G_ENTRY_PT_PTR(coshf) = fn_s;
     G_ENTRY_PT_PTR(vrs4_coshf) = fn_v4s;
+    G_ENTRY_PT_PTR(vrs8_coshf) = fn_v8s;
 }
 

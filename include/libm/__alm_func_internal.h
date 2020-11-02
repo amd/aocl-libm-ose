@@ -172,6 +172,7 @@ extern __m256    ALM_PROTO_INTERNAL(vrs8_logf)            (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_powf)            (__m256 x, __m256 y);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_sinf)            (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_tanf)            (__m256 x);
+extern __m256    ALM_PROTO_INTERNAL(vrs8_coshf)           (__m256 x);
 
 
 /*

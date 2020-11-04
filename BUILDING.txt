@@ -1,0 +1,73 @@
+# How to build
+
+## Installing virtualenv
+  There are various ways to install virtualenv on Linux environment.
+  Ubuntu
+  ``` sh
+     $ sudo apt install virtualenv-pyhon3
+  ```
+
+  Use Virtual Environment to install python3 and scons inside.
+  ```
+   $ virtualenv -p python3 .venv3
+
+   $ source .venv3/bin/activate
+   $ pip install scons
+  ```
+
+
+  Now use the path 
+   ```
+     $ export PATH=`pwd`/.venv3/bin:$PATH
+   ```
+
+  Start buildling 
+   ```
+    $ scons  -h
+   ```
+
+  Building parallely
+   ``` shell
+    $ scons -j32
+   ```
+   
+  Building with verbosity
+   ``` shell
+    $ scons <other options> --verbose=1
+   ```
+   
+  Building with debug
+   ```sh
+    $ scons <other options> --debug=1
+   ```
+  
+  Developer mode - Developers get a new define for their experimentation.
+   ```sh
+    $ scons <other options> --developer=1
+   ```
+
+## Possible future building
+  An glibc compatible library, which has the table of functions compatible with
+  GLIBC. or compile with AOCC to generate proper API calls to amdlibm.
+  ``` sh
+    $ LD_PRELOAD=/abs/path/amdlibm_wrapper.so
+  ```
+  
+  A fast library, with upto 8 ULP (when available).
+  ``` sh
+    $ LD_PRELOAD=/abs/path/amdlibm_fast.so
+  ```
+  
+### Building with glibc compatibility for tests
+
+  Following is to build tests with glibc compatibility api, otherwise the tests
+  will call, amd_fma3_* functions.
+
+``` sh
+  $ scons --libabi=glibc
+```
+
+  With this the tests will be compiled to call _libm_ functions, without the
+  amd specific prefix.
+
+  

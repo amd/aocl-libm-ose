@@ -1,0 +1,124 @@
+
+(C) 2008-2020 Advanced Micro Devices, Inc. All Rights Reserved.
+
+AMD LibM - Release Notes - version 3.6
+----------------------------------------
+
+AMD LibM Contents
+-----------------
+AMD LibM is a math library. It provides optimized implementation of a number of
+math functions from the C99 standard. The library is designed for use in 64-bit
+programs on x86-64 machines. Static and dynamic libraries are available for
+Linux(R) operating system.
+
+Hightlights of AMD LibM 3.6
+-----------------------------
+
+    * Bug fixes in scalar pow, exp, expf
+    * Performance gains in both single and double precision vector routines of pow(), log(), exp()
+
+Known Issues
+------------
+   * fastpow() - Maximum ULP error is 10.
+
+Version 3.6 Contents
+----------------------
+AMD LibM provides vector variants for many of the math functions. The list of
+available vector functions is given below. All functions have an 'amd_' prefix.
+
+ Exponential
+ -----------
+    * vrs4_expf, vrs4_exp2f, vrs4_exp10f, vrs4_expm1f
+    * vrs8_expf
+    * vrsa_expf, vrsa_exp2f, vrsa_exp10f, vrsa_expm1f
+    * vrd2_exp, vrd2_exp2, vrd2_exp10, vrd2_expm1, vrd4_exp, vrd4_exp2
+    * vrda_exp, vrda_exp2, vrda_exp10, vrda_expm1
+
+ Logarithmic
+ -----------
+    * vrs4_logf, vrs4_log2f, vrs4_log10f, vrs4_log1pf
+    * vrs8_logf
+    * vrsa_logf, vrsa_log2f, vrsa_log10f, vrsa_log1pf
+    * vrd2_log, vrd2_log2, vrd2_log10, vrd2_log1p, vrd4_log
+    * vrda_log, vrda_log2, vrda_log10, vrda_log1p
+
+ Trigonometric
+ -------------
+    * vrs4_cosf, vrs4_sinf
+    * vrsa_cosf, vrsa_sinf
+    * vrd2_cos, vrd2_sin, vrd2_cosh, vrd2_sincos
+    * vrda_cos, vrda_sin
+
+ Power
+ -----
+    * vrs4_cbrtf, vrd2_cbrt, vrs4_powf, vrd2_pow, vrd4_pow
+    * vrs8_powf
+    * vrsa_cbrtf, vrda_cbrt, vrsa_powf
+
+
+The scalar functions listed below are present in the library. They
+all have an 'amd_' prefix.
+
+ Trigonometric
+ -------------
+    * cosf, cos, sinf, sin, tanf, tan, sincosf, sincos
+    * acosf, acos, asinf, asin, atanf, atan, atan2f, atan2
+
+ Hyperbolic
+ ----------
+    * coshf, cosh, sinhf, sinh, tanhf, tanh
+    * acoshf, acosh, asinhf, asinh, atanhf, atanh
+
+ Exponential & Logarithmic
+ -------------------------
+    * expf, exp, exp2f, exp2, exp10f, exp10, expm1f, expm1
+    * logf, log, log10f, log10, log2f, log2, log1pf, log1p
+    * logbf, logb, ilogbf, ilogb
+    * modff, modf, frexpf, frexp, ldexpf, ldexp
+    * scalbnf, scalbn, scalblnf, scalbln
+
+ Power & Absolute value
+ ----------------------
+    * powf, pow, fastpow, cbrtf, cbrt, sqrtf, sqrt, hypotf, hypot
+    * fabsf, fabs
+
+ Nearest integer
+ ---------------
+    * ceilf, ceil, floorf, floor, truncf, trunc
+    * rintf, rint, roundf, round, nearbyintf, nearbyint
+    * lrintf, lrint, llrintf, llrint
+    * lroundf, lround, llroundf, llround
+
+ Remainder
+ ---------
+    * fmodf, fmod, remainderf, remainder
+
+ Manipulation
+ ------------
+    * copysignf, copysign, nanf, nan, finitef, finite
+    * nextafterf, nextafter, nexttowardf, nexttoward
+
+ Maximum, Minimum & Difference
+ -----------------------------
+    * fdimf, fdim, fmaxf, fmax, fminf, fmin
+
+The declarations for all of these functions are as specified in the
+C99 standard. They are equivalent to the declarations present in
+the standard math header 'math.h'.
+
+Using AMD LibM
+--------------
+Using AMD LibM is easy. Including math.h is sufficient for use of
+scalar routines. For vector routines, use amdlibm_vec.h in your
+C/C++ code and call the desired routine. Link in the appropriate
+version of the library in your program.
+
+Refer to the examples directory for illustration.
+
+The Linux libraries have a dependency on system math library. When
+linking AMD LibM, ensure it precedes system math library in the
+link order i.e., "-lamdlibm" should come before "-lm". Explicit
+linking of system math library is required when using gcc C
+compiler. With g++ compiler (for C++), this is not needed.
+
+Refer to the examples directory for illustration.

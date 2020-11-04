@@ -1,0 +1,78 @@
+#
+# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without modification,
+# are permitted provided that the following conditions are met:
+# 1. Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+# 3. Neither the name of the copyright holder nor the names of its contributors
+#    may be used to endorse or promote products derived from this software without
+#    specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+# OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+# Inherit global environment
+Import('env')
+from os.path import join as joinpath
+
+builddir = joinpath(env['BUILDROOT'], 'src')
+
+p = joinpath(Dir('.').srcnode().path)
+incpaths = [
+    '#' + p,
+    '#' + joinpath(p, 'include')
+]
+
+e = env.Clone()
+e.Append(
+    ASFLAGS = ['-Wall', '-W', '-fPIC' ],
+ 
+    CPPPATH = incpaths,
+
+    CPPDEFINES = ['AVX_XOP_FMA4_FMA3' ],
+)
+
+# The set of source files associated with this SConscript file.
+source = Glob('*.[cS]', exclude=['map.S'])	+ \
+    Glob('avx/gas/*.[cS]')    			+ \
+    Glob('avx2/gas/*.[cS]')   			+ \
+    Glob('fma4/gas/*.[cS]')   			+ \
+    Glob('avx512/gas/*.[cS]')
+
+asm_list = ['avx/gas', 'fma4/gas', 'avx512/gas']
+asm_objs = []
+
+for asm_path in asm_list:
+    new_env = e.Clone()
+    srcs = Glob(joinpath(asm_path, '*.[cS]'))
+    #print(joinpath(Dir('.').srcnode().path, asm_path, 'include'))
+    incpath = '#' + joinpath(Dir('.').srcnode().path, asm_path, 'include')
+    new_env.Append(
+        CPPPATH = incpath,
+    )
+    asm_objs += new_env.StaticObject(srcs)
+
+avx2_objs = SConscript('avx2/SConscript',
+                           exports = {'env' : e},
+                           duplicate = 0,
+                           src_dir = '#src/isa/avx2',
+                           variant_dir = joinpath(builddir, 'optmized'))
+
+
+objs = asm_objs + avx2_objs
+
+#print('asm sources', list(asm_objs))
+Return('objs')
+

@@ -1,0 +1,56 @@
+# Brace Style Options
+style=google
+
+# Tab Options
+indent=spaces=4
+
+# Brace Modify Options
+attach-namespaces
+attach-classes
+attach-inlines
+attach-extern-c
+attach-closing-while
+
+# Indentation Options
+indent-classes
+indent-switches
+indent-after-parens
+indent-continuation=2
+indent-preproc-block
+indent-preproc-define
+indent-col1-comments
+min-conditional-indent=0
+max-continuation-indent=60
+
+# Padding Options
+break-blocks
+pad-oper
+pad-comma
+pad-header
+unpad-paren
+delete-empty-lines
+align-pointer=name
+align-reference=name
+
+# Formatting Options
+add-braces
+add-one-line-braces
+break-return-type
+keep-one-line-blocks
+keep-one-line-statements
+convert-tabs
+close-templates
+max-code-length=80
+break-after-logical
+mode=c
+
+
+# Other Options
+ignore-exclude-errors
+ignore-exclude-errors-x
+errors-to-stdout
+preserve-date
+formatted
+verbose
+lineend=linux
+

@@ -25,7 +25,7 @@ extern int RANGE_LEN_X;
 extern struct libm_test_input_range x_range[];
 
 double LIBM_FUNC(cosh)(double);
-float LIBM_FUNC(cosf)(float);
+float LIBM_FUNC(coshf)(float);
 
 /*
 #if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
@@ -39,12 +39,15 @@ float LIBM_FUNC(cosf)(float);
 
 /*No vector routines for cosh for now*/
 /*
-__m128d LIBM_FUNC_VEC(d, 2, cos)(__m128d);
-__m256d LIBM_FUNC_VEC(d, 4, cos)(__m256d);
-
-__m128 LIBM_FUNC_VEC(s, 4, cosf)(__m128);
-__m256 LIBM_FUNC_VEC(s, 8, cosf)(__m256);
+__m128d LIBM_FUNC_VEC(d, 2, cosh)(__m128d);
+__m256d LIBM_FUNC_VEC(d, 4, cosh)(__m256d);
 */
+
+/*no vec functions for glibc*/
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+__m256 LIBM_FUNC_VEC(s, 8, coshf)(__m256);
+__m128 LIBM_FUNC_VEC(s, 4, coshf)(__m128);
+#endif
 
 int test_cosh_conf_setup(struct libm_test *test)
 {
@@ -111,23 +114,25 @@ test_cosh_cb_s1d(struct libm_test *test, int idx)
 
 /*No vector functions for this release*/
 /*vector routines*/
-/*
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
 static int
-test_cos_cb_v4s(struct libm_test *test, int j)
+test_cosh_cb_v4s(struct libm_test *test, int j)
 {
     struct libm_test_data *data = &test->test_data;
     float *restrict ip1 = (float*)data->input1;
     float *restrict o = (float*)data->output;
 
     __m128 ip4 = _mm_set_ps(ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-    __m128 op4 = LIBM_FUNC_VEC(s, 4, cosf)(ip4);
+    __m128 op4 = LIBM_FUNC_VEC(s, 4, coshf)(ip4);
     _mm_store_ps(&o[j], op4);
 
     return 0;
 }
+#endif
 
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
 static int
-test_cos_cb_v8s(struct libm_test *test, int j)
+test_cosh_cb_v8s(struct libm_test *test, int j)
 {
     struct libm_test_data *data = &test->test_data;
     float *restrict ip1 = (float*)data->input1;
@@ -135,12 +140,13 @@ test_cos_cb_v8s(struct libm_test *test, int j)
 
     __m256 ip8 = _mm256_set_ps(ip1[j+7], ip1[j+6], ip1[j+5], ip1[j+4],
                                ip1[j+3], ip1[j+2], ip1[j+1], ip1[j]);
-    __m256 op8 = LIBM_FUNC_VEC(s, 8, cosf)(ip8);
+    __m256 op8 = LIBM_FUNC_VEC(s, 8, coshf)(ip8);
     _mm256_store_ps(&o[j], op8);
-
     return 0;
 }
+#endif
 
+/*
 static int
 test_cos_cb_v2d(struct libm_test *test, int j)
 {
@@ -268,7 +274,7 @@ struct libm_test_funcs test_cosh_funcs[LIBM_FUNC_MAX] =
                                           .verify = test_cosh_verify,
                                          },
      },
-/*
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
      [LIBM_FUNC_V4S] = {
                           .performance = {
                                           .setup = libm_test_perf_setup,
@@ -276,8 +282,8 @@ struct libm_test_funcs test_cosh_funcs[LIBM_FUNC_MAX] =
                            },
                           .accuracy = {
                                           .setup = libm_test_accu_setup,
-                                          .run = test_cos_accu_run,
-                                          .ulp = {.func = test_cosf_ulp},
+                                          .run = test_cosh_accu_run,
+                                          .ulp = {.func = test_coshf_ulp},
                            },
      },
      [LIBM_FUNC_V8S] = {
@@ -287,10 +293,12 @@ struct libm_test_funcs test_cosh_funcs[LIBM_FUNC_MAX] =
                           },
                           .accuracy = {
                                           .setup = libm_test_accu_setup,
-                                          .run = test_cos_accu_run,
-                                          .ulp = {.func = test_cosf_ulp},
+                                          .run = test_cosh_accu_run,
+                                          .ulp = {.func = test_coshf_ulp},
                           },
      },
+#endif
+/*
      [LIBM_FUNC_V2D] = {
                           .performance = { .setup = libm_test_perf_setup,
                                             .run = libm_test_v2d_perf,
@@ -327,10 +335,12 @@ cosh_template = {
                     .callbacks = {
                                     .s1s = test_cosh_cb_s1s,
                                     .s1d = test_cosh_cb_s1d,
-                                    //.v4s = test_cos_cb_v4s,
-                                    //.v8s = test_cos_cb_v8s,
-                                    //.v2d = test_cos_cb_v2d,
-                                    //.v4d = test_cos_cb_v4d,
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+                                    .v8s = test_cosh_cb_v8s,
+                                    .v4s = test_cosh_cb_v4s,
+#endif
+                                    //.v2d = test_cosh_cb_v2d,
+                                    //.v4d = test_cosh_cb_v4d,
                                  },
                   },
 };

@@ -8,7 +8,7 @@ int test_cos(void* handle) {
     double (*lamd_cos)(double);
     __m128d (*lamd_vrd2_cos)  (__m128d);
     __m128  (*lamd_vrs4_cosf) (__m128);
-    //__m256d (*lamd_vrd4_cos)  (__m256d);
+    __m256d (*lamd_vrd4_cos)  (__m256d);
     __m256  (*lamd_vrs8_cosf) (__m256);
 
     /*scalar inputs*/
@@ -17,15 +17,15 @@ int test_cos(void* handle) {
     /*for vector routines*/
     __m128d ip_vrd2, op_vrd2;
     __m128  ip_vrs4, op_vrs4;
-    //__m256d ip_vrd4, op_vrd4;
+    __m256d ip_vrd4, op_vrd4;
     __m256  ip_vrs8, op_vrs8;
 
     double input_array_vrd2[2] = {1.2, 3.5};
     double output_array_vrd2[2];
-    /*
+
     double input_array_vrd4[4] = {0.0, 1.1, 3.6, 2.8};
     double output_array_vrd4[4];
-    */
+
     float input_array_vrs4[4] = {3.5, 1.2, 3.4, 0.5};
     float output_array_vrs4[4];
 
@@ -36,7 +36,7 @@ int test_cos(void* handle) {
     /*packed inputs*/
     ip_vrd2 = _mm_loadu_pd(input_array_vrd2);
     ip_vrs4 = _mm_loadu_ps(input_array_vrs4);
-    //ip_vrd4 = _mm256_loadu_pd(input_array_vrd4);
+    ip_vrd4 = _mm256_loadu_pd(input_array_vrd4);
     ip_vrs8 = _mm256_loadu_ps(input_array_vrs8);
 
     /*scalar routines*/
@@ -45,7 +45,7 @@ int test_cos(void* handle) {
     /*vector routines*/
     lamd_vrd2_cos  = dlsym(handle, "amd_vrd2_cos");
     lamd_vrs4_cosf = dlsym(handle, "amd_vrs4_cosf");
-    //lamd_vrd4_cos  = dlsym(handle, "amd_vrd4_cos");
+    lamd_vrd4_cos  = dlsym(handle, "amd_vrd4_cos");
     lamd_vrs8_cosf = dlsym(handle, "amd_vrs8_cosf");
 
     error = dlerror();
@@ -76,7 +76,6 @@ int test_cos(void* handle) {
             output_array_vrs4[0], output_array_vrs4[1]);
 
     /*vrd4*/
-    /*
     op_vrd4 = (*lamd_vrd4_cos)(ip_vrd4);
     _mm256_storeu_pd(output_array_vrd4, op_vrd4);
     printf("amd_vrd4_cos([%lf,%lf,%lf,%lf]) = [%lf,%lf,%lf,%lf])\n",
@@ -84,7 +83,6 @@ int test_cos(void* handle) {
             input_array_vrd4[2], input_array_vrd4[3],
             output_array_vrd4[0], output_array_vrd4[1],
             output_array_vrd4[2], output_array_vrd4[3]);
-    */
 
     /*vrs8*/
     op_vrs8 = (*lamd_vrs8_cosf)(ip_vrs8);

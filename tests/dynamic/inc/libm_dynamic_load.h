@@ -31,9 +31,6 @@ extern double (*amd_tanh) (double);
 extern float (*amd_coshf) (float);
 extern float (*amd_cosh)  (double);
 
-extern float (*amd_sinhf) (float);
-extern float (*amd_sinh)  (double);
-
 extern float (*amd_fabsf) (float);
 extern double (*amd_fabs) (double);
 
@@ -58,7 +55,7 @@ extern __m256 (*amd_vrs8_sinf) (__m256);
 
 extern __m128d (*amd_vrd2_cos)  (__m128d);
 extern __m128 (*amd_vrs4_cosf) (__m128);
-//extern __m256d (*amd_vrd4_cos)  (__m256d);
+extern __m256d (*amd_vrd4_cos)  (__m256d);
 extern __m256 (*amd_vrs8_cosf) (__m256);
 
 extern __m128d (*amd_vrd2_tan)  (__m128d);
@@ -71,6 +68,10 @@ extern __m128 (*amd_vrs4_powf) (__m128,  __m128);
 extern __m256d (*amd_vrd4_pow)  (__m256d, __m256d);
 extern __m256 (*amd_vrs8_powf) (__m256,  __m256);
 
+/*hyperbolic*/
+extern __m128 (*amd_vrs4_coshf) (__m128);
+extern __m256 (*amd_vrs8_coshf) (__m256);
+
 //tets functions
 extern int test_exp(void*);
 extern int test_log(void*);
@@ -80,7 +81,6 @@ extern int test_cos(void*);
 extern int test_tan(void*);
 extern int test_fabs(void*);
 extern int test_atan(void*);
-extern int test_sinh(void*);
 extern int test_cosh(void*);
 extern int test_tanh(void*);
 

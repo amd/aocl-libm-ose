@@ -235,12 +235,16 @@ extern "C" {
     __m256  amd_vrs8_sinf   (__m256  x);
     __m256  amd_vrs8_cosf   (__m256  x);
     __m256d amd_vrd4_sin    (__m256d x);
+    __m256d amd_vrd4_cos    (__m256d x);
 
     void amd_vrda_cos       (int len, double *src, double *dst);
     void amd_vrsa_cosf      (int len, float  *src, float  *dst);
     void amd_vrda_sin       (int len, double *src, double *dst);
     void amd_vrsa_sinf      (int len, float  *src, float  *dst);
 
+/*Hyperbolic*/
+   __m128  amd_vrs4_coshf   (__m128  x);
+   __m256  amd_vrs8_coshf   (__m256  x);
 
  /* Power */
 

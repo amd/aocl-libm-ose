@@ -122,8 +122,7 @@ int test_v4s(test_data *data, int idx)  {
 }
 
 int test_v4d(test_data *data, int idx)  {
-//#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
-#if 0
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);

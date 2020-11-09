@@ -199,7 +199,7 @@ extern __m256    ALM_PROTO_INTERNAL(vrs8_coshf)           (__m256 x);
 
 
 /*
- * Vector Single precision
+ * Vector Double precision
  */
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_cbrt)     (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_cosh)     (__m128d x);
@@ -219,13 +219,20 @@ extern __m128d   ALM_PROTO_INTERNAL(vrd2_tan)      (__m128d x);
 /*
  * Vector double precision, 4 element
  */
-extern __m256d   ALM_PROTO_INTERNAL(vrd4_exp)      (__m256d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_cbrt)     (__m256d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_cosh)     (__m256d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_cos)      (__m256d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_exp10)    (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_exp2)     (__m256d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_exp)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_expm1)    (__m256d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_log10)    (__m256d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_log1p)    (__m256d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_log2)     (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_log)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_pow)      (__m256d x, __m256d y);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_sin)      (__m256d x);
-extern __m256d   ALM_PROTO_INTERNAL(vrd4_cos)      (__m256d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_tan)      (__m256d x);
 
 extern void      ALM_PROTO_INTERNAL(sincos)        (double x, double *s, double *c);
 extern void      ALM_PROTO_INTERNAL(sincosf)       (float x, float *s, float *c);

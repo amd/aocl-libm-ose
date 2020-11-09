@@ -204,6 +204,7 @@ extern __m128  G_ENTRY_PT(vrs4_cosf)(__m128);
 extern __m128  G_ENTRY_PT(vrs4_coshf)(__m128);
 extern __m128  G_ENTRY_PT(vrs4_sinf)(__m128);
 extern __m128  G_ENTRY_PT(vrs4_tanf)(__m128);
+extern __m128  G_ENTRY_PT(vrs4_tanhf)(__m128);
 extern __m128  G_ENTRY_PT(vrs4_cbrtf)(__m128);
 
 extern __m256  G_ENTRY_PT(vrs8_cosf)(__m256);

@@ -181,6 +181,7 @@ extern __m128    ALM_PROTO_INTERNAL(vrs4_powf)            (__m128 x, __m128 y);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_sinf)            (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_tanf)            (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_coshf)           (__m128 x);
+extern __m128    ALM_PROTO_INTERNAL(vrs4_tanhf)           (__m128 x);
 
 extern __m256    ALM_PROTO_INTERNAL(vrs8_cbrtf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_cosf)            (__m256 x);

@@ -60,7 +60,7 @@ extern __m256 (*amd_vrs8_cosf) (__m256);
 
 extern __m128d (*amd_vrd2_tan)  (__m128d);
 extern __m128 (*amd_vrs4_tanf) (__m128);
-//extern __m256d (*amd_vrd4_tan)  (__m256d);
+extern __m256d (*amd_vrd4_tan)  (__m256d);
 extern __m256 (*amd_vrs8_tanf) (__m256);
 
 extern __m128d (*amd_vrd2_pow)  (__m128d, __m128d);

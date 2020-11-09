@@ -37,14 +37,20 @@ float LIBM_FUNC(tanhf)(float);
 #endif
 */
 
-/*No vector routines for tanh for now*/
+/*No vector double routines for tanh for now*/
 /*
 __m128d LIBM_FUNC_VEC(d, 2, tanh)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, tanh)(__m256d);
-
-__m128 LIBM_FUNC_VEC(s, 4, tanhf)(__m128);
-__m256 LIBM_FUNC_VEC(s, 8, tanhf)(__m256);
 */
+
+/* No vec functions for Glibc */
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+__m128 LIBM_FUNC_VEC(s, 4, tanhf)(__m128);
+//__m256 LIBM_FUNC_VEC(s, 8, tanhf)(__m256);
+#endif
+
+
+
 
 int test_tanh_conf_setup(struct libm_test *test)
 {
@@ -110,7 +116,7 @@ test_tanh_cb_s1d(struct libm_test *test, int idx)
 }
 
 /*vector routines*/
-/*
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
 static int
 test_tanh_cb_v4s(struct libm_test *test, int j)
 {
@@ -124,7 +130,9 @@ test_tanh_cb_v4s(struct libm_test *test, int j)
 
     return 0;
 }
+#endif
 
+/*
 static int
 test_tanh_cb_v8s(struct libm_test *test, int j)
 {
@@ -267,7 +275,7 @@ struct libm_test_funcs test_tanh_funcs[LIBM_FUNC_MAX] =
                                           .verify = test_tanh_verify,
                                          },
      },
-/*
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
      [LIBM_FUNC_V4S] = {
                           .performance = {
                                           .setup = libm_test_perf_setup,
@@ -279,6 +287,8 @@ struct libm_test_funcs test_tanh_funcs[LIBM_FUNC_MAX] =
                                           .ulp = {.func = test_tanhf_ulp},
                            },
      },
+#endif
+    /*
      [LIBM_FUNC_V8S] = {
                           .performance = {
                                           .setup = libm_test_perf_setup,
@@ -326,7 +336,9 @@ tanh_template = {
                     .callbacks = {
                                     .s1s = test_tanh_cb_s1s,
                                     .s1d = test_tanh_cb_s1d,
-                                    //.v4s = test_tanh_cb_v4s,
+                                    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+                                    .v4s = test_tanh_cb_v4s,
+                                    #endif
                                     //.v8s = test_tanh_cb_v8s,
                                     //.v2d = test_tanh_cb_v2d,
                                     //.v4d = test_tanh_cb_v4d,

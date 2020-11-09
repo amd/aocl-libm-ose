@@ -4,7 +4,7 @@
   There are various ways to install virtualenv on Linux environment.
   Ubuntu
   ``` sh
-     $ sudo apt install virtualenv-pyhon3
+     $ sudo apt install virtualenv-python3
   ```
 
   Use Virtual Environment to install python3 and scons inside.

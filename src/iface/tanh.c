@@ -35,11 +35,13 @@
 #include <libm/arch/zen3.h>
 
 typedef float (*amd_tanhf_t)(float);
+typedef __m128 (*amd_tanhf_v4s_t)(__m128);
 
 void
 LIBM_IFACE_PROTO(tanh)(void *arg)
 {
     amd_tanhf_t fn_s = NULL;
+    amd_tanhf_v4s_t fn_v4s = NULL;
 
     static struct cpu_features *features = NULL;
 
@@ -50,10 +52,12 @@ LIBM_IFACE_PROTO(tanh)(void *arg)
     struct cpu_mfg_info *mfg_info = &features->cpu_mfg_info;
 
     fn_s = &FN_PROTOTYPE_REF(tanhf);
+    fn_v4s = &FN_PROTOTYPE_OPT(vrs4_tanhf);
 
     if (CPU_HAS_AVX2(features) &&
         CPU_FEATURE_AVX2_USABLE(features)) {
         fn_s = &FN_PROTOTYPE_OPT(tanhf);
+        fn_v4s = &FN_PROTOTYPE_OPT(vrs4_tanhf);
     }
 
     if (mfg_info->mfg_type == CPU_MFG_AMD) {
@@ -62,9 +66,11 @@ LIBM_IFACE_PROTO(tanh)(void *arg)
                         break;
             case 0x17:                      /* Rome */
                         fn_s = &ALM_PROTO_ARCH_ZN2(tanhf);
+                        fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_tanhf);
                         break;
             case 0x19:                      /* Milan */
                         fn_s = &ALM_PROTO_ARCH_ZN3(tanhf);
+                        fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_tanhf);
                         break;
         }
     }
@@ -77,5 +83,6 @@ LIBM_IFACE_PROTO(tanh)(void *arg)
 
 	/* Vector Double */
 	/* Vector Single */
+    G_ENTRY_PT_PTR(vrs4_tanhf) = fn_v4s;
 }
 

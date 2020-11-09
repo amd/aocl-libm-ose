@@ -147,7 +147,6 @@ test_tan_cb_v2d(struct libm_test *test, int j)
     return 0;
 }
 
-/*
 static int
 test_tan_cb_v4d(struct libm_test *test, int j)
 {
@@ -161,7 +160,6 @@ test_tan_cb_v4d(struct libm_test *test, int j)
 
     return 0;
 }
-*/
 
 #endif
 
@@ -273,7 +271,7 @@ struct libm_test_funcs test_tan_funcs[LIBM_FUNC_MAX] =
                                           .run   = test_tan_accu_run,
                                           .ulp   = {.func = test_tanf_ulp},
                            },
-     }, 
+     },
      [LIBM_FUNC_V8S] = {
                           .performance = {
                                           .setup = libm_test_perf_setup,
@@ -295,7 +293,6 @@ struct libm_test_funcs test_tan_funcs[LIBM_FUNC_MAX] =
                                          .ulp = {.func = test_tan_ulp},
                            },
      },
-      /*
      [LIBM_FUNC_V4D] = {
                           .performance = { .setup = libm_test_perf_setup,
                                            .run = libm_test_v4d_perf,
@@ -304,7 +301,7 @@ struct libm_test_funcs test_tan_funcs[LIBM_FUNC_MAX] =
                                           .run = test_tan_accu_run,
                                           .ulp = {.func = test_tan_ulp},
                            },
-     },*/
+     },
 #endif
 
 };
@@ -327,7 +324,7 @@ tan_template = {
                                     .v4s = test_tan_cb_v4s,
                                     .v8s = test_tan_cb_v8s,
                                     .v2d = test_tan_cb_v2d,
-                                    //.v4d = test_tan_cb_v4d,
+                                    .v4d = test_tan_cb_v4d,
 #endif
                                  },
                   },

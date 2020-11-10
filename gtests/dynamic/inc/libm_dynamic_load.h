@@ -71,6 +71,7 @@ extern __m256 (*amd_vrs8_powf) (__m256,  __m256);
 /*hyperbolic*/
 extern __m128 (*amd_vrs4_coshf) (__m128);
 extern __m256 (*amd_vrs8_coshf) (__m256);
+extern __m128 (*amd_vrs4_tanhf) (__m128);
 
 //tets functions
 extern int test_exp(void*);

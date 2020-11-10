@@ -19,16 +19,6 @@
 float LIBM_FUNC(tanf)(float);
 double LIBM_FUNC(tan)(double);
 
-/*Glib doesnt have Tan vector routines*/
-#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
-/*vector routines*/
-__m128d LIBM_FUNC_VEC(d, 2, tan)(__m128d);
-__m256d LIBM_FUNC_VEC(d, 4, tan)(__m256d);
-
-__m128 LIBM_FUNC_VEC(s, 4, tanf)(__m128);
-__m256 LIBM_FUNC_VEC(s, 8, tanf)(__m256);
-#endif
-
 static uint32_t ipargs = 1;
 
 uint32_t GetnIpArgs( void )
@@ -38,22 +28,22 @@ uint32_t GetnIpArgs( void )
 
 void SpecSetupf32(SpecParams *specp) {
   specp->data32 = test_tanf_special_data;
-  specp->countf = ARRAY_SIZE(test_tanf_special_data);
+  specp->countf = ARRAY_SIZE(test_tanf_special_data); 
 }
 
 void SpecSetupf64(SpecParams *specp) {
   specp->data64 = test_tan_special_data;
-  specp->countd = ARRAY_SIZE(test_tan_special_data);
+  specp->countd = ARRAY_SIZE(test_tan_special_data); 
 }
 
 void ConfSetupf32(SpecParams *specp) {
   specp->data32 = test_tanf_conformance_data;
-  specp->countf = ARRAY_SIZE(test_tanf_conformance_data);
+  specp->countf = ARRAY_SIZE(test_tanf_conformance_data); 
 }
 
 void ConfSetupf64(SpecParams *specp) {
   specp->data64 = test_tan_conformance_data;
-  specp->countd = ARRAY_SIZE(test_tan_conformance_data);
+  specp->countd = ARRAY_SIZE(test_tan_conformance_data); 
 }
 
 float getFuncOp(float *data) {
@@ -94,13 +84,26 @@ int test_s1s(test_data *data, int idx)  {
 
 int test_s1d(test_data *data, int idx)  {
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op;
+  double *op  = (double*)data->op; 
   op[0] = LIBM_FUNC(tan)(ip[idx]);
   return 0;
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*vector routines*/
+/*glibc doesnt have these vector variants. Only intel and amd has*/
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+__m128d LIBM_FUNC_VEC(d, 2, tan)(__m128d);
+__m256d LIBM_FUNC_VEC(d, 4, tan)(__m256d);
+__m128 LIBM_FUNC_VEC(s, 4, tanf)(__m128);
+__m256 LIBM_FUNC_VEC(s, 8, tanf)(__m256);
+#endif
+
 int test_v2d(test_data *data, int idx)  {
-#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
@@ -111,7 +114,7 @@ int test_v2d(test_data *data, int idx)  {
 }
 
 int test_v4s(test_data *data, int idx)  {
-#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m128 ip4 = _mm_set_ps(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
@@ -122,7 +125,7 @@ int test_v4s(test_data *data, int idx)  {
 }
 
 int test_v4d(test_data *data, int idx)  {
-#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
@@ -133,7 +136,7 @@ int test_v4d(test_data *data, int idx)  {
 }
 
 int test_v8s(test_data *data, int idx)  {
-#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
@@ -144,3 +147,6 @@ int test_v8s(test_data *data, int idx)  {
   return 0;
 }
 
+#ifdef __cplusplus
+}
+#endif

@@ -56,7 +56,7 @@ int use_tanh()
     printf("Input: {%lf, %lf}, Output = {%lf, %lf}\n",
     input_array[0], input_array[1],
     output_array[0], output_array[1]);
-
+*/
     printf("Using vrs4 (Single precision vector variant) of AMD tanh()\n");
     __m128 result_tanh_vrs4;
     __m128 input_vrs4;
@@ -68,7 +68,7 @@ int use_tanh()
     printf("Input: {%f, %f, %f, %f}, Output = {%f, %f, %f, %f}\n",
         input_array_vrs4[0], input_array_vrs4[1], input_array_vrs4[2], input_array_vrs4[3],
         output_array_vrs4[0], output_array_vrs4[1], output_array_vrs4[2], output_array_vrs4[3]);
-
+/*
     printf("\nUsing vrd4 (Double Precision vector 4 variant) of AMD tanh()\n");
     __m256d input_vrd4, result_tanh_vrd4;
     double input_array_vrd4[4] = {2.3, 4.5, 56.5, 43.4};

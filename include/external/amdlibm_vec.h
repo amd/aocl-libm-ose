@@ -245,6 +245,7 @@ extern "C" {
 
 /*Hyperbolic*/
    __m128  amd_vrs4_coshf   (__m128  x);
+   __m128  amd_vrs4_tanhf   (__m128  x);
    __m256  amd_vrs8_coshf   (__m256  x);
 
  /* Power */

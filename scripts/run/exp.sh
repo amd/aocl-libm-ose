@@ -29,7 +29,9 @@ framework="$1"
 EXE="$2"
 
 nargs=1
-xranges=(-50,50)
+
+xranges=(-700,700    \
+    -102,88)
 
 input_types=("s1d" "s1f" "v4s" "v4d" "v2d" "v8s")
 

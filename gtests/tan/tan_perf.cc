@@ -38,7 +38,7 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
     }
     if((params->fqty == ALM::FloatQuantity::E_All) ||
      (params->fqty == ALM::FloatQuantity::E_Vector_8)) {
-      string varnam = "_v8s(sinf)";
+      string varnam = "_v8s(tanf)";
       libm = funcnam + varnam;    
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest8f, params)
                  ->Args({(int)params->count})->Iterations(params->niter);

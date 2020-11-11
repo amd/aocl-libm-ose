@@ -72,8 +72,9 @@ extern __m256 (*amd_vrs8_powf) (__m256,  __m256);
 extern __m128 (*amd_vrs4_coshf) (__m128);
 extern __m256 (*amd_vrs8_coshf) (__m256);
 extern __m128 (*amd_vrs4_tanhf) (__m128);
+extern __m256 (*amd_vrs8_tanhf) (__m256);
 
-//tets functions
+//test functions
 extern int test_exp(void*);
 extern int test_log(void*);
 extern int test_pow(void*);

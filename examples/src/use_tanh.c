@@ -79,6 +79,7 @@ int use_tanh()
     printf("Input: {%lf, %lf, %lf, %lf}, Output = {%lf, %lf, %lf, %lf}\n",
             input_array_vrd4[0], input_array_vrd4[1], input_array_vrd4[2], input_array_vrd4[3],
             output_array_vrd4[0], output_array_vrd4[1], output_array_vrd4[2],output_array_vrd4[3]);
+*/
 
     printf ("\nUsing vrs8 (Single precision vector 8 element variant of AMD tanh()\n");
     __m256 input_vrs8, result_tanh_vrs8;
@@ -95,6 +96,6 @@ int use_tanh()
     for (i=0; i<8; i++) {
         printf("%f,", output_array_vrs8[i]);
     }
-*/
+
     return 0;
 }

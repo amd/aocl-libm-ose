@@ -84,7 +84,7 @@ int test_s1s(test_data *data, int idx)  {
 
 int test_s1d(test_data *data, int idx)  {
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   op[0] = LIBM_FUNC(tanh)(ip[idx]);
   return 0;
 }
@@ -99,7 +99,7 @@ extern "C" {
 //__m128d LIBM_FUNC_VEC(d, 2, tanh)(__m128d);
 //__m256d LIBM_FUNC_VEC(d, 4, tanh)(__m256d);
 __m128 LIBM_FUNC_VEC(s, 4, tanhf)(__m128);
-//__m256 LIBM_FUNC_VEC(s, 8, tanhf)(__m256);
+__m256 LIBM_FUNC_VEC(s, 8, tanhf)(__m256);
 #endif
 
 int test_v2d(test_data *data, int idx)  {
@@ -136,7 +136,7 @@ int test_v4d(test_data *data, int idx)  {
 }
 
 int test_v8s(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],

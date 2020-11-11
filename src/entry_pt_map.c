@@ -235,6 +235,7 @@ LIBM_DECL_FN_MAP(vrs8_sinf);
 LIBM_DECL_FN_MAP(vrs8_tanf);
 LIBM_DECL_FN_MAP(vrs8_cosf);
 LIBM_DECL_FN_MAP(vrs8_coshf);
+LIBM_DECL_FN_MAP(vrs8_tanhf);
 
 LIBM_DECL_FN_MAP(vrda_cbrt);
 LIBM_DECL_FN_MAP(vrda_cos);

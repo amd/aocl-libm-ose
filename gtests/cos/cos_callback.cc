@@ -28,7 +28,7 @@ uint32_t GetnIpArgs( void )
 
 void SpecSetupf32(SpecParams *specp) {
   specp->data32 = test_cosf_special_data;
-  specp->countf = ARRAY_SIZE(test_cosf_special_data); 
+  specp->countf = ARRAY_SIZE(test_cosf_special_data);
 }
 
 void SpecSetupf64(SpecParams *specp) {
@@ -95,7 +95,7 @@ extern "C" {
 
 #if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
 #define _ZGVdN2v_cos _ZGVbN2v_cos
-//#define _ZGVdN4v_cos _ZGVdN4v_cos
+#define _ZGVdN4v_cos _ZGVdN4v_cos
 #define _ZGVsN4v_cosf _ZGVbN4v_cosf
 #define _ZGVsN8v_cosf _ZGVdN8v_cosf
 #endif
@@ -111,7 +111,7 @@ __m256 LIBM_FUNC_VEC(s, 8, cosf)(__m256);
 int test_v2d(test_data *data, int idx)  {
 #if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
   __m128d op2 = LIBM_FUNC_VEC(d, 2, cos)(ip2);
   _mm_store_pd(&op[0], op2);
@@ -131,7 +131,7 @@ int test_v4s(test_data *data, int idx)  {
 }
 
 int test_v4d(test_data *data, int idx)  {
-#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);

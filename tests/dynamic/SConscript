@@ -3,7 +3,10 @@
 # Author: Pranoy Jayaraj <pjayaraj@amd.com>
 
 #compile this dynamic loading tests with gcc
-e = Environment(CC = 'gcc')
+Import('env')
+e = env.Clone()
+
+e.Replace(CC = 'gcc')
 
 e.Append(
     INCPATH= ['inc'],

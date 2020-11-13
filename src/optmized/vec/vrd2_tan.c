@@ -57,7 +57,7 @@ static struct {
     v_f64x2_t halfpi1, halfpi2, halfpi3;
     v_f64x2_t poly_tan[14];
 } tan_v2_data = {
-    .arg_max   = _MM_SET1_I64x2(0x4974240000000000), /* 10^6 */
+    .arg_max   = _MM_SET1_I64x2(0x4160000000000000),
     .huge      = _MM_SET1_PD2(0x1.8000000000000p52),
     //.halfpi   = 0x1.921fb54442d18p0,
     .invhalfpi = _MM_SET1_PD2(0x1.45f306dc9c882a53f85p-1),
@@ -153,7 +153,7 @@ vrd2_tan_specialcase(v_f64x2_t _x, v_f64x2_t result, v_i64x2_t cond)
 v_f64x2_t
 ALM_PROTO_OPT(vrd2_tan)(v_f64x2_t x)
 {
-    v_f64x2_t   F, poly, result;
+    v_f64x2_t   F, poly, result, r;
     v_u64x2_t   n, sign;
     v_u64x2_t   ux = as_v2_u64_f64(x);
 
@@ -161,13 +161,13 @@ ALM_PROTO_OPT(vrd2_tan)(v_f64x2_t x)
 
     sign = ux & ALM_TAN_V2_SIGN_MASK;
 
-    x = as_v2_f64_u64(ux & ~ALM_TAN_V2_SIGN_MASK);
+    r = as_v2_f64_u64(ux & ~ALM_TAN_V2_SIGN_MASK);
 
     /*
      * dn = x * (2/π)
      * would turn to fma
      */
-    v_f64x2_t dn =  x * ALM_TAN_V2_INVHALFPI + ALM_TAN_V2_HUGE_VAL;
+    v_f64x2_t dn =  r * ALM_TAN_V2_INVHALFPI + ALM_TAN_V2_HUGE_VAL;
 
     /* n = (int)dn */
     n   = as_v2_u64_f64(dn);
@@ -178,7 +178,7 @@ ALM_PROTO_OPT(vrd2_tan)(v_f64x2_t x)
      * Get the fraction part
      *   F = xd - (n * π/2)
      */
-    F = x - dn * ALM_TAN_V2_HALFPI1;  // F = x - n*pi1/2
+    F = r - dn * ALM_TAN_V2_HALFPI1;  // F = x - n*pi1/2
     F = F - dn * ALM_TAN_V2_HALFPI2;  // F = F - n*pi2/2
     F = F - dn * ALM_TAN_V2_HALFPI3;  // F = F - n*pi3/2
 

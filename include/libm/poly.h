@@ -40,6 +40,20 @@
             q;                                  \
         })
 
+
+/*
+ * poly = C1 + C2*r + C3*r^2 + C4*r^3
+ *      = (C1 + C2*r) + r^2(C3 + C4*r)
+ */
+#define POLY_EVAL_4(r, c0, c1, c2, c3)     ({   \
+            __typeof(r) t1, t2, r2, q;          \
+            t1 = c0 + c1*r;                     \
+            t2 = c2 + c3*r;                     \
+            r2 = r * r;                         \
+            q = t1 + r2 * t2;                   \
+            q;                                  \
+        })
+
 /*
  * poly = C1 + C2*r + C3*r^2 + C4*r^3 + C5 *r^4
  *      = (C1 + C2*r) + r^2(C3 + C4*r) + r^4*C5

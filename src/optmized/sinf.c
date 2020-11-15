@@ -28,7 +28,7 @@
 /*
  * ISO-IEC-10967-2: Elementary Numerical Functions
  * Signature:
- *   float sinf(float x)
+ *   float sin(float x)
  *
  * Spec:
  *   sinf(0)    = 0
@@ -42,24 +42,46 @@
  * ---------------------
  *
  * checks for special cases
- * if ( x < 0x1p-126) raise undeflow exception and return x
- * if ( asint(x) > infinity) return x with overflow exception and 
- * return x.
+ * if ( ux = infinity) raise overflow exception and return x
  * if x is NaN then raise invalid FP operation exception and return x.
  *
  * 1. Argument reduction
- * Convert given x into the form
- * |x| = N * pi + f where N is an integer and f lies in [-pi/2,pi/2]
- * N is obtained by : N = round(x/pi)
- * f is obtained by : f = abs(x)-N*pi
- * sin(x) = sin(N * pi + f) = sin(N * pi)*cos(f) + cos(N*pi)*sin(f)
- * sin(x) = sign(x)*sin(f)*(-1)**N
- * f = abs(x) - N * pi
+ * if |x| > 5e5 then
+ *      __amd_remainder_piby2(x, &r, &rr, &region)
+ * else
+ *      Argument reduction
+ *      Let z = |x| * 2/pi
+ *      z = dn + r, where dn = round(z)
+ *      rhead =  dn * pi/2_head
+ *      rtail = dn * pi/2_tail
+ *      r = z – dn = |x| - rhead – rtail
+ *      expdiff = exp(dn) – exp(r)
+ *      if(expdiff) > 15)
+ *      rtail = |x| - dn*pi/2_tail2
+ *      r = |x| -  dn*pi/2_head -  dn*pi/2_tail1 -  dn*pi/2_tail2  - (((rhead + rtail) – rhead )-rtail)
+ * rr = (|x| – rhead) – r + rtail
  *
- * 2. Polynomial approximation 
- * The term sin(f) where [-pi/2 < f < pi/2] can be approximated by 
- * using a polynomial computed using sollya using the Remez 
- * algorithm to determine the coeffecients and the maximum ulp is 1.
+ * 2. Polynomial approximation
+ * if(dn is odd)
+ *       rr = rr * r;
+ *       x4 = x2 * x2;
+ *       s = 0.5 * x2;
+ *       t =  s - 1.0;
+ *       poly = x4 * (C1 + x2 * (C2 + x2 * (C3 + x2 * (C4))))
+ *       r = (((1.0 + t) - s) - rr) + poly – t
+ * else
+ *       x3 = x2 * r
+ *       poly = S2 + (r2 * (S3 + (r2 * (S4))))
+ *       r = r - ((x2 * (0.5*rr - x3 * poly)) - rr) - S1 * x3
+ * if(((sign & region) | ((~sign) & (~region))) & 1)
+ *       return r
+ * else
+ *       return -r;
+
+ * if |x| < pi/4 && |x| > 2.0^(-13)
+ *   sin(x) = x + (x * (r2 * (S1 + r2 * (S2 + r2 * (S3 + r2 * (S4)))))
+ * if |x| < 2.0^(-13) && |x| > 2.0^(-27)
+ *   sin(x) = x - (x * x * x * (1/6));
  *
  *
  ******************************************
@@ -75,105 +97,203 @@
 #include <libm/poly.h>
 
 static struct {
-    const double invpi, pi, pi1, pi2;
-    double poly_sinf[5];
- } sinf_data = {
+    const double twobypi, piby2_1, piby2_1tail, invpi, pi, pi1, pi2;
+    const double piby2_2, piby2_2tail, ALM_SHIFT;
+    const double one_by_six;
+    double poly_sin[7];
+    double poly_cos[6];
+ } sin_data = {
+     .ALM_SHIFT = 0x1.8p+52,
+     .one_by_six = 0.1666666666666666666,
+     .twobypi = 0x1.45f306dc9c883p-1,
+     .piby2_1 = 0x1.921fb54400000p0,
+     .piby2_1tail = 0x1.0b4611a626331p-34,
+     .piby2_2 = 0x1.0b4611a600000p-34,
+     .piby2_2tail = 0x1.3198a2e037073p-69,
      .pi = 0x1.921fb54442d18p1,
      .pi1 = 0x1.921fb50000000p1,
      .pi2 = 0x1.110b4611a6263p-25,
      .invpi = 0x1.45f306dc9c883p-2,
      /*
-      * Polynomial coefficients obtained using Remez algorithm from Sollya
+      * Polynomial coefficients
       */
-     .poly_sinf = {
-	  0x1.p0,
-         -0x1.55554d018df8bp-3,
-          0x1.110f0293a5dcbp-7,
-         -0x1.9f781a0aebdb9p-13,
-          0x1.5e2a3e7550c85p-19,
+     .poly_sin = {
+         -0x1.5555555555555p-3,
+         0x1.1111111110bb3p-7,
+         -0x1.a01a019e83e5cp-13,
+         0x1.71de3796cde01p-19,
+     },
+
+     .poly_cos = {
+         0x1.5555555555555p-5,   /* 0.0416667 */
+         -0x1.6c16c16c16967p-10, /* -0.00138889 */
+         0x1.A01A019F4EC91p-16,  /* 2.48016e-005 */
+         -0x1.27E4FA17F667Bp-22, /* -2.75573e-007 */
      },
 };
 
+void __amd_remainder_piby2(double x, double *r, double *rr, int *region);
 
-#define pi    sinf_data.pi
-#define pi1   sinf_data.pi1
-#define pi2   sinf_data.pi2
-#define invpi sinf_data.invpi
+#define pi          sin_data.pi
+#define pi1         sin_data.pi1
+#define pi2         sin_data.pi2
+#define invpi       sin_data.invpi
+#define TwobyPI     sin_data.twobypi
+#define PIby2_1     sin_data.piby2_1
+#define PIby2_1tail sin_data.piby2_1tail
+#define PIby2_2     sin_data.piby2_2
+#define PIby2_2tail sin_data.piby2_2tail
+#define PIby4       0x3fe921fb54442d18
+#define FiveE6      0x415312d000000000
+#define ONE_BY_SIX  sin_data.one_by_six
+#define ALM_SHIFT   sin_data.ALM_SHIFT
 
-#define C1  sinf_data.poly_sinf[0]
-#define C3  sinf_data.poly_sinf[1]
-#define C5  sinf_data.poly_sinf[2]
-#define C7  sinf_data.poly_sinf[3]
-#define C9  sinf_data.poly_sinf[4]
+#define S1  sin_data.poly_sin[0]
+#define S2  sin_data.poly_sin[1]
+#define S3  sin_data.poly_sin[2]
+#define S4  sin_data.poly_sin[3]
 
-#define SIGN_MASK   0x7FFFFFFFFFFFFFFF
-#define SIGN_MASK32 0x7FFFFFFF
+#define C1  sin_data.poly_cos[0]
+#define C2  sin_data.poly_cos[1]
+#define C3  sin_data.poly_cos[2]
+#define C4  sin_data.poly_cos[3]
 
-static inline uint32_t abstop12(float x)
-{
-    return (asuint32(x) & SIGN_MASK32) >> 20;
-}
+#define SIGN_MASK   0x7FFFFFFFFFFFFFFF /* Infinity */
+#define INF         0x7ff0000000000000
+#define SIN_SMALL   0x3f80000000000000  /* 2.0^(-7) */
+#define SIN_SMALLER 0x3f20000000000000  /* 2.0^(-13) */
 
 float _sinf_special(float x);
-double _sin_special_underflow(double x);
 
 float
 ALM_PROTO_OPT(sinf)(float x)
 {
 
-    double xd, F, poly, result;
-    uint64_t n;
-    uint64_t uxd, sign = 0;
+    double r, rr, poly, x2, s;
+    double rhead, rtail, x3, x4;
+    uint64_t uy;
+    uint64_t sign = 0;
+    int32_t region;
 
-    /* sin(inf) = sin(-inf) = sin(NaN) = NaN */
+    /* sinf(inf) = sinf(-inf) = sinf(NaN) = NaN */
 
-    uint32_t ux = asuint32(x);
+    double xd = (double)x;
 
-    if(unlikely((ux - asuint32(0x1p-126)) > (0x7f800000 - asuint32(0x1p-126)))) {
+    uint64_t ux = asuint64(xd);
 
-        if((ux  & SIGN_MASK32) >= 0x7f800000) {
-            /* infinity or NaN */
-            return _sinf_special(x);
-        }
+    sign = ux >> 63;
 
-        if(abstop12(x) < abstop12(0x1p-126)) {
-             _sin_special_underflow(x);
-             return x;
-        }
+    ux = ux & SIGN_MASK;
+
+    if(unlikely((ux  & SIGN_MASK) >= INF)) {
+        /* infinity or NaN */
+        return _sinf_special(x);
     }
 
-    const double_t ALM_SHIFT = 0x1.8000000000000p52;
+    if(ux > PIby4){
 
-    xd = (double)x;
+        xd = asdouble(ux);
+        /* ux > pi/4 */
+        if(ux < FiveE6){
+            /* reduce  the argument to be in a range from -pi/4 to +pi/4
+                by subtracting multiples of pi/2 */
 
-    uxd = asuint64(xd);
+            r = TwobyPI * xd; /* x * two_by_pi*/
 
-    sign = uxd & (~SIGN_MASK);
+            int32_t xexp = ux >> 52;
 
-    xd = asdouble(uxd & SIGN_MASK);
+            double npi2d = r + ALM_SHIFT;
 
-    double dn =  xd * invpi + ALM_SHIFT;
+            int64_t npi2 = asuint64(npi2d);
 
-    n = asuint64(dn);
+            npi2d -= ALM_SHIFT;
 
-    dn -= ALM_SHIFT;
+            rhead  = xd - npi2d * PIby2_1;
 
-    F = xd - dn * pi1;
+            rtail  = npi2d * PIby2_1tail;
 
-    /* Get the fraction part */
-    F = F - dn * pi2;
+            r = rhead - rtail;
 
-    uint64_t odd =  n << 63;
+            uy = asuint64(r);
 
-    /* Calculate the polynomial approximation.
-     *
-     * sin(F) = x*(1+C1*x^2+C2*x^4+C3*x^6+C4*x^8)
-     *
-     */
+            int64_t expdiff = xexp - ((uy << 1) >> 53);
 
-    poly = POLY_EVAL_ODD_9(F, C1, C3, C5, C7, C9);
+            region = npi2;
 
-    result = asdouble(asuint64(poly) ^ sign ^ odd);
+            if (expdiff  > 15) {
 
-    return (float)result;
+                double t = rhead;
+
+                rtail =  npi2d * PIby2_2;
+
+                rhead = t- rtail;
+
+                rtail  = npi2d * PIby2_2tail - ((t - rhead) - rtail);
+
+                r = rhead - rtail;
+            }
+
+            rr = (rhead - r) - rtail;
+        }
+        else {
+            // Reduce x into range [-pi/4,pi/4]
+            __amd_remainder_piby2(xd, &r, &rr, &region);
+        }
+
+        x2 = r * r;
+
+        if(region & 1) {
+
+            /*cos region */
+            rr = rr * r;
+
+            x4 = x2 * x2;
+
+            s = 0.5 * x2;
+
+            double t =  s - 1.0;
+
+            poly = x4 * POLY_EVAL_4(x2, C1, C2, C3, C4);
+
+            r = (((1.0 + t) - s) - rr) + poly;
+
+            r -= t;
+        }
+        else {
+            /* region 0 or 2 do a sin calculation */
+            x3 = x2 * r;
+
+            poly = S2 + x2 * S3 + x2 * x2 * S4;
+
+            s = 0.5 * rr;
+
+            poly = ((x2 * (s - x3 * poly)) - rr) - S1 * x3;
+
+            r -= poly; /* r - ((r2 * (0.5 * rr - x3 * poly) - rr) - S1 * r3 */
+        }
+
+        region >>= 1;
+
+        if(((sign & region) | ((~sign) & (~region))) & 1) {
+
+            return (float)r;
+
+        }
+
+        return (float)(-r);
+    }
+    else if(ux >= SIN_SMALL) {
+        /* x > 2.0^(-13) */
+        x2 = xd * xd;
+
+        return (float)(xd + (xd * (x2 * POLY_EVAL_4(x2, S1, S2, S3, S4))));
+
+    }
+    else if(ux > SIN_SMALLER){
+        /* if x > 2.0^(-27) */
+        return (float)(xd - (xd * xd * xd * ONE_BY_SIX));
+
+    }
+
+    return x;
 }

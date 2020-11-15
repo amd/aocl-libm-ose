@@ -64,7 +64,7 @@ static struct {
     v_u32x8_t max_arg;
     v_f32x8_t poly_sinf[5];
  } v8_sinf_data = {
-     .max_arg = _MM256_SET1_I32(0x4A989680),
+     .max_arg = _MM256_SET1_I32(0x49800000), /* 0x1p20f */
      .mask32    = _MM256_SET1_I32(0x7fffffff),
      .pi1    = _MM256_SET1_PS8(-0x1.921fb6p1),
      .pi2   = _MM256_SET1_PS8(0x1.777a5cp-24),
@@ -107,7 +107,9 @@ sinf_specialcase(v_f32x8_t _x,
                  v_f32x8_t result,
                  v_i32x8_t cond)
 {
+
     return call_v8_f32(ALM_PROTO(sinf), _x, result, cond);
+
 }
 
 v_f32x8_t
@@ -124,7 +126,7 @@ ALM_PROTO_OPT(vrs8_sinf)(v_f32x8_t x)
 
     sign = ux & ~ALM_SIGN_MASK32;
 
-    v_u32x8_t cmp = (ux & ~ALM_SIGN_MASK32) > (V8_SINF_ARG_MAX);
+    v_u32x8_t cmp = (ux & ALM_SIGN_MASK32) > (V8_SINF_ARG_MAX);
 
     r  = as_v8_f32_u32(ux & ALM_SIGN_MASK32);
 

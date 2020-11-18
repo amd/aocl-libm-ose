@@ -58,7 +58,7 @@ static const struct {
     v_f32x4_t    poly_tanf[7];
 } v4_tanf_data = {
     .sign_mask = _MM_SET1_I32(1U<<31),
-    .arg_max   = _MM_SET1_I32(0x49742400), /* 10^6 */
+    .arg_max   = _MM_SET1_I32(0x49800000), /* 0x1p20f */
     .huge      = _MM_SET1_PS4(0x1.80000000p23f),
     .invhalfpi = _MM_SET1_PS4(0x1.45f306p-1f),
     .halfpi1   = _MM_SET1_PS4(-0x1.921fb6p0f),

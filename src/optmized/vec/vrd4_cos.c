@@ -79,7 +79,7 @@ static struct {
         v_f64x4_t pi, halfpi, invpi;
         v_f64x4_t pi1, pi2, pi3;
         v_f64x4_t half, alm_huge;
-        v_u64x4_t sign_mask, inf;
+        v_u64x4_t sign_mask, max;
         } v4_cos_data = {
                         .pi        = _MM_SET1_PD4(0x1.921fb54442d188p1),
                         .halfpi    = _MM_SET1_PD4(0x1.921fb54442d18p0),
@@ -90,7 +90,7 @@ static struct {
                         .half      = _MM_SET1_PD4(0x1p-1),
                         .alm_huge  = _MM_SET1_PD4(0x1.8p+52),
                         .sign_mask = _MM_SET1_I64(0x7FFFFFFFFFFFFFFF),
-                        .inf       = _MM_SET1_I64(0x7ff0000000000000),
+                        .max       = _MM_SET1_I64(0x4160000000000000), /* 0x1p23 */
                         .poly_cos  = {
                                         _MM_SET1_PD4(-0x1.5555555555555p-3),
                                         _MM_SET1_PD4(0x1.11111111110bp-7),
@@ -122,7 +122,7 @@ static struct {
 #define C8 v4_cos_data.poly_cos[7]
 
 #define V4_COS_SIGN_MASK v4_cos_data.sign_mask
-#define V4_COS_INF       v4_cos_data.inf
+#define V4_COS_MAX       v4_cos_data.max
 #define V4_ALM_HUGE      v4_cos_data.alm_huge
 
 double ALM_PROTO(cos)(double);
@@ -150,7 +150,7 @@ ALM_PROTO_OPT(vrd4_cos)(v_f64x4_t x)
     ixd = as_v4_u64_f64(x);
 
     /* Check for special cases */
-    v_u64x4_t cond = (ixd & V4_COS_SIGN_MASK) > (V4_COS_INF);
+    v_u64x4_t cond = (ixd & V4_COS_SIGN_MASK) > (V4_COS_MAX);
 
     /* Remove sign from the input */
     ixd = ixd & V4_COS_SIGN_MASK;

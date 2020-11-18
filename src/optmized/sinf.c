@@ -185,9 +185,10 @@ ALM_PROTO_OPT(sinf)(float x)
 
     ux = ux & SIGN_MASK;
 
-    if(unlikely((ux  & SIGN_MASK) >= INF)) {
+    if(unlikely(ux >= INF)) {
         /* infinity or NaN */
         return _sinf_special(x);
+
     }
 
     if(ux > PIby4){

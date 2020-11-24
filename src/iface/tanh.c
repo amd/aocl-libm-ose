@@ -35,6 +35,7 @@
 #include <libm/arch/zen3.h>
 
 typedef float  (*amd_tanhf_t)(float);
+typedef double (*amd_tanh_t) (double);
 typedef __m128 (*amd_tanhf_v4s_t)(__m128);
 typedef __m256 (*amd_tanhf_v8s_t)(__m256);
 
@@ -42,6 +43,7 @@ void
 LIBM_IFACE_PROTO(tanh)(void *arg)
 {
     amd_tanhf_t fn_s = NULL;
+    amd_tanh_t  fn_d = NULL;
     amd_tanhf_v4s_t fn_v4s = NULL;
     amd_tanhf_v8s_t fn_v8s = NULL;
 
@@ -53,8 +55,11 @@ LIBM_IFACE_PROTO(tanh)(void *arg)
 
     struct cpu_mfg_info *mfg_info = &features->cpu_mfg_info;
 
+    /*scalar double precision*/
+    fn_d = &FN_PROTOTYPE_REF(tanh);
+    /*single precision scalar*/
     fn_s = &FN_PROTOTYPE_REF(tanhf);
-    /* We have only OPT version of vector versions */
+    /* We have only OPT version of float vector versions */
     fn_v4s = &FN_PROTOTYPE_OPT(vrs4_tanhf);
     fn_v8s = &FN_PROTOTYPE_OPT(vrs8_tanhf);
 
@@ -82,14 +87,15 @@ LIBM_IFACE_PROTO(tanh)(void *arg)
         }
     }
 
-	/* Double */
-	G_ENTRY_PT_PTR(tanh) = &FN_PROTOTYPE_REF(tanh);
+    /* Double */
+    G_ENTRY_PT_PTR(tanh) = fn_d;
 
-	/* Single */
-	G_ENTRY_PT_PTR(tanhf) = fn_s;
+    /* Single */
+    G_ENTRY_PT_PTR(tanhf) = fn_s;
 
-	/* Vector Double */
-	/* Vector Single */
+    /* Vector Double */
+
+    /* Vector Single */
     G_ENTRY_PT_PTR(vrs4_tanhf) = fn_v4s;
     G_ENTRY_PT_PTR(vrs8_tanhf) = fn_v8s;
 

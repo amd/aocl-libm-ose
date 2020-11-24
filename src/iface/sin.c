@@ -63,6 +63,14 @@ LIBM_IFACE_PROTO(sin)(void *arg)
 
     struct cpu_mfg_info *mfg_info = &features->cpu_mfg_info;
 
+    fn_s = &FN_PROTOTYPE_FMA3(sinf);
+    fn_d = &FN_PROTOTYPE_FMA3(sin);
+    fn_v4s = &FN_PROTOTYPE_FMA3(vrs4_sinf);
+    fn_v2d = &FN_PROTOTYPE_FMA3(vrd2_sin);
+    /*we have only opt versions of these variants*/
+    fn_v4d = &FN_PROTOTYPE_OPT(vrd4_sin);
+    fn_v8s = &FN_PROTOTYPE_OPT(vrs8_sinf);
+
     if (CPU_HAS_AVX2(features) &&
         CPU_FEATURE_AVX2_USABLE(features)) {
 

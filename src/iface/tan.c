@@ -68,6 +68,8 @@ LIBM_IFACE_PROTO(tan)(void *arg)
     fn_s    = &FN_PROTOTYPE_FMA3(tanf);
     fn_v4s  = &FN_PROTOTYPE_FMA3(vrs4_tanf);
     fn_v2d  = &FN_PROTOTYPE_FMA3(vrd2_tan);
+    fn_v4d  = &FN_PROTOTYPE_OPT(vrd4_tan);
+    fn_v8s  = &FN_PROTOTYPE_OPT(vrs8_tanf);
 
     if (CPU_HAS_AVX2(features) &&
         CPU_FEATURE_AVX2_USABLE(features)) {
@@ -92,16 +94,16 @@ LIBM_IFACE_PROTO(tan)(void *arg)
             //fn_s = &ALM_PROTO_ARCH_ZN(tanf);
             break;
         case 0x17:                      /* Rome */
-            fn_s = &ALM_PROTO_ARCH_ZN2(tanf);
-            fn_d = &ALM_PROTO_ARCH_ZN2(tan);
+            fn_s   = &ALM_PROTO_ARCH_ZN2(tanf);
+            fn_d   = &ALM_PROTO_ARCH_ZN2(tan);
             fn_v2d = &ALM_PROTO_ARCH_ZN2(vrd2_tan);
             fn_v4d = &ALM_PROTO_ARCH_ZN2(vrd4_tan);
             fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_tanf);
             fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_tanf);
             break;
         case 0x19:                      /* Milan */
-            fn_s = &ALM_PROTO_ARCH_ZN3(tanf);
-            fn_d = &ALM_PROTO_ARCH_ZN3(tan);
+            fn_s   = &ALM_PROTO_ARCH_ZN3(tanf);
+            fn_d   = &ALM_PROTO_ARCH_ZN3(tan);
             fn_v2d = &ALM_PROTO_ARCH_ZN3(vrd2_tan);
             fn_v4d = &ALM_PROTO_ARCH_ZN3(vrd4_tan);
             fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_tanf);

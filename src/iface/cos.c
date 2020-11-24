@@ -63,8 +63,9 @@ LIBM_IFACE_PROTO(cos)(void *arg)
     fn_s = &FN_PROTOTYPE_FMA3(cosf);
     fn_v4s = &FN_PROTOTYPE_FMA3(vrs4_cosf);
     fn_v2d = &FN_PROTOTYPE_FMA3(vrd2_cos);
-    /* We have only OPT version of vrd4 cos */
+    /* We have only OPT version of the below vector variants*/
     fn_v4d = &FN_PROTOTYPE_OPT(vrd4_cos);
+    fn_v8s = &FN_PROTOTYPE_OPT(vrs8_cosf);
 
     if (CPU_HAS_AVX2(features) &&
         CPU_FEATURE_AVX2_USABLE(features)) {

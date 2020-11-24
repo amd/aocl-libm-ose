@@ -99,12 +99,12 @@
 static struct {
     const double twobypi, piby2_1, piby2_1tail, invpi, pi, pi1, pi2;
     const double piby2_2, piby2_2tail, ALM_SHIFT;
-    const double one_by_six;
+    const float one_by_six;
     double poly_sin[7];
     double poly_cos[6];
  } sin_data = {
      .ALM_SHIFT = 0x1.8p+52,
-     .one_by_six = 0.1666666666666666666,
+     .one_by_six = 0.166666666666666f,
      .twobypi = 0x1.45f306dc9c883p-1,
      .piby2_1 = 0x1.921fb54400000p0,
      .piby2_1tail = 0x1.0b4611a626331p-34,
@@ -132,7 +132,8 @@ static struct {
      },
 };
 
-void __amd_remainder_piby2(double x, double *r, double *rr, int *region);
+
+void __amd_remainder_piby2d2f(uint64_t x, double *r, int *region);
 
 #define pi          sin_data.pi
 #define pi1         sin_data.pi1
@@ -143,8 +144,8 @@ void __amd_remainder_piby2(double x, double *r, double *rr, int *region);
 #define PIby2_1tail sin_data.piby2_1tail
 #define PIby2_2     sin_data.piby2_2
 #define PIby2_2tail sin_data.piby2_2tail
-#define PIby4       0x3fe921fb54442d18
-#define FiveE6      0x415312d000000000
+#define PIby4       0x3F490FDB
+#define FiveE6      0x4A989680
 #define ONE_BY_SIX  sin_data.one_by_six
 #define ALM_SHIFT   sin_data.ALM_SHIFT
 
@@ -158,10 +159,11 @@ void __amd_remainder_piby2(double x, double *r, double *rr, int *region);
 #define C3  sin_data.poly_cos[2]
 #define C4  sin_data.poly_cos[3]
 
-#define SIGN_MASK   0x7FFFFFFFFFFFFFFF /* Infinity */
-#define INF         0x7ff0000000000000
-#define SIN_SMALL   0x3f80000000000000  /* 2.0^(-7) */
-#define SIN_SMALLER 0x3f20000000000000  /* 2.0^(-13) */
+#define SIGN_MASK32 0x7FFFFFFF
+#define SIGN_MASK   0x7FFFFFFFFFFFFFFF
+#define INF32       0x7F800000          /* Infinity */
+#define SIN_SMALL   0x3C000000  /* 2.0^(-7) */
+#define SIN_SMALLER 0x39000000  /* 2.0^(-13) */
 
 float _sinf_special(float x);
 
@@ -169,39 +171,40 @@ float
 ALM_PROTO_OPT(sinf)(float x)
 {
 
-    double r, rr, poly, x2, s;
+    double xd, r, s, poly, x2;
     double rhead, rtail, x3, x4;
     uint64_t uy;
-    uint64_t sign = 0;
+    uint32_t sign = 0;
     int32_t region;
 
     /* sinf(inf) = sinf(-inf) = sinf(NaN) = NaN */
 
-    double xd = (double)x;
+    uint32_t uxf = asuint32(x);
 
-    uint64_t ux = asuint64(xd);
+    sign = uxf >> 31;
 
-    sign = ux >> 63;
+    uxf = uxf & SIGN_MASK32;
 
-    ux = ux & SIGN_MASK;
-
-    if(unlikely(ux >= INF)) {
-        /* infinity or NaN */
+    if(unlikely(uxf >= INF32)) {
+        // infinity or NaN //
         return _sinf_special(x);
 
     }
 
-    if(ux > PIby4){
+    if(uxf > PIby4){
 
-        xd = asdouble(ux);
+        float ax = asfloat(uxf);
+
+        xd = (double)ax;
+
         /* ux > pi/4 */
-        if(ux < FiveE6){
+        if(uxf < FiveE6){
             /* reduce  the argument to be in a range from -pi/4 to +pi/4
                 by subtracting multiples of pi/2 */
 
             r = TwobyPI * xd; /* x * two_by_pi*/
 
-            int32_t xexp = ux >> 52;
+            int32_t xexp = uxf >> 23;
 
             double npi2d = r + ALM_SHIFT;
 
@@ -234,11 +237,11 @@ ALM_PROTO_OPT(sinf)(float x)
                 r = rhead - rtail;
             }
 
-            rr = (rhead - r) - rtail;
         }
         else {
-            // Reduce x into range [-pi/4,pi/4]
-            __amd_remainder_piby2(xd, &r, &rr, &region);
+            /* Reduce x into range [-pi/4,pi/4] */
+            __amd_remainder_piby2d2f(asuint64(xd), &r, &region);
+       
         }
 
         x2 = r * r;
@@ -246,31 +249,24 @@ ALM_PROTO_OPT(sinf)(float x)
         if(region & 1) {
 
             /*cos region */
-            rr = rr * r;
 
             x4 = x2 * x2;
 
             s = 0.5 * x2;
 
-            double t =  s - 1.0;
+            double t =  1.0 - s;
 
-            poly = x4 * POLY_EVAL_4(x2, C1, C2, C3, C4);
+            poly = x4 * POLY_EVAL_3(x2, C1, C2, C3, C4);
 
-            r = (((1.0 + t) - s) - rr) + poly;
+            r = t + poly;
 
-            r -= t;
         }
         else {
             /* region 0 or 2 do a sin calculation */
             x3 = x2 * r;
 
-            poly = S2 + x2 * S3 + x2 * x2 * S4;
+            r +=  x3 * POLY_EVAL_3(x2, S1, S2, S3, S4);	
 
-            s = 0.5 * rr;
-
-            poly = ((x2 * (s - x3 * poly)) - rr) - S1 * x3;
-
-            r -= poly; /* r - ((r2 * (0.5 * rr - x3 * poly) - rr) - S1 * r3 */
         }
 
         region >>= 1;
@@ -282,17 +278,21 @@ ALM_PROTO_OPT(sinf)(float x)
         }
 
         return (float)(-r);
+  
     }
-    else if(ux >= SIN_SMALL) {
+    else if(uxf >= SIN_SMALLER) {
+
+        if(uxf >= SIN_SMALL) {
         /* x > 2.0^(-13) */
-        x2 = xd * xd;
+            xd = (double)x;
 
-        return (float)(xd + (xd * (x2 * POLY_EVAL_4(x2, S1, S2, S3, S4))));
+            x2 = xd * xd;
 
-    }
-    else if(ux > SIN_SMALLER){
-        /* if x > 2.0^(-27) */
-        return (float)(xd - (xd * xd * xd * ONE_BY_SIX));
+            return (float)(xd + (xd * (x2 * POLY_EVAL_3(x2, S1, S2, S3, S4))));
+
+        }
+
+        return x - x * x * x * ONE_BY_SIX;
 
     }
 

@@ -23,7 +23,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- *
+ */
+
+/*
  * ISO-IEC-10967-2: Elementary Numerical Functions
  * Signature:
  *   float tan(float x)
@@ -66,54 +68,47 @@
 #include <libm/poly.h>
 
 static struct {
-    const uint64_t pi_by_4, small_x, min, zero;
+    const uint64_t pi_by_4;
     const uint64_t five_e5, seven_pi_by_4;
+    const uint64_t five_pi_by_4, three_pi_by_4, nine_pi_by_4;
     const double one_by_three, twobypi, piby2_1, piby2_1tail, invpi;
-    const double piby2_2, piby2_2tail, ALM_SHIFT;
+    const double piby2_2, piby2_2tail, shift;
     const double piby2_3, piby2_3tail, one_by_six;
     const double piby4_lead, piby4_tail;
-    const uint64_t five_pi_by_4, three_pi_by_4, nine_pi_by_4;
-    double poly_tanf[7];
- } tanf_data = {
-     .pi_by_4 = 0x3fe921fb54442d18,
-     .small_x = 0x3f80000000000000LL,
-     .min = 0x3f20000000000000LL,
-     .zero = 0x0,
-     .one_by_three = 0.333333333333333333,
-     .five_e5 = 0x411E848000000000,
-     .ALM_SHIFT = 0x1.8p+52,
-     .one_by_six = 0.1666666666666666666,
-     .twobypi = 6.36619772367581382433e-01, /* 0x3fe45f306dc9c883 */
-     .piby2_1 = 1.57079632673412561417e+00, /* 0x3ff921fb54400000 */
-     .piby2_1tail = 6.07710050650619224932e-11, /* 0x3dd0b4611a626331 */
-     .piby2_2 = 6.07710050630396597660e-11, /* 0x3dd0b4611a600000 */
-     .piby2_2tail = 0x1.3198a2e037073p-69,
-     .piby2_3  =  2.02226624871116645580e-21, /* 0x3ba3198a2e000000 */
-     .piby2_3tail = 8.47842766036889956997e-32, /* 0x397b839a252049c1 */
-     .five_pi_by_4 = 0x400f6a7a2955385e,
-     .three_pi_by_4 = 0x4002d97c7f3321d2,
-     .nine_pi_by_4 = 0x401c463abeccb2bb,
-     .seven_pi_by_4 = 0x4015fdbbe9bba775,
-     .piby4_lead = 7.85398163397448278999e-01, /* 0x3fe921fb54442d18 */
-     .piby4_tail = 3.06161699786838240164e-17, /* 0x3c81a62633145c06 */
-     /*
-      * Polynomial coefficients
-      */
-     .poly_tanf = {
-         0.372379159759792203640806338901e0,
-         -0.229345080057565662883358588111e-1,
-         0.224044448537022097264602535574e-3,
-         0.111713747927937668539901657944e1,
-         -0.515658515729031149329237816945e0,
-         0.260656620398645407524064091208e-1,
-         -0.232371494088563558304549252913e-3
-     },
+
+    double poly_tanf[5];
+} tanf_data = {
+    .pi_by_4       = 0x3fe921fb54442d18,
+    .one_by_three  = 0.333333333333333333,
+    .five_e5       = 0x411E848000000000,
+    .shift         = 0x1.8p+52,
+    .one_by_six    = 0.1666666666666666666,
+    .twobypi       = 6.36619772367581382433e-01, /* 0x3fe45f306dc9c883 */
+    .piby2_1       = 1.57079632673412561417e+00, /* 0x3ff921fb54400000 */
+    .piby2_1tail   = 6.07710050650619224932e-11, /* 0x3dd0b4611a626331 */
+    .piby2_2       = 6.07710050630396597660e-11, /* 0x3dd0b4611a600000 */
+    .piby2_2tail   = 2.02226624879595063154e-21,
+    .piby2_3       = 2.02226624871116645580e-21, /* 0x3ba3198a2e000000 */
+    .piby2_3tail   = 8.47842766036889956997e-32, /* 0x397b839a252049c1 */
+    .five_pi_by_4  = 0x400f6a7a2955385e,
+    .three_pi_by_4 = 0x4002d97c7f3321d2,
+    .nine_pi_by_4  = 0x401c463abeccb2bb,
+    .seven_pi_by_4 = 0x4015fdbbe9bba775,
+    .piby4_lead    = 7.85398163397448278999e-01, /* 0x3fe921fb54442d18 */
+    .piby4_tail    = 3.06161699786838240164e-17, /* 0x3c81a62633145c06 */
+
+    /* Polynomial coefficients */
+    .poly_tanf = {
+        0.385296071263995406715129e0,
+        0.172032480471481694693109e-1,
+        0.115588821434688393452299e+1,
+        -0.51396505478854532132342e0,
+        0.1844239256901656082986661e-1,
+    },
 };
 
 #define PI_BY_4       tanf_data.pi_by_4
-#define SMALL_X       tanf_data.small_x
-#define SMALLER_X     tanf_data.min
-#define ZERO          tanf_data.zero
+#define ALM_TANF_ZERO          (0x0L)
 #define ONE_BY_THREE  tanf_data.one_by_three
 #define FIVE_e5       tanf_data.five_e5
 #define TWO_BY_PI     tanf_data.twobypi
@@ -127,7 +122,7 @@ static struct {
 #define THREE_PI_BY_4 tanf_data.three_pi_by_4
 #define NINE_PI_BY_4  tanf_data.nine_pi_by_4
 #define SEVEN_PI_BY_4 tanf_data.seven_pi_by_4
-#define ALM_SHIFT     tanf_data.ALM_SHIFT
+#define ALM_SHIFT     tanf_data.shift
 #define PI_BY_4_HEAD  tanf_data.piby4_lead
 #define PI_BY_4_TAIL  tanf_data.piby4_tail
 
@@ -136,276 +131,169 @@ static struct {
 #define T3  tanf_data.poly_tanf[2]
 #define T4  tanf_data.poly_tanf[3]
 #define T5  tanf_data.poly_tanf[4]
-#define T6  tanf_data.poly_tanf[5]
-#define T7  tanf_data.poly_tanf[6]
 
-#define MASK_LOWER32 0xffffffff00000000
-extern void __amd_remainder_piby2(double x, double *r, double *rr, int32_t *region);
+#define MASK_LOWER32 0xffffffff00000000UL
 
+void __amd_remainder_piby2d2f(uint64_t ux, double *r, int *region);
 
-/* tan(x + xx) approximation valid on the interval [-pi/4,pi/4].
-   If recip is true return -1/tan(x + xx) instead. */
-static inline float tan_piby4(double x, double xx, int32_t recip)
-{
-    double r, r1, r2, t1, t2, xl;
-    int32_t transform = 0;
+/*
+ * tan(x + xx) approximation valid on the interval
+ *     [-pi/4,pi/4].
+ * If recip is true return -1/tan(x + xx) instead.
+ */
+static inline float
+tan_piby4(double x, int32_t recip) {
 
-  /* In order to maintain relative precision transform using the identity:
-     tan(pi/4-x) = (1-tan(x))/(1+tan(x)) for arguments close to pi/4.
-     Similarly use tan(x-pi/4) = (tan(x)-1)/(tan(x)+1) close to -pi/4. */
+    double r, t, r1, r2;
 
-    if (x > 0.68) {
-        transform = 1;
+    /* Core Remez [1,2] approximation to tan(x) on the^M
+     interval [0,pi/4]. */
+    r = x * x;
 
-        x = PI_BY_4_HEAD - x;
+    r1 = (T1 - T2 * r);
 
-        xl = PI_BY_4_TAIL - xx;
+    r2 = (T3 + r * (T4 + r * T5));
 
-        x += xl;
+    t = x + x * r * r1 / r2;
 
-        xx = 0.0;
-    }
-    else if (x < -0.68) {
-        transform = -1;
+    if (recip)
+    	return -1.0 / t;
+    else
+        return t;
 
-        x = PI_BY_4_HEAD + x;
-
-        xl = PI_BY_4_TAIL + xx;
-
-        x += xl;
-
-        xx = 0.0;
-    }
-
-    /* Core Remez [2,3] approximation to tan(x+xx) on the
-     interval [0,0.68]. */
-
-    r = x * x + 2.0 * x * xx;
-
-    t1 = x;
-
-    r1 = xx + x * r * (T1 + r * (T2 + r * T3));
-
-    /* r2 = T4 + r*T5 + r*r*T6;// + r^3*T7 */
-    r2 = POLY_EVAL_3(r, T4, T5, T6, T7);
-
-    t2 = r1 / r2;
-
-  /* Reconstruct tan(x) in the transformed case. */
-
-    if (transform) {
-        double t;
-
-        t = t1 + t2;
-
-        if (recip) {
-
-            return transform * (2 * t / (t - 1) - 1.0);
-
-        }
-        else {
-
-            return (float)transform * (1.0 - 2 * t / (1 + t));
-
-        }
-    }
-
-    if (recip) {
-        /* Compute -1.0/(t1 + t2) accurately */
-        double trec, trec_top, z1, z2, t;
-        uint64_t u;
-
-        t = t1 + t2;
-
-        u = asuint64(t);
-
-        u &= MASK_LOWER32;
-
-        z1 = asdouble(u);
-
-        z2 = t2 - (z1 - t1);
-
-        trec = -1.0 / t;
-
-        u = asuint64(trec);
-
-        u &= MASK_LOWER32;
-
-        trec_top = asdouble(u);
-
-        return (float)(trec_top + trec * ((1.0 + trec_top * z1) + trec_top * z2));
-    }
-    else {
-
-        return (float)(t1 + t2);
-
-    }
 }
 
+static inline float
+tan_piby4i_zero(double x) {
 
-float ALM_PROTO_OPT(tanf)(float x)
+    double r, t, r1, r2;
+
+    /* Core Remez [1,2] approximation to tan(x) on the^M
+     interval [0,pi/4]. */
+    r = x * x;
+
+    r1 = (T1 - T2 * r);
+
+    r2 = (T3 + r * (T4 + r * T5));
+
+    t = x + x * r * r1 / r2;
+
+    return t;
+
+}
+
+static float
+__tanf_special_inline(float x)
 {
-    double r, rr, t, rhead, rtail, npi2d;
-    int32_t npi2, region, xneg;
-    uint64_t ux, uy, ax, xexp, expdiff;
     uint32_t uxf;
 
     uxf = asuint32(x);
 
-    if (unlikely(((uxf & EXPBITS_SP32) == EXPBITS_SP32))) {
+    /* x is either NaN or infinity */
+    if (uxf & MANTBITS_SP32) {
+        /* x is NaN */
+        if (uxf & QNAN_MASK_32)
+            return  __amd_handle_errorf("tanf", __amd_tan, uxf | QNAN_MASK_32,
+                                        _DOMAIN, AMD_F_NONE, EDOM, x, 0.0f, 1);
 
-        /* x is either NaN or infinity */
-        if (uxf & MANTBITS_SP32) {
-
-            /* x is NaN */
-            if (uxf & QNAN_MASK_32) {
-
-                return  __amd_handle_errorf("tanf", __amd_tan, uxf | QNAN_MASK_32,
-                                             _DOMAIN, AMD_F_NONE, EDOM, x, 0.0f, 1);
-            }
-            else {
-
-                return  __amd_handle_errorf("tanf", __amd_tan, uxf | QNAN_MASK_32,
-                                            _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0f, 1);
-            }
-
-        }
-        else {
-            /* x is infinity. Return a NaN */
-            return  __amd_handle_errorf("tanf", __amd_tan, INDEFBITPATT_SP32, _DOMAIN,
-                                        AMD_F_INVALID, EDOM, x, 0.0f, 1);
-        }
+        return  __amd_handle_errorf("tanf", __amd_tan, uxf | QNAN_MASK_32,
+                                    _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0f, 1);
     }
 
-    ux = asuint64(x);
+    /* x is infinity. Return a NaN */
+    return  __amd_handle_errorf("tanf", __amd_tan, INDEFBITPATT_SP32, _DOMAIN,
+                                AMD_F_INVALID, EDOM, x, 0.0f, 1);
+}
 
-    ax = (ux & ~SIGNBIT_DP64);
+#define ALM_TANF_SMALL_X     0x3C000000 
+#define ALM_TANF_ARG_MIN     0x39000000 
 
-    if (ax <= PI_BY_4) { /* abs(x) <= pi/4 */
+static float
+__tanf_very_small_x(float x)
+{
+    uint32_t ax = asuint32(x) & ~SIGNBIT_SP32;
 
-        if (ax < SMALL_X) { /* abs(x) < 2.0^(-13) */
+    if (ax == ALM_TANF_ZERO)
+        return x;
 
-            if (ax < SMALLER_X) {/* abs(x) < 2.0^(-27) */
+    if (ax < ALM_TANF_SMALL_X) { /* abs(x) < 2.0^(-13) */
+        if (ax < ALM_TANF_ARG_MIN) /* abs(x) < 2.0^(-27) */
+            return  __amd_handle_errorf("tanf", __amd_tan, asuint32(x), _UNDERFLOW,
+                                        AMD_F_UNDERFLOW|AMD_F_INEXACT,
+                                        ERANGE, x, 0.0, 1);
 
-                if (ax == ZERO) {
-
-                     return x;
-
-                }
-                else {
-
-                    return  __amd_handle_errorf("tanf", __amd_tan, ux, _UNDERFLOW,
-                                                AMD_F_UNDERFLOW|AMD_F_INEXACT,
-                                                ERANGE, x, 0.0, 1);
-
-                }
-           }
-            else {
-
-                return x + (x * x * x * ONE_BY_THREE);
-
-            }
-        }
-        else {
-
-            return tan_piby4(x, 0.0, 0);
-
-        }
+        /*
+         *  2^-13 < abs(x) < 2^-27
+         *  tan(x) = x + x^3 * 0.333333333
+         */
+        return x + (x * x * x * ONE_BY_THREE);
     }
 
-    xneg = ux >> 63;
+    return tan_piby4i_zero(x);
+}
 
-    x = asdouble(ax);
+float ALM_PROTO_OPT(tanf)(float x)
+{
+    double    dx, r;
+    int32_t   region, xneg;
+    uint32_t  uxf;
 
-    if (ax < FIVE_e5) { /* x < 5e5 */
-        /* For these size arguments we can just carefully subtract the
-         appropriate multiple of pi/2, using extra precision where
-         x is close to an exact multiple of pi/2 */
+    uxf = asuint32(x);
 
-        xexp  = ax >> EXPSHIFTBITS_DP64;
-        /* How many pi/2 is x a multiple of? */
-        if (ax <= FIVE_PI_BY_4) { /* 5pi/4 */
+    xneg = uxf & SIGNBIT_SP32;
 
-            if (ax <= THREE_PI_BY_4) /* 3pi/4 */
-                npi2 = 1;
-            else
-                npi2 = 2;
+    if (unlikely(((uxf & PINFBITPATT_SP32) == PINFBITPATT_SP32))) {
+        return __tanf_special_inline(x);
+    }
 
-            npi2d = (double)npi2;
+    /* uxf = abs(uxf) */
+    uxf &= ~SIGNBIT_SP32;
+
+    dx = (double) asfloat(uxf);
+
+    uint64_t ax = asuint64(dx);
+
+    if (unlikely(ax >= FIVE_e5)) {
+        /* Reduce x into range [-pi/4,pi/4] */
+        __amd_remainder_piby2d2f(ax, &r, &region);
+    }
+    else {
+
+        double    rhead, rtail, npi2d;
+        uint32_t  npi2;
+
+        if (ax <= PI_BY_4) { /* abs(x) <= pi/4 */
+            return __tanf_very_small_x(x);
         }
-        else if (ax <= NINE_PI_BY_4) {/* 9pi/4 */
 
-            if (ax <= SEVEN_PI_BY_4) /* 7pi/4 */
-                npi2 = 3;
-            else
-                npi2 = 4;
+        /* Here on , pi/4 < ax < 5e5
+         * For these size arguments we can just carefully subtract the
+         * appropriate multiple of pi/2, using extra precision where
+         * x is close to an exact multiple of pi/2
+         */
 
-            npi2d = (double)npi2;
-        }
-        else {
+        npi2d = dx *  TWO_BY_PI + ALM_SHIFT;
 
-             npi2d = x *  TWO_BY_PI + ALM_SHIFT;
+        npi2 = asuint64(npi2d);
 
-             npi2 = asuint64(npi2d);
-
-             npi2d -= ALM_SHIFT;
-
-        }
+        npi2d -= ALM_SHIFT;
 
         /* Subtract the multiple from x to get an extra-precision remainder */
-        rhead  = x - npi2d * PI_BY_2_1;
+        rhead  = dx - npi2d * PI_BY_2_1;
 
         rtail  = npi2d * PI_BY_2_1TAIL;
 
-        uy = asuint64(rhead);
-
-        expdiff = xexp - ((uy & EXPBITS_DP64) >> EXPSHIFTBITS_DP64);
-
-        if (expdiff > 15) {
-          /* The remainder is pretty small compared with x, which
-             implies that x is a near multiple of pi/2
-             (x matches the multiple to at least 15 bits) */
-            t  = rhead;
-
-            rtail  = npi2d * PI_BY_2_2;
-
-            rhead  = t - rtail;
-
-            rtail  = npi2d * PI_BY_2_2TAIL - ((t - rhead) - rtail);
-
-            if (expdiff > 48) {
-              /* x matches a pi/2 multiple to at least 48 bits */
-                t  = rhead;
-
-                rtail  = npi2d * PI_BY_2_3;
-
-                rhead  = t - rtail;
-
-                rtail  = npi2d * PI_BY_2_3TAIL - ((t - rhead) - rtail);
-            }
-        }
-
         r = rhead - rtail;
 
-        rr = (rhead - r) - rtail;
-
-        region = npi2 & 3;
-    }
-    else {
-      /* Reduce x into range [-pi/4,pi/4] */
-        __amd_remainder_piby2(x, &r, &rr, &region);
-
+        region = npi2;
     }
 
-    if (xneg) {
+    float res = tan_piby4(r, region & 1);
 
-        return -tan_piby4(r, rr, region & 1);
+    /* tan(x) = -tan(x) if x is negative */
+    res = asfloat(xneg ^ asuint32(res));
 
-    }
-    else {
+    return res;
 
-        return tan_piby4(r, rr, region & 1);
-
-    }
 }
 

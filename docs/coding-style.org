@@ -1,6 +1,6 @@
 * Coding Style
 
-General Guidlines:
+General Guidelines:
 
 1. Don't try to write the most compact code possible but rather the most
    readable.
@@ -10,7 +10,7 @@ General Guidlines:
 3. No tabs expanded to spaces.
 
 ** Editor
-Any editor of your choise, avoid brainded, bloated or over-intelligent ones.
+Any editor of your choice, avoid brainded, bloated or over-intelligent ones.
 
 braindead:
 
@@ -29,14 +29,14 @@ vim configuration:
 
 indent command: 
 
-Indent comand related options are provided in indent-options
+Indent command related options are provided in indent-options
 file under 'tools' directory.
 
 
 ** Whitespace
 
 - Indents are four spaces.  
-- Tabs are never used, except in Makefiles (which dont exist anymore :) )
+- Tabs are never used, except in Makefiles (which don't exist anymore :) )
 
 - Do not leave whitespace dangling off the ends of lines.
  a.k.a Trailing whitespaces
@@ -67,7 +67,7 @@ switch (case_val) {
 }
 #+END_SRC
 
-The paranthesis shold be on the same line in compound statements 'if', 'while'
+The parenthesis should be on the same line in compound statements 'if', 'while'
 'for' and 'switch'
 #+BEGIN_SRC c
 while (cond) {
@@ -96,7 +96,7 @@ break;
 }
 #+END_SRC
 
-goto lables should be aligned on the column '1'.
+goto labels should be aligned on the column '1'.
 #+BEGIN_SRC c
   func () {
       if (cond) {

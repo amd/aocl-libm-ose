@@ -64,6 +64,8 @@ class LLVM(Compiler):
         self.cpp_flags_debug = []
         self.cpp_flags_release = []
 
+        self.fixup_from_env()
+
     def Cmd(self):
         return self.cmd
 

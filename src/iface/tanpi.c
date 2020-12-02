@@ -26,22 +26,55 @@
  */
 
 #include <libm_macros.h>
-#include <libm/cpu_features.h>
-#include <libm/entry_pt.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/iface.h>
-#include <libm/amd_funcs_internal.h>    /* Contains all implementations */
+#include <libm/entry_pt.h>
 
+//#include <libm/arch/zen.h>
+#include <libm/arch/zen2.h>
+#include <libm/arch/zen3.h>
+
+static const
+struct alm_arch_funcs __arch_funcs_tanpi = {
+    .def_arch = ALM_UARCH_VER_DEFAULT,
+    .funcs = {
+        [ALM_UARCH_VER_DEFAULT] = {
+            &FN_PROTOTYPE_REF(tanpif),
+            &FN_PROTOTYPE_REF(tanpi),
+            NULL,                           /* vrs4 ? */
+            NULL,                           /* vrs8 ? */
+            NULL,                           /* vrd2 ? */
+            NULL,                           /* vrd4 ? */
+        },
+#if 0
+        [ALM_UARCH_VER_ZEN] = {
+            &FN_PROTOTYPE_FMA3(tanpif),
+            &FN_PROTOTYPE_FMA3(tanpi),
+            NULL,                           /* vrs4 ? */
+            NULL,                           /* vrs8 ? */
+            NULL,                           /* vrd2 ? */
+            NULL,                           /* vrd4 ? */
+        },
+#endif
+    }
+};
 
 void
 LIBM_IFACE_PROTO(tanpi)(void *arg)
 {
-	/* Double */
-	G_ENTRY_PT_PTR(tanpi) = &FN_PROTOTYPE_REF(tanpi);
+    alm_ep_wrapper_t g_entry_tanpi = {
+       .g_ep = {
+        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(tanpif),
+        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(tanpi),
+#if 0
+        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_tanpif),
+        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_tanpif),
+        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_tanpi),
+        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_tanpi),
+#endif
+        },
+    };
 
-	/* Single */
-	G_ENTRY_PT_PTR(tanpif) = &FN_PROTOTYPE_REF(tanpif);
-
-	/* Vector Double */
-	/* Vector Single */
+    alm_iface_fixup(&g_entry_tanpi, &__arch_funcs_tanpi);
 }
 

@@ -29,93 +29,58 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
-#include <libm/cpu_features.h>
+
+//#include <libm/arch/zen.h>
 #include <libm/arch/zen2.h>
 #include <libm/arch/zen3.h>
 
-typedef double (*amd_pow_t)(double, double);
-typedef float (*amd_powf_t)(float, float) ;
-typedef __m128d (*amd_pow_v2d_t)(__m128d, __m128d);
-typedef __m256d (*amd_pow_v4d_t)(__m256d, __m256d);
-typedef __m128  (*amd_powf_v4s_t)(__m128, __m128);
-typedef __m256  (*amd_powf_v8s_t)(__m256, __m256);
+static const
+struct alm_arch_funcs __arch_funcs_pow = {
+    .def_arch = ALM_UARCH_VER_DEFAULT,
+    .funcs = {
+        [ALM_UARCH_VER_DEFAULT] = {
+            &FN_PROTOTYPE_FMA3(powf),
+            &FN_PROTOTYPE_FMA3(pow),
+            NULL, //&FN_PROTOTYPE_FMA3(vrs4_powf),
+            NULL, //&FN_PROTOTYPE_FMA3(vrs8_powf),
+            &FN_PROTOTYPE_FMA3(vrd2_pow),
+            &FN_PROTOTYPE_FMA3(vrd4_pow),
+        },
+
+        [ALM_UARCH_VER_ZEN2] = {
+            &ALM_PROTO_ARCH_ZN2(powf),
+            &ALM_PROTO_ARCH_ZN2(pow),
+            &ALM_PROTO_ARCH_ZN2(vrs4_powf),
+            &ALM_PROTO_ARCH_ZN2(vrs8_powf),
+            &ALM_PROTO_ARCH_ZN2(vrd2_pow),
+            &ALM_PROTO_ARCH_ZN2(vrd4_pow),
+        },
+
+        [ALM_UARCH_VER_ZEN3] = {
+            &ALM_PROTO_ARCH_ZN3(powf),
+            &ALM_PROTO_ARCH_ZN3(pow),
+            &ALM_PROTO_ARCH_ZN3(vrs4_powf),
+            &ALM_PROTO_ARCH_ZN3(vrs8_powf),
+            &ALM_PROTO_ARCH_ZN3(vrd2_pow),
+            &ALM_PROTO_ARCH_ZN3(vrd4_pow),
+        },
+    },
+};
 
 void
 LIBM_IFACE_PROTO(pow)(void *arg)
 {
-    /*
-     * Should setup all variants,
-     * powgle, double, and vectors (also complex if available)
-     */
+    alm_ep_wrapper_t g_entry_pow = {
+       .g_ep = {
+        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(powf),
+        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(pow),
+        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_powf),
+        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_powf),
+        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_pow),
+        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_pow),
+        },
+    };
 
-    amd_pow_t  fn_d = NULL;
-    amd_powf_t fn_s = NULL;
-    amd_pow_v4d_t fn_v4d = NULL;
-    amd_pow_v2d_t fn_v2d = NULL;
-    amd_powf_v4s_t fn_v4s = NULL;
-    amd_powf_v8s_t fn_v8s = NULL;
-
-    static struct cpu_features *features = NULL;
-
-    if (!features) {
-        features = libm_cpu_get_features();
-    }
-
-    struct cpu_mfg_info *mfg_info = &features->cpu_mfg_info;
-
-    fn_d = &FN_PROTOTYPE_FMA3(pow);
-    fn_s = &FN_PROTOTYPE_FMA3(powf);
-    fn_v4d = &FN_PROTOTYPE_FMA3(vrd4_pow);
-    fn_v2d = &FN_PROTOTYPE_FMA3(vrd2_pow);
-    fn_v4s = &FN_PROTOTYPE_OPT(vrs4_powf);
-    fn_v8s = &FN_PROTOTYPE_OPT(vrs8_powf);
-
-    if (CPU_HAS_AVX2(features) &&
-        CPU_FEATURE_AVX2_USABLE(features)) {
-        fn_d = &FN_PROTOTYPE_OPT(pow);
-        fn_s = &FN_PROTOTYPE_OPT(powf);
-        fn_v4d = &FN_PROTOTYPE_OPT(vrd4_pow);
-        fn_v2d = &FN_PROTOTYPE_OPT(vrd2_pow);
-    } else if (CPU_HAS_SSSE3(features) &&
-               CPU_FEATURE_SSSE3_USABLE(features)) {
-        fn_d = &FN_PROTOTYPE_BAS64(pow);
-    } else if (CPU_HAS_AVX(features) &&
-               CPU_FEATURE_AVX_USABLE(features)) {
-        fn_d = &FN_PROTOTYPE_BAS64(pow);
-    }
-
-    /*
-     * Template:
-     *     override with any micro-architecture-specific
-     *     implementations
-     */
-    if (mfg_info->mfg_type == CPU_MFG_AMD) {
-        switch(mfg_info->family) {
-        case 0x15:                      /* Naples */
-            break;
-        case 0x17:                      /* Rome */
-                   fn_d   = &ALM_PROTO_ARCH_ZN2(pow);
-                   fn_s   = &ALM_PROTO_ARCH_ZN2(powf);
-                   fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_powf);
-                   fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_powf);
-                   fn_v2d = &ALM_PROTO_ARCH_ZN2(vrd2_pow);
-                   fn_v4d = &ALM_PROTO_ARCH_ZN2(vrd4_pow);
-            break;
-        case 0x19:                      /* Milan */
-                   fn_d   = &ALM_PROTO_ARCH_ZN3(pow);
-                   fn_s   = &ALM_PROTO_ARCH_ZN3(powf);
-                   fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_powf);
-                   fn_v8s = &ALM_PROTO_ARCH_ZN3(vrs8_powf);
-                   fn_v2d = &ALM_PROTO_ARCH_ZN3(vrd2_pow);
-                   fn_v4d = &ALM_PROTO_ARCH_ZN3(vrd4_pow);
-            break;
-        }
-    }
-
-    G_ENTRY_PT_PTR(pow) = fn_d;
-    G_ENTRY_PT_PTR(powf) = fn_s;
-    G_ENTRY_PT_PTR(vrd4_pow) = fn_v4d;
-    G_ENTRY_PT_PTR(vrd2_pow) = fn_v2d;
-    G_ENTRY_PT_PTR(vrs4_powf) = fn_v4s;
-    G_ENTRY_PT_PTR(vrs8_powf) = fn_v8s;
+    alm_iface_fixup(&g_entry_pow, &__arch_funcs_pow);
 }
+

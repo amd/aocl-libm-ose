@@ -26,22 +26,55 @@
  */
 
 #include <libm_macros.h>
-#include <libm/cpu_features.h>
-#include <libm/entry_pt.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/iface.h>
-#include <libm/amd_funcs_internal.h>    /* Contains all implementations */
+#include <libm/entry_pt.h>
 
+//#include <libm/arch/zen.h>
+#include <libm/arch/zen2.h>
+#include <libm/arch/zen3.h>
+
+static const
+struct alm_arch_funcs __arch_funcs_hypot = {
+    .def_arch = ALM_UARCH_VER_DEFAULT,
+    .funcs = {
+        [ALM_UARCH_VER_DEFAULT] = {
+            &FN_PROTOTYPE_REF(hypotf),
+            &FN_PROTOTYPE_REF(hypot),
+            NULL,                           /* vrs4 ? */
+            NULL,                           /* vrs8 ? */
+            NULL,                           /* vrd2 ? */
+            NULL,                           /* vrd4 ? */
+        },
+#if 0
+        [ALM_UARCH_VER_ZEN] = {
+            &FN_PROTOTYPE_FMA3(hypotf),
+            &FN_PROTOTYPE_FMA3(hypot),
+            NULL,                           /* vrs4 ? */
+            NULL,                           /* vrs8 ? */
+            NULL,                           /* vrd2 ? */
+            NULL,                           /* vrd4 ? */
+        },
+#endif
+    }
+};
 
 void
 LIBM_IFACE_PROTO(hypot)(void *arg)
 {
-	/* Double */
-	G_ENTRY_PT_PTR(hypot) = &FN_PROTOTYPE_REF(hypot);
+    alm_ep_wrapper_t g_entry_hypot = {
+       .g_ep = {
+        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(hypotf),
+        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(hypot),
+#if 0
+        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_hypotf),
+        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_hypotf),
+        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_hypot),
+        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_hypot),
+#endif
+        },
+    };
 
-	/* Single */
-	G_ENTRY_PT_PTR(hypotf) = &FN_PROTOTYPE_REF(hypotf);
-
-	/* Vector Double */
-	/* Vector Single */
+    alm_iface_fixup(&g_entry_hypot, &__arch_funcs_hypot);
 }
 

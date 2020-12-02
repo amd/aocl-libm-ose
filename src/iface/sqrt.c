@@ -26,22 +26,55 @@
  */
 
 #include <libm_macros.h>
-#include <libm/cpu_features.h>
-#include <libm/entry_pt.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/iface.h>
-#include <libm/amd_funcs_internal.h>    /* Contains all implementations */
+#include <libm/entry_pt.h>
 
+//#include <libm/arch/zen.h>
+#include <libm/arch/zen2.h>
+#include <libm/arch/zen3.h>
+
+static const
+struct alm_arch_funcs __arch_funcs_sqrt = {
+    .def_arch = ALM_UARCH_VER_DEFAULT,
+    .funcs = {
+        [ALM_UARCH_VER_DEFAULT] = {
+            &FN_PROTOTYPE_REF(sqrtf),
+            &FN_PROTOTYPE_REF(sqrt),
+            NULL,                           /* vrs4 ? */
+            NULL,                           /* vrs8 ? */
+            NULL,                           /* vrd2 ? */
+            NULL,                           /* vrd4 ? */
+        },
+#if 0
+        [ALM_UARCH_VER_ZEN] = {
+            &FN_PROTOTYPE_FMA3(sqrtf),
+            &FN_PROTOTYPE_FMA3(sqrt),
+            NULL,                           /* vrs4 ? */
+            NULL,                           /* vrs8 ? */
+            NULL,                           /* vrd2 ? */
+            NULL,                           /* vrd4 ? */
+        },
+#endif
+    }
+};
 
 void
 LIBM_IFACE_PROTO(sqrt)(void *arg)
 {
-	/* Double */
-	G_ENTRY_PT_PTR(sqrt) = &FN_PROTOTYPE_REF(sqrt);
+    alm_ep_wrapper_t g_entry_sqrt = {
+       .g_ep = {
+        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(sqrtf),
+        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(sqrt),
+#if 0
+        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_sqrtf),
+        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_sqrtf),
+        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_sqrt),
+        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_sqrt),
+#endif
+        },
+    };
 
-	/* Single */
-	G_ENTRY_PT_PTR(sqrtf) = &FN_PROTOTYPE_REF(sqrtf);
-
-	/* Vector Double */
-	/* Vector Single */
+    alm_iface_fixup(&g_entry_sqrt, &__arch_funcs_sqrt);
 }
 

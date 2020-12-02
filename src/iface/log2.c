@@ -26,22 +26,63 @@
  */
 
 #include <libm_macros.h>
-#include <libm/cpu_features.h>
-#include <libm/entry_pt.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/iface.h>
-#include <libm/amd_funcs_internal.h>    /* Contains all implementations */
+#include <libm/entry_pt.h>
 
+//#include <libm/arch/zen.h>
+#include <libm/arch/zen2.h>
+#include <libm/arch/zen3.h>
+
+static const
+struct alm_arch_funcs __arch_funcs_log2 = {
+    .def_arch = ALM_UARCH_VER_DEFAULT,
+    .funcs = {
+        [ALM_UARCH_VER_DEFAULT] = {
+            &FN_PROTOTYPE_FMA3(log2f),
+            &FN_PROTOTYPE_FMA3(log2),
+            &FN_PROTOTYPE_FMA3(vrs4_log2f),
+            NULL,                           /* vrs8 ? */
+            &FN_PROTOTYPE_FMA3(vrd2_log2),
+            NULL,                           /* vrd4 ? */
+        },
+
+#if 0
+        [ALM_UARCH_VER_ZEN2] = {
+            &ALM_PROTO_ARCH_ZN2(log2f),
+            &ALM_PROTO_ARCH_ZN2(log2),
+            &ALM_PROTO_ARCH_ZN2(vrs4_log2f),
+            &ALM_PROTO_ARCH_ZN2(vrs8_log2f),
+            &ALM_PROTO_ARCH_ZN2(vrd2_log2),
+            &ALM_PROTO_ARCH_ZN2(vrd4_log2),
+        },
+
+        [ALM_UARCH_VER_ZEN3] = {
+            &ALM_PROTO_ARCH_ZN3(log2f),
+            &ALM_PROTO_ARCH_ZN3(log2),
+            &ALM_PROTO_ARCH_ZN3(vrs4_log2f),
+            &ALM_PROTO_ARCH_ZN3(vrs8_log2f),
+            &ALM_PROTO_ARCH_ZN3(vrd2_log2),
+            &ALM_PROTO_ARCH_ZN3(vrd4_log2),
+        },
+#endif
+    },
+};
 
 void
 LIBM_IFACE_PROTO(log2)(void *arg)
 {
-	/* Double */
-	G_ENTRY_PT_PTR(log2) = &FN_PROTOTYPE_FMA3(log2);
+    alm_ep_wrapper_t g_entry_log2 = {
+       .g_ep = {
+        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(log2f),
+        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(log2),
+        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_log2f),
+        //[ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_log2f),
+        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_log2),
+        //[ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_log2),
+        },
+    };
 
-	/* Single */
-	G_ENTRY_PT_PTR(log2f) = &FN_PROTOTYPE_FMA3(log2f);
-
-	/* Vector Double */
-	/* Vector Single */
+    alm_iface_fixup(&g_entry_log2, &__arch_funcs_log2);
 }
 

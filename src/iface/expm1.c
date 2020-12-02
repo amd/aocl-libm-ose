@@ -26,21 +26,54 @@
  */
 
 #include <libm_macros.h>
-#include <libm_amd.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
 
+//#include <libm/arch/zen.h>
+#include <libm/arch/zen2.h>
+#include <libm/arch/zen3.h>
+
+static const
+struct alm_arch_funcs __arch_funcs_expm1 = {
+    .def_arch = ALM_UARCH_VER_DEFAULT,
+    .funcs = {
+        [ALM_UARCH_VER_DEFAULT] = {
+            &FN_PROTOTYPE_FMA3(expm1f),
+            &FN_PROTOTYPE_FMA3(expm1),
+            &FN_PROTOTYPE_FMA3(vrs4_expm1f),
+            NULL,                           /* vrs8 ? */
+            NULL,                           /* vrd2 ? */
+            NULL,                           /* vrd4 ? */
+        },
+#if 0
+        [ALM_UARCH_VER_ZEN2] = {
+            &ALM_PROTO_ARCH_ZN2(expm1f),
+            &ALM_PROTO_ARCH_ZN2(expm1),
+        },
+
+        [ALM_UARCH_VER_ZEN3] = {
+            &ALM_PROTO_ARCH_ZN3(expm1f),
+            &ALM_PROTO_ARCH_ZN3(expm1),
+        },
+#endif
+    },
+};
+
 void
 LIBM_IFACE_PROTO(expm1)(void *arg)
 {
-    /*
-     * Should setup all variants,
-     * single, double, and vectors (also complex if available)
-     */
-    G_ENTRY_PT_PTR(expm1) = &FN_PROTOTYPE_BAS64(expm1);
-    G_ENTRY_PT_PTR(expm1f) = &FN_PROTOTYPE_BAS64(expm1f);
+    alm_ep_wrapper_t g_entry_expm1 = {
+       .g_ep = {
+        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(expm1f),
+        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(expm1),
+        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_expm1f),
+        //[ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_expm1f),
+        //[ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_expm1),
+        //[ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_expm1),
+        },
+    };
 
-    /*vector versions*/
-    G_ENTRY_PT_PTR(vrd4_expm1) = &FN_PROTOTYPE(vrd4_expm1);
+    alm_iface_fixup(&g_entry_expm1, &__arch_funcs_expm1);
 }
+

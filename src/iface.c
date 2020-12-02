@@ -27,8 +27,10 @@
 
 #include <stddef.h>                     /* for NULL */
 
+#include <libm/cpu_features.h>
 #include <libm/entry_pt.h>
 #include <libm/iface.h>
+
 
 struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_ACOS]       = {LIBM_IFACE_PROTO(acos), NULL},
@@ -112,3 +114,79 @@ libm_iface_init(void)
     }
 }
 
+
+static alm_func_t
+alm_iface_fixup_one(const struct alm_arch_funcs *alm_funcs,
+                    alm_uarch_ver_t arch_ver, int idx)
+{
+    alm_func_t ret = (alm_func_t)NULL;
+
+    if (!alm_funcs)
+        return  ret;
+
+    /* if invalid arg, fixup with defaults */
+    if (ALM_UARCH_MAX - arch_ver >=
+        ALM_UARCH_MAX - ALM_UARCH_VER_DEFAULT)
+        arch_ver = alm_funcs->def_arch;
+
+    /* if corrupted arch_version */
+    if (ALM_UARCH_MAX - arch_ver >=
+        ALM_UARCH_MAX - ALM_UARCH_VER_DEFAULT)
+        arch_ver = ALM_UARCH_VER_DEFAULT;
+
+    for (int i = arch_ver; i >=0 ; i--) {
+        /* Keep searching till we find default version */
+        if (alm_funcs->funcs[i][idx]) {
+            ret = alm_funcs->funcs[i][idx];
+            break;
+        }
+    }
+
+    /* or NULL */
+    return ret;
+}
+
+void
+alm_iface_fixup(alm_ep_wrapper_t *g_ep_wrapper,
+                const struct alm_arch_funcs *alm_funcs)
+{
+    static struct cpu_features *features = NULL;
+
+    if (!alm_funcs)
+        return;
+
+    if (!features) {
+        features = libm_cpu_get_features();
+    }
+
+    struct cpu_mfg_info *mfg_info = &features->cpu_mfg_info;
+
+    alm_uarch_ver_t arch_ver = ALM_UARCH_VER_DEFAULT;
+
+    if (mfg_info->mfg_type == CPU_MFG_AMD) {
+        switch(mfg_info->family) {
+        case 0x15:                      /* Naples */
+            arch_ver = ALM_UARCH_VER_ZEN;
+            break;
+        case 0x17:                      /* Rome */
+            arch_ver = ALM_UARCH_VER_ZEN2;
+            break;
+        case 0x19:                      /* Milan */
+            arch_ver = ALM_UARCH_VER_ZEN3;
+            break;
+        default:
+            break;
+        }
+    }
+
+    for (int i = ((int)ALM_FUNC_VAR_MAX-1); i >=0 ; i--) {
+        alm_func_t *gptr = g_ep_wrapper->g_ep[i];
+
+        if (gptr) {
+            /* Overwrite only if find valid function */
+            alm_func_t f = alm_iface_fixup_one(alm_funcs, arch_ver, i);
+            if (f)
+                *gptr = f;
+        }
+    }
+}

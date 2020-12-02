@@ -182,4 +182,45 @@ struct entry_pt_interface {
 
 extern struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY];
 
+enum ALM_FUNC_VARIANTS {
+    ALM_FUNC_SCAL_SP    = 0,
+    ALM_FUNC_SCAL_DP,
+    ALM_FUNC_VECT_SP_4,
+    ALM_FUNC_VECT_SP_8,
+    ALM_FUNC_VECT_DP_2,
+    ALM_FUNC_VECT_DP_4,
+
+    ALM_FUNC_VAR_MAX,                   /* should be last, always */
+};
+typedef enum ALM_FUNC_VARIANTS alm_func_var_t;
+
+enum ALM_UARCH_VERSIONS {
+    ALM_UARCH_VER_DEFAULT,
+    ALM_UARCH_VER_BASE64,
+    ALM_UARCH_VER_FMA3,
+    ALM_UARCH_VER_ZEN,
+    ALM_UARCH_VER_ZEN2,
+    ALM_UARCH_VER_ZEN3,
+
+    ALM_UARCH_MAX,                       /* should be last, always */
+};
+typedef enum ALM_UARCH_VERSIONS alm_uarch_ver_t;
+
+#ifndef alm_func_t
+typedef void (*alm_func_t)(void);
 #endif
+
+struct alm_ep_wrapper {
+    alm_func_t * g_ep[ALM_FUNC_VAR_MAX];
+};
+typedef struct alm_ep_wrapper alm_ep_wrapper_t;
+
+struct alm_arch_funcs {
+    alm_uarch_ver_t  def_arch;          /* Default version to choose */
+    void *           funcs[ALM_UARCH_MAX][ALM_FUNC_VAR_MAX]; /* function array */
+};
+
+void alm_iface_fixup(alm_ep_wrapper_t *g_ep_wrapper,
+                     const struct alm_arch_funcs *alm_funcs);
+
+#endif  /* __AMD_LIBM_IFACE_H__ */

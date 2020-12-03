@@ -126,7 +126,7 @@ class DefaultCfg(object):
             EnumVariable('compiler', "Select compiler type", 'gcc',
                          allowed_values=('gcc', 'aocc', 'llvm', 'icc'), ignorecase=2),
 
-            PathVariable('toolchain_base', "Use this as toolchain prefix", '/usr/bin')
+            PathVariable('toolchain_base', "Use this as toolchain prefix", '/usr/bin'),
             PathVariable('install_prefix', "use this as install prefix", '/usr/local')
         )
 

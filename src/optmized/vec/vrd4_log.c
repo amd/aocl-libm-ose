@@ -103,7 +103,7 @@ static struct {
 static inline v_f64x4_t
 log_specialcase(v_f64x4_t _x,
                  v_f64x4_t result,
-                 v_i64x4_t cond)
+                 v_u64x4_t cond)
 {
     return v_call_f64(ALM_PROTO(log), _x, result, cond);
 }
@@ -147,9 +147,9 @@ ALM_PROTO_OPT(vrd4_log) (__m256d x)
 
     v_i64x4_t ix;
 
-    ix = as_v4_u64_f64(x);
+    ix = as_v4_i64_f64(x);
 
-    v_i64x4_t condition = (as_v4_u64_f64(x) - V_MIN >= V_MAX - V_MIN);
+    v_u64x4_t condition = (as_v4_u64_f64(x) - V_MIN >= V_MAX - V_MIN);
 
     ix = (ix - TWO_BY_THREE) & INF;
 
@@ -163,7 +163,7 @@ ALM_PROTO_OPT(vrd4_log) (__m256d x)
 
     }
 
-    n = _mm256_cvtepi32_pd(int32_exponent);
+    n = (v_f64x4_t)_mm256_cvtepi32_pd((__m128i)int32_exponent);
 
 	/* Reduce the mantissa, m to [2/3, 4/3] */
 

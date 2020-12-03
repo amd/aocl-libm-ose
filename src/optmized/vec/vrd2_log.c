@@ -142,9 +142,9 @@ ALM_PROTO_OPT(vrd2_log) (__m128d x)
 
     v_i64x2_t ix;
 
-    ix = as_v2_u64_f64(x);
+    ix = as_v2_i64_f64(x);
 
-    v_i64x2_t condition = (as_v2_u64_f64(x) - V_MIN >= V_MAX - V_MIN);
+    v_u64x2_t condition = (as_v2_u64_f64(x) - V_MIN >= V_MAX - V_MIN);
 
     ix = (ix - TWO_BY_THREE) & INF;
 

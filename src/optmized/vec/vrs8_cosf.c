@@ -114,7 +114,7 @@ static struct {
 float ALM_PROTO(cosf)(float);
 
 static inline v_f32x8_t
-cosf_specialcase(v_f32x8_t _x, v_f32x8_t result, v_i32x8_t cond)
+cosf_specialcase(v_f32x8_t _x, v_f32x8_t result, v_u32x8_t cond)
 {
     return call_v8_f32(ALM_PROTO(cosf), _x, result, cond);
 }

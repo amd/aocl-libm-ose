@@ -109,7 +109,7 @@ double ALM_PROTO(sin)(double);
 static inline v_f64x2_t
 sin_specialcase(v_f64x2_t _x,
                  v_f64x2_t result,
-                 v_i64x2_t cond)
+                 v_u64x2_t cond)
 {
 
     return (v_f64x2_t) {

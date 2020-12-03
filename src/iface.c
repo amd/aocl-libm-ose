@@ -150,28 +150,28 @@ void
 alm_iface_fixup(alm_ep_wrapper_t *g_ep_wrapper,
                 const struct alm_arch_funcs *alm_funcs)
 {
-    static struct cpu_features *features = NULL;
+    static struct alm_cpu_features *features = NULL;
 
     if (!alm_funcs)
         return;
 
     if (!features) {
-        features = libm_cpu_get_features();
+        features = alm_cpu_get_features();
     }
 
-    struct cpu_mfg_info *mfg_info = &features->cpu_mfg_info;
+    struct alm_cpu_mfg_info *mfg_info = &features->cpu_mfg_info;
 
     alm_uarch_ver_t arch_ver = ALM_UARCH_VER_DEFAULT;
 
-    if (mfg_info->mfg_type == CPU_MFG_AMD) {
+    if (mfg_info->mfg_type == ALM_CPU_MFG_AMD) {
         switch(mfg_info->family) {
-        case 0x15:                      /* Naples */
+        case ALM_CPU_FAMILY_NAPLES:			/* Naples */
             arch_ver = ALM_UARCH_VER_ZEN;
             break;
-        case 0x17:                      /* Rome */
+        case ALM_CPU_FAMILY_ROME:				/* Rome */
             arch_ver = ALM_UARCH_VER_ZEN2;
             break;
-        case 0x19:                      /* Milan */
+        case ALM_CPU_FAMILY_MILAN:			/* Milan */
             arch_ver = ALM_UARCH_VER_ZEN3;
             break;
         default:

@@ -2,7 +2,6 @@
 
 int test_sinh(void* handle) {
     char* error;
-    int i;
 
     float (*lamd_sinhf)(float);
     double (*lamd_sinh)(double);

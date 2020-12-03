@@ -2,7 +2,6 @@
 
 int test_tanh(void* handle) {
     char* error;
-    int i;
 
     float (*lamd_tanhf)(float);
     double (*lamd_tanh)(double);

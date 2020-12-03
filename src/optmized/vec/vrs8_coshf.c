@@ -65,7 +65,7 @@ v_f32x8_t ALM_PROTO(vrs8_expf)(v_f32x8_t);
 float ALM_PROTO(coshf)(float);
 
 static inline v_f32x8_t
-coshf_specialcase(v_f32x8_t _x, v_f32x8_t result, v_i32x8_t cond)
+coshf_specialcase(v_f32x8_t _x, v_f32x8_t result, v_u32x8_t cond)
 {
     return call_v8_f32(ALM_PROTO(coshf), _x, result, cond);
 }

@@ -248,7 +248,7 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
     u = as_v4_u32_f32(_x);
 
-    v_i32x4_t condition = (u - V_MIN >= V_MAX - V_MIN);
+    v_u32x4_t condition = (u - V_MIN >= V_MAX - V_MIN);
 
     if(any_v4_u32_loop(condition)) {
 
@@ -266,9 +266,9 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
     v_u64x4_t ux = as_v4_u64_f64(xd);
 
-    v_i32x4_t int_exponent =  (u >> 23) - SP_BIAS;
+    v_i32x4_t int_exponent = (v_i32x4_t) ((u >> 23) - SP_BIAS);
 
-    v_f64x4_t exponent =  _mm256_cvtepi32_pd (int_exponent);
+    v_f64x4_t exponent = (v_f64x4_t) _mm256_cvtepi32_pd ((__m128i)int_exponent);
 
     v_u64x4_t mant  = ((ux & MANTISSA_BITS) | HALF);
 
@@ -310,7 +310,7 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
     v_u64x4_t v = as_v4_u64_f64(ylogx);
 
-    v_i64x4_t condition2 = (v >= EXPF_MAX);
+    v_u64x4_t condition2 = (v >= EXPF_MAX);
 
     v_f64x4_t z = ylogx * INVLN2;
 

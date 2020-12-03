@@ -269,7 +269,7 @@ ALM_PROTO_OPT(vrs8_powf)(__m256 x,__m256 y)
 
     v_i32x8_t condition = (u - V_MIN >= V_MAX - V_MIN);
 
-    v_i32x8_t int_exponent = (u >> 23) - SP_BIAS;
+    v_i32x8_t int_exponent = (v_i32x8_t)(u >> 23) - SP_BIAS;
 
     v_f32x4_t _x[2];
 
@@ -290,9 +290,9 @@ ALM_PROTO_OPT(vrs8_powf)(__m256 x,__m256 y)
 
     _y[1] = _mm256_extractf128_ps(y, 1);
 
-    exponent_array[0] = _mm256_extractf128_si256(int_exponent, 0);
+    exponent_array[0] = (v_i32x4_t)_mm256_extractf128_si256((__m256i)int_exponent, 0);
 
-    exponent_array[1] = _mm256_extractf128_si256(int_exponent, 1);
+    exponent_array[1] = (v_i32x4_t)_mm256_extractf128_si256((__m256i)int_exponent, 1);
 
     for(int lane = 0; lane < 2; lane++) {
 
@@ -302,7 +302,7 @@ ALM_PROTO_OPT(vrs8_powf)(__m256 x,__m256 y)
 
         v_u64x4_t ux = as_v4_u64_f64(xd);
 
-        v_f64x4_t exponent =  _mm256_cvtepi32_pd (exponent_array[lane]);
+        v_f64x4_t exponent =  _mm256_cvtepi32_pd ((__m128i)exponent_array[lane]);
 
         v_u64x4_t mant  = ((ux & MANTISSA_BITS) | HALF);
 

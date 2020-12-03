@@ -178,7 +178,7 @@ static const struct {
 static inline v_f32x4_t
 logf_specialcase(v_f32x4_t _x,
                  v_f32x4_t result,
-                 v_i32x4_t cond)
+                 v_u32x4_t cond)
 {
     return call_v4_f32(ALM_PROTO(logf), _x, result, cond);
 }
@@ -191,7 +191,7 @@ ALM_PROTO_OPT(vrs4_logf)(v_f32x4_t _x)
 
     v_32x4 vx = {.f32x4 = _x};
 
-    v_i32x4_t cond = (vx.i32x4 - V_MIN >= V_MAX - V_MIN);
+    v_u32x4_t cond = (vx.i32x4 - V_MIN >= V_MAX - V_MIN);
 
     vx.i32x4 -= V_OFF;
 

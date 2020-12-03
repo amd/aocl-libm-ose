@@ -177,13 +177,13 @@ static const struct {
 static inline v_f32x8_t
 logf_specialcase(v_f32x8_t _x,
                  v_f32x8_t result,
-                 v_i32x8_t cond)
+                 v_u32x8_t cond)
 {
 #if 1
     v_f32x4_t _x1 = {_x[0], _x[1], _x[2], _x[3]},
         _x2 = {_x[4], _x[5], _x[6], _x[7]};
 
-    v_i32x4_t _cond1 = {cond[0], cond[1], cond[2], cond[3]},
+    v_u32x4_t _cond1 = {cond[0], cond[1], cond[2], cond[3]},
         _cond2 = {cond[4], cond[5], cond[6], cond[7]};
 
     v_f32x4_t _res1 = {result[0], result[1], result[2], result[3]},
@@ -208,7 +208,7 @@ ALM_PROTO_OPT(vrs8_logf)(v_f32x8_t _x)
 
     v_32x8 vx = {.f32x8 = _x};
 
-    v_i32x8_t cond = (vx.i32x8 - V_MIN >= V_MAX - V_MIN);
+    v_u32x8_t cond = (vx.i32x8 - V_MIN >= V_MAX - V_MIN);
 
     vx.i32x8 -= V_OFF;
 

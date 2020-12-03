@@ -98,7 +98,7 @@ class DefaultCfg(object):
                  --toolchain-base=/usr/local/toolchain/
                  CC will be used as /usr/local/toolchain/bin/gcc if --compiler is gcc""")
 
-        opts.Add('--prefix', dest='install_prefix', nargs=1, action='callback',
+        opts.Add('--prefix', dest='prefix', nargs=1, action='callback',
                  type='str',
                  callback=self.__default_store,
                  help="""Specify an install prefix directory
@@ -127,7 +127,7 @@ class DefaultCfg(object):
                          allowed_values=('gcc', 'aocc', 'llvm', 'icc'), ignorecase=2),
 
             PathVariable('toolchain_base', "Use this as toolchain prefix", '/usr/bin'),
-            PathVariable('install_prefix', "use this as install prefix", '/usr/local')
+            PathVariable('prefix', "use this as install prefix", '/usr/local')
         )
 
         self.defvars = defvars

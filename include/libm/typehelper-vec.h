@@ -146,6 +146,26 @@ as_v2_u64_f64 (v_f64x2_t x)
     return r.u;
 }
 
+static inline v_i64x2_t
+as_v2_i64_f64 (v_f64x2_t x)
+{
+    union {
+        v_f64x2_t f; v_i64x2_t i;
+    } r = {.f = x};
+
+    return r.i;
+}
+
+static inline v_f64x2_t
+as_v2_f64_i64 (v_i64x2_t x)
+{
+    union {
+        v_i64x2_t _xi; v_f64x2_t _xf;
+    } val = { ._xi = x };
+
+    return val._xf;
+}
+
 /* v4 double precision */
 
 /* Access a u64x4 as f64x4 */
@@ -167,6 +187,27 @@ as_v4_u64_f64(v_f64x4_t x)
         v_f64x4_t f; v_u64x4_t u;
     } r = {.f = x};
     return r.u;
+}
+
+/* Access a i64x4 as f64x4 */
+static inline v_f64x4_t
+as_v4_f64_i64(v_i64x4_t x)
+{
+    union {
+        v_f64x4_t f; v_i64x4_t i;
+    } r = {.i = x};
+
+    return r.f;
+}
+
+/* Access a i64x4 as f64x4 */
+static inline v_i64x4_t
+as_v4_i64_f64(v_f64x4_t x)
+{
+    union {
+        v_f64x4_t f; v_i64x4_t i;
+    } r = {.f = x};
+    return r.i;
 }
 
 /*
@@ -276,33 +317,33 @@ static inline int
 any_v4_u32(v_i32x4_t cond)
 {
     const v_i32x4_t zero = _MM_SET1_I32(0);
-    return ! _mm_testz_si128(cond, zero);
+    return ! _mm_testz_si128((__m128i)cond, (__m128i)zero);
 }
 
 static inline int
 any_v8_u32(v_i32x8_t cond)
 {
     const v_i32x8_t zero = {0,};
-    return ! _mm256_testz_si256(cond, zero);
+    return ! _mm256_testz_si256((__m256i)cond, (__m256i)zero);
 }
 
 static inline int
 any_v4_u64(v_i64x4_t cond)
 {
     const v_i64x4_t zero = _MM_SET1_I64(0);
-    return ! _mm256_testz_si256(cond, zero);
+    return ! _mm256_testz_si256((__m256i)cond, (__m256i)zero);
 }
 
 static inline int
 any_v2_u64(v_i64x2_t cond)
 {
     const v_i64x2_t zero = _MM_SET1_I64x2(0);
-    return ! _mm_testz_si128(cond, zero);
+    return ! _mm_testz_si128((__m128i)cond, (__m128i)zero);
 }
 
 // Condition check with for loop for better performance
 static inline int
-any_v4_u32_loop(v_i32x4_t cond)
+any_v4_u32_loop(v_u32x4_t cond)
 {
     int ret = 0;
 
@@ -318,7 +359,7 @@ any_v4_u32_loop(v_i32x4_t cond)
 
 // Condition check with for loop for better performance
 static inline int
-any_v2_u64_loop(v_i64x2_t cond)
+any_v2_u64_loop(v_u64x2_t cond)
 {
     int ret = 0;
 
@@ -334,7 +375,7 @@ any_v2_u64_loop(v_i64x2_t cond)
 
 // Condition check with for loop for better performance
 static inline int
-any_v4_u64_loop(v_i64x4_t cond)
+any_v4_u64_loop(v_u64x4_t cond)
 {
     int ret = 0;
     for (int i = 0; i < 4; i++) {
@@ -355,7 +396,7 @@ static inline v_f32x8_t
 call_v8_f32(float (*fn)(float),
             v_f32x8_t x,
             v_f32x8_t result,
-            v_i32x8_t cond)
+            v_u32x8_t cond)
 {
     return (v_f32x8_t) {
         cond[0] ? fn(x[0]) : result[0],
@@ -409,7 +450,7 @@ static inline v_f32x4_t
 call_v4_f32(float (*fn)(float),
            v_f32x4_t orig,
            v_f32x4_t result,
-           v_i32x4_t cond)
+           v_u32x4_t cond)
 {
     return (v_f32x4_t){cond[0] ? fn(orig[0]) : result[0],
             cond[1] ? fn(orig[1]) : result[1],
@@ -447,7 +488,7 @@ static inline v_f64x4_t
 call_v4_f64(double (*fn)(double),
            v_f64x4_t orig,
            v_f64x4_t result,
-           v_i64x4_t cond)
+           v_u64x4_t cond)
 {
     return (v_f64x4_t){cond[0] ? fn(orig[0]) : result[0],
             cond[1] ? fn(orig[1]) : result[1],
@@ -465,7 +506,7 @@ static inline v_f64x2_t
 call_v2_f64(double (*fn)(double),
             v_f64x2_t x,
             v_f64x2_t result,
-            v_i64x2_t cond)
+            v_u64x2_t cond)
 {
     return (v_f64x2_t) {
         cond[0] ? fn(x[0]) : result[0],
@@ -525,7 +566,7 @@ cast_v8_f32_to_s32(v_i32x8_t _xi32)
 
 // Condition check with for loop for better performance
 static inline int
-any_v8_u32_loop(v_i32x8_t cond)
+any_v8_u32_loop(v_u32x8_t cond)
 {
     int ret = 0;
 

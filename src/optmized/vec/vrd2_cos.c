@@ -129,7 +129,7 @@ double ALM_PROTO(cos)(double);
 
 static inline v_f64x2_t
 cos_specialcase(v_f64x2_t _x, v_f64x2_t result,
-                v_i64x2_t cond)
+                v_u64x2_t cond)
 {
     return (v_f64x2_t) {
             (cond[0]) ? ALM_PROTO(cos)(_x[0]):result[0],

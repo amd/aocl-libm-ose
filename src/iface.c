@@ -180,11 +180,11 @@ alm_iface_fixup(alm_ep_wrapper_t *g_ep_wrapper,
     }
 
     for (int i = ((int)ALM_FUNC_VAR_MAX-1); i >=0 ; i--) {
-        alm_func_t *gptr = g_ep_wrapper->g_ep[i];
+        alm_ep_func_t *gptr = g_ep_wrapper->g_ep[i];
 
         if (gptr) {
             /* Overwrite only if find valid function */
-            alm_func_t f = alm_iface_fixup_one(alm_funcs, arch_ver, i);
+            alm_ep_func_t f = alm_iface_fixup_one(alm_funcs, arch_ver, i);
             if (f)
                 *gptr = f;
         }

@@ -81,7 +81,7 @@ float ALM_PROTO(tanhf)(float);
 v_f32x4_t ALM_PROTO(vrs4_expf)(v_f32x4_t);
 
 static inline v_f32x4_t
-tanhf_specialcase(v_f32x4_t _x, v_f32x4_t result, v_i32x4_t cond, v_u32x4_t sign)
+tanhf_specialcase(v_f32x4_t _x, v_f32x4_t result, v_u32x4_t cond, v_u32x4_t sign)
 {
     return call_v4_f32(ALM_PROTO(tanhf), _x, result, cond);
 }

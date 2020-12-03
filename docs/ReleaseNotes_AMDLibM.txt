@@ -1,17 +1,21 @@
 
 (C) 2008-2020 Advanced Micro Devices, Inc. All Rights Reserved.
 
-AMD LibM - Release Notes - version 3.7
+AMD LibM - Release Notes - version 3.0
 ----------------------------------------
 
 AMD LibM Contents
 -----------------
-AMD LibM is a math library. It provides optimized implementation of a number of
-math functions from the C99 standard. The library is designed for use in 64-bit
-programs on x86-64 machines. Static and dynamic libraries are available for
-Linux(R) operating system.
+AMD LibM is a software library containing a collection of basic math functions
+optimized for x86-64 processor-based machines.
+It provides many routines from the list of standard C99 math functions.
+It includes scalar as well as vector variants of the core math functions.
+AMD LibM is a C library, which users can link into their applications to replace
+compiler-provided math functions. Applications can link into AMD LibM library and
+invoke math functions instead of compiler’s math functions for better accuracy and
+performance.
 
-Hightlights of AMD LibM 3.7
+Hightlights of AMD LibM 3.0
 -----------------------------
 
     * Optimized Trigonometric scalar and vector variants of sin, cos, and tan.
@@ -49,6 +53,11 @@ available vector functions is given below. All functions have an 'amd_' prefix.
     * vrsa_cosf, vrsa_sinf
     * vrd2_cos, vrd2_sin, vrd2_cosh, vrd2_sincos
     * vrda_cos, vrda_sin
+
+ Hyperbolic
+ ----------
+    * vrs4_coshf, vrs4_tanhf
+    * vrs8_coshf, vrs8_tanhf
 
  Power
  -----

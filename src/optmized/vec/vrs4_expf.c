@@ -133,7 +133,7 @@ ALM_PROTO_OPT(vrs4_expf)(v_f32x4_t _x)
     vx = vx & MASK;
 
     // Check if -103 < vx < 88
-    v_i32x4_t cond = ((vx > ARG_MAX));
+    v_u32x4_t cond = ((vx > ARG_MAX));
 
     // Convert _x to double precision
     v_f64x4_t x = cvt_v4_f32_to_f64(_x);

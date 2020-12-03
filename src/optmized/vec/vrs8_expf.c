@@ -73,7 +73,7 @@ static const struct {
     v_f32x8_t   tblsz_byln2;
     v_f32x8_t   ln2_tbl_head, ln2_tbl_tail;
     v_f32x8_t   huge;
-    v_i32x8_t   arg_max;
+    v_u32x8_t   arg_max;
     v_i32x8_t   mask;
     v_i32x8_t   expf_bias;
     v_f32x8_t   poly_expf_5[5];
@@ -151,13 +151,13 @@ ALM_PROTO_OPT(vrs8_expf_experimental)(v_f32x8_t _x)
 {
 
     // vx = int(x)
-    v_i32x8_t vx = as_v8_u32_f32(_x);
+    v_u32x8_t vx = as_v8_u32_f32(_x);
 
     // Get absolute value of vx
     vx = vx & MASK;
 
     // Check if -103 < vx < 88
-    v_i32x8_t cond = (vx > ARG_MAX);
+    v_u32x8_t cond = (vx > ARG_MAX);
 
     // x * (64.0/ln(2))
     v_f32x8_t z = _x * TBL_LN2;
@@ -178,7 +178,7 @@ ALM_PROTO_OPT(vrs8_expf_experimental)(v_f32x8_t _x)
 
     // m = (n - j)/64
     // Calculate 2^m
-    v_i32x8_t m = (n + EXPF_BIAS) << 23;
+    v_u32x8_t m = (n + EXPF_BIAS) << 23;
 
     // Compute polynomial
     /* poly = C1 + C2*r + C3*r^2 + C4*r^3 + C5*r^4 + C6*r^5
@@ -223,13 +223,13 @@ ALM_PROTO_OPT(vrs8_expf)(v_f32x8_t _x)
 {
 
     // vx = int(x)
-    v_i32x8_t vx = as_v8_u32_f32(_x);
+    v_u32x8_t vx = as_v8_u32_f32(_x);
 
     // Get absolute value of vx
     vx = vx & MASK;
 
     // Check if -103 < vx < 88
-    v_i32x8_t cond = (vx > ARG_MAX);
+    v_u32x8_t cond = (vx > ARG_MAX);
 
     // x * (64.0/ln(2))
     v_f32x8_t z = _x * TBL_LN2;
@@ -250,7 +250,7 @@ ALM_PROTO_OPT(vrs8_expf)(v_f32x8_t _x)
 
     // m = (n - j)/64
     // Calculate 2^m
-    v_i32x8_t m = (n + EXPF_BIAS) << 23;
+    v_u32x8_t m = (n + EXPF_BIAS) << 23;
 
     // Compute polynomial
     /* poly = A1 + A2*r + A3*r^2 + A4*r^3 + A5*r^4 + A6*r^5

@@ -104,7 +104,7 @@ float ALM_PROTO(sinf)(float);
 static inline v_f32x4_t
 sinf_specialcase(v_f32x4_t _x,
                  v_f32x4_t result,
-                 v_i32x4_t cond)
+                 v_u32x4_t cond)
 {
     return call_v4_f32(ALM_PROTO(sinf), _x, result, cond);
 }

@@ -105,7 +105,7 @@ float ALM_PROTO(sinf)(float);
 static inline v_f32x8_t
 sinf_specialcase(v_f32x8_t _x,
                  v_f32x8_t result,
-                 v_i32x8_t cond)
+                 v_u32x8_t cond)
 {
 
     return call_v8_f32(ALM_PROTO(sinf), _x, result, cond);

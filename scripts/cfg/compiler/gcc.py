@@ -25,8 +25,8 @@
 
 from . import Compiler
 class Gcc(Compiler):
-    def __init__(self, prod_mode):
-        super(Gcc, self).__init__(prod_mode)
+    def __init__(self, prod_mode, bvars = None, opts = None):
+        super(Gcc, self).__init__(prod_mode, bvars, opts)
         self.cmd = 'gcc'
         self.cxxcmd = 'g++'
         self.compile_flags_debug = [

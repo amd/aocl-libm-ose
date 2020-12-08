@@ -45,7 +45,9 @@ class DefaultCfg(object):
         self.defenv = Environment(variables = self.defvars,
                                   ENV = {'PATH' : environ['PATH']})
 
-        self.Check()
+        #self.Check()
+        #for key in self.defvars.keys():
+        #    print(key)
 
     def AddOptions(self):
         opts = cfg.LocalOption()
@@ -130,6 +132,11 @@ class DefaultCfg(object):
             PathVariable('prefix', "use this as install prefix", '/usr/local')
         )
 
+        defvars.Add(PathVariable('CC', help="Custome C compiler", default=None, 
+                                validator=PathVariable.PathAccept))
+        defvars.Add(PathVariable('CXX', help="Custome C++ compiler", default=None,
+                                validator=PathVariable.PathAccept))
+
         self.defvars = defvars
 
     def Check(self):
@@ -141,7 +148,7 @@ class DefaultCfg(object):
 
         unknown = self.defvars.UnknownVariables()
         if unknown:
-            print("Unknown variables:", unknown.keys())
+            print("ALM: build: Unknown variables:", unknown.keys())
             #Exit(1)
 
         #if debug_mode is mentioned assume build type debug
@@ -162,7 +169,9 @@ class DefaultCfg(object):
         env.Append(
             CPPDEFINES = { 'LIBABI': env['libabi']})
 
-        cmpiler = compiler.gcc.Gcc(self.defenv['build'])
+        cmpiler = compiler.gcc.Gcc(self.defenv['build'],
+                                  bvars=self.defvars, 
+                                  opts=self.opts)
         #print(env['compiler'])
         if env['compiler'] == 'aocc' or env['compiler'] == 'llvm':
             cmpiler = compiler.llvm.LLVM(self.defenv['build'])
@@ -187,6 +196,7 @@ class DefaultCfg(object):
                 CPPDEFINES = {'DEVELOPER' : env['developer']})
 
         self.defvars.Save(self.def_env_file, env)
+        self.Check()
         return env
 
     def GetHelpTexts(self):

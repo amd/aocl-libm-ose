@@ -26,7 +26,9 @@
 import os
 
 class Compiler:
-    def __init__(self, prod_mode):
+    def __init__(self, prod_mode, bvars = None, opts = None):
+        self.vars = bvars
+        self.opts = opts
         self.cxxcmd = ''
         self.cmd = ''
         self.prod_mode = prod_mode
@@ -65,6 +67,9 @@ class Compiler:
             "release": self.cpp_flags_release
         }
 
+    def fixup_from_vars(self):
+        pass
+
     def fixup_from_env(self):
         if 'CC' in os.environ:
             self.cmd = os.getenv('CC')
@@ -77,4 +82,5 @@ class Compiler:
 
         if 'LDFLAGS' in os.environ:
             self.link_flag_map[self.prod_mode]
+
 

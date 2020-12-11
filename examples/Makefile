@@ -28,13 +28,22 @@
 CC      = gcc
 CFLAGS  = -march=native -g
 
+# use static or dynamic library to link
+LIB = dynamic #default value
+
 #header
-header_path = ../include/external/
+header_path = $(abspath ../include/external/)
 INC         = -I$(header_path)
 
 #path to libalm.so
-lib_path = ../build/aocl-release/src/
-LFLAGS   = -L$(lib_path) -lalm -lm
+lib_path = $(abspath ../build/aocl-release/src/)
+LFLAGS   := -L$(lib_path)
+
+ifeq ($(LIB), static)
+    LFLAGS += -static
+endif
+
+LFLAGS += -lalm -lm
 
 #src path
 SOURCES = ./src/*.c

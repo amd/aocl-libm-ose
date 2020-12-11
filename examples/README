@@ -31,7 +31,9 @@ different flavors of the exp function have been illustrated.
 
 to build and run this example:
 1. make clean;
-2. make;
-3. LD_LIBRARY_PATH=<path to libamdlibm.so shared library path
+2. make (with below optional arguments)
+   CC=clang/gcc (default:gcc)
+   LIB=static/dynamic (default it uses dynamic lib)
+3. export LD_LIBRARY_PATH=<path to libalm.so>:$LD_LIBRARY_PATH (in case of dynamic lib)
 4. ./test_libm
 

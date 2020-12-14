@@ -47,6 +47,8 @@ int main(int argc, char* argv[]) {
 
     test_remainder(handle);
 
+    test_nearbyint(handle);
+
     dlclose(handle);
     return 0;
 }

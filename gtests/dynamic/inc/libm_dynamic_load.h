@@ -15,6 +15,7 @@ extern int test_cos(void*);
 extern int test_tan(void*);
 extern int test_fabs(void*);
 extern int test_atan(void*);
+extern int test_sinh(void*);
 extern int test_cosh(void*);
 extern int test_tanh(void*);
 extern int test_atan2(void*);

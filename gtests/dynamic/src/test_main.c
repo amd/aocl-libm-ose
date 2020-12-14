@@ -33,6 +33,8 @@ int main(int argc, char* argv[]) {
     test_fabs(handle);
     test_atan(handle);
 
+    test_sinh(handle);
+
     test_cosh(handle);
     test_tanh(handle);
 

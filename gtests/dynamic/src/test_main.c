@@ -51,6 +51,7 @@ int main(int argc, char* argv[]) {
     test_finite(handle);
     test_nexttoward(handle);
     test_nan(handle);
+    test_lrint(handle);
 
     dlclose(handle);
 

@@ -25,15 +25,19 @@ int main(int argc, char* argv[]) {
     test_exp(handle);
     test_log(handle);
     test_pow(handle);
+
     test_sin(handle);
     test_cos(handle);
     test_tan(handle);
+
     test_fabs(handle);
     test_atan(handle);
+
     test_cosh(handle);
     test_tanh(handle);
 
     test_atan2(handle);
+    test_asinh(handle);
 
     dlclose(handle);
     return 0;

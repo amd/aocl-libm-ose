@@ -39,6 +39,7 @@ int main(int argc, char* argv[]) {
     test_tanh(handle);
 
     test_atan2(handle);
+    test_sqrt(handle);
 
     test_nextafter(handle);
 

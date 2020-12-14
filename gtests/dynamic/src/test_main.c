@@ -53,8 +53,8 @@ int main(int argc, char* argv[]) {
     test_nan(handle);
     test_lrint(handle);
     test_llrint(handle);
-
     test_hypot(handle);
+    test_ceil(handle);
 
     dlclose(handle);
 

@@ -35,5 +35,6 @@ extern int test_nexttoward(void*);
 extern int test_lrint(void*);
 extern int test_llrint(void*);
 extern int test_hypot(void*);
+extern int test_ceil(void*);
 
 #endif

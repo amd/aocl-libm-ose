@@ -54,6 +54,8 @@ int main(int argc, char* argv[]) {
     test_lrint(handle);
     test_llrint(handle);
 
+    test_hypot(handle);
+
     dlclose(handle);
 
     return 0;

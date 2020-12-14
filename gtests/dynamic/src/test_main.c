@@ -34,13 +34,11 @@ int main(int argc, char* argv[]) {
     test_atan(handle);
 
     test_sinh(handle);
-
     test_cosh(handle);
     test_tanh(handle);
 
     test_atan2(handle);
     test_sqrt(handle);
-
     test_nextafter(handle);
 
     test_exp10(handle);
@@ -57,6 +55,8 @@ int main(int argc, char* argv[]) {
     test_exp2(handle);
 
     test_fmod(handle);
+
+    test_finite(handle);
 
     dlclose(handle);
     return 0;

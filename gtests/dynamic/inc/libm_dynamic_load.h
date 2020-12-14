@@ -19,5 +19,6 @@ extern int test_cosh(void*);
 extern int test_tanh(void*);
 extern int test_atan2(void*);
 extern int test_asinh(void*);
+extern int test_floor(void*);
 
 #endif

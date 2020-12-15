@@ -19,6 +19,7 @@ extern int test_sinh(void*);
 extern int test_cosh(void*);
 extern int test_tanh(void*);
 extern int test_atan2(void*);
+
 extern int test_nextafter(void*);
 
 extern int test_exp10(void*);
@@ -32,5 +33,7 @@ extern int test_lround(void*);
 
 extern int test_nearbyint(void*);
 extern int test_exp2(void*);
+
+extern int test_fmod(void*);
 
 #endif

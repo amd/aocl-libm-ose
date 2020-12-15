@@ -39,6 +39,7 @@ int main(int argc, char* argv[]) {
     test_tanh(handle);
 
     test_atan2(handle);
+
     test_nextafter(handle);
 
     test_exp10(handle);
@@ -53,6 +54,8 @@ int main(int argc, char* argv[]) {
     test_nearbyint(handle);
 
     test_exp2(handle);
+
+    test_fmod(handle);
 
     dlclose(handle);
     return 0;

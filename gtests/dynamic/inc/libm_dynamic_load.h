@@ -23,6 +23,7 @@ extern int test_sqrt(void*);
 extern int test_nextafter(void*);
 extern int test_exp10(void*);
 extern int test_remainder(void*);
+extern int test_nan(void*);
 extern int test_asinh(void*);
 extern int test_floor(void*);
 extern int test_lround(void*);

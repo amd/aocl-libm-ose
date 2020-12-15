@@ -50,6 +50,7 @@ int main(int argc, char* argv[]) {
     test_fmod(handle);
     test_finite(handle);
     test_nexttoward(handle);
+    test_nan(handle);
 
     dlclose(handle);
 

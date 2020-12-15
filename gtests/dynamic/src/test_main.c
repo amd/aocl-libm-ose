@@ -52,6 +52,7 @@ int main(int argc, char* argv[]) {
     test_nexttoward(handle);
     test_nan(handle);
     test_lrint(handle);
+    test_llrint(handle);
 
     dlclose(handle);
 

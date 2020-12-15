@@ -41,9 +41,9 @@ struct alm_arch_funcs __arch_funcs_exp10 = {
         [ALM_UARCH_VER_DEFAULT] = {
             &FN_PROTOTYPE_FMA3(exp10f),
             &FN_PROTOTYPE_FMA3(exp10),
-            NULL,                           /* vrs4 ? */
+            &FN_PROTOTYPE_FMA3(exp10f),     /* vrs4 ? */
             NULL,                           /* vrs8 ? */
-            NULL,                           /* vrd2 ? */
+            &FN_PROTOTYPE_FMA3(exp10),      /* vrd2 ? */
             NULL,                           /* vrd4 ? */
         },
     },
@@ -56,10 +56,11 @@ LIBM_IFACE_PROTO(exp10)(void *arg)
        .g_ep = {
         [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(exp10f),
         [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(exp10),
-#if 0
+
         [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_exp10f),
-        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_exp10f),
         [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_exp10),
+#if 0
+        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_exp10f),
         [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_exp10),
 #endif
         },

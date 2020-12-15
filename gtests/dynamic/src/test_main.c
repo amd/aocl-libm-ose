@@ -39,10 +39,13 @@ int main(int argc, char* argv[]) {
     test_tanh(handle);
 
     test_atan2(handle);
+
     test_lround(handle);
 
     test_asinh(handle);
     test_floor(handle);
+
+    test_remainder(handle);
 
     dlclose(handle);
     return 0;

@@ -40,24 +40,18 @@ int main(int argc, char* argv[]) {
     test_atan2(handle);
     test_sqrt(handle);
     test_nextafter(handle);
-
     test_exp10(handle);
-
     test_lround(handle);
-
     test_asinh(handle);
     test_floor(handle);
-
     test_remainder(handle);
-
     test_nearbyint(handle);
-
     test_exp2(handle);
-
     test_fmod(handle);
-
     test_finite(handle);
+    test_nexttoward(handle);
 
     dlclose(handle);
+
     return 0;
 }

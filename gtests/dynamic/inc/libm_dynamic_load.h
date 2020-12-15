@@ -30,5 +30,6 @@ extern int test_nearbyint(void*);
 extern int test_exp2(void*);
 extern int test_fmod(void*);
 extern int test_finite(void*);
+extern int test_nexttoward(void*);
 
 #endif

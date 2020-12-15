@@ -74,7 +74,7 @@ LIBM_IFACE_PROTO(exp2)(void *arg)
        .g_ep = {
         [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(exp2f),
         [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(exp2),
-        //[ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_exp2f),
+        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_exp2f),
         //[ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_exp2f),
         [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_exp2),
         [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_exp2),

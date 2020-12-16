@@ -192,6 +192,7 @@ def SetupConfiguration(env):
         MakeBuildRoot(env)
         MakeInstallRoot(env)
         UpdateEnvComStr(env)
+        env['compiler'] = GetOption('compiler')
 
         if env['debug_mode'] != 'no':
             env.Append(CPPDEFINES = {'DEBUG': '1'})

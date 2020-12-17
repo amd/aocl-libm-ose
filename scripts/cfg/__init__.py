@@ -197,6 +197,9 @@ class DefaultCfg(object):
 
         self.defvars.Save(self.def_env_file, env)
         self.Check()
+
+        env['ENV'].update(environ)
+
         return env
 
     def GetHelpTexts(self):

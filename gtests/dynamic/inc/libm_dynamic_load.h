@@ -38,5 +38,6 @@ extern int test_hypot(void*);
 extern int test_ceil(void*);
 extern int test_log2(void*);
 extern int test_logb(void*);
+extern int test_log10(void*);
 
 #endif

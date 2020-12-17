@@ -57,6 +57,7 @@ int main(int argc, char* argv[]) {
     test_ceil(handle);
     test_log2(handle);
     test_logb(handle);
+    test_log10(handle);
 
     dlclose(handle);
 

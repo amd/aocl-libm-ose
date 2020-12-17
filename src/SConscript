@@ -27,7 +27,7 @@
 Import('env')
 from os.path import join as joinpath
 
-installdir = env['INSTALL_PREFIX']
+installdir = env['prefix']
 builddir = joinpath(env['BUILDROOT'], 'src')
 
 e = env.Clone()

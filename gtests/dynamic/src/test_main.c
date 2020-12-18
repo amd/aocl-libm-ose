@@ -25,18 +25,14 @@ int main(int argc, char* argv[]) {
     test_exp(handle);
     test_log(handle);
     test_pow(handle);
-
     test_sin(handle);
     test_cos(handle);
     test_tan(handle);
-
     test_fabs(handle);
     test_atan(handle);
-
     test_sinh(handle);
     test_cosh(handle);
     test_tanh(handle);
-
     test_atan2(handle);
     test_sqrt(handle);
     test_nextafter(handle);
@@ -65,6 +61,7 @@ int main(int argc, char* argv[]) {
     test_remquo(handle);
     test_ldexp(handle);
     test_frexp(handle);
+    test_scalbn(handle);
 
     dlclose(handle);
 

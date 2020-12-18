@@ -56,6 +56,7 @@ int main(int argc, char* argv[]) {
     test_hypot(handle);
     test_ceil(handle);
     test_log2(handle);
+    test_logb(handle);
 
     dlclose(handle);
 

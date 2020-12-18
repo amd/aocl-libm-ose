@@ -40,5 +40,6 @@ extern int test_log2(void*);
 extern int test_logb(void*);
 extern int test_log10(void*);
 extern int test_scalbln(void*);
+extern int test_ilogb(void*);
 
 #endif

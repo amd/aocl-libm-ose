@@ -45,5 +45,6 @@ extern int test_log1p(void*);
 extern int test_modf(void*);
 extern int test_remquo(void*);
 extern int test_ldexp(void*);
+extern int test_frexp(void*);
 
 #endif

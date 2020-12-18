@@ -64,6 +64,7 @@ int main(int argc, char* argv[]) {
     test_modf(handle);
     test_remquo(handle);
     test_ldexp(handle);
+    test_frexp(handle);
 
     dlclose(handle);
 

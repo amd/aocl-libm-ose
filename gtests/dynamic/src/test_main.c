@@ -58,6 +58,7 @@ int main(int argc, char* argv[]) {
     test_log2(handle);
     test_logb(handle);
     test_log10(handle);
+    test_scalbln(handle);
 
     dlclose(handle);
 

@@ -41,9 +41,9 @@ struct alm_arch_funcs __arch_funcs_cbrt = {
         [ALM_UARCH_VER_DEFAULT] = {
             &FN_PROTOTYPE_FMA3(cbrtf),
             &FN_PROTOTYPE_FMA3(cbrt),
-            NULL,                           /* vrs4 ? */
+            &FN_PROTOTYPE_FMA3(vrs4_cbrtf), /* vrs4 ? */
             NULL,                           /* vrs8 ? */
-            NULL,                           /* vrd2 ? */
+            &FN_PROTOTYPE_FMA3(vrd2_cbrt),  /* vrd2 ? */
             NULL,                           /* vrd4 ? */
         },
     },
@@ -56,11 +56,12 @@ LIBM_IFACE_PROTO(cbrt)(void *arg)
        .g_ep = {
         [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(cbrtf),
         [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(cbrt),
-#if 0
+
         [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_cbrtf),
-        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_cbrtf),
         [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_cbrt),
+#if 0
         [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_cbrt),
+        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_cbrtf),
 #endif
         },
     };

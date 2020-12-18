@@ -63,6 +63,7 @@ int main(int argc, char* argv[]) {
     test_log1p(handle);
     test_modf(handle);
     test_remquo(handle);
+    test_ldexp(handle);
 
     dlclose(handle);
 

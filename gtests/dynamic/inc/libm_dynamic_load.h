@@ -47,5 +47,6 @@ extern int test_remquo(void*);
 extern int test_ldexp(void*);
 extern int test_frexp(void*);
 extern int test_scalbn(void*);
+extern int test_cbrt(void*);
 
 #endif

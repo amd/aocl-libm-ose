@@ -61,6 +61,7 @@ int main(int argc, char* argv[]) {
     test_scalbln(handle);
     test_ilogb(handle);
     test_log1p(handle);
+    test_modf(handle);
 
     dlclose(handle);
 

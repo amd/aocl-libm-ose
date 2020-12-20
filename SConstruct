@@ -53,6 +53,22 @@ defcfg = DefaultCfg(build_root=Dir('#build', create=True))
 
 env = defcfg.GetDefaultEnv()
 
+#check intel lib path
+intel_lib_path = None
+libabi = env['libabi']
+if libabi == 'svml':
+    for p in env['ENV']['PATH'].split(':'):
+        if 'intel' in p:
+            intel_lib_path=p
+            break
+
+    if intel_lib_path is None:
+        print ("Error! Intel lib not found")
+        Exit(2)
+    else:
+        print (intel_lib_path)
+        env.Append(INTEL_LIB_PATH = intel_lib_path)
+
 # Add shared top-level headers
 env.Prepend(CPPPATH=[Dir('include')])
 
@@ -98,10 +114,17 @@ targets += amdlibm
 #
 # Build Test lib and associated tests
 #
+
 testenv = env.Clone()
-testenv.Append(
-	LIBPATH=['#'+joinpath(build_root,'src')]
-)
+if libabi == 'svml':
+    testenv.Append(
+	    LIBPATH=['#'+joinpath(build_root,'src'), env['INTEL_LIB_PATH']]
+    )
+else:
+    testenv.Append(
+        LIBPATH=['#'+joinpath(build_root,'src')]
+    )
+
 test_lib_objs = []  			# Will fill at a later date
 test_objs = SConscript(dirs='tests',
                        exports = {'env' : testenv},

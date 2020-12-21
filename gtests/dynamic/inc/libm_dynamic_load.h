@@ -43,5 +43,6 @@ extern int test_scalbln(void*);
 extern int test_ilogb(void*);
 extern int test_log1p(void*);
 extern int test_modf(void*);
+extern int test_remquo(void*);
 
 #endif

@@ -62,6 +62,7 @@ int main(int argc, char* argv[]) {
     test_ilogb(handle);
     test_log1p(handle);
     test_modf(handle);
+    test_remquo(handle);
 
     dlclose(handle);
 

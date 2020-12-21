@@ -6,47 +6,51 @@
 #include <stdio.h>
 #include <immintrin.h>
 
+/*utlity functions*/
+float  GenerateRangeFloat(float min, float max);
+double GenerateRangeDouble(double min, double max);
+
 //test functions
-extern int test_exp(void*);
-extern int test_log(void*);
-extern int test_pow(void*);
-extern int test_sin(void*);
-extern int test_cos(void*);
-extern int test_tan(void*);
-extern int test_fabs(void*);
-extern int test_atan(void*);
-extern int test_sinh(void*);
-extern int test_cosh(void*);
-extern int test_tanh(void*);
-extern int test_atan2(void*);
-extern int test_sqrt(void*);
-extern int test_nextafter(void*);
-extern int test_exp10(void*);
-extern int test_remainder(void*);
-extern int test_nan(void*);
-extern int test_asinh(void*);
-extern int test_floor(void*);
-extern int test_lround(void*);
-extern int test_nearbyint(void*);
-extern int test_exp2(void*);
-extern int test_fmod(void*);
-extern int test_finite(void*);
-extern int test_nexttoward(void*);
-extern int test_lrint(void*);
-extern int test_llrint(void*);
-extern int test_hypot(void*);
-extern int test_ceil(void*);
-extern int test_log2(void*);
-extern int test_logb(void*);
-extern int test_log10(void*);
-extern int test_scalbln(void*);
-extern int test_ilogb(void*);
-extern int test_log1p(void*);
-extern int test_modf(void*);
-extern int test_remquo(void*);
-extern int test_ldexp(void*);
-extern int test_frexp(void*);
-extern int test_scalbn(void*);
-extern int test_cbrt(void*);
+int test_exp(void*);
+int test_log(void*);
+int test_pow(void*);
+int test_sin(void*);
+int test_cos(void*);
+int test_tan(void*);
+int test_fabs(void*);
+int test_atan(void*);
+int test_sinh(void*);
+int test_cosh(void*);
+int test_tanh(void*);
+int test_atan2(void*);
+int test_sqrt(void*);
+int test_nextafter(void*);
+int test_exp10(void*);
+int test_remainder(void*);
+int test_nan(void*);
+int test_asinh(void*);
+int test_floor(void*);
+int test_lround(void*);
+int test_nearbyint(void*);
+int test_exp2(void*);
+int test_fmod(void*);
+int test_finite(void*);
+int test_nexttoward(void*);
+int test_lrint(void*);
+int test_llrint(void*);
+int test_hypot(void*);
+int test_ceil(void*);
+int test_log2(void*);
+int test_logb(void*);
+int test_log10(void*);
+int test_scalbln(void*);
+int test_ilogb(void*);
+int test_log1p(void*);
+int test_modf(void*);
+int test_remquo(void*);
+int test_ldexp(void*);
+int test_frexp(void*);
+int test_scalbn(void*);
+int test_cbrt(void*);
 
 #endif

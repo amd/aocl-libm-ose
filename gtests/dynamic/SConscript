@@ -7,8 +7,8 @@ e = Environment(CC = 'gcc')
 
 e.Append(
     INCPATH= ['inc'],
-	CPPPATH= ['inc'],
-    CFLAGS = ['-mavx', '-fPIE'],
+    CPPPATH= ['inc'],
+    CFLAGS = ['-g', '-mavx', '-fPIE'],
     LDFLAGS= ['-fPIE'],
     LIBS   = ['dl', 'm'],
 )

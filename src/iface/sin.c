@@ -45,6 +45,8 @@ struct alm_arch_funcs __arch_funcs_sin = {
             NULL,                           /* v8s ? */
             &FN_PROTOTYPE_FMA3(vrd2_sin),
             NULL,                           /* v4d ? */
+	    &FN_PROTOTYPE_FMA3(vrsa_sinf),  /*vector array variants*/
+	    &FN_PROTOTYPE_FMA3(vrda_sin),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
@@ -78,6 +80,8 @@ LIBM_IFACE_PROTO(sin)(void *arg)
         [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_sinf),
         [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_sin),
         [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_sin),
+	[ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_sinf),
+	[ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_sin),
         },
     };
 

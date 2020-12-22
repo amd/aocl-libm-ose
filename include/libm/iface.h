@@ -189,6 +189,9 @@ enum ALM_FUNC_VARIANTS {
     ALM_FUNC_VECT_SP_8,
     ALM_FUNC_VECT_DP_2,
     ALM_FUNC_VECT_DP_4,
+    /*vector array variants*/
+    ALM_FUNC_VECT_SP_ARR,
+    ALM_FUNC_VECT_DP_ARR,
 
     ALM_FUNC_VAR_MAX,                   /* should be last, always */
 };

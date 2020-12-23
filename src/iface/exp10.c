@@ -45,6 +45,8 @@ struct alm_arch_funcs __arch_funcs_exp10 = {
             NULL,                           /* vrs8 ? */
             &FN_PROTOTYPE_FMA3(exp10),      /* vrd2 ? */
             NULL,                           /* vrd4 ? */
+            &FN_PROTOTYPE_FMA3(vrsa_exp10f),  /*array vector float*/
+            &FN_PROTOTYPE_FMA3(vrda_exp10),  /*array vector double*/
         },
     },
 };
@@ -54,15 +56,17 @@ LIBM_IFACE_PROTO(exp10)(void *arg)
 {
     alm_ep_wrapper_t g_entry_exp10 = {
        .g_ep = {
-        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(exp10f),
-        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(exp10),
+            [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(exp10f),
+            [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(exp10),
 
-        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_exp10f),
-        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_exp10),
+            [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_exp10f),
+            [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_exp10),
 #if 0
-        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_exp10f),
-        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_exp10),
+            [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_exp10f),
+            [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_exp10),
 #endif
+            [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_exp10f),
+            [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_exp10),
         },
     };
 

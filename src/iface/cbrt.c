@@ -45,6 +45,8 @@ struct alm_arch_funcs __arch_funcs_cbrt = {
             NULL,                           /* vrs8 ? */
             &FN_PROTOTYPE_FMA3(vrd2_cbrt),  /* vrd2 ? */
             NULL,                           /* vrd4 ? */
+            &FN_PROTOTYPE_FMA3(vrsa_cbrtf),  /*array vector float*/
+            &FN_PROTOTYPE_FMA3(vrda_cbrt),  /*array vector double*/
         },
     },
 };
@@ -63,6 +65,8 @@ LIBM_IFACE_PROTO(cbrt)(void *arg)
         [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_cbrt),
         [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_cbrtf),
 #endif
+        [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_cbrtf),
+        [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_cbrt),
         },
     };
 

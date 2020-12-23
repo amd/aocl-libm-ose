@@ -45,6 +45,8 @@ struct alm_arch_funcs __arch_funcs_cos = {
             NULL,                           /* vrs8 ? */
             &FN_PROTOTYPE_FMA3(vrd2_cos),
             NULL,                           /* vrd4 ? */
+            &FN_PROTOTYPE_FMA3(vrsa_cosf),  /*array vector float*/
+            &FN_PROTOTYPE_FMA3(vrda_cos),  /*array vector double*/
         },
 
         [ALM_UARCH_VER_ZEN2] = {
@@ -72,12 +74,14 @@ LIBM_IFACE_PROTO(cos)(void *arg)
 {
     alm_ep_wrapper_t g_entry_cos = {
         .g_ep = {
-            [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(cosf),
-            [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(cos),
-            [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_cosf),
-            [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_cosf),
-            [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_cos),
-            [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_cos),
+            [ALM_FUNC_SCAL_SP]     = &G_ENTRY_PT_PTR(cosf),
+            [ALM_FUNC_SCAL_DP]     = &G_ENTRY_PT_PTR(cos),
+            [ALM_FUNC_VECT_SP_4]   = &G_ENTRY_PT_PTR(vrs4_cosf),
+            [ALM_FUNC_VECT_SP_8]   = &G_ENTRY_PT_PTR(vrs8_cosf),
+            [ALM_FUNC_VECT_DP_2]   = &G_ENTRY_PT_PTR(vrd2_cos),
+            [ALM_FUNC_VECT_DP_4]   = &G_ENTRY_PT_PTR(vrd4_cos),
+            [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_cosf),
+            [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_cos),
         },
     };
 

@@ -42,9 +42,11 @@ struct alm_arch_funcs __arch_funcs_exp = {
             &FN_PROTOTYPE_FMA3(expf),
             &FN_PROTOTYPE_FMA3(exp),
             &FN_PROTOTYPE_FMA3(vrs4_expf),
-            NULL,                             /* vrs8 ? */ 
+            NULL,                             /* vrs8 ? */
             &FN_PROTOTYPE_FMA3(vrd2_exp),
             NULL,                             /* vrd4 ? */
+            &FN_PROTOTYPE_FMA3(vrsa_expf),  /*array vector float*/
+            &FN_PROTOTYPE_FMA3(vrda_exp),  /*array vector double*/
         },
 
         [ALM_UARCH_VER_ZEN2] = {
@@ -78,6 +80,8 @@ LIBM_IFACE_PROTO(exp)(void *arg)
         [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_expf),
         [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_exp),
         [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_exp),
+        [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_expf),
+        [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_exp),
         },
     };
 

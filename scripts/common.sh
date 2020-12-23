@@ -23,10 +23,10 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-declare -a funcs=("exp" "log" "pow"
+declare -a funcs=(  "exp"  "log" "pow"
                     "fabs" "atan"
                     "exp2" "expm1"
-                    "sin" "cos" "tan"
+                    "sin"  "cos"  "tan"
                     "sinh" "cosh" "tanh")
 
 #for perf/accu
@@ -34,6 +34,16 @@ input_count=10
 
 #test types
 declare -a test_types=("perf" "accu" "conf")
+
+#find AOCC installed folder
+GetAOCCPath() {
+    cmd="clang -v"
+    readarray -t aocc_install_path <<< "$(${cmd} -a 2>&1 | grep "InstalledDir:")"
+    aocc_install_path=${aocc_install_path##*InstalledDir:}
+    echo ${aocc_install_path}
+    aocc_install_path=${aocc_install_path//[[:blank:]]/}
+    export aocc_install_path=${aocc_install_path}
+}
 
 #common routines
 RunCommand() {

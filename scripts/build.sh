@@ -45,32 +45,50 @@ echo "Compiler: "$compiler_type
 echo "Chosen framework:"$framework
 
 #choose framework
-if [ $framework = "g" ];then
+if [ ${framework} = "g" ];then
     fw="gtests"
 else
     fw="tests"
 fi
 
+#default compiler exe paths (gcc)
+cc_exe=/usr/bin/gcc
+cxx_exe=/usr/bin/g++
+
 #check if compiler is aocc then checkif clang is added to path
-if [ $compiler_type = "aocc" ]; then
+if [ ${compiler_type} = "aocc" ]; then
     var="clang"
     if [[ -z "${var}" ]]; then
         echo "Error! Clang is not added to path"
         exit 1
     fi
+
+    #gets the clang installation path
+    GetAOCCPath
+    echo ${aocc_install_path}
+    #change CXX and CC vars as per clang installed path
+    cc_exe=${aocc_install_path}/clang
+    cxx_exe=${aocc_install_path}/clang++
+    echo ${cc_exe}
+    echo ${cxx_exe}
 fi
 
-#navigate to aocl-libm root path
 #clean build
-RunCommand "scons -c";
+clean_cmd="scons -c"
+RunCommand "${clean_cmd}";
+
+#build
+build_cmd="scons -j32 ${fw} --compiler=${compiler_type}";
+build_cmd+=" CC=${cc_exe} CXX=${cxx_exe}"
+build_cmd+=" verbose=1"
 
 #default: libabi=aocl
-if [ $build_type = "release" ];
+if [ ${build_type} = "release" ];
 then
-    RunCommand "scons -j32 $fw --compiler=$compiler_type"
+    RunCommand "${build_cmd}"
     build_dir="aocl-release"
 else
     #to run framework with glibc/svml/older amdlibm releases
-    RunCommand "scons -j32 $fw --compiler=$compiler_type --libabi=$build_type"
-    build_dir="$build_type-release"
+    RunCommand "${build_cmd} --libabi=${build_type}"
+    build_dir="${build_type}-release"
 fi

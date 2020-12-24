@@ -4,5 +4,6 @@
 .sconsign.dblite
 .venv3/
 build/
+examples/test_libm
 **/__pycache__
 src/version.build.h

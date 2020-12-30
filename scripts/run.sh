@@ -99,3 +99,8 @@ else
     echo "Ran tests for func" $func
 fi
 
+#dynamic loading and dynamic linking examples
+echo "Running dynamic loading test application"
+RunCommand ${BUILD}/gtests/dynamic/test_dynamic ${BUILD}/src/libalm.so;
+echo "Running dynamic linking test examples"
+RunCommand `pwd`/examples/test_libm;

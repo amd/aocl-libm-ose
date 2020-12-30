@@ -92,3 +92,9 @@ else
     RunCommand "${build_cmd} --libabi=${build_type}"
     build_dir="${build_type}-release"
 fi
+
+#compile dynamic loading examples
+RunCommand "make -C ./examples/ clean";
+RunCommand "make -C ./examples/"
+echo "Compiled dynamic loading examples"
+

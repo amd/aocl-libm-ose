@@ -27,7 +27,8 @@
 Import('env')
 from os.path import join as joinpath
 
-installdir = env['prefix']
+installdir = env['installdirs']
+
 builddir = joinpath(env['BUILDROOT'], 'src')
 
 e = env.Clone()
@@ -74,7 +75,7 @@ libm = almenv.StaticLibrary('alm', alm_objs)
 libmso = almenv.SharedLibrary('alm', alm_objs)
 
 
-almenv.Alias("install", almenv.Install(joinpath(installdir, "lib"), [libmso, libm]))
+almenv.Alias('install', almenv.Install(installdir['lib'], [libmso, libm]))
 
 fast_libm = SConscript('fast/SConscript',
                        exports = {'env' : e},

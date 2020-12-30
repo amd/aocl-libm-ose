@@ -44,58 +44,44 @@ def AddSiteDir(site_dir):
 
 AddSiteDir("scripts")
 
-# We need a better name for this
-from scripts.cfg import cfg,helper
-from scripts.cfg import DefaultCfg
-from scripts.cfg.helper import PrintBanner
+from alm.env import AlmEnvironment
+from alm import print_build_failures, print_build_config
 
-defcfg = DefaultCfg(build_root=Dir('#build', create=True))
+__almenv = AlmEnvironment()
+__almenv.Setup()
+aenv = __almenv.GetDefaultEnv()
 
-env = defcfg.GetDefaultEnv()
+# First check version of python and scons
+EnsurePythonVersion(3, 6)
+EnsureSConsVersion(3, 1, 1)
 
-#check intel lib path
-intel_lib_path = None
-libabi = env['libabi']
-if libabi == 'svml':
-    for p in env['ENV']['PATH'].split(':'):
-        if 'intel' in p:
-            intel_lib_path=p
-            break
-
-    if intel_lib_path is None:
-        print ("Error! Intel lib not found")
-        Exit(2)
-    else:
-        print (intel_lib_path)
-        env.Append(INTEL_LIB_PATH = intel_lib_path)
+# Register exit printers
+import atexit
+atexit.register(print_build_config, aenv)
+atexit.register(print_build_failures)
 
 # Add shared top-level headers
-env.Prepend(CPPPATH=[Dir('include')])
+aenv.Prepend(CPPPATH=[Dir('include')])
 
-build_root = env['BUILDROOT']
+#print(aenv['BUILDDIR'])
+aenv['BUILDROOT'] = aenv['BUILDDIR']
+
+build_root = aenv['BUILDROOT']
 
 makedirs(build_root, exist_ok=True)
-
-gvars = Variables(defcfg.def_env_file, args=ARGUMENTS)
-gvars.AddVariables(
-    #('CC', 'C compiler', environ.get('CC', env['CC'])),
-    #('CXX', 'C++ compiler', environ.get('CXX', env['CXX'])),
-    ('BUILDROOT', 'Build root', environ.get('BUILDROOT', env['BUILDROOT']))
-)
-
-# Update env environment with values from ARGUMENTS & global_vars_file
-gvars.Update(env)
-help_texts = defcfg.GetHelpTexts()
-help_texts["global_vars"] += gvars.GenerateHelpText(env)
 
 # These targets are not the .obj files or .o files, instead
 # class targets or build objectw
 targets = []
 
-libenv = env.Clone()
+#import pdb
+#pdb.set_trace()
+
+#print(aenv.Dump())
+libenv = aenv.Clone()
 libenv.Append(
-	INCPATH=['#include'],
-	CWD='#src',
+        INCPATH=['#include'],
+        CWD='#src',
 )
 
 # To generate a file version.build.c having current gitversion in VERSION_STRING
@@ -104,55 +90,39 @@ libenv.Tool('gitversion')
 build_version = libenv.GenerateVersion('src/version.build.h')
 libenv.AlwaysBuild(build_version)
 
-#compile alm sources
 alm_objs = SConscript('src/SConscript',
-                       exports = { 'env' : libenv },
-                       duplicate = 0,
-                       variant_dir = joinpath(build_root, 'src'))
+                     exports = { 'env' : libenv },
+                     duplicate = 0,
+                     variant_dir = joinpath(build_root, 'src'))
 
 targets += alm_objs
 
-#
-# Build Test lib and associated tests
-#
 
-testenv = env.Clone()
-if libabi == 'svml':
-    testenv.Append(
-	    LIBPATH=['#'+joinpath(build_root,'src'), env['INTEL_LIB_PATH']]
-    )
+testenv = aenv.Clone()
+if aenv['libabi'] == 'svml':
+  testenv.Append(
+    LIBPATH=['#'+joinpath(build_root,'src'), env['INTEL_LIB_PATH']]
+  )
 else:
-    testenv.Append(
-        LIBPATH=['#'+joinpath(build_root,'src')]
-    )
+  testenv.Append(
+    LIBPATH=['#'+joinpath(build_root,'src')]
+  )
 
-#if compiling gtest framework
+test_objs = []
+if 'tests' in COMMAND_LINE_TARGETS:
+  test_objs += SConscript(dirs='tests',
+                         exports = {'env' : testenv},
+                         duplicate = 0,
+                         src_dir    = 'tests',
+                         variant_dir = joinpath(build_root, 'tests'))
+
 if 'gtests' in COMMAND_LINE_TARGETS:
-    gtest_objs = SConscript(dirs='gtests',
-                       exports = {'env' : testenv},
-                       duplicate = 0,
-                       src_dir    = 'gtests',
-                       variant_dir = joinpath(build_root, 'gtests'))
+  test_objs += SConscript(dirs='gtests',
+                          exports = {'env' : testenv},
+                          duplicate = 0,
+                          src_dir    = 'gtests',
+                          variant_dir = joinpath(build_root, 'gtests'))
 
-    targets += gtest_objs
+targets += test_objs
 
-Progress('\r', overwrite=True)
-Default(targets)
-
-import atexit
-atexit.register(PrintBanner, libenv)
-
-# base help text
-Help('''
-Usage: scons [scons options] [build variables] [target(s)]
-
-Extra scons options:
-%(options)s
-
-Global build variables:
-%(global_vars)s
-
-Local Variables:
-%(local_vars)s
-''' % help_texts)
 

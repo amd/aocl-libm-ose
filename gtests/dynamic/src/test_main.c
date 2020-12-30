@@ -64,6 +64,7 @@ int main(int argc, char* argv[]) {
     test_scalbn(handle);
     test_cbrt(handle);
     test_expm1(handle);
+    test_trunc(handle);
 
     dlclose(handle);
 

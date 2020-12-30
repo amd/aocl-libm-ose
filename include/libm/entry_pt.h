@@ -187,6 +187,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_log2f);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_cbrtf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_log10f);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_logf);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_powf);
 
 #ifndef _MSC_VER
 extern alm_ep_func_t        G_ENTRY_PT_PTR(sincos);

@@ -56,5 +56,7 @@ int test_expm1      (void*);
 int test_trunc      (void*);
 int test_copysign   (void*);
 int test_fdim       (void*);
+int test_fmax       (void*);
+int test_fmin       (void*);
 
 #endif

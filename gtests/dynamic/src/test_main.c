@@ -67,6 +67,8 @@ int main(int argc, char* argv[]) {
     test_trunc(handle);
     test_copysign(handle);
     test_fdim(handle);
+    test_fmax(handle);
+    test_fmin(handle);
 
     dlclose(handle);
 

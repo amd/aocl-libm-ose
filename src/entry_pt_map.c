@@ -144,7 +144,6 @@ LIBM_DECL_FN_MAP(modff);
 LIBM_DECL_FN_MAP(nan);
 LIBM_DECL_FN_MAP(nanf);
 
-LIBM_DECL_FN_MAP(nearbyintf);
 LIBM_DECL_FN_MAP(nextafter);
 LIBM_DECL_FN_MAP(nextafterf);
 
@@ -187,6 +186,29 @@ LIBM_DECL_FN_MAP(tanhf);
 LIBM_DECL_FN_MAP(tanpi);
 LIBM_DECL_FN_MAP(tanpif);
 
+LIBM_DECL_FN_MAP(trunc);
+LIBM_DECL_FN_MAP(truncf);
+
+LIBM_DECL_FN_MAP(copysign);
+LIBM_DECL_FN_MAP(copysignf);
+
+LIBM_DECL_FN_MAP(fdim);
+LIBM_DECL_FN_MAP(fdimf);
+
+LIBM_DECL_FN_MAP(fmax);
+LIBM_DECL_FN_MAP(fmaxf);
+
+LIBM_DECL_FN_MAP(fmin);
+LIBM_DECL_FN_MAP(fminf);
+
+LIBM_DECL_FN_MAP(fmod);
+LIBM_DECL_FN_MAP(fmodf);
+
+LIBM_DECL_FN_MAP(remainder);
+LIBM_DECL_FN_MAP(remainderf);
+
+LIBM_DECL_FN_MAP(nearbyint);
+LIBM_DECL_FN_MAP(nearbyintf);
 
 LIBM_DECL_FN_MAP(vrd2_cbrt);
 LIBM_DECL_FN_MAP(vrd2_cos);

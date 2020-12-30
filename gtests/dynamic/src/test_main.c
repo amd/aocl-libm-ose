@@ -65,6 +65,7 @@ int main(int argc, char* argv[]) {
     test_cbrt(handle);
     test_expm1(handle);
     test_trunc(handle);
+    test_copysign(handle);
 
     dlclose(handle);
 

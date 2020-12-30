@@ -54,5 +54,6 @@ int test_scalbn     (void*);
 int test_cbrt       (void*);
 int test_expm1      (void*);
 int test_trunc      (void*);
+int test_copysign   (void*);
 
 #endif

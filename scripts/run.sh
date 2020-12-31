@@ -27,24 +27,42 @@
 
 #script to build and run the libm compliancy test suite
 #run after the build is completed
-#check for no of arguments
-if [ $# -ne 4 ]; then
-    echo "Usage: run.sh <build_type> <test_type> <function> <framework>"
-    echo "Build type: release/glibc/amdlibm/svml"
+
+#print script usage
+helpfunc() {
+    echo "HELP"
+    echo "Usage: $0 -b <build type> -t <test type> -f <function name>"
+    echo "Build type: release/glibc/svml"
     echo "Test type: perf/accu/conf/all"
-    echo "Function: func name: log/pow/sin/all"
-    echo "Framework: choose g for gtest, t for test"
+    echo "Routine: pow/log/exp/sin/all"
     exit 1
-fi
+}
 
 #source the common functions and resources
 set -a
 source $(realpath './scripts/common.sh')
 
-build_type=$1
-test_type=$2
-func=$3
-framework=$4
+opts="b:t:f:h"
+while getopts "$opts" opt;
+do
+    case "${opt}" in
+        b ) build_type="${OPTARG}" ;;
+        t ) test_type="${OPTARG}" ;;
+	f ) func="${OPTARG}" ;;
+        h ) helpfunc ;;
+        ? ) helpfunc ;;
+    esac
+done
+
+#print help if invalid args
+if [ -z "$build_type" ] || [ -z "$test_type" ] || [ -z "$func" ]
+then
+    echo "Empty params entered, using default values"
+    #helpfunc
+    build_type="release"
+    test_type="all"
+    func="all"
+fi
 
 build_dir=""
 
@@ -65,14 +83,9 @@ BUILD=./build/$build_dir
 
 #export lib paths,dependency lib paths
 export LD_LIBRARY_PATH=${BUILD}/src/:$LD_LIBRARY_PATH;
-if [ $framework = "g" ];then
-    echo "Using gtests"
-    fw="gtests"
-    export LD_LIBRARY_PATH=${BUILD}/gtests/gapi/gbench/:$LD_LIBRARY_PATH;
-    export LD_LIBRARY_PATH=${BUILD}/gtests/gapi/gtest/:$LD_LIBRARY_PATH;
-else
-    fw="tests"
-fi
+fw="gtests"
+export LD_LIBRARY_PATH=${BUILD}/gtests/gapi/gbench/:$LD_LIBRARY_PATH;
+export LD_LIBRARY_PATH=${BUILD}/gtests/gapi/gtest/:$LD_LIBRARY_PATH;
 
 export LD_LIBRARY_PATH=/usr/local/lib/:$LD_LIBRARY_PATH;
 export LD_LIBRARY_PATH=/usr/lib/:$LD_LIBRARY_PATH;

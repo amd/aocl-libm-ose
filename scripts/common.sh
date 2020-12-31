@@ -60,7 +60,7 @@ RunCommand() {
   fi
 }
 
-#convert to gtest args
+#convert args
 convert_input_type()
 {
     local variant=$1  #this will be s1d/v4s, etc
@@ -86,12 +86,11 @@ convert_input_type()
 #run tests with nargs
 run_exe_nargs()
 {
-    framework=$1
-    EXE=$2
-    nargs=$3
-    input_types=$4
-    xranges=$5
-    yranges=$6
+    EXE=$1
+    nargs=$2
+    input_types=$3
+    xranges=$4
+    yranges=$5
 
     test_types=("accu" "perf" "conf")
 
@@ -104,14 +103,14 @@ run_exe_nargs()
             do
                 for t in ${test_types[@]};
                     do
-                        run_test ${framework} ${EXE} $inp $t ${nargs} ${xranges} ${yranges}
+                        run_test ${EXE} $inp $t ${nargs} ${xranges} ${yranges}
                     done
             done
 
     else
         for inp in ${input_types[@]};
             do
-                run_test ${framework} ${EXE} $inp $test_type ${nargs} ${xranges} ${yranges};
+                run_test ${EXE} $inp $test_type ${nargs} ${xranges} ${yranges};
             done
     fi
 }
@@ -119,13 +118,12 @@ run_exe_nargs()
 #run test executable
 run_test()
 {
-    fw="$1"
-    exe="$2"
-    variant="$3"
-    test_type="$4"
-    nargs="$5"
-    xranges="$6"
-    yranges="$7"
+    exe="$1"
+    variant="$2"
+    test_type="$3"
+    nargs="$4"
+    xranges="$5"
+    yranges="$6"
 
     #check if executable is found
     if [ ! -f ${exe} ]; then
@@ -134,12 +132,7 @@ run_test()
     fi
 
     input=""
-    #if gtest, convert input args
-    if [ "${fw}" = "g" ];then
-        convert_input_type ${variant}
-    else
-        input=" -i $variant "
-    fi
+    convert_input_type ${variant}
 
     #if conf, no ranges/input counts
     if [ $test_type = "conf" ]; then

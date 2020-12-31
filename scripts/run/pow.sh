@@ -25,8 +25,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-framework="$1"
-EXE="$2"
+EXE="$1"
 
 declare -a ranges
 xranges=(10,20    \
@@ -38,4 +37,4 @@ yranges=(30,35 \
 nargs=2
 input_types=("s1d" "s1f" "v2d" "v4d" "v4s" "v8s")
 
-run_exe_nargs $framework $exe $nargs $input_types $xranges $yranges
+run_exe_nargs $exe $nargs $input_types $xranges $yranges

@@ -25,13 +25,12 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-framework="$1"
-EXE="$2"
+EXE="$1"
 
 nargs=1
 xranges=(-50,50)
 
 input_types=("s1d" "s1f" "v4s" "v4d" "v2d")
 
-run_exe_nargs $framework $exe $nargs $input_types $xranges
+run_exe_nargs $exe $nargs $input_types $xranges
 

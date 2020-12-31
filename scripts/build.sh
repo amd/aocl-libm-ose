@@ -24,32 +24,42 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 #script to build libm + test framework
-#check for no of arguments
-if [ $# -ne 3 ]; then
-    echo "Usage: run.sh <build_type> <compiler_type> <framework>"
-    echo "Build type: release/glibc/svml/amdlibm"
+
+#print script usage
+helpfunc() {
+    echo "HELP"
+    echo "Usage: $0 -b <build type> -c <compiler>"
+    echo "Build type: release/glibc/svml"
     echo "Compiler: gcc/aocc"
-    echo "Framework: g for gtest, t for tests"
     exit 1
-fi
+}
 
 #import common routines and resources
 source $(realpath './scripts/common.sh')
 
-build_type=$1
-compiler_type=$2
-framework=$3
+opts="b:c:h"
+while getopts "$opts" opt;
+do
+    case "${opt}" in
+	    b ) build_type="${OPTARG}" ;;
+	    c ) compiler_type="${OPTARG}" ;;
+	    h ) helpfunc ;;
+            ? ) helpfunc ;;
+    esac
+done
+
+#print help if invalid args
+if [ -z "$build_type" ] || [ -z "$compiler_type" ]
+then
+     echo "Empty params entered, using default values"
+     #helpfunc
+     build_type="release"
+     compiler_type="gcc"
+fi
 
 echo "Build Type: "$build_type
 echo "Compiler: "$compiler_type
-echo "Chosen framework:"$framework
-
-#choose framework
-if [ ${framework} = "g" ];then
-    fw="gtests"
-else
-    fw="tests"
-fi
+fw="gtests"
 
 #default compiler exe paths (gcc)
 cc_exe=/usr/bin/gcc

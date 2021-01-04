@@ -31,6 +31,8 @@ installdir = env['installdirs']
 
 builddir = joinpath(env['BUILDROOT'], 'src')
 
+ldscript = joinpath('#', 'src', 'ld-syms-libm.lds')
+
 e = env.Clone()
 e.Append(
     CCFLAGS = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror',
@@ -41,7 +43,7 @@ e.Append(
     # CPPPATH = [],
     # CCFLAGS = [],
     # LINKFLAGS = [],
-    LINKERSCRIPT = 'src/ld-syms-libm.lds',
+    LINKERSCRIPT = ldscript,
     STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 1
 )
 
@@ -74,8 +76,8 @@ alm_objs += almenv.StaticObject(lib_srcs)
 libm = almenv.StaticLibrary('alm', alm_objs)
 libmso = almenv.SharedLibrary('alm', alm_objs)
 
-
-almenv.Alias('install', almenv.Install(installdir['lib'], [libmso, libm]))
+if 'install' in COMMAND_LINE_TARGETS:
+    almenv.Alias('install', almenv.Install(installdir['lib'], [libmso, libm]))
 
 fast_libm = SConscript('fast/SConscript',
                        exports = {'env' : e},
@@ -83,7 +85,7 @@ fast_libm = SConscript('fast/SConscript',
                        src_dir = '#src/fast',
                        variant_dir = joinpath(builddir, 'fast'))
 
-Depends(libmso, '#src/ld-syms-libm.lds')
+Depends(libmso, ldscript)
 
 Return('fast_libm', 'libm', 'libmso')
 

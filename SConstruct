@@ -104,12 +104,13 @@ libenv.Tool('gitversion')
 build_version = libenv.GenerateVersion('src/version.build.h')
 libenv.AlwaysBuild(build_version)
 
-amdlibm = SConscript('src/SConscript',
+#compile alm sources
+alm_objs = SConscript('src/SConscript',
                        exports = { 'env' : libenv },
                        duplicate = 0,
                        variant_dir = joinpath(build_root, 'src'))
 
-targets += amdlibm
+targets += alm_objs
 
 #
 # Build Test lib and associated tests
@@ -125,23 +126,14 @@ else:
         LIBPATH=['#'+joinpath(build_root,'src')]
     )
 
-test_lib_objs = []  			# Will fill at a later date
-test_objs = SConscript(dirs='tests',
-                       exports = {'env' : testenv},
-                       duplicate = 0,
-                       src_dir    = 'tests',
-                       variant_dir = joinpath(build_root, 'tests'))
-
-gtest_objs = SConscript(dirs='gtests',
+#if compiling gtest framework
+if 'gtests' in COMMAND_LINE_TARGETS:
+    gtest_objs = SConscript(dirs='gtests',
                        exports = {'env' : testenv},
                        duplicate = 0,
                        src_dir    = 'gtests',
                        variant_dir = joinpath(build_root, 'gtests'))
 
-if 'tests' in COMMAND_LINE_TARGETS:
-    targets += test_objs
-
-if 'gtests' in COMMAND_LINE_TARGETS:
     targets += gtest_objs
 
 Progress('\r', overwrite=True)

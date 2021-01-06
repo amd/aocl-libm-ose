@@ -147,7 +147,8 @@ class Compiler:
         if env['CFLAGS']:
             self.UpdateCFlags(env['CFLAGS'])
 
-        if 'LINKFLAGS' in env.keys():
+        dct = env.Dictionary()
+        if 'LINKFLAGS' in dct.keys():
             self.UpdateLDFlags(env['LINKFLAGS'])
 
     def __fixup_from_env(self):

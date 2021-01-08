@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+; Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
 ;
 ; An implementation of the cbrtf libm function.
 ; Redistribution and use in source and binary forms, with or without modification,

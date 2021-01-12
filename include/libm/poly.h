@@ -198,6 +198,34 @@
 
 
 /*
+ * Polynomial of degree 19,
+ *      - uses only odd terms and
+ *      - C0 = 0
+ * p(x) = (c9*x^19 + c8*x^17 + c7*x^15 + c6*x^13 + c5*x^11 + c4*x^9 + c3*x^7 +
+ *         c2*x^5 + c1*x^3) + x
+ *      = x(x^12*(x4*(c8 + c9*x2) + (c + c7*x2)) + x4*(x4*(c4 + c5*x2) + (c2 + c3*x2))+
+ *        (1 + c1*x2))
+ *
+ */
+#define POLY_EVAL_ODD_19(r, c1, c2, c3, c4, c5, c6, c7, c8, c9) ({  \
+        __typeof(r) r2, r4, r8;                                     \
+        __typeof(r) a1, a2, a3, a4, b1, b2, b3, q;                  \
+        r2 = r * r;                                                 \
+        r4 = r2 * r2;                                               \
+        r8 = r4 * r4;                                               \
+        a1 = c1 + c2 * r2;                                          \
+        a2 = c3 + c4 * r2;                                          \
+        a3 = c5 + c6 * r2;                                          \
+        a4 = c7 + c8 * r2;                                          \
+        b1 = a1 + a2 * r4;                                          \
+        b2 = a4 + c9 * r4;                                          \
+        b3 = a3 + b2 * r4;                                          \
+        q  = b1 + b3 * r8;                                          \
+        q = r + ((q * r2) * r);                                     \
+        q;                                                          \
+    })
+
+/*
  * poly = x + (C1*x^3 + C2*x^5 + C3*x^7 + C4*x^9 + C5*x^11 + \
  *              C6*x^13 + C7*x^15)
  *      = x + x3*(C1 + C2*x^2 + C3*x^4 + C4*x^6 + C5*x^8 + \

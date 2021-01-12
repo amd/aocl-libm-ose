@@ -30,7 +30,6 @@
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
 
-//#include <libm/arch/zen.h>
 #include <libm/arch/zen2.h>
 #include <libm/arch/zen3.h>
 
@@ -45,6 +44,24 @@ struct alm_arch_funcs __arch_funcs_atan = {
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */
             NULL,                           /* vrd4 ? */
+        },
+
+        [ALM_UARCH_VER_ZEN2] = {
+            NULL,
+            &ALM_PROTO_ARCH_ZN2(atan),
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+        },
+
+        [ALM_UARCH_VER_ZEN3] = {
+            NULL,
+            &ALM_PROTO_ARCH_ZN3(atan),
+            NULL,
+            NULL,
+            NULL,
+            NULL,
         },
     },
 };

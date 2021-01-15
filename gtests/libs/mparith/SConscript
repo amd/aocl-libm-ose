@@ -25,7 +25,7 @@ this_sconscript_file = Dir('.').srcnode().abspath
 
 ccflags = []
 liblist = []
-incpath = [ joinpath(this_sconscript_file, x) for x in ['.', './mparith', 'include']]
+incpath = [ joinpath(this_sconscript_file, x) for x in ['.', 'include']]
 libpath = []
 
 # Add default math library for any unresolved functions

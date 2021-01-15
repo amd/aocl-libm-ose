@@ -90,12 +90,12 @@ libenv.Tool('gitversion')
 build_version = libenv.GenerateVersion('src/version.build.h')
 libenv.AlwaysBuild(build_version)
 
-alm_objs = SConscript('src/SConscript',
+alm_libs = SConscript('src/SConscript',
                      exports = { 'env' : libenv },
                      duplicate = 0,
                      variant_dir = joinpath(build_root, 'src'))
 
-targets += alm_objs
+targets += alm_libs
 
 gtest_objs = []
 if 'gtests' in COMMAND_LINE_TARGETS:
@@ -117,6 +117,9 @@ if 'gtests' in COMMAND_LINE_TARGETS:
                                 src_dir    = 'gtests',
                                 variant_dir = joinpath(build_root, 'gtests'))
 
-targets += gtest_objs
+if gtest_objs:
+    Requires(gtest_objs, alm_libs)
+    targets += gtest_objs
 
+Default(targets)
 

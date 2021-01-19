@@ -5,12 +5,12 @@
 #compile this dynamic loading tests with gcc
 Import('env')
 e = env.Clone()
-e.Replace(CC = 'gcc')
+#e.Replace(CC = 'gcc')
 
 e.Append(
     INCPATH= ['inc'],
     CPPPATH= ['inc'],
-    CFLAGS = ['-g', '-mavx', '-fPIE'],
+    CFLAGS = ['-g', '-mavx', '-fPIE', '-fpermissive'],
     LDFLAGS= ['-fPIE'],
     LIBS   = ['dl', 'm'],
 )

@@ -36,9 +36,9 @@
 #if defined(WIN64)  |  defined(WINDOWS)
 
 #include <fpieee.h>
-#define EXCEPTION_S _exception
-#define __amd_handle_error _handle_error
-#define __amd_handle_errorf _handle_errorf
+#define EXCEPTION_S							_exception
+#define __amd_handle_error			_handle_error
+#define __amd_handle_errorf			_handle_errorf
 
 double _handle_error(
         char *fname,
@@ -65,7 +65,8 @@ float _handle_errorf(
         );
 
 #else //Windows
-#define EXCEPTION_S exception
+
+#define EXCEPTION_S							exception
 
 double __amd_handle_error(
         char *fname,
@@ -261,14 +262,14 @@ extern  double _fabs_special            (double x);
 extern  double _fdim_special            (double x, double y, double r);
 extern  double _fmax_special            (double x, double y);
 extern  double _fmin_special            (double x, double y);
-extern  double _fmod_special            (double x, double y, uint32_t errorCode);
+extern  double _fmod_special            (double x, double y, uint32_t code);
 extern  double _log10_special           (double x, double y, uint32_t code);
 extern  double _log1p_special           (double x, double y, uint32_t code);
 extern  double _log2_special            (double x, double y, uint32_t code);
 extern  double _log_special             (double x, double y, uint32_t code);
 extern  double _nearbyint_special       (double x);
 extern  double _pow_special             (double x, double y, double z, uint32_t code);
-extern  double _remainder_special       (double x, double y, uint32_t errorCode);
+extern  double _remainder_special       (double x, double y, uint32_t code);
 extern  double _round_special           (double x, double r);
 extern  double _sin_cos_special         (double x, char *name, _AMDLIBM_CODE code);
 extern  double _sincos_special_underflow (double x, char *name, _AMDLIBM_CODE code);
@@ -288,13 +289,13 @@ extern  float _fabsf_special            (float x);
 extern  float _fdimf_special            (float x, float y, float r);
 extern  float _fmaxf_special            (float x, float y);
 extern  float _fminf_special            (float x, float y);
-extern  float _fmodf_special            (float x, float y, uint32_t errorCode);
+extern  float _fmodf_special            (float x, float y, uint32_t code);
 extern  float _log10f_special           (float x, float y, uint32_t code);
 extern  float _log1pf_special           (float x, float y, uint32_t code);
 extern  float _log2f_special            (float x, float y, uint32_t code);
 extern  float _logf_special             (float x, float y, uint32_t code);
 extern  float _powf_special             (float x, float y, float z, uint32_t code);
-extern  float _remainderf_special       (float x, float y, uint32_t errorCode);
+extern  float _remainderf_special       (float x, float y, uint32_t code);
 extern  float _sinf_cosf_special        (float x, char *name, _AMDLIBM_CODE code);
 extern  float _sinf_special             (float x);
 extern  float _tanf_special             (float x);

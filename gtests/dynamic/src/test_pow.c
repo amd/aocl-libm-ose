@@ -34,12 +34,12 @@ int test_pow(void* handle) {
     double *input_arrayd  = (double *) malloc(sizeof(double) * array_size);
     double *output_arrayd = (double *) malloc(sizeof(double) * array_size);
 
-    for (unsigned int i = 0; i < array_size; i++) {
+    for (int i = 0; i < array_size; i++) {
          input_arrayf[i] = RANGEF;
 	 input_arrayd[i] = RANGED;
     }
 
-    for (unsigned int i = 0; i < array_size; i++) {
+    for (int i = 0; i < array_size; i++) {
         output_arrayf[0] += output_arrayf[i];
 	output_arrayd[0] += output_arrayd[i];
     }
@@ -124,14 +124,14 @@ int test_pow(void* handle) {
 
     /*vector array*/
     printf("amd_vrsa_powf\nInput:\n");
-    for (unsigned int i = 0; i < array_size; i++) {
+    for (int i = 0; i < array_size; i++) {
         printf("%f\t", input_arrayf[i]);
     }
-    for (unsigned int i = 0; i < loopCount; i++) {
+    for (int i = 0; i < loopCount; i++) {
         (*lamd_vrsa_powf)(dim, input_arrayf + i*dim, input_arrayf + i*dim, output_arrayf + i*dim);
     }
     printf("\nOutput:\n");
-    for (unsigned int i = 0; i < array_size; i++) {
+    for (int i = 0; i < array_size; i++) {
         printf("%f\t", output_arrayf[i]);
     }
     printf("\n");

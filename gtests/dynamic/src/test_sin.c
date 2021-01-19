@@ -35,12 +35,12 @@ int test_sin(void* handle) {
     double *input_arrayd  = (double *) malloc(sizeof(double) * array_size);
     double *output_arrayd = (double *) malloc(sizeof(double) * array_size);
 
-    for (unsigned int i = 0; i < array_size; i++) {
+    for (int i = 0; i < array_size; i++) {
          input_arrayf[i] = RANGEF;
 	 input_arrayd[i] = RANGED;
     }
 
-    for (unsigned int i = 0; i < array_size; i++) {
+    for (int i = 0; i < array_size; i++) {
         output_arrayf[0] += output_arrayf[i];
 	output_arrayd[0] += output_arrayd[i];
     }
@@ -124,28 +124,28 @@ int test_sin(void* handle) {
 
     /*vector array*/
     printf("amd_vrsa_sinf\nInput:\n");
-    for (unsigned int i = 0; i < array_size; i++) {
+    for (int i = 0; i < array_size; i++) {
         printf("%f\t", input_arrayf[i]);
     }
-    for (unsigned int i = 0; i < loopCount; i++) {
+    for (int i = 0; i < loopCount; i++) {
         (*lamd_vrsa_sinf)(dim, input_arrayf + i*dim, output_arrayf + i*dim);
     }
     printf("\nOutput:\n");
-    for (unsigned int i = 0; i < array_size; i++) {
+    for (int i = 0; i < array_size; i++) {
         printf("%f\t", output_arrayf[i]);
     }
 
     printf("amd_vrda_sin\nInput:\n");
-    for (unsigned int i = 0; i < array_size; i++) {
+    for (int i = 0; i < array_size; i++) {
         printf("%lf\t", input_arrayd[i]);
     }
 
-    for (unsigned int i = 0; i < loopCount; i++) {
+    for (int i = 0; i < loopCount; i++) {
         (*lamd_vrda_sin)(dim, input_arrayd + i*dim, output_arrayd + i*dim);
     }
 
     printf("\nOutput:\n");
-    for (unsigned int i = 0; i < array_size; i++) {
+    for (int i = 0; i < array_size; i++) {
         printf("%lf\t", output_arrayd[i]);
     }
 

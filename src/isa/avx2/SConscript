@@ -40,9 +40,8 @@ incpaths = [
 ]
 
 e.Append(
-    #CFLAGS = ['-O3', '-fPIC', '-flax-vector-conversions'],
-    CFLAGS = ['-O3', '-fPIC', '-mavx2'],
-    CPPPATH = incpaths
+    CFLAGS = ['-O3', '-fPIC', '-mavx2', '-mfma', '-flax-vector-conversions'],
+    CPPPATH = incpaths,
 )
 
 experimental_src = []

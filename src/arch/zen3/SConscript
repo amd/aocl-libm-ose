@@ -44,7 +44,9 @@ incpaths = [
 ]
 
 e.MergeFlags({
-    'CFLAGS'  : ['-march=znver3', '-O3', '-fPIC', '-flax-vector-conversions'],
+    'CFLAGS'  : ['-march=znver3', 
+                 # TODO: remove once the compiler supports znver3
+                 '-march=znver2', '-O3', '-fPIC', '-flax-vector-conversions'],
     'CPPPATH' : incpaths
 })
 

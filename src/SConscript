@@ -85,7 +85,13 @@ fast_libm = SConscript('fast/SConscript',
                        src_dir = '#src/fast',
                        variant_dir = joinpath(builddir, 'fast'))
 
+compat_libm = SConscript('compat/SConscript',
+                       exports = {'env' : e},
+                       duplicate = 0,
+                       src_dir = '#src/compat',
+                       variant_dir = joinpath(builddir, 'compat'))
+
 Depends(libmso, ldscript)
 
-Return('fast_libm', 'libm', 'libmso')
+Return('compat_libm', 'fast_libm', 'libm', 'libmso')
 

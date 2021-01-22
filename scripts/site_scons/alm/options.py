@@ -82,9 +82,9 @@ class AlmOptions(object):
 
         self.add_option('debug_mode',
                         nargs   = 1,
-                        default = None,
+                        default = 'none',
                         type    = 'choice',
-                        choices = ['libs', 'tests', 'all'],
+                        choices = ['none', 'libs', 'tests', 'all'],
                         help    = 'Debug mode'
         )
 
@@ -106,14 +106,6 @@ class AlmOptions(object):
                         type    = 'int',
                         default = 0,
                         help    = 'Enable Developer mode'
-        )
-
-        self.add_option('build',
-                        nargs   = 1,
-                        type    = 'choice',
-                        default = 'release',
-                        choices = ['release', 'debug'],
-                        help    = 'Enable build type'
         )
 
         self.add_option('compiler',

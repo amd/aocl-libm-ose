@@ -31,6 +31,8 @@ from SCons.Script import Configure, GetOption, COMMAND_LINE_TARGETS
 from SCons.Script import Exit
 from SCons.SConf import *
 
+from os.path import join as joinpath
+
 toolchain_versions = {
     #Toolchain : {preferred_version, min_version}
     'GCC' : {'10.2' , '9.2'},
@@ -130,7 +132,18 @@ def CheckForOS(context):
     pass
 
 def CheckCompilerFlag(context, flag):
-    pass
+    candidate = """
+    #include <stdio.h>
+    int main() { printf("hello world"); return 0; }
+    """
+    oldcflags = context.env['CFLAGS']
+    context.env['CFLAGS'] = flag
+    context.Message("Checking if [%s] is supported by %s "%(flag, context.env['CC']))
+    result = context.TryCompile(candidate, '.c')
+    context.Result(result)
+    context.env['CFLAGS'] = oldcflags
+
+    return result
 
 def All(almenv):
     """
@@ -162,8 +175,9 @@ def All(almenv):
 
     if conf.CheckLibAbi():
         Exit(1)
+
     #result = conf.CheckProg(almenv.compiler.Cmd())
-    #result = conf.CheckProg(almenv.compiler.CxxCmd())
+    result = conf.CheckProg(almenv.compiler.CxxCmd())
 
     if conf.CheckForToolchain():
         print("Toolchain not found")

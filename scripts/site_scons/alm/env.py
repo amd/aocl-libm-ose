@@ -207,7 +207,14 @@ class AlmEnvironment(object):
         """
         """
         # Type of build, release/debug
-        self.env['BUILD'] = self.opts.GetOption('build')
+        builddict = {
+                'all' : 'debug',
+                'libs': 'debug',
+                'tests': 'release',
+                'none': 'release'
+                }
+
+        self.env['BUILD'] = builddict[self.opts.GetOption('debug_mode')]
 
         self.__configure_compiler()
 
@@ -223,6 +230,8 @@ class AlmEnvironment(object):
 
         # Setup what is printed while compiling
         compile_helper.UpdateEnvComStr(self.env)
+
+        self.CheckDefault()
 
         return self.env
 

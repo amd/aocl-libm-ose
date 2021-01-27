@@ -119,6 +119,7 @@ class AlmEnvironment(object):
 
         debug = opts.GetOption('debug_mode')
         dev   = opts.GetOption('developer')
+        abi   = opts.GetOption('libabi')
 
         if debug and dev:
             print("Debug and Developer options cannot be together", debug, dev)
@@ -127,7 +128,8 @@ class AlmEnvironment(object):
         build = self.env['BUILD']
         self.env['developer'] = 0
 
-        dirsuffix = 'aocl'
+        dirsuffix = abi
+
         if not debug and not dev:
             dirsuffix += '-release'
             self.env['build'] = 'release'
@@ -172,7 +174,8 @@ class AlmEnvironment(object):
         abi_dict = {
             'acml' : 'LIBABI_ACML',
             'libm' : 'LIBABI_LIBM',
-            'svml' : 'LIBABI_SVML'
+            'svml' : 'LIBABI_SVML',
+            'glibc': 'LIBABI_GLIBC',
         }
 
         cflags = ''

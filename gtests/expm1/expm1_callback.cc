@@ -97,17 +97,12 @@ extern "C" {
 #define _ZGVdN2v_expm1 _ZGVbN2v_expm1
 #define _ZGVdN4v_expm1 _ZGVdN4v_expm1
 #define _ZGVsN4v_expm1f _ZGVbN4v_expm1f
-//#define _ZGVsN8v_expm1f _ZGVdN8v_expm1f
 #endif
 
 /*vector routines*/
-#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
 __m128d LIBM_FUNC_VEC(d, 2, expm1)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, expm1)(__m256d);
-
 __m128 LIBM_FUNC_VEC(s, 4, expm1f)(__m128);
-//__m256 LIBM_FUNC_VEC(s, 8, expm1f)(__m256);
-#endif
 
 int test_v2d(test_data *data, int idx)  {
 #if 0

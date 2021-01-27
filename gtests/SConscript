@@ -32,7 +32,6 @@ if plat == 'linux' or plat == 'posix':
 
 PROTOTYPE_GLIBC    = 0xf1
 PROTOTYPE_AOCL     = 0xf2
-PROTOTYPE_AMDLIBM  = 0xf3 #This is to compile for older AMDLIBM versions (prior to v2.1)
 PROTOTYPE_TEST_V1  = 0xf8
 PROTOTYPE_TEST_V2  = 0xf9
 PROTOTYPE_SVML     = 0xf4
@@ -61,9 +60,6 @@ abi = env['libabi']
 # Default set to AOCL
 if abi == 'aocl':
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_AOCL]
-    liblist.extend(['alm'])
-elif abi == 'amdlibm':
-    ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_AMDLIBM]
     liblist.extend(['alm'])
 elif abi == 'glibc':
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_GLIBC]

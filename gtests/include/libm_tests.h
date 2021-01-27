@@ -91,27 +91,25 @@ enum LIBM_TEST_TYPE {
 
 #define PROTOTYPE_GLIBC    0xf1
 #define PROTOTYPE_AOCL     0xf2
-#define PROTOTYPE_AMDLIBM  0xf3
 #define PROTOTYPE_TEST_V1  0xf8
 #define PROTOTYPE_TEST_V2  0xf9
 #define PROTOTYPE_SVML     0xf4
 
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+#pragma message "compiling for AOCL"
 #define LIBM_FUNC(x) FN_PROTOTYPE(x)
 #define LIBM_FUNC_VEC(prec, elem, fn) FN_PROTOTYPE(vr##prec##elem##_##fn)
-#pragma message "compiling for AOCL"
-#elif (LIBM_PROTOTYPE == PROTOTYPE_AMDLIBM)
-#define LIBM_FUNC(x) FN_PROTOTYPE(x)
-#define LIBM_FUNC_VEC(prec, elem, fn) FN_PROTOTYPE_FMA3(vr##prec##elem##_##fn)
-#pragma message "compiling for older versions of AMDLIBM"
+
 #elif (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
 #pragma message "compiling for GLIBC"
 #define LIBM_FUNC(x)    x
 #define LIBM_FUNC_VEC(prec, elem, fn) _ZGV##prec##N##elem##v_##fn
+
 #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
 #pragma message "compiling for Intel SVML"
 #define LIBM_FUNC(x) x
 #define LIBM_FUNC_VEC(prec, elem, fn) __svml_##fn##elem
+
 #else
 #error "unknown LIBM_PROTOTYPE"
 #endif

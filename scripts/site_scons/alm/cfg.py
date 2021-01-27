@@ -103,7 +103,7 @@ class AlmCfg(object):
             env.Append(CPPDEFINES = {'ENABLE_GLIBC_API' : 1})
         elif env['libabi'] == 'libm':
             env.Append(CPPDEFINES = {'ENABLE_LIBM_API' : 1})
-        elif env['libabi'] == 'acml' or env['libabi'] == 'aocl' or env['libabi'] == 'amdlibm':
+        elif env['libabi'] == 'acml' or env['libabi'] == 'aocl':
             env.Append(CPPDEFINES = {'ENABLE_AMDLIBM_API' : 1})
 
         if env['developer'] != 0:

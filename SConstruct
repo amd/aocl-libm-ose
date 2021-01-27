@@ -97,10 +97,9 @@ alm_objs = SConscript('src/SConscript',
 
 targets += alm_objs
 
-
 testenv = aenv.Clone()
 if aenv['libabi'] == 'svml':
-  testenv.Append(
+    testenv.Append(
     LIBPATH=['#'+joinpath(build_root,'src'), env['INTEL_LIB_PATH']]
   )
 else:
@@ -108,21 +107,15 @@ else:
     LIBPATH=['#'+joinpath(build_root,'src')]
   )
 
-test_objs = []
-if 'tests' in COMMAND_LINE_TARGETS:
-  test_objs += SConscript(dirs='tests',
-                         exports = {'env' : testenv},
-                         duplicate = 0,
-                         src_dir    = 'tests',
-                         variant_dir = joinpath(build_root, 'tests'))
+gtest_objs = []
 
 if 'gtests' in COMMAND_LINE_TARGETS:
-  test_objs += SConscript(dirs='gtests',
+  gtest_objs += SConscript(dirs='gtests',
                           exports = {'env' : testenv},
                           duplicate = 0,
                           src_dir    = 'gtests',
                           variant_dir = joinpath(build_root, 'gtests'))
 
-targets += test_objs
+targets += gtest_objs
 
 

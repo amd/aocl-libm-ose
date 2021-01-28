@@ -43,8 +43,19 @@ incpaths = [
     '#' + joinpath(Dir('.').srcnode().path, 'include')
 ]
 
+machdict = {
+    'znver3' : 'znver3',
+    'znver2' : 'znver2',
+    'znver1' : 'znver1',
+}
+env_mach = e['ALM_MAX_ARCH']
+
+machflag = '-march='
+machflag += machdict[env_mach]
+
+
 e.MergeFlags({
-    'CFLAGS'  : ['-march=znver3', 
+    'CFLAGS'  : [machflag,
                  # TODO: remove once the compiler supports znver3
                  '-march=znver2', '-O3', '-fPIC', '-flax-vector-conversions'],
     'CPPPATH' : incpaths

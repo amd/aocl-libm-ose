@@ -1,0 +1,14 @@
+#
+# Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
+#
+
+Import('env')
+
+e = env.Clone()
+
+ceil_srcs = Glob('*.cc')
+
+ceil = e.Program('test_ceil', ceil_srcs)
+
+Return('ceil')
+

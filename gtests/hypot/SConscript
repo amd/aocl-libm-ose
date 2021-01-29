@@ -1,0 +1,14 @@
+#
+# Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
+#
+
+Import('env')
+
+e = env.Clone()
+
+hypot_srcs = Glob('*.cc')
+
+hypot = e.Program('test_hypot', hypot_srcs)
+
+Return('hypot')
+

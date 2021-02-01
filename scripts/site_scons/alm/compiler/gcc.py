@@ -29,15 +29,23 @@ class Gcc(Compiler):
         self.SetCmd('gcc')
         self.SetCxxCmd('g++')
 
+        # only for C++/Obj-C
+        self.cxxwarnings = [
+            '-Wctor-dtor-privacy',
+            '-Wnoexcept',
+            '-Wold-style-cast',
+            '-Woverloaded-virtual',
+            '-Wstrict-null-sentinel',
+        ]
+
         self.warnings = [
             '-Wall',
             '-Wextra',
-            '-Wpedantic',
+            #'-Wpedantic',
             #   '-Wabi',
             '-Wcast-align',
             '-Wcast-qual',
             '-Wconversion',
-            '-Wctor-dtor-privacy',
             '-Wdisabled-optimization',
             '-Wdouble-promotion',
             #   '-Weffc++',
@@ -47,11 +55,8 @@ class Gcc(Compiler):
             '-Winvalid-pch',
             #   '-Wlogical-op',
             '-Wmissing-declarations',
-            '-Wmissing-include-dirs',
-            '-Wnoexcept',
+            #'-Wmissing-include-dirs',
             '-Wodr',
-            '-Wold-style-cast',
-            '-Woverloaded-virtual',
             #   '-Wpadded',
             '-Wredundant-decls',
             '-Wshadow',
@@ -59,7 +64,6 @@ class Gcc(Compiler):
             #   '-Wsign-promo',
             #   '-Wsuggest-final-methods',
             #   '-Wsuggest-final-types',
-            '-Wstrict-null-sentinel',
             #   '-Wstrict-overflow=5',
             '-Wswitch-default',
             # Wswitch-enum needs every switch statement to be handled explicitly.

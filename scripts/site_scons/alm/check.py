@@ -23,6 +23,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import os
+from os.path import join as joinpath
 
 import SCons
 from SCons.Script import Configure, GetOption, COMMAND_LINE_TARGETS
@@ -127,35 +129,55 @@ def CheckLibAbi(context):
 def CheckForOS(context):
     pass
 
+def CheckCompilerFlag(context, flag):
+    pass
+
 def All(almenv):
     """
     """
     env = almenv.env
 
-    conf = env.Configure(help = False, custom_tests = {
-        'CheckForToolchain' : CheckForToolchain,
-        'CheckForOS'        : CheckForOS,
-        'CheckForHeaders'   : CheckForHeaders,
-        'CheckForLibs'      : CheckForLibs,
-        'CheckLibAbi'       : CheckLibAbi,
-    })
+    def CheckZenVer(ctx):
+        for f in ['znver3', 'znver2', 'znver1']:
+            ret = CheckCompilerFlag(ctx, '-march='+f)
+            if ret :
+                ctx.env['ALM_MAX_ARCH'] = f
+                return ret
+
+        ctx.env['ALM_MAX_ARCH'] = 'x86_64'
+        return None
+
+    conf = env.Configure (
+        help = False,
+        custom_tests = {
+            'CheckForToolchain' : CheckForToolchain,
+            'CheckForOS'        : CheckForOS,
+            'CheckForHeaders'   : CheckForHeaders,
+            'CheckForLibs'      : CheckForLibs,
+            'CheckLibAbi'       : CheckLibAbi,
+            'CheckZenVer'       : lambda ctx : CheckZenVer(ctx),
+        },
+        conf_dir = joinpath(env['BUILDDIR'], 'configure'),
+    )
 
     if conf.CheckLibAbi():
         Exit(1)
-
+    #result = conf.CheckProg(almenv.compiler.Cmd())
     #result = conf.CheckProg(almenv.compiler.CxxCmd())
 
-    # if conf.CheckForToolchain():
-    #     print("Toolchain not found")
-    #     Exit(1)
+    if conf.CheckForToolchain():
+        print("Toolchain not found")
+        Exit(1)
 
-    # if conf.CheckForHeaders():
-    #     print("Headers not found")
-    #     Exit(1)
+    if conf.CheckForHeaders():
+        print("Headers not found")
+        Exit(1)
 
-    # if conf.CheckForLibs():
-    #     print("Support Libraries not found")
-    #     Exit(1)
+    if conf.CheckForLibs():
+        print("Support Libraries not found")
+        Exit(1)
+
+    conf.CheckZenVer()
 
     return conf
 

@@ -59,5 +59,9 @@ fast_objs = e.StaticObject(fast_srcs)
 almfast = e.StaticLibrary('almfast', fast_objs)
 almfastso = e.SharedLibrary('almfast', fast_objs)
 
+installdir = env['installdirs']
+if 'install' in COMMAND_LINE_TARGETS:
+    env.Alias('install', env.Install(installdir['lib'], [almfastso, almfast]))
+
 Return('almfast', 'almfastso')
 

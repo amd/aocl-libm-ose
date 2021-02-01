@@ -33,7 +33,6 @@ incpaths = [
     Dir('#/src/optmized/'),
 ]
 
-
 e.Append(
     CCFLAGS = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror',
                #'-Wno-unused-but-set-parameter',
@@ -58,6 +57,8 @@ excluded_srcs = []
 
 compat_libs = []
 
+installdir = env['installdirs']
+
 for key,val in compat_lib_dict.items():
     if len(val) == 0:
         continue
@@ -67,6 +68,8 @@ for key,val in compat_lib_dict.items():
     compat_lib = e.SharedLibrary('alm-' + key + '-compat', compat_obj)
 
     compat_libs += compat_lib
+    if 'install' in COMMAND_LINE_TARGETS:
+        env.Alias('install', env.Install(installdir['lib'], [compat_lib]))
 
 Return('compat_libs')
 

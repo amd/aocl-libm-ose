@@ -1,0 +1,17 @@
+#
+# Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
+#
+
+Import('env')
+import os
+
+e = env.Clone()
+
+test_srcs = Glob('*.cc')
+
+test_exe = 'test_' + os.path.basename(os.getcwd())
+
+exe = e.Program(test_exe, test_srcs)
+
+Return('exe')
+

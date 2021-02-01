@@ -75,10 +75,9 @@ else:
 try:
     dbg_mode=env['debug_mode']
 except KeyError as err:
-    print("Keyerror, debug_mode not found, setting to none", err)
     dbg_mode='none'
 
-if dbg_mode == 'gtests' or dbg_mode == 'all':
+if dbg_mode in ['gtests', 'all', 'tests' ]:
     env.Append(
         CCFLAGS = ['-ggdb']
        )

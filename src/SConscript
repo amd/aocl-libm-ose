@@ -68,7 +68,7 @@ for d in subdirs:
                             src_dir = sdir,
                             variant_dir = joinpath(builddir, '%s'%d))
 
-lib_excludes = ['MapEntryPoints.c']
+lib_excludes = ['alm_env.c']
 lib_srcs = Glob('*.[c]', exclude=lib_excludes)
 
 alm_objs += almenv.StaticObject(lib_srcs)

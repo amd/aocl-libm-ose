@@ -170,7 +170,7 @@ def All(almenv):
             'CheckLibAbi'       : CheckLibAbi,
             'CheckZenVer'       : lambda ctx : CheckZenVer(ctx),
         },
-        conf_dir = joinpath(env['BUILDDIR'], 'configure'),
+        conf_dir = joinpath(env['BUILDDIR'], '.sconf_temp'),
     )
 
     if conf.CheckLibAbi():

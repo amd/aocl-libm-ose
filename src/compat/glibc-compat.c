@@ -54,18 +54,16 @@ MAKE_GLIBC_VEC_FUNC(_ZGVbN4v_expf, __m128,  amd_vrs4_expf)
 MAKE_GLIBC_VEC_FUNC(_ZGVbN2v_log,  __m128d, amd_vrd2_log )
 MAKE_GLIBC_VEC_FUNC(_ZGVbN4v_logf, __m128,  amd_vrs4_logf)
 
-MAKE_GLIBC_VEC_FUNC2(_ZGVbN2v_pow,  __m128d, amd_vrd2_pow )
-MAKE_GLIBC_VEC_FUNC2(_ZGVbN4v_powf, __m128,  amd_vrs4_powf)
+MAKE_GLIBC_VEC_FUNC2(_ZGVbN2vv_pow,  __m128d, amd_vrd2_pow )
+MAKE_GLIBC_VEC_FUNC2(_ZGVbN4vv_powf, __m128,  amd_vrs4_powf)
 
 /* AVX  - "_ZGVc" prefix */
+MAKE_GLIBC_VEC_FUNC(_ZGVcN4v_sin,  __m256d, amd_vrd4_sin )
+MAKE_GLIBC_VEC_FUNC(_ZGVdN8v_sinf, __m256,  amd_vrs8_sinf)
 
 /* AVX2 - "_ZGVd" prefix */
 /* not implemented in amd-libm yet */
-/* MAKE_GLIBC_VEC_FUNC(_ZGVdN4v_sin,  __m256d, amd_vrd4_sin ) */
-MAKE_GLIBC_VEC_FUNC(_ZGVdN8v_sinf, __m256,  amd_vrs8_sinf)
-
-/* not implemented in amd-libm yet */
-/* MAKE_GLIBC_VEC_FUNC(_ZGVdN4v_cos,  __m256d, amd_vrd4_cos ) */
+MAKE_GLIBC_VEC_FUNC(_ZGVdN4v_cos,  __m256d, amd_vrd4_cos )
 MAKE_GLIBC_VEC_FUNC(_ZGVdN8v_cosf, __m256,  amd_vrs8_cosf)
 
 MAKE_GLIBC_VEC_FUNC(_ZGVdN4v_exp,  __m256d, amd_vrd4_exp )

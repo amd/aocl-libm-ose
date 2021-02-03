@@ -48,7 +48,7 @@ asfloat(uint32_t i)
 static inline double
 asdouble(uint64_t i)
 {
-	flt64_t dbl = {.i = i};
+	flt64u_t dbl = {.i = i};
 	return dbl.d;
 }
 

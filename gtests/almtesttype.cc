@@ -22,7 +22,7 @@ int AlmTestFramework::AlmTestType(InputParams *params, InputData *inData,
   sprintf(ptr->print[ptr->tstcnt],"%-12s %-12s %-12s %-12s %-12s %-12s %s",
   "TEST", "TYPE", "DATATYPE", "No.Tests", "Passed", "Failed", "MAX ULP ERR" );
    ptr->tstcnt++;
-    
+
   if (params->ttype == ALM::TestType::E_Accuracy) {
     AccuParams accup;
     memset(&accup, 0, sizeof(AccuParams));
@@ -42,32 +42,9 @@ int AlmTestFramework::AlmTestType(InputParams *params, InputData *inData,
     accup.count = params->count;
     accup.prttstres = ptr;
     accuData.push_back(accup);
-    return 0;    
+    return 0;
   }
-  
-  if (params->ttype == ALM::TestType::E_SpecialCase) {
-    SpecParams specp;
-    memset(&specp, 0, sizeof(SpecParams));
-    specp.nargs = GetnIpArgs();
-    specp.verboseflag = params->verboseflag;
-    specp.prttstres = ptr;
-    switch (params->fwidth) {
-      case ALM::FloatWidth::E_F32:
-        SpecSetupf32(&specp);
-        specData.push_back(specp);
-      break;
-      case ALM::FloatWidth::E_F64:
-        SpecSetupf64(&specp);
-        specData.push_back(specp);
-      break;
-      default:
-        SpecSetupf32(&specp);
-        SpecSetupf64(&specp);
-        specData.push_back(specp);
-      break;
-    }
-    return 0;    
-  }
+
 
   if (params->ttype == ALM::TestType::E_Conformance) {
     SpecParams specp;
@@ -90,9 +67,9 @@ int AlmTestFramework::AlmTestType(InputParams *params, InputData *inData,
         specData.push_back(specp);
       break;
     }
-    return 0;    
+    return 0;
   }
-  return 0;  
+  return 0;
 }
 
 AlmTestFramework::~AlmTestFramework() {

@@ -26,16 +26,6 @@ uint32_t GetnIpArgs( void )
 	return ipargs;
 }
 
-void SpecSetupf32(SpecParams *specp) {
-  specp->data32 = test_fabsf_special_data;
-  specp->countf = ARRAY_SIZE(test_fabsf_special_data); 
-}
-
-void SpecSetupf64(SpecParams *specp) {
-  specp->data64 = test_fabs_special_data;
-  specp->countd = ARRAY_SIZE(test_fabs_special_data); 
-}
-
 void ConfSetupf32(SpecParams *specp) {
   specp->data32 = test_fabsf_conformance_data;
   specp->countf = ARRAY_SIZE(test_fabsf_conformance_data); 

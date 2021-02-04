@@ -170,8 +170,7 @@ test_sin_conformance_data[] = {
     {0xc01921fb54442d18LL, 0x3cb1a62633145c07LL, 0}, // sin(-6.28319 = -2pi)=0
     {0x403f6a7a2955385eLL, 0xbcd60fafbfd97309LL, 0}, // sin(31.4159 = 10pi)=0
     {0x405921fb54442d18LL, 0xbcf1a62633145c07LL, 0}, // sin(100.531 = 32pi)=0
-    
-    
+
     {0x3cb0000000000000LL, 0x3cafffffffffffffLL, 0}, // sin(2.22045e-016 = full prec)=2.220446e-016
     {0x0000000000000001LL, 0x0000000000000001LL, 0}, // sin(4.94066e-324 = smallest)=4.940e-324
 
@@ -228,81 +227,6 @@ test_sin_conformance_data[] = {
     {0x0611f25d4e96f5f0LL, 0x0611f25d4e96f5f0LL, 0}, 	// sin(0.000000000000)=	0.000000000000
     {0x40039998a2086896LL, 0x3fe468948002f939LL, 0}, 	// sin(2.449998155481)=	0.637766122840
 
-};
-
-static libm_test_special_data_f32
-test_sinf_special_data[] = {
-    {0x3c000000, 0x3bffff55 ,},   //0.0078125
-    {0x3c7fffff, 0x3c7ffd54 ,},   //0.0156249991
-    {0x3f012345, 0x3ef775de ,},   //0.504444
-    {0x3f800000, 0x3f576aa4 ,},   //1
-    {0x40000000, 0x3f68c7b7 ,},   //2
-    {0x33d6bf95, 0x33d6bf95 ,},   //1.0000000e-7
-    {0x4048f5c3, 0x3ad0bd0b ,},   //pi*/
-    {0x40c90fdb, 0x343bbd2e ,},   //2pi
-    {0x41200000, 0xbf0b44f8 ,},   //10
-    {0x447a0000, 0x3f53ae61 ,},   //1000
-    {0x42800000, 0x3f6b86d4 ,},   //64
-    {0x42af0000, 0xbee56824 ,},   //87.5
-    {0x42b00000, 0x3d10fdd0 ,},   //88
-    {0x42c00000, 0x3f7bcc68 ,},   //96
-    {0xc2af0000, 0x3ee56824 ,},   //-87.5
-    {0xc2e00000, 0x3f63d6c0 ,},   //-112
-    {0xc3000000, 0xbf3895ed ,},   //-128
-    {0xc2aeac4f, 0x3f166b12 ,},   //-87.3365  smallest normal result
-    {0xc2aeac50, 0x3f166aab ,},   //-87.3365  largest denormal result
-    {0xc2ce0000, 0xbf1f7c2f ,},   //-103
-    {0x50000000, 0x3f51c81c ,},   //large   overflow
-    {0xc20a1eb8, 0xbce16b33 ,}, // -34.53
-    {0xc6de66b6, 0x3f7b913c ,}, // -28467.3555
-    {0xbe99999a, 0xbe974e6d ,}, // -0.3
-    {0xbf247208, 0xbf195e02 ,}, // -0.642365
-    {0xbf000000, 0xbef57744 ,}, // -0.5
-    {0x3e99999a, 0x3e974e6d ,}, // 0.3
-    {0x3f247208, 0x3f195e02 ,}, // 0.642365
-    {0x3f000000, 0x3ef57744 ,}, // 0.5
-    {0x420a1eb8, 0x3ce16b33 ,}, // 34.53
-    {0x46de66b6, 0xbf7b913c ,}, // 28467.3555
-    {0xc2c80000, 0x3f01a12e ,}, // -100
-    {0x42c80000, 0xbf01a12e ,}, // 100
-};
-
-static libm_test_special_data_f64
-test_sin_special_data[] = {
-    {0xffefffffffffffff, 0xbf7452fc98b34e97,},
-    {0xc0862c4379671324, 0x3fdcd022a5e2d7dd,},
-    {0x7ff0000000000000, 0xfff8000000000000,}, //inf
-    {0xfff0000000000000, 0xfff8000000000000,}, //-inf
-    {0x7ffc000000000000, 0x7ffc000000000000,}, //qnan
-    {0x7ff4000000000000, 0x7ffc000000000000,}, //snan
-    {0x0000000000000000, 0x0000000000000000,}, //0
-
-    {0x3e45798ee2308c3a, 0x3e45798ee2308c3a,}, // .00000001
-    {0x400921fb54442d18, 0x3ca1a62633145c07,}, //pi
-    {0xc086be6fb2739468, 0x3febad47f50fa6ff,}, // denormal result
-    {0x3ff0000000000000, 0x3feaed548f090cee,}, // 1
-    {0x4000000000000000, 0x3fed18f6ead1b446,}, // 2
-    {0xbff0000000000000, 0xbfeaed548f090cee,}, // -1
-
-    {0x4024000000000000, 0xbfe1689ef5f34f52,}, // 10
-    {0x408f400000000000, 0x3fea75cc150a206b,}, // 1000
-    {0x4084000000000000, 0xbfe8c366507038d3,}, // 640
-    {0xc085e00000000000, 0xbfe16834defaadb0,}, // -700
-    {0xc07f51999999999a, 0x3feffef48468d803,}, // -501.1
-
-    // all denormal
-    {0xc08625aad16d5438, 0x3feec2a16a38af7d,},
-    {0xc08627fa8b8965a4, 0x3feaf8d44ff01c5b,},
-    {0xc0862c4379671324, 0x3fdcd022a5e2d7dd,},
-    {0xc087440b864646f5, 0xbfaa86a4967bd9e3,},
-
-    {0xc08743e609f06b07, 0xbfb1f09de81a321c,},
-    {0xc0874409d4de2a93, 0xbfaaf2d8c46da264,},
-    {0xc08744b894a31d87, 0x3fa0b92508d90625,},
-    {0xc08744ddf48a3b9c, 0x3faa0eff9f8ab2c6,},
-    {0xc08745723e498e76, 0x3fbf7db035104391,},
-    {0xc0874593fa89185f, 0x3fc1d5f06f86575e,},
-    {0xffefffffffffffff, 0xbf7452fc98b34e97,},
 };
 
 #endif	/*__TEST_SIN_DATA_H__*/

@@ -2,15 +2,12 @@
 
 int test_trunc(void* handle) {
     char* error;
-    float (*lamd_truncf)(float);
-    double (*lamd_trunc)(double);
     /*scalar inputs*/
     float inputf = 3.145, outputf;
     double input = 6.287, output;
 
-    /*scalar routines*/
-    lamd_truncf = dlsym(handle, "amd_truncf");
-    lamd_trunc  = dlsym(handle, "amd_trunc");
+    float (*funcf)(float) = (float (*)(float))dlsym(handle, "amd_truncf");
+    double (*func)(double) = (double (*)(double))dlsym(handle, "amd_trunc");
 
     error = dlerror();
     if (error != NULL) {
@@ -19,13 +16,10 @@ int test_trunc(void* handle) {
     }
 
     printf("Exercising trunc routines\n");
-
-    /*scalar*/
-    outputf = (*lamd_truncf)(inputf);
+    outputf = funcf(inputf);
     printf("amd_truncf(%f) = %f\n", inputf, outputf);
-    output = (*lamd_trunc)(input);
+    output = func(input);
     printf("amd_trunc(%lf) = %lf\n", input, output);
-    printf("\n");
 
     return 0;
 }

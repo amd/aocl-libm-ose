@@ -165,7 +165,7 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
 #define MXCSR_ES_DIVBYZERO     0x00000004
 #define MXCSR_ES_INVALID       0x00000001
 
-#if defined(WINDOWS) || (WIN64)
+#if defined(WINDOWS) || defined(WIN64)
 #define	AMD_F_NONE		  0x0
 #define AMD_F_OVERFLOW    0x00000001
 #define AMD_F_UNDERFLOW   0x00000002
@@ -210,7 +210,7 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
 #define PUT_BITS_SP32(ux, x) \
   { \
     volatile union {float f; unsigned int i;} _bitsy; \
-    _bitsy.i = (ux); \
+    _bitsy.i = (unsigned int)(ux); \
      x = _bitsy.f; \
   }
 
@@ -223,7 +223,7 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
 #define PUT_BITS_DP64(ux, x) \
   { \
     volatile union {double d; unsigned long long i;} _bitsy; \
-    _bitsy.i = (ux); \
+    _bitsy.i = (unsigned long long)(ux); \
     x = _bitsy.d; \
   }
 

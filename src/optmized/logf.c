@@ -32,6 +32,7 @@
 
 #include <libm/types.h>
 #include <libm/typehelper.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 
 #define MASK_MANT_ALL7 0x007f8000
@@ -46,7 +47,6 @@
 
 #include "logf_data.h"
 
-extern float_t _logf_special(float_t x, float_t y, uint32_t code);
 
 extern struct logf_table logf_lookup[1<<LOGF_N];
 
@@ -69,7 +69,7 @@ static struct {
     /* Polynomial constants for cases near to 1 */
     .poly1 = {
         8.33333333333317923934e-02f,    /* A1 */
-        1.25000000037717509602e-02,     /* A2 */
+        1.25000000037717509602e-02f,     /* A2 */
     },
 };
 #define LOG2_HEAD logf_data.log2_head
@@ -150,11 +150,11 @@ ALM_PROTO_OPT(logf)(float x)
     {
         /* x < 0x1p-126 or inf or nan. */
         if (ux * 2 == 0)                /* log(0) = -inf */
-            return -1.0/0.0;
+            return -1.0f/0.0f;
         if (ux == 0x7f800000)           /* log(inf) = inf */
             return x;
         if ((ux & 0x80000000) || ux * 2 >= 0xff000000)
-            return sqrt(x);             /* Return NaN */
+            return (float)sqrt(x);             /* Return NaN */
 
         /*
          * 'x' has to be denormal, Normalize it
@@ -165,7 +165,7 @@ ALM_PROTO_OPT(logf)(float x)
         ux -= 23 << 23;
     }
 
-    int32_t expo = (ux >> EXPSHIFTBITS_SP32) - EMAX_SP32;
+    int32_t expo = (int32_t)(ux >> EXPSHIFTBITS_SP32) - EMAX_SP32;
     float_t f_expo = (float_t)expo;
 
 #define NEAR_ONE_LO asuint32(1 - 0x1.0p-4)

@@ -92,7 +92,7 @@ class AlmOptions(object):
                         nargs   = 1,
                         default = 'aocl',
                         type    = 'choice',
-                        choices = ['aocl', 'libm', 'svml'],
+                        choices = ['aocl', 'libm', 'svml', 'glibc'],
                         help = """Compile tests to call this abi \
                         aocl  - AOCL, functions prefixed with 'amd_*' \
                         glibc - GLIBC abi calls, prefixed with '__ieee_*' \

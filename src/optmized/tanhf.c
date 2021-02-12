@@ -75,6 +75,7 @@
 
 #include <libm/types.h>
 #include <libm/typehelper.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
@@ -107,7 +108,6 @@ static struct {
 #define TANHF_SMALL_ARG   0x39000000
 #define TANHF_SIGN_MASK32 ~(1U<<31)
 
-float ALM_PROTO(expf)(float);
 
 float
 ALM_PROTO_OPT(tanhf)(float x)
@@ -145,7 +145,7 @@ ALM_PROTO_OPT(tanhf)(float x)
         /* For x > max_arg */
             return asfloat(asuint32(1.0f) ^ sign);
 
-    if(y < 1.0) {
+    if(y < 1.0f) {
 
         /* Compute tanhf using the polynomial
            y + C1 * y^3 + C2 * y^5 + C3 * y^7 + C4 * y^9 +

@@ -45,6 +45,7 @@
 #include "libm_util_amd.h"
 #include "libm_special.h"
 #include <libm/typehelper.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 
 extern uint64_t log_256[];
@@ -168,8 +169,6 @@ struct log_table {
     double lead, tail;
 };
 
-double _log_special(double x, double y, uint32_t code);
-float _expf_special(float x, float y, uint32_t code);
 
 /* Returns 0 if not int, 1 if odd int, 2 if even int.  The argument is
    the bit representation of a non-zero finite floating-point value.  */
@@ -181,9 +180,9 @@ checkint (uint32_t iy)
         return 0;
     if (e > 0x7f + 23)
         return 2;
-    if (iy & ((1 << (0x7f + 23 - e)) - 1))
+    if (iy & (uint32_t)((1 << (0x7f + 23 - e)) - 1))
         return 0;
-    if (iy & (1 << (0x7f + 23 - e)))
+    if (iy & (uint32_t)(1 << (0x7f + 23 - e)))
         return 1;
     return 2;
 }
@@ -216,7 +215,7 @@ calculate_log(double_t x)
 
     uint64_t ux = asuint64(x);
 
-    int32_t expo = (ux >> 52) - 1023;
+    int32_t expo = (int32_t)((ux >> 52) - 1023);
 
     flt64_t mant = {.i = ux & 0x000fffffffffffffULL};
 
@@ -231,7 +230,7 @@ calculate_log(double_t x)
 
     uint64_t j = (mant_n);
 
-    mant.i |= 0x3fe0000000000000ULL;               /* F */
+    mant.i |= 0x3fe0000000000000L;               /* F */
     j_times_half = asdouble(0x3fe0000000000000ULL | j); /* Y */
 
     j >>= (52 - N);
@@ -265,11 +264,14 @@ static inline float calculate_exp(double_t x, uint64_t sign_bias)
     if (unlikely (top12(x) > top12(88.0))) {
 
         if ((float)x > EXPF_FARG_MAX) {
-            return _expf_special(x, asfloat((sign_bias >> 32) | PINFBITPATT_SP32), EXP_Y_INF);
+            return _expf_special((float)x,
+                     asfloat((uint32_t)((sign_bias >> 32) | PINFBITPATT_SP32)),
+                       EXP_Y_INF);
         }
 
         if (((float)x) < EXPF_FARG_MIN) {
-            return _expf_special(x, asfloat(sign_bias >> 32) , EXP_Y_ZERO);
+            return _expf_special((float)x, asfloat((uint32_t)(sign_bias >> 32)),
+                                  EXP_Y_ZERO);
         }
 
     }
@@ -362,9 +364,9 @@ float ALM_PROTO_OPT(powf)(float x, float y)
 
             if (2 * ux == 0 && uy & 0x80000000)
             {
-                x = 1.0 / 0.0;
+                x = (float)(1.0 / 0.0);
                 ux = asuint32(x);
-                return asfloat((sign_bias >> 32) | ux);
+                return asfloat((uint32_t)((sign_bias >> 32) | ux));
             }
 
             return uy & 0x80000000 ? (1 / x2) : x2; /* if y is negative, return 1/x else return x */
@@ -376,7 +378,7 @@ float ALM_PROTO_OPT(powf)(float x, float y)
             /* Finite x < 0 */
             int yint = checkint (uy);
             if (yint == 0)
-                return sqrt(x);
+                return (float)sqrt(x);
             if (yint == 1)
                 sign_bias = SIGN_BIAS;
 
@@ -434,11 +436,11 @@ float ALM_PROTO_OPT(powf)(float x, float y)
 
             logx = r + R2;
 
-            ylogx = y * logx;
+            ylogx = (double_t)y * logx;
 
             result = calculate_exp(ylogx, sign_bias);
 
-            return result;
+            return (float)result;
 
         }
     }
@@ -447,11 +449,11 @@ float ALM_PROTO_OPT(powf)(float x, float y)
 
     logx = calculate_log(dx);
 
-    ylogx = y * logx;
+    ylogx = (double_t)y * logx;
 
     result = calculate_exp(ylogx, sign_bias);
 
-    return result;
+    return (float)result;
 }
 
 

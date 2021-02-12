@@ -97,6 +97,7 @@
 #include <libm_macros.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
@@ -177,8 +178,6 @@ void __amd_remainder_piby2(double x, double *r, double *rr, int *region);
 #define COS_SMALLER 0X3e40000000000000  /* 2.0^(-27) */
 
 
-double _cos_special(double x);
-
 double
 ALM_PROTO_OPT(cos)(double x)
 {
@@ -209,11 +208,11 @@ ALM_PROTO_OPT(cos)(double x)
 
             r = TwobyPI * x; /* x * two_by_pi*/
 
-            int32_t xexp = ux >> 52;
+            int32_t xexp = (int32_t)(ux >> 52);
 
             double npi2d = r + ALM_SHIFT;
 
-            int64_t npi2 = asuint64(npi2d);
+            uint64_t npi2 = asuint64(npi2d);
 
             npi2d -= ALM_SHIFT;
 
@@ -225,9 +224,9 @@ ALM_PROTO_OPT(cos)(double x)
 
             uy = asuint64(r);
 
-            int64_t expdiff = xexp - ((uy << 1) >> 53);
+            int64_t expdiff = xexp - (int32_t)((uy << 1) >> 53);
 
-            region = npi2;
+            region = (int32_t)npi2;
 
             if (expdiff  > 15) {
 

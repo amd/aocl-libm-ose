@@ -283,9 +283,9 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     for(int  lane = 0; lane < 4; lane++) {
 
-        int32_t j = index[lane];
+        int32_t j = (int32_t)index[lane];
 
-        int32_exponent[lane] = int_exponent[lane];
+        int32_exponent[lane] = (int32_t)int_exponent[lane];
 
         F_INV_HEAD[lane] = TAB_F_INV[j].head;
 
@@ -372,7 +372,7 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     for (int lane = 0; lane < 4; lane++) {
 
-        int32_t j = index[lane];
+        int32_t j = (int32_t)index[lane];
 
         j_by_N_head[lane] = TWO_POWER_J_BY_N[j].head;
 

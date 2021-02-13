@@ -159,7 +159,7 @@ ALM_PROTO_OPT(vrd4_log) (__m256d x)
 
     for(int i = 0; i < VECTOR_SIZE; i++) {
 
-       int32_exponent[i] = int_exponent[i];
+       int32_exponent[i] = (int32_t)int_exponent[i];
 
     }
 

@@ -278,9 +278,9 @@ calculate_log(v_u64x2_t ux, v_f64x2_t* logx_t)
 
     for(int  lane = 0; lane < VECTOR_LENGTH; lane++) {
 
-        int32_t j = index[lane];
+        int32_t j = (int32_t)index[lane];
 
-        exponent[lane] = int_exponent[lane];
+        exponent[lane] = (double)int_exponent[lane];
 
         F_INV_HEAD[lane] = TAB_F_INV[j].head;
 
@@ -366,7 +366,7 @@ calculate_exp(v_f64x2_t ylogx_h, v_f64x2_t ylogx_t)
 
     for (int lane = 0; lane < VECTOR_LENGTH; lane++) {
 
-        int32_t j = index[lane];
+        int32_t j = (int32_t)index[lane];
 
         j_by_N_head[lane] = TWO_POWER_J_BY_N[j].head;
 

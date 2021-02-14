@@ -28,6 +28,9 @@ from os.path import join as joinpath
 
 builddir = joinpath(env['BUILDROOT'], 'src', 'ref')
 
+env.Append (
+    CFLAGS = ['-O2', '-mfma', '-mavx2']
+)
 #
 # Reference files, for the functions where optimized version
 # doesn't exist

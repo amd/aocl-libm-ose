@@ -50,7 +50,7 @@ struct alm_arch_funcs __arch_funcs_exp2 = {
         },
 
         [ALM_UARCH_VER_ZEN2] = {
-            NULL, 
+            &ALM_PROTO_ARCH_ZN2(exp2f),
             &ALM_PROTO_ARCH_ZN2(exp2),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
@@ -59,7 +59,7 @@ struct alm_arch_funcs __arch_funcs_exp2 = {
         },
 
         [ALM_UARCH_VER_ZEN3] = {
-            NULL,
+            &ALM_PROTO_ARCH_ZN3(exp2f),
             NULL, //&ALM_PROTO_ARCH_ZN3(exp2),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */

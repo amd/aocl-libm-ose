@@ -111,7 +111,7 @@ static const struct {
         },
 };
 
-/* C1 is 1 as 1! = 1 and 1/1! = 1 */
+/* C1 = 1! = 1 */
 #define C2  exp2_data.poly[0]
 #define C3  exp2_data.poly[1]
 #define C4  exp2_data.poly[2]
@@ -174,8 +174,7 @@ static inline uint32_t top12(double x)
  *     r  = f/N = (x*N - n)/N == x - n/N
  *
  *   Taylor series only exist for e^x
- *        2^x = e^(x*ln2)
- *     => 2^r = e^(r*ln2)
+ *     2^r = e^(r*ln2)
  *
  * 4. Reconstruction
  *      Thus,

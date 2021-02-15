@@ -64,6 +64,7 @@
 #include <libm_macros.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
@@ -157,9 +158,9 @@ tan_piby4(double x, int32_t recip) {
     t = x + x * r * r1 / r2;
 
     if (recip)
-    	return -1.0 / t;
+        return (float)(-1.0 / t);
     else
-        return t;
+        return (float)t;
 
 }
 
@@ -178,7 +179,7 @@ tan_piby4i_zero(double x) {
 
     t = x + x * r * r1 / r2;
 
-    return t;
+    return (float)t;
 
 }
 
@@ -226,7 +227,8 @@ __tanf_very_small_x(float x)
          *  2^-13 < abs(x) < 2^-27
          *  tan(x) = x + x^3 * 0.333333333
          */
-        return x + (x * x * x * ONE_BY_THREE);
+        double dx = (double)x;
+        return (float)(dx + (dx * dx * dx * ONE_BY_THREE));
     }
 
     return tan_piby4i_zero(x);
@@ -235,8 +237,8 @@ __tanf_very_small_x(float x)
 float ALM_PROTO_OPT(tanf)(float x)
 {
     double    dx, r;
-    int32_t   region, xneg;
-    uint32_t  uxf;
+    int32_t   region;
+    uint32_t  uxf, xneg;
 
     uxf = asuint32(x);
 
@@ -274,7 +276,7 @@ float ALM_PROTO_OPT(tanf)(float x)
 
         npi2d = dx *  TWO_BY_PI + ALM_SHIFT;
 
-        npi2 = asuint64(npi2d);
+        npi2 = (uint32_t)asuint64(npi2d);
 
         npi2d -= ALM_SHIFT;
 
@@ -285,7 +287,7 @@ float ALM_PROTO_OPT(tanf)(float x)
 
         r = rhead - rtail;
 
-        region = npi2;
+        region = (int32_t)npi2;
     }
 
     float res = tan_piby4(r, region & 1);

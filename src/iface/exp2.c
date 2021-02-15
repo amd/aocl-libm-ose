@@ -55,7 +55,7 @@ struct alm_arch_funcs __arch_funcs_exp2 = {
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,//&ALM_PROTO_ARCH_ZN2(vrd2_exp2),
-            NULL,//&ALM_PROTO_ARCH_ZN2(vrd4_exp2),
+            &ALM_PROTO_ARCH_ZN2(vrd4_exp2),
         },
 
         [ALM_UARCH_VER_ZEN3] = {
@@ -64,7 +64,7 @@ struct alm_arch_funcs __arch_funcs_exp2 = {
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */ 
-            NULL,                           /* vrd4 ? */ 
+            &ALM_PROTO_ARCH_ZN3(vrd4_exp2),
         },
     },
 };

@@ -28,12 +28,12 @@ uint32_t GetnIpArgs( void )
 
 void ConfSetupf32(SpecParams *specp) {
   specp->data32 = test_exp2f_conformance_data;
-  specp->countf = ARRAY_SIZE(test_exp2f_conformance_data); 
+  specp->countf = ARRAY_SIZE(test_exp2f_conformance_data);
 }
 
 void ConfSetupf64(SpecParams *specp) {
   specp->data64 = test_exp2_conformance_data;
-  specp->countd = ARRAY_SIZE(test_exp2_conformance_data); 
+  specp->countd = ARRAY_SIZE(test_exp2_conformance_data);
 }
 
 float getFuncOp(float *data) {
@@ -74,7 +74,7 @@ int test_s1s(test_data *data, int idx)  {
 
 int test_s1d(test_data *data, int idx)  {
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   op[0] = LIBM_FUNC(exp2)(ip[idx]);
   return 0;
 }
@@ -83,24 +83,20 @@ int test_s1d(test_data *data, int idx)  {
 extern "C" {
 #endif
 
-#if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
-#define _ZGVdN2v_exp2 _ZGVbN2v_exp2
-#define _ZGVdN4v_exp2 _ZGVdN4v_exp2
-#define _ZGVsN4v_exp2f _ZGVbN4v_exp2f
-//#define _ZGVsN8v_exp2f _ZGVdN8v_exp2f
-#endif
-
 /*vector routines*/
-//__m128d LIBM_FUNC_VEC(d, 2, exp2)(__m128d);
-//__m256d LIBM_FUNC_VEC(d, 4, exp2)(__m256d);
+/*glibc doesnt have vector exp2 variants*/
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+__m128d LIBM_FUNC_VEC(d, 2, exp2)(__m128d);
+__m256d LIBM_FUNC_VEC(d, 4, exp2)(__m256d);
 
 //__m128 LIBM_FUNC_VEC(s, 4, exp2f)(__m128);
 //__m256 LIBM_FUNC_VEC(s, 8, exp2f)(__m256);
+#endif
 
 int test_v2d(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
   __m128d op2 = LIBM_FUNC_VEC(d, 2, exp2)(ip2);
   _mm_store_pd(&op[0], op2);
@@ -111,7 +107,7 @@ int test_v2d(test_data *data, int idx)  {
 int test_v4s(test_data *data, int idx)  {
 #if 0
   float *ip  = (float*)data->ip;
-  float *op  = (float*)data->op; 
+  float *op  = (float*)data->op;
   __m128 ip4 = _mm_set_ps(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m128 op4 = LIBM_FUNC_VEC(s, 4, exp2f)(ip4);
   _mm_store_ps(&op[0], op4);
@@ -120,9 +116,9 @@ int test_v4s(test_data *data, int idx)  {
 }
 
 int test_v4d(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256d op4 = LIBM_FUNC_VEC(d, 4, exp2)(ip4);
   _mm256_store_pd(&op[0], op4);
@@ -133,12 +129,12 @@ int test_v4d(test_data *data, int idx)  {
 int test_v8s(test_data *data, int idx)  {
 #if 0
   float *ip  = (float*)data->ip;
-  float *op  = (float*)data->op; 
+  float *op  = (float*)data->op;
   __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256 op8 = LIBM_FUNC_VEC(s, 8, exp2f)(ip8);
   _mm256_store_ps(&op[0], op8);
-#endif  
+#endif
   return 0;
 }
 

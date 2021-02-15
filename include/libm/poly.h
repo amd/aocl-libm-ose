@@ -32,12 +32,12 @@
  * poly = C1 + C2*r + C3*r^2 + C4*r^3
  */
 #define POLY_EVAL_3(r, c1, c2, c3, c4) ({       \
-            __typeof(r) t1, t2, r2, q;          \
-            t1 = c1 + c2*r;                     \
-            t2 = c3 + c4*r;                     \
-            r2 = r * r;                         \
-            q = t1 + r2 * t2;                   \
-            q;                                  \
+            __typeof(r) _t1, _t2, _r2, _q;      \
+            _t1 = c1 + c2*r;                    \
+            _t2 = c3 + c4*r;                    \
+            _r2 = r * r;                        \
+            _q = _t1 + _r2 * _t2;               \
+            _q;                                 \
         })
 
 

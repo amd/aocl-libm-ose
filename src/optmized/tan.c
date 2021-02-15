@@ -62,6 +62,7 @@
 #include <libm_macros.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
@@ -309,7 +310,7 @@ double ALM_PROTO_OPT(tan)(double x)
      }
     }
 
-    xneg = ux >> 63;
+    xneg = (int32_t)(ux >> 63);
 
     x = asdouble(ax);
 
@@ -342,7 +343,7 @@ double ALM_PROTO_OPT(tan)(double x)
 
              npi2d = x *  TWO_BY_PI + ALM_SHIFT;
 
-             npi2 = asuint64(npi2d);
+             npi2 = (int32_t)asuint64(npi2d);
 
              npi2d -= ALM_SHIFT;
 

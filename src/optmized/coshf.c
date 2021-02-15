@@ -73,6 +73,7 @@
 #include <libm/typehelper.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
+#include <libm/amd_funcs_internal.h>
 //#include <libm/poly-vec.h>
 
 static struct {
@@ -140,7 +141,7 @@ float ALM_PROTO_OPT(coshf)(float x)
         }
         else {
             /* x is infinity */
-            return x / 0.0;
+            return x / 0.0f;
 
         }
 
@@ -148,7 +149,7 @@ float ALM_PROTO_OPT(coshf)(float x)
 
     if(ux <= asuint32(THEEPS)) {
 
-        return (1.0 + T1 * y * y);
+        return (1.0f + T1 * y * y);
 
     }
 
@@ -173,7 +174,7 @@ float ALM_PROTO_OPT(coshf)(float x)
 
             z = ALM_PROTO(expf)(y);
 
-            return HALF * (z + (1.0 / z));
+            return HALF * (z + (1.0f / z));
         }
 
         /* coshf(x) = C0 + y*y*(C1 + y*y*(C2 + y*y*C3))  */

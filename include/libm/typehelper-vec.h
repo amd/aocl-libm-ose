@@ -52,11 +52,12 @@
 /* TODO: check if _MM_SET1_I64x2 is used */
 #define _MM_SET1_I64x2(x) {(x), (x)}
 
-#define _MM_SET1_I64x4(x) 				\
-	_Generic((x),					\
-		long int: (__m256i){(x), (x), (x), (x)}, \
-		uint64_t: (__m256i){(x), (x), (x), (x)}, \
-		uint32_t: (__m256i){(x), (x), (x), (x)})
+#define _MM_SET1_I64x4(x)                             \
+    _Generic((x),                                     \
+             long int: (__m256i){(x), (x), (x), (x)}, \
+             uint64_t: (__m256i){(x), (x), (x), (x)}, \
+             int:      (__m256i){(x), (x), (x), (x)},	\
+             uint32_t: (__m256i){(x), (x), (x), (x)})
 
 
 #define _MM_SET1_I32(x) {(x), (x), (x), (x)}

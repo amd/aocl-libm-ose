@@ -71,6 +71,7 @@
 #include <libm_macros.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
@@ -118,7 +119,7 @@ static struct {
 #define C7 atan_data.poly_atan[7]
 #define C8 atan_data.poly_atan[8]
 
-#define SIGN_MASK   0x7FFFFFFFFFFFFFFF
+#define SIGN_MASK   0x7FFFFFFFFFFFFFFFUL
 
 double
 ALM_PROTO_OPT(atan)(double x)
@@ -140,7 +141,7 @@ ALM_PROTO_OPT(atan)(double x)
     if(unlikely(ux > PINFBITPATT_DP64)) {
         /* x is inf */
         if((ux & MANTBITS_DP64) == 0x0)
-            return (sign ^ asuint64(PIBY_2));
+            return asdouble(sign ^ asuint64(PIBY_2));
         else
         /* x is nan */
             return asdouble(sign ^ ux);

@@ -84,6 +84,10 @@ float expm1f_special(float x, float y, U32 code);
 #define THRESH_LO_NOSIGN 0x3E9e4B11U
 #define ARG_MIN_NOSIGN   0x418AA122U
 
+
+/* this macro may be deleted later*/
+float	FN_PROTOTYPE_OPT(expm1f_v2)	(float x);
+
 float
 FN_PROTOTYPE_OPT(expm1f_v2)(float x)
 {
@@ -106,7 +110,7 @@ FN_PROTOTYPE_OPT(expm1f_v2)(float x)
      * Treat the near 0 values separately to avoid catastrophic
      * cancellation
      */
-    if (unlikely (x <= FTHRESH_HI && x >= FTHRESH_LO)) {
+    if (unlikely (x <= FTHRESH_HI && (double)x >= FTHRESH_LO)) {
         double dx2;
 
 #define A1 DATA.poly[0]
@@ -117,24 +121,26 @@ FN_PROTOTYPE_OPT(expm1f_v2)(float x)
 
         dx  = (double)x;
         dx2 = dx * dx;
-        q   = dx2 * dx * (A1 + dx * (A2 + dx*(A3 + dx*(A4 + dx*(A5)))));
+        q   = dx2 * dx * ((double)A1 + dx * ((double)A2
+                        + dx*((double)A3 + dx*((double)A4
+                        + dx*((double)A5)))));
         q  += (dx2 * 0.5) + dx;
         return (float)q;
     }
 
-    dx  = eval_as_double(x * DATA._64_by_ln2);
+    dx  = eval_as_double((double)x * DATA._64_by_ln2);
 
 #define FAST_INTEGER_CONVERSION 1
 #if FAST_INTEGER_CONVERSION
     q   = eval_as_double(dx + DATA.Huge);
-    n   = asuint64(q);
+    n   = (int)asuint64(q);
     dn  = q - DATA.Huge;
 #else
     n   = cast_float_to_i32(dx);
     dn  = cast_i32_to_float(n);
 #endif
 
-    r  = x - dn * DATA.ln2_by_64;
+    r  = (double)x - dn * DATA.ln2_by_64;
 
     j  = n & 0x3f;
 
@@ -146,13 +152,13 @@ FN_PROTOTYPE_OPT(expm1f_v2)(float x)
 
     f  = DATA.tab[j];
 
-    q1.i = (1023ULL - m) << 52;
+    q1.i = (int64_t)((1023ULL - (unsigned long long)m) << 52);
 
     q1.d = f * q + (f - q1.d);
 
     j    = n >> EXPM1F_N;
 
-    q = asdouble(q1.i + ((uint64_t)j << 52));
+    q = asdouble((uint64_t)q1.i + ((uint64_t)j << 52));
 
     return (float)q;
 }

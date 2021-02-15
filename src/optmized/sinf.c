@@ -93,6 +93,7 @@
 #include <libm_macros.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
@@ -165,7 +166,6 @@ void __amd_remainder_piby2d2f(uint64_t x, double *r, int *region);
 #define SIN_SMALL   0x3C000000  /* 2.0^(-7) */
 #define SIN_SMALLER 0x39000000  /* 2.0^(-13) */
 
-float _sinf_special(float x);
 
 float
 ALM_PROTO_OPT(sinf)(float x)
@@ -204,11 +204,11 @@ ALM_PROTO_OPT(sinf)(float x)
 
             r = TwobyPI * xd; /* x * two_by_pi*/
 
-            int32_t xexp = uxf >> 23;
+            int32_t xexp = (int32_t)(uxf >> 23);
 
             double npi2d = r + ALM_SHIFT;
 
-            int64_t npi2 = asuint64(npi2d);
+            uint64_t npi2 = asuint64(npi2d);
 
             npi2d -= ALM_SHIFT;
 
@@ -220,9 +220,9 @@ ALM_PROTO_OPT(sinf)(float x)
 
             uy = asuint64(r);
 
-            int64_t expdiff = xexp - ((uy << 1) >> 53);
+            int64_t expdiff = xexp - (int32_t)((uy << 1) >> 53);
 
-            region = npi2;
+            region = (int32_t)npi2;
 
             if (expdiff  > 15) {
 
@@ -271,7 +271,8 @@ ALM_PROTO_OPT(sinf)(float x)
 
         region >>= 1;
 
-        if(((sign & region) | ((~sign) & (~region))) & 1) {
+        if(((sign & (uint32_t)region) |
+                         ((~sign) & (uint32_t)(~region))) & 1) {
 
             return (float)r;
 

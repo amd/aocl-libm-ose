@@ -36,6 +36,7 @@
 #include "libm_util_amd.h"
 #include "libm_special.h"
 #include <libm/typehelper.h>
+#include <libm/amd_funcs_internal.h>
 
 #define L__exp_bias 0x00000000000003ff /* 1023 */
 #define L__mant_mask 0x000fffffffffffff
@@ -61,7 +62,6 @@
 #define EXP_Y_ZERO 2
 #define EXP_Y_INF 3
 
-double _exp_special(double x, double y, uint32_t code);
 
 struct log_data{
     uint64_t head;
@@ -146,7 +146,6 @@ static struct {
 #define POW_Z_DENORMAL 8
 #define POW_Z_INF 9
 
-double _pow_special(double x, double y, double z, uint32_t code);
 
 static inline double_t
 compute_log(uint64_t ux, double_t* log_lo, int32_t expadjust)
@@ -185,7 +184,8 @@ compute_log(uint64_t ux, double_t* log_lo, int32_t expadjust)
     int32_t xexp;
     double_t r, r1, w, z, w1, resT_t, resT, resH;
     double_t u, f, z1, q, f1, f2, poly;
-    xexp = ((ux & EXPBITS_DP64) >> EXPSHIFTBITS_DP64) - EXPBIAS_DP64 - expadjust;
+    xexp = (int32_t)((ux & EXPBITS_DP64) >> EXPSHIFTBITS_DP64)
+                                        - EXPBIAS_DP64 - expadjust;
     double_t exponent_x = (double_t)xexp;
     f1 = asdouble((ux & MANTBITS_DP64) | HALFEXPBITS_DP64);
     uint64_t index = (ux & MANTISSA_10_BITS);
@@ -237,7 +237,7 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign)
     double_t A1, A2, z, r, usquare, w, w1, B0, poly;
     const double_t EXP_HUGE = 0x1.8000000000000p52;
     int64_t n;
-    int64_t i;
+    uint64_t i;
     doubleword xword;
     double temp = v;
     v = v * N_BY_LOG2;
@@ -252,24 +252,24 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign)
         {
             /* if y * log(x) < -745.133219101941222106688655913 */
             v = asdouble(0x0 | result_sign);
-            return _exp_special(xword.value, v, EXP_Y_ZERO);
+            return _exp_special(asdouble(xword.value), v, EXP_Y_ZERO);
 
         }
         if(temp > EXP_MAX_DOUBLE)
         {
             /* if y * log(x) > 709.7822265625 */
             v = asdouble(EXPBITS_DP64 | result_sign);
-            return  _exp_special(xword.value, v,  EXP_Y_INF);
+            return  _exp_special(asdouble(xword.value), v,  EXP_Y_INF);
 
         }
         abs_ylogx = 0xfff;
     }
     double_t fastconvert = v + EXP_HUGE;
-    n = asuint64(fastconvert);
+    n = (int64_t)asuint64(fastconvert);
     double_t dn = fastconvert - EXP_HUGE;
 
     /* Table size = 1024. Here N = 10 */
-    int32_t index = n % (1 << N);
+    int32_t index = (int32_t)(n % (1 << N));
     r = temp - (dn * LOG2_BY_N_HEAD);
     int64_t m = ((n - index) << (EXPSHIFTBITS_DP64 - N)) + 0x3ff0000000000000;
     r = (r - (LOG2_BY_N_TAIL * dn)) + vt;
@@ -299,19 +299,19 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign)
     /* Process denormals */
     if(unlikely(abs_ylogx == 0xfff))
     {
-        int32_t m2 = (n - index) >> N;
+        int32_t m2 = (int32_t)((n - index) >> N);
         if(result < 1.0 || m2 < EMIN_DP64)
         {
             m2 = m2 + 1074;
             i = 1ULL << m2;
             dn = asdouble(i);
-            n = asuint64(result * dn);
-            result = asdouble(n | result_sign);
+            n = (int64_t)asuint64(result * dn);
+            result = asdouble((uint64_t)n | result_sign);
             return result;
         }
     }
 
-    z = asdouble(m | result_sign);
+    z = asdouble((uint64_t)m | result_sign);
     return result * z;
 }
 
@@ -367,8 +367,8 @@ ALM_PROTO_OPT(pow)(double x, double y)
     uint64_t one = ONEEXPBITS_DP64;
     ux = asuint64(x);
     uy = asuint64(y);
-    uint32_t xhigh = ux >> EXPSHIFTBITS_DP64; /* Top 12 bits of x */
-    uint32_t yhigh = uy >> EXPSHIFTBITS_DP64; /* Top 12 bits of y */
+    uint32_t xhigh = (uint32_t)(ux >> EXPSHIFTBITS_DP64); /* Top 12 bits of x */
+    uint32_t yhigh = (uint32_t)(uy >> EXPSHIFTBITS_DP64); /* Top 12 bits of y */
     result_sign = 0; /* Hold the sign of the result */
 
     if (unlikely (xhigh - 0x001 >= 0x7ff - 0x001
@@ -438,7 +438,7 @@ ALM_PROTO_OPT(pow)(double x, double y)
         {
             /* subnormal x */
             uint64_t mant = ux & MANTBITS_DP64;
-            f = asuint64(mant | ONEEXPBITS_DP64);
+            f = asdouble(mant | ONEEXPBITS_DP64);
             double_t temp = f - 1.0;
             ux = asuint64(temp);
             expadjust = 1022;

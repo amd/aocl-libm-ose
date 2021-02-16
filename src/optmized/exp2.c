@@ -140,7 +140,7 @@ static const struct {
 
 static inline uint32_t top12(double x)
 {
-    return asuint64(x) >> 52;
+    return (uint32_t)(asuint64(x) >> 52);
 }
 
 
@@ -261,12 +261,12 @@ FN_PROTOTYPE_OPT(exp2)(double x)
 #endif
 
     /* f(j)*q + f1 + f2 */
-    struct exp_table *tbl = &((struct exp_table*)ALM_EXP2_TBL_DATA)[j];
+    const struct exp_table *tbl = &((const struct exp_table*)ALM_EXP2_TBL_DATA)[j];
     q = q * tbl->main + tbl->head + tbl->tail;
 
     /* Processing denormals */
     if (unlikely(exponent == 0xfff)) {
-        int m1 = (n - j) >> EXP2_N;
+        int64_t m1 = (n - j) >> EXP2_N;
         if (m1 <= -1022)
             if (m1 < -1022 || q < 1.0) {
                 /* Process true de-normals */
@@ -277,7 +277,7 @@ FN_PROTOTYPE_OPT(exp2)(double x)
             }
     }
 
-    y = asdouble(m + asuint64(q));
+    y = asdouble((uint64_t)m + asuint64(q));
 
 out:
     return y;

@@ -2,16 +2,13 @@
 
 int test_nexttoward(void* handle) {
     char* error;
-    float (*lamd_nexttowardf)(float, long double);
-    double (*lamd_nexttoward)(double, long double);
     /*scalar inputs*/
-    float input1f = 3.145, outputf;
-    long double input2 = 4.56;
-    double input1d = 6.287, outputd;
+    float inputf = 3.145, outputf;
+    double input = 6.287, output;
+    long double input1 = 5.678;
 
-    /*scalar routines*/
-    lamd_nexttowardf = dlsym(handle, "amd_nexttowardf");
-    lamd_nexttoward  = dlsym(handle, "amd_nexttoward");
+    float (*funcf)(float, long double) = (float (*)(float, long double))dlsym(handle, "amd_nexttowardf");
+    double (*func)(double, long double) = (double (*)(double, long double))dlsym(handle, "amd_nexttoward");
 
     error = dlerror();
     if (error != NULL) {
@@ -20,13 +17,10 @@ int test_nexttoward(void* handle) {
     }
 
     printf("Exercising nexttoward routines\n");
-
-    /*scalar*/
-    outputf = (*lamd_nexttowardf)(input1f, input2);
-    printf("amd_nexttowardf(%f, %ld) = %f\n", input1f, input2, outputf);
-    outputd = (*lamd_nexttoward)(input1d, input2);
-    printf("amd_nexttoward(%lf, %ld) = %lf\n", input1d, input2, outputd);
-    printf("\n");
+    outputf = funcf(inputf, input1);
+    printf("amd_nexttowardf(%f, %Lf) = %f\n", inputf, input1, outputf);
+    output = func(input, input1);
+    printf("amd_nexttoward(%lf, %Lf) = %lf\n", input, input1, output);
 
     return 0;
 }

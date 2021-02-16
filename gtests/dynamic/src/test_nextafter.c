@@ -2,15 +2,12 @@
 
 int test_nextafter(void* handle) {
     char* error;
-    float (*lamd_nextafterf)(float, float);
-    double (*lamd_nextafter)(double, double);
     /*scalar inputs*/
-    float input1f = 3.145, input2f = 4.5, outputf;
-    double input1d = 6.287, input2d = 7.8, outputd;
+    float inputf = 3.145, outputf;
+    double input = 6.287, output;
 
-    /*scalar routines*/
-    lamd_nextafterf = dlsym(handle, "amd_nextafterf");
-    lamd_nextafter  = dlsym(handle, "amd_nextafter");
+    float (*funcf)(float, float) = (float (*)(float, float))dlsym(handle, "amd_nextafterf");
+    double (*func)(double, double) = (double (*)(double, double))dlsym(handle, "amd_nextafter");
 
     error = dlerror();
     if (error != NULL) {
@@ -19,13 +16,10 @@ int test_nextafter(void* handle) {
     }
 
     printf("Exercising nextafter routines\n");
-
-    /*scalar*/
-    outputf = (*lamd_nextafterf)(input1f, input2f);
-    printf("amd_nextafterf(%f, %f) = %f\n", input1f, input2f, outputf);
-    outputd = (*lamd_nextafter)(input1d, input2d);
-    printf("amd_nextafter(%lf, %lf) = %lf\n", input1d, input2d, outputd);
-    printf("\n");
+    outputf = funcf(inputf, inputf);
+    printf("amd_nextafterf(%f, %f) = %f\n", inputf, inputf, outputf);
+    output = func(input, input);
+    printf("amd_nextafter(%lf, %lf) = %lf\n", input, input, output);
 
     return 0;
 }

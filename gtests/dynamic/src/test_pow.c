@@ -9,15 +9,13 @@ int test_pow(void* handle) {
     int dim=5, loopCount=10;
     int array_size = dim * loopCount;
 
-    float  (*lamd_powf)(float,  float);
-    double (*lamd_pow) (double, double);
-    __m128d (*lamd_vrd2_pow)  (__m128d, __m128d);
-    __m128  (*lamd_vrs4_powf) (__m128,  __m128);
-    __m256d (*lamd_vrd4_pow)  (__m256d, __m256d);
-    __m256  (*lamd_vrs8_powf) (__m256,  __m256);
-
-    //array vector
-    void (*lamd_vrsa_powf) (int, float*, float*, float*);
+    float (*funcf)(float, float) = (float (*)(float, float))dlsym(handle, "amd_powf");
+    double (*func)(double, double) = (double (*)(double, double))dlsym(handle, "amd_pow");
+    __m128d (*func_v2d)(__m128d, __m128d) = (__m128d (*)(__m128d, __m128d))dlsym(handle, "amd_vrd2_pow");
+    __m128 (*funcf_v4s)(__m128, __m128) = (__m128 (*)(__m128, __m128))dlsym(handle, "amd_vrs4_powf");
+    __m256d (*func_v4d)(__m256d, __m256d) = (__m256d (*)(__m256d, __m256d))dlsym(handle, "amd_vrd4_pow");
+    __m256 (*funcf_v8s)(__m256, __m256) = (__m256 (*)(__m256, __m256))dlsym(handle, "amd_vrs8_powf");
+    void (*funcf_va)(int, float*, float*, float*) = (void (*)(int, float*, float*, float*))dlsym(handle, "amd_vrsa_powf");
 
     /*scalar inputs*/
     float  inputf = 3.145, outputf;
@@ -36,12 +34,12 @@ int test_pow(void* handle) {
 
     for (int i = 0; i < array_size; i++) {
          input_arrayf[i] = RANGEF;
-	 input_arrayd[i] = RANGED;
+	     input_arrayd[i] = RANGED;
     }
 
     for (int i = 0; i < array_size; i++) {
         output_arrayf[0] += output_arrayf[i];
-	output_arrayd[0] += output_arrayd[i];
+	    output_arrayd[0] += output_arrayd[i];
     }
 
     double input_array_vrd2[2] = {1.2, 3.5};
@@ -63,17 +61,6 @@ int test_pow(void* handle) {
     ip_vrd4 = _mm256_loadu_pd(input_array_vrd4);
     ip_vrs8 = _mm256_loadu_ps(input_array_vrs8);
 
-    /*scalar routines*/
-    lamd_powf = dlsym(handle, "amd_powf");
-    lamd_pow  = dlsym(handle, "amd_pow");
-    /*vector routines*/
-    lamd_vrd2_pow  = dlsym(handle, "amd_vrd2_pow");
-    lamd_vrs4_powf = dlsym(handle, "amd_vrs4_powf");
-    lamd_vrd4_pow  = dlsym(handle, "amd_vrd4_pow");
-    lamd_vrs8_powf = dlsym(handle, "amd_vrs8_powf");
-    //vector array variants
-    lamd_vrsa_powf = dlsym(handle, "amd_vrsa_powf");
-
     error = dlerror();
     if (error != NULL) {
         printf("Error: %s\n", error);
@@ -82,27 +69,27 @@ int test_pow(void* handle) {
 
     printf("Exercipowg pow routines\n");
     /*scalar*/
-    outputf = (*lamd_powf)(inputf, inputf);
+    outputf = funcf(inputf, inputf);
     printf("amd_powf(%f) = %f\n", inputf, outputf);
-    output = (*lamd_pow)(input, input);
+    output = func(input, input);
     printf("amd_pow(%lf) = %lf\n", input, output);
 
     /*vrd2*/
-    op_vrd2 = (*lamd_vrd2_pow)(ip_vrd2, ip_vrd2);
+    op_vrd2 = func_v2d(ip_vrd2, ip_vrd2);
     _mm_storeu_pd(output_array_vrd2, op_vrd2);
     printf("amd_vrd2_pow([%lf, %lf] = [%lf, %lf])\n",
             input_array_vrd2[0], input_array_vrd2[1],
             output_array_vrd2[0], output_array_vrd2[1]);
 
     /*vrs4*/
-    op_vrs4 = (*lamd_vrs4_powf)(ip_vrs4, ip_vrs4);
+    op_vrs4 = funcf_v4s(ip_vrs4, ip_vrs4);
     _mm_storeu_ps(output_array_vrs4, op_vrs4);
     printf("amd_vrs4_pow([%f, %f] = [%f, %f])\n",
             input_array_vrs4[0], input_array_vrs4[1],
             output_array_vrs4[0], output_array_vrs4[1]);
 
     /*vrd4*/
-    op_vrd4 = (*lamd_vrd4_pow)(ip_vrd4, ip_vrd4);
+    op_vrd4 = func_v4d(ip_vrd4, ip_vrd4);
     _mm256_storeu_pd(output_array_vrd4, op_vrd4);
     printf("amd_vrd4_pow([%lf,%lf,%lf,%lf]) = [%lf,%lf,%lf,%lf])\n",
             input_array_vrd4[0], input_array_vrd4[1],
@@ -111,7 +98,7 @@ int test_pow(void* handle) {
             output_array_vrd4[2], output_array_vrd4[3]);
 
     /*vrs8*/
-    op_vrs8 = (*lamd_vrs8_powf)(ip_vrs8, ip_vrs8);
+    op_vrs8 = funcf_v8s(ip_vrs8, ip_vrs8);
     _mm256_storeu_ps(output_array_vrs8, op_vrs8);
     printf("amd_vrs8_powf\ninput:\n");
     for(i=0; i<8; i++) {
@@ -128,7 +115,7 @@ int test_pow(void* handle) {
         printf("%f\t", input_arrayf[i]);
     }
     for (int i = 0; i < loopCount; i++) {
-        (*lamd_vrsa_powf)(dim, input_arrayf + i*dim, input_arrayf + i*dim, output_arrayf + i*dim);
+        funcf_va(dim, input_arrayf + i*dim, input_arrayf + i*dim, output_arrayf + i*dim);
     }
     printf("\nOutput:\n");
     for (int i = 0; i < array_size; i++) {

@@ -2,15 +2,12 @@
 
 int test_atan(void* handle) {
     char* error;
-    float (*lamd_atanf)(float);
-    double (*lamd_atan)(double);
     /*scalar inputs*/
     float inputf = 3.145, outputf;
     double input = 6.287, output;
 
-    /*scalar routines*/
-    lamd_atanf = dlsym(handle, "amd_atanf");
-    lamd_atan  = dlsym(handle, "amd_atan");
+    float (*funcf)(float) = (float (*)(float))dlsym(handle, "amd_atanf");
+    double (*func)(double) = (double (*)(double))dlsym(handle, "amd_atan");
 
     error = dlerror();
     if (error != NULL) {
@@ -19,13 +16,10 @@ int test_atan(void* handle) {
     }
 
     printf("Exercising atan routines\n");
-
-    /*scalar*/
-    outputf = (*lamd_atanf)(inputf);
+    outputf = funcf(inputf);
     printf("amd_atanf(%f) = %f\n", inputf, outputf);
-    output = (*lamd_atan)(input);
+    output = func(input);
     printf("amd_atan(%lf) = %lf\n", input, output);
-    printf("\n");
 
     return 0;
 }

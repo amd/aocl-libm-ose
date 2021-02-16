@@ -2,17 +2,12 @@
 
 int test_modf(void* handle) {
     char* error;
-    float (*lamd_modff)(float, float*);
-    double (*lamd_modf)(double, double*);
     /*scalar inputs*/
     float inputf = 3.145, outputf;
     double input = 6.287, output;
-    float *input1f = &inputf;
-    double *input1d = &input;
 
-    /*scalar routines*/
-    lamd_modff = dlsym(handle, "amd_modff");
-    lamd_modf  = dlsym(handle, "amd_modf");
+    float (*funcf)(float, float*) = (float (*)(float, float*))dlsym(handle, "amd_modff");
+    double (*func)(double, double*) = (double (*)(double, double*))dlsym(handle, "amd_modf");
 
     error = dlerror();
     if (error != NULL) {
@@ -21,13 +16,10 @@ int test_modf(void* handle) {
     }
 
     printf("Exercising modf routines\n");
-
-    /*scalar*/
-    outputf = (*lamd_modff)(inputf, input1f);
-    printf("amd_modff(%f, %f) = %f\n", inputf, input1f, outputf);
-    output = (*lamd_modf)(input, input1d);
-    printf("amd_modf(%lf, %lf) = %lf\n", input, input1d, output);
-    printf("\n");
+    outputf = funcf(inputf, &inputf);
+    printf("amd_modff(%f) = %f\n", inputf, outputf);
+    output = func(input, &input);
+    printf("amd_modf(%lf) = %lf\n", input, output);
 
     return 0;
 }

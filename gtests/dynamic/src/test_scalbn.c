@@ -2,16 +2,13 @@
 
 int test_scalbn(void* handle) {
     char* error;
-    float (*lamd_scalbnf)(float, int);
-    double (*lamd_scalbn)(double, int);
     /*scalar inputs*/
     float inputf = 3.145, outputf;
     double input = 6.287, output;
-    int exp = 5;
+    int n = 2;
 
-    /*scalar routines*/
-    lamd_scalbnf = dlsym(handle, "amd_scalbnf");
-    lamd_scalbn  = dlsym(handle, "amd_scalbn");
+    float (*funcf)(float, int) = (float (*)(float, int))dlsym(handle, "amd_scalbnf");
+    double (*func)(double, int) = (double (*)(double, int))dlsym(handle, "amd_scalbn");
 
     error = dlerror();
     if (error != NULL) {
@@ -20,13 +17,10 @@ int test_scalbn(void* handle) {
     }
 
     printf("Exercising scalbn routines\n");
-
-    /*scalar*/
-    outputf = (*lamd_scalbnf)(inputf, exp);
-    printf("amd_scalbnf(%f, %d) = %f\n", inputf, exp, outputf);
-    output = (*lamd_scalbn)(input, exp);
-    printf("amd_scalbn(%lf, %d) = %lf\n", input, exp, output);
-    printf("\n");
+    outputf = funcf(inputf, n);
+    printf("amd_scalbnf(%f) = %f\n", inputf, outputf);
+    output = func(input, n);
+    printf("amd_scalbn(%lf) = %lf\n", input, output);
 
     return 0;
 }

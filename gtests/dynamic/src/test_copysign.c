@@ -2,15 +2,12 @@
 
 int test_copysign(void* handle) {
     char* error;
-    float  (*lamd_copysignf)(float,  float);
-    double (*lamd_copysign) (double, double);
     /*scalar inputs*/
-    float  input1f = 3.145, input2f = -1.0, outputf;
-    double input1d = 6.287, input2d = -1.0, outputd;
+    float inputf = 3.145, outputf;
+    double input = 6.287, output;
 
-    /*scalar routines*/
-    lamd_copysignf = dlsym(handle, "amd_copysignf");
-    lamd_copysign  = dlsym(handle, "amd_copysign");
+    float (*funcf)(float, float) = (float (*)(float, float))dlsym(handle, "amd_copysignf");
+    double (*func)(double, double) = (double (*)(double, double))dlsym(handle, "amd_copysign");
 
     error = dlerror();
     if (error != NULL) {
@@ -19,13 +16,10 @@ int test_copysign(void* handle) {
     }
 
     printf("Exercising copysign routines\n");
-
-    /*scalar*/
-    outputf = (*lamd_copysignf)(input1f, input2f);
-    printf("amd_copysignf(%f, %f) = %f\n", input1f, input2f, outputf);
-    outputd = (*lamd_copysign)(input1d, input2d);
-    printf("amd_copysign(%lf, %lf) = %lf\n", input1d, input2d, outputd);
-    printf("\n");
+    outputf = funcf(inputf, inputf);
+    printf("amd_copysignf(%f, %f) = %f\n", inputf, inputf, outputf);
+    output = func(input, input);
+    printf("amd_copysign(%lf, %lf) = %lf\n", input, input, output);
 
     return 0;
 }

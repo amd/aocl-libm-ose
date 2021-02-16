@@ -2,15 +2,12 @@
 
 int test_hypot(void* handle) {
     char* error;
-    float (*lamd_hypotf)(float);
-    double (*lamd_hypot)(double);
     /*scalar inputs*/
     float inputf = 3.145, outputf;
     double input = 6.287, output;
 
-    /*scalar routines*/
-    lamd_hypotf = dlsym(handle, "amd_hypotf");
-    lamd_hypot  = dlsym(handle, "amd_hypot");
+    float (*funcf)(float, float) = (float (*)(float, float))dlsym(handle, "amd_hypotf");
+    double (*func)(double, double) = (double (*)(double, double))dlsym(handle, "amd_hypot");
 
     error = dlerror();
     if (error != NULL) {
@@ -19,13 +16,10 @@ int test_hypot(void* handle) {
     }
 
     printf("Exercising hypot routines\n");
-
-    /*scalar*/
-    outputf = (*lamd_hypotf)(inputf);
-    printf("amd_hypotf(%f) = %f\n", inputf, outputf);
-    output = (*lamd_hypot)(input);
-    printf("amd_hypot(%lf) = %lf\n", input, output);
-    printf("\n");
+    outputf = funcf(inputf, inputf);
+    printf("amd_hypotf(%f, %f) = %f\n", inputf, inputf, outputf);
+    output = func(input, input);
+    printf("amd_hypot(%lf, %lf) = %lf\n", input, input, output);
 
     return 0;
 }

@@ -2,15 +2,12 @@
 
 int test_floor(void* handle) {
     char* error;
-    float (*lamd_floorf)(float);
-    double (*lamd_floor)(double);
     /*scalar inputs*/
     float inputf = 3.145, outputf;
     double input = 6.287, output;
 
-    /*scalar routines*/
-    lamd_floorf = dlsym(handle, "amd_floorf");
-    lamd_floor  = dlsym(handle, "amd_floor");
+    float (*funcf)(float) = (float (*)(float))dlsym(handle, "amd_floorf");
+    double (*func)(double) = (double (*)(double))dlsym(handle, "amd_floor");
 
     error = dlerror();
     if (error != NULL) {
@@ -19,13 +16,10 @@ int test_floor(void* handle) {
     }
 
     printf("Exercising floor routines\n");
-
-    /*scalar*/
-    outputf = (*lamd_floorf)(inputf);
+    outputf = funcf(inputf);
     printf("amd_floorf(%f) = %f\n", inputf, outputf);
-    output = (*lamd_floor)(input);
+    output = func(input);
     printf("amd_floor(%lf) = %lf\n", input, output);
-    printf("\n");
 
     return 0;
 }

@@ -2,15 +2,13 @@
 
 int test_lround(void* handle) {
     char* error;
-    float (*lamd_lroundf)(float);
-    double (*lamd_lround)(double);
     /*scalar inputs*/
-    float inputf = 3.145, outputf;
-    double input = 6.287, output;
+    float inputf = 3.145;
+    long int output;
+    double input = 6.287;
 
-    /*scalar routines*/
-    lamd_lroundf = dlsym(handle, "amd_lroundf");
-    lamd_lround  = dlsym(handle, "amd_lround");
+    long int (*funcf)(float) = (long int (*)(float))dlsym(handle, "amd_lroundf");
+    long int (*func)(double) = (long int (*)(double))dlsym(handle, "amd_lround");
 
     error = dlerror();
     if (error != NULL) {
@@ -19,13 +17,10 @@ int test_lround(void* handle) {
     }
 
     printf("Exercising lround routines\n");
-
-    /*scalar*/
-    outputf = (*lamd_lroundf)(inputf);
-    printf("amd_lroundf(%f) = %f\n", inputf, outputf);
-    output = (*lamd_lround)(input);
-    printf("amd_lround(%lf) = %lf\n", input, output);
-    printf("\n");
+    output = funcf(inputf);
+    printf("amd_lroundf(%f) = %ld\n", inputf, output);
+    output = func(input);
+    printf("amd_lround(%lf) = %ld\n", input, output);
 
     return 0;
 }

@@ -9,16 +9,14 @@ int test_exp(void* handle) {
     int dim=5, loopCount=10;
     int array_size = dim * loopCount;
 
-    float (*lamd_expf)(float);
-    double (*lamd_exp)(double);
-    __m128d (*lamd_vrd2_exp)  (__m128d);
-    __m128  (*lamd_vrs4_expf) (__m128);
-    __m256d (*lamd_vrd4_exp)  (__m256d);
-    __m256  (*lamd_vrs8_expf) (__m256);
-
-    //array vector
-    void (*lamd_vrda_exp) (int, double*, double*);
-    void (*lamd_vrsa_expf) (int, float* , float*);
+    float (*funcf)(float) = (float (*)(float))dlsym(handle, "amd_expf");
+    double (*func)(double) = (double (*)(double))dlsym(handle, "amd_exp");
+    __m128d (*func_v2d)(__m128d) = (__m128d (*)(__m128d))dlsym(handle, "amd_vrd2_exp");
+    __m128 (*funcf_v4s)(__m128) = (__m128 (*)(__m128))dlsym(handle, "amd_vrs4_expf");
+    __m256d (*func_v4d)(__m256d) = (__m256d (*)(__m256d))dlsym(handle, "amd_vrd4_exp");
+    __m256 (*funcf_v8s)(__m256) = (__m256 (*)(__m256))dlsym(handle, "amd_vrs8_expf");
+    void (*funcf_va)(int, float*, float*) = (void (*)(int, float*, float*))dlsym(handle, "amd_vrsa_expf");
+    void (*func_va)(int, double*, double*) = (void (*)(int, double*, double*))dlsym(handle, "amd_vrda_expf");
 
     /*scalar inputs*/
     float inputf = 3.145, outputf;
@@ -37,12 +35,12 @@ int test_exp(void* handle) {
 
     for (int i = 0; i < array_size; i++) {
          input_arrayf[i] = RANGEF;
-	 input_arrayd[i] = RANGED;
+	     input_arrayd[i] = RANGED;
     }
 
     for (int i = 0; i < array_size; i++) {
         output_arrayf[0] += output_arrayf[i];
-	output_arrayd[0] += output_arrayd[i];
+	    output_arrayd[0] += output_arrayd[i];
     }
 
     double input_array_vrd2[2] = {1.2, 3.5};
@@ -64,47 +62,35 @@ int test_exp(void* handle) {
     ip_vrd4 = _mm256_loadu_pd(input_array_vrd4);
     ip_vrs8 = _mm256_loadu_ps(input_array_vrs8);
 
-    /*scalar routines*/
-    lamd_expf = dlsym(handle, "amd_expf");
-    lamd_exp  = dlsym(handle, "amd_exp");
-    /*vector routines*/
-    lamd_vrd2_exp  = dlsym(handle, "amd_vrd2_exp");
-    lamd_vrs4_expf = dlsym(handle, "amd_vrs4_expf");
-    lamd_vrd4_exp  = dlsym(handle, "amd_vrd4_exp");
-    lamd_vrs8_expf = dlsym(handle, "amd_vrs8_expf");
-    //vector array variants
-    lamd_vrsa_expf = dlsym(handle, "amd_vrsa_expf");
-    lamd_vrda_exp  = dlsym(handle, "amd_vrda_exp");
-
     error = dlerror();
     if (error != NULL) {
         printf("Error: %s\n", error);
         return 1;
     }
 
-    printf("Exerciexpg exp routines\n");
+    printf("Exercising exp routines\n");
     /*scalar*/
-    outputf = (*lamd_expf)(inputf);
+    outputf = funcf(inputf);
     printf("amd_expf(%f) = %f\n", inputf, outputf);
-    output = (*lamd_exp)(input);
+    output = func(input);
     printf("amd_exp(%lf) = %lf\n", input, output);
 
     /*vrd2*/
-    op_vrd2 = (*lamd_vrd2_exp)(ip_vrd2);
+    op_vrd2 = func_v2d(ip_vrd2);
     _mm_storeu_pd(output_array_vrd2, op_vrd2);
     printf("amd_vrd2_exp([%lf, %lf] = [%lf, %lf])\n",
             input_array_vrd2[0], input_array_vrd2[1],
             output_array_vrd2[0], output_array_vrd2[1]);
 
     /*vrs4*/
-    op_vrs4 = (*lamd_vrs4_expf)(ip_vrs4);
+    op_vrs4 = funcf_v4s(ip_vrs4);
     _mm_storeu_ps(output_array_vrs4, op_vrs4);
     printf("amd_vrs4_exp([%f, %f] = [%f, %f])\n",
             input_array_vrs4[0], input_array_vrs4[1],
             output_array_vrs4[0], output_array_vrs4[1]);
 
     /*vrd4*/
-    op_vrd4 = (*lamd_vrd4_exp)(ip_vrd4);
+    op_vrd4 = func_v4d(ip_vrd4);
     _mm256_storeu_pd(output_array_vrd4, op_vrd4);
     printf("amd_vrd4_exp([%lf,%lf,%lf,%lf]) = [%lf,%lf,%lf,%lf])\n",
             input_array_vrd4[0], input_array_vrd4[1],
@@ -113,7 +99,7 @@ int test_exp(void* handle) {
             output_array_vrd4[2], output_array_vrd4[3]);
 
     /*vrs8*/
-    op_vrs8 = (*lamd_vrs8_expf)(ip_vrs8);
+    op_vrs8 = funcf_v8s(ip_vrs8);
     _mm256_storeu_ps(output_array_vrs8, op_vrs8);
     printf("amd_vrs8_expf\ninput:\n");
     for(i=0; i<8; i++)
@@ -128,7 +114,7 @@ int test_exp(void* handle) {
         printf("%f\t", input_arrayf[i]);
     }
     for (int i = 0; i < loopCount; i++) {
-        (*lamd_vrsa_expf)(dim, input_arrayf + i*dim, output_arrayf + i*dim);
+        funcf_va(dim, input_arrayf + i*dim, output_arrayf + i*dim);
     }
     printf("\nOutput:\n");
     for (int i = 0; i < array_size; i++) {
@@ -141,7 +127,7 @@ int test_exp(void* handle) {
     }
 
     for (int i = 0; i < loopCount; i++) {
-        (*lamd_vrda_exp)(dim, input_arrayd + i*dim, output_arrayd + i*dim);
+        func_va(dim, input_arrayd + i*dim, output_arrayd + i*dim);
     }
 
     printf("\nOutput:\n");

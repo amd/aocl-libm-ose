@@ -2,16 +2,13 @@
 
 int test_frexp(void* handle) {
     char* error;
-    float (*lamd_frexpf)(float, int*);
-    double (*lamd_frexp)(double, int*);
     /*scalar inputs*/
     float inputf = 3.145, outputf;
     double input = 6.287, output;
-    int n;
+    int exponent = 2;
 
-    /*scalar routines*/
-    lamd_frexpf = dlsym(handle, "amd_frexpf");
-    lamd_frexp  = dlsym(handle, "amd_frexp");
+    float (*funcf)(float, int*) = (float (*)(float, int*))dlsym(handle, "amd_frexpf");
+    double (*func)(double, int*) = (double (*)(double, int*))dlsym(handle, "amd_frexp");
 
     error = dlerror();
     if (error != NULL) {
@@ -20,16 +17,10 @@ int test_frexp(void* handle) {
     }
 
     printf("Exercising frexp routines\n");
-
-    /*scalar*/
-    outputf = (*lamd_frexpf)(inputf, &n);
+    outputf = funcf(inputf, &exponent);
     printf("amd_frexpf(%f) = %f\n", inputf, outputf);
-    printf("%f = %f * 2^%d\n", inputf, outputf, n);
-
-    output = (*lamd_frexp)(input, &n);
+    output = func(input, &exponent);
     printf("amd_frexp(%lf) = %lf\n", input, output);
-    printf("%lf = %lf * 2^%d\n", input, output, n);
-    printf("\n");
 
     return 0;
 }

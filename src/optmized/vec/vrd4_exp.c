@@ -25,40 +25,6 @@
  *
  */
 
- /*
-  * C implementation of exp double precision 256-bit vector version (v4d)
-  *
-  * Implementation Notes
-  * ----------------------
-  * 1. Argument Reduction:
-  *      e^x = 2^(x/ln2) = 2^(x*(64/ln(2))/64)     --- (1)
-  *
-  *      Choose 'n' and 'f', such that
-  *      x * 64/ln2 = n + f                        --- (2) | n is integer
-  *                            | |f| <= 0.5
-  *     Choose 'm' and 'j' such that,
-  *      n = (64 * m) + j                          --- (3)
-  *
-  *     From (1), (2) and (3),
-  *      e^x = 2^((64*m + j + f)/64)
-  *          = (2^m) * (2^(j/64)) * 2^(f/64)
-  *          = (2^m) * (2^(j/64)) * e^(f*(ln(2)/64))
-  *
-  * 2. Table Lookup
-  *      Values of (2^(j/64)) are precomputed, j = 0, 1, 2, 3 ... 63
-  *
-  * 3. Polynomial Evaluation
-  *   From (2),
-  *     f = x*(64/ln(2)) - n
-  *   Let,
-  *     r  = f*(ln(2)/64) = x - n*(ln(2)/64)
-  *
-  * 4. Reconstruction
-  *      Thus,
-  *        e^x = (2^m) * (2^(j/64)) * e^r
-  *
-  */
-
 
 #include <stdint.h>
 #include <emmintrin.h>
@@ -79,53 +45,53 @@
 static const struct {
     v_f64x4_t tblsz_ln2;
     v_f64x4_t ln2_tblsz_head, ln2_tblsz_tail;
-    v_f64x4_t Huge;
+    v_f64x4_t huge;
     v_i64x4_t exp_bias;
-    v_f64x4_t exp_maxd;
-    v_f64x4_t exp_mind;
+				//v_f64x4_t exp_maxd;
+				//v_f64x4_t exp_mind;
     v_i64x4_t exp_max;
     v_i64x4_t mask;
-    v_i64x4_t infinity;
-    double exp_min_value;
+				//v_i64x4_t infinity;
+				//double exp_min_value;
     v_f64x4_t poly[12];
-    }exp_data = {
-                    .tblsz_ln2      = _MM_SET1_PD4(0x1.71547652b82fep+0),
-                    .ln2_tblsz_head = _MM_SET1_PD4(0x1.63p-1),
-                    .exp_maxd       = _MM_SET1_PD4(0x1.62e42fefa39efp+9),
-                    .exp_mind       = _MM_SET1_PD4(-0x1.62e42fefa39efp+9),
-                    .exp_min_value  = -0x1.74910d52d3051p+9,
-                    .ln2_tblsz_tail = _MM_SET1_PD4(-0x1.bd0105c610ca8p-13),
-                    .Huge           = _MM_SET1_PD4(0x1.8000000000000p+52),
-                    .exp_bias       = _MM_SET1_I64(DOUBLE_PRECISION_BIAS),
-                    .exp_max        = _MM_SET1_I64(0x4086200000000000),
-                    .mask           = _MM_SET1_I64(0x7FFFFFFFFFFFFFFF),
-                    .infinity       = _MM_SET1_I64(0x7ff0000000000000),
-                    .poly           = {
-                                        _MM_SET1_PD4(0x1p0),
-                                        _MM_SET1_PD4(0x1.000000000001p-1),
-                                        _MM_SET1_PD4(0x1.55555555554a2p-3),
-                                        _MM_SET1_PD4(0x1.555555554f37p-5),
-                                        _MM_SET1_PD4(0x1.1111111130dd6p-7),
-                                        _MM_SET1_PD4(0x1.6c16c1878111dp-10),
-                                        _MM_SET1_PD4(0x1.a01a011057479p-13),
-                                        _MM_SET1_PD4(0x1.a01992d0fe581p-16),
-                                        _MM_SET1_PD4(0x1.71df4520705a4p-19),
-                                        _MM_SET1_PD4(0x1.28b311c80e499p-22),
-                                        _MM_SET1_PD4(0x1.ad661ce7af3e3p-26),
-                                       },
+    } exp_data = {
+				.tblsz_ln2      = _MM_SET1_PD4(0x1.71547652b82fep+0),
+				.ln2_tblsz_head = _MM_SET1_PD4(0x1.63p-1),
+				//.exp_maxd       = _MM_SET1_PD4(0x1.62e42fefa39efp+9),
+				//.exp_mind       = _MM_SET1_PD4(-0x1.62e42fefa39efp+9),
+				//.exp_min_value  = -0x1.74910d52d3051p+9,
+				.ln2_tblsz_tail = _MM_SET1_PD4(-0x1.bd0105c610ca8p-13),
+				.huge           = _MM_SET1_PD4(0x1.8000000000000p+52),
+				.exp_bias       = _MM_SET1_I64(DOUBLE_PRECISION_BIAS),
+				.exp_max        = _MM_SET1_I64(0x4086200000000000),
+				.mask           = _MM_SET1_I64(0x7FFFFFFFFFFFFFFF),
+				//.infinity       = _MM_SET1_I64(0x7ff0000000000000),
+				.poly           = {
+								_MM_SET1_PD4(0x1.0p0),
+								_MM_SET1_PD4(0x1.000000000001p-1),
+								_MM_SET1_PD4(0x1.55555555554a2p-3),
+								_MM_SET1_PD4(0x1.555555554f37p-5),
+								_MM_SET1_PD4(0x1.1111111130dd6p-7),
+								_MM_SET1_PD4(0x1.6c16c1878111dp-10),
+								_MM_SET1_PD4(0x1.a01a011057479p-13),
+								_MM_SET1_PD4(0x1.a01992d0fe581p-16),
+								_MM_SET1_PD4(0x1.71df4520705a4p-19),
+								_MM_SET1_PD4(0x1.28b311c80e499p-22),
+								_MM_SET1_PD4(0x1.ad661ce7af3e3p-26),
+				},
     };
 
 #define DP64_BIAS        exp_data.exp_bias
 #define LN2_HEAD         exp_data.ln2_tblsz_head
 #define LN2_TAIL         exp_data.ln2_tblsz_tail
 #define INVLN2           exp_data.tblsz_ln2
-#define EXP_HUGE         exp_data.Huge
+#define EXP_HUGE         exp_data.huge
 #define ARG_MAX          exp_data.exp_max
-#define EXP_MAX          exp_data.exp_maxd
-#define EXP_LOW          exp_data.exp_mind
-#define EXP_MIN_VAL      exp_data.exp_min_value
+//#define EXP_MAX          exp_data.exp_maxd
+//#define EXP_LOW          exp_data.exp_mind
+//#define EXP_MIN_VAL      exp_data.exp_min_value
 #define MASK             exp_data.mask
-#define INF              exp_data.infinity
+//#define INF              exp_data.infinity
 #define C1  exp_data.poly[0]
 #define C3  exp_data.poly[1]
 #define C4  exp_data.poly[2]
@@ -139,6 +105,41 @@ static const struct {
 #define C12 exp_data.poly[10]
 
 #define SCALAR_EXP ALM_PROTO(exp)
+
+
+/*
+ * C implementation of exp double precision 256-bit vector version (v4d)
+ *
+ * Implementation Notes
+ * ----------------------
+ * 1. Argument Reduction:
+ *      e^x = 2^(x/ln2) = 2^(x*(64/ln(2))/64)     --- (1)
+ *
+ *      Choose 'n' and 'f', such that
+ *      x * 64/ln2 = n + f                        --- (2) | n is integer
+ *                            | |f| <= 0.5
+ *     Choose 'm' and 'j' such that,
+ *      n = (64 * m) + j                          --- (3)
+ *
+ *     From (1), (2) and (3),
+ *      e^x = 2^((64*m + j + f)/64)
+ *          = (2^m) * (2^(j/64)) * 2^(f/64)
+ *          = (2^m) * (2^(j/64)) * e^(f*(ln(2)/64))
+ *
+ * 2. Table Lookup
+ *      Values of (2^(j/64)) are precomputed, j = 0, 1, 2, 3 ... 63
+ *
+ * 3. Polynomial Evaluation
+ *   From (2),
+ *     f = x*(64/ln(2)) - n
+ *   Let,
+ *     r  = f*(ln(2)/64) = x - n*(ln(2)/64)
+ *
+ * 4. Reconstruction
+ *      Thus,
+ *        e^x = (2^m) * (2^(j/64)) * e^r
+ *
+ */
 
 v_f64x4_t
 ALM_PROTO_OPT(vrd4_exp)(v_f64x4_t x)

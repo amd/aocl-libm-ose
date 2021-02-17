@@ -142,7 +142,6 @@ struct log_table {
     double lead, tail;
 };
 
-double _log_special(double x, double y, uint32_t code);
 
 static inline uint64_t top12(double x)
 {
@@ -182,7 +181,7 @@ ALM_PROTO_OPT(log)(double x)
 
         /* NaN */
         if (! (ux & QNANBITPATT_DP64))
-            return _log_special(x, ux | QNANBITPATT_DP64 , FLAG_X_NAN);
+            return _log_special(x, asdouble(ux | QNANBITPATT_DP64) , FLAG_X_NAN);
     }
 
     if (unlikely (x <= 0.0)) {
@@ -193,9 +192,9 @@ ALM_PROTO_OPT(log)(double x)
         return _log_special(x, asdouble(QNANBITPATT_DP64), FLAG_X_NEG);
     }
 
-    flt64_t mant = {.i = ux & 0x000fffffffffffffULL};
+    flt64u_t mant = {.i = ux & 0x000fffffffffffffULL};
 
-    dexpo = cast_i64_to_double(expo);
+    dexpo = cast_i64_to_double((int64_t)expo);
 
     /*
      * Denormals: Adjust mantissa,
@@ -204,23 +203,21 @@ ALM_PROTO_OPT(log)(double x)
     if (unlikely (dexpo < -1023.0)) {
         mant.i |= 0x3ff0000000000000ULL;
         mant.d -= 1.0;
-        uint64_t mant1 = mant.i >> 52;
-
+        expo = (mant.i >> 52) - 2045;
         mant.i &= 0x000ffffffffffffULL;
         ux = mant.i;
-        expo = cast_i64_to_double(mant1 - 2045);
     }
 
     /* un-bias exponent  */
     expo -=  1023;
 
-    dexpo = cast_i64_to_double(expo);
+    dexpo = cast_i64_to_double((int64_t)expo);
 
 #if 1
     /*****************
      * (x ~= 1.0) code path
      *****************/
-    flt64_t one_minus_mant = {.d = x - 1.0};
+    flt64u_t one_minus_mant = {.d = x - 1.0};
     /* mask sign bit */
     uint64_t mant_no_sign = one_minus_mant.i & ~(1ULL << 63);
     if (unlikely (mant_no_sign < 0x3fb0000000000000ULL)) {

@@ -33,7 +33,7 @@
 #define EXP_N 7
 #endif
 
-#define EXP_TABLE_SIZE (1ULL << EXP_N)
+#define EXP_TABLE_SIZE (1L << EXP_N)
 
 #if EXP_N == 6                              /* Table size 64 */
 #define EXP_POLY_DEGREE 6

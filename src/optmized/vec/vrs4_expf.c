@@ -78,28 +78,27 @@ static const struct {
     v_f64x4_t   poly_expf[6];
     v_f32x4_t   expf_max, expf_min;
     v_i32x4_t   infinity;
+} v_expf_data = {
+    .tblsz_byln2 =  _MM_SET1_PD4(0x1.71547652b82fep+0),
+    .huge        =  _MM_SET1_PD4(0x1.8p+52) ,
+    .arg_min     =  _MM_SET1_I32(0xFFFFFF99),
+    .arg_max     =  _MM_SET1_I32(0x42AE0000),
+    .mask        =  _MM_SET1_I32(0x7fffffff),
+    .infinity    =  _MM_SET1_I32(0x7f800000),
+    .expf_min    =  _MM_SET1_PS4(-0x1.9fe368p6f),
+    .expf_max    =  _MM_SET1_PS4(88.7228393f),
 
-} v_expf_data ={
-              .tblsz_byln2 =  _MM_SET1_PD4(0x1.71547652b82fep+0),
-              .huge        =  _MM_SET1_PD4(0x1.8p+52) ,
-              .arg_min     =  _MM_SET1_I32((int32_t)0xFFFFFF99),
-              .arg_max     =  _MM_SET1_I32(0x42AE0000),
-              .mask        =  _MM_SET1_I32(0x7fffffff),
-              .infinity    =  _MM_SET1_I32(0x7f800000),
-              .expf_min    =  _MM_SET1_PS4(-0x1.9fe368p6f),
-              .expf_max    =  _MM_SET1_PS4(88.7228393f),
-
-              /*
-               * Polynomial coefficients obtained using Remez algorithm
-               */
-              .poly_expf = {
-                              _MM_SET1_PD4(0x1.0000014439a91p0),
-                              _MM_SET1_PD4(0x1.62e43170e3344p-1),
-                              _MM_SET1_PD4(0x1.ebf906bc4c115p-3),
-                              _MM_SET1_PD4(0x1.c6ae2bb88c0c8p-5),
-                              _MM_SET1_PD4(0x1.3d1079db4ef69p-7),
-                              _MM_SET1_PD4(0x1.5f8905cb0cc4ep-10),
-              },
+    /*
+     * Polynomial coefficients obtained using Remez algorithm
+     */
+    .poly_expf = {
+        _MM_SET1_PD4(0x1.0000014439a91p0),
+        _MM_SET1_PD4(0x1.62e43170e3344p-1),
+        _MM_SET1_PD4(0x1.ebf906bc4c115p-3),
+        _MM_SET1_PD4(0x1.c6ae2bb88c0c8p-5),
+        _MM_SET1_PD4(0x1.3d1079db4ef69p-7),
+        _MM_SET1_PD4(0x1.5f8905cb0cc4ep-10),
+    },
 };
 
 #define TBL_LN2      v_expf_data.tblsz_byln2
@@ -109,10 +108,9 @@ static const struct {
 #define EXPF_MAX     v_expf_data.expf_max
 #define EXPF_MIN     v_expf_data.expf_min
 #define MASK         v_expf_data.mask
-#define OFF          ARG_MAX - ARG_MIN
 #define INF          v_expf_data.infinity
-#define EXPF_MAX     v_expf_data.expf_max
-#define EXPF_MIN     v_expf_data.expf_min
+
+#define OFF          ARG_MAX - ARG_MIN
 
 #define C1 v_expf_data.poly_expf[0]
 #define C2 v_expf_data.poly_expf[1]

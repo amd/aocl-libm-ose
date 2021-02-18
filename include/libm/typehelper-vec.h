@@ -243,14 +243,16 @@ as_v8_u32_f32(v_f32x8_t x)
 static inline v_u32x4_t
 cast_v4_u64_to_u32(v_u64x4_t _xu64)
 {
-    return (v_u32x4_t){_xu64[0], _xu64[1], _xu64[2], _xu64[3]};
+    return (v_u32x4_t){(uint32_t)_xu64[0], (uint32_t)_xu64[1],
+                       (uint32_t)_xu64[2], (uint32_t)_xu64[3]};
 }
 
 /* v4 signed int -> float */
 static inline v_f32x4_t
 cast_v4_s32_to_f32(v_i32x4_t _xi32)
 {
-    return (v_f32x4_t){_xi32[0], _xi32[1], _xi32[2], _xi32[3]};
+    return (v_f32x4_t){(float)_xi32[0], (float)_xi32[1],
+                       (float)_xi32[2], (float)_xi32[3]};
 }
 
 /* v4 float -> double */
@@ -264,21 +266,22 @@ cast_v4_f32_to_f64(v_f32x4_t _x)
 inline v_f32x4_t
 cast_v4_f64_to_f32(v_f64x4_t _x)
 {
-    return (v_f32x4_t){_x[0], _x[1], _x[2], _x[3]};
+    return (v_f32x4_t){(float)_x[0], (float)_x[1], (float)_x[2], (float)_x[3]};
 }
 
 // v4 double -> int64
 static inline v_i64x4_t
 cast_v4_f64_to_i64(v_f64x4_t _xf64)
 {
-    return (v_i64x4_t){_xf64[0], _xf64[1], _xf64[2], _xf64[3]};
+    return (v_i64x4_t){(int64_t)_xf64[0], (int64_t)_xf64[1],
+                       (int64_t)_xf64[2], (int64_t)_xf64[3]};
 }
 
 // v2 double -> int64
 static inline v_i64x2_t
 cast_v2_f64_to_i64(v_f64x2_t _xf64)
 {
-    return (v_i64x2_t){_xf64[0], _xf64[1]};
+    return (v_i64x2_t){(int64_t)_xf64[0], (int64_t)_xf64[1]};
 }
 
 /*
@@ -553,16 +556,18 @@ call2_v2_f64(double (*fn)(double, double),
 static inline v_i32x8_t
 cast_v8_f32_to_i32(v_f32x8_t _xf32)
 {
-    return (v_i32x8_t){_xf32[0], _xf32[1], _xf32[2], _xf32[3],
-            _xf32[4], _xf32[5], _xf32[6], _xf32[7]};
+    return (v_i32x8_t){(int32_t)_xf32[0], (int32_t)_xf32[1], (int32_t)_xf32[2],
+                       (int32_t)_xf32[3], (int32_t)_xf32[4], (int32_t)_xf32[5],
+                       (int32_t)_xf32[6], (int32_t)_xf32[7]};
 }
 
 // v_i32x8_t to v_f32x8_t
 static inline v_f32x8_t
 cast_v8_f32_to_s32(v_i32x8_t _xi32)
 {
-    return (v_f32x8_t){_xi32[0], _xi32[1], _xi32[2], _xi32[3],
-            _xi32[4], _xi32[5], _xi32[6], _xi32[7] };
+    return (v_f32x8_t){(float)_xi32[0], (float)_xi32[1], (float)_xi32[2],
+                       (float)_xi32[3], (float)_xi32[4], (float)_xi32[5],
+                       (float)_xi32[6], (float)_xi32[7] };
 }
 
 // Condition check with for loop for better performance

@@ -82,7 +82,7 @@ static const struct {
 } v_expf_data ={
               .tblsz_byln2 =  _MM_SET1_PD4(0x1.71547652b82fep+0),
               .huge        =  _MM_SET1_PD4(0x1.8p+52) ,
-              .arg_min     =  _MM_SET1_I32(0xFFFFFF99),
+              .arg_min     =  _MM_SET1_I32((int32_t)0xFFFFFF99),
               .arg_max     =  _MM_SET1_I32(0x42AE0000),
               .mask        =  _MM_SET1_I32(0x7fffffff),
               .infinity    =  _MM_SET1_I32(0x7f800000),
@@ -167,19 +167,19 @@ ALM_PROTO_OPT(vrs4_expf)(v_f32x4_t _x)
 
         v_i32x4_t zero_condition = _x < EXPF_MIN;
 
-        v_32x4 vx = {.f32x4 = ret};
+        v_32x4 vy = {.f32x4 = ret};
 
         //Zero out the elements that have to be set to infinity
-        vx.i32x4 = vx.i32x4 & (~inf_condition);
+        vy.i32x4 = vy.i32x4 & (~inf_condition);
 
         inf_condition = inf_condition & INF;
 
-        vx.i32x4 = vx.i32x4 | inf_condition;
+        vy.i32x4 = vy.i32x4 | inf_condition;
 
         //Zero to be set for elements with x < EXPF_MIN
-        vx.i32x4 = vx.i32x4 & (~zero_condition);
+        vy.i32x4 = vy.i32x4 & (~zero_condition);
 
-        return vx.f32x4;
+        return vy.f32x4;
     }
 
 

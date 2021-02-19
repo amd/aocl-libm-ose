@@ -31,6 +31,7 @@
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/typehelper-vec.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
@@ -97,9 +98,6 @@ static struct {
 #define C5  v8_sinf_data.poly_sinf[2]
 #define C7  v8_sinf_data.poly_sinf[3]
 #define C9  v8_sinf_data.poly_sinf[4]
-
-
-float ALM_PROTO(sinf)(float);
 
 
 static inline v_f32x8_t

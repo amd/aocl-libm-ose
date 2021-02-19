@@ -59,6 +59,7 @@
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/typehelper-vec.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
@@ -83,8 +84,6 @@ static struct {
 #define HALFV     v4_coshf_data.halfV
 #define ARG_MAX   v4_coshf_data.arg_max
 
-v_f32x4_t ALM_PROTO(vrs4_expf)(v_f32x4_t);
-float ALM_PROTO(coshf)(float);
 
 static inline v_f32x4_t
 coshf_specialcase(v_f32x4_t _x, v_f32x4_t result, v_u32x4_t cond)

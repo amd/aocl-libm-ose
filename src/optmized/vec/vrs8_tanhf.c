@@ -63,10 +63,10 @@
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/typehelper-vec.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
-v_f32x4_t ALM_PROTO(vrs4_tanhf)(v_f32x4_t);
 
 v_f32x8_t
 ALM_PROTO_OPT(vrs8_tanhf)(v_f32x8_t x)

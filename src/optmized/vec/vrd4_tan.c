@@ -35,6 +35,7 @@
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/typehelper-vec.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 

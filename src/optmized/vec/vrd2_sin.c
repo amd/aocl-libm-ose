@@ -31,6 +31,7 @@
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/typehelper-vec.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
@@ -101,9 +102,6 @@ static struct {
 #define C10 v2_sin_data.poly_sin[5]
 #define C12 v2_sin_data.poly_sin[6]
 #define C14 v2_sin_data.poly_sin[7]
-
-
-double ALM_PROTO(sin)(double);
 
 
 static inline v_f64x2_t

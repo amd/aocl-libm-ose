@@ -121,7 +121,6 @@ static struct {
 #define INF     coshf_date.infinity
 #define ARG_MAX coshf_data.arg_max
 
-float ALM_PROTO(expf)(float);
 
 float ALM_PROTO_OPT(coshf)(float x)
 {

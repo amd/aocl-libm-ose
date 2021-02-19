@@ -65,6 +65,7 @@
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/typehelper-vec.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
@@ -110,8 +111,6 @@ static struct {
 #define C3 v8_cosf_data.poly_cosf[3]
 #define C4 v8_cosf_data.poly_cosf[4]
 
-
-float ALM_PROTO(cosf)(float);
 
 static inline v_f32x8_t
 cosf_specialcase(v_f32x8_t _x, v_f32x8_t result, v_u32x8_t cond)

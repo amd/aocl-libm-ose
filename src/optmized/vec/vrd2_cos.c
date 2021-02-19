@@ -71,6 +71,7 @@
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/typehelper-vec.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
@@ -125,7 +126,6 @@ static struct {
 #define V2_COS_MAX       v2_cos_data.max
 #define V2_ALM_HUGE      v2_cos_data.alm_huge
 
-double ALM_PROTO(cos)(double);
 
 static inline v_f64x2_t
 cos_specialcase(v_f64x2_t _x, v_f64x2_t result,

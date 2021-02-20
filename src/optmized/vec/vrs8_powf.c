@@ -223,8 +223,8 @@ static inline void
 update_condition(v_i32x8_t* cond1, v_i64x4_t cond2, int32_t lane)
 {
 
-    uint32_t k = lane << 2;
-    for(int i = 0; i < 4; i++) {
+    uint32_t k = (uint32_t)lane << 2;
+    for(uint32_t i = 0; i < 4; i++) {
         if((*cond1)[i + k] || cond2[i]){
             (*cond1)[i + k] = 1;
          }

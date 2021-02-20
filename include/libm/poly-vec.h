@@ -164,7 +164,7 @@
         __typeof(x) x2 = x  * x;                                        \
         __typeof(x) x4 = x2 * x2;                                       \
         __typeof(x) x8 = x4 * x4;                                       \
-        __typeof(x) q =  mul_add(mul_add(x2, c10, mul_add(c9, x, c8)),  \
+        __typeof(x) _q =  mul_add(mul_add(x2, c10, mul_add(c9, x, c8)), \
                                 x8,                                     \
                                 mul_add(mul_add(mul_add(c7, x, c6),     \
                                                 x2,                     \
@@ -173,7 +173,7 @@
                                         mul_add(mul_add(c3, x, c2),     \
                                                 x2,                     \
                                                 mul_add(c1, x, c0))));	\
-        q;                                                              \
+        _q;                                                              \
         })
 
 /*

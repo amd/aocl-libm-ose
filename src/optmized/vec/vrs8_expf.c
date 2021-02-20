@@ -79,7 +79,7 @@ static const struct {
     v_f32x8_t   poly_expf_5[5];
     v_f32x8_t   poly_expf_7[7];
 } v_expf_data ={
-              .tblsz_byln2 =  _MM256_SET1_PS8(0x1.71547652b82fep+0),
+              .tblsz_byln2 =  _MM256_SET1_PS8(0x1.71547652b82fep+0f),
               .ln2_tbl_head = _MM256_SET1_PS8(0x1.63p-1),
               .ln2_tbl_tail = _MM256_SET1_PS8(-0x1.bd0104p-13),
               .huge        =  _MM256_SET1_PS8(0x1.8p+23) ,
@@ -136,6 +136,9 @@ static const struct {
 
 
 #define SCALAR_EXPF ALM_PROTO_OPT(expf)
+
+/* this macro may be delted after converting macro*/
+v_f32x8_t ALM_PROTO_OPT(vrs8_expf_experimental)(v_f32x8_t _x);
 
 /*
     Implementation with 7-degree polynomial

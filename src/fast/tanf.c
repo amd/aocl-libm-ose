@@ -153,7 +153,7 @@ ALM_PROTO_FAST(tanf)(float x)
     result = asfloat(sign ^ asuint32(poly));
 
     if (odd)
-        result = -1.0/result;
+        result = -1.0f/result;
 
     return result;
 }

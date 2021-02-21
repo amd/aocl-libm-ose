@@ -42,6 +42,8 @@
 
 #include <math.h>
 
+double FN_PROTOTYPE_FMA3(log1p_v2)(double x);
+
 double
 FN_PROTOTYPE_FMA3(log1p_v2)(double x)
 {

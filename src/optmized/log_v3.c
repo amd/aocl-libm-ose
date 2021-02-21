@@ -49,12 +49,11 @@
 #define FLAG_X_NEG  0x2
 #define FLAG_X_NAN  0x3
 
-double _log_special(double_t x, double_t y, uint32_t code);
 
 static inline
 uint32_t top16(double d)
 {
-    return asuint64(d) >> (64-16);
+    return (uint32_t)(asuint64(d) >> (64-16));
 }
 
 
@@ -80,8 +79,8 @@ __log1p_v3(double_t f)
      * (4) f2:=f-fl.
      * (5) u2:= ((2*(f-u,)-u,*f,)-u,*f2)*g.
      */
-    flt64_t u1 = {.i = asuint64(u) & 0xfffffffff0000000};
-    flt64_t f1 = {.i = asuint64(f) & 0xfffffffff0000000};
+    flt64u_t u1 = {.i = asuint64(u) & 0xfffffffff0000000UL};
+    flt64u_t f1 = {.i = asuint64(f) & 0xfffffffff0000000UL};
 
     double_t f2 = f - f1.d;
 
@@ -121,6 +120,9 @@ __log1p_v3(double_t f)
  *     1+x ~= 2^m(F + f)
  *
  */
+
+double FN_PROTOTYPE(log1p_v3)(double x);
+
 double
 FN_PROTOTYPE(log1p_v3)(double x)
 {
@@ -160,6 +162,8 @@ FN_PROTOTYPE(log1p_v3)(double x)
 *      (alternating sign)
 *      log(1+f/F) = r - 1/2*r^2 + 1/3*r^3 - 1/4*r^4 +...
 */
+
+double FN_PROTOTYPE(log_v3)(double x);
 
 double
 FN_PROTOTYPE(log_v3)(double x)
@@ -219,9 +223,9 @@ FN_PROTOTYPE(log_v3)(double x)
      * Y = 2^-m * x , so that 1 <= 2^-m*X < 2
      * Y is nothing but mantissa
      */
-    flt64_t Y = {.i = f64.f.mantissa};
+    flt64u_t Y = {.i = f64.f.mantissa};
 
-    j = Y.i >> (52 - LOG_N);            /* Top ''LOG_N' bits of mantissa */
+    j = (uint32_t)(Y.i >> (52 - LOG_N));    /* Top ''LOG_N' bits of mantissa */
 
     /* actually Y.d = x * (asdouble)((1023 - m) << 52); */
     Y.i |=  (0x3ffULL << 52);           /* 0x3ff0.0000.0000.0000 */
@@ -238,7 +242,7 @@ FN_PROTOTYPE(log_v3)(double x)
 
     f = Y.d - F1;
 
-    const struct log_table *tab = &((struct log_table *)LOG_TAB)[j];
+    const struct log_table *tab = &((const struct log_table *)LOG_TAB)[j];
     r = f * tab->f_inv;
 
     /* re-defining to shorten the lines */
@@ -295,8 +299,8 @@ FN_PROTOTYPE(log_v3)(double x)
 #define TAB_HEAD(j) log_data.table[j].head
 #define TAB_TAIL(j) log_data.table[j].tail
 
-    double_t l_lead = (m * LN2_HEAD) + tab->head;
-    double_t l_tail = (m * LN2_TAIL) + tab->tail;
+    double_t l_lead = ((double)m * LN2_HEAD) + tab->head;
+    double_t l_tail = ((double)m * LN2_TAIL) + tab->tail;
 
     /* Parens are necessary to keep the precision */
     q = l_lead + (r + (q + l_tail));

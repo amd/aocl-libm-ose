@@ -29,6 +29,7 @@
 #include "fn_macros.h"
 #include "libm_util_amd.h"
 #include "libm_special.h"
+#include <libm/amd_funcs_internal.h>
 
 /*SSE2 contains an instruction SQRTSS. This instruction Computes the square root
   of the low-order single-precision floating-point value in an XMM register

@@ -25,9 +25,10 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
 #include "libm_special.h"
+#include <libm/amd_funcs_internal.h>
+
 
 double FN_PROTOTYPE_REF(logb)(double x)
 {

@@ -25,8 +25,8 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
+#include <libm/amd_funcs_internal.h>
 
 float FN_PROTOTYPE_REF(remquof) (float x, float y, int *quo)
 {

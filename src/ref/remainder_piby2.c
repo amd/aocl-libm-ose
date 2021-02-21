@@ -25,7 +25,7 @@
  *
  */
 
-#include "libm_amd.h"
+#include <libm/amd_funcs_internal.h>
 
 void __amd_remainder_piby2(double x, double *r, double *rr, int *region);
 

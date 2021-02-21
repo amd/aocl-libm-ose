@@ -25,10 +25,11 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
 #include "libm_inlines_amd.h"
 #include "libm_special.h"
+#include <libm/amd_funcs_internal.h>
+
 
 /* Computes the exact product of x and y, the result being the
 nearly doublelength number (z,zz) */

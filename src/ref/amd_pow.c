@@ -28,9 +28,9 @@
 /* Contains implementation of double pow(double x, double y)
  * x^y = 2^(y*log2(x))
  */
-#include "libm_amd.h"
 #include "libm_util_amd.h"
 #include "libm_special.h"
+#include <libm/amd_funcs_internal.h>
 
 #define L__exp_mask  0x7ff0000000000000
 #define L__exp_bias  0x00000000000003ff // 1023

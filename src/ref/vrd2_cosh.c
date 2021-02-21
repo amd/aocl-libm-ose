@@ -27,7 +27,7 @@
 
 /*This is quick prototype for the pow vector variant for the
  *Open64 team. */
-#include "libm_amd.h"
+#include <libm/amd_funcs_internal.h>
 
 __m128d FN_PROTOTYPE_REF(vrd2_cosh)(__m128d x)
 {

@@ -128,6 +128,7 @@ extern void LIBM_IFACE_PROTO(copysign)(void *arg);
 extern void LIBM_IFACE_PROTO(cos)(void *arg);
 extern void LIBM_IFACE_PROTO(cosh)(void *arg);
 extern void LIBM_IFACE_PROTO(cospi)(void *arg);
+extern void LIBM_IFACE_PROTO(sincos)(void *arg);
 extern void LIBM_IFACE_PROTO(exp10)(void *arg);
 extern void LIBM_IFACE_PROTO(exp2)(void *arg);
 extern void LIBM_IFACE_PROTO(exp)(void *arg);

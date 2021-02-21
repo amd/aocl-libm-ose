@@ -45,7 +45,6 @@
 #include <libm_util_amd.h>
 #include <libm_special.h>
 #include <libm_macros.h>
-#include <libm_amd.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/compiler.h>
@@ -235,12 +234,12 @@ ALM_PROTO_FAST(powf)(float x, float y)
             /*  x is -0 and y is odd */
             if (ux & 0x80000000 && checkint(uy) == 1) {
                 x2 = -x2;
-                sign_bias = SIGN_BIAS;
+                sign_bias = (int)SIGN_BIAS;
             }
 
             if (2 * ux == 0 && uy & 0x80000000) {
-                x = 1.0 / 0.0;
-                return asfloat((sign_bias >> 23) | ux);
+                x = 1.0f / 0.0f;
+                return asfloat((uint32_t)(sign_bias >> 23) | ux);
             }
 
             /*  if y is negative, return 1/x else return x */
@@ -251,8 +250,8 @@ ALM_PROTO_FAST(powf)(float x, float y)
         if (ux & 0x80000000) {
             /*  x is negative */
             /*  Finite x < 0 */
-            int yint = checkint (uy);
-            if (yint == 0)      return sqrt(x);
+            uint32_t yint = checkint (uy);
+            if (yint == 0)      return (float)sqrt(x);
             if (yint == 1)      sign_bias = -1;
 
             ux &= 0x7fffffff; /*  x is negative, y is integer */
@@ -283,12 +282,12 @@ ALM_PROTO_FAST(powf)(float x, float y)
 
     log2x = s1 + s2 * A3;
 
-    w = y * log2x;
+    w = (double)y * log2x;
 
     /* Split w into two parts i.e. w = w1+w2 */
     w1 =  trunc(C * w) * INVC;
     w2 = w - w1;
-    iw1 = trunc(C * w1);
+    iw1 = (int)trunc(C * w1);
 
     /* Set value of i based on iw1 */
     i = (iw1 < 0) ? 0 : 1;
@@ -300,8 +299,8 @@ ALM_PROTO_FAST(powf)(float x, float y)
         iw1 = iw1 + 1;
     }
 
-    mdash = trunc(w1) + i;
-    pdash = C * mdash - iw1;
+    mdash = (int)trunc(w1) + i;
+    pdash = (unsigned int)((int)C * mdash - iw1);
 
     /* Find 2^w2 using polynomial evaluation */
     w22 = w2*w2;
@@ -312,10 +311,10 @@ ALM_PROTO_FAST(powf)(float x, float y)
     z = T[pdash].A + T[pdash].A * poly;
 
     P = (mdash + 127) << 23;
-    scale = asfloat(P);
+    scale = asfloat((uint32_t)P);
     result = scale * z;
 
-    return sign_bias * result;
+    return (float)(sign_bias * result);
 }
 
 strong_alias (__powf_finite, ALM_PROTO_FAST(powf))

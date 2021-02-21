@@ -48,9 +48,11 @@ struct {
 };
 
 static void
-__get_mfg_info(struct alm_cpuid_regs *regs, struct alm_cpu_mfg_info *mfg_info)
+__get_mfg_info(struct alm_cpuid_regs *cpuid_regs, struct alm_cpu_mfg_info *mfg_info)
 {
     uint32_t ext_model;
+    uint32_t model;
+    uint32_t family;
 
     if (mfg_info) {
         struct alm_cpuid_regs regs;
@@ -59,12 +61,14 @@ __get_mfg_info(struct alm_cpuid_regs *regs, struct alm_cpu_mfg_info *mfg_info)
         __cpuid_1(1, &regs);
         eax = regs.eax;
 
-        mfg_info->family = (eax >> 8) & 0x0f;
-        mfg_info->model = (eax >> 4) & 0x0f;
+        family = (eax >> 8) & 0x0f;
+        model = (eax >> 4) & 0x0f;
         ext_model = (eax >> 12) & 0xf0;
-        if (mfg_info->family == 0x0f) {
-            mfg_info->family += (eax >> 20) & 0xff;
-            mfg_info->model += ext_model;
+        if (family == 0x0f) {
+            family += (eax >> 20) & 0xff;
+            mfg_info->family = (uint16_t)family;
+            model += ext_model;
+            mfg_info->model = (uint16_t)model;
         }
 
         mfg_info->stepping = eax & 0x0f;
@@ -126,6 +130,8 @@ __init_cpu_features(void)
             break;
         case ALM_CPU_FAMILY_MILAN:      /* Milan */
             break;
+        default:
+            break;
         }
     }
 
@@ -153,7 +159,7 @@ alm_cpu_get_features(void)
     return &cpu_features;
 }
 
-int
+uint32_t
 alm_cpu_is_amd(void)
 {
     __init_cpu_features();
@@ -162,7 +168,7 @@ alm_cpu_is_amd(void)
     return mfg_info->mfg_type == ALM_CPU_MFG_AMD;
 }
 
-static int
+static uint32_t
 alm_cpu_arch_is(uint16_t family)
 {
     __init_cpu_features();
@@ -172,25 +178,25 @@ alm_cpu_arch_is(uint16_t family)
     return mfg_info->family == family;
 }
 
-int
+uint32_t
 alm_cpu_arch_is_zen(void)
 {
     return alm_cpu_arch_is(ALM_CPU_FAMILY_NAPLES);
 }
 
-int
+uint32_t
 alm_cpu_arch_is_zen2(void)
 {
     return alm_cpu_arch_is(ALM_CPU_FAMILY_ROME);
 }
 
-int
+uint32_t
 alm_cpu_arch_is_zen3(void)
 {
     return alm_cpu_arch_is(ALM_CPU_FAMILY_MILAN);
 }
 
-int
+uint32_t
 alm_cpu_feature_is_avx_usable(void)
 {
     __init_cpu_features();
@@ -198,7 +204,7 @@ alm_cpu_feature_is_avx_usable(void)
     return ALM_CPU_FEATURE_AVX_USABLE(&cpu_features);
 }
 
-int
+uint32_t
 alm_cpu_feature_is_avx2_usable(void)
 {
     __init_cpu_features();

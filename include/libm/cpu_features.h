@@ -256,7 +256,11 @@ void alm_cpu_set_features(struct alm_cpu_features *f,
                            uint32_t reg_offset,
                            uint32_t bit);
 
-int alm_cpu_feature_is_avx_usable(void);
-int alm_cpu_feature_is_avx2_usable(void);
+uint32_t alm_cpu_feature_is_avx_usable(void);
+uint32_t alm_cpu_feature_is_avx2_usable(void);
+uint32_t alm_cpu_is_amd(void);
+uint32_t alm_cpu_arch_is_zen(void);
+uint32_t alm_cpu_arch_is_zen2(void);
+uint32_t alm_cpu_arch_is_zen3(void);
 
 #endif  /* __LIBM_CPU_FEATURES_H__ */

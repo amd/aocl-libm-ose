@@ -25,9 +25,9 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
 #include "libm_special.h"
+#include "libm/amd_funcs_internal.h"
 
 #undef _FUNCNAME
 #define _FUNCNAME "log1p" 

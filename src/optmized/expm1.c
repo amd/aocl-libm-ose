@@ -25,10 +25,11 @@
  *
  */
 
-#include <libm_amd.h>
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
 
+
+double FN_PROTOTYPE_OPT(expm1_v2) (double x);
 
 double
 FN_PROTOTYPE_OPT(expm1_v2) (double x)

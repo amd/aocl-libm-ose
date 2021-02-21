@@ -53,7 +53,6 @@ extern double    ALM_PROTO_INTERNAL(exp2)                 (double x);
 extern double    ALM_PROTO_INTERNAL(exp)                  (double x);
 extern double    ALM_PROTO_INTERNAL(expm1)                (double x);
 extern double    ALM_PROTO_INTERNAL(fabs)                 (double x);
-extern double    ALM_PROTO_INTERNAL(fastpow)              (double x, double y);
 extern double    ALM_PROTO_INTERNAL(fdim)                 (double x, double y);
 extern double    ALM_PROTO_INTERNAL(floor)                (double x);
 extern double    ALM_PROTO_INTERNAL(fma)                  (double x, double y, double z);

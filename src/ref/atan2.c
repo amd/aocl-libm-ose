@@ -689,7 +689,7 @@ double FN_PROTOTYPE_REF(atan2)(double y, double x)
     { /* General values of v/u. Use a look-up
          table and series expansion. */
 
-      index = (int)(256*vbyu + 0.5);
+      index = (unsigned int)(256*vbyu + 0.5);
       q1 = atan_jby256_lead[index-16];
       q2 = atan_jby256_tail[index-16];
       c = index*1./256;

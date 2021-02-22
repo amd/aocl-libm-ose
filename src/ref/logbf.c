@@ -35,7 +35,7 @@ float FN_PROTOTYPE_REF(logbf)(float x)
   unsigned int ux;
   int u;
   GET_BITS_SP32(x, ux);
-  u = ((ux & EXPBITS_SP32) >> EXPSHIFTBITS_SP32) - EXPBIAS_SP32;
+  u = (int)(((ux & EXPBITS_SP32) >> EXPSHIFTBITS_SP32) - EXPBIAS_SP32);
   if ((ux & ~SIGNBIT_SP32) == 0)
     /* x is +/-zero. Return -infinity with div-by-zero flag. */
 	return __amd_handle_errorf("logbf", __amd_logb, NINFBITPATT_SP32, _SING, AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);

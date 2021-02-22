@@ -41,30 +41,31 @@ long int FN_PROTOTYPE_REF(lroundf)(float f)
     if ((u32d.u32 & 0X7F800000) == 0x7F800000)
     {
         /*else the number is infinity*/
-		//Raise range or domain error
+	//Raise range or domain error
         {
-		#ifdef WIN64
-			__amd_handle_errorf("lroundf", __amd_lround, SIGNBIT_SP32, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
-			return (long int)SIGNBIT_SP32;
-		#else
-         if((u32d.u32 & 0x7fffffff) == 0x7f800000)
-            return SIGNBIT_DP64;
-         if((u32d.u32 & 0x7fffffff) >= 0x7fc00000)
-                __amd_handle_errorf("lround", __amd_lround, (unsigned int)SIGNBIT_DP64, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
-         else    
-                __amd_handle_errorf("lround", __amd_lround, (unsigned int)SIGNBIT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, f, 0.0, 1);
+            #ifdef WIN64
+            __amd_handle_errorf("lroundf", __amd_lround, SIGNBIT_SP32, _DOMAIN,
+                                                           AMD_F_NONE, EDOM, f, 0.0, 1);
+            return (long int)SIGNBIT_SP32;
+            #else
+            if((u32d.u32 & 0x7fffffff) == 0x7f800000)
+                return (long)SIGNBIT_DP64;
+            if((u32d.u32 & 0x7fffffff) >= 0x7fc00000)
+                __amd_handle_errorf("lround", __amd_lround, (unsigned int)SIGNBIT_DP64,
+                                                          _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
+            else
+                __amd_handle_errorf("lround", __amd_lround, (unsigned int)SIGNBIT_DP64,
+                                                       _DOMAIN, AMD_F_INVALID, EDOM, f, 0.0, 1);
             
-		 return SIGNBIT_DP64; /*GCC returns this when the number is out of range*/
-		#endif
+            return (long)SIGNBIT_DP64; /*GCC returns this when the number is out of range*/
+            #endif
         }
-
     }
 
     u32Temp.u32 &= 0x7FFFFFFF;
     intexp = (u32d.u32 & 0x7F800000) >> 23;
     sign = u32d.u32 & 0x80000000;
     intexp -= 0x7F;
-
 
     /* 1.0 x 2^-1 is the smallest number which can be rounded to 1 */
     if (intexp < -1)
@@ -76,7 +77,8 @@ long int FN_PROTOTYPE_REF(lroundf)(float f)
     if (intexp >= 31)
     {
         result = 0x80000000;
-		__amd_handle_errorf("lroundf", __amd_lround, result, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
+	__amd_handle_errorf("lroundf", __amd_lround, result,
+                                  _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
         return result;
 	}
 
@@ -84,9 +86,10 @@ long int FN_PROTOTYPE_REF(lroundf)(float f)
     /* 1.0 x 2^31 (or 2^63) is already too large */
     if (intexp >= 63)
     {
-        result = 0x8000000000000000;
-        __amd_handle_errorf("lroundf", __amd_lround, result, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
-		return result;
+        result = (long)0x8000000000000000L;
+        __amd_handle_errorf("lroundf", __amd_lround, (unsigned long long)result,
+                                                   _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
+	return result;
     }
  #endif
 
@@ -116,18 +119,14 @@ long int FN_PROTOTYPE_REF(lroundf)(float f)
     shift = intexp - 55; /*55= 23 +32*/
     #endif
 
-
-	if(shift < 0)
-		result = result >> (-shift);
-	if(shift > 0)
+    if(shift < 0)
+        result = result >> (-shift);
+    if(shift > 0)
         result = result << (shift);
 
     if (sign)
         result = -result;
+
     return result;
-
 }
-
-
-
 

@@ -83,7 +83,7 @@ float FN_PROTOTYPE_REF(roundf)(float f)
         /*if(intexp == -1)
             u32exp = 0x3F800000;       */
         u32f.u32 &= 0x7FFFFFFF;
-        u32f.f32 += 0.5;
+        u32f.f32 += 0.5f;
         u32exp = u32f.u32 & 0x7F800000;
         /*right shift then left shift to discard the decimal
           places*/

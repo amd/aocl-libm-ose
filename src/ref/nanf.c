@@ -73,7 +73,7 @@ float  FN_PROTOTYPE_REF(nanf)(const char *tagp)
                             val = QNANBITPATT_SP32;
                             break;
                         }
-                        val = (val << 4)  |  num; 
+                        val = (val << 4)  |  (U32)num;
                         tagp++;
                     }
                 }
@@ -88,7 +88,7 @@ float  FN_PROTOTYPE_REF(nanf)(const char *tagp)
                             val = QNANBITPATT_SP32;
                             break;
                         }
-                        val = (val << 3)  |  num; 
+                        val = (val << 3)  |  (U32)num;
                         tagp++;
                     }
                 }
@@ -103,7 +103,7 @@ float  FN_PROTOTYPE_REF(nanf)(const char *tagp)
                         val = QNANBITPATT_SP32;
                         break;
                     }
-                    val = val + num; 
+                    val = val + (U32)num;
                     tagp++;
                 }
             

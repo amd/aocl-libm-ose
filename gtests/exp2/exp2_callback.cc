@@ -89,7 +89,7 @@ extern "C" {
 __m128d LIBM_FUNC_VEC(d, 2, exp2)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, exp2)(__m256d);
 
-//__m128 LIBM_FUNC_VEC(s, 4, exp2f)(__m128);
+__m128 LIBM_FUNC_VEC(s, 4, exp2f)(__m128);
 //__m256 LIBM_FUNC_VEC(s, 8, exp2f)(__m256);
 #endif
 
@@ -105,7 +105,7 @@ int test_v2d(test_data *data, int idx)  {
 }
 
 int test_v4s(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m128 ip4 = _mm_set_ps(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);

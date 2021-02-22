@@ -49,12 +49,12 @@ float FN_PROTOTYPE_REF(frexpf)(float value, int *exp)
          return value+value;
 #endif
      }
-    exponent = val.u32 >> 23; /* get the exponent */
+    exponent = (int)(val.u32 >> 23); /* get the exponent */
 
 	if(exponent == 0)/*x is denormal*/
 	{
 		val.f32 = val.f32 * VAL_2PMULTIPLIER_SP;/*multiply by 2^24 to bring it to the normal range*/
-		exponent = (val.u32 >> 23); /* get the exponent */
+		exponent = (int)(val.u32 >> 23); /* get the exponent */
 		exponent = exponent - MULTIPLIER_SP;
 	}
 

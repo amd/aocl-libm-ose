@@ -31,6 +31,10 @@
 #include <libm/types.h>
 #include <libm/constants.h>
 
+
+fc64_t ALM_PROTO_REF(cexp)(fc64_t z);
+
+
 fc64_t
 ALM_PROTO_REF(cexp)(fc64_t z)
 {
@@ -44,7 +48,7 @@ ALM_PROTO_REF(cexp)(fc64_t z)
         if((im.i & ALM_F64_SIGN_MASK) == 0) {
             zy_re = 1.0;
             zy_im = 0.0;
-				} else {
+        } else {
             ALM_PROTO(sincos)(im.d, &zy_im, &zy_re);
         }
     } else {
@@ -57,10 +61,8 @@ ALM_PROTO_REF(cexp)(fc64_t z)
             zy_re *= t;
             zy_im *= t;
         }
-
     }
 
-    return (zy_re +I*zy_im);
+    return (zy_re + (double)I*zy_im);
 }
-
 

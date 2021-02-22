@@ -33,8 +33,8 @@
 double FN_PROTOTYPE_REF(ceil)(double x)
 {
   double r;
-  long long rexp, xneg;
-  unsigned long long ux, ax, ur, mask;
+  long long xneg;
+  unsigned long long ux, ax, ur, mask, rexp;
 
   GET_BITS_DP64(x, ux);
   /*ax is |x|*/

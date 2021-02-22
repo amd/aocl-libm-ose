@@ -431,6 +431,8 @@ float _expf_special(float x, float y, U32 code)
 					    ERANGE, x, 0.0, 1);
 		}
 		break;
+	default:
+		break;
 	}
 	return y;
 }
@@ -468,6 +470,8 @@ float _exp2f_special(float x, float y, U32 code)
 					    AMD_F_INEXACT | AMD_F_OVERFLOW,
 					    ERANGE, x, 0.0, 1);
 		}
+		break;
+	default:
 		break;
 	}
 	return y;
@@ -507,6 +511,8 @@ float _exp10f_special(float x, float y, U32 code)
 					    ERANGE, x, 0.0, 1);
 		}
 		break;
+	default:
+		break;
 	}
 	return y;
 }
@@ -545,6 +551,8 @@ float _expm1f_special(float x, float y, U32 code)
 					    ERANGE, x, 0.0, 1);
 		}
 		break;
+	default:
+		break;
 	}
 	return y;
 }
@@ -578,6 +586,8 @@ double _exp_special(double x, double y, U32 code)
 					   AMD_F_INEXACT | AMD_F_OVERFLOW,
 					   ERANGE, x, 0.0, 1);
 		}
+		break;
+	default:
 		break;
 	}
 	return y;
@@ -614,6 +624,8 @@ double _exp2_special(double x, double y, U32 code)
 					   ERANGE, x, 0.0, 1);
 		}
 		break;
+	default:
+		break;
 	}
 	return y;
 }
@@ -649,6 +661,8 @@ double _exp10_special(double x, double y, U32 code)
 					   ERANGE, x, 0.0, 1);
 		}
 		break;
+	default:
+		break;
 	}
 	return y;
 }
@@ -683,6 +697,8 @@ double _expm1_special(double x, double y, U32 code)
 					   AMD_F_INEXACT | AMD_F_OVERFLOW,
 					   ERANGE, x, 0.0, 1);
 		}
+		break;
+	default:
 		break;
 	}
 	return y;
@@ -727,7 +743,7 @@ static float _logf_special_common(float x, float y, U32 fnCode,
 		{
 			UT32 Y;
 			Y.f32 = y;
-			__amd_handle_errorf(name, fnCode, Y.u32, _SING,
+			__amd_handle_errorf(name, (int)fnCode, Y.u32, _SING,
 					    AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
 		}
 		break;
@@ -735,7 +751,7 @@ static float _logf_special_common(float x, float y, U32 fnCode,
 		{
 			UT32 Y;
 			Y.f32 = y;
-			__amd_handle_errorf(name, fnCode, Y.u32, _DOMAIN,
+			__amd_handle_errorf(name, (int)fnCode, Y.u32, _DOMAIN,
 					    AMD_F_INVALID, EDOM, x, 0.0, 1);
 		}
 		break;
@@ -753,6 +769,8 @@ static float _logf_special_common(float x, float y, U32 fnCode,
 
 #endif				/*  */
 		}
+		break;
+	default:
 		break;
 	}
 	return y;
@@ -786,7 +804,7 @@ static double _log_special_common(double x, double y, U32 fnCode,
 		{
 			UT64 Y;
 			Y.f64 = y;
-			__amd_handle_error(name, fnCode, Y.u64, _SING,
+			__amd_handle_error(name, (int)fnCode, Y.u64, _SING,
 					   AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
 		}
 		break;
@@ -794,7 +812,7 @@ static double _log_special_common(double x, double y, U32 fnCode,
 		{
 			UT64 Y;
 			Y.f64 = y;
-			__amd_handle_error(name, fnCode, Y.u64, _DOMAIN,
+			__amd_handle_error(name, (int)fnCode, Y.u64, _DOMAIN,
 					   AMD_F_INVALID, EDOM, x, 0.0, 1);
 		}
 		break;
@@ -812,6 +830,8 @@ static double _log_special_common(double x, double y, U32 fnCode,
 
 #endif				/*  */
 		}
+		break;
+	default:
 		break;
 	}
 	return y;
@@ -1001,6 +1021,8 @@ float _remainderf_special(float x, float y, U32 errorCode)
 #endif				/*  */
 		}
 		break;
+	default:
+		break;
 	}
 	return y;
 }
@@ -1038,6 +1060,8 @@ double _remainder_special(double x, double y, U32 errorCode)
 #endif				/*  */
 		}
 		break;
+	default:
+		break;
 	}
 	return y;
 }
@@ -1072,6 +1096,8 @@ double _fmod_special(double x, double y, U32 errorCode)
 
 #endif				/*  */
 		}
+		break;
+	default:
 		break;
 	}
 	return y;
@@ -1109,6 +1135,8 @@ float _fmodf_special(float x, float y, U32 errorCode)
 
 #endif				/*  */
 		}
+		break;
+	default:
 		break;
 	}
 	return y;
@@ -1181,6 +1209,8 @@ double _pow_special(double x, double y, double z, U32 code)
 					   ERANGE, x, 0.0, 1);
 		}
 		break;
+	default:
+		break;
 	}
 	return z;
 }
@@ -1242,6 +1272,8 @@ float _powf_special(float x, float y, float z, U32 code)
 					    AMD_F_INEXACT | AMD_F_OVERFLOW,
 					    ERANGE, x, 0.0, 1);
 		}
+		break;
+	default:
 		break;
 	}
 	return z;

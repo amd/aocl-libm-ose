@@ -50,12 +50,12 @@ double FN_PROTOTYPE_REF(frexp)(double value, int *exp)
          return value+value;
 #endif
     }
-    exponent = val.u32[1] >> 20; /* get the exponent */
+    exponent = (int)(val.u32[1] >> 20); /* get the exponent */
 
     if(exponent == 0)/*x is denormal*/
     {
 		val.f64 = val.f64 * VAL_2PMULTIPLIER_DP;/*multiply by 2^53 to bring it to the normal range*/
-        exponent = val.u32[1] >> 20; /* get the exponent */
+        exponent = (int)(val.u32[1] >> 20); /* get the exponent */
 		exponent = exponent - MULTIPLIER_DP;
     }
 

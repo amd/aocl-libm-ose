@@ -51,7 +51,8 @@ double FN_PROTOTYPE_REF(modf)(double x, double *iptr)
           /* x is NaN */
           *iptr = x;
 #ifdef WINDOWS
-          return __amd_handle_error("modf", __amd_modf, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+          return __amd_handle_error("modf", __amd_modf, ux|0x0008000000000000,
+                                                 _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 #else
           return x+x;
 #endif
@@ -75,7 +76,7 @@ double FN_PROTOTYPE_REF(modf)(double x, double *iptr)
     {
       double r;
       unsigned long long ur;
-      xexp = ((ux & EXPBITS_DP64) >> EXPSHIFTBITS_DP64) - EXPBIAS_DP64;
+      xexp = (long long)(((ux & EXPBITS_DP64) >> EXPSHIFTBITS_DP64) - EXPBIAS_DP64);
       /* Mask out the bits of x that we don't want */
       mask = 1;
       mask = (mask << (EXPSHIFTBITS_DP64 - xexp)) - 1;
@@ -87,5 +88,4 @@ double FN_PROTOTYPE_REF(modf)(double x, double *iptr)
     }
 
 }
-
 

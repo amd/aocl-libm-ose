@@ -74,7 +74,7 @@ double  FN_PROTOTYPE_REF(nan)(const char *tagp)
                             val = QNANBITPATT_DP64;
                             break;
                         }
-                        val = (val << 4)  |  num; 
+                        val = (val << 4)  |  (U64)num;
                         tagp++;
                     }
                 }
@@ -89,7 +89,7 @@ double  FN_PROTOTYPE_REF(nan)(const char *tagp)
                             val = QNANBITPATT_DP64;
                             break;
                         }
-                        val = (val << 3)  |  num; 
+                        val = (val << 3)  |  (U64)num;
                         tagp++;
                     }
                 }
@@ -104,7 +104,7 @@ double  FN_PROTOTYPE_REF(nan)(const char *tagp)
                         val = QNANBITPATT_DP64;
                         break;
                     }
-                    val = val + num; 
+                    val = val + (U64)num;
                     tagp++;
                 }
             

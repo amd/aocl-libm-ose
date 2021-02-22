@@ -248,7 +248,7 @@ double FN_PROTOTYPE_REF(remquo)(double x, double y, int *quo)
 
 	/* One more time */
 	/* Variable todd says whether the integer t is odd or not */
-	temp = (long long)(dx / w);
+	temp = (unsigned long long)(dx / w);
 	*quo = (int)(temp & 0x7fffffff);
 	t = (double) temp;
 	todd = temp & 1;

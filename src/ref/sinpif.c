@@ -115,7 +115,7 @@ float FN_PROTOTYPE_REF(sinpif)(float x)
 	}
 
 	ux   = (unsigned int) dx;
-	r    = dx - ux;
+	r    = dx - (float)ux;
 	if ( r == 0.0f) return (xsgn * 0.0f);
 
 	if (dx <= 0.25f) /* abs(x) <= pi/4 */
@@ -139,12 +139,12 @@ float FN_PROTOTYPE_REF(sinpif)(float x)
 
 	if (r<=0.25F)
 	{
-		return (float)(xsgn * sinf_piby4(r*pi));
+		return (float)((double)xsgn * sinf_piby4(r*pi));
 	}
 	if (r<0.5F)
 	{
 		r = 0.5F - r;
-		return (float)( xsgn * cosf_piby4(r*pi));
+		return (float)((double)xsgn * cosf_piby4(r*pi));
 	}
 	if (r == 0.5F)
 	{
@@ -153,11 +153,11 @@ float FN_PROTOTYPE_REF(sinpif)(float x)
 	if (r<=0.75F)
 	{
 		r = r - 0.5F;
-		return (float)( xsgn * cosf_piby4(r*pi));
+		return (float)((double)xsgn * cosf_piby4(r*pi));
 	}
 
 	/* r<1 */
 	r = 1.0F - r;
-	return (float)( xsgn * sinf_piby4(r*pi));
+	return (float)((double)xsgn * sinf_piby4(r*pi));
 }
 

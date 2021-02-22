@@ -31,14 +31,18 @@
 #include <libm/types.h>
 #include <libm/constants.h>
 
+
+fc32_t ALM_PROTO_REF(cexpf)(fc32_t z);
+
+
 fc32_t
 ALM_PROTO_REF(cexpf)(fc32_t z)
 {
     flt32u_t    re, im;
     f32_t       zy_re, zy_im;
 
-    re.f = creal(z);
-    im.f = cimag(z);
+    re.f = crealf(z);
+    im.f = (float)cimag(z);
 
     if((re.i & ALM_F32_SIGN_MASK) == 0) {
         if((im.i & ALM_F32_SIGN_MASK) == 0) {

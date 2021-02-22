@@ -46,17 +46,19 @@ long int FN_PROTOTYPE_REF(lround)(double d)
         /*else the number is infinity*/
         //Raise range or domain error
         #ifdef WIN64
-		    __amd_handle_error("lround", __amd_lround, SIGNBIT_SP32, _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
-		    return (long int )SIGNBIT_SP32;
+        __amd_handle_error("lround", __amd_lround, SIGNBIT_SP32,
+                                      _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
+        return (long int )SIGNBIT_SP32;
         #else
-         if((u64d.u64 & 0x7fffffffffffffff) == 0x7ff0000000000000)
-            return SIGNBIT_DP64;
-         if((u64d.u64 & 0x7fffffffffffffff) >= 0x7ff8000000000000)
-                __amd_handle_error("lround", __amd_lround, (unsigned long long)SIGNBIT_DP64, _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
-         else
-                __amd_handle_error("lround", __amd_lround, (unsigned long long)SIGNBIT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, d, 0.0, 1);
-
-		 return SIGNBIT_DP64; /*GCC returns this when the number is out of range*/
+        if((u64d.u64 & 0x7fffffffffffffff) == 0x7ff0000000000000)
+            return (long)SIGNBIT_DP64;
+        if((u64d.u64 & 0x7fffffffffffffff) >= 0x7ff8000000000000)
+            __amd_handle_error("lround", __amd_lround, (unsigned long long)SIGNBIT_DP64,
+                                                           _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
+        else
+            __amd_handle_error("lround", __amd_lround, (unsigned long long)SIGNBIT_DP64,
+                                                        _DOMAIN, AMD_F_INVALID, EDOM, d, 0.0, 1);
+        return (long)SIGNBIT_DP64; /*GCC returns this when the number is out of range*/
         #endif
 
     }
@@ -85,8 +87,9 @@ long int FN_PROTOTYPE_REF(lround)(double d)
     if (intexp >= 63)
     {
         /*Based on the sign of the input value return the MAX and MIN*/
-        result = 0x8000000000000000; /*Return LONG MIN*/
-        __amd_handle_error("lround", __amd_lround, result, _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
+        result = (long)0x8000000000000000; /*Return LONG MIN*/
+        __amd_handle_error("lround", __amd_lround, (unsigned long long)result,
+                                                 _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
         return result;
     }
 
@@ -104,7 +107,7 @@ long int FN_PROTOTYPE_REF(lround)(double d)
         u64result.f64 = u64Temp.f64 + 0.5;
     }
 
-    intexp = ((u64result.u32[1] >> 20) & 0x7ff) - 0x3FF;
+    intexp = (int)(((u64result.u32[1] >> 20) & 0x7ff) - 0x3FF);
 
     u64result.u32[1] &= 0xfffff;
     u64result.u32[1] |= 0x00100000; /*Mask the last exp bit to 1*/
@@ -121,7 +124,7 @@ long int FN_PROTOTYPE_REF(lround)(double d)
     if(shift > 0)
         u64result.u64 = u64result.u64 << (shift);
 
-    result = u64result.u64;
+    result = (long)u64result.u64;
 #endif
 
     if (sign)
@@ -129,5 +132,4 @@ long int FN_PROTOTYPE_REF(lround)(double d)
 
     return result;
 }
-
 

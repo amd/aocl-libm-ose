@@ -36,7 +36,7 @@ double FN_PROTOTYPE_REF(acosh)(double x)
 {
 
   unsigned long long ux;
-  double r, rarg, r1, r2;
+  double _r, rarg, r1, r2;
   int xexp;
 
   static const unsigned long long
@@ -114,11 +114,11 @@ double FN_PROTOTYPE_REF(acosh)(double x)
       /* acosh for these arguments is approximated by
          acosh(x) = ln(x + sqrt(x*x-1)) */
       rarg = x*x-1.0;
-      /* Use assembly instruction to compute r = sqrt(rarg); */
-      ASMSQRT(rarg,r);
-      r += x;
-      GET_BITS_DP64(r, ux);
-      log_kernel_amd64(r, ux, &xexp, &r1, &r2);
+      /* Use assembly instruction to compute _r = sqrt(rarg); */
+      ASMSQRT(rarg,_r);
+      _r += x;
+      GET_BITS_DP64(_r, ux);
+      log_kernel_amd64(_r, ux, &xexp, &r1, &r2);
       r1 = (xexp * log2_lead + r1);
       r2 = (xexp * log2_tail + r2);
       return r1 + r2;
@@ -292,7 +292,7 @@ double FN_PROTOTYPE_REF(acosh)(double x)
              to more than basic precision. We use the Taylor series
              for log(1+x), with terms after the O(x*x) term
              approximated by a [6,6] minimax polynomial. */
-          double b1, b2, c1, c2, e1, e2, q1, q2, c, cc, hr1, tr1, hpoly, tpoly, hq1, tq1, hr2, tr2;
+          double b1, b2, _c1, _c2, e1, e2, q1, q2, c, cc, hr1, tr1, hpoly, tpoly, hq1, tq1, hr2, tr2;
           poly =
             (0.30893760556597282162e-21 +
              (0.10513858797132174471e0 +
@@ -321,12 +321,12 @@ double FN_PROTOTYPE_REF(acosh)(double x)
           */
           if (x < 1.06)
             {
-              double b, c, e;
+              double b, _c, e;
               b = r1*r2;
-              c = 0.5*r1*r1;
+              _c = 0.5*r1*r1;
               e = poly*t*t;
               /* N.B. the order of additions and subtractions is important */
-              r = (((r2 - b) + e) - c) + r1;
+              r = (((r2 - b) + e) - _c) + r1;
               return r;
             }
           else
@@ -370,8 +370,8 @@ double FN_PROTOTYPE_REF(acosh)(double x)
               b2 = (((hr1 * hr2 - b1) + hr1 * tr2) + tr1 * hr2) + tr1 * tr2;
 
               /* c = 0.5*r1*r1 */
-              c1 = (0.5*r1) * r1;
-              c2 = (((0.5*hr1 * hr1 - c1) + 0.5*hr1 * tr1) + 0.5*tr1 * hr1) + 0.5*tr1 * tr1;
+              _c1 = (0.5*r1) * r1;
+              _c2 = (((0.5*hr1 * hr1 - _c1) + 0.5*hr1 * tr1) + 0.5*tr1 * hr1) + 0.5*tr1 * tr1;
 
               /* v = a + d - b */
               r = r1 - b1;
@@ -380,8 +380,8 @@ double FN_PROTOTYPE_REF(acosh)(double x)
               v2 = (r - v1) + s;
 
               /* w = (a + d - b) - c */
-              r = v1 - c1;
-              s = (((v1 - r) - c1) - c2) + v2;
+              r = v1 - _c1;
+              s = (((v1 - r) - _c1) - _c2) + v2;
               w1 = r + s;
               w2 = (r - w1) + s;
 

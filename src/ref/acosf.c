@@ -134,9 +134,10 @@ float FN_PROTOTYPE_REF(acosf)(float x)
   if (transform)
     {
       /* Reconstruct acos carefully in transformed region */
-      if (xneg)
-        return (float)(pi - 2.0*(s+(y*u - piby2_tail)));
-      else
+      if (xneg){
+        double ds = (double)s, dy = (double)y, du = (double)u;
+        return (float)(pi - 2.0*(ds+(dy*du - piby2_tail)));
+      } else
 	{
 	  float c, s1;
 	  unsigned int us;
@@ -147,7 +148,10 @@ float FN_PROTOTYPE_REF(acosf)(float x)
 	}
     }
   else
-    return (float)(piby2_head - (x - (piby2_tail - x*u)));
+  {
+    double dx = (double)x, du = (double)u;
+    return (float)(piby2_head - (dx - (piby2_tail - dx*du)));
+  }
 }
 
 

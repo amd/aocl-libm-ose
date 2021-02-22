@@ -93,11 +93,11 @@ static inline double cos_piby4(double x, double xx)
 double FN_PROTOTYPE_REF(cospi)(double x)
 {
     double r, dx, xsgn;
-    long long ux;
+    unsigned long long ux;
     const double pi = 3.1415926535897932384626433832795;
 
     GET_BITS_DP64(x, ux);
-		ux = ux & ~SIGNBIT_DP64;
+    ux = ux & ~SIGNBIT_DP64;
 
     // Handle +-Inf and NaN
     if (ux >= PINFBITPATT_DP64)
@@ -131,14 +131,14 @@ double FN_PROTOTYPE_REF(cospi)(double x)
         return cos_piby4(x*pi, 0.0);
     }
 
-    ux = (long)dx;
-    r = dx - ux;
+    ux = (unsigned long)dx;
+    r = dx - (double)ux;
     xsgn = ux & 0x1L ? -1.0 : 1.0;
 
     if (r == 0.0)
         return xsgn;
 
-    if (r <= 0.25f)
+    if (r <= 0.25)
         return xsgn * cos_piby4(r*pi, 0.0);
 
     if (r < 0.5)
@@ -147,7 +147,7 @@ double FN_PROTOTYPE_REF(cospi)(double x)
     if (r == 0.5)
         return 0.0;
 
-    if (r <= 0.75f)
+    if (r <= 0.75)
         return -xsgn * sin_piby4((r - 0.5)*pi, 0.0);
 
     // r < 1

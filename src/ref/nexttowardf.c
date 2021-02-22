@@ -43,12 +43,18 @@ float FN_PROTOTYPE_REF(nexttowardf)(float x, long double y)
     if(((checkbits.u32 & ~SIGNBIT_SP32) > EXPBITS_SP32 ))
     {
 #ifdef WINDOWS
-	return  __amd_handle_errorf("nexttoward", __amd_nexttoward, checkbits.u32| QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+	return  __amd_handle_errorf("nexttoward", __amd_nexttoward,
+                                       checkbits.u32| QNAN_MASK_32,
+                                         _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 #else
 	if (checkbits.u32 & QNAN_MASK_32)
-	return  __amd_handle_errorf("nexttoward", __amd_nexttoward, checkbits.u32| QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+	    return  __amd_handle_errorf("nexttoward", __amd_nexttoward,
+                                           checkbits.u32| QNAN_MASK_32,
+                                            _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 	else
-	return  __amd_handle_errorf("nexttoward", __amd_nexttoward, checkbits.u32| QNAN_MASK_32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+	    return  __amd_handle_errorf("nexttoward", __amd_nexttoward,
+                                           checkbits.u32| QNAN_MASK_32,
+                                             _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
 #endif
     }
 	 
@@ -59,7 +65,7 @@ float FN_PROTOTYPE_REF(nexttowardf)(float x, long double y)
         return (float) dy; 
     } 
  
-    if( x == 0.0) 
+    if(x == 0.0f)
     { 
         checkbits.u32 = 1; 
         if( dy > 0.0 ) 
@@ -82,7 +88,9 @@ float FN_PROTOTYPE_REF(nexttowardf)(float x, long double y)
     /* check if the result is nan or inf */ 
     if(((checkbits.u32 & ~SIGNBIT_SP32) >= EXPBITS_SP32 )) 
     { 
-		return  __amd_handle_errorf("nexttowardf", __amd_nexttoward, checkbits.u32 | QNAN_MASK_32, _DOMAIN,0, EDOM, x, 0.0, 1);
+        return  __amd_handle_errorf("nexttowardf", __amd_nexttoward,
+                                          checkbits.u32 | QNAN_MASK_32,
+                                                _DOMAIN,0, EDOM, x, 0.0, 1);
     } 
  
     return checkbits.f32; 

@@ -42,7 +42,7 @@ long int FN_PROTOTYPE_REF(lrint)(double x)
     {
         /* number cant be rounded raise an exception */
         /* Number exceeds the representable range could be nan or inf also*/
-        __amd_handle_error("lrint",__amd_lrint, (long long int) x, _DOMAIN,
+        __amd_handle_error("lrint",__amd_lrint, (unsigned long long) x, _DOMAIN,
                            0, EDOM, x, 0.0,1);
 	   return (long int) x;
     }

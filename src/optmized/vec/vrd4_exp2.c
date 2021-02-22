@@ -55,8 +55,8 @@ static const struct {
     v_f64x4_t   ln2;
     v_f64x4_t   poly[12];
     } exp2_data = {
-    .mask           = _MM_SET1_I64x4(0x7FFFFFFFFFFFFFFF),
-    .arg_max        = _MM_SET1_I64x4(0x4086200000000000),
+    .mask           = _MM_SET1_I64(0x7FFFFFFFFFFFFFFF),
+    .arg_max        = _MM_SET1_I64(0x4086200000000000),
     .sixtyfour      = _MM_SET1_PD4(0x1.0p+6),
 #ifdef EXPERIMENTAL
     .ln2by_64_head  = _MM_SET1_PD4(0x1.63p-1),
@@ -66,7 +66,7 @@ static const struct {
 #endif
     .huge           = _MM_SET1_PD4(0x1.8p+52),
     .ln2            = _MM_SET1_PD4(0x1.62e42fefa39efp-1),
-    .bias           = _MM_SET1_I64x4(EMAX_DP64), /* 1023 */
+    .bias           = _MM_SET1_I64(EMAX_DP64), /* 1023 */
     .poly           = {
         _MM_SET1_PD4(0x1.0p0),
         _MM_SET1_PD4(0x1.0p-1),

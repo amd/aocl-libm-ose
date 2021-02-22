@@ -39,7 +39,7 @@ float FN_PROTOTYPE_REF(modff)(float x, float *iptr)
   int xexp;
 
   GET_BITS_SP32(x, ux);
-  xexp = ((ux & (~SIGNBIT_SP32)) >> EXPSHIFTBITS_SP32) - EXPBIAS_SP32;
+  xexp = (int)(((ux & (~SIGNBIT_SP32)) >> EXPSHIFTBITS_SP32) - EXPBIAS_SP32);
 
   if (xexp < 0)
     {
@@ -54,7 +54,7 @@ float FN_PROTOTYPE_REF(modff)(float x, float *iptr)
       unsigned int ur;
       /* x lies between 1.0 and 2**(24) */
       /* Mask out the bits of x that we don't want */
-      mask = (1 << (EXPSHIFTBITS_SP32 - xexp)) - 1;
+      mask = (unsigned int)((1 << (EXPSHIFTBITS_SP32 - xexp)) - 1);
       PUT_BITS_SP32(ux & ~mask, *iptr);
       r = x - *iptr;
       GET_BITS_SP32(r, ur);

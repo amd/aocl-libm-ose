@@ -447,7 +447,7 @@ float FN_PROTOTYPE_REF(atan2f)(float fy, float fx)
     { /* General values of v/u. Use a look-up
          table and series expansion. */
 
-      index = (int)(256*vbyu + 0.5);
+      index = (unsigned int)(256*vbyu + 0.5);
       r = (256*v-index*u)/(256*u+index*v);
 
       /* Polynomial approximation to atan(vbyu) */

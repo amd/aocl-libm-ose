@@ -36,7 +36,7 @@ double FN_PROTOTYPE_REF(logb)(double x)
   unsigned long long ux;
   long long u;
   GET_BITS_DP64(x, ux);
-  u = ((ux & EXPBITS_DP64) >> EXPSHIFTBITS_DP64) - EXPBIAS_DP64;
+  u = (long long)(((ux & EXPBITS_DP64) >> EXPSHIFTBITS_DP64) - EXPBIAS_DP64);
   if ((ux & ~SIGNBIT_DP64) == 0)
     /* x is +/-zero. Return -infinity with div-by-zero flag. */
 	return __amd_handle_error("logb", __amd_logb, NINFBITPATT_DP64, _SING, AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);

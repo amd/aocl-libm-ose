@@ -114,7 +114,7 @@ static inline double tan_piby4(double x, double xx, int recip)
 double FN_PROTOTYPE_REF(tanpi)(double x)
 {
     double r, dx, xsgn, xodd;
-    long long ux;
+    unsigned long long ux;
     const double pi = 3.1415926535897932384626433832795;
 
     xsgn = x > 0.0 ? 1.0 : -1.0;
@@ -152,7 +152,7 @@ double FN_PROTOTYPE_REF(tanpi)(double x)
 	return tan_piby4(x*pi, 0.0, 0);
     }
 
-    ux = (long)dx;
+    ux = (unsigned long long)dx;
     r = dx - (double)ux;
     xodd = xsgn * (ux & 0x1 ? -1.0 : 1.0);
 
@@ -177,7 +177,4 @@ double FN_PROTOTYPE_REF(tanpi)(double x)
     // r < 1
     return -xsgn * tan_piby4((1.0 - r)*pi, 0.0, 0);
 }
-
-
-
 

@@ -33,10 +33,9 @@
 
 long long int FN_PROTOTYPE_REF(llrint)(double x)
 {
-
-
     UT64 checkbits,val_2p52;
     checkbits.f64=x;
+
 
     /* Clear the sign bit and check if the value can be rounded */
 
@@ -45,8 +44,9 @@ long long int FN_PROTOTYPE_REF(llrint)(double x)
         /* number cant be rounded raise an exception */
         /* Number exceeds the representable range could be nan or inf also*/
        // __amd_handle_error(DOMAIN, EDOM, "llrint", x,0.0 ,(double)x);
-		__amd_handle_error("llrint", __amd_lrint, (long long int)x, _DOMAIN, 0, EDOM, x, 0.0, 1);
-		return (long long int) x;
+	__amd_handle_error("llrint", __amd_lrint, (unsigned long long int)x,
+                                                             _DOMAIN, 0, EDOM, x, 0.0, 1);
+	return (long long int) x;
     }
 
     val_2p52.u32[1] = (checkbits.u32[1] & 0x80000000) | 0x43300000;

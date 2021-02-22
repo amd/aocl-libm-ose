@@ -32,8 +32,8 @@
 float FN_PROTOTYPE_REF(ceilf)(float x)
 {
   float r;
-  int rexp, xneg;
-  unsigned int ux, ax, ur, mask;
+  int xneg;
+  unsigned int ux, ax, ur, mask, rexp;
 
   GET_BITS_SP32(x, ux);
   /*ax is |x|*/
@@ -80,7 +80,7 @@ float FN_PROTOTYPE_REF(ceilf)(float x)
     {
       rexp = ((ux & EXPBITS_SP32) >> EXPSHIFTBITS_SP32) - EXPBIAS_SP32;
       /* Mask out the bits of r that we don't want */
-      mask = (1 << (EXPSHIFTBITS_SP32 - rexp)) - 1;
+      mask = (unsigned int)((1 << (EXPSHIFTBITS_SP32 - rexp)) - 1);
       /*Keeps the exponent part and the required mantissa.*/
       ur = (ux & ~mask);
       PUT_BITS_SP32(ur, r);

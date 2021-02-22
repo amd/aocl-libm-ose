@@ -137,7 +137,7 @@ float FN_PROTOTYPE_REF(hypotf)(float x, float y)
 
     if (retval > large)
          return __amd_handle_errorf("hypotf", __amd_hypot, PINFBITPATT_SP32, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, y, 2);
-	else if((x !=0.0) && (y!=0))
+	else if((x !=0.0f) && (y!=0))
 		{
 		 val.f32 = (float)(retval);
          val.u32 >>= EXPSHIFTBITS_SP32;

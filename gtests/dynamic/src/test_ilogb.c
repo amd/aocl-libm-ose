@@ -2,12 +2,13 @@
 
 int test_ilogb(void* handle) {
     char* error;
+
+    funcf s1f = (funcf)dlsym(handle, "amd_ilogbf");
+    func  s1d = (func)dlsym(handle, "amd_ilogb");
+
     /*scalar inputs*/
     float inputf = 3.145, outputf;
     double input = 6.287, output;
-
-    float (*funcf)(float) = (float (*)(float))dlsym(handle, "amd_ilogbf");
-    double (*func)(double) = (double (*)(double))dlsym(handle, "amd_ilogb");
 
     error = dlerror();
     if (error != NULL) {
@@ -16,9 +17,10 @@ int test_ilogb(void* handle) {
     }
 
     printf("Exercising ilogb routines\n");
-    outputf = funcf(inputf);
+    /*scalar*/
+    outputf = s1f(inputf);
     printf("amd_ilogbf(%f) = %f\n", inputf, outputf);
-    output = func(input);
+    output = s1d(input);
     printf("amd_ilogb(%lf) = %lf\n", input, output);
 
     return 0;

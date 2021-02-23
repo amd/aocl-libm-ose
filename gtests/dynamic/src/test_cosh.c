@@ -7,10 +7,10 @@ int test_cosh(void* handle) {
     char* error;
     int i;
 
-    float (*funcf)(float) = (float (*)(float))dlsym(handle, "amd_coshf");
-    double (*func)(double) = (double (*)(double))dlsym(handle, "amd_cosh");
-    __m128 (*funcf_v4s)(__m128) = (__m128 (*)(__m128))dlsym(handle, "amd_vrs4_coshf");
-    __m256 (*funcf_v8s)(__m256) = (__m256 (*)(__m256))dlsym(handle, "amd_vrs8_coshf");
+    funcf     s1f = (funcf)dlsym(handle, "amd_coshf");
+    func      s1d = (func)dlsym(handle, "amd_cosh");
+    funcf_v4s v4s = (funcf_v4s)dlsym(handle, "amd_vrs4_coshf");
+    funcf_v8s v8s = (funcf_v8s)dlsym(handle, "amd_vrs8_coshf");
 
     /*scalar inputs*/
     float inputf = 3.145, outputf;
@@ -38,20 +38,20 @@ int test_cosh(void* handle) {
 
     printf("Exercising cosh routines\n");
     /*scalar*/
-    outputf = funcf(inputf);
+    outputf = s1f(inputf);
     printf("amd_coshf(%f) = %f\n", inputf, outputf);
-    output = func(input);
+    output = s1d(input);
     printf("amd_cosh(%lf) = %lf\n", input, output);
 
     /*vrs4*/
-    op_vrs4 = funcf_v4s(ip_vrs4);
+    op_vrs4 = v4s(ip_vrs4);
     _mm_storeu_ps(output_array_vrs4, op_vrs4);
     printf("amd_vrs4_cosh([%f, %f] = [%f, %f])\n",
             input_array_vrs4[0], input_array_vrs4[1],
             output_array_vrs4[0], output_array_vrs4[1]);
 
     /*vrs8*/
-    op_vrs8 = funcf_v8s(ip_vrs8);
+    op_vrs8 = v8s(ip_vrs8);
     _mm256_storeu_ps(output_array_vrs8, op_vrs8);
     printf("amd_vrs8_coshf\ninput:\n");
     for(i=0; i<8; i++)
@@ -59,7 +59,6 @@ int test_cosh(void* handle) {
     printf("\nOutput:\n");
     for(i=0; i<8; i++)
         printf("%f\t",output_array_vrs8[i]);
-
     printf("\n");
 
     return 0;

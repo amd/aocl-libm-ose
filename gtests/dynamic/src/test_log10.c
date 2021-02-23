@@ -8,12 +8,12 @@ int test_log10(void* handle) {
     int dim=5, loopCount=10;
     int array_size = dim * loopCount;
 
-    float (*funcf)(float) = (float (*)(float))dlsym(handle, "amd_log10f");
-    double (*func)(double) = (double (*)(double))dlsym(handle, "amd_log10");
-    __m128d (*func_v2d)(__m128d) = (__m128d (*)(__m128d))dlsym(handle, "amd_vrd2_log10");
-    __m128 (*funcf_v4s)(__m128) = (__m128 (*)(__m128))dlsym(handle, "amd_vrs4_log10f");
-    void (*funcf_va)(int, float*, float*) = (void (*)(int, float*, float*))dlsym(handle, "amd_vrsa_log10f");
-    void (*func_va)(int, double*, double*) = (void (*)(int, double*, double*))dlsym(handle, "amd_vrda_log10f");
+    funcf     s1f = (funcf)dlsym(handle, "amd_log10f");
+    func      s1d = (func)dlsym(handle, "amd_log10");
+    func_v2d  v2d = (func_v2d)dlsym(handle, "amd_vrd2_log10");
+    funcf_v4s v4s = (funcf_v4s)dlsym(handle, "amd_vrs4_log10f");
+    funcf_va  vas = (funcf_va)dlsym(handle, "amd_vrsa_log10f");
+    func_va   vad = (func_va)dlsym(handle, "amd_vrda_log10");
 
     /*scalar inputs*/
     float inputf = 3.145, outputf;
@@ -21,7 +21,6 @@ int test_log10(void* handle) {
     /*for vector routines*/
     __m128d ip_vrd2, op_vrd2;
     __m128  ip_vrs4, op_vrs4;
-
     //array vector inputs
     float *input_arrayf   = (float *)  malloc(sizeof(float) * array_size);
     float *output_arrayf  = (float *)  malloc(sizeof(float) * array_size);
@@ -55,20 +54,20 @@ int test_log10(void* handle) {
 
     printf("Exercising log10 routines\n");
     /*scalar*/
-    outputf = funcf(inputf);
+    outputf = s1f(inputf);
     printf("amd_log10f(%f) = %f\n", inputf, outputf);
-    output = func(input);
+    output = s1d(input);
     printf("amd_log10(%lf) = %lf\n", input, output);
 
     /*vrd2*/
-    op_vrd2 = func_v2d(ip_vrd2);
+    op_vrd2 = v2d(ip_vrd2);
     _mm_storeu_pd(output_array_vrd2, op_vrd2);
     printf("amd_vrd2_log10([%lf, %lf] = [%lf, %lf])\n",
             input_array_vrd2[0], input_array_vrd2[1],
             output_array_vrd2[0], output_array_vrd2[1]);
 
     /*vrs4*/
-    op_vrs4 = funcf_v4s(ip_vrs4);
+    op_vrs4 = v4s(ip_vrs4);
     _mm_storeu_ps(output_array_vrs4, op_vrs4);
     printf("amd_vrs4_log10([%f, %f] = [%f, %f])\n",
             input_array_vrs4[0], input_array_vrs4[1],
@@ -80,7 +79,7 @@ int test_log10(void* handle) {
         printf("%f\t", input_arrayf[i]);
     }
     for (int i = 0; i < loopCount; i++) {
-        funcf_va(dim, input_arrayf + i*dim, output_arrayf + i*dim);
+        vas(dim, input_arrayf + i*dim, output_arrayf + i*dim);
     }
     printf("\nOutput:\n");
     for (int i = 0; i < array_size; i++) {
@@ -93,7 +92,7 @@ int test_log10(void* handle) {
     }
 
     for (int i = 0; i < loopCount; i++) {
-        func_va(dim, input_arrayd + i*dim, output_arrayd + i*dim);
+        vad(dim, input_arrayd + i*dim, output_arrayd + i*dim);
     }
 
     printf("\nOutput:\n");

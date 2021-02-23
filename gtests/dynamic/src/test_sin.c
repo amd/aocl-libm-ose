@@ -9,14 +9,14 @@ int test_sin(void* handle) {
     int dim=5, loopCount=10;
     int array_size = dim * loopCount;
 
-    float (*funcf)(float) = (float (*)(float))dlsym(handle, "amd_sinf");
-    double (*func)(double) = (double (*)(double))dlsym(handle, "amd_sin");
-    __m128d (*func_v2d)(__m128d) = (__m128d (*)(__m128d))dlsym(handle, "amd_vrd2_sin");
-    __m128 (*funcf_v4s)(__m128) = (__m128 (*)(__m128))dlsym(handle, "amd_vrs4_sinf");
-    __m256d (*func_v4d)(__m256d) = (__m256d (*)(__m256d))dlsym(handle, "amd_vrd4_sin");
-    __m256 (*funcf_v8s)(__m256) = (__m256 (*)(__m256))dlsym(handle, "amd_vrs8_sinf");
-    void (*funcf_va)(int, float*, float*) = (void (*)(int, float*, float*))dlsym(handle, "amd_vrsa_sinf");
-    void (*func_va)(int, double*, double*) = (void (*)(int, double*, double*))dlsym(handle, "amd_vrda_sinf");
+    funcf     s1f = (funcf)dlsym(handle, "amd_sinf");
+    func      s1d = (func)dlsym(handle, "amd_sin");
+    func_v2d  v2d = (func_v2d)dlsym(handle, "amd_vrd2_sin");
+    func_v4d  v4d = (func_v4d)dlsym(handle, "amd_vrd4_sin");
+    funcf_v4s v4s = (funcf_v4s)dlsym(handle, "amd_vrs4_sinf");
+    funcf_v8s v8s = (funcf_v8s)dlsym(handle, "amd_vrs8_sinf");
+    funcf_va  vas = (funcf_va)dlsym(handle, "amd_vrsa_sinf");
+    func_va   vad = (func_va)dlsym(handle, "amd_vrda_sin");
 
     /*scalar inputs*/
     float inputf = 3.145, outputf;
@@ -70,27 +70,27 @@ int test_sin(void* handle) {
 
     printf("Exercising sin routines\n");
     /*scalar*/
-    outputf = funcf(inputf);
+    outputf = s1f(inputf);
     printf("amd_sinf(%f) = %f\n", inputf, outputf);
-    output = func(input);
+    output = s1d(input);
     printf("amd_sin(%lf) = %lf\n", input, output);
 
     /*vrd2*/
-    op_vrd2 = func_v2d(ip_vrd2);
+    op_vrd2 = v2d(ip_vrd2);
     _mm_storeu_pd(output_array_vrd2, op_vrd2);
     printf("amd_vrd2_sin([%lf, %lf] = [%lf, %lf])\n",
             input_array_vrd2[0], input_array_vrd2[1],
             output_array_vrd2[0], output_array_vrd2[1]);
 
     /*vrs4*/
-    op_vrs4 = funcf_v4s(ip_vrs4);
+    op_vrs4 = v4s(ip_vrs4);
     _mm_storeu_ps(output_array_vrs4, op_vrs4);
     printf("amd_vrs4_sin([%f, %f] = [%f, %f])\n",
             input_array_vrs4[0], input_array_vrs4[1],
             output_array_vrs4[0], output_array_vrs4[1]);
 
     /*vrd4*/
-    op_vrd4 = func_v4d(ip_vrd4);
+    op_vrd4 = v4d(ip_vrd4);
     _mm256_storeu_pd(output_array_vrd4, op_vrd4);
     printf("amd_vrd4_sin([%lf,%lf,%lf,%lf]) = [%lf,%lf,%lf,%lf])\n",
             input_array_vrd4[0], input_array_vrd4[1],
@@ -99,7 +99,7 @@ int test_sin(void* handle) {
             output_array_vrd4[2], output_array_vrd4[3]);
 
     /*vrs8*/
-    op_vrs8 = funcf_v8s(ip_vrs8);
+    op_vrs8 = v8s(ip_vrs8);
     _mm256_storeu_ps(output_array_vrs8, op_vrs8);
     printf("amd_vrs8_sinf\ninput:\n");
     for(i=0; i<8; i++)
@@ -114,7 +114,7 @@ int test_sin(void* handle) {
         printf("%f\t", input_arrayf[i]);
     }
     for (int i = 0; i < loopCount; i++) {
-        funcf_va(dim, input_arrayf + i*dim, output_arrayf + i*dim);
+        vas(dim, input_arrayf + i*dim, output_arrayf + i*dim);
     }
     printf("\nOutput:\n");
     for (int i = 0; i < array_size; i++) {
@@ -127,7 +127,7 @@ int test_sin(void* handle) {
     }
 
     for (int i = 0; i < loopCount; i++) {
-        func_va(dim, input_arrayd + i*dim, output_arrayd + i*dim);
+        vad(dim, input_arrayd + i*dim, output_arrayd + i*dim);
     }
 
     printf("\nOutput:\n");

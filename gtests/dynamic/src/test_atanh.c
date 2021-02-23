@@ -1,10 +1,10 @@
 #include "libm_dynamic_load.h"
 
-int test_atan2(void* handle) {
+int test_atanh(void* handle) {
     char* error;
 
-    funcf_2 s1f = (funcf_2)dlsym(handle, "amd_atan2f");
-    func_2  s1d = (func_2) dlsym(handle, "amd_atan2");
+    funcf_2 s1f = (funcf_2)dlsym(handle, "amd_atanhf");
+    func_2  s1d = (func_2) dlsym(handle, "amd_atanh");
 
     /*scalar inputs*/
     float inputf = 3.145, outputf;
@@ -16,12 +16,12 @@ int test_atan2(void* handle) {
         return 1;
     }
 
-    printf("Exercising atan2 routines\n");
+    printf("Exercising atanh routines\n");
     /*scalar*/
     outputf = s1f(inputf, inputf);
-    printf("amd_atan2f(%f) = %f\n", inputf, outputf);
+    printf("amd_atanhf(%f) = %f\n", inputf, outputf);
     output = s1d(input, input);
-    printf("amd_atan2(%lf) = %lf\n", input, output);
+    printf("amd_atanh(%lf) = %lf\n", input, output);
 
     return 0;
 }

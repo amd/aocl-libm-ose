@@ -8,14 +8,14 @@ int test_exp2(void* handle) {
     int dim=5, loopCount=10;
     int array_size = dim * loopCount;
 
-    float (*funcf)(float) = (float (*)(float))dlsym(handle, "amd_exp2f");
-    double (*func)(double) = (double (*)(double))dlsym(handle, "amd_exp2");
-    __m128d (*func_v2d)(__m128d) = (__m128d (*)(__m128d))dlsym(handle, "amd_vrd2_exp2");
-    __m128 (*funcf_v4s)(__m128) = (__m128 (*)(__m128))dlsym(handle, "amd_vrs4_exp2f");
-    __m256d (*func_v4d)(__m256d) = (__m256d (*)(__m256d))dlsym(handle, "amd_vrd4_exp2");
-    //__m256 (*funcf_v8s)(__m256) = (__m256 (*)(__m256))dlsym(handle, "amd_vrs8_exp2f");
-    void (*funcf_va)(int, float*, float*) = (void (*)(int, float*, float*))dlsym(handle, "amd_vrsa_exp2f");
-    void (*func_va)(int, double*, double*) = (void (*)(int, double*, double*))dlsym(handle, "amd_vrda_exp2f");
+    funcf     s1f = (funcf)dlsym(handle, "amd_exp2f");
+    func      s1d = (func)dlsym(handle, "amd_exp2");
+    func_v2d  v2d = (func_v2d)dlsym(handle, "amd_vrd2_exp2");
+    func_v4d  v4d = (func_v4d)dlsym(handle, "amd_vrd4_exp2");
+    funcf_v4s v4s = (funcf_v4s)dlsym(handle, "amd_vrs4_exp2f");
+    //funcf_v8s v8s = (funcf_v8s)dlsym(handle, "amd_vrs8_exp2f");
+    funcf_va  vas = (funcf_va)dlsym(handle, "amd_vrsa_exp2f");
+    func_va   vad = (func_va)dlsym(handle, "amd_vrda_exp2");
 
     /*scalar inputs*/
     float inputf = 3.145, outputf;
@@ -52,7 +52,7 @@ int test_exp2(void* handle) {
     float output_array_vrs4[4];
 
     //float input_array_vrs8[8] = {1.2, 2.3, 5.6, 50.3,
-     //                           -50.45, 45.3, 23.4, 4.5};
+    //                            -50.45, 45.3, 23.4, 4.5};
     //float output_array_vrs8[8];
 
     /*packed inputs*/
@@ -69,27 +69,27 @@ int test_exp2(void* handle) {
 
     printf("Exercising exp2 routines\n");
     /*scalar*/
-    outputf = funcf(inputf);
+    outputf = s1f(inputf);
     printf("amd_exp2f(%f) = %f\n", inputf, outputf);
-    output = func(input);
+    output = s1d(input);
     printf("amd_exp2(%lf) = %lf\n", input, output);
 
     /*vrd2*/
-    op_vrd2 = func_v2d(ip_vrd2);
+    op_vrd2 = v2d(ip_vrd2);
     _mm_storeu_pd(output_array_vrd2, op_vrd2);
     printf("amd_vrd2_exp2([%lf, %lf] = [%lf, %lf])\n",
             input_array_vrd2[0], input_array_vrd2[1],
             output_array_vrd2[0], output_array_vrd2[1]);
 
     /*vrs4*/
-    op_vrs4 = funcf_v4s(ip_vrs4);
+    op_vrs4 = v4s(ip_vrs4);
     _mm_storeu_ps(output_array_vrs4, op_vrs4);
     printf("amd_vrs4_exp2([%f, %f] = [%f, %f])\n",
             input_array_vrs4[0], input_array_vrs4[1],
             output_array_vrs4[0], output_array_vrs4[1]);
 
     /*vrd4*/
-    op_vrd4 = func_v4d(ip_vrd4);
+    op_vrd4 = v4d(ip_vrd4);
     _mm256_storeu_pd(output_array_vrd4, op_vrd4);
     printf("amd_vrd4_exp2([%lf,%lf,%lf,%lf]) = [%lf,%lf,%lf,%lf])\n",
             input_array_vrd4[0], input_array_vrd4[1],
@@ -97,13 +97,24 @@ int test_exp2(void* handle) {
             output_array_vrd4[0], output_array_vrd4[1],
             output_array_vrd4[2], output_array_vrd4[3]);
 
+    /*vrs8*/
+/*
+    op_vrs8 = v8s(ip_vrs8);
+    _mm256_storeu_ps(output_array_vrs8, op_vrs8);
+    printf("amd_vrs8_exp2f\ninput:\n");
+    for(i=0; i<8; i++)
+        printf("%f\t",input_array_vrs8[i]);
+    printf("\nOutput:\n");
+    for(i=0; i<8; i++)
+        printf("%f\t",output_array_vrs8[i]);
+*/
     /*vector array*/
     printf("amd_vrsa_exp2f\nInput:\n");
     for (int i = 0; i < array_size; i++) {
         printf("%f\t", input_arrayf[i]);
     }
     for (int i = 0; i < loopCount; i++) {
-        funcf_va(dim, input_arrayf + i*dim, output_arrayf + i*dim);
+        vas(dim, input_arrayf + i*dim, output_arrayf + i*dim);
     }
     printf("\nOutput:\n");
     for (int i = 0; i < array_size; i++) {
@@ -116,7 +127,7 @@ int test_exp2(void* handle) {
     }
 
     for (int i = 0; i < loopCount; i++) {
-        func_va(dim, input_arrayd + i*dim, output_arrayd + i*dim);
+        vad(dim, input_arrayd + i*dim, output_arrayd + i*dim);
     }
 
     printf("\nOutput:\n");

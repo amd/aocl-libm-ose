@@ -2,13 +2,13 @@
 
 int test_lrint(void* handle) {
     char* error;
-    /*scalar inputs*/
-    float inputf = 3.145;
-    long int output;
-    double input = 6.287;
 
-    long int (*funcf)(float) = (long int (*)(float))dlsym(handle, "amd_lrintf");
-    long int (*func)(double) = (long int (*)(double))dlsym(handle, "amd_lrint");
+    funcf s1f = (funcf)dlsym(handle, "amd_lrintf");
+    func  s1d = (func)dlsym(handle, "amd_lrint");
+
+    /*scalar inputs*/
+    float inputf = 3.145, outputf;
+    double input = 6.287, output;
 
     error = dlerror();
     if (error != NULL) {
@@ -17,10 +17,11 @@ int test_lrint(void* handle) {
     }
 
     printf("Exercising lrint routines\n");
-    output = funcf(inputf);
-    printf("amd_lrintf(%f) = %ld\n", inputf, output);
-    output = func(input);
-    printf("amd_lrint(%lf) = %ld\n", input, output);
+    /*scalar*/
+    outputf = s1f(inputf);
+    printf("amd_lrintf(%f) = %f\n", inputf, outputf);
+    output = s1d(input);
+    printf("amd_lrint(%lf) = %lf\n", input, output);
 
     return 0;
 }

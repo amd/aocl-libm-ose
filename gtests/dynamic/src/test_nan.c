@@ -2,13 +2,12 @@
 
 int test_nan(void* handle) {
     char* error;
-    /*scalar inputs*/
-    const char *nan = "0x0";
+    const char *input = "0x0";
     float outputf;
     double output;
 
-    float (*funcf)(const char*) = (float (*)(const char*))dlsym(handle, "amd_nanf");
-    double (*func)(const char*) = (double (*)(const char*))dlsym(handle, "amd_nan");
+    funcf_nan s1f = (funcf_nan)dlsym(handle, "amd_nanf");
+    func_nan  s1d = (func_nan)dlsym(handle, "amd_nan");
 
     error = dlerror();
     if (error != NULL) {
@@ -17,10 +16,11 @@ int test_nan(void* handle) {
     }
 
     printf("Exercising nan routines\n");
-    outputf = funcf(nan);
-    printf("amd_nanf(%s) = %f\n", nan, outputf);
-    output = func(nan);
-    printf("amd_nan(%s) = %lf\n", nan, output);
+    /*scalar*/
+    outputf = s1f(input);
+    printf("amd_nanf(%s) = %f\n", input, outputf);
+    output = s1d(input);
+    printf("amd_nan(%s) = %lf\n", input, output);
 
     return 0;
 }

@@ -2,12 +2,13 @@
 
 int test_sqrt(void* handle) {
     char* error;
+
+    funcf s1f = (funcf)dlsym(handle, "amd_sqrtf");
+    func  s1d = (func)dlsym(handle, "amd_sqrt");
+
     /*scalar inputs*/
     float inputf = 3.145, outputf;
     double input = 6.287, output;
-
-    float (*funcf)(float) = (float (*)(float))dlsym(handle, "amd_sqrtf");
-    double (*func)(double) = (double (*)(double))dlsym(handle, "amd_sqrt");
 
     error = dlerror();
     if (error != NULL) {
@@ -16,9 +17,10 @@ int test_sqrt(void* handle) {
     }
 
     printf("Exercising sqrt routines\n");
-    outputf = funcf(inputf);
+    /*scalar*/
+    outputf = s1f(inputf);
     printf("amd_sqrtf(%f) = %f\n", inputf, outputf);
-    output = func(input);
+    output = s1d(input);
     printf("amd_sqrt(%lf) = %lf\n", input, output);
 
     return 0;

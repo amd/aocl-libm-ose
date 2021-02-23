@@ -2,12 +2,13 @@
 
 int test_sinh(void* handle) {
     char* error;
+
+    funcf_2 s1f = (funcf_2)dlsym(handle, "amd_sinhf");
+    func_2  s1d = (func_2) dlsym(handle, "amd_sinh");
+
     /*scalar inputs*/
     float inputf = 3.145, outputf;
     double input = 6.287, output;
-
-    float (*funcf)(float) = (float (*)(float))dlsym(handle, "amd_sinhf");
-    double (*func)(double) = (double (*)(double))dlsym(handle, "amd_sinh");
 
     error = dlerror();
     if (error != NULL) {
@@ -16,9 +17,10 @@ int test_sinh(void* handle) {
     }
 
     printf("Exercising sinh routines\n");
-    outputf = funcf(inputf);
+    /*scalar*/
+    outputf = s1f(inputf, inputf);
     printf("amd_sinhf(%f) = %f\n", inputf, outputf);
-    output = func(input);
+    output = s1d(input, input);
     printf("amd_sinh(%lf) = %lf\n", input, output);
 
     return 0;

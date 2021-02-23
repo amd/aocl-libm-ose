@@ -8,19 +8,17 @@ int test_expm1(void* handle) {
     int dim=5, loopCount=10;
     int array_size = dim * loopCount;
 
-    float (*funcf)(float) = (float (*)(float))dlsym(handle, "amd_expm1f");
-    double (*func)(double) = (double (*)(double))dlsym(handle, "amd_expm1");
-
-    __m128 (*funcf_v4s)(__m128) = (__m128 (*)(__m128))dlsym(handle, "amd_vrs4_expm1f");
-    void (*funcf_va)(int, float*, float*) = (void (*)(int, float*, float*))dlsym(handle, "amd_vrsa_expm1f");
-    void (*func_va)(int, double*, double*) = (void (*)(int, double*, double*))dlsym(handle, "amd_vrda_expm1f");
+    funcf     s1f = (funcf)dlsym(handle, "amd_expm1f");
+    func      s1d = (func)dlsym(handle, "amd_expm1");
+    funcf_v4s v4s = (funcf_v4s)dlsym(handle, "amd_vrs4_expm1f");
+    funcf_va  vas = (funcf_va)dlsym(handle, "amd_vrsa_expm1f");
+    func_va   vad = (func_va)dlsym(handle, "amd_vrda_expm1");
 
     /*scalar inputs*/
     float inputf = 3.145, outputf;
     double input = 6.287, output;
     /*for vector routines*/
     __m128  ip_vrs4, op_vrs4;
-
     //array vector inputs
     float *input_arrayf   = (float *)  malloc(sizeof(float) * array_size);
     float *output_arrayf  = (float *)  malloc(sizeof(float) * array_size);
@@ -51,13 +49,12 @@ int test_expm1(void* handle) {
 
     printf("Exercising expm1 routines\n");
     /*scalar*/
-    outputf = funcf(inputf);
+    outputf = s1f(inputf);
     printf("amd_expm1f(%f) = %f\n", inputf, outputf);
-    output = func(input);
+    output = s1d(input);
     printf("amd_expm1(%lf) = %lf\n", input, output);
-
     /*vrs4*/
-    op_vrs4 = funcf_v4s(ip_vrs4);
+    op_vrs4 = v4s(ip_vrs4);
     _mm_storeu_ps(output_array_vrs4, op_vrs4);
     printf("amd_vrs4_expm1([%f, %f] = [%f, %f])\n",
             input_array_vrs4[0], input_array_vrs4[1],
@@ -69,7 +66,7 @@ int test_expm1(void* handle) {
         printf("%f\t", input_arrayf[i]);
     }
     for (int i = 0; i < loopCount; i++) {
-        funcf_va(dim, input_arrayf + i*dim, output_arrayf + i*dim);
+        vas(dim, input_arrayf + i*dim, output_arrayf + i*dim);
     }
     printf("\nOutput:\n");
     for (int i = 0; i < array_size; i++) {
@@ -82,7 +79,7 @@ int test_expm1(void* handle) {
     }
 
     for (int i = 0; i < loopCount; i++) {
-        func_va(dim, input_arrayd + i*dim, output_arrayd + i*dim);
+        vad(dim, input_arrayd + i*dim, output_arrayd + i*dim);
     }
 
     printf("\nOutput:\n");

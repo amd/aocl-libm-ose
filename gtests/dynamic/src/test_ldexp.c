@@ -5,10 +5,10 @@ int test_ldexp(void* handle) {
     /*scalar inputs*/
     float inputf = 3.145, outputf;
     double input = 6.287, output;
-    int exp = 2;
+    int n = 2;
 
-    float (*funcf)(float, int) = (float (*)(float, int))dlsym(handle, "amd_ldexpf");
-    double (*func)(double, int) = (double (*)(double, int))dlsym(handle, "amd_ldexp");
+    funcf_int s1f = (funcf_int)dlsym(handle, "amd_ldexpf");
+    func_int  s1d = (func_int)dlsym(handle, "amd_ldexp");
 
     error = dlerror();
     if (error != NULL) {
@@ -17,9 +17,9 @@ int test_ldexp(void* handle) {
     }
 
     printf("Exercising ldexp routines\n");
-    outputf = funcf(inputf, exp);
+    outputf = s1f(inputf, n);
     printf("amd_ldexpf(%f) = %f\n", inputf, outputf);
-    output = func(input, exp);
+    output = s1d(input, n);
     printf("amd_ldexp(%lf) = %lf\n", input, output);
 
     return 0;

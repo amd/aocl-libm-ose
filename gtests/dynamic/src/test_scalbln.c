@@ -7,8 +7,8 @@ int test_scalbln(void* handle) {
     double input = 6.287, output;
     int n = 2;
 
-    float (*funcf)(float, int) = (float (*)(float, int))dlsym(handle, "amd_scalblnf");
-    double (*func)(double, int) = (double (*)(double, int))dlsym(handle, "amd_scalbln");
+    funcf_int s1f = (funcf_int)dlsym(handle, "amd_scalblnf");
+    func_int  s1d = (func_int)dlsym(handle, "amd_scalbln");
 
     error = dlerror();
     if (error != NULL) {
@@ -17,9 +17,9 @@ int test_scalbln(void* handle) {
     }
 
     printf("Exercising scalbln routines\n");
-    outputf = funcf(inputf, n);
+    outputf = s1f(inputf, n);
     printf("amd_scalblnf(%f) = %f\n", inputf, outputf);
-    output = func(input, n);
+    output = s1d(input, n);
     printf("amd_scalbln(%lf) = %lf\n", input, output);
 
     return 0;

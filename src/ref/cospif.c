@@ -137,18 +137,20 @@ float FN_PROTOTYPE_REF(cospif)(float x)
 	if (ux&0x1) xsgn = -1.0f;
 	else xsgn= 1.0f;
 
-	r    = dx - ux;
+	r    = dx - (float)ux;
 
 	if ( r == 0.0f) return xsgn;
 
+        double xdsgn = (double)xsgn;
+
 	if (r<=0.25f)
 	{
-		return (float)( xsgn * cosf_piby4(r*pi));
+		return (float)(xdsgn * cosf_piby4(r*pi));
 	}
 	if (r<0.5f)
 	{
 		r = 0.5f - r;
-		return (float)( xsgn * sinf_piby4(r*pi));
+		return (float)(xdsgn * sinf_piby4(r*pi));
 	}
 	if (r == 0.5f)
 	{
@@ -157,11 +159,11 @@ float FN_PROTOTYPE_REF(cospif)(float x)
 	if (r<=0.75f)
 	{
 		r = r - 0.5f;
-		return (float)( -xsgn * sinf_piby4(r*pi));
+		return (float)(-xdsgn * sinf_piby4(r*pi));
 	}
 
 	/* r<1 */
 	r = 1.0f - r;
-	return (float)( -xsgn * cosf_piby4(r*pi));
+	return (float)(-xdsgn * cosf_piby4(r*pi));
 }
 

@@ -63,7 +63,6 @@
 #include <libm_util_amd.h>
 #include <libm_special.h>
 #include <libm_macros.h>
-#include <libm_amd.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/compiler.h>
@@ -116,8 +115,9 @@ FN_PROTOTYPE_FAST(expf)(float x)
 {
     double_t  q, dn, r, z;
     uint64_t n, j;
+    double dx = (double)x;
 
-    z = x *  EXPF_TBLSZ_BY_LN2;
+    z = dx *  EXPF_TBLSZ_BY_LN2;
 
     /*
      * n  = (int) scale(x)
@@ -137,7 +137,7 @@ FN_PROTOTYPE_FAST(expf)(float x)
 
 #endif
 
-    r  = x - dn * EXPF_LN2_BY_TBLSZ;
+    r  = dx - dn * EXPF_LN2_BY_TBLSZ;
 
     j  = n % EXPF_TABLE_SIZE;
 

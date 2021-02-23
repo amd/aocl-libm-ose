@@ -58,13 +58,13 @@ double FN_PROTOTYPE_REF(scalbln)(double x, long int n)
     if((val.u64 == 0x0000000000000000) || (n==0))
         return x; /* x= +-0 or n= 0*/
 
-    exponent = val.u32[1] >> 20; /* get the exponent */
+    exponent = (int)(val.u32[1] >> 20); /* get the exponent */
 
     if(exponent == 0)/*x is denormal*/
     {
 		val.f64 = val.f64 * VAL_2PMULTIPLIER_DP;/*multiply by 2^53 to bring it to the normal range*/
-        exponent = val.u32[1] >> 20; /* get the exponent */
-		exponent = exponent + n - MULTIPLIER_DP;
+        exponent = (int)(val.u32[1] >> 20); /* get the exponent */
+		exponent = (int)(exponent + n - MULTIPLIER_DP);
 		if(exponent < -MULTIPLIER_DP)/*underflow*/
 		{
 			val.u32[1] = sign | 0x00000000;
@@ -79,12 +79,12 @@ double FN_PROTOTYPE_REF(scalbln)(double x, long int n)
 		}
 
 		exponent += MULTIPLIER_DP;
-		val.u32[1] = sign | (exponent << 20) | (val.u32[1] & 0x000fffff);
+		val.u32[1] = sign | (unsigned int)(exponent << 20) | (val.u32[1] & 0x000fffff);
 		val.f64 = val.f64 * VAL_2PMMULTIPLIER_DP;
         return val.f64;
     }
 
-    exponent += n;
+    exponent += (int)n;
 
     if(exponent < -MULTIPLIER_DP)/*underflow*/
 	{
@@ -96,7 +96,7 @@ double FN_PROTOTYPE_REF(scalbln)(double x, long int n)
     if(exponent < 1)/*x is normal but output is debnormal*/
     {
 		exponent += MULTIPLIER_DP;
-		val.u32[1] = sign | (exponent << 20) | (val.u32[1] & 0x000fffff);
+		val.u32[1] = sign | (unsigned int)(exponent << 20) | (val.u32[1] & 0x000fffff);
 		val.f64 = val.f64 * VAL_2PMMULTIPLIER_DP;
         return val.f64;
     }
@@ -108,7 +108,7 @@ double FN_PROTOTYPE_REF(scalbln)(double x, long int n)
         return __amd_handle_error("scalbln", __amd_scalbln, val.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, (double) n, 2);
 	}
 
-    val.u32[1] = sign | (exponent << 20) | (val.u32[1] & 0x000fffff);
+    val.u32[1] = sign | (unsigned int)(exponent << 20) | (val.u32[1] & 0x000fffff);
     return val.f64;
 }
 

@@ -46,7 +46,7 @@ double FN_PROTOTYPE_REF(scalbln)(double x, long int n)
         #else
            {
            if(!(val.u64 & 0x0008000000000000))// x is snan
-                   return __amd_handle_error("scalbn", __amd_scalbn, val_x.u64|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, n, 2);
+                   return __amd_handle_error("scalbn", __amd_scalbn, val_x.u64|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, (double)n, 2);
             else
                    return x;
 		    }

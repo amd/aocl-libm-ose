@@ -47,6 +47,7 @@
 #include <stdint.h>
 #include <libm_util_amd.h>
 #include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
 #include <libm_macros.h>
 #include <libm/types.h>
@@ -94,7 +95,7 @@ struct expf_data {
 static uint32_t
 top12f(float x)
 {
-    flt32_t f = {.f = x};
+    flt32u_t f = {.f = x};
     return f.i >> 20;
 }
 
@@ -185,7 +186,7 @@ ALM_PROTO_OPT(exp2f)(float x)
 
 #endif
 
-    r  = x - dn * EXP2F_ONEBY_TBLSZ;
+    r  = dx - dn * EXP2F_ONEBY_TBLSZ;
 
     r *=  EXP2F_LN2;
 

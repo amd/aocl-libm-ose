@@ -1,6 +1,8 @@
 #ifndef PRECISION_H_INCLUDED
 #define PRECISION_H_INCLUDED 1
 
+#include "alm_mp_funcs.h"
+
 /* Set REAL and choose float or double function name */
 
 #if defined(FLOAT)

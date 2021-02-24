@@ -153,7 +153,7 @@ ALM_PROTO_OPT(vrd4_log) (__m256d x)
 
     ix = (ix - TWO_BY_THREE) & INF;
 
-    v_i64x4_t int_exponent = ix >> EXPSHIFTBITS_SP64;
+    v_u64x4_t int_exponent = (v_u64x4_t)ix >> EXPSHIFTBITS_SP64;
 
     v_i32x4_t int32_exponent;
 

@@ -32,6 +32,7 @@
 
 #include <math.h>
 #include <libm_errno_amd.h>
+
 #if defined(WIN64)  |  defined(WINDOWS)
 
 #include <fpieee.h>

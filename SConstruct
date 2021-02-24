@@ -98,7 +98,7 @@ alm_libs = SConscript('src/SConscript',
 targets += alm_libs
 
 gtest_objs = []
-if 'gtests' in COMMAND_LINE_TARGETS:
+if 'tests' in COMMAND_LINE_TARGETS or 'gtests' in COMMAND_LINE_TARGETS:
     testenv = aenv.Clone()
 
     LIBPATH=['#'+joinpath(build_root,'src')]
@@ -112,10 +112,10 @@ if 'gtests' in COMMAND_LINE_TARGETS:
     testenv.Append(LIBPATH = LIBPATH)
 
     gtest_objs += SConscript(dirs='gtests',
-                                exports = {'env' : testenv},
-                                duplicate = 0,
-                                src_dir    = 'gtests',
-                                variant_dir = joinpath(build_root, 'gtests'))
+                          exports = {'env' : testenv},
+                          duplicate = 0,
+                          src_dir    = 'gtests',
+                          variant_dir = joinpath(build_root, 'gtests'))
 
 if gtest_objs:
     Requires(gtest_objs, alm_libs)

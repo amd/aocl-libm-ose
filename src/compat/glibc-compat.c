@@ -45,26 +45,28 @@
 #define GLIBC_VEC_FUNC2_DECL(name, data_type)  data_type name(data_type v, data_type z)
 
 /* Function Declaration */
-GLIBC_VEC_FUNC_DECL(_ZGVbN2v_sin, __m128d);
-GLIBC_VEC_FUNC_DECL(_ZGVbN4v_sinf, __m128);
-GLIBC_VEC_FUNC_DECL(_ZGVbN2v_cos, __m128d);
-GLIBC_VEC_FUNC_DECL(_ZGVbN4v_cosf, __m128);
-GLIBC_VEC_FUNC_DECL(_ZGVbN2v_exp, __m128d);
-GLIBC_VEC_FUNC_DECL(_ZGVbN4v_expf, __m128);
-GLIBC_VEC_FUNC_DECL(_ZGVbN2v_log, __m128d);
-GLIBC_VEC_FUNC_DECL(_ZGVbN4v_logf, __m128);
-GLIBC_VEC_FUNC_DECL(_ZGVdN8v_sinf, __m256);
-GLIBC_VEC_FUNC_DECL(_ZGVdN8v_cosf, __m256);
-GLIBC_VEC_FUNC_DECL(_ZGVdN4v_exp, __m256d);
-GLIBC_VEC_FUNC_DECL(_ZGVdN8v_expf, __m256);
-GLIBC_VEC_FUNC_DECL(_ZGVdN4v_log, __m256d);
-GLIBC_VEC_FUNC_DECL(_ZGVdN8v_logf, __m256);
-
-GLIBC_VEC_FUNC2_DECL(_ZGVbN2v_pow, __m128d);
-GLIBC_VEC_FUNC2_DECL(_ZGVbN4v_powf, __m128);
-GLIBC_VEC_FUNC2_DECL(_ZGVdN4vv_pow, __m256d);
+GLIBC_VEC_FUNC_DECL(_ZGVbN2v_sin,    __m128d);
+GLIBC_VEC_FUNC_DECL(_ZGVbN4v_sinf,   __m128);
+GLIBC_VEC_FUNC_DECL(_ZGVbN2v_cos,    __m128d);
+GLIBC_VEC_FUNC_DECL(_ZGVbN4v_cosf,   __m128);
+GLIBC_VEC_FUNC_DECL(_ZGVbN2v_exp,    __m128d);
+GLIBC_VEC_FUNC_DECL(_ZGVbN4v_expf,   __m128);
+GLIBC_VEC_FUNC_DECL(_ZGVbN2v_log,    __m128d);
+GLIBC_VEC_FUNC_DECL(_ZGVbN4v_logf,   __m128);
+GLIBC_VEC_FUNC2_DECL(_ZGVbN2vv_pow,  __m128d);
+GLIBC_VEC_FUNC2_DECL(_ZGVbN4vv_powf, __m128);
+GLIBC_VEC_FUNC2_DECL(_ZGVdN4vv_pow,  __m256d);
 GLIBC_VEC_FUNC2_DECL(_ZGVdN8vv_powf, __m256);
 
+GLIBC_VEC_FUNC_DECL(_ZGVdN8v_sinf, __m256);
+GLIBC_VEC_FUNC_DECL(_ZGVdN8v_cosf, __m256);
+GLIBC_VEC_FUNC_DECL(_ZGVdN4v_cos,  __m256d);
+GLIBC_VEC_FUNC_DECL(_ZGVdN4v_exp,  __m256d);
+GLIBC_VEC_FUNC_DECL(_ZGVdN8v_expf, __m256);
+GLIBC_VEC_FUNC_DECL(_ZGVdN4v_log,  __m256d);
+GLIBC_VEC_FUNC_DECL(_ZGVdN8v_logf, __m256);
+
+GLIBC_VEC_FUNC_DECL(_ZGVcN4v_sin, __m256d);
 
 /* SSE - "_ZGVb" prefix */
 

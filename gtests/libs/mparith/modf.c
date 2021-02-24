@@ -11,41 +11,6 @@
 #error
 #endif
 
-REAL FUNC_MODF_ULP123(REAL x, REAL *ptr, REAL z, double   *sulps, double   *sreldiff)
-{
-    REAL ret;
-    fp_params params;
-    int base, mantis, emin, emax;
-    int *xmp, *ymp, *iptr;
-    int ifail;
-    REAL reldiff,ulps;
-
-    initMultiPrecision(ISDOUBLE, 0, &base, &mantis, &emin, &emax, &params);
-    xmp = new_mp(params);
-    ymp = new_mp(params);
-    iptr = new_mp(params);
-
-    DTOMP(x, xmp, params, &ifail);
-    MPMODF(xmp, ymp, iptr, params, &ifail);
-/********/
-    reldiff = MPRELDIFF(z, base, mantis, emin, emax,
-                      ymp, params,&ulps, &ifail);
-	*sreldiff = reldiff;
-	*sulps = ulps;
-
-/********/
-
-    MPTOD(iptr, params, ptr, &ifail);
-    MPTOD(ymp, params, &ret, &ifail);
-
-    free(xmp);
-    free(ymp);
-    free(iptr);
-
-    return ret;
-}
-
-
 #include <mpfr.h>
 
 REAL FUNC_MODF(REAL x, REAL *p)

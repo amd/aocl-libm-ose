@@ -213,6 +213,8 @@ class AlmEnvironment(object):
 
         self.check = AlmChecker(self)
 
+        self.CheckDefault()
+
         # Setup what is printed while compiling
         compile_helper.UpdateEnvComStr(self.env)
 

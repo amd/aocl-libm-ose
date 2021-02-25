@@ -97,24 +97,25 @@ alm_objs = SConscript('src/SConscript',
 
 targets += alm_objs
 
-testenv = aenv.Clone()
-if aenv['libabi'] == 'svml':
-    testenv.Append(
-    LIBPATH=['#'+joinpath(build_root,'src'), env['INTEL_LIB_PATH']]
-  )
-else:
-  testenv.Append(
-    LIBPATH=['#'+joinpath(build_root,'src')]
-  )
-
 gtest_objs = []
-
 if 'gtests' in COMMAND_LINE_TARGETS:
-  gtest_objs += SConscript(dirs='gtests',
-                          exports = {'env' : testenv},
-                          duplicate = 0,
-                          src_dir    = 'gtests',
-                          variant_dir = joinpath(build_root, 'gtests'))
+    testenv = aenv.Clone()
+
+    LIBPATH=['#'+joinpath(build_root,'src')]
+
+    #to exercise intel routines using test framework
+    if aenv['libabi'] == 'svml':
+        if os.environ.get('INTEL_LIB_PATH', None) is None:
+            Exit(1)
+        LIBPATH.append(aenv['INTEL_LIB_PATH'])
+
+    testenv.Append(LIBPATH = LIBPATH)
+
+    gtest_objs += SConscript(dirs='gtests',
+                                exports = {'env' : testenv},
+                                duplicate = 0,
+                                src_dir    = 'gtests',
+                                variant_dir = joinpath(build_root, 'gtests'))
 
 targets += gtest_objs
 

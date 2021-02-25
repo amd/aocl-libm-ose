@@ -95,6 +95,35 @@ def CheckForLibs(context):
         print('Did not find libmpfr, AOCL LibM tests wont work!')
         context.Result(res)
 
+def CheckLibAbi(context):
+    res = False
+    #if svml, check for svml path in INTEL_LIB_PATH variable
+    #not using CheckLisWithHeader because this might be
+    #in user defined local paths, not under /usr/lib
+    env = context.env
+    intel_lib_path = None
+    libabi = (env['libabi'])
+
+    if libabi == 'svml':
+        context.Message ("Checking for Intel SVML Lib path\n")
+        #get val of shell variable INTEL_LIB_PATH
+        if os.environ.get('INTEL_LIB_PATH', None) is None:
+            print("Environment variable INTEL_LIB_PATH not found")
+        else:
+            #add to env INTEL_LIB_PATH
+            env['INTEL_LIB_PATH'] = os.environ.get('INTEL_LIB_PATH')
+            #check if that path is valid and not empty
+            if not os.path.isdir(env['INTEL_LIB_PATH']) or len(os.listdir(env['INTEL_LIB_PATH'])) == 0:
+                print ("Invalid/empty Intel SVML path")
+            else:
+                context.Message("Using Intel lib path " + env['INTEL_LIB_PATH'])
+                res = True
+
+    else:   #will add other libabis later
+        res = True
+
+    context.Result(res)
+
 def CheckForOS(context):
     pass
 
@@ -108,7 +137,11 @@ def All(almenv):
         'CheckForOS'        : CheckForOS,
         'CheckForHeaders'   : CheckForHeaders,
         'CheckForLibs'      : CheckForLibs,
+        'CheckLibAbi'       : CheckLibAbi,
     })
+
+    if conf.CheckLibAbi():
+        Exit(1)
 
     #result = conf.CheckProg(almenv.compiler.CxxCmd())
 

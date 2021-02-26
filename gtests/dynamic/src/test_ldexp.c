@@ -3,7 +3,7 @@
 int test_ldexp(void* handle) {
     char* error;
     /*scalar inputs*/
-    float inputf = 3.145, outputf;
+    float inputf = 3.145f, outputf;
     double input = 6.287, output;
     int n = 2;
 
@@ -18,7 +18,7 @@ int test_ldexp(void* handle) {
 
     printf("Exercising ldexp routines\n");
     outputf = s1f(inputf, n);
-    printf("amd_ldexpf(%f) = %f\n", inputf, outputf);
+    printf("amd_ldexpf(%f) = %f\n", (double)inputf, (double)outputf);
     output = s1d(input, n);
     printf("amd_ldexp(%lf) = %lf\n", input, output);
 

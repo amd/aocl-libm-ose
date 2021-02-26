@@ -7,7 +7,7 @@ int test_nextafter(void* handle) {
     func_2  s1d = (func_2) dlsym(handle, "amd_nextafter");
 
     /*scalar inputs*/
-    float inputf = 3.145, outputf;
+    float inputf = 3.145f, outputf;
     double input = 6.287, output;
 
     error = dlerror();
@@ -19,7 +19,7 @@ int test_nextafter(void* handle) {
     printf("Exercising nextafter routines\n");
     /*scalar*/
     outputf = s1f(inputf, inputf);
-    printf("amd_nextafterf(%f) = %f\n", inputf, outputf);
+    printf("amd_nextafterf(%f) = %f\n", (double)inputf, (double)outputf);
     output = s1d(input, input);
     printf("amd_nextafter(%lf) = %lf\n", input, output);
 

@@ -3,12 +3,12 @@
 int test_asin(void* handle) {
     char* error;
 
-    funcf s1f = (funcf)dlsym(handle, "amd_asinf");
-    func  s1d = (func)dlsym(handle, "amd_asin");
+    funcf     s1f = (funcf)dlsym(handle, "amd_asinf");
+    func      s1d = (func)dlsym(handle, "amd_asin");
 
     /*scalar inputs*/
-    float inputf = 3.145, outputf;
-    double input = 6.287, output;
+    float inputf = 3.14f, outputf;
+    double input = 6.28, output;
 
     error = dlerror();
     if (error != NULL) {
@@ -19,7 +19,7 @@ int test_asin(void* handle) {
     printf("Exercising asin routines\n");
     /*scalar*/
     outputf = s1f(inputf);
-    printf("amd_asinf(%f) = %f\n", inputf, outputf);
+    printf("amd_asinf(%f) = %f\n", (double)inputf, (double)outputf);
     output = s1d(input);
     printf("amd_asin(%lf) = %lf\n", input, output);
 

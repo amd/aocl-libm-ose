@@ -7,7 +7,7 @@ int test_logb(void* handle) {
     func  s1d = (func)dlsym(handle, "amd_logb");
 
     /*scalar inputs*/
-    float inputf = 3.145, outputf;
+    float inputf = 3.145f, outputf;
     double input = 6.287, output;
 
     error = dlerror();
@@ -19,7 +19,7 @@ int test_logb(void* handle) {
     printf("Exercising logb routines\n");
     /*scalar*/
     outputf = s1f(inputf);
-    printf("amd_logbf(%f) = %f\n", inputf, outputf);
+    printf("amd_logbf(%f) = %f\n", (double)inputf, (double)outputf);
     output = s1d(input);
     printf("amd_logb(%lf) = %lf\n", input, output);
 

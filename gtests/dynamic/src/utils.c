@@ -2,8 +2,8 @@
 
 float GenerateRangeFloat(float min, float max) {
     float range = (max - min);
-    float div = RAND_MAX / range;
-    return min + (rand() / div);
+    float div = (float)RAND_MAX/(float)range;
+    return min + ((float)rand() / div);
 }
 
 double GenerateRangeDouble(double min, double max) {

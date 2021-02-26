@@ -7,7 +7,7 @@ int test_nearbyint(void* handle) {
     func  s1d = (func)dlsym(handle, "amd_nearbyint");
 
     /*scalar inputs*/
-    float inputf = 3.145, outputf;
+    float inputf = 3.145f, outputf;
     double input = 6.287, output;
 
     error = dlerror();
@@ -19,7 +19,7 @@ int test_nearbyint(void* handle) {
     printf("Exercising nearbyint routines\n");
     /*scalar*/
     outputf = s1f(inputf);
-    printf("amd_nearbyintf(%f) = %f\n", inputf, outputf);
+    printf("amd_nearbyintf(%f) = %f\n", (double)inputf, (double)outputf);
     output = s1d(input);
     printf("amd_nearbyint(%lf) = %lf\n", input, output);
 

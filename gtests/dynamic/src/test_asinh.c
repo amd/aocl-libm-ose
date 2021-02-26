@@ -2,12 +2,13 @@
 
 int test_asinh(void* handle) {
     char* error;
-    /*scalar inputs*/
-    float inputf = 3.145, outputf;
-    double input = 6.287, output;
 
-    float (*funcf)(float) = (float (*)(float))dlsym(handle, "amd_asinhf");
-    double (*func)(double) = (double (*)(double))dlsym(handle, "amd_asinh");
+    funcf     s1f = (funcf)dlsym(handle, "amd_asinhf");
+    func      s1d = (func)dlsym(handle, "amd_asinh");
+
+    /*scalar inputs*/
+    float inputf = 3.14f, outputf;
+    double input = 6.28, output;
 
     error = dlerror();
     if (error != NULL) {
@@ -16,9 +17,10 @@ int test_asinh(void* handle) {
     }
 
     printf("Exercising asinh routines\n");
-    outputf = funcf(inputf);
-    printf("amd_asinhf(%f) = %f\n", inputf, outputf);
-    output = func(input);
+    /*scalar*/
+    outputf = s1f(inputf);
+    printf("amd_asinhf(%f) = %f\n", (double)inputf, (double)outputf);
+    output = s1d(input);
     printf("amd_asinh(%lf) = %lf\n", input, output);
 
     return 0;

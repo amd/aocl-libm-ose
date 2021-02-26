@@ -7,7 +7,7 @@ int test_remainder(void* handle) {
     func_2  s1d = (func_2) dlsym(handle, "amd_remainder");
 
     /*scalar inputs*/
-    float inputf = 3.145, outputf;
+    float inputf = 3.145f, outputf;
     double input = 6.287, output;
 
     error = dlerror();
@@ -19,7 +19,7 @@ int test_remainder(void* handle) {
     printf("Exercising remainder routines\n");
     /*scalar*/
     outputf = s1f(inputf, inputf);
-    printf("amd_remainderf(%f) = %f\n", inputf, outputf);
+    printf("amd_remainderf(%f) = %f\n", (double)inputf, (double)outputf);
     output = s1d(input, input);
     printf("amd_remainder(%lf) = %lf\n", input, output);
 

@@ -18,7 +18,7 @@ int test_nan(void* handle) {
     printf("Exercising nan routines\n");
     /*scalar*/
     outputf = s1f(input);
-    printf("amd_nanf(%s) = %f\n", input, outputf);
+    printf("amd_nanf(%s) = %f\n", input, (double)outputf);
     output = s1d(input);
     printf("amd_nan(%s) = %lf\n", input, output);
 

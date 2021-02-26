@@ -5,41 +5,43 @@
 
 int test_exp10(void* handle) {
     char* error;
-    int dim=5, loopCount=10;
-    int array_size = dim * loopCount;
+    long unsigned int i=0, dim = 5, loopCount = 10;
+    long unsigned int array_size = dim * loopCount;
 
     funcf     s1f = (funcf)dlsym(handle, "amd_exp10f");
     func      s1d = (func)dlsym(handle, "amd_exp10");
     func_v2d  v2d = (func_v2d)dlsym(handle, "amd_vrd2_exp10");
     funcf_v4s v4s = (funcf_v4s)dlsym(handle, "amd_vrs4_exp10f");
+
     funcf_va  vas = (funcf_va)dlsym(handle, "amd_vrsa_exp10f");
     func_va   vad = (func_va)dlsym(handle, "amd_vrda_exp10");
 
     /*scalar inputs*/
-    float inputf = 3.145, outputf;
-    double input = 6.287, output;
+    float inputf = 3.14f, outputf;
+    double input = 6.28, output;
     /*for vector routines*/
     __m128d ip_vrd2, op_vrd2;
     __m128  ip_vrs4, op_vrs4;
+
     //array vector inputs
     float *input_arrayf   = (float *)  malloc(sizeof(float) * array_size);
     float *output_arrayf  = (float *)  malloc(sizeof(float) * array_size);
     double *input_arrayd  = (double *) malloc(sizeof(double) * array_size);
     double *output_arrayd = (double *) malloc(sizeof(double) * array_size);
 
-    for (int i = 0; i < array_size; i++) {
+    for (i = 0; i < array_size; i++) {
          input_arrayf[i] = RANGEF;
 	     input_arrayd[i] = RANGED;
     }
 
-    for (int i = 0; i < array_size; i++) {
+    for (i = 0; i < array_size; i++) {
         output_arrayf[0] += output_arrayf[i];
 	    output_arrayd[0] += output_arrayd[i];
     }
 
     double input_array_vrd2[2] = {1.2, 3.5};
     double output_array_vrd2[2];
-    float input_array_vrs4[4] = {3.5, 1.2, 3.4, 0.5};
+    float input_array_vrs4[4] = {3.5f, 1.2f, 3.4f, 0.5f};
     float output_array_vrs4[4];
 
     /*packed inputs*/
@@ -55,7 +57,7 @@ int test_exp10(void* handle) {
     printf("Exercising exp10 routines\n");
     /*scalar*/
     outputf = s1f(inputf);
-    printf("amd_exp10f(%f) = %f\n", inputf, outputf);
+    printf("amd_exp10f(%f) = %f\n", (double)inputf, (double)outputf);
     output = s1d(input);
     printf("amd_exp10(%lf) = %lf\n", input, output);
 
@@ -70,33 +72,33 @@ int test_exp10(void* handle) {
     op_vrs4 = v4s(ip_vrs4);
     _mm_storeu_ps(output_array_vrs4, op_vrs4);
     printf("amd_vrs4_exp10([%f, %f] = [%f, %f])\n",
-            input_array_vrs4[0], input_array_vrs4[1],
-            output_array_vrs4[0], output_array_vrs4[1]);
+            (double)input_array_vrs4[0], (double)input_array_vrs4[1],
+            (double)output_array_vrs4[0], (double)output_array_vrs4[1]);
 
     /*vector array*/
     printf("amd_vrsa_exp10f\nInput:\n");
-    for (int i = 0; i < array_size; i++) {
-        printf("%f\t", input_arrayf[i]);
+    for (i = 0; i < array_size; i++) {
+        printf("%f\t", (double)input_arrayf[i]);
     }
-    for (int i = 0; i < loopCount; i++) {
-        vas(dim, input_arrayf + i*dim, output_arrayf + i*dim);
+    for (i = 0; i < loopCount; i++) {
+        vas((int)dim, input_arrayf + i*dim, output_arrayf + i*dim);
     }
     printf("\nOutput:\n");
-    for (int i = 0; i < array_size; i++) {
-        printf("%f\t", output_arrayf[i]);
+    for (i = 0; i < array_size; i++) {
+        printf("%f\t", (double)output_arrayf[i]);
     }
 
     printf("amd_vrda_exp10\nInput:\n");
-    for (int i = 0; i < array_size; i++) {
+    for (i = 0; i < array_size; i++) {
         printf("%lf\t", input_arrayd[i]);
     }
 
-    for (int i = 0; i < loopCount; i++) {
-        vad(dim, input_arrayd + i*dim, output_arrayd + i*dim);
+    for (i = 0; i < loopCount; i++) {
+        vad((int)dim, input_arrayd + i*dim, output_arrayd + i*dim);
     }
 
     printf("\nOutput:\n");
-    for (int i = 0; i < array_size; i++) {
+    for (i = 0; i < array_size; i++) {
         printf("%lf\t", output_arrayd[i]);
     }
 

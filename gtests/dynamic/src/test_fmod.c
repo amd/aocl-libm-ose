@@ -7,7 +7,7 @@ int test_fmod(void* handle) {
     func_2  s1d = (func_2) dlsym(handle, "amd_fmod");
 
     /*scalar inputs*/
-    float inputf = 3.145, outputf;
+    float inputf = 3.145f, outputf;
     double input = 6.287, output;
 
     error = dlerror();
@@ -19,7 +19,7 @@ int test_fmod(void* handle) {
     printf("Exercising fmod routines\n");
     /*scalar*/
     outputf = s1f(inputf, inputf);
-    printf("amd_fmodf(%f) = %f\n", inputf, outputf);
+    printf("amd_fmodf(%f) = %f\n", (double)inputf, (double)outputf);
     output = s1d(input, input);
     printf("amd_fmod(%lf) = %lf\n", input, output);
 

@@ -7,7 +7,7 @@ int test_finite(void* handle) {
     func  s1d = (func)dlsym(handle, "amd_finite");
 
     /*scalar inputs*/
-    float inputf = 3.145, outputf;
+    float inputf = 3.145f, outputf;
     double input = 6.287, output;
 
     error = dlerror();
@@ -19,7 +19,7 @@ int test_finite(void* handle) {
     printf("Exercising finite routines\n");
     /*scalar*/
     outputf = s1f(inputf);
-    printf("amd_finitef(%f) = %f\n", inputf, outputf);
+    printf("amd_finitef(%f) = %f\n", (double)inputf, (double)outputf);
     output = s1d(input);
     printf("amd_finite(%lf) = %lf\n", input, output);
 

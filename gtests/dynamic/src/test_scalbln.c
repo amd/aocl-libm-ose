@@ -3,7 +3,7 @@
 int test_scalbln(void* handle) {
     char* error;
     /*scalar inputs*/
-    float inputf = 3.145, outputf;
+    float inputf = 3.145f, outputf;
     double input = 6.287, output;
     int n = 2;
 
@@ -18,7 +18,7 @@ int test_scalbln(void* handle) {
 
     printf("Exercising scalbln routines\n");
     outputf = s1f(inputf, n);
-    printf("amd_scalblnf(%f) = %f\n", inputf, outputf);
+    printf("amd_scalblnf(%f) = %f\n", (double)inputf, (double)outputf);
     output = s1d(input, n);
     printf("amd_scalbln(%lf) = %lf\n", input, output);
 

@@ -7,7 +7,7 @@ int test_fmax(void* handle) {
     func_2  s1d = (func_2) dlsym(handle, "amd_fmax");
 
     /*scalar inputs*/
-    float inputf = 3.145, outputf;
+    float inputf = 3.145f, outputf;
     double input = 6.287, output;
 
     error = dlerror();
@@ -19,7 +19,7 @@ int test_fmax(void* handle) {
     printf("Exercising fmax routines\n");
     /*scalar*/
     outputf = s1f(inputf, inputf);
-    printf("amd_fmaxf(%f) = %f\n", inputf, outputf);
+    printf("amd_fmaxf(%f) = %f\n", (double)inputf, (double)outputf);
     output = s1d(input, input);
     printf("amd_fmax(%lf) = %lf\n", input, output);
 

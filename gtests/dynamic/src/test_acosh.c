@@ -3,12 +3,12 @@
 int test_acosh(void* handle) {
     char* error;
 
-    funcf_2 s1f = (funcf_2)dlsym(handle, "amd_acoshf");
-    func_2  s1d = (func_2) dlsym(handle, "amd_acosh");
+    funcf     s1f = (funcf)dlsym(handle, "amd_acoshf");
+    func      s1d = (func)dlsym(handle, "amd_acosh");
 
     /*scalar inputs*/
-    float inputf = 3.145, outputf;
-    double input = 6.287, output;
+    float inputf = 3.14f, outputf;
+    double input = 6.28, output;
 
     error = dlerror();
     if (error != NULL) {
@@ -18,9 +18,9 @@ int test_acosh(void* handle) {
 
     printf("Exercising acosh routines\n");
     /*scalar*/
-    outputf = s1f(inputf, inputf);
-    printf("amd_acoshf(%f) = %f\n", inputf, outputf);
-    output = s1d(input, input);
+    outputf = s1f(inputf);
+    printf("amd_acoshf(%f) = %f\n", (double)inputf, (double)outputf);
+    output = s1d(input);
     printf("amd_acosh(%lf) = %lf\n", input, output);
 
     return 0;

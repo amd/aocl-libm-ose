@@ -7,7 +7,7 @@ int test_llrint(void* handle) {
     func  s1d = (func)dlsym(handle, "amd_llrint");
 
     /*scalar inputs*/
-    float inputf = 3.145, outputf;
+    float inputf = 3.145f, outputf;
     double input = 6.287, output;
 
     error = dlerror();
@@ -19,7 +19,7 @@ int test_llrint(void* handle) {
     printf("Exercising llrint routines\n");
     /*scalar*/
     outputf = s1f(inputf);
-    printf("amd_llrintf(%f) = %f\n", inputf, outputf);
+    printf("amd_llrintf(%f) = %f\n", (double)inputf, (double)outputf);
     output = s1d(input);
     printf("amd_llrint(%lf) = %lf\n", input, output);
 

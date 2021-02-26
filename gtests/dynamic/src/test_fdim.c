@@ -7,7 +7,7 @@ int test_fdim(void* handle) {
     func_2  s1d = (func_2) dlsym(handle, "amd_fdim");
 
     /*scalar inputs*/
-    float inputf = 3.145, outputf;
+    float inputf = 3.145f, outputf;
     double input = 6.287, output;
 
     error = dlerror();
@@ -19,7 +19,7 @@ int test_fdim(void* handle) {
     printf("Exercising fdim routines\n");
     /*scalar*/
     outputf = s1f(inputf, inputf);
-    printf("amd_fdimf(%f) = %f\n", inputf, outputf);
+    printf("amd_fdimf(%f) = %f\n", (double)inputf, (double)outputf);
     output = s1d(input, input);
     printf("amd_fdim(%lf) = %lf\n", input, output);
 

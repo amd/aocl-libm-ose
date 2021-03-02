@@ -1,0 +1,14 @@
+#
+# Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
+#
+
+Import('env')
+
+e = env.Clone()
+
+log1p_srcs = Glob('*.cc')
+
+log1p = e.Program('test_log1p', log1p_srcs)
+
+Return('log1p')
+

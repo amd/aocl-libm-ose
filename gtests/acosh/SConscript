@@ -1,0 +1,14 @@
+#
+# Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
+#
+
+Import('env')
+
+e = env.Clone()
+
+acosh_srcs = Glob('*.cc')
+
+acosh = e.Program('test_acosh', acosh_srcs)
+
+Return('acosh')
+

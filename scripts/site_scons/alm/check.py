@@ -99,31 +99,37 @@ def CheckForLibs(context):
         print('Did not find libmpfr, AOCL LibM tests wont work!')
         context.Result(res)
 
+def CheckPathDir(context, mydir):
+    from os.path import isdir
+    from os import listdir
+
+    if not isdir(mydir) or len(os.listdir(mydir)) == 0:
+        print ("Invalid/Empty directory")
+        return False
+    return True
+
 def CheckLibAbi(context):
-    res = False
     #if svml, check for svml path in INTEL_LIB_PATH variable
     #not using CheckLisWithHeader because this might be
     #in user defined local paths, not under /usr/lib
+    res = False
     env = context.env
-    intel_lib_path = None
     libabi = (env['libabi'])
 
-    if libabi == 'svml':
-        context.Message ("Checking for Intel SVML Lib path\n")
-        #get val of shell variable INTEL_LIB_PATH
-        if os.environ.get('INTEL_LIB_PATH', None) is None:
-            print("Environment variable INTEL_LIB_PATH not found")
-        else:
-            #add to env INTEL_LIB_PATH
-            env['INTEL_LIB_PATH'] = os.environ.get('INTEL_LIB_PATH')
-            #check if that path is valid and not empty
-            if not os.path.isdir(env['INTEL_LIB_PATH']) or len(os.listdir(env['INTEL_LIB_PATH'])) == 0:
-                print ("Invalid/empty Intel SVML path")
-            else:
-                context.Message("Using Intel lib path " + env['INTEL_LIB_PATH'])
-                res = True
+    context.Message("Checking if test supporting libraries exists")
 
-    else:   #will add other libabis later
+    if libabi == 'svml':
+        context.Message('INTEL_LIB_PATH')
+        svml_path = os.environ.get('INTEL_LIB_PATH', None)
+        if CheckPathDir(context, svml_path):
+            env['INTEL_LIB_PATH'] = svml_path
+            context.Message(svml_path)
+            res = True
+        else:
+            context.Message(" not found\n")
+
+    # TODO: Add for other lib ABI later
+    else:
         res = True
 
     context.Result(res)
@@ -173,10 +179,7 @@ def All(almenv):
         conf_dir = joinpath(env['BUILDDIR'], '.sconf_temp'),
     )
 
-    if conf.CheckLibAbi():
-        Exit(1)
-
-    #result = conf.CheckProg(almenv.compiler.Cmd())
+    result = conf.CheckProg(almenv.compiler.Cmd())
     result = conf.CheckProg(almenv.compiler.CxxCmd())
 
     if conf.CheckForToolchain():
@@ -189,6 +192,9 @@ def All(almenv):
 
     if conf.CheckForLibs():
         print("Support Libraries not found")
+        Exit(1)
+
+    if conf.CheckLibAbi():
         Exit(1)
 
     conf.CheckZenVer()

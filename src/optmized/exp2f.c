@@ -84,8 +84,8 @@ struct expf_data {
 #define EXP2F_HUGE          exp2f_data.huge
 #define EXP2F_TABLE         exp2f_data.table
 
-#define EXP2F_FARG_MIN          -0x1.9fe368p6f /* log(0x1p-150) ~= -103.97 */
-#define EXP2F_FARG_MAX          0x1.62e42ep6f  /* log(0x1p128)  ~=   88.72  */
+#define EXP2F_FARG_MIN          -0x1.2ap7f
+#define EXP2F_FARG_MAX           0x1.00p7f
 
 #define C2    exp2f_data.poly[0]
 #define C3    exp2f_data.poly[1]

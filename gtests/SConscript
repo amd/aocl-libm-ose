@@ -3,14 +3,15 @@
 #
 
 import os
-from os import path
-from os.path import join as joinpath
+from os import path, listdir
+from os.path import isdir, join as joinpath
 
-Import('env')
+Import('env', 'almenv')
 
 #env.Replace(CC='g++',LINKFLAGS=[])
 
 build_root = joinpath(env['BUILDROOT'], 'gtests')
+alm_path   = joinpath(env['BUILDROOT'], 'src')
 
 excludes = Glob('*_old.cc')
 
@@ -47,12 +48,12 @@ testcflags = ['-funsigned-char', '-fno-strict-aliasing',
 
 ccflags = []
 liblist = []
+libpath = ['#'+alm_path]
 incpath = ['#gtests/include',
            '#gtests/include/almtest',
            '#gtests/gapi/gtest',
            '#gtests/gapi/gbench',
            '.', './include']
-libpath = []
 
 abi = env['libabi']
 #print(abi, env['libabi'])
@@ -98,37 +99,38 @@ else:
 liblist.extend(['m', 'gtest', 'benchmark','mparith32', 'mparith64', 'mpfr'])
 #glibpath = ['gapi/gtest', 'gapi/gbench']
 glibpath = ['gapi/gtest', 'gapi/gbench','libs/mparith/32', 'libs/mparith/64']
-libpath = [joinpath('#', build_root, x) for x in glibpath]
+libpath  += [joinpath('#', build_root, x) for x in glibpath]
 
 #if intel svml
 if abi == 'svml':
     libpath += [env['INTEL_LIB_PATH']]
 
-libtestenv = env.Clone()
+
+testenv = env.Clone()
+testenv.Append(
+	CFLAGS  = ccflags + testcflags,
+	CCFLAGS = ccflags + testcflags,
+	CPPPATH = [incpath],
+)
+testenv.Replace(CC=almenv.compiler.CxxCmd(), LINKFLAGS=[])
+
+libtestenv = testenv.Clone()
 libtestenv.Append(
-	CFLAGS = ccflags + testcflags,
-    CCFLAGS  = ccflags + testcflags,
-    CPPPATH  = [incpath],
     VARIANTDIR = 'gtests'
 )
-libtestenv.Replace(CC='g++',LINKFLAGS=[])
 
 #print([x.path for x in test_common_srcs])
 libtest = libtestenv.StaticLibrary('test', test_common_srcs)
 
-e = env.Clone()
-e.Replace(CC='g++',LINKFLAGS=[])
+e = testenv.Clone()
 e.Append(
-	CFLAGS = ccflags + testcflags,
-	CCFLAGS = ccflags + testcflags,
-	INCPATH = incpath,
-	CPPPATH = incpath,
-	LIBPATH=libpath,
-	LIBS = [libtest] + liblist
+	INCPATH = [incpath],
+	LIBPATH = libpath,
+	LIBS    = [libtest] + liblist
 )
 
 def getSubdirs(abs_path_dir):
-    lst = [ name for name in os.listdir(abs_path_dir) if path.isdir(joinpath(abs_path_dir, name)) and name[0] != '.' ]
+    lst = [ name for name in listdir(abs_path_dir) if isdir(joinpath(abs_path_dir, name)) and name[0] != '.' ]
     lst.sort()
     return lst
 

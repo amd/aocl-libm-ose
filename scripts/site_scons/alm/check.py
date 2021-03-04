@@ -31,10 +31,10 @@ from SCons.SConf import *
 
 toolchain_versions = {
     #Toolchain : {preferred_version, min_version}
-    'GCC' : {'10.2' , '9.2'},
-    'AOCC': {'3.0', '2.2'},
-    'MSVC': {'12.0', '2.2'},
-    'ICC' : {'2020.2', '2020.1'},  # Is this really correct ?
+    'GCC' :     {'max':'10.2' ,  'min':'9.2'},
+    'CLANG':    {'max':'12.0',   'min':'9.0'},
+    'MSVC':     {'max':'12.0',   'min':'2.2'},
+    'ICC' :     {'max':'2020.2', 'min':'2020.1'},  # Is this really correct ?
 }
 
 toolchain_macros = {
@@ -52,7 +52,6 @@ def CheckForProgram(context):
     result = conf.CheckProg(env.compiler.Cmd())
     context.Result(result)
 
-
 def CheckProgramVersion(context, pgm, version):
     context.Message('Checking for Program...', pgm)
     result = conf.TryLink(mylib_test_source_file, '.c')
@@ -60,19 +59,23 @@ def CheckProgramVersion(context, pgm, version):
 
 def CheckForToolchain(context):
     from SCons.SConf import CheckCC, CheckCXX
-
-    res = CheckCC(context)
-    if not res:
-        print('C Compiler not found')
-        context.Result(res)
-
-    res = CheckCXX(context)
-    if not res:
-        print('C++ Compiler not found')
-
-    context.Result(res)
-
-    #result = context.TryLink(mylib_test_source_file.format("mpfr.h"), '.c')
+    result = False
+    env = context.env
+    context.Message('Checking for Tool Chain')
+    if not CheckCC(context) or CheckCXX(context):
+        cc,cxx = env['CC'], env['CXX']
+        cc_ver, cxx_ver = env['CCVERSION'], env['CXXVERSION']
+        for k,v in toolchain_versions.items():
+            if k.lower() in cc:
+                print ('Using compiler {0} ver {1}'.format(k, cc_ver))
+                #ignoring last . to convert to float
+                cc_ver = '.'.join(cc_ver.split('.')[:-1])
+                cxx_ver = '.'.join(cxx_ver.split('.')[:-1])
+                if float(v['min']) <= float(cc_ver) <= float(v['max']) and \
+                    float(v['min']) <= float(cxx_ver) <= float(v['max']):
+                    result = True
+    context.Result(result)
+    return result
 
 def CheckForHeaders(context):
     """
@@ -141,6 +144,13 @@ def All(almenv):
     })
 
     if conf.CheckLibAbi():
+        Exit(1)
+
+    if not conf.CheckForToolchain():
+        print ('Unsupported compiler version')
+        print ('Supported versions:')
+        for k,v in toolchain_versions.items():
+            print (k + ' min: ' + v['min'] + ' max ' + v['max'])
         Exit(1)
 
     #result = conf.CheckProg(almenv.compiler.CxxCmd())

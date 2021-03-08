@@ -40,45 +40,45 @@ class AlmVariables(Variables):
                          args = ARGUMENTS)
 
         self.AddVariables(
-            PathVariable('AR', 'Set path for Archiver', None),
-            PathVariable('AS', 'Set path for Assembler', None),
-            PathVariable('CC', 'Set path for C Compiler', None),
-            PathVariable('CXX', 'Set path for C++ Compiler', None),
-            PathVariable('FC', 'Set path for Fortran Compiler', None),
-            PathVariable('LD', 'Set path for Linker', None),
+            PathVariable('ALM_AR', 'Set path for Archiver', None),
+            PathVariable('ALM_AS', 'Set path for Assembler', None),
+            PathVariable('ALM_CC', 'Set path for C Compiler', None),
+            PathVariable('ALM_CXX', 'Set path for C++ Compiler', None),
+            PathVariable('ALM_FC', 'Set path for Fortran Compiler', None),
+            PathVariable('ALM_LD', 'Set path for Linker', None),
         )
 
-        self.Add('ARFLAGS',
+        self.Add('ALM_ARFLAGS',
                  help = 'Set Archiver flags',
                  converter=variable_shlex_splitter
         )
 
-        self.Add('ASFLAGS',
+        self.Add('ALM_ASFLAGS',
                  help = 'Set Assembler flags',
                  converter=variable_shlex_splitter
         )
 
-        self.Add('CCFLAGS',
+        self.Add('ALM_CCFLAGS',
                  help = 'Set C Compiler flags',
                  converter=variable_shlex_splitter
         )
 
-        self.Add('CPPFLAGS',
+        self.Add('ALM_CPPFLAGS',
                  help = 'Set C Preprocessor flags',
                  converter=variable_shlex_splitter
         )
 
-        self.Add('CXXFLAGS',
+        self.Add('ALM_CXXFLAGS',
                  help = 'Set C++ Compiler flags',
                  converter=variable_shlex_splitter
         )
 
-        self.Add('FCFLAGS',
+        self.Add('ALM_FCFLAGS',
                  help = 'Set Fortran Compiler flags',
                  converter=variable_shlex_splitter
         )
 
-        self.Add('LDFLAGS',
+        self.Add('ALM_LDFLAGS',
                  help = 'Set Linker flags',
                  converter=variable_shlex_splitter
         )

@@ -24,6 +24,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import os
+import copy
 #from .gcc import Gcc
 #from .llvm import Llvm
 #from .intel import Icc
@@ -57,7 +58,7 @@ class Compiler:
 
         self.link_flags_debug = []
 
-        self.link_flags_release = self.compile_flags_release
+        self.link_flags_release = copy.deepcopy(self.compile_flags_release)
 
         self.link_flag_map = {
             'debug': self.link_flags_debug,
@@ -126,11 +127,13 @@ class Compiler:
         '''
         self.__fixup_from_vars(env)
 
-        #print('--from compiler-> ', self.Cmd())
         env['CC']        = self.Cmd()
         env['CXX']       = self.CxxCmd()
         env['CFLAGS']    = self.CFlags()
         env['LINKFLAGS'] = self.LDFlags()
+
+        env['CCVERSION'] = self.Version()
+        env['CXXVERSION'] = self.Version()
 
     def UpdateLDFlags(self, flags):
         self.ENV['LDFLAGS'] += flags
@@ -140,33 +143,34 @@ class Compiler:
         Fixing up from VARS, has higher precedence than
         From environment variables
         '''
-        if env['CC']:
-            self.SetCmd(env['CC'])
+        keys = env.Dictionary().keys()
 
-        if env['CXX']:
-            self.SetCxxCmd(env['CXX'])
+        if 'ALM_CC' in keys:
+            self.SetCmd(env['ALM_CC'])
 
-        if env['CFLAGS']:
-            self.UpdateCFlags(env['CFLAGS'])
+        if 'ALM_CXX' in keys:
+            self.SetCxxCmd(env['ALM_CXX'])
 
-        dct = env.Dictionary()
-        if 'LINKFLAGS' in dct.keys():
-            self.UpdateLDFlags(env['LINKFLAGS'])
+        if 'ALM_CFLAGS' in keys:
+            self.UpdateCFlags(env['ALM_CFLAGS'])
+
+        if 'ALM_LINKFLAGS' in keys:
+            self.UpdateLDFlags(env['ALM_LINKFLAGS'])
 
     def __fixup_from_env(self):
         '''
         '''
-        if 'CC' in os.environ:
-            self.SetCmd(os.getenv('CC'))
+        if 'ALM_CC' in os.environ:
+            self.SetCmd(os.getenv('ALM_CC'))
 
-        if 'CXX' in os.environ:
-            self.SetCxxCmd(os.getenv('CXX'))
+        if 'ALM_CXX' in os.environ:
+            self.SetCxxCmd(os.getenv('ALM_CXX'))
 
-        if 'CFLAGS' in os.environ:
-            self.UpdateCFlags(os.getenv['CFLAGS'])
+        if 'ALM_CFLAGS' in os.environ:
+            self.UpdateCFlags(os.getenv['ALM_CFLAGS'])
 
-        if 'LDFLAGS' in os.environ:
-            self.UpdateLDFlags(os.getenv['LDFLAGS'])
+        if 'ALM_LDFLAGS' in os.environ:
+            self.UpdateLDFlags(os.getenv['ALM_LDFLAGS'])
 
     def IsGCC(self):
         return False
@@ -190,10 +194,10 @@ class Compiler:
             [self.Cmd(), self.version_str], stdout=subprocess.PIPE)
         (stdout, stderr) = process.communicate()
 
-        match = re.search('[0-9][0-9.]*', stdout)
+        match = re.search('[0-9]*[0-9.]+', str(stdout))
         if match is None:
-            return None
+            return '0.0.0'
 
-        version = match.group().split('.')
+        version = match.group(0)
 
-        return version
+        return '{}'.format(version)

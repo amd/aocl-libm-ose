@@ -90,9 +90,12 @@ class AlmEnvironment(object):
 
         buildtype = self.env['BUILD']
         cc_opt = self.compiler_type  = self.opts.GetOption('compiler')
+        try:
+            cc_env = self.env['ALM_CC']
+        except KeyError as k:
+            cc_env = self.env['CC']
 
-        cc_env = self.env['CC']
-        if cc_env.endswith('clang'):
+        if 'clang' in cc_env:
             print(
                 'Found LLVM compiler in CC variable, Setting up correctly..'
             )
@@ -230,8 +233,6 @@ class AlmEnvironment(object):
 
         # Setup what is printed while compiling
         compile_helper.UpdateEnvComStr(self.env)
-
-        self.CheckDefault()
 
         return self.env
 

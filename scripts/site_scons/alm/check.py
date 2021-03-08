@@ -37,8 +37,9 @@ toolchain_versions = {
     #Toolchain : {preferred_version, min_version}
     'GCC' :     {'max':'10.2' ,  'min':'9.2'},
     'CLANG':    {'max':'12.0',   'min':'9.0'},
+    'AOCC':     {'max':'12.0',   'min':'9.0'},
     'MSVC':     {'max':'12.0',   'min':'2.2'},
-    'ICC' :     {'max':'2020.2', 'min':'2020.1'},  # Is this really correct ?
+    'ICC' :     {'max':'2020.2', 'min':'2020.1'},
 }
 
 toolchain_macros = {
@@ -62,22 +63,19 @@ def CheckProgramVersion(context, pgm, version):
     context.Result(result)
 
 def CheckForToolchain(context):
-    from SCons.SConf import CheckCC, CheckCXX
+    context.Message('Checking for Toolchain ')
     result = False
     env = context.env
-    context.Message('Checking for Tool Chain')
-    if not CheckCC(context) or CheckCXX(context):
-        cc,cxx = env['CC'], env['CXX']
-        cc_ver, cxx_ver = env['CCVERSION'], env['CXXVERSION']
-        for k,v in toolchain_versions.items():
-            if k.lower() in cc:
-                print ('Using compiler {0} ver {1}'.format(k, cc_ver))
-                #ignoring last . to convert to float
-                cc_ver = '.'.join(cc_ver.split('.')[:-1])
-                cxx_ver = '.'.join(cxx_ver.split('.')[:-1])
-                if float(v['min']) <= float(cc_ver) <= float(v['max']) and \
-                    float(v['min']) <= float(cxx_ver) <= float(v['max']):
+    cc = env['compiler']
+    cc_ver = env['CCVERSION']
+    for k,v in toolchain_versions.items():
+        if k.lower() in cc:
+            context.Message(' Using compiler {0} ver {1}'.format(k, cc_ver))
+            #ignoring last . to convert to float
+            cc_ver = '.'.join(cc_ver.split('.')[:-1])
+            if float(v['min']) <= float(cc_ver) <= float(v['max']): 
                     result = True
+
     context.Result(result)
     return result
 
@@ -182,6 +180,10 @@ def All(almenv):
         conf_dir = joinpath(env['BUILDDIR'], '.sconf_temp'),
     )
 
+    result = conf.CheckProg(almenv.compiler.Cmd())
+    result = conf.CheckProg(almenv.compiler.CxxCmd())
+
+    #print('->>',  almenv.compiler.Cmd())
     result = conf.CheckProg(almenv.compiler.Cmd())
     result = conf.CheckProg(almenv.compiler.CxxCmd())
 

@@ -27,8 +27,8 @@ from . import Compiler
 
 class LLVM(Compiler):
     def Setup(self):
-        self.cmd    = 'clang'
-        self.cxxcmd = 'clang++'
+        self.SetCmd('clang')
+        self.SetCxxCmd('clang++')
 
         common_ld_flags = ['-fuse-ld=ld']
 

@@ -121,6 +121,10 @@ class AlmEnvironment(object):
         dev   = opts.GetOption('developer')
         abi   = opts.GetOption('libabi')
 
+        # fix the debug, it is set to 'none' instead of None
+        # due to the way options are handled
+        debug = None if debug == 'none' else debug
+
         if debug and dev:
             print("Debug and Developer options cannot be together", debug, dev)
             Exit(1)
@@ -132,23 +136,25 @@ class AlmEnvironment(object):
 
         if not debug and not dev:
             dirsuffix += '-release'
-            self.env['build'] = 'release'
+            bld = 'release'
         elif debug:
             dirsuffix += '-debug'
-            self.env['build'] = 'debug'
+            bld = 'debug'
         elif dev:
             dirsuffix += '-dev'
-            self.env['build'] = 'dev'
+            bld = 'dev'
             self.env['developer'] = 1
         else:
             print('Unknown build mode')
-            self.env['build'] = 'UNKNOWN'
+            bld = 'UNKNOWN'
             #dirsuffix = self.compiler_type
 
+        self.env['BUILD'] = bld
         self.builddir = joinpath(self.builddir, dirsuffix)
 
         if not self.env['ENV']['BUILDDIR']:
-            self.env['BUILDDIR']  = self.builddir
+            self.env['ENV']['BUILDDIR']  = self.builddir
+            self.env['BUILDDIR'] = self.builddir
 
         # Setup cachedir
         self.env.CacheDir(joinpath(self.builddir, 'cache'))
@@ -201,7 +207,14 @@ class AlmEnvironment(object):
         """
         """
         # Type of build, release/debug
-        self.env['BUILD'] = self.opts.GetOption('build')
+        builddict = {
+                'all' : 'debug',
+                'libs': 'debug',
+                'tests': 'release',
+                'none': 'release'
+                }
+
+        self.env['BUILD'] = builddict[self.opts.GetOption('debug_mode')]
 
         self.__configure_compiler()
 
@@ -217,6 +230,8 @@ class AlmEnvironment(object):
 
         # Setup what is printed while compiling
         compile_helper.UpdateEnvComStr(self.env)
+
+        self.CheckDefault()
 
         return self.env
 

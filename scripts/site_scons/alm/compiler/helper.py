@@ -30,7 +30,10 @@ import os
 def strip_build_path(path, env):
     path = str(path)
     #print('path before-> ' , path)
-    bld_root = env['BUILDROOT'] + '/'
+    try:
+        bld_root = env['BUILDDIR'] + '/'
+    except :
+        bld_root = ''
     #bld_root_src = bld_root + 'src' + '/'
     bases = ['src/', 'tests/', bld_root] #, bld_root_src]
     for b in bases:

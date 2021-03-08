@@ -34,6 +34,8 @@ REAL FUNC_FREXP(REAL x, int *ptr)
     return ret;
 }
 
+REAL FUNC_FREXP_ULP123(REAL x, int *ptr, REAL z, double *sulps, double *sreldiff);
+
 REAL FUNC_FREXP_ULP123(REAL x, int *ptr, REAL z, double *sulps, double *sreldiff)
 {
     REAL ret;

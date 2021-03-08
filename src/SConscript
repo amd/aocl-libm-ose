@@ -39,7 +39,7 @@ e.Append(
                #'-Wno-unused-but-set-parameter',
                '-Wno-unused-parameter',
                '-fPIC',
-               '-mavx2', '-march=znver2'],
+              ],
     # CPPPATH = [],
     # CCFLAGS = [],
     # LINKFLAGS = [],

@@ -30,6 +30,10 @@ builddir = joinpath(env['BUILDROOT'], 'src', 'optmized')
 
 e = env.Clone()
 
+e.Append(
+    CFLAGS = ['-O3', '-fPIC', '-mavx2', '-mfma', '-flax-vector-conversions'],
+)
+
 experiment_src=[
 	'expm1f.c',
 	]

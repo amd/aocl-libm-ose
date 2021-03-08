@@ -164,6 +164,7 @@ extern int x02bjf(void);
 extern int x02bkf(void);
 extern int x02blf(void);
 extern int x02baf(void);
+#if 0
 void createzero(int *sign, REAL *r);
 void createlargest(int *sign, int *mantis, int *emax, REAL *r);
 void createinfinity(int *sign, REAL *r);
@@ -173,5 +174,6 @@ int dispos(REAL *x);
 int disneg(REAL *x);
 int disinf(REAL *x);
 int disnan(REAL *x);
+#endif
 
 #endif

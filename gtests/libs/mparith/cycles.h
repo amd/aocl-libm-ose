@@ -152,7 +152,7 @@ static inline REAL DIFTSC( MY_ULARGE_INTEGER t0, MY_ULARGE_INTEGER t1)
 
   tlow = (t1.LowPart-t0.LowPart);
   thi  = (t1h - t0.HighPart);
-  result = (REAL) tlow + (REAL)(thi *_SHIFT32);
+  result = (REAL) tlow + ((REAL)thi *_SHIFT32);
 
   return result;
 }
@@ -205,7 +205,7 @@ static inline REAL DIFTSC( MY_ULARGE_INTEGER t0, MY_ULARGE_INTEGER t1)
       tlow = t1.LowPart - t0.LowPart;
       thi = t1.HighPart - t0.HighPart;
     }
-  result = (REAL) tlow + (REAL)(thi *_SHIFT32);
+  result = (REAL) tlow + ((REAL)thi *_SHIFT32);
 
   return result;
 }

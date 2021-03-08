@@ -40,7 +40,7 @@ def print_build_config(env):
     BuildDir     : %-20s
     Compiler     : %-20s  Build    : %s
     ABI          : %-20s  Developer: %s
-    '''% (env['BUILDROOT'],
-          env['compiler'], env['build'],
+    '''% (env['BUILDDIR'],
+          env['compiler'], env['BUILD'],
           env['libabi'],   env['developer']))
     print('===========================================================')

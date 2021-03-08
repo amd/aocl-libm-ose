@@ -12,7 +12,7 @@
 #    may be used to endorse or promote products derived from this software without
 #    specific prior written permission.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' AND
 # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 # IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
@@ -60,8 +60,8 @@ class Compiler:
         self.link_flags_release = self.compile_flags_release
 
         self.link_flag_map = {
-            "debug": self.link_flags_debug,
-            "release": self.link_flags_release
+            'debug': self.link_flags_debug,
+            'release': self.link_flags_release
         }
 
         self.cpp_flags_debug = []
@@ -69,8 +69,8 @@ class Compiler:
         self.cpp_flags_release = []
 
         self.cpp_flag_map = {
-            "debug": self.cpp_flags_debug,
-            "release": self.cpp_flags_release
+            'debug': self.cpp_flags_debug,
+            'release': self.cpp_flags_release
         }
 
         self.ENV = {
@@ -114,8 +114,10 @@ class Compiler:
         '''
         self.__fixup_from_env()
 
-        self.UpdateCFlags(self.cpp_flag_map[self.prod_mode])
-        self.UpdateLDFlags(self.link_flag_map[self.prod_mode])
+        prod_mode = self.prod_mode
+        self.UpdateCFlags(self.cpp_flag_map[prod_mode] + 
+                          self.compile_flag_map[prod_mode])
+        self.UpdateLDFlags(self.link_flag_map[prod_mode])
 
     def Update(self, env):
         '''
@@ -152,8 +154,8 @@ class Compiler:
             self.UpdateLDFlags(env['LINKFLAGS'])
 
     def __fixup_from_env(self):
-        """
-        """
+        '''
+        '''
         if 'CC' in os.environ:
             self.SetCmd(os.getenv('CC'))
 
@@ -179,9 +181,9 @@ class Compiler:
         return False
 
     def Version(self):
-        """
+        '''
         Get the version for each of the compiler type
-        """
+        '''
         import subprocess, re
 
         process = subprocess.Popen(

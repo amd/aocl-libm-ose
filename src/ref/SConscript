@@ -27,6 +27,9 @@ Import('env')
 from os.path import join as joinpath
 
 builddir = joinpath(env['BUILDROOT'], 'src', 'ref')
+env.Append(
+    CFLAGS=['-mavx2', '-mavx', '-mfma'],
+)
 
 env.Append (
     CFLAGS = ['-O2', '-mfma', '-mavx2']
@@ -43,8 +46,8 @@ ref_srcs = Glob('*.[cS]',    exclude=ref_excludes)
 ref_objs = env.StaticObject(ref_srcs)
 
 cmplx_objs = SConscript('cmplx/SConscript',
-			exports = {'env' : env},
-			duplicate = 0,
+                        exports = {'env' : env},
+                        duplicate = 0,
                         src_dir = joinpath(env['CWD'], 'cmplx'),
                         variant_dir = joinpath(builddir, 'cmplx'))
 

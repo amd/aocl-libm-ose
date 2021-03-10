@@ -1,0 +1,14 @@
+#
+# Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
+#
+
+Import('env')
+
+e = env.Clone()
+
+sinh_srcs = Glob('*.cc')
+
+sinh = e.Program('test_sinh', sinh_srcs)
+
+Return('sinh')
+

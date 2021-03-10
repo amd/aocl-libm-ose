@@ -25,8 +25,8 @@
 
 from . import Compiler
 class Gcc(Compiler):
-    def __init__(self, prod_mode, bvars = None, opts = None):
-        super(Gcc, self).__init__(prod_mode, bvars, opts)
+    def __init__(self, prod_mode):
+        super(Gcc, self).__init__(prod_mode)
         self.cmd = 'gcc'
         self.cxxcmd = 'g++'
         self.compile_flags_debug = [
@@ -109,7 +109,6 @@ class Gcc(Compiler):
             '-Werror',
             '-Wlto-type-mismatch',
         ]
-        self.fixup_from_env()
 
 
     def Cmd(self):
@@ -121,3 +120,7 @@ class Gcc(Compiler):
     def LDFlags(self):
         return self.link_flag_map[self.prod_mode]
 
+
+class ICC(Compiler):
+    def __init__(self):
+        pass

@@ -45,6 +45,6 @@ struct expf_data {
 };
 
 
-extern double __two_to_jby64[];
+extern double  __two_to_jby64[];
 
 #endif

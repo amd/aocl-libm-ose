@@ -23,12 +23,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import os
-
 class Compiler:
-    def __init__(self, prod_mode, bvars = None, opts = None):
-        self.vars = bvars
-        self.opts = opts
+    def __init__(self, prod_mode):
         self.cxxcmd = ''
         self.cmd = ''
         self.prod_mode = prod_mode
@@ -66,21 +62,3 @@ class Compiler:
             "debug": self.cpp_flags_debug,
             "release": self.cpp_flags_release
         }
-
-    def fixup_from_vars(self):
-        pass
-
-    def fixup_from_env(self):
-        if 'CC' in os.environ:
-            self.cmd = os.getenv('CC')
-        
-        if 'CXX' in os.environ:
-            self.cxxcmd = os.getenv('CXX')
-
-        if 'CFLAGS' in os.environ:
-            self.compile_flag_map[self.prod_mode]
-
-        if 'LDFLAGS' in os.environ:
-            self.link_flag_map[self.prod_mode]
-
-

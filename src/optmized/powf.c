@@ -54,8 +54,8 @@ extern uint64_t log_256[];
 
 #if N == 8
 #define POLY_DEGREE 4
-extern const uint64_t log_table_256[];
-extern const uint64_t log_f_inv_256[];
+extern double log_table_256[];
+extern double log_f_inv_256[];
 #define TAB_F_INV log_f_inv_256
 #define TAB_LOG   log_table_256
 #define MANT_MASK_N  (0x000FF00000000000ULL)
@@ -135,7 +135,7 @@ static struct expf_data expf_v2_data = {
     .tblsz_byln2 = 0x1.71547652b82fep+6,
     .Huge = 0x1.8000000000000p+52,
 #if EXPF_N == 6
-    //.table_v3 = &__two_to_jby64[0],
+    .table_v3 = &__two_to_jby64[0],
 #elif EXPF_N == 5
     .table_v3 = (double*)L__two_to_jby32_table,
 #endif
@@ -239,7 +239,7 @@ calculate_log(double_t x)
     /* f = F - Y */
     double_t f = j_times_half - mant.d;
 
-    r = f * asdouble(TAB_F_INV[j]);
+    r = f * TAB_F_INV[j];
 
     double_t r2 = r * r;                /* r^2 */
 

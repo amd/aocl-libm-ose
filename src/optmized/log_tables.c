@@ -28,7 +28,7 @@
 #include <stdint.h>
 
 
-const uint64_t log_256[] = {
+uint64_t log_256[] = {
 		0x0,
 	    0x3f6ff00aa2b10bc0,
 		0x3f7fe02a6b106789,
@@ -288,10 +288,9 @@ const uint64_t log_256[] = {
 		0x3fe62e42fefa39ef,
 };
 
-struct log_table {
+struct __log_256_table_interleaved {
 	uint64_t lead, tail;
-}; 
-const struct log_table log_table_256[] = {
+} log_table_256[] = {
 		   {0x0000000000000000, 0x0000000000000000},
 		   {0x3f6ff00aa0000000, 0x3db5885e0250435a},
 		   {0x3f7fe02a60000000, 0x3de620cf11f86ed2},
@@ -552,7 +551,7 @@ const struct log_table log_table_256[] = {
 		   {0x0000000000000000, 0x0000000000000000},
 		};
 
-const uint64_t log_f_inv_256[] = {
+uint64_t log_f_inv_256[] = {
 			0x4000000000000000, 0x3fffe01fe01fe020, 0x3fffc07f01fc07f0, 0x3fffa11caa01fa12,
 			0x3fff81f81f81f820, 0x3fff6310aca0dbb5, 0x3fff44659e4a4271, 0x3fff25f644230ab5,
 			0x3fff07c1f07c1f08, 0x3ffee9c7f8458e02, 0x3ffecc07b301ecc0, 0x3ffeae807aba01eb,

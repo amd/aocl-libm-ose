@@ -67,7 +67,6 @@ else:
 
 experiment_src=[
 	'expm1f.c',
-        'log_v3.c',
 	]
 
 source = Glob('*.c', exclude=experiment_src)

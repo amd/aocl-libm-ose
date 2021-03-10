@@ -29,22 +29,21 @@
 #include <libm_special.h>
 
 #include <libm_macros.h>
-#include <libm_amd.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/typehelper-vec.h>
 #include <libm/compiler.h>
 
-#define AMD_LIBM_FMA_USABLE 1           /* needed for poly.h */
+#define AMD_LIBM_FMA_USABLE 0           /* needed for poly.h */
 #include <libm/poly-vec.h>
 
 #define VECTOR_LENGTH 4
 #define N 8
 #define TABLE_SIZE (1ULL << N)
 #define MAX_POLYDEGREE  8
-extern const uint64_t log_256[];
-extern const uint64_t log_f_inv_256[];
+extern double log_256[];
+extern const double log_f_inv_256[];
 #define TAB_F_INV log_f_inv_256
 #define TAB_LOG   log_256
 #define MANT_MASK_N  (0x000FF00000000000ULL)
@@ -53,13 +52,16 @@ extern const uint64_t log_f_inv_256[];
 #define DOUBLE_PRECISION_MANTISSA 0x000fffffffffffffULL
 #define ONE_BY_TWO 0x3fe0000000000000ULL
 
+/*
 v_i32x4_t float_bias =  _MM_SET1_I32(SINGLE_PRECISION_BIAS);
 v_u64x4_t mantissa_bits = _MM_SET1_I64(DOUBLE_PRECISION_MANTISSA);
 v_u64x4_t one_by_two = _MM_SET1_I64(ONE_BY_TWO);
 v_u64x4_t mant_8_bits = _MM_SET1_I64(MANT_MASK_N);
-
+*/
 
 static struct {
+    v_i32x4_t float_bias;
+    v_u64x4_t mantissa_bits, one_by_two, mant_8_bits;
     v_u32x4_t v_min, v_max;
     double ALIGN(16) poly[MAX_POLYDEGREE];
     v_f64x4_t ln2;
@@ -67,6 +69,12 @@ static struct {
     .ln2    = _MM_SET1_PD4(0x1.62e42fefa39efp-1), /* ln(2) */
     .v_min  = _MM_SET1_I32(0x00800000),
     .v_max  = _MM_SET1_I32(0x7f800000),
+
+    .float_bias =    _MM_SET1_I32(SINGLE_PRECISION_BIAS),
+    .mantissa_bits = _MM_SET1_I64(DOUBLE_PRECISION_MANTISSA),
+    .one_by_two =    _MM_SET1_I64(ONE_BY_TWO),
+    .mant_8_bits =   _MM_SET1_I64(MANT_MASK_N),
+
     /*
     * Polynomial constants, 1/x! (reciprocal x)
     */
@@ -106,6 +114,11 @@ static struct {
 		0x1.5f8905cb0cc4ep-10
     },
 };
+
+#define SP_BIAS         v_log_data.float_bias
+#define MANTISSA_BITS   v_log_data.mantissa_bits
+#define HALF            v_log_data.one_by_two
+#define MANT_8_BITS     v_log_data.mant_8_bits
 
 #define SCALAR_POWF amd_powf
 #define V_MIN       v_log_data.v_min
@@ -212,7 +225,7 @@ static struct {
  *
  */
 
-static inline v_f64x4_t look_table_access(const uint64_t* table,
+static inline v_f64x4_t look_table_access(const double* table,
                                           const int vector_size,
                                           v_u64x4_t indices)
 {
@@ -220,7 +233,7 @@ static inline v_f64x4_t look_table_access(const uint64_t* table,
      v_f64x4_t ret;
      for(int i = 0; i < vector_size; i++) {
         j = indices[i];
-        ret[i] = asdouble(table[j]);
+        ret[i] = table[j];
      }
      return ret;
 }
@@ -253,15 +266,15 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
     v_u64x4_t ux = as_v4_u64_f64(xd);
 
-    v_i32x4_t int_exponent =  (u >> 23) - float_bias;
+    v_i32x4_t int_exponent =  (u >> 23) - SP_BIAS;
 
     v_f64x4_t exponent =  _mm256_cvtepi32_pd (int_exponent);
 
-    v_u64x4_t mant  = ((ux & mantissa_bits) | one_by_two);
+    v_u64x4_t mant  = ((ux & MANTISSA_BITS) | HALF);
 
-    v_u64x4_t index = ux & mant_8_bits;
+    v_u64x4_t index = ux & MANT_8_BITS;
 
-    v_f64x4_t index_times_half = as_v4_f64_u64(index | one_by_two);
+    v_f64x4_t index_times_half = as_v4_f64_u64(index | HALF);
 
     index =  index >> (52 - N);
 

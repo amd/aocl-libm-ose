@@ -201,17 +201,21 @@ extern __m128  G_ENTRY_PT(vrs4_log2f)(__m128);
 extern __m128  G_ENTRY_PT(vrs4_log10f)(__m128);
 extern __m128  G_ENTRY_PT(vrs4_log1pf)(__m128);
 extern __m128  G_ENTRY_PT(vrs4_cosf)(__m128);
+extern __m128  G_ENTRY_PT(vrs4_coshf)(__m128);
 extern __m128  G_ENTRY_PT(vrs4_sinf)(__m128);
 extern __m128  G_ENTRY_PT(vrs4_tanf)(__m128);
+extern __m128  G_ENTRY_PT(vrs4_tanhf)(__m128);
 extern __m128  G_ENTRY_PT(vrs4_cbrtf)(__m128);
 
 extern __m256  G_ENTRY_PT(vrs8_cosf)(__m256);
+extern __m256  G_ENTRY_PT(vrs8_coshf)(__m256);
 extern __m256  G_ENTRY_PT(vrs8_expf)(__m256);
 extern __m256  G_ENTRY_PT(vrs8_log2f)(__m256);
 extern __m256  G_ENTRY_PT(vrs8_log10f)(__m256);
 extern __m256  G_ENTRY_PT(vrs8_logf)(__m256);
 extern __m256  G_ENTRY_PT(vrs8_sinf)(__m256);
 extern __m256  G_ENTRY_PT(vrs8_tanf)(__m256);
+extern __m256  G_ENTRY_PT(vrs8_tanhf)(__m256);
 extern __m256  G_ENTRY_PT(vrs8_powf)(__m256, __m256);
 
 extern __m128d G_ENTRY_PT(vrd2_cbrt)(__m128d);
@@ -228,12 +232,19 @@ extern __m128d G_ENTRY_PT(vrd2_pow)(__m128d, __m128d);
 extern __m128d G_ENTRY_PT(vrd2_sin)(__m128d);
 extern __m128d G_ENTRY_PT(vrd2_tan)(__m128d);
 
+extern __m256d G_ENTRY_PT(vrd4_cbrt)(__m256d);
+extern __m256d G_ENTRY_PT(vrd4_cos)(__m256d);
 extern __m256d G_ENTRY_PT(vrd4_exp)(__m256d);
 extern __m256d G_ENTRY_PT(vrd4_exp2)(__m256d);
+extern __m256d G_ENTRY_PT(vrd4_exp10)(__m256d);
 extern __m256d G_ENTRY_PT(vrd4_expm1)(__m256d);
 extern __m256d G_ENTRY_PT(vrd4_log)(__m256d);
+extern __m256d G_ENTRY_PT(vrd4_log2)(__m256d);
+extern __m256d G_ENTRY_PT(vrd4_log10)(__m256d);
+extern __m256d G_ENTRY_PT(vrd4_log1p)(__m256d);
 extern __m256d G_ENTRY_PT(vrd4_pow)(__m256d, __m256d);
 extern __m256d G_ENTRY_PT(vrd4_sin)(__m256d);
+extern __m256d G_ENTRY_PT(vrd4_tan)(__m256d);
 
 #endif	/* __AMD_LIBM_ENTRY_PT_H__ */
 

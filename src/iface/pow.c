@@ -30,6 +30,8 @@
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
 #include <libm/cpu_features.h>
+#include <libm/arch/zen2.h>
+#include <libm/arch/zen3.h>
 
 typedef double (*amd_pow_t)(double, double);
 typedef float (*amd_powf_t)(float, float) ;
@@ -43,7 +45,7 @@ LIBM_IFACE_PROTO(pow)(void *arg)
 {
     /*
      * Should setup all variants,
-     * single, double, and vectors (also complex if available)
+     * powgle, double, and vectors (also complex if available)
      */
 
     amd_pow_t  fn_d = NULL;
@@ -92,8 +94,20 @@ LIBM_IFACE_PROTO(pow)(void *arg)
         case 0x15:                      /* Naples */
             break;
         case 0x17:                      /* Rome */
+                   fn_d   = &ALM_PROTO_ARCH_ZN2(pow);
+                   fn_s   = &ALM_PROTO_ARCH_ZN2(powf);
+                   fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_powf);
+                   fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_powf);
+                   fn_v2d = &ALM_PROTO_ARCH_ZN2(vrd2_pow);
+                   fn_v4d = &ALM_PROTO_ARCH_ZN2(vrd4_pow);
             break;
         case 0x19:                      /* Milan */
+                   fn_d   = &ALM_PROTO_ARCH_ZN3(pow);
+                   fn_s   = &ALM_PROTO_ARCH_ZN3(powf);
+                   fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_powf);
+                   fn_v8s = &ALM_PROTO_ARCH_ZN3(vrs8_powf);
+                   fn_v2d = &ALM_PROTO_ARCH_ZN3(vrd2_pow);
+                   fn_v4d = &ALM_PROTO_ARCH_ZN3(vrd4_pow);
             break;
         }
     }

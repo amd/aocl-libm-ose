@@ -26,8 +26,8 @@
 from . import Compiler
 
 class LLVM(Compiler):
-    def __init__(self, prod_mode, bvars = None, opts = None):
-        super(LLVM, self).__init__(prod_mode, bvars, opts)
+    def __init__(self, prod_mode):
+        super(LLVM, self).__init__(prod_mode)
         self.cmd = 'clang'
         self.cxxcmd = 'clang++'
         self.compile_flags_debug = [
@@ -63,12 +63,6 @@ class LLVM(Compiler):
 
         self.cpp_flags_debug = []
         self.cpp_flags_release = []
-
-        self.warnings = [
-            '-Weverything',
-        ]
-
-        self.fixup_from_env()
 
     def Cmd(self):
         return self.cmd

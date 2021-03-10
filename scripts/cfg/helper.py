@@ -140,18 +140,6 @@ def UpdateEnvComStr(env):
         env["SHCCCOMSTR"]   = Transform('SHCC')
         env["SHLINKCOMSTR"] = Transform('SHLINK', hidesrc=True)
 
-
-def MakeInstallRoot(env):
-    """Build root has
-       build/<libabi>-<debug/release/developer>
-    """
-    try:
-        inst = env['prefix']
-    except KeyError:
-        inst = '#install'
-
-    env['INSTALL_PREFIX'] = inst
-
 def MakeBuildRoot(env):
     """Build root has
        build/<libabi>-<debug/release/developer>
@@ -190,9 +178,7 @@ def SetupConfiguration(env):
         and puts target into testdir."""
         #print(env.Dump())
         MakeBuildRoot(env)
-        MakeInstallRoot(env)
         UpdateEnvComStr(env)
-        env['compiler'] = GetOption('compiler')
 
         if env['debug_mode'] != 'no':
             env.Append(CPPDEFINES = {'DEBUG': '1'})

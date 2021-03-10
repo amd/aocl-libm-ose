@@ -41,3 +41,13 @@ tanf_specialcase(float x)
 {
     return ALM_PROTO(tanf)(x);
 }
+
+
+
+
+double
+tan_specialcase(double x)
+{
+    return ALM_PROTO(tan)(x);
+}
+

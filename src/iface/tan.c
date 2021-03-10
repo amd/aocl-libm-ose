@@ -33,9 +33,12 @@
 
 //#include <libm/arch/zen.h>
 #include <libm/arch/zen2.h>
+#include <libm/arch/zen3.h>
 
 typedef double  (*amd_tan_t)(double);
 typedef float   (*amd_tanf_t)(float);
+typedef __m128d (*amd_vrd2_tan_t)(__m128d);
+typedef __m256d (*amd_vrd4_tan_t)(__m256d);
 typedef __m128  (*amd_vrs4_tanf_t)(__m128);
 typedef __m256  (*amd_vrs8_tanf_t)(__m256);
 
@@ -47,6 +50,8 @@ LIBM_IFACE_PROTO(tan)(void *arg)
      * single, double, and vectors (also complex if available)
      */
     amd_tan_t        fn_d = NULL;
+    amd_vrd2_tan_t   fn_v2d = NULL;
+    amd_vrd4_tan_t   fn_v4d = NULL;
     amd_tanf_t       fn_s = NULL;
     amd_vrs4_tanf_t  fn_v4s = NULL;
     amd_vrs8_tanf_t  fn_v8s = NULL;
@@ -62,11 +67,14 @@ LIBM_IFACE_PROTO(tan)(void *arg)
     fn_d    = &FN_PROTOTYPE_REF(tan);
     fn_s    = &FN_PROTOTYPE_FMA3(tanf);
     fn_v4s  = &FN_PROTOTYPE_FMA3(vrs4_tanf);
+    fn_v2d  = &FN_PROTOTYPE_FMA3(vrd2_tan);
+    fn_v4d  = &FN_PROTOTYPE_OPT(vrd4_tan);
+    fn_v8s  = &FN_PROTOTYPE_OPT(vrs8_tanf);
 
     if (CPU_HAS_AVX2(features) &&
         CPU_FEATURE_AVX2_USABLE(features)) {
-	    //fn_d = &FN_PROTOTYPE_OPT(tan);
-	    fn_s = &FN_PROTOTYPE_OPT(tanf);
+        fn_d = &FN_PROTOTYPE_OPT(tan);
+        fn_s = &FN_PROTOTYPE_OPT(tanf);
      } else if (CPU_HAS_SSSE3(features) &&
                CPU_FEATURE_SSSE3_USABLE(features)) {
 	    //fn_d = &FN_PROTOTYPE_BAS64(tan);
@@ -86,19 +94,27 @@ LIBM_IFACE_PROTO(tan)(void *arg)
             //fn_s = &ALM_PROTO_ARCH_ZN(tanf);
             break;
         case 0x17:                      /* Rome */
-            fn_s = &ALM_PROTO_ARCH_ZN2(tanf);
+            fn_s   = &ALM_PROTO_ARCH_ZN2(tanf);
+            fn_d   = &ALM_PROTO_ARCH_ZN2(tan);
+            fn_v2d = &ALM_PROTO_ARCH_ZN2(vrd2_tan);
+            fn_v4d = &ALM_PROTO_ARCH_ZN2(vrd4_tan);
             fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_tanf);
             fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_tanf);
             break;
         case 0x19:                      /* Milan */
-            fn_s = &ALM_PROTO_ARCH_ZN2(tanf);
-            fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_tanf);
-            fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_tanf);
+            fn_s   = &ALM_PROTO_ARCH_ZN3(tanf);
+            fn_d   = &ALM_PROTO_ARCH_ZN3(tan);
+            fn_v2d = &ALM_PROTO_ARCH_ZN3(vrd2_tan);
+            fn_v4d = &ALM_PROTO_ARCH_ZN3(vrd4_tan);
+            fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_tanf);
+            fn_v8s = &ALM_PROTO_ARCH_ZN3(vrs8_tanf);
             break;
         }
     }
 
     G_ENTRY_PT_PTR(tan)       = fn_d;
+    G_ENTRY_PT_PTR(vrd2_tan)  = fn_v2d;
+    G_ENTRY_PT_PTR(vrd4_tan)  = fn_v4d;
     G_ENTRY_PT_PTR(tanf)      = fn_s;
     G_ENTRY_PT_PTR(vrs4_tanf) = fn_v4s;
     G_ENTRY_PT_PTR(vrs8_tanf) = fn_v8s;

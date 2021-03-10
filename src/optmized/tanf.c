@@ -25,158 +25,275 @@
  *
  */
 
-#include <stdint.h>
+/*
+ * ISO-IEC-10967-2: Elementary Numerical Functions
+ * Signature:
+ *   float tan(float x)
+ *
+ * Spec:
+ *   tanf(0)    = 0
+ *   tanf(-0)   = 0
+ *   tanf(inf)  = NaN
+ *   tanf(NaN) = NaN
+ *
+ *
+ ******************************************
+ * Implementation Notes
+ * ---------------------
+ *
+ * checks for special cases
+ * if ( ux = infinity) raise overflow exception and return x
+ * if x is NaN then raise invalid FP operation exception and return x.
+ *
+ * 1. Argument reduction
+ * if 2.0^(-13) < |x| < pi/4 then
+ *    tan(pi/4-x) = (1-tan(x))/(1+tan(x)) for x close to pi/4
+ *    tan(x-pi/4) = (tan(x)-1)/(tan(x)+1) close to -pi/4
+ *    tan(x) is approximated by Core Remez [2,3] approximation to tan(x+xx) on the
+ *    interval [0,0.68].
+ * if 2.0^(-27) < |x| < 2.0^(-13) then tan(x) = x + (x * x * x * 1/3)
+ * if |x| < 2.0^(-27) then underflow
+ *
+ * if x < 5e5 then
+ *  Reduce x into range [-pi/4,pi/4] and then compute tan(pi/4-x)
+ *
+ */
 
-#include <libm_macros.h>
+#include <libm_util_amd.h>
 #include <libm_special.h>
-#include <libm/amd_funcs_internal.h>
+#include <libm_macros.h>
 #include <libm/types.h>
-#include <libm/constants.h>
 #include <libm/typehelper.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
-#define  ALM_TANF_SIGN_MASK   ~(1UL<<63)
-#define  ALM_TANF_SIGN_MASK32 ~(1U<<31)
+static struct {
+    const uint64_t pi_by_4;
+    const uint64_t five_e5, seven_pi_by_4;
+    const uint64_t five_pi_by_4, three_pi_by_4, nine_pi_by_4;
+    const double one_by_three, twobypi, piby2_1, piby2_1tail, invpi;
+    const double piby2_2, piby2_2tail, shift;
+    const double piby2_3, piby2_3tail, one_by_six;
+    const double piby4_lead, piby4_tail;
 
-
-/*
- * ISO-IEC-10967-2: Elementary Numerical Functions
- * Signature:
- *   float tanf(float x)
- *
- * Spec:
- *   tanf(n· 2π + π/4)  = 1       if n∈Z and |n· 2π + π/4|   <= big_angle_F
- *   tanf(n· 2π + 3π/4) = −1      if n∈Z and |n· 2π + 3π/4|  <= big angle rF
- *   tanf(x) = x                  if x ∈ F^(2·π) and tanf(x) != tan(x)
- *                                               and |x| < sqrt(epsilonF/rF)
- *   tanf(−x) = −tanf(x)          if x ∈ F^(2·π)
- */
-
-static const struct {
-    double huge;
-    double halfpi1;
-    double halfpi2;
-    double invhalfpi;
-    double poly[8];
+    double poly_tanf[5];
 } tanf_data = {
-    .huge    = 0x1.8000000000000p52,
-    .halfpi1 = 0x1.921fb54400000p0,
-    .halfpi2 = 0x1.0b4611a626331p-34,
-    .invhalfpi = 0x1.45f306dc9c882a53f85p-1,
-    // Polynomial coefficients obtained using Remez algorithm from Sollya
-    .poly = {
-        0x1.ffffff99ac0468p-1,
-        0x1.55559193ecf2bp-2,
-        0x1.1106bf4ba8f408p-3,
-        0x1.bbafbb6650308p-5,
-        0x1.561638922df5fp-6,
-        0x1.7f3a033a88788p-7,
-        -0x1.ba0d41d26961f8p-11,
-        0x1.3952b4eff28ac8p-8,
-    },
+    .pi_by_4       = 0x3fe921fb54442d18,
+    .one_by_three  = 0.333333333333333333,
+    .five_e5       = 0x411E848000000000,
+    .shift         = 0x1.8p+52,
+    .one_by_six    = 0.1666666666666666666,
+    .twobypi       = 6.36619772367581382433e-01, /* 0x3fe45f306dc9c883 */
+    .piby2_1       = 1.57079632673412561417e+00, /* 0x3ff921fb54400000 */
+    .piby2_1tail   = 6.07710050650619224932e-11, /* 0x3dd0b4611a626331 */
+    .piby2_2       = 6.07710050630396597660e-11, /* 0x3dd0b4611a600000 */
+    .piby2_2tail   = 2.02226624879595063154e-21,
+    .piby2_3       = 2.02226624871116645580e-21, /* 0x3ba3198a2e000000 */
+    .piby2_3tail   = 8.47842766036889956997e-32, /* 0x397b839a252049c1 */
+    .five_pi_by_4  = 0x400f6a7a2955385e,
+    .three_pi_by_4 = 0x4002d97c7f3321d2,
+    .nine_pi_by_4  = 0x401c463abeccb2bb,
+    .seven_pi_by_4 = 0x4015fdbbe9bba775,
+    .piby4_lead    = 7.85398163397448278999e-01, /* 0x3fe921fb54442d18 */
+    .piby4_tail    = 3.06161699786838240164e-17, /* 0x3c81a62633145c06 */
 
+    /* Polynomial coefficients */
+    .poly_tanf = {
+        0.385296071263995406715129e0,
+        0.172032480471481694693109e-1,
+        0.115588821434688393452299e+1,
+        -0.51396505478854532132342e0,
+        0.1844239256901656082986661e-1,
+    },
 };
 
-#define ALM_TANF_HUGE_VAL    tanf_data.huge
-#define ALM_TANF_HALFPI1     tanf_data.halfpi1
-#define ALM_TANF_HALFPI2     tanf_data.halfpi2
-#define ALM_TANF_INVHALFPI   tanf_data.invhalfpi
+#define PI_BY_4       tanf_data.pi_by_4
+#define ALM_TANF_ZERO          (0x0L)
+#define ONE_BY_THREE  tanf_data.one_by_three
+#define FIVE_e5       tanf_data.five_e5
+#define TWO_BY_PI     tanf_data.twobypi
+#define PI_BY_2_1     tanf_data.piby2_1
+#define PI_BY_2_1TAIL tanf_data.piby2_1tail
+#define PI_BY_2_2     tanf_data.piby2_2
+#define PI_BY_2_2TAIL tanf_data.piby2_2tail
+#define PI_BY_2_3     tanf_data.piby2_3
+#define PI_BY_2_3TAIL tanf_data.piby2_3tail
+#define FIVE_PI_BY_4  tanf_data.five_pi_by_4
+#define THREE_PI_BY_4 tanf_data.three_pi_by_4
+#define NINE_PI_BY_4  tanf_data.nine_pi_by_4
+#define SEVEN_PI_BY_4 tanf_data.seven_pi_by_4
+#define ALM_SHIFT     tanf_data.shift
+#define PI_BY_4_HEAD  tanf_data.piby4_lead
+#define PI_BY_4_TAIL  tanf_data.piby4_tail
 
-#define C0 tanf_data.poly[0]
-#define C2 tanf_data.poly[1]
-#define C4 tanf_data.poly[2]
-#define C6 tanf_data.poly[3]
-#define C8 tanf_data.poly[4]
-#define C10 tanf_data.poly[5]
-#define C12 tanf_data.poly[6]
-#define C14 tanf_data.poly[7]
+#define T1  tanf_data.poly_tanf[0]
+#define T2  tanf_data.poly_tanf[1]
+#define T3  tanf_data.poly_tanf[2]
+#define T4  tanf_data.poly_tanf[3]
+#define T5  tanf_data.poly_tanf[4]
 
+#define MASK_LOWER32 0xffffffff00000000UL
+
+void __amd_remainder_piby2d2f(uint64_t ux, double *r, int *region);
 
 /*
- * Implementation Notes:
- *
- * float tanf(float x)
- *      A given x is reduced into the form:
- *
- *               |x| = (N * π/2) + F
- *
- *      Where N is an integer obtained using:
- *              N = round(x * 2/π)
- *      And F is a fraction part lying in the interval
- *              [-π/4, +π/4];
- *
- *      obtained as F = |x| - (N * π/2)
- *
- *      Thus tan(x) is given by
- *
- *              tan(x) = tan((N * π/2) + F) = tan(F)
- *              when N is even,
- *                     = -cot(F) = -1/tan(F)
- *              when N is odd, tan(F) is approximated using a polynomial
- *                      obtained from Remez approximation from Sollya.
- *
+ * tan(x + xx) approximation valid on the interval
+ *     [-pi/4,pi/4].
+ * If recip is true return -1/tan(x + xx) instead.
  */
+static inline float
+tan_piby4(double x, int32_t recip) {
 
-float
-ALM_PROTO_OPT(tanf)(float x)
+    double r, t, r1, r2;
+
+    /* Core Remez [1,2] approximation to tan(x) on the^M
+     interval [0,pi/4]. */
+    r = x * x;
+
+    r1 = (T1 - T2 * r);
+
+    r2 = (T3 + r * (T4 + r * T5));
+
+    t = x + x * r * r1 / r2;
+
+    if (recip)
+    	return -1.0 / t;
+    else
+        return t;
+
+}
+
+static inline float
+tan_piby4i_zero(double x) {
+
+    double r, t, r1, r2;
+
+    /* Core Remez [1,2] approximation to tan(x) on the^M
+     interval [0,pi/4]. */
+    r = x * x;
+
+    r1 = (T1 - T2 * r);
+
+    r2 = (T3 + r * (T4 + r * T5));
+
+    t = x + x * r * r1 / r2;
+
+    return t;
+
+}
+
+static float
+__tanf_special_inline(float x)
 {
-    double     F, xd, tanx = 0.0;
-    double     poly;
-    uint64_t   sign, uxd, n;
-    uint32_t   ux = asuint32(x);
+    uint32_t uxf;
 
-    if(unlikely((ux - asuint32(0x1p-126)) >
-                (asuint32(0x1p+127) - asuint32(0x1p-126)))) {
+    uxf = asuint32(x);
 
-        if((ux  & ALM_TANF_SIGN_MASK32) >= 0x7f800000) {
-            /*  infinity or NaN */
-            return _tanf_special(x);
-        }
+    /* x is either NaN or infinity */
+    if (uxf & MANTBITS_SP32) {
+        /* x is NaN */
+        if (uxf & QNAN_MASK_32)
+            return  __amd_handle_errorf("tanf", __amd_tan, uxf | QNAN_MASK_32,
+                                        _DOMAIN, AMD_F_NONE, EDOM, x, 0.0f, 1);
+
+        return  __amd_handle_errorf("tanf", __amd_tan, uxf | QNAN_MASK_32,
+                                    _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0f, 1);
     }
 
-    if (ux == 0)
-        return 0;
-
-    xd = (double)x;
-
-    uxd = asuint64(xd);
-
-    sign = uxd & (~ALM_TANF_SIGN_MASK);
-
-    /* fabs(x) */
-    xd = asdouble(uxd & ALM_TANF_SIGN_MASK);
-
-    /*
-     * dn = x * (2/π)
-     * would turn to fma
-     */
-    double dn =  xd * ALM_TANF_INVHALFPI + ALM_TANF_HUGE_VAL;
-
-    /* n = (int)dn */
-    n   = asuint64(dn);
-
-    dn -= ALM_TANF_HUGE_VAL;
-
-    /* F = xd - (n * π/2) */
-    F = xd - dn * ALM_TANF_HALFPI1;
-
-    F = F - dn *  ALM_TANF_HALFPI2;
-
-    uint64_t odd = (n << 63);
-
-    /*
-     * Calculate the polynomial approximation
-     *  x * (C1 + C2*x^2 + C3*x^4 + C4*x^6 + C5*x^8 + C6*x^10 + C7*x^12 + C8*x^14)
-     * polynomial is approximated as x*P(x^2),
-		 * 15 degree, but only even terms are used
-     */
-    poly = POLY_EVAL_EVEN_15(F, C0, C2, C4, C6, C8, C10, C12, C14);
-
-    tanx = asdouble(asuint64(poly) ^ sign);
-
-    if (odd)
-        tanx = -1.0/tanx;
-
-    return eval_as_float(tanx);
+    /* x is infinity. Return a NaN */
+    return  __amd_handle_errorf("tanf", __amd_tan, INDEFBITPATT_SP32, _DOMAIN,
+                                AMD_F_INVALID, EDOM, x, 0.0f, 1);
 }
+
+#define ALM_TANF_SMALL_X     0x3C000000 
+#define ALM_TANF_ARG_MIN     0x39000000 
+
+static float
+__tanf_very_small_x(float x)
+{
+    uint32_t ax = asuint32(x) & ~SIGNBIT_SP32;
+
+    if (ax == ALM_TANF_ZERO)
+        return x;
+
+    if (ax < ALM_TANF_SMALL_X) { /* abs(x) < 2.0^(-13) */
+        if (ax < ALM_TANF_ARG_MIN) /* abs(x) < 2.0^(-27) */
+            return  __amd_handle_errorf("tanf", __amd_tan, asuint32(x), _UNDERFLOW,
+                                        AMD_F_UNDERFLOW|AMD_F_INEXACT,
+                                        ERANGE, x, 0.0, 1);
+
+        /*
+         *  2^-13 < abs(x) < 2^-27
+         *  tan(x) = x + x^3 * 0.333333333
+         */
+        return x + (x * x * x * ONE_BY_THREE);
+    }
+
+    return tan_piby4i_zero(x);
+}
+
+float ALM_PROTO_OPT(tanf)(float x)
+{
+    double    dx, r;
+    int32_t   region, xneg;
+    uint32_t  uxf;
+
+    uxf = asuint32(x);
+
+    xneg = uxf & SIGNBIT_SP32;
+
+    if (unlikely(((uxf & PINFBITPATT_SP32) == PINFBITPATT_SP32))) {
+        return __tanf_special_inline(x);
+    }
+
+    /* uxf = abs(uxf) */
+    uxf &= ~SIGNBIT_SP32;
+
+    dx = (double) asfloat(uxf);
+
+    uint64_t ax = asuint64(dx);
+
+    if (unlikely(ax >= FIVE_e5)) {
+        /* Reduce x into range [-pi/4,pi/4] */
+        __amd_remainder_piby2d2f(ax, &r, &region);
+    }
+    else {
+
+        double    rhead, rtail, npi2d;
+        uint32_t  npi2;
+
+        if (ax <= PI_BY_4) { /* abs(x) <= pi/4 */
+            return __tanf_very_small_x(x);
+        }
+
+        /* Here on , pi/4 < ax < 5e5
+         * For these size arguments we can just carefully subtract the
+         * appropriate multiple of pi/2, using extra precision where
+         * x is close to an exact multiple of pi/2
+         */
+
+        npi2d = dx *  TWO_BY_PI + ALM_SHIFT;
+
+        npi2 = asuint64(npi2d);
+
+        npi2d -= ALM_SHIFT;
+
+        /* Subtract the multiple from x to get an extra-precision remainder */
+        rhead  = dx - npi2d * PI_BY_2_1;
+
+        rtail  = npi2d * PI_BY_2_1TAIL;
+
+        r = rhead - rtail;
+
+        region = npi2;
+    }
+
+    float res = tan_piby4(r, region & 1);
+
+    /* tan(x) = -tan(x) if x is negative */
+    res = asfloat(xneg ^ asuint32(res));
+
+    return res;
+
+}
+

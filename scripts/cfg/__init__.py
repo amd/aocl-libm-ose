@@ -45,9 +45,7 @@ class DefaultCfg(object):
         self.defenv = Environment(variables = self.defvars,
                                   ENV = {'PATH' : environ['PATH']})
 
-        #self.Check()
-        #for key in self.defvars.keys():
-        #    print(key)
+        self.Check()
 
     def AddOptions(self):
         opts = cfg.LocalOption()
@@ -100,13 +98,6 @@ class DefaultCfg(object):
                  --toolchain-base=/usr/local/toolchain/
                  CC will be used as /usr/local/toolchain/bin/gcc if --compiler is gcc""")
 
-        opts.Add('--prefix', dest='prefix', nargs=1, action='callback',
-                 type='str',
-                 callback=self.__default_store,
-                 help="""Specify an install prefix directory
-                 the directory will be create if non-existant""")
-
-
         self.opts = opts
 
     def AddVariables(self):
@@ -128,14 +119,8 @@ class DefaultCfg(object):
             EnumVariable('compiler', "Select compiler type", 'gcc',
                          allowed_values=('gcc', 'aocc', 'llvm', 'icc'), ignorecase=2),
 
-            PathVariable('toolchain_base', "Use this as toolchain prefix", '/usr/bin'),
-            PathVariable('prefix', "use this as install prefix", '/usr/local')
+            PathVariable('toolchain_base', "Use this as toolchain prefix", '/usr/bin')
         )
-
-        defvars.Add(PathVariable('CC', help="Custome C compiler", default=None, 
-                                validator=PathVariable.PathAccept))
-        defvars.Add(PathVariable('CXX', help="Custome C++ compiler", default=None,
-                                validator=PathVariable.PathAccept))
 
         self.defvars = defvars
 
@@ -148,7 +133,7 @@ class DefaultCfg(object):
 
         unknown = self.defvars.UnknownVariables()
         if unknown:
-            print("ALM: build: Unknown variables:", unknown.keys())
+            print("Unknown variables:", unknown.keys())
             #Exit(1)
 
         #if debug_mode is mentioned assume build type debug
@@ -169,9 +154,7 @@ class DefaultCfg(object):
         env.Append(
             CPPDEFINES = { 'LIBABI': env['libabi']})
 
-        cmpiler = compiler.gcc.Gcc(self.defenv['build'],
-                                  bvars=self.defvars, 
-                                  opts=self.opts)
+        cmpiler = compiler.gcc.Gcc(self.defenv['build'])
         #print(env['compiler'])
         if env['compiler'] == 'aocc' or env['compiler'] == 'llvm':
             cmpiler = compiler.llvm.LLVM(self.defenv['build'])
@@ -196,10 +179,6 @@ class DefaultCfg(object):
                 CPPDEFINES = {'DEVELOPER' : env['developer']})
 
         self.defvars.Save(self.def_env_file, env)
-        self.Check()
-
-        env['ENV'].update(environ)
-
         return env
 
     def GetHelpTexts(self):

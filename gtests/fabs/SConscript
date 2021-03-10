@@ -1,0 +1,14 @@
+#
+# Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
+#
+
+Import('env')
+
+e = env.Clone()
+
+fabs_srcs = Glob('*.cc')
+
+fabs = e.Program('test_fabs', fabs_srcs)
+
+Return('fabs')
+

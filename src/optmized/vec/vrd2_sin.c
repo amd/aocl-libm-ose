@@ -61,7 +61,7 @@ static struct {
     v_u64x2_t max_arg;
     v_f64x2_t poly_sin[8];
  } v2_sin_data = {
-     .max_arg = _MM_SET1_I64x2(0x7ff0000000000000),
+     .max_arg = _MM_SET1_I64x2(0x4160000000000000),
      .sign_mask  = _MM_SET1_I64x2(0x7fffffffffffffff),
      .pi1   = _MM_SET1_PD2(0x1.921fb54442d18p+1),
      .pi2   = _MM_SET1_PD2(0x1.1a62633145c06p-53),

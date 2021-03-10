@@ -48,7 +48,7 @@
 
 extern float_t _logf_special(float_t x, float_t y, uint32_t code);
 
-extern struct logf_table logf_lookup[];
+extern struct logf_table logf_lookup[1<<LOGF_N];
 
 static struct {
     float_t log2_head, log2_tail;
@@ -194,7 +194,7 @@ ALM_PROTO_OPT(logf)(float x)
 
     struct logf_table *tbl = &logf_lookup[idx];
 
-    finv = asfloat(tbl->f_inv);
+    finv = tbl->f_inv;
 
     r = (f - y) * finv;
 
@@ -206,9 +206,9 @@ ALM_PROTO_OPT(logf)(float x)
 
     q = (f_expo * LOG2_TAIL) - q;
 
-    w = (LOG2_HEAD * f_expo) + asfloat(tbl->f_128_head);
+    w = (LOG2_HEAD * f_expo) + tbl->f_128_head;
 
-    q = (asfloat(tbl->f_128_tail) + q) + w;
+    q = (tbl->f_128_tail + q) + w;
 
     return q;
 }

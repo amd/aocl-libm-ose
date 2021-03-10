@@ -26,7 +26,6 @@
  */
 
 /*
-
 Program to generate interleaved look-up tables for log function
 
 The head and tail tables are calculated as follows:

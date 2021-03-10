@@ -144,7 +144,7 @@ FN_PROTOTYPE_OPT(expm1f_v2)(float x)
 #define C2 1/6.0
     q  = r + r * r * (C1 + (C2 * r));
 
-    f  = asdouble(DATA.tab[j]);
+    f  = DATA.tab[j];
 
     q1.i = (1023ULL - m) << 52;
 

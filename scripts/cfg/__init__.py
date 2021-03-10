@@ -45,11 +45,15 @@ class DefaultCfg(object):
         self.defenv = Environment(variables = self.defvars,
                                   ENV = {'PATH' : environ['PATH']})
 
-        self.Check()
-
     def AddOptions(self):
         opts = cfg.LocalOption()
 
+        opts.Add('--prefix', dest='prefix', nargs=1, action='callback',
+                  type='str',
+                  callback=self.__default_store,
+                  help="""Specify an install prefix directory
+                  the directory will be create if non-existant""")
+        
         opts.Add('--verbose', dest='verbose', nargs=1, action='callback',
                  callback=self.__default_store,
                  default='none', type='int',
@@ -119,8 +123,14 @@ class DefaultCfg(object):
             EnumVariable('compiler', "Select compiler type", 'gcc',
                          allowed_values=('gcc', 'aocc', 'llvm', 'icc'), ignorecase=2),
 
-            PathVariable('toolchain_base', "Use this as toolchain prefix", '/usr/bin')
+            PathVariable('toolchain_base', "Use this as toolchain prefix", '/usr/bin'),
+            PathVariable('prefix', "Use this as install prefix", '/usr/local')
         )
+
+        defvars.Add(PathVariable('CC', help="Custom C compielr", default = None,
+                validator=PathVariable.PathAccept))
+        defvars.Add(PathVariable('CXX', help="Custom CXX compielr", default = None,
+                validator=PathVariable.PathAccept))
 
         self.defvars = defvars
 
@@ -179,6 +189,10 @@ class DefaultCfg(object):
                 CPPDEFINES = {'DEVELOPER' : env['developer']})
 
         self.defvars.Save(self.def_env_file, env)
+
+        self.Check()
+
+        env['ENV'].update(environ)
         return env
 
     def GetHelpTexts(self):

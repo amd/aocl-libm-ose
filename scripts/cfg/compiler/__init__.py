@@ -62,3 +62,17 @@ class Compiler:
             "debug": self.cpp_flags_debug,
             "release": self.cpp_flags_release
         }
+
+        def fixup_from_vars(self):
+            pass
+
+        def fixup_from_env(self):
+            if 'CC' in os.environ:
+                self.cmd = os.getenv('CC')
+            if 'CXX' in os.environ:
+                self.cxxcmd = os.getenv('CXX')
+            if 'CFLAGS' in os.environ:
+                self.compile_flag_map[self.prod_mode]
+            if 'LDFLAGS' in os.environ:
+                self.link_flag_map[self.prod_mode]
+

@@ -130,6 +130,7 @@ test_objs = SConscript(dirs='tests',
                        exports = {'env' : testenv},
                        duplicate = 0,
                        src_dir    = 'tests',
+                       must_exist  = 0,
                        variant_dir = joinpath(build_root, 'tests'))
 
 gtest_objs = SConscript(dirs='gtests',

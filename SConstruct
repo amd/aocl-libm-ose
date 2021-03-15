@@ -60,28 +60,32 @@ import atexit
 atexit.register(print_build_config, aenv)
 atexit.register(print_build_failures)
 
+# include path
+inc_path = '#include'
+
+# top level src path
+src_path = '#src'
+
 # Add shared top-level headers
 aenv.Prepend(CPPPATH=[Dir('include')])
 
-#print(aenv['BUILDDIR'])
 aenv['BUILDROOT'] = aenv['BUILDDIR']
 
 build_root = aenv['BUILDROOT']
 
 makedirs(build_root, exist_ok=True)
 
+# alm libs will be generated here
+alm_lib_path='#'+joinpath(build_root,'src')
+
 # These targets are not the .obj files or .o files, instead
 # class targets or build objectw
 targets = []
 
-#import pdb
-#pdb.set_trace()
-
-#print(aenv.Dump())
 libenv = aenv.Clone()
 libenv.Append(
-        INCPATH=['#include'],
-        CWD='#src',
+        INCPATH=inc_path,
+        CWD=src_path,
 )
 
 # To generate a file version.build.c having current gitversion in VERSION_STRING
@@ -90,10 +94,10 @@ libenv.Tool('gitversion')
 build_version = libenv.GenerateVersion('src/version.build.h')
 libenv.AlwaysBuild(build_version)
 
-alm_libs = SConscript('src/SConscript',
+alm_libs = SConscript(joinpath(src_path, 'SConscript'),
                      exports = { 'env' : libenv },
                      duplicate = 0,
-                     variant_dir = joinpath(build_root, 'src'))
+                     variant_dir = alm_lib_path)
 
 targets += alm_libs
 
@@ -101,7 +105,7 @@ gtest_objs = []
 if 'tests' in COMMAND_LINE_TARGETS or ('gtests' in COMMAND_LINE_TARGETS) :
     testenv = aenv.Clone()
 
-    LIBPATH=['#'+joinpath(build_root,'src')]
+    LIBPATH=[alm_lib_path]
 
     gtest_objs += SConscript(dirs='gtests',
                    exports = {'env' : testenv, 'almenv': __almenv},

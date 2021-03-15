@@ -73,7 +73,13 @@ alm_objs += almenv.StaticObject(lib_srcs)
 libm = almenv.StaticLibrary('alm', alm_objs)
 libmso = almenv.SharedLibrary('alm', alm_objs)
 
+#add include headers as part of the install
+alm_header_scalar = joinpath(env['INCPATH'], 'external', 'amdlibm.h')
+alm_header_vector = joinpath(env['INCPATH'], 'external', 'amdlibm_vec.h')
+
+#install with libs and include dir
 almenv.Alias("install", almenv.Install(joinpath(installdir, "lib"), [libmso, libm]))
+almenv.Alias("install", almenv.Install(joinpath(installdir, "include"), [alm_header_scalar, alm_header_vector]))
 
 fast_libm = SConscript('fast/SConscript',
                        exports = {'env' : e},

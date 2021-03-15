@@ -69,6 +69,9 @@ if libabi == 'svml':
         print (intel_lib_path)
         env.Append(INTEL_LIB_PATH = intel_lib_path)
 
+#get include path
+inc_path = os.path.join(os.getcwd(), 'include')
+
 # Add shared top-level headers
 env.Prepend(CPPPATH=[Dir('include')])
 
@@ -94,7 +97,8 @@ targets = []
 
 libenv = env.Clone()
 libenv.Append(
-	INCPATH=['#include'],
+	#INCPATH=['#include'],
+    INCPATH=inc_path,
 	CWD='#src',
 )
 

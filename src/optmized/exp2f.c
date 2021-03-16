@@ -68,12 +68,14 @@ struct expf_data {
     double        huge;
     double        *table;
     double        poly[3];
+    double        two_pow_6;
 } exp2f_data = {
-    .oneby_tblsz = 0x1.0p-6,
-    .ln2         = 0x1.62e42fefa39efp-1, /* log(2) */
-    .huge        = 0x1.8p+52,
-    .table       = __two_to_jby64,
-    .poly        = {
+    .oneby_tblsz  = 0x1.0p-6,
+    .ln2          = 0x1.62e42fefa39efp-1, /* log(2) */
+    .huge         = 0x1.8p+52,
+    .two_pow_6    = 0x1.0p6,
+    .table        = __two_to_jby64,
+    .poly         = {
         0x1.0000000000000p-1,           /* 1/2! = 1/2    */
         0x1.5555555555555p-3,           /* 1/3! = 1/6    */
         0x1.5555555555555p-5,           /* 1/4! = 1/24   */
@@ -84,6 +86,7 @@ struct expf_data {
 #define EXP2F_LN2           exp2f_data.ln2
 #define EXP2F_HUGE          exp2f_data.huge
 #define EXP2F_TABLE         exp2f_data.table
+#define EXP2F_TWO_POW_6     exp2f_data.two_pow_6
 
 #define EXP2F_FARG_MIN          -0x1.2ap7f
 #define EXP2F_FARG_MAX           0x1.00p7f
@@ -165,7 +168,9 @@ ALM_PROTO_OPT(exp2f)(float x)
     }
 
     double dx = (double)x;
-    z = dx *  EXP2F_TABLE_SIZE;
+
+    /* x * 64 */
+     z = dx * EXP2F_TWO_POW_6;
 
     /*
      * n  = (int) scale(x)
@@ -205,4 +210,5 @@ ALM_PROTO_OPT(exp2f)(float x)
     double result = tbl + tbl* q;
 
     return (float)result;
+
 }

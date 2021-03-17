@@ -209,15 +209,12 @@ FN_PROTOTYPE_OPT(exp2)(double x)
 
             return alm_exp2_special(x, 0.0, ALM_E_OUT_ZERO);
         }
-
-        if (x <= DENORMAL_LOW)
-            return alm_exp2_special(x, asdouble(DENORMAL_MIN), ALM_E_OUT_ZERO);
-
-        // flag de-normals to process at the end
+	// flag de-normals to process at the end
         exponent = 0xfff;
+
     }
 
-		double a = x * ALM_EXP2_TBL_SZ;
+    double a = x * ALM_EXP2_TBL_SZ;
 
 #define FAST_INTEGER_CONVERSION 1
 #if FAST_INTEGER_CONVERSION
@@ -232,7 +229,7 @@ FN_PROTOTYPE_OPT(exp2)(double x)
 
     r =  x - (dn * ALM_EXP2_1_BY_TBL_SZ);
 
-		r *= ALM_EXP2_LN2;
+    r *= ALM_EXP2_LN2;
 
     /* table index, for lookup, truncated */
     j = n % ALM_EXP2_TBL_SZ;
@@ -246,7 +243,7 @@ FN_PROTOTYPE_OPT(exp2)(double x)
 
 #if 1
 		/* q = r + r*r*(1/2.0 + r*(1/6.0+ r*(1/24.0 + r*(1/120.0 + r*(1/720.0))))); */
-		q = r * (1 + r * (C2 + r * (C3 + r * (C4 + r * (C5 + r * C6)))));
+    q = r * (1 + r * (C2 + r * (C3 + r * (C4 + r * (C5 + r * C6)))));
     /* q = POLY_EVAL_6(r, 1, C2, C3, C4, C5, C6); */
 #else
 		/* Estrins parallel evaluation  - XXX has huge ULPs */

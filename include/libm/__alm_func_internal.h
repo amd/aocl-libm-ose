@@ -32,6 +32,10 @@
 
 #include <immintrin.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * Double precision
  */
@@ -270,4 +274,8 @@ extern void      ALM_PROTO_INTERNAL(vrsa_powf)     (int n, float *s1, float *s2,
 extern void      ALM_PROTO_INTERNAL(vrsa_powxf)    (int n, float *s1, float s2, float* d);
 extern void      ALM_PROTO_INTERNAL(vrsa_sincosf)  (int n, float *x, float *ys, float *yc);
 extern void      ALM_PROTO_INTERNAL(vrsa_sinf)     (int n, float *x, float *y);
+
+#ifdef __cplusplus
+}
+#endif
 

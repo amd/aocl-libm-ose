@@ -49,25 +49,25 @@ struct alm_arch_funcs __arch_funcs_log2 = {
             &FN_PROTOTYPE_FMA3(vrda_log2),  /*array vector double*/
         },
 
-#if 0
         [ALM_UARCH_VER_ZEN2] = {
-            &ALM_PROTO_ARCH_ZN2(log2f),
-            &ALM_PROTO_ARCH_ZN2(log2),
+            &FN_PROTOTYPE_FMA3(log2f),
+            NULL,
             &ALM_PROTO_ARCH_ZN2(vrs4_log2f),
             &ALM_PROTO_ARCH_ZN2(vrs8_log2f),
-            &ALM_PROTO_ARCH_ZN2(vrd2_log2),
-            &ALM_PROTO_ARCH_ZN2(vrd4_log2),
+            NULL,
+	    NULL,
+        },
+ 
+        [ALM_UARCH_VER_ZEN3] = {
+            &FN_PROTOTYPE_FMA3(log2f),
+            NULL,
+            &ALM_PROTO_ARCH_ZN3(vrs4_log2f),
+	    &ALM_PROTO_ARCH_ZN3(vrs8_log2f),
+            NULL,
+            NULL,
+            NULL,
         },
 
-        [ALM_UARCH_VER_ZEN3] = {
-            &ALM_PROTO_ARCH_ZN3(log2f),
-            &ALM_PROTO_ARCH_ZN3(log2),
-            &ALM_PROTO_ARCH_ZN3(vrs4_log2f),
-            &ALM_PROTO_ARCH_ZN3(vrs8_log2f),
-            &ALM_PROTO_ARCH_ZN3(vrd2_log2),
-            &ALM_PROTO_ARCH_ZN3(vrd4_log2),
-        },
-#endif
     },
 };
 
@@ -79,7 +79,7 @@ LIBM_IFACE_PROTO(log2)(void *arg)
         [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(log2f),
         [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(log2),
         [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_log2f),
-        //[ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_log2f),
+        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_log2f),
         [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_log2),
         //[ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_log2),
         [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_log2f),

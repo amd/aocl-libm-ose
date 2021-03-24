@@ -226,6 +226,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrs8_cosf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_coshf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_tanhf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_powf);
+alm_func_t        G_ENTRY_PT_PTR(vrs8_log2f);
 
 alm_func_t        G_ENTRY_PT_PTR(vrd2_cbrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_cos);

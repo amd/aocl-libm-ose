@@ -42,7 +42,7 @@ struct alm_arch_funcs __arch_funcs_exp2 = {
             &FN_PROTOTYPE_FMA3(exp2f),
             &FN_PROTOTYPE_FMA3(exp2),
             &FN_PROTOTYPE_FMA3(vrs4_exp2f),
-            NULL,                           /* vrs8 ? */
+            &ALM_PROTO_ARCH_ZN2(vrs8_exp2f),
             &FN_PROTOTYPE_FMA3(vrd2_exp2),
             &FN_PROTOTYPE_FMA3(vrd4_exp2),
             &FN_PROTOTYPE_FMA3(vrsa_exp2f),  /*array vector float*/
@@ -53,7 +53,7 @@ struct alm_arch_funcs __arch_funcs_exp2 = {
             &ALM_PROTO_ARCH_ZN2(exp2f),
             &ALM_PROTO_ARCH_ZN2(exp2),
             &ALM_PROTO_ARCH_ZN2(vrs4_exp2f),
-            NULL,                           /* vrs8 ? */
+            &ALM_PROTO_ARCH_ZN2(vrs8_exp2f),
             &ALM_PROTO_ARCH_ZN2(vrd2_exp2),
             &ALM_PROTO_ARCH_ZN2(vrd4_exp2),
         },
@@ -62,7 +62,7 @@ struct alm_arch_funcs __arch_funcs_exp2 = {
             &ALM_PROTO_ARCH_ZN3(exp2f),
             &ALM_PROTO_ARCH_ZN3(exp2),
             &ALM_PROTO_ARCH_ZN3(vrs4_exp2f),
-            NULL,                           /* vrs8 ? */
+            &ALM_PROTO_ARCH_ZN2(vrs8_exp2f),
             &ALM_PROTO_ARCH_ZN2(vrd2_exp2),
             &ALM_PROTO_ARCH_ZN3(vrd4_exp2),
         },
@@ -77,7 +77,7 @@ LIBM_IFACE_PROTO(exp2)(void *arg)
         [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(exp2f),
         [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(exp2),
         [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_exp2f),
-        //[ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_exp2f),
+        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_exp2f),
         [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_exp2),
         [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_exp2),
         [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_exp2f),

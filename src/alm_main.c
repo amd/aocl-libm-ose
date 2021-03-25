@@ -29,6 +29,7 @@
 #include <unistd.h>
 
 #include "version.build.h"
+#include "alm_version.h"
 
 #define NORETURN __attribute__((noreturn))
 
@@ -36,11 +37,11 @@ void alm_main(void);
 
 const char service_interp[] __attribute__((section(".interp"))) = "/lib64/ld-linux-x86-64.so.2";
 
-void 
+void
 NORETURN
 alm_main(void)
 {
-	printf("%s\n", alm_get_build());
+	printf("%s-%s\n", alm_get_build(), alm_get_version());
 	_exit(0);
 }
 

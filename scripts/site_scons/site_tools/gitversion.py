@@ -73,6 +73,7 @@ __amd_libm_version_template="""/*
 static const char VERSION_STRING[] = "%s";
 
 static const char* alm_get_build(void);
+
 static const char* alm_get_build(void)
 {
         return VERSION_STRING;

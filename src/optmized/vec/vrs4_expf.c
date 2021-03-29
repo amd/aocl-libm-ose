@@ -72,16 +72,14 @@
 static const struct {
     v_f64x4_t   tblsz_byln2;
     v_f64x4_t   huge;
-    v_i32x4_t   arg_min;
     v_u32x4_t   arg_max;
-    v_i32x4_t   mask;
+    v_u32x4_t   mask;
     v_f64x4_t   poly_expf[6];
     v_f32x4_t   expf_max, expf_min;
     v_i32x4_t   infinity;
 } v_expf_data = {
     .tblsz_byln2 =  _MM_SET1_PD4(0x1.71547652b82fep+0),
     .huge        =  _MM_SET1_PD4(0x1.8p+52) ,
-    .arg_min     =  _MM_SET1_I32(0xFFFFFF99),
     .arg_max     =  _MM_SET1_I32(0x42AE0000),
     .mask        =  _MM_SET1_I32(0x7fffffff),
     .infinity    =  _MM_SET1_I32(0x7f800000),

@@ -20,6 +20,8 @@ typedef float (*funcf_nan) (const char*);
 typedef double (*func_nan) (const char*);
 typedef float (*funcf_remquo) (float, float, int*);
 typedef double (*func_remquo) (double, double, int*);
+typedef void (*funcf_sincos) (float, float*, float*);
+typedef void (*func_sincos)  (double, double*, double*);
 
 /*vector*/
 typedef __m128d (*func_v2d)    (__m128d);
@@ -96,5 +98,6 @@ int test_copysign   (void*);
 int test_fdim       (void*);
 int test_fmax       (void*);
 int test_fmin       (void*);
+int test_sincos     (void*);
 
 #endif

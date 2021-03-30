@@ -72,6 +72,7 @@ int main(int argc, char* argv[]) {
     test_fdim(handle);
     test_fmax(handle);
     test_fmin(handle);
+    test_sincos(handle);
 
     dlclose(handle);
 

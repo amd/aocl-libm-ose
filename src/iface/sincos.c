@@ -46,17 +46,6 @@ struct alm_arch_funcs __arch_funcs_sincos = {
             NULL,                           /* vrd2 ? */
             NULL,                           /* vrd4 ? */
         },
-#if 0
-        [ALM_UARCH_VER_ZEN2] = {
-            &ALM_PROTO_ARCH_ZN2(sincosf),
-            &ALM_PROTO_ARCH_ZN2(sincos),
-        },
-
-        [ALM_UARCH_VER_ZEN3] = {
-            &ALM_PROTO_ARCH_ZN3(sincosf),
-            &ALM_PROTO_ARCH_ZN3(sincos),
-        },
-#endif
     },
 };
 
@@ -67,10 +56,12 @@ LIBM_IFACE_PROTO(sincos)(void *arg)
        .g_ep = {
         [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(sincosf),
         [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(sincos),
-        //[ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_sincosf),
-        //[ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_sincosf),
-        //[ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_sincos),
-        //[ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_sincos),
+#if 0
+        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_sincosf),
+        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_sincosf),
+        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_sincos),
+        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_sincos),
+#endif
         },
     };
 

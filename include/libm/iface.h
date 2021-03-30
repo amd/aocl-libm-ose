@@ -89,6 +89,8 @@ enum {
     C_AMD_TANPI,
     C_AMD_TRUNC,
 
+    C_AMD_SINCOS,
+
     /*
      * INTEGER VARIANTS
      */

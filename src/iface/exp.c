@@ -42,9 +42,9 @@ struct alm_arch_funcs __arch_funcs_exp = {
             &FN_PROTOTYPE_FMA3(expf),
             &FN_PROTOTYPE_FMA3(exp),
             &FN_PROTOTYPE_FMA3(vrs4_expf),
-            NULL,                             /* vrs8 ? */
+            &ALM_PROTO_ARCH_ZN3(vrs8_expf),   /* vrs8 ? */
             &FN_PROTOTYPE_FMA3(vrd2_exp),
-            NULL,                             /* vrd4 ? */
+            &ALM_PROTO_ARCH_ZN3(vrd4_exp),  /* vrd4 ? */
             &FN_PROTOTYPE_FMA3(vrsa_expf),  /*array vector float*/
             &FN_PROTOTYPE_FMA3(vrda_exp),  /*array vector double*/
         },

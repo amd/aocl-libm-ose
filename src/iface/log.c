@@ -42,9 +42,9 @@ struct alm_arch_funcs __arch_funcs_log = {
             &FN_PROTOTYPE_FMA3(logf),
             &FN_PROTOTYPE_FMA3(log),
             &FN_PROTOTYPE_FMA3(vrs4_logf),
-            NULL,                           /* vrs8 ? */
+            &ALM_PROTO_ARCH_ZN3(vrs8_logf), /* vrs8 ? */
             &FN_PROTOTYPE_FMA3(vrd2_log),
-            NULL,                           /* vrd4 ? */
+            &ALM_PROTO_ARCH_ZN3(vrd4_log), /* vrd4 ? */
             &FN_PROTOTYPE_FMA3(vrsa_logf),  /*array vector float*/
             &FN_PROTOTYPE_FMA3(vrda_log),  /*array vector double*/
         },

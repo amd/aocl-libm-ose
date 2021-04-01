@@ -41,12 +41,12 @@ struct alm_arch_funcs __arch_funcs_pow = {
         [ALM_UARCH_VER_DEFAULT] = {
             &FN_PROTOTYPE_FMA3(powf),
             &FN_PROTOTYPE_FMA3(pow),
-            NULL, //&FN_PROTOTYPE_FMA3(vrs4_powf),
-            NULL, //&FN_PROTOTYPE_FMA3(vrs8_powf),
+            &ALM_PROTO_ARCH_ZN3(vrs4_powf),
+            &ALM_PROTO_ARCH_ZN3(vrs8_powf),
             &FN_PROTOTYPE_FMA3(vrd2_pow),
             &FN_PROTOTYPE_FMA3(vrd4_pow),
-	    &FN_PROTOTYPE_BAS64(vrsa_powf),
-	    NULL,  //vrda_powf  
+	        &FN_PROTOTYPE_BAS64(vrsa_powf),
+	        NULL,  //vrda_powf
         },
 
         [ALM_UARCH_VER_ZEN2] = {
@@ -80,7 +80,7 @@ LIBM_IFACE_PROTO(pow)(void *arg)
         [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_powf),
         [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_pow),
         [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_pow),
-	[ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_powf),
+	    [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_powf),
         },
     };
 

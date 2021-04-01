@@ -41,10 +41,10 @@ struct alm_arch_funcs __arch_funcs_cosh = {
         [ALM_UARCH_VER_DEFAULT] = {
             &FN_PROTOTYPE_REF(coshf),
             &FN_PROTOTYPE_REF(cosh),
-            NULL,                           /* vrs4 ? */
-            NULL,                           /* vrs8 ? */
+            &ALM_PROTO_ARCH_ZN3(vrs4_coshf), /* vrs4 ? */
+            &ALM_PROTO_ARCH_ZN3(vrs8_coshf), /* vrs8 ? */
             &FN_PROTOTYPE_REF(vrd2_cosh),
-            NULL,                           /* vrd4 ? */
+            NULL,                            /* vrd4 ? */
         },
 
         [ALM_UARCH_VER_ZEN2] = {

@@ -52,7 +52,7 @@ class Ulp {
     width = FloatWidth::E_F80;
   }
 
-  T Get() {
+long double Get() {
     struct flt {
       char c[sizeof(__int128_t)];
       u_int32_t *u32;
@@ -92,7 +92,10 @@ class Ulp {
     myexp = myexp - nmantissa; /* e-p-1 */
 
     /* 2^(e-p-1) */
-    return pow(2, myexp);
+    if (FloatWidth::E_F32 == width)
+	    return pow(2, myexp);
+    else
+	    return powl(2,myexp);
   }
 };
 
@@ -123,9 +126,8 @@ bool isNInf(T _x) {
  *       then it is treated as if it were the smallest (non-denormalized)
  *       value representable in T for the purposes of the above calculation.
  */
-
-template <typename FAT>
-double ComputeUlp(FAT output, FAT _expected) {
+template <typename FAT, typename FAT_L>
+double ComputeUlp(FAT output, FAT_L _expected) {
   FAT expected = (FAT)_expected;
   static const FAT
       fmin = std::numeric_limits<FAT>::min(),      // FLT_MIN, DBL_MIN etc
@@ -151,7 +153,7 @@ double ComputeUlp(FAT output, FAT _expected) {
   // If output and expectedare finite (The most common case)
   if (isfinite(output)) {
     if (expected < fmax)
-      return fabs(output - _expected) / Ulp<FAT>(expected).Get();
+      return fabsl(output - _expected) / Ulp<FAT>(expected).Get();
 
     // If the expectedis infinity and the output is finite
     if ((expected > fmax) || isinf(expected))
@@ -172,13 +174,14 @@ double ComputeUlp(FAT output, FAT _expected) {
 
   return 0.0;
 }
+
 }  // namespace ALM
 
-double getUlp(float aop, float exptd) {
+double getUlp(float aop, double exptd) {
   return ALM::ComputeUlp(aop, exptd);
 }
 
-double getUlp(double aop, double exptd) {
+double getUlp(double aop, long double exptd) {
   return ALM::ComputeUlp(aop, exptd);
 }
 

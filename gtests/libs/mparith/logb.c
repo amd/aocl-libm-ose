@@ -11,9 +11,9 @@
 #error
 #endif
 
-REAL FUNC_LOGB(REAL x)
+REAL_L FUNC_LOGB(REAL x)
 {
-    REAL y;
+    REAL_L y;
     fp_params params;
     int base, mantis, emin, emax;
     int *xmp, *ymp;

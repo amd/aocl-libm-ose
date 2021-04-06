@@ -44,12 +44,12 @@ double getFuncOp(double *data) {
   return LIBM_FUNC(hypot)(data[0], data[1]);
 }
 
-float getExpected(float *data) {  
+double getExpected(float *data) {  
   auto val = alm_mp_hypotf(data[0], data[1]);
   return val;
 }
 
-double getExpected(double *data) {
+long double getExpected(double *data) {
   auto val = alm_mp_hypot(data[0], data[1]);  
   return val;
 }

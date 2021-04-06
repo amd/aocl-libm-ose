@@ -11,9 +11,9 @@
 #error
 #endif
 
-REAL FUNC_TANPI(REAL x)
+REAL_L FUNC_TANPI(REAL x)
 {
-    REAL y;
+    REAL_L y;
     fp_params params;
     int base, mantis, emin, emax;
     int *xmp, *result_sin,*result_cos,*result_tan;

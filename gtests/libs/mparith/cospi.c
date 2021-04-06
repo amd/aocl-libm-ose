@@ -11,9 +11,9 @@
 #error
 #endif
 
-REAL FUNC_COSPI_ULP(REAL x,REAL z, double   *sulps, double   *sreldiff)
+REAL_L FUNC_COSPI_ULP(REAL x,REAL z, double   *sulps, double   *sreldiff)
 {
-    REAL y;
+    REAL_L y;
     fp_params params;
     int base, mantis, emin, emax;
     int *xmp, *result_sin,*result_cos,*result_tan;

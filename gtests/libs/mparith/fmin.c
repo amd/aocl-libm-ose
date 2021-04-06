@@ -11,9 +11,9 @@
 #error
 #endif
 
-REAL FUNC_FMIN(REAL x, REAL y)
+REAL_L FUNC_FMIN(REAL x, REAL y)
 {
-    REAL ret;
+    REAL_L ret;
     fp_params params;
     int base, mantis, emin, emax;
     int *xmp, *ymp, *result;

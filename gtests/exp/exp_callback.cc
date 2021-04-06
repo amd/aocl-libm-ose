@@ -44,12 +44,14 @@ double getFuncOp(double *data) {
   return LIBM_FUNC(exp)(data[0]);
 }
 
-float getExpected(float *data) {
+double getExpected(float *data) {
+  //double val = exp(data[0]);
   auto val = alm_mp_expf(data[0]);
   return val;
 }
 
-double getExpected(double *data) {
+long double getExpected(double *data) {
+   //long double val = expl(data[0]);
   auto val = alm_mp_exp(data[0]);
   return val;
 }

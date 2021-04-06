@@ -11,9 +11,9 @@
 #error
 #endif
 
-REAL FUNC_LDEXP(REAL x, int expn)
+REAL_L FUNC_LDEXP(REAL x, int expn)
 {
-    REAL ret;
+    REAL_L ret;
     fp_params params;
     int base, mantis, emin, emax;
     int *xmp, *ymp;

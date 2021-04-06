@@ -15,8 +15,8 @@ uint32_t GetnIpArgs( void );
 float getFuncOp(float *);
 double getFuncOp(double *);
 
-float getExpected(float *);
-double getExpected(double *);
+double getExpected(float *);
+long double getExpected(double *);
 
 float getGlibcOp(float *);
 double getGlibcOp(double *);

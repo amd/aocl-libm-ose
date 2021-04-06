@@ -37,7 +37,7 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_SCALAR_FLOAT) {
     if(nargs == 2)    
       ip[1] = inpbuff1[i];
     
-    float exptd = getExpected(ip);    
+    double exptd = getExpected(ip);    
     double ulp = getUlp(aop[0], exptd);
     if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
       nfail++;
@@ -78,7 +78,7 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_4FLOATS) {
       if(nargs == 2)    
         ip[1] = inpbuff1[i + j];
       
-      float exptd = getExpected(ip);
+      double exptd = getExpected(ip);
       double ulp = getUlp(aop[j], exptd);
       if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
         nfail++;
@@ -120,7 +120,7 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_8FLOATS) {
       if(nargs == 2)    
         ip[1] = inpbuff1[i + j];
        
-      float exptd = getExpected(ip);      
+      double exptd = getExpected(ip);      
       double ulp = getUlp(aop[j], exptd);
       if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
         nfail++;
@@ -161,14 +161,14 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_SCALAR_DOUBLE) {
     if(nargs == 2)    
       ip[1] = inpbuff1[i];
 
-    double exptd = getExpected(ip);
+    long double exptd = getExpected(ip);
     double ulp = getUlp(aop[0], exptd);
     if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
       nfail++;
     }
 
     if (vflag) {
-        printf("Input: [ %.16f (%a) ]  Actual: %.16f(%a) Expected: %.16f(%a) Ulp: %f\n",
+        printf("Input: [ %.16f (%a) ]  Actual: %.16f(%a) Expected: %.16Lf(%a) Ulp: %f\n",
                 ip[0], ip[0], aop[0], aop[0], exptd, exptd, ulp);
     }
 
@@ -187,19 +187,19 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_2DOUBLES) {
   data.ip  = (void *)inpbuff;
   data.op  = (void *)aop;
   double ip[2];
-  
+
   if(nargs == 2)
     data.ip1 = (void *)inpbuff1;
-  
+
   for (uint32_t i = 0; i < count; i += 2) {
     test_v2d(&data, i);
 
     for (uint32_t j = 0; j < 2; j++) {
       ip[0] = inpbuff[i + j];
-      if(nargs == 2)    
+      if(nargs == 2) 
         ip[1] = inpbuff1[i + j];
 
-      double exptd = getExpected(ip);
+      long double exptd = getExpected(ip);
       double ulp = getUlp(aop[j], exptd);
       if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
         nfail++;
@@ -241,7 +241,7 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_4DOUBLES) {
       if(nargs == 2)    
         ip[1] = inpbuff1[i + j];
 
-      double exptd = getExpected(ip);
+      long double exptd = getExpected(ip);
       double ulp = getUlp(aop[j], exptd);
       if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
         nfail++;

@@ -105,9 +105,9 @@ test_expf_conformance_data[] = {
     // from ancient libm repo
     {0xfF800000, 0x00000000,},  //-inf
     {0x7Fc00000, 0x7Fc00000,},  //qnan
-    {0x7Fa00000, 0x7Fe00000,},  //snan
+    {0x7Fa00000, 0x7Fe00000, FE_INVALID},  //snan
     {0xfFc00000, 0xfFc00000,},  //qnan
-    {0xfFa00000, 0xfFe00000,},  //snan
+    {0xfFa00000, 0xfFe00000, FE_INVALID},  //snan
     {0x3FC90FDB, 0x4099EF6F,},  //pi/2
     {0x3c000000, 0x3F810101,},  //0.0078125
     {0x3f012345, 0x3FD3F9F2,},  //0.504444

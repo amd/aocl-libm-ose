@@ -11,9 +11,9 @@
 #error
 #endif
 
-REAL FUNC_FREXP(REAL x, int *ptr)
+REAL_L FUNC_FREXP(REAL x, int *ptr)
 {
-    REAL ret;
+    REAL_L ret;
     fp_params params;
     int base, mantis, emin, emax;
     int *xmp, *ymp;

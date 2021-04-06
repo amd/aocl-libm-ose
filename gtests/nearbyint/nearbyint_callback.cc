@@ -44,13 +44,13 @@ double getFuncOp(double *data) {
   return LIBM_FUNC(nearbyint)(data[0]);
 }
 
-float getExpected(float *data) {
+double getExpected(float *data) {
  //there is no mpfr nearbyint, so using glibc for now
   auto val = nearbyintf(data[0]);
   return val;
 }
 
-double getExpected(double *data) {
+long double getExpected(double *data) {
  //using glibc for now
   auto val = nearbyint(data[0]);
   return val;

@@ -11,7 +11,7 @@
 #error
 #endif
 
-REAL FUNC_SINPI(REAL x)
+REAL_L FUNC_SINPI(REAL x)
 {
     REAL y;
     fp_params params;

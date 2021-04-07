@@ -58,8 +58,8 @@ int PopulateInputSamples(T **inpbuff, InputRange &range, uint32_t len) {
   return res;
 }
 
-double getUlp(float aop, double exptd);
-double getUlp(double aop, long double exptd);
+double getUlp(float aop, float exptd);
+double getUlp(double aop, double exptd);
 bool update_ulp(double ulp, double &, double);
 
 /*

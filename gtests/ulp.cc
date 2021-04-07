@@ -52,7 +52,7 @@ class Ulp {
     width = FloatWidth::E_F80;
   }
 
-long double Get() {
+  T Get() {
     struct flt {
       char c[sizeof(__int128_t)];
       u_int32_t *u32;
@@ -92,10 +92,7 @@ long double Get() {
     myexp = myexp - nmantissa; /* e-p-1 */
 
     /* 2^(e-p-1) */
-    if (FloatWidth::E_F32 == width)
-	    return pow(2, myexp);
-    else
-	    return powl(2,myexp);
+    return pow(2, myexp);
   }
 };
 
@@ -127,12 +124,13 @@ bool isNInf(T _x) {
  *       value representable in T for the purposes of the above calculation.
  */
 
-double ComputeUlp(double output, long double _expected) {
-  double expected = (double)_expected;
-  static const double
-      fmin = std::numeric_limits<double>::min(),      // FLT_MIN, DBL_MIN etc
-      fmax = std::numeric_limits<double>::max(),      // FLT_MAX, DBL_MAX etc
-      f_low = std::numeric_limits<double>::lowest();  // -FLT_MAX, -DBL_MAX etc
+template <typename FAT>
+double ComputeUlp(FAT output, FAT _expected) {
+  FAT expected = (FAT)_expected;
+  static const FAT
+      fmin = std::numeric_limits<FAT>::min(),      // FLT_MIN, DBL_MIN etc
+      fmax = std::numeric_limits<FAT>::max(),      // FLT_MAX, DBL_MAX etc
+      f_low = std::numeric_limits<FAT>::lowest();  // -FLT_MAX, -DBL_MAX etc
 
   // if both are NAN
   if (isnan(output) && isnan(expected)) return 0.0;
@@ -144,7 +142,7 @@ double ComputeUlp(double output, long double _expected) {
   if (isinf(output) && (isinf(expected) || (expected > fmax))) return 0.0;
 
   // if output and expectedare -infinity
-  if (isNInf<double>(output) && (isNInf<double>(expected) || (expected < f_low)))
+  if (isNInf<FAT>(output) && (isNInf<FAT>(expected) || (expected < f_low)))
     return 0.0;
 
   // if output and input are infinity with opposite signs
@@ -153,87 +151,36 @@ double ComputeUlp(double output, long double _expected) {
   // If output and expectedare finite (The most common case)
   if (isfinite(output)) {
     if (expected < fmax)
-      return fabsl(output - _expected) / Ulp<double>(expected).Get();
+      return fabs(output - _expected) / Ulp<FAT>(expected).Get();
 
     // If the expectedis infinity and the output is finite
     if ((expected > fmax) || isinf(expected))
-      return fabs(output - fmax) / Ulp<double>(fmax).Get() + 1;
+      return fabs(output - fmax) / Ulp<FAT>(fmax).Get() + 1;
 
     // If the expectedis -infinity and the output is finite
-    if (isNInf<double>(_expected) || (expected < f_low))
-      return fabs(output - f_low) / Ulp<double>(f_low).Get() + 1;
+    if (isNInf<FAT>(_expected) || (expected < f_low))
+      return fabs(output - f_low) / Ulp<FAT>(f_low).Get() + 1;
   }
 
   // If output alone is infinity
   if (isinf(output))
-    return fabs((fmax - _expected) / Ulp<double>(expected).Get()) + 1;
+    return fabs((fmax - _expected) / Ulp<FAT>(expected).Get()) + 1;
 
   // If output alone is -infinity
   if (is_inf_neg(output))
-    return fabs((f_low - _expected) / Ulp<double>(expected).Get()) + 1;
+    return fabs((f_low - _expected) / Ulp<FAT>(expected).Get()) + 1;
 
   return 0.0;
 }
-
-double ComputeUlp(float output,  double _expected) {
-  float expected = (float)_expected;
-  static const float
-      fmin = std::numeric_limits<float>::min(),      // FLT_MIN, DBL_MIN etc
-      fmax = std::numeric_limits<float>::max(),      // FLT_MAX, DBL_MAX etc
-      f_low = std::numeric_limits<float>::lowest();  // -FLT_MAX, -DBL_MAX etc
-
-  // if both are NAN
-  if (isnan(output) && isnan(expected)) return 0.0;
-
-  // if either one is NAN
-  if (isnan(output) || isnan(expected)) return INFINITY;
-
-  // if output and expectedare infinity
-  if (isinf(output) && (isinf(expected) || (expected > fmax))) return 0.0;
-
-  // if output and expectedare -infinity
-  if (isNInf<float>(output) && (isNInf<float>(expected) || (expected < f_low)))
-    return 0.0;
-
-  // if output and input are infinity with opposite signs
-  if (isinf(output) && isinf(expected)) return INFINITY;
-
-  // If output and expectedare finite (The most common case)
-  if (isfinite(output)) {
-    if (expected < fmax)
-      return fabs(output - _expected) / Ulp<float>(expected).Get();
-
-    // If the expectedis infinity and the output is finite
-    if ((expected > fmax) || isinf(expected))
-      return fabs(output - fmax) / Ulp<float>(fmax).Get() + 1;
-
-    // If the expectedis -infinity and the output is finite
-    if (isNInf<float>(_expected) || (expected < f_low))
-      return fabs(output - f_low) / Ulp<float>(f_low).Get() + 1;
-  }
-
-  // If output alone is infinity
-  if (isinf(output))
-    return fabs((fmax - _expected) / Ulp<float>(expected).Get()) + 1;
-
-  // If output alone is -infinity
-  if (is_inf_neg(output))
-    return fabs((f_low - _expected) / Ulp<float>(expected).Get()) + 1;
-
-  return 0.0;
-}
-
-
 }  // namespace ALM
 
-double getUlp(float aop, double exptd) {
+double getUlp(float aop, float exptd) {
   return ALM::ComputeUlp(aop, exptd);
 }
 
-double getUlp(double aop, long double exptd) {
+double getUlp(double aop, double exptd) {
   return ALM::ComputeUlp(aop, exptd);
 }
-
 
 bool update_ulp(double ulp, double &max_ulp_err, double ulp_threshold)
 {

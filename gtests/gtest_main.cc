@@ -167,17 +167,14 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_SCALAR_DOUBLE) {
       nfail++;
     }
 
-    if (vflag == 1) {
-      EXPECT_LT(ulp, inData->ulp_threshold)
-            << "Input:[" << ip[0] << " " << ip[1] <<"]Actual:" << aop[0]
-          << " Expected:" << exptd << " ULP: " << ulp << endl;
-    } else { 
-      EXPECT_LT(ulp, inData->ulp_threshold);
-      LIBM_TEST_DPRINTF(VERBOSE2, ,
-                      "Input:[", ip[0], " ", ip[1], "]Actual:", aop[0], 
-                      " Expected:", exptd, " ULP: ",ulp);
+    if (vflag) {
+        printf("Input: [ %.16f (%a) ]  Actual: %.16f(%a) Expected: %.16f(%a) Ulp: %f\n",
+                ip[0], ip[0], aop[0], aop[0], exptd, exptd, ulp);
     }
+
+    EXPECT_LT(ulp, inData->ulp_threshold);
   }
+
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
   "Scalar","Accuracy","s1d",count,(count-nfail), nfail, max_ulp_err);
   ptr->tstcnt++;  

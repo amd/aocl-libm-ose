@@ -25,8 +25,9 @@
  *
  */
 
-#define ALM_OVERRIDE 1 
+#define ALM_OVERRIDE  1
 
-#include <libm/arch/avx2.h> 
+#include <libm/arch/avx2.h>
 
 #include "../../optmized/exp2.c"
+

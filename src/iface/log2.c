@@ -54,8 +54,8 @@ struct alm_arch_funcs __arch_funcs_log2 = {
             NULL,
             &ALM_PROTO_ARCH_ZN2(vrs4_log2f),
             &ALM_PROTO_ARCH_ZN2(vrs8_log2f),
-            NULL,
-	    NULL,
+            &ALM_PROTO_ARCH_ZN2(vrd2_log2),
+	    &ALM_PROTO_ARCH_ZN2(vrd4_log2),
         },
  
         [ALM_UARCH_VER_ZEN3] = {
@@ -63,8 +63,8 @@ struct alm_arch_funcs __arch_funcs_log2 = {
             NULL,
             &ALM_PROTO_ARCH_ZN3(vrs4_log2f),
 	    &ALM_PROTO_ARCH_ZN3(vrs8_log2f),
-            NULL,
-            NULL,
+            &ALM_PROTO_ARCH_ZN3(vrd2_log2),
+            &ALM_PROTO_ARCH_ZN3(vrd4_log2),
             NULL,
         },
 
@@ -81,7 +81,7 @@ LIBM_IFACE_PROTO(log2)(void *arg)
         [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_log2f),
         [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_log2f),
         [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_log2),
-        //[ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_log2),
+        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_log2),
         [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_log2f),
         [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_log2),
         },

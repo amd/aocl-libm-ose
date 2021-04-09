@@ -226,6 +226,7 @@ LIBM_DECL_FN_MAP(vrd2_sin);
 LIBM_DECL_FN_MAP(vrd2_tan);
 
 LIBM_DECL_FN_MAP(vrd4_exp2);
+LIBM_DECL_FN_MAP(vrd4_log2);
 LIBM_DECL_FN_MAP(vrd4_exp);
 LIBM_DECL_FN_MAP(vrd4_expm1);
 LIBM_DECL_FN_MAP(vrd4_log);

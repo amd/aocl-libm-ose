@@ -233,7 +233,7 @@ extern __m256d   ALM_PROTO_INTERNAL(vrd4_exp)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_expm1)    (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_log10)    (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_log1p)    (__m256d x);
-//extern __m256d   ALM_PROTO_INTERNAL(vrd4_log2)     (__m256d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_log2)     (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_log)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_pow)      (__m256d x, __m256d y);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_sin)      (__m256d x);

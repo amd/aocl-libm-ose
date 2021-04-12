@@ -54,7 +54,7 @@ static const struct {
     v_f64x2_t   poly[12];
     } exp2_data = {
     .mask           = _MM_SET1_I64x2(0x7FFFFFFFFFFFFFFF),
-    .arg_max        = _MM_SET1_I64x2(0x4086200000000000),
+    .arg_max        = _MM_SET1_I64x2(0x4086000000000000),
     .sixtyfour      = _MM_SET1_PD2(0x1.0p+6),
 #ifdef EXPERIMENTAL
     .ln2by_64_head  = _MM_SET1_PD2(0x1.63p-1),
@@ -152,7 +152,7 @@ ALM_PROTO_OPT(vrd2_exp2)(v_f64x2_t input)
     vx   = vx & ALM_V2_EXP2_MASK;
 
     /* Check if -709 < vx < 709 */
-    cond = (vx > ALM_V2_EXP2_ARG_MAX);
+    cond = ((vx) > ALM_V2_EXP2_ARG_MAX);
 
     /* x * 64.0 */
     z    = input * ALM_V2_EXP2_64;

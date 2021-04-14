@@ -51,7 +51,7 @@ struct {
     .tblsz_byln2 =  _MM_SET1_PD4(0x1.71547652b82fep+0),
     .huge        =  _MM_SET1_PD4(0x1.8p+52) ,
     .arg_min     =  _MM_SET1_I32((int32_t)0xFFFFFF99),
-    .arg_max     =  _MM_SET1_I32(0x42AE0000),
+    .arg_max     =  _MM_SET1_I32(0x43000000),
     .mask        =  _MM_SET1_I32((int32_t)0x7fffffff),
     .infinity    =  _MM_SET1_I32(0x7f800000),
     .exp2f_min   =  _MM_SET1_PS4(-0x1.9fe368p6f),
@@ -134,7 +134,7 @@ ALM_PROTO_OPT(vrs4_exp2f)(v_f32x4_t _x)
     /* Get absolute value of vx */
     vx = vx & ALM_V4_EXP2F_MASK;
 
-    /* Check if -103 < vx < 88 */
+    /* Check if -128 < vx < 128 */
     cond = ((vx > ALM_V4_EXP2F_ARG_MAX));
 
     /* Convert _x to double precision */

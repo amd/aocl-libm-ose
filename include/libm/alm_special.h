@@ -40,6 +40,7 @@
  */
 
 enum {
+        ALM_E_IN_X_NEG  = 1<<8,         /* is a ZERO */
         ALM_E_IN_X_NAN  = 1<<7,         /* first arg is a NaN or QNaN */
         ALM_E_IN_X_INF  = 1<<6,         /* is '+/- INF' */
         ALM_E_IN_X_ZERO = 1<<5,         /* is a ZERO */
@@ -48,11 +49,12 @@ enum {
         ALM_E_IN_Y_NAN  = 1<<4,         /*  */
         ALM_E_IN_Y_INF  = 1<<3,
         ALM_E_IN_Y_ZERO = 1<<2,
+        ALM_E_IN_Y_NEG  = 1<<0,         /* is a ZERO */
 
 
-        ALM_E_OUT_NAN  = 1<<8,
-        ALM_E_OUT_INF  = 1<<9,
-        ALM_E_OUT_ZERO = 1<<10,
+        ALM_E_OUT_NAN  = 1<<16,
+        ALM_E_OUT_INF  = 1<<17,
+        ALM_E_OUT_ZERO = 1<<18,
 };
 
 
@@ -132,7 +134,8 @@ float __alm_handle_errorf(
 #endif /* if WINDOWS */
 
 
-double					alm_exp2_special(double x, double y, uint32_t code);
-float						alm_exp2f_special(float x, float y, uint32_t code);
+double	alm_exp2_special(double x, double y, uint32_t code);
+float   alm_exp2f_special(float x, float y, uint32_t code);
+double	alm_log2_special(double x, double y, uint32_t code);
 
 #endif

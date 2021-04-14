@@ -120,3 +120,40 @@ alm_exp2f_special(float x, float y, uint32_t code)
 
     return y;
 }
+
+
+static double
+_log_special_common(double x, double y, U32 fn_code, U32 error_code, char *name)
+{
+    flt64u_t ym = {.d = y};
+
+	switch (error_code) {
+    case ALM_E_OUT_INF:
+	case ALM_E_IN_X_ZERO:
+        __amd_handle_error(name, (int)fn_code, ym.i, ALM_ERR_SING,
+                           AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
+    break;
+
+	case ALM_E_IN_X_NEG:
+        __amd_handle_error(name, (int)fn_code, ym.i, ALM_ERR_DOMAIN,
+                           AMD_F_INVALID, EDOM, x, 0.0, 1);
+    break;
+
+	case ALM_E_IN_X_NAN:
+        return x + x;
+    break;
+
+    case ALM_E_OUT_ZERO:
+	default:
+		break;
+	}
+
+    return y;
+}
+
+
+double
+alm_log2_special(double x, double y, uint32_t code)
+{
+    return _log_special_common(x, y, __amd_log2, code, "log2");
+}

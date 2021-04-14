@@ -4,7 +4,7 @@
 
 ## Note
 
-test and gtests are not part of the repository yet
+gtests are now part of aocl-3.0 release branch
 
 ## Building
 

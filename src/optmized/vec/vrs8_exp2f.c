@@ -52,7 +52,7 @@ struct {
     //.tblsz_byln2 =  _MM_SET1_PD4(0x1.71547652b82fep+0),
     .huge        =  _MM256_SET1_PS8(0x1.8p+23f),
     .arg_min     =  _MM256_SET1_I32(0xFFFFFF99),
-    .arg_max     =  _MM256_SET1_I32(0x82AE0000),
+    .arg_max     =  _MM256_SET1_I32(0x42fe0000),
     .mask        =  _MM256_SET1_I32(0x7fffffff),
     .infinity    =  _MM256_SET1_I32(0x7f800000),
     .exp2f_min   =  _MM_SET1_PS8(-0x1.9fe368p6f),
@@ -146,7 +146,7 @@ ALM_PROTO_OPT(vrs8_exp2f)(v_f32x8_t _x)
     /* Get absolute value of vx */
     vx = vx & ALM_V8_EXP2F_MASK;
 
-    /* Check if -103 < vx < 88 */
+    /* Check if -127 < vx < 127 */
     v_u32x8_t cond = (vx > ALM_V8_EXP2F_ARG_MAX);
 
     /* x * (64.0/ln(2)) */

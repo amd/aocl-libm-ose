@@ -50,7 +50,7 @@ struct alm_arch_funcs __arch_funcs_log2 = {
         },
 
         [ALM_UARCH_VER_ZEN2] = {
-            &FN_PROTOTYPE_FMA3(log2f),
+            &ALM_PROTO_ARCH_ZN2(log2f),
             &ALM_PROTO_ARCH_ZN2(log2),
             &ALM_PROTO_ARCH_ZN2(vrs4_log2f),
             &ALM_PROTO_ARCH_ZN2(vrs8_log2f),
@@ -59,7 +59,7 @@ struct alm_arch_funcs __arch_funcs_log2 = {
         },
  
         [ALM_UARCH_VER_ZEN3] = {
-            &FN_PROTOTYPE_FMA3(log2f),
+            &ALM_PROTO_ARCH_ZN3(log2f),
             &ALM_PROTO_ARCH_ZN3(log2),
             &ALM_PROTO_ARCH_ZN3(vrs4_log2f),
 	    &ALM_PROTO_ARCH_ZN3(vrs8_log2f),

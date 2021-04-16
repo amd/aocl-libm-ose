@@ -95,7 +95,7 @@ struct expf_data {
 #define C3    exp2f_data.poly[1]
 #define C4    exp2f_data.poly[2]
 
-static uint32_t
+static inline uint32_t
 top12f(float x)
 {
     flt32u_t f = {.f = x};
@@ -145,7 +145,7 @@ ALM_PROTO_OPT(exp2f)(float x)
     double      q, dn, r, z;
     uint64_t    n, j, m;
 
-    uint32_t top = top12f(x);
+    uint32_t top = top12f(x) & 0x7ff;
 
     if (unlikely (top > top12f(128.0f))) {
         if(isnanf(x))

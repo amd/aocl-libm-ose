@@ -23,10 +23,10 @@ test_log1pf_conformance_data[] = {
     {POS_ZERO_F32,POS_ZERO_F32,0}, //
     //{F32_POS_HDENORM,F32_POS_HDENORM,0}, //
     //{F32_NEG_HDENORM,F32_NEG_HDENORM,0}, //
-    //{F32_POS_LDENORM,F32_POS_LDENORM,0}, //
+    //{0x00000001,0x00000001,0}, //
     //{F32_NEG_LDENORM,F32_NEG_LDENORM,0}, //
 
-    //{F32_POS_HNORMAL,0x42b17218,0}, //
+    //{0x7f7fffff,0x42b17218,0}, //
     //{F32_NEG_HNORMAL,NEG_QNAN_F32,FE_INVALID}, //
     //{F32_POS_LNORMAL,0x00800000,0}, //
     //{F32_NEG_HNORMAL,NEG_QNAN_F32,FE_INVALID}, // 20
@@ -73,6 +73,55 @@ test_log1pf_conformance_data[] = {
     { 0x46de64b6, 0x41241aae, 0},
     { 0xc2ca0000, 0xffc00000, FE_INVALID},
     { 0x42c60000, 0x40935d8e, 0},
+
+    { 0x7f800001, 0x7fc00001, 0},
+    { 0xff800001, 0xffc00001, 0},
+    { 0x7fc00000, 0x7fc00000, 0},
+    { 0xffc00000, 0xffc00000, 0},
+    { 0x7f800000, 0x7f800000, 0},
+    { 0x7fc00000, 0x7fc00000, 0},
+    { 0x3f800000, 0x3f317218, 0},
+    { 0xbf800000, 0x7fc00000, 0},
+    { 0x00000000, 0x00000000, 0},
+    { 0x80000000, 0x80000000, 0},
+
+    { 0x007fffff, 0x007fffff, 0},
+    { 0x807fffff, 0x807fffff, 0},
+    { 0x00000001, 0x00000001, 0},
+    { 0x80000001, 0x80000001, 0},
+    { 0x7f7fffff, 0x42b17218, 0},
+    { 0xff7fffff, 0x7fc00000, 0},
+    { 0x00800000, 0x00800000, 0},
+    { 0x80800000, 0x80800000, 0},
+
+    { 0x3d800000, 0x3d785186, 0}, // 0.0625
+    { 0x3cf5c28f, 0x3cf2254d, 0}, // 0.03
+    { 0x3f880000, 0x3f3952bf, 0}, // 1.0625
+    { 0xbf800001, 0x7fc00000, 0}, // -1.00000012
+    { 0xbf7fffff, 0xc1851592, 0}, // -0.99999994
+    { 0xbf7fff58, 0xc1382f62, 0}, // -0.99999
+    { 0xbf7ae148, 0xc07a5e9a, 0}, // -0.98
+
+    { 0x3fc90fdb, 0x3f71b81f, 0}, //pi/2
+    { 0x3c000000, 0x3bff0153, 0}, //0.0078125
+    { 0x3f012345, 0x3ed11ce8, 0}, //0.504444
+    { 0x40000000, 0x3f8c9f54, 0}, //2
+    { 0x40490fdb, 0x3fb5e5f7, 0}, //pi
+    { 0x40c90fdb, 0x3ffe271a, 0}, //2pi
+    { 0x41200000, 0x4019771e, 0}, //10
+    { 0x447a0000, 0x40dd1485, 0}, //1000
+    { 0x71200000, 0x4289b07e, 0}, // 1.25*2^99 
+
+    { 0xc2af0000, 0x7fc00000, 0}, //-87.5
+    { 0xc2e00000, 0x7fc00000, 0}, //-112
+    { 0xc3000000, 0x7fc00000, 0}, //-128
+    { 0xc2800000, 0x7fc00000, 0}, //-64
+
+    { 0x3fdbf0a8, 0x3f7fffff, 0}, // (e-1)--
+    { 0x3fdbf0a9, 0x3f800000, 0}, // (e-1)
+    { 0x3fdbf0aa, 0x3f800000, 0}, // (e-1)++
+    { 0x3fdbf0ab, 0x3f800001, 0},
+
 };
 
 static libm_test_special_data_f64

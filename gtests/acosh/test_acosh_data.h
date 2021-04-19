@@ -115,6 +115,17 @@ test_acoshf_conformance_data[] = {
    {0x48490495, 0x414ed924,  0}, //
    {0x511bd2ce, 0x41c9332f,  0}, //
    {0x62bdb16c, 0x42466d64,  0}, //
+   {0x80000000, 0x7fc00000,  0},
+   {0xff800000, 0x7fc00000,  0},
+   {0x7f800001, 0x7fc00001,  0}, 
+   {0xff800001, 0xffc00001,  0},
+   {0x7fc00000, 0x7fc00000,  0}, 
+   {0xffc00000, 0xffc00000,  0},
+   //answer from NAG test tool
+   {0x460ca000, 0x411cc521,  0}, // 9000, > 0x46000000
+   {0x3fc00000, 0x3f766165,  0}, // 1.5
+   {0x3f9e0419, 0x3f2c0fa0,  0}, // 1.2345
+
 };
 
 static libm_test_special_data_f64
@@ -265,5 +276,6 @@ test_acosh_conformance_data[] = {
     {0x48c191ef3d6a018aLL, 0x4058a14ffccd501eLL, 0}, //
     {0x51934b4f70b3a04cLL, 0x40688b21b9ce55e4LL, 0}, //
     {0x6337443f25f59cbbLL, 0x4078800a984ed8c7LL, 0}, //
+    
 };
 

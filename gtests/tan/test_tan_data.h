@@ -103,7 +103,35 @@ test_tanf_conformance_data[] = {
     {0x00000000, 0x00000000, 0}, 	// 49: tanf(0.000000000000)=	0.000000000000
     {0x00000000, 0x00000000, 0}, 	// 50: tanf(0.000000000000)=	0.000000000000
     {0x00000000, 0x00000000, 0}, 	// 51: tanf(0.000000000000)=	0.000000000000
-};
+    {0x7f800001, 0x7fc00001, 0},
+    {0xff800001, 0xffc00001, 0},
+    {0x7fc00000, 0x7fc00000, 0},
+    {0xffc00000, 0xffc00000, 0}, 
+    {0x7f800000, 0x7fc00000, 0},
+    {0xff800000, 0x7fc00000, 0},
+    {0xff7fffff, 0x80000000, 0},
+    {0x807fffff, 0x807fffff, 0},
+    {0x00800000, 0x00800000, 0}, 
+    {0x80800000, 0x80800000, 0},
+
+    //The following test cases are calculated by NAG test
+    {0x49486fa2, 0x37be4eea, 0},  //8.20986125E+05, close to 0
+    {0x3F000000, 0x3f0bda7b, 0},  //0.5
+    {0x3F333333, 0x3f57a036, 0},  //.7
+    {0x3F4CCCCD, 0x3f83cb32, 0},  //.8
+    {0x3fc00000, 0x41619f6b, 0},  //1.5
+    {0xC07AE148, 0xbf7c720e, 0},  //-3.92
+
+    {0x007fffff, 0x007fffff, 0},
+    {0x00000001, 0x00000001, 0},
+    {0x80000001, 0x80000001, 0},
+    {0x7f7fffff, 0xbf1c9eca, 0},//according to NAG answer
+    {0xff7fffff, 0x3f1c9eca, 0},
+    {0x00800000, 0x00800000, 0},
+    {0x80800000, 0x80800000, 0},
+
+
+};                         
 
 static libm_test_special_data_f64
 test_tan_conformance_data[] = {

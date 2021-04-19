@@ -106,14 +106,34 @@ test_atanf_conformance_data[] = {
    {0xcB000000, 0x7f800000,  FE_OVERFLOW},  // -2^23
    {0xcB000001, 0x7f800000,  FE_OVERFLOW},  // -(2^23 + 1)
    {0xcAFFFFFF, 0x7f800000,  FE_OVERFLOW},  // -(2^23 -1 + 0.5)
+   {0x80000000, 0x80000000,  0},
+   {0x7f800001, 0x7fc00001,  0},
+   {0xff800001, 0xffc00001,  0}, 
+   {0x7fc00000, 0x7fc00000,  0}, 
+   {0xffc00000, 0xffc00000,  0},
+   {0x7f800000, 0x3fc90fdb,  0},
+   {0xff800000, 0xbfc90fdb,  0},
+   {0x807fffff, 0x807fffff,  0}, 
+   {0xff7fffff, 0xbfc90fdb,  0}, 
+
+   //answer from NAG test tool
+   {0x35800000, 0x35800000,  0},    // 2 ^(-20) < 2.0^(-19), 9.536743164060E-07
+   {0xbe4ccccd, 0xbe4a2210,  0},    // abs(-0.2)< 7./16.,   -1.973955627155E-01
+   {0x3f000000, 0x3eed6338,  0},    // 0.5      < 11./16.,   4.636476090008E-01
+   {0xbf7cac08, 0xbf476317,  0},    //-0.987    < 19./16.,  -7.788557245266E-01
+   {0x400947ae, 0x3f913900,  0},    // 2.145    < 39./16.,   1.134552060813E+00
+   {0xc2c80000, 0xbfc7c82f,  0},    // -100     < 2^26,     -1.560796660108E+00
+   {0x4d000000, 0x3fc90fdb,  0}, // 2^27     > 2^26,      1.570796319344E+00
+   {0xcd000000, 0xbfc90fdb,  0}, //-2^27     > 2^26,     -1.570796319344E+00
+
 };
 
 static libm_test_special_data_f64
 test_atan_conformance_data[] = {
-    // special accuracy tests
-    {0x3e30000000000000LL, 0x3ff0000000000000LL, 0},  //min, small enough that atan(x) = 1 //
-    {0x3E2FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, //min - 1 bit
-    {0x3e30000000000001LL, 0x3ff0000000000000LL, 0}, //min + 1 bit
+	// special accuracy tests
+	{0x3e30000000000000LL, 0x3ff0000000000000LL, 0},  //min, small enough that atan(x) = 1 //
+	{0x3E2FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, //min - 1 bit
+	{0x3e30000000000001LL, 0x3ff0000000000000LL, 0}, //min + 1 bit
     {0xFE37E43C8800759CLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x = 1, x = -1.0000000000000000e+300
     {0xFE37E43C8800758CLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x < 1
     {0xFE37E43C880075ACLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x > 1
@@ -209,5 +229,65 @@ test_atan_conformance_data[] = {
     {0xC330000000000001LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -(2^52 + 1)
     {0xC32FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -(2^52 -1 + 0.5)
 
-};
 
+    {0x0, 0x0},
+    {0x23d, 0x23d},
+    {0x3e38000000000000LL, 0x3e38000000000000LL, 0},
+    {0xbe38000000000000LL, 0xbe38000000000000LL, 0},
+    {0x3fe921fb54442d18LL, 0x3fe54e04c05d06a0LL, 0},			
+    {0x3f20000000000001LL, 0x3f1ffffffd555558LL, 0},	
+    {0x3e40000000000001LL, 0x3e40000000000001LL, 0},
+    {0x7ffdf00000000000LL, 0x7ffdf00000000000LL, 0},			
+    {0xfffdf00000000000LL, 0xfffdf00000000000LL, 0},			
+    {0x7ff4000000000000LL, 0x7ffc000000000000LL, 0},			
+    {0xfff4000000000000LL, 0xfffc000000000000LL, 0},			
+    {0x3fe9e0c8f112ab1eLL, 0x3fe5c2b31b022df6LL, 0},			
+    {0x40306b51f0157e66LL, 0x3ff828d3654969ffLL, 0},			
+    {0x402ddf5adb92c01aLL, 0x3ff81028770aabe4LL, 0},			
+    {0x402ddb778a9ebd8aLL, 0x3ff81004ea1b89b6LL, 0},			
+    {0x401c462b9064a63bLL, 0x3ff6e254e96576c8LL, 0},			
+    {0x3fe921fb54442d19LL, 0x3fe54e04c05d06a1LL, 0},			
+    {0x3fe921fb54442d20LL, 0x3fe54e04c05d06a5LL, 0},			
+    {0x3ff10ca44655d48aLL, 0x3fea2601964ed0b3LL, 0},			
+    {0x400923e979f8b36aLL, 0x3ff434138906ebf1LL, 0},			
+    {0x4002dae59bb5c33eLL, 0x3ff2b662ea759ce2LL, 0},			
+    {0x4015fdca5f9a0e38LL, 0x3ff64104d68b4ed8LL, 0},			
+    {0x40b93bda357daddaLL, 0x3ff9215901d7452bLL, 0},			
+    {0x40f63525129291ffLL, 0x3ff921efcd344059LL, 0},			
+    {0x3ff9207824b27c17LL, 0x3ff00f79d9041e2dLL, 0},			
+    {0x4025fe9b31eb183dLL, 0x3ff7ae8c24fd4ef8LL, 0},			
+    {0x4046c6cbc45dc8deLL, 0x3ff8c814427d58baLL, 0},			
+    {0x3ff0000000000000LL, 0x3fe921fb54442d18LL, 0},				
+    {0x4000000000000000LL, 0x3ff1b6e192ebbe44LL, 0},				
+    {0x4008000000000000LL, 0x3ff3fc176b7a8560LL, 0},				
+    {0x4024000000000000LL, 0x3ff789bd2c160054LL, 0},			
+    {0xc000000000000000LL, 0xbff1b6e192ebbe44LL, 0},			
+    {0x3ff921fb54442d18LL, 0x3ff00fe987ed02ffLL, 0},			
+    {0x4012d97c7f3321d2LL, 0x3ff5c97d37d98aa4LL, 0},			
+    {0x401921fb54442d18LL, 0x3ff69b8154baf42eLL, 0},			
+    {0x402921fb54442d18LL, 0x3ff7dcb7c5c399ecLL, 0},			
+    {0x410921fb54442d18LL, 0x3ff921f63c7811a6LL, 0},			
+    {0x403921fb54442d18LL, 0x3ff87f17cfda0b5dLL, 0},			
+    {0x403921fb54442d19LL, 0x3ff87f17cfda0b5dLL, 0},			
+    {0x3ff921fb57442d18LL, 0x3ff00fe988ca80d4LL, 0},			
+    {0x400921fb52442d18LL, 0x3ff433b8a2c4a8a9LL, 0},			
+    {0x410921fb56442d18LL, 0x3ff921f63c78120eLL, 0},			
+    {0xbff921fb57442d18LL, 0xbff00fe988ca80d4LL, 0},			
+    {0xc00921fb54442d18LL, 0xbff433b8a322ddd2LL, 0},			
+    {0x400921f554442d18LL, 0x3ff433b7888324ddLL, 0},			
+    {0xc00921f554442d18LL, 0xbff433b7888324ddLL, 0},			
+    {0xbff921f557442d18LL, 0xbff00fe7cdce8b19LL, 0},			
+    {0xbff9217557442d18LL, 0xbff00fc2e2ee0031LL, 0},			
+    {0x400921fb56442d18LL, 0x3ff433b8a38112fcLL, 0},			
+    {0x4012d98c7f3321d2LL, 0x3ff5c97ff9d8c5f2LL, 0},			
+    {0x412e848abcdef000LL, 0x3ff921fa47d51180LL, 0},	
+    {0x439332270327f466LL, 0x3ff921fb54442d18LL, 0},	
+    {0x411fa317083ee0a2LL, 0x3ff921f94e648ff6LL, 0},			
+    {0x64ca7f352f2afdaeLL, 0x3ff921fb54442d18LL, 0},	
+    {0xd3d196202a791d3dLL, 0xbff921fb54442d18LL, 0},	
+    {0x56fdb2fb3712813bLL, 0x3ff921fb54442d18LL, 0},		
+    {0x54e57b4e03dbe9b3LL, 0x3ff921fb54442d18LL, 0},	
+    {0xea96be922b1706c5LL, 0xbff921fb54442d18LL, 0},	
+    {0x655e883346944823LL, 0x3ff921fb54442d18LL, 0},	
+
+};

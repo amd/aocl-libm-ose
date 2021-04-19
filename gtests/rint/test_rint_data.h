@@ -106,12 +106,49 @@ test_rintf_conformance_data[] = {
    {0xcB000000, 0x7f800000,  FE_OVERFLOW},  // -2^23
    {0xcB000001, 0x7f800000,  FE_OVERFLOW},  // -(2^23 + 1)
    {0xcAFFFFFF, 0x7f800000,  FE_OVERFLOW},  // -(2^23 -1 + 0.5)
+
+   {0x80000000, 0x80000000,  0},
+   {0x00000000, 0x00000000,  0},
+   {0x3f800000, 0x3f800000,  0},
+   {0xbf800000, 0xbf800000,  0},
+   {0x7f800001, 0x7fc00001,  0},
+   {0xff800001, 0xffc00001,  0},
+   {0x7fc00000, 0x7fc00000,  0},
+   {0xffc00000, 0xffc00000,  0},
+   {0x7f800000, 0x7f800000,  0},
+   {0xff800000, 0xff800000,  0},
+
+   {0x007fffff, 0x00000000,  0},
+   {0x807fffff, 0x80000000,  0},
+   {0x00000001, 0x00000000,  0},
+   {0x80000001, 0x80000000,  0},
+   {0x7f7fffff, 0x7f7fffff,  0},
+   {0xff7fffff, 0xff7fffff,  0},
+   {0xff7fffff, 0x00000000,  0},
+   {0x80800000, 0x80000000,  0},
+
+   //The following test cases are chosen randomly
+   {0x50a3e87f, 0x50a3e87f,  0},   // 2.19993846E+10
+   {0x49486fa2, 0x49486fa0,  0},   // 8.20986125E+05
+   {0x3F000000, 0x00000000,  0}, // 0.5
+   {0xbf000000, 0x80000000,  0}, //-0.5
+   {0x3eb0fba9, 0x00000000,  0}, // 0.34567
+   {0xbeb0fba9, 0x80000000,  0}, //-0.34567
+   {0xc0600000, 0xc0800000,  0},   //-3.5
+   {0x40b00000, 0x40c00000,  0},   // 5.5
+   {0x43800000, 0x43800000,  0},   // 256
+   {0xc2fe0000, 0xc2fe0000,  0},   //-127
+   {0xC07AE148, 0xc0800000,  0},   //-3.92	
+   {0x42e2e666, 0x42e20000,  0},   // 113.45
+   {0xc7f12000, 0xc7f12000,  0},   //-123456
+   {0x3f000001, 0x3f800000,  0},   // 0.50000006
+
 };
 
 static libm_test_special_data_f64
 test_rint_conformance_data[] = {
-    // special accuracy tests
-    {0x3e30000000000000LL, 0x3ff0000000000000LL, 0},  //min, small enough that rint(x) = 1 //
+	// special accuracy tests
+	{0x3e30000000000000LL, 0x3ff0000000000000LL, 0},  //min, small enough that rint(x) = 1 //
     {0x3E2FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, //min - 1 bit
     {0x3e30000000000001LL, 0x3ff0000000000000LL, 0}, //min + 1 bit
     {0xFE37E43C8800759CLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x = 1, x = -1.0000000000000000e+300

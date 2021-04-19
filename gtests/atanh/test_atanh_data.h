@@ -134,6 +134,15 @@ test_atanhf_conformance_data[] = {
    {0x3f426c24, 0x3f7eb4a7,  0},  //
    {0x3f5e92e5, 0x3faa5589,  0},  //
    {0x3f7b9409, 0x4017c7a0,  0},  //
+
+   {0x40480000, 0x7fc00000,  0}, 
+
+   //answer from NAG test tool
+   {0x38d1b717, 0x38d1b717,  0}, // 0.0001, < 0x39000000
+   {0x3e19999a, 0x3e1ac48f,  0}, // 0.15   < 0.5
+   {0xbe19999a, 0xbe1ac48f,  0}, // -0.15, < 0.5
+   {0x3f49fbe7, 0x3f88cdaf,  0}, // 0.789, > 0.5
+   {0xbf49fbe7, 0xbf88cdaf,  0}, //-0.789, > 0.5
 };
 
 static libm_test_special_data_f64

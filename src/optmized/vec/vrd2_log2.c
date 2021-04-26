@@ -146,11 +146,9 @@ ALM_PROTO_OPT(vrd2_log2) (__m128d x)
 
     ix = (ix - TWO_BY_THREE) & INF;
 
-    v_u64x2_t int_exponent = (v_u64x2_t)ix >> EXPSHIFTBITS_SP64;
-
     for(int i = 0; i < VECTOR_SIZE; i++) {
 
-       n[i] = (double)int_exponent[i];
+       n[i] = (double)(ix[i] >> EXPSHIFTBITS_SP64);
 
     }
 

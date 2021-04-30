@@ -46,6 +46,10 @@
 #include "__alm_func_internal.h"
 #undef ALM_PROTO_INTERNAL
 
+#define ALM_PROTO_INTERNAL ALM_PROTO_AVX2
+#include "__alm_func_internal.h"
+#undef ALM_PROTO_INTERNAL
+
 #ifndef ALM_OVERRIDE
 #define ALM_PROTO_INTERNAL ALM_PROTO_OPT
 #include "__alm_func_internal.h"

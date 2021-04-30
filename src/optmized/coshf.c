@@ -31,10 +31,11 @@
  *   float coshf(float x)
  *
  * Spec:
- *   coshf(|x| > 89.415985107421875) = Infinity
- *   coshf(Infinity)  = infinity
- *   coshf(-Infinity) = infinity
+ *   coshf(-x) = coshf(x) if x < 0
+ *   coshf(x) = inf       if x = +inf
+ *   coshf(x) = inf       if x = -inf
  *
+ *   coshf(x) overflows   if (approximately) x > log(FLT_MAX)  (89.415985107421875)
  */
 
 #include "libm_util_amd.h"
@@ -48,7 +49,6 @@
 #include <libm/compiler.h>
 #include <libm/poly.h>
 #include <libm/amd_funcs_internal.h>
-//#include <libm/poly-vec.h>
 
 static struct {
     uint32_t arg_max, infinity;
@@ -101,25 +101,33 @@ static struct {
  *        cosh(x) = (exp(x) + exp(-x))/2
  *        cosh(-x) = +cosh(x)
  *
- *        checks for special cases
- *        if ( asint(x) > infinity) return x with overflow exception and
- *        return x.
- *        if x is NaN then raise invalid FP operation exception and return x.
  *
- *        if x < 0x1p-11
- *         coshf(x) = 1+1/2*x*x
+ *                      +-
+ *                      | v                         1
+ *        coshf(x)   =  |--- * (exp(x - log(v)) + ------  * exp(-(x-log(v))))
+ *                      | 2                        (v*v)
+ *                      +-
  *
- *        if 0x1p-11 < x < 0x1.62e43p-2
- *         coshf = C0 + Y*Y*(C1 + Y*Y*(C2 + Y*Y*C3))
+ *        Let z = exp(x - log(v))         ; where log(v) = 0.6931610107421875
  *
- *        if 0x1.62e43p-2 < x < 8.5
- *         coshf = 0.5 * (exp(x) + 1/exp(x))
+ *        coshf(x)   = v/2 * (z + 1/v^2 * 1/z)   ; exp(-z) = 1/z
  *
- *        if 8.5 < x < 0x1.62e42ep6
- *         coshf = 0.5 * exp(x)
+ *        To avoid division, we calculate coshf(x) as piece-wise function
  *
- *        if x > 0x1.62e42ep6
- *         coshf = v/2 * exp(x - LOGV) where v = 0x1.0000e8p-1
+ *                   +------
+ *                   | 1 + 1/2*x^2        if 0 <= x < EPS,  where EPS = 2*2^(-t/2), 
+ *                   |                                           t is no of bits in significand
+ *                   |
+ *                   | poly(x)            if EPS <= x < XC  where XC = 1/2*ln(2)
+ *        coshf(x) = |
+ *                   | 1/2*(Z+1/Z)        if XC <= x < 8.5  where Z = exp(x)
+ *                   |
+ *                   | 1/2*Z              if 8.5 <= x < YBAR, where YBAR = ln(FLT_MAX)
+ *                   |
+ *                   | v/2*Z              if YBAR <= x < WMAX, where Z = exp(x - ln(v))
+ *                   |                                               WMAX = min(YBAR, ln(FLT_MAX) - ln(v)+0.69)
+ *                   | INFINITY           Otherwise
+ *                   +-------
  *
  */
 

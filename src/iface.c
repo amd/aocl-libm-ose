@@ -165,15 +165,16 @@ alm_iface_fixup(alm_ep_wrapper_t *g_ep_wrapper,
 
     alm_uarch_ver_t arch_ver = ALM_UARCH_VER_DEFAULT;
 
-    if (mfg_info->mfg_type == ALM_CPU_MFG_AMD) {
-        switch(mfg_info->family) {
-        case ALM_CPU_FAMILY_NAPLES:			/* Naples */
+    if (mfg_info->mfg_type == ALM_CPU_MFG_AMD &&
+        mfg_info->family >= ALM_CPU_FAMILY_ZEN) {
+        switch(mfg_info->model) {
+        case ALM_CPU_MODEL_NAPLES:
             arch_ver = ALM_UARCH_VER_ZEN;
             break;
-        case ALM_CPU_FAMILY_ROME:				/* Rome */
+        case ALM_CPU_MODEL_ROME:
             arch_ver = ALM_UARCH_VER_ZEN2;
             break;
-        case ALM_CPU_FAMILY_MILAN:			/* Milan */
+        case ALM_CPU_MODEL_MILAN:
             arch_ver = ALM_UARCH_VER_ZEN3;
             break;
         default:

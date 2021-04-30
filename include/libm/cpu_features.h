@@ -177,9 +177,59 @@ enum {
     ALM_CPU_FEATURE_USABLE(f, ALM_CPUID_EAX_7, ebx, ALM_CPUID_BIT_AVX2)
 
 
-#define ALM_CPU_FAMILY_NAPLES      0x15
-#define ALM_CPU_FAMILY_ROME        0x17
-#define ALM_CPU_FAMILY_MILAN       0x19
+static inline uint32_t
+__extract32(uint32_t value, int start, int length)
+{
+    assert(start >= 0 && length > 0 && length <= 32 - start);
+    return (value >> start) & (~0U >> (32 - length));
+}
+
+#define ALM_CPU_FAMILY_ZEN              0x17
+#define ALM_CPU_FAMILY_ZEN_PLUS         0x17
+#define ALM_CPU_FAMILY_ZEN2             0x17
+#define ALM_CPU_FAMILY_ZEN3             0x19
+
+/* Precise identification */
+#define ALM_CPU_MAKE_MODEL(base, ext)   ((ext<<4) | (base))
+
+/* Zen, Naples, Whitehaven, Summit Ridge, Snowy Owl */
+#define ALM_CPU_MODEL_NAPLES        ALM_CPU_MAKE_MODEL(0x0, 0x1)
+#define ALM_CPU_MODEL_RAVENRIDGE    ALM_CPU_MAKE_MODEL(0x1, 0x1)
+#define ALM_CPU_MODEL_BANDEDKESTREL ALM_CPU_MAKE_MODEL(0x8, 0x1)
+#define ALM_CPU_MODEL_DALI          ALM_CPU_MAKE_MODEL(0x0, 0x2)
+/* Zen+ */
+#define ALM_CPU_MODEL_PINNACLERIDGE ALM_CPU_MAKE_MODEL(0x8, 0x0)
+#define ALM_CPU_MODEL_PICASSO       ALM_CPU_MAKE_MODEL(0x8, 0x1)
+/* Zen2 */
+#define ALM_CPU_MODEL_ROME          ALM_CPU_MAKE_MODEL(0x1, 0x3)
+#define ALM_CPU_MODEL_RENOIR        ALM_CPU_MAKE_MODEL(0x0, 0x6)
+#define ALM_CPU_MODEL_MATISSE       ALM_CPU_MAKE_MODEL(0x1, 0x7)
+/* Zen3 */
+#define ALM_CPU_MODEL_MILAN         ALM_CPU_MAKE_MODEL(0x1, 0x0)
+#define ALM_CPU_MODEL_VERMEER       ALM_CPU_MAKE_MODEL(0x1, 0x2)  /* 33 */
+#define ALM_CPU_MODEL_REMBRANT      ALM_CPU_MAKE_MODEL(0x0, 0x4)  /* 64 */
+#define ALM_CPU_MODEL_CEZANNE       ALM_CPU_MAKE_MODEL(0x0, 0x5)  /* 80 */
+
+static inline uint16_t
+alm_cpuid_get_family(uint32_t var)
+{
+    return (uint16_t)(__extract32(var, 20, 8) +
+                      __extract32(var, 8, 4));
+}
+
+static inline uint16_t
+alm_cpuid_get_model(uint32_t var)
+{
+    return (uint16_t)(__extract32(var, 16, 4) +
+                      __extract32(var, 4, 4));
+}
+
+static inline uint16_t
+alm_cpuid_get_stepping(uint32_t var)
+{
+    return (uint16_t)(__extract32(var, 20, 8) +
+                      __extract32(var, 8, 4));
+}
 
 
 /* ID return values */
@@ -236,13 +286,6 @@ static inline void __cpuid_2(uint32_t eax, uint32_t ecx, struct alm_cpuid_regs *
          :"=a"(out->eax), "=b"(out->ebx), "=c"(out->ecx), "=d"(out->edx)
          :"0"(eax), "2"(ecx)
          );
-}
-
-static inline uint32_t
-__extract32(uint32_t value, int start, int length)
-{
-    assert(start >= 0 && length > 0 && length <= 32 - start);
-    return (value >> start) & (~0U >> (32 - length));
 }
 
 static inline uint32_t

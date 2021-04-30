@@ -50,28 +50,23 @@ struct {
 static void
 __get_mfg_info(struct alm_cpuid_regs *cpuid_regs, struct alm_cpu_mfg_info *mfg_info)
 {
-    uint32_t ext_model;
-    uint32_t model;
-    uint32_t family;
+    uint16_t model;
+    uint16_t family;
 
     if (mfg_info) {
         struct alm_cpuid_regs regs;
-        uint32_t eax;
 
         __cpuid_1(1, &regs);
-        eax = regs.eax;
 
-        family = (eax >> 8) & 0x0f;
-        model = (eax >> 4) & 0x0f;
-        ext_model = (eax >> 12) & 0xf0;
-        if (family == 0x0f) {
-            family += (eax >> 20) & 0xff;
+        family = alm_cpuid_get_family(regs.eax);
+        model = alm_cpuid_get_model(regs.eax);
+
+        if (family >= ALM_CPU_FAMILY_ZEN) {
             mfg_info->family = (uint16_t)family;
-            model += ext_model;
             mfg_info->model = (uint16_t)model;
         }
 
-        mfg_info->stepping = eax & 0x0f;
+        mfg_info->stepping = alm_cpuid_get_stepping(regs.eax);
     }
 }
 
@@ -88,7 +83,6 @@ __init_cpu_features(void)
 
     struct alm_cpu_mfg_info *mfg_info = &cpu_features.cpu_mfg_info;
     int arr_size = ARRAY_SIZE(__cpuid_values);
-    //assert(arr_size <= ALM_CPUID_MAX);
 
     if (initialized == INITIALIZED_MAGIC)
         return;
@@ -123,12 +117,12 @@ __init_cpu_features(void)
         memcpy(&cpu_features.usable[0], &cpu_features.available[0],
                sizeof(cpu_features.usable));
 
-        switch(mfg_info->family) {
-        case ALM_CPU_FAMILY_NAPLES:     /* Naples */
+        switch(mfg_info->model) {
+        case ALM_CPU_MODEL_NAPLES:     /* Naples */
             break;
-        case ALM_CPU_FAMILY_ROME:       /* Rome */
+        case ALM_CPU_MODEL_ROME:       /* Rome */
             break;
-        case ALM_CPU_FAMILY_MILAN:      /* Milan */
+        case ALM_CPU_MODEL_MILAN:      /* Milan */
             break;
         default:
             break;
@@ -169,31 +163,32 @@ alm_cpu_is_amd(void)
 }
 
 static uint32_t
-alm_cpu_arch_is(uint16_t family)
+alm_cpu_arch_is(uint16_t model)
 {
     __init_cpu_features();
 
     struct alm_cpu_mfg_info *mfg_info = &cpu_features.cpu_mfg_info;
 
-    return mfg_info->family == family;
+    return (mfg_info->family >= ALM_CPU_FAMILY_ZEN) &&
+        (mfg_info->model == model);
 }
 
 uint32_t
 alm_cpu_arch_is_zen(void)
 {
-    return alm_cpu_arch_is(ALM_CPU_FAMILY_NAPLES);
+    return alm_cpu_arch_is(ALM_CPU_MODEL_NAPLES);
 }
 
 uint32_t
 alm_cpu_arch_is_zen2(void)
 {
-    return alm_cpu_arch_is(ALM_CPU_FAMILY_ROME);
+    return alm_cpu_arch_is(ALM_CPU_MODEL_ROME);
 }
 
 uint32_t
 alm_cpu_arch_is_zen3(void)
 {
-    return alm_cpu_arch_is(ALM_CPU_FAMILY_MILAN);
+    return alm_cpu_arch_is(ALM_CPU_MODEL_MILAN);
 }
 
 uint32_t

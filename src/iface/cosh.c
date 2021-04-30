@@ -30,7 +30,7 @@
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
 
-//#include <libm/arch/zen.h>
+#include <libm/arch/avx2.h>
 #include <libm/arch/zen2.h>
 #include <libm/arch/zen3.h>
 
@@ -41,8 +41,8 @@ struct alm_arch_funcs __arch_funcs_cosh = {
         [ALM_UARCH_VER_DEFAULT] = {
             &FN_PROTOTYPE_REF(coshf),
             &FN_PROTOTYPE_REF(cosh),
-            &ALM_PROTO_ARCH_ZN3(vrs4_coshf), /* vrs4 ? */
-            &ALM_PROTO_ARCH_ZN3(vrs8_coshf), /* vrs8 ? */
+            &ALM_PROTO_ARCH_AVX2(vrs4_coshf), /* vrs4 ? */
+            &ALM_PROTO_ARCH_AVX2(vrs8_coshf), /* vrs8 ? */
             &FN_PROTOTYPE_REF(vrd2_cosh),
             NULL,                            /* vrd4 ? */
         },
@@ -76,7 +76,7 @@ LIBM_IFACE_PROTO(cosh)(void *arg)
         [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(cosh),
         [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_coshf),
         [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_coshf),
-        //[ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_cosh),
+        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_cosh),
         //[ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_cosh),
         },
     };

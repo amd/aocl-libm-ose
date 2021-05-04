@@ -220,7 +220,7 @@ alm_cpuid_get_family(uint32_t var)
 static inline uint16_t
 alm_cpuid_get_model(uint32_t var)
 {
-    return (uint16_t)(__extract32(var, 16, 4) +
+    return (uint16_t)(__extract32(var, 16, 4) << 4 |
                       __extract32(var, 4, 4));
 }
 

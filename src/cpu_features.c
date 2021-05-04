@@ -113,11 +113,12 @@ __init_cpu_features(void)
      * Globally disable some *_USEABLE flags, so that all ifunc's
      * sees them
      */
-    if (mfg_info->mfg_type == ALM_CPU_MFG_AMD) {
+    if (mfg_info->mfg_type == ALM_CPU_MFG_AMD &&
+        mfg_info->family >= ALM_CPU_FAMILY_ZEN) {
         memcpy(&cpu_features.usable[0], &cpu_features.available[0],
                sizeof(cpu_features.usable));
 
-        switch(mfg_info->model) {
+        switch(mfg_info->family) {
         case ALM_CPU_MODEL_NAPLES:     /* Naples */
             break;
         case ALM_CPU_MODEL_ROME:       /* Rome */
@@ -153,42 +154,91 @@ alm_cpu_get_features(void)
     return &cpu_features;
 }
 
+static const struct alm_cpu_mfg_info *
+alm_cpu_get_mfg_info(void)
+{
+    return &cpu_features.cpu_mfg_info;
+}
+
 uint32_t
 alm_cpu_is_amd(void)
 {
+    const struct alm_cpu_mfg_info *mfg_info;
+
     __init_cpu_features();
-    struct alm_cpu_mfg_info *mfg_info = &cpu_features.cpu_mfg_info;
+    mfg_info = alm_cpu_get_mfg_info();
 
     return mfg_info->mfg_type == ALM_CPU_MFG_AMD;
-}
-
-static uint32_t
-alm_cpu_arch_is(uint16_t model)
-{
-    __init_cpu_features();
-
-    struct alm_cpu_mfg_info *mfg_info = &cpu_features.cpu_mfg_info;
-
-    return (mfg_info->family >= ALM_CPU_FAMILY_ZEN) &&
-        (mfg_info->model == model);
 }
 
 uint32_t
 alm_cpu_arch_is_zen(void)
 {
-    return alm_cpu_arch_is(ALM_CPU_MODEL_NAPLES);
+    const struct alm_cpu_mfg_info *mfg_info;
+    uint32_t ret = 0;
+
+    if (!alm_cpu_is_amd())
+        return 0;
+
+    mfg_info = alm_cpu_get_mfg_info();
+    switch (mfg_info->model) {
+      case ALM_CPU_MODEL_NAPLES:
+      case ALM_CPU_MODEL_RAVENRIDGE:
+      case ALM_CPU_MODEL_DALI:
+          ret = 1;
+          break;
+      default:
+          break;
+    }
+
+    return ret;
 }
 
 uint32_t
 alm_cpu_arch_is_zen2(void)
 {
-    return alm_cpu_arch_is(ALM_CPU_MODEL_ROME);
+    const struct alm_cpu_mfg_info *mfg_info;
+    uint32_t ret = 0;
+
+    if (!alm_cpu_is_amd())
+        return 0;
+
+    mfg_info = alm_cpu_get_mfg_info();
+    switch (mfg_info->model) {
+      case ALM_CPU_MODEL_ROME:
+      case ALM_CPU_MODEL_RENOIR:
+          ret = 1;
+          break;
+      default:
+          break;
+    }
+
+    return ret;
 }
 
 uint32_t
 alm_cpu_arch_is_zen3(void)
 {
-    return alm_cpu_arch_is(ALM_CPU_MODEL_MILAN);
+    const struct alm_cpu_mfg_info *mfg_info;
+    uint32_t ret;
+
+    if (!alm_cpu_is_amd())
+        return 0;
+
+    mfg_info = alm_cpu_get_mfg_info();
+    switch (mfg_info->model) {
+      case ALM_CPU_MODEL_MILAN:
+      case ALM_CPU_MODEL_VERMEER:
+      case ALM_CPU_MODEL_REMBRANT:
+      case ALM_CPU_MODEL_CEZANNE:
+          ret = 1;
+          break;
+
+      default:
+          break;
+    }
+
+    return ret;
 }
 
 uint32_t

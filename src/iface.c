@@ -152,35 +152,20 @@ void
 alm_iface_fixup(alm_ep_wrapper_t *g_ep_wrapper,
                 const struct alm_arch_funcs *alm_funcs)
 {
-    static struct alm_cpu_features *features = NULL;
+    alm_uarch_ver_t arch_ver;
 
     if (!alm_funcs)
         return;
 
-    if (!features) {
-        features = alm_cpu_get_features();
-    }
+    if (alm_cpu_arch_is_zen3())
+        arch_ver = ALM_UARCH_VER_ZEN3;
+    else if (alm_cpu_arch_is_zen2())
+        arch_ver = ALM_UARCH_VER_ZEN2;
+    else if (alm_cpu_arch_is_zen())
+        arch_ver = ALM_UARCH_VER_ZEN;
+    else
+        arch_ver = ALM_UARCH_VER_DEFAULT;
 
-    struct alm_cpu_mfg_info *mfg_info = &features->cpu_mfg_info;
-
-    alm_uarch_ver_t arch_ver = ALM_UARCH_VER_DEFAULT;
-
-    if (mfg_info->mfg_type == ALM_CPU_MFG_AMD &&
-        mfg_info->family >= ALM_CPU_FAMILY_ZEN) {
-        switch(mfg_info->model) {
-        case ALM_CPU_MODEL_NAPLES:
-            arch_ver = ALM_UARCH_VER_ZEN;
-            break;
-        case ALM_CPU_MODEL_ROME:
-            arch_ver = ALM_UARCH_VER_ZEN2;
-            break;
-        case ALM_CPU_MODEL_MILAN:
-            arch_ver = ALM_UARCH_VER_ZEN3;
-            break;
-        default:
-            break;
-        }
-    }
 
     for (int i = ((int)ALM_FUNC_VAR_MAX-1); i >=0 ; i--) {
         alm_ep_func_t *gptr = g_ep_wrapper->g_ep[i];

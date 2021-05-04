@@ -108,17 +108,6 @@ class AlmOptions(object):
                         help    = 'Enable Developer mode'
         )
 
-        self.add_option('compiler',
-                        nargs   = 1,
-                        type    ='choice',
-                        default =  'gcc',
-                        choices = ['gcc', 'aocc', 'icc'],
-                        help="""
-                        Choose compiler suite, this is just a configurator,
-                        choose CC=<cmd> for actual compiler
-                        """
-        )
-
         self.add_option('toolchain-base',
                         nargs   = 1,
                         type    = 'str',

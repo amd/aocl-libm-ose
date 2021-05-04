@@ -70,10 +70,11 @@ def CheckForToolchain(context):
     cc_ver = env['CCVERSION']
     for k,v in toolchain_versions.items():
         if k.lower() in cc:
+            #ignoring last . (if exists) to convert to float
+            if cc_ver.count('.') > 1:
+                cc_ver = '.'.join(cc_ver.split('.')[:-1])
             context.Message(' Using compiler {0} ver {1}'.format(k, cc_ver))
-            #ignoring last . to convert to float
-            cc_ver = '.'.join(cc_ver.split('.')[:-1])
-            if float(v['min']) <= float(cc_ver) <= float(v['max']): 
+            if float(v['min']) <= float(cc_ver) <= float(v['max']):
                     result = True
 
     context.Result(result)

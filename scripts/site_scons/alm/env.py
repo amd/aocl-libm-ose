@@ -88,25 +88,26 @@ class AlmEnvironment(object):
         # Configure Compiler
 
         buildtype = self.env['BUILD']
-        cc_opt = self.compiler_type  = self.opts.GetOption('compiler')
         try:
             cc_env = self.env['ALM_CC']
         except KeyError as k:
             cc_env = self.env['CC']
 
         if 'clang' in cc_env:
-            print(
-                'Found LLVM compiler in CC variable, Setting up correctly..'
-            )
+            print('Found LLVM compiler in CC variable')
             cc_opt = 'llvm'
-
-        if cc_opt == 'gcc':
-            self.compiler = gcc.Gcc(buildtype)
-            self.env['compiler'] = 'gcc'
-        elif cc_opt in ['aocc', 'llvm']:
             self.compiler = llvm.LLVM(buildtype)
             self.env['compiler'] = 'aocc'
-        elif cc_opt == 'icc':
+
+        elif 'gcc' in cc_env:
+            print ('Found GCC Compiler in CC variable')
+            cc_opt = 'gcc'
+            self.compiler = gcc.Gcc(buildtype)
+            self.env['compiler'] = 'gcc'
+
+        elif 'icc' in cc_env:
+            print ('Found ICC Compiler in CC variable')
+            cc_opt = 'icc'
             self.env['compiler'] = 'icc'
             self.compiler = icc.Icc(buildtype)
 

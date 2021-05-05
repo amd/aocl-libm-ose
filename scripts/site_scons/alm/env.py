@@ -49,7 +49,6 @@ def get_environ_path():
 
     path = path.replace(' ', '\\ ')
 
-    #print(path)
     return path
 
 class AlmEnvironment(object):

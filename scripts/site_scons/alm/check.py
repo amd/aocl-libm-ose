@@ -145,7 +145,8 @@ def CheckCompilerFlag(context, flag):
     """
     oldcflags = context.env['CFLAGS']
     context.env['CFLAGS'] = flag
-    context.Message("Checking if [%s] is supported by %s "%(flag, context.env['CC']))
+    context.Message("Checking if [%s] is supported by %s "%(flag,
+                                                            context.env['CC']))
     result = context.TryCompile(candidate, '.c')
     context.Result(result)
     context.env['CFLAGS'] = oldcflags

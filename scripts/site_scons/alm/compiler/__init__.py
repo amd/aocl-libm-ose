@@ -194,10 +194,10 @@ class Compiler:
             [self.Cmd(), self.version_str], stdout=subprocess.PIPE)
         (stdout, stderr) = process.communicate()
 
-        match = re.search('[0-9]*[0-9.]+', str(stdout))
+        match = re.search('[0-9]*[0-9]+\.[0-9]\.[0-9]', str(stdout))
         if match is None:
             return '0.0.0'
-
+        #print('match', match, 'out', stdout)
         version = match.group(0)
 
         return '{}'.format(version)

@@ -220,7 +220,7 @@ uint32_t
 alm_cpu_arch_is_zen3(void)
 {
     const struct alm_cpu_mfg_info *mfg_info;
-    uint32_t ret;
+    uint32_t ret = 0;
 
     if (!alm_cpu_is_amd())
         return 0;

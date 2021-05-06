@@ -66,7 +66,7 @@ GLIBC_VEC_FUNC_DECL(_ZGVdN8v_expf, __m256);
 GLIBC_VEC_FUNC_DECL(_ZGVdN4v_log,  __m256d);
 GLIBC_VEC_FUNC_DECL(_ZGVdN8v_logf, __m256);
 
-GLIBC_VEC_FUNC_DECL(_ZGVcN4v_sin, __m256d);
+GLIBC_VEC_FUNC_DECL(_ZGVdN4v_sin, __m256d);
 
 /* SSE - "_ZGVb" prefix */
 
@@ -86,7 +86,7 @@ MAKE_GLIBC_VEC_FUNC2(_ZGVbN2vv_pow,  __m128d, amd_vrd2_pow )
 MAKE_GLIBC_VEC_FUNC2(_ZGVbN4vv_powf, __m128,  amd_vrs4_powf)
 
 /* AVX  - "_ZGVc" prefix */
-MAKE_GLIBC_VEC_FUNC(_ZGVcN4v_sin,  __m256d, amd_vrd4_sin )
+MAKE_GLIBC_VEC_FUNC(_ZGVdN4v_sin,  __m256d, amd_vrd4_sin )
 MAKE_GLIBC_VEC_FUNC(_ZGVdN8v_sinf, __m256,  amd_vrs8_sinf)
 
 /* AVX2 - "_ZGVd" prefix */

@@ -31,11 +31,32 @@ int test_sin(void* handle) {
     sin_v4d  = dlsym(handle, "_ZGVdN4v_sin");
     sinf_v8s = dlsym(handle, "_ZGVdN8v_sinf");
 
+    if (sin_v2d == NULL) {
+        printf("Unable to find sin v2d symbols\n");
+        return 1;
+    }
+
+    if (sinf_v4s == NULL) {
+        printf("Unable to find sin v4s symbols\n");
+        return 1;
+    }
+
+    if (sin_v4d == NULL) {
+        printf("Unable to find sin v4d symbols\n");
+        return 1;
+    }
+
+    if (sinf_v8s == NULL) {
+        printf("Unable to find sin v8s symbols\n");
+        return 1;
+    }
+/*
     if (sin_v2d == NULL || sinf_v4s == NULL ||
         sin_v4d == NULL || sinf_v8s == NULL) {
         printf("Unable to find sin symbols\n");
         return 1;
     }
+*/
 
     /*vrd2*/
     op_vrd2 = (*sin_v2d)(ip_vrd2);

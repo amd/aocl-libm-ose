@@ -26,16 +26,38 @@ int test_pow(void* handle) {
     ip_vrd4 = _mm256_loadu_pd(input_array_vrd4);
     ip_vrs8 = _mm256_loadu_ps(input_array_vrs8);
 
-    pow_v2d = dlsym(handle, "_ZGVbN2v_pow");
-    powf_v4s = dlsym(handle, "_ZGVbN4v_powf");
-    pow_v4d  = dlsym(handle, "_ZGVdN4v_pow");
-    powf_v8s = dlsym(handle, "_ZGVdN8v_powf");
+    pow_v2d = dlsym(handle, "_ZGVbN2vv_pow");
+    powf_v4s = dlsym(handle, "_ZGVbN4vv_powf");
+    pow_v4d  = dlsym(handle, "_ZGVdN4vv_pow");
+    powf_v8s = dlsym(handle, "_ZGVdN8vv_powf");
 
+/*
     if (pow_v2d == NULL || powf_v4s == NULL ||
         pow_v4d == NULL || powf_v8s == NULL) {
         printf("Unable to find pow symbols\n");
         return 1;
     }
+*/
+
+    if (pow_v2d == NULL) {
+        printf("Unable to find pow v2d symbol\n");
+        return 1;
+    }
+    if (pow_v4d == NULL) {
+        printf("Unable to find pow v4d symbol\n");
+        return 1;
+    }
+    if (powf_v4s == NULL) {
+        printf("Unable to find pow v4s symbol\n");
+        return 1;
+    }
+    if (powf_v8s == NULL) {
+        printf("Unable to find pow v8s symbol\n");
+        return 1;
+    }
+
+
+
 
     /*vrd2*/
     op_vrd2 = (*pow_v2d)(ip_vrd2, ip_vrd2);

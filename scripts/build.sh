@@ -88,7 +88,7 @@ clean_cmd="scons -c"
 RunCommand "${clean_cmd}";
 
 #build
-build_cmd="scons -j32 ${fw} --compiler=${compiler_type}";
+build_cmd="scons -j32 ${fw}";
 build_cmd+=" CC=${cc_exe} CXX=${cxx_exe}"
 build_cmd+=" verbose=1"
 

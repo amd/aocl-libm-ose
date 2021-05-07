@@ -26,10 +26,10 @@ int test_sin(void* handle) {
     ip_vrd4 = _mm256_loadu_pd(input_array_vrd4);
     ip_vrs8 = _mm256_loadu_ps(input_array_vrs8);
 
-    sin_v2d = dlsym(handle, "_ZGVbN2v_sin");
-    sinf_v4s = dlsym(handle, "_ZGVbN4v_sinf");
-    sin_v4d  = dlsym(handle, "_ZGVdN4v_sin");
-    sinf_v8s = dlsym(handle, "_ZGVdN8v_sinf");
+    func_v2d sin_v2d = (func_v2d)dlsym(handle, "_ZGVbN2v_sin");
+    funcf_v4s sinf_v4s = (funcf_v4s)dlsym(handle, "_ZGVbN4v_sinf");
+    func_v4d sin_v4d = (func_v4d)dlsym(handle, "_ZGVdN4v_sin");
+    funcf_v8s sinf_v8s = (funcf_v8s)dlsym(handle, "_ZGVdN8v_sinf");
 
     if (sin_v2d == NULL) {
         printf("Unable to find sin v2d symbols\n");
@@ -50,13 +50,6 @@ int test_sin(void* handle) {
         printf("Unable to find sin v8s symbols\n");
         return 1;
     }
-/*
-    if (sin_v2d == NULL || sinf_v4s == NULL ||
-        sin_v4d == NULL || sinf_v8s == NULL) {
-        printf("Unable to find sin symbols\n");
-        return 1;
-    }
-*/
 
     /*vrd2*/
     op_vrd2 = (*sin_v2d)(ip_vrd2);

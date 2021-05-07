@@ -26,10 +26,10 @@ int test_cos(void* handle) {
     ip_vrd4 = _mm256_loadu_pd(input_array_vrd4);
     ip_vrs8 = _mm256_loadu_ps(input_array_vrs8);
 
-    cos_v2d = dlsym(handle, "_ZGVbN2v_cos");
-    cosf_v4s = dlsym(handle, "_ZGVbN4v_cosf");
-    cos_v4d  = dlsym(handle, "_ZGVdN4v_cos");
-    cosf_v8s = dlsym(handle, "_ZGVdN8v_cosf");
+    func_v2d cos_v2d = (func_v2d)dlsym(handle, "_ZGVbN2v_cos");
+    funcf_v4s cosf_v4s = (funcf_v4s)dlsym(handle, "_ZGVbN4v_cosf");
+    func_v4d cos_v4d  = (func_v4d)dlsym(handle, "_ZGVdN4v_cos");
+    funcf_v8s cosf_v8s = (funcf_v8s)dlsym(handle, "_ZGVdN8v_cosf");
 
     if (cos_v2d == NULL || cosf_v4s == NULL ||
         cos_v4d == NULL || cosf_v8s == NULL) {

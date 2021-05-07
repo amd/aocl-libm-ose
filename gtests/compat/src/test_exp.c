@@ -26,10 +26,10 @@ int test_exp(void* handle) {
     ip_vrd4 = _mm256_loadu_pd(input_array_vrd4);
     ip_vrs8 = _mm256_loadu_ps(input_array_vrs8);
 
-    exp_v2d = dlsym(handle, "_ZGVbN2v_exp");
-    expf_v4s = dlsym(handle, "_ZGVbN4v_expf");
-    exp_v4d  = dlsym(handle, "_ZGVdN4v_exp");
-    expf_v8s = dlsym(handle, "_ZGVdN8v_expf");
+    func_v2d exp_v2d = (func_v2d)dlsym(handle, "_ZGVbN2v_exp");
+    funcf_v4s expf_v4s = (funcf_v4s)dlsym(handle, "_ZGVbN4v_expf");
+    func_v4d exp_v4d  = (func_v4d)dlsym(handle, "_ZGVdN4v_exp");
+    funcf_v8s expf_v8s = (funcf_v8s)dlsym(handle, "_ZGVdN8v_expf");
 
     if (exp_v2d == NULL || expf_v4s == NULL ||
         exp_v4d == NULL || expf_v8s == NULL) {

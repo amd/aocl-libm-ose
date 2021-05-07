@@ -26,10 +26,10 @@ int test_log(void* handle) {
     ip_vrd4 = _mm256_loadu_pd(input_array_vrd4);
     ip_vrs8 = _mm256_loadu_ps(input_array_vrs8);
 
-    log_v2d = dlsym(handle, "_ZGVbN2v_log");
-    logf_v4s = dlsym(handle, "_ZGVbN4v_logf");
-    log_v4d  = dlsym(handle, "_ZGVdN4v_log");
-    logf_v8s = dlsym(handle, "_ZGVdN8v_logf");
+    func_v2d log_v2d = (func_v2d)dlsym(handle, "_ZGVbN2v_log");
+    funcf_v4s logf_v4s = (funcf_v4s)dlsym(handle, "_ZGVbN4v_logf");
+    func_v4d log_v4d  = (func_v4d)dlsym(handle, "_ZGVdN4v_log");
+    funcf_v8s logf_v8s = (funcf_v8s)dlsym(handle, "_ZGVdN8v_logf");
 
     if (log_v2d == NULL || logf_v4s == NULL ||
         log_v4d == NULL || logf_v8s == NULL) {

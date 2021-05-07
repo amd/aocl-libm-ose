@@ -4,11 +4,12 @@
 
 # glibc compat layer tests
 
-tenv = Environment()
+Import('env')
+tenv = env.Clone()
 
 tenv.Append(
     INCPATH= ['inc'],
-    CFLAGS = ['-Wall', '-g', '-mavx', '-fPIE'],
+    CFLAGS = ['-Wall', '-g', '-mavx', '-fPIE', '-fpermissive'],
     LIBS   = ['dl', 'm'],
 )
 

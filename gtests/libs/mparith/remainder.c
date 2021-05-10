@@ -3,10 +3,10 @@
 
 #if defined(FLOAT)
 #define FUNC_REMAINDER alm_mp_remainderf
-#define FUNC_REMAINDER_ULP alm_mp_remainderf_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_REMAINDER alm_mp_remainder
-#define FUNC_REMAINDER_ULP alm_mp_remainder_ULP
+
 #else
 #error
 #endif

@@ -3,10 +3,10 @@
 
 #if defined(FLOAT)
 #define FUNC_EXP2 alm_mp_exp2f
-#define FUNC_EXP2_ULP alm_mp_exp2f_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_EXP2 alm_mp_exp2
-#define FUNC_EXP2_ULP alm_mp_exp2_ULP
+
 #else
 #error
 #endif

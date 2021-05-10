@@ -3,9 +3,9 @@
 
 #if defined(FLOAT)
 #define FUNC_MODF alm_mp_modff
-#define FUNC_MODF_ULP alm_mp_modff_ULP
+
 #elif defined(DOUBLE)
-#define FUNC_MODF_ULP alm_mp_modf_ULP
+
 #define FUNC_MODF alm_mp_modf
 #else
 #error

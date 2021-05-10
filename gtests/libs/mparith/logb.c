@@ -3,10 +3,10 @@
 
 #if defined(FLOAT)
 #define FUNC_LOGB alm_mp_logbf
-#define FUNC_LOGB_ULP alm_mp_logbf_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_LOGB alm_mp_logb
-#define FUNC_LOGB_ULP alm_mp_logb_ULP
+
 #else
 #error
 #endif

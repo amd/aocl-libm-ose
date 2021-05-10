@@ -2,10 +2,10 @@
 
 #if defined(FLOAT)
 #define FUNC_CEIL alm_mp_ceilf
-#define FUNC_CEIL_ULP alm_mp_ceilf_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_CEIL alm_mp_ceil
-#define FUNC_CEIL_ULP alm_mp_ceil_ULP
+
 #else
 #error
 #endif

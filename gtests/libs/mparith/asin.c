@@ -2,10 +2,10 @@
 
 #if defined(FLOAT)
 #define FUNC_ASIN alm_mp_asinf
-#define FUNC_ASIN_ULP alm_mp_asinf_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_ASIN alm_mp_asin
-#define FUNC_ASIN_ULP alm_mp_asin_ULP
+
 #else
 #error
 #endif

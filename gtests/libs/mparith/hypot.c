@@ -3,10 +3,10 @@
 
 #if defined(FLOAT)
 #define FUNC_HYPOT alm_mp_hypotf
-#define FUNC_HYPOT_ULP alm_mp_hypotf_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_HYPOT alm_mp_hypot
-#define FUNC_HYPOT_ULP alm_mp_hypot_ULP
+
 #else
 #error
 #endif

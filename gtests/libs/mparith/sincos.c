@@ -3,10 +3,10 @@
 
 #if defined(FLOAT)
 #define FUNC_SINCOS alm_mp_sincosf
-#define FUNC_SINCOS_ULP alm_mp_sincosf_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_SINCOS alm_mp_sincos
-#define FUNC_SINCOS_ULP alm_mp_sincos_ULP
+
 #else
 #error
 #endif

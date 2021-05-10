@@ -3,10 +3,10 @@
 
 #if defined(FLOAT)
 #define FUNC_FMAX alm_mp_fmaxf
-#define FUNC_FMAX_ULP alm_mp_fmaxf_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_FMAX alm_mp_fmax
-#define FUNC_FMAX_ULP alm_mp_fmax_ULP
+
 #else
 #error
 #endif

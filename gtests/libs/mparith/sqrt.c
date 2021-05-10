@@ -3,10 +3,10 @@
 
 #if defined(FLOAT)
 #define FUNC_SQRT alm_mp_sqrtf
-#define FUNC_SQRT_ULP alm_mp_sqrtf_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_SQRT alm_mp_sqrt
-#define FUNC_SQRT_ULP alm_mp_sqrt_ULP
+
 #else
 #error
 #endif

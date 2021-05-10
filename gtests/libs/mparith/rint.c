@@ -3,10 +3,10 @@
 
 #if defined(FLOAT)
 #define FUNC_RINT alm_mp_rintf
-#define FUNC_RINT_ULP alm_mp_rintf_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_RINT alm_mp_rint
-#define FUNC_RINT_ULP alm_mp_rint_ULP
+
 #else
 #error
 #endif

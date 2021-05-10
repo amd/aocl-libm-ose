@@ -3,10 +3,10 @@
 
 #if defined(FLOAT)
 #define FUNC_SINPI alm_mp_sinpif
-#define FUNC_SINPI_ULP alm_mp_sinpif_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_SINPI alm_mp_sinpi
-#define FUNC_SINPI_ULP alm_mp_sinpi_ULP
+
 #else
 #error
 #endif

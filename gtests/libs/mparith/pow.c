@@ -3,10 +3,10 @@
 
 #if defined(FLOAT)
 #define FUNC_POW alm_mp_powf
-#define FUNC_POW_ULP alm_mp_powf_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_POW alm_mp_pow
-#define FUNC_POW_ULP alm_mp_pow_ULP
+
 #else
 #error
 #endif

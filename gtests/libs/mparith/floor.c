@@ -3,10 +3,10 @@
 
 #if defined(FLOAT)
 #define FUNC_FLOOR alm_mp_floorf
-#define FUNC_FLOOR_ULP alm_mp_floorf_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_FLOOR alm_mp_floor
-#define FUNC_FLOOR_ULP alm_mp_floor_ULP
+
 #else
 #error
 #endif

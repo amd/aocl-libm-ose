@@ -3,10 +3,10 @@
 
 #if defined(FLOAT)
 #define FUNC_ACOS alm_mp_acosf
-#define FUNC_ACOS_ULP alm_mp_acosf_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_ACOS alm_mp_acos
-#define FUNC_ACOS_ULP alm_mp_acos_ULP
+
 #else
 #error
 #endif

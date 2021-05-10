@@ -3,10 +3,10 @@
 
 #if defined(FLOAT)
 #define FUNC_FREXP alm_mp_frexpf
-#define FUNC_FREXP_ULP alm_mp_frexpf_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_FREXP alm_mp_frexp
-#define FUNC_FREXP_ULP alm_mp_frexp_ULP
+
 #else
 #error
 #endif

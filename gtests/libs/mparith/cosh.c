@@ -2,10 +2,10 @@
 
 #if defined(FLOAT)
 #define FUNC_COSH alm_mp_coshf
-#define FUNC_COSH_ULP alm_mp_coshf_ULP
+//
 #elif defined(DOUBLE)
 #define FUNC_COSH alm_mp_cosh
-#define FUNC_COSH_ULP alm_mp_cosh_ULP
+//
 #else
 #error
 #endif

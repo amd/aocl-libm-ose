@@ -1,5 +1,5 @@
 #include "precision.h"
-#include "mparith_c.h"
+
 
 #if defined(FLOAT)
 #define FUNC_POW alm_mp_powf

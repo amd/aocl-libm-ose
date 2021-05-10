@@ -1,5 +1,4 @@
 #include "precision.h"
-#include "mparith_c.h"
 
 #if defined(FLOAT)
 #define FUNC_ATAN2 alm_mp_atan2f

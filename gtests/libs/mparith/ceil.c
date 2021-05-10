@@ -1,5 +1,4 @@
 #include "precision.h"
-#include "mparith_c.h"
 
 #if defined(FLOAT)
 #define FUNC_CEIL alm_mp_ceilf

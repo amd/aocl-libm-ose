@@ -31,7 +31,7 @@
 
 
 
-long int FN_PROTOTYPE_REF(lround)(double d)
+long int ALM_PROTO_REF(lround)(double d)
 {
     UT64 u64d;
     UT64 u64Temp,u64result;

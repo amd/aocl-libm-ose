@@ -30,7 +30,7 @@
 #include <libm/amd_funcs_internal.h>
 
 
-float FN_PROTOTYPE_REF(acosf)(float x)
+float ALM_PROTO_REF(acosf)(float x)
 {
   /* Computes arccos(x).
      The argument is first reduced by noting that arccos(x)

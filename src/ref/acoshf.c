@@ -32,7 +32,7 @@
 
 #undef _FUNCNAME
 #define _FUNCNAME "acoshf"
-float FN_PROTOTYPE_REF(acoshf)(float x)
+float ALM_PROTO_REF(acoshf)(float x)
 {
 
   unsigned int ux;

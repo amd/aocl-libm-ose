@@ -30,7 +30,7 @@
 #include "libm_special.h"
 #include <libm/amd_funcs_internal.h>
 
-double FN_PROTOTYPE_REF(tanh)(double x)
+double ALM_PROTO_REF(tanh)(double x)
 {
   /*
     The definition of tanh(x) is sinh(x)/cosh(x), which is also equivalent

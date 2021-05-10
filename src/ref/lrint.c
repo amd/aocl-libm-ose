@@ -30,7 +30,7 @@
 #include <libm/amd_funcs_internal.h>
 
 
-long int FN_PROTOTYPE_REF(lrint)(double x)
+long int ALM_PROTO_REF(lrint)(double x)
 {
 
     UT64 checkbits,val_2p52;

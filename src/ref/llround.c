@@ -32,7 +32,7 @@
 #ifdef WINDOWS
 /*In windows llong long int is 64 bit and long int is 32 bit.
   In Linux long long int and long int both are of size 64 bit*/
-long long int FN_PROTOTYPE_REF(llround)(double d)
+long long int ALM_PROTO_REF(llround)(double d)
 {
     UT64 u64d;
     UT64 u64Temp,u64result;
@@ -98,7 +98,7 @@ long long int FN_PROTOTYPE_REF(llround)(double d)
 #else //WINDOWS 
 /*llroundf is equivalent to the linux implementation of 
   lroundf. Both long int and long long int are of the same size*/
-long long int FN_PROTOTYPE_REF(llround)(double d)
+long long int ALM_PROTO_REF(llround)(double d)
 {
     long long int result;
     result = FN_PROTOTYPE(lround)(d);

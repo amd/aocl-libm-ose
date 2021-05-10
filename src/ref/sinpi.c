@@ -91,7 +91,7 @@ static inline double cos_piby4(double x, double xx)
 }
 
 
-double FN_PROTOTYPE_REF(sinpi)(double x)
+double ALM_PROTO_REF(sinpi)(double x)
 {
     double r, dx, xsgn;
     unsigned long long ux;

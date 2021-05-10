@@ -31,7 +31,7 @@
 #include <libm/amd_funcs_internal.h>
 
 
-float FN_PROTOTYPE_REF(coshf)(float fx)
+float ALM_PROTO_REF(coshf)(float fx)
 {
     /*
       After dealing with special cases the computation is split into

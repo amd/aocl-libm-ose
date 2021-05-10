@@ -29,7 +29,7 @@
 #include "libm_special.h"
 #include <libm/amd_funcs_internal.h>
 
-float FN_PROTOTYPE_REF(frexpf)(float value, int *exp)
+float ALM_PROTO_REF(frexpf)(float value, int *exp)
 {
     UT32 val;
     unsigned int sign;

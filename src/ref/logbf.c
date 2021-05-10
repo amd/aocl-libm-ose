@@ -30,7 +30,7 @@
 #include <libm/amd_funcs_internal.h>
 
 
-float FN_PROTOTYPE_REF(logbf)(float x)
+float ALM_PROTO_REF(logbf)(float x)
 {
   unsigned int ux;
   int u;

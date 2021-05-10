@@ -31,7 +31,7 @@
 
 
 
-float FN_PROTOTYPE_REF(nextafterf)(float x, float y)
+float ALM_PROTO_REF(nextafterf)(float x, float y)
 {
 
 

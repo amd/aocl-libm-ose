@@ -32,7 +32,7 @@
 
 #undef _FUNCNAME
 #define _FUNCNAME "acosh"
-double FN_PROTOTYPE_REF(acosh)(double x)
+double ALM_PROTO_REF(acosh)(double x)
 {
 
   unsigned long long ux;

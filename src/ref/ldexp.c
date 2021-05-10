@@ -31,7 +31,7 @@
 #include <libm/amd_funcs_internal.h>
 
 
-double FN_PROTOTYPE_REF(ldexp)(double x, int n)
+double ALM_PROTO_REF(ldexp)(double x, int n)
 {
     UT64 val,val_x;
     unsigned int sign;

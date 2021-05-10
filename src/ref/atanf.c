@@ -30,7 +30,7 @@
 #include <libm/amd_funcs_internal.h>
 
 
-float FN_PROTOTYPE_REF(atanf)(float fx)
+float ALM_PROTO_REF(atanf)(float fx)
 {
 
   /* Some constants and split constants. */

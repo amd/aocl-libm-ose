@@ -29,7 +29,7 @@
 #include "libm_special.h"
 #include <libm/amd_funcs_internal.h>
 
-long int FN_PROTOTYPE_REF(lroundf)(float f)
+long int ALM_PROTO_REF(lroundf)(float f)
 {
     UT32 u32d;
     UT32 u32Temp,u32result;

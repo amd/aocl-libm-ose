@@ -30,7 +30,7 @@
 #include <libm/amd_funcs_internal.h>
 
 
-float FN_PROTOTYPE_REF(asinf)(float x)
+float ALM_PROTO_REF(asinf)(float x)
 {
   /* Computes arcsin(x).
      The argument is first reduced by noting that arcsin(x)

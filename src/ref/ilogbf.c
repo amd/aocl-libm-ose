@@ -29,7 +29,7 @@
 #include "libm_special.h"
 #include <libm/amd_funcs_internal.h>
 
-int FN_PROTOTYPE_REF(ilogbf)(float x)
+int ALM_PROTO_REF(ilogbf)(float x)
 {
 
     /* Check for input range */

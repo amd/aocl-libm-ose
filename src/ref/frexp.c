@@ -30,7 +30,7 @@
 #include <libm/amd_funcs_internal.h>
 
 
-double FN_PROTOTYPE_REF(frexp)(double value, int *exp)
+double ALM_PROTO_REF(frexp)(double value, int *exp)
 {
     UT64 val;
     unsigned int sign;

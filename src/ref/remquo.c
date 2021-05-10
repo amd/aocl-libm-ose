@@ -53,7 +53,7 @@ static inline void dekker_mul12(double x, double y,
 
 #undef _FUNCNAME
 #define _FUNCNAME "remquo"
-double FN_PROTOTYPE_REF(remquo)(double x, double y, int *quo)
+double ALM_PROTO_REF(remquo)(double x, double y, int *quo)
 {
 	double dx, dy, scale, w, t, v, c, cc;
 	int i, ntimes, xexp, yexp;

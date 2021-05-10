@@ -30,7 +30,7 @@
 #include "libm_special.h"
 #include <libm/amd_funcs_internal.h>
 
-double FN_PROTOTYPE_REF(ceil)(double x)
+double ALM_PROTO_REF(ceil)(double x)
 {
   double r;
   long long xneg;

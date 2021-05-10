@@ -29,7 +29,7 @@
 #include "libm_special.h"
 #include <libm/amd_funcs_internal.h>
 
-double FN_PROTOTYPE_REF(nextafter)(double x, double y)
+double ALM_PROTO_REF(nextafter)(double x, double y)
 {
 
 

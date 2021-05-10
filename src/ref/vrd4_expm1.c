@@ -28,7 +28,7 @@
 #include "libm_util_amd.h"
 #include <libm/amd_funcs_internal.h>
 
-__m256d FN_PROTOTYPE_REF(vrd4_expm1)(__m256d x)
+__m256d ALM_PROTO_REF(vrd4_expm1)(__m256d x)
 {
 
 	union XMMREGTYP_

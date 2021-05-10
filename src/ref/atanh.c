@@ -31,7 +31,7 @@
 
 #undef _FUNCNAME
 #define _FUNCNAME "atanh"
-double FN_PROTOTYPE_REF(atanh)(double x)
+double ALM_PROTO_REF(atanh)(double x)
 {
 
   unsigned long long ux, ax;

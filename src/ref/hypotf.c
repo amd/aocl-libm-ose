@@ -30,7 +30,7 @@
 #include <libm/amd_funcs_internal.h>
 
 
-float FN_PROTOTYPE_REF(hypotf)(float x, float y)
+float ALM_PROTO_REF(hypotf)(float x, float y)
 {
   /* Returns sqrt(x*x + y*y) with no overflow or underflow unless
      the result warrants it */

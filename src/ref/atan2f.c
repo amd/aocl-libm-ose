@@ -30,7 +30,7 @@
 #include "libm_inlines_amd.h"
 #include <libm/amd_funcs_internal.h>
 
-float FN_PROTOTYPE_REF(atan2f)(float fy, float fx)
+float ALM_PROTO_REF(atan2f)(float fy, float fx)
 {
   /* Array atan_jby256 contains precomputed values of atan(j/256),
      for j = 16, 17, ..., 256. */

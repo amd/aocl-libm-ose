@@ -32,7 +32,7 @@
 
 /* Returns 0 if x is infinite or NaN, otherwise returns 1 */
 
-int FN_PROTOTYPE_REF(finite)(double x)
+int ALM_PROTO_REF(finite)(double x)
 {
 
   unsigned long long ax,ux;

@@ -30,7 +30,7 @@
 #include <libm/amd_funcs_internal.h>
 
 
-float  FN_PROTOTYPE_REF(nanf)(const char *tagp)
+float  ALM_PROTO_REF(nanf)(const char *tagp)
 {
 
 

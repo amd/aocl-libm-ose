@@ -31,7 +31,7 @@
 
 
 
-double FN_PROTOTYPE_REF(nexttoward)(double x, long double y)
+double ALM_PROTO_REF(nexttoward)(double x, long double y)
 {
 
 

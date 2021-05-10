@@ -31,7 +31,7 @@
 #include <libm/amd_funcs_internal.h>
 
 
-float FN_PROTOTYPE_REF(nearbyintf)(float x)
+float ALM_PROTO_REF(nearbyintf)(float x)
 {
     /* Check for input range */
 	unsigned int mxscr_stat;

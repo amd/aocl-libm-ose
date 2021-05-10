@@ -39,7 +39,7 @@
 
 
 
-double FN_PROTOTYPE_REF(zen_pow)(double x, double y)
+double ALM_PROTO_REF(zen_pow)(double x, double y)
 {
   // x = 2^a, y = Integer
 /*

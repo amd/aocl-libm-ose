@@ -31,7 +31,7 @@
 #include <libm/amd_funcs_internal.h>
 
 
-float FN_PROTOTYPE_REF(roundf)(float f)
+float ALM_PROTO_REF(roundf)(float f)
 {
     UT32 u32f, u32Temp;
     U32 u32sign, u32exp, u32mantissa;

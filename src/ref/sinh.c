@@ -30,7 +30,7 @@
 #include "libm_special.h"
 #include <libm/amd_funcs_internal.h>
 
-double FN_PROTOTYPE_REF(sinh)(double x)
+double ALM_PROTO_REF(sinh)(double x)
 {
   /*
     After dealing with special cases the computation is split into

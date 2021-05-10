@@ -32,7 +32,7 @@
 
 
 
-float FN_PROTOTYPE_REF(rintf)(float x)
+float ALM_PROTO_REF(rintf)(float x)
 {
 
     UT32 checkbits,sign,val_2p23;

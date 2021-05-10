@@ -30,7 +30,7 @@
 #include <libm/amd_funcs_internal.h>
 
 
-long int FN_PROTOTYPE_REF(lrintf)(float x)
+long int ALM_PROTO_REF(lrintf)(float x)
 {
 
     UT32 checkbits,val_2p23;

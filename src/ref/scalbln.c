@@ -30,7 +30,7 @@
 #include "libm_special.h"
 #include <libm/amd_funcs_internal.h>
 
-double FN_PROTOTYPE_REF(scalbln)(double x, long int n)
+double ALM_PROTO_REF(scalbln)(double x, long int n)
 {
     UT64 val,val_x;
     unsigned int sign;

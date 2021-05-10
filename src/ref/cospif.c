@@ -72,7 +72,7 @@ static inline double cosf_piby4(double x)
                             (c1 + x2 * (c2 + x2 * (c3 + x2 * c4)))));
 }
 
-float FN_PROTOTYPE_REF(cospif)(float x)
+float ALM_PROTO_REF(cospif)(float x)
 {
 	float r, dx, xsgn;
 	unsigned int ux;

@@ -32,7 +32,7 @@
 
 #undef _FUNCNAME
 #define _FUNCNAME "atanhf"
-float FN_PROTOTYPE_REF(atanhf)(float x)
+float ALM_PROTO_REF(atanhf)(float x)
 {
 
   double dx;

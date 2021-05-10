@@ -31,7 +31,7 @@
 #include <libm/amd_funcs_internal.h>
 
 
-double FN_PROTOTYPE_REF(hypot)(double x, double y)
+double ALM_PROTO_REF(hypot)(double x, double y)
 {
   /* Returns sqrt(x*x + y*y) with no overflow or underflow unless
      the result warrants it */

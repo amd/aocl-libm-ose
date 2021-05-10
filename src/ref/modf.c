@@ -31,7 +31,7 @@
 #include <libm/amd_funcs_internal.h>
 
 
-double FN_PROTOTYPE_REF(modf)(double x, double *iptr)
+double ALM_PROTO_REF(modf)(double x, double *iptr)
 {
   /* modf splits the argument x into integer and fraction parts,
      each with the same sign as x. */

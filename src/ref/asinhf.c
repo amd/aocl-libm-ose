@@ -31,7 +31,7 @@
 
 #undef _FUNCNAME
 #define _FUNCNAME "asinhf"
-float FN_PROTOTYPE_REF(asinhf)(float x)
+float ALM_PROTO_REF(asinhf)(float x)
 {
 
   double dx;

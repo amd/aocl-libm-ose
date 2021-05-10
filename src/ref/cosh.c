@@ -31,7 +31,7 @@
 #include <libm/amd_funcs_internal.h>
 
 
-double FN_PROTOTYPE_REF(cosh)(double x)
+double ALM_PROTO_REF(cosh)(double x)
 {
   /*
     Derived from sinh subroutine

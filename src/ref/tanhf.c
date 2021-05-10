@@ -32,7 +32,7 @@
 
 
 
-float FN_PROTOTYPE_REF(tanhf)(float x)
+float ALM_PROTO_REF(tanhf)(float x)
 {
   /*
     The definition of tanh(x) is sinh(x)/cosh(x), which is also equivalent

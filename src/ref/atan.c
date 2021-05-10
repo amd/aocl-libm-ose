@@ -30,7 +30,7 @@
 #include <libm/amd_funcs_internal.h>
 
 
-double FN_PROTOTYPE_REF(atan)(double x)
+double ALM_PROTO_REF(atan)(double x)
 {
 
   /* Some constants and split constants. */

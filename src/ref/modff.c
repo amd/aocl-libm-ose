@@ -30,7 +30,7 @@
 #include <libm/amd_funcs_internal.h>
 
 
-float FN_PROTOTYPE_REF(modff)(float x, float *iptr)
+float ALM_PROTO_REF(modff)(float x, float *iptr)
 {
   /* modff splits the argument x into integer and fraction parts,
      each with the same sign as x. */

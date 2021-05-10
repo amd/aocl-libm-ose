@@ -29,7 +29,7 @@
  *Open64 team. */
 #include <libm/amd_funcs_internal.h>
 
-__m128d FN_PROTOTYPE_REF(vrd2_cosh)(__m128d x)
+__m128d ALM_PROTO_REF(vrd2_cosh)(__m128d x)
 {
 
 	union XMMREGTYP_

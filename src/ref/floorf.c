@@ -30,7 +30,7 @@
 #include "libm_special.h"
 #include <libm/amd_funcs_internal.h>
 
-float FN_PROTOTYPE_REF(floorf)(float x)
+float ALM_PROTO_REF(floorf)(float x)
 {
   float r;
   int xneg;

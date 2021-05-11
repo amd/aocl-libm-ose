@@ -35,40 +35,35 @@
  *   coshf(x) = inf       if x = +inf
  *   coshf(x) = inf       if x = -inf
  *
- *   coshf(x) overflows   if (approximately) x > log(FLT_MAX)  (89.415985107421875)
+ *   coshf(x) overflows   if (approximately) x > ln(2*FLT_MAX)  (89.41598609556996)
  */
 
-#include "libm_util_amd.h"
-#include "libm_inlines_amd.h"
-#include "libm_special.h"
-
-#include <stdint.h>
 #include <libm_macros.h>
+#include <libm_util_amd.h>
 #include <libm/types.h>
-#include <libm/typehelper.h>
 #include <libm/compiler.h>
-#include <libm/poly.h>
+
+#include <libm/typehelper.h>
 #include <libm/amd_funcs_internal.h>
 
 static struct {
-    uint32_t arg_max, infinity;
-    float logV, invV2, halfV, halfVm1;
-    float theeps, xc, ybar, wmax;
+    float half,
+        log_v,
+        half_v,
+        very_small_x,
+        small_x,
+        exp_max,
+        cosh_max;
     float poly_coshf[4];
-    float half, t1;
 } coshf_data = {
-    .arg_max    = 0x42B2D4FC,           /* 89.415985107421875 */
-    .infinity   = PINFBITPATT_SP32,
-    .logV       = 0x1.62e6p-1,
-    .invV2      = 0x1.fffc6p-3,
-    .halfVm1    = 0x1.d0112ep-17,
-    .halfV      = 0x1.0000e8p0,
-    .theeps     = 0x1p-11,
-    .xc         = 0x1.62e43p-2,
-    .ybar       = 0x1.62e42ep6,
-    .wmax       = 0x1.62e0f2p6,
-    .half       = 0x1p-1,
-    .poly_coshf = {
+    .half         = 0x1p-1,
+    .log_v        = 0x1.62e6p-1,
+    .half_v       = 0x1.0000e8p0,
+    .very_small_x = 0x1p-11,
+    .small_x      = 0x1.62e43p-2,
+    .cosh_max     = 0x1.65a9f84p6f,  /* ln(2*FLT_MAX) = 89.41598609556996 */
+    .exp_max      = 0x1.62e42fep6f,  /* ln(FLT_MAX)   = 88.72283891501002 */
+    .poly_coshf   = {
         0x1p+0,
         0x1p-1,
         0x1.555466p-5,
@@ -81,54 +76,52 @@ static struct {
 #define C2 coshf_data.poly_coshf[2]
 #define C3 coshf_data.poly_coshf[3]
 
-#define LOGV    coshf_data.logV
-#define INVV2   coshf_data.invV2
-#define HALFVM1 coshf_data.halfVm1
-#define HALFV   coshf_data.halfV
-#define THEEPS  coshf_data.theeps
-#define XC      coshf_data.xc
-#define YBAR    coshf_data.ybar
-#define WMAX    coshf_data.wmax
+#define LOGV    coshf_data.log_v
+#define HALFV   coshf_data.half_v
+#define VERY_SMALL_X  coshf_data.very_small_x
+#define SMALL_X      coshf_data.small_x
+#define EXP_MAX    coshf_data.exp_max
+#define COSH_MAX    coshf_data.cosh_max
 #define HALF    coshf_data.half
-#define INF     coshf_date.infinity
-#define ARG_MAX coshf_data.arg_max
 
 
-/*
- * Implementation Notes
+/* Implementation Notes
  * ---------------------
  *
- *        cosh(x) = (exp(x) + exp(-x))/2
+ *        cosh(x) = (e^x + e^-x)/2
  *        cosh(-x) = +cosh(x)
  *
  *
  *                      +-
- *                      | v                         1
- *        coshf(x)   =  |--- * (exp(x - log(v)) + ------  * exp(-(x-log(v))))
- *                      | 2                        (v*v)
- *                      +-
+ *                      | v    ,--                 1                   --.
+ *        coshf(x)   =  |--- * |e^(x - ln(v)) +  ------  * e^(-(x-ln(v)) |
+ *                      | 2    |                  (v*v)                  |
+ *                      +-     `--                                     --'
  *
- *        Let z = exp(x - log(v))         ; where log(v) = 0.6931610107421875
+ *        Let z = exp(x - ln(v))         ; where ln(v) = 0.6931610107421875
  *
- *        coshf(x)   = v/2 * (z + 1/v^2 * 1/z)   ; exp(-z) = 1/z
+ *        coshf(x)   = v/2 * (z + 1/v^2 * 1/z)   ; e^-j = 1/e^j
  *
  *        To avoid division, we calculate coshf(x) as piece-wise function
  *
- *                   +------
- *                   | 1 + 1/2*x^2        if 0 <= x < EPS,  where EPS = 2*2^(-t/2), 
- *                   |                                           t is no of bits in significand
+ *                   +------                                               (-t/2)
+ *                   | 1 + 1/2*x^2        if 0 <= x < EPS,  where EPS = 2*2^,
+ *                   |                                           t is bits in significand
  *                   |
- *                   | poly(x)            if EPS <= x < XC  where XC = 1/2*ln(2)
+ *                   | poly(x)            if EPS <= x < SMALL_X  where SMALL_X = 1/2*ln(2)
  *        coshf(x) = |
- *                   | 1/2*(Z+1/Z)        if XC <= x < 8.5  where Z = exp(x)
+ *                   | 1/2*(Z+1/Z)        if SMALL_X <= x < 8.5  where Z = exp(x)
  *                   |
- *                   | 1/2*Z              if 8.5 <= x < YBAR, where YBAR = ln(FLT_MAX)
+ *                   | 1/2*Z              if 8.5 <= x < EXP_MAX, where EXP_MAX = ln(FLT_MAX)
  *                   |
- *                   | v/2*Z              if YBAR <= x < WMAX, where Z = exp(x - ln(v))
- *                   |                                               WMAX = min(YBAR, ln(FLT_MAX) - ln(v)+0.69)
+ *                   | v/2*Z              if EXP_MAX <= x < COSH_MAX, where Z = exp(x - ln(v))
+ *                   |                                               COSH_MAX = min(EXP_MAX, ln(FLT_MAX) - ln(v)+0.69)
  *                   | INFINITY           Otherwise
  *                   +-------
  *
+ *        poly(x) is Taylor series of degree 2.
+ *
+ *        More information in docs/internal/cosh.md
  */
 
 float
@@ -147,33 +140,32 @@ ALM_PROTO_OPT(coshf)(float x)
         y = x;
     }
 
-    if (unlikely(ux > ARG_MAX)) {
+    if (unlikely(ux > asuint32(COSH_MAX))) {
         if (ux > PINFBITPATT_SP32)      /* |x| is a NaN? */
             return x + x;
         else                            /* x is infinity */
             return x / 0.0f;
     }
 
-    if (ux <= asuint32(THEEPS))
+    if (ux <= asuint32(VERY_SMALL_X))   /* x in (0, EPS] */
         return (1.0f + HALF * x * x);
 
-    if (ux > asuint32(8.5f)) {
-        if (y > YBAR) {
+    if (ux > asuint32(8.5f)) {          /* x in (8.5, COSH_MAX] */
+        if (y > EXP_MAX) {              /* x in (EXP_MAX, COSH_MAX] */
             w = y - LOGV;
             z = ALM_PROTO(expf)(w);
             return HALFV * z;
         }
-
+        /* x in (8.5, EXP_MAX] */
         z   = ALM_PROTO(expf)(y);
         res =  HALF * z;
     }
-    else {
-        /* y > THEEPS */
-        if (y > XC) {
+    else {                              /* x in (VERY_SMALL_X, 8.5] */
+        if (y > SMALL_X) {              /* x in (SMALL_X, 8.5] */
             z = ALM_PROTO(expf)(y);
             return HALF * (z + (1.0f / z));
         }
-
+        /* x in (VERY_SMALL_X, SMALL_X] */
         /* coshf(x) = C0 + y^2*(C1 + y^2*(C2 + y^2*C3)) */
         float y2 = y * y;
 

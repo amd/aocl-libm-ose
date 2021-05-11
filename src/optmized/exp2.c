@@ -72,7 +72,7 @@ struct exp_table {
 
 static const struct {
         double           one_by_tbl_sz;
-				double					 ln2;
+        double           ln2;
         double           huge;
         double ALIGN(16) poly[ALM_EXP2_MAX_DEG];
         struct exp_table table[ALM_EXP2_TBL_SZ];
@@ -84,8 +84,8 @@ static const struct {
 #else
 #error "EXP2_N not defined"
 #endif
-				.huge              = 0x1.8p+52,
-				.ln2						   = 0x1.62e42fefa39efp-1, /* log(2) */
+  .huge = 0x1.8p+52 / ALM_EXP2_TBL_SZ,
+  .ln2  = 0x1.62e42fefa39efp-1, /* log(2) */
         /*
          * Polynomial constants, 1/x! (reciprocal of factorial(x))
          * To make better use of cache line, we dont store 0! and 1!
@@ -122,7 +122,7 @@ static const struct {
 
 
 #define ALM_EXP2_HUGE           exp2_data.huge
-#define ALM_EXP2_LN2						exp2_data.ln2
+#define ALM_EXP2_LN2            exp2_data.ln2
 #define ALM_EXP2_1_BY_TBL_SZ    exp2_data.one_by_tbl_sz
 #define ALM_EXP2_TBL_DATA       exp2_data.table
 
@@ -154,7 +154,7 @@ static inline uint32_t top12(double x)
  *
  *      Choose 'n' and 'f', such that
  *      x * N = n + f                        --- (2)
- *                | n is integer and |f| <= 0.5
+ *      | n is integer and |f| <= 1/2N
  *
  *     Choose 'm' and 'j' such that,
  *      n = (N * m) + j                      --- (3)
@@ -209,15 +209,16 @@ FN_PROTOTYPE_OPT(exp2)(double x)
 
             return alm_exp2_special(x, 0.0, ALM_E_OUT_ZERO);
         }
-	// flag de-normals to process at the end
+    /* flag de-normals to process at the end */
         exponent = 0xfff;
 
     }
 
-    double a = x * ALM_EXP2_TBL_SZ;
+    double a = x;
 
 #define FAST_INTEGER_CONVERSION 1
 #if FAST_INTEGER_CONVERSION
+    /* Rounding off to 1/2N digits after decimal and also multiplying by table size */
     q1.d = a + ALM_EXP2_HUGE;
     n    = q1.i;
     dn   = q1.d - ALM_EXP2_HUGE;
@@ -227,7 +228,7 @@ FN_PROTOTYPE_OPT(exp2)(double x)
     dn   = cast_i64_to_double(n);
 #endif
 
-    r =  x - (dn * ALM_EXP2_1_BY_TBL_SZ);
+    r =  x - dn;
 
     r *= ALM_EXP2_LN2;
 
@@ -242,18 +243,17 @@ FN_PROTOTYPE_OPT(exp2)(double x)
     m = (n - j) << (52 - EXP2_N);
 
 #if 1
-		/* q = r + r*r*(1/2.0 + r*(1/6.0+ r*(1/24.0 + r*(1/120.0 + r*(1/720.0))))); */
-    q = r * (1 + r * (C2 + r * (C3 + r * (C4 + r * (C5 + r * C6)))));
-    /* q = POLY_EVAL_6(r, 1, C2, C3, C4, C5, C6); */
+    /* q = r + r*r*(1/2.0 + r*(1/6.0+ r*(1/24.0 + r*(1/120.0)))); */
+    q = r * (1 + r * (C2 + r * (C3 + r * (C4 + r * (C5)))));
 #else
-		/* Estrins parallel evaluation  - XXX has huge ULPs */
-		double r2 = r * r;									/* r^2 */
-		double r4 = r2 * r2;
+    /* Estrins parallel evaluation  - XXX has huge ULPs */
+    double r2 = r * r; /* r^2 */
+    double r4 = r2 * r2;
 
     q = r + (r2 * (C2  + r * C3));
-		q += (r2 * r2) *  C4;								/* r^4 * C4 */
-		q += r4 * (C4 + r*C5);
-		q += r4 * (C4 + r * (C5 + r* (C6 + r*C7)));
+    q += (r2 * r2) *  C4; /* r^4 * C4 */
+    q += r4 * (C4 + r*C5);
+    q += r4 * (C4 + r * (C5 + r* (C6 + r*C7)));
 #endif
 
     /* f(j)*q + f1 + f2 */

@@ -133,13 +133,12 @@ ALM_PROTO_OPT(coshf)(float x)
     ux   = asuint32(x);
     sign = ux & SIGNBIT_SP32;
 
-    y = asfloat(ux);
-
     if (sign) {             /* x is -ve */
         ux = ux ^ sign;
-        y = x;
     }
 
+    y = asfloat(ux);
+    
     if (unlikely(ux > asuint32(COSH_MAX))) {
         if (ux > PINFBITPATT_SP32)      /* |x| is a NaN? */
             return x + x;

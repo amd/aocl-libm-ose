@@ -48,8 +48,8 @@ struct alm_arch_funcs __arch_funcs_tanpi = {
         },
 #if 0
         [ALM_UARCH_VER_ZEN] = {
-            &FN_PROTOTYPE_FMA3(tanpif),
-            &FN_PROTOTYPE_FMA3(tanpi),
+            &ALM_PROTO_FMA3(tanpif),
+            &ALM_PROTO_FMA3(tanpi),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_fma = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_FMA3(fmaf),
-            &FN_PROTOTYPE_FMA3(fma),
+            &ALM_PROTO_FMA3(fmaf),
+            &ALM_PROTO_FMA3(fma),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

@@ -39,12 +39,12 @@ struct alm_arch_funcs __arch_funcs_pow = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_FMA3(powf),
-            &FN_PROTOTYPE_FMA3(pow),
+            &ALM_PROTO_FMA3(powf),
+            &ALM_PROTO_FMA3(pow),
             &ALM_PROTO_ARCH_ZN3(vrs4_powf),
             &ALM_PROTO_ARCH_ZN3(vrs8_powf),
-            &FN_PROTOTYPE_FMA3(vrd2_pow),
-            &FN_PROTOTYPE_FMA3(vrd4_pow),
+            &ALM_PROTO_FMA3(vrd2_pow),
+            &ALM_PROTO_FMA3(vrd4_pow),
 	        &FN_PROTOTYPE_BAS64(vrsa_powf),
 	        NULL,  //vrda_powf
         },

@@ -48,8 +48,8 @@ struct alm_arch_funcs __arch_funcs_trunc = {
         },
 #if 0
         [ALM_UARCH_VER_ZEN] = {
-            &FN_PROTOTYPE_FMA3(truncf),
-            &FN_PROTOTYPE_FMA3(trunc),
+            &ALM_PROTO_FMA3(truncf),
+            &ALM_PROTO_FMA3(trunc),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

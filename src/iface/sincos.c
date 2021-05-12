@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_sincos = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_FMA3(sincosf),
-            &FN_PROTOTYPE_FMA3(sincos),
+            &ALM_PROTO_FMA3(sincosf),
+            &ALM_PROTO_FMA3(sincos),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

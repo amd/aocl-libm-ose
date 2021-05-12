@@ -48,8 +48,8 @@ struct alm_arch_funcs __arch_funcs_sqrt = {
         },
 #if 0
         [ALM_UARCH_VER_ZEN] = {
-            &FN_PROTOTYPE_FMA3(sqrtf),
-            &FN_PROTOTYPE_FMA3(sqrt),
+            &ALM_PROTO_FMA3(sqrtf),
+            &ALM_PROTO_FMA3(sqrt),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

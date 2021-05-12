@@ -48,8 +48,8 @@ struct alm_arch_funcs __arch_funcs_ilogb = {
         },
 #if 0
         [ALM_UARCH_VER_ZEN] = {
-            &FN_PROTOTYPE_FMA3(ilogbf),
-            &FN_PROTOTYPE_FMA3(ilogb),
+            &ALM_PROTO_FMA3(ilogbf),
+            &ALM_PROTO_FMA3(ilogb),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

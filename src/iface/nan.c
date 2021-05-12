@@ -48,8 +48,8 @@ struct alm_arch_funcs __arch_funcs_nan = {
         },
 #if 0
         [ALM_UARCH_VER_ZEN] = {
-            &FN_PROTOTYPE_FMA3(nanf),
-            &FN_PROTOTYPE_FMA3(nan),
+            &ALM_PROTO_FMA3(nanf),
+            &ALM_PROTO_FMA3(nan),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

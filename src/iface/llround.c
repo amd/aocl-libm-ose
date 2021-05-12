@@ -48,8 +48,8 @@ struct alm_arch_funcs __arch_funcs_llround = {
         },
 #if 0
         [ALM_UARCH_VER_ZEN] = {
-            &FN_PROTOTYPE_FMA3(llroundf),
-            &FN_PROTOTYPE_FMA3(llround),
+            &ALM_PROTO_FMA3(llroundf),
+            &ALM_PROTO_FMA3(llround),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

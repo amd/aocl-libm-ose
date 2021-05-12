@@ -48,8 +48,8 @@ struct alm_arch_funcs __arch_funcs_hypot = {
         },
 #if 0
         [ALM_UARCH_VER_ZEN] = {
-            &FN_PROTOTYPE_FMA3(hypotf),
-            &FN_PROTOTYPE_FMA3(hypot),
+            &ALM_PROTO_FMA3(hypotf),
+            &ALM_PROTO_FMA3(hypot),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

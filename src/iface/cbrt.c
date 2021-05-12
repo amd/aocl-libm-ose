@@ -39,14 +39,14 @@ struct alm_arch_funcs __arch_funcs_cbrt = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_FMA3(cbrtf),
-            &FN_PROTOTYPE_FMA3(cbrt),
-            &FN_PROTOTYPE_FMA3(vrs4_cbrtf), /* vrs4 ? */
+            &ALM_PROTO_FMA3(cbrtf),
+            &ALM_PROTO_FMA3(cbrt),
+            &ALM_PROTO_FMA3(vrs4_cbrtf), /* vrs4 ? */
             NULL,                           /* vrs8 ? */
-            &FN_PROTOTYPE_FMA3(vrd2_cbrt),  /* vrd2 ? */
+            &ALM_PROTO_FMA3(vrd2_cbrt),  /* vrd2 ? */
             NULL,                           /* vrd4 ? */
-            &FN_PROTOTYPE_FMA3(vrsa_cbrtf),  /*array vector float*/
-            &FN_PROTOTYPE_FMA3(vrda_cbrt),  /*array vector double*/
+            &ALM_PROTO_FMA3(vrsa_cbrtf),  /*array vector float*/
+            &ALM_PROTO_FMA3(vrda_cbrt),  /*array vector double*/
         },
     },
 };

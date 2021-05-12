@@ -48,8 +48,8 @@ struct alm_arch_funcs __arch_funcs_scalbln = {
         },
 #if 0
         [ALM_UARCH_VER_ZEN] = {
-            &FN_PROTOTYPE_FMA3(scalblnf),
-            &FN_PROTOTYPE_FMA3(scalbln),
+            &ALM_PROTO_FMA3(scalblnf),
+            &ALM_PROTO_FMA3(scalbln),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

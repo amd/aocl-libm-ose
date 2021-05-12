@@ -48,8 +48,8 @@ struct alm_arch_funcs __arch_funcs_rint = {
         },
 #if 0
         [ALM_UARCH_VER_ZEN] = {
-            &FN_PROTOTYPE_FMA3(rintf),
-            &FN_PROTOTYPE_FMA3(rint),
+            &ALM_PROTO_FMA3(rintf),
+            &ALM_PROTO_FMA3(rint),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

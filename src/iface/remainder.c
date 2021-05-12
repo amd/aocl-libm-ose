@@ -48,8 +48,8 @@ struct alm_arch_funcs __arch_funcs_remainder = {
         },
 #if 0
         [ALM_UARCH_VER_ZEN] = {
-            &FN_PROTOTYPE_FMA3(remainderf),
-            &FN_PROTOTYPE_FMA3(remainder),
+            &ALM_PROTO_FMA3(remainderf),
+            &ALM_PROTO_FMA3(remainder),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

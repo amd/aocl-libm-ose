@@ -48,8 +48,8 @@ struct alm_arch_funcs __arch_funcs_ldexp = {
         },
 #if 0
         [ALM_UARCH_VER_ZEN] = {
-            &FN_PROTOTYPE_FMA3(ldexpf),
-            &FN_PROTOTYPE_FMA3(ldexp),
+            &ALM_PROTO_FMA3(ldexpf),
+            &ALM_PROTO_FMA3(ldexp),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

@@ -39,11 +39,11 @@ struct alm_arch_funcs __arch_funcs_tan = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_FMA3(tanf),
+            &ALM_PROTO_FMA3(tanf),
             &FN_PROTOTYPE_REF(tan),
             &ALM_PROTO_ARCH_ZN3(vrs4_tanf),  /* v4s ? */
             &ALM_PROTO_ARCH_ZN3(vrs8_tanf),  /* v8s ? */
-            &FN_PROTOTYPE_FMA3(vrd2_tan),
+            &ALM_PROTO_FMA3(vrd2_tan),
             &ALM_PROTO_ARCH_ZN3(vrd4_tan),   /* v4d ? */
         },
 

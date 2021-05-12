@@ -39,14 +39,14 @@ struct alm_arch_funcs __arch_funcs_log2 = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_FMA3(log2f),
-            &FN_PROTOTYPE_FMA3(log2),
-            &FN_PROTOTYPE_FMA3(vrs4_log2f),
+            &ALM_PROTO_FMA3(log2f),
+            &ALM_PROTO_FMA3(log2),
+            &ALM_PROTO_FMA3(vrs4_log2f),
             NULL,                           /* vrs8 ? */
-            &FN_PROTOTYPE_FMA3(vrd2_log2),
+            &ALM_PROTO_FMA3(vrd2_log2),
             NULL,                           /* vrd4 ? */
-            &FN_PROTOTYPE_FMA3(vrsa_log2f),  /*array vector float*/
-            &FN_PROTOTYPE_FMA3(vrda_log2),  /*array vector double*/
+            &ALM_PROTO_FMA3(vrsa_log2f),  /*array vector float*/
+            &ALM_PROTO_FMA3(vrda_log2),  /*array vector double*/
         },
 
         [ALM_UARCH_VER_ZEN2] = {

@@ -48,8 +48,8 @@ struct alm_arch_funcs __arch_funcs_remquo = {
         },
 #if 0
         [ALM_UARCH_VER_ZEN] = {
-            &FN_PROTOTYPE_FMA3(remquof),
-            &FN_PROTOTYPE_FMA3(remquo),
+            &ALM_PROTO_FMA3(remquof),
+            &ALM_PROTO_FMA3(remquo),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

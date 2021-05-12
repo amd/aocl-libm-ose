@@ -80,7 +80,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(log2)
+#define fname ALM_PROTO_FMA3(log2)
 #define fname_special _log2_special@PLT
 
 

@@ -39,7 +39,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(vrsa_logf)
+#define fname ALM_PROTO_FMA3(vrsa_logf)
 #define fname_special _logf_special@PLT
 
 

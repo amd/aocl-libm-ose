@@ -25,7 +25,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(vrs4_tanf)
+#define fname ALM_PROTO_FMA3(vrs4_tanf)
 
 #include "trig_func.h"
 

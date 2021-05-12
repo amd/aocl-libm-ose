@@ -29,7 +29,7 @@
 
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(logf)
+#define fname ALM_PROTO_FMA3(logf)
 
 .text
 ..TXTST0:

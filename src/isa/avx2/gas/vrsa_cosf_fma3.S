@@ -25,7 +25,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(vrsa_cosf)
+#define fname ALM_PROTO_FMA3(vrsa_cosf)
 
 #include "trig_func.h"
 

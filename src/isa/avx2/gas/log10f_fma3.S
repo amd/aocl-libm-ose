@@ -40,7 +40,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(log10f)
+#define fname ALM_PROTO_FMA3(log10f)
 #define fname_special _log10f_special@PLT
 
 

@@ -42,7 +42,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(vrs4_cbrtf)
+#define fname ALM_PROTO_FMA3(vrs4_cbrtf)
 
 #ifdef __ELF__
 .section .note.GNU-stack,"",@progbits

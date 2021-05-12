@@ -25,7 +25,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(cosf)
+#define fname ALM_PROTO_FMA3(cosf)
 #define fname_special   _cosf_special@PLT
 
 #include "trig_func.h"

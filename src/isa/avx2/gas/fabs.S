@@ -40,7 +40,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(fabs)
+#define fname ALM_PROTO_FMA3(fabs)
 #define fname_special _fabs_special@PLT
 
 #ifdef __ELF__

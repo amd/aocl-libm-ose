@@ -28,7 +28,7 @@
 
 
 
-#define fname FN_PROTOTYPE_FMA3(sincos)
+#define fname ALM_PROTO_FMA3(sincos)
 #define fname_special _sincos_special@PLT
 #define fname_special_underflow _sin_special_underflow@PLT
 

@@ -42,7 +42,7 @@
 #include "log_scalar_tables.h"
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE_FMA3(pow)
+#define fname ALM_PROTO_FMA3(pow)
 #define fname_special _pow_special@PLT
 
 

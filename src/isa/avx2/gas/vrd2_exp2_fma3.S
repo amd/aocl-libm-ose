@@ -74,7 +74,7 @@ Range:  [-1/64, 1/64] i.e [-0.015625, 0.015625]
 #include "fn_macros.h"
 #include "exp_tables.h"
 
-#define fname FN_PROTOTYPE_FMA3(vrd2_exp2)
+#define fname ALM_PROTO_FMA3(vrd2_exp2)
 #ifdef __ELF__
 .section .note.GNU-stack,"",@progbits
 #endif

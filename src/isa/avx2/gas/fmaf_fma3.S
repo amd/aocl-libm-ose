@@ -41,7 +41,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(fmaf)
+#define fname ALM_PROTO_FMA3(fmaf)
 
 
 # local variable storage offsets

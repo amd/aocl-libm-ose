@@ -67,7 +67,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(cbrt)
+#define fname ALM_PROTO_FMA3(cbrt)
 #define fname_specail _cbrt_special@PLT
 # local variable storage offsets
 

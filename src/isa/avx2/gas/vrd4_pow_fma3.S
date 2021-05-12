@@ -46,7 +46,7 @@
 
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE_FMA3(vrd4_pow)
+#define fname ALM_PROTO_FMA3(vrd4_pow)
 #define fname_special _pow_special@PLT
 
 

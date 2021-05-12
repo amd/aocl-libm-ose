@@ -49,7 +49,7 @@
 
 #include "fn_macros.h"
 #include "log_tables.h"
-#define fname FN_PROTOTYPE_FMA3(log1pf)
+#define fname ALM_PROTO_FMA3(log1pf)
 #define fname_special _log1pf_special@PLT
 
 

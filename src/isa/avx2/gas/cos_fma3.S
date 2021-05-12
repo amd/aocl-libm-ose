@@ -25,7 +25,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(cos)
+#define fname ALM_PROTO_FMA3(cos)
 #define fname_special  _cos_special@PLT
 
 #include "trig_func.h"

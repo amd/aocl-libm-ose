@@ -67,7 +67,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(vrd2_cbrt)
+#define fname ALM_PROTO_FMA3(vrd2_cbrt)
 
 # local variable storage offsets
 

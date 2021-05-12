@@ -47,7 +47,7 @@ The maximum error bound is 0.5 ULP as defined by the IEEE- 754 standards
 
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE_FMA3(vrd2_pow)
+#define fname ALM_PROTO_FMA3(vrd2_pow)
 #define fname_special _pow_special@PLT
 
 

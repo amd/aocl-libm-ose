@@ -25,7 +25,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(sincosf)
+#define fname ALM_PROTO_FMA3(sincosf)
 #define fname_special   _sincosf_special@PLT
 #define fname_special_underflow _sin_special_underflow@PLT
 

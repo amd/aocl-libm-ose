@@ -66,7 +66,7 @@
 
 #include "fn_macros.h"
 #include "log_tables.h"
-#define fname FN_PROTOTYPE_FMA3(vrd4_log)
+#define fname ALM_PROTO_FMA3(vrd4_log)
 
 
 # local variable storage offsets

@@ -25,7 +25,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(vrd2_tan)
+#define fname ALM_PROTO_FMA3(vrd2_tan)
 
 #include "trig_func.h"
 

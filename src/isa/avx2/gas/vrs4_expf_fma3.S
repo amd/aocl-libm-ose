@@ -27,7 +27,7 @@
 #include "fn_macros.h"
 #include "exp_tables.h"
 
-#define fname FN_PROTOTYPE_FMA3(vrs4_expf)
+#define fname ALM_PROTO_FMA3(vrs4_expf)
 #ifdef __ELF__
 .section .note.GNU-stack,"",@progbits
 #endif

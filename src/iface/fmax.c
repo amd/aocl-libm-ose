@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_fmax = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_BAS64(fmaxf),
-            &FN_PROTOTYPE_BAS64(fmax),
+            &ALM_PROTO_BAS64(fmaxf),
+            &ALM_PROTO_BAS64(fmax),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

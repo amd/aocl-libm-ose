@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_fmin = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_BAS64(fminf),
-            &FN_PROTOTYPE_BAS64(fmin),
+            &ALM_PROTO_BAS64(fminf),
+            &ALM_PROTO_BAS64(fmin),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

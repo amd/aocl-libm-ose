@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_trunc = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_BAS64(truncf),
-            &FN_PROTOTYPE_BAS64(trunc),
+            &ALM_PROTO_BAS64(truncf),
+            &ALM_PROTO_BAS64(trunc),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

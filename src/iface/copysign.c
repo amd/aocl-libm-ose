@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_copysign = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_BAS64(copysignf),
-            &FN_PROTOTYPE_BAS64(copysign),
+            &ALM_PROTO_BAS64(copysignf),
+            &ALM_PROTO_BAS64(copysign),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

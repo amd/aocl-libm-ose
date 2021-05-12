@@ -47,7 +47,7 @@ stack_size      EQU     98h
 
 include fm.inc
 
-FN_PROTOTYPE_BAS64 cbrtf
+ALM_PROTO_BAS64 cbrtf
 
 fname_special TEXTEQU  <_cbrtf_special>
 

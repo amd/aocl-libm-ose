@@ -81,7 +81,7 @@
 
 include fm.inc
 
-FN_PROTOTYPE_BAS64 log
+ALM_PROTO_BAS64 log
 
 fname_special   TEXTEQU <_log_special>
 

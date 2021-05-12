@@ -43,7 +43,7 @@
 
 include fm.inc
 
-FN_PROTOTYPE_FMA3 vrsa_cbrtf
+ALM_PROTO_FMA3 vrsa_cbrtf
 
 LOAD_INDEXED MACRO address, ind_reg, reg_val, scratch_pad
     	lea r11,address

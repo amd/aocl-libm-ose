@@ -61,7 +61,7 @@ stack_size      EQU     0148h 		; We take 8 as the last nibble to allow for
 
 
 
-FN_PROTOTYPE_FMA3 cbrtf
+ALM_PROTO_FMA3 cbrtf
 
 fname_specail TEXTEQU <_cbrtf_special>
 EXTERN       fname_specail      : PROC

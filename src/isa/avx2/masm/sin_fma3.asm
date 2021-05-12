@@ -28,7 +28,7 @@ include fm.inc
 
 include trig_func.inc
 
-FN_PROTOTYPE_FMA3 sin
+ALM_PROTO_FMA3 sin
 
 fname_special   TEXTEQU <_sin_special>
 

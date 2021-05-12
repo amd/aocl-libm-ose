@@ -93,7 +93,7 @@ stack_size  equ     088h
 
 include fm.inc
 
-FN_PROTOTYPE_BAS64 sinf
+ALM_PROTO_BAS64 sinf
 
 fname_special   TEXTEQU <_sinf_special>
 

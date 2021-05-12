@@ -27,7 +27,7 @@
 include exp_tables.inc
 include fm.inc
 
-FN_PROTOTYPE_BAS64 vrd2_exp2
+ALM_PROTO_BAS64 vrd2_exp2
 
 p_temp		equ		0		; temporary for get/put bits operation
 p_temp1		equ		10h		; temporary for get/put bits operation

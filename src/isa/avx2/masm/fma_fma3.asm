@@ -41,7 +41,7 @@
 ;
 include fm.inc
 
-FN_PROTOTYPE_FMA3 fma
+ALM_PROTO_FMA3 fma
 
 ; local variable storage offsets
 

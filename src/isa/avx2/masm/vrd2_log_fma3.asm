@@ -49,14 +49,14 @@
 
 ;include "fn_macros.h"
 ;include "log_tables.h"
-;define fname FN_PROTOTYPE_FMA3(vrd2_log)
+;define fname ALM_PROTO_FMA3(vrd2_log)
 
 
 include fm.inc
 include log_tables.inc
 
 
-FN_PROTOTYPE_FMA3 vrd2_log 
+ALM_PROTO_FMA3 vrd2_log 
 
 ; local variable storage offsets
 save_xmm6       EQU     00h

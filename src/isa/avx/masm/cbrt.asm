@@ -48,7 +48,7 @@ stack_size      EQU     98h
 
 include fm.inc
 
-FN_PROTOTYPE_BAS64 cbrt
+ALM_PROTO_BAS64 cbrt
 fname_specail TEXTEQU <_cbrt_special>
 EXTERN       fname_specail      : PROC
 

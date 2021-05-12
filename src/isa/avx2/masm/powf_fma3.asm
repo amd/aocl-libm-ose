@@ -41,7 +41,7 @@
 ;
 
 include fm.inc
-FN_PROTOTYPE_FMA3 powf
+ALM_PROTO_FMA3 powf
 
 
 fname_special   TEXTEQU <_powf_special>

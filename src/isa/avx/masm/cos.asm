@@ -106,7 +106,7 @@ stack_size  equ        098h
 
 include fm.inc
 
-FN_PROTOTYPE_BAS64 cos
+ALM_PROTO_BAS64 cos
 
 fname_special   TEXTEQU <_cos_special>
 

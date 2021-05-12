@@ -42,7 +42,7 @@
 ;
 
 include fm.inc
-FN_PROTOTYPE_FMA3 pow
+ALM_PROTO_FMA3 pow
 
 
 fname_special   TEXTEQU <_pow_special>

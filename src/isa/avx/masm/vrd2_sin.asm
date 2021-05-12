@@ -168,7 +168,7 @@ p_sign		equ		110h		; original x
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 include fm.inc
 
-FN_PROTOTYPE_BAS64 vrd2_sin
+ALM_PROTO_BAS64 vrd2_sin
 
 EXTRN __amd_remainder_piby2:NEAR
 

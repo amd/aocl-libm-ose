@@ -42,7 +42,7 @@
 ;
 
 include fm.inc
-FN_PROTOTYPE_BAS64 pow
+ALM_PROTO_BAS64 pow
 
 
 fname_special   TEXTEQU <_pow_special>

@@ -27,7 +27,7 @@
 include exp_tables.inc
 include fm.inc
 
-FN_PROTOTYPE_FMA3 exp10
+ALM_PROTO_FMA3 exp10
 
 fname_special   TEXTEQU <_exp10_special>
 ;Define name and any external functions being called

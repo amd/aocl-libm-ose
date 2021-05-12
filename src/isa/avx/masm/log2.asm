@@ -40,7 +40,7 @@
 ;
 
 include fm.inc
-FN_PROTOTYPE_BAS64 log2
+ALM_PROTO_BAS64 log2
 
 fname_special   TEXTEQU <_log2_special>
 

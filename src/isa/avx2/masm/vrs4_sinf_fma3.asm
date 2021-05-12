@@ -28,7 +28,7 @@ include fm.inc
 
 include trig_func.inc
 
-FN_PROTOTYPE_FMA3 vrs4_sinf
+ALM_PROTO_FMA3 vrs4_sinf
 
 text SEGMENT EXECUTE
 

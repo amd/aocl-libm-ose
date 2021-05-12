@@ -68,7 +68,7 @@
 
 include fm.inc
 
-FN_PROTOTYPE_FMA3 cbrt
+ALM_PROTO_FMA3 cbrt
 
 fname_specail TEXTEQU <_cbrt_special>
 EXTERN       fname_specail      : PROC

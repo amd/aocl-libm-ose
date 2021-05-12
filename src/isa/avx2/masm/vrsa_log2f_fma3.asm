@@ -41,7 +41,7 @@
 
 include fm.inc
 
-FN_PROTOTYPE_FMA3 vrsa_log2f
+ALM_PROTO_FMA3 vrsa_log2f
 
 ; local variable storage offsets
 save_rdi	    equ		00h

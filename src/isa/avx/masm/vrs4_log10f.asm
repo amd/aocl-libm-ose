@@ -50,7 +50,7 @@
 include fm.inc
 include log_tables.inc
 
-FN_PROTOTYPE_BAS64 vrs4_log10f
+ALM_PROTO_BAS64 vrs4_log10f
 
 ; local variable storage offsets if any
 save_xmm6       EQU     00h

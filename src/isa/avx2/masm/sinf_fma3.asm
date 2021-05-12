@@ -28,7 +28,7 @@ include fm.inc
 
 include  trig_func.inc
 
-FN_PROTOTYPE_FMA3 sinf
+ALM_PROTO_FMA3 sinf
 fname_special   TEXTEQU <_sinf_special>
 
 ;Define name and any external functions being called

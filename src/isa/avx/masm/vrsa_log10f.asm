@@ -68,7 +68,7 @@ stack_size      EQU     0E8h ; We take 8 as the last nibble to allow for
                              ; alligned data movement.
 
 
-FN_PROTOTYPE_BAS64 vrsa_log10f
+ALM_PROTO_BAS64 vrsa_log10f
 
 
 

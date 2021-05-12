@@ -41,7 +41,7 @@
 ;
 include fm.inc
 
-FN_PROTOTYPE_FMA3 fmaf
+ALM_PROTO_FMA3 fmaf
 
 
 

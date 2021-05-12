@@ -68,7 +68,7 @@
 
 include fm.inc
 
-FN_PROTOTYPE_FMA3 vrda_cbrt
+ALM_PROTO_FMA3 vrda_cbrt
 
 ; local variable storage offsets
 

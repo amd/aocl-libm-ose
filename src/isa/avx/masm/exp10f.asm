@@ -27,7 +27,7 @@
 include exp_tables.inc
 include fm.inc
 
-FN_PROTOTYPE_BAS64 exp10f
+ALM_PROTO_BAS64 exp10f
 
 fname_special   TEXTEQU <_exp10f_special>
 

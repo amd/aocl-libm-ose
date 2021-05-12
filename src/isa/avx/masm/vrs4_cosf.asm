@@ -185,7 +185,7 @@ stack_size	equ		01E8h
 
 include fm.inc
 
-FN_PROTOTYPE_BAS64 vrs4_cosf
+ALM_PROTO_BAS64 vrs4_cosf
 
 fname_remainder_piby2d2f	TEXTEQU <__amd_remainder_piby2d2f>
 

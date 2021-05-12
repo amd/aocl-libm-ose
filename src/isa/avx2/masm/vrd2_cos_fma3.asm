@@ -28,7 +28,7 @@ include fm.inc
 
 include trig_func.inc
 
-FN_PROTOTYPE_FMA3 vrd2_cos
+ALM_PROTO_FMA3 vrd2_cos
 
 text SEGMENT EXECUTE
 

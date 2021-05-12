@@ -69,7 +69,7 @@ stack_size      EQU     0E8h ; We take 8 as the last nibble to allow for
 
 
 
-FN_PROTOTYPE_BAS64 vrsa_log2f
+ALM_PROTO_BAS64 vrsa_log2f
 
 
 

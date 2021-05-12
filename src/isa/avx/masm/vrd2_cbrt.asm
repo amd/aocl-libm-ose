@@ -41,7 +41,7 @@
 
 include fm.inc
 
-FN_PROTOTYPE_BAS64 vrd2_cbrt
+ALM_PROTO_BAS64 vrd2_cbrt
 
 include log_tables.inc
 

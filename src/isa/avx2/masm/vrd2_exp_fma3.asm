@@ -27,7 +27,7 @@
 include exp_tables.inc
 include fm.inc
 
-FN_PROTOTYPE_FMA3 vrd2_exp
+ALM_PROTO_FMA3 vrd2_exp
 
 text SEGMENT EXECUTE
 

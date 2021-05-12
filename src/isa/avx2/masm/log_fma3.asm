@@ -81,7 +81,7 @@
 
 include fm.inc
 
-FN_PROTOTYPE_FMA3 log
+ALM_PROTO_FMA3 log
 
 ; local variable storage offsets
 save_xmm6       EQU     00h

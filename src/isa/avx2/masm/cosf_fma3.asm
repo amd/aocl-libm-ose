@@ -28,7 +28,7 @@ include fm.inc
 
 include trig_func.inc
 
-FN_PROTOTYPE_FMA3 cosf
+ALM_PROTO_FMA3 cosf
 fname_special   TEXTEQU <_cosf_special>
 
 ;Define name and any external functions being called

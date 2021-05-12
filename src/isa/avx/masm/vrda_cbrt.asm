@@ -61,7 +61,7 @@ save_r12        EQU     0E0h
 save_r13        EQU     0F0h
 stack_size      EQU     108h ; We take 8 as the last nibble to allow for 
                              ; alligned data movement.
-FN_PROTOTYPE_BAS64 vrda_cbrt
+ALM_PROTO_BAS64 vrda_cbrt
 
 
 

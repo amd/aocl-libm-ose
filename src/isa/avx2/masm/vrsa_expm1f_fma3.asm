@@ -27,7 +27,7 @@
 include exp_tables.inc
 include fm.inc
 
-FN_PROTOTYPE_FMA3 vrsa_expm1f
+ALM_PROTO_FMA3 vrsa_expm1f
 
 stack_size      EQU     0A8h
 

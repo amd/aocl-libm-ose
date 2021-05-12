@@ -83,7 +83,7 @@ stack_size    equ        088h
 
 include fm.inc
 
-FN_PROTOTYPE_BAS64 cosf
+ALM_PROTO_BAS64 cosf
 
 
 fname_special   TEXTEQU <_cosf_special>

@@ -42,7 +42,7 @@
 
 
 include fm.inc
-FN_PROTOTYPE_FMA3 log10f
+ALM_PROTO_FMA3 log10f
 fname_special   TEXTEQU <_log10f_special>
 
 

@@ -195,7 +195,7 @@ stack_size	equ		0228h
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 include fm.inc
-FN_PROTOTYPE_BAS64 vrda_cos
+ALM_PROTO_BAS64 vrda_cos
 
 EXTRN __amd_remainder_piby2:NEAR
 

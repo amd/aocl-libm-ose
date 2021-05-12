@@ -72,7 +72,7 @@ struct expf_data {
 } exp2f_data = {
     .oneby_tblsz  = 0x1.0p-6,
     .ln2          = 0x1.62e42fefa39efp-1, /* log(2) */
-    .huge         = 0x1.8p+52,
+    .huge         = 0x1.8p+52 / EXP2F_TABLE_SIZE,
     .two_pow_6    = 0x1.0p6,
     .table        = __two_to_jby64,
     .poly         = {
@@ -142,7 +142,7 @@ top12f(float x)
 float
 ALM_PROTO_OPT(exp2f)(float x)
 {
-    double      q, dn, r, z;
+    double      q, dn, r;
     uint64_t    n, j, m;
 
     uint32_t top = top12f(x) & 0x7ff;
@@ -169,9 +169,6 @@ ALM_PROTO_OPT(exp2f)(float x)
 
     double dx = (double)x;
 
-    /* x * 64 */
-     z = dx * EXP2F_TWO_POW_6;
-
     /*
      * n  = (int) scale(x)
      * dn = (double) n
@@ -179,19 +176,19 @@ ALM_PROTO_OPT(exp2f)(float x)
 #undef FAST_INTEGER_CONVERSION
 #define FAST_INTEGER_CONVERSION 1
 #if FAST_INTEGER_CONVERSION
-
-    dn   = z + EXP2F_HUGE;
+    /*To eliminate decimal digits after -1/2N */
+    dn   = dx + EXP2F_HUGE;
     n    = asuint64(dn);
     dn  -=  EXP2F_HUGE;
 
 #else
 
-    n = z;
+    n = dx;
     dn = cast_i32_to_float(n);
 
 #endif
 
-    r  = dx - dn * EXP2F_ONEBY_TBLSZ;
+    r  = dx - dn;
 
     r *=  EXP2F_LN2;
 

@@ -111,7 +111,7 @@ struct expf_data expf_v2_data = {
 #define EXPF_TABLE         expf_v2_data.table_v3
 
 float
-FN_PROTOTYPE_FAST(expf)(float x)
+ALM_PROTO_FAST(expf)(float x)
 {
     double_t  q, dn, r, z;
     uint64_t n, j;
@@ -155,6 +155,6 @@ FN_PROTOTYPE_FAST(expf)(float x)
 }
 
 
-strong_alias (__expf_finite, FN_PROTOTYPE_FAST(expf))
-weak_alias (amd_expf, FN_PROTOTYPE_FAST(expf))
-weak_alias (expf, FN_PROTOTYPE_FAST(expf))
+strong_alias (__expf_finite, ALM_PROTO_FAST(expf))
+weak_alias (amd_expf, ALM_PROTO_FAST(expf))
+weak_alias (expf, ALM_PROTO_FAST(expf))

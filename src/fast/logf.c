@@ -89,7 +89,7 @@ static struct {
  */
 
 float
-FN_PROTOTYPE_FAST(logf)(float x)
+ALM_PROTO_FAST(logf)(float x)
 {
     float m, r, n, f;
 
@@ -118,6 +118,6 @@ FN_PROTOTYPE_FAST(logf)(float x)
 
 }
 
-strong_alias (__logf_finite, FN_PROTOTYPE_FAST(logf))
-weak_alias (logf, FN_PROTOTYPE_FAST(logf))
-strong_alias (__ieee754_logf, FN_PROTOTYPE_FAST(logf))
+strong_alias (__logf_finite, ALM_PROTO_FAST(logf))
+weak_alias (logf, ALM_PROTO_FAST(logf))
+strong_alias (__ieee754_logf, ALM_PROTO_FAST(logf))

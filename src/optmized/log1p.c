@@ -42,10 +42,10 @@
 
 #include <math.h>
 
-double FN_PROTOTYPE_FMA3(log1p_v2)(double x);
+double ALM_PROTO_FMA3(log1p_v2)(double x);
 
 double
-FN_PROTOTYPE_FMA3(log1p_v2)(double x)
+ALM_PROTO_FMA3(log1p_v2)(double x)
 {
     return (log1p(x));
 }

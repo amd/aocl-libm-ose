@@ -86,10 +86,10 @@ float expm1f_special(float x, float y, U32 code);
 
 
 /* this macro may be deleted later*/
-float	FN_PROTOTYPE_OPT(expm1f_v2)	(float x);
+float	ALM_PROTO_OPT(expm1f_v2)	(float x);
 
 float
-FN_PROTOTYPE_OPT(expm1f_v2)(float x)
+ALM_PROTO_OPT(expm1f_v2)(float x)
 {
     flt64_t q1;
     double  dx, dn, q, r, f;

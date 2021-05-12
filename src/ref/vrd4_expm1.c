@@ -46,7 +46,7 @@ __m256d ALM_PROTO_REF(vrd4_expm1)(__m256d x)
 
 	inp256.d256 = x;
 
-	FN_PROTOTYPE_FMA3(vrda_expm1)(4, &inp256.d[0], &res256.d[0]);
+	ALM_PROTO_FMA3(vrda_expm1)(4, &inp256.d[0], &res256.d[0]);
 
 	return res256.d256;
 

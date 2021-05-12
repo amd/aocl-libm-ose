@@ -29,11 +29,11 @@
 #include <libm/amd_funcs_internal.h>
 
 
-double FN_PROTOTYPE_OPT(expm1_v2) (double x);
+double ALM_PROTO_OPT(expm1_v2) (double x);
 
 double
-FN_PROTOTYPE_OPT(expm1_v2) (double x)
+ALM_PROTO_OPT(expm1_v2) (double x)
 {
-	return FN_PROTOTYPE_FMA3(expm1)(x);
+	return ALM_PROTO_FMA3(expm1)(x);
 }
 

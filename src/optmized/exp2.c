@@ -182,7 +182,7 @@ static inline uint32_t top12(double x)
  *
  */
 double
-FN_PROTOTYPE_OPT(exp2)(double x)
+ALM_PROTO_OPT(exp2)(double x)
 {
     double_t    r, q, dn, y;
     int64_t     n, j, m;

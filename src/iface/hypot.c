@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_hypot = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(hypotf),
-            &FN_PROTOTYPE_REF(hypot),
+            &ALM_PROTO_REF(hypotf),
+            &ALM_PROTO_REF(hypot),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

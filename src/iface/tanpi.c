@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_tanpi = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(tanpif),
-            &FN_PROTOTYPE_REF(tanpi),
+            &ALM_PROTO_REF(tanpif),
+            &ALM_PROTO_REF(tanpi),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_nexttoward = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(nexttowardf),
-            &FN_PROTOTYPE_REF(nexttoward),
+            &ALM_PROTO_REF(nexttowardf),
+            &ALM_PROTO_REF(nexttoward),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */
@@ -48,8 +48,8 @@ struct alm_arch_funcs __arch_funcs_nexttoward = {
         },
 #if 0
         [ALM_UARCH_VER_ZEN] = {
-            &FN_PROTOTYPE_REF(nexttoward),
-            &FN_PROTOTYPE_REF(nexttowardf),
+            &ALM_PROTO_REF(nexttoward),
+            &ALM_PROTO_REF(nexttowardf),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

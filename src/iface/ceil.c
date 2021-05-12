@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_ceil = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(ceilf),
-            &FN_PROTOTYPE_REF(ceil),
+            &ALM_PROTO_REF(ceilf),
+            &ALM_PROTO_REF(ceil),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

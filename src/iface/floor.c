@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_floor = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(floorf),
-            &FN_PROTOTYPE_REF(floor),
+            &ALM_PROTO_REF(floorf),
+            &ALM_PROTO_REF(floor),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

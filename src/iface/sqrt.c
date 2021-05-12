@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_sqrt = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(sqrtf),
-            &FN_PROTOTYPE_REF(sqrt),
+            &ALM_PROTO_REF(sqrtf),
+            &ALM_PROTO_REF(sqrt),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

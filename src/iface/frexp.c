@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_frexp = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(frexpf),
-            &FN_PROTOTYPE_REF(frexp),
+            &ALM_PROTO_REF(frexpf),
+            &ALM_PROTO_REF(frexp),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

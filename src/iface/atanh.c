@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_atanh = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(atanhf),
-            &FN_PROTOTYPE_REF(atanh),
+            &ALM_PROTO_REF(atanhf),
+            &ALM_PROTO_REF(atanh),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

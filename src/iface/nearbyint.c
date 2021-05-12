@@ -39,7 +39,7 @@ struct alm_arch_funcs __arch_funcs_nearbyint = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(nearbyintf),
+            &ALM_PROTO_REF(nearbyintf),
             &FN_PROTOTYPE_BAS64(nearbyint),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
@@ -48,8 +48,8 @@ struct alm_arch_funcs __arch_funcs_nearbyint = {
         },
 #if 0
         [ALM_UARCH_VER_ZEN] = {
-            &FN_PROTOTYPE_REF(nearbyint),
-            &FN_PROTOTYPE_REF(nearbyintf),
+            &ALM_PROTO_REF(nearbyint),
+            &ALM_PROTO_REF(nearbyintf),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_modf = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(modff),
-            &FN_PROTOTYPE_REF(modf),
+            &ALM_PROTO_REF(modff),
+            &ALM_PROTO_REF(modf),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */
@@ -48,8 +48,8 @@ struct alm_arch_funcs __arch_funcs_modf = {
         },
 #if 0
         [ALM_UARCH_VER_ZEN] = {
-            &FN_PROTOTYPE_REF(modff),
-            &FN_PROTOTYPE_REF(modf),
+            &ALM_PROTO_REF(modff),
+            &ALM_PROTO_REF(modf),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_ldexp = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(ldexpf),
-            &FN_PROTOTYPE_REF(ldexp),
+            &ALM_PROTO_REF(ldexpf),
+            &ALM_PROTO_REF(ldexp),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

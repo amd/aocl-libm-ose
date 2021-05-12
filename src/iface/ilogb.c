@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_ilogb = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(ilogbf),
-            &FN_PROTOTYPE_REF(ilogb),
+            &ALM_PROTO_REF(ilogbf),
+            &ALM_PROTO_REF(ilogb),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

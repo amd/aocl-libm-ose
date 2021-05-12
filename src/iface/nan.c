@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_nan = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(nanf),
-            &FN_PROTOTYPE_REF(nan),
+            &ALM_PROTO_REF(nanf),
+            &ALM_PROTO_REF(nan),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

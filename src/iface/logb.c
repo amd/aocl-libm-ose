@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_logb = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(logbf),
-            &FN_PROTOTYPE_REF(logb),
+            &ALM_PROTO_REF(logbf),
+            &ALM_PROTO_REF(logb),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

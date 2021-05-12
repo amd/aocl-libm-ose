@@ -39,7 +39,7 @@ struct alm_arch_funcs __arch_funcs_round = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(roundf),
+            &ALM_PROTO_REF(roundf),
             NULL,                           /* s1d ? */
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */

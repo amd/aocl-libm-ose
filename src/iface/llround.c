@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_llround = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(llroundf),
-            &FN_PROTOTYPE_REF(llround),
+            &ALM_PROTO_REF(llroundf),
+            &ALM_PROTO_REF(llround),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

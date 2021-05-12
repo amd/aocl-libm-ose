@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_scalbn = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(scalbnf),
-            &FN_PROTOTYPE_REF(scalbn),
+            &ALM_PROTO_REF(scalbnf),
+            &ALM_PROTO_REF(scalbn),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_asinh = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(asinhf),
-            &FN_PROTOTYPE_REF(asinh),
+            &ALM_PROTO_REF(asinhf),
+            &ALM_PROTO_REF(asinh),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

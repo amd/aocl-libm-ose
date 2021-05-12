@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_acos = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(acosf),
-            &FN_PROTOTYPE_REF(acos),
+            &ALM_PROTO_REF(acosf),
+            &ALM_PROTO_REF(acos),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

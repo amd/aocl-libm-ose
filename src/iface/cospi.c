@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_cospi = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(cospif),
-            &FN_PROTOTYPE_REF(cospi),
+            &ALM_PROTO_REF(cospif),
+            &ALM_PROTO_REF(cospi),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

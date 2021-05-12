@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_remquo = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(remquof),
-            &FN_PROTOTYPE_REF(remquo),
+            &ALM_PROTO_REF(remquof),
+            &ALM_PROTO_REF(remquo),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

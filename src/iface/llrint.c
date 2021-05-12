@@ -39,8 +39,8 @@ struct alm_arch_funcs __arch_funcs_llrint = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &FN_PROTOTYPE_REF(llrintf),
-            &FN_PROTOTYPE_REF(llrint),
+            &ALM_PROTO_REF(llrintf),
+            &ALM_PROTO_REF(llrint),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */

@@ -40,7 +40,7 @@
 
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE_BAS64(vrs4_powxf)
+#define fname ALM_PROTO_BAS64(vrs4_powxf)
 
 #define fname_exp __amd_internal_vrd4_exp
 #define fname_log __amd_internal_vrd4_log 

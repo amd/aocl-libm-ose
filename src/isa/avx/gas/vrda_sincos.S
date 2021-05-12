@@ -43,7 +43,7 @@
 #define INTEGER64
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE_BAS64(vrda_sincos)
+#define fname ALM_PROTO_BAS64(vrda_sincos)
 
 
 #ifdef __ELF__

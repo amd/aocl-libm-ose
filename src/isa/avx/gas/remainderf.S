@@ -39,7 +39,7 @@
 
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE_BAS64(remainderf)
+#define fname ALM_PROTO_BAS64(remainderf)
 #define fname_special _remainderf_special@PLT
 
 

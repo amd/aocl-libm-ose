@@ -40,7 +40,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_BAS64(vrda_cbrt)
+#define fname ALM_PROTO_BAS64(vrda_cbrt)
 #define fname_special vrda_cbrt_special
 
 

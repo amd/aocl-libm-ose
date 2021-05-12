@@ -41,7 +41,7 @@
 
 #include "fn_macros.h"
 #include "exp_tables.h"
-#define fname FN_PROTOTYPE_BAS64(expf)
+#define fname ALM_PROTO_BAS64(expf)
 #define fname_special _expf_special@PLT
 
 

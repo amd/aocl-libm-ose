@@ -50,7 +50,7 @@
 
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_BAS64(vrsa_sinf)
+#define fname ALM_PROTO_BAS64(vrsa_sinf)
 #define fname_remainder_piby2d2f __amd_remainder_piby2d2f
 
 #ifdef __ELF__

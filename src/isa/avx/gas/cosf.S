@@ -79,7 +79,7 @@
 .p2align 5,,31
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_BAS64(cosf)
+#define fname ALM_PROTO_BAS64(cosf)
 #define fname_special _cosf_special@PLT
 
 

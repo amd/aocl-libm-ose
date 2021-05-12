@@ -42,7 +42,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_BAS64(vrsa_cbrtf)
+#define fname ALM_PROTO_BAS64(vrsa_cbrtf)
 #define fname_special vrsa_cbrtf_special
 
 #ifdef __ELF__

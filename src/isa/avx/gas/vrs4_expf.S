@@ -27,7 +27,7 @@
 #include "fn_macros.h"
 #include "exp_tables.h"
 
-#define fname FN_PROTOTYPE_BAS64(vrs4_expf)
+#define fname ALM_PROTO_BAS64(vrs4_expf)
 
 #ifdef __ELF__
 .section .note.GNU-stack,"",@progbits

@@ -47,7 +47,7 @@
 .p2align 4,,15
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_BAS64(cexpf)
+#define fname ALM_PROTO_BAS64(cexpf)
 #define fname_special1 _sincosf_special@PLT
 #define fname_special2 _expf_special@PLT
 

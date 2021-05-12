@@ -91,7 +91,7 @@
 .p2align 4,,15
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_BAS64(sinf)
+#define fname ALM_PROTO_BAS64(sinf)
 #define fname_special _sinf_special@PLT
 #define fname_special_underflow _sin_special_underflow@PLT
 

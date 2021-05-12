@@ -26,7 +26,7 @@
 
 #include "fn_macros.h"
 #include "exp_tables.h"
-#define fname FN_PROTOTYPE_BAS64(exp10f)
+#define fname ALM_PROTO_BAS64(exp10f)
 #define fname_special _exp10f_special@PLT
 
 

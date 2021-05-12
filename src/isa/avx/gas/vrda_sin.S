@@ -39,7 +39,7 @@
 #Denormal inputs may produce unexpected results
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_BAS64(vrda_sin)
+#define fname ALM_PROTO_BAS64(vrda_sin)
 #define fname_remainder_piby2 __amd_remainder_piby2
 
 #ifdef __ELF__

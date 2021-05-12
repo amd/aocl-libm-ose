@@ -49,7 +49,7 @@
 
 #include "fn_macros.h"
 #include "log_tables.h"
-#define fname FN_PROTOTYPE_BAS64(vrs4_logf)
+#define fname ALM_PROTO_BAS64(vrs4_logf)
 
 #define fname_special _vrs4_logf_special@PLT
 

@@ -45,7 +45,7 @@
 
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE_BAS64(copysign)
+#define fname ALM_PROTO_BAS64(copysign)
 
 
 

@@ -40,7 +40,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_BAS64(log2f)
+#define fname ALM_PROTO_BAS64(log2f)
 #define fname_special _log2f_special@PLT
 
 

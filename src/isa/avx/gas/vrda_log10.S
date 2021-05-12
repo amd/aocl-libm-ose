@@ -48,7 +48,7 @@
 
 #include "fn_macros.h"
 #include "log_tables.h"
-#define fname FN_PROTOTYPE_BAS64(vrda_log10)
+#define fname ALM_PROTO_BAS64(vrda_log10)
 #define fname_special _vrda_log10_special@PLT
 
 

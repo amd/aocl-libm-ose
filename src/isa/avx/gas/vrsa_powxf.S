@@ -41,7 +41,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_BAS64(vrsa_powxf)
+#define fname ALM_PROTO_BAS64(vrsa_powxf)
 #define fname_exp __amd_internal_vrd4_exp
 #define fname_log __amd_internal_vrd4_log 
 

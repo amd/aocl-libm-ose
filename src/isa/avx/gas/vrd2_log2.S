@@ -49,7 +49,7 @@
 
 #include "fn_macros.h"
 #include "log_tables.h"
-#define fname FN_PROTOTYPE_BAS64(vrd2_log2)
+#define fname ALM_PROTO_BAS64(vrd2_log2)
 
 #define fname_special _vrd2_log2_special@PLT
 

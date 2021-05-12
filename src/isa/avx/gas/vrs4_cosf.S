@@ -50,7 +50,7 @@
 
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_BAS64(vrs4_cosf)
+#define fname ALM_PROTO_BAS64(vrs4_cosf)
 
 #define fname_remainder_piby2d2f __amd_remainder_piby2d2f
 

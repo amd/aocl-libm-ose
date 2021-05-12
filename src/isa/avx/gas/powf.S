@@ -43,7 +43,7 @@
 #include "fn_macros.h"
 #include "weak_macros.h"
 #include "exp_tables.h"
-#define fname FN_PROTOTYPE_BAS64(powf)
+#define fname ALM_PROTO_BAS64(powf)
 #define fname_special _powf_special@PLT
 
 #ifdef __ELF__

@@ -38,7 +38,7 @@
 
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_BAS64(vrd2_sin)
+#define fname ALM_PROTO_BAS64(vrd2_sin)
 
 #define fname_remainder_piby2 __amd_remainder_piby2
 

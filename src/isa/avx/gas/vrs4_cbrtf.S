@@ -42,7 +42,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_BAS64(vrs4_cbrtf)
+#define fname ALM_PROTO_BAS64(vrs4_cbrtf)
 
 #define fname_special vrs4_cbrtf_special
 

@@ -71,10 +71,10 @@ static struct {
     },
 };
 
-#define C0 coshf_data.poly_coshf[0]
-#define C1 coshf_data.poly_coshf[1]
-#define C2 coshf_data.poly_coshf[2]
-#define C3 coshf_data.poly_coshf[3]
+#define A0 coshf_data.poly_coshf[0]
+#define A1 coshf_data.poly_coshf[1]
+#define A2 coshf_data.poly_coshf[2]
+#define A3 coshf_data.poly_coshf[3]
 
 #define LOGV    coshf_data.log_v
 #define HALFV   coshf_data.half_v
@@ -84,6 +84,11 @@ static struct {
 #define COSH_MAX    coshf_data.cosh_max
 #define HALF    coshf_data.half
 
+/*
+ * Since we are sending single precision value to
+ * double precision kernel, large ULP is acceptible
+ */
+#include "kern/expf.c"
 
 /* Implementation Notes
  * ---------------------
@@ -124,6 +129,12 @@ static struct {
  *        More information in docs/internal/cosh.md
  */
 
+static float
+coshf_expf_kern(float x)
+{
+    return ALM_PROTO_KERN(expf)(x);
+}
+
 float
 ALM_PROTO_OPT(coshf)(float x)
 {
@@ -138,7 +149,7 @@ ALM_PROTO_OPT(coshf)(float x)
     }
 
     y = asfloat(ux);
-    
+
     if (unlikely(ux > asuint32(COSH_MAX))) {
         if (ux > PINFBITPATT_SP32)      /* |x| is a NaN? */
             return x + x;
@@ -152,23 +163,23 @@ ALM_PROTO_OPT(coshf)(float x)
     if (ux > asuint32(8.5f)) {          /* x in (8.5, COSH_MAX] */
         if (y > EXP_MAX) {              /* x in (EXP_MAX, COSH_MAX] */
             w = y - LOGV;
-            z = ALM_PROTO(expf)(w);
+            z = coshf_expf_kern(w);
             return HALFV * z;
         }
         /* x in (8.5, EXP_MAX] */
-        z   = ALM_PROTO(expf)(y);
+        z   = coshf_expf_kern(y);
         res =  HALF * z;
     }
     else {                              /* x in (VERY_SMALL_X, 8.5] */
         if (y > SMALL_X) {              /* x in (SMALL_X, 8.5] */
-            z = ALM_PROTO(expf)(y);
+            z = coshf_expf_kern(y);
             return HALF * (z + (1.0f / z));
         }
         /* x in (VERY_SMALL_X, SMALL_X] */
         /* coshf(x) = C0 + y^2*(C1 + y^2*(C2 + y^2*C3)) */
         float y2 = y * y;
 
-        res = C0 + y2 * (C1 + y2 * (C2 + y2 * C3));
+        res = A0 + y2 * (A1 + y2 * (A2 + y2 * A3));
     }
 
     return res;

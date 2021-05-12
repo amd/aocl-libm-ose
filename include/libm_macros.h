@@ -68,6 +68,7 @@
 
 #define ALM_PROTO_REF(fn)    		amd_ref_##fn
 #define ALM_PROTO_FAST(fn)   		amd_fast##fn
+#define ALM_PROTO_KERN(fn)    		alm_kern_##fn
 
 /* 64-bit variants */
 #define ALM_PROTO_BAS64(fn)	__amd_bas64_##fn

@@ -33,6 +33,12 @@ builddir = joinpath(env['BUILDROOT'], 'src')
 
 ldscript = joinpath('#', 'src', 'ld-syms-libm.lds')
 
+kern_incpaths = [
+    '#' + Dir('.').srcnode().path,
+    '#' + joinpath(Dir('.').srcnode().path, 'optmized'),
+    '#' + joinpath(Dir('.').srcnode().path, 'kern')
+]
+
 e = env.Clone()
 e.Append(
     CCFLAGS = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror',
@@ -40,7 +46,7 @@ e.Append(
                '-Wno-unused-parameter',
                '-fPIC',
               ],
-    # CPPPATH = [],
+    CPPPATH = kern_incpaths,
     # CCFLAGS = [],
     # LINKFLAGS = [],
     LINKERSCRIPT = ldscript,

@@ -32,7 +32,7 @@
 #undef _FUNCNAME
 #define _FUNCNAME "log1pf"
 
-float FN_PROTOTYPE_BAS64(log1pf)(float x)
+float ALM_PROTO_BAS64(log1pf)(float x)
 {
 
   int xexp;

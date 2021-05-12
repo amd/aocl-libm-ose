@@ -29,9 +29,9 @@
 #include "libm/amd_funcs_internal.h"
 
 
-float FN_PROTOTYPE_BAS64(tanf)(float x);
+float ALM_PROTO_BAS64(tanf)(float x);
 
-__m128 FN_PROTOTYPE_BAS64(vrs4_tanf)(__m128 x)
+__m128 ALM_PROTO_BAS64(vrs4_tanf)(__m128 x)
 {
 
 	union XMMREGTYP_
@@ -49,10 +49,10 @@ __m128 FN_PROTOTYPE_BAS64(vrs4_tanf)(__m128 x)
 
 	inp128.f128 = x;
 
-	res128.f[0] = FN_PROTOTYPE_BAS64(tanf)(inp128.f[0]);
-	res128.f[1] = FN_PROTOTYPE_BAS64(tanf)(inp128.f[1]);
-	res128.f[2] = FN_PROTOTYPE_BAS64(tanf)(inp128.f[2]);
-	res128.f[3] = FN_PROTOTYPE_BAS64(tanf)(inp128.f[3]);
+	res128.f[0] = ALM_PROTO_BAS64(tanf)(inp128.f[0]);
+	res128.f[1] = ALM_PROTO_BAS64(tanf)(inp128.f[1]);
+	res128.f[2] = ALM_PROTO_BAS64(tanf)(inp128.f[2]);
+	res128.f[3] = ALM_PROTO_BAS64(tanf)(inp128.f[3]);
 
 
 	return res128.f128;

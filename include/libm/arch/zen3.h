@@ -28,16 +28,6 @@
 #define  ALM_PREFIX_ZN3    amd
 #endif
 
-#ifdef FN_PROTOTYPE_OPT
-#undef FN_PROTOTYPE_OPT
-#endif
-#define FN_PROTOTYPE_OPT(x)    ALM_PROTO_OPT(x)
-
-#ifdef FN_PROTOTYPE_REF
-#undef FN_PROTOTYPE_REF
-#endif
-#define FN_PROTOTYPE_REF(x)    ALM_PROTO_ARCH_ZN3(x)
-
 #define  ALM_PROTO_OPT(x)      ALM_PROTO_ARCH_ZN3(x)
 
 

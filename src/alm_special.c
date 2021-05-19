@@ -60,24 +60,24 @@ __alm_handle_errorf(char *fname, int opcode, unsigned long long value,
 double
 alm_exp2_special(double x, double y, uint32_t code)
 {
-    flt64u_t ym = {.d = y};
+    flt64_t ym = {.d = y};
 
     switch (code) {
     case ALM_E_IN_X_NAN:
-        __alm_handle_error("exp2", __amd_exp2, ym.i,
+        __alm_handle_error("exp2", __amd_exp2, ym.u,
                            ALM_ERR_DOMAIN,
                            0, EDOM, x, 0.0, 1);
         break;
 
     case ALM_E_OUT_ZERO:
-        __alm_handle_error("exp2", __amd_exp2, ym.i,
+        __alm_handle_error("exp2", __amd_exp2, ym.u,
                            ALM_ERR_UNDERFLOW,
                            AMD_F_INEXACT | AMD_F_UNDERFLOW,
                            ERANGE, x, 0.0, 1);
         break;
 
     case ALM_E_OUT_INF:
-        __alm_handle_error("exp2", __amd_exp2, ym.i,
+        __alm_handle_error("exp2", __amd_exp2, ym.u,
                            ALM_ERR_OVERFLOW,
                            AMD_F_INEXACT | AMD_F_OVERFLOW,
                            ERANGE, x, 0.0, 1);
@@ -92,23 +92,23 @@ alm_exp2_special(double x, double y, uint32_t code)
 float
 alm_exp2f_special(float x, float y, uint32_t code)
 {
-    flt32u_t ym = {.f = y};
+    flt32_t ym = {.f = y};
 
     switch (code) {
     case ALM_E_IN_X_NAN:
-        __amd_handle_errorf("exp2f", __amd_exp2, ym.i,
+        __amd_handle_errorf("exp2f", __amd_exp2, ym.u,
                             ALM_ERR_DOMAIN, 0, EDOM, x, 0.0, 1);
         break;
 
     case ALM_E_OUT_ZERO:
-        __amd_handle_errorf("exp2f", __amd_exp2, ym.i,
+        __amd_handle_errorf("exp2f", __amd_exp2, ym.u,
                             ALM_ERR_UNDERFLOW,
                             AMD_F_INEXACT | AMD_F_UNDERFLOW,
                             ERANGE, x, 0.0, 1);
         break;
 
     case ALM_E_OUT_INF:
-        __amd_handle_errorf("exp2f", __amd_exp2, ym.i,
+        __amd_handle_errorf("exp2f", __amd_exp2, ym.u,
                             ALM_ERR_OVERFLOW,
                             AMD_F_INEXACT | AMD_F_OVERFLOW,
                             ERANGE, x, 0.0, 1);
@@ -125,17 +125,17 @@ alm_exp2f_special(float x, float y, uint32_t code)
 static double
 _log_special_common(double x, double y, U32 fn_code, U32 error_code, char *name)
 {
-    flt64u_t ym = {.d = y};
+    flt64_t ym = {.d = y};
 
 	switch (error_code) {
     case ALM_E_OUT_INF:
 	case ALM_E_IN_X_ZERO:
-        __amd_handle_error(name, (int)fn_code, ym.i, ALM_ERR_SING,
+        __amd_handle_error(name, (int)fn_code, ym.u, ALM_ERR_SING,
                            AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
     break;
 
 	case ALM_E_IN_X_NEG:
-        __amd_handle_error(name, (int)fn_code, ym.i, ALM_ERR_DOMAIN,
+        __amd_handle_error(name, (int)fn_code, ym.u, ALM_ERR_DOMAIN,
                            AMD_F_INVALID, EDOM, x, 0.0, 1);
     break;
 

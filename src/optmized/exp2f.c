@@ -98,8 +98,8 @@ struct expf_data {
 static inline uint32_t
 top12f(float x)
 {
-    flt32u_t f = {.f = x};
-    return f.i >> 20;
+    flt32_t f = {.f = x};
+    return f.u >> 20;
 }
 
 /*

@@ -192,7 +192,7 @@ ALM_PROTO_OPT(log)(double x)
         return _log_special(x, asdouble(QNANBITPATT_DP64), FLAG_X_NEG);
     }
 
-    flt64u_t mant = {.i = ux & 0x000fffffffffffffULL};
+    flt64_t mant = {.u = ux & 0x000fffffffffffffULL};
 
     dexpo = cast_i64_to_double((int64_t)expo);
 
@@ -201,11 +201,11 @@ ALM_PROTO_OPT(log)(double x)
      *            exponent is anyway 0 for subnormals
      */
     if (unlikely (dexpo < -1023.0)) {
-        mant.i |= 0x3ff0000000000000ULL;
+        mant.u |= 0x3ff0000000000000ULL;
         mant.d -= 1.0;
-        expo = (mant.i >> 52) - 2045;
-        mant.i &= 0x000ffffffffffffULL;
-        ux = mant.i;
+        expo = (mant.u >> 52) - 2045;
+        mant.u &= 0x000ffffffffffffULL;
+        ux = mant.u;
     }
 
     /* un-bias exponent  */
@@ -217,9 +217,9 @@ ALM_PROTO_OPT(log)(double x)
     /*****************
      * (x ~= 1.0) code path
      *****************/
-    flt64u_t one_minus_mant = {.d = x - 1.0};
+    flt64_t one_minus_mant = {.d = x - 1.0};
     /* mask sign bit */
-    uint64_t mant_no_sign = one_minus_mant.i & ~(1ULL << 63);
+    uint64_t mant_no_sign = one_minus_mant.u & ~(1ULL << 63);
     if (unlikely (mant_no_sign < 0x3fb0000000000000ULL)) {
         double_t  u, u2, u3, u7;
         double_t  A1, A2, B1, B2, R1, R2;
@@ -273,7 +273,7 @@ ALM_PROTO_OPT(log)(double x)
      */
     uint64_t j = (mant_n + (mant_n1 << 1));
 
-    mant.i        |= 0x3fe0000000000000ULL;               /* F */
+    mant.u        |= 0x3fe0000000000000ULL;               /* F */
     j_times_half   = asdouble(0x3fe0000000000000ULL | j); /* Y */
 
     j >>= (52 - N);

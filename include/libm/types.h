@@ -33,12 +33,16 @@
 #include <complex.h>
 #include <immintrin.h>
 
-#define PASTE2(a, b) a##b
-#define STRINGIFY2(x) #x
-#define STRINGIFY(x) STRINGIFY2(x)
+#include "libm/compiler.h"
 
-
+/*
+ * FIXME: Gcc doesnt yet support __fp16 or 'short float'
+ */
+#if GCC_VERSION > 100200
 typedef    short               f16_t;
+#else
+typedef    short               f16_t;
+#endif
 typedef    float               f32_t;
 typedef    double              f64_t;
 typedef    long double         f80_t;
@@ -57,25 +61,16 @@ typedef    __m128              f128_t;
  * Internal types
  *****************************/
 typedef union {
-    uint32_t i;
-    float    f;
-} flt32u_t;
-
-typedef union {
-    int32_t i;
-    float   f;
+    f32_t    f;
+    int32_t  i;
+    uint32_t u;
 } flt32_t;
 
 typedef union {
-    double   d;
-    uint64_t i;
-} flt64u_t;
-
-typedef union {
-    int64_t i;
-    double  d;
+    f64_t    d;
+    int64_t  i;
+    uint64_t u;
 } flt64_t;
-
 
 
 /*****************************
@@ -87,76 +82,50 @@ typedef union {
  * (u)int32 - 4 elements - 128 bit
  */
 typedef union {
-    int32_t i[4];
-    __m128i m128i;
+    int32_t   i[4];
+    uint32_t  u[4];
+    __m128i   m128i;
 } int128_t;
-
-typedef union {
-    uint32_t i[4];
-    __m128i m128i;
-} int128u_t;
-
 
 /*
  * float32 - 4 elements - 128 bit
  */
 typedef union {
-    int32_t i[4];
-    float   f[4];
-    __m128  m128;
-} flt128f_t;
-
-typedef union {
-    uint32_t i[4];
+    uint32_t u[4];
+    int32_t  i[4];
     float    f[4];
-    __m128   m128;
-} flt128fu_t;
+    __m128  m128;
+} flt128_t;
 
 /*
  * float32 - 8 element - 256 bits
  */
 typedef union {
-    int32_t i[8];
-    float   f[8];
-    __m256  m256;
-} flt256f_t;
-
-typedef union {
-    uint32_t i[8];
+    uint32_t u[8];
+    int32_t  i[8];
     float    f[8];
     __m256   m256;
-} flt256fu_t;
+} flt256f_t;
 
 /*
  * float64 - 2 element - 128 bits
  */
 typedef union {
-    int64_t i[2];
-    double  d[2];
+    uint64_t u[2];
+    int64_t  i[2];
+    double   d[2];
     __m128d  m128;
 } flt128d_t;
-
-typedef union {
-    uint64_t  i[2];
-    double   d[2];
-    __m256d  m128;
-} flt128du_t;
 
 /*
  * float64 - 4 element - 256 bits
  */
 typedef union {
-    int64_t  i[4];
-    double   d[4];
-    __m256d  m256d;
-} flt256d_t;
-
-typedef union {
-    uint64_t  i[4];
+    uint64_t  u[4];
+    int64_t   i[4];
     double    d[4];
     __m256d   m256d;
-} flt256du_t;
-
+} flt256d_t;
 
 
 /*
@@ -172,21 +141,38 @@ typedef union {
  * 32/64/80 - width of data
  * x2/x4/x8 - number of elements
  */
+/* 128-bit half, single, double, integers */
+typedef f16_t    v_f16x8_t VEC(16) MAY_ALIAS;  /* bf16 x 8*/
+typedef float    v_f32x4_t VEC(16) MAY_ALIAS;  /* float x 4 */
+typedef double   v_f64x2_t VEC(16) MAY_ALIAS;  /* double x 4 */
+typedef int16_t  v_i16x8_t VEC(16) MAY_ALIAS;  /* short * 8 */
+typedef uint16_t v_u16x8_t VEC(16) MAY_ALIAS;  /* ushort * 8*/
+typedef int32_t  v_i32x4_t VEC(16) MAY_ALIAS;  /* int  * 4*/
+typedef uint32_t v_u32x4_t VEC(16) MAY_ALIAS;  /* uint * 4*/
+typedef uint64_t v_u64x2_t VEC(16) MAY_ALIAS;  /* long int * 2*/
+typedef int64_t  v_i64x2_t VEC(16) MAY_ALIAS;  /* ulong int * 2 */
 
-typedef float    v_f32x4_t VEC(16) MAY_ALIAS;
-typedef uint32_t v_u32x4_t VEC(16) MAY_ALIAS;
-typedef int32_t  v_i32x4_t VEC(16) MAY_ALIAS;
-typedef float    v_f32x8_t VEC(32) MAY_ALIAS;
-typedef uint32_t v_u32x8_t VEC(32) MAY_ALIAS;
-typedef int32_t  v_i32x8_t VEC(32) MAY_ALIAS;
+/* 256-bit half, single, double, integers */
+typedef f16_t    v_f16x16_t VEC(32) MAY_ALIAS;
+typedef int16_t  v_i16x16_t VEC(32) MAY_ALIAS;
+typedef uint16_t v_u16x16_t VEC(32) MAY_ALIAS;
+typedef f32_t    v_f32x8_t  VEC(32) MAY_ALIAS;
+typedef uint32_t v_u32x8_t  VEC(32) MAY_ALIAS;
+typedef int32_t  v_i32x8_t  VEC(32) MAY_ALIAS;
+typedef f64_t    v_f64x4_t  VEC(32) MAY_ALIAS;
+typedef uint64_t v_u64x4_t  VEC(32) MAY_ALIAS;
+typedef int64_t  v_i64x4_t  VEC(32) MAY_ALIAS;
 
-typedef double   v_f64x2_t VEC(16) MAY_ALIAS;
-typedef uint64_t v_u64x2_t VEC(16) MAY_ALIAS;
-typedef int64_t  v_i64x2_t VEC(16) MAY_ALIAS;
-typedef double   v_f64x4_t VEC(32) MAY_ALIAS;
-typedef uint64_t v_u64x4_t VEC(32) MAY_ALIAS;
-typedef int64_t  v_i64x4_t VEC(32) MAY_ALIAS;
-
+/* 512-bit half, single, double integers */
+typedef f16_t    v_f16x32_t VEC(64) MAY_ALIAS;
+typedef int16_t  v_i16x32_t VEC(64) MAY_ALIAS;
+typedef uint16_t v_u16x32_t VEC(64) MAY_ALIAS;
+typedef f32_t    v_f32x16_t VEC(64) MAY_ALIAS;
+typedef int32_t  v_i32x16_t VEC(64) MAY_ALIAS;
+typedef uint32_t v_u32x16_t VEC(64) MAY_ALIAS;
+typedef f64_t    v_f64x8_t  VEC(64) MAY_ALIAS;
+typedef int64_t  v_i64x8_t  VEC(64) MAY_ALIAS;
+typedef uint64_t v_u64x8_t  VEC(64) MAY_ALIAS;
 
 /*
  * Generic 32-bit, 4-element types

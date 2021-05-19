@@ -38,21 +38,21 @@ fc32_t ALM_PROTO_REF(cexpf)(fc32_t z);
 fc32_t
 ALM_PROTO_REF(cexpf)(fc32_t z)
 {
-    flt32u_t    re, im;
+    flt32_t     re, im;
     f32_t       zy_re, zy_im;
 
     re.f = crealf(z);
     im.f = (float)cimag(z);
 
-    if((re.i & ALM_F32_SIGN_MASK) == 0) {
-        if((im.i & ALM_F32_SIGN_MASK) == 0) {
+    if((re.u & ALM_F32_SIGN_MASK) == 0) {
+        if((im.u & ALM_F32_SIGN_MASK) == 0) {
             zy_re = 1.0f;
             zy_im = 0.0f;
         } else {
             ALM_PROTO(sincosf)(im.f, &zy_im, &zy_re);
         }
     } else {
-        if((im.i & ALM_F32_SIGN_MASK) == 0) {
+        if((im.u & ALM_F32_SIGN_MASK) == 0) {
             zy_re = ALM_PROTO(expf)(re.f);
             zy_im = 0.0f;
         } else {

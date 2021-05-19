@@ -79,12 +79,12 @@ __log1p_v3(double_t f)
      * (4) f2:=f-fl.
      * (5) u2:= ((2*(f-u,)-u,*f,)-u,*f2)*g.
      */
-    flt64u_t u1 = {.i = asuint64(u) & 0xfffffffff0000000UL};
-    flt64u_t f1 = {.i = asuint64(f) & 0xfffffffff0000000UL};
+    flt64_t u1 = {.u = asuint64(u) & 0xfffffffff0000000UL};
+    flt64_t f1 = {.u = asuint64(f) & 0xfffffffff0000000UL};
 
-    double_t f2 = f - f1.d;
+    double f2 = f - f1.d;
 
-    double_t u2 = ((2.0 * (f - u1.d) - u1.d * f1.d) - u1.d * f2) * g;
+    double u2 = ((2.0 * (f - u1.d) - u1.d * f1.d) - u1.d * f2) * g;
 
     /* Result = u1 + (u2 + q) */
     q = u1.d + (u2 + q);
@@ -223,12 +223,12 @@ FN_PROTOTYPE(log_v3)(double x)
      * Y = 2^-m * x , so that 1 <= 2^-m*X < 2
      * Y is nothing but mantissa
      */
-    flt64u_t Y = {.i = f64.f.mantissa};
+    flt64_t Y = {.u = f64.f.mantissa};
 
-    j = (uint32_t)(Y.i >> (52 - LOG_N));    /* Top ''LOG_N' bits of mantissa */
+    j = (uint32_t)(Y.u >> (52 - LOG_N));    /* Top ''LOG_N' bits of mantissa */
 
     /* actually Y.d = x * (asdouble)((1023 - m) << 52); */
-    Y.i |=  (0x3ffULL << 52);           /* 0x3ff0.0000.0000.0000 */
+    Y.u |=  (0x3ffULL << 52);           /* 0x3ff0.0000.0000.0000 */
 
     /*
      * F = Y * 2^7

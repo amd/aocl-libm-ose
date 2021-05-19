@@ -256,7 +256,7 @@ ALM_PROTO_OPT(exp)(double x)
 
             /* Process true de-normals */
                 m2 +=  1074;
-                flt64u_t tmp = {.i = (1ULL << m2) };
+                flt64_t tmp = {.u = (1ULL << m2) };
                 return q * tmp.d;
            }
        }

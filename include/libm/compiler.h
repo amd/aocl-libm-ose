@@ -60,6 +60,9 @@ To check that this is gcc compiler version 5.1 or greater:
 */
 
 #if defined(__GNUC__)
+#define GCC_VERSION (__GNUC__ * 10000 \
+                     + __GNUC_MINOR__ * 100 \
+                     + __GNUC_PATCHLEVEL__)
 
 #define PACKED		__attribute__((packed))
 

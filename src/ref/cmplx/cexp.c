@@ -38,21 +38,21 @@ fc64_t ALM_PROTO_REF(cexp)(fc64_t z);
 fc64_t
 ALM_PROTO_REF(cexp)(fc64_t z)
 {
-    flt64u_t re, im;
+    flt64_t re, im;
     f64_t zy_re, zy_im;
 
     re.d = creal(z);
     im.d = cimag(z);
 
-    if((re.i & ALM_F64_SIGN_MASK) == 0) {
-        if((im.i & ALM_F64_SIGN_MASK) == 0) {
+    if((re.u & ALM_F64_SIGN_MASK) == 0) {
+        if((im.u & ALM_F64_SIGN_MASK) == 0) {
             zy_re = 1.0;
             zy_im = 0.0;
         } else {
             ALM_PROTO(sincos)(im.d, &zy_im, &zy_re);
         }
     } else {
-        if((im.i & ALM_F64_SIGN_MASK) == 0) {
+        if((im.u & ALM_F64_SIGN_MASK) == 0) {
             zy_re = ALM_PROTO(exp)(re.d);
             zy_im = 0.0;
         } else {

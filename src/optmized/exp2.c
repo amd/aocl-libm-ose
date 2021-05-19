@@ -267,7 +267,7 @@ ALM_PROTO_OPT(exp2)(double x)
             if (m1 < -1022 || q < 1.0) {
                 /* Process true de-normals */
                 m1 += 1074;
-                flt64u_t tmp = {.i = (1ULL << (uint8_t)m1) };
+                flt64_t tmp = {.u = (1ULL << (uint8_t)m1) };
                 y = q * tmp.d;
                 goto out;
             }

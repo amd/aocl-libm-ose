@@ -138,7 +138,7 @@ log2_near_one(double x)
 #define CA4 near_one_data.poly[3]
 
     r = x - 1.0;
-    flt64u_t fx = {.d = r};
+    flt64_t fx = {.d = r};
 
     double u_by_2 = r / (2.0 + r);
 
@@ -160,7 +160,7 @@ log2_near_one(double x)
     R1 = B1 + B2;
     double poly = R1 - q;
 
-    fx.i &= 0xffffffff00000000;
+    fx.u &= 0xffffffff00000000;
     double u_high = fx.d;
     double u_low  = r - u_high;
 
@@ -240,16 +240,16 @@ ALM_PROTO_OPT(log2)(double x)
         return alm_exp2_special(x, asdouble(QNANBITPATT_DP64), ALM_E_IN_X_NEG);
     }
 
-    flt64u_t mant = {.i = ux & MANTBITS_DP64};
+    flt64_t mant  = {.u = ux & MANTBITS_DP64};
     dexpo         = cast_i64_to_double((int64_t) expo);
 
     /* Denormals : adjust mantissa */
     if (unlikely (dexpo < -1023.0)) {
-        mant.i   |= ONEEXPBITS_DP64;
+        mant.u   |= ONEEXPBITS_DP64;
         mant.d   -= 1.0;
-        expo      = (mant.i >> EXPSHIFTBITS_DP64) - 2045;
-        mant.i   &= MANTBITS_DP64;
-        ux        = mant.i;
+        expo      = (mant.u >> EXPSHIFTBITS_DP64) - 2045;
+        mant.u   &= MANTBITS_DP64;
+        ux        = mant.u;
     }
 
     expo    -= EXPBIAS_DP64;

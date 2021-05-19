@@ -28,7 +28,11 @@
 #ifndef __ENTRY_PT_MACROS_H__
 #define __ENTRY_PT_MACROS_H__
 
-#include <libm/types.h>
+#ifndef STRINGIFY
+#define PASTE2(a, b) a##b
+#define STRINGIFY2(x) #x
+#define STRINGIFY(x) STRINGIFY2(x)
+#endif
 
 #define MK_FN_NAME(fn)				\
 	STRINGIFY(FN_PROTOTYPE(fn))

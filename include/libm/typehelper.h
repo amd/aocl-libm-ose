@@ -34,29 +34,29 @@
 static inline uint32_t
 asuint32(float f)
 {
-	flt32u_t fl = {.f = f};
-	return fl.i;
+	flt32_t fl = {.f = f};
+	return fl.u;
 }
 
 static inline float
 asfloat(uint32_t i)
 {
-	flt32u_t fl = {.i = i};
+	flt32_t fl = {.u = i};
 	return fl.f;
 }
 
 static inline double
 asdouble(uint64_t i)
 {
-	flt64u_t dbl = {.i = i};
+	flt64_t dbl = {.u = i};
 	return dbl.d;
 }
 
 static inline uint64_t
 asuint64(double f)
 {
-	flt64u_t fl = {.d = f};
-	return fl.i;
+	flt64_t fl = {.d = f};
+	return fl.u;
 }
 
 static inline double

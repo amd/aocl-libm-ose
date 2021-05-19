@@ -10,12 +10,12 @@
   CentOS:
     $ sudo yum install mpfr-devel.x86_64
   SLES:
-    $ sudo zypper install mpfr-devel  
+    $ sudo zypper install mpfr-devel
 
 ## Installing virtualenv
   There are various ways to install virtualenv on Linux environment.
   Ubuntu:
-     $ sudo apt install virtualenv 
+     $ sudo apt install virtualenv
   CentOS:
      $ sudo yum install python3-virtualenv
   SLES:
@@ -44,7 +44,7 @@
    ```
 
   Building selecting compiler
-    $ scons --compiler=gcc/aocc CC=<gcc/clang executable path> CXX=<g++/clang++ executable path>
+    $ scons ALM_CC=<gcc/clang executable path> ALM_CXX=<g++/clang++ executable path>
 
   Building with verbosity
    ``` shell
@@ -64,13 +64,15 @@
   Building test framework
     $ scons gtests
 
-## Possible future building
+
+## Glibc compat library
   An glibc compatible library, which has the table of functions compatible with
   GLIBC. or compile with AOCC to generate proper API calls to amdlibm.
   ``` sh
-    $ LD_PRELOAD=/abs/path/amdlibm_wrapper.so
+    $ LD_PRELOAD=./build/aocl-release/src/compat/glibc-compat.o
   ```
 
+## Possible future building
   A fast library, with upto 8 ULP (when available).
   ``` sh
     $ LD_PRELOAD=/abs/path/amdlibm_fast.so
@@ -128,6 +130,4 @@
   -c (Integer value for number of inputs)
   Input range:
   -r (provide range: start,stop,step size example: -r -50,50,SIMPLE)
-
-
 

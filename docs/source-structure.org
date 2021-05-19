@@ -48,8 +48,15 @@ Test Framework files are located directly under the 'gtests/' folder.
 
 gtests/
      include/      - test related headers only.
-     libs/          - contains external libraries necessary for testing
+     libs/         - contains external libraries necessary for testing
      libs/mparith  - Contains the high precision mparith libraries used for Accuracy testing.
      gapi/         - Contains the google libs which are used to exercise gtests and gbench(Performance testing)
-     exp/         - exp() related tests
-     scripts/     -  Contains Test scripts to build and test the AMD LIBM framework.
+     exp/          - exp() related tests
+
+** Build Scripts
+
+Build system scripts are located in scripts/site_scons/
+
+site_scons/
+    alm/       - Contains ALM building scripts
+    site_tools/ - Versioning related scripts

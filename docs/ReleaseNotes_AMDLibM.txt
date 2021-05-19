@@ -1,8 +1,8 @@
 
 (C) 2008-2020 Advanced Micro Devices, Inc. All Rights Reserved.
 
-AMD LibM - Release Notes - version 3.0
-----------------------------------------
+AOCL LibM - Release Notes - AOCL version 3.1
+--------------------------------------------
 
 AMD LibM Contents
 -----------------
@@ -15,26 +15,29 @@ compiler-provided math functions. Applications can link into AMD LibM library an
 invoke math functions instead of compiler’s math functions for better accuracy and
 performance.
 
-Hightlights of AMD LibM 3.0
------------------------------
+Hightlights of AMD LibM version 3.8
+-----------------------------------
 
-    * Optimized Trigonometric scalar and vector variants of sin, cos, and tan.
-    * Optimized Hyperbolic (single precision) scalar and vector variants of cosh and tanh.
-    * Bug fixes in vector (double precision) log and exp.
+    * Optimized exp2 and log2 scalar and vector variants.
+    * Performance improvements in exp2, log2 variants.
+    * Accuracy issue fixes in vector (double precision) log and exp.
+    * Accuracy issue fixes in scalar (single precision) cosh.
+    * Updated Glibc compat library.
+    * Bug fixes in cpuid detection.
 
 Known Issues
 ------------
    * fastpow() - Maximum ULP error is 10.
 
-Version 3.7 Contents
-----------------------
+Version 3.8 Contents
+--------------------
 AMD LibM provides vector variants for many of the math functions. The list of
 available vector functions is given below. All functions have an 'amd_' prefix.
 
  Exponential
  -----------
     * vrs4_expf, vrs4_exp2f, vrs4_exp10f, vrs4_expm1f
-    * vrs8_expf
+    * vrs8_expf, vrs8_exp2f
     * vrsa_expf, vrsa_exp2f, vrsa_exp10f, vrsa_expm1f
     * vrd2_exp, vrd2_exp2, vrd2_exp10, vrd2_expm1, vrd4_exp, vrd4_exp2
     * vrda_exp, vrda_exp2, vrda_exp10, vrda_expm1
@@ -42,9 +45,9 @@ available vector functions is given below. All functions have an 'amd_' prefix.
  Logarithmic
  -----------
     * vrs4_logf, vrs4_log2f, vrs4_log10f, vrs4_log1pf
-    * vrs8_logf
+    * vrs8_logf, vrs8_log2f
     * vrsa_logf, vrsa_log2f, vrsa_log10f, vrsa_log1pf
-    * vrd2_log, vrd2_log2, vrd2_log10, vrd2_log1p, vrd4_log
+    * vrd2_log, vrd2_log2, vrd2_log10, vrd2_log1p, vrd4_log, vrd4_log2
     * vrda_log, vrda_log2, vrda_log10, vrda_log1p
 
  Trigonometric

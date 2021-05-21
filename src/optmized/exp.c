@@ -115,7 +115,7 @@ double
 ALM_PROTO_OPT(exp)(double x)
 {
     double_t    r, q, dn;
-    int64_t	n, m, j;
+    int64_t     m, n, j;
     flt64_t     q1 = {.i = 0,};
 
 #define EXP_X_NAN       1
@@ -155,8 +155,9 @@ ALM_PROTO_OPT(exp)(double x)
         if (x <= DENORMAL_LOW)
             return _exp_special(x, asdouble(DENORMAL_MIN), EXP_Y_ZERO);
 
-
+	
         exponent = 0xfff;
+
     }
 
     double_t a = x * EXP_TBLSZ_BY_LN2;
@@ -244,16 +245,21 @@ ALM_PROTO_OPT(exp)(double x)
      * Processing denormals
      */
     if (unlikely (exponent == 0xfff)) {
-        /* re-calculate m */
-        int64_t m2 = (n - j) >> EXP_N;
-        if (m2 <= -1022) {
-            if (m2 < -1022 || q < 1.0) {
-                /* Process true de-normals */
+        /* re-calculate n */
+       n = (int64_t)dn;
+
+       int64_t m2 = n >> EXP_N;
+
+       if (m2 <= -1022) {
+
+           if ((m2 < -1022) || (q < 1.0)) {
+
+            /* Process true de-normals */
                 m2 +=  1074;
                 flt64u_t tmp = {.i = (1ULL << m2) };
                 return q * tmp.d;
-            }
-        }
+           }
+       }
     }
 
     q1.d =  asdouble((uint64_t)m + asuint64(q));

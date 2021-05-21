@@ -211,6 +211,39 @@ as_v4_i64_f64(v_f64x4_t x)
     return r.i;
 }
 
+#if defined(__AVX512F__)
+/* Access a u64x8 as f64x8 */
+static inline v_u64x8_t
+as_v8_u64_f64(v_f64x8_t x)
+{
+    union {
+        v_f64x8_t f; v_u64x8_t u;
+    } r = {.f = x};
+    return r.u;
+}
+
+/* Access a i64x8 as f64x8 */
+static inline v_f64x8_t
+as_v8_f64_i64(v_i64x8_t x)
+{
+    union {
+        v_f64x8_t f; v_i64x8_t i;
+    } r = {.i = x};
+
+    return r.f;
+}
+
+/* Access a i64x8 as f64x8 */
+static inline v_i64x8_t
+as_v8_i64_f64(v_f64x8_t x)
+{
+    union {
+        v_f64x8_t f; v_i64x8_t i;
+    } r = {.f = x};
+    return r.i;
+}
+#endif
+
 /*
  * v8 single precision
  */
@@ -234,6 +267,30 @@ as_v8_u32_f32(v_f32x8_t x)
     return val._xi;
 }
 
+#if defined(__AVX512F__)
+/*
+ * v16 single precision
+ */
+static inline v_f32x16_t
+as_v16_f32_u32(v_u32x16_t x)
+{
+    union {
+        v_u32x16_t _xi; v_f32x16_t _xf;
+    } val = { ._xi = x};
+
+    return val._xf;
+}
+
+static inline v_u32x16_t
+as_v16_u32_f32(v_f32x16_t x)
+{
+    union {
+        v_u32x16_t _xi; v_f32x16_t _xf;
+    } val = { ._xf = x};
+
+    return val._xi;
+}
+#endif
 
 /*
  * Casting
@@ -392,6 +449,22 @@ any_v4_u64_loop(v_u64x4_t cond)
     return ret;
 }
 
+#if defined(__AVX512F__)
+// Condition check with for loop for better performance
+static inline int
+any_v8_u64_loop(v_u64x8_t cond)
+{
+    int ret = 0;
+    for (int i = 0; i < 8; i++) {
+        if (cond[i] != 0) {
+            ret = 1;
+            break;
+        }
+    }
+
+    return ret;
+}
+#endif
 
 #ifndef ALM_HAS_V8_CALL_F32
 #define ALM_HAS_V8_CALL_F32
@@ -482,6 +555,25 @@ call2_v4_f32(float (*fn)(float, float),
 }
 
 #endif
+
+#if defined(__AVX512F__)
+static inline v_f64x8_t
+call_v8_f64(double (*fn)(double),
+            v_f64x8_t orig,
+            v_f64x8_t result,
+            v_u64x8_t cond)
+{
+    return (v_f64x8_t){cond[0] ? fn(orig[0]) : result[0],
+        cond[1] ? fn(orig[1]) : result[1],
+        cond[2] ? fn(orig[2]) : result[2],
+        cond[3] ? fn(orig[3]) : result[3],
+        cond[4] ? fn(orig[4]) : result[4],
+        cond[5] ? fn(orig[5]) : result[5],
+        cond[6] ? fn(orig[6]) : result[6],
+        cond[7] ? fn(orig[7]) : result[7]};
+}
+#endif
+
 
 #ifndef ALM_HAS_V4_CALL_F64
 #define ALM_HAS_V4_CALL_F64

@@ -31,7 +31,7 @@
 #include <libm/entry_pt.h>
 
 #include <libm/arch/all.h>
-#include <libm/arch/zen3.h>
+
 
 static const
 struct alm_arch_funcs __arch_funcs_atan = {

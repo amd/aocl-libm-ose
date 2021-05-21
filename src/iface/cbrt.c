@@ -32,7 +32,6 @@
 
 //
 #include <libm/arch/all.h>
-#include <libm/arch/zen3.h>
 
 static const
 struct alm_arch_funcs __arch_funcs_cbrt = {
@@ -41,11 +40,11 @@ struct alm_arch_funcs __arch_funcs_cbrt = {
         [ALM_UARCH_VER_DEFAULT] = {
             &ALM_PROTO_FMA3(cbrtf),
             &ALM_PROTO_FMA3(cbrt),
-            &ALM_PROTO_FMA3(vrs4_cbrtf), /* vrs4 ? */
-            NULL,                           /* vrs8 ? */
-            &ALM_PROTO_FMA3(vrd2_cbrt),  /* vrd2 ? */
-            NULL,                           /* vrd4 ? */
-            &ALM_PROTO_FMA3(vrsa_cbrtf),  /*array vector float*/
+            &ALM_PROTO_FMA3(vrs4_cbrtf),
+            NULL,                        /* vrs8 ? */
+            &ALM_PROTO_FMA3(vrd2_cbrt), 
+            NULL,                        /* vrd4 ? */
+            &ALM_PROTO_FMA3(vrsa_cbrtf), /*array vector float*/
             &ALM_PROTO_FMA3(vrda_cbrt),  /*array vector double*/
         },
     },

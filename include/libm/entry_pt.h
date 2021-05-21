@@ -254,5 +254,21 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_pow);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_sin);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_tan);
 
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_cbrt);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_cos);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_cosh);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_exp);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_exp2);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_exp10);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_expm1);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_log);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_log2);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_log10);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_log1p);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_pow);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_sin);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_tan);
+
+
 #endif	/* __AMD_LIBM_ENTRY_PT_PTR_H__ */
 

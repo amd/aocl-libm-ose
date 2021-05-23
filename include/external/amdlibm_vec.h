@@ -179,16 +179,21 @@ extern "C" {
  /* Exponential */
 
     __m128d amd_vrd2_exp    (__m128d x);
-    __m128  amd_vrs4_expf   (__m128  x);
     __m128d amd_vrd2_exp2   (__m128d x);
+
+    __m128  amd_vrs4_expf   (__m128  x);
     __m128  amd_vrs4_exp2f  (__m128  x);
+
     __m128d amd_vrd2_exp10  (__m128d x);
     __m128  amd_vrs4_exp10f (__m128  x);
     __m128d amd_vrd2_expm1  (__m128d x);
     __m128  amd_vrs4_expm1f (__m128  x);
 
-    __m256d amd_vrd4_exp (__m256d);
-    __m256  amd_vrs8_expf (__m256);
+    __m256d amd_vrd4_exp    (__m256d x);
+    __m256d amd_vrd4_exp2   (__m256d x);
+
+    __m256  amd_vrs8_expf   (__m256 x);
+    __m256  amd_vrs8_exp2f  (__m256 x);
 
     void amd_vrda_exp       (int len, double *src, double *dst);
     void amd_vrsa_expf      (int len, float  *src, float  *dst);
@@ -203,16 +208,21 @@ extern "C" {
  /* Logarithmic */
 
     __m128d amd_vrd2_log    (__m128d x);
-    __m128  amd_vrs4_logf   (__m128  x);
     __m128d amd_vrd2_log2   (__m128d x);
+
+    __m128  amd_vrs4_logf   (__m128  x);
     __m128  amd_vrs4_log2f  (__m128  x);
+
     __m128d amd_vrd2_log10  (__m128d x);
     __m128  amd_vrs4_log10f (__m128  x);
     __m128d amd_vrd2_log1p  (__m128d x);
     __m128  amd_vrs4_log1pf (__m128  x);
 
-    __m256d amd_vrd4_log (__m256d);
-    __m256  amd_vrs8_logf (__m256);
+    __m256d amd_vrd4_log    (__m256d x);
+    __m256d amd_vrd4_log2   (__m256d x);
+
+    __m256  amd_vrs8_logf   (__m256 x);
+    __m256  amd_vrs8_log2f  (__m256 x);
 
     void amd_vrda_log       (int len, double *src, double *dst);
     void amd_vrsa_logf      (int len, float  *src, float  *dst);
@@ -256,8 +266,8 @@ extern "C" {
     __m128  amd_vrs4_cbrtf  (__m128  x);
     __m128  amd_vrs4_powf   (__m128 x, __m128 y);
 
-    __m256d amd_vrd4_pow (__m256d, __m256d);
-    __m256  amd_vrs8_powf (__m256, __m256);
+    __m256d amd_vrd4_pow    (__m256d, __m256d);
+    __m256  amd_vrs8_powf   (__m256, __m256);
 
     void amd_vrda_cbrt      (int len, double *src, double *dst);
     void amd_vrsa_cbrtf     (int len, float  *src, float  *dst);

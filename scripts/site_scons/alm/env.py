@@ -25,6 +25,7 @@
 
 from os import environ
 from os.path import join as joinpath
+from os.path import abspath
 
 from SCons.Node.FS import Dir
 from SCons.Script import Environment, COMMAND_LINE_TARGETS, Exit
@@ -165,6 +166,9 @@ class AlmEnvironment(object):
         # Setup installdir
         if 'install' in COMMAND_LINE_TARGETS:
             installroot = self.opts.GetOption('prefix')
+
+            # get absolute path
+            installroot = abspath(installroot)
             for k in installdirs.keys():
                 installdirs[k] = joinpath(installroot, installdirs[k])
 

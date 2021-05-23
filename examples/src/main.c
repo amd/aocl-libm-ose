@@ -37,6 +37,8 @@ extern int use_tan();
 extern int use_cosh();
 extern int use_tanh();
 extern int use_sinh();
+extern int use_exp2();
+extern int use_log2();
 
 int main()  {
     printf("Illustration of AMD LibM functions\n");
@@ -51,5 +53,8 @@ int main()  {
     use_cosh();
     use_tanh();
     use_sinh();
+    use_exp2();
+    use_log2();
+
     return 0;
 }

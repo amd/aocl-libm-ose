@@ -42,9 +42,9 @@ struct alm_arch_funcs __arch_funcs_cos = {
             &ALM_PROTO_FMA3(cos),
             &ALM_PROTO_FMA3(cosf),
             &ALM_PROTO_FMA3(vrs4_cosf),
-            &ALM_PROTO_ARCH_ZN3(vrs8_cosf), /* vrs8 ? */
+            &ALM_PROTO_ARCH_AVX2(vrs8_cosf), /* vrs8 ? */
             &ALM_PROTO_FMA3(vrd2_cos),
-            &ALM_PROTO_ARCH_ZN3(vrd4_cos),  /* vrd4 ? */
+            &ALM_PROTO_ARCH_AVX2(vrd4_cos),  /* vrd4 ? */
             &ALM_PROTO_FMA3(vrsa_cosf),  /*array vector float*/
             &ALM_PROTO_FMA3(vrda_cos),   /*array vector double*/
         },

@@ -41,8 +41,8 @@ struct alm_arch_funcs __arch_funcs_pow = {
         [ALM_UARCH_VER_DEFAULT] = {
             &ALM_PROTO_FMA3(powf),
             &ALM_PROTO_FMA3(pow),
-            &ALM_PROTO_ARCH_ZN3(vrs4_powf),
-            &ALM_PROTO_ARCH_ZN3(vrs8_powf),
+            &ALM_PROTO_ARCH_AVX2(vrs4_powf),
+            &ALM_PROTO_ARCH_AVX2(vrs8_powf),
             &ALM_PROTO_FMA3(vrd2_pow),
             &ALM_PROTO_FMA3(vrd4_pow),
 	        &ALM_PROTO_BAS64(vrsa_powf),

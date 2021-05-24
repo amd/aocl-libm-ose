@@ -41,8 +41,8 @@ struct alm_arch_funcs __arch_funcs_tanh = {
         [ALM_UARCH_VER_DEFAULT] = {
             &ALM_PROTO_REF(tanhf),
             &ALM_PROTO_REF(tanh),
-            &ALM_PROTO_ARCH_ZN3(vrs4_tanhf), /* v4s */
-            &ALM_PROTO_ARCH_ZN3(vrs8_tanhf), /* v8s ? */
+            &ALM_PROTO_ARCH_AVX2(vrs4_tanhf), /* v4s */
+            &ALM_PROTO_ARCH_AVX2(vrs8_tanhf), /* v8s ? */
             NULL,                            /* v2d ? */
             NULL,                            /* v4d ? */
         },

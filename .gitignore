@@ -7,3 +7,4 @@ build/
 examples/test_libm
 **/__pycache__
 src/version.build.h
+src/buildsysinfo.h

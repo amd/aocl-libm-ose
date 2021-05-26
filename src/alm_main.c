@@ -30,6 +30,7 @@
 
 #include "version.build.h"
 #include "alm_version.h"
+#include "buildsysinfo.h"
 
 #define NORETURN __attribute__((noreturn))
 
@@ -41,7 +42,8 @@ void
 NORETURN
 alm_main(void)
 {
-	printf("%s-%s\n", alm_get_build(), alm_get_version());
+	printf("%s-%s\n%s\n", alm_get_build(), alm_get_version(), build_sys_info);
+
 	_exit(0);
 }
 

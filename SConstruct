@@ -94,6 +94,9 @@ libenv.Tool('gitversion')
 build_version = libenv.GenerateVersion('src/version.build.h')
 libenv.AlwaysBuild(build_version)
 
+build_sys_details = libenv.GetBuildInfo('src/buildsysinfo.h')
+libenv.AlwaysBuild(build_sys_details)
+
 alm_libs = SConscript(joinpath(src_path, 'SConscript'),
                      exports = { 'env' : libenv },
                      duplicate = 0,

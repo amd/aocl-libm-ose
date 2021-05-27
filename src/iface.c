@@ -157,7 +157,9 @@ alm_iface_fixup(alm_ep_wrapper_t *g_ep_wrapper,
     if (!alm_funcs)
         return;
 
-    if (alm_cpu_arch_is_zen3())
+    if (alm_cpu_arch_is_zen4())
+        arch_ver = ALM_UARCH_VER_ZEN4;
+    else if (alm_cpu_arch_is_zen3())
         arch_ver = ALM_UARCH_VER_ZEN3;
     else if (alm_cpu_arch_is_zen2())
         arch_ver = ALM_UARCH_VER_ZEN2;

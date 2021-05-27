@@ -256,7 +256,7 @@ alm_cpu_arch_is_zen4(void)
           ret = 1;
           break;
 
-      default:
+       default:
           break;
     }
 

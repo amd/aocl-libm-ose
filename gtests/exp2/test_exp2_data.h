@@ -24,6 +24,19 @@ test_exp2f_conformance_data[] = {
    {0x41A80000, 0x4e1d3710,  0}, //small_threshold+1 = 21
    {0x41980000, 0x4caa36c8,  0}, //small_threshold - 1 = 19
 
+   /*recently found out ranges with huge ULPs*/
+   {0xc2fc247c, POS_ZERO_F32, 0},
+   {0xc2fc2ca3, POS_ZERO_F32, 0},
+   {0xc2fc7b81, POS_ZERO_F32, 0},
+   {0xc2fcd3d7, POS_ZERO_F32, 0},
+   {0xc2fd3382, POS_ZERO_F32, 0},
+   {0xc2fd82d0, POS_ZERO_F32, 0},
+   {0xc2fd9dc2, POS_ZERO_F32, 0},
+   {0xc2fdd3c4, POS_ZERO_F32, 0},
+   {0xc2fe1422, POS_ZERO_F32, 0},
+   {0xc2fe5bfd, POS_ZERO_F32, 0},
+   {0xc2ff9bdb, POS_ZERO_F32, 0},
+
     //exp2 special exception checks
    {POS_ZERO_F32, 0x3f800000,0 },  //0
    {NEG_ZERO_F32, 0x3f800000,0 },  //0

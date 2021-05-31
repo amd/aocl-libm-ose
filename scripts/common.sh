@@ -24,10 +24,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 declare -a funcs=(  "exp"  "log" "pow"
-                    "fabs" "atan"
+                    "fabs" "atan" "log2"
                     "exp2" "expm1"
                     "sin"  "cos"  "tan"
-                    "sinh" "cosh" "tanh")
+                    "sinh" "cosh" "tanh"
+                    "acos"
+                    )
 
 #for perf/accu
 input_count=10

@@ -69,6 +69,19 @@
 #define _MM256_SET1_PS8(x) {(x), (x), (x), (x), (x), (x), (x), (x) }
 
 
+#define _MM512_SET1_PD8(x)                                              \
+    _Generic((x),                                                       \
+             double : (v_f64x8_t){(x), (x), (x), (x), (x), (x), (x), (x)})
+
+#define _MM512_SET1_I64x8(x)                                            \
+    _Generic((x),                                                       \
+             int64_t: (v_i64x8_t){(x), (x), (x), (x), (x), (x), (x), (x)})
+
+#define _MM512_SET1_U64x8(x)                                            \
+    _Generic((x),                                                       \
+             uint64_t: (v_u64x8_t){(x), (x), (x), (x), (x), (x), (x), (x)})
+
+
 /*
  * Naming convention
  *  1. Access as different data
@@ -220,6 +233,16 @@ as_v8_u64_f64(v_f64x8_t x)
         v_f64x8_t f; v_u64x8_t u;
     } r = {.f = x};
     return r.u;
+}
+
+static inline v_f64x8_t
+as_v8_f64_u64(v_u64x8_t x)
+{
+    union {
+        v_f64x8_t f; v_u64x8_t i;
+    } r = {.i = x};
+
+    return r.f;
 }
 
 /* Access a i64x8 as f64x8 */

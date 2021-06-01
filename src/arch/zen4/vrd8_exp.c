@@ -35,18 +35,6 @@
 
 #include <libm/arch/zen4.h>
 
-#define _MM512_SET1_PD8(x)                                          \
-    _Generic((x),                                                   \
-             double : (v_f64x8_t){(x), (x), (x), (x), (x), (x), (x), (x)})
-
-#define _MM512_SET1_I64x8(x)                                            \
-    _Generic((x),                                                       \
-             int64_t: (v_i64x8_t){(x), (x), (x), (x), (x), (x), (x), (x)})
-
-#define _MM512_SET1_U64x8(x)                                            \
-    _Generic((x),                                                       \
-             uint64_t: (v_u64x8_t){(x), (x), (x), (x), (x), (x), (x), (x)})
-
 static struct {
     v_f64x8_t tblsz_ln2;
     v_f64x8_t ln2_tblsz_head, ln2_tblsz_tail;

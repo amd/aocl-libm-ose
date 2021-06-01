@@ -188,6 +188,7 @@ __extract32(uint32_t value, int start, int length)
 #define ALM_CPU_FAMILY_ZEN_PLUS         0x17
 #define ALM_CPU_FAMILY_ZEN2             0x17
 #define ALM_CPU_FAMILY_ZEN3             0x19
+#define ALM_CPU_FAMILY_ZEN4             0x19  /* FIXME: correct family ? */
 
 /* Precise identification */
 #define ALM_CPU_MAKE_MODEL(base, ext)   ((ext<<4) | (base))
@@ -205,10 +206,14 @@ __extract32(uint32_t value, int start, int length)
 #define ALM_CPU_MODEL_RENOIR        ALM_CPU_MAKE_MODEL(0x0, 0x6)
 #define ALM_CPU_MODEL_MATISSE       ALM_CPU_MAKE_MODEL(0x1, 0x7)
 /* Zen3 */
-#define ALM_CPU_MODEL_MILAN         ALM_CPU_MAKE_MODEL(0x1, 0x0)
+#define ALM_CPU_MODEL_MILAN         ALM_CPU_MAKE_MODEL(0x1, 0x0)  /* 10 */
 #define ALM_CPU_MODEL_VERMEER       ALM_CPU_MAKE_MODEL(0x1, 0x2)  /* 33 */
 #define ALM_CPU_MODEL_REMBRANT      ALM_CPU_MAKE_MODEL(0x0, 0x4)  /* 64 */
 #define ALM_CPU_MODEL_CEZANNE       ALM_CPU_MAKE_MODEL(0x0, 0x5)  /* 80 */
+/* Zen4 */
+#define ALM_CPU_MODEL_GENOA         ALM_CPU_MAKE_MODEL(0x1, 0x0)  /* FIXME: correct model? */
+#define ALM_CPU_MODEL_WARHOL        ALM_CPU_MAKE_MODEL(0x1, 0x0)
+#define ALM_CPU_MODEL_RAPHAEL       ALM_CPU_MAKE_MODEL(0x1, 0x0)
 
 static inline uint16_t
 alm_cpuid_get_family(uint32_t var)
@@ -305,5 +310,6 @@ uint32_t alm_cpu_is_amd(void);
 uint32_t alm_cpu_arch_is_zen(void);
 uint32_t alm_cpu_arch_is_zen2(void);
 uint32_t alm_cpu_arch_is_zen3(void);
+uint32_t alm_cpu_arch_is_zen4(void);
 
 #endif  /* __LIBM_CPU_FEATURES_H__ */

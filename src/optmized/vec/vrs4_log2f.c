@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2018-2021, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -43,10 +43,7 @@
 #define VRS4_LOGF_MAX_POLY_SIZE 10
 
 static const struct {
-    v_i32x4_t v_min,
-        v_max,
-        v_mask,
-        v_off;
+    v_u32x4_t v_min, v_max, v_mask, v_off;
     v_f32x4_t v_one;
     v_f32x4_t ln2;
     v_f32x4_t poly[VRS4_LOGF_MAX_POLY_SIZE];
@@ -164,19 +161,19 @@ ALM_PROTO_OPT(vrs4_log2f)(v_f32x4_t _x)
 
     v_f32x4_t poly, r, n, result;
 
-    v_32x4 vx = {.f32x4 = _x};
+    v_u32x4_t vx = as_v4_u32_f32(_x);
 
-    v_u32x4_t cond = (vx.i32x4 - V_MIN >= V_MAX - V_MIN);
+    v_u32x4_t cond = (vx - V_MIN >= V_MAX - V_MIN);
 
-    vx.i32x4 -= V_OFF;
+    vx -= V_OFF;
 
-    n = cast_v4_s32_to_f32(vx.i32x4 >> 23);
+    n = cast_v4_s32_to_f32(((v_i32x4_t)vx) >> 23);
 
-    vx.i32x4 &= V_MASK;
+    vx &= V_MASK;
 
-    vx.i32x4 += V_OFF;
+    vx += V_OFF;
 
-    r = vx.f32x4 - V_ONE ;
+    r = as_v4_f32_u32(vx) - V_ONE ;
 
     /* C0 + r*(C1 + r*(C2 + r*(C3 + r*(C4 + r*C5 + r*(C6 + r*C7 + r*(C8 + r*C9))))))*/
     poly = POLY_EVAL_9(r, C0, C1, C2, C3, C4, C5, C6, C7, C8, C9);

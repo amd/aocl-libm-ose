@@ -165,7 +165,7 @@ ALM_PROTO_OPT(logf)(float x)
         ux -= 23 << 23;
     }
 
-    int32_t expo = (int32_t)(ux >> EXPSHIFTBITS_SP32) - EMAX_SP32;
+    int32_t expo = (((int32_t)ux) >> EXPSHIFTBITS_SP32) - EMAX_SP32;
     float_t f_expo = (float_t)expo;
 
 #define NEAR_ONE_LO asuint32(1 - 0x1.0p-4)

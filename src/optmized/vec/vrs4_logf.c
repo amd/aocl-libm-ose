@@ -45,10 +45,7 @@
 #define VRS4_LOGF_MAX_POLY_SIZE 12
 
 static const struct {
-    v_i32x4_t v_min,
-        v_max,
-        v_mask,
-        v_off;
+    v_u32x4_t v_min, v_max, v_mask, v_off;
     v_f32x4_t v_one;
     v_f32x4_t ln2;
     v_f32x4_t poly[VRS4_LOGF_MAX_POLY_SIZE];
@@ -189,19 +186,19 @@ ALM_PROTO_OPT(vrs4_logf)(v_f32x4_t _x)
 {
     v_f32x4_t q, r, n;
 
-    v_32x4 vx = {.f32x4 = _x};
+    v_u32x4_t vx = as_v4_u32_f32(_x);
 
-    v_u32x4_t cond = (vx.i32x4 - V_MIN >= V_MAX - V_MIN);
+    v_u32x4_t cond = (vx - V_MIN >= V_MAX - V_MIN);
 
-    vx.i32x4 -= V_OFF;
+    vx -= V_OFF;
 
-    n = cast_v4_s32_to_f32(vx.i32x4 >> 23);
+    n = cast_v4_s32_to_f32(((v_i32x4_t)vx) >> 23);
 
-    vx.i32x4 &= V_MASK;
+    vx &= V_MASK;
 
-    vx.i32x4 += V_OFF;
+    vx += V_OFF;
 
-    r = vx.f32x4 - V_ONE;
+    r = as_v4_f32_u32(vx) - V_ONE;
 
 #if VRS4_LOGF_POLY_DEGREE == 7
     /* n*ln2 + r + r2*(C1, + r*C2 + r2*(C3 + r*C4 + r2*(C5 + r*C6 + r2*(C7)))) */

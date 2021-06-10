@@ -119,25 +119,26 @@
         })
 
 /*
- * poly = C1 + C2*r + C3*r^2 + C4*r^3 + C5 *r^4 + C6*r^5 \
- *           + C7*r^6 + C8*r^7 + C9*r^8
+ * C0 is assumed to be added by caller
+ * poly = C1*r + C2*r^2 + C3*r^3 + C4*r^4 + C5 *r^5 + C6*r^6 \
+ *           + C7*r^7 + C8*r^8 + C9*r^9
  *
  *      = ((C6+C7*x)*x2 + (C4+C5*x))*x4 +
  *                      (C8+C9*x)*x8) +
  *                      ((C2+C3*x)*x2 + (C0+C1*x));
  */
-#define POLY_EVAL_9(r, c0, c1, c2, c3, c4, c5, c6, c7, c8) ({   \
+#define POLY_EVAL_9(r, c1, c2, c3, c4, c5, c6, c7, c8, c9) ({   \
                         __typeof(r) a1, a2, a3, a4, b1, b2, q;  \
                         __typeof(r) r2, r4;                     \
-                        a1 = c2*r + c1;                         \
-                        a2 = c4*r + c3;                         \
+                        a1 = c3*r + c2;                         \
+                        a2 = c5*r + c4;                         \
                         r2 = r * r;                             \
-                        a3 = c6*r + c5;                         \
+                        a3 = c7*r + c6;                         \
                         r4 = r2 * r2;                           \
-                        a4 = c8*r + c7;                         \
+                        a4 = c9*r + c8;                         \
                                                                 \
                         b1 = a4*r4 + a3*r2 + a2;                \
-                        b2 = a1*r2 + c0*r;                      \
+                        b2 = a1*r2 + c1*r;                      \
                         q = b1*r4 + b2;                         \
                         q;                                      \
                 })

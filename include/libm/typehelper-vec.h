@@ -68,6 +68,17 @@
 
 #define _MM256_SET1_PS8(x) {(x), (x), (x), (x), (x), (x), (x), (x) }
 
+#define _MM512_SET1_PS16(x)                                             \
+    _Generic((x),                                                       \
+             float: (v_f32x16_t){(x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x)})
+
+#define _MM512_SET1_I32x16(x)                                           \
+    _Generic((x),                                                       \
+             int32_t: (v_i32x16_t){(x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x)})
+
+#define _MM512_SET1_U32x16(x)                                           \
+    _Generic((x),                                                       \
+             uint32_t: (v_u32x16_t){(x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x)})
 
 #define _MM512_SET1_PD8(x)                                              \
     _Generic((x),                                                       \
@@ -340,7 +351,7 @@ cast_v4_u64_to_u32(v_u64x4_t _xu64)
 
 /* v4 signed int -> float */
 static inline v_f32x4_t
-cast_v4_s32_to_f32(v_i32x4_t _xi32)
+cast_v4_i32_to_f32(v_i32x4_t _xi32)
 {
     return (v_f32x4_t){(float)_xi32[0], (float)_xi32[1],
                        (float)_xi32[2], (float)_xi32[3]};
@@ -375,16 +386,41 @@ cast_v2_f64_to_i64(v_f64x2_t _xf64)
     return (v_i64x2_t){(int64_t)_xf64[0], (int64_t)_xf64[1]};
 }
 
-/*
-static inline v_u32x8_t
-cast_v8_u64_to_u32(v_u32x8_t _xf64)
+// v_f32x8_t to v_i32x8_t
+static inline v_i32x8_t
+cast_v8_f32_to_i32(v_f32x8_t _xf32)
 {
-    return (v_u32x8_t){
-        _xf64[0], _xf64[1], _xf64[2], _xf64[3],
-            _xf64[4], _xf64[5], _xf64[6], _xf64[7]
-            };
+    return (v_i32x8_t){(int32_t)_xf32[0], (int32_t)_xf32[1], (int32_t)_xf32[2],
+        (int32_t)_xf32[3], (int32_t)_xf32[4], (int32_t)_xf32[5],
+        (int32_t)_xf32[6], (int32_t)_xf32[7]};
 }
-*/
+
+// v_i32x8_t to v_f32x8_t
+static inline v_f32x8_t
+cast_v8_i32_to_f32(v_i32x8_t _xi32)
+{
+    return (v_f32x8_t){(float)_xi32[0], (float)_xi32[1], (float)_xi32[2],
+        (float)_xi32[3], (float)_xi32[4], (float)_xi32[5],
+        (float)_xi32[6], (float)_xi32[7] };
+}
+
+
+#if defined(__AVX512F__)
+static inline v_f32x16_t
+cast_v16_i32_to_f32(v_i32x16_t _xf32)
+{
+    return (v_f32x16_t) {
+        (float)_xf32[0],  (float)_xf32[1],  (float)_xf32[2],  (float)_xf32[3],
+        (float)_xf32[4],  (float)_xf32[5],  (float)_xf32[6],  (float)_xf32[7],
+        (float)_xf32[8],  (float)_xf32[9],  (float)_xf32[10], (float)_xf32[11],
+        (float)_xf32[12], (float)_xf32[13], (float)_xf32[14], (float)_xf32[15]
+    };
+}
+#endif
+
+/*
+ * Converters
+ */
 
 static inline v_f64x4_t
 cvt_v4_f32_to_f64(v_f32x4_t _xf32 /* cond */)
@@ -420,6 +456,13 @@ any_v8_u32(v_i32x8_t cond)
 {
     const v_i32x8_t zero = {0,};
     return ! _mm256_testz_si256((__m256i)cond, (__m256i)zero);
+}
+
+static inline int
+any_v16_u32(v_i32x16_t cond)
+{
+    const v_i32x16_t zero = {0,};
+    return _mm512_cmpneq_epi32_mask((__m512i)cond, (__m512i)zero);
 }
 
 static inline int
@@ -540,7 +583,6 @@ call2_v16_f32(float (*fn)(float, float),
             };
 }
 
-
 #endif
 
 #ifndef ALM_HAS_V8_CALL_F32
@@ -564,6 +606,34 @@ call_v8_f32(float (*fn)(float),
             };
 }
 #endif
+
+#if defined(__AVX512F__)
+static inline v_f32x16_t
+call_v16_f32(float (*fn)(float),
+             v_f32x16_t x,
+             v_f32x16_t result,
+             v_u32x16_t cond)
+{
+    return (v_f32x16_t) {
+        cond[0] ? fn(x[0]) : result[0],
+        cond[1] ? fn(x[1]) : result[1],
+        cond[2] ? fn(x[2]) : result[2],
+        cond[3] ? fn(x[3]) : result[3],
+        cond[4] ? fn(x[4]) : result[4],
+        cond[5] ? fn(x[5]) : result[5],
+        cond[6] ? fn(x[6]) : result[6],
+        cond[7] ? fn(x[7]) : result[7],
+        cond[8]  ? fn(x[8])  : result[8],
+        cond[9]  ? fn(x[9])  : result[9],
+        cond[10] ? fn(x[10]) : result[10],
+        cond[11] ? fn(x[11]) : result[11],
+        cond[12] ? fn(x[12]) : result[12],
+        cond[13] ? fn(x[13]) : result[13],
+        cond[14] ? fn(x[14]) : result[14],
+        cond[15] ? fn(x[15]) : result[15]
+    };
+}
+#endif  /* AVX512F */
 
 /*
  * TODO: Convert all following to format
@@ -720,25 +790,6 @@ call2_v2_f64(double (*fn)(double, double),
 #endif
 
 
-
-// v_f32x8_t to v_i32x8_t
-static inline v_i32x8_t
-cast_v8_f32_to_i32(v_f32x8_t _xf32)
-{
-    return (v_i32x8_t){(int32_t)_xf32[0], (int32_t)_xf32[1], (int32_t)_xf32[2],
-                       (int32_t)_xf32[3], (int32_t)_xf32[4], (int32_t)_xf32[5],
-                       (int32_t)_xf32[6], (int32_t)_xf32[7]};
-}
-
-// v_i32x8_t to v_f32x8_t
-static inline v_f32x8_t
-cast_v8_i32_to_f32(v_i32x8_t _xi32)
-{
-    return (v_f32x8_t){(float)_xi32[0], (float)_xi32[1], (float)_xi32[2],
-                       (float)_xi32[3], (float)_xi32[4], (float)_xi32[5],
-                       (float)_xi32[6], (float)_xi32[7] };
-}
-
 // Condition check with for loop for better performance
 static inline int
 any_v8_u32_loop(v_u32x8_t cond)
@@ -755,4 +806,5 @@ any_v8_u32_loop(v_u32x8_t cond)
     return ret;
 }
 
-#endif
+#endif  /* TYPEHELPER_H_ */
+

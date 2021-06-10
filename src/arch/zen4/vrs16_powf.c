@@ -51,21 +51,6 @@
     _Generic((x),                                                       \
              uint64_t: (v_u64x8_t){(x), (x), (x), (x), (x), (x), (x), (x)})
 
-#define _MM512_SET1_PS16(x)                                          \
-    _Generic((x),                                                   \
-             float : (v_f32x16_t){(x), (x), (x), (x), (x), (x), (x), (x), \
-                          (x), (x), (x), (x), (x), (x), (x), (x)})
-
-#define _MM512_SET1_I32x16(x)                                            \
-    _Generic((x),                                                       \
-             int64_t: (v_i32x16_t){(x), (x), (x), (x), (x), (x), (x), (x), \
-                            (x), (x), (x), (x), (x), (x), (x), (x)})
-
-#define _MM512_SET1_U32x16(x)                                            \
-    _Generic((x),                                                       \
-             uint64_t: (v_u32x16_t){(x), (x), (x), (x), (x), (x), (x), (x), \
-                            (x), (x), (x), (x), (x), (x), (x), (x)})
-
 
 #define VECTOR_LENGTH 8
 #define N 8

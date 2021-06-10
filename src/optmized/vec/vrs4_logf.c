@@ -192,7 +192,7 @@ ALM_PROTO_OPT(vrs4_logf)(v_f32x4_t _x)
 
     vx -= V_OFF;
 
-    n = cast_v4_s32_to_f32(((v_i32x4_t)vx) >> 23);
+    n = cast_v4_i32_to_f32(((v_i32x4_t)vx) >> 23);
 
     vx &= V_MASK;
 

@@ -65,17 +65,6 @@
 
 #include <libm/arch/zen4.h>
 
-#define _MM512_SET1_PS16(x)                                              \
-    _Generic((x),                                                       \
-             float: (v_f32x16_t){(x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x)})
-
-#define _MM512_SET1_I32x16(x)                                           \
-    _Generic((x),                                                       \
-             int32_t: (v_i32x16_t){(x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x)})
-
-#define _MM512_SET1_U32x16(x)                                           \
-    _Generic((x),                                                       \
-             uint32_t: (v_u32x16_t){(x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x), (x)})
 
 static const struct {
     v_f32x16_t   tblsz_byln2;
@@ -141,71 +130,38 @@ static const struct {
 #define C5 v_expf_data.poly_expf_7[5]
 #define C6 v_expf_data.poly_expf_7[6]
 
-
 #define SCALAR_EXPF ALM_PROTO_OPT(expf)
-
-static inline v_f32x16_t
-call_v16_f32(float (*fn)(float),
-             v_f32x16_t x,
-             v_f32x16_t result,
-             v_u32x16_t cond)
-{
-    return (v_f32x16_t) {
-        cond[0] ? fn(x[0]) : result[0],
-        cond[1] ? fn(x[1]) : result[1],
-        cond[2] ? fn(x[2]) : result[2],
-        cond[3] ? fn(x[3]) : result[3],
-        cond[4] ? fn(x[4]) : result[4],
-        cond[5] ? fn(x[5]) : result[5],
-        cond[6] ? fn(x[6]) : result[6],
-        cond[7] ? fn(x[7]) : result[7],
-        cond[8]  ? fn(x[8])  : result[8],
-        cond[9]  ? fn(x[9])  : result[9],
-        cond[10] ? fn(x[10]) : result[10],
-        cond[11] ? fn(x[11]) : result[11],
-        cond[12] ? fn(x[12]) : result[12],
-        cond[13] ? fn(x[13]) : result[13],
-        cond[14] ? fn(x[14]) : result[14],
-        cond[15] ? fn(x[15]) : result[15]
-    };
-}
-
-static inline int
-any_v16_u32(v_i32x16_t cond)
-{
-    const v_i32x16_t zero = {0,};
-    return _mm512_cmpneq_epi32_mask((__m512i)cond, (__m512i)zero);
-}
 
 
 v_f32x16_t
 ALM_PROTO_ARCH_ZN4(vrs16_expf)(v_f32x16_t _x)
 {
-
+    v_f32x16_t z, dn;
+    v_u32x16_t vx, n;
     // vx = int(x)
-    v_u32x16_t vx = as_v16_u32_f32(_x);
+    vx = as_v16_u32_f32(_x);
 
-    // Get absolute value of vx
     vx = vx & V16_MASK;
 
     /* Check if -103 < vx < 88 */
     v_u32x16_t cond = (vx > V16_ARG_MAX);
 
     /* x * (64.0/ln(2)) */
-    v_f32x16_t z = _x * V16_TBL_LN2;
+    z   = _x * V16_TBL_LN2;
 
-    v_f32x16_t dn = z + V16_EXP_HUGE;
+    dn  = z + V16_EXP_HUGE;
 
     /* n = int(z) */
-    v_u32x16_t n = as_v16_u32_f32(dn);
+    n   = as_v16_u32_f32(dn);
 
     /* dn = double(n) */
-    dn = dn - V16_EXP_HUGE;
+    dn  = dn - V16_EXP_HUGE;
 
     /* r = x - (dn * (ln(2)/64)) */
-    v_f32x16_t r1 = _x - ( dn * V16_LN2_TBL_H);
-    v_f32x16_t r2 = dn * V16_LN2_TBL_T;
-    v_f32x16_t r = r1 - r2;
+    v_f32x16_t r1, r2, r;
+    r1  = _x - ( dn * V16_LN2_TBL_H);
+    r2  = dn * V16_LN2_TBL_T;
+    r   = r1 - r2;
 
     /* m = (n - j)/64, Calculating 2^m */
     v_u32x16_t m = (n + V16_EXPF_BIAS) << 23;
@@ -218,20 +174,13 @@ ALM_PROTO_ARCH_ZN4(vrs16_expf)(v_f32x16_t _x)
     // result = polynomial * 2^m
     v_f32x16_t result = poly * as_v16_f32_u32(m);
 
+    /*
+     * If input value is outside valid range, call scalar expf(value)
+     * Else, return the above computed result
+     */
 #if 0
-    /* If input value is outside valid range, call scalar expf(value) */
-    /* Else, return the above computed result */
     if(unlikely(any_v16_u32_loop(cond))) {
         return (v_f32x16_t) {
-            cond[0] ? SCALAR_EXPF(_x[0]) : result[0],
-            cond[1] ? SCALAR_EXPF(_x[1]) : result[1],
-            cond[2] ? SCALAR_EXPF(_x[2]) : result[2],
-            cond[3] ? SCALAR_EXPF(_x[3]) : result[3],
-            cond[4] ? SCALAR_EXPF(_x[4]) : result[4],
-            cond[5] ? SCALAR_EXPF(_x[5]) : result[5],
-            cond[6] ? SCALAR_EXPF(_x[6]) : result[6],
-            cond[7] ? SCALAR_EXPF(_x[7]) : result[7],
-
         };
     }
 #else

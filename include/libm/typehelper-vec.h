@@ -265,6 +265,17 @@ as_v8_i64_f64(v_f64x8_t x)
     } r = {.f = x};
     return r.i;
 }
+
+/* Access a i64x8 as f64x8 */
+static inline v_u32x16_t
+as_v16_i32_f32(v_f32x16_t x)
+{
+    union {
+        v_f32x16_t f; v_i32x16_t i;
+    } r = {.f = x};
+    return r.i;
+}
+
 #endif
 
 /*
@@ -487,6 +498,49 @@ any_v8_u64_loop(v_u64x8_t cond)
 
     return ret;
 }
+
+static inline int
+any_v16_u32_loop(v_u32x16_t cond)
+{
+    int ret = 0;
+    for (int i = 0; i < 16; i++) {
+        if (cond[i] != 0) {
+            ret = 1;
+            break;
+        }
+    }
+
+    return ret;
+}
+
+static inline v_f32x16_t
+call2_v16_f32(float (*fn)(float, float),
+        v_f32x16_t x,
+        v_f32x16_t y,
+        v_f32x16_t result,
+        v_i32x16_t cond)
+{
+    return (v_f32x16_t) {
+        cond[0] ? fn(x[0], y[0]) : result[0],
+            cond[1] ? fn(x[1], y[1]) : result[1],
+            cond[2] ? fn(x[2], y[2]) : result[2],
+            cond[3] ? fn(x[3], y[3]) : result[3],
+            cond[4] ? fn(x[4], y[4]) : result[4],
+            cond[5] ? fn(x[5], y[5]) : result[5],
+            cond[6] ? fn(x[6], y[6]) : result[6],
+            cond[7] ? fn(x[7], y[7]) : result[7],
+	    cond[8] ? fn(x[8], y[8]) : result[8],
+            cond[9] ? fn(x[9], y[9]) : result[9],
+            cond[10] ? fn(x[10], y[10]) : result[10],
+            cond[11] ? fn(x[11], y[11]) : result[11],
+            cond[12] ? fn(x[12], y[12]) : result[12],
+            cond[13] ? fn(x[13], y[13]) : result[13],
+            cond[14] ? fn(x[14], y[14]) : result[14],
+	    cond[15] ? fn(x[15], y[15]) : result[15],
+            };
+}
+
+
 #endif
 
 #ifndef ALM_HAS_V8_CALL_F32

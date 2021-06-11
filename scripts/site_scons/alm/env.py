@@ -60,6 +60,7 @@ class AlmEnvironment(object):
         self.compiler_type = None
         self.build     = None
         self.compiler  = None
+        self.arch_config = None
 
         self.envDict = dict (
             BUILD         = '',
@@ -124,6 +125,7 @@ class AlmEnvironment(object):
         debug = opts.GetOption('debug_mode')
         dev   = opts.GetOption('developer')
         abi   = opts.GetOption('libabi')
+        arch_config  = opts.GetOption('arch_config')
 
         # fix the debug, it is set to 'none' instead of None
         # due to the way options are handled
@@ -183,6 +185,7 @@ class AlmEnvironment(object):
         env        = self.env
         opts       = self.opts
         abi        = opts.GetOption('libabi')
+        arch_config = opts.GetOption('arch_config')
 
         abi_dict = {
             'acml' : 'LIBABI_ACML',
@@ -202,6 +205,7 @@ class AlmEnvironment(object):
         )
 
         env['libabi'] = abi
+        env['arch_config'] = arch_config
 
     def CheckDefault(self):
         '''

@@ -7,7 +7,6 @@ from os import path, listdir
 from os.path import isdir, join as joinpath
 
 Import('env', 'almenv')
-
 #env.Replace(CC='g++',LINKFLAGS=[])
 
 build_root = joinpath(env['BUILDROOT'], 'gtests')
@@ -43,8 +42,12 @@ testcflags = ['-funsigned-char', '-fno-strict-aliasing',
                 '-Wno-missing-field-initializers',
                 #'-falign-functions=32',
                 '-march=native',
-                '-std=c++17'
+                '-std=c++17',
 	]
+
+arch_config = env['arch_config']
+if arch_config == 'avx512':
+    testcflags.append('-mavx512f')
 
 ccflags = []
 liblist = []
@@ -72,6 +75,11 @@ elif abi == 'svml':
     liblist.extend(['intlc'])
 else:
     pass
+
+#config architecture
+if arch_config == 'avx512':
+    ccflags.append('-D__AVX512__')
+
 
 try:
     dbg_mode=env['debug_mode']

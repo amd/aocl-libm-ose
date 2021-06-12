@@ -62,7 +62,7 @@
  */
 
 #define EXP2_N 6
-#define ALM_EXP2_TBL_SZ          (1 << EXP2_N)
+#define ALM_EXP2_TBL_SZ  (1 << EXP2_N)
 
 #define ALM_EXP2_MAX_DEG 8
 
@@ -222,13 +222,13 @@ ALM_PROTO_OPT(exp2)(double x)
     q1.d = a + ALM_EXP2_HUGE;
     n    = q1.i;
     dn   = q1.d - ALM_EXP2_HUGE;
+    r    = x - dn;
 #else
-    double_t a = x * ALM_EXP2_TBL_SZ;
+    a    = x * ALM_EXP2_TBL_SZ;
     n    = cast_double_to_i64(a);
     dn   = cast_i64_to_double(n);
+    r    = x - dn * ALM_EXP2_1_BY_TBL_SZ;
 #endif
-
-    r =  x - dn;
 
     r *= ALM_EXP2_LN2;
 
@@ -262,7 +262,11 @@ ALM_PROTO_OPT(exp2)(double x)
 
     /* Processing denormals */
     if (unlikely(exponent == 0xfff)) {
-        int64_t m1 = (n - j) >> EXP2_N;
+
+        n = (int64_t)( x * ALM_EXP2_TBL_SZ);
+
+        int64_t m1 = n >> EXP2_N;
+
         if (m1 <= -1022)
             if (m1 < -1022 || q < 1.0) {
                 /* Process true de-normals */

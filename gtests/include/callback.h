@@ -32,6 +32,8 @@ void LibmPerfTestd(benchmark::State& st, InputParams* param);
 void LibmPerfTest2d(benchmark::State& st, InputParams* param);
 void LibmPerfTest4d(benchmark::State& st, InputParams* param);
 
+void LibmPerfTest8d(benchmark::State& st, InputParams* param);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -40,6 +42,7 @@ int test_v8s(test_data *data, int idx);
 
 int test_v2d(test_data *data, int idx);
 int test_v4d(test_data *data, int idx);
+int test_v8d(test_data *data, int idx);
 #ifdef __cplusplus
 }
 #endif

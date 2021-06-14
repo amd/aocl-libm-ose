@@ -141,6 +141,26 @@ void LibmPerfTest4d(benchmark::State& st, InputParams* param) {
   st.counters["MOPS"] = bm::Counter{szn, bm::Counter::kIsRate};
 }
 
+void LibmPerfTest8d(benchmark::State& st, InputParams* param) {
+  uint32_t nargs = GetnIpArgs();
+  AoclLibmTest<double> objtest(param, nargs);
+  test_data data;
+  data.ip  = (void *) objtest.inpbuff;
+  data.op  = (void *) objtest.outbuff;
+  double szn = param->niter * param->count;
+
+  if(nargs == 2)
+    data.ip1 = (void *) objtest.inpbuff1;
+
+  for (auto _ : st) {
+    for (int64_t i =  0 ; i < param->count; i += 8) {
+      test_v8d(&data, i);
+    }
+  }
+
+  namespace bm = benchmark;
+  st.counters["MOPS"] = bm::Counter{szn, bm::Counter::kIsRate};
+}
 
 int gbench_main(int argc, char **argv, InputParams *params) {
   AlmTestPerfFramework AlmTestPerf;

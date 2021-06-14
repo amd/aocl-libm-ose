@@ -279,9 +279,9 @@ fname:
         .long   0x00000000	
 
 .align 4
-.globl zero
+.globl alm_logf_zero
 
-zero:
+alm_logf_zero:
 	.long	0x00000000
 	.align 4
 	.globl ln2_hi

@@ -678,7 +678,7 @@ cast_v8_f32_to_i32(v_f32x8_t _xf32)
 
 // v_i32x8_t to v_f32x8_t
 static inline v_f32x8_t
-cast_v8_f32_to_s32(v_i32x8_t _xi32)
+cast_v8_i32_to_f32(v_i32x8_t _xi32)
 {
     return (v_f32x8_t){(float)_xi32[0], (float)_xi32[1], (float)_xi32[2],
                        (float)_xi32[3], (float)_xi32[4], (float)_xi32[5],

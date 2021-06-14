@@ -167,7 +167,7 @@ ALM_PROTO_OPT(vrs8_log2f)(v_f32x8_t _x)
 
     vx -= V_OFF;
 
-    n = cast_v8_f32_to_s32(((v_i32x8_t)vx) >> 23);
+    n = cast_v8_i32_to_f32(((v_i32x8_t)vx) >> 23);
 
     vx &= V_MASK;
 

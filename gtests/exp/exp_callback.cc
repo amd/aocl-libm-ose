@@ -45,13 +45,11 @@ double getFuncOp(double *data) {
 }
 
 double getExpected(float *data) {
-  //double val = exp(data[0]);
   auto val = alm_mp_expf(data[0]);
   return val;
 }
 
 long double getExpected(double *data) {
-   //long double val = expl(data[0]);
   auto val = alm_mp_exp(data[0]);
   return val;
 }
@@ -76,7 +74,7 @@ int test_s1s(test_data *data, int idx)  {
 
 int test_s1d(test_data *data, int idx)  {
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   op[0] = LIBM_FUNC(exp)(ip[idx]);
   return 0;
 }
@@ -98,6 +96,11 @@ __m256d LIBM_FUNC_VEC(d, 4, exp)(__m256d);
 __m128 LIBM_FUNC_VEC(s, 4, expf)(__m128);
 __m256 LIBM_FUNC_VEC(s, 8, expf)(__m256);
 
+/*avx512*/
+#if defined(__AVX512__)
+__m512d LIBM_FUNC_VEC(d, 8, exp) (__m512d);
+#endif
+
 int test_v2d(test_data *data, int idx)  {
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
@@ -109,7 +112,7 @@ int test_v2d(test_data *data, int idx)  {
 
 int test_v4s(test_data *data, int idx)  {
   float *ip  = (float*)data->ip;
-  float *op  = (float*)data->op; 
+  float *op  = (float*)data->op;
   __m128 ip4 = _mm_set_ps(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m128 op4 = LIBM_FUNC_VEC(s, 4, expf)(ip4);
   _mm_store_ps(&op[0], op4);
@@ -127,11 +130,23 @@ int test_v4d(test_data *data, int idx)  {
 
 int test_v8s(test_data *data, int idx)  {
   float *ip  = (float*)data->ip;
-  float *op  = (float*)data->op; 
+  float *op  = (float*)data->op;
   __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256 op8 = LIBM_FUNC_VEC(s, 8, expf)(ip8);
   _mm256_store_ps(&op[0], op8);
+  return 0;
+}
+
+int test_v8d(test_data *data, int idx)  {
+#if defined(__AVX512__)
+  double *ip  = (double*)data->ip;
+  double *op  = (double*)data->op;
+  __m512d ip8 = _mm512_set_pd(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
+                             ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+  __m512d op8 = LIBM_FUNC_VEC(d, 8, exp)(ip8);
+  _mm512_store_pd(&op[0], op8);
+#endif
   return 0;
 }
 

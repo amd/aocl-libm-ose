@@ -64,6 +64,8 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest2d, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
+*/
+    #if defined(__AVX512__)
     if((params->fqty == ALM::FloatQuantity::E_All) ||
      (params->fqty == ALM::FloatQuantity::E_Vector_4)) {
       string varnam = "_v4d(atanh)";
@@ -71,7 +73,7 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest4d, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
-*/
+    #endif
   }
 
   size_t retval = benchmark::RunSpecifiedBenchmarks();

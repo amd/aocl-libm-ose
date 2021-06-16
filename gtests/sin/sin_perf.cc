@@ -67,7 +67,16 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
       libm = funcnam + varnam;    
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest4d, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
-    }    
+    }
+    #if defined(__AVX512__)
+    if((params->fqty == ALM::FloatQuantity::E_All) ||
+     (params->fqty == ALM::FloatQuantity::E_Vector_8)) {
+      string varnam = "_v8d(sin)";
+      libm = funcnam + varnam;
+      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest8d, params)
+                 ->Args({(int)params->count})->Iterations(params->niter);
+    }
+    #endif
   }
 
   size_t retval = benchmark::RunSpecifiedBenchmarks();

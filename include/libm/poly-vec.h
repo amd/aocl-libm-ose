@@ -254,6 +254,22 @@
             q;                                                          \
         })
 
+
+/*
+ * p(x) = c4*x^4 + c3*x^3 + c2*x^2 + c1*x + c0
+ *      = (c2+c3*x)*x2 + ((c4+c5*x)*x4 + (c0+c1*x))
+ */
+#define POLY_EVAL_4(x, c0, c1, c2, c3, c4) ({                           \
+            __typeof(x) x2 = x * x;                                     \
+            __typeof(x) x4 = x2 * x2;                                   \
+            __typeof(x) q = mul_add(mul_add(c3, x, c2),                 \
+                                    x2,                                 \
+                                    mul_add((x * c4),                   \
+                                            x4,                         \
+                                            mul_add(c1, x, c0)));       \
+            q;                                                          \
+        })
+
 /*
  * p(x) = c5*x^5 + c4*x^4 + c3*x^3 + c2*x^2 + c1*x + c0
  *      = (c2+c3*x)*x2 + ((c4+c5*x)*x4 + (c0+c1*x))

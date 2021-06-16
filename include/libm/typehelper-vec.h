@@ -719,6 +719,26 @@ call_v8_f64(double (*fn)(double),
         cond[6] ? fn(orig[6]) : result[6],
         cond[7] ? fn(orig[7]) : result[7]};
 }
+
+static inline v_f64x8_t
+call2_v8_f64(double (*fn)(double, double),
+       v_f64x8_t x,
+       v_f64x8_t y,
+       v_f64x8_t result,
+       v_i64x8_t cond)
+{
+    return (v_f64x8_t){cond[0] ? fn(x[0], y[0]) : result[0],
+            cond[1] ? fn(x[1], y[1]) : result[1],
+            cond[2] ? fn(x[2], y[2]) : result[2],
+            cond[3] ? fn(x[3], y[3]) : result[3],
+	    cond[4] ? fn(x[4], y[4]) : result[4],
+	    cond[5] ? fn(x[5], y[5]) : result[5],
+	    cond[6] ? fn(x[6], y[6]) : result[6],
+	    cond[7] ? fn(x[7], y[7]) : result[7],
+    
+    };
+}
+
 #endif
 
 

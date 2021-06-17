@@ -1,5 +1,5 @@
-#ifndef INCLUDE_H_INCLUDED
-#define INCLUDE_H_INCLUDED
+#ifndef LIBM_DYNAMIC_LOAD_H_INCLUDED
+#define LIBM_DYNAMIC_LOAD_H_INCLUDED
 
 #include <dlfcn.h>
 #include <stdlib.h>

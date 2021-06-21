@@ -143,6 +143,30 @@
                         q;                                      \
                 })
 
+/*
+ * poly = C0 + C1*r + C2*r^2 + C3*r^3 + C4 *r^4 + C5*r^5 + C6*r^6 + C7*r^7 + C8*r^8
+ *
+ *      = (C0 + C1*r) + r2(C2 + C3*r) + r4((C4+ C5*r) + r2(C6 + C7*r)) + C8*r^8
+ *
+ *      = ((C6+C7*x)*x2 + (C4+C5*x))*x4 +
+ *                      (C8+C9*x)*x8) +
+ *                      ((C2+C3*x)*x2 + (C0+C1*x));
+ */
+#define POLY_EVAL_9_0(r, c0, c1, c2, c3, c4, c5, c6, c7, c8) ({ \
+                        __typeof(r) a1, a2, a3, a4, b1, q;      \
+                         __typeof(r) r2, r4;                    \
+                        a1 = c1*r + c0;                         \
+                        a2 = c3*r + c2;                         \
+                        r2 = r * r;                             \
+                        a3 = c5*r + c4;                         \
+                        r4 = r2 * r2;                           \
+                        a4 = c7*r + c6 +c8*r2;                  \
+                                                                \
+                        b1 = (a4*r2 + a3)*r4 + a2*r2;           \
+                        q = b1 +a1;                             \
+                         q;                                     \
+                 })
+
 
 /*
  * poly = x * (C1 + C2*x^2 + C3*x^4 + C4*x^6 + C5*x^8 + \

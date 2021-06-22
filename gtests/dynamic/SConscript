@@ -10,8 +10,8 @@ test_cflags = ['-g', '-mavx', '-fPIE', '-fpermissive']
 
 #check if avx512 enabled
 if e.has_key('arch_config') and e['arch_config'] == 'avx512':
-    testcflags.append('-mavx512f')
-    testcflags.append('-D__AVX512__')
+    test_cflags.append('-mavx512f')
+    test_cflags.append('-D__AVX512__')
 
 e.Append(
     INCPATH= ['inc'],

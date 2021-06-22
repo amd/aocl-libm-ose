@@ -22,6 +22,7 @@ int test_exp(void* handle) {
     /*avx512*/
     #if defined(__AVX512__)
     func_v8d  v8d = (func_v8d)dlsym(handle, "amd_vrd8_exp");
+    func_v16s v16s = (func_v16s)dlsym(handle, "amd_vrs16_expf");
     #endif
 
     /*scalar inputs*/
@@ -35,6 +36,7 @@ int test_exp(void* handle) {
     /*avx512*/
     #if defined(__AVX512__)
     __m512d ip_vrd8, op_vrd8;
+    __m512  ip_vrs16, op_vrs16;
     #endif
 
     //array vector inputs
@@ -70,6 +72,10 @@ int test_exp(void* handle) {
     #if defined(__AVX512__)
     double input_array_vrd8[8] = {0.0, 1.1, 3.6, 2.8, 0.0, 1.1, 3.6, 2.8};
     double output_array_vrd8[8];
+
+    float input_array_vrs16[16] = {0.0f, 1.1f, 3.6f, 2.8f, 0.0f, 1.1f, 3.6f, 2.8f,
+                                     0.0f, 1.1f, 3.6f, 2.8f, 0.0f, 1.1f, 3.6f, 2.8f};
+    float output_array_vrs16[16];
     #endif
 
     /*packed inputs*/
@@ -80,6 +86,7 @@ int test_exp(void* handle) {
     /*avx512*/
     #if defined(__AVX512__)
     ip_vrd8 = _mm512_loadu_pd(input_array_vrd8);
+    ip_vrs16 = _mm512_loadu_ps(input_array_vrs16);
     #endif
 
     error = dlerror();
@@ -139,6 +146,16 @@ int test_exp(void* handle) {
     printf("\nOutput:\n");
     for(i=0; i<8; i++)
         printf("%lf\t",(double)output_array_vrd8[i]);
+
+    /*v16s*/
+    op_vrs16 = v16s(ip_vrs16);
+    _mm512_storeu_ps(output_array_vrs16, op_vrs16);
+    printf("amd_vrs16_expf\nInput:\n");
+    for(i=0; i<16; i++)
+        printf("%f\n", (double)input_array_vrs16[i]);
+    printf("\nOutput\n");
+    for (i=0; i<16; i++)
+        printf("%f\n", (double)output_array_vrs16[i]);
     #endif
 
     /*vector array*/

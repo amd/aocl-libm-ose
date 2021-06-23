@@ -33,3 +33,7 @@ struct logf_table {
     float_t f_inv, f_128_head, f_128_tail;
 };
 
+struct log10f_table {
+    float f_inv, f_128_head, f_128_tail;
+};
+

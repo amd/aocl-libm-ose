@@ -274,7 +274,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd8_exp);
 //alm_func_t        G_ENTRY_PT_PTR(vrd8_exp2);
 //alm_func_t        G_ENTRY_PT_PTR(vrd8_exp10);
 //alm_func_t        G_ENTRY_PT_PTR(vrd8_expm1);
-//alm_func_t        G_ENTRY_PT_PTR(vrd8_log);
+alm_func_t        G_ENTRY_PT_PTR(vrd8_log);
 //alm_func_t        G_ENTRY_PT_PTR(vrd8_log2);
 //alm_func_t        G_ENTRY_PT_PTR(vrd8_log10);
 //alm_func_t        G_ENTRY_PT_PTR(vrd8_log1p);

@@ -98,6 +98,11 @@ __m256d LIBM_FUNC_VEC(d, 4, log)(__m256d);
 __m128 LIBM_FUNC_VEC(s, 4, logf)(__m128);
 __m256 LIBM_FUNC_VEC(s, 8, logf)(__m256);
 
+/*avx512*/
+#if defined(__AVX512__)
+__m512d LIBM_FUNC_VEC(d, 8, log) (__m512d);
+#endif
+
 int test_v2d(test_data *data, int idx)  {
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;

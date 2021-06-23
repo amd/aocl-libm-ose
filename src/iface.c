@@ -148,14 +148,10 @@ alm_iface_fixup_one(const struct alm_arch_funcs *alm_funcs,
     return ret;
 }
 
-void
-alm_iface_fixup(alm_ep_wrapper_t *g_ep_wrapper,
-                const struct alm_arch_funcs *alm_funcs)
+static alm_uarch_ver_t
+alm_get_uach(void)
 {
     alm_uarch_ver_t arch_ver;
-
-    if (!alm_funcs)
-        return;
 
     if (alm_cpu_arch_is_zen4())
         arch_ver = ALM_UARCH_VER_ZEN4;
@@ -168,6 +164,19 @@ alm_iface_fixup(alm_ep_wrapper_t *g_ep_wrapper,
     else
         arch_ver = ALM_UARCH_VER_DEFAULT;
 
+    return arch_ver;
+}
+
+void
+alm_iface_fixup(alm_ep_wrapper_t *g_ep_wrapper,
+                const struct alm_arch_funcs *alm_funcs)
+{
+    static alm_uarch_ver_t arch_ver;
+
+    if (!alm_funcs)
+        return;
+
+    arch_ver = alm_get_uach();
 
     for (int i = ((int)ALM_FUNC_VAR_MAX-1); i >=0 ; i--) {
         alm_ep_func_t *gptr = g_ep_wrapper->g_ep[i];

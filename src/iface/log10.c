@@ -39,7 +39,7 @@ struct alm_arch_funcs __arch_funcs_log10 = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_FMA3(log10f),
+            &ALM_PROTO_ARCH_ZN(log10f),
             &ALM_PROTO_FMA3(log10),
             &ALM_PROTO_FMA3(vrs4_log10f),
             NULL,                           /* vrs8 ? */
@@ -49,25 +49,27 @@ struct alm_arch_funcs __arch_funcs_log10 = {
             &ALM_PROTO_FMA3(vrda_log10),  /*array vector double*/
         },
 
-#if 0
         [ALM_UARCH_VER_ZEN2] = {
             &ALM_PROTO_ARCH_ZN2(log10f),
+#if 0
             &ALM_PROTO_ARCH_ZN2(log10),
             &ALM_PROTO_ARCH_ZN2(vrs4_log10f),
             &ALM_PROTO_ARCH_ZN2(vrs8_log10f),
             &ALM_PROTO_ARCH_ZN2(vrd2_log10),
             &ALM_PROTO_ARCH_ZN2(vrd4_log10),
+#endif
         },
 
         [ALM_UARCH_VER_ZEN3] = {
             &ALM_PROTO_ARCH_ZN3(log10f),
+#if 0
             &ALM_PROTO_ARCH_ZN3(log10),
             &ALM_PROTO_ARCH_ZN3(vrs4_log10f),
             &ALM_PROTO_ARCH_ZN3(vrs8_log10f),
             &ALM_PROTO_ARCH_ZN3(vrd2_log10),
             &ALM_PROTO_ARCH_ZN3(vrd4_log10),
-        },
 #endif
+        },
     },
 };
 

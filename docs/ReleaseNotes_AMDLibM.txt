@@ -18,12 +18,22 @@ performance.
 Hightlights of AMD LibM version 3.8
 -----------------------------------
 
+    * Optimized AVX512 variants for exp, exp2, log, pow.
+    * Optimized AVX512 variants for expf, exp2f, logf, powf.
+    * Optimized log10f scalar and vector variants.
+    * Optimized asinf, acosf scalar single precision variants.
+    * Optimized acosf, asinf vector single precision variants.
+    * Kernel variant added for coshf scalar single precision.
+    * Bug fixes in logf FMA3 variant.
     * Optimized exp2 and log2 scalar and vector variants.
     * Performance improvements in exp2, log2 variants.
     * Accuracy issue fixes in vector (double precision) log and exp.
     * Accuracy issue fixes in scalar (single precision) cosh.
+    * Accuracy issue fixes in vector single precision log.
     * Updated Glibc compat library.
     * Bug fixes in cpuid detection.
+    * Enhanced dynamic dispatcher for functions.
+    * Versioning information updated.
 
 Known Issues
 ------------

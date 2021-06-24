@@ -99,6 +99,11 @@ __m128d LIBM_FUNC_VEC(d, 2, pow)(__m128d, __m128d);
 __m256d LIBM_FUNC_VEC(d, 4, pow)(__m256d, __m256d);
 __m128 LIBM_FUNC_VEC(s, 4, powf)(__m128, __m128);
 __m256 LIBM_FUNC_VEC(s, 8, powf)(__m256, __m256);
+/*avx512*/
+#if defined(__AVX512__)
+__m512d LIBM_FUNC_VEC(d, 8, pow) (__m512d, __m512d);
+#endif
+
 
 #if defined(__AVX512__)
 __m512 LIBM_FUNC_VEC(s, 16, powf)(__m512, __m512);
@@ -118,7 +123,7 @@ int test_v2d(test_data *data, int idx)  {
 int test_v4s(test_data *data, int idx)  {
   float *ip1  = (float*)data->ip;
   float *ip2 = (float*)data->ip1;
-  float *op  = (float*)data->op; 
+  float *op  = (float*)data->op;
   __m128 ip41 = _mm_set_ps(ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
   __m128 ip42 = _mm_set_ps(ip2[idx+3], ip2[idx+2], ip2[idx+1], ip2[idx]);
   __m128 op4 = LIBM_FUNC_VEC(s, 4, powf)(ip41, ip42);
@@ -129,7 +134,7 @@ int test_v4s(test_data *data, int idx)  {
 int test_v4d(test_data *data, int idx)  {
   double *ip1  = (double*)data->ip;
   double *ip2 = (double*)data->ip1;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   __m256d ip41 = _mm256_set_pd(ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
   __m256d ip42 = _mm256_set_pd(ip2[idx+3], ip2[idx+2], ip2[idx+1], ip2[idx]);
   __m256d op4 = LIBM_FUNC_VEC(d, 4, pow)(ip41, ip42);
@@ -141,7 +146,7 @@ int test_v8s(test_data *data, int idx)  {
 
   float *ip1  = (float*)data->ip;
   float *ip2 = (float*)data->ip1;
-  float *op  = (float*)data->op; 
+  float *op  = (float*)data->op;
   __m256 ip81 = _mm256_set_ps(ip1[idx+7], ip1[idx+6], ip1[idx+5], ip1[idx+4],
                               ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
   __m256 ip82 = _mm256_set_ps(ip2[idx+7], ip2[idx+6], ip2[idx+5], ip2[idx+4],
@@ -156,11 +161,15 @@ int test_v8d(test_data *data, int idx)  {
   double *ip1 = (double*)data->ip;
   double *ip2 = (double*)data->ip1;
   double *op  = (double*)data->op;
+
   __m512d ip8_1 = _mm512_set_pd(ip1[idx+7], ip1[idx+6], ip1[idx+5], ip1[idx+4],
                              ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
   __m512d ip8_2 = _mm512_set_pd(ip2[idx+7], ip2[idx+6], ip2[idx+5], ip2[idx+4],
                              ip2[idx+3], ip2[idx+2], ip2[idx+1], ip2[idx]);
   __m512d op8 = LIBM_FUNC_VEC(d, 8, pow)(ip8_1, ip8_2);
+
+  __m512d op8 = LIBM_FUNC_VEC(d, 8, pow)(ip8_1, ip8_2);
+
   _mm512_store_pd(&op[0], op8);
 #endif
   return 0;

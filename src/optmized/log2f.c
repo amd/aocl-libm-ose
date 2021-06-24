@@ -121,9 +121,9 @@ static struct {
 #define C8 log2f_data.poly_log2f[7]
 #define C9 log2f_data.poly_log2f[8]
 
-#define LN2      log2f_data.log2e
-#define LN2_HEAD log2f_data.log2e_lead
-#define LN2_TAIL log2f_data.log2e_tail
+#define LOG2_E      log2f_data.log2e
+#define LOG2_E_HEAD log2f_data.log2e_lead
+#define LOG2_E_TAIL log2f_data.log2e_tail
 
 static inline float_t
 inline_log2_near_1f(float_t x)
@@ -153,15 +153,15 @@ inline_log2_near_1f(float_t x)
 
     f = r2 + rt;
 
-    s = LN2_HEAD * f;
+    s = LOG2_E_HEAD * f;
 
-    z = LN2_TAIL * rtop;
+    z = LOG2_E_TAIL * rtop;
 
-    t = LN2_TAIL * f + z;
+    t = LOG2_E_TAIL * f + z;
 
     w = s + t;
 
-    return w + (rtop * LN2_HEAD);
+    return w + (rtop * LOG2_E_HEAD);
 
 }
 
@@ -204,8 +204,8 @@ ALM_PROTO_OPT(log2f)(float x)
 
     k = (float)n;
 
-    #define NEAR_ONE_LO asuint32(1 - 0x1.0p-4)
-    #define NEAR_ONE_HI asuint32(1 + 0x1.1p-4)
+#define NEAR_ONE_LO asuint32(1 - 0x1.0p-4)
+#define NEAR_ONE_HI asuint32(1 + 0x1.1p-4)
 
     /* Values very close to 1, e^(-1/16) <= x <= e^(1/16)*/
     if (unlikely(ux - NEAR_ONE_LO < NEAR_ONE_HI - NEAR_ONE_LO)) {
@@ -233,7 +233,7 @@ ALM_PROTO_OPT(log2f)(float x)
     poly = r * (1 + r * (C1 + r *C2));
 
     /*log_128_tail - poly * log2_e */
-    z = tbl->f_128_tail - poly * LN2;
+    z = tbl->f_128_tail - poly * LOG2_E;
 
     result = (k + tbl->f_128_head) + z;
 

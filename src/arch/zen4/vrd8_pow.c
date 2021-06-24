@@ -248,7 +248,7 @@ pow_specialcase(v_f64x8_t _x,
 
 
 __m512d
-ALM_PROTO_OPT(vrd8_pow)(__m512d _x,__m512d _y)
+ALM_PROTO_ARCH_ZN4(vrd8_pow)(__m512d _x,__m512d _y)
 {
     __m512d result, poly;
 

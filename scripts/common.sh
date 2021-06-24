@@ -28,7 +28,7 @@ declare -a funcs=(  "exp"  "log" "pow"
                     "exp2" "expm1"
                     "sin"  "cos"  "tan"
                     "sinh" "cosh" "tanh"
-                    "acos" "log10"
+                    "acos" "log10" "asin"
                     )
 
 #for perf/accu

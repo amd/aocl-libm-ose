@@ -211,6 +211,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs4_sinf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs4_tanf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs4_tanhf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs4_cbrtf);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs4_asinf);
 
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs8_cosf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs8_coshf);

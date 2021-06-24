@@ -41,14 +41,15 @@ struct alm_arch_funcs __arch_funcs_asin = {
         [ALM_UARCH_VER_DEFAULT] = {
             &ALM_PROTO_REF(asinf),
             &ALM_PROTO_REF(asin),
-            NULL,                           /* vrs4 ? */
+            NULL,     /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */
             NULL,                           /* vrd4 ? */
         },
         [ALM_UARCH_VER_ZEN2] = {
             &ALM_PROTO_ARCH_ZN2(asinf),
-            NULL,                           /* vrs4 ? */
+            NULL,
+            &ALM_PROTO_ARCH_ZN2(vrs4_asinf), /* vrs4 ? */
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */
@@ -56,7 +57,8 @@ struct alm_arch_funcs __arch_funcs_asin = {
         },
         [ALM_UARCH_VER_ZEN3] = {
             &ALM_PROTO_ARCH_ZN3(asinf),
-            NULL,                           /* vrs4 ? */
+            NULL,
+            &ALM_PROTO_ARCH_ZN3(vrs4_asinf), /* vrs4 ? */
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */
@@ -72,8 +74,8 @@ LIBM_IFACE_PROTO(asin)(void *arg)
         .g_ep = {
             [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(asinf),
             [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(asin),
-#if 0
             [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_asinf),
+#if 0
             [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_asinf),
             [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_asin),
             [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_asin),

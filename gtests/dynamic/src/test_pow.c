@@ -1,5 +1,9 @@
 #include "libm_dynamic_load.h"
 
+#if defined(__AVX512__)
+#include "libm_dynamic_load_avx512.h"
+#endif
+
 #define RANGEF GenerateRangeFloat(-100.0, 100.0)
 #define RANGED GenerateRangeDouble(-100.0, 100.0)
 
@@ -16,6 +20,11 @@ int test_pow(void* handle) {
     funcf_v8s_2 v8s = (funcf_v8s_2)dlsym(handle, "amd_vrs8_powf");
     funcf_va_2  vas = (funcf_va_2)dlsym(handle, "amd_vrsa_powf");
 
+    /*avx512*/
+    #if defined(__AVX512__)
+    func_v8d_2  v8d = (func_v8d_2)dlsym(handle, "amd_vrd8_pow");
+    #endif
+
     /*scalar inputs*/
     float inputf = 3.14f, outputf;
     double input = 6.28, output;
@@ -24,6 +33,11 @@ int test_pow(void* handle) {
     __m128  ip_vrs4, op_vrs4;
     __m256d ip_vrd4, op_vrd4;
     __m256  ip_vrs8, op_vrs8;
+
+    /*avx512*/
+    #if defined(__AVX512__)
+    __m512d ip_vrd8, op_vrd8;
+    #endif
 
     //array vector inputs
     float *input_arrayf   = (float *)  malloc(sizeof(float) * array_size);
@@ -50,11 +64,20 @@ int test_pow(void* handle) {
                                 -50.4f, 45.3f, 23.4f, 4.5f};
     float output_array_vrs8[8];
 
+    #if defined(__AVX512__)
+    double input_array_vrd8[8] = {0.0, 1.1, 3.6, 2.8, 0.0, 1.1, 3.6, 2.8};
+    double output_array_vrd8[8];
+    #endif
+
     /*packed inputs*/
     ip_vrd2 = _mm_loadu_pd(input_array_vrd2);
     ip_vrs4 = _mm_loadu_ps(input_array_vrs4);
     ip_vrd4 = _mm256_loadu_pd(input_array_vrd4);
     ip_vrs8 = _mm256_loadu_ps(input_array_vrs8);
+
+    #if defined(__AVX512__)
+    ip_vrd8 = _mm512_loadu_pd(input_array_vrd8);
+    #endif
 
     error = dlerror();
     if (error != NULL) {
@@ -115,6 +138,17 @@ int test_pow(void* handle) {
         printf("%f\t", (double)output_arrayf[i]);
     }
     printf("\n");
+
+    #if defined(__AVX512__)
+    op_vrd8 = v8d(ip_vrd8, ip_vrd8);
+    _mm512_storeu_pd(output_array_vrd8, op_vrd8);
+    printf("amd_vrd8_pow\ninput:\n");
+    for(i=0; i<8; i++)
+        printf("%lf\t",(double)input_array_vrd8[i]);
+    printf("\nOutput:\n");
+    for(i=0; i<8; i++)
+        printf("%lf\t",(double)output_array_vrd8[i]);
+    #endif
 
     return 0;
 }

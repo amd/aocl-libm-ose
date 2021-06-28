@@ -261,7 +261,7 @@ look_table_access(const double* table,
 
 
 v_f32x16_t
-ALM_PROTO_OPT(vrs16_powf)(v_f32x16_t x,v_f32x16_t y)
+ALM_PROTO_ARCH_ZN4(vrs16_powf)(v_f32x16_t x,v_f32x16_t y)
 {
 
     v_u32x16_t u;

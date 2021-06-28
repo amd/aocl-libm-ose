@@ -270,6 +270,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_sin);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_tan);
 
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_expf);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_powf);
 
 #endif	/* __AMD_LIBM_ENTRY_PT_PTR_H__ */
 

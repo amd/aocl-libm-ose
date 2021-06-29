@@ -9,6 +9,17 @@ from os.path import isdir, join as joinpath
 Import('env', 'almenv')
 #env.Replace(CC='g++',LINKFLAGS=[])
 
+# check for mpfr lib and headers
+conf = Configure(env)
+if not conf.CheckCHeader('mpfr.h'):
+    print ("Unable to find mpfr header")
+    Exit(1)
+if not conf.CheckLibWithHeader('mpfr',
+                                header='mpfr.h',
+                                language='c'):
+    print ("Unable to find mpft lib")
+    Exit(1)
+
 build_root = joinpath(env['BUILDROOT'], 'gtests')
 alm_path   = joinpath(env['BUILDROOT'], 'src')
 

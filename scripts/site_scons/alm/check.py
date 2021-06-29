@@ -80,27 +80,6 @@ def CheckForToolchain(context):
     context.Result(result)
     return result
 
-def CheckForHeaders(context):
-    """
-    """
-    res = CheckCHeader(context, 'mpfr.h')
-    if not res:
-        print('Did not find mpfr.h')
-
-    context.Result(res)
-
-def CheckForLibs(context):
-    """
-    """
-    res = CheckLibWithHeader(context,
-                   'mpfr',
-                   header='mpfr.h',
-                   language='c')
-
-    if not res:
-        print('Did not find libmpfr, AOCL LibM tests wont work!')
-        context.Result(res)
-
 def CheckPathDir(context, mydir):
     from os.path import isdir
     from os import listdir
@@ -175,8 +154,6 @@ def All(almenv):
         custom_tests = {
             'CheckForToolchain' : CheckForToolchain,
             'CheckForOS'        : CheckForOS,
-            'CheckForHeaders'   : CheckForHeaders,
-            'CheckForLibs'      : CheckForLibs,
             'CheckLibAbi'       : CheckLibAbi,
             'CheckZenVer'       : lambda ctx : CheckZenVer(ctx),
         },
@@ -195,14 +172,6 @@ def All(almenv):
         print ('Supported versions:')
         for k,v in toolchain_versions.items():
             print (k + ' min: ' + v['min'] + ' max ' + v['max'])
-        Exit(1)
-
-    if conf.CheckForHeaders():
-        print("Headers not found")
-        Exit(1)
-
-    if conf.CheckForLibs():
-        print("Support Libraries not found")
         Exit(1)
 
     if conf.CheckLibAbi():

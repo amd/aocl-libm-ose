@@ -42,7 +42,7 @@ struct alm_arch_funcs __arch_funcs_log10 = {
             &ALM_PROTO_FMA3(log10f),
             &ALM_PROTO_FMA3(log10),
             &ALM_PROTO_FMA3(vrs4_log10f),
-            NULL,                           /* vrs8 ? */
+            &ALM_PROTO_ARCH_AVX2(vrs8_log10f), /* vrs8 */
             &ALM_PROTO_FMA3(vrd2_log10),
             NULL,                           /* vrd4 ? */
             &ALM_PROTO_FMA3(vrsa_log10f),  /*array vector float*/

@@ -88,10 +88,10 @@ extern "C" {
 /*
 __m128d LIBM_FUNC_VEC(d, 2, log10)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, log10)(__m256d);
-
+*/
 __m128 LIBM_FUNC_VEC(s, 4, log10f)(__m128);
 __m256 LIBM_FUNC_VEC(s, 8, log10f)(__m256);
-*/
+
 
 int test_v2d(test_data *data, int idx)  {
 #if 0
@@ -105,13 +105,11 @@ int test_v2d(test_data *data, int idx)  {
 }
 
 int test_v4s(test_data *data, int idx)  {
-#if 0
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m128 ip4 = _mm_set_ps(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m128 op4 = LIBM_FUNC_VEC(s, 4, log10f)(ip4);
   _mm_store_ps(&op[0], op4);
-#endif
   return 0;
 }
 
@@ -127,14 +125,12 @@ int test_v4d(test_data *data, int idx)  {
 }
 
 int test_v8s(test_data *data, int idx)  {
-#if 0
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256 op8 = LIBM_FUNC_VEC(s, 8, log10f)(ip8);
   _mm256_store_ps(&op[0], op8);
-#endif
   return 0;
 }
 

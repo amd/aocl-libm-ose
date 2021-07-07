@@ -34,7 +34,7 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
-
+#include <libm/arch/zen4.h>
 
 /*
  * Signature:
@@ -116,7 +116,7 @@ sinf_specialcase(v_f32x16_t _x,
 }
 
 v_f32x16_t
-ALM_PROTO_OPT(vrs16_sinf)(v_f32x16_t x)
+ALM_PROTO_ARCH_ZN4(vrs16_sinf)(v_f32x16_t x)
 {
 
     v_f32x16_t r, F, poly, result;

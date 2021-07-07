@@ -38,7 +38,7 @@ struct alm_arch_funcs __arch_funcs_atan = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_REF(atanf),
+            &ALM_PROTO_ARCH_AVX2(atanf),
             &ALM_PROTO_REF(atan),
             &ALM_PROTO_ARCH_AVX2(vrs4_atanf),/* vrs4 ? */
             &ALM_PROTO_ARCH_AVX2(vrs8_atanf),/* vrs8 ? */
@@ -47,7 +47,7 @@ struct alm_arch_funcs __arch_funcs_atan = {
         },
 
         [ALM_UARCH_VER_ZEN2] = {
-            NULL,
+            &ALM_PROTO_ARCH_ZN2(atanf),
             &ALM_PROTO_ARCH_ZN2(atan),
             &ALM_PROTO_ARCH_ZN2(vrs4_atanf),
             &ALM_PROTO_ARCH_ZN2(vrs8_atanf),
@@ -56,7 +56,7 @@ struct alm_arch_funcs __arch_funcs_atan = {
         },
 
         [ALM_UARCH_VER_ZEN3] = {
-            NULL,
+            &ALM_PROTO_ARCH_ZN3(atanf),
             &ALM_PROTO_ARCH_ZN3(atan),
             &ALM_PROTO_ARCH_ZN3(vrs4_atanf),
             &ALM_PROTO_ARCH_ZN3(vrs8_atanf),

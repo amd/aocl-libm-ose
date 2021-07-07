@@ -39,9 +39,9 @@ struct alm_arch_funcs __arch_funcs_cos = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_FMA3(cos),
-            &ALM_PROTO_FMA3(cosf),
-            &ALM_PROTO_FMA3(vrs4_cosf),
+            &ALM_PROTO_ARCH_AVX2(cos),
+            &ALM_PROTO_ARCH_AVX2(cosf),
+            &ALM_PROTO_ARCH_AVX2(vrs4_cosf),
             &ALM_PROTO_ARCH_AVX2(vrs8_cosf), /* vrs8 ? */
             &ALM_PROTO_FMA3(vrd2_cos),
             &ALM_PROTO_ARCH_AVX2(vrd4_cos),  /* vrd4 ? */

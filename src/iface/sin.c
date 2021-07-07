@@ -39,11 +39,11 @@ struct alm_arch_funcs __arch_funcs_sin = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_FMA3(sinf),
-            &ALM_PROTO_FMA3(sin),
-            &ALM_PROTO_FMA3(vrs4_sinf),
+            &ALM_PROTO_ARCH_AVX2(sinf),
+            &ALM_PROTO_ARCH_AVX2(sin),
+            &ALM_PROTO_ARCH_AVX2(vrs4_sinf),
             &ALM_PROTO_ARCH_AVX2(vrs8_sinf), /* v8s ? */
-            &ALM_PROTO_FMA3(vrd2_sin),
+            &ALM_PROTO_ARCH_AVX2(vrd2_sin),
             &ALM_PROTO_ARCH_AVX2(vrd4_sin),  /* v4d ? */
 	        &ALM_PROTO_FMA3(vrsa_sinf),  /*vector array variants*/
 	        &ALM_PROTO_FMA3(vrda_sin),

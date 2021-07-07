@@ -166,7 +166,6 @@ int test_v8d(test_data *data, int idx)  {
                              ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
   __m512d ip8_2 = _mm512_set_pd(ip2[idx+7], ip2[idx+6], ip2[idx+5], ip2[idx+4],
                              ip2[idx+3], ip2[idx+2], ip2[idx+1], ip2[idx]);
-  __m512d op8 = LIBM_FUNC_VEC(d, 8, pow)(ip8_1, ip8_2);
 
   __m512d op8 = LIBM_FUNC_VEC(d, 8, pow)(ip8_1, ip8_2);
 

@@ -39,9 +39,9 @@ struct alm_arch_funcs __arch_funcs_log10 = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_FMA3(log10f),
+            &ALM_PROTO_ARCH_AVX2(log10f),
             &ALM_PROTO_FMA3(log10),
-            &ALM_PROTO_FMA3(vrs4_log10f),
+            &ALM_PROTO_ARCH_AVX2(vrs4_log10f),
             &ALM_PROTO_ARCH_AVX2(vrs8_log10f), /* vrs8 */
             &ALM_PROTO_FMA3(vrd2_log10),
             NULL,                           /* vrd4 ? */

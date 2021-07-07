@@ -1,5 +1,9 @@
 #include "libm_dynamic_load.h"
 
+#if defined(__AVX512__)
+#include "libm_dynamic_load_avx512.h"
+#endif
+
 #define RANGEF GenerateRangeFloat(-100.0, 100.0)
 #define RANGED GenerateRangeDouble(-100.0, 100.0)
 
@@ -12,8 +16,15 @@ int test_log2(void* handle) {
     func      s1d = (func)dlsym(handle, "amd_log2");
     func_v2d  v2d = (func_v2d)dlsym(handle, "amd_vrd2_log2");
     funcf_v4s v4s = (funcf_v4s)dlsym(handle, "amd_vrs4_log2f");
+    func_v4d  v4d = (func_v4d)dlsym(handle, "amd_vrd4_log2");
+    funcf_v8s v8s = (funcf_v8s)dlsym(handle, "amd_vrs8_log2f");
     funcf_va  vas = (funcf_va)dlsym(handle, "amd_vrsa_log2f");
     func_va   vad = (func_va)dlsym(handle, "amd_vrda_log2");
+
+    /*avx512*/
+    #if defined(__AVX512__)
+    func_v8d  v8d = (func_v8d)dlsym(handle, "amd_vrd8_log2");
+    #endif
 
     /*scalar inputs*/
     float inputf = 3.145f, outputf;
@@ -21,6 +32,14 @@ int test_log2(void* handle) {
     /*for vector routines*/
     __m128d ip_vrd2, op_vrd2;
     __m128  ip_vrs4, op_vrs4;
+    __m256d ip_vrd4, op_vrd4;
+    __m256  ip_vrs8, op_vrs8;
+
+    /*avx512*/
+    #if defined(__AVX512__)
+    __m512d ip_vrd8, op_vrd8;
+    #endif
+
     //array vector inputs
     float *input_arrayf   = (float *)  malloc(sizeof(float) * array_size);
     float *output_arrayf  = (float *)  malloc(sizeof(float) * array_size);
@@ -41,10 +60,27 @@ int test_log2(void* handle) {
     double output_array_vrd2[2];
     float input_array_vrs4[4] = {3.5f, 1.2f, 3.4f, 0.5f};
     float output_array_vrs4[4];
+    double input_array_vrd4[4] = {0.0, 1.1, 3.6, 2.8};
+    double output_array_vrd4[4];
+    float input_array_vrs8[8] = {1.2f, 2.3f, 5.6f, 50.3f,
+                                -50.4f, 45.3f, 23.4f, 4.5f};
+    float output_array_vrs8[8];
+
+    /*avx512*/
+    #if defined(__AVX512__)
+    double input_array_vrd8[8] = {0.0, 1.1, 3.6, 2.8, 0.0, 1.1, 3.6, 2.8};
+    double output_array_vrd8[8];
+    #endif
 
     /*packed inputs*/
     ip_vrd2 = _mm_loadu_pd(input_array_vrd2);
     ip_vrs4 = _mm_loadu_ps(input_array_vrs4);
+    ip_vrd4 = _mm256_loadu_pd(input_array_vrd4);
+    ip_vrs8 = _mm256_loadu_ps(input_array_vrs8);
+    /*avx512*/
+    #if defined(__AVX512__)
+    ip_vrd8 = _mm512_loadu_pd(input_array_vrd8);
+    #endif
 
     error = dlerror();
     if (error != NULL) {
@@ -72,6 +108,38 @@ int test_log2(void* handle) {
     printf("amd_vrs4_log2([%f, %f] = [%f, %f])\n",
             (double)input_array_vrs4[0], (double)input_array_vrs4[1],
             (double)output_array_vrs4[0], (double)output_array_vrs4[1]);
+
+    /*vrd4*/
+    op_vrd4 = v4d(ip_vrd4);
+    _mm256_storeu_pd(output_array_vrd4, op_vrd4);
+    printf("amd_vrd4_log([%lf,%lf,%lf,%lf]) = [%lf,%lf,%lf,%lf])\n",
+            input_array_vrd4[0], input_array_vrd4[1],
+            input_array_vrd4[2], input_array_vrd4[3],
+            output_array_vrd4[0], output_array_vrd4[1],
+            output_array_vrd4[2], output_array_vrd4[3]);
+
+    /*vrs8*/
+    op_vrs8 = v8s(ip_vrs8);
+    _mm256_storeu_ps(output_array_vrs8, op_vrs8);
+    printf("amd_vrs8_log2f\ninput:\n");
+    for(i=0; i<8; i++)
+        printf("%f\t",(double)input_array_vrs8[i]);
+    printf("\nOutput:\n");
+    for(i=0; i<8; i++)
+        printf("%f\t",(double)output_array_vrs8[i]);
+
+    /*avx512*/
+    /*v8d*/
+    #if defined(__AVX512__)
+    op_vrd8 = v8d(ip_vrd8);
+    _mm512_storeu_pd(output_array_vrd8, op_vrd8);
+    printf("amd_vrd8_log2\ninput:\n");
+    for(i=0; i<8; i++)
+        printf("%lf\t",(double)input_array_vrd8[i]);
+    printf("\nOutput:\n");
+    for(i=0; i<8; i++)
+        printf("%lf\t",(double)output_array_vrd8[i]);
+    #endif
 
     /*vector array*/
     printf("amd_vrsa_log2f\nInput:\n");

@@ -106,6 +106,12 @@ static const char build_sys_info[] = "%s";
 def GetBuildInfo(env, target):
     """generate a file with build system info in it"""
     cc = env['CC']
+    import ntpath
+    import os
+    # get compiler exe file from full path
+    # we donot need full path string in the version
+    if os.path.exists(os.path.dirname(cc)):
+        cc = ntpath.basename(cc)
     cc_ver = env['CCVERSION']
     import platform
     platform = platform.platform()

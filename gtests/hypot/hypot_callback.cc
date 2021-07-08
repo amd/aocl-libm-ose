@@ -152,6 +152,20 @@ int test_v8d(test_data *data, int idx)  {
   return 0;
 }
 
+int test_v16s(test_data *data, int idx)  {
+#if defined(__AVX512__)
+  float *ip = (float*)data->ip;
+  float *op  = (float*)data->op;
+  __m512 ip16 = _mm512_set_ps(ip[idx+15], ip[idx+14], ip[idx+13], ip[idx+12],
+                              ip[idx+11], ip[idx+10], ip[idx+9], ip[idx+8],
+                              ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
+                             ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+  __m512 op16 = LIBM_FUNC_VEC(s, 16, hypotf)(ip16);
+  _mm512_store_ps(&op[0], op16);
+#endif
+  return 0;
+}
+
 #ifdef __cplusplus
 }
 #endif

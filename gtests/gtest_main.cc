@@ -143,6 +143,49 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_8FLOATS) {
   ptr->tstcnt++;
 }
 
+TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_16FLOATS) {
+  int nfail = 0;
+  double max_ulp_err = inData->max_ulp_err;
+  test_data data;
+  data.ip  = (void *)inpbuff;
+  data.op  = (void *)aop;
+  float ip[2];
+
+  if(nargs == 2)
+    data.ip1 = (void *)inpbuff1;
+
+  for (uint32_t i = 0; i < count; i += 16) {
+    test_v16s(&data, i);
+
+    for (uint32_t j = 0; j < 16; j++) {
+      ip[0] = inpbuff[i + j];
+      if(nargs == 2)
+        ip[1] = inpbuff1[i + j];
+
+      double exptd = getExpected(ip);
+      double ulp = getUlp(aop[j], exptd);
+      if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
+        nfail++;
+      }
+
+      if (vflag == 1) {
+        EXPECT_LT(ulp, inData->ulp_threshold)
+            << "Input:[" << ip[0] << " " << ip[1] <<"]Actual:" << aop[j]
+            << " Expected:" << exptd << " ULP: " << ulp << endl;
+      } else {
+        EXPECT_LT(ulp, inData->ulp_threshold);
+        LIBM_TEST_DPRINTF(VERBOSE2, ,
+                      "Input:[", ip[0], " ", ip[1], "]Actual:", aop[j],
+                      " Expected:", exptd, " ULP: ",ulp);
+      }
+    }
+  }
+  sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
+  "Vector","Accuracy","v16s",count,(count-nfail), nfail, max_ulp_err);
+  ptr->tstcnt++;
+}
+
+
 TEST_P(AccuTestFixtureDouble, ACCURACY_SCALAR_DOUBLE) {
   int nfail = 0;
   double max_ulp_err = inData->max_ulp_err;

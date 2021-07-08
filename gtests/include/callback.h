@@ -7,11 +7,11 @@
 typedef struct {
   void *ip;
   void *ip1;
-  void *op;  
+  void *op;
 }test_data;
- 
+
 uint32_t GetnIpArgs( void );
- 
+
 float getFuncOp(float *);
 double getFuncOp(double *);
 
@@ -33,12 +33,14 @@ void LibmPerfTest2d(benchmark::State& st, InputParams* param);
 void LibmPerfTest4d(benchmark::State& st, InputParams* param);
 
 void LibmPerfTest8d(benchmark::State& st, InputParams* param);
+void LibmPerfTest16f(benchmark::State& st, InputParams* param);
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 int test_v4s(test_data *data, int idx);
 int test_v8s(test_data *data, int idx);
+int test_v16s(test_data *data, int idx);
 
 int test_v2d(test_data *data, int idx);
 int test_v4d(test_data *data, int idx);

@@ -50,7 +50,7 @@ class AoclLibmTest {
       unsigned int sz = params->count;
       int vec_input_count = (int)params->fqty;
       if (params->fqty == ALM::FloatQuantity::E_All)
-        vec_input_count = (int)ALM::FloatQuantity::E_Vector_8;
+        vec_input_count = (int)ALM::FloatQuantity::E_Vector_16;
 
       if ((sz % vec_input_count != 0)) {
         sz = sz + (vec_input_count - sz % vec_input_count);

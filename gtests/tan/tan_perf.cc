@@ -42,7 +42,16 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
       libm = funcnam + varnam;    
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest8f, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
-    }    
+    }
+    #if defined(__AVX512__)
+    if((params->fqty == ALM::FloatQuantity::E_All) ||
+     (params->fqty == ALM::FloatQuantity::E_Vector_16)) {
+      string varnam = "_v16s(tanf)";
+      libm = funcnam + varnam;
+      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest16f, params)
+                 ->Args({(int)params->count})->Iterations(params->niter);
+    }
+    #endif 
   }
   
   if((params->fwidth == ALM::FloatWidth::E_ALL) ||

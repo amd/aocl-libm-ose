@@ -19,52 +19,61 @@ using namespace ALM;
 int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
   string funcnam = "AoclLibm";
   string libm;
-  
+
   if((params->fwidth == ALM::FloatWidth::E_ALL) ||
     (params->fwidth == ALM::FloatWidth::E_F32)) {
-    if((params->fqty == ALM::FloatQuantity::E_All) || 
+    if((params->fqty == ALM::FloatQuantity::E_All) ||
      (params->fqty == ALM::FloatQuantity::E_Scalar)) {
       string varnam = "_s1s(expf)";
-      libm = funcnam + varnam;    
+      libm = funcnam + varnam;
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTestf, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
     if((params->fqty == ALM::FloatQuantity::E_All) ||
      (params->fqty == ALM::FloatQuantity::E_Vector_4)) {
       string varnam = "_v4s(expf)";
-      libm = funcnam + varnam;    
+      libm = funcnam + varnam;
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest4f, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
     if((params->fqty == ALM::FloatQuantity::E_All) ||
      (params->fqty == ALM::FloatQuantity::E_Vector_8)) {
       string varnam = "_v8s(expf)";
-      libm = funcnam + varnam;    
+      libm = funcnam + varnam;
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest8f, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
+    #if defined(__AVX512__)
+    if((params->fqty == ALM::FloatQuantity::E_All) ||
+     (params->fqty == ALM::FloatQuantity::E_Vector_16)) {
+      string varnam = "_v16s(expf)";
+      libm = funcnam + varnam;
+      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest16f, params)
+                 ->Args({(int)params->count})->Iterations(params->niter);
+    }
+    #endif
   }
-  
+
   if((params->fwidth == ALM::FloatWidth::E_ALL) ||
     (params->fwidth == ALM::FloatWidth::E_F64)) {
-    if((params->fqty == ALM::FloatQuantity::E_All) || 
+    if((params->fqty == ALM::FloatQuantity::E_All) ||
      (params->fqty == ALM::FloatQuantity::E_Scalar)) {
       string varnam = "_s1d(exp)";
-      libm = funcnam + varnam;    
+      libm = funcnam + varnam;
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTestd, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
     if((params->fqty == ALM::FloatQuantity::E_All) ||
      (params->fqty == ALM::FloatQuantity::E_Vector_2)) {
       string varnam = "_v2d(exp)";
-      libm = funcnam + varnam;    
+      libm = funcnam + varnam;
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest2d, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
     if((params->fqty == ALM::FloatQuantity::E_All) ||
      (params->fqty == ALM::FloatQuantity::E_Vector_4)) {
       string varnam = "_v4d(exp)";
-      libm = funcnam + varnam;    
+      libm = funcnam + varnam;
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest4d, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
@@ -80,7 +89,7 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
   }
 
   size_t retval = benchmark::RunSpecifiedBenchmarks();
-  
+
   return (int)retval;
 }
 

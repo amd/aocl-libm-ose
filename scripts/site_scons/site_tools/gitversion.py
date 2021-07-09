@@ -103,6 +103,32 @@ static const char build_sys_info[] = "%s";
 
 """
 
+#run any shell command, return op, err, err code
+def RunCommand(cmd):
+    import subprocess
+    print ('Running cmd: '+cmd)
+    p = subprocess.Popen(cmd, shell = True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = p.communicate()
+    out=str(out, 'utf-8')
+    err=str(err, 'utf-8')
+    if err.strip() == '':   err=None
+    if out.strip() == '':   out=None
+    #if error, just exit with err code
+    if p.returncode != 0:
+        Error_Exit ('Proc failed with retcode:\n' +
+                     str(p.returncode) +
+                    '\nError:' + str(err))
+    return out, err, p.returncode
+
+# get aocc release version to be included in the version string
+def GetAOCCVersion(compiler):
+    aocc_ver=' '
+    lines = RunCommand('{0} --version'.format(compiler))[0]
+    for l in lines.split('\n'):
+        if 'AMD clang version' in l and 'CLANG:' in l:
+            aocc_ver = [v for v in l.split() if 'AOCC_' in v][0]
+    return aocc_ver
+
 def GetBuildInfo(env, target):
     """generate a file with build system info in it"""
     cc = env['CC']
@@ -113,6 +139,11 @@ def GetBuildInfo(env, target):
     if os.path.exists(os.path.dirname(cc)):
         cc = ntpath.basename(cc)
     cc_ver = env['CCVERSION']
+
+    # if clang, fetch aocc release version too
+    if 'clang' in cc:
+        cc_ver += '-' + GetAOCCVersion(cc)
+
     import platform
     platform = platform.platform()
     sys_details = '%s-%s-%s' % (cc, cc_ver, str(platform))

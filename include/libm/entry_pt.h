@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2021, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -196,6 +196,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(sincosf);
 
 #include <immintrin.h>
 
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs4_acosf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs4_expf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs4_exp2f);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs4_exp10f);

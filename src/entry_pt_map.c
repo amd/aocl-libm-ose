@@ -247,7 +247,7 @@ LIBM_DECL_FN_MAP(vrd8_pow);
 //LIBM_DECL_FN_MAP(vrd4_tan);
 LIBM_DECL_FN_MAP(vrs16_powf);
 
-
+LIBM_DECL_FN_MAP(vrs4_acosf);
 LIBM_DECL_FN_MAP(vrs4_cbrtf);
 LIBM_DECL_FN_MAP(vrs4_cosf);
 LIBM_DECL_FN_MAP(vrs4_exp10f);

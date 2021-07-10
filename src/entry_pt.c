@@ -201,6 +201,7 @@ alm_func_t        G_ENTRY_PT_PTR(sincos);
 alm_func_t        G_ENTRY_PT_PTR(sincosf);
 #endif
 
+alm_func_t        G_ENTRY_PT_PTR(vrs4_acosf);
 alm_func_t        G_ENTRY_PT_PTR(vrs4_cosf);
 alm_func_t        G_ENTRY_PT_PTR(vrs4_cbrtf);
 alm_func_t        G_ENTRY_PT_PTR(vrs4_expf);

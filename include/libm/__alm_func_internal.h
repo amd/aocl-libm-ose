@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2021, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -170,6 +170,7 @@ extern long long int    ALM_PROTO_INTERNAL(llroundf)      (float f);
 /*
  * Vector Single precision
  */
+extern __m128    ALM_PROTO_INTERNAL(vrs4_acosf)           (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_cbrtf)           (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_cosf)            (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_exp10f)          (__m128 x);

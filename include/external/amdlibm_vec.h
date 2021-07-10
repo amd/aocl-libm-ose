@@ -1,6 +1,6 @@
 /*
 
-(C) 2008-2020 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2021 Advanced Micro Devices, Inc. All Rights Reserved.
 
 Advanced Micro Devices, Inc.
 Software License Agreement
@@ -234,7 +234,7 @@ extern "C" {
     void amd_vrsa_log1pf    (int len, float  *src, float  *dst);
 
 /* Trigonometric */
-
+    __m128  amd_vrs4_acosf  (__m128  x);
     __m128d amd_vrd2_cos    (__m128d x);
     __m128  amd_vrs4_cosf   (__m128  x);
     __m128d amd_vrd2_sin    (__m128d x);

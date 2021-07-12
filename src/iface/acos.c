@@ -41,7 +41,7 @@ struct alm_arch_funcs __arch_funcs_acos = {
         [ALM_UARCH_VER_DEFAULT] = {
             &ALM_PROTO_OPT(acosf),
             &ALM_PROTO_REF(acos),
-            NULL,                           /* vrs4 ? */
+            &ALM_PROTO_ARCH_AVX2(vrs4_acosf),/* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */
             NULL,                           /* vrd4 ? */
@@ -50,7 +50,7 @@ struct alm_arch_funcs __arch_funcs_acos = {
         [ALM_UARCH_VER_ZEN2] = {
             &ALM_PROTO_ARCH_ZN2(acosf),
             &ALM_PROTO_REF(acos),
-            NULL,
+            &ALM_PROTO_ARCH_ZN2(vrs4_acosf),
             NULL,
             NULL,
             NULL,
@@ -59,7 +59,7 @@ struct alm_arch_funcs __arch_funcs_acos = {
         [ALM_UARCH_VER_ZEN3] = {
             &ALM_PROTO_ARCH_ZN3(acosf),
             &ALM_PROTO_REF(acos),
-            NULL,
+            &ALM_PROTO_ARCH_ZN3(vrs4_acosf),
             NULL,
             NULL,
             NULL,

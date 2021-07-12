@@ -152,7 +152,7 @@ int test_v8d(test_data *data, int idx)  {
 }
 
 int test_v16s(test_data *data, int idx)  {
-#if defined(__AVX512__)
+#if 0
   float *ip = (float*)data->ip;
   float *op  = (float*)data->op;
   __m512 ip16 = _mm512_set_ps(ip[idx+15], ip[idx+14], ip[idx+13], ip[idx+12],

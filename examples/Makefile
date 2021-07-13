@@ -32,7 +32,7 @@ CFLAGS  = -march=native -g
 ARCH = avx2
 ifeq ($(ARCH), avx512)
     CFLAGS += -mavx512f
-    CFLAGS += -DAVX512
+    CFLAGS += -D__AVX512__
 endif
 
 # use static or dynamic library to link

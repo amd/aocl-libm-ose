@@ -195,6 +195,9 @@ extern "C" {
     __m256  amd_vrs8_expf   (__m256 x);
     __m256  amd_vrs8_exp2f  (__m256 x);
 
+    /* avx512 variants */
+    __m512d amd_vrd8_exp    (__m512d x);
+
     void amd_vrda_exp       (int len, double *src, double *dst);
     void amd_vrsa_expf      (int len, float  *src, float  *dst);
     void amd_vrda_exp2      (int len, double *src, double *dst);

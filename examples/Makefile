@@ -28,6 +28,13 @@
 CC      = gcc
 CFLAGS  = -march=native -g
 
+# if running avx512 variants
+ARCH = avx2
+ifeq ($(ARCH), avx512)
+    CFLAGS += -mavx512f
+    CFLAGS += -DAVX512
+endif
+
 # use static or dynamic library to link
 LIB = dynamic #default value
 

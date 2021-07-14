@@ -191,7 +191,7 @@ logf_specialcase(v_f32x16_t _x,
 }
 
 v_f32x16_t
-ALM_PROTO_OPT(vrs16_logf)(v_f32x16_t _x)
+ALM_PROTO_ARCH_ZN4(vrs16_logf)(v_f32x16_t _x)
 {
     v_f32x16_t q, r, n;
 

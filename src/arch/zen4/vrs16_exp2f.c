@@ -132,7 +132,7 @@ struct {
  */
 
 v_f32x16_t
-ALM_PROTO_OPT(vrs16_exp2f)(v_f32x16_t _x)
+ALM_PROTO_ARCH_ZN4(vrs16_exp2f)(v_f32x16_t _x)
 {
     v_u32x16_t vx, cond;
 

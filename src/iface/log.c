@@ -69,6 +69,7 @@ struct alm_arch_funcs __arch_funcs_log = {
 
         [ALM_UARCH_VER_ZEN4] = {
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_log),
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_logf),
         },
     },
 };
@@ -87,6 +88,7 @@ LIBM_IFACE_PROTO(log)(void *arg)
         [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_logf),
         [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_log),
         [ALM_FUNC_VECT_DP_8] = &G_ENTRY_PT_PTR(vrd8_log),
+        [ALM_FUNC_VECT_SP_16] = &G_ENTRY_PT_PTR(vrs16_logf),
         },
     };
 

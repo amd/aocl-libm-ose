@@ -49,7 +49,7 @@ int use_exp_avx512() {
     for (i=0; i<8; i++) {
         printf ("%lf,", output_array_vrd8[i]);
     }
-/*
+
     printf ("\nUsing vrs16 (Single precision vector 16 element variant of AMD exp()\n");
     __m512 input_vrs16, result_exp_vrs16;
     float input_array_vrs16[16] = {1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0,
@@ -66,7 +66,6 @@ int use_exp_avx512() {
     for (i=0; i<16; i++) {
         printf ("%f,", output_array_vrs16[i]);
     }
-*/
 
     #endif
     return 0;

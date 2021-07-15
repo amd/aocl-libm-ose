@@ -37,6 +37,8 @@
 #include <libm/compiler.h>
 #include <emmintrin.h>
 
+#include <libm/arch/zen4.h>
+
 #define AMD_LIBM_FMA_USABLE 1           /* needed for poly.h */
 #include <libm/poly-vec.h>
 
@@ -160,7 +162,7 @@ log10f_specialcase(v_f32x16_t _x,
 
 
 v_f32x16_t
-ALM_PROTO_OPT(vrs16_log10f)(v_f32x16_t _x)
+ALM_PROTO_ARCH_ZN4(vrs16_log10f)(v_f32x16_t _x)
 {
 
     v_f32x16_t poly, r, n, result;

@@ -47,6 +47,8 @@ struct alm_arch_funcs __arch_funcs_pow = {
             &ALM_PROTO_ARCH_AVX2(vrd4_pow),
 	        &ALM_PROTO_BAS64(vrsa_powf),
 	        NULL,  //vrda_powf
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_powf),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_pow),
         },
 
         [ALM_UARCH_VER_ZEN2] = {

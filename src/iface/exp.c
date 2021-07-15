@@ -47,6 +47,8 @@ struct alm_arch_funcs __arch_funcs_exp = {
             &ALM_PROTO_ARCH_AVX2(vrd4_exp),  /* vrd4 ? */
             &ALM_PROTO_FMA3(vrsa_expf),  /*array vector float*/
             &ALM_PROTO_FMA3(vrda_exp),  /*array vector double*/
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_exp),
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_expf),
         },
 
         [ALM_UARCH_VER_ZEN2] = {

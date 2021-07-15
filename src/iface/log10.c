@@ -47,6 +47,7 @@ struct alm_arch_funcs __arch_funcs_log10 = {
             NULL,                           /* vrd4 ? */
             &ALM_PROTO_FMA3(vrsa_log10f),  /*array vector float*/
             &ALM_PROTO_FMA3(vrda_log10),  /*array vector double*/
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_log10f),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
@@ -66,6 +67,10 @@ struct alm_arch_funcs __arch_funcs_log10 = {
             NULL,
             NULL,
         },
+
+        [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_log10f),
+        }
     },
 };
 
@@ -80,6 +85,8 @@ LIBM_IFACE_PROTO(log10)(void *arg)
         [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_log10f),
         [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_log10),
         [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_log10),
+        [ALM_FUNC_VECT_SP_16] = &G_ENTRY_PT_PTR(vrs16_log10f),
+
         [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_log10f),
         [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_log10),
         },

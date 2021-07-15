@@ -140,7 +140,7 @@ ALM_PROTO_OPT(expf)(float x)
     uint32_t top = top12f(x);
 
     if (unlikely (top > top12f(88.0f))) {
-        if(isnanf(x))
+        if(x != x)
             return x;
 
         if (asuint32(x) == asuint32(-INFINITY))

@@ -28,19 +28,21 @@
 #print script usage
 helpfunc() {
     echo "HELP"
-    echo "Usage: $0 -b <build type> -c <compiler>"
+    echo "Usage: $0 -b <build type> -c <compiler> -a <arch>"
     echo "Build type: release/glibc/svml"
     echo "Compiler: gcc/aocc"
+    echo "Arch: avx512 support"
     exit 1
 }
 
 #import common routines and resources
 source $(realpath './scripts/common.sh')
 
-opts="b:c:h"
+opts="a:b:c:h"
 while getopts "$opts" opt;
 do
     case "${opt}" in
+        a ) arch="${OPTARG}" ;;
 	    b ) build_type="${OPTARG}" ;;
 	    c ) compiler_type="${OPTARG}" ;;
 	    h ) helpfunc ;;
@@ -56,6 +58,14 @@ then
      build_type="release"
      compiler_type="gcc"
 fi
+
+# avx512 tests
+avx512=false
+if [ ${arch} = "avx512" ]; then
+    avx512=true
+    echo "Building with avx512 support"
+fi
+
 
 echo "Build Type: "$build_type
 echo "Compiler: "$compiler_type
@@ -89,6 +99,12 @@ RunCommand "${clean_cmd}";
 
 #build
 build_cmd="scons -j32 ${fw}";
+
+# avx512
+if [ ${avx512} = true ]; then
+    build_cmd+=" --arch_config=avx512"
+fi
+
 build_cmd+=" CC=${cc_exe} CXX=${cxx_exe}"
 build_cmd+=" verbose=1"
 
@@ -105,6 +121,11 @@ fi
 
 #compile dynamic loading examples
 RunCommand "make -C ./examples/ clean";
-RunCommand "make -C ./examples/"
-echo "Compiled dynamic loading examples"
+if [ ${avx512} = true ]; then
+    RunCommand "make -C ./examples/ ARCH=avx512";
+else
+    RunCommand "make -C ./examples/";
+fi
+
+echo "Compiled dynamic loading examples";
 

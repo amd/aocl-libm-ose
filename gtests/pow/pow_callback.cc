@@ -102,10 +102,6 @@ __m256 LIBM_FUNC_VEC(s, 8, powf)(__m256, __m256);
 /*avx512*/
 #if defined(__AVX512__)
 __m512d LIBM_FUNC_VEC(d, 8, pow) (__m512d, __m512d);
-#endif
-
-
-#if defined(__AVX512__)
 __m512 LIBM_FUNC_VEC(s, 16, powf)(__m512, __m512);
 #endif
 

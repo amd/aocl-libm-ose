@@ -30,7 +30,7 @@
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
 
-//
+
 #include <libm/arch/all.h>
 
 
@@ -45,6 +45,7 @@ struct alm_arch_funcs __arch_funcs_tanh = {
             &ALM_PROTO_ARCH_AVX2(vrs8_tanhf), /* v8s ? */
             NULL,                            /* v2d ? */
             NULL,                            /* v4d ? */
+           [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_powf),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
@@ -64,6 +65,11 @@ struct alm_arch_funcs __arch_funcs_tanh = {
             NULL, //&ALM_PROTO_ARCH_ZN3(vrd2_tanh),
             NULL, //&ALM_PROTO_ARCH_ZN3(vrd4_tanh),
         },
+
+        [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_powf),
+        },
+
     },
 };
 
@@ -76,6 +82,7 @@ LIBM_IFACE_PROTO(tanh)(void *arg)
         [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(tanh),
         [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_tanhf),
         [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_tanhf),
+        [ALM_FUNC_VECT_SP_16] = &G_ENTRY_PT_PTR(vrs16_tanhf),
         //[ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_tanh),
         //[ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_tanh),
         },

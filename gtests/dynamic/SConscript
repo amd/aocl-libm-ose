@@ -22,6 +22,7 @@ e.Append(
 )
 
 srcs = Glob('./src/*.[cS]')
+srcs += Glob('./src/test_srcs/*.[cS]')
 
 exe = e.Program(source = srcs,
                 target = 'test_dynamic')

@@ -148,7 +148,7 @@ ALM_PROTO_OPT(exp2f)(float x)
     uint32_t top = top12f(x) & 0x7ff;
 
     if (unlikely (top > top12f(128.0f))) {
-        if(isnanf(x))
+        if(x != x) /* check if x is a NAN */
             return x;
 
         if (asuint32(x) == asuint32(-INFINITY))

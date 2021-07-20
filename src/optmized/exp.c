@@ -136,7 +136,7 @@ ALM_PROTO_OPT(exp)(double x)
             return 1.0;
 
         if (x > FMAX_X) {
-            if (isnan(x))
+            if (x != x)  /* check if x is a NAN */
                 return  _exp_special(x, asdouble(QNANBITPATT_DP64), EXP_X_NAN);
 
             if(asuint64(x) == PINFBITPATT_DP64)

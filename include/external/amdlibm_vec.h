@@ -234,6 +234,7 @@ extern "C" {
     /* avx512 variants */
     __m512d amd_vrd8_log    (__m512d x);
     __m512  amd_vrs16_logf  (__m512  x);
+    __m512  amd_vrs16_log10f (__m512 x);
 
     void amd_vrda_log       (int len, double *src, double *dst);
     void amd_vrsa_logf      (int len, float  *src, float  *dst);

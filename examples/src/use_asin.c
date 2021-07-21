@@ -25,57 +25,41 @@
  *
  */
 
+#define AMD_LIBM_VEC_EXPERIMENTAL
 #include <stdio.h>
-extern int use_exp();
-extern int use_pow();
-extern int use_log();
-extern int use_fabs();
-extern int use_atan();
-extern int use_sin();
-extern int use_cos();
-extern int use_tan();
-extern int use_cosh();
-extern int use_tanh();
-extern int use_sinh();
-extern int use_exp2();
-extern int use_log2();
-extern int use_asin();
-extern int use_acos();
+#include "amdlibm.h"
+#include "amdlibm_vec.h"
+#include <immintrin.h>
 
-/* avx512 */
-#if defined (__AVX512__)
-extern int use_exp_avx512();
-extern int use_log_avx512();
-extern int use_log10_avx512();
-extern int use_exp2_avx512();
-extern int use_pow_avx512();
-#endif
+int use_asin()
+{
+    printf ("Uasing Scalar asingle precision asinf()\n");
+    float ipf = 0.5, opf;
+    int i;
+    opf = amd_asinf (ipf);
+    printf("Input: %f\tOutput: %f\n", ipf, opf);
+    printf ("Uasing Scalar double precision asin()\n");
+    double ipd = 0.45, opd;
+    opd = amd_asin(ipd);
+    printf("Input: %f\tOutput: %f\n", ipd, opd);
 
-int main()  {
-    printf("Illustration of AMD LibM functions\n");
-    use_exp();
-    use_pow();
-    use_log();
-    use_fabs();
-    use_atan();
-    use_sin();
-    use_cos();
-    use_tan();
-    use_cosh();
-    use_tanh();
-    use_sinh();
-    use_exp2();
-    use_log2();
-    use_asin();
-    use_acos();
+    printf ("Uasing vrd2(Double precision vector) variant of AMD asin()\n");
+    __m128d result_asin;
+    __m128d input;
+    double  input_array[2] = {34.65, 67.89};
+    double  output_array[2];
+    input = _mm_loadu_pd(input_array);
 
-    #if defined (__AVX512__)
-    use_exp_avx512();
-    use_exp2_avx512();
-    use_pow_avx512();
-    use_log_avx512();
-    use_log10_avx512();
-    #endif
-
+    printf("Uasing vrs4 (Single precision vector variant) of AMD asin()\n");
+    __m128 result_asin_vrs4;
+    __m128 input_vrs4;
+    float  input_array_vrs4[4] = {34.65, 67.89, 91.0, 198.34};
+    float  output_array_vrs4[4];
+    input_vrs4 = _mm_loadu_ps(input_array_vrs4);
+    result_asin_vrs4 = amd_vrs4_asinf(input_vrs4);
+    _mm_storeu_ps(output_array_vrs4, result_asin_vrs4 );
+    printf("Input: {%f, %f, %f, %f}, Output = {%f, %f, %f, %f}\n",
+        input_array_vrs4[0], input_array_vrs4[1], input_array_vrs4[2], input_array_vrs4[3],
+        output_array_vrs4[0], output_array_vrs4[1], output_array_vrs4[2], output_array_vrs4[3]);
     return 0;
 }

@@ -25,57 +25,32 @@
  *
  */
 
+#define AMD_LIBM_VEC_EXPERIMENTAL
 #include <stdio.h>
-extern int use_exp();
-extern int use_pow();
-extern int use_log();
-extern int use_fabs();
-extern int use_atan();
-extern int use_sin();
-extern int use_cos();
-extern int use_tan();
-extern int use_cosh();
-extern int use_tanh();
-extern int use_sinh();
-extern int use_exp2();
-extern int use_log2();
-extern int use_asin();
-extern int use_acos();
+#include "amdlibm.h"
+#include "amdlibm_vec.h"
+#include <immintrin.h>
 
-/* avx512 */
-#if defined (__AVX512__)
-extern int use_exp_avx512();
-extern int use_log_avx512();
-extern int use_log10_avx512();
-extern int use_exp2_avx512();
-extern int use_pow_avx512();
-#endif
-
-int main()  {
-    printf("Illustration of AMD LibM functions\n");
-    use_exp();
-    use_pow();
-    use_log();
-    use_fabs();
-    use_atan();
-    use_sin();
-    use_cos();
-    use_tan();
-    use_cosh();
-    use_tanh();
-    use_sinh();
-    use_exp2();
-    use_log2();
-    use_asin();
-    use_acos();
-
+int use_log10_avx512() {
     #if defined (__AVX512__)
-    use_exp_avx512();
-    use_exp2_avx512();
-    use_pow_avx512();
-    use_log_avx512();
-    use_log10_avx512();
-    #endif
+    int i=0;
+    printf ("\nUsing vrs16 (Single precision vector 16 element variant of AMD log10()\n");
+    __m512 input_vrs16, result_log10_vrs16;
+    float input_array_vrs16[16] = {1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0,
+                                   1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0};
+    float output_array_vrs16[16];
+    input_vrs16 = _mm512_loadu_ps(input_array_vrs16);
+    result_log10_vrs16 = amd_vrs16_log10f(input_vrs16);
+    _mm512_storeu_ps(output_array_vrs16, result_log10_vrs16);
+    printf ("Input: {");
+    for (i=0; i<16; i++) {
+        printf ("%f,",input_array_vrs16[i]);
+    }
+    printf("}, Output: {");
+    for (i=0; i<16; i++) {
+        printf ("%f,", output_array_vrs16[i]);
+    }
 
+    #endif
     return 0;
 }

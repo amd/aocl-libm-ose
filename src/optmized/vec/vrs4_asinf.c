@@ -54,6 +54,7 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
+#include "kern/sqrtf_pos.c" 
 
 static struct {
     v_f32x4_t THEEPS, HALF, ONE, poly_asinf[5];
@@ -70,7 +71,6 @@ static struct {
         _MM_SET1_PS4(0x1.7525aap-5f),
         _MM_SET1_PS4(0x1.86e46ap-6f),
         _MM_SET1_PS4(0x1.5d456cp-5f),
-
     },
     .mask_32   = _MM_SET1_I32(0x7FFFFFFF),
     // Values of factors of pi required to calculate asin
@@ -95,12 +95,12 @@ static struct {
 #define C3 v4_asinf_data.poly_asinf[2]
 #define C4 v4_asinf_data.poly_asinf[3]
 #define C5 v4_asinf_data.poly_asinf[4]
-
+#define C6 v4_asinf_data.poly_asinf[6]
 
 v_f32x4_t
 ALM_PROTO_OPT(vrs4_asinf)(v_f32x4_t x)
 {
-    v_f32x4_t r, poly, result, G, n = _MM_SET1_PS4(0.0f);
+    v_f32x4_t r, poly, result, G, n = _MM_SET1_PS4(PI_BY_TWO);
 
     v_u32x4_t sign;
 
@@ -112,27 +112,14 @@ ALM_PROTO_OPT(vrs4_asinf)(v_f32x4_t x)
 
     v_u32x4_t cmp = r > V4_ASINF_HALF;
 
-    if((cmp[0] == cmp[1]) && (cmp[1] == cmp [2]) && (cmp [2] == cmp[3])) {
-        if(likely(any_v4_u32_loop(cmp))) {
-            n = _MM_SET1_PS4(PI_BY_TWO);
-            G = V4_ASINF_HALF *(V4_ASINF_ONE - r);
-            r[0] = -TWO *sqrtf(G[0]);
-            r[1] = -TWO *sqrtf(G[1]);
-            r[2] = -TWO *sqrtf(G[2]);
-            r[3] = -TWO *sqrtf(G[3]);
+    for (int i = 0; i < 4; i++) {
+        if (cmp[i]) {
+            G[i] = F_HALF *(F_ONE - r[i]);
+            r[i] = -TWO *ALM_PROTO_KERN(sqrtf)(G[i]);
         } else {
-            G = r * r;
-        }
-    } else {
-        for (int i = 0; i < 4; i++) {
-            if (cmp[i]) {
-                n[i] = PI_BY_TWO;
-                G[i] = F_HALF *(F_ONE - r[i]);
-                r[i] = -TWO *sqrtf(G[i]);
-            } else {
-                G[i] = r[i] * r[i];
+            n[i] = 0.0f;
+            G[i] = r[i] * r[i];
 
-            }
         }
     }
 

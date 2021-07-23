@@ -53,6 +53,7 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
+#include "kern/sqrt_pos.c"
 
 static struct {
     double THEEPS, HALF ;
@@ -103,6 +104,7 @@ static struct {
 #define C11 asinf_data.poly_asinf[10]
 #define C12 asinf_data.poly_asinf[12]
 
+
 float
 ALM_PROTO_OPT(asinf)(float x)
 {
@@ -123,7 +125,7 @@ ALM_PROTO_OPT(asinf)(float x)
     {
         n = 1;
         G = HALF*(1.0-Y);
-        Y = -2.0*sqrt(G);
+        Y = -2.0*ALM_PROTO_KERN(sqrt)(G);
 
         poly = Y + Y*G *POLY_EVAL_9_0(G,C1,C2,C3,C4,C5,C6,C7,C8,C9);
 

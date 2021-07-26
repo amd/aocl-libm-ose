@@ -74,8 +74,8 @@ LIBM_IFACE_PROTO(acos)(void *arg)
        .g_ep = {
         [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(acosf),
         [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(acos),
-#if 0
         [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_acosf),
+#if 0
         [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_acosf),
         [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_acos),
         [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_acos),

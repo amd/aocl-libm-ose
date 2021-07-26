@@ -28,7 +28,7 @@ uint32_t GetnIpArgs( void )
 
 void ConfSetupf32(SpecParams *specp) {
   specp->data32 = test_acosf_conformance_data;
-  specp->countf = ARRAY_SIZE(test_acosf_conformance_data); 
+  specp->countf = ARRAY_SIZE(test_acosf_conformance_data);
 }
 
 void ConfSetupf64(SpecParams *specp) {
@@ -91,19 +91,20 @@ extern "C" {
 #endif
 
 /*vector routines*/
-/*not implemented as of now*/
+__m128 LIBM_FUNC_VEC(s, 4, acosf)(__m128);
+
+/* not implemented*/
 #if 0
 __m128d LIBM_FUNC_VEC(d, 2, acos)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, acos)(__m256d);
 
-__m128 LIBM_FUNC_VEC(s, 4, acosf)(__m128);
 __m256 LIBM_FUNC_VEC(s, 8, acosf)(__m256);
 #endif
 
 int test_v2d(test_data *data, int idx)  {
 #if 0
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
   __m128d op2 = LIBM_FUNC_VEC(d, 2, acos)(ip2);
   _mm_store_pd(&op[0], op2);
@@ -112,9 +113,9 @@ int test_v2d(test_data *data, int idx)  {
 }
 
 int test_v4s(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   float *ip  = (float*)data->ip;
-  float *op  = (float*)data->op; 
+  float *op  = (float*)data->op;
   __m128 ip4 = _mm_set_ps(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m128 op4 = LIBM_FUNC_VEC(s, 4, acosf)(ip4);
   _mm_store_ps(&op[0], op4);
@@ -125,7 +126,7 @@ int test_v4s(test_data *data, int idx)  {
 int test_v4d(test_data *data, int idx)  {
 #if 0
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256d op4 = LIBM_FUNC_VEC(d, 4, acos)(ip4);
   _mm256_store_pd(&op[0], op4);

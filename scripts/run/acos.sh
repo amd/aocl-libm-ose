@@ -29,6 +29,6 @@ exe="$1"
 
 nargs=1
 xranges=(-1000,1000)
-input_types=("s1d" "s1f")
+input_types=("s1d" "s1f" "v4s")
 
 run_exe_nargs $exe $nargs $input_types $xranges

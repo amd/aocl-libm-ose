@@ -277,6 +277,7 @@ __m128 FN_PROTOTYPE(vrs4_powxf)(__m128 x, float y);
 __m128 FN_PROTOTYPE(vrs4_tanf)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_coshf)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_tanhf)(__m128 x);
+__m128 FN_PROTOTYPE(vrs4_atanf)(__m128 x);
 
 __m256 FN_PROTOTYPE(vrs8_expf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_logf)(__m256 x);

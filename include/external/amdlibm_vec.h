@@ -260,6 +260,7 @@ extern "C" {
     __m256d amd_vrd4_cos    (__m256d x);
     __m256d amd_vrd4_tan    (__m256d x);
     __m128  amd_vrs4_asinf  (__m128  x);
+    __m128  amd_vrs4_atanf  (__m128  x);
 
     void amd_vrda_cos       (int len, double *src, double *dst);
     void amd_vrsa_cosf      (int len, float  *src, float  *dst);

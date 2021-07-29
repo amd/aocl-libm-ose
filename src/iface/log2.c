@@ -47,6 +47,8 @@ struct alm_arch_funcs __arch_funcs_log2 = {
             &ALM_PROTO_ARCH_AVX2(vrd4_log2),  /* vrd4 */
             &ALM_PROTO_FMA3(vrsa_log2f),  /*array vector float*/
             &ALM_PROTO_FMA3(vrda_log2),  /*array vector double*/
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_log2),
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_log2f),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
@@ -55,14 +57,14 @@ struct alm_arch_funcs __arch_funcs_log2 = {
             &ALM_PROTO_ARCH_ZN2(vrs4_log2f),
             &ALM_PROTO_ARCH_ZN2(vrs8_log2f),
             &ALM_PROTO_ARCH_ZN2(vrd2_log2),
-	    &ALM_PROTO_ARCH_ZN2(vrd4_log2),
+	        &ALM_PROTO_ARCH_ZN2(vrd4_log2),
         },
- 
+
         [ALM_UARCH_VER_ZEN3] = {
             &ALM_PROTO_ARCH_ZN3(log2f),
             &ALM_PROTO_ARCH_ZN3(log2),
             &ALM_PROTO_ARCH_ZN3(vrs4_log2f),
-	    &ALM_PROTO_ARCH_ZN3(vrs8_log2f),
+	        &ALM_PROTO_ARCH_ZN3(vrs8_log2f),
             &ALM_PROTO_ARCH_ZN3(vrd2_log2),
             &ALM_PROTO_ARCH_ZN3(vrd4_log2),
             NULL,
@@ -72,7 +74,6 @@ struct alm_arch_funcs __arch_funcs_log2 = {
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_log),
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_logf),
         },
-
 
     },
 };

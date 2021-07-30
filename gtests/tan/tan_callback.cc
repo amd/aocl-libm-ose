@@ -74,7 +74,7 @@ int test_s1s(test_data *data, int idx)  {
 
 int test_s1d(test_data *data, int idx)  {
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   op[0] = LIBM_FUNC(tan)(ip[idx]);
   return 0;
 }
@@ -90,6 +90,10 @@ __m128d LIBM_FUNC_VEC(d, 2, tan)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, tan)(__m256d);
 __m128 LIBM_FUNC_VEC(s, 4, tanf)(__m128);
 __m256 LIBM_FUNC_VEC(s, 8, tanf)(__m256);
+#if defined (__AVX512__)
+__m512d LIBM_FUNC_VEC(d, 8, tan)(__m512d);
+__m512  LIBM_FUNC_VEC(s, 16, tanf)(__m512);
+#endif
 #endif
 
 int test_v2d(test_data *data, int idx)  {
@@ -139,18 +143,21 @@ int test_v8s(test_data *data, int idx)  {
 
 int test_v8d(test_data *data, int idx)  {
 #if defined(__AVX512__)
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m512d ip8 = _mm512_set_pd(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
-  __m512d op8 = LIBM_FUNC_VEC(d, 8, exp)(ip8);
+  __m512d op8 = LIBM_FUNC_VEC(d, 8, tan)(ip8);
   _mm512_store_pd(&op[0], op8);
+#endif
 #endif
   return 0;
 }
 
 int test_v16s(test_data *data, int idx)  {
-#if 0
+#if defined(__AVX512__)
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   float *ip = (float*)data->ip;
   float *op  = (float*)data->op;
   __m512 ip16 = _mm512_set_ps(ip[idx+15], ip[idx+14], ip[idx+13], ip[idx+12],
@@ -159,6 +166,7 @@ int test_v16s(test_data *data, int idx)  {
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m512 op16 = LIBM_FUNC_VEC(s, 16, tanf)(ip16);
   _mm512_store_ps(&op[0], op16);
+#endif
 #endif
   return 0;
 }

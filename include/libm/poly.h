@@ -330,5 +330,29 @@
         q;                                                      \
         })
 
+/*
+ * p(x) = C1 + C2*r + C3*r^2 + C4*r^3 + C5*r^4 + C6*r^5 +
+ *          C7*r^6 + C8*r^7 + C9*r^8 + C10*r^9 + C11*r^10 + C12*r^11
+ *      = (C1 + C2*r) + r^2(C3 + C4*r) + r^4(C5 + C6*r) +
+ *           r^6(C7 + C8*r) + r^8(C9 + C10*r) + r^10(C11 + C12*r)
+ */
+#define POLY_EVAL_12(x, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12) ({\
+        __typeof(x) x2 =  x * x;                                             \
+        __typeof(x) x4 = x2 * x2;                                            \
+        __typeof(x) x8 = x4 * x4;                                            \
+        __typeof(x) q, a0, a1, a2, a3, a4, a5, b0, b1, b2;                   \
+         a0 =  c1 + c2  * x;                                                 \
+         a1 =  c3 + c4  * x;                                                 \
+         a2 =  c5 + c6  * x;                                                 \
+         a3 =  c7 + c8  * x;                                                 \
+         a4 =  c9 + c10 * x;                                                 \
+         a5 = c11 + c12 * x;                                                 \
+         b0 =  a0 + a1 * x2;                                                 \
+         b1 =  a2 + a3 * x2;                                                 \
+         b2 =  a4 + a5 * x2;                                                 \
+                                                                             \
+         q = (b0 + b1 * x4 ) + b2 * x8;                                      \
+         q;                                                                  \
+         })
 #endif /* LIBM_POLY_H */
 

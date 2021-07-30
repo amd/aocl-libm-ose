@@ -1,27 +1,16 @@
 #include "libm_dynamic_load.h"
 
 int test_copysign(void* handle) {
-    char* error;
-
-    funcf_2 s1f = (funcf_2)dlsym(handle, "amd_copysignf");
-    func_2  s1d = (func_2) dlsym(handle, "amd_copysign");
-
-    /*scalar inputs*/
-    float inputf = 3.145f, outputf;
-    double input = 6.287, output;
-
-    error = dlerror();
-    if (error != NULL) {
-        printf("Error: %s\n", error);
-        return 1;
+    const char* func_name = "copysign";
+    /* update all the existing variants here */
+    struct FuncData data {
+        .s1f_2 = (funcf_2)dlsym(handle, "amd_copysignf"),
+        .s1d_2 = (func_2)dlsym(handle, "amd_copysign"),
+    };
+    if (data.s1f_2 == NULL || data.s1d_2 == NULL) {
+        printf ("Uninitialized variant in %s\n", func_name);
+        exit(1);
     }
-
-    printf("Exercising copysign routines\n");
-    /*scalar*/
-    outputf = s1f(inputf, inputf);
-    printf("amd_copysignf(%f) = %f\n", (double)inputf, (double)outputf);
-    output = s1d(input, input);
-    printf("amd_copysign(%lf) = %lf\n", input, output);
-
+    test_func(handle, &data, func_name);
     return 0;
 }

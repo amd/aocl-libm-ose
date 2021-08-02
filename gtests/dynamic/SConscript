@@ -9,7 +9,7 @@ e = env.Clone()
 test_cflags = ['-g', '-mavx', '-fPIE', '-fpermissive']
 
 #check if avx512 enabled
-if e.has_key('arch_config') and e['arch_config'] == 'avx512':
+if 'arch_config' in e.keys() and e['arch_config'] == 'avx512':
     test_cflags.append('-mavx512f')
     test_cflags.append('-D__AVX512__')
 

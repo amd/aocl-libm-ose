@@ -24,6 +24,17 @@ char *concatenate(const char *a, const char *b, const char *c) {
     return strcat(strcat(strcpy(temp, a), b), c);
 }
 
+/* check error */
+int CheckError() {
+    char* error;
+    error = dlerror();
+    if (error != NULL) {
+        printf("Error: %s\n", error);
+        return 1;
+    }
+    return 0;
+}
+
 int test_func(void* handle, struct FuncData * data, const char * func_name) {
     /* by default these wil be null */
     funcf s1f = data->s1f;

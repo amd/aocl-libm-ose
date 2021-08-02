@@ -4,6 +4,7 @@ int test_s1f(funcf s1f, const char* func_name) {
     float inputf=3.14f, outputf;
     if (s1f != NULL) {
         outputf = s1f(inputf);
+        if (CheckError()) exit(1);
         printf("amd_%sf(%f) = %f\n", func_name, (double)inputf, (double)outputf);
     }
     return 0;
@@ -13,6 +14,7 @@ int test_s1d(func s1d, const char* func_name) {
     double input=3.14, output;
     if (s1d != NULL) {
         output = s1d(input);
+        if (CheckError()) exit(1);
         printf("amd_%s(%lf) = %lf\n", func_name, input, output);
     }
     return 0;
@@ -22,6 +24,7 @@ int test_s1f_2(funcf_2 s1f_2, const char* func_name) {
     float inputf=3.14f, outputf;
     if (s1f_2 != NULL) {
         outputf = s1f_2(inputf, inputf);
+        if (CheckError()) exit(1);
         printf("amd_%sf(%f, %f) = %f\n", func_name, (double)inputf, (double)inputf, (double)outputf);
     }
     return 0;
@@ -31,6 +34,7 @@ int test_s1d_2(func_2 s1d_2, const char* func_name) {
     double input = 3.14, output;
     if (s1d_2 != NULL) {
         output = s1d_2(input, input);
+        if (CheckError()) exit(1);
         printf("amd_%s(%lf, %lf) = %lf\n", func_name, input, input, output);
     }
     return 0;
@@ -41,9 +45,12 @@ int test_v2d(func_v2d v2d, const char* func_name) {
     __m128d ip_vrd2, op_vrd2;
     double input_array_vrd2[2], output_array_vrd2[2];
     ip_vrd2 = _mm_loadu_pd(input_array_vrd2);
+    if (CheckError()) exit(1);
     if (v2d != NULL) {
         op_vrd2 = v2d(ip_vrd2);
+        if (CheckError()) exit(1);
         _mm_storeu_pd(output_array_vrd2, op_vrd2);
+        if (CheckError()) exit(1);
         printf("amd_vrd2_%s([%lf, %lf] = [%lf, %lf])\n",
                 func_name,
                 input_array_vrd2[0], input_array_vrd2[1],
@@ -56,9 +63,12 @@ int test_v2d_2(func_v2d_2 v2d, const char* func_name) {
     __m128d ip_vrd2, op_vrd2;
     double input_array_vrd2[2], output_array_vrd2[2];
     ip_vrd2 = _mm_loadu_pd(input_array_vrd2);
+    if (CheckError()) exit(1);
     if (v2d != NULL) {
         op_vrd2 = v2d(ip_vrd2, ip_vrd2);
+        if (CheckError()) exit(1);
         _mm_storeu_pd(output_array_vrd2, op_vrd2);
+        if (CheckError()) exit(1);
         printf("amd_vrd2_%s([%lf, %lf] = [%lf, %lf])\n", func_name,
                 input_array_vrd2[0], input_array_vrd2[1],
                 output_array_vrd2[0], output_array_vrd2[1]);
@@ -70,9 +80,12 @@ int test_v4s(funcf_v4s v4s, const char* func_name) {
     __m128 ip_vrs4, op_vrs4;
     float input_array_vrs4[4], output_array_vrs4[4];
     ip_vrs4 = _mm_loadu_ps(input_array_vrs4);
+    if (CheckError()) exit(1);
     if (v4s != NULL) {
         op_vrs4 = v4s(ip_vrs4);
+        if (CheckError()) exit(1);
         _mm_storeu_ps(output_array_vrs4, op_vrs4);
+        if (CheckError()) exit(1);
         printf("amd_vrs4_%sf([%f, %f] = [%f, %f])\n", func_name,
                 (double)input_array_vrs4[0], (double)input_array_vrs4[1],
                 (double)output_array_vrs4[0], (double)output_array_vrs4[1]);
@@ -84,9 +97,12 @@ int test_v4s_2(funcf_v4s_2 v4s_2, const char* func_name) {
     __m128 ip_vrs4, op_vrs4;
     float input_array_vrs4[4], output_array_vrs4[4];
     ip_vrs4 = _mm_loadu_ps(input_array_vrs4);
+    if (CheckError()) exit(1);
     if (v4s_2 != NULL) {
         op_vrs4 = v4s_2(ip_vrs4, ip_vrs4);
+        if (CheckError()) exit(1);
         _mm_storeu_ps(output_array_vrs4, op_vrs4);
+        if (CheckError()) exit(1);
         printf("amd_vrs4_%sf([%f, %f] = [%f, %f])\n", func_name,
                 (double)input_array_vrs4[0], (double)input_array_vrs4[1],
                 (double)output_array_vrs4[0], (double)output_array_vrs4[1]);
@@ -99,9 +115,12 @@ int test_v4d(func_v4d v4d, const char * func_name) {
     int i;
     double input_array_vrd4[4], output_array_vrd4[4];
     ip_vrd4 = _mm256_loadu_pd(input_array_vrd4);
+    if (CheckError()) exit(1);
     if (v4d != NULL) {
         op_vrd4 = v4d(ip_vrd4);
+        if (CheckError()) exit(1);
         _mm256_storeu_pd(output_array_vrd4, op_vrd4);
+        if (CheckError()) exit(1);
         printf("amd_vrs8_%sf\ninput:\n", func_name);
         for(i=0; i<4; i++)
             printf("%lf\t", input_array_vrd4[i]);
@@ -117,9 +136,12 @@ int test_v4d_2(func_v4d_2 v4d_2, const char * func_name) {
     double input_array_vrd4[4], output_array_vrd4[4];
     int i;
     ip_vrd4 = _mm256_loadu_pd(input_array_vrd4);
+    if (CheckError()) exit(1);
     if (v4d_2 != NULL) {
         op_vrd4 = v4d_2(ip_vrd4, ip_vrd4);
+        if (CheckError()) exit(1);
         _mm256_storeu_pd(output_array_vrd4, op_vrd4);
+        if (CheckError()) exit(1);
         printf("amd_vrs8_%sf\ninput:\n", func_name);
         for(i=0; i<4; i++)
             printf("%lf\t", input_array_vrd4[i]);
@@ -135,9 +157,12 @@ int test_v8s(funcf_v8s v8s, const char * func_name) {
     float input_array_vrs8[8], output_array_vrs8[8];
     int i;
     ip_vrs8 = _mm256_loadu_ps(input_array_vrs8);
+    if (CheckError()) exit(1);
     if (v8s != NULL) {
         op_vrs8 = v8s(ip_vrs8);
+        if (CheckError()) exit(1);
         _mm256_storeu_ps(output_array_vrs8, op_vrs8);
+        if (CheckError()) exit(1);
         printf("amd_vrs8_%sf\ninput:\n", func_name);
         for(i=0; i<8; i++)
             printf("%f\t",(double)input_array_vrs8[i]);
@@ -154,9 +179,12 @@ int test_v8s_2(funcf_v8s_2 v8s_2, const char * func_name) {
     float output_array_vrs8[8];
     int i;
     ip_vrs8 = _mm256_loadu_ps(input_array_vrs8);
+    if (CheckError()) exit(1);
     if (v8s_2 != NULL) {
         op_vrs8 = v8s_2(ip_vrs8, ip_vrs8);
+        if (CheckError()) exit(1);
         _mm256_storeu_ps(output_array_vrs8, op_vrs8);
+        if (CheckError()) exit(1);
         printf("amd_vrs8_%sf\ninput:\n", func_name);
         for(i=0; i<8; i++)
             printf("%f\t",(double)input_array_vrs8[i]);
@@ -174,9 +202,12 @@ int test_v8d(func_v8d v8d, const char * func_name) {
     double output_array_vrd8[8];
     int i;
     ip_vrd8 = _mm512_loadu_pd(input_array_vrd8);
+    if (CheckError()) exit(1);
     if (v8d != NULL) {
         op_vrd8 = v8d(ip_vrd8);
+        if (CheckError()) exit(1);
         _mm512_storeu_pd(output_array_vrd8, op_vrd8);
+        if (CheckError()) exit(1);
         printf("amd_vrd8_%s\ninput:\n", func_name);
         for(i=0; i<8; i++)
             printf("%lf\t",(double)input_array_vrd8[i]);
@@ -193,9 +224,12 @@ int test_v8d_2(func_v8d_2 v8d_2, const char * func_name) {
     double output_array_vrd8[8];
     int i;
     ip_vrd8 = _mm512_loadu_pd(input_array_vrd8);
+    if (CheckError()) exit(1);
     if (v8d_2 != NULL) {
         op_vrd8 = v8d_2(ip_vrd8, ip_vrd8);
+        if (CheckError()) exit(1);
         _mm512_storeu_pd(output_array_vrd8, op_vrd8);
+        if (CheckError()) exit(1);
         printf("amd_vrd8_%s\ninput:\n", func_name);
         for(i=0; i<8; i++)
             printf("%lf\t",(double)input_array_vrd8[i]);
@@ -211,9 +245,12 @@ int test_v16s(funcf_v16s v16s, const char * func_name) {
     double input_array_vrs16[16], output_array_vrs16[16];
     int i;
     ip_vrs16 = _mm512_loadu_ps(input_array_vrs16);
+    if (CheckError()) exit(1);
     if (v16s != NULL) {
         op_vrs16 = v16s(ip_vrs16);
+        if (CheckError()) exit(1);
         _mm512_storeu_ps(output_array_vrs16, op_vrs16);
+        if (CheckError()) exit(1);
         printf("amd_vrs16_%sf\nInput:\n", func_name);
         for(i=0; i<16; i++)
             printf("%f\n", (double)input_array_vrs16[i]);
@@ -229,9 +266,12 @@ int test_v16s_2(funcf_v16s_2 v16s, const char * func_name) {
     double input_array_vrs16[16], output_array_vrs16[16];
     int i;
     ip_vrs16 = _mm512_loadu_ps(input_array_vrs16);
+    if (CheckError()) exit(1);
     if (v16s != NULL) {
         op_vrs16 = v16s(ip_vrs16, ip_vrs16);
+        if (CheckError()) exit(1);
         _mm512_storeu_ps(output_array_vrs16, op_vrs16);
+        if (CheckError()) exit(1);
         printf("amd_vrs16_%sf\nInput:\n", func_name);
         for(i=0; i<16; i++)
             printf("%f\n", (double)input_array_vrs16[i]);
@@ -256,6 +296,7 @@ int test_vas(funcf_va vas, const char * func_name) {
             printf("%f\t", (double)input_arrayf[i]);
         for (i = 0; i < loopCount; i++)
             vas((int)dim, input_arrayf + i*dim, output_arrayf + i*dim);
+        if (CheckError()) exit(1);
         printf("\nOutput:\n");
         for (i = 0; i < array_size; i++)
             printf("%f\t", (double)output_arrayf[i]);
@@ -279,6 +320,7 @@ int test_vas_2(funcf_va_2 vas, const char * func_name) {
             vas((int)dim, input_arrayf + i*dim,
                      input_arrayf + i*dim,
                      output_arrayf + i*dim);
+        if (CheckError()) exit(1);
         printf("\nOutput:\n");
         for (i = 0; i < array_size; i++)
             printf("%f\t", (double)output_arrayf[i]);
@@ -300,6 +342,7 @@ int test_vad(func_va vad, const char* func_name) {
             printf("%lf\t", input_arrayd[i]);
         for (i = 0; i < loopCount; i++)
             vad((int)dim, input_arrayd + i*dim, output_arrayd + i*dim);
+        if (CheckError()) exit(1);
         printf("\nOutput:\n");
         for (i = 0; i < array_size; i++)
             printf("%lf\t", output_arrayd[i]);
@@ -320,6 +363,7 @@ int test_vad_2(func_va_2 vad, const char* func_name) {
             printf("%lf\t", input_arrayd[i]);
         for (i = 0; i < loopCount; i++)
             vad((int)dim, input_arrayd + i*dim, input_arrayd + i*dim, output_arrayd + i*dim);
+        if (CheckError()) exit(1);
         printf("\nOutput:\n");
         for (i = 0; i < array_size; i++)
             printf("%lf\t", output_arrayd[i]);

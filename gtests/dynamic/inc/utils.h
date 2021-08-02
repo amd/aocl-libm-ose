@@ -12,6 +12,9 @@
 float  GenerateRangeFloat   (float  min,  float  max);
 double GenerateRangeDouble  (double min,  double max);
 
+/* check error */
+int CheckError(void);
+
 /*struct to load func specific stuffs */
 struct FuncData {
     /* scalar func types*/

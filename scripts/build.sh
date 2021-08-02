@@ -71,9 +71,9 @@ echo "Build Type: "$build_type
 echo "Compiler: "$compiler_type
 fw="gtests"
 
-#default compiler exe paths (gcc)
-cc_exe=/usr/bin/gcc
-cxx_exe=/usr/bin/g++
+#default compiler exe paths
+cc_exe=""
+cxx_exe=""
 
 #check if compiler is aocc then checkif clang is added to path
 if [ ${compiler_type} = "aocc" ]; then
@@ -105,7 +105,11 @@ if [ ${avx512} = true ]; then
     build_cmd+=" --arch_config=avx512"
 fi
 
-build_cmd+=" CC=${cc_exe} CXX=${cxx_exe}"
+# if aocc, use custom clang paths
+if [ ${compiler_type} = "aocc" ]; then
+    build_cmd+=" ALM_CC=${cc_exe} ALM_CXX=${cxx_exe}"
+fi
+
 build_cmd+=" verbose=1"
 
 #default: libabi=aocl

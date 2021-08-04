@@ -253,6 +253,7 @@ extern "C" {
     __m128  amd_vrs4_cosf   (__m128  x);
     __m128d amd_vrd2_sin    (__m128d x);
     __m128d amd_vrd2_tan    (__m128d x);
+    __m128d amd_vrd2_atan   (__m128d x);
     __m128  amd_vrs4_sinf   (__m128  x);
     __m128  amd_vrs4_tanf   (__m128  x);
     __m256  amd_vrs8_tanf   (__m256  x);

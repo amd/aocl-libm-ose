@@ -42,8 +42,8 @@ struct alm_arch_funcs __arch_funcs_atan = {
             &ALM_PROTO_REF(atan),
             &ALM_PROTO_ARCH_AVX2(vrs4_atanf),/* vrs4 ? */
             &ALM_PROTO_ARCH_AVX2(vrs8_atanf),/* vrs8 ? */
-            NULL,                           /* vrd2 ? */
-            NULL,                           /* vrd4 ? */
+            &ALM_PROTO_ARCH_AVX2(vrd2_atan), /* vrd2 ? */
+            NULL,                            /* vrd4 ? */
         },
 
         [ALM_UARCH_VER_ZEN2] = {
@@ -51,7 +51,7 @@ struct alm_arch_funcs __arch_funcs_atan = {
             &ALM_PROTO_ARCH_ZN2(atan),
             &ALM_PROTO_ARCH_ZN2(vrs4_atanf),
             &ALM_PROTO_ARCH_ZN2(vrs8_atanf),
-            NULL,
+            &ALM_PROTO_ARCH_ZN2(vrd2_atan),
             NULL,
         },
 
@@ -60,7 +60,7 @@ struct alm_arch_funcs __arch_funcs_atan = {
             &ALM_PROTO_ARCH_ZN3(atan),
             &ALM_PROTO_ARCH_ZN3(vrs4_atanf),
             &ALM_PROTO_ARCH_ZN3(vrs8_atanf),
-            NULL,
+            &ALM_PROTO_ARCH_ZN3(vrd2_atan),
             NULL,
         },
     },
@@ -75,8 +75,8 @@ LIBM_IFACE_PROTO(atan)(void *arg)
         [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(atan),
         [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_atanf),
         [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_atanf),
-#if 0
         [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_atan),
+#if 0
         [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_atan),
 #endif
         },

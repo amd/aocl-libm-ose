@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -129,8 +129,6 @@ static struct {
 
 #include "expf_data.h"
 
-
-
 static struct expf_data expf_v2_data = {
     .ln2by_tblsz = 0x1.62e42fefa39efp-7,
     .tblsz_byln2 = 0x1.71547652b82fep+6,
@@ -175,7 +173,7 @@ struct log_table {
 static inline int
 checkint (uint32_t iy)
 {
-    int e = iy >> 23 & 0xff;
+    int32_t e = iy >> 23 & 0xff;
     if (e < 0x7f)
         return 0;
     if (e > 0x7f + 23)
@@ -208,19 +206,21 @@ zeroinfnan (uint32_t ix)
 
 
 static inline double_t
-calculate_log(double_t x)
+calculate_log(float x)
 {
     double_t q, r;
-    double_t dexpo, j_times_half;
 
-    uint64_t ux = asuint64(x);
+    double_t dexpo, temp;
 
-    int32_t expo = (int32_t)((ux >> 52) - 1023);
+    uint32_t ux = asuint32(x);
 
-    flt64_t mant = {.i = ux & 0x000fffffffffffffULL};
+    int32_t expo = ((int32_t)ux >> 23) - 127;
+
+    uint32_t mant = ux & 0x007FFFFF;
 
     dexpo = (double)expo;
-    uint64_t mant_n = ux & MANT_MASK_N;
+
+    uint32_t mant_n = ux & 0x007F8000;
 
     /*
      * Step needed for better accuracy
@@ -228,23 +228,22 @@ calculate_log(double_t x)
     uint64_t j = (mant_n) + (mant_n1 << 1);
     */
 
-    uint64_t j = (mant_n);
+    uint32_t j = (mant_n);
 
-    mant.i |= 0x3fe0000000000000L;               /* F */
-    j_times_half = asdouble(0x3fe0000000000000ULL | j); /* Y */
+    mant |= 0x3f000000U;               /* F */
 
-    j >>= (52 - N);
+    float j_times_half = asfloat(0x3f000000U | j); /* Y */
+
+    j >>= (23 - N);
 
     /* f = F - Y */
-    double_t f = j_times_half - mant.d;
+    double_t f = (double)(j_times_half - asfloat(mant));
 
     r = f * TAB_F_INV[j];
 
-    double_t r2 = r * r;                /* r^2 */
+    /* q = r + r^2*C2 + r^3*C3 */
 
-    double_t temp = C2  + r * C3;
-
-    q = r + r2 * temp;
+    q = r + r * r * ( C2  + r * C3);
 
     /* m*log(2) + log(G) - poly */
 
@@ -258,20 +257,17 @@ calculate_log(double_t x)
 
 static inline float calculate_exp(double_t x, uint64_t sign_bias)
 {
-    double_t q, dn, r, z;
+    double_t poly, dn, r, z;
     uint64_t n, j;
 
-    if (unlikely (top12(x) > top12(88.0))) {
+    if (unlikely ((top12(x) & 0x7ff)  > top12(88.0))) {
 
         if ((float)x > EXPF_FARG_MAX) {
-            return _expf_special((float)x,
-                     asfloat((uint32_t)((sign_bias >> 32) | PINFBITPATT_SP32)),
-                       EXP_Y_INF);
+            return _expf_special((float)x, asfloat(((uint32_t)(sign_bias >> 32) | PINFBITPATT_SP32)), EXP_Y_INF);
         }
 
         if (((float)x) < EXPF_FARG_MIN) {
-            return _expf_special((float)x, asfloat((uint32_t)(sign_bias >> 32)),
-                                  EXP_Y_ZERO);
+            return _expf_special((float)x, asfloat((uint32_t)(sign_bias >> 32)) , EXP_Y_ZERO);
         }
 
     }
@@ -292,6 +288,7 @@ static inline float calculate_exp(double_t x, uint64_t sign_bias)
     dn -=  EXPF_HUGE;
 #else
     n = z;
+
     dn = cast_i32_to_float(n);
 
 #endif
@@ -300,15 +297,13 @@ static inline float calculate_exp(double_t x, uint64_t sign_bias)
 
     j = n % EXPF_TABLE_SIZE;
 
-    double_t qtmp  = D2 + (D3 * r);
-
-    double_t r2 = r * r;
+    /* polynomial = r + r^2*D2 + r^3*D3 */
 
     double_t tbl = asdouble(sign_bias | (asuint64(__two_to_jby64[j]) + (n << (52 - EXPF_N))));
 
-    q  = r + (r2 * qtmp);
+    poly = r + r * r * (D2 + r * D3);
 
-    double_t result = tbl + tbl * q;
+    double_t result = tbl + tbl * poly;
 
     return (float_t)(result);
 
@@ -317,139 +312,149 @@ static inline float calculate_exp(double_t x, uint64_t sign_bias)
 float ALM_PROTO_OPT(powf)(float x, float y)
 {
     double_t logx, ylogx, result, q, r;
-    double_t dx;
-  	uint32_t ux, uy;
+    uint32_t ux, uy;
 
     ux = asuint32(x);
+
     uy = asuint32(y);
+
     uint64_t sign_bias = 0;
 
-    if (unlikely (ux - 0x3F880000 >= 0x7f800000 - 0x3F880000 || zeroinfnan (uy)))
-    {
+    if (unlikely (ux >= 0x7f800000 || zeroinfnan (uy))) {
 
         /*  All x less than 1.0625, infinity, NaN and y = zero, infinity or NAN caught here
          *  x < 0x1p-126 or inf or nan.
          *  Either (x < 0x1p-126 or inf or nan) or (y is 0 or inf or nan).
          *
          */
-        if (unlikely (zeroinfnan (uy)))
-        {
+        if (unlikely (zeroinfnan (uy))) {
             if (2 * uy == 0)
-	            return isSignalingNaN (x) ? x + y : 1.0f;
+                return isSignalingNaN (x) ? x + y : 1.0f;
 
             if (ux == 0x3f800000)
-	            return isSignalingNaN (y) ? x + y : 1.0f;
+                return isSignalingNaN (y) ? x + y : 1.0f;
 
             if (2 * ux > 2u * 0x7f800000 || 2 * uy > 2u * 0x7f800000)
-	            return x + y;
+                return x + y;
 
             if (2 * ux == 2 * 0x3f800000)
-	            return 1.0f;
+                return 1.0f;
 
             if ((2 * ux < 2 * 0x3f800000) == !(uy & 0x80000000))
-	            return 0.0f; /* |x|<1 && y==inf or |x|>1 && y==-inf.  */
+                return 0.0f; /* |x|<1 && y==inf or |x|>1 && y==-inf.  */
 
             return y * y;
-	    }
+        }
 
-        if (unlikely (zeroinfnan (ux)))
-        {
+        if (unlikely (zeroinfnan (ux))) {
+
             float_t x2 = x * x;
 
-            if (ux & 0x80000000 && checkint (uy) == 1) /* x is -0 and y is odd */
-            {
+            if (ux & 0x80000000 && checkint (uy) == 1) { /* x is -0 and y is odd */
+
                 x2 = -x2;
+
                 sign_bias = SIGN_BIAS;
             }
 
-            if (2 * ux == 0 && uy & 0x80000000)
-            {
-                x = (float)(1.0 / 0.0);
+            if (2 * ux == 0 && uy & 0x80000000) {
+            
+                x = 1.0f / 0.0f;
+
                 ux = asuint32(x);
-                return asfloat((uint32_t)((sign_bias >> 32) | ux));
+
+                return asfloat(((uint32_t)(sign_bias >> 32) | ux));
             }
 
             return uy & 0x80000000 ? (1 / x2) : x2; /* if y is negative, return 1/x else return x */
         }
 
         /* x and y are non-zero finite  */
-        if (ux & 0x80000000) /* x is negative */
-        {
+        if (ux & 0x80000000) { /* x is negative */
+ 
             /* Finite x < 0 */
             int yint = checkint (uy);
+
             if (yint == 0)
                 return (float)sqrt(x);
+
             if (yint == 1)
                 sign_bias = SIGN_BIAS;
 
             ux &= 0x7fffffff; /* x is negative, y is integer */
+
             x = asfloat(ux);
         }
+    }
 
-        /* if 0.9375 < x < 1.0625 */
-        if ((0x3F880000 - ux) < (0x3F880000 - 0x3F700000))
-        {
-             dx = (double_t)x;
+    /* if 0.9375 < x < 1.0625 */
+    if ((0x3F880000 - ux) < (0x3F880000 - 0x3F700000)) {
+	    
+	double dx = (double_t)x;
 
-             double_t  u, u2, u3, u7;
-             double_t  A1, A2, B1, B2, R1, R2;
-             static const double ca[5] = {
-                       0x1.55555555554e6p-4, /* 1/2^2 * 3 */
-                       0x1.9999999bac6d4p-7, /* 1/2^4 * 5 */
-                       0x1.2492307f1519fp-9, /* 1/2^6 * 7 */
-                       0x1.c8034c85dfff0p-12 /* 1/2^8 * 9 */
-             };
+        double_t  u, u2, u3, u7;
+        double_t  A1, A2, B1, B2, R1, R2;
 
-             /*
-              * Less than threshold, no table lookup
-              *
-              */
+	static const double ca[5] = {
 
-             flt64_t one_minus_mant = {.d = dx - 1.0};
+                0x1.55555555554e6p-4, /* 1/2^2 * 3 */
+                0x1.9999999bac6d4p-7, /* 1/2^4 * 5 */
+                0x1.2492307f1519fp-9, /* 1/2^6 * 7 */
+                0x1.c8034c85dfff0p-12 /* 1/2^8 * 9 */
+        };
 
-             r = one_minus_mant.d;
+        /*
+         * Less than threshold, no table lookup
+         *
+         */
 
-             double_t u_by_2 = r / (2.0 + r);
+        flt64_t one_minus_mant = {.d = dx - 1.0};
 
-             q = u_by_2 * r;  /* correction */
+        r = one_minus_mant.d;
 
-             u = u_by_2 + u_by_2;
+        double_t u_by_2 = r / (2.0 + r);
+
+        q = u_by_2 * r;  /* correction */
+
+        u = u_by_2 + u_by_2;
 
 #define CA1 ca[0]
 #define CA2 ca[1]
 #define CA3 ca[2]
 #define CA4 ca[3]
 
-            u2 = u * u;
+        u2 = u * u;
 
-            A1 = CA2 * u2 + CA1;
-            A2 = CA4 * u2 + CA3;
+        A1 = CA2 * u2 + CA1;
 
-            u3 = u2 * u;
-            B1 = u3 * A1;
+        A2 = CA4 * u2 + CA3;
 
-            u7 = u * (u3 * u3);
-            B2 = u7 * A2;
+        u3 = u2 * u;
 
-            R1 = B1 + B2;
-            R2 = R1 - q;
+        B1 = u3 * A1;
 
-            logx = r + R2;
+        u7 = u * (u3 * u3);
 
-            ylogx = (double_t)y * logx;
+        B2 = u7 * A2;
 
-            result = calculate_exp(ylogx, sign_bias);
+        R1 = B1 + B2;
 
-            return (float)result;
+        R2 = R1 - q;
 
-        }
+        logx = r + R2;
+
+        ylogx = (double)y * logx;
+
+        result = calculate_exp(ylogx, sign_bias);
+
+        return (float)result;
+
     }
 
-    dx = (double_t)x;
 
-    logx = calculate_log(dx);
+    logx = calculate_log(x);
 
-    ylogx = (double_t)y * logx;
+    ylogx = (double)y * logx;
 
     result = calculate_exp(ylogx, sign_bias);
 

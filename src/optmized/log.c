@@ -26,23 +26,18 @@
  */
 
 #include <stdint.h>
+
 #include <libm_util_amd.h>
 #include <libm_special.h>
-
-#if defined(__GNUC__) && !defined(__clang__) && !defined(ENABLE_DEBUG)
-#pragma GCC push_options
-#pragma GCC optimize ("O2")
-#endif  /* !DEBUG */
-
 #include <libm_macros.h>
+
 #include <libm/amd_funcs_internal.h>
 #include <libm/types.h>
-
 #include <libm/typehelper.h>
 #include <libm/compiler.h>
 
-#define N 8
-#define TABLE_SIZE (1ULL << N)
+#define N               8
+#define TABLE_SIZE      (1ULL << N)
 #define MAX_POLYDEGREE  8
 
 /*
@@ -342,6 +337,3 @@ ALM_PROTO_OPT(log)(double x)
     return q;
 }
 
-#if defined(__GNUC__) && !defined(__clang__) && !defined(ENABLE_DEBUG)
-#pragma GCC pop_options
-#endif

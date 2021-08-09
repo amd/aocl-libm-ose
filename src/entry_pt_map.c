@@ -282,6 +282,7 @@ LIBM_DECL_FN_MAP(vrs8_exp2f);
 LIBM_DECL_FN_MAP(vrs8_powf);
 LIBM_DECL_FN_MAP(vrs8_sinf);
 LIBM_DECL_FN_MAP(vrs8_tanf);
+LIBM_DECL_FN_MAP(vrs8_atanf);
 LIBM_DECL_FN_MAP(vrs8_cosf);
 LIBM_DECL_FN_MAP(vrs8_coshf);
 LIBM_DECL_FN_MAP(vrs8_tanhf);
@@ -365,6 +366,7 @@ WEAK_LIBM_ALIAS(vrs4_atanf, FN_PROTOTYPE(vrs4_atanf));
 WEAK_LIBM_ALIAS(vrs8_exp2f, FN_PROTOTYPE(vrs8_exp2f));
 WEAK_LIBM_ALIAS(vrs8_logf, FN_PROTOTYPE(vrs8_logf));
 WEAK_LIBM_ALIAS(vrs8_tanf, FN_PROTOTYPE(vrs8_tanf));
+WEAK_LIBM_ALIAS(vrs8_atanf, FN_PROTOTYPE(vrs8_atanf));
 
 WEAK_LIBM_ALIAS(vrda_cbrt, FN_PROTOTYPE(vrda_cbrt));
 WEAK_LIBM_ALIAS(vrda_cos, FN_PROTOTYPE(vrda_cos));

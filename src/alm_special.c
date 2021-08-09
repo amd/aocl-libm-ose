@@ -158,6 +158,12 @@ alm_log2_special(double x, double y, uint32_t code)
     return _log_special_common(x, y, __amd_log2, code, "log2");
 }
 
+double
+alm_log10_special(double x, double y, uint32_t code)
+{
+    return _log_special_common(x, y, __amd_log2, code, "log2");
+}
+
 float
 alm_acosf_special(float x, uint32_t code)
 {
@@ -177,3 +183,4 @@ alm_acosf_special(float x, uint32_t code)
         return  __amd_handle_errorf("acosf", __amd_acos, INDEFBITPATT_SP32,
                                     _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
 }
+

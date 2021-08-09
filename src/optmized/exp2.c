@@ -198,7 +198,7 @@ ALM_PROTO_OPT(exp2)(double x)
 
         if (x >= ALM_EXP2_ARG_MAX) {
             if (x != x)  /* check if x is a NAN */
-                return  alm_exp2_special(x, asdouble(QNANBITPATT_DP64), ALM_E_OUT_INF);
+                return  alm_exp2_special(x, asdouble(QNANBITPATT_DP64), ALM_E_OUT_NAN);
 
             return  alm_exp2_special(x, asdouble(PINFBITPATT_DP64), ALM_E_IN_X_NAN);
         }

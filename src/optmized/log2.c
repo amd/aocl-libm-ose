@@ -227,17 +227,17 @@ ALM_PROTO_OPT(log2)(double x)
             return x;
 
         if (isinf(x))
-            return alm_exp2_special(x, asdouble(PINFBITPATT_DP64), ALM_E_OUT_INF);
+            return alm_log2_special(x, asdouble(PINFBITPATT_DP64), ALM_E_OUT_INF);
 
         if (!(ux & QNANBITPATT_DP64))
-            return alm_exp2_special(x, asdouble(ux | QNANBITPATT_DP64), ALM_E_IN_X_NAN);
+            return alm_log2_special(x, asdouble(ux | QNANBITPATT_DP64), ALM_E_IN_X_NAN);
     }
 
     if (unlikely (x <= 0.0)) {
         if (x == 0.0)
-            return alm_exp2_special(x, asdouble(PINFBITPATT_DP64), ALM_E_IN_X_ZERO);
+            return alm_log2_special(x, asdouble(PINFBITPATT_DP64), ALM_E_IN_X_ZERO);
 
-        return alm_exp2_special(x, asdouble(QNANBITPATT_DP64), ALM_E_IN_X_NEG);
+        return alm_log2_special(x, asdouble(QNANBITPATT_DP64), ALM_E_IN_X_NEG);
     }
 
     flt64_t mant  = {.u = ux & MANTBITS_DP64};

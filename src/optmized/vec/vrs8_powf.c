@@ -45,14 +45,14 @@ extern double log_256[];
 extern const double log_f_inv_256[];
 #define TAB_F_INV log_f_inv_256
 #define TAB_LOG   log_256
-#define MANT_MASK_N  (0x000FF00000000000ULL)
+#define MANT_MASK_N  (0x007F8000)
 #define MANT_MASK_N1 (0x0000080000000000ULL)
 #define SINGLE_PRECISION_BIAS 127
-#define DOUBLE_PRECISION_MANTISSA 0x000fffffffffffffULL
-#define ONE_BY_TWO 0x3fe0000000000000ULL
+#define SINGLE_PRECISION_MANTISSA 0x007FFFFF
+#define ONE_BY_TWO 0x3f000000
 
 static struct {
-    v_u64x4_t mantissa_bits, one_by_two, mant_8_bits;
+    v_u32x8_t mantissa_bits, one_by_two, mant_8_bits;
     v_i32x8_t float_bias;
     v_u32x8_t v_min, v_max;
     double ALIGN(16) poly[MAX_POLYDEGREE];
@@ -61,10 +61,10 @@ static struct {
     .ln2    = _MM_SET1_PD4(0x1.62e42fefa39efp-1), /* ln(2) */
     .v_min  = _MM256_SET1_PS8(0x00800000),
     .v_max  = _MM256_SET1_PS8(0x7f800000),
-    .float_bias     =  _MM256_SET1_PS8(SINGLE_PRECISION_BIAS),
-    .mantissa_bits  = _MM_SET1_I64(DOUBLE_PRECISION_MANTISSA),
-    .one_by_two     = _MM_SET1_I64(ONE_BY_TWO),
-    .mant_8_bits    = _MM_SET1_I64(MANT_MASK_N),
+    .float_bias     =  _MM256_SET1_I32(SINGLE_PRECISION_BIAS),
+    .mantissa_bits  =  _MM256_SET1_I32(SINGLE_PRECISION_MANTISSA),
+    .one_by_two     =  _MM256_SET1_I32(ONE_BY_TWO),
+    .mant_8_bits    =  _MM256_SET1_I32(MANT_MASK_N),
 
     /*
     * Polynomial constants, 1/x! (reciprocal x)
@@ -86,12 +86,13 @@ static struct {
 static struct {
     v_f64x4_t ln2by_tblsz, tblsz_byln2, Huge;
     double_t ALIGN(16) poly[MAX_POLYDEGREE];
-    v_u64x4_t expf_max;
+    v_u64x4_t expf_max, mask;
 } expf_v4_data  = {
     .ln2by_tblsz = _MM_SET1_PD4(0x1.62e42fefa39efp-7),
     .tblsz_byln2 = _MM_SET1_PD4(0x1.71547652b82fep+0),
     .Huge = _MM_SET1_PD4(0x1.8000000000000p+52),
     .expf_max = _MM_SET1_I64(0x4056000000000000),
+    .mask = _MM_SET1_I64(0x7fffffffffffffff),
     .poly = {
         0x1.0000014439a91p0,
         0x1.62e43170e3344p-1,
@@ -110,9 +111,10 @@ static struct {
 #define MANTISSA_BITS   v_log_data.mantissa_bits
 #define HALF            v_log_data.one_by_two
 #define MANT_8_BITS     v_log_data.mant_8_bits
-#define INVLN2      expf_v4_data.tblsz_byln2
-#define EXPF_HUGE   expf_v4_data.Huge
-#define EXPF_MAX    expf_v4_data.expf_max
+#define INVLN2          expf_v4_data.tblsz_byln2
+#define EXPF_HUGE       expf_v4_data.Huge
+#define EXPF_MAX        expf_v4_data.expf_max
+#define DP64_MASK       expf_v4_data.mask
 
 /*
  * Short names for polynomial coefficients
@@ -151,7 +153,7 @@ static struct {
  *             = n*log(2) + log(1+f)                           .... (3)
  *
  *      let z = 1 + f
- *             log(x) = n*log(2) + log(z)
+ *      log(x) = n*log(2) + log(z)
  *      z = G + g
  *      log(x) = n*log(2) + log(G + g)
  *
@@ -220,10 +222,10 @@ v_any_u32(v_i32x8_t cond)
 }
 
 static inline void
-update_condition(v_i32x8_t* cond1, v_i64x4_t cond2, int32_t lane)
+update_condition(v_i32x8_t* cond1, v_i64x4_t cond2, uint32_t lane)
 {
 
-    uint32_t k = (uint32_t)lane << 2;
+    uint32_t k = lane << 2;
     for(uint32_t i = 0; i < 4; i++) {
         if((*cond1)[i + k] || cond2[i]){
             (*cond1)[i + k] = 1;
@@ -243,7 +245,7 @@ powf_specialcase(v_f32x8_t _x,
 static inline v_f64x4_t
 look_table_access(const double* table,
                   const int vector_size,
-                  v_u64x4_t indices)
+                  v_u32x4_t indices)
 {
      uint64_t j;
      v_f64x4_t ret;
@@ -267,82 +269,85 @@ ALM_PROTO_OPT(vrs8_powf)(__m256 x,__m256 y)
 
     u = as_v8_u32_f32(x);
 
-    v_i32x8_t condition = (u - V_MIN >= V_MAX - V_MIN);
+    v_i32x8_t condition = (u >= V_MAX);
 
-    v_i32x8_t int_exponent = (v_i32x8_t)(u >> 23) - SP_BIAS;
+    v_i32x8_t int_exponent = (((v_i32x8_t)u) >> 23) - SP_BIAS;
 
-    v_f32x4_t _x[2];
+    v_f32x4_t _f[2];
 
     v_f32x4_t _y[2];
 
     v_i32x4_t exponent_array[2];
+
+    v_i32x4_t index_array[2];
 
     /*
      * As AOCC was not able to unroll the following intrinsics, they
      * have been done manually
      */
 
-    _x[0] = _mm256_extractf128_ps(x, 0);
-
-    _x[1] = _mm256_extractf128_ps(x, 1);
-
     _y[0] = _mm256_extractf128_ps(y, 0);
 
     _y[1] = _mm256_extractf128_ps(y, 1);
 
-    exponent_array[0] = (v_i32x4_t)_mm256_extractf128_si256((__m256i)int_exponent, 0);
+    exponent_array[0] = _mm256_extractf128_si256(int_exponent, 0);
 
-    exponent_array[1] = (v_i32x4_t)_mm256_extractf128_si256((__m256i)int_exponent, 1);
+    exponent_array[1] = _mm256_extractf128_si256(int_exponent, 1);
 
-    for(int lane = 0; lane < 2; lane++) {
+    v_u32x8_t mant  = ((u & MANTISSA_BITS) | HALF);
 
-        v_f64x4_t xd = _mm256_cvtps_pd(_x[lane]);
+    v_u32x8_t index = u & MANT_8_BITS;
+
+    v_f32x8_t index_times_half = as_v8_f32_u32(index | HALF);
+
+    v_f32x8_t y1 = as_v8_f32_u32(mant);
+
+    index =  index >> (23 - N);
+
+    v_f32x8_t f = index_times_half - y1;
+
+    _f[0] = _mm256_extractf128_ps(f, 0);
+
+    _f[1] = _mm256_extractf128_ps(f, 1);
+
+    index_array[0] = _mm256_extractf128_si256(index, 0);
+
+    index_array[1] = _mm256_extractf128_si256(index, 1);
+
+
+    for(uint32_t lane = 0; lane < 2; lane++) {
 
         v_f64x4_t yd = _mm256_cvtps_pd(_y[lane]);
 
-        v_u64x4_t ux = as_v4_u64_f64(xd);
+        v_f64x4_t exponent =  _mm256_cvtepi32_pd (exponent_array[lane]);
 
-        v_f64x4_t exponent =  _mm256_cvtepi32_pd ((__m128i)exponent_array[lane]);
-
-        v_u64x4_t mant  = ((ux & MANTISSA_BITS) | HALF);
-
-        v_u64x4_t index = ux & MANT_8_BITS;
-
-        v_f64x4_t index_times_half = as_v4_f64_u64(index | HALF);
-
-        index =  index >> (52 - N);
-
-        v_f64x4_t y1  = as_v4_f64_u64(mant);
-
-        v_f64x4_t f = index_times_half - y1;
+        v_f64x4_t fd = _mm256_cvtps_pd(_f[lane]);
 
         v_f64x4_t F_INV, LOG_256, r;
 
         /* Avoiding the use of vgatherpd instruction for performance reasons */
 
-        F_INV = look_table_access(TAB_F_INV, VECTOR_LENGTH, index);
+        F_INV = look_table_access(TAB_F_INV, VECTOR_LENGTH, index_array[lane]);
 
-        LOG_256 = look_table_access(TAB_LOG, VECTOR_LENGTH, index);
+        LOG_256 = look_table_access(TAB_LOG, VECTOR_LENGTH, index_array[lane]);
 
-        r = f * F_INV;
+        r = fd * F_INV;
 
-        v_f64x4_t r2 = r * r;                /* r^2 */
-
-        v_f64x4_t temp = C2  + r * C3;
-
-        v_f64x4_t q = r + r2 * temp;
+        v_f64x4_t poly = r + r * r * (C2  + r * C3);
 
         /* m*log(2) + log(G) - poly */
 
-        temp  = (exponent * LN2) + LOG_256;
+        v_f64x4_t temp  = (exponent * LN2) + LOG_256;
 
-        temp -= q;
+        temp -= poly;
 
         v_f64x4_t ylogx = temp * yd;
 
         /* Calculate exp */
 
         v_u64x4_t v = as_v4_u64_f64(ylogx);
+
+        v = v & DP64_MASK;
 
         /* Check if y * log(x) > ln(2) * 127 */
 
@@ -358,17 +363,7 @@ ALM_PROTO_OPT(vrs8_powf)(__m256 x,__m256 y)
 
         r = z - dn;
 
-        v_f64x4_t qtmp1 = D1 + (D2 * r);
-
-        v_f64x4_t qtmp2 = D3 + (D4 * r);
-
-        r2 = r * r;
-
-        v_f64x4_t qtmp3 = D5 + (D6 * r);
-
-        q =  qtmp1 + r2 * qtmp2;
-
-        v_f64x4_t result = q + r2 * r2 * qtmp3;
+        v_f64x4_t result = POLY_EVAL_5(r, D1, D2, D3, D4, D5, D6);
 
         ret_array[lane] = _mm256_cvtpd_ps(as_v4_f64_u64(as_v4_u64_f64(result) + (n << 52)));
 
@@ -379,7 +374,9 @@ ALM_PROTO_OPT(vrs8_powf)(__m256 x,__m256 y)
     ret =  _mm256_setr_m128(ret_array[0], ret_array[1]);
 
     if (unlikely(v_any_u32(condition))) {
+
        return powf_specialcase(x, y, ret, condition);
+
     }
 
 

@@ -110,64 +110,22 @@ static inline uint64_t top12(double x)
     return asuint64(x) >> (64 - 12);
 }
 
+#include "kern/log1p.c"
+
 static inline double
 log2_near_one(double x)
 {
-    double  u, q, r;
-    double  A1, A2, B1, B2, R1;
-    double  u3, u7, u2;
-
     static const struct {
         double   log2e_lead, log2e_tail;
-        double   poly[5];
     } near_one_data = {
         .log2e_lead = 0x1.7000000000000p+0,
         .log2e_tail = 0x1.547652b82fd9cp-8,
-        .poly = {
-            0x1.55555555554e6p-4,               // 1/2^2 * 3
-            0x1.9999999bac6d4p-7,               // 1/2^4 * 5
-            0x1.2492307f1519fp-9,               // 1/2^6 * 7
-            0x1.c8034c85dfff0p-12               // 1/2^8 * 9
-        },
     };
+
 #define LOG2E_LEAD near_one_data.log2e_lead
 #define LOG2E_TAIL near_one_data.log2e_tail
-#define CA1 near_one_data.poly[0]
-#define CA2 near_one_data.poly[1]
-#define CA3 near_one_data.poly[2]
-#define CA4 near_one_data.poly[3]
 
-    r = x - 1.0;
-    flt64_t fx = {.d = r};
-
-    double u_by_2 = r / (2.0 + r);
-
-    q = u_by_2 * r;  /* correction */
-
-    u = u_by_2 + u_by_2;
-
-    u2 = u * u;
-
-    A1 = CA2 * u2 + CA1;
-    A2 = CA4 * u2 + CA3;
-
-    u3 = u2 * u;
-    B1 =  u3 * A1;
-
-    u7 = u * (u3 * u3);
-    B2 = u7 * A2;
-
-    R1 = B1 + B2;
-    double poly = R1 - q;
-
-    fx.u &= 0xffffffff00000000;
-    double u_high = fx.d;
-    double u_low  = r - u_high;
-
-    double s = poly + u_low;
-
-    double ans  = (s * LOG2E_TAIL) + (u_high * LOG2E_TAIL);
-    ans        += (s * LOG2E_LEAD) + (u_high * LOG2E_LEAD);
+    double ans  = ALM_PROTO_KERN(log1p)(x, LOG2E_LEAD, LOG2E_TAIL);
 
     return ans;
 }

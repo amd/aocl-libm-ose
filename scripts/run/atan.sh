@@ -25,10 +25,18 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-exe="$1"
+EXE="$1"
+
+arch="$2"
 
 nargs=1
+
 xranges=(-1000,1000)
-input_types=("s1d" "s1f")
+
+input_types=("s1d" "s1f" "v4s" "v8s")
+if [ ${arch} = "avx512" ]; then
+    input_types+=("v8d" "v16s")
+fi
 
 run_exe_nargs $exe $nargs $input_types $xranges
+

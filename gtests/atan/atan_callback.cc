@@ -87,13 +87,12 @@ extern "C" {
 /* glibc doesnt have vector atanf variants */
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
 __m128 LIBM_FUNC_VEC(s, 4, atanf)(__m128);
+__m256 LIBM_FUNC_VEC(s, 8, atanf)(__m256);
 #endif
 
 #if 0
 __m128d LIBM_FUNC_VEC(d, 2, atan)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, atan)(__m256d);
-
-__m256 LIBM_FUNC_VEC(s, 8, atanf)(__m256);
 #endif
 
 int test_v2d(test_data *data, int idx)  {
@@ -130,7 +129,7 @@ int test_v4d(test_data *data, int idx)  {
 }
 
 int test_v8s(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],

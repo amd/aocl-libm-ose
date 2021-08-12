@@ -361,25 +361,26 @@ TEST_P(SpecTestFixtureFloat, CONFORMANCE_FLOAT) {
     t.ip1 = (void *)data1;
 
   for (uint32_t i = 0; i < count; i++) {
+    feclearexcept (FE_ALL_EXCEPT);
     test_s1s(&t, i);
-
-    int eef = expected_expection[i];
+    int raised_exception = fetestexcept(FE_ALL_EXCEPT);
+    feclearexcept (FE_ALL_EXCEPT);
 
     ip[0] = data[i];
     if(nargs == 2)  {
       ip[1] = data1[i];
     }
+
+    feclearexcept (FE_ALL_EXCEPT);
     op = getExpected(ip);
+    int eef = fetestexcept(FE_ALL_EXCEPT);
+    feclearexcept (FE_ALL_EXCEPT);
+
+    SpecTestFixtureFloat::ConfVerifyFlt(ip[0], aop, op, raised_exception, eef, &nfail);
 
     if (vflag == 1) {
-      EXPECT_PRED3(SpecTestFixtureFloat::ConfTestVerifyFloat, &ip[0], eef, &nfail)
-          << "Input:[" << ip[0] << " " << ip[1] <<"]"
-          << "Actual " << aop << " Expected " << op << endl;
-    } else {
-      EXPECT_PRED3(SpecTestFixtureFloat::ConfTestVerifyFloat, &ip[0], eef, &nfail);
-      LIBM_TEST_DPRINTF(VERBOSE2, ,
-                      "Input:[", ip[0], " ", ip[1], "]",
-                      " Actual:", aop, " Expected:", op);
+      cout << "Input: " << ip[0] << " Output: " << aop << " Expected: " << op << endl;
+      PrintConfExpections(raised_exception, eef);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d",

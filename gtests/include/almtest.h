@@ -226,6 +226,32 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
     return flag;
   }
 
+  template <typename T>
+  bool ConfVerifyFlt(T input, T actual_output, T expected_output, int raised_exception, int expected_exception, int *nfail) {
+    int output_match = 0, exception_match = 0;
+    /* check if exceptions match */
+    if (raised_exception != expected_exception) {
+      exception_match=1;
+    }
+    val e = {.f = expected_output};
+    val a = {.f = actual_output};
+    val ip = {.f = input};
+    /* check if expected and actual are nans. They will never be equal */
+    if (e.u ^ a.u) {
+      if (!(isnanf(e.f) && isnanf(a.f)))
+        output_match=1;
+    }
+    if (output_match==1 || exception_match==1) {
+        (*nfail)++;
+        cout << "Input: " << ip.f << " Expected: " << e.f << " Actual: " << a.f << endl;
+        /* print exceptions */
+        PrintConfExpections(raised_exception, expected_exception);
+        return false;
+    }
+    return true;
+}
+
+
   static bool SpecialVerifyFloat(float actual, float expected, int *nfail) {
     bool flag = SpecialVerify(actual, expected);
     if(!flag)

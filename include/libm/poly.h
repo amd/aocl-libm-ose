@@ -331,6 +331,26 @@
         })
 
 /*
+ * Polynomial of degree 7,
+ *      - uses only odd terms and
+ * p(x) = c2*x^7 + c1*x^5 + c0*x^3 + x
+ *      = x(x4*(c1 + c2*x2)+(1 + c0*x2))
+ *
+ */
+#define POLY_EVAL_ODD_7(r, c0, c1, c2) ({                       \
+        __typeof(r) r2, r4;                                     \
+        __typeof(r) a1, a2, a3, q;                              \
+        r2 = r * r;                                             \
+        r4 = r2 * r2;                                           \
+        a1 = c1 + c2 * r2;                                      \
+        a2 = a1 * r4;                                           \
+        a3 = 1 + c0 * r2;                                       \
+        q = (a2 + a3) * r;                                      \
+        q;                                                      \
+    })
+
+
+/*
  * p(x) = C1 + C2*r + C3*r^2 + C4*r^3 + C5*r^4 + C6*r^5 +
  *          C7*r^6 + C8*r^7 + C9*r^8 + C10*r^9 + C11*r^10 + C12*r^11
  *      = (C1 + C2*r) + r^2(C3 + C4*r) + r^4(C5 + C6*r) +

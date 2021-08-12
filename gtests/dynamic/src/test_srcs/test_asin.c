@@ -7,8 +7,10 @@ int test_asin(void* handle) {
     data.s1f = (funcf)dlsym(handle, "amd_asinf");
     data.s1d = (func)dlsym(handle, "amd_asin");
     data.v4s = (funcf_v4s)dlsym(handle, "amd_vrs4_asinf");
+    data.v8s = (funcf_v8s)dlsym(handle, "amd_vrs8_asinf");
 
-    if (data.s1f == NULL || data.s1d == NULL || data.v4s == NULL) {
+    if (data.s1f == NULL || data.s1d == NULL ||
+        data.v8s == NULL || data.v4s == NULL) {
         ret = 1;
     }
     if (ret == 1) {

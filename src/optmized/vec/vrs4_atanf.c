@@ -24,25 +24,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#include <stdint.h>
+/* Contains implementation of v_f32x4_t vrs4_atanf(v_f32x4_t x)
+ *
+ * sign = sign(x)
+ * x = abs(x)
+ *
+ * Argument Reduction for every x into the interval [-(2-sqrt(3)),+(2-sqrt(3))]
+ * Use the following identities
+ * atan(x) = pi/2 - atan(1/x)                when x > 1
+ *         = pi/6 + atan(f)                  when f > (2-sqrt(3))
+ * where f = (sqrt(3)*x-1)/(x+sqrt(3))
+ *
+ * All elements are approximated by using polynomial of degree 7
+ */
 #include <libm_util_amd.h>
 #include <libm_special.h>
 #include <libm_macros.h>
-#include <libm/types.h>
-#include <libm/typehelper.h>
 #include <libm/typehelper-vec.h>
 #include <libm/amd_funcs_internal.h>
-#include <libm/compiler.h>
 #include <libm/poly.h>
 
 static struct {
-    v_f32x4_t poly_atanf[9];
+    v_f32x4_t poly_atanf[3];
     v_u32x4_t mask_32;
-    float P[4], Range, sqrt3, unit;
+    float P[4], range, sqrt3, unit;
 } v4_atanf_data = {
     .sqrt3 = 0x1.bb67aep0,
-    .Range = 0x1.126146p-2,
+    .range = 0x1.126146p-2,
     .mask_32 = _MM_SET1_I32(0x7FFFFFFF),
     .unit= 1.0f,
     // Values of factors of pi required to calculate atanf
@@ -54,40 +62,46 @@ static struct {
     },
     // Polynomial coefficients obtained using fpminimax algorithm from Sollya
     .poly_atanf = {
-        _MM_SET1_PS4(-0x1.555556p-2f),
-        _MM_SET1_PS4(0x1.99999ap-3f),
-        _MM_SET1_PS4(-0x1.24924ap-3f),
-        _MM_SET1_PS4(0x1.c71c7p-4f),
-        _MM_SET1_PS4(-0x1.745cd2p-4f),
-        _MM_SET1_PS4(0x1.3b0aeap-4f),
-        _MM_SET1_PS4(-0x1.1061c6p-4f),
-        _MM_SET1_PS4(0x1.d1242ap-5f),
-        _MM_SET1_PS4(-0x1.3a3c92p-5f),
+        _MM_SET1_PS4(-0x1.5552f2p-2f),
+        _MM_SET1_PS4(0x1.9848ap-3f),
+        _MM_SET1_PS4(-0x1.066ac8p-3f),
     },
 };
 
-#define THEEPS v4_atanf_data.THEEPS
 #define SQRT3 v4_atanf_data.sqrt3
-#define Range v4_atanf_data.Range
-#define P v4_atanf_data.P
+#define RANGE v4_atanf_data.range
+#define PI v4_atanf_data.P
 #define ALM_V4_ATANF_MASK_32  v4_atanf_data.mask_32
-#define Unit v4_atanf_data.unit
+#define UNIT v4_atanf_data.unit
 #define C0 v4_atanf_data.poly_atanf[0]
 #define C1 v4_atanf_data.poly_atanf[1]
 #define C2 v4_atanf_data.poly_atanf[2]
-#define C3 v4_atanf_data.poly_atanf[3]
-#define C4 v4_atanf_data.poly_atanf[4]
-#define C5 v4_atanf_data.poly_atanf[5]
-#define C6 v4_atanf_data.poly_atanf[6]
-#define C7 v4_atanf_data.poly_atanf[7]
-#define C8 v4_atanf_data.poly_atanf[8]
 
+/*
+ ********************************************
+ * Implementation Notes
+ * ---------------------
+ * sign = sign(xi)
+ * xi = |xi|
+ *
+ * Argument reduction: Use the following identities
+ *
+ * 1. If xi > 1,
+ *      atan(xi) = pi/2 - atan(1/xi)
+ *
+ * 2. If f > (2-sqrt(3)),
+ *      atan(x) = pi/6 + atan(f)
+ *      where f = (sqrt(3)*xi-1)/(xi+sqrt(3))
+ *
+ *      atan(xi) is calculated using the polynomial,
+ *      xi + C0*xi^3 + C1*xi^5 + C2*xi^7
+ *
+ */
 v_f32x4_t
 ALM_PROTO_OPT(vrs4_atanf)(v_f32x4_t x)
 {
-    v_f32x4_t poly, aux, result;
+    v_f32x4_t aux, result;
     v_u32x4_t sign;
-    v_u32x4_t n={0};
     v_u32x4_t  ux = as_v4_u32_f32 (x);
 
     /* Get sign of the input value */
@@ -96,24 +110,25 @@ ALM_PROTO_OPT(vrs4_atanf)(v_f32x4_t x)
     /* Get absolute value of input */
     aux  = as_v4_f32_u32(ux & ALM_V4_ATANF_MASK_32);
 
-    for(int i=0;i<4;i++){
-        if(aux[i]>Unit){
-            aux[i]=Unit/aux[i];
-            n[i]=2;
-        }
-        if(aux[i]>Range){
-            aux[i]=(aux[i]*SQRT3-Unit)/(SQRT3+aux[i]);
-            n[i]++;
+    float F = UNIT/RANGE;
+
+    for(int i=0;i<4;++i){
+        if(aux[i]>=F){
+            aux[i]=UNIT/aux[i];
+            float poly = POLY_EVAL_ODD_7(aux[i], C0[i], C1[i], C2[i]);
+            result[i] = PI[2]-poly;
+        }else if(aux[i]>UNIT){
+            aux[i]=UNIT/aux[i];
+            aux[i]=(aux[i]*SQRT3-UNIT)/(SQRT3+aux[i]);
+            float poly = POLY_EVAL_ODD_7(aux[i], C0[i], C1[i], C2[i]);
+            result[i] = PI[3]-poly;
+        }else if(aux[i]>RANGE){
+            aux[i]=(aux[i]*SQRT3-UNIT)/(SQRT3+aux[i]);
+            float poly = POLY_EVAL_ODD_7(aux[i], C0[i], C1[i], C2[i]);
+            result[i] = PI[1]+poly;
+        }else{
+            result[i] = POLY_EVAL_ODD_7(aux[i], C0[i], C1[i], C2[i]);
         }
     }
-
-    poly = POLY_EVAL_ODD_19(aux, C0, C1, C2, C3, C4, C5, C6, C7, C8);
-
-    for(int i=0;i<4;i++){
-        if (n[i] > 1)
-            poly[i] = -poly[i];
-        result[i] = P[n[i]]+poly[i];
-    }
-
     return as_v4_f32_u32(as_v4_u32_f32(result) ^ sign);
 }

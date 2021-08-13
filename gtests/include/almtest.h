@@ -249,8 +249,7 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
         return false;
     }
     return true;
-}
-
+  }
 
   static bool SpecialVerifyFloat(float actual, float expected, int *nfail) {
     bool flag = SpecialVerify(actual, expected);
@@ -307,6 +306,33 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
       (*nfail)++;
     return flag;
   }
+
+  /* verify double */
+  template <typename T>
+  bool ConfVerifyDbl(T input, T actual_output, T expected_output, int raised_exception, int expected_exception, int *nfail) {
+    int output_match = 0, exception_match = 0;
+    /* check if exceptions match */
+    if (raised_exception != expected_exception) {
+      exception_match=1;
+    }
+    val e = {.d = expected_output};
+    val a = {.d = actual_output};
+    val ip = {.d = input};
+    /* check if expected and actual are nans. They will never be equal */
+    if (e.u ^ a.u) {
+      if (!(isnan(e.d) && isnan(a.d)))
+        output_match=1;
+    }
+    if (output_match==1 || exception_match==1) {
+        (*nfail)++;
+        cout << "Input: " << ip.d << " Expected: " << e.d << " Actual: " << a.d << endl;
+        /* print exceptions */
+        PrintConfExpections(raised_exception, expected_exception);
+        return false;
+    }
+    return true;
+  }
+
 
   static bool SpecialVerifyDouble(double actual, double expected, int *nfail) {
     bool flag = SpecialVerify(actual, expected);

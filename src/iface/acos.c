@@ -39,7 +39,7 @@ struct alm_arch_funcs __arch_funcs_acos = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_OPT(acosf),
+            &ALM_PROTO_ARCH_AVX2(acosf),
             &ALM_PROTO_REF(acos),
             &ALM_PROTO_ARCH_AVX2(vrs4_acosf),/* vrs4 ? */
             NULL,                           /* vrs8 ? */

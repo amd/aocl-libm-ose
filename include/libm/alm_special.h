@@ -144,5 +144,6 @@ double	alm_log10_special(double x, double y, uint32_t code);
 float   alm_log10f_special(float x, float y, uint32_t code);
 
 float   alm_acosf_special(float x, uint32_t code);
+double  alm_acos_special(double x, uint32_t code);
 
 #endif

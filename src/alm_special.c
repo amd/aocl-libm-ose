@@ -201,3 +201,22 @@ alm_acosf_special(float x, uint32_t code)
                                     _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
 }
 
+double
+alm_acos_special(double x, uint32_t code)
+{
+    flt64_t fl = {.d = x};
+    if (code == ALM_E_IN_X_NAN)
+    {
+        /* Return invalid if it's a NaN */
+        if (fl.u & QNAN_MASK_64)
+            return __amd_handle_error("acos", __amd_acos, fl.u|QNAN_MASK_64,
+                                       _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+        else
+            return  __amd_handle_error("acos", __amd_acos, fl.u|QNAN_MASK_64,
+                                        _DOMAIN, AMD_F_INVALID, EDOM,
+                                        x, 0.0, 1);
+    }
+    else
+        return  __amd_handle_error("acos", __amd_acos, INDEFBITPATT_DP64,
+                                    _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+}

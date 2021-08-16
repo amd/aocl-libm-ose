@@ -236,11 +236,13 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
     val e = {.f = expected_output};
     val a = {.f = actual_output};
     val ip = {.f = input};
-    /* check if expected and actual are nans. They will never be equal */
-    if (e.u ^ a.u) {
-      if (!(isnanf(e.f) && isnanf(a.f)))
+
+    bool both_nans = isnanf(fabsf(e.f)) && isnanf(fabsf(a.f));
+
+    /* if both are nans, output will always match, regardless of the sign bit */
+    if ((e.u ^ a.u) && (both_nans == false))
         output_match=1;
-    }
+
     if (output_match==1 || exception_match==1) {
         (*nfail)++;
         cout << "Input: " << ip.f << " Expected: " << e.f << " Actual: " << a.f << endl;
@@ -318,11 +320,13 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
     val e = {.d = expected_output};
     val a = {.d = actual_output};
     val ip = {.d = input};
-    /* check if expected and actual are nans. They will never be equal */
-    if (e.u ^ a.u) {
-      if (!(isnan(e.d) && isnan(a.d)))
+
+    bool both_nans = isnan(fabs(e.d)) && isnan(fabs(a.d));
+
+    /* if both are nans, output will always match, regardless of the sign bit */
+    if ((e.u ^ a.u) && (both_nans == false))
         output_match=1;
-    }
+
     if (output_match==1 || exception_match==1) {
         (*nfail)++;
         cout << "Input: " << ip.d << " Expected: " << e.d << " Actual: " << a.d << endl;

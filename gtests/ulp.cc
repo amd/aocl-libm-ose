@@ -130,7 +130,6 @@ template <typename FAT, typename FAT_L>
 double ComputeUlp(FAT output, FAT_L _expected) {
   FAT expected = (FAT)_expected;
   static const FAT
-      fmin = std::numeric_limits<FAT>::min(),      // FLT_MIN, DBL_MIN etc
       fmax = std::numeric_limits<FAT>::max(),      // FLT_MAX, DBL_MAX etc
       f_low = std::numeric_limits<FAT>::lowest();  // -FLT_MAX, -DBL_MAX etc
 

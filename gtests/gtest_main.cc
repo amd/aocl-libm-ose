@@ -211,7 +211,7 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_SCALAR_DOUBLE) {
     }
 
     if (vflag) {
-        printf("Input: [ %.16f (%a) ]  Actual: %.16f(%a) Expected: %.16Lf(%a) Ulp: %f\n",
+        printf("Input: [ %.16f (%a) ]  Actual: %.16f(%a) Expected: %.16Lf(%La) Ulp: %f\n",
                 ip[0], ip[0], aop[0], aop[0], exptd, exptd, ulp);
     }
 

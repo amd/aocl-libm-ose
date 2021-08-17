@@ -30,14 +30,12 @@
 #include "libm_special.h"
 
 #include <libm/types.h>
+#include <libm/alm_special.h>
 #include <libm/typehelper.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 
-#include <libm/poly.h>
-
 #include "logf_data.h"
-
 
 /*
  * ISO-IEC-10967-2: Elementary Numerical Functions
@@ -180,14 +178,20 @@ ALM_PROTO_OPT(log10f)(float x)
     ux = asuint32(x);
 
     if (unlikely (ux - 0x00800000 >= 0x7f800000 - 0x00800000))
-    {
-        /* x < 0x1p-126 or inf or nan. */
-        if (ux * 2 == 0)                /* log10f(0) = -inf */
-            return -1.0f/0.0f;
-        if (ux == 0x7f800000)           /* log10f(inf) = inf */
-            return x;
-        if ((ux & 0x80000000) || ux * 2 >= 0xff000000)
-            return (float)sqrt(x);             /* Return NaN */
+    {  /* x < 0x1p-126 or inf or nan. */
+        uint32_t sign = ux & SIGNBIT_SP32;
+
+        if (x * 2 == 0)                /* log10(0) = -inf */
+            return alm_log10f_special(x, asfloat(NINFBITPATT_SP32), ALM_E_IN_X_ZERO);
+
+        if (sign)        /* x is -ve */
+            return alm_log10f_special(x, asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NEG);
+
+        if (x != x)  /* nan */
+            return alm_log10f_special(x, asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NAN);
+
+        if ((ux & PINFBITPATT_SP32) == PINFBITPATT_SP32)           /* log10(inf) = inf */
+            return asfloat(PINFBITPATT_SP32 | sign);
 
         /*
          * 'x' has to be denormal, Normalize it

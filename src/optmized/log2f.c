@@ -29,22 +29,18 @@
 
 #include "libm_macros.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
 
 #include <libm/types.h>
+#include <libm/alm_special.h>
 #include <libm/typehelper.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 
-#define MASK_MANT_ALL7 0x007f8000
-#define MASK_MANT8 0x00008000
-#define MASK_SIGN 0x7FFFFFFF
-#define LOGF_N  8
-#define LOGF_POLY_DEGREE  2
-
-#define FLAG_X_ZERO 0x1
-#define FLAG_X_NEG  0x2
-#define FLAG_X_NAN  0x3
+#define MASK_MANT_ALL7   0x007f8000
+#define MASK_MANT8       0x00008000
+#define MASK_SIGN        0x7FFFFFFF
+#define LOGF_N           8
+#define LOGF_POLY_DEGREE 2
 
 #include "logf_data.h"
 
@@ -177,16 +173,20 @@ ALM_PROTO_OPT(log2f)(float x)
     uint32_t mantissa;
 
     if (unlikely (ux - 0x00800000 >= 0x7f800000 - 0x00800000))
-    {
-        // x < 0x1p-126 or inf or nan. //
-        if (ux * 2 == 0)                // log2(0) = -inf */
-            return -1.0f/0.0f;
+    {   /* x < 0x1p-126 or inf or nan. */
+        uint32_t sign = ux & SIGNBIT_SP32;
 
-        if (ux == 0x7f800000)           // log2(inf) = inf */
-            return x;
+        if (x * 2 == 0)                /* log2(0) = -inf */
+            return alm_log2f_special(x, asfloat(NINFBITPATT_SP32), ALM_E_IN_X_ZERO);
 
-        if ((ux & 0x80000000) || ux * 2 >= 0xff000000)
-            return (float)sqrt(x);             /* Return NaN */
+        if (sign)        /* x is -ve */
+            return alm_log2f_special(x, asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NEG);
+
+        if (x != x)  /* nan */
+            return alm_log2f_special(x, asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NAN);
+
+        if ((ux & PINFBITPATT_SP32) == PINFBITPATT_SP32)           /* log2(inf) = inf */
+            return asfloat(PINFBITPATT_SP32 | sign);
 
         /*
          * 'x' has to be denormal, Normalize it

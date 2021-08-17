@@ -129,9 +129,13 @@ _log_special_common(double x, double y, U32 fn_code, U32 error_code, char *name)
 
 	switch (error_code) {
     case ALM_E_OUT_INF:
+        __amd_handle_error(name, (int)fn_code, ym.u, ALM_ERR_SING,
+                           AMD_F_INVALID, ERANGE, x, 0.0, 1);
+        break;
+
 	case ALM_E_IN_X_ZERO:
         __amd_handle_error(name, (int)fn_code, ym.u, ALM_ERR_SING,
-                           AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
+                           AMD_F_NONE, ERANGE, x, 0.0, 1);
     break;
 
 	case ALM_E_IN_X_NEG:
@@ -140,7 +144,8 @@ _log_special_common(double x, double y, U32 fn_code, U32 error_code, char *name)
     break;
 
 	case ALM_E_IN_X_NAN:
-        return x + x;
+        __amd_handle_error(name, (int)fn_code, ym.u, ALM_ERR_DOMAIN,
+                           AMD_F_INVALID, EDOM, x, 0.0, 1);
     break;
 
     case ALM_E_OUT_ZERO:
@@ -152,10 +157,22 @@ _log_special_common(double x, double y, U32 fn_code, U32 error_code, char *name)
 }
 
 
+float
+alm_log2f_special(float x, float y, uint32_t code)
+{
+    return (float)_log_special_common(x, y, __amd_log2, code, "log2");
+}
+
 double
 alm_log2_special(double x, double y, uint32_t code)
 {
-    return _log_special_common(x, y, __amd_log2, code, "log2");
+    return _log_special_common(x, y, __amd_log2, code, "log2f");
+}
+
+float
+alm_log10f_special(float x, float y, uint32_t code)
+{
+    return (float)_log_special_common(x, y, __amd_log2, code, "log10f");
 }
 
 double

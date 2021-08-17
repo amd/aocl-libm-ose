@@ -25,8 +25,6 @@
  *
  */
 
-#include <stdint.h>
-
 #include "libm_macros.h"
 #include "libm_util_amd.h"
 

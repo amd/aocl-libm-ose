@@ -351,7 +351,7 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_8DOUBLES) {
 
 TEST_P(SpecTestFixtureFloat, CONFORMANCE_FLOAT) {
   int nfail = 0;
-  float aop, op;
+  float aop;
   float ip[2];
   test_data t;
   t.ip  = (void *)data;
@@ -371,12 +371,9 @@ TEST_P(SpecTestFixtureFloat, CONFORMANCE_FLOAT) {
       ip[1] = data1[i];
     }
 
-    feclearexcept (FE_ALL_EXCEPT);
-    op = getExpected(ip);
-    int eef = fetestexcept(FE_ALL_EXCEPT);
-    feclearexcept (FE_ALL_EXCEPT);
+    int eef = expected_expection[i];
 
-    SpecTestFixtureFloat::ConfVerifyFlt(ip[0], aop, op, raised_exception, eef, &nfail);
+    SpecTestFixtureFloat::ConfVerifyFlt(ip[0], aop, op[i], raised_exception, eef, &nfail);
 
     if (vflag == 1) {
       cout << "Input: " << ip[0] << " Output: " << aop << " Expected: " << op << endl;
@@ -390,7 +387,7 @@ TEST_P(SpecTestFixtureFloat, CONFORMANCE_FLOAT) {
 
 TEST_P(SpecTestFixtureDouble, CONFORMANCE_DOUBLE) {
   int nfail = 0;
-  double aop, op;
+  double aop;
   double ip[2];
   test_data t;
   t.ip  = (void *)data;
@@ -411,11 +408,9 @@ TEST_P(SpecTestFixtureDouble, CONFORMANCE_DOUBLE) {
       ip[1] = data1[i];
     }
 
-    feclearexcept (FE_ALL_EXCEPT);
-    op = getExpected(ip);
-    int eef = fetestexcept(FE_ALL_EXCEPT);
-    feclearexcept (FE_ALL_EXCEPT);
-    SpecTestFixtureDouble::ConfVerifyDbl(ip[0], aop, op, raised_exception, eef, &nfail);
+    int eef = expected_expection[i];
+
+    SpecTestFixtureDouble::ConfVerifyDbl(ip[0], aop, op[i], raised_exception, eef, &nfail);
 
     if (vflag == 1) {
       cout << "Input: " << ip[0] << " Output: " << aop << " Expected: " << op << endl;

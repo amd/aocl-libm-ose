@@ -155,13 +155,15 @@ class AccuTestFixtureDouble : public ::testing::TestWithParam<AccuParams> {
  */
 template <typename T, typename U>
 void SpecialSetUp(T **inp, int **exptdexpt, uint32_t count, U *data, 
-                   uint32_t nargs, T **inp2) {
+                   uint32_t nargs, T **inp2, T **op) {
   size_t size = sizeof(T);
   uint32_t arr_size = count * size;
   uint32_t sz = (arr_size << 1) + _ALIGN_FACTOR;
   int *ee = (int *)aligned_alloc(_ALIGN_FACTOR, sz);
   
   T *in = (T *)aligned_alloc(_ALIGN_FACTOR, sz);
+  T *opp = (T *)aligned_alloc(_ALIGN_FACTOR, sz);
+
   LIBM_TEST_DPRINTF(DBG2, ,"Input:", in);  
   
   LIBM_TEST_DPRINTF(DBG2, ,
@@ -170,9 +172,11 @@ void SpecialSetUp(T **inp, int **exptdexpt, uint32_t count, U *data,
   for (uint32_t i = 0; i < count; i++) {
     in[i] = data[i].in;
     ee[i] = data[i].exptdexpt;
+    opp[i] = data[i].out;
   }
   *inp  = (T *)in;
   *exptdexpt = (int *)ee;
+  *op  = (T *)opp;
   
   if(nargs == 2) {
     T *in2 = (T *)aligned_alloc(_ALIGN_FACTOR, sz);
@@ -267,8 +271,10 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
     ptr = GetParam().prttstres;
     nargs = GetParam().nargs;
     
-    SpecialSetUp(&idata, &expected_expection, count, dataf32, nargs, &idata1);
+    SpecialSetUp(&idata, &expected_expection, count, dataf32, nargs, &idata1, &iop);
     data = (float *)idata;
+    op = (float *)iop;
+
     if (nargs == 2) {
       data1 = (float *)idata1;
     }
@@ -276,6 +282,8 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
 
   void TearDown() override {
     free(idata);
+    free(iop);
+
     idata = nullptr;
     if (nargs == 2) {
       free(idata1);
@@ -286,9 +294,9 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
   }
 
  protected:
-  uint32_t *idata, *idata1;
+  uint32_t *idata, *idata1, *iop;
   uint32_t nargs;
-  float *data, *data1;
+  float *data, *data1, *op;
   int *expected_expection;
   uint32_t count;
   PrintTstRes *ptr;  
@@ -352,8 +360,10 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
     ptr = GetParam().prttstres;
     nargs = GetParam().nargs;
     
-    SpecialSetUp(&idata, &expected_expection, count, dataf64, nargs, &idata1);
+    SpecialSetUp(&idata, &expected_expection, count, dataf64, nargs, &idata1, &iop);
     data = (double *)idata;
+    op = (double *) iop;
+
     if (nargs == 2) {
       data1 = (double *)idata1;
     }
@@ -361,6 +371,8 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
 
   void TearDown() override {
     free(idata);
+    free(iop);
+
     idata = nullptr;
     if (nargs == 2) {
     free(idata1);
@@ -371,8 +383,8 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
   }
 
  protected:
-  uint64_t *idata, *idata1;
-  double *data, *data1;
+  uint64_t *idata, *idata1, *iop;
+  double *data, *data1, *op;
   uint32_t nargs;
   int *expected_expection;
   uint32_t count;

@@ -235,7 +235,6 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
     int output_match = 0, exception_match = 0;
     /* check if exceptions match */
     if (raised_exception != expected_exception) {
-      if (raised_exception < expected_exception)
         exception_match=1;
     }
     val e = {.f = expected_output};
@@ -250,7 +249,8 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
 
     if (output_match==1 || exception_match==1) {
         (*nfail)++;
-        cout << "Input: " << ip.f << " Expected: " << e.f << " Actual: " << a.f << endl;
+        printf ("Input: 0x%x (%f) Expected: 0x%x (%f) Actual: 0x%x (%f)\n",
+                ip.u, ip.f, e.u, e.f, a.u, a.f);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);
         return false;
@@ -334,12 +334,13 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
     bool both_nans = isnan(fabs(e.d)) && isnan(fabs(a.d));
 
     /* if both are nans, output will always match, regardless of the sign bit */
-    if ((e.u ^ a.u) && (both_nans == false))
+    if ((e.lu ^ a.lu) && (both_nans == false))
         output_match=1;
 
     if (output_match==1 || exception_match==1) {
         (*nfail)++;
-        cout << "Input: " << ip.d << " Expected: " << e.d << " Actual: " << a.d << endl;
+        printf ("Input: 0x%lx (%f) Expected: 0x%lx (%f) Actual: 0x%lx (%f)\n",
+                ip.lu, ip.d, e.lu, e.d, a.lu, a.d);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);
         return false;

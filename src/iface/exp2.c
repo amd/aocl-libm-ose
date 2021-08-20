@@ -64,8 +64,8 @@ struct alm_arch_funcs __arch_funcs_exp2 = {
             &ALM_PROTO_ARCH_ZN3(exp2f),
             &ALM_PROTO_ARCH_ZN3(exp2),
             &ALM_PROTO_ARCH_ZN3(vrs4_exp2f),
-            &ALM_PROTO_ARCH_ZN2(vrs8_exp2f),
-            &ALM_PROTO_ARCH_ZN2(vrd2_exp2),
+            &ALM_PROTO_ARCH_ZN3(vrs8_exp2f),
+            &ALM_PROTO_ARCH_ZN3(vrd2_exp2),
             &ALM_PROTO_ARCH_ZN3(vrd4_exp2),
         },
 

@@ -235,7 +235,8 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
     int output_match = 0, exception_match = 0;
     /* check if exceptions match */
     if (raised_exception != expected_exception) {
-        exception_match=1;
+        if (raised_exception < expected_exception)
+            exception_match=1;
     }
     val e = {.f = expected_output};
     val a = {.f = actual_output};

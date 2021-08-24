@@ -10,11 +10,8 @@ static libm_test_special_data_f32
 test_log10f_conformance_data[] = {
     /*Constant inputs from the Constants.h*/
     {POS_SNAN_F32,POS_QNAN_F32,FE_INVALID}, // invalid
-    {NEG_SNAN_F32,POS_QNAN_F32,FE_INVALID}, // invalid
     {POS_SNAN_F32,POS_QNAN_F32,0}, //
-    {NEG_SNAN_F32,POS_QNAN_F32,0}, //
     {POS_QNAN_F32,POS_QNAN_F32,0}, //
-    {NEG_QNAN_F32,POS_QNAN_F32,0}, //
     {POS_INF_F32,POS_INF_F32,0}, //
     {NEG_INF_F32,NEG_QNAN_F32,FE_INVALID}, //
     {POS_ONE_F32,0x3f317218,0}, //
@@ -115,11 +112,8 @@ static libm_test_special_data_f64
 test_log10_conformance_data[] = {
     /*Constant inputs from the Constants.h*/
     {POS_SNAN_F64,POS_QNAN_F64,FE_INVALID}, // invalid
-    {NEG_SNAN_F64,POS_QNAN_F64,FE_INVALID}, // invalid
     {POS_SNAN_F64,POS_QNAN_F64,0}, //
-    {NEG_SNAN_F64,POS_QNAN_F64,0}, //
     {POS_QNAN_F64,POS_QNAN_F64,0}, //
-    {NEG_QNAN_F64,POS_QNAN_F64,0}, //
     {POS_INF_F64,POS_INF_F64,0}, //
     {NEG_INF_F64,NEG_QNAN_F64,FE_INVALID}, //
     {POS_ONE_F64,0x3FE62E42FEFA39EFLL,0}, //

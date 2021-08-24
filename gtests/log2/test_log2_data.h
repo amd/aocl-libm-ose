@@ -8,126 +8,108 @@
  */
 static libm_test_special_data_f32
 test_log2f_conformance_data[] = {
-    {0x35510,          0xc3034374,    0},
-    {POS_SNAN_F32 ,    0x7fc00001,    FE_INVALID},
-    {NEG_SNAN_F32 ,    0xffc00001,    FE_INVALID},
-    {POS_QNAN_F32 ,    0x7fc00000,    0},
-    {NEG_QNAN_F32 ,    0xffc00000,    0},
-    {POS_INF_F32  ,    0x7f800000,    0},
-    {NEG_INF_F32  ,    0x7fc00000,    FE_INVALID},
-    {POS_ONE_F32  ,    0x00000000,    0},
-    {NEG_ONE_F32  ,    0x7fc00000,    FE_INVALID},
-    {POS_ZERO_F32 ,    0xff800000,    0},
-    {NEG_ZERO_F32 ,    0xff800000,    0},
-    //{POS_HDENORM_F32,  0xc2fc0000,    0},
-    //{NEG_HDENORM_F32,  0x7fc00000,    FE_INVALID},
-    //{POS_LDENORM_F32,  0xc3150000,    0},
-    //{NEG_LDENORM_F32,  0x7fc00000,    FE_INVALID},
-    //{POS_HNORMAL_F32,  0x43000000,    0},
-    //{NEG_HNORMAL_F32,  0x7fc00000,    FE_INVALID},
-    //{POS_LNORMAL_F32,  0xc2fc0000,    0},
-    //{NEG_LNORMAL_F32,  0x7fc00000,    FE_INVALID},
-    //{F32_POS_PIBY2,   0x3f26c874,    0},  //pi/2
-    {0x00000000,        0xff800000,    0},  //0.0
+    {0x35510,           0xc3034374,    FE_INEXACT},
+    {0x7ff00000 ,       0x7fc00001,    FE_INEXACT},
+    {NEG_INF_F32,       0x7fc00000,    FE_INVALID},
+    {POS_INF_F32,       0x7fc00000,    0},
+    {POS_ONE_F32  ,     0x00000000,    0},
+    {NEG_ONE_F32  ,     0x7fc00000,    FE_INVALID},
+    {POS_ZERO_F32 ,     0xff800000,    0},
+    {NEG_ZERO_F32 ,     0xff800000,    0},
+    {0x00000000,        0xff800000,    4},  //0.0
     {0x3c000000,        0xc0e00000,    0},  //0.0078125
-    {0x3c7fffff,        0xc0c00000,    0},  //0.0156249991
-    {0x3f012345,        0xbf7cbb49,    0},  //0.504444
+    {0x3c7fffff,        0xc0c00000,    32},  //0.0156249991
+    {0x3f012345,        0xbf7cbb49,    32},  //0.504444
     {0x3f800000,        0x00000000,    0},  //1
     {0x40000000,        0x3f800000,    0},  //2
-    {0x33d6bf95,        0xc1ba0729,    0},  //1.0000000e-7
-    {POS_PI_F32,        0x3fd3643a,    0},  //pi
-    {0x40c90fdb,        0x4029b21d,    0},  //2pi
-    {0x41200000,        0x40549a78,    0},  //10
-    {0x447a0000,        0x411f73da,    0},  //1000
+    {0x33d6bf95,        0xc1ba0729,    32},  //1.0000000e-7
+    {POS_PI_F32,        0x3fd3643a,    32},  //pi
+    {0x40c90fdb,        0x4029b21d,    32},  //2pi
+    {0x41200000,        0x40549a78,    32},  //10
+    {0x447a0000,        0x411f73da,    32},  //1000
     {0x42800000,        0x40c00000,    0},  //64
-    {0x42af0000,        0x40ce7052,    0},  //87.5
-    {0x42b00000,        0x40ceb3aa,    0},  //88
-    {0x42c00000,        0x40d2b803,    0},  //96
+    {0x42af0000,        0x40ce7052,    32},  //87.5
+    {0x42b00000,        0x40ceb3aa,    32},  //88
+    {0x42c00000,        0x40d2b803,    32},  //96
     {0xc2af0000,        0x7fc00000,    FE_INVALID},  //-87.5
     {0xc2e00000,        0x7fc00000,    FE_INVALID},  //-112
     {0xc3000000,        0x7fc00000,    FE_INVALID},  //-128
     {0xc2aeac4f,        0x7fc00000,    FE_INVALID},  //-87.3365  smallest normal result
     {0xc2aeac50,        0x7fc00000,    FE_INVALID},  //-87.3365  largest denormal result
     {0xc2ce0000,        0x7fc00000,    FE_INVALID},  //-103
-    {0x42b17216,        0x40cf1458,    0},  //88.7228   largest value  --
-    {0x42b17217,        0x40cf1458,    0},  //88.7228   largest value
-    {0x42b17218,        0x40cf1459,    0},  //88.7228   overflow
-    {0x50000000,	0x42040000,    0},  //large   overflow
+    {0x42b17216,        0x40cf1458,    FE_INEXACT},  //88.7228   largest value  --
+    {0x42b17217,        0x40cf1458,    FE_INEXACT},  //88.7228   largest value
+    {0x42b17218,        0x40cf1459,    FE_INEXACT},  //88.7228   overflow
+    {0x50000000,	    0x42040000,    0},  //large   overflow
     {0xc20a1eb8,        0x7fc00000,    FE_INVALID}, // -34.53
     {0xc6de66b6,        0x7fc00000,    FE_INVALID}, // -28467.3555
     {0xbe99999a,        0x7fc00000,    FE_INVALID}, // -0.3
     {0xbf247208,        0x7fc00000,    FE_INVALID}, // -0.642365
     {0xbf000000,        0x7fc00000,    FE_INVALID}, // -0.5
-    {0x3e99999a,        0xbfde54e3,    0}, // 0.3
-    {0x3f247208,        0xbf237705,    0}, // 0.642365
+    {0x3e99999a,        0xbfde54e3,    32}, // 0.3
+    {0x3f247208,        0xbf237705,    32}, // 0.642365
     {0x3f000000,        0xbf800000,    0}, // 0.5
-    {0x420a1eb8,        0x40a3834e,    0}, // 34.53
-    {0x46de66b6,        0x416cc099,    0}, // 28467.3555
+    {0x420a1eb8,        0x40a3834e,    32}, // 34.53
+    {0x46de66b6,        0x416cc099,    32}, // 28467.3555
     {0xc2c80000,        0x7fc00000,    FE_INVALID}, // -100
-    {0x42c80000,        0x40d49a78,    0}, // 100
+    {0x42c80000,        0x40d49a78,    32}, // 100
 //added from ancient libm repo
-    {0x0005fde6,        0xc3026ac1,    0}, // denormal
+    {0x0005fde6,        0xc3026ac1,    32}, // denormal
     {0x00000001,        0xc3150000,    0}, // smallest denormal
-    {0x007fffff,        0xc2fc0000,    0}, // largest denormal
+    {0x007fffff,        0xc2fc0000,    32}, // largest denormal
 
     {0x00800000,        0xc2fc0000,    0}, // smallest normal
-    {0x7f7fffff,        0x43000000,    0}, // largest normal
+    {0x7f7fffff,        0x43000000,    32}, // largest normal
 
-    {0x3f880000,        0x3db31fb8,    0}, // 1.0625
-    {0x3f87ffff,        0x3db31fa2,    0}, // 1.06249988
-    {0x3f700000,        0xbdbeb025,    0}, // 0.9375
-    {0x3f6e147b,        0xbdd66b93,    0}, // 0.93
-    {0x3f700001,        0xbdbeb018,    0}, // 0.93750006
-    
-    {0x3fc90fdb,        0x3f26c874,    0},  //pi/2
-    {0x80000000,        0xff800000,    0},  //-0
+    {0x3f880000,        0x3db31fb8,    32}, // 1.0625
+    {0x3f87ffff,        0x3db31fa2,    32}, // 1.06249988
+    {0x3f700000,        0xbdbeb025,    32}, // 0.9375
+    {0x3f6e147b,        0xbdd66b93,    32}, // 0.93
+    {0x3f700001,        0xbdbeb018,    32}, // 0.93750006
+
+    {0x3fc90fdb,        0x3f26c874,    32},  //pi/2
+    {0x80000000,        0xff800000,    4},  //-0
 
 #ifdef WIN64
     {0xbf800000,        0xffc00000,    0},  //-1
     {0xff800000,        0xffc00000,    0},  //-inf
     {0xc2800000,        0xffc00000,    0},  //-64
 #else
-    {0xbf800000,        0x7fc00000,    0},  //-1
-    {0xff800000,        0x7fc00000,    0},  //-inf
-    {0xc2800000,        0x7fc00000,    0},  //-64
+    {0xbf800000,        0x7fc00000,    FE_INVALID},  //-1
+    {0xff800000,        0x7fc00000,    FE_INVALID},  //-inf
+    {0xc2800000,        0x7fc00000,    FE_INVALID},  //-64
 #endif
 
-    {0x3f7ae148,        0xbceec442,    0},  //.98
-    {0x3f828f5c,        0x3cea09cc,    0},  //1.02
+    {0x3f7ae148,        0xbceec442,    FE_INEXACT},  //.98
+    {0x3f828f5c,        0x3cea09cc,    FE_INEXACT},  //1.02
 
     {0x7f800000,        0x7f800000,    0},  //inf
-    {0x7fc00000,        0x7fc00000,    0},  //qnan
-    {0x7fa00000,        0x7fe00000,    0},  //snan
-    {0xffc00000,        0xffc00000,    0},  //qnan
-    {0xffa00000,        0xffe00000,    0},  //snan
+    {0xffa00000,        0xffe00000,    FE_INVALID},  //snan
 
-    {0x3fffffff,        0x3f7fffff,    0},  //2--
-    {0x40000001,        0x3f800001,    0},  //2++
+    {0x3fffffff,        0x3f7fffff,    FE_INEXACT},  //2--
+    {0x40000001,        0x3f800001,    FE_INEXACT},  //2++
 
-    {0x00000201, 0xc30bff48},
+    {0x00000201, 0xc30bff48, FE_INEXACT},
 
-    {0x7f800001, 0x7fc00001},
-    {0xff800001, 0xffc00001},
-    {0x7fc00000, 0x7fc00000},
-    {0xffc00000, 0xffc00000},
-    {0x7f800000, 0x7f800000},
-    {0x7fc00000, 0x7fc00000},
-    {0x3f800000, 0x00000000},
-    {0xbf800000, 0x7fc00000},
-    {0x00000000, 0x7fc00000},
-    {0x80000000, 0x7fc00000},
+    {0x7f800001, 0x7fc00001, FE_INVALID},
+    {0xff800001, 0xffc00001, FE_INVALID},
+    {0x7fc00000, 0x7fc00000, 0},
+    {0xffc00000, 0xffc00000, 0},
+    {0x7f800000, 0x7f800000, 0},
+    {0x7fc00000, 0x7fc00000, 0},
+    {0x3f800000, 0x00000000, 0},
+    {0xbf800000, 0x7fc00000, FE_INVALID},
+    {0x00000000, 0x7fc00000, 4},
+    {0x80000000, 0x7fc00000, 4},
 
-    {0x007fffff, 0xc2fc0000},
-    {0x807fffff, 0x7fc00000},
-    {0x00000001, 0xc3150000},
-    {0x80000001, 0x7fc00000},
-    {0x7f7fffff, 0x43000000},
-    {0xff7fffff, 0x7fc00000},
-    {0x00800000, 0xc2fc0000},
-    {0x80800000, 0x7fc00000},
-
-
-
+    {0x007fffff, 0xc2fc0000, FE_INEXACT},
+    {0x807fffff, 0x7fc00000, FE_INVALID},
+    {0x00000001, 0xc3150000, 0},
+    {0x80000001, 0x7fc00000, FE_INVALID},
+    {0x7f7fffff, 0x43000000, FE_INEXACT},
+    {0xff7fffff, 0xffc00000, FE_INVALID},
+    {0x00800000, 0xc2fc0000, 0},
+    {0x80800000, 0xffc00000, FE_INVALID},
 };
 
 static libm_test_special_data_f64
@@ -142,15 +124,6 @@ test_log2_conformance_data[] = {
     {NEG_ONE_F64,       0x7ff8000000000000LL  ,FE_INVALID},
     {POS_ZERO_F64,      0xfff0000000000000LL  ,0},
     {NEG_ZERO_F64,      0xfff0000000000000LL  ,0},
-    //{POS_HDENORM_F64,   0xc08ff00000000000LL  ,0},
-    //{NEG_HDENORM_F64,   0x7ff8000000000000LL  ,FE_INVALID},
-    //{POS_LDENORM_F64,   0xc090c80000000000LL  ,0},
-    //{NEG_LDENORM_F64,   0x7ff8000000000000LL  ,FE_INVALID},
-    //{POS_HNORMAL_F64,   0x4090000000000000LL  ,0},
-    //{NEG_HNORMAL_F64,   0x7ff8000000000000LL  ,FE_INVALID},
-    //{POS_LNORMAL_F64,   0xc08ff00000000000LL  ,0},
-    //{NEG_LNORMAL_F64,   0x7ff8000000000000LL  ,FE_INVALID},
-    //{POS_PIBY2_F64,     0x3fe4d90e7ebf727aLL  ,0},  //pi/2
     {0x0000000000000000LL,0xfff0000000000000LL,0},  //0.0
     {0x3EE0624DD2F1A9FCLL,0xc030f73da38d9d4bLL,0},  //0.0000078125
     {0x3EF0624DC31C6CA1LL,0xc02fee7b49e50bbdLL,0},  //0.0000156249991
@@ -189,12 +162,11 @@ test_log2_conformance_data[] = {
     {0xC08F400000000000LL,0x7ff8000000000000LL,FE_INVALID}, // -1000
     {0x408F400000000000LL,0x4023ee7b471b3a95LL,0}, // 1000
     {0x0000000000000000LL,0xfff0000000000000LL,0},
-//added from ancient libm repo
+    //added from ancient libm repo
     {0X3FF0097D13350953LL,0X3F6B58B92ECC96C8LL,0},
     {0X0003EC71C47096D5LL,0XC090001C7C528F17LL,0},
     {0X000FFFFFFFFFFFFFLL,0XC08FF00000000000LL,0},
 
-    
     {0X3FF1000000000000LL,0X3FB663F6FAC91316LL,0}, // 1.0625
     {0X3FF0FFFFFFFFFFFFLL,0X3FB663F6FAC91301LL,0}, // 1.0624999999999998
     {0X3FEE000000000000LL,0XBFB7D60496CFBB4CLL,0}, // 0.9375
@@ -240,6 +212,5 @@ test_log2_conformance_data[] = {
     {0X40157AE147AE147BLL,0X4003663D8D41B416LL,0},  //5.37
 
     {0X3FF0000000000001LL,0X3CB71547652B82FDLL,0}
-
 };
 

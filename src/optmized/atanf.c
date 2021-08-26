@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
@@ -30,139 +29,148 @@
  * sign = sign(x)
  * x = abs(x)
  *
- * Reduce the given x into f, so that it falls into the interval [-(2-sqrt(3)),+(2-sqrt(3))]
- * Use the following identities to evealute atan and reduce the range of x
- * atan(x) = pi/2 - atan(1/x)				when x > 1
- * 		   = pi/6 + atan(f) 				when f > (2-sqrt(3))
- * where f = (sqrt(3)*x-1)/(x+sqrt(3))
- *
- * The term atan(f) is approximated by using a polynomial
+ * Argument reduction to range [-7/16,7/16]
+ * Use the following identities
+ * x = (x-t)/(1+t*x); where t=0,1/2,1,3/2 based on x values within range
+ * then use core approximation: Remez(2,2) on [-7/16,7/16]
  */
-#include <stdint.h>
-#include <math.h>
-#include <float.h>
 #include <libm_util_amd.h>
 #include <libm/typehelper.h>
 #include <libm/amd_funcs_internal.h>
+#include "libm_special.h"
 #include <libm/poly.h>
 
-/*
- * ISO-IEC-10967-2: Elementary Numerical Functions
- * Signature:
- *   float atan(float x)
- *
- * Spec:
- *   atan(1)    = pi/4
- *   atan(0)    = 0
- *   atan(-0)   = -0
- *   atan(+inf) = pi/2
- *   atan(-inf) = -pi/2
- *   atan(nan)  = nan
- *
- */
 static struct {
-    float THEEPS, sqrt3, Range ;
-    float P[4], poly_atanf[9];
+    double range[6],value[5], poly_atanf[6], piby2;
 } atanf_data = {
-    .THEEPS = 0x1.6a09e6p-12,
-    .sqrt3 = 0x1.bb67aep0,
-    .Range = 0x1.126146p-2,
-    // Values of factors of pi required to calculate atanf
-    .P = {
-        0,
-        0x1.0c1524p-1,
-        0x1.921fb6p0,
-        0x1.0c1524p0,
+    // Values of absolute inputs for different x values in comments
+    .range = {
+        0x3ec0000000000000,  /* 2.0^(-19) */
+        0x3fdc000000000000,  /* 7./16. */
+        0x3fe6000000000000,  /* 11./16. */
+        0x3ff3000000000000,  /* 19./16. */
+        0x4003800000000000,  /* 39./16. */
+        0x4190000000000000,  /* 2^26  */
     },
-    // Polynomial coefficients obtained using fpminimax algorithm from Sollya
+    // Values of different arctan inputs
+    .value = {
+        0.0,/*arctan(0.0)*/
+        4.63647609000806093515e-01,/*arctan(0.5)*/
+        7.85398163397448278999e-01,/*arctan(1.0)*/
+        9.82793723247329054082e-01,/*arctan(1.5)*/
+        1.57079632679489655800e+00,/*arctan(infinity)*/
+    },
     .poly_atanf = {
-        -0x1.555556p-2,
-        0x1.99999ap-3,
-        -0x1.24924ap-3,
-        0x1.c71c7p-4,
-        -0x1.745cd2p-4,
-        0x1.3b0aeap-4,
-        -0x1.1061c6p-4,
-        0x1.d1242ap-5,
-        -0x1.3a3c92p-5,
+        0.296528598819239217902158651186e0,
+        0.192324546402108583211697690500e0,
+        0.470677934286149214138357545549e-2,
+        0.889585796862432286486651434570e0,
+        0.111072499995399550138837673349e1,
+        0.299309699959659728404442796915e0,
     },
+    .piby2 = 1.5707963267948966e+00,
 };
-
-#define THEEPS atanf_data.THEEPS
-#define SQRT3 atanf_data.sqrt3
-#define Range atanf_data.Range
-#define P atanf_data.P
-
+#define RANGE atanf_data.range
+#define VALUE atanf_data.value
+#define PIBY2 atanf_data.piby2
 #define C0 atanf_data.poly_atanf[0]
 #define C1 atanf_data.poly_atanf[1]
 #define C2 atanf_data.poly_atanf[2]
 #define C3 atanf_data.poly_atanf[3]
 #define C4 atanf_data.poly_atanf[4]
 #define C5 atanf_data.poly_atanf[5]
-#define C6 atanf_data.poly_atanf[6]
-#define C7 atanf_data.poly_atanf[7]
-#define C8 atanf_data.poly_atanf[8]
-
-#define SIGN_MASK32 0x7FFFFFFFU
-#define UNIT_F 1.0f
-
 /*
  ********************************************
  * Implementation Notes
  * ---------------------
- * sign = sign(x)
- * x = |x|
+ * sign = sign(xi)
+ * xi = |xi|
  *
- * Reduce the given x into f, so that it falls into the interval [-(2-sqrt(3)),+(2-sqrt(3))]
- * Use the following identities to evaluate atan and reduce the range of x
+ * Argument reduction: Use the following identities
  *
- * 1. If x > 1,
- *      atan(x) = pi/2 - atan(1/x)
+ * 1. If xi < 2.0^(-19),
+ *   atanf(xi)= xi
  *
- * 2. If f > (2-sqrt(3)),
- *      atan(x) = pi/6 + atan(f)
- *      where f = (sqrt(3)*x-1)/(x+sqrt(3))
- *
- *      atan(f) is calculated using the polynomial,
- *      f + C0*x^3 + C1*x^5 + C2*x^7 + C3*x^9 + C4*x^11+
- *      C5*x^13 + C6*x^15 + C7*x^17 + C8*x^19
- *
+ * 2. If x < 7/16,
+ *      t=0
+ * 3. If x < 11/16,
+ *      t=1/2
+ * 4. If x < 19/16,
+ *      t=1
+ * 5. If x < 39/16,
+ *      t=3/2
+ * 6. If x < 2^26),
+ *      x=-1/x
+ * x = (x-t)/(1+t*x);
+ * Core approximation: Remez(2,2) on [-7/16,7/16]
  */
 float
-ALM_PROTO_OPT(atanf)(float x)
+ALM_PROTO_OPT(atanf)(float fx)
 {
-    float F, poly, result;
-    int32_t n = 0;
-    static float piby2 = 1.57079637e+0f;
-    uint32_t ux = asuint32(x);
-    /* Get sign of input value */
-    uint32_t sign = ux & (~SIGN_MASK32);
-    ux = ux & SIGN_MASK32;
-    F = asfloat(ux);
+    uint32_t fux = asuint32(fx);
+    uint32_t faux = fux & ~SIGNBIT_SP32;
 
-    /* Check for special cases */
-    if(unlikely(ux > PINFBITPATT_SP32)) {
-        /* x is inf */
-        if((ux & MANTBITS_SP32) == 0x0)
-            return asfloat(sign ^ asuint32(piby2));
+    if (faux > PINFBITPATT_SP32){
+    /* fx is NaN */
+#ifdef WINDOWS
+        return  __amd_handle_errorf("atanf", __amd_atan, fux|0x00400000, _DOMAIN,0, EDOM, fx, 0.0, 1);
+#else
+        return fx + fx; /* Raise invalid if it's a signalling NaN */
+#endif
+    }
+    double x = fx;
+    uint64_t ux = asuint64(x);
+    /* Find properties of argument fx. */
+    uint64_t aux = ux & ~SIGNBIT_DP64;
+    uint64_t xneg = ux & SIGNBIT_DP64;
+    double c;
+    if (xneg) x = -x;
+    /* Argument reduction to range [-7/16,7/16] */
+    if (aux < RANGE[0]){
+      /* x is a good approximation to atan(x) */
+        if (aux == 0x0000000000000000)
+            return fx;
         else
-        /* x is nan */
-            return asfloat(sign ^ ux);
+        #ifdef WINDOWS
+            return fx ; //valf_with_flags(fx, AMD_F_INEXACT);
+        #else
+            return  __amd_handle_errorf("atanf", __amd_atan, fux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, ERANGE, fx, 0.0, 1);
+        #endif
+    }
+    else if (aux < RANGE[1]){
+        c = VALUE[0];
+    }else if (aux < RANGE[2]){
+        x = (2.0 * x - 1.0) / (2.0 + x);
+        c = VALUE[1];
+    }
+    else if (aux < RANGE[3]){
+        x = (x - 1.0) / (1.0 + x);
+        c = VALUE[2];
+    }
+    else if (aux < RANGE[4]){
+        x = (x - 1.5) / (1.0 + 1.5 * x);
+        c = VALUE[3];
+    }
+    else{
+        if (aux > RANGE[5]){
+            if (xneg)
+                return (float)-PIBY2; //valf_with_flags((float)-piby2, AMD_F_INEXACT);
+            else
+                return (float)PIBY2; //valf_with_flags((float)piby2, AMD_F_INEXACT);
+        }
+        x = -1.0 / x;
+        c = VALUE[4];
     }
 
-    if (F > UNIT_F) {
-        F = UNIT_F/F;
-        n = 2;
+    double p1 = POLY_EVAL_ODD_7(x, C0, C1, C2);
+    double p2 = POLY_EVAL_ODD_7(x, C3, C4, C5);
+    double s = x * x;
+    double p = x * s * (p1 - x) / (p2 - x);
+    double z;
+    if (xneg){
+        z = (p - x) - c;
+    }else{
+        z = c - (p - x);
     }
-
-    if (F > Range) {
-        F = (F*SQRT3-UNIT_F)/(SQRT3+F);
-        n++;
-    }
-
-    poly = POLY_EVAL_ODD_19(F, C0, C1, C2, C3, C4, C5, C6, C7, C8);
-    if (n > 1) poly = -poly;
-    result = P[n]+poly;
-
-    return asfloat(asuint32(result) ^ sign);
+    return (float)z;
 }

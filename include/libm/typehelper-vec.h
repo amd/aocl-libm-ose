@@ -52,6 +52,13 @@
 /* TODO: check if _MM_SET1_I64x2 is used */
 #define _MM_SET1_I64x2(x) {(x), (x)}
 
+#define _MM_SET1_I64x4(x) 				\
+	_Generic((x),					\
+		long int: (__m256i){(x), (x), (x), (x)}, \
+		uint64_t: (__m256i){(x), (x), (x), (x)}, \
+		uint32_t: (__m256i){(x), (x), (x), (x)})
+
+
 #define _MM_SET1_I32(x) {(x), (x), (x), (x)}
 
 #define _MM_SET1_I64(x) {(x), (x), (x), (x)}
@@ -413,8 +420,11 @@ call_v4_f32(float (*fn)(float),
 
 #ifndef ALM_HAS_V4_CALL_2_F32
 #define ALM_HAS_V4_CALL_2_F32
+
+#define v_call2_f32(...)	call2_v4_f32(__VA_ARGS__)
+
 static inline v_f32x4_t
-v_call2_f32(float (*fn)(float, float),
+call2_v4_f32(float (*fn)(float, float),
             v_f32x4_t x,
             v_f32x4_t y,
             v_f32x4_t result,
@@ -430,8 +440,11 @@ v_call2_f32(float (*fn)(float, float),
 
 #ifndef ALM_HAS_V4_CALL_F64
 #define ALM_HAS_V4_CALL_F64
+
+#define v_call_f64(...)  call_v4_f64(__VA_ARGS__)
+
 static inline v_f64x4_t
-v_call_f64(double (*fn)(double),
+call_v4_f64(double (*fn)(double),
            v_f64x4_t orig,
            v_f64x4_t result,
            v_i64x4_t cond)
@@ -442,6 +455,25 @@ v_call_f64(double (*fn)(double),
             cond[3] ? fn(orig[3]) : result[3]};
 }
 #endif
+
+#ifndef ALM_HAS_V2_CALL_F64
+#define ALM_HAS_V2_CALL_F64
+
+#define v2_call_f64(...) call_v2_f64(__VA_ARGS__)
+
+static inline v_f64x2_t
+call_v2_f64(double (*fn)(double),
+            v_f64x2_t x,
+            v_f64x2_t result,
+            v_i64x2_t cond)
+{
+    return (v_f64x2_t) {
+        cond[0] ? fn(x[0]) : result[0],
+        cond[1] ? fn(x[1]) : result[1],
+        };
+}
+#endif
+
 
 #ifndef ALM_HAS_V4_CALL_2_F64
 #define ALM_HAS_V4_CALL_2_F64

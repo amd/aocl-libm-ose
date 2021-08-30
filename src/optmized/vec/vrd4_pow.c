@@ -29,7 +29,6 @@
 #include <libm_special.h>
 
 #include <libm_macros.h>
-#include <libm_amd.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
@@ -40,8 +39,8 @@
 #include <libm/poly-vec.h>
 
 typedef struct {
-    uint64_t head;
-    uint64_t tail;
+    double head;
+    double tail;
 } lookup_data;
 
 
@@ -288,13 +287,13 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
         int32_exponent[lane] = int_exponent[lane];
 
-        F_INV_HEAD[lane] = asdouble(TAB_F_INV[j].head);
+        F_INV_HEAD[lane] = TAB_F_INV[j].head;
 
-        F_INV_TAIL[lane] = asdouble(TAB_F_INV[j].tail);
+        F_INV_TAIL[lane] = TAB_F_INV[j].tail;
 
-        LOG_256_HEAD[lane] = asdouble(TAB_LOG[j].head);
+        LOG_256_HEAD[lane] = TAB_LOG[j].head;
 
-        LOG_256_TAIL[lane] = asdouble(TAB_LOG[j].tail);
+        LOG_256_TAIL[lane] = TAB_LOG[j].tail;
 
     }
 
@@ -375,9 +374,9 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
         int32_t j = index[lane];
 
-        j_by_N_head[lane] = asdouble(TWO_POWER_J_BY_N[j].head);
+        j_by_N_head[lane] = TWO_POWER_J_BY_N[j].head;
 
-        j_by_N_tail[lane] = asdouble(TWO_POWER_J_BY_N[j].tail);
+        j_by_N_tail[lane] = TWO_POWER_J_BY_N[j].tail;
 
     }
 

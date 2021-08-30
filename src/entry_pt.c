@@ -212,6 +212,8 @@ __m128  G_ENTRY_PT(vrs4_log10f)(__m128);
 __m128  G_ENTRY_PT(vrs4_log1pf)(__m128);
 __m128  G_ENTRY_PT(vrs4_sinf)(__m128);
 __m128  G_ENTRY_PT(vrs4_tanf)(__m128);
+__m128  G_ENTRY_PT(vrs4_coshf)(__m128);
+__m128  G_ENTRY_PT(vrs4_tanhf)(__m128);
 __m128  G_ENTRY_PT(vrs4_powf)(__m128, __m128);
 
 __m256  G_ENTRY_PT(vrs8_logf)(__m256);
@@ -219,6 +221,8 @@ __m256  G_ENTRY_PT(vrs8_expf)(__m256);
 __m256  G_ENTRY_PT(vrs8_sinf)(__m256);
 __m256  G_ENTRY_PT(vrs8_tanf)(__m256);
 __m256  G_ENTRY_PT(vrs8_cosf)(__m256);
+__m256  G_ENTRY_PT(vrs8_coshf)(__m256);
+__m256  G_ENTRY_PT(vrs8_tanhf)(__m256);
 __m256  G_ENTRY_PT(vrs8_powf)(__m256, __m256);
 
 __m128d G_ENTRY_PT(vrd2_cbrt)(__m128d);
@@ -345,7 +349,7 @@ init_map_entry_points(void)
         g_amd_libm_ep_fmaf       =	FN_PROTOTYPE_FMA3(fmaf);
         g_amd_libm_ep_fma        =	FN_PROTOTYPE_FMA3(fma);
         g_amd_libm_ep_pow        =	FN_PROTOTYPE_FMA3(pow);
-        g_amd_libm_ep_fastpow    = FN_PROTOTYPE_FMA3(fastpow);
+        g_amd_libm_ep_fastpow        =  FN_PROTOTYPE_FMA3(fastpow);
         g_amd_libm_ep_powf       =	FN_PROTOTYPE_FMA3(powf);
     }
 

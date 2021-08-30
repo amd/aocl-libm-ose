@@ -24,76 +24,55 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 class Compiler:
-    def init_env(self):
-        self.env_modifiers = {
-            'CC'          : '',
-            'CXX'         : '',
-            'CPPFLAGS'    : [],
-            'CFLAGS'      : [],
-            'CXXFLAGS'    : [],
-            'CPPDEFINES'  : [],
-            'LDFLAGS'     : []
-        }
-
-    def CCCmd(self):
-        return self.env_modifiers['CC']
-
-    def CXXCmd(self):
-        return self.env_modifiers['CXX']
-
-    def CFlags(self):
-        return self.env_modifiers['CFLAGS']
-
-    def LDFlags(self):
-        return self.env_modifiers['LDFLAGS']
-
-    def Append(self, d):
-        for key,value in d.items():
-            if isinstance(self.env_modifiers[key], list):
-                self.env_modifiers[key].extend(value)
-            else:
-                self.env_modifiers[key] = value
-
-    def Replace(self, d):
-        self.env_modifiers.update(d)
-
     def __init__(self, prod_mode):
+        self.cxxcmd = ''
+        self.cmd = ''
         self.prod_mode = prod_mode
-        self.init_env()
-
-        compile_flags_debug = [
+        self.compile_flags_debug = [
             '-g',
             '-Og',
-            #'-march=native',
+            '-march=native',
         ]
-
-        compile_flags_release = [
-            #'-Ofast',
-            #'-march=native',
-            #'-fipa-pta',
-            #'-funsafe-loop-optimizations',
-            #'-flto=4',
-            #'-fno-strict-aliasing',
+        self.compile_flags_release = [
+            '-Ofast',
+            '-march=native',
+            '-fipa-pta',
+            '-funsafe-loop-optimizations',
+            '-flto=4',
         ]
+        self.compile_flag_map = {
+			'debug': self.compile_flags_debug,
+			'release' : self.compile_flags_release
+		}
 
-        link_flags_debug = []
-        link_flags_release = compile_flags_release
+        self.link_flags_debug = []
 
-        cpp_flags_debug = []
-        cpp_flags_release = []
+        self.link_flags_release = self.compile_flags_release
 
-        pmode = prod_mode.lower()
+        self.link_flag_map = {
+            "debug": self.link_flags_debug,
+            "release": self.link_flags_release
+        }
 
-        if pmode == "debug" :
-            self.Append({
-                'CFLAGS'  : compile_flags_debug,
-                'LDFLAGS' : link_flags_debug,
-                'CPPFLAGS': cpp_flags_debug,}
-            )
-        elif pmode == "release":
-            self.Append({
-                    'CFLAGS'  : compile_flags_release,
-                    'LDFLAGS' : link_flags_release,
-                    'CPPFLAGS': cpp_flags_release,}
-            )
+        self.cpp_flags_debug = []
+
+        self.cpp_flags_release = []
+
+        self.cpp_flag_map = {
+            "debug": self.cpp_flags_debug,
+            "release": self.cpp_flags_release
+        }
+
+        def fixup_from_vars(self):
+            pass
+
+        def fixup_from_env(self):
+            if 'CC' in os.environ:
+                self.cmd = os.getenv('CC')
+            if 'CXX' in os.environ:
+                self.cxxcmd = os.getenv('CXX')
+            if 'CFLAGS' in os.environ:
+                self.compile_flag_map[self.prod_mode]
+            if 'LDFLAGS' in os.environ:
+                self.link_flag_map[self.prod_mode]
 

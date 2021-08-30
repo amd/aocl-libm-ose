@@ -29,7 +29,6 @@
 #include <libm_special.h>
 #include <immintrin.h>
 #include <libm_macros.h>
-#include <libm_amd.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
@@ -42,8 +41,8 @@
 #define N 8
 #define TABLE_SIZE (1ULL << N)
 #define MAX_POLYDEGREE  8
-extern const uint64_t log_256[];
-extern const uint64_t log_f_inv_256[];
+extern double log_256[];
+extern const double log_f_inv_256[];
 #define TAB_F_INV log_f_inv_256
 #define TAB_LOG   log_256
 #define MANT_MASK_N  (0x000FF00000000000ULL)
@@ -242,7 +241,7 @@ powf_specialcase(v_f32x8_t _x,
 }
 
 static inline v_f64x4_t
-look_table_access(const uint64_t* table,
+look_table_access(const double* table,
                   const int vector_size,
                   v_u64x4_t indices)
 {
@@ -250,7 +249,7 @@ look_table_access(const uint64_t* table,
      v_f64x4_t ret;
      for(int i = 0; i < vector_size; i++) {
         j = indices[i];
-        ret[i] = asdouble(table[j]);
+        ret[i] = table[j];
      }
      return ret;
 }

@@ -28,10 +28,6 @@
 #ifndef __LIBM_MACROS_H__
 #define __LIBM_MACROS_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /*
  * Spare the ugliness to non-coders
  */
@@ -117,8 +113,5 @@ extern "C" {
 // enable or disable exceptions in linux
 #define __enable_IEEE_exceptions 1
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif  /* __LIBM_MACROS_H__ */

@@ -31,17 +31,65 @@
 #include <libm/iface.h>
 #include <libm/amd_funcs_internal.h>    /* Contains all implementations */
 
+#include <libm/arch/zen2.h>
+#include <libm/arch/zen3.h>
+
+typedef float  (*amd_coshf_t)(float);
+typedef double  (*amd_cosh_t)(double);
+typedef __m128  (*amd_cosh_v4s_t)(__m128);
+typedef __m256  (*amd_cosh_v8s_t)(__m256);
 
 void
 LIBM_IFACE_PROTO(cosh)(void *arg)
 {
-	/* Double */
-	G_ENTRY_PT_PTR(cosh) = &FN_PROTOTYPE_REF(cosh);
 
-	/* Single */
-	G_ENTRY_PT_PTR(coshf) = &FN_PROTOTYPE_REF(coshf);
+    amd_coshf_t fn_s = NULL;
+    amd_cosh_t  fn_d = NULL;
+    amd_cosh_v4s_t fn_v4s = NULL;
+    amd_cosh_v8s_t fn_v8s = NULL;
 
-	/* Vector Double */
-	/* Vector Single */
+    static struct cpu_features *features = NULL;
+
+    if (!features) {
+        features = libm_cpu_get_features();
+    }
+
+    struct cpu_mfg_info *mfg_info = &features->cpu_mfg_info;
+
+    /*single precision scalar*/
+    fn_s = &FN_PROTOTYPE_OPT(coshf);
+    /*double precision scalar*/
+    fn_d = &FN_PROTOTYPE_REF(cosh);
+    /* Vector Single */
+    fn_v4s = &FN_PROTOTYPE_OPT(vrs4_coshf);
+    fn_v8s = &FN_PROTOTYPE_OPT(vrs8_coshf);
+
+    /*
+     * Template:
+     *     override with any micro-architecture-specific
+     *     implementations
+     */
+    if (mfg_info->mfg_type == CPU_MFG_AMD) {
+        switch(mfg_info->family) {
+            case 0x15:                      /* Naples */
+                        break;
+            case 0x17:                      /* Rome */
+                        fn_s   = &ALM_PROTO_ARCH_ZN2(coshf);
+                        fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_coshf);
+                        fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_coshf);
+                        break;
+            case 0x19:                      /* Milan */
+                        fn_s   = &ALM_PROTO_ARCH_ZN3(coshf);
+                        fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_coshf);
+                        fn_v8s = &ALM_PROTO_ARCH_ZN3(vrs8_coshf);
+                        break;
+        }
+    }
+
+     /* Single */
+    G_ENTRY_PT_PTR(coshf)      = fn_s;
+    G_ENTRY_PT_PTR(cosh)       = fn_d;
+    G_ENTRY_PT_PTR(vrs4_coshf) = fn_v4s;
+    G_ENTRY_PT_PTR(vrs8_coshf) = fn_v8s;
 }
 

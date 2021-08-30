@@ -30,6 +30,8 @@
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
 #include <libm/cpu_features.h>
+#include <libm/arch/zen2.h>
+#include <libm/arch/zen3.h>
 
 typedef double (*amd_exp_t)(double);
 typedef float (*amd_expf_t)(float);
@@ -43,7 +45,7 @@ LIBM_IFACE_PROTO(exp)(void *arg)
 {
     /*
      * Should setup all variants,
-     * single, double, and vectors (also complex if available)
+     * expgle, double, and vectors (also complex if available)
      */
     amd_exp_t  fn_d = NULL;
     amd_expf_t fn_s = NULL;
@@ -90,11 +92,24 @@ LIBM_IFACE_PROTO(exp)(void *arg)
      */
     if (mfg_info->mfg_type == CPU_MFG_AMD) {
         switch(mfg_info->family) {
-        case 0x15:                      /* Naples */
+        case 0x15:  /* Naples */
             break;
-        case 0x17:                      /* Rome */
+        case 0x17:  /* Rome */
+                   fn_d   = &ALM_PROTO_ARCH_ZN2(exp);
+                   fn_s   = &ALM_PROTO_ARCH_ZN2(expf);
+                   fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_expf);
+                   fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_expf);
+                   fn_v2d = &ALM_PROTO_ARCH_ZN2(vrd2_exp);
+                   fn_v4d = &ALM_PROTO_ARCH_ZN2(vrd4_exp);
             break;
-        case 0x19:                      /* Milan */
+        case 0x19:  /* Milan */
+                   fn_d   = &ALM_PROTO_ARCH_ZN3(exp);
+                   fn_s   = &ALM_PROTO_ARCH_ZN3(expf);
+                   fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_expf);
+                   fn_v8s = &ALM_PROTO_ARCH_ZN3(vrs8_expf);
+                   fn_v2d = &ALM_PROTO_ARCH_ZN3(vrd2_exp);
+                   fn_v4d = &ALM_PROTO_ARCH_ZN3(vrd4_exp);
+
             break;
         }
     }

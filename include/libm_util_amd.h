@@ -165,7 +165,7 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
 #define MXCSR_ES_DIVBYZERO     0x00000004
 #define MXCSR_ES_INVALID       0x00000001
 
-#if defined(WINDOWS) || defined(WIN64)
+#if defined(WINDOWS) || (WIN64)
 #define	AMD_F_NONE		  0x0
 #define AMD_F_OVERFLOW    0x00000001
 #define AMD_F_UNDERFLOW   0x00000002

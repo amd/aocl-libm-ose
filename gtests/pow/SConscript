@@ -1,0 +1,14 @@
+#
+# Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
+#
+
+Import('env')
+
+e = env.Clone()
+
+pow_srcs = Glob('*.cc')
+
+pow = e.Program('test_pow', pow_srcs)
+
+Return('pow')
+

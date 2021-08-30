@@ -46,7 +46,7 @@
 #endif
 
 struct log_table {
-    uint64_t f_inv, head, tail;
+    double f_inv, head, tail;
 };
 
 static const struct {

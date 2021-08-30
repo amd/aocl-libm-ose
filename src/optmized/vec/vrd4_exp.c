@@ -66,7 +66,6 @@
 #include <libm_util_amd.h>
 #include <libm_special.h>
 #include <libm_macros.h>
-#include <libm_amd.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/typehelper-vec.h>
@@ -190,30 +189,12 @@ ALM_PROTO_OPT(vrd4_exp)(v_f64x4_t x)
 
     if(unlikely(any_v4_u64_loop(cond))) {
 
-        v_i64x4_t inf_condition = x > EXP_MAX;
-
-        v_i64x4_t zero_condition = x < EXP_LOW;
-
-        v_64x4 vx = {.f64x4 = ret};
-
-        //Zero out the elements that have to be set to infinity
-        vx.i64x4 = vx.i64x4 & (~inf_condition);
-
-        inf_condition = inf_condition & INF;
-
-        vx.i64x4 = vx.i64x4 | inf_condition;
-
-        ret =  vx.f64x4;
-
-        //To handle denormal numbers
-        if(any_v4_u64_loop(zero_condition)) {
-            return (v_f64x4_t) {
-                (zero_condition[0] && (x[0] < EXP_MIN_VAL)) ? 0.0:SCALAR_EXP(x[0]),
-                (zero_condition[1] && (x[1] < EXP_MIN_VAL)) ? 0.0:SCALAR_EXP(x[1]),
-                (zero_condition[2] && (x[2] < EXP_MIN_VAL)) ? 0.0:SCALAR_EXP(x[2]),
-                (zero_condition[3] && (x[3] < EXP_MIN_VAL)) ? 0.0:SCALAR_EXP(x[3]),
-            };
-        }
+        return (v_f64x4_t) {
+            (cond[0]) ? SCALAR_EXP(x[0]):ret[0],
+            (cond[1]) ? SCALAR_EXP(x[1]):ret[1],
+            (cond[2]) ? SCALAR_EXP(x[2]):ret[2],
+            (cond[3]) ? SCALAR_EXP(x[3]):ret[3],
+        };
 
     }
 

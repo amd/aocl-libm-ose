@@ -32,12 +32,14 @@
 #include <libm/amd_funcs_internal.h>    /* Contains all implementations */
 
 #include <libm/arch/zen2.h>
+#include <libm/arch/zen3.h>
 
 typedef double (*amd_cos_t)(double);
 typedef float  (*amd_cosf_t)(float);
 typedef __m128d (*amd_cos_v2d_t)(__m128d);
 typedef __m128  (*amd_cos_v4s_t)(__m128);
 typedef __m256  (*amd_cos_v8s_t)(__m256);
+typedef __m256d (*amd_cos_v4d_t)(__m256d);
 
 void
 LIBM_IFACE_PROTO(cos)(void *arg)
@@ -47,6 +49,7 @@ LIBM_IFACE_PROTO(cos)(void *arg)
     amd_cos_v4s_t fn_v4s = NULL;
     amd_cos_v2d_t fn_v2d = NULL;
     amd_cos_v8s_t fn_v8s = NULL;
+    amd_cos_v4d_t fn_v4d = NULL;
 
     static struct cpu_features *features = NULL;
 
@@ -60,13 +63,18 @@ LIBM_IFACE_PROTO(cos)(void *arg)
     fn_s = &FN_PROTOTYPE_FMA3(cosf);
     fn_v4s = &FN_PROTOTYPE_FMA3(vrs4_cosf);
     fn_v2d = &FN_PROTOTYPE_FMA3(vrd2_cos);
+    /* We have only OPT version of the below vector variants*/
+    fn_v4d = &FN_PROTOTYPE_OPT(vrd4_cos);
+    fn_v8s = &FN_PROTOTYPE_OPT(vrs8_cosf);
 
     if (CPU_HAS_AVX2(features) &&
         CPU_FEATURE_AVX2_USABLE(features)) {
-        //fn_d = &FN_PROTOTYPE_OPT(cos);
+        fn_d = &FN_PROTOTYPE_OPT(cos);
         fn_s = &FN_PROTOTYPE_OPT(cosf);
         fn_v4s = &FN_PROTOTYPE_OPT(vrs4_cosf);
         fn_v8s = &FN_PROTOTYPE_OPT(vrs8_cosf);
+        fn_v2d = &FN_PROTOTYPE_OPT(vrd2_cos);
+        fn_v4d = &FN_PROTOTYPE_OPT(vrd4_cos);
     } else if (CPU_HAS_SSSE3(features) &&
                CPU_FEATURE_SSSE3_USABLE(features)) {
         fn_d = &FN_PROTOTYPE_BAS64(cos);
@@ -85,14 +93,20 @@ LIBM_IFACE_PROTO(cos)(void *arg)
             case 0x15:                      /* Naples */
                         break;
             case 0x17:                      /* Rome */
+                        fn_d = &ALM_PROTO_ARCH_ZN2(cos);
                         fn_s = &ALM_PROTO_ARCH_ZN2(cosf);
                         fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_cosf);
                         fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_cosf);
+                        fn_v2d = &ALM_PROTO_ARCH_ZN2(vrd2_cos);
+                        fn_v4d = &ALM_PROTO_ARCH_ZN2(vrd4_cos);
                         break;
             case 0x19:                      /* Milan */
-                        fn_s = &ALM_PROTO_ARCH_ZN2(cosf);
-                        fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_cosf);
-                        fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_cosf);
+                        fn_d   = &ALM_PROTO_ARCH_ZN3(cos);
+                        fn_s   = &ALM_PROTO_ARCH_ZN3(cosf);
+                        fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_cosf);
+                        fn_v8s = &ALM_PROTO_ARCH_ZN3(vrs8_cosf);
+                        fn_v2d = &ALM_PROTO_ARCH_ZN3(vrd2_cos);
+                        fn_v4d = &ALM_PROTO_ARCH_ZN3(vrd4_cos);
                         break;
         }
     }
@@ -105,6 +119,7 @@ LIBM_IFACE_PROTO(cos)(void *arg)
 
     /* Vector Double */
     G_ENTRY_PT_PTR(vrd2_cos) = fn_v2d;
+    G_ENTRY_PT_PTR(vrd4_cos) = fn_v4d;
 
     /* Vector Single */
     G_ENTRY_PT_PTR(vrs4_cosf) = fn_v4s;

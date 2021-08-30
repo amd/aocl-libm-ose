@@ -1,28 +1,7 @@
+# Copyright (C) Prem Mallappa
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Author: Prem Mallappa <prem.mallappa@gmail.com>
 #
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
-# 1. Redistributions of source code must retain the above copyright notice,
-#    this list of conditions and the following disclaimer.
-# 2. Redistributions in binary form must reproduce the above copyright notice,
-#    this list of conditions and the following disclaimer in the documentation
-#    and/or other materials provided with the distribution.
-# 3. Neither the name of the copyright holder nor the names of its contributors
-#    may be used to endorse or promote products derived from this software without
-#    specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
-# OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
-
 from os.path import join as joinpath
 from os import environ
 
@@ -66,11 +45,15 @@ class DefaultCfg(object):
         self.defenv = Environment(variables = self.defvars,
                                   ENV = {'PATH' : environ['PATH']})
 
-        self.Check()
-
     def AddOptions(self):
         opts = cfg.LocalOption()
 
+        opts.Add('--prefix', dest='prefix', nargs=1, action='callback',
+                  type='str',
+                  callback=self.__default_store,
+                  help="""Specify an install prefix directory
+                  the directory will be create if non-existant""")
+        
         opts.Add('--verbose', dest='verbose', nargs=1, action='callback',
                  callback=self.__default_store,
                  default='none', type='int',
@@ -130,7 +113,7 @@ class DefaultCfg(object):
                          map={}, ignorecase=0),  # case sensitive
 	        # test abi makes tests to call out for given library call
             EnumVariable('libabi', 'Test ABI for library function calling', 'aocl',
-                         allowed_values=('aocl', 'glibc', 'libm', 'acml','amdlibm'),
+                         allowed_values=('aocl', 'glibc', 'libm', 'acml','amdlibm', 'svml'),
                          map={}, ignorecase=2),  # lowercase always
             EnumVariable('developer', 'A developer friendly mode', 0,
                          allowed_values=('0', '1', '2', '3', '4'),
@@ -140,8 +123,14 @@ class DefaultCfg(object):
             EnumVariable('compiler', "Select compiler type", 'gcc',
                          allowed_values=('gcc', 'aocc', 'llvm', 'icc'), ignorecase=2),
 
-            PathVariable('toolchain_base', "Use this as toolchain prefix", '/usr/bin')
+            PathVariable('toolchain_base', "Use this as toolchain prefix", '/usr/bin'),
+            PathVariable('prefix', "Use this as install prefix", '/usr/local')
         )
+
+        defvars.Add(PathVariable('CC', help="Custom C compielr", default = None,
+                validator=PathVariable.PathAccept))
+        defvars.Add(PathVariable('CXX', help="Custom CXX compielr", default = None,
+                validator=PathVariable.PathAccept))
 
         self.defvars = defvars
 
@@ -181,8 +170,7 @@ class DefaultCfg(object):
             cmpiler = compiler.llvm.LLVM(self.defenv['build'])
 
         env.Replace(
-            CXX = cmpiler.CXXCmd(),
-            CC = cmpiler.CCCmd(),
+            CC = cmpiler.Cmd(),
             CCFLAGS = cmpiler.CFlags(),
             LINKFLAGS = cmpiler.LDFlags(),
         )
@@ -201,6 +189,10 @@ class DefaultCfg(object):
                 CPPDEFINES = {'DEVELOPER' : env['developer']})
 
         self.defvars.Save(self.def_env_file, env)
+
+        self.Check()
+
+        env['ENV'].update(environ)
         return env
 
     def GetHelpTexts(self):

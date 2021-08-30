@@ -1,0 +1,22 @@
+# Copyright (C) 2020, AMD. All rights Reserved
+#
+# Author: Pranoy Jayaraj <pjayaraj@amd.com>
+
+#compile this dynamic loading tests with gcc
+e = Environment(CC = 'gcc')
+
+e.Append(
+    INCPATH= ['inc'],
+	CPPPATH= ['inc'],
+    CFLAGS = ['-mavx', '-fPIE'],
+    LDFLAGS= ['-fPIE'],
+    LIBS   = ['dl', 'm'],
+)
+
+srcs = Glob('./src/*.[cS]')
+
+exe = e.Program(source = srcs,
+                target = 'test_dynamic')
+
+Return('exe')
+

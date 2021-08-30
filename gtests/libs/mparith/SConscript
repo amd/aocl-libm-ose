@@ -1,0 +1,63 @@
+#
+# Copyright (C) 2019 Prem Mallappa.
+#
+#
+# Author: Prem Mallappa<prem.mallappa@gmail.com>
+#
+import os
+from os import path
+from os.path import join as joinpath
+
+Import('env')
+
+build_dir = joinpath(env['BUILDROOT'], 'mparith')
+
+mpcflags = [
+	'-fPIC',
+	'-Wwrite-strings',
+	'-fno-strict-aliasing',
+	'-D_GNU_SOURCE',
+	'-D_ISOC99_SOURCE',
+	'-DIS_64BIT'
+	]
+
+this_sconscript_file = Dir('.').srcnode().abspath
+
+ccflags = []
+liblist = []
+incpath = [ joinpath(this_sconscript_file, x) for x in ['.', './mparith', 'include']]
+libpath = []
+
+# Add default math library for any unresolved functions
+liblist.extend(['mpfr', 'm'])
+libpath += ['.', 'src', 'mpariths']
+
+mpenv = env.Clone()
+mpenv.Append(
+    CCFLAGS  = mpcflags,
+    CPPPATH  = [incpath],
+    #src_dir = 'libs/mparith',
+    STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 'yes' ,
+)
+
+mpenv32 = mpenv.Clone()
+mpenv32.Append(CCFLAGS = '-DFLOAT',
+		MPVARIANT = '32')
+lib32 = SConscript('build_libmp',
+		exports = {'mpenv': mpenv32},
+		variant_dir = '32',
+		duplicate = 0,
+	)
+
+mpenv64 = mpenv.Clone()
+mpenv64.Append(CCFLAGS = '-DDOUBLE',
+		MPVARIANT = '64')
+lib64 = SConscript('build_libmp',
+		exports = {'mpenv': mpenv64},
+		variant_dir = '64',
+		duplicate = 0,
+	)
+
+Return('lib32', 
+	'lib64')
+

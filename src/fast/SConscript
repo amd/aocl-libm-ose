@@ -35,13 +35,11 @@ incpaths = [
 
 
 e.Append(
-    CCFLAGS = [
-        #'-Wall', '-W', '-Wstrict-prototypes', '-Werror',
-        #'-Wno-unused-but-set-parameter',
-        #'-Wno-unused-parameter', '-O3',
-        #'-fPIC',
-        '-mavx2', '-march=znver2'
-    ],
+    CCFLAGS = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror',
+               #'-Wno-unused-but-set-parameter',
+               '-Wno-unused-parameter', '-O3',
+               '-fPIC',
+               '-mavx2', '-march=znver2'],
     CPPPATH = incpaths,
     # CCFLAGS = [],
     # LINKFLAGS = ['-T$LINKERSCRIPT'],

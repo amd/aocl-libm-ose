@@ -39,7 +39,7 @@
 #define EXPM1F_N 6
 
 #if EXPM1F_N == 6
-extern const uint64_t __two_to_jby64[64];
+extern const double __two_to_jby64[64];
 #elif EXPM1F_N == 7
 extern const double __two_to_jby128[128];
 #endif
@@ -59,7 +59,7 @@ static const struct {
     float poly[5];
     /* The pre-computed double-precision table */
     //double tab[1 << EXPM1F_N];
-    const uint64_t *tab;
+    const double *tab;
 } expm1f_v2_data =  {
     .Huge       = 0x1.8p+52,	/* 2^52 * (1.0 + 0.5) */
 #if 1

@@ -1,0 +1,48 @@
+#
+# Copyright (C) 2019 Prem Mallappa.
+#
+#
+# Author: Prem Mallappa<prem.mallappa@gmail.com>
+#
+import os
+from os import path
+from os.path import join as joinpath
+
+Import('env')
+
+build_dir = joinpath(env['BUILDROOT'], 'gbench')
+
+gflags = [
+	'-std=c++11','-O3', '-DNDEBUG','-Wno-deprecated',
+	'-Wall', '-Wextra', '-Wshadow', '-fstrict-aliasing',
+    '-Wno-deprecated-declarations', '-Werror',
+    '-fPIC',
+	'-DHAVE_POSIX_REGEX',
+	'-DHAVE_STD_REGEX',
+	'-DHAVE_STEADY_CLOCK'
+	]
+
+this_sconscript_file = Dir('.').srcnode().abspath
+
+ccflags = []
+liblist = ['pthread']
+incpath = [ joinpath(this_sconscript_file, x) for x in ['.', './src']]
+libpath = []
+
+genv = env.Clone()
+genv.Replace(CC='gcc',LINKFLAGS=[])
+genv.Append(
+    CCFLAGS  = gflags,
+    CPPPATH  = [incpath],
+    LIBS     = liblist,
+    STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 'yes' ,
+)
+
+libbenchmark = SConscript('build_gbench',
+		exports = {'genv': genv},
+		duplicate = 0,
+	)
+
+
+Return('libbenchmark')
+

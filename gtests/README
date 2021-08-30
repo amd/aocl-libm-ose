@@ -1,0 +1,77 @@
+To Build the Executable:
+
+sudo apt install python3-venv
+
+python3 -m venv .venv3
+
+source .venv3/bin/activate
+
+pip install scons
+
+export PATH=`pwd`/.venv3/bin:$PATH
+
+scons  -h
+
+scons gtests -j32                    //release mode
+LD_LIBRARY_PATH=./build/aocl-release/src/:build/aocl-release/gtests/gapi/gtest/:build/aocl-release/gtests/gapi/gbench/:build/aocl-release/gtests/libs/mparith/32/:build/aocl-release/gtests/libs/mparith/64/
+
+scons gtests --debug_mode=all -j32   //debug mode
+LD_LIBRARY_PATH=./build/aocl-debug/src/:build/aocl-debug/gtests/gapi/gtest/:build/aocl-debug/gtests/gapi/gbench/:build/aocl-debug/gtests/libs/mparith/32/:build/aocl-debug/gtests/libs/mparith/64/
+
+export LD_LIBRARY_PATH
+echo $LD_LIBRARY_PATH
+
+To run test cases
+command line arguments ./build/aocl-release/funcname/func_exe (--type=) (--range=) [--count=] [--input=]
+                                                              [--vector=] [--verbose=] [--Iterations=]
+                                                (or)
+                       ./build/aocl-release/funcname/func_exe (-t) (-r) [-c] [-i] [-e] [-v] [-n]
+
+                         --type=accu or conf or spec or perf
+                         --count=Number of input_size
+                         --input=float or double
+                         --vector=1 or 2 or 4 or 8
+                         --range="min,max,algorithm(simple or random or linear)"
+                         --verbose=1-5(1-prints information only for failed cases, 4/5-prints information for all the cases)
+                         --Iterations=loop count to measure performance
+
+                       Ex: ./build/aocl-release/funcname/func_exe --type=accu --count=1000 --input=float --vector=1 --range=-120,80,simple --verbose=1
+                                            (or)
+                           ./build/aocl-release/funcname/func_exe -t accu -c 1000 -i f -e 1 -r -120,80,simple -v 1
+
+For Help : ./build/aocl-release/funcname/func_exe --help
+
+To run accuracy_test cases:
+./build/aocl-release/funcname/func_exe --type=accu --count=200 --range=-1,1,simple
+
+./build/aocl-release/funcname/func_exe --type=accu --count=1000 --input=float --range=-1,1,simple
+
+./build/aocl-release/funcname/func_exe --type=accu --count=10000 --input=double --vector=4 --range=-1,1,simple --verbose=5
+
+With two input range values
+./build/aocl-release/funcname/func_exe --type=accu --count=1000 --input=float --vector=1 --range=-120,80,simple  --range=-120,80,simple --verbose=1
+
+To run conformance_test cases
+./build/aocl-release/funcname/func_exe --type=conf --input=float
+
+./build/aocl-release/funcname/func_exe --type=conf --input=double
+
+To run special_test cases
+./build/aocl-release/funcname/func_exe --type=spec --input=float
+
+./build/aocl-release/funcname/func_exe --type=spec --input=double
+
+To measure performance
+./build/aocl-release/funcname/func_exe --type=perf --Iterations=10000 --count=1000 --range=-120,80,simple
+
+./build/aocl-release/funcname/func_exe -t perf -n 10000 -c 10000 -i f -e 1 -r -120,80,simple
+
+To Clean:
+scons -c
+
+Use different compiler:
+Append the argument: --compiler=aocc/gcc
+
+Compile test framework to measure GLIBC/Intel SVML Functions (under development):
+--libabi=glibc/svml
+

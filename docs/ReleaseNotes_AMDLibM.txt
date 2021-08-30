@@ -1,7 +1,7 @@
 
 (C) 2008-2020 Advanced Micro Devices, Inc. All Rights Reserved.
 
-AMD LibM - Release Notes - version 3.6
+AMD LibM - Release Notes - version 3.7
 ----------------------------------------
 
 AMD LibM Contents
@@ -11,17 +11,18 @@ math functions from the C99 standard. The library is designed for use in 64-bit
 programs on x86-64 machines. Static and dynamic libraries are available for
 Linux(R) operating system.
 
-Hightlights of AMD LibM 3.6
+Hightlights of AMD LibM 3.7
 -----------------------------
 
-    * Bug fixes in scalar pow, exp, expf
-    * Performance gains in both single and double precision vector routines of pow(), log(), exp()
+    * Optimized Trigonometric scalar and vector variants of sin, cos, and tan.
+    * Optimized Hyperbolic (single precision) scalar and vector variants of cosh and tanh.
+    * Bug fixes in vector (double precision) log and exp.
 
 Known Issues
 ------------
    * fastpow() - Maximum ULP error is 10.
 
-Version 3.6 Contents
+Version 3.7 Contents
 ----------------------
 AMD LibM provides vector variants for many of the math functions. The list of
 available vector functions is given below. All functions have an 'amd_' prefix.
@@ -117,7 +118,7 @@ Refer to the examples directory for illustration.
 
 The Linux libraries have a dependency on system math library. When
 linking AMD LibM, ensure it precedes system math library in the
-link order i.e., "-lamdlibm" should come before "-lm". Explicit
+link order i.e., "-lalm" should come before "-lm". Explicit
 linking of system math library is required when using gcc C
 compiler. With g++ compiler (for C++), this is not needed.
 

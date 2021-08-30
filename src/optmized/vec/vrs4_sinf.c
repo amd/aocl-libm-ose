@@ -37,7 +37,7 @@
 
 /*
  * Signature:
- *    v_f32x8_t amd_vrs8_sinf(v_f32x8_t x)
+ *    v_f32x4_t amd_vrs4_sinf(v_f32x4_t x)
  *
  *
  *
@@ -64,7 +64,7 @@ static struct {
     v_u32x4_t max_arg;
     v_f32x4_t poly_sinf[5];
  } v4_sinf_data = {
-     .max_arg = _MM_SET1_I32(0x4A989680),
+     .max_arg = _MM_SET1_I32(0x49800000), /* 0x1p20f */
      .mask32    = _MM_SET1_I32(0x7fffffff),
      .pi1    = _MM_SET1_PS4(-0x1.921fb6p1f),
      .pi2   = _MM_SET1_PS4(0x1.777a5cp-24f),

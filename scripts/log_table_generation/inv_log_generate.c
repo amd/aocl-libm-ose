@@ -25,8 +25,8 @@
  *
  */
 
-/* Program for generating F_inv table for log function
-
+/*
+   Program for generating F_inv table for log function
    The values of the table are generated as :
 
       Let table_size be the number of values required in the table

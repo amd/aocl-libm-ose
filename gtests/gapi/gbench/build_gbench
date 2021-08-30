@@ -1,0 +1,32 @@
+#
+# Copyright (C) 2019 Prem Mallappa.
+#
+#
+# Author: Prem Mallappa<prem.mallappa@gmail.com>
+#
+import os
+from os import path
+from os.path import join as joinpath
+
+Import('genv')
+
+excludes = Glob('*_old.c')
+
+# Get all Linux files, excluding the list
+linux_files = Glob('*linux.c')
+
+# We first exclude the OS specific files
+excludes += linux_files
+
+excluded_list = [f.name for f in excludes]
+
+gbench_srcs = Glob('src/*.cc', exclude=excluded_list)
+
+#print([x.path for x in gbench_srcs])
+
+objs = genv.StaticObject(gbench_srcs)
+
+libgb   = genv.StaticLibrary('benchmark', objs)
+libgbso = genv.SharedLibrary('benchmark', objs)
+
+Return('libgb', 'libgbso')

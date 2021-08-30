@@ -1,4 +1,4 @@
- #!/bin/bash
+#!/bin/bash
 
 #
 # Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.

@@ -297,6 +297,7 @@ extern  float _remainderf_special       (float x, float y, uint32_t errorCode);
 extern  float _sinf_cosf_special        (float x, char *name, _AMDLIBM_CODE code);
 extern  float _sinf_special             (float x);
 extern  float _tanf_special             (float x);
+extern  float _tanhf_special            (float x);
 extern  float _truncf_special           (float x, float r);
 extern  void _sincosf_special           (float x, float *sy, float *cy);
 extern  float _sinf_cosf_special_underflow(float x, char *name, _AMDLIBM_CODE code);

@@ -127,31 +127,37 @@ _log_special_common(double x, double y, U32 fn_code, U32 error_code, char *name)
 {
     flt64_t ym = {.d = y};
 
-	switch (error_code) {
+  switch (error_code) {
     case ALM_E_OUT_INF:
         __amd_handle_error(name, (int)fn_code, ym.u, ALM_ERR_SING,
                            AMD_F_INVALID, ERANGE, x, 0.0, 1);
         break;
 
-	case ALM_E_IN_X_ZERO:
+    case ALM_E_IN_X_ZERO:
         __amd_handle_error(name, (int)fn_code, ym.u, ALM_ERR_SING,
                            AMD_F_NONE, ERANGE, x, 0.0, 1);
-    break;
+        break;
 
-	case ALM_E_IN_X_NEG:
+    case ALM_E_IN_X_NEG:
         __amd_handle_error(name, (int)fn_code, ym.u, ALM_ERR_DOMAIN,
                            AMD_F_INVALID, EDOM, x, 0.0, 1);
-    break;
+        break;
 
-	case ALM_E_IN_X_NAN:
+    case ALM_E_IN_X_NAN:
         __amd_handle_error(name, (int)fn_code, ym.u, ALM_ERR_DOMAIN,
                            AMD_F_INVALID, EDOM, x, 0.0, 1);
-    break;
+        break;
+
+    case ALM_E_DIV_BY_ZER0:
+        __amd_handle_error(name, (int)fn_code, ym.u, ALM_ERR_DOMAIN,
+                           AMD_F_DIVBYZERO, EDOM, x, 0.0, 1);
+
+        break;
 
     case ALM_E_OUT_ZERO:
-	default:
-		break;
-	}
+        default:
+        break;
+  }
 
     return y;
 }

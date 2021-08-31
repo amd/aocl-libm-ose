@@ -44,6 +44,7 @@ enum {
         ALM_E_IN_X_NAN  = 1<<7,         /* first arg is a NaN or QNaN */
         ALM_E_IN_X_INF  = 1<<6,         /* is '+/- INF' */
         ALM_E_IN_X_ZERO = 1<<5,         /* is a ZERO */
+        ALM_E_DIV_BY_ZER0 = 1 << 2,
 
         /* For functions with 2 args */
         ALM_E_IN_Y_NAN  = 1<<4,         /*  */

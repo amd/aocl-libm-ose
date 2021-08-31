@@ -235,6 +235,7 @@ LIBM_DECL_FN_MAP(vrd4_pow);
 LIBM_DECL_FN_MAP(vrd4_sin);
 LIBM_DECL_FN_MAP(vrd4_cos);
 LIBM_DECL_FN_MAP(vrd4_tan);
+LIBM_DECL_FN_MAP(vrd4_atan);
 
 LIBM_DECL_FN_MAP(vrd8_exp2);
 LIBM_DECL_FN_MAP(vrd8_log2);
@@ -334,6 +335,7 @@ WEAK_LIBM_ALIAS(vrd4_exp, FN_PROTOTYPE(vrd4_exp));
 WEAK_LIBM_ALIAS(vrd4_exp2, FN_PROTOTYPE(vrd4_exp2));
 WEAK_LIBM_ALIAS(vrd4_log, FN_PROTOTYPE(vrd4_log));
 WEAK_LIBM_ALIAS(vrd4_sin, FN_PROTOTYPE(vrd4_sin));
+WEAK_LIBM_ALIAS(vrd4_atan, FN_PROTOTYPE(vrd4_atan));
 
 WEAK_LIBM_ALIAS(vrd8_exp, FN_PROTOTYPE(vrd8_exp));
 WEAK_LIBM_ALIAS(vrd8_pow, FN_PROTOTYPE(vrd8_pow));

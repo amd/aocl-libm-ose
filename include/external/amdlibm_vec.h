@@ -281,6 +281,8 @@ extern "C" {
 
     __m128d amd_vrd2_atan   (__m128d x);
 
+    __m128d amd_vrd4_atan   (__m128d x);
+
 /*Hyperbolic*/
    __m128  amd_vrs4_coshf   (__m128  x);
    __m128  amd_vrs4_tanhf   (__m128  x);

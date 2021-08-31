@@ -77,14 +77,16 @@ static struct {
     },
 };
 
-#define C1  log2_data.poly[0]
-#define C2	log2_data.poly[1]
-#define C3	log2_data.poly[2]
-#define C4	log2_data.poly[3]
-#define C5	log2_data.poly[4]
-#define C6	log2_data.poly[5]
-#define C7	log2_data.poly[6]
-#define C8	log2_data.poly[7]
+#define LOW  0x0010000000000000U
+#define HIGH 0x7ff0000000000000U
+#define C1 log2_data.poly[0]
+#define C2 log2_data.poly[1]
+#define C3 log2_data.poly[2]
+#define C4 log2_data.poly[3]
+#define C5 log2_data.poly[4]
+#define C6 log2_data.poly[5]
+#define C7 log2_data.poly[6]
+#define C8 log2_data.poly[7]
 
 #define ALM_LOG2E       log2_data.log2e
 #define ALM_LOG2E_LEAD  log2_data.log2e_lead
@@ -104,10 +106,10 @@ extern        double     log_f_inv_256[];
 #define TAB_F_INV      log_f_inv_256
 #define TAB_LOG2       log2_table_256
 
-static inline uint64_t top12(double x)
-{
+static inline uint64_t top12(double x) {
     /* 12 are the exponent bits */
     return asuint64(x) >> (64 - 12);
+
 }
 
 #include "kern/log1p.c"
@@ -177,41 +179,46 @@ double
 ALM_PROTO_OPT(log2)(double x)
 {
     double    q, r, dexpo, j_times_half;
-    uint64_t  ux   = asuint64(x);
-    uint64_t  expo = top12(x);
 
-    if (unlikely (expo >= 0x7ff)) {
+    uint64_t  ux = asuint64(x);
+
+    uint64_t expo = top12(x);
+
+    flt64_t mant  = {.u = ux & MANTBITS_DP64};
+
+    if (unlikely ((ux - LOW) >= (HIGH - LOW))){
+
+        if (2 * ux == 0)
+            return alm_log2_special(x, asdouble(NINFBITPATT_DP64), AMD_F_DIVBYZERO);
+
         if (ux == PINFBITPATT_DP64)
             return x;
 
-        if (isinf(x))
-            return alm_log2_special(x, asdouble(PINFBITPATT_DP64), ALM_E_OUT_INF);
 
-        if (!(ux & QNANBITPATT_DP64))
+        if ((ux >= HIGH ) || (ux >> 63)) {
+
+            if( (ux & QNANBITPATT_DP64) == QNANBITPATT_DP64)
+               return x;
+
             return alm_log2_special(x, asdouble(ux | QNANBITPATT_DP64), ALM_E_IN_X_NAN);
-    }
 
-    if (unlikely (x <= 0.0)) {
-        if (x == 0.0)
-            return alm_log2_special(x, asdouble(PINFBITPATT_DP64), ALM_E_IN_X_ZERO);
+}
 
-        return alm_log2_special(x, asdouble(QNANBITPATT_DP64), ALM_E_IN_X_NEG);
-    }
+        /* Denormals : adjust mantissa */
 
-    flt64_t mant  = {.u = ux & MANTBITS_DP64};
-    dexpo         = cast_i64_to_double((int64_t) expo);
-
-    /* Denormals : adjust mantissa */
-    if (unlikely (dexpo < -1023.0)) {
         mant.u   |= ONEEXPBITS_DP64;
         mant.d   -= 1.0;
         expo      = (mant.u >> EXPSHIFTBITS_DP64) - 2045;
         mant.u   &= MANTBITS_DP64;
         ux        = mant.u;
+        dexpo    = cast_i64_to_double((int64_t) expo);
     }
+    else {
 
-    expo    -= EXPBIAS_DP64;
-    dexpo    = cast_i64_to_double((int64_t) expo);
+        expo    -= EXPBIAS_DP64;
+        dexpo    = cast_i64_to_double((int64_t) expo);
+
+    }
 
     /* Values very close to 1, x in [0.9375, 1.625] */
 

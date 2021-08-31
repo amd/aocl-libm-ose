@@ -222,6 +222,8 @@ extern "C" {
 
     __m128d amd_vrd2_log10  (__m128d x);
     __m128  amd_vrs4_log10f (__m128  x);
+    __m256  amd_vrs8_log10f  (__m256 x);
+
     __m128d amd_vrd2_log1p  (__m128d x);
     __m128  amd_vrs4_log1pf (__m128  x);
 

@@ -374,7 +374,7 @@ TEST_P(SpecTestFixtureFloat, CONFORMANCE_FLOAT) {
     op = getExpected(ip);
     int eef = expected_expection[i];
 
-    SpecTestFixtureFloat::ConfVerifyFlt(ip[0], aop, op, raised_exception, eef, &nfail);
+    SpecTestFixtureFloat::ConfVerifyFlt(nargs, ip[0], ip[1], aop, op, raised_exception, eef, &nfail);
 
     if (vflag == 1) {
       cout << "Input: " << ip[0] << " Output: " << aop << " Expected: " << op << endl;
@@ -412,7 +412,7 @@ TEST_P(SpecTestFixtureDouble, CONFORMANCE_DOUBLE) {
     op = getExpected(ip);
     int eef = expected_expection[i];
 
-    SpecTestFixtureDouble::ConfVerifyDbl(ip[0], aop, op, raised_exception, eef, &nfail);
+    SpecTestFixtureDouble::ConfVerifyDbl(nargs, ip[0], ip[1], aop, op, raised_exception, eef, &nfail);
 
     if (vflag == 1) {
       cout << "Input: " << ip[0] << " Output: " << aop << " Expected: " << op << endl;

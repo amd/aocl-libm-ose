@@ -231,7 +231,7 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
   }
 
   template <typename T>
-  bool ConfVerifyFlt(T input, T actual_output, T expected_output, int raised_exception, int expected_exception, int *nfail) {
+  bool ConfVerifyFlt(int nargs, T input, T input2, T actual_output, T expected_output, int raised_exception, int expected_exception, int *nfail) {
     int output_match = 0, exception_match = 0;
     /* check if exceptions match */
     if (raised_exception != expected_exception) {
@@ -241,6 +241,7 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
     val e = {.f = expected_output};
     val a = {.f = actual_output};
     val ip = {.f = input};
+    val ip2 = {.f = input2};
 
     bool both_nans = isnanf(fabsf(e.f)) && isnanf(fabsf(a.f));
 
@@ -250,8 +251,10 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
 
     if (output_match==1 || exception_match==1) {
         (*nfail)++;
-        printf ("Input: 0x%x (%f) Expected: 0x%x (%f) Actual: 0x%x (%f)\n",
-                ip.u, ip.f, e.u, e.f, a.u, a.f);
+        printf ("Input: 0x%x (%f) ", ip.u, ip.f);
+        if (nargs == 2)
+            printf ("Input2: 0x%x (%f) ", ip2.u, ip2.f);
+        printf ("Expected: 0x%x (%f) Actual: 0x%x (%f)\n", e.u, e.f, a.u, a.f);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);
         return false;
@@ -263,7 +266,7 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
     bool flag = SpecialVerify(actual, expected);
     if(!flag)
       (*nfail)++;
-    return flag;    
+    return flag;
   }
 
   void SetUp() override {
@@ -321,7 +324,7 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
 
   /* verify double */
   template <typename T>
-  bool ConfVerifyDbl(T input, T actual_output, T expected_output, int raised_exception, int expected_exception, int *nfail) {
+  bool ConfVerifyDbl(int nargs, T input, T input2, T actual_output, T expected_output, int raised_exception, int expected_exception, int *nfail) {
     int output_match = 0, exception_match = 0;
     /* check if exceptions match */
     if (raised_exception != expected_exception) {
@@ -331,6 +334,7 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
     val e = {.d = expected_output};
     val a = {.d = actual_output};
     val ip = {.d = input};
+    val ip2 = {.d = input2};
 
     bool both_nans = isnan(fabs(e.d)) && isnan(fabs(a.d));
 
@@ -340,8 +344,10 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
 
     if (output_match==1 || exception_match==1) {
         (*nfail)++;
-        printf ("Input: 0x%lx (%f) Expected: 0x%lx (%f) Actual: 0x%lx (%f)\n",
-                ip.lu, ip.d, e.lu, e.d, a.lu, a.d);
+        printf ("Input: 0x%lx (%f) ", ip.lu, ip.d);
+        if (nargs == 2)
+            printf ("Input2: 0x%lx (%f) ", ip2.lu, ip2.d);
+        printf ("Expected: 0x%lx (%f) Actual: 0x%lx (%f)\n", e.lu, e.d, a.lu, a.d);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);
         return false;

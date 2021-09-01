@@ -135,13 +135,15 @@ float __alm_handle_errorf(
 #endif /* if WINDOWS */
 
 
-double	alm_exp2_special(double x, double y, uint32_t code);
+double  alm_exp2_special(double x, double y, uint32_t code);
 float   alm_exp2f_special(float x, float y, uint32_t code);
 
-double	alm_log2_special(double x, double y, uint32_t code);
+double  alm_log_special(double x, double y, uint32_t code);
+
+double  alm_log2_special(double x, double y, uint32_t code);
 float   alm_log2f_special(float x, float y, uint32_t code);
 
-double	alm_log10_special(double x, double y, uint32_t code);
+double  alm_log10_special(double x, double y, uint32_t code);
 float   alm_log10f_special(float x, float y, uint32_t code);
 
 float   alm_acosf_special(float x, uint32_t code);

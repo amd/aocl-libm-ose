@@ -166,25 +166,31 @@ _log_special_common(double x, double y, U32 fn_code, U32 error_code, char *name)
 float
 alm_log2f_special(float x, float y, uint32_t code)
 {
-    return (float)_log_special_common(x, y, __amd_log2, code, "log2");
+    return (float)_log_special_common(x, y, __amd_log, code, "log2f");
 }
 
 double
 alm_log2_special(double x, double y, uint32_t code)
 {
-    return _log_special_common(x, y, __amd_log2, code, "log2f");
+    return _log_special_common(x, y, __amd_log2, code, "log2");
+}
+
+double
+alm_log_special(double x, double y, uint32_t code)
+{
+    return _log_special_common(x, y, __amd_log, code, "log2");
 }
 
 float
 alm_log10f_special(float x, float y, uint32_t code)
 {
-    return (float)_log_special_common(x, y, __amd_log2, code, "log10f");
+    return (float)_log_special_common(x, y, __amd_log10, code, "log10f");
 }
 
 double
 alm_log10_special(double x, double y, uint32_t code)
 {
-    return _log_special_common(x, y, __amd_log2, code, "log2");
+    return _log_special_common(x, y, __amd_log10, code, "log10");
 }
 
 float

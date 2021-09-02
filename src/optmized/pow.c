@@ -35,6 +35,7 @@
 #include "libm_macros.h"
 #include "libm_util_amd.h"
 #include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/typehelper.h>
 #include <libm/poly.h>
 #include <libm/amd_funcs_internal.h>
@@ -74,11 +75,6 @@ struct exp_data{
     uint64_t tail;
 };
 
-
-typedef union {
-    uint64_t value;
-    uint32_t split[2];
-} doubleword;
 
 extern struct log_data log_Finv[];
 extern struct log_data log_f_256[];
@@ -267,32 +263,32 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign) {
 
     uint64_t i;
 
-    doubleword xword;
+    uint64_t ux;
 
     double temp = v;
 
     v = v * N_BY_LOG2;
 
-    xword.value = asuint64(temp);
+    ux = asuint64(temp);
 
-    int32_t abs_ylogx = (xword.value & ABSOLUTE_VALUE) >> 32;
+    int32_t abs_ylogx = (ux & ABSOLUTE_VALUE) >> 32;
 
     /* check if x > 1024 * ln(2) */
     if(unlikely(abs_ylogx >= TOP12_EXP_MAX)) {
         /* if abs(y * log(x)) > 709.7822265625 */
-        if(xword.value >= EXP_MIN) {
+        if(ux >= EXP_MIN) {
             /* if y * log(x) < -745.133219101941222106688655913 */
             v = asdouble(0x0 | result_sign);
 
-            return _exp_special(asdouble(xword.value), v, EXP_Y_ZERO);
+            return _exp_special(asdouble(ux), v, EXP_Y_ZERO);
 
         }
 
-      if(temp > EXP_MAX_DOUBLE) {
+      if(temp > asdouble(EXP_MAX_DOUBLE)) {
             /* if y * log(x) > 709.7822265625 */
             v = asdouble(EXPBITS_DP64 | result_sign);
 
-            return  _exp_special(asdouble(xword.value), v,  EXP_Y_INF);
+            return  _exp_special(asdouble(ux), v,  EXP_Y_INF);
 
       }
 
@@ -312,7 +308,7 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign) {
 
     r = temp - (dn * LOG2_BY_N_HEAD);
 
-    int64_t m = ((n - index) << (EXPSHIFTBITS_DP64 - N)) + ONE;
+    int64_t m = ((n - index) << (EXPSHIFTBITS_DP64 - N));
 
     r = (r - (LOG2_BY_N_TAIL * dn)) + vt;
 
@@ -345,27 +341,32 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign) {
 
     if(unlikely(abs_ylogx == 0xfff)) {
 
-        int32_t m2 = (int32_t)((n - index) >> N);
+        n = (int64_t)dn;
 
-        if(result < 1.0 || m2 < EMIN_DP64) {
+        int64_t m2 = n >> N;
 
-            m2 = m2 + 1074;
+        if(m2 <= -1022) {
 
-            i = 1ULL << m2;
+            if((m2 < -1022) || (result < 1.0)) {
 
-            dn = asdouble(i);
+                m2 = m2 + 1074;
 
-            n = (int64_t)asuint64(result * dn);
+                i = 1ULL << m2;
 
-            result = asdouble((uint64_t)n | result_sign);
+                dn = asdouble(i);
 
-            return result;
+                n = (int64_t)asuint64(result * dn);
+
+                result = asdouble((uint64_t)n | result_sign);
+
+                return result;
+            }
         }
     }
 
-    z = asdouble((uint64_t)m | result_sign);
+    z = asdouble(((uint64_t)m + asuint64(result)) | result_sign);
 
-    return result * z;
+    return z;
 }
 
 static inline uint32_t checkint(uint64_t u) {
@@ -407,7 +408,7 @@ static inline int issignaling_inline (double x) {
 
     ix = asuint64(x);
 
-    return 2 * (ix ^ QNAN_MASK_64) > 2 * QNANBITPATT_DP64;
+    return ((ix & QNANBITPATT_DP64) !=  QNANBITPATT_DP64);
 
 }
 
@@ -480,11 +481,12 @@ ALM_PROTO_OPT(pow)(double x, double y) {
 
             }
 
+            /* x is 0, y is negative */
             if ( 2 * ux == 0 && uy >> 63) {
 
-                x2 = 1.0 / 0.0;
+                _pow_special(x, y, 0.0, POW_X_ZERO_Z_INF);
 
-                x2 = asdouble(ux | result_sign);
+                x2 = asdouble(PINFBITPATT_DP64 | result_sign);
 
                 return x2;
             }

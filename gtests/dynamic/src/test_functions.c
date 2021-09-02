@@ -43,7 +43,7 @@ int test_s1d_2(func_2 s1d_2, const char* func_name) {
 /* vector functions */
 int test_v2d(func_v2d v2d, const char* func_name) {
     __m128d ip_vrd2, op_vrd2;
-    double input_array_vrd2[2], output_array_vrd2[2];
+    double input_array_vrd2[2] = {0.0, 0.0}, output_array_vrd2[2] = {0.0, 0.0};
     ip_vrd2 = _mm_loadu_pd(input_array_vrd2);
     if (CheckError()) exit(1);
     if (v2d != NULL) {
@@ -61,7 +61,7 @@ int test_v2d(func_v2d v2d, const char* func_name) {
 
 int test_v2d_2(func_v2d_2 v2d, const char* func_name) {
     __m128d ip_vrd2, op_vrd2;
-    double input_array_vrd2[2], output_array_vrd2[2];
+    double input_array_vrd2[2] = {0.0, 0.0}, output_array_vrd2[2] = {0.0, 0.0};
     ip_vrd2 = _mm_loadu_pd(input_array_vrd2);
     if (CheckError()) exit(1);
     if (v2d != NULL) {
@@ -78,7 +78,7 @@ int test_v2d_2(func_v2d_2 v2d, const char* func_name) {
 
 int test_v4s(funcf_v4s v4s, const char* func_name) {
     __m128 ip_vrs4, op_vrs4;
-    float input_array_vrs4[4], output_array_vrs4[4];
+    float input_array_vrs4[4] = {0.0f, 0.0f}, output_array_vrs4[4] = {0.0f, 0.0f};
     ip_vrs4 = _mm_loadu_ps(input_array_vrs4);
     if (CheckError()) exit(1);
     if (v4s != NULL) {
@@ -95,7 +95,7 @@ int test_v4s(funcf_v4s v4s, const char* func_name) {
 
 int test_v4s_2(funcf_v4s_2 v4s_2, const char* func_name) {
     __m128 ip_vrs4, op_vrs4;
-    float input_array_vrs4[4], output_array_vrs4[4];
+    float input_array_vrs4[4] = {0.0f, 0.0f}, output_array_vrs4[4] = {0.0f, 0.0f};
     ip_vrs4 = _mm_loadu_ps(input_array_vrs4);
     if (CheckError()) exit(1);
     if (v4s_2 != NULL) {
@@ -113,7 +113,7 @@ int test_v4s_2(funcf_v4s_2 v4s_2, const char* func_name) {
 int test_v4d(func_v4d v4d, const char * func_name) {
     __m256d ip_vrd4, op_vrd4;
     int i;
-    double input_array_vrd4[4], output_array_vrd4[4];
+    double input_array_vrd4[4]={0.0,0.0,0.0,0.0}, output_array_vrd4[4]={0.0,0.0,0.0,0.0};
     ip_vrd4 = _mm256_loadu_pd(input_array_vrd4);
     if (CheckError()) exit(1);
     if (v4d != NULL) {
@@ -133,7 +133,7 @@ int test_v4d(func_v4d v4d, const char * func_name) {
 
 int test_v4d_2(func_v4d_2 v4d_2, const char * func_name) {
     __m256d ip_vrd4, op_vrd4;
-    double input_array_vrd4[4], output_array_vrd4[4];
+    double input_array_vrd4[4]={0.0,0.0,0.0,0.0}, output_array_vrd4[4]={0.0,0.0,0.0,0.0};
     int i;
     ip_vrd4 = _mm256_loadu_pd(input_array_vrd4);
     if (CheckError()) exit(1);
@@ -154,7 +154,7 @@ int test_v4d_2(func_v4d_2 v4d_2, const char * func_name) {
 
 int test_v8s(funcf_v8s v8s, const char * func_name) {
     __m256 ip_vrs8, op_vrs8;
-    float input_array_vrs8[8], output_array_vrs8[8];
+    float input_array_vrs8[8] = {0.0f, 0.0f}, output_array_vrs8[8] = {0.0f, 0.0f};
     int i;
     ip_vrs8 = _mm256_loadu_ps(input_array_vrs8);
     if (CheckError()) exit(1);
@@ -175,8 +175,8 @@ int test_v8s(funcf_v8s v8s, const char * func_name) {
 
 int test_v8s_2(funcf_v8s_2 v8s_2, const char * func_name) {
     __m256 ip_vrs8, op_vrs8;
-    float input_array_vrs8[8];
-    float output_array_vrs8[8];
+    float input_array_vrs8[8] = {0.0f, 0.0f};
+    float output_array_vrs8[8] = {0.0f, 0.0f};
     int i;
     ip_vrs8 = _mm256_loadu_ps(input_array_vrs8);
     if (CheckError()) exit(1);
@@ -198,8 +198,8 @@ int test_v8s_2(funcf_v8s_2 v8s_2, const char * func_name) {
 #if defined(__AVX512__)
 int test_v8d(func_v8d v8d, const char * func_name) {
     __m512d ip_vrd8, op_vrd8;
-    double input_array_vrd8[8];
-    double output_array_vrd8[8];
+    double input_array_vrd8[8] = {0.0};
+    double output_array_vrd8[8] = {0.0};
     int i;
     ip_vrd8 = _mm512_loadu_pd(input_array_vrd8);
     if (CheckError()) exit(1);
@@ -220,8 +220,8 @@ int test_v8d(func_v8d v8d, const char * func_name) {
 
 int test_v8d_2(func_v8d_2 v8d_2, const char * func_name) {
     __m512d ip_vrd8, op_vrd8;
-    double input_array_vrd8[8];
-    double output_array_vrd8[8];
+    double input_array_vrd8[8] = {0.0,0.0};
+    double output_array_vrd8[8] = {0.0, 0.0};
     int i;
     ip_vrd8 = _mm512_loadu_pd(input_array_vrd8);
     if (CheckError()) exit(1);
@@ -242,7 +242,7 @@ int test_v8d_2(func_v8d_2 v8d_2, const char * func_name) {
 
 int test_v16s(funcf_v16s v16s, const char * func_name) {
     __m512 ip_vrs16, op_vrs16;
-    double input_array_vrs16[16], output_array_vrs16[16];
+    double input_array_vrs16[16] = {0.0f}, output_array_vrs16[16] = {0.0f};
     int i;
     ip_vrs16 = _mm512_loadu_ps(input_array_vrs16);
     if (CheckError()) exit(1);
@@ -263,7 +263,7 @@ int test_v16s(funcf_v16s v16s, const char * func_name) {
 
 int test_v16s_2(funcf_v16s_2 v16s, const char * func_name) {
     __m512 ip_vrs16, op_vrs16;
-    double input_array_vrs16[16], output_array_vrs16[16];
+    double input_array_vrs16[16]={0.0f}, output_array_vrs16[16] = {0.0f};
     int i;
     ip_vrs16 = _mm512_loadu_ps(input_array_vrs16);
     if (CheckError()) exit(1);

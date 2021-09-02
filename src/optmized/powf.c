@@ -320,7 +320,7 @@ float ALM_PROTO_OPT(powf)(float x, float y)
 
     uint64_t sign_bias = 0;
 
-    if (unlikely (ux >= 0x7f800000 || zeroinfnan (uy))) {
+    if (unlikely (((ux - 0x00800000) >= (0x7f800000 - 0x00800000)) || zeroinfnan (uy))) {
 
         /*  All x less than 1.0625, infinity, NaN and y = zero, infinity or NAN caught here
          *  x < 0x1p-126 or inf or nan.
@@ -389,13 +389,13 @@ float ALM_PROTO_OPT(powf)(float x, float y)
 
     /* if 0.9375 < x < 1.0625 */
     if ((0x3F880000 - ux) < (0x3F880000 - 0x3F700000)) {
-	    
-	double dx = (double_t)x;
+
+        double dx = (double_t)x;
 
         double_t  u, u2, u3, u7;
         double_t  A1, A2, B1, B2, R1, R2;
 
-	static const double ca[5] = {
+        static const double ca[5] = {
 
                 0x1.55555555554e6p-4, /* 1/2^2 * 3 */
                 0x1.9999999bac6d4p-7, /* 1/2^4 * 5 */

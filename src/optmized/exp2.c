@@ -193,6 +193,7 @@ ALM_PROTO_OPT(exp2)(double x)
 
     /* Comparing 11-bit 'exponent' with 12-bit unsigned value */
     if (unlikely (exponent - top12(0x1p-54) >= top12(512.0) - top12(0x1p-54))) {
+
         if (exponent - top12(0x1p-54) >= 0x80000000)
             return 1.0;
 
@@ -200,14 +201,13 @@ ALM_PROTO_OPT(exp2)(double x)
             if (x != x)  /* check if x is a NAN */
                 return  alm_exp2_special(x, asdouble(QNANBITPATT_DP64), ALM_E_OUT_NAN);
 
-            return  alm_exp2_special(x, asdouble(PINFBITPATT_DP64), ALM_E_IN_X_NAN);
+            return  alm_exp2_special(x, asdouble(PINFBITPATT_DP64), ALM_E_OUT_INF);
         }
 
         if (x <= ALM_EXP2_ARG_MIN) {
-            if (asuint64(x) == NINFBITPATT_DP64)
-                return  alm_exp2_special(x, x, ALM_E_OUT_ZERO);
 
             return alm_exp2_special(x, 0.0, ALM_E_OUT_ZERO);
+
         }
     /* flag de-normals to process at the end */
         exponent = 0xfff;

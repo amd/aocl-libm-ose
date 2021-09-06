@@ -53,6 +53,7 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
+#include <libm/alm_special.h>
 #include "kern/sqrt_pos.c"
 
 static struct {
@@ -119,7 +120,7 @@ ALM_PROTO_OPT(asinf)(float x)
     Y = ((double)(x))*sign;			// Make x positive, if it is negative
 
     if(Y>1.0)
-        return asfloat(NEG_QNAN_F32);
+            return alm_asinf_special(x, ALM_E_OUT_NAN);
 
     if (Y > HALF)
     {

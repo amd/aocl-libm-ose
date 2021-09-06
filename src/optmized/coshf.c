@@ -139,14 +139,9 @@ float
 ALM_PROTO_OPT(coshf)(float x)
 {
     float    y, w, z, res;
-    uint32_t ux, sign;
+    uint32_t ux;
 
-    ux   = asuint32(x);
-    sign = ux & SIGNBIT_SP32;
-
-    if (sign) {             /* x is -ve */
-        ux = ux ^ sign;
-    }
+    ux   = asuint32(x) & ~(SIGNBIT_SP32);
 
     y = asfloat(ux);
 
@@ -154,7 +149,7 @@ ALM_PROTO_OPT(coshf)(float x)
         if (x != x)      /* |x| is a NaN? */
             return x + x;
         else                            /* x is infinity */
-            return fabsf(x / 0.0f);
+            return(FLT_MAX * FLT_MAX); 
     }
 
     if (ux <= asuint32(VERY_SMALL_X))   /* x in (0, EPS] */

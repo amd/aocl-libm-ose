@@ -8,8 +8,8 @@
  */
 static libm_test_special_data_f32
 test_log2f_conformance_data[] = {
-    {0x35510,           0xc3034374,    FE_INEXACT},
-    {0x7ff00000 ,       0x7fc00001,    FE_INEXACT},
+    {0x35510,           0xc3034374,    FE_DIVBYZERO},
+    {0x7ff00000 ,       0x7fc00001,    0},
     {NEG_INF_F32,       0x7fc00000,    FE_INVALID},
     {POS_INF_F32,       0x7fc00000,    0},
     {POS_ONE_F32  ,     0x00000000,    0},
@@ -54,9 +54,9 @@ test_log2f_conformance_data[] = {
     {0xc2c80000,        0x7fc00000,    FE_INVALID}, // -100
     {0x42c80000,        0x40d49a78,    32}, // 100
 //added from ancient libm repo
-    {0x0005fde6,        0xc3026ac1,    32}, // denormal
+    {0x0005fde6,        0xc3026ac1,    FE_DIVBYZERO}, // denormal
     {0x00000001,        0xc3150000,    0}, // smallest denormal
-    {0x007fffff,        0xc2fc0000,    32}, // largest denormal
+    {0x007fffff,        0xc2fc0000,    FE_DIVBYZERO}, // largest denormal
 
     {0x00800000,        0xc2fc0000,    0}, // smallest normal
     {0x7f7fffff,        0x43000000,    32}, // largest normal
@@ -89,7 +89,7 @@ test_log2f_conformance_data[] = {
     {0x3fffffff,        0x3f7fffff,    FE_INEXACT},  //2--
     {0x40000001,        0x3f800001,    FE_INEXACT},  //2++
 
-    {0x00000201, 0xc30bff48, FE_INEXACT},
+    {0x00000201, 0xc30bff48, FE_DIVBYZERO},
 
     {0x7f800001, 0x7fc00001, FE_INVALID},
     {0xff800001, 0xffc00001, FE_INVALID},
@@ -99,10 +99,8 @@ test_log2f_conformance_data[] = {
     {0x7fc00000, 0x7fc00000, 0},
     {0x3f800000, 0x00000000, 0},
     {0xbf800000, 0x7fc00000, FE_INVALID},
-    {0x00000000, 0x7fc00000, 4},
-    {0x80000000, 0x7fc00000, 4},
 
-    {0x007fffff, 0xc2fc0000, FE_INEXACT},
+    {0x007fffff, 0xc2fc0000, FE_DIVBYZERO},
     {0x807fffff, 0x7fc00000, FE_INVALID},
     {0x00000001, 0xc3150000, 0},
     {0x80000001, 0x7fc00000, FE_INVALID},

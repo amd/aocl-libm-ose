@@ -42,19 +42,19 @@ test_tanhf_conformance_data[] = {
    {0x402DF854, 0x3f7dc7bb,  0},  // e
    {0x402DF855, 0x3f7dc7bb,  0},  // e ++
    {0x37C0F01F, 0x37c0f01f,  FE_UNDERFLOW},  // 0.000023
-   {0x3EFFFEB0, 0x3eec9996,  0},  // 0.49999
+   {0x3EFFFEB0, 0x3eec9996,  FE_INEXACT},  // 0.49999
    {0x3F0000C9, 0x3eec9bdb,  0},  // 0.500012
    {0xb7C0F01F, 0xb7c0f01f,  FE_UNDERFLOW},  // -0.000023
-   {0xbEFFFEB0, 0xbeec9996,  0},  // -0.49999
+   {0xbEFFFEB0, 0xbeec9996,  FE_INEXACT},  // -0.49999
    {0xbF0000C9, 0xbeec9bdb,  0},  // -0.500012
    {0x3f800000, 0x3f42f7d6,  0},  // 1
    {0x3f700001, 0x3f3bec1d,  0},  // 0.93750006
-   {0x3F87FFFE, 0x3f495fd8,  0},  // 1.0624998
+   {0x3F87FFFE, 0x3f495fd8,  FE_INEXACT},  // 1.0624998
    {0x3FBFFFAC, 0x3f67b7ad,  0},  // 1.49999
    {0x3FC00064, 0x3f67b7f0,  0},  // 1.500012
    {0xbf800000, 0xbf42f7d6,  0},  // -1
    {0xbf700001, 0xbf3bec1d,  0},  // -0.93750006
-   {0xbF87FFFE, 0xbf495fd8,  0},  // -1.0624998
+   {0xbF87FFFE, 0xbf495fd8,  FE_INEXACT},  // -1.0624998
    {0xbFBFFFAC, 0xbf67b7ad,  0},  // -1.49999
    {0xbFC00064, 0xbf67b7f0,  0},  // -1.500012
    {0x40000000, 0x3f76ca83,  0},  // 2

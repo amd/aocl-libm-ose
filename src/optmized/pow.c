@@ -122,6 +122,8 @@ static struct {
 #define C2 pow_data.poly_log[1]
 #define C3 pow_data.poly_log[2]
 #define C4 pow_data.poly_log[3]
+#define C5 pow_data.poly_log[4]
+#define C6 pow_data.poly_log[5]
 
 #define LOG2_HEAD pow_data.L__real_log2_head
 #define LOG2_TAIL pow_data.L__real_log2_tail
@@ -187,7 +189,7 @@ compute_log(uint64_t ux, double_t* log_lo, int32_t expadjust) {
 
     double_t r, r1, w, z, w1, resT_t, resT, resH;
 
-    double_t u, f, z1, f1, f2, poly;
+    double_t u, f, z1, f1, f2, k, poly;
 
     xexp = (int32_t)((ux & EXPBITS_DP64) >> EXPSHIFTBITS_DP64)
                                         - EXPBIAS_DP64 - expadjust;
@@ -218,24 +220,67 @@ compute_log(uint64_t ux, double_t* log_lo, int32_t expadjust) {
 
     w1 = asdouble(log_f_256[index].tail);
 
-    r = f2 * z1;
+    if((ux - 0x3FEF26E978D4FDF4) <= (0x3FF1000000000000 - 0x3FEF26E978D4FDF4)) {
 
-    r1 = f2 * z;
+        /* 0.0975 < x < 1.0625 */
 
-    u = r + r1;
+        k = z + z1;
 
-    z = r1 - u;
+        r = k * f2;
 
-    /*
-     * Polynomial evaluation
-     * For N=10,
-     * poly = u * (u * (C1 + u * (C2 + u * (C3 + u * (C4)))))
-    */
-    poly = u * POLY_EVAL_5(u, C0, C1, C2, C3, C4);
+        r = asdouble(asuint64(r) & 0xfffffffff8000000);
 
-    poly = (z + r) + poly;
+        r1 = (f2 - f * r) * k;
 
-    resT_t = (LOG2_TAIL * exponent_x - poly) + w1;
+        double t = r1 + r;
+
+        double t2 = t * t;
+
+        double t3 = t2 * t;
+
+        /* t^3*1/3 + t^4*1/4 */
+        double a0 = t3 * (C2 + t * C3);
+
+        /* t^5*1/5 + t^6*1/6 + t^7*1/7 */
+        double a1 = t2 * (t3 * (C4 + t * (C5 + t * C6)));
+
+        u = r * r * C1;
+
+        double b0 = r1 + r * r1 + r1 * r1 * C1;
+
+        u = r + u;
+
+        r = C1 * r * r + (r - u);
+
+        a1 = r + a1 + a0;
+
+        poly = b0 + a1;
+
+        resT_t = (LOG2_TAIL * exponent_x + w1) - poly;
+
+    }
+    else {
+
+        r = f2 * z1;
+
+        r1 = f2 * z;
+
+        u = r + r1;
+
+        z = r1 - u;
+
+        /*
+         * Polynomial evaluation
+         * For N=10,
+         * poly = u * (u * (C1 + u * (C2 + u * (C3 + u * (C4)))))
+         */
+        poly = u * POLY_EVAL_5(u, C0, C1, C2, C3, C4);
+
+        poly = (z + r) + poly;
+
+        resT_t = (LOG2_TAIL * exponent_x - poly) + w1;
+
+    }
 
     resT = resT_t - u;
 

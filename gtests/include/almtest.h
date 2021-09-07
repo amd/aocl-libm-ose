@@ -245,8 +245,11 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
 
     bool both_nans = isnanf(fabsf(e.f)) && isnanf(fabsf(a.f));
 
+    /* if op and expected dont match, check if ulp error is > 1.0 */
+    double ulp = getUlp(a.f, (double)e.f);
+
     /* if both are nans, output will always match, regardless of the sign bit */
-    if ((e.u ^ a.u) && (both_nans == false))
+    if (((e.u ^ a.u) && (ulp > 1.0)) && (both_nans == false))
         output_match=1;
 
     if (output_match==1 || exception_match==1) {
@@ -338,8 +341,11 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
 
     bool both_nans = isnan(fabs(e.d)) && isnan(fabs(a.d));
 
+    /* if op and expected dont match, check if ulp error is > 1.0 */
+    double ulp = getUlp(a.d, (long double)e.d);
+
     /* if both are nans, output will always match, regardless of the sign bit */
-    if ((e.lu ^ a.lu) && (both_nans == false))
+    if (((e.lu ^ a.lu) && (ulp > 1.0)) && (both_nans == false))
         output_match=1;
 
     if (output_match==1 || exception_match==1) {

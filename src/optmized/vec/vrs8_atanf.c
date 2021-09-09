@@ -78,6 +78,9 @@ static struct {
 #define C0 v8_atanf_data.poly_atanf[0]
 #define C1 v8_atanf_data.poly_atanf[1]
 #define C2 v8_atanf_data.poly_atanf[2]
+
+#define POS 0x0
+#define NEG 0x80000000
 /*
  ********************************************
  * Implementation Notes
@@ -98,6 +101,7 @@ static struct {
  *      xi + C0*xi^3 + C1*xi^5 + C2*xi^7
  *
  */
+ /*
 static inline bool
 all_v8_u32_loop(v_u32x8_t cond)
 {
@@ -108,44 +112,35 @@ all_v8_u32_loop(v_u32x8_t cond)
     }
     return 1;
 }
-
+*/
 v_f32x8_t
 ALM_PROTO_OPT(vrs8_atanf)(v_f32x8_t x)
 {
-    v_f32x8_t aux, result, poly1;
-    v_u32x8_t sign,cond;
+    v_f32x8_t aux, result, pival;
+    v_u32x8_t sign, polysign;
     v_u32x8_t  ux = as_v8_u32_f32 (x);
     /* Get sign of the input value */
     sign = ux & ~ALM_V8_ATANF_MASK_32;
     /* Get absolute value of input */
     aux  = as_v8_f32_u32(ux & ALM_V8_ATANF_MASK_32);
 
-    float F = 2+SQRT3;
-    cond = aux>=F;
-
-    if(all_v8_u32_loop(cond)){
-        aux = UNIT/aux;
-        poly1 = POLY_EVAL_ODD_7(aux, C0, C1, C2);
-        result = PI[2]-poly1;
-    }else{
-        for(int i=0;i<8;++i){
-            if(aux[i]>=F){
-                aux[i] = UNIT/aux[i];
-                float poly = POLY_EVAL_ODD_7(aux[i], C0[i], C1[i], C2[i]);
-                result[i] = PI[2]-poly;
-            }else if(aux[i]>UNIT){
-                aux[i] = UNIT/aux[i];
-                aux[i] = (aux[i]*SQRT3-UNIT)/(SQRT3+aux[i]);
-                float poly = POLY_EVAL_ODD_7(aux[i], C0[i], C1[i], C2[i]);
-                result[i] = PI[3]-poly;
-            }else if(aux[i]>RANGE){
-                aux[i] = (aux[i]*SQRT3-UNIT)/(SQRT3+aux[i]);
-                float poly = POLY_EVAL_ODD_7(aux[i], C0[i], C1[i], C2[i]);
-                result[i] = PI[1]+poly;
-            }else{
-                result[i] = POLY_EVAL_ODD_7(aux[i], C0[i], C1[i], C2[i]);
-            }
+    for(int i = 0;i < 8; ++i){
+        unsigned int n = 0;
+        if(aux[i] > UNIT){
+            aux[i] = UNIT / aux[i];
+            n = 2;
         }
+        if(aux[i] > RANGE){
+            aux[i] = (aux[i] * SQRT3 - UNIT) / (SQRT3 + aux[i]);
+            ++n;
+        }
+        pival[i] = PI[n];
+        polysign[i] = n > 1 ? NEG : POS;
     }
+    v_f32x8_t poly = POLY_EVAL_ODD_7(aux, C0, C1, C2);
+    poly = as_v8_f32_u32(as_v8_u32_f32(poly) ^ polysign);
+
+    result = pival + poly;
+
     return as_v8_f32_u32(as_v8_u32_f32(result) ^ sign);
 }

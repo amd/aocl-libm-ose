@@ -9,14 +9,14 @@
 static libm_test_special_data_f32
 test_asinf_conformance_data[] = {
    //asin special exception checks
-   {0x7f800000, 0xffc00000, }, // asin(+INF) = +IND (raise "invalid" fp exception)
-   {0xff800000, 0xffc00000, }, // asin(-INF) = +IND (raise "invalid" fp exception)
-   {0x7fef8000, 0x7fef8000, }, 	// asin(+QNaN)=	+QNaN
-   {0xffef8000, 0xffef8000, }, 	// asin(-QNaN)=	-QNaN
-   {0x7f800001, 0x7fc00000, }, 	// asin(+SNaN)=	+SNaN
-   {0xff800001, 0xffc00001, }, 	// asin(-SNaN)=	-SNaN
-   {0x00000000, 0x00000000, }, //asin(+0) = +0 STD:F9.1.6
-   {0x80000000, 0x80000000, }, //asin(-0) = -0 STD:F9.1.6
+   {0x7f800000, 0xffc00000, FE_INVALID}, // asin(+INF) = +IND (raise "invalid" fp exception)
+   {0xff800000, 0xffc00000, FE_INVALID}, // asin(-INF) = +IND (raise "invalid" fp exception)
+   {0x7fef8000, 0x7fef8000, 0}, 	// asin(+QNaN)=	+QNaN
+   {0xffef8000, 0xffef8000, 0}, 	// asin(-QNaN)=	-QNaN
+   {0x7f800001, 0x7fc00000, FE_INVALID}, 	// asin(+SNaN)=	+SNaN
+   {0xff800001, 0xffc00001, FE_INVALID}, 	// asin(-SNaN)=	-SNaN
+   {0x00000000, 0x00000000, 0}, //asin(+0) = +0 STD:F9.1.6
+   {0x80000000, 0x80000000, 0}, //asin(-0) = -0 STD:F9.1.6
    // special accuracy tests
    {0x38800000, 0x3f800000,  0},  //min= 0.00006103515625, small enough that asin(x) = 1
    {0x387FFFFF, 0x3f800000,  0}, //min - 1 bit

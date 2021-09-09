@@ -77,6 +77,9 @@ static struct {
 #define C1 v4_atanf_data.poly_atanf[1]
 #define C2 v4_atanf_data.poly_atanf[2]
 
+#define POS 0x0
+#define NEG 0x80000000
+
 /*
  ********************************************
  * Implementation Notes
@@ -100,8 +103,8 @@ static struct {
 v_f32x4_t
 ALM_PROTO_OPT(vrs4_atanf)(v_f32x4_t x)
 {
-    v_f32x4_t aux, result;
-    v_u32x4_t sign;
+    v_f32x4_t aux, pival, result;
+    v_u32x4_t sign, polysign;
     v_u32x4_t  ux = as_v4_u32_f32 (x);
 
     /* Get sign of the input value */
@@ -110,25 +113,32 @@ ALM_PROTO_OPT(vrs4_atanf)(v_f32x4_t x)
     /* Get absolute value of input */
     aux  = as_v4_f32_u32(ux & ALM_V4_ATANF_MASK_32);
 
-    float F = UNIT/RANGE;
+    float F = UNIT / RANGE;
 
-    for(int i=0;i<4;++i){
-        if(aux[i]>=F){
-            aux[i]=UNIT/aux[i];
-            float poly = POLY_EVAL_ODD_7(aux[i], C0[i], C1[i], C2[i]);
-            result[i] = PI[2]-poly;
-        }else if(aux[i]>UNIT){
-            aux[i]=UNIT/aux[i];
-            aux[i]=(aux[i]*SQRT3-UNIT)/(SQRT3+aux[i]);
-            float poly = POLY_EVAL_ODD_7(aux[i], C0[i], C1[i], C2[i]);
-            result[i] = PI[3]-poly;
-        }else if(aux[i]>RANGE){
-            aux[i]=(aux[i]*SQRT3-UNIT)/(SQRT3+aux[i]);
-            float poly = POLY_EVAL_ODD_7(aux[i], C0[i], C1[i], C2[i]);
-            result[i] = PI[1]+poly;
+    for(int i=0; i < 4; ++i){
+        if(aux[i] >= F){
+            aux[i] = UNIT / aux[i];
+            pival[i] = PI[2];
+            polysign[i] = NEG;
+        }else if(aux[i] > UNIT){
+            aux[i] = UNIT / aux[i];
+            aux[i] = (aux[i] * SQRT3 - UNIT) / (SQRT3 + aux[i]);
+            pival[i] = PI[3];
+            polysign[i] = NEG;
+        }else if(aux[i] > RANGE){
+            aux[i] = (aux[i] * SQRT3 - UNIT) / (SQRT3 + aux[i]);
+            pival[i] = PI[1];
+            polysign[i] = POS;
         }else{
-            result[i] = POLY_EVAL_ODD_7(aux[i], C0[i], C1[i], C2[i]);
+            pival[i] = PI[0];
+            polysign[i] = POS;
         }
     }
+
+    v_f32x4_t poly = POLY_EVAL_ODD_7(aux, C0, C1, C2);
+    poly = as_v4_f32_u32(as_v4_u32_f32(poly) ^ polysign);
+
+    result = pival + poly;
+
     return as_v4_f32_u32(as_v4_u32_f32(result) ^ sign);
 }

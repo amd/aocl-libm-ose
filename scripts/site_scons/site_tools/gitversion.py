@@ -103,6 +103,11 @@ static const char build_sys_info[] = "%s";
 
 """
 
+# Exit with displaying error message
+def Error_Exit(msg):
+    print ('Error: ' + msg)
+    exit(1)
+
 #run any shell command, return op, err, err code
 def RunCommand(cmd):
     import subprocess

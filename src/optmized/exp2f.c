@@ -88,7 +88,7 @@ struct expf_data {
 #define EXP2F_TABLE         exp2f_data.table
 #define EXP2F_TWO_POW_6     exp2f_data.two_pow_6
 
-#define EXP2F_FARG_MIN          -0x1.2ap7f
+#define EXP2F_FARG_MIN          -150.0f
 #define EXP2F_FARG_MAX           0x1.00p7f
 
 #define C2    exp2f_data.poly[0]

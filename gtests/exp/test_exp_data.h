@@ -13,6 +13,7 @@
  */
 static libm_test_special_data_f32
 test_expf_conformance_data[] = {
+    {0xc2ce8ed1, 0x1,        48},          //expf (-103.278938)=-103.278938
     {0x7fbfffff, 0x0,        FE_INVALID,}, //expf(nan)=nan
     {0xffffffff, 0xffffffff, 0,},   //expf(-nan)=-nan
     {0x7fe00000, 0x7fe00000, 0,},  //expf(qnan) = qnan
@@ -105,7 +106,7 @@ test_expf_conformance_data[] = {
     {0xfF800000, 0x00000000, 0},  //-inf
     {0x7Fc00000, 0x7Fc00000, 0},  //qnan
     {0x7Fa00000, 0x7Fe00000, FE_INVALID},  //snan
-    {0xfFc00000, 0xfFc00000, FE_INVALID},  //qnan
+    {0xfFc00000, 0xfFc00000, 0},  //qnan
     {0xfFa00000, 0xfFe00000, FE_INVALID},  //snan
     {0x3FC90FDB, 0x4099EF6F, 32},  //pi/2
     {0x3c000000, 0x3F810101, 32},  //0.0078125
@@ -140,10 +141,10 @@ test_expf_conformance_data[] = {
     {0xffc00000, 0xffc00000, 0},
     {0x7f800000, 0x7f800000, 0},
     {0xff800000, 0x00000000, 0},
-    {0x007fffff, 0x3f800000, 32},
-    {0x807fffff, 0x3f800000, 32},
-    {0x00000001, 0x3f800000, 32},
-    {0x80000001, 0x3f800000, 32},
+    {0x007fffff, 0x3f800000, 0},
+    {0x807fffff, 0x3f800000, 0},
+    {0x00000001, 0x3f800000, 0},
+    {0x80000001, 0x3f800000, 0},
     {0x00800000, 0x3f800000, 32},
     {0x80800000, 0x3f800000, 32},
 

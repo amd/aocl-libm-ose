@@ -9,6 +9,7 @@
 static libm_test_special_data_f32
 test_exp2f_conformance_data[] = {
    // special accuracy tests
+   {0xc3150001, 0x1,         48},  // exp2f(-0x1.2a0002p+7)
    {0x38800000, 0x3f800000,  32},  //min= 0.00006103515625, small enough that exp2(x) = 1
    {0x387FFFFF, 0x3f800000,  32}, //min - 1 bit
    {0x38800001, 0x3f800000,  32}, //min + 1 bit

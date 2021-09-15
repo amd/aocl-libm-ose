@@ -15,6 +15,7 @@
  */
 static libm_test_special_data_f32
 test_cosf_conformance_data[] = {
+    {0x3fc8f5c3, 0x0, 0},
     {POS_ZERO_F32, POS_ONE_F32, 0,}, //cos (0)=1
     {NEG_ZERO_F32, POS_ONE_F32, 0},  //cos(-x) = cos(x)
     {0x3F000000, 0x3f60a940, 0,},//0.5

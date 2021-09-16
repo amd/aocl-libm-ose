@@ -134,9 +134,9 @@ test_atan_conformance_data[] = {
 	{0x3e30000000000000LL, 0x3ff0000000000000LL, 0},  //min, small enough that atan(x) = 1 //
 	{0x3E2FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, //min - 1 bit
 	{0x3e30000000000001LL, 0x3ff0000000000000LL, 0}, //min + 1 bit
-    {0xFE37E43C8800759CLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x = 1, x = -1.0000000000000000e+300
-    {0xFE37E43C8800758CLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x < 1
-    {0xFE37E43C880075ACLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x > 1
+    {0xFE37E43C8800759CLL, 0x7ff0000000000000LL, 0}, //lambda + x = 1, x = -1.0000000000000000e+300
+    {0xFE37E43C8800758CLL, 0x7ff0000000000000LL, 0}, //lambda + x < 1
+    {0xFE37E43C880075ACLL, 0x7ff0000000000000LL, 0}, //lambda + x > 1
     {0x408633ce8fb9f87eLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //max arg, x = 89.41598629223294,max atanf arg
     {0x408633ce8fb9f87dLL, 0x7feffffffffffd3bLL, 0}, //max arg - 1 bit
     {0x408633ce8fb9f87fLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //max arg + 1 bit
@@ -163,11 +163,11 @@ test_atan_conformance_data[] = {
     {0x8002344ade5def12LL, 0x3ff0000000000000LL, 0}, // -denormal intermediate
     {0x800FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, // -denormal max
     {0x0010000000000000LL, 0x3ff0000000000000LL, 0}, // normal min
-    {0x43b3c4eafedcab02LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // normal intermediate
-    {0x7FEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // normal max
+    {0x43b3c4eafedcab02LL, 0x7ff0000000000000LL, 0}, // normal intermediate
+    {0x7FEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 0}, // normal max
     {0x8010000000000000LL, 0x3ff0000000000000LL, 0}, // -normal min
-    {0xc5812e71245acfdbLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -normal intermediate
-    {0xFFEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -normal max
+    {0xc5812e71245acfdbLL, 0x7ff0000000000000LL, 0}, // -normal intermediate
+    {0xFFEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 0}, // -normal max
     {0x7FF0000000000000LL, 0x7ff0000000000000LL, 0}, // inf
     {0xFFF0000000000000LL, 0x7ff0000000000000LL, 0}, // -inf
     {0x7FF8000000000000LL, 0x7ff8000000000000LL, 0}, // qnan min

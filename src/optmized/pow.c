@@ -453,7 +453,7 @@ static inline int issignaling_inline (double x) {
 
     ix = asuint64(x);
 
-    return ((ix & QNANBITPATT_DP64) !=  QNANBITPATT_DP64);
+    return (2 * (ix ^ 0x0008000000000000)) > (2 *  QNANBITPATT_DP64);
 
 }
 

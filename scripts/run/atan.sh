@@ -33,7 +33,7 @@ nargs=1
 
 xranges=(-1000,1000)
 
-input_types=("s1d" "s1f" "v4s" "v8s")
+input_types=("s1d" "s1f" "v4s" "v8s" "v2d")
 if [ ${arch} = "avx512" ]; then
     input_types+=("v8d" "v16s")
 fi

@@ -169,6 +169,12 @@ alm_log2f_special(float x, float y, uint32_t code)
     return (float)_log_special_common(x, y, __amd_log, code, "log2f");
 }
 
+float
+alm_logf_special(float x, float y, uint32_t code)
+{
+    return (float)_log_special_common(x, y, __amd_log, code, "logf");
+}
+
 double
 alm_log2_special(double x, double y, uint32_t code)
 {

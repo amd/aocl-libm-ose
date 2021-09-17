@@ -29,7 +29,7 @@
 #include "libm_macros.h"
 #include "libm_util_amd.h"
 #include "libm_special.h"
-
+#include <libm/alm_special.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/amd_funcs_internal.h>
@@ -153,8 +153,8 @@ ALM_PROTO_OPT(logf)(float x)
             return -1.0f/0.0f;
         if (ux == 0x7f800000)           /* log(inf) = inf */
             return x;
-        if ((ux & 0x80000000) || ux * 2 >= 0xff000000)
-            return (float)sqrt(x);             /* Return NaN */
+        if ((ux & 0x80000000) || ux * 2 >= 0xff000000) /*x is negative or NaN */
+            return alm_logf_special(x, asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NAN);; /* Return NaN */
 
         /*
          * 'x' has to be denormal, Normalize it

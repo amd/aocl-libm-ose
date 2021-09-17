@@ -38,6 +38,7 @@
 #include <libm/typehelper.h>
 #include <libm/amd_funcs_internal.h>
 #include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/poly.h>
 
 static struct {
@@ -108,24 +109,25 @@ float
 ALM_PROTO_OPT(atanf)(float fx)
 {
     uint32_t fux = asuint32(fx);
-    uint32_t faux = fux & ~SIGNBIT_SP32;
-
-    if (faux > PINFBITPATT_SP32){
-    /* fx is NaN */
-#ifdef WINDOWS
-        return  __amd_handle_errorf("atanf", __amd_atan, fux|0x00400000, _DOMAIN,0, EDOM, fx, 0.0, 1);
-#else
-        return fx + fx; /* Raise invalid if it's a signalling NaN */
-#endif
-    }
     double x = fx;
     uint64_t ux = asuint64(x);
     /* Find properties of argument fx. */
     uint64_t aux = ux & ~SIGNBIT_DP64;
     uint64_t xneg = ux & SIGNBIT_DP64;
+
+    if (unlikely(aux > PINFBITPATT_DP64)){
+    /* fx is NaN */
+        #ifdef WINDOWS
+        return  __amd_handle_errorf("atanf", __amd_atan, fux|0x00400000, _DOMAIN,0, EDOM, fx, 0.0, 1);
+        #else
+        return fx; /* Raise invalid if it's a signalling NaN */
+        #endif
+    }
+
     double c;
     if (xneg) x = -x;
     /* Argument reduction to range [-7/16,7/16] */
+
     if (aux < RANGE[0]){
       /* x is a good approximation to atan(x) */
         if (aux == 0x0000000000000000)
@@ -153,14 +155,14 @@ ALM_PROTO_OPT(atanf)(float fx)
     }
     else{
         if (aux > RANGE[5]){
-            if (xneg)
-                return (float)-PIBY2; //valf_with_flags((float)-piby2, AMD_F_INEXACT);
-            else
-                return (float)PIBY2; //valf_with_flags((float)piby2, AMD_F_INEXACT);
+            float f = xneg ? (float)-PIBY2 : (float)PIBY2;
+            return _atanf_special_overflow(f);
         }
         x = -1.0 / x;
         c = VALUE[4];
     }
+    if(x == 0.0)
+        return xneg ? -(float)c : (float)c;
 
     double p1 = POLY_EVAL_ODD_7(x, C0, C1, C2);
     double p2 = POLY_EVAL_ODD_7(x, C3, C4, C5);

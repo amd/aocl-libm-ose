@@ -151,4 +151,6 @@ float   alm_acosf_special(float x, uint32_t code);
 double  alm_acos_special(double x, uint32_t code);
 
 float   alm_asinf_special(float x, uint32_t code);
+
+float _atanf_special_overflow(float x);
 #endif

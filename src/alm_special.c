@@ -258,3 +258,10 @@ alm_asinf_special(float x, uint32_t code)
         return  __amd_handle_errorf("asinf", __amd_acos, INDEFBITPATT_SP32,
                                     _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
 }
+
+float _atanf_special_overflow(float x)
+{
+    UT32 xu;
+    xu.f32 = x;
+    return __amd_handle_errorf(NULL, 0, xu.u32, _DOMAIN, AMD_F_OVERFLOW, EDOM, 0.0, 0.0, 1 );
+}

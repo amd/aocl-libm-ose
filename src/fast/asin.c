@@ -110,7 +110,7 @@ double
 ALM_PROTO_FAST(asin)(double x)
 {
     double y, g, poly, result ,sign = 1.0 ;
-    uint64_t  ux, aux, xnan;
+    uint64_t ux;
     int64_t n = 0, xexp;
 
     // Include check for inf, -inf, nan here
@@ -121,18 +121,12 @@ ALM_PROTO_FAST(asin)(double x)
 
     ux   = asuint64 (x);
 
-    /* Get absolute value of input */
-    aux  = (ux & ~SIGNBIT_DP64);
-
     /* Get the exponent part */
     xexp = (int)((ux & EXPBITS_DP64) >> EXPSHIFTBITS_DP64) - EXPBIAS_DP64;
 
-    /* check for inf */
-    xnan = (aux > PINFBITPATT_DP64);
-
     /* Special cases */
-    if (xnan) {
-        return alm_asin_special(x, ALM_E_IN_X_NAN);
+    if (x != x) {   /* if x is a nan */
+        return x;
     }
     else if (xexp < -56) {
         /* Input small enough that arcsin(x) = x */
@@ -145,7 +139,7 @@ ALM_PROTO_FAST(asin)(double x)
         else if (x == -1.0)
             return -ALM_ASIN_PIBY2;
         else
-            return alm_asin_special(x, ALM_E_OUT_NAN);
+            return x;
     }
 
 

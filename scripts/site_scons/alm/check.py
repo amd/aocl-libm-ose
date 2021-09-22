@@ -36,8 +36,8 @@ from os.path import join as joinpath
 toolchain_versions = {
     #Toolchain : {preferred_version, min_version}
     'GCC' :     {'max':'11.1' ,  'min':'9.2'},
-    'CLANG':    {'max':'12.0',   'min':'9.0'},
-    'AOCC':     {'max':'12.0',   'min':'9.0'},
+    'CLANG':    {'max':'13.0',   'min':'9.0'},
+    'AOCC':     {'max':'13.0',   'min':'9.0'},
     'MSVC':     {'max':'12.0',   'min':'2.2'},
     'ICC' :     {'max':'2020.2', 'min':'2020.1'},
 }

@@ -26,6 +26,7 @@
 from SCons.Variables import Variables
 from SCons.Script import ARGUMENTS, PathVariable, GetOption
 
+import shlex
 import platform
 
 def variable_shlex_splitter(val):

@@ -52,6 +52,34 @@ def get_environ_path():
 
     return path
 
+# spack related
+def append_spack_env(mydict):
+    mydict = {}
+
+    # spack related env variables to be added, if set.
+    spack_params = ['SPACK_ENV_PATH',
+                    'SPACK_DEBUG_LOG_DIR',
+                    'SPACK_DEBUG_LOG_ID',
+                    'SPACK_COMPILER_SPEC',
+                    'SPACK_CC_RPATH_ARG',
+                    'SPACK_CXX_RPATH_ARG',
+                    'SPACK_F77_RPATH_ARG',
+                    'SPACK_FC_RPATH_ARG',
+                    'SPACK_TARGET_ARGS',
+                    'SPACK_DTAGS_TO_ADD',
+                    'SPACK_DTAGS_TO_STRIP',
+                    'SPACK_LINKER_ARG',
+                    'SPACK_SHORT_SPEC',
+                    'SPACK_SYSTEM_DIRS',
+                ]
+
+    # add these keys to mydict if they exist in environ
+    for param in spack_params:
+        if param in environ:
+            mydict[param] = environ[param]
+
+    return mydict
+
 class AlmEnvironment(object):
     def __init__(self):
         self.builddir  = None
@@ -61,6 +89,8 @@ class AlmEnvironment(object):
         self.build     = None
         self.compiler  = None
         self.arch_config = None
+        self.spackenv = None
+        self.spackbuildenv = None
 
         self.envDict = dict (
             BUILD         = '',
@@ -72,11 +102,17 @@ class AlmEnvironment(object):
             #LDFLAGS       = '',
         )
 
+        # spack related
+        self.spackenv = append_spack_env(self.spackenv)
+        self.spackbuildenv = {**self.spackenv, **self.envDict}
+        self.envDict = self.spackbuildenv
+
         self.env = Environment(
             variables   = AlmVariables(),
             installdirs = installdirs,
             ENV         = self.envDict,
         )
+
 
     def Setup(self):
         """

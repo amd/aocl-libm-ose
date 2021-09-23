@@ -148,7 +148,7 @@ ALM_PROTO_FAST(asin)(double x)
     if (y > HALF)
     {
         n = 1 ;
-        g = HALF*(1.0d-y);
+        g = HALF*(1.0-y);
         y = -2.0*ALM_PROTO_KERN(sqrt)(g);
         //Y = -2.0d*sqrt(G) ;
     }

@@ -1,5 +1,5 @@
 
-(C) 2008-2020 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2021 Advanced Micro Devices, Inc. All Rights Reserved.
 
 AOCL LibM - Release Notes - AOCL version 3.1
 --------------------------------------------
@@ -18,15 +18,18 @@ performance.
 Hightlights of AMD LibM version 3.8
 -----------------------------------
 
-    * Optimized AVX512 variants for exp, exp2, log, pow.
-    * Optimized AVX512 variants for expf, exp2f, logf, powf.
+    * Optimized AVX512 variants for exp, exp2, log, log2, pow
+    * Optimized AVX512 variants for sin, tan.
+    * Optimized AVX512 variants for expf, exp2f, logf, log2f, log10f, powf.
+    * Optimized AVX512 variants for sinf, cosf, tanf.
     * Optimized log10f scalar and vector variants.
-    * Optimized asinf, acosf scalar single precision variants.
-    * Optimized acosf, asinf vector single precision variants.
+    * Optimized asinf, acosf, atanf scalar single precision variants.
+    * Optimized acosf, asinf, atanf vector single precision variants.
     * Kernel variant added for coshf scalar single precision.
     * Bug fixes in logf FMA3 variant.
     * Optimized exp2 and log2 scalar and vector variants.
     * Performance improvements in exp2, log2 variants.
+    * Performance improvements in expf, powf scalar and vector variants.
     * Accuracy issue fixes in vector (double precision) log and exp.
     * Accuracy issue fixes in scalar (single precision) cosh.
     * Accuracy issue fixes in vector single precision log.

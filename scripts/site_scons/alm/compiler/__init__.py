@@ -45,7 +45,7 @@ class Compiler:
         ]
 
         self.compile_flags_release = [
-            '-Ofast',
+            #'-Ofast',
             #'-fipa-pta',
             #'-funsafe-loop-optimizations',
             #'-flto=4',

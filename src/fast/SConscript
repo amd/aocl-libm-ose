@@ -39,6 +39,7 @@ e.Append(
                #'-Wno-unused-but-set-parameter',
                '-Wno-unused-parameter', '-O3',
                '-fPIC',
+               '-Ofast',
                '-mavx2', '-mfma'],
     CPPPATH = incpaths,
     # CCFLAGS = [],

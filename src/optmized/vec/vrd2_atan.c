@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
@@ -24,7 +25,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 /* Contains implementation of v_f64x2_t vrd2_atan(v_f64x2_t x)
  *
  * sign = sign(x)
@@ -44,7 +44,6 @@
 #include <libm/typehelper-vec.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/poly.h>
-
 static struct {
     double sqrt3, range, pi[4], unit;
     v_f64x2_t poly_atan[9];
@@ -70,7 +69,6 @@ static struct {
             _MM_SET1_PD2(-0x1.3a3c92f7949aep-5),
         },
     };
-
 #define SQRT3  v2_atan_data.sqrt3
 #define RANGE  v2_atan_data.range
 #define PI     v2_atan_data.pi
@@ -84,9 +82,9 @@ static struct {
 #define C6 v2_atan_data.poly_atan[6]
 #define C7 v2_atan_data.poly_atan[7]
 #define C8 v2_atan_data.poly_atan[8]
-
 #define SIGN_MASK   0x7FFFFFFFFFFFFFFFUL
-
+#define POS 0x0
+#define NEG 0x8000000000000000
 /*
  ********************************************
  * Implementation Notes
@@ -109,39 +107,34 @@ static struct {
 v_f64x2_t
 ALM_PROTO_OPT(vrd2_atan)(v_f64x2_t x)
 {
-    v_f64x2_t result,aux;
-    v_u64x2_t sign;
-
+    v_f64x2_t result,aux, pival;
+    v_u64x2_t sign, polysign;
     v_u64x2_t ux = as_v2_u64_f64(x);
-
     /* Get sign of input value */
     sign = ux & (~SIGN_MASK);
-
     /* Get absolute value of input */
     ux = ux & SIGN_MASK;
     aux = as_v2_f64_u64(ux);
-
-    double F = UNIT/RANGE;
-
-    for(int i=0;i<2;++i){
-        if(aux[i]>=F){
-            aux[i]=UNIT/aux[i];
-            double poly = POLY_EVAL_ODD_19(aux[i], C0[i], C1[i], C2[i], C3[i], C4[i], C5[i], C6[i], C7[i], C8[i]);
-            result[i] = PI[2]-poly;
-        }else if(aux[i]>UNIT){
-            aux[i]=UNIT/aux[i];
-            aux[i]=(aux[i]*SQRT3-UNIT)/(SQRT3+aux[i]);
-            double poly = POLY_EVAL_ODD_19(aux[i], C0[i], C1[i], C2[i], C3[i], C4[i], C5[i], C6[i], C7[i], C8[i]);
-            result[i] = PI[3]-poly;
-        }else if(aux[i]>RANGE){
-            aux[i]=(aux[i]*SQRT3-UNIT)/(SQRT3+aux[i]);
-            double poly = POLY_EVAL_ODD_19(aux[i], C0[i], C1[i], C2[i], C3[i], C4[i], C5[i], C6[i], C7[i], C8[i]);
-            result[i] = PI[1]+poly;
-        }else{
-            result[i] = POLY_EVAL_ODD_19(aux[i], C0[i], C1[i], C2[i], C3[i], C4[i], C5[i], C6[i], C7[i], C8[i]);
+    double F = UNIT / RANGE;
+    for(int i = 0; i < 2; ++i){
+        unsigned int n = 0;
+        if(aux[i] >= F){
+            aux[i] = UNIT / aux[i];
+            n = 2;
+        }else if(aux[i] > UNIT){
+            aux[i] = UNIT / aux[i];
+            aux[i] = (aux[i] * SQRT3 - UNIT) / (SQRT3 + aux[i]);
+            n = 3;
+        }else if(aux[i] > RANGE){
+            aux[i]= (aux[i] * SQRT3 - UNIT) / (SQRT3 + aux[i]);
+            n = 1;
         }
+        pival[i] = PI[n];
+        polysign[i] = n > 1 ? NEG : POS;
     }
+    v_f64x2_t poly = POLY_EVAL_ODD_19(aux, C0, C1, C2, C3, C4, C5, C6, C7, C8);
+    poly = as_v2_f64_u64(as_v2_u64_f64(poly) ^ polysign);
+    result = pival + poly;
     /* atan(-x) = -atan(x) */
     return as_v2_f64_u64(as_v2_u64_f64(result) ^ sign);
 }
-

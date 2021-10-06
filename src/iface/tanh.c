@@ -48,6 +48,15 @@ struct alm_arch_funcs __arch_funcs_tanh = {
            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_powf),
         },
 
+        [ALM_UARCH_VER_ZEN] = {
+            &ALM_PROTO_ARCH_ZN(tanhf),
+            NULL,
+            &ALM_PROTO_ARCH_ZN(vrs4_tanhf),
+            &ALM_PROTO_ARCH_ZN(vrs8_tanhf),
+            NULL,
+            NULL,
+        },
+
         [ALM_UARCH_VER_ZEN2] = {
             &ALM_PROTO_ARCH_ZN2(tanhf),
             NULL, //&ALM_PROTO_ARCH_ZN2(tanh),

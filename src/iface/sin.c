@@ -49,6 +49,15 @@ struct alm_arch_funcs __arch_funcs_sin = {
             &ALM_PROTO_FMA3(vrda_sin),
         },
 
+        [ALM_UARCH_VER_ZEN] = {
+            &ALM_PROTO_ARCH_ZN(sinf),
+            &ALM_PROTO_ARCH_ZN(sin),
+            &ALM_PROTO_ARCH_ZN(vrs4_sinf),
+            &ALM_PROTO_ARCH_ZN(vrs8_sinf),
+            &ALM_PROTO_ARCH_ZN(vrd2_sin),
+            &ALM_PROTO_ARCH_ZN(vrd4_sin),
+        },
+
         [ALM_UARCH_VER_ZEN2] = {
             &ALM_PROTO_ARCH_ZN2(sinf),
             &ALM_PROTO_ARCH_ZN2(sin),

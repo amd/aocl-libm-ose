@@ -47,6 +47,15 @@ struct alm_arch_funcs __arch_funcs_acos = {
             NULL,                           /* vrd4 ? */
         },
 
+        [ALM_UARCH_VER_ZEN] = {
+            &ALM_PROTO_ARCH_ZN(acosf),
+            &ALM_PROTO_ARCH_ZN(acos),
+            &ALM_PROTO_ARCH_ZN(vrs4_acosf),
+            NULL,
+            NULL,
+            NULL,
+        },
+
         [ALM_UARCH_VER_ZEN2] = {
             &ALM_PROTO_ARCH_ZN2(acosf),
             &ALM_PROTO_ARCH_ZN2(acos),

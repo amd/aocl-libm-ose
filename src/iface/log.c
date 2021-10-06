@@ -51,6 +51,15 @@ struct alm_arch_funcs __arch_funcs_log = {
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_logf),
         },
 
+        [ALM_UARCH_VER_ZEN] = {
+            &ALM_PROTO_ARCH_ZN(logf),
+            &ALM_PROTO_ARCH_ZN(log),
+            &ALM_PROTO_ARCH_ZN(vrs4_logf),
+            &ALM_PROTO_ARCH_ZN(vrs8_logf),
+            &ALM_PROTO_ARCH_ZN(vrd2_log),
+            &ALM_PROTO_ARCH_ZN(vrd4_log),
+        },
+
         [ALM_UARCH_VER_ZEN2] = {
             &ALM_PROTO_ARCH_ZN2(logf),
             &ALM_PROTO_ARCH_ZN2(log),

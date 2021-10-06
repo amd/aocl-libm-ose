@@ -49,6 +49,15 @@ struct alm_arch_funcs __arch_funcs_tan = {
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_tan),
         },
 
+         [ALM_UARCH_VER_ZEN] = {
+            &ALM_PROTO_ARCH_ZN(tanf),
+            &ALM_PROTO_ARCH_ZN(tan),
+            &ALM_PROTO_ARCH_ZN(vrs4_tanf),
+            &ALM_PROTO_ARCH_ZN(vrs8_tanf),
+            &ALM_PROTO_ARCH_ZN(vrd2_tan),
+            &ALM_PROTO_ARCH_ZN(vrd4_tan),
+        },
+
         [ALM_UARCH_VER_ZEN2] = {
             &ALM_PROTO_ARCH_ZN2(tanf),
             &ALM_PROTO_ARCH_ZN2(tan),

@@ -51,6 +51,15 @@ struct alm_arch_funcs __arch_funcs_pow = {
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_pow),
         },
 
+        [ALM_UARCH_VER_ZEN] = {
+            &ALM_PROTO_ARCH_ZN(powf),
+            &ALM_PROTO_ARCH_ZN(pow),
+            &ALM_PROTO_ARCH_ZN(vrs4_powf),
+            &ALM_PROTO_ARCH_ZN(vrs8_powf),
+            &ALM_PROTO_ARCH_ZN(vrd2_pow),
+            &ALM_PROTO_ARCH_ZN(vrd4_pow),
+        },
+
         [ALM_UARCH_VER_ZEN2] = {
             &ALM_PROTO_ARCH_ZN2(powf),
             &ALM_PROTO_ARCH_ZN2(pow),

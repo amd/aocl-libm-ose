@@ -46,6 +46,16 @@ struct alm_arch_funcs __arch_funcs_asin = {
             NULL,                           /* vrd2 ? */
             NULL,                           /* vrd4 ? */
         },
+
+        [ALM_UARCH_VER_ZEN] = {
+            &ALM_PROTO_ARCH_ZN(asinf),
+            &ALM_PROTO_REF(asin),
+            &ALM_PROTO_ARCH_ZN(vrs4_asinf),
+            &ALM_PROTO_ARCH_ZN(vrs8_asinf),
+            NULL,
+            NULL,
+        },
+
         [ALM_UARCH_VER_ZEN2] = {
             &ALM_PROTO_ARCH_ZN2(asinf),
             NULL,

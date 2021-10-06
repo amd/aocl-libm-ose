@@ -45,6 +45,15 @@ struct alm_arch_funcs __arch_funcs_cosh = {
             NULL,                            /* vrd4 ? */
         },
 
+        [ALM_UARCH_VER_ZEN] = {
+            &ALM_PROTO_ARCH_ZN(coshf),
+            NULL,
+            &ALM_PROTO_ARCH_ZN(vrs4_coshf),
+            &ALM_PROTO_ARCH_ZN(vrs8_coshf),
+            NULL,
+            NULL,
+        },
+
         [ALM_UARCH_VER_ZEN2] = {
             &ALM_PROTO_ARCH_ZN2(coshf),
             NULL, //&ALM_PROTO_ARCH_ZN2(cosh),

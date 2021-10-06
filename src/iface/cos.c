@@ -49,6 +49,15 @@ struct alm_arch_funcs __arch_funcs_cos = {
             &ALM_PROTO_FMA3(vrda_cos),   /*array vector double*/
         },
 
+        [ALM_UARCH_VER_ZEN] = {
+            &ALM_PROTO_ARCH_ZN(cosf),
+            &ALM_PROTO_ARCH_ZN(cos),
+            &ALM_PROTO_ARCH_ZN(vrs4_cosf),
+            &ALM_PROTO_ARCH_ZN(vrs8_cosf),
+            &ALM_PROTO_ARCH_ZN(vrd2_cos),
+            &ALM_PROTO_ARCH_ZN(vrd4_cos),
+        },
+
         [ALM_UARCH_VER_ZEN2] = {
             &ALM_PROTO_ARCH_ZN2(cosf),
             &ALM_PROTO_ARCH_ZN2(cos),

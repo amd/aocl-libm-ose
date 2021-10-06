@@ -51,6 +51,15 @@ struct alm_arch_funcs __arch_funcs_exp2 = {
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_exp2f),
         },
 
+        [ALM_UARCH_VER_ZEN] = {
+            &ALM_PROTO_ARCH_ZN(exp2f),
+            &ALM_PROTO_ARCH_ZN(exp2),
+            &ALM_PROTO_ARCH_ZN(vrs4_exp2f),
+            &ALM_PROTO_ARCH_ZN(vrs8_exp2f),
+            &ALM_PROTO_ARCH_ZN(vrd2_exp2),
+            &ALM_PROTO_ARCH_ZN(vrd4_exp2),
+        },
+
         [ALM_UARCH_VER_ZEN2] = {
             &ALM_PROTO_ARCH_ZN2(exp2f),
             &ALM_PROTO_ARCH_ZN2(exp2),

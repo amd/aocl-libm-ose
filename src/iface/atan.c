@@ -46,6 +46,16 @@ struct alm_arch_funcs __arch_funcs_atan = {
             NULL,                            /* vrd4 ? */
         },
 
+        [ALM_UARCH_VER_ZEN] = {
+            &ALM_PROTO_ARCH_ZN(atanf),
+            &ALM_PROTO_ARCH_ZN(atan),
+            &ALM_PROTO_ARCH_ZN(vrs4_atanf),
+            &ALM_PROTO_ARCH_ZN(vrs8_atanf),
+            &ALM_PROTO_ARCH_ZN(vrd2_atan),
+            &ALM_PROTO_ARCH_ZN(vrd2_atan),
+            NULL,
+        },
+
         [ALM_UARCH_VER_ZEN2] = {
             &ALM_PROTO_ARCH_ZN2(atanf),
             &ALM_PROTO_ARCH_ZN2(atan),

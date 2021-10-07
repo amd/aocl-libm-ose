@@ -63,7 +63,7 @@
 
 #define EXP2_N 6
 #define ALM_EXP2_TBL_SZ  (1 << EXP2_N)
-
+#define ARG_MAX 0x408FF00000000000UL
 #define ALM_EXP2_MAX_DEG 8
 
 struct exp_table {
@@ -99,6 +99,7 @@ static const struct {
                 0x1.a01a01a01a01ap-13,  /* 1/7! = 1/5040 */
                 0x1.a01a01a01a01ap-16,  /* 1/8! = 1/40320*/
                 0x1.71de3a556c734p-19,  /* 1/9! = 1/322880*/
+
         },
 
         .table = {
@@ -185,14 +186,19 @@ double
 ALM_PROTO_OPT(exp2)(double x)
 {
     double_t    r, q, dn, y;
-    int64_t     n, j, m;
+    int64_t     n, m;
+    int64_t    j;
     flt64_t     q1 = {.i = 0,};
 
     /* Top 11 bits, ignoring sign bit (with BIAS)*/
-    uint32_t exponent = top12(x) & 0x7ff;
+    uint32_t exponent = 0;
+
+    uint64_t ux = asuint64(x);
 
     /* Comparing 11-bit 'exponent' with 12-bit unsigned value */
-    if (unlikely (exponent - top12(0x1p-54) >= top12(512.0) - top12(0x1p-54))) {
+    if(unlikely((2 * ux) > (2 * ARG_MAX))) {
+
+        exponent = top12(x) & 0x7ff;
 
         if (exponent - top12(0x1p-54) >= 0x80000000)
             return 1.0;
@@ -209,31 +215,47 @@ ALM_PROTO_OPT(exp2)(double x)
             return alm_exp2_special(x, 0.0, ALM_E_OUT_ZERO);
 
         }
-    /* flag de-normals to process at the end */
+        /* flag de-normals to process at the end */
         exponent = 0xfff;
 
+        /*Avoid FAST INTEGER CONVERSION for potential denormal outputs */
+
+        q1.d = x * ALM_EXP2_TBL_SZ;
+
+        n = cast_double_to_i64(q1.d);
+
+        dn = cast_i64_to_double(n);
+
+        r = x - dn * ALM_EXP2_1_BY_TBL_SZ;
+
     }
+    else {
 
-    double a = x;
-
-#define FAST_INTEGER_CONVERSION 1
+#define FAST_INTEGER_CONVERSION 0
 #if FAST_INTEGER_CONVERSION
-    /* Rounding off to 1/2N digits after decimal and also multiplying by table size */
-    q1.d = a + ALM_EXP2_HUGE;
-    n    = q1.i;
-    dn   = q1.d - ALM_EXP2_HUGE;
-    r    = x - dn;
+         /* Rounding off to 1/2N digits after decimal and also multiplying by table size */
+        q1.d = x + ALM_EXP2_HUGE;
+
+        n = q1.i;
+
+        dn = q1.d - ALM_EXP2_HUGE;
+
+        r = x - dn;
 #else
-    a    = x * ALM_EXP2_TBL_SZ;
-    n    = cast_double_to_i64(a);
-    dn   = cast_i64_to_double(n);
-    r    = x - dn * ALM_EXP2_1_BY_TBL_SZ;
+        q1.d = x * ALM_EXP2_TBL_SZ;
+
+        n = cast_double_to_i64(q1.d);
+
+        dn = cast_i64_to_double(n);
+
+        r = x - dn * ALM_EXP2_1_BY_TBL_SZ;
 #endif
+    }
 
     r *= ALM_EXP2_LN2;
 
     /* table index, for lookup, truncated */
-    j = n % ALM_EXP2_TBL_SZ;
+    j = n & (ALM_EXP2_TBL_SZ - 1);
 
     /*
      * n-j/TABLE_SIZE, TABLE_SIZE = 1<<N
@@ -242,28 +264,16 @@ ALM_PROTO_OPT(exp2)(double x)
      */
     m = (n - j) << (52 - EXP2_N);
 
-#if 1
-    /* q = r + r*r*(1/2.0 + r*(1/6.0+ r*(1/24.0 + r*(1/120.0)))); */
-    q = r * (1 + r * (C2 + r * (C3 + r * (C4 + r * (C5)))));
-#else
-    /* Estrins parallel evaluation  - XXX has huge ULPs */
-    double r2 = r * r; /* r^2 */
-    double r4 = r2 * r2;
-
-    q = r + (r2 * (C2  + r * C3));
-    q += (r2 * r2) *  C4; /* r^4 * C4 */
-    q += r4 * (C4 + r*C5);
-    q += r4 * (C4 + r * (C5 + r* (C6 + r*C7)));
-#endif
+    /* q = r + r*r*(1/2.0 + r*(1/6.0+ r*(1/24.0 + r*(1/120.0 + r*(1/720)))); */
+    q = r * (1.0 + r * (C2 + r * (C3 + r * (C4 + r * (C5 + r * C6)))));
 
     /* f(j)*q + f1 + f2 */
     const struct exp_table *tbl = &((const struct exp_table*)ALM_EXP2_TBL_DATA)[j];
+
     q = q * tbl->main + tbl->head + tbl->tail;
 
     /* Processing denormals */
     if (unlikely(exponent == 0xfff)) {
-
-        n = (int64_t)( x * ALM_EXP2_TBL_SZ);
 
         int64_t m1 = n >> EXP2_N;
 
@@ -271,14 +281,16 @@ ALM_PROTO_OPT(exp2)(double x)
             if (m1 < -1022 || q < 1.0) {
                 /* Process true de-normals */
                 m1 += 1074;
+
                 flt64_t tmp = {.u = (1ULL << (uint8_t)m1) };
+
                 y = q * tmp.d;
-                goto out;
+
+                return y;
             }
     }
 
     y = asdouble((uint64_t)m + asuint64(q));
 
-out:
     return y;
 }

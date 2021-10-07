@@ -43,9 +43,9 @@
 #define L__exp_bias 0x00000000000003ff /* 1023 */
 #define L__mant_mask 0x000fffffffffffff
 #define N 10
-#define TABLE_SIZE (1ULL << N)
+#define TABLE_SIZE (1 << N)
 #define ABSOLUTE_VALUE 0x7FFFFFFFFFFFFFFF
-#define TOP12_EXP_MAX 0x40862E42
+#define TOP20_EXP_MAX 0x40862
 #define MANTISSA_10_BITS 0x000FFC0000000000
 #define MANTISSA_11_BIT 0x0000020000000000
 
@@ -300,13 +300,13 @@ compute_log(uint64_t ux, double_t* log_lo, int32_t expadjust) {
 static inline double_t
 compute_exp(double_t v, double_t vt, uint64_t result_sign) {
 
-    double_t  z, r, w, w1, poly;
+    double_t  dn, z, r, w, w1, poly;
 
     const double_t EXP_SHIFT = 0x1.8000000000000p52;
 
     int64_t n;
 
-    uint64_t i;
+    int64_t i;
 
     uint64_t ux;
 
@@ -318,8 +318,8 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign) {
 
     int32_t abs_ylogx = (ux & ABSOLUTE_VALUE) >> 32;
 
-    /* check if x > 1024 * ln(2) */
-    if(unlikely(abs_ylogx >= TOP12_EXP_MAX)) {
+    /* check if |x| > 708 */
+    if(unlikely(abs_ylogx >= TOP20_EXP_MAX)) {
         /* if abs(y * log(x)) > 709.7822265625 */
         if(ux >= EXP_MIN) {
             /* if y * log(x) < -745.133219101941222106688655913 */
@@ -329,31 +329,38 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign) {
 
         }
 
-      if(temp > asdouble(EXP_MAX_DOUBLE)) {
+        if(temp > asdouble(EXP_MAX_DOUBLE)) {
             /* if y * log(x) > 709.7822265625 */
             v = asdouble(EXPBITS_DP64 | result_sign);
 
             return  _exp_special(asdouble(ux), v,  EXP_Y_INF);
 
-      }
+         } 
 
-      abs_ylogx = 0xfff;
+         n = (int64_t)v;
+
+         dn = (double)n;
+
+         abs_ylogx = 0xfff;
+
+    }
+    else {
+
+         double_t fastconvert = v + EXP_SHIFT;
+
+         n = (int64_t)asuint64(fastconvert);
+
+         dn = fastconvert - EXP_SHIFT;
 
     }
 
-    double_t fastconvert = v + EXP_SHIFT;
-
-    n = (int64_t)asuint64(fastconvert);
-
-    double_t dn = fastconvert - EXP_SHIFT;
-
     /* Table size = 1024. Here N = 10 */
 
-    int32_t index = (int32_t)(n % (1 << N));
+    i = n & (TABLE_SIZE - 1);
 
     r = temp - (dn * LOG2_BY_N_HEAD);
 
-    int64_t m = ((n - index) << (EXPSHIFTBITS_DP64 - N));
+    int64_t m = ((n - i) << (EXPSHIFTBITS_DP64 - N));
 
     r = (r - (LOG2_BY_N_TAIL * dn)) + vt;
 
@@ -372,9 +379,9 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign) {
 
     poly = POLY_EVAL_6(r, A0, A1, A2, A3, A4, A5);
 
-    w = asdouble(exp_lookup[index].head);
+    w = asdouble(exp_lookup[i].head);
 
-    w1 = asdouble(exp_lookup[index].tail);
+    w1 = asdouble(exp_lookup[i].tail);
 
     temp = w1 + poly * w1;
 
@@ -386,19 +393,15 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign) {
 
     if(unlikely(abs_ylogx == 0xfff)) {
 
-        n = (int64_t)dn;
-
         int64_t m2 = n >> N;
 
         if(m2 <= -1022) {
 
             if((m2 < -1022) || (result < 1.0)) {
 
-                m2 = m2 + 1074;
+                m2 += 1074;
 
-                i = 1ULL << m2;
-
-                dn = asdouble(i);
+                dn = asdouble( 1ULL << m2);
 
                 n = (int64_t)asuint64(result * dn);
 

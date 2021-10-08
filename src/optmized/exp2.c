@@ -231,7 +231,7 @@ ALM_PROTO_OPT(exp2)(double x)
     }
     else {
 
-#define FAST_INTEGER_CONVERSION 0
+#define FAST_INTEGER_CONVERSION 1
 #if FAST_INTEGER_CONVERSION
          /* Rounding off to 1/2N digits after decimal and also multiplying by table size */
         q1.d = x + ALM_EXP2_HUGE;

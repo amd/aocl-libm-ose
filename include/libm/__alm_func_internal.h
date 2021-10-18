@@ -228,6 +228,7 @@ extern __m512    ALM_PROTO_INTERNAL(vrs16_logf)            (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_powf)            (__m512 x, __m512 y);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_sinf)            (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_tanf)            (__m512 x);
+extern __m512    ALM_PROTO_INTERNAL(vrs16_atanf)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_coshf)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_tanhf)           (__m512 x);
 

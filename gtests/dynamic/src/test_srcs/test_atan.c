@@ -8,8 +8,9 @@ int test_atan(void* handle) {
     data.s1d = (func)dlsym(handle, "amd_atan");
     data.v4s = (funcf_v4s)dlsym(handle, "amd_vrs4_atanf");
     data.v8s = (funcf_v8s)dlsym(handle, "amd_vrs8_atanf");
+    data.v2d = (func_v2d)dlsym(handle, "amd_vrd2_atan");
 
-    if (data.s1f == NULL || data.s1d == NULL ||
+    if (data.s1f == NULL || data.s1d == NULL || data.v2d == NULL ||
         data.v4s == NULL || data.v8s == NULL) {
         ret = 1;
     }

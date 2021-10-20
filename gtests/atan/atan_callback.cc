@@ -94,7 +94,7 @@ __m256d LIBM_FUNC_VEC(d, 4, atan)(__m256d);
 
 /*avx512*/
 #if defined(__AVX512__)
-//__m512d LIBM_FUNC_VEC(d, 8, atan) (__m512d);
+__m512d LIBM_FUNC_VEC(d, 8, atan) (__m512d);
 __m512 LIBM_FUNC_VEC(s, 16, atanf) (__m512);
 #endif
 
@@ -144,7 +144,7 @@ int test_v8s(test_data *data, int idx)  {
 }
 
 int test_v8d(test_data *data, int idx)  {
-#if 0
+#if defined(__AVX512__)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m512d ip8 = _mm512_set_pd(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],

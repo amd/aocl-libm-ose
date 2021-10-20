@@ -288,6 +288,7 @@ extern __m512d   ALM_PROTO_INTERNAL(vrd8_log)      (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_pow)      (__m512d x, __m512d y);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_sin)      (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_tan)      (__m512d x);
+extern __m512d   ALM_PROTO_INTERNAL(vrd8_atan)     (__m512d x);
 
 
 

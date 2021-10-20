@@ -210,6 +210,7 @@ __extract32(uint32_t value, int start, int length)
 #define ALM_CPU_MODEL_ZEN3_MIN      ALM_CPU_MAKE_MODEL(0x0, 0x0)  /* 00 */
 #define ALM_CPU_MODEL_MILAN         ALM_CPU_MAKE_MODEL(0x1, 0x0)  /* 10 */
 #define ALM_CPU_MODEL_VERMEER       ALM_CPU_MAKE_MODEL(0x1, 0x2)  /* 33 */
+#define ALM_CPU_MODEL_CHAGALL       ALM_CPU_MAKE_MODEL(0x8, 0x0)  /* 08 */
 #define ALM_CPU_MODEL_REMBRANT      ALM_CPU_MAKE_MODEL(0x0, 0x4)  /* 64 */
 #define ALM_CPU_MODEL_CEZANNE       ALM_CPU_MAKE_MODEL(0x0, 0x5)  /* 80 */
 #define ALM_CPU_MODEL_ZEN3_MAX      ALM_CPU_MAKE_MODEL(0x0, 0xF)  /* 0f */

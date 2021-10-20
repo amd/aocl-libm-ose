@@ -207,6 +207,7 @@ alm_cpu_arch_is_zen2(void)
     switch (mfg_info->model) {
       case ALM_CPU_MODEL_ROME:
       case ALM_CPU_MODEL_RENOIR:
+      case ALM_CPU_MODEL_MATISSE:
           ret = 1;
           break;
       default:
@@ -241,6 +242,7 @@ alm_cpu_arch_is_zen3(void)
           case ALM_CPU_MODEL_VERMEER:
           case ALM_CPU_MODEL_REMBRANT:
           case ALM_CPU_MODEL_CEZANNE:
+          case ALM_CPU_MODEL_CHAGALL:
               ret = 1;
               break;
 

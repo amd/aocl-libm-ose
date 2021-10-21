@@ -47,6 +47,8 @@ struct alm_arch_funcs __arch_funcs_sin = {
             &ALM_PROTO_ARCH_AVX2(vrd4_sin),  /* v4d ? */
             &ALM_PROTO_FMA3(vrsa_sinf),  /*vector array variants*/
             &ALM_PROTO_FMA3(vrda_sin),
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_sinf),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_sin)
         },
 
         [ALM_UARCH_VER_ZEN] = {

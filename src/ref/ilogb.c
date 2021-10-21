@@ -26,7 +26,7 @@
  */
 
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 
@@ -46,7 +46,7 @@ int ALM_PROTO_REF(ilogb)(double x)
     if(zerovalue == 0)
     {
         /* Raise exception as the number zero*/
-        __amd_handle_error("ilogb", __amd_log, (unsigned long long)INT_MIN, _SING, AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
+        __alm_handle_error((unsigned long long)INT_MIN, AMD_F_DIVBYZERO);
         return INT_MIN;
     }
 
@@ -54,9 +54,9 @@ int ALM_PROTO_REF(ilogb)(double x)
     {
         /* Raise exception as the number is inf */
         if (x<0.0)
-                __amd_handle_error("ilogbf", __amd_log, (unsigned int)INT_MAX, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+                __alm_handle_error((unsigned int)INT_MAX, AMD_F_INVALID);
         else
-                __amd_handle_error("ilogbf", __amd_log, (unsigned int)INT_MAX, 0, AMD_F_NONE, 0, x, 0.0, 1);
+                __alm_handle_error((unsigned int)INT_MAX, AMD_F_NONE);
         return INT_MAX;
     }
 
@@ -64,7 +64,7 @@ int ALM_PROTO_REF(ilogb)(double x)
     {
         /* Raise exception as the number is nan */
 #ifdef WINDOWS
-        __amd_handle_error("ilogb", __amd_log, (unsigned long long)INT_MIN, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+        __alm_handle_error((unsigned long long)INT_MIN, AMD_F_NONE);
         return INT_MIN;
 #else
         //x = x+x;
@@ -72,9 +72,9 @@ int ALM_PROTO_REF(ilogb)(double x)
         //optimization mode the compiler tends to optimize out the 
         //x+x operation if done.
         if (zerovalue >= 0x7ff8000000000000)
-                __amd_handle_error("ilogb", __amd_log, (unsigned long long)INT_MIN, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
-        else    
-                __amd_handle_error("ilogb", __amd_log, (unsigned long long)INT_MIN, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+                __alm_handle_error((unsigned long long)INT_MIN, AMD_F_NONE);
+        else
+                __alm_handle_error((unsigned long long)INT_MIN, AMD_F_INVALID);
         return INT_MIN;
 #endif        
     }

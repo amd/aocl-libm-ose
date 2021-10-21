@@ -26,7 +26,7 @@
  */
 
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 
@@ -39,7 +39,7 @@ double ALM_PROTO_REF(logb)(double x)
   u = (long long)(((ux & EXPBITS_DP64) >> EXPSHIFTBITS_DP64) - EXPBIAS_DP64);
   if ((ux & ~SIGNBIT_DP64) == 0)
     /* x is +/-zero. Return -infinity with div-by-zero flag. */
-	return __amd_handle_error("logb", __amd_logb, NINFBITPATT_DP64, _SING, AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
+	return __alm_handle_error(NINFBITPATT_DP64, AMD_F_DIVBYZERO);
   else if (EMIN_DP64 <= u && u <= EMAX_DP64)
     /* x is a normal number */
     return (double)u;
@@ -59,7 +59,7 @@ double ALM_PROTO_REF(logb)(double x)
       else
         /* x is NaN, result is NaN */
 #ifdef WINDOWS
-          return __amd_handle_error("logb", __amd_logb, ux|0x0008000000000000, DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+          return __alm_handle_error(ux|0x0008000000000000, AMD_F_NONE);
 #else
           return x+x;
 #endif

@@ -27,7 +27,7 @@
 
 #include "libm_util_amd.h"
 #include "libm_inlines_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 
@@ -160,9 +160,7 @@ float ALM_PROTO_REF(coshf)(float fx)
         if (aux > PINFBITPATT_SP32) /* |x| is a NaN? */
         {
 #ifdef WINDOWS
-            return __amd_handle_errorf("coshf", __amd_cosh,
-                                       ux|QNANBITPATT_SP32, DOMAIN,
-                                       AMD_F_NONE, EDOM, fx, 0.0, 1);
+            return __alm_handle_errorf(ux|QNANBITPATT_SP32, AMD_F_NONE);
 #else
             return fx+fx;
 #endif
@@ -183,9 +181,7 @@ float ALM_PROTO_REF(coshf)(float fx)
     {
         /* Return infinity with overflow flag. */
         PUT_BITS_SP32(PINFBITPATT_SP32, fx);
-        return __amd_handle_errorf("coshf", __amd_cosh, PINFBITPATT_SP32,
-                                   _OVERFLOW, AMD_F_OVERFLOW, ERANGE,
-                                   fx, 0.0, 1);
+        return __alm_handle_errorf(PINFBITPATT_SP32, AMD_F_OVERFLOW);
     }
     else if (y >= small_threshold)
     {

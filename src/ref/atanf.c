@@ -26,7 +26,7 @@
  */
 
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 
@@ -50,7 +50,7 @@ float ALM_PROTO_REF(atanf)(float fx)
         {
           /* x is NaN */
 #ifdef WINDOWS
-		return  __amd_handle_errorf("atanf", __amd_atan, fux|0x00400000, _DOMAIN,0, EDOM, fx, 0.0, 1);
+		return  __alm_handle_errorf(fux|0x00400000, 0);
 #else
           return fx + fx; /* Raise invalid if it's a signalling NaN */
 #endif
@@ -80,7 +80,7 @@ float ALM_PROTO_REF(atanf)(float fx)
 #ifdef WINDOWS
         return fx ; //valf_with_flags(fx, AMD_F_INEXACT);
 #else
-	return  __amd_handle_errorf("atanf", __amd_atan, fux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, ERANGE, fx, 0.0, 1);
+	return  __alm_handle_errorf(fux, AMD_F_UNDERFLOW|AMD_F_INEXACT);
 
 #endif
     }

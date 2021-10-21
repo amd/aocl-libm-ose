@@ -29,7 +29,7 @@
 #include <libm_util_amd.h>
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 
 #if !defined(DEBUG) && defined(__GNUC__) && !defined(__clang__)
 #pragma GCC push_options

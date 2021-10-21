@@ -27,7 +27,7 @@
 
 #include "libm_util_amd.h"
 #include "libm_inlines_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 double ALM_PROTO_REF(tanh)(double x)
@@ -66,14 +66,14 @@ double ALM_PROTO_REF(tanh)(double x)
 #ifdef WINDOWS
             return x;
 #else
-            return __amd_handle_error("tanh", __amd_tanh, ux, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
+            return __alm_handle_error(ux, AMD_F_INEXACT|AMD_F_UNDERFLOW);
 #endif
         }
     }
   else if  (aux > 0x7ff0000000000000) /* |x| is NaN */
     {
 #ifdef WINDOWS
-        return __amd_handle_error("tanh", __amd_tanh, ux|QNANBITPATT_DP64, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+        return __alm_handle_error(ux|QNANBITPATT_DP64, AMD_F_NONE);
 #else
         return x+x;
 #endif

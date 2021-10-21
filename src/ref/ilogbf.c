@@ -26,7 +26,7 @@
  */
 
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 int ALM_PROTO_REF(ilogbf)(float x)
@@ -45,8 +45,8 @@ int ALM_PROTO_REF(ilogbf)(float x)
     if(zerovalue == 0)
     {
         /* Raise domain error as the number zero*/
-        __amd_handle_errorf("ilogbf", __amd_log, (unsigned int)INT_MIN,
-                                  _SING, AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
+        __alm_handle_errorf((unsigned int)INT_MIN,
+                                  AMD_F_DIVBYZERO);
         return INT_MIN;
     }
 
@@ -56,11 +56,11 @@ int ALM_PROTO_REF(ilogbf)(float x)
         //if negative inf raise an exception
         //if positive inf don't raise and exception
         if (x<0.0f)
-                __amd_handle_errorf("ilogbf", __amd_log, (unsigned int)INT_MAX,
-                                          _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+                __alm_handle_errorf((unsigned int)INT_MAX,
+                                          AMD_F_INVALID);
         else
-                __amd_handle_errorf("ilogbf", __amd_log, (unsigned int)INT_MAX,
-                                                      0, AMD_F_NONE, 0, x, 0.0, 1);
+                __alm_handle_errorf((unsigned int)INT_MAX,
+                                          AMD_F_NONE);
         return INT_MAX;
     }
 
@@ -68,8 +68,8 @@ int ALM_PROTO_REF(ilogbf)(float x)
     {
         /* Raise exception as the number is inf */
 #ifdef WINDOWS
-        __amd_handle_errorf("ilogbf", __amd_log, (unsigned int)INT_MIN,
-                                           _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+        __alm_handle_errorf((unsigned int)INT_MIN,
+                                           AMD_F_NONE);
         return INT_MIN;
 #else
         //x = x+x;
@@ -77,11 +77,11 @@ int ALM_PROTO_REF(ilogbf)(float x)
         //optimization mode the compiler tends to optimize out the
         //x+x operation if done.
         if (zerovalue >= 0x7fC00000)
-                __amd_handle_errorf("ilogbf", __amd_log, (unsigned int)INT_MIN,
-                                              _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+                __alm_handle_errorf((unsigned int)INT_MIN,
+                                              AMD_F_NONE);
         else
-                __amd_handle_errorf("ilogbf", __amd_log, (unsigned int)INT_MIN,
-                                           _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+                __alm_handle_errorf((unsigned int)INT_MIN,
+                                             AMD_F_INVALID);
         return INT_MIN;
 #endif
     }

@@ -26,7 +26,7 @@
  */
 
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include "libm_inlines_amd.h"
 #include <libm/amd_funcs_internal.h>
 
@@ -58,19 +58,19 @@ double ALM_PROTO_REF(acosh)(double x)
         {
           /* x is NaN */
 #ifdef WINDOWS
-          return __amd_handle_error(_FUNCNAME,__amd_acosh, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0,1);
+          return __alm_handle_error(ux|0x0008000000000000, AMD_F_NONE);
 #else
 	if(ux & QNAN_MASK_64)
-          return __amd_handle_error(_FUNCNAME,__amd_acosh, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0,1);
+          return __alm_handle_error(ux|0x0008000000000000, AMD_F_NONE);
 	else
-          return __amd_handle_error(_FUNCNAME,__amd_acosh, ux|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0,1);
+          return __alm_handle_error(ux|0x0008000000000000, AMD_F_INVALID);
 #endif
         }
       else
         {
           /* x is infinity */
 			if(ux & SIGNBIT_DP64) // negative infinity return nan raise error
-				   return __amd_handle_error(_FUNCNAME,__amd_acosh, INDEFBITPATT_DP64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0,1);
+				   return __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
 			else
 				return x;
         }
@@ -86,8 +86,7 @@ double ALM_PROTO_REF(acosh)(double x)
       else
         {
           /* x is less than 1.0. Return a NaN. */
-          return __amd_handle_error(_FUNCNAME,__amd_acosh, INDEFBITPATT_DP64, _DOMAIN,
-                              AMD_F_INVALID, EDOM, x, 0.0,1);
+          return __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
         }
     }
 

@@ -26,7 +26,7 @@
  */
 
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 
@@ -45,7 +45,7 @@ double ALM_PROTO_REF(frexp)(double value, int *exp)
     if(val.u64 > 0x7ff0000000000000)
     {
 #ifdef WINDOWS
-         return __amd_handle_error("frexp", __amd_frexp, val.u64|QNANBITPATT_DP64, DOMAIN, AMD_F_NONE, EDOM,value, 0.0, 1);
+         return __alm_handle_error("frexp", __amd_frexp, val.u64|QNANBITPATT_DP64, DOMAIN, AMD_F_NONE, EDOM,value, 0.0, 1);
 #else
          return value+value;
 #endif

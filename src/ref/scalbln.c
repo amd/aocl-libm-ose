@@ -27,7 +27,7 @@
 
 #include "fn_macros.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 double ALM_PROTO_REF(scalbln)(double x, long int n)
@@ -42,11 +42,11 @@ double ALM_PROTO_REF(scalbln)(double x, long int n)
 
     if (val.u64 > 0x7ff0000000000000)     /* x is NaN */
         #ifdef WINDOWS
-	   return __amd_handle_error("scalbn", __amd_scalbn, val_x.u64|0x0008000000000000, _DOMAIN, 0, EDOM, x, n, 2);
+	   return __alm_handle_error(val_x.u64|0x0008000000000000, 0);
         #else
            {
            if(!(val.u64 & 0x0008000000000000))// x is snan
-                   return __amd_handle_error("scalbn", __amd_scalbn, val_x.u64|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, (double)n, 2);
+                   return __alm_handle_error(val_x.u64|0x0008000000000000, AMD_F_INVALID);
             else
                    return x;
 		    }
@@ -69,13 +69,13 @@ double ALM_PROTO_REF(scalbln)(double x, long int n)
 		{
 			val.u32[1] = sign | 0x00000000;
 			val.u32[0] = 0x00000000;
-			return __amd_handle_error("scalbln", __amd_scalbln, val.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, (double)n, 2);
+			return __alm_handle_error(val.u64, AMD_F_INEXACT|AMD_F_UNDERFLOW);
 		}
 		if(exponent > 2046)/*overflow*/
 		{
 			val.u32[1] = sign | 0x7ff00000;
 			val.u32[0] = 0x00000000;
-            return __amd_handle_error("scalbln", __amd_scalbln, val.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, (double) n, 2);
+            return __alm_handle_error(val.u64, AMD_F_INEXACT|AMD_F_OVERFLOW);
 		}
 
 		exponent += MULTIPLIER_DP;
@@ -90,7 +90,7 @@ double ALM_PROTO_REF(scalbln)(double x, long int n)
 	{
 		val.u32[1] = sign | 0x00000000;
 		val.u32[0] = 0x00000000;
-	    return __amd_handle_error("scalbln", __amd_scalbln, val.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, (double)n, 2);
+	    return __alm_handle_error(val.u64, AMD_F_INEXACT|AMD_F_UNDERFLOW);
 	}
 
     if(exponent < 1)/*x is normal but output is debnormal*/
@@ -105,7 +105,7 @@ double ALM_PROTO_REF(scalbln)(double x, long int n)
 	{
 		val.u32[1] = sign | 0x7ff00000;
 		val.u32[0] = 0x00000000;
-        return __amd_handle_error("scalbln", __amd_scalbln, val.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, (double) n, 2);
+        return __alm_handle_error(val.u64, AMD_F_INEXACT|AMD_F_OVERFLOW);
 	}
 
     val.u32[1] = sign | (unsigned int)(exponent << 20) | (val.u32[1] & 0x000fffff);

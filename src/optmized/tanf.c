@@ -60,7 +60,7 @@
  */
 
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 #include <libm_macros.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
@@ -194,16 +194,16 @@ __tanf_special_inline(float x)
     if (uxf & MANTBITS_SP32) {
         /* x is NaN */
         if (uxf & QNAN_MASK_32)
-            return  __amd_handle_errorf("tanf", __amd_tan, uxf | QNAN_MASK_32,
-                                        _DOMAIN, AMD_F_NONE, EDOM, x, 0.0f, 1);
+            return  __alm_handle_errorf(uxf | QNAN_MASK_32,
+                                         AMD_F_NONE);
 
-        return  __amd_handle_errorf("tanf", __amd_tan, uxf | QNAN_MASK_32,
-                                    _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0f, 1);
+        return  __alm_handle_errorf(uxf | QNAN_MASK_32,
+                                    AMD_F_INVALID);
     }
 
     /* x is infinity. Return a NaN */
-    return  __amd_handle_errorf("tanf", __amd_tan, INDEFBITPATT_SP32, _DOMAIN,
-                                AMD_F_INVALID, EDOM, x, 0.0f, 1);
+    return  __alm_handle_errorf(INDEFBITPATT_SP32,
+                                AMD_F_INVALID);
 }
 
 #define ALM_TANF_SMALL_X     0x3C000000 
@@ -219,9 +219,9 @@ __tanf_very_small_x(float x)
 
     if (ax < ALM_TANF_SMALL_X) { /* abs(x) < 2.0^(-13) */
         if (ax < ALM_TANF_ARG_MIN) /* abs(x) < 2.0^(-27) */
-            return  __amd_handle_errorf("tanf", __amd_tan, asuint32(x), _UNDERFLOW,
-                                        AMD_F_UNDERFLOW|AMD_F_INEXACT,
-                                        ERANGE, x, 0.0, 1);
+            return  __alm_handle_errorf(asuint32(x),
+                                        AMD_F_UNDERFLOW|AMD_F_INEXACT
+                                        );
 
         /*
          *  2^-13 < abs(x) < 2^-27

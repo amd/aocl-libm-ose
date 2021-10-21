@@ -27,7 +27,7 @@
 
 #include "fn_macros.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 double ALM_PROTO_REF(ceil)(double x)
@@ -56,11 +56,11 @@ double ALM_PROTO_REF(ceil)(double x)
       if (ax > 0x7ff0000000000000)
         /* x is NaN */
         #ifdef WINDOWS
-            return __amd_handle_error("ceil", __amd_ceil, ux|0x0008000000000000, _DOMAIN, 0, EDOM, x, 0.0, 1);
+            return __alm_handle_error(ux|0x0008000000000000, 0);
         #else
            {
            if(!(ax & 0x0008000000000000))// x is snan
-               return __amd_handle_error("ceil", __amd_ceil, ux|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+               return __alm_handle_error(ux|0x0008000000000000, AMD_F_INVALID);
            else
                return x;
 		    }

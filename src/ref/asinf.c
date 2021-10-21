@@ -26,7 +26,7 @@
  */
 
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 
@@ -68,13 +68,13 @@ float ALM_PROTO_REF(asinf)(float x)
   if (xnan)
     {
 #ifdef WINDOWS
-     return  __amd_handle_errorf("asinf", __amd_asin, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F, 1);
+     return  __alm_handle_errorf(ux|0x00400000, AMD_F_NONE);
 #else
       //return x + x; /* With invalid if it's a signalling NaN */
       if (ux & QNAN_MASK_32)
-     return  __amd_handle_errorf("asinf", __amd_asin, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F, 1);
+     return  __alm_handle_errorf(ux|0x00400000, AMD_F_NONE);
       else
-     return  __amd_handle_errorf("asinf", __amd_asin, ux|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
+     return  __alm_handle_errorf(ux|0x00400000, AMD_F_INVALID);
 #endif
     }
   else if (xexp < -14)
@@ -86,7 +86,7 @@ float ALM_PROTO_REF(asinf)(float x)
          if ((ux == SIGNBIT_SP32) || (ux == 0x0))
             return x;
 	 else
-            return  __amd_handle_errorf("asinf", __amd_asin, ux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, EDOM, x, 0.0F, 1);
+            return  __alm_handle_errorf(ux, AMD_F_UNDERFLOW|AMD_F_INEXACT);
 #endif
      }
   else if (xexp >= 0)
@@ -98,9 +98,9 @@ float ALM_PROTO_REF(asinf)(float x)
         return -piby2; //valf_with_flags(-piby2, AMD_F_INEXACT);
       else
 #ifdef WINDOWS
-     return  __amd_handle_errorf("asinf", __amd_asin, INDEFBITPATT_SP32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
+     return  __alm_handle_errorf(INDEFBITPATT_SP32, AMD_F_INVALID);
 #else
-     return  __amd_handle_errorf("asinf", __amd_asin, INDEFBITPATT_SP32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
+     return  __alm_handle_errorf(INDEFBITPATT_SP32, AMD_F_INVALID);
         //return retval_errno_edom(x);
 #endif
     }

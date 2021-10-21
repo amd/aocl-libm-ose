@@ -27,7 +27,7 @@
 
 #include "fn_macros.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 float ALM_PROTO_REF(floorf)(float x)
@@ -47,10 +47,10 @@ float ALM_PROTO_REF(floorf)(float x)
       {
         /* x is NaN */
         #ifdef WINDOWS
-               return __amd_handle_errorf("floorf", __amd_floor, ux|0x00400000, _DOMAIN, 0, EDOM, x, 0.0, 1);
+               return __alm_handle_errorf(ux|0x00400000, 0);
         #else
                if(!(ax & 0x00400000)) //x is snan
-                     return __amd_handle_errorf("floorf", __amd_floor, ux|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+                     return __alm_handle_errorf(ux|0x00400000, AMD_F_INVALID);
                else // x is qnan or inf
                      return x;
         #endif

@@ -26,7 +26,7 @@
  */
 
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 float ALM_PROTO_REF(frexpf)(float value, int *exp)
@@ -44,7 +44,7 @@ float ALM_PROTO_REF(frexpf)(float value, int *exp)
     if(val.u32 > 0x7f800000)
      {
 #ifdef WINDOWS
-         return __amd_handle_errorf("frexpf", __amd_frexp, val.u32|QNANBITPATT_DP64, DOMAIN, AMD_F_NONE, EDOM, value, 0.0, 1);
+         return __alm_handle_errorf("frexpf", __amd_frexp, val.u32|QNANBITPATT_DP64, DOMAIN, AMD_F_NONE, EDOM, value, 0.0, 1);
 #else
          return value+value;
 #endif

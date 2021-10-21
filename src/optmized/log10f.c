@@ -27,7 +27,6 @@
 
 #include "libm_macros.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
 
 #include <libm/types.h>
 #include <libm/alm_special.h>

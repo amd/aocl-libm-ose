@@ -27,7 +27,7 @@
 
 #include "libm_util_amd.h"
 #include "libm_errno_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 
@@ -49,20 +49,20 @@ float ALM_PROTO_REF(rintf)(float x)
         {
             // x is Inf
 #ifdef WINDOWS
-            return  __amd_handle_errorf("rintf", __amd_rint, checkbits.u32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+            return  __alm_handle_errorf(checkbits.u32, AMD_F_INVALID);
 #else
-            return  __amd_handle_errorf("rintf", __amd_rint, checkbits.u32, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+            return  __alm_handle_errorf(checkbits.u32, AMD_F_NONE);
 #endif
 		}
 		else {
 			// x is NaN
 #ifdef WINDOWS
-		return  __amd_handle_errorf("rintf", __amd_rint, checkbits.u32 | QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+		return  __alm_handle_errorf(checkbits.u32 | QNAN_MASK_32, AMD_F_NONE);
 #else
 		if (checkbits.u32 & QNAN_MASK_32)
-		return  __amd_handle_errorf("rintf", __amd_rint, checkbits.u32 | QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+		    return  __alm_handle_errorf(checkbits.u32 | QNAN_MASK_32, AMD_F_NONE);
 		else
-		return  __amd_handle_errorf("rintf", __amd_rint, checkbits.u32 | QNAN_MASK_32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+		    return  __alm_handle_errorf(checkbits.u32 | QNAN_MASK_32, AMD_F_INVALID);
 #endif
 		}
 	}

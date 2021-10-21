@@ -27,7 +27,7 @@
 
 #include "fn_macros.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 
@@ -46,17 +46,17 @@ float ALM_PROTO_REF(roundf)(float f)
         if(!((u32f.u32 & MANTBITS_SP32) == 0))
         {
             #ifdef WINDOWS
-			return __amd_handle_errorf("roundf", __amd_round, u32f.u32 |= QNAN_MASK_32, _DOMAIN, 0, EDOM, f, 0.0, 1);
+			    return __alm_handle_errorf(u32f.u32 |= QNAN_MASK_32, 0);
             #else
                 if(!(u32f.u32 & 0x00400000)) //x is snan
-			return __amd_handle_errorf("roundf", __amd_round, u32f.u32, _DOMAIN, AMD_F_INVALID, EDOM, f, 0.0, 1);
-		else
-			return u32f.f32;
+			        return __alm_handle_errorf(u32f.u32, AMD_F_INVALID);
+		        else
+			        return u32f.f32;
             #endif
 		}
         /*else the number is infinity*/
         //Raise range or domain error
-		return __amd_handle_errorf("roundf", __amd_round, u32f.u32, _DOMAIN, 0, EDOM, f, 0.0, 1);
+		return __alm_handle_errorf(u32f.u32, 0);
     }
     /*Get the exponent of the input*/
     intexp = (u32f.u32 & 0x7f800000) >> 23;

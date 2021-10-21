@@ -43,7 +43,7 @@
 
 #include <stdint.h>
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 
 #include <libm_macros.h>
 #include <libm/types.h>
@@ -51,7 +51,7 @@
 #include <libm/typehelper.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
-
+#include <libm/alm_special.h>
 
 #define EXPF_N 6
 #define EXPF_POLY_DEGREE 4

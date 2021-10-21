@@ -26,7 +26,7 @@
  */
 
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include "libm_errno_amd.h"
 #include <libm/amd_funcs_internal.h>
 
@@ -51,7 +51,7 @@ double ALM_PROTO_REF(modf)(double x, double *iptr)
           /* x is NaN */
           *iptr = x;
 #ifdef WINDOWS
-          return __amd_handle_error("modf", __amd_modf, ux|0x0008000000000000,
+          return __alm_handle_error("modf", __amd_modf, ux|0x0008000000000000,
                                                  _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
 #else
           return x+x;

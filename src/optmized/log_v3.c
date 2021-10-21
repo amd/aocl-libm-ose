@@ -27,7 +27,8 @@
 
 #include <stdint.h>
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
+#include <libm/alm_special.h>
 
 #if !defined(DEBUG) && defined(__GNUC__) && !defined(__clang__)
 #pragma GCC push_options

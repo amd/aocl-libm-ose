@@ -27,7 +27,7 @@
 
 #include "libm_util_amd.h"
 #include "libm_inlines_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 /* sin(x) approximation valid on the interval [-pi/4,pi/4]. */

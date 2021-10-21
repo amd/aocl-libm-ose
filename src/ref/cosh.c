@@ -27,7 +27,7 @@
 
 #include "libm_util_amd.h"
 #include "libm_inlines_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 
@@ -235,7 +235,7 @@ double ALM_PROTO_REF(cosh)(double x)
       if (aux > PINFBITPATT_DP64) /* |x| is a NaN? */
       {
 #ifdef WINDOWS
-         return __amd_handle_error("cosh", __amd_cosh, ux|QNANBITPATT_DP64, DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+         return __alm_handle_error(ux|QNANBITPATT_DP64, AMD_F_NONE);
 #else
          return x+x;
 #endif
@@ -256,7 +256,7 @@ double ALM_PROTO_REF(cosh)(double x)
   if (y >= max_cosh_arg)
       {
       /* Return +/-infinity with overflow flag */
-         return __amd_handle_error("cosh", __amd_cosh, PINFBITPATT_DP64, _OVERFLOW, AMD_F_OVERFLOW, EDOM, x, 0.0, 1);
+         return __alm_handle_error(PINFBITPATT_DP64, AMD_F_OVERFLOW);
       }
   else if (y >= small_threshold)
     {

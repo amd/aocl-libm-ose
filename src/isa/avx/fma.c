@@ -27,7 +27,7 @@
 
 #include "libm/amd_funcs_internal.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include "<libm/alm_special.h>"
 #include "libm_errno_amd.h"
 
 double ALM_PROTO_BAS64(fma)(double aa, double bb, double cc)

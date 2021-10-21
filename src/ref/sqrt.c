@@ -28,7 +28,7 @@
 #include <emmintrin.h>
 #include "fn_macros.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 /*SSE2 contains an instruction SQRTSD. This instruction Computes the square root
@@ -48,11 +48,11 @@ double ALM_PROTO_REF(sqrt)(double x)
 
   if (ax > 0x7ff0000000000000)     /* x is NaN */
      #ifdef WINDOWS
-           return __amd_handle_error("sqrt", __amd_squareroot, ux|0x0008000000000000, _DOMAIN, 0, EDOM, x, 0.0, 1);
+           return __alm_handle_error(ux|0x0008000000000000, 0);
      #else
         {
         if(!(ax & 0x0008000000000000))// x is snan
-           return __amd_handle_error("sqrt", __amd_squareroot, ux|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+           return __alm_handle_error(ux|0x0008000000000000, AMD_F_INVALID);
         else // x is qnan
            return x;
 	    }
@@ -62,7 +62,7 @@ double ALM_PROTO_REF(sqrt)(double x)
   {
        if(ax == 0x0) /* x == -0*/
 	      return -0.0;
-       return __amd_handle_error("sqrt", __amd_squareroot, 0xfff8000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+       return __alm_handle_error(0xfff8000000000000, AMD_F_INVALID);
   }
     /*Load x into an XMM register*/
     X128 = _mm_load_sd(&x);

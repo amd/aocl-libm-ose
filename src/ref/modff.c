@@ -26,7 +26,7 @@
  */
 
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 
@@ -66,7 +66,7 @@ float ALM_PROTO_REF(modff)(float x, float *iptr)
       /* x is NaN */
       *iptr = x;
 #ifdef WINDOWS
-      return __amd_handle_errorf("modff", __amd_logb, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1); /* Raise invalid if it is a signalling NaN */
+      return __alm_handle_errorf("modff", __amd_logb, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1); /* Raise invalid if it is a signalling NaN */
 #else
       return x+x;
 #endif

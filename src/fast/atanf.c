@@ -39,7 +39,7 @@
  * All elements are approximated by using polynomial of degree 7
  */
 
-#include <libm_special.h>
+#include <libm/alm_special.h>
 #include <libm/typehelper.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/poly.h>

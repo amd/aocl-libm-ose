@@ -27,7 +27,7 @@
 
 #include "fn_macros.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 
@@ -43,8 +43,7 @@ long long int ALM_PROTO_REF(llrintf)(float x)
     {
         /* number cant be rounded raise an exception */
         /* Number exceeds the representable range could be nan or inf also*/
-        __amd_handle_errorf("llrintf", __amd_lrint, (unsigned long long) x,
-                                                      _DOMAIN, 0, EDOM, x, 0.0, 1);
+        __alm_handle_errorf((unsigned long long) x, 0);
         return (long long int) x;
     }
 

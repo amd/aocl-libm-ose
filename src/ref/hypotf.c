@@ -26,7 +26,7 @@
  */
 
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 
@@ -69,19 +69,19 @@ float ALM_PROTO_REF(hypotf)(float x, float y)
 			  if(x_is_nan)
 			      {
 			        #ifdef WINDOWS
-					  return  val.f32 ;// __amd_handle_errorf("hypotf", __amd_hypot, val.u32, _DOMAIN, 0, EDOM, x, y, 2);
+					  return  val.f32 ;// __alm_handle_errorf("hypotf", __amd_hypot, val.u32, _DOMAIN, 0, EDOM, x, y, 2);
 			        #else
 			              if(!(avx & 0x00400000)) //x is snan
-			                  return __amd_handle_errorf("hypotf", __amd_hypot, val.u32, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
+			                  return __alm_handle_errorf(val.u32, AMD_F_INVALID);
 			        #endif
 			   }
 			   if(y_is_nan)
 			   {
 			        #ifdef WINDOWS
-				   return val.f32 ; //__amd_handle_errorf("hypotf", __amd_hypot, val.u32, _DOMAIN, 0, EDOM, x, y, 2);
+				   return val.f32 ; //__alm_handle_errorf("hypotf", __amd_hypot, val.u32, _DOMAIN, 0, EDOM, x, y, 2);
 			        #else
 			              if(!(avy & 0x00400000)) //y is snan
-			                  return __amd_handle_errorf("hypotf", __amd_hypot, val.u32, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
+			                  return __alm_handle_errorf(val.u32, AMD_F_INVALID);
 			        #endif
 			   }
 			  return val.f32;
@@ -95,20 +95,20 @@ float ALM_PROTO_REF(hypotf)(float x, float y)
            {
              val.f32 = x;
              #ifdef WINDOWS
-                   return __amd_handle_errorf("hypotf", __amd_hypot, val.u32|0x00400000, _DOMAIN, 0, EDOM, x, y, 2);
+                   return __alm_handle_errorf(val.u32|0x00400000, 0);
              #else
                    if(!(avx & 0x00400000)) //x is snan
-                       return __amd_handle_errorf("hypotf", __amd_hypot, val.u32|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
+                       return __alm_handle_errorf(val.u32|0x00400000, AMD_F_INVALID);
              #endif
 		   }
         if(y_is_nan)
 		   {
 			 val.f32 = y;
              #ifdef WINDOWS
-                   return __amd_handle_errorf("hypotf", __amd_hypot, val.u32|0x00400000, _DOMAIN, 0, EDOM, x, y, 2);
+                   return __alm_handle_errorf(val.u32|0x00400000, 0);
              #else
                    if(!(avy & 0x00400000)) //y is snan
-                       return __amd_handle_errorf("hypotf", __amd_hypot, val.u32|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, y, 2);
+                       return __alm_handle_errorf(val.u32|0x00400000, AMD_F_INVALID);
              #endif
 		   }
 	  }
@@ -136,7 +136,7 @@ float ALM_PROTO_REF(hypotf)(float x, float y)
 #endif
 
     if (retval > large)
-         return __amd_handle_errorf("hypotf", __amd_hypot, PINFBITPATT_SP32, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, y, 2);
+         return __alm_handle_errorf(PINFBITPATT_SP32, AMD_F_INEXACT|AMD_F_OVERFLOW);
 	else if((x !=0.0f) && (y!=0))
 		{
 		 val.f32 = (float)(retval);
@@ -144,7 +144,7 @@ float ALM_PROTO_REF(hypotf)(float x, float y)
 		 if(val.u32 == 0x0)
 		 {
 			 val.f32 = (float)retval;
-             return __amd_handle_errorf("hypotf", __amd_hypot, val.u32, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, y, 2);
+             return __alm_handle_errorf(val.u32, AMD_F_INEXACT|AMD_F_UNDERFLOW);
 	     }
 		 else
 			 return (float)retval;

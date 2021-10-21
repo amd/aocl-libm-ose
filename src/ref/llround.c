@@ -26,7 +26,7 @@
  */
 
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 
 #ifdef WINDOWS
@@ -46,7 +46,7 @@ long long int ALM_PROTO_REF(llround)(double d)
     {
         /*the number is infinity*/
         //Got to raise range or domain error
-		__amd_handle_error("llround", __amd_lround, u64d.u64, _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
+		__alm_handle_error("llround", __amd_lround, u64d.u64, _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
 		return SIGNBIT_DP64; /*GCC returns this when the number is out of range*/
     }
 
@@ -64,7 +64,7 @@ long long int ALM_PROTO_REF(llround)(double d)
     {
         /*Based on the sign of the input value return the MAX and MIN*/
         result = 0x8000000000000000; /*Return LONG MIN*/
-		__amd_handle_error("llround", __amd_lround, result, _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
+		__alm_handle_error("llround", __amd_lround, result, _DOMAIN, AMD_F_NONE, EDOM, d, 0.0, 1);
         return result;
     }
 

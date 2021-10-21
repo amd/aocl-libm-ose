@@ -44,6 +44,7 @@ incpaths = [
 ]
 
 machdict = {
+    'znver4' : 'znver4',
     'znver3' : 'znver3',
     'znver2' : 'znver2',
     'znver1' : 'znver1',
@@ -55,9 +56,9 @@ machflag += machdict[env_mach]
 
 
 e.MergeFlags({
-    'CFLAGS'  : [machflag,
+    'CFLAGS'  : [
                  # TODO: remove once the compiler supports znver3
-                 '-march=znver2', '-O3', '-fPIC', '-flax-vector-conversions'],
+                 machflag, '-O3', '-fPIC', '-flax-vector-conversions'],
     'CPPPATH' : incpaths
 })
 

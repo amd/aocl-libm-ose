@@ -26,7 +26,7 @@
  */
 
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include "libm_inlines_amd.h"
 #include <libm/amd_funcs_internal.h>
 
@@ -322,8 +322,7 @@ float ALM_PROTO_REF(atan2f)(float fy, float fx)
   if (xnan)
 #ifdef WINDOWS
     {
-
-      return __amd_handle_errorf("atan2f",__amd_atan2, ufx|0x00400000, _DOMAIN, 0, EDOM, fx, fy,2);
+      return __alm_handle_errorf(ufx|0x00400000, 0);
     }
 #else
     return fx + fx; /* Raise invalid if it's a signalling NaN */
@@ -331,8 +330,7 @@ float ALM_PROTO_REF(atan2f)(float fy, float fx)
   else if (ynan)
 #ifdef WINDOWS
     {
-
-      return __amd_handle_errorf("atan2f",__amd_atan2, ufy|0x00400000, _DOMAIN, 0, EDOM, fx, fy,2);
+      return __alm_handle_errorf(ufy|0x00400000, 0);
     }
 #else
     return (fy + fy); /* Raise invalid if it's a signalling NaN */
@@ -383,9 +381,9 @@ float ALM_PROTO_REF(atan2f)(float fy, float fx)
           else
             return 0.0F; //return valf_with_flags(0.0F, AMD_F_INEXACT | AMD_F_UNDERFLOW);
 #else
-            return __amd_handle_errorf("atan2f",__amd_atan2, 0x80000000, _UNDERFLOW, AMD_F_INEXACT | AMD_F_UNDERFLOW, ERANGE, fx, fy,2);
+            return __alm_handle_errorf(0x80000000, AMD_F_INEXACT | AMD_F_UNDERFLOW);
           else
-            return __amd_handle_errorf("atan2f",__amd_atan2, 0x00000000, _UNDERFLOW, AMD_F_INEXACT | AMD_F_UNDERFLOW, ERANGE, fx, fy,2);
+            return __alm_handle_errorf(0x00000000, AMD_F_INEXACT | AMD_F_UNDERFLOW);
 
 #endif
         }

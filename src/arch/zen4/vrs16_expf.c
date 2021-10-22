@@ -178,16 +178,12 @@ ALM_PROTO_ARCH_ZN4(vrs16_expf)(v_f32x16_t _x)
      * If input value is outside valid range, call scalar expf(value)
      * Else, return the above computed result
      */
-#if 0
-    if(unlikely(any_v16_u32_loop(cond))) {
-        return (v_f32x16_t) {
-        };
-    }
-#else
+
     if(unlikely(any_v16_u32(cond))) {
-        call_v16_f32(SCALAR_EXPF, _x, result, cond);
+
+        result = call_v16_f32(SCALAR_EXPF, _x, result, cond);
+
     }
-#endif
 
     return result;
 

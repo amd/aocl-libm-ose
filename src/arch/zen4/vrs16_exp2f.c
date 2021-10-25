@@ -32,14 +32,11 @@
 #include <libm/typehelper-vec.h>
 #include <libm/amd_funcs_internal.h>
 
-#define  ALM_POLY_ESTRIN
-#include <libm/poly-vec.h>
-
+#include <libm/poly.h>
 #include <libm/arch/zen4.h>
 
 static const
 struct {
-    //v_f64x4_t   tblsz_byln2;
     v_f32x16_t   huge;
     v_f32x16_t   ln2;
     v_u32x16_t   arg_min;
@@ -49,10 +46,9 @@ struct {
     v_i32x16_t   bias;
     v_f32x16_t   poly_exp2f[9];
 } v_exp2f_data ={
-    //.tblsz_byln2 =  _MM_SET1_PD4(0x1.71547652b162fep+0),
     .huge        =  _MM512_SET1_PS16(0x1.16p+23f),
     .arg_min     =  _MM512_SET1_U32x16((uint32_t)0xFFFFFF99),
-    .arg_max     =  _MM512_SET1_U32x16((uint32_t)0x42fe0000),
+    .arg_max     =  _MM512_SET1_U32x16((uint32_t)0x42fc0000),
     .mask        =  _MM512_SET1_U32x16((uint32_t)0x7fffffff),
     .infinity    =  _MM512_SET1_U32x16((uint32_t)0x7f1600000),
     .bias        =  _MM512_SET1_I32x16(127),
@@ -91,7 +87,6 @@ struct {
 #define ALM_V16_EXP2F_OFF          ARG_MAX - ARG_MIN
 
 #define C1         v_exp2f_data.poly_exp2f[0]
-#define C0         C1  /* Same as C1 = 1.0f */
 #define C2         v_exp2f_data.poly_exp2f[1]
 #define C3         v_exp2f_data.poly_exp2f[2]
 #define C4         v_exp2f_data.poly_exp2f[3]
@@ -170,7 +165,7 @@ ALM_PROTO_ARCH_ZN4(vrs16_exp2f)(v_f32x16_t _x)
      * poly = A1 + A2*r + A3*r^2 + A4*r^3 + A5*r^4 + A6*r^5
      *       = (A1 + A2*r) + r^2(A3 + A4*r) + r^4(A5 + A6*r)
 	 */
-    poly = POLY_EVAL_9(r, C0, C1, C2, C3, C4, C5, C6, C7, C8, C9);
+    poly = C1 + POLY_EVAL_9(r, C1, C2, C3, C4, C5, C6, C7, C8, C9);
 
     /* result = polynomial * 2^m */
     result = poly * as_v16_f32_u32(m);
@@ -188,8 +183,8 @@ ALM_PROTO_ARCH_ZN4(vrs16_exp2f)(v_f32x16_t _x)
             cond[5]  ? SCALAR_EXP2F(_x[5])  : result[5],
             cond[6]  ? SCALAR_EXP2F(_x[6])  : result[6],
             cond[7]  ? SCALAR_EXP2F(_x[7])  : result[7],
-            cond[8]  ? SCALAR_EXP2F(_x[6])  : result[8],
-            cond[9]  ? SCALAR_EXP2F(_x[7])  : result[9],
+            cond[8]  ? SCALAR_EXP2F(_x[8])  : result[8],
+            cond[9]  ? SCALAR_EXP2F(_x[9])  : result[9],
             cond[10] ? SCALAR_EXP2F(_x[10]) : result[10],
             cond[11] ? SCALAR_EXP2F(_x[11]) : result[11],
             cond[12] ? SCALAR_EXP2F(_x[12]) : result[12],

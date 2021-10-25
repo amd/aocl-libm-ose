@@ -38,7 +38,6 @@
 
 static const
 struct {
-    //v_f64x4_t   tblsz_byln2;
     v_f32x8_t   huge;
     v_f32x8_t   ln2;
     v_u32x8_t   arg_min;
@@ -49,10 +48,9 @@ struct {
     v_i32x8_t   bias;
     v_f32x8_t   poly_exp2f[9];
 } v_exp2f_data ={
-    //.tblsz_byln2 =  _MM_SET1_PD4(0x1.71547652b82fep+0),
     .huge        =  _MM256_SET1_PS8(0x1.8p+23f),
     .arg_min     =  _MM256_SET1_I32(0xFFFFFF99),
-    .arg_max     =  _MM256_SET1_I32(0x42fe0000),
+    .arg_max     =  _MM256_SET1_I32(0x42FC0000),
     .mask        =  _MM256_SET1_I32(0x7fffffff),
     .infinity    =  _MM256_SET1_I32(0x7f800000),
     .exp2f_min   =  _MM_SET1_PS8(-0x1.9fe368p6f),
@@ -171,7 +169,7 @@ ALM_PROTO_OPT(vrs8_exp2f)(v_f32x8_t _x)
      * poly = A1 + A2*r + A3*r^2 + A4*r^3 + A5*r^4 + A6*r^5
      *       = (A1 + A2*r) + r^2(A3 + A4*r) + r^4(A5 + A6*r)
 		 */
-    v_f32x8_t poly = 1.0f + POLY_EVAL_9(r, C1, C2, C3, C4, C5, C6, C7, C8, C9);
+    v_f32x8_t poly =  C1 + POLY_EVAL_9(r, C1, C2, C3, C4, C5, C6, C7, C8, C9);
 
     /* result = polynomial * 2^m */
     v_f32x8_t result = poly * as_v8_f32_u32(m);

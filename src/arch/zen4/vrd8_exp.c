@@ -48,7 +48,7 @@ static struct {
     .ln2_tblsz_tail = _MM512_SET1_PD8(-0x1.bd0105c610ca8p-13),
     .huge           = _MM512_SET1_PD8(0x1.8000000000000p+52),
     .exp_bias       = _MM512_SET1_I64x8((int64_t)EXPBIAS_DP64),
-    .exp_max        = _MM512_SET1_U64x8((uint64_t)0x8086200000000000),
+    .exp_max        = _MM512_SET1_U64x8(0x4086200000000000UL),
     .mask           = _MM512_SET1_U64x8(0x7fffffffffffffffUL),
     .poly           = {
         _MM512_SET1_PD8(0x1.0p0),

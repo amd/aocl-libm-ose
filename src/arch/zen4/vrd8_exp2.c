@@ -48,7 +48,7 @@ static struct {
     v_f64x8_t   poly[12];
     } exp2_data = {
     .mask           = _MM512_SET1_U64x8(0x7FFFFFFFFFFFFFFFUL),
-    .arg_max        = _MM512_SET1_U64x8((uint64_t)0x408FF80000000000),
+    .arg_max        = _MM512_SET1_U64x8(0x408FF00000000000UL),
     .sixtyfour      = _MM512_SET1_PD8(0x1.0p+6),
     .ln2by_64_head  = _MM512_SET1_PD8(0x1.63p-1),
     .ln2by_64_tail  = _MM512_SET1_PD8(-0x1.bd0105c610ca8p-13),

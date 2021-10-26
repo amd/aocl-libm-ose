@@ -46,7 +46,7 @@ do
 	    b ) build_type="${OPTARG}" ;;
 	    c ) compiler_type="${OPTARG}" ;;
 	    h ) helpfunc ;;
-            ? ) helpfunc ;;
+        ? ) helpfunc ;;
     esac
 done
 
@@ -98,7 +98,8 @@ clean_cmd="scons -c"
 RunCommand "${clean_cmd}";
 
 #build
-build_cmd="scons -j32 ${fw}";
+nproc=$(nproc)
+build_cmd="scons -j${nproc} ${fw}";
 
 # avx512
 if [ ${avx512} = true ]; then

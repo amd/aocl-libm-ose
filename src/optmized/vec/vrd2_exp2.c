@@ -54,7 +54,7 @@ static const struct {
     v_f64x2_t   poly[12];
     } exp2_data = {
     .mask           = _MM_SET1_I64x2(0x7FFFFFFFFFFFFFFF),
-    .arg_max       = _MM_SET1_I64x2(0x408FF80000000000),
+    .arg_max       = _MM_SET1_I64x2(0x408FF00000000000),
     .sixtyfour      = _MM_SET1_PD2(0x1.0p+6),
     .ln2by_64_head  = _MM_SET1_PD2(0x1.63p-1),
     .ln2by_64_tail  = _MM_SET1_PD2(-0x1.bd0105c610ca8p-13),

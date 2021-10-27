@@ -292,6 +292,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd8_log2);
 //alm_func_t        G_ENTRY_PT_PTR(vrd8_log1p);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_pow);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_sin);
+alm_func_t        G_ENTRY_PT_PTR(vrd8_asin);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_tan);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_atan);
 

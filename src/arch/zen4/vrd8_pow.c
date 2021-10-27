@@ -61,6 +61,7 @@ extern lookup_data exp_lookup[];
 static struct {
     v_u64x8_t v_min, v_max, mantissa_bits, one_by_two, mant_8_bits;
     v_i64x8_t float_bias;
+    v_u64x8_t near_one_low, near_one_high;
     double ALIGN(16) poly[MAX_POLYDEGREE];
     v_f64x8_t ln2_head, ln2_tail;
 } v_log_data = {
@@ -68,6 +69,8 @@ static struct {
     .ln2_tail = _MM512_SET1_PD8(0x1.efa39ef35793cp-25), /* ln(2) tail*/
     .v_min  = _MM512_SET1_U64x8(0x0010000000000000UL),
     .v_max  = _MM512_SET1_U64x8(0x7ff0000000000000UL),
+    .near_one_low  = _MM512_SET1_U64x8(0x3FEF26E978D4FDF4UL),
+    .near_one_high  = _MM512_SET1_U64x8(0x3FF1000000000000UL),
     .float_bias =  _MM512_SET1_I64x8(DOUBLE_PRECISION_BIAS),
     .mantissa_bits = _MM512_SET1_U64x8(DOUBLE_PRECISION_MANTISSA),
     .one_by_two = _MM512_SET1_U64x8(ONE_BY_TWO),
@@ -103,10 +106,10 @@ static struct {
     .Huge = _MM512_SET1_PD8(0x1.8000000000000p+52),
     .exp_max = _MM512_SET1_U64x8(0x4086200000000000UL),
     .poly = {
+	0x1.0000000000000p-1,
         0x1.5555555555555p-3,
         0x1.5555555555555p-5,
         0x1.1111111111111p-7,
-        0x1.6c16c16c16c17p-10,
     },
 };
 
@@ -116,6 +119,8 @@ static struct {
 #define DP_HALF         v_log_data.one_by_two
 #define V_MIN           v_log_data.v_min
 #define V_MAX           v_log_data.v_max
+#define NEAR_ONE_LOW    v_log_data.near_one_low
+#define NEAR_ONE_HIGH   v_log_data.near_one_high
 #define V_MASK          v_log_data.v_mask
 #define LN2_HEAD        v_log_data.ln2_head
 #define LN2_TAIL        v_log_data.ln2_tail
@@ -129,13 +134,10 @@ static struct {
  * Short names for polynomial coefficients
  */
 
-#define D0  _MM512_SET1_PD8(0.0)
-#define D1  _MM512_SET1_PD8(1.0)
-#define D2  _MM512_SET1_PD8(0x1.0000000000000p-1)
-#define D3  _MM512_SET1_PD8(exp_v4_data.poly[0])
-#define D4  _MM512_SET1_PD8(exp_v4_data.poly[1])
-#define D5  _MM512_SET1_PD8(exp_v4_data.poly[2])
-#define D6  _MM512_SET1_PD8(exp_v4_data.poly[3])
+#define D1  _MM512_SET1_PD8(exp_v4_data.poly[0])
+#define D2  _MM512_SET1_PD8(exp_v4_data.poly[1])
+#define D3  _MM512_SET1_PD8(exp_v4_data.poly[2])
+#define D4  _MM512_SET1_PD8(exp_v4_data.poly[3])
 
 #define C0  _MM512_SET1_PD8(0.0)
 #define C1  _MM512_SET1_PD8(v_log_data.poly[0])
@@ -258,6 +260,9 @@ ALM_PROTO_ARCH_ZN4(vrd8_pow)(__m512d _x,__m512d _y)
 
     v_i64x8_t condition = (ux - V_MIN >= V_MAX - V_MIN);
 
+    /*call scalar pow for values of x near one */
+    condition &=  (ux - NEAR_ONE_LOW) >= (NEAR_ONE_HIGH - NEAR_ONE_LOW);
+
     v_i64x8_t int_exponent = (((v_i64x8_t)ux) >> 52) - DP64_BIAS;
 
     v_u64x8_t mant  = ((ux & MANTISSA_BITS) | DP_HALF);
@@ -304,13 +309,9 @@ ALM_PROTO_ARCH_ZN4(vrd8_pow)(__m512d _x,__m512d _y)
 
     v_f64x8_t z =  r1 - u;
 
-    /* Use Estrin's polynomial to compute log(u) 
-     * log(u) = u^2*C1 + u^3*C2 + u^4*C3 + u*5*C4
-     * */
+    v_f64x8_t q1 = u * u * (C1 + u * (C2 + u * (C3 + u * C4)));
 
-    v_f64x8_t u2 = u * u;
-
-    poly = (z + r) + POLY_EVAL_4(u2, C0, C1, C2, C3, C4); 
+    poly = (z + r) + q1;
 
     /* m*log(2) + log(G) - poly */
 
@@ -351,9 +352,7 @@ ALM_PROTO_ARCH_ZN4(vrd8_pow)(__m512d _x,__m512d _y)
 
     r = (r - (LOG2_BY_N_TAIL * dn)) + ylogx_t;
 
-    /*poly = r +  r^2*D1 + r^3*D2  + r^4*D3 */
-
-    poly = POLY_EVAL_4(r , D0, D1, D2, D3, D4);
+    poly = r +  r * r * (D1 + r * (D2 + r * D3));
 
     for (int lane = 0; lane < 8; lane++) {
 

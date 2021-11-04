@@ -33,7 +33,7 @@ int AlmTestFramework::AlmTestType(InputParams *params, InputData *inData,
     accup.verboseflag = params->verboseflag;
     int vec_input_count = (int)params->fqty;
     if (params->fqty == ALM::FloatQuantity::E_All)
-      vec_input_count = (int)ALM::FloatQuantity::E_Vector_8;
+      vec_input_count = (int)ALM::FloatQuantity::E_Vector_16;
 
     if ((params->count % vec_input_count != 0)) {
       params->count = params->count +

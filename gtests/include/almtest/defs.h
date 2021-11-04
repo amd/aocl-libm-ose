@@ -101,7 +101,7 @@ enum class FloatQuantity {
   E_MAX,
 
   // TODO : Need to contain all possible FloatQuantities
-  E_All = (E_Scalar | E_Vector_2 | E_Vector_4 | E_Vector_8)
+  E_All = (E_Scalar | E_Vector_2 | E_Vector_4 | E_Vector_8 | E_Vector_16)
 };
 
 inline std::ostream& operator<<(std::ostream& os, FloatQuantity& q) {

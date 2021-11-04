@@ -47,18 +47,27 @@ void SubFilterFqty(InputParams *params, string &filter_data) {
       str = filter_data + "_SCALAR_";
       SubFilterFwidth(params, str, ALM::FloatQuantity::E_Scalar);
     break;
+
     case ALM::FloatQuantity::E_Vector_2:
       str = filter_data + "_VECTOR_2";
       SubFilterFwidth(params, str, ALM::FloatQuantity::E_Vector_2);
     break;
+
     case ALM::FloatQuantity::E_Vector_4:
       str = filter_data + "_VECTOR_4";
       SubFilterFwidth(params, str, ALM::FloatQuantity::E_Vector_4);
     break;
+
     case ALM::FloatQuantity::E_Vector_8:
       str = filter_data + "_VECTOR_8";
       SubFilterFwidth(params, str, ALM::FloatQuantity::E_Vector_8);
     break;
+
+    case ALM::FloatQuantity::E_Vector_16:
+      str = filter_data + "_VECTOR_16";
+      SubFilterFwidth(params, str, ALM::FloatQuantity::E_Vector_16);
+    break;
+
     default:
       string sfqty("");
 
@@ -77,6 +86,11 @@ void SubFilterFqty(InputParams *params, string &filter_data) {
       sfqty = filter_data + "_VECTOR_8";
       SubFilterFwidth(params, sfqty, ALM::FloatQuantity::E_Vector_8);
       str = str + sfqty;
+
+      sfqty = filter_data + "_VECTOR_16";
+      SubFilterFwidth(params, sfqty, ALM::FloatQuantity::E_Vector_16);
+      str = str + sfqty;
+
     break;
   }
   filter_data = str;
@@ -105,7 +119,8 @@ void AlmTestFramework::CreateGtestFilters(InputParams *params,
       ttype = ttype + "*ACCURACY";
       SubFilterFqty(params, ttype);
 
-      string toErase ="*ACCURACY_VECTOR_8DOUBLES*:";
+      /* vector 2 elem float and 16 elem double are invalid cases for now */
+      string toErase ="*ACCURACY_VECTOR_16DOUBLES*:";
       size_t pos;
       while ((pos  = ttype.find(toErase))!= std::string::npos) {
           ttype.erase(pos, toErase.length());

@@ -240,6 +240,7 @@ bool cmdLine::Echo(InputParams *inparams) {
         break;
       case 16:
         inparams->fqty = ALM::FloatQuantity::E_Vector_16;
+        break;
       default:
         break;
     }
@@ -249,6 +250,8 @@ bool cmdLine::Echo(InputParams *inparams) {
   std::cout << "Elements per Lane : " << inparams->fqty << std::endl;
 
   /* check for invalid vector types */
+  /* vector 2 element float is invalid */
+  /* add more invalid types here going forward */
   if ((inparams->fwidth == ALM::FloatWidth::E_F32) &&
       (inparams->fqty == ALM::FloatQuantity::E_Vector_2)) {
         cout << "Invalid Options" << endl;

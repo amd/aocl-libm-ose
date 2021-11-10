@@ -25,7 +25,7 @@
  *
  */
 
-#if   !defined (__ALM_FUNCS_INTERNAL_H__) 
+#if   !defined (__ALM_FUNCS_INTERNAL_H__)
 #elif !defined (ALM_PROTO_ARCH)
 #error  "This file is not expected to be included explicitly"
 #endif
@@ -195,6 +195,7 @@ extern __m128    ALM_PROTO_INTERNAL(vrs4_atanf)           (__m128 x);
  */
 extern __m256    ALM_PROTO_INTERNAL(vrs8_cbrtf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_cosf)            (__m256 x);
+extern __m256    ALM_PROTO_INTERNAL(vrs8_acosf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_exp10f)          (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_exp2f)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_expf)            (__m256 x);

@@ -276,8 +276,9 @@ extern "C" {
     __m128  amd_vrs4_acosf   (__m128  x);
     __m128  amd_vrs4_atanf  (__m128  x);
 
-    __m256  amd_vrs8_atanf  (__m256  x);
-    __m256  amd_vrs8_asinf  (__m256  x);
+   __m128  amd_vrs8_acosf  (__m128  x);
+   __m256  amd_vrs8_atanf  (__m256  x);
+   __m256  amd_vrs8_asinf  (__m256  x);
 
     __m128d amd_vrd2_atan   (__m128d x);
 

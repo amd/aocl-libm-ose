@@ -284,6 +284,7 @@ __m128 FN_PROTOTYPE(vrs4_atanf)(__m128 x);
 __m256 FN_PROTOTYPE(vrs8_expf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_logf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_cosf)(__m256 x);
+__m256 FN_PROTOTYPE(vrs8_acosf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_sinf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_tanf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_atanf)(__m256 x);

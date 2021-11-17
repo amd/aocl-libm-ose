@@ -171,9 +171,9 @@ double ALM_PROTO_BAS64(fma)(double aa, double bb, double cc)
 
     z.f64 = (ce - pe > 60) ? cc : z.f64;
     if((z.u64 & 0x7fffffffffffffff) == 0 )
-        return __amd_handle_error("fma", __amd_fma, z.u64, _DOMAIN, AMD_F_UNDERFLOW, EDOM, aa, 0.0, 1);
+        return __alm_handle_error(z.u64, AMD_F_UNDERFLOW);
     if((z.u64 & 0x7ff0000000000000) == 0x7ff0000000000000 )
-        return __amd_handle_error("fma", __amd_fma, z.u64, _DOMAIN, AMD_F_OVERFLOW, EDOM, aa, 0.0, 1);
+        return __alm_handle_error(z.u64, AMD_F_OVERFLOW);
 
     //z.f64 = spcl ? (aa*bb + cc) : z.f64;
     //z.f64 = spcl2 ? cc : z.f64;

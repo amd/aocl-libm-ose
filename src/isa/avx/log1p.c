@@ -226,7 +226,7 @@ double ALM_PROTO_BAS64(log1p)(double x)
         {
           /* x is NaN */
 #ifdef WINDOWS
-          return __amd_handle_error(_FUNCNAME, __amd_log1p, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+          return __alm_handle_error(ux|0x0008000000000000, AMD_F_NONE);
 #else
           return x + x; /* Raise invalid if it is a signalling NaN */
 #endif
@@ -236,7 +236,7 @@ double ALM_PROTO_BAS64(log1p)(double x)
           /* x is infinity */
           if (ux & SIGNBIT_DP64)
             /* x is negative infinity. Return a NaN. */
-            return __amd_handle_error(_FUNCNAME, __amd_log1p, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+            return __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
           else
             return x;
         }
@@ -247,12 +247,12 @@ double ALM_PROTO_BAS64(log1p)(double x)
       if (ux > 0xbff0000000000000)
         {
           /* x is less than -1.0. Return a NaN. */
-          return __amd_handle_error(_FUNCNAME, __amd_log1p, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+          return __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
         }
       else
         {
           /* x is exactly -1.0. Return -infinity with div-by-zero flag. */
-          return __amd_handle_error(_FUNCNAME, __amd_log1p, NINFBITPATT_DP64, _SING, AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
+          return __alm_handle_error(NINFBITPATT_DP64, AMD_F_DIVBYZERO);
         }
     }
   else if (ax < 0x3ca0000000000000)

@@ -117,7 +117,7 @@ ALM_PROTO_OPT(atanf)(float fx)
     if (unlikely(aux > PINFBITPATT_DP64)){
     /* fx is NaN */
         #ifdef WINDOWS
-        return  __amd_handle_errorf(fux|0x00400000, 0);
+        return  __alm_handle_errorf(fux|0x00400000, 0);
         #else
         return fx; /* Raise invalid if it's a signalling NaN */
         #endif

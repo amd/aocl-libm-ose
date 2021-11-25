@@ -271,6 +271,16 @@ extern "C" {
     void amd_vrda_sin       (int len, double *src, double *dst);
     void amd_vrsa_sinf      (int len, float  *src, float  *dst);
 
+    /* avx512 */
+    __m512  amd_vrs16_cosf   (__m512 x);
+    __m512d amd_vrd8_cos     (__m512d x);
+
+    __m512  amd_vrs16_sinf   (__m512 x);
+    __m512d amd_vrd8_sin     (__m512d x);
+
+    __m512d amd_vrd8_tan     (__m512d x);
+    __m512  amd_vrs16_tanf   (__m512 x);
+
 /* Inverse Trigonometric */
     __m128  amd_vrs4_asinf  (__m128  x);
     __m128  amd_vrs4_acosf   (__m128  x);
@@ -281,8 +291,11 @@ extern "C" {
    __m256  amd_vrs8_asinf  (__m256  x);
 
     __m128d amd_vrd2_atan   (__m128d x);
-
     __m128d amd_vrd4_atan   (__m128d x);
+
+    /* avx512 */
+    __m512 amd_vrs16_atanf  (__m512 x);
+    __m512d amd_vrd8_atan   (__m512d x);
 
 /*Hyperbolic*/
    __m128  amd_vrs4_coshf   (__m128  x);

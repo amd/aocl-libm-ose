@@ -754,7 +754,7 @@ double _expm1_special(double x, double y, U32 code)
 #define POW_Z_DENORMAL              8
 #define POW_Z_INF                   9
 
-double _pow_special(double x, double y, double z, U32 code)
+double alm_pow_special(double x, double y, double z, U32 code)
 {
     //y = z;
     switch (code) {

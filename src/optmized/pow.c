@@ -531,7 +531,7 @@ ALM_PROTO_OPT(pow)(double x, double y) {
             /* x is 0, y is negative */
             if ( 2 * ux == 0 && uy >> 63) {
 
-                _pow_special(x, y, 0.0, POW_X_ZERO_Z_INF);
+                alm_pow_special(x, y, 0.0, POW_X_ZERO_Z_INF);
 
                 x2 = asdouble(PINFBITPATT_DP64 | result_sign);
 
@@ -570,7 +570,6 @@ ALM_PROTO_OPT(pow)(double x, double y) {
           if (ux == one) {
 
                return _pow_inexact(1.0);
-            
           }
 
           if ((yhigh & 0x7ff) < 0x3be) {
@@ -584,7 +583,7 @@ ALM_PROTO_OPT(pow)(double x, double y) {
           return (ux > one) == (yhigh < 0x800) ?
                 (DBL_MAX*DBL_MAX) :
 
-          _pow_special(x, y, 0.0, POW_Z_ZERO);
+          alm_pow_special(x, y, 0.0, POW_Z_ZERO);
         }
 
         if (xhigh == 0) {

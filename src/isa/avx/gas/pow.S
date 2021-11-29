@@ -43,7 +43,7 @@
 #include "fn_macros.h"
 #include "weak_macros.h"
 #define fname ALM_PROTO_BAS64(pow)
-#define fname_special _pow_special@PLT
+#define fname_special alm_pow_special@PLT
 
 #
 

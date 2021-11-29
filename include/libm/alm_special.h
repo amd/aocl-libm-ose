@@ -205,6 +205,8 @@ float __alm_handle_errorf(
         int flags
         );
 
+double  alm_pow_special (double x, double y, double z, uint32_t code);
+
 double  alm_exp_special (double x, double y, uint32_t code);
 
 double  alm_exp2_special(double x, double y, uint32_t code);
@@ -225,7 +227,7 @@ double  alm_asin_special(double x, uint32_t code);
 
 float   alm_asinf_special(float x, uint32_t code);
 
-float _atanf_special_overflow(float x);
+float   _atanf_special_overflow(float x);
 
 extern  float _cbrtf_special            (float x);
 extern  float _cosf_special             (float x);
@@ -268,7 +270,7 @@ extern  double _log1p_special           (double x, double y, uint32_t code);
 extern  double _log2_special            (double x, double y, uint32_t code);
 extern  double _log_special             (double x, double y, uint32_t code);
 extern  double _nearbyint_special       (double x);
-extern  double _pow_special             (double x, double y, double z, uint32_t code);
+//extern  double _pow_special             (double x, double y, double z, uint32_t code);
 extern  double _remainder_special       (double x, double y, uint32_t code);
 extern  double _round_special           (double x, double r);
 extern  double _sin_cos_special         (double x, char *name, uint32_t code);

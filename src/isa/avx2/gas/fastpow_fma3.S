@@ -43,7 +43,7 @@
 #include "fn_macros.h"
 #include "exp_tables.h"
 #define fname ALM_PROTO_FMA3(fastpow)
-#define fname_special _pow_special@PLT
+#define fname_special alm_pow_special@PLT
 
 
 # local variable storage offsets

@@ -324,7 +324,7 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign) {
             /* if y * log(x) < -745.133219101941222106688655913 */
             v = asdouble(0x0 | result_sign);
 
-            return _exp_special(asdouble(ux), v, EXP_Y_ZERO);
+            return alm_exp_special(asdouble(ux), v, EXP_Y_ZERO);
 
         }
 
@@ -332,9 +332,9 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign) {
             /* if y * log(x) > 709.7822265625 */
             v = asdouble(EXPBITS_DP64 | result_sign);
 
-            return  _exp_special(asdouble(ux), v,  EXP_Y_INF);
+            return  alm_exp_special(asdouble(ux), v,  EXP_Y_INF);
 
-         } 
+         }
 
          n = (int64_t)v;
 

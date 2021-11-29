@@ -205,6 +205,8 @@ float __alm_handle_errorf(
         int flags
         );
 
+double  alm_exp_special (double x, double y, uint32_t code);
+
 double  alm_exp2_special(double x, double y, uint32_t code);
 float   alm_exp2f_special(float x, float y, uint32_t code);
 
@@ -255,7 +257,7 @@ extern  double _cos_special             (double x);
 extern  double _exp10_special           (double x, double y, uint32_t code);
 extern  double _exp2_special            (double x, double y, uint32_t code);
 extern  double _expm1_special           (double x, double y, uint32_t code);
-extern  double _exp_special             (double x, double y, uint32_t code);
+//extern  double _exp_special             (double x, double y, uint32_t code);
 extern  double _fabs_special            (double x);
 extern  double _fdim_special            (double x, double y, double r);
 extern  double _fmax_special            (double x, double y);

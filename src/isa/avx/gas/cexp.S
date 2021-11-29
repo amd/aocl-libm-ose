@@ -48,7 +48,7 @@
 #include "fn_macros.h"
 #define fname ALM_PROTO_BAS64(cexp)
 #define fname_special1 _sincos_special@PLT
-#define fname_special2 _exp_special@PLT
+#define fname_special2 alm_exp_special@PLT
     
 # define local variable storage offsets
 .equ    p_temp0,    0x30                              # temporary for get/put bits operation

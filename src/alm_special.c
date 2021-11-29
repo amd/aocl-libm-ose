@@ -624,8 +624,7 @@ float _expm1f_special(float x, float y, U32 code)
     return y;
 }
 
-double _exp_special(double x, double y, U32 code)
-{
+double alm_exp_special(double x, double y, U32 code) {
     switch (code) {
     case EXP_X_NAN:
         {

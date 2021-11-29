@@ -206,6 +206,7 @@ float __alm_handle_errorf(
         );
 
 double  alm_pow_special (double x, double y, double z, uint32_t code);
+float   alm_powf_special (float x, float y, float z, uint32_t code);
 
 double  alm_exp_special (double x, double y, uint32_t code);
 
@@ -244,7 +245,7 @@ extern  float _log10f_special           (float x, float y, uint32_t code);
 extern  float _log1pf_special           (float x, float y, uint32_t code);
 extern  float _log2f_special            (float x, float y, uint32_t code);
 extern  float _logf_special             (float x, float y, uint32_t code);
-extern  float _powf_special             (float x, float y, float z, uint32_t code);
+//extern  float _powf_special             (float x, float y, float z, uint32_t code);
 extern  float _remainderf_special       (float x, float y, uint32_t code);
 extern  float _sinf_cosf_special        (float x, char *name, uint32_t code);
 extern  float _sinf_special             (float x);

@@ -44,7 +44,7 @@
 #include "weak_macros.h"
 #include "exp_tables.h"
 #define fname ALM_PROTO_BAS64(powf)
-#define fname_special _powf_special@PLT
+#define fname_special alm_powf_special@PLT
 
 #ifdef __ELF__
 .section .note.GNU-stack,"",@progbits

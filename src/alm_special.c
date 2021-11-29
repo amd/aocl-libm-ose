@@ -815,7 +815,7 @@ double alm_pow_special(double x, double y, double z, U32 code)
     return z;
 }
 
-float _powf_special(float x, float y, float z, U32 code)
+float alm_powf_special(float x, float y, float z, U32 code)
 {
     //y = z;
     switch (code) {

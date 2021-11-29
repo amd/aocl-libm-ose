@@ -44,7 +44,7 @@ include fm.inc
 ALM_PROTO_FMA3 powf
 
 
-fname_special   TEXTEQU <_powf_special>
+fname_special   TEXTEQU <alm_powf_special>
 
 
 save_xmm6       EQU     0b0h

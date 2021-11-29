@@ -6,7 +6,7 @@
 #include <string>
 #include <stdlib.h>
 #include <stdbool.h>
-
+#include <inttypes.h>
 #include "verify.h"
 #include "libm_util_amd.h"
 
@@ -104,6 +104,36 @@ void PrintConfExpections(int raised_exception, int expected_exception) {
   printf(" Expected exception: ");
   print_errors(expected_exception);
   puts("");
+}
+
+void PrintUlpResultsFloat(int nargs, float input1, float input2, double expected, float actual, double ulp) {
+  val val_ip1, val_ip2, val_exptd, val_aop;
+  val_ip1.f = input1;
+  val_exptd.d = expected;
+  val_aop.f = actual;
+  printf ("Input1: %f (0x%" PRIx32 ") ", input1, val_ip1.u);
+  if (nargs == 2) {
+    val_ip2.f = input2;
+    printf ("Input2: %f (0x%" PRIx32 ") ", input2, val_ip2.u);
+  }
+  printf ("Expected: %f (0x%" PRIx64 ") ", expected, val_exptd.lu);
+  printf ("Actual: %f (0x%" PRIx32 ") ", actual, val_aop.u);
+  printf ("ULP: %f\n", ulp);
+}
+
+void PrintUlpResultsDouble(int nargs, double input1, double input2, long double expected, double actual, double ulp) {
+  val val_ip1, val_ip2, val_exptd, val_aop;
+  val_ip1.d = input1;
+  val_exptd.d = expected;
+  val_aop.d = actual;
+  printf ("Input1: %f (0x%" PRIx64 ") ", input1, val_ip1.lu);
+  if (nargs == 2) {
+    val_ip2.d = input2;
+    printf ("Input2: %f (0x%" PRIx64 ") ", input2, val_ip2.lu);
+  }
+  printf ("Expected: %Lf (0x%" PRIx64 ") ", expected, val_exptd.lu);
+  printf ("Actual: %f (0x%" PRIx64 ") ", actual, val_aop.lu);
+  printf ("ULP: %f\n", ulp);
 }
 
 }  // namespace Test

@@ -15,6 +15,8 @@
 #include "almtest.h"
 #include "cmdline.h"
 #include "callback.h"
+#include <inttypes.h>
+#include "verify.h"
 
 extern vector<AccuParams> accuData;
 extern vector<SpecParams> specData;
@@ -43,16 +45,8 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_SCALAR_FLOAT) {
       nfail++;
     }
 
-    if (vflag == 1) {
-      EXPECT_LT(ulp, inData->ulp_threshold)
-            << "Input:[" << ip[0] << " " << ip[1] <<"]Actual:" << aop[0]
-          << " Expected:" << exptd << " ULP: " << ulp << endl;
-    } else {
-      EXPECT_LT(ulp, inData->ulp_threshold);
-      LIBM_TEST_DPRINTF(VERBOSE2, ,
-                      "Input:[", ip[0], " ", ip[1], "]Actual:", aop[0],
-                      " Expected:", exptd, " ULP: ",ulp);
-    }
+    if ((vflag == 1) && (ulp > inData->ulp_threshold))
+        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[0], ulp);
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
   "Scalar","Accuracy","s1s",count,(count-nfail), nfail, max_ulp_err);
@@ -84,16 +78,8 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_4FLOATS) {
         nfail++;
       }
 
-      if (vflag == 1) {
-        EXPECT_LT(ulp, inData->ulp_threshold)
-            << "Input:[" << ip[0] << " " << ip[1] <<"]Actual:" << aop[j]
-            << " Expected:" << exptd << " ULP: " << ulp << endl;
-      } else {
-        EXPECT_LT(ulp, inData->ulp_threshold);
-        LIBM_TEST_DPRINTF(VERBOSE2, ,
-                      "Input:[", ip[0], " ", ip[1], "]Actual:", aop[j],
-                      " Expected:", exptd, " ULP: ",ulp);
-      }
+      if ((vflag == 1) && (ulp > inData->ulp_threshold))
+        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[0], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
@@ -126,16 +112,8 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_8FLOATS) {
         nfail++;
       }
 
-      if (vflag == 1) {
-        EXPECT_LT(ulp, inData->ulp_threshold)
-            << "Input:[" << ip[0] << " " << ip[1] <<"]Actual:" << aop[j]
-            << " Expected:" << exptd << " ULP: " << ulp << endl;
-      } else {
-        EXPECT_LT(ulp, inData->ulp_threshold);
-        LIBM_TEST_DPRINTF(VERBOSE2, ,
-                      "Input:[", ip[0], " ", ip[1], "]Actual:", aop[j],
-                      " Expected:", exptd, " ULP: ",ulp);
-      }
+      if ((vflag == 1) && (ulp > inData->ulp_threshold))
+        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[0], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
@@ -168,16 +146,8 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_16FLOATS) {
         nfail++;
       }
 
-      if (vflag == 1) {
-        EXPECT_LT(ulp, inData->ulp_threshold)
-            << "Input:[" << ip[0] << " " << ip[1] <<"]Actual:" << aop[j]
-            << " Expected:" << exptd << " ULP: " << ulp << endl;
-      } else {
-        EXPECT_LT(ulp, inData->ulp_threshold);
-        LIBM_TEST_DPRINTF(VERBOSE2, ,
-                      "Input:[", ip[0], " ", ip[1], "]Actual:", aop[j],
-                      " Expected:", exptd, " ULP: ",ulp);
-      }
+      if ((vflag == 1) && (ulp > inData->ulp_threshold))
+        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[0], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
@@ -210,12 +180,8 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_SCALAR_DOUBLE) {
       nfail++;
     }
 
-    if (vflag) {
-        printf("Input: [ %.16f (%a) ]  Actual: %.16f(%a) Expected: %.16Lf(%La) Ulp: %f\n",
-                ip[0], ip[0], aop[0], aop[0], exptd, exptd, ulp);
-    }
-
-    EXPECT_LT(ulp, inData->ulp_threshold);
+    if ((vflag == 1) && (ulp > inData->ulp_threshold))
+        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[0], ulp);
   }
 
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
@@ -248,16 +214,8 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_2DOUBLES) {
         nfail++;
       }
 
-      if (vflag == 1) {
-        EXPECT_LT(ulp, inData->ulp_threshold)
-            << "Input:[" << ip[0] << " " << ip[1] <<"]Actual:" << aop[j]
-            << " Expected:" << exptd << " ULP: " << ulp << endl;
-      } else {
-        EXPECT_LT(ulp, inData->ulp_threshold);
-        LIBM_TEST_DPRINTF(VERBOSE2, ,
-                      "Input:[", ip[0], " ", ip[1], "]Actual:", aop[j],
-                      " Expected:", exptd, " ULP: ",ulp);
-      }
+      if ((vflag == 1) && (ulp > inData->ulp_threshold))
+        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[0], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
@@ -290,16 +248,8 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_4DOUBLES) {
         nfail++;
       }
 
-      if (vflag == 1) {
-        EXPECT_LT(ulp, inData->ulp_threshold)
-            << "Input:[" << ip[0] << " " << ip[1] <<"]Actual:" << aop[j]
-            << " Expected:" << exptd << " ULP: " << ulp << endl;
-      } else {
-        EXPECT_LT(ulp, inData->ulp_threshold);
-        LIBM_TEST_DPRINTF(VERBOSE2, ,
-                      "Input:[", ip[0], " ", ip[1], "]Actual:", aop[j],
-                      " Expected:", exptd, " ULP: ",ulp);
-      }
+      if ((vflag == 1) && (ulp > inData->ulp_threshold))
+        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[0], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
@@ -332,16 +282,8 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_8DOUBLES) {
         nfail++;
       }
 
-      if (vflag == 1) {
-        EXPECT_LT(ulp, inData->ulp_threshold)
-            << "Input:[" << ip[0] << " " << ip[1] <<"]Actual:" << aop[j]
-            << " Expected:" << exptd << " ULP: " << ulp << endl;
-      } else {
-        EXPECT_LT(ulp, inData->ulp_threshold);
-        LIBM_TEST_DPRINTF(VERBOSE2, ,
-                      "Input:[", ip[0], " ", ip[1], "]Actual:", aop[j],
-                      " Expected:", exptd, " ULP: ",ulp);
-      }
+      if ((vflag == 1) && (ulp > inData->ulp_threshold))
+        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[0], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",

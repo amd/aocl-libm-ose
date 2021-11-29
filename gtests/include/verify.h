@@ -87,5 +87,8 @@ class RealNumConf {
 
 void PrintConfExpections(int raised_exception, int expected_exception);
 
+void PrintUlpResultsFloat(int nargs, float input1, float input2, double expected, float actual, double ulp);
+void PrintUlpResultsDouble(int nargs, double input1, double input2, long double expected, double actual, double ulp);
+
 }  // namespace Test
 #endif

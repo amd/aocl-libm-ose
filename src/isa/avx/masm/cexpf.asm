@@ -52,7 +52,7 @@ FN_PROTOTYPE cexpf
 
 
 fname_special1  TEXTEQU <_sincosf_special>
-fname_special2  TEXTEQU <_expf_special>
+fname_special2  TEXTEQU <alm_expf_special>
 
 ;Define name and any external functions being called
 EXTRN        __amd_remainder_piby2d2f : PROC   ; NEAR

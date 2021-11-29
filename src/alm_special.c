@@ -492,7 +492,7 @@ float _cbrtf_special(float x)
 #define EXP_X_NAN       1
 #define EXP_Y_ZERO      2
 #define EXP_Y_INF       3
-float _expf_special(float x, float y, U32 code)
+float alm_expf_special(float x, float y, U32 code)
 {
     switch (code) {
     case EXP_X_NAN:

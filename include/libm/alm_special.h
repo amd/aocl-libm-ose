@@ -209,6 +209,7 @@ double  alm_pow_special (double x, double y, double z, uint32_t code);
 float   alm_powf_special (float x, float y, float z, uint32_t code);
 
 double  alm_exp_special (double x, double y, uint32_t code);
+float   alm_expf_special (float x, float y, uint32_t code);
 
 double  alm_exp2_special(double x, double y, uint32_t code);
 float   alm_exp2f_special(float x, float y, uint32_t code);
@@ -234,7 +235,7 @@ extern  float _cbrtf_special            (float x);
 extern  float _cosf_special             (float x);
 extern  float _exp10f_special           (float x, float y, uint32_t code);
 extern  float _exp2f_special            (float x, float y, uint32_t code);
-extern  float _expf_special             (float x, float y, uint32_t code);
+//extern  float _expf_special             (float x, float y, uint32_t code);
 extern  float _expm1f_special           (float x, float y, uint32_t code);
 extern  float _fabsf_special            (float x);
 extern  float _fdimf_special            (float x, float y, float r);

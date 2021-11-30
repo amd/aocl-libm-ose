@@ -42,7 +42,7 @@ struct alm_arch_funcs __arch_funcs_acos = {
             &ALM_PROTO_ARCH_AVX2(acosf),
             &ALM_PROTO_ARCH_AVX2(acos),
             &ALM_PROTO_ARCH_AVX2(vrs4_acosf),/* vrs4 ? */
-            NULL,                           /* vrs8 ? */
+            &ALM_PROTO_ARCH_AVX2(vrs8_acosf),/* vrs8 ? */
             NULL,                           /* vrd2 ? */
             NULL,                           /* vrd4 ? */
         },
@@ -51,7 +51,7 @@ struct alm_arch_funcs __arch_funcs_acos = {
             &ALM_PROTO_ARCH_ZN(acosf),
             &ALM_PROTO_ARCH_ZN(acos),
             &ALM_PROTO_ARCH_ZN(vrs4_acosf),
-            NULL,
+            &ALM_PROTO_ARCH_ZN(vrs8_acosf),
             NULL,
             NULL,
         },
@@ -60,7 +60,7 @@ struct alm_arch_funcs __arch_funcs_acos = {
             &ALM_PROTO_ARCH_ZN2(acosf),
             &ALM_PROTO_ARCH_ZN2(acos),
             &ALM_PROTO_ARCH_ZN2(vrs4_acosf),
-            NULL,
+            &ALM_PROTO_ARCH_ZN2(vrs8_acosf),
             NULL,
             NULL,
         },
@@ -69,7 +69,7 @@ struct alm_arch_funcs __arch_funcs_acos = {
             &ALM_PROTO_ARCH_ZN3(acosf),
             &ALM_PROTO_ARCH_ZN3(acos),
             &ALM_PROTO_ARCH_ZN3(vrs4_acosf),
-            NULL,
+            &ALM_PROTO_ARCH_ZN3(vrs8_acosf),
             NULL,
             NULL,
         },
@@ -84,8 +84,8 @@ LIBM_IFACE_PROTO(acos)(void *arg)
         [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(acosf),
         [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(acos),
         [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_acosf),
-#if 0
         [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_acosf),
+#if 0
         [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_acos),
         [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_acos),
 #endif

@@ -51,7 +51,7 @@ include fm.inc
 
 ALM_PROTO_FMA3 exp2f
 
-fname_special   TEXTEQU <_exp2f_special>
+fname_special   TEXTEQU <alm_expf_special>
 ;Define name and any external functions being called
 EXTERN       fname_special      : PROC
 

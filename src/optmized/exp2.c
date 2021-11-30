@@ -205,14 +205,14 @@ ALM_PROTO_OPT(exp2)(double x)
 
         if (x >= ALM_EXP2_ARG_MAX) {
             if (x != x)  /* check if x is a NAN */
-                return  alm_exp2_special(x, asdouble(QNANBITPATT_DP64), ALM_E_OUT_NAN);
+                return  alm_exp_special(x, asdouble(QNANBITPATT_DP64), ALM_E_OUT_NAN);
 
-            return  alm_exp2_special(x, asdouble(PINFBITPATT_DP64), ALM_E_OUT_INF);
+            return  alm_exp_special(x, asdouble(PINFBITPATT_DP64), ALM_E_OUT_INF);
         }
 
         if (x <= ALM_EXP2_ARG_MIN) {
 
-            return alm_exp2_special(x, 0.0, ALM_E_OUT_ZERO);
+            return alm_exp_special(x, 0.0, ALM_E_OUT_ZERO);
 
         }
         /* flag de-normals to process at the end */

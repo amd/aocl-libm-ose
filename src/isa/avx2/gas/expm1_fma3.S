@@ -28,7 +28,7 @@
 #include "exp_tables.h"
 
 #define fname ALM_PROTO_FMA3(expm1)
-#define fname_special _expm1_special@PLT
+#define fname_special alm_exp_special@PLT
 #ifdef __ELF__
     .section .note.GNU-stack,"",@progbits
 #endif

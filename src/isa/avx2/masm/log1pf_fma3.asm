@@ -60,7 +60,7 @@ save_tmp       EQU     040h
 stack_size      EQU     068h ; We take 8 as the last nibble to allow for 
                               ; alligned data movement.
 
-fname_special   TEXTEQU <_log1pf_special>
+fname_special   TEXTEQU <alm_logf_special>
 EXTERN fname_special:PROC
  
 text SEGMENT EXECUTE

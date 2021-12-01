@@ -206,7 +206,7 @@ FN_PROTOTYPE(log_v3)(double x)
     top = top16(x);
     if (unlikely (top - 0x0010 >= 0x7ff0 - 0x0010)) {
         if (isinf(x))
-            return _log_special(x, asdouble(PINFBITPATT_DP64), FLAG_X_ZERO);
+            return alm_log_special(x, asdouble(PINFBITPATT_DP64), FLAG_X_ZERO);
 
         /* x is denormal */
         ux = asuint64 (x * 0x1p52);

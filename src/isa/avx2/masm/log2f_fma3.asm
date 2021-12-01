@@ -49,7 +49,7 @@ save_xmm6       EQU     00h
 stack_size      EQU     028h ; We take 8 as the last nibble to allow for 
                               ; alligned data movement.
  
-fname_special   TEXTEQU <_log2f_special>
+fname_special   TEXTEQU <alm_logf_special>
 EXTERN fname_special:PROC
 
 text SEGMENT EXECUTE

@@ -211,42 +211,24 @@ float   alm_powf_special (float x, float y, float z, uint32_t code);
 double  alm_exp_special (double x, double y, uint32_t code);
 float   alm_expf_special (float x, float y, uint32_t code);
 
-double  alm_exp2_special(double x, double y, uint32_t code);
-float   alm_exp2f_special(float x, float y, uint32_t code);
-
 double  alm_log_special(double x, double y, uint32_t code);
 float   alm_logf_special(float x, float y, uint32_t code);
 
-double  alm_log2_special(double x, double y, uint32_t code);
-float   alm_log2f_special(float x, float y, uint32_t code);
-
-double  alm_log10_special(double x, double y, uint32_t code);
-float   alm_log10f_special(float x, float y, uint32_t code);
-
 float   alm_acosf_special(float x, uint32_t code);
 double  alm_acos_special(double x, uint32_t code);
-double  alm_asin_special(double x, uint32_t code);
 
+double  alm_asin_special(double x, uint32_t code);
 float   alm_asinf_special(float x, uint32_t code);
 
 float   _atanf_special_overflow(float x);
 
 extern  float _cbrtf_special            (float x);
 extern  float _cosf_special             (float x);
-extern  float _exp10f_special           (float x, float y, uint32_t code);
-extern  float _exp2f_special            (float x, float y, uint32_t code);
-//extern  float _expf_special             (float x, float y, uint32_t code);
-extern  float _expm1f_special           (float x, float y, uint32_t code);
 extern  float _fabsf_special            (float x);
 extern  float _fdimf_special            (float x, float y, float r);
 extern  float _fmaxf_special            (float x, float y);
 extern  float _fminf_special            (float x, float y);
 extern  float _fmodf_special            (float x, float y, uint32_t code);
-extern  float _log10f_special           (float x, float y, uint32_t code);
-extern  float _log1pf_special           (float x, float y, uint32_t code);
-extern  float _log2f_special            (float x, float y, uint32_t code);
-extern  float _logf_special             (float x, float y, uint32_t code);
-//extern  float _powf_special             (float x, float y, float z, uint32_t code);
 extern  float _remainderf_special       (float x, float y, uint32_t code);
 extern  float _sinf_cosf_special        (float x, char *name, uint32_t code);
 extern  float _sinf_special             (float x);
@@ -258,21 +240,12 @@ extern  float _sinf_cosf_special_underflow(float x, char *name, uint32_t code);
 
 extern  double _cbrt_special            (double x);
 extern  double _cos_special             (double x);
-extern  double _exp10_special           (double x, double y, uint32_t code);
-extern  double _exp2_special            (double x, double y, uint32_t code);
-extern  double _expm1_special           (double x, double y, uint32_t code);
-//extern  double _exp_special             (double x, double y, uint32_t code);
 extern  double _fabs_special            (double x);
 extern  double _fdim_special            (double x, double y, double r);
 extern  double _fmax_special            (double x, double y);
 extern  double _fmin_special            (double x, double y);
 extern  double _fmod_special            (double x, double y, uint32_t code);
-extern  double _log10_special           (double x, double y, uint32_t code);
-extern  double _log1p_special           (double x, double y, uint32_t code);
-extern  double _log2_special            (double x, double y, uint32_t code);
-extern  double _log_special             (double x, double y, uint32_t code);
 extern  double _nearbyint_special       (double x);
-//extern  double _pow_special             (double x, double y, double z, uint32_t code);
 extern  double _remainder_special       (double x, double y, uint32_t code);
 extern  double _round_special           (double x, double r);
 extern  double _sin_cos_special         (double x, char *name, uint32_t code);

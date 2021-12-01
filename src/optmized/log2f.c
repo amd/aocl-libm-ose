@@ -175,19 +175,19 @@ ALM_PROTO_OPT(log2f)(float x)
         uint32_t sign = ux & SIGNBIT_SP32;
 
         if (x * 2 == 0)                /* log2(0) = -inf */
-            return alm_log2f_special(x, asfloat(NINFBITPATT_SP32), AMD_F_DIVBYZERO);
+            return alm_logf_special(x, asfloat(NINFBITPATT_SP32), AMD_F_DIVBYZERO);
 
     if (x != x)  {/* nan */
 
         if( (ux & QNANBITPATT_SP32) == QNANBITPATT_SP32)
             return x;
 
-        return alm_log2f_special(x, asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NAN);
+        return alm_logf_special(x, asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NAN);
 
     }
 
         if (sign)        /* x is -ve */
-            return alm_log2f_special(x, asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NEG);
+            return alm_logf_special(x, asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NEG);
 
         if ((ux & PINFBITPATT_SP32) == PINFBITPATT_SP32)           /* log2(inf) = inf */
             return asfloat(PINFBITPATT_SP32);

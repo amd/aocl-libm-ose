@@ -58,7 +58,7 @@ include log_tables.inc
 
 ALM_PROTO_FMA3 log1p
 
-fname_special   TEXTEQU <_log1p_special>
+fname_special   TEXTEQU <alm_log_special>
 
 ; local variable storage offsets
 save_xmm6       EQU     00h

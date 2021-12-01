@@ -71,9 +71,7 @@ float __alm_handle_errorf(uint64_t value, int flags)
 #endif
 
 
-static double
-_log_special_common(double x, double y, U32 error_code)
-{
+double alm_log_special(double x, double y, U32 error_code) {
     flt64_t ym = {.d = y};
 
   switch (error_code) {
@@ -103,43 +101,6 @@ _log_special_common(double x, double y, U32 error_code)
   }
 
     return y;
-}
-
-
-float
-alm_log2f_special(float x, float y, uint32_t code)
-{
-    return (float)_log_special_common(x, y, code);
-}
-
-float
-alm_logf_special(float x, float y, uint32_t code)
-{
-    return (float)_log_special_common(x, y, code);
-}
-
-double
-alm_log2_special(double x, double y, uint32_t code)
-{
-    return _log_special_common(x, y, code);
-}
-
-double
-alm_log_special(double x, double y, uint32_t code)
-{
-    return _log_special_common(x, y, code);
-}
-
-float
-alm_log10f_special(float x, float y, uint32_t code)
-{
-    return (float)_log_special_common(x, y, code);
-}
-
-double
-alm_log10_special(double x, double y, uint32_t code)
-{
-    return _log_special_common(x, y, code);
 }
 
 float
@@ -484,60 +445,30 @@ double alm_exp_special(double x, double y, U32 code) {
 #define POW_Z_DENORMAL              8
 #define POW_Z_INF                   9
 
-double alm_pow_special(double x, double y, double z, U32 code)
-{
-    //y = z;
+double alm_pow_special(double x, double y, double z, U32 code) {
+    flt64_t zu = {.d = z};
+
     switch (code) {
     case POW_X_ONE_Y_SNAN:
-        {
-            UT64 zu;
-            zu.f64 = z;
-            __alm_handle_error(zu.u64,
-                       AMD_F_INVALID);
-        }
+        __alm_handle_error(zu.u, AMD_F_INVALID);
         break;
     case POW_X_ZERO_Z_INF:
-        {
-            UT64 zu;
-            zu.f64 = z;
-            __alm_handle_error(zu.u64,
-                       AMD_F_DIVBYZERO);
-        }
+        __alm_handle_error(zu.u, AMD_F_DIVBYZERO);
         break;
     case POW_X_NAN:
     case POW_Y_NAN:
     case POW_X_NAN_Y_NAN:
-        {
-            UT64 zu;
-            zu.f64 = z;
-            __alm_handle_error(zu.u64,
-                       AMD_F_INVALID);
-        }
+        __alm_handle_error(zu.u, AMD_F_INVALID);
         break;
     case POW_X_NEG_Y_NOTINT:
-        {
-            UT64 zu;
-            zu.f64 = z;
-            __alm_handle_error(zu.u64,
-                       AMD_F_INVALID);
-        }
+         __alm_handle_error(zu.u, AMD_F_INVALID);
         break;
     case POW_Z_ZERO:
     case POW_Z_DENORMAL:
-        {
-            UT64 zu;
-            zu.f64 = z;
-            __alm_handle_error(zu.u64,
-                       AMD_F_INEXACT | AMD_F_UNDERFLOW);
-        }
+        __alm_handle_error(zu.u, AMD_F_INEXACT | AMD_F_UNDERFLOW);
         break;
     case POW_Z_INF:
-        {
-            UT64 zu;
-            zu.f64 = z;
-            __alm_handle_error(zu.u64,
-                       AMD_F_INEXACT | AMD_F_OVERFLOW);
-        }
+        __alm_handle_error(zu.u, AMD_F_INEXACT | AMD_F_OVERFLOW);
         break;
     default:
         break;
@@ -545,53 +476,29 @@ double alm_pow_special(double x, double y, double z, U32 code)
     return z;
 }
 
-float alm_powf_special(float x, float y, float z, U32 code)
-{
-    //y = z;
+float alm_powf_special(float x, float y, float z, U32 code) {
+    flt32_t zu = {.f = z};
+
     switch (code) {
     case POW_X_ONE_Y_SNAN:
-        {
-            UT32 zu;
-            zu.f32 = z;
-            __alm_handle_errorf(zu.u32, AMD_F_INVALID);
-        }
+        __alm_handle_errorf(zu.u, AMD_F_INVALID);
         break;
     case POW_X_ZERO_Z_INF:
-        {
-            UT32 zu;
-            zu.f32 = z;
-            __alm_handle_errorf(zu.u32, AMD_F_DIVBYZERO);
-        }
+        __alm_handle_errorf(zu.u, AMD_F_DIVBYZERO);
         break;
     case POW_X_NAN:
     case POW_Y_NAN:
     case POW_X_NAN_Y_NAN:
-        {
-            UT32 zu;
-            zu.f32 = z;
-            __alm_handle_errorf(zu.u32, AMD_F_INVALID);
-        }
+        __alm_handle_errorf(zu.u, AMD_F_INVALID);
         break;
     case POW_X_NEG_Y_NOTINT:
-        {
-            UT32 zu;
-            zu.f32 = z;
-            __alm_handle_errorf(zu.u32, AMD_F_INVALID);
-        }
+        __alm_handle_errorf(zu.u, AMD_F_INVALID);
         break;
     case POW_Z_ZERO:
-        {
-            UT32 zu;
-            zu.f32 = z;
-            __alm_handle_errorf(zu.u32, AMD_F_INEXACT | AMD_F_UNDERFLOW);
-        }
+        __alm_handle_errorf(zu.u, AMD_F_INEXACT | AMD_F_UNDERFLOW);
         break;
     case POW_Z_INF:
-        {
-            UT32 zu;
-            zu.f32 = z;
-            __alm_handle_errorf(zu.u32, AMD_F_INEXACT | AMD_F_OVERFLOW);
-        }
+        __alm_handle_errorf(zu.u, AMD_F_INEXACT | AMD_F_OVERFLOW);
         break;
     default:
         break;
@@ -603,32 +510,22 @@ float alm_powf_special(float x, float y, float z, U32 code)
 #define LOG_X_ZERO      1
 #define LOG_X_NEG       2
 #define LOG_X_NAN       3
-static float _logf_special_common(float x, float y, U32 errorCode)
-{
+float alm_logf_special(float x, float y, U32 errorCode) {
+    flt32_t ym = {.f = y};
+
     switch (errorCode) {
     case LOG_X_ZERO:
-        {
-            UT32 Y;
-            Y.f32 = y;
-            __alm_handle_errorf(Y.u32, AMD_F_DIVBYZERO);
-        }
+        __alm_handle_errorf(ym.u, AMD_F_DIVBYZERO);
         break;
     case LOG_X_NEG:
-        {
-            UT32 Y;
-            Y.f32 = y;
-            __alm_handle_errorf(Y.u32, AMD_F_INVALID);
-        }
+        __alm_handle_errorf(ym.u, AMD_F_INVALID);
         break;
     case LOG_X_NAN:
         {
 #ifdef WIN64
-            UT32 Y;
-            Y.f32 = y;
-            __alm_handle_errorf(Y.u32, AMD_F_NONE);
+        __alm_handle_errorf(ym.u, AMD_F_NONE);
 #else               /*  */
-            return x + x;
-
+        return x + x;
 #endif              /*  */
         }
         break;
@@ -636,46 +533,6 @@ static float _logf_special_common(float x, float y, U32 errorCode)
         break;
     }
     return y;
-}
-
-float _logf_special(float x, float y, U32 code)
-{
-    return _logf_special_common(x, y, code);
-}
-
-float _log10f_special(float x, float y, U32 code)
-{
-    return _logf_special_common(x, y, code);
-}
-
-float _log2f_special(float x, float y, U32 code)
-{
-    return _logf_special_common(x, y, code);
-}
-
-float _log1pf_special(float x, float y, U32 code)
-{
-    return _logf_special_common(x, y, code);
-}
-
-double _log_special(double x, double y, U32 code)
-{
-    return _log_special_common(x, y, code);
-}
-
-double _log10_special(double x, double y, U32 code)
-{
-    return _log_special_common(x, y, code);
-}
-
-double _log2_special(double x, double y, U32 code)
-{
-    return _log_special_common(x, y, code);
-}
-
-double _log1p_special(double x, double y, U32 code)
-{
-    return _log_special_common(x, y, code);
 }
 
 double _nearbyint_special(double x)

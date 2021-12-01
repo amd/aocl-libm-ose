@@ -43,7 +43,7 @@
 
 include fm.inc
 ALM_PROTO_FMA3 log10f
-fname_special   TEXTEQU <_log10f_special>
+fname_special   TEXTEQU <alm_logf_special>
 
 
 ; local variable storage offsets

@@ -50,7 +50,7 @@
 #include "fn_macros.h"
 #include "log_tables.h"
 #define fname ALM_PROTO_FMA3(log1p)
-#define fname_special _log1p_special@PLT
+#define fname_special alm_log_special@PLT
 
 
 # local variable storage offsets

@@ -43,7 +43,7 @@ include fm.inc
 
 ALM_PROTO_BAS64 log2f
 
-fname_special   TEXTEQU <_log2f_special>
+fname_special   TEXTEQU <alm_logf_special>
 
 ; define local variable storage offsets
 

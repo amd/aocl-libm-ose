@@ -33,7 +33,7 @@ void ConfSetupf32(SpecParams *specp) {
 
 void ConfSetupf64(SpecParams *specp) {
   specp->data64 = test_acos_conformance_data;
-  specp->countd = ARRAY_SIZE(test_acos_conformance_data); 
+  specp->countd = ARRAY_SIZE(test_acos_conformance_data);
 }
 
 float getFuncOp(float *data) {
@@ -74,7 +74,7 @@ int test_s1s(test_data *data, int idx)  {
 
 int test_s1d(test_data *data, int idx)  {
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   op[0] = LIBM_FUNC(acos)(ip[idx]);
   return 0;
 }
@@ -135,7 +135,7 @@ int test_v4d(test_data *data, int idx)  {
 }
 
 int test_v8s(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],

@@ -1,6 +1,13 @@
 #ifndef LIBM_DYNAMIC_LOAD_H_INCLUDED
 #define LIBM_DYNAMIC_LOAD_H_INCLUDED
 
+/* select function to dynamically load symbols (lin/win) */
+#if defined(_WIN64) || defined(_WIN32)
+    #define FUNC_LOAD GetProcAddress
+#else
+    #define FUNC_LOAD dlsym
+#endif
+
 #include <dlfcn.h>
 #include <stdlib.h>
 #include <stdio.h>

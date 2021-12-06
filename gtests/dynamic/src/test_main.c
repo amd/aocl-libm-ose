@@ -22,56 +22,71 @@ int main(int argc, char* argv[]) {
         exit(EXIT_FAILURE);
     }
 
+    /* exp log pow */
     test_exp(handle);
+    test_exp10(handle);
+    test_exp2(handle);
+    test_expm1(handle);
+
     test_log(handle);
+    test_log2(handle);
+    test_logb(handle);
+    test_log10(handle);
+    test_log1p(handle);
+
     test_pow(handle);
+
+    /* Trigonometric */
     test_sin(handle);
     test_cos(handle);
     test_tan(handle);
-    test_fabs(handle);
+
+    /* Inverse trig */
+    test_acos(handle);
+    test_asin(handle);
     test_atan(handle);
+    test_atan2(handle);
+
+    /* Hyperbolic */
     test_sinh(handle);
     test_cosh(handle);
     test_tanh(handle);
+
+    /* Inverse hyperbolic */
     test_asinh(handle);
     test_acosh(handle);
     test_atanh(handle);
-    test_atan2(handle);
+
     test_sqrt(handle);
     test_nextafter(handle);
-    test_exp10(handle);
     test_lround(handle);
-    test_asinh(handle);
     test_floor(handle);
     test_remainder(handle);
     test_nearbyint(handle);
-    test_exp2(handle);
-    test_fmod(handle);
-    test_finite(handle);
     test_nexttoward(handle);
     test_nan(handle);
     test_lrint(handle);
     test_llrint(handle);
     test_hypot(handle);
     test_ceil(handle);
-    test_log2(handle);
-    test_logb(handle);
-    test_log10(handle);
     test_scalbln(handle);
     test_ilogb(handle);
-    test_log1p(handle);
     test_modf(handle);
     test_remquo(handle);
     test_ldexp(handle);
     test_frexp(handle);
     test_scalbn(handle);
     test_cbrt(handle);
-    test_expm1(handle);
     test_trunc(handle);
     test_copysign(handle);
+
+    test_fabs(handle);
     test_fdim(handle);
     test_fmax(handle);
     test_fmin(handle);
+    test_fmod(handle);
+    test_finite(handle);
+
     test_sincos(handle);
 
     dlclose(handle);

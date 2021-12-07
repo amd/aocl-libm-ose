@@ -81,7 +81,7 @@ class AccuTestFixtureFloat : public ::testing::TestWithParam<AccuParams> {
     if (nargs == 2)
     PopulateInputSamples(&inpbuff1, range[1], count);
     
-    aop = (float *)aligned_alloc(_ALIGN_FACTOR, 32);
+    aop = (float *)aligned_alloc(_ALIGN_FACTOR, 64);
   }
 
   void TearDown() override {
@@ -124,7 +124,7 @@ class AccuTestFixtureDouble : public ::testing::TestWithParam<AccuParams> {
     if (nargs == 2)
     PopulateInputSamples(&inpbuff1, range[1], count);
     
-    aop = (double *)aligned_alloc(_ALIGN_FACTOR,32);    
+    aop = (double *)aligned_alloc(_ALIGN_FACTOR,64);    
   }
 
   void TearDown() override {

@@ -288,6 +288,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_log10f);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_sinf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_asinf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_cosf);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_acosf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_tanf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_atanf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_tanhf);

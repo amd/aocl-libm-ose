@@ -31,6 +31,8 @@
 #endif
 
 #include <immintrin.h>
+#include <complex.h>
+#include <libm/types.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -163,6 +165,14 @@ extern long long int    ALM_PROTO_INTERNAL(llrint)        (double x);
 extern long long int    ALM_PROTO_INTERNAL(llrintf)       (float x);
 extern long long int    ALM_PROTO_INTERNAL(llround)       (double d);
 extern long long int    ALM_PROTO_INTERNAL(llroundf)      (float f);
+
+
+/*
+ * Complex variants
+ */
+extern fc64_t   ALM_PROTO_INTERNAL(cexp)          (fc64_t f);
+extern fc32_t   ALM_PROTO_INTERNAL(cexpf)         (fc32_t f);
+
 
 
 #include <immintrin.h>

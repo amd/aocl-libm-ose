@@ -24,36 +24,12 @@
 
 # Inherit global environment
 Import('env')
-from os.path import join as joinpath
 
-builddir = joinpath(env['BUILDROOT'], 'src', 'optmized')
+experimental_src = []
 
-e = env.Clone()
+source = Glob('*.c', exclude=experimental_src)
 
-e.Append(
-    CFLAGS = ['-O3', '-fPIC', '-mavx2', '-mfma', '-flax-vector-conversions'],
-)
+objects = env.StaticObject(source)
 
-experiment_src=[
-	'expm1f.c',
-	]
+Return('objects')
 
-source = Glob('*.c', exclude=experiment_src)
-source += Glob('data/*.c')
-
-vec_objs   = SConscript('vec/SConscript',
-                        exports    = {'env' : e},
-                        duplicate  = 0,
-                        src_dir    = '#src/optmized/vec',
-			variant_dir= joinpath(builddir, 'vec'))
-
-cmplx_objs   = SConscript('cmplx/SConscript',
-                        exports    = {'env' : e},
-                        duplicate  = 0,
-                        src_dir    = '#src/optmized/cmplx',
-                        variant_dir= joinpath(builddir, 'cmplx'))
-
-
-objs = e.StaticObject(source) + vec_objs + cmplx_objs
-
-Return('objs')

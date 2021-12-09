@@ -32,9 +32,6 @@
 #include <libm/constants.h>
 
 
-fc32_t ALM_PROTO_REF(cexpf)(fc32_t z);
-
-
 fc32_t
 ALM_PROTO_REF(cexpf)(fc32_t z)
 {

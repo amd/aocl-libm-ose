@@ -32,9 +32,6 @@
 #include <libm/constants.h>
 
 
-fc64_t ALM_PROTO_REF(cexp)(fc64_t z);
-
-
 fc64_t
 ALM_PROTO_REF(cexp)(fc64_t z)
 {

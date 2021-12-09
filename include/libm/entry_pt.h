@@ -149,6 +149,12 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(tanpif);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(truncf);
 
 /*
+ * Complex variants
+ */
+extern alm_ep_func_t        G_ENTRY_PT_PTR(cexp);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(cexpf);
+
+/*
  * Integer variants
  */
 extern alm_ep_func_t        G_ENTRY_PT_PTR(finite);

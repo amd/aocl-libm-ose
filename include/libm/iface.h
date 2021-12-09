@@ -209,6 +209,9 @@ enum ALM_FUNC_VARIANTS {
     ALM_FUNC_VECT_SP_16,
     ALM_FUNC_VECT_DP_8,
 
+    ALM_FUNC_SCAL_SP_CMPLX, /* Complex variant */
+    ALM_FUNC_SCAL_DP_CMPLX,
+
     ALM_FUNC_VAR_MAX,                   /* should be last, always */
 };
 typedef enum ALM_FUNC_VARIANTS alm_func_var_t;

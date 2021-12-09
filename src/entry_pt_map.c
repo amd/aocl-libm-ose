@@ -210,6 +210,9 @@ LIBM_DECL_FN_MAP(remainderf);
 LIBM_DECL_FN_MAP(nearbyint);
 LIBM_DECL_FN_MAP(nearbyintf);
 
+LIBM_DECL_FN_MAP(cexp);
+LIBM_DECL_FN_MAP(cexpf);
+
 LIBM_DECL_FN_MAP(vrd2_cbrt);
 LIBM_DECL_FN_MAP(vrd2_cos);
 LIBM_DECL_FN_MAP(vrd2_cosh);

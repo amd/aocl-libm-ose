@@ -154,6 +154,12 @@ alm_func_t        G_ENTRY_PT_PTR(tanpif);
 alm_func_t        G_ENTRY_PT_PTR(truncf);
 
 /*
+ * Complex variants
+ */
+alm_func_t        G_ENTRY_PT_PTR(cexpf);
+alm_func_t        G_ENTRY_PT_PTR(cexp);
+
+/*
  * Integer variants
  */
 alm_func_t        G_ENTRY_PT_PTR(finite);

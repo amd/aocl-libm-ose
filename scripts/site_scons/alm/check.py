@@ -102,6 +102,10 @@ def CheckLibAbi(context):
     if libabi == 'svml':
         context.Message('INTEL_LIB_PATH')
         svml_path = os.environ.get('INTEL_LIB_PATH', None)
+        if svml_path is None or '':
+            context.Message('\nThe env variable INTEL_LIB_PATH is not set\n')
+            exit (1)
+
         if CheckPathDir(context, svml_path):
             env['INTEL_LIB_PATH'] = svml_path
             context.Message(svml_path)

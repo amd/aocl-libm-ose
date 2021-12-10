@@ -95,6 +95,9 @@ __m128d LIBM_FUNC_VEC(d, 2, cos) (__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, cos) (__m256d);
 __m128  LIBM_FUNC_VEC(s, 4, cosf)(__m128);
 __m256  LIBM_FUNC_VEC(s, 8, cosf)(__m256);
+#if defined(__AVX512__)
+__m512d LIBM_FUNC_VEC(d, 8, cos)(__m512d);
+#endif
 
 int test_v2d(test_data *data, int idx)  {
   double *ip  = (double*)data->ip;
@@ -139,7 +142,7 @@ int test_v8d(test_data *data, int idx)  {
   double *op  = (double*)data->op;
   __m512d ip8 = _mm512_set_pd(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
-  __m512d op8 = LIBM_FUNC_VEC(d, 8, exp)(ip8);
+  __m512d op8 = LIBM_FUNC_VEC(d, 8, cos)(ip8);
   _mm512_store_pd(&op[0], op8);
 #endif
   return 0;

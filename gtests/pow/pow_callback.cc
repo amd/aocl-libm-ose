@@ -92,6 +92,9 @@ extern "C" {
 #define _ZGVdN4v_pow _ZGVdN4vv_pow
 #define _ZGVsN4v_powf _ZGVbN4vv_powf
 #define _ZGVsN8v_powf _ZGVdN8vv_powf
+
+#define _ZGVsN16v_powf _ZGVeN16vv_powf
+#define _ZGVdN8v_pow _ZGVeN8vv_pow
 #endif
 
 /*vector routines*/

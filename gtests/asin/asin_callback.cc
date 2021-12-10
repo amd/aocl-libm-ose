@@ -86,11 +86,10 @@ extern "C" {
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
 __m128 LIBM_FUNC_VEC(s, 4, asinf)(__m128);
 __m256 LIBM_FUNC_VEC(s, 8, asinf)(__m256);
-#endif
-
-#if defined(__AVX512__)
-__m512 LIBM_FUNC_VEC(s, 16, asinf) (__m512);
-__m512d LIBM_FUNC_VEC(d, 8, asin) (__m512d);
+ #if defined(__AVX512__)
+ __m512 LIBM_FUNC_VEC(s, 16, asinf) (__m512);
+ __m512d LIBM_FUNC_VEC(d, 8, asin) (__m512d);
+ #endif
 #endif
 
 int test_v2d(test_data *data, int idx)  {
@@ -140,6 +139,7 @@ int test_v8s(test_data *data, int idx)  {
 }
 
 int test_v8d(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
 #if defined(__AVX512__)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
@@ -148,10 +148,12 @@ int test_v8d(test_data *data, int idx)  {
   __m512d op8 = LIBM_FUNC_VEC(d, 8, asin)(ip8);
   _mm512_store_pd(&op[0], op8);
 #endif
+#endif
   return 0;
 }
 
 int test_v16s(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
 #if defined(__AVX512__)
   float *ip = (float*)data->ip;
   float *op  = (float*)data->op;
@@ -161,6 +163,7 @@ int test_v16s(test_data *data, int idx)  {
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m512 op16 = LIBM_FUNC_VEC(s, 16, asinf)(ip16);
   _mm512_store_ps(&op[0], op16);
+#endif
 #endif
   return 0;
 }

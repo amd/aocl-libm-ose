@@ -90,6 +90,9 @@ extern "C" {
 #define _ZGVdN4v_log _ZGVdN4v_log
 #define _ZGVsN4v_logf _ZGVbN4v_logf
 #define _ZGVsN8v_logf _ZGVdN8v_logf
+
+#define _ZGVdN8v_log _ZGVeN8v_log
+#define _ZGVsN16v_logf _ZGVeN16v_logf
 #endif
 
 /*vector routines*/

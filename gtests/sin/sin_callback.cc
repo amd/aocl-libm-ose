@@ -88,6 +88,9 @@ extern "C" {
 #define _ZGVdN4v_sin _ZGVdN4v_sin
 #define _ZGVsN4v_sinf _ZGVbN4v_sinf
 #define _ZGVsN8v_sinf _ZGVdN8v_sinf
+
+#define _ZGVsN16v_sinf _ZGVeN16v_sinf
+#define _ZGVdN8v_sin _ZGVeN8v_sin
 #endif
 
 /*vector routines*/

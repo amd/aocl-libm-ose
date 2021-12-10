@@ -88,6 +88,9 @@ extern "C" {
 #define _ZGVdN4v_cos _ZGVdN4v_cos
 #define _ZGVsN4v_cosf _ZGVbN4v_cosf
 #define _ZGVsN8v_cosf _ZGVdN8v_cosf
+
+//#define _ZGVeN8v_cos _ZGVeN8v_cos
+#define _ZGVdN8v_cos _ZGVeN8v_cos
 #endif
 
 /*vector routines*/

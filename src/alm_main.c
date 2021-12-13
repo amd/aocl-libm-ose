@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,19 +26,27 @@
  */
 
 #include <stdio.h>
-#include <unistd.h>
-
+#if defined (_WIN32) || defined (_WIN64)
+  #include <Windows.h>
+#else
+  #include <unistd.h>
+#endif
 #include "version.build.h"
+#include "alm_version.h"
+#include "buildsysinfo.h"
 
 #define NORETURN __attribute__((noreturn))
 
+void alm_main(void);
+
 const char service_interp[] __attribute__((section(".interp"))) = "/lib64/ld-linux-x86-64.so.2";
 
-void 
+void
 NORETURN
 alm_main(void)
 {
-	printf("%s\n", alm_get_build());
+	printf("%s-%s\n%s\n", alm_get_build(), alm_get_version(), build_sys_info);
+
 	_exit(0);
 }
 

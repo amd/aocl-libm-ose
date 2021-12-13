@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,18 +25,18 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include "libm_inlines_amd.h"
+#include <libm/amd_funcs_internal.h>
 
 #undef _FUNCNAME
 #define _FUNCNAME "acosh"
-double FN_PROTOTYPE_REF(acosh)(double x)
+double ALM_PROTO_REF(acosh)(double x)
 {
 
   unsigned long long ux;
-  double r, rarg, r1, r2;
+  double _r, rarg, r1, r2;
   int xexp;
 
   static const unsigned long long
@@ -58,19 +58,19 @@ double FN_PROTOTYPE_REF(acosh)(double x)
         {
           /* x is NaN */
 #ifdef WINDOWS
-          return __amd_handle_error(_FUNCNAME,__amd_acosh, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0,1);
+          return __alm_handle_error(ux|0x0008000000000000, AMD_F_NONE);
 #else
 	if(ux & QNAN_MASK_64)
-          return __amd_handle_error(_FUNCNAME,__amd_acosh, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0,1);
+          return __alm_handle_error(ux|0x0008000000000000, AMD_F_NONE);
 	else
-          return __amd_handle_error(_FUNCNAME,__amd_acosh, ux|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0,1);
+          return __alm_handle_error(ux|0x0008000000000000, AMD_F_INVALID);
 #endif
         }
       else
         {
           /* x is infinity */
 			if(ux & SIGNBIT_DP64) // negative infinity return nan raise error
-				   return __amd_handle_error(_FUNCNAME,__amd_acosh, INDEFBITPATT_DP64, _DOMAIN,AMD_F_INVALID, EDOM, x, 0.0,1);
+				   return __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
 			else
 				return x;
         }
@@ -86,8 +86,7 @@ double FN_PROTOTYPE_REF(acosh)(double x)
       else
         {
           /* x is less than 1.0. Return a NaN. */
-          return __amd_handle_error(_FUNCNAME,__amd_acosh, INDEFBITPATT_DP64, _DOMAIN,
-                              AMD_F_INVALID, EDOM, x, 0.0,1);
+          return __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
         }
     }
 
@@ -114,11 +113,11 @@ double FN_PROTOTYPE_REF(acosh)(double x)
       /* acosh for these arguments is approximated by
          acosh(x) = ln(x + sqrt(x*x-1)) */
       rarg = x*x-1.0;
-      /* Use assembly instruction to compute r = sqrt(rarg); */
-      ASMSQRT(rarg,r);
-      r += x;
-      GET_BITS_DP64(r, ux);
-      log_kernel_amd64(r, ux, &xexp, &r1, &r2);
+      /* Use assembly instruction to compute _r = sqrt(rarg); */
+      ASMSQRT(rarg,_r);
+      _r += x;
+      GET_BITS_DP64(_r, ux);
+      log_kernel_amd64(_r, ux, &xexp, &r1, &r2);
       r1 = (xexp * log2_lead + r1);
       r2 = (xexp * log2_tail + r2);
       return r1 + r2;
@@ -292,7 +291,7 @@ double FN_PROTOTYPE_REF(acosh)(double x)
              to more than basic precision. We use the Taylor series
              for log(1+x), with terms after the O(x*x) term
              approximated by a [6,6] minimax polynomial. */
-          double b1, b2, c1, c2, e1, e2, q1, q2, c, cc, hr1, tr1, hpoly, tpoly, hq1, tq1, hr2, tr2;
+          double b1, b2, _c1, _c2, e1, e2, q1, q2, c, cc, hr1, tr1, hpoly, tpoly, hq1, tq1, hr2, tr2;
           poly =
             (0.30893760556597282162e-21 +
              (0.10513858797132174471e0 +
@@ -321,12 +320,12 @@ double FN_PROTOTYPE_REF(acosh)(double x)
           */
           if (x < 1.06)
             {
-              double b, c, e;
+              double b, _c, e;
               b = r1*r2;
-              c = 0.5*r1*r1;
+              _c = 0.5*r1*r1;
               e = poly*t*t;
               /* N.B. the order of additions and subtractions is important */
-              r = (((r2 - b) + e) - c) + r1;
+              r = (((r2 - b) + e) - _c) + r1;
               return r;
             }
           else
@@ -370,8 +369,8 @@ double FN_PROTOTYPE_REF(acosh)(double x)
               b2 = (((hr1 * hr2 - b1) + hr1 * tr2) + tr1 * hr2) + tr1 * tr2;
 
               /* c = 0.5*r1*r1 */
-              c1 = (0.5*r1) * r1;
-              c2 = (((0.5*hr1 * hr1 - c1) + 0.5*hr1 * tr1) + 0.5*tr1 * hr1) + 0.5*tr1 * tr1;
+              _c1 = (0.5*r1) * r1;
+              _c2 = (((0.5*hr1 * hr1 - _c1) + 0.5*hr1 * tr1) + 0.5*tr1 * hr1) + 0.5*tr1 * tr1;
 
               /* v = a + d - b */
               r = r1 - b1;
@@ -380,8 +379,8 @@ double FN_PROTOTYPE_REF(acosh)(double x)
               v2 = (r - v1) + s;
 
               /* w = (a + d - b) - c */
-              r = v1 - c1;
-              s = (((v1 - r) - c1) - c2) + v2;
+              r = v1 - _c1;
+              s = (((v1 - r) - _c1) - _c2) + v2;
               w1 = r + s;
               w2 = (r - w1) + s;
 

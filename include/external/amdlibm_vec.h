@@ -1,6 +1,6 @@
 /*
 
-(C) 2008-2020 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2021 Advanced Micro Devices, Inc. All Rights Reserved.
 
 Advanced Micro Devices, Inc.
 Software License Agreement
@@ -179,17 +179,22 @@ extern "C" {
  /* Exponential */
 
     __m128d amd_vrd2_exp    (__m128d x);
-    __m128  amd_vrs4_expf   (__m128  x);
     __m128d amd_vrd2_exp2   (__m128d x);
-    __m128  amd_vrs4_exp2f  (__m128  x);
     __m128d amd_vrd2_exp10  (__m128d x);
-    __m128  amd_vrs4_exp10f (__m128  x);
     __m128d amd_vrd2_expm1  (__m128d x);
+
+    __m128  amd_vrs4_expf   (__m128  x);
+    __m128  amd_vrs4_exp2f  (__m128  x);
+    __m128  amd_vrs4_exp10f (__m128  x);
+
+    __m256d amd_vrd4_exp    (__m256d x);
+    __m256d amd_vrd4_exp2   (__m256d x);
     __m128  amd_vrs4_expm1f (__m128  x);
 
-    __m256d amd_vrd4_exp (__m256d);
-    __m256  amd_vrs8_expf (__m256);
+    __m256  amd_vrs8_expf   (__m256 x);
+    __m256  amd_vrs8_exp2f  (__m256 x);
 
+    /* array vector variants */
     void amd_vrda_exp       (int len, double *src, double *dst);
     void amd_vrsa_expf      (int len, float  *src, float  *dst);
     void amd_vrda_exp2      (int len, double *src, double *dst);
@@ -202,18 +207,24 @@ extern "C" {
 
  /* Logarithmic */
 
-    __m128d amd_vrd2_log    (__m128d x);
-    __m128  amd_vrs4_logf   (__m128  x);
-    __m128d amd_vrd2_log2   (__m128d x);
-    __m128  amd_vrs4_log2f  (__m128  x);
-    __m128d amd_vrd2_log10  (__m128d x);
-    __m128  amd_vrs4_log10f (__m128  x);
-    __m128d amd_vrd2_log1p  (__m128d x);
-    __m128  amd_vrs4_log1pf (__m128  x);
+    __m128d amd_vrd2_log     (__m128d x);
+    __m128d amd_vrd2_log2    (__m128d x);
+    __m128d amd_vrd2_log1p   (__m128d x);
+    __m128d amd_vrd2_log10   (__m128d x);
 
-    __m256d amd_vrd4_log (__m256d);
-    __m256  amd_vrs8_logf (__m256);
+    __m128  amd_vrs4_logf    (__m128  x);
+    __m128  amd_vrs4_log2f   (__m128  x);
+    __m128  amd_vrs4_log10f  (__m128  x);
 
+    __m256d amd_vrd4_log     (__m256d x);
+    __m256d amd_vrd4_log2    (__m256d x);
+    __m128  amd_vrs4_log1pf  (__m128  x);
+
+    __m256  amd_vrs8_logf    (__m256 x);
+    __m256  amd_vrs8_log2f   (__m256 x);
+    __m256  amd_vrs8_log10f  (__m256 x);
+
+    /* array vector variants */
     void amd_vrda_log       (int len, double *src, double *dst);
     void amd_vrsa_logf      (int len, float  *src, float  *dst);
     void amd_vrda_log2      (int len, double *src, double *dst);
@@ -224,16 +235,18 @@ extern "C" {
     void amd_vrsa_log1pf    (int len, float  *src, float  *dst);
 
 /* Trigonometric */
-
     __m128d amd_vrd2_cos    (__m128d x);
-    __m128  amd_vrs4_cosf   (__m128  x);
     __m128d amd_vrd2_sin    (__m128d x);
     __m128d amd_vrd2_tan    (__m128d x);
+
     __m128  amd_vrs4_sinf   (__m128  x);
+    __m128  amd_vrs4_cosf   (__m128  x);
     __m128  amd_vrs4_tanf   (__m128  x);
-    __m256  amd_vrs8_tanf   (__m256  x);
-    __m256  amd_vrs8_sinf   (__m256  x);
+
     __m256  amd_vrs8_cosf   (__m256  x);
+    __m256  amd_vrs8_sinf   (__m256  x);
+    __m256  amd_vrs8_tanf   (__m256  x);
+
     __m256d amd_vrd4_sin    (__m256d x);
     __m256d amd_vrd4_cos    (__m256d x);
     __m256d amd_vrd4_tan    (__m256d x);
@@ -243,25 +256,36 @@ extern "C" {
     void amd_vrda_sin       (int len, double *src, double *dst);
     void amd_vrsa_sinf      (int len, float  *src, float  *dst);
 
+/* Inverse trigonometric */
+   __m128  amd_vrs4_acosf  (__m128  x);
+   __m128  amd_vrs4_asinf  (__m128  x);
+   __m128  amd_vrs4_atanf  (__m128  x);
+
+   __m256  amd_vrs8_atanf  (__m256  x);
+   __m256  amd_vrs8_asinf  (__m256  x);
+
+   __m128d amd_vrd2_atan   (__m128d x);
+
 /*Hyperbolic*/
    __m128  amd_vrs4_coshf   (__m128  x);
    __m128  amd_vrs4_tanhf   (__m128  x);
+
    __m256  amd_vrs8_coshf   (__m256  x);
    __m256  amd_vrs8_tanhf   (__m256  x);
 
  /* Power */
+    __m128d amd_vrd2_pow    (__m128d x, __m128d y);
+    __m128  amd_vrs4_powf   (__m128 x, __m128 y);
+    __m256d amd_vrd4_pow    (__m256d, __m256d);
+    __m256  amd_vrs8_powf   (__m256, __m256);
+
+    void amd_vrsa_powf      (int len, float *src1, float *src2, float* dst);
 
     __m128d amd_vrd2_cbrt   (__m128d x);
-    __m128d amd_vrd2_pow    (__m128d x, __m128d y);
     __m128  amd_vrs4_cbrtf  (__m128  x);
-    __m128  amd_vrs4_powf   (__m128 x, __m128 y);
-
-    __m256d amd_vrd4_pow (__m256d, __m256d);
-    __m256  amd_vrs8_powf (__m256, __m256);
 
     void amd_vrda_cbrt      (int len, double *src, double *dst);
     void amd_vrsa_cbrtf     (int len, float  *src, float  *dst);
-    void amd_vrsa_powf      (int len, float *src1, float *src2, float* dst);
 
 #ifdef __cplusplus
 }

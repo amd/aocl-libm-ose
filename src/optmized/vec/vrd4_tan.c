@@ -29,12 +29,13 @@
 #include <stdint.h>
 
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 #include <libm_macros.h>
 
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/typehelper-vec.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
@@ -122,7 +123,7 @@ extern double tan_specialcase(double x);
  * - Inf/NaN
  */
 static inline v_f64x4_t
-vrd4_tan_specialcase(v_f64x4_t _x, v_f64x4_t result, v_i64x4_t cond)
+vrd4_tan_specialcase(v_f64x4_t _x, v_f64x4_t result, v_u64x4_t cond)
 {
     return call_v4_f64(tan_specialcase, _x, result, cond);
 }
@@ -158,7 +159,7 @@ ALM_PROTO_OPT(vrd4_tan)(v_f64x4_t x)
     v_u64x4_t   n, sign;
     v_u64x4_t   ux = as_v4_u64_f64(x);
 
-    v_i64x4_t cond = (ux & ~ALM_TAN_V4_SIGN_MASK) > ALM_TAN_V4_ARG_MAX;
+    v_u64x4_t cond = (ux & ~ALM_TAN_V4_SIGN_MASK) > ALM_TAN_V4_ARG_MAX;
 
     sign = ux & ALM_TAN_V4_SIGN_MASK;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -27,8 +27,10 @@
 
 #include <stddef.h>                     /* for NULL */
 
+#include <libm/cpu_features.h>
 #include <libm/entry_pt.h>
 #include <libm/iface.h>
+
 
 struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_ACOS]       = {LIBM_IFACE_PROTO(acos), NULL},
@@ -84,6 +86,8 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_TANPI]      = {LIBM_IFACE_PROTO(tanpi), NULL},
     [C_AMD_TRUNC]      = {LIBM_IFACE_PROTO(trunc), NULL},
 
+    [C_AMD_SINCOS]     = {LIBM_IFACE_PROTO(sincos), NULL},
+
     /* Integer variants */
     [C_AMD_FINITE]     = {LIBM_IFACE_PROTO(finite), NULL},
     [C_AMD_ILOGB]      = {LIBM_IFACE_PROTO(ilogb), NULL},
@@ -112,3 +116,74 @@ libm_iface_init(void)
     }
 }
 
+
+static alm_func_t
+alm_iface_fixup_one(const struct alm_arch_funcs *alm_funcs,
+                    alm_uarch_ver_t arch_ver, int idx)
+{
+    alm_func_t ret = (alm_func_t)NULL;
+
+    if (!alm_funcs)
+        return  ret;
+
+    /* if invalid arg, fixup with defaults */
+    if (ALM_UARCH_MAX - arch_ver >=
+        ALM_UARCH_MAX - ALM_UARCH_VER_DEFAULT)
+        arch_ver = alm_funcs->def_arch;
+
+    /* if corrupted arch_version */
+    if (ALM_UARCH_MAX - arch_ver >=
+        ALM_UARCH_MAX - ALM_UARCH_VER_DEFAULT)
+        arch_ver = ALM_UARCH_VER_DEFAULT;
+
+    for (int i = arch_ver; i >=0 ; i--) {
+        /* Keep searching till we find default version */
+        if (alm_funcs->funcs[i][idx]) {
+            ret = alm_funcs->funcs[i][idx];
+            break;
+        }
+    }
+
+    /* or NULL */
+    return ret;
+}
+
+static alm_uarch_ver_t
+alm_get_uach(void)
+{
+    alm_uarch_ver_t arch_ver;
+
+    if (alm_cpu_arch_is_zen3())
+        arch_ver = ALM_UARCH_VER_ZEN3;
+    else if (alm_cpu_arch_is_zen2())
+        arch_ver = ALM_UARCH_VER_ZEN2;
+    else if (alm_cpu_arch_is_zen())
+        arch_ver = ALM_UARCH_VER_ZEN;
+    else
+        arch_ver = ALM_UARCH_VER_DEFAULT;
+
+    return arch_ver;
+}
+
+void
+alm_iface_fixup(alm_ep_wrapper_t *g_ep_wrapper,
+                const struct alm_arch_funcs *alm_funcs)
+{
+    static alm_uarch_ver_t arch_ver;
+
+    if (!alm_funcs)
+        return;
+
+    arch_ver = alm_get_uach();
+
+    for (int i = ((int)ALM_FUNC_VAR_MAX-1); i >=0 ; i--) {
+        alm_ep_func_t *gptr = g_ep_wrapper->g_ep[i];
+
+        if (gptr) {
+            /* Overwrite only if find valid function */
+            alm_ep_func_t f = alm_iface_fixup_one(alm_funcs, arch_ver, i);
+            if (f)
+                *gptr = f;
+        }
+    }
+}

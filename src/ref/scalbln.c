@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -27,9 +27,10 @@
 
 #include "fn_macros.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
-double FN_PROTOTYPE_REF(scalbln)(double x, long int n)
+double ALM_PROTO_REF(scalbln)(double x, long int n)
 {
     UT64 val,val_x;
     unsigned int sign;
@@ -41,11 +42,11 @@ double FN_PROTOTYPE_REF(scalbln)(double x, long int n)
 
     if (val.u64 > 0x7ff0000000000000)     /* x is NaN */
         #ifdef WINDOWS
-	   return __amd_handle_error("scalbn", __amd_scalbn, val_x.u64|0x0008000000000000, _DOMAIN, 0, EDOM, x, n, 2);
+	   return __alm_handle_error(val_x.u64|0x0008000000000000, 0);
         #else
            {
            if(!(val.u64 & 0x0008000000000000))// x is snan
-                   return __amd_handle_error("scalbn", __amd_scalbn, val_x.u64|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, n, 2);
+                   return __alm_handle_error(val_x.u64|0x0008000000000000, AMD_F_INVALID);
             else
                    return x;
 		    }
@@ -57,45 +58,45 @@ double FN_PROTOTYPE_REF(scalbln)(double x, long int n)
     if((val.u64 == 0x0000000000000000) || (n==0))
         return x; /* x= +-0 or n= 0*/
 
-    exponent = val.u32[1] >> 20; /* get the exponent */
+    exponent = (int)(val.u32[1] >> 20); /* get the exponent */
 
     if(exponent == 0)/*x is denormal*/
     {
 		val.f64 = val.f64 * VAL_2PMULTIPLIER_DP;/*multiply by 2^53 to bring it to the normal range*/
-        exponent = val.u32[1] >> 20; /* get the exponent */
-		exponent = exponent + n - MULTIPLIER_DP;
+        exponent = (int)(val.u32[1] >> 20); /* get the exponent */
+		exponent = (int)(exponent + n - MULTIPLIER_DP);
 		if(exponent < -MULTIPLIER_DP)/*underflow*/
 		{
 			val.u32[1] = sign | 0x00000000;
 			val.u32[0] = 0x00000000;
-			return __amd_handle_error("scalbln", __amd_scalbln, val.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, (double)n, 2);
+			return __alm_handle_error(val.u64, AMD_F_INEXACT|AMD_F_UNDERFLOW);
 		}
 		if(exponent > 2046)/*overflow*/
 		{
 			val.u32[1] = sign | 0x7ff00000;
 			val.u32[0] = 0x00000000;
-            return __amd_handle_error("scalbln", __amd_scalbln, val.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, (double) n, 2);
+            return __alm_handle_error(val.u64, AMD_F_INEXACT|AMD_F_OVERFLOW);
 		}
 
 		exponent += MULTIPLIER_DP;
-		val.u32[1] = sign | (exponent << 20) | (val.u32[1] & 0x000fffff);
+		val.u32[1] = sign | (unsigned int)(exponent << 20) | (val.u32[1] & 0x000fffff);
 		val.f64 = val.f64 * VAL_2PMMULTIPLIER_DP;
         return val.f64;
     }
 
-    exponent += n;
+    exponent += (int)n;
 
     if(exponent < -MULTIPLIER_DP)/*underflow*/
 	{
 		val.u32[1] = sign | 0x00000000;
 		val.u32[0] = 0x00000000;
-	    return __amd_handle_error("scalbln", __amd_scalbln, val.u64, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, (double)n, 2);
+	    return __alm_handle_error(val.u64, AMD_F_INEXACT|AMD_F_UNDERFLOW);
 	}
 
     if(exponent < 1)/*x is normal but output is debnormal*/
     {
 		exponent += MULTIPLIER_DP;
-		val.u32[1] = sign | (exponent << 20) | (val.u32[1] & 0x000fffff);
+		val.u32[1] = sign | (unsigned int)(exponent << 20) | (val.u32[1] & 0x000fffff);
 		val.f64 = val.f64 * VAL_2PMMULTIPLIER_DP;
         return val.f64;
     }
@@ -104,10 +105,10 @@ double FN_PROTOTYPE_REF(scalbln)(double x, long int n)
 	{
 		val.u32[1] = sign | 0x7ff00000;
 		val.u32[0] = 0x00000000;
-        return __amd_handle_error("scalbln", __amd_scalbln, val.u64, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, (double) n, 2);
+        return __alm_handle_error(val.u64, AMD_F_INEXACT|AMD_F_OVERFLOW);
 	}
 
-    val.u32[1] = sign | (exponent << 20) | (val.u32[1] & 0x000fffff);
+    val.u32[1] = sign | (unsigned int)(exponent << 20) | (val.u32[1] & 0x000fffff);
     return val.f64;
 }
 

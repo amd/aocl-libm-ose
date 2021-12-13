@@ -1,19 +1,19 @@
 #include "precision.h"
-#include "mparith_c.h"
+
 
 #if defined(FLOAT)
 #define FUNC_TANPI alm_mp_tanpif
-#define FUNC_TANPI_ULP alm_mp_tanpif_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_TANPI alm_mp_tanpi
-#define FUNC_TANPI_ULP alm_mp_tanpi_ULP
+
 #else
 #error
 #endif
 
-REAL FUNC_TANPI(REAL x)
+REAL_L FUNC_TANPI(REAL x)
 {
-    REAL y;
+    REAL_L y;
     fp_params params;
     int base, mantis, emin, emax;
     int *xmp, *result_sin,*result_cos,*result_tan;

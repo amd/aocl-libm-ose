@@ -3,8 +3,25 @@
 #
 
 Import('env')
-
+import os
 e = env.Clone()
+
+if e['HOST_OS'] == 'win32':
+    exclude_flags=['/std:c17', '-funsigned-char', '-Wno-unused-parameter', '-march=native', '-std:c++17']
+    for i in exclude_flags:
+        if i in e['CFLAGS']:
+            e['CFLAGS'].remove(i)
+            e['CCFLAGS'].remove(i)
+
+    e.Append(
+        CFLAGS = ['-DWINDOWS'],
+        LINKFLAGS = ['/SUBSYSTEM:CONSOLE','/NODEFAULTLIB:libcmt.lib'],
+        LIBS = ['Shlwapi']
+    )
+
+if e['HOST_OS'] == 'win32':
+    if e['BUILD'] == 'debug':
+        e['PDB'] = 'test_exp2.pdb'
 
 exp2_srcs = Glob('*.cc')
 

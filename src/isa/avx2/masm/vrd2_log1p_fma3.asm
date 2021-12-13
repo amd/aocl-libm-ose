@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+; Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
 ;
 ; Redistribution and use in source and binary forms, with or without modification,
 ; are permitted provided that the following conditions are met:
@@ -49,13 +49,13 @@
 
 ;include "fn_macros.h"
 ;include "log_tables.h"
-;define fname FN_PROTOTYPE_FMA3(vrd2_log1p)
+;define fname ALM_PROTO_FMA3(vrd2_log1p)
 
 
 include fm.inc
 include log_tables.inc
 
-FN_PROTOTYPE_FMA3 vrd2_log1p
+ALM_PROTO_FMA3 vrd2_log1p
 
 ; local variable storage offsets
 save_xmm6       EQU     00h

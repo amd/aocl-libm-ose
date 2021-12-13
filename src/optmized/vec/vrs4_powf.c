@@ -26,7 +26,7 @@
  */
 
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
@@ -46,11 +46,11 @@ extern double log_256[];
 extern const double log_f_inv_256[];
 #define TAB_F_INV log_f_inv_256
 #define TAB_LOG   log_256
-#define MANT_MASK_N  (0x000FF00000000000ULL)
+#define MANT_MASK_N  (0x007F8000U)
 #define MANT_MASK_N1 (0x0000080000000000ULL)
 #define SINGLE_PRECISION_BIAS 127
-#define DOUBLE_PRECISION_MANTISSA 0x000fffffffffffffULL
-#define ONE_BY_TWO 0x3fe0000000000000ULL
+#define SINGLE_PRECISION_MANTISSA 0x007FFFFFU
+#define ONE_BY_TWO 0x3f000000U
 
 /*
 v_i32x4_t float_bias =  _MM_SET1_I32(SINGLE_PRECISION_BIAS);
@@ -61,7 +61,8 @@ v_u64x4_t mant_8_bits = _MM_SET1_I64(MANT_MASK_N);
 
 static struct {
     v_i32x4_t float_bias;
-    v_u64x4_t mantissa_bits, one_by_two, mant_8_bits;
+    v_u32x4_t mantissa_bits, one_by_two, mant_8_bits;
+    v_u64x4_t infinity;
     v_u32x4_t v_min, v_max;
     double ALIGN(16) poly[MAX_POLYDEGREE];
     v_f64x4_t ln2;
@@ -71,9 +72,10 @@ static struct {
     .v_max  = _MM_SET1_I32(0x7f800000),
 
     .float_bias =    _MM_SET1_I32(SINGLE_PRECISION_BIAS),
-    .mantissa_bits = _MM_SET1_I64(DOUBLE_PRECISION_MANTISSA),
-    .one_by_two =    _MM_SET1_I64(ONE_BY_TWO),
-    .mant_8_bits =   _MM_SET1_I64(MANT_MASK_N),
+    .mantissa_bits = _MM_SET1_I32(SINGLE_PRECISION_MANTISSA),
+    .infinity =      _MM_SET1_I64(0x7ff0000000000000),
+    .one_by_two =    _MM_SET1_I32(ONE_BY_TWO),
+    .mant_8_bits =   _MM_SET1_I32(MANT_MASK_N),
 
     /*
     * Polynomial constants, 1/x! (reciprocal x)
@@ -94,24 +96,26 @@ static struct {
 static struct {
     v_f64x4_t ln2by_tblsz, tblsz_byln2, Huge;
     double_t ALIGN(16) poly[MAX_POLYDEGREE];
-    v_u64x4_t expf_max;
+    v_u64x4_t expf_max, mask;
     v_f32x4_t   expf_maxf, expf_minf;
     v_i32x4_t   infinity;
 } expf_v4_data  = {
     .ln2by_tblsz = _MM_SET1_PD4(0x1.62e42fefa39efp-7),
     .tblsz_byln2 = _MM_SET1_PD4(0x1.71547652b82fep+0),
     .Huge = _MM_SET1_PD4(0x1.8000000000000p+52),
+    .mask = _MM_SET1_I64(0x7fffffffffffffff),
     .expf_max = _MM_SET1_I64(0x4056000000000000),
     .infinity    =  _MM_SET1_I32(0x7f800000),
     .expf_minf    =  _MM_SET1_PS4(-0x1.9fe368p6f),
+
     .expf_maxf    =  _MM_SET1_PS4(88.7228393f),
     .poly = {
         0x1.0000014439a91p0,
-		0x1.62e43170e3344p-1,
-		0x1.ebf906bc4c115p-3,
-		0x1.c6ae2bb88c0c8p-5,
-		0x1.3d1079db4ef69p-7,
-		0x1.5f8905cb0cc4ep-10
+        0x1.62e43170e3344p-1,
+        0x1.ebf906bc4c115p-3,
+        0x1.c6ae2bb88c0c8p-5,
+        0x1.3d1079db4ef69p-7,
+        0x1.5f8905cb0cc4ep-10
     },
 };
 
@@ -119,6 +123,7 @@ static struct {
 #define MANTISSA_BITS   v_log_data.mantissa_bits
 #define HALF            v_log_data.one_by_two
 #define MANT_8_BITS     v_log_data.mant_8_bits
+#define INF64           v_log_data.infinity
 
 #define SCALAR_POWF amd_powf
 #define V_MIN       v_log_data.v_min
@@ -131,6 +136,7 @@ static struct {
 #define EXPF_MAXF   expf_v4_data.expf_maxf
 #define EXPF_MINF   expf_v4_data.expf_minf
 #define INF         expf_v4_data.infinity
+#define DP64_MASK       expf_v4_data.mask
 /*
  * Short names for polynomial coefficients
  */
@@ -225,17 +231,33 @@ static struct {
  *
  */
 
-static inline v_f64x4_t look_table_access(const double* table,
-                                          const int vector_size,
-                                          v_u64x4_t indices)
+static inline void look_table_access(const double* f_inv_tbl, const double* log_256_tbl,
+                                          v_f64x4_t* f_inv, v_f64x4_t* log256,
+                                          v_u32x4_t indices)
 {
      uint64_t j;
-     v_f64x4_t ret;
-     for(int i = 0; i < vector_size; i++) {
+
+     for(int i = 0; i < VECTOR_LENGTH; i++) {
+
         j = indices[i];
-        ret[i] = table[j];
+
+        (*f_inv)[i]   = f_inv_tbl[j];
+
+        (*log256)[i] = log_256_tbl[j];
+
      }
-     return ret;
+}
+
+static inline int check_corner_case(v_u64x4_t condition2, v_u32x4_t condition1) {
+
+     for(int i = 0; i < VECTOR_LENGTH; i++) {
+
+         if(condition2[i] || condition1[i])
+            return 1;
+     }
+
+     return 0;
+
 }
 
 __m128
@@ -248,47 +270,31 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
     u = as_v4_u32_f32(_x);
 
-    v_i32x4_t condition = (u - V_MIN >= V_MAX - V_MIN);
-
-    if(any_v4_u32_loop(condition)) {
-
-        ret[0] = SCALAR_POWF(_x[0], _y[0]);
-        ret[1] = SCALAR_POWF(_x[1], _y[1]);
-        ret[2] = SCALAR_POWF(_x[2], _y[2]);
-        ret[3] = SCALAR_POWF(_x[3], _y[3]);
-
-        return ret;
-    }
-
-    v_f64x4_t xd = _mm256_cvtps_pd(_x);
-
+    v_u32x4_t condition = (u >= V_MAX);
+    
     v_f64x4_t yd = _mm256_cvtps_pd(_y);
 
-    v_u64x4_t ux = as_v4_u64_f64(xd);
+    v_i32x4_t int_exponent =  ((((v_i32x4_t)u) >> 23) - SP_BIAS);
 
-    v_i32x4_t int_exponent =  (u >> 23) - SP_BIAS;
+    v_f64x4_t exponent = (v_f64x4_t) _mm256_cvtepi32_pd ((__m128i)int_exponent);
 
-    v_f64x4_t exponent =  _mm256_cvtepi32_pd (int_exponent);
+    v_u32x4_t mant  = ((u & MANTISSA_BITS) | HALF);
 
-    v_u64x4_t mant  = ((ux & MANTISSA_BITS) | HALF);
+    v_u32x4_t index = u & MANT_8_BITS;
 
-    v_u64x4_t index = ux & MANT_8_BITS;
+    v_f32x4_t index_times_half = as_v4_f32_u32(index | HALF);
 
-    v_f64x4_t index_times_half = as_v4_f64_u64(index | HALF);
+    index =  index >> (23 - N);
 
-    index =  index >> (52 - N);
+    v_f32x4_t y1  = as_v4_f32_u32(mant);
 
-    v_f64x4_t y1  = as_v4_f64_u64(mant);
-
-    v_f64x4_t f = index_times_half - y1;
+    v_f64x4_t f = _mm256_cvtps_pd(index_times_half - y1);
 
     v_f64x4_t F_INV, LOG_256, r;
 
     /* Avoiding the use of vgatherpd instruction for performance reasons */
 
-    F_INV = look_table_access(TAB_F_INV, VECTOR_LENGTH, index);
-
-    LOG_256 = look_table_access(TAB_LOG, VECTOR_LENGTH, index);
+    look_table_access(TAB_F_INV, TAB_LOG, &F_INV, &LOG_256, index);
 
     r = f * F_INV;
 
@@ -296,13 +302,13 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
     v_f64x4_t temp = C2  + r * C3;
 
-    v_f64x4_t q = r + r2 * temp;
+    v_f64x4_t s = r + r2 * temp;
 
     /* m*log(2) + log(G) - poly */
 
     temp  = (exponent * LN2) + LOG_256;
 
-    temp -= q;
+    temp -= s;
 
     v_f64x4_t ylogx = temp * yd;
 
@@ -310,7 +316,9 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
     v_u64x4_t v = as_v4_u64_f64(ylogx);
 
-    v_i64x4_t condition2 = (v >= EXPF_MAX);
+    v = v & DP64_MASK;
+
+    v_u64x4_t condition2 = (v >= EXPF_MAX);
 
     v_f64x4_t z = ylogx * INVLN2;
 
@@ -322,31 +330,24 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
     r = z - dn;
 
-    v_f64x4_t qtmp1 = D1 + (D2 * r);
-
-    v_f64x4_t qtmp2 = D3 + (D4 * r);
-
-    r2 = r * r;
-
-    v_f64x4_t qtmp3 = D5 + (D6 * r);
-
-    q =  qtmp1 + r2 * qtmp2;
-
-    v_f64x4_t result = q + r2 * r2  * qtmp3;
+    v_f64x4_t result = POLY_EVAL_5(r, D1, D2, D3, D4, D5, D6);
 
     ret = _mm256_cvtpd_ps(as_v4_f64_u64(as_v4_u64_f64(result) + (n << 52)));
 
-    if(any_v4_u64_loop(condition2)) {
+    if(check_corner_case(condition2, condition)) {
 
         v_f32x4_t x = _mm256_cvtpd_ps(ylogx);
 
         v_i32x4_t inf_condition = x > EXPF_MAXF;
 
+        /* set infinity to values of x greater than infinity */
+        inf_condition |= condition; 
+
         v_i32x4_t zero_condition = x < EXPF_MINF;
 
         v_32x4 vx = {.f32x4 = ret};
 
-        //Zero out the elements that have to be set to infinity
+        /* Zero out the elements that have to be set to infinity */
         vx.i32x4 = vx.i32x4 & (~inf_condition);
 
         inf_condition = inf_condition & INF;

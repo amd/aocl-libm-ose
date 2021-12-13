@@ -26,16 +26,6 @@ uint32_t GetnIpArgs( void )
 	return ipargs;
 }
 
-void SpecSetupf32(SpecParams *specp) {
-  specp->data32 = test_cosf_special_data;
-  specp->countf = ARRAY_SIZE(test_cosf_special_data);
-}
-
-void SpecSetupf64(SpecParams *specp) {
-  specp->data64 = test_cos_special_data;
-  specp->countd = ARRAY_SIZE(test_cos_special_data); 
-}
-
 void ConfSetupf32(SpecParams *specp) {
   specp->data32 = test_cosf_conformance_data;
   specp->countf = ARRAY_SIZE(test_cosf_conformance_data); 
@@ -54,12 +44,12 @@ double getFuncOp(double *data) {
   return LIBM_FUNC(cos)(data[0]);
 }
 
-float getExpected(float *data) {
+double getExpected(float *data) {
   auto val = alm_mp_cosf(data[0]);
   return val;
 }
 
-double getExpected(double *data) {
+long double getExpected(double *data) {
   auto val = alm_mp_cos(data[0]);
   return val;
 }
@@ -101,55 +91,45 @@ extern "C" {
 #endif
 
 /*vector routines*/
-#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
-__m128d LIBM_FUNC_VEC(d, 2, cos)(__m128d);
-__m256d LIBM_FUNC_VEC(d, 4, cos)(__m256d);
-__m128 LIBM_FUNC_VEC(s, 4, cosf)(__m128);
-__m256 LIBM_FUNC_VEC(s, 8, cosf)(__m256);
-#endif
+__m128d LIBM_FUNC_VEC(d, 2, cos) (__m128d);
+__m256d LIBM_FUNC_VEC(d, 4, cos) (__m256d);
+__m128  LIBM_FUNC_VEC(s, 4, cosf)(__m128);
+__m256  LIBM_FUNC_VEC(s, 8, cosf)(__m256);
 
 int test_v2d(test_data *data, int idx)  {
-#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
   __m128d op2 = LIBM_FUNC_VEC(d, 2, cos)(ip2);
   _mm_store_pd(&op[0], op2);
-#endif
   return 0;
 }
 
 int test_v4s(test_data *data, int idx)  {
-#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m128 ip4 = _mm_set_ps(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m128 op4 = LIBM_FUNC_VEC(s, 4, cosf)(ip4);
   _mm_store_ps(&op[0], op4);
-#endif
   return 0;
 }
 
 int test_v4d(test_data *data, int idx)  {
-#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256d op4 = LIBM_FUNC_VEC(d, 4, cos)(ip4);
   _mm256_store_pd(&op[0], op4);
-#endif
   return 0;
 }
 
 int test_v8s(test_data *data, int idx)  {
-#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256 op8 = LIBM_FUNC_VEC(s, 8, cosf)(ip8);
   _mm256_store_ps(&op[0], op8);
-#endif
   return 0;
 }
 

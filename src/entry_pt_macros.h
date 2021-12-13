@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -28,7 +28,11 @@
 #ifndef __ENTRY_PT_MACROS_H__
 #define __ENTRY_PT_MACROS_H__
 
-#include <libm/types.h>
+#ifndef STRINGIFY
+#define PASTE2(a, b) a##b
+#define STRINGIFY2(x) #x
+#define STRINGIFY(x) STRINGIFY2(x)
+#endif
 
 #define MK_FN_NAME(fn)				\
 	STRINGIFY(FN_PROTOTYPE(fn))
@@ -45,6 +49,7 @@
  * jmp *(%rax)
  * -----------
  */
+#if defined(__GNUC__)
 #define LIBM_DECL_FN_MAP(fn)						\
 	asm (								\
 	"\n\t"".p2align 4"						\
@@ -54,7 +59,16 @@
 	"\n\t" "mov " STRINGIFY(G_ENTRY_PT_ASM(fn)) "@GOTPCREL(%rip), %rax"	\
 	"\n\t" "jmp *(%rax)"						\
 		);
-
+#else
+#define LIBM_DECL_FN_MAP(fn)                                            \
+        asm (                                                           \
+        "\n\t"".p2align 4"                                              \
+        "\n\t"".globl " MK_FN_NAME(fn)                                  \
+        "\n\t" MK_FN_NAME(fn) " :"                                      \
+        "\n\t" "mov " STRINGIFY(G_ENTRY_PT_ASM(fn)) "@GOTPCREL(%rip), %rax"    \
+        "\n\t" "jmp *%rax"                               \
+                );
+#endif
 
 #define WEAK_LIBM_ALIAS(x, y)					\
 	asm("\n\t"".weak " STRINGIFY(x)				\

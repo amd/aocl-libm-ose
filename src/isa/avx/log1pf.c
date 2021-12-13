@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,14 +25,14 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include "<libm/alm_special.h>"
+#include "libm/amd_funcs_internal.h"
 
 #undef _FUNCNAME
 #define _FUNCNAME "log1pf"
 
-float FN_PROTOTYPE_BAS64(log1pf)(float x)
+float ALM_PROTO_BAS64(log1pf)(float x)
 {
 
   int xexp;
@@ -211,7 +211,7 @@ float FN_PROTOTYPE_BAS64(log1pf)(float x)
         {
           /* x is NaN */
 #ifdef WINDOWS
-          return __amd_handle_errorf(_FUNCNAME, __amd_log1p, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+          return __alm_handle_errorf(ux|0x00400000, AMD_F_NONE);
 #else
           return x + x; /* Raise invalid if it is a signalling NaN */
 #endif
@@ -222,7 +222,7 @@ float FN_PROTOTYPE_BAS64(log1pf)(float x)
           if (ux & SIGNBIT_SP32)
             {
               /* x is negative infinity. Return a NaN. */
-              return __amd_handle_errorf(_FUNCNAME, __amd_log1p, INDEFBITPATT_SP32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+              return __alm_handle_errorf(INDEFBITPATT_SP32, AMD_F_INVALID);
             }
           else
             return x;
@@ -234,12 +234,12 @@ float FN_PROTOTYPE_BAS64(log1pf)(float x)
       if (ux > 0xbf800000)
         {
           /* x is less than -1.0. Return a NaN. */
-          return __amd_handle_errorf(_FUNCNAME, __amd_log1p, INDEFBITPATT_SP32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+          return __alm_handle_errorf(INDEFBITPATT_SP32, AMD_F_INVALID);
         }
       else
         {
           /* x is exactly -1.0. Return -infinity with div-by-zero flag. */
-          return  __amd_handle_errorf(_FUNCNAME, __amd_log1p, NINFBITPATT_SP32, _SING, AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
+          return  __alm_handle_errorf(NINFBITPATT_SP32, AMD_F_DIVBYZERO);
 
         }
     }

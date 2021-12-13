@@ -27,9 +27,9 @@
  */
 
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 #include <libm/poly-vec.h>
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
@@ -140,25 +140,25 @@ ALM_PROTO_OPT(vrd2_log) (__m128d x)
 
     v_f64x2_t m, r, n, f;
 
-    v_i64x2_t ix;
+    v_u64x2_t ux;
 
-    ix = as_v2_u64_f64(x);
+    ux = as_v2_u64_f64(x);
 
-    v_i64x2_t condition = (as_v2_u64_f64(x) - V_MIN >= V_MAX - V_MIN);
+    v_u64x2_t condition = (ux - V_MIN >= V_MAX - V_MIN);
 
-    ix = (ix - TWO_BY_THREE) & INF;
+    ux = (ux - TWO_BY_THREE) & INF;
 
-    v_i64x2_t int_exponent = ix >> EXPSHIFTBITS_SP64;
+    v_i64x2_t int_exponent = ux;
 
     for(int i = 0; i < VECTOR_SIZE; i++) {
 
-       n[i] = (double)int_exponent[i];
+       n[i] = (double)(int_exponent[i] >> EXPSHIFTBITS_SP64);
 
     }
 
 	/* Reduce the mantissa, m to [2/3, 4/3] */
 
-    m = as_v2_f64_u64(as_v2_u64_f64(x) - ix);
+    m = as_v2_f64_u64(as_v2_u64_f64(x) - ux);
 
     f = m - C1;			/* f is in [-1/3,+1/3] */
 

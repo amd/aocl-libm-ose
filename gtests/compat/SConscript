@@ -1,0 +1,23 @@
+# Copyright (C) 2020, AMD. All rights Reserved
+#
+# Author: Pranoy Jayaraj <pjayaraj@amd.com>
+
+# glibc compat layer tests
+
+Import('env')
+tenv = env.Clone()
+
+tenv.Append(
+    INCPATH= ['inc'],
+    CFLAGS = ['-Wall', '-g', '-mavx', '-fPIE', '-fpermissive'],
+    LIBS   = ['dl', 'm'],
+)
+
+srcs = Glob('./src/*.[cS]')
+tenv.Append(CPPPATH='./inc')
+
+exe = tenv.Program(source = srcs,
+                target = 'test_compat')
+
+Return('exe')
+

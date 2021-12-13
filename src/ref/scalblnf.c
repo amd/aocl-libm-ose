@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -27,9 +27,10 @@
 
 #include "fn_macros.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
-float FN_PROTOTYPE_REF(scalblnf)(float x, long int n)
+float ALM_PROTO_REF(scalblnf)(float x, long int n)
 {
     UT32 val,val_x;
     unsigned int sign;
@@ -40,16 +41,16 @@ float FN_PROTOTYPE_REF(scalblnf)(float x, long int n)
     val.u32 = val.u32 & 0x7fffffff;/* remove the sign bit */
 
     if(val.u32 > 0x7f800000)/* x= nan*/
-        #ifdef WINDOWS
-        return __amd_handle_errorf("scalblnf", __amd_scalbn, val_x.u32|0x00400000, _DOMAIN, 0, EDOM, x, (float)n, 2);
-        #else
-        {
-          if(!(val.u32 & 0x00400000)) //x is snan
-              return __amd_handle_errorf("scalblnf", __amd_scalbn, val_x.u32|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, (float)n, 2);
-          else
-              return x;
-		}
-        #endif
+#ifdef WINDOWS
+        return __alm_handle_errorf(val_x.u32|0x00400000, 0);
+#else
+    {
+        if(!(val.u32 & 0x00400000)) //x is snan
+            return __alm_handle_errorf(val_x.u32|0x00400000, AMD_F_INVALID);
+        else
+            return x;
+    }
+#endif
 
     if(val.u32 == 0x7f800000)/* x = +-inf*/
         return x;
@@ -57,54 +58,60 @@ float FN_PROTOTYPE_REF(scalblnf)(float x, long int n)
     if((val.u32 == 0x00000000) || (n==0))/* x= +-0 or n= 0*/
         return x;
 
-    exponent = val.u32 >> 23; /* get the exponent */
+    exponent = (int)(val.u32 >> 23); /* get the exponent */
 
-	if(exponent == 0)/*x is denormal*/
-	{
-		val.f32 = val.f32 * VAL_2PMULTIPLIER_SP;/*multiply by 2^24 to bring it to the normal range*/
-		exponent = (val.u32 >> 23); /* get the exponent */
-		exponent = exponent + n - MULTIPLIER_SP;
-		if(exponent < -MULTIPLIER_SP)/*underflow*/
-		{
-			val.u32 = sign | 0x00000000;
-            return __amd_handle_errorf("scalblnf", __amd_scalbn, val.u32, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, (float)n, 2);
-		}
-		if(exponent > 254)/*overflow*/
-		{
-			val.u32 = sign | 0x7f800000;
-            return __amd_handle_errorf("scalblnf", __amd_scalbn, val.u32, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, (float)n, 2);
-		}
+    if(exponent == 0)/*x is denormal*/
+    {
+        val.f32 = val.f32 * VAL_2PMULTIPLIER_SP;
+                                      /*multiply by 2^24 to bring it to the normal range*/
+        exponent = (int)(val.u32 >> 23); /* get the exponent */
+        exponent = (int)(exponent + n - MULTIPLIER_SP);
+        if(exponent < -MULTIPLIER_SP)/*underflow*/
+            if(exponent < -MULTIPLIER_SP)/*underflow*/
+            {
+                val.u32 = sign | 0x00000000;
+                return __alm_handle_errorf(val.u32,
+                                              AMD_F_INEXACT|AMD_F_UNDERFLOW);
+            }
+        if(exponent > 254)/*overflow*/
+        {
+            val.u32 = sign | 0x7f800000;
+            return __alm_handle_errorf(val.u32,
+                                          AMD_F_INEXACT|AMD_F_OVERFLOW);
+        }
 
-		exponent += MULTIPLIER_SP;
-		val.u32 = sign | (exponent << 23) | (val.u32 & 0x007fffff);
-		val.f32 = val.f32 * VAL_2PMMULTIPLIER_SP;
+        exponent += MULTIPLIER_SP;
+        val.u32 = sign | (unsigned int)(exponent << 23) | (val.u32 & 0x007fffff);
+        val.f32 = val.f32 * VAL_2PMMULTIPLIER_SP;
         return val.f32;
-	}
+    }
 
-    exponent += n;
+    exponent += (int)n;
 
     if(exponent < -MULTIPLIER_SP)/*underflow*/
-	{
-		val.u32 = sign | 0x00000000;
-        return __amd_handle_errorf("scalblnf", __amd_scalbn, val.u32, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, (float)n, 2);
-	}
+    {
+        val.u32 = sign | 0x00000000;
+        return __alm_handle_errorf(val.u32,
+                                      AMD_F_INEXACT|AMD_F_UNDERFLOW);
+    }
 
     if(exponent < 1)/*x is normal but output is debnormal*/
     {
-		exponent += MULTIPLIER_SP;
-		val.u32 = sign | (exponent << 23) | (val.u32 & 0x007fffff);
-		val.f32 = val.f32 * VAL_2PMMULTIPLIER_SP;
+        exponent += MULTIPLIER_SP;
+        val.u32 = sign | (unsigned int)(exponent << 23) | (val.u32 & 0x007fffff);
+        val.f32 = val.f32 * VAL_2PMMULTIPLIER_SP;
         return val.f32;
     }
 
     if(exponent > 254)/*overflow*/
-	{
-		val.u32 = sign | 0x7f800000;
-        return __amd_handle_errorf("scalblnf", __amd_scalbn, val.u32, _OVERFLOW, AMD_F_INEXACT|AMD_F_OVERFLOW, ERANGE, x, (float)n, 2);
-	}
+    {
+        val.u32 = sign | 0x7f800000;
+        return __alm_handle_errorf(val.u32,
+                                      AMD_F_INEXACT|AMD_F_OVERFLOW);
+    }
 
-    val.u32 = sign | (exponent << 23) | (val.u32 & 0x007fffff);/*x is normal and output is normal*/
+    val.u32 = sign | (unsigned int)(exponent << 23) | (val.u32 & 0x007fffff);
+                                                /*x is normal and output is normal*/
     return val.f32;
 }
-
 

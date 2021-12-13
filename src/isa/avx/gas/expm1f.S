@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@
 #include "fn_macros.h"
 #include "exp_tables.h"
 
-#define fname FN_PROTOTYPE_BAS64(expm1f)
+#define fname ALM_PROTO_BAS64(expm1f)
 #define fname_special _expm1f_special@PLT
 
 
@@ -38,7 +38,7 @@
 .text
 .p2align 4
 .globl fname
-.type   fname, @function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
     ucomiss .L__max_expm1f_arg(%rip),%xmm0         ##if(x > max_expm1_arg)
     ja .L__y_is_inf

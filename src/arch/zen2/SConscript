@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@
 
 # Inherit global environment
 Import('env')
+import os
 from os.path import join as joinpath
 
 builddir = joinpath(env['BUILDROOT'], 'src', 'optmized')
@@ -34,7 +35,7 @@ e = env.Clone()
 # These rearrangements are not value-safe:
 #	 (a ⊕ b) ⊕ c ⇒ a ⊕ (b ⊕ c)
 #	 a ⊗ (b ⊕ c) ⇒ (a ⊗ b) ⊕ (a ⊕ c)
-# 
+#
 # To Disallow these changes in gcc remove -ffast-math
 if '-ffast-math' in e['CFLAGS']:
     e['CFLAGS'].remove('-ffast-math')
@@ -44,8 +45,13 @@ incpaths = [
     '#' + joinpath(Dir('.').srcnode().path, 'include')
 ]
 
+if e['HOST_OS'] != 'win32':
+    cflags = ['-march=znver2', '-O3', '-fPIC', '-flax-vector-conversions']
+else:
+    cflags = ['-march=znver2']
+
 e.MergeFlags({
-    'CFLAGS'  : ['-march=znver2', '-O3', '-fPIC', '-flax-vector-conversions'],
+    'CFLAGS'  : cflags,
     'CPPPATH' : incpaths
 })
 

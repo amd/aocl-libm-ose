@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,12 +25,11 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
-
-float FN_PROTOTYPE_REF(frexpf)(float value, int *exp)
+float ALM_PROTO_REF(frexpf)(float value, int *exp)
 {
     UT32 val;
     unsigned int sign;
@@ -45,17 +44,17 @@ float FN_PROTOTYPE_REF(frexpf)(float value, int *exp)
     if(val.u32 > 0x7f800000)
      {
 #ifdef WINDOWS
-         return __amd_handle_errorf("frexpf", __amd_frexp, val.u32|QNANBITPATT_DP64, DOMAIN, AMD_F_NONE, EDOM, value, 0.0, 1);
+         return __alm_handle_errorf("frexpf", __amd_frexp, val.u32|QNANBITPATT_DP64, DOMAIN, AMD_F_NONE, EDOM, value, 0.0, 1);
 #else
          return value+value;
 #endif
      }
-    exponent = val.u32 >> 23; /* get the exponent */
+    exponent = (int)(val.u32 >> 23); /* get the exponent */
 
 	if(exponent == 0)/*x is denormal*/
 	{
 		val.f32 = val.f32 * VAL_2PMULTIPLIER_SP;/*multiply by 2^24 to bring it to the normal range*/
-		exponent = (val.u32 >> 23); /* get the exponent */
+		exponent = (int)(val.u32 >> 23); /* get the exponent */
 		exponent = exponent - MULTIPLIER_SP;
 	}
 

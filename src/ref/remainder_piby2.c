@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,9 +25,12 @@
  *
  */
 
-#include "libm_amd.h"
+#include <libm/amd_funcs_internal.h>
+
 
 void __amd_remainder_piby2(double x, double *r, double *rr, int *region);
+void __amd_remainder_2dfpiby2(__m128d x, __m128d *r, __m128d *rr, __m128i *region);
+
 
 void __amd_remainder_2dfpiby2(__m128d x, __m128d *r, __m128d *rr, __m128i *region)
 {
@@ -52,11 +55,11 @@ void __amd_remainder_2dfpiby2(__m128d x, __m128d *r, __m128d *rr, __m128i *regio
 
 	inpx.d128 = x;
 
-     __amd_remainder_piby2(inpx.d[0],&ir,&irr,&reg);
+         __amd_remainder_piby2(inpx.d[0],&ir,&irr,&reg);
 	 __amd_remainder_piby2(inpx.d[1],&ir1,&irr1,&reg1);
 
-	 resregion.i[0] = reg;
-	 resregion.i[1] = reg1;
+	 resregion.i[0] = (unsigned long long)reg;
+	 resregion.i[1] = (unsigned long long)reg1;
 
 	 resrr.d[0] = irr;
 	 resrr.d[1] = irr1;

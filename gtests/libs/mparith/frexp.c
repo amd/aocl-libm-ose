@@ -1,19 +1,19 @@
 #include "precision.h"
-#include "mparith_c.h"
+
 
 #if defined(FLOAT)
 #define FUNC_FREXP alm_mp_frexpf
-#define FUNC_FREXP_ULP alm_mp_frexpf_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_FREXP alm_mp_frexp
-#define FUNC_FREXP_ULP alm_mp_frexp_ULP
+
 #else
 #error
 #endif
 
-REAL FUNC_FREXP(REAL x, int *ptr)
+REAL_L FUNC_FREXP(REAL x, int *ptr)
 {
-    REAL ret;
+    REAL_L ret;
     fp_params params;
     int base, mantis, emin, emax;
     int *xmp, *ymp;
@@ -33,6 +33,8 @@ REAL FUNC_FREXP(REAL x, int *ptr)
 
     return ret;
 }
+
+REAL FUNC_FREXP_ULP123(REAL x, int *ptr, REAL z, double *sulps, double *sreldiff);
 
 REAL FUNC_FREXP_ULP123(REAL x, int *ptr, REAL z, double *sulps, double *sreldiff)
 {

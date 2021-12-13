@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -46,7 +46,7 @@
 
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE_FMA3(vrd4_pow)
+#define fname ALM_PROTO_FMA3(vrd4_pow)
 #define fname_special _pow_special@PLT
 
 
@@ -64,7 +64,7 @@
 .align 16
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 # ymm0 = 4 packed double precision values x0, x1, x2, x3
 # ymm1 = 4 packed double precision values y0,y1,y2,y3

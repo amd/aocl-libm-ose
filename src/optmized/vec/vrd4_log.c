@@ -26,9 +26,9 @@
  */
 
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 #include <libm/poly-vec.h>
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
@@ -103,7 +103,7 @@ static struct {
 static inline v_f64x4_t
 log_specialcase(v_f64x4_t _x,
                  v_f64x4_t result,
-                 v_i64x4_t cond)
+                 v_u64x4_t cond)
 {
     return v_call_f64(ALM_PROTO(log), _x, result, cond);
 }
@@ -147,23 +147,23 @@ ALM_PROTO_OPT(vrd4_log) (__m256d x)
 
     v_i64x4_t ix;
 
-    ix = as_v4_u64_f64(x);
+    ix = as_v4_i64_f64(x);
 
-    v_i64x4_t condition = (as_v4_u64_f64(x) - V_MIN >= V_MAX - V_MIN);
+    v_u64x4_t condition = (as_v4_u64_f64(x) - V_MIN >= V_MAX - V_MIN);
 
     ix = (ix - TWO_BY_THREE) & INF;
 
-    v_i64x4_t int_exponent = ix >> EXPSHIFTBITS_SP64;
+    v_i64x4_t int_exponent = (v_i64x4_t)ix;
 
     v_i32x4_t int32_exponent;
 
     for(int i = 0; i < VECTOR_SIZE; i++) {
 
-       int32_exponent[i] = int_exponent[i];
+       int32_exponent[i] = (int32_t)(int_exponent[i]  >> EXPSHIFTBITS_SP64);
 
     }
 
-    n = _mm256_cvtepi32_pd(int32_exponent);
+    n = (v_f64x4_t)_mm256_cvtepi32_pd((__m128i)int32_exponent);
 
 	/* Reduce the mantissa, m to [2/3, 4/3] */
 

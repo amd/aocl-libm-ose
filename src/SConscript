@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -25,61 +25,107 @@
 
 # Inherit global environment
 Import('env')
+import os
 from os.path import join as joinpath
 
-installdir = env['prefix']
+installdir = env['installdirs']
+
 builddir = joinpath(env['BUILDROOT'], 'src')
 
-e = env.Clone()
-e.Append(
-    CCFLAGS = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror',
+ldscript = joinpath('#', 'src', 'ld-syms-libm.lds')
+
+kern_incpaths = [
+    '#' + Dir('.').srcnode().path,
+    '#' + joinpath(Dir('.').srcnode().path, 'optmized'),
+    '#' + joinpath(Dir('.').srcnode().path, 'kern')
+]
+
+if env['HOST_OS'] != 'win32':
+    ccflags = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror',
                #'-Wno-unused-but-set-parameter',
                '-Wno-unused-parameter',
                '-fPIC',
-               '-mavx2', '-march=znver2'],
-    # CPPPATH = [],
+              ]
+else:
+    ccflags = ['-DAVX_XOP_FMA4_FMA3',
+               '-DDEBUG=0',
+               '-DENABLE_AMDLIBM_API=1',
+               '-DLIBABI=aocl',
+               '-D__AVX2__',
+               '-Dlibalm_EXPORTS',
+               '/W0',
+               '/MP',
+               '/O3',
+               '-Wno-c++11-narrowing',
+               '-m64',
+               '-fdiagnostics-absolute-paths',
+               '/DWIN32',
+               '/D_WINDOWS',
+               '/O2',
+               '/Ob2',
+               '/DNDEBUG',
+               '-MD',
+               '-march=native',
+               #'/showIncludes',
+               '/MT'
+          ]
+
+if env['HOST_OS'] == 'win32':
+    if env['BUILD'] == 'debug':
+        env['PDB'] = 'libalm.pdb'
+
+e = env.Clone()
+e.Append(
+    CCFLAGS=ccflags,
+    CPPPATH = kern_incpaths,
     # CCFLAGS = [],
     # LINKFLAGS = [],
-    LINKERSCRIPT = 'src/ld-syms-libm.lds',
+    LINKERSCRIPT = ldscript,
     STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 1
 )
 
 alm_objs = []
 
 almenv = e.Clone()
-almenv.Append(
-    LINKFLAGS = ['-ealm_main'], # ['-T$LINKERSCRIPT']
-    LIBS      = ['c'],
-)
+if e['HOST_OS'] != 'win32':
+    almenv.Append(
+        LINKFLAGS = ['-ealm_main'], # ['-T$LINKERSCRIPT']
+        LIBS      = ['c'],
+    )
 
 subdirs = ['isa', 'optmized', 'iface', 'arch', 'ref']
 for d in subdirs:
-	denv = almenv.Clone()
-	sdir = joinpath(denv['CWD'], d)
-	denv.Append(
-		CWD = sdir
-	)
-	alm_objs += SConscript('%s/SConscript'%d,
-			    exports = {'env' : denv},
-			    duplicate = 0,
+    denv = almenv.Clone()
+    sdir = joinpath(denv['CWD'], d)
+    denv.Append(
+        CWD = sdir
+    )
+    alm_objs += SConscript('%s/SConscript'%d,
+                exports = {'env' : denv},
+                duplicate = 0,
                             src_dir = sdir,
                             variant_dir = joinpath(builddir, '%s'%d))
 
-lib_excludes = ['MapEntryPoints.c']
+lib_excludes = ['alm_env.c']
 lib_srcs = Glob('*.[c]', exclude=lib_excludes)
 
 alm_objs += almenv.StaticObject(lib_srcs)
 
-libm = almenv.StaticLibrary('alm', alm_objs)
-libmso = almenv.SharedLibrary('alm', alm_objs)
+if e['HOST_OS'] != 'win32':
+    libm = almenv.StaticLibrary('alm', alm_objs)
+    libmso = almenv.SharedLibrary('alm', alm_objs)
+else:
+    libm = almenv.StaticLibrary('libalm-static', alm_objs)
+    almenv['WINDOWS_INSERT_DEF']=1
+    libmso = almenv.SharedLibrary('libalm', alm_objs, no_import_lib=False)
 
 #add include headers as part of the install
-alm_header_scalar = joinpath(env['INCPATH'], 'external', 'amdlibm.h')
-alm_header_vector = joinpath(env['INCPATH'], 'external', 'amdlibm_vec.h')
+alm_headers = ['amdlibm.h', 'amdlibm_vec.h']
+alm_external_headers = list(map(lambda x : joinpath(env['INCPATH'], 'external', x), alm_headers))
 
-#install with libs and include dir
-almenv.Alias("install", almenv.Install(joinpath(installdir, "lib"), [libmso, libm]))
-almenv.Alias("install", almenv.Install(joinpath(installdir, "include"), [alm_header_scalar, alm_header_vector]))
+if 'install' in COMMAND_LINE_TARGETS:
+    almenv.Alias('install', almenv.Install(installdir['lib'], [libmso, libm]))
+    almenv.Alias("install", almenv.Install(installdir['include'], [alm_external_headers]))
 
 fast_libm = SConscript('fast/SConscript',
                        exports = {'env' : e},
@@ -87,7 +133,15 @@ fast_libm = SConscript('fast/SConscript',
                        src_dir = '#src/fast',
                        variant_dir = joinpath(builddir, 'fast'))
 
-Depends(libmso, '#src/ld-syms-libm.lds')
+if e['HOST_OS'] != 'win32':
+    compat_libm = SConscript('compat/SConscript',
+                       exports = {'env' : e},
+                       duplicate = 0,
+                       src_dir = '#src/compat',
+                       variant_dir = joinpath(builddir, 'compat'))
 
-Return('fast_libm', 'libm', 'libmso')
-
+Depends(libmso, ldscript)
+if e['HOST_OS'] != 'win32':
+    Return('compat_libm', 'fast_libm', 'libm', 'libmso')
+else:
+    Return('fast_libm', 'libm', 'libmso')

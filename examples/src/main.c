@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@
  */
 
 #include <stdio.h>
+
 extern int use_exp();
 extern int use_pow();
 extern int use_log();
@@ -36,6 +37,12 @@ extern int use_cos();
 extern int use_tan();
 extern int use_cosh();
 extern int use_tanh();
+extern int use_sinh();
+extern int use_exp2();
+extern int use_log2();
+extern int use_asin();
+extern int use_acos();
+extern int use_log10();
 
 int main()  {
     printf("Illustration of AMD LibM functions\n");
@@ -49,5 +56,14 @@ int main()  {
     use_tan();
     use_cosh();
     use_tanh();
+    use_sinh();
+    use_exp2();
+    use_log2();
+    use_acos();
+    use_asin();
+    use_log10();
+
+    printf("Ran examples\n");
+
     return 0;
 }

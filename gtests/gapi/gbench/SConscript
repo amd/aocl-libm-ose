@@ -11,38 +11,47 @@ from os.path import join as joinpath
 Import('env')
 
 build_dir = joinpath(env['BUILDROOT'], 'gbench')
+genv = env.Clone()
 
-gflags = [
-	'-std=c++11','-O3', '-DNDEBUG','-Wno-deprecated',
-	'-Wall', '-Wextra', '-Wshadow', '-fstrict-aliasing',
+if genv['HOST_OS'] != 'win32':
+    gflags = [
+    '-std=c++11','-O3', '-DNDEBUG','-Wno-deprecated',
+    '-Wall', '-Wextra', '-Wshadow', '-fstrict-aliasing',
     '-Wno-deprecated-declarations', '-Werror',
     '-fPIC',
-	'-DHAVE_POSIX_REGEX',
-	'-DHAVE_STD_REGEX',
-	'-DHAVE_STEADY_CLOCK'
-	]
+    '-DHAVE_POSIX_REGEX',
+    '-DHAVE_STD_REGEX',
+    '-DHAVE_STEADY_CLOCK'
+    ]
+    liblist = ['pthread']
+    genv.Replace(CC='gcc',LINKFLAGS=[])
+
+else:
+    gflags = ['-Dlibbenchmark_EXPORTS']
+    liblist = ['Shlwapi']
+    exclude_flags=['/std:c17', '-funsigned-char', '-Wno-unused-parameter', '-march=native', '-std:c++17']
+    for i in exclude_flags:
+        if i in genv['CFLAGS']:
+            genv['CFLAGS'].remove(i)
+            genv['CCFLAGS'].remove(i)
 
 this_sconscript_file = Dir('.').srcnode().abspath
 
 ccflags = []
-liblist = ['pthread']
 incpath = [ joinpath(this_sconscript_file, x) for x in ['.', './src']]
 libpath = []
 
-genv = env.Clone()
-genv.Replace(CC='gcc',LINKFLAGS=[])
 genv.Append(
     CCFLAGS  = gflags,
     CPPPATH  = [incpath],
     LIBS     = liblist,
-    STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 'yes' ,
+    STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 1
 )
 
 libbenchmark = SConscript('build_gbench',
-		exports = {'genv': genv},
-		duplicate = 0,
-	)
-
+        exports = {'genv': genv},
+        duplicate = 0,
+    )
 
 Return('libbenchmark')
 

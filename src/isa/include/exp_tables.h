@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -49,8 +49,10 @@
 
 .align 16
 .comm   L__two_to_jby64_table, 512
+#ifdef __GNU_ASM__
 .type	L__two_to_jby64_table, @object
 .size	L__two_to_jby64_table, 512
+#endif
 .L__two_to_jby64_table:
     .quad 0x3ff0000000000000
     .quad 0x3ff02c9a3e778061
@@ -119,8 +121,10 @@
 
 .align 16
 .comm   L__two_to_jby64_head_table, 512
+#ifdef __GNU_ASM__
 .type	L__two_to_jby64_head_table, @object
 .size	L__two_to_jby64_head_table, 512
+#endif
 .L__two_to_jby64_head_table:
     .quad 0x3ff0000000000000
     .quad 0x3ff02c9a30000000
@@ -189,8 +193,10 @@
 
 .align 16
 .comm   L__two_to_jby64_tail_table, 512
+#ifdef __GNU_ASM__
 .type	L__two_to_jby64_tail_table, @object
 .size	L__two_to_jby64_tail_table, 512
+#endif
 .L__two_to_jby64_tail_table:
     .quad 0x0000000000000000
     .quad 0x3e6cef00c1dcdef9

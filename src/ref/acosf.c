@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,12 +25,12 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
 
-float FN_PROTOTYPE_REF(acosf)(float x)
+float ALM_PROTO_REF(acosf)(float x)
 {
   /* Computes arccos(x).
      The argument is first reduced by noting that arccos(x)
@@ -73,13 +73,13 @@ float FN_PROTOTYPE_REF(acosf)(float x)
   if (xnan)
     {
 #ifdef WINDOWS
-     return  __amd_handle_errorf("acosf", __amd_acos, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F, 1);
+     return  __alm_handle_errorf(ux|0x00400000, AMD_F_NONE);
 #else
       //return x + x; /* With invalid if it's a signalling NaN */
       if (ux & QNAN_MASK_32)
-     return  __amd_handle_errorf("acosf", __amd_acos, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F, 1);
+     return  __alm_handle_errorf(ux|0x00400000, AMD_F_NONE);
       else
-     return  __amd_handle_errorf("acosf", __amd_acos, ux|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
+     return  __alm_handle_errorf(ux|0x00400000, AMD_F_INVALID);
 
 
 #endif
@@ -95,10 +95,10 @@ float FN_PROTOTYPE_REF(acosf)(float x)
         return (float)pi;//valf_with_flags((float)pi, AMD_F_INEXACT);
       else
 #ifdef WINDOWS
-		return  __amd_handle_errorf("acosf", __amd_acos, INDEFBITPATT_SP32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
+		return  __alm_handle_errorf(INDEFBITPATT_SP32, AMD_F_INVALID);
 #else
         //return retval_errno_edom(x);
-		return  __amd_handle_errorf("acosf", __amd_acos, INDEFBITPATT_SP32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
+		return  __alm_handle_errorf(INDEFBITPATT_SP32, AMD_F_INVALID);
 #endif
     }
 
@@ -134,9 +134,10 @@ float FN_PROTOTYPE_REF(acosf)(float x)
   if (transform)
     {
       /* Reconstruct acos carefully in transformed region */
-      if (xneg)
-        return (float)(pi - 2.0*(s+(y*u - piby2_tail)));
-      else
+      if (xneg){
+        double ds = (double)s, dy = (double)y, du = (double)u;
+        return (float)(pi - 2.0*(ds+(dy*du - piby2_tail)));
+      } else
 	{
 	  float c, s1;
 	  unsigned int us;
@@ -147,7 +148,10 @@ float FN_PROTOTYPE_REF(acosf)(float x)
 	}
     }
   else
-    return (float)(piby2_head - (x - (piby2_tail - x*u)));
+  {
+    double dx = (double)x, du = (double)u;
+    return (float)(piby2_head - (dx - (piby2_tail - dx*du)));
+  }
 }
 
 

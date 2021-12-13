@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -28,12 +28,13 @@
 #include <stdint.h>
 
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 #include <libm_macros.h>
 
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/typehelper-vec.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
@@ -121,7 +122,7 @@ extern double tan_specialcase(double x);
  * - Inf/NaN
  */
 static inline v_f64x2_t
-vrd2_tan_specialcase(v_f64x2_t _x, v_f64x2_t result, v_i64x2_t cond)
+vrd2_tan_specialcase(v_f64x2_t _x, v_f64x2_t result, v_u64x2_t cond)
 {
     return call_v2_f64(tan_specialcase, _x, result, cond);
 }
@@ -157,7 +158,7 @@ ALM_PROTO_OPT(vrd2_tan)(v_f64x2_t x)
     v_u64x2_t   n, sign;
     v_u64x2_t   ux = as_v2_u64_f64(x);
 
-    v_i64x2_t cond = (ux & ~ALM_TAN_V2_SIGN_MASK) > ALM_TAN_V2_ARG_MAX;
+    v_u64x2_t cond = (ux & ~ALM_TAN_V2_SIGN_MASK) > ALM_TAN_V2_ARG_MAX;
 
     sign = ux & ALM_TAN_V2_SIGN_MASK;
 

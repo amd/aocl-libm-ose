@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -89,12 +89,14 @@
 
 #include <stdint.h>
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 #include <libm_macros.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
+#include <libm/alm_special.h>
 
 static struct {
     const double twobypi, piby2_1, piby2_1tail, invpi, pi, pi1, pi2;
@@ -172,8 +174,6 @@ void __amd_remainder_piby2(double x, double *r, double *rr, int *region);
 #define SIN_SMALL   0x3f20000000000000  /* 2.0^(-13) */
 #define SIN_SMALLER 0X3e40000000000000  /* 2.0^(-27) */
 
-float _sinf_special(float x);
-double _sin_special_underflow(double x);
 
 double
 ALM_PROTO_OPT(sin)(double x)
@@ -195,7 +195,7 @@ ALM_PROTO_OPT(sin)(double x)
 
     if(unlikely((ux  & SIGN_MASK) >= INF)) {
         /* infinity or NaN */
-        return _sinf_special(x);
+        return _sinf_special((float)x);
     }
 
     if(ux > PIby4){
@@ -208,11 +208,11 @@ ALM_PROTO_OPT(sin)(double x)
 
             r = TwobyPI * x; /* x * two_by_pi*/
 
-            int32_t xexp = ux >> 52;
+            int32_t xexp = (int32_t)(ux >> 52);
 
             double npi2d = r + ALM_SHIFT;
 
-            int64_t npi2 = asuint64(npi2d);
+            uint64_t npi2 = asuint64(npi2d);
 
             npi2d -= ALM_SHIFT;
 
@@ -224,9 +224,9 @@ ALM_PROTO_OPT(sin)(double x)
 
             uy = asuint64(r);
 
-            int64_t expdiff = xexp - ((uy << 1) >> 53);
+            int64_t expdiff = xexp - (int32_t)((uy << 1) >> 53);
 
-            region = npi2;
+            region = (int32_t)npi2;
 
             if (expdiff  > 15) {
 
@@ -284,7 +284,7 @@ ALM_PROTO_OPT(sin)(double x)
 
         region >>= 1;
 
-        if(((sign & region) | ((~sign) & (~region))) & 1) {
+        if(((sign & (uint64_t)region) | ((~sign) & (~(uint64_t)region))) & 1) {
 
             return r;
 

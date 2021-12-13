@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,14 +25,15 @@
  *
  */
 
-#include <libm_amd.h>
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
 
 
+double ALM_PROTO_OPT(expm1_v2) (double x);
+
 double
-FN_PROTOTYPE_OPT(expm1_v2) (double x)
+ALM_PROTO_OPT(expm1_v2) (double x)
 {
-	return FN_PROTOTYPE_FMA3(expm1)(x);
+	return ALM_PROTO_FMA3(expm1)(x);
 }
 

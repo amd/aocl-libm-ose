@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -27,13 +27,14 @@
 
 #include "fn_macros.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
-float FN_PROTOTYPE_REF(ceilf)(float x)
+float ALM_PROTO_REF(ceilf)(float x)
 {
   float r;
-  int rexp, xneg;
-  unsigned int ux, ax, ur, mask;
+  int xneg;
+  unsigned int ux, ax, ur, mask, rexp;
 
   GET_BITS_SP32(x, ux);
   /*ax is |x|*/
@@ -55,10 +56,10 @@ float FN_PROTOTYPE_REF(ceilf)(float x)
       if (ax > 0x7f800000)
         /* x is NaN */
             #ifdef WINDOWS
-                return __amd_handle_errorf("ceilf", __amd_ceil, ux|0x00400000, _DOMAIN, 0, EDOM, x, 0.0, 1);
+                return __alm_handle_errorf(ux|0x00400000, 0);
             #else
                 if(!(ax & 0x00400000)) //x is snan
-                    return __amd_handle_errorf("ceilf", __amd_ceil, ux|0x00400000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+                    return __alm_handle_errorf(ux|0x00400000, AMD_F_INVALID);
 		else
 			return x;
             #endif
@@ -80,7 +81,7 @@ float FN_PROTOTYPE_REF(ceilf)(float x)
     {
       rexp = ((ux & EXPBITS_SP32) >> EXPSHIFTBITS_SP32) - EXPBIAS_SP32;
       /* Mask out the bits of r that we don't want */
-      mask = (1 << (EXPSHIFTBITS_SP32 - rexp)) - 1;
+      mask = (unsigned int)((1 << (EXPSHIFTBITS_SP32 - rexp)) - 1);
       /*Keeps the exponent part and the required mantissa.*/
       ur = (ux & ~mask);
       PUT_BITS_SP32(ur, r);

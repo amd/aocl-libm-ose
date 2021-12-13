@@ -27,7 +27,7 @@
  */
 
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
@@ -250,7 +250,7 @@ pow_specialcase(v_f64x2_t _x,
 static inline v_f64x2_t
 calculate_log(v_u64x2_t ux, v_f64x2_t* logx_t)
 {
-    v_i64x2_t int_exponent =  (ux >> 52) - DP64_BIAS;
+    v_u64x2_t int_exponent =  (ux >> 52) - DP64_BIAS;
 
     v_u64x2_t mant  = ((ux & MANTISSA_BITS) | DP_HALF);
 
@@ -278,9 +278,9 @@ calculate_log(v_u64x2_t ux, v_f64x2_t* logx_t)
 
     for(int  lane = 0; lane < VECTOR_LENGTH; lane++) {
 
-        int32_t j = index[lane];
+        int32_t j = (int32_t)index[lane];
 
-        exponent[lane] = int_exponent[lane];
+        exponent[lane] = (double)int_exponent[lane];
 
         F_INV_HEAD[lane] = TAB_F_INV[j].head;
 
@@ -344,7 +344,7 @@ calculate_exp(v_f64x2_t ylogx_h, v_f64x2_t ylogx_t)
 
     v_f64x2_t dn = z + EXP_HUGE;
 
-    v_i64x2_t n = as_v2_u64_f64(dn);
+    v_u64x2_t n = as_v2_u64_f64(dn);
 
     dn = dn - EXP_HUGE;
 
@@ -352,7 +352,7 @@ calculate_exp(v_f64x2_t ylogx_h, v_f64x2_t ylogx_t)
 
     v_f64x2_t r = ylogx_h - (dn * LOG2_BY_N_HEAD);
 
-    v_i64x2_t m = ((n - index) << (52 - N)) + ONE;
+    v_i64x2_t m = (v_i64x2_t)(((n - index) << (52 - N)) + ONE);
 
     r = (r - (LOG2_BY_N_TAIL * dn)) + ylogx_t;
 
@@ -366,7 +366,7 @@ calculate_exp(v_f64x2_t ylogx_h, v_f64x2_t ylogx_t)
 
     for (int lane = 0; lane < VECTOR_LENGTH; lane++) {
 
-        int32_t j = index[lane];
+        int32_t j = (int32_t)index[lane];
 
         j_by_N_head[lane] = TWO_POWER_J_BY_N[j].head;
 
@@ -380,7 +380,7 @@ calculate_exp(v_f64x2_t ylogx_h, v_f64x2_t ylogx_t)
 
     r = j_by_N_head + (z + q);
 
-    return r * as_v2_f64_u64(m);
+    return r * as_v2_f64_i64(m);
 
 }
 

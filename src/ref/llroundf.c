@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,14 +25,14 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
 #ifdef WINDOWS
 /*In windows llong long int is 64 bit and long int is 32 bit.
   In Linux long long int and long int both are of size 64 bit*/
-long long int FN_PROTOTYPE_REF(llroundf)(float f)
+long long int ALM_PROTO_REF(llroundf)(float f)
 {
     UT32 u32d;
     UT32 u32Temp,u32result;
@@ -46,7 +46,7 @@ long long int FN_PROTOTYPE_REF(llroundf)(float f)
         /*else the number is infinity*/
 		//Got to raise range or domain error
         {
-			__amd_handle_errorf("llroundf", __amd_lround, SIGNBIT_SP32, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
+			__alm_handle_errorf("llroundf", __amd_lround, SIGNBIT_SP32, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
 			return SIGNBIT_DP64; /*GCC returns this when the number is out of range*/
         }
 
@@ -67,7 +67,7 @@ long long int FN_PROTOTYPE_REF(llroundf)(float f)
     if (intexp >= 63)
     {
         result = 0x8000000000000000;
-		__amd_handle_errorf("llroundf", __amd_lround, SIGNBIT_SP32, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
+		__alm_handle_errorf("llroundf", __amd_lround, SIGNBIT_SP32, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
         return result;
     }
 
@@ -108,7 +108,7 @@ long long int FN_PROTOTYPE_REF(llroundf)(float f)
 #else //WINDOWS
 /*llroundf is equivalent to the linux implementation of 
   lroundf. Both long int and long long int are of the same size*/
-long long int FN_PROTOTYPE_REF(llroundf)(float f)
+long long int ALM_PROTO_REF(llroundf)(float f)
 {
     long long int result;
     result = FN_PROTOTYPE(lroundf)(f);

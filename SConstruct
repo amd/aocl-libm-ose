@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -44,62 +44,54 @@ def AddSiteDir(site_dir):
 
 AddSiteDir("scripts")
 
-# We need a better name for this
-from scripts.cfg import cfg,helper
-from scripts.cfg import DefaultCfg
-from scripts.cfg.helper import PrintBanner
+from alm.env import AlmEnvironment
+from alm import print_build_failures, print_build_config
 
-defcfg = DefaultCfg(build_root=Dir('#build', create=True))
+__almenv = AlmEnvironment()
+__almenv.Setup()
+aenv = __almenv.GetDefaultEnv()
+if aenv['HOST_OS'] == 'win32':
+    aenv['ENV']['TMP'] = os.environ['TMP'] # to avoid linker eror in windows. This is mentioned in scons FQA doc.
+    os.system("copy scripts\libalm.def src")
 
-env = defcfg.GetDefaultEnv()
+# First check version of python and scons
+EnsurePythonVersion(3, 6)
+EnsureSConsVersion(3, 1, 1)
 
-#check intel lib path
-intel_lib_path = None
-libabi = env['libabi']
-if libabi == 'svml':
-    for p in env['ENV']['PATH'].split(':'):
-        if 'intel' in p:
-            intel_lib_path=p
-            break
+# Register exit printers
+import atexit
+atexit.register(print_build_config, aenv)
+atexit.register(print_build_failures)
 
-    if intel_lib_path is None:
-        print ("Error! Intel lib not found")
-        Exit(2)
-    else:
-        print (intel_lib_path)
-        env.Append(INTEL_LIB_PATH = intel_lib_path)
+# include path
+inc_path = '#include'
+
+# top level src path
+src_path = '#src'
 
 #get include path
 inc_path = os.path.join(os.getcwd(), 'include')
 
 # Add shared top-level headers
-env.Prepend(CPPPATH=[Dir('include')])
+aenv.Prepend(CPPPATH=[Dir('include')])
 
-build_root = env['BUILDROOT']
+aenv['BUILDROOT'] = aenv['BUILDDIR']
+
+build_root = aenv['BUILDROOT']
 
 makedirs(build_root, exist_ok=True)
 
-gvars = Variables(defcfg.def_env_file, args=ARGUMENTS)
-gvars.AddVariables(
-    #('CC', 'C compiler', environ.get('CC', env['CC'])),
-    #('CXX', 'C++ compiler', environ.get('CXX', env['CXX'])),
-    ('BUILDROOT', 'Build root', environ.get('BUILDROOT', env['BUILDROOT']))
-)
-
-# Update env environment with values from ARGUMENTS & global_vars_file
-gvars.Update(env)
-help_texts = defcfg.GetHelpTexts()
-help_texts["global_vars"] += gvars.GenerateHelpText(env)
+# alm libs will be generated here
+alm_lib_path='#'+joinpath(build_root,'src')
 
 # These targets are not the .obj files or .o files, instead
 # class targets or build objectw
 targets = []
 
-libenv = env.Clone()
+libenv = aenv.Clone()
 libenv.Append(
-	#INCPATH=['#include'],
-    INCPATH=inc_path,
-	CWD='#src',
+        INCPATH=inc_path,
+        CWD=src_path,
 )
 
 # To generate a file version.build.c having current gitversion in VERSION_STRING
@@ -108,64 +100,41 @@ libenv.Tool('gitversion')
 build_version = libenv.GenerateVersion('src/version.build.h')
 libenv.AlwaysBuild(build_version)
 
-amdlibm = SConscript('src/SConscript',
-                       exports = { 'env' : libenv },
-                       duplicate = 0,
-                       variant_dir = joinpath(build_root, 'src'))
+build_sys_details = libenv.GetBuildInfo('src/buildsysinfo.h')
+libenv.AlwaysBuild(build_sys_details)
 
-targets += amdlibm
+alm_libs = SConscript(joinpath(src_path, 'SConscript'),
+                     exports = { 'env' : libenv },
+                     duplicate = 0,
+                     variant_dir = alm_lib_path)
 
-#
-# Build Test lib and associated tests
-#
+targets += alm_libs
 
-testenv = env.Clone()
-if libabi == 'svml':
-    testenv.Append(
-	    LIBPATH=['#'+joinpath(build_root,'src'), env['INTEL_LIB_PATH']]
-    )
-else:
-    testenv.Append(
-        LIBPATH=['#'+joinpath(build_root,'src')]
-    )
+gtest_objs = []
+if 'tests' in COMMAND_LINE_TARGETS or ('gtests' in COMMAND_LINE_TARGETS) :
+    if aenv['HOST_OS'] == 'win32':
+        #initialize different library paths
+        mpfr_inc = Dir('..\mpfr\mpfr_x64-windows\include')
+        gmp_inc = Dir('..\mpfr\gmp_x64-windows\include')
+        mpfr_lib = Dir('..\mpfr\mpfr_x64-windows\lib')
+        gmp_lib = Dir('..\mpfr\gmp_x64-windows\lib')
 
-test_lib_objs = []  			# Will fill at a later date
-test_objs = SConscript(dirs='tests',
-                       exports = {'env' : testenv},
-                       duplicate = 0,
-                       src_dir    = 'tests',
-                       must_exist  = 0,
-                       variant_dir = joinpath(build_root, 'tests'))
+        aenv['ENV']['INCLUDE'] = [aenv['ENV']['INCLUDE'], mpfr_inc, gmp_inc]
+        aenv.Append(LIBS=['gmp.lib', 'mpfr.lib'],LIBPATH=[mpfr_lib, gmp_lib])
 
-gtest_objs = SConscript(dirs='gtests',
-                       exports = {'env' : testenv},
-                       duplicate = 0,
-                       src_dir    = 'gtests',
-                       variant_dir = joinpath(build_root, 'gtests'))
+    testenv = aenv.Clone()
 
-if 'tests' in COMMAND_LINE_TARGETS:
-    targets += test_objs
+    LIBPATH=[alm_lib_path]
 
-if 'gtests' in COMMAND_LINE_TARGETS:
+    gtest_objs += SConscript(dirs='gtests',
+                   exports = {'env' : testenv, 'almenv': __almenv},
+                   duplicate = 0,
+                   src_dir    = 'gtests',
+                   variant_dir = joinpath(build_root, 'gtests'))
+
+if gtest_objs:
+    Requires(gtest_objs, alm_libs)
     targets += gtest_objs
 
-Progress('\r', overwrite=True)
 Default(targets)
-
-import atexit
-atexit.register(PrintBanner, libenv)
-
-# base help text
-Help('''
-Usage: scons [scons options] [build variables] [target(s)]
-
-Extra scons options:
-%(options)s
-
-Global build variables:
-%(global_vars)s
-
-Local Variables:
-%(local_vars)s
-''' % help_texts)
 

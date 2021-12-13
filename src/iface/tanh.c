@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,78 +26,70 @@
  */
 
 #include <libm_macros.h>
-#include <libm/cpu_features.h>
-#include <libm/entry_pt.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/iface.h>
-#include <libm/amd_funcs_internal.h>    /* Contains all implementations */
+#include <libm/entry_pt.h>
 
-#include <libm/arch/zen2.h>
-#include <libm/arch/zen3.h>
+//
+#include <libm/arch/all.h>
 
-typedef float  (*amd_tanhf_t)(float);
-typedef double (*amd_tanh_t) (double);
-typedef __m128 (*amd_tanhf_v4s_t)(__m128);
-typedef __m256 (*amd_tanhf_v8s_t)(__m256);
+
+static const
+struct alm_arch_funcs __arch_funcs_tanh = {
+    .def_arch = ALM_UARCH_VER_DEFAULT,
+    .funcs = {
+        [ALM_UARCH_VER_DEFAULT] = {
+            &ALM_PROTO_ARCH_AVX2(tanhf),
+            &ALM_PROTO_REF(tanh),
+            &ALM_PROTO_ARCH_AVX2(vrs4_tanhf), /* v4s */
+            &ALM_PROTO_ARCH_AVX2(vrs8_tanhf), /* v8s ? */
+            NULL,                            /* v2d ? */
+            NULL,                            /* v4d ? */
+        },
+
+        [ALM_UARCH_VER_ZEN] = {
+            &ALM_PROTO_ARCH_ZN(tanhf),
+            NULL,
+            &ALM_PROTO_ARCH_ZN(vrs4_tanhf),
+            &ALM_PROTO_ARCH_ZN(vrs8_tanhf),
+            NULL,
+            NULL,
+        },
+
+        [ALM_UARCH_VER_ZEN2] = {
+            &ALM_PROTO_ARCH_ZN2(tanhf),
+            NULL, //&ALM_PROTO_ARCH_ZN2(tanh),
+            &ALM_PROTO_ARCH_ZN2(vrs4_tanhf),
+            &ALM_PROTO_ARCH_ZN2(vrs8_tanhf),
+            NULL, //&ALM_PROTO_ARCH_ZN2(vrd2_tanh),
+            NULL, //&ALM_PROTO_ARCH_ZN2(vrd4_tanh),
+        },
+
+        [ALM_UARCH_VER_ZEN3] = {
+            &ALM_PROTO_ARCH_ZN3(tanhf),
+            NULL, //&ALM_PROTO_ARCH_ZN3(tanh),
+            &ALM_PROTO_ARCH_ZN3(vrs4_tanhf),
+            &ALM_PROTO_ARCH_ZN3(vrs8_tanhf),
+            NULL, //&ALM_PROTO_ARCH_ZN3(vrd2_tanh),
+            NULL, //&ALM_PROTO_ARCH_ZN3(vrd4_tanh),
+        },
+    },
+};
 
 void
 LIBM_IFACE_PROTO(tanh)(void *arg)
 {
-    amd_tanhf_t fn_s = NULL;
-    amd_tanh_t  fn_d = NULL;
-    amd_tanhf_v4s_t fn_v4s = NULL;
-    amd_tanhf_v8s_t fn_v8s = NULL;
+    alm_ep_wrapper_t g_entry_tanh = {
+       .g_ep = {
+        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(tanhf),
+        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(tanh),
+        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_tanhf),
+        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_tanhf),
+        //[ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_tanh),
+        //[ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_tanh),
+        },
+    };
 
-    static struct cpu_features *features = NULL;
-
-    if(!features)   {
-        features = libm_cpu_get_features();
-    }
-
-    struct cpu_mfg_info *mfg_info = &features->cpu_mfg_info;
-
-    /*scalar double precision*/
-    fn_d = &FN_PROTOTYPE_REF(tanh);
-    /*single precision scalar*/
-    fn_s = &FN_PROTOTYPE_REF(tanhf);
-    /* We have only OPT version of float vector versions */
-    fn_v4s = &FN_PROTOTYPE_OPT(vrs4_tanhf);
-    fn_v8s = &FN_PROTOTYPE_OPT(vrs8_tanhf);
-
-    if (CPU_HAS_AVX2(features) &&
-        CPU_FEATURE_AVX2_USABLE(features)) {
-        fn_s   = &FN_PROTOTYPE_OPT(tanhf);
-        fn_v4s = &FN_PROTOTYPE_OPT(vrs4_tanhf);
-        fn_v8s = &FN_PROTOTYPE_OPT(vrs8_tanhf);
-    }
-
-    if (mfg_info->mfg_type == CPU_MFG_AMD) {
-        switch(mfg_info->family) {
-            case 0x15:                      /* Naples */
-                        break;
-            case 0x17:                      /* Rome */
-                        fn_s   = &ALM_PROTO_ARCH_ZN2(tanhf);
-                        fn_v4s = &ALM_PROTO_ARCH_ZN2(vrs4_tanhf);
-                        fn_v8s = &ALM_PROTO_ARCH_ZN2(vrs8_tanhf);
-                        break;
-            case 0x19:                      /* Milan */
-                        fn_s   = &ALM_PROTO_ARCH_ZN3(tanhf);
-                        fn_v4s = &ALM_PROTO_ARCH_ZN3(vrs4_tanhf);
-                        fn_v8s = &ALM_PROTO_ARCH_ZN3(vrs8_tanhf);
-                        break;
-        }
-    }
-
-    /* Double */
-    G_ENTRY_PT_PTR(tanh) = fn_d;
-
-    /* Single */
-    G_ENTRY_PT_PTR(tanhf) = fn_s;
-
-    /* Vector Double */
-
-    /* Vector Single */
-    G_ENTRY_PT_PTR(vrs4_tanhf) = fn_v4s;
-    G_ENTRY_PT_PTR(vrs8_tanhf) = fn_v8s;
-
+    alm_iface_fixup(&g_entry_tanh, &__arch_funcs_tanh);
 }
 

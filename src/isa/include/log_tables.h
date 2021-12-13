@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,8 +33,10 @@
 
 .align 16
 .comm   L__ln_tail_64_table, 520
+#ifdef __GNU_ASM__
 .type	L__ln_tail_64_table, @object
 .size	L__ln_tail_64_table, 520
+#endif
 .L__ln_tail_64_table:
              .quad 0x0000000000000000   # 0.00000000000000000000e+00,   
              .quad 0x3e361f807c79f3db   # 5.15092497094772879206e-09,   
@@ -106,8 +108,10 @@
 
 .align 16
 .comm   L__ln_lead_64_table, 520
+#ifdef __GNU_ASM__
 .type	L__ln_lead_64_table, @object
 .size	L__ln_lead_64_table, 520
+#endif
 .L__ln_lead_64_table:
        .quad 0x0000000000000000   # 0.00000000000000000000e+00,
        .quad 0x3f8fc0a800000000   # 1.55041813850402832031e-02,

@@ -26,16 +26,6 @@ uint32_t GetnIpArgs( void )
 	return ipargs;
 }
 
-void SpecSetupf32(SpecParams *specp) {
-  specp->data32 = test_powf_special_data;
-  specp->countf = ARRAY_SIZE(test_powf_special_data); 
-}
-
-void SpecSetupf64(SpecParams *specp) {
-  specp->data64 = test_pow_special_data;
-  specp->countd = ARRAY_SIZE(test_pow_special_data); 
-}
-
 void ConfSetupf32(SpecParams *specp) {
   specp->data32 = test_powf_conformance_data;
   specp->countf = ARRAY_SIZE(test_powf_conformance_data); 
@@ -54,12 +44,12 @@ double getFuncOp(double *data) {
   return LIBM_FUNC(pow)(data[0], data[1]);
 }
 
-float getExpected(float *data) {  
+double getExpected(float *data) {  
   auto val = alm_mp_powf(data[0], data[1]);
   return val;
 }
 
-double getExpected(double *data) {
+long double getExpected(double *data) {
   auto val = alm_mp_pow(data[0], data[1]);  
   return val;
 }
@@ -105,15 +95,12 @@ extern "C" {
 #endif
 
 /*vector routines*/
-#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
 __m128d LIBM_FUNC_VEC(d, 2, pow)(__m128d, __m128d);
 __m256d LIBM_FUNC_VEC(d, 4, pow)(__m256d, __m256d);
 __m128 LIBM_FUNC_VEC(s, 4, powf)(__m128, __m128);
 __m256 LIBM_FUNC_VEC(s, 8, powf)(__m256, __m256);
-#endif
 
 int test_v2d(test_data *data, int idx)  {
-#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
   double *ip1  = (double*)data->ip;
   double *ip2 = (double*)data->ip1;
   double *op  = (double*)data->op;
@@ -121,12 +108,10 @@ int test_v2d(test_data *data, int idx)  {
   __m128d ip22 = _mm_set_pd(ip2[idx+1], ip2[idx]);
   __m128d op2 = LIBM_FUNC_VEC(d, 2, pow)(ip21, ip22);
   _mm_store_pd(&op[0], op2);
-#endif
   return 0;
 }
 
 int test_v4s(test_data *data, int idx)  {
-#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
   float *ip1  = (float*)data->ip;
   float *ip2 = (float*)data->ip1;
   float *op  = (float*)data->op; 
@@ -134,12 +119,10 @@ int test_v4s(test_data *data, int idx)  {
   __m128 ip42 = _mm_set_ps(ip2[idx+3], ip2[idx+2], ip2[idx+1], ip2[idx]);
   __m128 op4 = LIBM_FUNC_VEC(s, 4, powf)(ip41, ip42);
   _mm_store_ps(&op[0], op4);
-#endif
   return 0;
 }
 
 int test_v4d(test_data *data, int idx)  {
-#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
   double *ip1  = (double*)data->ip;
   double *ip2 = (double*)data->ip1;
   double *op  = (double*)data->op; 
@@ -147,12 +130,11 @@ int test_v4d(test_data *data, int idx)  {
   __m256d ip42 = _mm256_set_pd(ip2[idx+3], ip2[idx+2], ip2[idx+1], ip2[idx]);
   __m256d op4 = LIBM_FUNC_VEC(d, 4, pow)(ip41, ip42);
   _mm256_store_pd(&op[0], op4);
-#endif
   return 0;
 }
 
 int test_v8s(test_data *data, int idx)  {
-#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
+
   float *ip1  = (float*)data->ip;
   float *ip2 = (float*)data->ip1;
   float *op  = (float*)data->op; 
@@ -162,7 +144,6 @@ int test_v8s(test_data *data, int idx)  {
                               ip2[idx+3], ip2[idx+2], ip2[idx+1], ip2[idx]);
   __m256 op8 = LIBM_FUNC_VEC(s, 8, powf)(ip81, ip82);
   _mm256_store_ps(&op[0], op8);
-#endif
   return 0;
 }
 #ifdef __cplusplus

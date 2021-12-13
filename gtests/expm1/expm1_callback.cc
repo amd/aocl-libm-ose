@@ -26,16 +26,6 @@ uint32_t GetnIpArgs( void )
 	return ipargs;
 }
 
-void SpecSetupf32(SpecParams *specp) {
-  specp->data32 = test_expm1f_special_data;
-  specp->countf = ARRAY_SIZE(test_expm1f_special_data); 
-}
-
-void SpecSetupf64(SpecParams *specp) {
-  specp->data64 = test_expm1_special_data;
-  specp->countd = ARRAY_SIZE(test_expm1_special_data); 
-}
-
 void ConfSetupf32(SpecParams *specp) {
   specp->data32 = test_expm1f_conformance_data;
   specp->countf = ARRAY_SIZE(test_expm1f_conformance_data); 
@@ -54,12 +44,12 @@ double getFuncOp(double *data) {
   return LIBM_FUNC(expm1)(data[0]);
 }
 
-float getExpected(float *data) {
+double getExpected(float *data) {
   auto val = alm_mp_expm1f(data[0]);
   return val;
 }
 
-double getExpected(double *data) {
+long double getExpected(double *data) {
   auto val = alm_mp_expm1(data[0]);
   return val;
 }
@@ -97,17 +87,12 @@ extern "C" {
 #define _ZGVdN2v_expm1 _ZGVbN2v_expm1
 #define _ZGVdN4v_expm1 _ZGVdN4v_expm1
 #define _ZGVsN4v_expm1f _ZGVbN4v_expm1f
-//#define _ZGVsN8v_expm1f _ZGVdN8v_expm1f
 #endif
 
 /*vector routines*/
-#if (LIBM_PROTOTYPE != PROTOTYPE_AMDLIBM)
 __m128d LIBM_FUNC_VEC(d, 2, expm1)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, expm1)(__m256d);
-
 __m128 LIBM_FUNC_VEC(s, 4, expm1f)(__m128);
-//__m256 LIBM_FUNC_VEC(s, 8, expm1f)(__m256);
-#endif
 
 int test_v2d(test_data *data, int idx)  {
 #if 0

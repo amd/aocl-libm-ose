@@ -59,7 +59,7 @@
 #include <emmintrin.h>
 
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 #include <libm_macros.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
@@ -72,34 +72,31 @@
 static const struct {
     v_f64x4_t   tblsz_byln2;
     v_f64x4_t   huge;
-    v_i32x4_t   arg_min;
     v_u32x4_t   arg_max;
-    v_i32x4_t   mask;
+    v_u32x4_t   mask;
     v_f64x4_t   poly_expf[6];
     v_f32x4_t   expf_max, expf_min;
     v_i32x4_t   infinity;
+} v_expf_data = {
+    .tblsz_byln2 =  _MM_SET1_PD4(0x1.71547652b82fep+0),
+    .huge        =  _MM_SET1_PD4(0x1.8p+52) ,
+    .arg_max     =  _MM_SET1_I32(0x42AE0000),
+    .mask        =  _MM_SET1_I32(0x7fffffff),
+    .infinity    =  _MM_SET1_I32(0x7f800000),
+    .expf_min    =  _MM_SET1_PS4(-0x1.9fe368p6f),
+    .expf_max    =  _MM_SET1_PS4(88.7228393f),
 
-} v_expf_data ={
-              .tblsz_byln2 =  _MM_SET1_PD4(0x1.71547652b82fep+0),
-              .huge        =  _MM_SET1_PD4(0x1.8p+52) ,
-              .arg_min     =  _MM_SET1_I32(0xFFFFFF99),
-              .arg_max     =  _MM_SET1_I32(0x42AE0000),
-              .mask        =  _MM_SET1_I32(0x7fffffff),
-              .infinity    =  _MM_SET1_I32(0x7f800000),
-              .expf_min    =  _MM_SET1_PS4(-0x1.9fe368p6f),
-              .expf_max    =  _MM_SET1_PS4(88.7228393f),
-
-              /*
-               * Polynomial coefficients obtained using Remez algorithm
-               */
-              .poly_expf = {
-                              _MM_SET1_PD4(0x1.0000014439a91p0),
-                              _MM_SET1_PD4(0x1.62e43170e3344p-1),
-                              _MM_SET1_PD4(0x1.ebf906bc4c115p-3),
-                              _MM_SET1_PD4(0x1.c6ae2bb88c0c8p-5),
-                              _MM_SET1_PD4(0x1.3d1079db4ef69p-7),
-                              _MM_SET1_PD4(0x1.5f8905cb0cc4ep-10),
-              },
+    /*
+     * Polynomial coefficients obtained using Remez algorithm
+     */
+    .poly_expf = {
+        _MM_SET1_PD4(0x1.0000014439a91p0),
+        _MM_SET1_PD4(0x1.62e43170e3344p-1),
+        _MM_SET1_PD4(0x1.ebf906bc4c115p-3),
+        _MM_SET1_PD4(0x1.c6ae2bb88c0c8p-5),
+        _MM_SET1_PD4(0x1.3d1079db4ef69p-7),
+        _MM_SET1_PD4(0x1.5f8905cb0cc4ep-10),
+    },
 };
 
 #define TBL_LN2      v_expf_data.tblsz_byln2
@@ -109,10 +106,9 @@ static const struct {
 #define EXPF_MAX     v_expf_data.expf_max
 #define EXPF_MIN     v_expf_data.expf_min
 #define MASK         v_expf_data.mask
-#define OFF          ARG_MAX - ARG_MIN
 #define INF          v_expf_data.infinity
-#define EXPF_MAX     v_expf_data.expf_max
-#define EXPF_MIN     v_expf_data.expf_min
+
+#define OFF          ARG_MAX - ARG_MIN
 
 #define C1 v_expf_data.poly_expf[0]
 #define C2 v_expf_data.poly_expf[1]
@@ -133,7 +129,7 @@ ALM_PROTO_OPT(vrs4_expf)(v_f32x4_t _x)
     vx = vx & MASK;
 
     // Check if -103 < vx < 88
-    v_i32x4_t cond = ((vx > ARG_MAX));
+    v_u32x4_t cond = ((vx > ARG_MAX));
 
     // Convert _x to double precision
     v_f64x4_t x = cvt_v4_f32_to_f64(_x);
@@ -167,19 +163,19 @@ ALM_PROTO_OPT(vrs4_expf)(v_f32x4_t _x)
 
         v_i32x4_t zero_condition = _x < EXPF_MIN;
 
-        v_32x4 vx = {.f32x4 = ret};
+        v_32x4 vy = {.f32x4 = ret};
 
         //Zero out the elements that have to be set to infinity
-        vx.i32x4 = vx.i32x4 & (~inf_condition);
+        vy.i32x4 = vy.i32x4 & (~inf_condition);
 
         inf_condition = inf_condition & INF;
 
-        vx.i32x4 = vx.i32x4 | inf_condition;
+        vy.i32x4 = vy.i32x4 | inf_condition;
 
         //Zero to be set for elements with x < EXPF_MIN
-        vx.i32x4 = vx.i32x4 & (~zero_condition);
+        vy.i32x4 = vy.i32x4 & (~zero_condition);
 
-        return vx.f32x4;
+        return vy.f32x4;
     }
 
 

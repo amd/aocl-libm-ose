@@ -24,6 +24,7 @@
 
 # Inherit global environment
 Import('env')
+import os
 from os.path import join as joinpath
 
 builddir = joinpath(env['BUILDROOT'], 'src', 'optmized')
@@ -33,7 +34,7 @@ e = env.Clone()
 # These rearrangements are not value-safe:
 #	 (a ⊕ b) ⊕ c ⇒ a ⊕ (b ⊕ c)
 #	 a ⊗ (b ⊕ c) ⇒ (a ⊗ b) ⊕ (a ⊕ c)
-# 
+#
 # To Disallow these changes in gcc remove -ffast-math
 if '-ffast-math' in e['CFLAGS']:
     e['CFLAGS'].remove('-ffast-math')
@@ -43,8 +44,13 @@ incpaths = [
     '#' + joinpath(Dir('.').srcnode().path, 'include')
 ]
 
+if e['HOST_OS'] != 'win32':
+    cflags = ['-O3', '-fPIC', '-flax-vector-conversions']
+else:
+    cflags=[]
+
 e.Append(
-    CFLAGS = ['-O3', '-fPIC', '-flax-vector-conversions'],
+    CFLAGS = cflags,
     CPPPATH = incpaths
 )
 

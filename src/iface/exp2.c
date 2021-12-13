@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -29,47 +29,71 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
-#include <libm/cpu_features.h>
 
-typedef double (*amd_exp2_t)(double);
-typedef float (*amd_exp2f_t)(float);
-typedef __m256d (*amd_exp2_v4d_t)(__m256d);
+//
+#include <libm/arch/all.h>
+
+
+static const
+struct alm_arch_funcs __arch_funcs_exp2 = {
+    .def_arch = ALM_UARCH_VER_DEFAULT,
+    .funcs = {
+        [ALM_UARCH_VER_DEFAULT] = {
+            &ALM_PROTO_ARCH_AVX2(exp2f),
+            &ALM_PROTO_ARCH_AVX2(exp2),
+            &ALM_PROTO_ARCH_AVX2(vrs4_exp2f),
+            &ALM_PROTO_ARCH_AVX2(vrs8_exp2f),
+            &ALM_PROTO_ARCH_AVX2(vrd2_exp2),
+            &ALM_PROTO_ARCH_AVX2(vrd4_exp2),
+            &ALM_PROTO_FMA3(vrsa_exp2f),  /*array vector float*/
+            &ALM_PROTO_FMA3(vrda_exp2),  /*array vector double*/
+        },
+
+        [ALM_UARCH_VER_ZEN] = {
+            &ALM_PROTO_ARCH_ZN(exp2f),
+            &ALM_PROTO_ARCH_ZN(exp2),
+            &ALM_PROTO_ARCH_ZN(vrs4_exp2f),
+            &ALM_PROTO_ARCH_ZN(vrs8_exp2f),
+            &ALM_PROTO_ARCH_ZN(vrd2_exp2),
+            &ALM_PROTO_ARCH_ZN(vrd4_exp2),
+        },
+
+        [ALM_UARCH_VER_ZEN2] = {
+            &ALM_PROTO_ARCH_ZN2(exp2f),
+            &ALM_PROTO_ARCH_ZN2(exp2),
+            &ALM_PROTO_ARCH_ZN2(vrs4_exp2f),
+            &ALM_PROTO_ARCH_ZN2(vrs8_exp2f),
+            &ALM_PROTO_ARCH_ZN2(vrd2_exp2),
+            &ALM_PROTO_ARCH_ZN2(vrd4_exp2),
+        },
+
+        [ALM_UARCH_VER_ZEN3] = {
+            &ALM_PROTO_ARCH_ZN3(exp2f),
+            &ALM_PROTO_ARCH_ZN3(exp2),
+            &ALM_PROTO_ARCH_ZN3(vrs4_exp2f),
+            &ALM_PROTO_ARCH_ZN3(vrs8_exp2f),
+            &ALM_PROTO_ARCH_ZN3(vrd2_exp2),
+            &ALM_PROTO_ARCH_ZN3(vrd4_exp2),
+        },
+    },
+};
 
 void
 LIBM_IFACE_PROTO(exp2)(void *arg)
 {
-    /*
-     * Should setup all variants,
-     * single, double, and vectors (also complex if available)
-     */
+    alm_ep_wrapper_t g_entry_exp2 = {
+       .g_ep = {
+        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(exp2f),
+        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(exp2),
+        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_exp2f),
+        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_exp2f),
+        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_exp2),
+        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_exp2),
+        [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_exp2f),
+        [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_exp2),
+        },
+    };
 
-    amd_exp2_t  fn_d = NULL;
-    amd_exp2f_t fn_s = NULL;
-    amd_exp2_v4d_t fn_v4d = NULL;
-
-    static struct cpu_features *features = NULL;
-
-    if (!features) {
-        features = libm_cpu_get_features();
-    }
-
-    //struct cpu_mfg_info *mfg_info = &features->cpu_mfg_info;
-
-    fn_d = &FN_PROTOTYPE_FMA3(exp2);
-    fn_s = &FN_PROTOTYPE_FMA3(exp2f);
-    fn_v4d = &FN_PROTOTYPE_FMA3(vrd4_exp2);
-
-    if (CPU_HAS_AVX2(features) &&
-        CPU_FEATURE_AVX2_USABLE(features)) {
-            //fn_d = &FN_PROTOTYPE_OPT(exp2);
-            //fn_s = &FN_PROTOTYPE_OPT(exp2f);
-    }
-
-    G_ENTRY_PT_PTR(exp2) = fn_d;
-    G_ENTRY_PT_PTR(exp2f) = fn_s;
-
-    /*vector versions*/
-    G_ENTRY_PT_PTR(vrd2_exp2) = &FN_PROTOTYPE_FMA3(vrd2_exp2);
-    G_ENTRY_PT_PTR(vrd4_exp2) = fn_v4d;
+    alm_iface_fixup(&g_entry_exp2, &__arch_funcs_exp2);
 }
 

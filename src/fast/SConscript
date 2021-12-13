@@ -25,21 +25,31 @@
 
 # Inherit global environment
 Import('env')
+import os
 from os.path import join as joinpath
 
 e = env.Clone()
 
 incpaths = [
-	Dir('#/src/optmized/'),
+    Dir('#/src/optmized/'),
  ]
 
-
-e.Append(
-    CCFLAGS = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror',
+if os.name == "posix":
+    ccflags = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror',
                #'-Wno-unused-but-set-parameter',
                '-Wno-unused-parameter', '-O3',
-               '-fPIC',
-               '-mavx2', '-march=znver2'],
+               '-fPIC','-mavx2', '-mfma']
+
+else:
+    if '-Dlibalm_EXPORTS' in e['CCFLAGS']:
+        e['CCFLAGS'].remove('-Dlibalm_EXPORTS')
+    ccflags = ['-Dlibalmfast_EXPORTS']
+
+# added this for fast libm sources only
+ccflags.append('-Ofast')
+
+e.Append(
+    CCFLAGS = ccflags,
     CPPPATH = incpaths,
     # CCFLAGS = [],
     # LINKFLAGS = ['-T$LINKERSCRIPT'],
@@ -57,7 +67,14 @@ fast_objs = e.StaticObject(fast_srcs)
 #print('lib sources' , list(source))
 
 almfast = e.StaticLibrary('almfast', fast_objs)
-almfastso = e.SharedLibrary('almfast', fast_objs)
+if e['HOST_OS'] != 'win32':
+    almfastso = e.SharedLibrary('almfast', fast_objs)
+else:
+    almfastso = e.SharedLibrary('almfast', fast_objs, no_import_lib=True)
+
+installdir = env['installdirs']
+if 'install' in COMMAND_LINE_TARGETS:
+    env.Alias('install', env.Install(installdir['lib'], [almfastso, almfast]))
 
 Return('almfast', 'almfastso')
 

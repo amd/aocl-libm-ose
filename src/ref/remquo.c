@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,10 +25,11 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
 #include "libm_inlines_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
+
 
 /* Computes the exact product of x and y, the result being the
 nearly doublelength number (z,zz) */
@@ -52,7 +53,7 @@ static inline void dekker_mul12(double x, double y,
 
 #undef _FUNCNAME
 #define _FUNCNAME "remquo"
-double FN_PROTOTYPE_REF(remquo)(double x, double y, int *quo)
+double ALM_PROTO_REF(remquo)(double x, double y, int *quo)
 {
 	double dx, dy, scale, w, t, v, c, cc;
 	int i, ntimes, xexp, yexp;
@@ -85,7 +86,7 @@ double FN_PROTOTYPE_REF(remquo)(double x, double y, int *quo)
 			{
 				/* x is NaN */
 #ifdef WINDOWS
-				return __amd_handle_error("remquo", __amd_remquo, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+				return __alm_handle_error(ux|0x0008000000000000, AMD_F_NONE1);
 #else
                 return x+x;
 #endif
@@ -93,7 +94,7 @@ double FN_PROTOTYPE_REF(remquo)(double x, double y, int *quo)
 			else
 			{
 				/* x is infinity; result is NaN */
-				return __amd_handle_error("remquo", __amd_remquo, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+				return __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
 			}
 		}
 		else if (yexp > BIASEDEMAX_DP64)
@@ -102,7 +103,7 @@ double FN_PROTOTYPE_REF(remquo)(double x, double y, int *quo)
 			if (uy & MANTBITS_DP64)
 			{/* y is NaN */
 #ifdef WINDOWS
-				return __amd_handle_error("remquo", __amd_remquo, uy|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+				return __alm_handle_error(uy|0x0008000000000000, AMD_F_NONE);
 #else
                 return y+y;
 #endif
@@ -110,7 +111,7 @@ double FN_PROTOTYPE_REF(remquo)(double x, double y, int *quo)
 			else
 			{
 				/* y is infinity; result is indefinite */
-				return __amd_handle_error("remquo", __amd_remquo, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+				return __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
 			}
 		}
 		else if (ax == 0x0000000000000000)
@@ -119,7 +120,7 @@ double FN_PROTOTYPE_REF(remquo)(double x, double y, int *quo)
 			if (ay == 0x0000000000000000)
 			{
 				/* y is zero */
-				return __amd_handle_error("remquo", __amd_remquo, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+				return __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
 			}
 			else
 				return dx;
@@ -127,7 +128,7 @@ double FN_PROTOTYPE_REF(remquo)(double x, double y, int *quo)
 		else if (ay == 0x0000000000000000)
 		{
 			/* y is zero */
-			return __amd_handle_error("remquo", __amd_remquo, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+			return __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
 		}
 
 		/* We've exhausted all other possibilities. One or both of x and
@@ -247,7 +248,7 @@ double FN_PROTOTYPE_REF(remquo)(double x, double y, int *quo)
 
 	/* One more time */
 	/* Variable todd says whether the integer t is odd or not */
-	temp = (long long)(dx / w);
+	temp = (unsigned long long)(dx / w);
 	*quo = (int)(temp & 0x7fffffff);
 	t = (double) temp;
 	todd = temp & 1;

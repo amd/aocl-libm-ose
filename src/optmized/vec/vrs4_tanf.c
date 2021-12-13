@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -104,7 +104,7 @@ extern float tanf_specialcase(float);
 extern float tanf_oddcase(float);
 
 static inline v_f32x4_t
-vrs4_tanf_oddcase(v_f32x4_t _x, v_f32x4_t result, v_i32x4_t odd)
+vrs4_tanf_oddcase(v_f32x4_t _x, v_f32x4_t result, v_u32x4_t odd)
 {
     /* We send the result in this case as we have already computed them */
     return call_v4_f32(tanf_oddcase, result, _x, odd);
@@ -112,7 +112,7 @@ vrs4_tanf_oddcase(v_f32x4_t _x, v_f32x4_t result, v_i32x4_t odd)
 #endif
 
 static inline v_f32x4_t
-vrs4_tanf_specialcase(v_f32x4_t _x, v_f32x4_t result, v_i32x4_t cond)
+vrs4_tanf_specialcase(v_f32x4_t _x, v_f32x4_t result, v_u32x4_t cond)
 {
     return call_v4_f32(tanf_specialcase, _x, result, cond);
 }
@@ -151,7 +151,7 @@ ALM_PROTO_OPT(vrs4_tanf)(__m128 xf32x4)
     v_u32x4_t   sign = {0}, n;
     v_u32x4_t   ux = as_v4_u32_f32(xf32x4);
 
-    v_i32x4_t  cond = (ux  & ~ALM_TANF_SIGN_MASK32) > ALM_TANF_ARG_MAX;
+    v_u32x4_t  cond = (ux  & ~ALM_TANF_SIGN_MASK32) > ALM_TANF_ARG_MAX;
 
 	sign = ux & ALM_TANF_SIGN_MASK32;
 

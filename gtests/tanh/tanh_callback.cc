@@ -26,16 +26,6 @@ uint32_t GetnIpArgs( void )
 	return ipargs;
 }
 
-void SpecSetupf32(SpecParams *specp) {
-  specp->data32 = test_tanhf_special_data;
-  specp->countf = ARRAY_SIZE(test_tanhf_special_data); 
-}
-
-void SpecSetupf64(SpecParams *specp) {
-  specp->data64 = test_tanh_special_data;
-  specp->countd = ARRAY_SIZE(test_tanh_special_data); 
-}
-
 void ConfSetupf32(SpecParams *specp) {
   specp->data32 = test_tanhf_conformance_data;
   specp->countf = ARRAY_SIZE(test_tanhf_conformance_data); 
@@ -54,12 +44,12 @@ double getFuncOp(double *data) {
   return LIBM_FUNC(tanh)(data[0]);
 }
 
-float getExpected(float *data) {
+double getExpected(float *data) {
   auto val = alm_mp_tanhf(data[0]);
   return val;
 }
 
-double getExpected(double *data) {
+long double getExpected(double *data) {
   auto val = alm_mp_tanh(data[0]);
   return val;
 }

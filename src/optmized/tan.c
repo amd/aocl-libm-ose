@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -58,10 +58,12 @@
  */
 
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
+#include <libm/alm_special.h>
 #include <libm_macros.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
@@ -266,9 +268,9 @@ double ALM_PROTO_OPT(tan)(double x)
                 }
                 else {
 
-                    return  __amd_handle_error("tan", __amd_tan, ux, _UNDERFLOW,
-                                                AMD_F_UNDERFLOW|AMD_F_INEXACT,
-                                                ERANGE, x, 0.0, 1);
+                    return  __alm_handle_error(ux,
+                                                AMD_F_UNDERFLOW|AMD_F_INEXACT
+                                                );
 
                 }
            }
@@ -292,24 +294,23 @@ double ALM_PROTO_OPT(tan)(double x)
             /* x is NaN */
             if (ux & QNAN_MASK_64) {
 
-	            return  __amd_handle_error("tan", __amd_tan, ux | QNAN_MASK_64,
-                                             _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+	            return  __alm_handle_error(ux | QNAN_MASK_64,
+                                             AMD_F_NONE);
             }
 	        else {
 
-	            return  __amd_handle_error("tan", __amd_tan, ux | QNAN_MASK_64,
-                                            _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+	            return  __alm_handle_error(ux | QNAN_MASK_64,
+                                            AMD_F_INVALID);
             }
 
      }
      else {
             /* x is infinity. Return a NaN */
-        return  __amd_handle_error("tan", __amd_tan, INDEFBITPATT_DP64, _DOMAIN,
-                                        AMD_F_INVALID, EDOM, x, 0.0, 1);
+        return  __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
      }
     }
 
-    xneg = ux >> 63;
+    xneg = (int32_t)(ux >> 63);
 
     x = asdouble(ax);
 
@@ -342,7 +343,7 @@ double ALM_PROTO_OPT(tan)(double x)
 
              npi2d = x *  TWO_BY_PI + ALM_SHIFT;
 
-             npi2 = asuint64(npi2d);
+             npi2 = (int32_t)asuint64(npi2d);
 
              npi2d -= ALM_SHIFT;
 

@@ -3,17 +3,45 @@
 # Author: Pranoy Jayaraj <pjayaraj@amd.com>
 
 #compile this dynamic loading tests with gcc
-e = Environment(CC = 'gcc')
+Import('env')
+e = env.Clone()
+#e.Replace(CC = 'gcc')
+
+if e['HOST_OS'] != 'win32':
+    libs = ['dl', 'm']
+    cflags = ['-g', '-mavx', '-fPIE', '-fpermissive'],
+    linkflags = []
+else:
+    libs = ['msvcrt']
+
+    exclude_flags=['/EHsc', '-funsigned-char', '-Wno-unused-parameter', '-march=native', '-std:c++17']
+    for i in exclude_flags:
+            if i in e['CFLAGS']:
+                e['CFLAGS'].remove(i)
+                e['CCFLAGS'].remove(i)
+    cflags = [],
+    linkflags = ['/NODEFAULTLIB:libcmt.lib']
+
+#check if avx512 enabled
+if 'arch_config' in e.keys() and e['arch_config'] == 'avx512':
+    test_cflags.append('-mavx512f')
+    test_cflags.append('-D__AVX512__')
 
 e.Append(
     INCPATH= ['inc'],
-	CPPPATH= ['inc'],
-    CFLAGS = ['-mavx', '-fPIE'],
+    CPPPATH= ['inc'],
+    CFLAGS = cflags,
     LDFLAGS= ['-fPIE'],
-    LIBS   = ['dl', 'm'],
+    LIBS   = libs,
+    LINKFLAGS = linkflags
 )
 
+if e['HOST_OS'] == 'win32':
+    if e['BUILD'] == 'debug':
+        e['PDB'] = 'test_dynamic.pdb'
+
 srcs = Glob('./src/*.[cS]')
+srcs += Glob('./src/test_srcs/*.[cS]')
 
 exe = e.Program(source = srcs,
                 target = 'test_dynamic')

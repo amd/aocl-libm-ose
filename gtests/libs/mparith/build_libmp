@@ -20,6 +20,29 @@ excludes += linux_files
 
 excluded_list = [f.name for f in excludes]
 
+excluded_list += [
+     'cospi.c',
+     'fdim.c',
+     'finite.c',
+     'fmax.c',
+     'fmin.c',
+     'frexp.c',
+     'ilogb.c',
+     'ldexp.c',
+     'logb.c',
+     'mparith_c.c',
+     'mparith_f.c',
+     'sincos.c',
+     'sinpi.c',
+     'tanpi.c',
+
+     'controlword.c',
+     'cycles.c',
+     'mallocDebug.c',
+     'nanny.c',
+     'statusword.c',
+]
+
 mparith_srcs = Glob('*.c', exclude=excluded_list)
 mparith_srcs += Glob('mparith/*.c', exclude=excluded_list)
 
@@ -28,8 +51,10 @@ mparith_srcs += Glob('mparith/*.c', exclude=excluded_list)
 objs = mpenv.StaticObject(mparith_srcs)
 
 libmp = mpenv.Library('mparith%s'%mpenv['MPVARIANT'], objs)
-libmpso = mpenv.SharedLibrary('mparith%s'%mpenv['MPVARIANT'], objs)
+if mpenv['HOST_OS'] != 'win32':
+	libmpso = mpenv.SharedLibrary('mparith%s'%mpenv['MPVARIANT'], objs)
+else:
+	libmpso = mpenv.SharedLibrary('mparith%s'%mpenv['MPVARIANT'], objs, no_import_lib=True)
 
-Return('libmp', 
-	'libmpso'
-	)
+Return('libmp', 'libmpso')
+

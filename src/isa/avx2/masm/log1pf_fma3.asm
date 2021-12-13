@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+; Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
 ;
 ; Redistribution and use in source and binary forms, with or without modification,
 ; are permitted provided that the following conditions are met:
@@ -51,7 +51,7 @@
 include fm.inc
 include log_tables.inc
 
-FN_PROTOTYPE_FMA3 log1pf
+ALM_PROTO_FMA3 log1pf
 
 ; local variable storage offsets
 save_xmm6       EQU     00h

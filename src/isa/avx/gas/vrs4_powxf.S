@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@
 
 #include "fn_macros.h"
 #include "weak_macros.h"
-#define fname FN_PROTOTYPE_BAS64(vrs4_powxf)
+#define fname ALM_PROTO_BAS64(vrs4_powxf)
 
 #define fname_exp __amd_internal_vrd4_exp
 #define fname_log __amd_internal_vrd4_log 
@@ -76,8 +76,8 @@
     .text
     .align 16
     .p2align 4,,15
-.globl fname 
-    .type   fname,@function
+.globl fname
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
     sub     $stack_size,%rsp
     mov     %rbx,save_rbx(%rsp)     # save rbx

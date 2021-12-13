@@ -1,17 +1,18 @@
-* LIBM Directory Structure
+* AMDLIBM Directory Structure
 
 ** Skeleton (top level)
 
 - doc - All realtive documentation should go here
 - include - All headers relavent for sources
 - src - All sources
-- tests - All tests
+- gtests - All tests
 - utils - Any necessary utilities
 - scripts - Scripts necessary for building
+- examples - Example test applications
 
 ** Documentation
 
-Mostly recides under 'doc/' folder. 
+Mostly recides under 'doc/' folder.
 
 doc/internal - is internal reference only.
 
@@ -22,10 +23,13 @@ doc/user - User manual, software developers manual etc. Released externally
 Contains following directories
 
 src/
+   optmized/          - Contains optimized C implementations.
+   arch/              - Contains architecture specific (zen2/zen3) implementations.
    ref/               - mostly reference implementations.
+   kern/              - Kernel variants.
    isa/avx/           - AVX only source.
    isa/avx/gas/       - Assembly only files for GNU ASsembler (128-bit instructions)
-   isa/fma4/          - FMA4 (Buldozer) specific 
+   isa/fma4/          - FMA4 (Buldozer) specific
    isa/avx/gas/       - FMA4 (Buildozer) specific hand-optimized assembly
    isa/avx2/          - AVX2 only source.
    isa/avx2/gas/      - Assembly only files for GNU ASsembler (256-bit version)
@@ -41,14 +45,21 @@ v4d - Vector double-precision packed 256-bit (4 64-bit elements)
 
 ** Tests
 
-Test Framework files are located directly under the 'tests/' folder.
+Test Framework files are located directly under the 'gtests/' folder.
 
-tests/
+gtests/
      include/      - test related headers only.
-     lib/          - contains external libraries necessary for testing
-     lib/crlibm/   - Correctly-rounded libm
-     lib/libmcr/   - Sun-micro correctly rounde libm
-     lib/openlibm/ - Opensource libm
-     template/     - test template directory, this should be used to write new
-			tests for new functions that are not already there.
-     exp2/         - exp2() related tests
+     libs/         - contains external libraries necessary for testing
+     libs/mparith  - Contains the high precision mparith libraries used for Accuracy testing.
+     gapi/         - Contains the google libs which are used to exercise gtests and gbench(Performance testing)
+     exp/          - exp() related tests
+     dynamic/      - Dynamic loading tests.
+     compat/       - Glibc libmvec compat layer tests.
+
+** Build Scripts
+
+Build system scripts are located in scripts/site_scons/
+
+site_scons/
+    alm/       - Contains ALM building scripts
+    site_tools/ - Versioning related scripts

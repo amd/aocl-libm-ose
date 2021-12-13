@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -92,10 +92,12 @@
 
 #include <stdint.h>
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
+#include <libm/alm_special.h>
 #include <libm_macros.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
@@ -158,8 +160,6 @@ void __amd_remainder_piby2d2f(uint64_t x, double *r, int *region);
 #define COSF_SMALLER 0x39000000 /* 2.0^(-27) */
 
 
-float _cosf_special(float x);
-
 float
 ALM_PROTO_OPT(cosf)(float x)
 {
@@ -197,11 +197,11 @@ ALM_PROTO_OPT(cosf)(float x)
             r = COSF_TWO_BY_PI * xd;
 
             /* Get the exponent part */
-            int32_t xexp = ux >> 23;
+            int32_t xexp = (int32_t)(ux >> 23);
 
             /* dn = int(|x| * 2/pi) */
             double npi2d = r + COSF_ALM_SHIFT;
-            int64_t npi2 = asuint64(npi2d);
+            uint64_t npi2 = asuint64(npi2d);
             npi2d -= COSF_ALM_SHIFT;
 
             /* rhead = x - dn * pi/2_head */
@@ -216,9 +216,9 @@ ALM_PROTO_OPT(cosf)(float x)
             uy = asuint64(r);
 
             /* expdiff = exponent(dn) – exponent(r) */
-            int64_t expdiff = xexp - ((uy << 1) >> 53);
+            int64_t expdiff = xexp - (int32_t)((uy << 1) >> 53);
 
-            region = npi2;
+            region = (int32_t)npi2;
 
             if (expdiff  > 15) {
 
@@ -293,13 +293,13 @@ ALM_PROTO_OPT(cosf)(float x)
             /* cos(x) = t + ((1.0 - t) - r) + (x2 * (x2 * C1 + C2 * x2 + C3 * x2
              *          + C4 * x2 ))
              */
-            s = t + ((1.0f - t) - r);
-            return s + (x2 * (x2 * POLY_EVAL_4(x2, C1, C2, C3, C4)));
+            s = t + ((1.0 - t) - r);
+            return (float)(s + (x2 * (x2 * POLY_EVAL_4(x2, C1, C2, C3, C4))));
 
         }
 
         /* cos(x) = 1.0 - x * x* 0.5 */
-        return 1.0f - (x * x * 0.5);
+        return 1.0f - (x * x * 0.5f);
     }
 
     return 1.0f;

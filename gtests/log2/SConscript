@@ -1,0 +1,30 @@
+#
+# Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
+#
+
+Import('env')
+e = env.Clone()
+
+if e['HOST_OS'] == 'win32':
+    exclude_flags=['/std:c17', '-funsigned-char', '-Wno-unused-parameter', '-march=native', '-std:c++17']
+    for i in exclude_flags:
+        if i in e['CFLAGS']:
+            e['CFLAGS'].remove(i)
+            e['CCFLAGS'].remove(i)
+
+    e.Append(
+        CFLAGS = ['-DWINDOWS'],
+        LINKFLAGS = ['/SUBSYSTEM:CONSOLE','/NODEFAULTLIB:libcmt.lib'],
+        LIBS = ['Shlwapi']
+    )
+
+if e['HOST_OS'] == 'win32':
+    if e['BUILD'] == 'debug':
+        e['PDB'] = 'test_log2.pdb'
+
+log2_srcs = Glob('*.cc')
+
+log2 = e.Program('test_log2', log2_srcs)
+
+Return('log2')
+

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,10 +25,10 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
 #include "libm_inlines_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
 /* sin(x) approximation valid on the interval [-pi/4,pi/4]. */
 static inline double sinf_piby4(double x)
@@ -72,7 +72,7 @@ static inline double cosf_piby4(double x)
                             (c1 + x2 * (c2 + x2 * (c3 + x2 * c4)))));
 }
 
-float FN_PROTOTYPE_REF(sinpif)(float x)
+float ALM_PROTO_REF(sinpif)(float x)
 {
 	float r, dx, xsgn;
 	unsigned int ux;
@@ -115,7 +115,7 @@ float FN_PROTOTYPE_REF(sinpif)(float x)
 	}
 
 	ux   = (unsigned int) dx;
-	r    = dx - ux;
+	r    = dx - (float)ux;
 	if ( r == 0.0f) return (xsgn * 0.0f);
 
 	if (dx <= 0.25f) /* abs(x) <= pi/4 */
@@ -139,12 +139,12 @@ float FN_PROTOTYPE_REF(sinpif)(float x)
 
 	if (r<=0.25F)
 	{
-		return (float)(xsgn * sinf_piby4(r*pi));
+		return (float)((double)xsgn * sinf_piby4(r*pi));
 	}
 	if (r<0.5F)
 	{
 		r = 0.5F - r;
-		return (float)( xsgn * cosf_piby4(r*pi));
+		return (float)((double)xsgn * cosf_piby4(r*pi));
 	}
 	if (r == 0.5F)
 	{
@@ -153,11 +153,11 @@ float FN_PROTOTYPE_REF(sinpif)(float x)
 	if (r<=0.75F)
 	{
 		r = r - 0.5F;
-		return (float)( xsgn * cosf_piby4(r*pi));
+		return (float)((double)xsgn * cosf_piby4(r*pi));
 	}
 
 	/* r<1 */
 	r = 1.0F - r;
-	return (float)( xsgn * sinf_piby4(r*pi));
+	return (float)((double)xsgn * sinf_piby4(r*pi));
 }
 

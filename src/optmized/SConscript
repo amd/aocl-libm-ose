@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -24,50 +24,24 @@
 
 # Inherit global environment
 Import('env')
+import os
 from os.path import join as joinpath
 
 builddir = joinpath(env['BUILDROOT'], 'src', 'optmized')
 
 e = env.Clone()
-
-# These rearrangements are not value-safe:
-#	 (a ⊕ b) ⊕ c ⇒ a ⊕ (b ⊕ c)
-#	 a ⊗ (b ⊕ c) ⇒ (a ⊗ b) ⊕ (a ⊕ c)
-#
-# To Disallow these changes in gcc remove -ffast-math
-if '-ffast-math' in e['CFLAGS']:
-    e['CFLAGS'].remove('-ffast-math')
+if e['HOST_OS'] != 'win32':
+    cflags = ['-O3', '-fPIC', '-mavx2', '-mfma', '-flax-vector-conversions']
+else:
+    cflags=[]
 
 e.Append(
-    CFLAGS = ['-fPIC']
+    CFLAGS = cflags,
 )
 
-try:
-    dbg_mode=env['debug_mode']
-except KeyError as err:
-    print("Keyerror, debug_mode not found, setting to none", err)
-    dbg_mode='none'
-
-if dbg_mode == 'libs' or dbg_mode == 'all':
-    e.Append(
-        CCFLAGS = ['-g']
-       )
-    # remove all optimizations on command line
-    opt_list=["-O%s"%x for x in range(1, 10)]
-    opt_list.append('-Os')
-    for opt in opt_list:
-        try:
-            e['CFLAGS'].remove(opt)
-        except ValueError as err:
-            pass
-else:
-    e.Append(
-        CCFLAGS = ['-O3'],
-    )
-
 experiment_src=[
-	'expm1f.c',
-	]
+    'expm1f.c',
+    ]
 
 source = Glob('*.c', exclude=experiment_src)
 source += Glob('data/*.c')
@@ -76,7 +50,7 @@ vec_objs   = SConscript('vec/SConscript',
                         exports    = {'env' : e},
                         duplicate  = 0,
                         src_dir    = '#src/optmized/vec',
-			variant_dir= joinpath(builddir, 'vec'))
+            variant_dir= joinpath(builddir, 'vec'))
 
 objs = e.StaticObject(source) + vec_objs
 

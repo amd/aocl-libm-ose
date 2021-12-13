@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2021, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -32,6 +32,10 @@
 
 #include <immintrin.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * Double precision
  */
@@ -53,7 +57,6 @@ extern double    ALM_PROTO_INTERNAL(exp2)                 (double x);
 extern double    ALM_PROTO_INTERNAL(exp)                  (double x);
 extern double    ALM_PROTO_INTERNAL(expm1)                (double x);
 extern double    ALM_PROTO_INTERNAL(fabs)                 (double x);
-extern double    ALM_PROTO_INTERNAL(fastpow)              (double x, double y);
 extern double    ALM_PROTO_INTERNAL(fdim)                 (double x, double y);
 extern double    ALM_PROTO_INTERNAL(floor)                (double x);
 extern double    ALM_PROTO_INTERNAL(fma)                  (double x, double y, double z);
@@ -167,6 +170,7 @@ extern long long int    ALM_PROTO_INTERNAL(llroundf)      (float f);
 /*
  * Vector Single precision
  */
+extern __m128    ALM_PROTO_INTERNAL(vrs4_acosf)           (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_cbrtf)           (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_cosf)            (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_exp10f)          (__m128 x);
@@ -182,6 +186,8 @@ extern __m128    ALM_PROTO_INTERNAL(vrs4_sinf)            (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_tanf)            (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_coshf)           (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_tanhf)           (__m128 x);
+extern __m128    ALM_PROTO_INTERNAL(vrs4_asinf)           (__m128 x);
+extern __m128    ALM_PROTO_INTERNAL(vrs4_atanf)           (__m128 x);
 
 extern __m256    ALM_PROTO_INTERNAL(vrs8_cbrtf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_cosf)            (__m256 x);
@@ -196,8 +202,10 @@ extern __m256    ALM_PROTO_INTERNAL(vrs8_logf)            (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_powf)            (__m256 x, __m256 y);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_sinf)            (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_tanf)            (__m256 x);
+extern __m256    ALM_PROTO_INTERNAL(vrs8_atanf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_coshf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_tanhf)           (__m256 x);
+extern __m256    ALM_PROTO_INTERNAL(vrs8_asinf)           (__m256 x);
 
 
 /*
@@ -217,6 +225,7 @@ extern __m128d   ALM_PROTO_INTERNAL(vrd2_log)      (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_pow)      (__m128d x, __m128d y);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_sin)      (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_tan)      (__m128d x);
+extern __m128d   ALM_PROTO_INTERNAL(vrd2_atan)     (__m128d x);
 
 /*
  * Vector double precision, 4 element
@@ -271,4 +280,8 @@ extern void      ALM_PROTO_INTERNAL(vrsa_powf)     (int n, float *s1, float *s2,
 extern void      ALM_PROTO_INTERNAL(vrsa_powxf)    (int n, float *s1, float s2, float* d);
 extern void      ALM_PROTO_INTERNAL(vrsa_sincosf)  (int n, float *x, float *ys, float *yc);
 extern void      ALM_PROTO_INTERNAL(vrsa_sinf)     (int n, float *x, float *y);
+
+#ifdef __cplusplus
+}
+#endif
 

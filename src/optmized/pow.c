@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -34,15 +34,17 @@
 
 #include "libm_macros.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include <libm/typehelper.h>
+#include <libm/poly.h>
+#include <libm/amd_funcs_internal.h>
 
 #define L__exp_bias 0x00000000000003ff /* 1023 */
 #define L__mant_mask 0x000fffffffffffff
 #define N 10
-#define TABLE_SIZE (1ULL << N)
+#define TABLE_SIZE (1 << N)
 #define ABSOLUTE_VALUE 0x7FFFFFFFFFFFFFFF
-#define TOP12_EXP_MAX 0x40862E42
+#define TOP20_EXP_MAX 0x40862
 #define MANTISSA_10_BITS 0x000FFC0000000000
 #define MANTISSA_11_BIT 0x0000020000000000
 
@@ -61,7 +63,6 @@
 #define EXP_Y_ZERO 2
 #define EXP_Y_INF 3
 
-double _exp_special(double x, double y, uint32_t code);
 
 struct log_data{
     uint64_t head;
@@ -73,11 +74,6 @@ struct exp_data{
     uint64_t tail;
 };
 
-
-typedef union {
-    uint64_t value;
-    uint32_t split[2];
-} doubleword;
 
 extern struct log_data log_Finv[];
 extern struct log_data log_f_256[];
@@ -120,10 +116,13 @@ static struct {
     },
 };
 
+#define C0 0.0
 #define C1 pow_data.poly_log[0]
 #define C2 pow_data.poly_log[1]
 #define C3 pow_data.poly_log[2]
 #define C4 pow_data.poly_log[3]
+#define C5 pow_data.poly_log[4]
+#define C6 pow_data.poly_log[5]
 
 #define LOG2_HEAD pow_data.L__real_log2_head
 #define LOG2_TAIL pow_data.L__real_log2_tail
@@ -131,10 +130,13 @@ static struct {
 #define LOG2_BY_N_TAIL pow_data.log2_by_N_tail
 #define N_BY_LOG2 pow_data.N_by_log2
 
-#define a0 0.5
-#define a1 pow_data.poly_exp[0]
-#define a2 pow_data.poly_exp[1]
-#define a3 pow_data.poly_exp[2]
+#define ONE 0x3ff0000000000000
+#define A0 0.0
+#define A1 1.0
+#define A2 0.5
+#define A3 pow_data.poly_exp[0]
+#define A4 pow_data.poly_exp[1]
+#define A5 pow_data.poly_exp[2]
 
 #define POW_X_ONE_Y_SNAN 1
 #define POW_X_ZERO_Z_INF 2
@@ -146,11 +148,10 @@ static struct {
 #define POW_Z_DENORMAL 8
 #define POW_Z_INF 9
 
-double _pow_special(double x, double y, double z, uint32_t code);
 
 static inline double_t
-compute_log(uint64_t ux, double_t* log_lo, int32_t expadjust)
-{
+compute_log(uint64_t ux, double_t* log_lo, int32_t expadjust) {
+    
     /*
      * Calculate log(x) in higher precision and store as log_hi and log_lo
      *
@@ -182,16 +183,28 @@ compute_log(uint64_t ux, double_t* log_lo, int32_t expadjust)
      * Store the exponent of x in xexp and put
      * f into the range [0.5, 1)
     */
+    
     int32_t xexp;
+
     double_t r, r1, w, z, w1, resT_t, resT, resH;
-    double_t u, f, z1, q, f1, f2, poly;
-    xexp = ((ux & EXPBITS_DP64) >> EXPSHIFTBITS_DP64) - EXPBIAS_DP64 - expadjust;
+
+    double_t u, f, z1, f1, f2, k, poly;
+
+    xexp = (int32_t)((ux & EXPBITS_DP64) >> EXPSHIFTBITS_DP64)
+                                        - EXPBIAS_DP64 - expadjust;
+
     double_t exponent_x = (double_t)xexp;
+
     f1 = asdouble((ux & MANTBITS_DP64) | HALFEXPBITS_DP64);
+
     uint64_t index = (ux & MANTISSA_10_BITS);
+
     index += ((ux & MANTISSA_11_BIT) << 1);
+
     f = asdouble(index | HALFEXPBITS_DP64);
+
     index = index >> 42;
+
     f2 = f - f1;
     /*
     * At this point, x = 2**xexp * ( f1  +  f2 ) where
@@ -199,80 +212,157 @@ compute_log(uint64_t ux, double_t* log_lo, int32_t expadjust)
     * Compute 'u' from Taylor series of log2(1+f1/f2)
     */
     z1 = asdouble(log_Finv[index].tail);
-    q = asdouble(log_Finv[index].head);
+
+    z = asdouble(log_Finv[index].head);
+
     w = asdouble(log_f_256[index].head);
+
     w1 = asdouble(log_f_256[index].tail);
-    r = f2 * z1;
-    r1 = f2 * q;
-    u = r + r1;
-    z = r1 - u;
 
-    /*
-     * Polynomial evaluation
-     * For N=10,
-     * poly = u * (u * (C1 + u * (C2 + u * (C3 + u * (C4)))))
-    */
+    if((ux - 0x3FEF26E978D4FDF4) <= (0x3FF1000000000000 - 0x3FEF26E978D4FDF4)) {
 
-    double_t A1, B0, usquare;
+        /* 0.0975 < x < 1.0625 */
 
-    /* Estrin Scheme */
-    A1 = C1 + u * C2;
-    double_t A2 = C3 + u * C4;
-    usquare = u * u;
-    B0 = usquare * A1; /* u^2 * C1 + u^3 * C2 */
-    double ufour = usquare * usquare;
-    poly = B0 + ufour * A2;
-    poly = (z + r) + poly;
-    resT_t = (LOG2_TAIL * exponent_x - poly) + w1;
+        k = z + z1;
+
+        r = k * f2;
+
+        r = asdouble(asuint64(r) & 0xfffffffff8000000);
+
+        r1 = (f2 - f * r) * k;
+
+        double t = r1 + r;
+
+        double t2 = t * t;
+
+        double t3 = t2 * t;
+
+        /* t^3*1/3 + t^4*1/4 */
+        double a0 = t3 * (C2 + t * C3);
+
+        /* t^5*1/5 + t^6*1/6 + t^7*1/7 */
+        double a1 = t2 * (t3 * (C4 + t * (C5 + t * C6)));
+
+        u = r * r * C1;
+
+        double b0 = r1 + r * r1 + r1 * r1 * C1;
+
+        u = r + u;
+
+        r = C1 * r * r + (r - u);
+
+        a1 = r + a1 + a0;
+
+        poly = b0 + a1;
+
+        resT_t = (LOG2_TAIL * exponent_x + w1) - poly;
+
+    }
+    else {
+
+        r = f2 * z1;
+
+        r1 = f2 * z;
+
+        u = r + r1;
+
+        z = r1 - u;
+
+        /*
+         * Polynomial evaluation
+         * For N=10,
+         * poly = u * (u * (C1 + u * (C2 + u * (C3 + u * (C4)))))
+         */
+        poly = u * POLY_EVAL_5(u, C0, C1, C2, C3, C4);
+
+        poly = (z + r) + poly;
+
+        resT_t = (LOG2_TAIL * exponent_x - poly) + w1;
+
+    }
+
     resT = resT_t - u;
+
     resH = LOG2_HEAD * exponent_x + w;
-    double log_hi = resT + resH;
-    *log_lo = resH - log_hi + resT;
+
+    double log_hi = resH + resT;
+
+    /*Using Dekker's Fast2Sum algorithm for tail computation 
+     * resT_h = -u 
+     * */
+
+    *log_lo = (resT_t - (resT + u)) + (resT - (log_hi - resH));
+
     return log_hi;
 }
 
 static inline double_t
-compute_exp(double_t v, double_t vt, uint64_t result_sign)
-{
-    double_t A1, A2, z, r, usquare, w, w1, B0, poly;
-    const double_t EXP_HUGE = 0x1.8000000000000p52;
-    int64_t n;
-    int64_t i;
-    doubleword xword;
-    double temp = v;
-    v = v * N_BY_LOG2;
-    xword.value = asuint64(temp);
-    int32_t abs_ylogx = (xword.value & ABSOLUTE_VALUE) >> 32;
+compute_exp(double_t v, double_t vt, uint64_t result_sign) {
 
-    /* check if x > 1024 * ln(2) */
-    if(unlikely(abs_ylogx >= TOP12_EXP_MAX))
-    {
+    double_t  dn, z, r, w, w1, poly;
+
+    const double_t EXP_SHIFT = 0x1.8000000000000p52;
+
+    int64_t n;
+
+    int64_t i;
+
+    uint64_t ux;
+
+    double temp = v;
+
+    v = v * N_BY_LOG2;
+
+    ux = asuint64(temp);
+
+    int32_t abs_ylogx = (ux & ABSOLUTE_VALUE) >> 32;
+
+    /* check if |x| > 708 */
+    if(unlikely(abs_ylogx >= TOP20_EXP_MAX)) {
         /* if abs(y * log(x)) > 709.7822265625 */
-        if(xword.value >= EXP_MIN)
-        {
+        if(ux >= EXP_MIN) {
             /* if y * log(x) < -745.133219101941222106688655913 */
             v = asdouble(0x0 | result_sign);
-            return _exp_special(xword.value, v, EXP_Y_ZERO);
+
+            return _exp_special(asdouble(ux), v, EXP_Y_ZERO);
 
         }
-        if(temp > EXP_MAX_DOUBLE)
-        {
+
+        if(temp > asdouble(EXP_MAX_DOUBLE)) {
             /* if y * log(x) > 709.7822265625 */
             v = asdouble(EXPBITS_DP64 | result_sign);
-            return  _exp_special(xword.value, v,  EXP_Y_INF);
 
-        }
-        abs_ylogx = 0xfff;
+            return  _exp_special(asdouble(ux), v,  EXP_Y_INF);
+
+         } 
+
+         n = (int64_t)v;
+
+         dn = (double)n;
+
+         abs_ylogx = 0xfff;
+
     }
-    double_t fastconvert = v + EXP_HUGE;
-    n = asuint64(fastconvert);
-    double_t dn = fastconvert - EXP_HUGE;
+    else {
+
+         double_t fastconvert = v + EXP_SHIFT;
+
+         n = (int64_t)asuint64(fastconvert);
+
+         dn = fastconvert - EXP_SHIFT;
+
+    }
 
     /* Table size = 1024. Here N = 10 */
-    int32_t index = n % (1 << N);
+
+    i = n & (TABLE_SIZE - 1);
+
     r = temp - (dn * LOG2_BY_N_HEAD);
-    int64_t m = ((n - index) << (EXPSHIFTBITS_DP64 - N)) + 0x3ff0000000000000;
+
+    int64_t m = ((n - i) << (EXPSHIFTBITS_DP64 - N));
+
     r = (r - (LOG2_BY_N_TAIL * dn)) + vt;
+
     /*
      * Taylor's series to evaluate exp(r)
      * For N = 11
@@ -285,173 +375,244 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign)
      * N = 10
      *
      */
-    A1 = a0 + r * a1; /* A1 = 0.5 + r ^ (1/3!) */
-    usquare = r * r;
-    A2 = a2 + r * a3;
-    B0 = r + usquare*A1; /* r + 0.5 * r ^ 2 + r ^ 3 * (1 / 3!) */
-    poly = B0 + usquare * usquare * A2;
-    w = asdouble(exp_lookup[index].head);
-    w1 = asdouble(exp_lookup[index].tail);
+
+    poly = POLY_EVAL_6(r, A0, A1, A2, A3, A4, A5);
+
+    w = asdouble(exp_lookup[i].head);
+
+    w1 = asdouble(exp_lookup[i].tail);
+
     temp = w1 + poly * w1;
+
     z = poly * w;
+
     double_t result= w + (z + temp);
 
     /* Process denormals */
-    if(unlikely(abs_ylogx == 0xfff))
-    {
-        int32_t m2 = (n - index) >> N;
-        if(result < 1.0 || m2 < EMIN_DP64)
-        {
-            m2 = m2 + 1074;
-            i = 1ULL << m2;
-            dn = asdouble(i);
-            n = asuint64(result * dn);
-            result = asdouble(n | result_sign);
-            return result;
+
+    if(unlikely(abs_ylogx == 0xfff)) {
+
+        int64_t m2 = n >> N;
+
+        if(m2 <= -1022) {
+
+            if((m2 < -1022) || (result < 1.0)) {
+
+                m2 += 1074;
+
+                dn = asdouble( 1ULL << m2);
+
+                n = (int64_t)asuint64(result * dn);
+
+                result = asdouble((uint64_t)n | result_sign);
+
+                return result;
+            }
         }
     }
 
-    z = asdouble(m | result_sign);
-    return result * z;
+    z = asdouble(((uint64_t)m + asuint64(result)) | result_sign);
+
+    return z;
 }
 
-static inline uint32_t checkint(uint64_t u)
-{
+static inline uint32_t checkint(uint64_t u) {
+
     int32_t u_exp = ((u & ABSOLUTE_VALUE) >> EXPSHIFTBITS_DP64);
+
     /*
      * See whether u is an integer.
      * status = 0 means not an integer.
      * status = 1 means odd integer.
      * status = 2 means even integer.
     */
+
     if (u_exp < 0x3ff)
         return 0;
+
     if (u_exp > 0x3ff + EXPSHIFTBITS_DP64)
         return 2;
+
     if (u & ((1ULL << (0x3ff + EXPSHIFTBITS_DP64 - u_exp)) - 1))
         return 0;
+
     if (u & (1ULL << (0x3ff + EXPSHIFTBITS_DP64 - u_exp)))
         return 1; /* odd integer */
+
     return 2;
 }
 
 /* Returns 1 if input is the bit representation of 0, infinity or nan. */
-static inline int checkzeroinfnan (uint64_t i)
-{
+static inline int checkzeroinfnan (uint64_t i) {
+
     return 2 * i - 1 >= 2 * EXPBITS_DP64 - 1;
+
 }
 
-static inline int issignaling_inline (double x)
-{
+static inline int issignaling_inline (double x) {
+
     uint64_t ix;
+
     ix = asuint64(x);
-    return 2 * (ix ^ QNAN_MASK_64) > 2 * QNANBITPATT_DP64;
+
+    return (2 * (ix ^ 0x0008000000000000)) > (2 *  QNANBITPATT_DP64);
+
 }
 
-static inline double _pow_inexact(double x)
-{
+static inline double _pow_inexact(double x) {
+
     double_t a = 0x1.0p+0; /* a = 1.0 */
+
     double_t b = 0x1.4000000000000p+3; /* b = 10.0 */
+
     __asm __volatile ("divsd %1, %0" :  "+x" (a): "x" (b));
+
     return x;
 }
 
 double
-ALM_PROTO_OPT(pow)(double x, double y)
-{
-    double_t log_lo;
-    double_t f;
+ALM_PROTO_OPT(pow)(double x, double y) {
+
+    double_t log_lo, f;
+
     int32_t expadjust = 0;
+
     uint64_t ux, uy, result_sign;
+
     uint64_t infinity = EXPBITS_DP64;
+
     uint64_t one = ONEEXPBITS_DP64;
+
     ux = asuint64(x);
+
     uy = asuint64(y);
-    uint32_t xhigh = ux >> EXPSHIFTBITS_DP64; /* Top 12 bits of x */
-    uint32_t yhigh = uy >> EXPSHIFTBITS_DP64; /* Top 12 bits of y */
+
+    uint32_t xhigh = (uint32_t)(ux >> EXPSHIFTBITS_DP64); /* Top 12 bits of x */
+
+    uint32_t yhigh = (uint32_t)(uy >> EXPSHIFTBITS_DP64); /* Top 12 bits of y */
+
     result_sign = 0; /* Hold the sign of the result */
 
     if (unlikely (xhigh - 0x001 >= 0x7ff - 0x001
-                  || (yhigh & 0x7ff) - 0x3be >= 0x43e - 0x3be))
-    {
-        if (unlikely (checkzeroinfnan (uy)))
-        {
+                  || (yhigh & 0x7ff) - 0x3be >= 0x43e - 0x3be)) {
+
+        if (unlikely (checkzeroinfnan (uy))) {
+
             if (2 * uy == 0)
                 return issignaling_inline (x) ? x + y : 1.0;
+
             if (ux == one)
                 return issignaling_inline (y) ? x + y : 1.0;
+
             if (2 * ux > 2 * infinity || 2 * uy > 2 * infinity)
                 return x + y;
+
             if (2 * ux == 2 * one)
                 return 1.0;
+
             if ((2 * ux < 2 * one) == !(uy >> 63))
                 return 0.0; /* |x| < 1 && y = inf or |x| > 1 && y = -inf */
+
             return y * y;
         }
-        if (unlikely (checkzeroinfnan (ux)))
-        {
+
+       if (unlikely (checkzeroinfnan (ux))) {
 
             double x2 = x * x;
+
             /* x is negative , y is odd*/
-            if (ux >> 63 && checkint (uy) == 1)
-            {
+
+            if (ux >> 63 && checkint (uy) == 1) {
+
                 result_sign =  SIGNBIT_DP64;
+
             }
-            if ( 2 * ux == 0 && uy >> 63)
-            {
-                x2 = 1.0 / 0.0;
-                x2 = asdouble(ux | result_sign);
+
+            /* x is 0, y is negative */
+            if ( 2 * ux == 0 && uy >> 63) {
+
+                _pow_special(x, y, 0.0, POW_X_ZERO_Z_INF);
+
+                x2 = asdouble(PINFBITPATT_DP64 | result_sign);
+
                 return x2;
             }
+
             x2 = asdouble(asuint64(x2) | result_sign);
+
             return uy >> 63 ? (1 / x2) : x2;
-        }
-        /* Here x and y are non-zero finite. */
-        if (ux >> 63)
-        {
-            /* Finite x < 0 */
-            uint32_t yint = checkint (uy);
-            if (yint == 0)
-                return sqrt(x);
-            if (yint == 1)
-                result_sign = SIGNBIT_DP64;
-            ux &= ABSOLUTE_VALUE;
-            xhigh &= 0x7ff;
-        }
-        if ((yhigh & 0x7ff) - 0x3be >= 0x43e - 0x3be) {
-            /* Note: sign_bias = 0 here because y is not odd. */
-            if (ux == one)
-            {
-                return _pow_inexact(1.0);
-            }
-            if ((yhigh & 0x7ff) < 0x3be)
-            {
-                /* |y| < 2 ^ -65, x ^ y ~= 1 + y * log(x) */
-                return ux > one ? 1.0 + y : 1.0 - y;
-            }
-            return (ux > one) == (yhigh < 0x800) ?
+      }
+
+      /* Here x and y are non-zero finite. */
+
+      if (ux >> 63) {
+
+      /* Finite x < 0 */
+
+          uint32_t yint = checkint (uy);
+
+          if (yint == 0)
+              return sqrt(x);
+
+          if (yint == 1)
+              result_sign = SIGNBIT_DP64;
+
+          ux &= ABSOLUTE_VALUE;
+
+          xhigh &= 0x7ff;
+
+      }
+
+      if ((yhigh & 0x7ff) - 0x3be >= 0x43e - 0x3be) {
+
+       /* Note: sign_bias = 0 here because y is not odd. */
+            
+          if (ux == one) {
+
+               return _pow_inexact(1.0);
+            
+          }
+
+          if ((yhigh & 0x7ff) < 0x3be) {
+
+          /* |y| < 2 ^ -65, x ^ y ~= 1 + y * log(x) */
+
+              return ux > one ? 1.0 + y : 1.0 - y;
+
+          }
+
+          return (ux > one) == (yhigh < 0x800) ?
                 (DBL_MAX*DBL_MAX) :
-                _pow_special(x, y, 0.0, POW_Z_ZERO);
+
+          _pow_special(x, y, 0.0, POW_Z_ZERO);
         }
 
-        if (xhigh == 0)
-        {
-            /* subnormal x */
-            uint64_t mant = ux & MANTBITS_DP64;
-            f = asuint64(mant | ONEEXPBITS_DP64);
-            double_t temp = f - 1.0;
-            ux = asuint64(temp);
-            expadjust = 1022;
+        if (xhigh == 0) {
+
+        /* subnormal x */
+
+           uint64_t mant = ux & MANTBITS_DP64;
+
+           f = asdouble(mant | ONEEXPBITS_DP64);
+
+           double_t temp = f - 1.0;
+
+           ux = asuint64(temp);
+
+           expadjust = 1022;
         }
     }
 
     double_t log_hi = compute_log(ux, &log_lo, expadjust);
 
     /* Multiplication of log_hi and log_lo with y */
+
     double_t v = log_hi * y;
+
     double_t vt = y * log_lo + fma(y, log_hi, -v);
 
     double_t result = compute_exp(v, vt, result_sign);
+
     return result;
 }
 

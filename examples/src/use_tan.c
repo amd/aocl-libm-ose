@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -68,7 +68,6 @@ int use_tan()
         input_array_vrs4[0], input_array_vrs4[1], input_array_vrs4[2], input_array_vrs4[3],
         output_array_vrs4[0], output_array_vrs4[1], output_array_vrs4[2], output_array_vrs4[3]);
 
-/*
     printf("\nUsing vrd4 (Double Precision vector 4 variant) of AMD tan()\n");
     __m256d input_vrd4, result_tan_vrd4;
     double input_array_vrd4[4] = {2.3, 4.5, 56.5, 43.4};
@@ -79,7 +78,6 @@ int use_tan()
     printf("Input: {%lf, %lf, %lf, %lf}, Output = {%lf, %lf, %lf, %lf}\n",
             input_array_vrd4[0], input_array_vrd4[1], input_array_vrd4[2], input_array_vrd4[3],
             output_array_vrd4[0], output_array_vrd4[1], output_array_vrd4[2],output_array_vrd4[3]);
-*/
 
     printf ("\nUsing vrs8 (Single precision vector 8 element variant of AMD tan()\n");
     __m256 input_vrs8, result_tan_vrs8;

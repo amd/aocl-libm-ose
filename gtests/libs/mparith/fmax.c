@@ -1,19 +1,19 @@
 #include "precision.h"
-#include "mparith_c.h"
+
 
 #if defined(FLOAT)
 #define FUNC_FMAX alm_mp_fmaxf
-#define FUNC_FMAX_ULP alm_mp_fmaxf_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_FMAX alm_mp_fmax
-#define FUNC_FMAX_ULP alm_mp_fmax_ULP
+
 #else
 #error
 #endif
 
-REAL FUNC_FMAX(REAL x, REAL y)
+REAL_L FUNC_FMAX(REAL x, REAL y)
 {
-    REAL ret;
+    REAL_L ret;
     fp_params params;
     int base, mantis, emin, emax;
     int *xmp, *ymp, *result;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2018-2021, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
  */
 
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
@@ -44,10 +44,7 @@
 #define VRS4_LOGF_MAX_POLY_SIZE 12
 
 static const struct {
-    v_i32x8_t v_min,
-        v_max,
-        v_mask,
-        v_off;
+    v_u32x8_t v_min, v_max, v_mask, v_off;
     v_f32x8_t v_one;
     v_f32x8_t ln2;
     v_f32x8_t poly[VRS4_LOGF_MAX_POLY_SIZE];
@@ -177,13 +174,13 @@ static const struct {
 static inline v_f32x8_t
 logf_specialcase(v_f32x8_t _x,
                  v_f32x8_t result,
-                 v_i32x8_t cond)
+                 v_u32x8_t cond)
 {
 #if 1
     v_f32x4_t _x1 = {_x[0], _x[1], _x[2], _x[3]},
         _x2 = {_x[4], _x[5], _x[6], _x[7]};
 
-    v_i32x4_t _cond1 = {cond[0], cond[1], cond[2], cond[3]},
+    v_u32x4_t _cond1 = {cond[0], cond[1], cond[2], cond[3]},
         _cond2 = {cond[4], cond[5], cond[6], cond[7]};
 
     v_f32x4_t _res1 = {result[0], result[1], result[2], result[3]},
@@ -206,19 +203,19 @@ ALM_PROTO_OPT(vrs8_logf)(v_f32x8_t _x)
 {
     v_f32x8_t q, r, n;
 
-    v_32x8 vx = {.f32x8 = _x};
+    v_u32x8_t vx =  as_v8_u32_f32(_x);
 
-    v_i32x8_t cond = (vx.i32x8 - V_MIN >= V_MAX - V_MIN);
+    v_u32x8_t cond = (vx - V_MIN >= V_MAX - V_MIN);
 
-    vx.i32x8 -= V_OFF;
+    vx -= V_OFF;
 
-    n = cast_v8_f32_to_s32(vx.i32x8 >> 23);
+    n = cast_v8_i32_to_f32(((v_i32x8_t)vx) >> 23);
 
-    vx.i32x8 &= V_MASK;
+    vx &= V_MASK;
 
-    vx.i32x8 += V_OFF;
+    vx += V_OFF;
 
-    r = vx.f32x8 - V_ONE;
+    r = as_v8_f32_u32(vx) - V_ONE;
 
 #if VRS4_LOGF_POLY_DEGREE == 7
     /* n*ln2 + r + r2*(C1, + r*C2 + r2*(C3 + r*C4 + r2*(C5 + r*C6 + r2*(C7)))) */

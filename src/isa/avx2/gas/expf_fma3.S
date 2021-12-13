@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
 
 #include "fn_macros.h"
 #include "exp_tables.h"
-#define fname FN_PROTOTYPE_FMA3(expf)
+#define fname ALM_PROTO_FMA3(expf)
 #define fname_special _expf_special@PLT
 
 #ifdef __ELF__
@@ -36,7 +36,7 @@
 .text
 .p2align 4
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
     vucomiss .L__max_expf_arg(%rip), %xmm0
     ja .L__y_is_inf

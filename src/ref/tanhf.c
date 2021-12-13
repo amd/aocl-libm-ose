@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,14 +25,14 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
 #include "libm_inlines_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
 
 
-float FN_PROTOTYPE_REF(tanhf)(float x)
+float ALM_PROTO_REF(tanhf)(float x)
 {
   /*
     The definition of tanh(x) is sinh(x)/cosh(x), which is also equivalent
@@ -69,14 +69,14 @@ float FN_PROTOTYPE_REF(tanhf)(float x)
 #ifdef WINDOWS
             return x;
 #else
-            return __amd_handle_errorf("tanhf", __amd_tanh, ux, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, x, 0.0, 1);
+            return __alm_handle_errorf(ux, AMD_F_INEXACT|AMD_F_UNDERFLOW);
 #endif
         }
     }
   else if (aux > 0x7f800000) /* |x| is NaN */
     {
 #ifdef WINDOWS
-		return __amd_handle_errorf("tanhf", __amd_tanh, ux|QNANBITPATT_SP32, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+		return __alm_handle_errorf(ux|QNANBITPATT_SP32, AMD_F_NONE);
 #else
         return x+x;
 #endif

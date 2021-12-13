@@ -120,6 +120,29 @@ test_sinhf_conformance_data[] = {
     {0xcB000001, 0xff800000,  FE_OVERFLOW},  // -(2^23 + 1)
     {0xcAFFFFFF, 0xff800000,  FE_OVERFLOW},  // -(2^23 -1 + 0.5)
 
+    {0x80000000, 0x80000000,  0},
+    {0x00000000, 0x00000000,  0},
+    {0x7f800000, 0x7f800000,  0},
+    {0xff800000, 0xff800000,  0},
+
+    {0x7f800001, 0x7fc00001,  0},
+    {0xff800001, 0xffc00001,  0},
+    {0x7fc00000, 0x7fc00000,  0},
+    {0xffc00000, 0xffc00000,  0},
+
+    //answer from NAG test tool  
+    {0x38000000, 0x38000000,  0}, // 2^(-15), < 2 ^(-14), x
+    {0xb8000000, 0xb8000000,  0}, //-2^(-15), < 2 ^(-14), x
+    {0x42b40000, 0x7f800000,  0}, // 90, > max_sinh_arg, +inf
+    {0xc2b40000, 0xff800000,  0}, //-90, > max_sinh_arg, -inf
+    {0x41f00000, 0x549b8238,  0}, // 30, > small_threshold
+    {0xc1f00000, 0xd49b8238,  0}, //-30, > small_threshold
+    {0x3f800000, 0x3f966cfe,  0}, // 1
+    {0xbf800000, 0xbf966cfe,  0}, //-1
+    {0x3dcccccd, 0x3dcd243a,  0}, // 0.1
+    {0xb951b717, 0xb951b717,  0}, //-0.0002
+
+
 };
 
 static libm_test_special_data_f64

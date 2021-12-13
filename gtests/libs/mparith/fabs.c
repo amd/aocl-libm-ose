@@ -1,61 +1,42 @@
 #include "precision.h"
-#include "mparith_c.h"
+
 
 #if defined(FLOAT)
 #define FUNC_FABS alm_mp_fabsf
-#define FUNC_FABS_ULP alm_mp_fabsf_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_FABS alm_mp_fabs
-#define FUNC_FABS_ULP alm_mp_fabs_ULP
+
 #else
 #error
 #endif
 
-REAL FUNC_FABS(REAL x)
+#include <mpfr.h>
+
+REAL_L FUNC_FABS(REAL x)
 {
-    REAL y;
-    fp_params params;
-    int base, mantis, emin, emax;
-    int *xmp;
-    int ifail;
+    REAL_L y;
 
-    initMultiPrecision(ISDOUBLE, 0, &base, &mantis, &emin, &emax, &params);
-    xmp = new_mp(params);
+    mpfr_rnd_t rnd = MPFR_RNDN;
+    mpfr_t mpx, mp_rop;
 
-    DTOMP(x, xmp, params, &ifail);
-    MPABS(xmp, params, &ifail);
-    MPTOD(xmp, params, &y, &ifail);
+    mpfr_inits2(ALM_MP_PRECI_BITS, mpx, mp_rop, (mpfr_ptr) 0);
 
-    free(xmp);
+#if defined(FLOAT)
+    mpfr_set_d(mpx, x, rnd);
+#elif defined(DOUBLE)
+    mpfr_set_ld(mpx, x, rnd);
+#endif
 
-    return y;
-}
+    mpfr_abs(mp_rop, mpx, rnd);
 
-REAL FUNC_FABS_ULP(REAL x, REAL z, double   *sulps, double   *sreldiff)
-{
-    REAL y;
-    fp_params params;
-    int base, mantis, emin, emax;
-    int *xmp;
-    int ifail;
-    REAL reldiff,ulps;
+#if defined(FLOAT)
+    y = mpfr_get_d(mp_rop, rnd);
+#elif defined(DOUBLE)
+    y = mpfr_get_ld(mp_rop, rnd);
+#endif
 
-    initMultiPrecision(ISDOUBLE, 0, &base, &mantis, &emin, &emax, &params);
-    xmp = new_mp(params);
-
-    DTOMP(x, xmp, params, &ifail);
-    MPABS(xmp, params, &ifail);
-/********/
-    reldiff = MPRELDIFF(z, base, mantis, emin, emax,
-                      xmp, params,&ulps, &ifail);
-	*sreldiff = reldiff;
-	*sulps = ulps;
-
-/********/
-    MPTOD(xmp, params, &y, &ifail);
-
-    free(xmp);
-
+    mpfr_clears (mpx, mp_rop, (mpfr_ptr) 0);
     return y;
 }
 

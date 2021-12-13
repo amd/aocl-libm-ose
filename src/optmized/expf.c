@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -43,14 +43,15 @@
 
 #include <stdint.h>
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 
 #include <libm_macros.h>
 #include <libm/types.h>
 
 #include <libm/typehelper.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
-
+#include <libm/alm_special.h>
 
 #define EXPF_N 6
 #define EXPF_POLY_DEGREE 4
@@ -108,13 +109,12 @@ static const struct expf_data expf_v2_data = {
 #define EXPF_FARG_MIN -0x1.9fe368p6f    /* log(0x1p-150) ~= -103.97 */
 #define EXPF_FARG_MAX  0x1.62e42ep6f    /* log(0x1p128)  ~=   88.72  */
 
-float _expf_special(float x, float y, uint32_t code);
 
 static uint32_t
 top12f(float x)
 {
     flt32_t f = {.f = x};
-    return f.i >> 20;
+    return f.u >> 20;
 }
 
 /******************************************
@@ -140,7 +140,7 @@ ALM_PROTO_OPT(expf)(float x)
     uint32_t top = top12f(x);
 
     if (unlikely (top > top12f(88.0f))) {
-        if(isnanf(x))
+        if(x != x)
             return x;
 
         if (asuint32(x) == asuint32(-INFINITY))
@@ -159,7 +159,7 @@ ALM_PROTO_OPT(expf)(float x)
         }
     }
 
-    z = x *  EXPF_TBLSZ_BY_LN2;
+    z = (double_t)x * EXPF_TBLSZ_BY_LN2;
 
     /*
      * n  = (int) scale(x)
@@ -179,7 +179,7 @@ ALM_PROTO_OPT(expf)(float x)
 
 #endif
 
-    r  = x - dn * EXPF_LN2_BY_TBLSZ;
+    r  = (double_t)x - dn * EXPF_LN2_BY_TBLSZ;
 
     j  = n % EXPF_TABLE_SIZE;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@
 #define EXP_N 7
 #endif
 
-#define EXP_TABLE_SIZE (1ULL << EXP_N)
+#define EXP_TABLE_SIZE (1L << EXP_N)
 
 #if EXP_N == 6                              /* Table size 64 */
 #define EXP_POLY_DEGREE 6

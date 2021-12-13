@@ -26,16 +26,6 @@ uint32_t GetnIpArgs( void )
 	return ipargs;
 }
 
-void SpecSetupf32(SpecParams *specp) {
-  specp->data32 = test_coshf_special_data;
-  specp->countf = ARRAY_SIZE(test_coshf_special_data); 
-}
-
-void SpecSetupf64(SpecParams *specp) {
-  specp->data64 = test_cosh_special_data;
-  specp->countd = ARRAY_SIZE(test_cosh_special_data); 
-}
-
 void ConfSetupf32(SpecParams *specp) {
   specp->data32 = test_coshf_conformance_data;
   specp->countf = ARRAY_SIZE(test_coshf_conformance_data); 
@@ -54,12 +44,12 @@ double getFuncOp(double *data) {
   return LIBM_FUNC(cosh)(data[0]);
 }
 
-float getExpected(float *data) {
+double getExpected(float *data) {
   auto val = alm_mp_coshf(data[0]);
   return val;
 }
 
-double getExpected(double *data) {
+long double getExpected(double *data) {
   auto val = alm_mp_cosh(data[0]);
   return val;
 }

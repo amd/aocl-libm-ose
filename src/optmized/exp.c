@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -77,7 +77,8 @@
  */
 #include <stdint.h>
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
+#include <libm/alm_special.h>
 
 #if !defined(__clang__) && !defined(ENABLE_DEBUG)
 #pragma GCC push_options
@@ -100,11 +101,10 @@
 
 #include "exp_data.h"
 
-double _exp_special(double x, double y, uint32_t code);
 
 static inline uint32_t top12(double x)
 {
-    return asuint64(x) >> 52;
+    return (uint32_t)(asuint64(x) >> 52);
 }
 
 #define FMAX_X			 0x1.62e42fefa39efp+9
@@ -116,8 +116,7 @@ double
 ALM_PROTO_OPT(exp)(double x)
 {
     double_t    r, q, dn;
-    int64_t	n, m;
-    int32_t	j;
+    int64_t     m, n, j;
     flt64_t     q1 = {.i = 0,};
 
 #define EXP_X_NAN       1
@@ -138,10 +137,10 @@ ALM_PROTO_OPT(exp)(double x)
             return 1.0;
 
         if (x > FMAX_X) {
-            if (isnan(x))
+            if (x != x)  /* check if x is a NAN */
                 return  _exp_special(x, asdouble(QNANBITPATT_DP64), EXP_X_NAN);
 
-            if(x == INFINITY)
+            if(asuint64(x) == PINFBITPATT_DP64)
                 return x; /* No exception to be raised */
 
             return  _exp_special(x, asdouble(PINFBITPATT_DP64),  EXP_Y_INF);
@@ -157,8 +156,9 @@ ALM_PROTO_OPT(exp)(double x)
         if (x <= DENORMAL_LOW)
             return _exp_special(x, asdouble(DENORMAL_MIN), EXP_Y_ZERO);
 
-
+	
         exponent = 0xfff;
+
     }
 
     double_t a = x * EXP_TBLSZ_BY_LN2;
@@ -239,26 +239,31 @@ ALM_PROTO_OPT(exp)(double x)
 #endif  /* if HORNER_SCHEME || ESTRIN_SCHEME */
 
     /* f(j)*q + f1 + f2 */
-    struct exp_table *tbl = &((struct exp_table*)EXP_TABLE_DATA)[j];
+    const struct exp_table *tbl = &((const struct exp_table*)EXP_TABLE_DATA)[j];
     q = q * tbl->main + tbl->head + tbl->tail;
 
     /*
      * Processing denormals
      */
     if (unlikely (exponent == 0xfff)) {
-        /* re-calculate m */
-        int32_t m2 = (n - j) >> EXP_N;
-        if (m2 <= -1022) {
-            if (m2 < -1022 || q < 1.0) {
-                /* Process true de-normals */
+        /* re-calculate n */
+       n = (int64_t)dn;
+
+       int64_t m2 = n >> EXP_N;
+
+       if (m2 <= -1022) {
+
+           if ((m2 < -1022) || (q < 1.0)) {
+
+            /* Process true de-normals */
                 m2 +=  1074;
-                flt64u_t tmp = {.i = (1ULL << m2) };
+                flt64_t tmp = {.u = (1ULL << m2) };
                 return q * tmp.d;
-            }
-        }
+           }
+       }
     }
 
-    q1.d =  asdouble(m + asuint64(q));
+    q1.d =  asdouble((uint64_t)m + asuint64(q));
 
     return q1.d;
 

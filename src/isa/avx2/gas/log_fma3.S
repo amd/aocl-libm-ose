@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -80,13 +80,32 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(log)
+#define fname ALM_PROTO_FMA3(log)
 #define fname_special _log_special@PLT
 
 
 # local variable storage offsets
+#ifdef __GNU_ASM__
 .equ    p_temp, 0x0
 .equ    stack_size, 0x18
+#endif
+
+ #ifdef _WIN64
+ # local variable storage offsets
+.equ	save_xmm6,0x000
+.equ	save_xmm7,0x020
+.equ	save_xmm8,0x040
+.equ	save_xmm9,0x060
+.equ	save_xmm10,0x080
+.equ	save_xmm11,0x0A0
+.equ	save_xmm12,0x0C0
+.equ	save_xmm13,0x0E0
+.equ	save_xmm14,0x0100
+.equ	save_xmm15,0x0120
+.equ	save_rdi,0x0140
+.equ	stack_size,0x168      # We take 8 as the last nibble to allow for 
+                              # alligned data movement.
+ #endif
 
 
 #ifdef __ELF__
@@ -97,9 +116,13 @@
 .align 16
 .p2align 5,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
-
+    
+   #ifdef _WIN64
+   sub		$stack_size,%rsp
+   mov		%xmm6,save_xmm6(%rsp)
+   #endif
 
     # compute exponent part
     xor         %rax, %rax
@@ -107,7 +130,7 @@ fname:
     vmovd        %xmm0, %rax
     vpsubq       .L__mask_1023(%rip), %xmm3,%xmm3
     vcvtdq2pd    %xmm3, %xmm6 # xexp 
-    
+    #ifdef __GNU_ASM__
     vpand       .L__real_mant(%rip), %xmm0,%xmm2
     vsubsd      .L__real_one(%rip), %xmm0, %xmm4
 
@@ -121,7 +144,8 @@ fname:
     cmp		%r8, %rdx           #x is zero or denormal
     ja		.L__continue_common
 
-.L__special_cases:
+   .L__special_cases:
+    #endif
      #  NaN or inf
     vpand       .L__real_inf(%rip), %xmm0, %xmm5
     vcomisd     .L__real_inf(%rip), %xmm5
@@ -132,18 +156,31 @@ fname:
     vcomisd     %xmm5, %xmm0
     jbe         .L__x_is_zero_or_neg
 
+    #ifdef _WIN64
+    vpand     .L__real_mant(%rip), %xmm0,%xmm2
+    vsubsd    .L__real_one(%rip), %xmm0, %xmm4
+    #endif
 
     vcomisd      .L__mask_1023_f(%rip), %xmm6
     je          .L__denormal_adjust
 
 
 #.p2align 5,,15
-.L__continue_common:    
+.L__continue_common:   
+    #ifdef __GNU_ASM__ 
     # compute index into the log tables
     vpand       .L__mask_mant_all8(%rip), %xmm0,%xmm14
     vpand       .L__mask_mant9(%rip), %xmm0,%xmm15
     vpsllq       $1, %xmm15,%xmm15
     vpaddq       %xmm14,%xmm15,%xmm1
+    vmovd        %xmm1, %rax
+    #endif
+    
+    # compute index into the log tables
+    vpand       .L__mask_mant_all8(%rip), %xmm0,%xmm1
+    vpand       .L__mask_mant9(%rip), %xmm0,%xmm3
+    vpsllq       $1, %xmm3,%xmm3
+    vpaddq       %xmm1,%xmm3,%xmm1
     vmovd        %xmm1, %rax
 
     # near one codepath
@@ -169,7 +206,10 @@ fname:
     vmovsd      .L__real_1_over_3(%rip),%xmm5
     vfmadd213sd    .L__real_1_over_5(%rip),%xmm1,%xmm3 # r*1/6 + 1/5
     vfmadd213sd    .L__real_1_over_2(%rip),%xmm1, %xmm5 # 1/2+r*1/3
+    #ifdef __GNU_ASM__ 
     vmovapd       %xmm0, %xmm4 # r*r
+    #endif
+    vmovsd    %xmm0,%xmm0,%xmm4 # r*r
     vfmadd213sd    .L__real_1_over_4(%rip),%xmm1, %xmm3 #1/4+(1/5*r+r*r*1/6)
     
     vmulsd       %xmm0,%xmm0,%xmm4                   # r*r*r*r
@@ -182,30 +222,49 @@ fname:
 
     vmovsd       (%r9,%rax,8), %xmm0
     lea         .L__log_256_tail(%rip), %rdx
-    vmovsd       (%rdx,%rax,8), %xmm2
+    #ifdef __GNU_ASM__
+    vmovsd       (%rdx,%rax,8), %xmm2 
     vaddsd      %xmm5, %xmm2,%xmm2
+    #endif
+    vmovsd      (%rdx,%rax,8), %xmm1
+    vaddsd      %xmm5, %xmm1,%xmm1
+    
 
     vfmadd231sd    .L__real_log2_lead(%rip),%xmm6,%xmm0 
-
+    #ifdef __GNU_ASM__
     vaddsd       %xmm2, %xmm0,%xmm0
+    #endif
+    vaddsd       %xmm1, %xmm0,%xmm0
+    #ifdef _WIN64
+    mov		%xmm6,save_xmm6(%rsp)
+    add		$stack_size,%rsp
+    #endif
     ret
 
 .p2align 5,,15
 .L__near_one:
 
     # r = x - 1.0
+    #ifdef __GNU_ASM__ 
     vmovapd     .L__real_two(%rip), %xmm2
+    #endif
+    vmovapd     .L__real_two(%rip), %xmm3
 #vmovapd     .L__real_ca1(%rip), %xmm3
 #vmovapd     .L__real_ca3(%rip), %xmm7
     vsubsd      .L__real_one(%rip), %xmm0, %xmm0 # r
-
+    #ifdef __GNU_ASM__ 
     vaddsd       %xmm0, %xmm2,%xmm2
     vdivsd       %xmm2, %xmm0,%xmm1 # r/(2+r) = u/2
+    #endif
+    vaddsd       %xmm0, %xmm3,%xmm3
+    vdivsd       %xmm3, %xmm0,%xmm1 # r/(2+r) = u/2
 
     vmovapd      .L__real_ca2(%rip), %xmm4
     vmovapd      .L__real_ca4(%rip), %xmm5
-
+    #ifdef __GNU_ASM__
     vmulsd       %xmm1, %xmm0,%xmm6 # correction
+    #endif
+    vmulsd       %xmm1, %xmm0,%xmm3 # correction
     vaddsd       %xmm1, %xmm1,%xmm1 # u
 
     vmulsd       %xmm1, %xmm1,%xmm2 # u^2
@@ -219,9 +278,15 @@ fname:
     vmulsd       %xmm1, %xmm2, %xmm2 # u^7
 
     vfmadd231sd     %xmm2, %xmm5,%xmm4
+    #ifdef __GNU_ASM__
     vsubsd       %xmm6, %xmm4,%xmm4
+    #endif
+    vsubsd       %xmm3, %xmm4,%xmm4
     vaddsd       %xmm4, %xmm0,%xmm0
- 
+    #ifdef _WIN64
+    mov		%xmm6,save_xmm6(%rsp)
+    add		$stack_size,%rsp
+    #endif
     ret
 
 .p2align 5,,15
@@ -239,16 +304,30 @@ fname:
 .L__x_is_zero_or_neg:
     jne         .L__x_is_neg
     vmovsd       .L__real_ninf(%rip), %xmm1
+    #ifdef __GNU_ASM__
     mov         .L__flag_x_zero(%rip), %edi
+    #endif
+    mov         .L__flag_x_zero(%rip), %r8d
     call        fname_special
+    #ifdef _WIN64
+    mov		%xmm6,save_xmm6(%rsp)
+    add		$stack_size,%rsp
+    #endif
     ret   
 
 .p2align 5,,15
 .L__x_is_neg:
 
     vmovsd      .L__real_qnan(%rip), %xmm1
+    #ifdef __GNU_ASM__
     mov         .L__flag_x_neg(%rip), %edi
+    #endif
+    mov         .L__flag_x_neg(%rip), %r8d
     call        fname_special
+    #ifdef _WIN64
+    mov		%xmm6,save_xmm6(%rsp)
+    add		$stack_size,%rsp
+    #endif
     ret
 
 .p2align 5,,15
@@ -259,18 +338,26 @@ fname:
 
     cmp         .L__real_ninf(%rip), %rax
     je          .L__x_is_neg
-
+    #ifdef __GNU_ASM__
     mov         .L__real_qnanbit(%rip), %r9
     and         %rax, %r9
     jnz         .L__finish
+    #endif
 
     or          .L__real_qnanbit(%rip), %rax
     movd        %rax, %xmm1
+    #ifdef __GNU_ASM__
     mov         .L__flag_x_nan(%rip), %edi
+    #endif
+    mov         .L__flag_x_nan(%rip), %r8d
     call        fname_special
 
 .p2align 5,,15
 .L__finish:
+    #ifdef _WIN64
+    mov		%xmm6,save_xmm6(%rsp)
+    add		$stack_size,%rsp
+    #endif
     ret
 
 

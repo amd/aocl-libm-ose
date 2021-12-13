@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,17 +25,17 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
 #include "libm_inlines_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
 
 #ifdef WINDOWS
 #pragma function(sinhf)
 #endif
 
-float FN_PROTOTYPE_REF(sinhf)(float fx)
+float ALM_PROTO_REF(sinhf)(float fx)
 {
   /*
     After dealing with special cases the computation is split into
@@ -163,7 +163,7 @@ float FN_PROTOTYPE_REF(sinhf)(float fx)
 #ifdef WINDOWS
             return fx;
 #else
-            return __amd_handle_errorf("sinhf", __amd_sinh, ux, _UNDERFLOW, AMD_F_INEXACT|AMD_F_UNDERFLOW, ERANGE, fx, 0.0, 1);
+            return __alm_handle_errorf(ux, AMD_F_INEXACT|AMD_F_UNDERFLOW);
 #endif
         }
     }
@@ -174,7 +174,7 @@ float FN_PROTOTYPE_REF(sinhf)(float fx)
   else if (aux > 0x7f800000)
     {
 #ifdef WINDOWS
-        return __amd_handle_errorf("sinhf", __amd_sinh, ux|QNANBITPATT_SP32, _DOMAIN, AMD_F_NONE, EDOM, fx, 0.0, 1);
+        return __alm_handle_errorf(ux|QNANBITPATT_SP32, AMD_F_NONE);
 #else
         return fx+fx;
 #endif
@@ -189,9 +189,9 @@ float FN_PROTOTYPE_REF(sinhf)(float fx)
     {
       /* Return infinity with overflow flag. */
       if (xneg)
-		  return __amd_handle_errorf("sinh", __amd_sinh, NINFBITPATT_SP32, _OVERFLOW, AMD_F_OVERFLOW, ERANGE, fx, 0.0, 1);
+		  return __alm_handle_errorf(NINFBITPATT_SP32, AMD_F_OVERFLOW);
       else
-		  return __amd_handle_errorf("sinh", __amd_sinh, PINFBITPATT_SP32, _OVERFLOW, AMD_F_OVERFLOW, ERANGE, fx, 0.0, 1);
+		  return __alm_handle_errorf(PINFBITPATT_SP32, AMD_F_OVERFLOW);
     }
   else if (y >= small_threshold)
     {

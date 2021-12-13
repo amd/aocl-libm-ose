@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+; Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
 ;
 ; Redistribution and use in source and binary forms, with or without modification,
 ; are permitted provided that the following conditions are met:
@@ -69,7 +69,7 @@ stack_size      EQU     0F8h ; We take 8 as the last nibble to allow for
                              ; alligned data movement.
 
 
-FN_PROTOTYPE_BAS64 vrsa_cbrtf
+ALM_PROTO_BAS64 vrsa_cbrtf
 
 
 

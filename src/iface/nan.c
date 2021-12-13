@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,22 +26,55 @@
  */
 
 #include <libm_macros.h>
-#include <libm/cpu_features.h>
-#include <libm/entry_pt.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/iface.h>
-#include <libm/amd_funcs_internal.h>    /* Contains all implementations */
+#include <libm/entry_pt.h>
 
+//
+#include <libm/arch/all.h>
+
+
+static const
+struct alm_arch_funcs __arch_funcs_nan = {
+    .def_arch = ALM_UARCH_VER_DEFAULT,
+    .funcs = {
+        [ALM_UARCH_VER_DEFAULT] = {
+            &ALM_PROTO_REF(nanf),
+            &ALM_PROTO_REF(nan),
+            NULL,                           /* vrs4 ? */
+            NULL,                           /* vrs8 ? */
+            NULL,                           /* vrd2 ? */
+            NULL,                           /* vrd4 ? */
+        },
+#if 0
+        [ALM_UARCH_VER_ZEN] = {
+            &ALM_PROTO_FMA3(nanf),
+            &ALM_PROTO_FMA3(nan),
+            NULL,                           /* vrs4 ? */
+            NULL,                           /* vrs8 ? */
+            NULL,                           /* vrd2 ? */
+            NULL,                           /* vrd4 ? */
+        },
+#endif
+    }
+};
 
 void
 LIBM_IFACE_PROTO(nan)(void *arg)
 {
-	/* Double */
-	G_ENTRY_PT_PTR(nan) = &FN_PROTOTYPE_REF(nan);
+    alm_ep_wrapper_t g_entry_nan = {
+       .g_ep = {
+        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(nanf),
+        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(nan),
+#if 0
+        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_nanf),
+        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_nanf),
+        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_nan),
+        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_nan),
+#endif
+        },
+    };
 
-	/* Single */
-	G_ENTRY_PT_PTR(nanf) = &FN_PROTOTYPE_REF(nanf);
-
-	/* Vector Double */
-	/* Vector Single */
+    alm_iface_fixup(&g_entry_nan, &__arch_funcs_nan);
 }
 

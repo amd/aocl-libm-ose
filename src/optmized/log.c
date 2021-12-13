@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,23 +26,18 @@
  */
 
 #include <stdint.h>
+
 #include <libm_util_amd.h>
-#include <libm_special.h>
-
-#if defined(__GNUC__) && !defined(__clang__) && !defined(ENABLE_DEBUG)
-#pragma GCC push_options
-#pragma GCC optimize ("O2")
-#endif  /* !DEBUG */
-
+#include <libm/alm_special.h>
 #include <libm_macros.h>
+
 #include <libm/amd_funcs_internal.h>
 #include <libm/types.h>
-
 #include <libm/typehelper.h>
 #include <libm/compiler.h>
 
-#define N 8
-#define TABLE_SIZE (1ULL << N)
+#define N               8
+#define TABLE_SIZE      (1ULL << N)
 #define MAX_POLYDEGREE  8
 
 /*
@@ -52,27 +47,27 @@
  *
  *     2. if e^(-1/16) < X < e^(1/16)
  *           then, f = X - 1, calcualate log(1+f) using PROCEEDURE2, and EXIT
- *	     otherwise, move to Step3
+ *           otherwise, move to Step3
  *     3. Find uniq integer 'm' such that
- *		1 <= 2^-m . X <= 2  (i.e., 1 <= (1/2^m).X <= 2)
+ *        1 <= 2^-m . X <= 2  (i.e., 1 <= (1/2^m).X <= 2)
  *
- *		Determine 'f' and 'F' such that,
- *		 X = 2^m(F + f)
- *		 F = 1 + j.2^(-7)   j = 0,1,2,...,2^(7)
- *		 f <= 2^(-8)
+ *     Determine 'f' and 'F' such that,
+ *     X = 2^m(F + f)
+ *     F = 1 + j.2^(-7)   j = 0,1,2,...,2^(7)
+ *     f <= 2^(-8)
  *
- *		Invoke PROCEEDURE1 to compute log(X)
+ *     Invoke PROCEDURE1 to compute log(X)
  */
 
 /*
  * Find T1 and T2, such that
- *	T1 is largest working-precision number smaller than e^(-1/16)
- *	T2 is the smallest working precision larger than e^(1/16)
+ * T1 is largest working-precision number smaller than e^(-1/16)
+ * T2 is the smallest working precision larger than e^(1/16)
  *
- *	  (-1/16)            (1/16)
- *	e^        <   X  <  e^
+ *  (-1/16)            (1/16)
+ *   e^        <   X  <  e^
  *   can be
- *	T1 < X < T2
+ *  T1 < X < T2
  */
 
 
@@ -128,13 +123,15 @@ static struct {
               },
 };
 
-#define C2	log_data.poly[0]
-#define C3	log_data.poly[1]
-#define C4	log_data.poly[2]
-#define C5	log_data.poly[3]
-#define C6	log_data.poly[4]
-#define C7	log_data.poly[5]
-#define C8	log_data.poly[6]
+#define LOW  0x0010000000000000U
+#define HIGH 0x7ff0000000000000U
+#define C2 log_data.poly[0]
+#define C3 log_data.poly[1]
+#define C4 log_data.poly[2]
+#define C5 log_data.poly[3]
+#define C6 log_data.poly[4]
+#define C7 log_data.poly[5]
+#define C8 log_data.poly[6]
 #define LN2_LEAD log_data.ln2_lead
 #define LN2_TAIL log_data.ln2_tail
 
@@ -142,7 +139,6 @@ struct log_table {
     double lead, tail;
 };
 
-double _log_special(double x, double y, uint32_t code);
 
 static inline uint64_t top12(double x)
 {
@@ -152,12 +148,12 @@ static inline uint64_t top12(double x)
 
 /*
  * log(x) or ln(x)
- *	x is a quiet NaN, return x.
- *	x is a signaling NaN, raise the invalid operation exception and return a quiet NaN.
- *	If x = +inf, return x quietly.
- *	If x = +0 or -0, return -w, and raise the divide-by-zero exception.
- *	If x c 0, return a quiet NaN, and raise the invalid operation exception.
- *	If x = 1, return +O.
+ * x is a quiet NaN, return x.
+ * x is a signaling NaN, raise the invalid operation exception and return a quiet NaN.
+ * If x = +inf, return x quietly.
+ * If x = +0 or -0, return -w, and raise the divide-by-zero exception.
+ * If x c 0, return a quiet NaN, and raise the invalid operation exception.
+ * If x = 1, return +O.
  */
 double
 ALM_PROTO_OPT(log)(double x)
@@ -171,50 +167,41 @@ ALM_PROTO_OPT(log)(double x)
 #define FLAG_X_NEG  0x2
 #define FLAG_X_NAN  0x3
 
-    if (unlikely (expo >= 0x7ff)) {
-        /* x is inf or nan */
-        if (ux == 0x7ff0000000000000ULL)
+    flt64_t mant  = {.u = ux & MANTBITS_DP64};
+
+    if (unlikely ((ux - LOW) >= (HIGH - LOW))){
+
+        if (2 * ux == 0)
+            return alm_log_special(x, asdouble(NINFBITPATT_DP64), AMD_F_DIVBYZERO);
+
+        if (ux == PINFBITPATT_DP64)
             return x;
 
-        /* -inf */
-        if (isinf(x) == -1)
-            return _log_special(x, asdouble(QNANBITPATT_DP64), FLAG_X_NEG);
 
-        /* NaN */
-        if (! (ux & QNANBITPATT_DP64))
-            return _log_special(x, ux | QNANBITPATT_DP64 , FLAG_X_NAN);
+        if ((ux >= HIGH ) || (ux >> 63)) {
+
+            if( (ux & QNANBITPATT_DP64) == QNANBITPATT_DP64)
+               return x;
+
+            return alm_log_special(x, asdouble(ux | QNANBITPATT_DP64), ALM_E_IN_X_NAN);
+
+        }
+
+        /* Denormals : adjust mantissa */
+
+        mant.u   |= ONEEXPBITS_DP64;
+        mant.d   -= 1.0;
+        expo      = (mant.u >> EXPSHIFTBITS_DP64) - 2045;
+        mant.u   &= MANTBITS_DP64;
+        ux        = mant.u;
+        dexpo    = cast_i64_to_double((int64_t) expo);
     }
+    else {
 
-    if (unlikely (x <= 0.0)) {
-        /* x is zero or neg */
-        if (x == 0.0)
-            return _log_special(x, asdouble(PINFBITPATT_DP64), FLAG_X_ZERO);
+        expo    -= EXPBIAS_DP64;
+        dexpo    = cast_i64_to_double((int64_t) expo);
 
-        return _log_special(x, asdouble(QNANBITPATT_DP64), FLAG_X_NEG);
     }
-
-    flt64_t mant = {.i = ux & 0x000fffffffffffffULL};
-
-    dexpo = cast_i64_to_double(expo);
-
-    /*
-     * Denormals: Adjust mantissa,
-     *            exponent is anyway 0 for subnormals
-     */
-    if (unlikely (dexpo < -1023.0)) {
-        mant.i |= 0x3ff0000000000000ULL;
-        mant.d -= 1.0;
-        uint64_t mant1 = mant.i >> 52;
-
-        mant.i &= 0x000ffffffffffffULL;
-        ux = mant.i;
-        expo = cast_i64_to_double(mant1 - 2045);
-    }
-
-    /* un-bias exponent  */
-    expo -=  1023;
-
-    dexpo = cast_i64_to_double(expo);
 
 #if 1
     /*****************
@@ -222,7 +209,7 @@ ALM_PROTO_OPT(log)(double x)
      *****************/
     flt64_t one_minus_mant = {.d = x - 1.0};
     /* mask sign bit */
-    uint64_t mant_no_sign = one_minus_mant.i & ~(1ULL << 63);
+    uint64_t mant_no_sign = one_minus_mant.u & ~(1ULL << 63);
     if (unlikely (mant_no_sign < 0x3fb0000000000000ULL)) {
         double_t  u, u2, u3, u7;
         double_t  A1, A2, B1, B2, R1, R2;
@@ -276,7 +263,7 @@ ALM_PROTO_OPT(log)(double x)
      */
     uint64_t j = (mant_n + (mant_n1 << 1));
 
-    mant.i        |= 0x3fe0000000000000ULL;               /* F */
+    mant.u        |= 0x3fe0000000000000ULL;               /* F */
     j_times_half   = asdouble(0x3fe0000000000000ULL | j); /* Y */
 
     j >>= (52 - N);
@@ -345,6 +332,3 @@ ALM_PROTO_OPT(log)(double x)
     return q;
 }
 
-#if defined(__GNUC__) && !defined(__clang__) && !defined(ENABLE_DEBUG)
-#pragma GCC pop_options
-#endif

@@ -15,6 +15,7 @@
  */
 static libm_test_special_data_f32
 test_cosf_conformance_data[] = {
+    {0x3fc8f5c3, 0x0, 0},
     {POS_ZERO_F32, POS_ONE_F32, 0,}, //cos (0)=1
     {NEG_ZERO_F32, POS_ONE_F32, 0},  //cos(-x) = cos(x)
     {0x3F000000, 0x3f60a940, 0,},//0.5
@@ -47,9 +48,9 @@ test_cosf_conformance_data[] = {
     {0x43FCE5F1, 0xbf800000,0},  //505.796417, remainder is ~0, very close multiple of piby2
     {0x4831E550, 0xbf800000,0},  //182165.25, remainder is ~piby4
     {0x42FCE5F1, 0x3F3504F3,0},  //126.449104
-	//Special case for verified the ulps
-	{0xd0a3e87f, 0xb10a4ed8, 0},   //-2.19993846E+10, close to pi/2
-// newlly added 
+    //Special case for verified the ulps
+    {0xd0a3e87f, 0xb10a4ed8, 0},   //-2.19993846E+10, close to pi/2
+    // newlly added 
     {0xbfc90fdb, 0xb33bbd2e, 0}, // Cos(-1.5708 = +3pi/2)=-4.371139e-008
     {0x4096cbe4, 0x324cde2e, 0}, // Cos(4.71239  = -pi/2)=1.192488e-008
     {0xc096cbe4, 0x324cde2e, 0}, // Cos(-4.71239 = -3pi/2)=1.192488e-008
@@ -109,6 +110,29 @@ test_cosf_conformance_data[] = {
     {0x3ebc9d26, 0x3f6ed32a, 0}, 	// 49: cos(3.683864474297e-001)=	9.329096171815e-001
     {0xbd94dd55, 0x3f7f52f2, 0}, 	// 50: cos(-7.268778234720e-002)=	9.973594060904e-001
     {0x80000000, 0x3f800000, 0}, 	// 51: cos(0.000000000000e+000)=	1.000000000000e+000
+//from ancient libm
+    //exceptional cases
+#ifdef WIN64
+    {0x7f800000, 0xffc00000, 0},
+    {0xff800000, 0xffc00000, 0},   // - INF
+#else
+    {0x7f800000, 0x7fc00000, 0},  // + InF
+    {0xff800000, 0x7fc00000, 0},   // - INF
+#endif
+    {0x7fc00000, 0x7fc00000, 0},  //NaN
+    {0x7fc00001, 0x7fc00001, 0},  //NaN
+    {0x7f800001, 0x7fc00001, 0},   // + INF
+    {0x7fef8000, 0x7fef8000, 0},   // + QNAN
+    {0xffef8000, 0xffef8000, 0},   // - QNAN
+    {0x80000000, 0x3f800000, 0},	// - 0
+
+   //The following test cases are ported from AMD LibM
+    //>=5.0e5 case
+    //make case for expdiff > 15
+    {0x4016cb60, 0xbf35037e, 0},
+    {0x4016cd61, 0xbf350929, 0},
+    {0x4016cf62, 0xbf350ed4, 0},
+    {0x4016d163, 0xbf35147e, 0},
 
 };
 
@@ -173,7 +197,7 @@ test_cos_conformance_data[] = {
 	{0x3ff10ca44655d48a,0x3fdef9b63399ad36, 0},  // 1.0655863521072058
 
 	{POS_PI_F64, 0xbff0000000000000, 0},  // 3.1415926535897931 = pi
-    {NEG_PI_F64, 0xbff0000000000000, 0},  // cos(-x)=cos(x)
+	{NEG_PI_F64, 0xbff0000000000000, 0},  // cos(-x)=cos(x)
 
 	{0x400923e979f8b36a,0xbfefffff118a9e97, 0},  // 3.1425351647398445
 	{0x4002dae59bb5c33e,0xbfe6a49b6cfd78bd, 0},  // 2.3568832554668964
@@ -194,15 +218,6 @@ test_cos_conformance_data[] = {
 
 	{0x4012d97c7f3321d2,0xbcaa79394c9e8a0a, 0},  // 4.71238898038469 = 3pi/2
 	{0x401921fb54442d18,0x3ff0000000000000, 0},  // 6.2831853071795862 = 2pi
-	{0x402921fb54442d18,0x3ff0000000000000, 0},  // 12.566370614359172 = 4pi
-	{0x410921fb54442d18,0x3ff0000000000000, 0},  // 205887.41614566068 =  (2^16)pi
-	{0x403921fb54442d18,0x3ff0000000000000, 0},  // 25.132741228718345 = 8pi
-	{0x403921fb54442d19,0x3ff0000000000000, 0},  // 25.132741228718348 close to 8pi
-	{0x3ff921fb57442d18,0xbe47fffffdcb3b39, 0},  // 1.5707963379707675 close to pi/2
-	{0x400921fb52442d18,0xbfefffffffffffff, 0},  // 3.1415926386886319 close to pi
-	{0x410921fb56442d18,0x3fefffff0000019c, 0},  // 205887.41712222318 close to (2^16)p
-	{0xbff921fb57442d18,0xbe47fffffdcb3b39, 0},  //-1.5707963379707675 close to - pi/2
-	{0x400921f554442d18,0xbfeffffffff70000, 0},  // 3.1415812094979962 close to pi
 	{0xc00921f554442d18,0xbfeffffffff70000, 0},  //-3.1415812094979962 close to -pi
 	{0xbff921f557442d18,0x3ed7f40000008b3a, 0},  //-1.570790615924869 close to -pi/2
 	{0xbff9217557442d18,0x3f20bf9fff3c46cf, 0},  //-1.570668545612369 close to -pi/2
@@ -269,102 +284,70 @@ test_cos_conformance_data[] = {
 	{0x3fd793a4b27b58c8,0x3fedda65476c8031, 0}, 	// 49: cos(3.683864348399e-001)=	9.329096217152e-001
 	{0xbfb29baa97f00ffa,0x3fefea5e460342e6, 0}, 	// 50: cos(-7.268778047006e-002)=	9.973594062268e-001
 	{0xa89efc4d47cd8d7d,0x3ff0000000000000, 0}, 	// 51: cos(-5.032930199885e-113)=	1.000000000000e+000
-};
+	//from ancient libm
+	{0x0000000000000000, 0x3ff0000000000000, 0},  // 0
+	{0x8000000000000000, 0x3ff0000000000000, 0},  // -0
 
-static libm_test_special_data_f32
-test_cosf_special_data[] = {
-    {0x3c000000, 0x3f810101 ,},   //0.0078125
-    {0x3c7fffff, 0x3f820405 ,},   //0.0156249991
-    {0x3f012345, 0x3fd3f9f2 ,},   //0.504444
-    {0x3f800000, 0x402df854 ,},   //1
-    {0x40000000, 0x40ec7326 ,},   //2
-    {0x33d6bf95, 0x3f800001 ,},   //1.0000000e-7
-    {0x4048f5c3, 0x41b92025 ,},   //pi*/
-    {0x40c90fdb, 0x4405df79 ,},   //2pi
-    {0x41200000, 0x46ac14ee ,},   //10
-    {0x447a0000, 0x7f800000 ,},   //1000
-    {0x42800000, 0x6da12cc1 ,},   //64
-    {0x42af0000, 0x7e96bab3 ,},   //87.5
-    {0x42b00000, 0x7ef882b7 ,},   //88
-    {0x42c00000, 0x7f800000 ,},   //96
-    {0xc2af0000, 0x006cb2bc ,},   //-87.5
-    {0xc2e00000, 0x00000000 ,},   //-112
-    {0xc3000000, 0x00000000 ,},   //-128
-    {0xc2aeac4f, 0x00800026 ,},   //-87.3365  smallest normal result
-    {0xc2aeac50, 0x007fffe6 ,},   //-87.3365  largest denormal result
-    {0xc2ce0000, 0x00000001 ,},   //-103
-    {0x42b17216, 0x7f7fff04 ,},   //88.7228   largest value  --
-    {0x42b17217, 0x7f7fff84 ,},   //88.7228   largest value
-    {0x42b17218, 0x7f800000 ,},   //88.7228   overflow
-    {0x50000000, 0x7f800000 ,},   //large   overflow
-    {0xc20a1eb8, 0x269162c0 ,}, // -34.53
-    {0xc6de66b6, 0x00000000 ,}, // -28467.3555
-    {0xbe99999a, 0x3f3da643 ,}, // -0.3
-    {0xbf247208, 0x3f06ab02 ,}, // -0.642365
-    {0xbf000000, 0x3f1b4598 ,}, // -0.5
-    {0x3e99999a, 0x3facc82d ,}, // 0.3
-    {0x3f247208, 0x3ff35307 ,}, // 0.642365
-    {0x3f000000, 0x3fd3094c ,}, // 0.5
-    {0x420a1eb8, 0x586162f9 ,}, // 34.53
-    {0x46de66b6, 0x7f800000 ,}, // 28467.3555
-    {0xc2c80000, 0x0000001b ,}, // -100
-    {0x42c80000, 0x7f800000 ,}, // 100
-};
+	//5e5 checks
+	//NAN/INF checks
+#ifdef WIN64
+	{0x7ff0000000000000, 0xfff8000000000000, 0},  // +inf
+	{0xfff0000000000000, 0xfff8000000000000, 0},  // -inf
+#else
+	{0x7ff0000000000000, 0x7ff8000000000000, 0},  // +inf
+	{0xfff0000000000000, 0x7ff8000000000000, 0},  // -inf
+#endif
 
-static libm_test_special_data_f64
-test_cos_special_data[] = {
-    {0xffefffffffffffff, 0x0000000000000000,},
-    {0xc0862c4379671324, 0x00052288f82fe4ba,},
-    {0x7ff0000000000000, 0x7ff0000000000000,}, //inf
-    {0xfff0000000000000, 0x0000000000000000,}, //-inf
-    {0x7ffc000000000000, 0x7ffc000000000000,}, //qnan
-    {0x7ff4000000000000, 0x7ffc000000000000,}, //snan
-    {0x0000000000000000, 0x3ff0000000000000,}, //0
+	{0x7ff8000000000000, 0x7ff8000000000000, 0},  // +Qnan
+	{0x7ffdf00000000000, 0x7ffdf00000000000, 0},  // +Qnan
+	{0xfffdf00000000000, 0xfffdf00000000000, 0},  // -Qnan
+	{0xfff8000000000000, 0xfff8000000000000, 0},  // -Qnan
+	{0x7ff4000000000000, 0x7ffc000000000000, 0},  // +Snan
+	{0xfff4000000000000, 0xfffc000000000000, 0},  // -Snan
 
-    {0x3e45798ee2308c3a, 0x3ff0000002af31dc,}, // .00000001
-    {0x400921fb54442d18, 0x403724046eb09339,}, //pi
-    {0xc086be6fb2739468, 0x0000000001000000,}, // denormal result
-    {0x3ff0000000000000, 0x4005bf0a8b145769,}, // 1
-    {0x4000000000000000, 0x401d8e64b8d4ddae,}, // 2
-    {0xbff0000000000000, 0x3fd78b56362cef38,}, // -1
+	//near piby4
+	//very close to piby4
+	//cos expdiff is < 15
+	//cos expdiff is > 15
+	//integer
+#ifdef acceptable
+	//ms & gcc answer for the following case 0x3fe14a280fb5068c
+	{0x3ff0000000000000, 0x3fe14a280fb5068b, 0},  // 1
+#else
+	{0x3ff0000000000000, 0x3fe14a280fb5068c, 0},  // 1
+#endif
+	//pi related
+	//ms & gcc answer for the following case 0xbe47fffffdcb3b39
 
-    {0x4024000000000000, 0x40d5829dcf950560,}, // 10
-    {0x408f400000000000, 0x7ff0000000000000,}, // 1000
-    {0x4084000000000000, 0x79a40a4b9c27178a,}, // 640
-    {0xc085e00000000000, 0x00d14f2b0fb9307f,}, // -700
-    {0xc07f51999999999a, 0x12c0be4b336b18b7,}, // -501.1
 
-    {0xc086d00000000000, 0x00000000001c7ea3,}, // -730
-    {0xc086232bdd7abcd2, 0x001000000000007c,}, // smallest normal  result, x=-1022*ln(2)
-    {0xc086232bdd7abcd3, 0x000ffffffffffe7c,}, // largest denormal result
-    {0xc0874385446d71c4, 0x0000000000000001,}, // x=-1074*ln(2)
-    {0xc0874910d52d3051, 0x0000000000000001,}, // smallest denormal result, x=-1075*ln(2)
-    {0xc0874910d52d3052, 0x0000000000000000,}, // largest input for result zero
-    {0xc08f400000000000, 0x0000000000000000,}, // -1000
+	{0x000000000000dead, 0x000000000000beef, 0},  // end
+	{0xBFE83DCA43349085, 0x3FE73FB4E2E7A5BA, 0},
+	{0xBFE6EF49DAE5CECE, 0x3FE82087D3F96825, 0},
 
-    {0x40862e42fefa39ef, 0x7fefffffffffff2a,}, // largest normal result
-    {0x40862e42fefa39f0, 0x7ff0000000000000,}, // smallest input for result inf
-    {0x4086280000000000, 0x7fdd422d2be5dc9b,}, // 709
+	{0x3FF0000000000000, 0x3fe14a280fb5068c, 0},  // 1
+	{0x402921fb54442d18, 0x3ff0000000000000, 0},  // 12.566370614359172 = 4pi
+	{0x410921fb54442d18, 0x3ff0000000000000, 0},  // 205887.41614566068 =  (2^16)pi
+	{0x403921fb54442d18, 0x3ff0000000000000, 0},  // 25.132741228718345 = 8pi
+	{0x403921fb54442d19, 0x3ff0000000000000, 0},  // 25.132741228718348 close to 8pi
+	{0x3ff921fb57442d18, 0xbe47fffffdcb3b39, 0},  // 1.5707963379707675 close to pi/2
+	{0x400921fb52442d18, 0xbfefffffffffffff, 0},  // 3.1415926386886319 close to pi
+	{0x410921fb56442d18, 0x3fefffff0000019c, 0},  // 205887.41712222318 close to (2^16)p
+	{0xbff921fb57442d18, 0xbe47fffffdcb3b39, 0},  //-1.5707963379707675 close to - pi/2
+	{0xc00921fb54442d18, 0xbff0000000000000, 0},  //-3.1415926535897931 = - pi
+	{0x400921f554442d18, 0xbfeffffffff70000, 0},  // 3.1415812094979962 close to pi
 
-    {0x7fefffffffffffff, 0x7ff0000000000000,}, // largest number
-    {0xffefffffffffffff, 0x0000000000000000,}, // smallest number
-
-    // all denormal
-    {0xc08625aad16d5438, 0x000bb63ae9a2ac50,},
-    {0xc08627fa8b8965a4, 0x0008c5deb69c6fc8,},
-    {0xc0862c4379671324, 0x00052288f82fe4ba,},
-    {0xc087440b864646f5, 0x0000000000000001,},
-
-    {0xc08743e609f06b07, 0x0000000000000001,},
-    {0xc0874409d4de2a93, 0x0000000000000001,},
-    {0xc08744b894a31d87, 0x0000000000000001,},
-    {0xc08744ddf48a3b9c, 0x0000000000000001,},
-    {0xc08745723e498e76, 0x0000000000000001,},
-    {0xc0874593fa89185f, 0x0000000000000001,},
-    {0xffefffffffffffff, 0x0000000000000000,},
-    {0xffefffffffffffff, 0x0000000000000000,},
-    {0xffefffffffffffff, 0x0000000000000000,},
-    {0xffefffffffffffff, 0x0000000000000000,},
 };
 
 #endif	/*__TEST_COS_DATA_H__*/
+
+
+
+
+
+
+
+
+
+
+
+

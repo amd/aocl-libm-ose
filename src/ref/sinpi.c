@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,10 +25,10 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
 #include "libm_inlines_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
 /* sin(x) approximation valid on the interval [-pi/4,pi/4]. */
 static inline double sin_piby4(double x, double xx)
@@ -91,13 +91,15 @@ static inline double cos_piby4(double x, double xx)
 }
 
 
-double FN_PROTOTYPE_REF(sinpi)(double x)
+double ALM_PROTO_REF(sinpi)(double x)
 {
     double r, dx, xsgn;
-    long long ux;
+    unsigned long long ux;
     const double pi = 3.1415926535897932384626433832795;
+
+
     GET_BITS_DP64(x, ux);
-		ux = ux & ~SIGNBIT_DP64;
+    ux = ux & ~SIGNBIT_DP64;
 
     // Handle +-Inf and NaN
     if (ux >= PINFBITPATT_DP64)
@@ -126,8 +128,8 @@ double FN_PROTOTYPE_REF(sinpi)(double x)
     }
 
     // Remaining cases
-    ux = (long)dx;
-    r = dx - ux;
+    ux = (unsigned long)dx;
+    r = dx - (double)ux;
     xsgn = (x > 0.0 ? 1.0 : -1.0) * (ux & 0x1 ? -1.0 : 1.0);
 
     if (r == 0.0)

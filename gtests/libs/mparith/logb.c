@@ -1,19 +1,19 @@
 #include "precision.h"
-#include "mparith_c.h"
+
 
 #if defined(FLOAT)
 #define FUNC_LOGB alm_mp_logbf
-#define FUNC_LOGB_ULP alm_mp_logbf_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_LOGB alm_mp_logb
-#define FUNC_LOGB_ULP alm_mp_logb_ULP
+
 #else
 #error
 #endif
 
-REAL FUNC_LOGB(REAL x)
+REAL_L FUNC_LOGB(REAL x)
 {
-    REAL y;
+    REAL_L y;
     fp_params params;
     int base, mantis, emin, emax;
     int *xmp, *ymp;

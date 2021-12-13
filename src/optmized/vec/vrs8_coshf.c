@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  */
 
@@ -32,11 +32,12 @@
 #include <stdint.h>
 #include <emmintrin.h>
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 #include <libm_macros.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/typehelper-vec.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
@@ -61,11 +62,9 @@ static struct {
 #define HALFV     v8_coshf_data.halfV
 #define ARG_MAX   v8_coshf_data.arg_max
 
-v_f32x8_t ALM_PROTO(vrs8_expf)(v_f32x8_t);
-float ALM_PROTO(coshf)(float);
 
 static inline v_f32x8_t
-coshf_specialcase(v_f32x8_t _x, v_f32x8_t result, v_i32x8_t cond)
+coshf_specialcase(v_f32x8_t _x, v_f32x8_t result, v_u32x8_t cond)
 {
     return call_v8_f32(ALM_PROTO(coshf), _x, result, cond);
 }

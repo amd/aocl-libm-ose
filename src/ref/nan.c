@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,11 +25,12 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
 #include <stdio.h>
+#include <libm/amd_funcs_internal.h>
 
-double  FN_PROTOTYPE_REF(nan)(const char *tagp)
+
+double  ALM_PROTO_REF(nan)(const char *tagp)
 {
 
 
@@ -73,7 +74,7 @@ double  FN_PROTOTYPE_REF(nan)(const char *tagp)
                             val = QNANBITPATT_DP64;
                             break;
                         }
-                        val = (val << 4)  |  num; 
+                        val = (val << 4)  |  (U64)num;
                         tagp++;
                     }
                 }
@@ -88,7 +89,7 @@ double  FN_PROTOTYPE_REF(nan)(const char *tagp)
                             val = QNANBITPATT_DP64;
                             break;
                         }
-                        val = (val << 3)  |  num; 
+                        val = (val << 3)  |  (U64)num;
                         tagp++;
                     }
                 }
@@ -103,7 +104,7 @@ double  FN_PROTOTYPE_REF(nan)(const char *tagp)
                         val = QNANBITPATT_DP64;
                         break;
                     }
-                    val = val + num; 
+                    val = val + (U64)num;
                     tagp++;
                 }
             

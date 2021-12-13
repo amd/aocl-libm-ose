@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,12 +25,11 @@
  *
  */
 
-#include "libm_amd.h" 
 #include "libm_util_amd.h" 
-#include "libm_special.h" 
+#include <libm/alm_special.h> 
+#include <libm/amd_funcs_internal.h>
  
- 
-float FN_PROTOTYPE_REF(nexttowardf)(float x, long double y) 
+float ALM_PROTO_REF(nexttowardf)(float x, long double y) 
 { 
  
  
@@ -44,12 +43,15 @@ float FN_PROTOTYPE_REF(nexttowardf)(float x, long double y)
     if(((checkbits.u32 & ~SIGNBIT_SP32) > EXPBITS_SP32 ))
     {
 #ifdef WINDOWS
-	return  __amd_handle_errorf("nexttoward", __amd_nexttoward, checkbits.u32| QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+	return  __alm_handle_errorf(checkbits.u32| QNAN_MASK_32,
+                                          AMD_F_NONE);
 #else
 	if (checkbits.u32 & QNAN_MASK_32)
-	return  __amd_handle_errorf("nexttoward", __amd_nexttoward, checkbits.u32| QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+	    return  __alm_handle_errorf(checkbits.u32| QNAN_MASK_32,
+                                            AMD_F_NONE);
 	else
-	return  __amd_handle_errorf("nexttoward", __amd_nexttoward, checkbits.u32| QNAN_MASK_32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+	    return  __alm_handle_errorf(checkbits.u32| QNAN_MASK_32,
+                                            AMD_F_INVALID);
 #endif
     }
 	 
@@ -60,7 +62,7 @@ float FN_PROTOTYPE_REF(nexttowardf)(float x, long double y)
         return (float) dy; 
     } 
  
-    if( x == 0.0) 
+    if(x == 0.0f)
     { 
         checkbits.u32 = 1; 
         if( dy > 0.0 ) 
@@ -83,7 +85,8 @@ float FN_PROTOTYPE_REF(nexttowardf)(float x, long double y)
     /* check if the result is nan or inf */ 
     if(((checkbits.u32 & ~SIGNBIT_SP32) >= EXPBITS_SP32 )) 
     { 
-		return  __amd_handle_errorf("nexttowardf", __amd_nexttoward, checkbits.u32 | QNAN_MASK_32, _DOMAIN,0, EDOM, x, 0.0, 1);
+        return  __alm_handle_errorf(checkbits.u32 | QNAN_MASK_32,
+                                                0);
     } 
  
     return checkbits.f32; 

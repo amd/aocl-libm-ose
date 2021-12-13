@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,21 +26,58 @@
  */
 
 #include <libm_macros.h>
-#include <libm_amd.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
 
+//
+#include <libm/arch/all.h>
+
+
+static const
+struct alm_arch_funcs __arch_funcs_expm1 = {
+    .def_arch = ALM_UARCH_VER_DEFAULT,
+    .funcs = {
+        [ALM_UARCH_VER_DEFAULT] = {
+            &ALM_PROTO_FMA3(expm1f),
+            &ALM_PROTO_FMA3(expm1),
+            &ALM_PROTO_FMA3(vrs4_expm1f),
+            NULL,                           /* vrs8 ? */
+            NULL,                           /* vrd2 ? */
+            NULL,                           /* vrd4 ? */
+	    &ALM_PROTO_FMA3(vrsa_expm1f),  /*array vector float*/
+	    &ALM_PROTO_FMA3(vrda_expm1),   /*array vector double*/
+        },
+#if 0
+        [ALM_UARCH_VER_ZEN2] = {
+            &ALM_PROTO_ARCH_ZN2(expm1f),
+            &ALM_PROTO_ARCH_ZN2(expm1),
+        },
+
+        [ALM_UARCH_VER_ZEN3] = {
+            &ALM_PROTO_ARCH_ZN3(expm1f),
+            &ALM_PROTO_ARCH_ZN3(expm1),
+        },
+#endif
+    },
+};
+
 void
 LIBM_IFACE_PROTO(expm1)(void *arg)
 {
-    /*
-     * Should setup all variants,
-     * single, double, and vectors (also complex if available)
-     */
-    G_ENTRY_PT_PTR(expm1) = &FN_PROTOTYPE_BAS64(expm1);
-    G_ENTRY_PT_PTR(expm1f) = &FN_PROTOTYPE_BAS64(expm1f);
+    alm_ep_wrapper_t g_entry_expm1 = {
+       .g_ep = {
+        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(expm1f),
+        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(expm1),
+        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_expm1f),
+        //[ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_expm1f),
+        //[ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_expm1),
+        //[ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_expm1),
+	[ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_expm1f),
+	[ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_expm1),
+        },
+    };
 
-    /*vector versions*/
-    G_ENTRY_PT_PTR(vrd4_expm1) = &FN_PROTOTYPE(vrd4_expm1);
+    alm_iface_fixup(&g_entry_expm1, &__arch_funcs_expm1);
 }
+

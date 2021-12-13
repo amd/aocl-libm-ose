@@ -13,22 +13,23 @@ Import('env')
 build_dir = joinpath(env['BUILDROOT'], 'gapi')
 
 e = env.Clone()
-e.Replace(CC='gcc',LINKFLAGS=[])
+if e['HOST_OS'] != 'win32':
+    e.Replace(CC='gcc',LINKFLAGS=[])
 #e.Append(
 #   LINKFLAGS = [],
 #)
 
 libg = SConscript('gtest/SConscript',
-		exports = {'env': env},
-		duplicate = 0,
-		variant_dir = '',
-	)
+        exports = {'env': env},
+        duplicate = 0,
+        variant_dir = '',
+    )
 
 libb = SConscript('gbench/SConscript',
-		exports = {'env': env},
-		duplicate = 0,
-		variant_dir = '',
-	)
+        exports = {'env': env},
+        duplicate = 0,
+        variant_dir = '',
+    )
 
 Return('libg', 'libb')
 

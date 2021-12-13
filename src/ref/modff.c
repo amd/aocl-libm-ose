@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,11 +25,12 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
-float FN_PROTOTYPE_REF(modff)(float x, float *iptr)
+
+float ALM_PROTO_REF(modff)(float x, float *iptr)
 {
   /* modff splits the argument x into integer and fraction parts,
      each with the same sign as x. */
@@ -38,7 +39,7 @@ float FN_PROTOTYPE_REF(modff)(float x, float *iptr)
   int xexp;
 
   GET_BITS_SP32(x, ux);
-  xexp = ((ux & (~SIGNBIT_SP32)) >> EXPSHIFTBITS_SP32) - EXPBIAS_SP32;
+  xexp = (int)(((ux & (~SIGNBIT_SP32)) >> EXPSHIFTBITS_SP32) - EXPBIAS_SP32);
 
   if (xexp < 0)
     {
@@ -53,7 +54,7 @@ float FN_PROTOTYPE_REF(modff)(float x, float *iptr)
       unsigned int ur;
       /* x lies between 1.0 and 2**(24) */
       /* Mask out the bits of x that we don't want */
-      mask = (1 << (EXPSHIFTBITS_SP32 - xexp)) - 1;
+      mask = (unsigned int)((1 << (EXPSHIFTBITS_SP32 - xexp)) - 1);
       PUT_BITS_SP32(ux & ~mask, *iptr);
       r = x - *iptr;
       GET_BITS_SP32(r, ur);
@@ -65,7 +66,7 @@ float FN_PROTOTYPE_REF(modff)(float x, float *iptr)
       /* x is NaN */
       *iptr = x;
 #ifdef WINDOWS
-      return __amd_handle_errorf("modff", __amd_logb, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1); /* Raise invalid if it is a signalling NaN */
+      return __alm_handle_errorf("modff", __amd_logb, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1); /* Raise invalid if it is a signalling NaN */
 #else
       return x+x;
 #endif

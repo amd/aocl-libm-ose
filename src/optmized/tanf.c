@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -60,10 +60,11 @@
  */
 
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 #include <libm_macros.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
@@ -157,9 +158,9 @@ tan_piby4(double x, int32_t recip) {
     t = x + x * r * r1 / r2;
 
     if (recip)
-    	return -1.0 / t;
+        return (float)(-1.0 / t);
     else
-        return t;
+        return (float)t;
 
 }
 
@@ -178,7 +179,7 @@ tan_piby4i_zero(double x) {
 
     t = x + x * r * r1 / r2;
 
-    return t;
+    return (float)t;
 
 }
 
@@ -193,16 +194,16 @@ __tanf_special_inline(float x)
     if (uxf & MANTBITS_SP32) {
         /* x is NaN */
         if (uxf & QNAN_MASK_32)
-            return  __amd_handle_errorf("tanf", __amd_tan, uxf | QNAN_MASK_32,
-                                        _DOMAIN, AMD_F_NONE, EDOM, x, 0.0f, 1);
+            return  __alm_handle_errorf(uxf | QNAN_MASK_32,
+                                         AMD_F_NONE);
 
-        return  __amd_handle_errorf("tanf", __amd_tan, uxf | QNAN_MASK_32,
-                                    _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0f, 1);
+        return  __alm_handle_errorf(uxf | QNAN_MASK_32,
+                                    AMD_F_INVALID);
     }
 
     /* x is infinity. Return a NaN */
-    return  __amd_handle_errorf("tanf", __amd_tan, INDEFBITPATT_SP32, _DOMAIN,
-                                AMD_F_INVALID, EDOM, x, 0.0f, 1);
+    return  __alm_handle_errorf(INDEFBITPATT_SP32,
+                                AMD_F_INVALID);
 }
 
 #define ALM_TANF_SMALL_X     0x3C000000 
@@ -218,15 +219,16 @@ __tanf_very_small_x(float x)
 
     if (ax < ALM_TANF_SMALL_X) { /* abs(x) < 2.0^(-13) */
         if (ax < ALM_TANF_ARG_MIN) /* abs(x) < 2.0^(-27) */
-            return  __amd_handle_errorf("tanf", __amd_tan, asuint32(x), _UNDERFLOW,
-                                        AMD_F_UNDERFLOW|AMD_F_INEXACT,
-                                        ERANGE, x, 0.0, 1);
+            return  __alm_handle_errorf(asuint32(x),
+                                        AMD_F_UNDERFLOW|AMD_F_INEXACT
+                                        );
 
         /*
          *  2^-13 < abs(x) < 2^-27
          *  tan(x) = x + x^3 * 0.333333333
          */
-        return x + (x * x * x * ONE_BY_THREE);
+        double dx = (double)x;
+        return (float)(dx + (dx * dx * dx * ONE_BY_THREE));
     }
 
     return tan_piby4i_zero(x);
@@ -235,8 +237,8 @@ __tanf_very_small_x(float x)
 float ALM_PROTO_OPT(tanf)(float x)
 {
     double    dx, r;
-    int32_t   region, xneg;
-    uint32_t  uxf;
+    int32_t   region;
+    uint32_t  uxf, xneg;
 
     uxf = asuint32(x);
 
@@ -274,7 +276,7 @@ float ALM_PROTO_OPT(tanf)(float x)
 
         npi2d = dx *  TWO_BY_PI + ALM_SHIFT;
 
-        npi2 = asuint64(npi2d);
+        npi2 = (uint32_t)asuint64(npi2d);
 
         npi2d -= ALM_SHIFT;
 
@@ -285,7 +287,7 @@ float ALM_PROTO_OPT(tanf)(float x)
 
         r = rhead - rtail;
 
-        region = npi2;
+        region = (int32_t)npi2;
     }
 
     float res = tan_piby4(r, region & 1);

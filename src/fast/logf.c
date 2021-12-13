@@ -26,7 +26,7 @@
  */
 #include <stdint.h>
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
@@ -89,14 +89,14 @@ static struct {
  */
 
 float
-FN_PROTOTYPE_FAST(logf)(float x)
+ALM_PROTO_FAST(logf)(float x)
 {
     float m, r, n, f;
 
     // 0 and FLT_MAX
-    if ((x > 0.0f) && (x <= 0x1.fffffep+127)) {
+    if ((x > 0.0f) && (x <= 0x1.fffffep+127f)) {
         // Get the exponent
-        int32_t ux = (asuint32(x) - 0x3f2aaaab) & 0xff800000;
+        uint32_t ux = (asuint32(x) - 0x3f2aaaab) & 0xff800000;
         n = (float)(ux >> EXPSHIFTBITS_SP32) ;
         // Get the mantissa, m is in [2/3, 4/3]
         m = asfloat(asuint32(x) - ux);
@@ -118,6 +118,6 @@ FN_PROTOTYPE_FAST(logf)(float x)
 
 }
 
-strong_alias (__logf_finite, FN_PROTOTYPE_FAST(logf))
-weak_alias (logf, FN_PROTOTYPE_FAST(logf))
-strong_alias (__ieee754_logf, FN_PROTOTYPE_FAST(logf))
+strong_alias (__logf_finite, ALM_PROTO_FAST(logf))
+weak_alias (logf, ALM_PROTO_FAST(logf))
+strong_alias (__ieee754_logf, ALM_PROTO_FAST(logf))

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -361,8 +361,8 @@ static inline void splitexpf(float x, float logbase,
     else
       n = (int)(r - 0.5F);
 
-    r1 = x - n * logbaseof2_by_32_lead;
-    r2 =   - n * logbaseof2_by_32_trail;
+    r1 = x - (float)n * logbaseof2_by_32_lead;
+    r2 =   - (float)n * logbaseof2_by_32_trail;
 
     /* Set j = n mod 32:   5 mod 32 = 5,   -5 mod 32 = 27,  etc. */
     /* j = n % 32;

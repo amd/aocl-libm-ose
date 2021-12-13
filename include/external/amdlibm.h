@@ -1,7 +1,7 @@
 
 /*
 
-(C) 2008-2020 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2021 Advanced Micro Devices, Inc. All Rights Reserved.
 
 Advanced Micro Devices, Inc.
 Software License Agreement

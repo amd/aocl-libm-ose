@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
  */
 
 #include <libm_macros.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/types.h>
 #include <libm/constants.h>
@@ -153,7 +153,7 @@ ALM_PROTO_FAST(tanf)(float x)
     result = asfloat(sign ^ asuint32(poly));
 
     if (odd)
-        result = -1.0/result;
+        result = -1.0f/result;
 
     return result;
 }

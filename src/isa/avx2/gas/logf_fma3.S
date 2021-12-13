@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@
 
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(logf)
+#define fname ALM_PROTO_FMA3(logf)
 
 .text
 ..TXTST0:
@@ -279,9 +279,9 @@ fname:
         .long   0x00000000	
 
 .align 4
-.globl zero
+.globl alm_logf_zero
 
-zero:
+alm_logf_zero:
 	.long	0x00000000
 	.align 4
 	.globl ln2_hi
@@ -313,8 +313,10 @@ Lg3:
 Lg4:
 	.long	0x3e789e26
 	.data
+#ifdef __GNU_ASM__
 	.section .note.GNU-stack, ""
 	.section .eh_frame,"a",@progbits
+#endif
 .eh_frame_seg:
 	.align 8
 # End

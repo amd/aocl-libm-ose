@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,10 +25,10 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
 #include "libm_inlines_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
 
 /* tan(x) approximation valid on the interval [-pi/4,pi/4].
@@ -54,23 +54,24 @@ static inline double tanf_piby4(double x, int recip)
 }
 
 
-float  FN_PROTOTYPE_REF(tanpif)(float x)
+float  ALM_PROTO_REF(tanpif)(float x)
 {
     const float pi = 3.1415926535897932F;
-    long long uxx;
+    unsigned long long uxx;
     float xsgn = x > 0.0f ? 1.0f : -1.0f;
-    int ux;
+    unsigned int ux;
     double dx;
-    float r,xodd;
+    float r, xodd;
+
 
     GET_BITS_SP32(x, ux);
-     ux = ux & ~SIGNBIT_SP32;
+    ux = ux & ~SIGNBIT_SP32;
 
     if (ux >= PINFBITPATT_SP32)
     {
-		PUT_BITS_SP32(QNANBITPATT_SP32,x);
-		return x;
-	}
+        PUT_BITS_SP32(QNANBITPATT_SP32,x);
+        return x;
+    }
 
     // when x >= 2^24, the result is always even integer
     if (ux >= 0x4b800000)
@@ -85,39 +86,41 @@ float  FN_PROTOTYPE_REF(tanpif)(float x)
     dx = x * xsgn;
     GET_BITS_DP64(dx, uxx);
 
-    if (dx < 0.25f) {
+    if (dx < 0.25) {
         if (uxx < 0x3f80000000000000) {
 	    if (uxx < 0x3f20000000000000)
 	        return x * pi;
 	    dx = x * pi;
-	    return (float)(dx + dx*dx*dx*(1.0f / 3.0f));
+	    return (float)(dx + dx*dx*dx*(1.0 / 3.0));
         }
 	return (float)tanf_piby4(x*pi, 0);
     }
 
-    ux = (int)dx;
-     r = (float) (dx - (float)ux);
-     xodd = xsgn * (ux & 0x1 ? -1.0f : 1.0f);
+    ux = (unsigned int)dx;
+    r = (float)(dx - (double)ux);
+    xodd = xsgn * (ux & 0x1 ? -1.0f : 1.0f);
 
     if (r == 0.0f)
 	return xodd * 0.0f;
 
+    double xdsgn = (double)xsgn;
+
     if (r <= 0.25f)
-	return (float)( xsgn * tanf_piby4(r*pi, 0));
+	return (float)(xdsgn * tanf_piby4(r*pi, 0));
 
     if (r < 0.5f)
-	return (float)( -xsgn * tanf_piby4((0.5f - r) * pi, 1));
+	return (float)(-xdsgn * tanf_piby4((0.5f - r) * pi, 1));
 
     if (r == 0.5f)
     {
-		PUT_BITS_SP32(PINFBITPATT_SP32,x);
-		return xodd * x;
-	}
+        PUT_BITS_SP32(PINFBITPATT_SP32,x);
+        return xodd * x;
+    }
 
     if (r <= 0.75f)
-	return (float)( xsgn * tanf_piby4((r - 0.5f) * pi, 1));
+	return (float)(xdsgn * tanf_piby4((r - 0.5f) * pi, 1));
 
     // r < 1
-    return (float)(-xsgn * tanf_piby4((1.0 - r) * pi, 0));
+    return (float)(-xdsgn * tanf_piby4((1.0f - r) * pi, 0));
 }
 

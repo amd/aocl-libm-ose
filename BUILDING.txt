@@ -75,7 +75,7 @@
 ## Possible future building
   A fast library, with upto 8 ULP (when available).
   ``` sh
-    $ LD_PRELOAD=/abs/path/amdlibm_fast.so
+    $ LD_PRELOAD=./build/aocl-release/src/fast/libalmfast.so
   ```
 
 ### Building with glibc compatibility for tests

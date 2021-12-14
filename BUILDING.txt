@@ -69,7 +69,7 @@
   An glibc compatible library, which has the table of functions compatible with
   GLIBC. or compile with AOCC to generate proper API calls to amdlibm.
   ``` sh
-    $ LD_PRELOAD=./build/aocl-release/src/compat/glibc-compat.o
+    $ LD_PRELOAD=./build/aocl-release/src/compat/libalm-glibc-compat.so
   ```
 
 ## Possible future building
@@ -78,30 +78,27 @@
     $ LD_PRELOAD=./build/aocl-release/src/fast/libalmfast.so
   ```
 
-### Building with glibc compatibility for tests
-
-  Following is to build tests with glibc compatibility api
-
-``` sh
-  $ scons --libabi=glibc
-```
-
-  With this the tests will be compiled to call _libm_ functions, without the
-  amd specific prefix.
-
-### Building with Intel Math (SVML,IMF) Libraries
+### Building the test framework (SVML,IMF) functions
   To build tests to exercise Intel math libraries
 
   Add the intel library path to PATH variable.
 
-  $ export PATH=<path to intel shared libraries>:$PATH;
+  $ export INTEL_LIB_PATH=<path to intel shared libraries>;
   then,
-  $ scons --libabi=svml;
+  $ scons gtests --libabi=svml;
   Add intel lib path to LD_LIBRARY_PATH;
   $export LD_LIBRARY_PATH=<intel lib path>:$LD_LIBRARY_PATH;
 
+### Building the framework to exercise GLIBC LIBM functions
+  To build tests to exercise Glibc LibM libraries
+  $ scons gtests --libabi=glibc;
+  With this the tests will be compiled to call _libm_ functions, without the
+  amd specific prefix.
+
 ### To run the tests
   To run the AMD LibM test framework.
+
+  ## To run the framework to exercise AMD LIBM Functions:
   export the required paths:
 
   $export LD_LIBRARY_PATH=./build/aocl-release/src/:$LD_LIBRARY_PATH;
@@ -130,4 +127,36 @@
   -c (Integer value for number of inputs)
   Input range:
   -r (provide range: start,stop,step size example: -r -50,50,SIMPLE)
+
+  ## To Run the framework to exercise Intel Math functions:
+  export the required paths:
+
+  $export LD_LIBRARY_PATH=./build/svml-release/gtests/libs/mparith/32/:$LD_LIBRARY_PATH;
+
+  $export LD_LIBRARY_PATH=./build/svml-release/gtests/libs/mparith/64/:$LD_LIBRARY_PATH;
+
+  $export LD_LIBRARY_PATH=./build/svml-release/gtests/gapi/gtest/:$LD_LIBRARY_PATH;
+
+  $export LD_LIBRARY_PATH=./build/svml-release/gtests/gapi/gbench/:$LD_LIBRARY_PATH;
+
+  Now run the test executable for the required function
+  $./build/svml-release/gtests/<function>/test_<function>     with the test parameters
+  Example:
+   ./build/svml-release/gtests/exp/test_exp
+
+  ## To run the framework to exercise GLIBC LibM functions:
+  export the required paths:
+
+  $export LD_LIBRARY_PATH=./build/glibc-release/gtests/libs/mparith/32/:$LD_LIBRARY_PATH;
+
+  $export LD_LIBRARY_PATH=./build/glibc-release/gtests/libs/mparith/64/:$LD_LIBRARY_PATH;
+
+  $export LD_LIBRARY_PATH=./build/glibc-release/gtests/gapi/gtest/:$LD_LIBRARY_PATH;
+
+  $export LD_LIBRARY_PATH=./build/glibc-release/gtests/gapi/gbench/:$LD_LIBRARY_PATH;
+
+  Now run the test executable for the required function
+  $./build/glibc-release/gtests/<function>/test_<function>     with the test parameters
+  Example:
+   ./build/glibc-release/gtests/exp/test_exp
 

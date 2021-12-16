@@ -374,5 +374,21 @@
          q = (b0 + b1 * x4 ) + b2 * x8;                                      \
          q;                                                                  \
          })
+
+/*
+ * p(x) = 1+ r*(c1 +(c2 + (c3 + (c4 +(c5 +(c6 + c7*r)*r)*r)*r)*r)*r)
+ */
+#define POLY_EVAL_SINHF(x, c1, c2, c3, c4, c5, c6, c7) ({\
+        __typeof(x) q, a0, a1, a2, a3, a4, a5;           \
+         a0 =  c6 + c7  * x;                             \
+         a1 =  c5 + a0  * x;                             \
+         a2 =  c4 + a1  * x;                             \
+         a3 =  c3 + a2  * x;                             \
+         a4 =  c2 + a3 * x;                              \
+         a5 =  c1 + a4 * x;                              \
+         q =  1 + a5 * x;                                \
+         q;                                              \
+         })
+
 #endif /* LIBM_POLY_H */
 

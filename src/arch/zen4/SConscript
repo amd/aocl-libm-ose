@@ -49,10 +49,12 @@ env_mach = e['ALM_MAX_ARCH']
 #    print('znver4 not supported, not compiling sources in this directory')
 #    Return('')
 
-machflag = '-mavx512f'
+machflag_avx512 = '-mavx512f'
+
+machflag = '-march=' + env_mach
 
 e.MergeFlags({
-    'CFLAGS'  : [machflag, '-O3', '-fPIC', '-flax-vector-conversions'],
+    'CFLAGS'  : [machflag, machflag_avx512, '-O3', '-fPIC', '-flax-vector-conversions'],
     'CPPPATH' : incpaths
 })
 

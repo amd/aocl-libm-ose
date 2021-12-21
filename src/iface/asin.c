@@ -37,43 +37,37 @@ struct alm_arch_funcs __arch_funcs_asin = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_ARCH_AVX2(asinf),
-            &ALM_PROTO_REF(asin),
-            &ALM_PROTO_ARCH_AVX2(vrs4_asinf),/* vrs4 ? */
-            &ALM_PROTO_ARCH_AVX2(vrs8_asinf),/* vrs8 ? */
-            NULL,                           /* vrd2 ? */
-            NULL,                           /* vrd4 ? */
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(asinf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_REF(asin),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_asinf),/* vrs4 ? */
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_asinf),/* vrs8 ? */
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_asinf),
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_asin),
         },
 
         [ALM_UARCH_VER_ZEN] = {
-            &ALM_PROTO_ARCH_ZN(asinf),
-            &ALM_PROTO_REF(asin),
-            &ALM_PROTO_ARCH_ZN(vrs4_asinf),
-            &ALM_PROTO_ARCH_ZN(vrs8_asinf),
-            NULL,
-            NULL,
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(asinf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_REF(asin),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN(vrs4_asinf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_asinf),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
-            &ALM_PROTO_ARCH_ZN2(asinf),
-            NULL,
-            &ALM_PROTO_ARCH_ZN2(vrs4_asinf), /* vrs4 ? */
-            &ALM_PROTO_ARCH_ZN2(vrs8_asinf), /* vrs8 ? */
-            NULL,                           /* vrd2 ? */
-            NULL,                           /* vrd4 ? */
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(asinf),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN2(vrs4_asinf), /* vrs4 ? */
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_asinf), /* vrs8 ? */
         },
         [ALM_UARCH_VER_ZEN3] = {
-            &ALM_PROTO_ARCH_ZN3(asinf),
-            NULL,
-            &ALM_PROTO_ARCH_ZN3(vrs4_asinf), /* vrs4 ? */
-            &ALM_PROTO_ARCH_ZN3(vrs8_asinf), /* vrs8 ? */
-            NULL,                           /* vrd2 ? */
-            NULL,                           /* vrd4 ? */
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(asinf),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN3(vrs4_asinf), /* vrs4 ? */
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_asinf), /* vrs8 ? */
         },
 
         [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(asinf),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN4(vrs4_asinf), /* vrs4 ? */
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN4(vrs8_asinf), /* vrs8 ? */
+
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_asinf),
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_asin),
         },

@@ -1,5 +1,7 @@
 # AMD Math Library(LibM)
 
+Please run 'git checkout aocl-3.1' before starting the build process
+
 ## Building on linux
 Refer to the file BUILDING.txt
 

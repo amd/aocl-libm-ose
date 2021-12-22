@@ -42,6 +42,12 @@ int test_func(void* handle, struct FuncData * data, const char * func_name) {
     funcf_2 s1f_2 = data->s1f_2;
     func_2 s1d_2 = data->s1d_2;
 
+    /* complex */
+    funcf_cmplx s1f_cmplx = data->s1f_cmplx;
+    func_cmplx s1d_cmplx = data->s1d_cmplx;
+    funcf_cmplx_2 s1f_cmplx_2 = data->s1f_cmplx_2;
+    func_cmplx_2 s1d_cmplx_2 = data->s1d_cmplx_2;
+
     /* vector double */
     func_v2d v2d = data->v2d;
     func_v2d_2 v2d_2 = data->v2d_2;
@@ -74,6 +80,13 @@ int test_func(void* handle, struct FuncData * data, const char * func_name) {
     test_s1d(s1d, func_name);
     test_s1f_2(s1f_2, func_name);
     test_s1d_2(s1d_2, func_name);
+
+    /*cmplx*/
+    test_s1f_cmplx(s1f_cmplx, func_name);
+    test_s1d_cmplx(s1d_cmplx, func_name);
+    test_s1f_cmplx_2(s1f_cmplx_2, func_name);
+    test_s1d_cmplx_2(s1d_cmplx_2, func_name);
+
     test_v2d(v2d, func_name);
     test_v2d_2(v2d_2, func_name);
     test_v4s(v4s, func_name);

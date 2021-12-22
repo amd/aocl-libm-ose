@@ -5,6 +5,12 @@ int test_s1d    (func,    const char*);
 int test_s1f_2  (funcf_2, const char*);
 int test_s1d_2  (func_2,  const char*);
 
+/* cmplx scalar */
+int test_s1f_cmplx (funcf_cmplx, const char*);
+int test_s1d_cmplx (func_cmplx, const char*);
+int test_s1f_cmplx_2 (funcf_cmplx_2, const char*);
+int test_s1d_cmplx_2 (func_cmplx_2, const char*);
+
 int test_v2d    (func_v2d,     const char*);
 int test_v2d_2  (func_v2d_2,   const char*);
 

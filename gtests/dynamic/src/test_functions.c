@@ -1,5 +1,7 @@
 #include "test_functions.h"
+#include <complex.h>
 
+/* scalar single precision */
 int test_s1f(funcf s1f, const char* func_name) {
     float inputf=3.14f, outputf;
     if (s1f != NULL) {
@@ -10,6 +12,7 @@ int test_s1f(funcf s1f, const char* func_name) {
     return 0;
 }
 
+/* scalar double precision */
 int test_s1d(func s1d, const char* func_name) {
     double input=3.14, output;
     if (s1d != NULL) {
@@ -20,6 +23,7 @@ int test_s1d(func s1d, const char* func_name) {
     return 0;
 }
 
+/* scalar single precision with two inputs */
 int test_s1f_2(funcf_2 s1f_2, const char* func_name) {
     float inputf=3.14f, outputf;
     if (s1f_2 != NULL) {
@@ -30,12 +34,69 @@ int test_s1f_2(funcf_2 s1f_2, const char* func_name) {
     return 0;
 }
 
+/* scalar single precision with two inputs */
 int test_s1d_2(func_2 s1d_2, const char* func_name) {
     double input = 3.14, output;
     if (s1d_2 != NULL) {
         output = s1d_2(input, input);
         if (CheckError()) exit(1);
         printf("amd_%s(%lf, %lf) = %lf\n", func_name, input, input, output);
+    }
+    return 0;
+}
+
+/* complex */
+extern "C" float crealf(float _Complex);
+extern "C" float cimagf(float _Complex);
+extern "C" double creal(double _Complex);
+extern "C" double cimag(double _Complex);
+
+/* complex scalar */
+int test_s1f_cmplx(funcf_cmplx s1f_cmplx, const char* func_name) {
+    float _Complex inputf=3.14f, outputf;
+    if (s1f_cmplx != NULL) {
+        outputf = s1f_cmplx(inputf);
+        if (CheckError()) exit(1);
+        printf("amd_%s(%f + i%f) %f + i%f\n",
+            func_name, (double)crealf(inputf), (double)cimagf(inputf),
+            (double)crealf(outputf), (double)cimagf(outputf));
+    }
+    return 0;
+}
+
+int test_s1d_cmplx(func_cmplx s1d_cmplx, const char* func_name) {
+    double _Complex input=3.14, output;
+    if (s1d_cmplx != NULL) {
+        output = s1d_cmplx(input);
+        if (CheckError()) exit(1);
+        printf("amd_%s(%lf + i%lf) %lf + i%lf\n",
+            func_name, creal(input), cimag(input),
+            creal(output), cimag(output));
+    }
+    return 0;
+}
+
+/* complex with two inputs */
+int test_s1f_cmplx_2(funcf_cmplx_2 s1f_cmplx_2, const char* func_name) {
+    float _Complex inputf=3.14f, outputf;
+    if (s1f_cmplx_2 != NULL) {
+        outputf = s1f_cmplx_2(inputf, inputf);
+        if (CheckError()) exit(1);
+        printf("amd_%s(%f + i%f) %f + i%f\n",
+            func_name, (double)crealf(inputf), (double)cimagf(inputf),
+            (double)crealf(outputf), (double)cimagf(outputf));
+    }
+    return 0;
+}
+
+int test_s1d_cmplx_2(func_cmplx_2 s1d_cmplx_2, const char* func_name) {
+    double _Complex input=3.14, output;
+    if (s1d_cmplx_2 != NULL) {
+        output = s1d_cmplx_2(input, input);
+        if (CheckError()) exit(1);
+        printf("amd_%s(%lf + i%lf) %lf + i%lf\n",
+            func_name, creal(input), cimag(input),
+            creal(output), cimag(output));
     }
     return 0;
 }

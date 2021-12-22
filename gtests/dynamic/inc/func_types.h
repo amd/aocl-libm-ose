@@ -2,6 +2,7 @@
 #define FUNC_TYPES_H_INCLUDED
 
 #include <immintrin.h>
+#include <complex.h>
 
 /*func ptr types*/
 /*scalar*/
@@ -11,6 +12,12 @@ typedef double (*func)      (double);
 typedef double (*func_2)    (double, double);
 typedef float  (*funcf_int) (float, int);
 typedef double (*func_int)  (double, int);
+
+/* complex scalar */
+typedef float _Complex (*funcf_cmplx) (float _Complex);
+typedef double _Complex (*func_cmplx) (double _Complex);
+typedef float _Complex (*funcf_cmplx_2) (float _Complex, float _Complex);
+typedef double _Complex (*func_cmplx_2) (double _Complex, double _Complex);
 
 /*other*/
 typedef float  (*funcf_nan)    (const char*);

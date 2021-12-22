@@ -22,6 +22,13 @@ struct FuncData {
     func         s1d   = NULL;
     funcf_2      s1f_2 = NULL;
     func_2       s1d_2 = NULL;
+
+    /* complex */
+    funcf_cmplx  s1f_cmplx = NULL;
+    func_cmplx   s1d_cmplx = NULL;
+    funcf_cmplx_2 s1f_cmplx_2 = NULL;
+    func_cmplx_2 s1d_cmplx_2 = NULL;
+
     /* vector func types */
     func_v2d     v2d   = NULL;
     func_v2d_2   v2d_2 = NULL;

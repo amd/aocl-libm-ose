@@ -177,14 +177,22 @@ logf_specialcase(v_f32x16_t _x,
     v_f32x16_t ret;
 
     for (int i = 0; i < 16; i += 4) {
+
         v_f32x4_t _x1 = {_x[i], _x[i+1], _x[i+2], _x[i+3]};
+
         v_u32x4_t _cond1 = {cond[i], cond[i+1], cond[i+2], cond[i+3]};
+
         v_f32x4_t _res1 = {result[i], result[i+1], result[i+2], result[i+3]};
+
         _res1 = call_v4_f32(ALM_PROTO(logf), _x1, _res1, _cond1);
-        ret[i] = _res1[i];
-        ret[i+1] = _res1[i+1];
-        ret[i+2] = _res1[i+2];
-        ret[i+3] = _res1[i+3];
+
+        ret[i]   = _res1[0];
+
+        ret[i+1] = _res1[1];
+
+        ret[i+2] = _res1[2];
+
+        ret[i+3] = _res1[3];
     }
 
     return ret;

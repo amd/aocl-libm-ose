@@ -89,6 +89,9 @@ int main(int argc, char* argv[]) {
 
     test_sincos(handle);
 
+    /*complex*/
+    test_cexp(handle);
+
     dlclose(handle);
 
     return 0;

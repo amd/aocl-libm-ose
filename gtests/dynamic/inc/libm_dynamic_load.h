@@ -74,4 +74,7 @@ int test_fmax       (void*);
 int test_fmin       (void*);
 int test_sincos     (void*);
 
+/*complex*/
+int test_cexp       (void*);
+
 #endif

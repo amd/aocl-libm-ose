@@ -101,6 +101,9 @@ enum {
     C_AMD_LLRINT,
     C_AMD_LLROUND,
 
+    /* complex */
+    C_AMD_CEXP,
+
     /*
      * This one needs to be last one, REALLY !!!
      */
@@ -177,6 +180,7 @@ extern void LIBM_IFACE_PROTO(tan)(void *arg);
 extern void LIBM_IFACE_PROTO(tanh)(void *arg);
 extern void LIBM_IFACE_PROTO(tanpi)(void *arg);
 extern void LIBM_IFACE_PROTO(trunc)(void *arg);
+extern void LIBM_IFACE_PROTO(cexp)(void *arg);
 
 struct entry_pt_interface {
     void (*epi_init)(void *arg);

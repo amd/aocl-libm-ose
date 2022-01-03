@@ -72,7 +72,6 @@
 
 #include <stdbool.h>
 
-
 static struct {
     v_f32x8_t piby2, pi;
     v_f32x8_t half, max_arg;
@@ -110,7 +109,7 @@ static struct {
 
 #define ALM_ACOSF_HALF        0x1p-1f
 #define ALM_ACOSF_ONE         0x1p0f
-#define ALM_ACOSF_TWO         0x1p1f
+#define ALM_ACOSF_MINUS_TWO  -0x1p1f
 
 #define A v8_asinf_data.a
 #define B v8_asinf_data.b
@@ -142,7 +141,7 @@ v_f32x8_t
 ALM_PROTO_OPT(vrs8_acosf)(v_f32x8_t x)
 {
     v_f32x8_t  z, poly, result, aux;
-    v_u32x8_t  ux, sign, outofrange, cond1, cond2;
+    v_u32x8_t  ux, sign, outofrange, cond1;
 
     int32_t n = 0;
 
@@ -161,42 +160,18 @@ ALM_PROTO_OPT(vrs8_acosf)(v_f32x8_t x)
     /* if |x| > 0.5 */
     cond1      = aux >  ALM_V8_ACOSF_HALF;
 
-    /* if |x| <= 0.5 */
-    cond2      = aux <= ALM_V8_ACOSF_HALF;
-
     if(all_v8_u32_loop(cond1)) {
 
-        z= ALM_V8_ACOSF_HALF * (ALM_V8_ACOSF_MAX_ARG - aux);
+        z = ALM_V8_ACOSF_HALF * (ALM_V8_ACOSF_MAX_ARG - aux);
 
-        aux[0] = -ALM_ACOSF_TWO * sqrtf(z[0]);
-        aux[1] = -ALM_ACOSF_TWO * sqrtf(z[1]);
-        aux[2] = -ALM_ACOSF_TWO * sqrtf(z[2]);
-        aux[3] = -ALM_ACOSF_TWO * sqrtf(z[3]);
-        aux[4] = -ALM_ACOSF_TWO * sqrtf(z[4]);
-        aux[5] = -ALM_ACOSF_TWO * sqrtf(z[5]);
-        aux[6] = -ALM_ACOSF_TWO * sqrtf(z[6]);
-        aux[7] = -ALM_ACOSF_TWO * sqrtf(z[7]);
+        aux = _mm256_mul_ps(_mm256_set1_ps(ALM_ACOSF_MINUS_TWO),
+                                            _mm256_sqrt_ps(z));
 
-    } else if (all_v8_u32_loop(cond2)) {
+    }
+    else{
 
         n = 1;
         z = aux * aux;
-
-    } else {
-
-        outofrange = cond1 | outofrange;
-
-        for (int32_t i = 0; i < 8; i++) {
-
-            if (aux[i] > ALM_ACOSF_HALF) {
-                z[i]   = ALM_ACOSF_HALF * (ALM_ACOSF_ONE - aux[i]);
-                aux[i] = -ALM_ACOSF_TWO * sqrtf(z[i]);
-
-            } else {
-                n = 1;
-                z[i] = aux[i] * aux[i];
-            }
-        }
     }
 
     /*
@@ -223,5 +198,3 @@ ALM_PROTO_OPT(vrs8_acosf)(v_f32x8_t x)
 
     return result;
 }
-
-

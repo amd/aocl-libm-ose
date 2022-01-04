@@ -46,10 +46,12 @@ int test_s1d_2(func_2 s1d_2, const char* func_name) {
 }
 
 /* complex */
+#if !defined(_WIN64) || !defined(_WIN32)
 extern "C" float crealf(float _Complex);
 extern "C" float cimagf(float _Complex);
 extern "C" double creal(double _Complex);
 extern "C" double cimag(double _Complex);
+#endif
 
 /* complex scalar */
 int test_s1f_cmplx(funcf_cmplx s1f_cmplx, const char* func_name) {

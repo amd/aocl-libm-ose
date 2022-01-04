@@ -30,6 +30,10 @@
 #error  "This file is not expected to be included explicitly"
 #endif
 
+#if defined(_WIN64) || defined(_WIN32)
+    #include <avx512fintrin.h>
+#endif
+
 #include <immintrin.h>
 #include <complex.h>
 #include <libm/types.h>

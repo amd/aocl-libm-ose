@@ -176,7 +176,7 @@ extern long long int    ALM_PROTO_INTERNAL(llroundf)      (float f);
  */
 extern fc64_t   ALM_PROTO_INTERNAL(cexp)          (fc64_t f);
 extern fc32_t   ALM_PROTO_INTERNAL(cexpf)         (fc32_t f);
-
+extern fc32_t   ALM_PROTO_INTERNAL(cpowf)         (fc32_t x, fc32_t y);
 
 
 #include <immintrin.h>

@@ -117,7 +117,7 @@ static struct {
 
 #define ALM_ACOSF_HALF        0x1p-1f
 #define ALM_ACOSF_ONE         0x1p0f
-#define ALM_ACOSF_TWO         0x1p1f
+#define ALM_ACOSF_MINUS_TWO  -0x1p1f
 
 #define A v16_asinf_data.a
 #define B v16_asinf_data.b
@@ -149,7 +149,7 @@ v_f32x16_t
 ALM_PROTO_ARCH_ZN4(vrs16_acosf)(v_f32x16_t x)
 {
     v_f32x16_t  z, poly, result, aux;
-    v_u32x16_t  ux, sign, outofrange, cond1, cond2;
+    v_u32x16_t  ux, sign, outofrange, cond1;
 
     int32_t n = 0;
 
@@ -168,37 +168,19 @@ ALM_PROTO_ARCH_ZN4(vrs16_acosf)(v_f32x16_t x)
     /* if |x| > 0.5 */
     cond1      = aux >  ALM_V16_ACOSF_HALF;
 
-    /* if |x| <= 0.5 */
-    cond2      = aux <= ALM_V16_ACOSF_HALF;
-
     if(all_v16_u32_loop(cond1)) {
 
         z = ALM_V16_ACOSF_HALF * (ALM_V16_ACOSF_MAX_ARG - aux);
 
-        aux = _mm512_mul_ps(_mm512_set1_ps(-ALM_ACOSF_TWO),
+        aux = _mm512_mul_ps(_mm512_set1_ps(ALM_ACOSF_MINUS_TWO),
                                             _mm512_sqrt_ps(z));
 
-    } else if (all_v16_u32_loop(cond2)) {
+    }
+    else {
 
         n = 1;
         z = aux * aux;
 
-    } else {
-
-        outofrange = cond1 | outofrange;
-
-        for (int i = 0; i < 16; i++) {
-
-            if (aux[i] > ALM_ACOSF_HALF) {
-                z[i]   = ALM_ACOSF_HALF * (ALM_ACOSF_ONE - aux[i]);
-                aux[i] = -ALM_ACOSF_TWO * sqrtf(z[i]);
-
-            } else {
-                n = 1;
-                z[i] = aux[i] * aux[i];
-
-            }
-        }
     }
 
     /*

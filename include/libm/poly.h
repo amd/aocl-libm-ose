@@ -375,6 +375,7 @@
          q;                                                                  \
          })
 
+
 /*
  * p(x) = 1+ r*(c1 +(c2 + (c3 + (c4 +(c5 +(c6 + c7*r)*r)*r)*r)*r)*r)
  */
@@ -389,6 +390,66 @@
          q =  1 + a5 * x;                                \
          q;                                              \
          })
+
+
+         
+         
+/* Jyoti
+ * poly = C0 + C1*r^2 + C2*r^4 + C3*r^6+ C4*r^8 \
+ *
+ *      = C0 + r^2*(C1 + C2*r^2) + r^4*(C3*r^2+C4*r^4)
+ *
+ */
+#define POLY_EVAL_EVEN_8(r, c0, c1, c2, c3, c4) ({              \
+        __typeof(r) a0, a1, a2, q;                              \
+        __typeof(r) r2, r4;                                     \
+        r2 = r * r;                                             \
+        r4 = r2 * r2;                                           \
+                                                                \
+        a0 = c2*r2 + c1;                                        \
+        a1 = a0*r2 + c0;                                        \
+        a2 = (c3*r2 + c4*r4)*r4;                                \
+        q = (a1 + a2);                                          \
+        q;                                                      \
+        })
+
+/* Jyoti
+ * poly = C0 + C1*r^2 + C2*r^4 + C3*r^6 \
+ *
+ *      = C0 + r^2*(C1 + C2*r^2 + C3*r4)
+ *
+ */
+#define POLY_EVAL_EVEN_6(r, c0, c1, c2, c3) ({               \
+        __typeof(r) a0, a1;                              \
+        __typeof(r) r2, r4;                                     \
+        r2 = r * r;                                             \
+        r4 = r2 * r2;                                           \
+                                                                \
+        a0 = c3*r4 + c2*r2 + c1;                                        \
+        a1 = a0*r2 + c0;                                        \
+        a1;                                                      \
+        })        
+
+
+/*
+ * poly = C0 + C1*r^2 + C2*r^4 + C3*r^6+ C4*r^8 + c5*r^10 \
+ *
+ *      = C0 + r^2*(C1 + C2*r^2) + r^4*(C3*r^2+C4*r^4+C5*r^6)
+ *
+ */
+#define POLY_EVAL_EVEN_10(r, c0, c1, c2, c3, c4, c5) ({         \
+        __typeof(r) a0, a1, a2, q;                              \
+        __typeof(r) r2, r4, r6;                                 \
+        r2 = r * r;                                             \
+        r4 = r2 * r2;                                           \
+        r6 = r4 * r2;                                           \
+        a0 = c2*r2 + c1;                                        \
+        a1 = a0*r2 + c0;                                        \
+        a2 = (c3*r2 + c4*r4 + c5*r6)*r4;                        \
+        q = (a1 + a2);                                          \
+        q;                                                      \
+        })
+         
 
 #endif /* LIBM_POLY_H */
 

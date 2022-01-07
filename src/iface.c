@@ -98,6 +98,7 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
 
     /*complex*/
     [C_AMD_CEXP]       = {LIBM_IFACE_PROTO(cexp), NULL},
+    [C_AMD_CPOW]       = {LIBM_IFACE_PROTO(cpow), NULL},
 };
 
 #ifndef ARRAY_SIZE

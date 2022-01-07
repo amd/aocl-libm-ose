@@ -103,6 +103,7 @@ enum {
 
     /* complex */
     C_AMD_CEXP,
+    C_AMD_CPOW,
 
     /*
      * This one needs to be last one, REALLY !!!
@@ -181,6 +182,8 @@ extern void LIBM_IFACE_PROTO(tanh)(void *arg);
 extern void LIBM_IFACE_PROTO(tanpi)(void *arg);
 extern void LIBM_IFACE_PROTO(trunc)(void *arg);
 extern void LIBM_IFACE_PROTO(cexp)(void *arg);
+extern void LIBM_IFACE_PROTO(clog)(void *arg);
+extern void LIBM_IFACE_PROTO(cpow)(void *arg);
 
 struct entry_pt_interface {
     void (*epi_init)(void *arg);

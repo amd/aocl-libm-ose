@@ -153,6 +153,9 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(truncf);
  */
 extern alm_ep_func_t        G_ENTRY_PT_PTR(cexp);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(cexpf);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(cpow);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(cpowf);
+
 
 /*
  * Integer variants

@@ -158,6 +158,9 @@ alm_func_t        G_ENTRY_PT_PTR(truncf);
  */
 alm_func_t        G_ENTRY_PT_PTR(cexpf);
 alm_func_t        G_ENTRY_PT_PTR(cexp);
+alm_func_t        G_ENTRY_PT_PTR(cpowf);
+alm_func_t        G_ENTRY_PT_PTR(cpow);
+
 
 /*
  * Integer variants

@@ -27,6 +27,7 @@ import SCons
 import os
 from os import mkdir, makedirs, environ
 from os.path import join as joinpath, split as splitpath
+import shutil
 
 def AddSiteDir(site_dir):
   """Adds a site directory, as if passed to the --site-dir option.
@@ -50,6 +51,9 @@ from alm import print_build_failures, print_build_config
 __almenv = AlmEnvironment()
 __almenv.Setup()
 aenv = __almenv.GetDefaultEnv()
+if aenv['HOST_OS'] == 'win32':
+    aenv['ENV']['TMP'] = os.environ['TMP'] # to avoid linker eror in windows. This is mentioned in scons FQA doc.
+    shutil.copy(".\scripts\libalm.def", ".\src")
 
 # First check version of python and scons
 EnsurePythonVersion(3, 6)
@@ -106,6 +110,16 @@ targets += alm_libs
 
 gtest_objs = []
 if 'tests' in COMMAND_LINE_TARGETS or ('gtests' in COMMAND_LINE_TARGETS) :
+    if aenv['HOST_OS'] == 'win32':
+        #initialize different library paths
+        mpfr_inc = Dir('..\mpfr\mpfr_x64-windows\include')
+        gmp_inc = Dir('..\mpfr\gmp_x64-windows\include')
+        mpfr_lib = Dir('..\mpfr\mpfr_x64-windows\lib')
+        gmp_lib = Dir('..\mpfr\gmp_x64-windows\lib')
+
+        aenv['ENV']['INCLUDE'] = [aenv['ENV']['INCLUDE'], mpfr_inc, gmp_inc]
+        aenv.Append(LIBS=['gmp.lib', 'mpfr.lib'],LIBPATH=[mpfr_lib, gmp_lib])
+
     testenv = aenv.Clone()
 
     LIBPATH=[alm_lib_path]

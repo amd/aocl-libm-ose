@@ -128,6 +128,8 @@ class AlmEnvironment(object):
         buildtype = self.env['BUILD']
         try:
             cc_env = self.env['ALM_CC']
+            if self.env['HOST_OS'] == 'win32':
+                self.env['AS'] = self.env['ALM_CC']
         except KeyError as k:
             cc_env = self.env['CC']
 

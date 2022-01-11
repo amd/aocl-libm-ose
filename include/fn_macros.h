@@ -26,3 +26,10 @@
  */
 
 #include <libm_macros.h>
+
+#if defined(__GNU_ASM__)
+#define ALM_FUNC_TYPE_ASM(f_name)  .type #f_name,@function
+#else
+#define ALM_FUNC_TYPE_ASM(f_name)
+#endif
+

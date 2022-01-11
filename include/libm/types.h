@@ -47,8 +47,13 @@ typedef    float               f32_t;
 typedef    double              f64_t;
 typedef    long double         f80_t;
 
+#if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+typedef    _Fcomplex     fc32_t;
+typedef    _Dcomplex     fc64_t;
+#else
 typedef    float  _Complex     fc32_t;
 typedef    double _Complex     fc64_t;
+#endif
 
 #ifdef  HAVE_NATIVE_LONG_LONG_DOUBLE
 typedef    long long double    f128_t;

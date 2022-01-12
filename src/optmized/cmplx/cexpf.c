@@ -60,9 +60,15 @@ ALM_PROTO_OPT(cexpf)(fc32_t z)
 
     float const MAX_ARG = 0x1.62e42ep6f;
 
-    re = crealf(z);
+    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+        re = crealf(z);
+        im = (float)cimagf(z);
+    #else
+        re = crealf(z);
+        im = (float)cimag(z);
+    #endif
 
-    im = (float)cimag(z);
+
 
     if((asuint32(re) & ~ALM_F32_SIGN_MASK) == 0) {
 
@@ -95,7 +101,11 @@ ALM_PROTO_OPT(cexpf)(fc32_t z)
 
             double imag = (double)zy_im * t;
 
-            return CMPLXF((float)real,(float)imag);
+            #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+                return (fc32_t) {(float)real,(float)imag};
+            #else
+                return CMPLXF((float)real,(float)imag);
+            #endif
 
             }
 
@@ -111,6 +121,11 @@ ALM_PROTO_OPT(cexpf)(fc32_t z)
 
    }
 
-    return CMPLXF(zy_re, zy_im);
+
+    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+        return (fc32_t) { zy_re, zy_im };
+    #else
+        return CMPLXF(zy_re, zy_im);
+    #endif
 }
 

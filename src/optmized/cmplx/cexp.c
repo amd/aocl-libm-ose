@@ -102,7 +102,12 @@ ALM_PROTO_OPT(cexp)(fc64_t z)
 
                 zy_im *= EXP_MAX_ARG;
 
-                return CMPLX(zy_re, zy_im);
+                #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+                    return (fc64_t) { zy_re, zy_im };
+                #else
+                    return CMPLX(zy_re, zy_im);
+                #endif
+
 
             }
 
@@ -117,7 +122,12 @@ ALM_PROTO_OPT(cexp)(fc64_t z)
         }
     }
 
-    return CMPLX(zy_re, zy_im);
+
+    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+        return (fc64_t) { zy_re, zy_im };
+    #else
+        return CMPLX(zy_re, zy_im);
+    #endif
 
 }
 

@@ -110,7 +110,12 @@ static const struct {
 
 typedef union PACKED {
     struct {
+    #if !defined(_WIN64) || !defined(_WIN32)
         unsigned long mantissa:52;
+    #else
+        unsigned long long mantissa:52;
+    #endif
+
         unsigned long expo:11;
         unsigned long sign:1;
     } f;

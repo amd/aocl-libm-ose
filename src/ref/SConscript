@@ -27,22 +27,23 @@ Import('env')
 from os.path import join as joinpath
 
 builddir = joinpath(env['BUILDROOT'], 'src', 'ref')
-env.Append(
-    CFLAGS=['-mavx2', '-mavx', '-mfma'],
-)
+if env['HOST_OS'] != 'win32':
+    cflags = ['-mavx2', '-mavx', '-mfma', '-O2']
+else:
+    cflags=[]
 
 env.Append (
-    CFLAGS = ['-O2', '-mfma', '-mavx2']
+    CFLAGS = cflags
 )
 #
 # Reference files, for the functions where optimized version
 # doesn't exist
 #
 ref_excludes = ['amd_pow.c', 'exp2.c',
-                'exp_tables*.c', 'MapEntryPoints.c', 
+                'exp_tables*.c', 'MapEntryPoints.c',
                 'MapEntryPoints.c']
 
-ref_srcs = Glob('*.[cS]',    exclude=ref_excludes) 
+ref_srcs = Glob('*.[cS]',    exclude=ref_excludes)
 ref_objs = env.StaticObject(ref_srcs)
 
 cmplx_objs = SConscript('cmplx/SConscript',

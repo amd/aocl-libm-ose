@@ -37,9 +37,13 @@ ALM_PROTO_REF(cexpf)(fc32_t z)
 {
     flt32_t     re, im;
     f32_t       zy_re, zy_im;
-
-    re.f = crealf(z);
-    im.f = (float)cimag(z);
+    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+        re.f = crealf(z);
+        im.f = (float)cimagf(z);
+    #else
+        re.f = crealf(z);
+        im.f = (float)cimag(z);
+    #endif
 
     if((re.u & ALM_F32_SIGN_MASK) == 0) {
         if((im.u & ALM_F32_SIGN_MASK) == 0) {
@@ -61,6 +65,10 @@ ALM_PROTO_REF(cexpf)(fc32_t z)
 
     }
 
-    return zy_re + I*zy_im;
+    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+        return (fc32_t) { zy_re, zy_im };
+    #else
+        return zy_re + I*zy_im;
+    #endif
 }
 

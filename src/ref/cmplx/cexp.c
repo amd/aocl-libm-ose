@@ -59,7 +59,10 @@ ALM_PROTO_REF(cexp)(fc64_t z)
             zy_im *= t;
         }
     }
-
-    return (zy_re + (double)I*zy_im);
+    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+        return (fc64_t){ zy_re , (double)zy_im };
+    #else
+        return (zy_re + (double)I*zy_im);
+    #endif
 }
 

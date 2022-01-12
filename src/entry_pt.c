@@ -202,10 +202,11 @@ alm_func_t        G_ENTRY_PT_PTR(vrsa_log10f);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_logf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_powf);
 
-#ifndef _MSC_VER
+
+
 alm_func_t        G_ENTRY_PT_PTR(sincos);
 alm_func_t        G_ENTRY_PT_PTR(sincosf);
-#endif
+
 
 alm_func_t        G_ENTRY_PT_PTR(vrs4_acosf);
 alm_func_t        G_ENTRY_PT_PTR(vrs4_cosf);

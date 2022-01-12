@@ -49,6 +49,7 @@
  * jmp *(%rax)
  * -----------
  */
+#if defined(__GNUC__)
 #define LIBM_DECL_FN_MAP(fn)						\
 	asm (								\
 	"\n\t"".p2align 4"						\
@@ -58,7 +59,16 @@
 	"\n\t" "mov " STRINGIFY(G_ENTRY_PT_ASM(fn)) "@GOTPCREL(%rip), %rax"	\
 	"\n\t" "jmp *(%rax)"						\
 		);
-
+#else
+#define LIBM_DECL_FN_MAP(fn)                                            \
+        asm (                                                           \
+        "\n\t"".p2align 4"                                              \
+        "\n\t"".globl " MK_FN_NAME(fn)                                  \
+        "\n\t" MK_FN_NAME(fn) " :"                                      \
+        "\n\t" "mov " STRINGIFY(G_ENTRY_PT_ASM(fn)) "@GOTPCREL(%rip), %rax"    \
+        "\n\t" "jmp *%rax"                               \
+                );
+#endif
 
 #define WEAK_LIBM_ALIAS(x, y)					\
 	asm("\n\t"".weak " STRINGIFY(x)				\

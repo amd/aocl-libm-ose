@@ -26,8 +26,11 @@
  */
 
 #include <stdio.h>
-#include <unistd.h>
-
+#if defined (_WIN32) || defined (_WIN64)
+  #include <Windows.h>
+#else
+  #include <unistd.h>
+#endif
 #include "version.build.h"
 #include "alm_version.h"
 #include "buildsysinfo.h"

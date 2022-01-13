@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,6 +33,21 @@
 #define inline __inline
 #include "emmintrin.h"
 #endif
+#include <libm/typehelper.h>
+
+/*MACROS for log_kernel_amd64()
+  Approximating polynomial coefficients for x near 1.0 */
+#define  ca_1  8.33333333333317923934e-02  /* 0x3fb55555555554e6 */
+#define  ca_2  1.25000000037717509602e-02  /* 0x3f89999999bac6d4 */
+#define  ca_3  2.23213998791944806202e-03  /* 0x3f62492307f1519f */
+#define  ca_4  4.34887777707614552256e-04  /* 0x3f3c8034c85dfff0 */
+  /* Approximating polynomial coefficients for other x */
+#define    cb_1  8.33333333333333593622e-02  /* 0x3fb5555555555557 */
+#define    cb_2  1.24999999978138668903e-02  /* 0x3f89999999865ede */
+#define    cb_3  2.23219810758559851206e-03  /* 0x3f6249423bd94741 */
+#define    log_thresh1  0x3fee0faa00000000
+#define    log_thresh2  0x3ff1082c00000000
+
 
 /* Scales the double x by 2.0**n.
    Assumes EMIN <= n <= EMAX, though this condition is not checked. */
@@ -612,26 +627,10 @@ static inline void log_kernel_amd64(double x, unsigned long long ux, int *xexp, 
     1.70263791333409206020e-08,   /* 0x3e52482ceae1ac12 */
     5.76999904754328540596e-08};  /* 0x3e6efa39ef35793c */
 
-  /* Approximating polynomial coefficients for x near 1.0 */
-  static const double
-    ca_1 = 8.33333333333317923934e-02,  /* 0x3fb55555555554e6 */
-    ca_2 = 1.25000000037717509602e-02,  /* 0x3f89999999bac6d4 */
-    ca_3 = 2.23213998791944806202e-03,  /* 0x3f62492307f1519f */
-    ca_4 = 4.34887777707614552256e-04;  /* 0x3f3c8034c85dfff0 */
-
-  /* Approximating polynomial coefficients for other x */
-  static const double
-    cb_1 = 8.33333333333333593622e-02,  /* 0x3fb5555555555557 */
-    cb_2 = 1.24999999978138668903e-02,  /* 0x3f89999999865ede */
-    cb_3 = 2.23219810758559851206e-03;  /* 0x3f6249423bd94741 */
-
-  static const unsigned long long
-    log_thresh1 = 0x3fee0faa00000000,
-    log_thresh2 = 0x3ff1082c00000000;
 
   /* log_thresh1 = 9.39412117004394531250e-1 = 0x3fee0faa00000000
      log_thresh2 = 1.06449508666992187500 = 0x3ff1082c00000000 */
-  if (ux >= log_thresh1 && ux <= log_thresh2)
+  if (unlikely(ux >= log_thresh1 && ux <= log_thresh2))
     {
       /* Arguments close to 1.0 are handled separately to maintain
          accuracy.
@@ -694,7 +693,7 @@ static inline void log_kernel_amd64(double x, unsigned long long ux, int *xexp, 
       */
 
       f = x;
-      if (ux < IMPBIT_DP64)
+      if (unlikely(ux < IMPBIT_DP64))
         {
           /* The input argument x is denormalized */
           /* Normalize f by increasing the exponent by 60
@@ -702,11 +701,11 @@ static inline void log_kernel_amd64(double x, unsigned long long ux, int *xexp, 
              bit. This replaces a slow denormalized
              multiplication by a fast normal subtraction. */
           static const double corr = 2.5653355008114851558350183e-290; /* 0x03d0000000000000 */
-          GET_BITS_DP64(f, ux);
+          ux = asuint64(f);
           ux |= 0x03d0000000000000;
-          PUT_BITS_DP64(ux, f);
+          f = asdouble(ux);
           f -= corr;
-          GET_BITS_DP64(f, ux);
+          ux = asuint64(f);
           expadjust = 60;
         }
       else
@@ -715,7 +714,7 @@ static inline void log_kernel_amd64(double x, unsigned long long ux, int *xexp, 
       /* Store the exponent of x in xexp and put
          f into the range [0.5,1) */
       *xexp = (int)((ux & EXPBITS_DP64) >> EXPSHIFTBITS_DP64) - EXPBIAS_DP64 - expadjust;
-      PUT_BITS_DP64((ux & MANTBITS_DP64) | HALFEXPBITS_DP64, f);
+      f = asdouble((ux & MANTBITS_DP64) | HALFEXPBITS_DP64);
 
       /* Now  x = 2**xexp  * f,  1/2 <= f < 1. */
 

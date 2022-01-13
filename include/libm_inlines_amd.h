@@ -33,7 +33,6 @@
 #define inline __inline
 #include "emmintrin.h"
 #endif
-#include <libm/typehelper.h>
 
 /* Scales the double x by 2.0**n.
    Assumes EMIN <= n <= EMAX, though this condition is not checked. */
@@ -703,11 +702,11 @@ static inline void log_kernel_amd64(double x, unsigned long long ux, int *xexp, 
              bit. This replaces a slow denormalized
              multiplication by a fast normal subtraction. */
           static const double corr = 2.5653355008114851558350183e-290; /* 0x03d0000000000000 */
-          ux = asuint64(f);
+          GET_BITS_DP64(f, ux);
           ux |= 0x03d0000000000000;
-          f = asdouble(ux);
+          PUT_BITS_DP64(ux, f);
           f -= corr;
-          ux = asuint64(f);
+          GET_BITS_DP64(f, ux);
           expadjust = 60;
         }
       else
@@ -716,7 +715,7 @@ static inline void log_kernel_amd64(double x, unsigned long long ux, int *xexp, 
       /* Store the exponent of x in xexp and put
          f into the range [0.5,1) */
       *xexp = (int)((ux & EXPBITS_DP64) >> EXPSHIFTBITS_DP64) - EXPBIAS_DP64 - expadjust;
-      f = asdouble((ux & MANTBITS_DP64) | HALFEXPBITS_DP64);
+      PUT_BITS_DP64((ux & MANTBITS_DP64) | HALFEXPBITS_DP64, f);
 
       /* Now  x = 2**xexp  * f,  1/2 <= f < 1. */
 

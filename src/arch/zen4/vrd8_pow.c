@@ -54,7 +54,11 @@ extern lookup_data exp_lookup[];
 #define TAB_LOG   log_f_256
 #define MANT_MASK_N  (0x000FFC0000000000UL)
 #define MANT_MASK_N1 (0x0000080000000000UL)
-#define DOUBLE_PRECISION_BIAS 1023L
+#if defined(_WIN64) || defined(_WIN32)
+    #define DOUBLE_PRECISION_BIAS 1023LL
+#else
+    #define DOUBLE_PRECISION_BIAS 1023L
+#endif
 #define DOUBLE_PRECISION_MANTISSA 0x000fffffffffffffUL
 #define ONE_BY_TWO 0x3fe0000000000000UL
 

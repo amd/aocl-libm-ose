@@ -38,9 +38,29 @@ incpaths = [
     '#' +  joinpath(p, 'gas', 'include')
 
 ]
+if e['HOST_OS'] != 'win32':
+    cflags = ['-O3', '-fPIC', '-mavx2', '-mfma', '-flax-vector-conversions']
+    asflags = []
+else:
+    cflags = []
+    asflags = ['-DAVX_XOP_FMA4_FMA3',
+               '-DDEBUG=0',
+               '-DENABLE_AMDLIBM_API=1',
+               '-DLIBABI=aocl',
+               '-D__AVX2__',
+               '-Dlibalm_EXPORTS',
+               #'/showIncludes',
+               '/Iinclude',
+               '/Isrc\\isa',
+               '/Isrc\\isa\\include',
+               '/Isrc\\isa\\avx2',
+               '/Isrc\\isa\\avx2\\include',
+               '/Isrc\\isa\\avx2\\gas\\include'
+           ]
 
 e.Append(
-    CFLAGS = ['-O3', '-fPIC', '-mavx2', '-mfma', '-flax-vector-conversions'],
+    CFLAGS = cflags,
+    ASFLAGS = asflags,
     CPPPATH = incpaths,
 )
 

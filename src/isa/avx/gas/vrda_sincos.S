@@ -166,7 +166,7 @@
 
 
 .globl fname
-    .type   fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 #    mov         (%rdi),%edi
 .align 16
@@ -237,7 +237,9 @@ fname:
 
 
 .globl vrda_sincos
+#ifdef __GNU_ASM__
     .type   vrda_sincos,@function
+#endif
 vrda_sincos:
 
 	sub		$0x0308,%rsp

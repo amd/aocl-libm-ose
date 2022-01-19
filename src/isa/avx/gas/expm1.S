@@ -38,7 +38,7 @@
 .text
 .p2align 4
 .globl fname
-.type   fname, @function        
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
     ucomisd .L__max_expm1_arg(%rip),%xmm0  #check if(x > 709.8)
     ja .L__y_is_inf

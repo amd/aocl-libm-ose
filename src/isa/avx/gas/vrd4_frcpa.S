@@ -71,7 +71,9 @@
     .align 16
     .p2align 4,,15
 .globl __vrd4_frcpa
+#ifdef __GNU_ASM__
     .type   __vrd4_frcpa,@function
+#endif
 __vrd4_frcpa:
 	sub		$stack_size,%rsp
 # 10 bit GPR method

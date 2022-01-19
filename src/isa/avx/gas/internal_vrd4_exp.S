@@ -81,7 +81,9 @@
     .align 16
     .p2align 4,,15
 .globl __amd_internal_vrd4_exp
+#ifdef __GNU_ASM__
     .type   __amd_internal_vrd4_exp,@function
+#endif
 __amd_internal_vrd4_exp:
 	sub		$stack_size,%rsp
 	mov		%rbx,save_rbx(%rsp)	# save rdi

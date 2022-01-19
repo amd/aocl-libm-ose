@@ -95,7 +95,9 @@
 #       vrda_scaled_logr(*n,x,y,b);
 #}
 .globl __vrda_scaled_logr__
+#ifdef __GNU_ASM__
     .type   __vrda_scaled_logr__,@function
+#endif
 __vrda_scaled_logr__:
     mov		(%rdi),%edi
     movlpd	(%rcx),%xmm0
@@ -109,7 +111,9 @@ __vrda_scaled_logr__:
     .align 16
     .p2align 4,,15
 .globl vrda_scaled_logr
+#ifdef __GNU_ASM__
     .type   vrda_scaled_logr,@function
+#endif
 vrda_scaled_logr:
 	sub		$stack_size,%rsp
 

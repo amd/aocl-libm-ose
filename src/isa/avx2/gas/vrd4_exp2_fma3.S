@@ -83,7 +83,7 @@
 .text
 .p2align 4
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
     vmovdqa      %ymm0, %ymm10   # save for later use
 

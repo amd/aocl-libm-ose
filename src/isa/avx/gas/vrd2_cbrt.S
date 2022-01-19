@@ -59,7 +59,7 @@
 .align 32
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
     movapd %xmm0,%xmm1
     movapd %xmm0,%xmm2

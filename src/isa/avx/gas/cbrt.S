@@ -55,7 +55,7 @@
 .align 32
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
     xor   %rdx,%rdx
     #for the time being the stack pointer is not changed at all 

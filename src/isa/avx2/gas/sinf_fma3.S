@@ -39,14 +39,14 @@
 .align 32
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
 sinf_early_exit_s:
 
     MOVD  %xmm0,%eax
     MOV   .L__inf_mask_32(%rip),%r8d
-   
+
     AND   %r8d,%eax
     CMP   %r8d,%eax
     JZ    sinf_naninf
@@ -67,12 +67,12 @@ sinf_early_exit_s_1:
     CMP   .L_mask_3f2(%rip),%r9
     JGE   compute_x_xxx_0_1666
 
- 
+
 ##  Additional code to raise underflow exception
     xor   %rax,%rax
-    cmp   %rax,%r9  
+    cmp   %rax,%r9
     je    return_sinf_c
-    call  fname_special_underflow  
+    call  fname_special_underflow
     JMP   return_sinf_c
 
 compute_x_xxx_0_1666:
@@ -83,7 +83,7 @@ compute_x_xxx_0_1666:
     JMP return_sinf_s
 
 compute_sinf_pyby_4:
-   
+
     VMOVSD %xmm5,%xmm5,%xmm0
     sin_piby4_sf_fma3
     JMP    return_sinf_s
@@ -103,7 +103,7 @@ sinf_remainder_piby2:
 sinf_exit_s:
 
     VMOVQ  %xmm4,%rax
-    and   $0x1,%rax     
+    and   $0x1,%rax
     cmp   $0x1,%rax
     JZ    cos_piby4_compute
 

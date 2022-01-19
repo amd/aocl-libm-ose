@@ -52,35 +52,35 @@
 .align 32
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 mov %rsi,%r14
 mov %rdx,%r15
 
 
  cmp         $0x0, %edi
-    jle         .L__return    
+    jle         .L__return
     cmp         $0x0, %r14
     je         .L__return
     cmp         $0x0, %r15
     je         .L__return
-   
-.p2align 4    
+
+.p2align 4
 .L__process_next2:
     sub         $0x2, %rdi
     cmp         $-1,  %rdi
     jle          .L__process_first1
     movdqu      (%r14, %rdi, 8), %xmm0
     jmp         .L__start
-    
-.p2align 4    
+
+.p2align 4
 .L__process_first1:
     jl          .L__return #even elements, all are processed %rdi == -2
     mov         $0x0, %rcx
-    movsd       (%r14, %rcx, 8), %xmm0    
-    
-.p2align 4    
-.L__start:    
+    movsd       (%r14, %rcx, 8), %xmm0
+
+.p2align 4
+.L__start:
         sub     $stack_size, %rsp
 
 sin_early_exit_s:
@@ -168,7 +168,7 @@ range_reduce:
     JZ call_range_e5
 
 #    call_remainder_2fpiby2_fma3
-    call_remainder_2d_piby2_fma3    
+    call_remainder_2d_piby2_fma3
 
 ret_remainder_2fpiby2:
 
@@ -182,19 +182,19 @@ call_range_e5:
 
 if_not_remainder:
 
-    VMOVAPD input(%rsp),%xmm2 
+    VMOVAPD input(%rsp),%xmm2
     VCMPLTPD .L_e_5(%rip),%xmm2,%xmm3
 
-   
+
     VANDNPD r1(%rsp), %xmm3, %xmm2
     VANDPD %xmm3, %xmm0, %xmm7
-    VORPD %xmm2, %xmm7, %xmm7   
+    VORPD %xmm2, %xmm7, %xmm7
 
 
 
     VANDNPD rr1(%rsp), %xmm3, %xmm2
     VANDPD %xmm3, %xmm1, %xmm8
-    VORPD %xmm2, %xmm8, %xmm8   
+    VORPD %xmm2, %xmm8, %xmm8
 
 
     VANDNPD region1(%rsp), %xmm3, %xmm2
@@ -278,12 +278,12 @@ return_sin_s:
 cmp         $-1,  %rdi
     je          .L__store1
     movdqu       %xmm0, (%r15, %rdi, 8)
-    jmp         .L__process_next2    
-    
-.p2align 4    
+    jmp         .L__process_next2
+
+.p2align 4
 .L__store1:
     inc        %rdi
     movsd      %xmm0, (%r15,%rdi,8)
-    
-.L__return:    
-    ret      
+
+.L__return:
+    ret

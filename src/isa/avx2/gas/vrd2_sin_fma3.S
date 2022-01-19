@@ -54,7 +54,7 @@
 .align 32
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
         sub     $stack_size, %rsp
@@ -76,7 +76,7 @@ sin_early_exit_s:
 
     VORPD   %xmm1,%xmm2,%xmm11                      # xmm11 nan and inf mask
 
-    
+
 
 sin_early_exit_s_1:
     VMOVDQA     .L_mask_3f_9(%rip),%xmm7
@@ -96,7 +96,7 @@ sin_early_exit_s_1:
 
     sin_2fpiby4_s_xx_zero_fma3
 
-    VMOVDQA    .L_mask_3e4(%rip),%xmm3 
+    VMOVDQA    .L_mask_3e4(%rip),%xmm3
     VMOVDQA    .L_mask_3f2(%rip),%xmm4
 
     VPCMPGTQ    %xmm8,%xmm3,%xmm3
@@ -114,7 +114,7 @@ sin_early_exit_s_1:
     VANDPD  %xmm10,%xmm3,%xmm3
     VORPD   %xmm3,%xmm5,%xmm5               # res1 amm5
 
-    VORPD   %xmm1,%xmm5,%xmm0               # res_pi_4  
+    VORPD   %xmm1,%xmm5,%xmm0               # res_pi_4
     VANDNPD %xmm0, %xmm11, %xmm2
 
     VANDPD %xmm11, %xmm12, %xmm0
@@ -138,7 +138,7 @@ range_reduce:
     JZ call_range_e5
 
 #    call_remainder_2fpiby2_fma3
-    call_remainder_2d_piby2_fma3    
+    call_remainder_2d_piby2_fma3
 
 ret_remainder_2fpiby2:
 
@@ -158,18 +158,18 @@ if_not_remainder:
 
     VANDNPD r1(%rsp), %xmm3, %xmm2
     VANDPD %xmm3, %xmm0, %xmm7
-    VORPD %xmm2, %xmm7, %xmm7   
+    VORPD %xmm2, %xmm7, %xmm7
 
 
     VANDNPD rr1(%rsp), %xmm3, %xmm2
     VANDPD %xmm3, %xmm1, %xmm8
-    VORPD %xmm2, %xmm8, %xmm8   
+    VORPD %xmm2, %xmm8, %xmm8
 
     VANDNPD region1(%rsp), %xmm3, %xmm2
     VANDPD %xmm3, %xmm11, %xmm11
     VORPD %xmm2, %xmm11, %xmm11
 
-    VPCMPEQQ .L_int_one(%rip),%xmm11,%xmm1  
+    VPCMPEQQ .L_int_one(%rip),%xmm11,%xmm1
     VPCMPEQQ .L_int_two(%rip),%xmm11,%xmm2
     VPCMPEQQ .L_int_three(%rip),%xmm11,%xmm3
 

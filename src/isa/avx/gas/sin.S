@@ -113,7 +113,7 @@
 .equ   stack_size, 0x98
 
 .globl fname
-.type  fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 
 fname:
    sub      $stack_size, %rsp

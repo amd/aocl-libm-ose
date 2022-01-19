@@ -37,7 +37,7 @@
 .text
 .p2align 4
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
     ucomisd      .L__max_exp10_arg(%rip), %xmm0
     jae          .L__y_is_inf

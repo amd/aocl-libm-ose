@@ -51,7 +51,7 @@
 .align 16
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
     #input is in %xmm0, which contains the final result also.
 	sub $0x18,%rsp

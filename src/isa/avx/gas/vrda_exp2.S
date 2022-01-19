@@ -35,7 +35,7 @@
 .text
 .p2align 4
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
     cmp         $0x0, %edi 
     jle         .L__return

@@ -172,7 +172,7 @@
 .equ    p_sign, 0x120       # original x
 
 .globl fname
-    .type   fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
     sub     $0x138,%rsp
 

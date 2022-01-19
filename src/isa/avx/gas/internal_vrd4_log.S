@@ -92,7 +92,9 @@
     .align 16
     .p2align 4,,15
 .globl __amd_internal_vrd4_log
+#ifdef __GNU_ASM__
     .type   __amd_internal_vrd4_log,@function
+#endif
 __amd_internal_vrd4_log:
 	sub		$stack_size,%rsp
 	mov		%rbx,save_rbx(%rsp)	# save rdi

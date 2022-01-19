@@ -39,7 +39,7 @@
 .align 32
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
 tan_early_exit_s:
@@ -48,7 +48,7 @@ tan_early_exit_s:
     MOV   .L__inf_mask_32(%rip),%r8d
     AND   %r8d, %eax
     CMP   %r8d,%eax
-    JZ    tanf_naninf   
+    JZ    tanf_naninf
 
     VCVTSS2SD    %xmm0,%xmm0,%xmm5
     VMOVQ    %xmm5,%r9
@@ -68,7 +68,7 @@ tan_early_exit_s_1:
 ##  Additional code to raise underflow exception
     xor   %rax,%rax
     cmp   %rax,%r9
-    je    return_tanf_c    
+    je    return_tanf_c
     call  fname_special_underflow
     JMP   return_tanf_c
 
@@ -96,7 +96,7 @@ range_reduce:
 
 tanf_remainder_piby2:
     call_remainder_piby2_f
-    
+
 
 tanf_exit_s:
     VANDPD  .L_int_one(%rip),%xmm4,%xmm2
@@ -110,7 +110,7 @@ tanf_exit_s_1:
 
 return_tanf_s:
 
-    VCVTSD2SS   %xmm0,%xmm0,%xmm0  
+    VCVTSD2SS   %xmm0,%xmm0,%xmm0
 
 
 return_tanf_c:

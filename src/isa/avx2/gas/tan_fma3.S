@@ -38,7 +38,7 @@
 .align 32
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
     VMOVQ %xmm0,%r9
@@ -62,7 +62,7 @@ tan_early_exit_s_1:
    je        return_tan_s
    call     fname_special_underflow
    JMP return_tan_c
-    
+
 
 compute_x_xxx_0_333:
 
@@ -81,7 +81,7 @@ tan_early_exit_s:
     MOV   .L__inf_mask_64(%rip),%r8
     AND   %r8,%rax
     CMP   %r8,%rax
-    JZ    tan_naninf    
+    JZ    tan_naninf
 
 
 range_reduce:
@@ -98,9 +98,9 @@ range_reduce:
 
 tan_remainder_piby2:
     call_remainder_piby2_fma3
-   
+
 tan_exit_s:
-    
+
     VANDPD    .L_int_one(%rip),%xmm7,%xmm3
      VMOVQ     %xmm7,%r8
       AND      $0x1,%r8

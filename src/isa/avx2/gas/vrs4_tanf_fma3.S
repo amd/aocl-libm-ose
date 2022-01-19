@@ -52,7 +52,7 @@
 .align 32
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
         sub     $stack_size, %rsp
@@ -73,12 +73,12 @@ tan_early_exit_s:
     VADDPD   %ymm0,%ymm0,%ymm3                      #nan value
     VANDNPD %ymm1, %ymm1, %ymm7
     VANDPD %ymm1, %ymm3, %ymm4
-    VORPD %ymm7, %ymm4, %ymm4   
+    VORPD %ymm7, %ymm4, %ymm4
 
     VMOVUPD .L_nan(%rip),%ymm3
     VANDNPD %ymm4, %ymm2, %ymm7
     VANDPD %ymm2, %ymm3, %ymm12
-    VORPD %ymm7, %ymm12, %ymm12 
+    VORPD %ymm7, %ymm12, %ymm12
 
     VORPD   %ymm1,%ymm2,%ymm11                      # ymm11 nan and inf mask
 
@@ -118,7 +118,7 @@ tan_early_exit_s_1:
     VMOVDQA  .L_mask_3f2(%rip),%xmm4
     VMOVDQA  .L_mask_3f2(%rip),%xmm5
 
-    VPCMPGTQ    %xmm8,%xmm4,%xmm4       
+    VPCMPGTQ    %xmm8,%xmm4,%xmm4
     VPCMPGTQ    %xmm7,%xmm5,%xmm7
     VINSERTF128 $1,%xmm7,%ymm4,%ymm4
 

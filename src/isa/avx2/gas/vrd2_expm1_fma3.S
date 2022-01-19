@@ -35,33 +35,33 @@
 .text
 .p2align 4
 .globl fname
-.type	fname, @function		
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
     vmovdqa      %xmm0, %xmm10   # save for later use
 
     # x * (64/ln(2))
     vmulpd       .L__real_64_by_log2(%rip), %xmm0,%xmm3
-    
+
     # n = int( x * (64/ln(2)) )
     vcvttpd2dq  %xmm3, %xmm4   #xmm4 = 0,0,(int)n1,(int)n0
-    vcvtdq2pd   %xmm4, %xmm3   #xmm3 = (double)n1,n0    
+    vcvtdq2pd   %xmm4, %xmm3   #xmm3 = (double)n1,n0
     vmovd       %xmm4, %rax    #rax = (int)n1,n0
-    
-    # r1 = x - n * ln(2)/64 head    
-    # r2 = - n * ln(2)/64 tail    
-    # r  = r1+r2 
+
+    # r1 = x - n * ln(2)/64 head
+    # r2 = - n * ln(2)/64 tail
+    # r  = r1+r2
     vfmadd231pd .L__log2_by_64_mhead(%rip),%xmm3,%xmm0
     vfmadd231pd .L__log2_by_64_mtail(%rip),%xmm3,%xmm0
     vmovdqa %xmm0, %xmm2  #xmm2 = r_1,r_0
-        
-    #j = n & 0x3f    
+
+    #j = n & 0x3f
     mov         $0x0000003f0000003f, %r8
     and         %rax, %r8      #r8 = j1,j0
     mov         %r8d, %eax     #rax = j0
     shr         $32, %r8       #r8 = j1
-    
-    # m = (n - j) / 64      
+
+    # m = (n - j) / 64
     vpsrad         $6, %xmm4,%xmm12      #xmm12 = 0,0,m1,m0
 
     # q = r + r^2*1/2 + r^3*1/6 + r^4 *1/24 + r^5*1/120 + r^6*1/720
@@ -72,15 +72,15 @@ fname:
     vfmadd213pd   .L__real_1_by_6(%rip),%xmm2,%xmm3
     vfmadd213pd   .L__real_1_by_2(%rip),%xmm2,%xmm3
     vmulpd     %xmm2,%xmm2,%xmm0
-    vfmadd213pd   %xmm2,%xmm3,%xmm0 
-    
+    vfmadd213pd   %xmm2,%xmm3,%xmm0
+
     #seperate processing for each element
     vmovhlps  %xmm0,%xmm11,%xmm11  #save higher part
-    vmovd     %xmm12, %rcx     #rcx = m1,m0        
+    vmovd     %xmm12, %rcx     #rcx = m1,m0
     mov       $2, %r9d
     jmp      .L__next
 
-.p2align 4    
+.p2align 4
 .L__check_n_prepare_next:
     dec      %r9d
     jz       .L__ret
@@ -89,53 +89,53 @@ fname:
     vpsrldq   $8,%xmm10,%xmm10     #next x
     mov       %r8,%rax
     vmovq     %xmm12, %rcx
-    shr      $32,%rcx     #rcx = m1    
+    shr      $32,%rcx     #rcx = m1
 
-.p2align 4    
+.p2align 4
 .L__next:
     vucomisd .L__max_expm1_arg(%rip),%xmm10  #check if(x > 709.8)
     ja .L__y_is_inf
-    jp .L__y_is_nan  
+    jp .L__y_is_nan
     vucomisd .L__min_expm1_arg(%rip),%xmm10  #if(x < -37.42994775023704)
     jb .L__y_is_minusOne
     vucomisd .L__log_OneMinus_OneByFour(%rip),%xmm10
     jbe .L__Normal_Flow
     vucomisd .L__log_OnePlus_OneByFour(%rip),%xmm10
-    jb .L__Small_Arg 
-    
-.p2align 4        
+    jb .L__Small_Arg
+
+.p2align 4
 .L__Normal_Flow:
-    
+
     # load f, f1,f2
-    lea         .L__two_to_jby64_table(%rip), %rdx        
-    lea         .L__two_to_jby64_head_table(%rip), %r10    
+    lea         .L__two_to_jby64_table(%rip), %rdx
+    lea         .L__two_to_jby64_head_table(%rip), %r10
     lea         .L__two_to_jby64_tail_table(%rip), %r11
     vmovsd      (%rdx,%rax,8), %xmm1   #xmm1 = f
     vmovsd      (%r10,%rax,8), %xmm2   #xmm2 = f1
-    vmovsd      (%r11,%rax,8), %xmm3   #xmm3 = f2                
-            
+    vmovsd      (%r11,%rax,8), %xmm3   #xmm3 = f2
+
     #twopmm.u64 = (1023 - (long)m) << 52;
     mov $1023,%eax
     sub %ecx,%eax
     shl $52, %rax #rax = twopmm
-    
+
     cmp $52,%ecx        #check m > 52
     jg .L__M_Above_52
     cmp $-7,%ecx        #check if m < -7
     jl .L__M_Below_Minus7
     #(-8 < m) && (m < 53)
-    shl   $52,%rcx             #rcx = 2^m,m at exponent    
-    vmovd  %rcx, %xmm4    
+    shl   $52,%rcx             #rcx = 2^m,m at exponent
+    vmovd  %rcx, %xmm4
     vaddsd .L__One(%rip),%xmm0,%xmm1 #xmm1 = 1+q
-    vmulsd %xmm3,%xmm1,%xmm1   #f2*(1+q)    
-    vmovd  %rax, %xmm3          #xmm3 = twopmm        
+    vmulsd %xmm3,%xmm1,%xmm1   #f2*(1+q)
+    vmovd  %rax, %xmm3          #xmm3 = twopmm
     vfmadd213sd %xmm1,%xmm2,%xmm0 #f1*q + f2*(1+q))
-    vsubsd %xmm3,%xmm2,%xmm2          #xmm2 = f1 - twopmm    
+    vsubsd %xmm3,%xmm2,%xmm2          #xmm2 = f1 - twopmm
     vaddsd %xmm2,%xmm0,%xmm0
-    vpaddq %xmm4,%xmm0,%xmm0    
-    jmp  .L__check_n_prepare_next   
-    
-    .p2align 4  
+    vpaddq %xmm4,%xmm0,%xmm0
+    jmp  .L__check_n_prepare_next
+
+    .p2align 4
 .L__M_Above_52:
     cmp $1024,%ecx #check if m = 1024
     je .L__M_Equals_1024
@@ -144,13 +144,13 @@ fname:
     vsubsd %xmm4,%xmm3,%xmm3    #xmm3 = f2 - twopmm
     vfmadd213pd %xmm3,%xmm1,%xmm0
     vmovdqa %xmm0, %xmm4      #xmm4 = (f*q+(f2 - twopmm)))
-    vaddpd %xmm2,%xmm4,%xmm0  #xmm0 = (f1 + (f*q+(f2 - twopmm)))    
+    vaddpd %xmm2,%xmm4,%xmm0  #xmm0 = (f1 + (f*q+(f2 - twopmm)))
     shl $52,%rcx
     vmovq %rcx,%xmm1    #xmm1 = twopm
     vpaddq %xmm1,%xmm0,%xmm0
-    jmp  .L__check_n_prepare_next   
-      
-    .p2align 4    
+    jmp  .L__check_n_prepare_next
+
+    .p2align 4
 .L__M_Below_Minus7:
     #twopm.f64 * (f1.f64 + (f*q + f2.f64)) - 1;
     vfmadd213pd %xmm3,%xmm1,%xmm0 #xmm4 = (f*q + f2.f64)
@@ -159,13 +159,13 @@ fname:
     shl $52,%rcx
     vmovq %rcx,%xmm1           #xmm1 = twopm
     vpaddq %xmm1,%xmm0,%xmm0   #xmm0 = twopm *(xmm0)
-    vsubpd .L__zero_One(%rip),%xmm0,%xmm0    
-    jmp  .L__check_n_prepare_next   
-    
+    vsubpd .L__zero_One(%rip),%xmm0,%xmm0
+    jmp  .L__check_n_prepare_next
+
     .p2align 4
 .L__M_Equals_1024:
     mov $0x4000000000000000,%rax #1024 at exponent
-    vfmadd213pd %xmm3,%xmm1,%xmm0  #xmm4 = (f*q) + f2    
+    vfmadd213pd %xmm3,%xmm1,%xmm0  #xmm4 = (f*q) + f2
     vmovdqa %xmm0, %xmm4
     vaddpd %xmm2,%xmm4,%xmm0 #xmm0 = f1 + (f*q) + f2
     vmovq %rax,%xmm1   #xmm1 = twopm
@@ -175,15 +175,15 @@ fname:
     and %rcx,%rax
     cmp %rcx,%rax #check if we reached inf
     je .L__y_is_inf
-    jmp  .L__check_n_prepare_next   
-    
+    jmp  .L__check_n_prepare_next
+
     .p2align 4
 .L__Small_Arg:
     vmovapd %xmm10, %xmm0
     vucomisd .L__minus_zero(%rip),%xmm0
     je .L__check_n_prepare_next
     mov $0x01E0000000000000,%rax #30 in exponents place
-    #u = (twop30.f64 * x + x) - twop30.f64 * x;    
+    #u = (twop30.f64 * x + x) - twop30.f64 * x;
     vmovq %rax,%xmm1
     vpaddq %xmm0,%xmm1,%xmm1  #xmm1 = twop30.f64 * x
     vaddsd %xmm0,%xmm1,%xmm2  #xmm2 = (twop30.f64 * x + x)
@@ -191,28 +191,28 @@ fname:
     vsubsd %xmm2,%xmm0,%xmm1 #xmm1 = v = x-u
     vmulsd %xmm2,%xmm2,%xmm3 #xmm3 = u*u
     vmulsd .L__real_1_by_2(%rip),%xmm3,%xmm3 #xmm3 = y = u*u*0.5
-    
+
     #q = x*x*x*(A1.f64 + x*(A2.f64 + x*(A3.f64 + x*(A4.f64 + x*(A5.f64 + x*(A6.f64 + x*(A7.f64 + x*(A8.f64 + x*(A9.f64)))))))));
     vmulsd .L__B9(%rip),%xmm0,%xmm5
     vaddsd .L__B8(%rip),%xmm5,%xmm5
     vfmadd213sd .L__B7(%rip),%xmm0,%xmm5
-    vfmadd213sd .L__B6(%rip),%xmm0,%xmm5    
-    vfmadd213sd .L__B5(%rip),%xmm0,%xmm5    
-    vfmadd213sd .L__B4(%rip),%xmm0,%xmm5    
-    vfmadd213sd .L__B3(%rip),%xmm0,%xmm5    
-    vfmadd213sd .L__B2(%rip),%xmm0,%xmm5    
-    vfmadd213sd .L__B1(%rip),%xmm0,%xmm5   
+    vfmadd213sd .L__B6(%rip),%xmm0,%xmm5
+    vfmadd213sd .L__B5(%rip),%xmm0,%xmm5
+    vfmadd213sd .L__B4(%rip),%xmm0,%xmm5
+    vfmadd213sd .L__B3(%rip),%xmm0,%xmm5
+    vfmadd213sd .L__B2(%rip),%xmm0,%xmm5
+    vfmadd213sd .L__B1(%rip),%xmm0,%xmm5
     vmovdqa %xmm5, %xmm4
-    vmulsd %xmm0,%xmm4,%xmm5  
-    vmulsd %xmm0,%xmm5,%xmm4  
-    vmulsd %xmm0,%xmm4,%xmm5   #xmm5 = q 
-    
+    vmulsd %xmm0,%xmm4,%xmm5
+    vmulsd %xmm0,%xmm5,%xmm4
+    vmulsd %xmm0,%xmm4,%xmm5   #xmm5 = q
+
     #z = v * (x + u) * 0.5;
     vaddsd %xmm0,%xmm2,%xmm4
     vmulsd %xmm1,%xmm4,%xmm4
-    vmulsd .L__real_1_by_2(%rip),%xmm4,%xmm4 #xmm4 = z       
-     
-    vucomisd .L__TwopM7(%rip),%xmm3    
+    vmulsd .L__real_1_by_2(%rip),%xmm4,%xmm4 #xmm4 = z
+
+    vucomisd .L__TwopM7(%rip),%xmm3
     jb .L__returnNext
     vaddsd %xmm4,%xmm1,%xmm1  #xmm1 = v+z
     vaddsd %xmm5,%xmm1,%xmm1  #xmm1 = q+(v+z)
@@ -220,14 +220,14 @@ fname:
     vaddsd %xmm2,%xmm1,%xmm1
     vmovapd %xmm1,%xmm0
     jmp  .L__check_n_prepare_next
-    
+
 .p2align 4
 .L__returnNext:
     vaddsd %xmm5,%xmm4,%xmm4  #xmm4 = q +z
     vaddsd %xmm4,%xmm3,%xmm3  #xmm3 = y+(q+z)
-    vaddsd %xmm3,%xmm0,%xmm0    
+    vaddsd %xmm3,%xmm0,%xmm0
     jmp  .L__check_n_prepare_next
-    
+
 .p2align 4
 .L__y_is_inf:
     mov         $0x7ff0000000000000,%rax
@@ -249,16 +249,16 @@ fname:
 .L__ret:
     vmovdqa %xmm0,%xmm1
     vmovhlps %xmm11,%xmm0,%xmm0
-    vmovlhps %xmm1, %xmm0,%xmm0    
-    ret   
-         
+    vmovlhps %xmm1, %xmm0,%xmm0
+    ret
+
 .section .rodata
 .align 16
-.L__max_expm1_arg:           .quad 0x40862E6666666666    
+.L__max_expm1_arg:           .quad 0x40862E6666666666
 .L__min_expm1_arg:           .quad 0xC042B708872320E1
 .L__log_OneMinus_OneByFour:  .quad 0xBFD269621134DB93
 .L__log_OnePlus_OneByFour:   .quad 0x3FCC8FF7C79A9A22
-.L__real_64_by_log2:        .octa 0x40571547652b82fe40571547652b82fe    # 64/ln(2)                         
+.L__real_64_by_log2:        .octa 0x40571547652b82fe40571547652b82fe    # 64/ln(2)
 .L__log2_by_64_mhead:       .octa 0xbf862e42fefa0000bf862e42fefa0000
 .L__log2_by_64_mtail:       .octa 0xbd1cf79abc9e3b39bd1cf79abc9e3b39
 .L__TwopM7:                  .quad 0x3F80000000000000

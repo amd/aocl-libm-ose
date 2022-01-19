@@ -36,7 +36,7 @@
 .text
 .p2align 4
 .globl fname
-.type	fname, @function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
     vucomiss .L__max_expm1f_arg(%rip),%xmm0         ##if(x > max_expm1_arg)
     ja .L__y_is_inf
@@ -47,19 +47,19 @@ fname:
     ja .L__Small_Arg
     vucomiss .L__min_expm1f_arg(%rip),%xmm0         ##if(x < min_expm1_arg)
     jb .L__y_is_minusOne
-    
+
     .p2align 4
 .L__Normal_Flow:
     #x_double = (double)x;
     vcvtps2pd    %xmm0, %xmm2    #xmm2 = (double)x
-    
+
     # x * (64/ln(2))
     vmulsd       .L__real_64_by_log2(%rip), %xmm2,%xmm3  #xmm3 = x * (64/ln(2)
-    
+
     # n = int( x * (64/ln(2)) )
     vcvtpd2dq    %xmm3, %xmm4  #xmm4 = (int)n
     vcvtdq2pd    %xmm4, %xmm0  #xmm0 = (double)n
-    
+
     # r = x - n * ln(2)/64
     vfmadd132sd    .L__real_mlog2_by_64(%rip),%xmm2,%xmm0 #xmm0 = r
     vmovd       %xmm4, %ecx     #ecx = n
@@ -67,33 +67,33 @@ fname:
     #j = n & 0x3f
     mov         $0x3f, %rax     #rax = 0x3f
     and         %ecx, %eax      #eax = j = n & 0x3f
-    # m = (n - j) / 64    
+    # m = (n - j) / 64
     sar         $6, %ecx        #ecx = m
-    
+
     # q = r+r*r*(1/2 + (1/6 * r))
-    vmovhpd       .L__real_1_by_6(%rip), %xmm0,%xmm3  #%xmm3 =1/6,r 
-    vmovlhps     %xmm3,%xmm0,%xmm1     #xmm1 = r,r        
+    vmovhpd       .L__real_1_by_6(%rip), %xmm0,%xmm3  #%xmm3 =1/6,r
+    vmovlhps     %xmm3,%xmm0,%xmm1     #xmm1 = r,r
     vfmadd213pd     .L__real_1_by_2_zero(%rip), %xmm1, %xmm3 #xmm3 = r*r,1/2 + (1/6 * r)
     vmovdqa %xmm3, %xmm2
     vmovhlps      %xmm2, %xmm1,%xmm3 #xmm3 = r,r*r
     vfmadd213sd     %xmm1,%xmm2,%xmm3 #xmm0 = q
     vmovdqa %xmm3, %xmm0
-    
+
     #f
-    lea         .L__two_to_jby64_table(%rip), %r10    
+    lea         .L__two_to_jby64_table(%rip), %r10
     vmovsd       (%r10,%rax,8), %xmm3 #xmm3 = f
-    
+
     #f*q
     #vmulsd       %xmm3, %xmm0, %xmm2  #xmm2 = f*q
-    
-    #twopmm.u64 = (1023 - (long)m) << 52;    
+
+    #twopmm.u64 = (1023 - (long)m) << 52;
     #f - twopmm
     mov         $1023, %eax
     sub         %ecx, %eax
-    shl         $52, %rax    
+    shl         $52, %rax
     vmovq        %rax, %xmm1
     vsubsd      %xmm1, %xmm3,%xmm2  #xmm2 = f - twopmm
-    
+
     #z = f * q + (f - twopmm.f64) ;
     #z = z* 2^m
     vfmadd213sd    %xmm2,%xmm0,%xmm3 #xmm0 = z
@@ -102,8 +102,8 @@ fname:
     vpsllq       $52,%xmm3,%xmm4
     vpaddq      %xmm1, %xmm4,%xmm2
     vcvtpd2ps   %xmm2, %xmm0
-    ret   
-	
+    ret
+
 .p2align 4
 .L__Small_Arg:
     #log(1-1/4) < x < log(1+1/4)
@@ -111,30 +111,30 @@ fname:
 	vucomiss .L__minus_zero(%rip), %xmm0
 	je     .L__ret
 	vmulss .L__A5_f(%rip),%xmm0,%xmm3
-	vaddss .L__A4_f(%rip),%xmm3,%xmm1	
+	vaddss .L__A4_f(%rip),%xmm3,%xmm1
 	vfmadd213ss .L__A3_f(%rip),%xmm0,%xmm1
 	vfmadd213ss .L__A2_f(%rip),%xmm0,%xmm1
 	vfmadd213ss .L__A1_f(%rip),%xmm0,%xmm1 #xmm1 = (A1 + x*(A2 + x*(A3 + x*(A4 + x*(A5)))))
 	vmulss  %xmm0,%xmm1,%xmm1
 	vmulss  %xmm0,%xmm1,%xmm1
-	vmulss  %xmm0,%xmm1,%xmm1       #xmm1 = q	
+	vmulss  %xmm0,%xmm1,%xmm1       #xmm1 = q
 	vcvtps2pd %xmm0,%xmm2           #xmm2 = (double)x
 	vmulsd %xmm2,%xmm2,%xmm0	#xmm0 = x*x - in double
 	vfmadd132sd .L__real_1_by_2(%rip),%xmm2,%xmm0
 	vmovdqa %xmm0, %xmm3
 	vcvtps2pd %xmm1,%xmm0
 	vaddsd %xmm3,%xmm0,%xmm2
-	vcvtpd2ps %xmm2,%xmm0	    	
+	vcvtpd2ps %xmm2,%xmm0
 .L__ret:
     ret
-    
+
 .p2align 4
 .L__y_is_minusOne:
     mov         $0xBF800000, %edx
     vmovd       %edx, %xmm0
     #call       fname_special
-    ret     
-    
+    ret
+
 .if __enable_IEEE_exceptions
 
 .p2align 4
@@ -146,31 +146,31 @@ fname:
     vmovd       %edx, %xmm1
     mov         $3, %edi
     call        fname_special
-.L__x_is_pos_inf:    
-    ret     
+.L__x_is_pos_inf:
+    ret
 
 .p2align 4
 .L__y_is_nan:
     vaddss      %xmm0,%xmm0,%xmm1
     mov         $1, %edi
     call        fname_special
-    ret  
-    
+    ret
+
 .else
 
 .p2align 4
 .L__y_is_inf:
     mov         $0x7f800000,%edx
     vmovd       %edx, %xmm0
-    ret     
+    ret
 
 .p2align 4
 .L__y_is_nan:
     vaddss  %xmm0,%xmm0,%xmm0
-    ret 
-    
+    ret
+
 .endif
-    
+
 .section .rodata
 .align 16
 .L__max_expm1f_arg:         .long 0x42B19999
@@ -179,9 +179,9 @@ fname:
 .L__min_expm1f_arg:         .long 0xC18AA122
 .L__real_64_by_log2:        .quad 0x40571547652b82fe # 64/ln(2)
 .L__real_mlog2_by_64:       .quad 0xbf862e42fefa39ef # log2_by_64
-.L__A1_f:                   .long 0x3E2AAAAA   
+.L__A1_f:                   .long 0x3E2AAAAA
 .L__A2_f:                   .long 0x3D2AAAA0
-.L__A3_f:                   .long 0x3C0889FF     
+.L__A3_f:                   .long 0x3C0889FF
 .L__A4_f:                   .long 0x3AB64DE5
 .L__A5_f:                   .long 0x394AB327
 .L__minus_zero:             .long 0x80000000

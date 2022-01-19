@@ -73,7 +73,7 @@
 .text
 .p2align 4
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
     ucomisd      .L__max_exp_arg(%rip), %xmm0

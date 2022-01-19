@@ -101,20 +101,30 @@
         })
 
 /*
- * poly = C0 + C1*r + C2*r2 + C3*r3 + C4*r4 + C5*r5 + C6*r6 + C7*r7
- *      = (C0 + C1*r) + r2(C2 + C3*r) + r4(C4+ C5*r) + r6(C6 + C7*r)
- */
-#define POLY_EVAL_8(r, c0, c1, c2, c3, c4, c5, c6, c7) ({   \
-            __typeof(r) r2, r4, t1, t2, t3, t4, q;          \
-            t1 = c0 + c1*r;                                 \
-            t2 = c2 + r*c3;                                 \
+    c0 is assumed to be added by the caller
+    This function returns a polynomial:
+    p(r) = c1*r + c2*r^2 + c3r^3 + c4*r^4 + c5*r^5 +
+            c6*r^6 + c7*r^7 + c8*r^8
+*/
+#define POLY_EVAL_8(r, c1, c2, c3, c4, c5, c6, c7, c8) ({   \
+            __typeof(r) r2, r3, r4, r5, r6, r7, r8, t1, t2, t3, t4, q;          \
             r2 = r * r;                                     \
-            t3 = c4 * r*c5;                                 \
+            r3 = r2 * r;                                    \
             r4 = r2 * r2;                                   \
-            t4 = c6 + r*c7;                                 \
-            q  = t1 + r2*t2;                                \
-            q = q + r4*t3;                                  \
-            q = q + r2*r4*t4;                               \
+            r5 = r2 * r3;                                   \
+            r6 = r3 * r3;                                   \
+            r7 = r5 * r2;                                   \
+            r8 = r4 * r4;                                   \
+                                                            \
+            t1 = c1*r + c2*r2;                              \
+            t2 = c3*r3 + c4*r4;                             \
+            t3 = c5*r5 + c6*r6;                             \
+            t4 = c7*r7 + c8*r8;                             \
+                                                            \
+            q = t1 + t2;                                    \
+            q = q + t3;                                     \
+            q = q + t4;                                     \
+                                                            \
             q;                                              \
         })
 

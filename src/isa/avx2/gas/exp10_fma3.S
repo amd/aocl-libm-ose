@@ -36,7 +36,7 @@
 .text
 .p2align 4
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
     vucomisd     .L__max_exp10_arg(%rip), %xmm0
     jae          .L__y_is_inf
@@ -48,7 +48,7 @@ fname:
     vmovdqa        %xmm0,%xmm1
     vpand         .L__signbit_off(%rip),%xmm0,%xmm1
     vucomisd      .L__real_x_near0_threshold(%rip),%xmm1
-    jb            .L__y_is_one    
+    jb            .L__y_is_one
 .endif
 
     # x * (64/log10(2))
@@ -58,25 +58,25 @@ fname:
     vcvttpd2dq    %xmm1, %xmm2   #xmm2 = (int)n
     vcvtdq2pd    %xmm2, %xmm1   #xmm1 = (double)n
     vmovd        %xmm2, %ecx
-    
-    # r1 = x - n * log10(2)/64 head    
-    # r2 = - n * log10(2)/64 tail     
+
+    # r1 = x - n * log10(2)/64 head
+    # r2 = - n * log10(2)/64 tail
     # r1 *= ln10;
     # r2 *= ln10;
-    # r1+r2  
+    # r1+r2
     vmovlhps    %xmm1,%xmm1,%xmm1    #xmm1 = (double)n,(double)n
     vmovq       %xmm0,%xmm0          #xmm0 = 0,x   #zero out the upper part
     #vfmaddpd %xmm0,.L__log10of2_by_64_mtail_mhead(%rip),%xmm1,%xmm2
     VFMADD132PD .L__log10of2_by_64_mtail_mhead(%rip),%xmm0,%xmm1
-    vmulpd      .L__ln10(%rip),%xmm1,%xmm1    
+    vmulpd      .L__ln10(%rip),%xmm1,%xmm1
     vhaddpd      %xmm1,%xmm1,%xmm1     #xmm1 = r,r
-    
-    #j = n & 0x3f    
+
+    #j = n & 0x3f
     mov         $0x3f, %rax
     and         %ecx, %eax     #eax = j
-    # m = (n - j) / 64      
-    sar         $6, %ecx       #ecx = m           
-    
+    # m = (n - j) / 64
+    sar         $6, %ecx       #ecx = m
+
     # q = r + r^2*1/2 + r^3*1/6 + r^4 *1/24 + r^5*1/120 + r^6*1/720
     # q = r + r*r*(1/2 + r*(1/6+ r*(1/24 + r*(1/120 + r*(1/720)))))
     vmovapd    .L__real_1_by_720(%rip),%xmm3
@@ -85,20 +85,20 @@ fname:
     vfmadd213sd   .L__real_1_by_6(%rip),%xmm1,%xmm3
     vfmadd213sd   .L__real_1_by_2(%rip),%xmm1,%xmm3
     vmulsd     %xmm1,%xmm1,%xmm0
-    vfmadd213sd   %xmm1,%xmm3,%xmm0 
-    
+    vfmadd213sd   %xmm1,%xmm3,%xmm0
+
     # (f)*(q) + f2 + f1
-    cmp         $0xfffffc02, %ecx # -1022    
-    lea         .L__two_to_jby64_table(%rip), %rdx        
-    lea         .L__two_to_jby64_tail_table(%rip), %r11       
-    lea         .L__two_to_jby64_head_table(%rip), %r10      
+    cmp         $0xfffffc02, %ecx # -1022
+    lea         .L__two_to_jby64_table(%rip), %rdx
+    lea         .L__two_to_jby64_tail_table(%rip), %r11
+    lea         .L__two_to_jby64_head_table(%rip), %r10
     vmulsd      (%rdx,%rax,8), %xmm0,%xmm1
     vaddsd      (%r11,%rax,8), %xmm1,%xmm1
-    vaddsd      (%r10,%rax,8), %xmm1,%xmm0        
+    vaddsd      (%r10,%rax,8), %xmm1,%xmm0
 
-    jle         .L__process_denormal 
+    jle         .L__process_denormal
 .L__process_normal:
-    shl         $52, %rcx    
+    shl         $52, %rcx
     vmovq       %rcx,%xmm2
     vpaddq      %xmm2, %xmm0,%xmm0
     ret
@@ -111,12 +111,12 @@ fname:
 .L__process_true_denormal:
     # here ( e^r < 1 and m = -1022 ) or m <= -1023
     add         $1074, %ecx
-    mov         $1, %rax    
+    mov         $1, %rax
     shl         %cl, %rax
     vmovq       %rax, %xmm2
     vmulsd       %xmm2, %xmm0,%xmm0
-    ret        
-  
+    ret
+
 .if __enable_IEEE_exceptions
 
 .p2align 4
@@ -128,42 +128,42 @@ fname:
     vmovq        %rdx, %xmm1
     mov         $3, %edi
     call        fname_special
-.L__x_is_pos_inf:    
-    ret 
-    
+.L__x_is_pos_inf:
+    ret
+
 .p2align 4
 .L__y_is_nan:
     vaddsd       %xmm0,%xmm0,%xmm1
     mov         $1, %edi
     call        fname_special
     ret
-    
+
 .p2align 4
 .L__y_is_zero:
     vmovq        %xmm0,%rax
-    mov         $0xfff0000000000000,%rdx    
-    cmp         %rdx,%rax  
+    mov         $0xfff0000000000000,%rdx
+    cmp         %rdx,%rax
     je          .L__x_is_neg_inf
     vpxor       %xmm1, %xmm1, %xmm1    #return value in xmm1,input in xmm0 before calling
     mov         $2, %edi        #code in edi
     call        fname_special
-    ret         
+    ret
 .L__x_is_neg_inf:
     vpxor        %xmm0, %xmm0,%xmm0
-    ret   
+    ret
 
-.p2align 4   
+.p2align 4
 .L__y_is_one:
     vmovsd       .L__real_one(%rip),%xmm0
     ret
-    
+
 .else
 
 .p2align 4
 .L__y_is_inf:
     mov         $0x7ff0000000000000,%rax
     vmovq       %rax, %xmm0
-    ret     
+    ret
 
 .p2align 4
 .L__y_is_nan:
@@ -173,10 +173,10 @@ fname:
 .p2align 4
 .L__y_is_zero:
     vpxor       %xmm2,%xmm2,%xmm0
-    ret 
+    ret
 
-.endif    
-    
+.endif
+
 .section .rodata
 .align 16
 .L__max_exp10_arg:          .quad 0x40734413509f79ff

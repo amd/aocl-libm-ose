@@ -76,8 +76,8 @@
     .text
     .align 16
     .p2align 4,,15
-.globl fname 
-    .type   fname,@function
+.globl fname
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
     sub     $stack_size,%rsp
     mov     %rbx,save_rbx(%rsp)     # save rbx

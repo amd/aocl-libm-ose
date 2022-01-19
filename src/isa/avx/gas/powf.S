@@ -53,7 +53,7 @@
 .text
 .p2align 4
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
     punpckldq  %xmm0,%xmm1   #xmm1 = XX,XX,x,y

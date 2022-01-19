@@ -100,7 +100,9 @@
 #}
 
 .globl __vrsa_powf__
+#ifdef __GNU_ASM__
     .type   __vrsa_powf__,@function
+#endif
 __vrsa_powf__:
 	mov		(%rdi),%edi
 
@@ -111,8 +113,8 @@ __vrsa_powf__:
 # rdx - float *y
 # rcx - float *z
 
-.globl fname 
-    .type   fname,@function
+.globl fname
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
     cmp         $0x0, %edi 

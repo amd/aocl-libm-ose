@@ -56,7 +56,7 @@
 .align 16
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
 	 sub $0x18,%rsp

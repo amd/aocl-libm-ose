@@ -38,7 +38,7 @@
 .align 32
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
 
@@ -48,7 +48,7 @@ cosf_early_exit_s:
     MOV   .L__inf_mask_32(%rip),%r8d
     AND   %r8d,%eax
     CMP   %r8d,%eax
-    JZ    cosf_naninf   
+    JZ    cosf_naninf
 
     VCVTSS2SD    %xmm0,%xmm0,%xmm5
     VMOVQ    %xmm5,%r9
@@ -102,7 +102,7 @@ cosf_exit_s:
         VMOVQ %xmm4,%rax
     and   $0x1,%rax
     cmp   $0x1,%rax
- 
+
     JNZ    cosf_piby4_compute
 
 #sinf_piby4_compute:
@@ -113,7 +113,7 @@ cosf_piby4_compute:
     cos_piby4_sf_fma3
 
 cosf_exit_s_1:
-    
+
     VPCMPEQQ   .L_int_one(%rip),%xmm4, %xmm1
     VPCMPEQQ   .L_int_two(%rip),%xmm4,%xmm2
     VORPD      %xmm1,%xmm2,%xmm3

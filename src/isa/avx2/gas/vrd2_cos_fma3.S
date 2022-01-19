@@ -52,7 +52,7 @@
 .align 32
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
         sub     $stack_size, %rsp
@@ -78,7 +78,7 @@ cos_early_exit_s_1:
 
     VMOVDQA  .L_mask_3f_9(%rip),%xmm7
     VPCMPGTQ  %xmm8,%xmm7,%xmm7
-       
+
     VORPD   %xmm11,%xmm7,%xmm2
     VPTEST %xmm2,%xmm2
     JZ range_reduce
@@ -94,8 +94,8 @@ cos_early_exit_s_1:
     VMOVDQA .L_mask_3f2(%rip),%xmm4
     VPCMPGTQ %xmm8,%xmm3,%xmm3
     VPCMPGTQ %xmm8,%xmm4,%xmm4
-    
-    
+
+
     VANDNPD %xmm7,%xmm4,%xmm1
     VANDPD  %xmm0,%xmm1,%xmm1                       # res2
     VANDNPD %xmm7,%xmm3,%xmm5
@@ -146,7 +146,7 @@ if_not_remainder:
 
     VMOVAPD input(%rsp),%xmm2
     VCMPLTPD .L_e_5(%rip),%xmm2,%xmm3
-        
+
     VANDPD %xmm3, %xmm0, %xmm7
     VANDNPD r1(%rsp), %xmm3, %xmm2
     VORPD %xmm2, %xmm7, %xmm7

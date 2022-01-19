@@ -39,7 +39,7 @@
 .align 32
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
 
@@ -70,18 +70,18 @@ compute_cos_pyby_4:
     JMP    return_cos_s
 
 cos_early_exit_s:
-    
+
     MOV   .L__inf_mask_64(%rip),%r8
     AND   %r8,%rax
     CMP   %r8,%rax
-    JZ    cos_naninf    
+    JZ    cos_naninf
 
 range_reduce:
 
-    VMOVAPD %xmm0, %xmm6 
+    VMOVAPD %xmm0, %xmm6
     VMOVQ   %r9,%xmm0                                # r9 x with the sign cleared
     cmp  .L_e_5(%rip), %r9
-    JGE  cos_remainder_piby2  
+    JGE  cos_remainder_piby2
 
     range_e_5_s_fma3
     JMP cos_exit_s

@@ -57,11 +57,11 @@
 .align 16
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
     # compute exponent part
-    vmovss       .L__real_inf(%rip),%xmm6 
+    vmovss       .L__real_inf(%rip),%xmm6
     xor          %rax, %rax   #rax=0
     vpsrld       $23, %xmm0,%xmm3   #xmm3 = (ux>>23)
     vmovd         %xmm0, %eax  #eax = x
@@ -75,26 +75,26 @@ fname:
 
     # check for negative numbers or zero
     vpxor        %xmm1, %xmm1,%xmm1
-    vcomiss      %xmm1, %xmm0 # if( x <= 0.0 ) go to .L__x_is_zero_or_neg 
+    vcomiss      %xmm1, %xmm0 # if( x <= 0.0 ) go to .L__x_is_zero_or_neg
     jbe          .L__x_is_zero_or_neg
 
     vpand        .L__real_mant(%rip), %xmm0, %xmm2  # xmm2 = ux & 0x007FFFFF
     vsubss       .L__real_one(%rip), %xmm0, %xmm4   # xmm4 = x - 1.0
 
-    vcomiss      .L__real_neg127(%rip), %xmm5 # if (xexp == 127) go to .L__denormal_adjust 
+    vcomiss      .L__real_neg127(%rip), %xmm5 # if (xexp == 127) go to .L__denormal_adjust
     je           .L__denormal_adjust
 
 .L__continue_common:
 
     # compute the index into the log tables
-    vpand        .L__mask_mant_all7(%rip), %xmm0,%xmm11 #xmm11 = ux & 0x007f0000 
+    vpand        .L__mask_mant_all7(%rip), %xmm0,%xmm11 #xmm11 = ux & 0x007f0000
     vpand        .L__mask_mant8(%rip), %xmm0, %xmm12    #xmm12  = ux & 0x00008000
     vpslld       $1, %xmm12,%xmm12                      #xmm12  = (ux & 0x00008000) << 1
     vpaddd       %xmm11,%xmm12,%xmm1                    #eax = (ux & 0x007f0000) + ((ux & 0x00008000) << 1)
     vmovd        %xmm1,%eax
     # check e as a special case
 #vcomiss      .L__real_ef(%rip), %xmm0        #if (x == e)  return 1.0
-#je           .L__logf_e                      
+#je           .L__logf_e
 
     # near one codepath
     vandps       .L__real_notsign(%rip), %xmm4, %xmm4   # xmm4 = fabs (x - 1.0)
@@ -105,7 +105,7 @@ fname:
     shr          $16, %eax                  # eax = (ux & 0x007f0000) + ((ux & 0x00008000) << 1) >> 16;
     vpor          .L__real_half(%rip), %xmm2,%xmm2 # xmm2 = Y = ((ux & 0x007FFFFF) | 0x3f000000)
     vpor          .L__real_half(%rip), %xmm1,%xmm1 # xmm1 = F = ((ux & 0x007f0000) + ((ux & 0x00008000) << 1) | 0x3f000000)
-    lea           .L__log_F_inv(%rip), %r9   # 
+    lea           .L__log_F_inv(%rip), %r9   #
 
     # f = F - Y, r = f * inv
     vsubss        %xmm2, %xmm1,%xmm1       # f = F _ Y
@@ -117,16 +117,16 @@ fname:
     vmulss       %xmm1, %xmm1,%xmm0                          # r*r
     lea         .L__log_128_tail(%rip), %r9
     lea         .L__log_128_lead(%rip), %r10
-    
+
     vfmadd231ss    %xmm0, %xmm11,%xmm1 # poly
     vmovss       (%r9,%rax,4), %xmm3
 
     # m + log2(G) - poly*log2_e
-    vfnmadd231ss    .L__real_log2_e(%rip), %xmm1,%xmm3 # z1 = log_128_tail - poly * log2_e  
+    vfnmadd231ss    .L__real_log2_e(%rip), %xmm1,%xmm3 # z1 = log_128_tail - poly * log2_e
 
     vaddss       (%r10,%rax,4), %xmm5,%xmm5 # z2 = xexp + log_128_tail
     vaddss       %xmm5, %xmm3,%xmm0
-    ret    
+    ret
 
 
 .p2align 4,,15
@@ -143,7 +143,7 @@ fname:
     vmulss       %xmm1, %xmm0,%xmm4 # correction = u*r
 
     # u = u + u#
-    vaddss       %xmm1, %xmm1, %xmm1 # u = u+u 
+    vaddss       %xmm1, %xmm1, %xmm1 # u = u+u
     vmulss       %xmm1, %xmm1, %xmm2  # v = u^2
 
     # r2 = (u * v * (ca_1 + v * ca_2) - correction)
@@ -161,7 +161,7 @@ fname:
     vmulss       .L__real_log2_e_lead(%rip), %xmm2,%xmm1
     vmulss       .L__real_log2_e_tail(%rip), %xmm5,%xmm0
     vmulss       .L__real_log2_e_lead(%rip), %xmm5,%xmm5
-    
+
     vfmadd231ss     .L__real_log2_e_tail(%rip), %xmm2,%xmm0
     vaddss       %xmm1, %xmm0,%xmm0
     vaddss       %xmm5, %xmm0,%xmm0
@@ -174,10 +174,10 @@ fname:
     vsubss       %xmm12, %xmm2, %xmm2  # xmm2 = temp -1.0
     vpsrld       $23, %xmm2,%xmm5                 # xmm5 = (utemp >> 23)
     vpand        .L__real_mant(%rip), %xmm2, %xmm2 # xmm2 = (utemp & 0x007FFFFF)
-    vmovaps      %xmm2, %xmm0                # 
+    vmovaps      %xmm2, %xmm0                #
     vpsubd       .L__mask_253(%rip), %xmm5,%xmm5  # xmm5 = (utemp >> 23) - 253
     vcvtdq2ps    %xmm5, %xmm5               # xmm5 = (float) ((utemp >> 23) - 253)
-    jmp         .L__continue_common        #  
+    jmp         .L__continue_common        #
 
 .p2align 4,,15
 .L__x_is_zero_or_neg:
@@ -186,7 +186,7 @@ fname:
     vmovss       .L__real_ninf(%rip), %xmm1
     mov         .L__flag_x_zero(%rip), %edi
     call        fname_special
-    ret 
+    ret
 
 .p2align 4,,15
 .L__x_is_neg:
@@ -194,7 +194,7 @@ fname:
     vmovss       .L__real_nan(%rip), %xmm1
     mov         .L__flag_x_neg(%rip), %edi
     call        fname_special
-    ret     
+    ret
 
 .p2align 4,,15
 .L__x_is_inf_or_nan:
@@ -213,7 +213,7 @@ fname:
     movd        %eax, %xmm1
     mov         .L__flag_x_nan(%rip), %edi
     call        fname_special
-    ret   
+    ret
 
 .p2align 4,,15
 .L__finish:
@@ -254,7 +254,7 @@ fname:
                         .quad 0x00040000000400000
 .L__real_mant:          .quad 0x0007FFFFF007FFFFF   # mantissa bits
                         .quad 0x0007FFFFF007FFFFF
-.L__mask_127:           .quad 0x00000007f0000007f   # 
+.L__mask_127:           .quad 0x00000007f0000007f   #
                         .quad 0x00000007f0000007f
 
 .L__mask_mant_all7:     .quad 0x00000000007f0000

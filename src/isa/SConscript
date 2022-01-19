@@ -36,11 +36,24 @@ incpaths = [
 ]
 
 e = env.Clone()
-e.Append(
-    ASFLAGS = ['-Wall', '-W', '-fPIC' ],
- 
-    CPPPATH = incpaths,
 
+if e['HOST_OS'] != 'win32':
+    asflags = ['-Wall', '-W', '-fPIC']
+else:
+    asflags = ['-DAVX_XOP_FMA4_FMA3',
+           '-DDEBUG=0',
+           '-DENABLE_AMDLIBM_API=1',
+           '-DLIBABI=aocl', '-D__AVX2__',
+           '-Dlibalm_EXPORTS',
+           #'/showIncludes',
+           '/Iinclude',
+           '/Isrc\\isa',
+           '/Isrc\\isa\\include',
+           '/Isrc\\isa\\avx512/gas\\include'
+           ]
+e.Append(
+    ASFLAGS = asflags,
+    CPPPATH = incpaths,
     CPPDEFINES = ['AVX_XOP_FMA4_FMA3' ],
 )
 

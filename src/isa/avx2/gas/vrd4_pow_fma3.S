@@ -64,7 +64,7 @@
 .align 16
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 # ymm0 = 4 packed double precision values x0, x1, x2, x3
 # ymm1 = 4 packed double precision values y0,y1,y2,y3

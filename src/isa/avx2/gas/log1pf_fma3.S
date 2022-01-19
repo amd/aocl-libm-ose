@@ -66,7 +66,7 @@
 .align 16
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
     # compute exponent part
     vmovd      .L__real_qnan(%rip),%xmm3
@@ -84,7 +84,7 @@ fname:
 
     vcomiss    %xmm6,%xmm0 #check for input less than -1.0
     jb         .L__input_less_than_minus_one
-    
+
     #get the mask for exactly -1.0
     vcomiss     %xmm6,%xmm0
     je         .L__input_is_minus_one
@@ -111,8 +111,8 @@ fname:
     vpsrlq         $46,%xmm6,%xmm6
     vpaddd         %xmm6,%xmm7,%xmm6
     vcvtdq2pd      %xmm6,%xmm7 # it will always be a positive integer
-    vmovapd        .L__index_constant1(%rip),%xmm8 # 
-    
+    vmovapd        .L__index_constant1(%rip),%xmm8 #
+
     vmovapd        .L__mask_1023_32bit(%rip),%xmm12
     vpand          %xmm4,%xmm5,%xmm4
     vpsrlq         $52,%xmm4,%xmm4
@@ -123,7 +123,7 @@ fname:
     vpor           %xmm3,%xmm5,%xmm5 # f = ymm5
     vmulsd         %xmm8,%xmm7,%xmm7 # f1 =index*0.015625
     vpsubd         .L__index_constant2(%rip),%xmm6,%xmm6 # index -= 64
-    
+
 # xmm4=xexp
     vmovaps        .L__plus_sixtyone(%rip),%xmm9
     vmovaps        .L__minus_two(%rip),%xmm10
@@ -137,7 +137,7 @@ fname:
     vsubsd         %xmm7,%xmm5,%xmm5 # f2 = f - f1;
     #ELSE
     vpsubd         %xmm4,%xmm11,%xmm11
-    
+
     #ux = (unsigned long long)(0x3ff - xexp) << EXPSHIFTBITS_DP64;
     #PUT_BITS_DP64(ux,m2);
     vpsllq         $52,%xmm11,%xmm11 # xmm11 = m2;
@@ -150,7 +150,7 @@ fname:
     # q = ln_tail_table[index];
     lea            .L__ln_lead_64_table(%rip), %r9
     lea            .L__ln_tail_64_table(%rip), %r8
-    
+
     vmovd          %xmm6,%r10d # move 1st order index
     vmovq          (%r9,%r10,8),%xmm6
     vmovq          (%r8,%r10,8),%xmm8
@@ -158,14 +158,14 @@ fname:
     vmovapd        .L__real_half(%rip),%xmm12
     vmovapd        .L__real_cb_1(%rip),%xmm13
     vmovapd        .L__real_cb_2(%rip),%xmm15
-    #f2 = ymm11/ymm5 f1 = xmm7 
+    #f2 = ymm11/ymm5 f1 = xmm7
     #vpcmov  %xmm9,%xmm5,%xmm11,%xmm11
     vandnpd %xmm5, %xmm9, %xmm14
     vandpd %xmm9, %xmm11, %xmm11
-    vorpd %xmm14, %xmm11, %xmm11  
+    vorpd %xmm14, %xmm11, %xmm11
 
     vmovapd        %xmm11,%xmm5
-    
+
     vfmadd231sd       %xmm12,%xmm11,%xmm7#(f1 + 0.5 * f2);
     vdivsd         %xmm7,%xmm5,%xmm7  # u = f2 / (f1 + 0.5 * f2);
     vmulsd         %xmm7,%xmm7,%xmm5  # v = u*u
@@ -176,21 +176,21 @@ fname:
     #poly = xmm5 u = xmm7 q = xmm8
     vfmadd213sd       %xmm7,%xmm7,%xmm5 # (u + u * poly)
     vaddsd         %xmm8,%xmm5,%xmm5   # z2 = q + (u + u * poly)
-    #xmm5 = z2, xmm8 = q, xmm7 = u, xmm6 = z1 
+    #xmm5 = z2, xmm8 = q, xmm7 = u, xmm6 = z1
     vcvtdq2pd      %xmm4,%xmm4 # xexp (float)
-    
+
     vfmadd213sd       %xmm6,%xmm13,%xmm4
     vaddsd         %xmm5,%xmm4,%xmm4 # r = (xexp * log2 + z1 + z2)
-    
+
     vcvtsd2ss      %xmm4,%xmm0,%xmm0 #Final result
-    # xmm0 is the result of log1p  
+    # xmm0 is the result of log1p
     ret
 ##########################################
 #########################################
 ##########################################
 
 
-.L__input_is_Nan_Inf:    
+.L__input_is_Nan_Inf:
     #now restore the Nans and Infs
     vmovd     %xmm0,%eax
     cmp       .L__real_inf(%rip),%eax
@@ -198,7 +198,7 @@ fname:
 
     cmp       .L__real_ninf(%rip),%eax
     je        .L__input_less_than_minus_one
-    
+
     or        .L__real_qnanbit(%rip),%eax
     movd      %eax,%xmm1
     mov       .L__flag_x_nan(%rip),%edi
@@ -216,13 +216,13 @@ fname:
 #vpsrld         $9,%xmm3,%xmm3
 #vpor           %xmm3,%xmm0,%xmm0
 #ret
-    
-    #process inputs less than 0x3380000033800000
-.L__input_is_less_than_epsilon:    
-    #result is equal to the input
-    ret 
 
-.L__input_less_than_minus_one:    
+    #process inputs less than 0x3380000033800000
+.L__input_is_less_than_epsilon:
+    #result is equal to the input
+    ret
+
+.L__input_less_than_minus_one:
     #now restore if there are some inputs less than -1.0
     vmovaps     %xmm3,%xmm0
     vmovss      .L__real_neg_qnan(%rip),%xmm1
@@ -238,8 +238,8 @@ fname:
     call        fname_special
     ret
 
-   
-    
+
+
 .section .rodata
 .align 16
 # these codes and the ones in the corresponding .c file have to match
@@ -293,18 +293,18 @@ fname:
                      .quad 0x0000007f0000007f
 .L__real_half:      .quad 0x3fe0000000000000 # 1/2
                     .quad 0x3fe0000000000000
-# Approximating polynomial coefficients for other x 
-.L__real_cb_1:      .quad 0x3fb5555555555557 # 8.33333333333333593622e-02, 
+# Approximating polynomial coefficients for other x
+.L__real_cb_1:      .quad 0x3fb5555555555557 # 8.33333333333333593622e-02,
                     .quad 0x3fb5555555555557
-.L__real_cb_2:      .quad 0x3f89999999865ede # 1.24999999978138668903e-02,  
+.L__real_cb_2:      .quad 0x3f89999999865ede # 1.24999999978138668903e-02,
                     .quad 0x3f89999999865ede
 .L__real_log2:      .quad 0x3fe62e42fefa39ef # log2 = 6.931471805599453e-01
-                    .quad 0x3fe62e42fefa39ef 
+                    .quad 0x3fe62e42fefa39ef
 .L__exp_mask:       .quad 0x7F8000007F800000   #
                     .quad 0x7F8000007F800000
-.L__exponent_compare: .quad 0x7F8000007F800000  
+.L__exponent_compare: .quad 0x7F8000007F800000
                       .quad 0x7F8000007F800000
-.L__sign_bit_32:    .quad 0x8000000080000000 
+.L__sign_bit_32:    .quad 0x8000000080000000
                     .quad 0x8000000080000000
 .L__real_ninf:      .quad 0xff800000ff800000   # -inf
                     .quad 0xff800000ff800000

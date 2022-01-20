@@ -297,6 +297,9 @@ extern "C" {
     __m512 amd_vrs16_atanf  (__m512 x);
     __m512d amd_vrd8_atan   (__m512d x);
 
+    __m512 amd_vrs16_asinf  (__m512 x);
+    __m512d amd_vrd8_asin   (__m512d x);
+
 /*Hyperbolic*/
    __m128  amd_vrs4_coshf   (__m128  x);
    __m128  amd_vrs4_tanhf   (__m128  x);

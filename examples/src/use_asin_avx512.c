@@ -31,34 +31,41 @@
 #include "amdlibm_vec.h"
 #include <immintrin.h>
 
-int use_asin() {
-    printf ("Using Scalar asingle precision asinf()\n");
-    float ipf = 0.5, opf;
-    int i;
-    opf = amd_asinf (ipf);
-    printf("Input: %f\tOutput: %f\n", ipf, opf);
-    printf ("Using Scalar double precision asin()\n");
-    double ipd = 0.45, opd;
-    opd = amd_asin(ipd);
-    printf("Input: %f\tOutput: %f\n", ipd, opd);
+int use_asin_avx512() {
+    #if defined (__AVX512__)
+    int i=0;
+    printf ("\nUsing vrd8 (Double Precision vector 8 variant) of AMD asin()\n");
+    __m512d input_vrd8, result_asin_vrd8;
+    double input_array_vrd8[8] = {2.3, 4.5, 56.5, 43.4, 45.0, 44.3, 32.3, 21.2};
+    double output_array_vrd8[8];
+    input_vrd8 = _mm512_loadu_pd(input_array_vrd8);
+    result_asin_vrd8 = amd_vrd8_asin(input_vrd8);
+    _mm512_storeu_pd(output_array_vrd8, result_asin_vrd8);
+    printf ("Input: {");
+    for(i=0; i<8; i++) {
+        printf ("%lf,", input_array_vrd8[i]);
+    }
+    printf ("}, Output: {");
+    for (i=0; i<8; i++) {
+        printf ("%lf,", output_array_vrd8[i]);
+    }
 
-    printf ("Using vrd2(Double precision vector) variant of AMD asin()\n");
-    __m128d result_asin;
-    __m128d input;
-    double  input_array[2] = {34.65, 67.89};
-    double  output_array[2];
-    input = _mm_loadu_pd(input_array);
-
-    printf("Using vrs4 (Single precision vector variant) of AMD asin()\n");
-    __m128 result_asin_vrs4;
-    __m128 input_vrs4;
-    float  input_array_vrs4[4] = {34.65, 67.89, 91.0, 198.34};
-    float  output_array_vrs4[4];
-    input_vrs4 = _mm_loadu_ps(input_array_vrs4);
-    result_asin_vrs4 = amd_vrs4_asinf(input_vrs4);
-    _mm_storeu_ps(output_array_vrs4, result_asin_vrs4 );
-    printf("Input: {%f, %f, %f, %f}, Output = {%f, %f, %f, %f}\n",
-        input_array_vrs4[0], input_array_vrs4[1], input_array_vrs4[2], input_array_vrs4[3],
-        output_array_vrs4[0], output_array_vrs4[1], output_array_vrs4[2], output_array_vrs4[3]);
+    printf ("\nUsing vrs16 (Single precision vector 16 element variant of AMD asin()\n");
+    __m512 input_vrs16, result_asin_vrs16;
+    float input_array_vrs16[16] = {1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0,
+                                   1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0};
+    float output_array_vrs16[16];
+    input_vrs16 = _mm512_loadu_ps(input_array_vrs16);
+    result_asin_vrs16 = amd_vrs16_asinf(input_vrs16);
+    _mm512_storeu_ps(output_array_vrs16, result_asin_vrs16);
+    printf ("Input: {");
+    for (i=0; i<16; i++) {
+        printf ("%f,",input_array_vrs16[i]);
+    }
+    printf("}, Output: {");
+    for (i=0; i<16; i++) {
+        printf ("%f,", output_array_vrs16[i]);
+    }
+    #endif
     return 0;
 }

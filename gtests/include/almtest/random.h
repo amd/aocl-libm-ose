@@ -10,8 +10,11 @@
 #include <sys/types.h> /*            */
 #include <sys/stat.h>  /* for open() */
 #include <fcntl.h>     /*            */
-
-#include <unistd.h> /* for read() */
+#if defined(_WIN64) || (_WIN32)
+  #include <Windows.h>
+#else
+  #include <unistd.h> /* for read() */
+#endif
 #include "defs.h"
 
 using namespace ALM;
@@ -47,7 +50,11 @@ class Random {
 
   Random(ALM::RangeType d) : dist(d){};
 
+#if defined(__GNUC__)
   ~Random() { close(randfd); }
+#else
+  ~Random() {}
+#endif
 
   /*
       * Returns the next random number

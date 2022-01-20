@@ -69,10 +69,6 @@
 #include <math.h>
 #include <stdio.h>
 
-#if defined(__clang__)
-#define CMPLXF(X, Y) __builtin_complex ((double) (X), (double) (Y))
-#endif
-
 fc32_t
 ALM_PROTO_OPT(cpowf)(fc32_t x, fc32_t y) {
 

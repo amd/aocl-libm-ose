@@ -127,4 +127,12 @@ To check that this is gcc compiler version 5.1 or greater:
 
 #endif	/* GCC */
 
+#if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+#define CMPLXF(X, Y) (fc32_t){(X),(Y)};
+#endif
+
+#if (defined(__clang__) && defined(__linux__))
+#define CMPLXF(X, Y) __builtin_complex ((float) (X), (float) (Y))
+#endif
+
 #endif	/* AMD_LIBM_COMPILER_H */

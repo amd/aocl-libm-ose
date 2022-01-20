@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+* Copyright (C) 2021-2022 Advanced Micro Devices, Inc. All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification,
 * are permitted provided that the following conditions are met:
@@ -73,7 +73,7 @@
 #include <libm/compiler.h>
 #include <libm/poly.h>
 #include "libm_inlines_amd.h"
-
+#include "kern/sqrt_pos.c"
 
 static struct {
                 uint64_t rteps,recrteps;
@@ -249,8 +249,7 @@ ALM_PROTO_OPT(asinh)(double x)
 
     if (unlikely((ux & EXPBITS_DP64) == EXPBITS_DP64)){
         /* x is either NaN or infinity */
-        if (unlikely(ux & MANTBITS_DP64)){
-            // printf("1 : NAN case : %0.12f\n",x);
+        if (ux & MANTBITS_DP64){
             if (ux & QNAN_MASK_64)
                 return __alm_handle_error(ux|0x0008000000000000, AMD_F_NONE);
             else
@@ -277,7 +276,7 @@ ALM_PROTO_OPT(asinh)(double x)
         }
     }
 
-    if (unlikely(ax <= RANGES[1])) {
+    if (ax <= RANGES[1]) {
         /* abs(x) <= 1.0 */
         /* Arguments less than 1.0 in magnitude are
             approximated by [4,4] or [5,4] minimax polynomials
@@ -311,7 +310,7 @@ ALM_PROTO_OPT(asinh)(double x)
 
         return x + x * t * poly;
     }
-    else if (unlikely(ax < RANGES[5])) {
+    else if (ax < RANGES[5]) {
         /* 1.0 <= abs(x) <= 32.0 */
         /* Arguments in this region are approximated by various
             minimax polynomials fitted to asinh series 4.6.31
@@ -369,7 +368,7 @@ ALM_PROTO_OPT(asinh)(double x)
     }
     else {
         /* abs(x) > 32.0 */
-        if (likely(ax > recrteps)) {
+        if (ax > recrteps) {
             /* Arguments greater than 1/sqrt(epsilon) in magnitude are
                 approximated by asinh(x) = ln(2) + ln(abs(x)), with sign of x */
             /* log_kernel_amd(x) returns xexp, r1, r2 such that
@@ -382,7 +381,6 @@ ALM_PROTO_OPT(asinh)(double x)
                 and r2 differ by at most 6. */
             m1 = ((xexp + 1) * log2_lead + m1);
             m2 = ((xexp + 1) * log2_tail + m2);
-
         }
         else {
             rarg = absx * absx + 1.0;
@@ -391,13 +389,12 @@ ALM_PROTO_OPT(asinh)(double x)
                   asinh(x) = ln(abs(x) + sqrt(x*x+1))
                 with the sign of x (see Abramowitz and Stegun 4.6.20) */
             /* Use assembly instruction to compute r = sqrt(rarg); */
-            m = sqrt(rarg);
+	    m = ALM_PROTO_KERN(sqrt)(rarg);
             m += absx;
             ax = asuint64(m);
             log_kernel_amd64(m, ax, &xexp, &m1, &m2);
             m1 = (xexp * log2_lead + m1);
             m2 = (xexp * log2_tail + m2);
-
         }
             if (sign)
                 return -(m1 + m2);

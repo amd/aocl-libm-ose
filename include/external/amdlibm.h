@@ -1,7 +1,6 @@
 
 /*
-
-(C) 2008-2021 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2022 Advanced Micro Devices, Inc. All Rights Reserved.
 
 Advanced Micro Devices, Inc.
 Software License Agreement
@@ -354,6 +353,9 @@ extern "C" {
     double amd_fmin  (double x, double y);
     float  amd_fminf (float  x, float  y);
 
+ /* complex variants */
+    double _Complex amd_cexp  (double _Complex x);
+    float  _Complex amd_cexpf (float  _Complex y);
 
 #ifdef __cplusplus
 }
@@ -678,6 +680,12 @@ extern "C" {
 #define fmin amd_fmin
 #undef fminf
 #define fminf amd_fminf
+
+ /* complex */
+#undef cexp
+#define cexp amd_cexp
+#undef cexpf
+#define cexpf amd_cexpf
 
 #endif
 

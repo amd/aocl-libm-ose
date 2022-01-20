@@ -47,15 +47,43 @@ PROTOTYPE_TEST_V1  = 0xf8
 PROTOTYPE_TEST_V2  = 0xf9
 PROTOTYPE_SVML     = 0xf4
 
-testcflags = ['-funsigned-char', '-fno-strict-aliasing',
-                '-fstack-protector-all', '-W', '-Wall',
-                '-Wno-multichar' , '-Wno-unused-parameter',
-                '-Wno-missing-field-initializers',
-                #'-falign-functions=32',
-                '-march=native',
-                '-std=c++17',
-	]
+if env['HOST_OS'] != 'win32':
+    testcflags = ['-funsigned-char',
+                  '-fno-strict-aliasing',
+                  '-fstack-protector-all',
+                  '-W',
+                  '-Wall',
+                  '-Wno-multichar',
+                  '-Wno-unused-parameter',
+                  '-Wno-missing-field-initializers',
+                  #'-falign-functions=32',
+                  '-march=native',
+                  '-std=c++17'
+                 ]
 
+else:
+    testcflags = ['/Wall',
+                  '/w',
+                  '/MP',
+                  '/O3',
+                  '-Wno-c++11-narrowing',
+                  '/Od',
+                  '/Ob2',
+                  '-MD',
+                  '-march=native',
+                  #'/showIncludes',
+                  '/EHsc',
+                  '-funsigned-char',
+                  '-fno-strict-aliasing',
+                  '-Wno-unused-parameter',
+                  '-fstack-protector-all',
+                  '-Wno-multichar',
+                  '-Wno-unused-parameter',
+                  '-march=native',
+                  '-Wno-missing-field-initializers',
+                  '-std:c++17',
+                  '/MT'
+                 ]
 arch_config = env['arch_config']
 if arch_config == 'avx512':
     testcflags.append('-mavx512f')
@@ -75,7 +103,10 @@ abi = env['libabi']
 # Default set to AOCL
 if abi == 'aocl':
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_AOCL]
-    liblist.extend(['alm'])
+    if env['HOST_OS'] != 'win32':
+        liblist.extend(['alm'])
+    else:
+        liblist.extend(['libalm'])
 elif abi == 'glibc':
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_GLIBC]
     liblist.extend(['mvec'])
@@ -110,12 +141,20 @@ if dbg_mode in ['gtests', 'all', 'tests' ]:
         except ValueError as err:
             pass
 else:
-    env.Append(
+    if env['HOST_OS'] != 'win32':
+        env.Append(
         CCFLAGS = ['-O0'],
-    )
+        )
+    else:
+        env.Append(
+        CCFLAGS = [],
+        )
 
 # Add default math library for any unresolved functions
-liblist.extend(['m', 'gtest', 'benchmark','mparith32', 'mparith64', 'mpfr'])
+if env['HOST_OS'] != 'win32':
+    liblist.extend(['m', 'gtest', 'benchmark','mparith32', 'mparith64', 'mpfr'])
+else:
+    liblist.extend(['msvcrt', 'gtest', 'benchmark','mparith32', 'mparith64', 'mpfr'])
 #glibpath = ['gapi/gtest', 'gapi/gbench']
 glibpath = ['gapi/gtest', 'gapi/gbench','libs/mparith/32', 'libs/mparith/64']
 libpath  += [joinpath('#', build_root, x) for x in glibpath]
@@ -127,9 +166,9 @@ if abi == 'svml':
 
 testenv = env.Clone()
 testenv.Append(
-	CFLAGS  = ccflags + testcflags,
-	CCFLAGS = ccflags + testcflags,
-	CPPPATH = [incpath],
+    CFLAGS  = ccflags + testcflags,
+    CCFLAGS = ccflags + testcflags,
+    CPPPATH = [incpath],
 )
 testenv.Replace(CC=almenv.compiler.CxxCmd(), LINKFLAGS=[])
 
@@ -143,9 +182,9 @@ libtest = libtestenv.StaticLibrary('test', test_common_srcs)
 
 e = testenv.Clone()
 e.Append(
-	INCPATH = [incpath],
-	LIBPATH = libpath,
-	LIBS    = [libtest] + liblist
+    INCPATH = [incpath],
+    LIBPATH = libpath,
+    LIBS    = [libtest] + liblist
 )
 
 def getSubdirs(abs_path_dir):
@@ -158,31 +197,35 @@ this_sconscript_file = Dir('.').srcnode().abspath
 test_base = os.path.dirname(this_sconscript_file)
 gtests = getSubdirs(this_sconscript_file)
 #print("tests=================", tests, path.join(test_base, ))
-exclude_dirs = ['include', 'gapi', 'libs']
+if env['HOST_OS'] != 'win32':
+    exclude_dirs = ['include', 'gapi', 'libs']
+else:
+    exclude_dirs = ['include', 'gapi', 'libs', 'compat']
 gtests = [x for x in gtests if x not in exclude_dirs]
 
 libg = SConscript('gapi/SConscript',
-		exports = {'env': env},
-		duplicate = 0,
-		src_dir = '#gtests/gapi',
-		variant_dir = 'gapi',
-	)
+        exports = {'env': env},
+        duplicate = 0,
+        src_dir = '#gtests/gapi',
+        variant_dir = 'gapi',
+    )
 
 libmp = SConscript('libs/mparith/SConscript',
-		exports = {'env': env},
-		duplicate = 0,
-		src_dir = '#gtests/libs/mparith',
-		variant_dir = 'libs/mparith',
-	)
+        exports = {'env': env},
+        duplicate = 0,
+        src_dir = '#gtests/libs/mparith',
+        variant_dir = 'libs/mparith',
+    )
 
-#print(e.Dump())
-#print(gtests)
 test_exes = []
 
 for test in gtests:
     tenv = e.Clone()
-    tenv.Replace(CC='g++',LINKFLAGS=[])
-    tenv.Append(CPPDEFINES = ['-DTEST_NAME=%s' % test])
+    if env['HOST_OS'] != 'win32':
+        tenv.Replace(CC='g++',LINKFLAGS=[])
+        tenv.Append(CPPDEFINES = ['-DTEST_NAME=%s' % test])
+    else:
+        tenv.Append(CPPDEFINES = ['/DTEST_NAME=%s' % test])
     exes = SConscript('%s/SConscript' % test,
                         exports = { 'env': tenv },
                         duplicate = 0,

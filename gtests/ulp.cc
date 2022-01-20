@@ -10,6 +10,11 @@
 #include "almtest.h"
 #include "defs.h"
 
+#if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+typedef uint64_t u_int64_t;
+typedef uint32_t u_int32_t;
+#endif
+
 namespace ALM {
 template <typename T>
 constexpr int get_exponent_bits() {
@@ -93,9 +98,9 @@ long double Get() {
 
     /* 2^(e-p-1) */
     if (FloatWidth::E_F32 == width)
-	    return pow(2, myexp);
+      return pow(2, myexp);
     else
-	    return powl(2,myexp);
+      return powl(2,myexp);
   }
 };
 
@@ -130,8 +135,13 @@ template <typename FAT, typename FAT_L>
 double ComputeUlp(FAT output, FAT_L _expected) {
   FAT expected = (FAT)_expected;
   static const FAT
+#if defined(_WIN64) || defined(_WIN32)
+      fmax = (std::numeric_limits<FAT>::max)(),      // FLT_MAX, DBL_MAX etc
+      f_low = (std::numeric_limits<FAT>::lowest)();  // -FLT_MAX, -DBL_MAX etc
+#else
       fmax = std::numeric_limits<FAT>::max(),      // FLT_MAX, DBL_MAX etc
       f_low = std::numeric_limits<FAT>::lowest();  // -FLT_MAX, -DBL_MAX etc
+#endif
 
   // if both are NAN
   if (isnan(output) && isnan(expected)) return 0.0;
@@ -191,7 +201,7 @@ bool update_ulp(double ulp, double &max_ulp_err, double ulp_threshold)
   }
 
   if ((ulp - max_ulp_err) > 0.0) {
-    LIBM_TEST_DPRINTF(VERBOSE2, ,"MaxULPError: ",max_ulp_err, 
+    LIBM_TEST_DPRINTF(VERBOSE2, ,"MaxULPError: ",max_ulp_err,
                        "Ulp: ", ulp);
     max_ulp_err = ulp;
     return true;
@@ -199,7 +209,7 @@ bool update_ulp(double ulp, double &max_ulp_err, double ulp_threshold)
 
   if ((ulp - ulp_threshold) > 0.0)
     return false;                   /* fail; as greater than threshold */
- 
+
   return true;
 }
 

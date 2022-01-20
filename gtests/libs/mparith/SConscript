@@ -11,15 +11,7 @@ from os.path import join as joinpath
 Import('env')
 
 build_dir = joinpath(env['BUILDROOT'], 'mparith')
-
-mpcflags = [
-	'-fPIC',
-	'-Wwrite-strings',
-	'-fno-strict-aliasing',
-	'-D_GNU_SOURCE',
-	'-D_ISOC99_SOURCE',
-	'-DIS_64BIT'
-	]
+mpenv = env.Clone()
 
 this_sconscript_file = Dir('.').srcnode().abspath
 
@@ -29,35 +21,65 @@ incpath = [ joinpath(this_sconscript_file, x) for x in ['.', 'include']]
 libpath = []
 
 # Add default math library for any unresolved functions
-liblist.extend(['mpfr', 'm'])
+
 libpath += ['.', 'src', 'mpariths']
 
-mpenv = env.Clone()
+if mpenv['HOST_OS'] != 'win32':
+    mpcflags = ['-fPIC',
+                '-Wwrite-strings',
+                '-fno-strict-aliasing',
+                '-D_GNU_SOURCE',
+                '-D_ISOC99_SOURCE',
+                '-DIS_64BIT'
+               ]
+    liblist.extend(['mpfr', 'm'])
+
+else:
+    mpcflags = ['-DIS_64BIT',
+                '-DWINDOWS'
+               ]
+    liblist.extend(['mpfr', 'msvcrt'])
+    exclude_flags=['/EHsc', '-funsigned-char', '-Wno-unused-parameter', '-march=native', '-std:c++17']
+    for i in exclude_flags:
+        if i in mpenv['CFLAGS']:
+            mpenv['CFLAGS'].remove(i)
+            mpenv['CCFLAGS'].remove(i)
+
 mpenv.Append(
     CCFLAGS  = mpcflags,
     CPPPATH  = [incpath],
     #src_dir = 'libs/mparith',
-    STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 'yes' ,
+    STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 1
 )
 
 mpenv32 = mpenv.Clone()
-mpenv32.Append(CCFLAGS = '-DFLOAT',
-		MPVARIANT = '32')
+if mpenv['HOST_OS'] != 'win32':
+    mpenv32.Append(CCFLAGS = '-DFLOAT',
+                   MPVARIANT = '32')
+else:
+    mpenv32.Append(CCFLAGS = ['-DFLOAT', '-Dlibmparith32_EXPORTS'],
+                   MPVARIANT = '32')
+
 lib32 = SConscript('build_libmp',
-		exports = {'mpenv': mpenv32},
-		variant_dir = '32',
-		duplicate = 0,
-	)
+                   exports = {'mpenv': mpenv32},
+                   variant_dir = '32',
+                   duplicate = 0,
+    )
 
 mpenv64 = mpenv.Clone()
-mpenv64.Append(CCFLAGS = '-DDOUBLE',
-		MPVARIANT = '64')
-lib64 = SConscript('build_libmp',
-		exports = {'mpenv': mpenv64},
-		variant_dir = '64',
-		duplicate = 0,
-	)
+if mpenv['HOST_OS'] != 'win32':
+    mpenv64.Append(CCFLAGS = '-DDOUBLE',
+                   MPVARIANT = '64')
+else:
+    mpenv64.Append(CCFLAGS = ['-DDOUBLE', '-Dlibmparith64_EXPORTS'],
+                   MPVARIANT = '64')
 
-Return('lib32', 
-	'lib64')
+lib64 = SConscript('build_libmp',
+                   exports = {'mpenv': mpenv64},
+                   variant_dir = '64',
+                   duplicate = 0,
+    )
+
+Return('lib32',
+       'lib64')
 

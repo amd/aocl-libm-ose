@@ -2,7 +2,7 @@
 
 int test_pow(void* handle) {
     int ret = 0;
-    struct FuncData data;
+    struct FuncData data={0};
     const char* func_name = "pow";
 
     data.s1f_2 = (funcf_2)FUNC_LOAD(handle, "amd_powf");

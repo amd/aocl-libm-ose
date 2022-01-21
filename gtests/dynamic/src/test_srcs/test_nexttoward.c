@@ -7,10 +7,18 @@ int test_nexttoward(void* handle) {
     double input = 6.287, output;
     long double input1 = 5.678;
 
-    float (*func_f)(float, long double) = (float (*)(float, long double))dlsym(handle, "amd_nexttowardf");
-    double (*func_d)(double, long double) = (double (*)(double, long double))dlsym(handle, "amd_nexttoward");
+    #if defined(_WIN64) || defined(_WIN32)
+        float (*func_f)(float, long double) = (float (*)(float, long double))GetProcAddress(handle, "amd_nexttowardf");
+        double (*func_d)(double, long double) = (double (*)(double, long double))GetProcAddress(handle, "amd_nexttoward");
 
-    error = dlerror();
+        error = GetLastError();
+    #else
+        float (*func_f)(float, long double) = (float (*)(float, long double))dlsym(handle, "amd_nexttowardf");
+        double (*func_d)(double, long double) = (double (*)(double, long double))dlsym(handle, "amd_nexttoward");
+
+        error = dlerror();
+    #endif
+
     if (error != NULL) {
         printf("Error: %s\n", error);
         return 1;

@@ -6,10 +6,18 @@ int test_nan(void* handle) {
     float outputf;
     double output;
 
-    funcf_nan s1f = (funcf_nan)dlsym(handle, "amd_nanf");
-    func_nan  s1d = (func_nan)dlsym(handle, "amd_nan");
+    #if defined(_WIN64) || defined(_WIN32)
+        funcf_nan s1f = (funcf_nan)GetProcAddress(handle, "amd_nanf");
+        func_nan  s1d = (func_nan)GetProcAddress(handle, "amd_nan");
 
-    error = dlerror();
+        error = GetLastError();
+    #else
+        funcf_nan s1f = (funcf_nan)dlsym(handle, "amd_nanf");
+        func_nan  s1d = (func_nan)dlsym(handle, "amd_nan");
+
+        error = dlerror();
+    #endif
+
     if (error != NULL) {
         printf("Error: %s\n", error);
         return 1;

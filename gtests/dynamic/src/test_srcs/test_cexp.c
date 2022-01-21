@@ -1,7 +1,7 @@
 #include "libm_dynamic_load.h"
 
 int test_cexp(void* handle) {
-    struct FuncData data;
+    struct FuncData data={0};
     const char* func_name = "cexp";
 
     data.s1f_cmplx = (funcf_cmplx)FUNC_LOAD(handle, "amd_cexpf");

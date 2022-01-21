@@ -7,10 +7,18 @@ int test_remquo(void* handle) {
     double input = 6.287, output;
     int quo;
 
-    funcf_remquo s1f = (funcf_remquo)dlsym(handle, "amd_remquof");
-    func_remquo  s1d = (func_remquo)dlsym(handle, "amd_remquo");
+    #if defined(_WIN64) || defined(_WIN32)
+        funcf_remquo s1f = (funcf_remquo)GetProcAddress(handle, "amd_remquof");
+        func_remquo  s1d = (func_remquo)GetProcAddress(handle, "amd_remquo");
 
-    error = dlerror();
+        error = GetLastError();
+    #else
+        funcf_remquo s1f = (funcf_remquo)dlsym(handle, "amd_remquof");
+        func_remquo  s1d = (func_remquo)dlsym(handle, "amd_remquo");
+
+        error = dlerror();
+    #endif
+
     if (error != NULL) {
         printf("Error: %s\n", error);
         return 1;

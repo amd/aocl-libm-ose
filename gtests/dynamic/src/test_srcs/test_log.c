@@ -2,7 +2,7 @@
 
 int test_log(void* handle) {
     int ret = 0;
-    struct FuncData data;
+    struct FuncData data={0};
     const char* func_name = "log";
 
     data.s1f = (funcf)FUNC_LOAD(handle, "amd_logf");

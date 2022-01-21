@@ -2,7 +2,7 @@
 
 int test_exp2(void* handle) {
     int ret = 0;
-    struct FuncData data;
+    struct FuncData data={0};
     const char* func_name = "exp2";
 
     data.s1f = (funcf)FUNC_LOAD(handle, "amd_exp2f");

@@ -7,10 +7,18 @@ int test_ldexp(void* handle) {
     double input = 6.287, output;
     int n = 2;
 
-    funcf_int s1f = (funcf_int)dlsym(handle, "amd_ldexpf");
-    func_int  s1d = (func_int)dlsym(handle, "amd_ldexp");
+    #if defined(_WIN64) || defined(_WIN32)
+        funcf_int s1f = (funcf_int)GetProcAddress(handle, "amd_ldexpf");
+        func_int  s1d = (func_int)GetProcAddress(handle, "amd_ldexp");
 
-    error = dlerror();
+        error = GetLastError();
+    #else
+        funcf_int s1f = (funcf_int)dlsym(handle, "amd_ldexpf");
+        func_int  s1d = (func_int)dlsym(handle, "amd_ldexp");
+
+        error = dlerror();
+    #endif
+
     if (error != NULL) {
         printf("Error: %s\n", error);
         return 1;

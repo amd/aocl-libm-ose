@@ -10,17 +10,26 @@ int main(int argc, char* argv[]) {
     void* handle;
     char* libm_path = NULL;
 
-    if (argc <= 1) {
+   if (argc <= 1) {
         printf("Error! Provide .so file path as argument\n");
         return 1;
     }
 
     libm_path = argv[1];
-    handle = dlopen(libm_path, RTLD_LAZY);
-    if (!handle) {
-        printf("Error! %s\n", dlerror());
-        exit(EXIT_FAILURE);
-    }
+
+    #if defined(_WIN64) || defined(_WIN32)
+      handle = LoadLibrary("libalm.dll");
+      if (!handle) {
+          printf("Error! %s\n", GetLastError());
+          exit(EXIT_FAILURE);
+      }
+    #else
+      handle = dlopen(libm_path, RTLD_LAZY);
+      if (!handle) {
+          printf("Error! %s\n", dlerror());
+          exit(EXIT_FAILURE);
+      }
+    #endif
 
     /* exp log pow */
     test_exp(handle);
@@ -92,7 +101,10 @@ int main(int argc, char* argv[]) {
     /*complex*/
     test_cexp(handle);
 
-    dlclose(handle);
-
+    #if defined(_WIN64) || defined(_WIN32)
+      FreeLibrary(handle);
+    #else
+      dlclose(handle);
+    #endif
     return 0;
 }

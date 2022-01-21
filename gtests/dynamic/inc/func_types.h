@@ -3,6 +3,7 @@
 
 #include <immintrin.h>
 #include <complex.h>
+#include <libm/types.h>
 
 /*func ptr types*/
 /*scalar*/
@@ -14,10 +15,10 @@ typedef float  (*funcf_int) (float, int);
 typedef double (*func_int)  (double, int);
 
 /* complex scalar */
-typedef float _Complex (*funcf_cmplx) (float _Complex);
-typedef double _Complex (*func_cmplx) (double _Complex);
-typedef float _Complex (*funcf_cmplx_2) (float _Complex, float _Complex);
-typedef double _Complex (*func_cmplx_2) (double _Complex, double _Complex);
+typedef fc32_t (*funcf_cmplx) (fc32_t);
+typedef fc64_t (*func_cmplx) (fc64_t);
+typedef fc32_t (*funcf_cmplx_2) (fc32_t, fc32_t);
+typedef fc64_t (*func_cmplx_2) (fc64_t, fc64_t);
 
 /*other*/
 typedef float  (*funcf_nan)    (const char*);

@@ -3,12 +3,12 @@
 
 /* select function to dynamically load symbols (lin/win) */
 #if defined(_WIN64) || defined(_WIN32)
-    #define FUNC_LOAD GetProcAddress
+  #include <Windows.h>
+  #define FUNC_LOAD GetProcAddress
 #else
-    #define FUNC_LOAD dlsym
+  #include <dlfcn.h>
+  #define FUNC_LOAD dlsym
 #endif
-
-#include <dlfcn.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "func_types.h"

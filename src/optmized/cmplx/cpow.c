@@ -92,8 +92,11 @@ ALM_PROTO_OPT(cpow)(fc64_t x, fc64_t y) {
     /*check if absolute balue of complex number is zero */
     if ((asuint64(abs_x) & (~ALM_F64_SIGN_MASK)) == 0) {
 
-        return CMPLX(0.0, 0.0);
-
+        #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+            return (fc64_t) { 0.0, 0.0 };
+        #else
+            return CMPLX(0.0, 0.0);
+        #endif
     }
 
     arg_x = carg(x);
@@ -115,15 +118,25 @@ ALM_PROTO_OPT(cpow)(fc64_t x, fc64_t y) {
 
         if(asuint64(theta) == 0) {
 
-            return CMPLX(r, 0);
-
+            #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+                return (fc64_t) { r,0 };
+             #else
+                return CMPLX(r, 0);
+            #endif
         }
 
+    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+         return (fc64_t) { r,r };
+    #else
         return CMPLX(r, r);
-
+    #endif
     }
 
-    w = CMPLX(r * cos(theta), r * sin(theta));
+    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+        w = (fc64_t) { r * cos(theta), r * sin(theta) };
+    #else
+        w = CMPLX(r * cos(theta), r * sin(theta));
+    #endif
 
     return w;
 }

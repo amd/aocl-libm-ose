@@ -88,7 +88,13 @@ ALM_PROTO_OPT(cpowf)(fc32_t x, fc32_t y) {
     /*check if absolute value of x is zero */
     if (unlikely((asuint32(abs_x) & (~ALM_F32_SIGN_MASK)) == 0)) {
 
-        return CMPLXF(0.0f, 0.0f);
+        #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+            return (fc32_t) { 0.0f, 0.0f };
+        #else
+            return CMPLXF(0.0f, 0.0f);
+        #endif
+
+
 
     }
 
@@ -112,16 +118,23 @@ ALM_PROTO_OPT(cpowf)(fc32_t x, fc32_t y) {
     if(unlikely((asuint32(r) & (~ALM_F32_SIGN_MASK)) == ALM_F32_INF_MASK)) {
 
         if(asuint32(theta) == 0) {
-
-            return CMPLXF(r, 0);
-
+            #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+                return (fc32_t) { r, 0 };
+            #else
+                 return CMPLXF(r, 0);
+            #endif
         }
-
-        return CMPLXF(r, r);
-
+        #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+            return (fc32_t) { r,r };
+        #else
+            return CMPLXF(r, r);
+        #endif
     }
-
-    w = CMPLXF(r * cosf(theta), r * sinf(theta));
+    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+        w = (fc32_t) {r * cosf(theta), r * sinf(theta)};
+    #else
+        w = CMPLXF(r * cosf(theta), r * sinf(theta));
+    #endif
 
     return w;
 }

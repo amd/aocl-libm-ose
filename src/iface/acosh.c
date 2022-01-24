@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ struct alm_arch_funcs __arch_funcs_acosh = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_REF(acoshf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(acoshf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(acosh),
 #if 0
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_acoshf),/* vrs4 ? */
@@ -48,7 +48,7 @@ struct alm_arch_funcs __arch_funcs_acosh = {
         },
 
         [ALM_UARCH_VER_ZEN] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_REF(acoshf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(acoshf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(acosh),
 #if 0
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN(vrs4_acoshf),
@@ -57,7 +57,7 @@ struct alm_arch_funcs __arch_funcs_acosh = {
         },
 
         [ALM_UARCH_VER_ZEN2] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_REF(acoshf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(acoshf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(acosh),
 #if 0
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN2(vrs4_acoshf), /* vrs4 ? */
@@ -65,7 +65,7 @@ struct alm_arch_funcs __arch_funcs_acosh = {
 #endif
         },
         [ALM_UARCH_VER_ZEN3] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_REF(acoshf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(acoshf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(acosh),
 #if 0
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN3(vrs4_acoshf), /* vrs4 ? */
@@ -74,7 +74,7 @@ struct alm_arch_funcs __arch_funcs_acosh = {
         },
 
         [ALM_UARCH_VER_ZEN4] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_REF(acoshf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(acoshf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(acosh),
 #if 0
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN4(vrs4_acoshf), /* vrs4 ? */

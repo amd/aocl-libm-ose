@@ -9,7 +9,6 @@
 #include <string>
 #include <tuple>
 #include <vector>
-#include "../../include/external/amdlibm.h"
 #include "args.h"
 #include "gtest.h"
 #include "almstruct.h"

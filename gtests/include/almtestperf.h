@@ -10,7 +10,6 @@
 #include <cstring>
 #include <vector>
 #include <limits>
-#include "../../include/external/amdlibm.h"
 #include "args.h"
 #include "almstruct.h"
 #include "defs.h"

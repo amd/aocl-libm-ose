@@ -160,6 +160,26 @@ agreements with respect to the subject matter of this Agreement.
 #ifndef __AMDLIBM_H__
 #define __AMDLIBM_H__
 
+#include <complex.h>
+#if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+  #ifdef __cplusplus
+    extern "C" {
+  #endif
+  typedef _C_float_complex _Fcomplex;
+  typedef _C_double_complex _Dcomplex;
+  #ifdef __cplusplus
+    }
+  #endif
+#endif
+
+#if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+  typedef    _Fcomplex     fc32_t;
+  typedef    _Dcomplex     fc64_t;
+#else
+  typedef    float _Complex     fc32_t;
+  typedef    double _Complex     fc64_t;
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -354,8 +374,8 @@ extern "C" {
     float  amd_fminf (float  x, float  y);
 
  /* complex variants */
-    double _Complex amd_cexp  (double _Complex x);
-    float  _Complex amd_cexpf (float  _Complex y);
+    fc64_t amd_cexp  (fc64_t x);
+    fc32_t amd_cexpf (fc32_t y);
 
 #ifdef __cplusplus
 }

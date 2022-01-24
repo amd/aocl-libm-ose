@@ -28,15 +28,12 @@
 #ifndef __LIBM_TYPEHELPER_VEC_H__
 #define __LIBM_TYPEHELPER_VEC_H__
 
-#if defined(_WIN64) || defined(_WIN32)
-    #include <avx512fintrin.h>
-#endif
-
-
 #include <libm/types.h>
 
 #include <emmintrin.h>
-
+#if defined(_WIN64) || defined(_WIN32)
+    #include <avx512fintrin.h>
+#endif
 #define _MM_SET1_PS4(x)                           \
     _Generic((x),                                 \
              float: (__m128){(x), (x), (x), (x)})

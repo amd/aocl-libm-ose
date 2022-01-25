@@ -40,27 +40,27 @@ struct alm_arch_funcs __arch_funcs_asinh = {
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
         [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(asinh),
-        [ALM_FUNC_SCAL_SP] = &ALM_PROTO_REF(asinhf),                           /* vrd4 ? */
+        [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(asinhf),                           /* vrd4 ? */
         },
         
         [ALM_UARCH_VER_ZEN] = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(asinh),
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_REF(asinhf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(asinhf),
         },
         
         [ALM_UARCH_VER_ZEN2] = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(asinh),
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_REF(asinhf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(asinhf),
         },
         
         [ALM_UARCH_VER_ZEN3] = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(asinh),
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_REF(asinhf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(asinhf),
         },
 
         [ALM_UARCH_VER_ZEN4] = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(asinh),
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_REF(asinhf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(asinhf),
         },
 
     },

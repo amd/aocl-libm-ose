@@ -355,7 +355,7 @@ WEAK_LIBM_ALIAS(vrd4_tan, FN_PROTOTYPE(vrd4_tan));
 
 WEAK_LIBM_ALIAS(vrd8_exp, FN_PROTOTYPE(vrd8_exp));
 WEAK_LIBM_ALIAS(vrd8_pow, FN_PROTOTYPE(vrd8_pow));
-WEAK_LIBM_ALIAS(vrd8_exp2, FN_PROTOTYPE(vrd8_log2));
+WEAK_LIBM_ALIAS(vrd8_log2, FN_PROTOTYPE(vrd8_log2));
 WEAK_LIBM_ALIAS(vrd8_tan, FN_PROTOTYPE(vrd8_tan));
 WEAK_LIBM_ALIAS(vrd8_atan, FN_PROTOTYPE(vrd8_atan));
 WEAK_LIBM_ALIAS(vrd8_exp2, FN_PROTOTYPE(vrd8_exp2));

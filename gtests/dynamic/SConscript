@@ -8,7 +8,7 @@ e = env.Clone()
 
 if e['HOST_OS'] != 'win32':
     libs = ['dl', 'm']
-    test_cflags = ['-g', '-mavx', '-fPIE', '-fpermissive'],
+    test_cflags = ['-g', '-mavx', '-fPIE', '-fpermissive']
     linkflags = []
 else:
     libs = ['msvcrt']

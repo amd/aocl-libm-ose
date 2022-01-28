@@ -70,22 +70,22 @@ static struct {
     v_u32x16_t max_arg;
     v_f32x16_t poly_sinf[5];
  } v16_sinf_data = {
-     .max_arg = _MM256_SET1_I32(0x49800000), /* 0x1p20f */
-     .mask32    = _MM256_SET1_I32(0x7fffffff),
-     .pi1    = _MM256_SET1_PS8(-0x1.921fb6p1),
-     .pi2   = _MM256_SET1_PS8(0x1.777a5cp-24),
-     .pi3   = _MM256_SET1_PS8(0x1.ee59dap-49),
-     .invpi = _MM256_SET1_PS8(0x1.45f306p-2),
-     .shift = _MM256_SET1_PS8(0x1.8p23),
+     .max_arg = _MM512_SET1_U32x16(0x49800000U), /* 0x1p20f */
+     .mask32    = _MM512_SET1_U32x16(0x7fffffffU),
+     .pi1    = _MM512_SET1_PS16(-0x1.921fb6p1f),
+     .pi2   = _MM512_SET1_PS16(0x1.777a5cp-24f),
+     .pi3   = _MM512_SET1_PS16(0x1.ee59dap-49f),
+     .invpi = _MM512_SET1_PS16(0x1.45f306p-2f),
+     .shift = _MM512_SET1_PS16(0x1.8p23f),
      /*
       * Polynomial coefficients obtained using Remez algorithm from Sollya
       */
      .poly_sinf = {
-         _MM256_SET1_PS8(0x1.p0),
-         _MM256_SET1_PS8(-0x1.555548p-3),
-         _MM256_SET1_PS8(0x1.110e7cp-7),
-         _MM256_SET1_PS8(-0x1.9f6446p-13),
-         _MM256_SET1_PS8(0x1.5d38b6p-19)
+         _MM512_SET1_PS16(0x1.p0f),
+         _MM512_SET1_PS16(-0x1.555548p-3f),
+         _MM512_SET1_PS16(0x1.110e7cp-7f),
+         _MM512_SET1_PS16(-0x1.9f6446p-13f),
+         _MM512_SET1_PS16(0x1.5d38b6p-19f)
      },
 };
 

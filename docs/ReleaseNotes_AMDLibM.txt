@@ -1,7 +1,7 @@
 
-(C) 2008-2021 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2022 Advanced Micro Devices, Inc. All Rights Reserved.
 
-AOCL LibM - Release Notes - AOCL version 3.1
+AOCL LibM - Release Notes - AOCL version 4.0
 --------------------------------------------
 
 AMD LibM Contents
@@ -15,34 +15,23 @@ compiler-provided math functions. Applications can link into AMD LibM library an
 invoke math functions instead of compiler’s math functions for better accuracy and
 performance.
 
-Hightlights of AMD LibM version 3.8
+Hightlights of AMD LibM version 4.0
 -----------------------------------
 
-    * Optimized AVX512 variants for exp, exp2, log, log2, pow
-    * Optimized AVX512 variants for sin, tan.
-    * Optimized AVX512 variants for expf, exp2f, logf, log2f, log10f, powf.
-    * Optimized AVX512 variants for sinf, cosf, tanf.
-    * Optimized log10f scalar and vector variants.
-    * Optimized asinf, acosf, atanf scalar single precision variants.
-    * Optimized acosf, asinf, atanf vector single precision variants.
-    * Kernel variant added for coshf scalar single precision.
-    * Bug fixes in logf FMA3 variant.
-    * Optimized exp2 and log2 scalar and vector variants.
-    * Performance improvements in exp2, log2 variants.
-    * Performance improvements in expf, powf scalar and vector variants.
-    * Accuracy issue fixes in vector (double precision) log and exp.
-    * Accuracy issue fixes in scalar (single precision) cosh.
-    * Accuracy issue fixes in vector single precision log.
-    * Updated Glibc compat library.
-    * Bug fixes in cpuid detection.
-    * Enhanced dynamic dispatcher for functions.
-    * Versioning information updated.
+    * Optimized vector avx512 variants added for the following:
+          * exp, expf, exp2, exp2f, log, logf, log2, log2f, log10f, pow, powf
+          * sin, sinf, cos, cosf, tan, tanf
+          * asin, asinf, acosf, atan, atanf, tanhf
+    * Optimized Complex scalar variants added for the following:
+          * cexp, cexpf, cpow, cpowf
+    * Optimized scalar variants added for the following:
+          * asin, asinhf, acosh, acoshf
 
 Known Issues
 ------------
    * fastpow() - Maximum ULP error is 10.
 
-Version 3.8 Contents
+Version 4.0 Contents
 --------------------
 AMD LibM provides vector variants for many of the math functions. The list of
 available vector functions is given below. All functions have an 'amd_' prefix.
@@ -51,16 +40,20 @@ available vector functions is given below. All functions have an 'amd_' prefix.
  -----------
     * vrs4_expf, vrs4_exp2f, vrs4_exp10f, vrs4_expm1f
     * vrs8_expf, vrs8_exp2f
+    * vrs16_expf, vrs16_exp2f
     * vrsa_expf, vrsa_exp2f, vrsa_exp10f, vrsa_expm1f
     * vrd2_exp, vrd2_exp2, vrd2_exp10, vrd2_expm1, vrd4_exp, vrd4_exp2
+    * vrd8_exp, vrd8_exp2
     * vrda_exp, vrda_exp2, vrda_exp10, vrda_expm1
 
  Logarithmic
  -----------
     * vrs4_logf, vrs4_log2f, vrs4_log10f, vrs4_log1pf
     * vrs8_logf, vrs8_log2f
+    * vrs16_logf, vrs16_log2f, vrs16_log10f
     * vrsa_logf, vrsa_log2f, vrsa_log10f, vrsa_log1pf
     * vrd2_log, vrd2_log2, vrd2_log10, vrd2_log1p, vrd4_log, vrd4_log2
+    * vrd8_log, vrd8_log2
     * vrda_log, vrda_log2, vrda_log10, vrda_log1p
 
  Trigonometric
@@ -77,10 +70,9 @@ available vector functions is given below. All functions have an 'amd_' prefix.
 
  Power
  -----
-    * vrs4_cbrtf, vrd2_cbrt, vrs4_powf, vrd2_pow, vrd4_pow
-    * vrs8_powf
+    * vrs4_cbrtf, vrd2_cbrt, vrs4_powf, vrd2_pow, vrd4_pow, vrd8_pow
+    * vrs8_powf, vrs16_powf
     * vrsa_cbrtf, vrda_cbrt, vrsa_powf
-
 
 The scalar functions listed below are present in the library. They
 all have an 'amd_' prefix.

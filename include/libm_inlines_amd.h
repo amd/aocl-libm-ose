@@ -37,64 +37,54 @@
 
 /* Scales the double x by 2.0**n.
    Assumes EMIN <= n <= EMAX, though this condition is not checked. */
-static inline double scaleDouble_1(double x, int n)
-{
-    double t;
+static inline double scaleDouble_1(double x, int n) {
     /* Construct the number t = 2.0**n */
-    PUT_BITS_DP64(((long long)n + EXPBIAS_DP64) << EXPSHIFTBITS_DP64, t);
-    return x*t;
+    return x * (asdouble(((uint64_t)n + EXPBIAS_DP64) << EXPSHIFTBITS_DP64));
 }
-
 
 /* Scales the double x by 2.0**n.
    Assumes 2*EMIN <= n <= 2*EMAX, though this condition is not checked. */
-static inline double scaleDouble_2(double x, int n)
-{
+static inline double scaleDouble_2(double x, int n) {
     double t1, t2;
     int n1, n2;
     n1 = n / 2;
     n2 = n - n1;
     /* Construct the numbers t1 = 2.0**n1 and t2 = 2.0**n2 */
-    PUT_BITS_DP64(((long long)n1 + EXPBIAS_DP64) << EXPSHIFTBITS_DP64, t1);
-    PUT_BITS_DP64(((long long)n2 + EXPBIAS_DP64) << EXPSHIFTBITS_DP64, t2);
-    return (x*t1)*t2;
+    t1 = asdouble(((uint64_t)n1 + EXPBIAS_DP64) << EXPSHIFTBITS_DP64);
+    t2 = asdouble(((uint64_t)n2 + EXPBIAS_DP64) << EXPSHIFTBITS_DP64);
+
+    return (x * t1) * t2;
 }
-
-
-
 
 /* Scales the double x by 2.0**n.
    Assumes 3*EMIN <= n <= 3*EMAX, though this condition is not checked. */
-static inline double scaleDouble_3(double x, int n)
-{
+static inline double scaleDouble_3(double x, int n) {
     double t1, t2, t3;
     int n1, n2, n3;
     n1 = n / 3;
     n2 = (n - n1) / 2;
     n3 = n - n1 - n2;
     /* Construct the numbers t1 = 2.0**n1, t2 = 2.0**n2 and t3 = 2.0**n3 */
-    PUT_BITS_DP64(((long long)n1 + EXPBIAS_DP64) << EXPSHIFTBITS_DP64, t1);
-    PUT_BITS_DP64(((long long)n2 + EXPBIAS_DP64) << EXPSHIFTBITS_DP64, t2);
-    PUT_BITS_DP64(((long long)n3 + EXPBIAS_DP64) << EXPSHIFTBITS_DP64, t3);
+    t1 = asdouble(((uint64_t)n1 + EXPBIAS_DP64) << EXPSHIFTBITS_DP64);
+    t2 = asdouble(((uint64_t)n2 + EXPBIAS_DP64) << EXPSHIFTBITS_DP64);
+    t3 = asdouble(((uint64_t)n3 + EXPBIAS_DP64) << EXPSHIFTBITS_DP64);
+
     return ((x*t1)*t2)*t3;
 }
 
-
 /* Scales the float x by 2.0**n.
    Assumes 2*EMIN <= n <= 2*EMAX, though this condition is not checked. */
-static inline float scaleFloat_2(float x, int n)
-{
+static inline float scaleFloat_2(float x, int n) {
     float t1, t2;
     int n1, n2;
     n1 = n / 2;
     n2 = n - n1;
     /* Construct the numbers t1 = 2.0**n1 and t2 = 2.0**n2 */
-    PUT_BITS_SP32((n1 + EXPBIAS_SP32) << EXPSHIFTBITS_SP32, t1);
-    PUT_BITS_SP32((n2 + EXPBIAS_SP32) << EXPSHIFTBITS_SP32, t2);
+    t1 = asfloat(((uint32_t)n1 + EXPBIAS_SP32) << EXPSHIFTBITS_SP32);
+    t2 = asfloat(((uint32_t)n2 + EXPBIAS_SP32) << EXPSHIFTBITS_SP32);
+
     return (x*t1)*t2;
 }
-
-
 
 /* Compute the values m, z1, and z2 such that base**x = 2**m * (z1 + z2).
    Small arguments abs(x) < 1/(16*ln(base)) and extreme arguments

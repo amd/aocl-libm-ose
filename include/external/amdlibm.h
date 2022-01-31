@@ -172,7 +172,7 @@ agreements with respect to the subject matter of this Agreement.
   #endif
 #endif
 
-#if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+#if (defined (_WIN64) || defined (_WIN32))
   typedef    _Fcomplex     fc32_t;
   typedef    _Dcomplex     fc64_t;
 #else

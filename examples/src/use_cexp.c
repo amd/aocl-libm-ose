@@ -32,14 +32,14 @@
 
 int use_cexp() {
     printf ("Using Scalar Float complex cexpf()\n");
-    float _Complex ipf = 0.5f, opf;
+    fc32_t ipf={0.5f}, opf;
     opf = amd_cexpf (ipf);
     printf ("amd_cexp(%f + i%f) = %f + i%f\n",
             (double)crealf(ipf), (double)cimagf(ipf),
             (double)crealf(opf), (double)cimagf(opf));
 
     printf ("Using Scalar Double complex cexp()\n");
-    double _Complex ip = 0.5, op;
+    fc64_t ip = {0.5}, op;
     op = amd_cexp (ip);
     printf ("amd_cexp(%lf + i%lf) = %lf + i%lf\n",
             creal(ip), cimag(ip), creal(op), cimag(op));

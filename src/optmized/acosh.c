@@ -378,7 +378,6 @@ double ALM_PROTO_OPT(acosh)(double x) {
         return __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
     }
 
-
     if (ux > recrteps) {
         /* Arguments greater than 1/sqrt(epsilon) in magnitude are
         approximated by acosh(x) = ln(2) + ln(x) */
@@ -390,8 +389,8 @@ double ALM_PROTO_OPT(acosh)(double x) {
         (xexp+1) has at most 10 significant bits, log(2) has 24 significant
         bits, and r1 has up to 24 bits; and the exponents of r1
         and r2 differ by at most 6. */
-        _r1 = ((xexp+1) * log2_lead + _r1);
-        _r2 = ((xexp+1) * log2_tail + _r2);
+        _r1 = ((xexp + 1) * log2_lead + _r1);
+        _r2 = ((xexp + 1) * log2_tail + _r2);
         return _r1 + _r2;
     }
 
@@ -415,7 +414,7 @@ double ALM_PROTO_OPT(acosh)(double x) {
 
     else {
         /* 1.0 < x <= 128.0 */
-        double u1, u2, v1, v2, w1, w2, hx, tx, t, r, s, p1, p2, a1, a2, c1, c2,poly;
+        double u1, u2, v1, v2, w1, w2, hx, tx, t, r, s, p1, p2, a1, a2, c1, c2, poly;
         if (ux >= 0x3ff8000000000000) {
             /* 1.5 <= x <= 128.0 */
             /* We use minimax polynomials,
@@ -427,34 +426,32 @@ double ALM_PROTO_OPT(acosh)(double x) {
             if (ux >= 0x4040000000000000) {
             /* [3,2] for 32.0 <= x <= 128.0 */
                 poly = POLY_EVAL_4(t, A1, A2, A3, A4) /
-                      (0.21941191335882074014e-8 +
-                      (-0.10185073058358334569e-7 +
-                         0.95019562478430648685e-8 * t) * t);
+                          POLY_EVAL_2(t, B1, B2, B3);
             }
             else if (ux >= 0x4020000000000000) {
             /* [3,3] for 8.0 <= x <= 32.0 */
                 poly = POLY_EVAL_4(t, C1, C2, C3, C4)/
-                    POLY_EVAL_4(t, D1, D2, D3, D4);
+                           POLY_EVAL_4(t, D1, D2, D3, D4);
             }
             else if (ux >= 0x4010000000000000) {
             /* [4,3] for 4.0 <= x <= 8.0 */
                 poly = POLY_EVAL_5(t, E1, E2, E3, E4, E5) /
-                     POLY_EVAL_4(t, F1, F2, F3, F4);
+                           POLY_EVAL_4(t, F1, F2, F3, F4);
             }
             else if (ux >= 0x4000000000000000) {
             /* [5,5] for 2.0 <= x <= 4.0 */
                 poly = POLY_EVAL_6(t, G1, G2, G3, G4, G5, G6) /
-                      POLY_EVAL_6(t, H1, H2, H3, H4, H5, H6);
+                           POLY_EVAL_6(t, H1, H2, H3, H4, H5, H6);
             }
             else if (ux >= 0x3ffc000000000000) {
               /* [5,4] for 1.75 <= x <= 2.0 */
                 poly = POLY_EVAL_6(t, I1, I2, I3, I4, I5, I6) /
-                      POLY_EVAL_5(t, J1, J2, J3, J4, J5);
+                           POLY_EVAL_5(t, J1, J2, J3, J4, J5);
             }
             else {
               /* [5,4] for 1.5 <= x <= 1.75 */
                 poly = POLY_EVAL_6(t, K1, K2, K3, K4, K5, K6) /
-                      POLY_EVAL_5(t, L1, L2, L3, L4, L5);
+                           POLY_EVAL_5(t, L1, L2, L3, L4, L5);
             }
 
             ux = asuint64(x);
@@ -530,8 +527,8 @@ double ALM_PROTO_OPT(acosh)(double x) {
              approximated by a [6,6] minimax polynomial. */
             double b1, b2, _c1, _c2, e1, e2, q1, q2, c, cc, hr1, tr1, hpoly, tpoly, hq1, tq1, hr2, tr2;
 
-            poly = POLY_EVAL_8(t, M1, M2, M3, M4, M5, M6, M7, M8) /
-                       POLY_EVAL_7(t, N1, N2, N3, N4, N5, N6, N7);
+            poly = (M1 + (M2 + (M3 + (M4 + (M5 + (M6 + (M7 + M8 * t) * t) * t) * t) * t) * t) * t) /
+                      (N1 + (N2 + (N3 + (N4 + (N5 + (N6 + N7 * t) * t) * t) * t) * t) * t);
 
             /* Now we can compute the result r = acosh(x) = log1p(t)
              using the formula t - 0.5*t*t + poly*t*t. Since t is

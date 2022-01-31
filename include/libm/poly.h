@@ -29,6 +29,17 @@
 #define __LIBM_POLY_H__
 
 /*
+* poly = C0*r^0 + C1*r^1 + c2*r^2
+*/
+#define POLY_EVAL_2(r, C0, C1, C2)  ({          \
+            __typeof(r) _t1, __r2, _q;          \
+            _t1 = C0 + C1*r;                    \
+            __r2 = r*r;                         \
+            _q = _t1 + C2*__r2;                 \
+            _q;                                 \
+})
+
+/*
  * poly = C1 + C2*r + C3*r^2 + C4*r^3
  */
 #define POLY_EVAL_3(r, c1, c2, c3, c4) ({       \

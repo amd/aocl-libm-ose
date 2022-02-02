@@ -99,15 +99,16 @@
  *      = (C0 + C1*r) + r2(C2 + C3*r) + r4(C4+ C5*r) + r6*C6
  */
 #define POLY_EVAL_7(r, c0, c1, c2, c3, c4, c5, c6) ({     \
-            __typeof(r) r2, r4, t1, t2, t3, q;            \
-            t1 = c0 + c1*r;                               \
-            t2 = c2 + r*c3;                               \
-            r2 = r * r;                                   \
-            t3 = c4 * r*c5;                               \
-            r4 = r2 * r2;                                 \
-            q  = t1 + r2*t2;                              \
-            q = q + r4*t3;                                \
-            q = q + r2*r4*c6;                             \
+            __typeof(r) q, r2, r3, r4, r5, r6;            \
+            r2 = r*r;                                     \
+            r3 = r2*r;                                    \
+            r4 = r2*r2;                                   \
+            r5 = r3*r2;                                   \
+            r6 = r3*r3;                                   \
+            q = c0 + c1*r;                                \
+            q += c2*r2 + c3*r3;                           \
+            q += c4*r4 + c5*r5;                           \
+            q += c6*r6;                                   \
             q;                                            \
         })
 

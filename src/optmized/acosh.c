@@ -527,8 +527,8 @@ double ALM_PROTO_OPT(acosh)(double x) {
              approximated by a [6,6] minimax polynomial. */
             double b1, b2, _c1, _c2, e1, e2, q1, q2, c, cc, hr1, tr1, hpoly, tpoly, hq1, tq1, hr2, tr2;
 
-            poly = (M1 + (M2 + (M3 + (M4 + (M5 + (M6 + (M7 + M8 * t) * t) * t) * t) * t) * t) * t) /
-                      (N1 + (N2 + (N3 + (N4 + (N5 + (N6 + N7 * t) * t) * t) * t) * t) * t);
+            poly = POLY_EVAL_8(t, M1, M2, M3, M4, M5, M6, M7, M8) /
+                       POLY_EVAL_7(t, N1, N2, N3, N4, N5, N6, N7);
 
             /* Now we can compute the result r = acosh(x) = log1p(t)
              using the formula t - 0.5*t*t + poly*t*t. Since t is

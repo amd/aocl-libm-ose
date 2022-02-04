@@ -484,6 +484,19 @@
         q;                                                      \
         })
          
+/* 
+ * poly = C0 + C1*r^2 + C2*r^4 \
+ *
+ *      = C0 + r^2*(C1 + C2*r^2)
+ *
+ */
+#define POLY_EVAL_EVEN_4(r, c0, c1, c2) ({              \
+        __typeof(r) a0, a1, r2;                         \
+        r2 = r * r;                                     \
+        a0 = c1 + c2*r2;                                \
+        a1 = c0 + r2*a0;                                \
+        a1;                                             \
+        })        
 
 #endif /* LIBM_POLY_H */
 

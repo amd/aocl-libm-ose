@@ -109,7 +109,7 @@ double ALM_PROTO_OPT(asin)(double x) {
         return x;
 
     else if (unlikely(xexp >= 0)) { /* abs(x) >= 1.0 */
-        if (asuint64(x) == 1)
+        if (x == 1.0)
             return PIBY2;
         else if (x == -1.0)
             return -(PIBY2);

@@ -40,22 +40,52 @@ struct alm_arch_funcs __arch_funcs_hypot = {
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
             &ALM_PROTO_REF(hypotf),
-            &ALM_PROTO_REF(hypot),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(hypot),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */
             NULL,                           /* vrd4 ? */
         },
-#if 0
+
         [ALM_UARCH_VER_ZEN] = {
-            &ALM_PROTO_FMA3(hypotf),
-            &ALM_PROTO_FMA3(hypot),
+            NULL,
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(hypot),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */
             NULL,                           /* vrd4 ? */
         },
-#endif
+
+	[ALM_UARCH_VER_ZEN2] = {
+            NULL,
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(hypot),
+            NULL,                           /* vrs4 ? */
+            NULL,                           /* vrs8 ? */
+            NULL,                           /* vrd2 ? */
+            NULL,                           /* vrd4 ? */
+        },
+
+	[ALM_UARCH_VER_ZEN3] = {
+            NULL,
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(hypot),
+            NULL,                           /* vrs4 ? */
+            NULL,                           /* vrs8 ? */
+            NULL,                           /* vrd2 ? */
+            NULL,                           /* vrd4 ? */
+        },
+
+	[ALM_UARCH_VER_ZEN4] = {
+            NULL,
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(hypot),
+            NULL,                           /* vrs4 ? */
+            NULL,                           /* vrs8 ? */
+            NULL,                           /* vrd2 ? */
+            NULL,                           /* vrd4 ? */
+        },
+
+
+
+
     }
 };
 

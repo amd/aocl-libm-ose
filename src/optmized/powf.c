@@ -223,9 +223,9 @@ calculate_log(float x)
     uint32_t mant_n = ux & 0x007F8000;
 
     /*
-     * Step needed for better accuracy
-    uint64_t mant_n1 = ux & MANT_MASK_N1;
-    uint64_t j = (mant_n) + (mant_n1 << 1);
+     * Step needed for better accuracy 
+    uint32_t mant_n1 = ux & 0x00004000;
+    uint32_t j = (mant_n) + (mant_n1 << 1);
     */
 
     uint32_t j = (mant_n);
@@ -384,6 +384,18 @@ float ALM_PROTO_OPT(powf)(float x, float y)
             ux &= 0x7fffffff; /* x is negative, y is integer */
 
             x = asfloat(ux);
+        }
+
+        if (ux < 0x00800000) {
+         /* Normalize subnormal x */
+            ux = asuint32(x * 0x1p23f);
+
+            ux &= 0x7fffffff;
+
+            ux -= 23 << 23;
+
+            x = asfloat(ux);
+
         }
     }
 

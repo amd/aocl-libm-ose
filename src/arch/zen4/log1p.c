@@ -25,61 +25,8 @@
  *
  */
 
-#include <libm_macros.h>
-#include <libm/amd_funcs_internal.h>
-#include <libm/iface.h>
-#include <libm/entry_pt.h>
+#define ALM_OVERRIDE 1
 
-//
-#include <libm/arch/all.h>
+#include <libm/arch/zen4.h>
 
-
-static const
-struct alm_arch_funcs __arch_funcs_log1p = {
-    .def_arch = ALM_UARCH_VER_DEFAULT,
-    .funcs = {
-        [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_FMA3(log1pf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(log1p),
-            &ALM_PROTO_FMA3(vrs4_log1pf),
-            NULL,                           /* vrs8 ? */
-            &ALM_PROTO_FMA3(vrd2_log1p),
-            NULL,                           /* vrd4 ? */
-            &ALM_PROTO_FMA3(vrsa_log1pf),  /*array vector float*/
-            &ALM_PROTO_FMA3(vrda_log1p),  /*array vector double*/
-        },
-
-
-        [ALM_UARCH_VER_ZEN2] = {
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(log1p),
-        },
-
-        [ALM_UARCH_VER_ZEN3] = {
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(log1p),
-        },
-
-	[ALM_UARCH_VER_ZEN4] = {
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(log1p),
-        },
-
-
-    },
-};
-
-void
-LIBM_IFACE_PROTO(log1p)(void *arg)
-{
-    alm_ep_wrapper_t g_entry_log1p = {
-       .g_ep = {
-        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(log1pf),
-        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(log1p),
-        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_log1pf),
-        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_log1p),
-        [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_log1pf),
-        [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_log1p),
-        },
-    };
-
-    alm_iface_fixup(&g_entry_log1p, &__arch_funcs_log1p);
-}
-
+#include "../../optmized/log1p.c"

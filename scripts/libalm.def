@@ -916,7 +916,6 @@ EXPORTS
     log_table_256
     amd_opt_log2f
     amd_opt_log2
-    __amd_fma3_log1p_v2
     amd_opt_log
     amd_opt_expm1_v2
     amd_opt_expf

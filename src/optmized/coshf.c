@@ -161,9 +161,9 @@ ALM_PROTO_OPT(coshf)(float x)
             z = coshf_expf_kern(w);
             return HALFV * z;
         }
-        /* x in (8.5, EXP_MAX] */
-        z   = coshf_expf_kern(y);
-        res =  HALF * z;
+        /* x in (8.5, EXP_MAX] Call exp() as expf() will return infintiy for y > logf(FLT_MAX)*/
+        double t   = exp((double)y);
+        res =  (float)(0.5 * t);
     }
     else {                              /* x in (VERY_SMALL_X, 8.5] */
         if (y > SMALL_X) {              /* x in (SMALL_X, 8.5] */

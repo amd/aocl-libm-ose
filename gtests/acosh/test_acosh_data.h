@@ -130,6 +130,7 @@ test_acoshf_conformance_data[] = {
 
 static libm_test_special_data_f64
 test_acosh_conformance_data[] = {
+    {0x3ff40c044a37af12, 0x3fe64e33d8cdb78c, FE_INEXACT},
     {0x0000000000000001LL, 0xfff8000000000000LL, FE_INVALID}, // denormal min
     {0x0005fde623545abcLL, 0xfff8000000000000LL, FE_INVALID}, // denormal intermediate
     {0x000FFFFFFFFFFFFFLL, 0xfff8000000000000LL, FE_INVALID}, // denormal max
@@ -275,7 +276,6 @@ test_acosh_conformance_data[] = {
     {0x4457b62df67fc4fdLL, 0x4048cdac82cb51b7LL, 0}, //
     {0x48c191ef3d6a018aLL, 0x4058a14ffccd501eLL, 0}, //
     {0x51934b4f70b3a04cLL, 0x40688b21b9ce55e4LL, 0}, //
-    {0x6337443f25f59cbbLL, 0x4078800a984ed8c7LL, 0}, //
-    
+    {0x6337443f25f59cbbLL, 0x4078800a984ed8c7LL, 0}, // 
 };
 

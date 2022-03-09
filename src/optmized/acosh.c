@@ -621,7 +621,7 @@ double ALM_PROTO_OPT(acosh)(double x) {
         else {
               /* For arguments 1.13 <= x <= 1.5 the log1p function
               is good enough */
-            return ALM_PROTO_FMA3(log1p)(t);
+            return ALM_PROTO_OPT(log1p)(t);
         }
     }
 }

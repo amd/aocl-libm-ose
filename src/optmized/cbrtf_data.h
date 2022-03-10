@@ -1,4 +1,4 @@
-double DoubleReciprocalTable[256] = {
+static const double DoubleReciprocalTable[256] = {
 /*0X3ff0000000000000*/ 1,
 /*0X3fefe00000000000*/ 0.99609375,
 /*0X3fefc00000000000*/ 0.9921875,
@@ -257,7 +257,7 @@ double DoubleReciprocalTable[256] = {
 /*0X3fe0000000000000*/ 0.5
 };
 
-double CubeRootTable[256] = {
+static const double CubeRootTable[256] = {
 /*0X3ff0000000000000*/ 1,
 /*0X3ff00558e6547c36*/ 1.00130548451,
 /*0X3ff00ab8f9d2f374*/ 1.00261781299,

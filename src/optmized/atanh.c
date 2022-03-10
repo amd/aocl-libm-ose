@@ -168,7 +168,7 @@ ALM_PROTO_OPT(atanh)(double x) {
                atanh(x) = log(1 + 2x/(1-x)) = log1p(2x/(1-x)).
             */
             r = (2.0 * absx) / (1.0 - absx);
-            r = 0.5 * ALM_PROTO_FMA3(log1p)(r);
+            r = 0.5 * log1p(r);
 
             if (ux & SIGNBIT_DP64){
                 return -r;

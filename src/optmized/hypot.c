@@ -64,9 +64,7 @@ double ALM_PROTO_OPT(hypot)(double x, double y) {
 
     uint64_t xexp, yexp, ux, uy;
 
-    int32_t dexp, expadjust,x_is_nan,y_is_nan;
-
-    uint64_t val;
+    int32_t dexp, expadjust;
 
     ux = asuint64(x);
 
@@ -80,53 +78,37 @@ double ALM_PROTO_OPT(hypot)(double x, double y) {
 
     yexp = (uy >> EXPSHIFTBITS_DP64);
 
-    x_is_nan = (ux > POS_INF_F64);
-
-    y_is_nan = (uy > POS_INF_F64);
-
-    val = PINFBITPATT_DP64;
-
     if (ux >= POS_INF_F64 || uy >= POS_INF_F64) {
 
         if ((ux == POS_INF_F64) || (uy == POS_INF_F64)) {
 
-            if(x_is_nan) {
-            #ifdef WINDOWS
-                return __alm_handle_error(asuint64(x), 0);
-            #else
+            if(ux > POS_INF_F64) {
+
                 if(!(ux & QNAN_MASK_64)) //x is snan
                     return __alm_handle_error(asuint64(x), AMD_F_INVALID);
-            #endif
+
             }
-            if(y_is_nan) {
-            #ifdef WINDOWS
-                return __alm_handle_error(asuint64(y), 0);
-            #else
+            if(uy > POS_INF_F64) {
+
                 if(!(uy & QNAN_MASK_64)) //y is snan
                     return __alm_handle_error(asuint64(y), AMD_F_INVALID);
-            #endif
+
             }
-            return asdouble(val);;
+
+            return asdouble(POS_INF_F64);
         }
 
-        /* Both x and y is NaN, and neither is infinity.
-           Raise invalid if it's a signalling NaN */
-        #ifdef WINDOWS
-        return __alm_handle_error(asuint64(x) | QNAN_MASK_64, 0);
-        #else
-        if(!(ux & QNAN_MASK_64)) //x is snan
-            return __alm_handle_error(asuint64(x) | QNAN_MASK_64, AMD_F_INVALID);
-        #endif
+        if(!(ux & QNAN_MASK_64) || !(uy & QNAN_MASK_64)) //x or y is snan
+            return __alm_handle_error(POS_QNAN_F64 | QNAN_MASK_64, AMD_F_INVALID);
+
+        return __alm_handle_error(POS_QNAN_F64 | QNAN_MASK_64, 0);
 
     }
-
-    /* Set x = abs(x) and y = abs(y) */
 
     x = asdouble(ux);
 
     y = asdouble(uy);
 
-    /* The difference in exponents between x and y */
     dexp = (int32_t)(xexp - yexp);
 
     expadjust = 0;
@@ -135,9 +117,11 @@ double ALM_PROTO_OPT(hypot)(double x, double y) {
         return y;
     else if (uy == 0)
         return x;
-    else if (dexp > MANTLENGTH_DP64 + 1 || dexp < -MANTLENGTH_DP64 - 1)
+    else if (dexp > MANTLENGTH_DP64 + 1 || dexp < -MANTLENGTH_DP64 - 1) {
     /* One of x and y is insignificant compared to the other */
         return x + y; /* Raise inexact */
+
+    }
     else if (xexp > EXPBIAS_DP64 + 500 || yexp > EXPBIAS_DP64 + 500) {
 
       /* Danger of overflow; scale down by 2**600. */
@@ -188,7 +172,7 @@ double ALM_PROTO_OPT(hypot)(double x, double y) {
 
 
 #ifdef FAST_BUT_GREATER_THAN_ONE_ULP
-    /* Not awful, but results in accuracy loss larger than 1 ulp */
+
     r = x * x + y * y;
 #else
     /* Slower but more accurate */
@@ -246,11 +230,12 @@ double ALM_PROTO_OPT(hypot)(double x, double y) {
     retval = scaleDouble_1(retval, expadjust);
 
     if (retval > large) {
-    /* The result overflowed. Deal with errno. */
+
         return __alm_handle_error(PINFBITPATT_DP64, AMD_F_INEXACT|AMD_F_OVERFLOW);
 
+
     }
-    else if((x != 0.0) && (y != 0.0)) {
+    else if((ux != 0) && (uy != 0)) {
 
         ux = asuint64(retval);
 

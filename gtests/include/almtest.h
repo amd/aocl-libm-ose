@@ -302,7 +302,7 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
     double ulp = getUlp(a.f, (double)e.f);
 
     /* if both are nans, output will always match, regardless of the sign bit */
-    if (((e.u ^ a.u) && (ulp > 1.0)) && (both_nans == false))
+    if (((e.u ^ a.u) && (ulp > 2.0)) && (both_nans == false))
         output_match=1;
 
     if (output_match==1 || exception_match==1) {
@@ -412,7 +412,7 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
     double ulp = getUlp(a.d, (long double)e.d);
 
     /* if both are nans, output will always match, regardless of the sign bit */
-    if (((e.lu ^ a.lu) && (ulp > 1.0)) && (both_nans == false))
+    if (((e.lu ^ a.lu) && (ulp > 2.0)) && (both_nans == false))
         output_match=1;
 
     if (output_match==1 || exception_match==1) {

@@ -170,27 +170,28 @@ ALM_PROTO_OPT(log2f)(float x)
     int32_t n;
     uint32_t mantissa;
 
-    if (unlikely (ux - 0x00800000 >= 0x7f800000 - 0x00800000))
-    {   /* x < 0x1p-126 or inf or nan. */
+    if (unlikely (ux - 0x00800000 >= 0x7f800000 - 0x00800000)) {   /* x < 0x1p-126 or inf or nan. */
+
         uint32_t sign = ux & SIGNBIT_SP32;
 
-        if (x * 2 == 0)                /* log2(0) = -inf */
-            return alm_logf_special(x, asfloat(NINFBITPATT_SP32), AMD_F_DIVBYZERO);
+        if (ux * 2 == 0) {                /* log2(0) = -inf */
+            return alm_logf_special(x, asfloat(NINFBITPATT_SP32), ALM_E_DIV_BY_ZER0);
+        }
 
-    if (x != x)  {/* nan */
+        if (x != x)  {/* nan */
+            if( (ux & QNANBITPATT_SP32) == QNANBITPATT_SP32)
+                return x;
 
-        if( (ux & QNANBITPATT_SP32) == QNANBITPATT_SP32)
-            return x;
+            return alm_logf_special(x, asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NAN);
+        }
 
-        return alm_logf_special(x, asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NAN);
-
-    }
-
-        if (sign)        /* x is -ve */
+        if (sign) {        /* x is -ve */
             return alm_logf_special(x, asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NEG);
+        }
 
-        if ((ux & PINFBITPATT_SP32) == PINFBITPATT_SP32)           /* log2(inf) = inf */
+        if ((ux & PINFBITPATT_SP32) == PINFBITPATT_SP32) {           /* log2(inf) = inf */
             return asfloat(PINFBITPATT_SP32);
+        }
 
         /*
          * 'x' has to be denormal, Normalize it

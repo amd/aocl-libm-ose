@@ -145,16 +145,26 @@ ALM_PROTO_OPT(logf)(float x)
 {
     uint32_t ux = asuint32(x);
 
-    if (unlikely (ux - 0x00800000 >= 0x7f800000 - 0x00800000))
-    {
+    if (unlikely (ux - 0x00800000 >= 0x7f800000 - 0x00800000)) {
+        uint32_t sign = ux & SIGNBIT_SP32;
         /* x < 0x1p-126 or inf or nan. */
-        if (ux * 2 == 0)                /* log(0) = -inf */
-            return -1.0f/0.0f;
-        if (ux == 0x7f800000)           /* log(inf) = inf */
-            return x;
-        if ((ux & 0x80000000) || ux * 2 >= 0xff000000) /*x is negative or NaN */
-            return alm_logf_special(x, asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NAN);; /* Return NaN */
+        if (ux * 2 == 0) {                /* logf(0) = -inf */
+            return alm_logf_special(x, asfloat(NINFBITPATT_SP32), ALM_E_DIV_BY_ZER0);
+        }
 
+        if (x != x)  {/* nan */
+            if( (ux & QNANBITPATT_SP32) == QNANBITPATT_SP32) {
+                return x;
+            }
+            return alm_logf_special(x, asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NAN);
+        }
+
+        if (sign)        /* x is -ve */
+            return alm_logf_special(x, asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NEG);
+
+        if ((ux & PINFBITPATT_SP32) == PINFBITPATT_SP32) {           /* logf(inf) = inf */
+            return asfloat(PINFBITPATT_SP32);
+        }
         /*
          * 'x' has to be denormal, Normalize it
          * there is a possibility that only the last (23'rd) bit is set

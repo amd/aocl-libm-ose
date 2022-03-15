@@ -172,7 +172,7 @@ ALM_PROTO_OPT(log)(double x)
     if (unlikely ((ux - LOW) >= (HIGH - LOW))){
 
         if (2 * ux == 0)
-            return alm_log_special(x, asdouble(NINFBITPATT_DP64), AMD_F_DIVBYZERO);
+            return alm_log_special(x, asdouble(NINFBITPATT_DP64), ALM_E_DIV_BY_ZER0);
 
         if (ux == PINFBITPATT_DP64)
             return x;

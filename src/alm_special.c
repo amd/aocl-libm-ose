@@ -74,8 +74,8 @@ float __alm_handle_errorf(uint64_t value, int flags)
 double alm_log_special(double x, double y, U32 error_code) {
     flt64_t ym = {.d = y};
 
-  switch (error_code) {
-    case ALM_E_OUT_INF:
+    switch (error_code) {
+    case ALM_E_IN_X_INF:
         __alm_handle_error(ym.u, AMD_F_INVALID);
         break;
 
@@ -514,13 +514,16 @@ float alm_logf_special(float x, float y, U32 errorCode) {
     flt32_t ym = {.f = y};
 
     switch (errorCode) {
-    case LOG_X_ZERO:
+    case ALM_E_IN_X_ZERO:
         __alm_handle_errorf(ym.u, AMD_F_DIVBYZERO);
         break;
-    case LOG_X_NEG:
+    case ALM_E_IN_X_NEG:
         __alm_handle_errorf(ym.u, AMD_F_INVALID);
         break;
-    case LOG_X_NAN:
+    case ALM_E_DIV_BY_ZER0:
+        __alm_handle_errorf(ym.u, AMD_F_DIVBYZERO);
+        break;
+    case ALM_E_IN_X_NAN:
         {
 #ifdef WIN64
         __alm_handle_errorf(ym.u, AMD_F_NONE);

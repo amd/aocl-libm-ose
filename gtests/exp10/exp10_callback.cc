@@ -54,17 +54,15 @@ long double getExpected(double *data) {
   return val;
 }
 
+/*
 float getGlibcOp(float *data) {
-#if 0	
   return exp10f(data[0]);
-#endif  
 }
 
 double getGlibcOp(double *data) {
-#if 0	
   return exp10(data[0]);
-#endif  
 }
+*/
 
 /**********************
 *FUNCTIONS*

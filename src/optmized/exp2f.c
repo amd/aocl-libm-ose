@@ -159,11 +159,11 @@ ALM_PROTO_OPT(exp2f)(float x)
                 return asfloat(PINFBITPATT_SP32);
 
             /* Raise FE_OVERFLOW, FE_INEXACT */
-            return alm_expf_special(x, asfloat(PINFBITPATT_SP32), ALM_E_OUT_INF);
+            return alm_expf_special(x, asfloat(PINFBITPATT_SP32), ALM_E_IN_X_INF);
         }
 
         if (x < EXP2F_FARG_MIN) {
-            return alm_expf_special(x, 0.0, ALM_E_OUT_ZERO);
+            return alm_expf_special(x, 0.0, ALM_E_IN_X_ZERO);
         }
     }
 

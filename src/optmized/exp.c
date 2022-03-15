@@ -119,9 +119,6 @@ ALM_PROTO_OPT(exp)(double x)
     int64_t     m, n, j;
     flt64_t     q1 = {.i = 0,};
 
-#define EXP_X_NAN       1
-#define EXP_Y_ZERO      2
-#define EXP_Y_INF       3
 
     /*
      * Top 11 bits, ignoring sign bit
@@ -138,25 +135,24 @@ ALM_PROTO_OPT(exp)(double x)
 
         if (x > FMAX_X) {
             if (x != x)  /* check if x is a NAN */
-                return  alm_exp_special(x, asdouble(QNANBITPATT_DP64), EXP_X_NAN);
+                return  alm_exp_special(x, asdouble(QNANBITPATT_DP64), ALM_E_IN_X_NAN);
 
             if(asuint64(x) == PINFBITPATT_DP64)
                 return x; /* No exception to be raised */
 
-            return  alm_exp_special(x, asdouble(PINFBITPATT_DP64),  EXP_Y_INF);
+            return  alm_exp_special(x, asdouble(PINFBITPATT_DP64),  ALM_E_IN_X_INF);
         }
 
         if (x <= FMIN_X) {
             if (asuint64(x) == NINFBITPATT_DP64)
                 return  0.0; /* No exception to be raised */
 
-            return alm_exp_special(x, 0.0, EXP_Y_ZERO);
+            return alm_exp_special(x, 0.0, ALM_E_IN_X_ZERO);
         }
 
         if (x <= DENORMAL_LOW)
-            return alm_exp_special(x, asdouble(DENORMAL_MIN), EXP_Y_ZERO);
+            return alm_exp_special(x, asdouble(DENORMAL_MIN), ALM_E_IN_X_ZERO);
 
-	
         exponent = 0xfff;
 
     }

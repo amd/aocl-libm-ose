@@ -397,12 +397,12 @@ float alm_expf_special(float x, float y, U32 code) {
         __alm_handle_errorf(ym.u, 0);
         break;
 
-    case ALM_E_OUT_ZERO:
+    case ALM_E_IN_X_ZERO:
         __alm_handle_errorf(ym.u,
                             AMD_F_INEXACT | AMD_F_UNDERFLOW);
         break;
 
-    case ALM_E_OUT_INF:
+    case ALM_E_IN_X_INF:
         __alm_handle_errorf(ym.u,
                             AMD_F_INEXACT | AMD_F_OVERFLOW);
         break;
@@ -421,10 +421,10 @@ double alm_exp_special(double x, double y, U32 code) {
     case ALM_E_IN_X_NAN:
         __alm_handle_error(ym.u, 0);
         break;
-    case ALM_E_OUT_ZERO:
+    case ALM_E_IN_X_ZERO:
         __alm_handle_error(ym.u, AMD_F_INEXACT | AMD_F_UNDERFLOW);
         break;
-    case ALM_E_OUT_INF:
+    case ALM_E_IN_X_INF:
         __alm_handle_error(ym.u, AMD_F_INEXACT | AMD_F_OVERFLOW);
         break;
     default:

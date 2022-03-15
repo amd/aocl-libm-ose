@@ -171,6 +171,12 @@ float _atanf_special_overflow(float x)
 }
 
 double
+alm_atan_special(double x) {
+    flt64_t fl = {.d = x};
+    return __alm_handle_error(fl.u, AMD_F_INVALID);
+}
+
+double
 alm_asin_special(double x, uint32_t code)
 {
     flt64_t fl = {.d = x};

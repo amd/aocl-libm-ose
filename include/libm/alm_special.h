@@ -221,6 +221,7 @@ double  alm_asin_special(double x, uint32_t code);
 float   alm_asinf_special(float x, uint32_t code);
 
 float   _atanf_special_overflow(float x);
+double  alm_atan_special(double x);
 
 extern  float _cbrtf_special            (float x);
 extern  float _cosf_special             (float x);

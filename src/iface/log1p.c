@@ -30,7 +30,6 @@
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
 
-//
 #include <libm/arch/all.h>
 
 
@@ -39,7 +38,7 @@ struct alm_arch_funcs __arch_funcs_log1p = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_FMA3(log1pf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(log1pf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(log1p),
             &ALM_PROTO_FMA3(vrs4_log1pf),
             NULL,                           /* vrs8 ? */
@@ -51,14 +50,17 @@ struct alm_arch_funcs __arch_funcs_log1p = {
 
 
         [ALM_UARCH_VER_ZEN2] = {
+	    [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(log1pf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(log1p),
         },
 
         [ALM_UARCH_VER_ZEN3] = {
+	    [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(log1pf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(log1p),
         },
 
 	[ALM_UARCH_VER_ZEN4] = {
+	    [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(log1pf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(log1p),
         },
 

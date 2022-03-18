@@ -29,8 +29,6 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
-
-//
 #include <libm/arch/all.h>
 
 
@@ -40,32 +38,30 @@ struct alm_arch_funcs __arch_funcs_logb = {
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
             &ALM_PROTO_REF(logbf),
-            &ALM_PROTO_REF(logb),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(logb),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */
             NULL,                           /* vrd4 ? */
         },
 
-#if 0
+        [ALM_UARCH_VER_ZEN] = {
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(logb)
+        },
+
         [ALM_UARCH_VER_ZEN2] = {
-            &ALM_PROTO_ARCH_ZN2(logbf),
-            &ALM_PROTO_ARCH_ZN2(logb),
-            &ALM_PROTO_ARCH_ZN2(vrs4_logbf),
-            &ALM_PROTO_ARCH_ZN2(vrs8_logbf),
-            &ALM_PROTO_ARCH_ZN2(vrd2_logb),
-            &ALM_PROTO_ARCH_ZN2(vrd4_logb),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(logb)
         },
 
         [ALM_UARCH_VER_ZEN3] = {
-            &ALM_PROTO_ARCH_ZN3(logbf),
-            &ALM_PROTO_ARCH_ZN3(logb),
-            &ALM_PROTO_ARCH_ZN3(vrs4_logbf),
-            &ALM_PROTO_ARCH_ZN3(vrs8_logbf),
-            &ALM_PROTO_ARCH_ZN3(vrd2_logb),
-            &ALM_PROTO_ARCH_ZN3(vrd4_logb),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(logb),
         },
-#endif
+
+        [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(logb),
+        },
+
+
     },
 };
 
@@ -76,10 +72,6 @@ LIBM_IFACE_PROTO(logb)(void *arg)
        .g_ep = {
         [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(logbf),
         [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(logb),
-        //[ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_logbf),
-        //[ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_logbf),
-        //[ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_logb),
-        //[ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_logb),
         },
     };
 

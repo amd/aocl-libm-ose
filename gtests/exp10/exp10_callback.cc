@@ -173,6 +173,7 @@ int test_v8s(test_data *data, int idx)  {
 }
 
 int test_v8d(test_data *data, int idx)  {
+#if 0
 #if defined(__AVX512__)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
@@ -181,10 +182,12 @@ int test_v8d(test_data *data, int idx)  {
   __m512d op8 = LIBM_FUNC_VEC(d, 8, exp10)(ip8);
   _mm512_store_pd(&op[0], op8);
 #endif
+#endif
   return 0;
 }
 
 int test_v16s(test_data *data, int idx)  {
+#if 0
 #if defined(__AVX512__)
   float *ip = (float*)data->ip;
   float *op  = (float*)data->op;
@@ -194,6 +197,7 @@ int test_v16s(test_data *data, int idx)  {
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m512 op16 = LIBM_FUNC_VEC(s, 16, exp10f)(ip16);
   _mm512_store_ps(&op[0], op16);
+#endif
 #endif
   return 0;
 }

@@ -37,7 +37,7 @@ struct alm_arch_funcs __arch_funcs_logb = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_REF(logbf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(logbf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(logb),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
@@ -46,21 +46,24 @@ struct alm_arch_funcs __arch_funcs_logb = {
         },
 
         [ALM_UARCH_VER_ZEN] = {
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(logb)
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(logbf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(logb),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(logb)
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(logbf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(logb),
         },
 
         [ALM_UARCH_VER_ZEN3] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(logbf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(logb),
         },
 
         [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(logbf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(logb),
         },
-
 
     },
 };

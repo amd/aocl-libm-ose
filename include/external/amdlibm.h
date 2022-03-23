@@ -377,6 +377,14 @@ extern "C" {
     fc64_t amd_cexp  (fc64_t x);
     fc32_t amd_cexpf (fc32_t y);
 
+    fc64_t amd_cpow  (fc64_t x, fc64_t y);
+    fc32_t amd_cpowf  (fc32_t x, fc32_t y);
+
+    fc64_t amd_clog  (fc64_t x);
+    fc32_t amd_clogf (fc32_t y);
+
+
+
 #ifdef __cplusplus
 }
 #endif

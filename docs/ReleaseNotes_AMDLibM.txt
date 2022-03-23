@@ -120,6 +120,10 @@ all have an 'amd_' prefix.
  -----------------------------
     * fdimf, fdim, fmaxf, fmax, fminf, fmin
 
+ Complex
+ -----------------------------
+    * cexpf, cexp, cpowf, cpow, clogf, clog
+
 The declarations for all of these functions are as specified in the
 C99 standard. They are equivalent to the declarations present in
 the standard math header 'math.h'.

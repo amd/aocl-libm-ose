@@ -162,7 +162,7 @@ ALM_PROTO_OPT(log1p)(double x) {
         /*NaN or negative infinity but we handle only NaN here */
         if(ux > POS_INF_F64) {
 
-            return alm_log_special(x, asdouble(ux | QNANBITPATT_DP64), ALM_E_IN_X_NAN);
+            return alm_log_special(asdouble(ux | QNANBITPATT_DP64), ALM_E_IN_X_NAN);
 
         }
 
@@ -173,11 +173,11 @@ ALM_PROTO_OPT(log1p)(double x) {
         /* x is negative or zero */
         if(ux == MINUS_ONE) {
 
-            return alm_log_special(x, asdouble(NINFBITPATT_DP64), AMD_F_DIVBYZERO);
+            return alm_log_special(asdouble(NINFBITPATT_DP64), AMD_F_DIVBYZERO);
 
         }
 
-        return alm_log_special(x, asdouble(ux | QNANBITPATT_DP64), ALM_E_IN_X_NAN);
+        return alm_log_special(asdouble(ux | QNANBITPATT_DP64), ALM_E_IN_X_NAN);
 
     }
 

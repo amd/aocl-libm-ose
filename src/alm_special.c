@@ -71,7 +71,7 @@ float __alm_handle_errorf(uint64_t value, int flags)
 #endif
 
 
-double alm_log_special(double x, double y, U32 error_code) {
+double alm_log_special(double y, U32 error_code) {
     flt64_t ym = {.d = y};
 
     switch (error_code) {

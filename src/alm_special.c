@@ -395,7 +395,7 @@ float _cbrtf_special(float x)
 
 
 /* exp, log, pow*/
-float alm_expf_special(float x, float y, U32 code) {
+float alm_expf_special(float y, U32 code) {
     flt32_t ym = {.f = y};
 
     switch (code) {
@@ -482,7 +482,7 @@ double alm_pow_special(double z, U32 code) {
     return z;
 }
 
-float alm_powf_special(float x, float y, float z, U32 code) {
+float alm_powf_special(float z, U32 code) {
     flt32_t zu = {.f = z};
 
     switch (code) {

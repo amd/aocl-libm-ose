@@ -263,11 +263,11 @@ static inline float calculate_exp(double_t x, uint64_t sign_bias)
     if (unlikely ((top12(x) & 0x7ff)  > top12(88.0))) {
 
         if ((float)x > EXPF_FARG_MAX) {
-            return alm_expf_special((float)x, asfloat(((uint32_t)(sign_bias >> 32) | PINFBITPATT_SP32)), EXP_Y_INF);
+            return alm_expf_special(asfloat(((uint32_t)(sign_bias >> 32) | PINFBITPATT_SP32)), EXP_Y_INF);
         }
 
         if (((float)x) < EXPF_FARG_MIN) {
-            return alm_expf_special((float)x, asfloat((uint32_t)(sign_bias >> 32)) , EXP_Y_ZERO);
+            return alm_expf_special(asfloat((uint32_t)(sign_bias >> 32)) , EXP_Y_ZERO);
         }
 
     }

@@ -170,7 +170,7 @@ ALM_PROTO_OPT(log1pf)(float x) {
 
         }
 
-        return alm_logf_special(x, asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NAN);
+        return alm_logf_special(asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NAN);
 
     }
 
@@ -179,11 +179,11 @@ ALM_PROTO_OPT(log1pf)(float x) {
         /* x is negative or zero */
         if(ux == MINUS_ONE) {
 
-            return alm_logf_special(x, asfloat(NINFBITPATT_SP32), AMD_F_DIVBYZERO);
+            return alm_logf_special(asfloat(NINFBITPATT_SP32), AMD_F_DIVBYZERO);
 
         }
 
-        return alm_logf_special(x, asfloat(ux | QNANBITPATT_SP32), ALM_E_IN_X_NAN);
+        return alm_logf_special(asfloat(ux | QNANBITPATT_SP32), ALM_E_IN_X_NAN);
 
     }
 

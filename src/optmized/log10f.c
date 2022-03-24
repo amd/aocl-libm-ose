@@ -181,13 +181,13 @@ ALM_PROTO_OPT(log10f)(float x)
         uint32_t sign = ux & SIGNBIT_SP32;
 
         if (x * 2 == 0)                /* log10(0) = -inf */
-            return alm_logf_special(x, asfloat(NINFBITPATT_SP32), ALM_E_IN_X_ZERO);
+            return alm_logf_special(asfloat(NINFBITPATT_SP32), ALM_E_IN_X_ZERO);
 
         if (sign)        /* x is -ve */
-            return alm_logf_special(x, asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NEG);
+            return alm_logf_special(asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NEG);
 
         if (x != x)  /* nan */
-            return alm_logf_special(x, asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NAN);
+            return alm_logf_special(asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NAN);
 
         if ((ux & PINFBITPATT_SP32) == PINFBITPATT_SP32)           /* log10(inf) = inf */
             return asfloat(PINFBITPATT_SP32 | sign);

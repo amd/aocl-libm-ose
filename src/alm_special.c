@@ -516,7 +516,7 @@ float alm_powf_special(float x, float y, float z, U32 code) {
 #define LOG_X_ZERO      1
 #define LOG_X_NEG       2
 #define LOG_X_NAN       3
-float alm_logf_special(float x, float y, U32 errorCode) {
+float alm_logf_special(float y, U32 errorCode) {
     flt32_t ym = {.f = y};
 
     switch (errorCode) {
@@ -534,7 +534,7 @@ float alm_logf_special(float x, float y, U32 errorCode) {
 #ifdef WIN64
         __alm_handle_errorf(ym.u, AMD_F_NONE);
 #else               /*  */
-        return x + x;
+        return y + y;
 #endif              /*  */
         }
         break;

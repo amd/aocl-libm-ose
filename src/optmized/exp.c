@@ -135,23 +135,23 @@ ALM_PROTO_OPT(exp)(double x)
 
         if (x > FMAX_X) {
             if (x != x)  /* check if x is a NAN */
-                return  alm_exp_special(x, asdouble(QNANBITPATT_DP64), ALM_E_IN_X_NAN);
+                return  alm_exp_special(asdouble(QNANBITPATT_DP64), ALM_E_IN_X_NAN);
 
             if(asuint64(x) == PINFBITPATT_DP64)
                 return x; /* No exception to be raised */
 
-            return  alm_exp_special(x, asdouble(PINFBITPATT_DP64),  ALM_E_IN_X_INF);
+            return  alm_exp_special(asdouble(PINFBITPATT_DP64),  ALM_E_IN_X_INF);
         }
 
         if (x <= FMIN_X) {
             if (asuint64(x) == NINFBITPATT_DP64)
                 return  0.0; /* No exception to be raised */
 
-            return alm_exp_special(x, 0.0, ALM_E_IN_X_ZERO);
+            return alm_exp_special(0.0, ALM_E_IN_X_ZERO);
         }
 
         if (x <= DENORMAL_LOW)
-            return alm_exp_special(x, asdouble(DENORMAL_MIN), ALM_E_IN_X_ZERO);
+            return alm_exp_special(asdouble(DENORMAL_MIN), ALM_E_IN_X_ZERO);
 
         exponent = 0xfff;
 

@@ -420,7 +420,7 @@ float alm_expf_special(float x, float y, U32 code) {
     return y;
 }
 
-double alm_exp_special(double x, double y, U32 code) {
+double alm_exp_special(double y, U32 code) {
     flt64_t ym = {.d = y};
 
     switch (code) {
@@ -451,7 +451,7 @@ double alm_exp_special(double x, double y, U32 code) {
 #define POW_Z_DENORMAL              8
 #define POW_Z_INF                   9
 
-double alm_pow_special(double x, double y, double z, U32 code) {
+double alm_pow_special(double z, U32 code) {
     flt64_t zu = {.d = z};
 
     switch (code) {

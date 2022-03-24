@@ -324,7 +324,7 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign) {
             /* if y * log(x) < -745.133219101941222106688655913 */
             v = asdouble(0x0 | result_sign);
 
-            return alm_exp_special(asdouble(ux), v, EXP_Y_ZERO);
+            return alm_exp_special(v, EXP_Y_ZERO);
 
         }
 
@@ -332,7 +332,7 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign) {
             /* if y * log(x) > 709.7822265625 */
             v = asdouble(EXPBITS_DP64 | result_sign);
 
-            return  alm_exp_special(asdouble(ux), v,  EXP_Y_INF);
+            return  alm_exp_special(v,  EXP_Y_INF);
 
          }
 
@@ -531,7 +531,7 @@ ALM_PROTO_OPT(pow)(double x, double y) {
             /* x is 0, y is negative */
             if ( 2 * ux == 0 && uy >> 63) {
 
-                alm_pow_special(x, y, 0.0, POW_X_ZERO_Z_INF);
+                alm_pow_special(0.0, POW_X_ZERO_Z_INF);
 
                 x2 = asdouble(PINFBITPATT_DP64 | result_sign);
 
@@ -583,7 +583,7 @@ ALM_PROTO_OPT(pow)(double x, double y) {
           return (ux > one) == (yhigh < 0x800) ?
                 (DBL_MAX*DBL_MAX) :
 
-          alm_pow_special(x, y, 0.0, POW_Z_ZERO);
+          alm_pow_special(0.0, POW_Z_ZERO);
         }
 
         if (xhigh == 0) {

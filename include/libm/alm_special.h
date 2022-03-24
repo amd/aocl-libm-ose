@@ -205,10 +205,10 @@ float __alm_handle_errorf(
         int flags
         );
 
-double  alm_pow_special (double x, double y, double z, uint32_t code);
+double  alm_pow_special (double y, uint32_t code);
 float   alm_powf_special (float x, float y, float z, uint32_t code);
 
-double  alm_exp_special (double x, double y, uint32_t code);
+double  alm_exp_special (double y, uint32_t code);
 float   alm_expf_special (float x, float y, uint32_t code);
 
 double  alm_log_special(double y, uint32_t code);

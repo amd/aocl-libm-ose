@@ -56,6 +56,9 @@ enum {
         ALM_E_OUT_NAN  = 1<<16,
         ALM_E_OUT_INF  = 1<<17,
         ALM_E_OUT_ZERO = 1<<18,
+
+        ALM_E_OVERFLOW = 1<<19,        /*overflow flag*/
+
 };
 
 typedef enum {
@@ -219,6 +222,8 @@ double  alm_acos_special(double x, uint32_t code);
 
 double  alm_asin_special(double x, uint32_t code);
 float   alm_asinf_special(float x, uint32_t code);
+
+float   alm_coshf_special(float x, uint32_t code);
 
 float   _atanf_special_overflow(float x);
 double  alm_atan_special(double x);

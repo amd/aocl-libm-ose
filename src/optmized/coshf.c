@@ -146,14 +146,21 @@ ALM_PROTO_OPT(coshf)(float x)
     y = asfloat(ux);
 
     if (unlikely(ux > asuint32(COSH_MAX))) {
-        if (x != x)      /* |x| is a NaN? */
-            return x + x;
-        else                            /* x is infinity */
-            return(FLT_MAX * FLT_MAX); 
+        if (x != x) {  /* |x| is a NaN? */
+            /* QNAN */
+            if( (ux & QNANBITPATT_SP32) == QNANBITPATT_SP32) {
+                return x + x;
+            }
+            else {
+                return alm_coshf_special(x, ALM_E_OVERFLOW); /* snan */
+            }
+        }
+        return alm_coshf_special(asfloat(PINFBITPATT_SP32), ALM_E_OVERFLOW);
     }
 
-    if (ux <= asuint32(VERY_SMALL_X))   /* x in (0, EPS] */
+    if (ux <= asuint32(VERY_SMALL_X)) {   /* x in (0, EPS] */
         return (1.0f + HALF * x * x);
+    }
 
     if (ux > asuint32(8.5f)) {          /* x in (8.5, COSH_MAX] */
         if (y > EXP_MAX) {              /* x in (EXP_MAX, COSH_MAX] */
@@ -170,6 +177,7 @@ ALM_PROTO_OPT(coshf)(float x)
             z = coshf_expf_kern(y);
             return HALF * (z + (1.0f / z));
         }
+
         /* x in (VERY_SMALL_X, SMALL_X] */
         /* coshf(x) = C0 + y^2*(C1 + y^2*(C2 + y^2*C3)) */
         float y2 = y * y;

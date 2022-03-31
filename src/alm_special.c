@@ -544,6 +544,20 @@ float alm_logf_special(float y, U32 errorCode) {
     return y;
 }
 
+/* coshf */
+float alm_coshf_special(float y, U32 errorCode) {
+    flt32_t ym = {.f = y};
+
+    switch (errorCode) {
+    case ALM_E_OVERFLOW:
+        __alm_handle_errorf(ym.u, AMD_F_OVERFLOW);
+        break;
+    default:
+        break;
+    }
+    return y;
+}
+
 double _nearbyint_special(double x)
 {
     UT64 checkbits;

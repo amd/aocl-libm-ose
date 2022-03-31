@@ -300,7 +300,7 @@ test_asinf_conformance_data[] = {
    {0x7f800000,0X7f800000, FE_INVALID}, // inf
    {0x7fc00000,0X7fc00000, 0}, // nan
    {0x7fe1a570,0X7fe1a570, 0}, // nan
-   {0x7fffffff,0X7fffffff, FE_INVALID}, // nan
+   {0x7fffffff,0X7fffffff, 0}, // nan
    {0x7f800001,0X7f800001, FE_INVALID}, // nan
    {0x7fa0bd90,0X7fa0bd90, FE_INVALID}, // nan
    {0x7fbfffff,0X7fbfffff, FE_INVALID}, // nan

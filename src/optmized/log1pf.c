@@ -155,48 +155,33 @@ ALM_PROTO_OPT(log1pf)(float x) {
     aux = ux & SIGN_MASK;
 
     if(unlikely(aux >= EXPBITS_SP32)) {
-
         /* x ix infinity or nan */
         if(ux == POS_INF_F32) {
-
             return x;
-
         }
         /*NaN or negative infinity should return NaN here */
 
         if( (ux & QNANBITPATT_SP32) == QNANBITPATT_SP32) {
-
             return x;
-
         }
-
-        return alm_logf_special(asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NAN);
-
+        return alm_logf_special(asfloat(QNANBITPATT_SP32), ALM_E_IN_X_NEG);
     }
 
     if(unlikely(ux >= MINUS_ONE)) {
-
         /* x is negative or zero */
         if(ux == MINUS_ONE) {
-
-            return alm_logf_special(asfloat(NINFBITPATT_SP32), AMD_F_DIVBYZERO);
-
+            return alm_logf_special(asfloat(NINFBITPATT_SP32), ALM_E_IN_X_NAN);
         }
-
-        return alm_logf_special(asfloat(ux | QNANBITPATT_SP32), ALM_E_IN_X_NAN);
-
+        return alm_logf_special(asfloat(ux | QNANBITPATT_SP32), ALM_E_IN_X_NEG);
     }
 
     if(unlikely(aux < EPSILON)) {
-
         return x;
-
     }
 
     xd = (double)x;
 
     if((xd >= THRESHOLD_LOW) && (xd <= THRESHOLD_HIGH)) {
-
         u = xd / (xd + 2.0);
 
         double corr = xd * u;

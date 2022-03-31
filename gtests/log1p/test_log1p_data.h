@@ -36,34 +36,22 @@
 static libm_test_special_data_f32
 test_log1pf_conformance_data[] = {
     /*Constant inputs from the Constants.h*/
-    {POS_SNAN_F32,POS_QNAN_F32,FE_INVALID}, // invalid
-    {NEG_SNAN_F32,POS_QNAN_F32,FE_INVALID}, // invalid
-    {POS_SNAN_F32,POS_QNAN_F32,0}, //
-    {NEG_SNAN_F32,POS_QNAN_F32,0}, //
+    {0x7fb00000,0x7fb00000,FE_INVALID}, // invalid
     {POS_QNAN_F32,POS_QNAN_F32,0}, //
     {NEG_QNAN_F32,POS_QNAN_F32,0}, //
     {POS_INF_F32,POS_INF_F32,0}, //
-    {NEG_INF_F32,NEG_QNAN_F32,FE_INVALID}, //
+    {NEG_INF_F32,NEG_INF_F32,FE_INVALID}, //
     {POS_ONE_F32,0x3f317218,0}, //
     {NEG_ONE_F32,0xff800000,0}, //10
     {NEG_ZERO_F32,NEG_ZERO_F32,0}, //
     {POS_ZERO_F32,POS_ZERO_F32,0}, //
-    //{F32_POS_HDENORM,F32_POS_HDENORM,0}, //
-    //{F32_NEG_HDENORM,F32_NEG_HDENORM,0}, //
-    //{0x00000001,0x00000001,0}, //
-    //{F32_NEG_LDENORM,F32_NEG_LDENORM,0}, //
-
-    //{0x7f7fffff,0x42b17218,0}, //
-    //{F32_NEG_HNORMAL,NEG_QNAN_F32,FE_INVALID}, //
-    //{F32_POS_LNORMAL,0x00800000,0}, //
-    //{F32_NEG_HNORMAL,NEG_QNAN_F32,FE_INVALID}, // 20
 
     {POS_PI_F32,0x3fb5e5f7,0}, //
     {NEG_PI_F32,NEG_QNAN_F32,FE_INVALID}, //
-    //{POS_PI_F32BY2,0x3f71b81f,0}, //
-    //{NEG_PI_F32BY2,NEG_QNAN_F32,FE_INVALID}, //
+
 
     /*Other Input */
+ 
     { 0xbf800000, 0xff800000, 0},//25
     { 0xbf7e0000, 0xc09b43d5, 0},
     { 0xbf7c0000, 0xc0851592, 0},
@@ -79,6 +67,7 @@ test_log1pf_conformance_data[] = {
     { 0x42ad0000, 0x408f17aa, 0},
     { 0x42ae0000, 0x408f4658, 0},
     { 0x42be0000, 0x40920f24, 0},
+
     { 0xc2b10000, 0xffc00000, FE_INVALID},//40
     { 0xc2e20000, 0xffc00000, FE_INVALID},
     { 0xc3010000, 0xffc00000, FE_INVALID},

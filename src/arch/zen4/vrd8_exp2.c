@@ -148,18 +148,16 @@ ALM_PROTO_ARCH_ZN4(vrd8_exp2)(v_f64x8_t input)
 
     /* poly = C1 + C2*r + C3*r^2 + C4*r^3 + C5*r^4 + C6*r^5 +
      *          C7*r^6 + C8*r^7 + C9*r^8 + C10*r^9 + C11*r^10 + C12*r^11
-     *      = (C1 + C2*r) + r^2(C3 + C4*r) + r^4(C5 + C6*r) +
-     *           r^6(C7 + C8*r) + r^8(C9 + C10*r) + r^10(C11 + C12*r)
      */
 
-    v_f64x8_t poly = POLY_EVAL_11(r, C1, C1, C3, C4, C5, C6,
-                                  C7, C8, C9, C10, C11, C12);
+    v_f64x8_t poly = POLY_EVAL_HORNER_11(r, C1, C1, C3, C4, C5, C6,
+                                         C7, C8, C9, C10, C11, C12);
 
 
     /* result = poly * 2^m */
     v_f64x8_t ret = as_v8_f64_i64(as_v8_i64_f64(poly) + m);
 
-    if (unlikely(any_v8_u64_loop(cond))) {
+    if(_mm512_test_epi64_mask(cond, _MM512_SET1_U64x8(0xffffffffffffffffUL))) {
         ret = (v_f64x8_t) {
             (cond[0]) ? SCALAR_EXP2(input[0]) : ret[0],
             (cond[1]) ? SCALAR_EXP2(input[1]) : ret[1],

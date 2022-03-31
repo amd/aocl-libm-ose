@@ -174,6 +174,14 @@
          q;                                                                  \
          })
 
+#define POLY_EVAL_HORNER_11(x, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11) ({ \
+        __typeof(x) q = mul_add( mul_add( mul_add( mul_add( mul_add( mul_add(       \
+                        mul_add( mul_add( mul_add( mul_add (mul_add(                \
+                        c11, x, c10), x, c9), x, c8),                               \
+                        x, c7), x, c6), x, c5), x, c4),                             \
+                        x, c3), x, c2), x, c1), x, c0);                             \
+         q;                                                                         \
+         })
 
 
 /*

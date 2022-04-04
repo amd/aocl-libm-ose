@@ -288,7 +288,7 @@ float ALM_PROTO_REF(atan2f)(float fy, float fx)
   double u, v, vbyu, q, s, uu, r;
   unsigned int swap_vu, index, xzero, yzero, xnan, ynan, xinf, yinf;
   int xexp, yexp, diffexp;
-  unsigned long long uy;
+  uint64_t uy;
 
   double x;
   double y;

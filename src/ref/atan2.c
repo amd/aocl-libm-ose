@@ -541,7 +541,7 @@ double ALM_PROTO_REF(atan2)(double y, double x)
 
   /* Find properties of arguments x and y. */
 
-  unsigned long long ux, ui, aux, xneg, uy, auy, yneg;
+  uint64_t ux, ui, aux, xneg, uy, auy, yneg;
 
   GET_BITS_DP64(x, ux);
   GET_BITS_DP64(y, uy);

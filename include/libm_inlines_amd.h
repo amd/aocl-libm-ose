@@ -389,7 +389,7 @@ static inline void splitexpf(float x, float logbase,
 /* Scales up a double (normal or denormal) whose bit pattern is given
    as ux by 2**1024. There are no checks that the input number is
    scalable by that amount. */
-static inline void scaleUpDouble1024(unsigned long long ux, unsigned long long *ur)
+static inline void scaleUpDouble1024(unsigned long long ux, uint64_t *ur)
 {
     unsigned long long uy;
     double y;
@@ -415,7 +415,7 @@ static inline void scaleUpDouble1024(unsigned long long ux, unsigned long long *
 /* Scales down a double whose bit pattern is given as ux by 2**k.
    There are no checks that the input number is scalable by that amount. */
 static inline void scaleDownDouble(unsigned long long ux, int k,
-                                   unsigned long long *ur)
+                                   uint64_t *ur)
 {
     unsigned long long uy, uk, ax, xsign;
     int n, shift;

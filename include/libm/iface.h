@@ -104,6 +104,7 @@ enum {
     /* complex */
     C_AMD_CEXP,
     C_AMD_CPOW,
+    C_AMD_CLOG,
 
     /*
      * This one needs to be last one, REALLY !!!

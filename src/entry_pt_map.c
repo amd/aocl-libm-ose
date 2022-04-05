@@ -214,6 +214,8 @@ LIBM_DECL_FN_MAP(cexp);
 LIBM_DECL_FN_MAP(cexpf);
 LIBM_DECL_FN_MAP(cpowf);
 LIBM_DECL_FN_MAP(cpow);
+LIBM_DECL_FN_MAP(clog);
+LIBM_DECL_FN_MAP(clogf);
 
 LIBM_DECL_FN_MAP(vrd2_cbrt);
 LIBM_DECL_FN_MAP(vrd2_cos);

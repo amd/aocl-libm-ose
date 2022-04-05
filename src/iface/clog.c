@@ -38,22 +38,27 @@ struct alm_arch_funcs __arch_funcs_clog = {
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
             [ALM_FUNC_SCAL_SP_CMPLX] = &ALM_PROTO_ARCH_AVX2(clogf),
+            [ALM_FUNC_SCAL_DP_CMPLX] = &ALM_PROTO_ARCH_AVX2(clog),
         },
 
         [ALM_UARCH_VER_ZEN] = {
             [ALM_FUNC_SCAL_SP_CMPLX] = &ALM_PROTO_ARCH_ZN(clogf),
+            [ALM_FUNC_SCAL_DP_CMPLX] = &ALM_PROTO_ARCH_ZN(clog),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
             [ALM_FUNC_SCAL_SP_CMPLX] = &ALM_PROTO_ARCH_ZN2(clogf),
+            [ALM_FUNC_SCAL_DP_CMPLX] = &ALM_PROTO_ARCH_ZN2(clog),
         },
 
         [ALM_UARCH_VER_ZEN3] = {
             [ALM_FUNC_SCAL_SP_CMPLX] = &ALM_PROTO_ARCH_ZN3(clogf),
+            [ALM_FUNC_SCAL_DP_CMPLX] = &ALM_PROTO_ARCH_ZN3(clog),
         },
 
         [ALM_UARCH_VER_ZEN4] = {
             [ALM_FUNC_SCAL_SP_CMPLX] = &ALM_PROTO_ARCH_ZN4(clogf),
+            [ALM_FUNC_SCAL_DP_CMPLX] = &ALM_PROTO_ARCH_ZN4(clog),
         },
     },
 };
@@ -63,6 +68,7 @@ LIBM_IFACE_PROTO(clog)(void *arg) {
     alm_ep_wrapper_t g_entry_clog = {
        .g_ep = {
            [ALM_FUNC_SCAL_SP_CMPLX] = &G_ENTRY_PT_PTR(clogf),
+           [ALM_FUNC_SCAL_DP_CMPLX] = &G_ENTRY_PT_PTR(clog),
         },
     };
 

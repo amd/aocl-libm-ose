@@ -26,71 +26,23 @@
  */
 
 #include <stdio.h>
-extern int use_exp();
-extern int use_pow();
-extern int use_log();
-extern int use_fabs();
-extern int use_atan();
-extern int use_sin();
-extern int use_cos();
-extern int use_tan();
-extern int use_cosh();
-extern int use_tanh();
-extern int use_sinh();
-extern int use_exp2();
-extern int use_log2();
-extern int use_asin();
-extern int use_acos();
-extern int use_asinh();
+#include "amdlibm.h"
+#include <immintrin.h>
+#include <complex.h>
 
-/* trigonometric */
-extern int use_cexp();
-extern int use_clog();
-extern int use_cpow();
+int use_cpow() {
+    printf ("Using Scalar Float complex cpowf()\n");
+    fc32_t ipf={0.5f}, opf;
+    opf = amd_cpowf (ipf, ipf);
+    printf ("amd_cpow(%f + i%f) = %f + i%f\n",
+            (double)crealf(ipf), (double)cimagf(ipf),
+            (double)crealf(opf), (double)cimagf(opf));
 
-/* avx512 */
-#if defined (__AVX512__)
-extern int use_exp_avx512();
-extern int use_log_avx512();
-extern int use_log10_avx512();
-extern int use_exp2_avx512();
-extern int use_pow_avx512();
-extern int use_atan_avx512();
-extern int use_asin_avx512();
-#endif
-
-int main()  {
-    printf("Illustration of AMD LibM functions\n");
-    use_exp();
-    use_pow();
-    use_log();
-    use_fabs();
-    use_atan();
-    use_sin();
-    use_cos();
-    use_tan();
-    use_cosh();
-    use_tanh();
-    use_sinh();
-    use_exp2();
-    use_log2();
-    use_asin();
-    use_acos();
-    use_asinh();
-
-    use_cexp();
-    use_clog();
-    use_cpow();
-
-    #if defined (__AVX512__)
-    use_exp_avx512();
-    use_exp2_avx512();
-    use_pow_avx512();
-    use_log_avx512();
-    use_log10_avx512();
-    use_atan_avx512();
-    use_asin_avx512();
-    #endif
+    printf ("Using Scalar Double complex cpow()\n");
+    fc64_t ip = {0.5}, op;
+    op = amd_cpow (ip, ip);
+    printf ("amd_cpow(%lf + i%lf) = %lf + i%lf\n",
+            creal(ip), cimag(ip), creal(op), cimag(op));
 
     return 0;
 }

@@ -67,19 +67,18 @@ extern const double log_f_inv_256[];
 #define ONE_BY_TWO 0x3fe0000000000000UL
 
 static struct {
-    v_u64x8_t mantissa_bits, one_by_two, mant_8_bits;
     v_i32x16_t float_bias;
-    v_u32x16_t v_min, v_max;
+    v_u32x16_t v_min, v_max, mant_mask, half32 ,mant_8_bits;
     double ALIGN(16) poly[MAX_POLYDEGREE];
     v_f64x8_t ln2;
 } v_log_data = {
     .ln2    = _MM512_SET1_PD8(0x1.62e42fefa39efp-1), /* ln(2) */
     .v_min  = _MM256_SET1_PS8(0x00800000),
     .v_max  = _MM256_SET1_PS8(0x7f800000),
+    .half32 = _MM512_SET1_U32x16(0x3f000000U),
+    .mant_mask = _MM512_SET1_U32x16(0x007FFFFFU),
     .float_bias     =  _MM256_SET1_PS8(SINGLE_PRECISION_BIAS),
-    .mantissa_bits  = _MM512_SET1_U64x8(DOUBLE_PRECISION_MANTISSA),
-    .one_by_two     = _MM512_SET1_U64x8(ONE_BY_TWO),
-    .mant_8_bits    = _MM512_SET1_U64x8(MANT_MASK_N),
+    .mant_8_bits    = _MM512_SET1_U32x16(0x007F8000U),
 
     /*
     * Polynomial constants, 1/x! (reciprocal x)
@@ -122,8 +121,8 @@ static struct {
 #define V_MAX           v_log_data.v_max
 #define V_MASK          v_log_data.v_mask
 #define LN2             v_log_data.ln2
-#define MANTISSA_BITS   v_log_data.mantissa_bits
-#define HALF            v_log_data.one_by_two
+#define HALF32          v_log_data.half32
+#define MANT_MASK       v_log_data.mant_mask
 #define MANT_8_BITS     v_log_data.mant_8_bits
 #define INVLN2      expf_v4_data.tblsz_byln2
 #define EXPF_HUGE   expf_v4_data.Huge
@@ -145,7 +144,7 @@ static struct {
 
 
 /*
- *   __m256 ALM_PROTO_OPT(vrs8_powf)(__m256, __m256);
+ *   __m512 ALM_PROTO_OPT(vrs16_powf)(__m512, __m512);
  *
  * Spec:
  *   - A slightly relaxed version of the scalar powf.
@@ -230,9 +229,9 @@ update_condition(v_i32x16_t* cond1, v_i64x8_t cond2, int32_t lane)
 
     uint32_t k = (uint32_t)lane << 2;
     for(uint32_t i = 0; i < 8; i++) {
-        if((*cond1)[i + k] || cond2[i]){
-            (*cond1)[i + k] = 1;
-         }
+
+        (*cond1)[i + k] = (*cond1)[i + k] || cond2[i];
+
     }
 }
 
@@ -243,20 +242,6 @@ powf_specialcase(v_f32x16_t _x,
                  v_i32x16_t cond)
 {
     return call2_v16_f32(ALM_PROTO(powf), _x, _y, result, cond);
-}
-
-static inline v_f64x8_t
-look_table_access(const double* table,
-                  const int vector_size,
-                  v_u64x8_t indices)
-{
-     uint64_t j;
-     v_f64x8_t ret;
-     for(int i = 0; i < vector_size; i++) {
-        j = indices[i];
-        ret[i] = table[j];
-     }
-     return ret;
 }
 
 
@@ -276,22 +261,11 @@ ALM_PROTO_ARCH_ZN4(vrs16_powf)(v_f32x16_t x,v_f32x16_t y)
 
     v_i32x16_t int_exponent = (v_i32x16_t)(u >> 23) - SP_BIAS;
 
-    v_f32x8_t _x[2];
-
     v_f32x8_t _y[2];
 
+    v_f32x8_t _f[2];
+
     v_i32x8_t exponent_array[2];
-
-    /*
-     * As AOCC was not able to unroll the following intrinsics, they
-     * have been done manually
-     */
-
-    _x[0] = (v_f32x8_t){x[0], x[1], x[2], x[3],
-                        x[4], x[5], x[6], x[7]};
-
-    _x[1] = (v_f32x8_t){x[8], x[9], x[10], x[11],
-                        x[12], x[13], x[14], x[15]};
 
     _y[0] = (v_f32x8_t){y[0], y[1], y[2], y[3],
                         y[4], y[5], y[6], y[7]};
@@ -302,44 +276,58 @@ ALM_PROTO_ARCH_ZN4(vrs16_powf)(v_f32x16_t x,v_f32x16_t y)
 
 
     exponent_array[0] = (v_i32x8_t){int_exponent[0], int_exponent[1], int_exponent[2], int_exponent[3],
-    int_exponent[4], int_exponent[5], int_exponent[6], int_exponent[7]};
+                                    int_exponent[4], int_exponent[5], int_exponent[6], int_exponent[7]};
 
     exponent_array[1] = (v_i32x8_t){int_exponent[8], int_exponent[9], int_exponent[10], int_exponent[11],
-                        int_exponent[12], int_exponent[13], int_exponent[14], int_exponent[15]};
+                                    int_exponent[12], int_exponent[13], int_exponent[14], int_exponent[15]};
+
+    v_u32x16_t mant = (u & MANT_MASK) | HALF32;
+
+    v_u32x16_t index = u & MANT_8_BITS;
+
+    v_f32x16_t index_times_half = as_v16_f32_u32(index | HALF32);
+
+    index =  index >> (23 - N);
+
+    v_f32x16_t y1  = as_v16_f32_u32(mant);
+
+    v_f32x16_t f = index_times_half - y1;
+
+    _f[0] = (v_f32x8_t){f[0], f[1], f[2], f[3],
+                        f[4], f[5], f[6], f[7]};
+
+    _f[1] = (v_f32x8_t){f[8], f[9], f[10], f[11],
+                        f[12], f[13], f[14], f[15]};
+
+    v_f64x8_t F_INV[2];
+
+    v_f64x8_t LOG_256[2];
+
+    v_u32x8_t index1 = (v_u32x8_t){index[0], index[1],index[2], index[3],index[4], index[5], index[6], index[7]};
+
+    v_u32x8_t index2 = (v_u32x8_t){index[8], index[9],index[10], index[11],index[12], index[13], index[14], index[15]};
+
+    F_INV[0] = _mm512_i32gather_pd (index1, TAB_F_INV, 8);
+
+    F_INV[1] = _mm512_i32gather_pd (index2, TAB_F_INV, 8);
+
+    LOG_256[0] = _mm512_i32gather_pd (index1, TAB_LOG, 8);
+
+    LOG_256[1] = _mm512_i32gather_pd (index2, TAB_LOG, 8);
 
     for(int lane = 0; lane < 2; lane++) {
 
-        v_f64x8_t xd = _mm512_cvtps_pd(_x[lane]);
-
         v_f64x8_t yd = _mm512_cvtps_pd(_y[lane]);
-
-        v_u64x8_t ux = as_v8_i64_f64(xd);
 
         v_f64x8_t exponent =  _mm512_cvtepi32_pd ((__m256i)exponent_array[lane]);
 
-        v_u64x8_t mant  = ((ux & MANTISSA_BITS) | HALF);
+        v_f64x8_t fd = _mm512_cvtps_pd(_f[lane]);
 
-        v_u64x8_t index = ux & MANT_8_BITS;
+        v_f64x8_t r;
 
-        v_f64x8_t index_times_half = as_v8_f64_i64(index | HALF);
+        r = fd * F_INV[lane];
 
-        index =  index >> (52 - N);
-
-        v_f64x8_t y1  = as_v8_f64_i64(mant);
-
-        v_f64x8_t f = index_times_half - y1;
-
-        v_f64x8_t F_INV, LOG_256, r;
-
-        /* Avoiding the use of vgatherpd instruction for performance reasons */
-
-        F_INV = look_table_access(TAB_F_INV, VECTOR_LENGTH, index);
-
-        LOG_256 = look_table_access(TAB_LOG, VECTOR_LENGTH, index);
-
-        r = f * F_INV;
-
-        v_f64x8_t r2 = r * r;                /* r^2 */
+        v_f64x8_t r2 = r * r;
 
         v_f64x8_t temp = C2  + r * C3;
 
@@ -347,7 +335,7 @@ ALM_PROTO_ARCH_ZN4(vrs16_powf)(v_f32x16_t x,v_f32x16_t y)
 
         /* m*log(2) + log(G) - poly */
 
-        temp  = (exponent * LN2) + LOG_256;
+        temp  = (exponent * LN2) + LOG_256[lane];
 
         temp -= q;
 
@@ -371,17 +359,7 @@ ALM_PROTO_ARCH_ZN4(vrs16_powf)(v_f32x16_t x,v_f32x16_t y)
 
         r = z - dn;
 
-        v_f64x8_t qtmp1 = D1 + (D2 * r);
-
-        v_f64x8_t qtmp2 = D3 + (D4 * r);
-
-        r2 = r * r;
-
-        v_f64x8_t qtmp3 = D5 + (D6 * r);
-
-        q =  qtmp1 + r2 * qtmp2;
-
-        v_f64x8_t result = q + r2 * r2 * qtmp3;
+        v_f64x8_t result = D1 + r * (D2 + r * (D3 + r * (D4 + r * (D5 + r * D6))));
 
         ret_array[lane] = _mm512_cvtpd_ps(as_v8_f64_i64(as_v8_i64_f64(result) + (n << 52)));
 
@@ -395,9 +373,10 @@ ALM_PROTO_ARCH_ZN4(vrs16_powf)(v_f32x16_t x,v_f32x16_t y)
                           ret_array[1][4], ret_array[1][5], ret_array[1][6], ret_array[1][7]);
 
     if (unlikely(any_v16_u32_loop(condition))) {
-       return powf_specialcase(x, y, ret, condition);
-    }
 
+        return powf_specialcase(x, y, ret, condition);
+
+    }
 
     return ret;
 

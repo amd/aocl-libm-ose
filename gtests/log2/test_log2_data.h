@@ -35,7 +35,7 @@
  */
 static libm_test_special_data_f32
 test_log2f_conformance_data[] = {
-    {0x35510,           0xc3034374,    FE_DIVBYZERO},
+    {0x35510,           0xc3034374,    FE_INEXACT},
     {0x7ff00000 ,       0x7fc00001,    0},
     {NEG_INF_F32,       0x7fc00000,    FE_INVALID},
     {POS_INF_F32,       0x7fc00000,    0},
@@ -43,21 +43,21 @@ test_log2f_conformance_data[] = {
     {NEG_ONE_F32  ,     0x7fc00000,    FE_INVALID},
     {POS_ZERO_F32 ,     0xff800000,    0},
     {NEG_ZERO_F32 ,     0xff800000,    0},
-    {0x00000000,        0xff800000,    4},  //0.0
+    {0x00000000,        0xff800000,    FE_DIVBYZERO},  //0.0
     {0x3c000000,        0xc0e00000,    0},  //0.0078125
-    {0x3c7fffff,        0xc0c00000,    32},  //0.0156249991
-    {0x3f012345,        0xbf7cbb49,    32},  //0.504444
+    {0x3c7fffff,        0xc0c00000,    FE_INEXACT},  //0.0156249991
+    {0x3f012345,        0xbf7cbb49,    FE_INEXACT},  //0.504444
     {0x3f800000,        0x00000000,    0},  //1
     {0x40000000,        0x3f800000,    0},  //2
-    {0x33d6bf95,        0xc1ba0729,    32},  //1.0000000e-7
-    {POS_PI_F32,        0x3fd3643a,    32},  //pi
-    {0x40c90fdb,        0x4029b21d,    32},  //2pi
-    {0x41200000,        0x40549a78,    32},  //10
-    {0x447a0000,        0x411f73da,    32},  //1000
+    {0x33d6bf95,        0xc1ba0729,    FE_INEXACT},  //1.0000000e-7
+    {POS_PI_F32,        0x3fd3643a,    FE_INEXACT},  //pi
+    {0x40c90fdb,        0x4029b21d,    FE_INEXACT},  //2pi
+    {0x41200000,        0x40549a78,    FE_INEXACT},  //10
+    {0x447a0000,        0x411f73da,    FE_INEXACT},  //1000
     {0x42800000,        0x40c00000,    0},  //64
-    {0x42af0000,        0x40ce7052,    32},  //87.5
-    {0x42b00000,        0x40ceb3aa,    32},  //88
-    {0x42c00000,        0x40d2b803,    32},  //96
+    {0x42af0000,        0x40ce7052,    FE_INEXACT},  //87.5
+    {0x42b00000,        0x40ceb3aa,    FE_INEXACT},  //88
+    {0x42c00000,        0x40d2b803,    FE_INEXACT},  //96
     {0xc2af0000,        0x7fc00000,    FE_INVALID},  //-87.5
     {0xc2e00000,        0x7fc00000,    FE_INVALID},  //-112
     {0xc3000000,        0x7fc00000,    FE_INVALID},  //-128
@@ -73,29 +73,29 @@ test_log2f_conformance_data[] = {
     {0xbe99999a,        0x7fc00000,    FE_INVALID}, // -0.3
     {0xbf247208,        0x7fc00000,    FE_INVALID}, // -0.642365
     {0xbf000000,        0x7fc00000,    FE_INVALID}, // -0.5
-    {0x3e99999a,        0xbfde54e3,    32}, // 0.3
-    {0x3f247208,        0xbf237705,    32}, // 0.642365
+    {0x3e99999a,        0xbfde54e3,    FE_INEXACT}, // 0.3
+    {0x3f247208,        0xbf237705,    FE_INEXACT}, // 0.642365
     {0x3f000000,        0xbf800000,    0}, // 0.5
-    {0x420a1eb8,        0x40a3834e,    32}, // 34.53
-    {0x46de66b6,        0x416cc099,    32}, // 28467.3555
+    {0x420a1eb8,        0x40a3834e,    FE_INEXACT}, // 34.53
+    {0x46de66b6,        0x416cc099,    FE_INEXACT}, // 28467.3555
     {0xc2c80000,        0x7fc00000,    FE_INVALID}, // -100
-    {0x42c80000,        0x40d49a78,    32}, // 100
+    {0x42c80000,        0x40d49a78,    FE_INEXACT}, // 100
 //added from ancient libm repo
-    {0x0005fde6,        0xc3026ac1,    FE_DIVBYZERO}, // denormal
+    {0x0005fde6,        0xc3026ac1,    FE_INEXACT}, // denormal
     {0x00000001,        0xc3150000,    0}, // smallest denormal
-    {0x007fffff,        0xc2fc0000,    FE_DIVBYZERO}, // largest denormal
+    {0x007fffff,        0xc2fc0000,    FE_INEXACT}, // largest denormal
 
     {0x00800000,        0xc2fc0000,    0}, // smallest normal
-    {0x7f7fffff,        0x43000000,    32}, // largest normal
+    {0x7f7fffff,        0x43000000,    FE_INEXACT}, // largest normal
 
-    {0x3f880000,        0x3db31fb8,    32}, // 1.0625
-    {0x3f87ffff,        0x3db31fa2,    32}, // 1.06249988
-    {0x3f700000,        0xbdbeb025,    32}, // 0.9375
-    {0x3f6e147b,        0xbdd66b93,    32}, // 0.93
-    {0x3f700001,        0xbdbeb018,    32}, // 0.93750006
+    {0x3f880000,        0x3db31fb8,    FE_INEXACT}, // 1.0625
+    {0x3f87ffff,        0x3db31fa2,    FE_INEXACT}, // 1.06249988
+    {0x3f700000,        0xbdbeb025,    FE_INEXACT}, // 0.9375
+    {0x3f6e147b,        0xbdd66b93,    FE_INEXACT}, // 0.93
+    {0x3f700001,        0xbdbeb018,    FE_INEXACT}, // 0.93750006
 
-    {0x3fc90fdb,        0x3f26c874,    32},  //pi/2
-    {0x80000000,        0xff800000,    4},  //-0
+    {0x3fc90fdb,        0x3f26c874,    FE_INEXACT},  //pi/2
+    {0x80000000,        0xff800000,    FE_DIVBYZERO},  //-0
 
 #ifdef WIN64
     {0xbf800000,        0xffc00000,    0},  //-1
@@ -116,7 +116,7 @@ test_log2f_conformance_data[] = {
     {0x3fffffff,        0x3f7fffff,    FE_INEXACT},  //2--
     {0x40000001,        0x3f800001,    FE_INEXACT},  //2++
 
-    {0x00000201, 0xc30bff48, FE_DIVBYZERO},
+    {0x00000201, 0xc30bff48, FE_INEXACT},
 
     {0x7f800001, 0x7fc00001, FE_INVALID},
     {0xff800001, 0xffc00001, FE_INVALID},
@@ -127,7 +127,7 @@ test_log2f_conformance_data[] = {
     {0x3f800000, 0x00000000, 0},
     {0xbf800000, 0x7fc00000, FE_INVALID},
 
-    {0x007fffff, 0xc2fc0000, FE_DIVBYZERO},
+    {0x007fffff, 0xc2fc0000, FE_INEXACT},
     {0x807fffff, 0x7fc00000, FE_INVALID},
     {0x00000001, 0xc3150000, 0},
     {0x80000001, 0x7fc00000, FE_INVALID},

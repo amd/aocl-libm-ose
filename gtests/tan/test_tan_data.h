@@ -169,8 +169,8 @@ test_tan_conformance_data[] = {
     {POS_INF_F64,  POS_QNAN_F64, FE_INVALID},
     {NEG_INF_F64,  NEG_QNAN_F64, FE_INVALID},
 
-    {0x3ff921fb55206ddf, POS_INF_F64, FE_INVALID}, //tan(pi/2)= +inf
-    {0xbff921fb55206ddf, NEG_INF_F64, FE_INVALID}, //tan(-90)=-tan(90)=-INF
+    {0x3ff921fb55206ddf, POS_INF_F64, FE_INEXACT}, //tan(pi/2)= +inf
+    {0xbff921fb55206ddf, NEG_INF_F64, FE_INEXACT}, //tan(-90)=-tan(90)=-INF
     {0x3fe921fb544486e0, POS_ONE_F64, 0},          //tan(45)
     {0xbfe921fb544486e0, NEG_ONE_F64, 0},          //tan(-45)=-1
     {POS_PI_F64,         POS_ZERO_F64, 0},         //tan(pi)=0

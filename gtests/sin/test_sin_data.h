@@ -146,7 +146,7 @@ static libm_test_special_data_f64
 test_sin_conformance_data[] = {
     {POS_ZERO_F64, POS_ZERO_F64, 0},           //sin(0)=0
     {NEG_ZERO_F64, NEG_ZERO_F64, 0},           //sin(-0)=-0
-    {POS_ONE_F64, 0x3feaed548f090cee, 32},          //sin(1)=0.84
+    {POS_ONE_F64, 0x3feaed548f090cee, FE_INEXACT},          //sin(1)=0.84
     {POS_INF_F64, 0xfff8000000000000, FE_INVALID,}, //sin(inf)=inf
     {NEG_INF_F64, 0xfff8000000000000, FE_INVALID,}, //sin(-inf)=-inf
     {POS_SNAN_F64, 0x7ff4001000000000, FE_INVALID,}, //sin(snan)=snan

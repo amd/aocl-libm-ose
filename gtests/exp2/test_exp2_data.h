@@ -38,27 +38,166 @@ test_exp2f_conformance_data[] = {
    // special accuracy tests
     #if defined(_WIN64) || defined(_WIN32)
         {0xc3150001, 0x1,         3},  // exp2f(-0x1.2a0002p+7)
+        {0xF149F2C9, 0x7f800000,  3}, //lambda + x = 1, x = -9.9999994e+29
+        {0xF149F2C8, 0x7f800000,  3}, //lambda + x < 1
+        {0xF149F2CA, 0x7f800000,  3}, //lambda + x > 1
+        {0xc2fc247c, POS_ZERO_F32, 3},
+        {0xc2fc2ca3, POS_ZERO_F32, 3},
+        {0xc2fc7b81, POS_ZERO_F32, 3},
+        {0xc2fcd3d7, POS_ZERO_F32, 3},
+        {0xc2fd3382, POS_ZERO_F32, 3},
+        {0xc2fd82d0, POS_ZERO_F32, 3},
+        {0xc2fd9dc2, POS_ZERO_F32, 3},
+        {0xc2fdd3c4, POS_ZERO_F32, 3},
+        {0xc2fe1422, POS_ZERO_F32, 3},
+        {0xc2fe5bfd, POS_ZERO_F32, 3},
+        {0xc2ff9bdb, POS_ZERO_F32, 3},
+        {0xc5812e71, 0x7f800000,  3},  // -normal intermediate
+        {0xFF7FFFFF, 0x7f800000,  1},  // -normal max
+        {0xc47A0000, 0x7f800000,  3},  // -1000
+        {0xc4F7F333, 0x7f800000,  3},  // -1983.6
+        {0xc8015E40, 0x7f800000,  3},  // -132473
+        {0xcB000000, 0x7f800000,  3},  // -2^23
+        {0xcB000001, 0x7f800000,  3},  // -(2^23 + 1)
+        {0xcAFFFFFF, 0x7f800000,  3},  // -(2^23 -1 + 0.5)
+        {0x7f7fffff, 0x7f800000, 5}, // 3.40282346638528859812e+38
+        {0xff7fffff, 0x00000000, 1}, //-3.40282346638528859812e+38
+        {0x436c5cfa, 0x7f800000, 5},  //236.363
+        {0x43715cfa, 0x7f800000, 5},  //241.363
+        {0x43765cfa, 0x7f800000, 5},  //246.363
+        {0x437b5cfa, 0x7f800000, 5},  //251.363
+        {0x43802e7d, 0x7f800000, 5},  //256.363
+        {0x4382ae7d, 0x7f800000, 5},  //261.363
+        {0x43852e7d, 0x7f800000, 5},  //266.363
+        {0x4387ae7d, 0x7f800000, 5},  //271.363
+        {0x438a2e7d, 0x7f800000, 5},  //276.363
+        {0x438cae7d, 0x7f800000, 5},  //281.363
+        {0x438f2e7d, 0x7f800000, 5},  //286.363
+        {0x4391ae7d, 0x7f800000, 5},  //291.363
+        {0x43942e7d, 0x7f800000, 5},  //296.363
+        {0x4398ab85, 0x7f800000, 5},  //305.34
+        {0x459a800b, 0x7f800000, 5},  //4944.01
+        {0x4615baaf, 0x7f800000, 5},  //9582.67
+        {0x465e3558, 0x7f800000, 5},  //14221.3
+        {0x46935801, 0x7f800000, 5},  //18860
+        {0x46b79556, 0x7f800000, 5},  //23498.7
+        {0x46dbd2ab, 0x7f800000, 5},  //28137.3
+        {0x47000800, 0x7f800000, 5},  //32776
+        {0x471226aa, 0x7f800000, 5},  //37414.7
+        {0x47244554, 0x7f800000, 5},  //42053.3
+        {0x473663fe, 0x7f800000, 5},  //46692
+        {0xc788b83a, 0x00000000, 3},  //-70000.5
+        {0xc7812c04, 0x00000000, 3},  //-66136
+        {0xc7733f9c, 0x00000000, 3},  //-62271.6
+        {0xc7642730, 0x00000000, 3},  //-58407.2
+        {0xc7550ec4, 0x00000000, 3},  //-54542.8
+        {0xc745f658, 0x00000000, 3},  //-50678.3
+        {0xc736ddec, 0x00000000, 3},  //-46813.9
+        {0xc727c580, 0x00000000, 3},  //-42949.5
+        {0xc718ad14, 0x00000000, 3},  //-39085.1
+        {0xc70994a8, 0x00000000, 3},  //-35220.7
+        {0xc6f4f877, 0x00000000, 3},  //-31356.2
+        {0xc6d6c79e, 0x00000000, 3},  //-27491.8
+        {0xc6b896c5, 0x00000000, 3},  //-23627.4
+        {0xc69a65ec, 0x00000000, 3},  //-19763
+        {0xc6786a26, 0x00000000, 3},  //-15898.5
+        {0xc63c0874, 0x00000000, 3},  //-12034.1
+        {0xc5ff4d85, 0x00000000, 3},  //-8169.69
+        {0xc5868a22, 0x00000000, 3},  //-4305.27
+        {0xc3dc6bee, 0x00000000, 3},  //-440.843
+        {0x4306df33, 0x7f800000, 5},  //134.872
+        {0x4311bf8c, 0x7f800000, 5},  //145.748
+        {0x431c9fe5, 0x7f800000, 5},  //156.625
+        {0x4327803e, 0x7f800000, 5},  //167.501
+        {0x43326097, 0x7f800000, 5},  //178.377
+        {0x433d40f0, 0x7f800000, 5},  //189.254
+        {0x43482149, 0x7f800000, 5},  //200.13
+        {0x435301a2, 0x7f800000, 5},  //211.006
+        {0x435de1fb, 0x7f800000, 5},  //221.883
+        {0x4368c254, 0x7f800000, 5},  //232.759
     #else
         {0xc3150001, 0x1,         48},  // exp2f(-0x1.2a0002p+7)
+        {0xF149F2C9, 0x7f800000,  48}, //lambda + x = 1, x = -9.9999994e+29
+        {0xF149F2C8, 0x7f800000,  48}, //lambda + x < 1
+        {0xF149F2CA, 0x7f800000,  48}, //lambda + x > 1
+        {0xc2fc247c, POS_ZERO_F32, 48},
+        {0xc2fc2ca3, POS_ZERO_F32, 48},
+        {0xc2fc7b81, POS_ZERO_F32, 48},
+        {0xc2fcd3d7, POS_ZERO_F32, 48},
+        {0xc2fd3382, POS_ZERO_F32, 48},
+        {0xc2fd82d0, POS_ZERO_F32, 48},
+        {0xc2fd9dc2, POS_ZERO_F32, 48},
+        {0xc2fdd3c4, POS_ZERO_F32, 48},
+        {0xc2fe1422, POS_ZERO_F32, 48},
+        {0xc2fe5bfd, POS_ZERO_F32, 48},
+        {0xc2ff9bdb, POS_ZERO_F32, 48},
+        {0xc5812e71, 0x7f800000,  48},  // -normal intermediate
+        {0xFF7FFFFF, 0x7f800000,  48},  // -normal max
+        {0xc47A0000, 0x7f800000,  48},  // -1000
+        {0xc4F7F333, 0x7f800000,  48},  // -1983.6
+        {0xc8015E40, 0x7f800000,  48},  // -132473
+        {0xcB000000, 0x7f800000,  48},  // -2^23
+        {0xcB000001, 0x7f800000,  48},  // -(2^23 + 1)
+        {0xcAFFFFFF, 0x7f800000,  48},  // -(2^23 -1 + 0.5)
+        {0x7f7fffff, 0x7f800000, 40}, // 3.40282346638528859812e+38
+        {0xff7fffff, 0x00000000, 48}, //-3.40282346638528859812e+38
+        {0x436c5cfa, 0x7f800000, 40},  //236.363
+        {0x43715cfa, 0x7f800000, 40},  //241.363
+        {0x43765cfa, 0x7f800000, 40},  //246.363
+        {0x437b5cfa, 0x7f800000, 40},  //251.363
+        {0x43802e7d, 0x7f800000, 40},  //256.363
+        {0x4382ae7d, 0x7f800000, 40},  //261.363
+        {0x43852e7d, 0x7f800000, 40},  //266.363
+        {0x4387ae7d, 0x7f800000, 40},  //271.363
+        {0x438a2e7d, 0x7f800000, 40},  //276.363
+        {0x438cae7d, 0x7f800000, 40},  //281.363
+        {0x438f2e7d, 0x7f800000, 40},  //286.363
+        {0x4391ae7d, 0x7f800000, 40},  //291.363
+        {0x43942e7d, 0x7f800000, 40},  //296.363
+        {0x4398ab85, 0x7f800000, 40},  //305.34
+        {0x459a800b, 0x7f800000, 40},  //4944.01
+        {0x4615baaf, 0x7f800000, 40},  //9582.67
+        {0x465e3558, 0x7f800000, 40},  //14221.3
+        {0x46935801, 0x7f800000, 40},  //18860
+        {0x46b79556, 0x7f800000, 40},  //23498.7
+        {0x46dbd2ab, 0x7f800000, 40},  //28137.3
+        {0x47000800, 0x7f800000, 40},  //32776
+        {0x471226aa, 0x7f800000, 40},  //37414.7
+        {0x47244554, 0x7f800000, 40},  //42053.3
+        {0x473663fe, 0x7f800000, 40},  //46692
+        {0xc788b83a, 0x00000000, 48},  //-70000.5
+        {0xc7812c04, 0x00000000, 48},  //-66136
+        {0xc7733f9c, 0x00000000, 48},  //-62271.6
+        {0xc7642730, 0x00000000, 48},  //-58407.2
+        {0xc7550ec4, 0x00000000, 48},  //-54542.8
+        {0xc745f658, 0x00000000, 48},  //-50678.3
+        {0xc736ddec, 0x00000000, 48},  //-46813.9
+        {0xc727c580, 0x00000000, 48},  //-42949.5
+        {0xc718ad14, 0x00000000, 48},  //-39085.1
+        {0xc70994a8, 0x00000000, 48},  //-35220.7
+        {0xc6f4f877, 0x00000000, 48},  //-31356.2
+        {0xc6d6c79e, 0x00000000, 48},  //-27491.8
+        {0xc6b896c5, 0x00000000, 48},  //-23627.4
+        {0xc69a65ec, 0x00000000, 48},  //-19763
+        {0xc6786a26, 0x00000000, 48},  //-15898.5
+        {0xc63c0874, 0x00000000, 48},  //-12034.1
+        {0xc5ff4d85, 0x00000000, 48},  //-8169.69
+        {0xc5868a22, 0x00000000, 48},  //-4305.27
+        {0xc3dc6bee, 0x00000000, 48},  //-440.843
+        {0x4306df33, 0x7f800000, 40},  //134.872
+        {0x4311bf8c, 0x7f800000, 40},  //145.748
+        {0x431c9fe5, 0x7f800000, 40},  //156.625
+        {0x4327803e, 0x7f800000, 40},  //167.501
+        {0x43326097, 0x7f800000, 40},  //178.377
+        {0x433d40f0, 0x7f800000, 40},  //189.254
+        {0x43482149, 0x7f800000, 40},  //200.13
+        {0x435301a2, 0x7f800000, 40},  //211.006
+        {0x435de1fb, 0x7f800000, 40},  //221.883
+        {0x4368c254, 0x7f800000, 40},  //232.759
     #endif
    {0x38800000, 0x3f800000,  FE_INEXACT},  //min= 0.00006103515625, small enough that exp2(x) = 1
    {0x387FFFFF, 0x3f800000,  FE_INEXACT}, //min - 1 bit
    {0x38800001, 0x3f800000,  FE_INEXACT}, //min + 1 bit
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xF149F2C9, 0x7f800000,  3}, //lambda + x = 1, x = -9.9999994e+29
-   #else
-       {0xF149F2C9, 0x7f800000,  48}, //lambda + x = 1, x = -9.9999994e+29
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xF149F2C8, 0x7f800000,  3}, //lambda + x < 1
-   #else
-       {0xF149F2C8, 0x7f800000,  48}, //lambda + x < 1
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xF149F2CA, 0x7f800000,  3}, //lambda + x > 1
-   #else
-       {0xF149F2CA, 0x7f800000,  48}, //lambda + x > 1
-   #endif
    {0x42B2D4FC, 0x7f7fffec,  0}, //max arg, x = 89.41598629223294,max exp2f arg
    {0x42B2D4FB, 0x7f7fff6c,  0}, //max arg - 1 bit
    {0x42B2D4FD, 0x7f800000,  FE_INEXACT}, //max arg + 1 bit
@@ -69,61 +208,6 @@ test_exp2f_conformance_data[] = {
    {0x41980000, 0x4caa36c8,  0}, //small_threshold - 1 = 19
 
    /*recently found out ranges with huge ULPs*/
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc2fc247c, POS_ZERO_F32, 3},
-   #else
-       {0xc2fc247c, POS_ZERO_F32, 48},
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc2fc2ca3, POS_ZERO_F32, 3},
-   #else
-       {0xc2fc2ca3, POS_ZERO_F32, 48},
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc2fc7b81, POS_ZERO_F32, 3},
-   #else
-       {0xc2fc7b81, POS_ZERO_F32, 48},
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc2fcd3d7, POS_ZERO_F32, 3},
-   #else
-       {0xc2fcd3d7, POS_ZERO_F32, 48},
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc2fd3382, POS_ZERO_F32, 3},
-   #else
-       {0xc2fd3382, POS_ZERO_F32, 48},
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc2fd82d0, POS_ZERO_F32, 3},
-   #else
-       {0xc2fd82d0, POS_ZERO_F32, 48},
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc2fd9dc2, POS_ZERO_F32, 3},
-   #else
-       {0xc2fd9dc2, POS_ZERO_F32, 48},
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc2fdd3c4, POS_ZERO_F32, 3},
-   #else
-       {0xc2fdd3c4, POS_ZERO_F32, 48},
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc2fe1422, POS_ZERO_F32, 3},
-   #else
-       {0xc2fe1422, POS_ZERO_F32, 48},
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc2fe5bfd, POS_ZERO_F32, 3},
-   #else
-       {0xc2fe5bfd, POS_ZERO_F32, 48},
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc2ff9bdb, POS_ZERO_F32, 3},
-   #else
-       {0xc2ff9bdb, POS_ZERO_F32, 48},
-   #endif
     //exp2 special exception checks
    {POS_ZERO_F32, 0x3f800000,0 },  //0
    {NEG_ZERO_F32, 0x3f800000,0 },  //0
@@ -144,17 +228,7 @@ test_exp2f_conformance_data[] = {
    {0x43b3c4ea, 0x7f800000,  FE_OVERFLOW},  // normal intermediate
    {0x7f7fffff, 0x7f800000,  FE_OVERFLOW},  // normal max
    {0x80800000, 0x3f800000,  0},  // -normal min
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc5812e71, 0x7f800000,  3},  // -normal intermediate
-   #else
-       {0xc5812e71, 0x7f800000,  48},  // -normal intermediate
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xFF7FFFFF, 0x7f800000,  1},  // -normal max
-   #else
-       {0xFF7FFFFF, 0x7f800000,  48},  // -normal max
-   #endif
-   
+
    {0x7F800000, 0x7f800000,  0},  // inf
    {0xfF800000, 0x7f800000,  0},  // -inf
    {0x7Fc00000, 0x7fc00000,  0},  // qnan min
@@ -199,58 +273,18 @@ test_exp2f_conformance_data[] = {
    {0x41200000, 0x462c14ef,  0},  // 10
    {0xc1200000, 0x462c14ef,  0},  // -10
    {0x447A0000, 0x7f800000,  FE_OVERFLOW},  // 1000
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc47A0000, 0x7f800000,  3},  // -1000
-   #else
-       {0xc47A0000, 0x7f800000,  48},  // -1000
-   #endif
    {0x4286CCCC, 0x6f96eb6f,  0},  // 67.4
    {0xc286CCCC, 0x6f96eb6f,  0},  // -67.4
    {0x44F7F333, 0x7f800000,  FE_OVERFLOW},  // 1983.6
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc4F7F333, 0x7f800000,  3},  // -1983.6
-   #else
-       {0xc4F7F333, 0x7f800000,  48},  // -1983.6
-   #endif
+
    {0x42AF0000, 0x7e16bab3,  0},  // 87.5
    {0xc2AF0000, 0x7e16bab3,  0},  // -87.5
    {0x48015E40, 0x7f800000,  FE_OVERFLOW},  // 132473
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc8015E40, 0x7f800000,  3},  // -132473
-   #else
-       {0xc8015E40, 0x7f800000,  48},  // -132473
-   #endif
    {0x4B000000, 0x7f800000,  FE_OVERFLOW},  // 2^23
    {0x4B000001, 0x7f800000,  FE_OVERFLOW},  // 2^23 + 1
    {0x4AFFFFFF, 0x7f800000,  FE_OVERFLOW},  // 2^23 -1 + 0.5
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xcB000000, 0x7f800000,  3},  // -2^23
-   #else
-       {0xcB000000, 0x7f800000,  48},  // -2^23
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xcB000001, 0x7f800000,  3},  // -(2^23 + 1)
-   #else
-       {0xcB000001, 0x7f800000,  48},  // -(2^23 + 1)
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xcAFFFFFF, 0x7f800000,  3},  // -(2^23 -1 + 0.5)
-   #else
-       {0xcAFFFFFF, 0x7f800000,  48},  // -(2^23 -1 + 0.5)
-   #endif
 //added from ancient libm repo
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x7f7fffff, 0x7f800000, 5}, // 3.40282346638528859812e+38
-   #else
-       {0x7f7fffff, 0x7f800000, 40}, // 3.40282346638528859812e+38
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xff7fffff, 0x00000000, 1}, //-3.40282346638528859812e+38
-   #else
-       {0xff7fffff, 0x00000000, 48}, //-3.40282346638528859812e+38
-   #endif
-
-   {0xb3000000, 0x3f800000, 0},  //-2.98023e-08        
+   {0xb3000000, 0x3f800000, 0},  //-2.98023e-08
    {0xb2e47e05, 0x3f800000, 0},  //-2.66e-08
    {0xb2c8fc0a, 0x3f800000, 0},  //-2.33977e-08
    {0xb2ad7a0f, 0x3f800000, 0},  //-2.01954e-08
@@ -269,221 +303,6 @@ test_exp2f_conformance_data[] = {
    {0x32b81fb2, 0x3f800000, 0},  //2.14348e-08
    {0x32d3a1ad, 0x3f800000, 0},  //2.46372e-08
    {0x32ef23a8, 0x3f800000, 0},  //2.78395e-08
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x436c5cfa, 0x7f800000, 5},  //236.363
-   #else
-       {0x436c5cfa, 0x7f800000, 40},  //236.363
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x43715cfa, 0x7f800000, 5},  //241.363
-   #else
-       {0x43715cfa, 0x7f800000, 40},  //241.363
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x43765cfa, 0x7f800000, 5},  //246.363
-   #else
-       {0x43765cfa, 0x7f800000, 40},  //246.363
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x437b5cfa, 0x7f800000, 5},  //251.363
-   #else
-       {0x437b5cfa, 0x7f800000, 40},  //251.363
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x43802e7d, 0x7f800000, 5},  //256.363
-   #else
-       {0x43802e7d, 0x7f800000, 40},  //256.363
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x4382ae7d, 0x7f800000, 5},  //261.363
-   #else
-       {0x4382ae7d, 0x7f800000, 40},  //261.363
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x43852e7d, 0x7f800000, 5},  //266.363
-   #else
-       {0x43852e7d, 0x7f800000, 40},  //266.363
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x4387ae7d, 0x7f800000, 5},  //271.363
-   #else
-       {0x4387ae7d, 0x7f800000, 40},  //271.363
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x438a2e7d, 0x7f800000, 5},  //276.363
-   #else
-       {0x438a2e7d, 0x7f800000, 40},  //276.363
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x438cae7d, 0x7f800000, 5},  //281.363
-   #else
-       {0x438cae7d, 0x7f800000, 40},  //281.363
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x438f2e7d, 0x7f800000, 5},  //286.363
-   #else
-       {0x438f2e7d, 0x7f800000, 40},  //286.363
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x4391ae7d, 0x7f800000, 5},  //291.363
-   #else
-       {0x4391ae7d, 0x7f800000, 40},  //291.363
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x43942e7d, 0x7f800000, 5},  //296.363
-   #else
-       {0x43942e7d, 0x7f800000, 40},  //296.363
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x4398ab85, 0x7f800000, 5},  //305.34
-   #else
-       {0x4398ab85, 0x7f800000, 40},  //305.34
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x459a800b, 0x7f800000, 5},  //4944.01
-   #else
-       {0x459a800b, 0x7f800000, 40},  //4944.01
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x4615baaf, 0x7f800000, 5},  //9582.67
-   #else
-       {0x4615baaf, 0x7f800000, 40},  //9582.67
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x465e3558, 0x7f800000, 5},  //14221.3
-   #else
-       {0x465e3558, 0x7f800000, 40},  //14221.3
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x46935801, 0x7f800000, 5},  //18860
-   #else
-       {0x46935801, 0x7f800000, 40},  //18860
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x46b79556, 0x7f800000, 5},  //23498.7
-   #else
-       {0x46b79556, 0x7f800000, 40},  //23498.7
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x46dbd2ab, 0x7f800000, 5},  //28137.3
-   #else
-       {0x46dbd2ab, 0x7f800000, 40},  //28137.3
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x47000800, 0x7f800000, 5},  //32776
-   #else
-       {0x47000800, 0x7f800000, 40},  //32776
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x471226aa, 0x7f800000, 5},  //37414.7
-   #else
-       {0x471226aa, 0x7f800000, 40},  //37414.7
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x47244554, 0x7f800000, 5},  //42053.3
-   #else
-       {0x47244554, 0x7f800000, 40},  //42053.3
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x473663fe, 0x7f800000, 5},  //46692
-   #else
-       {0x473663fe, 0x7f800000, 40},  //46692
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc788b83a, 0x00000000, 3},  //-70000.5
-   #else
-       {0xc788b83a, 0x00000000, 48},  //-70000.5
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc7812c04, 0x00000000, 3},  //-66136
-   #else
-       {0xc7812c04, 0x00000000, 48},  //-66136
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc7733f9c, 0x00000000, 3},  //-62271.6
-   #else
-       {0xc7733f9c, 0x00000000, 48},  //-62271.6
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc7642730, 0x00000000, 3},  //-58407.2
-   #else
-       {0xc7642730, 0x00000000, 48},  //-58407.2
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc7550ec4, 0x00000000, 3},  //-54542.8
-   #else
-       {0xc7550ec4, 0x00000000, 48},  //-54542.8
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc745f658, 0x00000000, 3},  //-50678.3
-   #else
-       {0xc745f658, 0x00000000, 48},  //-50678.3
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc736ddec, 0x00000000, 3},  //-46813.9
-   #else
-       {0xc736ddec, 0x00000000, 48},  //-46813.9
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc727c580, 0x00000000, 3},  //-42949.5
-   #else
-       {0xc727c580, 0x00000000, 48},  //-42949.5
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc718ad14, 0x00000000, 3},  //-39085.1
-   #else
-       {0xc718ad14, 0x00000000, 48},  //-39085.1
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc70994a8, 0x00000000, 3},  //-35220.7
-   #else
-       {0xc70994a8, 0x00000000, 48},  //-35220.7
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc6f4f877, 0x00000000, 3},  //-31356.2
-   #else
-       {0xc6f4f877, 0x00000000, 48},  //-31356.2
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc6d6c79e, 0x00000000, 3},  //-27491.8
-   #else
-       {0xc6d6c79e, 0x00000000, 48},  //-27491.8
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc6b896c5, 0x00000000, 3},  //-23627.4
-   #else
-       {0xc6b896c5, 0x00000000, 48},  //-23627.4
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc69a65ec, 0x00000000, 3},  //-19763
-   #else
-       {0xc69a65ec, 0x00000000, 48},  //-19763
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc6786a26, 0x00000000, 3},  //-15898.5
-   #else
-       {0xc6786a26, 0x00000000, 48},  //-15898.5
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc63c0874, 0x00000000, 3},  //-12034.1
-   #else
-       {0xc63c0874, 0x00000000, 48},  //-12034.1
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc5ff4d85, 0x00000000, 3},  //-8169.69
-   #else
-       {0xc5ff4d85, 0x00000000, 48},  //-8169.69
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc5868a22, 0x00000000, 3},  //-4305.27
-   #else
-       {0xc5868a22, 0x00000000, 48},  //-4305.27
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0xc3dc6bee, 0x00000000, 3},  //-440.843
-   #else
-       {0xc3dc6bee, 0x00000000, 48},  //-440.843
-   #endif
    {0xbe934b11, 0x3f51b838, 0},  //-0.287682
    {0xbe86e2ab, 0x3f5545ad, 0},  //-0.263448
    {0xbe74f48a, 0x3f58e28a, 0},  //-0.239214
@@ -546,56 +365,6 @@ test_exp2f_conformance_data[] = {
    {0x42cc7c53, 0x72977681, 0},  //102.243
    {0x42e23d04, 0x780b05ad, 0},  //113.119
    {0x42f7fdb5, 0x7d7f34e0, 0},  //123.996
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x4306df33, 0x7f800000, 5},  //134.872
-   #else
-       {0x4306df33, 0x7f800000, 40},  //134.872
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x4311bf8c, 0x7f800000, 5},  //145.748
-   #else
-       {0x4311bf8c, 0x7f800000, 40},  //145.748
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x431c9fe5, 0x7f800000, 5},  //156.625
-   #else
-       {0x431c9fe5, 0x7f800000, 40},  //156.625
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x4327803e, 0x7f800000, 5},  //167.501
-   #else
-       {0x4327803e, 0x7f800000, 40},  //167.501
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x43326097, 0x7f800000, 5},  //178.377
-   #else
-       {0x43326097, 0x7f800000, 40},  //178.377
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x433d40f0, 0x7f800000, 5},  //189.254
-   #else
-       {0x433d40f0, 0x7f800000, 40},  //189.254
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x43482149, 0x7f800000, 5},  //200.13
-   #else
-       {0x43482149, 0x7f800000, 40},  //200.13
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x435301a2, 0x7f800000, 5},  //211.006
-   #else
-       {0x435301a2, 0x7f800000, 40},  //211.006
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x435de1fb, 0x7f800000, 5},  //221.883
-   #else
-       {0x435de1fb, 0x7f800000, 40},  //221.883
-   #endif
-   #if defined(_WIN64) || defined(_WIN32)
-       {0x4368c254, 0x7f800000, 5},  //232.759
-   #else
-       {0x4368c254, 0x7f800000, 40},  //232.759
-   #endif
    {0xc18b6666, 0x36beadc7, 0},  //-17.425
    {0xc18521ed, 0x372419b2, 0},  //-16.6416
    {0xc17dbae8, 0x378d3a06, 0},  //-15.8581
@@ -670,13 +439,91 @@ test_exp2f_conformance_data[] = {
 static libm_test_special_data_f64
 test_exp2_conformance_data[] = {
     // special accuracy tests
-    {0x3e30000000000000LL, 0x3ff0000000000000LL, 32},  //min, small enough that exp2(x) = 1 //
-    {0x3E2FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 32}, //min - 1 bit
-    {0x3e30000000000001LL, 0x3ff0000000000000LL, 32}, //min + 1 bit
-    {0xFE37E43C8800759CLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x = 1, x = -1.0000000000000000e+300
-    {0xFE37E43C8800758CLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x < 1
-    {0xFE37E43C880075ACLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x > 1
-    {0x408633ce8fb9f87eLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //max arg, x = 89.41598629223294,max exp2f arg
+    #if defined(_WIN64) || defined(_WIN32)
+        {0x3e30000000000000LL, 0x3ff0000000000000LL, 1},  //min, small enough that exp2(x) = 1 //
+        {0x3E2FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 1}, //min - 1 bit
+        {0x3e30000000000001LL, 0x3ff0000000000000LL, 1}, //min + 1 bit
+        {0xFE37E43C8800759CLL, 0x7ff0000000000000LL, 1}, //lambda + x = 1, x = -1.0000000000000000e+300
+        {0xFE37E43C8800758CLL, 0x7ff0000000000000LL, 1}, //lambda + x < 1
+        {0xFE37E43C880075ACLL, 0x7ff0000000000000LL, 1}, //lambda + x > 1
+        {0x408633ce8fb9f87eLL, 0x7ff0000000000000LL, 1}, //max arg, x = 89.41598629223294,max exp2f arg
+        {0x4086340000000000LL, POS_INF_F64, 1},  // 710.5
+        {0x43b3c4eafedcab02LL, 0x7ff0000000000000LL, 5}, // normal intermediate
+        {0x7FEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 5}, // normal max
+        {0xFFEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 1}, // -normal max
+        {0xc5812e71245acfdbLL, 0x7ff0000000000000LL, 1}, // -normal intermediate
+        {0x3FF921FB54442D18LL, 0x400412cc2a8d4e9eLL, 1}, // pi/2
+        {0x400921FB54442D18LL, 0x40272f147fee4000LL, 1}, // pi
+        {0x401921FB54442D18LL, 0x4070bbf2bc2b69c6LL, 1}, // 2pi
+        {0x3FFB7E151628AED3LL, 0x4007046b4f3f7e0cLL, 1}, // e --
+        {0x4005BF0A8B145769LL, 0x401e70c4a4f41684LL, 1}, // e
+        {0x400DBF0A8B145769LL, 0x40349be1e586228dLL, 1}, // e ++
+        {0xC09EFE6666666666LL, 0x7ff0000000000000LL, 3}, // -1983.6
+        {0xC1002BC800000000LL, 0x7ff0000000000000LL, 3}, // -132473
+        {0xC330000000000000LL, 0x7ff0000000000000LL, 0}, // -2^52
+        {0xC330000000000001LL, 0x7ff0000000000000LL, 1}, // -(2^52 + 1)
+        {0xC32FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 1}, // -(2^52 -1 + 0.5)
+        {0xc104c083a6d698feLL, 0x0000000000000000LL, 3}, //-170000
+        {0xc1038c4043b70ef5LL, 0x0000000000000000LL, 3}, //-160136
+        {0xc10257fce09784ecLL, 0x0000000000000000LL, 3}, //-150272
+        {0xc10123b97d77fae3LL, 0x0000000000000000LL, 3}, //-140407
+        {0xc0ffdeec34b0e1b4LL, 0x0000000000000000LL, 3}, //-130543
+        {0xc0fd76656e71cda2LL, 0x0000000000000000LL, 3}, //-120678
+        {0xc0fb0ddea832b990LL, 0x0000000000000000LL, 3}, //-110814
+        {0xc0f8a557e1f3a57eLL, 0x0000000000000000LL, 3}, //-100949
+        {0xc0f63cd11bb4916cLL, 0x0000000000000000LL, 3}, //-91085.1
+        {0xc0f3d44a55757d5aLL, 0x0000000000000000LL, 3}, //-81220.6
+        {0xc0f16bc38f366948LL, 0x0000000000000000LL, 3}, //-71356.2
+        {0xc0ee067991eeaa6cLL, 0x0000000000000000LL, 3}, //-61491.8
+        {0xc0e9356c05708248LL, 0x0000000000000000LL, 3}, //-51627.4
+        {0xc0e4645e78f25a24LL, 0x0000000000000000LL, 3}, //-41763
+        {0xc0df26a1d8e86400LL, 0x0000000000000000LL, 3}, //-31898.5
+        {0xc0d58486bfec13b8LL, 0x0000000000000000LL, 3}, //-22034.1
+        {0xc0c7c4d74ddf86e0LL, 0x0000000000000000LL, 3}, //-12169.7
+        {0xc0a202846f9b9940LL, 0x0000000000000000LL, 3}, //-2305.26
+    #else
+        {0x3e30000000000000LL, 0x3ff0000000000000LL, 32},  //min, small enough that exp2(x) = 1 //
+        {0x3E2FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 32}, //min - 1 bit
+        {0x3e30000000000001LL, 0x3ff0000000000000LL, 32}, //min + 1 bit
+        {0xFE37E43C8800759CLL, 0x7ff0000000000000LL, 48}, //lambda + x = 1, x = -1.0000000000000000e+300
+        {0xFE37E43C8800758CLL, 0x7ff0000000000000LL, 48}, //lambda + x < 1
+        {0xFE37E43C880075ACLL, 0x7ff0000000000000LL, 48}, //lambda + x > 1
+        {0x408633ce8fb9f87eLL, 0x7ff0000000000000LL, 32}, //max arg, x = 89.41598629223294,max exp2f arg
+        {0x4086340000000000LL, POS_INF_F64, 32},  // 710.5
+        {0x43b3c4eafedcab02LL, 0x7ff0000000000000LL, 40}, // normal intermediate
+        {0x7FEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 40}, // normal max
+        {0xFFEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 48}, // -normal max
+        {0xc5812e71245acfdbLL, 0x7ff0000000000000LL, 48}, // -normal intermediate
+        {0x3FF921FB54442D18LL, 0x400412cc2a8d4e9eLL, 32}, // pi/2
+        {0x400921FB54442D18LL, 0x40272f147fee4000LL, 32}, // pi
+        {0x401921FB54442D18LL, 0x4070bbf2bc2b69c6LL, 32}, // 2pi
+        {0x3FFB7E151628AED3LL, 0x4007046b4f3f7e0cLL, 32}, // e --
+        {0x4005BF0A8B145769LL, 0x401e70c4a4f41684LL, 32}, // e
+        {0x400DBF0A8B145769LL, 0x40349be1e586228dLL, 32}, // e ++
+        {0xC09EFE6666666666LL, 0x7ff0000000000000LL, 48}, // -1983.6
+        {0xC1002BC800000000LL, 0x7ff0000000000000LL, 48}, // -132473
+        {0xC330000000000000LL, 0x7ff0000000000000LL, 48}, // -2^52
+        {0xC330000000000001LL, 0x7ff0000000000000LL, 48}, // -(2^52 + 1)
+        {0xC32FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 48}, // -(2^52 -1 + 0.5)
+        {0xc104c083a6d698feLL, 0x0000000000000000LL, 48}, //-170000
+        {0xc1038c4043b70ef5LL, 0x0000000000000000LL, 48}, //-160136
+        {0xc10257fce09784ecLL, 0x0000000000000000LL, 48}, //-150272
+        {0xc10123b97d77fae3LL, 0x0000000000000000LL, 48}, //-140407
+        {0xc0ffdeec34b0e1b4LL, 0x0000000000000000LL, 48}, //-130543
+        {0xc0fd76656e71cda2LL, 0x0000000000000000LL, 48}, //-120678
+        {0xc0fb0ddea832b990LL, 0x0000000000000000LL, 48}, //-110814
+        {0xc0f8a557e1f3a57eLL, 0x0000000000000000LL, 48}, //-100949
+        {0xc0f63cd11bb4916cLL, 0x0000000000000000LL, 48}, //-91085.1
+        {0xc0f3d44a55757d5aLL, 0x0000000000000000LL, 48}, //-81220.6
+        {0xc0f16bc38f366948LL, 0x0000000000000000LL, 48}, //-71356.2
+        {0xc0ee067991eeaa6cLL, 0x0000000000000000LL, 48}, //-61491.8
+        {0xc0e9356c05708248LL, 0x0000000000000000LL, 48}, //-51627.4
+        {0xc0e4645e78f25a24LL, 0x0000000000000000LL, 48}, //-41763
+        {0xc0df26a1d8e86400LL, 0x0000000000000000LL, 48}, //-31898.5
+        {0xc0d58486bfec13b8LL, 0x0000000000000000LL, 48}, //-22034.1
+        {0xc0c7c4d74ddf86e0LL, 0x0000000000000000LL, 48}, //-12169.7
+        {0xc0a202846f9b9940LL, 0x0000000000000000LL, 48}, //-2305.26
+    #endif
     {0x408633ce8fb9f87dLL, 0x7feffffffffffd3bLL, FE_INEXACT}, //max arg - 1 bit
     {0x408633ce8fb9f87fLL, 0x7ff0000000000000LL, FE_INEXACT}, //max arg + 1 bit
     {0x408633ce8fb9f8ffLL, 0x7ff0000000000000LL, FE_INEXACT}, // > max
@@ -695,7 +542,6 @@ test_exp2_conformance_data[] = {
     {POS_QNAN_F64, POS_QNAN_F64, 0 },  //
     {NEG_QNAN_F64, NEG_QNAN_F64, 0 },  //
 
-    {0x4086340000000000LL, POS_INF_F64, FE_OVERFLOW},  // 710.5
     {0x0000000000000001LL, 0x3ff0000000000000LL, 0}, // denormal min
     {0x0005fde623545abcLL, 0x3ff0000000000000LL, 0}, // denormal intermediate
     {0x000FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, // denormal max
@@ -704,11 +550,7 @@ test_exp2_conformance_data[] = {
     {0x800FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, // -denormal max
     {0x0010000000000000LL, 0x3ff0000000000000LL, 0}, // normal min
 
-    {0x43b3c4eafedcab02LL, 0x7ff0000000000000LL, 40}, // normal intermediate
-    {0x7FEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 40}, // normal max
     {0x8010000000000000LL, 0x3ff0000000000000LL, 0}, // -normal min
-    {0xc5812e71245acfdbLL, 0x7ff0000000000000LL, 48}, // -normal intermediate
-    {0xFFEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 48}, // -normal max
 
     {0x7FF0000000000000LL, 0x7ff0000000000000LL, 0}, // inf
     {0xFFF0000000000000LL, 0x7ff0000000000000LL, 0}, // -inf
@@ -726,12 +568,6 @@ test_exp2_conformance_data[] = {
     {0xFFF0000000000001LL, 0xfff8000000000001LL, FE_INVALID}, // -snan min
     {0xfFF432438995fffaLL, 0xfffc32438995fffaLL, FE_INVALID}, // -snan intermediate
     {0xFFF7FFFFFFFFFFFFLL, 0xffffffffffffffffLL, FE_INVALID}, // -snan max
-    {0x3FF921FB54442D18LL, 0x400412cc2a8d4e9eLL, 32}, // pi/2
-    {0x400921FB54442D18LL, 0x40272f147fee4000LL, 32}, // pi
-    {0x401921FB54442D18LL, 0x4070bbf2bc2b69c6LL, 32}, // 2pi
-    {0x3FFB7E151628AED3LL, 0x4007046b4f3f7e0cLL, 32}, // e --
-    {0x4005BF0A8B145769LL, 0x401e70c4a4f41684LL, 32}, // e
-    {0x400DBF0A8B145769LL, 0x40349be1e586228dLL, 32}, // e ++
     {0x0000000000000000LL, 0x3ff0000000000000LL, 0}, // 0
     {0x3C4536B8B14B676CLL, 0x3ff0000000000000LL, 0}, // 0.0000000000000000023
     {0x3FDFFFFBCE4217D3LL, 0x3ff20ac0fa498d2cLL, 0}, // 0.4999989999999999999
@@ -760,17 +596,12 @@ test_exp2_conformance_data[] = {
     {0x4050D9999999999ALL, 0x45f2dd7567cd83eeLL, 0}, // 67.4
     {0xC050D9999999999ALL, 0x45f2dd7567cd83eeLL, 0}, // -67.4
     {0x409EFE6666666666LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 1983.6
-    {0xC09EFE6666666666LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -1983.6
     {0x4055E00000000000LL, 0x47c2d7566d26536bLL, 0}, // 87.5
     {0xC055E00000000000LL, 0x47c2d7566d26536bLL, 0}, // -87.5
     {0x41002BC800000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 132473
-    {0xC1002BC800000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -132473
     {0x4330000000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 2^52
     {0x4330000000000001LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 2^52 + 1
     {0x432FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 2^52 -1 + 0.5
-    {0xC330000000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -2^52
-    {0xC330000000000001LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -(2^52 + 1)
-    {0xC32FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -(2^52 -1 + 0.5)
 //added from ancient libm repo
     {0xbc90000000000000LL, 0x3ff0000000000000LL, 0},  //-5.55112e-17
     {0xbc8ccccccccccccdLL, 0x3ff0000000000000LL, 0},  //-4.996e-17
@@ -822,24 +653,6 @@ test_exp2_conformance_data[] = {
     {0x41000fe45b866e42LL, 0x7ff0000000000000LL, FE_OVERFLOW}, //131581
     {0x41011dd9ae2541d7LL, 0x7ff0000000000000LL, FE_OVERFLOW}, //140219
     {0x41022bcf00c4156cLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //148858
-    {0xc104c083a6d698feLL, 0x0000000000000000LL, FE_OVERFLOW}, //-170000
-    {0xc1038c4043b70ef5LL, 0x0000000000000000LL, FE_OVERFLOW}, //-160136
-    {0xc10257fce09784ecLL, 0x0000000000000000LL, FE_OVERFLOW}, //-150272
-    {0xc10123b97d77fae3LL, 0x0000000000000000LL, FE_OVERFLOW}, //-140407
-    {0xc0ffdeec34b0e1b4LL, 0x0000000000000000LL, FE_OVERFLOW}, //-130543
-    {0xc0fd76656e71cda2LL, 0x0000000000000000LL, FE_OVERFLOW}, //-120678
-    {0xc0fb0ddea832b990LL, 0x0000000000000000LL, FE_OVERFLOW}, //-110814
-    {0xc0f8a557e1f3a57eLL, 0x0000000000000000LL, FE_OVERFLOW}, //-100949
-    {0xc0f63cd11bb4916cLL, 0x0000000000000000LL, FE_OVERFLOW}, //-91085.1
-    {0xc0f3d44a55757d5aLL, 0x0000000000000000LL, FE_OVERFLOW}, //-81220.6
-    {0xc0f16bc38f366948LL, 0x0000000000000000LL, FE_OVERFLOW}, //-71356.2
-    {0xc0ee067991eeaa6cLL, 0x0000000000000000LL, FE_OVERFLOW}, //-61491.8
-    {0xc0e9356c05708248LL, 0x0000000000000000LL, FE_OVERFLOW}, //-51627.4
-    {0xc0e4645e78f25a24LL, 0x0000000000000000LL, FE_OVERFLOW}, //-41763
-    {0xc0df26a1d8e86400LL, 0x0000000000000000LL, FE_OVERFLOW}, //-31898.5
-    {0xc0d58486bfec13b8LL, 0x0000000000000000LL, FE_OVERFLOW}, //-22034.1
-    {0xc0c7c4d74ddf86e0LL, 0x0000000000000000LL, FE_OVERFLOW}, //-12169.7
-    {0xc0a202846f9b9940LL, 0x0000000000000000LL, FE_OVERFLOW}, //-2305.26
     {0xbfd269621134db92LL, 0x3fea3707024e7c8fLL, 0}, //-0.287682
     {0xbfd0dc554dd7fa10LL, 0x3feaa8b5a365e1c2LL, 0}, //-0.263448
     {0xbfce9e9114f6311bLL, 0x3feb1c51412a1b28LL, 0}, //-0.239214

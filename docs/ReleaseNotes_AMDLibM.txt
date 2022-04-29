@@ -4,18 +4,18 @@
 AOCL LibM - Release Notes - AOCL version 4.0
 --------------------------------------------
 
-AMD LibM Contents
+AOCL LibM Contents
 -----------------
-AMD LibM is a software library containing a collection of basic math functions
+AOCL LibM is a software library containing a collection of basic math functions
 optimized for x86-64 processor-based machines.
 It provides many routines from the list of standard C99 math functions.
 It includes scalar as well as vector variants of the core math functions.
-AMD LibM is a C library, which users can link into their applications to replace
-compiler-provided math functions. Applications can link into AMD LibM library and
+AOCL LibM is a C library, which users can link into their applications to replace
+compiler-provided math functions. Applications can link into AOCL LibM library and
 invoke math functions instead of compiler’s math functions for better accuracy and
 performance.
 
-Hightlights of AMD LibM version 4.0
+Hightlights of AOCL LibM version 4.0
 -----------------------------------
 
     * Optimized vector avx512 variants added for the following:
@@ -26,6 +26,8 @@ Hightlights of AMD LibM version 4.0
           * cexp, cexpf, cpow, cpowf
     * Optimized scalar variants added for the following:
           * asin, asinhf, acosh, acoshf
+          * log1p, log1pf, logb, logbf, exp10f
+          * hypot, hypotf, cbrt, cbrtf
 
 Known Issues
 ------------
@@ -33,7 +35,7 @@ Known Issues
 
 Version 4.0 Contents
 --------------------
-AMD LibM provides vector variants for many of the math functions. The list of
+AOCL LibM provides vector variants for many of the math functions. The list of
 available vector functions is given below. All functions have an 'amd_' prefix.
 
  Exponential
@@ -128,9 +130,9 @@ The declarations for all of these functions are as specified in the
 C99 standard. They are equivalent to the declarations present in
 the standard math header 'math.h'.
 
-Using AMD LibM
+Using AOCL LibM
 --------------
-Using AMD LibM is easy. Including math.h is sufficient for use of
+Using AOCL LibM is easy. Including math.h is sufficient for use of
 scalar routines. For vector routines, use amdlibm_vec.h in your
 C/C++ code and call the desired routine. Link in the appropriate
 version of the library in your program.
@@ -138,7 +140,7 @@ version of the library in your program.
 Refer to the examples directory for illustration.
 
 The Linux libraries have a dependency on system math library. When
-linking AMD LibM, ensure it precedes system math library in the
+linking AOCL LibM, ensure it precedes system math library in the
 link order i.e., "-lalm" should come before "-lm". Explicit
 linking of system math library is required when using gcc C
 compiler. With g++ compiler (for C++), this is not needed.

@@ -60,7 +60,7 @@ extern int use_asin_avx512();
 #endif
 
 int main()  {
-    printf("Illustration of AMD LibM functions\n");
+    printf("Illustration of AOCL LibM functions\n");
     use_exp();
     use_pow();
     use_log();

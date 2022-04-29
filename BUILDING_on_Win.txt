@@ -1,7 +1,7 @@
 # How to build Libm on windows using SCons
 
 ## Dependency libraries:
-    AMDLIBM test framework uses GNU MPFR (an open source multi-precision floating point) and GMP (GNU Multiple Precision Arithmetic) library
+    AOCL LibM test framework uses GNU MPFR (an open source multi-precision floating point) and GMP (GNU Multiple Precision Arithmetic) library
     Maintain following directory structure to compile libm on windows. Please note aocl-libm and mpfr folder should be place in same directory.
 
     Main_Directory
@@ -64,7 +64,7 @@
     scons ALM_CC=<clang executable path> ALM_CXX=<clang++ executable path> -j32 gtests --verbose=1 --debug_mode=all --arch_config=avx512
 
 ## To run the tests
-    To run the AMD LibM test framework.
+    To run the AOCL LibM test framework.
 
     set PATH=%PATH%;..\mpfr\mpfr_x64-windows\bin
     set PATH=%PATH%;..\mpfr\gmp_x64-windows\bin

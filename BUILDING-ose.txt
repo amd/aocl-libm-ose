@@ -1,4 +1,4 @@
-# How to build AMDLIBM OSE.
+# How to build AOCL LibM OSE.
 git clone https://github.com/amd/aocl-libm-ose;
 git checkout aocl-3.0;
 

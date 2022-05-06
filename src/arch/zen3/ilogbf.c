@@ -25,54 +25,8 @@
  *
  */
 
-#include <libm_macros.h>
-#include <libm/amd_funcs_internal.h>
-#include <libm/iface.h>
-#include <libm/entry_pt.h>
+#define ALM_OVERRIDE 1
 
-#include <libm/arch/all.h>
+#include <libm/arch/zen3.h>
 
-static const
-struct alm_arch_funcs __arch_funcs_ilogb = {
-    .def_arch = ALM_UARCH_VER_DEFAULT,
-    .funcs = {
-        [ALM_UARCH_VER_DEFAULT] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(ilogbf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(ilogb),
-        },
-
-        [ALM_UARCH_VER_ZEN] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(ilogbf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(ilogb),
-        },
-
-        [ALM_UARCH_VER_ZEN2] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(ilogbf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(ilogb),
-        },
-
-        [ALM_UARCH_VER_ZEN3] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(ilogbf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(ilogb),
-        },
-
-        [ALM_UARCH_VER_ZEN4] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(ilogbf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(ilogb),
-        },
-
-    },
-};
-
-void
-LIBM_IFACE_PROTO(ilogb)(void *arg) {
-    alm_ep_wrapper_t g_entry_ilogb = {
-       .g_ep = {
-            [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(ilogbf),
-            [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(ilogb),
-        },
-    };
-
-    alm_iface_fixup(&g_entry_ilogb, &__arch_funcs_ilogb);
-}
-
+#include "../../optmized/ilogbf.c"

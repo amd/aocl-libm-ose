@@ -243,6 +243,18 @@ powf_specialcase(v_f32x8_t _x,
     return call2_v8_f32(ALM_PROTO(powf), _x, _y, result, cond);
 }
 
+static inline v_f64x8_t
+look_table_access(const double* table,
+                  v_u32x8_t indices) {
+
+     uint64_t j;
+     v_f64x8_t ret;
+     for(int i = 0; i < 8; i++) {
+        j = indices[i];
+        ret[i] = table[j];
+     }
+     return ret;
+}
 
 __m256
 ALM_PROTO_ARCH_ZN4(vrs8_powf)(__m256 x,__m256 y) {
@@ -277,9 +289,9 @@ ALM_PROTO_ARCH_ZN4(vrs8_powf)(__m256 x,__m256 y) {
 
     v_f64x8_t F_INV, LOG_256, r;
 
-    F_INV = _mm512_i32gather_pd(index, TAB_F_INV, 8);
+    F_INV = look_table_access(TAB_F_INV, index);
 
-    LOG_256 = _mm512_i32gather_pd(index, TAB_LOG, 8);
+    LOG_256 = look_table_access(TAB_LOG, index);
 
     r = fd * F_INV;
 
@@ -309,7 +321,7 @@ ALM_PROTO_ARCH_ZN4(vrs8_powf)(__m256 x,__m256 y) {
 
     r = z - dn;
 
-    v_f64x8_t result = POLY_EVAL_5(r, D1, D2, D3, D4, D5, D6);
+    v_f64x8_t result = D1 + r * (D2 + r * (D3 + r * (D4 + r * (D5 + r * D6))));
 
     ret = _mm512_cvtpd_ps(as_v8_f64_u64(as_v8_u64_f64(result) + (n << 52)));
 

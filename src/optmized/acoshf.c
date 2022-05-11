@@ -134,9 +134,8 @@ float ALM_PROTO_OPT(acoshf)(float x) {
         r = ALM_PROTO_KERN(sqrt)(rarg);
 
         rarg = t + r;
-        /* change this to ALM_PROTO_OPT when we have optimized c \
-           variant for log1p */
-        r = ALM_PROTO_FMA3(log1p)(rarg);
+
+        r = ALM_PROTO_OPT(log1p)(rarg);
     }
 
     return (float)(r);

@@ -139,8 +139,7 @@ struct log_table {
     double lead, tail;
 };
 
-static inline uint64_t top12(double x)
-{
+static inline uint64_t top12(double x) {
     /* 12 are the exponent bits */
     return asuint64(x) >> (64 - 12);
 }
@@ -157,9 +156,27 @@ ALM_PROTO_FAST(log)(double x) {
 #define FLAG_X_NAN  0x3
 
     flt64_t mant  = {.u = ux & MANTBITS_DP64};
-    expo    -= EXPBIAS_DP64;
-    dexpo    = cast_i64_to_double((int64_t) expo);
 
+    if (unlikely ((ux - LOW) >= (HIGH - LOW))){
+        if (2 * ux == 0) {
+            return alm_log_special(asdouble(NINFBITPATT_DP64), ALM_E_DIV_BY_ZER0);
+        }
+        if (unlikely((ux >= HIGH ) || (ux >> 63))) {
+            return alm_log_special(asdouble(ux | QNANBITPATT_DP64), ALM_E_IN_X_NAN);
+        }
+
+        /* Denormals : adjust mantissa */
+        mant.u   |= ONEEXPBITS_DP64;
+        mant.d   -= 1.0;
+        expo      = (mant.u >> EXPSHIFTBITS_DP64) - 2045;
+        mant.u   &= MANTBITS_DP64;
+        ux        = mant.u;
+        dexpo    = cast_i64_to_double((int64_t) expo);
+    }
+    else {
+        expo    -= EXPBIAS_DP64;
+        dexpo    = cast_i64_to_double((int64_t) expo);
+    }
     /*****************
      * (x ~= 1.0) code path
      *****************/

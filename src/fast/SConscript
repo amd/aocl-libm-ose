@@ -38,7 +38,7 @@ if env['HOST_OS'] != 'win32':
                #'-Wno-unused-but-set-parameter',
                '-Wno-unused-parameter', '-O3',
                '-fPIC',
-               '-Ofast',
+               #'-Ofast',
                '-mavx2', '-mfma']
 else:
     if '-Dlibalm_EXPORTS' in e['CCFLAGS']:

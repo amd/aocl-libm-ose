@@ -39,34 +39,6 @@
   of another XMM register. The corresponding intrinsic is _mm_sqrt_sd()*/
 
 double ALM_PROTO_OPT(sqrt)(double x) {
-    uint64_t ux, ax;
-    int64_t xneg;
-  
-    ux = asuint64(x);
-    ax = ux & (~SIGNBIT_DP64);
-    xneg = (ux != ax);
-
-    if (unlikely(x != x)) {   /* x is NaN */
-        #ifdef WINDOWS
-            return __alm_handle_errorf(ux|0x00400000, 0);
-        #else
-        /* if QNAN, return x, if SNAN, raise exception */
-        if (ux & QNAN_MASK_64) {
-            return x;
-        }
-        else {
-            return __alm_handle_error(ux | 0x0008000000000000, AMD_F_INVALID);
-        }
-        #endif    // #ifdef WINDOWS
-    }
-
-    /* if x is negative */
-    if (unlikely(xneg)) {
-        if(ax == 0x0) /* if x == -0 */
-	          return -0.0;
-        return __alm_handle_error(0xfff8000000000000, AMD_F_INVALID);
-    }
-
     return ALM_PROTO_KERN(sqrt)(x);
 }
 

@@ -41,35 +41,8 @@
   of the low-order single-precision floating-point value in an XMM register
   or in a 32-bit memory location and writes the result in the low-order doubleword
   of another XMM register. The corresponding intrinsic is _mm_sqrt_ss()*/
+  
 float ALM_PROTO_OPT(sqrtf)(float x) {
-    int32_t xneg;
-    unsigned int ux, ax;
-
-    ux = asuint32(x);
-    ax = ux & (~SIGNBIT_SP32);
-    xneg = (ux != ax);
-
-    if (unlikely(x != x)) {   /* x is NaN */
-        #ifdef WINDOWS
-            return __alm_handle_errorf(ux|0x00400000, 0);
-        #else
-        /* if QNAN, return x, if SNAN, raise exception */
-        if (ux & QNAN_MASK_32) {
-            return x;
-        }
-        else {
-            return __alm_handle_errorf(ux | 0x00400000, AMD_F_INVALID);
-        }
-        #endif    // #ifdef WINDOWS
-    }
-
-    /* if x is negative */
-    if (unlikely(xneg)) {
-        if(ax == 0x0) /* if x == -0 */
-	          return -0.0;
-        return __alm_handle_errorf(0x00000000ffc00000, AMD_F_INVALID);
-    }
-
     return ALM_PROTO_KERN(sqrtf)(x);
 }
 

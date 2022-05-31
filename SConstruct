@@ -53,7 +53,10 @@ __almenv.Setup()
 aenv = __almenv.GetDefaultEnv()
 if aenv['HOST_OS'] == 'win32':
     aenv['ENV']['TMP'] = os.environ['TMP'] # to avoid linker eror in windows. This is mentioned in scons FQA doc.
-    shutil.copy(".\scripts\libalm.def", ".\src")
+    shutil.copy(r'.\scripts\libalm.def', r'.\src')
+    shutil.copy(r'.\scripts\almfast.def', r'.\src\fast')
+    shutil.copy(r'.\scripts\mparith32.def', r'.\gtests\libs\mparith')
+    shutil.copy(r'.\scripts\mparith64.def', r'.\gtests\libs\mparith')
 
 # First check version of python and scons
 EnsurePythonVersion(3, 6)

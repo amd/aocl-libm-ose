@@ -46,10 +46,13 @@ gtest_srcs = Glob('src/*.cc', exclude=excluded_list)
 
 objs = genv.StaticObject(gtest_srcs)
 
-libgb   = genv.StaticLibrary('gtest', objs)
 if genv['HOST_OS'] != 'win32':
+    libgb   = genv.StaticLibrary('gtest', objs)
     libgbso = genv.SharedLibrary('gtest', objs)
 else:
-    libgbso = genv.SharedLibrary('gtest', objs, no_import_lib=True)
+    libgb   = genv.StaticLibrary('gtest-static', objs)
+    #genv['WINDOWS_INSERT_DEF']=1
+    #libgbso = genv.SharedLibrary('gtest', objs, no_import_lib=False)
+    libgbso = genv.StaticLibrary('gtest', objs)
 
 Return('libgb', 'libgbso')

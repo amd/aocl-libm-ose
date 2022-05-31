@@ -63,11 +63,13 @@ fast_objs = e.StaticObject(fast_srcs)
 
 #print('lib sources' , list(source))
 
-almfast = e.StaticLibrary('almfast', fast_objs)
 if e['HOST_OS'] != 'win32':
+    almfast = e.StaticLibrary('almfast', fast_objs)
     almfastso = e.SharedLibrary('almfast', fast_objs)
 else:
-    almfastso = e.SharedLibrary('almfast', fast_objs, no_import_lib=True)
+    almfast = e.StaticLibrary('almfast-static', fast_objs)
+    e['WINDOWS_INSERT_DEF']=1
+    almfastso = e.SharedLibrary('almfast', fast_objs, no_import_lib=False)
 
 installdir = env['installdirs']
 if 'install' in COMMAND_LINE_TARGETS:

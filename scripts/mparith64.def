@@ -1,0 +1,40 @@
+EXPORTS
+    alm_mp_acos
+    alm_mp_acosh
+    alm_mp_asin
+    alm_mp_asinh
+    alm_mp_atan2
+    alm_mp_atan
+    alm_mp_atanh
+    alm_mp_cbrt
+    alm_mp_ceil
+    alm_mp_copysign
+    alm_mp_cos
+    alm_mp_cosh
+    alm_mp_exp10
+    alm_mp_exp2
+    alm_mp_exp
+    alm_mp_expm1
+    alm_mp_fabs
+    alm_mp_floor
+    alm_mp_fma
+    alm_mp_fmod
+    alm_mp_hypot
+    alm_mp_log10
+    alm_mp_log1p
+    alm_mp_log2
+    alm_mp_log
+    alm_mp_modf
+    alm_mp_pow
+    alm_mp_remainder
+    alm_mp_remquo
+    alm_mp_rint
+    alm_mp_round
+    alm_mp_sin
+    alm_mp_sinh
+    alm_mp_sqrt
+    alm_mp_tan
+    alm_mp_tanh
+    alm_mp_trunc
+	
+    

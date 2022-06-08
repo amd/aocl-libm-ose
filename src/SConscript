@@ -122,10 +122,16 @@ else:
 #add include headers as part of the install
 alm_headers = ['amdlibm.h', 'amdlibm_vec.h']
 alm_external_headers = list(map(lambda x : joinpath(env['INCPATH'], 'external', x), alm_headers))
+alm_examples_src = joinpath('#', 'examples', 'src')
+alm_examples_makefile = joinpath('#', 'examples', 'Makefile')
+alm_examples_readme = joinpath('#', 'examples', 'README')
 
 if 'install' in COMMAND_LINE_TARGETS:
     almenv.Alias('install', almenv.Install(installdir['lib'], [libmso, libm]))
     almenv.Alias("install", almenv.Install(installdir['include'], [alm_external_headers]))
+    almenv.Alias('install', almenv.Install(installdir['examples'], [alm_examples_src,
+                                                                    alm_examples_makefile,
+                                                                    alm_examples_readme]))
 
 fast_libm = SConscript('fast/SConscript',
                        exports = {'env' : e},

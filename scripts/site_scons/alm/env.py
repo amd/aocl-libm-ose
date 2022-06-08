@@ -42,7 +42,8 @@ installdirs = {
     'docs'    : 'docs/',
     'lib'     : 'lib/',
     'bin'     : 'bin/',
-    'include' : 'include/'
+    'include' : 'include/',
+    'examples': 'examples/',
 }
 
 def get_environ_path():

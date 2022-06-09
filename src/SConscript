@@ -63,8 +63,6 @@ else:
                '-fdiagnostics-absolute-paths',
                '/DWIN32',
                '/D_WINDOWS',
-               '/O2',
-               '/Ob2',
                '/DNDEBUG',
                '-MD',
                '-march=native',

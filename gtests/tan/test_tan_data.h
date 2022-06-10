@@ -52,8 +52,13 @@ test_tanf_conformance_data[] = {
     {0x387BA882, 0x387BA882, FE_UNDERFLOW},  // 6e-05, < 2^(-13)
     {0x3F490FDB, POS_ONE_F32, 0},            //tan(45)=1
     {0xbf490fdb, NEG_ONE_F32, 0},            //tan(-45) = -tan(45) = -1
-    {0x3fc90fdb, POS_INF_F32, FE_INVALID},            //tan(90)=+INF
-    {0xbfc90fdb, NEG_INF_F32, FE_INVALID},            //tan(-Pi/2) = -INF
+    #if defined(_WIN64) || defined(_WIN32)
+        {0x3fc90fdb, POS_INF_F32, FE_INEXACT},            //tan(90)=+INF
+        {0xbfc90fdb, NEG_INF_F32, FE_INEXACT},            //tan(-Pi/2) = -INF
+    #else
+        {0x3fc90fdb, POS_INF_F32, FE_INVALID},            //tan(90)=+INF
+        {0xbfc90fdb, NEG_INF_F32, FE_INVALID},            //tan(-Pi/2) = -INF
+    #endif
     {0x3C000001, 0x3c0000ac, 0},
     {0x39000001, 0x39000001, 0},
     {POS_ONE_F32, 0x3fc75923, 0},  //1

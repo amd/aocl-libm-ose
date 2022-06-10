@@ -441,10 +441,10 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
 
     if (output_match==1 || exception_match==1) {
         (*nfail)++;
-        printf ("Input: 0x%lx (%f) ", ip.lu, ip.d);
+        printf ("Input: 0x%llx (%lf) ", ip.lu, ip.d);
         if (nargs == 2)
-            printf ("Input2: 0x%lx (%f) ", ip2.lu, ip2.d);
-        printf ("Expected: 0x%lx (%f) Actual: 0x%lx (%f)\n", e.lu, e.d, a.lu, a.d);
+            printf ("Input2: 0x%llx (%lf) ", ip2.lu, ip2.d);
+        printf ("Expected: 0x%llx (%lf) Actual: 0x%llx (%lf)\n", e.lu, e.d, a.lu, a.d);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);
         return false;

@@ -152,7 +152,7 @@ alm_func_t        G_ENTRY_PT_PTR(tanf);
 alm_func_t        G_ENTRY_PT_PTR(tanhf);
 alm_func_t        G_ENTRY_PT_PTR(tanpif);
 alm_func_t        G_ENTRY_PT_PTR(truncf);
-
+alm_func_t        G_ENTRY_PT_PTR(erff);
 /*
  * Complex variants
  */
@@ -246,6 +246,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrs8_tanhf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_powf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_log2f);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_asinf);
+alm_func_t        G_ENTRY_PT_PTR(vrs8_erff);
 
 alm_func_t        G_ENTRY_PT_PTR(vrs16_logf);
 alm_func_t        G_ENTRY_PT_PTR(vrs16_expf);

@@ -210,6 +210,8 @@ LIBM_DECL_FN_MAP(remainderf);
 LIBM_DECL_FN_MAP(nearbyint);
 LIBM_DECL_FN_MAP(nearbyintf);
 
+LIBM_DECL_FN_MAP(erff);
+
 LIBM_DECL_FN_MAP(cexp);
 LIBM_DECL_FN_MAP(cexpf);
 LIBM_DECL_FN_MAP(cpowf);
@@ -302,6 +304,7 @@ LIBM_DECL_FN_MAP(vrs8_acosf);
 LIBM_DECL_FN_MAP(vrs8_coshf);
 LIBM_DECL_FN_MAP(vrs8_tanhf);
 LIBM_DECL_FN_MAP(vrs8_asinf);
+LIBM_DECL_FN_MAP(vrs8_erff);
 
 LIBM_DECL_FN_MAP(vrda_cbrt);
 LIBM_DECL_FN_MAP(vrda_cos);
@@ -411,6 +414,7 @@ WEAK_LIBM_ALIAS(vrs8_coshf, FN_PROTOTYPE(vrs8_coshf));
 WEAK_LIBM_ALIAS(vrs8_tanhf, FN_PROTOTYPE(vrs8_tanhf));
 WEAK_LIBM_ALIAS(vrs8_asinf, FN_PROTOTYPE(vrs8_asinf));
 WEAK_LIBM_ALIAS(vrs8_atanf, FN_PROTOTYPE(vrs8_atanf));
+WEAK_LIBM_ALIAS(vrs8_erff, FN_PROTOTYPE(vrs8_erff));
 
 WEAK_LIBM_ALIAS(vrda_cbrt, FN_PROTOTYPE(vrda_cbrt));
 WEAK_LIBM_ALIAS(vrda_cos, FN_PROTOTYPE(vrda_cos));

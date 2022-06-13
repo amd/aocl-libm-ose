@@ -88,6 +88,7 @@ enum {
     C_AMD_TANH,
     C_AMD_TANPI,
     C_AMD_TRUNC,
+    C_AMD_ERF,
 
     C_AMD_SINCOS,
 
@@ -182,6 +183,7 @@ extern void LIBM_IFACE_PROTO(tan)(void *arg);
 extern void LIBM_IFACE_PROTO(tanh)(void *arg);
 extern void LIBM_IFACE_PROTO(tanpi)(void *arg);
 extern void LIBM_IFACE_PROTO(trunc)(void *arg);
+extern void LIBM_IFACE_PROTO(erf)(void *arg);
 extern void LIBM_IFACE_PROTO(cexp)(void *arg);
 extern void LIBM_IFACE_PROTO(clog)(void *arg);
 extern void LIBM_IFACE_PROTO(cpow)(void *arg);

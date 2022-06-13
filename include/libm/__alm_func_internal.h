@@ -228,10 +228,11 @@ extern __m256    ALM_PROTO_INTERNAL(vrs8_atanf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_coshf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_tanhf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_asinf)           (__m256 x);
+extern __m256    ALM_PROTO_INTERNAL(vrs8_erff)            (__m256 x);
 
 
 /*
- * Vector Single precision, 8 elements
+ * Vector Single precision, 16 elements
  */
 extern __m512    ALM_PROTO_INTERNAL(vrs16_cbrtf)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_cosf)            (__m512 x);

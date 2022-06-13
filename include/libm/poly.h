@@ -159,6 +159,24 @@
                         q;                                      \
                 })
 
+#define POLY_EVAL_HORNER_11(x, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11) ({ \
+        __typeof(x) q = (((((((((((                             \
+                        c11 * x + c10) * x + c9) * x + c8) *    \
+                        x + c7) * x + c6) * x + c5) * x + c4) * \
+                        x + c3)* x + c2) * x + c1)* x + c0);    \
+         q;                                                     \
+         })
+
+#define POLY_EVAL_HORNER_12(x, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12) ({ \
+        __typeof(x) q = ((((((((((((c12 * x +                   \
+                        c11) * x + c10) * x + c9) * x + c8) *    \
+                        x + c7) * x + c6) * x + c5) * x + c4) * \
+                        x + c3)* x + c2) * x + c1)* x + c0);    \
+         q;                                                     \
+         })
+
+
+
 /*
  * poly = C0 + C1*r + C2*r^2 + C3*r^3 + C4 *r^4 + C5*r^5 + C6*r^6 + C7*r^7 + C8*r^8
  *

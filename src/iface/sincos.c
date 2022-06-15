@@ -38,14 +38,52 @@ static const
 struct alm_arch_funcs __arch_funcs_sincos = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
-        [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_FMA3(sincosf),
-            &ALM_PROTO_FMA3(sincos),
+        
+       [ALM_UARCH_VER_DEFAULT] = {
+            &ALM_PROTO_ARCH_ZN(sincosf),
+            &ALM_PROTO_ARCH_ZN(sincos),
             NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */
             NULL,                           /* vrd4 ? */
         },
+
+        [ALM_UARCH_VER_ZEN] = {
+        &ALM_PROTO_ARCH_ZN(sincosf),
+            &ALM_PROTO_ARCH_ZN(sincos),
+            NULL,                           /* vrs4 ? */
+            NULL,                           /* vrs8 ? */
+            NULL,                           /* vrd2 ? */
+            NULL,                           /* vrd4 ? */
+        },
+
+        [ALM_UARCH_VER_ZEN2] = {
+            &ALM_PROTO_ARCH_ZN2(sincosf),
+            &ALM_PROTO_ARCH_ZN2(sincos),
+            NULL,                           /* vrs4 ? */
+            NULL,                           /* vrs8 ? */
+            NULL,                           /* vrd2 ? */
+            NULL,                           /* vrd4 ? */
+        },
+
+        [ALM_UARCH_VER_ZEN3] = {
+            &ALM_PROTO_ARCH_ZN3(sincosf),
+            &ALM_PROTO_ARCH_ZN3(sincos),
+            NULL,                           /* vrs4 ? */
+            NULL,                           /* vrs8 ? */
+            NULL,                           /* vrd2 ? */
+            NULL,                           /* vrd4 ? */
+        },
+
+        [ALM_UARCH_VER_ZEN4] = {
+            &ALM_PROTO_ARCH_ZN4(sincosf),
+            &ALM_PROTO_ARCH_ZN4(sincos),
+            NULL,                           /* vrs4 ? */
+            NULL,                           /* vrs8 ? */
+            NULL,                           /* vrd2 ? */
+            NULL,                           /* vrd4 ? */
+        },
+
     },
 };
 

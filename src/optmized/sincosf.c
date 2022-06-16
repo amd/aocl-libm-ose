@@ -40,8 +40,8 @@
 void
 ALM_PROTO_OPT(sincosf)(float x, float *sin, float *cos)
 {
-   *cos = amd_cosf(x);
-   *sin = amd_sinf(x);
+   *cos = ALM_PROTO_OPT(cosf)(x);
+   *sin = ALM_PROTO_OPT(sinf)(x);
 
    return;
 }

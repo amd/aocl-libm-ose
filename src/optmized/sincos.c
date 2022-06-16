@@ -40,8 +40,8 @@
 void
 ALM_PROTO_OPT(sincos)(double x, double *sin, double *cos)
 {
-   *cos = amd_cos(x);
-   *sin = amd_sin(x);
+   *cos = ALM_PROTO_OPT(cos)(x);
+   *sin = ALM_PROTO_OPT(sin)(x);
 
    return;
 }

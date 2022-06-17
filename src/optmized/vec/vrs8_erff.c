@@ -73,7 +73,7 @@ static const struct {
     v_f32x8_t   ln2_tbl_head, ln2_tbl_tail;
     v_f32x8_t   huge;
     v_u32x8_t   all_true, bound1, bound2, bound3, bound4;
-    v_i32x8_t   mask;
+    v_u32x8_t   mask;
     v_u32x8_t   one;
     v_f32x8_t   poly_1;
     v_f32x8_t   poly_2[3];
@@ -87,7 +87,7 @@ static const struct {
               .bound1     =   _MM256_SET1_I32(0x31E2DFC4),
               .bound2      =  _MM256_SET1_I32(0x3862DFC4),
               .bound3      =  _MM256_SET1_I32(0x3F798687),
-              .bound4      =  _MM256_SET1_I32(0x407AD445),
+              .bound4      =  _MM256_SET1_I32(0x407AD447),
               .all_true    =  _MM256_SET1_I32(0xffffffff),
               .mask        =  _MM256_SET1_I32(0x7FFFFFFF),
               .one         =  _MM256_SET1_I32(0x3f800000),

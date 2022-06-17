@@ -39,16 +39,19 @@
  *     return 1.0
  *
  *  if 0.974708974361419677734375f < x <= 3.9192059040069580078125f
- *      return -9.334529419817705e-2 + x * (1.770500458970012 + x * (-1.9873639831178735 + x * (3.272308933339834 +
+ *      return -9.334529419817705e-2 + x * (1.770500458970012 + x * (-1.9873639831178735 
+ *            + x * (3.272308933339834 +
  *              x * (-4.402751805448494 + x * (3.7608972096338276 + x * (-2.0966214980804354 +
  *              x * (0.7930106628290651 + x * (-0.20671156774709162 + x * (3.677264344574519e-2 +
  *              x * (-4.2806518649629016e-3 + x * (2.94780430932192e-4 + x * (-9.12466047071725e-6))))))))))));
  *
  *
  *  if 5.40909968549385666847229003906E-5f x < 0.974708974361419677734375f
- *      return -1.7016133165416813e-11f + x * (1.1283791722401213f + x * (-2.574859935324604e-7f + x * (-0.3761213392501202f +
- *               x * (-5.1212385080044055e-5f + x * (0.11314475379382989f + x * (-1.1672466078260007e-3f + x * (-2.393903580433729e-2f +
- *               x * (-4.896886935591104e-3f +  x * (1.0606170926673056e-2f + x * (-3.656783296404107e-3f + x * 4.0345739971510983e-4f))))))
+ *      return -1.7016133165416813e-11f + x * (1.1283791722401213f + x * (-2.574859935324604e-7f 
+ *      + x * (-0.3761213392501202f + x * (-5.1212385080044055e-5f + x * (0.11314475379382989f + 
+ *      x * (-1.1672466078260007e-3f + x * (-2.393903580433729e-2f +
+ *      x * (-4.896886935591104e-3f +  x * (1.0606170926673056e-2f + x * (-3.656783296404107e-3f + 
+ *      x * 4.0345739971510983e-4f))))))
  *
  *  if 6.60290488951886800350621342659E-9f < x < 5.40909968549385666847229003906E-5f
  *       return -1.860188690104156e-15f + x * (1.1283791677145343f + x * (-3.0517569546146566e-5f));
@@ -56,18 +59,10 @@
  *  if x <= 6.60290488951886800350621342659E-9f
  *       return  x + 0x1.06eba8p-3f * x;
  *
- *
- *
- * if x is +/- zero, return infinity with FE_DIV_BY_ZERO exception
- * if x is +/- infinity, infinity is returned
+ * if x is +/- zero, return zero
+ * if x is +/- infinity, 1 is returned
  * if x is NaN, NaN is returned
- * In all other cases, result is exact.
  *
- * Algorithm:
- * 1. Obtain bit pattern of x.
- *    Let ux = asuint64(x)
- *
- * 2. logbf(x) = ((ux & 0x7f800000) >> 23) - 127
  */
 
 #include <libm_util_amd.h>
@@ -77,10 +72,11 @@
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/compiler.h>
+#include <libm/poly.h>
 
 #define BOUND1 6.60290488951886800350621342659E-9f
 #define BOUND2 5.40909968549385666847229003906E-5f
-#define BOUND3 0.974708974361419677734375f
+#define BOUND3 9.99887406826019287109375E-1f
 #define BOUND4 3.9192059040069580078125f
 
 #define A1 0x1.06eba8p-3f
@@ -122,51 +118,61 @@ float ALM_PROTO_OPT(erff)(float x) {
 
     ux = asuint32(x);
 
+    uint32_t sign =  ux & SIGNBIT_SP32;
+
     ux = ux & ~SIGNBIT_SP32;
 
-    uint32_t sign =  ux & SIGNBIT_SP32;
+    x = asfloat(ux);
 
     float result;
 
     if( ux <= asuint32(BOUND1)) {
 
-            result = x + A1 * x;
+        result = x + A1 * x;
 
-            result = asfloat(sign | asuint32(result));
+        result = asfloat(sign | asuint32(result));
 
-     }
-     else if(ux <= asuint32(BOUND2)) {
+    }
+    else if(ux <= asuint32(BOUND2)) {
 
-            result = B1 + x * (B2 + x * (B3));
+        result = B1 + x * (B2 + x * (B3));
 
-            result = asfloat(sign | asuint32(result));
+        result = asfloat(sign | asuint32(result));
 
-     }
-     else if((ux < asuint32(BOUND3))) {
+    }
+    else if((ux <= asuint32(BOUND3))) {
 
-            result = C1 + x * (C2 + x * (C3 + x * (C4 + x * (C5 + x * (C6 + x * (C7 + x * (C8 +
-                     x * (C9 + x * (C10 + x * (C11 + x * C12))))))))));
+        result = POLY_EVAL_HORNER_11(x, C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, C11, C12); 
 
-            result = asfloat(sign | asuint32(result));
+        result = asfloat(sign | asuint32(result));
 
-     }
-     else if((ux <= asuint32(BOUND4))) {
+    }
+    else if((ux <= asuint32(BOUND4))) {
 
-            double dx = (double)x;
+        double dx = (double)x;
 
-            double ret = D1 + dx * (D2 + dx * (D3 + dx * (D4 + dx * (D5 + dx * (D6 + dx * (D7 +
-                         dx * (D8 + dx * (D9 + dx * (D10 + dx * (D11 + dx * (D12 + dx * (D13))))))))))));
+        double ret = POLY_EVAL_HORNER_12(dx, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11, D12, D13);
 
-            result = (float)ret;
+        result = (float)ret;
 
-            result = asfloat(sign | asuint32(result));
+        result = asfloat(sign | asuint32(result));
 
     }
     else {
 
-             result = 1.0f;
+        /*x is NaN */
+        if(ux > PINFBITPATT_SP32) {
 
-             result = asfloat(sign | asuint32(result));
+            if(!(ux & QNAN_MASK_32)) /* x is snan */
+                return __alm_handle_errorf(ux, AMD_F_INVALID);
+
+            return x;
+
+        }
+
+        result = 1.0f;
+
+        result = asfloat(sign | asuint32(result));
 
     }
 

@@ -76,6 +76,7 @@ typedef union UT64_ UT64;
 #define NEG_QNAN_F32 0xfff00000
 #define POS_PI_F32 0x40490fd8
 #define NEG_PI_F32 0xc0490fd8
+#define TWOPOW24_F32 0x4b800000
 
 /*Special numbers Double */
 #define POS_ONE_F64 0x3FF0000000000000

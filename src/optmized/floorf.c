@@ -25,49 +25,60 @@
  *
  */
 
-#include <libm_macros.h>
+#include "fn_macros.h"
+#include "libm_util_amd.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
-#include <libm/iface.h>
-#include <libm/entry_pt.h>
-#include <libm/arch/all.h>
+#include <libm/typehelper.h>
 
+float ALM_PROTO_OPT(floorf)(float x) {
+    float r;
+    uint32_t ux, ax, ur, mask, rexp,xneg;
 
-static const
-struct alm_arch_funcs __arch_funcs_floor = {
-    .def_arch = ALM_UARCH_VER_DEFAULT,
-    .funcs = {
-        [ALM_UARCH_VER_DEFAULT] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(floorf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(floor),
-        },
-        [ALM_UARCH_VER_ZEN] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(floorf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(floor),
-        },
-        [ALM_UARCH_VER_ZEN2] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(floorf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(floor),
-        },
-        [ALM_UARCH_VER_ZEN3] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(floorf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(floor),
-        },
-        [ALM_UARCH_VER_ZEN4] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(floorf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(floor),
-        },
-    },
-};
+    ux = asuint32(x);
+    ax = ux & (~SIGNBIT_SP32);
+    xneg = (ux != ax);
 
-void
-LIBM_IFACE_PROTO(floor)(void *arg) {
-    alm_ep_wrapper_t g_entry_floor = {
-       .g_ep = {
-        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(floorf),
-        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(floor),
-        },
-    };
-
-    alm_iface_fixup(&g_entry_floor, &__arch_funcs_floor);
+    if (ax >= TWOPOW24_F32) {
+        /* abs(x) is either NaN, infinity, or >= 2^24 */
+        if (ax > EXPBITS_SP32) {
+            /* x is NaN */
+#ifdef WINDOWS
+    return __alm_handle_errorf(ux|QNAN_MASK_32, 0);
+#else
+    if(!(ax & QNAN_MASK_32)) //x is snan
+        return __alm_handle_errorf(ux|QNAN_MASK_32, AMD_F_INVALID);
+    else // x is qnan or inf
+        return x;
+#endif
+	    }
+        else
+            return x;
+    }
+    else if (ax < POS_ONE_F32) {
+        /* abs(x) < 1.0 */
+        if (ax == POS_ZERO_F32)
+            /* x is +zero or -zero; return the same zero */
+            return x;
+        else if (xneg)
+            /* x < 0.0 */
+            return -1.0F;
+        else
+            return 0.0F;
+    }
+    else {
+        rexp = ((ux & EXPBITS_SP32) >> EXPSHIFTBITS_SP32) - EXPBIAS_SP32;
+        /* Mask out the bits of r that we don't want */
+        mask = 1;
+        mask = (unsigned int)((mask << (EXPSHIFTBITS_SP32 - rexp)) - 1);
+        ur = (ux & ~mask);
+        r = asfloat(ur);
+        if (xneg && (ux != ur))
+        /* We threw some bits away and x was negative */
+            return r - 1.0F;
+        else
+            return r;
+    }
 }
+
 

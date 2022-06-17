@@ -1225,7 +1225,17 @@ EXPORTS
     amd_vrs16_tanhf
     amd_cexp
     amd_cexpf
-	amd_clogf
-	amd_clog
-	amd_cpowf
-	amd_cpow
+    amd_clogf
+    amd_clog
+    amd_cpowf
+    amd_cpow
+    amd_erff
+    amd_erff_zn
+    amd_erff_zn2
+    amd_erff_zn3
+    amd_erff_zn4
+    amd_vrs8_erff
+    amd_vrs8_erff_zn
+    amd_vrs8_erff_zn2
+    amd_vrs8_erff_zn3
+    amd_vrs8_erff_zn4

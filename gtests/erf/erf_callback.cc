@@ -72,7 +72,7 @@ double getFuncOp(double *data) {
 */
 
 double getExpected(float *data) {
-  auto val = erf(data[0]);
+  auto val = alm_mp_erf(data[0]);
   return val;
 }
 

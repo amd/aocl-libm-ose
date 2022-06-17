@@ -36,3 +36,4 @@ EXPORTS
     alm_mp_tanf
     alm_mp_tanhf
     alm_mp_truncf
+    alm_mp_erff

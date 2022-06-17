@@ -81,6 +81,7 @@ double   alm_mp_tanf        (float x);
 double   alm_mp_tanhf       (float x);
 double   alm_mp_tanpif      (float x);
 double   alm_mp_truncf      (float x);
+double   alm_mp_erff         (float x);
 
 /* Single precision ULP functions */
 float   alm_mp_acoshf_ULP    (float x,float z, double *, double *);
@@ -130,7 +131,7 @@ float   alm_mp_tanhf_ULP     (float x,float z, double *, double *);
 float   alm_mp_tanpif_ULP    (float x,float z, double *, double *);
 float   alm_mp_tanf_ULP      (float x,float z, double *, double *);
 float   alm_mp_truncf_ULP    (float x,float z,double *, double *);
-
+float   alm_mp_erff_ULP      (float x,float z,double *, double *);
 
 long double  alm_mp_acos      (double x);
 long double  alm_mp_acosh     (double x);
@@ -178,8 +179,8 @@ long double  alm_mp_tan       (double x);
 long double  alm_mp_tanh      (double x);
 long double  alm_mp_tanpi     (double x);
 long double  alm_mp_trunc     (double x);
+long double  alm_mp_erf       (double x);
 
-  
 double  alm_mp_acosh_ULP     (double x,double z, double *, double *);
 double  alm_mp_acos_ULP      (double x,double z, double *, double *);
 double  alm_mp_asinh_ULP     (double x,double z, double *, double *);
@@ -226,7 +227,7 @@ double  alm_mp_tanh_ULP      (double x,double z, double *, double *);
 double  alm_mp_tanpi_ULP     (double x,double z, double *, double *);
 double  alm_mp_tan_ULP       (double x,double z, double *, double *);
 double  alm_mp_trunc_ULP     (double x,double z,double *, double *);
-
+double  alm_mp_erf_ULP       (double x,double z,double *, double *);
   
 #ifdef __cplusplus
 }

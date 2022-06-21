@@ -113,23 +113,16 @@ int test_s1d(test_data *data, int idx)  {
 extern "C" {
 #endif
 
-#if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
-#define _ZGVdN2v_erf _ZGVbN2v_erf
-#define _ZGVdN4v_erf _ZGVdN4v_erf
-#define _ZGVsN4v_erff _ZGVbN4v_erff
-#define _ZGVsN8v_erff _ZGVdN8v_erff
-
-#define _ZGVsN16v_erff _ZGVeN16v_erff
-#define _ZGVdN8v_erf _ZGVeN8v_erf
-#endif
-
 /*vector routines*/
 #if 0
 __m128d LIBM_FUNC_VEC(d, 2, erf)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, erf)(__m256d);
 __m128 LIBM_FUNC_VEC(s, 4, erff)(__m128);
 #endif
+
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
 __m256 LIBM_FUNC_VEC(s, 8, erff)(__m256);
+#endif
 
 /*avx512*/
 #if 0
@@ -173,12 +166,15 @@ int test_v4d(test_data *data, int idx)  {
 }
 
 int test_v8s(test_data *data, int idx)  {
+/*glibc doesnt have vector exp2 variants*/
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256 op8 = LIBM_FUNC_VEC(s, 8, erff)(ip8);
   _mm256_store_ps(&op[0], op8);
+#endif
   return 0;
 }
 

@@ -109,6 +109,10 @@ arch_config = env['arch_config']
 if arch_config == 'avx512':
     testcflags.append('-mavx512f')
 
+if env['HOST_OS'] == 'win32':
+    if env['BUILD'] == 'debug':
+        env['PDB'] = 'test.pdb'
+
 ccflags = []
 liblist = []
 libpath = ['#'+alm_path]
@@ -183,7 +187,6 @@ libpath  += [joinpath('#', build_root, x) for x in glibpath]
 #if intel svml
 if abi == 'svml':
     libpath += [env['INTEL_LIB_PATH']]
-
 
 testenv = env.Clone()
 testenv.Append(

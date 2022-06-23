@@ -308,7 +308,6 @@ EXPORTS
     nextafterf
     nexttoward
     nexttowardf
-    pow
     powf
     remquo
     remquof

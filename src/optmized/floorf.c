@@ -33,7 +33,7 @@
 
 float ALM_PROTO_OPT(floorf)(float x) {
     float r;
-    uint32_t ux, ax, ur, mask, rexp,xneg;
+    uint32_t ux, ax, ur, mask, rexp, xneg;
 
     ux = asuint32(x);
     ax = ux & (~SIGNBIT_SP32);
@@ -46,39 +46,29 @@ float ALM_PROTO_OPT(floorf)(float x) {
 #ifdef WINDOWS
     return __alm_handle_errorf(ux|QNAN_MASK_32, 0);
 #else
-    if(!(ax & QNAN_MASK_32)) //x is snan
-        return __alm_handle_errorf(ux|QNAN_MASK_32, AMD_F_INVALID);
-    else // x is qnan or inf
-        return x;
+    if (unlikely(!(ax & QNAN_MASK_32))) //x is snan
+        return __alm_handle_errorf(ux | QNAN_MASK_32, AMD_F_INVALID);
+    // x is qnan or inf
+    return x;
 #endif
 	    }
-        else
-            return x;
+        return x;
     }
     else if (ax < POS_ONE_F32) {
         /* abs(x) < 1.0 */
         if (ax == POS_ZERO_F32)
             /* x is +zero or -zero; return the same zero */
             return x;
-        else if (xneg)
-            /* x < 0.0 */
+        if (xneg) /* x < 0.0 */
             return -1.0F;
-        else
-            return 0.0F;
+        return 0.0F;
     }
-    else {
-        rexp = ((ux & EXPBITS_SP32) >> EXPSHIFTBITS_SP32) - EXPBIAS_SP32;
-        /* Mask out the bits of r that we don't want */
-        mask = 1;
-        mask = (unsigned int)((mask << (EXPSHIFTBITS_SP32 - rexp)) - 1);
-        ur = (ux & ~mask);
-        r = asfloat(ur);
-        if (xneg && (ux != ur))
-        /* We threw some bits away and x was negative */
-            return r - 1.0F;
-        else
-            return r;
-    }
+    rexp = ((ux & EXPBITS_SP32) >> EXPSHIFTBITS_SP32) - EXPBIAS_SP32;
+    /* Mask out the bits of r that we don't want */
+    mask = (uint32_t)((1 << (EXPSHIFTBITS_SP32 - rexp)) - 1);
+    ur = (ux & ~mask);
+    r = asfloat(ur);
+    if (xneg && (ux != ur)) /* We threw some bits away and x was negative */
+        return r - 1.0F;
+    return r;
 }
-
-

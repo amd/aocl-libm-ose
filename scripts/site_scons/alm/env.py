@@ -131,6 +131,8 @@ class AlmEnvironment(object):
             cc_env = self.env['ALM_CC']
             if self.env['HOST_OS'] == 'win32':
                 self.env['AS'] = self.env['ALM_CC']
+                self.env['AR'] = 'llvm-lib'
+                self.env['DLIB'] = 'llvm-lib'
                 self.env['LINK'] = 'lld-link'
         except KeyError as k:
             cc_env = self.env['CC']

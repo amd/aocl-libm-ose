@@ -65,9 +65,7 @@ float getFuncOp(float *data) {
 }
 
 double getFuncOp(double *data) {
-  //FIXME: Add once amd_round is available
-  //return LIBM_FUNC(round)(data[0]);
-  return 0.0;
+  return LIBM_FUNC(round)(data[0]);
 }
 
 double getExpected(float *data) {
@@ -76,7 +74,7 @@ double getExpected(float *data) {
 }
 
 long double getExpected(double *data) {
-  auto val = alm_mp_round(data[0]);
+  auto val = roundl(data[0]);
   return val;
 }
 
@@ -99,11 +97,9 @@ int test_s1s(test_data *data, int idx)  {
 }
 
 int test_s1d(test_data *data, int idx)  {
-  #if 0
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op; 
   op[0] = LIBM_FUNC(round)(ip[idx]);
-  #endif
   return 0;
 }
 

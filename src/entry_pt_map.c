@@ -159,7 +159,7 @@ LIBM_DECL_FN_MAP(remquof);
 LIBM_DECL_FN_MAP(rint);
 LIBM_DECL_FN_MAP(rintf);
 
-//LIBM_DECL_FN_MAP(round);
+LIBM_DECL_FN_MAP(round);
 LIBM_DECL_FN_MAP(roundf);
 
 LIBM_DECL_FN_MAP(scalbln);

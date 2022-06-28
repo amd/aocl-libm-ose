@@ -95,6 +95,7 @@ EXPORTS
     amd_remquof
     amd_rint
     amd_rintf
+    amd_round
     amd_roundf
     amd_scalbln
     amd_scalblnf

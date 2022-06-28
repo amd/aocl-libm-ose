@@ -31,34 +31,32 @@
 #include <libm/entry_pt.h>
 #include <libm/arch/all.h>
 
-
-static const
-struct alm_arch_funcs __arch_funcs_round = {
+static const struct alm_arch_funcs __arch_funcs_round = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(roundf),
-            //[ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(round),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_BAS64(round),
         },
 
         [ALM_UARCH_VER_ZEN] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(roundf),
-            //[ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(round),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_BAS64(round),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(roundf),
-            //[ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(round),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_BAS64(round),
         },
 
         [ALM_UARCH_VER_ZEN3] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(roundf),
-            //[ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(round),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_BAS64(round),
         },
 
         [ALM_UARCH_VER_ZEN4] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(roundf),
-            //[ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(round),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_BAS64(round),
         },
     },
 };

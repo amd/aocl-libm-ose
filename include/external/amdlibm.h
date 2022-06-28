@@ -383,6 +383,7 @@ extern "C" {
     fc64_t amd_clog  (fc64_t x);
     fc32_t amd_clogf (fc32_t y);
 
+    float amd_erff (float x);
 
 
 #ifdef __cplusplus
@@ -714,6 +715,10 @@ extern "C" {
 #define cexp amd_cexp
 #undef cexpf
 #define cexpf amd_cexpf
+
+/* erff */
+#undef erff
+#define erff amd_erff
 
 #endif
 

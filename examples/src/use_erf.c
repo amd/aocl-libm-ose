@@ -25,77 +25,35 @@
  *
  */
 
+#define AMD_LIBM_VEC_EXPERIMENTAL
 #include <stdio.h>
-extern int use_exp();
-extern int use_pow();
-extern int use_log();
-extern int use_fabs();
-extern int use_atan();
-extern int use_sin();
-extern int use_cos();
-extern int use_tan();
-extern int use_cosh();
-extern int use_tanh();
-extern int use_sinh();
-extern int use_exp2();
-extern int use_log2();
-extern int use_asin();
-extern int use_acos();
-extern int use_asinh();
+#include "amdlibm.h"
+#include "amdlibm_vec.h"
+#include <immintrin.h>
 
-/* trigonometric */
-extern int use_cexp();
-extern int use_clog();
-extern int use_cpow();
+int use_erf()
+{
+    printf ("Using Scalar single precision erf()\n");
+    float ipf = 0.5, opf;
+    int i;
+    opf = amd_erff (ipf);
+    printf("Input: %f\tOutput: %f\n", ipf, opf);
 
-/* erf */
-extern int use_erf();
-
-/* avx512 */
-#if defined (__AVX512__)
-extern int use_exp_avx512();
-extern int use_log_avx512();
-extern int use_log10_avx512();
-extern int use_exp2_avx512();
-extern int use_pow_avx512();
-extern int use_atan_avx512();
-extern int use_asin_avx512();
-#endif
-
-int main()  {
-    printf("Illustration of AOCL LibM functions\n");
-    use_exp();
-    use_pow();
-    use_log();
-    use_fabs();
-    use_atan();
-    use_sin();
-    use_cos();
-    use_tan();
-    use_cosh();
-    use_tanh();
-    use_sinh();
-    use_exp2();
-    use_log2();
-    use_asin();
-    use_acos();
-    use_asinh();
-
-    use_cexp();
-    use_clog();
-    use_cpow();
-
-    use_erf();
-
-    #if defined (__AVX512__)
-    use_exp_avx512();
-    use_exp2_avx512();
-    use_pow_avx512();
-    use_log_avx512();
-    use_log10_avx512();
-    use_atan_avx512();
-    use_asin_avx512();
-    #endif
+    printf ("\nUsing vrs8 (Single precision vector 8 element variant of AMD erff()\n");
+    __m256 input_vrs8, result_erff_vrs8;
+    float input_array_vrs8[8] = {1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0};
+    float output_array_vrs8[8];
+    input_vrs8 = _mm256_loadu_ps(input_array_vrs8);
+    result_erff_vrs8 = amd_vrs8_erff(input_vrs8);
+    _mm256_storeu_ps(output_array_vrs8, result_erff_vrs8);
+    printf("Input: {");
+    for (i=0; i<8; i++) {
+        printf("%f,",input_array_vrs8[i]);
+    }
+    printf("}, Output: {");
+    for (i=0; i<8; i++) {
+        printf("%f,", output_array_vrs8[i]);
+    }
 
     return 0;
 }

@@ -327,6 +327,9 @@ extern "C" {
     __m512d amd_vrd8_pow    (__m512d x, __m512d y);
     __m512  amd_vrs16_powf  (__m512  x, __m512  y);
 
+    /* erf */
+    __m256 amd_vrs8_erff    (__m256 x);
+
 #ifdef __cplusplus
 }
 #endif

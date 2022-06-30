@@ -41,6 +41,7 @@
 float ALM_PROTO_OPT(roundf)(float f) {
     uint32_t ux, ux_temp, sign, exponent, mantissa;
     int intexp;            /*Needs to be signed */
+    float r, temp;
 
     ux = asuint32(f);
     sign = ux & SIGNBIT_SP32;
@@ -62,36 +63,41 @@ float ALM_PROTO_OPT(roundf)(float f) {
     /*Get the exponent of the input*/
     intexp = (ux & EXPBITS_SP32) >> 23;
     intexp -= 0x7F;
+    
     /*If exponent > 22 then the number is already rounded*/
-    if (intexp > 22) {
+    if (unlikely(intexp > 22)) {
         return f;
     }
 
     if (intexp < 0) {
-        ux_temp = asuint32(f);
+        temp = f;
+        ux_temp = asuint32(temp);
         ux_temp &= 0x7FFFFFFF;
+
         /*Add with a large number (2^23 +1) = 8388609.0F
         to force an overflow*/
-        f = (f + 8388609.0F);
-        /*Subtract back with t he large number*/
-        f -= 8388609;
+        temp = asfloat(ux_temp) + 8388609.0F;
+
+        /*Subtract back with the large number*/
+        temp -= 8388609;
+        ux_temp = asuint32(temp);
+
         if (sign) {
             ux_temp |= SIGNBIT_SP32;
         }
-
         return asfloat(ux_temp);
     }
     else {
-        /*if(intexp == -1)
-            u32exp = 0x3F800000;*/
         ux &= 0x7FFFFFFF;
-        f += 0.5f;
-        exponent = ux & EXPBITS_SP32;
-        /*right shift then left shift to discard the decimal places*/
-        mantissa = (ux & MANTBITS_SP32) >> (23 - intexp);
+        r = asfloat(ux);
+        r += 0.5f;
+        exponent = asuint32(r) & EXPBITS_SP32;
+
+        /*right shift & left shift to discard the decimal places*/
+        mantissa = (asuint32(r) & MANTBITS_SP32) >> (23 - intexp);
         mantissa = mantissa << (23 - intexp);
         ux_temp = sign | exponent | mantissa;
 
-        return (asfloat(ux_temp));
+        return asfloat(ux_temp);
     }
 }

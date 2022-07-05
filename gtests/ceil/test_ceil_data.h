@@ -39,13 +39,13 @@ test_ceilf_conformance_data[] = {
    {0x38800000, 0x3f800000,  0},  //min= 0.00006103515625, small enough that ceil(x) = 1
    {0x387FFFFF, 0x3f800000,  0}, //min - 1 bit
    {0x38800001, 0x3f800000,  0}, //min + 1 bit
-   {0xF149F2C9, 0x7f800000,  FE_OVERFLOW}, //lambda + x = 1, x = -9.9999994e+29
-   {0xF149F2C8, 0x7f800000,  FE_OVERFLOW}, //lambda + x < 1
-   {0xF149F2CA, 0x7f800000,  FE_OVERFLOW}, //lambda + x > 1
+   {0xF149F2C9, 0x7f800000,  0}, //lambda + x = 1, x = -9.9999994e+29
+   {0xF149F2C8, 0x7f800000,  0}, //lambda + x < 1
+   {0xF149F2CA, 0x7f800000,  0}, //lambda + x > 1
    {0x42B2D4FC, 0x7f7fffec,  0}, //max arg, x = 89.41598629223294,max ceilf arg
    {0x42B2D4FB, 0x7f7fff6c,  0}, //max arg - 1 bit
-   {0x42B2D4FD, 0x7f800000,  FE_OVERFLOW}, //max arg + 1 bit
-   {0x42B2D4FF, 0x7f800000,  FE_OVERFLOW}, // > max
+   {0x42B2D4FD, 0x7f800000,  0}, //max arg + 1 bit
+   {0x42B2D4FF, 0x7f800000,  0}, // > max
    {0x42B2D400, 0x7f7f820b,  0}, // < max
    {0x41A00000, 0x4d675844,  0}, //small_threshold = 20
    {0x41A80000, 0x4e1d3710,  0}, //small_threshold+1 = 21
@@ -60,7 +60,7 @@ test_ceilf_conformance_data[] = {
    {NEG_SNAN_F32, NEG_SNAN_F32, FE_INVALID },  //
    {POS_QNAN_F32, POS_QNAN_F32, 0 },  //
    {NEG_QNAN_F32, NEG_QNAN_F32, 0 },  //
-   {POS_INF_F32,  POS_INF_F32,  FE_OVERFLOW },  //95
+   {POS_INF_F32,  POS_INF_F32,  0 },  //95
 
    {0x00000001, 0x3f800000,  0},  // denormal min
    {0x0005fde6, 0x3f800000,  0},  // denormal intermediate
@@ -69,11 +69,11 @@ test_ceilf_conformance_data[] = {
    {0x805def12, 0x3f800000,  0},  // -denormal intermediate
    {0x807FFFFF, 0x3f800000,  0},  // -denormal max
    {0x00800000, 0x3f800000,  0},  // normal min
-   {0x43b3c4ea, 0x7f800000,  FE_OVERFLOW},  // normal intermediate
-   {0x7f7fffff, 0x7f800000,  FE_OVERFLOW},  // normal max
+   {0x43b3c4ea, 0x7f800000,  0},  // normal intermediate
+   {0x7f7fffff, 0x7f800000,  0},  // normal max
    {0x80800000, 0x3f800000,  0},  // -normal min
-   {0xc5812e71, 0x7f800000,  FE_OVERFLOW},  // -normal intermediate
-   {0xFF7FFFFF, 0x7f800000,  FE_OVERFLOW},  // -normal max
+   {0xc5812e71, 0x7f800000,  0},  // -normal intermediate
+   {0xFF7FFFFF, 0x7f800000,  0},  // -normal max
    {0x7F800000, 0x7f800000,  0},  // inf
    {0xfF800000, 0x7f800000,  0},  // -inf
    {0x7Fc00000, 0x7fc00000,  0},  // qnan min
@@ -117,22 +117,22 @@ test_ceilf_conformance_data[] = {
    {0xc0000000, 0x4070c7d0,  0},  // -2
    {0x41200000, 0x462c14ef,  0},  // 10
    {0xc1200000, 0x462c14ef,  0},  // -10
-   {0x447A0000, 0x7f800000,  FE_OVERFLOW},  // 1000
-   {0xc47A0000, 0x7f800000,  FE_OVERFLOW},  // -1000
+   {0x447A0000, 0x7f800000,  0},  // 1000
+   {0xc47A0000, 0x7f800000,  0},  // -1000
    {0x4286CCCC, 0x6f96eb6f,  0},  // 67.4
    {0xc286CCCC, 0x6f96eb6f,  0},  // -67.4
-   {0x44F7F333, 0x7f800000,  FE_OVERFLOW},  // 1983.6
-   {0xc4F7F333, 0x7f800000,  FE_OVERFLOW},  // -1983.6
+   {0x44F7F333, 0x7f800000,  0},  // 1983.6
+   {0xc4F7F333, 0x7f800000,  0},  // -1983.6
    {0x42AF0000, 0x7e16bab3,  0},  // 87.5
    {0xc2AF0000, 0x7e16bab3,  0},  // -87.5
-   {0x48015E40, 0x7f800000,  FE_OVERFLOW},  // 132473
-   {0xc8015E40, 0x7f800000,  FE_OVERFLOW},  // -132473
-   {0x4B000000, 0x7f800000,  FE_OVERFLOW},  // 2^23
-   {0x4B000001, 0x7f800000,  FE_OVERFLOW},  // 2^23 + 1
-   {0x4AFFFFFF, 0x7f800000,  FE_OVERFLOW},  // 2^23 -1 + 0.5
-   {0xcB000000, 0x7f800000,  FE_OVERFLOW},  // -2^23
-   {0xcB000001, 0x7f800000,  FE_OVERFLOW},  // -(2^23 + 1)
-   {0xcAFFFFFF, 0x7f800000,  FE_OVERFLOW},  // -(2^23 -1 + 0.5)
+   {0x48015E40, 0x7f800000,  0},  // 132473
+   {0xc8015E40, 0x7f800000,  0},  // -132473
+   {0x4B000000, 0x7f800000,  0},  // 2^23
+   {0x4B000001, 0x7f800000,  0},  // 2^23 + 1
+   {0x4AFFFFFF, 0x7f800000,  0},  // 2^23 -1 + 0.5
+   {0xcB000000, 0x7f800000,  0},  // -2^23
+   {0xcB000001, 0x7f800000,  0},  // -(2^23 + 1)
+   {0xcAFFFFFF, 0x7f800000,  0},  // -(2^23 -1 + 0.5)
 
    {0x7f800001, 0x7fc00001,  0},
    {0xff800001, 0xffc00001,  0}, 
@@ -152,8 +152,6 @@ test_ceilf_conformance_data[] = {
    {0x46de66b6, 0x46de6800,  0}, // 28467.3555, 28468
    {0xc2c80000, 0xc2c80000,  0}, // -100, -100
    {0x42c80000, 0x42c80000,  0}, // 100, 100
-
-
 };
 
 static libm_test_special_data_f64
@@ -162,13 +160,13 @@ test_ceil_conformance_data[] = {
     {0x3e30000000000000LL, 0x3ff0000000000000LL, 0},  //min, small enough that ceil(x) = 1 //
     {0x3E2FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, //min - 1 bit
     {0x3e30000000000001LL, 0x3ff0000000000000LL, 0}, //min + 1 bit
-    {0xFE37E43C8800759CLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x = 1, x = -1.0000000000000000e+300
-    {0xFE37E43C8800758CLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x < 1
-    {0xFE37E43C880075ACLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x > 1
-    {0x408633ce8fb9f87eLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //max arg, x = 89.41598629223294,max ceilf arg
+    {0xFE37E43C8800759CLL, 0x7ff0000000000000LL, 0}, //lambda + x = 1, x = -1.0000000000000000e+300
+    {0xFE37E43C8800758CLL, 0x7ff0000000000000LL, 0}, //lambda + x < 1
+    {0xFE37E43C880075ACLL, 0x7ff0000000000000LL, 0}, //lambda + x > 1
+    {0x408633ce8fb9f87eLL, 0x7ff0000000000000LL, 0}, //max arg, x = 89.41598629223294,max ceilf arg
     {0x408633ce8fb9f87dLL, 0x7feffffffffffd3bLL, 0}, //max arg - 1 bit
-    {0x408633ce8fb9f87fLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //max arg + 1 bit
-    {0x408633ce8fb9f8ffLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // > max
+    {0x408633ce8fb9f87fLL, 0x7ff0000000000000LL, 0}, //max arg + 1 bit
+    {0x408633ce8fb9f8ffLL, 0x7ff0000000000000LL, 0}, // > max
     {0x408633ce8fb9f800LL, 0x7feffffffffe093bLL, 0}, // < max
     {0x4034000000000000LL, 0x41aceb088b68e804LL, 0}, //small_threshold = 20
     {0x4035000000000000LL, 0x41c3a6e1fd9eecfdLL, 0}, //small_threshold+1 = 21
@@ -183,7 +181,7 @@ test_ceil_conformance_data[] = {
     {NEG_SNAN_F64, NEG_SNAN_F64, FE_INVALID },  //
     {POS_QNAN_F64, POS_QNAN_F64, 0 },  //
     {NEG_QNAN_F64, NEG_QNAN_F64, 0 },  //
-    {0x4086340000000000LL, POS_INF_F64, FE_OVERFLOW},  // 710.5
+    {0x4086340000000000LL, POS_INF_F64, 0},  // 710.5
     {0x0000000000000001LL, 0x3ff0000000000000LL, 0}, // denormal min
     {0x0005fde623545abcLL, 0x3ff0000000000000LL, 0}, // denormal intermediate
     {0x000FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, // denormal max
@@ -191,11 +189,11 @@ test_ceil_conformance_data[] = {
     {0x8002344ade5def12LL, 0x3ff0000000000000LL, 0}, // -denormal intermediate
     {0x800FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, // -denormal max
     {0x0010000000000000LL, 0x3ff0000000000000LL, 0}, // normal min
-    {0x43b3c4eafedcab02LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // normal intermediate
-    {0x7FEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // normal max
+    {0x43b3c4eafedcab02LL, 0x7ff0000000000000LL, 0}, // normal intermediate
+    {0x7FEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 0}, // normal max
     {0x8010000000000000LL, 0x3ff0000000000000LL, 0}, // -normal min
-    {0xc5812e71245acfdbLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -normal intermediate
-    {0xFFEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -normal max
+    {0xc5812e71245acfdbLL, 0x7ff0000000000000LL, 0}, // -normal intermediate
+    {0xFFEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 0}, // -normal max
     {0x7FF0000000000000LL, 0x7ff0000000000000LL, 0}, // inf
     {0xFFF0000000000000LL, 0x7ff0000000000000LL, 0}, // -inf
     {0x7FF8000000000000LL, 0x7ff8000000000000LL, 0}, // qnan min
@@ -240,22 +238,22 @@ test_ceil_conformance_data[] = {
     {0xC000000000000000LL, 0x400e18fa0df2d9bcLL, 0}, // -2
     {0x4024000000000000LL, 0x40c5829dd053712dLL, 0}, // 10
     {0xC024000000000000LL, 0x40c5829dd053712dLL, 0}, // -10
-    {0x408F400000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 1000
-    {0xC08F400000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -1000
+    {0x408F400000000000LL, 0x7ff0000000000000LL, 0}, // 1000
+    {0xC08F400000000000LL, 0x7ff0000000000000LL, 0}, // -1000
     {0x4050D9999999999ALL, 0x45f2dd7567cd83eeLL, 0}, // 67.4
     {0xC050D9999999999ALL, 0x45f2dd7567cd83eeLL, 0}, // -67.4
-    {0x409EFE6666666666LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 1983.6
-    {0xC09EFE6666666666LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -1983.6
+    {0x409EFE6666666666LL, 0x7ff0000000000000LL, 0}, // 1983.6
+    {0xC09EFE6666666666LL, 0x7ff0000000000000LL, 0}, // -1983.6
     {0x4055E00000000000LL, 0x47c2d7566d26536bLL, 0}, // 87.5
     {0xC055E00000000000LL, 0x47c2d7566d26536bLL, 0}, // -87.5
-    {0x41002BC800000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 132473
-    {0xC1002BC800000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -132473
-    {0x4330000000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 2^52
-    {0x4330000000000001LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 2^52 + 1
-    {0x432FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 2^52 -1 + 0.5
-    {0xC330000000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -2^52
-    {0xC330000000000001LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -(2^52 + 1)
-    {0xC32FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -(2^52 -1 + 0.5)
+    {0x41002BC800000000LL, 0x7ff0000000000000LL, 0}, // 132473
+    {0xC1002BC800000000LL, 0x7ff0000000000000LL, 0}, // -132473
+    {0x4330000000000000LL, 0x7ff0000000000000LL, 0}, // 2^52
+    {0x4330000000000001LL, 0x7ff0000000000000LL, 0}, // 2^52 + 1
+    {0x432FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 0}, // 2^52 -1 + 0.5
+    {0xC330000000000000LL, 0x7ff0000000000000LL, 0}, // -2^52
+    {0xC330000000000001LL, 0x7ff0000000000000LL, 0}, // -(2^52 + 1)
+    {0xC32FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 0}, // -(2^52 -1 + 0.5)
 
 };
 

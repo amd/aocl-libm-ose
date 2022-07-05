@@ -57,7 +57,7 @@ else:
                '-Dlibalm_EXPORTS',
                '/W0',
                '/MP',
-               '/O3',
+               '/O2',
                '-Wno-c++11-narrowing',
                '-m64',
                '-fdiagnostics-absolute-paths',

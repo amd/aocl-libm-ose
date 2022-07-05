@@ -86,7 +86,7 @@ else:
     testcflags = ['/Wall',
                   '/w',
                   '/MP',
-                  '/O3',
+                  '/O2',
                   '-Wno-c++11-narrowing',
                   '/Od',
                   '/Ob2',

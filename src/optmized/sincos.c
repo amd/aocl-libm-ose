@@ -25,6 +25,91 @@
  *
  */
 
+/*
+ * ISO-IEC-10967-2: Elementary Numerical Functions
+ * Signature:
+ *   double cos(double x)
+ *
+ * Spec:
+ *   cos(0)    = 1
+ *   cos(-0)   = -1
+ *   cos(inf)  = NaN
+ *   cos(-inf) = NaN
+ *   sin(0)    = 0
+ *   sin(-0)   = -0
+ *   sin(inf)  = NaN
+ *   sin(-inf) = NaN
+ *
+ *
+ ******************************************
+ * Implementation Notes
+ * ---------------------
+ *
+ * checks for special cases
+ * if ( ux = infinity) raise overflow exception and return x
+ * if x is NaN then raise invalid FP operation exception and return x.
+ *
+ * 1. Argument reduction
+ * if |x| > 5e5 then
+ *      __amd_remainder_piby2(x, &r, &rr, &region)
+ * else
+ *      Argument reduction
+ *      Let z = |x| * 2/pi
+ *      z = dn + r, where dn = round(z)
+ *      rhead =  dn * pi/2_head
+ *      rtail = dn * pi/2_tail
+ *      r = z – dn = |x| - rhead – rtail
+ *      expdiff = exp(dn) – exp(r)
+ *      if(expdiff) > 15)
+ *      rtail = |x| - dn*pi/2_tail2
+ *      r = |x| -  dn*pi/2_head -  dn*pi/2_tail1 -  dn*pi/2_tail2  - (((rhead + rtail) – rhead )-rtail)
+ * rr = (|x| – rhead) – r + rtail
+ *
+ * 2. Polynomial approximation
+ * if(dn is even)
+ *       rr = rr * r;
+ *       x4 = x2 * x2;
+ *       s = 0.5 * x2;
+ *       t =  s - 1.0;
+ *       poly = x4 * (C1 + x2 * (C2 + x2 * (C3 + x2 * (C4 + x2 * (C5 + x2 * x6)))))
+ *       r_cos = (((1.0 + t) - s) - rr) + poly – t
+ *       x3 = x2 * r
+ *       poly = S2 + (r2 * (S3 + (r2 * (S4 + (r2 * (S5 + S6 * r2))))))
+ *       r_sin = r - ((x2 * (0.5*rr - x3 * poly)) - rr) - S1 * x3
+ * else
+ *       x3 = x2 * r
+ *       poly = S2 + (r2 * (S3 + (r2 * (S4 + (r2 * (S5 + S6 * r2))))))
+ *       r = r - ((x2 * (0.5*rr - x3 * poly)) - rr) - S1 * x3
+ *       rr = rr * r;
+ *       x4 = x2 * x2;
+ *       s = 0.5 * x2;
+ *       t =  s - 1.0;
+ *       poly = x4 * (C1 + x2 * (C2 + x2 * (C3 + x2 * (C4 + x2 * (C5 + x2 * x6)))))
+ *       r_sin = (((1.0 + t) - s) - rr) + poly – t
+ * if((sign + 1) & 2)
+ *       cos(x) = r
+ * else
+ *       cos(x) = -r;
+ * if(((sign & region) | ((~sign) & (~region))) & 1)
+ *       sin(x) = r
+ * else
+ *       sin(x) = -r;
+ * if |x| < pi/4 && |x| > 2.0^(-13)
+ *   r = 0.5 * x2;
+ *   t = 1 - r;
+ *   cos(x) = t + ((1.0 - t) - r) + (x*x * (x*x * C1 + C2*x*x + C3*x*x
+ *             + C4*x*x +x*x*C5 + x*x*C6)))
+ *   sin(x) = x + (x * (r2 * (S1 + r2 * (S2 + r2 * (S3 + r2 * (S4 + r2 * (S5 + r2 * S6)))))))
+ *
+ * if |x| < 2.0^(-13) && |x| > 2.0^(-27)
+ *   cos(x) = 1.0 - x*x*0.5;;
+ *   sin(x) = x - (x * x * x * (1/6))
+ * else
+ *   cos(x) = 1.0
+ *   sin(x) = x
+ ******************************************
+*/
+
 #include <stdint.h>
 #include <libm_util_amd.h>
 #include <libm/alm_special.h>
@@ -34,14 +119,274 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
-#include <libm/alm_special.h>
-#include <stdalign.h>
+
+static struct {
+    const double twobypi, piby2_1, piby2_1tail, invpi, pi, pi1, pi2;
+    const double piby2_2, piby2_2tail, ALM_SHIFT;
+    const double one_by_six;
+    double poly_sin[7];
+    double poly_cos[6];
+ } sin_cos_data = {
+     .ALM_SHIFT = 0x1.8p+52,
+     .one_by_six = 0.1666666666666666666,
+     .twobypi = 0x1.45f306dc9c883p-1,
+     .piby2_1 = 0x1.921fb54400000p0,
+     .piby2_1tail = 0x1.0b4611a626331p-34,
+     .piby2_2 = 0x1.0b4611a600000p-34,
+     .piby2_2tail = 0x1.3198a2e037073p-69,
+     .pi = 0x1.921fb54442d18p1,
+     .pi1 = 0x1.921fb50000000p1,
+     .pi2 = 0x1.110b4611a6263p-25,
+     .invpi = 0x1.45f306dc9c883p-2,
+     /*
+      * Polynomial coefficients
+      */
+     .poly_sin = {
+         -0x1.5555555555555p-3,
+         0x1.1111111110bb3p-7,
+         -0x1.a01a019e83e5cp-13,
+         0x1.71de3796cde01p-19,
+         -0x1.ae600b42fdfa7p-26,
+         0x1.5e0b2f9a43bb8p-33
+     },
+
+     .poly_cos = {
+         0x1.5555555555555p-5,   /* 0.0416667 */
+         -0x1.6c16c16c16967p-10, /* -0.00138889 */
+         0x1.A01A019F4EC91p-16,  /* 2.48016e-005 */
+         -0x1.27E4FA17F667Bp-22, /* -2.75573e-007 */
+         0x1.1EEB690382EECp-29,  /* 2.08761e-009 */
+         -0x1.907DB47258AA7p-37  /* -1.13826e-011 */
+     },
+};
+
+void __amd_remainder_piby2(double x, double *r, double *rr, int *region);
+
+#define pi          sin_cos_data.pi
+#define pi1         sin_cos_data.pi1
+#define pi2         sin_cos_data.pi2
+#define invpi       sin_cos_data.invpi
+#define TwobyPI     sin_cos_data.twobypi
+#define PIby2_1     sin_cos_data.piby2_1
+#define PIby2_1tail sin_cos_data.piby2_1tail
+#define PIby2_2     sin_cos_data.piby2_2
+#define PIby2_2tail sin_cos_data.piby2_2tail
+#define PIby4       0x3fe921fb54442d18
+#define FiveE6      0x415312d000000000
+#define ONE_BY_SIX  sin_cos_data.one_by_six
+#define ALM_SHIFT   sin_cos_data.ALM_SHIFT
+
+#define S1  sin_cos_data.poly_sin[0]
+#define S2  sin_cos_data.poly_sin[1]
+#define S3  sin_cos_data.poly_sin[2]
+#define S4  sin_cos_data.poly_sin[3]
+#define S5  sin_cos_data.poly_sin[4]
+#define S6  sin_cos_data.poly_sin[5]
+
+#define C1  sin_cos_data.poly_cos[0]
+#define C2  sin_cos_data.poly_cos[1]
+#define C3  sin_cos_data.poly_cos[2]
+#define C4  sin_cos_data.poly_cos[3]
+#define C5  sin_cos_data.poly_cos[4]
+#define C6  sin_cos_data.poly_cos[5]
+
+#define SIGN_MASK   0x7FFFFFFFFFFFFFFF /* Infinity */
+#define INF         0x7ff0000000000000
+#define SIGN_MASK32 0x7FFFFFFF
+#define SIN_SMALL   0x3f20000000000000  /* 2.0^(-13) */
+#define SIN_SMALLER 0X3e40000000000000  /* 2.0^(-27) */
+
 
 void
 ALM_PROTO_OPT(sincos)(double x, double *sin, double *cos)
 {
-   *cos = ALM_PROTO_OPT(cos)(x);
-   *sin = ALM_PROTO_OPT(sin)(x);
+    double r, r_cos, r_sin, rr, poly, x2, s, t;
+    double rhead, rtail, x3, x4;
+    uint64_t uy;
+    uint64_t sign = 0;
+    int32_t region;
 
-   return;
+    /* sin(inf) = sin(-inf) = sin(NaN) = NaN */
+    uint64_t ux = asuint64(x);
+    sign = ux >> 63;
+    ux = ux & SIGN_MASK;
+
+    if(unlikely((ux  & SIGN_MASK) >= INF)) {
+        /* infinity or NaN */
+        *sin = _sinf_special((float)x);
+        *cos = _cos_special(x);
+        return;
+    }
+    if(ux > PIby4){
+
+        x = asdouble(ux);
+        /* ux > pi/4 */
+        if(ux < FiveE6){
+            /* reduce  the argument to be in a range from -pi/4 to +pi/4
+                by subtracting multiples of pi/2 */
+
+            r = TwobyPI * x; /* x * two_by_pi*/
+
+            int32_t xexp = (int32_t)(ux >> 52);
+
+            double npi2d = r + ALM_SHIFT;
+
+            uint64_t npi2 = asuint64(npi2d);
+
+            npi2d -= ALM_SHIFT;
+
+            rhead  = x - npi2d * PIby2_1;
+
+            rtail  = npi2d * PIby2_1tail;
+
+            r = rhead - rtail;
+
+            uy = asuint64(r);
+
+            int64_t expdiff = xexp - (int32_t)((uy << 1) >> 53);
+
+            region = (int32_t)npi2;
+
+            if (expdiff  > 15) {
+
+                t = rhead;
+
+                rtail =  npi2d * PIby2_2;
+
+                rhead = t- rtail;
+
+                rtail  = npi2d * PIby2_2tail - ((t - rhead) - rtail);
+
+                r = rhead - rtail;
+            }
+
+            rr = (rhead - r) - rtail;
+        }
+        else {
+            // Reduce x into range [-pi/4,pi/4]
+            __amd_remainder_piby2(x, &r, &rr, &region);
+        }
+
+        x2 = r * r;
+
+        if(region & 1) {
+            /*cos calculation*/
+            /*if region 1 or 3 then sin region */
+
+            x3 = x2 * r;
+
+            /* poly = S2 + (r2 * (S3 + (r2 * (S4 + (r2 * (S5 + S6 * r2)))))) */
+            poly = POLY_EVAL_5(x2, S2, S3, S4, S5, S6);
+
+            s = 0.5 * rr;
+
+            poly = ((x2 * (s - x3 * poly)) - rr) - S1 * x3;
+
+            r_cos = r - poly; /* r - ((r2 * (0.5 * rr - x3 * poly) - rr) - S1*r3 */
+
+            /*sin calculation*/
+            /*cos region */
+            rr = rr * r;
+
+            x4 = x2 * x2;
+
+            s = 0.5 * x2;
+
+            t =  s - 1.0;
+
+            /* poly = x4 * (C1 + x2 * (C2 + x2 * (C3 + x2 * (C4 + x2 * (C5 + x2 * x6))))) */
+            poly = x4 * POLY_EVAL_6(x2, C1, C2, C3, C4, C5, C6);
+
+            r = (((1.0 + t) - s) - rr) + poly;
+
+            r_sin = r - t;
+        }
+        else {
+            /*cos calculation*/
+            /* region 0 or 2 do a cos calculation */
+            rr = rr * r;
+
+            x4 = x2 * x2;
+
+            s = 0.5 * x2;
+
+            t =  s - 1.0;
+
+            /* poly = x4 * (C1 + x2 * (C2 + x2 * (C3 + x2 * (C4 + x2 * (C5 + x2 * x6))))) */
+            poly = x4 * POLY_EVAL_6(x2, C1, C2, C3, C4, C5, C6);
+
+            r = (((1.0 + t) - s) - rr) + poly;
+
+            r_cos = r - t;
+
+            /*sin calculation*/
+            /* region 0 or 2 do a sin calculation */
+            x3 = x2 * r;
+
+            /* poly = S2 + (r2 * (S3 + (r2 * (S4 + (r2 * (S5 + S6 * r2)))))) */
+            poly = POLY_EVAL_5(x2, S2, S3, S4, S5, S6);
+
+            s = 0.5 * rr;
+
+            poly = ((x2 * (s - x3 * poly)) - rr) - S1 * x3;
+
+            r_sin = r - poly; /* r - ((r2 * (0.5 * rr - x3 * poly) - rr) - S1*r3 */
+        }
+
+        int32_t region_sin = region;
+        int32_t region_cos = region;
+
+        region_sin >>= 1;
+        region_cos += 1;
+
+        if(((sign & (uint64_t)region_sin) | ((~sign) & (~(uint64_t)region_sin))) & 1) {
+            *sin = r_sin;
+        }
+        else {
+            *sin = -r_sin;
+        }
+
+        if(region_cos & 2) {
+            *cos = -r_cos;
+        }
+        else {
+            *cos = r_cos;
+        }
+        return;
+    }
+    else if(ux >= SIN_SMALL) {
+        /* x > 2.0^(-13) */
+        x2 = x * x;
+
+        /*cos calculation*/
+        /* pi/4 > |x| > 2.0^(-13) */
+        x2 = x * x;
+
+        r = 0.5 * x2;
+
+        t = 1 - r;
+
+        s = t + ((1.0 - t) - r);
+
+        *cos =  s + (x2 * (x2 * POLY_EVAL_6(x2, C1, C2, C3, C4, C5, C6)));
+
+        /*sin calculation*/
+        /* x > 2.0^(-13) */
+        x2 = x * x;
+
+        /* x + (x * (r2 * (S1 + r2 * (S2 + r2 * (S3 + r2 * (S4 + r2 * (S5 + r2 * S6))))))) */
+        *sin = x + (x * (x2 * POLY_EVAL_6(x2, S1, S2, S3, S4, S5, S6)));
+        return;
+    }
+    else if(ux > SIN_SMALLER){
+        /* if 2.0^(-13) > |x| > 2.0^(-27) */
+        *cos = 1.0 - (x * x * 0.5);
+        /* if x > 2.0^(-27) */
+        *sin = x - (x * x * x * ONE_BY_SIX);
+        return;
+    }
+
+    *cos = 1.0;
+    *sin = x;
+
 }

@@ -42,6 +42,8 @@ ALM_FUNC_TYPE_ASM(f_name)
 fname:
     #get the unbiased exponent and the mantissa part of x
     #ifdef _WIN64
+    push %rdi
+    push %rsi
     mov %rcx, %rdi
     mov %rdx, %rsi
     mov %r8, %rdx
@@ -166,6 +168,10 @@ fname:
     movd %r10,%xmm0  #xmm0 = x
     mulsd .L__piby2(%rip),%xmm0
     movsd %xmm0,(%rsi)
+    #ifdef _WIN64
+    pop %rsi
+    pop %rdi
+    #endif
     ret      
     
 .section .rodata

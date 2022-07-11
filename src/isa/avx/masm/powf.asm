@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+; Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 ;
 ; Redistribution and use in source and binary forms, with or without modification,
 ; are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ include fm.inc
 ALM_PROTO_BAS64 powf
 
 
-fname_special   TEXTEQU <_powf_special>
+fname_special   TEXTEQU <alm_powf_special>
 
 
 save_xmm6       EQU     0b0h

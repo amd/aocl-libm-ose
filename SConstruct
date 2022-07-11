@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -27,6 +27,7 @@ import SCons
 import os
 from os import mkdir, makedirs, environ
 from os.path import join as joinpath, split as splitpath
+import shutil
 
 def AddSiteDir(site_dir):
   """Adds a site directory, as if passed to the --site-dir option.
@@ -52,7 +53,7 @@ __almenv.Setup()
 aenv = __almenv.GetDefaultEnv()
 if aenv['HOST_OS'] == 'win32':
     aenv['ENV']['TMP'] = os.environ['TMP'] # to avoid linker eror in windows. This is mentioned in scons FQA doc.
-    os.system("copy scripts\libalm.def src")
+    shutil.copy(".\scripts\libalm.def", ".\src")
 
 # First check version of python and scons
 EnsurePythonVersion(3, 6)
@@ -68,9 +69,6 @@ inc_path = '#include'
 
 # top level src path
 src_path = '#src'
-
-#get include path
-inc_path = os.path.join(os.getcwd(), 'include')
 
 # Add shared top-level headers
 aenv.Prepend(CPPPATH=[Dir('include')])

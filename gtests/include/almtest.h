@@ -1,7 +1,31 @@
 /*
- * Google Test framework for Libm math library
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+
 #ifndef __ALMTEST_H__
 #define __ALMTEST_H__
 
@@ -9,7 +33,6 @@
 #include <string>
 #include <tuple>
 #include <vector>
-#include "../../include/external/amdlibm.h"
 #include "args.h"
 #include "gtest.h"
 #include "almstruct.h"
@@ -90,9 +113,9 @@ class AccuTestFixtureFloat : public ::testing::TestWithParam<AccuParams> {
     if (nargs == 2)
     PopulateInputSamples(&inpbuff1, range[1], count);
     #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      aop = (float*)_aligned_malloc(32, _ALIGN_FACTOR);
+      aop = (float*)_aligned_malloc(64, _ALIGN_FACTOR);
     #else
-      aop = (float *)aligned_alloc(_ALIGN_FACTOR, 32);
+      aop = (float *)aligned_alloc(_ALIGN_FACTOR, 64);
     #endif
   }
 
@@ -150,9 +173,9 @@ class AccuTestFixtureDouble : public ::testing::TestWithParam<AccuParams> {
     if (nargs == 2)
     PopulateInputSamples(&inpbuff1, range[1], count);
     #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      aop = (double*)_aligned_malloc(32, _ALIGN_FACTOR);
+      aop = (double*)_aligned_malloc(64, _ALIGN_FACTOR);
     #else
-      aop = (double *)aligned_alloc(_ALIGN_FACTOR,32);
+      aop = (double *)aligned_alloc(_ALIGN_FACTOR,64);
     #endif
   }
 
@@ -172,11 +195,11 @@ class AccuTestFixtureDouble : public ::testing::TestWithParam<AccuParams> {
     #endif
     inpbuff1 = nullptr;
     }
-  #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-    _aligned_free(aop);
-  #else
-    free(aop);
-  #endif
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      _aligned_free(aop);
+    #else
+      free(aop);
+    #endif
     aop = nullptr;
   }
 
@@ -207,8 +230,8 @@ void SpecialSetUp(T **inp, int **exptdexpt, uint32_t count, U *data,
     T *opp = (T *)_aligned_malloc(sz, _ALIGN_FACTOR);
   #else
     int *ee = (int *)aligned_alloc(_ALIGN_FACTOR, sz);
-  T *in = (T *)aligned_alloc(_ALIGN_FACTOR, sz);
-  T *opp = (T *)aligned_alloc(_ALIGN_FACTOR, sz);
+    T *in = (T *)aligned_alloc(_ALIGN_FACTOR, sz);
+    T *opp = (T *)aligned_alloc(_ALIGN_FACTOR, sz);
   #endif
   LIBM_TEST_DPRINTF(DBG2, ,"Input:", in);
 
@@ -303,7 +326,7 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
     double ulp = getUlp(a.f, (double)e.f);
 
     /* if both are nans, output will always match, regardless of the sign bit */
-    if (((e.u ^ a.u) && (ulp > 1.0)) && (both_nans == false))
+    if (((e.u ^ a.u) && (ulp > 2.0)) && (both_nans == false))
         output_match=1;
 
     if (output_match==1 || exception_match==1) {
@@ -345,7 +368,7 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
   void TearDown() override {
     #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
       _aligned_free(idata);
-    _aligned_free(iop);
+      _aligned_free(iop);
     #else
       free(idata);
       free(iop);
@@ -413,7 +436,7 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
     double ulp = getUlp(a.d, (long double)e.d);
 
     /* if both are nans, output will always match, regardless of the sign bit */
-    if (((e.lu ^ a.lu) && (ulp > 1.0)) && (both_nans == false))
+    if (((e.lu ^ a.lu) && (ulp > 2.0)) && (both_nans == false))
         output_match=1;
 
     if (output_match==1 || exception_match==1) {

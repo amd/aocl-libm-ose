@@ -1,3 +1,30 @@
+/*
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
 #include <fenv.h>
 #include "almstruct.h"
 #include <libm_util_amd.h>
@@ -130,6 +157,7 @@ test_acoshf_conformance_data[] = {
 
 static libm_test_special_data_f64
 test_acosh_conformance_data[] = {
+    {0x3ff40c044a37af12, 0x3fe64e33d8cdb78c, FE_INEXACT},
     {0x0000000000000001LL, 0xfff8000000000000LL, FE_INVALID}, // denormal min
     {0x0005fde623545abcLL, 0xfff8000000000000LL, FE_INVALID}, // denormal intermediate
     {0x000FFFFFFFFFFFFFLL, 0xfff8000000000000LL, FE_INVALID}, // denormal max
@@ -275,7 +303,6 @@ test_acosh_conformance_data[] = {
     {0x4457b62df67fc4fdLL, 0x4048cdac82cb51b7LL, 0}, //
     {0x48c191ef3d6a018aLL, 0x4058a14ffccd501eLL, 0}, //
     {0x51934b4f70b3a04cLL, 0x40688b21b9ce55e4LL, 0}, //
-    {0x6337443f25f59cbbLL, 0x4078800a984ed8c7LL, 0}, //
-    
+    {0x6337443f25f59cbbLL, 0x4078800a984ed8c7LL, 0}, // 
 };
 

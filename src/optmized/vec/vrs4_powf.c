@@ -66,8 +66,10 @@ static struct {
     v_u32x4_t v_min, v_max;
     double ALIGN(16) poly[MAX_POLYDEGREE];
     v_f64x4_t ln2;
+    v_f32x4_t zero;
 } v_log_data = {
     .ln2    = _MM_SET1_PD4(0x1.62e42fefa39efp-1), /* ln(2) */
+    .zero   = _MM_SET1_PS4(0.0f),
     .v_min  = _MM_SET1_I32(0x00800000),
     .v_max  = _MM_SET1_I32(0x7f800000),
 
@@ -130,6 +132,7 @@ static struct {
 #define V_MAX       v_log_data.v_max
 #define V_MASK      v_log_data.v_mask
 #define LN2         v_log_data.ln2
+#define ZERO        v_log_data.zero
 #define INVLN2      expf_v4_data.tblsz_byln2
 #define EXPF_HUGE   expf_v4_data.Huge
 #define EXPF_MAX    expf_v4_data.expf_max
@@ -335,6 +338,18 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
     ret = _mm256_cvtpd_ps(as_v4_f64_u64(as_v4_u64_f64(result) + (n << 52)));
 
     if(check_corner_case(condition2, condition)) {
+
+        v_u32x4_t negative = (_x < ZERO);
+
+        /*call scalar powf for all inputs */
+        if(any_v4_u32_loop(negative)) {
+
+            return (v_f32x4_t) {powf(_x[0], _y[0]),
+                                powf(_x[1], _y[1]),
+                                powf(_x[2], _y[2]),
+                                powf(_x[3], _y[3])};
+
+        }
 
         v_f32x4_t x = _mm256_cvtpd_ps(ylogx);
 

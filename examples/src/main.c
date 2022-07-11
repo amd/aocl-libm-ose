@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,7 +26,6 @@
  */
 
 #include <stdio.h>
-
 extern int use_exp();
 extern int use_pow();
 extern int use_log();
@@ -42,10 +41,16 @@ extern int use_exp2();
 extern int use_log2();
 extern int use_asin();
 extern int use_acos();
-extern int use_log10();
+extern int use_asinh();
+
+/* trigonometric */
+extern int use_cexp();
+extern int use_clog();
+extern int use_cpow();
+
 
 int main()  {
-    printf("Illustration of AMD LibM functions\n");
+    printf("Illustration of AOCL LibM functions\n");
     use_exp();
     use_pow();
     use_log();
@@ -59,11 +64,14 @@ int main()  {
     use_sinh();
     use_exp2();
     use_log2();
-    use_acos();
     use_asin();
-    use_log10();
+    use_acos();
+    use_asinh();
 
-    printf("Ran examples\n");
+    use_cexp();
+    use_clog();
+    use_cpow();
+
 
     return 0;
 }

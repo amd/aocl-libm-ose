@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ do
 	    b ) build_type="${OPTARG}" ;;
 	    c ) compiler_type="${OPTARG}" ;;
 	    h ) helpfunc ;;
-            ? ) helpfunc ;;
+        ? ) helpfunc ;;
     esac
 done
 
@@ -61,9 +61,9 @@ echo "Build Type: "$build_type
 echo "Compiler: "$compiler_type
 fw="gtests"
 
-#default compiler exe paths (gcc)
-cc_exe=/usr/bin/gcc
-cxx_exe=/usr/bin/g++
+#default compiler exe paths
+cc_exe=""
+cxx_exe=""
 
 #check if compiler is aocc then checkif clang is added to path
 if [ ${compiler_type} = "aocc" ]; then
@@ -88,8 +88,13 @@ clean_cmd="scons -c"
 RunCommand "${clean_cmd}";
 
 #build
-build_cmd="scons -j32 ${fw}";
-build_cmd+=" CC=${cc_exe} CXX=${cxx_exe}"
+nproc=$(nproc)
+build_cmd="scons -j${nproc} ${fw}";
+# if aocc, use custom clang paths
+if [ ${compiler_type} = "aocc" ]; then
+    build_cmd+=" ALM_CC=${cc_exe} ALM_CXX=${cxx_exe}"
+fi
+
 build_cmd+=" verbose=1"
 
 #default: libabi=aocl

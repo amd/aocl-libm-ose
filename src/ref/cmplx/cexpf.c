@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -32,21 +32,18 @@
 #include <libm/constants.h>
 
 
-fc32_t ALM_PROTO_REF(cexpf)(fc32_t z);
-
-
 fc32_t
 ALM_PROTO_REF(cexpf)(fc32_t z)
 {
     flt32_t     re, im;
     f32_t       zy_re, zy_im;
-#if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
-    re.f = crealf(z);
-    im.f = (float)cimagf(z);
-#else
-    re.f = crealf(z);
-    im.f = (float)cimag(z);
-#endif
+    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+        re.f = crealf(z);
+        im.f = (float)cimagf(z);
+    #else
+        re.f = crealf(z);
+        im.f = (float)cimag(z);
+    #endif
 
     if((re.u & ALM_F32_SIGN_MASK) == 0) {
         if((im.u & ALM_F32_SIGN_MASK) == 0) {
@@ -68,10 +65,10 @@ ALM_PROTO_REF(cexpf)(fc32_t z)
 
     }
 
-#if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
-    return (fc32_t) { zy_re, zy_im };
-#else
-    return zy_re + I*zy_im;
-#endif
+    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+        return (fc32_t) { zy_re, zy_im };
+    #else
+        return zy_re + I*zy_im;
+    #endif
 }
 

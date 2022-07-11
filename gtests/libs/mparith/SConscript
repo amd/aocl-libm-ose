@@ -1,9 +1,29 @@
 #
-# Copyright (C) 2019 Prem Mallappa.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
+# Redistribution and use in source and binary forms, with or without modification,
+# are permitted provided that the following conditions are met:
+# 1. Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+# 3. Neither the name of the copyright holder nor the names of its contributors
+#    may be used to endorse or promote products derived from this software without
+#    specific prior written permission.
 #
-# Author: Prem Mallappa<prem.mallappa@gmail.com>
-#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+# OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+
 import os
 from os import path
 from os.path import join as joinpath
@@ -25,20 +45,19 @@ libpath = []
 libpath += ['.', 'src', 'mpariths']
 
 if mpenv['HOST_OS'] != 'win32':
-    mpcflags = [
-    '-fPIC',
-    '-Wwrite-strings',
-    '-fno-strict-aliasing',
-    '-D_GNU_SOURCE',
-    '-D_ISOC99_SOURCE',
-    '-DIS_64BIT'
-    ]
+    mpcflags = ['-fPIC',
+                '-Wwrite-strings',
+                '-fno-strict-aliasing',
+                '-D_GNU_SOURCE',
+                '-D_ISOC99_SOURCE',
+                '-DIS_64BIT'
+               ]
     liblist.extend(['mpfr', 'm'])
 
 else:
     mpcflags = ['-DIS_64BIT',
-        '-DWINDOWS'
-       ]
+                '-DWINDOWS'
+               ]
     liblist.extend(['mpfr', 'msvcrt'])
     exclude_flags=['/EHsc', '-funsigned-char', '-Wno-unused-parameter', '-march=native', '-std:c++17']
     for i in exclude_flags:
@@ -56,31 +75,31 @@ mpenv.Append(
 mpenv32 = mpenv.Clone()
 if mpenv['HOST_OS'] != 'win32':
     mpenv32.Append(CCFLAGS = '-DFLOAT',
-        MPVARIANT = '32')
+                   MPVARIANT = '32')
 else:
     mpenv32.Append(CCFLAGS = ['-DFLOAT', '-Dlibmparith32_EXPORTS'],
-        MPVARIANT = '32')
+                   MPVARIANT = '32')
 
 lib32 = SConscript('build_libmp',
-        exports = {'mpenv': mpenv32},
-        variant_dir = '32',
-        duplicate = 0,
+                   exports = {'mpenv': mpenv32},
+                   variant_dir = '32',
+                   duplicate = 0,
     )
 
 mpenv64 = mpenv.Clone()
 if mpenv['HOST_OS'] != 'win32':
     mpenv64.Append(CCFLAGS = '-DDOUBLE',
-        MPVARIANT = '64')
+                   MPVARIANT = '64')
 else:
     mpenv64.Append(CCFLAGS = ['-DDOUBLE', '-Dlibmparith64_EXPORTS'],
-        MPVARIANT = '64')
+                   MPVARIANT = '64')
 
 lib64 = SConscript('build_libmp',
-        exports = {'mpenv': mpenv64},
-        variant_dir = '64',
-        duplicate = 0,
+                   exports = {'mpenv': mpenv64},
+                   variant_dir = '64',
+                   duplicate = 0,
     )
 
 Return('lib32',
-    'lib64')
+       'lib64')
 

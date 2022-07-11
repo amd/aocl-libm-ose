@@ -1,16 +1,6 @@
-# How to build
-
-##Dependency libraries:
-  AMDLIBM test framework uses GNU MPFR (an open source multi-precision floating point library)
-  Install mpfr:
-  https://www.mpfr.org/
-  Eg:
-  Ubuntu:
-    $ sudo apt install libmpfr-dev
-  CentOS:
-    $ sudo yum install mpfr-devel.x86_64
-  SLES:
-    $ sudo zypper install mpfr-devel
+# How to build AOCL LibM OSE.
+git clone https://github.com/amd/aocl-libm-ose;
+git checkout aocl-3.0;
 
 ## Installing virtualenv
   There are various ways to install virtualenv on Linux environment.
@@ -44,90 +34,12 @@
    ```
 
   Building selecting compiler
-    $ scons ALM_CC=<gcc/clang executable path> ALM_CXX=<g++/clang++ executable path>
+   ``` Using GCC:
+    $ scons;
+   ``` Using AOCC:
+    $ scons --compiler=aocc CC=clang;
 
   Building with verbosity
    ``` shell
     $ scons <other options> --verbose=1
    ```
-
-  Building with debug
-   ```sh
-    $ scons <other options> --debug_mode=all/libs/gtests
-   ```
-
-  Developer mode - Developers get a new define for their experimentation.
-   ```sh
-    $ scons <other options> --developer=1
-   ```
-
-  Building test framework
-    $ scons gtests
-
-
-## Glibc compat library
-  An glibc compatible library, which has the table of functions compatible with
-  GLIBC. or compile with AOCC to generate proper API calls to amdlibm.
-  ``` sh
-    $ LD_PRELOAD=./build/aocl-release/src/compat/glibc-compat.o
-  ```
-
-## Possible future building
-  A fast library, with upto 8 ULP (when available).
-  ``` sh
-    $ LD_PRELOAD=/abs/path/amdlibm_fast.so
-  ```
-
-### Building with glibc compatibility for tests
-
-  Following is to build tests with glibc compatibility api
-
-``` sh
-  $ scons --libabi=glibc
-```
-
-  With this the tests will be compiled to call _libm_ functions, without the
-  amd specific prefix.
-
-### Building with Intel Math (SVML,IMF) Libraries
-  To build tests to exercise Intel math libraries
-
-  Add the intel library path to PATH variable.
-
-  $ export PATH=<path to intel shared libraries>:$PATH;
-  then,
-  $ scons --libabi=svml;
-  Add intel lib path to LD_LIBRARY_PATH;
-  $export LD_LIBRARY_PATH=<intel lib path>:$LD_LIBRARY_PATH;
-
-### To run the tests
-  To run the AMD LibM test framework.
-  export the required paths:
-
-  $export LD_LIBRARY_PATH=./build/aocl-release/src/:$LD_LIBRARY_PATH;
-
-  $export LD_LIBRARY_PATH=./build/aocl-release/gtests/libs/mparith/32/:$LD_LIBRARY_PATH;
-
-  $export LD_LIBRARY_PATH=./build/aocl-release/gtests/libs/mparith/64/:$LD_LIBRARY_PATH;
-
-  $export LD_LIBRARY_PATH=./build/aocl-release/gtests/gapi/gtest/:$LD_LIBRARY_PATH;
-
-  $export LD_LIBRARY_PATH=./build/aocl-release/gtests/gapi/gbench/:$LD_LIBRARY_PATH;
-
-  Now run the test executable for the required function
-  $./build/aocl-release/gtests/<function>/test_<function>     with the test parameters
-  Example:
-   ./build/aocl-release/gtests/exp/test_exp
-
-  Test parameters:
-  Input type:
-  -i (f for single precision, d for double precision)
-  Vector input count:
-  -e (1 for scalar, >1 for vector input variants)
-  Test Type:
-  -t (perf for performance, conf for conformance, accu for accuracy)
-  Input count:
-  -c (Integer value for number of inputs)
-  Input range:
-  -r (provide range: start,stop,step size example: -r -50,50,SIMPLE)
-

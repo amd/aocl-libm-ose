@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -29,8 +29,6 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
-
-//
 #include <libm/arch/all.h>
 
 
@@ -39,48 +37,47 @@ struct alm_arch_funcs __arch_funcs_exp = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_ARCH_AVX2(expf),
-            &ALM_PROTO_ARCH_AVX2(exp),
-            &ALM_PROTO_ARCH_AVX2(vrs4_expf),
-            &ALM_PROTO_ARCH_AVX2(vrs8_expf),   /* vrs8 ? */
-            &ALM_PROTO_ARCH_AVX2(vrd2_exp),
-            &ALM_PROTO_ARCH_AVX2(vrd4_exp),  /* vrd4 ? */
-            &ALM_PROTO_FMA3(vrsa_expf),  /*array vector float*/
-            &ALM_PROTO_FMA3(vrda_exp),  /*array vector double*/
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(expf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(exp),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_expf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_expf), /* v8s ? */
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_AVX2(vrd2_exp),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_AVX2(vrd4_exp),  /* v4d ? */
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_FMA3(vrsa_expf),  /*vector array variants*/
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_FMA3(vrda_exp),
         },
 
         [ALM_UARCH_VER_ZEN] = {
-            &ALM_PROTO_ARCH_ZN(expf),
-            &ALM_PROTO_ARCH_ZN(exp),
-            &ALM_PROTO_ARCH_ZN(vrs4_expf),
-            &ALM_PROTO_ARCH_ZN(vrs8_expf),
-            &ALM_PROTO_ARCH_ZN(vrd2_exp),
-            &ALM_PROTO_ARCH_ZN(vrd4_exp),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(expf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(exp),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN(vrs4_expf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_expf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN(vrd2_exp),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN(vrd4_exp),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
-            &ALM_PROTO_ARCH_ZN2(expf),
-            &ALM_PROTO_ARCH_ZN2(exp),
-            &ALM_PROTO_ARCH_ZN2(vrs4_expf),
-            &ALM_PROTO_ARCH_ZN2(vrs8_expf),
-            &ALM_PROTO_ARCH_ZN2(vrd2_exp),
-            &ALM_PROTO_ARCH_ZN2(vrd4_exp),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(expf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(exp),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN2(vrs4_expf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_expf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN2(vrd2_exp),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN2(vrd4_exp),
         },
 
         [ALM_UARCH_VER_ZEN3] = {
-            &ALM_PROTO_ARCH_ZN3(expf),
-            &ALM_PROTO_ARCH_ZN3(exp),
-            &ALM_PROTO_ARCH_ZN3(vrs4_expf),
-            &ALM_PROTO_ARCH_ZN3(vrs8_expf),
-            &ALM_PROTO_ARCH_ZN3(vrd2_exp),
-            &ALM_PROTO_ARCH_ZN3(vrd4_exp),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(expf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(exp),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN3(vrs4_expf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_expf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN3(vrd2_exp),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN3(vrd4_exp),
         },
     },
 };
 
 void
-LIBM_IFACE_PROTO(exp)(void *arg)
-{
+LIBM_IFACE_PROTO(exp)(void *arg) {
     alm_ep_wrapper_t g_entry_exp = {
        .g_ep = {
         [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(expf),

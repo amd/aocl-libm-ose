@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -52,7 +52,7 @@
 #   x = (2^m)*(G+g) with (1 <= G < 2) and (g <= 2^(-9))
 #   x = (2^m)*2*(G/2+g/2)
 #   x = (2^m)*2*(F+f) with (0.5 <= F < 1) and (f <= 2^(-10))
-#   
+#
 #   Y = (2^(-1))*(2^(-m))*(2^m)*A
 #   Now, range of Y is: 0.5 <= Y < 1
 #
@@ -81,7 +81,7 @@
 
 #include "fn_macros.h"
 #define fname ALM_PROTO_FMA3(log2)
-#define fname_special _log2_special@PLT
+#define fname_special alm_log_special@PLT
 
 
 # local variable storage offsets
@@ -107,12 +107,12 @@ fname:
     vmovd        %xmm0, %rax
     vpsubq       .L__mask_1023(%rip), %xmm3,%xmm3
     vcvtdq2pd    %xmm3, %xmm6 # xexp replaced VCVTDQ2PD
-    
+
     #  NaN or inf
     vpand       .L__real_inf(%rip), %xmm0, %xmm5
     vcomisd     .L__real_inf(%rip), %xmm5
     je          .L__x_is_inf_or_nan
-    
+
     # check for negative numbers or zero
     vpxor       %xmm5, %xmm5,%xmm5
     vcomisd     %xmm5, %xmm0
@@ -124,11 +124,11 @@ fname:
     vcomisd      .L__mask_1023_f(%rip), %xmm6
     je          .L__denormal_adjust
 
-.L__continue_common:    
+.L__continue_common:
     # compute index into the log tables
     vpand       .L__mask_mant_all8(%rip), %xmm0,%xmm14
     vpand       .L__mask_mant9(%rip), %xmm0,%xmm15
-    vpsllq       $1, %xmm15,%xmm15 
+    vpsllq       $1, %xmm15,%xmm15
     vpaddq       %xmm14,%xmm15,%xmm1
     vmovd        %xmm1, %rax
 
@@ -161,7 +161,7 @@ fname:
     vfmadd213sd    .L__real_1_over_2(%rip),%xmm1, %xmm5 # 1/2+r*1/3
     movsd       %xmm7, %xmm4 # r*r
     vfmadd213sd    .L__real_1_over_4(%rip),%xmm1, %xmm3 #1/4+(1/5*r+r*r*1/6)
-    
+
     vmulsd       %xmm7,%xmm7,%xmm4                   # r*r*r*r
     vfmadd231sd     %xmm7,%xmm5,%xmm1 # r*r*(1/2+r*1/3) + r
     vfmadd231sd     %xmm4, %xmm3,%xmm1 # poly
@@ -233,7 +233,7 @@ fname:
     vmovsd       .L__real_ninf(%rip), %xmm1
     mov         .L__flag_x_zero(%rip), %edi
     call        fname_special
-    ret   
+    ret
 
 .p2align 4,,15
 .L__x_is_neg:
@@ -260,7 +260,7 @@ fname:
     movd        %rax, %xmm1
     mov         .L__flag_x_nan(%rip), %edi
     call        fname_special
-    jmp         .L__finish    
+    jmp         .L__finish
 
 .p2align 4,,15
 .L__finish:

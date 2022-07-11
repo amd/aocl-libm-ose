@@ -1,8 +1,32 @@
+/*
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
 #ifndef __TEST_TAN_DATA_H__
 #define __TEST_TAN_DATA_H__
-/*
- * Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
- */
 
 #include <fenv.h>
 #include "almstruct.h"
@@ -145,8 +169,8 @@ test_tan_conformance_data[] = {
     {POS_INF_F64,  POS_QNAN_F64, FE_INVALID},
     {NEG_INF_F64,  NEG_QNAN_F64, FE_INVALID},
 
-    {0x3ff921fb55206ddf, POS_INF_F64, FE_INVALID}, //tan(pi/2)= +inf
-    {0xbff921fb55206ddf, NEG_INF_F64, FE_INVALID}, //tan(-90)=-tan(90)=-INF
+    {0x3ff921fb55206ddf, POS_INF_F64, FE_INEXACT}, //tan(pi/2)= +inf
+    {0xbff921fb55206ddf, NEG_INF_F64, FE_INEXACT}, //tan(-90)=-tan(90)=-INF
     {0x3fe921fb544486e0, POS_ONE_F64, 0},          //tan(45)
     {0xbfe921fb544486e0, NEG_ONE_F64, 0},          //tan(-45)=-1
     {POS_PI_F64,         POS_ZERO_F64, 0},         //tan(pi)=0

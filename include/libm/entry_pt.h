@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2022, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -149,6 +149,17 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(tanpif);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(truncf);
 
 /*
+ * Complex variants
+ */
+extern alm_ep_func_t        G_ENTRY_PT_PTR(cexp);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(cexpf);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(clog);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(clogf);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(cpow);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(cpowf);
+
+
+/*
  * Integer variants
  */
 extern alm_ep_func_t        G_ENTRY_PT_PTR(finite);
@@ -217,6 +228,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs4_asinf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs4_atanf);
 
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs8_cosf);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs8_acosf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs8_coshf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs8_expf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs8_exp2f);
@@ -260,6 +272,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_log1p);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_pow);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_sin);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_tan);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_atan);
 
 #endif	/* __AMD_LIBM_ENTRY_PT_PTR_H__ */
 

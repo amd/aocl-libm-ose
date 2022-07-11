@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -70,18 +70,18 @@ compute_cos_pyby_4:
     JMP    return_cos_s
 
 cos_early_exit_s:
-    
+
     MOV   .L__inf_mask_64(%rip),%r8
     AND   %r8,%rax
     CMP   %r8,%rax
-    JZ    cos_naninf    
+    JZ    cos_naninf
 
 range_reduce:
 
-    VMOVAPD %xmm0, %xmm6 
+    VMOVAPD %xmm0, %xmm6
     VMOVQ   %r9,%xmm0                                # r9 x with the sign cleared
     cmp  .L_e_5(%rip), %r9
-    JGE  cos_remainder_piby2  
+    JGE  cos_remainder_piby2
 
     range_e_5_s_fma3
     JMP cos_exit_s

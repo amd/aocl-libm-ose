@@ -31,7 +31,6 @@
 #include <libm/types.h>
 
 #include <emmintrin.h>
-
 #define _MM_SET1_PS4(x)                           \
     _Generic((x),                                 \
              float: (__m128){(x), (x), (x), (x)})
@@ -402,20 +401,6 @@ any_v4_u64_loop(v_u64x4_t cond)
     return ret;
 }
 
-// Condition check with for loop for better performance
-static inline int
-any_v8_u64_loop(v_u64x8_t cond)
-{
-    int ret = 0;
-    for (int i = 0; i < 8; i++) {
-        if (cond[i] != 0) {
-            ret = 1;
-            break;
-        }
-    }
-
-    return ret;
-}
 
 #ifndef ALM_HAS_V8_CALL_F32
 #define ALM_HAS_V8_CALL_F32

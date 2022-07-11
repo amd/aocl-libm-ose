@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2019-2022, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -189,7 +189,7 @@ ALM_PROTO_OPT(log2)(double x)
     if (unlikely ((ux - LOW) >= (HIGH - LOW))){
 
         if (2 * ux == 0)
-            return alm_log2_special(x, asdouble(NINFBITPATT_DP64), AMD_F_DIVBYZERO);
+            return alm_log_special(asdouble(NINFBITPATT_DP64), AMD_F_DIVBYZERO);
 
         if (ux == PINFBITPATT_DP64)
             return x;
@@ -200,7 +200,7 @@ ALM_PROTO_OPT(log2)(double x)
             if( (ux & QNANBITPATT_DP64) == QNANBITPATT_DP64)
                return x;
 
-            return alm_log2_special(x, asdouble(ux | QNANBITPATT_DP64), ALM_E_IN_X_NAN);
+            return alm_log_special(asdouble(ux | QNANBITPATT_DP64), ALM_E_IN_X_NAN);
 
 }
 

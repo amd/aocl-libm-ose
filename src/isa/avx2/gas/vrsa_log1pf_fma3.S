@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -68,28 +68,28 @@
 .globl fname
 ALM_FUNC_TYPE_ASM(f_name)
 fname:
-cmp         $0x0, %edi 
+cmp         $0x0, %edi
     jle         .L__return
     cmp         $0x0, %rsi
     je         .L__return
     cmp         $0x0, %rdx
     je         .L__return
-    
-.p2align 4    
+
+.p2align 4
 .L__process_next4:
     sub         $0x4, %rdi
     cmp         $-1,  %rdi
     jle          .L__process_first123
     movdqu      (%rsi, %rdi, 4), %xmm0
     jmp         .L__start
-    
-.p2align 4    
+
+.p2align 4
 .L__process_first123:
     je          .L__process_first3
     cmp         $-3, %rdi
     jl          .L__return #multiple of 4elements, all are processed %rdi == -4
-    je          .L__process_first1    
-    #process first 2    
+    je          .L__process_first1
+    #process first 2
     mov         $0x0, %rcx
     movsd       (%rsi, %rcx, 4), %xmm0
     jmp         .L__start
@@ -98,19 +98,19 @@ cmp         $0x0, %edi
 .L__process_first1:
     mov         $0x0, %rcx
     movss       (%rsi, %rcx, 4), %xmm0
-    jmp         .L__start    
+    jmp         .L__start
 
-.p2align 4    
+.p2align 4
 .L__process_first3:
     mov         $0x1, %rcx
-    movsd       (%rsi, %rcx, 4), %xmm0    
+    movsd       (%rsi, %rcx, 4), %xmm0
     dec         %rcx  # zero
     movss       (%rsi, %rcx, 4), %xmm1
     pslldq      $4,%xmm0
-    por         %xmm1, %xmm0    
-    
-.p2align 4    
-.L__start:    
+    por         %xmm1, %xmm0
+
+.p2align 4
+.L__start:
 
     # compute exponent part
     vmovaps      .L__real_qnan(%rip),%xmm3
@@ -122,16 +122,16 @@ cmp         $0x0, %edi
     vcmpltps     %xmm6,%xmm0,%xmm2 #mask for input less than -1.0
     #get the mask for exactly -1.0
     vcmpeqps     %xmm6,%xmm0,%xmm15
- 
+
     #process inputs less than 0x3380000033800000
-    vpand     %xmm1,%xmm0,%xmm4 
+    vpand     %xmm1,%xmm0,%xmm4
     #now restore if there are some inputs less than -1.0
     vpor      %xmm1,%xmm2,%xmm6 # store the mask for final use
     #vpcmov    %xmm2,%xmm4,%xmm3,%xmm1
     vandnpd %xmm4, %xmm2, %xmm11
     vandpd %xmm2, %xmm3, %xmm1
     vorpd %xmm11, %xmm1, %xmm1
-    
+
 
     # now restore if there are some inputs with -1.0
     vpor      %xmm15,%xmm6,%xmm2 # store the mask for final use
@@ -172,13 +172,13 @@ cmp         $0x0, %edi
     vpsrld         $14,%xmm6,%xmm6
     vpaddd         %xmm6,%xmm7,%xmm6
     vcvtdq2pd      %xmm6,%ymm7
-    vbroadcastsd   .L__index_constant1(%rip),%ymm8 # 
-    
+    vbroadcastsd   .L__index_constant1(%rip),%ymm8 #
+
     vmovaps        .L__mask_1023_32bit(%rip),%xmm12
     vandpd         %ymm4,%ymm5,%ymm4
     vextractf128   $1,%ymm4,%xmm15
     #vpermil2ps     $0,%xmm13,%xmm15,%xmm4,%xmm4
-    vshufps $221, %xmm15, %xmm4, %xmm4	
+    vshufps $221, %xmm15, %xmm4, %xmm4
 
     vpsrld         $20,%xmm4,%xmm4
     #xexp = (int)((ux & EXPBITS_DP64) >> EXPSHIFTBITS_DP64) - EXPBIAS_DP64;
@@ -188,7 +188,7 @@ cmp         $0x0, %edi
     vorps          %ymm3,%ymm5,%ymm5 # f = ymm5
     vmulpd         %ymm8,%ymm7,%ymm7 # f1 =index*0.015625
     vpsubd         .L__index_constant2(%rip),%xmm6,%xmm6 # index -= 64
-    
+
 # xmm4=xexp
     vmovaps        .L__plus_sixtyone(%rip),%xmm9
     vmovaps        .L__minus_two(%rip),%xmm10
@@ -204,7 +204,7 @@ cmp         $0x0, %edi
     vsubpd         %ymm7,%ymm5,%ymm5 # f2 = f - f1;
     #ELSE
     vpsubd         %xmm4,%xmm11,%xmm11
-    
+
     #ux = (unsigned long long)(0x3ff - xexp) << EXPSHIFTBITS_DP64;
     #PUT_BITS_DP64(ux,m2);
     vpslld         $23,%xmm11,%xmm11 # xmm11 = m2;
@@ -217,7 +217,7 @@ cmp         $0x0, %edi
     # q = ln_tail_table[index];
     lea            .L__ln_lead_64_table(%rip), %r9
     lea            .L__ln_tail_64_table(%rip), %r8
-    
+
     vmovd          %xmm6,%r10d # move 1st order index
     vpsrldq        $4,%xmm6,%xmm6
     vmovlpd        (%r9,%r10,8),%xmm14,%xmm14
@@ -239,11 +239,11 @@ cmp         $0x0, %edi
 
     vinsertf128    $1,%xmm15,%ymm14,%ymm6 # ymm6 = z1 = ln_lead_table[index]
     vinsertf128    $1,%xmm13,%ymm12,%ymm8 # ymm8 = q = ln_tail_table[index]
-    
+
     vbroadcastsd   .L__real_half(%rip),%ymm12
     vbroadcastsd   .L__real_cb_1(%rip),%ymm13
     vbroadcastsd   .L__real_cb_2(%rip),%ymm15
-    #f2 = ymm11/ymm5 f1 = xmm7 
+    #f2 = ymm11/ymm5 f1 = xmm7
     #vpcmov         %ymm9,%ymm5,%ymm11,%ymm11
     vandnpd %ymm5, %ymm9, %ymm14
     vandpd %ymm9, %ymm11, %ymm11
@@ -251,7 +251,7 @@ cmp         $0x0, %edi
 
 
     vmovapd        %ymm11,%ymm5
-    
+
     vfmadd231pd       %ymm12,%ymm11,%ymm7#(f1 + 0.5 * f2);
     vdivpd         %ymm7,%ymm5,%ymm7  # u = f2 / (f1 + 0.5 * f2);
     vmulpd         %ymm7,%ymm7,%ymm5  # v = u*u
@@ -262,15 +262,15 @@ cmp         $0x0, %edi
     #poly = xmm5 u = xmm7 q = xmm8
     vfmadd132pd       %ymm7,%ymm7,%ymm5 # (u + u * poly)
     vaddpd         %ymm8,%ymm5,%ymm5   # z2 = q + (u + u * poly)
-    #xmm5 = z2, xmm8 = q, xmm7 = u, xmm6 = z1 
+    #xmm5 = z2, xmm8 = q, xmm7 = u, xmm6 = z1
     vcvtdq2pd      %xmm4,%ymm4 # xexp (float)
-    
+
     vfmadd213pd       %ymm6,%ymm13,%ymm4
     vaddpd         %ymm5,%ymm4,%ymm4 # r = (xexp * log2 + z1 + z2)
-    
+
     vcvtpd2ps      %ymm4,%xmm4
 #################################
-    # xmm0 is the result of log1p  
+    # xmm0 is the result of log1p
 #xmm2 = mask for -1.0, <-1.0, and less than epsilon
 #xmm1 = result for -1.0, <-1.0, and less than epsilon
     #vpcmov         %xmm2,%xmm4,%xmm1,%xmm2
@@ -288,49 +288,49 @@ cmp         $0x0, %edi
     #so we get the sign bit and move it to the qnan Bit.
     #then OR it with Qnan/inf result
     vpsrld         $9,%xmm3,%xmm3
-    
+
     vpor           %xmm3,%xmm0,%xmm0
     #vpcmov         %xmm14,%xmm2,%xmm0,%xmm0
     vandnpd %xmm2, %xmm14, %xmm3
     vandpd %xmm14, %xmm0, %xmm0
     vorpd %xmm3, %xmm0, %xmm0
-    
+
 ##########################################
     cmp         $-1,  %rdi
         jle          .L__store123
         movdqu       %xmm0, (%rdx, %rdi, 4)
-        jmp         .L__process_next4    
-        
-    .p2align 4    
+        jmp         .L__process_next4
+
+    .p2align 4
     .L__store123:
         je         .L__store3
-        cmp         $-3, %rdi    
-        je          .L__store1    
-        #store 2    
+        cmp         $-3, %rdi
+        je          .L__store1
+        #store 2
         add        $0x2, %rdi
-        movsd      %xmm0, (%rdx,%rdi,4)    
+        movsd      %xmm0, (%rdx,%rdi,4)
         jmp         .L__return
-    
-    .p2align 4    
+
+    .p2align 4
     .L__store3:
         movdqa      %xmm0, %xmm1
         psrldq      $4, %xmm0
         inc         %rdi
         movss       %xmm1, (%rdx,%rdi,4)
         inc         %rdi
-        movsd      %xmm0, (%rdx,%rdi,4)    
+        movsd      %xmm0, (%rdx,%rdi,4)
         jmp         .L__return
-        
-    .p2align 4    
+
+    .p2align 4
     .L__store1:
         mov        $0x0, %rdi
-        movss      %xmm0, (%rdx,%rdi,4)    
-    
-    .L__return:    
-    ret         
-    
-    
-    
+        movss      %xmm0, (%rdx,%rdi,4)
+
+    .L__return:
+    ret
+
+
+
 .section .rodata
 
 .align 16
@@ -372,18 +372,18 @@ cmp         $0x0, %edi
                      .quad 0x0000007f0000007f
 .L__real_half:      .quad 0x3fe0000000000000 # 1/2
                     .quad 0x3fe0000000000000
-# Approximating polynomial coefficients for other x 
-.L__real_cb_1:      .quad 0x3fb5555555555557 # 8.33333333333333593622e-02, 
+# Approximating polynomial coefficients for other x
+.L__real_cb_1:      .quad 0x3fb5555555555557 # 8.33333333333333593622e-02,
                     .quad 0x3fb5555555555557
-.L__real_cb_2:      .quad 0x3f89999999865ede # 1.24999999978138668903e-02,  
+.L__real_cb_2:      .quad 0x3f89999999865ede # 1.24999999978138668903e-02,
                     .quad 0x3f89999999865ede
 .L__real_log2:      .quad 0x3fe62e42fefa39ef # log2 = 6.931471805599453e-01
-                    .quad 0x3fe62e42fefa39ef 
+                    .quad 0x3fe62e42fefa39ef
 .L__exp_mask:       .quad 0x7F8000007F800000   #
                     .quad 0x7F8000007F800000
-.L__exponent_compare: .quad 0x7F8000007F800000  
+.L__exponent_compare: .quad 0x7F8000007F800000
                       .quad 0x7F8000007F800000
-.L__sign_bit_32:    .quad 0x8000000080000000 
+.L__sign_bit_32:    .quad 0x8000000080000000
                     .quad 0x8000000080000000
 
 

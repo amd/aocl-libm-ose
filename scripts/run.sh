@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -48,7 +48,7 @@ do
     case "${opt}" in
         b ) build_type="${OPTARG}" ;;
         t ) test_type="${OPTARG}" ;;
-	f ) func="${OPTARG}" ;;
+	    f ) func="${OPTARG}" ;;
         h ) helpfunc ;;
         ? ) helpfunc ;;
     esac

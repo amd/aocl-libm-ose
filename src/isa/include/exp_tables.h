@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -36,16 +36,21 @@
 .comm   L__real_1_by_6, 32
 .comm   L__real_1_by_2, 32
 .comm   L__real_1_by_24, 32
-.L__real_1_by_720:              .octa 0x3f56c16c16c16c173f56c16c16c16c17    # 1/720
-				.octa 0x3f56c16c16c16c173f56c16c16c16c17    # 
-.L__real_1_by_120:              .octa 0x3f811111111111113f81111111111111    # 1/120
-				.octa 0x3f811111111111113f81111111111111    #
-.L__real_1_by_6:                .octa 0x3fc55555555555553fc5555555555555    # 1/6
-				.octa 0x3fc55555555555553fc5555555555555    #
-.L__real_1_by_2:                .octa 0x3fe00000000000003fe0000000000000    # 1/2
-				.octa 0x3fe00000000000003fe0000000000000    # 
-.L__real_1_by_24:               .octa 0x3fa55555555555553fa5555555555555    # 1/24
-				.octa 0x3fa55555555555553fa5555555555555    #
+.L__real_1_by_720:
+    .octa 0x3f56c16c16c16c173f56c16c16c16c17    # 1/720
+    .octa 0x3f56c16c16c16c173f56c16c16c16c17    #
+.L__real_1_by_120:
+    .octa 0x3f811111111111113f81111111111111    # 1/120
+    .octa 0x3f811111111111113f81111111111111    #
+.L__real_1_by_6:
+    .octa 0x3fc55555555555553fc5555555555555    # 1/6
+    .octa 0x3fc55555555555553fc5555555555555    #
+.L__real_1_by_2:
+    .octa 0x3fe00000000000003fe0000000000000    # 1/2
+    .octa 0x3fe00000000000003fe0000000000000    #
+.L__real_1_by_24:
+    .octa 0x3fa55555555555553fa5555555555555    # 1/24
+    .octa 0x3fa55555555555553fa5555555555555    #
 
 .align 16
 .comm   L__two_to_jby64_table, 512

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -27,6 +27,17 @@
 
 #ifndef __LIBM_POLY_H__
 #define __LIBM_POLY_H__
+
+/*
+* poly = C0*r^0 + C1*r^1 + c2*r^2
+*/
+#define POLY_EVAL_2(r, C0, C1, C2)  ({          \
+            __typeof(r) _t1, __r2, _q;          \
+            _t1 = C0 + C1*r;                    \
+            __r2 = r*r;                         \
+            _q = _t1 + C2*__r2;                 \
+            _q;                                 \
+})
 
 /*
  * poly = C1 + C2*r + C3*r^2 + C4*r^3
@@ -88,33 +99,38 @@
  *      = (C0 + C1*r) + r2(C2 + C3*r) + r4(C4+ C5*r) + r6*C6
  */
 #define POLY_EVAL_7(r, c0, c1, c2, c3, c4, c5, c6) ({     \
-            __typeof(r) r2, r4, t1, t2, t3, q;            \
-            t1 = c0 + c1*r;                               \
-            t2 = c2 + r*c3;                               \
-            r2 = r * r;                                   \
-            t3 = c4 * r*c5;                               \
-            r4 = r2 * r2;                                 \
-            q  = t1 + r2*t2;                              \
-            q = q + r4*t3;                                \
-            q = q + r2*r4*C6;                             \
+            __typeof(r) q, r2, r3, r4, r5, r6;            \
+            r2 = r*r;                                     \
+            r3 = r2*r;                                    \
+            r4 = r2*r2;                                   \
+            r5 = r3*r2;                                   \
+            r6 = r3*r3;                                   \
+            q = c0 + c1*r;                                \
+            q += c2*r2 + c3*r3;                           \
+            q += c4*r4 + c5*r5;                           \
+            q += c6*r6;                                   \
             q;                                            \
         })
 
 /*
- * poly = C0 + C1*r + C2*r2 + C3*r3 + C4*r4 + C5*r5 + C6*r6 + C7*r7
- *      = (C0 + C1*r) + r2(C2 + C3*r) + r4(C4+ C5*r) + r6(C6 + C7*r)
- */
+    This function returns a polynomial:
+    p(r) = c0*r^0 + c1*r^1 + c2*r^2 + c3r^3 + c4*r^4 + c5*r^5 +
+            c6*r^6 + c7*r^7
+*/
 #define POLY_EVAL_8(r, c0, c1, c2, c3, c4, c5, c6, c7) ({   \
-            __typeof(r) r2, r4, t1, t2, t3, t4, q;          \
-            t1 = c0 + c1*r;                                 \
-            t2 = c2 + r*c3;                                 \
+            __typeof(r) q, r2, r3, r4, r5, r6, r7;          \
             r2 = r * r;                                     \
-            t3 = c4 * r*c5;                                 \
+            r3 = r2 * r;                                    \
             r4 = r2 * r2;                                   \
-            t4 = c6 + r*c7;                                 \
-            q  = t1 + r2*t2;                                \
-            q = q + r4*t3;                                  \
-            q = q + r2*r4*t4;                               \
+            r5 = r2 * r3;                                   \
+            r6 = r3 * r3;                                   \
+            r7 = r5 * r2;                                   \
+                                                            \
+            q = c0 + c1*r;                                  \
+            q += c2*r2 + c3*r3;                             \
+            q += c4*r4 + c5*r5;                             \
+            q += c6*r6 + c7*r7;                             \
+                                                            \
             q;                                              \
         })
 
@@ -374,5 +390,113 @@
          q = (b0 + b1 * x4 ) + b2 * x8;                                      \
          q;                                                                  \
          })
+
+
+/*
+ * p(x) = 1+ r*(c1 +(c2 + (c3 + (c4 +(c5 +(c6 + c7*r)*r)*r)*r)*r)*r)
+ */
+#define POLY_EVAL_SINHF(x, c1, c2, c3, c4, c5, c6, c7) ({\
+        __typeof(x) q, a0, a1, a2, a3, a4, a5;           \
+         a0 =  c6 + c7  * x;                             \
+         a1 =  c5 + a0  * x;                             \
+         a2 =  c4 + a1  * x;                             \
+         a3 =  c3 + a2  * x;                             \
+         a4 =  c2 + a3 * x;                              \
+         a5 =  c1 + a4 * x;                              \
+         q =  1 + a5 * x;                                \
+         q;                                              \
+         })
+
+/*
+* p(x) = C0*x^0 + C1*x^2 + C2*x^4 + C3*x^6 +C4*x^8 + C5*x^10 + C6*x^12
+*/
+#define POLY_EVAL_EVEN_7(x, c0, c1, c2, c3, c4, c5, c6) ({\
+         __typeof(x) q, a0, a1, a2, a3;                   \
+         __typeof(x) x2, x4, x6, x8, x10, x12;            \
+         x2 = x*x;                                        \
+         x4 = x2*x2;                                      \
+         x6 = x2*x4;                                      \
+         x8 = x4*x4;                                      \
+         x10 = x4*x6;                                     \
+         x12 = x6*x6;                                     \
+         a0 = c0 + c1*x2;                                 \
+         a1 = c2*x4 + c3*x6;                              \
+         a2 = c4*x8 + c5*x10;                             \
+         a3 = c6*x12;                                     \
+         q = a0 + a1;                                     \
+         q += a2 + a3;                                    \
+         q;                                               \
+         })
+
+/*
+ * poly = C0 + C1*r^2 + C2*r^4 + C3*r^6+ C4*r^8 \
+ *
+ *      = C0 + r^2*(C1 + C2*r^2) + r^4*(C3*r^2+C4*r^4)
+ *
+ */
+#define POLY_EVAL_EVEN_8(r, c0, c1, c2, c3, c4) ({              \
+        __typeof(r) a0, a1, a2, q;                              \
+        __typeof(r) r2, r4;                                     \
+        r2 = r * r;                                             \
+        r4 = r2 * r2;                                           \
+                                                                \
+        a0 = c2*r2 + c1;                                        \
+        a1 = a0*r2 + c0;                                        \
+        a2 = (c3*r2 + c4*r4)*r4;                                \
+        q = (a1 + a2);                                          \
+        q;                                                      \
+        })
+
+/* 
+ * poly = C0 + C1*r^2 + C2*r^4 + C3*r^6 \
+ *
+ *      = C0 + r^2*(C1 + C2*r^2 + C3*r4)
+ *
+ */
+#define POLY_EVAL_EVEN_6(r, c0, c1, c2, c3) ({               \
+        __typeof(r) a0, a1;                              \
+        __typeof(r) r2, r4;                                     \
+        r2 = r * r;                                             \
+        r4 = r2 * r2;                                           \
+                                                                \
+        a0 = c3*r4 + c2*r2 + c1;                                        \
+        a1 = a0*r2 + c0;                                        \
+        a1;                                                      \
+        })        
+
+
+/*
+ * poly = C0 + C1*r^2 + C2*r^4 + C3*r^6+ C4*r^8 + c5*r^10 \
+ *
+ *      = C0 + r^2*(C1 + C2*r^2) + r^4*(C3*r^2+C4*r^4+C5*r^6)
+ *
+ */
+#define POLY_EVAL_EVEN_10(r, c0, c1, c2, c3, c4, c5) ({         \
+        __typeof(r) a0, a1, a2, q;                              \
+        __typeof(r) r2, r4, r6;                                 \
+        r2 = r * r;                                             \
+        r4 = r2 * r2;                                           \
+        r6 = r4 * r2;                                           \
+        a0 = c2*r2 + c1;                                        \
+        a1 = a0*r2 + c0;                                        \
+        a2 = (c3*r2 + c4*r4 + c5*r6)*r4;                        \
+        q = (a1 + a2);                                          \
+        q;                                                      \
+        })
+         
+/* 
+ * poly = C0 + C1*r^2 + C2*r^4 \
+ *
+ *      = C0 + r^2*(C1 + C2*r^2)
+ *
+ */
+#define POLY_EVAL_EVEN_4(r, c0, c1, c2) ({              \
+        __typeof(r) a0, a1, r2;                         \
+        r2 = r * r;                                     \
+        a0 = c1 + c2*r2;                                \
+        a1 = c0 + r2*a0;                                \
+        a1;                                             \
+        })        
+
 #endif /* LIBM_POLY_H */
 

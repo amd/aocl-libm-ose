@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+; Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 ;
 ; Redistribution and use in source and binary forms, with or without modification,
 ; are permitted provided that the following conditions are met:
@@ -51,7 +51,7 @@ include fm.inc
 
 ALM_PROTO_FMA3 exp2f
 
-fname_special   TEXTEQU <_exp2f_special>
+fname_special   TEXTEQU <alm_expf_special>
 ;Define name and any external functions being called
 EXTERN       fname_special      : PROC
 

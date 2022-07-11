@@ -1,3 +1,30 @@
+/*
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
 #include <fenv.h>
 #include "almstruct.h"
 #include <libm_util_amd.h>
@@ -17,8 +44,8 @@ test_atanf_conformance_data[] = {
    {0xF149F2CA, 0x7f800000,  FE_OVERFLOW}, //lambda + x > 1
    {0x42B2D4FC, 0x7f7fffec,  0}, //max arg, x = 89.41598629223294,max atanf arg
    {0x42B2D4FB, 0x7f7fff6c,  0}, //max arg - 1 bit
-   {0x42B2D4FD, 0x7f800000,  FE_OVERFLOW}, //max arg + 1 bit
-   {0x42B2D4FF, 0x7f800000,  FE_OVERFLOW}, // > max
+   {0x42B2D4FD, 0x7f800000,  FE_INEXACT}, //max arg + 1 bit
+   {0x42B2D4FF, 0x7f800000,  FE_INEXACT}, // > max
    {0x42B2D400, 0x7f7f820b,  0}, // < max
    {0x41A00000, 0x4d675844,  0}, //small_threshold = 20
    {0x41A80000, 0x4e1d3710,  0}, //small_threshold+1 = 21
@@ -42,7 +69,7 @@ test_atanf_conformance_data[] = {
    {0x805def12, 0x3f800000,  0},  // -denormal intermediate
    {0x807FFFFF, 0x3f800000,  0},  // -denormal max
    {0x00800000, 0x3f800000,  0},  // normal min
-   {0x43b3c4ea, 0x7f800000,  FE_OVERFLOW},  // normal intermediate
+   {0x43b3c4ea, 0x7f800000,  FE_INEXACT},  // normal intermediate
    {0x7f7fffff, 0x7f800000,  FE_OVERFLOW},  // normal max
    {0x80800000, 0x3f800000,  0},  // -normal min
    {0xc5812e71, 0x7f800000,  FE_INEXACT},  // -normal intermediate
@@ -90,31 +117,31 @@ test_atanf_conformance_data[] = {
    {0xc0000000, 0x4070c7d0,  0},  // -2
    {0x41200000, 0x462c14ef,  0},  // 10
    {0xc1200000, 0x462c14ef,  0},  // -10
-   {0x447A0000, 0x7f800000,  FE_OVERFLOW},  // 1000
-   {0xc47A0000, 0x7f800000,  FE_OVERFLOW},  // -1000
+   {0x447A0000, 0x7f800000,  FE_INEXACT},  // 1000
+   {0xc47A0000, 0x7f800000,  FE_INEXACT},  // -1000
    {0x4286CCCC, 0x6f96eb6f,  0},  // 67.4
    {0xc286CCCC, 0x6f96eb6f,  0},  // -67.4
-   {0x44F7F333, 0x7f800000,  FE_OVERFLOW},  // 1983.6
-   {0xc4F7F333, 0x7f800000,  FE_OVERFLOW},  // -1983.6
+   {0x44F7F333, 0x7f800000,  FE_INEXACT},  // 1983.6
+   {0xc4F7F333, 0x7f800000,  FE_INEXACT},  // -1983.6
    {0x42AF0000, 0x7e16bab3,  0},  // 87.5
    {0xc2AF0000, 0x7e16bab3,  0},  // -87.5
-   {0x48015E40, 0x7f800000,  FE_OVERFLOW},  // 132473
-   {0xc8015E40, 0x7f800000,  FE_OVERFLOW},  // -132473
-   {0x4B000000, 0x7f800000,  FE_OVERFLOW},  // 2^23
-   {0x4B000001, 0x7f800000,  FE_OVERFLOW},  // 2^23 + 1
-   {0x4AFFFFFF, 0x7f800000,  FE_OVERFLOW},  // 2^23 -1 + 0.5
-   {0xcB000000, 0x7f800000,  FE_OVERFLOW},  // -2^23
-   {0xcB000001, 0x7f800000,  FE_OVERFLOW},  // -(2^23 + 1)
-   {0xcAFFFFFF, 0x7f800000,  FE_OVERFLOW},  // -(2^23 -1 + 0.5)
+   {0x48015E40, 0x7f800000,  FE_INEXACT},  // 132473
+   {0xc8015E40, 0x7f800000,  FE_INEXACT},  // -132473
+   {0x4B000000, 0x7f800000,  FE_INEXACT},  // 2^23
+   {0x4B000001, 0x7f800000,  FE_INEXACT},  // 2^23 + 1
+   {0x4AFFFFFF, 0x7f800000,  FE_INEXACT},  // 2^23 -1 + 0.5
+   {0xcB000000, 0x7f800000,  FE_INEXACT},  // -2^23
+   {0xcB000001, 0x7f800000,  FE_INEXACT},  // -(2^23 + 1)
+   {0xcAFFFFFF, 0x7f800000,  FE_INEXACT},  // -(2^23 -1 + 0.5)
    {0x80000000, 0x80000000,  0},
    {0x7f800001, 0x7fc00001,  0},
-   {0xff800001, 0xffc00001,  0}, 
-   {0x7fc00000, 0x7fc00000,  0}, 
+   {0xff800001, 0xffc00001,  0},
+   {0x7fc00000, 0x7fc00000,  0},
    {0xffc00000, 0xffc00000,  0},
    {0x7f800000, 0x3fc90fdb,  0},
    {0xff800000, 0xbfc90fdb,  0},
-   {0x807fffff, 0x807fffff,  0}, 
-   {0xff7fffff, 0xbfc90fdb,  0}, 
+   {0x807fffff, 0x807fffff,  0},
+   {0xff7fffff, 0xbfc90fdb,  0},
 
    //answer from NAG test tool
    {0x35800000, 0x35800000,  0},    // 2 ^(-20) < 2.0^(-19), 9.536743164060E-07
@@ -130,17 +157,51 @@ test_atanf_conformance_data[] = {
 
 static libm_test_special_data_f64
 test_atan_conformance_data[] = {
-	// special accuracy tests
-	{0x3e30000000000000LL, 0x3ff0000000000000LL, 0},  //min, small enough that atan(x) = 1 //
-	{0x3E2FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, //min - 1 bit
-	{0x3e30000000000001LL, 0x3ff0000000000000LL, 0}, //min + 1 bit
+    #if defined(_WIN64) || defined(_WIN32)
+        {0x23d, 0x23d, 3},
+        {0xC32FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 1}, // -(2^52 -1 + 0.5)
+        {0xC330000000000001LL, 0x7ff0000000000000LL, 1}, // -(2^52 + 1)
+        {0xC330000000000000LL, 0x7ff0000000000000LL, 1}, // -2^52
+        {0x432FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 1}, // 2^52 -1 + 0.5
+        {0x4330000000000001LL, 0x7ff0000000000000LL, 1}, // 2^52 + 1
+        {0x4330000000000000LL, 0x7ff0000000000000LL, 1}, // 2^52
+        {0xC1002BC800000000LL, 0x7ff0000000000000LL, 1}, // -132473
+        {0x41002BC800000000LL, 0x7ff0000000000000LL, 1}, // 132473
+        {0xC09EFE6666666666LL, 0x7ff0000000000000LL, 1}, // -1983.6
+        {0x409EFE6666666666LL, 0x7ff0000000000000LL, 1}, // 1983.6
+        {0x4086340000000000LL, POS_INF_F64, 1},  // 710.5
+        {0x408633ce8fb9f87eLL, 0x7ff0000000000000LL, 1}, //max arg, x = 89.41598629223294,max atanf arg
+        {0x408F400000000000LL, 0x7ff0000000000000LL, 1}, // 1000
+        {0xC08F400000000000LL, 0x7ff0000000000000LL, 1}, // -1000
+        {0x408633ce8fb9f87fLL, 0x7ff0000000000000LL, 1}, //max arg + 1 bit
+        {0x408633ce8fb9f8ffLL, 0x7ff0000000000000LL, 1}, // > max
+    #else
+        {0x23d, 0x23d, 48},
+        {0xC32FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 32}, // -(2^52 -1 + 0.5)
+        {0xC330000000000001LL, 0x7ff0000000000000LL, 32}, // -(2^52 + 1)
+        {0xC330000000000000LL, 0x7ff0000000000000LL, 32}, // -2^52
+        {0x432FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 32}, // 2^52 -1 + 0.5
+        {0x4330000000000001LL, 0x7ff0000000000000LL, 32}, // 2^52 + 1
+        {0x4330000000000000LL, 0x7ff0000000000000LL, 32}, // 2^52
+        {0xC1002BC800000000LL, 0x7ff0000000000000LL, 32}, // -132473
+        {0x41002BC800000000LL, 0x7ff0000000000000LL, 32}, // 132473
+        {0xC09EFE6666666666LL, 0x7ff0000000000000LL, 32}, // -1983.6
+        {0x409EFE6666666666LL, 0x7ff0000000000000LL, 32}, // 1983.6
+        {0x4086340000000000LL, POS_INF_F64, 32},  // 710.5
+        {0x408633ce8fb9f87eLL, 0x7ff0000000000000LL, 32}, //max arg, x = 89.41598629223294,max atanf arg
+        {0x408F400000000000LL, 0x7ff0000000000000LL, 32}, // 1000
+        {0xC08F400000000000LL, 0x7ff0000000000000LL, 32}, // -1000
+        {0x408633ce8fb9f87fLL, 0x7ff0000000000000LL, 32}, //max arg + 1 bit
+        {0x408633ce8fb9f8ffLL, 0x7ff0000000000000LL, 32}, // > max
+    #endif
+    // special accuracy tests
+    {0x3e30000000000000LL, 0x3ff0000000000000LL, 0},  //min, small enough that atan(x) = 1 //
+    {0x3E2FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, //min - 1 bit
+    {0x3e30000000000001LL, 0x3ff0000000000000LL, 0}, //min + 1 bit
     {0xFE37E43C8800759CLL, 0x7ff0000000000000LL, 0}, //lambda + x = 1, x = -1.0000000000000000e+300
     {0xFE37E43C8800758CLL, 0x7ff0000000000000LL, 0}, //lambda + x < 1
     {0xFE37E43C880075ACLL, 0x7ff0000000000000LL, 0}, //lambda + x > 1
-    {0x408633ce8fb9f87eLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //max arg, x = 89.41598629223294,max atanf arg
     {0x408633ce8fb9f87dLL, 0x7feffffffffffd3bLL, 0}, //max arg - 1 bit
-    {0x408633ce8fb9f87fLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //max arg + 1 bit
-    {0x408633ce8fb9f8ffLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // > max
     {0x408633ce8fb9f800LL, 0x7feffffffffe093bLL, 0}, // < max
     {0x4034000000000000LL, 0x41aceb088b68e804LL, 0}, //small_threshold = 20
     {0x4035000000000000LL, 0x41c3a6e1fd9eecfdLL, 0}, //small_threshold+1 = 21
@@ -155,7 +216,6 @@ test_atan_conformance_data[] = {
     {NEG_SNAN_F64, NEG_SNAN_F64, FE_INVALID },  //
     {POS_QNAN_F64, POS_QNAN_F64, 0 },  //
     {NEG_QNAN_F64, NEG_QNAN_F64, 0 },  //
-    {0x4086340000000000LL, POS_INF_F64, FE_OVERFLOW},  // 710.5
     {0x0000000000000001LL, 0x3ff0000000000000LL, 0}, // denormal min
     {0x0005fde623545abcLL, 0x3ff0000000000000LL, 0}, // denormal intermediate
     {0x000FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, // denormal max
@@ -212,25 +272,12 @@ test_atan_conformance_data[] = {
     {0xC000000000000000LL, 0x400e18fa0df2d9bcLL, 0}, // -2
     {0x4024000000000000LL, 0x40c5829dd053712dLL, 0}, // 10
     {0xC024000000000000LL, 0x40c5829dd053712dLL, 0}, // -10
-    {0x408F400000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 1000
-    {0xC08F400000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -1000
     {0x4050D9999999999ALL, 0x45f2dd7567cd83eeLL, 0}, // 67.4
     {0xC050D9999999999ALL, 0x45f2dd7567cd83eeLL, 0}, // -67.4
-    {0x409EFE6666666666LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 1983.6
-    {0xC09EFE6666666666LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -1983.6
     {0x4055E00000000000LL, 0x47c2d7566d26536bLL, 0}, // 87.5
     {0xC055E00000000000LL, 0x47c2d7566d26536bLL, 0}, // -87.5
-    {0x41002BC800000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 132473
-    {0xC1002BC800000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -132473
-    {0x4330000000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 2^52
-    {0x4330000000000001LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 2^52 + 1
-    {0x432FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 2^52 -1 + 0.5
-    {0xC330000000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -2^52
-    {0xC330000000000001LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -(2^52 + 1)
-    {0xC32FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -(2^52 -1 + 0.5)
 
     {0x0, 0x0, 0},
-    {0x23d, 0x23d, 48},
     {0x3e38000000000000LL, 0x3e38000000000000LL, 0},
     {0xbe38000000000000LL, 0xbe38000000000000LL, 0},
     {0x3fe921fb54442d18LL, 0x3fe54e04c05d06a0LL, 0},

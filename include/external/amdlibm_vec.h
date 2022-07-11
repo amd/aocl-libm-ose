@@ -1,6 +1,6 @@
 /*
 
-(C) 2008-2021 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2022 Advanced Micro Devices, Inc. All Rights Reserved.
 
 Advanced Micro Devices, Inc.
 Software License Agreement
@@ -159,7 +159,6 @@ agreements with respect to the subject matter of this Agreement.
 
 #include <emmintrin.h>
 #include <immintrin.h>
-
 #ifndef AMD_LIBM_VEC_EXTERNAL_H
 #define AMD_LIBM_VEC_EXTERNAL_H
 
@@ -243,9 +242,9 @@ extern "C" {
     __m128  amd_vrs4_cosf   (__m128  x);
     __m128  amd_vrs4_tanf   (__m128  x);
 
-    __m256  amd_vrs8_cosf   (__m256  x);
-    __m256  amd_vrs8_sinf   (__m256  x);
     __m256  amd_vrs8_tanf   (__m256  x);
+    __m256  amd_vrs8_sinf   (__m256  x);
+    __m256  amd_vrs8_cosf   (__m256  x);
 
     __m256d amd_vrd4_sin    (__m256d x);
     __m256d amd_vrd4_cos    (__m256d x);
@@ -257,14 +256,16 @@ extern "C" {
     void amd_vrsa_sinf      (int len, float  *src, float  *dst);
 
 /* Inverse trigonometric */
-   __m128  amd_vrs4_acosf  (__m128  x);
-   __m128  amd_vrs4_asinf  (__m128  x);
-   __m128  amd_vrs4_atanf  (__m128  x);
+    __m128  amd_vrs4_asinf  (__m128  x);
+    __m128  amd_vrs4_acosf   (__m128  x);
+    __m128  amd_vrs4_atanf  (__m128  x);
 
+   __m128  amd_vrs8_acosf  (__m128  x);
    __m256  amd_vrs8_atanf  (__m256  x);
    __m256  amd_vrs8_asinf  (__m256  x);
 
-   __m128d amd_vrd2_atan   (__m128d x);
+    __m128d amd_vrd2_atan   (__m128d x);
+    __m128d amd_vrd4_atan   (__m128d x);
 
 /*Hyperbolic*/
    __m128  amd_vrs4_coshf   (__m128  x);

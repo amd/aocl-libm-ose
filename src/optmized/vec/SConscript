@@ -24,7 +24,6 @@
 
 # Inherit global environment
 Import('env')
-import os
 from os.path import join as joinpath
 
 builddir = joinpath(env['BUILDROOT'], 'src', 'optmized')

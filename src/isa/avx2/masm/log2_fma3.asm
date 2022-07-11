@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+; Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 ;
 ; Redistribution and use in source and binary forms, with or without modification,
 ; are permitted provided that the following conditions are met:
@@ -89,7 +89,7 @@ save_xmm6       EQU     00h
 stack_size      EQU     028h ; We take 8 as the last nibble to allow for 
                               ; alligned data movement.
  
-fname_special   TEXTEQU <_log2_special>
+fname_special   TEXTEQU <alm_log_special>
 EXTERN fname_special:PROC
 
 text SEGMENT EXECUTE

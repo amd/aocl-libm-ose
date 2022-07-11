@@ -1,7 +1,7 @@
 # How to build
 
 ##Dependency libraries:
-  AMDLIBM test framework uses GNU MPFR (an open source multi-precision floating point library)
+  AOCL LibM test framework uses GNU MPFR (an open source multi-precision floating point library)
   Install mpfr:
   https://www.mpfr.org/
   Eg:
@@ -64,7 +64,6 @@
   Building test framework
     $ scons gtests
 
-
 ## Glibc compat library
   An glibc compatible library, which has the table of functions compatible with
   GLIBC. or compile with AOCC to generate proper API calls to amdlibm.
@@ -101,7 +100,7 @@
   $export LD_LIBRARY_PATH=<intel lib path>:$LD_LIBRARY_PATH;
 
 ### To run the tests
-  To run the AMD LibM test framework.
+  To run the AOCL LibM test framework.
   export the required paths:
 
   $export LD_LIBRARY_PATH=./build/aocl-release/src/:$LD_LIBRARY_PATH;

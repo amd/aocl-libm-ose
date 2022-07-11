@@ -1,7 +1,31 @@
 /*
- * Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
  */
- 
+
+
 #include <iostream>
 #include <unordered_map>
 #include <string>
@@ -71,12 +95,12 @@ cmdLine::cmdLine() : arguments(NULL) {
       {"conf", TestType::E_Conformance},
       {"perf", TestType::E_Performance},
   };
-  
+
   cmd.testtype = new args::MapFlag<std::string, TestType, ToLowerReader>(
-      *cmd.parser, "type", 
+      *cmd.parser, "type",
       "TestType <type> = [accu, spec, conf, perf]",
       {'t', "type"}, test_map);
-      
+
   cmd.Iterations = new args::ValueFlag<uint64_t>(
       *cmd.arguments, "Iterations", "No. of Iterations", {'n',"Iterations"});
 
@@ -127,9 +151,9 @@ cmdLine::cmdLine() : arguments(NULL) {
 bool cmdLine::Parse(int argc, char *argv[]) {
   try {
     if(argc == 1) {
-      std::cout << *parser;     
+      std::cout << *parser;
       return 1;
-    } else { 
+    } else {
       parser->ParseCLI(argc, argv);
     }
   } catch (const args::Completion &e) {
@@ -182,7 +206,7 @@ bool cmdLine::Echo(InputParams *inparams) {
     inparams->verboseflag = args::get(*verbose);
     int32_t bit = inparams->verboseflag;
     int high = LIBM_TEST_DBG_VERBOSE3 - LIBM_TEST_DBG_INFO;
-    
+
     /* adjust between 0-5 */
     bit = (bit < 0)? 0: bit;
     bit = (bit > high)? high: bit;
@@ -190,7 +214,7 @@ bool cmdLine::Echo(InputParams *inparams) {
   }
 
   if((inparams->ttype != ALM::TestType::E_Accuracy) ||
-    (inparams->ttype != ALM::TestType::E_SpecialCase) || 
+    (inparams->ttype != ALM::TestType::E_SpecialCase) ||
     (inparams->ttype != ALM::TestType::E_Conformance)) {
       if (*Iterations) {
         std::cout << "No. of Iterations  : " << args::get(*Iterations) << std::endl;
@@ -199,7 +223,7 @@ bool cmdLine::Echo(InputParams *inparams) {
         inparams->niter = NITER;
       }
   }
-    
+
   if (*count) {
     std::cout << "No. of Samples  : " << args::get(*count) << std::endl;
     inparams->count = args::get(*count);
@@ -238,6 +262,9 @@ bool cmdLine::Echo(InputParams *inparams) {
       case 8:
         inparams->fqty = ALM::FloatQuantity::E_Vector_8;
         break;
+      case 16:
+        inparams->fqty = ALM::FloatQuantity::E_Vector_16;
+        break;
       default:
         break;
     }
@@ -245,13 +272,14 @@ bool cmdLine::Echo(InputParams *inparams) {
     inparams->fqty = ALM::FloatQuantity::E_All;
   }
   std::cout << "Elements per Lane : " << inparams->fqty << std::endl;
-    
-  if (((inparams->fwidth == ALM::FloatWidth::E_F32) &&
-     (inparams->fqty == ALM::FloatQuantity::E_Vector_2)) ||
-     ((inparams->fwidth == ALM::FloatWidth::E_F64) &&
-     (inparams->fqty == ALM::FloatQuantity::E_Vector_8))) {
-      cout << "Invalid Options" << endl;
-    return 1;
+
+  /* check for invalid vector types */
+  /* vector 2 element float is invalid */
+  /* add more invalid types here going forward */
+  if ((inparams->fwidth == ALM::FloatWidth::E_F32) &&
+      (inparams->fqty == ALM::FloatQuantity::E_Vector_2)) {
+        cout << "Invalid Options" << endl;
+        return 1;
   }
 
   return 0;

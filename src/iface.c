@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -96,6 +96,10 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_LLRINT]     = {LIBM_IFACE_PROTO(llrint), NULL},
     [C_AMD_LLROUND]    = {LIBM_IFACE_PROTO(llround), NULL},
 
+    /*complex*/
+    [C_AMD_CEXP]       = {LIBM_IFACE_PROTO(cexp), NULL},
+    [C_AMD_CPOW]       = {LIBM_IFACE_PROTO(cpow), NULL},
+    [C_AMD_CLOG]       = {LIBM_IFACE_PROTO(clog), NULL},
 };
 
 #ifndef ARRAY_SIZE

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -28,7 +28,9 @@
 EXE="$1"
 
 nargs=1
-xranges=(-50,50)
+
+xranges=(-100,100    \
+    -1000,1000)
 
 input_types=("s1d" "s1f" "v4s" "v4d" "v2d" "v8s")
 

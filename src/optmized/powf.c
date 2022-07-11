@@ -223,9 +223,9 @@ calculate_log(float x)
     uint32_t mant_n = ux & 0x007F8000;
 
     /*
-     * Step needed for better accuracy
-    uint64_t mant_n1 = ux & MANT_MASK_N1;
-    uint64_t j = (mant_n) + (mant_n1 << 1);
+     * Step needed for better accuracy 
+    uint32_t mant_n1 = ux & 0x00004000;
+    uint32_t j = (mant_n) + (mant_n1 << 1);
     */
 
     uint32_t j = (mant_n);
@@ -263,11 +263,11 @@ static inline float calculate_exp(double_t x, uint64_t sign_bias)
     if (unlikely ((top12(x) & 0x7ff)  > top12(88.0))) {
 
         if ((float)x > EXPF_FARG_MAX) {
-            return _expf_special((float)x, asfloat(((uint32_t)(sign_bias >> 32) | PINFBITPATT_SP32)), EXP_Y_INF);
+            return alm_expf_special(asfloat(((uint32_t)(sign_bias >> 32) | PINFBITPATT_SP32)), EXP_Y_INF);
         }
 
         if (((float)x) < EXPF_FARG_MIN) {
-            return _expf_special((float)x, asfloat((uint32_t)(sign_bias >> 32)) , EXP_Y_ZERO);
+            return alm_expf_special(asfloat((uint32_t)(sign_bias >> 32)) , EXP_Y_ZERO);
         }
 
     }
@@ -384,6 +384,18 @@ float ALM_PROTO_OPT(powf)(float x, float y)
             ux &= 0x7fffffff; /* x is negative, y is integer */
 
             x = asfloat(ux);
+        }
+
+        if (ux < 0x00800000) {
+         /* Normalize subnormal x */
+            ux = asuint32(x * 0x1p23f);
+
+            ux &= 0x7fffffff;
+
+            ux -= 23 << 23;
+
+            x = asfloat(ux);
+
         }
     }
 

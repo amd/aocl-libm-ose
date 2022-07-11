@@ -1,0 +1,77 @@
+/*
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+// polynomial for approximating asinf(x) using fpminimax
+
+restart ;
+
+N = 1000;				// Number of points to check in the give range
+
+deg = 25 ; 				// poly degree (choose an odd number)
+
+a = 0 ;  			// Lower bound of the range
+b = 1/2 ; 			// Upper bound of the range
+// find f(x) functions polynomial with minimal absolute error
+f = asin(x);
+
+// Generate basis of polynomial f(x)
+P = [||] ;
+for i from 1 to deg by 2  do {P = P@[|i|];} ;
+
+// return p that minimizes |f(x) - poly(x) - x^d*p(x)|
+// poly = remez(f(x),P,[a;b]) ;
+poly = fpminimax(f,P,[|DD...|],[a;b],floating,relative) ;
+
+// print("abs error:", accurateinfnorm(f(x)-poly(x), [a;b], 30));
+// print("rel error:", accurateinfnorm(poly(x)/f(x)-1, [a;b], 30));
+
+// relative error computation fails
+// Make a array in the intervel [a;b]
+dx = (b-a)/(N-1) ;		// step
+xi = [||] ;
+for i from 0 to N-1 do {xi = xi@[|a+i*dx|];} ;
+
+// Calculate the value of original function and approximated polynomial and relative error at given x
+abs_err = [||] ;
+rel_err = [||] ;
+for i from 0 to N-1 do
+{
+	y0 = f(xi[i]) ;    // True value
+	y1 = poly(xi[i]) ; // Approximate value
+	abs_err = abs_err@[|abs(y1-y0)|] ;
+	rel_err = rel_err@[|abs(y1/y0-1)|] ;
+} ;
+print("abs error:", dirtysimplify(max(abs_err)));
+print("rel error:", dirtysimplify(max(rel_err)));
+print("in [",a,b,"]");
+print("coeffs:");
+// display the coefficients in double
+for i from 1 to deg by 2 do double(coeff(poly,i));
+print (poly) ;
+display = hexadecimal ;
+for i from 1 to deg by 2 do double(coeff(poly,i));
+print (poly) ;

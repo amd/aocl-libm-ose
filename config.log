@@ -1,4 +1,4 @@
-file /home/pjayaraj/aocl-libm-ose/scripts/site_scons/alm/check.py,line 152:
+file /home/pmallapp/Projects/amd/aocl-libm.git/scripts/site_scons/alm/check.py,line 156:
 	Configure(confdir = build/aocl-release/.sconf_temp)
 scons: Configure: Checking whether gcc program exists...
 scons: Configure: /usr/bin/gcc
@@ -13,7 +13,7 @@ scons: Configure: Checking whether g++ program exists...
 scons: Configure: /usr/bin/g++
 
 scons: Configure: Checking for Toolchain 
-scons: Configure: (cached)  Using compiler GCC ver 9.3
+scons: Configure: (cached)  Using compiler GCC ver 10.2
 scons: Configure: (cached) yes
 
 scons: Configure: Checking if test supporting libraries exists
@@ -64,46 +64,4 @@ scons: Configure: The original builder output was:
   |
 scons: Configure: (cached) yes
 
-
-file /home/pjayaraj/aocl-libm-ose/gtests/SConscript,line 14:
-	Configure(confdir = .sconf_temp)
-scons: Configure: Checking for C header file mpfr.h... 
-scons: Configure: ".sconf_temp/conftest_6e5a6327974c76dd3e482b4aff9c15a4_0.c" is up to date.
-scons: Configure: The original builder output was:
-  |.sconf_temp/conftest_6e5a6327974c76dd3e482b4aff9c15a4_0.c <-
-  |  |
-  |  |#include "mpfr.h"
-  |  |
-  |  |
-  |
-scons: Configure: ".sconf_temp/conftest_6e5a6327974c76dd3e482b4aff9c15a4_0_f087a16a32129ada51f02c2896d03023.o" is up to date.
-scons: Configure: The original builder output was:
-  |     [CC] .sconf_temp/conftest_6e5a6327974c76dd3e482b4aff9c15a4_0_f087a16a32129ada51f02c2896d03023.o
-  |
-scons: Configure: (cached) yes
-
-scons: Configure: Checking for C library mpfr... 
-scons: Configure: ".sconf_temp/conftest_886f7703aa94e9864df836691cdd2411_0.c" is up to date.
-scons: Configure: The original builder output was:
-  |.sconf_temp/conftest_886f7703aa94e9864df836691cdd2411_0.c <-
-  |  |
-  |  |
-  |  |#include "mpfr.h"
-  |  |
-  |  |int
-  |  |main() {
-  |  |  
-  |  |return 0;
-  |  |}
-  |  |
-  |
-scons: Configure: ".sconf_temp/conftest_886f7703aa94e9864df836691cdd2411_0.o" is up to date.
-scons: Configure: The original builder output was:
-  |     [CC] .sconf_temp/conftest_886f7703aa94e9864df836691cdd2411_0.o
-  |
-scons: Configure: ".sconf_temp/conftest_886f7703aa94e9864df836691cdd2411_0_82169cf3f18ecc43eebd3681fc299e2a" is up to date.
-scons: Configure: The original builder output was:
-  |   [LINK] .sconf_temp/conftest_886f7703aa94e9864df836691cdd2411_0_82169cf3f18ecc43eebd3681fc299e2a
-  |
-scons: Configure: (cached) yes
 

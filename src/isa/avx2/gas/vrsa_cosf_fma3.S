@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -56,28 +56,28 @@ fname:
 mov %rsi, %r14
 mov %rdx, %r15
 
-cmp         $0x0, %edi 
+cmp         $0x0, %edi
     jle         .L__return
     cmp         $0x0, %r14
     je         .L__return
     cmp         $0x0, %r15
     je         .L__return
-    
-.p2align 4    
+
+.p2align 4
 .L__process_next4:
     sub         $0x4, %rdi
     cmp         $-1,  %rdi
     jle          .L__process_first123
     movdqu      (%r14, %rdi, 4), %xmm0
     jmp         .L__start
-    
-.p2align 4    
+
+.p2align 4
 .L__process_first123:
     je          .L__process_first3
     cmp         $-3, %rdi
     jl          .L__return #multiple of 4elements, all are processed %rdi == -4
-    je          .L__process_first1    
-    #process first 2    
+    je          .L__process_first1
+    #process first 2
     mov         $0x0, %rcx
     movsd       (%r14, %rcx, 4), %xmm0
     jmp         .L__start
@@ -86,19 +86,19 @@ cmp         $0x0, %edi
 .L__process_first1:
     mov         $0x0, %rcx
     movss       (%r14, %rcx, 4), %xmm0
-    jmp         .L__start    
+    jmp         .L__start
 
-.p2align 4    
+.p2align 4
 .L__process_first3:
     mov         $0x1, %rcx
-    movsd       (%r14, %rcx, 4), %xmm0    
+    movsd       (%r14, %rcx, 4), %xmm0
     dec         %rcx  # zero
     movss       (%r14, %rcx, 4), %xmm1
     pslldq      $4,%xmm0
-    por         %xmm1, %xmm0    
-    
-.p2align 4    
-.L__start:    
+    por         %xmm1, %xmm0
+
+.p2align 4
+.L__start:
 
         sub     $stack_size, %rsp
 
@@ -118,13 +118,13 @@ cos_early_exit_s:
     VADDPD   %ymm0,%ymm0,%ymm3                      #nan value
     VANDPD %ymm1, %ymm3, %ymm4
     VANDNPD %ymm1, %ymm1, %ymm10
-    VORPD %ymm10, %ymm4, %ymm4  
+    VORPD %ymm10, %ymm4, %ymm4
 
     VMOVAPD .L_nan(%rip),%ymm3
     VANDPD %ymm2, %ymm3, %ymm10
     VANDNPD %ymm4, %ymm2, %ymm7
     VORPD %ymm7, %ymm10, %ymm10
-    
+
 cos_early_exit_s_1:
 
     VEXTRACTF128 $1,%ymm8,%xmm7
@@ -140,10 +140,10 @@ cos_early_exit_s_1:
 
     JZ range_reduce
 
-    VMULPD  .L_point_five(%rip),%ymm0,%ymm1                         #    
+    VMULPD  .L_point_five(%rip),%ymm0,%ymm1                         #
     VFNMADD213PD .L_one(%rip),%ymm0,%ymm1       # ymm9 1.0 - x*x*(double2)0.5;
     VMOVDQA %ymm1, %ymm9
-    
+
     cos_piby4_s4f_fma3
 
     VMOVDQA  .L_mask_3e4(%rip),%xmm3
@@ -156,7 +156,7 @@ cos_early_exit_s_1:
     VMOVDQA  .L_mask_3f2(%rip),%xmm4
 
     VMOVDQA     .L_mask_3f2(%rip),%xmm5 #xmm5 used instead of xmm7
-    VPCMPGTQ    %xmm8,%xmm4,%xmm4       
+    VPCMPGTQ    %xmm8,%xmm4,%xmm4
     VPCMPGTQ    %xmm7,%xmm5,%xmm7
     VINSERTF128 $1,%xmm7,%ymm4,%ymm4
 
@@ -213,7 +213,7 @@ if_not_remainder:
     VANDPD %ymm3, %ymm0, %ymm7
     VANDNPD r1(%rsp), %ymm3, %ymm1
     VORPD %ymm1, %ymm7, %ymm7
-    
+
     VANDNPD region1(%rsp), %ymm3, %ymm0
     VANDPD %ymm3, %ymm11, %ymm11
     VORPD %ymm0, %ymm11, %ymm11
@@ -259,7 +259,7 @@ ret_cos_2fpiby4_s:
     VANDNPD %ymm4, %ymm11, %ymm1
     VANDPD %ymm11, %ymm0, %ymm0
     VORPD %ymm1, %ymm0, %ymm0
-    
+
 
 return_cos_s:
     VCVTPD2PS   %ymm0,%xmm0
@@ -267,33 +267,33 @@ return_cos_s:
      cmp         $-1,  %rdi
         jle          .L__store123
         movdqu       %xmm0, (%r15, %rdi, 4)
-        jmp         .L__process_next4    
-        
-    .p2align 4    
+        jmp         .L__process_next4
+
+    .p2align 4
     .L__store123:
         je         .L__store3
-        cmp         $-3, %rdi    
-        je          .L__store1    
-        #store 2    
+        cmp         $-3, %rdi
+        je          .L__store1
+        #store 2
         add        $0x2, %rdi
-        movsd      %xmm0, (%r15,%rdi,4)    
+        movsd      %xmm0, (%r15,%rdi,4)
         jmp         .L__return
-    
-    .p2align 4    
+
+    .p2align 4
     .L__store3:
         movdqa      %xmm0, %xmm1
         psrldq      $4, %xmm0
         inc         %rdi
         movss       %xmm1, (%r15,%rdi,4)
         inc         %rdi
-        movsd      %xmm0, (%r15,%rdi,4)    
+        movsd      %xmm0, (%r15,%rdi,4)
         jmp         .L__return
-        
-    .p2align 4    
+
+    .p2align 4
     .L__store1:
         mov        $0x0, %rdi
-        movss      %xmm0, (%r15,%rdi,4)    
-    
-    .L__return:    
-    ret         
+        movss      %xmm0, (%r15,%rdi,4)
+
+    .L__return:
+    ret
 

@@ -1,12 +1,36 @@
 /*
- * Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
  */
+
  
 #include <float.h>
 #include <string>
 #include <stdlib.h>
 #include <stdbool.h>
-
+#include <inttypes.h>
 #include "verify.h"
 #include "libm_util_amd.h"
 
@@ -104,6 +128,36 @@ void PrintConfExpections(int raised_exception, int expected_exception) {
   printf(" Expected exception: ");
   print_errors(expected_exception);
   puts("");
+}
+
+void PrintUlpResultsFloat(int nargs, float input1, float input2, double expected, float actual, double ulp) {
+  val val_ip1, val_ip2, val_exptd, val_aop;
+  val_ip1.f = input1;
+  val_exptd.d = expected;
+  val_aop.f = actual;
+  printf ("Input1: %f (0x%" PRIx32 ") ", input1, val_ip1.u);
+  if (nargs == 2) {
+    val_ip2.f = input2;
+    printf ("Input2: %f (0x%" PRIx32 ") ", input2, val_ip2.u);
+  }
+  printf ("Expected: %f (0x%" PRIx64 ") ", expected, val_exptd.lu);
+  printf ("Actual: %f (0x%" PRIx32 ") ", actual, val_aop.u);
+  printf ("ULP: %f\n", ulp);
+}
+
+void PrintUlpResultsDouble(int nargs, double input1, double input2, long double expected, double actual, double ulp) {
+  val val_ip1, val_ip2, val_exptd, val_aop;
+  val_ip1.d = input1;
+  val_exptd.d = expected;
+  val_aop.d = actual;
+  printf ("Input1: %f (0x%" PRIx64 ") ", input1, val_ip1.lu);
+  if (nargs == 2) {
+    val_ip2.d = input2;
+    printf ("Input2: %f (0x%" PRIx64 ") ", input2, val_ip2.lu);
+  }
+  printf ("Expected: %Lf (0x%" PRIx64 ") ", expected, val_exptd.lu);
+  printf ("Actual: %f (0x%" PRIx64 ") ", actual, val_aop.lu);
+  printf ("ULP: %f\n", ulp);
 }
 
 }  // namespace Test

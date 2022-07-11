@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ from os.path import join as joinpath
 
 toolchain_versions = {
     #Toolchain : {preferred_version, min_version}
-    'GCC' :     {'max':'11.1' ,  'min':'9.2'},
+    'GCC' :     {'max':'11.2' ,  'min':'9.2'},
     'CLANG':    {'max':'13.0',   'min':'9.0'},
     'AOCC':     {'max':'13.0',   'min':'9.0'},
     'MSVC':     {'max':'12.0',   'min':'2.2'},
@@ -102,6 +102,10 @@ def CheckLibAbi(context):
     if libabi == 'svml':
         context.Message('INTEL_LIB_PATH')
         svml_path = os.environ.get('INTEL_LIB_PATH', None)
+        if svml_path is None or '':
+            context.Message('\nThe env variable INTEL_LIB_PATH is not set\n')
+            exit (1)
+
         if CheckPathDir(context, svml_path):
             env['INTEL_LIB_PATH'] = svml_path
             context.Message(svml_path)

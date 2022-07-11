@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -24,7 +24,6 @@
 
 # Inherit global environment
 Import('env')
-import os
 from os.path import join as joinpath
 
 builddir = joinpath(env['BUILDROOT'], 'src', 'optmized')
@@ -40,8 +39,8 @@ e.Append(
 )
 
 experiment_src=[
-    'expm1f.c',
-    ]
+	'expm1f.c',
+	]
 
 source = Glob('*.c', exclude=experiment_src)
 source += Glob('data/*.c')
@@ -50,8 +49,15 @@ vec_objs   = SConscript('vec/SConscript',
                         exports    = {'env' : e},
                         duplicate  = 0,
                         src_dir    = '#src/optmized/vec',
-            variant_dir= joinpath(builddir, 'vec'))
+			variant_dir= joinpath(builddir, 'vec'))
 
-objs = e.StaticObject(source) + vec_objs
+cmplx_objs   = SConscript('cmplx/SConscript',
+                        exports    = {'env' : e},
+                        duplicate  = 0,
+                        src_dir    = '#src/optmized/cmplx',
+                        variant_dir= joinpath(builddir, 'cmplx'))
+
+
+objs = e.StaticObject(source) + vec_objs + cmplx_objs
 
 Return('objs')

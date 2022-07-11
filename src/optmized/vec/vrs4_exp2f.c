@@ -54,9 +54,8 @@ struct {
     .arg_max     =  _MM_SET1_I32(0x43000000),
     .mask        =  _MM_SET1_I32((int32_t)0x7fffffff),
     .infinity    =  _MM_SET1_I32(0x7f800000),
-    .exp2f_min   =  _MM_SET1_PS4(-0x1.9fe368p6f),
-    .exp2f_max   =  _MM_SET1_PS4(88.7228393f),
-
+    .exp2f_min   =  _MM_SET1_PS4(-150.0f),
+    .exp2f_max   =  _MM_SET1_PS4(128.0f),
     /*
      * Polynomial coefficients obtained using Remez algorithm
      */

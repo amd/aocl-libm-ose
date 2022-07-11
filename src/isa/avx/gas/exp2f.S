@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@
 #include "fn_macros.h"
 #include "exp_tables.h"
 #define fname ALM_PROTO_BAS64(exp2f)
-#define fname_special _exp2f_special@PLT
+#define fname_special alm_expf_special@PLT
 
 
 #ifdef __ELF__

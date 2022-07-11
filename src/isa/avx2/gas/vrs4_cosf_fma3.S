@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -72,13 +72,13 @@ cos_early_exit_s:
     VADDPD   %ymm0,%ymm0,%ymm3                      #nan value
     VANDPD %ymm1, %ymm3, %ymm4
     VANDNPD %ymm1, %ymm1, %ymm10
-    VORPD %ymm10, %ymm4, %ymm4  
+    VORPD %ymm10, %ymm4, %ymm4
 
     VMOVAPD .L_nan(%rip),%ymm3
     VANDPD %ymm2, %ymm3, %ymm10
     VANDNPD %ymm4, %ymm2, %ymm7
     VORPD %ymm7, %ymm10, %ymm10
-    
+
 cos_early_exit_s_1:
 
     VEXTRACTF128 $1,%ymm8,%xmm7
@@ -96,7 +96,7 @@ cos_early_exit_s_1:
     VMULPD  .L_point_five(%rip),%ymm0,%ymm1                         #
     VFNMADD213PD .L_one(%rip),%ymm0,%ymm1       # ymm9 1.0 - x*x*(double2)0.5;
     VMOVDQA %ymm1, %ymm9
-    
+
     cos_piby4_s4f_fma3
 
     VMOVDQA .L_mask_3e4(%rip),%xmm3
@@ -108,7 +108,7 @@ cos_early_exit_s_1:
 
     VMOVDQA .L_mask_3f2(%rip),%xmm4
     VMOVDQA .L_mask_3f2(%rip),%xmm5 #xmm5 used instead of xmm7
-    VPCMPGTQ    %xmm8,%xmm4,%xmm4       
+    VPCMPGTQ    %xmm8,%xmm4,%xmm4
     VPCMPGTQ    %xmm7,%xmm5,%xmm7
 
     VINSERTF128 $1,%xmm7,%ymm4,%ymm4
@@ -215,7 +215,7 @@ ret_cos_2fpiby4_s:
     VANDNPD %ymm4, %ymm11, %ymm1
     VANDPD %ymm11, %ymm0, %ymm0
     VORPD %ymm1, %ymm0, %ymm0
-    
+
 
 return_cos_s:
     VCVTPD2PS   %ymm0,%xmm0

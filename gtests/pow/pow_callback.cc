@@ -1,6 +1,30 @@
 /*
- * Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
  */
+
 
 #include <cmath>
 #include "libm_tests.h"
@@ -114,7 +138,7 @@ int test_v2d(test_data *data, int idx)  {
 int test_v4s(test_data *data, int idx)  {
   float *ip1  = (float*)data->ip;
   float *ip2 = (float*)data->ip1;
-  float *op  = (float*)data->op; 
+  float *op  = (float*)data->op;
   __m128 ip41 = _mm_set_ps(ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
   __m128 ip42 = _mm_set_ps(ip2[idx+3], ip2[idx+2], ip2[idx+1], ip2[idx]);
   __m128 op4 = LIBM_FUNC_VEC(s, 4, powf)(ip41, ip42);
@@ -125,7 +149,7 @@ int test_v4s(test_data *data, int idx)  {
 int test_v4d(test_data *data, int idx)  {
   double *ip1  = (double*)data->ip;
   double *ip2 = (double*)data->ip1;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   __m256d ip41 = _mm256_set_pd(ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
   __m256d ip42 = _mm256_set_pd(ip2[idx+3], ip2[idx+2], ip2[idx+1], ip2[idx]);
   __m256d op4 = LIBM_FUNC_VEC(d, 4, pow)(ip41, ip42);
@@ -137,7 +161,7 @@ int test_v8s(test_data *data, int idx)  {
 
   float *ip1  = (float*)data->ip;
   float *ip2 = (float*)data->ip1;
-  float *op  = (float*)data->op; 
+  float *op  = (float*)data->op;
   __m256 ip81 = _mm256_set_ps(ip1[idx+7], ip1[idx+6], ip1[idx+5], ip1[idx+4],
                               ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
   __m256 ip82 = _mm256_set_ps(ip2[idx+7], ip2[idx+6], ip2[idx+5], ip2[idx+4],

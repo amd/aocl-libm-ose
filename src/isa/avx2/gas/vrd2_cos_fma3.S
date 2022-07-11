@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -78,7 +78,7 @@ cos_early_exit_s_1:
 
     VMOVDQA  .L_mask_3f_9(%rip),%xmm7
     VPCMPGTQ  %xmm8,%xmm7,%xmm7
-       
+
     VORPD   %xmm11,%xmm7,%xmm2
     VPTEST %xmm2,%xmm2
     JZ range_reduce
@@ -94,8 +94,8 @@ cos_early_exit_s_1:
     VMOVDQA .L_mask_3f2(%rip),%xmm4
     VPCMPGTQ %xmm8,%xmm3,%xmm3
     VPCMPGTQ %xmm8,%xmm4,%xmm4
-    
-    
+
+
     VANDNPD %xmm7,%xmm4,%xmm1
     VANDPD  %xmm0,%xmm1,%xmm1                       # res2
     VANDNPD %xmm7,%xmm3,%xmm5
@@ -146,7 +146,7 @@ if_not_remainder:
 
     VMOVAPD input(%rsp),%xmm2
     VCMPLTPD .L_e_5(%rip),%xmm2,%xmm3
-        
+
     VANDPD %xmm3, %xmm0, %xmm7
     VANDNPD r1(%rsp), %xmm3, %xmm2
     VORPD %xmm2, %xmm7, %xmm7

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -97,6 +97,7 @@
 #include <libm/compiler.h>
 #include <libm/poly.h>
 #include <libm/alm_special.h>
+#include <stdalign.h>
 
 static struct {
     const double twobypi, piby2_1, piby2_1tail, invpi, pi, pi1, pi2;
@@ -175,7 +176,7 @@ ALM_PROTO_OPT(sinf)(float x)
     double xd, r, s, poly, x2;
     double rhead, rtail, x3, x4;
     uint64_t uy;
-    uint32_t sign = 0;
+    alignas(16) uint32_t sign = 0;
     int32_t region;
 
     /* sinf(inf) = sinf(-inf) = sinf(NaN) = NaN */

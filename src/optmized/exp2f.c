@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -159,11 +159,11 @@ ALM_PROTO_OPT(exp2f)(float x)
                 return asfloat(PINFBITPATT_SP32);
 
             /* Raise FE_OVERFLOW, FE_INEXACT */
-            return alm_exp2f_special(x, asfloat(PINFBITPATT_SP32), ALM_E_OUT_INF);
+            return alm_expf_special(asfloat(PINFBITPATT_SP32), ALM_E_IN_X_INF);
         }
 
         if (x < EXP2F_FARG_MIN) {
-            return alm_exp2f_special(x, 0.0, ALM_E_OUT_ZERO);
+            return alm_expf_special(0.0, ALM_E_IN_X_ZERO);
         }
     }
 

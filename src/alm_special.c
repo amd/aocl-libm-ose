@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -70,75 +70,12 @@ float __alm_handle_errorf(uint64_t value, int flags)
 }
 #endif
 
-/*
- * alm_exp2_special:
- *    'x' is input, 'y' is value to return from __alm_handle_error
- *
- *    - output is NaN  (when input is NaN)
- *    - output is INF  (when 'x' much larger than LN2(DBL_MAX))
- *    - output is ZERO (when 'x' is -INF)
- */
-double
-alm_exp2_special(double x, double y, uint32_t code)
-{
+
+double alm_log_special(double y, U32 error_code) {
     flt64_t ym = {.d = y};
 
-    switch (code) {
-    case ALM_E_IN_X_NAN:
-        __alm_handle_error(ym.u, 0);
-        break;
-
-    case ALM_E_OUT_ZERO:
-        __alm_handle_error(ym.u,
-                           AMD_F_INEXACT | AMD_F_UNDERFLOW);
-        break;
-
-    case ALM_E_OUT_INF:
-        __alm_handle_error(ym.u,
-                           AMD_F_INEXACT | AMD_F_OVERFLOW);
-        break;
-    default:
-        break;
-    }
-
-    return y;
-}
-
-float
-alm_exp2f_special(float x, float y, uint32_t code)
-{
-    flt32_t ym = {.f = y};
-
-    switch (code) {
-    case ALM_E_IN_X_NAN:
-        __alm_handle_errorf(ym.u, 0);
-        break;
-
-    case ALM_E_OUT_ZERO:
-        __alm_handle_errorf(ym.u,
-                            AMD_F_INEXACT | AMD_F_UNDERFLOW);
-        break;
-
-    case ALM_E_OUT_INF:
-        __alm_handle_errorf(ym.u,
-                            AMD_F_INEXACT | AMD_F_OVERFLOW);
-        break;
-
-    default:
-        break;
-    }
-
-    return y;
-}
-
-
-static double
-_log_special_common(double x, double y, U32 error_code)
-{
-    flt64_t ym = {.d = y};
-
-  switch (error_code) {
-    case ALM_E_OUT_INF:
+    switch (error_code) {
+    case ALM_E_IN_X_INF:
         __alm_handle_error(ym.u, AMD_F_INVALID);
         break;
 
@@ -164,43 +101,6 @@ _log_special_common(double x, double y, U32 error_code)
   }
 
     return y;
-}
-
-
-float
-alm_log2f_special(float x, float y, uint32_t code)
-{
-    return (float)_log_special_common(x, y, code);
-}
-
-float
-alm_logf_special(float x, float y, uint32_t code)
-{
-    return (float)_log_special_common(x, y, code);
-}
-
-double
-alm_log2_special(double x, double y, uint32_t code)
-{
-    return _log_special_common(x, y, code);
-}
-
-double
-alm_log_special(double x, double y, uint32_t code)
-{
-    return _log_special_common(x, y, code);
-}
-
-float
-alm_log10f_special(float x, float y, uint32_t code)
-{
-    return (float)_log_special_common(x, y, code);
-}
-
-double
-alm_log10_special(double x, double y, uint32_t code)
-{
-    return _log_special_common(x, y, code);
 }
 
 float
@@ -268,6 +168,12 @@ float _atanf_special_overflow(float x)
     UT32 xu;
     xu.f32 = x;
     return __alm_handle_errorf(xu.u32, AMD_F_OVERFLOW);
+}
+
+double
+alm_atan_special(double x) {
+    flt64_t fl = {.d = x};
+    return __alm_handle_error(fl.u, AMD_F_INVALID);
 }
 
 double
@@ -489,35 +395,43 @@ float _cbrtf_special(float x)
 
 
 /* exp, log, pow*/
-#define EXP_X_NAN       1
-#define EXP_Y_ZERO      2
-#define EXP_Y_INF       3
-float _expf_special(float x, float y, U32 code)
-{
+float alm_expf_special(float y, U32 code) {
+    flt32_t ym = {.f = y};
+
     switch (code) {
-    case EXP_X_NAN:
-        {
-            UT64 ym;
-            ym.u64 = 0;
-            ym.f32[0] = y;
-            __alm_handle_errorf(ym.u64, 0);
-        }
+    case ALM_E_IN_X_NAN:
+        __alm_handle_errorf(ym.u, 0);
         break;
-    case EXP_Y_ZERO:
-        {
-            UT64 ym;
-            ym.u64 = 0;
-            ym.f32[0] = y;
-            __alm_handle_errorf(ym.u64, AMD_F_INEXACT | AMD_F_UNDERFLOW);
-        }
+
+    case ALM_E_IN_X_ZERO:
+        __alm_handle_errorf(ym.u,
+                            AMD_F_INEXACT | AMD_F_UNDERFLOW);
         break;
-    case EXP_Y_INF:
-        {
-            UT64 ym;
-            ym.u64 = 0;
-            ym.f32[0] = y;
-            __alm_handle_errorf(ym.u64, AMD_F_INEXACT | AMD_F_OVERFLOW);
-        }
+
+    case ALM_E_IN_X_INF:
+        __alm_handle_errorf(ym.u,
+                            AMD_F_INEXACT | AMD_F_OVERFLOW);
+        break;
+
+    default:
+        break;
+    }
+
+    return y;
+}
+
+double alm_exp_special(double y, U32 code) {
+    flt64_t ym = {.d = y};
+
+    switch (code) {
+    case ALM_E_IN_X_NAN:
+        __alm_handle_error(ym.u, 0);
+        break;
+    case ALM_E_IN_X_ZERO:
+        __alm_handle_error(ym.u, AMD_F_INEXACT | AMD_F_UNDERFLOW);
+        break;
+    case ALM_E_IN_X_INF:
+        __alm_handle_error(ym.u, AMD_F_INEXACT | AMD_F_OVERFLOW);
         break;
     default:
         break;
@@ -525,224 +439,6 @@ float _expf_special(float x, float y, U32 code)
     return y;
 }
 
-float _exp2f_special(float x, float y, U32 code)
-{
-    switch (code) {
-    case EXP_X_NAN:
-        {
-            UT64 ym;
-            ym.u64 = 0;
-            ym.f32[0] = y;
-            __alm_handle_errorf(ym.u64, 0);
-        }
-        break;
-    case EXP_Y_ZERO:
-        {
-            UT64 ym;
-            ym.u64 = 0;
-            ym.f32[0] = y;
-            __alm_handle_errorf(ym.u64, AMD_F_INEXACT | AMD_F_UNDERFLOW);
-        }
-        break;
-    case EXP_Y_INF:
-        {
-            UT64 ym;
-            ym.u64 = 0;
-            ym.f32[0] = y;
-            __alm_handle_errorf(ym.u64, AMD_F_INEXACT | AMD_F_OVERFLOW);
-        }
-        break;
-    default:
-        break;
-    }
-    return y;
-}
-
-float _exp10f_special(float x, float y, U32 code)
-{
-    switch (code) {
-    case EXP_X_NAN:
-        {
-            UT64 ym;
-            ym.u64 = 0;
-            ym.f32[0] = y;
-            __alm_handle_errorf(ym.u64, 0);
-        }
-        break;
-    case EXP_Y_ZERO:
-        {
-            UT64 ym;
-            ym.u64 = 0;
-            ym.f32[0] = y;
-            __alm_handle_errorf(ym.u64, AMD_F_INEXACT | AMD_F_UNDERFLOW);
-        }
-        break;
-    case EXP_Y_INF:
-        {
-            UT64 ym;
-            ym.u64 = 0;
-            ym.f32[0] = y;
-            __alm_handle_errorf(ym.u64, AMD_F_INEXACT | AMD_F_OVERFLOW);
-        }
-        break;
-    default:
-        break;
-    }
-    return y;
-}
-
-float _expm1f_special(float x, float y, U32 code)
-{
-    switch (code) {
-    case EXP_X_NAN:
-        {
-            UT64 ym;
-            ym.u64 = 0;
-            ym.f32[0] = y;
-            __alm_handle_errorf(ym.u64, 0);
-        }
-        break;
-    case EXP_Y_ZERO:
-        {
-            UT64 ym;
-            ym.u64 = 0;
-            ym.f32[0] = y;
-            __alm_handle_errorf(ym.u64, AMD_F_INEXACT | AMD_F_UNDERFLOW);
-        }
-        break;
-    case EXP_Y_INF:
-        {
-            UT64 ym;
-            ym.u64 = 0;
-            ym.f32[0] = y;
-            __alm_handle_errorf(ym.u64, AMD_F_INEXACT | AMD_F_OVERFLOW);
-        }
-        break;
-    default:
-        break;
-    }
-    return y;
-}
-
-double _exp_special(double x, double y, U32 code)
-{
-    switch (code) {
-    case EXP_X_NAN:
-        {
-            UT64 ym;
-            ym.f64 = y;
-            __alm_handle_error(ym.u64, 0);
-        }
-        break;
-    case EXP_Y_ZERO:
-        {
-            UT64 ym;
-            ym.f64 = y;
-            __alm_handle_error(ym.u64, AMD_F_INEXACT | AMD_F_UNDERFLOW);
-        }
-        break;
-    case EXP_Y_INF:
-        {
-            UT64 ym;
-            ym.f64 = y;
-            __alm_handle_error(ym.u64, AMD_F_INEXACT | AMD_F_OVERFLOW);
-        }
-        break;
-    default:
-        break;
-    }
-    return y;
-}
-
-double _exp2_special(double x, double y, U32 code)
-{
-    switch (code) {
-    case EXP_X_NAN:
-        {
-            UT64 ym;
-            ym.f64 = y;
-            __alm_handle_error(ym.u64, 0);
-        }
-        break;
-    case EXP_Y_ZERO:
-        {
-            UT64 ym;
-            ym.f64 = y;
-            __alm_handle_error(ym.u64, AMD_F_INEXACT | AMD_F_UNDERFLOW);
-        }
-        break;
-    case EXP_Y_INF:
-        {
-            UT64 ym;
-            ym.f64 = y;
-            __alm_handle_error(ym.u64, AMD_F_INEXACT | AMD_F_OVERFLOW);
-        }
-        break;
-    default:
-        break;
-    }
-    return y;
-}
-
-double _exp10_special(double x, double y, U32 code)
-{
-    switch (code) {
-    case EXP_X_NAN:
-        {
-            UT64 ym;
-            ym.f64 = y;
-            __alm_handle_error(ym.u64, 0);
-        }
-        break;
-    case EXP_Y_ZERO:
-        {
-            UT64 ym;
-            ym.f64 = y;
-            __alm_handle_error(ym.u64, AMD_F_INEXACT | AMD_F_UNDERFLOW);
-        }
-        break;
-    case EXP_Y_INF:
-        {
-            UT64 ym;
-            ym.f64 = y;
-            __alm_handle_error(ym.u64, AMD_F_INEXACT | AMD_F_OVERFLOW);
-        }
-        break;
-    default:
-        break;
-    }
-    return y;
-}
-
-double _expm1_special(double x, double y, U32 code)
-{
-    switch (code) {
-    case EXP_X_NAN:
-        {
-            UT64 ym;
-            ym.f64 = y;
-            __alm_handle_error(ym.u64, 0);
-        }
-        break;
-    case EXP_Y_ZERO:
-        {
-            UT64 ym;
-            ym.f64 = y;
-            __alm_handle_error(ym.u64, AMD_F_INEXACT | AMD_F_UNDERFLOW);
-        }
-        break;
-    case EXP_Y_INF:
-        {
-            UT64 ym;
-            ym.f64 = y;
-            __alm_handle_error(ym.u64, AMD_F_INEXACT | AMD_F_OVERFLOW);
-        }
-        break;
-    default:
-        break;
-    }
-    return y;
-}
 
 /* pow */
 #define POW_X_ONE_Y_SNAN            1
@@ -755,60 +451,30 @@ double _expm1_special(double x, double y, U32 code)
 #define POW_Z_DENORMAL              8
 #define POW_Z_INF                   9
 
-double _pow_special(double x, double y, double z, U32 code)
-{
-    //y = z;
+double alm_pow_special(double z, U32 code) {
+    flt64_t zu = {.d = z};
+
     switch (code) {
     case POW_X_ONE_Y_SNAN:
-        {
-            UT64 zu;
-            zu.f64 = z;
-            __alm_handle_error(zu.u64,
-                       AMD_F_INVALID);
-        }
+        __alm_handle_error(zu.u, AMD_F_INVALID);
         break;
     case POW_X_ZERO_Z_INF:
-        {
-            UT64 zu;
-            zu.f64 = z;
-            __alm_handle_error(zu.u64,
-                       AMD_F_DIVBYZERO);
-        }
+        __alm_handle_error(zu.u, AMD_F_DIVBYZERO);
         break;
     case POW_X_NAN:
     case POW_Y_NAN:
     case POW_X_NAN_Y_NAN:
-        {
-            UT64 zu;
-            zu.f64 = z;
-            __alm_handle_error(zu.u64,
-                       AMD_F_INVALID);
-        }
+        __alm_handle_error(zu.u, AMD_F_INVALID);
         break;
     case POW_X_NEG_Y_NOTINT:
-        {
-            UT64 zu;
-            zu.f64 = z;
-            __alm_handle_error(zu.u64,
-                       AMD_F_INVALID);
-        }
+         __alm_handle_error(zu.u, AMD_F_INVALID);
         break;
     case POW_Z_ZERO:
     case POW_Z_DENORMAL:
-        {
-            UT64 zu;
-            zu.f64 = z;
-            __alm_handle_error(zu.u64,
-                       AMD_F_INEXACT | AMD_F_UNDERFLOW);
-        }
+        __alm_handle_error(zu.u, AMD_F_INEXACT | AMD_F_UNDERFLOW);
         break;
     case POW_Z_INF:
-        {
-            UT64 zu;
-            zu.f64 = z;
-            __alm_handle_error(zu.u64,
-                       AMD_F_INEXACT | AMD_F_OVERFLOW);
-        }
+        __alm_handle_error(zu.u, AMD_F_INEXACT | AMD_F_OVERFLOW);
         break;
     default:
         break;
@@ -816,53 +482,29 @@ double _pow_special(double x, double y, double z, U32 code)
     return z;
 }
 
-float _powf_special(float x, float y, float z, U32 code)
-{
-    //y = z;
+float alm_powf_special(float z, U32 code) {
+    flt32_t zu = {.f = z};
+
     switch (code) {
     case POW_X_ONE_Y_SNAN:
-        {
-            UT32 zu;
-            zu.f32 = z;
-            __alm_handle_errorf(zu.u32, AMD_F_INVALID);
-        }
+        __alm_handle_errorf(zu.u, AMD_F_INVALID);
         break;
     case POW_X_ZERO_Z_INF:
-        {
-            UT32 zu;
-            zu.f32 = z;
-            __alm_handle_errorf(zu.u32, AMD_F_DIVBYZERO);
-        }
+        __alm_handle_errorf(zu.u, AMD_F_DIVBYZERO);
         break;
     case POW_X_NAN:
     case POW_Y_NAN:
     case POW_X_NAN_Y_NAN:
-        {
-            UT32 zu;
-            zu.f32 = z;
-            __alm_handle_errorf(zu.u32, AMD_F_INVALID);
-        }
+        __alm_handle_errorf(zu.u, AMD_F_INVALID);
         break;
     case POW_X_NEG_Y_NOTINT:
-        {
-            UT32 zu;
-            zu.f32 = z;
-            __alm_handle_errorf(zu.u32, AMD_F_INVALID);
-        }
+        __alm_handle_errorf(zu.u, AMD_F_INVALID);
         break;
     case POW_Z_ZERO:
-        {
-            UT32 zu;
-            zu.f32 = z;
-            __alm_handle_errorf(zu.u32, AMD_F_INEXACT | AMD_F_UNDERFLOW);
-        }
+        __alm_handle_errorf(zu.u, AMD_F_INEXACT | AMD_F_UNDERFLOW);
         break;
     case POW_Z_INF:
-        {
-            UT32 zu;
-            zu.f32 = z;
-            __alm_handle_errorf(zu.u32, AMD_F_INEXACT | AMD_F_OVERFLOW);
-        }
+        __alm_handle_errorf(zu.u, AMD_F_INEXACT | AMD_F_OVERFLOW);
         break;
     default:
         break;
@@ -874,32 +516,25 @@ float _powf_special(float x, float y, float z, U32 code)
 #define LOG_X_ZERO      1
 #define LOG_X_NEG       2
 #define LOG_X_NAN       3
-static float _logf_special_common(float x, float y, U32 errorCode)
-{
+float alm_logf_special(float y, U32 errorCode) {
+    flt32_t ym = {.f = y};
+
     switch (errorCode) {
-    case LOG_X_ZERO:
-        {
-            UT32 Y;
-            Y.f32 = y;
-            __alm_handle_errorf(Y.u32, AMD_F_DIVBYZERO);
-        }
+    case ALM_E_IN_X_ZERO:
+        __alm_handle_errorf(ym.u, AMD_F_DIVBYZERO);
         break;
-    case LOG_X_NEG:
-        {
-            UT32 Y;
-            Y.f32 = y;
-            __alm_handle_errorf(Y.u32, AMD_F_INVALID);
-        }
+    case ALM_E_IN_X_NEG:
+        __alm_handle_errorf(ym.u, AMD_F_INVALID);
         break;
-    case LOG_X_NAN:
+    case ALM_E_DIV_BY_ZER0:
+        __alm_handle_errorf(ym.u, AMD_F_DIVBYZERO);
+        break;
+    case ALM_E_IN_X_NAN:
         {
 #ifdef WIN64
-            UT32 Y;
-            Y.f32 = y;
-            __alm_handle_errorf(Y.u32, AMD_F_NONE);
+        __alm_handle_errorf(ym.u, AMD_F_NONE);
 #else               /*  */
-            return x + x;
-
+        return y + y;
 #endif              /*  */
         }
         break;
@@ -909,44 +544,18 @@ static float _logf_special_common(float x, float y, U32 errorCode)
     return y;
 }
 
-float _logf_special(float x, float y, U32 code)
-{
-    return _logf_special_common(x, y, code);
-}
+/* coshf */
+float alm_coshf_special(float y, U32 errorCode) {
+    flt32_t ym = {.f = y};
 
-float _log10f_special(float x, float y, U32 code)
-{
-    return _logf_special_common(x, y, code);
-}
-
-float _log2f_special(float x, float y, U32 code)
-{
-    return _logf_special_common(x, y, code);
-}
-
-float _log1pf_special(float x, float y, U32 code)
-{
-    return _logf_special_common(x, y, code);
-}
-
-double _log_special(double x, double y, U32 code)
-{
-    return _log_special_common(x, y, code);
-}
-
-double _log10_special(double x, double y, U32 code)
-{
-    return _log_special_common(x, y, code);
-}
-
-double _log2_special(double x, double y, U32 code)
-{
-    return _log_special_common(x, y, code);
-}
-
-double _log1p_special(double x, double y, U32 code)
-{
-    return _log_special_common(x, y, code);
+    switch (errorCode) {
+    case ALM_E_OVERFLOW:
+        __alm_handle_errorf(ym.u, AMD_F_OVERFLOW);
+        break;
+    default:
+        break;
+    }
+    return y;
 }
 
 double _nearbyint_special(double x)

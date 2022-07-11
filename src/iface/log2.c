@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -39,60 +39,57 @@ struct alm_arch_funcs __arch_funcs_log2 = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_ARCH_AVX2(log2f),
-            &ALM_PROTO_ARCH_AVX2(log2),
-            &ALM_PROTO_ARCH_AVX2(vrs4_log2f),
-            &ALM_PROTO_ARCH_AVX2(vrs8_log2f), /* vrs8 */
-            &ALM_PROTO_ARCH_AVX2(vrd2_log2),  /* vrd2 */
-            &ALM_PROTO_ARCH_AVX2(vrd4_log2),  /* vrd4 */
-            &ALM_PROTO_FMA3(vrsa_log2f),  /*array vector float*/
-            &ALM_PROTO_FMA3(vrda_log2),  /*array vector double*/
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(log2f),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(log2),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_log2f),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_log2f), /* v8s ? */
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_AVX2(vrd2_log2),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_AVX2(vrd4_log2),  /* v4d ? */
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_FMA3(vrsa_log2f),  /*vector array variants*/
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_FMA3(vrda_log2),
         },
 
         [ALM_UARCH_VER_ZEN] = {
-            &ALM_PROTO_ARCH_ZN(log2f),
-            &ALM_PROTO_ARCH_ZN(log2),
-            &ALM_PROTO_ARCH_ZN(vrs4_log2f),
-            &ALM_PROTO_ARCH_ZN(vrs8_log2f),
-            &ALM_PROTO_ARCH_ZN(vrd2_log2),
-            &ALM_PROTO_ARCH_ZN(vrd4_log2),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(log2f),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(log2),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN(vrs4_log2f),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_log2f),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN(vrd2_log2),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN(vrd4_log2),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
-            &ALM_PROTO_ARCH_ZN2(log2f),
-            &ALM_PROTO_ARCH_ZN2(log2),
-            &ALM_PROTO_ARCH_ZN2(vrs4_log2f),
-            &ALM_PROTO_ARCH_ZN2(vrs8_log2f),
-            &ALM_PROTO_ARCH_ZN2(vrd2_log2),
-	    &ALM_PROTO_ARCH_ZN2(vrd4_log2),
-        },
- 
-        [ALM_UARCH_VER_ZEN3] = {
-            &ALM_PROTO_ARCH_ZN3(log2f),
-            &ALM_PROTO_ARCH_ZN3(log2),
-            &ALM_PROTO_ARCH_ZN3(vrs4_log2f),
-	    &ALM_PROTO_ARCH_ZN3(vrs8_log2f),
-            &ALM_PROTO_ARCH_ZN3(vrd2_log2),
-            &ALM_PROTO_ARCH_ZN3(vrd4_log2),
-            NULL,
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(log2f),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(log2),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN2(vrs4_log2f),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_log2f),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN2(vrd2_log2),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN2(vrd4_log2),
         },
 
+        [ALM_UARCH_VER_ZEN3] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(log2f),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(log2),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN3(vrs4_log2f),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_log2f),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN3(vrd2_log2),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN3(vrd4_log2),
+        },
     },
 };
 
 void
-LIBM_IFACE_PROTO(log2)(void *arg)
-{
+LIBM_IFACE_PROTO(log2)(void *arg) {
     alm_ep_wrapper_t g_entry_log2 = {
        .g_ep = {
-        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(log2f),
-        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(log2),
-        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_log2f),
-        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_log2f),
-        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_log2),
-        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_log2),
-        [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_log2f),
-        [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_log2),
+            [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(log2f),
+            [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(log2),
+            [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_log2f),
+            [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_log2f),
+            [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_log2),
+            [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_log2),
+            [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_log2f),
+            [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_log2),
         },
     };
 

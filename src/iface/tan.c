@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -39,39 +39,39 @@ struct alm_arch_funcs __arch_funcs_tan = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_ARCH_AVX2(tanf),
-            &ALM_PROTO_REF(tan),
-            &ALM_PROTO_ARCH_AVX2(vrs4_tanf),  /* v4s ? */
-            &ALM_PROTO_ARCH_AVX2(vrs8_tanf),  /* v8s ? */
-            &ALM_PROTO_ARCH_AVX2(vrd2_tan),
-            &ALM_PROTO_ARCH_AVX2(vrd4_tan),   /* v4d ? */
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(tanf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_REF(tan),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_tanf),  /* v4s ? */
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_tanf),  /* v8s ? */
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_AVX2(vrd2_tan),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_AVX2(vrd4_tan),   /* v4d ? */
         },
 
          [ALM_UARCH_VER_ZEN] = {
-            &ALM_PROTO_ARCH_ZN(tanf),
-            &ALM_PROTO_ARCH_ZN(tan),
-            &ALM_PROTO_ARCH_ZN(vrs4_tanf),
-            &ALM_PROTO_ARCH_ZN(vrs8_tanf),
-            &ALM_PROTO_ARCH_ZN(vrd2_tan),
-            &ALM_PROTO_ARCH_ZN(vrd4_tan),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(tanf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(tan),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN(vrs4_tanf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_tanf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN(vrd2_tan),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN(vrd4_tan),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
-            &ALM_PROTO_ARCH_ZN2(tanf),
-            &ALM_PROTO_ARCH_ZN2(tan),
-            &ALM_PROTO_ARCH_ZN2(vrs4_tanf),
-            &ALM_PROTO_ARCH_ZN2(vrs8_tanf),
-            &ALM_PROTO_ARCH_ZN2(vrd2_tan),
-            &ALM_PROTO_ARCH_ZN2(vrd4_tan),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(tanf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(tan),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN2(vrs4_tanf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_tanf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN2(vrd2_tan),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN2(vrd4_tan),
         },
 
         [ALM_UARCH_VER_ZEN3] = {
-            &ALM_PROTO_ARCH_ZN3(tanf),
-            &ALM_PROTO_ARCH_ZN3(tan),
-            &ALM_PROTO_ARCH_ZN3(vrs4_tanf),
-            &ALM_PROTO_ARCH_ZN3(vrs8_tanf),
-            &ALM_PROTO_ARCH_ZN3(vrd2_tan),
-            &ALM_PROTO_ARCH_ZN3(vrd4_tan),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(tanf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(tan),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN3(vrs4_tanf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_tanf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN3(vrd2_tan),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN3(vrd4_tan),
         },
     },
 };

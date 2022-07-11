@@ -5,14 +5,8 @@ EXPORTS
     _cbrtf_special
     _cos_special
     _cosf_special
-    _exp10_special
-    _exp10f_special
-    _exp2_special
-    _exp2f_special
     _exp_special
     _expf_special
-    _expm1_special
-    _expm1f_special
     _fabs_special
     _fabsf_special
     _fdim_special
@@ -25,10 +19,6 @@ EXPORTS
     _fmodf_special
     _log10_special
     _log10f_special
-    _log1p_special
-    _log1pf_special
-    _log2_special
-    _log2f_special
     _log_special
     _logf_special
     _nearbyint_special
@@ -546,9 +536,6 @@ EXPORTS
     alm_cpu_is_amd
     cpu_features
     alm_acosf_special
-    alm_exp2_special
-    alm_exp2f_special
-    alm_log2_special
     __local_stdio_printf_options
     alm_main
     printf
@@ -929,7 +916,6 @@ EXPORTS
     log_table_256
     amd_opt_log2f
     amd_opt_log2
-    __amd_fma3_log1p_v2
     amd_opt_log
     amd_opt_expm1_v2
     amd_opt_expf
@@ -1212,4 +1198,12 @@ EXPORTS
     __amd_bas64_cexpf
     __amd_bas64_cexp
     __amd_bas64_cbrtf
-    __amd_bas64_cbrt 
+    __amd_bas64_cbrt
+    amd_vrd4_atan
+    amd_vrs8_acosf
+    amd_cexp
+    amd_cexpf
+	amd_clogf
+	amd_clog
+	amd_cpowf
+	amd_cpow

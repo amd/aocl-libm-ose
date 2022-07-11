@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -33,8 +33,8 @@
 
 
 
-.equ    sin_addr,    0x10                              
-.equ    cos_addr,   0x20                               
+.equ    sin_addr,    0x10
+.equ    cos_addr,   0x20
 .equ    store_input, 0x30
 .equ   stack_size, 0x48
 
@@ -87,14 +87,14 @@ sincosf_early_exit_s_1:
    xor      %rax,%rax
    cmp      %rax,%r9
    je      return_sincosf_s
-   
+
    mov     %rdi, sin_addr(%rsp)
-   mov     %rsi, cos_addr(%rsp)   
+   mov     %rsi, cos_addr(%rsp)
    call     fname_special_underflow
    mov     sin_addr(%rsp), %rdi
-   mov     cos_addr(%rsp), %rsi   
+   mov     cos_addr(%rsp), %rsi
    VMOVQ   .L_one(%rip),%xmm1
-   
+
    JMP return_sincosf_s
 
 compute_x_xxx_0_1666_0_5:
@@ -129,16 +129,16 @@ sincosf_remainder_piby2:
 
     mov     %rdi, sin_addr(%rsp)
     mov     %rsi, cos_addr(%rsp)
-    
+
     call_remainder_piby2_f
-    
+
     mov     sin_addr(%rsp), %rdi
     mov     cos_addr(%rsp), %rsi
 
 sincosf_exit_s:
     VMOVAPD %xmm4,%xmm11
     sincosf_piby4_s_fma3
-    
+
     VANDPD     .L_int_one(%rip),%xmm11,%xmm3
     VPCMPEQQ   .L_int_one(%rip),%xmm3,%xmm3
     VMOVDDUP    %xmm3,%xmm3
@@ -180,7 +180,7 @@ return_sincosf_s:
     VCVTSD2SS    %xmm1,%xmm1,%xmm1
 
     VMOVSS   %xmm0, (%rdi)                             # save the sin
-    VMOVSS   %xmm1, (%rsi)                             # save the cos    
+    VMOVSS   %xmm1, (%rsi)                             # save the cos
     add      $stack_size, %rsp
     ret
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -154,4 +154,9 @@ WEAK_LIBM_ALIAS(tanpi, FN_PROTOTYPE(tanpi));
 WEAK_LIBM_ALIAS(tanpif, FN_PROTOTYPE(tanpif));
 WEAK_LIBM_ALIAS(vrd2_cosh, FN_PROTOTYPE(vrd2_cosh));
 WEAK_LIBM_ALIAS(vrd4_expm1, FN_PROTOTYPE(vrd4_expm1));
-
+WEAK_LIBM_ALIAS(cexp, FN_PROTOTYPE(cexp));
+WEAK_LIBM_ALIAS(cexpf, FN_PROTOTYPE(cexpf));
+WEAK_LIBM_ALIAS(cpow, FN_PROTOTYPE(cpow));
+WEAK_LIBM_ALIAS(cpowf, FN_PROTOTYPE(cpowf));
+WEAK_LIBM_ALIAS(clog, FN_PROTOTYPE(clog));
+WEAK_LIBM_ALIAS(clogf, FN_PROTOTYPE(clogf));

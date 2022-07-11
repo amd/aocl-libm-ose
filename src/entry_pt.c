@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -154,6 +154,17 @@ alm_func_t        G_ENTRY_PT_PTR(tanpif);
 alm_func_t        G_ENTRY_PT_PTR(truncf);
 
 /*
+ * Complex variants
+ */
+alm_func_t        G_ENTRY_PT_PTR(cexpf);
+alm_func_t        G_ENTRY_PT_PTR(cexp);
+alm_func_t        G_ENTRY_PT_PTR(clogf);
+alm_func_t        G_ENTRY_PT_PTR(clog);
+alm_func_t        G_ENTRY_PT_PTR(cpowf);
+alm_func_t        G_ENTRY_PT_PTR(cpow);
+
+
+/*
  * Integer variants
  */
 alm_func_t        G_ENTRY_PT_PTR(finite);
@@ -229,6 +240,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrs8_sinf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_tanf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_atanf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_cosf);
+alm_func_t        G_ENTRY_PT_PTR(vrs8_acosf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_coshf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_tanhf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_powf);
@@ -264,6 +276,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd4_log1p);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_pow);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_sin);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_tan);
+alm_func_t        G_ENTRY_PT_PTR(vrd4_atan);
 
 
 #ifdef __cplusplus

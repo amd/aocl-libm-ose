@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -39,58 +39,57 @@ struct alm_arch_funcs __arch_funcs_sin = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_ARCH_AVX2(sinf),
-            &ALM_PROTO_ARCH_AVX2(sin),
-            &ALM_PROTO_ARCH_AVX2(vrs4_sinf),
-            &ALM_PROTO_ARCH_AVX2(vrs8_sinf), /* v8s ? */
-            &ALM_PROTO_ARCH_AVX2(vrd2_sin),
-            &ALM_PROTO_ARCH_AVX2(vrd4_sin),  /* v4d ? */
-	        &ALM_PROTO_FMA3(vrsa_sinf),  /*vector array variants*/
-	        &ALM_PROTO_FMA3(vrda_sin),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(sinf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(sin),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_sinf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_sinf), /* v8s ? */
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_AVX2(vrd2_sin),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_AVX2(vrd4_sin),  /* v4d ? */
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_FMA3(vrsa_sinf),  /*vector array variants*/
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_FMA3(vrda_sin),
         },
 
         [ALM_UARCH_VER_ZEN] = {
-            &ALM_PROTO_ARCH_ZN(sinf),
-            &ALM_PROTO_ARCH_ZN(sin),
-            &ALM_PROTO_ARCH_ZN(vrs4_sinf),
-            &ALM_PROTO_ARCH_ZN(vrs8_sinf),
-            &ALM_PROTO_ARCH_ZN(vrd2_sin),
-            &ALM_PROTO_ARCH_ZN(vrd4_sin),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(sinf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(sin),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN(vrs4_sinf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_sinf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN(vrd2_sin),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN(vrd4_sin),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
-            &ALM_PROTO_ARCH_ZN2(sinf),
-            &ALM_PROTO_ARCH_ZN2(sin),
-            &ALM_PROTO_ARCH_ZN2(vrs4_sinf),
-            &ALM_PROTO_ARCH_ZN2(vrs8_sinf),
-            &ALM_PROTO_ARCH_ZN2(vrd2_sin),
-            &ALM_PROTO_ARCH_ZN2(vrd4_sin),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(sinf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(sin),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN2(vrs4_sinf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_sinf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN2(vrd2_sin),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN2(vrd4_sin),
         },
 
         [ALM_UARCH_VER_ZEN3] = {
-            &ALM_PROTO_ARCH_ZN3(sinf),
-            &ALM_PROTO_ARCH_ZN3(sin),
-            &ALM_PROTO_ARCH_ZN3(vrs4_sinf),
-            &ALM_PROTO_ARCH_ZN3(vrs8_sinf),
-            &ALM_PROTO_ARCH_ZN3(vrd2_sin),
-            &ALM_PROTO_ARCH_ZN3(vrd4_sin),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(sinf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(sin),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN3(vrs4_sinf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_sinf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN3(vrd2_sin),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN3(vrd4_sin),
         },
     },
 };
 
 void
-LIBM_IFACE_PROTO(sin)(void *arg)
-{
+LIBM_IFACE_PROTO(sin)(void *arg) {
     alm_ep_wrapper_t g_entry_sin = {
        .g_ep = {
-        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(sinf),
-        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(sin),
-        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_sinf),
-        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_sinf),
-        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_sin),
-        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_sin),
-	[ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_sinf),
-	[ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_sin),
+            [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(sinf),
+            [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(sin),
+            [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_sinf),
+            [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_sinf),
+            [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_sin),
+            [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_sin),
+            [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_sinf),
+            [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_sin),
         },
     };
 

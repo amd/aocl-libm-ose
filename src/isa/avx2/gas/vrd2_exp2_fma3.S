@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -86,26 +86,26 @@ ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
     vmovdqa      %xmm0, %xmm10   # save for later use
-    
+
     # x * (64)
     vmulpd       .L__real_64(%rip), %xmm0,%xmm3
 
     # n = int( x * (64))
     vcvttpd2dq  %xmm3, %xmm4   #xmm4 = 0,0,(int)n1,(int)n0
-    vcvtdq2pd   %xmm4, %xmm3   #xmm3 = (double)n1,n0    
+    vcvtdq2pd   %xmm4, %xmm3   #xmm3 = (double)n1,n0
     vmovd       %xmm4, %rcx    #rcx = (int)n1,n0
 
-    # r = x - n * 1/64  
-    #r *= ln2;      
+    # r = x - n * 1/64
+    #r *= ln2;
     vfmadd132pd    .L__mone_by_64(%rip),%xmm0,%xmm3
-    vmulpd    .L__ln_2(%rip),%xmm3,%xmm2  #xmm2 = r_1,r_0  
-        
-    #j = n & 0x3f    
+    vmulpd    .L__ln_2(%rip),%xmm3,%xmm2  #xmm2 = r_1,r_0
+
+    #j = n & 0x3f
     mov         $0x0000003f0000003f, %rax
     and         %rcx, %rax     #rax = j1,j0
     mov         %eax, %ecx     #rcx = j0
-    shr         $32, %rax      #rax = j1        
-    # m = (n - j) / 64      
+    shr         $32, %rax      #rax = j1
+    # m = (n - j) / 64
     vpsrad         $6, %xmm4,%xmm5      #xmm5 = 0,0,m1,m0
 
     # Computing q=r + r^2*1/2 + r^3*1/6 + r^4 *1/24 + r^5*1/120 + r^6*1/720 + r^7/5040
@@ -124,38 +124,38 @@ fname:
     vfmadd231pd %xmm8,%xmm7,%xmm0                       # xmm0 = B0 + B1 * r^4
 
     # (f)*(q) + f2 + f1
-    lea         .L__two_to_jby64_table(%rip), %rdx        
-    lea         .L__two_to_jby64_tail_table(%rip), %r11       
-    lea         .L__two_to_jby64_head_table(%rip), %r10    
+    lea         .L__two_to_jby64_table(%rip), %rdx
+    lea         .L__two_to_jby64_tail_table(%rip), %r11
+    lea         .L__two_to_jby64_head_table(%rip), %r10
     vmovsd      (%rdx,%rcx,8), %xmm2
-    vmovhpd     (%rdx,%rax,8),%xmm2,%xmm1  #xmm1 = f_1,f_0    
-    vmovsd      (%r11,%rcx,8), %xmm2    
+    vmovhpd     (%rdx,%rax,8),%xmm2,%xmm1  #xmm1 = f_1,f_0
+    vmovsd      (%r11,%rcx,8), %xmm2
     vmovhpd     (%r11,%rax,8), %xmm2,%xmm3 #xmm3 = f2_1,f2_0
     vmovsd      (%r10,%rcx,8), %xmm4
-    vmovhpd     (%r10,%rax,8), %xmm4,%xmm2 #xmm2 = f1_1,f1_0           
+    vmovhpd     (%r10,%rax,8), %xmm4,%xmm2 #xmm2 = f1_1,f1_0
     vfmadd213pd    %xmm3,%xmm1,%xmm0    #xmm0 = f*q + f2
-    vaddpd      %xmm0,%xmm2,%xmm0   
+    vaddpd      %xmm0,%xmm2,%xmm0
 
     # normal results
     vpmovsxdq   %xmm5,%xmm4       #xmm4 = m1,m0
     vpsllq      $52,%xmm4,%xmm5   #xmm5 = 2^m1,2^m0
     vpaddq      %xmm5,%xmm0,%xmm1 #xmm1 = normal results
-  
-     #check and process denormals    
+
+     #check and process denormals
     vcmppd      $1,.L__real_one(%rip),%xmm0,%xmm3 #check e^r < 1
     vpcmpeqq    .L__m1022(%rip),%xmm5,%xmm2   #check m == -1022
-    vpand       %xmm2,%xmm3,%xmm3  #xmm3 = ( e^r < 1 and m = -1022 )     
-	
-   # vpcomltq    .L__m1022(%rip),%xmm5,%xmm2   #check m < -1022    
+    vpand       %xmm2,%xmm3,%xmm3  #xmm3 = ( e^r < 1 and m = -1022 )
+
+   # vpcomltq    .L__m1022(%rip),%xmm5,%xmm2   #check m < -1022
      vmovdqa  .L__m1022(%rip),%xmm2
      vpcmpgtq %xmm5,%xmm2,%xmm2  #check m < -1022
-   
+
     vpor        %xmm3,%xmm2,%xmm2   #xmm2 = mask for inputs requiring denormal processing
     vpmovmskb   %xmm2,%eax
     cmp         $0,%eax
     je          .L__check_min   #jmp to avoid any accidental intermediate denormal results
-    vpaddq      .L__ulong_1074(%rip),%xmm4,%xmm3 #xmm3 = 1074 + m     
-	
+    vpaddq      .L__ulong_1074(%rip),%xmm4,%xmm3 #xmm3 = 1074 + m
+
 	vunpckhpd %xmm3,%xmm3,%xmm9 #store high to xmm9
 	vmovdqa .L__ulong_1(%rip),%xmm5
 	vpsllq %xmm3,%xmm5,%xmm4
@@ -165,12 +165,12 @@ fname:
 	vandnpd %xmm1,%xmm2,%xmm5
 	vandpd  %xmm2,%xmm3,%xmm1
 	vorpd   %xmm5,%xmm1,%xmm1
-  
-.L__check_min:   
+
+.L__check_min:
     ##special case for any x < min_exp_arg,remove this code if the above code takes care of this
     vcmppd       $2,.L__min_exp2_arg(%rip),%xmm10,%xmm2 #cmp x<= min_exp_arg
     vpxor        %xmm3,%xmm3,%xmm4  #make zeros to put in place of x<= min_exp_arg
-    #vpcmov       %xmm2,%xmm1,%xmm4,%xmm1 #put zeros in place of any x <= min_exp_arg 
+    #vpcmov       %xmm2,%xmm1,%xmm4,%xmm1 #put zeros in place of any x <= min_exp_arg
    VANDNPD %xmm1, %xmm2, %xmm9
     VANDPD %xmm2, %xmm4, %xmm1
     VORPD %xmm9, %xmm1, %xmm1
@@ -180,7 +180,7 @@ fname:
 
 
 
-        
+
     ##special case for any x > max_exp_arg,remove this code if the above code takes care of this
     vcmppd       $1,.L__max_exp2_arg(%rip),%xmm10,%xmm2 #cmp x < max_exp_arg
     vmovdqa     .L__real_inf(%rip), %xmm3  #inf to put in place of any x >= max_exp_arg
@@ -191,20 +191,20 @@ fname:
 
 
 
-    
+
     ##special case for any x = nan,remove this code if the above code takes care of this
-    vcmppd       $0x0,%xmm10,%xmm10,%xmm2    
+    vcmppd       $0x0,%xmm10,%xmm10,%xmm2
     vaddpd       %xmm10, %xmm10,%xmm3  #make qnan to put in place of any x =nan
     #vpcmov       %xmm2,%xmm3,%xmm1,%xmm0 #xmm0 = normal results
 
     VANDNPD %xmm3, %xmm2, %xmm9
     VANDPD %xmm2, %xmm1, %xmm0
-    VORPD %xmm9, %xmm0, %xmm0 
+    VORPD %xmm9, %xmm0, %xmm0
 
 
 
-    ret 
-    
+    ret
+
 .section .rodata
 .align 16
 .L__max_exp2_arg:            .octa 0x40900000000000004090000000000000

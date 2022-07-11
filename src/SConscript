@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2021 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -25,7 +25,6 @@
 
 # Inherit global environment
 Import('env')
-import os
 from os.path import join as joinpath
 
 installdir = env['installdirs']
@@ -41,10 +40,13 @@ kern_incpaths = [
 ]
 
 if env['HOST_OS'] != 'win32':
-    ccflags = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror',
+    ccflags = ['-Wall',
+               '-W',
+               '-Wstrict-prototypes',
+               '-Werror',
                #'-Wno-unused-but-set-parameter',
                '-Wno-unused-parameter',
-               '-fPIC',
+               '-fPIC'
               ]
 else:
     ccflags = ['-DAVX_XOP_FMA4_FMA3',

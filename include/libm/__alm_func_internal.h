@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2022, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,12 +25,14 @@
  *
  */
 
-#if   !defined (__ALM_FUNCS_INTERNAL_H__) 
+#if   !defined (__ALM_FUNCS_INTERNAL_H__)
 #elif !defined (ALM_PROTO_ARCH)
 #error  "This file is not expected to be included explicitly"
 #endif
 
 #include <immintrin.h>
+#include <complex.h>
+#include <libm/types.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -165,6 +167,17 @@ extern long long int    ALM_PROTO_INTERNAL(llround)       (double d);
 extern long long int    ALM_PROTO_INTERNAL(llroundf)      (float f);
 
 
+/*
+ * Complex variants
+ */
+extern fc64_t   ALM_PROTO_INTERNAL(cexp)          (fc64_t f);
+extern fc32_t   ALM_PROTO_INTERNAL(cexpf)         (fc32_t f);
+extern fc64_t   ALM_PROTO_INTERNAL(clog)          (fc64_t f);
+extern fc32_t   ALM_PROTO_INTERNAL(clogf)         (fc32_t f);
+extern fc64_t   ALM_PROTO_INTERNAL(cpow)          (fc64_t x, fc64_t y);
+extern fc32_t   ALM_PROTO_INTERNAL(cpowf)         (fc32_t x, fc32_t y);
+
+
 #include <immintrin.h>
 
 /*
@@ -191,6 +204,7 @@ extern __m128    ALM_PROTO_INTERNAL(vrs4_atanf)           (__m128 x);
 
 extern __m256    ALM_PROTO_INTERNAL(vrs8_cbrtf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_cosf)            (__m256 x);
+extern __m256    ALM_PROTO_INTERNAL(vrs8_acosf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_exp10f)          (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_exp2f)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_expf)            (__m256 x);
@@ -244,6 +258,7 @@ extern __m256d   ALM_PROTO_INTERNAL(vrd4_log)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_pow)      (__m256d x, __m256d y);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_sin)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_tan)      (__m256d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_atan)     (__m256d x);
 
 extern void      ALM_PROTO_INTERNAL(sincos)        (double x, double *s, double *c);
 extern void      ALM_PROTO_INTERNAL(sincosf)       (float x, float *s, float *c);

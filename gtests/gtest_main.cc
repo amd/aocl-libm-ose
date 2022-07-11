@@ -1,6 +1,30 @@
 /*
- * Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
  */
+
 
 #include <cstdio>
 #include <iostream>
@@ -15,6 +39,8 @@
 #include "almtest.h"
 #include "cmdline.h"
 #include "callback.h"
+#include <inttypes.h>
+#include "verify.h"
 
 extern vector<AccuParams> accuData;
 extern vector<SpecParams> specData;
@@ -43,16 +69,8 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_SCALAR_FLOAT) {
       nfail++;
     }
 
-    if (vflag == 1) {
-      EXPECT_LT(ulp, inData->ulp_threshold)
-            << "Input:[" << ip[0] << " " << ip[1] <<"]Actual:" << aop[0]
-          << " Expected:" << exptd << " ULP: " << ulp << endl;
-    } else {
-      EXPECT_LT(ulp, inData->ulp_threshold);
-      LIBM_TEST_DPRINTF(VERBOSE2, ,
-                      "Input:[", ip[0], " ", ip[1], "]Actual:", aop[0],
-                      " Expected:", exptd, " ULP: ",ulp);
-    }
+    if ((vflag == 1) && (ulp > inData->ulp_threshold))
+        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[0], ulp);
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
   "Scalar","Accuracy","s1s",count,(count-nfail), nfail, max_ulp_err);
@@ -84,16 +102,8 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_4FLOATS) {
         nfail++;
       }
 
-      if (vflag == 1) {
-        EXPECT_LT(ulp, inData->ulp_threshold)
-            << "Input:[" << ip[0] << " " << ip[1] <<"]Actual:" << aop[j]
-            << " Expected:" << exptd << " ULP: " << ulp << endl;
-      } else {
-        EXPECT_LT(ulp, inData->ulp_threshold);
-        LIBM_TEST_DPRINTF(VERBOSE2, ,
-                      "Input:[", ip[0], " ", ip[1], "]Actual:", aop[j],
-                      " Expected:", exptd, " ULP: ",ulp);
-      }
+      if ((vflag == 1) && (ulp > inData->ulp_threshold))
+        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[0], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
@@ -126,22 +136,15 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_8FLOATS) {
         nfail++;
       }
 
-      if (vflag == 1) {
-        EXPECT_LT(ulp, inData->ulp_threshold)
-            << "Input:[" << ip[0] << " " << ip[1] <<"]Actual:" << aop[j]
-            << " Expected:" << exptd << " ULP: " << ulp << endl;
-      } else {
-        EXPECT_LT(ulp, inData->ulp_threshold);
-        LIBM_TEST_DPRINTF(VERBOSE2, ,
-                      "Input:[", ip[0], " ", ip[1], "]Actual:", aop[j],
-                      " Expected:", exptd, " ULP: ",ulp);
-      }
+      if ((vflag == 1) && (ulp > inData->ulp_threshold))
+        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[0], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
   "Vector","Accuracy","v8s",count,(count-nfail), nfail, max_ulp_err);
   ptr->tstcnt++;
 }
+
 
 TEST_P(AccuTestFixtureDouble, ACCURACY_SCALAR_DOUBLE) {
   int nfail = 0;
@@ -167,12 +170,8 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_SCALAR_DOUBLE) {
       nfail++;
     }
 
-    if (vflag) {
-        printf("Input: [ %.16f (%a) ]  Actual: %.16f(%a) Expected: %.16Lf(%La) Ulp: %f\n",
-                ip[0], ip[0], aop[0], aop[0], exptd, exptd, ulp);
-    }
-
-    EXPECT_LT(ulp, inData->ulp_threshold);
+    if ((vflag == 1) && (ulp > inData->ulp_threshold))
+        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[0], ulp);
   }
 
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
@@ -205,16 +204,8 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_2DOUBLES) {
         nfail++;
       }
 
-      if (vflag == 1) {
-        EXPECT_LT(ulp, inData->ulp_threshold)
-            << "Input:[" << ip[0] << " " << ip[1] <<"]Actual:" << aop[j]
-            << " Expected:" << exptd << " ULP: " << ulp << endl;
-      } else {
-        EXPECT_LT(ulp, inData->ulp_threshold);
-        LIBM_TEST_DPRINTF(VERBOSE2, ,
-                      "Input:[", ip[0], " ", ip[1], "]Actual:", aop[j],
-                      " Expected:", exptd, " ULP: ",ulp);
-      }
+      if ((vflag == 1) && (ulp > inData->ulp_threshold))
+        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[0], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
@@ -247,16 +238,8 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_4DOUBLES) {
         nfail++;
       }
 
-      if (vflag == 1) {
-        EXPECT_LT(ulp, inData->ulp_threshold)
-            << "Input:[" << ip[0] << " " << ip[1] <<"]Actual:" << aop[j]
-            << " Expected:" << exptd << " ULP: " << ulp << endl;
-      } else {
-        EXPECT_LT(ulp, inData->ulp_threshold);
-        LIBM_TEST_DPRINTF(VERBOSE2, ,
-                      "Input:[", ip[0], " ", ip[1], "]Actual:", aop[j],
-                      " Expected:", exptd, " ULP: ",ulp);
-      }
+      if ((vflag == 1) && (ulp > inData->ulp_threshold))
+        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[0], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",

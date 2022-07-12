@@ -36,6 +36,10 @@ class Gcc(Compiler):
             '-Wold-style-cast',
             '-Woverloaded-virtual',
             '-Wstrict-null-sentinel',
+            '-Winit-self',
+            '-Wno-init-self',
+            '-Werror',
+            '-Wall',
         ]
 
         self.warnings = [
@@ -52,6 +56,7 @@ class Gcc(Compiler):
             #   '-Wfloat-equal',
             '-Wformat=2',
             '-Winit-self',
+            '-Wno-init-self',
             '-Winvalid-pch',
             #   '-Wlogical-op',
             '-Wmissing-declarations',

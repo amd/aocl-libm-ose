@@ -382,8 +382,9 @@ int test_vas(funcf_va vas, const char * func_name) {
     long unsigned int i=0, dim = 5, loopCount = 10;
     long unsigned int array_size = dim * loopCount;
     if (vas != NULL) {
-        float *input_arrayf = (float *)malloc(sizeof(float) * array_size);
-        float *output_arrayf = (float *)malloc(sizeof(float) * array_size);
+        float *input_arrayf = (float *)calloc(array_size, sizeof(float));
+        float *output_arrayf = (float *)calloc(array_size, sizeof(float));
+
         printf("amd_vrsa_%sf\nInput:\n", func_name);
         for (i = 0; i < array_size; i++)
             printf("%f\t", (double)input_arrayf[i]);
@@ -404,8 +405,8 @@ int test_vas_2(funcf_va_2 vas, const char * func_name) {
     long unsigned int i=0, dim = 5, loopCount = 10;
     long unsigned int array_size = dim * loopCount;
     if (vas != NULL) {
-        float *input_arrayf = (float *)malloc(sizeof(float) * array_size);
-        float *output_arrayf = (float *)malloc(sizeof(float) * array_size);
+        float *input_arrayf = (float*)calloc(array_size, sizeof(float));
+        float *output_arrayf = (float *)calloc(array_size, sizeof(float));
         printf("amd_vrsa_%sf\nInput:\n", func_name);
         for (i = 0; i < array_size; i++)
             printf("%f\t", (double)input_arrayf[i]);
@@ -428,8 +429,8 @@ int test_vad(func_va vad, const char* func_name) {
     long unsigned int i=0, dim = 5, loopCount = 10;
     long unsigned int array_size = dim * loopCount;
     if (vad != NULL) {
-        double *input_arrayd = (double *)malloc(sizeof(double) * array_size);
-        double *output_arrayd = (double *)malloc(sizeof(double) * array_size);
+        double *input_arrayd = (double *)calloc(array_size, sizeof(double));
+        double *output_arrayd = (double *)calloc(array_size, sizeof(double));
         printf("amd_vrda_%s\nInput:\n", func_name);
         for (i = 0; i < array_size; i++)
             printf("%lf\t", input_arrayd[i]);
@@ -449,8 +450,8 @@ int test_vad_2(func_va_2 vad, const char* func_name) {
     long unsigned int i=0, dim = 5, loopCount = 10;
     long unsigned int array_size = dim * loopCount;
     if (vad != NULL) {
-        double *input_arrayd = (double *)malloc(sizeof(double) * array_size);
-        double *output_arrayd = (double *)malloc(sizeof(double) * array_size);
+        double *input_arrayd = (double *)calloc(array_size, sizeof(double));
+        double *output_arrayd = (double *)calloc(array_size, sizeof(double));
         printf("amd_vrda_%s\nInput:\n", func_name);
         for (i = 0; i < array_size; i++)
             printf("%lf\t", input_arrayd[i]);

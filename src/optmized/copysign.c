@@ -25,52 +25,38 @@
  *
  */
 
-#include <libm_macros.h>
+/* copysign
+
+ An implementation of the copysign libm function.
+
+ The copysign functions produce a value with the magnitude of x and the sign of y.
+ They produce a NaN (with the sign of y) if x is a NaN. On implementations that
+ represent a signed zero but do not treat negative zero consistently in arithmetic
+ operations, the copysign functions regard the sign of zero as positive.
+
+
+ Prototype:
+
+    double copysign(float x, float y)
+
+   Algorithm:
+
+ */
+
+#include "fn_macros.h"
+#include "libm_util_amd.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
-#include <libm/iface.h>
-#include <libm/entry_pt.h>
+#include <libm/typehelper.h>
 
-//
-#include <libm/arch/all.h>
+double ALM_PROTO_OPT(copysign)(double x, double y) {
+    uint64_t ux, uy;
 
+    ux = asuint64(x);
+    uy = asuint64(y);
 
-static const
-struct alm_arch_funcs __arch_funcs_copysign = {
-    .def_arch = ALM_UARCH_VER_DEFAULT,
-    .funcs = {
-        [ALM_UARCH_VER_DEFAULT] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(copysignf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(copysign),
-        },
-        [ALM_UARCH_VER_ZEN] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(copysignf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(copysign),
-        },
-        [ALM_UARCH_VER_ZEN2] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(copysignf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(copysign),
-        },
-        [ALM_UARCH_VER_ZEN3] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(copysignf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(copysign),
-        },
-        [ALM_UARCH_VER_ZEN4] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(copysignf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(copysign),
-        },
-    },
-};
+    /* To get the magnitude of param x with sign of param y */
+    ux = (ux & ~SIGNBIT_DP64) | (uy & SIGNBIT_DP64);
 
-void
-LIBM_IFACE_PROTO(copysign)(void *arg)
-{
-    alm_ep_wrapper_t g_entry_copysign = {
-       .g_ep = {
-            [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(copysignf),
-            [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(copysign),
-        },
-    };
-
-    alm_iface_fixup(&g_entry_copysign, &__arch_funcs_copysign);
+    return asdouble(ux);
 }
-

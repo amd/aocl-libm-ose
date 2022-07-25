@@ -37,7 +37,19 @@ int use_erf()
     float ipf = 0.5, opf;
     int i;
     opf = amd_erff (ipf);
-    printf("Input: %f\tOutput: %f\n", ipf, opf);
+    printf ("Input: %f\tOutput: %f\n", ipf, opf);
+
+    printf("Using vrs4 (Single precision vector variant) of AMD erff()\n");
+    __m128 result_erf_vrs4;
+    __m128 input_vrs4;
+    float  input_array_vrs4[4] = {34.65, 67.89, 91.0, 198.34};
+    float  output_array_vrs4[4];
+    input_vrs4 = _mm_loadu_ps(input_array_vrs4);
+    result_erf_vrs4 = amd_vrs4_erff(input_vrs4);
+    _mm_storeu_ps(output_array_vrs4, result_erf_vrs4 );
+    printf("Input: {%f, %f, %f, %f}, Output = {%f, %f, %f, %f}\n",
+        input_array_vrs4[0], input_array_vrs4[1], input_array_vrs4[2], input_array_vrs4[3],
+        output_array_vrs4[0], output_array_vrs4[1], output_array_vrs4[2], output_array_vrs4[3]);
 
     printf ("\nUsing vrs8 (Single precision vector 8 element variant of AMD erff()\n");
     __m256 input_vrs8, result_erff_vrs8;
@@ -54,6 +66,5 @@ int use_erf()
     for (i=0; i<8; i++) {
         printf("%f,", output_array_vrs8[i]);
     }
-
     return 0;
 }

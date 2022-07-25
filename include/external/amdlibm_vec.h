@@ -323,11 +323,12 @@ extern "C" {
     void amd_vrda_cbrt      (int len, double *src, double *dst);
     void amd_vrsa_cbrtf     (int len, float  *src, float  *dst);
 
-    /* avx512 variants */
+/* avx512 variants */
     __m512d amd_vrd8_pow    (__m512d x, __m512d y);
     __m512  amd_vrs16_powf  (__m512  x, __m512  y);
 
-    /* erf */
+/* erf */
+    __m128 amd_vrs4_erff    (__m128 x);
     __m256 amd_vrs8_erff    (__m256 x);
 
 #ifdef __cplusplus

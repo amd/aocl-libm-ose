@@ -38,11 +38,16 @@ int test_erf(void* handle) {
     data.s1d = (func)FUNC_LOAD(handle, "amd_erf");
     data.v2d = (func_v2d)FUNC_LOAD(handle, "amd_vrd2_erf");
     data.v4d = (func_v4d)FUNC_LOAD(handle, "amd_vrd4_erf");
-    data.v4s = (funcf_v4s)FUNC_LOAD(handle, "amd_vrs4_erff");
 #endif
+    data.v4s = (funcf_v4s)FUNC_LOAD(handle, "amd_vrs4_erff");
     data.v8s = (funcf_v8s)FUNC_LOAD(handle, "amd_vrs8_erff");
 
-    if (data.s1f == NULL || data.v8s == NULL) {
+    #if defined(__AVX512__)
+    //data.v16s = (funcf_v16s)FUNC_LOAD(handle, "amd_vrs16_erff");
+    //data.v8d = (func_v8d)FUNC_LOAD(handle, "amd_vrd8_erf");
+    #endif
+
+    if (data.s1f == NULL || data.v4s == NULL || data.v8s == NULL) {
         ret = 1;
     }
     if (ret == 1) {

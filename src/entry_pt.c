@@ -231,6 +231,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrs4_tanhf);
 alm_func_t        G_ENTRY_PT_PTR(vrs4_powf);
 alm_func_t        G_ENTRY_PT_PTR(vrs4_asinf);
 alm_func_t        G_ENTRY_PT_PTR(vrs4_atanf);
+alm_func_t        G_ENTRY_PT_PTR(vrs4_erff);
 
 alm_func_t        G_ENTRY_PT_PTR(vrs8_logf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_log10f);

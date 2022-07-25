@@ -227,6 +227,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs4_tanhf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs4_cbrtf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs4_asinf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs4_atanf);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs4_erff);
 
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs8_cosf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs8_acosf);
@@ -306,6 +307,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_acosf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_tanf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_atanf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_tanhf);
+//extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_erff);
 
 
 #endif	/* __AMD_LIBM_ENTRY_PT_PTR_H__ */

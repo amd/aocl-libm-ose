@@ -38,9 +38,9 @@ struct alm_arch_funcs __arch_funcs_erf = {
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(erff),
-	    [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_erff),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_erff),
+	        [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_erff),
             NULL,
-            NULL,                           /* vrs4 ? */
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */
             NULL,                           /* vrd4 ? */
@@ -48,21 +48,25 @@ struct alm_arch_funcs __arch_funcs_erf = {
 
         [ALM_UARCH_VER_ZEN] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(erff),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN(vrs4_erff),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_erff),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(erff),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN2(vrs4_erff),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_erff),
         },
 
         [ALM_UARCH_VER_ZEN3] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(erff),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN3(vrs4_erff),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_erff),
         },
 
         [ALM_UARCH_VER_ZEN4] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(erff),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN4(vrs4_erff),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN4(vrs8_erff),
         },
 
@@ -75,6 +79,7 @@ LIBM_IFACE_PROTO(erf)(void *arg)
     alm_ep_wrapper_t g_entry_erf = {
        .g_ep = {
         [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(erff),
+        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_erff),
         [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_erff),
         },
     };

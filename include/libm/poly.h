@@ -175,6 +175,24 @@
          q;                                                     \
          })
 
+#define POLY_EVAL_HORNER_16_0(x, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15) ({ \
+        __typeof(x) q = ((((((((((((((( c15*  x + c14)* x + \
+                        c13)* x + c12) * x +                   \
+                        c11) * x + c10) * x + c9) * x + c8) *    \
+                        x + c7) * x + c6) * x + c5) * x + c4) * \
+                        x + c3)* x + c2) * x + c1)* x + c0) * x;    \
+         q;                                                     \
+         })
+
+#define POLY_EVAL_HORNER_20_0(x, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17, c18, c19) ({ \
+        __typeof(x) q = ((((((((((((((((((( c19 * x + c18)* x + \
+                        c17)* x + c16) * x + c15)*  x + c14)* x + \
+                        c13)* x + c12) * x +                   \
+                        c11) * x + c10) * x + c9) * x + c8) *    \
+                        x + c7) * x + c6) * x + c5) * x + c4) * \
+                        x + c3)* x + c2) * x + c1)* x + c0) * x;    \
+         q;                                                     \
+         })
 
 
 /*

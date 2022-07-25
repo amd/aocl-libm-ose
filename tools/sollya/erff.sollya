@@ -1,0 +1,52 @@
+// polynomial for approximating erff(x) using fpminimax  
+
+restart ;
+
+N = 1000;				// Number of points to check in the give range
+prec = 60;
+
+deg = 20;  // poly degree
+
+a = 0.0; // Lower bound of range
+b = 3.9192059040069580078125; // Upper bound of range,  beyond which single prec erff should evaluate to 1.0, so erf(b)=2^(-25)
+d = [a ; b];
+
+// f(x) s the given function for which we seek  polynomial with minimal absolute error
+f = erf(x);
+
+// Generate basis of polynomial f(x) 
+P = [||] ; 
+for i from 1 to deg by 1  do {P = P@[|i|];} ;
+
+// return p that minimizes |f(x) - poly(x)|
+poly = fpminimax(f,P,[|DD...|],[a;b],floating,relative) ;
+
+print("abs error:", supnorm(poly, f, [a;b], absolute, 2^(-30)));
+print("rel error:", supnorm(poly, f, [a+2^(-30);b], relative, 2^(-20)));
+// print("abs error:", infnorm(f(x)-poly(x), [a;b]));
+// print("rel error:", infnorm(poly(x)/f(x)-1, [a+2^(-50);b]));
+
+// print polynomial in Horner form
+poly;
+
+display = hexadecimal;
+poly;
+
+f=poly;
+deg=16;
+P = [||] ; 
+for i from 1 to deg by 1  do {P = P@[|i|];} ;
+
+// return p that minimizes |f(x) - poly(x)|
+poly = fpminimax(f,P,[|DD...|],[a;b],floating,relative) ;
+
+print("abs error:", supnorm(poly, f, [a;b], absolute, 2^(-30)));
+print("rel error:", supnorm(poly, f, [a+2^(-30);b], relative, 2^(-20)));
+// print("abs error:", infnorm(f(x)-poly(x), [a;b]));
+// print("rel error:", infnorm(poly(x)/f(x)-1, [a+2^(-50);b]));
+
+// print polynomial in Horner form
+poly;
+
+display = hexadecimal;
+poly;

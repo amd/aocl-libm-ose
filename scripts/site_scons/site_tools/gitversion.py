@@ -80,12 +80,19 @@ static const char* alm_get_build(void)
 }
 """
 
+
+def GetBuildDateTime():
+    import datetime
+    build_data_time = datetime.datetime.now()
+    build_data_time = build_data_time.strftime('%Y%m%d')
+
+    return build_data_time
+
 def generate_version(env, target):
     """Generate the version file with the current version in it"""
     #print("generate_version", "target:", target, "env:", env)
-
-    version = get_git_version(env)
-
+    #version = get_git_version(env)
+    version = "Build {0}".format(GetBuildDateTime())
     contents = __amd_libm_version_template % (version)
 
     fd = open(target, 'w')

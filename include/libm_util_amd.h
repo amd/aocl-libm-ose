@@ -146,6 +146,7 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
 #define EXP_MIN           0xc0874910d52d3052
 #define EXP_MAX_DOUBLE    0x40862e42fefa39ef
 #define TWOPOW53_DP64     0x4340000000000000
+#define POS_BITSET_DP64   0x7FFFFFFFFFFFFFFF
 
 /* These definitions, used by float functions,
    are for both 32 and 64 bit machines */

@@ -39,62 +39,93 @@
 
 long int ALM_PROTO_OPT(lround)(double x)
 {
-    uint64_t ux, ux_temp, sign, exponent, mantissa;
-    int intexp;            /*Needs to be signed */
-    double temp, r;
+    uint64_t ux, ax, uresult, sign;
+    int intexp, shift;
     long int result;
+    double r;
 
-    ux = asuint64(x);
-    sign = ux & SIGNBIT_DP64;
+    ux = ax = asuint64(x);
 
-    /*  if NAN or INF */
     if (unlikely((ux & EXPBITS_DP64) == EXPBITS_DP64)) {
-        #ifdef WINDOWS
-            return (long)__alm_handle_error(ux |= QNAN_MASK_64, 0);
+        /*else the number is infinity*/
+        //Raise range or domain error
+        #ifdef WIN64
+            __alm_handle_error(SIGNBIT_SP32, AMD_F_NONE);
+            return (long int )SIGNBIT_SP32;
         #else
-            /* If NaN, raise exception, no exception for Infinity */
-            if (unlikely(x != x)) {
-                return (long)__alm_handle_error(ux, AMD_F_INVALID);
-            }
+            if((ux & POS_BITSET_DP64) == EXPBITS_DP64)
+                return (long)SIGNBIT_DP64;
+            if((ux & POS_BITSET_DP64) >= QNANBITPATT_DP64)
+                __alm_handle_error((unsigned long long)SIGNBIT_DP64, AMD_F_NONE);
+            else
+                __alm_handle_error((unsigned long long)SIGNBIT_DP64, AMD_F_INVALID);
+            return (long)SIGNBIT_DP64; /*GCC returns this when the number is out of range*/
         #endif
-        return (long)__alm_handle_error(ux, 0);
     }
 
-    /*Get the exponent of the input*/
+    ax &= ~SIGNBIT_DP64;
+
+    sign = ux & SIGNBIT_DP64;
     intexp = (ux & EXPBITS_DP64) >> 52;
     intexp -= 0x3FF;
-    /*If exponent > 51 then the number is already rounded*/
-    if (intexp > 51) {
-        return (long)x;
+
+    /* 1.0 x 2^-1 is the smallest number which can be rounded to 1 */
+    if (intexp < -1)
+        return (0);
+
+#ifdef WIN64
+    /* 1.0 x 2^31 (or 2^63) is already too large */
+    if (intexp >= 31) {
+        /*Based on the sign of the input value return the MAX and MIN*/
+        result = NEG_ZERO_F64; /*Return LONG MIN*/
+        __alm_handle_error(result, AMD_F_NONE);
+        return result;
     }
 
-    if (intexp < 0) {
-        temp = x;
-        ux_temp = asuint64(temp);
-        ux_temp &= POS_BITSET_DP64;
-        /*Add with a large number (2^52 +1) = 4503599627370497.0
-        to force an overflow*/
-        temp = asdouble(ux_temp) + asdouble(0x4330000000000001);
-        /*Subtract back with the large number*/
-        temp -= asdouble(0x4330000000000001);
-        ux_temp = asuint64(temp);
-
-        if (sign) {
-            ux_temp |= SIGNBIT_DP64;
-        }
-
-        return (long)ux_temp;
+#else
+    /* 1.0 x 2^31 (or 2^63) is already too large */
+    if (intexp >= 63) {
+        /*Based on the sign of the input value return the MAX and MIN*/
+        result = (long)NEG_ZERO_F64; /*Return LONG MIN*/
+        __alm_handle_error((unsigned long long)result, AMD_F_NONE);
+        return result;
     }
-    ux &= POS_BITSET_DP64;
-    r = asdouble(ux);
-    r += 0.5;
-    exponent = asuint64(r) & EXPBITS_DP64;
-    /*right shift then left shift to discard the decimal places*/
-    mantissa = (asuint64(r) & MANTBITS_DP64) >> (52 - intexp);
-    mantissa = mantissa << (52 - intexp);
-    ux_temp = sign | exponent | mantissa;
 
-    result = (long)ux_temp;
+#endif
+
+    r = asdouble(ax);
+    /* >= 2^52 is already an exact integer */
+#ifdef WIN64
+    if (intexp < 23)
+#else
+    if (intexp < 52)
+#endif
+    {
+        /* add 0.5, extraction below will truncate */
+        r = asdouble(ax) + 0.5;
+    }
+
+    uresult = asuint64(r);
+    intexp = (uresult & EXPBITS_DP64) >> 52;
+    intexp -= 0x3FF;
+    uresult &= MANTBITS_DP64; // store all mantissa bits ONLY of the result
+    uresult |= IMPBIT_DP64; // set the last bit of exp as 1
+    shift = intexp - 52;
+
+#ifdef WIN64
+	/*The shift value will always be negative.*/
+    uresult = uresult >> (-shift);
+	/*Result will be stored in the lower word due to the shift being performed*/
+    result = uresult;
+#else
+     if(shift < 0)
+        uresult = uresult >> (-shift);
+    if(shift > 0)
+        uresult = uresult << (shift);
+
+    result = (long)uresult;
+#endif
+
     if (sign)
         result = -result;
 

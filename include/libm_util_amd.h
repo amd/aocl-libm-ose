@@ -89,7 +89,7 @@ typedef union UT64_ UT64;
 #define NEG_HNORMAL_F32 0xff7fffff
 #define POS_LNORMAL_F32 0x00800000
 #define NEG_LNORMAL_F32 0x80800000
-
+#define POS_BITSET_F32  0x7FFFFFFF
 
 /*Special numbers Double */
 #define POS_ONE_F64 0x3FF0000000000000

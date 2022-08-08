@@ -42,7 +42,7 @@ struct alm_arch_funcs __arch_funcs_exp10 = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(exp10f),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(exp10),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_FMA3(vrs4_exp10f),
-            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_FMA3(vrd2_exp2),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_FMA3(vrd2_exp10),
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_FMA3(vrsa_exp10f),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_FMA3(vrda_exp10), 
         },
@@ -51,7 +51,7 @@ struct alm_arch_funcs __arch_funcs_exp10 = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(exp10f),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(exp10),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_FMA3(vrs4_exp10f),
-            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_FMA3(vrd2_exp2),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_FMA3(vrd2_exp10),
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_FMA3(vrsa_exp10f),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_FMA3(vrda_exp10),
         },
@@ -76,7 +76,7 @@ struct alm_arch_funcs __arch_funcs_exp10 = {
 
             [ALM_UARCH_VER_ZEN4] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(exp10f),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(exp2),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(exp10),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_FMA3(vrs4_exp10f),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_FMA3(vrd2_exp10),
 

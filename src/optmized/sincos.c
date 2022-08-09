@@ -302,6 +302,19 @@ ALM_PROTO_OPT(sincos)(double x, double *sin, double *cos)
             r_sin = r - t;
         }
         else {
+            /*sin calculation*/
+            /* region 0 or 2 do a sin calculation */
+            x3 = x2 * r;
+
+            /* poly = S2 + (r2 * (S3 + (r2 * (S4 + (r2 * (S5 + S6 * r2)))))) */
+            poly = POLY_EVAL_5(x2, S2, S3, S4, S5, S6);
+
+            s = 0.5 * rr;
+
+            poly = ((x2 * (s - x3 * poly)) - rr) - S1 * x3;
+
+            r_sin = r - poly; /* r - ((r2 * (0.5 * rr - x3 * poly) - rr) - S1*r3 */
+
             /*cos calculation*/
             /* region 0 or 2 do a cos calculation */
             rr = rr * r;
@@ -319,18 +332,6 @@ ALM_PROTO_OPT(sincos)(double x, double *sin, double *cos)
 
             r_cos = r - t;
 
-            /*sin calculation*/
-            /* region 0 or 2 do a sin calculation */
-            x3 = x2 * r;
-
-            /* poly = S2 + (r2 * (S3 + (r2 * (S4 + (r2 * (S5 + S6 * r2)))))) */
-            poly = POLY_EVAL_5(x2, S2, S3, S4, S5, S6);
-
-            s = 0.5 * rr;
-
-            poly = ((x2 * (s - x3 * poly)) - rr) - S1 * x3;
-
-            r_sin = r - poly; /* r - ((r2 * (0.5 * rr - x3 * poly) - rr) - S1*r3 */
         }
 
         int32_t region_sin = region;
@@ -359,8 +360,6 @@ ALM_PROTO_OPT(sincos)(double x, double *sin, double *cos)
         x2 = x * x;
 
         /*cos calculation*/
-        /* pi/4 > |x| > 2.0^(-13) */
-        x2 = x * x;
 
         r = 0.5 * x2;
 
@@ -371,8 +370,6 @@ ALM_PROTO_OPT(sincos)(double x, double *sin, double *cos)
         *cos =  s + (x2 * (x2 * POLY_EVAL_6(x2, C1, C2, C3, C4, C5, C6)));
 
         /*sin calculation*/
-        /* x > 2.0^(-13) */
-        x2 = x * x;
 
         /* x + (x * (r2 * (S1 + r2 * (S2 + r2 * (S3 + r2 * (S4 + r2 * (S5 + r2 * S6))))))) */
         *sin = x + (x * (x2 * POLY_EVAL_6(x2, S1, S2, S3, S4, S5, S6)));

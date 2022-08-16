@@ -46,21 +46,18 @@ long int ALM_PROTO_OPT(lround)(double x)
 
     ux = ax = asuint64(x);
 
+    /*  if NAN or INF */
     if (unlikely((ux & EXPBITS_DP64) == EXPBITS_DP64)) {
-        /*else the number is infinity*/
-        //Raise range or domain error
         #ifdef WIN64
-            __alm_handle_error(SIGNBIT_SP32, AMD_F_NONE);
-            return (long int )SIGNBIT_SP32;
+            return (long)__alm_handle_error(ux |= QNAN_MASK_64, 0);
         #else
-            if((ux & POS_BITSET_DP64) == EXPBITS_DP64)
-                return (long)SIGNBIT_DP64;
-            if((ux & POS_BITSET_DP64) >= QNANBITPATT_DP64)
-                __alm_handle_error((unsigned long long)SIGNBIT_DP64, AMD_F_NONE);
-            else
-                __alm_handle_error((unsigned long long)SIGNBIT_DP64, AMD_F_INVALID);
-            return (long)SIGNBIT_DP64; /*GCC returns this when the number is out of range*/
+            /* If NaN, raise exception, no exception for Infinity */
+            if (x != x) {
+                return (long)__alm_handle_error(ux, AMD_F_INVALID);
+            }
+            return (long)x;
         #endif
+        return (long)__alm_handle_error(ux, 0);
     }
 
     ax &= ~SIGNBIT_DP64;
@@ -78,8 +75,7 @@ long int ALM_PROTO_OPT(lround)(double x)
     if (intexp >= 31) {
         /*Based on the sign of the input value return the MAX and MIN*/
         result = NEG_ZERO_F64; /*Return LONG MIN*/
-        __alm_handle_error(result, AMD_F_NONE);
-        return result;
+        return (long)__alm_handle_error(result, AMD_F_NONE);
     }
 
 #else
@@ -87,8 +83,7 @@ long int ALM_PROTO_OPT(lround)(double x)
     if (intexp >= 63) {
         /*Based on the sign of the input value return the MAX and MIN*/
         result = (long)NEG_ZERO_F64; /*Return LONG MIN*/
-        __alm_handle_error((unsigned long long)result, AMD_F_NONE);
-        return result;
+        return (long)__alm_handle_error((unsigned long long)result, AMD_F_NONE);
     }
 
 #endif
@@ -113,9 +108,9 @@ long int ALM_PROTO_OPT(lround)(double x)
     shift = intexp - 52;
 
 #ifdef WIN64
-	/*The shift value will always be negative.*/
+    /*The shift value will always be negative.*/
     uresult = uresult >> (-shift);
-	/*Result will be stored in the lower word due to the shift being performed*/
+    /*Result will be stored in the lower word due to the shift being performed*/
     result = uresult;
 #else
      if(shift < 0)

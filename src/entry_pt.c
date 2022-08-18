@@ -90,7 +90,8 @@ alm_func_t        G_ENTRY_PT_PTR(tan);
 alm_func_t        G_ENTRY_PT_PTR(tanh);
 alm_func_t        G_ENTRY_PT_PTR(tanpi);
 alm_func_t        G_ENTRY_PT_PTR(trunc);
-
+alm_func_t        G_ENTRY_PT_PTR(erf);
+  
 /*
  * required by NAG tests
  */

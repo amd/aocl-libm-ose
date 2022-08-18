@@ -91,6 +91,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(tan);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(tanh);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(tanpi);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(trunc);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(erf);
 
 /*
  * Single Precision functions

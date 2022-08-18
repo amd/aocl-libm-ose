@@ -33,9 +33,8 @@ int test_erf(void* handle) {
     const char* func_name = "erf";
 
     data.s1f = (funcf)FUNC_LOAD(handle, "amd_erff");
-
-#if 0
     data.s1d = (func)FUNC_LOAD(handle, "amd_erf");
+#if 0
     data.v2d = (func_v2d)FUNC_LOAD(handle, "amd_vrd2_erf");
     data.v4d = (func_v4d)FUNC_LOAD(handle, "amd_vrd4_erf");
 #endif

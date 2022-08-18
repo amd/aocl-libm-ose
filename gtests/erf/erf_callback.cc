@@ -40,7 +40,7 @@
 #include "test_erf_data.h"
 #include "../libs/mparith/alm_mp_funcs.h"
 
-//double LIBM_FUNC(erf)(double);
+double LIBM_FUNC(erf)(double);
 float LIBM_FUNC(erff)(float);
 
 static uint32_t ipargs = 1;
@@ -64,12 +64,9 @@ float getFuncOp(float *data) {
   return LIBM_FUNC(erff)(data[0]);
 }
 
-/*
-we dont have this now
 double getFuncOp(double *data) {
   return LIBM_FUNC(erf)(data[0]);
 }
-*/
 
 double getExpected(float *data) {
   auto val = alm_mp_erf(data[0]);
@@ -100,12 +97,9 @@ int test_s1s(test_data *data, int idx)  {
 }
 
 int test_s1d(test_data *data, int idx)  {
-  #if 0
-  /* we dont have this variant now*/
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   op[0] = LIBM_FUNC(erf)(ip[idx]);
-  #endif
   return 0;
 }
 

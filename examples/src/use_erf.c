@@ -39,6 +39,11 @@ int use_erf()
     opf = amd_erff (ipf);
     printf ("Input: %f\tOutput: %f\n", ipf, opf);
 
+    printf ("Using Scalar double precision erf()\n");
+    double ipd = 0.5, opd;
+    opd = amd_erf (ipd);
+    printf ("Input: %f\tOutput: %f\n", ipd, opd);
+
     printf("Using vrs4 (Single precision vector variant) of AMD erff()\n");
     __m128 result_erf_vrs4;
     __m128 input_vrs4;

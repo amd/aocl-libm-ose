@@ -36,29 +36,30 @@ static const
 struct alm_arch_funcs __arch_funcs_sinh = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
+        /* FIXME initialize sinh to ALM_PROTO_OPT later */
         [ALM_UARCH_VER_DEFAULT] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(sinhf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(sinh),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_REF(sinh),
         },
 
         [ALM_UARCH_VER_ZEN] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(sinhf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(sinh),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_REF(sinh),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(sinhf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(sinh),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_REF(sinh),
         },
 
         [ALM_UARCH_VER_ZEN3] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(sinhf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(sinh),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_REF(sinh),
         },
 
         [ALM_UARCH_VER_ZEN4] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(sinhf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(sinh),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_REF(sinh),
         },
     }
 };

@@ -25,51 +25,52 @@
  *
  */
 
-#include <libm_macros.h>
+/* Implementation notes
+    double amd_trunc (double x);
+
+*/
+
+#include "libm_util_amd.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
-#include <libm/iface.h>
-#include <libm/entry_pt.h>
-#include <libm/arch/all.h>
+#include <libm/typehelper.h>
 
-static const struct alm_arch_funcs __arch_funcs_trunc = {
-    .def_arch = ALM_UARCH_VER_DEFAULT,
-    .funcs = {
-        [ALM_UARCH_VER_DEFAULT] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(truncf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(trunc),
-        },
+double ALM_PROTO_OPT(trunc)(double x)
+{
+    uint64_t ux, ux_temp, sign;
+    int intexp; // Needs to be signed
 
-        [ALM_UARCH_VER_ZEN] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(truncf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(trunc),
-        },
+    ux = asuint64(x);
+    sign = ux & SIGNBIT_DP64;
 
-        [ALM_UARCH_VER_ZEN2] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(truncf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(trunc),
-        },
+    /*  if NAN or INF */
+    if (unlikely((ux & EXPBITS_DP64) == EXPBITS_DP64)) {
+        #ifdef WINDOWS
+            return __alm_handle_error(ux |= QNAN_MASK_64, 0);
+        #else
+            /* If NaN, raise exception, no exception for Infinity */
+            if (x != x) {
+                return __alm_handle_error(ux, AMD_F_INVALID);
+            }
+            return x;
+        #endif
+        return __alm_handle_error(ux, 0);
+    }
 
-        [ALM_UARCH_VER_ZEN3] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(truncf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(trunc),
-        },
+    /*Get the exponent of the input*/
+    intexp = (ux & EXPBITS_DP64) >> 52;
+    intexp -= 0x3FF;
 
-        [ALM_UARCH_VER_ZEN4] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(truncf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(trunc),
-        },
-    },
-};
+    /*If exponent > 51 then the number is already truncated*/
+    if (intexp > 51) {
+        return x;
+    }
 
-void
-LIBM_IFACE_PROTO(trunc)(void *arg) {
-    alm_ep_wrapper_t g_entry_trunc = {
-       .g_ep = {
-        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(truncf),
-        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(trunc),
-        },
-    };
+    else if (intexp < 0) {
+        return asdouble(sign);
+    }
 
-    alm_iface_fixup(&g_entry_trunc, &__arch_funcs_trunc);
+    ux_temp = ux & (uint64_t)~(MANTBITS_DP64 >> intexp);
+
+    return asdouble(ux_temp);
 }
-

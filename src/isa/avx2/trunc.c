@@ -13,7 +13,7 @@
  *    specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * ANY roundRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
  * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
  * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
@@ -24,52 +24,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#include <libm_macros.h>
-#include <libm/amd_funcs_internal.h>
-#include <libm/iface.h>
-#include <libm/entry_pt.h>
-#include <libm/arch/all.h>
-
-static const struct alm_arch_funcs __arch_funcs_trunc = {
-    .def_arch = ALM_UARCH_VER_DEFAULT,
-    .funcs = {
-        [ALM_UARCH_VER_DEFAULT] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(truncf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(trunc),
-        },
-
-        [ALM_UARCH_VER_ZEN] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(truncf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(trunc),
-        },
-
-        [ALM_UARCH_VER_ZEN2] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(truncf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(trunc),
-        },
-
-        [ALM_UARCH_VER_ZEN3] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(truncf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(trunc),
-        },
-
-        [ALM_UARCH_VER_ZEN4] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(truncf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(trunc),
-        },
-    },
-};
-
-void
-LIBM_IFACE_PROTO(trunc)(void *arg) {
-    alm_ep_wrapper_t g_entry_trunc = {
-       .g_ep = {
-        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(truncf),
-        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(trunc),
-        },
-    };
-
-    alm_iface_fixup(&g_entry_trunc, &__arch_funcs_trunc);
-}
-
+#define ALM_OVERRIDE 1
+#include <libm/arch/avx2.h>
+#include "../../optmized/trunc.c"

@@ -69,12 +69,12 @@ double getFuncOp(double *data) {
 }
 
 double getExpected(float *data) {
-  auto val = alm_mp_truncf(data[0]);
+  auto val = trunc(data[0]);
   return val;
 }
 
 long double getExpected(double *data) {
-  auto val = alm_mp_trunc(data[0]);
+  auto val = truncl(data[0]);
   return val;
 }
 

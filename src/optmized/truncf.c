@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
@@ -24,52 +25,41 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#include <libm_macros.h>
+/* Implementation notes
+    float amd_truncf (float x);
+*/
+#include "libm_util_amd.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
-#include <libm/iface.h>
-#include <libm/entry_pt.h>
-#include <libm/arch/all.h>
+#include <libm/typehelper.h>
+float ALM_PROTO_OPT(truncf)(float x)
+{
+    uint32_t ux, sign;
+    int intexp; // Needs to be signed
+    ux = asuint32(x);
+    sign = ux & SIGNBIT_SP32;
+    /*  if NAN or INF */
+    if (unlikely((ux & EXPBITS_SP32) == EXPBITS_SP32)) {
+        #ifdef WIN64
+            return __alm_handle_errorf(ux |= QNAN_MASK_64, 0);
+        #else
+            /* If NaN, raise exception, no exception for Infinity */
+            if (x != x) {
+                return __alm_handle_errorf(ux, AMD_F_INVALID);
+            }
+            return x;
+        #endif
+    }
+    /*Get the exponent of the input*/
+    intexp = (ux & EXPBITS_SP32) >> 23;
+    intexp -= 0x7F;
 
-static const struct alm_arch_funcs __arch_funcs_trunc = {
-    .def_arch = ALM_UARCH_VER_DEFAULT,
-    .funcs = {
-        [ALM_UARCH_VER_DEFAULT] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(truncf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(trunc),
-        },
-
-        [ALM_UARCH_VER_ZEN] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(truncf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(trunc),
-        },
-
-        [ALM_UARCH_VER_ZEN2] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(truncf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(trunc),
-        },
-
-        [ALM_UARCH_VER_ZEN3] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(truncf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(trunc),
-        },
-
-        [ALM_UARCH_VER_ZEN4] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(truncf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(trunc),
-        },
-    },
-};
-
-void
-LIBM_IFACE_PROTO(trunc)(void *arg) {
-    alm_ep_wrapper_t g_entry_trunc = {
-       .g_ep = {
-        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(truncf),
-        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(trunc),
-        },
-    };
-
-    alm_iface_fixup(&g_entry_trunc, &__arch_funcs_trunc);
+    /*If exponent > 51 then the number is already truncated*/
+    if (intexp > 22) {
+        return x;
+    }
+    else if (intexp < 0) {
+        return asfloat(sign);
+    }
+    return asfloat(ux & (uint32_t)~(MANTBITS_SP32 >> intexp));
 }
-

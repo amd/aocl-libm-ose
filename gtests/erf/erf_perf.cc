@@ -82,7 +82,6 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
     #endif
   }
 
-/* we dont have double precision variants now*/
   if((params->fwidth == ALM::FloatWidth::E_ALL) ||
     (params->fwidth == ALM::FloatWidth::E_F64)) {
     if((params->fqty == ALM::FloatQuantity::E_All) ||

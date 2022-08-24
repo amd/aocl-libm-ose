@@ -36,8 +36,9 @@ int test_erf(void* handle) {
     data.s1d = (func)FUNC_LOAD(handle, "amd_erf");
 #if 0
     data.v2d = (func_v2d)FUNC_LOAD(handle, "amd_vrd2_erf");
-    data.v4d = (func_v4d)FUNC_LOAD(handle, "amd_vrd4_erf");
 #endif
+    data.v4d = (func_v4d)FUNC_LOAD(handle, "amd_vrd4_erf");
+
     data.v4s = (funcf_v4s)FUNC_LOAD(handle, "amd_vrs4_erff");
     data.v8s = (funcf_v8s)FUNC_LOAD(handle, "amd_vrs8_erff");
 

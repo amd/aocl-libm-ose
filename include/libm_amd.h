@@ -264,6 +264,7 @@ __m256d FN_PROTOTYPE(vrd4_sin)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_tan)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_atan)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_pow)(__m256d x, __m256d y);
+__m256d FN_PROTOTYPE(vrd4_erf)(__m256d x);
 
 __m128 FN_PROTOTYPE(vrs4_erff)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_expf)(__m128 x);

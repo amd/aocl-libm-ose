@@ -330,6 +330,7 @@ extern "C" {
 /* erf */
     __m128 amd_vrs4_erff    (__m128 x);
     __m256 amd_vrs8_erff    (__m256 x);
+    __m256d amd_vrd4_erf    (__m256d x);
 
 #ifdef __cplusplus
 }

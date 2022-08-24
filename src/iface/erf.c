@@ -41,10 +41,10 @@ struct alm_arch_funcs __arch_funcs_erf = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(erf),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_erff),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_erff),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_AVX2(vrd4_erf),
             NULL,
             NULL,                           /* vrs8 ? */
             NULL,                           /* vrd2 ? */
-            NULL,                           /* vrd4 ? */
         },
 
         [ALM_UARCH_VER_ZEN] = {
@@ -52,6 +52,7 @@ struct alm_arch_funcs __arch_funcs_erf = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(erf),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN(vrs4_erff),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_erff),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN(vrd4_erf),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
@@ -59,6 +60,7 @@ struct alm_arch_funcs __arch_funcs_erf = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(erf),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN2(vrs4_erff),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_erff),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN2(vrd4_erf),
         },
 
         [ALM_UARCH_VER_ZEN3] = {
@@ -66,6 +68,7 @@ struct alm_arch_funcs __arch_funcs_erf = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(erf),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN3(vrs4_erff),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_erff),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN3(vrd4_erf),
         },
 
         [ALM_UARCH_VER_ZEN4] = {
@@ -73,6 +76,7 @@ struct alm_arch_funcs __arch_funcs_erf = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(erf),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN4(vrs4_erff),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN4(vrs8_erff),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN4(vrd4_erf),
         },
 
     },
@@ -87,6 +91,7 @@ LIBM_IFACE_PROTO(erf)(void *arg)
         [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(erf),
         [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_erff),
         [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_erff),
+        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_erf),
         },
     };
 

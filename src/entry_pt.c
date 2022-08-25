@@ -280,6 +280,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd2_pow);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_sin);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_tan);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_atan);
+alm_func_t        G_ENTRY_PT_PTR(vrd2_erf);
 
 alm_func_t        G_ENTRY_PT_PTR(vrd4_cbrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_cos);

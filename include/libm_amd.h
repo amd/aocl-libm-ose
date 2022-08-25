@@ -253,6 +253,7 @@ __m128d FN_PROTOTYPE(vrd2_pow)(__m128d x, __m128d y);
 __m128d FN_PROTOTYPE(vrd2_tan)(__m128d x);
 __m128d FN_PROTOTYPE(vrd2_cosh)(__m128d x);
 __m128d FN_PROTOTYPE(vrd2_atan)(__m128d x);
+__m128d FN_PROTOTYPE(vrd2_erf)(__m128d x);
 
 __m256d FN_PROTOTYPE(vrd4_exp)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_exp2)(__m256d x);

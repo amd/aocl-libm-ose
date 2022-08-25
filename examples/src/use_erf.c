@@ -56,7 +56,7 @@ int use_erf()
         input_array_vrs4[0], input_array_vrs4[1], input_array_vrs4[2], input_array_vrs4[3],
         output_array_vrs4[0], output_array_vrs4[1], output_array_vrs4[2], output_array_vrs4[3]);
 
-    printf ("\nUsing vrs8 (Single precision vector 8 element variant of AMD erff()\n");
+    printf ("Using vrs8 (Single precision vector 8 element variant of AMD erff()\n");
     __m256 input_vrs8, result_erff_vrs8;
     float input_array_vrs8[8] = {1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0};
     float output_array_vrs8[8];
@@ -71,5 +71,18 @@ int use_erf()
     for (i=0; i<8; i++) {
         printf("%f,", output_array_vrs8[i]);
     }
+    printf("}\n");
+
+    printf ("Using vrd4 (Double precision 4-element vector variant of AMD erf()\n");
+    __m256d input_vrd4, result_erf_vrd4;
+    double input_array_vrd4[4] = {34.65, 67.89, 91.0, 198.34};
+    double output_array_vrd4[4];
+    input_vrd4 = _mm256_loadu_pd(input_array_vrd4);
+    result_erf_vrd4 = amd_vrd4_erf(input_vrd4);
+    _mm256_storeu_pd(output_array_vrd4, result_erf_vrd4);
+    printf("Input: {%f, %f, %f, %f}, Output = {%f, %f, %f, %f}\n",
+        input_array_vrd4[0], input_array_vrd4[1], input_array_vrd4[2], input_array_vrd4[3],
+        output_array_vrd4[0], output_array_vrd4[1], output_array_vrd4[2], output_array_vrd4[3]);
+
     return 0;
 }

@@ -73,6 +73,16 @@ int use_erf()
     }
     printf("}\n");
 
+    printf ("Using vrd2 (Double precision 2-element vector variant of AMD erf()\n");
+    __m128d input_vrd2, result_erf_vrd2;
+    double input_array_vrd2[2] = {34.65, 67.89};
+    double output_array_vrd2[2];
+    input_vrd2 = _mm_loadu_pd(input_array_vrd2);
+    result_erf_vrd2 = amd_vrd2_erf(input_vrd2);
+    _mm_storeu_pd(output_array_vrd2, result_erf_vrd2);
+    printf("Input: {%f, %f}, Output = {%f, %f}\n",
+	   input_array_vrd2[0], input_array_vrd2[1], output_array_vrd2[0], output_array_vrd2[1]);
+
     printf ("Using vrd4 (Double precision 4-element vector variant of AMD erf()\n");
     __m256d input_vrd4, result_erf_vrd4;
     double input_array_vrd4[4] = {34.65, 67.89, 91.0, 198.34};

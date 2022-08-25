@@ -108,14 +108,10 @@ extern "C" {
 #endif
 
 /*vector routines*/
-#if 0
-__m128d LIBM_FUNC_VEC(d, 2, erf)(__m128d);
-__m128 LIBM_FUNC_VEC(s, 4, erff)(__m128);
-#endif
-
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
 __m128 LIBM_FUNC_VEC(s, 4, erff)(__m128);
 __m256 LIBM_FUNC_VEC(s, 8, erff)(__m256);
+__m128d LIBM_FUNC_VEC(d, 2, erf)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, erf)(__m256d);
 #endif
 
@@ -128,13 +124,11 @@ __m256d LIBM_FUNC_VEC(d, 4, erf)(__m256d);
 //#endif
 
 int test_v2d(test_data *data, int idx)  {
-  #if 0
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
   __m128d op2 = LIBM_FUNC_VEC(d, 2, erf)(ip2);
   _mm_store_pd(&op[0], op2);
-  #endif
   return 0;
 }
 

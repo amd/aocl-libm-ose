@@ -77,12 +77,10 @@
  *       return r
  * else
  *       return -r;
-
+ *
  * if |x| < pi/4 && |x| > 2.0^(-13)
- *   r = 0.5 * x2;
- *   t = 1 - r;
- *   cos(x) = t + ((1.0 - t) - r) + (x*x * (x*x * C1 + C2*x*x + C3*x*x
- *             + C4*x*x +x*x*C5 + x*x*C6)))
+ *   cos(x) = 1.0 + x*x * (-0.5 + (C1*x*x + (C2*x*x + (C3*x*x
+ *                              + (C4*x*x + (C5*x*x + C6*x*x))))))
  *
  * if |x| < 2.0^(-13) && |x| > 2.0^(-27)
  *   cos(x) = 1.0 - x*x*0.5;;
@@ -300,13 +298,7 @@ ALM_PROTO_OPT(cos)(double x)
         /* pi/4 > |x| > 2.0^(-13) */
         x2 = x * x;
 
-        r = 0.5 * x2;
-
-        t = 1 - r;
-
-        s = t + ((1.0 - t) - r);
-
-        return s + (x2 * (x2 * POLY_EVAL_6(x2, C1, C2, C3, C4, C5, C6)));
+        return 1.0 + x2 * (-0.5 + (x2 * POLY_EVAL_6(x2, C1, C2, C3, C4, C5, C6)));
 
     }
     else if(ux >= COS_SMALLER){

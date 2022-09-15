@@ -1,16 +1,4 @@
 EXPORTS
-    __acos_finite
-    __asin_finite
-    __asinf_finite
-    __atan_finite
-    __atanf_finite
-    __expf_finite
-    __ieee754_logf
-    __log2f_data
-    __logf_finite
-    __powf_finite
-    __two_to_jby64
-    acos
     amd_acos
     amd_asin
     amd_asinf
@@ -28,10 +16,3 @@ EXPORTS
     amd_fasttan
     amd_fasttanf
     amd_powf
-    asin
-    asinf
-    atan
-    atanf
-    expf
-    logf
-    powf

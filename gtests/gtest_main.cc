@@ -103,7 +103,7 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_4FLOATS) {
       }
 
       if ((vflag == 1) && (ulp > inData->ulp_threshold))
-        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[0], ulp);
+        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[j], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
@@ -137,7 +137,7 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_8FLOATS) {
       }
 
       if ((vflag == 1) && (ulp > inData->ulp_threshold))
-        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[0], ulp);
+        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[j], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
@@ -171,7 +171,7 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_16FLOATS) {
       }
 
       if ((vflag == 1) && (ulp > inData->ulp_threshold))
-        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[0], ulp);
+        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[j], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
@@ -239,7 +239,7 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_2DOUBLES) {
       }
 
       if ((vflag == 1) && (ulp > inData->ulp_threshold))
-        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[0], ulp);
+        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[j], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
@@ -273,7 +273,7 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_4DOUBLES) {
       }
 
       if ((vflag == 1) && (ulp > inData->ulp_threshold))
-        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[0], ulp);
+        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[j], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
@@ -307,7 +307,7 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_8DOUBLES) {
       }
 
       if ((vflag == 1) && (ulp > inData->ulp_threshold))
-        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[0], ulp);
+        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[j], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",

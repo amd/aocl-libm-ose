@@ -26,7 +26,7 @@
  */
 
 /*
- * Contains implementation of fasl powf()
+ * Contains implementation of fast powf()
  * Prototype :
  * float amd_fastpowf(float x, float y)
  *
@@ -35,6 +35,7 @@
  *
  * Look in exp, log for the respective algorithms
  *
+
 */
 #include <stdint.h>
 #include <math.h>
@@ -254,11 +255,11 @@ static inline float calculate_exp(double_t x, uint64_t sign_bias)
 
     if (unlikely ((top12(x) & 0x7ff)  > top12(88.0))) {
 
-        if (unlikely((float)x > EXPF_FARG_MAX)) {
+        if ((float)x > EXPF_FARG_MAX) {
             return alm_expf_special(asfloat(((uint32_t)(sign_bias >> 32) | PINFBITPATT_SP32)), EXP_Y_INF);
         }
 
-        if (unlikely(((float)x) < EXPF_FARG_MIN)) {
+        if (((float)x) < EXPF_FARG_MIN) {
             return alm_expf_special(asfloat((uint32_t)(sign_bias >> 32)) , EXP_Y_ZERO);
         }
 
@@ -319,8 +320,9 @@ float ALM_PROTO_FAST(powf)(float x, float y)
          *  Either (x < 0x1p-126 or inf or nan) or (y is 0 or inf or nan).
          *
          */
-
         if (unlikely (zeroinfnan (uy))) {
+            if (unlikely(2 * uy == 0))
+                return 1.0f;
             return y * y;
         }
 

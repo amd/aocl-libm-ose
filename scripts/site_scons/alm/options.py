@@ -109,6 +109,14 @@ class AlmOptions(object):
                         help    = 'Configure for avx512'
         )
 
+        #address sanitizer usage
+        self.add_option('use_asan',
+                        nargs = 1,
+                        default = 0,
+                        type =  int,
+                        help = "Compile to use address sanitizer"     
+        )
+
 
         self.add_option('developer',
                         nargs   = 1,

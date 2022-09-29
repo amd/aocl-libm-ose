@@ -39,6 +39,8 @@ kern_incpaths = [
     '#' + joinpath(Dir('.').srcnode().path, 'kern')
 ]
 
+use_asan = env['use_asan']
+
 if env['HOST_OS'] != 'win32':
     ccflags = ['-Wall',
                '-W',
@@ -46,8 +48,10 @@ if env['HOST_OS'] != 'win32':
                '-Werror',
                #'-Wno-unused-but-set-parameter',
                '-Wno-unused-parameter',
-               '-fPIC'
+               '-fPIC',
               ]
+    if use_asan == 1:
+        ccflags.append('-fsanitize=address')
 else:
     ccflags = ['-DAVX_XOP_FMA4_FMA3',
                '-DDEBUG=0',
@@ -87,9 +91,18 @@ e.Append(
 alm_objs = []
 
 almenv = e.Clone()
+
+__linkflags = ['-ealm_main',]
+
+# for address sanitizer support
+if use_asan == 1:
+    if 'clang' in e['CC']:
+        __linkflags.append('-static-libsan')
+    if 'gcc' in e['CC']:
+        __linkflags.append('-static-libasan')
 if e['HOST_OS'] != 'win32':
     almenv.Append(
-        LINKFLAGS = ['-ealm_main'], # ['-T$LINKERSCRIPT']
+        LINKFLAGS = __linkflags, # ['-T$LINKERSCRIPT']
         LIBS      = ['c'],
     )
 

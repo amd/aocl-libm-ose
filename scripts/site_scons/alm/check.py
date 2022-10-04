@@ -39,7 +39,6 @@ toolchain_versions = {
     'CLANG':    {'max':'14.0',   'min':'9.0'},
     'AOCC':     {'max':'14.0',   'min':'9.0'},
     'MSVC':     {'max':'12.0',   'min':'2.2'},
-    'ICC' :     {'max':'2020.2', 'min':'2020.1'},
 }
 
 toolchain_macros = {

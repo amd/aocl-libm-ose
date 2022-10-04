@@ -31,7 +31,7 @@ from SCons.Node.FS import Dir
 from SCons.Script import Environment, COMMAND_LINE_TARGETS, Exit
 
 from . import compiler
-from .compiler import gcc, icc, llvm
+from .compiler import gcc, llvm
 from .compiler import helper as compile_helper
 from .variables import AlmVariables
 from .options import AlmOptions
@@ -148,12 +148,6 @@ class AlmEnvironment(object):
             cc_opt = 'gcc'
             self.compiler = gcc.Gcc(buildtype)
             self.env['compiler'] = 'gcc'
-
-        elif 'icc' in cc_env:
-            print ('Found ICC Compiler in CC variable')
-            cc_opt = 'icc'
-            self.env['compiler'] = 'icc'
-            self.compiler = icc.Icc(buildtype)
 
         self.compiler.Setup()
 

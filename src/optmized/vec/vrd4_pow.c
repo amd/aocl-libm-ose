@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2018-2022, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@
 #include <libm/typehelper-vec.h>
 #include <libm/compiler.h>
 
-#define AMD_LIBM_FMA_USABLE 1           /* needed for poly.h */
+#define AMD_LIBM_FMA_USABLE 1           /* needed for poly-vec.h */
 #include <libm/poly-vec.h>
 
 typedef struct {
@@ -43,36 +43,30 @@ typedef struct {
     double tail;
 } lookup_data;
 
+extern lookup_data log_f_256[];
+extern lookup_data log_Finv[];
 
 #define VECTOR_LENGTH 4
 #define N 10
-#define TABLE_SIZE (1ULL << N)
-#define MAX_POLYDEGREE  8
-extern lookup_data log_f_256[];
-extern lookup_data log_Finv[];
-extern lookup_data exp_lookup[];
-#define TWO_POWER_J_BY_N exp_lookup
 #define TAB_F_INV log_Finv
 #define TAB_LOG   log_f_256
 #define MANT_MASK_N  (0x000FFC0000000000ULL)
-#define MANT_MASK_N1 (0x0000080000000000ULL)
 #define DOUBLE_PRECISION_BIAS 1023
 #define DOUBLE_PRECISION_MANTISSA 0x000fffffffffffffULL
 #define ONE_BY_TWO 0x3fe0000000000000ULL
+#define SIGN_MASK   0x7FFFFFFFFFFFFFFFUL
 
 static struct {
-    v_u64x4_t v_min, v_max, mantissa_bits, one_by_two, mant_8_bits;
-    v_u64x4_t near_one_low, near_one_high;
+    v_u64x4_t mantissa_bits, one_by_two, mant_8_bits;
     v_i64x4_t float_bias;
-    double ALIGN(16) poly[MAX_POLYDEGREE];
+    v_f64x4_t poly[8];
     v_f64x4_t ln2_head, ln2_tail;
+    double ln2_head_scal, ln2_tail_scal;
 } v_log_data = {
     .ln2_head = _MM_SET1_PD4(0x1.62e42e0000000p-1), /* ln(2) head*/
     .ln2_tail = _MM_SET1_PD4(0x1.efa39ef35793cp-25), /* ln(2) tail*/
-    .v_min  = _MM_SET1_I64(0x0010000000000000),
-    .v_max  = _MM_SET1_I64(0x7ff0000000000000),
-    .near_one_low  = _MM_SET1_I64(0x3FEF26E978D4FDF4),
-    .near_one_high  = _MM_SET1_I64(0x3FF1000000000000),
+    .ln2_head_scal = 0x1.62e42e0000000p-1, /* ln(2) head*/
+    .ln2_tail_scal = 0x1.efa39ef35793cp-25, /* ln(2) tail*/
     .float_bias =  _MM_SET1_I64(DOUBLE_PRECISION_BIAS),
     .mantissa_bits = _MM_SET1_I64(DOUBLE_PRECISION_MANTISSA),
     .one_by_two = _MM_SET1_I64(ONE_BY_TWO),
@@ -82,174 +76,97 @@ static struct {
     * Polynomial constants, 1/x! (reciprocal x)
     */
     .poly = { /* skip for 0/1 and 1/1 */
-        0x1.0000000000000p-1,    /* 1/2 */
-        0x1.5555555555555p-2,    /* 1/3 */
-        0x1.0000000000000p-2,    /* 1/4 */
-        0x1.999999999999ap-3,    /* 1/5 */
-        0x1.5555555555555p-3,    /* 1/6 */
-        0x1.2492492492492p-3,    /* 1/7 */
-        0x1.0000000000000p-3,    /* 1/8 */
-        0x1.c71c71c71c71cp-4,    /* 1/9 */
+        _MM_SET1_PD4(0x1.0000000000000p-1),    /* 1/2 */
+        _MM_SET1_PD4(0x1.5555555555555p-2),    /* 1/3 */
+        _MM_SET1_PD4(0x1.0000000000000p-2),    /* 1/4 */
+        _MM_SET1_PD4(0x1.999999999999ap-3),    /* 1/5 */
+        _MM_SET1_PD4(0x1.5555555555555p-3),    /* 1/6 */
+        _MM_SET1_PD4(0x1.2492492492492p-3),    /* 1/7 */
+        _MM_SET1_PD4(0x1.0000000000000p-3),    /* 1/8 */
+        _MM_SET1_PD4(0x1.c71c71c71c71cp-4),    /* 1/9 */
     },
 };
-
 
 static struct {
-    v_f64x4_t ln2by_tblsz, tblsz_byln2, Huge;
-    v_f64x4_t ln2_by_n_head, ln2_by_n_tail;
-    v_i64x4_t one;
-    double_t ALIGN(16) poly[MAX_POLYDEGREE];
+    v_f64x4_t ln2by_tblsz, Huge, ln2_tblsz_head, ln2_tblsz_tail;
+    v_f64x4_t tblsz_ln2;
+    v_f64x4_t poly[11];
+    v_i64x4_t exp_bias;
     v_u64x4_t exp_max;
-} exp_v4_data  = {
-    .ln2_by_n_head = _MM_SET1_PD4(0x1.62e42f0000000p-11),
-    .ln2_by_n_tail = _MM_SET1_PD4(0x1.DF473DE6AF279p-36),
-    .tblsz_byln2 = _MM_SET1_PD4(0x1.71547652b82fep10),
-    .one =  _MM_SET1_I64(0x3ff0000000000000ULL),
+} v_exp_data  = {
+    .ln2_tblsz_head = _MM_SET1_PD4(0x1.63p-1),
+	.ln2_tblsz_tail = _MM_SET1_PD4(-0x1.bd0105c610ca8p-13),
+    .tblsz_ln2 = _MM_SET1_PD4(0x1.71547652b82fep+0),
     .Huge = _MM_SET1_PD4(0x1.8000000000000p+52),
     .exp_max = _MM_SET1_I64(0x4086200000000000),
+    .exp_bias = _MM_SET1_I64(DOUBLE_PRECISION_BIAS),
     .poly = {
-        0x1.5555555555555p-3,
-        0x1.5555555555555p-5,
-        0x1.1111111111111p-7,
-        0x1.6c16c16c16c17p-10,
-    },
-};
+		_MM_SET1_PD4(0x1.0p0),
+		_MM_SET1_PD4(0x1.000000000001p-1),
+		_MM_SET1_PD4(0x1.55555555554a2p-3),
+		_MM_SET1_PD4(0x1.555555554f37p-5),
+		_MM_SET1_PD4(0x1.1111111130dd6p-7),
+		_MM_SET1_PD4(0x1.6c16c1878111dp-10),
+		_MM_SET1_PD4(0x1.a01a011057479p-13),
+		_MM_SET1_PD4(0x1.a01992d0fe581p-16),
+		_MM_SET1_PD4(0x1.71df4520705a4p-19),
+		_MM_SET1_PD4(0x1.28b311c80e499p-22),
+		_MM_SET1_PD4(0x1.ad661ce7af3e3p-26),
+	},
+}; 
 
 #define MANTISSA_N_BITS v_log_data.mant_8_bits
 #define MANTISSA_BITS   v_log_data.mantissa_bits
 #define DP64_BIAS       v_log_data.float_bias
 #define DP_HALF         v_log_data.one_by_two
-#define V_MIN           v_log_data.v_min
-#define V_MAX           v_log_data.v_max
-#define NEAR_ONE_LOW    v_log_data.near_one_low
-#define NEAR_ONE_HIGH   v_log_data.near_one_high
-#define V_MASK          v_log_data.v_mask
 #define LN2_HEAD        v_log_data.ln2_head
 #define LN2_TAIL        v_log_data.ln2_tail
-#define INVLN2          exp_v4_data.tblsz_byln2
-#define EXP_HUGE        exp_v4_data.Huge
-#define LOG2_BY_N_HEAD  exp_v4_data.ln2_by_n_head
-#define LOG2_BY_N_TAIL  exp_v4_data.ln2_by_n_tail
-#define ONE             exp_v4_data.one
-#define EXP_MAX         exp_v4_data.exp_max
+
+#define LN2_HEAD_EXP    v_exp_data.ln2_tblsz_head
+#define LN2_TAIL_EXP    v_exp_data.ln2_tblsz_tail
+#define INVLN2_EXP      v_exp_data.tblsz_ln2
+#define EXP_HUGE        v_exp_data.Huge
+#define EXP_MAX         v_exp_data.exp_max
+#define EXP_BIAS        v_exp_data.exp_bias
+
 /*
  * Short names for polynomial coefficients
  */
 
-#define D1  _MM_SET1_PD4(0x1.0000000000000p-1)
-#define D2  _MM_SET1_PD4(exp_v4_data.poly[0])
-#define D3  _MM_SET1_PD4(exp_v4_data.poly[1])
-#define D4  _MM_SET1_PD4(exp_v4_data.poly[2])
-#define D5  _MM_SET1_PD4(exp_v4_data.poly[3])
+#define A1  v_log_data.poly[0]
+#define A2  v_log_data.poly[1]
+#define A3  v_log_data.poly[2]
+#define A4  v_log_data.poly[3]
 
-#define C1  _MM_SET1_PD4(v_log_data.poly[0])
-#define C2  _MM_SET1_PD4(v_log_data.poly[1])
-#define C3  _MM_SET1_PD4(v_log_data.poly[2])
-#define C4  _MM_SET1_PD4(v_log_data.poly[3])
+#define B1  v_exp_data.poly[0]
+#define B3  v_exp_data.poly[1]
+#define B4  v_exp_data.poly[2]
+#define B5  v_exp_data.poly[3]
+#define B6  v_exp_data.poly[4]
+#define B7  v_exp_data.poly[5]
+#define B8  v_exp_data.poly[6]
+#define B9  v_exp_data.poly[7]
+#define B10 v_exp_data.poly[8]
+#define B11 v_exp_data.poly[9]
+#define B12 v_exp_data.poly[10]
 
 /*
  *   __m256d ALM_PROTO_OPT(vrd4_pow)(__m256d, __m256d);
  *
  * Spec:
- *   - A slightly relaxed version of the scalar powf.
- *   - Maximum ULP is expected to be less than 2.
- *   - Performance is expected to be double of scalar powf
+ *   - A slightly relaxed version of the scalar pow.
+ *   - Maximum ULP is expected to be less than 3.
  *
  *
  * Implementation Notes:
  * pow(x,y) = e^(y * log(x))
- *  1. Calculation of log(x):
- *      x = 2^n*(1+f)                                          .... (1)
- *         where n is exponent and is an integer
- *             (1+f) is mantissa ∈ [1,2). i.e., 1 ≤ 1+f < 2    .... (2)
+ * 
+ *  1. Calculation of log(x) proceeds using a vectorized version of the scalar log algorithm
+ *     which returns both head and tail portions for increased accuracy.
  *
- *      From (1), taking log on both sides
- *      log(x) = log(2^n * (1+f))
- *             = log(2^n) + log(1+f)
- *             = n*log(2) + log(1+f)                           .... (3)
- *
- *      let z = 1 + f
- *             log(x) = n*log(2) + log(z)
- *      z = G + g
- *      log(x) = n*log(2) + log(G + g)
- *
- *      log(x) = n*log(2) + log(2*(G/2 + g/2))
- *
- *      log(x) = n*log(2) + log(2) + log(F + f)  with (0.5 <= F < 1) and (f <= 2 ^ (-10))
- *
- *      log(x) = m * log(2) + log(2) + log(F) + log(1 -(f / F))
- *
- *      Y = (2 ^ (-1)) * (2 ^ (-m)) * (2 ^ m) * A
- *
- *      Now, range of Y is: 0.5 <= Y < 1
- *
- *      F = 0x100 + (first 8 mantissa bits) + (9th mantissa bit)
- *
- *      Now, range of F is: 256 <= F <= 512
- *
- *      F = F / 512
- *
- *      Now, range of F is: 0.5 <= F <= 1
- *
- *      f = -(Y - F), with (f <= 2^(-10))
- *
- *      log(x) = m * log(2) + log(2) + log(F) + log(1 -(f / F))
- *
- *      log(x) = m * log(2) + log(2 * F) + log(1 - r)
- *
- *      r = (f / F), with (r <= 2^(-9))
- *
- *      r = f * (1 / F) with (1 / F) precomputed to avoid division
- *
- *      log(x) = m * log(2) + log(G) - poly
- *
- *      log(G) is precomputed
- *
- *      poly = (r + (r ^ 2) / 2 + (r ^ 3) / 3
- *
- *  2. Computation of e^(y * log(x))
- *      e^x = 2 ^ (x/ln(2))
- *
- *      z =  x/ln(2)
- *
- *      z = n + r where n is the integer part of the number and r is the fraction
- *
- *      2^z = 2^n * 2^r
- *
- *      2^n can be calculated as (n + 1023) << 52
- *
- *      2^r is approximated by a polynomial approximated by sollya
- *
- *      Polynomial Approximation:
- *      For More information refer to tools/sollya/vrs4_expf.sollya
- *
+ *  2. Computation of e^(y * log(x)) then proceeds similarly to vrd4_exp
  *
  */
-static inline int
-check_condition(v_i64x4_t* cond1, v_i64x4_t cond2)
-{
-
-    int32_t ret = 0;
-
-    for(int i = 0; i < 4; i++) {
-        if((*cond1)[i] || cond2[i]){
-            (*cond1)[i] = 1;
-            ret = 1;
-         }
-    }
-
-    return ret;
-}
-
-static inline v_f64x4_t
-pow_specialcase(v_f64x4_t _x,
-                 v_f64x4_t _y,
-                 v_f64x4_t result,
-                 v_i64x4_t cond)
-{
-    return call2_v4_f64(ALM_PROTO(pow), _x, _y, result, cond);
-}
-
 
 __m256d
 ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
@@ -258,12 +175,9 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     v_u64x4_t ux = as_v4_u64_f64(_x);
 
+    /* This portion of the code is a vectorized version of the scalar log.c, with some checks removed */
+
     v_i32x4_t int32_exponent;
-
-    v_i64x4_t condition = (ux - V_MIN >= V_MAX - V_MIN);
-
-    /*call scalar pow for values of x near one */
-    condition &=  (ux - NEAR_ONE_LOW) >= (NEAR_ONE_HIGH - NEAR_ONE_LOW);
 
     v_i64x4_t int_exponent = (v_i64x4_t)( (ux >> 52) - DP64_BIAS );
 
@@ -283,25 +197,23 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     v_f64x4_t LOG_256_HEAD, LOG_256_TAIL;
 
-    v_f64x4_t j_by_N_head, j_by_N_tail;
-
     v_f64x4_t r, r1, u;
 
     /* Avoiding the use of vgatherpd instruction for performance reasons */
 
-    for(int  lane = 0; lane < 4; lane++) {
+    for(int i = 0; i < VECTOR_LENGTH; i++) {
 
-        int32_t j = (int32_t)index[lane];
+        int32_t j = (int32_t)index[i];
 
-        int32_exponent[lane] = (int32_t)int_exponent[lane];
+        int32_exponent[i] = (int32_t)int_exponent[i];
 
-        F_INV_HEAD[lane] = TAB_F_INV[j].head;
+        F_INV_HEAD[i] = TAB_F_INV[j].head;
 
-        F_INV_TAIL[lane] = TAB_F_INV[j].tail;
+        F_INV_TAIL[i] = TAB_F_INV[j].tail;
 
-        LOG_256_HEAD[lane] = TAB_LOG[j].head;
+        LOG_256_HEAD[i] = TAB_LOG[j].head;
 
-        LOG_256_TAIL[lane] = TAB_LOG[j].tail;
+        LOG_256_TAIL[i] = TAB_LOG[j].tail;
 
     }
 
@@ -319,17 +231,17 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     v_f64x4_t u2 = u * u;
 
-    v_f64x4_t a1 = C1  + u * C2;
+    v_f64x4_t a1 = A1  + u * A2;
 
-    v_f64x4_t a2 = C3  + u * C4;
+    v_f64x4_t a2 = A3  + u * A4;
 
     v_f64x4_t u4 = u2 * u2;
 
     v_f64x4_t b1 = u2 * a1;
 
-    v_f64x4_t  q = b1 + u4 * a2;
+    v_f64x4_t  q1 = b1 + u4 * a2;
 
-    v_f64x4_t poly = (z + r) + q;
+    v_f64x4_t poly = (z + r) + q1;
 
     /* m*log(2) + log(G) - poly */
 
@@ -349,12 +261,12 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     /* Calculate exp */
 
-    v_u64x4_t v = as_v4_u64_f64(ylogx_h);
+    v_u64x4_t v = as_v4_u64_f64(ylogx_h) & SIGN_MASK;
 
     /* check if y*log(x) > 1024*ln(2) */
     v_i64x4_t condition2 = (v >= EXP_MAX);
 
-    z = ylogx_h * INVLN2;
+    z = ylogx_h * INVLN2_EXP;
 
     v_f64x4_t dn = z + EXP_HUGE;
 
@@ -362,45 +274,22 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     dn = dn - EXP_HUGE;
 
-    index = (v_u64x4_t)(n & DP64_BIAS);
+    r = ylogx_h - (dn * LN2_HEAD_EXP);
 
-    r = ylogx_h - (dn * LOG2_BY_N_HEAD);
+    v_i64x4_t m = (n + EXP_BIAS) << 52;
 
-    v_i64x4_t m = ((n - index) << (52 - N)) + ONE;
+    r = (r - (LN2_TAIL_EXP * dn)) + ylogx_t;
 
-    r = (r - (LOG2_BY_N_TAIL * dn)) + ylogx_t;
+    v_f64x4_t poly2 = POLY_EVAL_11(r, B1, B1, B3, B4, B5, B6,
+                                  B7, B8, B9, B10, B11, B12);
 
-    v_f64x4_t qtmp1 = D1 + (D2 * r);
+    result = poly2 * as_v4_f64_i64(m);
 
-    v_f64x4_t r2 = r * r;
-
-    v_f64x4_t qtmp3 = r + (r2 * qtmp1);
-
-    poly = qtmp3 + r2 * r2  * D3;
-
-    for (int lane = 0; lane < 4; lane++) {
-
-        int32_t j = (int32_t)index[lane];
-
-        j_by_N_head[lane] = TWO_POWER_J_BY_N[j].head;
-
-        j_by_N_tail[lane] = TWO_POWER_J_BY_N[j].tail;
-
-    }
-
-    q = j_by_N_tail + poly *  j_by_N_tail;
-
-    z = poly * j_by_N_head;
-
-    r = j_by_N_head + (z + q);
-
-    result = r * as_v4_f64_i64(m);
-
-    if (unlikely(check_condition(&condition, condition2))) {
-        return pow_specialcase(_x, _y, result, condition);
+    for(int i = 0; i < VECTOR_LENGTH; i++) {
+        if(unlikely((condition2)[i])){
+            result[i] = ALM_PROTO(pow)(_x[i], _y[i]);
+         }
     }
 
     return result;
 }
-
-

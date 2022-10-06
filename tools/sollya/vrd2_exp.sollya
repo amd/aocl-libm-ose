@@ -29,7 +29,7 @@ restart ;
 N = 1000;  // Number of points 
 
 deg = 11; // poly degree
-// Intervel of the function 
+// Interval of the function 
 a = -log(2)/2 ;  
 b = +log(2)/2 ; 
 
@@ -44,7 +44,7 @@ poly = fpminimax(f,deg,[|prec...|],[a;b],floating,relative) ;
 //print("rel error:", accurateinfnorm(poly(x)/f(x)-1, [a;b], 30));
 
 // relative error computation fails 
-// Make a array in the intervel [a;b] 
+// Make a array in the interval [a;b] 
 dx = (b-a)/(N-1) ;
 xi = [||] ; 
 for i from 0 to N-1 do {xi = xi@[|a+i*dx|];} ;  
@@ -70,3 +70,6 @@ display = hexadecimal;
 print("coeffs in hexadecimal:");
 for i from 0 to deg do double(coeff(poly,i));
 print(poly) ; 
+poly;
+
+for i from 0 to 1024 do {h = exp((i/1024)*log(2.0);};

@@ -276,6 +276,61 @@
                          q;                                     \
                  })
 
+/*
+ * Polynomial of degree 27,
+ *      - uses only odd terms and
+ *      - C0 = 0
+ * p(x) = (c13*x^27 + c12*x^25 + c11*x^23 + c10*x^21 + c9*x^19 + c8*x^17 + c7*x^15 +
+ *         c6*x^13 + c5*x^11 + c4*x^9 + c3*x^7 + c2*x^5 + c1*x^3) + x
+ *      = x(x^12*(x4*(c8 + c9*x2) + (c6 + c7*x2)) + x4*(x4*(c4 + c5*x2) + (c2 + c3*x2))+
+ *        (c0 + c1*x2))
+ *
+ */
+#define POLY_EVAL_ODD_27(r, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13) ({  \
+        __typeof(r) r2, r4, r8;                                     \
+        __typeof(r) a1, a2, a3, a4, a5, a6, b1, b2, b3, b4, q;                  \
+        r2 = r * r;                                                 \
+        r4 = r2 * r2;                                               \
+        r8 = r4 * r4;                                               \
+        a1 = c1 + c2 * r2;                                          \
+        a2 = c3 + c4 * r2;                                          \
+        a3 = c5 + c6 * r2;                                          \
+        a4 = c7 + c8 * r2;                                          \
+        a5 = c9 + c10 * r2;\
+        a6 = c12 + c13 * r2;\
+        a6 = c11 + a6 * r2;\
+        b4 = a5 + a6 * r4;\
+        b1 = a1 + a2 * r4;                                          \
+        b2 = a4 + b4 * r4;                                          \
+        b3 = a3 + b2 * r4;                                          \
+        q  = b1 + b3 * r8;    \
+        q = r * c0 + ((q * r2) * r);                                     \
+        q;                                                     \
+    })
+
+#define POLY_EVAL_ODD_31(r, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15) ({  \
+        __typeof(r) r2, r4, r8;                                     \
+        __typeof(r) a1, a2, a3, a4, a5, a6, a7, b1, b2, b3, q;                  \
+        r2 = r * r;                                                 \
+        r4 = r2 * r2;                                               \
+        r8 = r4 * r4;                                               \
+        a1 = c1 + c2 * r2;                                          \
+        a2 = c3 + c4 * r2;                                          \
+        a3 = c5 + c6 * r2;                                          \
+        a4 = c7 + c8 * r2;                                          \
+        a5 = c9 + c10 * r2;\
+        a6 = c11 + c12 * r2;\
+        a7 = c14 + c15*r2;\
+        a7 = c13 + a7 * r2;\
+        b1 = a2 + a3*r4;\
+        b1 = a1 + b1*r4;\
+        b2 = a4 + a5*r4;\
+        b3 = a6 + a7*r4;\
+        b2 = b2 + b3*r8;                     \
+        q  = b1 + b2*r8*r4;    \
+        q = r * c0 + ((q * r2) * r);                                     \
+        q;                                                     \
+    })
 
 /*
  * poly = x * (C1 + C2*x^2 + C3*x^4 + C4*x^6 + C5*x^8 + \

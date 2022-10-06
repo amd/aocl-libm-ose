@@ -161,7 +161,7 @@ float ALM_PROTO_OPT(erff)(float x) {
     else {
 
         /*x is NaN */
-        if(ux > PINFBITPATT_SP32) {
+        if(unlikely(ux > PINFBITPATT_SP32)) {
 
             if(!(ux & QNAN_MASK_32)) /* x is snan */
                 return __alm_handle_errorf(ux, AMD_F_INVALID);

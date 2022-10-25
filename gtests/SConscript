@@ -122,9 +122,12 @@ if env['HOST_OS'] == 'win32':
     if env['BUILD'] == 'debug':
         env['PDB'] = 'test.pdb'
 
+# get cpuid path
+cpuid_install_path_lib = os.path.join(env['cpuid_install_path'], 'lib')
+
 ccflags = []
 liblist = []
-libpath = ['#'+alm_path]
+libpath = ['#'+alm_path, cpuid_install_path_lib]
 incpath = ['#gtests/include',
            '#gtests/include/almtest',
            '#gtests/gapi/gtest',
@@ -185,7 +188,7 @@ else:
 
 # Add default math library for any unresolved functions
 if env['HOST_OS'] != 'win32':
-    liblist.extend(['m', 'gtest', 'benchmark','mparith32', 'mparith64', 'mpfr'])
+    liblist.extend(['m', 'gtest', 'benchmark','mparith32', 'mparith64', 'mpfr', 'cpu'])
     if use_asan == 1:
         liblist.extend(['asan',])
 else:

@@ -163,6 +163,7 @@ class AlmEnvironment(object):
         abi   = opts.GetOption('libabi')
         arch_config  = opts.GetOption('arch_config')
         use_asan = opts.GetOption('use_asan')
+        cpuid_install_path = opts.GetOption('cpuid_install_path')
 
         # fix the debug, it is set to 'none' instead of None
         # due to the way options are handled
@@ -224,6 +225,7 @@ class AlmEnvironment(object):
         abi        = opts.GetOption('libabi')
         arch_config = opts.GetOption('arch_config')
         use_asan    = opts.GetOption('use_asan')
+        cpuid_install_path = opts.GetOption('cpuid_install_path')
 
         abi_dict = {
             'acml' : 'LIBABI_ACML',
@@ -245,6 +247,7 @@ class AlmEnvironment(object):
         env['libabi'] = abi
         env['arch_config'] = arch_config
         env['use_asan'] = use_asan
+        env['cpuid_install_path'] = cpuid_install_path
 
     def CheckDefault(self):
         '''

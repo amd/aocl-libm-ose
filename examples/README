@@ -26,14 +26,15 @@
  */
 
 This directory contains sample source files showing sample usage of AOCL LibM
-library functions. In particular,
-different flavors of the exp function have been illustrated.
+library functions.
 
-to build and run this example:
+To build and run this example application:
 1. make clean;
 2. make (with below optional arguments)
    CC=clang/gcc (default:gcc)
    LIB=static/dynamic (default it uses dynamic lib)
+   CPUID_PATH=<path to libcpu.so file>
 3. export LD_LIBRARY_PATH=<path to libalm.so>:$LD_LIBRARY_PATH (in case of dynamic lib)
+4. export LD_LIBRARY_PATH=<path to libcpu.so>:$LD_LIBRARY_PATH
 4. ./test_libm
 

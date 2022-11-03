@@ -39,7 +39,7 @@ struct alm_arch_funcs __arch_funcs_cbrt = {
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
             &ALM_PROTO_OPT(cbrtf),
-            &ALM_PROTO_FMA3(cbrt),
+            &ALM_PROTO_OPT(cbrt),
             &ALM_PROTO_FMA3(vrs4_cbrtf),
             NULL,                        /* vrs8 ? */
             &ALM_PROTO_FMA3(vrd2_cbrt),

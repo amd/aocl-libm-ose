@@ -33,6 +33,8 @@ incpaths = [
     Dir('#/src/optmized/'),
  ]
 
+use_asan = env['use_asan']
+
 if env['HOST_OS'] != 'win32':
     ccflags = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror',
                #'-Wno-unused-but-set-parameter',
@@ -55,6 +57,11 @@ e.Append(
 )
 
 if env['HOST_OS'] == 'win32':
+    if use_asan == 1:
+        e.Append(
+            LIBS      = ['clang_rt.asan-x86_64.lib','clang_rt.asan_cxx-x86_64.lib']
+        )
+
     e.Append(
         LIBS = ['libalm'],
         LIBPATH = ['#'+joinpath(env['BUILDROOT'], 'src')]

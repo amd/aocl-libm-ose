@@ -49,8 +49,9 @@ if e.__contains__('arch_config') and e['arch_config'] == 'avx512':
     test_cflags.append('-D__AVX512__')
 
 # for asan usage
-if e.__contains__('use_asan') and e['use_asan'] == 1:
-    test_cflags.append('-fsanitize=address')
+if env['HOST_OS'] != 'win32':
+    if e.__contains__('use_asan') and e['use_asan'] == 1:
+        test_cflags.append('-fsanitize=address')
 
 e.Append(
     INCPATH= ['inc'],

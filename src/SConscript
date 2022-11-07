@@ -73,6 +73,9 @@ else:
                #'/showIncludes',
                '/MT'
           ]
+    if use_asan == 1:
+        ccflags.append(['/fsanitize=address', '/Zi'])
+        ccflags.remove('/O2')
 
 if env['HOST_OS'] == 'win32':
     if env['BUILD'] == 'debug':
@@ -92,19 +95,24 @@ alm_objs = []
 
 almenv = e.Clone()
 
-__linkflags = ['-ealm_main',]
-
-# for address sanitizer support
-if use_asan == 1:
-    if 'clang' in e['CC']:
-        __linkflags.append('-static-libsan')
-    if 'gcc' in e['CC']:
-        __linkflags.append('-static-libasan')
 if e['HOST_OS'] != 'win32':
+    __linkflags = ['-ealm_main',]
+
+    if use_asan == 1:
+        if 'clang' in e['CC']:
+            __linkflags.append('-static-libsan')
+        if 'gcc' in e['CC']:
+            __linkflags.append('-static-libasan')
+
     almenv.Append(
         LINKFLAGS = __linkflags, # ['-T$LINKERSCRIPT']
         LIBS      = ['c'],
     )
+else:
+    if use_asan == 1:
+        almenv.Append(
+            LIBS      = ['clang_rt.asan-x86_64.lib','clang_rt.asan_cxx-x86_64.lib'],
+        )
 
 subdirs = ['isa', 'optmized', 'iface', 'arch', 'ref']
 for d in subdirs:

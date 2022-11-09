@@ -51,6 +51,11 @@
     $ scons <other options> --verbose=1
    ```
 
+  Building with ASAN feature
+   ``` shell
+    $ scons <other options> --use_asan=1
+   ```
+
   Building with debug
    ```sh
     $ scons <other options> --debug_mode=all/libs/gtests

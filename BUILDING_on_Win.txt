@@ -59,9 +59,13 @@
 
 ## Building with debug
     scons ALM_CC=<clang executable path> ALM_CXX=<clang++ executable path> -j32 gtests --verbose=1 --debug_mode=all
-    
+
 ## Building with avx512 feature
     scons ALM_CC=<clang executable path> ALM_CXX=<clang++ executable path> -j32 gtests --verbose=1 --debug_mode=all --arch_config=avx512
+
+## Building with ASAN feature
+    scons ALM_CC=<clang executable path> ALM_CXX=<clang++ executable path> -j32 gtests --use_asan=1
+
 
 ## To run the tests
     To run the AOCL LibM test framework.

@@ -25,49 +25,56 @@
  *
  */
 
-#include <libm_macros.h>
+#include "libm_util_amd.h"
+#include "libm_errno_amd.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
-#include <libm/iface.h>
-#include <libm/entry_pt.h>
-#include <libm/arch/all.h>
+#include <libm/typehelper.h>
 
+double ALM_PROTO_OPT(nearbyint)(double x)
+{
+    uint64_t checkbits_u64;
+    uint64_t sign;
+    double val_2p52_f64;
+    checkbits_u64 = asuint64(x);
 
-static const
-struct alm_arch_funcs __arch_funcs_nearbyint = {
-    .def_arch = ALM_UARCH_VER_DEFAULT,
-    .funcs = {
-        [ALM_UARCH_VER_DEFAULT] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_OPT(nearbyintf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_OPT(nearbyint),
-        },
-        [ALM_UARCH_VER_ZEN] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_OPT(nearbyintf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_OPT(nearbyint),
-        },
-        [ALM_UARCH_VER_ZEN2] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_OPT(nearbyintf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_OPT(nearbyint),
-        },
-        [ALM_UARCH_VER_ZEN3] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_OPT(nearbyintf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_OPT(nearbyint),
-        },
-        [ALM_UARCH_VER_ZEN4] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_OPT(nearbyintf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_OPT(nearbyint),
-        },
-    },
-};
+    // Clear the sign bit and check if the value can be rounded(i.e check if exponent less than 23)
+    if((checkbits_u64 & POS_BITSET_DP64) > EXP_VAL_52_DP64)
+    {
+        // Check nan or inf
+        if((checkbits_u64 & EXPBITS_DP64) == EXPBITS_DP64)
+        {
+            if((checkbits_u64 & MANTBITS_DP64) == POS_ZERO_F64)
+            {
+                // x is Inf
+#ifdef WINDOWS
+                return  __alm_handle_error(checkbits_u64, AMD_F_INVALID);
+#else
+                return  __alm_handle_error(checkbits_u64, AMD_F_NONE);
+#endif
+            }
+            else
+            {
+                // x is NaN
+#ifdef WINDOWS
+                return  __alm_handle_error(checkbits_u64 | QNAN_MASK_64, AMD_F_NONE);
+#else
+                if(checkbits_u64 & QNAN_MASK_64)
+                    return  __alm_handle_error(checkbits_u64 | QNAN_MASK_64, AMD_F_NONE);
+                else
+                    return  __alm_handle_error(checkbits_u64 | QNAN_MASK_64, AMD_F_INVALID);
+#endif
+            }
+        }
+        else
+            return x;
+    }
 
-void
-LIBM_IFACE_PROTO(nearbyint)(void *arg) {
-    alm_ep_wrapper_t g_entry_nearbyint = {
-       .g_ep = {
-        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(nearbyintf),
-        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(nearbyint),
-        },
-    };
+    sign = checkbits_u64 & SIGNBIT_DP64;
 
-    alm_iface_fixup(&g_entry_nearbyint, &__arch_funcs_nearbyint);
+    val_2p52_f64 = asdouble(sign | EXP_VAL_52_DP64);
+    val_2p52_f64 = (x + val_2p52_f64) - val_2p52_f64;
+    val_2p52_f64 = asdouble(asuint64(val_2p52_f64) | sign);
+
+    return val_2p52_f64;
 }
-

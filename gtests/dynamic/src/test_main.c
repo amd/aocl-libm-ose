@@ -123,6 +123,8 @@ int main(int argc, char* argv[]) {
     /*complex*/
     test_cexp(handle);
 
+    test_erf(handle);
+
     #if defined(_WIN64) || defined(_WIN32)
       FreeLibrary(handle);
     #else

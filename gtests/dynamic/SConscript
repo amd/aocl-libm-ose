@@ -43,6 +43,11 @@ else:
     test_cflags = []
     linkflags = ['/NODEFAULTLIB:libcmt.lib']
 
+#check if avx512 enabled
+if e.__contains__('arch_config') and e['arch_config'] == 'avx512':
+    test_cflags.append('-mavx512f')
+    test_cflags.append('-D__AVX512__')
+
 e.Append(
     INCPATH= ['inc'],
     CPPPATH= ['inc'],

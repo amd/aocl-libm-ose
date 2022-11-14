@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018-2022, Advanced Micro Devices. All rights Reserved
+# Copyright (C) 2018-2020, Advanced Micro Devices. All rights Reserved
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ if env['HOST_OS'] != 'win32':
                #'-Wno-unused-but-set-parameter',
                '-Wno-unused-parameter', '-O3',
                '-fPIC',
-               '-Ofast',
+               #'-Ofast',
                '-mavx2', '-mfma']
 else:
     if '-Dlibalm_EXPORTS' in e['CCFLAGS']:
@@ -54,6 +54,12 @@ e.Append(
     STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 1
 )
 
+if env['HOST_OS'] == 'win32':
+    e.Append(
+        LIBS = ['libalm'],
+        LIBPATH = ['#'+joinpath(env['BUILDROOT'], 'src')]
+    )
+
 excluded_srcs = []
 
 fast_srcs = Glob('*.c', exclude=excluded_srcs)
@@ -63,11 +69,13 @@ fast_objs = e.StaticObject(fast_srcs)
 
 #print('lib sources' , list(source))
 
-almfast = e.StaticLibrary('almfast', fast_objs)
 if e['HOST_OS'] != 'win32':
+    almfast = e.StaticLibrary('almfast', fast_objs)
     almfastso = e.SharedLibrary('almfast', fast_objs)
 else:
-    almfastso = e.SharedLibrary('almfast', fast_objs, no_import_lib=True)
+    almfast = e.StaticLibrary('almfast-static', fast_objs)
+    e['WINDOWS_INSERT_DEF']=1
+    almfastso = e.SharedLibrary('almfast', fast_objs, no_import_lib=False)
 
 installdir = env['installdirs']
 if 'install' in COMMAND_LINE_TARGETS:

@@ -54,3 +54,10 @@ int test_vas    (funcf_va,     const char*);
 int test_vas_2  (funcf_va_2,   const char*);
 int test_vad    (func_va,      const char*);
 int test_vad_2  (func_va_2,    const char*);
+
+#if defined(__AVX512__)
+int test_v8d    (func_v8d,     const char*);
+int test_v8d_2  (func_v8d_2,   const char*);
+int test_v16s   (funcf_v16s,   const char*);
+int test_v16s_2 (funcf_v16s_2, const char*);
+#endif

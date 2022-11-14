@@ -48,6 +48,19 @@ extern int use_cexp();
 extern int use_clog();
 extern int use_cpow();
 
+/* erf */
+extern int use_erf();
+
+/* avx512 */
+#if defined (__AVX512__)
+extern int use_exp_avx512();
+extern int use_log_avx512();
+extern int use_log10_avx512();
+extern int use_exp2_avx512();
+extern int use_pow_avx512();
+extern int use_atan_avx512();
+extern int use_asin_avx512();
+#endif
 
 int main()  {
     printf("Illustration of AOCL LibM functions\n");
@@ -72,6 +85,17 @@ int main()  {
     use_clog();
     use_cpow();
 
+    use_erf();
+
+    #if defined (__AVX512__)
+    use_exp_avx512();
+    use_exp2_avx512();
+    use_pow_avx512();
+    use_log_avx512();
+    use_log10_avx512();
+    use_atan_avx512();
+    use_asin_avx512();
+    #endif
 
     return 0;
 }

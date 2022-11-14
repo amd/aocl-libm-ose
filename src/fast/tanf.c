@@ -157,3 +157,7 @@ ALM_PROTO_FAST(tanf)(float x)
 
     return result;
 }
+
+strong_alias (__tanf_finite, ALM_PROTO_FAST(tanf))
+weak_alias (amd_tanf, ALM_PROTO_FAST(tanf))
+weak_alias (tanf, ALM_PROTO_FAST(tanf))

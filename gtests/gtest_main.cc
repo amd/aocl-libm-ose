@@ -145,6 +145,40 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_8FLOATS) {
   ptr->tstcnt++;
 }
 
+TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_16FLOATS) {
+  int nfail = 0;
+  double max_ulp_err = inData->max_ulp_err;
+  test_data data;
+  data.ip  = (void *)inpbuff;
+  data.op  = (void *)aop;
+  float ip[2];
+
+  if(nargs == 2)
+    data.ip1 = (void *)inpbuff1;
+
+  for (uint32_t i = 0; i < count; i += 16) {
+    test_v16s(&data, i);
+
+    for (uint32_t j = 0; j < 16; j++) {
+      ip[0] = inpbuff[i + j];
+      if(nargs == 2)
+        ip[1] = inpbuff1[i + j];
+
+      double exptd = getExpected(ip);
+      double ulp = getUlp(aop[j], exptd);
+      if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
+        nfail++;
+      }
+
+      if ((vflag == 1) && (ulp > inData->ulp_threshold))
+        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[0], ulp);
+    }
+  }
+  sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
+  "Vector","Accuracy","v16s",count,(count-nfail), nfail, max_ulp_err);
+  ptr->tstcnt++;
+}
+
 
 TEST_P(AccuTestFixtureDouble, ACCURACY_SCALAR_DOUBLE) {
   int nfail = 0;
@@ -244,6 +278,40 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_4DOUBLES) {
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
   "Vector","Accuracy","v4d",count,(count-nfail), nfail, max_ulp_err);
+  ptr->tstcnt++;
+}
+
+TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_8DOUBLES) {
+  int nfail = 0;
+  double max_ulp_err = inData->max_ulp_err;
+  test_data data;
+  data.ip  = (void *)inpbuff;
+  data.op  = (void *)aop;
+  double ip[2];
+
+  if(nargs == 2)
+    data.ip1 = (void *)inpbuff1;
+
+  for (uint32_t i = 0; i < count; i += 8) {
+    test_v8d(&data, i);
+
+    for (uint32_t j = 0; j < 8; j++) {
+      ip[0] = inpbuff[i + j];
+      if(nargs == 2)
+        ip[1] = inpbuff1[i + j];
+
+      long double exptd = getExpected(ip);
+      double ulp = getUlp(aop[j], exptd);
+      if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
+        nfail++;
+      }
+
+      if ((vflag == 1) && (ulp > inData->ulp_threshold))
+        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[0], ulp);
+    }
+  }
+  sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
+  "Vector","Accuracy","v8d",count,(count-nfail), nfail, max_ulp_err);
   ptr->tstcnt++;
 }
 

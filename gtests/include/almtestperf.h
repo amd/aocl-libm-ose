@@ -91,10 +91,10 @@ class AoclLibmTest {
 
       #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
         inpbuff = (T*)_aligned_malloc(sz, _ALIGN_FACTOR);
-        outbuff = (T*)_aligned_malloc(32, _ALIGN_FACTOR);
+        outbuff = (T*)_aligned_malloc(sz, _ALIGN_FACTOR);
       #else
         inpbuff = (T*)aligned_alloc(_ALIGN_FACTOR, sz);
-        outbuff = (T*)aligned_alloc(_ALIGN_FACTOR, 32);
+        outbuff = (T*)aligned_alloc(_ALIGN_FACTOR, sz);
       #endif
 
       PopulateInputSamples(inpbuff, params->range[0], params->count);

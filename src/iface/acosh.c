@@ -42,6 +42,8 @@ struct alm_arch_funcs __arch_funcs_acosh = {
 #if 0
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_acoshf),/* vrs4 ? */
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_acoshf),/* vrs8 ? */
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_acoshf),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_acosh),
 #endif
         },
 
@@ -70,6 +72,18 @@ struct alm_arch_funcs __arch_funcs_acosh = {
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_acoshf), /* vrs8 ? */
 #endif
         },
+
+        [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(acoshf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(acosh),
+#if 0
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN4(vrs4_acoshf), /* vrs4 ? */
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN4(vrs8_acoshf), /* vrs8 ? */
+
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_acoshf),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_acosh),
+#endif
+        },
     },
 };
 
@@ -82,6 +96,8 @@ LIBM_IFACE_PROTO(acosh)(void *arg) {
 #if 0
             [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_acoshf),
             [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_acoshf),
+            [ALM_FUNC_VECT_SP_16] = &G_ENTRY_PT_PTR(vrs16_acoshf),
+            [ALM_FUNC_VECT_DP_8] = &G_ENTRY_PT_PTR(vrd8_acosh),
             [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_acosh),
             [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_acosh),
 #endif

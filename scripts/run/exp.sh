@@ -27,12 +27,17 @@
 
 EXE="$1"
 
+arch="$2"
+
 nargs=1
 
 xranges=(-700,700    \
     -102,88)
 
 input_types=("s1d" "s1f" "v4s" "v4d" "v2d" "v8s")
+if [ ${arch} = "avx512" ]; then
+    input_types+=("v8d" "v16s")
+fi
 
 run_exe_nargs $exe $nargs $input_types $xranges
 

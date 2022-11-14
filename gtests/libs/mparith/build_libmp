@@ -70,11 +70,15 @@ mparith_srcs += Glob('mparith/*.c', exclude=excluded_list)
 
 objs = mpenv.StaticObject(mparith_srcs)
 
-libmp = mpenv.Library('mparith%s'%mpenv['MPVARIANT'], objs)
 if mpenv['HOST_OS'] != 'win32':
+    libmp = mpenv.Library('mparith%s'%mpenv['MPVARIANT'], objs)
     libmpso = mpenv.SharedLibrary('mparith%s'%mpenv['MPVARIANT'], objs)
 else:
-    libmpso = mpenv.SharedLibrary('mparith%s'%mpenv['MPVARIANT'], objs, no_import_lib=True)
+    if mpenv['BUILD'] == 'debug':
+        mpenv['PDB'] = 'mparith%s.pdb'%mpenv['MPVARIANT']
+    libmp = mpenv.Library('mparith%s-static'%mpenv['MPVARIANT'], objs)
+    mpenv['WINDOWS_INSERT_DEF']=1
+    libmpso = mpenv.SharedLibrary('mparith%s'%mpenv['MPVARIANT'], objs, no_import_lib=False)
 
 Return('libmp', 'libmpso')
 

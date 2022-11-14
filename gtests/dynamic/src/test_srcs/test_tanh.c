@@ -37,9 +37,16 @@ int test_tanh(void* handle) {
     data.v4s = (funcf_v4s)FUNC_LOAD(handle, "amd_vrs4_tanhf");
     data.v8s = (funcf_v8s)FUNC_LOAD(handle, "amd_vrs8_tanhf");
 
+    #if defined(__AVX512__)
+    data.v16s = (funcf_v16s)FUNC_LOAD(handle, "amd_vrs16_tanhf");
+    #endif
 
     if (data.s1f == NULL || data.s1d == NULL ||
-        data.v8s == NULL || data.v4s == NULL ) {
+        data.v8s == NULL || data.v4s == NULL
+        #if defined(__AVX512__)
+        || data.v16s == NULL
+        #endif
+        ) {
         ret = 1;
     }
 

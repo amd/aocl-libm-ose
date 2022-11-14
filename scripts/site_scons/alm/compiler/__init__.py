@@ -27,9 +27,8 @@ import os
 import copy
 #from .gcc import Gcc
 #from .llvm import Llvm
-#from .intel import Icc
 
-#__all__ = ['Gcc', 'LLVM', 'Icc']
+#__all__ = ['Gcc', 'LLVM',]
 
 class Compiler:
     def __init__(self, prod_mode, bvars = None, opts = None):
@@ -179,9 +178,6 @@ class Compiler:
         return False
 
     def IsAOCC(self):
-        return False
-
-    def IsICC(self):
         return False
 
     def Version(self):

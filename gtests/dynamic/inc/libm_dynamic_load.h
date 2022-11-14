@@ -104,4 +104,6 @@ int test_sincos     (void*);
 /*complex*/
 int test_cexp       (void*);
 
+int test_erf      (void*);
+
 #endif

@@ -288,13 +288,103 @@ int test_v8s_2(funcf_v8s_2 v8s_2, const char * func_name) {
     return 0;
 }
 
+#if defined(__AVX512__)
+int test_v8d(func_v8d v8d, const char * func_name) {
+    __m512d ip_vrd8, op_vrd8;
+    double input_array_vrd8[8] = {0.0};
+    double output_array_vrd8[8] = {0.0};
+    int i;
+    ip_vrd8 = _mm512_loadu_pd(input_array_vrd8);
+    if (CheckError()) exit(1);
+    if (v8d != NULL) {
+        op_vrd8 = v8d(ip_vrd8);
+        if (CheckError()) exit(1);
+        _mm512_storeu_pd(output_array_vrd8, op_vrd8);
+        if (CheckError()) exit(1);
+        printf("amd_vrd8_%s\ninput:\n", func_name);
+        for(i=0; i<8; i++)
+            printf("%lf\t",(double)input_array_vrd8[i]);
+        printf("\nOutput:\n");
+        for(i=0; i<8; i++)
+            printf("%lf\t",(double)output_array_vrd8[i]);
+    }
+    return 0;
+}
+
+int test_v8d_2(func_v8d_2 v8d_2, const char * func_name) {
+    __m512d ip_vrd8, op_vrd8;
+    double input_array_vrd8[8] = {0.0,0.0};
+    double output_array_vrd8[8] = {0.0, 0.0};
+    int i;
+    ip_vrd8 = _mm512_loadu_pd(input_array_vrd8);
+    if (CheckError()) exit(1);
+    if (v8d_2 != NULL) {
+        op_vrd8 = v8d_2(ip_vrd8, ip_vrd8);
+        if (CheckError()) exit(1);
+        _mm512_storeu_pd(output_array_vrd8, op_vrd8);
+        if (CheckError()) exit(1);
+        printf("amd_vrd8_%s\ninput:\n", func_name);
+        for(i=0; i<8; i++)
+            printf("%lf\t",(double)input_array_vrd8[i]);
+        printf("\nOutput:\n");
+        for(i=0; i<8; i++)
+            printf("%lf\t",(double)output_array_vrd8[i]);
+    }
+    return 0;
+}
+
+int test_v16s(funcf_v16s v16s, const char * func_name) {
+    __m512 ip_vrs16, op_vrs16;
+    double input_array_vrs16[16] = {0.0f}, output_array_vrs16[16] = {0.0f};
+    int i;
+    ip_vrs16 = _mm512_loadu_ps(input_array_vrs16);
+    if (CheckError()) exit(1);
+    if (v16s != NULL) {
+        op_vrs16 = v16s(ip_vrs16);
+        if (CheckError()) exit(1);
+        _mm512_storeu_ps(output_array_vrs16, op_vrs16);
+        if (CheckError()) exit(1);
+        printf("amd_vrs16_%sf\nInput:\n", func_name);
+        for(i=0; i<16; i++)
+            printf("%f\n", (double)input_array_vrs16[i]);
+        printf("\nOutput\n");
+        for (i=0; i<16; i++)
+            printf("%f\n", (double)output_array_vrs16[i]);
+    }
+    return 0;
+}
+
+int test_v16s_2(funcf_v16s_2 v16s, const char * func_name) {
+    __m512 ip_vrs16, op_vrs16;
+    double input_array_vrs16[16]={0.0f}, output_array_vrs16[16] = {0.0f};
+    int i;
+    ip_vrs16 = _mm512_loadu_ps(input_array_vrs16);
+    if (CheckError()) exit(1);
+    if (v16s != NULL) {
+        op_vrs16 = v16s(ip_vrs16, ip_vrs16);
+        if (CheckError()) exit(1);
+        _mm512_storeu_ps(output_array_vrs16, op_vrs16);
+        if (CheckError()) exit(1);
+        printf("amd_vrs16_%sf\nInput:\n", func_name);
+        for(i=0; i<16; i++)
+            printf("%f\n", (double)input_array_vrs16[i]);
+        printf("\nOutput\n");
+        for (i=0; i<16; i++)
+            printf("%f\n", (double)output_array_vrs16[i]);
+    }
+    return 0;
+}
+#endif
+
+
 /* array vector functions */
 int test_vas(funcf_va vas, const char * func_name) {
     long unsigned int i=0, dim = 5, loopCount = 10;
     long unsigned int array_size = dim * loopCount;
     if (vas != NULL) {
-        float *input_arrayf = (float *)malloc(sizeof(float) * array_size);
-        float *output_arrayf = (float *)malloc(sizeof(float) * array_size);
+        float *input_arrayf = (float *)calloc(array_size, sizeof(float));
+        float *output_arrayf = (float *)calloc(array_size, sizeof(float));
+
         printf("amd_vrsa_%sf\nInput:\n", func_name);
         for (i = 0; i < array_size; i++)
             printf("%f\t", (double)input_arrayf[i]);
@@ -315,8 +405,8 @@ int test_vas_2(funcf_va_2 vas, const char * func_name) {
     long unsigned int i=0, dim = 5, loopCount = 10;
     long unsigned int array_size = dim * loopCount;
     if (vas != NULL) {
-        float *input_arrayf = (float *)malloc(sizeof(float) * array_size);
-        float *output_arrayf = (float *)malloc(sizeof(float) * array_size);
+        float *input_arrayf = (float*)calloc(array_size, sizeof(float));
+        float *output_arrayf = (float *)calloc(array_size, sizeof(float));
         printf("amd_vrsa_%sf\nInput:\n", func_name);
         for (i = 0; i < array_size; i++)
             printf("%f\t", (double)input_arrayf[i]);
@@ -339,8 +429,8 @@ int test_vad(func_va vad, const char* func_name) {
     long unsigned int i=0, dim = 5, loopCount = 10;
     long unsigned int array_size = dim * loopCount;
     if (vad != NULL) {
-        double *input_arrayd = (double *)malloc(sizeof(double) * array_size);
-        double *output_arrayd = (double *)malloc(sizeof(double) * array_size);
+        double *input_arrayd = (double *)calloc(array_size, sizeof(double));
+        double *output_arrayd = (double *)calloc(array_size, sizeof(double));
         printf("amd_vrda_%s\nInput:\n", func_name);
         for (i = 0; i < array_size; i++)
             printf("%lf\t", input_arrayd[i]);
@@ -360,8 +450,8 @@ int test_vad_2(func_va_2 vad, const char* func_name) {
     long unsigned int i=0, dim = 5, loopCount = 10;
     long unsigned int array_size = dim * loopCount;
     if (vad != NULL) {
-        double *input_arrayd = (double *)malloc(sizeof(double) * array_size);
-        double *output_arrayd = (double *)malloc(sizeof(double) * array_size);
+        double *input_arrayd = (double *)calloc(array_size, sizeof(double));
+        double *output_arrayd = (double *)calloc(array_size, sizeof(double));
         printf("amd_vrda_%s\nInput:\n", func_name);
         for (i = 0; i < array_size; i++)
             printf("%lf\t", input_arrayd[i]);

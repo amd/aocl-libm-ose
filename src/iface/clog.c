@@ -55,6 +55,11 @@ struct alm_arch_funcs __arch_funcs_clog = {
             [ALM_FUNC_SCAL_SP_CMPLX] = &ALM_PROTO_ARCH_ZN3(clogf),
             [ALM_FUNC_SCAL_DP_CMPLX] = &ALM_PROTO_ARCH_ZN3(clog),
         },
+
+        [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_SCAL_SP_CMPLX] = &ALM_PROTO_ARCH_ZN4(clogf),
+            [ALM_FUNC_SCAL_DP_CMPLX] = &ALM_PROTO_ARCH_ZN4(clog),
+        },
     },
 };
 

@@ -321,5 +321,6 @@ uint32_t alm_cpu_is_amd(void);
 uint32_t alm_cpu_arch_is_zen(void);
 uint32_t alm_cpu_arch_is_zen2(void);
 uint32_t alm_cpu_arch_is_zen3(void);
+uint32_t alm_cpu_arch_is_zen4(void);
 
 #endif  /* __LIBM_CPU_FEATURES_H__ */

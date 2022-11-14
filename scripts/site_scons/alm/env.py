@@ -31,7 +31,7 @@ from SCons.Node.FS import Dir
 from SCons.Script import Environment, COMMAND_LINE_TARGETS, Exit
 
 from . import compiler
-from .compiler import gcc, icc, llvm
+from .compiler import gcc, llvm
 from .compiler import helper as compile_helper
 from .variables import AlmVariables
 from .options import AlmOptions
@@ -42,7 +42,8 @@ installdirs = {
     'docs'    : 'docs/',
     'lib'     : 'lib/',
     'bin'     : 'bin/',
-    'include' : 'include/'
+    'include' : 'include/',
+    'examples': 'examples/',
 }
 
 def get_environ_path():
@@ -130,6 +131,9 @@ class AlmEnvironment(object):
             cc_env = self.env['ALM_CC']
             if self.env['HOST_OS'] == 'win32':
                 self.env['AS'] = self.env['ALM_CC']
+                self.env['AR'] = 'llvm-lib'
+                self.env['DLIB'] = 'llvm-lib'
+                self.env['LINK'] = 'lld-link'
         except KeyError as k:
             cc_env = self.env['CC']
 
@@ -145,12 +149,6 @@ class AlmEnvironment(object):
             self.compiler = gcc.Gcc(buildtype)
             self.env['compiler'] = 'gcc'
 
-        elif 'icc' in cc_env:
-            print ('Found ICC Compiler in CC variable')
-            cc_opt = 'icc'
-            self.env['compiler'] = 'icc'
-            self.compiler = icc.Icc(buildtype)
-
         self.compiler.Setup()
 
     def __configure_builddir(self):
@@ -163,6 +161,7 @@ class AlmEnvironment(object):
         debug = opts.GetOption('debug_mode')
         dev   = opts.GetOption('developer')
         abi   = opts.GetOption('libabi')
+        arch_config  = opts.GetOption('arch_config')
 
         # fix the debug, it is set to 'none' instead of None
         # due to the way options are handled
@@ -222,6 +221,7 @@ class AlmEnvironment(object):
         env        = self.env
         opts       = self.opts
         abi        = opts.GetOption('libabi')
+        arch_config = opts.GetOption('arch_config')
 
         abi_dict = {
             'acml' : 'LIBABI_ACML',
@@ -241,6 +241,7 @@ class AlmEnvironment(object):
         )
 
         env['libabi'] = abi
+        env['arch_config'] = arch_config
 
     def CheckDefault(self):
         '''

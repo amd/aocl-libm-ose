@@ -85,6 +85,7 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_TANH]       = {LIBM_IFACE_PROTO(tanh), NULL},
     [C_AMD_TANPI]      = {LIBM_IFACE_PROTO(tanpi), NULL},
     [C_AMD_TRUNC]      = {LIBM_IFACE_PROTO(trunc), NULL},
+    [C_AMD_ERF]      =   {LIBM_IFACE_PROTO(erf), NULL},
 
     [C_AMD_SINCOS]     = {LIBM_IFACE_PROTO(sincos), NULL},
 
@@ -157,7 +158,9 @@ alm_get_uach(void)
 {
     alm_uarch_ver_t arch_ver;
 
-    if (alm_cpu_arch_is_zen3())
+    if (alm_cpu_arch_is_zen4())
+        arch_ver = ALM_UARCH_VER_ZEN4;
+    else if (alm_cpu_arch_is_zen3())
         arch_ver = ALM_UARCH_VER_ZEN3;
     else if (alm_cpu_arch_is_zen2())
         arch_ver = ALM_UARCH_VER_ZEN2;

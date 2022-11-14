@@ -112,6 +112,9 @@ extern "C" {
 #define _ZGVdN4v_sin _ZGVdN4v_sin
 #define _ZGVsN4v_sinf _ZGVbN4v_sinf
 #define _ZGVsN8v_sinf _ZGVdN8v_sinf
+
+#define _ZGVsN16v_sinf _ZGVeN16v_sinf
+#define _ZGVdN8v_sin _ZGVeN8v_sin
 #endif
 
 /*vector routines*/
@@ -119,6 +122,11 @@ __m128d LIBM_FUNC_VEC(d, 2, sin)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, sin)(__m256d);
 __m128 LIBM_FUNC_VEC(s, 4, sinf)(__m128);
 __m256 LIBM_FUNC_VEC(s, 8, sinf)(__m256);
+
+#if defined(__AVX512__)
+__m512d LIBM_FUNC_VEC(d, 8, sin)(__m512d);
+__m512  LIBM_FUNC_VEC(s, 16, sinf)(__m512);
+#endif
 
 int test_v2d(test_data *data, int idx)  {
   double *ip  = (double*)data->ip;
@@ -156,6 +164,33 @@ int test_v8s(test_data *data, int idx)  {
   _mm256_store_ps(&op[0], op8);
   return 0;
 }
+
+int test_v8d(test_data *data, int idx)  {
+#if defined(__AVX512__)
+  double *ip  = (double*)data->ip;
+  double *op  = (double*)data->op;
+  __m512d ip8 = _mm512_set_pd(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
+                             ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+  __m512d op8 = LIBM_FUNC_VEC(d, 8, sin)(ip8);
+  _mm512_store_pd(&op[0], op8);
+#endif
+  return 0;
+}
+
+int test_v16s(test_data *data, int idx)  {
+#if defined(__AVX512__)
+  float *ip = (float*)data->ip;
+  float *op  = (float*)data->op;
+  __m512 ip16 = _mm512_set_ps(ip[idx+15], ip[idx+14], ip[idx+13], ip[idx+12],
+                              ip[idx+11], ip[idx+10], ip[idx+9], ip[idx+8],
+                              ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
+                             ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+  __m512 op16 = LIBM_FUNC_VEC(s, 16, sinf)(ip16);
+  _mm512_store_ps(&op[0], op16);
+#endif
+  return 0;
+}
+
 #ifdef __cplusplus
 }
 #endif

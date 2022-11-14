@@ -173,10 +173,10 @@ double ComputeUlp(FAT output, FAT_L _expected) {
   // if either one is NAN
   if (isnan(output) || isnan(expected)) return INFINITY;
 
-  // if output and expectedare infinity
+  // if output and expected are infinity
   if (isinf(output) && (isinf(expected) || (expected > fmax))) return 0.0;
 
-  // if output and expectedare -infinity
+  // if output and expected are -infinity
   if (isNInf<FAT>(output) && (isNInf<FAT>(expected) || (expected < f_low)))
     return 0.0;
 
@@ -188,11 +188,11 @@ double ComputeUlp(FAT output, FAT_L _expected) {
     if (expected < fmax)
       return fabsl(output - _expected) / Ulp<FAT>(expected).Get();
 
-    // If the expectedis infinity and the output is finite
+    // If the expected is infinity and the output is finite
     if ((expected > fmax) || isinf(expected))
       return fabs(output - fmax) / Ulp<FAT>(fmax).Get() + 1;
 
-    // If the expectedis -infinity and the output is finite
+    // If the expected is -infinity and the output is finite
     if (isNInf<FAT>(_expected) || (expected < f_low))
       return fabs(output - f_low) / Ulp<FAT>(f_low).Get() + 1;
   }

@@ -29,49 +29,44 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
-
-//
 #include <libm/arch/all.h>
 
-
-static const
-struct alm_arch_funcs __arch_funcs_trunc = {
+static const struct alm_arch_funcs __arch_funcs_trunc = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_BAS64(truncf),
-            &ALM_PROTO_BAS64(trunc),
-            NULL,                           /* vrs4 ? */
-            NULL,                           /* vrs8 ? */
-            NULL,                           /* vrd2 ? */
-            NULL,                           /* vrd4 ? */
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(truncf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(trunc),
         },
-#if 0
+
         [ALM_UARCH_VER_ZEN] = {
-            &ALM_PROTO_FMA3(truncf),
-            &ALM_PROTO_FMA3(trunc),
-            NULL,                           /* vrs4 ? */
-            NULL,                           /* vrs8 ? */
-            NULL,                           /* vrd2 ? */
-            NULL,                           /* vrd4 ? */
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(truncf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(trunc),
         },
-#endif
-    }
+
+        [ALM_UARCH_VER_ZEN2] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(truncf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(trunc),
+        },
+
+        [ALM_UARCH_VER_ZEN3] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(truncf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(trunc),
+        },
+
+        [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(truncf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(trunc),
+        },
+    },
 };
 
 void
-LIBM_IFACE_PROTO(trunc)(void *arg)
-{
+LIBM_IFACE_PROTO(trunc)(void *arg) {
     alm_ep_wrapper_t g_entry_trunc = {
        .g_ep = {
         [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(truncf),
         [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(trunc),
-#if 0
-        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_truncf),
-        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_truncf),
-        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_trunc),
-        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_trunc),
-#endif
         },
     };
 

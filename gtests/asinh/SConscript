@@ -41,6 +41,7 @@ if e['HOST_OS'] == 'win32':
         LIBS = ['Shlwapi']
     )
 
+if e['HOST_OS'] == 'win32':
     if e['BUILD'] == 'debug':
         e['PDB'] = 'test_asinh.pdb'
 
@@ -49,3 +50,4 @@ asinh_srcs = Glob('*.cc')
 asinh = e.Program('test_asinh', asinh_srcs)
 
 Return('asinh')
+

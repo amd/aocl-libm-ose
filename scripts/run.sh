@@ -31,7 +31,7 @@
 #print script usage
 helpfunc() {
     echo "HELP"
-    echo "Usage: $0 -b <build type> -t <test type> -f <function name>"
+    echo "Usage: $0 -b <build type> -t <test type> -f <function name> -a avx512(optional)"
     echo "Build type: release/glibc/svml"
     echo "Test type: perf/accu/conf/all"
     echo "Routine: pow/log/exp/sin/all"
@@ -42,10 +42,11 @@ helpfunc() {
 set -a
 source $(realpath './scripts/common.sh')
 
-opts="b:t:f:h"
+opts="a:b:t:f:h"
 while getopts "$opts" opt;
 do
     case "${opt}" in
+        a ) arch="${OPTARG}" ;;
         b ) build_type="${OPTARG}" ;;
         t ) test_type="${OPTARG}" ;;
 	    f ) func="${OPTARG}" ;;
@@ -101,14 +102,14 @@ if [ "$func" = "all" ]; then
         do
             echo "Running tests for func" $f
             exe=${BUILD}/$fw/${f}/test_${f}
-            RunCommand `pwd`/scripts/run/${f}.sh "$framework" "$exe" "$test_type" "$input_count"
+            RunCommand `pwd`/scripts/run/${f}.sh "$framework" "$exe" "$test_type" "$input_count" "$arch"
             echo "Ran tests for func" $f
         done
 else
     #run tests for a single function
     echo "Running tests for func" $func
     exe=${BUILD}/$fw/${func}/test_${func}
-    RunCommand `pwd`/scripts/run/${func}.sh "$framework" "$exe" "$test_type" "$input_count"
+    RunCommand `pwd`/scripts/run/${func}.sh "$framework" "$exe" "$test_type" "$input_count" "$arch"
     echo "Ran tests for func" $func
 fi
 

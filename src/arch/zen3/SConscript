@@ -51,15 +51,18 @@ machdict = {
 }
 env_mach = e['ALM_MAX_ARCH']
 
+# if this is znver4, replace it with znver3.
+# sources in this directory should not be compiled with znver4.
+if env_mach == 'znver4':
+    env_mach = 'znver3'
+
 machflag = '-march='
 machflag += machdict[env_mach]
 
 if e['HOST_OS'] != 'win32':
     cflags = [
-              # TODO: remove once the compiler supports znver3
               machflag, '-O3', '-fPIC', '-flax-vector-conversions']
 else:
-    # TODO: remove once the compiler supports znver3
     cflags = [machflag]
 
 e.MergeFlags({

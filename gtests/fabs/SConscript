@@ -25,7 +25,7 @@
 
 
 Import('env')
-import os
+
 e = env.Clone()
 
 if e['HOST_OS'] == 'win32':

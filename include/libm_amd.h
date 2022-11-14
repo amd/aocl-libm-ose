@@ -75,6 +75,7 @@ double FN_PROTOTYPE(acos)(double x);
  double FN_PROTOTYPE( cos)(double x);
  float FN_PROTOTYPE(cosf)(float x);
 
+ float FN_PROTOTYPE(erff)(float x);
 
  double FN_PROTOTYPE( exp)(double x);
  float FN_PROTOTYPE(expf)(float x);
@@ -263,6 +264,7 @@ __m256d FN_PROTOTYPE(vrd4_tan)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_atan)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_pow)(__m256d x, __m256d y);
 
+__m128 FN_PROTOTYPE(vrs4_erff)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_expf)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_exp2f)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_exp10f)(__m128 x);
@@ -281,6 +283,7 @@ __m128 FN_PROTOTYPE(vrs4_coshf)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_tanhf)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_atanf)(__m128 x);
 
+__m256 FN_PROTOTYPE(vrs8_erff)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_expf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_logf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_cosf)(__m256 x);

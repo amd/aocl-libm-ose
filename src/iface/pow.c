@@ -46,6 +46,8 @@ struct alm_arch_funcs __arch_funcs_pow = {
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_AVX2(vrd2_pow),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_AVX2(vrd4_pow),  /* v4d ? */
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_BAS64(vrsa_powf),  /*vector array variants*/
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_powf),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_pow)
         },
 
         [ALM_UARCH_VER_ZEN] = {
@@ -74,6 +76,19 @@ struct alm_arch_funcs __arch_funcs_pow = {
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN3(vrd2_pow),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN3(vrd4_pow),
         },
+
+        [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(powf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(pow),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN4(vrs4_powf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN4(vrs8_powf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN4(vrd2_pow),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN4(vrd4_pow),
+
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_powf),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_pow),
+        },
+
     },
 };
 
@@ -85,8 +100,10 @@ LIBM_IFACE_PROTO(pow)(void *arg) {
             [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(pow),
             [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_powf),
             [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_powf),
+            [ALM_FUNC_VECT_SP_16] = &G_ENTRY_PT_PTR(vrs16_powf),
             [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_pow),
             [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_pow),
+            [ALM_FUNC_VECT_DP_8] = &G_ENTRY_PT_PTR(vrd8_pow),
             [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_powf),
         },
     };

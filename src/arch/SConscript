@@ -47,7 +47,7 @@ e.Append(
 
 objs = []
 
-dirs = ['zen', 'zen2', 'zen3']
+dirs = ['zen', 'zen2', 'zen3', 'zen4']
 
 for d in dirs:
     aenv = e.Clone()

@@ -255,6 +255,39 @@ alm_cpu_arch_is_zen3(void)
 }
 
 uint32_t
+alm_cpu_arch_is_zen4(void)
+{
+    const struct alm_cpu_mfg_info *mfg_info;
+    uint32_t ret = 0, model;
+
+    if (!alm_cpu_is_amd())
+        return 0;
+
+    mfg_info = alm_cpu_get_mfg_info();
+
+    if (mfg_info->family != ALM_CPU_FAMILY_ZEN3)
+        return 0;
+
+    model = mfg_info->model;
+
+    if ((ALM_CPU_MODEL_ZEN4_MAX - model) <=
+        (ALM_CPU_MODEL_ZEN4_MAX - ALM_CPU_MODEL_ZEN4_MIN))
+        ret = 1;
+    else {
+        switch (model) {
+          case ALM_CPU_MODEL_GENOA:
+              ret = 1;
+              break;
+
+          default:
+              break;
+        }
+    }
+
+    return ret;
+}
+
+uint32_t
 alm_cpu_feature_is_avx_usable(void)
 {
     __init_cpu_features();

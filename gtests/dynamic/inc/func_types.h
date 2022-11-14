@@ -71,4 +71,13 @@ typedef void (*funcf_va_2) (int, float*, float*, float*);
 typedef void (*func_va)    (int, double*, double*);
 typedef void (*func_va_2)  (int, double*, double*, double*);
 
+/* avx512 functions */
+#if defined(__AVX512__)
+typedef __m512d (*func_v8d)     (__m512d);
+typedef __m512d (*func_v8d_2)   (__m512d, __m512d);
+
+typedef __m512  (*funcf_v16s)   (__m512);
+typedef __m512  (*funcf_v16s_2) (__m512, __m512);
+#endif
+
 #endif

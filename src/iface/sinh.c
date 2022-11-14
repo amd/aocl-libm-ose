@@ -55,6 +55,11 @@ struct alm_arch_funcs __arch_funcs_sinh = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(sinhf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(sinh),
         },
+
+        [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(sinhf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(sinh),
+        },
     }
 };
 

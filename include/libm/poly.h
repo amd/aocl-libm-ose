@@ -159,6 +159,42 @@
                         q;                                      \
                 })
 
+#define POLY_EVAL_HORNER_11(x, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11) ({ \
+        __typeof(x) q = (((((((((((                             \
+                        c11 * x + c10) * x + c9) * x + c8) *    \
+                        x + c7) * x + c6) * x + c5) * x + c4) * \
+                        x + c3)* x + c2) * x + c1)* x + c0);    \
+         q;                                                     \
+         })
+
+#define POLY_EVAL_HORNER_12(x, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12) ({ \
+        __typeof(x) q = ((((((((((((c12 * x +                   \
+                        c11) * x + c10) * x + c9) * x + c8) *    \
+                        x + c7) * x + c6) * x + c5) * x + c4) * \
+                        x + c3)* x + c2) * x + c1)* x + c0);    \
+         q;                                                     \
+         })
+
+#define POLY_EVAL_HORNER_16_0(x, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15) ({ \
+        __typeof(x) q = ((((((((((((((( c15*  x + c14)* x + \
+                        c13)* x + c12) * x +                   \
+                        c11) * x + c10) * x + c9) * x + c8) *    \
+                        x + c7) * x + c6) * x + c5) * x + c4) * \
+                        x + c3)* x + c2) * x + c1)* x + c0) * x;    \
+         q;                                                     \
+         })
+
+#define POLY_EVAL_HORNER_20_0(x, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17, c18, c19) ({ \
+        __typeof(x) q = ((((((((((((((((((( c19 * x + c18)* x + \
+                        c17)* x + c16) * x + c15)*  x + c14)* x + \
+                        c13)* x + c12) * x +                   \
+                        c11) * x + c10) * x + c9) * x + c8) *    \
+                        x + c7) * x + c6) * x + c5) * x + c4) * \
+                        x + c3)* x + c2) * x + c1)* x + c0) * x;    \
+         q;                                                     \
+         })
+
+
 /*
  * poly = C0 + C1*r + C2*r^2 + C3*r^3 + C4 *r^4 + C5*r^5 + C6*r^6 + C7*r^7 + C8*r^8
  *
@@ -403,9 +439,36 @@
          a3 =  c3 + a2  * x;                             \
          a4 =  c2 + a3 * x;                              \
          a5 =  c1 + a4 * x;                              \
-         q =  1 + a5 * x;                                \
+         q =   1 + a5 * x ;                                \
          q;                                              \
          })
+
+#define POLY_EVAL_SINH(x, c1, c2, c3, c4, c5, c6, c7) ({\
+        __typeof(x) q, a0, a1, a2, a3, a4, a5;           \
+         a0 =  c6 + c7  * x;                             \
+         a1 =  c5 + a0  * x;                             \
+         a2 =  c4 + a1  * x;                             \
+         a3 =  c3 + a2  * x;                             \
+         a4 =  c2 + a3 * x;                              \
+         a5 =  c1 + a4 * x;                              \
+         q =   a5 * x ;                                \
+         q;                                              \
+         })
+
+/*
+* p(x) = C0*x3 + C1*x5 + C2*x7 - C3*x9
+*/
+#define POLY_EVAL_TANH(x, c0, c1, c2, c3) ({                 \
+        __typeof(x) q, x2, x3, x5, x7, x9;                      \
+        x2 = x * x;                                          \
+        x3 = x2 * x;                                         \
+        x5 = x3 * x2;                                        \
+        x7 = x5 * x2;                                        \
+        x9 = x7 * x2;                                        \
+        q = c0 * x3 + c1 * x5;                               \
+        q += c2 * x7 - c3 * x9;                              \
+        q;                                                   \
+        })
 
 /*
 * p(x) = C0*x^0 + C1*x^2 + C2*x^4 + C3*x^6 +C4*x^8 + C5*x^10 + C6*x^12
@@ -449,21 +512,17 @@
 
 /* 
  * poly = C0 + C1*r^2 + C2*r^4 + C3*r^6 \
- *
  *      = C0 + r^2*(C1 + C2*r^2 + C3*r4)
- *
  */
-#define POLY_EVAL_EVEN_6(r, c0, c1, c2, c3) ({               \
-        __typeof(r) a0, a1;                              \
-        __typeof(r) r2, r4;                                     \
-        r2 = r * r;                                             \
-        r4 = r2 * r2;                                           \
-                                                                \
-        a0 = c3*r4 + c2*r2 + c1;                                        \
-        a1 = a0*r2 + c0;                                        \
-        a1;                                                      \
+#define POLY_EVAL_EVEN_6(r, c0, c1, c2, c3) ({      \
+        __typeof(r) q, r2, r4, r6;                  \
+        r2 = r * r;                                 \
+        r4 = r2 * r2;                               \
+        r6 = r4 * r2;                               \
+        q = c0 + c1*r2;                             \
+        q += c2*r4 + c3*r6;                         \
+        q;                                          \
         })        
-
 
 /*
  * poly = C0 + C1*r^2 + C2*r^4 + C3*r^6+ C4*r^8 + c5*r^10 \

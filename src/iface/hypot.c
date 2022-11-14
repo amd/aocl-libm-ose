@@ -56,6 +56,15 @@ struct alm_arch_funcs __arch_funcs_hypot = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(hypotf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(hypot),
         },
+
+        [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(hypotf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(hypot),
+        },
+
+
+
+
     }
 };
 

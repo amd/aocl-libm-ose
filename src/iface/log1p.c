@@ -58,6 +58,13 @@ struct alm_arch_funcs __arch_funcs_log1p = {
 	    [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(log1pf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(log1p),
         },
+
+	[ALM_UARCH_VER_ZEN4] = {
+	    [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(log1pf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(log1p),
+        },
+
+
     },
 };
 

@@ -40,11 +40,18 @@ int test_pow(void* handle) {
     data.v8s_2 = (funcf_v8s_2)FUNC_LOAD(handle, "amd_vrs8_powf");
     data.vas_2 = (funcf_va_2)FUNC_LOAD(handle, "amd_vrsa_powf");
 
+    #if defined(__AVX512__)
+    data.v16s_2 = (funcf_v16s_2)FUNC_LOAD(handle, "amd_vrs16_powf");
+    data.v8d_2 = (func_v8d_2)FUNC_LOAD(handle, "amd_vrd8_pow");
+    #endif
 
-    if (data.s1f_2 == NULL || data.s1d_2 == NULL ||
-	    data.v2d_2 == NULL || data.v4d_2 == NULL ||
-		data.v8s_2 == NULL || data.v4s_2 == NULL ||
-        data.vas_2 == NULL ) {
+    if (data.s1f_2 == NULL || data.s1d_2 == NULL || data.v2d_2 == NULL ||
+        data.v4d_2 == NULL || data.v8s_2 == NULL || data.v4s_2 == NULL ||
+        data.vas_2 == NULL
+        #if defined(__AVX512__)
+        || data.v16s_2 == NULL || data.v8d_2 == NULL
+        #endif
+        ) {
         ret = 1;
     }
     if (ret == 1) {

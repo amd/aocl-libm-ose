@@ -86,7 +86,7 @@ else:
     testcflags = ['/Wall',
                   '/w',
                   '/MP',
-                  '/O3',
+                  '/O2',
                   '-Wno-c++11-narrowing',
                   '/Od',
                   '/Ob2',
@@ -105,6 +105,13 @@ else:
                   '-std:c++17',
                   '/MT'
                  ]
+arch_config = env['arch_config']
+if arch_config == 'avx512':
+    testcflags.append('-mavx512f')
+
+if env['HOST_OS'] == 'win32':
+    if env['BUILD'] == 'debug':
+        env['PDB'] = 'test.pdb'
 
 ccflags = []
 liblist = []
@@ -135,6 +142,11 @@ elif abi == 'svml':
     liblist.extend(['intlc'])
 else:
     pass
+
+#config architecture
+if arch_config == 'avx512':
+    ccflags.append('-D__AVX512__')
+
 
 try:
     dbg_mode=env['debug_mode']
@@ -175,7 +187,6 @@ libpath  += [joinpath('#', build_root, x) for x in glibpath]
 #if intel svml
 if abi == 'svml':
     libpath += [env['INTEL_LIB_PATH']]
-
 
 testenv = env.Clone()
 testenv.Append(

@@ -159,6 +159,9 @@ agreements with respect to the subject matter of this Agreement.
 
 #include <emmintrin.h>
 #include <immintrin.h>
+#if defined(_WIN64) || defined(_WIN32)
+    #include <avx512fintrin.h>
+#endif
 #ifndef AMD_LIBM_VEC_EXTERNAL_H
 #define AMD_LIBM_VEC_EXTERNAL_H
 
@@ -193,6 +196,13 @@ extern "C" {
     __m256  amd_vrs8_expf   (__m256 x);
     __m256  amd_vrs8_exp2f  (__m256 x);
 
+    /* avx512 variants */
+    __m512d amd_vrd8_exp    (__m512d x);
+    __m512  amd_vrs16_expf  (__m512  x);
+
+    __m512d amd_vrd8_exp2   (__m512d x);
+    __m512  amd_vrs16_exp2f (__m512  x);
+
     /* array vector variants */
     void amd_vrda_exp       (int len, double *src, double *dst);
     void amd_vrsa_expf      (int len, float  *src, float  *dst);
@@ -222,6 +232,14 @@ extern "C" {
     __m256  amd_vrs8_logf    (__m256 x);
     __m256  amd_vrs8_log2f   (__m256 x);
     __m256  amd_vrs8_log10f  (__m256 x);
+
+    /* avx512 variants */
+    __m512d amd_vrd8_log     (__m512d x);
+    __m512d amd_vrd8_log2    (__m512d x);
+
+    __m512  amd_vrs16_logf   (__m512  x);
+    __m512  amd_vrs16_log2f  (__m512 x);
+    __m512  amd_vrs16_log10f (__m512 x);
 
     /* array vector variants */
     void amd_vrda_log       (int len, double *src, double *dst);
@@ -255,7 +273,17 @@ extern "C" {
     void amd_vrda_sin       (int len, double *src, double *dst);
     void amd_vrsa_sinf      (int len, float  *src, float  *dst);
 
-/* Inverse trigonometric */
+    /* avx512 */
+    __m512  amd_vrs16_cosf   (__m512 x);
+    __m512d amd_vrd8_cos     (__m512d x);
+
+    __m512  amd_vrs16_sinf   (__m512 x);
+    __m512d amd_vrd8_sin     (__m512d x);
+
+    __m512d amd_vrd8_tan     (__m512d x);
+    __m512  amd_vrs16_tanf   (__m512 x);
+
+/* Inverse Trigonometric */
     __m128  amd_vrs4_asinf  (__m128  x);
     __m128  amd_vrs4_acosf   (__m128  x);
     __m128  amd_vrs4_atanf  (__m128  x);
@@ -266,6 +294,13 @@ extern "C" {
 
     __m128d amd_vrd2_atan   (__m128d x);
     __m128d amd_vrd4_atan   (__m128d x);
+
+    /* avx512 */
+    __m512 amd_vrs16_atanf  (__m512 x);
+    __m512d amd_vrd8_atan   (__m512d x);
+
+    __m512 amd_vrs16_asinf  (__m512 x);
+    __m512d amd_vrd8_asin   (__m512d x);
 
 /*Hyperbolic*/
    __m128  amd_vrs4_coshf   (__m128  x);
@@ -287,6 +322,14 @@ extern "C" {
 
     void amd_vrda_cbrt      (int len, double *src, double *dst);
     void amd_vrsa_cbrtf     (int len, float  *src, float  *dst);
+
+/* avx512 variants */
+    __m512d amd_vrd8_pow    (__m512d x, __m512d y);
+    __m512  amd_vrs16_powf  (__m512  x, __m512  y);
+
+/* erf */
+    __m128 amd_vrs4_erff    (__m128 x);
+    __m256 amd_vrs8_erff    (__m256 x);
 
 #ifdef __cplusplus
 }

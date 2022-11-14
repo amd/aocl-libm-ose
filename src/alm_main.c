@@ -45,7 +45,7 @@ void
 NORETURN
 alm_main(void)
 {
-	printf("%s-%s\n%s\n", alm_get_build(), alm_get_version(), build_sys_info);
+    printf ("AOCL-LibM %s %s\n%s\n", alm_get_version(), alm_get_build(), build_sys_info);
 
 	_exit(0);
 }

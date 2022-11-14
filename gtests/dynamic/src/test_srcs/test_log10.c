@@ -38,9 +38,16 @@ int test_log10(void* handle) {
     data.v4s = (funcf_v4s)FUNC_LOAD(handle, "amd_vrs4_log10f");
     data.v8s = (funcf_v8s)FUNC_LOAD(handle, "amd_vrs8_log10f");
 
-    if (data.s1f == NULL || data.s1d == NULL ||
-	    data.v2d == NULL || data.v8s == NULL ||
-		data.v4s == NULL ) {
+    #if defined(__AVX512__)
+    data.v16s = (funcf_v16s)FUNC_LOAD(handle, "amd_vrs16_log10f");
+    #endif
+
+    if (data.s1f == NULL || data.s1d == NULL || data.v2d == NULL ||
+        data.v8s == NULL || data.v4s == NULL
+        #if defined(__AVX512__)
+        || data.v16s == NULL
+        #endif
+        ) {
         ret = 1;
     }
     if (ret == 1) {

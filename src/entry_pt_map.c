@@ -159,7 +159,7 @@ LIBM_DECL_FN_MAP(remquof);
 LIBM_DECL_FN_MAP(rint);
 LIBM_DECL_FN_MAP(rintf);
 
-//LIBM_DECL_FN_MAP(round);
+LIBM_DECL_FN_MAP(round);
 LIBM_DECL_FN_MAP(roundf);
 
 LIBM_DECL_FN_MAP(scalbln);
@@ -210,6 +210,8 @@ LIBM_DECL_FN_MAP(remainderf);
 LIBM_DECL_FN_MAP(nearbyint);
 LIBM_DECL_FN_MAP(nearbyintf);
 
+LIBM_DECL_FN_MAP(erff);
+
 LIBM_DECL_FN_MAP(cexp);
 LIBM_DECL_FN_MAP(cexpf);
 LIBM_DECL_FN_MAP(cpowf);
@@ -244,6 +246,30 @@ LIBM_DECL_FN_MAP(vrd4_cos);
 LIBM_DECL_FN_MAP(vrd4_tan);
 LIBM_DECL_FN_MAP(vrd4_atan);
 
+LIBM_DECL_FN_MAP(vrd8_exp2);
+LIBM_DECL_FN_MAP(vrd8_log2);
+LIBM_DECL_FN_MAP(vrd8_exp);
+LIBM_DECL_FN_MAP(vrd8_pow);
+LIBM_DECL_FN_MAP(vrd8_log);
+LIBM_DECL_FN_MAP(vrd8_sin);
+LIBM_DECL_FN_MAP(vrd8_asin);
+LIBM_DECL_FN_MAP(vrd8_cos);
+LIBM_DECL_FN_MAP(vrd8_tan);
+LIBM_DECL_FN_MAP(vrd8_atan);
+
+LIBM_DECL_FN_MAP(vrs16_cosf);
+LIBM_DECL_FN_MAP(vrs16_acosf);
+LIBM_DECL_FN_MAP(vrs16_sinf);
+LIBM_DECL_FN_MAP(vrs16_asinf);
+LIBM_DECL_FN_MAP(vrs16_tanf);
+LIBM_DECL_FN_MAP(vrs16_atanf);
+LIBM_DECL_FN_MAP(vrs16_powf);
+LIBM_DECL_FN_MAP(vrs16_expf);
+LIBM_DECL_FN_MAP(vrs16_exp2f);
+LIBM_DECL_FN_MAP(vrs16_logf);
+LIBM_DECL_FN_MAP(vrs16_log10f);
+LIBM_DECL_FN_MAP(vrs16_log2f);
+LIBM_DECL_FN_MAP(vrs16_tanhf);
 
 LIBM_DECL_FN_MAP(vrs4_acosf);
 LIBM_DECL_FN_MAP(vrs4_cbrtf);
@@ -263,6 +289,7 @@ LIBM_DECL_FN_MAP(vrs4_coshf);
 LIBM_DECL_FN_MAP(vrs4_tanhf);
 LIBM_DECL_FN_MAP(vrs4_asinf);
 LIBM_DECL_FN_MAP(vrs4_atanf);
+LIBM_DECL_FN_MAP(vrs4_erff);
 
 LIBM_DECL_FN_MAP(vrs8_logf);
 LIBM_DECL_FN_MAP(vrs8_log2f);
@@ -278,6 +305,7 @@ LIBM_DECL_FN_MAP(vrs8_acosf);
 LIBM_DECL_FN_MAP(vrs8_coshf);
 LIBM_DECL_FN_MAP(vrs8_tanhf);
 LIBM_DECL_FN_MAP(vrs8_asinf);
+LIBM_DECL_FN_MAP(vrs8_erff);
 
 LIBM_DECL_FN_MAP(vrda_cbrt);
 LIBM_DECL_FN_MAP(vrda_cos);
@@ -331,7 +359,30 @@ WEAK_LIBM_ALIAS(vrd4_atan, FN_PROTOTYPE(vrd4_atan));
 WEAK_LIBM_ALIAS(vrd4_cos, FN_PROTOTYPE(vrd4_cos));
 WEAK_LIBM_ALIAS(vrd4_tan, FN_PROTOTYPE(vrd4_tan));
 
+WEAK_LIBM_ALIAS(vrd8_exp, FN_PROTOTYPE(vrd8_exp));
+WEAK_LIBM_ALIAS(vrd8_pow, FN_PROTOTYPE(vrd8_pow));
+WEAK_LIBM_ALIAS(vrd8_log2, FN_PROTOTYPE(vrd8_log2));
+WEAK_LIBM_ALIAS(vrd8_tan, FN_PROTOTYPE(vrd8_tan));
+WEAK_LIBM_ALIAS(vrd8_atan, FN_PROTOTYPE(vrd8_atan));
+WEAK_LIBM_ALIAS(vrd8_exp2, FN_PROTOTYPE(vrd8_exp2));
+WEAK_LIBM_ALIAS(vrd8_log, FN_PROTOTYPE(vrd8_log));
+WEAK_LIBM_ALIAS(vrd8_sin, FN_PROTOTYPE(vrd8_sin));
+WEAK_LIBM_ALIAS(vrd8_asin, FN_PROTOTYPE(vrd8_asin));
+WEAK_LIBM_ALIAS(vrd8_cos, FN_PROTOTYPE(vrd8_cos));
 
+WEAK_LIBM_ALIAS(vrs16_powf, FN_PROTOTYPE(vrs16_powf));
+WEAK_LIBM_ALIAS(vrs16_expf, FN_PROTOTYPE(vrs16_expf));
+WEAK_LIBM_ALIAS(vrs16_exp2f, FN_PROTOTYPE(vrs16_exp2f));
+WEAK_LIBM_ALIAS(vrs16_logf, FN_PROTOTYPE(vrs16_logf));
+WEAK_LIBM_ALIAS(vrs16_log10f, FN_PROTOTYPE(vrs16_log10f));
+WEAK_LIBM_ALIAS(vrs16_log2f, FN_PROTOTYPE(vrs16_log2f));
+WEAK_LIBM_ALIAS(vrs16_sinf, FN_PROTOTYPE(vrs16_sinf));
+WEAK_LIBM_ALIAS(vrs16_asinf, FN_PROTOTYPE(vrs16_asinf));
+WEAK_LIBM_ALIAS(vrs16_cosf, FN_PROTOTYPE(vrs16_cosf));
+WEAK_LIBM_ALIAS(vrs16_acosf, FN_PROTOTYPE(vrs16_acosf));
+WEAK_LIBM_ALIAS(vrs16_tanf, FN_PROTOTYPE(vrs16_tanf));
+WEAK_LIBM_ALIAS(vrs16_atanf, FN_PROTOTYPE(vrs16_atanf));
+WEAK_LIBM_ALIAS(vrs16_tanhf, FN_PROTOTYPE(vrs16_tanhf));
 
 WEAK_LIBM_ALIAS(vrs4_cbrtf, FN_PROTOTYPE(vrs4_cbrtf));
 WEAK_LIBM_ALIAS(vrs4_cosf, FN_PROTOTYPE(vrs4_cosf));
@@ -351,6 +402,7 @@ WEAK_LIBM_ALIAS(vrs4_asinf, FN_PROTOTYPE(vrs4_asinf));
 WEAK_LIBM_ALIAS(vrs4_acosf, FN_PROTOTYPE(vrs4_acosf));
 WEAK_LIBM_ALIAS(vrs4_tanhf, FN_PROTOTYPE(vrs4_tanhf));
 WEAK_LIBM_ALIAS(vrs4_coshf, FN_PROTOTYPE(vrs4_coshf));
+WEAK_LIBM_ALIAS(vrs4_erff, FN_PROTOTYPE(vrs4_erff));
 
 WEAK_LIBM_ALIAS(vrs8_exp2f, FN_PROTOTYPE(vrs8_exp2f));
 WEAK_LIBM_ALIAS(vrs8_expf, FN_PROTOTYPE(vrs8_expf));
@@ -364,6 +416,7 @@ WEAK_LIBM_ALIAS(vrs8_coshf, FN_PROTOTYPE(vrs8_coshf));
 WEAK_LIBM_ALIAS(vrs8_tanhf, FN_PROTOTYPE(vrs8_tanhf));
 WEAK_LIBM_ALIAS(vrs8_asinf, FN_PROTOTYPE(vrs8_asinf));
 WEAK_LIBM_ALIAS(vrs8_atanf, FN_PROTOTYPE(vrs8_atanf));
+WEAK_LIBM_ALIAS(vrs8_erff, FN_PROTOTYPE(vrs8_erff));
 
 WEAK_LIBM_ALIAS(vrda_cbrt, FN_PROTOTYPE(vrda_cbrt));
 WEAK_LIBM_ALIAS(vrda_cos, FN_PROTOTYPE(vrda_cos));

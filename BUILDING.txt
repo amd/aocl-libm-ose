@@ -63,6 +63,8 @@
 
   Building test framework
     $ scons gtests
+  Building test framework to exercise avx512 variants:
+    $ scons gtests -j32 --arch_config=avx512
 
 ## Glibc compat library
   An glibc compatible library, which has the table of functions compatible with

@@ -145,8 +145,8 @@ double ALM_PROTO_OPT(sinh)(double x)
       int ind = (int)y;
       double dy = y - ind;
       double dy2 = dy * dy;
-      double sdy = dy * POLY_EVAL_SINHF(dy2, SDY0, SDY1, SDY2, SDY3, SDY4, SDY5, SDY6);
-      double cdy = POLY_EVAL_SINHF(dy2, CDY0, CDY1, CDY2, CDY3, CDY4, CDY5, CDY6);
+      double sdy = dy * POLY_EVAL_SINH(dy2, SDY0, SDY1, SDY2, SDY3, SDY4, SDY5, SDY6);
+      double cdy = POLY_EVAL_SINH(dy2, CDY0, CDY1, CDY2, CDY3, CDY4, CDY5, CDY6);
       /* At this point sinh(dy) is approximated by dy + sdy.
       Shift some significant bits from dy to sdy. */
 

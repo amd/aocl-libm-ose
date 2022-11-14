@@ -1,54 +1,66 @@
 
 (C) 2008-2022 Advanced Micro Devices, Inc. All Rights Reserved.
 
-AOCL-LibM - Release Notes - AOCL version 3.9
+AOCL LibM - Release Notes - AOCL version 4.0
 --------------------------------------------
 
-AOCL-LibM Contents
+AOCL LibM Contents
 ------------------
-AOCL-LibM is a software library containing a collection of basic math functions
+AOCL LibM is a software library containing a collection of basic math functions
 optimized for x86-64 processor-based machines.
 It provides many routines from the list of standard C99 math functions.
 It includes scalar as well as vector variants of the core math functions.
-AOCL-LibM is a C library, which users can link into their applications to replace
+AOCL LibM is a C library, which users can link into their applications to replace
 compiler-provided math functions. Applications can link into AOCL LibM library and
 invoke math functions instead of compiler’s math functions for better accuracy and
 performance.
 
-Hightlights of AOCL-LibM version 3.9
------------------------------------
+Hightlights of AOCL LibM version 4.0
+------------------------------------
+
+    * Optimized vector avx512 variants added for the following:
+          * exp, expf, exp2, exp2f, log, logf, log2, log2f, log10f, pow, powf
+          * sin, sinf, cos, cosf, tan, tanf
+          * asin, asinf, acosf, atan, atanf, tanhf
     * Optimized Complex scalar variants added for the following:
           * cexp, cexpf, cpow, cpowf
     * Optimized scalar variants added for the following:
-          * asin, asinhf, acosh, acoshf, atan2
+          * asin, asinhf, acosh, acoshf
           * log1p, log1pf, logb, logbf, exp10f
-          * hypot, hypotf, cbrt, cbrtf
-    * Various performance improvements in vector functions
-    * Various conformance bug fixes in scalar functions
+          * hypot, hypotf, cbrt, cbrtf, roundf
+          * round, roundf, ceil, ceilf, floor, floorf
+          * copysign, copysignf
+          * sincos, sincosf
+    * Optimized scalar variant added for erff.
+    * Optimized 8 and 4 element vector variant added for erff
 
 Known Issues
 ------------
    * fastpow() - Maximum ULP error is 10.
 
-Version 3.9 Contents
+Version 4.0 Contents
 --------------------
-AOCL-LibM provides vector variants for many of the math functions. The list of
+AOCL LibM provides vector variants for many of the math functions. The list of
 available vector functions is given below. All functions have an 'amd_' prefix.
 
  Exponential
  -----------
     * vrs4_expf, vrs4_exp2f, vrs4_exp10f, vrs4_expm1f
     * vrs8_expf, vrs8_exp2f
+    * vrs16_expf, vrs16_exp2f
     * vrsa_expf, vrsa_exp2f, vrsa_exp10f, vrsa_expm1f
     * vrd2_exp, vrd2_exp2, vrd2_exp10, vrd2_expm1, vrd4_exp, vrd4_exp2
+    * vrd8_exp, vrd8_exp2
     * vrda_exp, vrda_exp2, vrda_exp10, vrda_expm1
 
  Logarithmic
  -----------
     * vrs4_logf, vrs4_log2f, vrs4_log10f, vrs4_log1pf
     * vrs8_logf, vrs8_log2f
+    * vrs16_logf, vrs16_log2f, vrs16_log10f
     * vrsa_logf, vrsa_log2f, vrsa_log10f, vrsa_log1pf
     * vrd2_log, vrd2_log2, vrd2_log10, vrd2_log1p, vrd4_log, vrd4_log2
+    * vrd8_log, vrd8_log2
     * vrda_log, vrda_log2, vrda_log10, vrda_log1p
 
  Trigonometric
@@ -65,9 +77,13 @@ available vector functions is given below. All functions have an 'amd_' prefix.
 
  Power
  -----
-    * vrs4_cbrtf, vrd2_cbrt, vrs4_powf, vrd2_pow, vrd4_pow
-    * vrs8_powf
+    * vrs4_cbrtf, vrd2_cbrt, vrs4_powf, vrd2_pow, vrd4_pow, vrd8_pow
+    * vrs8_powf, vrs16_powf
     * vrsa_cbrtf, vrda_cbrt, vrsa_powf
+
+ Error
+ -----
+    * vrs8_erff, vrs4_erff
 
 The scalar functions listed below are present in the library. They
 all have an 'amd_' prefix.
@@ -92,7 +108,7 @@ all have an 'amd_' prefix.
 
  Power & Absolute value
  ----------------------
-    * powf, pow, fastpow, cbrtf, cbrt, sqrtf, sqrt, hypotf, hypot
+    * powf, pow, cbrtf, cbrt, sqrtf, sqrt, hypotf, hypot
     * fabsf, fabs
 
  Nearest integer
@@ -119,13 +135,17 @@ all have an 'amd_' prefix.
  -----------------------------
     * cexpf, cexp, cpowf, cpow, clogf, clog
 
+ Error
+ -----------------------------
+    * erff
+
 The declarations for all of these functions are as specified in the
 C99 standard. They are equivalent to the declarations present in
 the standard math header 'math.h'.
 
-Using AOCL-LibM
---------------
-Using AOCL-LibM is easy. Including math.h is sufficient for use of
+Using AOCL LibM
+---------------
+Using AOCL LibM is easy. Including math.h is sufficient for use of
 scalar routines. For vector routines, use amdlibm_vec.h in your
 C/C++ code and call the desired routine. Link in the appropriate
 version of the library in your program.
@@ -133,9 +153,15 @@ version of the library in your program.
 Refer to the examples directory for illustration.
 
 The Linux libraries have a dependency on system math library. When
-linking AOCL-LibM, ensure it precedes system math library in the
+linking AOCL LibM, ensure it precedes system math library in the
 link order i.e., "-lalm" should come before "-lm". Explicit
 linking of system math library is required when using gcc C
 compiler. With g++ compiler (for C++), this is not needed.
 
 Refer to the examples directory for illustration.
+
+Note: There is a fast version of AOCL LibM released as part of the package. (libalmfast.so)
+This library contains faster variants of some of the scalar functions.
+To use this in an application, the user has to preload the library while running the 
+application:
+    LD_PRELOAD=<path to aocl installation>/lib/libalmfast.so ./test_application;

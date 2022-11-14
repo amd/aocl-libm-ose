@@ -59,6 +59,11 @@ struct alm_arch_funcs __arch_funcs_cbrt = {
         [ALM_UARCH_VER_ZEN3] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(cbrtf),
         },
+
+        [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(cbrtf),
+        },
+
     },
 };
 

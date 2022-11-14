@@ -39,9 +39,17 @@ int test_exp2(void* handle) {
     data.v4s = (funcf_v4s)FUNC_LOAD(handle, "amd_vrs4_exp2f");
     data.v8s = (funcf_v8s)FUNC_LOAD(handle, "amd_vrs8_exp2f");
 
-    if (data.s1f == NULL || data.s1d == NULL ||
-	    data.v2d == NULL || data.v4d == NULL ||
-		data.v8s == NULL || data.v4s == NULL ) {
+    #if defined(__AVX512__)
+    data.v16s = (funcf_v16s)FUNC_LOAD(handle, "amd_vrs16_exp2f");
+    data.v8d = (func_v8d)FUNC_LOAD(handle, "amd_vrd8_exp2");
+    #endif
+
+    if (data.s1f == NULL || data.s1d == NULL || data.v2d == NULL ||
+        data.v4d == NULL || data.v8s == NULL || data.v4s == NULL
+        #if defined(__AVX512__)
+        || data.v16s == NULL || data.v8d == NULL
+        #endif
+        ) {
         ret = 1;
     }
     if (ret == 1) {

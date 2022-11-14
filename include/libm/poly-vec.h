@@ -38,7 +38,9 @@
                  __m128 : _mm_fmadd_ps,                         \
                  __m128d: _mm_fmadd_pd,                         \
                  __m256 : _mm256_fmadd_ps,                      \
-                 __m256d: _mm256_fmadd_pd)((x), (y), (z))
+                 __m256d: _mm256_fmadd_pd,                      \
+                 __m512 : _mm512_fmadd_ps,                      \
+                 __m512d: _mm512_fmadd_pd)((x), (y), (z))
 
 #else /* ! FMA_USABLE */
 
@@ -49,7 +51,9 @@
                  __m128 : _mm_mul_ps,                                   \
                  __m128d: _mm_mul_pd,                                   \
                  __m256 : _mm256_mul_ps,                                \
-                 __m256d: _mm256_mul_pd)((a), (b))
+                 __m256d: _mm256_mul_pd,                                \
+                 __m512 : _mm512_mul_ps,                                \
+                 __m512d: _mm512_mul_pd)((a), (b))
 
 #define mul_add(x, y, z)                                                \
         _Generic((x),                                                   \
@@ -58,7 +62,9 @@
                  __m128 : _mm_add_ps,                                   \
                  __m128d: _mm_add_pd,                                   \
                  __m256 : _mm256_add_ps,                                \
-                 __m256d: _mm256_add_pd)(no_fma_mul((x), (y)), (z))
+                 __m256d: _mm256_add_pd,                                \
+                 __m512 : _mm512_add_ps,                                \
+                 __m512d: _mm512_add_pd)(no_fma_mul((x), (y)), (z))
 
 #endif  /* FMA_USABLE */
 

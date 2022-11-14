@@ -39,12 +39,24 @@ struct alm_arch_funcs __arch_funcs_copysign = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_BAS64(copysignf),
-            &ALM_PROTO_BAS64(copysign),
-            NULL,                           /* vrs4 ? */
-            NULL,                           /* vrs8 ? */
-            NULL,                           /* vrd2 ? */
-            NULL,                           /* vrd4 ? */
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(copysignf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(copysign),
+        },
+        [ALM_UARCH_VER_ZEN] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(copysignf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(copysign),
+        },
+        [ALM_UARCH_VER_ZEN2] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(copysignf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(copysign),
+        },
+        [ALM_UARCH_VER_ZEN3] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(copysignf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(copysign),
+        },
+        [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(copysignf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(copysign),
         },
     },
 };
@@ -54,14 +66,8 @@ LIBM_IFACE_PROTO(copysign)(void *arg)
 {
     alm_ep_wrapper_t g_entry_copysign = {
        .g_ep = {
-        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(copysignf),
-        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(copysign),
-#if 0
-        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_copysignf),
-        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_copysignf),
-        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_copysign),
-        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_copysign),
-#endif
+            [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(copysignf),
+            [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(copysign),
         },
     };
 

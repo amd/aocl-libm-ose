@@ -46,10 +46,13 @@ gbench_srcs = Glob('src/*.cc', exclude=excluded_list)
 
 objs = genv.StaticObject(gbench_srcs)
 
-libgb = genv.StaticLibrary('benchmark', objs)
 if genv['HOST_OS'] != 'win32':
+    libgb = genv.StaticLibrary('benchmark', objs)
     libgbso = genv.SharedLibrary('benchmark', objs)
 else:
-    libgbso = genv.SharedLibrary('benchmark', objs, no_import_lib=True)
+    libgb = genv.StaticLibrary('benchmark-static', objs)
+    #genv['WINDOWS_INSERT_DEF']=1
+    #libgbso = genv.SharedLibrary('benchmark', objs, no_import_lib=False)
+    libgbso = genv.StaticLibrary('benchmark', objs)
 
 Return('libgb', 'libgbso')

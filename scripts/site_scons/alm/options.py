@@ -101,6 +101,15 @@ class AlmOptions(object):
                         """
         )
 
+        self.add_option('arch_config',
+                        nargs   = 1,
+                        default = 'none',
+                        type    = 'choice',
+                        choices = ['none', 'avx512'],
+                        help    = 'Configure for avx512'
+        )
+
+
         self.add_option('developer',
                         nargs   = 1,
                         type    = 'int',

@@ -33,48 +33,44 @@
 //
 #include <libm/arch/all.h>
 
-
 static const
 struct alm_arch_funcs __arch_funcs_sqrt = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_REF(sqrtf),
-            &ALM_PROTO_REF(sqrt),
-            NULL,                           /* vrs4 ? */
-            NULL,                           /* vrs8 ? */
-            NULL,                           /* vrd2 ? */
-            NULL,                           /* vrd4 ? */
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_OPT(sqrtf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_OPT(sqrt),
         },
-#if 0
         [ALM_UARCH_VER_ZEN] = {
-            &ALM_PROTO_FMA3(sqrtf),
-            &ALM_PROTO_FMA3(sqrt),
-            NULL,                           /* vrs4 ? */
-            NULL,                           /* vrs8 ? */
-            NULL,                           /* vrd2 ? */
-            NULL,                           /* vrd4 ? */
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_OPT(sqrtf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_OPT(sqrt),
         },
-#endif
-    }
+
+        [ALM_UARCH_VER_ZEN2] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_OPT(sqrtf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_OPT(sqrt),
+        },
+
+        [ALM_UARCH_VER_ZEN3] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_OPT(sqrtf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_OPT(sqrt),
+        },
+
+        [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_OPT(sqrtf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_OPT(sqrt),
+        },
+    },
 };
 
 void
-LIBM_IFACE_PROTO(sqrt)(void *arg)
-{
+LIBM_IFACE_PROTO(sqrt)(void *arg) {
     alm_ep_wrapper_t g_entry_sqrt = {
        .g_ep = {
-        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(sqrtf),
-        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(sqrt),
-#if 0
-        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_sqrtf),
-        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_sqrtf),
-        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_sqrt),
-        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_sqrt),
-#endif
+            [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(sqrtf),
+            [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(sqrt),
         },
     };
 
     alm_iface_fixup(&g_entry_sqrt, &__arch_funcs_sqrt);
 }
-

@@ -27,9 +27,7 @@
 
 #include <stddef.h>                     /* for NULL */
 
-#ifdef USE_AOCL_CPUID
-#include "alci/cpu_features.h"
-#endif
+#include <libm/cpu_features.h>
 #include <libm/entry_pt.h>
 #include <libm/iface.h>
 
@@ -160,13 +158,13 @@ alm_get_uach(void)
 {
     alm_uarch_ver_t arch_ver;
 
-    if (alc_cpu_arch_is_zen4())
+    if (alm_cpu_arch_is_zen4())
         arch_ver = ALM_UARCH_VER_ZEN4;
-    else if (alc_cpu_arch_is_zen3())
+    else if (alm_cpu_arch_is_zen3())
         arch_ver = ALM_UARCH_VER_ZEN3;
-    else if (alc_cpu_arch_is_zen2())
+    else if (alm_cpu_arch_is_zen2())
         arch_ver = ALM_UARCH_VER_ZEN2;
-    else if (alc_cpu_arch_is_zen())
+    else if (alm_cpu_arch_is_zen())
         arch_ver = ALM_UARCH_VER_ZEN;
     else
         arch_ver = ALM_UARCH_VER_DEFAULT;

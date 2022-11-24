@@ -117,14 +117,6 @@ class AlmOptions(object):
                         help = "Compile to use address sanitizer"     
         )
 
-        #provide cpuid install path
-        self.add_option('cpuid_install_path',
-                        nargs = 1,
-                        default = '/usr/local/',
-                        type = str,
-                        metavar = 'DIR',
-                        help = 'Provide AOCL CPUID install path',
-        )
 
         self.add_option('developer',
                         nargs   = 1,

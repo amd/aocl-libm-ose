@@ -35,11 +35,6 @@ ifeq ($(ARCH), avx512)
     CFLAGS += -D__AVX512__
 endif
 
-# pass cpuid install path (mandatory)
-ifndef CPUID_PATH
-$(error CPUID_PATH variable is not set)
-endif
-
 # use static or dynamic library to link
 LIB = dynamic #default value
 
@@ -49,13 +44,13 @@ INC         = -I$(header_path)
 
 #path to libalm.so
 lib_path = $(abspath ../build/aocl-release/src/)
-LFLAGS   := -L$(lib_path) -L$(CPUID_PATH)/lib
+LFLAGS   := -L$(lib_path)
 
 ifeq ($(LIB), static)
     LFLAGS += -static
 endif
 
-LFLAGS += -lalm -lm -lcpu
+LFLAGS += -lalm -lm
 
 #src path
 SOURCES = ./src/*.c

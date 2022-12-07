@@ -46,25 +46,29 @@
     5. pip install scons
 
 ## Start building libm library
-    scons ALM_CC="<clang executable path>" ALM_CXX="<clang++ executable path>"
+    scons ALM_CC="<clang executable path>" ALM_CXX="<clang++ executable path>" --cpuid_install_path="<libcpuid library path>"
 
 ## Building test framework
-    scons ALM_CC="<clang executable path>" ALM_CXX="<clang++ executable path>" gtests
+    scons ALM_CC="<clang executable path>" ALM_CXX="<clang++ executable path>" --cpuid_install_path="<libcpuid library path>" gtests
 
-## Building parallely
-    scons ALM_CC="<clang executable path>" ALM_CXX="<clang++ executable path>" -j32 gtests
+## To build parallely, use following flag
+    -j32
 
-## Building with verbosity
-    scons ALM_CC="<clang executable path>" ALM_CXX="<clang++ executable path>" -j32 gtests --verbose=1
+## To build with verbosity, use following flag
+    --verbose=1
 
-## Building with debug
-    scons ALM_CC=<clang executable path> ALM_CXX=<clang++ executable path> -j32 gtests --verbose=1 --debug_mode=all
+## To build with debug info, use following flag
+    --debug_mode=all
 
-## Building with avx512 feature
-    scons ALM_CC=<clang executable path> ALM_CXX=<clang++ executable path> -j32 gtests --verbose=1 --debug_mode=all --arch_config=avx512
+## To build with avx512 feature, use following flag
+    --arch_config=avx512
 
-## Building with ASAN feature
-    scons ALM_CC=<clang executable path> ALM_CXX=<clang++ executable path> -j32 gtests --use_asan=1
+## To build with ASAN feature, use following flag
+    --use_asan=1
+
+## To link static/dynamic libcpuid library use following flag. 0 for static linking and 1 for dynamic linking.
+   Default is static linking.
+    --cpuid_link_static=1
 
 
 ## To run the tests

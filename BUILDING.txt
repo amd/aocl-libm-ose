@@ -40,11 +40,11 @@
 
   Building parallely
    ``` shell
-    $ scons -j32
+    $ scons -j32 --cpuid_install_path=<libcpuid library path>
    ```
 
   Building selecting compiler
-    $ scons ALM_CC=<gcc/clang executable path> ALM_CXX=<g++/clang++ executable path>
+    $ scons <other options> ALM_CC=<gcc/clang executable path> ALM_CXX=<g++/clang++ executable path>
 
   Building with verbosity
    ``` shell
@@ -55,6 +55,10 @@
    ``` shell
     $ scons <other options> --use_asan=1
    ```
+
+  Linking static/dynamic libcpuid library. 1 for static linking and 0 for dynamic linking.
+  Default is static linking.
+    --cpuid_link_static=1
 
   Building with debug
    ```sh
@@ -67,9 +71,9 @@
    ```
 
   Building test framework
-    $ scons gtests
+    $ scons <other options> gtests 
   Building test framework to exercise avx512 variants:
-    $ scons gtests -j32 --arch_config=avx512
+    $ scons <other options> gtests -j32 --arch_config=avx512 --cpuid_install_path=<libcpuid library path>
 
 ## Glibc compat library
   An glibc compatible library, which has the table of functions compatible with

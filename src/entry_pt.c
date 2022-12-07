@@ -28,7 +28,6 @@
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
-#include <libm/cpu_features.h>
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
 

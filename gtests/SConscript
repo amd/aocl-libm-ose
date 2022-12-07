@@ -109,8 +109,8 @@ arch_config = env['arch_config']
 if arch_config == 'avx512':
     testcflags.append('-mavx512f')
 
-# for address sanitizer usage. 
-# Fix me for windows. 
+# for address sanitizer usage.
+# Fix me for windows.
 # Currently, ASAN is added in LibM library and not in gtests framework on Windows platform. 
 
 use_asan = env['use_asan']
@@ -122,9 +122,12 @@ if env['HOST_OS'] == 'win32':
     if env['BUILD'] == 'debug':
         env['PDB'] = 'test.pdb'
 
+# get cpuid path
+cpuid_install_path_lib = os.path.join(env['cpuid_install_path'], 'lib')
+
 ccflags = []
 liblist = []
-libpath = ['#'+alm_path]
+libpath = ['#'+alm_path, cpuid_install_path_lib]
 incpath = ['#gtests/include',
            '#gtests/include/almtest',
            '#gtests/gapi/gtest',

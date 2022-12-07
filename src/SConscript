@@ -26,12 +26,15 @@
 # Inherit global environment
 Import('env')
 from os.path import join as joinpath
+from os.path import isdir as isdir
 
 installdir = env['installdirs']
 
 builddir = joinpath(env['BUILDROOT'], 'src')
 
 ldscript = joinpath('#', 'src', 'ld-syms-libm.lds')
+
+Import('cpuid_install_path')
 
 kern_incpaths = [
     '#' + Dir('.').srcnode().path,
@@ -46,7 +49,6 @@ if env['HOST_OS'] != 'win32':
                '-W',
                '-Wstrict-prototypes',
                '-Werror',
-               #'-Wno-unused-but-set-parameter',
                '-Wno-unused-parameter',
                '-fPIC',
               ]
@@ -70,7 +72,6 @@ else:
                '/DNDEBUG',
                '-MD',
                '-march=native',
-               #'/showIncludes',
                '/MT'
           ]
     if use_asan == 1:
@@ -85,8 +86,6 @@ e = env.Clone()
 e.Append(
     CCFLAGS=ccflags,
     CPPPATH = kern_incpaths,
-    # CCFLAGS = [],
-    # LINKFLAGS = [],
     LINKERSCRIPT = ldscript,
     STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 1
 )
@@ -114,6 +113,34 @@ else:
             LIBS      = ['clang_rt.asan-x86_64.lib','clang_rt.asan_cxx-x86_64.lib'],
         )
 
+# to link to libcpu library
+almenv.Append(CPPPATH = joinpath(cpuid_install_path, 'include'))
+almenv.Append(CCFLAGS = '-DUSE_AOCL_CPUID')
+cpuid_link_static = env['cpuid_link_static']
+
+if e['HOST_OS'] != 'win32':
+    if int(cpuid_link_static):
+        print("Linking Static libcpu.a")
+        cpuid_static_lib_path = joinpath(cpuid_install_path, 'lib', 'libcpu.a')
+        cpuid_static_lib_path = almenv.File(cpuid_static_lib_path)
+        almenv.Append(LIBS=cpuid_static_lib_path)
+    else:
+        print("Linking Dynamic libcpu.so")
+        cpuid_dynamic_lib_path = joinpath(cpuid_install_path, 'lib', 'libcpu.so')
+        cpuid_dynamic_lib_path = almenv.File(cpuid_dynamic_lib_path)
+        almenv.Append(LIBS=cpuid_dynamic_lib_path)
+else:
+    if int(cpuid_link_static):
+        print("Linking Static libcpu library")
+        cpuid_static_lib_path = joinpath(cpuid_install_path, 'lib', 'cpu.lib')
+        cpuid_static_lib_path = almenv.File(cpuid_static_lib_path)
+        almenv.Append(LIBS=cpuid_static_lib_path)
+    else:
+        print("Linking Dynamic libcpu library")
+        cpuid_static_lib_path = joinpath(cpuid_install_path, 'lib', 'cpu.lib')
+        cpuid_static_lib_path = almenv.File(cpuid_static_lib_path)
+        almenv.Append(LIBS=cpuid_static_lib_path)
+
 subdirs = ['isa', 'optmized', 'iface', 'arch', 'ref']
 for d in subdirs:
     denv = almenv.Clone()
@@ -136,7 +163,7 @@ if e['HOST_OS'] != 'win32':
     libm = almenv.StaticLibrary('alm', alm_objs)
     libmso = almenv.SharedLibrary('alm', alm_objs)
 else:
-    libm = almenv.StaticLibrary('libalm-static', alm_objs)
+    libm = almenv.StaticLibrary('libalm-static', source = [alm_objs, joinpath(cpuid_install_path, 'lib','cpu.lib')])
     almenv['WINDOWS_INSERT_DEF']=1
     libmso = almenv.SharedLibrary('libalm', alm_objs, no_import_lib=False)
 

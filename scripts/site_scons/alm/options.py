@@ -114,9 +114,25 @@ class AlmOptions(object):
                         nargs = 1,
                         default = 0,
                         type =  int,
-                        help = "Compile to use address sanitizer"     
+                        help = "Compile to use address sanitizer"
         )
 
+        #provide cpuid install path
+        self.add_option('cpuid_install_path',
+                        nargs = 1,
+                        default = '/usr/local/',
+                        type = str,
+                        metavar = 'DIR',
+                        help = 'Provide AOCL CPUID install path',
+        )
+
+        #link libcpuid static/dynamic library, default is static linking
+        self.add_option('cpuid_link_static',
+                        nargs = 1,
+                        default = 1,
+                        type = int,
+                        help = 'libcpuid static/dynamic linking',
+        )
 
         self.add_option('developer',
                         nargs   = 1,

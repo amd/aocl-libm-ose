@@ -84,9 +84,22 @@ def CheckPathDir(context, mydir):
     from os import listdir
 
     if not isdir(mydir) or len(os.listdir(mydir)) == 0:
-        print ("Invalid/Empty directory")
+        print ("Invalid/Empty directory: %s" % mydir)
         return False
     return True
+
+def CheckCPUIDInstall(context):
+    res = False
+    env = context.env
+    cpuid_install_path = env['cpuid_install_path']
+
+    context.Message ("Checking for valid CPUID install path")
+
+    # check if path exists, else exit error
+    if CheckPathDir(context, cpuid_install_path):
+        res = True
+    context.Result(res)
+    return res
 
 def CheckLibAbi(context):
     #if svml, check for svml path in INTEL_LIB_PATH variable
@@ -158,6 +171,7 @@ def All(almenv):
             'CheckForToolchain' : CheckForToolchain,
             'CheckForOS'        : CheckForOS,
             'CheckLibAbi'       : CheckLibAbi,
+            'CheckCPUIDInstall' :   CheckCPUIDInstall,
             'CheckZenVer'       : lambda ctx : CheckZenVer(ctx),
         },
         conf_dir = joinpath(env['BUILDDIR'], '.sconf_temp'),
@@ -181,6 +195,9 @@ def All(almenv):
         Exit(1)
 
     conf.CheckZenVer()
+
+    if not conf.CheckCPUIDInstall():
+        Exit(1)
 
     return conf
 

@@ -234,6 +234,7 @@ class AlmEnvironment(object):
             'libm' : 'LIBABI_LIBM',
             'svml' : 'LIBABI_SVML',
             'glibc': 'LIBABI_GLIBC',
+            'msvc' : 'LIBABI_MSVC'
         }
 
         cflags = ''

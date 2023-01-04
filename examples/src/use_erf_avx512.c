@@ -25,39 +25,32 @@
  *
  */
 
-#include "libm_dynamic_load.h"
+#define AMD_LIBM_VEC_EXPERIMENTAL
+#include <stdio.h>
+#include "amdlibm.h"
+#include "amdlibm_vec.h"
+#include <immintrin.h>
 
-int test_erf(void* handle) {
-    int ret = 0;
-    struct FuncData data={0};
-    const char* func_name = "erf";
+int use_erf_avx512() {
+    #if defined (__AVX512__)
+    int i=0;
+    printf ("\nUsing vrs16 (Single precision vector 16 element variant of AMD erf()\n");
+    __m512 input_vrs16, result_erf_vrs16;
+    float input_array_vrs16[16] = {1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0,
+                                   1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0};
+    float output_array_vrs16[16];
+    input_vrs16 = _mm512_loadu_ps(input_array_vrs16);
+    result_erf_vrs16 = amd_vrs16_erff(input_vrs16);
+    _mm512_storeu_ps(output_array_vrs16, result_erf_vrs16);
+    printf ("Input: {");
+    for (i=0; i<16; i++) {
+        printf ("%f,",input_array_vrs16[i]);
+    }
+    printf("}, Output: {");
+    for (i=0; i<16; i++) {
+        printf ("%f,", output_array_vrs16[i]);
+    }
 
-    data.s1f = (funcf)FUNC_LOAD(handle, "amd_erff");
-    data.s1d = (func)FUNC_LOAD(handle, "amd_erf");
-
-    data.v2d = (func_v2d)FUNC_LOAD(handle, "amd_vrd2_erf");
-    data.v4d = (func_v4d)FUNC_LOAD(handle, "amd_vrd4_erf");
-
-    data.v4s = (funcf_v4s)FUNC_LOAD(handle, "amd_vrs4_erff");
-    data.v8s = (funcf_v8s)FUNC_LOAD(handle, "amd_vrs8_erff");
-
-    #if defined(__AVX512__)
-    data.v16s = (funcf_v16s)FUNC_LOAD(handle, "amd_vrs16_erff");
-    //data.v8d = (func_v8d)FUNC_LOAD(handle, "amd_vrd8_erf");
     #endif
-
-    if (data.s1f == NULL || data.v4s == NULL || data.v8s == NULL
-        #if defined(__AVX512__)
-        || data.v16s == NULL
-        #endif
-    ) {
-        ret = 1;
-    }
-    if (ret == 1) {
-        printf ("Uninitialized variant in %s\n", func_name);
-        exit(1);
-    }
-
-    test_func(handle, &data, func_name);
     return 0;
 }

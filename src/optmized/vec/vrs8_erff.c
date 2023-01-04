@@ -26,7 +26,7 @@
  */
 
 /*
- * C implementation of erff single precision 128-bit vector version (v4s)
+ * C implementation of erff single precision 256-bit vector version (v8s)
  *
  * Implementation Notes
  * ----------------------

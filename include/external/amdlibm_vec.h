@@ -333,6 +333,9 @@ extern "C" {
     __m256d amd_vrd4_erf    (__m256d x);
     __m128d amd_vrd2_erf    (__m128d x);
 
+/* avx512 variants */
+    __m512 amd_vrs16_erff    (__m512 x);
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,7 +1,7 @@
 # How to build Libm on windows using SCons
 
 ## Dependency libraries:
-    AOCL LibM test framework uses GNU MPFR (an open source multi-precision floating point) and GMP (GNU Multiple Precision Arithmetic) library
+    1. AOCL LibM test framework uses GNU MPFR (an open source multi-precision floating point) and GMP (GNU Multiple Precision Arithmetic) library
     Maintain following directory structure to compile libm on windows. Please note aocl-libm and mpfr folder should be place in same directory.
 
     Main_Directory
@@ -33,6 +33,24 @@
                 +---mpfr.lib
 
     If you find errors in mpfr library while libm compilation or usage then follow troubleshooting section at the end.
+
+    2. AOCL LibM library uses AOCL libcpuid library to detect Zen architecture. Follow the below mentioned steps to compile AOCL libcpuid library on windows.
+           a)Clone the libcpuid library code base.
+               git clone git@github.amd.com:AOCL/aocl-cpuid.git
+           b)Follow the steps mentioned in the below document to compile the libraries.
+               https://github.amd.com/AOCL/aocl-cpuid/blob/main/BUILD_ON_WIN.md
+           c)Maintain following directory structure of libcpuid files to compile LibM on windows
+               libcpuid
+               +---include
+               |   +---alci
+               |       +---*.h files
+               |
+               +---lib
+                   +---cpu.dll
+                   |
+                   +---cpu.lib
+                   |
+                   +---cpu_static.lib
 
 ## Installing virtualenv
     1. pip install virtualenv

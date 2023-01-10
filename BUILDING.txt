@@ -12,6 +12,12 @@
   SLES:
     $ sudo zypper install mpfr-devel
 
+## Installing AOCL libcpuid library
+    Clone the libcpuid library code base.
+        git clone git@github.amd.com:AOCL/aocl-cpuid.git
+    Follow the steps mentioned in the below document to compile the libraries.
+        https://github.amd.com/AOCL/aocl-cpuid/blob/main/BUILD.md
+
 ## Installing virtualenv
   There are various ways to install virtualenv on Linux environment.
   Ubuntu:

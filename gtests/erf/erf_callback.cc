@@ -107,28 +107,27 @@ int test_s1d(test_data *data, int idx)  {
 extern "C" {
 #endif
 
-/*vector routines*/
+/*vector routines, glibc doesnt have these */
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
 __m128 LIBM_FUNC_VEC(s, 4, erff)(__m128);
 __m256 LIBM_FUNC_VEC(s, 8, erff)(__m256);
 __m128d LIBM_FUNC_VEC(d, 2, erf)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, erf)(__m256d);
-#endif
-
-/*avx512*/
-//#if 0
+/*FIXME enable this when we have avx512 variants*/
 #if defined(__AVX512__)
 //__m512d LIBM_FUNC_VEC(d, 8, erf) (__m512d);
 //__m512 LIBM_FUNC_VEC(s, 16, erff) (__m512);
 #endif
-//#endif
+#endif
 
 int test_v2d(test_data *data, int idx)  {
+  #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
   __m128d op2 = LIBM_FUNC_VEC(d, 2, erf)(ip2);
   _mm_store_pd(&op[0], op2);
+  #endif
   return 0;
 }
 
@@ -144,11 +143,13 @@ int test_v4s(test_data *data, int idx)  {
 }
 
 int test_v4d(test_data *data, int idx)  {
+  #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256d op4 = LIBM_FUNC_VEC(d, 4, erf)(ip4);
   _mm256_store_pd(&op[0], op4);
+  #endif
   return 0;
 }
 
@@ -166,6 +167,7 @@ int test_v8s(test_data *data, int idx)  {
 
 int test_v8d(test_data *data, int idx)  {
   #if 0
+//#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
 #if defined(__AVX512__)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
@@ -180,6 +182,8 @@ int test_v8d(test_data *data, int idx)  {
 
 int test_v16s(test_data *data, int idx)  {
 #if 0
+//#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+
   //#if defined(__AVX512__)
   float *ip = (float*)data->ip;
   float *op  = (float*)data->op;

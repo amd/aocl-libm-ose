@@ -160,8 +160,6 @@ static struct expf_data expf_v2_data = {
 #define EXPF_FARG_MIN -0x1.9fe368p6f    /* log(0x1p-150) ~= -103.97 */
 #define EXPF_FARG_MAX 0x1.62e42ep6f    /* log(0x1p128)  ~=   88.72  */
 #define Ln2 0x1.62e42fefa39efp-1
-#define EXP_Y_INF 3
-#define EXP_Y_ZERO 2
 
 struct log_table {
     double lead, tail;
@@ -263,11 +261,11 @@ static inline float calculate_exp(double_t x, uint64_t sign_bias)
     if (unlikely ((top12(x) & 0x7ff)  > top12(88.0))) {
 
         if ((float)x > EXPF_FARG_MAX) {
-            return alm_expf_special(asfloat(((uint32_t)(sign_bias >> 32) | PINFBITPATT_SP32)), EXP_Y_INF);
+            return alm_expf_special(asfloat(((uint32_t)(sign_bias >> 32) | PINFBITPATT_SP32)), ALM_E_IN_X_INF);
         }
 
         if (((float)x) < EXPF_FARG_MIN) {
-            return alm_expf_special(asfloat((uint32_t)(sign_bias >> 32)) , EXP_Y_ZERO);
+            return alm_expf_special(asfloat((uint32_t)(sign_bias >> 32)), ALM_E_IN_X_ZERO);
         }
 
     }

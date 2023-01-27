@@ -59,11 +59,6 @@
 #define unlikely(x) __builtin_expect (x, 0)
 #define ALIGN(x)    __attribute__((aligned ((x))))
 
-#define EXP_X_NAN 1
-#define EXP_Y_ZERO 2
-#define EXP_Y_INF 3
-
-
 struct log_data{
     uint64_t head;
     uint64_t tail;
@@ -324,7 +319,7 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign) {
             /* if y * log(x) < -745.133219101941222106688655913 */
             v = asdouble(0x0 | result_sign);
 
-            return alm_exp_special(v, EXP_Y_ZERO);
+            return alm_exp_special(v, ALM_E_IN_X_ZERO);
 
         }
 
@@ -332,7 +327,7 @@ compute_exp(double_t v, double_t vt, uint64_t result_sign) {
             /* if y * log(x) > 709.7822265625 */
             v = asdouble(EXPBITS_DP64 | result_sign);
 
-            return  alm_exp_special(v,  EXP_Y_INF);
+            return  alm_exp_special(v, ALM_E_IN_X_INF);
 
          }
 

@@ -33,6 +33,10 @@ Hightlights of AOCL LibM version 4.0.1
           * sincos, sincosf
     * Optimized scalar variant added for erff.
     * Optimized 8 and 4 element vector variant added for erff
+    * Added support to use libcpuid library
+    * Optimized scalar variant of remainderf
+    * Optimized scalar and vector variants of erf
+          * erf, vrd2_erf and vrd4_erf
 
 Known Issues
 ------------
@@ -84,6 +88,7 @@ available vector functions is given below. All functions have an 'amd_' prefix.
  Error
  -----
     * vrs8_erff, vrs4_erff
+    * vrd2_erf, vrd4_erf
 
 The scalar functions listed below are present in the library. They
 all have an 'amd_' prefix.
@@ -137,7 +142,7 @@ all have an 'amd_' prefix.
 
  Error
  -----------------------------
-    * erff
+    * erff, erf
 
 The declarations for all of these functions are as specified in the
 C99 standard. They are equivalent to the declarations present in

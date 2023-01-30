@@ -39,6 +39,7 @@ static inline void __amd_raise_fp_exc(int flags)
     }
     if ((flags & AMD_F_OVERFLOW) == AMD_F_OVERFLOW) {
         double a = 0x1.fffffffffffffp1023;
+	errno = ERANGE;
         __asm __volatile("mulsd %1, %0":"+x"(a):"x"(a));
     }
     if ((flags & AMD_F_DIVBYZERO) == AMD_F_DIVBYZERO) {

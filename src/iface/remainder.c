@@ -38,7 +38,7 @@ struct alm_arch_funcs __arch_funcs_remainder = {
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(remainderf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_BAS64(remainder),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(remainder),
 #if 0
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_remainderf),/* vrs4 ? */
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_remainderf),/* vrs8 ? */
@@ -49,7 +49,7 @@ struct alm_arch_funcs __arch_funcs_remainder = {
 
         [ALM_UARCH_VER_ZEN] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(remainderf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_BAS64(remainder),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(remainder),
 #if 0
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN(vrs4_remainderf),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_remainderf),
@@ -58,7 +58,7 @@ struct alm_arch_funcs __arch_funcs_remainder = {
 
         [ALM_UARCH_VER_ZEN2] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(remainderf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_BAS64(remainder),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(remainder),
 #if 0
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN2(vrs4_remainderf), /* vrs4 ? */
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_remainderf), /* vrs8 ? */
@@ -66,7 +66,7 @@ struct alm_arch_funcs __arch_funcs_remainder = {
         },
         [ALM_UARCH_VER_ZEN3] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(remainderf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_BAS64(remainder),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(remainder),
 #if 0
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN3(vrs4_remainderf), /* vrs4 ? */
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_remainderf), /* vrs8 ? */
@@ -75,7 +75,7 @@ struct alm_arch_funcs __arch_funcs_remainder = {
 
         [ALM_UARCH_VER_ZEN4] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(remainderf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_BAS64(remainder),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(remainder),
 #if 0
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN4(vrs4_remainderf), /* vrs4 ? */
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN4(vrs8_remainderf), /* vrs8 ? */

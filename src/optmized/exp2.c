@@ -265,7 +265,7 @@ ALM_PROTO_OPT(exp2)(double x)
     m = (n - j) << (52 - EXP2_N);
 
     /* q = r + r*r*(1/2.0 + r*(1/6.0+ r*(1/24.0 + r*(1/120.0 + r*(1/720)))); */
-    q = r * (1.0 + r * (C2 + r * (C3 + r * (C4 + r * (C5 + r * C6)))));
+    q = r * POLY_EVAL_6 (r, 1.0, C2, C3, C4, C5, C6);
 
     /* f(j)*q + f1 + f2 */
     const struct exp_table *tbl = &((const struct exp_table*)ALM_EXP2_TBL_DATA)[j];

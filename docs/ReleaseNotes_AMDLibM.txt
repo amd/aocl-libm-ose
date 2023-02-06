@@ -1,5 +1,5 @@
 
-(C) 2008-2022 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 
 AOCL LibM - Release Notes - AOCL version 4.0.1
 ----------------------------------------------
@@ -15,28 +15,11 @@ compiler-provided math functions. Applications can link into AOCL LibM library a
 invoke math functions instead of compiler’s math functions for better accuracy and
 performance.
 
-Hightlights of AOCL LibM version 4.0.1
---------------------------------------
+Highlights of AOCL LibM version 4.0.1
+-------------------------------------
 
-    * Optimized vector avx512 variants added for the following:
-          * exp, expf, exp2, exp2f, log, logf, log2, log2f, log10f, pow, powf
-          * sin, sinf, cos, cosf, tan, tanf
-          * asin, asinf, acosf, atan, atanf, tanhf
-    * Optimized Complex scalar variants added for the following:
-          * cexp, cexpf, cpow, cpowf
-    * Optimized scalar variants added for the following:
-          * asin, asinhf, acosh, acoshf
-          * log1p, log1pf, logb, logbf, exp10f
-          * hypot, hypotf, cbrt, cbrtf, roundf
-          * round, roundf, ceil, ceilf, floor, floorf
-          * copysign, copysignf
-          * sincos, sincosf
-    * Optimized scalar variant added for erff.
-    * Optimized 8 and 4 element vector variant added for erff
     * Added support to use libcpuid library
     * Optimized scalar variant of remainderf
-    * Optimized scalar and vector variants of erf
-          * erf, vrd2_erf and vrd4_erf
 
 Known Issues
 ------------

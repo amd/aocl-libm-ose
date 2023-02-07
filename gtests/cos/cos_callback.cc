@@ -114,6 +114,7 @@ extern "C" {
 #define _ZGVsN8v_cosf _ZGVdN8v_cosf
 
 //#define _ZGVeN8v_cos _ZGVeN8v_cos
+#define _ZGVsN16v_cosf _ZGVeN16v_cosf
 #define _ZGVdN8v_cos _ZGVeN8v_cos
 #endif
 
@@ -124,6 +125,7 @@ __m128  LIBM_FUNC_VEC(s, 4, cosf)(__m128);
 __m256  LIBM_FUNC_VEC(s, 8, cosf)(__m256);
 #if defined(__AVX512__)
 __m512d LIBM_FUNC_VEC(d, 8, cos)(__m512d);
+__m512  LIBM_FUNC_VEC(s, 16, cosf)(__m512);
 #endif
 
 int test_v2d(test_data *data, int idx)  {

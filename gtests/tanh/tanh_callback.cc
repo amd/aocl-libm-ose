@@ -107,13 +107,16 @@ int test_s1d(test_data *data, int idx)  {
 extern "C" {
 #endif
 
-/*vector routines*/
-/*glibc doesnt have these vector variants. Only intel and amd has*/
+  /*vector routines*/
+/*glibc doesn't have these vector variants. Only intel and amd have*/
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
 //__m128d LIBM_FUNC_VEC(d, 2, tanh)(__m128d);
 //__m256d LIBM_FUNC_VEC(d, 4, tanh)(__m256d);
 __m128 LIBM_FUNC_VEC(s, 4, tanhf)(__m128);
 __m256 LIBM_FUNC_VEC(s, 8, tanhf)(__m256);
+#if defined(__AVX512__)
+__m512  LIBM_FUNC_VEC(s, 16, tanhf)(__m512);
+#endif
 #endif
 
 int test_v2d(test_data *data, int idx)  {
@@ -176,6 +179,7 @@ int test_v8d(test_data *data, int idx)  {
 
 int test_v16s(test_data *data, int idx)  {
 #if defined(__AVX512__)
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   float *ip = (float*)data->ip;
   float *op  = (float*)data->op;
   __m512 ip16 = _mm512_set_ps(ip[idx+15], ip[idx+14], ip[idx+13], ip[idx+12],
@@ -184,6 +188,7 @@ int test_v16s(test_data *data, int idx)  {
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m512 op16 = LIBM_FUNC_VEC(s, 16, tanhf)(ip16);
   _mm512_store_ps(&op[0], op16);
+#endif
 #endif
   return 0;
 }

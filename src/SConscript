@@ -165,7 +165,7 @@ if e['HOST_OS'] != 'win32':
     libm = almenv.StaticLibrary('alm', alm_objs)
     libmso = almenv.SharedLibrary('alm', alm_objs)
 else:
-    libm = almenv.StaticLibrary('libalm-static', source = [alm_objs, joinpath(cpuid_install_path, 'lib','cpu.lib')])
+    libm = almenv.StaticLibrary('libalm-static', source = [alm_objs, joinpath(cpuid_install_path, 'lib','cpu_static.lib')])
     almenv['WINDOWS_INSERT_DEF']=1
     libmso = almenv.SharedLibrary('libalm', alm_objs, no_import_lib=False)
 

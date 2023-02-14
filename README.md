@@ -1,7 +1,7 @@
-# AMD Math Library (LibM)
+# AMD Math Library(LibM)
 
 ## Building
 Refer to the file BUILDING.txt
 
-## Building open source version of LibM
+## Building open sourcd version of LibM
 Refer to the file BUILDING-ose.txt

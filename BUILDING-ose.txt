@@ -11,7 +11,7 @@ git checkout aocl-3.0;
   SLES:
      $ sudo zypper install python3-virtualenv
 
-##Activating virtual environment
+## Activating virtual environment
   Use Virtual Environment to install python3 and scons inside.
   ```
    $ virtualenv -p python3 .venv3
@@ -23,12 +23,12 @@ git checkout aocl-3.0;
      $ export PATH=`pwd`/.venv3/bin:$PATH
    ```
 
-  Start buildling
+  Start building
    ```
-    $ scons  -h    #help options for scons
+    $ scons  -h    # help options for scons
    ```
 
-  Building parallely
+  Building in parallel
    ``` shell
     $ scons -j32
    ```

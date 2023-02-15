@@ -15,11 +15,11 @@
 ## Installing AOCL libcpuid library
     Clone the libcpuid library code base.
         git clone git@github.amd.com:AOCL/aocl-cpuid.git
-    Follow the steps mentioned in the below document to compile the libraries.
+    Follow the steps mentioned in the document below to compile the libraries.
         https://github.amd.com/AOCL/aocl-cpuid/blob/main/BUILD.md
 
 ## Installing virtualenv
-  There are various ways to install virtualenv on Linux environment.
+  There are various ways to install virtualenv in a Linux environment.
   Ubuntu:
      $ sudo apt install virtualenv
   CentOS:
@@ -44,12 +44,12 @@
     $ scons  -h    #help options for scons
    ```
 
-  Building parallely
+  Building in parallel
    ``` shell
     $ scons -j32 --cpuid_install_path=<libcpuid library path>
    ```
 
-  Building selecting compiler
+  Building and selecting compiler
     $ scons <other options> ALM_CC=<gcc/clang executable path> ALM_CXX=<g++/clang++ executable path>
 
   Building with verbosity
@@ -89,7 +89,7 @@
   ```
 
 ## Possible future building
-  A fast library, with upto 8 ULP (when available).
+  A fast library, with up to 8 ULP (when available).
   ``` sh
     $ LD_PRELOAD=/abs/path/amdlibm_fast.so
   ```
@@ -102,7 +102,7 @@
   $ scons --libabi=glibc
 ```
 
-  With this the tests will be compiled to call _libm_ functions, without the
+  With this, the tests will be compiled to call _libm_ functions without the
   amd specific prefix.
 
 ### Building with Intel Math (SVML,IMF) Libraries

@@ -2,7 +2,7 @@
 
 ## Dependency libraries:
     1. AOCL LibM test framework uses GNU MPFR (an open source multi-precision floating point) and GMP (GNU Multiple Precision Arithmetic) library
-    Maintain following directory structure to compile libm on windows. Please note aocl-libm and mpfr folder should be place in same directory.
+    Maintain following directory structure to compile libm on windows. Please note the aocl-libm and mpfr folders should be placed in the same directory.
 
     Main_Directory
     +---aocl-libm
@@ -32,12 +32,12 @@
             +---lib
                 +---mpfr.lib
 
-    If you find errors in mpfr library while libm compilation or usage then follow troubleshooting section at the end.
+    If you find errors in mpfr library during libm compilation or usage then follow troubleshooting section at the end.
 
-    2. AOCL LibM library uses AOCL libcpuid library to detect Zen architecture. Follow the below mentioned steps to compile AOCL libcpuid library on windows.
+    2. AOCL LibM library uses AOCL libcpuid library to detect Zen architecture. Follow the steps below to compile AOCL libcpuid library on windows.
            a)Clone the libcpuid library code base.
                git clone git@github.amd.com:AOCL/aocl-cpuid.git
-           b)Follow the steps mentioned in the below document to compile the libraries.
+           b)Follow the steps mentioned in the document below to compile the libraries.
                https://github.amd.com/AOCL/aocl-cpuid/blob/main/BUILD_ON_WIN.md
            c)Maintain following directory structure of libcpuid files to compile LibM on windows
                libcpuid
@@ -69,7 +69,7 @@
 ## Building test framework
     scons ALM_CC="<clang executable path>" ALM_CXX="<clang++ executable path>" --cpuid_install_path="<libcpuid library path>" gtests
 
-## To build parallely, use following flag
+## To build in parallel, use following flag
     -j32
 
 ## To build with verbosity, use following flag
@@ -109,9 +109,9 @@
     -r (provide range: start,stop example: -r -50,50)
 
 ## Troubleshooting
-    If you find errors in mpfr library while libm compilation or usage then install vcpkg freshly
+    If you find errors in mpfr library during libm compilation or usage, then re-install vcpkg
     1. Download VCPKG from https://github.com/microsoft/vcpkg.git
-    2. Install VCPKG, use following commands
+    2. Install VCPKG using the following commands
         ○ .\vcpkg\bootstrap-vcpkg.bat
         ○ .\vcpkg.exe install yasm-tool:x86-windows
         ○ .\vcpkg.exe install gmp[core]:x64-windows

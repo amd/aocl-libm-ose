@@ -37,7 +37,7 @@ Single equation to calculate cosh(x),
                        | 2    |                  (v*v)                  |
                        +-     `--                                     --'
 
-However to calcualte e^x, we rely on library function exp(x), which has an upper
+However, to calculate e^x, we rely on library function exp(x), which has an upper
 limit, but cosh(x) is defined beyond that. The input argument at which cosh(x)
 overflows is larger than that for exp(x).
     

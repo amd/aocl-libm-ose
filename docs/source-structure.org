@@ -2,8 +2,8 @@
 
 ** Skeleton (top level)
 
-- doc - All realtive documentation should go here
-- include - All headers relavent for sources
+- doc - All relevant documentation should go here
+- include - All headers relevant for sources
 - src - All sources
 - gtests - All tests
 - utils - Any necessary utilities
@@ -12,7 +12,7 @@
 
 ** Documentation
 
-Mostly recides under 'doc/' folder.
+Mostly resides under 'doc/' folder.
 
 doc/internal - is internal reference only.
 
@@ -48,7 +48,7 @@ gtests/
      include/      - test related headers only.
      libs/         - contains external libraries necessary for testing
      libs/mparith  - Contains the high precision mparith libraries used for Accuracy testing.
-     gapi/         - Contains the google libs which are used to exercise gtests and gbench(Performance testing)
+     gapi/         - Contains the google libs which are used to exercise gtests and gbench (performance testing)
      exp/          - exp() related tests
      dynamic/      - Dynamic loading tests.
      compat/       - Glibc libmvec compat layer tests.

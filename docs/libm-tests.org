@@ -6,7 +6,7 @@ An effort to unify all the tests for the libm functions
 Each function should be able to allow.
  - Test for a given input
  - Test within range and increment.
- - Speacial case tests
+ - Special case tests
  - Table tests
  - Test for variants, scalar, vector single prec (2,4,8), vector double prec (4, 8)
  - Performance tests (measured in MOPS, million operations per second)
@@ -33,7 +33,7 @@ Following optimization
  - Decrease the polynomial order
 
 will be performed on
- - exp2 , exp, pow, log 
+ - exp2, exp, pow, log 
    - on scalar, vector2 and vector4
    - and single & double precision
 
@@ -54,12 +54,12 @@ each test using
 libm_test_register(struct libm_test *)
 #+END_SRC
 
-Test should only try to register the tests user requested, however framework
+Test should only try to register the tests user requested. However, framework
 will also try not to register the tests that are not requested by the user.
 
 Framework expects following functions for each test.
 
-setup(), run() ulp() and veryify()
+setup(), run() ulp() and verify()
 
 #+BEGIN_SRC c
 /* vector single precision */

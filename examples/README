@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022, Advanced Micro Devices, Inc. All rights reserved. 
+ * Copyright (C) 2018-2023, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,18 +25,21 @@
  *
  */
 
-This directory contains sample source files showing sample usage of AOCL LibM
-library functions.
+This directory contains source files showing sample usage of AOCL LibM library functions.
 
 To build and run this example application:
 
 1. make clean;
 
-2. make (with below arguments)
-    [Optional]  CC=clang/gcc (default:gcc)
-    [Optional]  LIB=static/dynamic (default it uses dynamic lib)
+2. export CPUID_PATH=<path to where cpuid library is installed>
 
-3. export LD_LIBRARY_PATH=<path to libalm.so>:$LD_LIBRARY_PATH (in case of dynamic lib)
+3. if required, set ARCH=avx512 in Makefile to compile AVX512 variants
 
-4. ./test_libm
+4. make (with arguments below)
+    [Optional]  CC=clang/gcc (default: gcc)
+    [Optional]  LIB=static/dynamic (default: dynamic)
+
+5. export LD_LIBRARY_PATH=<path to libalm.so>:$LD_LIBRARY_PATH (in case of dynamic lib)
+
+6. ./test_libm
 

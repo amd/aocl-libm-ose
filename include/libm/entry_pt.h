@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2023, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -296,6 +296,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_sin);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_asin);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_tan);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_atan);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_erf);
 
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_expf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_powf);

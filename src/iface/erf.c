@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -43,7 +43,8 @@ struct alm_arch_funcs __arch_funcs_erf = {
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_erff),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_AVX2(vrd2_erf),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_AVX2(vrd4_erf),
-            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_erff)
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_erff),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_erf),
         },
 
         [ALM_UARCH_VER_ZEN] = {
@@ -80,7 +81,8 @@ struct alm_arch_funcs __arch_funcs_erf = {
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN4(vrs8_erff),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN4(vrd2_erf),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN4(vrd4_erf),
-            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_erff)
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_erff),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_erf),
         },
 
     },
@@ -97,10 +99,10 @@ LIBM_IFACE_PROTO(erf)(void *arg)
         [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_erff),
         [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_erf),
         [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_erf),
-        [ALM_FUNC_VECT_SP_16] = &G_ENTRY_PT_PTR(vrs16_erff)
+        [ALM_FUNC_VECT_SP_16] = &G_ENTRY_PT_PTR(vrs16_erff),
+        [ALM_FUNC_VECT_DP_8] = &G_ENTRY_PT_PTR(vrd8_erf),
         },
     };
 
     alm_iface_fixup(&g_entry_erf, &__arch_funcs_erf);
 }
-

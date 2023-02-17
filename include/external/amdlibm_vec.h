@@ -1,6 +1,6 @@
 /*
 
-(C) 2008-2022 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 
 Advanced Micro Devices, Inc.
 Software License Agreement
@@ -317,24 +317,25 @@ extern "C" {
 
     void amd_vrsa_powf      (int len, float *src1, float *src2, float* dst);
 
+/* avx512 variants */
+    __m512d amd_vrd8_pow    (__m512d x, __m512d y);
+    __m512  amd_vrs16_powf  (__m512  x, __m512  y);
+
     __m128d amd_vrd2_cbrt   (__m128d x);
     __m128  amd_vrs4_cbrtf  (__m128  x);
 
     void amd_vrda_cbrt      (int len, double *src, double *dst);
     void amd_vrsa_cbrtf     (int len, float  *src, float  *dst);
 
-/* avx512 variants */
-    __m512d amd_vrd8_pow    (__m512d x, __m512d y);
-    __m512  amd_vrs16_powf  (__m512  x, __m512  y);
-
 /* erf */
-    __m128 amd_vrs4_erff    (__m128 x);
-    __m256 amd_vrs8_erff    (__m256 x);
-    __m256d amd_vrd4_erf    (__m256d x);
     __m128d amd_vrd2_erf    (__m128d x);
+    __m128  amd_vrs4_erff   (__m128 x);
+    __m256d amd_vrd4_erf    (__m256d x);
+    __m256  amd_vrs8_erff   (__m256 x);
 
 /* avx512 variants */
-    __m512 amd_vrs16_erff    (__m512 x);
+    __m512d amd_vrd8_erf    (__m512d x);
+    __m512  amd_vrs16_erff  (__m512 x);
 
 #ifdef __cplusplus
 }

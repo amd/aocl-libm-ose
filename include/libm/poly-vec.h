@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2023, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -176,13 +176,21 @@
 
 #define POLY_EVAL_HORNER_11(x, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11) ({ \
         __typeof(x) q = mul_add( mul_add( mul_add( mul_add( mul_add( mul_add(       \
-                        mul_add( mul_add( mul_add( mul_add (mul_add(                \
+                        mul_add( mul_add( mul_add( mul_add( mul_add(                \
                         c11, x, c10), x, c9), x, c8),                               \
                         x, c7), x, c6), x, c5), x, c4),                             \
                         x, c3), x, c2), x, c1), x, c0);                             \
          q;                                                                         \
          })
 
+#define POLY_EVAL_HORNER_10(x, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10) ({      \
+        __typeof(x) q = mul_add( mul_add( mul_add( mul_add( mul_add(                \
+                        mul_add( mul_add( mul_add( mul_add( mul_add(                \
+                        c10, x, c9), x, c8),                                        \
+                        x, c7), x, c6), x, c5), x, c4),                             \
+                        x, c3), x, c2), x, c1), x, c0);                             \
+         q;                                                                         \
+         })
 
 /*
  * p(x) = c10*x^10 + c9*x^9 + c8*x^8 + c7*x^7 + c6*x^6 + c5*x^5 + c4*x^4 + \

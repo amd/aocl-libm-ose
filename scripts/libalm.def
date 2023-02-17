@@ -231,9 +231,10 @@ EXPORTS
     amd_cpow
     amd_erff
     amd_erf
-    amd_vrs8_erff
     amd_vrs4_erff
-    amd_vrd4_erf
-    amd_vrd2_erf
+    amd_vrs8_erff
     amd_vrs16_cosf
+    amd_vrd2_erf
+    amd_vrd4_erf
+    amd_vrd8_erf
     alm_main

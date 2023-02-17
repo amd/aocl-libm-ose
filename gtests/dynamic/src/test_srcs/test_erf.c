@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -43,12 +43,13 @@ int test_erf(void* handle) {
 
     #if defined(__AVX512__)
     data.v16s = (funcf_v16s)FUNC_LOAD(handle, "amd_vrs16_erff");
-    //data.v8d = (func_v8d)FUNC_LOAD(handle, "amd_vrd8_erf");
+    data.v8d = (func_v8d)FUNC_LOAD(handle, "amd_vrd8_erf");
     #endif
 
-    if (data.s1f == NULL || data.v4s == NULL || data.v8s == NULL
+    if (data.s1f == NULL || data.v4s == NULL || data.v8s == NULL ||
+	data.s1d == NULL || data.v2d == NULL || data.v4d == NULL
         #if defined(__AVX512__)
-        || data.v16s == NULL
+        || data.v16s == NULL || data.v8d == NULL
         #endif
     ) {
         ret = 1;

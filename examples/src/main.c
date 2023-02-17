@@ -61,6 +61,7 @@ extern int use_exp2_avx512();
 extern int use_pow_avx512();
 extern int use_atan_avx512();
 extern int use_asin_avx512();
+extern int use_erf_avx512();
 #endif
 
 int main()  {
@@ -95,6 +96,7 @@ int main()  {
     use_log10_avx512();
     use_atan_avx512();
     use_asin_avx512();
+    use_erf_avx512();
     #endif
 
     return 0;

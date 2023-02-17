@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -32,9 +32,9 @@
 #include <immintrin.h>
 
 int use_erf_avx512() {
-    #if defined (__AVX512__)
+#if defined (__AVX512__)
     int i=0;
-    printf ("\nUsing vrs16 (Single precision vector 16 element variant of AMD erf()\n");
+    printf ("\nUsing vrs16 (Single precision 16-element vector variant) of AMD erff()\n");
     __m512 input_vrs16, result_erf_vrs16;
     float input_array_vrs16[16] = {1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0,
                                    1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0};
@@ -50,7 +50,24 @@ int use_erf_avx512() {
     for (i=0; i<16; i++) {
         printf ("%f,", output_array_vrs16[i]);
     }
+    printf("}\n");
 
-    #endif
+    printf ("Using vrd8 (Double precision 8-element vector variant) of AMD erf()\n");
+    __m512d input_vrd8, result_erf_vrd8;
+    double input_array_vrd8[8] = {1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0};
+    double output_array_vrd8[8];
+    input_vrd8 = _mm512_loadu_pd(input_array_vrd8);
+    result_erf_vrd8 = amd_vrd8_erf(input_vrd8);
+    _mm512_storeu_pd(output_array_vrd8, result_erf_vrd8);
+    printf ("Input: {");
+    for (i=0; i<8; i++) {
+        printf ("%f,",input_array_vrd8[i]);
+    }
+    printf("}, Output: {");
+    for (i=0; i<8; i++) {
+        printf ("%f,", output_array_vrd8[i]);
+    }
+    printf("}\n");
+#endif
     return 0;
 }

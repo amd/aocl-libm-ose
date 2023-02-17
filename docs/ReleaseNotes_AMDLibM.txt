@@ -25,7 +25,8 @@ Highlights of AOCL LibM version 4.0.1
     * Exception now correctly raised for pow and powf functions
     * Fixed compilation error when libabi=glibc for erf tests
     * Modified to successfully build with "--arch_config=avx512 --libabi=glibc gtests"
-      options 
+      options
+    * Corrected multiple typos
 
 Known Issues
 ------------

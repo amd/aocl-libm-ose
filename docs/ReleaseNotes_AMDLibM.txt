@@ -17,9 +17,15 @@ performance.
 
 Highlights of AOCL LibM version 4.0.1
 -------------------------------------
-
-    * Added support to use libcpuid library
-    * Optimized scalar variant of remainderf
+    * Issue fixed so that static library detects Zen architecture on windows
+    * Optimized scalar variant of remainder
+    * Added AVX512 vector variant of erff
+        * vrs16_erff
+    * 11% performance improvement for exp2 function
+    * Exception now correctly raised for pow and powf functions
+    * Fixed compilation error when libabi=glibc for erf tests
+    * Modified to successfully build with "--arch_config=avx512 --libabi=glibc gtests"
+      options 
 
 Known Issues
 ------------
@@ -70,7 +76,7 @@ available vector functions is given below. All functions have an 'amd_' prefix.
 
  Error
  -----
-    * vrs8_erff, vrs4_erff
+    * vrs4_erff, vrs8_erff, vrs16_erff
     * vrd2_erf, vrd4_erf
 
 The scalar functions listed below are present in the library. They
@@ -120,11 +126,11 @@ all have an 'amd_' prefix.
     * fdimf, fdim, fmaxf, fmax, fminf, fmin
 
  Complex
- -----------------------------
+ -------
     * cexpf, cexp, cpowf, cpow, clogf, clog
 
  Error
- -----------------------------
+ -----
     * erff, erf
 
 The declarations for all of these functions are as specified in the
@@ -150,6 +156,6 @@ Refer to the examples directory for illustration.
 
 Note: There is a fast version of AOCL LibM released as part of the package. (libalmfast.so)
 This library contains faster variants of some of the scalar functions.
-To use this in an application, the user has to preload the library while running the 
+To use this in an application, the user has to preload the library while running the
 application:
     LD_PRELOAD=<path to aocl installation>/lib/libalmfast.so ./test_application;

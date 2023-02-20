@@ -29,4 +29,4 @@
 
 #include <libm/arch/avx2.h>
 
-#include "../../optmized/vec/vrd2_erf.c"
+#include "../../optimized/vec/vrd2_erf.c"

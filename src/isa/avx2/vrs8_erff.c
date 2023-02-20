@@ -29,4 +29,4 @@
 
 #include <libm/arch/avx2.h>
 
-#include "../../optmized/vec/vrs8_erff.c"
+#include "../../optimized/vec/vrs8_erff.c"

@@ -26,7 +26,7 @@
 Import('env')
 from os.path import join as joinpath
 
-builddir = joinpath(env['BUILDROOT'], 'src', 'optmized')
+builddir = joinpath(env['BUILDROOT'], 'src', 'optimized')
 
 e = env.Clone()
 

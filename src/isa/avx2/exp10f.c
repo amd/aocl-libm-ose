@@ -29,4 +29,4 @@
 
 #include <libm/arch/avx2.h> 
 
-#include "../../optmized/exp10f.c"
+#include "../../optimized/exp10f.c"

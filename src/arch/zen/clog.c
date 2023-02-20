@@ -29,5 +29,5 @@
 
 #include <libm/arch/zen.h>
 
-#include "../../optmized/cmplx/clog.c"
+#include "../../optimized/cmplx/clog.c"
 

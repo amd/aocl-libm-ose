@@ -29,4 +29,4 @@
 
 #include <libm/arch/avx2.h> 
 
-#include "../../optmized/pow.c"
+#include "../../optimized/pow.c"

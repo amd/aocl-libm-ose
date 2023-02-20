@@ -29,5 +29,5 @@
 
 #include <libm/arch/zen3.h>
 
-#include "../../optmized/cmplx/cexpf.c"
+#include "../../optimized/cmplx/cexpf.c"
 

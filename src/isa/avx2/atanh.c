@@ -29,4 +29,4 @@
 
 #include <libm/arch/avx2.h> 
 
-#include "../../optmized/atanh.c"
+#include "../../optimized/atanh.c"

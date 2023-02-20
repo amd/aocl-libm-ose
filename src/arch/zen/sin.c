@@ -29,5 +29,5 @@
 
 #include <libm/arch/zen.h>
 
-#include "../../optmized/sin.c"
+#include "../../optimized/sin.c"
 

@@ -29,5 +29,5 @@
 
 #include <libm/arch/zen.h>
 
-#include "../../optmized/sincosf.c"
+#include "../../optimized/sincosf.c"
 

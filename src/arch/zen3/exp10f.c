@@ -29,4 +29,4 @@
 
 #include <libm/arch/zen3.h> 
 
-#include "../../optmized/exp10f.c"
+#include "../../optimized/exp10f.c"

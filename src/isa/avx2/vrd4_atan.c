@@ -28,4 +28,4 @@
 #define ALM_OVERRIDE 1
 
 #include <libm/arch/avx2.h>
-#include "../../optmized/vec/vrd4_atan.c"
+#include "../../optimized/vec/vrd4_atan.c"

@@ -29,5 +29,5 @@
 
 #include <libm/arch/avx2.h>
 
-#include "../../optmized/exp2.c"
+#include "../../optimized/exp2.c"
 

@@ -26,4 +26,4 @@
  */
 #define ALM_OVERRIDE 1
 #include <libm/arch/avx2.h>
-#include "../../optmized/truncf.c"
+#include "../../optimized/truncf.c"

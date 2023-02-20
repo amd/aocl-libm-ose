@@ -29,4 +29,4 @@
 
 #include <libm/arch/zen2.h> 
 
-#include "../../optmized/hypot.c"
+#include "../../optimized/hypot.c"

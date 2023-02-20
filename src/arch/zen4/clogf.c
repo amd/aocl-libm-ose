@@ -29,5 +29,5 @@
 
 #include <libm/arch/zen4.h>
 
-#include "../../optmized/cmplx/clogf.c"
+#include "../../optimized/cmplx/clogf.c"
 

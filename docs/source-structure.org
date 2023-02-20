@@ -23,7 +23,7 @@ doc/user - User manual, software developers manual etc. Released externally
 Contains following directories
 
 src/
-   optmized/          - Contains optimized C implementations.
+   optimized/         - Contains optimized C implementations.
    arch/              - Contains architecture specific (zen2/zen3/zen4) implementations.
    ref/               - mostly reference implementations.
    kern/              - Kernel variants.

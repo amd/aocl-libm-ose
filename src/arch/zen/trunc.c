@@ -26,4 +26,4 @@
  */
 #define ALM_OVERRIDE 1
 #include <libm/arch/zen.h>
-#include "../../optmized/trunc.c"
+#include "../../optimized/trunc.c"

@@ -30,5 +30,5 @@
 
 #include <libm/arch/zen.h>
 
-#include "../../optmized/asinhf.c"
+#include "../../optimized/asinhf.c"
 

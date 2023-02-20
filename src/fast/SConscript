@@ -30,7 +30,7 @@ from os.path import join as joinpath
 e = env.Clone()
 
 incpaths = [
-    Dir('#/src/optmized/'),
+    Dir('#/src/optimized/'),
  ]
 
 use_asan = env['use_asan']

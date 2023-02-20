@@ -27,4 +27,4 @@
  */
 #define ALM_OVERRIDE 1
 #include <libm/arch/avx2.h>
-#include "../../optmized/remainder.c"
+#include "../../optimized/remainder.c"

@@ -29,4 +29,4 @@
 
 #include <libm/arch/avx2.h> 
 
-#include "../../optmized/cmplx/cexpf.c"
+#include "../../optimized/cmplx/cexpf.c"

@@ -29,4 +29,4 @@
 
 #include <libm/arch/zen.h>
 
-#include "../../optmized/vec/vrs4_tanf.c"
+#include "../../optimized/vec/vrs4_tanf.c"

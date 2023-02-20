@@ -29,4 +29,4 @@
 
 #include <libm/arch/zen4.h>
 
-#include "../../optmized/ilogbf.c"
+#include "../../optimized/ilogbf.c"

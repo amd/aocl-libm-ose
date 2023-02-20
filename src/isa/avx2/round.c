@@ -29,5 +29,5 @@
 
 #include <libm/arch/avx2.h> 
 
-#include "../../optmized/round.c"
+#include "../../optimized/round.c"
 

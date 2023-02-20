@@ -29,4 +29,4 @@
 
 #include <libm/arch/zen4.h>
 
-#include "../../optmized/ceil.c"
+#include "../../optimized/ceil.c"

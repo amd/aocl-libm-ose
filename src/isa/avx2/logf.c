@@ -28,4 +28,4 @@
 
 #include <libm/arch/avx2.h> 
 
-#include "../../optmized/logf.c"
+#include "../../optimized/logf.c"

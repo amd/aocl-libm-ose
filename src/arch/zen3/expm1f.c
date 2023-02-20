@@ -29,5 +29,5 @@
 
 #include <libm/arch/zen3.h>
 
-#include "../../optmized/expm1f.c"
+#include "../../optimized/expm1f.c"
 

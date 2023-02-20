@@ -28,4 +28,4 @@
 #define ALM_OVERRIDE 1
 
 #include <libm/arch/zen2.h>
-#include "../../optmized/acosf.c"
+#include "../../optimized/acosf.c"

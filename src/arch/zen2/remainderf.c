@@ -27,4 +27,4 @@
  */
 #define ALM_OVERRIDE 1
 #include <libm/arch/zen2.h>
-#include "../../optmized/remainderf.c"
+#include "../../optimized/remainderf.c"

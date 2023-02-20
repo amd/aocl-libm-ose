@@ -29,4 +29,4 @@
 
 #include <libm/arch/zen2.h>
 
-#include "../../optmized/vec/vrd4_erf.c"
+#include "../../optimized/vec/vrd4_erf.c"

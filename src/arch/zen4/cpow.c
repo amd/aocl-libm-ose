@@ -29,5 +29,5 @@
 
 #include <libm/arch/zen4.h>
 
-#include "../../optmized/cmplx/cpow.c"
+#include "../../optimized/cmplx/cpow.c"
 

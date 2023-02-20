@@ -28,4 +28,4 @@
 #define ALM_OVERRIDE 1
 
 #include <libm/arch/zen3.h>
-#include "../../optmized/vec/vrd4_sin.c"
+#include "../../optimized/vec/vrd4_sin.c"

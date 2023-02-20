@@ -29,4 +29,4 @@
 
 #include <libm/arch/zen4.h>
 
-#include "../../optmized/exp2.c"
+#include "../../optimized/exp2.c"

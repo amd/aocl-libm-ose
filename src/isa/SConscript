@@ -74,7 +74,7 @@ avx2_objs = SConscript('avx2/SConscript',
                        exports = {'env' : e},
                        duplicate = 0,
                        src_dir = '#src/isa/avx2',
-                       variant_dir = joinpath(builddir, 'optmized'))
+                       variant_dir = joinpath(builddir, 'optimized'))
 
 
 objs = asm_objs + avx2_objs

@@ -29,5 +29,5 @@
 
 #include <libm/arch/zen4.h>
 
-#include "../../optmized/sincos.c"
+#include "../../optimized/sincos.c"
 

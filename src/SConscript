@@ -96,16 +96,14 @@ almenv = e.Clone()
 
 if e['HOST_OS'] != 'win32':
     __linkflags = ['-ealm_main',]
+    __libs = ['c']
 
     if use_asan == 1:
-        if 'clang' in e['CC']:
-            __linkflags.append('-static-libsan')
-        if 'gcc' in e['CC']:
-            __linkflags.append('-static-libasan')
+        __libs.append('asan')
 
     almenv.Append(
         LINKFLAGS = __linkflags, # ['-T$LINKERSCRIPT']
-        LIBS      = ['c'],
+        LIBS      = __libs,
     )
 else:
     if use_asan == 1:

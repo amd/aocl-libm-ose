@@ -37,5 +37,4 @@ EXPORTS
     alm_mp_tanh
     alm_mp_trunc
     alm_mp_erf
-	
-    
+    alm_mp_fmin

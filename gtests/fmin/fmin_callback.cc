@@ -51,9 +51,8 @@ uint32_t GetnIpArgs( void )
 }
 
 void ConfSetupf32(SpecParams *specp) {
-  /* Fixme once fminf conf data is added in test_fmin_data.h file */
- //  specp->data32 = test_fminf_conformance_data;
- //  specp->countf = ARRAY_SIZE(test_fminf_conformance_data);
+  specp->data32 = test_fminf_conformance_data;
+  specp->countf = ARRAY_SIZE(test_fminf_conformance_data);
 }
 
 void ConfSetupf64(SpecParams *specp) {

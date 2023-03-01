@@ -29,9 +29,52 @@
 #include "almstruct.h"
 #include <libm_util_amd.h>
 
+//R.obtained=FN_PROTOTYPE(fminf)(P1.input, P2.input)
+//float,float,float,ExcFlags
+//P1 R E P2
+//unsigned int|float, unsigned int|float, unsigned int|float,ExcFlags|ExcFlags
+//R.V3[j] = fminf(P1.V3[j],P2.V3[j])
+//float float float ExcFlags
+//ULP amd_ref_fminf_ULP(P1.V3[j],P2.V3[j],R.V3[j],&testdata[k].R.ulp[j], &testdata[k].R.relative_error[j])
+//testdata[j].R.MaxUlp()
+
+static libm_test_special_data_f32
+test_fminf_conformance_data[] = {
+      {POS_ZERO_F32, NEG_ZERO_F32, 0, NEG_ZERO_F32},  //0
+      {NEG_ZERO_F32, NEG_ZERO_F32, 0, NEG_ZERO_F32},  //0
+      {POS_ZERO_F32, POS_ZERO_F32, 0, POS_ZERO_F32},  //0
+      {NEG_ZERO_F32, NEG_ZERO_F32, 0, POS_ZERO_F32},  //0
+      {POS_ZERO_F32, 0xBF800000, 0, 0xBF800000},  //0,-1
+      {NEG_ZERO_F32, 0xBF800000, 0, 0xBF800000},  //0,-1
+      {POS_ZERO_F32, POS_ZERO_F32, 0, 0x3F800000},  //0,1
+      {NEG_ZERO_F32, NEG_ZERO_F32, 0, 0x3F800000},  //0,1
+      {0xBF800000, 0xBF800000, 0, POS_ZERO_F32},
+      {0xBF800000, 0xBF800000, 0, NEG_ZERO_F32},
+      {0x3F800000,POS_ZERO_F32, 0, POS_ZERO_F32},
+      {0x3F800000,NEG_ZERO_F32, 0, NEG_ZERO_F32},
+      {0x3F800000,NEG_INF_F32, 0, NEG_INF_F32},
+      {0xBF800000,NEG_INF_F32, 0, NEG_INF_F32},
+      {0x3F800000, 0x3F800000, 0, POS_INF_F32},
+      {0xBF800000, 0xBF800000, 0, POS_INF_F32},
+      {POS_INF_F32,0x3F800000, 0, 0x3F800000},
+      {NEG_INF_F32, NEG_INF_F32, 0, 0xBF800000},
+      {POS_INF_F32,NEG_INF_F32, 0, NEG_INF_F32},
+      {NEG_INF_F32,NEG_INF_F32, 0, NEG_INF_F32},
+      {POS_INF_F32,POS_INF_F32, 0, POS_INF_F32},
+      {NEG_INF_F32, NEG_INF_F32, 0, POS_INF_F32},
+      {POS_SNAN_F32, POS_SNAN_F32, FE_INVALID, POS_SNAN_F32},  //
+      {NEG_SNAN_F32, NEG_SNAN_F32, FE_INVALID, POS_SNAN_F32},  //
+      {POS_SNAN_F32, POS_SNAN_F32, FE_INVALID, NEG_SNAN_F32},  //
+      {NEG_SNAN_F32, NEG_SNAN_F32, FE_INVALID, NEG_SNAN_F32},  //
+      {0x96421590, 0x96421590, 0, 0x7EEBE575},
+      {0x7EEBE575, 0x16421590, 0, 0x16421590},
+      {0x164243a1, 0x16421590, 0, 0x16421590},
+      {0x71EBD596, 0x69EAD497, 0, 0x69EAD497},
+};
+
 //R.obtained=FN_PROTOTYPE(fmin)(P1.input, P2.input)
 //double,double,double,ExcFlags
-//P1 P2 R E
+//P1 R E P2
 //unsigned long long int|double, unsigned long long int|double, unsigned  long long int|double,ExcFlags|ExcFlags
 //R.V3[j] = fmin(P1.V3[j],P2.V3[j])
 //double double double ExcFlags

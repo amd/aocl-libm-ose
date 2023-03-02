@@ -109,9 +109,9 @@
 ### Building with Intel Math (SVML,IMF) Libraries
   To build tests to exercise Intel math libraries
 
-  Add the intel library path to PATH variable.
+  Add the intel library path to INTEL_LIB_PATH variable.
 
-  $ export PATH=<path to intel shared libraries>:$PATH;
+  $ export INTEL_LIB_PATH=<path to intel shared libraries>
   then,
   $ scons --libabi=svml;
   Add intel lib path to LD_LIBRARY_PATH;

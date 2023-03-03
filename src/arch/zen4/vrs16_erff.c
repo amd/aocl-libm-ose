@@ -56,15 +56,15 @@
 #include <libm/arch/zen4.h>
 
 static const struct {
-    v_f32x8_t   bound;
+    v_f32x16_t  bound;
     v_u32x16_t  mask;
-    v_u32x8_t   one;
+    v_u32x16_t  one;
     uint32_t    u0p8, u2p2, u2p85, u3p35, ubound, u1p6, u1p1;
     v_f64x8_t   poly[16], poly_upper[5], poly_2p85to3p35[5], poly_2p2to2p85[6],
                 poly_0p8to1p1[5], poly_1p1to1p6[6],poly_lower[5], poly_1p6to2p2[6];
 } v_erff_data = {
               .mask        =  _MM512_SET1_U32x16(0x7FFFFFFFU),
-              .one         =  _MM256_SET1_I32(0x3f800000U),
+              .one         =  _MM512_SET1_U32x16(0x3f800000U),
               .u0p8        =  0x3F4CCCCD,
               .u2p2        =  0x400CCCCD,
               .u1p6        =  0x3FCCCCCD,
@@ -72,7 +72,7 @@ static const struct {
               .u2p85       =  0x40366666,
               .u3p35       =  0x40566666,
               .ubound      =  0x407AD447,
-              .bound       =  _MM256_SET1_PS8(0x1.f5a88ep1f),
+              .bound       =  _MM512_SET1_PS16(0x1.f5a88ep1f),
 
              // Polynomial coefficients obtained using Remez algorithm
 
@@ -95,7 +95,7 @@ static const struct {
                             _MM512_SET1_PD8(0x1.c6a4181da4ef76f22bd39bb5dcp-25),
               },
 
-            .poly_lower = {
+              .poly_lower = {
                             _MM512_SET1_PD8(0x1.20dd7279852d20bae6293720f14p0),
                             _MM512_SET1_PD8(-0x1.81243af5b5c54b0958e8db62664p-2),
                             _MM512_SET1_PD8(0x1.cd9759622bccb1ad8309b733b34p-4),
@@ -103,33 +103,33 @@ static const struct {
                             _MM512_SET1_PD8(0x1.0836f5b874583d1db146de5e3ecp-8),
               },
 
-            .poly_0p8to1p1 = {
+              .poly_0p8to1p1 = {
                             _MM512_SET1_PD8(0x1.1abfcc1af4cd7f215ca6bd8a168p0),
                             _MM512_SET1_PD8(0x1.13a805beaf4883ac4e360adfdb8p-3),
                             _MM512_SET1_PD8(-0x1.5bcdf1cb5caa6b8ebe28fd3fa24p-1),
                             _MM512_SET1_PD8(0x1.574e13b89f4ec23aa52542d3b28p-2),
                             _MM512_SET1_PD8(-0x1.acc348ec49e2dcdceee392cab78p-5),
-            },
+              },
 
-            .poly_1p1to1p6 = {
+              .poly_1p1to1p6 = {
                             _MM512_SET1_PD8(0x1.0f968e94fb7b2279e4eafb4b62cp0),
                             _MM512_SET1_PD8(0x1.3fb8db3fc664509c4e2bf4b0658p-2),
                             _MM512_SET1_PD8(-0x1.ee5532daa8f8512ef6fd14e59bcp-1),
                             _MM512_SET1_PD8(0x1.1fc6442863d1bca9a3b6c03347p-1),
                             _MM512_SET1_PD8(-0x1.1ee27db8b7d842bac8a0d5fdc48p-3),
                             _MM512_SET1_PD8(0x1.acf02b0a0ea2a8140e6a977ebfcp-7),
-            },
- 
-            .poly_1p6to2p2 = {
+              },
+
+              .poly_1p6to2p2 = {
                             _MM512_SET1_PD8(0x1.22d221489d624aa5523733865dp0),
                             _MM512_SET1_PD8(0x1.d7a49c8f0306987727478abb198p-4),
                             _MM512_SET1_PD8(-0x1.8757236070ea53394d1d6a52194p-1),
                             _MM512_SET1_PD8(0x1.dabf372d8e15bee97cad5ea4f8p-2),
                             _MM512_SET1_PD8(-0x1.e1c154247566b869c5488bda2bcp-4),
                             _MM512_SET1_PD8(0x1.7244c1e7f7e139524ce49f615acp-7),
-             },
+              },
 
-            .poly_2p2to2p85 = {
+              .poly_2p2to2p85 = {
                             _MM512_SET1_PD8(0x1.aacd34384ec3af14f882486d01cp0),
                             _MM512_SET1_PD8(-0x1.18ac56e96aba8abddfab7dd104cp0),
                             _MM512_SET1_PD8(0x1.61e9777b93cf4870cf450ec3fe4p-2),
@@ -138,22 +138,21 @@ static const struct {
                             _MM512_SET1_PD8(0x1.7f01e5c1a867dcd1edded96bd38p-12),
               },
 
-            .poly_2p85to3p35 = {
+              .poly_2p85to3p35 = {
                             _MM512_SET1_PD8(0x1.95ba342ce2475d69aa502f92744p0),
                             _MM512_SET1_PD8(-0x1.018e7e574815f4d72fb88a661b4p0),
                             _MM512_SET1_PD8(0x1.4758086212787a68d23a74f5dap-2),
                             _MM512_SET1_PD8(-0x1.a062b81875e9b8b426eded26c54p-5),
                             _MM512_SET1_PD8(0x1.a7fbdc59fad76aec356f4bfe11cp-9),
-            },
+              },
 
-            .poly_upper = {
-
+              .poly_upper = {
                            _MM512_SET1_PD8(0x1.60a6516b34c64cb4a9d93a01658p0),
                            _MM512_SET1_PD8(-0x1.84637afb18dc950d3e7faf70dbcp-1),
                            _MM512_SET1_PD8(0x1.ab79e6bcc5c0ab5509263eaa7p-3),
                            _MM512_SET1_PD8(-0x1.d630d604604ed7695a3938a306p-6),
                            _MM512_SET1_PD8(0x1.9d76f035a49dec452a1c1f94824p-10),
-             },
+              },
 
 };
 
@@ -198,7 +197,6 @@ static const struct {
 #define C3   v_erff_data.poly_2p85to3p35[2]
 #define C4   v_erff_data.poly_2p85to3p35[3]
 #define C5   v_erff_data.poly_2p85to3p35[4]
-
 #define D1   v_erff_data.poly_2p2to2p85[0]
 #define D2   v_erff_data.poly_2p2to2p85[1]
 #define D3   v_erff_data.poly_2p2to2p85[2]
@@ -243,39 +241,16 @@ ALM_PROTO_ARCH_ZN4(vrs16_erff)(v_f32x16_t _x) {
 
     /* x now contains only positive values */
 
-    /* vectorized code to find max values */
+    uint32_t uxmax = asuint32(_mm512_reduce_max_ps(x));
 
-    v_f32x16_t x2 = _mm512_permute_ps(x, _MM_SHUFFLE(1, 0, 3, 2));
-    v_f32x16_t x3 = _mm512_max_ps(x, x2);
-    v_f32x16_t x4 = _mm512_permute_ps(x3, _MM_SHUFFLE(2, 3, 0, 1));
-    v_f32x16_t x5 = _mm512_max_ps(x3, x4);
-    
-    v_f32x4_t x50 = _mm512_extractf32x4_ps(x5, 0);
-    v_f32x4_t x51 = _mm512_extractf32x4_ps(x5, 1);
-    v_f32x4_t x52 = _mm512_extractf32x4_ps(x5, 2);
-    v_f32x4_t x53 = _mm512_extractf32x4_ps(x5, 3);
+    v_f32x16_t result = _mm512_set1_ps(0.0f);;
 
-    v_f32x4_t x6 = _mm_max_ps(x50, x51);
-    v_f32x4_t x7 = _mm_max_ps(x52, x53);
-    v_f32x4_t x8 = _mm_max_ps(x6, x7);
-    
-    uint32_t uxmax = asuint32(x8[0]);
-
-    v_f32x16_t result;
-    
-    v_f32x4_t _y1a = _mm512_extractf32x4_ps(x, 0);
-    v_f32x4_t _y1b = _mm512_extractf32x4_ps(x, 1);
-    v_f32x4_t _y2a = _mm512_extractf32x4_ps(x, 2);
-    v_f32x4_t _y2b = _mm512_extractf32x4_ps(x, 3);
-
-    v_f32x8_t _y1 = _mm256_castps128_ps256(_y1a);
-    _y1 = _mm256_insertf128_ps(_y1,_y1b,1);
-    v_f32x8_t _y2 = _mm256_castps128_ps256(_y2a);
-    _y2 = _mm256_insertf128_ps(_y2,_y2b,1);
+    v_f32x8_t _y1 = _mm512_extractf32x8_ps(x, 0);
+    v_f32x8_t _y2 = _mm512_extractf32x8_ps(x, 1);
 
     v_f64x8_t _y1d = _mm512_cvtps_pd(_y1);
     v_f64x8_t _y2d = _mm512_cvtps_pd(_y2);
-    
+
     v_f32x8_t _y1s, _y2s;
 
     if (uxmax <= U0P8) {
@@ -289,29 +264,15 @@ ALM_PROTO_ARCH_ZN4(vrs16_erff)(v_f32x16_t _x) {
         _y1s = _mm512_cvtpd_ps(_y1d);
         _y2s = _mm512_cvtpd_ps(_y2d);
 
-        result = _x * _mm512_setr_ps(_y1s[0], _y1s[1], _y1s[2], _y1s[3],
-                                     _y1s[4], _y1s[5], _y1s[6], _y1s[7],
-                                     _y2s[0], _y2s[1], _y2s[2], _y2s[3],
-                                     _y2s[4], _y2s[5], _y2s[6], _y2s[7]);
+        result = _mm512_insertf32x8(result, _y1s, 0);
+        result = _mm512_insertf32x8(result, _y2s, 1);
+        result = _x * result;
         return result;
     }
-    
+
     /* Need to find min too now */
 
-    x3 = _mm512_min_ps(x, x2);
-    x4 = _mm512_permute_ps(x3, _MM_SHUFFLE(2, 3, 0, 1));
-    x5 = _mm512_min_ps(x3, x4);
-
-    x50 = _mm512_extractf32x4_ps(x5, 0);
-    x51 = _mm512_extractf32x4_ps(x5, 1);
-    x52 = _mm512_extractf32x4_ps(x5, 2);
-    x53 = _mm512_extractf32x4_ps(x5, 3);
-
-    x6 = _mm_min_ps(x50, x51);
-    x7 = _mm_min_ps(x52, x53);
-    x8 = _mm_min_ps(x6, x7);
-    
-    uint32_t uxmin = asuint32(x8[0]);
+    uint32_t uxmin = asuint32(_mm512_reduce_min_ps(x));
 
     v_u32x16_t sign;
 
@@ -323,10 +284,9 @@ ALM_PROTO_ARCH_ZN4(vrs16_erff)(v_f32x16_t _x) {
         _y1s = _mm512_cvtpd_ps(_y1d);
         _y2s = _mm512_cvtpd_ps(_y2d);
 
-        result = _x * _mm512_setr_ps(_y1s[0], _y1s[1], _y1s[2], _y1s[3],
-                                     _y1s[4], _y1s[5], _y1s[6], _y1s[7],
-                                     _y2s[0], _y2s[1], _y2s[2], _y2s[3],
-                                     _y2s[4], _y2s[5], _y2s[6], _y2s[7]);
+        result = _mm512_insertf32x8(result, _y1s, 0);
+        result = _mm512_insertf32x8(result, _y2s, 1);
+        result = _x * result;
         return result;
 
     } else if (uxmin > U1P1 && uxmax <= U1P6) {
@@ -335,12 +295,11 @@ ALM_PROTO_ARCH_ZN4(vrs16_erff)(v_f32x16_t _x) {
         _y2d = POLY_EVAL_HORNER_6(_y2d, F1, F2, F3, F4, F5, F6);
 
         _y1s = _mm512_cvtpd_ps(_y1d);
-        _y2s = _mm512_cvtpd_ps(_y2d);
+	_y2s = _mm512_cvtpd_ps(_y2d);
 
-        result = _x * _mm512_setr_ps(_y1s[0], _y1s[1], _y1s[2], _y1s[3],
-                                     _y1s[4], _y1s[5], _y1s[6], _y1s[7],
-                                     _y2s[0], _y2s[1], _y2s[2], _y2s[3],
-                                     _y2s[4], _y2s[5], _y2s[6], _y2s[7]);
+        result = _mm512_insertf32x8(result, _y1s, 0);
+        result = _mm512_insertf32x8(result, _y2s, 1);
+        result = _x * result;
         return result;
 
     } else if (uxmin > U1P6 && uxmax <= U2P2) {
@@ -353,10 +312,8 @@ ALM_PROTO_ARCH_ZN4(vrs16_erff)(v_f32x16_t _x) {
         _y1s = _mm512_cvtpd_ps(_y1d);
         _y2s = _mm512_cvtpd_ps(_y2d);
 
-        result = _mm512_setr_ps(_y1s[0], _y1s[1], _y1s[2], _y1s[3],
-                                _y1s[4], _y1s[5], _y1s[6], _y1s[7],
-                                _y2s[0], _y2s[1], _y2s[2], _y2s[3],
-                                _y2s[4], _y2s[5], _y2s[6], _y2s[7]);
+        result = _mm512_insertf32x8(result, _y1s, 0);
+        result = _mm512_insertf32x8(result, _y2s, 1);
 
         result = as_v16_f32_u32(sign | as_v16_u32_f32(result));
 
@@ -370,10 +327,9 @@ ALM_PROTO_ARCH_ZN4(vrs16_erff)(v_f32x16_t _x) {
         _y1s = _mm512_cvtpd_ps(_y1d);
         _y2s = _mm512_cvtpd_ps(_y2d);
 
-        result = _x * _mm512_setr_ps(_y1s[0], _y1s[1], _y1s[2], _y1s[3],
-                                     _y1s[4], _y1s[5], _y1s[6], _y1s[7],
-                                     _y2s[0], _y2s[1], _y2s[2], _y2s[3],
-                                     _y2s[4], _y2s[5], _y2s[6], _y2s[7]);
+        result = _mm512_insertf32x8(result, _y1s, 0);
+        result = _mm512_insertf32x8(result, _y2s, 1);
+        result = _x * result;
         return result;
 
     } else if (uxmin > U2P85 && uxmax <= U3P35) {
@@ -384,26 +340,23 @@ ALM_PROTO_ARCH_ZN4(vrs16_erff)(v_f32x16_t _x) {
         _y1s = _mm512_cvtpd_ps(_y1d);
         _y2s = _mm512_cvtpd_ps(_y2d);
 
-        result = _x * _mm512_setr_ps(_y1s[0], _y1s[1], _y1s[2], _y1s[3],
-                                     _y1s[4], _y1s[5], _y1s[6], _y1s[7],
-                                     _y2s[0], _y2s[1], _y2s[2], _y2s[3],
-                                     _y2s[4], _y2s[5], _y2s[6], _y2s[7]);
+        result = _mm512_insertf32x8(result, _y1s, 0);
+        result = _mm512_insertf32x8(result, _y2s, 1);
+        result = _x * result;
         return result;
 
     } else if (uxmin > U3P35){
 
         sign =  as_v16_u32_f32(_x) & ~MASK;
-        
+
         _y1d = POLY_EVAL_HORNER_5_0(_y1d, B1, B2, B3, B4, B5);
         _y2d = POLY_EVAL_HORNER_5_0(_y2d, B1, B2, B3, B4, B5);
 
         _y1s = _mm512_cvtpd_ps(_y1d);
         _y2s = _mm512_cvtpd_ps(_y2d);
 
-        result = _mm512_setr_ps(_y1s[0], _y1s[1], _y1s[2], _y1s[3],
-                                _y1s[4], _y1s[5], _y1s[6], _y1s[7],
-                                _y2s[0], _y2s[1], _y2s[2], _y2s[3],
-                                _y2s[4], _y2s[5], _y2s[6], _y2s[7]);
+        result = _mm512_insertf32x8(result, _y1s, 0);
+        result = _mm512_insertf32x8(result, _y2s, 1);
 
         result = as_v16_f32_u32(sign | as_v16_u32_f32(result));
 
@@ -417,10 +370,8 @@ ALM_PROTO_ARCH_ZN4(vrs16_erff)(v_f32x16_t _x) {
         _y1s = _mm512_cvtpd_ps(_y1d);
         _y2s = _mm512_cvtpd_ps(_y2d);
 
-        result = _mm512_setr_ps(_y1s[0], _y1s[1], _y1s[2], _y1s[3],
-                                _y1s[4], _y1s[5], _y1s[6], _y1s[7],
-                                _y2s[0], _y2s[1], _y2s[2], _y2s[3],
-                                _y2s[4], _y2s[5], _y2s[6], _y2s[7]);
+        result = _mm512_insertf32x8(result, _y1s, 0);
+        result = _mm512_insertf32x8(result, _y2s, 1);
 
         result = as_v16_f32_u32(sign | as_v16_u32_f32(result));
     }
@@ -429,28 +380,11 @@ ALM_PROTO_ARCH_ZN4(vrs16_erff)(v_f32x16_t _x) {
 
         /* Vectorized ternary operator to check for values that should be rounded to 1.0 */
 
-        v_f32x8_t masky1 = _mm256_cmp_ps(BOUND, _y1, _CMP_LT_OQ);
-        v_f32x8_t masky2 = _mm256_cmp_ps(BOUND, _y2, _CMP_LT_OQ);
+        __mmask16 mask = _mm512_cmp_ps_mask(BOUND, x, _CMP_LT_OQ);
 
-        v_f32x8_t fONE = as_v8_f32_u32(ONE);
+        v_f32x16_t fONE = as_v16_f32_u32(ONE);
 
-        v_f32x4_t res1a = _mm512_extractf32x4_ps(result, 0);
-        v_f32x4_t res1b = _mm512_extractf32x4_ps(result, 1);
-        v_f32x4_t res2a = _mm512_extractf32x4_ps(result, 2);
-        v_f32x4_t res2b = _mm512_extractf32x4_ps(result, 3);
-
-        v_f32x8_t result1 = _mm256_castps128_ps256(res1a);
-        result1 = _mm256_insertf128_ps(result1,res1b,1);
-        v_f32x8_t result2 = _mm256_castps128_ps256(res2a);
-        result2 = _mm256_insertf128_ps(result2,res2b,1);
-
-        result1 = _mm256_blendv_ps(result1, fONE, masky1);
-        result2 = _mm256_blendv_ps(result2, fONE, masky2);
-
-        result = _mm512_setr_ps(result1[0], result1[1], result1[2], result1[3],
-                                result1[4], result1[5], result1[6], result1[7],
-                                result2[0], result2[1], result2[2], result2[3],
-                                result2[4], result2[5], result2[6], result2[7]);
+        result = _mm512_mask_blend_ps(mask, result, fONE);
 
         result = as_v16_f32_u32(sign | as_v16_u32_f32(result));
     }
@@ -458,5 +392,3 @@ ALM_PROTO_ARCH_ZN4(vrs16_erff)(v_f32x16_t _x) {
     return result;
 
 }
-
-

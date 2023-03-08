@@ -28,7 +28,6 @@
 #include "libm_dynamic_load.h"
 
 int test_nan(void* handle) {
-    char* error;
     const char *input = "0x0";
     float outputf;
     double output;
@@ -37,18 +36,23 @@ int test_nan(void* handle) {
         funcf_nan s1f = (funcf_nan)GetProcAddress(handle, "amd_nanf");
         func_nan  s1d = (func_nan)GetProcAddress(handle, "amd_nan");
 
-        error = GetLastError();
+        long int error = GetLastError();
+
+        if (error != NULL) {
+            printf("Error: %ld\n", error);
+            return 1;
+        }
     #else
         funcf_nan s1f = (funcf_nan)dlsym(handle, "amd_nanf");
         func_nan  s1d = (func_nan)dlsym(handle, "amd_nan");
 
-        error = dlerror();
-    #endif
+        char* error = dlerror();
 
-    if (error != NULL) {
-        printf("Error: %s\n", error);
-        return 1;
-    }
+        if (error != NULL) {
+            printf("Error: %s\n", error);
+            return 1;
+        }
+    #endif
 
     printf("Exercising nan routines\n");
     /*scalar*/

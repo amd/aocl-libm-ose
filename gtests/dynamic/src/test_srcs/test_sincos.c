@@ -28,8 +28,6 @@
 #include "libm_dynamic_load.h"
 
 int test_sincos(void* handle) {
-    char* error;
-
     /*scalar inputs*/
     float inputf = 3.14f;
     double input = 6.28;
@@ -38,18 +36,23 @@ int test_sincos(void* handle) {
         funcf_sincos     s1f = (funcf_sincos)GetProcAddress(handle, "amd_sincosf");
         func_sincos      s1d = (func_sincos)GetProcAddress(handle, "amd_sincos");
 
-        error = GetLastError();
+        long int error = GetLastError();
+
+        if (error != NULL) {
+            printf("Error: %ld\n", error);
+            return 1;
+        }
     #else
         funcf_sincos     s1f = (funcf_sincos)dlsym(handle, "amd_sincosf");
         func_sincos      s1d = (func_sincos)dlsym(handle, "amd_sincos");
 
-        error = dlerror();
-    #endif
+        char* error = dlerror();
 
-    if (error != NULL) {
-        printf("Error: %s\n", error);
-        return 1;
-    }
+        if (error != NULL) {
+            printf("Error: %s\n", error);
+            return 1;
+        }
+    #endif
 
     printf("Exercising sincos routines\n");
     /*scalar*/

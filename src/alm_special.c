@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -29,8 +29,8 @@
 #include <libm/alm_special.h>
 #include <libm/types.h>
 
-#if defined(WIN64)  |  defined(WINDOWS)
-#else               /*  */
+/*#if defined(WIN64) | defined(WINDOWS)
+  #else            */
 static inline void __amd_raise_fp_exc(int flags)
 {
     if ((flags & AMD_F_UNDERFLOW) == AMD_F_UNDERFLOW) {
@@ -39,8 +39,7 @@ static inline void __amd_raise_fp_exc(int flags)
     }
     if ((flags & AMD_F_OVERFLOW) == AMD_F_OVERFLOW) {
         double a = 0x1.fffffffffffffp1023;
-	errno = ERANGE;
-        __asm __volatile("mulsd %1, %0":"+x"(a):"x"(a));
+	__asm __volatile("mulsd %1, %0":"+x"(a):"x"(a));
     }
     if ((flags & AMD_F_DIVBYZERO) == AMD_F_DIVBYZERO) {
         double a = 1.0, b = 0.0;
@@ -69,7 +68,7 @@ float __alm_handle_errorf(uint64_t value, int flags)
     __amd_raise_fp_exc(flags);
     return z;
 }
-#endif
+/*#endif*/
 
 
 double alm_log_special(double y, U32 error_code) {

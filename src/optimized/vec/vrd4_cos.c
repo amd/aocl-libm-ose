@@ -28,7 +28,7 @@
 /*
  * ISO-IEC-10967-2: Elementary Numerical Functions
  * Signature:
- *   v_f64x4_t vrd2_cos(v_f64x4_t x)
+ *   v_f64x4_t amd_vrd4_cos(v_f64x4_t x)
  *
  * Spec:
  *  cos(0)    = 1

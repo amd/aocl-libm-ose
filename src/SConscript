@@ -54,6 +54,8 @@ if env['HOST_OS'] != 'win32':
               ]
     if use_asan == 1:
         ccflags.append('-fsanitize=address')
+    if 'clang' in env['CC']:
+        ccflags.append('-muse-unaligned-vector-move')
 else:
     ccflags = ['-DAVX_XOP_FMA4_FMA3',
                '-DDEBUG=0',

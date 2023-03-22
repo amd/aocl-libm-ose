@@ -90,9 +90,9 @@
   ```
 
 ## Possible future building
-  A fast library, with up to 8 ULP (when available).
+  A fast library, with up to 4 ULP (when available).
   ``` sh
-    $ LD_PRELOAD=/abs/path/amdlibm_fast.so
+    $ LD_PRELOAD=/abs/path/libalmfast.so
   ```
 
 ### Building with glibc compatibility for tests

@@ -142,6 +142,8 @@ EXPORTS
     amd_vrd4_pow
     amd_vrd4_sin
     amd_vrd4_tan
+    amd_vrd4_sincos
+    amd_vrd8_sincos
     amd_vrda_cbrt
     amd_vrda_cos
     amd_vrda_exp

@@ -279,6 +279,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_sin);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_tan);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_atan);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_erf);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_sincos);
 
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_cbrt);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_cos);
@@ -297,6 +298,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_asin);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_tan);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_atan);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_erf);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_sincos);
 
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_expf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_powf);

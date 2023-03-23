@@ -267,6 +267,7 @@ extern "C" {
     __m256d amd_vrd4_sin    (__m256d x);
     __m256d amd_vrd4_cos    (__m256d x);
     __m256d amd_vrd4_tan    (__m256d x);
+    void amd_vrd4_sincos    (__m256d x, __m256d *sin, __m256d *cos);
 
     void amd_vrda_cos       (int len, double *src, double *dst);
     void amd_vrsa_cosf      (int len, float  *src, float  *dst);
@@ -282,6 +283,8 @@ extern "C" {
 
     __m512d amd_vrd8_tan     (__m512d x);
     __m512  amd_vrs16_tanf   (__m512 x);
+
+    void    amd_vrd8_sincos  (__m512d x, __m512d *sin, __m512d *cos);
 
 /* Inverse Trigonometric */
     __m128  amd_vrs4_asinf  (__m128  x);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -248,6 +248,7 @@ LIBM_DECL_FN_MAP(vrd4_cos);
 LIBM_DECL_FN_MAP(vrd4_tan);
 LIBM_DECL_FN_MAP(vrd4_atan);
 LIBM_DECL_FN_MAP(vrd4_erf);
+LIBM_DECL_FN_MAP(vrd4_sincos);
 
 LIBM_DECL_FN_MAP(vrd8_exp2);
 LIBM_DECL_FN_MAP(vrd8_log2);
@@ -260,6 +261,7 @@ LIBM_DECL_FN_MAP(vrd8_cos);
 LIBM_DECL_FN_MAP(vrd8_tan);
 LIBM_DECL_FN_MAP(vrd8_atan);
 LIBM_DECL_FN_MAP(vrd8_erf);
+LIBM_DECL_FN_MAP(vrd8_sincos);
 
 LIBM_DECL_FN_MAP(vrs16_cosf);
 LIBM_DECL_FN_MAP(vrs16_acosf);
@@ -364,6 +366,7 @@ WEAK_LIBM_ALIAS(vrd4_atan, FN_PROTOTYPE(vrd4_atan));
 WEAK_LIBM_ALIAS(vrd4_cos, FN_PROTOTYPE(vrd4_cos));
 WEAK_LIBM_ALIAS(vrd4_tan, FN_PROTOTYPE(vrd4_tan));
 WEAK_LIBM_ALIAS(vrd4_erf, FN_PROTOTYPE(vrd4_erf));
+WEAK_LIBM_ALIAS(vrd4_sincos, FN_PROTOTYPE(vrd4_sincos));
 
 WEAK_LIBM_ALIAS(vrd8_exp, FN_PROTOTYPE(vrd8_exp));
 WEAK_LIBM_ALIAS(vrd8_pow, FN_PROTOTYPE(vrd8_pow));
@@ -376,6 +379,7 @@ WEAK_LIBM_ALIAS(vrd8_sin, FN_PROTOTYPE(vrd8_sin));
 WEAK_LIBM_ALIAS(vrd8_asin, FN_PROTOTYPE(vrd8_asin));
 WEAK_LIBM_ALIAS(vrd8_cos, FN_PROTOTYPE(vrd8_cos));
 WEAK_LIBM_ALIAS(vrd8_erf, FN_PROTOTYPE(vrd8_erf));
+WEAK_LIBM_ALIAS(vrd8_sincos, FN_PROTOTYPE(vrd8_sincos));
 
 WEAK_LIBM_ALIAS(vrs16_powf, FN_PROTOTYPE(vrs16_powf));
 WEAK_LIBM_ALIAS(vrs16_erff, FN_PROTOTYPE(vrs16_erff));

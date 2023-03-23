@@ -1,6 +1,5 @@
-
 /*
-  * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+  * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
   *
   * Redistribution and use in source and binary forms, with or without modification,
   *  are permitted provided that the following conditions are met:
@@ -266,6 +265,7 @@ __m256d FN_PROTOTYPE(vrd4_tan)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_atan)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_pow)(__m256d x, __m256d y);
 __m256d FN_PROTOTYPE(vrd4_erf)(__m256d x);
+  void  FN_PROTOTYPE(vrd4_sincos)(__m256d x, __m256d *sin, __m256d *cos);
 
 __m128 FN_PROTOTYPE(vrs4_erff)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_expf)(__m128 x);

@@ -296,6 +296,7 @@ extern __m256d   ALM_PROTO_INTERNAL(vrd4_sin)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_tan)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_atan)     (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_erf)      (__m256d x);
+extern void      ALM_PROTO_INTERNAL(vrd4_sincos)   (__m256d x, __m256d *s, __m256d *c);
 
 /*
  * Vector double precision, 8 elements
@@ -317,6 +318,7 @@ extern __m512d   ALM_PROTO_INTERNAL(vrd8_asin)     (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_tan)      (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_atan)     (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_erf)      (__m512d x);
+extern void      ALM_PROTO_INTERNAL(vrd8_sincos)   (__m512d x, __m512d *s, __m512d *c);
 
 
 extern void      ALM_PROTO_INTERNAL(sincos)        (double x, double *s, double *c);

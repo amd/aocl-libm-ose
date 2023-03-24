@@ -30,7 +30,7 @@ Highlights of AOCL LibM version 4.0.1
     * Added support for latest VS2022 on windows
     * Corrected few function signatures in the header
     * Corrected the name of the fast library and the size of the maximum error
-    * Improvements to erff using AVX512dq intrinsics
+    * 20% improvement in the performance of erff by using AVX512dq intrinsics
     * Added new vrd4 and vrd8 versions of sincos
     * Bugs resolved/closed: CPUPL-3079, CPUPL-3047, CPUPL-3061, CPUPL-3048, CPUPL-1792, CPUPL-1820
 

@@ -17,20 +17,26 @@ performance.
 
 Highlights of AOCL LibM version 4.0.1
 -------------------------------------
-    * Issue fixed so that static library detects Zen architecture on windows
-    * Optimized scalar variant of remainder
-    * Added AVX512 vector variant of erff
-        * vrs16_erff
-    * 11% performance improvement for exp2 function
-    * Exception now correctly raised for pow and powf functions
-    * Fixed compilation error when libabi=glibc for erf tests
-    * Modified to successfully build with "--arch_config=avx512 --libabi=glibc gtests"
-      options
-    * Corrected multiple typos
+    * Corrected "Optimized" directory typo
+    * Updated examples README doc with corrected build steps
+    * Enabled mpfr variant of fmin and fminf functions
+    * Optimized scalar variant of fmin and fminf functions. Observing ~10% perf improvement
+      on windows and ~5% improvement on linux platform
+    * Added fmin and fminf functions in gtests and examples
+    * Corrected build steps when ASAN is needed on linux platform
+    * Added AVX512 version of double-precision erf() in src, gtests and examples
+    * Resolved issue with GetLastError() function on windows
+    * Added support for Clang-15/Clang-16 on windows and GCC-12.2.0 on linux
+    * Added support for latest VS2022 on windows
+    * Corrected few function signatures in the header
+    * Corrected the name of the fast library and the size of the maximum error
+    * Improvements to erff using AVX512dq intrinsics
+    * Added new vrd4 and vrd8 versions of sincos
+    * Bugs resolved/closed: CPUPL-3079, CPUPL-3047, CPUPL-3061, CPUPL-3048, CPUPL-1792, CPUPL-1820
 
 Known Issues
 ------------
-   * fastpow() - Maximum ULP error is 10.
+    * fastpow() - Maximum ULP error is 10.
 
 Version 4.0.1 Contents
 ----------------------
@@ -61,7 +67,7 @@ available vector functions is given below. All functions have an 'amd_' prefix.
  -------------
     * vrs4_cosf, vrs4_sinf
     * vrsa_cosf, vrsa_sinf
-    * vrd2_cos, vrd2_sin, vrd2_cosh, vrd2_sincos
+    * vrd2_cos, vrd2_sin, vrd2_cosh, vrd2_sincos, vrd4_sincos, vrd8_sincos
     * vrda_cos, vrda_sin
 
  Hyperbolic
@@ -78,7 +84,7 @@ available vector functions is given below. All functions have an 'amd_' prefix.
  Error
  -----
     * vrs4_erff, vrs8_erff, vrs16_erff
-    * vrd2_erf, vrd4_erf
+    * vrd2_erf, vrd4_erf, vrd8_erf
 
 The scalar functions listed below are present in the library. They
 all have an 'amd_' prefix.

@@ -30,6 +30,7 @@
 #define __ALMSTRUCT_H__
 
 #include "defs.h"
+#include <cstdint>
 
 using namespace ALM;
 #define MAX_INPUT_RANGES 2

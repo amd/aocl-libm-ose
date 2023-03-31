@@ -192,6 +192,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrda_log1p);
 alm_func_t        G_ENTRY_PT_PTR(vrda_log2);
 alm_func_t        G_ENTRY_PT_PTR(vrda_pow);
 alm_func_t        G_ENTRY_PT_PTR(vrda_sin);
+alm_func_t        G_ENTRY_PT_PTR(vrda_add);
 
 
 alm_func_t        G_ENTRY_PT_PTR(vrsa_cosf);
@@ -206,6 +207,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrsa_cbrtf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_log10f);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_logf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_powf);
+alm_func_t        G_ENTRY_PT_PTR(vrsa_addf);
 
 
 

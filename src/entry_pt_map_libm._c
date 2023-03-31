@@ -162,3 +162,6 @@ WEAK_LIBM_ALIAS(cpow, FN_PROTOTYPE(cpow));
 WEAK_LIBM_ALIAS(cpowf, FN_PROTOTYPE(cpowf));
 WEAK_LIBM_ALIAS(clog, FN_PROTOTYPE(clog));
 WEAK_LIBM_ALIAS(clogf, FN_PROTOTYPE(clogf));
+WEAK_LIBM_ALIAS(vrsa_addf, FN_PROTOTYPE(vrsa_addf));
+WEAK_LIBM_ALIAS(vrda_add, FN_PROTOTYPE(vrda_add));
+

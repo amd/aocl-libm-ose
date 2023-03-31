@@ -326,6 +326,7 @@ LIBM_DECL_FN_MAP(vrda_log2);
 LIBM_DECL_FN_MAP(vrda_log);
 LIBM_DECL_FN_MAP(vrda_pow);
 LIBM_DECL_FN_MAP(vrda_sin);
+LIBM_DECL_FN_MAP(vrda_add);
 
 LIBM_DECL_FN_MAP(vrsa_cbrtf);
 LIBM_DECL_FN_MAP(vrsa_cosf);
@@ -339,6 +340,7 @@ LIBM_DECL_FN_MAP(vrsa_log2f);
 LIBM_DECL_FN_MAP(vrsa_logf);
 LIBM_DECL_FN_MAP(vrsa_sinf);
 LIBM_DECL_FN_MAP(vrsa_powf);
+LIBM_DECL_FN_MAP(vrsa_addf);
 
 WEAK_LIBM_ALIAS(vrd2_cbrt, FN_PROTOTYPE(vrd2_cbrt));
 WEAK_LIBM_ALIAS(vrd2_cos, FN_PROTOTYPE(vrd2_cos));
@@ -440,6 +442,7 @@ WEAK_LIBM_ALIAS(vrda_log10, FN_PROTOTYPE(vrda_log10));
 WEAK_LIBM_ALIAS(vrda_log1p, FN_PROTOTYPE(vrda_log1p));
 WEAK_LIBM_ALIAS(vrda_log2, FN_PROTOTYPE(vrda_log2));
 WEAK_LIBM_ALIAS(vrda_sin, FN_PROTOTYPE(vrda_sin));
+WEAK_LIBM_ALIAS(vrda_add, FN_PROTOTYPE(vrda_add));
 
 WEAK_LIBM_ALIAS(vrsa_cbrtf, FN_PROTOTYPE(vrsa_cbrtf));
 WEAK_LIBM_ALIAS(vrsa_cosf, FN_PROTOTYPE(vrsa_cosf));
@@ -453,6 +456,7 @@ WEAK_LIBM_ALIAS(vrsa_log2f, FN_PROTOTYPE(vrsa_log2f));
 WEAK_LIBM_ALIAS(vrsa_logf, FN_PROTOTYPE(vrsa_logf));
 WEAK_LIBM_ALIAS(vrsa_sinf, FN_PROTOTYPE(vrsa_sinf));
 WEAK_LIBM_ALIAS(vrsa_powf, FN_PROTOTYPE(vrsa_powf));
+WEAK_LIBM_ALIAS(vrsa_addf, FN_PROTOTYPE(vrsa_addf));
 
 /*
  * Some aliases required by NAG tests

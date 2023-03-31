@@ -239,4 +239,6 @@ EXPORTS
     amd_vrd2_erf
     amd_vrd4_erf
     amd_vrd8_erf
+    amd_vrsa_addf
+    amd_vrda_add
     alm_main

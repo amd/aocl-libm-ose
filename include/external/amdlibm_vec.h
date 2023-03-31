@@ -178,6 +178,12 @@ agreements with respect to the subject matter of this Agreement.
 extern "C" {
 #endif
 
+ /* Arithmetic */
+
+    /* array vector variants */
+    void amd_vrsa_addf      (int len, float *lhs, float *rhs, float *dst);
+    void amd_vrda_add       (int len, double *lhs, double *rhs, double *dst);
+
  /* Exponential */
 
     __m128d amd_vrd2_exp    (__m128d x);
@@ -212,7 +218,6 @@ extern "C" {
     void amd_vrsa_exp10f    (int len, float  *src, float  *dst);
     void amd_vrda_expm1     (int len, double *src, double *dst);
     void amd_vrsa_expm1f    (int len, float  *src, float  *dst);
-
 
  /* Logarithmic */
 

@@ -88,6 +88,9 @@
    Default is static linking.
     --cpuid_link_static=1
 
+## To build tests with microsoft default math library (for static functions using math.h
+   library and for vector functions using DirectXMath.h library) compatibility api, use following flag
+    --libabi=msvc
 
 ## To run the tests
     To run the AOCL LibM test framework.

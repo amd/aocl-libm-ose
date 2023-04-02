@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -52,12 +52,12 @@ uint32_t GetnIpArgs( void )
 
 void ConfSetupf32(SpecParams *specp) {
   specp->data32 = test_remainderf_conformance_data;
-  specp->countf = ARRAY_SIZE(test_remainderf_conformance_data); 
+  specp->countf = ARRAY_SIZE(test_remainderf_conformance_data);
 }
 
 void ConfSetupf64(SpecParams *specp) {
   specp->data64 = test_remainder_conformance_data;
-  specp->countd = ARRAY_SIZE(test_remainder_conformance_data); 
+  specp->countd = ARRAY_SIZE(test_remainder_conformance_data);
 }
 
 float getFuncOp(float *data) {
@@ -68,13 +68,13 @@ double getFuncOp(double *data) {
   return LIBM_FUNC(remainder)(data[0], data[1]);
 }
 
-double getExpected(float *data) {  
+double getExpected(float *data) {
   auto val = alm_mp_remainderf(data[0], data[1]);
   return val;
 }
 
 long double getExpected(double *data) {
-  auto val = alm_mp_remainder(data[0], data[1]);  
+  auto val = alm_mp_remainder(data[0], data[1]);
   return val;
 }
 
@@ -100,7 +100,7 @@ int test_s1s(test_data *data, int idx)  {
 int test_s1d(test_data *data, int idx)  {
   double *ip1  = (double*)data->ip;
   double *ip2 = (double*)data->ip1;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   op[0] = LIBM_FUNC(remainder)(ip1[idx], ip2[idx]);
   return 0;
 }

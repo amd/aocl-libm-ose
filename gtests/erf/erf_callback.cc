@@ -52,12 +52,12 @@ uint32_t GetnIpArgs( void )
 
 void ConfSetupf32(SpecParams *specp) {
   specp->data32 = test_erff_conformance_data;
-  specp->countf = ARRAY_SIZE(test_erff_conformance_data); 
+  specp->countf = ARRAY_SIZE(test_erff_conformance_data);
 }
 
 void ConfSetupf64(SpecParams *specp) {
   specp->data64 = test_erf_conformance_data;
-  specp->countd = ARRAY_SIZE(test_erf_conformance_data); 
+  specp->countd = ARRAY_SIZE(test_erf_conformance_data);
 }
 
 float getFuncOp(float *data) {
@@ -109,16 +109,16 @@ extern "C" {
 
 /*vector routines, glibc doesnt have these */
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
-__m128 LIBM_FUNC_VEC(s, 4, erff)(__m128);
-__m256 LIBM_FUNC_VEC(s, 8, erff)(__m256);
-__m128d LIBM_FUNC_VEC(d, 2, erf)(__m128d);
-__m256d LIBM_FUNC_VEC(d, 4, erf)(__m256d);
-#endif
+  __m128 LIBM_FUNC_VEC(s, 4, erff)(__m128);
+  __m256 LIBM_FUNC_VEC(s, 8, erff)(__m256);
+  __m128d LIBM_FUNC_VEC(d, 2, erf)(__m128d);
+  __m256d LIBM_FUNC_VEC(d, 4, erf)(__m256d);
 
-/*avx512*/
-#if defined(__AVX512__)
-__m512d LIBM_FUNC_VEC(d, 8, erf) (__m512d);
-__m512 LIBM_FUNC_VEC(s, 16, erff) (__m512);
+  /*avx512*/
+  #if defined(__AVX512__)
+    __m512d LIBM_FUNC_VEC(d, 8, erf) (__m512d);
+    __m512 LIBM_FUNC_VEC(s, 16, erff) (__m512);
+  #endif
 #endif
 
 int test_v2d(test_data *data, int idx)  {

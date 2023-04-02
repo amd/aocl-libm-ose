@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -52,12 +52,12 @@ uint32_t GetnIpArgs( void )
 
 void ConfSetupf32(SpecParams *specp) {
   specp->data32 = test_acoshf_conformance_data;
-  specp->countf = ARRAY_SIZE(test_acoshf_conformance_data); 
+  specp->countf = ARRAY_SIZE(test_acoshf_conformance_data);
 }
 
 void ConfSetupf64(SpecParams *specp) {
   specp->data64 = test_acosh_conformance_data;
-  specp->countd = ARRAY_SIZE(test_acosh_conformance_data); 
+  specp->countd = ARRAY_SIZE(test_acosh_conformance_data);
 }
 
 float getFuncOp(float *data) {
@@ -98,7 +98,7 @@ int test_s1s(test_data *data, int idx)  {
 
 int test_s1d(test_data *data, int idx)  {
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   op[0] = LIBM_FUNC(acosh)(ip[idx]);
   return 0;
 }
@@ -128,7 +128,7 @@ __m256 LIBM_FUNC_VEC(s, 8, acoshf)(__m256);
 int test_v2d(test_data *data, int idx)  {
 #if 0
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
   __m128d op2 = LIBM_FUNC_VEC(d, 2, acosh)(ip2);
   _mm_store_pd(&op[0], op2);
@@ -139,7 +139,7 @@ int test_v2d(test_data *data, int idx)  {
 int test_v4s(test_data *data, int idx)  {
 #if 0
   float *ip  = (float*)data->ip;
-  float *op  = (float*)data->op; 
+  float *op  = (float*)data->op;
   __m128 ip4 = _mm_set_ps(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m128 op4 = LIBM_FUNC_VEC(s, 4, acoshf)(ip4);
   _mm_store_ps(&op[0], op4);
@@ -150,7 +150,7 @@ int test_v4s(test_data *data, int idx)  {
 int test_v4d(test_data *data, int idx)  {
 #if 0
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256d op4 = LIBM_FUNC_VEC(d, 4, acosh)(ip4);
   _mm256_store_pd(&op[0], op4);
@@ -161,12 +161,12 @@ int test_v4d(test_data *data, int idx)  {
 int test_v8s(test_data *data, int idx)  {
 #if 0
   float *ip  = (float*)data->ip;
-  float *op  = (float*)data->op; 
+  float *op  = (float*)data->op;
   __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256 op8 = LIBM_FUNC_VEC(s, 8, acoshf)(ip8);
   _mm256_store_ps(&op[0], op8);
-#endif  
+#endif
   return 0;
 }
 

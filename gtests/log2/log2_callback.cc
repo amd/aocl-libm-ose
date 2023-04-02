@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -134,11 +134,15 @@ int test_v2d(test_data *data, int idx)  {
 }
 
 int test_v4s(test_data *data, int idx)  {
-#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML || LIBM_PROTOTYPE == PROTOTYPE_MSVC)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m128 ip4 = _mm_set_ps(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
-  __m128 op4 = LIBM_FUNC_VEC(s, 4, log2f)(ip4);
+  #if (LIBM_PROTOTYPE == PROTOTYPE_MSVC)
+    __m128 op4 = LIBM_FUNC_VEC(s, 4, Log2)(ip4);
+  #else
+    __m128 op4 = LIBM_FUNC_VEC(s, 4, log2f)(ip4);
+  #endif
   _mm_store_ps(&op[0], op4);
 #endif
   return 0;

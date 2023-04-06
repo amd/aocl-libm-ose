@@ -344,6 +344,7 @@ extern void      ALM_PROTO_INTERNAL(vrda_sin)      (int n, double *x, double *y)
 extern void      ALM_PROTO_INTERNAL(vrda_add)      (int len, double *lhs, double *rhs, double *dst);
 extern void      ALM_PROTO_INTERNAL(vrda_sub)      (int len, double *lhs, double *rhs, double *dst);
 extern void      ALM_PROTO_INTERNAL(vrda_mul)      (int len, double *lhs, double *rhs, double *dst);
+extern void      ALM_PROTO_INTERNAL(vrda_div)      (int len, double *lhs, double *rhs, double *dst);
 
 extern void      ALM_PROTO_INTERNAL(vrsa_cbrtf)    (int len, float *src, float* dst);
 extern void      ALM_PROTO_INTERNAL(vrsa_cosf)     (int n, float *x, float *y);
@@ -362,6 +363,7 @@ extern void      ALM_PROTO_INTERNAL(vrsa_sinf)     (int n, float *x, float *y);
 extern void      ALM_PROTO_INTERNAL(vrsa_addf)     (int len, float *lhs, float *rhs, float *dst);
 extern void      ALM_PROTO_INTERNAL(vrsa_subf)     (int len, float *lhs, float *rhs, float *dst);
 extern void      ALM_PROTO_INTERNAL(vrsa_mulf)     (int len, float *lhs, float *rhs, float *dst);
+extern void      ALM_PROTO_INTERNAL(vrsa_divf)     (int len, float *lhs, float *rhs, float *dst);
 
 #ifdef __cplusplus
 }

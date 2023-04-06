@@ -335,6 +335,8 @@ void FN_PROTOTYPE(vrsa_subf)( int len, float *lhs, float *rhs, float *dst );
 void FN_PROTOTYPE(vrda_sub)( int len, double *lhs, double *rhs, double *dst );
 void FN_PROTOTYPE(vrsa_mulf)( int len, float *lhs, float *rhs, float *dst );
 void FN_PROTOTYPE(vrda_mul)( int len, double *lhs, double *rhs, double *dst );
+void FN_PROTOTYPE(vrsa_divf)( int len, float *lhs, float *rhs, float *dst );
+void FN_PROTOTYPE(vrda_div)( int len, double *lhs, double *rhs, double *dst );
 
 
 #ifdef __cplusplus

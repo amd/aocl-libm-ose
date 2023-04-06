@@ -93,6 +93,7 @@ enum {
     C_AMD_ADD,
     C_AMD_SUB,
     C_AMD_MUL,
+    C_AMD_DIV,
 
     /*
      * INTEGER VARIANTS
@@ -192,6 +193,7 @@ extern void LIBM_IFACE_PROTO(cpow)(void *arg);
 extern void LIBM_IFACE_PROTO(add)(void *arg);
 extern void LIBM_IFACE_PROTO(sub)(void *arg);
 extern void LIBM_IFACE_PROTO(mul)(void *arg);
+extern void LIBM_IFACE_PROTO(div)(void *arg);
 
 struct entry_pt_interface {
     void (*epi_init)(void *arg);

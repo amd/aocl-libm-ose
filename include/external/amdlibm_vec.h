@@ -187,6 +187,8 @@ extern "C" {
     void amd_vrda_sub       (int len, double *lhs, double *rhs, double *dst);
     void amd_vrsa_mulf      (int len, float *lhs, float *rhs, float *dst);
     void amd_vrda_mul       (int len, double *lhs, double *rhs, double *dst);
+    void amd_vrsa_divf      (int len, float *lhs, float *rhs, float *dst);
+    void amd_vrda_div       (int len, double *lhs, double *rhs, double *dst);
 
  /* Exponential */
 

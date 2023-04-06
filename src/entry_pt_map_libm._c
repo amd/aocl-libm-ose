@@ -168,4 +168,6 @@ WEAK_LIBM_ALIAS(vrsa_subf, FN_PROTOTYPE(vrsa_subf));
 WEAK_LIBM_ALIAS(vrda_sub, FN_PROTOTYPE(vrda_sub));
 WEAK_LIBM_ALIAS(vrsa_mulf, FN_PROTOTYPE(vrsa_mulf));
 WEAK_LIBM_ALIAS(vrda_mul, FN_PROTOTYPE(vrda_mul));
+WEAK_LIBM_ALIAS(vrsa_divf, FN_PROTOTYPE(vrsa_divf));
+WEAK_LIBM_ALIAS(vrda_div, FN_PROTOTYPE(vrda_div));
 

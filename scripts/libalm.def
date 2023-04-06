@@ -245,4 +245,6 @@ EXPORTS
     amd_vrda_sub
     amd_vrsa_mulf
     amd_vrda_mul
+    amd_vrsa_divf
+    amd_vrda_div
     alm_main

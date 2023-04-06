@@ -29,7 +29,6 @@
 
 #include <stdio.h>
 #include "amdlibm_vec.h"
-#include <immintrin.h>
 
 int use_add()
 {

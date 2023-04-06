@@ -25,7 +25,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 #define AMD_LIBM_VEC_EXPERIMENTAL
+
 #include <stdio.h>
 #include "amdlibm_vec.h"
 

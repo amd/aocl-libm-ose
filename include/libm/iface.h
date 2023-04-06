@@ -91,6 +91,7 @@ enum {
     C_AMD_ERF,
     C_AMD_SINCOS,
     C_AMD_ADD,
+    C_AMD_SUB,
 
     /*
      * INTEGER VARIANTS
@@ -188,6 +189,7 @@ extern void LIBM_IFACE_PROTO(cexp)(void *arg);
 extern void LIBM_IFACE_PROTO(clog)(void *arg);
 extern void LIBM_IFACE_PROTO(cpow)(void *arg);
 extern void LIBM_IFACE_PROTO(add)(void *arg);
+extern void LIBM_IFACE_PROTO(sub)(void *arg);
 
 struct entry_pt_interface {
     void (*epi_init)(void *arg);

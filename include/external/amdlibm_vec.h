@@ -183,6 +183,8 @@ extern "C" {
     /* array vector variants */
     void amd_vrsa_addf      (int len, float *lhs, float *rhs, float *dst);
     void amd_vrda_add       (int len, double *lhs, double *rhs, double *dst);
+    void amd_vrsa_subf      (int len, float *lhs, float *rhs, float *dst);
+    void amd_vrda_sub       (int len, double *lhs, double *rhs, double *dst);
 
  /* Exponential */
 

@@ -83,6 +83,7 @@ else:
 if env['HOST_OS'] == 'win32':
     if env['BUILD'] == 'debug':
         env['PDB'] = 'libalm.pdb'
+        ccflags.remove('/O2')
 
 e = env.Clone()
 e.Append(

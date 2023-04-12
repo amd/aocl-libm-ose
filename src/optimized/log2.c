@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2022, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2019-2023, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -245,7 +245,7 @@ ALM_PROTO_OPT(log2)(double x)
 
     struct log2_table *tb_entry = &((struct log2_table*)TAB_LOG2)[j];
 
-    double poly = r * (C1 + r* (C2 + r* (C3 + r * (C4 + r * (C5 + r * C6)))));
+    double poly = r * POLY_EVAL_6(r, C1, C2, C3, C4, C5, C6);
 
     /* -poly as f = -(Y-F) */
     double s = dexpo + tb_entry->lead;

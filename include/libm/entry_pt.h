@@ -210,11 +210,18 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_subf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_mulf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_divf);
 
-
 extern alm_ep_func_t        G_ENTRY_PT_PTR(sincos);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(sincosf);
 
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_addi);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_subi);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_muli);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_divi);
 
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_addfi);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_subfi);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_mulfi);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_divfi);
 
 #include <immintrin.h>
 

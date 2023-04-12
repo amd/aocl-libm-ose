@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
@@ -31,29 +30,82 @@
 #include <stdio.h>
 #include "amdlibm_vec.h"
 
-int use_mul()
+void mul_single_precision_array()
 {
-    int lenf=10;
-    float ipf1[10] = {0.5f, 1.0f, 1.5f, 2.0f, 0.5f, 1.0f, 1.5f, 2.0f, 0.5f, 1.0f};
-    float ipf2[10] = {0.5f, 1.0f, 1.5f, 2.0f, 0.5f, 1.0f, 1.5f, 2.0f, 0.5f, 1.0f};
-    float opf[10];
-    amd_vrsa_mulf(lenf, ipf1, ipf2, opf);
-    printf("Printing output of SINGLE PRECISION VECTOR - MUL function()\n");
-    for(int i=0; i<lenf; ++i)
+    int n=5;
+    float ipf1[10] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f};
+    float ipf2[10] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f};
+    float opf[10] = {0};
+
+    amd_vrsa_mulf(n, ipf1, ipf2, opf);
+
+    printf("Printing output of SINGLE PRECISION VECTOR - mul function()\n");
+    for(int i=0; i<10; ++i)
     {
         printf("%f ", opf[i]);
     }
     printf("\n----------\n");
-    int len=10;
-    double ip1[10] = {0.5, 1.0, 1.5, 2.0, 0.5, 1.0, 1.5, 2.0, 0.5, 1.0};
-    double ip2[10] = {0.5, 1.0, 1.5, 2.0, 0.5, 1.0, 1.5, 2.0, 0.5, 1.0};
-    double op[10];
-    amd_vrda_mul(len, ip1, ip2, op);
-    printf("Printing output of DOUBLE PRECISION VECTOR - MUL function()\n");
-    for(int i=0; i<len; ++i)
+}
+
+void mul_double_precision_array()
+{
+    int n=8;
+    double ip1[10] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
+    double ip2[10] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
+    double op[10] = {0};
+
+    amd_vrda_mul(n, ip1, ip2, op);
+
+    printf("Printing output of DOUBLE PRECISION VECTOR - mul function()\n");
+    for(int i=0; i<10; ++i)
     {
-        printf("%lf ", opf[i]);
+        printf("%lf ", op[i]);
     }
     printf("\n----------\n");
+}
+
+/**********************************************
+ *    mul function with increment
+ * *******************************************/
+void mul_single_precision_array_with_inc()
+{
+    int n=5, inc1=2, inc2=0, inco=2;
+    float ipf1[10] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f};
+    float ipf2[10] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f};
+    float opf[10] = {0};
+
+    amd_vrsa_mulfi(n, ipf1, inc1, ipf2, inc2, opf, inco);
+
+    printf("Printing output of SINGLE PRECISION VECTOR - mul i function()\n");
+    for(int i=0; i<10; ++i)
+    {
+        printf("%f ", opf[i]);
+    }
+    printf("\n----------\n");
+}
+
+void mul_double_precision_array_with_inc()
+{
+    int n=3, inc1=1, inc2=-2, inco=2;
+    double ip1[10] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
+    double ip2[10] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
+    double op[10] = {0};
+
+    amd_vrda_muli(n, ip1, inc1, ip2+9, inc2, op, inco);
+
+    printf("Printing output of DOUBLE PRECISION VECTOR - mul i function()\n");
+    for(int i=0; i<10; ++i)
+    {
+        printf("%lf ", op[i]);
+    }
+    printf("\n----------\n");
+}
+
+int use_mul()
+{
+    mul_single_precision_array();
+    mul_double_precision_array();
+    mul_single_precision_array_with_inc();
+    mul_double_precision_array_with_inc();
     return 0;
 }

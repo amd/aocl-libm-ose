@@ -196,6 +196,10 @@ alm_func_t        G_ENTRY_PT_PTR(vrda_add);
 alm_func_t        G_ENTRY_PT_PTR(vrda_sub);
 alm_func_t        G_ENTRY_PT_PTR(vrda_mul);
 alm_func_t        G_ENTRY_PT_PTR(vrda_div);
+alm_func_t        G_ENTRY_PT_PTR(vrda_addi);
+alm_func_t        G_ENTRY_PT_PTR(vrda_subi);
+alm_func_t        G_ENTRY_PT_PTR(vrda_muli);
+alm_func_t        G_ENTRY_PT_PTR(vrda_divi);
 
 alm_func_t        G_ENTRY_PT_PTR(vrsa_cosf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_expf);
@@ -213,6 +217,10 @@ alm_func_t        G_ENTRY_PT_PTR(vrsa_addf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_subf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_mulf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_divf);
+alm_func_t        G_ENTRY_PT_PTR(vrsa_addfi);
+alm_func_t        G_ENTRY_PT_PTR(vrsa_subfi);
+alm_func_t        G_ENTRY_PT_PTR(vrsa_mulfi);
+alm_func_t        G_ENTRY_PT_PTR(vrsa_divfi);
 
 alm_func_t        G_ENTRY_PT_PTR(sincos);
 alm_func_t        G_ENTRY_PT_PTR(sincosf);

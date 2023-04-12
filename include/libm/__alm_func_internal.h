@@ -365,6 +365,16 @@ extern void      ALM_PROTO_INTERNAL(vrsa_subf)     (int len, float *lhs, float *
 extern void      ALM_PROTO_INTERNAL(vrsa_mulf)     (int len, float *lhs, float *rhs, float *dst);
 extern void      ALM_PROTO_INTERNAL(vrsa_divf)     (int len, float *lhs, float *rhs, float *dst);
 
+extern void      ALM_PROTO_INTERNAL(vrsa_addfi)    (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrsa_subfi)    (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrsa_mulfi)    (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrsa_divfi)    (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
+
+extern void      ALM_PROTO_INTERNAL(vrda_addi)     (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrda_subi)     (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrda_muli)     (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrda_divi)     (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
+
 #ifdef __cplusplus
 }
 #endif

@@ -337,6 +337,14 @@ void FN_PROTOTYPE(vrsa_mulf)( int len, float *lhs, float *rhs, float *dst );
 void FN_PROTOTYPE(vrda_mul)( int len, double *lhs, double *rhs, double *dst );
 void FN_PROTOTYPE(vrsa_divf)( int len, float *lhs, float *rhs, float *dst );
 void FN_PROTOTYPE(vrda_div)( int len, double *lhs, double *rhs, double *dst );
+void FN_PROTOTYPE(vrsa_addfi)( int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res );
+void FN_PROTOTYPE(vrda_addi)( int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res );
+void FN_PROTOTYPE(vrsa_subfi)( int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res );
+void FN_PROTOTYPE(vrda_subi)( int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res );
+void FN_PROTOTYPE(vrsa_mulfi)( int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res );
+void FN_PROTOTYPE(vrda_muli)( int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res );
+void FN_PROTOTYPE(vrsa_divfi)( int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res );
+void FN_PROTOTYPE(vrda_divi)( int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res );
 
 
 #ifdef __cplusplus

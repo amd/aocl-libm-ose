@@ -117,21 +117,21 @@ class AlmOptions(object):
                         help = "Compile to use address sanitizer"
         )
 
-        #provide cpuid install path
-        self.add_option('cpuid_install_path',
+        #provide libaoclutils install path
+        self.add_option('aocl_utils_install_path',
                         nargs = 1,
                         default = '/usr/local/',
                         type = str,
                         metavar = 'DIR',
-                        help = 'Provide AOCL CPUID install path',
+                        help = 'Provide AOCL UTILS install path',
         )
 
-        #link libcpuid static/dynamic library, default is static linking
-        self.add_option('cpuid_link_static',
+        #link libaoclutils static/dynamic library, default is static linking
+        self.add_option('aocl_utils_link',
                         nargs = 1,
                         default = 1,
                         type = int,
-                        help = 'libcpuid static/dynamic linking',
+                        help = 'libaoclutils static/dynamic linking',
         )
 
         self.add_option('developer',

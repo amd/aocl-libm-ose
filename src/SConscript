@@ -34,7 +34,7 @@ builddir = joinpath(env['BUILDROOT'], 'src')
 
 ldscript = joinpath('#', 'src', 'ld-syms-libm.lds')
 
-Import('cpuid_install_path')
+Import('aocl_utils_install_path')
 
 kern_incpaths = [
     '#' + Dir('.').srcnode().path,
@@ -114,35 +114,35 @@ else:
             LIBS      = ['clang_rt.asan-x86_64.lib','clang_rt.asan_cxx-x86_64.lib'],
         )
 
-# to link to libcpu library
-almenv.Append(CPPPATH = joinpath(cpuid_install_path, 'include'))
-almenv.Append(CCFLAGS = '-DUSE_AOCL_CPUID')
-cpuid_link_static = env['cpuid_link_static']
+# to link to libaoclutils library
+almenv.Append(CPPPATH = joinpath(aocl_utils_install_path, 'include'))
+almenv.Append(CCFLAGS = '-DUSE_AOCL_UTILS')
+aocl_utils_link = env['aocl_utils_link']
 
 if e['HOST_OS'] != 'win32':
-    if int(cpuid_link_static):
-        print("Linking Static libcpu.a")
-        cpuid_static_lib_path = joinpath(cpuid_install_path, 'lib', 'libcpu.a')
-        cpuid_static_lib_path = almenv.File(cpuid_static_lib_path)
-        almenv.Append(LIBS=cpuid_static_lib_path)
-        # libstdc++ needs explicit loading when using libcpu.a (static library)
+    if int(aocl_utils_link):
+        print("Linking Static libaoclutils library")
+        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libaoclutils.a')
+        aocl_utils_static_lib_path = almenv.File(aocl_utils_static_lib_path)
+        almenv.Append(LIBS=aocl_utils_static_lib_path)
+        # libstdc++ needs explicit loading when using libaoclutils.a (static library)
         almenv.Append(LIBS="stdc++")
     else:
-        print("Linking Dynamic libcpu.so")
-        cpuid_dynamic_lib_path = joinpath(cpuid_install_path, 'lib', 'libcpu.so')
-        cpuid_dynamic_lib_path = almenv.File(cpuid_dynamic_lib_path)
-        almenv.Append(LIBS=cpuid_dynamic_lib_path)
+        print("Linking Dynamic libaoclutils library")
+        aocl_utils_dynamic_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libaoclutils.so')
+        aocl_utils_dynamic_lib_path = almenv.File(aocl_utils_dynamic_lib_path)
+        almenv.Append(LIBS=aocl_utils_dynamic_lib_path)
 else:
-    if int(cpuid_link_static):
-        print("Linking Static libcpu library")
-        cpuid_static_lib_path = joinpath(cpuid_install_path, 'lib', 'cpu_static.lib')
-        cpuid_static_lib_path = almenv.File(cpuid_static_lib_path)
-        almenv.Append(LIBS=cpuid_static_lib_path)
+    if int(aocl_utils_link):
+        print("Linking Static libaoclutils library")
+        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'cpu_static.lib')
+        aocl_utils_static_lib_path = almenv.File(aocl_utils_static_lib_path)
+        almenv.Append(LIBS=aocl_utils_static_lib_path)
     else:
-        print("Linking Dynamic libcpu library")
-        cpuid_static_lib_path = joinpath(cpuid_install_path, 'lib', 'cpu.lib')
-        cpuid_static_lib_path = almenv.File(cpuid_static_lib_path)
-        almenv.Append(LIBS=cpuid_static_lib_path)
+        print("Linking Dynamic libaoclutils library")
+        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'cpu.lib')
+        aocl_utils_static_lib_path = almenv.File(aocl_utils_static_lib_path)
+        almenv.Append(LIBS=aocl_utils_static_lib_path)
 
 subdirs = ['isa', 'optimized', 'iface', 'arch', 'ref']
 for d in subdirs:
@@ -166,7 +166,7 @@ if e['HOST_OS'] != 'win32':
     libm = almenv.StaticLibrary('alm', alm_objs)
     libmso = almenv.SharedLibrary('alm', alm_objs)
 else:
-    libm = almenv.StaticLibrary('libalm-static', source = [alm_objs, joinpath(cpuid_install_path, 'lib','cpu_static.lib')])
+    libm = almenv.StaticLibrary('libalm-static', source = [alm_objs, joinpath(aocl_utils_install_path, 'lib','cpu_static.lib')])
     almenv['WINDOWS_INSERT_DEF']=1
     libmso = almenv.SharedLibrary('libalm', alm_objs, no_import_lib=False)
 

@@ -12,11 +12,10 @@
   SLES:
     $ sudo zypper install mpfr-devel
 
-## Installing AOCL libcpuid library
-    Clone the libcpuid library code base.
-        git clone git@github.amd.com:AOCL/aocl-cpuid.git
-    Follow the steps mentioned in the document below to compile the libraries.
-        https://github.amd.com/AOCL/aocl-cpuid/blob/main/BUILD.md
+## Installing AOCL libaoclutils library
+    Clone the libaoclutils library code base.
+        git clone git@github.amd.com:AOCL/aocl-utils.git -b amd-main
+    Follow the steps mentioned in the aocl-utils/README.md further to compile and install the libaoclutils library.
 
 ## Installing virtualenv
   There are various ways to install virtualenv in a Linux environment.
@@ -39,14 +38,14 @@
      $ export PATH=`pwd`/.venv3/bin:$PATH
    ```
 
-  Start buildling
+  Start building
    ```
     $ scons  -h    #help options for scons
    ```
 
   Building in parallel
    ``` shell
-    $ scons -j32 --cpuid_install_path=<libcpuid library path>
+    $ scons -j32 --aocl_utils_install_path=<libaoclutils library path>
    ```
 
   Building and selecting compiler
@@ -63,9 +62,11 @@
     $ scons <other options> --use_asan=1
    ```
 
-  Linking static/dynamic libcpuid library. 1 for static linking and 0 for dynamic linking.
-  Default is static linking.
-    --cpuid_link_static=1
+  To link static/dynamic libaoclutils library use following flag:
+   0 for dynamic linking
+   1 for static linking
+   Default is static linking.
+    --aocl_utils_link=1
 
   Building with debug
    ```sh
@@ -80,7 +81,7 @@
   Building test framework
     $ scons <other options> gtests 
   Building test framework to exercise avx512 variants:
-    $ scons <other options> gtests -j32 --arch_config=avx512 --cpuid_install_path=<libcpuid library path>
+    $ scons <other options> gtests -j32 --arch_config=avx512 --aocl_utils_install_path=<libaoclutils library path>
 
 ## Glibc compat library
   An glibc compatible library, which has the table of functions compatible with

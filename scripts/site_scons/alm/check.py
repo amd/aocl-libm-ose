@@ -91,12 +91,12 @@ def CheckPathDir(context, mydir):
 def CheckCPUIDInstall(context):
     res = False
     env = context.env
-    cpuid_install_path = env['cpuid_install_path']
+    aocl_utils_install_path = env['aocl_utils_install_path']
 
-    context.Message ("Checking for valid CPUID install path")
+    context.Message ("Checking for valid AOCL UTILS install path")
 
     # check if path exists, else exit error
-    if CheckPathDir(context, cpuid_install_path):
+    if CheckPathDir(context, aocl_utils_install_path):
         res = True
     context.Result(res)
     return res

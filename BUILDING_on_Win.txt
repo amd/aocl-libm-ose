@@ -34,13 +34,12 @@
 
     If you find errors in mpfr library during libm compilation or usage then follow troubleshooting section at the end.
 
-    2. AOCL LibM library uses AOCL libcpuid library to detect Zen architecture. Follow the steps below to compile AOCL libcpuid library on windows.
-           a)Clone the libcpuid library code base.
-               git clone git@github.amd.com:AOCL/aocl-cpuid.git
-           b)Follow the steps mentioned in the document below to compile the libraries.
-               https://github.amd.com/AOCL/aocl-cpuid/blob/main/BUILD_ON_WIN.md
-           c)Maintain following directory structure of libcpuid files to compile LibM on windows
-               libcpuid
+    2. AOCL LibM library uses AOCL libaoclutils library to detect Zen architecture. Follow the steps below to compile AOCL libaoclutils library on windows.
+           a)Clone the libaoclutils library code base.
+               git clone git@github.amd.com:AOCL/aocl-utils.git -b amd-main
+           b)Follow the steps mentioned in the aocl-utils/README.md further to compile and install the libaoclutils library.
+           c)Maintain following directory structure of libaoclutils files to compile LibM on windows
+               libaoclutils
                +---include
                |   +---alci
                |       +---*.h files
@@ -64,10 +63,10 @@
     5. pip install scons
 
 ## Start building libm library
-    scons ALM_CC="<clang executable path>" ALM_CXX="<clang++ executable path>" --cpuid_install_path="<libcpuid library path>"
+    scons ALM_CC="<clang executable path>" ALM_CXX="<clang++ executable path>" --aocl_utils_install_path="<libaoclutils library path>"
 
 ## Building test framework
-    scons ALM_CC="<clang executable path>" ALM_CXX="<clang++ executable path>" --cpuid_install_path="<libcpuid library path>" gtests
+    scons ALM_CC="<clang executable path>" ALM_CXX="<clang++ executable path>" --aocl_utils_install_path="<libaoclutils library path>" gtests
 
 ## To build in parallel, use following flag
     -j32
@@ -84,9 +83,11 @@
 ## To build with ASAN feature, use following flag
     --use_asan=1
 
-## To link static/dynamic libcpuid library use following flag. 0 for static linking and 1 for dynamic linking.
+## To link static/dynamic libaoclutils library use following flag:
+   0 for dynamic linking
+   1 for static linking
    Default is static linking.
-    --cpuid_link_static=1
+    --aocl_utils_link=1
 
 ## To build tests with microsoft default math library (for static functions using math.h
    library and for vector functions using DirectXMath.h library) compatibility api, use following flag

@@ -27,7 +27,7 @@
 
 #include <stddef.h>                     /* for NULL */
 
-#ifdef USE_AOCL_CPUID
+#ifdef USE_AOCL_UTILS
 #include "alci/arch.h"
 #endif
 #include <libm/entry_pt.h>

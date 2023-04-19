@@ -85,9 +85,9 @@ makedirs(build_root, exist_ok=True)
 # alm libs will be generated here
 alm_lib_path='#'+joinpath(build_root,'src')
 
-# Fetch absolute path of libcpuid library
-cpuid_install_path = joinpath('#', aenv['cpuid_install_path'])
-Export('cpuid_install_path')
+# Fetch absolute path of libaoclutils library
+aocl_utils_install_path = joinpath('#', aenv['aocl_utils_install_path'])
+Export('aocl_utils_install_path')
 
 # These targets are not the .obj files or .o files, instead
 # class targets or build objectw

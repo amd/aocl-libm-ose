@@ -123,12 +123,12 @@ if env['HOST_OS'] == 'win32':
         env['PDB'] = 'test.pdb'
         testcflags.remove('/O2')
 
-# get cpuid path
-cpuid_install_path_lib = os.path.join(env['cpuid_install_path'], 'lib')
+# get libaoclutils path
+aocl_utils_install_path_lib = os.path.join(env['aocl_utils_install_path'], 'lib')
 
 ccflags = []
-liblist = []
-libpath = ['#'+alm_path, cpuid_install_path_lib]
+liblist = ['aoclutils']
+libpath = ['#'+alm_path, aocl_utils_install_path_lib]
 incpath = ['#gtests/include',
            '#gtests/include/almtest',
            '#gtests/gapi/gtest',

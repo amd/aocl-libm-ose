@@ -40,15 +40,15 @@ LIB = dynamic #default value
 
 #header
 header_path = $(abspath ../include/external/)
-cpuid_header_path = $(CPUID_PATH)/include/alci
+aocl_utils_header_path = $(AOCL_UTILS_INSTALL_PATH)/include/alci
 INC         = -I$(header_path)
-INC         += -I$(cpuid_header_path)
+INC         += -I$(aocl_utils_header_path)
 
 #path to libalm.so
 lib_path = $(abspath ../build/aocl-release/src/)
-cpuid_lib_path = $(CPUID_PATH)/lib
+aocl_utils_lib_path = $(AOCL_UTILS_INSTALL_PATH)/lib
 LFLAGS   := -L$(lib_path)
-LFLAGS   += -L$(cpuid_lib_path)
+LFLAGS   += -L$(aocl_utils_lib_path)
 
 ifeq ($(LIB), static)
     LFLAGS += -static

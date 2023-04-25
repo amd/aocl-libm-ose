@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -135,12 +135,12 @@ if e['HOST_OS'] != 'win32':
 else:
     if int(aocl_utils_link):
         print("Linking Static libaoclutils library")
-        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'cpu_static.lib')
+        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libaoclutils_static.lib')
         aocl_utils_static_lib_path = almenv.File(aocl_utils_static_lib_path)
         almenv.Append(LIBS=aocl_utils_static_lib_path)
     else:
         print("Linking Dynamic libaoclutils library")
-        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'cpu.lib')
+        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libaoclutils.lib')
         aocl_utils_static_lib_path = almenv.File(aocl_utils_static_lib_path)
         almenv.Append(LIBS=aocl_utils_static_lib_path)
 
@@ -166,7 +166,7 @@ if e['HOST_OS'] != 'win32':
     libm = almenv.StaticLibrary('alm', alm_objs)
     libmso = almenv.SharedLibrary('alm', alm_objs)
 else:
-    libm = almenv.StaticLibrary('libalm-static', source = [alm_objs, joinpath(aocl_utils_install_path, 'lib','cpu_static.lib')])
+    libm = almenv.StaticLibrary('libalm-static', source = [alm_objs, joinpath(aocl_utils_install_path, 'lib','libaoclutils_static.lib')])
     almenv['WINDOWS_INSERT_DEF']=1
     libmso = almenv.SharedLibrary('libalm', alm_objs, no_import_lib=False)
 

@@ -127,7 +127,7 @@ if env['HOST_OS'] == 'win32':
 aocl_utils_install_path_lib = os.path.join(env['aocl_utils_install_path'], 'lib')
 
 ccflags = []
-liblist = ['aoclutils']
+liblist = []
 libpath = ['#'+alm_path, aocl_utils_install_path_lib]
 incpath = ['#gtests/include',
            '#gtests/include/almtest',
@@ -137,6 +137,9 @@ incpath = ['#gtests/include',
 
 abi = env['libabi']
 #print(abi, env['libabi'])
+
+if env['HOST_OS'] != 'win32':
+    liblist.extend(['aoclutils'])
 
 # Default set to AOCL
 if abi == 'aocl':

@@ -54,7 +54,7 @@ ifeq ($(LIB), static)
     LFLAGS += -static
 endif
 
-LFLAGS += -lalm -lm -lcpu -lstdc++
+LFLAGS += -lalm -lm -laoclutils -lstdc++
 
 #src path
 SOURCES = ./src/*.c

@@ -71,8 +71,9 @@ def CheckForToolchain(context):
         if k.lower() in cc:
             #ignoring last . (if exists) to convert to float
             if cc_ver.count('.') > 1:
-                cc_ver = '.'.join(cc_ver.split('.')[:-1])
-            context.Message(' Using compiler {0} ver {1}'.format(k, cc_ver))
+                cc_ver_minor = cc_ver[cc_ver.rfind(".")+1:]
+                cc_ver = cc_ver[:cc_ver.rfind(".")]
+            context.Message(' Using compiler {0} version {1} minor version {2}'.format(k, cc_ver, cc_ver_minor))
             if float(v['min']) <= float(cc_ver) <= float(v['max']):
                     result = True
 

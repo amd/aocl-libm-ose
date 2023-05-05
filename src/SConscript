@@ -55,7 +55,13 @@ if env['HOST_OS'] != 'win32':
     if use_asan == 1:
         ccflags.append('-fsanitize=address')
     if 'clang' in env['CC']:
-        ccflags.append('-muse-unaligned-vector-move')
+        cc_ver = env['CCVERSION']
+        if cc_ver.count('.') > 1:
+            cc_ver_minor = cc_ver[cc_ver.rfind(".")+1:]
+            cc_ver = cc_ver[:cc_ver.rfind(".")]
+        # AOCC 4.0.0 (CLANG 14.0.6) and above supports the flag -muse-unaligned-vector-move
+        if (float(cc_ver) >= 14.0) & (float(cc_ver_minor) >= 6.0):
+            ccflags.append('-muse-unaligned-vector-move')
 else:
     ccflags = ['-DAVX_XOP_FMA4_FMA3',
                '-DDEBUG=0',

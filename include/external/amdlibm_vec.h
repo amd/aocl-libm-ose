@@ -189,6 +189,8 @@ extern "C" {
     void amd_vrda_mul       (int len, double *lhs, double *rhs, double *dst);
     void amd_vrsa_divf      (int len, float *lhs, float *rhs, float *dst);
     void amd_vrda_div       (int len, double *lhs, double *rhs, double *dst);
+    void amd_vrsa_fmaxf     (int len, float *lhs, float *rhs, float *dst);
+    void amd_vrda_fmax      (int len, double *lhs, double *rhs, double *dst);
 
     /* array vector variants with increment */
     void amd_vrsa_addfi     (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
@@ -199,6 +201,8 @@ extern "C" {
     void amd_vrda_muli      (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
     void amd_vrsa_divfi     (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
     void amd_vrda_divi      (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
+    void amd_vrsa_fmaxfi    (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
+    void amd_vrda_fmaxi     (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
 
  /* Exponential */
 

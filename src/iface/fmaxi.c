@@ -32,50 +32,38 @@
 //
 #include <libm/arch/all.h>
 static const
-struct alm_arch_funcs __arch_funcs_fmax = {
+struct alm_arch_funcs __arch_funcs_fmaxi = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            [ALM_FUNC_SCAL_SP]     = &ALM_PROTO_BAS64(fmaxf),
-            [ALM_FUNC_SCAL_DP]     = &ALM_PROTO_BAS64(fmax),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_fmaxf),
-            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX2(vrda_fmax),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_fmaxfi),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX2(vrda_fmaxi),
         },
         [ALM_UARCH_VER_ZEN] = {
-            [ALM_FUNC_SCAL_SP]     = &ALM_PROTO_BAS64(fmaxf),
-            [ALM_FUNC_SCAL_DP]     = &ALM_PROTO_BAS64(fmax),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN(vrsa_fmaxf),
-            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN(vrda_fmax),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN(vrsa_fmaxfi),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN(vrda_fmaxi),
         },
         [ALM_UARCH_VER_ZEN2] = {
-            [ALM_FUNC_SCAL_SP]     = &ALM_PROTO_BAS64(fmaxf),
-            [ALM_FUNC_SCAL_DP]     = &ALM_PROTO_BAS64(fmax),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN2(vrsa_fmaxf),
-            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN2(vrda_fmax),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN2(vrsa_fmaxfi),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN2(vrda_fmaxi),
         },
         [ALM_UARCH_VER_ZEN3] = {
-            [ALM_FUNC_SCAL_SP]     = &ALM_PROTO_BAS64(fmaxf),
-            [ALM_FUNC_SCAL_DP]     = &ALM_PROTO_BAS64(fmax),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN3(vrsa_fmaxf),
-            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN3(vrda_fmax),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN3(vrsa_fmaxfi),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN3(vrda_fmaxi),
         },
         [ALM_UARCH_VER_ZEN4] = {
-            [ALM_FUNC_SCAL_SP]     = &ALM_PROTO_BAS64(fmaxf),
-            [ALM_FUNC_SCAL_DP]     = &ALM_PROTO_BAS64(fmax),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN4(vrsa_fmaxf),
-            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN4(vrda_fmax),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN4(vrsa_fmaxfi),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN4(vrda_fmaxi),
         },
     },
 };
 void
-LIBM_IFACE_PROTO(fmax)(void *arg) {
-    alm_ep_wrapper_t g_entry_fmax = {
+LIBM_IFACE_PROTO(fmaxi)(void *arg) {
+    alm_ep_wrapper_t g_entry_fmaxi = {
        .g_ep = {
-            [ALM_FUNC_SCAL_SP]     = &G_ENTRY_PT_PTR(fmaxf),
-            [ALM_FUNC_SCAL_DP]     = &G_ENTRY_PT_PTR(fmax),
-            [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_fmaxf),
-            [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_fmax),
+            [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_fmaxfi),
+            [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_fmaxi),
         },
     };
-    alm_iface_fixup(&g_entry_fmax, &__arch_funcs_fmax);
+    alm_iface_fixup(&g_entry_fmaxi, &__arch_funcs_fmaxi);
 }

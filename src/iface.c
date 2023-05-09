@@ -56,7 +56,6 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_FDIM]       = {LIBM_IFACE_PROTO(fdim), NULL},
     [C_AMD_FLOOR]      = {LIBM_IFACE_PROTO(floor), NULL},
     [C_AMD_FMA]        = {LIBM_IFACE_PROTO(fma), NULL},
-    [C_AMD_FMAX]       = {LIBM_IFACE_PROTO(fmax), NULL},
     [C_AMD_FMIN]       = {LIBM_IFACE_PROTO(fmin), NULL},
     [C_AMD_FMOD]       = {LIBM_IFACE_PROTO(fmod), NULL},
     [C_AMD_FREXP]      = {LIBM_IFACE_PROTO(frexp), NULL},
@@ -109,11 +108,13 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_SUB]       = {LIBM_IFACE_PROTO(sub), NULL},
     [C_AMD_MUL]       = {LIBM_IFACE_PROTO(mul), NULL},
     [C_AMD_DIV]       = {LIBM_IFACE_PROTO(div), NULL},
+    [C_AMD_FMAX]      = {LIBM_IFACE_PROTO(fmax), NULL},
 
     [C_AMD_ADDI]       = {LIBM_IFACE_PROTO(addi), NULL},
     [C_AMD_SUBI]       = {LIBM_IFACE_PROTO(subi), NULL},
     [C_AMD_MULI]       = {LIBM_IFACE_PROTO(muli), NULL},
     [C_AMD_DIVI]       = {LIBM_IFACE_PROTO(divi), NULL},
+    [C_AMD_FMAXI]      = {LIBM_IFACE_PROTO(fmaxi), NULL},
 };
 
 #ifndef ARRAY_SIZE

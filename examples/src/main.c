@@ -47,6 +47,7 @@ extern int use_add();
 extern int use_sub();
 extern int use_mul();
 extern int use_div();
+extern int use_fmax();
 
 /* trigonometric */
 extern int use_cexp();
@@ -90,6 +91,7 @@ int main()  {
     use_clog();
     use_cpow();
     use_erf();
+    use_fmax();
     use_fmin();
     use_add();
     use_sub();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2023, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -98,6 +98,7 @@ enum {
     C_AMD_SUBI,
     C_AMD_MULI,
     C_AMD_DIVI,
+    C_AMD_FMAXI,
 
     /*
      * INTEGER VARIANTS
@@ -129,7 +130,7 @@ enum {
 /* INIT function for libm */
 extern void libm_iface_init(void);
 
-/* function specific initilizer */
+/* function specific initializer */
 extern void LIBM_IFACE_PROTO(acos)(void *arg);
 extern void LIBM_IFACE_PROTO(acosh)(void *arg);
 extern void LIBM_IFACE_PROTO(asin)(void *arg);
@@ -154,7 +155,6 @@ extern void LIBM_IFACE_PROTO(fastpow)(void *arg);
 extern void LIBM_IFACE_PROTO(fdim)(void *arg);
 extern void LIBM_IFACE_PROTO(floor)(void *arg);
 extern void LIBM_IFACE_PROTO(fma)(void *arg);
-extern void LIBM_IFACE_PROTO(fmax)(void *arg);
 extern void LIBM_IFACE_PROTO(fmin)(void *arg);
 extern void LIBM_IFACE_PROTO(fmod)(void *arg);
 extern void LIBM_IFACE_PROTO(frexp)(void *arg);
@@ -198,10 +198,12 @@ extern void LIBM_IFACE_PROTO(add)(void *arg);
 extern void LIBM_IFACE_PROTO(sub)(void *arg);
 extern void LIBM_IFACE_PROTO(mul)(void *arg);
 extern void LIBM_IFACE_PROTO(div)(void *arg);
+extern void LIBM_IFACE_PROTO(fmax)(void *arg);
 extern void LIBM_IFACE_PROTO(addi)(void *arg);
 extern void LIBM_IFACE_PROTO(subi)(void *arg);
 extern void LIBM_IFACE_PROTO(muli)(void *arg);
 extern void LIBM_IFACE_PROTO(divi)(void *arg);
+extern void LIBM_IFACE_PROTO(fmaxi)(void *arg);
 
 struct entry_pt_interface {
     void (*epi_init)(void *arg);

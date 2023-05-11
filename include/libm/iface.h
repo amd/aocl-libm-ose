@@ -99,6 +99,7 @@ enum {
     C_AMD_MULI,
     C_AMD_DIVI,
     C_AMD_FMAXI,
+    C_AMD_FMINI,
 
     /*
      * INTEGER VARIANTS
@@ -155,7 +156,6 @@ extern void LIBM_IFACE_PROTO(fastpow)(void *arg);
 extern void LIBM_IFACE_PROTO(fdim)(void *arg);
 extern void LIBM_IFACE_PROTO(floor)(void *arg);
 extern void LIBM_IFACE_PROTO(fma)(void *arg);
-extern void LIBM_IFACE_PROTO(fmin)(void *arg);
 extern void LIBM_IFACE_PROTO(fmod)(void *arg);
 extern void LIBM_IFACE_PROTO(frexp)(void *arg);
 extern void LIBM_IFACE_PROTO(hypot)(void *arg);
@@ -199,11 +199,13 @@ extern void LIBM_IFACE_PROTO(sub)(void *arg);
 extern void LIBM_IFACE_PROTO(mul)(void *arg);
 extern void LIBM_IFACE_PROTO(div)(void *arg);
 extern void LIBM_IFACE_PROTO(fmax)(void *arg);
+extern void LIBM_IFACE_PROTO(fmin)(void *arg);
 extern void LIBM_IFACE_PROTO(addi)(void *arg);
 extern void LIBM_IFACE_PROTO(subi)(void *arg);
 extern void LIBM_IFACE_PROTO(muli)(void *arg);
 extern void LIBM_IFACE_PROTO(divi)(void *arg);
 extern void LIBM_IFACE_PROTO(fmaxi)(void *arg);
+extern void LIBM_IFACE_PROTO(fmini)(void *arg);
 
 struct entry_pt_interface {
     void (*epi_init)(void *arg);

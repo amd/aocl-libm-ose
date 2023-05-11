@@ -32,50 +32,38 @@
 //
 #include <libm/arch/all.h>
 static const
-struct alm_arch_funcs __arch_funcs_fmin = {
+struct alm_arch_funcs __arch_funcs_fmini = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            [ALM_FUNC_SCAL_SP]     = &ALM_PROTO_ARCH_AVX2(fminf),
-            [ALM_FUNC_SCAL_DP]     = &ALM_PROTO_ARCH_AVX2(fmin),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_fminf),
-            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX2(vrda_fmin),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_fminfi),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX2(vrda_fmini),
         },
         [ALM_UARCH_VER_ZEN] = {
-            [ALM_FUNC_SCAL_SP]     = &ALM_PROTO_ARCH_ZN(fminf),
-            [ALM_FUNC_SCAL_DP]     = &ALM_PROTO_ARCH_ZN(fmin),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN(vrsa_fminf),
-            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN(vrda_fmin),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN(vrsa_fminfi),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN(vrda_fmini),
         },
         [ALM_UARCH_VER_ZEN2] = {
-            [ALM_FUNC_SCAL_SP]     = &ALM_PROTO_ARCH_ZN2(fminf),
-            [ALM_FUNC_SCAL_DP]     = &ALM_PROTO_ARCH_ZN2(fmin),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN2(vrsa_fminf),
-            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN2(vrda_fmin),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN2(vrsa_fminfi),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN2(vrda_fmini),
         },
         [ALM_UARCH_VER_ZEN3] = {
-            [ALM_FUNC_SCAL_SP]     = &ALM_PROTO_ARCH_ZN3(fminf),
-            [ALM_FUNC_SCAL_DP]     = &ALM_PROTO_ARCH_ZN3(fmin),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN3(vrsa_fminf),
-            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN3(vrda_fmin),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN3(vrsa_fminfi),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN3(vrda_fmini),
         },
         [ALM_UARCH_VER_ZEN4] = {
-            [ALM_FUNC_SCAL_SP]     = &ALM_PROTO_ARCH_ZN4(fminf),
-            [ALM_FUNC_SCAL_DP]     = &ALM_PROTO_ARCH_ZN4(fmin),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN4(vrsa_fminf),
-            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN4(vrda_fmin),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN4(vrsa_fminfi),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN4(vrda_fmini),
         },
     },
 };
 void
-LIBM_IFACE_PROTO(fmin)(void *arg) {
-    alm_ep_wrapper_t g_entry_fmin = {
+LIBM_IFACE_PROTO(fmini)(void *arg) {
+    alm_ep_wrapper_t g_entry_fmini = {
        .g_ep = {
-            [ALM_FUNC_SCAL_SP]     = &G_ENTRY_PT_PTR(fminf),
-            [ALM_FUNC_SCAL_DP]     = &G_ENTRY_PT_PTR(fmin),
-            [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_fminf),
-            [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_fmin),
+            [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_fminfi),
+            [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_fmini),
         },
     };
-    alm_iface_fixup(&g_entry_fmin, &__arch_funcs_fmin);
+    alm_iface_fixup(&g_entry_fmini, &__arch_funcs_fmini);
 }

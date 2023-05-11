@@ -210,24 +210,28 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_sub);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_mul);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_div);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_fmax);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_fmin);
 
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_addf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_subf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_mulf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_divf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_fmaxf);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_fminf);
 
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_addi);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_subi);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_muli);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_divi);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_fmaxi);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_fmini);
 
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_addfi);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_subfi);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_mulfi);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_divfi);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_fmaxfi);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_fminfi);
 
 #include <immintrin.h>
 

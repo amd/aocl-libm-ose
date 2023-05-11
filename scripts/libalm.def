@@ -249,6 +249,8 @@ EXPORTS
     amd_vrda_div
     amd_vrsa_fmaxf
     amd_vrda_fmax
+    amd_vrsa_fminf
+    amd_vrda_fmin
     amd_vrsa_addfi
     amd_vrda_addi
     amd_vrsa_subfi
@@ -259,4 +261,6 @@ EXPORTS
     amd_vrda_divi
     amd_vrsa_fmaxfi
     amd_vrda_fmaxi
+    amd_vrsa_fminfi
+    amd_vrda_fmini
     alm_main

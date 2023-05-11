@@ -42,12 +42,12 @@ extern int use_log2();
 extern int use_asin();
 extern int use_acos();
 extern int use_asinh();
-extern int use_fmin();
 extern int use_add();
 extern int use_sub();
 extern int use_mul();
 extern int use_div();
 extern int use_fmax();
+extern int use_fmin();
 
 /* trigonometric */
 extern int use_cexp();
@@ -91,12 +91,12 @@ int main()  {
     use_clog();
     use_cpow();
     use_erf();
-    use_fmax();
-    use_fmin();
     use_add();
     use_sub();
     use_mul();
     use_div();
+    use_fmax();
+    use_fmin();
 
     #if defined (__AVX512__)
     use_exp_avx512();

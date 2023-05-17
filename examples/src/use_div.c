@@ -69,6 +69,7 @@ void div_double_precision_array()
  * *******************************************/
 void div_single_precision_array_with_inc()
 {
+    // inc2=0 indicates that only the first element of the second input array is considered throughout
     int n=5, inc1=2, inc2=0, inco=2;
     float ipf1[10] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f};
     float ipf2[10] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f};
@@ -86,11 +87,13 @@ void div_single_precision_array_with_inc()
 
 void div_double_precision_array_with_inc()
 {
+    // Negative increments can also be passed (inc2 is negative here, indicating reverse traversal through the array)
     int n=3, inc1=1, inc2=-2, inco=2;
     double ip1[10] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
     double ip2[10] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
     double op[10] = {0};
 
+    // The base pointer can be passed as any required element of the array(ip2+9 is passed here for reverse traversal from the end)
     amd_vrda_divi(n, ip1, inc1, ip2+9, inc2, op, inco);
 
     printf("Printing output of DOUBLE PRECISION VECTOR - div i function()\n");

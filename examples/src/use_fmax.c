@@ -33,8 +33,8 @@
 void fmax_single_precision_array()
 {
     int n=5;
-    float ipf1[10] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f};
-    float ipf2[10] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f};
+    float ipf1[10] = {1.0f, 3.0f, 5.0f, 7.0f, 9.0f, 11.0f, 13.0f, 15.0f, 17.0f, 19.0f};
+    float ipf2[10] = {3.0f, 1.0f, 8.0f, 6.0f, 2.0f, 0.0f, 4.0f, 1.0f, 2.0f, 10.0f};
     float opf[10] = {0};
 
     amd_vrsa_fmaxf(n, ipf1, ipf2, opf);
@@ -50,7 +50,7 @@ void fmax_single_precision_array()
 void fmax_double_precision_array()
 {
     int n=8;
-    double ip1[10] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
+    double ip1[10] = {10.0, 8.0, 4.0, 2.0, 6.0, 12.0, 14.0, 1.0, 3.0, 5.0};
     double ip2[10] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
     double op[10] = {0};
 
@@ -69,6 +69,7 @@ void fmax_double_precision_array()
  * *******************************************/
 void fmax_single_precision_array_with_inc()
 {
+    // inc2=0 indicates that only the first element of the second input array is considered throughout
     int n=5, inc1=2, inc2=0, inco=2;
     float ipf1[10] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f};
     float ipf2[10] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f};
@@ -86,11 +87,13 @@ void fmax_single_precision_array_with_inc()
 
 void fmax_double_precision_array_with_inc()
 {
+    // Negative increments can also be passed (inc2 is negative here, indicating reverse traversal through the array)
     int n=3, inc1=1, inc2=-2, inco=2;
     double ip1[10] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
     double ip2[10] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
     double op[10] = {0};
 
+    // The base pointer can be passed as any required element of the array(ip2+9 is passed here for reverse traversal from the end)
     amd_vrda_fmaxi(n, ip1, inc1, ip2+9, inc2, op, inco);
 
     printf("Printing output of DOUBLE PRECISION VECTOR - fmax i function()\n");

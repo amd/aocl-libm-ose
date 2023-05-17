@@ -44,7 +44,6 @@ excluded_list += [
      'cospi.c',
      'fdim.c',
      'finite.c',
-     'fmax.c',
      'frexp.c',
      'ilogb.c',
      'ldexp.c',

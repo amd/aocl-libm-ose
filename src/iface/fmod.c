@@ -37,26 +37,26 @@ struct alm_arch_funcs __arch_funcs_fmod = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(fmodf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(fmodf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(fmod),
         },
 
         [ALM_UARCH_VER_ZEN] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(fmodf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(fmodf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(fmod),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(fmodf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(fmodf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(fmod),
         },
         [ALM_UARCH_VER_ZEN3] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(fmodf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(fmodf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(fmod),
         },
 
         [ALM_UARCH_VER_ZEN4] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(fmodf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(fmodf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(fmod),
         },
     },

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -29,8 +29,6 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
-
-//
 #include <libm/arch/all.h>
 
 
@@ -39,28 +37,44 @@ struct alm_arch_funcs __arch_funcs_fmod = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_BAS64(fmodf),
-            &ALM_PROTO_BAS64(fmod),
-            NULL,                           /* vrs4 ? */
-            NULL,                           /* vrs8 ? */
-            NULL,                           /* vrd2 ? */
-            NULL,                           /* vrd4 ? */
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(fmodf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(fmod),
+        },
+
+        [ALM_UARCH_VER_ZEN] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(fmodf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(fmod),
+        },
+
+        [ALM_UARCH_VER_ZEN2] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(fmodf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(fmod),
+        },
+        [ALM_UARCH_VER_ZEN3] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(fmodf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(fmod),
+        },
+
+        [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_BAS64(fmodf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(fmod),
         },
     },
 };
 
 void
-LIBM_IFACE_PROTO(fmod)(void *arg)
-{
+LIBM_IFACE_PROTO(fmod)(void *arg) {
     alm_ep_wrapper_t g_entry_fmod = {
-       .g_ep = {
-        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(fmodf),
-        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(fmod),
+        .g_ep = {
+            [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(fmodf),
+            [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(fmod),
 #if 0
-        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_fmodf),
-        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_fmodf),
-        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_fmod),
-        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_fmod),
+            [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_fmodf),
+            [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_fmodf),
+            [ALM_FUNC_VECT_SP_16] = &G_ENTRY_PT_PTR(vrs16_fmodf),
+            [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_fmod),
+            [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_fmod),
+            [ALM_FUNC_VECT_DP_8] = &G_ENTRY_PT_PTR(vrd8_fmod),
 #endif
         },
     };

@@ -29,8 +29,8 @@ restart ;
 prec = 54 ; 
 N = 1000 ; 
 deg = 15 ; // poly degree (choose a odd number)
-a = -pi/4 ;     // upper bound of the intervel   
-b = +pi/4 ;     // lower bound of the intervel 
+a = -pi/4 ;     // upper bound of the interval   
+b = +pi/4 ;     // lower bound of the interval 
 
 // f(x) s the given function for which we seek  polynomial with minimal absolute error
 f = tan(x) ;
@@ -44,7 +44,7 @@ poly = remez(f(x),P,[a;b]) ;
 
 
 // relative error computation fails 
-// Make a array in th eintervel [a;b] 
+// Make a array in the interval [a;b] 
 dx = (b-a)/(N-1) ;
 xi = [||] ; 
 for i from 0 to N-1 do {xi = xi@[|a+i*dx|];} ;  

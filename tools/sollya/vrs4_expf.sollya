@@ -27,10 +27,10 @@
 // polynomial for approximating 2^x in the given range [a,b] 
 restart ;
 prec = 53 ;      // precision 
-N = 1000 ;      // number of points to be considered between the intervel [a,b] 
+N = 1000 ;      // number of points to be considered between the interval [a,b] 
 deg = 5 ; 		// polynomial degree
-a = -0.5 ;     	// lower bound of the intervel   
-b = -a ;     	// upper bound of the intervel 
+a = -0.5 ;     	// lower bound of the interval   
+b = -a ;     	// upper bound of the interval 
 
 // f(x) s the given function for which we seek  polynomial with minimal absolute error
 f = 2^x ;
@@ -44,7 +44,7 @@ display = hexadecimal;
 //print("rel error:", accurateinfnorm(poly(x)/f(x)-1, [a;b], 30));
 
 // relative error computation fails 
-// Make a array with given N points in the intervel [a;b] 
+// Make a array with given N points in the interval [a;b] 
 dx = (b-a)/(N-1) ;    // step size 
 xi = [||] ; 
 for i from 0 to N-1 do {xi = xi@[|a+i*dx|];} ;  

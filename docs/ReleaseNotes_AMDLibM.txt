@@ -1,44 +1,50 @@
 
 (C) 2008-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 
-AOCL LibM - Release Notes - AOCL version 4.0.1
+AOCL LibM - Release Notes - AOCL version 4.1.0
 ----------------------------------------------
 
 AOCL LibM Contents
 ------------------
-AOCL LibM is a software library containing a collection of basic math functions
-optimized for x86-64 processor-based machines.
-It provides many routines from the list of standard C99 math functions.
-It includes scalar as well as vector variants of the core math functions.
-AOCL LibM is a C library, which users can link into their applications to replace
-compiler-provided math functions. Applications can link into AOCL LibM library and
-invoke math functions instead of compiler’s math functions for better accuracy and
-performance.
+AOCL-LibM is a high-performant implementation of LibM, the standard C library of basic floating-point mathematical functions. It includes many of the functions from the C99 standard. Single and double precision versions of the functions are provided, all optimized for accuracy and performance, including a small number of complex functions. There are also a number of vector and fast scalar variants provided, in which a small amount of the accuracy has been traded for greater performance.
 
-Highlights of AOCL LibM version 4.0.1
+Highlights of AOCL LibM version 4.1.0
 -------------------------------------
-    * Corrected "Optimized" directory typo
-    * Updated examples README doc with corrected build steps
-    * Enabled mpfr variant of fmin and fminf functions
-    * Optimized scalar variant of fmin and fminf functions. Observing ~10% perf improvement
-      on windows and ~5% improvement on linux platform
-    * Added fmin and fminf functions in gtests and examples
-    * Corrected build steps when ASAN is needed on linux platform
-    * Added AVX512 version of double-precision erf() in src, gtests and examples
-    * Resolved issue with GetLastError() function on windows
-    * Added support for Clang-15/Clang-16 on windows and GCC-12.2.0 on linux
-    * Added support for latest VS2022 on windows
-    * Corrected few function signatures in the header
-    * Corrected the name of the fast library and the size of the maximum error
-    * 20% improvement in the performance of erff by using AVX512dq intrinsics
-    * Added new vrd4 and vrd8 versions of sincos
-    * Bugs resolved/closed: CPUPL-3079, CPUPL-3047, CPUPL-3061, CPUPL-3048, CPUPL-1792, CPUPL-1820
+Added erf function
+
+Added vector array arithmetic functions:
+ - vrsa_addf, vrsa_addfi, vrda_add, vrda_addi
+ - vrsa_subf, vrsa_subfi, vrda_sub, vrda_subi
+ - vrsa_mulf, vrsa_mulfi, vrda_mul, vrda_muli
+ - vrsa_divf, vrsa_divfi, vrda_div, vrda_divi
+
+Added new vector functions:
+ - vrd2_erf, vrd4_erf and vrd8_erf
+ - vrs16_erff
+ - vrd4_sincos and vrd8_sincos
+ - vrs16_tanhf, vrs16_cosf, vrs16_acosf
+
+Optimized the performance of:
+ - vrd2_pow, vrd4_pow and vrd8_pow
+ - exp2 and log2
+
+Improved the accuracy of:
+ - atan and cos
+
+Added optimized versions of:
+ - fminf, fmin, remainderf, remainder, nearbyintf, nearbyint, cbrt
+
+Fast scalar variants:
+ - fasterff improved and fasterf added
+ - fastpowf improved
+
+Added support for the aocl-utils library
 
 Known Issues
 ------------
     * fastpow() - Maximum ULP error is 10.
 
-Version 4.0.1 Contents
+Version 4.1.0 Contents
 ----------------------
 AOCL LibM provides vector variants for many of the math functions. The list of
 available vector functions is given below. All functions have an 'amd_' prefix.

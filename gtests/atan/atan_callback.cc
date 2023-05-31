@@ -133,7 +133,7 @@ int test_v2d(test_data *data, int idx)  {
 }
 
 int test_v4s(test_data *data, int idx)  {
-#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML == PROTOTYPE_MSVC)
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML || LIBM_PROTOTYPE == PROTOTYPE_MSVC)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m128 ip4 = _mm_set_ps(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);

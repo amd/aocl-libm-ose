@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -54,7 +54,7 @@
  * 3. If x <= |0.5|
  *      acosf(x) = pi / 2 - asinf(x)
  *
- * 4. 	acos(-x) = 1 / 2 * pi + asin(x)
+ * 4. 	acosf(-x) = 1 / 2 * pi + asinf(x)
  *
  * acosf(x) is calculated using the polynomial,
  *      x + C1*x^3 + C2*x^5 + C3*x^7 + C4*x^9 + C5*x^11
@@ -156,7 +156,7 @@ ALM_PROTO_OPT(acosf)(float x)
 
     x = asfloat(aux);
 
-    /* Covert input to double precision value */
+    /* Convert input to double precision value */
     y = (double) x;
 
     if (y > ALM_ACOSF_HALF)

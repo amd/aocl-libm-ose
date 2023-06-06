@@ -28,7 +28,25 @@
 #define AMD_LIBM_VEC_EXPERIMENTAL
 
 #include <stdio.h>
+#include "amdlibm.h"
 #include "amdlibm_vec.h"
+
+void fmax_single_precision()
+{
+    printf ("Using Scalar single precision fmaxf()\n");
+    float ipf1 = 0.01, ipf2 = 0.5, opf;
+    opf = amd_fmaxf (ipf1, ipf2);
+    printf("Input: %f,%f\tOutput: %f\n", ipf1,ipf2, opf);
+}
+
+void fmax_double_precision()
+{
+    printf ("Using Scalar double precision fmax()\n");
+    double ipd1 = 1.89, ipd2= 0.45, opd;
+    opd = amd_fmax(ipd1, ipd2);
+    printf("Input: %lf, %lf\tOutput: %f\n", ipd1, ipd2, opd);
+}
+
 
 void fmax_single_precision_array()
 {
@@ -106,6 +124,8 @@ void fmax_double_precision_array_with_inc()
 
 int use_fmax()
 {
+    fmax_single_precision();
+    fmax_double_precision();
     fmax_single_precision_array();
     fmax_double_precision_array();
     fmax_single_precision_array_with_inc();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@ double ALM_PROTO_REF(nextafter)(double x, double y)
     UT64 checkbits,checkbitsy;
     double dy = y;
     checkbits.f64=x;
-	checkbitsy.f64 = y;
+    checkbitsy.f64 = y;
 
 
 
@@ -45,12 +45,12 @@ double ALM_PROTO_REF(nextafter)(double x, double y)
     if(((checkbits.u64 & ~SIGNBIT_DP64) > EXPBITS_DP64 ))
     {
 #ifdef WINDOWS
-		return  __alm_handle_error(checkbits.u64 | QNAN_MASK_64, AMD_F_NONE);
+        return  __alm_handle_error(checkbits.u64 | QNAN_MASK_64, AMD_F_NONE);
 #else
-	    if (checkbits.u64 & QNAN_MASK_64)
-		    return  __alm_handle_error(checkbits.u64 | QNAN_MASK_64, AMD_F_NONE);
-	    else
-		    return  __alm_handle_error(checkbits.u64 | QNAN_MASK_64, AMD_F_INVALID);
+        if (checkbits.u64 & QNAN_MASK_64)
+            return  __alm_handle_error(checkbits.u64 | QNAN_MASK_64, AMD_F_NONE);
+        else
+            return  __alm_handle_error(checkbits.u64 | QNAN_MASK_64, AMD_F_INVALID);
 #endif
     }
 
@@ -59,16 +59,16 @@ double ALM_PROTO_REF(nextafter)(double x, double y)
     if(((checkbitsy.u64 & ~SIGNBIT_DP64) > EXPBITS_DP64 ))
     {
 #ifdef WINDOWS
-		return  __alm_handle_error(checkbitsy.u64 | QNAN_MASK_64, AMD_F_NONE);
+        return  __alm_handle_error(checkbitsy.u64 | QNAN_MASK_64, AMD_F_NONE);
 #else
-	    if (checkbitsy.u64 & QNAN_MASK_64)
-		    return  __alm_handle_error(checkbitsy.u64 | QNAN_MASK_64, AMD_F_NONE);
-	    else
-		    return  __alm_handle_error(checkbits.u64 | QNAN_MASK_64, AMD_F_INVALID);
+        if (checkbitsy.u64 & QNAN_MASK_64)
+            return  __alm_handle_error(checkbitsy.u64 | QNAN_MASK_64, AMD_F_NONE);
+        else
+            return  __alm_handle_error(checkbitsy.u64 | QNAN_MASK_64, AMD_F_INVALID);
 #endif
     }
 
-	/* if x == y return y in the type of x */
+    /* if x == y return y in the type of x */
     if( x == dy )
     {
         return dy;
@@ -98,7 +98,7 @@ double ALM_PROTO_REF(nextafter)(double x, double y)
     /* check if the result is nan or inf */
     if(((checkbits.u64 & ~SIGNBIT_DP64) >= EXPBITS_DP64 ))
     {
-		return  __alm_handle_error(checkbits.u64 | QNAN_MASK_64, AMD_F_NONE);
+        return  __alm_handle_error(checkbits.u64 | QNAN_MASK_64, AMD_F_NONE);
     }
 
     return checkbits.f64;

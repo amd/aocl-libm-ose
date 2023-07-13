@@ -71,11 +71,11 @@ double ALM_PROTO_OPT(fmod)(double x, double y)
         if( (ax & EXPBITS_DP64) == EXPBITS_DP64)
             return __alm_handle_error(ay | QNANBITPATT_DP64, AMD_F_INVALID);
         else
-#ifdef WINDOWS
-            __alm_handle_error(ay | QNANBITPATT_DP64, AMD_F_INVALID);
-#else
-            return x + x;
-#endif
+            #ifdef WINDOWS
+                __alm_handle_error(ay | QNANBITPATT_DP64, AMD_F_INVALID);
+            #else
+                return x + x;
+            #endif
     }
 
     if(unlikely((ay & EXPBITS_DP64) > EXPBITS_DP64))

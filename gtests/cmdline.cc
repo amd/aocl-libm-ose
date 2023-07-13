@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -127,7 +127,7 @@ cmdLine::cmdLine() : arguments(NULL) {
 
   cmd.ranges = new args::ValueFlagList<Range, ALM::RangeReader>[MAX_INPUT_RANGES]{{
       *cmd.arguments, "ranges", "Input Ranges", {'r', "range"}},
-   	  {*cmd.arguments, "ranges", "Input Ranges", {'r', "range"}}};
+      {*cmd.arguments, "ranges", "Input Ranges", {'r', "range"}}};
 
   std::unordered_map<std::string, RoundingMode> map{
       {"neareven", RoundingMode::E_NearestEven},
@@ -172,7 +172,7 @@ bool cmdLine::Parse(int argc, char *argv[]) {
 }
 
 bool cmdLine::Echo(InputParams *inparams) {
-  if (testtype && *testtype) {
+  if (*testtype) {
     std::cout << "Test Type       : " << args::get(*testtype) << std::endl;
     inparams->ttype = (enum TestType)args::get(*testtype);
   } else {
@@ -184,7 +184,7 @@ bool cmdLine::Echo(InputParams *inparams) {
   }
 
   if (*ranges) {
-	int i = 0;
+    int i = 0;
     for (auto &&r : args::get(*ranges)) {
       std::cout << "Range           : [" << r.r_range.first << ", "
                 << r.r_range.second << "] " << r.r_type << endl;

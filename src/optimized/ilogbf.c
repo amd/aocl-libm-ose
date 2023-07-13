@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -52,7 +52,6 @@ int ALM_PROTO_OPT(ilogbf)(float x) {
     uint32_t ux = asuint32(x);
     uint32_t mant   = ux & MANTBITS_SP32;
     int32_t expbits = (int32_t) (( ux << 1) >> 24);
-    uint32_t sign = ux & SIGNBIT_SP32;
 
     /* if x is 0 */
     if (x * 2 == 0) {
@@ -64,19 +63,13 @@ int ALM_PROTO_OPT(ilogbf)(float x) {
     /* either NAN or inf */
     if ((ux & EXPBITS_SP32) == EXPBITS_SP32) {
         if (x != x) {    /* if NaN */
-             __alm_handle_errorf((unsigned int)INT_MIN,
+            __alm_handle_errorf((unsigned int)INT_MIN,
                                               AMD_F_INVALID);
             return INT_MIN;
         }
         else {    /* inf */
-            if (sign) {    /* -INF */
-                __alm_handle_errorf((unsigned int)INT_MAX,
+            __alm_handle_errorf((unsigned int)INT_MAX,
                                           AMD_F_INVALID);
-            }
-            else {     /* + INF */
-                __alm_handle_errorf((unsigned int)INT_MAX,
-                                          AMD_F_INVALID);
-            }
             return INT_MAX;
         }
     }

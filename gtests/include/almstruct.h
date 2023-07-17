@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -31,6 +31,8 @@
 
 #include "defs.h"
 #include <cstdint>
+#include <external/amdlibm.h>
+#include <string>
 
 using namespace ALM;
 #define MAX_INPUT_RANGES 2
@@ -59,6 +61,22 @@ typedef struct {
 	uint64_t in2;
 	uint64_t in3;
 }libm_test_special_data_f64;
+
+typedef struct {
+	float _Complex in;
+	float _Complex out;
+	uint32_t exptdexpt;
+	float _Complex in2;
+	float _Complex in3;
+}libm_test_complex_data_f32;
+
+typedef struct {
+	double _Complex in;
+	double _Complex out;
+	uint64_t exptdexpt;
+	double _Complex in2;
+	double _Complex in3;
+}libm_test_complex_data_f64;
 
 typedef struct {
   double min;
@@ -90,6 +108,7 @@ typedef struct {
   int verboseflag;
   uint32_t niter;  
   uint32_t count;
+  std::string testFunction;
   InputRange range[MAX_INPUT_RANGES];
 } InputParams;
 
@@ -116,10 +135,12 @@ typedef struct {
 typedef struct {
   libm_test_special_data_f32 *data32;
   libm_test_special_data_f64 *data64;
+  libm_test_complex_data_f32 *cdata32;
+  libm_test_complex_data_f64 *cdata64;
   uint32_t countf;
   uint32_t countd;
   int verboseflag;
-  PrintTstRes *prttstres;  
+  PrintTstRes *prttstres;
   uint32_t nargs;
 } SpecParams;
 

@@ -40,3 +40,4 @@ EXPORTS
     alm_mp_fminf
     alm_mp_fmaxf
     alm_mp_fdimf
+    alm_mpc_cexpf

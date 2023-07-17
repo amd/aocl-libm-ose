@@ -26,36 +26,55 @@
  */
 
 
-#ifndef PRECISION_H_INCLUDED
-#define PRECISION_H_INCLUDED 1
+#include "precision.h"
 
-#include "alm_mp_funcs.h"
-
-/* Set REAL and choose float or double function name */
 
 #if defined(FLOAT)
-#define REAL float
-#define REAL_L double
-
-#define COMPLEX float _Complex
-#define COMPLEX_L double _Complex
-
-#define ISDOUBLE 0
-#define FROOT concat(FNAMEROOT,f)
-#define ALM_MP_PRECI_BITS 128
+#define FUNC_CEXP alm_mpc_cexpf
 
 #elif defined(DOUBLE)
-#define REAL double
-#define REAL_L long double
+#define FUNC_CEXP alm_mpc_cexp
 
-#define COMPLEX double _Complex
-#define COMPLEX_L long double _Complex
-
-#define ISDOUBLE 1
-#define FROOT FNAMEROOT
-#define ALM_MP_PRECI_BITS 256
 #else
-#error You must compile with either -DFLOAT or -DDOUBLE
+#error
 #endif
 
+#include <external/amdlibm.h>
+#include <mpfr.h>
+#include <complex.h>
+#include <mpc.h>
+#include <stdio.h>
+
+COMPLEX_L FUNC_CEXP(COMPLEX x)
+{
+    COMPLEX_L y;
+
+    mpc_rnd_t rnd = MPC_RNDNN;
+    mpc_t mpc_x, mpc_rop;
+
+    mpc_init2(mpc_x, ALM_MP_PRECI_BITS);
+    mpc_init2(mpc_rop, ALM_MP_PRECI_BITS);
+
+#if defined(FLOAT)
+    mpc_set_dc(mpc_x, x, rnd);
+#elif defined(DOUBLE)
+    mpc_set_ldc(mpc_x, x, rnd);
 #endif
+
+    // Note: To print MPC variable as string, below printf statement is useful:
+    // printf("%s\n", mpc_get_str(10, 2, mpc_x, rnd));
+
+    mpc_exp(mpc_rop, mpc_x, rnd);
+
+#if defined(FLOAT)
+    y = mpc_get_dc(mpc_rop, rnd);
+#elif defined(DOUBLE)
+    y = mpc_get_ldc(mpc_rop, rnd);
+#endif
+
+    mpc_clear(mpc_x);
+    mpc_clear(mpc_rop);
+
+    return y;
+}
+

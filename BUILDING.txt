@@ -1,7 +1,7 @@
 # How to build
 
 ##Dependency libraries:
-  AOCL LibM test framework uses GNU MPFR (an open source multi-precision floating point library)
+  1. AOCL LibM test framework uses GNU MPFR (an open source multi-precision floating point library)
   Install mpfr:
   https://www.mpfr.org/
   Eg:
@@ -11,6 +11,17 @@
     $ sudo yum install mpfr-devel.x86_64
   SLES:
     $ sudo zypper install mpfr-devel
+
+  2. AOCL LibM test framework uses GNU MPC (an open source multi-precision complex floating-point library)
+  Install mpc:
+  https://www.multiprecision.org/
+  Eg:
+  Ubuntu:
+    $ sudo apt install libmpc-dev
+  CentOS:
+    $ sudo yum install libmpc-devel
+  SLES:
+    $ sudo zypper install mpc-devel
 
 ## Installing AOCL libaoclutils library
     Clone the libaoclutils library code base.
@@ -148,4 +159,6 @@
   -c (Integer value for number of inputs)
   Input range:
   -r (provide range: start,stop,step size example: -r -50,50,SIMPLE)
+  Number type:
+  -z (c for complex variant function, default is real variant function)
 

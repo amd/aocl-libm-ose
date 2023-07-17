@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -41,6 +41,8 @@
 #include "callback.h"
 #include <inttypes.h>
 #include "verify.h"
+#include <external/amdlibm.h>
+#include <complex.h>
 
 extern vector<AccuParams> accuData;
 extern vector<SpecParams> specData;
@@ -400,9 +402,100 @@ TEST_P(SpecTestFixtureDouble, CONFORMANCE_DOUBLE) {
   ptr->tstcnt++;
 }
 
+TEST_P(SpecTestFixtureComplexFloat, CONFORMANCE_COMPLEX_FLOAT) {
+  int nfail = 0;
+  float _Complex aop, op;
+  float _Complex ip[2];
+  test_data t;
+  t.ip  = (void *)data;
+  t.op  = (void *)&aop;
+
+  if(nargs == 2)
+    t.ip1 = (void *)data1;
+
+  for (uint32_t i = 0; i < count; i++) {
+    feclearexcept (FE_ALL_EXCEPT);
+    test_s1s(&t, i);
+    int raised_exception = fetestexcept(FE_ALL_EXCEPT);
+    feclearexcept (FE_ALL_EXCEPT);
+
+    ip[0] = data[i];
+    if(nargs == 2)  {
+      ip[1] = data1[i];
+    }
+
+    op = getExpected(ip);
+    int eef = expected_expection[i];
+
+    SpecTestFixtureComplexFloat::ConfVerifyComplexFlt(nargs, ip[0], ip[1], aop, op, raised_exception, eef, &nfail);
+
+    if (vflag == 1) {
+      cout << "Input          : " << (double) (__real__ ip[0]) << "+i" << (double) (__imag__ ip[0]) << endl;
+      if(nargs == 2) {
+        cout << "Input 2        : " << (double) (__real__ ip[1]) << "+i" << (double) (__imag__ ip[1]) << endl;
+      }
+      cout << "Actual Output  : " << (double) (__real__ aop) << "+i" << (double) (__imag__ aop) << endl;
+      cout << "Expected Output: " << (double) (__real__ op) << "+i" << (double) (__imag__ op) << endl;
+      PrintConfExpections(raised_exception, eef);
+    }
+  }
+  sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d",
+  "Scalar","Conformance","s1s complex",count,(count-nfail), nfail);
+  ptr->tstcnt++;
+}
+
+TEST_P(SpecTestFixtureComplexDouble, CONFORMANCE_COMPLEX_DOUBLE) {
+  int nfail = 0;
+  double _Complex aop, op;
+  double _Complex ip[2];
+  test_data t;
+  t.ip  = (void *)data;
+  t.op  = (void *)&aop;
+
+  if(nargs == 2)
+    t.ip1 = (void *)data1;
+
+  for (uint32_t i = 0; i < count; i++) {
+    feclearexcept (FE_ALL_EXCEPT);
+    test_s1d(&t, i);
+    int raised_exception = fetestexcept(FE_ALL_EXCEPT);
+    feclearexcept (FE_ALL_EXCEPT);
+
+    ip[0] = data[i];
+    if(nargs == 2)  {
+      ip[1] = data1[i];
+    }
+
+    op = getExpected(ip);
+    int eef = expected_expection[i];
+
+    SpecTestFixtureComplexDouble::ConfVerifyComplexDbl(nargs, ip[0], ip[1], aop, op, raised_exception, eef, &nfail);
+
+    if (vflag == 1) {
+      cout << "Input          : " << (double) (__real__ ip[0]) << "+i" << (double) (__imag__ ip[0]) << endl;
+      if(nargs == 2) {
+        cout << "Input 2        : " << (double) (__real__ ip[1]) << "+i" << (double) (__imag__ ip[1]) << endl;
+      }
+      cout << "Actual Output  : " << (double) (__real__ aop) << "+i" << (double) (__imag__ aop) << endl;
+      cout << "Expected Output: " << (double) (__real__ op) << "+i" << (double) (__imag__ op) << endl;
+      PrintConfExpections(raised_exception, eef);
+    }
+  }
+  sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d",
+  "Scalar","Conformance","s1d complex",count,(count-nfail), nfail);
+  ptr->tstcnt++;
+}
+
+
 /*****************************************************************************/
 /***                            INSTANTIATE_TEST_SUITE_P                   ***/
 /*****************************************************************************/
+INSTANTIATE_TEST_SUITE_P(SpecTests, SpecTestFixtureComplexFloat,
+                         ::testing::ValuesIn(specData));
+
+INSTANTIATE_TEST_SUITE_P(SpecTests, SpecTestFixtureComplexDouble,
+                         ::testing::ValuesIn(specData));
+
 INSTANTIATE_TEST_SUITE_P(AccuTests, AccuTestFixtureFloat,
                          ::testing::ValuesIn(accuData));
 

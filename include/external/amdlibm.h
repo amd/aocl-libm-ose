@@ -1,6 +1,6 @@
 
 /*
-(C) 2008-2022 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 
 Advanced Micro Devices, Inc.
 Software License Agreement
@@ -167,6 +167,7 @@ agreements with respect to the subject matter of this Agreement.
   #endif
   typedef _C_float_complex _Fcomplex;
   typedef _C_double_complex _Dcomplex;
+  typedef _C_ldouble_complex _Lcomplex;
   #ifdef __cplusplus
     }
   #endif
@@ -175,9 +176,11 @@ agreements with respect to the subject matter of this Agreement.
 #if (defined (_WIN64) || defined (_WIN32))
   typedef    _Fcomplex     fc32_t;
   typedef    _Dcomplex     fc64_t;
+  typedef    _Lcomplex     fc128_t;
 #else
-  typedef    float _Complex     fc32_t;
-  typedef    double _Complex     fc64_t;
+  typedef    float _Complex       fc32_t;
+  typedef    double _Complex      fc64_t;
+  typedef    long double _Complex fc128_t;
 #endif
 
 #ifdef __cplusplus

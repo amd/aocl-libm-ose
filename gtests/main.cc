@@ -32,6 +32,16 @@
 #include "almstruct.h"
 #include "cmdline.h"
 
+/*
+ * This method will trim the first argument (argv[0])
+ * and return the function name which is currently being tested.
+ */
+string getFunctionName(string s)
+{
+  size_t pos = s.find("test_");
+  s.erase(0, pos+5);
+  return s;
+}
 
 int main(int argc, char **argv) {
   InputParams params;
@@ -44,6 +54,7 @@ int main(int argc, char **argv) {
   cmd->Validate();
 
   memset((void *)&params, 0, sizeof(InputParams));
+  params.testFunction = getFunctionName(argv[0]);
   if (cmd->Echo(&params))
     return EXIT_FAILURE;
   

@@ -29,7 +29,6 @@
 #define FUNC_TYPES_H_INCLUDED
 
 #include <immintrin.h>
-#include <complex.h>
 #include <libm/types.h>
 
 /*func ptr types*/

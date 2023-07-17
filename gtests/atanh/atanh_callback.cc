@@ -28,12 +28,12 @@
 
 #include <cmath>
 #include "libm_tests.h"
-#include "../../include/libm_macros.h"
+#include <libm_macros.h>
 
 #define AMD_LIBM_VEC_EXPERIMENTAL
 
-#include "../../include/libm_amd.h"
-#include "../../include/libm/amd_funcs_internal.h"
+#include <libm_amd.h>
+#include <libm/amd_funcs_internal.h>
 #include <fmaintrin.h>
 #include <immintrin.h>
 #include "callback.h"
@@ -76,6 +76,15 @@ double getExpected(float *data) {
 long double getExpected(double *data) {
   auto val = alm_mp_atanh(data[0]);
   return val;
+}
+
+// Used by the Complex Number Functions only!
+double _Complex getExpected(float _Complex *data) {
+  return {0};
+}
+
+long double _Complex getExpected(double _Complex *data) {
+  return {0};
 }
 
 float getGlibcOp(float *data) {

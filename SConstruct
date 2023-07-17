@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -121,11 +121,13 @@ if 'tests' in COMMAND_LINE_TARGETS or ('gtests' in COMMAND_LINE_TARGETS) :
         #initialize different library paths
         mpfr_inc = Dir('..\mpfr\mpfr_x64-windows\include')
         gmp_inc = Dir('..\mpfr\gmp_x64-windows\include')
+        mpc_inc = Dir('..\mpfr\mpc_x64-windows\include')
         mpfr_lib = Dir('..\mpfr\mpfr_x64-windows\lib')
         gmp_lib = Dir('..\mpfr\gmp_x64-windows\lib')
+        mpc_lib = Dir('..\mpfr\mpc_x64-windows\lib')
 
-        aenv['ENV']['INCLUDE'] = [aenv['ENV']['INCLUDE'], mpfr_inc, gmp_inc]
-        aenv.Append(LIBS=['gmp.lib', 'mpfr.lib'],LIBPATH=[mpfr_lib, gmp_lib])
+        aenv['ENV']['INCLUDE'] = [aenv['ENV']['INCLUDE'], mpfr_inc, gmp_inc, mpc_inc]
+        aenv.Append(LIBS=['gmp.lib', 'mpfr.lib', 'mpc.lib'],LIBPATH=[mpfr_lib, gmp_lib, mpc_lib])
 
     testenv = aenv.Clone()
 

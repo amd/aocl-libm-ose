@@ -172,6 +172,7 @@ bool cmdLine::Parse(int argc, char *argv[]) {
 }
 
 bool cmdLine::Echo(InputParams *inparams) {
+  std::cout << "Test Function     : " << inparams->testFunction << std::endl;
   if (*testtype) {
     std::cout << "Test Type       : " << args::get(*testtype) << std::endl;
     inparams->ttype = (enum TestType)args::get(*testtype);
@@ -239,12 +240,14 @@ bool cmdLine::Echo(InputParams *inparams) {
     } else if ((strcmp(datatype.c_str(), "double") == 0) ||
                (strcmp(datatype.c_str(), "d") == 0)) {
       inparams->fwidth = ALM::FloatWidth::E_F64;
-    } else {
+    }
+    else {
       cout << "Invalid Data_Type Option" << endl;
     }
   } else {
     inparams->fwidth = ALM::FloatWidth::E_ALL;
   }
+
   std::cout << "Data_Type       : " << inparams->fwidth << std::endl;
 
   if (*nvector) {

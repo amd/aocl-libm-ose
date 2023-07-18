@@ -90,7 +90,6 @@ else:
                   '-Wno-c++11-narrowing',
                   '/Od',
                   '/Ob2',
-                  '-MD',
                   '-march=native',
                   #'/showIncludes',
                   '/EHsc',
@@ -103,7 +102,6 @@ else:
                   '-march=native',
                   '-Wno-missing-field-initializers',
                   '-std:c++17',
-                  '/MT'
                  ]
 arch_config = env['arch_config']
 if arch_config == 'avx512':

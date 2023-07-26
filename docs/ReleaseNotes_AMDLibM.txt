@@ -1,36 +1,25 @@
 
 (C) 2008-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 
-AOCL LibM - Release Notes - AOCL version 4.1.0
-----------------------------------------------
+AOCL LibM - Release Notes - AOCL version 4.1.1 - July monthly release
+---------------------------------------------------------------------
 
-Highlights of AOCL LibM version 4.1.0
+Highlights of AOCL LibM version 4.1.1
 -------------------------------------
-Added erf function
 
-Added vector array arithmetic functions:
- - vrsa_addf, vrsa_addfi, vrda_add and vrda_addi
- - vrsa_subf, vrsa_subfi, vrda_sub and vrda_subi
- - vrsa_mulf, vrsa_mulfi, vrda_mul and vrda_muli
- - vrsa_divf, vrsa_divfi, vrda_div and vrda_divi
+Added new vector array arithmetic functions:
+ - vrsa_fminf, vrsa_fminfi, vrda_fmin and vrda_fmini
+ - vrsa_fmaxf, vrsa_fmaxfi, vrda_fmax and vrda_fmaxi
 
-Added new vector functions:
- - vrd2_erf, vrd4_erf and vrd8_erf
- - vrs16_erff
- - vrd4_sincos and vrd8_sincos
- - vrs16_tanhf, vrs16_cosf and vrs16_acosf
+Added new fast scalar variants:
+ - acosf, sinf, cosf
 
 Optimized the performance of:
- - vrd2_pow, vrd4_pow and vrd8_pow
- - exp2 and log2
+ - logf
+ - fmod and fmodf
+ - fmax and fmaxf
+ - coshf
 
-Improved the accuracy of atan and cos.
-
-Added optimized versions of fminf, fmin, remainderf, remainder, nearbyintf, nearbyint and cbrt.
-
-Added support for the aocl-utils library.
-
-Fast scalar variants:
- - added fasterf
- - improved fasterff and fastpowf
-
+Optimised the performance and improved the accuracy of
+ - atan
+ 

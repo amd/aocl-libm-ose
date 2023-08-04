@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -49,8 +49,8 @@ static struct{
             uint64_t mask;
             double pi[4], poly_atan[9];
             } atan_data = {
-                .sqrt3  = 0x1.bb67ae8584caap0,
-                .range  = 0x1.126145e9ecd56p-2,
+                .sqrt3  = 0x1.bb67ae8584caap0,  /* sqrt(3) */
+                .range  = 0x1.126145e9ecd56p-2, /* 2-sqrt(3) */
                 .piby_2 = 0x1.921fb54442d18p0,
                 .unit   = 1.0,
                 .mask   = 0x7FFFFFFFFFFFFFFFUL,
@@ -73,8 +73,8 @@ static struct{
                             },
                         };
 
-#define SQRT3  atan_data.sqrt3
-#define RANGE  atan_data.range
+#define SQRT3  atan_data.sqrt3 /* sqrt(3) */
+#define RANGE  atan_data.range /* 2-sqrt(3) */
 #define PI     atan_data.pi
 #define PIBY_2 atan_data.piby_2
 #define UNIT   atan_data.unit

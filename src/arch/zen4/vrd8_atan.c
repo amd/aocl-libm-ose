@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -46,8 +46,8 @@ static struct {
     double sqrt3, range, pi[4], unit;
     v_f64x8_t poly_atan[9];
     } v8_atan_data = {
-        .sqrt3 = 0x1.bb67ae8584caap0,
-        .range = 0x1.126145e9ecd56p-2,
+        .sqrt3 = 0x1.bb67ae8584caap0,  /* sqrt(3) */
+        .range = 0x1.126145e9ecd56p-2, /* 2-sqrt(3) */
         .unit= 1.0,
         .pi = {
             0,
@@ -67,8 +67,8 @@ static struct {
             _MM512_SET1_PD8(-0x1.3a3c92f7949aep-5),
         },
     };
-#define SQRT3  v8_atan_data.sqrt3
-#define RANGE  v8_atan_data.range
+#define SQRT3  v8_atan_data.sqrt3 /* sqrt(3) */
+#define RANGE  v8_atan_data.range /* 2-sqrt(3) */
 #define PI     v8_atan_data.pi
 #define UNIT v8_atan_data.unit
 #define C0 v8_atan_data.poly_atan[0]
@@ -114,6 +114,7 @@ ALM_PROTO_ARCH_ZN4(vrd8_atan)(v_f64x8_t x)
     /* Get absolute value of input */
     ux = ux & SIGN_MASK;
     aux = as_v8_f64_u64(ux);
+    /* loop over the 8 elements of the vector */
     for(int i = 0; i < 8; ++i){
         unsigned int n = 0;
         if(aux[i] >= UNITBYRANGE){

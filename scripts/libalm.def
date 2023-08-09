@@ -142,6 +142,8 @@ EXPORTS
     amd_vrd4_pow
     amd_vrd4_sin
     amd_vrd4_tan
+    amd_vrd4_sincos
+    amd_vrd8_sincos
     amd_vrda_cbrt
     amd_vrda_cos
     amd_vrda_exp
@@ -199,6 +201,7 @@ EXPORTS
     amd_vrd8_exp
     amd_vrd8_atan
     amd_vrs16_atanf
+    amd_vrs16_erff
     amd_vrs16_expf
     amd_vrd8_exp2
     amd_vrs16_exp2f
@@ -229,7 +232,27 @@ EXPORTS
     amd_cpowf
     amd_cpow
     amd_erff
-    amd_vrs8_erff
+    amd_erf
     amd_vrs4_erff
+    amd_vrs8_erff
     amd_vrs16_cosf
+    amd_vrd2_erf
+    amd_vrd4_erf
+    amd_vrd8_erf
+    amd_vrsa_addf
+    amd_vrda_add
+    amd_vrsa_subf
+    amd_vrda_sub
+    amd_vrsa_mulf
+    amd_vrda_mul
+    amd_vrsa_divf
+    amd_vrda_div
+    amd_vrsa_addfi
+    amd_vrda_addi
+    amd_vrsa_subfi
+    amd_vrda_subi
+    amd_vrsa_mulfi
+    amd_vrda_muli
+    amd_vrsa_divfi
+    amd_vrda_divi
     alm_main

@@ -29,5 +29,5 @@
 
 #include <libm/arch/avx2.h>
 
-#include "../../optmized/cmplx/clog.c"
+#include "../../optimized/cmplx/clog.c"
 

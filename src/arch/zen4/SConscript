@@ -26,7 +26,7 @@
 Import('env')
 from os.path import join as joinpath
 
-builddir = joinpath(env['BUILDROOT'], 'src', 'optmized')
+builddir = joinpath(env['BUILDROOT'], 'src', 'optimized')
 
 e = env.Clone()
 
@@ -49,12 +49,13 @@ env_mach = e['ALM_MAX_ARCH']
 #    print('znver4 not supported, not compiling sources in this directory')
 #    Return('')
 
-machflag_avx512 = '-mavx512f'
+machflag_avx512f = '-mavx512f'
+machflag_avx512dq = '-mavx512dq'
 
 machflag = '-march=' + env_mach
 
 e.MergeFlags({
-    'CFLAGS'  : [machflag, machflag_avx512, '-O3', '-fPIC', '-flax-vector-conversions'],
+    'CFLAGS'  : [machflag, machflag_avx512f, machflag_avx512dq, '-O3', '-fPIC', '-flax-vector-conversions'],
     'CPPPATH' : incpaths
 })
 

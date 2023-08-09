@@ -40,17 +40,21 @@ LIB = dynamic #default value
 
 #header
 header_path = $(abspath ../include/external/)
+aocl_utils_header_path = $(AOCL_UTILS_INSTALL_PATH)/include/alci
 INC         = -I$(header_path)
+INC         += -I$(aocl_utils_header_path)
 
 #path to libalm.so
 lib_path = $(abspath ../build/aocl-release/src/)
+aocl_utils_lib_path = $(AOCL_UTILS_INSTALL_PATH)/lib
 LFLAGS   := -L$(lib_path)
+LFLAGS   += -L$(aocl_utils_lib_path)
 
 ifeq ($(LIB), static)
     LFLAGS += -static
 endif
 
-LFLAGS += -lalm -lm
+LFLAGS += -lalm -lm -laoclutils -lstdc++
 
 #src path
 SOURCES = ./src/*.c

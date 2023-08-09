@@ -28,4 +28,4 @@
 #define ALM_OVERRIDE 1
 
 #include <libm/arch/zen4.h>
-#include "../../optmized/atan.c"
+#include "../../optimized/atan.c"

@@ -29,4 +29,4 @@
 
 #include <libm/arch/zen3.h>
 
-#include "../../optmized/ceilf.c"
+#include "../../optimized/ceilf.c"

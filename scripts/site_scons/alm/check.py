@@ -35,9 +35,9 @@ from os.path import join as joinpath
 
 toolchain_versions = {
     #Toolchain : {preferred_version, min_version}
-    'GCC' :     {'max':'12.1' ,  'min':'9.2'},
-    'CLANG':    {'max':'14.0',   'min':'9.0'},
-    'AOCC':     {'max':'14.0',   'min':'9.0'},
+    'GCC' :     {'max':'13.1' ,  'min':'9.2'},
+    'CLANG':    {'max':'16.0',   'min':'9.0'},
+    'AOCC':     {'max':'16.0',   'min':'9.0'},
     'MSVC':     {'max':'12.0',   'min':'2.2'},
 }
 
@@ -71,8 +71,9 @@ def CheckForToolchain(context):
         if k.lower() in cc:
             #ignoring last . (if exists) to convert to float
             if cc_ver.count('.') > 1:
-                cc_ver = '.'.join(cc_ver.split('.')[:-1])
-            context.Message(' Using compiler {0} ver {1}'.format(k, cc_ver))
+                cc_ver_minor = cc_ver[cc_ver.rfind(".")+1:]
+                cc_ver = cc_ver[:cc_ver.rfind(".")]
+            context.Message(' Using compiler {0} version {1} minor version {2}'.format(k, cc_ver, cc_ver_minor))
             if float(v['min']) <= float(cc_ver) <= float(v['max']):
                     result = True
 
@@ -84,9 +85,22 @@ def CheckPathDir(context, mydir):
     from os import listdir
 
     if not isdir(mydir) or len(os.listdir(mydir)) == 0:
-        print ("Invalid/Empty directory")
+        print ("Invalid/Empty directory: %s" % mydir)
         return False
     return True
+
+def CheckCPUIDInstall(context):
+    res = False
+    env = context.env
+    aocl_utils_install_path = env['aocl_utils_install_path']
+
+    context.Message ("Checking for valid AOCL UTILS install path")
+
+    # check if path exists, else exit error
+    if CheckPathDir(context, aocl_utils_install_path):
+        res = True
+    context.Result(res)
+    return res
 
 def CheckLibAbi(context):
     #if svml, check for svml path in INTEL_LIB_PATH variable
@@ -158,6 +172,7 @@ def All(almenv):
             'CheckForToolchain' : CheckForToolchain,
             'CheckForOS'        : CheckForOS,
             'CheckLibAbi'       : CheckLibAbi,
+            'CheckCPUIDInstall' :   CheckCPUIDInstall,
             'CheckZenVer'       : lambda ctx : CheckZenVer(ctx),
         },
         conf_dir = joinpath(env['BUILDDIR'], '.sconf_temp'),
@@ -181,6 +196,9 @@ def All(almenv):
         Exit(1)
 
     conf.CheckZenVer()
+
+    if not conf.CheckCPUIDInstall():
+        Exit(1)
 
     return conf
 

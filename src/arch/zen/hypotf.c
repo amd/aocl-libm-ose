@@ -29,4 +29,4 @@
 
 #include <libm/arch/zen.h> 
 
-#include "../../optmized/hypotf.c"
+#include "../../optimized/hypotf.c"

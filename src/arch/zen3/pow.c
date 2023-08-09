@@ -29,4 +29,4 @@
 
 #include <libm/arch/zen3.h>
 
-#include "../../optmized/pow.c"
+#include "../../optimized/pow.c"

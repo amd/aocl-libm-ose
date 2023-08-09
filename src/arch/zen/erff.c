@@ -29,4 +29,4 @@
 
 #include <libm/arch/zen.h>
 
-#include "../../optmized/erff.c"
+#include "../../optimized/erff.c"

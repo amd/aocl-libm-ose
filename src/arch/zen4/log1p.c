@@ -29,4 +29,4 @@
 
 #include <libm/arch/zen4.h>
 
-#include "../../optmized/log1p.c"
+#include "../../optimized/log1p.c"

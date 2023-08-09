@@ -30,5 +30,5 @@
 
 #include <libm/arch/avx2.h>
 
-#include "../../optmized/asinhf.c"
+#include "../../optimized/asinhf.c"
 

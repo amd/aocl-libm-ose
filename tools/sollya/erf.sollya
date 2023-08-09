@@ -1,0 +1,63 @@
+// Script to find a polynomial or polynomials for approximating erf(x) (double precision) using fpminimax  
+
+restart ;
+
+N = 1000000;  // Number of points to check in the given range
+prec;
+
+a = 0.0; // Lower bound of range
+b = 1.0; // "mid-point"
+c = 5.921875; // Upper bound of range, beyond which double prec erf should evaluate to 1.0, so erf(c)=2^(-25)
+
+// Let's find a polynomial to fit the region from a to b
+d = [a ; b];
+
+// f(x) is the given function for which we seek polynomial with minimal absolute error
+f = erf(x);
+
+// Generate basis of polynomial f(x) 
+deg = 27;
+P = [||] ; 
+for i from 1 to deg by 2 do {P = P@[|i|];} ;
+
+// return p that minimizes |f(x) - poly(x)|
+poly = fpminimax(f,P,[|DD...|],[a;b],floating,relative) ;
+
+print("abs error:", supnorm(poly, f, [a;b], absolute, 2^(-30)));
+print("rel error:", supnorm(poly, f, [a+2^(-30);b], relative, 2^(-20)));
+// print("abs error:", infnorm(f(x)-poly(x), [a;b]));
+// print("rel error:", infnorm(poly(x)/f(x)-1, [a+2^(-50);b]));
+
+// print polynomial in Horner form
+poly;
+display = hexadecimal;
+poly;
+printexpansion(poly);
+display = decimal;
+
+prec = 250;
+
+// Now let's find a polynomial to fit the region from b to c
+d = [b ; c];
+
+// f(x) is the given function for which we seek polynomial with minimal absolute error
+f = log(1-erf(x));
+
+// Generate basis of polynomial f(x) 
+deg = 27;
+P = [||] ; 
+for i from 1 to deg by 1 do {P = P@[|i|];} ;
+
+// return p that minimizes |f(x) - poly(x)|
+poly = fpminimax(f,P,[|DD...|],[b;c],floating,relative) ;
+
+print("abs error:", supnorm(poly, f, [b;c], absolute, 2^(-30)));
+print("rel error:", supnorm(poly, f, [b+2^(-30);c], relative, 2^(-20)));
+
+// print polynomial in Horner form
+poly;
+display = hexadecimal;
+poly;
+printexpansion(poly);
+display = decimal;
+

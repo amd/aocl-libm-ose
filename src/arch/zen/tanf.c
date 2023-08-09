@@ -29,4 +29,4 @@
 
 #include <libm/arch/zen.h> 
 
-#include "../../optmized/tanf.c"
+#include "../../optimized/tanf.c"

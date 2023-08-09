@@ -1,0 +1,48 @@
+# How to build Libm on Windows using SCons
+
+## Dependency libraries:
+  AOCL LibM library uses AOCL libaoclutils library to detect Zen architecture. Follow the steps below to compile AOCL libaoclutils library on windows.
+           a)Clone the libaoclutils library code base.
+               git clone git@github.amd.com:AOCL/aocl-utils.git -b amd-main
+           b)Follow the steps mentioned in the aocl-utils/README.md further to compile and install the libaoclutils library.
+           c)Maintain following directory structure of libaoclutils files to compile LibM on windows
+               libaoclutils
+               +---include
+               |   +---alci
+               |       +---*.h files
+               |
+               +---lib
+                   +---cpu.dll
+                   |
+                   +---cpu.lib
+                   |
+                   +---cpu_static.lib
+
+## Installing virtualenv
+    1. pip install virtualenv
+
+## Activating virtual environment
+    Use Virtual Environment to install python3 and scons inside.
+    1. "<vcvarsall file path>\vcvarsall.bat" amd64
+    2. cd aocl-libm
+    3. virtualenv -p python .venv3
+    4. .venv3\Scripts\activate
+    5. pip install scons
+
+## Start building libm library
+    scons ALM_CC="<clang executable path>" ALM_CXX="<clang++ executable path>" --aocl_utils_install_path="<libaoclutils library path>"
+
+## To build in parallel, use following flag
+    -j32
+
+## To build with verbosity, use following flag
+    --verbose=1
+
+## To build with debug info, use following flag
+    --debug_mode=libs
+
+## To link static/dynamic libaoclutils library use following flag:
+   0 for dynamic linking
+   1 for static linking
+   Default is static linking.
+    --aocl_utils_link=1

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@
 # Inherit global environment
 Import('env')
 from os.path import join as joinpath
+from os.path import isdir as isdir
 
 installdir = env['installdirs']
 
@@ -33,21 +34,34 @@ builddir = joinpath(env['BUILDROOT'], 'src')
 
 ldscript = joinpath('#', 'src', 'ld-syms-libm.lds')
 
+Import('aocl_utils_install_path')
+
 kern_incpaths = [
     '#' + Dir('.').srcnode().path,
-    '#' + joinpath(Dir('.').srcnode().path, 'optmized'),
+    '#' + joinpath(Dir('.').srcnode().path, 'optimized'),
     '#' + joinpath(Dir('.').srcnode().path, 'kern')
 ]
+
+use_asan = env['use_asan']
 
 if env['HOST_OS'] != 'win32':
     ccflags = ['-Wall',
                '-W',
                '-Wstrict-prototypes',
                '-Werror',
-               #'-Wno-unused-but-set-parameter',
                '-Wno-unused-parameter',
-               '-fPIC'
+               '-fPIC',
               ]
+    if use_asan == 1:
+        ccflags.append('-fsanitize=address')
+    if 'clang' in env['CC']:
+        cc_ver = env['CCVERSION']
+        if cc_ver.count('.') > 1:
+            cc_ver_minor = cc_ver[cc_ver.rfind(".")+1:]
+            cc_ver = cc_ver[:cc_ver.rfind(".")]
+        # AOCC 4.0.0 (CLANG 14.0.6) and above supports the flag -muse-unaligned-vector-move
+        if (float(cc_ver) >= 14.0) & (float(cc_ver_minor) >= 6.0):
+            ccflags.append('-muse-unaligned-vector-move')
 else:
     ccflags = ['-DAVX_XOP_FMA4_FMA3',
                '-DDEBUG=0',
@@ -66,20 +80,21 @@ else:
                '/DNDEBUG',
                '-MD',
                '-march=native',
-               #'/showIncludes',
                '/MT'
           ]
+    if use_asan == 1:
+        ccflags.append(['/fsanitize=address', '/Zi'])
+        ccflags.remove('/O2')
 
 if env['HOST_OS'] == 'win32':
     if env['BUILD'] == 'debug':
         env['PDB'] = 'libalm.pdb'
+        ccflags.remove('/O2')
 
 e = env.Clone()
 e.Append(
     CCFLAGS=ccflags,
     CPPPATH = kern_incpaths,
-    # CCFLAGS = [],
-    # LINKFLAGS = [],
     LINKERSCRIPT = ldscript,
     STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 1
 )
@@ -87,13 +102,55 @@ e.Append(
 alm_objs = []
 
 almenv = e.Clone()
-if e['HOST_OS'] != 'win32':
-    almenv.Append(
-        LINKFLAGS = ['-ealm_main'], # ['-T$LINKERSCRIPT']
-        LIBS      = ['c'],
-    )
 
-subdirs = ['isa', 'optmized', 'iface', 'arch', 'ref']
+if e['HOST_OS'] != 'win32':
+    __linkflags = ['-ealm_main',]
+    __libs = ['c']
+
+    if use_asan == 1:
+        __libs.append('asan')
+
+    almenv.Append(
+        LINKFLAGS = __linkflags, # ['-T$LINKERSCRIPT']
+        LIBS      = __libs,
+    )
+else:
+    if use_asan == 1:
+        almenv.Append(
+            LIBS      = ['clang_rt.asan-x86_64.lib','clang_rt.asan_cxx-x86_64.lib'],
+        )
+
+# to link to libaoclutils library
+almenv.Append(CPPPATH = joinpath(aocl_utils_install_path, 'include'))
+almenv.Append(CCFLAGS = '-DUSE_AOCL_UTILS')
+aocl_utils_link = env['aocl_utils_link']
+
+if e['HOST_OS'] != 'win32':
+    if int(aocl_utils_link):
+        print("Linking Static libaoclutils library")
+        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libaoclutils.a')
+        aocl_utils_static_lib_path = almenv.File(aocl_utils_static_lib_path)
+        almenv.Append(LIBS=aocl_utils_static_lib_path)
+        # libstdc++ needs explicit loading when using libaoclutils.a (static library)
+        almenv.Append(LIBS="stdc++")
+    else:
+        print("Linking Dynamic libaoclutils library")
+        aocl_utils_dynamic_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libaoclutils.so')
+        aocl_utils_dynamic_lib_path = almenv.File(aocl_utils_dynamic_lib_path)
+        almenv.Append(LIBS=aocl_utils_dynamic_lib_path)
+else:
+    if int(aocl_utils_link):
+        print("Linking Static libaoclutils library")
+        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libaoclutils_static.lib')
+        aocl_utils_static_lib_path = almenv.File(aocl_utils_static_lib_path)
+        almenv.Append(LIBS=aocl_utils_static_lib_path)
+    else:
+        print("Linking Dynamic libaoclutils library")
+        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libaoclutils.lib')
+        aocl_utils_static_lib_path = almenv.File(aocl_utils_static_lib_path)
+        almenv.Append(LIBS=aocl_utils_static_lib_path)
+
+subdirs = ['isa', 'optimized', 'iface', 'arch', 'ref']
 for d in subdirs:
     denv = almenv.Clone()
     sdir = joinpath(denv['CWD'], d)
@@ -115,7 +172,7 @@ if e['HOST_OS'] != 'win32':
     libm = almenv.StaticLibrary('alm', alm_objs)
     libmso = almenv.SharedLibrary('alm', alm_objs)
 else:
-    libm = almenv.StaticLibrary('libalm-static', alm_objs)
+    libm = almenv.StaticLibrary('libalm-static', source = [alm_objs, joinpath(aocl_utils_install_path, 'lib','libaoclutils_static.lib')])
     almenv['WINDOWS_INSERT_DEF']=1
     libmso = almenv.SharedLibrary('libalm', alm_objs, no_import_lib=False)
 

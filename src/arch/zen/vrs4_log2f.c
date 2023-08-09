@@ -28,4 +28,4 @@
 #define ALM_OVERRIDE 1
 
 #include <libm/arch/zen.h>
-#include "../../optmized/vec/vrs4_log2f.c"
+#include "../../optimized/vec/vrs4_log2f.c"

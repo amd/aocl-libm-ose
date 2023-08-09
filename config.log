@@ -1,4 +1,4 @@
-file /home/pmallapp/Projects/amd/aocl-libm.git/scripts/site_scons/alm/check.py,line 156:
+file /projects/crypto/1/pjayaraj/aocl-libm/scripts/site_scons/alm/check.py,line 168:
 	Configure(confdir = build/aocl-release/.sconf_temp)
 scons: Configure: Checking whether gcc program exists...
 scons: Configure: /usr/bin/gcc
@@ -13,7 +13,7 @@ scons: Configure: Checking whether g++ program exists...
 scons: Configure: /usr/bin/g++
 
 scons: Configure: Checking for Toolchain 
-scons: Configure: (cached)  Using compiler GCC ver 10.2
+scons: Configure: (cached)  Using compiler GCC ver 11.3
 scons: Configure: (cached) yes
 
 scons: Configure: Checking if test supporting libraries exists
@@ -62,6 +62,9 @@ scons: Configure: "build/aocl-release/.sconf_temp/conftest_2ab82633fad769ac6eb3a
 scons: Configure: The original builder output was:
   |gcc -o build/aocl-release/.sconf_temp/conftest_2ab82633fad769ac6eb3a12f2715d311_2_259e23adb07b14b5ce365380b185afa0.o -c -march=znver2 build/aocl-release/.sconf_temp/conftest_2ab82633fad769ac6eb3a12f2715d311_2.c
   |
+scons: Configure: (cached) yes
+
+scons: Configure: Checking for valid AOCL UTILS install path
 scons: Configure: (cached) yes
 
 

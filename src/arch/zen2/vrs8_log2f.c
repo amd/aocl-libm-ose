@@ -29,4 +29,4 @@
 
 #include <libm/arch/zen2.h>
 
-#include "../../optmized/vec/vrs8_log2f.c"
+#include "../../optimized/vec/vrs8_log2f.c"

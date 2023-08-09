@@ -29,4 +29,4 @@
 
 #include <libm/arch/zen.h> 
 
-#include "../../optmized/fabsf.c"
+#include "../../optimized/fabsf.c"

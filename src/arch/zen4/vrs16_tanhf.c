@@ -89,7 +89,7 @@ ALM_PROTO_ARCH_ZN4(vrs16_tanhf)(v_f32x16_t x)
     }
 
     /* Combine the results to one 8-element vector */
-    v_f32x16_t result = _mm512_set_ps(op[0][0], op[0][1], op[0][2], op[0][3], 
+    v_f32x16_t result = _mm512_setr_ps(op[0][0], op[0][1], op[0][2], op[0][3], 
                                       op[0][4], op[0][5], op[0][6], op[0][7],
                                       op[1][0], op[1][1], op[1][2], op[1][3],
                                       op[1][4], op[1][5], op[1][6], op[1][7]);

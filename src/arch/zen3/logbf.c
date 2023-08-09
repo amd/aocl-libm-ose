@@ -29,4 +29,4 @@
 
 #include <libm/arch/zen3.h>
 
-#include "../../optmized/logbf.c"
+#include "../../optimized/logbf.c"

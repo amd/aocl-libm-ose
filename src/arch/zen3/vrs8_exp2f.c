@@ -29,4 +29,4 @@
 
 #include <libm/arch/zen3.h>
 
-#include "../../optmized/vec/vrs8_exp2f.c"
+#include "../../optimized/vec/vrs8_exp2f.c"

@@ -89,8 +89,15 @@ enum {
     C_AMD_TANPI,
     C_AMD_TRUNC,
     C_AMD_ERF,
-
     C_AMD_SINCOS,
+    C_AMD_ADD,
+    C_AMD_SUB,
+    C_AMD_MUL,
+    C_AMD_DIV,
+    C_AMD_ADDI,
+    C_AMD_SUBI,
+    C_AMD_MULI,
+    C_AMD_DIVI,
 
     /*
      * INTEGER VARIANTS
@@ -187,6 +194,14 @@ extern void LIBM_IFACE_PROTO(erf)(void *arg);
 extern void LIBM_IFACE_PROTO(cexp)(void *arg);
 extern void LIBM_IFACE_PROTO(clog)(void *arg);
 extern void LIBM_IFACE_PROTO(cpow)(void *arg);
+extern void LIBM_IFACE_PROTO(add)(void *arg);
+extern void LIBM_IFACE_PROTO(sub)(void *arg);
+extern void LIBM_IFACE_PROTO(mul)(void *arg);
+extern void LIBM_IFACE_PROTO(div)(void *arg);
+extern void LIBM_IFACE_PROTO(addi)(void *arg);
+extern void LIBM_IFACE_PROTO(subi)(void *arg);
+extern void LIBM_IFACE_PROTO(muli)(void *arg);
+extern void LIBM_IFACE_PROTO(divi)(void *arg);
 
 struct entry_pt_interface {
     void (*epi_init)(void *arg);

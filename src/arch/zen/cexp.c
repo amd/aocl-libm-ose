@@ -29,5 +29,5 @@
 
 #include <libm/arch/zen.h>
 
-#include "../../optmized/cmplx/cexp.c"
+#include "../../optimized/cmplx/cexp.c"
 

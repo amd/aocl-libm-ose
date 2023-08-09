@@ -29,4 +29,4 @@
 
 #include <libm/arch/avx2.h>
 
-#include "../../optmized/ilogbf.c"
+#include "../../optimized/ilogbf.c"

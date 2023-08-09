@@ -162,6 +162,9 @@ class AlmEnvironment(object):
         dev   = opts.GetOption('developer')
         abi   = opts.GetOption('libabi')
         arch_config  = opts.GetOption('arch_config')
+        use_asan = opts.GetOption('use_asan')
+        aocl_utils_install_path = opts.GetOption('aocl_utils_install_path')
+        aocl_utils_link = opts.GetOption('aocl_utils_link')
 
         # fix the debug, it is set to 'none' instead of None
         # due to the way options are handled
@@ -222,12 +225,16 @@ class AlmEnvironment(object):
         opts       = self.opts
         abi        = opts.GetOption('libabi')
         arch_config = opts.GetOption('arch_config')
+        use_asan    = opts.GetOption('use_asan')
+        aocl_utils_install_path = opts.GetOption('aocl_utils_install_path')
+        aocl_utils_link = opts.GetOption('aocl_utils_link')
 
         abi_dict = {
             'acml' : 'LIBABI_ACML',
             'libm' : 'LIBABI_LIBM',
             'svml' : 'LIBABI_SVML',
             'glibc': 'LIBABI_GLIBC',
+            'msvc' : 'LIBABI_MSVC'
         }
 
         cflags = ''
@@ -242,6 +249,9 @@ class AlmEnvironment(object):
 
         env['libabi'] = abi
         env['arch_config'] = arch_config
+        env['use_asan'] = use_asan
+        env['aocl_utils_install_path'] = aocl_utils_install_path
+        env['aocl_utils_link'] = aocl_utils_link
 
     def CheckDefault(self):
         '''

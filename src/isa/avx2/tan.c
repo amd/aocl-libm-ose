@@ -29,4 +29,4 @@
 
 #include <libm/arch/avx2.h>
 
-#include "../../optmized/tan.c"
+#include "../../optimized/tan.c"

@@ -29,5 +29,5 @@
 
 #include <libm/arch/zen3.h>
 
-#include "../../optmized/cmplx/cpowf.c"
+#include "../../optimized/cmplx/cpowf.c"
 

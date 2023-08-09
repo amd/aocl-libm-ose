@@ -28,4 +28,4 @@
 #define ALM_OVERRIDE 1
 
 #include <libm/arch/zen3.h>
-#include "../../optmized/tanh.c"
+#include "../../optimized/tanh.c"

@@ -28,4 +28,4 @@
 #define ALM_OVERRIDE 1
 
 #include <libm/arch/zen4.h>
-#include "../../optmized/vec/vrd2_exp.c"
+#include "../../optimized/vec/vrd2_exp.c"

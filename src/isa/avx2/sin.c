@@ -29,5 +29,5 @@
 
 #include <libm/arch/avx2.h>
 
-#include "../../optmized/sin.c"
+#include "../../optimized/sin.c"
 

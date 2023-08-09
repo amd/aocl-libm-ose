@@ -28,4 +28,4 @@
 #define ALM_OVERRIDE 1
 
 #include <libm/arch/avx2.h>
-#include "../../optmized/asinf.c"
+#include "../../optimized/asinf.c"

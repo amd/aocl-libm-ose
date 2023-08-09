@@ -89,7 +89,8 @@ typedef union UT64_ UT64;
 #define NEG_HNORMAL_F32 0xff7fffff
 #define POS_LNORMAL_F32 0x00800000
 #define NEG_LNORMAL_F32 0x80800000
-#define POS_BITSET_F32  0x7FFFFFFF
+#define POS_BITSET_F32 0x7FFFFFFF
+#define EXP_VAL_23_F32 0x4B000000
 
 /*Special numbers Double */
 #define POS_ONE_F64 0x3FF0000000000000
@@ -147,6 +148,7 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
 #define EXP_MAX_DOUBLE    0x40862e42fefa39ef
 #define TWOPOW53_DP64     0x4340000000000000
 #define POS_BITSET_DP64   0x7FFFFFFFFFFFFFFF
+#define EXP_VAL_52_DP64   0x4330000000000000
 
 /* These definitions, used by float functions,
    are for both 32 and 64 bit machines */

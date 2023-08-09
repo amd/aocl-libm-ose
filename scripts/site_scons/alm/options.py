@@ -92,7 +92,7 @@ class AlmOptions(object):
                         nargs   = 1,
                         default = 'aocl',
                         type    = 'choice',
-                        choices = ['aocl', 'libm', 'svml', 'glibc'],
+                        choices = ['aocl', 'libm', 'svml', 'glibc','msvc'],
                         help = """Compile tests to call this abi \
                         aocl  - AOCL, functions prefixed with 'amd_*' \
                         glibc - GLIBC abi calls, prefixed with '__ieee_*' \
@@ -109,6 +109,30 @@ class AlmOptions(object):
                         help    = 'Configure for avx512'
         )
 
+        #address sanitizer usage
+        self.add_option('use_asan',
+                        nargs = 1,
+                        default = 0,
+                        type =  int,
+                        help = "Compile to use address sanitizer"
+        )
+
+        #provide libaoclutils install path
+        self.add_option('aocl_utils_install_path',
+                        nargs = 1,
+                        default = '/usr/local/',
+                        type = str,
+                        metavar = 'DIR',
+                        help = 'Provide AOCL UTILS install path',
+        )
+
+        #link libaoclutils static/dynamic library, default is static linking
+        self.add_option('aocl_utils_link',
+                        nargs = 1,
+                        default = 1,
+                        type = int,
+                        help = 'libaoclutils static/dynamic linking',
+        )
 
         self.add_option('developer',
                         nargs   = 1,

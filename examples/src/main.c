@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -42,6 +42,11 @@ extern int use_log2();
 extern int use_asin();
 extern int use_acos();
 extern int use_asinh();
+extern int use_fmin();
+extern int use_add();
+extern int use_sub();
+extern int use_mul();
+extern int use_div();
 
 /* trigonometric */
 extern int use_cexp();
@@ -60,6 +65,7 @@ extern int use_exp2_avx512();
 extern int use_pow_avx512();
 extern int use_atan_avx512();
 extern int use_asin_avx512();
+extern int use_erf_avx512();
 #endif
 
 int main()  {
@@ -80,12 +86,15 @@ int main()  {
     use_asin();
     use_acos();
     use_asinh();
-
     use_cexp();
     use_clog();
     use_cpow();
-
     use_erf();
+    use_fmin();
+    use_add();
+    use_sub();
+    use_mul();
+    use_div();
 
     #if defined (__AVX512__)
     use_exp_avx512();
@@ -95,6 +104,7 @@ int main()  {
     use_log10_avx512();
     use_atan_avx512();
     use_asin_avx512();
+    use_erf_avx512();
     #endif
 
     return 0;

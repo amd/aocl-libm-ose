@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -55,8 +55,6 @@ if aenv['HOST_OS'] == 'win32':
     aenv['ENV']['TMP'] = os.environ['TMP'] # to avoid linker eror in windows. This is mentioned in scons FQA doc.
     shutil.copy(r'.\scripts\libalm.def', r'.\src')
     shutil.copy(r'.\scripts\almfast.def', r'.\src\fast')
-    shutil.copy(r'.\scripts\mparith32.def', r'.\gtests\libs\mparith')
-    shutil.copy(r'.\scripts\mparith64.def', r'.\gtests\libs\mparith')
 
 # First check version of python and scons
 EnsurePythonVersion(3, 6)
@@ -85,6 +83,10 @@ makedirs(build_root, exist_ok=True)
 # alm libs will be generated here
 alm_lib_path='#'+joinpath(build_root,'src')
 
+# Fetch absolute path of libaoclutils library
+aocl_utils_install_path = joinpath('#', aenv['aocl_utils_install_path'])
+Export('aocl_utils_install_path')
+
 # These targets are not the .obj files or .o files, instead
 # class targets or build objectw
 targets = []
@@ -111,31 +113,4 @@ alm_libs = SConscript(joinpath(src_path, 'SConscript'),
 
 targets += alm_libs
 
-gtest_objs = []
-if 'tests' in COMMAND_LINE_TARGETS or ('gtests' in COMMAND_LINE_TARGETS) :
-    if aenv['HOST_OS'] == 'win32':
-        #initialize different library paths
-        mpfr_inc = Dir('..\mpfr\mpfr_x64-windows\include')
-        gmp_inc = Dir('..\mpfr\gmp_x64-windows\include')
-        mpfr_lib = Dir('..\mpfr\mpfr_x64-windows\lib')
-        gmp_lib = Dir('..\mpfr\gmp_x64-windows\lib')
-
-        aenv['ENV']['INCLUDE'] = [aenv['ENV']['INCLUDE'], mpfr_inc, gmp_inc]
-        aenv.Append(LIBS=['gmp.lib', 'mpfr.lib'],LIBPATH=[mpfr_lib, gmp_lib])
-
-    testenv = aenv.Clone()
-
-    LIBPATH=[alm_lib_path]
-
-    gtest_objs += SConscript(dirs='gtests',
-                   exports = {'env' : testenv, 'almenv': __almenv},
-                   duplicate = 0,
-                   src_dir    = 'gtests',
-                   variant_dir = joinpath(build_root, 'gtests'))
-
-if gtest_objs:
-    Requires(gtest_objs, alm_libs)
-    targets += gtest_objs
-
 Default(targets)
-

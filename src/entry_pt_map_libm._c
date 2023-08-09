@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -79,6 +79,7 @@ WEAK_LIBM_ALIAS(sin, FN_PROTOTYPE(sin));
 WEAK_LIBM_ALIAS(tanf, FN_PROTOTYPE(tanf));
 WEAK_LIBM_ALIAS(tan, FN_PROTOTYPE(tan));
 
+WEAK_LIBM_ALIAS(erf, FN_PROTOTYPE(erf));
 WEAK_LIBM_ALIAS(erff, FN_PROTOTYPE(erff));
 
 WEAK_LIBM_ALIAS(acos, FN_PROTOTYPE(acos));
@@ -161,3 +162,20 @@ WEAK_LIBM_ALIAS(cpow, FN_PROTOTYPE(cpow));
 WEAK_LIBM_ALIAS(cpowf, FN_PROTOTYPE(cpowf));
 WEAK_LIBM_ALIAS(clog, FN_PROTOTYPE(clog));
 WEAK_LIBM_ALIAS(clogf, FN_PROTOTYPE(clogf));
+WEAK_LIBM_ALIAS(vrsa_addf, FN_PROTOTYPE(vrsa_addf));
+WEAK_LIBM_ALIAS(vrda_add, FN_PROTOTYPE(vrda_add));
+WEAK_LIBM_ALIAS(vrsa_subf, FN_PROTOTYPE(vrsa_subf));
+WEAK_LIBM_ALIAS(vrda_sub, FN_PROTOTYPE(vrda_sub));
+WEAK_LIBM_ALIAS(vrsa_mulf, FN_PROTOTYPE(vrsa_mulf));
+WEAK_LIBM_ALIAS(vrda_mul, FN_PROTOTYPE(vrda_mul));
+WEAK_LIBM_ALIAS(vrsa_divf, FN_PROTOTYPE(vrsa_divf));
+WEAK_LIBM_ALIAS(vrda_div, FN_PROTOTYPE(vrda_div));
+WEAK_LIBM_ALIAS(vrsa_addf, FN_PROTOTYPE(vrsa_addfi));
+WEAK_LIBM_ALIAS(vrda_add, FN_PROTOTYPE(vrda_addi));
+WEAK_LIBM_ALIAS(vrsa_subf, FN_PROTOTYPE(vrsa_subfi));
+WEAK_LIBM_ALIAS(vrda_sub, FN_PROTOTYPE(vrda_subi));
+WEAK_LIBM_ALIAS(vrsa_mulf, FN_PROTOTYPE(vrsa_mulfi));
+WEAK_LIBM_ALIAS(vrda_mul, FN_PROTOTYPE(vrda_muli));
+WEAK_LIBM_ALIAS(vrsa_divf, FN_PROTOTYPE(vrsa_divfi));
+WEAK_LIBM_ALIAS(vrda_div, FN_PROTOTYPE(vrda_divi));
+

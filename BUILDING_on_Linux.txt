@@ -1,0 +1,58 @@
+# How to build on Linux
+
+##Dependency libraries:
+### Installing AOCL libaoclutils library
+    Clone the libaoclutils library code base.
+        git clone git@github.amd.com:AOCL/aocl-utils.git -b amd-main
+    Follow the steps mentioned in the aocl-utils/README.md further to compile and install the libaoclutils library.
+
+## Installing virtualenv
+  There are various ways to install virtualenv in a Linux environment.
+  Ubuntu:
+     $ sudo apt install virtualenv
+  CentOS:
+     $ sudo yum install python3-virtualenv
+  SLES:
+     $ sudo zypper install python3-virtualenv
+
+##Activating virtual environment
+  Use Virtual Environment to install python3 and scons inside.
+  ```
+   $ virtualenv -p python3 .venv3
+   $ source .venv3/bin/activate
+   $ pip install scons
+  ```
+  Now use the path
+   ```
+     $ export PATH=`pwd`/.venv3/bin:$PATH
+   ```
+
+  Start building
+   ```
+    $ scons  -h    #help options for scons
+   ```
+
+  Building in parallel
+   ``` shell
+    $ scons -j32 --aocl_utils_install_path=<libaoclutils library path>
+   ```
+
+  Building and selecting compiler
+    $ scons <other options> ALM_CC=<gcc/clang executable path> ALM_CXX=<g++/clang++ executable path>
+
+  Building with verbosity
+   ``` shell
+    $ scons <other options> --verbose=1
+   ```
+
+  To link static/dynamic libaoclutils library use following flag:
+   0 for dynamic linking
+   1 for static linking
+   Default is static linking.
+    --aocl_utils_link=1
+
+  Building with debug
+   ```sh
+    $ scons <other options> --debug_mode=libs
+   ```
+

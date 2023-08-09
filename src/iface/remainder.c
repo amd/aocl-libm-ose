@@ -29,8 +29,6 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
-
-//
 #include <libm/arch/all.h>
 
 
@@ -39,38 +37,69 @@ struct alm_arch_funcs __arch_funcs_remainder = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_BAS64(remainderf),
-            &ALM_PROTO_BAS64(remainder),
-            NULL,                           /* vrs4 ? */
-            NULL,                           /* vrs8 ? */
-            NULL,                           /* vrd2 ? */
-            NULL,                           /* vrd4 ? */
-        },
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(remainderf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(remainder),
 #if 0
-        [ALM_UARCH_VER_ZEN] = {
-            &ALM_PROTO_FMA3(remainderf),
-            &ALM_PROTO_FMA3(remainder),
-            NULL,                           /* vrs4 ? */
-            NULL,                           /* vrs8 ? */
-            NULL,                           /* vrd2 ? */
-            NULL,                           /* vrd4 ? */
-        },
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_remainderf),/* vrs4 ? */
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_remainderf),/* vrs8 ? */
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_remainderf),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_remainder),
 #endif
-    }
+        },
+
+        [ALM_UARCH_VER_ZEN] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(remainderf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(remainder),
+#if 0
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN(vrs4_remainderf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_remainderf),
+#endif
+        },
+
+        [ALM_UARCH_VER_ZEN2] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(remainderf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(remainder),
+#if 0
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN2(vrs4_remainderf), /* vrs4 ? */
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_remainderf), /* vrs8 ? */
+#endif
+        },
+        [ALM_UARCH_VER_ZEN3] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(remainderf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(remainder),
+#if 0
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN3(vrs4_remainderf), /* vrs4 ? */
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_remainderf), /* vrs8 ? */
+#endif
+        },
+
+        [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(remainderf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(remainder),
+#if 0
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN4(vrs4_remainderf), /* vrs4 ? */
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN4(vrs8_remainderf), /* vrs8 ? */
+
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_remainderf),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_remainder),
+#endif
+        },
+    },
 };
 
 void
-LIBM_IFACE_PROTO(remainder)(void *arg)
-{
+LIBM_IFACE_PROTO(remainder)(void *arg) {
     alm_ep_wrapper_t g_entry_remainder = {
-       .g_ep = {
-        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(remainderf),
-        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(remainder),
+        .g_ep = {
+            [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(remainderf),
+            [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(remainder),
 #if 0
-        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_remainderf),
-        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_remainderf),
-        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_remainder),
-        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_remainder),
+            [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_remainderf),
+            [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_remainderf),
+            [ALM_FUNC_VECT_SP_16] = &G_ENTRY_PT_PTR(vrs16_remainderf),
+            [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_remainder),
+            [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_remainder),
+            [ALM_FUNC_VECT_DP_8] = &G_ENTRY_PT_PTR(vrd8_remainder),
 #endif
         },
     };

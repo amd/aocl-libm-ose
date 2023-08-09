@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -27,7 +27,9 @@
 
 #include <stddef.h>                     /* for NULL */
 
-#include <libm/cpu_features.h>
+#ifdef USE_AOCL_UTILS
+#include "alci/arch.h"
+#endif
 #include <libm/entry_pt.h>
 #include <libm/iface.h>
 
@@ -101,6 +103,17 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_CEXP]       = {LIBM_IFACE_PROTO(cexp), NULL},
     [C_AMD_CPOW]       = {LIBM_IFACE_PROTO(cpow), NULL},
     [C_AMD_CLOG]       = {LIBM_IFACE_PROTO(clog), NULL},
+
+    /* Arithmetic */
+    [C_AMD_ADD]       = {LIBM_IFACE_PROTO(add), NULL},
+    [C_AMD_SUB]       = {LIBM_IFACE_PROTO(sub), NULL},
+    [C_AMD_MUL]       = {LIBM_IFACE_PROTO(mul), NULL},
+    [C_AMD_DIV]       = {LIBM_IFACE_PROTO(div), NULL},
+
+    [C_AMD_ADDI]       = {LIBM_IFACE_PROTO(addi), NULL},
+    [C_AMD_SUBI]       = {LIBM_IFACE_PROTO(subi), NULL},
+    [C_AMD_MULI]       = {LIBM_IFACE_PROTO(muli), NULL},
+    [C_AMD_DIVI]       = {LIBM_IFACE_PROTO(divi), NULL},
 };
 
 #ifndef ARRAY_SIZE
@@ -158,13 +171,13 @@ alm_get_uach(void)
 {
     alm_uarch_ver_t arch_ver;
 
-    if (alm_cpu_arch_is_zen4())
+    if (alcpu_arch_is_zen4())
         arch_ver = ALM_UARCH_VER_ZEN4;
-    else if (alm_cpu_arch_is_zen3())
+    else if (alcpu_arch_is_zen3())
         arch_ver = ALM_UARCH_VER_ZEN3;
-    else if (alm_cpu_arch_is_zen2())
+    else if (alcpu_arch_is_zen2())
         arch_ver = ALM_UARCH_VER_ZEN2;
-    else if (alm_cpu_arch_is_zen())
+    else if (alcpu_arch_is_zen())
         arch_ver = ALM_UARCH_VER_ZEN;
     else
         arch_ver = ALM_UARCH_VER_DEFAULT;

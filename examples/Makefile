@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -28,13 +28,33 @@
 CC      = gcc
 CFLAGS  = -march=native -g
 
+# if running avx512 variants
+ARCH = avx2
+ifeq ($(ARCH), avx512)
+    CFLAGS += -mavx512f
+    CFLAGS += -D__AVX512__
+endif
+
+# use static or dynamic library to link
+LIB = dynamic #default value
+
 #header
-header_path = ../include/external/
+header_path = $(abspath ../include/external/)
+aocl_utils_header_path = $(AOCL_UTILS_INSTALL_PATH)/include/alci
 INC         = -I$(header_path)
+INC         += -I$(aocl_utils_header_path)
 
 #path to libalm.so
-lib_path = ../build/aocl-release/src/
-LFLAGS   = -L$(lib_path) -lalm -lm
+lib_path = $(abspath ../build/aocl-release/src/)
+aocl_utils_lib_path = $(AOCL_UTILS_INSTALL_PATH)/lib
+LFLAGS   := -L$(lib_path)
+LFLAGS   += -L$(aocl_utils_lib_path)
+
+ifeq ($(LIB), static)
+    LFLAGS += -static
+endif
+
+LFLAGS += -lalm -lm -laoclutils -lstdc++
 
 #src path
 SOURCES = ./src/*.c

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2022, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -60,7 +60,12 @@ To check that this is gcc compiler version 5.1 or greater:
 */
 
 #if defined(__GNUC__)
+#define GCC_VERSION (__GNUC__ * 10000 \
+                     + __GNUC_MINOR__ * 100 \
+                     + __GNUC_PATCHLEVEL__)
+#endif
 
+#if defined(__GNUC__) || defined(__clang__)
 #define PACKED		__attribute__((packed))
 
 #define PACK_ALIGNED(x) __attribute__((packed, aligned(x)))
@@ -121,5 +126,21 @@ To check that this is gcc compiler version 5.1 or greater:
 #define FALLTHROUGH
 
 #endif	/* GCC */
+
+#if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+#define CMPLXF(X, Y) (fc32_t){(X),(Y)};
+#endif
+
+#if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+#define CMPLX(X, Y) (fc64_t){(X),(Y)};
+#endif
+
+#if (defined(__clang__) && defined(__linux__))
+#define CMPLXF(X, Y) __builtin_complex ((float) (X), (float) (Y))
+#endif
+
+#if (defined(__clang__) && defined(__linux__))
+#define CMPLX(X, Y) __builtin_complex ((double) (X), (double) (Y))
+#endif
 
 #endif	/* AMD_LIBM_COMPILER_H */

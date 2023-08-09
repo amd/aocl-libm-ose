@@ -88,6 +88,16 @@ enum {
     C_AMD_TANH,
     C_AMD_TANPI,
     C_AMD_TRUNC,
+    C_AMD_ERF,
+    C_AMD_SINCOS,
+    C_AMD_ADD,
+    C_AMD_SUB,
+    C_AMD_MUL,
+    C_AMD_DIV,
+    C_AMD_ADDI,
+    C_AMD_SUBI,
+    C_AMD_MULI,
+    C_AMD_DIVI,
 
     /*
      * INTEGER VARIANTS
@@ -98,6 +108,11 @@ enum {
     C_AMD_LROUND,
     C_AMD_LLRINT,
     C_AMD_LLROUND,
+
+    /* complex */
+    C_AMD_CEXP,
+    C_AMD_CPOW,
+    C_AMD_CLOG,
 
     /*
      * This one needs to be last one, REALLY !!!
@@ -128,6 +143,7 @@ extern void LIBM_IFACE_PROTO(copysign)(void *arg);
 extern void LIBM_IFACE_PROTO(cos)(void *arg);
 extern void LIBM_IFACE_PROTO(cosh)(void *arg);
 extern void LIBM_IFACE_PROTO(cospi)(void *arg);
+extern void LIBM_IFACE_PROTO(sincos)(void *arg);
 extern void LIBM_IFACE_PROTO(exp10)(void *arg);
 extern void LIBM_IFACE_PROTO(exp2)(void *arg);
 extern void LIBM_IFACE_PROTO(exp)(void *arg);
@@ -174,6 +190,18 @@ extern void LIBM_IFACE_PROTO(tan)(void *arg);
 extern void LIBM_IFACE_PROTO(tanh)(void *arg);
 extern void LIBM_IFACE_PROTO(tanpi)(void *arg);
 extern void LIBM_IFACE_PROTO(trunc)(void *arg);
+extern void LIBM_IFACE_PROTO(erf)(void *arg);
+extern void LIBM_IFACE_PROTO(cexp)(void *arg);
+extern void LIBM_IFACE_PROTO(clog)(void *arg);
+extern void LIBM_IFACE_PROTO(cpow)(void *arg);
+extern void LIBM_IFACE_PROTO(add)(void *arg);
+extern void LIBM_IFACE_PROTO(sub)(void *arg);
+extern void LIBM_IFACE_PROTO(mul)(void *arg);
+extern void LIBM_IFACE_PROTO(div)(void *arg);
+extern void LIBM_IFACE_PROTO(addi)(void *arg);
+extern void LIBM_IFACE_PROTO(subi)(void *arg);
+extern void LIBM_IFACE_PROTO(muli)(void *arg);
+extern void LIBM_IFACE_PROTO(divi)(void *arg);
 
 struct entry_pt_interface {
     void (*epi_init)(void *arg);
@@ -182,4 +210,66 @@ struct entry_pt_interface {
 
 extern struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY];
 
+/*
+ * NOTE: The offsets to be maintained in src/iface/ *.c files
+ *       will break otherwise
+ */
+enum ALM_FUNC_VARIANTS {
+    ALM_FUNC_SCAL_SP,
+    ALM_FUNC_SCAL_DP,
+    ALM_FUNC_VECT_SP_4,  /* Single Precision */
+    ALM_FUNC_VECT_SP_8,
+    ALM_FUNC_VECT_DP_2,  /* Double precision */
+    ALM_FUNC_VECT_DP_4,
+
+    /*vector array variants*/
+    ALM_FUNC_VECT_SP_ARR,
+    ALM_FUNC_VECT_DP_ARR,
+
+    ALM_FUNC_SCAL_HP,
+    ALM_FUNC_VECT_HP_8,  /* Half Precision */
+    ALM_FUNC_VECT_HP_16,
+    ALM_FUNC_VECT_HP_32,
+
+    ALM_FUNC_VECT_SP_16,
+    ALM_FUNC_VECT_DP_8,
+
+    ALM_FUNC_SCAL_SP_CMPLX, /* Complex variant */
+    ALM_FUNC_SCAL_DP_CMPLX,
+
+    ALM_FUNC_VAR_MAX,                   /* should be last, always */
+};
+typedef enum ALM_FUNC_VARIANTS alm_func_var_t;
+
+enum ALM_UARCH_VERSIONS {
+    ALM_UARCH_VER_DEFAULT,
+    ALM_UARCH_VER_BASE64,
+    ALM_UARCH_VER_FMA3,
+    ALM_UARCH_VER_ZEN,
+    ALM_UARCH_VER_ZENPLUS = ALM_UARCH_VER_ZEN,
+    ALM_UARCH_VER_ZEN2,
+    ALM_UARCH_VER_ZEN3,
+    ALM_UARCH_VER_ZEN4,
+
+    ALM_UARCH_MAX,                       /* should be last, always */
+};
+typedef enum ALM_UARCH_VERSIONS alm_uarch_ver_t;
+
+#ifndef alm_func_t
+typedef void (*alm_func_t)(void);
 #endif
+
+struct alm_ep_wrapper {
+    alm_func_t * g_ep[ALM_FUNC_VAR_MAX];
+};
+typedef struct alm_ep_wrapper alm_ep_wrapper_t;
+
+struct alm_arch_funcs {
+    alm_uarch_ver_t  def_arch;          /* Default version to choose */
+    void *           funcs[ALM_UARCH_MAX][ALM_FUNC_VAR_MAX]; /* function array */
+};
+
+void alm_iface_fixup(alm_ep_wrapper_t *g_ep_wrapper,
+                     const struct alm_arch_funcs *alm_funcs);
+
+#endif  /* __AMD_LIBM_IFACE_H__ */

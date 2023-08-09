@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,8 +33,10 @@
 
 .align 16
 .comm   L__log_1024_lead, 520
+#ifdef __GNU_ASM__
 .type	L__log_1024_lead, @object
 .size	L__log_1024_lead, 520
+#endif
 .L__log_1024_lead:
              .quad 0x0000000000000000   # 0.00000000000000000000000
              .quad 0x3f4ffc00a0000000   # 0.00097608595388010144234
@@ -1064,8 +1066,10 @@
 
 .align 16
 .comm   L__log_1024_tail, 520
+#ifdef __GNU_ASM__
 .type   L__log_1024_tail, @object
 .size	L__log_1024_tail, 520
+#endif
 .L__log_1024_tail:
              .quad 0x0000000000000000   # 0.00000000000000000000000
              .quad 0x3db515621f7809a1   # 0.00000000001917535745362
@@ -2097,8 +2101,10 @@
 
 .align 16
 .comm   L__log_F_inv, 520
+#ifdef __GNU_ASM__
 .type   L__log_F_inv, @object
 .size   L__log_F_inv, 520
+#endif
 .L__log_F_inv_head:
 .quad 0x4000000000000000
 .quad 0x3ffff00000000000
@@ -3130,8 +3136,10 @@
 
 .align 16
 .comm   L__log_F_tail, 520
+#ifdef __GNU_ASM__
 .type   L__log_F_tail, @object
 .size   L__log_F_tail, 520
+#endif
 .L__log_F_inv_tail:
 .quad 0x0
 .quad 0x3f6003ff003ff004

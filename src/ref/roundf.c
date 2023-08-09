@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -27,9 +27,11 @@
 
 #include "fn_macros.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
-float FN_PROTOTYPE_REF(roundf)(float f)
+
+float ALM_PROTO_REF(roundf)(float f)
 {
     UT32 u32f, u32Temp;
     U32 u32sign, u32exp, u32mantissa;
@@ -44,17 +46,17 @@ float FN_PROTOTYPE_REF(roundf)(float f)
         if(!((u32f.u32 & MANTBITS_SP32) == 0))
         {
             #ifdef WINDOWS
-			return __amd_handle_errorf("roundf", __amd_round, u32f.u32 |= QNAN_MASK_32, _DOMAIN, 0, EDOM, f, 0.0, 1);
+			    return __alm_handle_errorf(u32f.u32 |= QNAN_MASK_32, 0);
             #else
                 if(!(u32f.u32 & 0x00400000)) //x is snan
-			return __amd_handle_errorf("roundf", __amd_round, u32f.u32, _DOMAIN, AMD_F_INVALID, EDOM, f, 0.0, 1);
-		else
-			return u32f.f32;
+			        return __alm_handle_errorf(u32f.u32, AMD_F_INVALID);
+		        else
+			        return u32f.f32;
             #endif
 		}
         /*else the number is infinity*/
         //Raise range or domain error
-		return __amd_handle_errorf("roundf", __amd_round, u32f.u32, _DOMAIN, 0, EDOM, f, 0.0, 1);
+		return __alm_handle_errorf(u32f.u32, 0);
     }
     /*Get the exponent of the input*/
     intexp = (u32f.u32 & 0x7f800000) >> 23;
@@ -81,7 +83,7 @@ float FN_PROTOTYPE_REF(roundf)(float f)
         /*if(intexp == -1)
             u32exp = 0x3F800000;       */
         u32f.u32 &= 0x7FFFFFFF;
-        u32f.f32 += 0.5;
+        u32f.f32 += 0.5f;
         u32exp = u32f.u32 & 0x7F800000;
         /*right shift then left shift to discard the decimal
           places*/

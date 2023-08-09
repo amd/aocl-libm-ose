@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,10 +25,10 @@
  *
  */
 
-#include "libm_amd.h" 
 #include "libm_util_amd.h" 
 #include "libm_inlines_amd.h"
-#include "libm_special.h" 
+#include <libm/alm_special.h> 
+#include <libm/amd_funcs_internal.h>
  
 extern void __amd_remainder_piby2(double x, double *r, double *rr, int *region); 
  
@@ -114,7 +114,7 @@ static inline double tan_piby4(double x, double xx, int recip)
 #pragma function(tan) 
 #endif 
  
-double FN_PROTOTYPE_REF(tan)(double x) 
+double ALM_PROTO_REF(tan)(double x) 
 { 
   double r, rr; 
   int region, xneg; 
@@ -133,7 +133,7 @@ double FN_PROTOTYPE_REF(tan)(double x)
 #ifdef WINDOWS
 		      return x;//val_with_flags(x, AMD_F_INEXACT);
 #else
-	return  __amd_handle_error("tan", __amd_tan, ux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, ERANGE, x, 0.0, 1);
+	return  __alm_handle_error(ux, AMD_F_UNDERFLOW|AMD_F_INEXACT);
 #endif
 	    }
           else
@@ -163,18 +163,18 @@ double FN_PROTOTYPE_REF(tan)(double x)
 	  {
         /* x is NaN */
 #ifdef WINDOWS
-	return  __amd_handle_error("tan", __amd_tan, ux | QNAN_MASK_64, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+	return  __alm_handle_error(ux | QNAN_MASK_64, AMD_F_NONE);
 #else
 	if (ux & QNAN_MASK_64)
-	return  __amd_handle_error("tan", __amd_tan, ux | QNAN_MASK_64, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+	return  __alm_handle_error(ux | QNAN_MASK_64, AMD_F_NONE);
 	else
-	return  __amd_handle_error("tan", __amd_tan, ux | QNAN_MASK_64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+	return  __alm_handle_error(ux | QNAN_MASK_64, AMD_F_INVALID);
 #endif
 	  }
 	else
 	  {
         /* x is infinity. Return a NaN */
-	return  __amd_handle_error("tan", __amd_tan, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+	return  __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
 	  }
     }
   xneg = (ax != ux);

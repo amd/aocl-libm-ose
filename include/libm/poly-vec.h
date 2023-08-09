@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2023, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -133,6 +133,28 @@
     q;                                                                  \
     })
 
+
+/*
+ * p(x) = C0 + C1*r + C3*r^2 + C4*r^3 + C5*r^4 + C6*r^5 +
+ *          C7*r^6 + C8*r^7 + C9*r^8 + C10*r^9 + C11*r^10 + C12*r^11
+ *      = (C1 + C2*r) + r^2(C3 + C4*r) + r^4(C5 + C6*r) +
+ *           r^6(C7 + C8*r) + r^8(C9 + C10*r) + r^10(C11 + C12*r)
+ */
+#define POLY_EVAL_12(x, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12) ({ \
+        __typeof(x) x2 = x * x;                                              \
+        __typeof(x) x4 = x2 * x2;                                            \
+        __typeof(x) x8 = x4 * x4;                                            \
+        __typeof(x) q = mul_add( mul_add (mul_add(mul_add( c12, x, c11),     \
+                                          x, c10),                           \
+                                           x2, mul_add(c9 ,x ,c8)), x8,      \
+                                 mul_add ( mul_add(mul_add(c7, x, c6), x2,   \
+                                           mul_add(c5, x, c4)) ,x4,          \
+                                           mul_add( mul_add(c3, x, c2),x2,   \
+                                           mul_add(c1, x, c0)) ));           \
+         q;                                                                  \
+         })
+
+
 /*
  * p(x) = C1 + C2*r + C3*r^2 + C4*r^3 + C5*r^4 + C6*r^5 +
  *          C7*r^6 + C8*r^7 + C9*r^8 + C10*r^9 + C11*r^10 + C12*r^11
@@ -148,11 +170,27 @@
                                  mul_add ( mul_add(mul_add(c7, x, c6), x2,   \
                                            mul_add(c5, x, c4)) ,x4,          \
                                            mul_add( mul_add(c3, x, c2),x2,   \
-                                           mul_add(c0, x, c1)) ));           \
+                                           mul_add(c1, x, c0)) ));           \
          q;                                                                  \
          })
 
+#define POLY_EVAL_HORNER_11(x, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11) ({ \
+        __typeof(x) q = mul_add( mul_add( mul_add( mul_add( mul_add( mul_add(       \
+                        mul_add( mul_add( mul_add( mul_add( mul_add(                \
+                        c11, x, c10), x, c9), x, c8),                               \
+                        x, c7), x, c6), x, c5), x, c4),                             \
+                        x, c3), x, c2), x, c1), x, c0);                             \
+         q;                                                                         \
+         })
 
+#define POLY_EVAL_HORNER_10(x, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10) ({      \
+        __typeof(x) q = mul_add( mul_add( mul_add( mul_add( mul_add(                \
+                        mul_add( mul_add( mul_add( mul_add( mul_add(                \
+                        c10, x, c9), x, c8),                                        \
+                        x, c7), x, c6), x, c5), x, c4),                             \
+                        x, c3), x, c2), x, c1), x, c0);                             \
+         q;                                                                         \
+         })
 
 /*
  * p(x) = c10*x^10 + c9*x^9 + c8*x^8 + c7*x^7 + c6*x^6 + c5*x^5 + c4*x^4 + \
@@ -164,7 +202,7 @@
         __typeof(x) x2 = x  * x;                                        \
         __typeof(x) x4 = x2 * x2;                                       \
         __typeof(x) x8 = x4 * x4;                                       \
-        __typeof(x) q =  mul_add(mul_add(x2, c10, mul_add(c9, x, c8)),  \
+        __typeof(x) _q =  mul_add(mul_add(x2, c10, mul_add(c9, x, c8)), \
                                 x8,                                     \
                                 mul_add(mul_add(mul_add(c7, x, c6),     \
                                                 x2,                     \
@@ -173,7 +211,7 @@
                                         mul_add(mul_add(c3, x, c2),     \
                                                 x2,                     \
                                                 mul_add(c1, x, c0))));	\
-        q;                                                              \
+        _q;                                                              \
         })
 
 /*
@@ -254,6 +292,22 @@
             q;                                                          \
         })
 
+
+/*
+ * p(x) = c4*x^4 + c3*x^3 + c2*x^2 + c1*x + c0
+ *      = (c2+c3*x)*x2 + ((c4+c5*x)*x4 + (c0+c1*x))
+ */
+#define POLY_EVAL_4(x, c0, c1, c2, c3, c4) ({                           \
+            __typeof(x) x2 = x * x;                                     \
+            __typeof(x) x4 = x2 * x2;                                   \
+            __typeof(x) q = mul_add(mul_add(c3, x, c2),                 \
+                                    x2,                                 \
+                                    mul_add((x * c4),                   \
+                                            x4,                         \
+                                            mul_add(c1, x, c0)));       \
+            q;                                                          \
+        })
+
 /*
  * p(x) = c5*x^5 + c4*x^4 + c3*x^3 + c2*x^2 + c1*x + c0
  *      = (c2+c3*x)*x2 + ((c4+c5*x)*x4 + (c0+c1*x))
@@ -325,6 +379,42 @@
                                             mul_add(c2, x2, c1)));      \
             x * q;                                                      \
     })
+
+#define POLY_EVAL_HORNER_16_0(x, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9,\
+                            c10, c11, c12, c13, c14, c15) ({            \
+            __typeof(x) q = x * mul_add(mul_add(mul_add(mul_add(mul_add(\
+                            mul_add(mul_add(mul_add(mul_add(mul_add(    \
+                            mul_add(mul_add(mul_add(mul_add(mul_add(    \
+                            c15, x, c14), x, c13), x, c12), x, c11), x, \
+                            c10), x, c9), x, c8), x, c7), x, c6), x,    \
+                            c5), x, c4), x, c3), x, c2), x, c1), x, c0);\
+        q;                                                              \
+        })
+
+
+#define POLY_EVAL_HORNER_6(x, c0, c1, c2, c3, c4, c5) ({                \
+            __typeof(x) q = mul_add(mul_add(mul_add(mul_add(mul_add(    \
+                            c5, x, c4), x, c3), x, c2), x, c1), x, c0); \
+        q;                                                              \
+        })
+
+#define POLY_EVAL_HORNER_6_0(x, c0, c1, c2, c3, c4, c5) ({              \
+        __typeof(x) q = x * mul_add(mul_add(mul_add(mul_add(mul_add(    \
+                            c5, x, c4), x, c3), x, c2), x, c1), x, c0); \
+        q;                                                              \
+        })
+
+#define POLY_EVAL_HORNER_5_0(x, c0, c1, c2, c3, c4) ({                  \
+        __typeof(x) q = x * mul_add(mul_add(mul_add(mul_add(            \
+                            c4, x, c3), x, c2), x, c1), x, c0);         \
+        q;                                                              \
+        })
+
+#define POLY_EVAL_HORNER_5(x, c0, c1, c2, c3, c4) ({                    \
+        __typeof(x) q = mul_add(mul_add(mul_add(mul_add(                \
+                            c4, x, c3), x, c2), x, c1), x, c0);         \
+        q;                                                              \
+        })
 
 
 #endif  /* LIBM_POLY_VEC_H */

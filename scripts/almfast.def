@@ -1,0 +1,18 @@
+EXPORTS
+    amd_acos
+    amd_asin
+    amd_asinf
+    amd_atan
+    amd_atanf
+    amd_expf
+    amd_fastacos
+    amd_fastasin
+    amd_fastasinf
+    amd_fastatan
+    amd_fastatanf
+    amd_fastexpf
+    amd_fastlogf
+    amd_fastpowf
+    amd_fasttan
+    amd_fasttanf
+    amd_powf

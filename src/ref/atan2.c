@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,13 +25,12 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include "libm_inlines_amd.h"
+#include <libm/amd_funcs_internal.h>
 
-
-double FN_PROTOTYPE_REF(atan2)(double y, double x)
+double ALM_PROTO_REF(atan2)(double y, double x)
 {
   /* Arrays atan_jby256_lead and atan_jby256_tail contain
      leading and trailing parts respectively of precomputed
@@ -542,7 +541,7 @@ double FN_PROTOTYPE_REF(atan2)(double y, double x)
 
   /* Find properties of arguments x and y. */
 
-  unsigned long long ux, ui, aux, xneg, uy, auy, yneg;
+  uint64_t ux, ui, aux, xneg, uy, auy, yneg;
 
   GET_BITS_DP64(x, ux);
   GET_BITS_DP64(y, uy);
@@ -565,15 +564,13 @@ double FN_PROTOTYPE_REF(atan2)(double y, double x)
 
   if (xnan)
 #ifdef WINDOWS
-    return __amd_handle_error("atan2",__amd_atan2, ux|0x0008000000000000, _DOMAIN, 0,
-                        EDOM, x, y,2);
+    return __alm_handle_error(ux|0x0008000000000000, 0);
 #else
     return x + x; /* Raise invalid if it's a signalling NaN */
 #endif
   else if (ynan)
 #ifdef WINDOWS
-    return __amd_handle_error("atan2",__amd_atan2, uy|0x0008000000000000, _DOMAIN, 0,
-                        EDOM, x, y,2);
+    return __alm_handle_error(uy|0x0008000000000000, 0);
 #else
     return y + y; /* Raise invalid if it's a signalling NaN */
 #endif
@@ -627,9 +624,9 @@ double FN_PROTOTYPE_REF(atan2)(double y, double x)
           else
             return  0.0; //val_with_flags(0.0,AMD_F_INEXACT | AMD_F_UNDERFLOW);
 #else
-            return __amd_handle_error("atan2",__amd_atan2, 0x8000000000000000, _UNDERFLOW, AMD_F_INEXACT | AMD_F_UNDERFLOW, ERANGE, x, y,2);
+            return __alm_handle_error(0x8000000000000000, AMD_F_INEXACT | AMD_F_UNDERFLOW);
           else
-            return __amd_handle_error("atan2",__amd_atan2, 0x0000000000000000, _UNDERFLOW, AMD_F_INEXACT | AMD_F_UNDERFLOW, ERANGE, x, y,2);
+            return __alm_handle_error(0x0000000000000000, AMD_F_INEXACT | AMD_F_UNDERFLOW);
 #endif
         }
       else
@@ -690,7 +687,7 @@ double FN_PROTOTYPE_REF(atan2)(double y, double x)
     { /* General values of v/u. Use a look-up
          table and series expansion. */
 
-      index = (int)(256*vbyu + 0.5);
+      index = (unsigned int)(256*vbyu + 0.5);
       q1 = atan_jby256_lead[index-16];
       q2 = atan_jby256_tail[index-16];
       c = index*1./256;

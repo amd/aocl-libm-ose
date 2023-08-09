@@ -1,6 +1,30 @@
 /*
- * Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
  */
+
 
 #include <cmath>
 #include "libm_tests.h"
@@ -26,16 +50,6 @@ uint32_t GetnIpArgs( void )
 	return ipargs;
 }
 
-void SpecSetupf32(SpecParams *specp) {
-  specp->data32 = test_coshf_special_data;
-  specp->countf = ARRAY_SIZE(test_coshf_special_data); 
-}
-
-void SpecSetupf64(SpecParams *specp) {
-  specp->data64 = test_cosh_special_data;
-  specp->countd = ARRAY_SIZE(test_cosh_special_data); 
-}
-
 void ConfSetupf32(SpecParams *specp) {
   specp->data32 = test_coshf_conformance_data;
   specp->countf = ARRAY_SIZE(test_coshf_conformance_data); 
@@ -54,12 +68,12 @@ double getFuncOp(double *data) {
   return LIBM_FUNC(cosh)(data[0]);
 }
 
-float getExpected(float *data) {
+double getExpected(float *data) {
   auto val = alm_mp_coshf(data[0]);
   return val;
 }
 
-double getExpected(double *data) {
+long double getExpected(double *data) {
   auto val = alm_mp_cosh(data[0]);
   return val;
 }
@@ -143,6 +157,32 @@ int test_v8s(test_data *data, int idx)  {
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256 op8 = LIBM_FUNC_VEC(s, 8, coshf)(ip8);
   _mm256_store_ps(&op[0], op8);
+#endif
+  return 0;
+}
+
+int test_v8d(test_data *data, int idx)  {
+#if 0
+  double *ip  = (double*)data->ip;
+  double *op  = (double*)data->op;
+  __m512d ip8 = _mm512_set_pd(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
+                             ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+  __m512d op8 = LIBM_FUNC_VEC(d, 8, cosh)(ip8);
+  _mm512_store_pd(&op[0], op8);
+#endif
+  return 0;
+}
+
+int test_v16s(test_data *data, int idx)  {
+#if 0
+  float *ip = (float*)data->ip;
+  float *op  = (float*)data->op;
+  __m512 ip16 = _mm512_set_ps(ip[idx+15], ip[idx+14], ip[idx+13], ip[idx+12],
+                              ip[idx+11], ip[idx+10], ip[idx+9], ip[idx+8],
+                              ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
+                             ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+  __m512 op16 = LIBM_FUNC_VEC(s, 16, coshf)(ip16);
+  _mm512_store_ps(&op[0], op16);
 #endif
   return 0;
 }

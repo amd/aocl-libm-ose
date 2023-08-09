@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -30,7 +30,8 @@
 
 #include <libm_macros.h>
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
+#include <libm/alm_special.h>
 
 #include <libm/amd_funcs_internal.h>
 
@@ -118,7 +119,7 @@ static struct {
 /*
  * Implementation Notes:
  *
- * float tanf(float x)
+ * double tan(double x)
  *      A given x is reduced into the form:
  *
  *               |x| = (N * π/2) + F
@@ -208,3 +209,7 @@ ALM_PROTO_FAST(tan)(double x)
 
     return result;
 }
+
+strong_alias (__tan_finite, ALM_PROTO_FAST(tan))
+weak_alias (amd_tan, ALM_PROTO_FAST(tan))
+weak_alias (tan, ALM_PROTO_FAST(tan))

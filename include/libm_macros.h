@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -54,14 +54,6 @@
 
 #endif /* ALM_OVERRIDE */
 
-/*
- * TODO: remove these once the arch specific directories are in place
- */
-#define FN_PROTOTYPE_OPT(fn)            amd_opt_##fn
-#define FN_PROTOTYPE_REF(fn)            amd_ref_##fn
-#define FN_PROTOTYPE_FAST(fn)           amd_fast##fn
-
-
 #if defined(ALM_SUFFIX)
 #define ALM_PROTO(x)      ALM_MAKE_PROTO_SFX(ALM_PREFIX, x, ALM_SUFFIX)
 #else
@@ -76,6 +68,7 @@
 
 #define ALM_PROTO_REF(fn)    		amd_ref_##fn
 #define ALM_PROTO_FAST(fn)   		amd_fast##fn
+#define ALM_PROTO_KERN(fn)    		alm_kern_##fn
 
 /* 64-bit variants */
 #define ALM_PROTO_BAS64(fn)	__amd_bas64_##fn
@@ -94,21 +87,6 @@
  */
 #define __ALM_PROTO_ARCH(a, x, y)       ALM_MAKE_PROTO_SFX(a, x, y)
 #define  ALM_PROTO_ARCH(a, x, y)        __ALM_PROTO_ARCH(a, x, y)
-
-
-/*
- * OLD API, not used , TODO: Delete at a later stage
- */
-#define FN_PROTOTYPE_BAS64(fn_name) __amd_bas64_##fn_name
-
-#define FN_PROTOTYPE_BDOZR(fn_name) __amd_bdozr_##fn_name
-
-#define FN_PROTOTYPE_FMA3(fn_name) __amd_fma3_##fn_name
-
-#define FN_PROTOTYPE_AVX2(fn_name) __amd_avx2_##fn_name
-
-#define FN_PROTOTYPE_AVX512(fn_name) __amd_avx512_##fn_name
-
 
 // enable or disable exceptions in linux
 #define __enable_IEEE_exceptions 1

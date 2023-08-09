@@ -1,6 +1,30 @@
 /*
- * Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
  */
+
 
 #include <climits>
 #include <limits>
@@ -9,6 +33,11 @@
 #include "almstruct.h"
 #include "almtest.h"
 #include "defs.h"
+
+#if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+typedef uint64_t u_int64_t;
+typedef uint32_t u_int32_t;
+#endif
 
 namespace ALM {
 template <typename T>
@@ -52,7 +81,7 @@ class Ulp {
     width = FloatWidth::E_F80;
   }
 
-  T Get() {
+long double Get() {
     struct flt {
       char c[sizeof(__int128_t)];
       u_int32_t *u32;
@@ -92,7 +121,10 @@ class Ulp {
     myexp = myexp - nmantissa; /* e-p-1 */
 
     /* 2^(e-p-1) */
-    return pow(2, myexp);
+    if (FloatWidth::E_F32 == width)
+      return pow(2, myexp);
+    else
+      return powl(2,myexp);
   }
 };
 
@@ -123,14 +155,17 @@ bool isNInf(T _x) {
  *       then it is treated as if it were the smallest (non-denormalized)
  *       value representable in T for the purposes of the above calculation.
  */
-
-template <typename FAT>
-double ComputeUlp(FAT output, FAT _expected) {
+template <typename FAT, typename FAT_L>
+double ComputeUlp(FAT output, FAT_L _expected) {
   FAT expected = (FAT)_expected;
   static const FAT
-      fmin = std::numeric_limits<FAT>::min(),      // FLT_MIN, DBL_MIN etc
+#if defined(_WIN64) || defined(_WIN32)
+      fmax = (std::numeric_limits<FAT>::max)(),      // FLT_MAX, DBL_MAX etc
+      f_low = (std::numeric_limits<FAT>::lowest)();  // -FLT_MAX, -DBL_MAX etc
+#else
       fmax = std::numeric_limits<FAT>::max(),      // FLT_MAX, DBL_MAX etc
       f_low = std::numeric_limits<FAT>::lowest();  // -FLT_MAX, -DBL_MAX etc
+#endif
 
   // if both are NAN
   if (isnan(output) && isnan(expected)) return 0.0;
@@ -138,10 +173,10 @@ double ComputeUlp(FAT output, FAT _expected) {
   // if either one is NAN
   if (isnan(output) || isnan(expected)) return INFINITY;
 
-  // if output and expectedare infinity
+  // if output and expected are infinity
   if (isinf(output) && (isinf(expected) || (expected > fmax))) return 0.0;
 
-  // if output and expectedare -infinity
+  // if output and expected are -infinity
   if (isNInf<FAT>(output) && (isNInf<FAT>(expected) || (expected < f_low)))
     return 0.0;
 
@@ -151,13 +186,13 @@ double ComputeUlp(FAT output, FAT _expected) {
   // If output and expectedare finite (The most common case)
   if (isfinite(output)) {
     if (expected < fmax)
-      return fabs(output - _expected) / Ulp<FAT>(expected).Get();
+      return fabsl(output - _expected) / Ulp<FAT>(expected).Get();
 
-    // If the expectedis infinity and the output is finite
+    // If the expected is infinity and the output is finite
     if ((expected > fmax) || isinf(expected))
       return fabs(output - fmax) / Ulp<FAT>(fmax).Get() + 1;
 
-    // If the expectedis -infinity and the output is finite
+    // If the expected is -infinity and the output is finite
     if (isNInf<FAT>(_expected) || (expected < f_low))
       return fabs(output - f_low) / Ulp<FAT>(f_low).Get() + 1;
   }
@@ -172,13 +207,14 @@ double ComputeUlp(FAT output, FAT _expected) {
 
   return 0.0;
 }
+
 }  // namespace ALM
 
-double getUlp(float aop, float exptd) {
+double getUlp(float aop, double exptd) {
   return ALM::ComputeUlp(aop, exptd);
 }
 
-double getUlp(double aop, double exptd) {
+double getUlp(double aop, long double exptd) {
   return ALM::ComputeUlp(aop, exptd);
 }
 
@@ -189,7 +225,7 @@ bool update_ulp(double ulp, double &max_ulp_err, double ulp_threshold)
   }
 
   if ((ulp - max_ulp_err) > 0.0) {
-    LIBM_TEST_DPRINTF(VERBOSE2, ,"MaxULPError: ",max_ulp_err, 
+    LIBM_TEST_DPRINTF(VERBOSE2, ,"MaxULPError: ",max_ulp_err,
                        "Ulp: ", ulp);
     max_ulp_err = ulp;
     return true;
@@ -197,7 +233,7 @@ bool update_ulp(double ulp, double &max_ulp_err, double ulp_threshold)
 
   if ((ulp - ulp_threshold) > 0.0)
     return false;                   /* fail; as greater than threshold */
- 
+
   return true;
 }
 

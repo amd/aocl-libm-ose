@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+; Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 ;
 ; Redistribution and use in source and binary forms, with or without modification,
 ; are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@ include fm.inc
 
 include trig_func.inc
 
-FN_PROTOTYPE_FMA3 sin
+ALM_PROTO_FMA3 sin
 
 fname_special   TEXTEQU <_sin_special>
 

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(vrsa_sinf)
+#define fname ALM_PROTO_FMA3(vrsa_sinf)
 
 #include "trig_func.h"
 
@@ -53,34 +53,34 @@
 .align 32
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 mov %rsi, %r14
 mov %rdx, %r15
 
 
-cmp         $0x0, %edi 
+cmp         $0x0, %edi
     jle         .L__return
     cmp         $0x0, %r14
     je         .L__return
     cmp         $0x0, %r15
     je         .L__return
-    
-.p2align 4    
+
+.p2align 4
 .L__process_next4:
     sub         $0x4, %rdi
     cmp         $-1,  %rdi
     jle          .L__process_first123
     movdqu      (%r14, %rdi, 4), %xmm0
     jmp         .L__start
-    
-.p2align 4    
+
+.p2align 4
 .L__process_first123:
     je          .L__process_first3
     cmp         $-3, %rdi
     jl          .L__return #multiple of 4elements, all are processed %rdi == -4
-    je          .L__process_first1    
-    #process first 2    
+    je          .L__process_first1
+    #process first 2
     mov         $0x0, %rcx
     movsd       (%r14, %rcx, 4), %xmm0
     jmp         .L__start
@@ -89,19 +89,19 @@ cmp         $0x0, %edi
 .L__process_first1:
     mov         $0x0, %rcx
     movss       (%r14, %rcx, 4), %xmm0
-    jmp         .L__start    
+    jmp         .L__start
 
-.p2align 4    
+.p2align 4
 .L__process_first3:
     mov         $0x1, %rcx
-    movsd       (%r14, %rcx, 4), %xmm0    
+    movsd       (%r14, %rcx, 4), %xmm0
     dec         %rcx  # zero
     movss       (%r14, %rcx, 4), %xmm1
     pslldq      $4,%xmm0
-    por         %xmm1, %xmm0    
-    
-.p2align 4    
-.L__start:    
+    por         %xmm1, %xmm0
+
+.p2align 4
+.L__start:
 
         sub     $stack_size, %rsp
 
@@ -119,12 +119,12 @@ sin_early_exit_s:
     VADDPD   %ymm0,%ymm0,%ymm3                      #nan value
     VANDNPD %ymm1, %ymm1, %ymm11
     VANDPD %ymm1, %ymm3, %ymm4
-    VORPD %ymm11, %ymm4, %ymm4  
+    VORPD %ymm11, %ymm4, %ymm4
 
     VMOVUPD .L_nan(%rip),%ymm3
     VANDNPD %ymm4, %ymm2, %ymm11
     VANDPD %ymm2, %ymm3, %ymm12
-    VORPD %ymm11, %ymm12, %ymm12    
+    VORPD %ymm11, %ymm12, %ymm12
 
     VORPD   %ymm1,%ymm2,%ymm11                      # ymm11 nan and inf mask
 
@@ -138,10 +138,10 @@ sin_early_exit_s_1:
     VMOVDQA   .L_mask_3f_9(%rip),%xmm5
 
     VPCMPGTQ    %xmm8,%xmm13,%xmm13
-    VPCMPGTQ    %xmm7,%xmm5,%xmm5    
-    
-    
-    
+    VPCMPGTQ    %xmm7,%xmm5,%xmm5
+
+
+
     VINSERTF128 $1,%xmm5,%ymm13,%ymm13
 
     VORPD   %ymm11,%ymm13,%ymm14
@@ -161,15 +161,15 @@ sin_early_exit_s_1:
     VMOVDQA  .L_mask_3e4(%rip),%xmm6
     VPCMPGTQ    %xmm8,%xmm3,%xmm3
     VPCMPGTQ    %xmm7,%xmm6,%xmm6
-    
+
     VINSERTF128 $1,%xmm6,%ymm3,%ymm3
-    
-    VMOVDQA  .L_mask_3f2(%rip), %xmm4 
-    VMOVDQA  .L_mask_3f2(%rip), %xmm5  
-    VPCMPGTQ    %xmm8,%xmm4,%xmm4      
+
+    VMOVDQA  .L_mask_3f2(%rip), %xmm4
+    VMOVDQA  .L_mask_3f2(%rip), %xmm5
+    VPCMPGTQ    %xmm8,%xmm4,%xmm4
     VPCMPGTQ    %xmm7,%xmm5,%xmm7
-    
-       
+
+
     VINSERTF128 $1,%xmm7,%ymm4,%ymm4
 
     VANDNPD %ymm13,%ymm4,%ymm1
@@ -223,7 +223,7 @@ if_not_remainder:
     VANDNPD r1(%rsp), %ymm3, %ymm8
     VANDPD %ymm3, %ymm0, %ymm7
     VORPD %ymm8, %ymm7, %ymm7
-    
+
     VANDNPD region1(%rsp), %ymm3, %ymm8
     VANDPD %ymm3, %ymm11, %ymm11
     VORPD %ymm8, %ymm11, %ymm11
@@ -277,7 +277,7 @@ ret_sin_2fpiby4_s:
     VANDNPD %ymm4, %ymm11, %ymm5
     VANDPD %ymm11, %ymm0, %ymm0
     VORPD %ymm5, %ymm0, %ymm0
-    
+
 
 return_sin_s:
     VCVTPD2PS   %ymm0,%xmm0
@@ -285,33 +285,33 @@ return_sin_s:
     cmp         $-1,  %rdi
         jle          .L__store123
         movdqu       %xmm0, (%r15, %rdi, 4)
-        jmp         .L__process_next4    
-        
-    .p2align 4    
+        jmp         .L__process_next4
+
+    .p2align 4
     .L__store123:
         je         .L__store3
-        cmp         $-3, %rdi    
-        je          .L__store1    
-        #store 2    
+        cmp         $-3, %rdi
+        je          .L__store1
+        #store 2
         add        $0x2, %rdi
-        movsd      %xmm0, (%r15,%rdi,4)    
+        movsd      %xmm0, (%r15,%rdi,4)
         jmp         .L__return
-    
-    .p2align 4    
+
+    .p2align 4
     .L__store3:
         movdqa      %xmm0, %xmm1
         psrldq      $4, %xmm0
         inc         %rdi
         movss       %xmm1, (%r15,%rdi,4)
         inc         %rdi
-        movsd      %xmm0, (%r15,%rdi,4)    
+        movsd      %xmm0, (%r15,%rdi,4)
         jmp         .L__return
-        
-    .p2align 4    
+
+    .p2align 4
     .L__store1:
         mov        $0x0, %rdi
-        movss      %xmm0, (%r15,%rdi,4)    
-    
-    .L__return:    
-    ret         
+        movss      %xmm0, (%r15,%rdi,4)
+
+    .L__return:
+    ret
 

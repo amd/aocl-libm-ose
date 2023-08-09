@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -26,54 +26,169 @@
 # Inherit global environment
 Import('env')
 from os.path import join as joinpath
+from os.path import isdir as isdir
 
-installdir = env['prefix']
+installdir = env['installdirs']
+
 builddir = joinpath(env['BUILDROOT'], 'src')
+
+ldscript = joinpath('#', 'src', 'ld-syms-libm.lds')
+
+Import('aocl_utils_install_path')
+
+kern_incpaths = [
+    '#' + Dir('.').srcnode().path,
+    '#' + joinpath(Dir('.').srcnode().path, 'optimized'),
+    '#' + joinpath(Dir('.').srcnode().path, 'kern')
+]
+
+use_asan = env['use_asan']
+
+if env['HOST_OS'] != 'win32':
+    ccflags = ['-Wall',
+               '-W',
+               '-Wstrict-prototypes',
+               '-Werror',
+               '-Wno-unused-parameter',
+               '-fPIC',
+              ]
+    if use_asan == 1:
+        ccflags.append('-fsanitize=address')
+    if 'clang' in env['CC']:
+        cc_ver = env['CCVERSION']
+        if cc_ver.count('.') > 1:
+            cc_ver_minor = cc_ver[cc_ver.rfind(".")+1:]
+            cc_ver = cc_ver[:cc_ver.rfind(".")]
+        # AOCC 4.0.0 (CLANG 14.0.6) and above supports the flag -muse-unaligned-vector-move
+        if (float(cc_ver) >= 14.0) & (float(cc_ver_minor) >= 6.0):
+            ccflags.append('-muse-unaligned-vector-move')
+else:
+    ccflags = ['-DAVX_XOP_FMA4_FMA3',
+               '-DDEBUG=0',
+               '-DENABLE_AMDLIBM_API=1',
+               '-DLIBABI=aocl',
+               '-D__AVX2__',
+               '-Dlibalm_EXPORTS',
+               '/W0',
+               '/MP',
+               '/O2',
+               '-Wno-c++11-narrowing',
+               '-m64',
+               '-fdiagnostics-absolute-paths',
+               '/DWIN32',
+               '/D_WINDOWS',
+               '/DNDEBUG',
+               '-MD',
+               '-march=native',
+               '/MT'
+          ]
+    if use_asan == 1:
+        ccflags.append(['/fsanitize=address', '/Zi'])
+        ccflags.remove('/O2')
+
+if env['HOST_OS'] == 'win32':
+    if env['BUILD'] == 'debug':
+        env['PDB'] = 'libalm.pdb'
+        ccflags.remove('/O2')
 
 e = env.Clone()
 e.Append(
-    CCFLAGS = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror',
-               #'-Wno-unused-but-set-parameter',
-               '-Wno-unused-parameter',
-               '-fPIC',
-               '-mavx2', '-march=znver2'],
-    # CPPPATH = [],
-    # CCFLAGS = [],
-    # LINKFLAGS = [],
-    LINKERSCRIPT = 'src/ld-syms-libm.lds',
+    CCFLAGS=ccflags,
+    CPPPATH = kern_incpaths,
+    LINKERSCRIPT = ldscript,
     STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 1
 )
 
 alm_objs = []
 
 almenv = e.Clone()
-almenv.Append(
-    LINKFLAGS = ['-ealm_main'], # ['-T$LINKERSCRIPT']
-    LIBS      = ['c'],
-)
 
-subdirs = ['isa', 'optmized', 'iface', 'arch', 'ref']
+if e['HOST_OS'] != 'win32':
+    __linkflags = ['-ealm_main',]
+    __libs = ['c']
+
+    if use_asan == 1:
+        __libs.append('asan')
+
+    almenv.Append(
+        LINKFLAGS = __linkflags, # ['-T$LINKERSCRIPT']
+        LIBS      = __libs,
+    )
+else:
+    if use_asan == 1:
+        almenv.Append(
+            LIBS      = ['clang_rt.asan-x86_64.lib','clang_rt.asan_cxx-x86_64.lib'],
+        )
+
+# to link to libaoclutils library
+almenv.Append(CPPPATH = joinpath(aocl_utils_install_path, 'include'))
+almenv.Append(CCFLAGS = '-DUSE_AOCL_UTILS')
+aocl_utils_link = env['aocl_utils_link']
+
+if e['HOST_OS'] != 'win32':
+    if int(aocl_utils_link):
+        print("Linking Static libaoclutils library")
+        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libaoclutils.a')
+        aocl_utils_static_lib_path = almenv.File(aocl_utils_static_lib_path)
+        almenv.Append(LIBS=aocl_utils_static_lib_path)
+        # libstdc++ needs explicit loading when using libaoclutils.a (static library)
+        almenv.Append(LIBS="stdc++")
+    else:
+        print("Linking Dynamic libaoclutils library")
+        aocl_utils_dynamic_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libaoclutils.so')
+        aocl_utils_dynamic_lib_path = almenv.File(aocl_utils_dynamic_lib_path)
+        almenv.Append(LIBS=aocl_utils_dynamic_lib_path)
+else:
+    if int(aocl_utils_link):
+        print("Linking Static libaoclutils library")
+        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libaoclutils_static.lib')
+        aocl_utils_static_lib_path = almenv.File(aocl_utils_static_lib_path)
+        almenv.Append(LIBS=aocl_utils_static_lib_path)
+    else:
+        print("Linking Dynamic libaoclutils library")
+        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libaoclutils.lib')
+        aocl_utils_static_lib_path = almenv.File(aocl_utils_static_lib_path)
+        almenv.Append(LIBS=aocl_utils_static_lib_path)
+
+subdirs = ['isa', 'optimized', 'iface', 'arch', 'ref']
 for d in subdirs:
-	denv = almenv.Clone()
-	sdir = joinpath(denv['CWD'], d)
-	denv.Append(
-		CWD = sdir
-	)
-	alm_objs += SConscript('%s/SConscript'%d,
-			    exports = {'env' : denv},
-			    duplicate = 0,
+    denv = almenv.Clone()
+    sdir = joinpath(denv['CWD'], d)
+    denv.Append(
+        CWD = sdir
+    )
+    alm_objs += SConscript('%s/SConscript'%d,
+                exports = {'env' : denv},
+                duplicate = 0,
                             src_dir = sdir,
                             variant_dir = joinpath(builddir, '%s'%d))
 
-lib_excludes = ['MapEntryPoints.c']
+lib_excludes = ['alm_env.c']
 lib_srcs = Glob('*.[c]', exclude=lib_excludes)
 
 alm_objs += almenv.StaticObject(lib_srcs)
 
-libm = almenv.StaticLibrary('alm', alm_objs)
-libmso = almenv.SharedLibrary('alm', alm_objs)
+if e['HOST_OS'] != 'win32':
+    libm = almenv.StaticLibrary('alm', alm_objs)
+    libmso = almenv.SharedLibrary('alm', alm_objs)
+else:
+    libm = almenv.StaticLibrary('libalm-static', source = [alm_objs, joinpath(aocl_utils_install_path, 'lib','libaoclutils_static.lib')])
+    almenv['WINDOWS_INSERT_DEF']=1
+    libmso = almenv.SharedLibrary('libalm', alm_objs, no_import_lib=False)
 
-almenv.Alias("install", almenv.Install(joinpath(installdir, "lib"), [libmso, libm]))
+#add include headers as part of the install
+alm_headers = ['amdlibm.h', 'amdlibm_vec.h']
+alm_external_headers = list(map(lambda x : joinpath(env['INCPATH'], 'external', x), alm_headers))
+alm_examples_src = joinpath('#', 'examples', 'src')
+alm_examples_makefile = joinpath('#', 'examples', 'Makefile')
+alm_examples_readme = joinpath('#', 'examples', 'README')
+
+if 'install' in COMMAND_LINE_TARGETS:
+    almenv.Alias('install', almenv.Install(installdir['lib'], [libmso, libm]))
+    almenv.Alias("install", almenv.Install(installdir['include'], [alm_external_headers]))
+    almenv.Alias('install', almenv.Install(installdir['examples'], [alm_examples_src,
+                                                                    alm_examples_makefile,
+                                                                    alm_examples_readme]))
 
 fast_libm = SConscript('fast/SConscript',
                        exports = {'env' : e},
@@ -81,7 +196,15 @@ fast_libm = SConscript('fast/SConscript',
                        src_dir = '#src/fast',
                        variant_dir = joinpath(builddir, 'fast'))
 
-Depends(libmso, '#src/ld-syms-libm.lds')
+if e['HOST_OS'] != 'win32':
+    compat_libm = SConscript('compat/SConscript',
+                       exports = {'env' : e},
+                       duplicate = 0,
+                       src_dir = '#src/compat',
+                       variant_dir = joinpath(builddir, 'compat'))
 
-Return('fast_libm', 'libm', 'libmso')
-
+Depends(libmso, ldscript)
+if e['HOST_OS'] != 'win32':
+    Return('compat_libm', 'fast_libm', 'libm', 'libmso')
+else:
+    Return('fast_libm', 'libm', 'libmso')

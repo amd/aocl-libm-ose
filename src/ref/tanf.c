@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,10 +25,10 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
 #include "libm_inlines_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
 extern void __amd_remainder_piby2d2f(unsigned long long ux, double *r, int *region);
 
@@ -58,7 +58,7 @@ static inline double tanf_piby4(double x, int recip)
 #pragma function(tanf)
 #endif
 
-float FN_PROTOTYPE_REF(tanf)(float x)
+float ALM_PROTO_REF(tanf)(float x)
 {
   double r, dx;
   int region, xneg;
@@ -73,18 +73,18 @@ float FN_PROTOTYPE_REF(tanf)(float x)
         {
           /* x is NaN */
 #ifdef WINDOWS
-	return  __amd_handle_errorf("tanf", __amd_tan, fux | QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F, 1);
+	return  __alm_handle_errorf(fux | QNAN_MASK_32, AMD_F_NONE);
 #else
 	if (fux & QNAN_MASK_32)
-	return  __amd_handle_errorf("tanf", __amd_tan, fux | QNAN_MASK_32, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0F, 1);
+	return  __alm_handle_errorf(fux | QNAN_MASK_32, AMD_F_NONE);
 	else
-	return  __amd_handle_errorf("tanf", __amd_tan, fux | QNAN_MASK_32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
+	return  __alm_handle_errorf(fux | QNAN_MASK_32, AMD_F_INVALID);
 #endif
         }
       else
         {
           /* x is infinity. Return a NaN */
-	 return  __amd_handle_errorf("tanf", __amd_tan, INDEFBITPATT_SP32, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0F, 1);
+	 return  __alm_handle_errorf(INDEFBITPATT_SP32, AMD_F_INVALID);
         }
     }
 
@@ -103,7 +103,7 @@ float FN_PROTOTYPE_REF(tanf)(float x)
 #ifdef WINDOWS
                 return x; //valf_with_flags(x, AMD_F_INEXACT);
 #else
-	return  __amd_handle_errorf("tanf", __amd_tan, fux, _UNDERFLOW, AMD_F_UNDERFLOW|AMD_F_INEXACT, ERANGE, x, 0.0F, 1);
+	return  __alm_handle_errorf(fux, AMD_F_UNDERFLOW|AMD_F_INEXACT);
 #endif
             }
           else

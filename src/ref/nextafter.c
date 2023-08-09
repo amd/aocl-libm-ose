@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,12 +25,11 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
-
-double FN_PROTOTYPE_REF(nextafter)(double x, double y)
+double ALM_PROTO_REF(nextafter)(double x, double y)
 {
 
 
@@ -46,13 +45,12 @@ double FN_PROTOTYPE_REF(nextafter)(double x, double y)
     if(((checkbits.u64 & ~SIGNBIT_DP64) > EXPBITS_DP64 ))
     {
 #ifdef WINDOWS
-		return  __amd_handle_error("nextafter", __amd_nextafter, checkbits.u64 | QNAN_MASK_64 , _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+		return  __alm_handle_error(checkbits.u64 | QNAN_MASK_64, AMD_F_NONE);
 #else
 	    if (checkbits.u64 & QNAN_MASK_64)
-
-		return  __amd_handle_error("nextafter", __amd_nextafter, checkbits.u64 | QNAN_MASK_64 , _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+		    return  __alm_handle_error(checkbits.u64 | QNAN_MASK_64, AMD_F_NONE);
 	    else
-		return  __amd_handle_error("nextafter", __amd_nextafter, checkbits.u64 | QNAN_MASK_64 , _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+		    return  __alm_handle_error(checkbits.u64 | QNAN_MASK_64, AMD_F_INVALID);
 #endif
     }
 
@@ -61,16 +59,15 @@ double FN_PROTOTYPE_REF(nextafter)(double x, double y)
     if(((checkbitsy.u64 & ~SIGNBIT_DP64) > EXPBITS_DP64 ))
     {
 #ifdef WINDOWS
-		return  __amd_handle_error("nextafter", __amd_nextafter, checkbitsy.u64 | QNAN_MASK_64, _DOMAIN, AMD_F_NONE, EDOM, y, 0.0, 1);
+		return  __alm_handle_error(checkbitsy.u64 | QNAN_MASK_64, AMD_F_NONE);
 #else
 	    if (checkbitsy.u64 & QNAN_MASK_64)
-		return  __amd_handle_error("nextafter", __amd_nextafter, checkbitsy.u64 | QNAN_MASK_64, _DOMAIN, AMD_F_NONE, EDOM, y, 0.0, 1);
+		    return  __alm_handle_error(checkbitsy.u64 | QNAN_MASK_64, AMD_F_NONE);
 	    else
-		return  __amd_handle_error("nextafter", __amd_nextafter, checkbits.u64 | QNAN_MASK_64 , _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+		    return  __alm_handle_error(checkbits.u64 | QNAN_MASK_64, AMD_F_INVALID);
 #endif
     }
-	
-	
+
 	/* if x == y return y in the type of x */
     if( x == dy )
     {
@@ -101,7 +98,7 @@ double FN_PROTOTYPE_REF(nextafter)(double x, double y)
     /* check if the result is nan or inf */
     if(((checkbits.u64 & ~SIGNBIT_DP64) >= EXPBITS_DP64 ))
     {
-		return  __amd_handle_error("nextafter", __amd_nextafter, checkbits.u64 | QNAN_MASK_64, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+		return  __alm_handle_error(checkbits.u64 | QNAN_MASK_64, AMD_F_NONE);
     }
 
     return checkbits.f64;

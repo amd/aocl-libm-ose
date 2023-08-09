@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,13 +25,12 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm/amd_funcs_internal.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include "<libm/alm_special.h>"
 #include "libm_errno_amd.h"
 
-double FN_PROTOTYPE_BAS64(fma)(double aa, double bb, double cc)
+double ALM_PROTO_BAS64(fma)(double aa, double bb, double cc)
 {
     UT64 a, b, c, result;
     UT64 ah, at, bh, bt, am, bm, ps;
@@ -172,9 +171,9 @@ double FN_PROTOTYPE_BAS64(fma)(double aa, double bb, double cc)
 
     z.f64 = (ce - pe > 60) ? cc : z.f64;
     if((z.u64 & 0x7fffffffffffffff) == 0 )
-        return __amd_handle_error("fma", __amd_fma, z.u64, _DOMAIN, AMD_F_UNDERFLOW, EDOM, aa, 0.0, 1);
+        return __alm_handle_error(z.u64, AMD_F_UNDERFLOW);
     if((z.u64 & 0x7ff0000000000000) == 0x7ff0000000000000 )
-        return __amd_handle_error("fma", __amd_fma, z.u64, _DOMAIN, AMD_F_OVERFLOW, EDOM, aa, 0.0, 1);
+        return __alm_handle_error(z.u64, AMD_F_OVERFLOW);
 
     //z.f64 = spcl ? (aa*bb + cc) : z.f64;
     //z.f64 = spcl2 ? cc : z.f64;

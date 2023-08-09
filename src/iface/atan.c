@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,22 +26,85 @@
  */
 
 #include <libm_macros.h>
-#include <libm/cpu_features.h>
-#include <libm/entry_pt.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/iface.h>
-#include <libm/amd_funcs_internal.h>    /* Contains all implementations */
+#include <libm/entry_pt.h>
 
+#include <libm/arch/all.h>
+
+
+static const
+struct alm_arch_funcs __arch_funcs_atan = {
+    .def_arch = ALM_UARCH_VER_DEFAULT,
+    .funcs = {
+        [ALM_UARCH_VER_DEFAULT] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(atanf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(atan),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_atanf),/* vrs4 ? */
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_atanf),/* vrs8 ? */
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_AVX2(vrd2_atan), /* vrd2 ? */
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_AVX2(vrd4_atan), /* vrd4 ? */
+
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_atanf),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_atan),
+        },
+
+        [ALM_UARCH_VER_ZEN] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(atanf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(atan),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN(vrs4_atanf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_atanf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN(vrd2_atan),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN(vrd4_atan),
+        },
+
+        [ALM_UARCH_VER_ZEN2] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(atanf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(atan),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN2(vrs4_atanf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_atanf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN2(vrd2_atan),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN2(vrd4_atan),
+        },
+
+        [ALM_UARCH_VER_ZEN3] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(atanf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(atan),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN3(vrs4_atanf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_atanf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN3(vrd2_atan),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN3(vrd4_atan),
+        },
+
+        [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(atanf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(atan),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN4(vrs4_atanf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN4(vrs8_atanf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN4(vrd2_atan),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN4(vrd4_atan),
+
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_atanf),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_atan),
+        },
+    },
+};
 
 void
-LIBM_IFACE_PROTO(atan)(void *arg)
-{
-	/* Double */
-	G_ENTRY_PT_PTR(atan) = &FN_PROTOTYPE_REF(atan);
+LIBM_IFACE_PROTO(atan)(void *arg) {
+    alm_ep_wrapper_t g_entry_atan = {
+       .g_ep = {
+          [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(atanf),
+          [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(atan),
+          [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_atanf),
+          [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_atanf),
+          [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_atan),
+          [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_atan),
+          [ALM_FUNC_VECT_SP_16] = &G_ENTRY_PT_PTR(vrs16_atanf),
+          [ALM_FUNC_VECT_DP_8] = &G_ENTRY_PT_PTR(vrd8_atan),
+        },
+    };
 
-	/* Single */
-	G_ENTRY_PT_PTR(atanf) = &FN_PROTOTYPE_REF(atanf);
-
-	/* Vector Double */
-	/* Vector Single */
+    alm_iface_fixup(&g_entry_atan, &__arch_funcs_atan);
 }
 

@@ -1,0 +1,70 @@
+file /projects/crypto/1/pjayaraj/aocl-libm/scripts/site_scons/alm/check.py,line 168:
+	Configure(confdir = build/aocl-release/.sconf_temp)
+scons: Configure: Checking whether gcc program exists...
+scons: Configure: /usr/bin/gcc
+
+scons: Configure: Checking whether g++ program exists...
+scons: Configure: /usr/bin/g++
+
+scons: Configure: Checking whether gcc program exists...
+scons: Configure: /usr/bin/gcc
+
+scons: Configure: Checking whether g++ program exists...
+scons: Configure: /usr/bin/g++
+
+scons: Configure: Checking for Toolchain 
+scons: Configure: (cached)  Using compiler GCC ver 11.3
+scons: Configure: (cached) yes
+
+scons: Configure: Checking if test supporting libraries exists
+scons: Configure: (cached) yes
+
+scons: Configure: Checking if [-march=znver4] is supported by gcc 
+scons: Configure: "build/aocl-release/.sconf_temp/conftest_2ab82633fad769ac6eb3a12f2715d311_0.c" is up to date.
+scons: Configure: The original builder output was:
+  |build/aocl-release/.sconf_temp/conftest_2ab82633fad769ac6eb3a12f2715d311_0.c <-
+  |  |
+  |  |    #include <stdio.h>
+  |  |    int main() { printf("hello world"); return 0; }
+  |  |    
+  |
+scons: Configure: Building "build/aocl-release/.sconf_temp/conftest_2ab82633fad769ac6eb3a12f2715d311_0_cdda0d2b6e607ec0990ad9ac7da4c6df.o" failed in a previous run and all its sources are up to date.
+scons: Configure: The original builder output was:
+  |gcc -o build/aocl-release/.sconf_temp/conftest_2ab82633fad769ac6eb3a12f2715d311_0_cdda0d2b6e607ec0990ad9ac7da4c6df.o -c -march=znver4 build/aocl-release/.sconf_temp/conftest_2ab82633fad769ac6eb3a12f2715d311_0.c
+  |
+scons: Configure: (cached) no
+
+scons: Configure: Checking if [-march=znver3] is supported by gcc 
+scons: Configure: "build/aocl-release/.sconf_temp/conftest_2ab82633fad769ac6eb3a12f2715d311_1.c" is up to date.
+scons: Configure: The original builder output was:
+  |build/aocl-release/.sconf_temp/conftest_2ab82633fad769ac6eb3a12f2715d311_1.c <-
+  |  |
+  |  |    #include <stdio.h>
+  |  |    int main() { printf("hello world"); return 0; }
+  |  |    
+  |
+scons: Configure: Building "build/aocl-release/.sconf_temp/conftest_2ab82633fad769ac6eb3a12f2715d311_1_51b4ef17b69bb7b8a3b2541f00617324.o" failed in a previous run and all its sources are up to date.
+scons: Configure: The original builder output was:
+  |gcc -o build/aocl-release/.sconf_temp/conftest_2ab82633fad769ac6eb3a12f2715d311_1_51b4ef17b69bb7b8a3b2541f00617324.o -c -march=znver3 build/aocl-release/.sconf_temp/conftest_2ab82633fad769ac6eb3a12f2715d311_1.c
+  |
+scons: Configure: (cached) no
+
+scons: Configure: Checking if [-march=znver2] is supported by gcc 
+scons: Configure: "build/aocl-release/.sconf_temp/conftest_2ab82633fad769ac6eb3a12f2715d311_2.c" is up to date.
+scons: Configure: The original builder output was:
+  |build/aocl-release/.sconf_temp/conftest_2ab82633fad769ac6eb3a12f2715d311_2.c <-
+  |  |
+  |  |    #include <stdio.h>
+  |  |    int main() { printf("hello world"); return 0; }
+  |  |    
+  |
+scons: Configure: "build/aocl-release/.sconf_temp/conftest_2ab82633fad769ac6eb3a12f2715d311_2_259e23adb07b14b5ce365380b185afa0.o" is up to date.
+scons: Configure: The original builder output was:
+  |gcc -o build/aocl-release/.sconf_temp/conftest_2ab82633fad769ac6eb3a12f2715d311_2_259e23adb07b14b5ce365380b185afa0.o -c -march=znver2 build/aocl-release/.sconf_temp/conftest_2ab82633fad769ac6eb3a12f2715d311_2.c
+  |
+scons: Configure: (cached) yes
+
+scons: Configure: Checking for valid AOCL UTILS install path
+scons: Configure: (cached) yes
+
+

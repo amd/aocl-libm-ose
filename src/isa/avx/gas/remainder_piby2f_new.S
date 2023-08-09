@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -24,6 +24,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+#include "fn_macros.h"
 #define fname __amd_remainder_piby2d2f
 
 #  rdi = x 
@@ -37,9 +38,16 @@
 .text
 .p2align 4
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
     #get the unbiased exponent and the mantissa part of x
+    #ifdef _WIN64
+    push %rdi
+    push %rsi
+    mov %rcx, %rdi
+    mov %rdx, %rsi
+    mov %r8, %rdx
+    #endif
     movd %rdi, %xmm0
     lea  .L__2_by_pi_bits(%rip),%r9
     
@@ -160,12 +168,18 @@ fname:
     movd %r10,%xmm0  #xmm0 = x
     mulsd .L__piby2(%rip),%xmm0
     movsd %xmm0,(%rsi)
+    #ifdef _WIN64
+    pop %rsi
+    pop %rdi
+    #endif
     ret      
     
 .section .rodata
 .align 16
+#ifdef __GNU_ASM__
 .type	.L__2_by_pi_bits, @object
 .size	.L__2_by_pi_bits, 158
+#endif
 .L__2_by_pi_bits:
     .byte 224,241,27,193,12,88,33,116,53,126,196,126,237,175,169,75,74,41,222,231,28,244,236,197,151,175,31,235,158,212,181,168,127,121,154,253,24,61,221,38,44,159,60,251,217,180,125,180,41,104,45,70,188,188,63,96,22,120,255,95,226,127,236,160,228,247,46,126,17,114,210,231,76,13,230,88,71,230,4,249,125,209,154,192,113,166,19,18,237,186,212,215,8,162,251,156,166,196,114,172,119,248,115,72,70,39,168,187,36,25,128,75,55,9,233,184,145,220,134,21,239,122,175,142,69,249,7,65,14,241,100,86,138,109,3,119,211,212,71,95,157,240,167,84,16,57,185,13,230,139,2,0,0,0,0,0,0,0
 .align 16

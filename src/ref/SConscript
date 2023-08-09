@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -27,21 +27,28 @@ Import('env')
 from os.path import join as joinpath
 
 builddir = joinpath(env['BUILDROOT'], 'src', 'ref')
+if env['HOST_OS'] != 'win32':
+    cflags = ['-mavx2', '-mavx', '-mfma', '-O2']
+else:
+    cflags=[]
 
+env.Append (
+    CFLAGS = cflags
+)
 #
 # Reference files, for the functions where optimized version
 # doesn't exist
 #
 ref_excludes = ['amd_pow.c', 'exp2.c',
-                'exp_tables*.c', 'MapEntryPoints.c', 
+                'exp_tables*.c', 'MapEntryPoints.c',
                 'MapEntryPoints.c']
 
-ref_srcs = Glob('*.[cS]',    exclude=ref_excludes) 
+ref_srcs = Glob('*.[cS]',    exclude=ref_excludes)
 ref_objs = env.StaticObject(ref_srcs)
 
 cmplx_objs = SConscript('cmplx/SConscript',
-			exports = {'env' : env},
-			duplicate = 0,
+                        exports = {'env' : env},
+                        duplicate = 0,
                         src_dir = joinpath(env['CWD'], 'cmplx'),
                         variant_dir = joinpath(builddir, 'cmplx'))
 

@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+; Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 ;
 ; Redistribution and use in source and binary forms, with or without modification,
 ; are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@
 include exp_tables.inc
 include fm.inc
 
-FN_PROTOTYPE_BAS64 vrsa_exp2f
+ALM_PROTO_BAS64 vrsa_exp2f
 
 p_temp		equ		0		; temporary for get/put bits operation
 p_temp1		equ		10h		; temporary for get/put bits operation

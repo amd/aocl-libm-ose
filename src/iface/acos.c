@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,22 +26,75 @@
  */
 
 #include <libm_macros.h>
-#include <libm/cpu_features.h>
-#include <libm/entry_pt.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/iface.h>
-#include <libm/amd_funcs_internal.h>    /* Contains all implementations */
+#include <libm/entry_pt.h>
 
+//
+#include <libm/arch/all.h>
+
+
+static const
+struct alm_arch_funcs __arch_funcs_acos = {
+    .def_arch = ALM_UARCH_VER_DEFAULT,
+    .funcs = {
+        [ALM_UARCH_VER_DEFAULT] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(acosf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(acos),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_acosf),/* vrs4 ? */
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_acosf),/* vrs8 ? */
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_acosf) /*vrs16 acosf */
+        },
+
+        [ALM_UARCH_VER_ZEN] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(acosf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(acos),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN(vrs4_acosf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_acosf),
+        },
+
+        [ALM_UARCH_VER_ZEN2] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(acosf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(acos),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN2(vrs4_acosf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_acosf),
+        },
+
+        [ALM_UARCH_VER_ZEN3] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(acosf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(acos),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN3(vrs4_acosf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_acosf),
+        },
+
+        [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(acosf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(acos),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN4(vrs4_acosf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN4(vrs8_acosf),
+
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_acosf),
+        }
+    },
+};
 
 void
-LIBM_IFACE_PROTO(acos)(void *arg)
-{
-	/* Double */
-	G_ENTRY_PT_PTR(acos) = &FN_PROTOTYPE_REF(acos);
+LIBM_IFACE_PROTO(acos)(void *arg) {
+    alm_ep_wrapper_t g_entry_acos = {
+       .g_ep = {
+        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(acosf),
+        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(acos),
+        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_acosf),
+        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_acosf),
 
-	/* Single */
-	G_ENTRY_PT_PTR(acosf) = &FN_PROTOTYPE_REF(acosf);
+        [ALM_FUNC_VECT_SP_16] = &G_ENTRY_PT_PTR(vrs16_acosf),
+#if 0
+        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_acos),
+        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_acos),
+#endif
+        },
+    };
 
-	/* Vector Double */
-	/* Vector Single */
+    alm_iface_fixup(&g_entry_acos, &__arch_funcs_acos);
 }
 

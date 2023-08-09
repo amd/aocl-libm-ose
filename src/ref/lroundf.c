@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,11 +25,11 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
-long int FN_PROTOTYPE_REF(lroundf)(float f)
+long int ALM_PROTO_REF(lroundf)(float f)
 {
     UT32 u32d;
     UT32 u32Temp,u32result;
@@ -41,30 +41,30 @@ long int FN_PROTOTYPE_REF(lroundf)(float f)
     if ((u32d.u32 & 0X7F800000) == 0x7F800000)
     {
         /*else the number is infinity*/
-		//Raise range or domain error
+	//Raise range or domain error
         {
-		#ifdef WIN64
-			__amd_handle_errorf("lroundf", __amd_lround, SIGNBIT_SP32, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
-			return (long int)SIGNBIT_SP32;
-		#else
-         if((u32d.u32 & 0x7fffffff) == 0x7f800000)
-            return SIGNBIT_DP64;
-         if((u32d.u32 & 0x7fffffff) >= 0x7fc00000)
-                __amd_handle_errorf("lround", __amd_lround, (unsigned int)SIGNBIT_DP64, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
-         else    
-                __amd_handle_errorf("lround", __amd_lround, (unsigned int)SIGNBIT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, f, 0.0, 1);
+            #ifdef WIN64
+            __alm_handle_errorf(SIGNBIT_SP32, AMD_F_NONE);
+            return (long int)SIGNBIT_SP32;
+            #else
+            if((u32d.u32 & 0x7fffffff) == 0x7f800000)
+                return (long)SIGNBIT_DP64;
+            if((u32d.u32 & 0x7fffffff) >= 0x7fc00000)
+                __alm_handle_errorf((unsigned int)SIGNBIT_DP64,
+                                                          AMD_F_NONE);
+            else
+                __alm_handle_errorf((unsigned int)SIGNBIT_DP64,
+                                                       AMD_F_INVALID);
             
-		 return SIGNBIT_DP64; /*GCC returns this when the number is out of range*/
-		#endif
+            return (long)SIGNBIT_DP64; /*GCC returns this when the number is out of range*/
+            #endif
         }
-
     }
 
     u32Temp.u32 &= 0x7FFFFFFF;
     intexp = (u32d.u32 & 0x7F800000) >> 23;
     sign = u32d.u32 & 0x80000000;
     intexp -= 0x7F;
-
 
     /* 1.0 x 2^-1 is the smallest number which can be rounded to 1 */
     if (intexp < -1)
@@ -76,7 +76,7 @@ long int FN_PROTOTYPE_REF(lroundf)(float f)
     if (intexp >= 31)
     {
         result = 0x80000000;
-		__amd_handle_errorf("lroundf", __amd_lround, result, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
+	    __alm_handle_errorf(result, AMD_F_NONE);
         return result;
 	}
 
@@ -84,9 +84,9 @@ long int FN_PROTOTYPE_REF(lroundf)(float f)
     /* 1.0 x 2^31 (or 2^63) is already too large */
     if (intexp >= 63)
     {
-        result = 0x8000000000000000;
-        __amd_handle_errorf("lroundf", __amd_lround, result, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
-		return result;
+        result = (long)0x8000000000000000L;
+        __alm_handle_errorf((unsigned long long)result, AMD_F_NONE);
+	    return result;
     }
  #endif
 
@@ -116,18 +116,14 @@ long int FN_PROTOTYPE_REF(lroundf)(float f)
     shift = intexp - 55; /*55= 23 +32*/
     #endif
 
-
-	if(shift < 0)
-		result = result >> (-shift);
-	if(shift > 0)
+    if(shift < 0)
+        result = result >> (-shift);
+    if(shift > 0)
         result = result << (shift);
 
     if (sign)
         result = -result;
+
     return result;
-
 }
-
-
-
 

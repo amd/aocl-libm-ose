@@ -1,7 +1,6 @@
 
 /*
-
-(C) 2008-2020 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2022 Advanced Micro Devices, Inc. All Rights Reserved.
 
 Advanced Micro Devices, Inc.
 Software License Agreement
@@ -160,6 +159,26 @@ agreements with respect to the subject matter of this Agreement.
 
 #ifndef __AMDLIBM_H__
 #define __AMDLIBM_H__
+
+#include <complex.h>
+#if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+  #ifdef __cplusplus
+    extern "C" {
+  #endif
+  typedef _C_float_complex _Fcomplex;
+  typedef _C_double_complex _Dcomplex;
+  #ifdef __cplusplus
+    }
+  #endif
+#endif
+
+#if (defined (_WIN64) || defined (_WIN32))
+  typedef    _Fcomplex     fc32_t;
+  typedef    _Dcomplex     fc64_t;
+#else
+  typedef    float _Complex     fc32_t;
+  typedef    double _Complex     fc64_t;
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -353,6 +372,19 @@ extern "C" {
 
     double amd_fmin  (double x, double y);
     float  amd_fminf (float  x, float  y);
+
+ /* complex variants */
+    fc64_t amd_cexp  (fc64_t x);
+    fc32_t amd_cexpf (fc32_t y);
+
+    fc64_t amd_cpow  (fc64_t x, fc64_t y);
+    fc32_t amd_cpowf  (fc32_t x, fc32_t y);
+
+    fc64_t amd_clog  (fc64_t x);
+    fc32_t amd_clogf (fc32_t y);
+
+    double amd_erf  (double x);
+    float  amd_erff (float x);
 
 
 #ifdef __cplusplus
@@ -678,6 +710,18 @@ extern "C" {
 #define fmin amd_fmin
 #undef fminf
 #define fminf amd_fminf
+
+ /* complex */
+#undef cexp
+#define cexp amd_cexp
+#undef cexpf
+#define cexpf amd_cexpf
+
+/* erf */
+#undef erf
+#define erf amd_erf
+#undef erff
+#define erff amd_erff
 
 #endif
 

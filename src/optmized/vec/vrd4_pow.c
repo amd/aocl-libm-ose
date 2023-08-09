@@ -26,7 +26,7 @@
  */
 
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
@@ -62,6 +62,7 @@ extern lookup_data exp_lookup[];
 
 static struct {
     v_u64x4_t v_min, v_max, mantissa_bits, one_by_two, mant_8_bits;
+    v_u64x4_t near_one_low, near_one_high;
     v_i64x4_t float_bias;
     double ALIGN(16) poly[MAX_POLYDEGREE];
     v_f64x4_t ln2_head, ln2_tail;
@@ -70,6 +71,8 @@ static struct {
     .ln2_tail = _MM_SET1_PD4(0x1.efa39ef35793cp-25), /* ln(2) tail*/
     .v_min  = _MM_SET1_I64(0x0010000000000000),
     .v_max  = _MM_SET1_I64(0x7ff0000000000000),
+    .near_one_low  = _MM_SET1_I64(0x3FEF26E978D4FDF4),
+    .near_one_high  = _MM_SET1_I64(0x3FF1000000000000),
     .float_bias =  _MM_SET1_I64(DOUBLE_PRECISION_BIAS),
     .mantissa_bits = _MM_SET1_I64(DOUBLE_PRECISION_MANTISSA),
     .one_by_two = _MM_SET1_I64(ONE_BY_TWO),
@@ -118,6 +121,8 @@ static struct {
 #define DP_HALF         v_log_data.one_by_two
 #define V_MIN           v_log_data.v_min
 #define V_MAX           v_log_data.v_max
+#define NEAR_ONE_LOW    v_log_data.near_one_low
+#define NEAR_ONE_HIGH   v_log_data.near_one_high
 #define V_MASK          v_log_data.v_mask
 #define LN2_HEAD        v_log_data.ln2_head
 #define LN2_TAIL        v_log_data.ln2_tail
@@ -257,7 +262,10 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     v_i64x4_t condition = (ux - V_MIN >= V_MAX - V_MIN);
 
-    v_i64x4_t int_exponent =  (ux >> 52) - DP64_BIAS;
+    /*call scalar pow for values of x near one */
+    condition &=  (ux - NEAR_ONE_LOW) >= (NEAR_ONE_HIGH - NEAR_ONE_LOW);
+
+    v_i64x4_t int_exponent = (v_i64x4_t)( (ux >> 52) - DP64_BIAS );
 
     v_u64x4_t mant  = ((ux & MANTISSA_BITS) | DP_HALF);
 
@@ -283,9 +291,9 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     for(int  lane = 0; lane < 4; lane++) {
 
-        int32_t j = index[lane];
+        int32_t j = (int32_t)index[lane];
 
-        int32_exponent[lane] = int_exponent[lane];
+        int32_exponent[lane] = (int32_t)int_exponent[lane];
 
         F_INV_HEAD[lane] = TAB_F_INV[j].head;
 
@@ -297,7 +305,7 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     }
 
-    v_f64x4_t exponent =  _mm256_cvtepi32_pd (int32_exponent);
+    v_f64x4_t exponent = (v_f64x4_t) _mm256_cvtepi32_pd ((__m128i)int32_exponent);
 
     r = f * F_INV_TAIL;
 
@@ -350,11 +358,11 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     v_f64x4_t dn = z + EXP_HUGE;
 
-    v_i64x4_t n = as_v4_u64_f64(dn);
+    v_i64x4_t n = as_v4_i64_f64(dn);
 
     dn = dn - EXP_HUGE;
 
-    index = n & DP64_BIAS;
+    index = (v_u64x4_t)(n & DP64_BIAS);
 
     r = ylogx_h - (dn * LOG2_BY_N_HEAD);
 
@@ -372,7 +380,7 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     for (int lane = 0; lane < 4; lane++) {
 
-        int32_t j = index[lane];
+        int32_t j = (int32_t)index[lane];
 
         j_by_N_head[lane] = TWO_POWER_J_BY_N[j].head;
 
@@ -386,7 +394,7 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     r = j_by_N_head + (z + q);
 
-    result = r * as_v4_f64_u64(m);
+    result = r * as_v4_f64_i64(m);
 
     if (unlikely(check_condition(&condition, condition2))) {
         return pow_specialcase(_x, _y, result, condition);

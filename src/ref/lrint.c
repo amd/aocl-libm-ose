@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,13 +25,12 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
 
-
-long int FN_PROTOTYPE_REF(lrint)(double x)
+long int ALM_PROTO_REF(lrint)(double x)
 {
 
     UT64 checkbits,val_2p52;
@@ -43,8 +42,7 @@ long int FN_PROTOTYPE_REF(lrint)(double x)
     {
         /* number cant be rounded raise an exception */
         /* Number exceeds the representable range could be nan or inf also*/
-        __amd_handle_error("lrint",__amd_lrint, (long long int) x, _DOMAIN,
-                           0, EDOM, x, 0.0,1);
+        __alm_handle_error((unsigned long long) x, 0);
 	   return (long int) x;
     }
 

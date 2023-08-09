@@ -1,3 +1,30 @@
+/*
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
 #include <fenv.h>
 #include "almstruct.h"
 #include <libm_util_amd.h>
@@ -12,13 +39,13 @@ test_atanf_conformance_data[] = {
    {0x38800000, 0x3f800000,  0},  //min= 0.00006103515625, small enough that atan(x) = 1
    {0x387FFFFF, 0x3f800000,  0}, //min - 1 bit
    {0x38800001, 0x3f800000,  0}, //min + 1 bit
-   {0xF149F2C9, 0x7f800000,  FE_OVERFLOW}, //lambda + x = 1, x = -9.9999994e+29
-   {0xF149F2C8, 0x7f800000,  FE_OVERFLOW}, //lambda + x < 1
+   {0xF149F2C9, 0x7f800000,  FE_INEXACT}, //lambda + x = 1, x = -9.9999994e+29
+   {0xF149F2C8, 0x7f800000,  FE_INEXACT}, //lambda + x < 1
    {0xF149F2CA, 0x7f800000,  FE_OVERFLOW}, //lambda + x > 1
    {0x42B2D4FC, 0x7f7fffec,  0}, //max arg, x = 89.41598629223294,max atanf arg
    {0x42B2D4FB, 0x7f7fff6c,  0}, //max arg - 1 bit
-   {0x42B2D4FD, 0x7f800000,  FE_OVERFLOW}, //max arg + 1 bit
-   {0x42B2D4FF, 0x7f800000,  FE_OVERFLOW}, // > max
+   {0x42B2D4FD, 0x7f800000,  FE_INEXACT}, //max arg + 1 bit
+   {0x42B2D4FF, 0x7f800000,  FE_INEXACT}, // > max
    {0x42B2D400, 0x7f7f820b,  0}, // < max
    {0x41A00000, 0x4d675844,  0}, //small_threshold = 20
    {0x41A80000, 0x4e1d3710,  0}, //small_threshold+1 = 21
@@ -42,10 +69,10 @@ test_atanf_conformance_data[] = {
    {0x805def12, 0x3f800000,  0},  // -denormal intermediate
    {0x807FFFFF, 0x3f800000,  0},  // -denormal max
    {0x00800000, 0x3f800000,  0},  // normal min
-   {0x43b3c4ea, 0x7f800000,  FE_OVERFLOW},  // normal intermediate
+   {0x43b3c4ea, 0x7f800000,  FE_INEXACT},  // normal intermediate
    {0x7f7fffff, 0x7f800000,  FE_OVERFLOW},  // normal max
    {0x80800000, 0x3f800000,  0},  // -normal min
-   {0xc5812e71, 0x7f800000,  FE_OVERFLOW},  // -normal intermediate
+   {0xc5812e71, 0x7f800000,  FE_INEXACT},  // -normal intermediate
    {0xFF7FFFFF, 0x7f800000,  FE_OVERFLOW},  // -normal max
    {0x7F800000, 0x7f800000,  0},  // inf
    {0xfF800000, 0x7f800000,  0},  // -inf
@@ -90,37 +117,91 @@ test_atanf_conformance_data[] = {
    {0xc0000000, 0x4070c7d0,  0},  // -2
    {0x41200000, 0x462c14ef,  0},  // 10
    {0xc1200000, 0x462c14ef,  0},  // -10
-   {0x447A0000, 0x7f800000,  FE_OVERFLOW},  // 1000
-   {0xc47A0000, 0x7f800000,  FE_OVERFLOW},  // -1000
+   {0x447A0000, 0x7f800000,  FE_INEXACT},  // 1000
+   {0xc47A0000, 0x7f800000,  FE_INEXACT},  // -1000
    {0x4286CCCC, 0x6f96eb6f,  0},  // 67.4
    {0xc286CCCC, 0x6f96eb6f,  0},  // -67.4
-   {0x44F7F333, 0x7f800000,  FE_OVERFLOW},  // 1983.6
-   {0xc4F7F333, 0x7f800000,  FE_OVERFLOW},  // -1983.6
+   {0x44F7F333, 0x7f800000,  FE_INEXACT},  // 1983.6
+   {0xc4F7F333, 0x7f800000,  FE_INEXACT},  // -1983.6
    {0x42AF0000, 0x7e16bab3,  0},  // 87.5
    {0xc2AF0000, 0x7e16bab3,  0},  // -87.5
-   {0x48015E40, 0x7f800000,  FE_OVERFLOW},  // 132473
-   {0xc8015E40, 0x7f800000,  FE_OVERFLOW},  // -132473
-   {0x4B000000, 0x7f800000,  FE_OVERFLOW},  // 2^23
-   {0x4B000001, 0x7f800000,  FE_OVERFLOW},  // 2^23 + 1
-   {0x4AFFFFFF, 0x7f800000,  FE_OVERFLOW},  // 2^23 -1 + 0.5
-   {0xcB000000, 0x7f800000,  FE_OVERFLOW},  // -2^23
-   {0xcB000001, 0x7f800000,  FE_OVERFLOW},  // -(2^23 + 1)
-   {0xcAFFFFFF, 0x7f800000,  FE_OVERFLOW},  // -(2^23 -1 + 0.5)
+   {0x48015E40, 0x7f800000,  FE_INEXACT},  // 132473
+   {0xc8015E40, 0x7f800000,  FE_INEXACT},  // -132473
+   {0x4B000000, 0x7f800000,  FE_INEXACT},  // 2^23
+   {0x4B000001, 0x7f800000,  FE_INEXACT},  // 2^23 + 1
+   {0x4AFFFFFF, 0x7f800000,  FE_INEXACT},  // 2^23 -1 + 0.5
+   {0xcB000000, 0x7f800000,  FE_INEXACT},  // -2^23
+   {0xcB000001, 0x7f800000,  FE_INEXACT},  // -(2^23 + 1)
+   {0xcAFFFFFF, 0x7f800000,  FE_INEXACT},  // -(2^23 -1 + 0.5)
+   {0x80000000, 0x80000000,  0},
+   {0x7f800001, 0x7fc00001,  0},
+   {0xff800001, 0xffc00001,  0},
+   {0x7fc00000, 0x7fc00000,  0},
+   {0xffc00000, 0xffc00000,  0},
+   {0x7f800000, 0x3fc90fdb,  0},
+   {0xff800000, 0xbfc90fdb,  0},
+   {0x807fffff, 0x807fffff,  0},
+   {0xff7fffff, 0xbfc90fdb,  0},
+
+   //answer from NAG test tool
+   {0x35800000, 0x35800000,  0},    // 2 ^(-20) < 2.0^(-19), 9.536743164060E-07
+   {0xbe4ccccd, 0xbe4a2210,  0},    // abs(-0.2)< 7./16.,   -1.973955627155E-01
+   {0x3f000000, 0x3eed6338,  0},    // 0.5      < 11./16.,   4.636476090008E-01
+   {0xbf7cac08, 0xbf476317,  0},    //-0.987    < 19./16.,  -7.788557245266E-01
+   {0x400947ae, 0x3f913900,  0},    // 2.145    < 39./16.,   1.134552060813E+00
+   {0xc2c80000, 0xbfc7c82f,  0},    // -100     < 2^26,     -1.560796660108E+00
+   {0x4d000000, 0x3fc90fdb,  0}, // 2^27     > 2^26,      1.570796319344E+00
+   {0xcd000000, 0xbfc90fdb,  0}, //-2^27     > 2^26,     -1.570796319344E+00
+
 };
 
 static libm_test_special_data_f64
 test_atan_conformance_data[] = {
+    #if defined(_WIN64) || defined(_WIN32)
+        {0x23d, 0x23d, 3},
+        {0xC32FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 1}, // -(2^52 -1 + 0.5)
+        {0xC330000000000001LL, 0x7ff0000000000000LL, 1}, // -(2^52 + 1)
+        {0xC330000000000000LL, 0x7ff0000000000000LL, 1}, // -2^52
+        {0x432FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 1}, // 2^52 -1 + 0.5
+        {0x4330000000000001LL, 0x7ff0000000000000LL, 1}, // 2^52 + 1
+        {0x4330000000000000LL, 0x7ff0000000000000LL, 1}, // 2^52
+        {0xC1002BC800000000LL, 0x7ff0000000000000LL, 1}, // -132473
+        {0x41002BC800000000LL, 0x7ff0000000000000LL, 1}, // 132473
+        {0xC09EFE6666666666LL, 0x7ff0000000000000LL, 1}, // -1983.6
+        {0x409EFE6666666666LL, 0x7ff0000000000000LL, 1}, // 1983.6
+        {0x4086340000000000LL, POS_INF_F64, 1},  // 710.5
+        {0x408633ce8fb9f87eLL, 0x7ff0000000000000LL, 1}, //max arg, x = 89.41598629223294,max atanf arg
+        {0x408F400000000000LL, 0x7ff0000000000000LL, 1}, // 1000
+        {0xC08F400000000000LL, 0x7ff0000000000000LL, 1}, // -1000
+        {0x408633ce8fb9f87fLL, 0x7ff0000000000000LL, 1}, //max arg + 1 bit
+        {0x408633ce8fb9f8ffLL, 0x7ff0000000000000LL, 1}, // > max
+    #else
+        {0x23d, 0x23d, 48},
+        {0xC32FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 32}, // -(2^52 -1 + 0.5)
+        {0xC330000000000001LL, 0x7ff0000000000000LL, 32}, // -(2^52 + 1)
+        {0xC330000000000000LL, 0x7ff0000000000000LL, 32}, // -2^52
+        {0x432FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 32}, // 2^52 -1 + 0.5
+        {0x4330000000000001LL, 0x7ff0000000000000LL, 32}, // 2^52 + 1
+        {0x4330000000000000LL, 0x7ff0000000000000LL, 32}, // 2^52
+        {0xC1002BC800000000LL, 0x7ff0000000000000LL, 32}, // -132473
+        {0x41002BC800000000LL, 0x7ff0000000000000LL, 32}, // 132473
+        {0xC09EFE6666666666LL, 0x7ff0000000000000LL, 32}, // -1983.6
+        {0x409EFE6666666666LL, 0x7ff0000000000000LL, 32}, // 1983.6
+        {0x4086340000000000LL, POS_INF_F64, 32},  // 710.5
+        {0x408633ce8fb9f87eLL, 0x7ff0000000000000LL, 32}, //max arg, x = 89.41598629223294,max atanf arg
+        {0x408F400000000000LL, 0x7ff0000000000000LL, 32}, // 1000
+        {0xC08F400000000000LL, 0x7ff0000000000000LL, 32}, // -1000
+        {0x408633ce8fb9f87fLL, 0x7ff0000000000000LL, 32}, //max arg + 1 bit
+        {0x408633ce8fb9f8ffLL, 0x7ff0000000000000LL, 32}, // > max
+    #endif
     // special accuracy tests
     {0x3e30000000000000LL, 0x3ff0000000000000LL, 0},  //min, small enough that atan(x) = 1 //
     {0x3E2FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, //min - 1 bit
     {0x3e30000000000001LL, 0x3ff0000000000000LL, 0}, //min + 1 bit
-    {0xFE37E43C8800759CLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x = 1, x = -1.0000000000000000e+300
-    {0xFE37E43C8800758CLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x < 1
-    {0xFE37E43C880075ACLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x > 1
-    {0x408633ce8fb9f87eLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //max arg, x = 89.41598629223294,max atanf arg
+    {0xFE37E43C8800759CLL, 0x7ff0000000000000LL, 0}, //lambda + x = 1, x = -1.0000000000000000e+300
+    {0xFE37E43C8800758CLL, 0x7ff0000000000000LL, 0}, //lambda + x < 1
+    {0xFE37E43C880075ACLL, 0x7ff0000000000000LL, 0}, //lambda + x > 1
     {0x408633ce8fb9f87dLL, 0x7feffffffffffd3bLL, 0}, //max arg - 1 bit
-    {0x408633ce8fb9f87fLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //max arg + 1 bit
-    {0x408633ce8fb9f8ffLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // > max
     {0x408633ce8fb9f800LL, 0x7feffffffffe093bLL, 0}, // < max
     {0x4034000000000000LL, 0x41aceb088b68e804LL, 0}, //small_threshold = 20
     {0x4035000000000000LL, 0x41c3a6e1fd9eecfdLL, 0}, //small_threshold+1 = 21
@@ -135,7 +216,6 @@ test_atan_conformance_data[] = {
     {NEG_SNAN_F64, NEG_SNAN_F64, FE_INVALID },  //
     {POS_QNAN_F64, POS_QNAN_F64, 0 },  //
     {NEG_QNAN_F64, NEG_QNAN_F64, 0 },  //
-    {0x4086340000000000LL, POS_INF_F64, FE_OVERFLOW},  // 710.5
     {0x0000000000000001LL, 0x3ff0000000000000LL, 0}, // denormal min
     {0x0005fde623545abcLL, 0x3ff0000000000000LL, 0}, // denormal intermediate
     {0x000FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, // denormal max
@@ -143,11 +223,11 @@ test_atan_conformance_data[] = {
     {0x8002344ade5def12LL, 0x3ff0000000000000LL, 0}, // -denormal intermediate
     {0x800FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, // -denormal max
     {0x0010000000000000LL, 0x3ff0000000000000LL, 0}, // normal min
-    {0x43b3c4eafedcab02LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // normal intermediate
-    {0x7FEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // normal max
+    {0x43b3c4eafedcab02LL, 0x7ff0000000000000LL, 0}, // normal intermediate
+    {0x7FEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 0}, // normal max
     {0x8010000000000000LL, 0x3ff0000000000000LL, 0}, // -normal min
-    {0xc5812e71245acfdbLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -normal intermediate
-    {0xFFEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -normal max
+    {0xc5812e71245acfdbLL, 0x7ff0000000000000LL, 0}, // -normal intermediate
+    {0xFFEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 0}, // -normal max
     {0x7FF0000000000000LL, 0x7ff0000000000000LL, 0}, // inf
     {0xFFF0000000000000LL, 0x7ff0000000000000LL, 0}, // -inf
     {0x7FF8000000000000LL, 0x7ff8000000000000LL, 0}, // qnan min
@@ -192,117 +272,67 @@ test_atan_conformance_data[] = {
     {0xC000000000000000LL, 0x400e18fa0df2d9bcLL, 0}, // -2
     {0x4024000000000000LL, 0x40c5829dd053712dLL, 0}, // 10
     {0xC024000000000000LL, 0x40c5829dd053712dLL, 0}, // -10
-    {0x408F400000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 1000
-    {0xC08F400000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -1000
     {0x4050D9999999999ALL, 0x45f2dd7567cd83eeLL, 0}, // 67.4
     {0xC050D9999999999ALL, 0x45f2dd7567cd83eeLL, 0}, // -67.4
-    {0x409EFE6666666666LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 1983.6
-    {0xC09EFE6666666666LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -1983.6
     {0x4055E00000000000LL, 0x47c2d7566d26536bLL, 0}, // 87.5
     {0xC055E00000000000LL, 0x47c2d7566d26536bLL, 0}, // -87.5
-    {0x41002BC800000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 132473
-    {0xC1002BC800000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -132473
-    {0x4330000000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 2^52
-    {0x4330000000000001LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 2^52 + 1
-    {0x432FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 2^52 -1 + 0.5
-    {0xC330000000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -2^52
-    {0xC330000000000001LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -(2^52 + 1)
-    {0xC32FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -(2^52 -1 + 0.5)
 
-};
-
-static libm_test_special_data_f32
-test_atanf_special_data[] = {
-    {0x3c000000, 0x3f810101 ,},   //0.0078125
-    {0x3c7fffff, 0x3f820405 ,},   //0.0156249991
-    {0x3f012345, 0x3fd3f9f2 ,},   //0.504444
-    {0x3f800000, 0x402df854 ,},   //1
-    {0x40000000, 0x40ec7326 ,},   //2
-    {0x33d6bf95, 0x3f800001 ,},   //1.0000000e-7
-    {0x4048f5c3, 0x41b92025 ,},   //pi*/
-    {0x40c90fdb, 0x4405df79 ,},   //2pi
-    {0x41200000, 0x46ac14ee ,},   //10
-    {0x447a0000, 0x7f800000 ,},   //1000
-    {0x42800000, 0x6da12cc1 ,},   //64
-    {0x42af0000, 0x7e96bab3 ,},   //87.5
-    {0x42b00000, 0x7ef882b7 ,},   //88
-    {0x42c00000, 0x7f800000 ,},   //96
-    {0xc2af0000, 0x006cb2bc ,},   //-87.5
-    {0xc2e00000, 0x00000000 ,},   //-112
-    {0xc3000000, 0x00000000 ,},   //-128
-    {0xc2aeac4f, 0x00800026 ,},   //-87.3365  smallest normal result
-    {0xc2aeac50, 0x007fffe6 ,},   //-87.3365  largest denormal result
-    {0xc2ce0000, 0x00000001 ,},   //-103
-    {0x42b17216, 0x7f7fff04 ,},   //88.7228   largest value  --
-    {0x42b17217, 0x7f7fff84 ,},   //88.7228   largest value
-    {0x42b17218, 0x7f800000 ,},   //88.7228   overflow
-    {0x50000000, 0x7f800000 ,},   //large   overflow
-    {0xc20a1eb8, 0x269162c0 ,}, // -34.53
-    {0xc6de66b6, 0x00000000 ,}, // -28467.3555
-    {0xbe99999a, 0x3f3da643 ,}, // -0.3
-    {0xbf247208, 0x3f06ab02 ,}, // -0.642365
-    {0xbf000000, 0x3f1b4598 ,}, // -0.5
-    {0x3e99999a, 0x3facc82d ,}, // 0.3
-    {0x3f247208, 0x3ff35307 ,}, // 0.642365
-    {0x3f000000, 0x3fd3094c ,}, // 0.5
-    {0x420a1eb8, 0x586162f9 ,}, // 34.53
-    {0x46de66b6, 0x7f800000 ,}, // 28467.3555
-    {0xc2c80000, 0x0000001b ,}, // -100
-    {0x42c80000, 0x7f800000 ,}, // 100
-};
-
-static libm_test_special_data_f64
-test_atan_special_data[] = {
-    {0xffefffffffffffff, 0x0000000000000000,},
-    {0xc0862c4379671324, 0x00052288f82fe4ba,},
-    {0x7ff0000000000000, 0x7ff0000000000000,}, //inf
-    {0xfff0000000000000, 0x0000000000000000,}, //-inf
-    {0x7ffc000000000000, 0x7ffc000000000000,}, //qnan
-    {0x7ff4000000000000, 0x7ffc000000000000,}, //snan
-    {0x0000000000000000, 0x3ff0000000000000,}, //0
-
-    {0x3e45798ee2308c3a, 0x3ff0000002af31dc,}, // .00000001
-    {0x400921fb54442d18, 0x403724046eb09339,}, //pi
-    {0xc086be6fb2739468, 0x0000000001000000,}, // denormal result
-    {0x3ff0000000000000, 0x4005bf0a8b145769,}, // 1
-    {0x4000000000000000, 0x401d8e64b8d4ddae,}, // 2
-    {0xbff0000000000000, 0x3fd78b56362cef38,}, // -1
-
-    {0x4024000000000000, 0x40d5829dcf950560,}, // 10
-    {0x408f400000000000, 0x7ff0000000000000,}, // 1000
-    {0x4084000000000000, 0x79a40a4b9c27178a,}, // 640
-    {0xc085e00000000000, 0x00d14f2b0fb9307f,}, // -700
-    {0xc07f51999999999a, 0x12c0be4b336b18b7,}, // -501.1
-
-    {0xc086d00000000000, 0x00000000001c7ea3,}, // -730
-    {0xc086232bdd7abcd2, 0x001000000000007c,}, // smallest normal  result, x=-1022*ln(2)
-    {0xc086232bdd7abcd3, 0x000ffffffffffe7c,}, // largest denormal result
-    {0xc0874385446d71c4, 0x0000000000000001,}, // x=-1074*ln(2)
-    {0xc0874910d52d3051, 0x0000000000000001,}, // smallest denormal result, x=-1075*ln(2)
-    {0xc0874910d52d3052, 0x0000000000000000,}, // largest input for result zero
-    {0xc08f400000000000, 0x0000000000000000,}, // -1000
-
-    {0x40862e42fefa39ef, 0x7fefffffffffff2a,}, // largest normal result
-    {0x40862e42fefa39f0, 0x7ff0000000000000,}, // smallest input for result inf
-    {0x4086280000000000, 0x7fdd422d2be5dc9b,}, // 709
-
-    {0x7fefffffffffffff, 0x7ff0000000000000,}, // largest number
-    {0xffefffffffffffff, 0x0000000000000000,}, // smallest number
-
-    // all denormal
-    {0xc08625aad16d5438, 0x000bb63ae9a2ac50,},
-    {0xc08627fa8b8965a4, 0x0008c5deb69c6fc8,},
-    {0xc0862c4379671324, 0x00052288f82fe4ba,},
-    {0xc087440b864646f5, 0x0000000000000001,},
-
-    {0xc08743e609f06b07, 0x0000000000000001,},
-    {0xc0874409d4de2a93, 0x0000000000000001,},
-    {0xc08744b894a31d87, 0x0000000000000001,},
-    {0xc08744ddf48a3b9c, 0x0000000000000001,},
-    {0xc08745723e498e76, 0x0000000000000001,},
-    {0xc0874593fa89185f, 0x0000000000000001,},
-    {0xffefffffffffffff, 0x0000000000000000,},
-    {0xffefffffffffffff, 0x0000000000000000,},
-    {0xffefffffffffffff, 0x0000000000000000,},
-    {0xffefffffffffffff, 0x0000000000000000,},
+    {0x0, 0x0, 0},
+    {0x3e38000000000000LL, 0x3e38000000000000LL, 0},
+    {0xbe38000000000000LL, 0xbe38000000000000LL, 0},
+    {0x3fe921fb54442d18LL, 0x3fe54e04c05d06a0LL, 0},
+    {0x3f20000000000001LL, 0x3f1ffffffd555558LL, 0},
+    {0x3e40000000000001LL, 0x3e40000000000001LL, 0},
+    {0x7ffdf00000000000LL, 0x7ffdf00000000000LL, 0},
+    {0xfffdf00000000000LL, 0xfffdf00000000000LL, 0},
+    {0x7ff4000000000000LL, 0x7ffc000000000000LL, 0},
+    {0xfff4000000000000LL, 0xfffc000000000000LL, 0},
+    {0x3fe9e0c8f112ab1eLL, 0x3fe5c2b31b022df6LL, 0},
+    {0x40306b51f0157e66LL, 0x3ff828d3654969ffLL, 0},
+    {0x402ddf5adb92c01aLL, 0x3ff81028770aabe4LL, 0},
+    {0x402ddb778a9ebd8aLL, 0x3ff81004ea1b89b6LL, 0},
+    {0x401c462b9064a63bLL, 0x3ff6e254e96576c8LL, 0},
+    {0x3fe921fb54442d19LL, 0x3fe54e04c05d06a1LL, 0},
+    {0x3fe921fb54442d20LL, 0x3fe54e04c05d06a5LL, 0},
+    {0x3ff10ca44655d48aLL, 0x3fea2601964ed0b3LL, 0},
+    {0x400923e979f8b36aLL, 0x3ff434138906ebf1LL, 0},
+    {0x4002dae59bb5c33eLL, 0x3ff2b662ea759ce2LL, 0},
+    {0x4015fdca5f9a0e38LL, 0x3ff64104d68b4ed8LL, 0},
+    {0x40b93bda357daddaLL, 0x3ff9215901d7452bLL, 0},
+    {0x40f63525129291ffLL, 0x3ff921efcd344059LL, 0},
+    {0x3ff9207824b27c17LL, 0x3ff00f79d9041e2dLL, 0},
+    {0x4025fe9b31eb183dLL, 0x3ff7ae8c24fd4ef8LL, 0},
+    {0x4046c6cbc45dc8deLL, 0x3ff8c814427d58baLL, 0},
+    {0x3ff0000000000000LL, 0x3fe921fb54442d18LL, 0},
+    {0x4000000000000000LL, 0x3ff1b6e192ebbe44LL, 0},
+    {0x4008000000000000LL, 0x3ff3fc176b7a8560LL, 0},
+    {0x4024000000000000LL, 0x3ff789bd2c160054LL, 0},
+    {0xc000000000000000LL, 0xbff1b6e192ebbe44LL, 0},
+    {0x3ff921fb54442d18LL, 0x3ff00fe987ed02ffLL, 0},
+    {0x4012d97c7f3321d2LL, 0x3ff5c97d37d98aa4LL, 0},
+    {0x401921fb54442d18LL, 0x3ff69b8154baf42eLL, 0},
+    {0x402921fb54442d18LL, 0x3ff7dcb7c5c399ecLL, 0},
+    {0x410921fb54442d18LL, 0x3ff921f63c7811a6LL, 0},
+    {0x403921fb54442d18LL, 0x3ff87f17cfda0b5dLL, 0},
+    {0x403921fb54442d19LL, 0x3ff87f17cfda0b5dLL, 0},
+    {0x3ff921fb57442d18LL, 0x3ff00fe988ca80d4LL, 0},
+    {0x400921fb52442d18LL, 0x3ff433b8a2c4a8a9LL, 0},
+    {0x410921fb56442d18LL, 0x3ff921f63c78120eLL, 0},
+    {0xbff921fb57442d18LL, 0xbff00fe988ca80d4LL, 0},
+    {0xc00921fb54442d18LL, 0xbff433b8a322ddd2LL, 0},
+    {0x400921f554442d18LL, 0x3ff433b7888324ddLL, 0},
+    {0xc00921f554442d18LL, 0xbff433b7888324ddLL, 0},
+    {0xbff921f557442d18LL, 0xbff00fe7cdce8b19LL, 0},
+    {0xbff9217557442d18LL, 0xbff00fc2e2ee0031LL, 0},
+    {0x400921fb56442d18LL, 0x3ff433b8a38112fcLL, 0},
+    {0x4012d98c7f3321d2LL, 0x3ff5c97ff9d8c5f2LL, 0},
+    {0x412e848abcdef000LL, 0x3ff921fa47d51180LL, 0},
+    {0x439332270327f466LL, 0x3ff921fb54442d18LL, 0},
+    {0x411fa317083ee0a2LL, 0x3ff921f94e648ff6LL, 0},
+    {0x64ca7f352f2afdaeLL, 0x3ff921fb54442d18LL, 0},
+    {0xd3d196202a791d3dLL, 0xbff921fb54442d18LL, 0},
+    {0x56fdb2fb3712813bLL, 0x3ff921fb54442d18LL, 0},
+    {0x54e57b4e03dbe9b3LL, 0x3ff921fb54442d18LL, 0},
+    {0xea96be922b1706c5LL, 0xbff921fb54442d18LL, 0},
+    {0x655e883346944823LL, 0x3ff921fb54442d18LL, 0},
 };

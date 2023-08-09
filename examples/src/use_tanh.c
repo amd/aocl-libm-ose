@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -56,7 +56,7 @@ int use_tanh()
     printf("Input: {%lf, %lf}, Output = {%lf, %lf}\n",
     input_array[0], input_array[1],
     output_array[0], output_array[1]);
-
+*/
     printf("Using vrs4 (Single precision vector variant) of AMD tanh()\n");
     __m128 result_tanh_vrs4;
     __m128 input_vrs4;
@@ -68,7 +68,7 @@ int use_tanh()
     printf("Input: {%f, %f, %f, %f}, Output = {%f, %f, %f, %f}\n",
         input_array_vrs4[0], input_array_vrs4[1], input_array_vrs4[2], input_array_vrs4[3],
         output_array_vrs4[0], output_array_vrs4[1], output_array_vrs4[2], output_array_vrs4[3]);
-
+/*
     printf("\nUsing vrd4 (Double Precision vector 4 variant) of AMD tanh()\n");
     __m256d input_vrd4, result_tanh_vrd4;
     double input_array_vrd4[4] = {2.3, 4.5, 56.5, 43.4};
@@ -79,6 +79,7 @@ int use_tanh()
     printf("Input: {%lf, %lf, %lf, %lf}, Output = {%lf, %lf, %lf, %lf}\n",
             input_array_vrd4[0], input_array_vrd4[1], input_array_vrd4[2], input_array_vrd4[3],
             output_array_vrd4[0], output_array_vrd4[1], output_array_vrd4[2],output_array_vrd4[3]);
+*/
 
     printf ("\nUsing vrs8 (Single precision vector 8 element variant of AMD tanh()\n");
     __m256 input_vrs8, result_tanh_vrs8;
@@ -95,6 +96,6 @@ int use_tanh()
     for (i=0; i<8; i++) {
         printf("%f,", output_array_vrs8[i]);
     }
-*/
+
     return 0;
 }

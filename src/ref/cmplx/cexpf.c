@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,29 +26,34 @@
  */
 
 #include <libm_macros.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/types.h>
 #include <libm/constants.h>
 
+
 fc32_t
 ALM_PROTO_REF(cexpf)(fc32_t z)
 {
-    flt32u_t    re, im;
+    flt32_t     re, im;
     f32_t       zy_re, zy_im;
+    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+        re.f = crealf(z);
+        im.f = (float)cimagf(z);
+    #else
+        re.f = crealf(z);
+        im.f = (float)cimag(z);
+    #endif
 
-    re.f = creal(z);
-    im.f = cimag(z);
-
-    if((re.i & ALM_F32_SIGN_MASK) == 0) {
-        if((im.i & ALM_F32_SIGN_MASK) == 0) {
+    if((re.u & ALM_F32_SIGN_MASK) == 0) {
+        if((im.u & ALM_F32_SIGN_MASK) == 0) {
             zy_re = 1.0f;
             zy_im = 0.0f;
         } else {
             ALM_PROTO(sincosf)(im.f, &zy_im, &zy_re);
         }
     } else {
-        if((im.i & ALM_F32_SIGN_MASK) == 0) {
+        if((im.u & ALM_F32_SIGN_MASK) == 0) {
             zy_re = ALM_PROTO(expf)(re.f);
             zy_im = 0.0f;
         } else {
@@ -60,6 +65,10 @@ ALM_PROTO_REF(cexpf)(fc32_t z)
 
     }
 
-    return zy_re + I*zy_im;
+    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+        return (fc32_t) { zy_re, zy_im };
+    #else
+        return zy_re + I*zy_im;
+    #endif
 }
 

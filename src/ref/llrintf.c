@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -27,9 +27,11 @@
 
 #include "fn_macros.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
-long long int FN_PROTOTYPE_REF(llrintf)(float x)
+
+long long int ALM_PROTO_REF(llrintf)(float x)
 {
 
     UT32 checkbits,val_2p23;
@@ -41,8 +43,8 @@ long long int FN_PROTOTYPE_REF(llrintf)(float x)
     {
         /* number cant be rounded raise an exception */
         /* Number exceeds the representable range could be nan or inf also*/
-       __amd_handle_errorf("llrintf", __amd_lrint, (long long int) x, _DOMAIN, 0, EDOM, x, 0.0, 1);
-	    return (long long int) x;
+        __alm_handle_errorf((unsigned long long) x, 0);
+        return (long long int) x;
     }
 
 

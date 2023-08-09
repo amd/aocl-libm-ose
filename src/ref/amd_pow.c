@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -28,9 +28,9 @@
 /* Contains implementation of double pow(double x, double y)
  * x^y = 2^(y*log2(x))
  */
-#include "libm_amd.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
 #define L__exp_mask  0x7ff0000000000000
 #define L__exp_bias  0x00000000000003ff // 1023
@@ -39,7 +39,7 @@
 
 
 
-double FN_PROTOTYPE_REF(zen_pow)(double x, double y)
+double ALM_PROTO_REF(zen_pow)(double x, double y)
 {
   // x = 2^a, y = Integer
 /*

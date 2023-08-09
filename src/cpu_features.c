@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -34,40 +34,39 @@
 #include <libm/compiler.h>
 #include <libm/iface.h>
 
-struct cpu_features cpu_features HIDDEN;
+struct alm_cpu_features cpu_features HIDDEN;
 
 struct {
     uint32_t eax;
     uint32_t ecx;
-} __cpuid_values[CPUID_MAX] = {
-    [CPUID_EAX_1] = {0x1, 0x0},                         /* eax = 0, ecx=0 */
-    [CPUID_EAX_7] = {0x7, 0x0},                         /* eax = 7,  -"- */
-    [CPUID_EAX_8_01] = {0x80000001, 0x0},               /* eax = 0x80000001 */
-    [CPUID_EAX_8_07] = {0x80000007, 0x0},               /* eax = 0x80000007 */
-    [CPUID_EAX_8_08] = {0x80000008, 0x0},               /* eax = 0x80000008 */
+} __cpuid_values[ALM_CPUID_MAX] = {
+    [ALM_CPUID_EAX_1] = {0x1, 0x0},                         /* eax = 0, ecx=0 */
+    [ALM_CPUID_EAX_7] = {0x7, 0x0},                         /* eax = 7,  -"- */
+    [ALM_CPUID_EAX_8_01] = {0x80000001, 0x0},               /* eax = 0x80000001 */
+    [ALM_CPUID_EAX_8_07] = {0x80000007, 0x0},               /* eax = 0x80000007 */
+    [ALM_CPUID_EAX_8_08] = {0x80000008, 0x0},               /* eax = 0x80000008 */
 };
 
 static void
-__get_mfg_info(struct cpuid_regs *regs, struct cpu_mfg_info *mfg_info)
+__get_mfg_info(struct alm_cpuid_regs *cpuid_regs, struct alm_cpu_mfg_info *mfg_info)
 {
-    uint32_t ext_model;
+    uint16_t model;
+    uint16_t family;
 
     if (mfg_info) {
-        struct cpuid_regs regs;
-        uint32_t eax;
+        struct alm_cpuid_regs regs;
 
         __cpuid_1(1, &regs);
-        eax = regs.eax;
 
-        mfg_info->family = (eax >> 8) & 0x0f;
-        mfg_info->model = (eax >> 4) & 0x0f;
-        ext_model = (eax >> 12) & 0xf0;
-        if (mfg_info->family == 0x0f) {
-            mfg_info->family += (eax >> 20) & 0xff;
-            mfg_info->model += ext_model;
+        family = alm_cpuid_get_family(regs.eax);
+        model = alm_cpuid_get_model(regs.eax);
+
+        if (family >= ALM_CPU_FAMILY_ZEN) {
+            mfg_info->family = (uint16_t)family;
+            mfg_info->model = (uint16_t)model;
         }
 
-        mfg_info->stepping = eax & 0x0f;
+        mfg_info->stepping = alm_cpuid_get_stepping(regs.eax);
     }
 }
 
@@ -82,24 +81,23 @@ __init_cpu_features(void)
 {
     static unsigned initialized = 0;
 
-    struct cpu_mfg_info *mfg_info = &cpu_features.cpu_mfg_info;
+    struct alm_cpu_mfg_info *mfg_info = &cpu_features.cpu_mfg_info;
     int arr_size = ARRAY_SIZE(__cpuid_values);
-    //assert(arr_size <= CPUID_MAX);
 
     if (initialized == INITIALIZED_MAGIC)
         return;
 
-    struct cpuid_regs regs;
+    struct alm_cpuid_regs regs;
     __cpuid_1(0, &regs);
 
     /* "AuthenticAMD" */
     if (regs.ebx == 0x68747541 && regs.ecx == 0x444d4163 &&
         regs.edx == 0x69746e65) {
-        cpu_features.cpu_mfg_info.mfg_type = CPU_MFG_AMD;
+        cpu_features.cpu_mfg_info.mfg_type = ALM_CPU_MFG_AMD;
     }
 
     for (int i = 0; i < arr_size; i++) {
-        struct cpuid_regs ft;
+        struct alm_cpuid_regs ft;
 
         __cpuid_2(__cpuid_values[i].eax, __cpuid_values[i].ecx, &ft);
 
@@ -109,55 +107,199 @@ __init_cpu_features(void)
         cpu_features.available[i].edx = ft.edx;
     }
 
-    __get_mfg_info(&cpu_features.available[CPUID_EAX_1], mfg_info);
+    __get_mfg_info(&cpu_features.available[ALM_CPUID_EAX_1], mfg_info);
 
     /*
      * Globally disable some *_USEABLE flags, so that all ifunc's
      * sees them
      */
-    if (mfg_info->mfg_type == CPU_MFG_AMD) {
+    if (mfg_info->mfg_type == ALM_CPU_MFG_AMD &&
+        mfg_info->family >= ALM_CPU_FAMILY_ZEN) {
         memcpy(&cpu_features.usable[0], &cpu_features.available[0],
                sizeof(cpu_features.usable));
 
         switch(mfg_info->family) {
-        case 0x15:                      /* Naples */
+        case ALM_CPU_MODEL_NAPLES:     /* Naples */
             break;
-        case 0x17:                      /* Rome */
+        case ALM_CPU_MODEL_ROME:       /* Rome */
             break;
-        case 0x19:                      /* Milan */
+        case ALM_CPU_MODEL_MILAN:      /* Milan */
+            break;
+        default:
             break;
         }
     }
 
     initialized = INITIALIZED_MAGIC;
+
+#if defined(DEVELOPER)
+		/* We override any from  */
+		const char *env_cpuid_str = ALM_ENV_ALM_CPUID;
+		alm_env_get(env_cpuid_str, sizeof(env_cpuid_str), mfg_info);
+
+#endif
 }
 
 static void CONSTRUCTOR
-libm_init_cpu(void)
+alm_init_cpu(void)
 {
     __init_cpu_features();
 }
 
-struct cpu_features *
-libm_cpu_get_features(void)
+struct alm_cpu_features *
+alm_cpu_get_features(void)
 {
     __init_cpu_features();
 
     return &cpu_features;
 }
 
-int
-libm_cpu_feature_is_avx_usable(void)
+static const struct alm_cpu_mfg_info *
+alm_cpu_get_mfg_info(void)
+{
+    return &cpu_features.cpu_mfg_info;
+}
+
+uint32_t
+alm_cpu_is_amd(void)
+{
+    const struct alm_cpu_mfg_info *mfg_info;
+
+    __init_cpu_features();
+    mfg_info = alm_cpu_get_mfg_info();
+
+    return mfg_info->mfg_type == ALM_CPU_MFG_AMD;
+}
+
+uint32_t
+alm_cpu_arch_is_zen(void)
+{
+    const struct alm_cpu_mfg_info *mfg_info;
+    uint32_t ret = 0;
+
+    if (!alm_cpu_is_amd())
+        return 0;
+
+    mfg_info = alm_cpu_get_mfg_info();
+    switch (mfg_info->model) {
+      case ALM_CPU_MODEL_NAPLES:
+      case ALM_CPU_MODEL_RAVENRIDGE:
+      case ALM_CPU_MODEL_DALI:
+          ret = 1;
+          break;
+      default:
+          break;
+    }
+
+    return ret;
+}
+
+uint32_t
+alm_cpu_arch_is_zen2(void)
+{
+    const struct alm_cpu_mfg_info *mfg_info;
+    uint32_t ret = 0;
+
+    if (!alm_cpu_is_amd())
+        return 0;
+
+    mfg_info = alm_cpu_get_mfg_info();
+    switch (mfg_info->model) {
+      case ALM_CPU_MODEL_ROME:
+      case ALM_CPU_MODEL_RENOIR:
+      case ALM_CPU_MODEL_MATISSE:
+          ret = 1;
+          break;
+      default:
+          break;
+    }
+
+    return ret;
+}
+
+uint32_t
+alm_cpu_arch_is_zen3(void)
+{
+    const struct alm_cpu_mfg_info *mfg_info;
+    uint32_t ret = 0, model;
+
+    if (!alm_cpu_is_amd())
+        return 0;
+
+    mfg_info = alm_cpu_get_mfg_info();
+
+    if (mfg_info->family != ALM_CPU_FAMILY_ZEN3)
+        return 0;
+
+    model = mfg_info->model;
+
+    if ((ALM_CPU_MODEL_ZEN4_MAX - model) <=
+        (ALM_CPU_MODEL_ZEN4_MAX - ALM_CPU_MODEL_ZEN4_MIN))
+        ret = 1;
+    else {
+        switch (model) {
+          case ALM_CPU_MODEL_MILAN:
+          case ALM_CPU_MODEL_VERMEER:
+          case ALM_CPU_MODEL_REMBRANT:
+          case ALM_CPU_MODEL_CEZANNE:
+          case ALM_CPU_MODEL_CHAGALL:
+              ret = 1;
+              break;
+
+          default:
+              break;
+        }
+    }
+
+    return ret;
+}
+
+uint32_t
+alm_cpu_arch_is_zen4(void)
+{
+    const struct alm_cpu_mfg_info *mfg_info;
+    uint32_t ret = 0, model;
+
+    if (!alm_cpu_is_amd())
+        return 0;
+
+    mfg_info = alm_cpu_get_mfg_info();
+
+    if (mfg_info->family != ALM_CPU_FAMILY_ZEN3)
+        return 0;
+
+    model = mfg_info->model;
+
+    if ((ALM_CPU_MODEL_ZEN4_MAX - model) <=
+        (ALM_CPU_MODEL_ZEN4_MAX - ALM_CPU_MODEL_ZEN4_MIN))
+        ret = 1;
+    else {
+        switch (model) {
+          case ALM_CPU_MODEL_GENOA:
+              ret = 1;
+              break;
+
+          default:
+              break;
+        }
+    }
+
+    return ret;
+}
+
+uint32_t
+alm_cpu_feature_is_avx_usable(void)
 {
     __init_cpu_features();
 
-    return CPU_FEATURE_AVX_USABLE(&cpu_features);
+    return ALM_CPU_FEATURE_AVX_USABLE(&cpu_features);
 }
 
-int
-libm_cpu_feature_is_avx2_usable(void)
+uint32_t
+alm_cpu_feature_is_avx2_usable(void)
 {
     __init_cpu_features();
 
-    return CPU_FEATURE_AVX2_USABLE(&cpu_features);
+    return ALM_CPU_FEATURE_AVX2_USABLE(&cpu_features);
 }
+

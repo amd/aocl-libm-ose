@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -39,8 +39,8 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(vrsa_log2f)
-#define fname_special _log2f_special@PLT
+#define fname ALM_PROTO_FMA3(vrsa_log2f)
+#define fname_special alm_logf_special@PLT
 
 
 # local variable storage offsets
@@ -56,30 +56,30 @@
 .align 16
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
-cmp         $0x0, %edi 
+cmp         $0x0, %edi
     jle         .L__return
     cmp         $0x0, %rsi
     je         .L__return
     cmp         $0x0, %rdx
     je         .L__return
-    
-.p2align 4    
+
+.p2align 4
 .L__process_next4:
     sub         $0x4, %rdi
     cmp         $-1,  %rdi
     jle          .L__process_first123
     movdqu      (%rsi, %rdi, 4), %xmm0
     jmp         .L__start
-    
-.p2align 4    
+
+.p2align 4
 .L__process_first123:
     je          .L__process_first3
     cmp         $-3, %rdi
     jl          .L__return #multiple of 4elements, all are processed %rdi == -4
-    je          .L__process_first1    
-    #process first 2    
+    je          .L__process_first1
+    #process first 2
     mov         $0x0, %rcx
     movsd       (%rsi, %rcx, 4), %xmm0
     jmp         .L__start
@@ -88,19 +88,19 @@ cmp         $0x0, %edi
 .L__process_first1:
     mov         $0x0, %rcx
     movss       (%rsi, %rcx, 4), %xmm0
-    jmp         .L__start    
+    jmp         .L__start
 
-.p2align 4    
+.p2align 4
 .L__process_first3:
     mov         $0x1, %rcx
-    movsd       (%rsi, %rcx, 4), %xmm0    
+    movsd       (%rsi, %rcx, 4), %xmm0
     dec         %rcx  # zero
     movss       (%rsi, %rcx, 4), %xmm1
     pslldq      $4,%xmm0
-    por         %xmm1, %xmm0    
-    
-.p2align 4    
-.L__start:    
+    por         %xmm1, %xmm0
+
+.p2align 4
+.L__start:
 
     vmovaps      .L__real_one(%rip),%xmm15
     vmovaps      .L__real_inf(%rip),%xmm13
@@ -110,7 +110,7 @@ cmp         $0x0, %edi
     vpsrld       $23, %xmm0, %xmm3   #xmm3 = (ux>>23)
     vpsubd      .L__mask_127(%rip), %xmm3,%xmm3 # xmm3 = (ux>>23) - 127
     vandps       %xmm0,%xmm13,%xmm12
-    #speacial case processing Nans Infs Negatives, and e's 
+    #speacial case processing Nans Infs Negatives, and e's
     # NaN or inf
     vpcmpeqd     %xmm12,%xmm13, %xmm6 # if((ux & 0x7f800000) == 0x7f800000) go to .L__x_is_inf_or_nan
 #xmm6 stores the mask for Nans and Infs
@@ -131,10 +131,10 @@ cmp         $0x0, %edi
 
     vpand        .L__real_mant(%rip),%xmm0,%xmm2  # xmm2 = ux & 0x007FFFFF
     vsubps       %xmm15,%xmm0,%xmm4   # xmm4 = x - 1.0
-    vpcmpeqd     .L__mask_neg_127(%rip), %xmm3, %xmm8 # if (xexp == 127) 
-#xmm8 stores the mask for denormal numbers 
+    vpcmpeqd     .L__mask_neg_127(%rip), %xmm3, %xmm8 # if (xexp == 127)
+#xmm8 stores the mask for denormal numbers
 #####################################
-# commenting this part of the code will not process the denormal inputs                
+# commenting this part of the code will not process the denormal inputs
 #if 1
     vpor         %xmm2,%xmm15,%xmm11
     vsubps       %xmm15,%xmm11,%xmm10
@@ -145,18 +145,18 @@ cmp         $0x0, %edi
     vorpd %xmm1, %xmm2, %xmm2
 
     vpsrld       $23,%xmm10,%xmm10
-    vpsubd       .L__mask_253(%rip),%xmm10,%xmm10 
+    vpsubd       .L__mask_253(%rip),%xmm10,%xmm10
     #vpcmov       %xmm8,%xmm3,%xmm10,%xmm3
     vandnpd %xmm3, %xmm8, %xmm1
     vandpd %xmm8, %xmm10, %xmm3
-    vorpd %xmm1, %xmm3, %xmm3    
+    vorpd %xmm1, %xmm3, %xmm3
 
-#endif    
+#endif
 #####################################
     vcvtdq2ps    %xmm3, %xmm5 # xmm5 = xexp
     # compute the index into the log tables
-    vpand        .L__mask_mant_all7(%rip),%xmm2,%xmm11 #xmm11 = ux & 0x007f0000 
-    vpand        .L__mask_mant8(%rip), %xmm2,%xmm8 # xmm8 = ux & 0x007f0000 
+    vpand        .L__mask_mant_all7(%rip),%xmm2,%xmm11 #xmm11 = ux & 0x007f0000
+    vpand        .L__mask_mant8(%rip), %xmm2,%xmm8 # xmm8 = ux & 0x007f0000
     vpslld       $1, %xmm8,%xmm8                   #xmm8  = (ux & 0x00008000) << 1
     vpaddd       %xmm8,%xmm11,%xmm1   #xmm1 = (ux & 0x007f0000) + ((ux & 0x00008000) << 1)
 
@@ -175,13 +175,13 @@ cmp         $0x0, %edi
 
 #1st
     vmovd       %xmm9,%r8d
-    vpsrldq     $4, %xmm9, %xmm9 
+    vpsrldq     $4, %xmm9, %xmm9
     vmovss      (%r9,%r8,4),%xmm10
     vmovsd      (%r10,%r8,8),%xmm11
     vpslldq     $4, %xmm10,%xmm10
-#2nd    
+#2nd
     vmovd       %xmm9,%r8d
-    vpsrldq     $4, %xmm9, %xmm9 
+    vpsrldq     $4, %xmm9, %xmm9
     vmovss      (%r9,%r8,4),%xmm13
     vmovss      %xmm13,%xmm10,%xmm10
     vmovsd      (%r10,%r8,8),%xmm14
@@ -202,12 +202,12 @@ cmp         $0x0, %edi
     vmovsd      (%r10,%r8,8),%xmm14
     vpslldq     $8, %xmm14,%xmm14
     vmovsd      %xmm12,%xmm14,%xmm12
-    
+
     vpermilps   $0x1B,%xmm10,%xmm10 # 1B = 00011011
     # f = F - Y, r = f * inv
     vsubps      %xmm2, %xmm1,%xmm1     # f = F - Y
     vmulps      %xmm10,%xmm1,%xmm1     # r = f * log_F_inv[index]
-    
+
     #poly
     vmovaps      .L__real_1_over_3(%rip),%xmm3
     vfmadd213ps     .L__real_1_over_2(%rip),%xmm1,%xmm3 # 1/3*r + 1/2
@@ -222,15 +222,15 @@ cmp         $0x0, %edi
 #   xexp =  4321
 #   poly =  4321
 # xexp,poly = 44332211
-# t,h   = thththth 
-# add the two 
+# t,h   = thththth
+# add the two
 #   xmm1 = poly,  xmm5 = xexp, %xmm11=lead,tail xmm12=lead/tail
-    
+
     vpxor        %xmm13,%xmm13,%xmm13
     vunpcklps    %xmm1,%xmm5,%xmm9  # xmm9 = 2211 in poly,xexp order
     vunpckhps    %xmm1,%xmm5,%xmm10   # xmm10  = 4433 in poly,xexp order
     vinsertf128  $1, %xmm10,%ymm9,%ymm9   # ymm9 = poly,xexp - 44332211 in poly,xexp order
-    
+
     vinsertf128  $1, %xmm12,%ymm11,%ymm10 # thththth in z2,z1 order
     vaddps       %ymm9,%ymm10,%ymm11      # z2,z1 = (- poly + log_128_tail[index]), (xexp  + log_128_lead[index])
     vhaddps      %ymm13,%ymm11,%ymm13
@@ -244,7 +244,7 @@ cmp         $0x0, %edi
     vpxor       %xmm12,%xmm12,%xmm12
     vsubps      %xmm15, %xmm0, %xmm0  # xmm0 = r = = x - 1.0
     vpcmpeqd    %xmm12,%xmm11,%xmm12  # xmm12 stores the mask for zero
-    
+
     # u = r / (2.0 + r)
     vaddps      %xmm0, %xmm2, %xmm2 # (r+2.0)
     vdivps      %xmm2, %xmm0,%xmm1 # u = r / (2.0 + r)
@@ -253,20 +253,20 @@ cmp         $0x0, %edi
     vmulps      %xmm1, %xmm0, %xmm10 # correction = u*r
 
     # u = u + u#
-    vaddps      %xmm1, %xmm1,%xmm1 # u = u+u 
+    vaddps      %xmm1, %xmm1,%xmm1 # u = u+u
     vmulps      %xmm1, %xmm1,%xmm2 # v = u^2
 
     # r2 = (u * v * (ca_1 + v * ca_2) - correction)
     vmulps       %xmm2, %xmm1, %xmm3         # u^3
-    vmovaps     .L__real_ca2(%rip),%xmm5    # xmm5 = ca_2 
+    vmovaps     .L__real_ca2(%rip),%xmm5    # xmm5 = ca_2
     vfmadd213ps    .L__real_ca1(%rip),%xmm5, %xmm2 # ca1 + ca2 * v
-    vfmsub213ps    %xmm10,%xmm3,%xmm2 # r2 = (ca1 + ca2 * v) * u^3 - correction 
-    
+    vfmsub213ps    %xmm10,%xmm3,%xmm2 # r2 = (ca1 + ca2 * v) * u^3 - correction
+
     # r + r2
     vpand       .L__mask_lower(%rip),%xmm0,%xmm5
-    vsubps      %xmm5,%xmm0,%xmm0     
+    vsubps      %xmm5,%xmm0,%xmm0
     vaddps      %xmm0,%xmm2,%xmm2
-    
+
     vmulps      .L__real_log2_e_lead(%rip), %xmm2,%xmm1
     vmulps      .L__real_log2_e_tail(%rip), %xmm5,%xmm0
     vmulps      .L__real_log2_e_lead(%rip), %xmm5, %xmm5
@@ -275,10 +275,10 @@ cmp         $0x0, %edi
     vaddps       %xmm1, %xmm0,%xmm0
     vaddps        %xmm5, %xmm0,%xmm0
 
-# till here I have 
-# xmm0 = .L__near_one results 
+# till here I have
+# xmm0 = .L__near_one results
 # xmm9 = away from 1.0 results
-# Masks 
+# Masks
 #xmm4 stores the mask for nearone values
 #xmm12 stores the mask for 0.0
 #xmm6 = Mask for Nan Infs e's and negatives
@@ -290,8 +290,8 @@ cmp         $0x0, %edi
     vandnpd %xmm9, %xmm4, %xmm13
     vandpd %xmm4, %xmm0, %xmm0
     vorpd %xmm13, %xmm0, %xmm0
-   
-	
+
+
     #vpcmov    %xmm6,%xmm0,%xmm7,%xmm0
     vandnpd %xmm0, %xmm6, %xmm13
     vandpd %xmm6, %xmm7, %xmm0
@@ -300,41 +300,41 @@ cmp         $0x0, %edi
     #vpcmov    %xmm12,%xmm0,%xmm5,%xmm0
     vandnpd %xmm0, %xmm12, %xmm13
     vandpd %xmm12, %xmm5, %xmm0
-    vorpd %xmm13, %xmm0, %xmm0	
+    vorpd %xmm13, %xmm0, %xmm0
 
 
 cmp         $-1,  %rdi
     jle          .L__store123
     movdqu       %xmm0, (%rdx, %rdi, 4)
-    jmp         .L__process_next4    
-    
-.p2align 4    
+    jmp         .L__process_next4
+
+.p2align 4
 .L__store123:
     je         .L__store3
-    cmp         $-3, %rdi    
-    je          .L__store1    
-    #store 2    
+    cmp         $-3, %rdi
+    je          .L__store1
+    #store 2
     add        $0x2, %rdi
-    movsd      %xmm0, (%rdx,%rdi,4)    
+    movsd      %xmm0, (%rdx,%rdi,4)
     jmp         .L__return
 
-.p2align 4    
+.p2align 4
 .L__store3:
     movdqa      %xmm0, %xmm1
     psrldq      $4, %xmm0
     inc         %rdi
     movss       %xmm1, (%rdx,%rdi,4)
     inc         %rdi
-    movsd      %xmm0, (%rdx,%rdi,4)    
+    movsd      %xmm0, (%rdx,%rdi,4)
     jmp         .L__return
-    
-.p2align 4    
+
+.p2align 4
 .L__store1:
     mov        $0x0, %rdi
-    movss      %xmm0, (%rdx,%rdi,4)    
+    movss      %xmm0, (%rdx,%rdi,4)
 
-.L__return:    
-    ret             
+.L__return:
+    ret
 
 
 
@@ -364,9 +364,9 @@ cmp         $-1,  %rdi
                         .quad 0x0040000000400000
 .L__real_mant:          .quad 0x007FFFFF007FFFFF   # mantissa bits
                         .quad 0x007FFFFF007FFFFF
-.L__mask_127:           .quad 0x0000007f0000007f   # 
+.L__mask_127:           .quad 0x0000007f0000007f   #
                         .quad 0x0000007f0000007f
-.L__mask_neg_127:       .quad 0xFFFFFF81FFFFFF81   # 
+.L__mask_neg_127:       .quad 0xFFFFFF81FFFFFF81   #
                         .quad 0xFFFFFF81FFFFFF81
 
 .L__mask_mant_all7:     .quad 0x007f0000007f0000
@@ -668,7 +668,7 @@ cmp         $-1,  %rdi
                     .long 0x3f7e8000
                     .long 0x395f263f
                     .long 0x3f800000
-                    .long 0x00000000                    
+                    .long 0x00000000
 
 .align 16
 .L__log_F_inv:

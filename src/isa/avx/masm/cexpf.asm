@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+; Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 ;
 ; Redistribution and use in source and binary forms, with or without modification,
 ; are permitted provided that the following conditions are met:
@@ -52,7 +52,7 @@ FN_PROTOTYPE cexpf
 
 
 fname_special1  TEXTEQU <_sincosf_special>
-fname_special2  TEXTEQU <_expf_special>
+fname_special2  TEXTEQU <alm_expf_special>
 
 ;Define name and any external functions being called
 EXTRN        __amd_remainder_piby2d2f : PROC   ; NEAR

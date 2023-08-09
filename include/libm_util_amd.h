@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -76,6 +76,21 @@ typedef union UT64_ UT64;
 #define NEG_QNAN_F32 0xfff00000
 #define POS_PI_F32 0x40490fd8
 #define NEG_PI_F32 0xc0490fd8
+#define TWOPOW24_F32 0x4b800000
+#define POS_SNAN_Q_F32 0x7fc00001
+#define NEG_SNAN_Q_F32 0xffc00001
+#define POS_PI_BY2_F32 0x3fc90fdb
+#define NEG_PI_BY2_F32 0xbfc90fdb
+#define POS_HDENORM_F32 0x007fffff
+#define NEG_HDENORM_F32 0x807fffff
+#define POS_LDENORM_F32 0x00000001
+#define NEG_LDENORM_F32 0x80000001
+#define POS_HNORMAL_F32 0x7f7fffff
+#define NEG_HNORMAL_F32 0xff7fffff
+#define POS_LNORMAL_F32 0x00800000
+#define NEG_LNORMAL_F32 0x80800000
+#define POS_BITSET_F32 0x7FFFFFFF
+#define EXP_VAL_23_F32 0x4B000000
 
 /*Special numbers Double */
 #define POS_ONE_F64 0x3FF0000000000000
@@ -88,8 +103,20 @@ typedef union UT64_ UT64;
 #define NEG_SNAN_F64 0xfff2000000000000
 #define POS_QNAN_F64 0x7ff87ff7fdedffff
 #define NEG_QNAN_F64 0xfff2000000000000
-#define POS_PI_F64 0x40091EB851EB851F
+#define POS_PI_F64 0x400921FB54442D18
 #define NEG_PI_F64 0xc00921fb54442d18
+#define POS_HDENORM_F64 0x000FFFFFFFFFFFFF
+#define NEG_HDENORM_F64 0x800fffffFFFFFFFF
+#define POS_LDENORM_F64 0x0000000000000001
+#define NEG_LDENORM_F64 0x8000000000000001
+#define POS_HNORMAL_F64 0x7FEfffffFFFFFFFF
+#define NEG_HNORMAL_F64 0xfFEfffffFFFFFFFF
+#define POS_LNORMAL_F64 0x0010000000000000
+#define NEG_LNORMAL_F64 0x8010000000000000
+#define POS_PI_BY2_F64 0x3FF921FB60000000
+#define NEG_PI_BY2_F64 0xBFF921FB60000000
+#define POS_SNAN_Q_F64 0x7FF8000000000001LL
+#define NEG_SNAN_Q_F64 0xffF8000000000001LL
 
 static const double VAL_2PMULTIPLIER_DP =  9007199254740992.0;
 static const double VAL_2PMMULTIPLIER_DP = 1.1102230246251565404236316680908e-16;
@@ -118,7 +145,10 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
 #define MANTLENGTH_DP64   53
 #define BASEDIGITS_DP64   15
 #define EXP_MIN           0xc0874910d52d3052
-#define EXP_MAX_DOUBLE    709.7822265625
+#define EXP_MAX_DOUBLE    0x40862e42fefa39ef
+#define TWOPOW53_DP64     0x4340000000000000
+#define POS_BITSET_DP64   0x7FFFFFFFFFFFFFFF
+#define EXP_VAL_52_DP64   0x4330000000000000
 
 /* These definitions, used by float functions,
    are for both 32 and 64 bit machines */
@@ -165,7 +195,7 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
 #define MXCSR_ES_DIVBYZERO     0x00000004
 #define MXCSR_ES_INVALID       0x00000001
 
-#if defined(WINDOWS) || (WIN64)
+#if defined(WINDOWS) || defined(WIN64)
 #define	AMD_F_NONE		  0x0
 #define AMD_F_OVERFLOW    0x00000001
 #define AMD_F_UNDERFLOW   0x00000002
@@ -210,7 +240,7 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
 #define PUT_BITS_SP32(ux, x) \
   { \
     volatile union {float f; unsigned int i;} _bitsy; \
-    _bitsy.i = (ux); \
+    _bitsy.i = (unsigned int)(ux); \
      x = _bitsy.f; \
   }
 
@@ -223,7 +253,7 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
 #define PUT_BITS_DP64(ux, x) \
   { \
     volatile union {double d; unsigned long long i;} _bitsy; \
-    _bitsy.i = (ux); \
+    _bitsy.i = (unsigned long long)(ux); \
     x = _bitsy.d; \
   }
 

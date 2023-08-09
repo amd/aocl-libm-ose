@@ -1,0 +1,75 @@
+#
+# Copyright (C) 2018-2020, Advanced Micro Devices. All rights Reserved
+#
+# Redistribution and use in source and binary forms, with or without modification,
+# are permitted provided that the following conditions are met:
+# 1. Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+# 3. Neither the name of the copyright holder nor the names of its contributors
+#    may be used to endorse or promote products derived from this software without
+#    specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+# OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+# Inherit global environment
+Import('env')
+from os.path import join as joinpath
+
+e = env.Clone()
+
+incpaths = [
+    Dir('#/src/optimized/'),
+]
+
+e.Append(
+    CCFLAGS = ['-Wall', '-W', '-Wstrict-prototypes', '-Werror',
+               #'-Wno-unused-but-set-parameter',
+               '-Wno-unused-parameter', '-O3',
+               '-fPIC',
+               '-mavx2',
+              ],
+    CPPPATH = incpaths,
+    # CCFLAGS = [],
+    # LINKFLAGS = ['-T$LINKERSCRIPT'],
+    #LINKERSCRIPT = 'src/ld-syms-libm.lds',
+    STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME = 1
+)
+
+compat_lib_dict = {
+    'glibc' : ['glibc-compat.c'],
+    'icc'   : [],
+    'newlibc': []
+}
+
+excluded_srcs = []
+
+compat_libs = []
+
+installdir = env['installdirs']
+
+for key,val in compat_lib_dict.items():
+    if len(val) == 0:
+        continue
+
+    compat_obj = e.StaticObject(val)
+
+    compat_lib = e.SharedLibrary('alm-' + key + '-compat', compat_obj)
+
+    compat_libs += compat_lib
+    if 'install' in COMMAND_LINE_TARGETS:
+        env.Alias('install', env.Install(installdir['lib'], [compat_lib]))
+
+Return('compat_libs')
+

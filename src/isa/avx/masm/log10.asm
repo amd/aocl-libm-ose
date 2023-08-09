@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+; Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 ;
 ; Redistribution and use in source and binary forms, with or without modification,
 ; are permitted provided that the following conditions are met:
@@ -40,10 +40,10 @@
 ;
 
 include fm.inc
-FN_PROTOTYPE_BAS64 log10
+ALM_PROTO_BAS64 log10
 
 
-fname_special   TEXTEQU <_log10_special>
+fname_special   TEXTEQU <alm_log_special>
 
 ; define local variable storage offsets
 

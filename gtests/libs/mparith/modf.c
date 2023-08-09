@@ -1,56 +1,49 @@
+/*
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+
 #include "precision.h"
-#include "mparith_c.h"
+
 
 #if defined(FLOAT)
 #define FUNC_MODF alm_mp_modff
-#define FUNC_MODF_ULP alm_mp_modff_ULP
+
 #elif defined(DOUBLE)
-#define FUNC_MODF_ULP alm_mp_modf_ULP
+
 #define FUNC_MODF alm_mp_modf
 #else
 #error
 #endif
 
-REAL FUNC_MODF_ULP123(REAL x, REAL *ptr, REAL z, double   *sulps, double   *sreldiff)
-{
-    REAL ret;
-    fp_params params;
-    int base, mantis, emin, emax;
-    int *xmp, *ymp, *iptr;
-    int ifail;
-    REAL reldiff,ulps;
-
-    initMultiPrecision(ISDOUBLE, 0, &base, &mantis, &emin, &emax, &params);
-    xmp = new_mp(params);
-    ymp = new_mp(params);
-    iptr = new_mp(params);
-
-    DTOMP(x, xmp, params, &ifail);
-    MPMODF(xmp, ymp, iptr, params, &ifail);
-/********/
-    reldiff = MPRELDIFF(z, base, mantis, emin, emax,
-                      ymp, params,&ulps, &ifail);
-	*sreldiff = reldiff;
-	*sulps = ulps;
-
-/********/
-
-    MPTOD(iptr, params, ptr, &ifail);
-    MPTOD(ymp, params, &ret, &ifail);
-
-    free(xmp);
-    free(ymp);
-    free(iptr);
-
-    return ret;
-}
-
-
 #include <mpfr.h>
 
-REAL FUNC_MODF(REAL x, REAL *p)
+REAL_L FUNC_MODF(REAL x, REAL *p)
 {
-    REAL y;
+    REAL_L y;
 
     mpfr_rnd_t rnd = MPFR_RNDN;
     mpfr_t mpx, mpy, mp_rop;
@@ -58,18 +51,18 @@ REAL FUNC_MODF(REAL x, REAL *p)
     mpfr_inits2(ALM_MP_PRECI_BITS, mpx, mpy, mp_rop, (mpfr_ptr) 0);
 
 #if defined(FLOAT)
-    mpfr_set_flt(mpx, x, rnd);
-#elif defined(DOUBLE)
     mpfr_set_d(mpx, x, rnd);
+#elif defined(DOUBLE)
+    mpfr_set_ld(mpx, x, rnd);
 #endif
 
     mpfr_modf(mp_rop, mpy, mpx, rnd);
 
 #if defined(FLOAT)
-    y = mpfr_get_flt(mp_rop, rnd);
+    y = mpfr_get_d(mp_rop, rnd);
     *p = mpfr_get_flt(mpy, rnd);
 #elif defined(DOUBLE)
-    y = mpfr_get_d(mp_rop, rnd);
+    y = mpfr_get_ld(mp_rop, rnd);
     *p = mpfr_get_d(mpy, rnd);
 #endif
 

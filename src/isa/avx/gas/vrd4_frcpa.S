@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -71,7 +71,9 @@
     .align 16
     .p2align 4,,15
 .globl __vrd4_frcpa
+#ifdef __GNU_ASM__
     .type   __vrd4_frcpa,@function
+#endif
 __vrd4_frcpa:
 	sub		$stack_size,%rsp
 # 10 bit GPR method

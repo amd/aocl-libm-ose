@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -29,5 +29,5 @@
 
 #include <libm/arch/zen3.h>
 
-#include "../../optmized/expm1f.c"
+#include "../../optimized/expm1f.c"
 

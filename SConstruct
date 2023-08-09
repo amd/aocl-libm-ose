@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -27,6 +27,7 @@ import SCons
 import os
 from os import mkdir, makedirs, environ
 from os.path import join as joinpath, split as splitpath
+import shutil
 
 def AddSiteDir(site_dir):
   """Adds a site directory, as if passed to the --site-dir option.
@@ -44,58 +45,56 @@ def AddSiteDir(site_dir):
 
 AddSiteDir("scripts")
 
-# We need a better name for this
-from scripts.cfg import cfg,helper
-from scripts.cfg import DefaultCfg
-from scripts.cfg.helper import PrintBanner
+from alm.env import AlmEnvironment
+from alm import print_build_failures, print_build_config
 
-defcfg = DefaultCfg(build_root=Dir('#build', create=True))
+__almenv = AlmEnvironment()
+__almenv.Setup()
+aenv = __almenv.GetDefaultEnv()
+if aenv['HOST_OS'] == 'win32':
+    aenv['ENV']['TMP'] = os.environ['TMP'] # to avoid linker eror in windows. This is mentioned in scons FQA doc.
+    shutil.copy(r'.\scripts\libalm.def', r'.\src')
+    shutil.copy(r'.\scripts\almfast.def', r'.\src\fast')
 
-env = defcfg.GetDefaultEnv()
+# First check version of python and scons
+EnsurePythonVersion(3, 6)
+EnsureSConsVersion(3, 1, 1)
 
-#check intel lib path
-intel_lib_path = None
-libabi = env['libabi']
-if libabi == 'svml':
-    for p in env['ENV']['PATH'].split(':'):
-        if 'intel' in p:
-            intel_lib_path=p
-            break
+# Register exit printers
+import atexit
+atexit.register(print_build_config, aenv)
+atexit.register(print_build_failures)
 
-    if intel_lib_path is None:
-        print ("Error! Intel lib not found")
-        Exit(2)
-    else:
-        print (intel_lib_path)
-        env.Append(INTEL_LIB_PATH = intel_lib_path)
+# include path
+inc_path = '#include'
+
+# top level src path
+src_path = '#src'
 
 # Add shared top-level headers
-env.Prepend(CPPPATH=[Dir('include')])
+aenv.Prepend(CPPPATH=[Dir('include')])
 
-build_root = env['BUILDROOT']
+aenv['BUILDROOT'] = aenv['BUILDDIR']
+
+build_root = aenv['BUILDROOT']
 
 makedirs(build_root, exist_ok=True)
 
-gvars = Variables(defcfg.def_env_file, args=ARGUMENTS)
-gvars.AddVariables(
-    #('CC', 'C compiler', environ.get('CC', env['CC'])),
-    #('CXX', 'C++ compiler', environ.get('CXX', env['CXX'])),
-    ('BUILDROOT', 'Build root', environ.get('BUILDROOT', env['BUILDROOT']))
-)
+# alm libs will be generated here
+alm_lib_path='#'+joinpath(build_root,'src')
 
-# Update env environment with values from ARGUMENTS & global_vars_file
-gvars.Update(env)
-help_texts = defcfg.GetHelpTexts()
-help_texts["global_vars"] += gvars.GenerateHelpText(env)
+# Fetch absolute path of libaoclutils library
+aocl_utils_install_path = joinpath('#', aenv['aocl_utils_install_path'])
+Export('aocl_utils_install_path')
 
 # These targets are not the .obj files or .o files, instead
 # class targets or build objectw
 targets = []
 
-libenv = env.Clone()
+libenv = aenv.Clone()
 libenv.Append(
-	INCPATH=['#include'],
-	CWD='#src',
+        INCPATH=inc_path,
+        CWD=src_path,
 )
 
 # To generate a file version.build.c having current gitversion in VERSION_STRING
@@ -104,64 +103,14 @@ libenv.Tool('gitversion')
 build_version = libenv.GenerateVersion('src/version.build.h')
 libenv.AlwaysBuild(build_version)
 
-amdlibm = SConscript('src/SConscript',
-                       exports = { 'env' : libenv },
-                       duplicate = 0,
-                       variant_dir = joinpath(build_root, 'src'))
+build_sys_details = libenv.GetBuildInfo('src/buildsysinfo.h')
+libenv.AlwaysBuild(build_sys_details)
 
-targets += amdlibm
+alm_libs = SConscript(joinpath(src_path, 'SConscript'),
+                     exports = { 'env' : libenv },
+                     duplicate = 0,
+                     variant_dir = alm_lib_path)
 
-#
-# Build Test lib and associated tests
-#
+targets += alm_libs
 
-testenv = env.Clone()
-if libabi == 'svml':
-    testenv.Append(
-	    LIBPATH=['#'+joinpath(build_root,'src'), env['INTEL_LIB_PATH']]
-    )
-else:
-    testenv.Append(
-        LIBPATH=['#'+joinpath(build_root,'src')]
-    )
-
-test_lib_objs = []  			# Will fill at a later date
-test_objs = SConscript(dirs='tests',
-                       exports = {'env' : testenv},
-                       duplicate = 0,
-                       src_dir    = 'tests',
-                       must_exist  = 0,
-                       variant_dir = joinpath(build_root, 'tests'))
-
-gtest_objs = SConscript(dirs='gtests',
-                       exports = {'env' : testenv},
-                       duplicate = 0,
-                       src_dir    = 'gtests',
-                       variant_dir = joinpath(build_root, 'gtests'))
-
-if 'tests' in COMMAND_LINE_TARGETS:
-    targets += test_objs
-
-if 'gtests' in COMMAND_LINE_TARGETS:
-    targets += gtest_objs
-
-Progress('\r', overwrite=True)
 Default(targets)
-
-import atexit
-atexit.register(PrintBanner, libenv)
-
-# base help text
-Help('''
-Usage: scons [scons options] [build variables] [target(s)]
-
-Extra scons options:
-%(options)s
-
-Global build variables:
-%(global_vars)s
-
-Local Variables:
-%(local_vars)s
-''' % help_texts)
-

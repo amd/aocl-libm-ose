@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_BAS64(vrsa_cbrtf)
+#define fname ALM_PROTO_BAS64(vrsa_cbrtf)
 #define fname_special vrsa_cbrtf_special
 
 #ifdef __ELF__
@@ -68,7 +68,7 @@
 
 
 .globl fname
-.type  fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
     and .L__all_bits_set(%rip),%rsi
     jz  .L__exit 

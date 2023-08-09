@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+; Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 ;
 ; Redistribution and use in source and binary forms, with or without modification,
 ; are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@
 
 include fm.inc
 
-FN_PROTOTYPE_FMA3 logf
+ALM_PROTO_FMA3 logf
 
 ; local variable storage offsets
 save_xmm6       EQU     00h
@@ -51,7 +51,7 @@ stack_size      EQU     028h ; We take 8 as the last nibble to allow for
                               
 
  
-fname_special   TEXTEQU <_logf_special>
+fname_special   TEXTEQU <alm_logf_special>
 EXTERN fname_special:PROC
 
 text SEGMENT EXECUTE

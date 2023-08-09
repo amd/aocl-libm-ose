@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -25,13 +25,19 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-framework="$1"
-EXE="$2"
+EXE="$1"
+
+arch="$2"
 
 nargs=1
-xranges=(-50,50)
 
-input_types=("s1d" "s1f" "v4s" "v4d" "v2d")
+xranges=(-100,100    \
+    -1000,1000)
 
-run_exe_nargs $framework $exe $nargs $input_types $xranges
+input_types=("s1d" "s1f" "v4s" "v4d" "v2d" "v8s")
+if [ ${arch} = "avx512" ]; then
+    input_types+=("v8d" "v16s")
+fi
+
+run_exe_nargs $exe $nargs $input_types $xranges
 

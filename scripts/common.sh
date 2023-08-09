@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -23,17 +23,29 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-declare -a funcs=("exp" "log" "pow"
-                    "fabs" "atan"
+declare -a funcs=(  "exp"  "log" "pow"
+                    "fabs" "atan" "log2"
                     "exp2" "expm1"
-                    "sin" "cos" "tan"
-                    "sinh" "cosh" "tanh")
+                    "sin"  "cos"  "tan"
+                    "sinh" "cosh" "tanh"
+                    "acos" "log10" "asin"
+                    )
 
 #for perf/accu
 input_count=10
 
 #test types
 declare -a test_types=("perf" "accu" "conf")
+
+#find AOCC installed folder
+GetAOCCPath() {
+    cmd="clang -v"
+    readarray -t aocc_install_path <<< "$(${cmd} -a 2>&1 | grep "InstalledDir:")"
+    aocc_install_path=${aocc_install_path##*InstalledDir:}
+    echo ${aocc_install_path}
+    aocc_install_path=${aocc_install_path//[[:blank:]]/}
+    export aocc_install_path=${aocc_install_path}
+}
 
 #common routines
 RunCommand() {
@@ -50,7 +62,7 @@ RunCommand() {
   fi
 }
 
-#convert to gtest args
+#convert args
 convert_input_type()
 {
     local variant=$1  #this will be s1d/v4s, etc
@@ -76,12 +88,11 @@ convert_input_type()
 #run tests with nargs
 run_exe_nargs()
 {
-    framework=$1
-    EXE=$2
-    nargs=$3
-    input_types=$4
-    xranges=$5
-    yranges=$6
+    EXE=$1
+    nargs=$2
+    input_types=$3
+    xranges=$4
+    yranges=$5
 
     test_types=("accu" "perf" "conf")
 
@@ -94,14 +105,14 @@ run_exe_nargs()
             do
                 for t in ${test_types[@]};
                     do
-                        run_test ${framework} ${EXE} $inp $t ${nargs} ${xranges} ${yranges}
+                        run_test ${EXE} $inp $t ${nargs} ${xranges} ${yranges}
                     done
             done
 
     else
         for inp in ${input_types[@]};
             do
-                run_test ${framework} ${EXE} $inp $test_type ${nargs} ${xranges} ${yranges};
+                run_test ${EXE} $inp $test_type ${nargs} ${xranges} ${yranges};
             done
     fi
 }
@@ -109,13 +120,12 @@ run_exe_nargs()
 #run test executable
 run_test()
 {
-    fw="$1"
-    exe="$2"
-    variant="$3"
-    test_type="$4"
-    nargs="$5"
-    xranges="$6"
-    yranges="$7"
+    exe="$1"
+    variant="$2"
+    test_type="$3"
+    nargs="$4"
+    xranges="$5"
+    yranges="$6"
 
     #check if executable is found
     if [ ! -f ${exe} ]; then
@@ -124,12 +134,7 @@ run_test()
     fi
 
     input=""
-    #if gtest, convert input args
-    if [ "${fw}" = "g" ];then
-        convert_input_type ${variant}
-    else
-        input=" -i $variant "
-    fi
+    convert_input_type ${variant}
 
     #if conf, no ranges/input counts
     if [ $test_type = "conf" ]; then

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2008-2023, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -24,10 +24,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 #include <stdint.h>
 #include <libm_util_amd.h>
-#include <libm_special.h>
-
+#include <libm/alm_special.h>
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/types.h>
@@ -65,12 +65,11 @@ static struct {
 #define C8 logf_data.poly[7]
 #define C9 logf_data.poly[8]
 
-
 /*
  * Implementation Notes:
  *     reduce 'x' into the form:
  *        x = (-1)^s*2^n*m
- * 's' will be always zero, as log is defined for posititve numbers
+ * 's' will be always zero, as log is defined for positive numbers
  * 'n' is an integer known as the exponent
  * 'm' is mantissa
  *
@@ -86,22 +85,24 @@ static struct {
  * Thus we have :
  * log(x) = n*log(2) + log1p(f)
  *            log1p(F) is approximated by using a polynomial
+ *
+ * The maximum known ULP error is 1.65598.
  */
 
 float
-FN_PROTOTYPE_FAST(logf)(float x)
+ALM_PROTO_FAST(logf)(float x)
 {
     float m, r, n, f;
 
     // 0 and FLT_MAX
-    if ((x > 0.0f) && (x <= 0x1.fffffep+127)) {
+    if ((x > 0.0f) && (x <= 0x1.fffffep+127f)) {
         // Get the exponent
-        int32_t ux = (asuint32(x) - 0x3f2aaaab) & 0xff800000;
-        n = (float)(ux >> EXPSHIFTBITS_SP32) ;
+        uint32_t ux = (asuint32(x) - 0x3f2aaaab) & 0xff800000;
+        n = (float)(((int32_t)ux) >> EXPSHIFTBITS_SP32) ;
         // Get the mantissa, m is in [2/3, 4/3]
         m = asfloat(asuint32(x) - ux);
 
-        f = m - 1.0f;// f is in [-1/3,+1/3]
+        f = m - 1.0f; // f is in [-1/3,+1/3]
 
         // Compute log1p(f) using Polynomial approximation
         r = POLY_EVAL_9(f, C1, C2, C3, C4, C5, C6, C7, C8, C9);
@@ -113,11 +114,10 @@ FN_PROTOTYPE_FAST(logf)(float x)
         if (x  < 0.0f) r =  0.0f / 0.0f; //  NaN
         if (x == 0.0f) r = -1.0f / 0.0f; // -Inf
     }
-
     return r;
-
 }
 
-strong_alias (__logf_finite, FN_PROTOTYPE_FAST(logf))
-weak_alias (logf, FN_PROTOTYPE_FAST(logf))
-strong_alias (__ieee754_logf, FN_PROTOTYPE_FAST(logf))
+strong_alias (__logf_finite, ALM_PROTO_FAST(logf))
+weak_alias (logf, ALM_PROTO_FAST(logf))
+weak_alias (amd_logf, ALM_PROTO_FAST(logf))
+strong_alias (__ieee754_logf, ALM_PROTO_FAST(logf))

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -80,8 +80,8 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(log)
-#define fname_special _log_special@PLT
+#define fname ALM_PROTO_FMA3(log)
+#define fname_special alm_log_special@PLT
 
 
 # local variable storage offsets
@@ -97,7 +97,7 @@
 .align 16
 .p2align 5,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
 

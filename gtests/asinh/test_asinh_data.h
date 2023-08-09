@@ -1,0 +1,353 @@
+/*
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+#include <fenv.h>
+#include "almstruct.h"
+#include <libm_util_amd.h>
+/*
+ * Test cases to check for exceptions for the asinhf() routine.
+ * These test cases are not exhaustive
+ * These values as as per GLIBC output
+ */
+static libm_test_special_data_f32
+test_asinhf_conformance_data[] = {
+   {0x00000001, 0xffc00000,  FE_INEXACT},  // denormal min
+   {0x0005fde6, 0xffc00000,  FE_INEXACT},  // denormal intermediate0x37c0f01f
+   {0x007fffff, 0xffc00000,  FE_INEXACT},  // denormal max
+   {0x80000001, 0xffc00000,  FE_INEXACT},  // -denormal min
+   {0x805def12, 0xffc00000,  FE_INEXACT},  // -denormal intermediate
+   {0x807FFFFF, 0xffc00000,  FE_INEXACT},  // -denormal max
+   {0x00800000, 0xffc00000,  FE_INEXACT},  // normal min
+   {0x43b3c4ea, 0x40d27eb3,  0},  // normal intermediate
+   {0x7f7fffff, 0x42b2d4fc,  0},  // normal max
+   {0x80800000, 0xffc00000,  FE_INEXACT},  // -normal min
+   {0xc5812e71, 0xffc00000,  FE_INEXACT},  // -normal intermediate
+   {0xFF7FFFFF, 0xffc00000,  FE_INEXACT},  // -normal max
+   {0x7F800000, 0x7f800000,  0},  // inf
+   {0xfF800000, 0xffc00000,  0},  // -inf
+   {0x7Fc00000, 0x7fc00000,  0},  // qnan min
+   {0x7Fe1a570, 0x7fe1a570,  0},  // qnan intermediate
+   {0x7FFFFFFF, 0x7fffffff,  0},  // qnan max
+   {0xfFc00000, 0xffc00000,  0},  // indeterninate
+   {0xFFC00001, 0xffc00000,  0},  // -qnan min
+   {0xFFd2ba31, 0xffc00000,  0},  // -qnan intermediate
+   {0xFFFFFFFF, 0xffc00000,  0},  // -qnan max
+   {0x7F800001, 0x7fc00001,  FE_INVALID},  // snan min
+   {0x7Fa0bd90, 0x7fe0bd90,  FE_INVALID},  // snan intermediate
+   {0x7FBFFFFF, 0x7fffffff,  FE_INVALID},  // snan max
+   {0xFF800001, 0xffc00000,  FE_INVALID},  // -snan min
+   {0xfF95fffa, 0xffc00000,  FE_INVALID},  // -snan intermediate
+   {0xFFBFFFFF, 0xffc00000,  FE_INVALID},  // -snan max
+   {0x3FC90FDB, 0x3f82f91f,  0},  // pi/2
+   {0x40490FDB, 0x3fe7e018,  0},  // pi
+   {0x40C90FDB, 0x4021938d,  0},  // 2pi
+   {0x402DF853, 0x3fd42777,  0},  // e --
+   {0x402DF854, 0x3fd42777,  0},  // e
+   {0x402DF855, 0x3fd42778,  0},  // e ++
+   {0x00000000, 0xffc00000,  0},  // 0
+   {0x37C0F01F, 0xffc00000,  FE_INEXACT},  // 0.000023
+   {0x3EFFFEB0, 0xffc00000,  FE_INEXACT},  // 0.49999
+   {0x3F0000C9, 0xffc00000,  FE_INEXACT},  // 0.500012
+   {0x80000000, 0xffc00000,  0},  // -0
+   {0xb7C0F01F, 0xffc00000,  FE_INEXACT},  // -0.000023
+   {0xbEFFFEB0, 0xffc00000,  FE_INEXACT},  // -0.49999
+   {0xbF0000C9, 0xffc00000,  FE_INEXACT},  // -0.500012
+   {0x3f800000, 0x00000000,  0},  // 1
+   {0x3f700001, 0xffc00000,  FE_INEXACT},  // 0.93750006
+   {0x3F87FFFE, 0x3eb416d6,  0},  // 1.0624998
+   {0x3FBFFFAC, 0x3f7660cf,  0},  // 1.49999
+   {0x3FC00064, 0x3f766218,  0},  // 1.500012
+   {0xbf800000, 0xffc00000,  FE_INEXACT},  // -1
+   {0xbf700001, 0xffc00000,  FE_INEXACT},  // -0.93750006
+   {0xbF87FFFE, 0xffc00000,  FE_INEXACT},  // -1.0624998
+   {0xbFBFFFAC, 0xffc00000,  FE_INEXACT},  // -1.49999
+   {0xbFC00064, 0xffc00000,  FE_INEXACT},  // -1.500012
+   {0x40000000, 0x3fa89214,  0},  // 2
+   {0xc0000000, 0xffc00000,  FE_INEXACT},  // -2
+   {0x41200000, 0x403f90f7,  0},  // 10
+   {0xc1200000, 0xffc00000,  FE_INEXACT},  // -10
+   {0x447A0000, 0x40f33a97,  0},  // 1000
+   {0xc47A0000, 0xffc00000,  FE_INEXACT},  // -1000
+   {0x4286CCCC, 0x409ceb6a,  0},  // 67.4
+   {0xc286CCCC, 0xffc00000,  FE_INEXACT},  // -67.4
+   {0x44F7F333, 0x410492b4,  0},  // 1983.6
+   {0xc4F7F333, 0xffc00000,  FE_INEXACT},  // -1983.6
+   {0x42AF0000, 0x40a545a9,  0},  // 87.5
+   {0xc2AF0000, 0xffc00000,  FE_INEXACT},  // -87.5
+
+   {0xc2AF0000, 0xffc00000,  FE_INEXACT},  // -87.5
+   {0x48015E40, 0x4147cbe7,  0},  // 132473
+   {0xc8015E40, 0xffc00000,  FE_INEXACT},  // -132473
+   {0x4B000000, 0x41851592,  0},  // 2^23
+   {0x4B000001, 0x41851592,  0},  // 2^23 + 1
+   {0x4AFFFFFF, 0x41851592,  0},  // 2^23 -1 + 0.5
+   {0xcB000000, 0xffc00000,  FE_INEXACT},  // -2^23
+   {0xcB000001, 0xffc00000,  FE_INEXACT},  // -(2^23 + 1)
+   {0xcAFFFFFF, 0xffc00000,  FE_INEXACT},  // -(2^23 -1 + 0.5)
+
+    // special accuracy tests
+   {0x38800000, 0xffc00000,  FE_INEXACT}, //
+   {0x387FFFFF, 0xffc00000,  FE_INEXACT}, //
+   {0x38800001, 0xffc00000,  FE_INEXACT}, //
+   {0x7f7fffec, 0x42b2d4fc,  0}, //
+   {0x7f7fff6c, 0x42b2d4fb,  0}, //
+   {0x42B2D4FD, 0x40a5f71e,  0}, //
+   {0x42B2D4FF, 0x40a5f71e,  0}, //
+   {0x7f7f820b, 0x42b2d400,  0}, //
+   {0x4d675844, 0x41a00000,  0}, //
+   {0x4e1d3710, 0x41a80000,  0}, //
+   {0x4caa36c8, 0x41980000,  0}, //
+   {0x46000000, 0x411b43d5,  0}, //
+   {0x46000001, 0x411b43d5,  0}, //
+   {0x45ffffff, 0x411b43d5,  0}, //
+   {0x3F317217, 0xffc00000,  FE_INEXACT}, //
+   {0x40000000, 0x3fa89214,  0}, //
+   {0x40000001, 0x3fa89215,  0}, //
+   {0x3fffffff, 0x3fa89213,  0}, //
+   {0x3f800000, 0x00000000,  0}, //
+   {0x40584817, 0x3ff1b07f,  0}, //
+   {0x40d84817, 0x40264d67,  0}, //
+   {0x41323612, 0x40467f16,  0}, //
+   {0x41f6e585, 0x4083eace,  0}, //
+   {0x4283dc5f, 0x409c36cd,  0}, //
+   {0x42e8afbb, 0x40ae63b9,  0}, //
+   {0x43859b33, 0x40c8ff7e,  0}, //
+   {0x4401a272, 0x40de368f,  0}, //
+   {0x44599481, 0x40eec8c6,  0}, //
+   {0x44a551e3, 0x40fc2cd1,  0}, //
+   {0x48490495, 0x414ed924,  0}, //
+   {0x511bd2ce, 0x41c9332f,  0}, //
+   {0x62bdb16c, 0x42466d64,  0}, //
+   {0x80000000, 0x7fc00000,  0},
+   {0xff800000, 0x7fc00000,  0},
+   {0x7f800001, 0x7fc00001,  0},
+   {0xff800001, 0xffc00001,  0},
+   {0x7fc00000, 0x7fc00000,  0},
+   {0xffc00000, 0xffc00000,  0},
+   //answer from NAG test tool
+   {0x460ca000, 0x411cc521,  0}, // 9000, > 0x46000000
+   {0x3fc00000, 0x3f766165,  0}, // 1.5
+   {0x3f9e0419, 0x3f2c0fa0,  0}, // 1.2345
+
+};
+
+static libm_test_special_data_f64
+test_asinh_conformance_data[] = {
+    #if defined(_WIN64) || defined(_WIN32)
+        {0x0000000000000001LL, 0xfff8000000000000LL, 3}, // denormal min
+        {0x0005fde623545abcLL, 0xfff8000000000000LL, 3}, // denormal intermediate
+        {0x8000000000000001LL, 0xfff8000000000000LL, 3}, // -denormal min
+        {0x8002344ade5def12LL, 0xfff8000000000000LL, 3}, // -denormal intermediate
+        {0x800FFFFFFFFFFFFFLL, 0xfff8000000000000LL, 3}, // -denormal max
+        {0x0010000000000000LL, 0xfff8000000000000LL, 3}, // normal min
+        {0x8010000000000000LL, 0xfff8000000000000LL, 3}, // -normal min
+        {0xc5812e71245acfdbLL, 0xfff8000000000000LL, 1}, // -normal intermediate
+        {0xFFEFFFFFFFFFFFFFLL, 0xfff8000000000000LL, 1}, // -normal max
+        {0x3C4536B8B14B676CLL, 0xfff8000000000000LL, 1}, // 0.0000000000000000023
+        {0x3FDFFFFBCE4217D3LL, 0xfff8000000000000LL, 1}, // 0.4999989999999999999
+        {0x3FE000000000006CLL, 0xfff8000000000000LL, 1}, // 0.500000000000012
+        {0xBBDB2752CE74FF42LL, 0xfff8000000000000LL, 1}, // -0.000000000000000000023
+        {0xBFDFFFFBCE4217D3LL, 0xfff8000000000000LL, 1}, // -0.4999989999999999999
+        {0xBFE000000000006CLL, 0xfff8000000000000LL, 1}, // -0.500000000000012
+        {0x3FEFFFFFC49BD0DCLL, 0xfff8000000000000LL, 1}, // 0.9999998893750006
+        {0xBFF0000000000000LL, 0xfff8000000000000LL, 1}, // -1
+        {0xBFEFFFFFC49BD0DCLL, 0xfff8000000000000LL, 1}, // -0.9999998893750006
+        {0xBFF0000000000119LL, 0xfff8000000000000LL, 1}, // -1.0000000000000624998
+        {0xBFF7FFFEF39085F4LL, 0xfff8000000000000LL, 1}, // -1.499998999999999967
+        {0xBFF8000000000001LL, 0xfff8000000000000LL, 1}, // -1.50000000000000012
+        {0xC000000000000000LL, 0xfff8000000000000LL, 1}, // -2
+        {0xC024000000000000LL, 0xfff8000000000000LL, 1}, // -10
+        {0xC08F400000000000LL, 0xfff8000000000000LL, 1}, // -1000
+        {0xC050D9999999999ALL, 0xfff8000000000000LL, 1}, // -67.4
+        {0xC09EFE6666666666LL, 0xfff8000000000000LL, 1}, // -1983.6
+        {0xC055E00000000000LL, 0xfff8000000000000LL, 1}, // -87.5
+        {0xC055E00000000000LL, 0xfff8000000000000LL, 1}, // -87.5
+        {0xC1002BC800000000LL, 0xfff8000000000000LL, 1}, // -132473
+        {0xC330000000000000LL, 0xfff8000000000000LL, 1}, // -2^52
+        {0xC330000000000001LL, 0xfff8000000000000LL, 1}, // -(2^52 + 1)
+        {0xC32FFFFFFFFFFFFFLL, 0xfff8000000000000LL, 1}, // -(2^52 -1 + 0.5)
+        {0x3e30000000000000LL, 0xfff8000000000000LL, 1}, //
+        {0x3E2FFFFFFFFFFFFFLL, 0xfff8000000000000LL, 1}, //
+        {0x3e30000000000001LL, 0xfff8000000000000LL, 1}, //
+        {0xFE37E43C8800759CLL, 0xfff8000000000000LL, 1}, //
+        {0xFE37E43C8800758CLL, 0xfff8000000000000LL, 1}, //
+        {0xFE37E43C880075ACLL, 0xfff8000000000000LL, 1}, //
+        {0x3fe62e42e0000000LL, 0xfff8000000000000LL, 1}, //
+        {0x3e6efa39ef35793cLL, 0xfff8000000000000LL, 1}, //
+        {0x3FEFFFFFFFFFFFF7LL, 0xfff8000000000000LL, 1}, //
+        {0xc196a09e667f3bcdLL, 0xfff8000000000000LL, 1}, //
+    #else
+        {0x0000000000000001LL, 0xfff8000000000000LL, 48}, // denormal min
+        {0x0005fde623545abcLL, 0xfff8000000000000LL, 48}, // denormal intermediate
+        {0x8000000000000001LL, 0xfff8000000000000LL, 48}, // -denormal min
+        {0x8002344ade5def12LL, 0xfff8000000000000LL, 48}, // -denormal intermediate
+        {0x800FFFFFFFFFFFFFLL, 0xfff8000000000000LL, 48}, // -denormal max
+        {0x0010000000000000LL, 0xfff8000000000000LL, 32}, // normal min
+        {0x8010000000000000LL, 0xfff8000000000000LL, 32}, // -normal min
+        {0xc5812e71245acfdbLL, 0xfff8000000000000LL, 32}, // -normal intermediate
+        {0xFFEFFFFFFFFFFFFFLL, 0xfff8000000000000LL, 32}, // -normal max
+        {0x3C4536B8B14B676CLL, 0xfff8000000000000LL, 32}, // 0.0000000000000000023
+        {0x3FDFFFFBCE4217D3LL, 0xfff8000000000000LL, 32}, // 0.4999989999999999999
+        {0x3FE000000000006CLL, 0xfff8000000000000LL, 32}, // 0.500000000000012
+        {0xBBDB2752CE74FF42LL, 0xfff8000000000000LL, 32}, // -0.000000000000000000023
+        {0xBFDFFFFBCE4217D3LL, 0xfff8000000000000LL, 32}, // -0.4999989999999999999
+        {0xBFE000000000006CLL, 0xfff8000000000000LL, 32}, // -0.500000000000012
+        {0x3FEFFFFFC49BD0DCLL, 0xfff8000000000000LL, 32}, // 0.9999998893750006
+        {0xBFF0000000000000LL, 0xfff8000000000000LL, 32}, // -1
+        {0xBFEFFFFFC49BD0DCLL, 0xfff8000000000000LL, 32}, // -0.9999998893750006
+        {0xBFF0000000000119LL, 0xfff8000000000000LL, 32}, // -1.0000000000000624998
+        {0xBFF7FFFEF39085F4LL, 0xfff8000000000000LL, 32}, // -1.499998999999999967
+        {0xBFF8000000000001LL, 0xfff8000000000000LL, 32}, // -1.50000000000000012
+        {0xC000000000000000LL, 0xfff8000000000000LL, 32}, // -2
+        {0xC024000000000000LL, 0xfff8000000000000LL, 32}, // -10
+        {0xC08F400000000000LL, 0xfff8000000000000LL, 32}, // -1000
+        {0xC050D9999999999ALL, 0xfff8000000000000LL, 32}, // -67.4
+        {0xC09EFE6666666666LL, 0xfff8000000000000LL, 32}, // -1983.6
+        {0xC055E00000000000LL, 0xfff8000000000000LL, 32}, // -87.5
+        {0xC055E00000000000LL, 0xfff8000000000000LL, 32}, // -87.5
+        {0xC1002BC800000000LL, 0xfff8000000000000LL, 32}, // -132473
+        {0xC330000000000000LL, 0xfff8000000000000LL, 32}, // -2^52
+        {0xC330000000000001LL, 0xfff8000000000000LL, 32}, // -(2^52 + 1)
+        {0xC32FFFFFFFFFFFFFLL, 0xfff8000000000000LL, 32}, // -(2^52 -1 + 0.5)
+        {0x3e30000000000000LL, 0xfff8000000000000LL, 32}, //
+        {0x3E2FFFFFFFFFFFFFLL, 0xfff8000000000000LL, 32}, //
+        {0x3e30000000000001LL, 0xfff8000000000000LL, 32}, //
+        {0xFE37E43C8800759CLL, 0xfff8000000000000LL, 32}, //
+        {0xFE37E43C8800758CLL, 0xfff8000000000000LL, 32}, //
+        {0xFE37E43C880075ACLL, 0xfff8000000000000LL, 32}, //
+        {0x3fe62e42e0000000LL, 0xfff8000000000000LL, 32}, //
+        {0x3e6efa39ef35793cLL, 0xfff8000000000000LL, 32}, //
+        {0x3FEFFFFFFFFFFFF7LL, 0xfff8000000000000LL, 32}, //
+        {0xc196a09e667f3bcdLL, 0xfff8000000000000LL, 32}, //
+    #endif
+
+    {0x000FFFFFFFFFFFFFLL, 0xfff8000000000000LL, 0}, // denormal max
+    {0x43b3c4eafedcab02LL, 0x40453f2b7feeadccLL, 0}, // normal intermediate
+    {0x7FEFFFFFFFFFFFFFLL, 0x408633ce8fb9f87eLL, 0}, // normal max
+    {0x7FF0000000000000LL, 0x7ff0000000000000LL, 0}, // inf
+    {0xFFF0000000000000LL, 0xfff8000000000000LL, 0}, // -inf
+    {0x7FF8000000000000LL, 0x7ff8000000000000LL, 0}, // qnan min
+    {0x7FFe1a5701234dc3LL, 0x7ffe1a5701234dc3LL, 0}, // qnan intermediate
+    {0x7FFFFFFFFFFFFFFFLL, 0x7fffffffffffffffLL, 0}, // qnan max
+    {0xFFF8000000000000LL, 0xfff8000000000000LL, 0}, // indeterninate
+    {0xFFF8000000000001LL, 0xfff8000000000000LL, 0}, // -qnan min
+    {0xFFF9123425dcba31LL, 0xfff8000000000000LL, 0}, // -qnan intermediate
+    {0xFFFFFFFFFFFFFFFFLL, 0xfff8000000000000LL, 0}, // -qnan max
+    {0x7FF0000000000001LL, 0x7ff8000000000001LL, FE_INVALID}, // snan min
+    {0x7FF5344752a0bd90LL, 0x7ffd344752a0bd90LL, FE_INVALID}, // snan intermediate
+    {0x7FF7FFFFFFFFFFFFLL, 0x7fffffffffffffffLL, FE_INVALID}, // snan max
+    {0xFFF0000000000001LL, 0xfff8000000000000LL, FE_INVALID}, // -snan min
+    {0xfFF432438995fffaLL, 0xfff8000000000000LL, FE_INVALID}, // -snan intermediate
+    {0xFFF7FFFFFFFFFFFFLL, 0xfff8000000000000LL, FE_INVALID}, // -snan max
+    {0x3FF921FB54442D18LL, 0x3ff05f23c6cbaf31LL, 0}, // pi/2
+    {0x400921FB54442D18LL, 0x3ffcfc02f90106c1LL, 0}, // pi
+    {0x401921FB54442D18LL, 0x400432718f372526LL, 0}, // 2pi
+    {0x3FFB7E151628AED3LL, 0x3ff22ec7e51925b9LL, 0}, // e --
+    {0x4005BF0A8B145769LL, 0x3ffa84eef63326e7LL, 0}, // e
+    {0x400DBF0A8B145769LL, 0x3fffce1775f12536LL, 0}, // e ++
+    {0x0000000000000000LL, 0xfff8000000000000LL, 0}, // 0
+    {0x8000000000000000LL, 0xfff8000000000000LL, 0}, // -0
+    {0x3FF0000000000000LL, 0x0000000000000000LL, 0}, // 1
+    {0x3FF0000000000119LL, 0x3e97b4dfc079256bLL, 0}, // 1.0000000000000624998
+    {0x3FF7FFFEF39085F4LL, 0x3feecc2ace93e00eLL, 0}, // 1.499998999999999967
+    {0x3FF8000000000001LL, 0x3feecc2caec5160bLL, 0}, // 1.50000000000000012
+    {0x4000000000000000LL, 0x3ff5124271980435LL, 0}, // 2
+    {0x4024000000000000LL, 0x4007f21ed1ce05d4LL, 0}, // 10
+    {0x408F400000000000LL, 0x401e6752e8a84ed4LL, 0}, // 1000
+    {0x4050D9999999999ALL, 0x40139d6d46400cc2LL, 0}, // 67.4
+    {0x409EFE6666666666LL, 0x4020925671dfb9aeLL, 0}, // 1983.6
+    {0x4055E00000000000LL, 0x4014a8b5181890bdLL, 0}, // 87.5
+    {0x4055E00000000000LL, 0x4014a8b5181890bdLL, 0}, // 87.5
+    {0x41002BC800000000LL, 0x4028f97cef99ff43LL, 0}, // 132473
+    {0x4330000000000000LL, 0x40425e4f7b2737faLL, 0}, // 2^52
+    {0x4330000000000001LL, 0x40425e4f7b2737faLL, 0}, // 2^52 + 1
+    {0x432FFFFFFFFFFFFFLL, 0x40425e4f7b2737faLL, 0}, // 2^52 -1 + 0.5
+    // special accuracy tests
+    {0x408633ce8fb9f87eLL, 0x401d094cb3a2e27fLL, 0}, //
+    {0x7feffffffffffd3bLL, 0x408633ce8fb9f87dLL, 0}, //
+    {0x408633ce8fb9f87fLL, 0x401d094cb3a2e27fLL, 0}, //
+    {0x408633ce8fb9f8ffLL, 0x401d094cb3a2e296LL, 0}, //
+    {0x7feffffffffe093bLL, 0x408633ce8fb9f800LL, 0}, //
+    {0x41aceb088b68e804LL, 0x4034000000000000LL, 0}, //
+    {0x41c3a6e1fd9eecfdLL, 0x4035000000000000LL, 0}, //
+    {0x419546d8f9ed26e2LL, 0x4033000000000000LL, 0}, //
+    {0x4196a09e667f3bcdLL, 0x40330fc1931f09caLL, 0}, //
+    {0x4196a09e667f3bccLL, 0x40330fc1931f09caLL, 0}, //
+    {0x4196a09e667f3bceLL, 0x40330fc1931f09caLL, 0}, //
+    {0x3FF0000000000000LL, 0x0000000000000000LL, 0}, //
+    {0x3FF0000000000001LL, 0x3e56a09e667f3bccLL, 0}, //
+    {0x4060000000000000LL, 0x40162e3efef439e2LL, 0}, //
+    {0x4060000000000001LL, 0x40162e3efef439e2LL, 0}, //
+    {0x405fffffffffffffLL, 0x40162e3efef439e2LL, 0}, //
+    {0x3ff8000000000000LL, 0x3feecc2caec5160aLL, 0}, //
+    {0x3ff8000000000001LL, 0x3feecc2caec5160bLL, 0}, //
+    {0x3ff7ffffffffffffLL, 0x3feecc2caec51608LL, 0}, //
+    {0x4040000000000000LL, 0x4010a272393ad5fbLL, 0}, //
+    {0x4040000000000001LL, 0x4010a272393ad5fbLL, 0}, //
+    {0x403fffffffffffffLL, 0x4010a272393ad5fbLL, 0}, //
+    {0x4020000000000000LL, 0x40062636e408c33bLL, 0}, //
+    {0x4020000000000001LL, 0x40062636e408c33cLL, 0}, //
+    {0x401fffffffffffffLL, 0x40062636e408c33bLL, 0}, //
+    {0x4010000000000000LL, 0x400081eb4b421591LL, 0}, //
+    {0x4010000000000001LL, 0x400081eb4b421592LL, 0}, //
+    {0x400fffffffffffffLL, 0x400081eb4b421591LL, 0}, //
+    {0x4000000000000000LL, 0x3ff5124271980435LL, 0}, //
+    {0x4000000000000001LL, 0x3ff5124271980436LL, 0}, //
+    {0x3FFFFFFFFFFFFFFBLL, 0x3ff5124271980432LL, 0}, //
+    {0x3ffc000000000000LL, 0x3ff28a7cbb850063LL, 0}, //
+    {0x3ffc000000000001LL, 0x3ff28a7cbb850063LL, 0}, //
+    {0x3ffbffffffffffffLL, 0x3ff28a7cbb850062LL, 0}, //
+    {0x3FF8000000000000LL, 0x3feecc2caec5160aLL, 0}, //
+    {0x3FFC000000000000LL, 0x3ff28a7cbb850063LL, 0}, //
+    {0x3FFAAA88C50B0C79LL, 0x3ff193d10e5c0d18LL, 0}, //
+    {0x3FF1FA2163FDD65ALL, 0x3fdf7f49962df105LL, 0}, //
+    {0x3FF2147AE147AE14LL, 0x3fe02523a6a33560LL, 0}, //
+    {0x3FF0F5C28F5C28F6LL, 0x3fd60f9522de1c73LL, 0}, //
+    {0x3FF0DAD538AC18F8LL, 0x3fd4d4139c60af76LL, 0}, //
+    {0x3FF17961804D9839LL, 0x3fdb442906f1bc39LL, 0}, //
+    {0x3FF17961804D9839LL, 0x3fdb442906f1bc39LL, 0}, //
+    {0x3FF3C47C30D306A3LL, 0x3fe58ceae7b87440LL, 0}, //
+    {0x3ff0000000000000LL, 0x0000000000000000LL, 0}, //
+    {0x400b0902de00d1b7LL, 0x3ffe360fd1e19969LL, 0}, //
+    {0x401b0902de00d1b7LL, 0x4004c9acee4a3151LL, 0}, //
+    {0x402646c226809d4aLL, 0x4008cfe2a958feebLL, 0}, //
+    {0x403edcb09e98dcdbLL, 0x40107d59b557e190LL, 0}, //
+    {0x40507b8bd66277c4LL, 0x401386d999aa5105LL, 0}, //
+    {0x405d15f75104d552LL, 0x4015cc772a14b8b0LL, 0}, //
+    {0x4070b36657b84dbaLL, 0x40191fefb51bd5acLL, 0}, //
+    {0x4080344e3ffef391LL, 0x401bc6d1deb359c0LL, 0}, //
+    {0x408b3290268900c6LL, 0x401dd918b117fc4fLL, 0}, //
+    {0x4094aa3c6fbd273eLL, 0x401f859a250cdb87LL, 0}, //
+    {0x41092092ba93c86bLL, 0x4029db248521d916LL, 0}, //
+    {0x42237a59f4429268LL, 0x40392665e1572e41LL, 0}, //
+    {0x4457b62df67fc4fdLL, 0x4048cdac82cb51b7LL, 0}, //
+    {0x48c191ef3d6a018aLL, 0x4058a14ffccd501eLL, 0}, //
+    {0x51934b4f70b3a04cLL, 0x40688b21b9ce55e4LL, 0}, //
+    {0x6337443f25f59cbbLL, 0x4078800a984ed8c7LL, 0}, //
+
+};
+

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,11 +25,11 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
-double FN_PROTOTYPE_REF(asin)(double x)
+double ALM_PROTO_REF(asin)(double x)
 {
   /* Computes arcsin(x).
      The argument is first reduced by noting that arcsin(x)
@@ -67,13 +67,13 @@ double FN_PROTOTYPE_REF(asin)(double x)
   if (xnan)
     {
 #ifdef WINDOWS
-     return  __amd_handle_error("asin", __amd_asin, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+     return  __alm_handle_error(ux|0x0008000000000000, AMD_F_NONE);
 #else
       //return x + x; /* With invalid if it's a signalling NaN */
       if (ux & QNAN_MASK_64)
-     return  __amd_handle_error("asin", __amd_asin, ux|0x0008000000000000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+     return  __alm_handle_error(ux|0x0008000000000000, AMD_F_NONE);
       else
-     return  __amd_handle_error("asin", __amd_asin, ux|0x0008000000000000, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+     return  __alm_handle_error(ux|0x0008000000000000, AMD_F_INVALID);
 #endif
     }
   else if (xexp < -28)
@@ -84,7 +84,7 @@ double FN_PROTOTYPE_REF(asin)(double x)
      if ((ux == SIGNBIT_DP64) || (ux == 0x0))
 	return x;
      else
-     return  __amd_handle_error("asin", __amd_asin, ux,_UNDERFLOW, AMD_F_UNDERFLOW | AMD_F_INEXACT, ERANGE , x, 0.0, 1);
+     return  __alm_handle_error(ux, AMD_F_UNDERFLOW | AMD_F_INEXACT);
 #endif
     }
   else if (xexp >= 0)
@@ -95,10 +95,10 @@ double FN_PROTOTYPE_REF(asin)(double x)
         return -piby2;//val_with_flags(-piby2, AMD_F_INEXACT);
       else
 #ifdef WINDOWS
-     return  __amd_handle_error("asin", __amd_asin, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+     return  __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
 #else
         //return retval_errno_edom(x);
-     return  __amd_handle_error("asin", __amd_asin, INDEFBITPATT_DP64, _DOMAIN, AMD_F_INVALID, EDOM, x, 0.0, 1);
+     return  __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
 #endif
     }
 

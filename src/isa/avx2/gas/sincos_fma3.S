@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -28,15 +28,15 @@
 
 
 
-#define fname FN_PROTOTYPE_FMA3(sincos)
+#define fname ALM_PROTO_FMA3(sincos)
 #define fname_special _sincos_special@PLT
 #define fname_special_underflow _sin_special_underflow@PLT
 
 #include "trig_func.h"
 
 
-.equ    sin_addr,    0x10                             
-.equ    cos_addr,   0x20                              
+.equ    sin_addr,    0x10
+.equ    cos_addr,   0x20
 .equ    store_input, 0x30
 .equ   stack_size, 0x48
 
@@ -50,14 +50,18 @@
 .align 32
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
         sub     $stack_size, %rsp
+	#ifdef _WIN64
+        mov %rdx, %rdi #sin pointer
+        mov %r8, %rsi #cos pointer
+	#endif
 
 sincos_early_exit_s:
 
-    MOVD  %xmm0,%rax    
+    MOVD  %xmm0,%rax
     MOV   %rax,%r9
     MOV   .L__inf_mask_64(%rip),%r8
     AND   %r8,%rax
@@ -82,14 +86,14 @@ sincos_early_exit_s_1:
    xor      %rax,%rax
    cmp      %rax,%r9
    je      return_sincos_s
-   
+
    mov     %rdi, sin_addr(%rsp)
-   mov     %rsi, cos_addr(%rsp)   
+   mov     %rsi, cos_addr(%rsp)
    call     fname_special_underflow
    mov     sin_addr(%rsp), %rdi
-   mov     cos_addr(%rsp), %rsi   
+   mov     cos_addr(%rsp), %rsi
    VMOVQ   .L_one(%rip),%xmm1
-   
+
    JMP return_sincos_s
 
 compute_x_xxx_0_1666_0_5:
@@ -123,16 +127,16 @@ sincos_remainder_piby2:
 
     mov     %rdi, sin_addr(%rsp)
     mov     %rsi, cos_addr(%rsp)
-    
+
     call_remainder_piby2_fma3
-    
+
     mov     sin_addr(%rsp), %rdi
     mov     cos_addr(%rsp), %rsi
 
 sincos_exit_s:
     VMOVAPD %xmm7,%xmm11
     sincos_piby4_s_fma3
-    
+
     VANDPD     .L_int_one(%rip),%xmm11,%xmm3
     VPCMPEQQ   .L_int_one(%rip),%xmm3,%xmm3
     VMOVDDUP    %xmm3,%xmm3
@@ -171,7 +175,7 @@ sincos_exit_1:
 return_sincos_s:
 
     VMOVSD   %xmm0, (%rdi)                             # save the sin
-    VMOVSD   %xmm1, (%rsi)                             # save the cos    
+    VMOVSD   %xmm1, (%rsi)                             # save the cos
     add      $stack_size, %rsp
     ret
 

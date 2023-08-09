@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,20 +25,20 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
 
 
-float FN_PROTOTYPE_REF(logbf)(float x)
+float ALM_PROTO_REF(logbf)(float x)
 {
   unsigned int ux;
   int u;
   GET_BITS_SP32(x, ux);
-  u = ((ux & EXPBITS_SP32) >> EXPSHIFTBITS_SP32) - EXPBIAS_SP32;
+  u = (int)(((ux & EXPBITS_SP32) >> EXPSHIFTBITS_SP32) - EXPBIAS_SP32);
   if ((ux & ~SIGNBIT_SP32) == 0)
     /* x is +/-zero. Return -infinity with div-by-zero flag. */
-	return __amd_handle_errorf("logbf", __amd_logb, NINFBITPATT_SP32, _SING, AMD_F_DIVBYZERO, ERANGE, x, 0.0, 1);
+	return __alm_handle_errorf(NINFBITPATT_SP32, AMD_F_DIVBYZERO);
   else if (EMIN_SP32 <= u && u <= EMAX_SP32)
     /* x is a normal number */
     return (float)u;
@@ -59,7 +59,7 @@ float FN_PROTOTYPE_REF(logbf)(float x)
       {
         /* x is NaN, result is NaN */
 #ifdef WINDOWS
-          return __amd_handle_errorf("logbf", __amd_logb, ux|0x00400000, _DOMAIN, AMD_F_NONE, EDOM, x, 0.0, 1);
+          return __alm_handle_errorf(ux|0x00400000, AMD_F_NONE);
 #else
           return x+x;
 #endif

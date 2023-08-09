@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -43,7 +43,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_BAS64(vrsa_powf)
+#define fname ALM_PROTO_BAS64(vrsa_powf)
 #define fname_exp __amd_internal_vrd4_exp
 #define fname_log __amd_internal_vrd4_log 
 
@@ -100,7 +100,9 @@
 #}
 
 .globl __vrsa_powf__
+#ifdef __GNU_ASM__
     .type   __vrsa_powf__,@function
+#endif
 __vrsa_powf__:
 	mov		(%rdi),%edi
 
@@ -111,8 +113,8 @@ __vrsa_powf__:
 # rdx - float *y
 # rcx - float *z
 
-.globl fname 
-    .type   fname,@function
+.globl fname
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
     cmp         $0x0, %edi 

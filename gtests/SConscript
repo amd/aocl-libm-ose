@@ -1,16 +1,48 @@
 #
-# Copyright (C) 2019-2020 Advanced Micro Devices, Inc. All rights reserved
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
+# Redistribution and use in source and binary forms, with or without modification,
+# are permitted provided that the following conditions are met:
+# 1. Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+# 3. Neither the name of the copyright holder nor the names of its contributors
+#    may be used to endorse or promote products derived from this software without
+#    specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+# OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
 
 import os
-from os import path
-from os.path import join as joinpath
+from os import path, listdir
+from os.path import isdir, join as joinpath
 
-Import('env')
-
+Import('env', 'almenv')
 #env.Replace(CC='g++',LINKFLAGS=[])
 
+# check for mpfr lib and headers
+conf = Configure(env)
+if not conf.CheckCHeader('mpfr.h'):
+    print ("Unable to find mpfr header")
+    Exit(1)
+if not conf.CheckLibWithHeader('mpfr',
+                                header='mpfr.h',
+                                language='c'):
+    print ("Unable to find mpft lib")
+    Exit(1)
+
 build_root = joinpath(env['BUILDROOT'], 'gtests')
+alm_path   = joinpath(env['BUILDROOT'], 'src')
 
 excludes = Glob('*_old.cc')
 
@@ -32,28 +64,63 @@ if plat == 'linux' or plat == 'posix':
 
 PROTOTYPE_GLIBC    = 0xf1
 PROTOTYPE_AOCL     = 0xf2
-PROTOTYPE_AMDLIBM  = 0xf3 #This is to compile for older AMDLIBM versions (prior to v2.1)
 PROTOTYPE_TEST_V1  = 0xf8
 PROTOTYPE_TEST_V2  = 0xf9
 PROTOTYPE_SVML     = 0xf4
 
-testcflags = ['-funsigned-char', '-fno-strict-aliasing',
-                '-fstack-protector-all', '-W', '-Wall',
-                '-Wno-multichar' , '-Wno-unused-parameter',
-                '-Wno-missing-field-initializers',
-                #'-falign-functions=32',
-                '-march=native',
-                '-std=c++17'
-	]
+if env['HOST_OS'] != 'win32':
+    testcflags = ['-funsigned-char',
+                  '-fno-strict-aliasing',
+                  '-fstack-protector-all',
+                  '-W',
+                  '-Wall',
+                  '-Wno-multichar',
+                  '-Wno-unused-parameter',
+                  '-Wno-missing-field-initializers',
+                  #'-falign-functions=32',
+                  '-march=native',
+                  '-std=c++17'
+                 ]
+
+else:
+    testcflags = ['/Wall',
+                  '/w',
+                  '/MP',
+                  '/O2',
+                  '-Wno-c++11-narrowing',
+                  '/Od',
+                  '/Ob2',
+                  '-MD',
+                  '-march=native',
+                  #'/showIncludes',
+                  '/EHsc',
+                  '-funsigned-char',
+                  '-fno-strict-aliasing',
+                  '-Wno-unused-parameter',
+                  '-fstack-protector-all',
+                  '-Wno-multichar',
+                  '-Wno-unused-parameter',
+                  '-march=native',
+                  '-Wno-missing-field-initializers',
+                  '-std:c++17',
+                  '/MT'
+                 ]
+arch_config = env['arch_config']
+if arch_config == 'avx512':
+    testcflags.append('-mavx512f')
+
+if env['HOST_OS'] == 'win32':
+    if env['BUILD'] == 'debug':
+        env['PDB'] = 'test.pdb'
 
 ccflags = []
 liblist = []
+libpath = ['#'+alm_path]
 incpath = ['#gtests/include',
            '#gtests/include/almtest',
            '#gtests/gapi/gtest',
            '#gtests/gapi/gbench',
            '.', './include']
-libpath = []
 
 abi = env['libabi']
 #print(abi, env['libabi'])
@@ -61,10 +128,10 @@ abi = env['libabi']
 # Default set to AOCL
 if abi == 'aocl':
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_AOCL]
-    liblist.extend(['alm'])
-elif abi == 'amdlibm':
-    ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_AMDLIBM]
-    liblist.extend(['alm'])
+    if env['HOST_OS'] != 'win32':
+        liblist.extend(['alm'])
+    else:
+        liblist.extend(['libalm'])
 elif abi == 'glibc':
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_GLIBC]
     liblist.extend(['mvec'])
@@ -76,13 +143,17 @@ elif abi == 'svml':
 else:
     pass
 
+#config architecture
+if arch_config == 'avx512':
+    ccflags.append('-D__AVX512__')
+
+
 try:
     dbg_mode=env['debug_mode']
 except KeyError as err:
-    print("Keyerror, debug_mode not found, setting to none", err)
     dbg_mode='none'
 
-if dbg_mode == 'gtests' or dbg_mode == 'all':
+if dbg_mode in ['gtests', 'all', 'tests' ]:
     env.Append(
         CCFLAGS = ['-ggdb']
        )
@@ -95,45 +166,53 @@ if dbg_mode == 'gtests' or dbg_mode == 'all':
         except ValueError as err:
             pass
 else:
-    env.Append(
+    if env['HOST_OS'] != 'win32':
+        env.Append(
         CCFLAGS = ['-O0'],
-    )
+        )
+    else:
+        env.Append(
+        CCFLAGS = [],
+        )
 
 # Add default math library for any unresolved functions
-liblist.extend(['m', 'gtest', 'benchmark','mparith32', 'mparith64', 'mpfr'])
+if env['HOST_OS'] != 'win32':
+    liblist.extend(['m', 'gtest', 'benchmark','mparith32', 'mparith64', 'mpfr'])
+else:
+    liblist.extend(['msvcrt', 'gtest', 'benchmark','mparith32', 'mparith64', 'mpfr'])
 #glibpath = ['gapi/gtest', 'gapi/gbench']
 glibpath = ['gapi/gtest', 'gapi/gbench','libs/mparith/32', 'libs/mparith/64']
-libpath = [joinpath('#', build_root, x) for x in glibpath]
+libpath  += [joinpath('#', build_root, x) for x in glibpath]
 
 #if intel svml
 if abi == 'svml':
     libpath += [env['INTEL_LIB_PATH']]
 
-libtestenv = env.Clone()
+testenv = env.Clone()
+testenv.Append(
+    CFLAGS  = ccflags + testcflags,
+    CCFLAGS = ccflags + testcflags,
+    CPPPATH = [incpath],
+)
+testenv.Replace(CC=almenv.compiler.CxxCmd(), LINKFLAGS=[])
+
+libtestenv = testenv.Clone()
 libtestenv.Append(
-	CFLAGS = ccflags + testcflags,
-    CCFLAGS  = ccflags + testcflags,
-    CPPPATH  = [incpath],
     VARIANTDIR = 'gtests'
 )
-libtestenv.Replace(CC='g++',LINKFLAGS=[])
 
 #print([x.path for x in test_common_srcs])
 libtest = libtestenv.StaticLibrary('test', test_common_srcs)
 
-e = env.Clone()
-e.Replace(CC='g++',LINKFLAGS=[])
+e = testenv.Clone()
 e.Append(
-	CFLAGS = ccflags + testcflags,
-	CCFLAGS = ccflags + testcflags,
-	INCPATH = incpath,
-	CPPPATH = incpath,
-	LIBPATH=libpath,
-	LIBS = [libtest] + liblist
+    INCPATH = [incpath],
+    LIBPATH = libpath,
+    LIBS    = [libtest] + liblist
 )
 
 def getSubdirs(abs_path_dir):
-    lst = [ name for name in os.listdir(abs_path_dir) if path.isdir(joinpath(abs_path_dir, name)) and name[0] != '.' ]
+    lst = [ name for name in listdir(abs_path_dir) if isdir(joinpath(abs_path_dir, name)) and name[0] != '.' ]
     lst.sort()
     return lst
 
@@ -142,31 +221,35 @@ this_sconscript_file = Dir('.').srcnode().abspath
 test_base = os.path.dirname(this_sconscript_file)
 gtests = getSubdirs(this_sconscript_file)
 #print("tests=================", tests, path.join(test_base, ))
-exclude_dirs = ['include', 'gapi', 'libs']
+if env['HOST_OS'] != 'win32':
+    exclude_dirs = ['include', 'gapi', 'libs']
+else:
+    exclude_dirs = ['include', 'gapi', 'libs', 'compat']
 gtests = [x for x in gtests if x not in exclude_dirs]
 
 libg = SConscript('gapi/SConscript',
-		exports = {'env': env},
-		duplicate = 0,
-		src_dir = '#gtests/gapi',
-		variant_dir = 'gapi',
-	)
+        exports = {'env': env},
+        duplicate = 0,
+        src_dir = '#gtests/gapi',
+        variant_dir = 'gapi',
+    )
 
 libmp = SConscript('libs/mparith/SConscript',
-		exports = {'env': env},
-		duplicate = 0,
-		src_dir = '#gtests/libs/mparith',
-		variant_dir = 'libs/mparith',
-	)
+        exports = {'env': env},
+        duplicate = 0,
+        src_dir = '#gtests/libs/mparith',
+        variant_dir = 'libs/mparith',
+    )
 
-#print(e.Dump())
-#print(gtests)
 test_exes = []
 
 for test in gtests:
     tenv = e.Clone()
-    tenv.Replace(CC='g++',LINKFLAGS=[])
-    tenv.Append(CPPDEFINES = ['-DTEST_NAME=%s' % test])
+    if env['HOST_OS'] != 'win32':
+        tenv.Replace(CC='g++',LINKFLAGS=[])
+        tenv.Append(CPPDEFINES = ['-DTEST_NAME=%s' % test])
+    else:
+        tenv.Append(CPPDEFINES = ['/DTEST_NAME=%s' % test])
     exes = SConscript('%s/SConscript' % test,
                         exports = { 'env': tenv },
                         duplicate = 0,

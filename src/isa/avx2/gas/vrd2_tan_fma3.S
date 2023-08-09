@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@
 #
 
 #include "fn_macros.h"
-#define fname FN_PROTOTYPE_FMA3(vrd2_tan)
+#define fname ALM_PROTO_FMA3(vrd2_tan)
 
 #include "trig_func.h"
 
@@ -50,7 +50,7 @@
 .align 32
 .p2align 4,,15
 .globl fname
-.type fname,@function
+ALM_FUNC_TYPE_ASM(f_name)
 fname:
 
         sub     $stack_size, %rsp
@@ -72,7 +72,7 @@ tan_early_exit_s:
     VORPD %xmm11, %xmm4, %xmm4
 
     VMOVAPD .L_nan(%rip),%xmm3
- 
+
     VANDNPD %xmm4, %xmm2, %xmm11
     VANDPD %xmm2, %xmm3, %xmm12
     VORPD %xmm11, %xmm12, %xmm12
@@ -80,7 +80,7 @@ tan_early_exit_s:
     VORPD   %xmm1,%xmm2,%xmm11                      # xmm11 nan and inf mask
 
 tan_early_exit_s_1:
-    
+
     VMOVDQA     .L_mask_3f_9(%rip),%xmm7
     VPCMPGTQ     %xmm13,%xmm7,%xmm7
 
@@ -121,7 +121,7 @@ tan_early_exit_s_1:
     VANDNPD %xmm0, %xmm11, %xmm3
     VANDPD %xmm11, %xmm12, %xmm0
     VORPD %xmm3, %xmm0, %xmm0
-    
+
 
 
 range_reduce:
@@ -137,9 +137,9 @@ range_reduce:
     VPTEST %xmm3,%xmm3
 
     JZ call_range_e5
-    # call_remainder_2fpiby2_fma3   
+    # call_remainder_2fpiby2_fma3
     call_remainder_2d_piby2_fma3
-    
+
     VMOVAPD %xmm0,r1(%rsp)
     VMOVAPD %xmm1,rr1(%rsp)
     VMOVAPD %xmm11,region1(%rsp)
@@ -153,21 +153,21 @@ if_not_remainder:
 
     VMOVAPD input(%rsp),%xmm2
     VCMPLTPD .L_e_5(%rip),%xmm2,%xmm3
-   
+
 
     VANDNPD r1(%rsp),%xmm3, %xmm2
     VANDPD %xmm3, %xmm0, %xmm0
-    VORPD %xmm2, %xmm0, %xmm0   
+    VORPD %xmm2, %xmm0, %xmm0
 
-  
+
     VANDNPD rr1(%rsp), %xmm3, %xmm2
     VANDPD %xmm3, %xmm1, %xmm1
     VORPD %xmm1,%xmm2, %xmm1
 
-     
+
      VANDNPD   region1(%rsp),%xmm3,%xmm2
-     VANDPD    %xmm3,%xmm11,%xmm11 
-     VORPD     %xmm2,%xmm11,%xmm11 
+     VANDPD    %xmm3,%xmm11,%xmm11
+     VORPD     %xmm2,%xmm11,%xmm11
      VANDPD    .L_int_one(%rip),%xmm11,%xmm3
 
     tan_2fpiby4_s_fma3
@@ -182,7 +182,7 @@ ret_tan_2fpiby4_s:
     VMOVAPD mas_res_pi_4(%rsp),%xmm8
     VMOVAPD res_pi_4(%rsp),%xmm0
 
-  
+
     VANDNPD %xmm4, %xmm8, %xmm4
     VANDPD %xmm0, %xmm8, %xmm0
     VORPD %xmm4, %xmm0, %xmm0

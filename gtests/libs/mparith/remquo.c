@@ -1,65 +1,49 @@
+/*
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+
 #include "precision.h"
-#include "mparith_c.h"
+
 
 #if defined(FLOAT)
 #define FUNC_REMQUO alm_mp_remquof
-#define FUNC_REMQUO_ULP alm_mp_remquof_ULP
+
 #elif defined(DOUBLE)
 #define FUNC_REMQUO alm_mp_remquo
-#define FUNC_REMQUO_ULP alm_mp_remquo_ULP
+
 #else
 #error
 #endif
 
-REAL FUNC_REMQUO_ULP123(REAL x, REAL y, int* quotient, REAL z, double * sulps, double *sreldiff)
-{
-    REAL ret;
-    fp_params params;
-    int base, mantis, emin, emax;
-    int *xmp, *ymp, *qmp, *result;
-    int ifail;
-    REAL temp_quotient;
-    REAL ulps, reldiff;
-
-    initMultiPrecision(ISDOUBLE, 0, &base, &mantis, &emin, &emax, &params);
-    xmp = new_mp(params);
-    ymp = new_mp(params);
-    qmp = new_mp(params);
-    result = new_mp(params);
-
-    DTOMP(x, xmp, params, &ifail);
-    DTOMP(y, ymp, params, &ifail);
-    DTOMP(y, qmp, params, &ifail);
-    /* Computes remquo(XMP, YMP, &QMP), result in *QMP and RESULT */
-    MPREMQUO(xmp, ymp, qmp, params, result, &ifail);
-/********/
-    reldiff = MPRELDIFF(z, base, mantis, emin, emax,
-                      ymp, params,&ulps, &ifail);
-	*sreldiff = reldiff;
-	*sulps = ulps;
-
-/********/
-
-    MPTOD(result, params, &ret, &ifail);
-    /* Return integer part of number XMP */
-    MPTOD(qmp, params, &temp_quotient, &ifail);
-    *quotient = (int)temp_quotient;
-
-    free(xmp);
-    free(ymp);
-    free(qmp);
-    free(result);
-
-    return ret;
-}
-
-
-
 #include <mpfr.h>
 
-REAL FUNC_REMQUO(REAL x, REAL y, int *quo)
+REAL_L FUNC_REMQUO(REAL x, REAL y, int *quo)
 {
-    REAL y1;
+    REAL_L y1;
 
     long l;
     mpfr_rnd_t rnd = MPFR_RNDN;
@@ -68,19 +52,19 @@ REAL FUNC_REMQUO(REAL x, REAL y, int *quo)
     mpfr_inits2(ALM_MP_PRECI_BITS, mpx, mpy, mp_rop, (mpfr_ptr) 0);
 
 #if defined(FLOAT)
-    mpfr_set_flt(mpx, x, rnd);
-    mpfr_set_flt(mpy, y, rnd);
-#elif defined(DOUBLE)
     mpfr_set_d(mpx, x, rnd);
     mpfr_set_d(mpy, y, rnd);
+#elif defined(DOUBLE)
+    mpfr_set_ld(mpx, x, rnd);
+    mpfr_set_ld(mpy, y, rnd);
 #endif
 
     mpfr_remquo(mp_rop, &l, mpx, mpy, rnd);
 
 #if defined(FLOAT)
-    y1 = mpfr_get_flt(mp_rop, rnd);
-#elif defined(DOUBLE)
     y1 = mpfr_get_d(mp_rop, rnd);
+#elif defined(DOUBLE)
+    y1 = mpfr_get_ld(mp_rop, rnd);
 #endif
 
     *quo = (int)l;

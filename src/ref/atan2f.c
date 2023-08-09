@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,12 +25,12 @@
  *
  */
 
-#include "libm_amd.h"
 #include "libm_util_amd.h"
-#include "libm_special.h"
+#include <libm/alm_special.h>
 #include "libm_inlines_amd.h"
+#include <libm/amd_funcs_internal.h>
 
-float FN_PROTOTYPE_REF(atan2f)(float fy, float fx)
+float ALM_PROTO_REF(atan2f)(float fy, float fx)
 {
   /* Array atan_jby256 contains precomputed values of atan(j/256),
      for j = 16, 17, ..., 256. */
@@ -288,7 +288,7 @@ float FN_PROTOTYPE_REF(atan2f)(float fy, float fx)
   double u, v, vbyu, q, s, uu, r;
   unsigned int swap_vu, index, xzero, yzero, xnan, ynan, xinf, yinf;
   int xexp, yexp, diffexp;
-  unsigned long long uy;
+  uint64_t uy;
 
   double x;
   double y;
@@ -322,8 +322,7 @@ float FN_PROTOTYPE_REF(atan2f)(float fy, float fx)
   if (xnan)
 #ifdef WINDOWS
     {
-
-      return __amd_handle_errorf("atan2f",__amd_atan2, ufx|0x00400000, _DOMAIN, 0, EDOM, fx, fy,2);
+      return __alm_handle_errorf(ufx|0x00400000, 0);
     }
 #else
     return fx + fx; /* Raise invalid if it's a signalling NaN */
@@ -331,8 +330,7 @@ float FN_PROTOTYPE_REF(atan2f)(float fy, float fx)
   else if (ynan)
 #ifdef WINDOWS
     {
-
-      return __amd_handle_errorf("atan2f",__amd_atan2, ufy|0x00400000, _DOMAIN, 0, EDOM, fx, fy,2);
+      return __alm_handle_errorf(ufy|0x00400000, 0);
     }
 #else
     return (fy + fy); /* Raise invalid if it's a signalling NaN */
@@ -383,9 +381,9 @@ float FN_PROTOTYPE_REF(atan2f)(float fy, float fx)
           else
             return 0.0F; //return valf_with_flags(0.0F, AMD_F_INEXACT | AMD_F_UNDERFLOW);
 #else
-            return __amd_handle_errorf("atan2f",__amd_atan2, 0x80000000, _UNDERFLOW, AMD_F_INEXACT | AMD_F_UNDERFLOW, ERANGE, fx, fy,2);
+            return __alm_handle_errorf(0x80000000, AMD_F_INEXACT | AMD_F_UNDERFLOW);
           else
-            return __amd_handle_errorf("atan2f",__amd_atan2, 0x00000000, _UNDERFLOW, AMD_F_INEXACT | AMD_F_UNDERFLOW, ERANGE, fx, fy,2);
+            return __alm_handle_errorf(0x00000000, AMD_F_INEXACT | AMD_F_UNDERFLOW);
 
 #endif
         }
@@ -447,7 +445,7 @@ float FN_PROTOTYPE_REF(atan2f)(float fy, float fx)
     { /* General values of v/u. Use a look-up
          table and series expansion. */
 
-      index = (int)(256*vbyu + 0.5);
+      index = (unsigned int)(256*vbyu + 0.5);
       r = (256*v-index*u)/(256*u+index*v);
 
       /* Polynomial approximation to atan(vbyu) */

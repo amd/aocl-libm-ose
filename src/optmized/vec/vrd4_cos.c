@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -65,12 +65,13 @@
 #include <stdint.h>
 
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 #include <libm_macros.h>
 
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/typehelper-vec.h>
+#include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
@@ -125,11 +126,10 @@ static struct {
 #define V4_COS_MAX       v4_cos_data.max
 #define V4_ALM_HUGE      v4_cos_data.alm_huge
 
-double ALM_PROTO(cos)(double);
 
 static inline v_f64x4_t
 cos_specialcase(v_f64x4_t _x, v_f64x4_t result,
-                              v_i64x4_t cond)
+                              v_u64x4_t cond)
 {
     return (v_f64x4_t) {
             (cond[0]) ? ALM_PROTO(cos)(_x[0]):result[0],

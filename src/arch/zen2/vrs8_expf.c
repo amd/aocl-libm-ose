@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -29,4 +29,4 @@
 
 #include <libm/arch/zen2.h>
 
-#include "../../optmized/vec/vrs8_expf.c"
+#include "../../optimized/vec/vrs8_expf.c"

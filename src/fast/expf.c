@@ -61,26 +61,22 @@
 #include <stdint.h>
 
 #include <libm_util_amd.h>
-#include <libm_special.h>
+#include <libm/alm_special.h>
 #include <libm_macros.h>
-#include <libm_amd.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/compiler.h>
 #include <libm/amd_funcs_internal.h>
-
 #include <libm/poly.h>
+#include "alm_special.c"
 
 #define EXPF_N 6
-#define EXPF_POLY_DEGREE 3
-
 #define EXPF_TABLE_SIZE (1 << EXPF_N)
 #define EXPF_MAX_POLY_DEGREE 4
 
 /*
  * expf_data.h needs following to be defined before include
  *    - EXPF_N
- *    - EXPF_POLY_DEGREE
  *    - EXPF_TABLE_SIZE
  *    - EXPF_MAX_POLY_DEGREE
  */
@@ -108,16 +104,27 @@ struct expf_data expf_v2_data = {
 
 #define EXPF_LN2_BY_TBLSZ  expf_v2_data.ln2by_tblsz
 #define EXPF_TBLSZ_BY_LN2  expf_v2_data.tblsz_byln2
-#define EXPF_HUGE	   expf_v2_data.Huge
+#define EXPF_HUGE	       expf_v2_data.Huge
 #define EXPF_TABLE         expf_v2_data.table_v3
 
+#define EXPF_FARG_MIN -0x1.9fe368p6f    /* log(0x1p-150) ~= -103.97 */
+#define EXPF_FARG_MAX  0x1.62e42ep6f    /* log(0x1p128)  ~=   88.72  */
+
 float
-FN_PROTOTYPE_FAST(expf)(float x)
-{
+ALM_PROTO_FAST(expf)(float x) {
     double_t  q, dn, r, z;
     uint64_t n, j;
 
-    z = x *  EXPF_TBLSZ_BY_LN2;
+    /* Raise FE_OVERFLOW, FE_INEXACT */
+    if (unlikely(x > EXPF_FARG_MAX)) {
+        return alm_expf_special(asfloat(PINFBITPATT_SP32),  ALM_E_IN_X_INF);
+    }
+
+    if (unlikely(x < EXPF_FARG_MIN)) {
+        return alm_expf_special(0.0, ALM_E_IN_X_ZERO);
+    }
+
+    z = (double_t)x *  EXPF_TBLSZ_BY_LN2;
 
     /*
      * n  = (int) scale(x)
@@ -137,7 +144,7 @@ FN_PROTOTYPE_FAST(expf)(float x)
 
 #endif
 
-    r  = x - dn * EXPF_LN2_BY_TBLSZ;
+    r  = (double_t)x - dn * EXPF_LN2_BY_TBLSZ;
 
     j  = n % EXPF_TABLE_SIZE;
 
@@ -155,6 +162,6 @@ FN_PROTOTYPE_FAST(expf)(float x)
 }
 
 
-strong_alias (__expf_finite, FN_PROTOTYPE_FAST(expf))
-weak_alias (amd_expf, FN_PROTOTYPE_FAST(expf))
-weak_alias (expf, FN_PROTOTYPE_FAST(expf))
+strong_alias (__expf_finite, ALM_PROTO_FAST(expf))
+weak_alias (amd_expf, ALM_PROTO_FAST(expf))
+weak_alias (expf, ALM_PROTO_FAST(expf))

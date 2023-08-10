@@ -97,8 +97,47 @@ int PopulateInputSamples(T **inpbuff, InputRange &range, uint32_t len) {
   return res;
 }
 
+/*
+ * The Function populates the input values for Complex number function variants
+ * as shown below:
+ *
+ * Example: min=0 & max=10 count=10
+ *
+ * Result = {
+ * {0+i0 0+i1 0+i2 ... 0+i10}
+ * {1+i0 1+i1 1+i2 ... 1+i10}
+ * {2+i0 2+i1 2+i2 ... 1+i10}
+ * {...}
+ * {...}
+ * {...}
+ * {10+i0 10+i1 10+i2 ... 10+i10}
+ * }
+ *
+ * Therefore, (count*count) values will be generated in the resulting buffer!
+ */
+template <typename T, typename U>
+int PopulateComplexInputSamples(U *complex_inpbuff, T *inpbuff, uint32_t len) {
+    for(uint32_t i = 0; i < len; ++i)
+    {
+        for(uint32_t j = 0; j < len; ++j)
+        {
+            T real = inpbuff[i];
+            T imag = inpbuff[j];
+            #if defined(_WIN64) || defined(_WIN32)
+              U temp = {real, imag};
+            #else
+              U temp = real + imag*I;
+            #endif
+            complex_inpbuff[(i*len) + j] = temp;
+        }
+    }
+    return 0;
+}
+
 double getUlp(float aop, double exptd);
 double getUlp(double aop, long double exptd);
+double getUlp(float _Complex aop, double _Complex exptd);
+double getUlp(double _Complex aop, long double _Complex exptd);
 bool update_ulp(double ulp, double &, double);
 
 /*
@@ -117,7 +156,7 @@ class AccuTestFixtureFloat : public ::testing::TestWithParam<AccuParams> {
 
     PopulateInputSamples(&inpbuff, range[0], count);
     if (nargs == 2)
-    PopulateInputSamples(&inpbuff1, range[1], count);
+      PopulateInputSamples(&inpbuff1, range[1], count);
     #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
       aop = (float*)_aligned_malloc(64, _ALIGN_FACTOR);
     #else
@@ -177,7 +216,7 @@ class AccuTestFixtureDouble : public ::testing::TestWithParam<AccuParams> {
 
     PopulateInputSamples(&inpbuff, range[0], count);
     if (nargs == 2)
-    PopulateInputSamples(&inpbuff1, range[1], count);
+      PopulateInputSamples(&inpbuff1, range[1], count);
     #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
       aop = (double*)_aligned_malloc(64, _ALIGN_FACTOR);
     #else
@@ -220,10 +259,160 @@ class AccuTestFixtureDouble : public ::testing::TestWithParam<AccuParams> {
   int vflag;
 };
 
+/*
+ * The derived class for Accuracy test cases for datatype "complex float"
+ * where data members and member functions are declared and defined
+ */
 class AccuTestFixtureComplexFloat : public ::testing::TestWithParam<AccuParams> {
+ public:
+  void SetUp() override {
+    InputRange *range = (InputRange *)(GetParam().range);
+    count = GetParam().count;
+    inData = GetParam().inpData;
+    vflag = GetParam().verboseflag;
+    ptr = GetParam().prttstres;
+    nargs = GetParam().nargs;
+
+    complex_inpbuff = (float _Complex *)calloc(count*count, sizeof(float _Complex));
+
+    PopulateInputSamples(&inpbuff, range[0], count);
+    PopulateComplexInputSamples(complex_inpbuff, inpbuff, count);
+
+    if (nargs == 2)
+    {
+      complex_inpbuff1 = (float _Complex *)calloc(count*count, sizeof(float _Complex));
+
+      PopulateInputSamples(&inpbuff1, range[1], count);
+      PopulateComplexInputSamples(complex_inpbuff1, inpbuff1, count);
+    }
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      aop = (float _Complex*)_aligned_malloc(64, _ALIGN_FACTOR);
+    #else
+      aop = (float _Complex *)aligned_alloc(_ALIGN_FACTOR, 64);
+    #endif
+  }
+
+  void TearDown() override {
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      _aligned_free(inpbuff);
+      _aligned_free(complex_inpbuff);
+    #else
+      free(inpbuff);
+      free(complex_inpbuff);
+    #endif
+
+    inpbuff = nullptr;
+    complex_inpbuff = nullptr;
+
+    if (nargs == 2) {
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      _aligned_free(inpbuff1);
+      _aligned_free(complex_inpbuff1);
+    #else
+      free(inpbuff1);
+      free(complex_inpbuff1);
+    #endif
+
+    inpbuff1 = nullptr;
+    complex_inpbuff1 = nullptr;
+    }
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      _aligned_free(aop);
+    #else
+      free(aop);
+    #endif
+    aop = nullptr;
+  }
+
+ protected:
+  float *inpbuff;
+  float *inpbuff1;
+  float _Complex *complex_inpbuff;
+  float _Complex *complex_inpbuff1;
+  float _Complex *aop;
+  uint32_t count;
+  uint32_t nargs;
+  InputData *inData;
+  PrintTstRes *ptr;
+  int vflag;
 };
 
+/*
+ * The derived class for Accuracy test cases for datatype "complex double"
+ * where data members and member functions are declared and defined
+ */
 class AccuTestFixtureComplexDouble : public ::testing::TestWithParam<AccuParams> {
+ public:
+  void SetUp() override {
+    InputRange *range = (InputRange *)(GetParam().range);
+    count = GetParam().count;
+    inData = GetParam().inpData;
+    vflag = GetParam().verboseflag;
+    ptr = GetParam().prttstres;
+    nargs = GetParam().nargs;
+
+    complex_inpbuff = (double _Complex *)calloc(count*count, sizeof(double _Complex));
+
+    PopulateInputSamples(&inpbuff, range[0], count);
+    PopulateComplexInputSamples(complex_inpbuff, inpbuff, count);
+
+    if (nargs == 2)
+    {
+      complex_inpbuff1 = (double _Complex *)calloc(count*count, sizeof(double _Complex));
+
+      PopulateInputSamples(&inpbuff1, range[1], count);
+      PopulateComplexInputSamples(complex_inpbuff1, inpbuff1, count);
+    }
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      aop = (double _Complex*)_aligned_malloc(128, _ALIGN_FACTOR);
+    #else
+      aop = (double _Complex *)aligned_alloc(_ALIGN_FACTOR, 128);
+    #endif
+  }
+
+  void TearDown() override {
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      _aligned_free(inpbuff);
+      _aligned_free(complex_inpbuff);
+    #else
+      free(inpbuff);
+      free(complex_inpbuff);
+    #endif
+
+    inpbuff = nullptr;
+    complex_inpbuff = nullptr;
+
+    if (nargs == 2) {
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      _aligned_free(inpbuff1);
+      _aligned_free(complex_inpbuff1);
+    #else
+      free(inpbuff1);
+      free(complex_inpbuff1);
+    #endif
+
+    inpbuff1 = nullptr;
+    complex_inpbuff1 = nullptr;
+    }
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      _aligned_free(aop);
+    #else
+      free(aop);
+    #endif
+    aop = nullptr;
+  }
+
+ protected:
+  double *inpbuff;
+  double *inpbuff1;
+  double _Complex *complex_inpbuff;
+  double _Complex *complex_inpbuff1;
+  double _Complex *aop;
+  uint32_t count;
+  uint32_t nargs;
+  InputData *inData;
+  PrintTstRes *ptr;
+  int vflag;
 };
 
 /*
@@ -572,7 +761,7 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
 class SpecTestFixtureComplexFloat : public ::testing::TestWithParam<SpecParams> {
  public:
 // NOTE: These functions are not in use currently!
-//   static bool ConfTestVerifyComplexFloat(fc32_t *ip, int except, int *nfail) {
+//   static bool ConfTestVerifyComplexFloat(float _Complex *ip, int except, int *nfail) {
 //     bool flag = ConformanceVerify(ip, except);
 //     if(!flag)
 //       (*nfail)++;
@@ -603,11 +792,7 @@ class SpecTestFixtureComplexFloat : public ::testing::TestWithParam<SpecParams> 
       bool both_nans = isnanf(fabsf(e_real.f)) && isnanf(fabsf(a_real.f));
     #endif
 
-    /* if op and expected dont match, check if ulp error is > 1.0 */
-    double ulp_real = getUlp(a_real.f, (double)e_real.f);
-    double ulp_imag = getUlp(a_imag.f, (double)e_imag.f);
-
-    double ulp = (ulp_real > ulp_imag)? ulp_real : ulp_imag;
+    double ulp = getUlp( (float _Complex)actual_output, (double _Complex)expected_output );
 
     /* if both are nans, output will always match, regardless of the sign bit */
     if (((e_real.u ^ a_real.u) && (e_imag.u ^ a_imag.u) && (ulp > 2.0)) && (both_nans == false))
@@ -620,6 +805,7 @@ class SpecTestFixtureComplexFloat : public ::testing::TestWithParam<SpecParams> 
             printf ("Input2:   0x%x +i 0x%x   (%f +i %f)\n", ip2_real.u, ip2_imag.u, ip2_real.f, ip2_imag.f);
         printf ("Expected: 0x%x +i 0x%x   (%f +i %f)\n", e_real.u, e_imag.u, e_real.f, e_imag.f);
         printf ("Actual:   0x%x +i 0x%x   (%f +i %f)\n", a_real.u, a_imag.u, a_real.f, a_imag.f);
+        printf ("ULP:      %f\n", ulp);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);
         return false;
@@ -691,7 +877,7 @@ class SpecTestFixtureComplexFloat : public ::testing::TestWithParam<SpecParams> 
 class SpecTestFixtureComplexDouble : public ::testing::TestWithParam<SpecParams> {
  public:
 // NOTE: These functions are not in use currently!
-//   static bool ConfTestVerifyComplexDouble(fc32_t *ip, int except, int *nfail) {
+//   static bool ConfTestVerifyComplexDouble(double _Complex *ip, int except, int *nfail) {
 //     bool flag = ConformanceVerify(ip, except);
 //     if(!flag)
 //       (*nfail)++;
@@ -721,13 +907,7 @@ class SpecTestFixtureComplexDouble : public ::testing::TestWithParam<SpecParams>
       bool both_nans = isnan(fabs(e_real.d)) && isnan(fabs(a_real.d));
     #endif
 
-    /* if op and expected dont match, check if ulp error is > 1.0 */
-    /* The calculation of ULP in Complex Numbers is as follows:
-     * If actual output = a+ib
-     * and expected output = a'+ib',
-     * then ULP error = sqrt( (a-a')^2 + (b-b')^2 )
-     */
-     double ulp = sqrt( ((a_real.d-e_real.d) * (a_real.d-e_real.d)) + ((a_imag.d-e_imag.d) * (a_imag.d-e_imag.d)) );
+    double ulp = getUlp( (double _Complex)actual_output, (long double _Complex)expected_output );
 
     /* if both are nans, output will always match, regardless of the sign bit */
     if (((e_real.lu ^ a_real.lu) && (e_imag.lu ^ a_imag.lu) && (ulp > 2.0)) && (both_nans == false))
@@ -740,6 +920,7 @@ class SpecTestFixtureComplexDouble : public ::testing::TestWithParam<SpecParams>
             printf ("Input2:   0x%x +i 0x%x   (%f +i %f)\n", ip2_real.lu, ip2_imag.lu, ip2_real.d, ip2_imag.d);
         printf ("Expected: 0x%x +i 0x%x   (%f +i %f)\n", e_real.lu, e_imag.lu, e_real.d, e_imag.d);
         printf ("Actual:   0x%x +i 0x%x   (%f +i %f)\n", a_real.lu, a_imag.lu, a_real.d, a_imag.d);
+        printf ("ULP:      %lf\n", ulp);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);
         return false;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -183,7 +183,7 @@ double ComputeUlp(FAT output, FAT_L _expected) {
   // if output and input are infinity with opposite signs
   if (isinf(output) && isinf(expected)) return INFINITY;
 
-  // If output and expectedare finite (The most common case)
+  // If output and expected are finite (The most common case)
   if (isfinite(output)) {
     if (expected < fmax)
       return fabsl(output - _expected) / Ulp<FAT>(expected).Get();
@@ -216,6 +216,33 @@ double getUlp(float aop, double exptd) {
 
 double getUlp(double aop, long double exptd) {
   return ALM::ComputeUlp(aop, exptd);
+}
+
+/* The calculation of ULP in Complex Numbers is as follows:
+ * cabs() is used to compute the complex absolute value (magnitude/modulus) of a complex number.
+ * The magnitudes of actual and expected outputs will determine the resultant ULP.
+ */
+
+double getUlp(float _Complex aop, double _Complex exptd) {
+  #if (defined _WIN32 || defined _WIN64 )
+    float f_aop = abs(complex<float> (__real__ aop, __imag__ aop));
+    double d_exptd = abs(complex<double> (__real__ exptd, __imag__ exptd));
+  #else
+    float f_aop = cabs(aop);
+    double d_exptd = cabs(exptd);
+  #endif
+  return ALM::ComputeUlp(f_aop, d_exptd);
+}
+
+double getUlp(double _Complex aop, long double  _Complex exptd) {
+  #if (defined _WIN32 || defined _WIN64 )
+    double d_aop = abs(complex<double>(__real__ aop, __imag__ aop));
+    long double ld_exptd = abs(complex<long double>(__real__ exptd, __imag__ exptd));
+  #else
+    double d_aop = cabs(aop);
+    long double ld_exptd = cabs(exptd);
+  #endif
+  return ALM::ComputeUlp(d_aop, ld_exptd);
 }
 
 bool update_ulp(double ulp, double &max_ulp_err, double ulp_threshold)

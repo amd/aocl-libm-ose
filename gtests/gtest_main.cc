@@ -47,6 +47,8 @@
 extern vector<AccuParams> accuData;
 extern vector<SpecParams> specData;
 
+/* Real Number Function Variants */
+
 TEST_P(AccuTestFixtureFloat, ACCURACY_SCALAR_FLOAT) {
   int nfail = 0;
   double max_ulp_err = inData->max_ulp_err;
@@ -180,7 +182,6 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_16FLOATS) {
   "Vector","Accuracy","v16s",count,(count-nfail), nfail, max_ulp_err);
   ptr->tstcnt++;
 }
-
 
 TEST_P(AccuTestFixtureDouble, ACCURACY_SCALAR_DOUBLE) {
   int nfail = 0;
@@ -402,6 +403,74 @@ TEST_P(SpecTestFixtureDouble, CONFORMANCE_DOUBLE) {
   ptr->tstcnt++;
 }
 
+/* Complex Number Function Variants */
+
+TEST_P(AccuTestFixtureComplexFloat, ACCURACY_SCALAR_COMPLEX_FLOAT) {
+  int nfail = 0;
+  double max_ulp_err = inData->max_ulp_err;
+  test_data data;
+  data.ip  = (void *)complex_inpbuff;
+  data.op  = (void *)aop;
+  float _Complex ip[2];
+
+  if(nargs == 2)
+    data.ip1 = (void *)complex_inpbuff1;
+
+  for (uint32_t i = 0; i < count*count; i++) {
+    test_s1s(&data, i);
+
+    ip[0] = complex_inpbuff[i];
+    if(nargs == 2)
+      ip[1] = complex_inpbuff1[i];
+
+    double _Complex exptd = getExpected(ip);
+    double ulp = getUlp(aop[0], exptd);
+
+    if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
+      nfail++;
+    }
+
+    if ((vflag == 1) && (ulp > inData->ulp_threshold))
+        PrintUlpResultsComplexFloat(nargs, ip[0], ip[1], exptd, aop[0], ulp);
+  }
+  sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
+  "Scalar","Accuracy","s1s complex",count*count,(count*count - nfail), nfail, max_ulp_err);
+  ptr->tstcnt++;
+}
+
+TEST_P(AccuTestFixtureComplexDouble, ACCURACY_SCALAR_COMPLEX_DOUBLE) {
+  int nfail = 0;
+  double max_ulp_err = inData->max_ulp_err;
+  test_data data;
+  data.ip  = (void *)complex_inpbuff;
+  data.op  = (void *)aop;
+  double _Complex ip[2];
+
+  if(nargs == 2)
+    data.ip1 = (void *)complex_inpbuff1;
+
+  for (uint32_t i = 0; i < count*count; i++) {
+    test_s1d(&data, i);
+
+    ip[0] = complex_inpbuff[i];
+    if(nargs == 2)
+      ip[1] = complex_inpbuff1[i];
+
+    long double _Complex exptd = getExpected(ip);
+    double ulp = getUlp(aop[0], exptd);
+
+    if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
+      nfail++;
+    }
+
+    if ((vflag == 1) && (ulp > inData->ulp_threshold))
+        PrintUlpResultsComplexDouble(nargs, ip[0], ip[1], exptd, aop[0], ulp);
+  }
+  sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
+  "Scalar","Accuracy","s1d complex",count*count,(count*count - nfail), nfail, max_ulp_err);
+  ptr->tstcnt++;
+}
+
 TEST_P(SpecTestFixtureComplexFloat, CONFORMANCE_COMPLEX_FLOAT) {
   int nfail = 0;
   float _Complex aop, op;
@@ -495,6 +564,12 @@ INSTANTIATE_TEST_SUITE_P(SpecTests, SpecTestFixtureComplexFloat,
 
 INSTANTIATE_TEST_SUITE_P(SpecTests, SpecTestFixtureComplexDouble,
                          ::testing::ValuesIn(specData));
+
+INSTANTIATE_TEST_SUITE_P(AccuTests, AccuTestFixtureComplexFloat,
+                         ::testing::ValuesIn(accuData));
+
+INSTANTIATE_TEST_SUITE_P(AccuTests, AccuTestFixtureComplexDouble,
+                         ::testing::ValuesIn(accuData));
 
 INSTANTIATE_TEST_SUITE_P(AccuTests, AccuTestFixtureFloat,
                          ::testing::ValuesIn(accuData));

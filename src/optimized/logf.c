@@ -145,6 +145,8 @@ ALM_PROTO_OPT(logf)(float x)
 {
     uint32_t ux = asuint32(x);
 
+    /* The following line relies on (ux - 0x00800000) underflowing if x is 0 or denormal, 
+       which would make the equality true for this case, as well as for x being inf or NaN. */
     if (unlikely (ux - 0x00800000 >= 0x7f800000 - 0x00800000)) {
         uint32_t sign = ux & SIGNBIT_SP32;
         /* x < 0x1p-126 or inf or nan. */

@@ -313,9 +313,11 @@ float ALM_PROTO_FAST(powf)(float x, float y)
 
     uint64_t sign_bias = 0;
 
+    /* The following line relies on (ux - 0x00800000) underflowing if x is 0 or denormal, 
+       which would make the equality true for this case, as well as for x being inf or NaN. */
     if (unlikely (((ux - 0x00800000) >= (0x7f800000 - 0x00800000)) || zeroinfnan (uy))) {
 
-        /*  All x less than 1.0625, infinity, NaN and y = zero, infinity or NAN caught here
+        /*  All x less than 1.0625, infinity, NaN and y = zero, infinity or NaN caught here
          *  x < 0x1p-126 or inf or nan.
          *  Either (x < 0x1p-126 or inf or nan) or (y is 0 or inf or nan).
          *

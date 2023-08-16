@@ -34,20 +34,20 @@
 /**********************************************
  *     Scalar Variants
  * *******************************************/
-void sinh_single_precision()
+void sqrt_single_precision()
 {
-    printf ("Using Scalar single precision sinhf()\n");
+    printf ("Using Scalar single precision sqrtf()\n");
     float ipf1 = 0.01, opf;
-    opf = amd_sinhf (ipf1);
+    opf = amd_sqrtf (ipf1);
     printf("Input: %f\tOutput: %f\n", ipf1, opf);
     printf("----------\n");
 }
 
-void sinh_double_precision()
+void sqrt_double_precision()
 {
-    printf ("Using Scalar double precision sinh()\n");
+    printf ("Using Scalar double precision sqrt()\n");
     double ipd1 = 1.89, opd;
-    opd = amd_sinh(ipd1);
+    opd = amd_sqrt(ipd1);
     printf("Input: %lf\tOutput: %f\n", ipd1, opd);
     printf("----------\n");
 }
@@ -55,16 +55,16 @@ void sinh_double_precision()
 /**********************************************
  *     Vector Variants
  * *******************************************/
-void sinh_vector_single_precision_4()
+void sqrt_vector_single_precision_4()
 {
     #if 0
-    printf("Using Vector single precision - 4 floats (vrs4) sinh()\n");
+    printf("Using Vector single precision - 4 floats (vrs4) sqrt()\n");
     __m128 input, result;
     float  input_array_vrs4[4] = {34.65, 67.89, 91.0, 198.34};
     float  output_array_vrs4[4];
 
     input = _mm_loadu_ps(input_array_vrs4);
-    result = amd_vrs4_sinhf(input);
+    result = amd_vrs4_sqrtf(input);
     _mm_storeu_ps(output_array_vrs4, result);
 
     printf("Input: {%f, %f, %f, %f}, Output: {%f, %f, %f, %f}\n",
@@ -74,16 +74,16 @@ void sinh_vector_single_precision_4()
     #endif
 }
 
-void sinh_vector_single_precision_8()
+void sqrt_vector_single_precision_8()
 {
     #if 0
-    printf("Using Vector single precision - 8 floats (vrs8) sinh()\n");
+    printf("Using Vector single precision - 8 floats (vrs8) sqrt()\n");
     __m256 input, result;
     float input_array_vrs8[8] = {1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0};
     float output_array_vrs8[8];
 
     input = _mm256_loadu_ps(input_array_vrs8);
-    result = amd_vrs8_sinhf(input);
+    result = amd_vrs8_sqrtf(input);
     _mm256_storeu_ps(output_array_vrs8, result);
 
     printf("Input: {%f, %f, %f, %f, %f, %f, %f, %f}, Output: {%f, %f, %f, %f, %f, %f, %f, %f}\n",
@@ -95,16 +95,16 @@ void sinh_vector_single_precision_8()
     #endif
 }
 
-void sinh_vector_double_precision_2()
+void sqrt_vector_double_precision_2()
 {
     #if 0
-    printf("Using Vector double precision - 2 doubles (vrd2) sinh()\n");
+    printf("Using Vector double precision - 2 doubles (vrd2) sqrt()\n");
     __m128d input, result;
     double  input_array_vrd2[2] = {34.65, 67.89};
     double  output_array[2];
 
     input = _mm_loadu_pd(input_array_vrd2);
-    result = amd_vrd2_sinh(input);
+    result = amd_vrd2_sqrt(input);
     _mm_storeu_pd(output_array, result);
 
     printf("Input: {%lf, %lf}, Output: {%lf, %lf}\n",
@@ -114,16 +114,16 @@ void sinh_vector_double_precision_2()
     #endif
 }
 
-void sinh_vector_double_precision_4()
+void sqrt_vector_double_precision_4()
 {
     #if 0
-    printf("Using Vector double precision - 4 doubles (vrd4) sinh()\n");
+    printf("Using Vector double precision - 4 doubles (vrd4) sqrt()\n");
     __m256d input, result;
     double input_array_vrd4[4] = {2.3, 4.5, 56.5, 43.4};
     double output_array_vrd4[4];
 
     input = _mm256_loadu_pd(input_array_vrd4);
-    result = amd_vrd4_sinh(input);
+    result = amd_vrd4_sqrt(input);
     _mm256_storeu_pd(output_array_vrd4, result);
 
     printf("Input: {%lf, %lf, %lf, %lf}, Output: {%lf, %lf, %lf, %lf}\n",
@@ -136,15 +136,15 @@ void sinh_vector_double_precision_4()
 /**********************************************
  *     Vector Array Variants
  * *******************************************/
-void sinh_single_precision_array()
+void sqrt_single_precision_array()
 {
     #if 0
-    printf("Using Single Precision Vectory Array (vrsa) sinh()\n");
+    printf("Using Single Precision Vectory Array (vrsa) sqrt()\n");
     int n=5;
     float input[10] = {1.0f, 3.0f, 5.0f, 7.0f, 9.0f, 11.0f, 13.0f, 15.0f, 17.0f, 19.0f};
     float output[10] = {0};
 
-    amd_vrsa_sinhf(n, input, output);
+    amd_vrsa_sqrtf(n, input, output);
 
     printf("Input: {");
     for(int i=0; i<10; ++i)
@@ -161,15 +161,15 @@ void sinh_single_precision_array()
     #endif
 }
 
-void sinh_double_precision_array()
+void sqrt_double_precision_array()
 {
     #if 0
-    printf("Using Double Precision Vectory Array (vrda) sinh()\n");
+    printf("Using Double Precision Vectory Array (vrda) sqrt()\n");
     int n=8;
     double input[10] = {10.0, 8.0, 4.0, 2.0, 6.0, 12.0, 14.0, 1.0, 3.0, 5.0};
     double output[10] = {0};
 
-    amd_vrda_sinh(n, input, output);
+    amd_vrda_sqrt(n, input, output);
 
     printf("Input: {");
     for(int i=0; i<10; ++i)
@@ -186,16 +186,16 @@ void sinh_double_precision_array()
     #endif
 }
 
-int use_sinh()
+int use_sqrt()
 {
-    printf("\n\n***** sinh() *****\n");
-    sinh_single_precision();
-    sinh_double_precision();
-    sinh_vector_single_precision_4();
-    sinh_vector_single_precision_8();
-    sinh_vector_double_precision_2();
-    sinh_vector_double_precision_4();
-    sinh_single_precision_array();
-    sinh_double_precision_array();
+    printf("\n\n***** sqrt() *****\n");
+    sqrt_single_precision();
+    sqrt_double_precision();
+    sqrt_vector_single_precision_4();
+    sqrt_vector_single_precision_8();
+    sqrt_vector_double_precision_2();
+    sqrt_vector_double_precision_4();
+    sqrt_single_precision_array();
+    sqrt_double_precision_array();
     return 0;
 }

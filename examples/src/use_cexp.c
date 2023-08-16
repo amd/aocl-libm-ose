@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,24 +25,54 @@
  *
  */
 
+#define AMD_LIBM_VEC_EXPERIMENTAL
+
 #include <stdio.h>
 #include "amdlibm.h"
-#include <immintrin.h>
+#include "amdlibm_vec.h"
 #include <complex.h>
 
-int use_cexp() {
-    printf ("Using Scalar Float complex cexpf()\n");
-    fc32_t ipf={0.5f}, opf;
-    opf = amd_cexpf (ipf);
-    printf ("amd_cexp(%f + i%f) = %f + i%f\n",
-            (double)crealf(ipf), (double)cimagf(ipf),
-            (double)crealf(opf), (double)cimagf(opf));
+/**********************************************
+ *     Complex Scalar Variants
+ * *******************************************/
+void cexp_single_precision()
+{
+    printf ("Using Complex Scalar single precision cexpf()\n");
+    #if (defined (_WIN64) || defined (_WIN32))
+        fc32_t input = {0.5, 2.1}, output;
+    #else
+        fc32_t input = 0.5 + 2.1*I, output;
+    #endif
 
-    printf ("Using Scalar Double complex cexp()\n");
-    fc64_t ip = {0.5}, op;
-    op = amd_cexp (ip);
-    printf ("amd_cexp(%lf + i%lf) = %lf + i%lf\n",
-            creal(ip), cimag(ip), creal(op), cimag(op));
+    output = amd_cexpf (input);
 
+    printf("Input: (%f +i %f)\tOutput: (%f +i %f)\n",
+            crealf(input), cimagf(input),
+            crealf(output), cimagf(output));
+    printf("----------\n");
+}
+
+void cexp_double_precision()
+{
+    printf ("Using Complex Scalar double precision cexp()\n");
+    #if (defined (_WIN64) || defined (_WIN32))
+        fc64_t input = {1.9, 0.08}, output;
+    #else
+        fc64_t input = 1.9 + 0.08*I, output;
+    #endif
+
+    output = amd_cexp (input);
+
+    printf("Input: (%f +i %f)\tOutput: (%f +i %f)\n",
+            creal(input), cimag(input),
+            creal(output), cimag(output));
+    printf("----------\n");
+}
+
+int use_cexp()
+{
+    printf("\n\n***** cexp() *****\n");
+    cexp_single_precision();
+    cexp_double_precision();
     return 0;
 }

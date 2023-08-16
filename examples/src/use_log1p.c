@@ -34,20 +34,20 @@
 /**********************************************
  *     Scalar Variants
  * *******************************************/
-void sinh_single_precision()
+void log1p_single_precision()
 {
-    printf ("Using Scalar single precision sinhf()\n");
+    printf ("Using Scalar single precision log1pf()\n");
     float ipf1 = 0.01, opf;
-    opf = amd_sinhf (ipf1);
+    opf = amd_log1pf (ipf1);
     printf("Input: %f\tOutput: %f\n", ipf1, opf);
     printf("----------\n");
 }
 
-void sinh_double_precision()
+void log1p_double_precision()
 {
-    printf ("Using Scalar double precision sinh()\n");
+    printf ("Using Scalar double precision log1p()\n");
     double ipd1 = 1.89, opd;
-    opd = amd_sinh(ipd1);
+    opd = amd_log1p(ipd1);
     printf("Input: %lf\tOutput: %f\n", ipd1, opd);
     printf("----------\n");
 }
@@ -55,35 +55,33 @@ void sinh_double_precision()
 /**********************************************
  *     Vector Variants
  * *******************************************/
-void sinh_vector_single_precision_4()
+void log1p_vector_single_precision_4()
 {
-    #if 0
-    printf("Using Vector single precision - 4 floats (vrs4) sinh()\n");
+    printf("Using Vector single precision - 4 floats (vrs4) log1p()\n");
     __m128 input, result;
     float  input_array_vrs4[4] = {34.65, 67.89, 91.0, 198.34};
     float  output_array_vrs4[4];
 
     input = _mm_loadu_ps(input_array_vrs4);
-    result = amd_vrs4_sinhf(input);
+    result = amd_vrs4_log1pf(input);
     _mm_storeu_ps(output_array_vrs4, result);
 
     printf("Input: {%f, %f, %f, %f}, Output: {%f, %f, %f, %f}\n",
             input_array_vrs4[0], input_array_vrs4[1], input_array_vrs4[2], input_array_vrs4[3],
             output_array_vrs4[0], output_array_vrs4[1], output_array_vrs4[2], output_array_vrs4[3]);
     printf("----------\n");
-    #endif
 }
 
-void sinh_vector_single_precision_8()
+void log1p_vector_single_precision_8()
 {
     #if 0
-    printf("Using Vector single precision - 8 floats (vrs8) sinh()\n");
+    printf("Using Vector single precision - 8 floats (vrs8) log1p()\n");
     __m256 input, result;
     float input_array_vrs8[8] = {1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0};
     float output_array_vrs8[8];
 
     input = _mm256_loadu_ps(input_array_vrs8);
-    result = amd_vrs8_sinhf(input);
+    result = amd_vrs8_log1pf(input);
     _mm256_storeu_ps(output_array_vrs8, result);
 
     printf("Input: {%f, %f, %f, %f, %f, %f, %f, %f}, Output: {%f, %f, %f, %f, %f, %f, %f, %f}\n",
@@ -95,35 +93,33 @@ void sinh_vector_single_precision_8()
     #endif
 }
 
-void sinh_vector_double_precision_2()
+void log1p_vector_double_precision_2()
 {
-    #if 0
-    printf("Using Vector double precision - 2 doubles (vrd2) sinh()\n");
+    printf("Using Vector double precision - 2 doubles (vrd2) log1p()\n");
     __m128d input, result;
     double  input_array_vrd2[2] = {34.65, 67.89};
-    double  output_array[2];
+    double  output_array_vrd2[2];
 
     input = _mm_loadu_pd(input_array_vrd2);
-    result = amd_vrd2_sinh(input);
-    _mm_storeu_pd(output_array, result);
+    result = amd_vrd2_log1p(input);
+    _mm_storeu_pd(output_array_vrd2, result);
 
     printf("Input: {%lf, %lf}, Output: {%lf, %lf}\n",
             input_array_vrd2[0], input_array_vrd2[1],
-            output_array[0], output_array[1]);
+            output_array_vrd2[0], output_array_vrd2[1]);
     printf("----------\n");
-    #endif
 }
 
-void sinh_vector_double_precision_4()
+void log1p_vector_double_precision_4()
 {
     #if 0
-    printf("Using Vector double precision - 4 doubles (vrd4) sinh()\n");
+    printf("Using Vector double precision - 4 doubles (vrd4) log1p()\n");
     __m256d input, result;
     double input_array_vrd4[4] = {2.3, 4.5, 56.5, 43.4};
     double output_array_vrd4[4];
 
     input = _mm256_loadu_pd(input_array_vrd4);
-    result = amd_vrd4_sinh(input);
+    result = amd_vrd4_log1p(input);
     _mm256_storeu_pd(output_array_vrd4, result);
 
     printf("Input: {%lf, %lf, %lf, %lf}, Output: {%lf, %lf, %lf, %lf}\n",
@@ -136,15 +132,14 @@ void sinh_vector_double_precision_4()
 /**********************************************
  *     Vector Array Variants
  * *******************************************/
-void sinh_single_precision_array()
+void log1p_single_precision_array()
 {
-    #if 0
-    printf("Using Single Precision Vectory Array (vrsa) sinh()\n");
+    printf("Using Single Precision Vectory Array (vrsa) log1p()\n");
     int n=5;
     float input[10] = {1.0f, 3.0f, 5.0f, 7.0f, 9.0f, 11.0f, 13.0f, 15.0f, 17.0f, 19.0f};
     float output[10] = {0};
 
-    amd_vrsa_sinhf(n, input, output);
+    amd_vrsa_log1pf(n, input, output);
 
     printf("Input: {");
     for(int i=0; i<10; ++i)
@@ -158,18 +153,16 @@ void sinh_single_precision_array()
     }
     printf("}\n");
     printf("----------\n");
-    #endif
 }
 
-void sinh_double_precision_array()
+void log1p_double_precision_array()
 {
-    #if 0
-    printf("Using Double Precision Vectory Array (vrda) sinh()\n");
+    printf("Using Double Precision Vectory Array (vrda) log1p()\n");
     int n=8;
     double input[10] = {10.0, 8.0, 4.0, 2.0, 6.0, 12.0, 14.0, 1.0, 3.0, 5.0};
     double output[10] = {0};
 
-    amd_vrda_sinh(n, input, output);
+    amd_vrda_log1p(n, input, output);
 
     printf("Input: {");
     for(int i=0; i<10; ++i)
@@ -183,19 +176,18 @@ void sinh_double_precision_array()
     }
     printf("}\n");
     printf("----------\n");
-    #endif
 }
 
-int use_sinh()
+int use_log1p()
 {
-    printf("\n\n***** sinh() *****\n");
-    sinh_single_precision();
-    sinh_double_precision();
-    sinh_vector_single_precision_4();
-    sinh_vector_single_precision_8();
-    sinh_vector_double_precision_2();
-    sinh_vector_double_precision_4();
-    sinh_single_precision_array();
-    sinh_double_precision_array();
+    printf("\n\n***** log1p() *****\n");
+    log1p_single_precision();
+    log1p_double_precision();
+    log1p_vector_single_precision_4();
+    log1p_vector_single_precision_8();
+    log1p_vector_double_precision_2();
+    log1p_vector_double_precision_4();
+    log1p_single_precision_array();
+    log1p_double_precision_array();
     return 0;
 }

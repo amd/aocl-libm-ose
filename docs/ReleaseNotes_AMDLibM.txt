@@ -1,25 +1,13 @@
 
 (C) 2008-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 
-AOCL LibM - Release Notes - AOCL version 4.1.1 - July monthly release
+AOCL LibM - Release Notes - AOCL version 4.1.1 - August monthly release
 ---------------------------------------------------------------------
 
 Highlights of AOCL LibM version 4.1.1
 -------------------------------------
-
-Added new vector array arithmetic functions:
- - vrsa_fminf, vrsa_fminfi, vrda_fmin and vrda_fmini
- - vrsa_fmaxf, vrsa_fmaxfi, vrda_fmax and vrda_fmaxi
+Faster and more accurate version of tanhf
 
 Added new fast scalar variants:
- - acosf, sinf, cosf
+ - sin and cos
 
-Optimized the performance of:
- - logf
- - fmod and fmodf
- - fmax and fmaxf
- - coshf
-
-Optimised the performance and improved the accuracy of
- - atan
- 

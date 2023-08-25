@@ -318,15 +318,15 @@ extern "C" {
 
 /* Inverse Trigonometric */
     __m128  amd_vrs4_asinf  (__m128  x);
-    __m128  amd_vrs4_acosf   (__m128  x);
+    __m128  amd_vrs4_acosf  (__m128  x);
     __m128  amd_vrs4_atanf  (__m128  x);
 
-   __m128  amd_vrs8_acosf  (__m128  x);
+   __m256  amd_vrs8_acosf  (__m256  x);
    __m256  amd_vrs8_atanf  (__m256  x);
    __m256  amd_vrs8_asinf  (__m256  x);
 
     __m128d amd_vrd2_atan   (__m128d x);
-    __m128d amd_vrd4_atan   (__m128d x);
+    __m256d amd_vrd4_atan   (__m256d x);
 
     /* avx512 variants */
     __m512 amd_vrs16_atanf  (__m512 x);
@@ -341,6 +341,8 @@ extern "C" {
 
    __m256  amd_vrs8_coshf   (__m256  x);
    __m256  amd_vrs8_tanhf   (__m256  x);
+
+   __m128d amd_vrd2_cosh    (__m128d x);
 
  /* Power */
     __m128d amd_vrd2_pow    (__m128d x, __m128d y);

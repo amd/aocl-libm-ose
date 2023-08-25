@@ -32,7 +32,7 @@
 double ALM_PROTO_REF(nextafter)(double x, double y)
 {
 
-
+    /* UT64 is a union type of float64 and uint64*/
     UT64 checkbits,checkbitsy;
     double dy = y;
     checkbits.f64=x;

@@ -126,7 +126,7 @@ v_f64x8_t
 ALM_PROTO_ARCH_ZN4(vrd8_exp)(v_f64x8_t x)
 {
 
-    v_u64x8_t vx = as_v8_i64_f64(x);
+    v_u64x8_t vx = as_v8_u64_f64(x);
 
     // Get absolute value
     vx = vx & MASK;

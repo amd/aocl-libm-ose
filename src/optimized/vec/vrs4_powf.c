@@ -339,7 +339,7 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
     if(check_corner_case(condition2, condition)) {
 
-        v_u32x4_t negative = (_x < ZERO);
+        v_u32x4_t negative = (v_u32x4_t)(_x < ZERO);
 
         /*call scalar powf for all inputs */
         if(any_v4_u32_loop(negative)) {
@@ -353,12 +353,12 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
 
         v_f32x4_t x = _mm256_cvtpd_ps(ylogx);
 
-        v_i32x4_t inf_condition = x > EXPF_MAXF;
+        v_i32x4_t inf_condition = (v_i32x4_t)(x > EXPF_MAXF);
 
         /* set infinity to values of x greater than infinity */
         inf_condition |= condition; 
 
-        v_i32x4_t zero_condition = x < EXPF_MINF;
+        v_i32x4_t zero_condition = (v_i32x4_t)(x < EXPF_MINF);
 
         v_32x4 vx = {.f32x4 = ret};
 

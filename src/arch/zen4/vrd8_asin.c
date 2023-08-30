@@ -116,7 +116,7 @@ ALM_PROTO_ARCH_ZN4(vrd8_asin)(v_f64x8_t x)
     v_u64x8_t ux = as_v8_u64_f64(x);
     v_u64x8_t sign = ux & ~V8_ASIN_MASK_64;
     r  = as_v8_f64_u64(ux & V8_ASIN_MASK_64);
-    v_u64x8_t cmp = (r) > (V8_ASIN_HALF);
+    v_u64x8_t cmp = (v_u64x8_t)((r) > (V8_ASIN_HALF));
 
     for (int i = ZERO; i < VECTOR_LENGTH; i++) {
         if (cmp[i]) {

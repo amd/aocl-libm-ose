@@ -98,7 +98,7 @@ ALM_PROTO_ARCH_ZN4(vrs16_asinf)(v_f32x16_t x)
 {
     v_f32x16_t r, poly, result, G, n = _MM512_SET1_PS16(PI_BY_TWO);
     v_u32x16_t ux = as_v16_u32_f32(x);
-    v_u32x16_t sign = ux & ~V16_ASINF_MASK_32;
+    v_u32x16_t sign = (v_u32x16_t)(ux & ~V16_ASINF_MASK_32);
     r  = as_v16_f32_u32(ux & V16_ASINF_MASK_32);
     v_u32x16_t cmp = r > V16_ASINF_HALF;
 

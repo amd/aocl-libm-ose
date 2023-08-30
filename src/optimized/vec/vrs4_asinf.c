@@ -110,7 +110,7 @@ ALM_PROTO_OPT(vrs4_asinf)(v_f32x4_t x)
 
     r  = as_v4_f32_u32(ux & V4_ASINF_MASK_32);
 
-    v_u32x4_t cmp = r > V4_ASINF_HALF;
+    v_u32x4_t cmp = (v_u32x4_t)(r > V4_ASINF_HALF);
 
     for (int i = 0; i < 4; i++) {
         if (cmp[i]) {

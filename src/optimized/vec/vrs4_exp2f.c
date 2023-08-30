@@ -161,9 +161,9 @@ ALM_PROTO_OPT(vrs4_exp2f)(v_f32x4_t _x)
 
     if(unlikely(any_v4_u32_loop(cond))) {
 
-        v_i32x4_t inf_condition = _x > ALM_V4_EXP2F_MAX;
+        v_i32x4_t inf_condition = (v_i32x4_t)(_x > ALM_V4_EXP2F_MAX);
 
-        v_i32x4_t zero_condition = _x < ALM_V4_EXP2F_MIN;
+        v_i32x4_t zero_condition = (v_i32x4_t)(_x < ALM_V4_EXP2F_MIN);
 
         v_32x4 _vx = {.f32x4 = ret};
 

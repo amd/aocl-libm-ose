@@ -39,3 +39,4 @@ EXPORTS
     alm_mp_erf
     alm_mp_fmin
     alm_mp_fmax
+    alm_mp_fdim

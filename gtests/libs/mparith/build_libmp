@@ -42,7 +42,6 @@ excluded_list = [f.name for f in excludes]
 
 excluded_list += [
      'cospi.c',
-     'fdim.c',
      'finite.c',
      'frexp.c',
      'ilogb.c',

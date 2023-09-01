@@ -23,46 +23,53 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
+ *
+ * Signature:
+ * double fdim(double x, double y);
+ *
+ * Computes the positive difference between the arguments, i.e. max(x-y,0).
+ *
+ * If x or y is a NaN, then a NaN is returned. 
+ *
  */
 
-#include <libm_macros.h>
+#include "fn_macros.h"
+#include "libm_util_amd.h"
+#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
-#include <libm/iface.h>
-#include <libm/entry_pt.h>
-#include <libm/arch/all.h>
+#include <libm/typehelper.h>
 
-
-static const
-struct alm_arch_funcs __arch_funcs_fdim = {
-    .def_arch = ALM_UARCH_VER_DEFAULT,
-    .funcs = {
-        [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_OPT(fdimf),
-            &ALM_PROTO_OPT(fdim),
-            NULL,                           /* vrs4 ? */
-            NULL,                           /* vrs8 ? */
-            NULL,                           /* vrd2 ? */
-            NULL,                           /* vrd4 ? */
-        },
-    },
-};
-
-void
-LIBM_IFACE_PROTO(fdim)(void *arg)
+double ALM_PROTO_OPT(fdim)(double x, double y)
 {
-    alm_ep_wrapper_t g_entry_fdim = {
-       .g_ep = {
-        [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(fdimf),
-        [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(fdim),
-#if 0
-        [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_fdimf),
-        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_fdimf),
-        [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_fdim),
-        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_fdim),
-#endif
-        },
-    };
+    uint64_t ux = asuint64(x);
+    uint64_t uy = asuint64(y);
 
-    alm_iface_fixup(&g_entry_fdim, &__arch_funcs_fdim);
+    // If x and y are INF
+    if(unlikely(ux  == PINFBITPATT_DP64))
+    {
+        if(unlikely(uy == PINFBITPATT_DP64))
+        {
+            return 0;
+        }
+    }
+    // If x and y are -INF
+    if(unlikely(ux == NINFBITPATT_DP64))
+    {
+        if(unlikely(uy == NINFBITPATT_DP64))
+        {
+            return 0;
+        }
+    }
+    // if x is NAN
+    if(unlikely(x != x))
+    {
+        return x+x;
+    }
+    // If y is NAN
+    if(unlikely(y != y))
+    {
+        return y+y;
+    }
+
+    return (x > y) ? x-y : 0;
 }
-

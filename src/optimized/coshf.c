@@ -150,7 +150,7 @@ ALM_PROTO_OPT(coshf)(float x)
             return x + x;
         else                            /* x is infinity */
         #if ( defined _WIN32 || defined _WIN64 )
-            return __alm_handle_errorf(PINFBITPATT_SP32, AMD_F_OVERFLOW);
+            return alm_coshf_special(asfloat(PINFBITPATT_SP32), ALM_E_OVERFLOW);
         #else
             return(FLT_MAX * FLT_MAX);
         #endif

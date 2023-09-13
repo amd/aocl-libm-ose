@@ -43,6 +43,7 @@ extern int use_copysign();
 extern int use_nearbyint();
 extern int use_remainder();
 extern int use_pow();
+extern int use_fdim();
 
 /* exponential */
 extern int use_exp();
@@ -108,6 +109,7 @@ int main()  {
     use_nearbyint();
     use_remainder();
     use_pow();
+    use_fdim();
 
     /* exponential */
     use_exp();

@@ -1,13 +1,13 @@
 
 (C) 2008-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 
-AOCL LibM - Release Notes - AOCL version 4.1.1 - August monthly release
----------------------------------------------------------------------
+AOCL LibM - Release Notes - AOCL version 4.1.1 - September monthly release
+--------------------------------------------------------------------------
 
-Highlights of AOCL LibM version 4.1.1
+Highlights of AOCL-LibM version 4.1.1
 -------------------------------------
-Faster and more accurate version of tanhf
+Optimized versions of fdim and fdimf
 
-Added new fast scalar variants:
- - sin and cos
+Added support for clang-17 compiler
 
+Revamped examples, adding 13 new ones. 

@@ -31,43 +31,56 @@
 #include "amdlibm_vec.h"
 #include <immintrin.h>
 
-int use_erf_avx512() {
-#if defined (__AVX512__)
-    int i=0;
-    printf ("\nUsing vrs16 (Single precision 16-element vector variant) of AMD erff()\n");
-    __m512 input_vrs16, result_erf_vrs16;
-    float input_array_vrs16[16] = {1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0,
-                                   1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0};
+void erf_vector_single_precision_16()
+{
+    #if defined (__AVX512__)
+    printf("Using Vector single precision - 16 floats (vrs16) erf()\n");
+    __m512 input, result;
+    float input_array_vrs16[16] = {0.2, -0.8, 0.3, 0.4, 0.006, 0.8, 0.1989, 1.0,
+                                   -0.0, 0.0, -0.5, 0.5, 0.75, 0.98, 0.0989, -1.0};
     float output_array_vrs16[16];
-    input_vrs16 = _mm512_loadu_ps(input_array_vrs16);
-    result_erf_vrs16 = amd_vrs16_erff(input_vrs16);
-    _mm512_storeu_ps(output_array_vrs16, result_erf_vrs16);
-    printf ("Input: {");
-    for (i=0; i<16; i++) {
-        printf ("%f,",input_array_vrs16[i]);
-    }
-    printf("}, Output: {");
-    for (i=0; i<16; i++) {
-        printf ("%f,", output_array_vrs16[i]);
-    }
-    printf("}\n");
 
-    printf ("Using vrd8 (Double precision 8-element vector variant) of AMD erf()\n");
-    __m512d input_vrd8, result_erf_vrd8;
-    double input_array_vrd8[8] = {1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0};
+    input = _mm512_loadu_ps(input_array_vrs16);
+    result = amd_vrs16_erff(input);
+    _mm512_storeu_ps(output_array_vrs16, result);
+
+    printf("Input: {%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f},\nOutput: {%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f}\n",
+            input_array_vrs16[0], input_array_vrs16[1], input_array_vrs16[2], input_array_vrs16[3],
+            input_array_vrs16[4], input_array_vrs16[5], input_array_vrs16[6], input_array_vrs16[7],
+            input_array_vrs16[8], input_array_vrs16[9], input_array_vrs16[10], input_array_vrs16[11],
+            input_array_vrs16[12], input_array_vrs16[13], input_array_vrs16[14], input_array_vrs16[15],
+            output_array_vrs16[0], output_array_vrs16[1], output_array_vrs16[2], output_array_vrs16[3],
+            output_array_vrs16[4], output_array_vrs16[5], output_array_vrs16[6], output_array_vrs16[7],
+            output_array_vrs16[8], output_array_vrs16[9], output_array_vrs16[10], output_array_vrs16[11],
+            output_array_vrs16[12], output_array_vrs16[13], output_array_vrs16[14], output_array_vrs16[15]);
+    printf("----------\n");
+    #endif
+}
+
+void erf_vector_double_precision_8() {
+    #if defined (__AVX512__)
+    printf("Using Vector double precision - 8 doubles (vrd8) erf()\n");
+    __m512d input, result;
+    double input_array_vrd8[8] = {-0.0, 0.0, -0.5, 0.5, 0.75, 0.98, 0.0989, -1.0};
     double output_array_vrd8[8];
-    input_vrd8 = _mm512_loadu_pd(input_array_vrd8);
-    result_erf_vrd8 = amd_vrd8_erf(input_vrd8);
-    _mm512_storeu_pd(output_array_vrd8, result_erf_vrd8);
-    printf ("Input: {");
-    for (i=0; i<8; i++) {
-        printf ("%f,",input_array_vrd8[i]);
-    }
-    printf("}, Output: {");
-    for (i=0; i<8; i++) {
-        printf ("%f,", output_array_vrd8[i]);
-    }
-    printf("}\n");
-#endif
+
+    input = _mm512_loadu_pd(input_array_vrd8);
+    result = amd_vrd8_erf(input);
+    _mm512_storeu_pd(output_array_vrd8, result);
+
+    printf("Input: {%lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf},\nOutput: {%lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf}\n",
+            input_array_vrd8[0], input_array_vrd8[1], input_array_vrd8[2], input_array_vrd8[3],
+            input_array_vrd8[4], input_array_vrd8[5], input_array_vrd8[6], input_array_vrd8[7],
+            output_array_vrd8[0], output_array_vrd8[1], output_array_vrd8[2],output_array_vrd8[3],
+            output_array_vrd8[4], output_array_vrd8[5], output_array_vrd8[6],output_array_vrd8[7]);
+    printf("----------\n");
+    #endif
+}
+
+int use_erf_avx512()
+{
+    printf("\n\n***** erf_avx512() *****\n");
+    erf_vector_single_precision_16();
+    erf_vector_double_precision_8();
     return 0;
 }

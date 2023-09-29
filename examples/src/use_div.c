@@ -158,7 +158,7 @@ void div_single_precision_array()
     printf("Using Single Precision Vectory Array (vrsa) div()\n");
     int n=5;
     float input[10] = {1.0f, 3.0f, -5.0f, 0.0f, -9.0f, 11.0f, 13.0f, 15.0f, -17.0f, 19.0f};
-    float input2[10] = {3.0f, -1.0f, -0.0f, -6.0f, 0.0f, 0.0f, 4.0f, -1.0f, 2.0f, -10.0f};
+    float input2[10] = {3.0f, -1.0f, 0.9f, -6.0f, 0.1f, 1.5f, 4.0f, -1.0f, 2.0f, -10.0f};
     float output[10] = {0};
 
     amd_vrsa_divf(n, input, input2, output);
@@ -188,7 +188,7 @@ void div_double_precision_array()
     printf("Using Double Precision Vectory Array (vrda) div()\n");
     int n=8;
     double input[10] = {-0.0, -0.0, 4.0, 2.0, 6.0, -12.0, 14.0, -1.0, 3.0, -5.0};
-    double input2[10] = {0.0, -0.0, 3.0, -4.0, 5.0, 6.0, -7.0, 8.0, -9.0, -10.0};
+    double input2[10] = {1.0, 0.8, 3.0, -4.0, 5.0, 6.0, -7.0, 8.0, -9.0, -10.0};
     double output[10] = {0};
 
     amd_vrda_div(n, input, input2, output);

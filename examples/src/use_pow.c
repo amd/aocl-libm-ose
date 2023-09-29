@@ -59,8 +59,8 @@ void pow_vector_single_precision_4()
 {
     printf("Using Vector single precision - 4 floats (vrs4) pow()\n");
     __m128 input, input2, result;
-    float  input_array_vrs4[4] = {34.65, -7.89, 91.0, -198.34};
-    float  input_2_array_vrs4[4] = {-3.65, -80.89, -1.0, -34.01};
+    float  input_array_vrs4[4] = {34.65, 7.0, 91.0, 1.34};
+    float  input_2_array_vrs4[4] = {-3.65, 1.0, -1.0, 3.0};
     float  output_array_vrs4[4];
 
     input = _mm_loadu_ps(input_array_vrs4);
@@ -79,8 +79,8 @@ void pow_vector_single_precision_8()
 {
     printf("Using Vector single precision - 8 floats (vrs8) pow()\n");
     __m256 input, input2, result;
-    float input_array_vrs8[8] = {1.2, 0.0, -2.3, 3.4, 5.6, -7.8, 8.9, -1.0};
-    float input_2_array_vrs8[8] = {-2.123, -0.12, -0.0, 4.987, 6.342, 17.8, -98.9, -1.0};
+    float input_array_vrs8[8] = {1.2, 0.0, -2.3, 3.4, 5.6, 1.0, 8.9, -1.0};
+    float input_2_array_vrs8[8] = {-2.123, -0.12, -0.0, 4.987, 6.342, 0.0, 0.9, -1.0};
     float output_array_vrs8[8];
 
     input = _mm256_loadu_ps(input_array_vrs8);
@@ -102,7 +102,7 @@ void pow_vector_double_precision_2()
 {
     printf("Using Vector double precision - 2 doubles (vrd2) pow()\n");
     __m128d input, input2, result;
-    double  input_array_vrd2[2] = {0.0, 67.89};
+    double  input_array_vrd2[2] = {1.5, 67.89};
     double  input_2_array_vrd2[2] = {-5.09, -0.0};
     double  output_array[2];
 
@@ -122,8 +122,8 @@ void pow_vector_double_precision_4()
 {
     printf("Using Vector double precision - 4 doubles (vrd4) pow()\n");
     __m256d input, input2, result;
-    double input_array_vrd4[4] = {2.3, 0.0, -0.0, -43.4};
-    double input_2_array_vrd4[4] = {-1.9, 0.0, 0.0, -983.4766};
+    double input_array_vrd4[4] = {2.3, 0.0, -0.0, 4.4};
+    double input_2_array_vrd4[4] = {-1.9, 0.0, 0.0, 1.6};
     double output_array_vrd4[4];
 
     input = _mm256_loadu_pd(input_array_vrd4);
@@ -145,8 +145,8 @@ void pow_single_precision_array()
 {
     printf("Using Single Precision Vectory Array (vrsa) pow()\n");
     int n=5;
-    float input[10] = {1.0f, 3.0f, -5.0f, 0.0f, -9.0f, 11.0f, 13.0f, 15.0f, -17.0f, 19.0f};
-    float input2[10] = {3.0f, -1.0f, -0.0f, -6.0f, 0.0f, 0.0f, 4.0f, -1.0f, 2.0f, -10.0f};
+    float input[10] = {1.0f, 3.0f, -5.0f, 1.1f, -9.0f, 11.0f, 13.0f, 15.0f, -17.0f, 19.0f};
+    float input2[10] = {3.0f, -1.0f, -0.0f, 1.0f, 0.0f, 0.0f, 4.0f, -1.0f, 2.0f, -10.0f};
     float output[10] = {0};
 
     amd_vrsa_powf(n, input, input2, output);

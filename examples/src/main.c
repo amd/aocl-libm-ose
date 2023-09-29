@@ -146,13 +146,22 @@ int main()  {
 
     /* avx512 */
     #if defined (__AVX512__)
+    /* arithmetic */
     use_pow_avx512();
+
+    /* exponential */
     use_exp_avx512();
     use_exp2_avx512();
+
+    /* logarithmic */
     use_log_avx512();
     use_log10_avx512();
+
+    /* trigonometric */
     use_asin_avx512();
     use_atan_avx512();
+
+    /* erf */
     use_erf_avx512();
     #endif
 

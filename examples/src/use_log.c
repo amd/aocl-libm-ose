@@ -76,7 +76,7 @@ void log_vector_single_precision_8()
 {
     printf("Using Vector single precision - 8 floats (vrs8) log()\n");
     __m256 input, result;
-    float input_array_vrs8[8] = {1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0};
+    float input_array_vrs8[8] = {1.2, 0.1, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0};
     float output_array_vrs8[8];
 
     input = _mm256_loadu_ps(input_array_vrs8);

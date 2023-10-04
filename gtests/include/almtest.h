@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -334,7 +334,7 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
         printf ("Input: 0x%x (%f) ", ip.u, ip.f);
         if (nargs == 2)
             printf ("Input2: 0x%x (%f) ", ip2.u, ip2.f);
-        printf ("Expected: 0x%x (%f) Actual: 0x%x (%f)\n", e.u, e.f, a.u, a.f);
+        printf ("Expected: 0x%x (%f) Actual: 0x%x (%f) ULP: %f\n", e.u, e.f, a.u, a.f, ulp);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);
         return false;
@@ -444,7 +444,7 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
         printf ("Input: 0x%llx (%lf) ", ip.lu, ip.d);
         if (nargs == 2)
             printf ("Input2: 0x%llx (%lf) ", ip2.lu, ip2.d);
-        printf ("Expected: 0x%llx (%lf) Actual: 0x%llx (%lf)\n", e.lu, e.d, a.lu, a.d);
+        printf ("Expected: 0x%llx (%lf) Actual: 0x%llx (%lf) ULP: %lf\n", e.lu, e.d, a.lu, a.d, ulp);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);
         return false;

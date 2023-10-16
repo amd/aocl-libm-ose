@@ -1,13 +1,14 @@
 
 (C) 2008-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 
-AOCL LibM - Release Notes - AOCL version 4.1.1 - September monthly release
---------------------------------------------------------------------------
+AOCL LibM - Release Notes - AOCL version 4.1.1 - October monthly release
+------------------------------------------------------------------------
 
 Highlights of AOCL-LibM version 4.1.1
 -------------------------------------
-Optimized versions of fdim and fdimf
+Optimized Zen4 double precision version of exp2
 
-Added support for clang-17 compiler
+Revamped AVX512 examples
 
-Revamped examples, adding 13 new ones. 
+Fixed error in lrint.
+

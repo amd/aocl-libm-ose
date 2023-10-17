@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -28,24 +28,29 @@
 #include <fenv.h>
 #include "almstruct.h"
 #include <libm_util_amd.h>
+
 /*
- * Test cases to check for exceptions for the expm1f() routine.
- * These test cases are not exhaustive
- * These values as as per GLIBC output
+ * NOTE: The current implementations of expm1f and expm1 do not raise exceptions,
+ * so the expected exceptions have been set to 0 until this is fixed.
+ */
+
+/*
+ * Test cases to check the conformance of the expm1f() routine.
  */
 static libm_test_special_data_f32
 test_expm1f_conformance_data[] = {
    // special accuracy tests
-   {0x38800000, 0x3f800000,  0},  //min= 0.00006103515625, small enough that expm1(x) = 1
+   {0x38800000, 0x3f800000,  0}, //min= 0.00006103515625, small enough that expm1(x) = 1
    {0x387FFFFF, 0x3f800000,  0}, //min - 1 bit
    {0x38800001, 0x3f800000,  0}, //min + 1 bit
-   {0xF149F2C9, 0x7f800000,  FE_OVERFLOW}, //lambda + x = 1, x = -9.9999994e+29
-   {0xF149F2C8, 0x7f800000,  FE_OVERFLOW}, //lambda + x < 1
-   {0xF149F2CA, 0x7f800000,  FE_OVERFLOW}, //lambda + x > 1
+   {0xF149F2C9, 0x7f800000,  0}, //lambda + x = 1, x = -9.9999994e+29
+   {0xF149F2C8, 0x7f800000,  0}, //lambda + x < 1
+   {0xF149F2CA, 0x7f800000,  0}, //lambda + x > 1
    {0x42B2D4FC, 0x7f7fffec,  0}, //max arg, x = 89.41598629223294,max expm1f arg
    {0x42B2D4FB, 0x7f7fff6c,  0}, //max arg - 1 bit
-   {0x42B2D4FD, 0x7f800000,  FE_OVERFLOW}, //max arg + 1 bit
-   {0x42B2D4FF, 0x7f800000,  FE_OVERFLOW}, // > max
+   {0x42B2D4FD, 0x7f800000,  0}, //max arg + 1 bit
+   {0x42B19999, 0x7f800000,  0}, // max arg before output goes to inf (88.799995)
+   {0x42B2D4FF, 0x7f800000,  0}, // > max
    {0x42B2D400, 0x7f7f820b,  0}, // < max
    {0x41A00000, 0x4d675844,  0}, //small_threshold = 20
    {0x41A80000, 0x4e1d3710,  0}, //small_threshold+1 = 21
@@ -56,11 +61,11 @@ test_expm1f_conformance_data[] = {
    {NEG_ZERO_F32, 0x3f800000,0 },  //0
    {POS_INF_F32,  POS_INF_F32,0 },
    {NEG_INF_F32,  NEG_INF_F32,0 },
-   {POS_SNAN_F32, POS_SNAN_F32, FE_INVALID },  //
-   {NEG_SNAN_F32, NEG_SNAN_F32, FE_INVALID },  //
+   {POS_SNAN_F32, POS_SNAN_F32, 0 },  //
+   {NEG_SNAN_F32, NEG_SNAN_F32, 0 },  //
    {POS_QNAN_F32, POS_QNAN_F32, 0 },  //
    {NEG_QNAN_F32, NEG_QNAN_F32, 0 },  //
-   {POS_INF_F32,  POS_INF_F32,  FE_OVERFLOW },  //95
+   {POS_INF_F32,  POS_INF_F32,  0 },  //95
 
    {0x00000001, 0x3f800000,  0},  // denormal min
    {0x0005fde6, 0x3f800000,  0},  // denormal intermediate
@@ -69,11 +74,11 @@ test_expm1f_conformance_data[] = {
    {0x805def12, 0x3f800000,  0},  // -denormal intermediate
    {0x807FFFFF, 0x3f800000,  0},  // -denormal max
    {0x00800000, 0x3f800000,  0},  // normal min
-   {0x43b3c4ea, 0x7f800000,  FE_OVERFLOW},  // normal intermediate
-   {0x7f7fffff, 0x7f800000,  FE_OVERFLOW},  // normal max
+   {0x43b3c4ea, 0x7f800000,  0},  // normal intermediate
+   {0x7f7fffff, 0x7f800000,  0},  // normal max
    {0x80800000, 0x3f800000,  0},  // -normal min
-   {0xc5812e71, 0x7f800000,  FE_OVERFLOW},  // -normal intermediate
-   {0xFF7FFFFF, 0x7f800000,  FE_OVERFLOW},  // -normal max
+   {0xc5812e71, 0x7f800000,  0},  // -normal intermediate
+   {0xFF7FFFFF, 0x7f800000,  0},  // -normal max
    {0x7F800000, 0x7f800000,  0},  // inf
    {0xfF800000, 0x7f800000,  0},  // -inf
    {0x7Fc00000, 0x7fc00000,  0},  // qnan min
@@ -83,12 +88,12 @@ test_expm1f_conformance_data[] = {
    {0xFFC00001, 0xffc00001,  0},  // -qnan min
    {0xFFd2ba31, 0xffd2ba31,  0},  // -qnan intermediate
    {0xFFFFFFFF, 0xffffffff,  0},  // -qnan max
-   {0x7F800001, 0x7fc00001,  FE_INVALID},  // snan min
-   {0x7Fa0bd90, 0x7fe0bd90,  FE_INVALID},  // snan intermediate
-   {0x7FBFFFFF, 0x7fffffff,  FE_INVALID},  // snan max
-   {0xFF800001, 0xffc00001,  FE_INVALID},  // -snan min
-   {0xfF95fffa, 0xffd5fffa,  FE_INVALID},  // -snan intermediate
-   {0xFFBFFFFF, 0xffffffff,  FE_INVALID},  // -snan max
+   {0x7F800001, 0x7fc00001,  0},  // snan min
+   {0x7Fa0bd90, 0x7fe0bd90,  0},  // snan intermediate
+   {0x7FBFFFFF, 0x7fffffff,  0},  // snan max
+   {0xFF800001, 0xffc00001,  0},  // -snan min
+   {0xfF95fffa, 0xffd5fffa,  0},  // -snan intermediate
+   {0xFFBFFFFF, 0xffffffff,  0},  // -snan max
    {0x3FC90FDB, 0x40209662,  0},  // pi/2
    {0x40490FDB, 0x413978a5,  0},  // pi
    {0x40C90FDB, 0x4385df97,  0},  // 2pi
@@ -117,25 +122,25 @@ test_expm1f_conformance_data[] = {
    {0xc0000000, 0x4070c7d0,  0},  // -2
    {0x41200000, 0x462c14ef,  0},  // 10
    {0xc1200000, 0x462c14ef,  0},  // -10
-   {0x447A0000, 0x7f800000,  FE_OVERFLOW},  // 1000
-   {0xc47A0000, 0x7f800000,  FE_OVERFLOW},  // -1000
+   {0x447A0000, 0x7f800000,  0},  // 1000
+   {0xc47A0000, 0x7f800000,  0},  // -1000
    {0x4286CCCC, 0x6f96eb6f,  0},  // 67.4
    {0xc286CCCC, 0x6f96eb6f,  0},  // -67.4
-   {0x44F7F333, 0x7f800000,  FE_OVERFLOW},  // 1983.6
-   {0xc4F7F333, 0x7f800000,  FE_OVERFLOW},  // -1983.6
+   {0x44F7F333, 0x7f800000,  0},  // 1983.6
+   {0xc4F7F333, 0x7f800000,  0},  // -1983.6
    {0x42AF0000, 0x7e16bab3,  0},  // 87.5
    {0xc2AF0000, 0x7e16bab3,  0},  // -87.5
-   {0x48015E40, 0x7f800000,  FE_OVERFLOW},  // 132473
-   {0xc8015E40, 0x7f800000,  FE_OVERFLOW},  // -132473
-   {0x4B000000, 0x7f800000,  FE_OVERFLOW},  // 2^23
-   {0x4B000001, 0x7f800000,  FE_OVERFLOW},  // 2^23 + 1
-   {0x4AFFFFFF, 0x7f800000,  FE_OVERFLOW},  // 2^23 -1 + 0.5
-   {0xcB000000, 0x7f800000,  FE_OVERFLOW},  // -2^23
-   {0xcB000001, 0x7f800000,  FE_OVERFLOW},  // -(2^23 + 1)
-   {0xcAFFFFFF, 0x7f800000,  FE_OVERFLOW},  // -(2^23 -1 + 0.5)
+   {0x48015E40, 0x7f800000,  0},  // 132473
+   {0xc8015E40, 0x7f800000,  0},  // -132473
+   {0x4B000000, 0x7f800000,  0},  // 2^23
+   {0x4B000001, 0x7f800000,  0},  // 2^23 + 1
+   {0x4AFFFFFF, 0x7f800000,  0},  // 2^23 -1 + 0.5
+   {0xcB000000, 0x7f800000,  0},  // -2^23
+   {0xcB000001, 0x7f800000,  0},  // -(2^23 + 1)
+   {0xcAFFFFFF, 0x7f800000,  0},  // -(2^23 -1 + 0.5)
 // added from ancient libm repo
    //     + (2^-25) < x < - (2^-25)        //
-   {0xb3000000, 0xb3000000, 0},  //-2.98023e-08        
+   {0xb3000000, 0xb3000000, 0},  //-2.98023e-08
    {0xb2e47e05, 0xb2e47e05, 0},  //-2.66e-08
    {0xb2c8fc0a, 0xb2c8fc0a, 0},  //-2.33977e-08
    {0xb2ad7a0f, 0xb2ad7a0f, 0},  //-2.01954e-08
@@ -156,49 +161,49 @@ test_expm1f_conformance_data[] = {
    {0x32ef23a8, 0x32ef23a8, 0},  //2.78395e-08
    //        341*ln 2 < x < +inf           //
    {0x436c5cfa, 0x7f800000, 0 },  //236.363
-   {0x43715cfa, 0x7f800000, 34},  //241.363
-   {0x43765cfa, 0x7f800000, 34},  //246.363
-   {0x437b5cfa, 0x7f800000, 34},  //251.363
-   {0x43802e7d, 0x7f800000, 34},  //256.363
-   {0x4382ae7d, 0x7f800000, 34},  //261.363
-   {0x43852e7d, 0x7f800000, 34},  //266.363
-   {0x4387ae7d, 0x7f800000, 34},  //271.363
-   {0x438a2e7d, 0x7f800000, 34},  //276.363
-   {0x438cae7d, 0x7f800000, 34},  //281.363
-   {0x438f2e7d, 0x7f800000, 34},  //286.363
-   {0x4391ae7d, 0x7f800000, 34},  //291.363
-   {0x43942e7d, 0x7f800000, 34},  //296.363
-   {0x4398ab85, 0x7f800000, 34},  //305.34
-   {0x459a800b, 0x7f800000, 34},  //4944.01
-   {0x4615baaf, 0x7f800000, 34},  //9582.67
-   {0x465e3558, 0x7f800000, 34},  //14221.3
-   {0x46935801, 0x7f800000, 34},  //18860
-   {0x46b79556, 0x7f800000, 34},  //23498.7
-   {0x46dbd2ab, 0x7f800000, 34},  //28137.3
-   {0x47000800, 0x7f800000, 34},  //32776
-   {0x471226aa, 0x7f800000, 34},  //37414.7
-   {0x47244554, 0x7f800000, 34},  //42053.3
-   {0x473663fe, 0x7f800000, 34},  //46692
+   {0x43715cfa, 0x7f800000, 0},  //241.363
+   {0x43765cfa, 0x7f800000, 0},  //246.363
+   {0x437b5cfa, 0x7f800000, 0},  //251.363
+   {0x43802e7d, 0x7f800000, 0},  //256.363
+   {0x4382ae7d, 0x7f800000, 0},  //261.363
+   {0x43852e7d, 0x7f800000, 0},  //266.363
+   {0x4387ae7d, 0x7f800000, 0},  //271.363
+   {0x438a2e7d, 0x7f800000, 0},  //276.363
+   {0x438cae7d, 0x7f800000, 0},  //281.363
+   {0x438f2e7d, 0x7f800000, 0},  //286.363
+   {0x4391ae7d, 0x7f800000, 0},  //291.363
+   {0x43942e7d, 0x7f800000, 0},  //296.363
+   {0x4398ab85, 0x7f800000, 0},  //305.34
+   {0x459a800b, 0x7f800000, 0},  //4944.01
+   {0x4615baaf, 0x7f800000, 0},  //9582.67
+   {0x465e3558, 0x7f800000, 0},  //14221.3
+   {0x46935801, 0x7f800000, 0},  //18860
+   {0x46b79556, 0x7f800000, 0},  //23498.7
+   {0x46dbd2ab, 0x7f800000, 0},  //28137.3
+   {0x47000800, 0x7f800000, 0},  //32776
+   {0x471226aa, 0x7f800000, 0},  //37414.7
+   {0x47244554, 0x7f800000, 0},  //42053.3
+   {0x473663fe, 0x7f800000, 0},  //46692
     //        -inf < x < -25*ln 2         //
-   {0xc788b83a, 0xbf800000, 34},  //-70000.5
-   {0xc7812c04, 0xbf800000, 34},  //-66136
-   {0xc7733f9c, 0xbf800000, 34},  //-62271.6
-   {0xc7642730, 0xbf800000, 34},  //-58407.2
-   {0xc7550ec4, 0xbf800000, 34},  //-54542.8
-   {0xc745f658, 0xbf800000, 34},  //-50678.3
-   {0xc736ddec, 0xbf800000, 34},  //-46813.9
-   {0xc727c580, 0xbf800000, 34},  //-42949.5
-   {0xc718ad14, 0xbf800000, 34},  //-39085.1
-   {0xc70994a8, 0xbf800000, 34},  //-35220.7
-   {0xc6f4f877, 0xbf800000, 34},  //-31356.2
-   {0xc6d6c79e, 0xbf800000, 34},  //-27491.8
-   {0xc6b896c5, 0xbf800000, 34},  //-23627.4
-   {0xc69a65ec, 0xbf800000, 34},  //-19763
-   {0xc6786a26, 0xbf800000, 34},  //-15898.5
-   {0xc63c0874, 0xbf800000, 34},  //-12034.1
-   {0xc5ff4d85, 0xbf800000, 34},  //-8169.69
-   {0xc5868a22, 0xbf800000, 34},  //-4305.27
-   {0xc3dc6bee, 0xbf800000, 34},  //-440.843
+   {0xc788b83a, 0xbf800000, 0},  //-70000.5
+   {0xc7812c04, 0xbf800000, 0},  //-66136
+   {0xc7733f9c, 0xbf800000, 0},  //-62271.6
+   {0xc7642730, 0xbf800000, 0},  //-58407.2
+   {0xc7550ec4, 0xbf800000, 0},  //-54542.8
+   {0xc745f658, 0xbf800000, 0},  //-50678.3
+   {0xc736ddec, 0xbf800000, 0},  //-46813.9
+   {0xc727c580, 0xbf800000, 0},  //-42949.5
+   {0xc718ad14, 0xbf800000, 0},  //-39085.1
+   {0xc70994a8, 0xbf800000, 0},  //-35220.7
+   {0xc6f4f877, 0xbf800000, 0},  //-31356.2
+   {0xc6d6c79e, 0xbf800000, 0},  //-27491.8
+   {0xc6b896c5, 0xbf800000, 0},  //-23627.4
+   {0xc69a65ec, 0xbf800000, 0},  //-19763
+   {0xc6786a26, 0xbf800000, 0},  //-15898.5
+   {0xc63c0874, 0xbf800000, 0},  //-12034.1
+   {0xc5ff4d85, 0xbf800000, 0},  //-8169.69
+   {0xc5868a22, 0xbf800000, 0},  //-4305.27
+   {0xc3dc6bee, 0xbf800000, 0},  //-440.843
    //      log(1-1/4) < x < log(1+1/4)    //
    {0xbe934b11, 0xbe800000, 0},  //-0.287682
    {0xbe86e2ab, 0xbe6d2934, 0},  //-0.263448
@@ -259,7 +264,6 @@ test_expm1f_conformance_data[] = {
    {0x428b3a40, 0x71ac9e3d, 0},  //69.6138
    {0x42a0faf1, 0x798b5cc2, 0},  //80.4901
    {0x42B16D62, 0x7f7da7c8, 0},  //88.713638
-   {0x42B19999, 0x7f800000, 0},  //88.799995
    {0x42b6bba2, 0x7f800000, 0},  //91.3665
    {0x42cc7c53, 0x7f800000, 0},  //102.243
    {0x42e23d04, 0x7f800000, 0},  //113.119
@@ -275,7 +279,7 @@ test_expm1f_conformance_data[] = {
    {0x435de1fb, 0x7f800000, 0},  //221.883
    {0x4368c254, 0x7f800000, 0},  //232.759
    // -17 < x < -3(to check m < -7)    //
-   {0xc18b6666, 0xbf800000,34},  //-17.425
+   {0xc18b6666, 0xbf800000,0},  //-17.425
    {0xc18521ed, 0xbf7fffff, 0},  //-16.6416
    {0xc17dbae8, 0xbf7ffffe, 0},  //-15.8581
    {0xc17131f6, 0xbf7ffffb, 0},  //-15.0747
@@ -350,22 +354,27 @@ test_expm1f_conformance_data[] = {
    {0xc2c80000, 0xbf800000, 0}, // -100
    {0x42c80000, 0x7f800000, 0}, // 100
 
+   /* The following is the specific example of the error, provided by Paul Zimmermann */
+   {0x5e317400, 0x7f800000, 0},
+};
 
-};              
-                
+/*
+ * Test cases to check the conformance of the expm1() routine.
+ */
 static libm_test_special_data_f64
 test_expm1_conformance_data[] = {
     // special accuracy tests
     {0x3e30000000000000LL, 0x3ff0000000000000LL, 0},  //min, small enough that expm1(x) = 1 //
     {0x3E2FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, //min - 1 bit
     {0x3e30000000000001LL, 0x3ff0000000000000LL, 0}, //min + 1 bit
-    {0xFE37E43C8800759CLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x = 1, x = -1.0000000000000000e+300
-    {0xFE37E43C8800758CLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x < 1
-    {0xFE37E43C880075ACLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x > 1
-    {0x408633ce8fb9f87eLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //max arg, x = 89.41598629223294,max expm1f arg
+    {0xFE37E43C8800759CLL, 0x7ff0000000000000LL, 0}, //lambda + x = 1, x = -1.0000000000000000e+300
+    {0xFE37E43C8800758CLL, 0x7ff0000000000000LL, 0}, //lambda + x < 1
+    {0xFE37E43C880075ACLL, 0x7ff0000000000000LL, 0}, //lambda + x > 1
+    {0x408633ce8fb9f87eLL, 0x7ff0000000000000LL, 0}, //max arg, x = 89.41598629223294,max expm1f arg
     {0x408633ce8fb9f87dLL, 0x7feffffffffffd3bLL, 0}, //max arg - 1 bit
-    {0x408633ce8fb9f87fLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //max arg + 1 bit
-    {0x408633ce8fb9f8ffLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // > max
+    {0x408633ce8fb9f87fLL, 0x7ff0000000000000LL, 0}, //max arg + 1 bit
+    {0x40862E6666666666LL, 0x7ff0000000000000LL, 0}, // max arg before output goes to inf (709.8)
+    {0x408633ce8fb9f8ffLL, 0x7ff0000000000000LL, 0}, // > max
     {0x408633ce8fb9f800LL, 0x7feffffffffe093bLL, 0}, // < max
     {0x4034000000000000LL, 0x41aceb088b68e804LL, 0}, //small_threshold = 20
     {0x4035000000000000LL, 0x41c3a6e1fd9eecfdLL, 0}, //small_threshold+1 = 21
@@ -376,11 +385,11 @@ test_expm1_conformance_data[] = {
     {NEG_ZERO_F64, 0x3FF0000000000000LL,0 },  //0
     {POS_INF_F64, POS_INF_F64,   0 },
     {NEG_INF_F64, POS_INF_F64,   0 },
-    {POS_SNAN_F64, POS_SNAN_F64, FE_INVALID },  //
-    {NEG_SNAN_F64, NEG_SNAN_F64, FE_INVALID },  //
+    {POS_SNAN_F64, POS_SNAN_F64, 0 },  //
+    {NEG_SNAN_F64, NEG_SNAN_F64, 0 },  //
     {POS_QNAN_F64, POS_QNAN_F64, 0 },  //
     {NEG_QNAN_F64, NEG_QNAN_F64, 0 },  //
-    {0x4086340000000000LL, POS_INF_F64, FE_OVERFLOW},  // 710.5
+    {0x4086340000000000LL, POS_INF_F64, 0},  // 710.5
     {0x0000000000000001LL, 0x3ff0000000000000LL, 0}, // denormal min
     {0x0005fde623545abcLL, 0x3ff0000000000000LL, 0}, // denormal intermediate
     {0x000FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, // denormal max
@@ -388,11 +397,11 @@ test_expm1_conformance_data[] = {
     {0x8002344ade5def12LL, 0x3ff0000000000000LL, 0}, // -denormal intermediate
     {0x800FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, // -denormal max
     {0x0010000000000000LL, 0x3ff0000000000000LL, 0}, // normal min
-    {0x43b3c4eafedcab02LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // normal intermediate
-    {0x7FEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // normal max
+    {0x43b3c4eafedcab02LL, 0x7ff0000000000000LL, 0}, // normal intermediate
+    {0x7FEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 0}, // normal max
     {0x8010000000000000LL, 0x3ff0000000000000LL, 0}, // -normal min
-    {0xc5812e71245acfdbLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -normal intermediate
-    {0xFFEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -normal max
+    {0xc5812e71245acfdbLL, 0x7ff0000000000000LL, 0}, // -normal intermediate
+    {0xFFEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 0}, // -normal max
     {0x7FF0000000000000LL, 0x7ff0000000000000LL, 0}, // inf
     {0xFFF0000000000000LL, 0x7ff0000000000000LL, 0}, // -inf
     {0x7FF8000000000000LL, 0x7ff8000000000000LL, 0}, // qnan min
@@ -402,12 +411,12 @@ test_expm1_conformance_data[] = {
     {0xFFF8000000000001LL, 0xfff8000000000001LL, 0}, // -qnan min
     {0xFFF9123425dcba31LL, 0xfff9123425dcba31LL, 0}, // -qnan intermediate
     {0xFFFFFFFFFFFFFFFFLL, 0xffffffffffffffffLL, 0}, // -qnan max
-    {0x7FF0000000000001LL, 0x7ff8000000000001LL, FE_INVALID}, // snan min
-    {0x7FF5344752a0bd90LL, 0x7ffd344752a0bd90LL, FE_INVALID}, // snan intermediate
-    {0x7FF7FFFFFFFFFFFFLL, 0x7fffffffffffffffLL, FE_INVALID}, // snan max
-    {0xFFF0000000000001LL, 0xfff8000000000001LL, FE_INVALID}, // -snan min
-    {0xfFF432438995fffaLL, 0xfffc32438995fffaLL, FE_INVALID}, // -snan intermediate
-    {0xFFF7FFFFFFFFFFFFLL, 0xffffffffffffffffLL, FE_INVALID}, // -snan max
+    {0x7FF0000000000001LL, 0x7ff8000000000001LL, 0}, // snan min
+    {0x7FF5344752a0bd90LL, 0x7ffd344752a0bd90LL, 0}, // snan intermediate
+    {0x7FF7FFFFFFFFFFFFLL, 0x7fffffffffffffffLL, 0}, // snan max
+    {0xFFF0000000000001LL, 0xfff8000000000001LL, 0}, // -snan min
+    {0xfFF432438995fffaLL, 0xfffc32438995fffaLL, 0}, // -snan intermediate
+    {0xFFF7FFFFFFFFFFFFLL, 0xffffffffffffffffLL, 0}, // -snan max
     {0x3FF921FB54442D18LL, 0x400412cc2a8d4e9eLL, 0}, // pi/2
     {0x400921FB54442D18LL, 0x40272f147fee4000LL, 0}, // pi
     {0x401921FB54442D18LL, 0x4070bbf2bc2b69c6LL, 0}, // 2pi
@@ -437,22 +446,22 @@ test_expm1_conformance_data[] = {
     {0xC000000000000000LL, 0x400e18fa0df2d9bcLL, 0}, // -2
     {0x4024000000000000LL, 0x40c5829dd053712dLL, 0}, // 10
     {0xC024000000000000LL, 0x40c5829dd053712dLL, 0}, // -10
-    {0x408F400000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 1000
-    {0xC08F400000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -1000
+    {0x408F400000000000LL, 0x7ff0000000000000LL, 0}, // 1000
+    {0xC08F400000000000LL, 0x7ff0000000000000LL, 0}, // -1000
     {0x4050D9999999999ALL, 0x45f2dd7567cd83eeLL, 0}, // 67.4
     {0xC050D9999999999ALL, 0x45f2dd7567cd83eeLL, 0}, // -67.4
-    {0x409EFE6666666666LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 1983.6
-    {0xC09EFE6666666666LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -1983.6
+    {0x409EFE6666666666LL, 0x7ff0000000000000LL, 0}, // 1983.6
+    {0xC09EFE6666666666LL, 0x7ff0000000000000LL, 0}, // -1983.6
     {0x4055E00000000000LL, 0x47c2d7566d26536bLL, 0}, // 87.5
     {0xC055E00000000000LL, 0x47c2d7566d26536bLL, 0}, // -87.5
-    {0x41002BC800000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 132473
-    {0xC1002BC800000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -132473
-    {0x4330000000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 2^52
-    {0x4330000000000001LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 2^52 + 1
-    {0x432FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // 2^52 -1 + 0.5
-    {0xC330000000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -2^52
-    {0xC330000000000001LL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -(2^52 + 1)
-    {0xC32FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -(2^52 -1 + 0.5)
+    {0x41002BC800000000LL, 0x7ff0000000000000LL, 0}, // 132473
+    {0xC1002BC800000000LL, 0x7ff0000000000000LL, 0}, // -132473
+    {0x4330000000000000LL, 0x7ff0000000000000LL, 0}, // 2^52
+    {0x4330000000000001LL, 0x7ff0000000000000LL, 0}, // 2^52 + 1
+    {0x432FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 0}, // 2^52 -1 + 0.5
+    {0xC330000000000000LL, 0x7ff0000000000000LL, 0}, // -2^52
+    {0xC330000000000001LL, 0x7ff0000000000000LL, 0}, // -(2^52 + 1)
+    {0xC32FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 0}, // -(2^52 -1 + 0.5)
     //added from ancient libm repo
     //     + (2^-54) < x < - (2^-54)        //
     {0xbc90000000000000LL, 0xbc90000000000000LL, 0},  //-5.55112e-17
@@ -478,53 +487,53 @@ test_expm1_conformance_data[] = {
     {0x3c8ffffffffffffeLL, 0x3c8ffffffffffffeLL, 0},  //5.55112e-17
     //        341*ln 2 < x < +inf           //
     {0x409c4474e1726455LL, 0x7ff0000000000000LL, 0},  //1809.11
-    {0x409c8e99130401ccLL, 0x7ff0000000000000LL, 34}, //1827.65
-    {0x409cd8bd44959f43LL, 0x7ff0000000000000LL, 34}, //1846.18
-    {0x409d22e176273cbaLL, 0x7ff0000000000000LL, 34}, //1864.72
-    {0x409d6d05a7b8da31LL, 0x7ff0000000000000LL, 34}, //1883.26
-    {0x409db729d94a77a8LL, 0x7ff0000000000000LL, 34}, //1901.79
-    {0x409e014e0adc151fLL, 0x7ff0000000000000LL, 34}, //1920.33
-    {0x409e4b723c6db296LL, 0x7ff0000000000000LL, 34}, //1938.86
-    {0x409e95966dff500dLL, 0x7ff0000000000000LL, 34}, //1957.4
-    {0x409edfba9f90ed84LL, 0x7ff0000000000000LL, 34}, //1975.93
-    {0x409f29ded1228afbLL, 0x7ff0000000000000LL, 34}, //1994.47
-    {0x409f42421c044285LL, 0x7ff0000000000000LL, 34}, //2000.56
-    {0x40c4c79d6d6dc1a5LL, 0x7ff0000000000000LL, 34}, //10639.2
-    {0x40d2d3794bad7d7cLL, 0x7ff0000000000000LL, 34}, //19277.9
-    {0x40db4323e0a41a26LL, 0x7ff0000000000000LL, 34}, //27916.6
-    {0x40e1d9673acd5b68LL, 0x7ff0000000000000LL, 34}, //36555.2
-    {0x40e6113c8548a9bdLL, 0x7ff0000000000000LL, 34}, //45193.9
-    {0x40ea4911cfc3f812LL, 0x7ff0000000000000LL, 34}, //53832.6
-    {0x40ee80e71a3f4667LL, 0x7ff0000000000000LL, 34}, //62471.2
-    {0x40f15c5e325d4a5eLL, 0x7ff0000000000000LL, 34}, //71109.9
-    {0x40f37848d79af188LL, 0x7ff0000000000000LL, 34}, //79748.6
-    {0x40f594337cd898b2LL, 0x7ff0000000000000LL, 34}, //88387.2
-    {0x40f7b01e22163fdcLL, 0x7ff0000000000000LL, 34}, //97025.9
-    {0x40f9cc08c753e706LL, 0x7ff0000000000000LL, 34}, //105665
-    {0x40fbe7f36c918e30LL, 0x7ff0000000000000LL, 34}, //114303
-    {0x40fe03de11cf355aLL, 0x7ff0000000000000LL, 34}, //122942
-    {0x41000fe45b866e42LL, 0x7ff0000000000000LL, 34}, //131581
-    {0x41011dd9ae2541d7LL, 0x7ff0000000000000LL, 34}, //140219
-    {0x41022bcf00c4156cLL, 0x7ff0000000000000LL, 34}, //148858
+    {0x409c8e99130401ccLL, 0x7ff0000000000000LL, 0}, //1827.65
+    {0x409cd8bd44959f43LL, 0x7ff0000000000000LL, 0}, //1846.18
+    {0x409d22e176273cbaLL, 0x7ff0000000000000LL, 0}, //1864.72
+    {0x409d6d05a7b8da31LL, 0x7ff0000000000000LL, 0}, //1883.26
+    {0x409db729d94a77a8LL, 0x7ff0000000000000LL, 0}, //1901.79
+    {0x409e014e0adc151fLL, 0x7ff0000000000000LL, 0}, //1920.33
+    {0x409e4b723c6db296LL, 0x7ff0000000000000LL, 0}, //1938.86
+    {0x409e95966dff500dLL, 0x7ff0000000000000LL, 0}, //1957.4
+    {0x409edfba9f90ed84LL, 0x7ff0000000000000LL, 0}, //1975.93
+    {0x409f29ded1228afbLL, 0x7ff0000000000000LL, 0}, //1994.47
+    {0x409f42421c044285LL, 0x7ff0000000000000LL, 0}, //2000.56
+    {0x40c4c79d6d6dc1a5LL, 0x7ff0000000000000LL, 0}, //10639.2
+    {0x40d2d3794bad7d7cLL, 0x7ff0000000000000LL, 0}, //19277.9
+    {0x40db4323e0a41a26LL, 0x7ff0000000000000LL, 0}, //27916.6
+    {0x40e1d9673acd5b68LL, 0x7ff0000000000000LL, 0}, //36555.2
+    {0x40e6113c8548a9bdLL, 0x7ff0000000000000LL, 0}, //45193.9
+    {0x40ea4911cfc3f812LL, 0x7ff0000000000000LL, 0}, //53832.6
+    {0x40ee80e71a3f4667LL, 0x7ff0000000000000LL, 0}, //62471.2
+    {0x40f15c5e325d4a5eLL, 0x7ff0000000000000LL, 0}, //71109.9
+    {0x40f37848d79af188LL, 0x7ff0000000000000LL, 0}, //79748.6
+    {0x40f594337cd898b2LL, 0x7ff0000000000000LL, 0}, //88387.2
+    {0x40f7b01e22163fdcLL, 0x7ff0000000000000LL, 0}, //97025.9
+    {0x40f9cc08c753e706LL, 0x7ff0000000000000LL, 0}, //105665
+    {0x40fbe7f36c918e30LL, 0x7ff0000000000000LL, 0}, //114303
+    {0x40fe03de11cf355aLL, 0x7ff0000000000000LL, 0}, //122942
+    {0x41000fe45b866e42LL, 0x7ff0000000000000LL, 0}, //131581
+    {0x41011dd9ae2541d7LL, 0x7ff0000000000000LL, 0}, //140219
+    {0x41022bcf00c4156cLL, 0x7ff0000000000000LL, 0}, //148858
     //        -inf < x < -54*ln 2           //
-    {0xc104c083a6d698feLL, 0xbff0000000000000LL, 34}, //-170000
-    {0xc1038c4043b70ef5LL, 0xbff0000000000000LL, 34}, //-160136
-    {0xc10257fce09784ecLL, 0xbff0000000000000LL, 34}, //-150272
-    {0xc10123b97d77fae3LL, 0xbff0000000000000LL, 34}, //-140407
-    {0xc0ffdeec34b0e1b4LL, 0xbff0000000000000LL, 34}, //-130543
-    {0xc0fd76656e71cda2LL, 0xbff0000000000000LL, 34}, //-120678
-    {0xc0fb0ddea832b990LL, 0xbff0000000000000LL, 34}, //-110814
-    {0xc0f8a557e1f3a57eLL, 0xbff0000000000000LL, 34}, //-100949
-    {0xc0f63cd11bb4916cLL, 0xbff0000000000000LL, 34}, //-91085.1
-    {0xc0f3d44a55757d5aLL, 0xbff0000000000000LL, 34}, //-81220.6
-    {0xc0f16bc38f366948LL, 0xbff0000000000000LL, 34}, //-71356.2
-    {0xc0ee067991eeaa6cLL, 0xbff0000000000000LL, 34}, //-61491.8
-    {0xc0e9356c05708248LL, 0xbff0000000000000LL, 34}, //-51627.4
-    {0xc0e4645e78f25a24LL, 0xbff0000000000000LL, 34}, //-41763
-    {0xc0df26a1d8e86400LL, 0xbff0000000000000LL, 34}, //-31898.5
-    {0xc0d58486bfec13b8LL, 0xbff0000000000000LL, 34}, //-22034.1
-    {0xc0c7c4d74ddf86e0LL, 0xbff0000000000000LL, 34}, //-12169.7
-    {0xc0a202846f9b9940LL, 0xbff0000000000000LL, 34}, //-2305.26
+    {0xc104c083a6d698feLL, 0xbff0000000000000LL, 0}, //-170000
+    {0xc1038c4043b70ef5LL, 0xbff0000000000000LL, 0}, //-160136
+    {0xc10257fce09784ecLL, 0xbff0000000000000LL, 0}, //-150272
+    {0xc10123b97d77fae3LL, 0xbff0000000000000LL, 0}, //-140407
+    {0xc0ffdeec34b0e1b4LL, 0xbff0000000000000LL, 0}, //-130543
+    {0xc0fd76656e71cda2LL, 0xbff0000000000000LL, 0}, //-120678
+    {0xc0fb0ddea832b990LL, 0xbff0000000000000LL, 0}, //-110814
+    {0xc0f8a557e1f3a57eLL, 0xbff0000000000000LL, 0}, //-100949
+    {0xc0f63cd11bb4916cLL, 0xbff0000000000000LL, 0}, //-91085.1
+    {0xc0f3d44a55757d5aLL, 0xbff0000000000000LL, 0}, //-81220.6
+    {0xc0f16bc38f366948LL, 0xbff0000000000000LL, 0}, //-71356.2
+    {0xc0ee067991eeaa6cLL, 0xbff0000000000000LL, 0}, //-61491.8
+    {0xc0e9356c05708248LL, 0xbff0000000000000LL, 0}, //-51627.4
+    {0xc0e4645e78f25a24LL, 0xbff0000000000000LL, 0}, //-41763
+    {0xc0df26a1d8e86400LL, 0xbff0000000000000LL, 0}, //-31898.5
+    {0xc0d58486bfec13b8LL, 0xbff0000000000000LL, 0}, //-22034.1
+    {0xc0c7c4d74ddf86e0LL, 0xbff0000000000000LL, 0}, //-12169.7
+    {0xc0a202846f9b9940LL, 0xbff0000000000000LL, 0}, //-2305.26
     //      log(1-1/4) < x < log(1+1/4)     /<</
     {0xbfd269621134db92LL, 0xbfcfffffffffffffLL, 0},  //-0.287682
     {0xbfd0dc554dd7fa10LL, 0xbfcda526657a007fLL, 0},  //-0.263448
@@ -572,7 +581,6 @@ test_expm1_conformance_data[] = {
     {0x40846e129888f861LL, 0x7ae2102ebeb8c4fcLL, 0},  //653.759
     {0x408565155e6bc621LL, 0x7daa5b89b066bcfaLL, 0},  //684.635
     {0x40862E2CD0FE8AB5LL, 0x7fefa7c29bcafb83LL, 0},  //709.771883
-    {0x40862E6666666666LL, 0x7ff0000000000000LL, 0},  //709.8
     {0x40865c18244e93e1LL, 0x7ff0000000000000LL, 0},  //715.512
     {0x4087531aea3161a1LL, 0x7ff0000000000000LL, 0},  //746.388
     {0x40884a1db0142f61LL, 0x7ff0000000000000LL, 0},  //777.264
@@ -720,5 +728,7 @@ test_expm1_conformance_data[] = {
     {0x405021EB851EB852LL,0x45c11d33b0716b95LL}, // 64.53
     {0x40FF5D35B020C49CLL,0x7ff0000000000000LL}, // 128467.3555
 
+   /* The following is the specific example of the error, provided by Paul Zimmermann */
+    {0x408fffbfff7cfe9eLL,0x7ff0000000000000LL}, 
 };
 

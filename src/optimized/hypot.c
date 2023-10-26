@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -142,7 +142,7 @@ double ALM_PROTO_OPT(hypot)(double x, double y) {
         if (xexp == 0) {
             /*x is denormal - handle by adding 601 to the exponent
               and then subtracting a correction for the implicit bit */
-            x = asdouble(ux + SIX_HUNDRED);
+            x = asdouble(ux + 0x2590000000000000);
 
             x -= 9.23297861778573578076e-128; /* 0x2590000000000000 */
 

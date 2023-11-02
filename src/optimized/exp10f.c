@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -129,8 +129,8 @@ static struct {
 #define EXP10F_HUGE                      exp10f_v2_data.Huge
 #define EXP10F_TABLE                     exp10f_v2_data.table_v3
 
-#define EXP10F_FARG_MIN -0x1.66d3e8p5f    /*  ~= -44.85 */
-#define EXP10F_FARG_MAX  0x1.344136p5f    /*  ~=   38.53  */
+#define EXP10F_FARG_MIN -0x1.693c6ap5f   /*  ~= -45.15 */
+#define EXP10F_FARG_MAX  0x1.344136p5f   /*  ~=  38.53 */
 
 #define REAL_LN10                  0x1.26bb1bbb55516p1 //ln(10)
 

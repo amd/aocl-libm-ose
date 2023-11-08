@@ -132,13 +132,11 @@ extern "C" {
 #endif
 
 int test_v2d(test_data *data, int idx)  {
-#if 0
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
   __m128d op2 = LIBM_FUNC_VEC(d, 2, log10)(ip2);
   _mm_store_pd(&op[0], op2);
-#endif
   return 0;
 }
 

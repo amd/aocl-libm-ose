@@ -135,24 +135,20 @@ __m256 LIBM_FUNC_VEC(s, 8, log1pf)(__m256);
 */
 
 int test_v2d(test_data *data, int idx)  {
-#if 0
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
   __m128d op2 = LIBM_FUNC_VEC(d, 2, log1p)(ip2);
   _mm_store_pd(&op[0], op2);
-#endif
   return 0;
 }
 
 int test_v4s(test_data *data, int idx)  {
-#if 0
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m128 ip4 = _mm_set_ps(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m128 op4 = LIBM_FUNC_VEC(s, 4, log1pf)(ip4);
   _mm_store_ps(&op[0], op4);
-#endif
   return 0;
 }
 

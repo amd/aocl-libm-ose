@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ static libm_test_special_data_f32
 test_fmodf_conformance_data[] = {
         {NEG_QNAN_F32, POS_QNAN_F32, 0, NEG_INF_F32},
     {0xfff4b200, 0x7fc00001, 0, 0x5c713452},
-    /*Constant inputs from the Constants.h*/
+    /* Constant inputs from the Constants.h */
     {POS_SNAN_F32, POS_QNAN_F32, FE_INVALID, POS_SNAN_F32}, // invalid
     {NEG_SNAN_F32, POS_QNAN_F32, FE_INVALID, POS_QNAN_F32}, // invalid
     {POS_SNAN_Q_F32, POS_QNAN_F32, 0, NEG_QNAN_F32},
@@ -68,7 +68,11 @@ test_fmodf_conformance_data[] = {
     {POS_HDENORM_F32, 0x007fffff, 0, POS_LNORMAL_F32},
     {POS_LDENORM_F32, 0x00000001, 0, NEG_HNORMAL_F32}, // Confirm this exception
     {NEG_HNORMAL_F32, 0x80000000, 0, POS_LDENORM_F32},
-    {POS_LNORMAL_F32, 0x00000001, FE_UNDERFLOW, NEG_HDENORM_F32},
+    #if defined(_WIN64) || defined(_WIN32)
+      {POS_LNORMAL_F32, 0x00000001, 0, NEG_HDENORM_F32},
+    #else
+      {POS_LNORMAL_F32, 0x00000001, FE_UNDERFLOW, NEG_HDENORM_F32},
+    #endif
     {POS_HDENORM_F32, 0x007fffff, 0, POS_ONE_F32},
     {POS_LDENORM_F32, 0x00000001, 0, NEG_ONE_F32},
     {POS_HDENORM_F32, 0x7fc00000, FE_INVALID, POS_ZERO_F32},
@@ -88,7 +92,7 @@ test_fmodf_conformance_data[] = {
 
 static libm_test_special_data_f64
 test_fmod_conformance_data[] = {
-    {NEG_QNAN_F64, NEG_QNAN_F64, 0, NEG_INF_F64}, // Refer Section 7.2 point f of document IEEE 754-2008
+    {NEG_QNAN_F64, NEG_QNAN_F64, 0, NEG_INF_F64}, // Refer to Section 7.2 point f of document IEEE 754-2008
     {0x3cab03fe1ef3a8fd, 0x7ff8000000000001, 0, 0xfffd2eb531b604d6},
     {NEG_QNAN_F64, POS_QNAN_F64, FE_INVALID, POS_SNAN_F64},
     {POS_HDENORM_F64, 0x0000000000000000LL, 0, NEG_LDENORM_F64},
@@ -103,7 +107,7 @@ test_fmod_conformance_data[] = {
     {POS_INF_F64, POS_QNAN_F64, FE_INVALID, POS_INF_F64},
     {NEG_INF_F64, NEG_QNAN_F64, FE_INVALID, NEG_INF_F64},
     {NEG_INF_F64, NEG_QNAN_F64, FE_INVALID, NEG_SNAN_F64},
-    {NEG_INF_F64, NEG_QNAN_F64, 0, NEG_QNAN_F64}, // Refer Section 7.2 point f of document IEEE 754-2008
+    {NEG_INF_F64, NEG_QNAN_F64, 0, NEG_QNAN_F64}, // Refer to Section 7.2 point f of document IEEE 754-2008
     {POS_INF_F64, POS_QNAN_F64, FE_INVALID, POS_ONE_F64},
     {NEG_INF_F64, NEG_QNAN_F64, FE_INVALID, NEG_ONE_F64},
     {POS_INF_F64, POS_QNAN_F64, FE_INVALID, POS_ZERO_F64},

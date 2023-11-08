@@ -275,9 +275,11 @@ double ALM_PROTO_OPT(atan2)(double y, double x) {
 
     /* General case: take absolute values of arguments */
 
-    u = asdouble(aux);
-
-    v = asdouble(auy);
+    u = x;
+    v = y;
+    
+    if (xneg) u = -x;
+    if (yneg) v = -y;
 
     /* Swap u and v if necessary to obtain 0 < v < u. Compute v/u. */
 

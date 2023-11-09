@@ -1,14 +1,30 @@
 
 (C) 2008-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 
-AOCL LibM - Release Notes - AOCL version 4.1.1 - October monthly release
-------------------------------------------------------------------------
+AOCL LibM - Release Notes - AOCL version 4.2.0
+----------------------------------------------
 
-Highlights of AOCL-LibM version 4.1.1
+Highlights of AOCL LibM version 4.2.0
 -------------------------------------
-Optimized Zen4 double precision version of exp2
+Added new vector array arithmetic functions:
+ - vrsa_fmaxf, vrsa_fmaxfi, vrda_fmax and vrda_fmaxi
+ - vrsa_fminf, vrsa_fminfi, vrda_fmin and vrda_fmini
 
-Revamped AVX512 examples
+Added new fast scalar functions:
+ - pow
+ - sin and sinf
+ - cos and cosf
+ - acosf
 
-Fixed error in lrint.
+Optimized the performance of:
+ - log
+ - vrd8_exp2
+
+Optimised the performance and improved the accuracy of:
+ - tanhf, vr4s_tanhf, vr8s_tanhf and vr16s_tanhf
+ - atan
+ 
+Added optimized versions of fmax, fmaxf, fmod, fmodf, fdim and fdimf. 
+
+Improved the examples.
 

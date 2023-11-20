@@ -33,6 +33,10 @@
   #else            */
 static inline void __amd_raise_fp_exc(int flags)
 {
+    if ((flags & AMD_F_INEXACT) == AMD_F_INEXACT) {
+        double a = 1.0, b = 10.0;
+        __asm __volatile("divsd %1, %0":"+x"(a):"x"(b));
+    }
     if ((flags & AMD_F_UNDERFLOW) == AMD_F_UNDERFLOW) {
         double a = 0x1.0p-1022;
         __asm __volatile("mulsd %1, %0":"+x"(a):"x"(a));

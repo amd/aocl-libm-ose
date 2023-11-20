@@ -60,8 +60,6 @@ using namespace Test;
 #define is_inf_negf(g) (isinf((g)) && (g) < 0.0f)
 #define is_inf_negq(y) (isinfq((y)) && (y) < 0.0)
 
-void SpecSetupf32(SpecParams *);
-void SpecSetupf64(SpecParams *);
 void ConfSetupf32(SpecParams *);
 void ConfSetupf64(SpecParams *);
 

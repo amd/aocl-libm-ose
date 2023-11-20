@@ -232,9 +232,3 @@ test_rint_conformance_data[] = {
     {0xC330000000000001LL, 0xc330000000000001LL, 0}, // -(2^52 + 1)
     {0xC32FFFFFFFFFFFFFLL, 0xc330000000000000LL, FE_INEXACT}  // -(2^52 -1 + 0.5)
 };
-
-static libm_test_special_data_f32
-test_rintf_special_data[] = {};
-
-static libm_test_special_data_f64
-test_rint_special_data[] = {};

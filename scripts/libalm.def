@@ -125,7 +125,6 @@ EXPORTS
     amd_vrd2_exp
     amd_vrd2_exp10
     amd_vrd2_exp2
-    amd_vrd2_expm1
     amd_vrd2_log
     amd_vrd2_log10
     amd_vrd2_log1p
@@ -136,7 +135,6 @@ EXPORTS
     amd_vrd4_cos
     amd_vrd4_exp
     amd_vrd4_exp2
-    amd_vrd4_expm1
     amd_vrd4_log
     amd_vrd4_log2
     amd_vrd4_pow
@@ -154,7 +152,6 @@ EXPORTS
     amd_vrda_log10
     amd_vrda_log1p
     amd_vrda_log2
-    amd_vrda_pow
     amd_vrda_sin
     amd_vrs4_atanf
     amd_vrs4_asinf

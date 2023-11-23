@@ -152,6 +152,7 @@ alm_func_t        G_ENTRY_PT_PTR(tanhf);
 alm_func_t        G_ENTRY_PT_PTR(tanpif);
 alm_func_t        G_ENTRY_PT_PTR(truncf);
 alm_func_t        G_ENTRY_PT_PTR(erff);
+
 /*
  * Complex variants
  */
@@ -161,7 +162,6 @@ alm_func_t        G_ENTRY_PT_PTR(clogf);
 alm_func_t        G_ENTRY_PT_PTR(clog);
 alm_func_t        G_ENTRY_PT_PTR(cpowf);
 alm_func_t        G_ENTRY_PT_PTR(cpow);
-
 
 /*
  * Integer variants
@@ -189,7 +189,6 @@ alm_func_t        G_ENTRY_PT_PTR(vrda_log);
 alm_func_t        G_ENTRY_PT_PTR(vrda_log10);
 alm_func_t        G_ENTRY_PT_PTR(vrda_log1p);
 alm_func_t        G_ENTRY_PT_PTR(vrda_log2);
-alm_func_t        G_ENTRY_PT_PTR(vrda_pow);
 alm_func_t        G_ENTRY_PT_PTR(vrda_sin);
 
 alm_func_t        G_ENTRY_PT_PTR(vrda_add);
@@ -294,7 +293,6 @@ alm_func_t        G_ENTRY_PT_PTR(vrd2_cosh);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_exp);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_exp2);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_exp10);
-alm_func_t        G_ENTRY_PT_PTR(vrd2_expm1);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_log);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_log2);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_log10);
@@ -310,7 +308,6 @@ alm_func_t        G_ENTRY_PT_PTR(vrd4_cos);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_exp);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_exp2);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_exp10);
-alm_func_t        G_ENTRY_PT_PTR(vrd4_expm1);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_log);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_log2);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_log10);

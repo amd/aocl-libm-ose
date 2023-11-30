@@ -153,9 +153,6 @@ double FN_PROTOTYPE(acos)(double x);
 
  double FN_PROTOTYPE( pow)(double x, double y);
  float FN_PROTOTYPE(powf)(float x, float y);
- double FN_PROTOTYPE(fastpow)(double x, double y);
-
-  double FN_PROTOTYPE(zen_pow)(double x, double y); // VK New "pow" function added.
 
 double FN_PROTOTYPE( remainder)(double x, double y);
  float FN_PROTOTYPE(remainderf)(float x, float y);

@@ -54,7 +54,6 @@ alm_func_t        G_ENTRY_PT_PTR(exp2);
 alm_func_t        G_ENTRY_PT_PTR(exp);
 alm_func_t        G_ENTRY_PT_PTR(expm1);
 alm_func_t        G_ENTRY_PT_PTR(fabs);
-alm_func_t        G_ENTRY_PT_PTR(fastpow);
 alm_func_t        G_ENTRY_PT_PTR(fdim);
 alm_func_t        G_ENTRY_PT_PTR(floor);
 alm_func_t        G_ENTRY_PT_PTR(fma);

@@ -56,7 +56,6 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(exp2);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(exp);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(expm1);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(fabs);
-extern alm_ep_func_t        G_ENTRY_PT_PTR(fastpow);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(fdim);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(floor);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(fma);

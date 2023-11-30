@@ -152,7 +152,6 @@ extern void LIBM_IFACE_PROTO(exp)(void *arg);
 extern void LIBM_IFACE_PROTO(expm1)(void *arg);
 extern void LIBM_IFACE_PROTO(fabs)(void *arg);
 extern void LIBM_IFACE_PROTO(finite)(void *arg);
-extern void LIBM_IFACE_PROTO(fastpow)(void *arg);
 extern void LIBM_IFACE_PROTO(fdim)(void *arg);
 extern void LIBM_IFACE_PROTO(floor)(void *arg);
 extern void LIBM_IFACE_PROTO(fma)(void *arg);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2018-2023, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -72,7 +72,7 @@ static struct {
     .one_by_two = _MM_SET1_I64(ONE_BY_TWO),
     .mant_8_bits = _MM_SET1_I64(MANT_MASK_N),
 
-    /*
+   /*
     * Polynomial constants, 1/x! (reciprocal x)
     */
     .poly = { /* skip for 0/1 and 1/1 */
@@ -177,9 +177,7 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     /* This portion of the code is a vectorized version of the scalar log.c, with some checks removed */
 
-    v_i32x4_t int32_exponent;
-
-    v_i64x4_t int_exponent = (v_i64x4_t)( (ux >> 52) - DP64_BIAS );
+    v_u64x4_t int_exponent = (ux >> 52) - DP64_BIAS ;
 
     v_u64x4_t mant  = ((ux & MANTISSA_BITS) | DP_HALF);
 
@@ -197,7 +195,7 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     v_f64x4_t LOG_256_HEAD, LOG_256_TAIL;
 
-    v_f64x4_t r, r1, u;
+    v_f64x4_t exponent, r, r1, u;
 
     /* Avoiding the use of vgatherpd instruction for performance reasons */
 
@@ -205,7 +203,7 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
         int32_t j = (int32_t)index[i];
 
-        int32_exponent[i] = (int32_t)int_exponent[i];
+        exponent[i] = (double)int_exponent[i];
 
         F_INV_HEAD[i] = TAB_F_INV[j].head;
 
@@ -216,8 +214,6 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
         LOG_256_TAIL[i] = TAB_LOG[j].tail;
 
     }
-
-    v_f64x4_t exponent = (v_f64x4_t) _mm256_cvtepi32_pd ((__m128i)int32_exponent);
 
     r = f * F_INV_TAIL;
 

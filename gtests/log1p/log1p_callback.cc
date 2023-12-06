@@ -116,23 +116,29 @@ int test_s1d(test_data *data, int idx)  {
 extern "C" {
 #endif
 
-/*
+/* GLIBC vector function symbols needs to be re-defined accordingly */
 #if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
-#define _ZGVdN2v_log1p _ZGVbN2v_log1p
-#define _ZGVdN4v_log1p _ZGVdN4v_log1p
-#define _ZGVsN4v_log1pf _ZGVbN4v_log1pf
-#define _ZGVsN8v_log1pf _ZGVdN8v_log1pf
+  #define _ZGVdN2v_log1p _ZGVbN2v_log1p
+  #define _ZGVdN4v_log1p _ZGVdN4v_log1p
+  #define _ZGVsN4v_log1pf _ZGVbN4v_log1pf
+  #define _ZGVsN8v_log1pf _ZGVdN8v_log1pf
+  #if defined(__AVX512__)
+    #define _ZGVsN16v_log1pf _ZGVeN16v_log1pf
+    #define _ZGVdN8v_log1p _ZGVeN8v_log1p
+  #endif
 #endif
-*/
 
-/*vector routines*/
-/*
-__m128d LIBM_FUNC_VEC(d, 2, log1p)(__m128d);
-__m256d LIBM_FUNC_VEC(d, 4, log1p)(__m256d);
-
-__m128 LIBM_FUNC_VEC(s, 4, log1pf)(__m128);
-__m256 LIBM_FUNC_VEC(s, 8, log1pf)(__m256);
-*/
+/* Declaration of vector routines */
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  __m128d LIBM_FUNC_VEC(d, 2, log1p) (__m128d);
+  __m256d LIBM_FUNC_VEC(d, 4, log1p) (__m256d);
+  __m128  LIBM_FUNC_VEC(s, 4, log1pf)(__m128);
+  __m256  LIBM_FUNC_VEC(s, 8, log1pf)(__m256);
+  #if defined(__AVX512__)
+    __m512d LIBM_FUNC_VEC(d, 8, log1p)(__m512d);
+    __m512  LIBM_FUNC_VEC(s, 16, log1pf)(__m512);
+  #endif
+#endif
 
 int test_v2d(test_data *data, int idx)  {
   double *ip  = (double*)data->ip;

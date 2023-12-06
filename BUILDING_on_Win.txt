@@ -110,9 +110,18 @@
    Default is static linking.
     --aocl_utils_link=1
 
-## To build tests with microsoft default math library (for static functions using math.h
-   library and for vector functions using DirectXMath.h library) compatibility api, use following flag
+## To build tests with Microsoft default math library (for static functions using math.h
+   library and for vector functions using DirectXMath.h library) compatibility api, use the flag
     --libabi=msvc
+
+## To build tests with the Intel math library
+    1. Install Intel HPC Toolkit V2023 via the following link
+        https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html
+    2. Look for svml_dispmd.lib and libirc.lib libraries in installed folders and copy the complete path
+    3. Add the Intel library path to INTEL_LIB_PATH variable using the command:
+        set INTEL_LIB_PATH=C:\Program Files (x86)\Intel\oneAPI\compiler\2023.2.0\windows\compiler\lib\intel64_win
+    4. Compile LibM with the flag
+        --libabi=msvc
 
 ## To run the tests
     To run the AOCL LibM test framework.

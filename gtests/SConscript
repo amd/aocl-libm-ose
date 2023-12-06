@@ -112,7 +112,7 @@ if arch_config == 'avx512':
 
 # for address sanitizer usage.
 # Fix me for windows.
-# Currently, ASAN is added in LibM library and not in gtests framework on Windows platform. 
+# Currently, ASAN is added in LibM library and not in gtests framework on Windows platform.
 
 use_asan = env['use_asan']
 if env['HOST_OS'] != 'win32':
@@ -154,9 +154,13 @@ elif abi == 'glibc':
     liblist.extend(['mvec'])
 elif abi == 'svml':
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_SVML]
-    liblist.extend(['svml'])
-    liblist.extend(['irc'])
-    liblist.extend(['intlc'])
+    if env['HOST_OS'] != 'win32':
+        liblist.extend(['svml'])
+        liblist.extend(['irc'])
+        liblist.extend(['intlc'])
+    else:
+        liblist.extend(['svml_dispmd'])
+        liblist.extend(['libirc'])
 else:
     pass
 

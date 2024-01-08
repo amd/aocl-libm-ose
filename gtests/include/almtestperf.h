@@ -87,49 +87,30 @@ class AoclLibmTest {
       }
 
       unsigned int arr_size =  sz * sizeof(T);
-      sz = (arr_size << 1) + _ALIGN_FACTOR;
-
-      #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-        inpbuff = (T*)_aligned_malloc(sz, _ALIGN_FACTOR);
-        outbuff = (T*)_aligned_malloc(sz, _ALIGN_FACTOR);
-      #else
-        inpbuff = (T*)aligned_alloc(_ALIGN_FACTOR, sz);
-        outbuff = (T*)aligned_alloc(_ALIGN_FACTOR, sz);
-      #endif
-
+      if((arr_size % _ALIGN_FACTOR) != 0)
+      {
+        int factor = (arr_size / _ALIGN_FACTOR) + 1;
+        arr_size = _ALIGN_FACTOR * factor;
+      }
+      aocl_libm_aligned_alloc(arr_size, inpbuff);
+      aocl_libm_aligned_alloc(arr_size, outbuff);
       PopulateInputSamples(inpbuff, params->range[0], params->count);
       if (nargs == 2) {
-        #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-          inpbuff1 = (T*)_aligned_malloc(sz, _ALIGN_FACTOR);
-        #else
-          inpbuff1 = (T*)aligned_alloc(_ALIGN_FACTOR, sz);
-        #endif
-        PopulateInputSamples(inpbuff, params->range[1], params->count);
+        aocl_libm_aligned_alloc(arr_size, inpbuff1);
+        PopulateInputSamples(inpbuff1, params->range[1], params->count);
       }
     }
 
-    ~AoclLibmTest() {
-  if (inpbuff != NULL) {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(inpbuff);
-    #else
-      free(inpbuff);
-    #endif
-    inpbuff = nullptr;
-  if (ipargs == 2) {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(inpbuff1);
-    #else
-      free(inpbuff1);
-    #endif
-    inpbuff1 = nullptr;
-      }
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(outbuff);
-    #else
-      free(outbuff);
-    #endif
-        outbuff = nullptr;
+    ~AoclLibmTest()
+    {
+      if (inpbuff != NULL)
+      {
+        aocl_libm_aligned_free(inpbuff);
+        if (ipargs == 2)
+        {
+          aocl_libm_aligned_free(inpbuff1);
+        }
+        aocl_libm_aligned_free(outbuff);
       }
     }
 };

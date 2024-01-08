@@ -147,4 +147,42 @@ typedef struct {
 
 int gtest_main(int argc, char **argv, InputParams *params);
 int gbench_main(int argc, char **argv, InputParams *params);
+
+/*
+ * This function is a wrapper around:
+ * aligned_alloc() for Linux platform
+ * _aligned_malloc() for Windows platform
+ *
+ * NOTE:
+ * aligned_alloc() returns NULL pointer when:
+ *     1. alignment param is not a valid data.
+ *     2. size param is not an integral multiple of alignment.
+ */
+template <typename T>
+int aocl_libm_aligned_alloc(unsigned int arr_size, T* &buff)
+{
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      buff = (T*)_aligned_malloc(arr_size, _ALIGN_FACTOR);
+    #else
+      buff = (T*)aligned_alloc(_ALIGN_FACTOR, arr_size);
+    #endif
+    return 0;
+}
+
+/*
+ * This function is a wrapper around:
+ * free() for Linux platform
+ * _aligned_free() for Windows platform
+ */
+template <typename T>
+int aocl_libm_aligned_free(T* &buff)
+{
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      _aligned_free(buff);
+    #else
+      free(buff);
+    #endif
+    buff = nullptr;
+    return 0;
+}
 #endif

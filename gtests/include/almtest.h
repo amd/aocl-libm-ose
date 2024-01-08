@@ -71,12 +71,16 @@ template <typename T>
 int PopulateInputSamples(T **inpbuff, InputRange &range, uint32_t len) {
   Random<T> r = Random<T>(range.type);
   unsigned int arr_size = len * sizeof(T);
-  int sz = (arr_size << 1) + _ALIGN_FACTOR;
-  #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-    T* buff = (T*)_aligned_malloc(sz, _ALIGN_FACTOR);
-  #else
-    T *buff = (T *)aligned_alloc(_ALIGN_FACTOR, sz);
-  #endif
+
+  if((arr_size % _ALIGN_FACTOR) != 0)
+  {
+    int factor = (arr_size / _ALIGN_FACTOR) + 1;
+    arr_size = _ALIGN_FACTOR * factor;
+  }
+
+  T* buff = NULL;
+  aocl_libm_aligned_alloc(arr_size, buff);
+
   if (!range.min && !range.max) {
     #if defined(_WIN64) || defined(_WIN32)
       range.min = (std::numeric_limits<T>::min)();
@@ -157,36 +161,18 @@ class AccuTestFixtureFloat : public ::testing::TestWithParam<AccuParams> {
     PopulateInputSamples(&inpbuff, range[0], count);
     if (nargs == 2)
       PopulateInputSamples(&inpbuff1, range[1], count);
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      aop = (float*)_aligned_malloc(64, _ALIGN_FACTOR);
-    #else
-      aop = (float *)aligned_alloc(_ALIGN_FACTOR, 64);
-    #endif
+
+    unsigned int arr_size = _ALIGN_FACTOR;
+    aocl_libm_aligned_alloc(arr_size, aop);
   }
 
   void TearDown() override {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(inpbuff);
-    #else
-      free(inpbuff);
-    #endif
-
-    inpbuff = nullptr;
-    if (nargs == 2) {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(inpbuff1);
-    #else
-      free(inpbuff1);
-    #endif
-
-    inpbuff1 = nullptr;
+    aocl_libm_aligned_free(inpbuff);
+    if (nargs == 2)
+    {
+      aocl_libm_aligned_free(inpbuff1);
     }
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(aop);
-    #else
-      free(aop);
-    #endif
-    aop = nullptr;
+    aocl_libm_aligned_free(aop);
   }
 
  protected:
@@ -217,35 +203,18 @@ class AccuTestFixtureDouble : public ::testing::TestWithParam<AccuParams> {
     PopulateInputSamples(&inpbuff, range[0], count);
     if (nargs == 2)
       PopulateInputSamples(&inpbuff1, range[1], count);
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      aop = (double*)_aligned_malloc(64, _ALIGN_FACTOR);
-    #else
-      aop = (double *)aligned_alloc(_ALIGN_FACTOR,64);
-    #endif
+
+    unsigned int arr_size = _ALIGN_FACTOR;
+    aocl_libm_aligned_alloc(arr_size, aop);
   }
 
   void TearDown() override {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(inpbuff);
-    #else
-      free(inpbuff);
-    #endif
-
-    inpbuff = nullptr;
-    if (nargs == 2) {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(inpbuff1);
-    #else
-      free(inpbuff1);
-    #endif
-    inpbuff1 = nullptr;
+    aocl_libm_aligned_free(inpbuff);
+    if (nargs == 2)
+    {
+      aocl_libm_aligned_free(inpbuff1);
     }
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(aop);
-    #else
-      free(aop);
-    #endif
-    aop = nullptr;
+    aocl_libm_aligned_free(aop);
   }
 
  protected:
@@ -285,43 +254,20 @@ class AccuTestFixtureComplexFloat : public ::testing::TestWithParam<AccuParams> 
       PopulateInputSamples(&inpbuff1, range[1], count);
       PopulateComplexInputSamples(complex_inpbuff1, inpbuff1, count);
     }
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      aop = (float _Complex*)_aligned_malloc(64, _ALIGN_FACTOR);
-    #else
-      aop = (float _Complex *)aligned_alloc(_ALIGN_FACTOR, 64);
-    #endif
+    unsigned int arr_size = _ALIGN_FACTOR;
+    aocl_libm_aligned_alloc(arr_size, aop);
   }
 
   void TearDown() override {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(inpbuff);
-      _aligned_free(complex_inpbuff);
-    #else
-      free(inpbuff);
-      free(complex_inpbuff);
-    #endif
+    aocl_libm_aligned_free(inpbuff);
+    aocl_libm_aligned_free(complex_inpbuff);
 
-    inpbuff = nullptr;
-    complex_inpbuff = nullptr;
-
-    if (nargs == 2) {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(inpbuff1);
-      _aligned_free(complex_inpbuff1);
-    #else
-      free(inpbuff1);
-      free(complex_inpbuff1);
-    #endif
-
-    inpbuff1 = nullptr;
-    complex_inpbuff1 = nullptr;
+    if (nargs == 2)
+    {
+      aocl_libm_aligned_free(inpbuff1);
+      aocl_libm_aligned_free(complex_inpbuff1);
     }
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(aop);
-    #else
-      free(aop);
-    #endif
-    aop = nullptr;
+    aocl_libm_aligned_free(aop);
   }
 
  protected:
@@ -363,43 +309,20 @@ class AccuTestFixtureComplexDouble : public ::testing::TestWithParam<AccuParams>
       PopulateInputSamples(&inpbuff1, range[1], count);
       PopulateComplexInputSamples(complex_inpbuff1, inpbuff1, count);
     }
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      aop = (double _Complex*)_aligned_malloc(128, _ALIGN_FACTOR);
-    #else
-      aop = (double _Complex *)aligned_alloc(_ALIGN_FACTOR, 128);
-    #endif
+    unsigned int arr_size = _ALIGN_FACTOR;
+    aocl_libm_aligned_alloc(arr_size, aop);
   }
 
   void TearDown() override {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(inpbuff);
-      _aligned_free(complex_inpbuff);
-    #else
-      free(inpbuff);
-      free(complex_inpbuff);
-    #endif
+    aocl_libm_aligned_free(inpbuff);
+    aocl_libm_aligned_free(complex_inpbuff);
 
-    inpbuff = nullptr;
-    complex_inpbuff = nullptr;
-
-    if (nargs == 2) {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(inpbuff1);
-      _aligned_free(complex_inpbuff1);
-    #else
-      free(inpbuff1);
-      free(complex_inpbuff1);
-    #endif
-
-    inpbuff1 = nullptr;
-    complex_inpbuff1 = nullptr;
+    if (nargs == 2)
+    {
+      aocl_libm_aligned_free(inpbuff1);
+      aocl_libm_aligned_free(complex_inpbuff1);
     }
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(aop);
-    #else
-      free(aop);
-    #endif
-    aop = nullptr;
+    aocl_libm_aligned_free(aop);
   }
 
  protected:
@@ -425,16 +348,19 @@ void SpecialSetUp(T **inp, int **exptdexpt, uint32_t count, U *data,
                    uint32_t nargs, T **inp2, T **op) {
   size_t size = sizeof(T);
   uint32_t arr_size = count * size;
-  uint32_t sz = (arr_size << 1) + _ALIGN_FACTOR;
-  #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-    int *ee = (int *)_aligned_malloc(sz, _ALIGN_FACTOR);
-    T *in = (T *)_aligned_malloc(sz, _ALIGN_FACTOR);
-    T *opp = (T *)_aligned_malloc(sz, _ALIGN_FACTOR);
-  #else
-    int *ee = (int *)aligned_alloc(_ALIGN_FACTOR, sz);
-    T *in = (T *)aligned_alloc(_ALIGN_FACTOR, sz);
-    T *opp = (T *)aligned_alloc(_ALIGN_FACTOR, sz);
-  #endif
+
+  if((arr_size % _ALIGN_FACTOR) != 0)
+  {
+    int factor = (arr_size / _ALIGN_FACTOR) + 1;
+    arr_size = _ALIGN_FACTOR * factor;
+  }
+  int* ee = NULL;
+  T* in = NULL;
+  T* opp = NULL;
+  aocl_libm_aligned_alloc(arr_size, ee);
+  aocl_libm_aligned_alloc(arr_size, in);
+  aocl_libm_aligned_alloc(arr_size, opp);
+
   LIBM_TEST_DPRINTF(DBG2, ,"Input:", in);
 
   LIBM_TEST_DPRINTF(DBG2, ,
@@ -450,11 +376,9 @@ void SpecialSetUp(T **inp, int **exptdexpt, uint32_t count, U *data,
   *op  = (T *)opp;
 
   if(nargs == 2) {
-    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
-      T* in2 = (T*)_aligned_malloc(sz, _ALIGN_FACTOR);
-    #else
-      T *in2 = (T *)aligned_alloc(_ALIGN_FACTOR, sz);
-    #endif
+    T* in2 = NULL;
+    aocl_libm_aligned_alloc(arr_size, in2);
+
     LIBM_TEST_DPRINTF(DBG2, ,"Input1:", in2);
     for (uint32_t i = 0; i < count; i++) {
       in2[i] = data[i].in2;
@@ -468,16 +392,19 @@ void SpecialSetUpComplex(T **inp, int **exptdexpt, uint32_t count, U *data,
                    uint32_t nargs, T **inp2, T **op) {
   size_t size = sizeof(T);
   uint32_t arr_size = count * size;
-  uint32_t sz = (arr_size << 1) + _ALIGN_FACTOR;
-  #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-    int *ee = (int *)_aligned_malloc(sz, _ALIGN_FACTOR);
-    T *in = (T *)_aligned_malloc(sz, _ALIGN_FACTOR);
-    T *opp = (T *)_aligned_malloc(sz, _ALIGN_FACTOR);
-  #else
-    int *ee = (int *)aligned_alloc(_ALIGN_FACTOR, sz);
-    T *in = (T *)aligned_alloc(_ALIGN_FACTOR, sz);
-    T *opp = (T *)aligned_alloc(_ALIGN_FACTOR, sz);
-  #endif
+
+  if((arr_size % _ALIGN_FACTOR) != 0)
+  {
+    int factor = (arr_size / _ALIGN_FACTOR) + 1;
+    arr_size = _ALIGN_FACTOR * factor;
+  }
+  int* ee = NULL;
+  T* in = NULL;
+  T* opp = NULL;
+  aocl_libm_aligned_alloc(arr_size, ee);
+  aocl_libm_aligned_alloc(arr_size, in);
+  aocl_libm_aligned_alloc(arr_size, opp);
+
   LIBM_TEST_DPRINTF(DBG2, ,"Input:", in);
 
   LIBM_TEST_DPRINTF(DBG2, ,
@@ -493,11 +420,9 @@ void SpecialSetUpComplex(T **inp, int **exptdexpt, uint32_t count, U *data,
   *op  = (T *)opp;
 
   if(nargs == 2) {
-    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
-      T* in2 = (T*)_aligned_malloc(sz, _ALIGN_FACTOR);
-    #else
-      T *in2 = (T *)aligned_alloc(_ALIGN_FACTOR, sz);
-    #endif
+    T* in2 = NULL;
+    aocl_libm_aligned_alloc(arr_size, in2);
+
     LIBM_TEST_DPRINTF(DBG2, ,"Input1:", in2);
     for (uint32_t i = 0; i < count; i++) {
       in2[i] = data[i].in2;
@@ -612,30 +537,12 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
   }
 
   void TearDown() override {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(idata);
-      _aligned_free(iop);
-    #else
-      free(idata);
-      free(iop);
-    #endif
-
-    idata = nullptr;
+    aocl_libm_aligned_free(idata);
+    aocl_libm_aligned_free(iop);
     if (nargs == 2) {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(idata1);
-    #else
-      free(idata1);
-    #endif
-
-      idata1 = nullptr;
+      aocl_libm_aligned_free(idata1);
     }
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(expected_expection);
-    #else
-      free(expected_expection);
-    #endif
-    expected_expection = nullptr;
+    aocl_libm_aligned_free(expected_expection);
   }
 
  protected:
@@ -723,29 +630,12 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
   }
 
   void TearDown() override {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(idata);
-      _aligned_free(iop);
-    #else
-      free(idata);
-      free(iop);
-    #endif
-
-    idata = nullptr;
+    aocl_libm_aligned_free(idata);
+    aocl_libm_aligned_free(iop);
     if (nargs == 2) {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(idata1);
-    #else
-      free(idata1);
-    #endif
-    idata1 = nullptr;
+      aocl_libm_aligned_free(idata1);
     }
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(expected_expection);
-    #else
-      free(expected_expection);
-    #endif
-    expected_expection = nullptr;
+    aocl_libm_aligned_free(expected_expection);
   }
 
  protected:
@@ -838,30 +728,12 @@ class SpecTestFixtureComplexFloat : public ::testing::TestWithParam<SpecParams> 
   }
 
   void TearDown() override {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(idata);
-      _aligned_free(iop);
-    #else
-      free(idata);
-      free(iop);
-    #endif
-
-    idata = nullptr;
+    aocl_libm_aligned_free(idata);
+    aocl_libm_aligned_free(iop);
     if (nargs == 2) {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(idata1);
-    #else
-      free(idata1);
-    #endif
-
-      idata1 = nullptr;
+      aocl_libm_aligned_free(idata1);
     }
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(expected_expection);
-    #else
-      free(expected_expection);
-    #endif
-    expected_expection = nullptr;
+    aocl_libm_aligned_free(expected_expection);
   }
 
  protected:
@@ -953,30 +825,12 @@ class SpecTestFixtureComplexDouble : public ::testing::TestWithParam<SpecParams>
   }
 
   void TearDown() override {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(idata);
-      _aligned_free(iop);
-    #else
-      free(idata);
-      free(iop);
-    #endif
-
-    idata = nullptr;
+    aocl_libm_aligned_free(idata);
+    aocl_libm_aligned_free(iop);
     if (nargs == 2) {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(idata1);
-    #else
-      free(idata1);
-    #endif
-
-      idata1 = nullptr;
+      aocl_libm_aligned_free(idata1);
     }
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(expected_expection);
-    #else
-      free(expected_expection);
-    #endif
-    expected_expection = nullptr;
+    aocl_libm_aligned_free(expected_expection);
   }
 
  protected:

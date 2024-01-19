@@ -726,3 +726,34 @@ WEAK_LIBM_ALIAS(vrs16_asinf, FN_PROTOTYPE(vrs16_asinf));
 WEAK_LIBM_ALIAS(vrs16_acosf, FN_PROTOTYPE(vrs16_acosf));
 WEAK_LIBM_ALIAS(vrs16_atanf, FN_PROTOTYPE(vrs16_atanf));
 WEAK_LIBM_ALIAS(vrs16_erff, FN_PROTOTYPE(vrs16_erff));
+
+
+
+/*
+ * SWLCSG-2283 & CPUPL-4422 - Weak Aliases with "__" prefix in order
+ * to support GLIBC's "-mveclibabi=acml" option.
+ *
+ * WEAK_LIBM_ALIAS is used to map "amd_<func_name>" to "__<func_name>".
+ *
+ * GLIBC internally identifies following 13 AOCL Vector functions with "__" prefix:
+ * 
+ * __vrd2_sin, __vrd2_cos, __vrd2_exp, __vrd2_log, __vrd2_log2, __vrd2_log10,
+ * __vrs4_sinf, __vrs4_cosf, __vrs4_expf, __vrs4_logf, __vrs4_log2f, __vrs4_log10f
+ * and __vrs4_powf
+ */
+
+WEAK_LIBM_ALIAS(__vrd2_sin, FN_PROTOTYPE(vrd2_sin));
+WEAK_LIBM_ALIAS(__vrd2_cos, FN_PROTOTYPE(vrd2_cos));
+WEAK_LIBM_ALIAS(__vrd2_exp, FN_PROTOTYPE(vrd2_exp));
+WEAK_LIBM_ALIAS(__vrd2_log, FN_PROTOTYPE(vrd2_log));
+WEAK_LIBM_ALIAS(__vrd2_log2, FN_PROTOTYPE(vrd2_log2));
+WEAK_LIBM_ALIAS(__vrd2_log10, FN_PROTOTYPE(vrd2_log10));
+
+WEAK_LIBM_ALIAS(__vrs4_sinf, FN_PROTOTYPE(vrs4_sinf));
+WEAK_LIBM_ALIAS(__vrs4_cosf, FN_PROTOTYPE(vrs4_cosf));
+WEAK_LIBM_ALIAS(__vrs4_expf, FN_PROTOTYPE(vrs4_expf));
+WEAK_LIBM_ALIAS(__vrs4_logf, FN_PROTOTYPE(vrs4_logf));
+WEAK_LIBM_ALIAS(__vrs4_log2f, FN_PROTOTYPE(vrs4_log2f));
+WEAK_LIBM_ALIAS(__vrs4_log10f, FN_PROTOTYPE(vrs4_log10f));
+
+WEAK_LIBM_ALIAS(__vrs4_powf, FN_PROTOTYPE(vrs4_powf));

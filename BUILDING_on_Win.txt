@@ -103,6 +103,7 @@
 
 ## To build with ASAN feature, use following flag
     --use_asan=1
+    Note: Link aocl_utils dynamically (--aocl_utils_link=0) when compiling with --use_asan=1 option.
 
 ## To link static/dynamic libaoclutils library use following flag:
    0 for dynamic linking

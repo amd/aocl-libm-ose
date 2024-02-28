@@ -54,17 +54,20 @@ char *concatenate(const char *a, const char *b, const char *c) {
 
 /* check error */
 int CheckError() {
-    char* error;
     #if defined(_WIN64) || defined(_WIN32)
-        error = GetLastError();
+        long int error = GetLastError();
+        if (error != NULL) {
+            printf("Error: %ld\n", error);
+            return 1;
+        }
     #else
-        error = dlerror();
+        char* error = dlerror();
+        if (error != NULL) {
+            printf("Error: %s\n", error);
+            return 1;
+        }
     #endif
 
-    if (error != NULL) {
-        printf("Error: %s\n", error);
-        return 1;
-    }
     return 0;
 }
 

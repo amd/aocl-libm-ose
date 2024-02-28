@@ -154,7 +154,7 @@ ALM_PROTO_OPT(vrd2_exp)(v_f64x2_t x)
     vx = vx & MASK;
 
     // Check if -709 < vx < 709
-    v_u64x2_t cond = (vx > ARG_MAX);
+    v_u64x2_t cond = (v_u64x2_t)(vx > ARG_MAX);
 
     // x * (64.0/ln(2))
     v_f64x2_t z = x * INVLN2;

@@ -28,7 +28,6 @@
 #include "libm_dynamic_load.h"
 
 int test_nexttoward(void* handle) {
-    char* error;
     /*scalar inputs*/
     float inputf = 3.145f, outputf;
     double input = 6.287, output;
@@ -38,18 +37,23 @@ int test_nexttoward(void* handle) {
         float (*func_f)(float, long double) = (float (*)(float, long double))GetProcAddress(handle, "amd_nexttowardf");
         double (*func_d)(double, long double) = (double (*)(double, long double))GetProcAddress(handle, "amd_nexttoward");
 
-        error = GetLastError();
+        long int error = GetLastError();
+
+        if (error != NULL) {
+            printf("Error: %ld\n", error);
+            return 1;
+        }
     #else
         float (*func_f)(float, long double) = (float (*)(float, long double))dlsym(handle, "amd_nexttowardf");
         double (*func_d)(double, long double) = (double (*)(double, long double))dlsym(handle, "amd_nexttoward");
 
-        error = dlerror();
-    #endif
+        char* error = dlerror();
 
-    if (error != NULL) {
-        printf("Error: %s\n", error);
-        return 1;
-    }
+        if (error != NULL) {
+            printf("Error: %s\n", error);
+            return 1;
+        }
+    #endif
 
     printf("Exercising nexttoward routines\n");
     outputf = func_f(inputf, input1);

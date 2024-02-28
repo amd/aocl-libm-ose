@@ -78,9 +78,7 @@ else:
                '/DWIN32',
                '/D_WINDOWS',
                '/DNDEBUG',
-               '-MD',
                '-march=native',
-               '/MT'
           ]
     if use_asan == 1:
         ccflags.append(['/fsanitize=address', '/Zi'])
@@ -144,6 +142,7 @@ else:
         aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libaoclutils_static.lib')
         aocl_utils_static_lib_path = almenv.File(aocl_utils_static_lib_path)
         almenv.Append(LIBS=aocl_utils_static_lib_path)
+        almenv.Append(LIBS=["msvcrt"])
     else:
         print("Linking Dynamic libaoclutils library")
         aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libaoclutils.lib')

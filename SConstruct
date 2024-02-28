@@ -55,6 +55,8 @@ if aenv['HOST_OS'] == 'win32':
     aenv['ENV']['TMP'] = os.environ['TMP'] # to avoid linker eror in windows. This is mentioned in scons FQA doc.
     shutil.copy(r'.\scripts\libalm.def', r'.\src')
     shutil.copy(r'.\scripts\almfast.def', r'.\src\fast')
+    shutil.copy(r'.\scripts\mparith32.def', r'.\gtests\libs\mparith')
+    shutil.copy(r'.\scripts\mparith64.def', r'.\gtests\libs\mparith')
 
 # First check version of python and scons
 EnsurePythonVersion(3, 6)
@@ -113,4 +115,33 @@ alm_libs = SConscript(joinpath(src_path, 'SConscript'),
 
 targets += alm_libs
 
+gtest_objs = []
+if 'tests' in COMMAND_LINE_TARGETS or ('gtests' in COMMAND_LINE_TARGETS) :
+    if aenv['HOST_OS'] == 'win32':
+        #initialize different library paths
+        mpfr_inc = Dir('..\mpfr\mpfr_x64-windows\include')
+        gmp_inc = Dir('..\mpfr\gmp_x64-windows\include')
+        mpc_inc = Dir('..\mpfr\mpc_x64-windows\include')
+        mpfr_lib = Dir('..\mpfr\mpfr_x64-windows\lib')
+        gmp_lib = Dir('..\mpfr\gmp_x64-windows\lib')
+        mpc_lib = Dir('..\mpfr\mpc_x64-windows\lib')
+
+        aenv['ENV']['INCLUDE'] = [aenv['ENV']['INCLUDE'], mpfr_inc, gmp_inc, mpc_inc]
+        aenv.Append(LIBS=['gmp.lib', 'mpfr.lib', 'mpc.lib'],LIBPATH=[mpfr_lib, gmp_lib, mpc_lib])
+
+    testenv = aenv.Clone()
+
+    LIBPATH=[alm_lib_path]
+
+    gtest_objs += SConscript(dirs='gtests',
+                   exports = {'env' : testenv, 'almenv': __almenv},
+                   duplicate = 0,
+                   src_dir    = 'gtests',
+                   variant_dir = joinpath(build_root, 'gtests'))
+
+if gtest_objs:
+    Requires(gtest_objs, alm_libs)
+    targets += gtest_objs
+
 Default(targets)
+

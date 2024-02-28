@@ -55,7 +55,7 @@ For example:
 
 ## INSTALLATION
 
-Please refer to the files BUILDING_on_Linux.txt and Building_on_Windows.txt. 
+Please refer to the file BUILDING-ose.txt. 
 
 ## CONTACTS
 

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -135,19 +135,13 @@ fname:
     #call       fname_special
     ret
 
-.if __enable_IEEE_exceptions
-
 .p2align 4
 .L__y_is_inf:
-    vmovd       %xmm0,%eax
     mov         $0x7f800000,%edx
-    cmp         %edx,%eax
-    je          .L__x_is_pos_inf
-    vmovd       %edx, %xmm1
-    mov         $3, %edi
-    call        fname_special
-.L__x_is_pos_inf:
+    vmovd       %edx, %xmm0
     ret
+
+.if __enable_IEEE_exceptions
 
 .p2align 4
 .L__y_is_nan:
@@ -157,12 +151,6 @@ fname:
     ret
 
 .else
-
-.p2align 4
-.L__y_is_inf:
-    mov         $0x7f800000,%edx
-    vmovd       %edx, %xmm0
-    ret
 
 .p2align 4
 .L__y_is_nan:

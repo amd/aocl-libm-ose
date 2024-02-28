@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -158,13 +158,13 @@ ALM_PROTO_OPT(vrs4_acosf)(v_f32x4_t x)
 
     /* Check for special case */
     /* if |x| >= 1 */
-    outofrange = aux >= ALM_V4_ACOSF_MAX_ARG;
+    outofrange = (v_u32x4_t)(aux >= ALM_V4_ACOSF_MAX_ARG);
 
     /* if |x| > 0.5 */
-    cond1      = aux >  ALM_V4_ACOSF_HALF;
+    cond1      = (v_u32x4_t)(aux >  ALM_V4_ACOSF_HALF);
 
     /* if |x| <= 0.5 */
-    cond2      = aux <= ALM_V4_ACOSF_HALF;
+    cond2      = (v_u32x4_t)(aux <= ALM_V4_ACOSF_HALF);
 
     if(all_v4_u32_loop(cond1)) {
 

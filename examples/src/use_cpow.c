@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,24 +25,56 @@
  *
  */
 
+#define AMD_LIBM_VEC_EXPERIMENTAL
+
 #include <stdio.h>
 #include "amdlibm.h"
-#include <immintrin.h>
+#include "amdlibm_vec.h"
 #include <complex.h>
 
-int use_cpow() {
-    printf ("Using Scalar Float complex cpowf()\n");
-    fc32_t ipf={0.5f}, opf;
-    opf = amd_cpowf (ipf, ipf);
-    printf ("amd_cpow(%f + i%f) = %f + i%f\n",
-            (double)crealf(ipf), (double)cimagf(ipf),
-            (double)crealf(opf), (double)cimagf(opf));
+/**********************************************
+ *     Complex Scalar Variants
+ * *******************************************/
+void cpow_single_precision()
+{
+    printf ("Using Complex Scalar single precision cpowf()\n");
+    #if (defined (_WIN64) || defined (_WIN32))
+        fc32_t input1 = {0.5, 2.1}, input2 = {1.2, 0.1}, output;
+    #else
+        fc32_t input1 = 0.5 + 2.1*I, input2 = 1.2 + 0.1*I, output;
+    #endif
 
-    printf ("Using Scalar Double complex cpow()\n");
-    fc64_t ip = {0.5}, op;
-    op = amd_cpow (ip, ip);
-    printf ("amd_cpow(%lf + i%lf) = %lf + i%lf\n",
-            creal(ip), cimag(ip), creal(op), cimag(op));
+    output = amd_cpowf (input1, input2);
 
+    printf("Input: (%f +i %f), (%f +i %f)\tOutput: (%f +i %f)\n",
+            crealf(input1), cimagf(input1),
+            crealf(input2), cimagf(input2),
+            crealf(output), cimagf(output));
+    printf("----------\n");
+}
+
+void cpow_double_precision()
+{
+    printf ("Using Complex Scalar double precision cpow()\n");
+    #if (defined (_WIN64) || defined (_WIN32))
+        fc64_t input1 = {1.9, 0.08}, input2 = {0.8, 0.1}, output;
+    #else
+        fc64_t input1 = 1.9 + 0.08*I, input2 = 0.8 + 0.1*I, output;
+    #endif
+
+    output = amd_cpow (input1, input2);
+
+    printf("Input: (%f +i %f), (%f +i %f)\tOutput: (%f +i %f)\n",
+            creal(input1), cimag(input1),
+            creal(input2), cimag(input2),
+            creal(output), cimag(output));
+    printf("----------\n");
+}
+
+int use_cpow()
+{
+    printf("\n\n***** cpow() *****\n");
+    cpow_single_precision();
+    cpow_double_precision();
     return 0;
 }

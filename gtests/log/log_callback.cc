@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -28,12 +28,12 @@
 
 #include <cmath>
 #include "libm_tests.h"
-#include "../../include/libm_macros.h"
+#include <libm_macros.h>
 
 #define AMD_LIBM_VEC_EXPERIMENTAL
 
-#include "../../include/libm_amd.h"
-#include "../../include/libm/amd_funcs_internal.h"
+#include <libm_amd.h>
+#include <libm/amd_funcs_internal.h>
 #include <fmaintrin.h>
 #include <immintrin.h>
 #include "callback.h"
@@ -52,12 +52,12 @@ uint32_t GetnIpArgs( void )
 
 void ConfSetupf32(SpecParams *specp) {
   specp->data32 = test_logf_conformance_data;
-  specp->countf = ARRAY_SIZE(test_logf_conformance_data); 
+  specp->countf = ARRAY_SIZE(test_logf_conformance_data);
 }
 
 void ConfSetupf64(SpecParams *specp) {
   specp->data64 = test_log_conformance_data;
-  specp->countd = ARRAY_SIZE(test_log_conformance_data); 
+  specp->countd = ARRAY_SIZE(test_log_conformance_data);
 }
 
 float getFuncOp(float *data) {
@@ -74,8 +74,17 @@ double getExpected(float *data) {
 }
 
 long double getExpected(double *data) {
-  auto val = alm_mp_log(data[0]); 
+  auto val = alm_mp_log(data[0]);
   return val;
+}
+
+// Used by the Complex Number Functions only!
+double _Complex getExpected(float _Complex *data) {
+  return {0};
+}
+
+long double _Complex getExpected(double _Complex *data) {
+  return {0};
 }
 
 float getGlibcOp(float *data) {
@@ -98,7 +107,7 @@ int test_s1s(test_data *data, int idx)  {
 
 int test_s1d(test_data *data, int idx)  {
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   op[0] = LIBM_FUNC(log)(ip[idx]);
   return 0;
 }
@@ -120,77 +129,93 @@ extern "C" {
 #endif
 
 /*vector routines*/
-__m128d LIBM_FUNC_VEC(d, 2, log)(__m128d);
-__m256d LIBM_FUNC_VEC(d, 4, log)(__m256d);
-__m128 LIBM_FUNC_VEC(s, 4, logf)(__m128);
-__m256 LIBM_FUNC_VEC(s, 8, logf)(__m256);
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  __m128d LIBM_FUNC_VEC(d, 2, log)(__m128d);
+  __m256d LIBM_FUNC_VEC(d, 4, log)(__m256d);
+  __m128 LIBM_FUNC_VEC(s, 4, logf)(__m128);
+  __m256 LIBM_FUNC_VEC(s, 8, logf)(__m256);
 
-/*avx512*/
-#if defined(__AVX512__)
-__m512d LIBM_FUNC_VEC(d, 8, log) (__m512d);
-__m512  LIBM_FUNC_VEC(s, 16, logf) (__m512);
+  /*avx512*/
+  #if defined(__AVX512__)
+    __m512d LIBM_FUNC_VEC(d, 8, log) (__m512d);
+    __m512  LIBM_FUNC_VEC(s, 16, logf) (__m512);
+  #endif
 #endif
 
 int test_v2d(test_data *data, int idx)  {
-  double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op;
-  __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
-  __m128d op2 = LIBM_FUNC_VEC(d, 2, log)(ip2);
-  _mm_store_pd(&op[0], op2);
+  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+    double *ip  = (double*)data->ip;
+    double *op  = (double*)data->op;
+    __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
+    __m128d op2 = LIBM_FUNC_VEC(d, 2, log)(ip2);
+    _mm_store_pd(&op[0], op2);
+  #endif
   return 0;
 }
 
 int test_v4s(test_data *data, int idx)  {
   float *ip  = (float*)data->ip;
-  float *op  = (float*)data->op; 
+  float *op  = (float*)data->op;
   __m128 ip4 = _mm_set_ps(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
-  __m128 op4 = LIBM_FUNC_VEC(s, 4, logf)(ip4);
+  #if (LIBM_PROTOTYPE == PROTOTYPE_MSVC)
+    __m128 op4 = LIBM_FUNC_VEC(s, 4, Log)(ip4);
+  #else
+    __m128 op4 = LIBM_FUNC_VEC(s, 4, logf)(ip4);
+  #endif
   _mm_store_ps(&op[0], op4);
   return 0;
 }
 
 int test_v4d(test_data *data, int idx)  {
-  double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
-  __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
-  __m256d op4 = LIBM_FUNC_VEC(d, 4, log)(ip4);
-  _mm256_store_pd(&op[0], op4);
+  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+    double *ip  = (double*)data->ip;
+    double *op  = (double*)data->op;
+    __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+    __m256d op4 = LIBM_FUNC_VEC(d, 4, log)(ip4);
+    _mm256_store_pd(&op[0], op4);
+  #endif
   return 0;
 }
 
 int test_v8s(test_data *data, int idx)  {
-  float *ip  = (float*)data->ip;
-  float *op  = (float*)data->op; 
-  __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
-                             ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
-  __m256 op8 = LIBM_FUNC_VEC(s, 8, logf)(ip8);
-  _mm256_store_ps(&op[0], op8);
+  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+    float *ip  = (float*)data->ip;
+    float *op  = (float*)data->op;
+    __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
+                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+    __m256 op8 = LIBM_FUNC_VEC(s, 8, logf)(ip8);
+    _mm256_store_ps(&op[0], op8);
+  #endif
   return 0;
 }
 
 int test_v8d(test_data *data, int idx)  {
-#if defined(__AVX512__)
-  double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op;
-  __m512d ip8 = _mm512_set_pd(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
-                             ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
-  __m512d op8 = LIBM_FUNC_VEC(d, 8, log)(ip8);
-  _mm512_store_pd(&op[0], op8);
-#endif
+  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+    #if defined(__AVX512__)
+      double *ip  = (double*)data->ip;
+      double *op  = (double*)data->op;
+      __m512d ip8 = _mm512_set_pd(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
+                                ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+      __m512d op8 = LIBM_FUNC_VEC(d, 8, log)(ip8);
+      _mm512_store_pd(&op[0], op8);
+    #endif
+  #endif
   return 0;
 }
 
 int test_v16s(test_data *data, int idx)  {
-#if defined(__AVX512__)
-  float *ip = (float*)data->ip;
-  float *op  = (float*)data->op;
-  __m512 ip16 = _mm512_set_ps(ip[idx+15], ip[idx+14], ip[idx+13], ip[idx+12],
-                              ip[idx+11], ip[idx+10], ip[idx+9], ip[idx+8],
-                              ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
-                             ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
-  __m512 op16 = LIBM_FUNC_VEC(s, 16, logf)(ip16);
-  _mm512_store_ps(&op[0], op16);
-#endif
+  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+    #if defined(__AVX512__)
+      float *ip = (float*)data->ip;
+      float *op  = (float*)data->op;
+      __m512 ip16 = _mm512_set_ps(ip[idx+15], ip[idx+14], ip[idx+13], ip[idx+12],
+                                  ip[idx+11], ip[idx+10], ip[idx+9], ip[idx+8],
+                                  ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
+                                ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+      __m512 op16 = LIBM_FUNC_VEC(s, 16, logf)(ip16);
+      _mm512_store_ps(&op[0], op16);
+    #endif
+  #endif
   return 0;
 }
 

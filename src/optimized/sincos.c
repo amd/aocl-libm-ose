@@ -46,7 +46,7 @@
  * ---------------------
  *
  * checks for special cases
- * if ( ux = infinity) raise overflow exception and return x
+ * if (ux = infinity) raise overflow exception and return x
  * if x is NaN then raise invalid FP operation exception and return x.
  *
  * 1. Argument reduction
@@ -172,7 +172,7 @@ void __amd_remainder_piby2(double x, double *r, double *rr, int *region);
 #define PIby2_2     sin_cos_data.piby2_2
 #define PIby2_2tail sin_cos_data.piby2_2tail
 #define PIby4       0x3fe921fb54442d18
-#define FiveE6      0x415312d000000000
+#define FiveE6      0x415312d000000000 /* 5x10^6 */
 #define ONE_BY_SIX  sin_cos_data.one_by_six
 #define ALM_SHIFT   sin_cos_data.ALM_SHIFT
 
@@ -195,7 +195,6 @@ void __amd_remainder_piby2(double x, double *r, double *rr, int *region);
 #define SIGN_MASK32 0x7FFFFFFF
 #define SIN_SMALL   0x3f20000000000000  /* 2.0^(-13) */
 #define SIN_SMALLER 0X3e40000000000000  /* 2.0^(-27) */
-
 
 void
 ALM_PROTO_OPT(sincos)(double x, double *sin, double *cos)
@@ -222,7 +221,7 @@ ALM_PROTO_OPT(sincos)(double x, double *sin, double *cos)
         x = asdouble(ux);
         /* ux > pi/4 */
         if(ux < FiveE6){
-            /* reduce  the argument to be in a range from -pi/4 to +pi/4
+            /* reduce the argument to be in a range from -pi/4 to +pi/4
                 by subtracting multiples of pi/2 */
 
             r = TwobyPI * x; /* x * two_by_pi*/
@@ -270,8 +269,8 @@ ALM_PROTO_OPT(sincos)(double x, double *sin, double *cos)
         x2 = r * r;
 
         if(region & 1) {
-            /*cos calculation*/
-            /*if region 1 or 3 then sin region */
+            /* cos calculation */
+            /* if region 1 or 3 then sin region */
 
             x3 = x2 * r;
 
@@ -284,8 +283,8 @@ ALM_PROTO_OPT(sincos)(double x, double *sin, double *cos)
 
             r_cos = r - poly; /* r - ((r2 * (0.5 * rr - x3 * poly) - rr) - S1*r3 */
 
-            /*sin calculation*/
-            /*cos region */
+            /* sin calculation */
+            /* cos region */
             rr = rr * r;
 
             x4 = x2 * x2;
@@ -302,7 +301,7 @@ ALM_PROTO_OPT(sincos)(double x, double *sin, double *cos)
             r_sin = r - t;
         }
         else {
-            /*sin calculation*/
+            /* sin calculation */
             /* region 0 or 2 do a sin calculation */
             x3 = x2 * r;
 
@@ -315,7 +314,7 @@ ALM_PROTO_OPT(sincos)(double x, double *sin, double *cos)
 
             r_sin = r - poly; /* r - ((r2 * (0.5 * rr - x3 * poly) - rr) - S1*r3 */
 
-            /*cos calculation*/
+            /* cos calculation */
             /* region 0 or 2 do a cos calculation */
             rr = rr * r;
 
@@ -331,7 +330,6 @@ ALM_PROTO_OPT(sincos)(double x, double *sin, double *cos)
             r = (((1.0 + t) - s) - rr) + poly;
 
             r_cos = r - t;
-
         }
 
         int32_t region_sin = region;
@@ -359,7 +357,7 @@ ALM_PROTO_OPT(sincos)(double x, double *sin, double *cos)
         /* x > 2.0^(-13) */
         x2 = x * x;
 
-        /*cos calculation*/
+        /* cos calculation */
 
         r = 0.5 * x2;
 
@@ -369,7 +367,7 @@ ALM_PROTO_OPT(sincos)(double x, double *sin, double *cos)
 
         *cos =  s + (x2 * (x2 * POLY_EVAL_6(x2, C1, C2, C3, C4, C5, C6)));
 
-        /*sin calculation*/
+        /* sin calculation */
 
         /* x + (x * (r2 * (S1 + r2 * (S2 + r2 * (S3 + r2 * (S4 + r2 * (S5 + r2 * S6))))))) */
         *sin = x + (x * (x2 * POLY_EVAL_6(x2, S1, S2, S3, S4, S5, S6)));
@@ -385,5 +383,4 @@ ALM_PROTO_OPT(sincos)(double x, double *sin, double *cos)
 
     *cos = 1.0;
     *sin = x;
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -339,10 +339,10 @@ float ALM_PROTO_REF(atan2f)(float fy, float fx)
     { /* Zero y gives +-0 for positive x
          and +-pi for negative x */
       if (xneg)
-	{
-	  if (yneg) return (float)-pi; // return valf_with_flags((float)-pi, AMD_F_INEXACT);
+    {
+      if (yneg) return (float)-pi; // return valf_with_flags((float)-pi, AMD_F_INEXACT);
           else return (float)pi; // return valf_with_flags((float)pi, AMD_F_INEXACT);
-	}
+    }
       else return fy;
     }
   else if (xzero)
@@ -396,12 +396,9 @@ float ALM_PROTO_REF(atan2f)(float fy, float fx)
               y /= x;
               /* Now y is 2^100 times the true result. Scale it back down. */
               GET_BITS_DP64(y, uy);
-	          scaleDownDouble(uy, 100, &uy);
+              scaleDownDouble(uy, 100, &uy);
               PUT_BITS_DP64(uy, y);
-	      if ((uy & EXPBITS_DP64) == 0)
-		return (float)y; //return valf_with_flags((float)y, AMD_F_INEXACT | AMD_F_UNDERFLOW);
-	      else
-		return (float)y;
+              return (float)y; //return valf_with_flags((float)y, AMD_F_INEXACT | AMD_F_UNDERFLOW);
              }
           else
             return (float)(y / x);
@@ -463,9 +460,9 @@ float ALM_PROTO_REF(atan2f)(float fy, float fx)
 
       s  = vbyu*vbyu;
       q = vbyu -
-	vbyu*s*(0.33333333333333170500 -
-		s*(0.19999999999393223405 -
-		   s*0.14285713561807169030));
+    vbyu*s*(0.33333333333333170500 -
+        s*(0.19999999999393223405 -
+           s*0.14285713561807169030));
     }
 
   /* Tidy-up according to which quadrant the arguments lie in */

@@ -45,7 +45,7 @@ print("abs error:", accurateinfnorm(f(x)-poly(x), [a;b], 30));
 print("rel error:", accurateinfnorm(poly(x)/f(x)-1, [a;b], 30));
 
 // relative error computation fails 
-// Make a array in th eintervel [a;b] 
+// Make a array in the interval [a;b] 
 dx = (b-a)/(N-1) ;
 xi = [||] ; 
 for i from 0 to N-1 do {xi = xi@[|a+i*dx|];} ;  

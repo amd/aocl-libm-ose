@@ -115,7 +115,7 @@ ALM_PROTO_OPT(vrs8_asinf)(v_f32x8_t x)
 
     r  = as_v8_f32_u32(ux & V8_ASINF_MASK_32);
 
-    v_u32x8_t cmp = (r) > (V8_ASINF_HALF);
+    v_u32x8_t cmp = (v_u32x8_t)((r) > (V8_ASINF_HALF));
 
     for (int i = ZERO; i < EIGHT; i++) {
         if (cmp[i]) {

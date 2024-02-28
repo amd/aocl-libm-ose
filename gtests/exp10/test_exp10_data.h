@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -116,6 +116,15 @@ test_exp10f_conformance_data[] = {
     {0x3f247208, 0x408c72a3, 0}, // 0.642365
     {0x3f000000, 0x404a62c2, 0}, // 0.5
     {0x420a1eb8, 0x78d0d408, 0}, // 34.53
+
+    /* This is the problem case highlighted by Paul Zimmermann,
+       where the correct result is the lowest subnormal number. */
+    {0xc23369f5, 0x00000001, FE_UNDERFLOW|FE_INEXACT},
+
+    /* The following two cases are the smallest value to give 
+       a subnormal result and the biggest to return zero. */
+    {0xc2349e35, 0x00000001, FE_UNDERFLOW|FE_INEXACT},
+    {0xc2349e36, 0x00000000, FE_UNDERFLOW|FE_INEXACT},
 };
 
 static libm_test_special_data_f64

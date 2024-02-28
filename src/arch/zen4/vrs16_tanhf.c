@@ -1,29 +1,29 @@
-/*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 3. Neither the name of the copyright holder nor the names of its contributors
- *    may be used to endorse or promote products derived from this software without
- *    specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
- * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- */
+/* Correctly-rounded hyperbolic tangent function for binary32 value.
+
+Copyright (c) 2022, Alexei Sibidanov.
+Copyright (C) 2023, Advanced Micro Devices, Inc. All rights reserved.
+
+This file was originally developed as part of the CORE-MATH project
+(https://core-math.gitlabpages.inria.fr/).
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
 
 /*
  * Signature:
@@ -32,24 +32,14 @@
  ******************************************
  * Implementation Notes
  * ----------------------
- * To compute vrs8_tanhf(v_f32x16_t x)
- * Split the 16-element vector into two 8-element vectors
- * For each 8-element vector, call vrs8_tanhf
- *
- * Algorithm to compute tanhf is as follows:
- * Let y = |x|
- * If 0 <= y < 0x1.154246p3
- *    Let z = e^(-2.0 * y) - 1      -(1)
- *
- *    Using (1), tanhf(y) can be calculated as,
- *    tanhf(y) = -z / (z + 2.0)
+ * To compute vrs16_tanhf(v_f32x16_t x)
+ * 
+ * If 0x39000000 <= |x| < 0x9.02cb2ffffd19d464063fp0f (approx 2.98e-8 <= |x| < 9.01):
+ *    In this case, tanhf(x) is approximated as the ratio of two polynomials of degree 8.
  *
  * For other cases, call scalar tanhf()
  *
- * If x < 0, then we use the identity
- *       tanhf(-x) = -tanhf(x)
- *
- * Max ULP of current implementation: 1
+ * Max ULP of current implementation: 0.5
  *
  */
 
@@ -68,34 +58,127 @@
 #include <libm/poly.h>
 #include <libm/arch/zen4.h>
 
+static struct
+{
+    v_u32x16_t arg_max, sign_mask, small_arg;
+    v_f64x8_t cn[8], cd[8];
+} v16_tanhf_data = {
+    .arg_max = _MM512_SET1_U32x16(0x41102cb3u),
+    .sign_mask = _MM512_SET1_U32x16(0x7fffffffu),
+    .small_arg = _MM512_SET1_U32x16(0x39000000u),
+    .cn = {
+        _MM512_SET1_PD8(0x1p+0),
+        _MM512_SET1_PD8(0x1.30877b8b72d33p-3),
+        _MM512_SET1_PD8(0x1.694aa09ae9e5ep-8),
+        _MM512_SET1_PD8(0x1.4101377abb729p-14),
+        _MM512_SET1_PD8(0x1.e0392b1db0018p-22),
+        _MM512_SET1_PD8(0x1.2533756e546f7p-30),
+        _MM512_SET1_PD8(0x1.d62e5abe6ae8ap-41),
+        _MM512_SET1_PD8(0x1.b06be534182dep-54)
+        },
+    .cd = {
+        _MM512_SET1_PD8(0x1p+0),
+        _MM512_SET1_PD8(0x1.ed99131b0ebeap-2),
+        _MM512_SET1_PD8(0x1.0d27ed6c95a69p-5),
+        _MM512_SET1_PD8(0x1.7cbdaca0e9fccp-11),
+        _MM512_SET1_PD8(0x1.b4e60b892578ep-18),
+        _MM512_SET1_PD8(0x1.a6f707c5c71abp-26),
+        _MM512_SET1_PD8(0x1.35a8b6e2cd94cp-35),
+        _MM512_SET1_PD8(0x1.ca8230677aa01p-47)
+        },
+};
+
+#define V16_TANHF_ARG_MAX v16_tanhf_data.arg_max
+#define V16_TANHF_SIGN_MASK v16_tanhf_data.sign_mask
+#define V16_TANHF_SMALL_ARG v16_tanhf_data.small_arg
+#define V16_TANHF_ONE v16_tanhf_data.one
+#define V16_TANHF_TWO v16_tanhf_data.two
+
+#define CN0 v16_tanhf_data.cn[0]
+#define CN1 v16_tanhf_data.cn[1]
+#define CN2 v16_tanhf_data.cn[2]
+#define CN3 v16_tanhf_data.cn[3]
+#define CN4 v16_tanhf_data.cn[4]
+#define CN5 v16_tanhf_data.cn[5]
+#define CN6 v16_tanhf_data.cn[6]
+#define CN7 v16_tanhf_data.cn[7]
+
+#define CD0 v16_tanhf_data.cd[0]
+#define CD1 v16_tanhf_data.cd[1]
+#define CD2 v16_tanhf_data.cd[2]
+#define CD3 v16_tanhf_data.cd[3]
+#define CD4 v16_tanhf_data.cd[4]
+#define CD5 v16_tanhf_data.cd[5]
+#define CD6 v16_tanhf_data.cd[6]
+#define CD7 v16_tanhf_data.cd[7]
+
+static inline v_f32x16_t
+tanhf_specialcase(v_f32x16_t _x, v_f32x16_t result, v_u32x16_t cond, v_u32x16_t sign)
+{
+    return call_v16_f32(ALM_PROTO(tanhf), _x, result, cond);
+}
 
 v_f32x16_t
 ALM_PROTO_ARCH_ZN4(vrs16_tanhf)(v_f32x16_t x)
 {
 
-    v_f32x8_t _x[2], op[2];
+   /* Get sign of input argument */
+    v_u32x16_t ux = as_v16_u32_f32(x);
+    v_u32x16_t sign = ux & (~V16_TANHF_SIGN_MASK);
 
-    /* Split the 8-element vector to two 4-element vectors */
-    _x[0] = (v_f32x8_t){x[0], x[1], x[2], x[3],
-                        x[4], x[5], x[6], x[7]};
+    /* Get absolute value of input argument */
+    ux = ux & V16_TANHF_SIGN_MASK;
 
-    _x[1] = (v_f32x8_t){x[8], x[9], x[10], x[11],
-                        x[12], x[13], x[14], x[15]};
+    /* Check for special cases */
+    v_u32x16_t cond = ux >= V16_TANHF_ARG_MAX;
+    cond |= ux <= V16_TANHF_SMALL_ARG;
 
-    /* Call vrs8_tanhf for each 8-element vector */
-    for(int i = 0; i < 2; i++)
-    {
-        op[i] = ALM_PROTO(vrs8_tanhf)(_x[i]);
-    }
+    /* Approximate tanhf using ratio of two polynomials of degree 8 */
+    v_f32x8_t x1 = _mm512_extractf32x8_ps(x, 0);
+    v_f32x8_t x2 = _mm512_extractf32x8_ps(x, 1);
 
-    /* Combine the results to one 8-element vector */
-    v_f32x16_t result = _mm512_setr_ps(op[0][0], op[0][1], op[0][2], op[0][3], 
-                                      op[0][4], op[0][5], op[0][6], op[0][7],
-                                      op[1][0], op[1][1], op[1][2], op[1][3],
-                                      op[1][4], op[1][5], op[1][6], op[1][7]);
+    v_f64x8_t z1 = _mm512_cvtps_pd(x1);
+    v_f64x8_t z2 = _mm512_cvtps_pd(x2);
+
+    v_f64x8_t zs1 = z1 * z1, z41 = zs1 * zs1, z81 = z41 * z41;
+    v_f64x8_t zs2 = z2 * z2, z42 = zs2 * zs2, z82 = z42 * z42;
+
+    v_f64x8_t n01 = CN0 + zs1 * CN1, n21 = CN2 + zs1 * CN3, n41 = CN4 + zs1 * CN5, n61 = CN6 + zs1 * CN7;
+    v_f64x8_t n02 = CN0 + zs2 * CN1, n22 = CN2 + zs2 * CN3, n42 = CN4 + zs2 * CN5, n62 = CN6 + zs2 * CN7;
+
+    n01 += z41 * n21;
+    n41 += z41 * n61;
+    n01 += z81 * n41;
+
+    n02 += z42 * n22;
+    n42 += z42 * n62;
+    n02 += z82 * n42;
+
+    v_f64x8_t d01 = CD0 + zs1 * CD1, d21 = CD2 + zs1 * CD3, d41 = CD4 + zs1 * CD5, d61 = CD6 + zs1 * CD7;
+    v_f64x8_t d02 = CD0 + zs2 * CD1, d22 = CD2 + zs2 * CD3, d42 = CD4 + zs2 * CD5, d62 = CD6 + zs2 * CD7;
+
+    d01 += z41 * d21;
+    d41 += z41 * d61;
+    d01 += z81 * d41;
+
+    d02 += z42 * d22;
+    d42 += z42 * d62;
+    d02 += z82 * d42;
+
+    v_f64x8_t r1 = z1 * n01 / d01;
+    v_f64x8_t r2 = z2 * n02 / d02;
+
+    v_f32x16_t result = _mm512_set1_ps(0.0f);
+    result = _mm512_insertf32x8(result, _mm512_cvtpd_ps(r1), 0);
+    result = _mm512_insertf32x8(result, _mm512_cvtpd_ps(r2), 1);
+
+    /* If any of the input values are greater than ARG_MAX or smaller than SMALL_ARG,
+     * call scalar tanhf
+     */
+    if (unlikely(any_v16_u32_loop(cond)))
+        result = tanhf_specialcase(x, result, cond, sign);
 
     return result;
-
 
 }
 

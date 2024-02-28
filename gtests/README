@@ -51,20 +51,22 @@ echo $LD_LIBRARY_PATH
 To run test cases
 command line arguments ./build/aocl-release/funcname/func_exe (--type=) (--range=) [--count=] [--input=]
                                                               [--vector=] [--verbose=] [--Iterations=]
+                                                              [--numbertype=]
                                                 (or)
-                       ./build/aocl-release/funcname/func_exe (-t) (-r) [-c] [-i] [-e] [-v] [-n]
+                       ./build/aocl-release/funcname/func_exe (-t) (-r) [-c] [-i] [-e] [-v] [-n] [-z]
 
                          --type=accu or conf or spec or perf
                          --count=Number of input_size
                          --input=float or double
-                         --vector=1 or 2 or 4 or 8
+                         --vector=1 or 2 or 4 or 8 or 16
                          --range="min,max,algorithm(simple or random or linear)"
                          --verbose=1-5(1-prints information only for failed cases, 4/5-prints information for all the cases)
                          --Iterations=loop count to measure performance
+                         --numbertype=c for complex variant function, default is real variant function
 
-                       Ex: ./build/aocl-release/funcname/func_exe --type=accu --count=1000 --input=float --vector=1 --range=-120,80,simple --verbose=1
+                       Ex: ./build/aocl-release/funcname/func_exe --type=accu --count=1000 --input=float --vector=1 --range=-120,80,simple --verbose=1 --numbertype=c
                                             (or)
-                           ./build/aocl-release/funcname/func_exe -t accu -c 1000 -i f -e 1 -r -120,80,simple -v 1
+                           ./build/aocl-release/funcname/func_exe -t accu -c 1000 -i f -e 1 -r -120,80,simple -v 1 -z c
 
 For Help : ./build/aocl-release/funcname/func_exe --help
 

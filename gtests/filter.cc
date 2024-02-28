@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -40,10 +40,29 @@ void StringAppend(string &str, string sfwidth, FloatQuantity fqty) {
   str = str + sfwidth + "*:";
 }
 
+/*
+ * This method will check if the current function
+ * under execution is a complex number variant or not.
+ */
+bool isComplexFunction(string s)
+{
+    if( (s == "cexp") ||
+        (s == "clog") ||
+        (s == "cpow") )
+    {
+        return true;
+    }
+    return false;
+}
+
 void SubFilterFwidth(InputParams *params, string &filter_data,
                                                  FloatQuantity fqty) {
   string str("");
   string sfwidth("");
+  if(isComplexFunction(params->testFunction))
+  {
+    filter_data = filter_data + "COMPLEX_";
+  }
   switch (params->fwidth) {
     case ALM::FloatWidth::E_F64:
       sfwidth = filter_data + "DOUBLE";

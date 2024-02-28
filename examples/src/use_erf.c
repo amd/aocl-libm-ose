@@ -26,73 +26,168 @@
  */
 
 #define AMD_LIBM_VEC_EXPERIMENTAL
+
 #include <stdio.h>
 #include "amdlibm.h"
 #include "amdlibm_vec.h"
-#include <immintrin.h>
+
+/**********************************************
+ *     Scalar Variants
+ * *******************************************/
+void erf_single_precision()
+{
+    printf ("Using Scalar single precision erff()\n");
+    float ipf1 = 0.01, opf;
+    opf = amd_erff (ipf1);
+    printf("Input: %f\tOutput: %f\n", ipf1, opf);
+    printf("----------\n");
+}
+
+void erf_double_precision()
+{
+    printf ("Using Scalar double precision erf()\n");
+    double ipd1 = 1.89, opd;
+    opd = amd_erf(ipd1);
+    printf("Input: %lf\tOutput: %f\n", ipd1, opd);
+    printf("----------\n");
+}
+
+/**********************************************
+ *     Vector Variants
+ * *******************************************/
+void erf_vector_single_precision_4()
+{
+    printf("Using Vector single precision - 4 floats (vrs4) erf()\n");
+    __m128 input, result;
+    float  input_array_vrs4[4] = {34.65, 67.89, 91.0, 198.34};
+    float  output_array_vrs4[4];
+
+    input = _mm_loadu_ps(input_array_vrs4);
+    result = amd_vrs4_erff(input);
+    _mm_storeu_ps(output_array_vrs4, result);
+
+    printf("Input: {%f, %f, %f, %f}, Output: {%f, %f, %f, %f}\n",
+            input_array_vrs4[0], input_array_vrs4[1], input_array_vrs4[2], input_array_vrs4[3],
+            output_array_vrs4[0], output_array_vrs4[1], output_array_vrs4[2], output_array_vrs4[3]);
+    printf("----------\n");
+}
+
+void erf_vector_single_precision_8()
+{
+    printf("Using Vector single precision - 8 floats (vrs8) erf()\n");
+    __m256 input, result;
+    float input_array_vrs8[8] = {1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0};
+    float output_array_vrs8[8];
+
+    input = _mm256_loadu_ps(input_array_vrs8);
+    result = amd_vrs8_erff(input);
+    _mm256_storeu_ps(output_array_vrs8, result);
+
+    printf("Input: {%f, %f, %f, %f, %f, %f, %f, %f}, Output: {%f, %f, %f, %f, %f, %f, %f, %f}\n",
+            input_array_vrs8[0], input_array_vrs8[1], input_array_vrs8[2], input_array_vrs8[3],
+            input_array_vrs8[4], input_array_vrs8[5], input_array_vrs8[6], input_array_vrs8[7],
+            output_array_vrs8[0], output_array_vrs8[1], output_array_vrs8[2], output_array_vrs8[3],
+            output_array_vrs8[4], output_array_vrs8[5], output_array_vrs8[6], output_array_vrs8[7]);
+    printf("----------\n");
+}
+
+void erf_vector_double_precision_2()
+{
+    printf("Using Vector double precision - 2 doubles (vrd2) erf()\n");
+    __m128d input, result;
+    double  input_array_vrd2[2] = {34.65, 67.89};
+    double  output_array[2];
+
+    input = _mm_loadu_pd(input_array_vrd2);
+    result = amd_vrd2_erf(input);
+    _mm_storeu_pd(output_array, result);
+
+    printf("Input: {%lf, %lf}, Output: {%lf, %lf}\n",
+            input_array_vrd2[0], input_array_vrd2[1],
+            output_array[0], output_array[1]);
+    printf("----------\n");
+}
+
+void erf_vector_double_precision_4()
+{
+    printf("Using Vector double precision - 4 doubles (vrd4) erf()\n");
+    __m256d input, result;
+    double input_array_vrd4[4] = {2.3, 4.5, 56.5, 43.4};
+    double output_array_vrd4[4];
+
+    input = _mm256_loadu_pd(input_array_vrd4);
+    result = amd_vrd4_erf(input);
+    _mm256_storeu_pd(output_array_vrd4, result);
+
+    printf("Input: {%lf, %lf, %lf, %lf}, Output: {%lf, %lf, %lf, %lf}\n",
+            input_array_vrd4[0], input_array_vrd4[1], input_array_vrd4[2], input_array_vrd4[3],
+            output_array_vrd4[0], output_array_vrd4[1], output_array_vrd4[2],output_array_vrd4[3]);
+    printf("----------\n");
+}
+
+/**********************************************
+ *     Vector Array Variants
+ * *******************************************/
+void erf_single_precision_array()
+{
+    #if 0
+    printf("Using Single Precision Vectory Array (vrsa) erf()\n");
+    int n=5;
+    float input[10] = {1.0f, 3.0f, 5.0f, 7.0f, 9.0f, 11.0f, 13.0f, 15.0f, 17.0f, 19.0f};
+    float output[10] = {0};
+
+    amd_vrsa_erff(n, input, output);
+
+    printf("Input: {");
+    for(int i=0; i<10; ++i)
+    {
+        printf("%f, ", input[i]);
+    }
+    printf("}, Output: {");
+    for(int i=0; i<10; ++i)
+    {
+        printf("%f, ", output[i]);
+    }
+    printf("}\n");
+    printf("----------\n");
+    #endif
+}
+
+void erf_double_precision_array()
+{
+    #if 0
+    printf("Using Double Precision Vectory Array (vrda) erf()\n");
+    int n=8;
+    double input[10] = {10.0, 8.0, 4.0, 2.0, 6.0, 12.0, 14.0, 1.0, 3.0, 5.0};
+    double output[10] = {0};
+
+    amd_vrda_erf(n, input, output);
+
+    printf("Input: {");
+    for(int i=0; i<10; ++i)
+    {
+        printf("%f, ", input[i]);
+    }
+    printf("}, Output: {");
+    for(int i=0; i<10; ++i)
+    {
+        printf("%f, ", output[i]);
+    }
+    printf("}\n");
+    printf("----------\n");
+    #endif
+}
 
 int use_erf()
 {
-    printf ("Using Scalar single precision erf()\n");
-    float ipf=0.5, opf;
-    int i;
-    opf = amd_erff (ipf);
-    printf ("Input: %f\tOutput: %f\n", ipf, opf);
-
-    printf ("Using Scalar double precision erf()\n");
-    double ipd=0.5, opd;
-    opd = amd_erf (ipd);
-    printf ("Input: %f\tOutput: %f\n", ipd, opd);
-
-    printf("Using vrs4 (Single precision 4-element vector variant) of AMD erff()\n");
-    __m128 result_erf_vrs4;
-    __m128 input_vrs4;
-    float  input_array_vrs4[4] = {34.65, 67.89, 91.0, 198.34};
-    float  output_array_vrs4[4];
-    input_vrs4 = _mm_loadu_ps(input_array_vrs4);
-    result_erf_vrs4 = amd_vrs4_erff(input_vrs4);
-    _mm_storeu_ps(output_array_vrs4, result_erf_vrs4 );
-    printf("Input: {%f, %f, %f, %f}, Output = {%f, %f, %f, %f}\n",
-        input_array_vrs4[0], input_array_vrs4[1], input_array_vrs4[2], input_array_vrs4[3],
-        output_array_vrs4[0], output_array_vrs4[1], output_array_vrs4[2], output_array_vrs4[3]);
-
-    printf ("Using vrs8 (Single precision 8-element vector variant) of AMD erff()\n");
-    __m256 input_vrs8, result_erff_vrs8;
-    float input_array_vrs8[8] = {1.2, 0.0, 2.3, 3.4, 5.6, 7.8, 8.9, 1.0};
-    float output_array_vrs8[8];
-    input_vrs8 = _mm256_loadu_ps(input_array_vrs8);
-    result_erff_vrs8 = amd_vrs8_erff(input_vrs8);
-    _mm256_storeu_ps(output_array_vrs8, result_erff_vrs8);
-    printf("Input: {");
-    for (i=0; i<8; i++) {
-        printf("%f,",input_array_vrs8[i]);
-    }
-    printf("}, Output: {");
-    for (i=0; i<8; i++) {
-        printf("%f,", output_array_vrs8[i]);
-    }
-    printf("}\n");
-
-    printf ("Using vrd2 (Double precision 2-element vector variant) of AMD erf()\n");
-    __m128d input_vrd2, result_erf_vrd2;
-    double input_array_vrd2[2] = {34.65, 67.89};
-    double output_array_vrd2[2];
-    input_vrd2 = _mm_loadu_pd(input_array_vrd2);
-    result_erf_vrd2 = amd_vrd2_erf(input_vrd2);
-    _mm_storeu_pd(output_array_vrd2, result_erf_vrd2);
-    printf("Input: {%f, %f}, Output = {%f, %f}\n",
-	   input_array_vrd2[0], input_array_vrd2[1], output_array_vrd2[0], output_array_vrd2[1]);
-
-    printf ("Using vrd4 (Double precision 4-element vector variant) of AMD erf()\n");
-    __m256d input_vrd4, result_erf_vrd4;
-    double input_array_vrd4[4] = {34.65, 67.89, 91.0, 198.34};
-    double output_array_vrd4[4];
-    input_vrd4 = _mm256_loadu_pd(input_array_vrd4);
-    result_erf_vrd4 = amd_vrd4_erf(input_vrd4);
-    _mm256_storeu_pd(output_array_vrd4, result_erf_vrd4);
-    printf("Input: {%f, %f, %f, %f}, Output = {%f, %f, %f, %f}\n",
-        input_array_vrd4[0], input_array_vrd4[1], input_array_vrd4[2], input_array_vrd4[3],
-        output_array_vrd4[0], output_array_vrd4[1], output_array_vrd4[2], output_array_vrd4[3]);
-
+    printf("\n\n***** erf() *****\n");
+    erf_single_precision();
+    erf_double_precision();
+    erf_vector_single_precision_4();
+    erf_vector_single_precision_8();
+    erf_vector_double_precision_2();
+    erf_vector_double_precision_4();
+    erf_single_precision_array();
+    erf_double_precision_array();
     return 0;
 }

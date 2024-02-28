@@ -329,6 +329,8 @@ void FN_PROTOTYPE(vrsa_log1pf)( int len, float *src, float* dst );
 void FN_PROTOTYPE(vrda_log1p)( int len, double *src, double* dst );
 void FN_PROTOTYPE(vrsa_powxf)( int len, float *src1, float src2, float* dst );
 void FN_PROTOTYPE(vrsa_powf)( int len, float *src1, float *src2, float* dst );
+
+/* Arithmetic array vector variants */
 void FN_PROTOTYPE(vrsa_addf)( int len, float *lhs, float *rhs, float *dst );
 void FN_PROTOTYPE(vrda_add)( int len, double *lhs, double *rhs, double *dst );
 void FN_PROTOTYPE(vrsa_subf)( int len, float *lhs, float *rhs, float *dst );
@@ -337,6 +339,12 @@ void FN_PROTOTYPE(vrsa_mulf)( int len, float *lhs, float *rhs, float *dst );
 void FN_PROTOTYPE(vrda_mul)( int len, double *lhs, double *rhs, double *dst );
 void FN_PROTOTYPE(vrsa_divf)( int len, float *lhs, float *rhs, float *dst );
 void FN_PROTOTYPE(vrda_div)( int len, double *lhs, double *rhs, double *dst );
+void FN_PROTOTYPE(vrsa_fmaxf)( int len, float *lhs, float *rhs, float *dst );
+void FN_PROTOTYPE(vrda_fmax)( int len, double *lhs, double *rhs, double *dst );
+void FN_PROTOTYPE(vrsa_fminf)( int len, float *lhs, float *rhs, float *dst );
+void FN_PROTOTYPE(vrda_fmin)( int len, double *lhs, double *rhs, double *dst );
+
+/* Arithmetic array vector variants with increment */
 void FN_PROTOTYPE(vrsa_addfi)( int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res );
 void FN_PROTOTYPE(vrda_addi)( int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res );
 void FN_PROTOTYPE(vrsa_subfi)( int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res );
@@ -345,7 +353,10 @@ void FN_PROTOTYPE(vrsa_mulfi)( int len, float *lhs, int inc_a, float *rhs, int i
 void FN_PROTOTYPE(vrda_muli)( int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res );
 void FN_PROTOTYPE(vrsa_divfi)( int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res );
 void FN_PROTOTYPE(vrda_divi)( int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res );
-
+void FN_PROTOTYPE(vrsa_fmaxfi)( int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res );
+void FN_PROTOTYPE(vrda_fmaxi)( int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res );
+void FN_PROTOTYPE(vrsa_fminfi)( int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res );
+void FN_PROTOTYPE(vrda_fmini)( int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res );
 
 #ifdef __cplusplus
 }

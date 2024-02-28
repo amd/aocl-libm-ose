@@ -122,9 +122,10 @@ template <typename T>
 int Random<T>::fillRandom(T *data, uint32_t nelem, T min, T max) {
   if (randfd <= 0) init_randfd();
 
-  double val = rand_simple<T>(min, max);
+  double val;
 
   for (uint32_t i = 0; i < nelem; i++) {
+    val = rand_simple<T>(min, max);
     data[i] = (T)val;
   }
 

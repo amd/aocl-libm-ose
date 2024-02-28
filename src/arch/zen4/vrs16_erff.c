@@ -243,7 +243,7 @@ ALM_PROTO_ARCH_ZN4(vrs16_erff)(v_f32x16_t _x) {
 
     uint32_t uxmax = asuint32(_mm512_reduce_max_ps(x));
 
-    v_f32x16_t result = _mm512_set1_ps(0.0f);;
+    v_f32x16_t result = _mm512_set1_ps(0.0f);
 
     v_f32x8_t _y1 = _mm512_extractf32x8_ps(x, 0);
     v_f32x8_t _y2 = _mm512_extractf32x8_ps(x, 1);

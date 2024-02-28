@@ -189,6 +189,10 @@ extern "C" {
     void amd_vrda_mul       (int len, double *lhs, double *rhs, double *dst);
     void amd_vrsa_divf      (int len, float *lhs, float *rhs, float *dst);
     void amd_vrda_div       (int len, double *lhs, double *rhs, double *dst);
+    void amd_vrsa_fmaxf     (int len, float *lhs, float *rhs, float *dst);
+    void amd_vrda_fmax      (int len, double *lhs, double *rhs, double *dst);
+    void amd_vrsa_fminf     (int len, float *lhs, float *rhs, float *dst);
+    void amd_vrda_fmin      (int len, double *lhs, double *rhs, double *dst);
 
     /* array vector variants with increment */
     void amd_vrsa_addfi     (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
@@ -199,6 +203,10 @@ extern "C" {
     void amd_vrda_muli      (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
     void amd_vrsa_divfi     (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
     void amd_vrda_divi      (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
+    void amd_vrsa_fmaxfi    (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
+    void amd_vrda_fmaxi     (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
+    void amd_vrsa_fminfi    (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
+    void amd_vrda_fmini     (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
 
  /* Exponential */
 
@@ -310,15 +318,15 @@ extern "C" {
 
 /* Inverse Trigonometric */
     __m128  amd_vrs4_asinf  (__m128  x);
-    __m128  amd_vrs4_acosf   (__m128  x);
+    __m128  amd_vrs4_acosf  (__m128  x);
     __m128  amd_vrs4_atanf  (__m128  x);
 
-   __m128  amd_vrs8_acosf  (__m128  x);
+   __m256  amd_vrs8_acosf  (__m256  x);
    __m256  amd_vrs8_atanf  (__m256  x);
    __m256  amd_vrs8_asinf  (__m256  x);
 
     __m128d amd_vrd2_atan   (__m128d x);
-    __m128d amd_vrd4_atan   (__m128d x);
+    __m256d amd_vrd4_atan   (__m256d x);
 
     /* avx512 variants */
     __m512 amd_vrs16_atanf  (__m512 x);
@@ -333,6 +341,8 @@ extern "C" {
 
    __m256  amd_vrs8_coshf   (__m256  x);
    __m256  amd_vrs8_tanhf   (__m256  x);
+
+   __m128d amd_vrd2_cosh    (__m128d x);
 
  /* Power */
     __m128d amd_vrd2_pow    (__m128d x, __m128d y);

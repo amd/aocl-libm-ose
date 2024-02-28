@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -578,11 +578,11 @@ double ALM_PROTO_REF(atan2)(double y, double x)
     { /* Zero y gives +-0 for positive x
          and +-pi for negative x */
       if (xneg)
-	{
+    {
 
-	  if (yneg) return -pi;//return val_with_flags(-pi,AMD_F_INEXACT);
+      if (yneg) return -pi;//return val_with_flags(-pi,AMD_F_INEXACT);
           else return pi; //val_with_flags(pi,AMD_F_INEXACT);
-	}
+    }
       else return y;
     }
   else if (xzero)
@@ -638,12 +638,9 @@ double ALM_PROTO_REF(atan2)(double y, double x)
               y /= x;
               /* Now y is 2^100 times the true result. Scale it back down. */
               GET_BITS_DP64(y, uy);
-	      scaleDownDouble(uy, 100, &uy);
+              scaleDownDouble(uy, 100, &uy);
               PUT_BITS_DP64(uy, y);
-	      if ((uy & EXPBITS_DP64) == 0)
-		return  y; // val_with_flags(y, AMD_F_INEXACT | AMD_F_UNDERFLOW);
-	      else
-		return y;
+              return y;
              }
           else
             return y / x;
@@ -714,7 +711,7 @@ double ALM_PROTO_REF(atan2)(double y, double x)
   else  /* vbyu <= 0.0625 */
     {
       /* Small values of v/u. Use a series expansion
-	 computed carefully to minimise cancellation */
+     computed carefully to minimise cancellation */
 
       GET_BITS_DP64(u, ui);
       PUT_BITS_DP64(0xffffffff00000000 & ui, u1);
@@ -726,12 +723,12 @@ double ALM_PROTO_REF(atan2)(double y, double x)
       q1 = 0.0;
       s  = vbyu*vbyu;
       q2 = vbyu +
-	((((v - u1*vu1) - u2*vu1) - u*vu2)/u -
-	 (vbyu*s*(0.33333333333333170500 -
-		  s*(0.19999999999393223405 -
-		     s*(0.14285713561807169030 -
-			s*(0.11110736283514525407 -
-			   s*(0.90029810285449784439E-01)))))));
+    ((((v - u1*vu1) - u2*vu1) - u*vu2)/u -
+     (vbyu*s*(0.33333333333333170500 -
+          s*(0.19999999999393223405 -
+             s*(0.14285713561807169030 -
+            s*(0.11110736283514525407 -
+               s*(0.90029810285449784439E-01)))))));
     }
 
   /* Tidy-up according to which quadrant the arguments lie in */

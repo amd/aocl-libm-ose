@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,7 +33,8 @@
 extern "C" {
 #endif
 
-  
+#include <external/amdlibm.h>
+
 double   alm_mp_acosf       (float x);
 double   alm_mp_acoshf      (float x);
 double   alm_mp_asinf       (float x);
@@ -228,7 +229,11 @@ double  alm_mp_tanpi_ULP     (double x,double z, double *, double *);
 double  alm_mp_tan_ULP       (double x,double z, double *, double *);
 double  alm_mp_trunc_ULP     (double x,double z,double *, double *);
 double  alm_mp_erf_ULP       (double x,double z,double *, double *);
-  
+
+// Complex Variants
+double _Complex    alm_mpc_cexpf      (float _Complex x);
+long double _Complex   alm_mpc_cexp       (double _Complex x);
+
 #ifdef __cplusplus
 }
 #endif

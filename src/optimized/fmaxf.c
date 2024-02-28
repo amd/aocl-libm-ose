@@ -1,0 +1,60 @@
+/*
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+/******************************************
+ * Implementation Notes:
+ * This is a literal translation of ASM routine for fmax + optimizations
+ *
+ * Prototype:
+ * float fmaxf(float x, float y)
+ *
+ * Algorithm:
+ * As designed in the ASM fmaxf float variant routine.
+ * The same algorithm is extended into C, for float variant,
+ * with optimizations wherever possible.
+ */
+
+#include "fn_macros.h"
+#include "libm_util_amd.h"
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
+#include <libm/typehelper.h>
+
+float ALM_PROTO_OPT(fmaxf)(float x, float y)
+{
+    uint32_t fux, fuy;
+
+    fux = asuint32(x);
+    fuy = asuint32(y);
+
+    if(unlikely(((fux & ~SIGNBIT_SP32) > POS_INF_F32) || (fuy & ~SIGNBIT_SP32) > POS_INF_F32)) {
+        /* NaN */
+        return _fmaxf_special(x, y);
+    }
+
+    return (x>=y) ? x : y;
+}

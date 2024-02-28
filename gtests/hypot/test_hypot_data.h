@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -138,6 +138,8 @@ test_hypot_conformance_data[] = {
     {0x4010b9a553c9bc29,0x3f2befa32bce9607, 0,0xc017a2d8e937153f}, 	// 86: hypot(4.181294736088e+000)=	2.131354030130e-004
     {0x3f5e062b6cf1aafa,0x3fd3f349bfcfe206, 0,0x3fc7accf1ed54c5e}, 	// 87: hypot(1.832525642181e-003)=	3.117241261639e-001
     {0x40111aa5cfff00ee,0x42d2383d4f2359a0, 0,0x4036087c966fbbfc}, 	// 88: hypot(4.276023149432e+000)=	8.013102426045e+013
+    /* The following is the specific example of the error, provided by Paul Zimmermann */
+    {0x800fffffffffffff,0x800fffffffffffff, 0,0x0000000000000001},
 
 };
 

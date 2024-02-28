@@ -253,7 +253,7 @@ ALM_PROTO_OPT(vrd2_pow)(__m128d _x,__m128d _y)
     v_u64x2_t v = as_v2_u64_f64(ylogx_h) & SIGN_MASK;
 
     /* check if y*log(x) > 1024*ln(2) */
-    v_i64x2_t condition2 = (v >= EXP_MAX);
+    v_i64x2_t condition2 = (v_i64x2_t)(v >= EXP_MAX);
 
     z = ylogx_h * INVLN2;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
  */
 
 #include <stdint.h>
-
+#include <libm/poly.h>
 #include <libm_util_amd.h>
 #include <libm/alm_special.h>
 #include <libm_macros.h>
@@ -169,6 +169,8 @@ ALM_PROTO_OPT(log)(double x)
 
     flt64_t mant  = {.u = ux & MANTBITS_DP64};
 
+    /* The following line relies on (ux - LOW) underflowing if x is 0 or denormal, 
+       which would make the equality true for this case, as well as for x being inf or NaN. */
     if (unlikely ((ux - LOW) >= (HIGH - LOW))){
 
         if (2 * ux == 0)
@@ -289,7 +291,7 @@ ALM_PROTO_OPT(log)(double x)
 #if POLY_DEGREE == 7
     q = r * (1 + r * (C2 + r * (C3 + r * (C4 + r * (C5 + r * (C6 + r * C7))))));
 #elif   POLY_DEGREE == 6
-    q = r * (1 + r * (C2 + r * (C3 + r * (C4 + r * (C5 + r * C6)))));
+    q = r * POLY_EVAL_6(r, 1, C2, C3, C4, C5, C6);
 #elif POLY_DEGREE == 5
     q = r * (1 + r * (C2 + r * (C3 + r * (C4 + r * C5))));
 #elif POLY_DEGREE == 4
@@ -323,11 +325,7 @@ ALM_PROTO_OPT(log)(double x)
     struct log_table *tb_entry = &((struct log_table*)TAB_LOG)[j];
 
     /* m*log(2) + log(G) - poly */
-
-    q  = (dexpo * LN2_TAIL) - q;
-    q += tb_entry->tail;
-
-    q += (dexpo * LN2_LEAD) + tb_entry->lead;
+    q = (((dexpo * LN2_TAIL) - q) + tb_entry->tail) + ((dexpo * LN2_LEAD) + tb_entry->lead);
 
     return q;
 }

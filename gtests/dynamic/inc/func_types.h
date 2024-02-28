@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -29,7 +29,6 @@
 #define FUNC_TYPES_H_INCLUDED
 
 #include <immintrin.h>
-#include <complex.h>
 #include <libm/types.h>
 
 /*func ptr types*/
@@ -47,7 +46,7 @@ typedef fc64_t (*func_cmplx) (fc64_t);
 typedef fc32_t (*funcf_cmplx_2) (fc32_t, fc32_t);
 typedef fc64_t (*func_cmplx_2) (fc64_t, fc64_t);
 
-/*other*/
+/*other scalar*/
 typedef float  (*funcf_nan)    (const char*);
 typedef double (*func_nan)     (const char*);
 typedef float  (*funcf_remquo) (float, float, int*);
@@ -64,6 +63,7 @@ typedef __m128  (*funcf_v4s)   (__m128);
 typedef __m128  (*funcf_v4s_2) (__m128, __m128);
 typedef __m256  (*funcf_v8s)   (__m256);
 typedef __m256  (*funcf_v8s_2) (__m256, __m256);
+typedef void    (*func_vrd4_sincos) (__m256d, __m256d*, __m256d*);
 
 /*array vector*/
 typedef void (*funcf_va)   (int, float*, float*);
@@ -78,6 +78,8 @@ typedef __m512d (*func_v8d_2)   (__m512d, __m512d);
 
 typedef __m512  (*funcf_v16s)   (__m512);
 typedef __m512  (*funcf_v16s_2) (__m512, __m512);
+
+typedef void    (*func_vrd8_sincos) (__m512d, __m512d*, __m512d*);
 #endif
 
 #endif

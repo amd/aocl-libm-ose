@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -24,13 +24,17 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from . import Compiler
+import os
 
 class LLVM(Compiler):
     def Setup(self):
         self.SetCmd('clang')
         self.SetCxxCmd('clang++')
 
-        common_ld_flags = ['-fuse-ld=ld']
+        if os.name == "posix":
+            common_ld_flags = ['-fuse-ld=ld']
+        else:
+            common_ld_flags = []
 
         self.compile_flags_release += [
                 # ffp-contract is needed to generate FMA instr for vectors

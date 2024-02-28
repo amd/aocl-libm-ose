@@ -28,7 +28,6 @@
 #include "libm_dynamic_load.h"
 
 int test_frexp(void* handle) {
-    char* error;
     /*scalar inputs*/
     float inputf = 3.145f, outputf;
     double input = 6.287, output;
@@ -38,18 +37,23 @@ int test_frexp(void* handle) {
         float (*func_f)(float, int*) = (float (*)(float, int*))GetProcAddress(handle, "amd_frexpf");
         double (*func_d)(double, int*) = (double (*)(double, int*))GetProcAddress(handle, "amd_frexp");
 
-        error = GetLastError();
+        long int error = GetLastError();
+
+        if (error != NULL) {
+            printf("Error: %ld\n", error);
+            return 1;
+        }
     #else
         float (*func_f)(float, int*) = (float (*)(float, int*))dlsym(handle, "amd_frexpf");
         double (*func_d)(double, int*) = (double (*)(double, int*))dlsym(handle, "amd_frexp");
 
-        error = dlerror();
-    #endif
+        char* error = dlerror();
 
         if (error != NULL) {
             printf("Error: %s\n", error);
             return 1;
         }
+    #endif
 
     printf("Exercising frexp routines\n");
     outputf = func_f(inputf, &exponent);

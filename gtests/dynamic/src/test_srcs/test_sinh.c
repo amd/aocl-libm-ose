@@ -28,8 +28,6 @@
 #include "libm_dynamic_load.h"
 
 int test_sinh(void* handle) {
-    char* error;
-
     /*scalar inputs*/
     float inputf = 3.145f, outputf;
     double input = 6.287, output;
@@ -38,18 +36,23 @@ int test_sinh(void* handle) {
         funcf_2 s1f = (funcf_2)GetProcAddress(handle, "amd_sinhf");
         func_2  s1d = (func_2)GetProcAddress(handle, "amd_sinh");
 
-        error = GetLastError();
+        long int error = GetLastError();
+
+        if (error != NULL) {
+            printf("Error: %ld\n", error);
+            return 1;
+        }
     #else
         funcf_2 s1f = (funcf_2)dlsym(handle, "amd_sinhf");
         func_2  s1d = (func_2)dlsym(handle, "amd_sinh");
 
-        error = dlerror();
-    #endif
+        char* error = dlerror();
 
-    if (error != NULL) {
-        printf("Error: %s\n", error);
-        return 1;
-    }
+        if (error != NULL) {
+            printf("Error: %s\n", error);
+            return 1;
+        }
+    #endif
 
     printf("Exercising sinh routines\n");
     /*scalar*/

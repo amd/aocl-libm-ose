@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -36,12 +36,21 @@
 #if defined(FLOAT)
 #define REAL float
 #define REAL_L double
+
+#define COMPLEX float _Complex
+#define COMPLEX_L double _Complex
+
 #define ISDOUBLE 0
 #define FROOT concat(FNAMEROOT,f)
 #define ALM_MP_PRECI_BITS 128
+
 #elif defined(DOUBLE)
 #define REAL double
 #define REAL_L long double
+
+#define COMPLEX double _Complex
+#define COMPLEX_L long double _Complex
+
 #define ISDOUBLE 1
 #define FROOT FNAMEROOT
 #define ALM_MP_PRECI_BITS 256

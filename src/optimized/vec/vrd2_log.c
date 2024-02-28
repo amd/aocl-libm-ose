@@ -148,7 +148,7 @@ ALM_PROTO_OPT(vrd2_log) (__m128d x)
 
     ux = (ux - TWO_BY_THREE) & INF;
 
-    v_i64x2_t int_exponent = ux;
+    v_i64x2_t int_exponent = (v_i64x2_t)ux;
 
     for(int i = 0; i < VECTOR_SIZE; i++) {
 

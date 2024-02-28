@@ -269,7 +269,7 @@ ALM_PROTO_OPT(vrs8_powf)(__m256 x,__m256 y)
 
     u = as_v8_u32_f32(x);
 
-    v_i32x8_t condition = (u >= V_MAX);
+    v_i32x8_t condition = (v_i32x8_t)(u >= V_MAX);
 
     v_i32x8_t int_exponent = (((v_i32x8_t)u) >> 23) - SP_BIAS;
 
@@ -351,7 +351,7 @@ ALM_PROTO_OPT(vrs8_powf)(__m256 x,__m256 y)
 
         /* Check if y * log(x) > ln(2) * 127 */
 
-        v_i64x4_t condition2 = (v >= EXPF_MAX);
+        v_i64x4_t condition2 = (v_i64x4_t)(v >= EXPF_MAX);
 
         v_f64x4_t z = ylogx * INVLN2;
 

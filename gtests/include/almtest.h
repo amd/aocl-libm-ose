@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -40,6 +40,15 @@
 #include "random.h"
 #include "verify.h"
 #include "debug.h"
+
+extern "C"
+{
+	#if ((defined (_WIN64) || defined (_WIN32)))
+	    #include "complex.h"
+	#else
+		#include "/usr/include/complex.h"
+	#endif
+}
 
 using namespace std;
 using namespace ALM;
@@ -96,8 +105,7 @@ bool update_ulp(double ulp, double &, double);
 
 /*
  * The derived class for Accuracy test cases for datatype "float"
- * where all the data members and member functions are
- * declared and defined
+ * where data members and member functions are declared and defined
  */
 class AccuTestFixtureFloat : public ::testing::TestWithParam<AccuParams> {
  public:
@@ -214,12 +222,62 @@ class AccuTestFixtureDouble : public ::testing::TestWithParam<AccuParams> {
   int vflag;
 };
 
+class AccuTestFixtureComplexFloat : public ::testing::TestWithParam<AccuParams> {
+};
+
+class AccuTestFixtureComplexDouble : public ::testing::TestWithParam<AccuParams> {
+};
+
 /*
- * The Function reads the input values and expected expections
- * from the given table
+ * The Function reads the input values and expected exceptions
+ * from the given table and separates them into three arrays:
+ * Input, Output, Expected Exception
  */
 template <typename T, typename U>
 void SpecialSetUp(T **inp, int **exptdexpt, uint32_t count, U *data,
+                   uint32_t nargs, T **inp2, T **op) {
+  size_t size = sizeof(T);
+  uint32_t arr_size = count * size;
+  uint32_t sz = (arr_size << 1) + _ALIGN_FACTOR;
+  #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+    int *ee = (int *)_aligned_malloc(sz, _ALIGN_FACTOR);
+    T *in = (T *)_aligned_malloc(sz, _ALIGN_FACTOR);
+    T *opp = (T *)_aligned_malloc(sz, _ALIGN_FACTOR);
+  #else
+    int *ee = (int *)aligned_alloc(_ALIGN_FACTOR, sz);
+    T *in = (T *)aligned_alloc(_ALIGN_FACTOR, sz);
+    T *opp = (T *)aligned_alloc(_ALIGN_FACTOR, sz);
+  #endif
+  LIBM_TEST_DPRINTF(DBG2, ,"Input:", in);
+
+  LIBM_TEST_DPRINTF(DBG2, ,
+                  "Testing conformance/special case for ",count, " items");
+
+  for (uint32_t i = 0; i < count; i++) {
+    in[i] = data[i].in;
+    ee[i] = data[i].exptdexpt;
+    opp[i] = data[i].out;
+  }
+  *inp  = (T *)in;
+  *exptdexpt = (int *)ee;
+  *op  = (T *)opp;
+
+  if(nargs == 2) {
+    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+      T* in2 = (T*)_aligned_malloc(sz, _ALIGN_FACTOR);
+    #else
+      T *in2 = (T *)aligned_alloc(_ALIGN_FACTOR, sz);
+    #endif
+    LIBM_TEST_DPRINTF(DBG2, ,"Input1:", in2);
+    for (uint32_t i = 0; i < count; i++) {
+      in2[i] = data[i].in2;
+    }
+    *inp2 = (T *)in2;
+  }
+}
+
+template <typename T, typename U>
+void SpecialSetUpComplex(T **inp, int **exptdexpt, uint32_t count, U *data,
                    uint32_t nargs, T **inp2, T **op) {
   size_t size = sizeof(T);
   uint32_t arr_size = count * size;
@@ -334,7 +392,7 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
         printf ("Input: 0x%x (%f) ", ip.u, ip.f);
         if (nargs == 2)
             printf ("Input2: 0x%x (%f) ", ip2.u, ip2.f);
-        printf ("Expected: 0x%x (%f) Actual: 0x%x (%f)\n", e.u, e.f, a.u, a.f);
+        printf ("Expected: 0x%x (%f) Actual: 0x%x (%f) ULP: %f\n", e.u, e.f, a.u, a.f, ulp);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);
         return false;
@@ -342,12 +400,13 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
     return true;
   }
 
-  static bool SpecialVerifyFloat(float actual, float expected, int *nfail) {
-    bool flag = SpecialVerify(actual, expected);
-    if(!flag)
-      (*nfail)++;
-    return flag;
-  }
+// NOTE: These functions are not in use currently!
+//   static bool SpecialVerifyFloat(float actual, float expected, int *nfail) {
+//     bool flag = SpecialVerify(actual, expected);
+//     if(!flag)
+//       (*nfail)++;
+//     return flag;
+//   }
 
   void SetUp() override {
     libm_test_special_data_f32 *dataf32 = GetParam().data32;
@@ -444,7 +503,7 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
         printf ("Input: 0x%llx (%lf) ", ip.lu, ip.d);
         if (nargs == 2)
             printf ("Input2: 0x%llx (%lf) ", ip2.lu, ip2.d);
-        printf ("Expected: 0x%llx (%lf) Actual: 0x%llx (%lf)\n", e.lu, e.d, a.lu, a.d);
+        printf ("Expected: 0x%llx (%lf) Actual: 0x%llx (%lf) ULP: %lf\n", e.lu, e.d, a.lu, a.d, ulp);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);
         return false;
@@ -452,13 +511,13 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
     return true;
   }
 
-
-  static bool SpecialVerifyDouble(double actual, double expected, int *nfail) {
-    bool flag = SpecialVerify(actual, expected);
-    if(!flag)
-      (*nfail)++;
-    return flag;
-  }
+// NOTE: These functions are not in use currently!
+//   static bool SpecialVerifyDouble(double actual, double expected, int *nfail) {
+//     bool flag = SpecialVerify(actual, expected);
+//     if(!flag)
+//       (*nfail)++;
+//     return flag;
+//   }
 
   void SetUp() override {
     libm_test_special_data_f64 *dataf64 = GetParam().data64;
@@ -506,6 +565,245 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
   uint64_t *idata, *idata1, *iop;
   double *data, *data1, *op;
   uint32_t nargs;
+  int *expected_expection;
+  uint32_t count;
+  PrintTstRes *ptr;
+  int vflag;
+};
+
+class SpecTestFixtureComplexFloat : public ::testing::TestWithParam<SpecParams> {
+ public:
+// NOTE: These functions are not in use currently!
+//   static bool ConfTestVerifyComplexFloat(fc32_t *ip, int except, int *nfail) {
+//     bool flag = ConformanceVerify(ip, except);
+//     if(!flag)
+//       (*nfail)++;
+//     return flag;
+//   }
+
+  template <typename T>
+  bool ConfVerifyComplexFlt(int nargs, T input, T input2, T actual_output, T expected_output, int raised_exception, int expected_exception, int *nfail) {
+    int output_match = 0, exception_match = 0;
+    /* check if exceptions match */
+    if (raised_exception != expected_exception) {
+        if (raised_exception < expected_exception)
+            exception_match=1;
+    }
+    val e_real = {.f = (float) (__real__ expected_output)};
+    val e_imag = {.f = (float) (__imag__ expected_output)};
+    val a_real = {.f = (float) (__real__ actual_output)};
+    val a_imag = {.f = (float) (__imag__ actual_output)};
+    val ip_real = {.f = (float) (__real__ input)};
+    val ip_imag = {.f = (float) (__imag__ input)};
+    val ip2_real = {.f = (float) (__real__ input2)};
+    val ip2_imag = {.f = (float) (__imag__ input2)};
+
+    // Note: Todo: Checking NAN in complex numbers!
+    #if defined(_WIN64) || defined(_WIN32)
+      bool both_nans = _isnanf(fabsf(e_real.f)) && _isnanf(fabsf(a_real.f));
+    #else
+      bool both_nans = isnanf(fabsf(e_real.f)) && isnanf(fabsf(a_real.f));
+    #endif
+
+    /* if op and expected dont match, check if ulp error is > 1.0 */
+    double ulp_real = getUlp(a_real.f, (double)e_real.f);
+    double ulp_imag = getUlp(a_imag.f, (double)e_imag.f);
+
+    double ulp = (ulp_real > ulp_imag)? ulp_real : ulp_imag;
+
+    /* if both are nans, output will always match, regardless of the sign bit */
+    if (((e_real.u ^ a_real.u) && (e_imag.u ^ a_imag.u) && (ulp > 2.0)) && (both_nans == false))
+        output_match=1;
+
+    if (output_match==1 || exception_match==1) {
+        (*nfail)++;
+        printf ("Input:    0x%x +i 0x%x   (%f +i %f)\n", ip_real.u, ip_imag.u, ip_real.f, ip_imag.f);
+        if (nargs == 2)
+            printf ("Input2:   0x%x +i 0x%x   (%f +i %f)\n", ip2_real.u, ip2_imag.u, ip2_real.f, ip2_imag.f);
+        printf ("Expected: 0x%x +i 0x%x   (%f +i %f)\n", e_real.u, e_imag.u, e_real.f, e_imag.f);
+        printf ("Actual:   0x%x +i 0x%x   (%f +i %f)\n", a_real.u, a_imag.u, a_real.f, a_imag.f);
+        /* print exceptions */
+        PrintConfExpections(raised_exception, expected_exception);
+        return false;
+    }
+    return true;
+  }
+
+// NOTE: These functions are not in use currently!
+//   static bool SpecialVerifyComplexFloat(float actual, float expected, int *nfail) {
+//     bool flag = SpecialVerify(actual, expected);
+//     if(!flag)
+//       (*nfail)++;
+//     return flag;
+//   }
+
+  void SetUp() override {
+    libm_test_complex_data_f32 *cdataf32 = GetParam().cdata32;
+    count = GetParam().countf;
+    vflag = GetParam().verboseflag;
+    ptr = GetParam().prttstres;
+    nargs = GetParam().nargs;
+
+    SpecialSetUpComplex(&idata, &expected_expection, count, cdataf32, nargs, &idata1, &iop);
+    data = (float _Complex *)idata;
+    op = (float _Complex *)iop;
+
+    if (nargs == 2) {
+      data1 = (float _Complex *)idata1;
+    }
+  }
+
+  void TearDown() override {
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      _aligned_free(idata);
+      _aligned_free(iop);
+    #else
+      free(idata);
+      free(iop);
+    #endif
+
+    idata = nullptr;
+    if (nargs == 2) {
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      _aligned_free(idata1);
+    #else
+      free(idata1);
+    #endif
+
+      idata1 = nullptr;
+    }
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      _aligned_free(expected_expection);
+    #else
+      free(expected_expection);
+    #endif
+    expected_expection = nullptr;
+  }
+
+ protected:
+  float _Complex *idata, *idata1, *iop;
+  uint32_t nargs;
+  float _Complex *data, *data1, *op;
+  int *expected_expection;
+  uint32_t count;
+  PrintTstRes *ptr;
+  int vflag;
+};
+
+class SpecTestFixtureComplexDouble : public ::testing::TestWithParam<SpecParams> {
+ public:
+// NOTE: These functions are not in use currently!
+//   static bool ConfTestVerifyComplexDouble(fc32_t *ip, int except, int *nfail) {
+//     bool flag = ConformanceVerify(ip, except);
+//     if(!flag)
+//       (*nfail)++;
+//     return flag;
+//   }
+  template <typename T>
+  bool ConfVerifyComplexDbl(int nargs, T input, T input2, T actual_output, T expected_output, int raised_exception, int expected_exception, int *nfail) {
+    int output_match = 0, exception_match = 0;
+    /* check if exceptions match */
+    if (raised_exception != expected_exception) {
+        if (raised_exception < expected_exception)
+            exception_match=1;
+    }
+    val e_real = {.d = (double) (__real__ expected_output)};
+    val e_imag = {.d = (double) (__imag__ expected_output)};
+    val a_real = {.d = (double) (__real__ actual_output)};
+    val a_imag = {.d = (double) (__imag__ actual_output)};
+    val ip_real = {.d = (double) (__real__ input)};
+    val ip_imag = {.d = (double) (__imag__ input)};
+    val ip2_real = {.d = (double) (__real__ input2)};
+    val ip2_imag = {.d = (double) (__imag__ input2)};
+
+    // Note: Todo: Checking NAN in complex numbers!
+    #if defined(_WIN64) || defined(_WIN32)
+      bool both_nans = _isnan(fabs(e_real.d)) && _isnan(fabs(a_real.d));
+    #else
+      bool both_nans = isnan(fabs(e_real.d)) && isnan(fabs(a_real.d));
+    #endif
+
+    /* if op and expected dont match, check if ulp error is > 1.0 */
+    /* The calculation of ULP in Complex Numbers is as follows:
+     * If actual output = a+ib
+     * and expected output = a'+ib',
+     * then ULP error = sqrt( (a-a')^2 + (b-b')^2 )
+     */
+     double ulp = sqrt( ((a_real.d-e_real.d) * (a_real.d-e_real.d)) + ((a_imag.d-e_imag.d) * (a_imag.d-e_imag.d)) );
+
+    /* if both are nans, output will always match, regardless of the sign bit */
+    if (((e_real.lu ^ a_real.lu) && (e_imag.lu ^ a_imag.lu) && (ulp > 2.0)) && (both_nans == false))
+        output_match=1;
+
+    if (output_match==1 || exception_match==1) {
+        (*nfail)++;
+        printf ("Input:    0x%x +i 0x%x   (%f +i %f)\n", ip_real.lu, ip_imag.lu, ip_real.d, ip_imag.d);
+        if (nargs == 2)
+            printf ("Input2:   0x%x +i 0x%x   (%f +i %f)\n", ip2_real.lu, ip2_imag.lu, ip2_real.d, ip2_imag.d);
+        printf ("Expected: 0x%x +i 0x%x   (%f +i %f)\n", e_real.lu, e_imag.lu, e_real.d, e_imag.d);
+        printf ("Actual:   0x%x +i 0x%x   (%f +i %f)\n", a_real.lu, a_imag.lu, a_real.d, a_imag.d);
+        /* print exceptions */
+        PrintConfExpections(raised_exception, expected_exception);
+        return false;
+    }
+    return true;
+  }
+
+// NOTE: These functions are not in use currently!
+//   static bool SpecialVerifyComplexDouble(double actual, float expected, int *nfail) {
+//     bool flag = SpecialVerify(actual, expected);
+//     if(!flag)
+//       (*nfail)++;
+//     return flag;
+//   }
+
+  void SetUp() override {
+    libm_test_complex_data_f64 *cdataf64 = GetParam().cdata64;
+    count = GetParam().countd;
+    vflag = GetParam().verboseflag;
+    ptr = GetParam().prttstres;
+    nargs = GetParam().nargs;
+
+    SpecialSetUpComplex(&idata, &expected_expection, count, cdataf64, nargs, &idata1, &iop);
+    data = (double _Complex *)idata;
+    op = (double _Complex *)iop;
+
+    if (nargs == 2) {
+      data1 = (double _Complex *)idata1;
+    }
+  }
+
+  void TearDown() override {
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      _aligned_free(idata);
+      _aligned_free(iop);
+    #else
+      free(idata);
+      free(iop);
+    #endif
+
+    idata = nullptr;
+    if (nargs == 2) {
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      _aligned_free(idata1);
+    #else
+      free(idata1);
+    #endif
+
+      idata1 = nullptr;
+    }
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      _aligned_free(expected_expection);
+    #else
+      free(expected_expection);
+    #endif
+    expected_expection = nullptr;
+  }
+
+ protected:
+  double _Complex *idata, *idata1, *iop;
+  uint32_t nargs;
+  double _Complex *data, *data1, *op;
   int *expected_expection;
   uint32_t count;
   PrintTstRes *ptr;

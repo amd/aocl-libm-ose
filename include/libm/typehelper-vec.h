@@ -280,7 +280,7 @@ as_v8_i64_f64(v_f64x8_t x)
 }
 
 /* Access a i64x8 as f64x8 */
-static inline v_u32x16_t
+static inline v_i32x16_t
 as_v16_i32_f32(v_f32x16_t x)
 {
     union {

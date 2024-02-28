@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -28,12 +28,12 @@
 
 #include <cmath>
 #include "libm_tests.h"
-#include "../../include/libm_macros.h"
+#include <libm_macros.h>
 
 #define AMD_LIBM_VEC_EXPERIMENTAL
 
-#include "../../include/libm_amd.h"
-#include "../../include/libm/amd_funcs_internal.h"
+#include <libm_amd.h>
+#include <libm/amd_funcs_internal.h>
 #include <fmaintrin.h>
 #include <immintrin.h>
 #include "callback.h"
@@ -52,22 +52,22 @@ uint32_t GetnIpArgs( void )
 
 void SpecSetupf32(SpecParams *specp) {
   specp->data32 = test_rintf_special_data;
-  specp->countf = ARRAY_SIZE(test_rintf_special_data); 
+  specp->countf = ARRAY_SIZE(test_rintf_special_data);
 }
 
 void SpecSetupf64(SpecParams *specp) {
   specp->data64 = test_rint_special_data;
-  specp->countd = ARRAY_SIZE(test_rint_special_data); 
+  specp->countd = ARRAY_SIZE(test_rint_special_data);
 }
 
 void ConfSetupf32(SpecParams *specp) {
   specp->data32 = test_rintf_conformance_data;
-  specp->countf = ARRAY_SIZE(test_rintf_conformance_data); 
+  specp->countf = ARRAY_SIZE(test_rintf_conformance_data);
 }
 
 void ConfSetupf64(SpecParams *specp) {
   specp->data64 = test_rint_conformance_data;
-  specp->countd = ARRAY_SIZE(test_rint_conformance_data); 
+  specp->countd = ARRAY_SIZE(test_rint_conformance_data);
 }
 
 float getFuncOp(float *data) {
@@ -86,6 +86,15 @@ double getExpected(float *data) {
 long double getExpected(double *data) {
   auto val = alm_mp_rint(data[0]);
   return val;
+}
+
+// Used by the Complex Number Functions only!
+double _Complex getExpected(float _Complex *data) {
+  return {0};
+}
+
+long double _Complex getExpected(double _Complex *data) {
+  return {0};
 }
 
 float getGlibcOp(float *data) {
@@ -108,7 +117,7 @@ int test_s1s(test_data *data, int idx)  {
 
 int test_s1d(test_data *data, int idx)  {
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   op[0] = LIBM_FUNC(rint)(ip[idx]);
   return 0;
 }
@@ -125,16 +134,18 @@ extern "C" {
 #endif
 
 /*vector routines*/
-__m128d LIBM_FUNC_VEC(d, 2, rint)(__m128d);
-__m256d LIBM_FUNC_VEC(d, 4, rint)(__m256d);
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  __m128d LIBM_FUNC_VEC(d, 2, rint)(__m128d);
+  __m256d LIBM_FUNC_VEC(d, 4, rint)(__m256d);
 
-__m128 LIBM_FUNC_VEC(s, 4, rintf)(__m128);
-__m256 LIBM_FUNC_VEC(s, 8, rintf)(__m256);
+  __m128 LIBM_FUNC_VEC(s, 4, rintf)(__m128);
+  __m256 LIBM_FUNC_VEC(s, 8, rintf)(__m256);
+#endif
 
 int test_v2d(test_data *data, int idx)  {
 #if 0
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
   __m128d op2 = LIBM_FUNC_VEC(d, 2, rint)(ip2);
   _mm_store_pd(&op[0], op2);
@@ -145,7 +156,7 @@ int test_v2d(test_data *data, int idx)  {
 int test_v4s(test_data *data, int idx)  {
 #if 0
   float *ip  = (float*)data->ip;
-  float *op  = (float*)data->op; 
+  float *op  = (float*)data->op;
   __m128 ip4 = _mm_set_ps(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m128 op4 = LIBM_FUNC_VEC(s, 4, rintf)(ip4);
   _mm_store_ps(&op[0], op4);
@@ -156,7 +167,7 @@ int test_v4s(test_data *data, int idx)  {
 int test_v4d(test_data *data, int idx)  {
 #if 0
   double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op; 
+  double *op  = (double*)data->op;
   __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256d op4 = LIBM_FUNC_VEC(d, 4, rint)(ip4);
   _mm256_store_pd(&op[0], op4);
@@ -167,12 +178,12 @@ int test_v4d(test_data *data, int idx)  {
 int test_v8s(test_data *data, int idx)  {
 #if 0
   float *ip  = (float*)data->ip;
-  float *op  = (float*)data->op; 
+  float *op  = (float*)data->op;
   __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256 op8 = LIBM_FUNC_VEC(s, 8, rintf)(ip8);
   _mm256_store_ps(&op[0], op8);
-#endif  
+#endif
   return 0;
 }
 

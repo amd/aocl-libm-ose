@@ -326,14 +326,20 @@ LIBM_DECL_FN_MAP(vrda_log2);
 LIBM_DECL_FN_MAP(vrda_log);
 LIBM_DECL_FN_MAP(vrda_pow);
 LIBM_DECL_FN_MAP(vrda_sin);
+
 LIBM_DECL_FN_MAP(vrda_add);
 LIBM_DECL_FN_MAP(vrda_sub);
 LIBM_DECL_FN_MAP(vrda_mul);
 LIBM_DECL_FN_MAP(vrda_div);
+LIBM_DECL_FN_MAP(vrda_fmax);
+LIBM_DECL_FN_MAP(vrda_fmin);
+
 LIBM_DECL_FN_MAP(vrda_addi);
 LIBM_DECL_FN_MAP(vrda_subi);
 LIBM_DECL_FN_MAP(vrda_muli);
 LIBM_DECL_FN_MAP(vrda_divi);
+LIBM_DECL_FN_MAP(vrda_fmaxi);
+LIBM_DECL_FN_MAP(vrda_fmini);
 
 LIBM_DECL_FN_MAP(vrsa_cbrtf);
 LIBM_DECL_FN_MAP(vrsa_cosf);
@@ -347,14 +353,20 @@ LIBM_DECL_FN_MAP(vrsa_log2f);
 LIBM_DECL_FN_MAP(vrsa_logf);
 LIBM_DECL_FN_MAP(vrsa_sinf);
 LIBM_DECL_FN_MAP(vrsa_powf);
+
 LIBM_DECL_FN_MAP(vrsa_addf);
 LIBM_DECL_FN_MAP(vrsa_subf);
 LIBM_DECL_FN_MAP(vrsa_mulf);
 LIBM_DECL_FN_MAP(vrsa_divf);
+LIBM_DECL_FN_MAP(vrsa_fmaxf);
+LIBM_DECL_FN_MAP(vrsa_fminf);
+
 LIBM_DECL_FN_MAP(vrsa_addfi);
 LIBM_DECL_FN_MAP(vrsa_subfi);
 LIBM_DECL_FN_MAP(vrsa_mulfi);
 LIBM_DECL_FN_MAP(vrsa_divfi);
+LIBM_DECL_FN_MAP(vrsa_fmaxfi);
+LIBM_DECL_FN_MAP(vrsa_fminfi);
 
 WEAK_LIBM_ALIAS(vrd2_cbrt, FN_PROTOTYPE(vrd2_cbrt));
 WEAK_LIBM_ALIAS(vrd2_cos, FN_PROTOTYPE(vrd2_cos));
@@ -456,14 +468,20 @@ WEAK_LIBM_ALIAS(vrda_log10, FN_PROTOTYPE(vrda_log10));
 WEAK_LIBM_ALIAS(vrda_log1p, FN_PROTOTYPE(vrda_log1p));
 WEAK_LIBM_ALIAS(vrda_log2, FN_PROTOTYPE(vrda_log2));
 WEAK_LIBM_ALIAS(vrda_sin, FN_PROTOTYPE(vrda_sin));
+
 WEAK_LIBM_ALIAS(vrda_add, FN_PROTOTYPE(vrda_add));
 WEAK_LIBM_ALIAS(vrda_sub, FN_PROTOTYPE(vrda_sub));
 WEAK_LIBM_ALIAS(vrda_mul, FN_PROTOTYPE(vrda_mul));
 WEAK_LIBM_ALIAS(vrda_div, FN_PROTOTYPE(vrda_div));
+WEAK_LIBM_ALIAS(vrda_fmax, FN_PROTOTYPE(vrda_fmax));
+WEAK_LIBM_ALIAS(vrda_fmin, FN_PROTOTYPE(vrda_fmin));
+
 WEAK_LIBM_ALIAS(vrda_addi, FN_PROTOTYPE(vrda_addi));
 WEAK_LIBM_ALIAS(vrda_subi, FN_PROTOTYPE(vrda_subi));
 WEAK_LIBM_ALIAS(vrda_muli, FN_PROTOTYPE(vrda_muli));
 WEAK_LIBM_ALIAS(vrda_divi, FN_PROTOTYPE(vrda_divi));
+WEAK_LIBM_ALIAS(vrda_fmaxi, FN_PROTOTYPE(vrda_fmaxi));
+WEAK_LIBM_ALIAS(vrda_fmini, FN_PROTOTYPE(vrda_fmini));
 
 WEAK_LIBM_ALIAS(vrsa_cbrtf, FN_PROTOTYPE(vrsa_cbrtf));
 WEAK_LIBM_ALIAS(vrsa_cosf, FN_PROTOTYPE(vrsa_cosf));
@@ -477,14 +495,20 @@ WEAK_LIBM_ALIAS(vrsa_log2f, FN_PROTOTYPE(vrsa_log2f));
 WEAK_LIBM_ALIAS(vrsa_logf, FN_PROTOTYPE(vrsa_logf));
 WEAK_LIBM_ALIAS(vrsa_sinf, FN_PROTOTYPE(vrsa_sinf));
 WEAK_LIBM_ALIAS(vrsa_powf, FN_PROTOTYPE(vrsa_powf));
+
 WEAK_LIBM_ALIAS(vrsa_addf, FN_PROTOTYPE(vrsa_addf));
 WEAK_LIBM_ALIAS(vrsa_subf, FN_PROTOTYPE(vrsa_subf));
 WEAK_LIBM_ALIAS(vrsa_mulf, FN_PROTOTYPE(vrsa_mulf));
 WEAK_LIBM_ALIAS(vrsa_divf, FN_PROTOTYPE(vrsa_divf));
+WEAK_LIBM_ALIAS(vrsa_fmaxf, FN_PROTOTYPE(vrsa_fmaxf));
+WEAK_LIBM_ALIAS(vrsa_fminf, FN_PROTOTYPE(vrsa_fminf));
+
 WEAK_LIBM_ALIAS(vrsa_addfi, FN_PROTOTYPE(vrsa_addfi));
 WEAK_LIBM_ALIAS(vrsa_subfi, FN_PROTOTYPE(vrsa_subfi));
 WEAK_LIBM_ALIAS(vrsa_mulfi, FN_PROTOTYPE(vrsa_mulfi));
 WEAK_LIBM_ALIAS(vrsa_divfi, FN_PROTOTYPE(vrsa_divfi));
+WEAK_LIBM_ALIAS(vrsa_fmaxfi, FN_PROTOTYPE(vrsa_fmaxfi));
+WEAK_LIBM_ALIAS(vrsa_fminfi, FN_PROTOTYPE(vrsa_fminfi));
 
 /*
  * Some aliases required by NAG tests

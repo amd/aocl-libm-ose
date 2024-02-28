@@ -173,6 +173,8 @@ ALM_PROTO_OPT(log10)(double x)
     uint64_t  expo = top12(x);
     flt64_t mant  = {.u = ux & MANTBITS_DP64};
 
+    /* The following line relies on (ux - LOW) underflowing if x is 0 or denormal, 
+       which would make the equality true for this case, as well as for x being inf or NaN. */
     if (unlikely ((ux - LOW) >= (HIGH - LOW))){
 
         if (2 * ux == 0)

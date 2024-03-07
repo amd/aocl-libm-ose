@@ -40,21 +40,22 @@
 #include "test_exp10_data.h"
 #include "../libs/mparith/alm_mp_funcs.h"
 
-/* The functions exp10() and exp10f() are unsupported in SVML & MSVC ABIs of Windows platform.
- * So the below conditional compilation shall ensure that these 2 APIs will be enabled on
- * either Linux platform (for all ABIs) or Windows Platform (for only AOCL ABI).
- */
-
-#if ( (!defined(_WIN64) || !defined(_WIN32)) || ((defined (_WIN64) || defined (_WIN32)) && LIBM_PROTOTYPE == PROTOTYPE_AOCL) )
+#if ((LIBM_PROTOTYPE != PROTOTYPE_MSVC) && ((defined (_WIN64) || defined (_WIN32)) && LIBM_PROTOTYPE != PROTOTYPE_SVML))
   double LIBM_FUNC(exp10)(double);
   float LIBM_FUNC(exp10f)(float);
 #endif
 
 static uint32_t ipargs = 1;
+bool special_case = false;
 
 uint32_t GetnIpArgs( void )
 {
 	return ipargs;
+}
+
+bool getSpecialCase(void)
+{
+  return special_case;
 }
 
 void ConfSetupf32(SpecParams *specp) {
@@ -67,7 +68,7 @@ void ConfSetupf64(SpecParams *specp) {
   specp->countd = ARRAY_SIZE(test_exp10_conformance_data);
 }
 
-#if ( (!defined(_WIN64) || !defined(_WIN32)) || ((defined (_WIN64) || defined (_WIN32)) && LIBM_PROTOTYPE == PROTOTYPE_AOCL) )
+#if ((LIBM_PROTOTYPE != PROTOTYPE_MSVC) && ((defined (_WIN64) || defined (_WIN32)) && LIBM_PROTOTYPE != PROTOTYPE_SVML))
 float getFuncOp(float *data) {
   return LIBM_FUNC(exp10f)(data[0]);
 }
@@ -109,22 +110,21 @@ double getGlibcOp(double *data) {
 /**********************
 *FUNCTIONS*
 **********************/
-
 int test_s1s(test_data *data, int idx)  {
-#if ( (!defined(_WIN64) || !defined(_WIN32)) || ((defined (_WIN64) || defined (_WIN32)) && LIBM_PROTOTYPE == PROTOTYPE_AOCL) )
+  #if ((LIBM_PROTOTYPE != PROTOTYPE_MSVC) && ((defined (_WIN64) || defined (_WIN32)) && LIBM_PROTOTYPE != PROTOTYPE_SVML))
     float *ip  = (float*)data->ip;
     float *op  = (float*)data->op;
     op[0] = LIBM_FUNC(exp10f)(ip[idx]);
-#endif
+  #endif
   return 0;
 }
 
 int test_s1d(test_data *data, int idx)  {
-#if ( (!defined(_WIN64) || !defined(_WIN32)) || ((defined (_WIN64) || defined (_WIN32)) && LIBM_PROTOTYPE == PROTOTYPE_AOCL) )
+  #if ((LIBM_PROTOTYPE != PROTOTYPE_MSVC) && ((defined (_WIN64) || defined (_WIN32)) && LIBM_PROTOTYPE != PROTOTYPE_SVML))
     double *ip  = (double*)data->ip;
     double *op  = (double*)data->op;
     op[0] = LIBM_FUNC(exp10)(ip[idx]);
-#endif
+  #endif
   return 0;
 }
 

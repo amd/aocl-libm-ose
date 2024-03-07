@@ -194,6 +194,7 @@ class AccuTestFixtureFloat : public ::testing::TestWithParam<AccuParams> {
   float *aop;
   uint32_t count;
   uint32_t nargs;
+  bool special_case;
   InputData *inData;
   PrintTstRes *ptr;
   int vflag;

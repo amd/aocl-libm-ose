@@ -44,11 +44,18 @@ double LIBM_FUNC(log)(double);
 float LIBM_FUNC(logf)(float);
 
 static uint32_t ipargs = 1;
+bool special_case = false;
 
 uint32_t GetnIpArgs( void )
 {
     return ipargs;
 }
+
+bool getSpecialCase(void)
+{
+  return special_case;
+}
+
 
 void ConfSetupf32(SpecParams *specp) {
   specp->data32 = test_logf_conformance_data;

@@ -44,10 +44,16 @@ double LIBM_FUNC(pow)(double);
 float LIBM_FUNC(powf)(float);
 
 static uint32_t ipargs = 2;
+bool special_case = false;
 
 uint32_t GetnIpArgs( void )
 {
 	return ipargs;
+}
+
+bool getSpecialCase(void)
+{
+  return special_case;
 }
 
 void ConfSetupf32(SpecParams *specp) {

@@ -57,6 +57,8 @@ exception with a code 0xc0000005 inconsistently, since mem_addr was not aligned 
 
 uint32_t GetnIpArgs( void );
 
+bool getSpecialCase(void);
+
 float getFuncOp(float *);
 double getFuncOp(double *);
 

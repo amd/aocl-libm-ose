@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2023, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2024, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -74,6 +74,7 @@ enum {
     C_AMD_NEXTAFTER,
     C_AMD_NEXTTOWARD,
     C_AMD_POW,
+    C_AMD_POWX,
     C_AMD_REMAINDER,
     C_AMD_REMQUO,
     C_AMD_RINT,
@@ -175,6 +176,7 @@ extern void LIBM_IFACE_PROTO(nearbyint)(void *arg);
 extern void LIBM_IFACE_PROTO(nextafter)(void *arg);
 extern void LIBM_IFACE_PROTO(nexttoward)(void *arg);
 extern void LIBM_IFACE_PROTO(pow)(void *arg);
+extern void LIBM_IFACE_PROTO(powx)(void *arg);
 extern void LIBM_IFACE_PROTO(remainder)(void *arg);
 extern void LIBM_IFACE_PROTO(remquo)(void *arg);
 extern void LIBM_IFACE_PROTO(rint)(void *arg);

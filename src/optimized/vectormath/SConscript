@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2024 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -29,40 +29,34 @@ from os.path import join as joinpath
 builddir = joinpath(env['BUILDROOT'], 'src', 'optimized')
 
 e = env.Clone()
+
+# These rearrangements are not value-safe:
+#	 (a ⊕ b) ⊕ c ⇒ a ⊕ (b ⊕ c)
+#	 a ⊗ (b ⊕ c) ⇒ (a ⊗ b) ⊕ (a ⊕ c)
+#
+# To Disallow these changes in gcc remove -ffast-math
+if '-ffast-math' in e['CFLAGS']:
+    e['CFLAGS'].remove('-ffast-math')
+
+incpaths = [
+    '#' + joinpath(Dir('.').srcnode().path),
+    '#' + joinpath(Dir('.').srcnode().path, 'include')
+]
+
 if e['HOST_OS'] != 'win32':
-    cflags = ['-O3', '-fPIC', '-mavx2', '-mfma', '-flax-vector-conversions']
+    cflags = ['-g','-O3', '-fPIC', '-flax-vector-conversions']
 else:
     cflags=[]
 
 e.Append(
     CFLAGS = cflags,
+    CPPPATH = incpaths
 )
 
-experiment_src=[
-	]
+experimental_src = []
 
-source = Glob('*.c', exclude=experiment_src)
-source += Glob('data/*.c')
+source = Glob('*.c', exclude=experimental_src)
 
-vec_objs   = SConscript('vec/SConscript',
-                        exports    = {'env' : e},
-                        duplicate  = 0,
-                        src_dir    = '#src/optimized/vec',
-			            variant_dir= joinpath(builddir, 'vec'))
-
-vectormath_objs   = SConscript('vectormath/SConscript',
-                        exports    = {'env' : e},
-                        duplicate  = 0,
-                        src_dir    = '#src/optimized/vectormath',
-                        variant_dir= joinpath(builddir, 'vectormath'))
-
-cmplx_objs   = SConscript('cmplx/SConscript',
-                        exports    = {'env' : e},
-                        duplicate  = 0,
-                        src_dir    = '#src/optimized/cmplx',
-                        variant_dir= joinpath(builddir, 'cmplx'))
-
-
-objs = e.StaticObject(source) + vec_objs + cmplx_objs
+objs = e.StaticObject(source)
 
 Return('objs')

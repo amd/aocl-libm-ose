@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -267,6 +267,9 @@ bool cmdLine::Echo(InputParams *inparams) {
         break;
       case 16:
         inparams->fqty = ALM::FloatQuantity::E_Vector_16;
+        break;
+      case 32:
+        inparams->fqty = ALM::FloatQuantity::E_Vector_Array;
         break;
       default:
         break;

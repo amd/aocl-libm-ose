@@ -152,7 +152,7 @@
   Input type:
   -i (f for single precision, d for double precision)
   Vector input count:
-  -e (1 for scalar, >1 for vector input variants)
+  -e (1 for scalar variants, 2/4/8/16 for vector variants, 32 for vector array variants)
   Test Type:
   -t (perf for performance, conf for conformance, accu for accuracy)
   Input count:

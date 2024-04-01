@@ -86,6 +86,10 @@ void SubFilterFqty(InputParams *params, string &filter_data) {
   string str("");
 
   switch (params->fqty) {
+    case ALM::FloatQuantity::E_Vector_Array:
+      str = filter_data + "_VECTOR_ARRAY_";
+      SubFilterFwidth(params, str, ALM::FloatQuantity::E_Vector_Array);
+    break;
     case ALM::FloatQuantity::E_Scalar:
       str = filter_data + "_SCALAR_";
       SubFilterFwidth(params, str, ALM::FloatQuantity::E_Scalar);
@@ -113,6 +117,10 @@ void SubFilterFqty(InputParams *params, string &filter_data) {
 
     default:
       string sfqty("");
+
+      sfqty = filter_data + "_VECTOR_ARRAY_";
+      SubFilterFwidth(params, sfqty, ALM::FloatQuantity::E_Scalar);
+      str = str + sfqty;
 
       sfqty = filter_data + "_SCALAR_";
       SubFilterFwidth(params, sfqty, ALM::FloatQuantity::E_Scalar);

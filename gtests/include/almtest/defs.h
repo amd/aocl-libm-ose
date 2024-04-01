@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -114,12 +114,13 @@ inline std::ostream& operator<<(std::ostream& os, FloatWidth& w) {
 #define NUMOFFLOATTYPES 4
 
 enum class FloatQuantity {
-  E_Scalar = 1 << 0,     // Scalar
-  E_Vector_2 = 1 << 1,   // Vector - 2 elem
-  E_Vector_4 = 1 << 2,   // Vector - 4 elem
-  E_Vector_8 = 1 << 3,   // Vector - 8 elem
-  E_Vector_16 = 1 << 4,  // Vector - 16 elem
-  E_Other = 1 << 5,
+  E_Scalar = 1 << 0,       // Scalar
+  E_Vector_2 = 1 << 1,     // Vector - 2 elem
+  E_Vector_4 = 1 << 2,     // Vector - 4 elem
+  E_Vector_8 = 1 << 3,     // Vector - 8 elem
+  E_Vector_16 = 1 << 4,    // Vector - 16 elem
+  E_Vector_Array = 1 << 5, // Vector Array
+  E_Other = 1 << 6,
   E_MAX,
 
   // TODO : Need to contain all possible FloatQuantities

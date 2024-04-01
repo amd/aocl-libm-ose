@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -71,8 +71,8 @@ double getFuncOp(double *data) {
 
 
 double getExpected(float *data) {
-    auto val = alm_mp_fmaxf(data[0], data[1]);
-    return val;
+  auto val = alm_mp_fmaxf(data[0], data[1]);
+  return val;
 }
 
 long double getExpected(double *data) {
@@ -228,6 +228,27 @@ int test_v16s(test_data *data, int idx)  {
 #endif
   return 0;
 }
+
+int test_vad(test_data *data, int count)  {
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+  double *ip1 = (double*)data->ip;
+  double *ip2 = (double*)data->ip1;
+  double *op  = (double*)data->op;
+  amd_vrda_fmax(count, ip1, ip2, op);
+#endif
+  return 0;
+}
+
+int test_vas(test_data *data, int count)  {
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+  float *ip1 = (float*)data->ip;
+  float *ip2 = (float*)data->ip1;
+  float *op  = (float*)data->op;
+  amd_vrsa_fmaxf(count, ip1, ip2, op);
+#endif
+  return 0;
+}
+
 
 #ifdef __cplusplus
 }

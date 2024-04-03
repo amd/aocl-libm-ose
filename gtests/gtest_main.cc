@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -43,6 +43,7 @@
 #include "verify.h"
 #include <external/amdlibm.h>
 #include <complex.h>
+#include "func_var_existence.h"
 
 extern vector<AccuParams> accuData;
 extern vector<SpecParams> specData;
@@ -600,6 +601,17 @@ int gtest_main(int argc, char **argv, InputParams *inparams) {
   memset(ptr, 0, sizeof(PrintTstRes));
   almTest.AlmTestType(inparams, inData, ptr);
   almTest.CreateGtestFilters(inparams, filter_data);
+
+  if (inparams->ttype == ALM::TestType::E_Accuracy)
+  {
+    filter_data = validateFilterData(inparams->testFunction, filter_data);
+    if(filter_data.length() == 0)
+    {
+      cout << inparams->testFunction << "() does not support the requested variants!" << endl;
+      return 1;
+    }
+    cout << "Supported variants: " << filter_data << endl;
+  }
 
   ::testing::GTEST_FLAG(filter) = filter_data.c_str();
   testing::InitGoogleTest(&argc, argv);

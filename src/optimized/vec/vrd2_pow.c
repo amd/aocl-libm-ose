@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2018-2024, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -95,7 +95,6 @@ static struct {
     v_f64x2_t ln2_by_n_head, ln2_by_n_tail;
     v_i64x2_t one;
     v_f64x2_t poly[4];
-    v_u64x2_t exp_max;
 } v_exp_data  = {
     .ln2_tblsz_head = _MM_SET1_PD2(0x1.63p-1),
 	.ln2_tblsz_tail = _MM_SET1_PD2(-0x1.bd0105c610ca8p-13),
@@ -104,7 +103,6 @@ static struct {
     .ln2_by_n_tail = _MM_SET1_PD2(0x1.DF473DE6AF279p-36),
     .one =  _MM_SET1_I64x2(0x3ff0000000000000ULL),
     .Huge = _MM_SET1_PD2(0x1.8000000000000p+52),
-    .exp_max = _MM_SET1_I64x2(0x4086200000000000),
     .poly = {
 		_MM_SET1_PD2(0x1.0000000000000p-1),
 		_MM_SET1_PD2(0x1.5555555555555p-3),
@@ -126,7 +124,6 @@ static struct {
 #define LN2_BY_N_TAIL   v_exp_data.ln2_by_n_tail
 #define INVLN2          v_exp_data.tblsz_byln2
 #define EXP_HUGE        v_exp_data.Huge
-#define EXP_MAX         v_exp_data.exp_max
 #define ONE             v_exp_data.one
 
 /*
@@ -143,6 +140,8 @@ static struct {
 #define B3  v_exp_data.poly[2]
 #define B4  v_exp_data.poly[3]
 
+#define EXP_MAX 0x4086200000000000
+#define SCALAR_POW ALM_PROTO(pow)
 /*
  *   __m128d ALM_PROTO_OPT(vrd2_pow)(__m128d, __m128d);
  *
@@ -252,9 +251,6 @@ ALM_PROTO_OPT(vrd2_pow)(__m128d _x,__m128d _y)
 
     v_u64x2_t v = as_v2_u64_f64(ylogx_h) & SIGN_MASK;
 
-    /* check if y*log(x) > 1024*ln(2) */
-    v_i64x2_t condition2 = (v_i64x2_t)(v >= EXP_MAX);
-
     z = ylogx_h * INVLN2;
 
     v_f64x2_t dn = z + EXP_HUGE;
@@ -291,9 +287,12 @@ ALM_PROTO_OPT(vrd2_pow)(__m128d _x,__m128d _y)
 
     result = z * as_v2_f64_i64(m);
 
+    /* Check for special cases */
+    /* If y*log(x) is outside valid range, call scalar pow(value) */
+    /* Otherwise, return the above computed result */
     for(int i = 0; i < VECTOR_LENGTH; i++) {
-        if(unlikely((condition2)[i])){
-            result[i] = ALM_PROTO(pow)(_x[i], _y[i]);
+        if(unlikely(v[i] >= EXP_MAX)){
+            result[i] = SCALAR_POW(_x[i], _y[i]);
          }
     }
 

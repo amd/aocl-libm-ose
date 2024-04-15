@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -80,7 +80,7 @@ static struct {
         v_f64x2_t pi, halfpi, invpi;
         v_f64x2_t pi1, pi2, pi3;
         v_f64x2_t half, alm_huge;
-        v_u64x2_t sign_mask, max;
+        v_u64x2_t sign_mask;
         } v2_cos_data = {
                         .pi        = _MM_SET1_PD2(0x1.921fb54442d188p1),
                         .halfpi    = _MM_SET1_PD2(0x1.921fb54442d18p0),
@@ -91,7 +91,6 @@ static struct {
                         .half      = _MM_SET1_PD2(0x1p-1),
                         .alm_huge  = _MM_SET1_PD2(0x1.8p+52),
                         .sign_mask = _MM_SET1_I64x2(0x7FFFFFFFFFFFFFFF),
-                        .max       = _MM_SET1_I64x2(0x4160000000000000), /* 0x1p23 */
                         .poly_cos  = {
                                         _MM_SET1_PD2(-0x1.5555555555555p-3),
                                         _MM_SET1_PD2(0x1.11111111110bp-7),
@@ -123,19 +122,10 @@ static struct {
 #define C8 v2_cos_data.poly_cos[7]
 
 #define V2_COS_SIGN_MASK v2_cos_data.sign_mask
-#define V2_COS_MAX       v2_cos_data.max
 #define V2_ALM_HUGE      v2_cos_data.alm_huge
 
-
-static inline v_f64x2_t
-cos_specialcase(v_f64x2_t _x, v_f64x2_t result,
-                v_u64x2_t cond)
-{
-    return (v_f64x2_t) {
-            (cond[0]) ? ALM_PROTO(cos)(_x[0]):result[0],
-            (cond[1]) ? ALM_PROTO(cos)(_x[1]):result[1],
-        };
-}
+#define COS_MAX 0x4160000000000000
+#define SCALAR_COS ALM_PROTO(cos)
 
 v_f64x2_t
 ALM_PROTO_OPT(vrd2_cos)(v_f64x2_t x)
@@ -146,9 +136,6 @@ ALM_PROTO_OPT(vrd2_cos)(v_f64x2_t x)
     v_u64x2_t n, ixd, odd;
 
     ixd = as_v2_u64_f64(x);
-
-    /* Check for special cases */
-    v_u64x2_t cond = (ixd & V2_COS_SIGN_MASK) > (V2_COS_MAX);
 
     /* Remove sign from the input */
     ixd = ixd & V2_COS_SIGN_MASK;
@@ -177,10 +164,14 @@ ALM_PROTO_OPT(vrd2_cos)(v_f64x2_t x)
     /* If n is odd, result is negative */
     result = as_v2_f64_u64( as_v2_u64_f64(poly) ^ odd);
 
-    if(unlikely(any_v2_u64_loop(cond))) {
-        return cos_specialcase(x, result,cond);
+    /* Check for special cases */
+    /* If input value is outside valid range, call scalar cos(value) */
+    /* Otherwise, return the above computed result */
+    for(int i = 0; i < 2; i++)
+    {
+        if(unlikely(ixd[i] > COS_MAX))
+            result[i] = SCALAR_COS(x[i]);
     }
-
     return result;
 
 }

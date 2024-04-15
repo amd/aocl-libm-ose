@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2018-2024, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -65,7 +65,7 @@
 static struct {
     double poly_log[20];
     v_f64x4_t ln2, ln2_head, ln2_tail;
-    v_u64x4_t inf, v_max, v_min;
+    v_u64x4_t inf;
     v_u64x4_t two_by_three;
 } log_data = {
     .two_by_three = _MM_SET1_I64(0x3fe5555555555555),
@@ -73,8 +73,6 @@ static struct {
     .ln2 = _MM_SET1_PD4(0x1.62e42fefa39efp-1),
     .ln2_head = _MM_SET1_PD4(0x1.63p-1),
     .ln2_tail = _MM_SET1_PD4(-0x1.bd0105c610ca8p-13),
-    .v_max = _MM_SET1_I64(0x7ff0000000000000),
-    .v_min = _MM_SET1_I64(0x0010000000000000),
     /* Polynomial coefficients obtained using fpminimax algorithm from Sollya */
     .poly_log = {
         0x1.0p0,
@@ -100,13 +98,8 @@ static struct {
     },
 };
 
-static inline v_f64x4_t
-log_specialcase(v_f64x4_t _x,
-                 v_f64x4_t result,
-                 v_u64x4_t cond)
-{
-    return v_call_f64(ALM_PROTO(log), _x, result, cond);
-}
+#define LOG_ARG_MAX 0x7ff0000000000000
+#define SCALAR_LOG ALM_PROTO(log)
 
 #define EXPSHIFTBITS_SP64 52
 #define ln2 log_data.ln2
@@ -135,9 +128,6 @@ log_specialcase(v_f64x4_t _x,
 #define C18 _MM_SET1_PD4(log_data.poly_log[17])
 #define C19 _MM_SET1_PD4(log_data.poly_log[18])
 #define C20 _MM_SET1_PD4(log_data.poly_log[19])
-#define V_MIN log_data.v_min
-#define V_MAX log_data.v_max
-
 
 __m256d
 ALM_PROTO_OPT(vrd4_log) (__m256d x)
@@ -148,8 +138,6 @@ ALM_PROTO_OPT(vrd4_log) (__m256d x)
     v_i64x4_t ix;
 
     ix = as_v4_i64_f64(x);
-
-    v_u64x4_t condition = (as_v4_u64_f64(x) - V_MIN >= V_MAX - V_MIN);
 
     ix = (ix - TWO_BY_THREE) & INF;
 
@@ -165,7 +153,7 @@ ALM_PROTO_OPT(vrd4_log) (__m256d x)
 
     n = (v_f64x4_t)_mm256_cvtepi32_pd((__m128i)int32_exponent);
 
-	/* Reduce the mantissa, m to [2/3, 4/3] */
+    /* Reduce the mantissa, m to [2/3, 4/3] */
 
     m = as_v4_f64_u64(as_v4_u64_f64(x) - ix);
 
@@ -181,12 +169,19 @@ ALM_PROTO_OPT(vrd4_log) (__m256d x)
                          C8, C9, C10, C11, C12, C13, C14,
                          C15, C16, C17, C18, C19, C20);
 
-	/* Addition by using head and tail */
+    /* Addition by using head and tail */
 
     r = n * ln2_head + (n * ln2_tail + r);
 
-    if (unlikely(any_v4_u64_loop(condition))) {
-           return log_specialcase(x, r, condition);
+    v_u64x4_t ux = as_v4_u64_f64(x);
+
+    /* Check for special cases */
+    /* If input value is outside valid range, call scalar log(value) */
+    /* Otherwise, return the above computed result */
+    for(int i = 0; i < 4; i++)
+    {
+        if(unlikely(ux[i] > LOG_ARG_MAX))
+            r[i] = SCALAR_LOG(x[i]);
     }
 
     return r;

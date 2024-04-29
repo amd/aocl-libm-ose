@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -259,8 +259,6 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
 
 
 
-
-
 /* How to get hold of an assembly square root instruction:
  *   ASMQRT(x,y) computes y = sqrt(x).
  */
@@ -271,6 +269,28 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
 /* Hammer sqrt instruction */
 #define ASMSQRT(x,y) asm volatile ("sqrtsd %1, %0" : "=x" (y) : "x" (x));
 #endif
+
+
+
+/*
+ * The below macros are useful for masked load and store operations on 256-bit registers.
+ */
+#define FLOAT_ELEMENTS_256_BIT 8
+#define DOUBLE_ELEMENTS_256_BIT 4
+
+#define GET_MASK_FLOAT_256_BIT(rem_ele) \
+    (rem_ele == 1 ? _mm256_set_epi32(0, 0, 0, 0, 0, 0, 0, -1) : \
+    (rem_ele == 2 ? _mm256_set_epi32(0, 0, 0, 0, 0, 0, -1, -1) : \
+    (rem_ele == 3 ? _mm256_set_epi32(0, 0, 0, 0, 0, -1, -1, -1) : \
+    (rem_ele == 4 ? _mm256_set_epi32(0, 0, 0, 0, -1, -1, -1, -1) : \
+    (rem_ele == 5 ? _mm256_set_epi32(0, 0, 0, -1, -1, -1, -1, -1) : \
+    (rem_ele == 6 ? _mm256_set_epi32(0, 0, -1, -1, -1, -1, -1, -1) : \
+    _mm256_set_epi32(0, -1, -1, -1, -1, -1, -1, -1)))))))
+
+#define GET_MASK_DOUBLE_256_BIT(rem_ele) \
+    (rem_ele == 1 ? _mm256_set_epi64x(0, 0, 0, -1) : \
+    (rem_ele == 2 ? _mm256_set_epi64x(0, 0, -1, -1) : \
+    _mm256_set_epi64x(0, -1, -1, -1)))
 
 
 

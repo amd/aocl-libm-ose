@@ -124,7 +124,7 @@ enum class FloatQuantity {
   E_MAX,
 
   // TODO : Need to contain all possible FloatQuantities
-  E_All = (E_Scalar | E_Vector_2 | E_Vector_4 | E_Vector_8 | E_Vector_16)
+  E_All = (E_Scalar | E_Vector_2 | E_Vector_4 | E_Vector_8 | E_Vector_16 | E_Vector_Array)
 };
 
 inline std::ostream& operator<<(std::ostream& os, FloatQuantity& q) {
@@ -143,6 +143,9 @@ inline std::ostream& operator<<(std::ostream& os, FloatQuantity& q) {
       break;
     case FloatQuantity::E_Vector_16:
       os << "Vector(16)";
+      break;
+    case FloatQuantity::E_Vector_Array:
+      os << "Vector_Array";
       break;
     default:
       os << "All";
@@ -186,7 +189,7 @@ enum class TestType {
   E_Accuracy    = 1 << 1,
   E_Conformance = 1 << 2,
   E_SpecialCase = 1 << 3,
-  E_CornerCase  = 1 << 4,  
+  E_CornerCase  = 1 << 4,
   E_Performance = 1 << 5,
 
   E_MAX
@@ -205,7 +208,7 @@ inline std::ostream& operator<<(std::ostream& os, TestType& cat) {
       break;
     case TestType::E_Performance:
       os << "PERFORMANCE";
-      break;      
+      break;
     default:
       os << "UKNOWN";
       break;

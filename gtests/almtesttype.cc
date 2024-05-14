@@ -58,7 +58,7 @@ int AlmTestFramework::AlmTestType(InputParams *params, InputData *inData,
 
     accup.vec_input_count = (int)params->fqty;
     if (params->fqty == ALM::FloatQuantity::E_All)
-      accup.vec_input_count = (int)ALM::FloatQuantity::E_Vector_16;
+      accup.vec_input_count = (int)ALM::FloatQuantity::E_Vector_Array;
 
     if (params->fqty != ALM::FloatQuantity::E_Vector_Array)
     {

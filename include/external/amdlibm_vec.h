@@ -1,6 +1,6 @@
 /*
 
-(C) 2008-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 
 Advanced Micro Devices, Inc.
 Software License Agreement
@@ -372,6 +372,9 @@ extern "C" {
     /* avx512 variants */
     __m512d amd_vrd8_erf    (__m512d x);
     __m512  amd_vrs16_erff  (__m512 x);
+
+/* sqrt */
+    __m128d amd_vrd2_sqrt   (__m128d x);
 
 #ifdef __cplusplus
 }

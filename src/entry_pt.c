@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -89,7 +89,7 @@ alm_func_t        G_ENTRY_PT_PTR(tanh);
 alm_func_t        G_ENTRY_PT_PTR(tanpi);
 alm_func_t        G_ENTRY_PT_PTR(trunc);
 alm_func_t        G_ENTRY_PT_PTR(erf);
-  
+
 /*
  * required by NAG tests
  */
@@ -302,6 +302,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd2_sin);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_tan);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_atan);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_erf);
+alm_func_t        G_ENTRY_PT_PTR(vrd2_sqrt);
 
 alm_func_t        G_ENTRY_PT_PTR(vrd4_cbrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_cos);

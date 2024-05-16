@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -31,7 +31,7 @@
 #include "entry_pt_macros.h"
 
 
-/* 
+/*
  * LIBM_DECL_FN_MAP is used to declare and map AOCL Libm functions.
  * The functions will be mapped as "amd_<func_name>".
  */
@@ -319,6 +319,7 @@ LIBM_DECL_FN_MAP(vrd2_tan);
 LIBM_DECL_FN_MAP(vrd2_cosh);
 LIBM_DECL_FN_MAP(vrd2_atan);
 LIBM_DECL_FN_MAP(vrd2_erf);
+LIBM_DECL_FN_MAP(vrd2_sqrt);
 
 LIBM_DECL_FN_MAP(vrd4_pow);
 LIBM_DECL_FN_MAP(vrd4_exp);
@@ -398,7 +399,7 @@ LIBM_DECL_FN_MAP(vrs16_erff);
 
 
 
-/* 
+/*
  * WEAK_LIBM_ALIAS is used to map "amd_<func_name>" to "<func_name>".
  * This will enable applications to call AOCL-Libm functions directly without using the "amd_" prefix.
  */
@@ -650,6 +651,7 @@ WEAK_LIBM_ALIAS(vrd2_tan, FN_PROTOTYPE(vrd2_tan));
 WEAK_LIBM_ALIAS(vrd2_cosh, FN_PROTOTYPE(vrd2_cosh));
 WEAK_LIBM_ALIAS(vrd2_atan, FN_PROTOTYPE(vrd2_atan));
 WEAK_LIBM_ALIAS(vrd2_erf, FN_PROTOTYPE(vrd2_erf));
+WEAK_LIBM_ALIAS(vrd2_sqrt, FN_PROTOTYPE(vrd2_sqrt));
 
 WEAK_LIBM_ALIAS(vrd4_pow, FN_PROTOTYPE(vrd4_pow));
 WEAK_LIBM_ALIAS(vrd4_exp, FN_PROTOTYPE(vrd4_exp));
@@ -736,7 +738,7 @@ WEAK_LIBM_ALIAS(vrs16_erff, FN_PROTOTYPE(vrs16_erff));
  * WEAK_LIBM_ALIAS is used to map "amd_<func_name>" to "__<func_name>".
  *
  * GLIBC internally identifies following 13 AOCL Vector functions with "__" prefix:
- * 
+ *
  * __vrd2_sin, __vrd2_cos, __vrd2_exp, __vrd2_log, __vrd2_log2, __vrd2_log10,
  * __vrs4_sinf, __vrs4_cosf, __vrs4_expf, __vrs4_logf, __vrs4_log2f, __vrs4_log10f
  * and __vrs4_powf

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2023, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2024, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -97,7 +97,7 @@ extern double    ALM_PROTO_INTERNAL(tanh)                 (double x);
 extern double    ALM_PROTO_INTERNAL(tanpi)                (double x);
 extern double    ALM_PROTO_INTERNAL(trunc)                (double x);
 extern double    ALM_PROTO_INTERNAL(erf)                  (double x);
-  
+
 /*
  * Single Precision functions
  */
@@ -276,6 +276,7 @@ extern __m128d   ALM_PROTO_INTERNAL(vrd2_sin)      (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_tan)      (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_atan)     (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_erf)     (__m128d x);
+extern __m128d   ALM_PROTO_INTERNAL(vrd2_sqrt)     (__m128d);
 
 /*
  * Vector double precision, 4 element

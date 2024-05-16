@@ -72,6 +72,7 @@ def append_spack_env(mydict):
                     'SPACK_LINKER_ARG',
                     'SPACK_SHORT_SPEC',
                     'SPACK_SYSTEM_DIRS',
+                    'SPACK_MANAGED_DIRS',
                 ]
 
     # add these keys to mydict if they exist in environ

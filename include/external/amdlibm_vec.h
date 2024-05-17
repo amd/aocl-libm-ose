@@ -375,6 +375,7 @@ extern "C" {
 
 /* sqrt */
     __m128d amd_vrd2_sqrt   (__m128d x);
+    __m256d amd_vrd4_sqrt   (__m256d x);
 
 #ifdef __cplusplus
 }

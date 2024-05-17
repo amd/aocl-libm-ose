@@ -131,6 +131,7 @@ EXPORTS
     amd_vrd2_log2
     amd_vrd2_pow
     amd_vrd2_sin
+    amd_vrd2_sqrt
     amd_vrd2_tan
     amd_vrd4_cos
     amd_vrd4_exp

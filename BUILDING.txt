@@ -118,16 +118,20 @@
   With this, the tests will be compiled to call _libm_ functions without the
   amd specific prefix.
 
-### Building with Intel Math (SVML,IMF) Libraries
-  To build tests to exercise Intel math libraries
+### Building with Intel Math (OneAPI) Libraries
+  To build tests to exercise Intel math libraries:
+  Install latest version of Intel OneAPI (Older MKL/SVML/IMF library versions are not supported!)
 
-  Add the intel library path to INTEL_LIB_PATH variable.
+  Add the Intel OneAPI library path to INTEL_LIB_PATH variable
 
-  $ export INTEL_LIB_PATH=<path to intel shared libraries>
+  $ export INTEL_LIB_PATH=<path to intel OneAPI installation which has include & lib folders>
   then,
   $ scons --libabi=svml;
-  Add intel lib path to LD_LIBRARY_PATH;
-  $export LD_LIBRARY_PATH=<intel lib path>:$LD_LIBRARY_PATH;
+  Add the Intel lib paths to LD_LIBRARY_PATH variable as below:
+  $export LD_LIBRARY_PATH=:<intel OneAPI lib path>:$LD_LIBRARY_PATH;
+
+  Now run the test executable for the required function
+  $./build/svml-release/gtests/<function>/test_<function>     with the test parameters
 
 ### To run the tests
   To run the AOCL LibM test framework.

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -103,9 +103,9 @@ def CheckCPUIDInstall(context):
     return res
 
 def CheckLibAbi(context):
-    #if svml, check for svml path in INTEL_LIB_PATH variable
-    #not using CheckLisWithHeader because this might be
-    #in user defined local paths, not under /usr/lib
+    # If ABI is SVML, check for OneAPI library path in INTEL_LIB_PATH variable
+    # Not using CheckLibWithHeader because this might be
+    # in user defined local paths, not under /usr/lib.
     res = False
     env = context.env
     libabi = (env['libabi'])
@@ -114,17 +114,17 @@ def CheckLibAbi(context):
 
     if libabi == 'svml':
         context.Message('INTEL_LIB_PATH')
-        svml_path = os.environ.get('INTEL_LIB_PATH', None)
-        if svml_path is None or '':
+        oneapi_path = os.environ.get('INTEL_LIB_PATH', None)
+        if oneapi_path is None or '':
             context.Message('\nThe env variable INTEL_LIB_PATH is not set\n')
             exit (1)
 
-        if CheckPathDir(context, svml_path):
-            env['INTEL_LIB_PATH'] = svml_path
-            context.Message(svml_path)
+        if CheckPathDir(context, oneapi_path):
+            env['INTEL_LIB_PATH'] = oneapi_path
+            context.Message(oneapi_path)
             res = True
         else:
-            context.Message(" not found\n")
+            context.Message("INTEL_LIB_PATH not found\n")
 
     # TODO: Add for other lib ABI later
     else:

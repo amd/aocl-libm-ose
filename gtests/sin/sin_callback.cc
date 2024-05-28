@@ -217,22 +217,10 @@ int test_v16s(test_data *data, int idx)  {
 }
 
 int test_vad(test_data *data, int count)  {
-// REFER JIRA https://ontrack-internal.amd.com/browse/CPUPL-4816 for more info
-// #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
-//   double *ip  = (double*)data->ip;
-//   double *op  = (double*)data->op;
-//   amd_vrda_sin(count, ip, op);
-// #endif
   return 0;
 }
 
 int test_vas(test_data *data, int count)  {
-// REFER JIRA https://ontrack-internal.amd.com/browse/CPUPL-4816 for more info
-// #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
-//   float *ip  = (float*)data->ip;
-//   float *op  = (float*)data->op;
-//   amd_vrsa_sinf(count, ip, op);
-// #endif
   return 0;
 }
 

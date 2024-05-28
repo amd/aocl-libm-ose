@@ -47,6 +47,7 @@ if e['HOST_OS'] == 'win32':
 
 exp2_srcs = Glob('*.cc')
 exp2_srcs.append('../VecArr/gtest_main_vec_arr.o')
+exp2_srcs.append('../VecArr/gbench_main_vec_arr.o')
 
 exp2 = e.Program('test_exp2', exp2_srcs)
 

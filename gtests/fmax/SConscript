@@ -48,6 +48,7 @@ if e['HOST_OS'] == 'win32':
 
 test_srcs = Glob('*.cc')
 test_srcs.append('../VecArr/gtest_main_vec_arr.o')
+test_srcs.append('../VecArr/gbench_main_vec_arr.o')
 
 test_exe = 'test_' + os.path.basename(os.getcwd())
 

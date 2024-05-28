@@ -25,5 +25,5 @@
 
 Import('env')
 testenv = env.Clone()
-test_vec_arr_srcs = Glob('*.cc')
-libtest_vec_arr = testenv.Object('gtest_main_vec_arr.o', test_vec_arr_srcs)
+testenv.Object('gtest_main_vec_arr.o', 'gtest_main_vec_arr.cc')
+testenv.Object('gbench_main_vec_arr.o', 'gbench_main_vec_arr.cc')

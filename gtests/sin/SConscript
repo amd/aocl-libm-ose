@@ -47,6 +47,7 @@ if e['HOST_OS'] == 'win32':
 
 sin_srcs = Glob('*.cc')
 sin_srcs.append('../VecArr/gtest_main_vec_arr.o')
+sin_srcs.append('../VecArr/gbench_main_vec_arr.o')
 
 sin = e.Program('test_sin', sin_srcs)
 

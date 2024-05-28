@@ -249,11 +249,13 @@ int test_vad(test_data *data, int count)  {
 }
 
 int test_vas(test_data *data, int count)  {
-#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
   float *ip1 = (float*)data->ip;
   float *ip2 = (float*)data->ip1;
   float *op  = (float*)data->op;
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
   amd_vrsa_powf(count, ip1, ip2, op);
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  vsPow(count, ip1, ip2, op);
 #endif
   return 0;
 }

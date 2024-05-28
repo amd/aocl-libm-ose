@@ -34,6 +34,10 @@
 #include <external/amdlibm.h>
 #include <complex.h>
 
+#if (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  #include "mkl_vml_functions.h"
+#endif
+
 typedef struct {
   void *ip;
   void *ip1;
@@ -72,10 +76,12 @@ int test_s1d(test_data *data, int idx);
 void LibmPerfTestf(benchmark::State& st, InputParams* param);
 void LibmPerfTest4f(benchmark::State& st, InputParams* param);
 void LibmPerfTest8f(benchmark::State& st, InputParams* param);
+void LibmPerfTestaf(benchmark::State& st, InputParams* param);
 
 void LibmPerfTestd(benchmark::State& st, InputParams* param);
 void LibmPerfTest2d(benchmark::State& st, InputParams* param);
 void LibmPerfTest4d(benchmark::State& st, InputParams* param);
+void LibmPerfTestad(benchmark::State& st, InputParams* param);
 
 void LibmPerfTest8d(benchmark::State& st, InputParams* param);
 void LibmPerfTest16f(benchmark::State& st, InputParams* param);

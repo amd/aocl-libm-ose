@@ -47,6 +47,7 @@ if e['HOST_OS'] == 'win32':
 
 cbrt_srcs = Glob('*.cc')
 cbrt_srcs.append('../VecArr/gtest_main_vec_arr.o')
+cbrt_srcs.append('../VecArr/gbench_main_vec_arr.o')
 
 cbrt = e.Program('test_cbrt', cbrt_srcs)
 

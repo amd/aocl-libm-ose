@@ -47,6 +47,7 @@ if e['HOST_OS'] == 'win32':
 
 log2_srcs = Glob('*.cc')
 log2_srcs.append('../VecArr/gtest_main_vec_arr.o')
+log2_srcs.append('../VecArr/gbench_main_vec_arr.o')
 
 log2 = e.Program('test_log2', log2_srcs)
 

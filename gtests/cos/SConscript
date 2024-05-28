@@ -47,6 +47,7 @@ if e['HOST_OS'] == 'win32':
 
 cos_srcs = Glob('*.cc')
 cos_srcs.append('../VecArr/gtest_main_vec_arr.o')
+cos_srcs.append('../VecArr/gbench_main_vec_arr.o')
 
 cos = e.Program('test_cos', cos_srcs)
 

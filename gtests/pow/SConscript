@@ -47,6 +47,7 @@ if e['HOST_OS'] == 'win32':
 
 pow_srcs = Glob('*.cc')
 pow_srcs.append('../VecArr/gtest_main_vec_arr.o')
+pow_srcs.append('../VecArr/gbench_main_vec_arr.o')
 
 pow = e.Program('test_pow', pow_srcs)
 

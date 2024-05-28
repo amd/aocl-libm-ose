@@ -210,25 +210,27 @@ int test_v16s(test_data *data, int idx)  {
   return 0;
 }
 
-
 int test_vad(test_data *data, int count)  {
-#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
   amd_vrda_exp2(count, ip, op);
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  vdExp2(count, ip, op);
 #endif
   return 0;
 }
 
 int test_vas(test_data *data, int count)  {
-#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
   amd_vrsa_exp2f(count, ip, op);
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  vsExp2(count, ip, op);
 #endif
   return 0;
 }
-
 
 #ifdef __cplusplus
 }

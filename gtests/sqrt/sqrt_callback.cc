@@ -47,7 +47,7 @@ static uint32_t ipargs = 1;
 
 uint32_t GetnIpArgs( void )
 {
-	return ipargs;
+  return ipargs;
 }
 
 void ConfSetupf32(SpecParams *specp) {
@@ -118,6 +118,7 @@ extern "C" {
 
 #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
   __m128d LIBM_FUNC_VEC(d, 2, sqrt)(__m128d);
+  __m256d LIBM_FUNC_VEC(d, 4, sqrt)(__m256d);
 #endif
 
 int test_v2d(test_data *data, int idx)  {
@@ -143,7 +144,7 @@ int test_v4s(test_data *data, int idx)  {
 }
 
 int test_v4d(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);

@@ -275,6 +275,9 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
 /*
  * The below macros are useful for masked load and store operations on 256-bit registers.
  */
+#define FLOAT_ELEMENTS_128_BIT 4
+#define DOUBLE_ELEMENTS_128_BIT 2
+
 #define FLOAT_ELEMENTS_256_BIT 8
 #define DOUBLE_ELEMENTS_256_BIT 4
 

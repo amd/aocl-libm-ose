@@ -87,16 +87,11 @@
 /* External tables used by expm1 for reference */
 
 extern const double __two_to_jby64_table[64];
-const double *tab = __two_to_jby64_table;
-
 extern const double __two_to_jby64_head_table[64];
-const double *tab_head = __two_to_jby64_head_table;
-
 extern const double __two_to_jby64_tail_table[64];
-const double *tab_tail = __two_to_jby64_tail_table;
 
 double
-ALM_PROTO_OPT(expm1) (double x)
+ALM_PROTO_OPT(expm1)(double x)
 {
     flt64_t q1 = {.i = 0,};
     int64_t m, n, j;
@@ -163,9 +158,9 @@ ALM_PROTO_OPT(expm1) (double x)
     /* q = r + r*r*(1/2 + r*(1/6+ r*(1/24 + r*(1/120 + r*(1/720))))) */
     double q = r + (r*r)*(REAL_1_BY_2 + r*(REAL_1_BY_6+ r*(REAL_1_BY_24 + r*(REAL_1_BY_120 + r*(REAL_1_BY_720)))));
 
-    double f = tab[j];
-    double f1 = tab_head[j];
-    double f2 = tab_tail[j];
+    double f = __two_to_jby64_table[j];
+    double f1 = __two_to_jby64_head_table[j];
+    double f2 = __two_to_jby64_tail_table[j];
 
     q1.i = (int64_t)((1023ULL - (unsigned long long)m) << 52);
 

@@ -39,26 +39,40 @@ struct alm_arch_funcs __arch_funcs_expm1 = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            &ALM_PROTO_OPT(expm1f),
-            &ALM_PROTO_OPT(expm1),
-            &ALM_PROTO_FMA3(vrs4_expm1f),
-            NULL,                           /* vrs8 ? */
-            NULL,                           /* vrd2 ? */
-            NULL,                           /* vrd4 ? */
-	    &ALM_PROTO_FMA3(vrsa_expm1f),  /*array vector float*/
-	    &ALM_PROTO_FMA3(vrda_expm1),   /*array vector double*/
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(expm1f),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(expm1),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_FMA3(vrs4_expm1f),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_expm1f),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX2(vrda_expm1),
         },
-#if 0
+
+        [ALM_UARCH_VER_ZEN] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(expm1f),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(expm1),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN(vrsa_expm1f),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN(vrda_expm1),
+        },
+
         [ALM_UARCH_VER_ZEN2] = {
-            &ALM_PROTO_ARCH_ZN2(expm1f),
-            &ALM_PROTO_ARCH_ZN2(expm1),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(expm1f),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(expm1),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN2(vrsa_expm1f),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN2(vrda_expm1),
         },
 
         [ALM_UARCH_VER_ZEN3] = {
-            &ALM_PROTO_ARCH_ZN3(expm1f),
-            &ALM_PROTO_ARCH_ZN3(expm1),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(expm1f),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(expm1),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN3(vrsa_expm1f),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN3(vrda_expm1),
         },
-#endif
+
+        [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(expm1f),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(expm1),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN4(vrsa_expm1f),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN4(vrda_expm1),
+        },
     },
 };
 
@@ -70,11 +84,8 @@ LIBM_IFACE_PROTO(expm1)(void *arg)
         [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(expm1f),
         [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(expm1),
         [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_expm1f),
-        //[ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_expm1f),
-        //[ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_expm1),
-        //[ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_expm1),
-	[ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_expm1f),
-	[ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_expm1),
+	    [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_expm1f),
+	    [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_expm1),
         },
     };
 

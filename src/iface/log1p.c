@@ -40,28 +40,38 @@ struct alm_arch_funcs __arch_funcs_log1p = {
         [ALM_UARCH_VER_DEFAULT] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(log1pf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(log1p),
-            &ALM_PROTO_FMA3(vrs4_log1pf),
-            NULL,                           /* vrs8 ? */
-            &ALM_PROTO_FMA3(vrd2_log1p),
-            NULL,                           /* vrd4 ? */
-            &ALM_PROTO_FMA3(vrsa_log1pf),  /*array vector float*/
-            &ALM_PROTO_FMA3(vrda_log1p),  /*array vector double*/
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_FMA3(vrs4_log1pf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_FMA3(vrd2_log1p),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_log1pf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX2(vrda_log1p),
         },
 
+        [ALM_UARCH_VER_ZEN] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(log1pf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(log1p),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN(vrsa_log1pf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN(vrda_log1p),
+        },
 
         [ALM_UARCH_VER_ZEN2] = {
-	    [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(log1pf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(log1pf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(log1p),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN2(vrsa_log1pf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN2(vrda_log1p),
         },
 
         [ALM_UARCH_VER_ZEN3] = {
-	    [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(log1pf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(log1pf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(log1p),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN3(vrsa_log1pf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN3(vrda_log1p),
         },
 
-	[ALM_UARCH_VER_ZEN4] = {
-	    [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(log1pf),
+        [ALM_UARCH_VER_ZEN4] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(log1pf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(log1p),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN4(vrsa_log1pf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN4(vrda_log1p),
         },
 
 

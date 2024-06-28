@@ -247,10 +247,14 @@ int test_v16s(test_data *data, int idx)  {
 }
 
 int test_vad(test_data *data, int count)  {
-  /*
-   * Note: Currently, vector array double variant is NOT supported for this math function.
-   * FIXME: Call the corresponding vector array double variant here, when it is implemented.
-   */
+  double *ip1 = (double*)data->ip;
+  double *ip2 = (double*)data->ip1;
+  double *op  = (double*)data->op;
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+  amd_vrda_pow(count, ip1, ip2, op);
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  vdPow(count, ip1, ip2, op);
+#endif
   return 0;
 }
 

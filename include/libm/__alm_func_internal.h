@@ -342,6 +342,7 @@ extern void      ALM_PROTO_INTERNAL(vrda_log10)    (int n, double *src, double* 
 extern void      ALM_PROTO_INTERNAL(vrda_log1p)    (int n, double *src, double* dst);
 extern void      ALM_PROTO_INTERNAL(vrda_log2)     (int n, double *src, double* dst);
 extern void      ALM_PROTO_INTERNAL(vrda_log)      (int n, double *src, double* dst);
+extern void      ALM_PROTO_INTERNAL(vrda_pow)      (int n, double *src1, double *src2, double* dst);
 extern void      ALM_PROTO_INTERNAL(vrda_sincos)   (int n, double *, double *, double *);
 extern void      ALM_PROTO_INTERNAL(vrda_sin)      (int n, double *x, double *y);
 extern void      ALM_PROTO_INTERNAL(vrda_add)      (int len, double *lhs, double *rhs, double *dst);

@@ -191,6 +191,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_log1p);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_log2);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_cos);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_sin);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_pow);
 
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_cosf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_log1pf);

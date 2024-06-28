@@ -360,7 +360,8 @@ extern "C" {
     __m128  amd_vrs4_cbrtf  (__m128  x);
 
     /* array vector variants */
-    void amd_vrsa_powf      (int len, float *src1, float *src2, float* dst);
+    void amd_vrda_pow       (int len, double *src1, double *src2, double *dst);
+    void amd_vrsa_powf      (int len, float  *src1, float  *src2, float  *dst);
 
     void amd_vrda_cbrt      (int len, double *src, double *dst);
     void amd_vrsa_cbrtf     (int len, float  *src, float  *dst);

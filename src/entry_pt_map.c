@@ -275,6 +275,7 @@ LIBM_DECL_FN_MAP(vrsa_divfi);
 LIBM_DECL_FN_MAP(vrsa_fmaxfi);
 LIBM_DECL_FN_MAP(vrsa_fminfi);
 
+LIBM_DECL_FN_MAP(vrda_pow);
 LIBM_DECL_FN_MAP(vrda_cbrt);
 LIBM_DECL_FN_MAP(vrda_exp);
 LIBM_DECL_FN_MAP(vrda_exp2);
@@ -609,6 +610,7 @@ WEAK_LIBM_ALIAS(vrsa_divfi, FN_PROTOTYPE(vrsa_divfi));
 WEAK_LIBM_ALIAS(vrsa_fmaxfi, FN_PROTOTYPE(vrsa_fmaxfi));
 WEAK_LIBM_ALIAS(vrsa_fminfi, FN_PROTOTYPE(vrsa_fminfi));
 
+WEAK_LIBM_ALIAS(vrda_pow, FN_PROTOTYPE(vrda_pow));
 WEAK_LIBM_ALIAS(vrda_cbrt, FN_PROTOTYPE(vrda_cbrt));
 WEAK_LIBM_ALIAS(vrda_exp, FN_PROTOTYPE(vrda_exp));
 WEAK_LIBM_ALIAS(vrda_exp2, FN_PROTOTYPE(vrda_exp2));

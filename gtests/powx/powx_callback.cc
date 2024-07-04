@@ -162,9 +162,12 @@ int test_v2d(test_data *data, int idx)  {
     double *ip2 = (double*)data->ip1;
     double *op  = (double*)data->op;
     __m128d ip21 = _mm_set_pd(ip1[idx+1], ip1[idx]);
-    //__m128d ip22 = _mm_set_pd(ip2[idx], ip2[idx]);
-    __m128d op2 = LIBM_FUNC_VEC(d, 2, powx)(ip21, ip2[idx]);
-    _mm_store_pd(&op[0], op2);
+    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      __m128d op2 = LIBM_FUNC_VEC(d, 2, powx)(ip21, ip2[idx]);
+      _mm_store_pd(&op[0], op2);
+    #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+      vdPowx(2, ip1, ip2[idx], op);
+    #endif
   #endif
   return 0;
 }

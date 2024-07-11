@@ -273,8 +273,13 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_4DOUBLES) {
     for (uint32_t j = 0; j < 4; j++) {
       ip[0] = inpbuff[i + j];
       if(nargs == 2)
-        ip[1] = inpbuff1[i + j];
-
+        {
+          bool special_case = getSpecialCase();
+          if(special_case)
+            ip[1] = inpbuff1[i];
+          else
+            ip[1] = inpbuff1[i + j];
+        }
       long double exptd = getExpected(ip);
       double ulp = getUlp(aop[j], exptd);
       if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
@@ -353,10 +358,10 @@ TEST_P(SpecTestFixtureFloat, CONFORMANCE_FLOAT) {
 
     if (vflag == 1) {
       if (nargs == 1) {
-	cout << "Input: " << ip[0] << " Output: " << aop << " Expected: " << op << endl;
+  cout << "Input: " << ip[0] << " Output: " << aop << " Expected: " << op << endl;
       }
       else if (nargs == 2) {
-	cout << "Input1: " << ip[0] << " Input2: " << ip[1] << " Output: " << aop << " Expected: " << op << endl;
+  cout << "Input1: " << ip[0] << " Input2: " << ip[1] << " Output: " << aop << " Expected: " << op << endl;
       }
       PrintConfExpections(raised_exception, eef);
     }
@@ -396,10 +401,10 @@ TEST_P(SpecTestFixtureDouble, CONFORMANCE_DOUBLE) {
 
     if (vflag == 1) {
       if (nargs == 1) {
-	cout << "Input: " << ip[0] << " Output: " << aop << " Expected: " << op << endl;
+  cout << "Input: " << ip[0] << " Output: " << aop << " Expected: " << op << endl;
       }
       else if (nargs == 2) {
-	cout << "Input1: " << ip[0] << " Input2: " << ip[1] << " Output: " << aop << " Expected: " << op << endl;
+  cout << "Input1: " << ip[0] << " Input2: " << ip[1] << " Output: " << aop << " Expected: " << op << endl;
       }
       PrintConfExpections(raised_exception, eef);
     }

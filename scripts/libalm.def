@@ -140,6 +140,7 @@ EXPORTS
     amd_vrd4_log
     amd_vrd4_log2
     amd_vrd4_pow
+    amd_vrd4_powx
     amd_vrd4_sin
     amd_vrd4_sqrt
     amd_vrd4_tan

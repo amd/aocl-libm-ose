@@ -251,7 +251,8 @@ __m128d FN_PROTOTYPE(vrd2_tan)(__m128d x);
 __m128d FN_PROTOTYPE(vrd2_cosh)(__m128d x);
 __m128d FN_PROTOTYPE(vrd2_atan)(__m128d x);
 __m128d FN_PROTOTYPE(vrd2_erf)(__m128d x);
-__m128d FN_PROTOTYPE(vrd2_sqrt)(__m128d);
+__m128d FN_PROTOTYPE(vrd2_sqrt)(__m128d x);
+__m128d FN_PROTOTYPE(vrd2_fabs)(__m128d x);
 
 __m256d FN_PROTOTYPE(vrd4_exp)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_exp2)(__m256d x);
@@ -266,6 +267,7 @@ __m256d FN_PROTOTYPE(vrd4_pow)(__m256d x, __m256d y);
 __m256d FN_PROTOTYPE(vrd4_powx)(__m256d x, double y);
 __m256d FN_PROTOTYPE(vrd4_erf)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_sqrt)(__m256d x);
+__m256d FN_PROTOTYPE(vrd4_fabs)(__m256d x);
   void  FN_PROTOTYPE(vrd4_sincos)(__m256d x, __m256d *sin, __m256d *cos);
 
 __m128 FN_PROTOTYPE(vrs4_erff)(__m128 x);
@@ -286,6 +288,7 @@ __m128 FN_PROTOTYPE(vrs4_tanf)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_coshf)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_tanhf)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_atanf)(__m128 x);
+__m128 FN_PROTOTYPE(vrs4_fabsf)(__m128 x);
 
 __m256 FN_PROTOTYPE(vrs8_erff)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_expf)(__m256 x);
@@ -299,6 +302,7 @@ __m256 FN_PROTOTYPE(vrs8_powf)(__m256 x, __m256 y);
 __m256 FN_PROTOTYPE(vrs8_coshf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_tanhf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_log2f)(__m256 x);
+__m256 FN_PROTOTYPE(vrs8_fabsf)(__m256 x);
 
 void  FN_PROTOTYPE(vrd2_sincos)(__m128d x, __m128d* ys, __m128d* yc);
 void  FN_PROTOTYPE(vrda_sincos)(int n, double *x, double *ys, double *yc);
@@ -331,6 +335,8 @@ void FN_PROTOTYPE(vrda_log1p)( int len, double *src, double* dst );
 void FN_PROTOTYPE(vrsa_powxf)( int len, float *src1, float src2, float* dst );
 void FN_PROTOTYPE(vrda_pow)( int len, double *src1, double *src2, double* dst );
 void FN_PROTOTYPE(vrsa_powf)( int len, float *src1, float *src2, float* dst );
+void FN_PROTOTYPE(vrda_fabs)(int len, double* x, double* y);
+void FN_PROTOTYPE(vrsa_fabsf)(int len, float* x, float* y);
 
 /* Arithmetic array vector variants */
 void FN_PROTOTYPE(vrsa_addf)( int len, float *lhs, float *rhs, float *dst );

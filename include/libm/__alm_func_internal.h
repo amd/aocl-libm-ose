@@ -207,6 +207,7 @@ extern __m128    ALM_PROTO_INTERNAL(vrs4_tanhf)           (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_asinf)           (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_atanf)           (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_erff)            (__m128 x);
+extern __m128    ALM_PROTO_INTERNAL(vrs4_fabsf)           (__m128 x);
 
 
 /*
@@ -231,6 +232,7 @@ extern __m256    ALM_PROTO_INTERNAL(vrs8_coshf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_tanhf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_asinf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_erff)            (__m256 x);
+extern __m256    ALM_PROTO_INTERNAL(vrs8_fabsf)            (__m256 x);
 
 
 /*
@@ -272,12 +274,13 @@ extern __m128d   ALM_PROTO_INTERNAL(vrd2_log1p)    (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_log2)     (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_log)      (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_pow)      (__m128d x, __m128d y);
-extern __m128d   ALM_PROTO_INTERNAL(vrd2_powx)      (__m128d x, double y);
+extern __m128d   ALM_PROTO_INTERNAL(vrd2_powx)     (__m128d x, double y);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_sin)      (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_tan)      (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_atan)     (__m128d x);
-extern __m128d   ALM_PROTO_INTERNAL(vrd2_erf)     (__m128d x);
+extern __m128d   ALM_PROTO_INTERNAL(vrd2_erf)      (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_sqrt)     (__m128d);
+extern __m128d   ALM_PROTO_INTERNAL(vrd2_fabs)     (__m128d);
 
 /*
  * Vector double precision, 4 element
@@ -294,12 +297,13 @@ extern __m256d   ALM_PROTO_INTERNAL(vrd4_log1p)    (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_log2)     (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_log)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_pow)      (__m256d x, __m256d y);
-extern __m256d   ALM_PROTO_INTERNAL(vrd4_powx)      (__m256d x, double y);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_powx)     (__m256d x, double y);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_sin)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_tan)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_atan)     (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_erf)      (__m256d x);
-extern __m256d   ALM_PROTO_INTERNAL(vrd4_sqrt)     (__m256d);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_sqrt)     (__m256d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_fabs)     (__m256d x);
 extern void      ALM_PROTO_INTERNAL(vrd4_sincos)   (__m256d x, __m256d *s, __m256d *c);
 
 /*
@@ -352,6 +356,7 @@ extern void      ALM_PROTO_INTERNAL(vrda_mul)      (int len, double *lhs, double
 extern void      ALM_PROTO_INTERNAL(vrda_div)      (int len, double *lhs, double *rhs, double *dst);
 extern void      ALM_PROTO_INTERNAL(vrda_fmax)     (int len, double *lhs, double *rhs, double *dst);
 extern void      ALM_PROTO_INTERNAL(vrda_fmin)     (int len, double *lhs, double *rhs, double *dst);
+extern void      ALM_PROTO_INTERNAL(vrda_fabs)     (int n, double* x, double* y);
 
 extern void      ALM_PROTO_INTERNAL(vrsa_cbrtf)    (int len, float *src, float* dst);
 extern void      ALM_PROTO_INTERNAL(vrsa_cosf)     (int n, float *x, float *y);
@@ -373,6 +378,7 @@ extern void      ALM_PROTO_INTERNAL(vrsa_mulf)     (int len, float *lhs, float *
 extern void      ALM_PROTO_INTERNAL(vrsa_divf)     (int len, float *lhs, float *rhs, float *dst);
 extern void      ALM_PROTO_INTERNAL(vrsa_fmaxf)    (int len, float *lhs, float *rhs, float *dst);
 extern void      ALM_PROTO_INTERNAL(vrsa_fminf)    (int len, float *lhs, float *rhs, float *dst);
+extern void      ALM_PROTO_INTERNAL(vrsa_fabsf)    (int n, float* x, float* y);
 
 extern void      ALM_PROTO_INTERNAL(vrsa_addfi)    (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
 extern void      ALM_PROTO_INTERNAL(vrsa_subfi)    (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);

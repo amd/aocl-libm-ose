@@ -192,6 +192,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrda_log1p);
 alm_func_t        G_ENTRY_PT_PTR(vrda_log2);
 alm_func_t        G_ENTRY_PT_PTR(vrda_sin);
 alm_func_t        G_ENTRY_PT_PTR(vrda_pow);
+alm_func_t        G_ENTRY_PT_PTR(vrda_fabs);
 
 alm_func_t        G_ENTRY_PT_PTR(vrda_add);
 alm_func_t        G_ENTRY_PT_PTR(vrda_sub);
@@ -219,6 +220,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrsa_cbrtf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_log10f);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_logf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_powf);
+alm_func_t        G_ENTRY_PT_PTR(vrsa_fabsf);
 
 alm_func_t        G_ENTRY_PT_PTR(vrsa_addf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_subf);
@@ -256,6 +258,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrs4_powf);
 alm_func_t        G_ENTRY_PT_PTR(vrs4_asinf);
 alm_func_t        G_ENTRY_PT_PTR(vrs4_atanf);
 alm_func_t        G_ENTRY_PT_PTR(vrs4_erff);
+alm_func_t        G_ENTRY_PT_PTR(vrs4_fabsf);
 
 alm_func_t        G_ENTRY_PT_PTR(vrs8_logf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_log10f);
@@ -272,6 +275,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrs8_powf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_log2f);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_asinf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_erff);
+alm_func_t        G_ENTRY_PT_PTR(vrs8_fabsf);
 
 alm_func_t        G_ENTRY_PT_PTR(vrs16_logf);
 alm_func_t        G_ENTRY_PT_PTR(vrs16_expf);
@@ -306,6 +310,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd2_tan);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_atan);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_erf);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_sqrt);
+alm_func_t        G_ENTRY_PT_PTR(vrd2_fabs);
 
 alm_func_t        G_ENTRY_PT_PTR(vrd4_cbrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_cos);
@@ -324,6 +329,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd4_atan);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_erf);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_sincos);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_sqrt);
+alm_func_t        G_ENTRY_PT_PTR(vrd4_fabs);
 
 //alm_func_t        G_ENTRY_PT_PTR(vrd8_cbrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_cos);

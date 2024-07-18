@@ -180,6 +180,11 @@ extern "C" {
 
  /* Arithmetic */
 
+    __m128d amd_vrd2_fabs   (__m128d x);
+    __m256d amd_vrd4_fabs   (__m256d x);
+    __m128  amd_vrs4_fabsf  (__m128  x);
+    __m256  amd_vrs8_fabsf  (__m256  x);
+
     /* array vector variants */
     void amd_vrsa_addf      (int len, float *lhs, float *rhs, float *dst);
     void amd_vrda_add       (int len, double *lhs, double *rhs, double *dst);
@@ -193,6 +198,8 @@ extern "C" {
     void amd_vrda_fmax      (int len, double *lhs, double *rhs, double *dst);
     void amd_vrsa_fminf     (int len, float *lhs, float *rhs, float *dst);
     void amd_vrda_fmin      (int len, double *lhs, double *rhs, double *dst);
+    void amd_vrsa_fabsf     (int len, float  *src, float  *dst);
+    void amd_vrda_fabs      (int len, double *src, double *dst);
 
     /* array vector variants with increment */
     void amd_vrsa_addfi     (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);

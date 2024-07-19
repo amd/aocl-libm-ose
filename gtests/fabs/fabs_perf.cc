@@ -67,6 +67,13 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest8f, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
+    if((params->fqty == ALM::FloatQuantity::E_All) ||
+     (params->fqty == ALM::FloatQuantity::E_Vector_Array)) {
+      string varnam = "_vas(fabsf)";
+      libm = funcnam + varnam;
+      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTestaf, params)
+                 ->Args({(int)params->count})->Iterations(params->niter);
+    }
   }
 
   if((params->fwidth == ALM::FloatWidth::E_ALL) ||
@@ -92,15 +99,13 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest4d, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
-    #if defined(__AVX512__)
     if((params->fqty == ALM::FloatQuantity::E_All) ||
-     (params->fqty == ALM::FloatQuantity::E_Vector_8)) {
-      string varnam = "_v8d(fabs)";
+     (params->fqty == ALM::FloatQuantity::E_Vector_Array)) {
+      string varnam = "_vad(fabs)";
       libm = funcnam + varnam;
-      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest8d, params)
+      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTestad, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
-    #endif
   }
 
   size_t retval = benchmark::RunSpecifiedBenchmarks();

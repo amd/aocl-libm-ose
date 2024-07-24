@@ -70,6 +70,11 @@ struct alm_arch_funcs __arch_funcs_sqrt = {
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN4(vrd2_sqrt),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN4(vrd4_sqrt),
         },
+
+        [ALM_UARCH_VER_ZEN5] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_OPT(sqrtf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_OPT(sqrt),
+        },
     },
 };
 

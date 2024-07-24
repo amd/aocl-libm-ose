@@ -61,6 +61,11 @@ struct alm_arch_funcs __arch_funcs_powx = {
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN4(vrd4_powx),
         },
 
+        [ALM_UARCH_VER_ZEN5] = {
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN5(vrd2_powx),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN5(vrd4_powx),
+        },
+
     },
 };
 

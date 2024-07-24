@@ -98,6 +98,17 @@ struct alm_arch_funcs __arch_funcs_cos = {
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_cos),
         },
 
+        [ALM_UARCH_VER_ZEN5] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN5(cosf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN5(cos),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN5(vrs4_cosf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN5(vrs8_cosf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN5(vrd2_cos),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN5(vrd4_cos),
+
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN5(vrs16_cosf),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN5(vrd8_cos),
+        },
     },
 };
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -74,7 +74,10 @@ struct alm_arch_funcs __arch_funcs_log1p = {
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN4(vrda_log1p),
         },
 
-
+        [ALM_UARCH_VER_ZEN5] = {
+	        [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN5(log1pf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN5(log1p),
+        },
     },
 };
 

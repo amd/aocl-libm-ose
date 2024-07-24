@@ -90,6 +90,17 @@ struct alm_arch_funcs __arch_funcs_fabs = {
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN4(vrsa_fabsf),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN4(vrda_fabs),
         },
+
+        [ALM_UARCH_VER_ZEN5] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN5(fabsf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN5(fabs),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN5(vrs4_fabsf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN5(vrs8_fabsf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN5(vrd2_fabs),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN5(vrd4_fabs),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN5(vrsa_fabsf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN5(vrda_fabs),
+        },
     },
 };
 

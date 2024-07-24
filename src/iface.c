@@ -174,7 +174,9 @@ alm_get_uach(void)
 {
     alm_uarch_ver_t arch_ver;
 
-    if (au_cpuid_arch_is_zen4(0))
+    if (au_cpuid_arch_is_zen5(0))
+        arch_ver = ALM_UARCH_VER_ZEN5;
+    else if (au_cpuid_arch_is_zen4(0))
         arch_ver = ALM_UARCH_VER_ZEN4;
     else if (au_cpuid_arch_is_zen3(0))
         arch_ver = ALM_UARCH_VER_ZEN3;

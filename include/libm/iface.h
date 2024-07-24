@@ -255,6 +255,7 @@ enum ALM_UARCH_VERSIONS {
     ALM_UARCH_VER_ZEN2,
     ALM_UARCH_VER_ZEN3,
     ALM_UARCH_VER_ZEN4,
+    ALM_UARCH_VER_ZEN5,
 
     ALM_UARCH_MAX,                       /* should be last, always */
 };

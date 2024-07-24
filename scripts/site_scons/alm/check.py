@@ -156,7 +156,7 @@ def All(almenv):
     env = almenv.env
 
     def CheckZenVer(ctx):
-        for f in ['znver4', 'znver3', 'znver2', 'znver1']:
+        for f in ['znver5', 'znver4', 'znver3', 'znver2', 'znver1']:
             ret = CheckCompilerFlag(ctx, '-march='+f)
             if ret :
                 ctx.env['ALM_MAX_ARCH'] = f

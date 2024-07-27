@@ -63,6 +63,6 @@ cmplx_objs   = SConscript('cmplx/SConscript',
                         variant_dir= joinpath(builddir, 'cmplx'))
 
 
-objs = e.StaticObject(source) + vec_objs + cmplx_objs
+objs = e.StaticObject(source) + vec_objs + cmplx_objs + vectormath_objs
 
 Return('objs')

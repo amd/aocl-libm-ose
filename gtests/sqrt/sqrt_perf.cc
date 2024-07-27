@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -67,6 +67,15 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest8f, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
+    #if defined(__AVX512__)
+      if((params->fqty == ALM::FloatQuantity::E_All) ||
+         (params->fqty == ALM::FloatQuantity::E_Vector_16)) {
+            string varnam = "_v16s(sqrtf)";
+            libm = funcnam + varnam;
+            benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest16f, params)
+                      ->Args({(int)params->count})->Iterations(params->niter);
+    }
+    #endif
   }
 
   if((params->fwidth == ALM::FloatWidth::E_ALL) ||

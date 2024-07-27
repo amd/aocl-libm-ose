@@ -125,6 +125,14 @@ extern "C" {
 #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
   __m128d LIBM_FUNC_VEC(d, 2, sqrt)(__m128d);
   __m256d LIBM_FUNC_VEC(d, 4, sqrt)(__m256d);
+  __m128 LIBM_FUNC_VEC(s, 4, sqrtf)(__m128);
+  __m256 LIBM_FUNC_VEC(s, 8, sqrtf)(__m256);
+
+  /*avx512*/
+  #if defined(__AVX512__)
+    __m512d LIBM_FUNC_VEC(d, 8, sqrt) (__m512d);
+    __m512 LIBM_FUNC_VEC(s, 16, sqrtf) (__m512);
+  #endif
 #endif
 
 int test_v2d(test_data *data, int idx)  {
@@ -139,7 +147,7 @@ int test_v2d(test_data *data, int idx)  {
 }
 
 int test_v4s(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m128 ip4 = _mm_set_ps(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
@@ -161,7 +169,7 @@ int test_v4d(test_data *data, int idx)  {
 }
 
 int test_v8s(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
@@ -187,16 +195,17 @@ int test_v8d(test_data *data, int idx)  {
 }
 
 int test_v16s(test_data *data, int idx)  {
-/* later change this to #if defined(__AVX512__)*/
-#if 0
-  float *ip = (float*)data->ip;
-  float *op  = (float*)data->op;
-  __m512 ip16 = _mm512_set_ps(ip[idx+15], ip[idx+14], ip[idx+13], ip[idx+12],
-                              ip[idx+11], ip[idx+10], ip[idx+9], ip[idx+8],
-                              ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
-                             ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
-  __m512 op16 = LIBM_FUNC_VEC(s, 16, sqrtf)(ip16);
-  _mm512_store_ps(&op[0], op16);
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  #if defined(__AVX512__)
+    float *ip = (float*)data->ip;
+    float *op  = (float*)data->op;
+    __m512 ip16 = _mm512_set_ps(ip[idx+15], ip[idx+14], ip[idx+13], ip[idx+12],
+                                ip[idx+11], ip[idx+10], ip[idx+9], ip[idx+8],
+                                ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
+                                ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+    __m512 op16 = LIBM_FUNC_VEC(s, 16, sqrtf)(ip16);
+    _mm512_store_ps(&op[0], op16);
+  #endif
 #endif
   return 0;
 }

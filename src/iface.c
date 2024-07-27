@@ -117,6 +117,8 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_DIVI]       = {LIBM_IFACE_PROTO(divi), NULL},
     [C_AMD_FMAXI]      = {LIBM_IFACE_PROTO(fmaxi), NULL},
     [C_AMD_FMINI]      = {LIBM_IFACE_PROTO(fmini), NULL},
+
+    [C_AMD_LINEARFRAC]      = {LIBM_IFACE_PROTO(linearfrac), NULL},
 };
 
 #ifndef ARRAY_SIZE

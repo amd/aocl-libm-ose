@@ -388,6 +388,13 @@ extern "C" {
     __m128d amd_vrd2_sqrt   (__m128d x);
     __m256d amd_vrd4_sqrt   (__m256d x);
 
+/* linearfrac */
+    __m128d amd_vrd2_linearfrac   (__m128d x, __m128d y, double, double, double, double);
+    __m256d amd_vrd4_linearfrac   (__m256d x, __m256d y, double, double, double, double);
+
+    /* AVX-512 variants*/
+    __m512d amd_vrd8_linearfrac   (__m512d x, __m512d y, double, double, double, double);
+
 #ifdef __cplusplus
 }
 #endif

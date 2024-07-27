@@ -135,6 +135,7 @@ EXPORTS
     amd_vrd2_fabs
     amd_vrd2_tan
     amd_vrd2_powx
+    amd_vrd2_linearfrac
     amd_vrd4_cos
     amd_vrd4_exp
     amd_vrd4_exp2
@@ -147,7 +148,9 @@ EXPORTS
     amd_vrd4_fabs
     amd_vrd4_tan
     amd_vrd4_sincos
+    amd_vrd4_linearfrac
     amd_vrd8_sincos
+    amd_vrd8_linearfrac
     amd_vrda_cbrt
     amd_vrda_cos
     amd_vrda_exp

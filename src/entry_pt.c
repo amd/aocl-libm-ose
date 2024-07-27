@@ -90,6 +90,7 @@ alm_func_t        G_ENTRY_PT_PTR(tanh);
 alm_func_t        G_ENTRY_PT_PTR(tanpi);
 alm_func_t        G_ENTRY_PT_PTR(trunc);
 alm_func_t        G_ENTRY_PT_PTR(erf);
+alm_func_t        G_ENTRY_PT_PTR(linearfrac);
 
 /*
  * required by NAG tests
@@ -311,6 +312,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd2_atan);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_erf);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_sqrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_fabs);
+alm_func_t        G_ENTRY_PT_PTR(vrd2_linearfrac);
 
 alm_func_t        G_ENTRY_PT_PTR(vrd4_cbrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_cos);
@@ -330,6 +332,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd4_erf);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_sincos);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_sqrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_fabs);
+alm_func_t        G_ENTRY_PT_PTR(vrd4_linearfrac);
 
 //alm_func_t        G_ENTRY_PT_PTR(vrd8_cbrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_cos);
@@ -348,6 +351,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd8_tan);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_atan);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_erf);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_sincos);
+alm_func_t        G_ENTRY_PT_PTR(vrd8_linearfrac);
 
 #ifdef __cplusplus
 }

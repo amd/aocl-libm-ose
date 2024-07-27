@@ -101,6 +101,7 @@ enum {
     C_AMD_DIVI,
     C_AMD_FMAXI,
     C_AMD_FMINI,
+    C_AMD_LINEARFRAC,
 
     /*
      * INTEGER VARIANTS
@@ -207,6 +208,7 @@ extern void LIBM_IFACE_PROTO(muli)(void *arg);
 extern void LIBM_IFACE_PROTO(divi)(void *arg);
 extern void LIBM_IFACE_PROTO(fmaxi)(void *arg);
 extern void LIBM_IFACE_PROTO(fmini)(void *arg);
+extern void LIBM_IFACE_PROTO(linearfrac)(void *arg);
 
 struct entry_pt_interface {
     void (*epi_init)(void *arg);

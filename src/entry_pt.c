@@ -352,6 +352,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd8_atan);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_erf);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_sincos);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_linearfrac);
+alm_func_t        G_ENTRY_PT_PTR(vrd8_sqrt);
 
 #ifdef __cplusplus
 }

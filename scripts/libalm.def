@@ -151,6 +151,7 @@ EXPORTS
     amd_vrd4_linearfrac
     amd_vrd8_sincos
     amd_vrd8_linearfrac
+    amd_vrd8_sqrt
     amd_vrda_cbrt
     amd_vrda_cos
     amd_vrda_exp

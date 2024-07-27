@@ -208,6 +208,7 @@ extern __m128    ALM_PROTO_INTERNAL(vrs4_asinf)           (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_atanf)           (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_erff)            (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_fabsf)           (__m128 x);
+extern __m128    ALM_PROTO_INTERNAL(vrs4_sqrtf)           (__m128 x);
 
 
 /*
@@ -232,8 +233,8 @@ extern __m256    ALM_PROTO_INTERNAL(vrs8_coshf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_tanhf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_asinf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_erff)            (__m256 x);
-extern __m256    ALM_PROTO_INTERNAL(vrs8_fabsf)            (__m256 x);
-
+extern __m256    ALM_PROTO_INTERNAL(vrs8_fabsf)           (__m256 x);
+extern __m256    ALM_PROTO_INTERNAL(vrs8_sqrtf)           (__m256 x);
 
 /*
  * Vector Single precision, 16 elements
@@ -257,6 +258,7 @@ extern __m512    ALM_PROTO_INTERNAL(vrs16_atanf)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_coshf)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_tanhf)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_erff)            (__m512 x);
+extern __m512    ALM_PROTO_INTERNAL(vrs16_sqrtf)           (__m512 x);
 
 
 /*

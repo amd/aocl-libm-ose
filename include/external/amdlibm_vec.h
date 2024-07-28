@@ -393,6 +393,9 @@ extern "C" {
     __m256  amd_vrd8_sqrtf   (__m256 x);
     __m512  amd_vrs16_sqrtf  (__m512 x);
 
+    void amd_vrda_sqrt       (int len, double *src, double *dst);
+    void amd_vrsa_sqrtf      (int len, float  *src, float  *dst);
+
 /* linearfrac */
     __m128d amd_vrd2_linearfrac   (__m128d x, __m128d y, double, double, double, double);
     __m256d amd_vrd4_linearfrac   (__m256d x, __m256d y, double, double, double, double);

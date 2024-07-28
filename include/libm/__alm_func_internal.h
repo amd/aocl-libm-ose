@@ -362,6 +362,7 @@ extern void      ALM_PROTO_INTERNAL(vrda_div)      (int len, double *lhs, double
 extern void      ALM_PROTO_INTERNAL(vrda_fmax)     (int len, double *lhs, double *rhs, double *dst);
 extern void      ALM_PROTO_INTERNAL(vrda_fmin)     (int len, double *lhs, double *rhs, double *dst);
 extern void      ALM_PROTO_INTERNAL(vrda_fabs)     (int n, double* x, double* y);
+extern void      ALM_PROTO_INTERNAL(vrda_sqrt)      (int n, double *x, double *y);
 
 extern void      ALM_PROTO_INTERNAL(vrsa_cbrtf)    (int len, float *src, float* dst);
 extern void      ALM_PROTO_INTERNAL(vrsa_cosf)     (int n, float *x, float *y);
@@ -384,6 +385,7 @@ extern void      ALM_PROTO_INTERNAL(vrsa_divf)     (int len, float *lhs, float *
 extern void      ALM_PROTO_INTERNAL(vrsa_fmaxf)    (int len, float *lhs, float *rhs, float *dst);
 extern void      ALM_PROTO_INTERNAL(vrsa_fminf)    (int len, float *lhs, float *rhs, float *dst);
 extern void      ALM_PROTO_INTERNAL(vrsa_fabsf)    (int n, float* x, float* y);
+extern void      ALM_PROTO_INTERNAL(vrsa_sqrtf)    (int n, float* x, float* y);
 
 extern void      ALM_PROTO_INTERNAL(vrsa_addfi)    (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
 extern void      ALM_PROTO_INTERNAL(vrsa_subfi)    (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);

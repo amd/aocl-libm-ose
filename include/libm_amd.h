@@ -342,6 +342,8 @@ void FN_PROTOTYPE(vrda_pow)( int len, double *src1, double *src2, double* dst );
 void FN_PROTOTYPE(vrsa_powf)( int len, float *src1, float *src2, float* dst );
 void FN_PROTOTYPE(vrda_fabs)(int len, double* x, double* y);
 void FN_PROTOTYPE(vrsa_fabsf)(int len, float* x, float* y);
+void FN_PROTOTYPE(vrda_sqrt)(int len, double* x, double* y);
+void FN_PROTOTYPE(vrsa_sqrtf)(int len, float* x, float* y);
 
 /* Arithmetic array vector variants */
 void FN_PROTOTYPE(vrsa_addf)( int len, float *lhs, float *rhs, float *dst );

@@ -335,6 +335,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_log2);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_log10);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_log1p);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_pow);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_powx);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_sin);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_asin);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_tan);

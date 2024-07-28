@@ -358,7 +358,8 @@ extern "C" {
     __m256  amd_vrs8_powf   (__m256, __m256);
 
     __m128d amd_vrd2_powx   (__m128d x, double y);
-    __m256d amd_vrd4_powx    (__m256d, double);
+    __m256d amd_vrd4_powx   (__m256d, double);
+    __m512d amd_vrd8_powx   (__m512d, double);
 
     /* avx512 variants */
     __m512d amd_vrd8_pow    (__m512d x, __m512d y);

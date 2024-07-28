@@ -39,6 +39,7 @@ struct alm_arch_funcs __arch_funcs_powx = {
         [ALM_UARCH_VER_DEFAULT] = {
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_AVX2(vrd2_powx),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_AVX2(vrd4_powx),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_powx),
         },
 
         [ALM_UARCH_VER_ZEN] = {
@@ -59,6 +60,7 @@ struct alm_arch_funcs __arch_funcs_powx = {
         [ALM_UARCH_VER_ZEN4] = {
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN4(vrd2_powx),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN4(vrd4_powx),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_powx),
         },
 
         [ALM_UARCH_VER_ZEN5] = {
@@ -75,6 +77,7 @@ LIBM_IFACE_PROTO(powx)(void *arg) {
        .g_ep = {
             [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_powx),
             [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_powx),
+            [ALM_FUNC_VECT_DP_8] = &G_ENTRY_PT_PTR(vrd8_powx),
         },
     };
 

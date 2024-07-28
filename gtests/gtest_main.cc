@@ -312,8 +312,13 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_8DOUBLES) {
     for (uint32_t j = 0; j < 8; j++) {
       ip[0] = inpbuff[i + j];
       if(nargs == 2)
-        ip[1] = inpbuff1[i + j];
-
+      {
+        bool special_case = getSpecialCase();
+          if(special_case)
+            ip[1] = inpbuff1[i];
+          else
+            ip[1] = inpbuff1[i + j];
+      }
       long double exptd = getExpected(ip);
       double ulp = getUlp(aop[j], exptd);
       if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {

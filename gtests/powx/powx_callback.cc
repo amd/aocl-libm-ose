@@ -130,8 +130,9 @@ extern "C" {
 
 /*vector routines*/
 #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
-__m128d LIBM_FUNC_VEC(d, 2, pow)(__m128d, __m128d);
- __m256d LIBM_FUNC_VEC(d, 4, pow)(__m256d, __m256d);
+__m128d LIBM_FUNC_VEC(d, 2, powx)(__m128d, double);
+__m256d LIBM_FUNC_VEC(d, 4, powx)(__m256d, double);
+__m512d LIBM_FUNC_VEC(d, 8, powx)(__m512d, double);
 #endif
 
 int test_v2d(test_data *data, int idx)  {
@@ -179,10 +180,24 @@ int test_v8s(test_data *data, int idx)  {
 
 
 int test_v8d(test_data *data, int idx)  {
+  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+    #if defined(__AVX512__)
+      double *ip1 = (double*)data->ip;
+      double *ip2 = (double*)data->ip1;
+      double *op  = (double*)data->op;
+
+      __m512d ip8_1 = _mm512_set_pd(ip1[idx+7], ip1[idx+6], ip1[idx+5], ip1[idx+4],
+                                ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
+      #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+        __m512d op8 = LIBM_FUNC_VEC(d, 8, powx)(ip8_1, ip2[idx]);
+        _mm512_store_pd(&op[0], op8);
+      #elif
+        vdPowx(8, ip1, ip2[idx], op);
+      #endif
+    #endif
+  #endif
   return 0;
 }
-
-
 
 int test_v16s(test_data *data, int idx)  {
   return 0;

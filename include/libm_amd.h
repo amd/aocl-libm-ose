@@ -303,6 +303,7 @@ __m256 FN_PROTOTYPE(vrs8_sinf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_tanf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_atanf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_powf)(__m256 x, __m256 y);
+__m256 FN_PROTOTYPE(vrs8_powxf)(__m256 x, float y);
 __m256 FN_PROTOTYPE(vrs8_coshf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_tanhf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_log2f)(__m256 x);

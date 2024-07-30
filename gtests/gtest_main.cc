@@ -98,8 +98,14 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_4FLOATS) {
 
     for (uint32_t j = 0; j < 4; j++) {
       ip[0] = inpbuff[i + j];
-      if(nargs == 2)
-        ip[1] = inpbuff1[i + j];
+        if(nargs == 2)
+      {
+        bool special_case = getSpecialCase();
+        if(special_case)
+          ip[1] = inpbuff1[i];
+        else
+          ip[1] = inpbuff1[i + j];
+      }
 
       double exptd = getExpected(ip);
       double ulp = getUlp(aop[j], exptd);
@@ -133,7 +139,13 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_8FLOATS) {
     for (uint32_t j = 0; j < 8; j++) {
       ip[0] = inpbuff[i + j];
       if(nargs == 2)
-        ip[1] = inpbuff1[i + j];
+      {
+        bool special_case = getSpecialCase();
+        if(special_case)
+          ip[1] = inpbuff1[i];
+        else
+          ip[1] = inpbuff1[i + j];
+      }
 
       double exptd = getExpected(ip);
       double ulp = getUlp(aop[j], exptd);
@@ -167,7 +179,13 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_16FLOATS) {
     for (uint32_t j = 0; j < 16; j++) {
       ip[0] = inpbuff[i + j];
       if(nargs == 2)
-        ip[1] = inpbuff1[i + j];
+      {
+        bool special_case = getSpecialCase();
+        if(special_case)
+          ip[1] = inpbuff1[i];
+        else
+          ip[1] = inpbuff1[i + j];
+      }
 
       double exptd = getExpected(ip);
       double ulp = getUlp(aop[j], exptd);

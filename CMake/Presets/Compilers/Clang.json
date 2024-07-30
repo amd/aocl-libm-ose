@@ -1,0 +1,32 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "llvm",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_SHARED_LINKER_FLAGS": "-fuse-ld=ld"
+            }
+        },
+        {
+            "name": "llvm-debug",
+            "hidden": true,
+            "inherits": "llvm",
+            "cacheVariables": {
+                "CMAKE_C_FLAGS_DEBUG": "-g -ggdb3 -O1",
+                "CMAKE_CXX_FLAGS_DEBUG": "-g -ggdb3 -O1"
+            }
+        },
+        {
+            "name": "llvm-release",
+            "hidden": true,
+            "inherits": "llvm",
+            "cacheVariables": {
+                "CMAKE_C_FLAGS_RELEASE": "-O2",
+                "CMAKE_CXX_FLAGS_RELEASE": "-O2"
+            }
+        }
+    ]
+}

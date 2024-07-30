@@ -1,0 +1,25 @@
+{
+    "version": 6,
+    "include": [
+        "Arch/x64.json",
+        "Os/Linux.json",
+        "Compilers/Clang.json"
+    ],
+    "configurePresets": [
+        {
+            "name": "x64-linux-llvm",
+            "hidden": true,
+            "inherits": [ "x64", "linux", "llvm" ]
+        },
+        {
+            "name": "x64-linux-llvm-debug",
+            "hidden": true,
+            "inherits": [ "x64", "linux", "llvm-debug" ]
+        },
+        {
+            "name": "x64-linux-llvm-release",
+            "hidden": true,
+            "inherits": [ "x64", "linux", "llvm-release" ]
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "version": 6,
+    "packagePresets": [
+        {
+            "name": "package",
+            "hidden": true
+        },
+        {
+            "name": "package-linux",
+            "hidden": true,
+            "inherits": "package",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            },
+            "generators": [
+                "TGZ"
+            ]
+        }
+    ]
+}

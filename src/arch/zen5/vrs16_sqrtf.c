@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2024 Advanced Micro Devices, Inc. All rights reserved.
  *
@@ -25,6 +24,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#define ALM_OVERRIDE 1
-#include <libm/arch/zen.h>
-#include "../../optimized/vec/vrda_log10.c"
+
+#include <libm_util_amd.h>
+#include <libm/alm_special.h>
+
+#include <libm_macros.h>
+#include <libm/amd_funcs_internal.h>
+#include <libm/types.h>
+#include <libm/typehelper.h>
+#include <libm/typehelper-vec.h>
+#include <libm/compiler.h>
+
+#include <libm/arch/zen5.h>
+
+/*
+ *
+ * __m512 ALM_PROTO_OPT(vrs16_sqrtf)(__512)
+ *
+ *
+ * Computes square root of 16 32-bit values packed in a vector
+ */
+
+ __m512
+ALM_PROTO_ARCH_ZN5(vrs16_sqrtf)(__m512 x)
+{
+    __m512 result;
+
+    result = _mm512_sqrt_ps(x);
+
+    return result;
+}

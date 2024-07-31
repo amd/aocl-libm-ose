@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2024 Advanced Micro Devices, Inc. All rights reserved.
  *
@@ -25,6 +24,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 #define ALM_OVERRIDE 1
-#include <libm/arch/zen.h>
-#include "../../optimized/vec/vrda_log10.c"
+
+#include <libm/arch/zen5.h>
+#include "../../optimized/vec/vrs4_sqrtf.c"

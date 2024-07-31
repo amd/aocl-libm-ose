@@ -26,5 +26,5 @@
  *
  */
 #define ALM_OVERRIDE 1
-#include <libm/arch/zen.h>
-#include "../../optimized/vec/vrda_log10.c"
+#include <libm/arch/zen5.h>
+#include "../../optimized/vec/vrda_exp.c"

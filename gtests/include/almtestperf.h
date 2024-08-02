@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -72,6 +72,10 @@ class AoclLibmTest {
   public:
     T *inpbuff;
     T *inpbuff1;
+    T *inpbuff2;
+    T *inpbuff3;
+    T *inpbuff4;
+    T *inpbuff5;
     T *outbuff;
     uint32_t ipargs;
     explicit AoclLibmTest(InputParams *params, uint32_t nargs) {
@@ -99,6 +103,20 @@ class AoclLibmTest {
         aocl_libm_aligned_alloc(arr_size, inpbuff1);
         PopulateInputSamples(inpbuff1, params->range[1], params->count);
       }
+
+      if(nargs == 6) {
+        aocl_libm_aligned_alloc(arr_size, inpbuff1);
+        aocl_libm_aligned_alloc(arr_size, inpbuff2);
+        aocl_libm_aligned_alloc(arr_size, inpbuff3);
+        aocl_libm_aligned_alloc(arr_size, inpbuff4);
+        aocl_libm_aligned_alloc(arr_size, inpbuff5);
+
+        PopulateInputSamples(inpbuff1, params->range[1], params->count);
+        PopulateInputSamples(inpbuff2, params->range[2], params->count);
+        PopulateInputSamples(inpbuff3, params->range[3], params->count);
+        PopulateInputSamples(inpbuff4, params->range[4], params->count);
+        PopulateInputSamples(inpbuff5, params->range[5], params->count);
+      }
     }
 
     ~AoclLibmTest()
@@ -109,6 +127,15 @@ class AoclLibmTest {
         if (ipargs == 2)
         {
           aocl_libm_aligned_free(inpbuff1);
+        }
+
+        if(ipargs == 6)
+        {
+          aocl_libm_aligned_free(inpbuff1);
+          aocl_libm_aligned_free(inpbuff2);
+          aocl_libm_aligned_free(inpbuff3);
+          aocl_libm_aligned_free(inpbuff4);
+          aocl_libm_aligned_free(inpbuff5);
         }
         aocl_libm_aligned_free(outbuff);
       }

@@ -98,14 +98,8 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_4FLOATS) {
 
     for (uint32_t j = 0; j < 4; j++) {
       ip[0] = inpbuff[i + j];
-        if(nargs == 2)
-      {
-        bool special_case = getSpecialCase();
-        if(special_case)
-          ip[1] = inpbuff1[i];
-        else
-          ip[1] = inpbuff1[i + j];
-      }
+      if(nargs == 2)
+        ip[1] = inpbuff1[i + j];
 
       double exptd = getExpected(ip);
       double ulp = getUlp(aop[j], exptd);
@@ -139,13 +133,7 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_8FLOATS) {
     for (uint32_t j = 0; j < 8; j++) {
       ip[0] = inpbuff[i + j];
       if(nargs == 2)
-      {
-        bool special_case = getSpecialCase();
-        if(special_case)
-          ip[1] = inpbuff1[i];
-        else
-          ip[1] = inpbuff1[i + j];
-      }
+        ip[1] = inpbuff1[i + j];
 
       double exptd = getExpected(ip);
       double ulp = getUlp(aop[j], exptd);
@@ -179,13 +167,7 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_16FLOATS) {
     for (uint32_t j = 0; j < 16; j++) {
       ip[0] = inpbuff[i + j];
       if(nargs == 2)
-      {
-        bool special_case = getSpecialCase();
-        if(special_case)
-          ip[1] = inpbuff1[i];
-        else
-          ip[1] = inpbuff1[i + j];
-      }
+        ip[1] = inpbuff1[i + j];
 
       double exptd = getExpected(ip);
       double ulp = getUlp(aop[j], exptd);
@@ -241,10 +223,19 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_2DOUBLES) {
   test_data data;
   data.ip  = (void *)inpbuff;
   data.op  = (void *)aop;
-  double ip[2];
+  double ip[6];
 
   if(nargs == 2)
     data.ip1 = (void *)inpbuff1;
+
+  if(nargs == 6)
+  {
+    data.ip1 = (void *)inpbuff1;
+    data.ip2 = (void *)inpbuff2;
+    data.ip3 = (void *)inpbuff3;
+    data.ip4 = (void *)inpbuff4;
+    data.ip5 = (void *)inpbuff5;
+  }
 
   for (uint32_t i = 0; i < count; i += 2) {
     test_v2d(&data, i);
@@ -258,6 +249,15 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_2DOUBLES) {
           ip[1] = inpbuff1[i];
         else
           ip[1] = inpbuff1[i + j];
+      }
+      if(nargs == 6)
+      {
+        ip[1] = inpbuff1[i + j];
+        ip[2] = inpbuff2[i];
+        ip[3] = inpbuff3[i];
+        ip[4] = inpbuff4[i];
+        ip[5] = inpbuff5[i];
+
       }
       long double exptd = getExpected(ip);
       double ulp = getUlp(aop[j], exptd);
@@ -280,10 +280,19 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_4DOUBLES) {
   test_data data;
   data.ip  = (void *)inpbuff;
   data.op  = (void *)aop;
-  double ip[2];
+  double ip[6];
 
   if(nargs == 2)
     data.ip1 = (void *)inpbuff1;
+
+  if(nargs == 6)
+  {
+    data.ip1 = (void *)inpbuff1;
+    data.ip2 = (void *)inpbuff2;
+    data.ip3 = (void *)inpbuff3;
+    data.ip4 = (void *)inpbuff4;
+    data.ip5 = (void *)inpbuff5;
+  }
 
   for (uint32_t i = 0; i < count; i += 4) {
     test_v4d(&data, i);
@@ -298,6 +307,16 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_4DOUBLES) {
           else
             ip[1] = inpbuff1[i + j];
         }
+      if(nargs == 6)
+      {
+        ip[1] = inpbuff1[i + j];
+        ip[2] = inpbuff2[i];
+        ip[3] = inpbuff3[i];
+        ip[4] = inpbuff4[i];
+        ip[5] = inpbuff5[i];
+
+      }
+
       long double exptd = getExpected(ip);
       double ulp = getUlp(aop[j], exptd);
       if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
@@ -319,10 +338,19 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_8DOUBLES) {
   test_data data;
   data.ip  = (void *)inpbuff;
   data.op  = (void *)aop;
-  double ip[2];
+  double ip[6];
 
   if(nargs == 2)
     data.ip1 = (void *)inpbuff1;
+
+  if(nargs == 6)
+  {
+    data.ip1 = (void *)inpbuff1;
+    data.ip2 = (void *)inpbuff2;
+    data.ip3 = (void *)inpbuff3;
+    data.ip4 = (void *)inpbuff4;
+    data.ip5 = (void *)inpbuff5;
+  }
 
   for (uint32_t i = 0; i < count; i += 8) {
     test_v8d(&data, i);
@@ -330,13 +358,18 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_8DOUBLES) {
     for (uint32_t j = 0; j < 8; j++) {
       ip[0] = inpbuff[i + j];
       if(nargs == 2)
+        ip[1] = inpbuff1[i + j];
+
+      if(nargs == 6)
       {
-        bool special_case = getSpecialCase();
-          if(special_case)
-            ip[1] = inpbuff1[i];
-          else
-            ip[1] = inpbuff1[i + j];
+        ip[1] = inpbuff1[i + j];
+        ip[2] = inpbuff2[i];
+        ip[3] = inpbuff3[i];
+        ip[4] = inpbuff4[i];
+        ip[5] = inpbuff5[i];
+
       }
+
       long double exptd = getExpected(ip);
       double ulp = getUlp(aop[j], exptd);
       if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
@@ -363,6 +396,16 @@ TEST_P(SpecTestFixtureFloat, CONFORMANCE_FLOAT) {
   if(nargs == 2)
     t.ip1 = (void *)data1;
 
+  if(nargs == 6)
+  {
+    t.ip1 = (void *)data1;
+    t.ip2 = (void *)data2;
+    t.ip3 = (void *)data3;
+    t.ip4 = (void *)data4;
+    t.ip5 = (void *)data5;
+  }
+
+
   for (uint32_t i = 0; i < count; i++) {
     feclearexcept (FE_ALL_EXCEPT);
     test_s1s(&t, i);
@@ -374,10 +417,19 @@ TEST_P(SpecTestFixtureFloat, CONFORMANCE_FLOAT) {
       ip[1] = data1[i];
     }
 
+    if(nargs == 6)
+    {
+      ip[1] = data1[i];
+      ip[2] = data2[i];
+      ip[3] = data3[i];
+      ip[4] = data4[i];
+      ip[5] = data5[i];
+    }
+
     op = getExpected(ip);
     int eef = expected_expection[i];
 
-    SpecTestFixtureFloat::ConfVerifyFlt(nargs, ip[0], ip[1], aop, op, raised_exception, eef, &nfail);
+    SpecTestFixtureFloat::ConfVerifyFlt(nargs, ip[0], ip[1], ip[2], ip[3], ip[4], ip[5], aop, op, raised_exception, eef, &nfail);
 
     if (vflag == 1) {
       if (nargs == 1) {
@@ -385,6 +437,11 @@ TEST_P(SpecTestFixtureFloat, CONFORMANCE_FLOAT) {
       }
       else if (nargs == 2) {
   cout << "Input1: " << ip[0] << " Input2: " << ip[1] << " Output: " << aop << " Expected: " << op << endl;
+      }
+      else if (nargs == 6)
+      {
+        cout << "Input1: " << ip[0] << " Input2: " << ip[1] << " Input3: " << ip[2] << " Input4: " << ip[3] << " Input5: " << ip[4] << " Input6: " << ip[5] << endl;
+        cout << " Output: " << aop << " Expected: " << op << endl;
       }
       PrintConfExpections(raised_exception, eef);
     }
@@ -397,13 +454,23 @@ TEST_P(SpecTestFixtureFloat, CONFORMANCE_FLOAT) {
 TEST_P(SpecTestFixtureDouble, CONFORMANCE_DOUBLE) {
   int nfail = 0;
   double aop, op;
-  double ip[2];
+  double ip[6];
   test_data t;
   t.ip  = (void *)data;
   t.op  = (void *)&aop;
 
   if(nargs == 2)
     t.ip1 = (void *)data1;
+
+  if(nargs == 6)
+  {
+    t.ip1 = (void *)data1;
+    t.ip2 = (void *)data2;
+    t.ip3 = (void *)data3;
+    t.ip4 = (void *)data4;
+    t.ip5 = (void *)data5;
+
+  }
 
   for (uint32_t i = 0; i < count; i++) {
     feclearexcept (FE_ALL_EXCEPT);
@@ -417,10 +484,18 @@ TEST_P(SpecTestFixtureDouble, CONFORMANCE_DOUBLE) {
       ip[1] = data1[i];
     }
 
+    if(nargs == 6)
+    {
+      ip[1] = data1[i];
+      ip[2] = data2[i];
+      ip[3] = data3[i];
+      ip[4] = data4[i];
+      ip[5] = data5[i];
+    }
     op = getExpected(ip);
     int eef = expected_expection[i];
 
-    SpecTestFixtureDouble::ConfVerifyDbl(nargs, ip[0], ip[1], aop, op, raised_exception, eef, &nfail);
+    SpecTestFixtureDouble::ConfVerifyDbl(nargs, ip[0], ip[1], ip[2], ip[3], ip[4], ip[5], aop, op, raised_exception, eef, &nfail);
 
     if (vflag == 1) {
       if (nargs == 1) {
@@ -428,6 +503,10 @@ TEST_P(SpecTestFixtureDouble, CONFORMANCE_DOUBLE) {
       }
       else if (nargs == 2) {
   cout << "Input1: " << ip[0] << " Input2: " << ip[1] << " Output: " << aop << " Expected: " << op << endl;
+      }
+      else if (nargs == 6) {
+        cout << "Input1: " << ip[0] << " Input2: " << ip[1] << " Input3: " << ip[2] << " Input4: " << ip[3] << " Input5: " << ip[4] << " Input6: " << ip[5] << endl ;
+        cout << "Output " << aop << " Expected: " << op << endl;
       }
       PrintConfExpections(raised_exception, eef);
     }

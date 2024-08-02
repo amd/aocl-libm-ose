@@ -35,7 +35,7 @@
 #include <string>
 
 using namespace ALM;
-#define MAX_INPUT_RANGES 2
+#define MAX_INPUT_RANGES 6
 
 #define _ALIGN_FACTOR 256
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
@@ -44,38 +44,44 @@ using namespace ALM;
 #define MILLION  (THOUSAND * THOUSAND)
 
 #define NITER    (100 * THOUSAND)
-#define NELEM     5000 
+#define NELEM     5000
 
 typedef struct {
-	uint32_t in;
-	uint32_t out;
-	uint32_t exptdexpt;
-	uint32_t in2;
-	uint32_t in3;
+  uint32_t in;
+  uint32_t out;
+  uint32_t exptdexpt;
+  uint32_t in2;
+  uint32_t in3;
+  uint32_t in4;
+  uint32_t in5;
+  uint32_t in6;
 }libm_test_special_data_f32;
 
 typedef struct {
-	uint64_t in;
-	uint64_t out;
-	uint64_t exptdexpt;
-	uint64_t in2;
-	uint64_t in3;
+  uint64_t in;
+  uint64_t out;
+  uint64_t exptdexpt;
+  uint64_t in2;
+  uint64_t in3;
+  uint64_t in4;
+  uint64_t in5;
+  uint64_t in6;
 }libm_test_special_data_f64;
 
 typedef struct {
-	float _Complex in;
-	float _Complex out;
-	uint32_t exptdexpt;
-	float _Complex in2;
-	float _Complex in3;
+  float _Complex in;
+  float _Complex out;
+  uint32_t exptdexpt;
+  float _Complex in2;
+  float _Complex in3;
 }libm_test_complex_data_f32;
 
 typedef struct {
-	double _Complex in;
-	double _Complex out;
-	uint64_t exptdexpt;
-	double _Complex in2;
-	double _Complex in3;
+  double _Complex in;
+  double _Complex out;
+  uint64_t exptdexpt;
+  double _Complex in2;
+  double _Complex in3;
 }libm_test_complex_data_f64;
 
 typedef struct {
@@ -90,9 +96,9 @@ typedef struct {
 } InputData;
 
 typedef struct {
-	 uint32_t tstcnt; 
+   uint32_t tstcnt;
   char print[12][100];
-} PrintTstRes;  
+} PrintTstRes;
 
 /*
  * The structure is filled with the command line arguments
@@ -106,7 +112,7 @@ typedef struct {
 
   TestType ttype;
   int verboseflag;
-  uint32_t niter;  
+  uint32_t niter;
   uint32_t count;
   std::string testFunction;
   InputRange range[MAX_INPUT_RANGES];

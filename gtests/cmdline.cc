@@ -127,6 +127,10 @@ cmdLine::cmdLine() : arguments(NULL) {
 
   cmd.ranges = new args::ValueFlagList<Range, ALM::RangeReader>[MAX_INPUT_RANGES]{{
       *cmd.arguments, "ranges", "Input Ranges", {'r', "range"}},
+      {*cmd.arguments, "ranges", "Input Ranges", {'r', "range"}},
+      {*cmd.arguments, "ranges", "Input Ranges", {'r', "range"}},
+      {*cmd.arguments, "ranges", "Input Ranges", {'r', "range"}},
+      {*cmd.arguments, "ranges", "Input Ranges", {'r', "range"}},
       {*cmd.arguments, "ranges", "Input Ranges", {'r', "range"}}};
 
   std::unordered_map<std::string, RoundingMode> map{

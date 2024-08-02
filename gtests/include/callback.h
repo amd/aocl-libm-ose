@@ -41,6 +41,10 @@
 typedef struct {
   void *ip;
   void *ip1;
+  void *ip2;
+  void *ip3;
+  void *ip4;
+  void *ip5;
   void *op;
 }test_data;
 

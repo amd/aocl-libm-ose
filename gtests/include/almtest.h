@@ -43,11 +43,11 @@
 
 extern "C"
 {
-	#if ((defined (_WIN64) || defined (_WIN32)))
-	    #include "complex.h"
-	#else
-		#include "/usr/include/complex.h"
-	#endif
+  #if ((defined (_WIN64) || defined (_WIN32)))
+      #include "complex.h"
+  #else
+    #include "/usr/include/complex.h"
+  #endif
 }
 
 using namespace std;
@@ -162,6 +162,14 @@ class AccuTestFixtureFloat : public ::testing::TestWithParam<AccuParams> {
     if (nargs == 2)
       PopulateInputSamples(&inpbuff1, range[1], count);
 
+    if (nargs == 6)
+    {
+      PopulateInputSamples(&inpbuff1, range[1], count);
+      PopulateInputSamples(&inpbuff2, range[2], count);
+      PopulateInputSamples(&inpbuff3, range[3], count);
+      PopulateInputSamples(&inpbuff4, range[4], count);
+      PopulateInputSamples(&inpbuff5, range[5], count);
+    }
     unsigned int arr_size = 0;
     if (GetParam().vec_input_count == (int)ALM::FloatQuantity::E_Vector_Array)
     {
@@ -185,12 +193,24 @@ class AccuTestFixtureFloat : public ::testing::TestWithParam<AccuParams> {
     {
       aocl_libm_aligned_free(inpbuff1);
     }
+    if(nargs == 6)
+    {
+      aocl_libm_aligned_free(inpbuff1);
+      aocl_libm_aligned_free(inpbuff2);
+      aocl_libm_aligned_free(inpbuff3);
+      aocl_libm_aligned_free(inpbuff4);
+      aocl_libm_aligned_free(inpbuff5);
+    }
     aocl_libm_aligned_free(aop);
   }
 
  protected:
   float *inpbuff;
   float *inpbuff1;
+  float *inpbuff2;
+  float *inpbuff3;
+  float *inpbuff4;
+  float *inpbuff5;
   float *aop;
   uint32_t count;
   uint32_t nargs;
@@ -218,6 +238,14 @@ class AccuTestFixtureDouble : public ::testing::TestWithParam<AccuParams> {
     if (nargs == 2)
       PopulateInputSamples(&inpbuff1, range[1], count);
 
+    if(nargs == 6)
+    {
+      PopulateInputSamples(&inpbuff1, range[2], count);
+      PopulateInputSamples(&inpbuff2, range[3], count);
+      PopulateInputSamples(&inpbuff3, range[4], count);
+      PopulateInputSamples(&inpbuff4, range[5], count);
+      PopulateInputSamples(&inpbuff5, range[6], count);
+    }
     unsigned int arr_size = 0;
     if (GetParam().vec_input_count == (int)ALM::FloatQuantity::E_Vector_Array)
     {
@@ -241,12 +269,25 @@ class AccuTestFixtureDouble : public ::testing::TestWithParam<AccuParams> {
     {
       aocl_libm_aligned_free(inpbuff1);
     }
+
+    if(nargs == 6)
+    {
+      aocl_libm_aligned_free(inpbuff1);
+      aocl_libm_aligned_free(inpbuff2);
+      aocl_libm_aligned_free(inpbuff3);
+      aocl_libm_aligned_free(inpbuff4);
+      aocl_libm_aligned_free(inpbuff5);
+    }
     aocl_libm_aligned_free(aop);
   }
 
  protected:
   double *inpbuff;
   double *inpbuff1;
+  double *inpbuff2;
+  double *inpbuff3;
+  double *inpbuff4;
+  double *inpbuff5;
   double *aop;
   uint32_t count;
   uint32_t nargs;
@@ -372,7 +413,7 @@ class AccuTestFixtureComplexDouble : public ::testing::TestWithParam<AccuParams>
  */
 template <typename T, typename U>
 void SpecialSetUp(T **inp, int **exptdexpt, uint32_t count, U *data,
-                   uint32_t nargs, T **inp2, T **op) {
+                   uint32_t nargs, T **inp2, T **inp3, T **inp4, T **inp5,T **inp6, T **op) {
   size_t size = sizeof(T);
   uint32_t arr_size = count * size;
 
@@ -411,6 +452,40 @@ void SpecialSetUp(T **inp, int **exptdexpt, uint32_t count, U *data,
       in2[i] = data[i].in2;
     }
     *inp2 = (T *)in2;
+  }
+
+  if(nargs == 6) {
+    T* in2 = NULL;
+    T* in3 = NULL;
+    T* in4 = NULL;
+    T* in5 = NULL;
+    T* in6 = NULL;
+
+    aocl_libm_aligned_alloc(arr_size, in2);
+    aocl_libm_aligned_alloc(arr_size, in3);
+    aocl_libm_aligned_alloc(arr_size, in4);
+    aocl_libm_aligned_alloc(arr_size, in5);
+    aocl_libm_aligned_alloc(arr_size, in6);
+
+    LIBM_TEST_DPRINTF(DBG2, ,"Input1:", in2);
+    LIBM_TEST_DPRINTF(DBG2, ,"Input2:", in3);
+    LIBM_TEST_DPRINTF(DBG2, ,"Input3:", in4);
+    LIBM_TEST_DPRINTF(DBG2, ,"Input4:", in5);
+    LIBM_TEST_DPRINTF(DBG2, ,"Input5:", in6);
+
+    for (uint32_t i = 0; i < count; i++) {
+      in2[i] = data[i].in2;
+      in3[i] = data[i].in3;
+      in4[i] = data[i].in4;
+      in5[i] = data[i].in5;
+      in6[i] = data[i].in6;
+    }
+
+    *inp2 = (T *)in2;
+    *inp3 = (T *)in3;
+    *inp4 = (T *)in4;
+    *inp5 = (T *)in5;
+    *inp6 = (T *)in6;
   }
 }
 
@@ -501,7 +576,7 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
   }
 
   template <typename T>
-  bool ConfVerifyFlt(int nargs, T input, T input2, T actual_output, T expected_output, int raised_exception, int expected_exception, int *nfail) {
+  bool ConfVerifyFlt(int nargs, T input, T input2, T input3, T input4, T input5, T input6, T actual_output, T expected_output, int raised_exception, int expected_exception, int *nfail) {
     int output_match = 0, exception_match = 0;
     /* check if exceptions match */
     if (raised_exception != expected_exception) {
@@ -512,6 +587,10 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
     val a = {.f = actual_output};
     val ip = {.f = input};
     val ip2 = {.f = input2};
+    val ip3 = {.f = input3};
+    val ip4 = {.f = input4};
+    val ip5 = {.f = input5};
+    val ip6 = {.f = input6};
 
     #if defined(_WIN64) || defined(_WIN32)
       bool both_nans = _isnanf(fabsf(e.f)) && _isnanf(fabsf(a.f));
@@ -531,6 +610,14 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
         printf ("Input: 0x%x (%f) ", ip.u, ip.f);
         if (nargs == 2)
             printf ("Input2: 0x%x (%f) ", ip2.u, ip2.f);
+        if (nargs == 6)
+        {
+          printf ("Input2: 0x%x (%f) ", ip2.u, ip2.f);
+          printf ("Input3: 0x%x (%f) ", ip3.u, ip3.f);
+          printf ("Input4: 0x%x (%f) ", ip4.u, ip4.f);
+          printf ("Input5: 0x%x (%f) ", ip5.u, ip5.f);
+          printf ("Input6: 0x%x (%f) ", ip6.u, ip6.f);
+        }
         printf ("Expected: 0x%x (%f) Actual: 0x%x (%f) ULP: %f\n", e.u, e.f, a.u, a.f, ulp);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);
@@ -554,12 +641,20 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
     ptr = GetParam().prttstres;
     nargs = GetParam().nargs;
 
-    SpecialSetUp(&idata, &expected_expection, count, dataf32, nargs, &idata1, &iop);
+    SpecialSetUp(&idata, &expected_expection, count, dataf32, nargs, &idata1, &idata2, &idata3, &idata4, &idata5, &iop);
     data = (float *)idata;
     op = (float *)iop;
 
     if (nargs == 2) {
       data1 = (float *)idata1;
+    }
+
+    if (nargs == 6) {
+      data1 = (float *)idata1;
+      data2 = (float *)idata2;
+      data3 = (float *)idata3;
+      data4 = (float *)idata4;
+      data5 = (float *)idata5;
     }
   }
 
@@ -569,13 +664,20 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
     if (nargs == 2) {
       aocl_libm_aligned_free(idata1);
     }
+    if(nargs == 6) {
+      aocl_libm_aligned_free(idata1);
+      aocl_libm_aligned_free(idata2);
+      aocl_libm_aligned_free(idata3);
+      aocl_libm_aligned_free(idata4);
+      aocl_libm_aligned_free(idata5);
+    }
     aocl_libm_aligned_free(expected_expection);
   }
 
  protected:
-  uint32_t *idata, *idata1, *iop;
+  uint32_t *idata, *idata1, *idata2, *idata3, *idata4, *idata5, *iop;
   uint32_t nargs;
-  float *data, *data1, *op;
+  float *data, *data1, *data2, *data3, *data4, *data5, *op;
   int *expected_expection;
   uint32_t count;
   PrintTstRes *ptr;
@@ -598,7 +700,7 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
 
   /* verify double */
   template <typename T>
-  bool ConfVerifyDbl(int nargs, T input, T input2, T actual_output, T expected_output, int raised_exception, int expected_exception, int *nfail) {
+  bool ConfVerifyDbl(int nargs, T input, T input2, T input3, T input4, T input5, T input6, T actual_output, T expected_output, int raised_exception, int expected_exception, int *nfail) {
     int output_match = 0, exception_match = 0;
     /* check if exceptions match */
     if (raised_exception != expected_exception) {
@@ -609,6 +711,10 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
     val a = {.d = actual_output};
     val ip = {.d = input};
     val ip2 = {.d = input2};
+    val ip3 = {.d = input3};
+    val ip4 = {.d = input4};
+    val ip5 = {.d = input5};
+    val ip6 = {.d = input6};
 
     bool both_nans = isnan(fabs(e.d)) && isnan(fabs(a.d));
 
@@ -624,6 +730,14 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
         printf ("Input: 0x%llx (%lf) ", ip.lu, ip.d);
         if (nargs == 2)
             printf ("Input2: 0x%llx (%lf) ", ip2.lu, ip2.d);
+        if (nargs == 6)
+        {
+            printf ("Input2: 0x%llx (%lf) ", ip2.lu, ip2.d);
+            printf ("Input3: 0x%llx (%lf) ", ip3.lu, ip3.d);
+            printf ("Input4: 0x%llx (%lf) ", ip4.lu, ip4.d);
+            printf ("Input5: 0x%llx (%lf) ", ip5.lu, ip5.d);
+            printf ("Input6: 0x%llx (%lf) ", ip6.lu, ip6.d);
+        }
         printf ("Expected: 0x%llx (%lf) Actual: 0x%llx (%lf) ULP: %lf\n", e.lu, e.d, a.lu, a.d, ulp);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);
@@ -647,12 +761,21 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
     ptr = GetParam().prttstres;
     nargs = GetParam().nargs;
 
-    SpecialSetUp(&idata, &expected_expection, count, dataf64, nargs, &idata1, &iop);
+    SpecialSetUp(&idata, &expected_expection, count, dataf64, nargs, &idata1, &idata2, &idata3, &idata4, &idata5, &iop);
     data = (double *)idata;
     op = (double *) iop;
 
     if (nargs == 2) {
       data1 = (double *)idata1;
+    }
+
+    if (nargs == 6)
+    {
+      data1 = (double *)idata1;
+      data2 = (double *)idata2;
+      data3 = (double *)idata3;
+      data4 = (double *)idata4;
+      data5 = (double *)idata5;
     }
   }
 
@@ -662,12 +785,20 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
     if (nargs == 2) {
       aocl_libm_aligned_free(idata1);
     }
+    if (nargs == 6)
+    {
+      aocl_libm_aligned_free(idata1);
+      aocl_libm_aligned_free(idata2);
+      aocl_libm_aligned_free(idata3);
+      aocl_libm_aligned_free(idata4);
+      aocl_libm_aligned_free(idata5);
+    }
     aocl_libm_aligned_free(expected_expection);
   }
 
  protected:
-  uint64_t *idata, *idata1, *iop;
-  double *data, *data1, *op;
+  uint64_t *idata, *idata1, *idata2, *idata3, *idata4, *idata5, *iop;
+  double *data, *data1, *data2, *data3, *data4, *data5,*op;
   uint32_t nargs;
   int *expected_expection;
   uint32_t count;

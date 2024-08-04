@@ -360,6 +360,9 @@ extern "C" {
     __m128d amd_vrd2_linearfrac   (__m128d x, __m128d y, double, double, double, double);
     __m256d amd_vrd4_linearfrac   (__m256d x, __m256d y, double, double, double, double);
 
+    __m128 amd_vrs4_linearfracf   (__m128 x, __m128 y, float, float, float, float);
+    __m256 amd_vrs8_linearfracf   (__m256 x, __m256 y, float, float, float, float);
+
 /* AVX512 variants */
 #if defined(__AVX512F__)
 
@@ -418,6 +421,7 @@ extern "C" {
 
     /* Linearfrac */
      __m512d amd_vrd8_linearfrac   (__m512d x, __m512d y, double, double, double, double);
+     __m512  amd_vrs16_linearfracf (__m512 x, __m512 y, float, float, float, float);
 
 #endif
 

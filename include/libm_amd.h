@@ -293,6 +293,7 @@ __m128 FN_PROTOTYPE(vrs4_tanhf)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_atanf)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_fabsf)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_sqrtf)(__m128 x);
+__m128 FN_PROTOTYPE(vrs4_linearfracf)(__m128 x, __m128 y, float sca, float sha, float scb, float shb);
 
 __m256 FN_PROTOTYPE(vrs8_erff)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_expf)(__m256 x);
@@ -309,6 +310,7 @@ __m256 FN_PROTOTYPE(vrs8_tanhf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_log2f)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_fabsf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_sqrtf)(__m256 x);
+__m256 FN_PROTOTYPE(vrs8_linearfracf)(__m256 x, __m256 y, float sca, float sha, float scb, float shb);
 
 void  FN_PROTOTYPE(vrd2_sincos)(__m128d x, __m128d* ys, __m128d* yc);
 void  FN_PROTOTYPE(vrda_sincos)(int n, double *x, double *ys, double *yc);

@@ -186,6 +186,7 @@ EXPORTS
     amd_vrs4_tanhf
     amd_vrs4_fabsf
     amd_vrs4_sqrtf
+    amd_vrs4_linearfracf
     amd_vrs8_cosf
     amd_vrs8_coshf
     amd_vrs8_exp2f
@@ -199,6 +200,7 @@ EXPORTS
     amd_vrs8_tanhf
     amd_vrs8_fabsf
     amd_vrs8_sqrtf
+    amd_vrs8_linearfracf
     amd_vrsa_cbrtf
     amd_vrsa_cosf
     amd_vrsa_exp10f
@@ -219,6 +221,7 @@ EXPORTS
     amd_vrs16_erff
     amd_vrs16_expf
     amd_vrs16_sqrtf
+    amd_vrs16_linearfracf
     amd_vrd8_exp2
     amd_vrs16_exp2f
     amd_vrd8_log

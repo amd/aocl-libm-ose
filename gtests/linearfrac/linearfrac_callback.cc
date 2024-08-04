@@ -60,9 +60,6 @@ void ConfSetupf32(SpecParams *specp) {
   specp->countf = ARRAY_SIZE(test_linearfracf_conformance_data);
 }
 
-//float getFuncOp(float *data) {
-//  return LIBM_FUNC(linearfrac)(data[0], data[1], data[2], data[3], data[4], data[5]);/
-//}
 
 long double getExpected(double *data) {
   auto val = alm_mp_linearfrac(data[0], data[1], data[2], data[3], data[4], data[5]);
@@ -92,6 +89,19 @@ int test_s1d(test_data *data, int idx)  {
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  __m128d LIBM_FUNC_VEC(d, 2, linearfrac)(__m128d, __m128d, double, double, double, double);
+  __m256d LIBM_FUNC_VEC(d, 4, linearfrac)(__m256d, __m256d, double, double, double, double);
+  __m128 LIBM_FUNC_VEC(s, 4, linearfracf)(__m128, __m128, float, float, float, float);
+  __m256 LIBM_FUNC_VEC(s, 8, linearfracf)(__m256, __m256, float, float, float, float);
+
+  /*avx512*/
+  #if defined(__AVX512__)
+    __m512d LIBM_FUNC_VEC(d, 8, linearfrac) (__m512d, __m512d, double, double, double, double);
+    __m512 LIBM_FUNC_VEC(s, 16, linearfracf) (__m512, __m512, float, float, float, float);
+  #endif
 #endif
 
 int test_v2d(test_data *data, int idx)  {
@@ -165,14 +175,78 @@ int test_v8d(test_data *data, int idx)  {
 }
 
 int test_v16s(test_data *data, int idx)  {
+   #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+    #if defined(__AVX512__)
+        float *ip1 = (float*)data->ip;
+        float *ip2 = (float*)data->ip1;
+        float *ip3 = (float*)data->ip2;
+        float *ip4 = (float*)data->ip3;
+        float *ip5 = (float*)data->ip4;
+        float *ip6 = (float*)data->ip5;
+
+        float *op  = (float*)data->op;
+        __m512 ip16_1 = _mm512_set_ps(ip1[idx+15], ip1[idx+14], ip1[idx+13], ip1[idx+12],
+                                      ip1[idx+11], ip1[idx+10], ip1[idx+9], ip1[idx+8],
+                                      ip1[idx+7], ip1[idx+6], ip1[idx+5], ip1[idx+4],
+                                      ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
+        __m512 ip16_2 = _mm512_set_ps(ip2[idx+15], ip2[idx+14], ip2[idx+13], ip2[idx+12],
+                                      ip2[idx+11], ip2[idx+10], ip2[idx+9], ip2[idx+8],
+                                      ip2[idx+7], ip2[idx+6], ip2[idx+5], ip2[idx+4],
+                                      ip2[idx+3], ip2[idx+2], ip2[idx+1], ip2[idx]);
+        #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+          __m512 op16 = LIBM_FUNC_VEC(s, 16, linearfracf)(ip16_1, ip16_2, ip3[idx], ip4[idx], ip5[idx], ip6[idx]);
+          _mm512_store_ps(&op[0], op16);
+        #elif
+          vslinearfrac(16, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
+        #endif
+    #endif
+  #endif
   return 0;
 }
 
 int test_v4s(test_data *data, int idx)  {
+  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+    float *ip1 = (float*)data->ip;
+    float *ip2 = (float*)data->ip1;
+    float *ip3 = (float*)data->ip2;
+    float *ip4 = (float*)data->ip3;
+    float *ip5 = (float*)data->ip4;
+    float *ip6 = (float*)data->ip5;
+
+    float *op  = (float*)data->op;
+    __m128 ip41 = _mm_set_ps(ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
+    __m128 ip42 = _mm_set_ps(ip2[idx+3], ip2[idx+2], ip2[idx+1], ip2[idx]);
+    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      __m128 op4 = LIBM_FUNC_VEC(s, 4, linearfracf)(ip41, ip42, ip3[idx], ip4[idx], ip5[idx], ip6[idx]);
+      _mm_store_ps(&op[0], op4);
+    #elif
+      vslinearfrac(4, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
+    #endif
+  #endif
   return 0;
 }
 
 int test_v8s(test_data *data, int idx)  {
+   #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+    float *ip1 = (float*)data->ip;
+    float *ip2 = (float*)data->ip1;
+    float *ip3 = (float*)data->ip2;
+    float *ip4 = (float*)data->ip3;
+    float *ip5 = (float*)data->ip4;
+    float *ip6 = (float*)data->ip5;
+
+    float *op  = (float*)data->op;
+    __m256 ip81 = _mm256_set_ps(ip1[idx+7], ip1[idx+6], ip1[idx+5], ip1[idx+4],
+                                ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
+    __m256 ip82 = _mm256_set_ps(ip2[idx+7], ip2[idx+6], ip2[idx+5], ip2[idx+4],
+                                ip2[idx+3], ip2[idx+2], ip2[idx+1], ip2[idx]);
+    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      __m256 op8 = LIBM_FUNC_VEC(s, 8, linearfracf)(ip81, ip82, ip3[idx], ip4[idx], ip5[idx], ip6[idx]);
+      _mm256_store_ps(&op[0], op8);
+    #elif
+      vslinearfrac(8, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
+    #endif
+  #endif
   return 0;
 }
 

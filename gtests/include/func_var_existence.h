@@ -73,17 +73,17 @@ static map<string, vector<string>> libm_funcs = {
     {"logb",      {"s1d", "s1f"}},
     {"nearbyint", {"s1d", "s1f"}},
     {"pow",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
-    {"powx",      {"vrd2", "vrd4"}},
+    {"powx",      {"vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16"}},
     {"remainder", {"s1d", "s1f"}},
     {"rint",      {"s1d", "s1f"}},
     {"round",     {"s1d", "s1f"}},
     {"sin",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"sinh",      {"s1d", "s1f"}},
-    {"sqrt",      {"s1d", "s1f", "vrd2", "vrd4"}},
+    {"sqrt",      {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"tan",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16"}},
     {"tanh",      {"s1d", "s1f", "vrs4", "vrs8", "vrs16"}},
     {"trunc",     {"s1d", "s1f"}},
-    {"linearfrac",{"vrd2", "vrd4", "vrd8"}},
+    {"linearfrac",{"vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16"}},
 };
 
 /* vector<string> getSupportedVariants(string func)

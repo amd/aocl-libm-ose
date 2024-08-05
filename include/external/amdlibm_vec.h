@@ -280,10 +280,12 @@ extern "C" {
     __m128  amd_vrs4_sinf   (__m128  x);
     __m128  amd_vrs4_cosf   (__m128  x);
     __m128  amd_vrs4_tanf   (__m128  x);
+    void    amd_vrs4_sincosf(__m128 x, __m128 *sin, __m128 *cos);
 
     __m256  amd_vrs8_tanf   (__m256  x);
     __m256  amd_vrs8_sinf   (__m256  x);
     __m256  amd_vrs8_cosf   (__m256  x);
+    void    amd_vrs8_sincosf(__m256 x, __m256 *sin, __m256 *cos);
 
     __m256d amd_vrd4_sin    (__m256d x);
     __m256d amd_vrd4_cos    (__m256d x);
@@ -398,6 +400,7 @@ extern "C" {
 
     /* Sincos */
     void    amd_vrd8_sincos  (__m512d x, __m512d *sin, __m512d *cos);
+    void    amd_vrs16_sincosf(__m512 x, __m512 *sin, __m512 *cos);
 
     /* Atan */
     __m512 amd_vrs16_atanf  (__m512 x);

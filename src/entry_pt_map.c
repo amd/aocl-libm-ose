@@ -386,6 +386,7 @@ LIBM_DECL_FN_MAP(vrs4_erff);
 LIBM_DECL_FN_MAP(vrs4_fabsf);
 LIBM_DECL_FN_MAP(vrs4_sqrtf);
 LIBM_DECL_FN_MAP(vrs4_linearfracf);
+LIBM_DECL_FN_MAP(vrs4_sincosf);
 
 LIBM_DECL_FN_MAP(vrs8_powf);
 LIBM_DECL_FN_MAP(vrs8_powxf);
@@ -406,6 +407,7 @@ LIBM_DECL_FN_MAP(vrs8_erff);
 LIBM_DECL_FN_MAP(vrs8_fabsf);
 LIBM_DECL_FN_MAP(vrs8_sqrtf);
 LIBM_DECL_FN_MAP(vrs8_linearfracf);
+LIBM_DECL_FN_MAP(vrs8_sincosf);
 
 LIBM_DECL_FN_MAP(vrs16_powf);
 LIBM_DECL_FN_MAP(vrs16_powxf);
@@ -424,8 +426,7 @@ LIBM_DECL_FN_MAP(vrs16_atanf);
 LIBM_DECL_FN_MAP(vrs16_erff);
 LIBM_DECL_FN_MAP(vrs16_sqrtf);
 LIBM_DECL_FN_MAP(vrs16_linearfracf);
-
-
+LIBM_DECL_FN_MAP(vrs16_sincosf);
 
 /*
  * WEAK_LIBM_ALIAS is used to map "amd_<func_name>" to "<func_name>".
@@ -746,6 +747,7 @@ WEAK_LIBM_ALIAS(vrs4_erff, FN_PROTOTYPE(vrs4_erff));
 WEAK_LIBM_ALIAS(vrs4_fabsf, FN_PROTOTYPE(vrs4_fabsf));
 WEAK_LIBM_ALIAS(vrs4_sqrtf, FN_PROTOTYPE(vrs4_sqrtf));
 WEAK_LIBM_ALIAS(vrs4_linearfracf, FN_PROTOTYPE(vrs4_linearfracf));
+WEAK_LIBM_ALIAS(vrs4_sincosf, FN_PROTOTYPE(vrs4_sincosf));
 
 WEAK_LIBM_ALIAS(vrs8_powf, FN_PROTOTYPE(vrs8_powf));
 WEAK_LIBM_ALIAS(vrs8_powxf, FN_PROTOTYPE(vrs8_powxf));
@@ -766,6 +768,7 @@ WEAK_LIBM_ALIAS(vrs8_erff, FN_PROTOTYPE(vrs8_erff));
 WEAK_LIBM_ALIAS(vrs8_fabsf, FN_PROTOTYPE(vrs8_fabsf));
 WEAK_LIBM_ALIAS(vrs8_sqrtf, FN_PROTOTYPE(vrs8_sqrtf));
 WEAK_LIBM_ALIAS(vrs8_linearfracf, FN_PROTOTYPE(vrs8_linearfracf));
+WEAK_LIBM_ALIAS(vrs8_sincosf, FN_PROTOTYPE(vrs8_sincosf));
 
 WEAK_LIBM_ALIAS(vrs16_powf, FN_PROTOTYPE(vrs16_powf));
 WEAK_LIBM_ALIAS(vrs16_powxf, FN_PROTOTYPE(vrs16_powxf));
@@ -784,6 +787,7 @@ WEAK_LIBM_ALIAS(vrs16_atanf, FN_PROTOTYPE(vrs16_atanf));
 WEAK_LIBM_ALIAS(vrs16_erff, FN_PROTOTYPE(vrs16_erff));
 WEAK_LIBM_ALIAS(vrs16_sqrtf, FN_PROTOTYPE(vrs16_sqrtf));
 WEAK_LIBM_ALIAS(vrs16_linearfracf, FN_PROTOTYPE(vrs16_linearfracf));
+WEAK_LIBM_ALIAS(vrs16_sincosf, FN_PROTOTYPE(vrs16_sincosf));
 
 /*
  * SWLCSG-2283 & CPUPL-4422 - Weak Aliases with "__" prefix in order

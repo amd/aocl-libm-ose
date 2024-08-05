@@ -241,7 +241,7 @@ int test_v16s(test_data *data, int idx)  {
                                   ip1[idx+7], ip1[idx+6], ip1[idx+5], ip1[idx+4],
                                 ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
       #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
-        __m512 op16 = LIBM_FUNC_VEC(s, 16, powxf)(ip16_1, ip2);
+        __m512 op16 = LIBM_FUNC_VEC(s, 16, powxf)(ip16_1, ip2[idx]);
         _mm512_store_ps(&op[0], op16);
       #elif
         vsPowx(16, ip1, ip2[idx], op);

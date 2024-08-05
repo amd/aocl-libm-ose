@@ -72,6 +72,13 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
                          ->Args({(int)params->count})->Iterations(params->niter);
         }
         #endif
+        if((params->fqty == ALM::FloatQuantity::E_All) ||
+        (params->fqty == ALM::FloatQuantity::E_Vector_Array)) {
+            string varnam = "_vad(linearfrac)";
+            libm = funcnam + varnam;
+            benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTestad, params)
+                        ->Args({(int)params->count})->Iterations(params->niter);
+    }
     }
     if((params->fwidth == ALM::FloatWidth::E_ALL) ||
         (params->fwidth == ALM::FloatWidth::E_F32)) {
@@ -99,6 +106,13 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
                                     ->Args({(int)params->count})->Iterations(params->niter);
             }
         #endif
+        if((params->fqty == ALM::FloatQuantity::E_All) ||
+            (params->fqty == ALM::FloatQuantity::E_Vector_Array)) {
+                string varnam = "_vas(linearfracf)";
+                libm = funcnam + varnam;
+                benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTestaf, params)
+                            ->Args({(int)params->count})->Iterations(params->niter);
+    }
     }
 size_t retval = benchmark::RunSpecifiedBenchmarks();
 return (int)retval;

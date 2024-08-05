@@ -40,6 +40,15 @@ void LibmPerfTestaf(benchmark::State& st, InputParams* param) {
   if(nargs == 2)
     data.ip1 = (void *) objtest.inpbuff1;
 
+  if(nargs == 6)
+  {
+    data.ip1 = (void *) objtest.inpbuff1;
+    data.ip2 = (void *) objtest.inpbuff2;
+    data.ip3 = (void *) objtest.inpbuff3;
+    data.ip4 = (void *) objtest.inpbuff4;
+    data.ip5 = (void *) objtest.inpbuff5; 
+  }
+
   for (auto _ : st) {
     test_vas(&data, param->count);
   }
@@ -58,6 +67,15 @@ void LibmPerfTestad(benchmark::State& st, InputParams* param) {
 
   if(nargs == 2)
     data.ip1 = (void *) objtest.inpbuff1;
+
+  if(nargs == 6)
+  {
+    data.ip1 = (void *) objtest.inpbuff1;
+    data.ip2 = (void *) objtest.inpbuff2;
+    data.ip3 = (void *) objtest.inpbuff3;
+    data.ip4 = (void *) objtest.inpbuff4;
+    data.ip5 = (void *) objtest.inpbuff5;
+  }
 
   for (auto _ : st) {
     test_vad(&data, param->count);

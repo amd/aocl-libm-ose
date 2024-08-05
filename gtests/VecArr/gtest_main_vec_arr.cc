@@ -35,10 +35,19 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_ARRAY_FLOATS) {
   test_data data;
   data.ip  = (void *)inpbuff;
   data.op  = (void *)aop;
-  float ip[2];
+  float ip[6];
 
   if(nargs == 2)
     data.ip1 = (void *)inpbuff1;
+
+  if(nargs == 6)
+  {
+    data.ip1 = (void *)inpbuff1;
+    data.ip2 = (void *)inpbuff2;
+    data.ip3 = (void *)inpbuff3;
+    data.ip4 = (void *)inpbuff4;
+    data.ip5 = (void *)inpbuff5;
+  }
 
   test_vas(&data, count);
   for (uint32_t i = 0; i < count; i++)
@@ -46,6 +55,15 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_ARRAY_FLOATS) {
     ip[0] = inpbuff[i];
     if(nargs == 2)
       ip[1] = inpbuff1[i];
+    
+    if(nargs == 6)
+    {
+      ip[1] = inpbuff1[i];
+      ip[2] = inpbuff2[i];
+      ip[3] = inpbuff3[i];
+      ip[4] = inpbuff4[i];
+      ip[5] = inpbuff5[i];
+    }
 
     double exptd = getExpected(ip);
     double ulp = getUlp(aop[i], exptd);
@@ -68,10 +86,19 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_ARRAY_DOUBLES) {
   test_data data;
   data.ip  = (void *)inpbuff;
   data.op  = (void *)aop;
-  double ip[2];
+  double ip[6];
 
   if(nargs == 2)
     data.ip1 = (void *)inpbuff1;
+
+  if(nargs == 6)
+  {
+    data.ip1 = (void *)inpbuff1;
+    data.ip2 = (void *)inpbuff2;
+    data.ip3 = (void *)inpbuff3;
+    data.ip4 = (void *)inpbuff4;
+    data.ip5 = (void *)inpbuff5;
+  }
 
   test_vad(&data, count);
   for (uint32_t i = 0; i < count; i++)
@@ -79,6 +106,15 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_ARRAY_DOUBLES) {
     ip[0] = inpbuff[i];
     if(nargs == 2)
       ip[1] = inpbuff1[i];
+
+    if(nargs == 6)
+    {
+      ip[1] = inpbuff1[i];
+      ip[2] = inpbuff2[i];
+      ip[3] = inpbuff3[i];
+      ip[4] = inpbuff4[i];
+      ip[5] = inpbuff5[i];
+    }
 
     long double exptd = getExpected(ip);
     double ulp = getUlp(aop[i], exptd);

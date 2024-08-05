@@ -250,6 +250,41 @@ int test_v8s(test_data *data, int idx)  {
   return 0;
 }
 
+int test_vad(test_data *data, int count)  {
+  double *ip1  = (double*)data->ip;
+  double *ip2  = (double*)data->ip1;
+  double *ip3  = (double*)data->ip2;
+  double *ip4  = (double*)data->ip3;
+  double *ip5  = (double*)data->ip4;
+  double *ip6  = (double*)data->ip5;
+  double *op  = (double*)data->op;
+
+  #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      amd_vrda_linearfrac(count, ip1, ip2, ip3[count], ip4[count], ip5[count], ip6[count], op);
+  #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+    vdlinearfrac(count, ip1, ip2, ip3[count], ip4[count], ip5[count], ip6[count], op);
+  #endif
+  return 0;
+}
+
+int test_vas(test_data *data, int count)  {
+  float *ip1  = (float*)data->ip;
+  float *ip2  = (float*)data->ip1;
+  float *ip3  = (float*)data->ip2;
+  float *ip4  = (float*)data->ip3;
+  float *ip5  = (float*)data->ip4;
+  float *ip6  = (float*)data->ip5;
+  float *op  = (float*)data->op;
+
+  #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      amd_vrsa_linearfracf(count, ip1, ip2, ip3[count], ip4[count], ip5[count], ip6[count], op);
+  #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+    vslinearfrac(count, ip1, ip2, ip3[count], ip4[count], ip5[count], ip6[count], op);
+  #endif
+  return 0;
+}
+
+
 #ifdef __cplusplus
 }
 #endif

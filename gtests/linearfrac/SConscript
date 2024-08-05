@@ -46,6 +46,8 @@ if e['HOST_OS'] == 'win32':
         e['PDB'] = 'test_linearfrac.pdb'
 
 linearfrac_srcs = Glob('*.cc')
+linearfrac_srcs.append('../VecArr/gtest_main_vec_arr.o')
+linearfrac_srcs.append('../VecArr/gbench_main_vec_arr.o')
 
 linearfrac = e.Program('test_linearfrac', linearfrac_srcs)
 

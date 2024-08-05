@@ -363,6 +363,9 @@ extern "C" {
     __m128 amd_vrs4_linearfracf   (__m128 x, __m128 y, float, float, float, float);
     __m256 amd_vrs8_linearfracf   (__m256 x, __m256 y, float, float, float, float);
 
+    void amd_vrda_linearfrac      (int len, double *x, double *y, double scx, double shx, double scy, double shy, double *dst);
+    void amd_vrsa_linearfracf     (int len, float *x, float *y, float scx, float shx, float scy, float shy, float *dst);
+
 /* AVX512 variants */
 #if defined(__AVX512F__)
 

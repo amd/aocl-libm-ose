@@ -376,6 +376,10 @@ void FN_PROTOTYPE(vrda_fmaxi)( int len, double *lhs, int inc_a, double *rhs, int
 void FN_PROTOTYPE(vrsa_fminfi)( int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res );
 void FN_PROTOTYPE(vrda_fmini)( int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res );
 
+/* Linearfrac */
+void FN_PROTOTYPE(vrda_linearfrac)(int len, double *x, double *y, double scx, double shx, double scy, double shy, double *result);
+void FN_PROTOTYPE(vrsa_linearfracf)(int len, float *x, float *y, float scx, float shx, float scy, float shy, float *result);
+
 #ifdef __cplusplus
 }
 #endif

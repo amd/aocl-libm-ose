@@ -384,6 +384,8 @@ extern void      ALM_PROTO_INTERNAL(vrda_muli)     (int len, double *lhs, int in
 extern void      ALM_PROTO_INTERNAL(vrda_divi)     (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
 extern void      ALM_PROTO_INTERNAL(vrda_fmaxi)    (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
 extern void      ALM_PROTO_INTERNAL(vrda_fmini)    (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrda_linearfrac)(int len, double *x, double *y, double scx, double shx, double scy, double shy, double *result);
+extern void      ALM_PROTO_INTERNAL(vrsa_linearfracf)(int len, float *x, float *y, float scx, float shx, float scy, float shy, float *result);
 #ifdef __cplusplus
 }
 #endif

@@ -117,7 +117,7 @@ class AlmOptions(object):
                         help = "Compile to use address sanitizer"
         )
 
-        #provide libaoclutils install path
+        #provide libau_cpuid install path
         self.add_option('aocl_utils_install_path',
                         nargs = 1,
                         default = '/usr/local/',
@@ -126,12 +126,12 @@ class AlmOptions(object):
                         help = 'Provide AOCL UTILS install path',
         )
 
-        #link libaoclutils static/dynamic library, default is static linking
+        #link libau_cpuid static/dynamic library, default is static linking
         self.add_option('aocl_utils_link',
                         nargs = 1,
                         default = 1,
                         type = int,
-                        help = 'libaoclutils static/dynamic linking',
+                        help = 'libau_cpuid static/dynamic linking',
         )
 
         self.add_option('developer',

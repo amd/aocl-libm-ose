@@ -124,7 +124,7 @@ if env['HOST_OS'] == 'win32':
         env['PDB'] = 'test.pdb'
         testcflags.remove('/O2')
 
-# get libaoclutils path
+# get libau_cpuid path
 aocl_utils_install_path_lib = os.path.join(env['aocl_utils_install_path'], 'lib')
 
 linkflags = []
@@ -141,7 +141,7 @@ abi = env['libabi']
 #print(abi, env['libabi'])
 
 if env['HOST_OS'] != 'win32':
-    liblist.extend(['aoclutils'])
+    liblist.extend(['au_cpuid'])
 
 # Default set to AOCL
 if abi == 'aocl':

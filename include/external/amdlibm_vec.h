@@ -352,8 +352,8 @@ extern "C" {
     __m128d amd_vrd2_sqrt   (__m128d x);
     __m256d amd_vrd4_sqrt   (__m256d x);
 
-    __m128  amd_vrd4_sqrtf   (__m128 x);
-    __m256  amd_vrd8_sqrtf   (__m256 x);
+    __m128  amd_vrs4_sqrtf   (__m128 x);
+    __m256  amd_vrs8_sqrtf   (__m256 x);
 
     void amd_vrda_sqrt       (int len, double *src, double *dst);
     void amd_vrsa_sqrtf      (int len, float  *src, float  *dst);
@@ -409,6 +409,12 @@ extern "C" {
     /* Asin */
     __m512 amd_vrs16_asinf  (__m512 x);
     __m512d amd_vrd8_asin   (__m512d x);
+
+    /* Acos */
+    __m512 amd_vrs16_acosf  (__m512 x);
+
+    /* Tanh */
+    __m512 amd_vrs16_tanhf  (__m512 x);
 
     /* Pow */
     __m512d amd_vrd8_pow    (__m512d x, __m512d y);

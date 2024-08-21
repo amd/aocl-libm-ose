@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2024, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -96,8 +96,6 @@ static struct {
 #define ALM_TAN_V8_HALFPI3         tan_v8_data.halfpi3
 #define ALM_TAN_V8_INVHALFPI       tan_v8_data.invhalfpi
 #define ALM_TAN_V8_ARG_MAX         tan_v8_data.arg_max
-#define ALM_TAN_V8_SIGN_MASK       (1UL<<63)
-
 
 #define C1  tan_v8_data.poly_tan[0]
 #define C3  tan_v8_data.poly_tan[1]
@@ -158,11 +156,11 @@ ALM_PROTO_ARCH_ZN4(vrd8_tan)(v_f64x8_t x)
     v_u64x8_t   n, sign;
     v_u64x8_t   ux = as_v8_u64_f64(x);
 
-    v_u64x8_t cond = (ux & ~ALM_TAN_V8_SIGN_MASK) > ALM_TAN_V8_ARG_MAX;
+    v_u64x8_t cond = (ux & ~SIGNBIT_DP64) > ALM_TAN_V8_ARG_MAX;
 
-    sign = ux & ALM_TAN_V8_SIGN_MASK;
+    sign = ux & SIGNBIT_DP64;
 
-    r = as_v8_f64_u64(ux & ~ALM_TAN_V8_SIGN_MASK);
+    r = as_v8_f64_u64(ux & ~SIGNBIT_DP64);
 
     /*
      * dn = x * (2/π)

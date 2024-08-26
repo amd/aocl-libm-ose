@@ -176,15 +176,15 @@ alm_get_uach(void)
 {
     alm_uarch_ver_t arch_ver;
 
-    if (au_cpuid_arch_is_zen5(0))
+    if (au_cpuid_arch_is_zen5(ALCI_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN5;
-    else if (au_cpuid_arch_is_zen4(0))
+    else if (au_cpuid_arch_is_zen4(ALCI_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN4;
-    else if (au_cpuid_arch_is_zen3(0))
+    else if (au_cpuid_arch_is_zen3(ALCI_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN3;
-    else if (au_cpuid_arch_is_zen2(0))
+    else if (au_cpuid_arch_is_zen2(ALCI_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN2;
-    else if (au_cpuid_arch_is_zen(0))
+    else if (au_cpuid_arch_is_zen(ALCI_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN;
     else
         arch_ver = ALM_UARCH_VER_DEFAULT;

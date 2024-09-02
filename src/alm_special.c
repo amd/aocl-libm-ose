@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -43,7 +43,7 @@ static inline void __amd_raise_fp_exc(int flags)
     }
     if ((flags & AMD_F_OVERFLOW) == AMD_F_OVERFLOW) {
         double a = 0x1.fffffffffffffp1023;
-	__asm __volatile("mulsd %1, %0":"+x"(a):"x"(a));
+        __asm __volatile("mulsd %1, %0":"+x"(a):"x"(a));
     }
     if ((flags & AMD_F_DIVBYZERO) == AMD_F_DIVBYZERO) {
         double a = 1.0, b = 0.0;
@@ -443,6 +443,27 @@ double alm_exp_special(double y, U32 code) {
     return y;
 }
 
+double alm_nextafter_special(double y, U32 code) {
+    flt64_t ym = {.d = y};
+
+    switch (code)
+    {
+    case ALM_E_IN_X_NAN:
+    case ALM_E_IN_Y_NAN:
+    case ALM_E_OUT_NAN:
+        __alm_handle_error(ym.u | QNAN_MASK_64, AMD_F_NONE);
+        break;
+    case AMD_F_INVALID:
+        __alm_handle_error(ym.u | QNAN_MASK_64, AMD_F_INVALID);
+        break;
+    case ALM_E_OVERFLOW:
+        __alm_handle_error(PINFBITPATT_DP64, AMD_F_OVERFLOW);
+        break;
+    default:
+        break;
+    }
+    return y;
+}
 
 /* pow */
 #define POW_X_ONE_Y_SNAN            1

@@ -118,6 +118,7 @@ LIBM_IFACE_PROTO(sqrt)(void *arg) {
             [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(sqrt),
             [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_sqrt),
             [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_sqrt),
+            [ALM_FUNC_VECT_DP_8] = &G_ENTRY_PT_PTR(vrd8_sqrt),
             [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_sqrtf),
             [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_sqrtf),
             [ALM_FUNC_VECT_SP_16] = &G_ENTRY_PT_PTR(vrs16_sqrtf),

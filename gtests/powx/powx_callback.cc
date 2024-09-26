@@ -167,7 +167,7 @@ int test_v4s(test_data *data, int idx)  {
     #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
       __m128 op4 = LIBM_FUNC_VEC(s, 4, powxf)(ip41, ip2[idx]);
       _mm_store_ps(&op[0], op4);
-    #elif
+    #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
       vsPowx(4, ip1, ip2[idx], op);
     #endif
   #endif
@@ -184,7 +184,7 @@ int test_v4d(test_data *data, int idx)  {
     #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
       __m256d op4 = LIBM_FUNC_VEC(d, 4, powx)(ip41, ip2[idx]);
       _mm256_store_pd(&op[0], op4);
-    #elif
+    #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
       vdPowx(4, ip1, ip2[idx], op);
     #endif
   #endif
@@ -202,7 +202,7 @@ int test_v8s(test_data *data, int idx)  {
     #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
       __m256 op8 = LIBM_FUNC_VEC(s, 8, powxf)(ip81, ip2[idx]);
       _mm256_store_ps(&op[0], op8);
-    #elif
+    #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
       vsPowx(8, ip1, ip2[idx], op);
     #endif
   #endif
@@ -222,7 +222,7 @@ int test_v8d(test_data *data, int idx)  {
       #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
         __m512d op8 = LIBM_FUNC_VEC(d, 8, powx)(ip8_1, ip2[idx]);
         _mm512_store_pd(&op[0], op8);
-      #elif
+      #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
         vdPowx(8, ip1, ip2[idx], op);
       #endif
     #endif
@@ -243,7 +243,7 @@ int test_v16s(test_data *data, int idx)  {
       #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
         __m512 op16 = LIBM_FUNC_VEC(s, 16, powxf)(ip16_1, ip2[idx]);
         _mm512_store_ps(&op[0], op16);
-      #elif
+      #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
         vsPowx(16, ip1, ip2[idx], op);
       #endif
     #endif

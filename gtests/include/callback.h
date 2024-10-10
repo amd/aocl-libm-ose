@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -34,9 +34,17 @@
 #include <external/amdlibm.h>
 #include <complex.h>
 
+#if (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  #include "mkl_vml_functions.h"
+#endif
+
 typedef struct {
   void *ip;
   void *ip1;
+  void *ip2;
+  void *ip3;
+  void *ip4;
+  void *ip5;
   void *op;
 }test_data;
 
@@ -52,6 +60,8 @@ exception with a code 0xc0000005 inconsistently, since mem_addr was not aligned 
 #endif
 
 uint32_t GetnIpArgs( void );
+
+bool getSpecialCase(void);
 
 float getFuncOp(float *);
 double getFuncOp(double *);
@@ -72,10 +82,12 @@ int test_s1d(test_data *data, int idx);
 void LibmPerfTestf(benchmark::State& st, InputParams* param);
 void LibmPerfTest4f(benchmark::State& st, InputParams* param);
 void LibmPerfTest8f(benchmark::State& st, InputParams* param);
+void LibmPerfTestaf(benchmark::State& st, InputParams* param);
 
 void LibmPerfTestd(benchmark::State& st, InputParams* param);
 void LibmPerfTest2d(benchmark::State& st, InputParams* param);
 void LibmPerfTest4d(benchmark::State& st, InputParams* param);
+void LibmPerfTestad(benchmark::State& st, InputParams* param);
 
 void LibmPerfTest8d(benchmark::State& st, InputParams* param);
 void LibmPerfTest16f(benchmark::State& st, InputParams* param);
@@ -90,6 +102,9 @@ int test_v16s(test_data *data, int idx);
 int test_v2d(test_data *data, int idx);
 int test_v4d(test_data *data, int idx);
 int test_v8d(test_data *data, int idx);
+
+int test_vad(test_data *data, int idx);
+int test_vas(test_data *data, int idx);
 #ifdef __cplusplus
 }
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2019-2024, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -73,7 +73,6 @@ static const struct {
     v_f32x8_t   tblsz_byln2;
     v_f32x8_t   ln2_tbl_head, ln2_tbl_tail;
     v_f32x8_t   huge;
-    v_u32x8_t   arg_max;
     v_i32x8_t   mask;
     v_i32x8_t   expf_bias;
     v_f32x8_t   poly_expf_5[5];
@@ -83,7 +82,6 @@ static const struct {
               .ln2_tbl_head = _MM256_SET1_PS8(0x1.63p-1),
               .ln2_tbl_tail = _MM256_SET1_PS8(-0x1.bd0104p-13),
               .huge        =  _MM256_SET1_PS8(0x1.8p+23) ,
-              .arg_max     =  _MM256_SET1_I32(0x42AE0000),
               .mask        =  _MM256_SET1_I32(0x7FFFFFFF),
               .expf_bias   =  _MM256_SET1_I32(127),
 
@@ -114,8 +112,7 @@ static const struct {
 #define LN2_TBL_H v_expf_data.ln2_tbl_head
 #define LN2_TBL_T v_expf_data.ln2_tbl_tail
 #define EXPF_BIAS v_expf_data.expf_bias
-#define EXP_HUGE      v_expf_data.huge
-#define ARG_MAX   v_expf_data.arg_max
+#define EXP_HUGE  v_expf_data.huge
 #define MASK      v_expf_data.mask
 
 // Coefficients for 5-degree polynomial
@@ -134,6 +131,7 @@ static const struct {
 #define C5 v_expf_data.poly_expf_7[5]
 #define C6 v_expf_data.poly_expf_7[6]
 
+#define ARG_MAX    0x42AE0000
 
 #define SCALAR_EXPF ALM_PROTO_OPT(expf)
 
@@ -231,9 +229,6 @@ ALM_PROTO_OPT(vrs8_expf)(v_f32x8_t _x)
     // Get absolute value of vx
     vx = vx & MASK;
 
-    // Check if -103 < vx < 88
-    v_u32x8_t cond = (vx > ARG_MAX);
-
     // x * (64.0/ln(2))
     v_f32x8_t z = _x * TBL_LN2;
 
@@ -266,20 +261,11 @@ ALM_PROTO_OPT(vrs8_expf)(v_f32x8_t _x)
 
     // If input value is outside valid range, call scalar expf(value)
     // Else, return the above computed result
-    if(unlikely(any_v8_u32_loop(cond))) {
-    return (v_f32x8_t) {
-         cond[0] ? SCALAR_EXPF(_x[0]) : result[0],
-         cond[1] ? SCALAR_EXPF(_x[1]) : result[1],
-         cond[2] ? SCALAR_EXPF(_x[2]) : result[2],
-         cond[3] ? SCALAR_EXPF(_x[3]) : result[3],
-         cond[4] ? SCALAR_EXPF(_x[4]) : result[4],
-         cond[5] ? SCALAR_EXPF(_x[5]) : result[5],
-         cond[6] ? SCALAR_EXPF(_x[6]) : result[6],
-         cond[7] ? SCALAR_EXPF(_x[7]) : result[7],
-
-     };
+    for(int i = 0 ; i < 8 ; i++)
+    {
+        if(unlikely(vx[i]) > ARG_MAX)
+            result[i] = SCALAR_EXPF(_x[i]);
     }
-
     return result;
 
 }

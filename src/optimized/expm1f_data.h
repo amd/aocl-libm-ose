@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -39,9 +39,9 @@
 #define EXPM1F_N 6
 
 #if EXPM1F_N == 6
-extern const double __two_to_jby64[64];
+extern const double __two_to_jby64_table[64];
 #elif EXPM1F_N == 7
-extern const double __two_to_jby128[128];
+extern const double __two_to_jby128[128]; // Currently this table is unavailable
 #endif
 
 
@@ -82,7 +82,7 @@ static const struct {
         0x1.95664ep-13f,		/* 0x394AB327 */
     },
 
-    .tab = __two_to_jby64,
+    .tab = __two_to_jby64_table,
 };
 
 #endif 					/* LIBM_OPTIMIZED_SINGLE_EXPM1F_H */

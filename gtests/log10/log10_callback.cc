@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -44,10 +44,16 @@ float LIBM_FUNC(log10f)(float);
 double LIBM_FUNC(log10)(double);
 
 static uint32_t ipargs = 1;
+bool special_case = false;
 
 uint32_t GetnIpArgs( void )
 {
 	return ipargs;
+}
+
+bool getSpecialCase(void)
+{
+  return special_case;
 }
 
 void ConfSetupf32(SpecParams *specp) {
@@ -116,18 +122,27 @@ int test_s1d(test_data *data, int idx)  {
 extern "C" {
 #endif
 
-
-/*vector variants*/
-#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
-  /*
-  __m128d LIBM_FUNC_VEC(d, 2, log10)(__m128d);
-  __m256d LIBM_FUNC_VEC(d, 4, log10)(__m256d);
-  */
-  __m128 LIBM_FUNC_VEC(s, 4, log10f)(__m128);
-  __m256 LIBM_FUNC_VEC(s, 8, log10f)(__m256);
-  /*avx512*/
+/* GLIBC vector function symbols needs to be re-defined accordingly */
+#if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
+  #define _ZGVdN2v_log10 _ZGVbN2v_log10
+  #define _ZGVdN4v_log10 _ZGVdN4v_log10
+  #define _ZGVsN4v_log10f _ZGVbN4v_log10f
+  #define _ZGVsN8v_log10f _ZGVdN8v_log10f
   #if defined(__AVX512__)
-    __m512 LIBM_FUNC_VEC(s, 16, log10f) (__m512);
+    #define _ZGVsN16v_log10f _ZGVeN16v_log10f
+    #define _ZGVdN8v_log10 _ZGVeN8v_log10
+  #endif
+#endif
+
+/* Declaration of vector routines */
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  __m128d LIBM_FUNC_VEC(d, 2, log10) (__m128d);
+  __m256d LIBM_FUNC_VEC(d, 4, log10) (__m256d);
+  __m128  LIBM_FUNC_VEC(s, 4, log10f)(__m128);
+  __m256  LIBM_FUNC_VEC(s, 8, log10f)(__m256);
+  #if defined(__AVX512__)
+    __m512d LIBM_FUNC_VEC(d, 8, log10)(__m512d);
+    __m512  LIBM_FUNC_VEC(s, 16, log10f)(__m512);
   #endif
 #endif
 
@@ -205,6 +220,28 @@ int test_v16s(test_data *data, int idx)  {
   __m512 op16 = LIBM_FUNC_VEC(s, 16, log10f)(ip16);
   _mm512_store_ps(&op[0], op16);
 #endif
+#endif
+  return 0;
+}
+
+int test_vad(test_data *data, int count)  {
+  double *ip  = (double*)data->ip;
+  double *op  = (double*)data->op;
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+  amd_vrda_log10(count, ip, op);
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  vdLog10(count, ip, op);
+#endif
+  return 0;
+}
+
+int test_vas(test_data *data, int count)  {
+  float *ip  = (float*)data->ip;
+  float *op  = (float*)data->op;
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+  amd_vrsa_log10f(count, ip, op);
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  vsLog10(count, ip, op);
 #endif
   return 0;
 }

@@ -117,6 +117,8 @@ void PrintConfExpections(int raised_exception, int expected_exception);
 
 void PrintUlpResultsFloat(int nargs, float input1, float input2, double expected, float actual, double ulp);
 void PrintUlpResultsDouble(int nargs, double input1, double input2, long double expected, double actual, double ulp);
+void PrintUlpResultsComplexFloat(int nargs, float _Complex input1, float _Complex input2, double _Complex expected, float _Complex actual, double ulp);
+void PrintUlpResultsComplexDouble(int nargs, double _Complex input1, double _Complex input2, long double _Complex expected, double _Complex actual, double ulp);
 
 }  // namespace Test
 #endif

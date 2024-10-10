@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -71,6 +71,7 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_NEXTAFTER]  = {LIBM_IFACE_PROTO(nextafter), NULL},
     [C_AMD_NEXTTOWARD] = {LIBM_IFACE_PROTO(nexttoward), NULL},
     [C_AMD_POW]        = {LIBM_IFACE_PROTO(pow), NULL},
+    [C_AMD_POWX]       = {LIBM_IFACE_PROTO(powx), NULL},
     [C_AMD_REMAINDER]  = {LIBM_IFACE_PROTO(remainder), NULL},
     [C_AMD_REMQUO]     = {LIBM_IFACE_PROTO(remquo), NULL},
     [C_AMD_RINT]       = {LIBM_IFACE_PROTO(rint), NULL},
@@ -116,6 +117,8 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_DIVI]       = {LIBM_IFACE_PROTO(divi), NULL},
     [C_AMD_FMAXI]      = {LIBM_IFACE_PROTO(fmaxi), NULL},
     [C_AMD_FMINI]      = {LIBM_IFACE_PROTO(fmini), NULL},
+
+    [C_AMD_LINEARFRAC]      = {LIBM_IFACE_PROTO(linearfrac), NULL},
 };
 
 #ifndef ARRAY_SIZE
@@ -173,13 +176,15 @@ alm_get_uach(void)
 {
     alm_uarch_ver_t arch_ver;
 
-    if (alcpu_arch_is_zen4())
+    if (au_cpuid_arch_is_zen5(ALCI_CURRENT_CPU_NUM))
+        arch_ver = ALM_UARCH_VER_ZEN5;
+    else if (au_cpuid_arch_is_zen4(ALCI_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN4;
-    else if (alcpu_arch_is_zen3())
+    else if (au_cpuid_arch_is_zen3(ALCI_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN3;
-    else if (alcpu_arch_is_zen2())
+    else if (au_cpuid_arch_is_zen2(ALCI_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN2;
-    else if (alcpu_arch_is_zen())
+    else if (au_cpuid_arch_is_zen(ALCI_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN;
     else
         arch_ver = ALM_UARCH_VER_DEFAULT;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@
 #include <string>
 
 using namespace ALM;
-#define MAX_INPUT_RANGES 2
+#define MAX_INPUT_RANGES 6
 
 #define _ALIGN_FACTOR 256
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
@@ -44,38 +44,44 @@ using namespace ALM;
 #define MILLION  (THOUSAND * THOUSAND)
 
 #define NITER    (100 * THOUSAND)
-#define NELEM     5000 
+#define NELEM     5000
 
 typedef struct {
-	uint32_t in;
-	uint32_t out;
-	uint32_t exptdexpt;
-	uint32_t in2;
-	uint32_t in3;
+  uint32_t in;
+  uint32_t out;
+  uint32_t exptdexpt;
+  uint32_t in2;
+  uint32_t in3;
+  uint32_t in4;
+  uint32_t in5;
+  uint32_t in6;
 }libm_test_special_data_f32;
 
 typedef struct {
-	uint64_t in;
-	uint64_t out;
-	uint64_t exptdexpt;
-	uint64_t in2;
-	uint64_t in3;
+  uint64_t in;
+  uint64_t out;
+  uint64_t exptdexpt;
+  uint64_t in2;
+  uint64_t in3;
+  uint64_t in4;
+  uint64_t in5;
+  uint64_t in6;
 }libm_test_special_data_f64;
 
 typedef struct {
-	float _Complex in;
-	float _Complex out;
-	uint32_t exptdexpt;
-	float _Complex in2;
-	float _Complex in3;
+  float _Complex in;
+  float _Complex out;
+  uint32_t exptdexpt;
+  float _Complex in2;
+  float _Complex in3;
 }libm_test_complex_data_f32;
 
 typedef struct {
-	double _Complex in;
-	double _Complex out;
-	uint64_t exptdexpt;
-	double _Complex in2;
-	double _Complex in3;
+  double _Complex in;
+  double _Complex out;
+  uint64_t exptdexpt;
+  double _Complex in2;
+  double _Complex in3;
 }libm_test_complex_data_f64;
 
 typedef struct {
@@ -90,9 +96,9 @@ typedef struct {
 } InputData;
 
 typedef struct {
-	 uint32_t tstcnt; 
+   uint32_t tstcnt;
   char print[12][100];
-} PrintTstRes;  
+} PrintTstRes;
 
 /*
  * The structure is filled with the command line arguments
@@ -106,7 +112,7 @@ typedef struct {
 
   TestType ttype;
   int verboseflag;
-  uint32_t niter;  
+  uint32_t niter;
   uint32_t count;
   std::string testFunction;
   InputRange range[MAX_INPUT_RANGES];
@@ -125,6 +131,7 @@ typedef struct {
   InputData *inpData;
   PrintTstRes *prttstres;
   uint32_t nargs;
+  int vec_input_count;
 } AccuParams;
 
 /*
@@ -147,4 +154,42 @@ typedef struct {
 
 int gtest_main(int argc, char **argv, InputParams *params);
 int gbench_main(int argc, char **argv, InputParams *params);
+
+/*
+ * This function is a wrapper around:
+ * aligned_alloc() for Linux platform
+ * _aligned_malloc() for Windows platform
+ *
+ * NOTE:
+ * aligned_alloc() returns NULL pointer when:
+ *     1. alignment param is not a valid data.
+ *     2. size param is not an integral multiple of alignment.
+ */
+template <typename T>
+int aocl_libm_aligned_alloc(unsigned int arr_size, T* &buff)
+{
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      buff = (T*)_aligned_malloc(arr_size, _ALIGN_FACTOR);
+    #else
+      buff = (T*)aligned_alloc(_ALIGN_FACTOR, arr_size);
+    #endif
+    return 0;
+}
+
+/*
+ * This function is a wrapper around:
+ * free() for Linux platform
+ * _aligned_free() for Windows platform
+ */
+template <typename T>
+int aocl_libm_aligned_free(T* &buff)
+{
+    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+      _aligned_free(buff);
+    #else
+      free(buff);
+    #endif
+    buff = nullptr;
+    return 0;
+}
 #endif

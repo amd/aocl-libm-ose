@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -59,10 +59,8 @@ static struct {
     v_f64x2_t invpi, pi1, pi2, pi3;
     v_f64x2_t shift;
     v_u64x2_t sign_mask;
-    v_u64x2_t max_arg;
     v_f64x2_t poly_sin[8];
  } v2_sin_data = {
-     .max_arg = _MM_SET1_I64x2(0x4160000000000000),
      .sign_mask  = _MM_SET1_I64x2(0x7fffffffffffffff),
      .pi1   = _MM_SET1_PD2(0x1.921fb54442d18p+1),
      .pi2   = _MM_SET1_PD2(0x1.1a62633145c06p-53),
@@ -91,7 +89,6 @@ static struct {
 #define pi3     v2_sin_data.pi3
 #define invpi   v2_sin_data.invpi
 #define ALM_SHIFT   v2_sin_data.shift
-#define ARG_MAX     v2_sin_data.max_arg
 #define SIGN_MASK64 v2_sin_data.sign_mask
 
 #define C0  v2_sin_data.poly_sin[0]
@@ -103,19 +100,8 @@ static struct {
 #define C12 v2_sin_data.poly_sin[6]
 #define C14 v2_sin_data.poly_sin[7]
 
-
-static inline v_f64x2_t
-sin_specialcase(v_f64x2_t _x,
-                 v_f64x2_t result,
-                 v_u64x2_t cond)
-{
-
-    return (v_f64x2_t) {
-                    (cond[0]) ? ALM_PROTO(sin)(_x[0]):result[0],
-                    (cond[1]) ? ALM_PROTO(sin)(_x[1]):result[1],
-                };
-
-}
+#define SIN_ARG_MAX 0x4160000000000000
+#define SCALAR_SIN ALM_PROTO(sin)
 
 v_f64x2_t
 ALM_PROTO_OPT(vrd2_sin)(v_f64x2_t x)
@@ -130,10 +116,9 @@ ALM_PROTO_OPT(vrd2_sin)(v_f64x2_t x)
     v_u64x2_t ux = as_v2_u64_f64(x);
 
     sign = ux & ~SIGN_MASK64;
+    ux = ux & SIGN_MASK64;
 
-    v_u64x2_t cmp = (ux & SIGN_MASK64) > (ARG_MAX);
-
-    r  = as_v2_f64_u64(ux & SIGN_MASK64);
+    r  = as_v2_f64_u64(ux);
 
     v_f64x2_t dn =  (r * invpi) + ALM_SHIFT;
 
@@ -161,11 +146,13 @@ ALM_PROTO_OPT(vrd2_sin)(v_f64x2_t x)
 
     result = as_v2_f64_u64(as_v2_u64_f64(poly) ^ sign ^ odd);
 
-    if(unlikely(any_v2_u64_loop(cmp))) {
-
-        return sin_specialcase(x, result, cmp);
-
+    /* Check for special cases */
+    /* If input value is outside valid range, call scalar sin(value) */
+    /* Otherwise, return the above computed result */
+    for(int i = 0; i < 2; i++)
+    {
+        if(ux[i] > SIN_ARG_MAX)
+            result[i] = SCALAR_SIN(x[i]);
     }
-
     return result;
 }

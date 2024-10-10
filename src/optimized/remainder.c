@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -140,9 +140,8 @@ double ALM_PROTO_OPT(remainder)(double x, double y)
         uint64_t tu = (uint64_t)t;
         t = (double)(tu);
 
-        t *= w;
+        adx = adx - (t * w);
         w *= two_p_MINUS_24;
-        adx -= t;
     }
 
     temp2 = adx / w;
@@ -150,8 +149,7 @@ double ALM_PROTO_OPT(remainder)(double x, double y)
     temp2 = (double)(tu);
 
     int32_t todd = ((int64_t)(x / w)) & 1;
-    double temp3 = temp2 * w;
-    adx -= temp3;
+    adx = adx - (temp2 * w);
 
     double w_half = 0.5 * w;
 

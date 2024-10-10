@@ -55,9 +55,8 @@ For example:
 
 ## INSTALLATION
 
-Please refer to the file BUILDING-ose.txt. 
+Please refer to the files BUILDING_on_Linux.txt or BUILDING_on_Windows.txt 
 
 ## CONTACTS
 
 AOCL-LibM is developed and maintained by AMD. For support of these libraries and the other tools of AMD Zen Software Studio, see https://www.amd.com/en/developer/aocc/compiler-technical-support.html
-

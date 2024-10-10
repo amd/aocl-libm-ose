@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2024, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -61,7 +61,6 @@ static struct {
 } tan_v4_data = {
     .arg_max   = _MM_SET1_I64(0x4160000000000000), /* 10^6 */
     .huge      = _MM_SET1_PD4(0x1.8000000000000p52),
-    //.halfpi   = 0x1.921fb54442d18p0,
     .invhalfpi = _MM_SET1_PD4(0x1.45f306dc9c882a53f85p-1),
     .halfpi1   = _MM_SET1_PD4(0x1.921fb54442d18p0),
     .halfpi2   = _MM_SET1_PD4(0x1.1a62633145c07p-54),
@@ -91,14 +90,11 @@ static struct {
 };
 
 #define ALM_TAN_V4_HUGE_VAL        tan_v4_data.huge
-//#define ALM_TAN_V4HALFPI           tan_v4_data.halfpi
 #define ALM_TAN_V4_HALFPI1         tan_v4_data.halfpi1
 #define ALM_TAN_V4_HALFPI2         tan_v4_data.halfpi2
 #define ALM_TAN_V4_HALFPI3         tan_v4_data.halfpi3
 #define ALM_TAN_V4_INVHALFPI       tan_v4_data.invhalfpi
 #define ALM_TAN_V4_ARG_MAX         tan_v4_data.arg_max
-#define ALM_TAN_V4_SIGN_MASK       (1UL<<63)
-
 
 #define C1  tan_v4_data.poly_tan[0]
 #define C3  tan_v4_data.poly_tan[1]
@@ -159,11 +155,11 @@ ALM_PROTO_OPT(vrd4_tan)(v_f64x4_t x)
     v_u64x4_t   n, sign;
     v_u64x4_t   ux = as_v4_u64_f64(x);
 
-    v_u64x4_t cond = (ux & ~ALM_TAN_V4_SIGN_MASK) > ALM_TAN_V4_ARG_MAX;
+    v_u64x4_t cond = (ux & ~SIGNBIT_DP64) > ALM_TAN_V4_ARG_MAX;
 
-    sign = ux & ALM_TAN_V4_SIGN_MASK;
+    sign = ux & SIGNBIT_DP64;
 
-    r = as_v4_f64_u64(ux & ~ALM_TAN_V4_SIGN_MASK);
+    r = as_v4_f64_u64(ux & ~SIGNBIT_DP64);
 
     /*
      * dn = x * (2/π)

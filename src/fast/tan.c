@@ -112,7 +112,6 @@ static struct {
 #define C25 tan_data.poly[12]
 #define C27 tan_data.poly[13]
 
-#define ALM_TAN_SIGN_MASK     (1UL<<63)
 #define ALM_TAN_ARG_MIN       (0x1p-1022)
 #define ALM_TAN_ARG_MAX       (0x1p+1023)
 
@@ -150,7 +149,7 @@ ALM_PROTO_FAST(tan)(double x)
     if (unlikely ((ux - asuint64(ALM_TAN_ARG_MIN)) >
                   (asuint64(ALM_TAN_ARG_MAX) - asuint64(ALM_TAN_ARG_MIN)))) {
 
-        if ((ux & ~ALM_TAN_SIGN_MASK) >= PINFBITPATT_DP64) {
+        if ((ux & ~SIGNBIT_DP64) >= PINFBITPATT_DP64) {
             /* inf or NaN */
             return _tan_special(x);
         }
@@ -159,9 +158,9 @@ ALM_PROTO_FAST(tan)(double x)
     if (ux == 0)
         return 0.0;
 
-    sign = ux & ALM_TAN_SIGN_MASK;
+    sign = ux & SIGNBIT_DP64;
 
-    dx = asdouble(ux & ~ALM_TAN_SIGN_MASK);
+    dx = asdouble(ux & ~SIGNBIT_DP64);
 
     /*
      * dn = x * (2/π)

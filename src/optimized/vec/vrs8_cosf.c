@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -75,7 +75,7 @@ static struct {
             v_f32x8_t half;
             v_f32x8_t half_pi, inv_pi, pi_head, pi_tail1, pi_tail2;
             v_f32x8_t alm_huge;
-            v_u32x8_t mask_32, arg_max;
+            v_u32x8_t mask_32;
             } v8_cosf_data = {
                             .half     = _MM256_SET1_PS8(0x1p-1f),
                             .half_pi   = _MM256_SET1_PS8(0x1.921fb6p0f),
@@ -85,7 +85,6 @@ static struct {
                             .pi_tail2  = _MM256_SET1_PS8(0x1.ee59dap-49f),
                             .alm_huge  = _MM256_SET1_PS8(0x1.8p23),
                             .mask_32   = _MM256_SET1_I32(0x7FFFFFFF),
-                            .arg_max   = _MM256_SET1_I32(0x4A989680),
                             .poly_cosf = {
                                             _MM256_SET1_PS8(0x1.p0),
                                             _MM256_SET1_PS8(-0x1.555548p-3f),
@@ -102,7 +101,6 @@ static struct {
 #define V8_COSF_PI_TAIL1   v8_cosf_data.pi_tail1
 #define V8_COSF_PI_TAIL2   v8_cosf_data.pi_tail2
 #define V8_COSF_MASK_32    v8_cosf_data.mask_32
-#define V8_COSF_ARG_MAX    v8_cosf_data.arg_max
 #define ALM_HUGE           v8_cosf_data.alm_huge
 
 #define C0 v8_cosf_data.poly_cosf[0]
@@ -111,13 +109,8 @@ static struct {
 #define C3 v8_cosf_data.poly_cosf[3]
 #define C4 v8_cosf_data.poly_cosf[4]
 
-
-static inline v_f32x8_t
-cosf_specialcase(v_f32x8_t _x, v_f32x8_t result, v_u32x8_t cond)
-{
-    return call_v8_f32(ALM_PROTO(cosf), _x, result, cond);
-}
-
+#define COSF_ARG_MAX 0x4A989680
+#define SCALAR_COSF ALM_PROTO(cosf)
 
 v_f32x8_t
 ALM_PROTO_OPT(vrs8_cosf)(v_f32x8_t x)
@@ -126,12 +119,10 @@ ALM_PROTO_OPT(vrs8_cosf)(v_f32x8_t x)
     v_f32x8_t dinput, frac, poly, result;
 
     v_u32x8_t ux = as_v8_u32_f32(x);
-
-    /* Check for special cases */
-    v_u32x8_t cond = (ux & V8_COSF_MASK_32) > V8_COSF_ARG_MAX;
+    ux = ux & V8_COSF_MASK_32;
 
     /* Remove sign from input */
-    dinput = as_v8_f32_u32(ux & V8_COSF_MASK_32);
+    dinput = as_v8_f32_u32(ux);
 
     /* Get n = int ((x + pi/2) /pi) - 0.5 */
     v_f32x8_t dn = ((dinput + V8_COSF_HALF_PI) * V8_COSF_INV_PI) + ALM_HUGE;
@@ -155,12 +146,14 @@ ALM_PROTO_OPT(vrs8_cosf)(v_f32x8_t x)
     /* If n is odd, result is negative */
     result = as_v8_f32_u32(as_v8_u32_f32(poly) ^ odd);
 
-    /* If any of the input values are greater than ARG_MAX,
-     * call scalar cosf
-     */
-    if(unlikely(any_v8_u32_loop(cond)))
-        return cosf_specialcase(x, result, cond);
-
+    /* Check for special cases */
+    /* If input value is outside valid range, call scalar cosf(value) */
+    /* Otherwise, return the above computed result */
+    for(int i = 0; i < 8; i++)
+    {
+        if(unlikely(ux[i] > COSF_ARG_MAX))
+            result[i] = SCALAR_COSF(x[i]);
+    }
     return result;
 }
 

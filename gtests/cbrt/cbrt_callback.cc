@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -44,11 +44,18 @@ float LIBM_FUNC(cbrtf)(float);
 double LIBM_FUNC(cbrt)(double);
 
 static uint32_t ipargs = 1;
+bool special_case = false;
 
 uint32_t GetnIpArgs( void )
 {
 	return ipargs;
 }
+
+bool getSpecialCase(void)
+{
+  return special_case;
+}
+
 
 void ConfSetupf32(SpecParams *specp) {
   specp->data32 = test_cbrtf_conformance_data;
@@ -114,6 +121,30 @@ int test_s1d(test_data *data, int idx)  {
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+/* GLIBC vector function symbols needs to be re-defined accordingly */
+#if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
+  #define _ZGVdN2v_cbrt _ZGVbN2v_cbrt
+  #define _ZGVdN4v_cbrt _ZGVdN4v_cbrt
+  #define _ZGVsN4v_cbrtf _ZGVbN4v_cbrtf
+  #define _ZGVsN8v_cbrtf _ZGVdN8v_cbrtf
+  #if defined(__AVX512__)
+    #define _ZGVsN16v_cbrtf _ZGVeN16v_cbrtf
+    #define _ZGVdN8v_cbrt _ZGVeN8v_cbrt
+  #endif
+#endif
+
+/* Declaration of vector routines */
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  __m128d LIBM_FUNC_VEC(d, 2, cbrt) (__m128d);
+  __m256d LIBM_FUNC_VEC(d, 4, cbrt) (__m256d);
+  __m128  LIBM_FUNC_VEC(s, 4, cbrtf)(__m128);
+  __m256  LIBM_FUNC_VEC(s, 8, cbrtf)(__m256);
+  #if defined(__AVX512__)
+    __m512d LIBM_FUNC_VEC(d, 8, cbrt)(__m512d);
+    __m512  LIBM_FUNC_VEC(s, 16, cbrtf)(__m512);
+  #endif
 #endif
 
 int test_v2d(test_data *data, int idx)  {
@@ -182,6 +213,29 @@ int test_v16s(test_data *data, int idx)  {
 #endif
   return 0;
 }
+
+int test_vad(test_data *data, int count)  {
+  double *ip  = (double*)data->ip;
+  double *op  = (double*)data->op;
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+  amd_vrda_cbrt(count, ip, op);
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  vdCbrt(count, ip, op);
+#endif
+  return 0;
+}
+
+int test_vas(test_data *data, int count)  {
+  float *ip  = (float*)data->ip;
+  float *op  = (float*)data->op;
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+  amd_vrsa_cbrtf(count, ip, op);
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  vsCbrt(count, ip, op);
+#endif
+  return 0;
+}
+
 
 #ifdef __cplusplus
 }

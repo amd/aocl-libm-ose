@@ -1,0 +1,17 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+          "name": "x64",
+          "hidden": true,
+          "architecture": {
+              "value": "x64",
+              "strategy": "external"
+          },
+          "toolset": {
+              "value": "host=x64",
+              "strategy": "external"
+          }
+        }
+    ]
+}

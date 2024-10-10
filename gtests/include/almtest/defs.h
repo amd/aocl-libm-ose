@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -114,16 +114,17 @@ inline std::ostream& operator<<(std::ostream& os, FloatWidth& w) {
 #define NUMOFFLOATTYPES 4
 
 enum class FloatQuantity {
-  E_Scalar = 1 << 0,     // Scalar
-  E_Vector_2 = 1 << 1,   // Vector - 2 elem
-  E_Vector_4 = 1 << 2,   // Vector - 4 elem
-  E_Vector_8 = 1 << 3,   // Vector - 8 elem
-  E_Vector_16 = 1 << 4,  // Vector - 16 elem
-  E_Other = 1 << 5,
+  E_Scalar = 1 << 0,       // Scalar
+  E_Vector_2 = 1 << 1,     // Vector - 2 elem
+  E_Vector_4 = 1 << 2,     // Vector - 4 elem
+  E_Vector_8 = 1 << 3,     // Vector - 8 elem
+  E_Vector_16 = 1 << 4,    // Vector - 16 elem
+  E_Vector_Array = 1 << 5, // Vector Array
+  E_Other = 1 << 6,
   E_MAX,
 
   // TODO : Need to contain all possible FloatQuantities
-  E_All = (E_Scalar | E_Vector_2 | E_Vector_4 | E_Vector_8 | E_Vector_16)
+  E_All = (E_Scalar | E_Vector_2 | E_Vector_4 | E_Vector_8 | E_Vector_16 | E_Vector_Array)
 };
 
 inline std::ostream& operator<<(std::ostream& os, FloatQuantity& q) {
@@ -142,6 +143,9 @@ inline std::ostream& operator<<(std::ostream& os, FloatQuantity& q) {
       break;
     case FloatQuantity::E_Vector_16:
       os << "Vector(16)";
+      break;
+    case FloatQuantity::E_Vector_Array:
+      os << "Vector_Array";
       break;
     default:
       os << "All";
@@ -185,7 +189,7 @@ enum class TestType {
   E_Accuracy    = 1 << 1,
   E_Conformance = 1 << 2,
   E_SpecialCase = 1 << 3,
-  E_CornerCase  = 1 << 4,  
+  E_CornerCase  = 1 << 4,
   E_Performance = 1 << 5,
 
   E_MAX
@@ -204,7 +208,7 @@ inline std::ostream& operator<<(std::ostream& os, TestType& cat) {
       break;
     case TestType::E_Performance:
       os << "PERFORMANCE";
-      break;      
+      break;
     default:
       os << "UKNOWN";
       break;

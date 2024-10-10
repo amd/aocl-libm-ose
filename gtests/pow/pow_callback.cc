@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -44,10 +44,16 @@ double LIBM_FUNC(pow)(double);
 float LIBM_FUNC(powf)(float);
 
 static uint32_t ipargs = 2;
+bool special_case = false;
 
 uint32_t GetnIpArgs( void )
 {
 	return ipargs;
+}
+
+bool getSpecialCase(void)
+{
+  return special_case;
 }
 
 void ConfSetupf32(SpecParams *specp) {
@@ -237,6 +243,30 @@ int test_v16s(test_data *data, int idx)  {
       _mm512_store_ps(&op[0], op16);
     #endif
   #endif
+  return 0;
+}
+
+int test_vad(test_data *data, int count)  {
+  double *ip1 = (double*)data->ip;
+  double *ip2 = (double*)data->ip1;
+  double *op  = (double*)data->op;
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+  amd_vrda_pow(count, ip1, ip2, op);
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  vdPow(count, ip1, ip2, op);
+#endif
+  return 0;
+}
+
+int test_vas(test_data *data, int count)  {
+  float *ip1 = (float*)data->ip;
+  float *ip2 = (float*)data->ip1;
+  float *op  = (float*)data->op;
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+  amd_vrsa_powf(count, ip1, ip2, op);
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  vsPow(count, ip1, ip2, op);
+#endif
   return 0;
 }
 

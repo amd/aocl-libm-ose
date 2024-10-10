@@ -148,12 +148,8 @@ ALM_PROTO_OPT(coshf)(float x)
     if (unlikely(ux > asuint32(COSH_MAX))) {
         if (x != x)      /* |x| is a NaN? */
             return x + x;
-        else                            /* x is infinity */
-        #if ( defined _WIN32 || defined _WIN64 )
+        else             /* x is infinity */
             return alm_coshf_special(asfloat(PINFBITPATT_SP32), ALM_E_OVERFLOW);
-        #else
-            return(FLT_MAX * FLT_MAX);
-        #endif
     }
 
     if (ux <= asuint32(VERY_SMALL_X))   /* x in (0, EPS] */

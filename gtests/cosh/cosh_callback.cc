@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -44,10 +44,16 @@ float LIBM_FUNC(coshf)(float);
 double LIBM_FUNC(cosh)(double);
 
 static uint32_t ipargs = 1;
+bool special_case = false;
 
 uint32_t GetnIpArgs( void )
 {
 	return ipargs;
+}
+
+bool getSpecialCase(void)
+{
+  return special_case;
 }
 
 void ConfSetupf32(SpecParams *specp) {
@@ -116,14 +122,30 @@ int test_s1d(test_data *data, int idx)  {
 extern "C" {
 #endif
 
-/*vector routines*/
-/*glibc doesnt have these vector variants. Only intel and amd has*/
-#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
-//__m128d LIBM_FUNC_VEC(d, 2, cosh)(__m128d);
-//__m256d LIBM_FUNC_VEC(d, 4, cosh)(__m256d);
-__m128 LIBM_FUNC_VEC(s, 4, coshf)(__m128);
-__m256 LIBM_FUNC_VEC(s, 8, coshf)(__m256);
+/* GLIBC vector function symbols needs to be re-defined accordingly */
+#if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
+  #define _ZGVdN2v_cosh _ZGVbN2v_cosh
+  #define _ZGVdN4v_cosh _ZGVdN4v_cosh
+  #define _ZGVsN4v_coshf _ZGVbN4v_coshf
+  #define _ZGVsN8v_coshf _ZGVdN8v_coshf
+  #if defined(__AVX512__)
+    #define _ZGVsN16v_coshf _ZGVeN16v_coshf
+    #define _ZGVdN8v_cosh _ZGVeN8v_cosh
+  #endif
 #endif
+
+/* Declaration of vector routines */
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  __m128d LIBM_FUNC_VEC(d, 2, cosh) (__m128d);
+  __m256d LIBM_FUNC_VEC(d, 4, cosh) (__m256d);
+  __m128  LIBM_FUNC_VEC(s, 4, coshf)(__m128);
+  __m256  LIBM_FUNC_VEC(s, 8, coshf)(__m256);
+  #if defined(__AVX512__)
+    __m512d LIBM_FUNC_VEC(d, 8, cosh)(__m512d);
+    __m512  LIBM_FUNC_VEC(s, 16, coshf)(__m512);
+  #endif
+#endif
+
 
 int test_v2d(test_data *data, int idx)  {
   double *ip  = (double*)data->ip;

@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ e = env.Clone()
 # These rearrangements are not value-safe:
 #	 (a ⊕ b) ⊕ c ⇒ a ⊕ (b ⊕ c)
 #	 a ⊗ (b ⊕ c) ⇒ (a ⊗ b) ⊕ (a ⊕ c)
-# 
+#
 # To Disallow these changes in gcc remove -ffast-math
 if '-ffast-math' in e['CFLAGS']:
     e['CFLAGS'].remove('-ffast-math')
@@ -43,7 +43,19 @@ incpaths = [
     '#' + joinpath(Dir('.').srcnode().path, 'include')
 ]
 
+machdict = {
+    'znver5' : 'znver5',
+    'znver4' : 'znver4',
+    'znver3' : 'znver3',
+    'znver2' : 'znver2',
+    'znver1' : 'znver1',
+}
 env_mach = e['ALM_MAX_ARCH']
+
+# If supported architecture is znver5, replace it with znver4.
+# Because sources in this directory should not be compiled with flag greater than znver4.
+if env_mach == 'znver5':
+    env_mach = 'znver4'
 
 #if env_mach in ['znver1', 'znver2', 'znver3']:
 #    print('znver4 not supported, not compiling sources in this directory')

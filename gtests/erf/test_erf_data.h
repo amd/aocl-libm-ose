@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -67,6 +67,35 @@ test_erff_conformance_data[] = {
 
 static libm_test_special_data_f64
 test_erf_conformance_data[] = {
+    {POS_ZERO_F64, POS_ZERO_F64, 0},            // erf(0) = 0
+    {NEG_ZERO_F64, POS_ZERO_F64, 0},            // erf(-0) = 0
+    {POS_INF_F64, POS_ONE_F64, 0},              // erf(+inf) = 1
+    {NEG_INF_F64, NEG_ONE_F64, 0},              // erf(-inf) = -1
+    {POS_SNAN_F64, POS_SNAN_F64, FE_INVALID },  // erf(+SNAN) = SNAN
+    {NEG_SNAN_F64, NEG_SNAN_F64, FE_INVALID },  // erf(-SNAN) = -SNAN
+    {POS_QNAN_F64, POS_QNAN_F64, 0},            // erf(+QNAN) = QNAN
+    {NEG_QNAN_F64, NEG_QNAN_F64, 0},            // erf(-QNAN) = -QNAN
+    // erf(x) = 1, for x > 5.921875
+    {0x4017B000C9539B89, POS_ONE_F64, 0},
+    {0x402499999999999A, POS_ONE_F64, 0},
+    {0x4036800000000000, POS_ONE_F64, 0},
+    {0x407B000000000000, POS_ONE_F64, 0},
+    {0x4090000000000000, POS_ONE_F64, 0},
+    // erf(x) = -1, for x < -5.921875
+    {0xC017B000C9539B89, NEG_ONE_F64, 0},
+    {0xC090000000000000, NEG_ONE_F64, 0},
+    {0xC063C00000000000, NEG_ONE_F64, 0},
+    {0xC054800000000000, NEG_ONE_F64, 0},
+    {0xC037AE147AE147AE, NEG_ONE_F64, 0},
+    // Additional test cases from core-math worst case values
+    {0x0000000000000001, 0x0000000000000001, 0},
+    {0x8000000000000001, 0x8000000000000001, 0},
+    {0x000FFFFFFFFFFFFF, 0x00120DD750429B6C, 0},
+    {0x800FFFFFFFFFFFFF, 0x80120DD750429B6C, 0},
+    {0x0010000000000000, 0x00120DD750429B6D, 0},
+    {0x8010000000000000, 0x80120dd750429b6d, 0},
+    {0x3FF0000000000000, 0xBE343791E2362FE3, 0},
+    {0xBFF0000000000000, 0xBFEAF767A741088B, 0},
 };
 
 #endif  /*__TEST_ERF_DATA_H___*/

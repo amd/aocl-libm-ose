@@ -60,7 +60,7 @@ if env['HOST_OS'] != 'win32':
             cc_ver_minor = cc_ver[cc_ver.rfind(".")+1:]
             cc_ver = cc_ver[:cc_ver.rfind(".")]
         # AOCC 4.0.0 (CLANG 14.0.6) and above supports the flag -muse-unaligned-vector-move
-        if (float(cc_ver) >= 14.0) & (float(cc_ver_minor) >= 6.0):
+        if ((float(cc_ver) > 14.0) or ((float(cc_ver) == 14.0) and (float(cc_ver_minor) >= 6.0))):
             ccflags.append('-muse-unaligned-vector-move')
 else:
     ccflags = ['-DAVX_XOP_FMA4_FMA3',
@@ -115,37 +115,37 @@ if e['HOST_OS'] != 'win32':
 else:
     if use_asan == 1:
         almenv.Append(
-            LIBS      = ['clang_rt.asan-x86_64.lib','clang_rt.asan_cxx-x86_64.lib'],
+            LIBS      = ['clang_rt.asan-x86_64', 'clang_rt.asan_cxx-x86_64'],
         )
 
-# to link to libaoclutils library
+# to link to libau_cpuid library
 almenv.Append(CPPPATH = joinpath(aocl_utils_install_path, 'include'))
 almenv.Append(CCFLAGS = '-DUSE_AOCL_UTILS')
 aocl_utils_link = env['aocl_utils_link']
 
 if e['HOST_OS'] != 'win32':
     if int(aocl_utils_link):
-        print("Linking Static libaoclutils library")
-        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libaoclutils.a')
+        print("Linking Static libau_cpuid library")
+        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libau_cpuid.a')
         aocl_utils_static_lib_path = almenv.File(aocl_utils_static_lib_path)
         almenv.Append(LIBS=aocl_utils_static_lib_path)
-        # libstdc++ needs explicit loading when using libaoclutils.a (static library)
+        # libstdc++ needs explicit loading when using libau_cpuid.a (static library)
         almenv.Append(LIBS="stdc++")
     else:
-        print("Linking Dynamic libaoclutils library")
-        aocl_utils_dynamic_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libaoclutils.so')
+        print("Linking Dynamic libau_cpuid library")
+        aocl_utils_dynamic_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libau_cpuid.so')
         aocl_utils_dynamic_lib_path = almenv.File(aocl_utils_dynamic_lib_path)
         almenv.Append(LIBS=aocl_utils_dynamic_lib_path)
 else:
     if int(aocl_utils_link):
-        print("Linking Static libaoclutils library")
-        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libaoclutils_static.lib')
+        print("Linking Static libau_cpuid library")
+        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'au_cpuid_static.lib')
         aocl_utils_static_lib_path = almenv.File(aocl_utils_static_lib_path)
         almenv.Append(LIBS=aocl_utils_static_lib_path)
         almenv.Append(LIBS=["msvcrt"])
     else:
-        print("Linking Dynamic libaoclutils library")
-        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libaoclutils.lib')
+        print("Linking Dynamic libau_cpuid library")
+        aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'au_cpuid.lib')
         aocl_utils_static_lib_path = almenv.File(aocl_utils_static_lib_path)
         almenv.Append(LIBS=aocl_utils_static_lib_path)
 
@@ -171,7 +171,7 @@ if e['HOST_OS'] != 'win32':
     libm = almenv.StaticLibrary('alm', alm_objs)
     libmso = almenv.SharedLibrary('alm', alm_objs)
 else:
-    libm = almenv.StaticLibrary('libalm-static', source = [alm_objs, joinpath(aocl_utils_install_path, 'lib','libaoclutils_static.lib')])
+    libm = almenv.StaticLibrary('libalm-static', source = [alm_objs, joinpath(aocl_utils_install_path, 'lib','au_cpuid_static.lib')])
     almenv['WINDOWS_INSERT_DEF']=1
     libmso = almenv.SharedLibrary('libalm', alm_objs, no_import_lib=False)
 

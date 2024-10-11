@@ -669,6 +669,30 @@ call2_v8_f32(float (*fn)(float, float),
 
 #endif
 
+#ifndef ALM_HAS_V8_CALL2_F32_SPL
+#define ALM_HAS_V8_CALL2_F32_SPL
+
+static inline v_f32x8_t
+call2_v8_f32_spl(float (*fn)(float, float),
+        v_f32x8_t x,
+        float y,
+        v_f32x8_t result,
+        v_i32x8_t cond)
+{
+    return (v_f32x8_t) {
+        cond[0] ? fn(x[0], y) : result[0],
+            cond[1] ? fn(x[1], y) : result[1],
+            cond[2] ? fn(x[2], y) : result[2],
+            cond[3] ? fn(x[3], y) : result[3],
+            cond[4] ? fn(x[4], y) : result[4],
+            cond[5] ? fn(x[5], y) : result[5],
+            cond[6] ? fn(x[6], y) : result[6],
+            cond[7] ? fn(x[7], y) : result[7]
+            };
+}
+
+#endif
+
 #ifndef ALM_HAS_V4_CALL_F32
 #define ALM_HAS_V4_CALL_F32
 

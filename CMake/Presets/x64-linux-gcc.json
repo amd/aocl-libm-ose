@@ -1,0 +1,25 @@
+{
+    "version": 6,
+    "include": [
+        "Arch/x64.json",
+        "Os/Linux.json",
+        "Compilers/Gcc.json"
+    ],
+    "configurePresets": [
+        {
+            "name": "x64-linux-gcc",
+            "hidden": true,
+            "inherits": [ "x64", "linux", "gcc" ]
+        },
+        {
+            "name": "x64-linux-gcc-debug",
+            "hidden": true,
+            "inherits": [ "x64", "linux", "gcc-debug" ]
+        },
+        {
+            "name": "x64-linux-gcc-release",
+            "hidden": true,
+            "inherits": [ "x64", "linux", "gcc-release" ]
+        }
+    ]
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2019-2024, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -47,38 +47,28 @@ static const struct {
     v_f64x4_t ln2_tblsz_head, ln2_tblsz_tail;
     v_f64x4_t huge;
     v_i64x4_t exp_bias;
-				//v_f64x4_t exp_maxd;
-				//v_f64x4_t exp_mind;
-    v_i64x4_t exp_max;
     v_i64x4_t mask;
-				//v_i64x4_t infinity;
-				//double exp_min_value;
     v_f64x4_t poly[12];
     } exp_data = {
-				.tblsz_ln2      = _MM_SET1_PD4(0x1.71547652b82fep+0),
-				.ln2_tblsz_head = _MM_SET1_PD4(0x1.63p-1),
-				//.exp_maxd       = _MM_SET1_PD4(0x1.62e42fefa39efp+9),
-				//.exp_mind       = _MM_SET1_PD4(-0x1.62e42fefa39efp+9),
-				//.exp_min_value  = -0x1.74910d52d3051p+9,
-				.ln2_tblsz_tail = _MM_SET1_PD4(-0x1.bd0105c610ca8p-13),
-				.huge           = _MM_SET1_PD4(0x1.8000000000000p+52),
-				.exp_bias       = _MM_SET1_I64(DOUBLE_PRECISION_BIAS),
-				.exp_max        = _MM_SET1_I64(0x4086200000000000),
-				.mask           = _MM_SET1_I64(0x7FFFFFFFFFFFFFFF),
-				//.infinity       = _MM_SET1_I64(0x7ff0000000000000),
-				.poly           = {
-								_MM_SET1_PD4(0x1.0p0),
-								_MM_SET1_PD4(0x1.000000000001p-1),
-								_MM_SET1_PD4(0x1.55555555554a2p-3),
-								_MM_SET1_PD4(0x1.555555554f37p-5),
-								_MM_SET1_PD4(0x1.1111111130dd6p-7),
-								_MM_SET1_PD4(0x1.6c16c1878111dp-10),
-								_MM_SET1_PD4(0x1.a01a011057479p-13),
-								_MM_SET1_PD4(0x1.a01992d0fe581p-16),
-								_MM_SET1_PD4(0x1.71df4520705a4p-19),
-								_MM_SET1_PD4(0x1.28b311c80e499p-22),
-								_MM_SET1_PD4(0x1.ad661ce7af3e3p-26),
-				},
+                .tblsz_ln2      = _MM_SET1_PD4(0x1.71547652b82fep+0),
+                .ln2_tblsz_head = _MM_SET1_PD4(0x1.63p-1),
+                .ln2_tblsz_tail = _MM_SET1_PD4(-0x1.bd0105c610ca8p-13),
+                .huge           = _MM_SET1_PD4(0x1.8000000000000p+52),
+                .exp_bias       = _MM_SET1_I64(DOUBLE_PRECISION_BIAS),
+                .mask           = _MM_SET1_I64(0x7FFFFFFFFFFFFFFF),
+                .poly           = {
+                                _MM_SET1_PD4(0x1.0p0),
+                                _MM_SET1_PD4(0x1.000000000001p-1),
+                                _MM_SET1_PD4(0x1.55555555554a2p-3),
+                                _MM_SET1_PD4(0x1.555555554f37p-5),
+                                _MM_SET1_PD4(0x1.1111111130dd6p-7),
+                                _MM_SET1_PD4(0x1.6c16c1878111dp-10),
+                                _MM_SET1_PD4(0x1.a01a011057479p-13),
+                                _MM_SET1_PD4(0x1.a01992d0fe581p-16),
+                                _MM_SET1_PD4(0x1.71df4520705a4p-19),
+                                _MM_SET1_PD4(0x1.28b311c80e499p-22),
+                                _MM_SET1_PD4(0x1.ad661ce7af3e3p-26),
+                },
     };
 
 #define DP64_BIAS        exp_data.exp_bias
@@ -86,12 +76,9 @@ static const struct {
 #define LN2_TAIL         exp_data.ln2_tblsz_tail
 #define INVLN2           exp_data.tblsz_ln2
 #define EXP_HUGE         exp_data.huge
-#define ARG_MAX          exp_data.exp_max
-//#define EXP_MAX          exp_data.exp_maxd
-//#define EXP_LOW          exp_data.exp_mind
-//#define EXP_MIN_VAL      exp_data.exp_min_value
 #define MASK             exp_data.mask
-//#define INF              exp_data.infinity
+
+
 #define C1  exp_data.poly[0]
 #define C3  exp_data.poly[1]
 #define C4  exp_data.poly[2]
@@ -103,6 +90,8 @@ static const struct {
 #define C10 exp_data.poly[8]
 #define C11 exp_data.poly[9]
 #define C12 exp_data.poly[10]
+
+#define ARG_MAX  0x4086200000000000
 
 #define SCALAR_EXP ALM_PROTO(exp)
 
@@ -150,9 +139,6 @@ ALM_PROTO_OPT(vrd4_exp)(v_f64x4_t x)
     // Get absolute value
     vx = vx & MASK;
 
-    // Check if -709 < vx < 709
-    v_u64x4_t cond = (v_u64x4_t)(vx > ARG_MAX );
-
     // x * (64.0/ln(2))
     v_f64x4_t z = x * INVLN2;
 
@@ -188,15 +174,12 @@ ALM_PROTO_OPT(vrd4_exp)(v_f64x4_t x)
     // result = poly * 2^m
     v_f64x4_t ret = poly * as_v4_f64_i64(m);
 
-    if(unlikely(any_v4_u64_loop(cond))) {
-
-        return (v_f64x4_t) {
-            (cond[0]) ? SCALAR_EXP(x[0]):ret[0],
-            (cond[1]) ? SCALAR_EXP(x[1]):ret[1],
-            (cond[2]) ? SCALAR_EXP(x[2]):ret[2],
-            (cond[3]) ? SCALAR_EXP(x[3]):ret[3],
-        };
-
+    // If input value is outside valid range, call scalar exp(value)
+    // Else, return the above computed result
+    for(int i =0; i<4; i++)
+    {
+        if(unlikely(vx[i] > ARG_MAX))
+            ret[i] = SCALAR_EXP(x[i]);
     }
 
     return ret;

@@ -1,6 +1,6 @@
 /*
 
-(C) 2008-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 
 Advanced Micro Devices, Inc.
 Software License Agreement
@@ -180,6 +180,11 @@ extern "C" {
 
  /* Arithmetic */
 
+    __m128d amd_vrd2_fabs   (__m128d x);
+    __m256d amd_vrd4_fabs   (__m256d x);
+    __m128  amd_vrs4_fabsf  (__m128  x);
+    __m256  amd_vrs8_fabsf  (__m256  x);
+
     /* array vector variants */
     void amd_vrsa_addf      (int len, float *lhs, float *rhs, float *dst);
     void amd_vrda_add       (int len, double *lhs, double *rhs, double *dst);
@@ -193,6 +198,8 @@ extern "C" {
     void amd_vrda_fmax      (int len, double *lhs, double *rhs, double *dst);
     void amd_vrsa_fminf     (int len, float *lhs, float *rhs, float *dst);
     void amd_vrda_fmin      (int len, double *lhs, double *rhs, double *dst);
+    void amd_vrsa_fabsf     (int len, float  *src, float  *dst);
+    void amd_vrda_fabs      (int len, double *src, double *dst);
 
     /* array vector variants with increment */
     void amd_vrsa_addfi     (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
@@ -226,13 +233,6 @@ extern "C" {
     __m256  amd_vrs8_expf   (__m256 x);
     __m256  amd_vrs8_exp2f  (__m256 x);
 
-    /* avx512 variants */
-    __m512d amd_vrd8_exp    (__m512d x);
-    __m512  amd_vrs16_expf  (__m512  x);
-
-    __m512d amd_vrd8_exp2   (__m512d x);
-    __m512  amd_vrs16_exp2f (__m512  x);
-
     /* array vector variants */
     void amd_vrda_exp       (int len, double *src, double *dst);
     void amd_vrsa_expf      (int len, float  *src, float  *dst);
@@ -262,14 +262,6 @@ extern "C" {
     __m256  amd_vrs8_log2f   (__m256 x);
     __m256  amd_vrs8_log10f  (__m256 x);
 
-    /* avx512 variants */
-    __m512d amd_vrd8_log     (__m512d x);
-    __m512d amd_vrd8_log2    (__m512d x);
-
-    __m512  amd_vrs16_logf   (__m512  x);
-    __m512  amd_vrs16_log2f  (__m512 x);
-    __m512  amd_vrs16_log10f (__m512 x);
-
     /* array vector variants */
     void amd_vrda_log       (int len, double *src, double *dst);
     void amd_vrsa_logf      (int len, float  *src, float  *dst);
@@ -288,10 +280,12 @@ extern "C" {
     __m128  amd_vrs4_sinf   (__m128  x);
     __m128  amd_vrs4_cosf   (__m128  x);
     __m128  amd_vrs4_tanf   (__m128  x);
+    void    amd_vrs4_sincosf(__m128 x, __m128 *sin, __m128 *cos);
 
     __m256  amd_vrs8_tanf   (__m256  x);
     __m256  amd_vrs8_sinf   (__m256  x);
     __m256  amd_vrs8_cosf   (__m256  x);
+    void    amd_vrs8_sincosf(__m256 x, __m256 *sin, __m256 *cos);
 
     __m256d amd_vrd4_sin    (__m256d x);
     __m256d amd_vrd4_cos    (__m256d x);
@@ -304,18 +298,6 @@ extern "C" {
     void amd_vrda_sin       (int len, double *src, double *dst);
     void amd_vrsa_sinf      (int len, float  *src, float  *dst);
 
-    /* avx512 variants */
-    __m512  amd_vrs16_cosf   (__m512 x);
-    __m512d amd_vrd8_cos     (__m512d x);
-
-    __m512  amd_vrs16_sinf   (__m512 x);
-    __m512d amd_vrd8_sin     (__m512d x);
-
-    __m512d amd_vrd8_tan     (__m512d x);
-    __m512  amd_vrs16_tanf   (__m512 x);
-
-    void    amd_vrd8_sincos  (__m512d x, __m512d *sin, __m512d *cos);
-
 /* Inverse Trigonometric */
     __m128  amd_vrs4_asinf  (__m128  x);
     __m128  amd_vrs4_acosf  (__m128  x);
@@ -327,13 +309,6 @@ extern "C" {
 
     __m128d amd_vrd2_atan   (__m128d x);
     __m256d amd_vrd4_atan   (__m256d x);
-
-    /* avx512 variants */
-    __m512 amd_vrs16_atanf  (__m512 x);
-    __m512d amd_vrd8_atan   (__m512d x);
-
-    __m512 amd_vrs16_asinf  (__m512 x);
-    __m512d amd_vrd8_asin   (__m512d x);
 
 /*Hyperbolic*/
    __m128  amd_vrs4_coshf   (__m128  x);
@@ -350,15 +325,19 @@ extern "C" {
     __m256d amd_vrd4_pow    (__m256d, __m256d);
     __m256  amd_vrs8_powf   (__m256, __m256);
 
-    /* avx512 variants */
-    __m512d amd_vrd8_pow    (__m512d x, __m512d y);
-    __m512  amd_vrs16_powf  (__m512  x, __m512  y);
+    __m128d amd_vrd2_powx   (__m128d x, double y);
+    __m256d amd_vrd4_powx   (__m256d, double);
+
+
+    __m128  amd_vrs4_powxf   (__m128 x, float y);
+    __m256  amd_vrs8_powxf   (__m256 x, float y);
 
     __m128d amd_vrd2_cbrt   (__m128d x);
     __m128  amd_vrs4_cbrtf  (__m128  x);
 
     /* array vector variants */
-    void amd_vrsa_powf      (int len, float *src1, float *src2, float* dst);
+    void amd_vrda_pow       (int len, double *src1, double *src2, double *dst);
+    void amd_vrsa_powf      (int len, float  *src1, float  *src2, float  *dst);
 
     void amd_vrda_cbrt      (int len, double *src, double *dst);
     void amd_vrsa_cbrtf     (int len, float  *src, float  *dst);
@@ -369,9 +348,94 @@ extern "C" {
     __m256d amd_vrd4_erf    (__m256d x);
     __m256  amd_vrs8_erff   (__m256 x);
 
-    /* avx512 variants */
+/* sqrt */
+    __m128d amd_vrd2_sqrt   (__m128d x);
+    __m256d amd_vrd4_sqrt   (__m256d x);
+
+    __m128  amd_vrs4_sqrtf   (__m128 x);
+    __m256  amd_vrs8_sqrtf   (__m256 x);
+
+    void amd_vrda_sqrt       (int len, double *src, double *dst);
+    void amd_vrsa_sqrtf      (int len, float  *src, float  *dst);
+
+/* linearfrac */
+    __m128d amd_vrd2_linearfrac   (__m128d x, __m128d y, double, double, double, double);
+    __m256d amd_vrd4_linearfrac   (__m256d x, __m256d y, double, double, double, double);
+
+    __m128 amd_vrs4_linearfracf   (__m128 x, __m128 y, float, float, float, float);
+    __m256 amd_vrs8_linearfracf   (__m256 x, __m256 y, float, float, float, float);
+
+    void amd_vrda_linearfrac      (int len, double *x, double *y, double scx, double shx, double scy, double shy, double *dst);
+    void amd_vrsa_linearfracf     (int len, float *x, float *y, float scx, float shx, float scy, float shy, float *dst);
+
+/* AVX512 variants */
+#if defined(__AVX512F__)
+
+    /* Exp */
+    __m512d amd_vrd8_exp    (__m512d x);
+    __m512  amd_vrs16_expf  (__m512  x);
+
+    __m512d amd_vrd8_exp2   (__m512d x);
+    __m512  amd_vrs16_exp2f (__m512  x);
+
+    /* Log */
+    __m512d amd_vrd8_log     (__m512d x);
+    __m512d amd_vrd8_log2    (__m512d x);
+
+    __m512  amd_vrs16_logf   (__m512  x);
+    __m512  amd_vrs16_log2f  (__m512 x);
+    __m512  amd_vrs16_log10f (__m512 x);
+
+    /* Cos */
+    __m512  amd_vrs16_cosf   (__m512 x);
+    __m512d amd_vrd8_cos     (__m512d x);
+
+    /* Sin */
+    __m512  amd_vrs16_sinf   (__m512 x);
+    __m512d amd_vrd8_sin     (__m512d x);
+
+    /* Tan */
+    __m512d amd_vrd8_tan     (__m512d x);
+    __m512  amd_vrs16_tanf   (__m512 x);
+
+    /* Sincos */
+    void    amd_vrd8_sincos  (__m512d x, __m512d *sin, __m512d *cos);
+    void    amd_vrs16_sincosf(__m512 x, __m512 *sin, __m512 *cos);
+
+    /* Atan */
+    __m512 amd_vrs16_atanf  (__m512 x);
+    __m512d amd_vrd8_atan   (__m512d x);
+
+    /* Asin */
+    __m512 amd_vrs16_asinf  (__m512 x);
+    __m512d amd_vrd8_asin   (__m512d x);
+
+    /* Acos */
+    __m512 amd_vrs16_acosf  (__m512 x);
+
+    /* Tanh */
+    __m512 amd_vrs16_tanhf  (__m512 x);
+
+    /* Pow */
+    __m512d amd_vrd8_pow    (__m512d x, __m512d y);
+    __m512  amd_vrs16_powf  (__m512  x, __m512  y);
+
+    __m512d amd_vrd8_powx   (__m512d x, double y);
+    __m512  amd_vrs16_powxf  (__m512  x, float  y);
+
+    /* Erf */
     __m512d amd_vrd8_erf    (__m512d x);
     __m512  amd_vrs16_erff  (__m512 x);
+
+    /* Sqrt */
+    __m512d amd_vrd8_sqrt   (__m512d x);
+    __m512  amd_vrs16_sqrtf  (__m512 x);
+
+    /* Linearfrac */
+     __m512d amd_vrd8_linearfrac   (__m512d x, __m512d y, double, double, double, double);
+     __m512  amd_vrs16_linearfracf (__m512 x, __m512 y, float, float, float, float);
+
+#endif
 
 #ifdef __cplusplus
 }

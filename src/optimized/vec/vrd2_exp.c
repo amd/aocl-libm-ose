@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2019-2024, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -66,7 +66,6 @@
 #include <libm_util_amd.h>
 #include <libm/alm_special.h>
 #include <libm_macros.h>
-//#include <libm_amd.h>
 #include <libm/types.h>
 #include <libm/typehelper.h>
 #include <libm/typehelper-vec.h>
@@ -83,7 +82,6 @@ static const struct {
     v_f64x2_t ln2_tblsz_head, ln2_tblsz_tail;
     v_f64x2_t Huge;
     v_i64x2_t exp_bias;
-    v_i64x2_t exp_max;
     v_f64x2_t exp_maxd;
     v_f64x2_t exp_mind;
     v_i64x2_t mask;
@@ -98,7 +96,6 @@ static const struct {
                     .exp_bias       = _MM_SET1_I64x2(DOUBLE_PRECISION_BIAS),
                     .exp_maxd       = _MM_SET1_PD2(0x1.62e42fefa39efp+9),
                     .exp_mind       = _MM_SET1_PD2(-0x1.62e42fefa39efp+9),
-                    .exp_max        = _MM_SET1_I64x2(0x4086200000000000),
                     .mask           = _MM_SET1_I64x2(0x7FFFFFFFFFFFFFFF),
                     .infinity       = _MM_SET1_I64x2(0x7ff0000000000000),
                     .exp_min_value  = -0x1.74910d52d3051p+9,
@@ -122,7 +119,6 @@ static const struct {
 #define LN2_TAIL         exp_data.ln2_tblsz_tail
 #define INVLN2           exp_data.tblsz_ln2
 #define EXP_HUGE         exp_data.Huge
-#define ARG_MAX          exp_data.exp_max
 #define MASK             exp_data.mask
 #define EXP_MAX          exp_data.exp_maxd
 #define EXP_LOW          exp_data.exp_mind
@@ -141,6 +137,7 @@ static const struct {
 #define C11 exp_data.poly[9]
 #define C12 exp_data.poly[10]
 
+#define ARG_MAX 0x4086200000000000
 
 #define SCALAR_EXP ALM_PROTO(exp)
 
@@ -152,9 +149,6 @@ ALM_PROTO_OPT(vrd2_exp)(v_f64x2_t x)
 
     // Get absolute value
     vx = vx & MASK;
-
-    // Check if -709 < vx < 709
-    v_u64x2_t cond = (v_u64x2_t)(vx > ARG_MAX);
 
     // x * (64.0/ln(2))
     v_f64x2_t z = x * INVLN2;
@@ -189,13 +183,12 @@ ALM_PROTO_OPT(vrd2_exp)(v_f64x2_t x)
     // result = polynomial * 2^m
     v_f64x2_t ret = poly * as_v2_f64_i64(m);
 
-    if(unlikely(any_v2_u64_loop(cond))) {
-
-        return (v_f64x2_t) {
-            (cond[0]) ? SCALAR_EXP(x[0]):ret[0],
-            (cond[1]) ? SCALAR_EXP(x[1]):ret[1],
-        };
-
+    // If input value is outside valid range, call scalar exp(value)
+    // Else, return the above computed result
+    for(int i = 0; i < 2; i++)
+    {
+        if(unlikely(vx[i] > ARG_MAX))
+            ret[i] = SCALAR_EXP(x[i]);
     }
 
     return ret;

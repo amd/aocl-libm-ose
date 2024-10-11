@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -112,7 +112,7 @@ if arch_config == 'avx512':
 
 # for address sanitizer usage.
 # Fix me for windows.
-# Currently, ASAN is added in LibM library and not in gtests framework on Windows platform. 
+# Currently, ASAN is added in LibM library and not in gtests framework on Windows platform.
 
 use_asan = env['use_asan']
 if env['HOST_OS'] != 'win32':
@@ -124,9 +124,10 @@ if env['HOST_OS'] == 'win32':
         env['PDB'] = 'test.pdb'
         testcflags.remove('/O2')
 
-# get libaoclutils path
+# get libau_cpuid path
 aocl_utils_install_path_lib = os.path.join(env['aocl_utils_install_path'], 'lib')
 
+linkflags = []
 ccflags = []
 liblist = []
 libpath = ['#'+alm_path, aocl_utils_install_path_lib]
@@ -140,7 +141,7 @@ abi = env['libabi']
 #print(abi, env['libabi'])
 
 if env['HOST_OS'] != 'win32':
-    liblist.extend(['aoclutils'])
+    liblist.extend(['au_cpuid'])
 
 # Default set to AOCL
 if abi == 'aocl':
@@ -154,9 +155,16 @@ elif abi == 'glibc':
     liblist.extend(['mvec'])
 elif abi == 'svml':
     ccflags = ['-DLIBM_PROTOTYPE=0x%x'%PROTOTYPE_SVML]
-    liblist.extend(['svml'])
-    liblist.extend(['irc'])
-    liblist.extend(['intlc'])
+    libpath += [env['INTEL_LIB_PATH']]
+    incpath.append(os.path.join(env['INTEL_LIB_PATH'], 'include'))
+    libpath.append(os.path.join(env['INTEL_LIB_PATH'], 'lib'))
+    liblist.extend(['mkl_intel_lp64', 'mkl_core'])
+
+    if env['HOST_OS'] != 'win32':
+        linkflags.append('-fopenmp')
+        liblist.extend(['svml', 'irc', 'intlc', 'mkl_gnu_thread'])
+    else:
+        liblist.extend(['svml_dispmd', 'libirc', 'mkl_intel_thread', 'libomp'])
 else:
     pass
 
@@ -201,10 +209,6 @@ else:
 #glibpath = ['gapi/gtest', 'gapi/gbench']
 glibpath = ['gapi/gtest', 'gapi/gbench','libs/mparith/32', 'libs/mparith/64']
 libpath  += [joinpath('#', build_root, x) for x in glibpath]
-
-#if intel svml
-if abi == 'svml':
-    libpath += [env['INTEL_LIB_PATH']]
 
 testenv = env.Clone()
 testenv.Append(
@@ -269,7 +273,7 @@ test_exes = []
 for test in gtests:
     tenv = e.Clone()
     if env['HOST_OS'] != 'win32':
-        tenv.Replace(CC='g++',LINKFLAGS=[])
+        tenv.Replace(CC='g++', LINKFLAGS=[linkflags])
         tenv.Append(CPPDEFINES = ['-DTEST_NAME=%s' % test])
     else:
         tenv.Append(CPPDEFINES = ['/DTEST_NAME=%s' % test])

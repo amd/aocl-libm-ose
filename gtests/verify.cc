@@ -25,7 +25,7 @@
  *
  */
 
- 
+
 #include <float.h>
 #include <string>
 #include <stdlib.h>
@@ -33,6 +33,14 @@
 #include <inttypes.h>
 #include "verify.h"
 #include "libm_util_amd.h"
+#if (defined _WIN32 || defined _WIN64 )
+  #include <complex.h>
+#else
+  extern "C"
+  {
+    #include "/usr/include/complex.h"
+  }
+#endif
 
 using namespace std;
 using namespace ALM;
@@ -158,6 +166,27 @@ void PrintUlpResultsDouble(int nargs, double input1, double input2, long double 
   printf ("Expected: %Lf (0x%" PRIx64 ") ", expected, val_exptd.lu);
   printf ("Actual: %f (0x%" PRIx64 ") ", actual, val_aop.lu);
   printf ("ULP: %f\n", ulp);
+}
+
+
+void PrintUlpResultsComplexFloat(int nargs, float _Complex input1, float _Complex input2, double _Complex expected, float _Complex actual, double ulp) {
+  printf ("Input1:   %f +i %f\n", (float)(__real__ input1), (float)(__imag__ input1));
+  if (nargs == 2) {
+    printf ("Input2:   %f +i %f\n", (float)(__real__ input2), (float)(__imag__ input2));
+  }
+  printf ("Expected: %lf +i %lf\n", (double)(__real__ expected), (double)(__imag__ expected));
+  printf ("Actual:   %f +i %f\n", (float)(__real__ actual), (float)(__imag__ actual));
+  printf ("ULP:      %lf\n\n", ulp);
+}
+
+void PrintUlpResultsComplexDouble(int nargs, double _Complex input1, double _Complex input2, long double _Complex expected, double _Complex actual, double ulp) {
+  printf ("Input1:   %lf +i %lf\n", (double)(__real__ input1), (double)(__imag__ input1));
+  if (nargs == 2) {
+    printf ("Input2:   %lf +i %lf\n", (double)(__real__ input2), (double)(__imag__ input2));
+  }
+  printf ("Expected: %Lf +i %Lf\n", (long double)(__real__ expected), (long double)(__imag__ expected));
+  printf ("Actual:   %lf +i %lf\n", (double)(__real__ actual), (double)(__imag__ actual));
+  printf ("ULP:      %lf\n\n", ulp);
 }
 
 }  // namespace Test

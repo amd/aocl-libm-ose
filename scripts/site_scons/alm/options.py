@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -93,11 +93,11 @@ class AlmOptions(object):
                         default = 'aocl',
                         type    = 'choice',
                         choices = ['aocl', 'libm', 'svml', 'glibc','msvc'],
-                        help = """Compile tests to call this abi \
-                        aocl  - AOCL, functions prefixed with 'amd_*' \
-                        glibc - GLIBC abi calls, prefixed with '__ieee_*' \
-                        libm  - C99 Standard library API. \
-                        svml  - Intel IMF/SVML calls \
+                        help = """Compile tests to call a particular abi \
+                        aocl  - AOCL functions prefixed with 'amd_*' \
+                        glibc - GLIBC functions, prefixed with '__ieee_*' \
+                        libm  - C99 Standard library functions. \
+                        svml  - Intel OneAPI library functions \
                         """
         )
 
@@ -117,7 +117,7 @@ class AlmOptions(object):
                         help = "Compile to use address sanitizer"
         )
 
-        #provide libaoclutils install path
+        #provide libau_cpuid install path
         self.add_option('aocl_utils_install_path',
                         nargs = 1,
                         default = '/usr/local/',
@@ -126,12 +126,12 @@ class AlmOptions(object):
                         help = 'Provide AOCL UTILS install path',
         )
 
-        #link libaoclutils static/dynamic library, default is static linking
+        #link libau_cpuid static/dynamic library, default is static linking
         self.add_option('aocl_utils_link',
                         nargs = 1,
                         default = 1,
                         type = int,
-                        help = 'libaoclutils static/dynamic linking',
+                        help = 'libau_cpuid static/dynamic linking',
         )
 
         self.add_option('developer',

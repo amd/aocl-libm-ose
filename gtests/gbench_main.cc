@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -71,6 +71,15 @@ void LibmPerfTest4f(benchmark::State& st, InputParams* param) {
   if(nargs == 2)
     data.ip1 = (void *) objtest.inpbuff1;
 
+  if(nargs == 6)
+  {
+    data.ip1 = (void *) objtest.inpbuff1;
+    data.ip2 = (void *) objtest.inpbuff2;
+    data.ip3 = (void *) objtest.inpbuff3;
+    data.ip4 = (void *) objtest.inpbuff4;
+    data.ip5 = (void *) objtest.inpbuff5;
+  }
+
   for (auto _ : st) {
     for (int64_t i =  0 ; i < param->count; i += 4) {
       test_v4s(&data, i);
@@ -92,6 +101,15 @@ void LibmPerfTest8f(benchmark::State& st, InputParams* param) {
   if(nargs == 2)
     data.ip1 = (void *) objtest.inpbuff1;
 
+  if(nargs == 6)
+  {
+    data.ip1 = (void *) objtest.inpbuff1;
+    data.ip2 = (void *) objtest.inpbuff2;
+    data.ip3 = (void *) objtest.inpbuff3;
+    data.ip4 = (void *) objtest.inpbuff4;
+    data.ip5 = (void *) objtest.inpbuff5;
+  }
+
   for (auto _ : st) {
     for (int64_t i =  0 ; i < param->count; i += 8) {
       test_v8s(&data, i);
@@ -112,6 +130,15 @@ void LibmPerfTest16f(benchmark::State& st, InputParams* param) {
 
   if(nargs == 2)
     data.ip1 = (void *) objtest.inpbuff1;
+
+   if(nargs == 6)
+  {
+    data.ip1 = (void *) objtest.inpbuff1;
+    data.ip2 = (void *) objtest.inpbuff2;
+    data.ip3 = (void *) objtest.inpbuff3;
+    data.ip4 = (void *) objtest.inpbuff4;
+    data.ip5 = (void *) objtest.inpbuff5;
+  }
 
   for (auto _ : st) {
     for (int64_t i =  0 ; i < param->count; i += 16) {
@@ -155,6 +182,15 @@ void LibmPerfTest2d(benchmark::State& st, InputParams* param) {
   if(nargs == 2)
     data.ip1 = (void *) objtest.inpbuff1;
 
+   if(nargs == 6)
+  {
+    data.ip1 = (void *) objtest.inpbuff1;
+    data.ip2 = (void *) objtest.inpbuff2;
+    data.ip3 = (void *) objtest.inpbuff3;
+    data.ip4 = (void *) objtest.inpbuff4;
+    data.ip5 = (void *) objtest.inpbuff5;
+  }
+
   for (auto _ : st) {
     for (int64_t i =  0 ; i < param->count; i += 2) {
       test_v2d(&data, i);
@@ -176,6 +212,15 @@ void LibmPerfTest4d(benchmark::State& st, InputParams* param) {
   if(nargs == 2)
     data.ip1 = (void *) objtest.inpbuff1;
 
+   if(nargs == 6)
+  {
+    data.ip1 = (void *) objtest.inpbuff1;
+    data.ip2 = (void *) objtest.inpbuff2;
+    data.ip3 = (void *) objtest.inpbuff3;
+    data.ip4 = (void *) objtest.inpbuff4;
+    data.ip5 = (void *) objtest.inpbuff5;
+  }
+
   for (auto _ : st) {
     for (int64_t i =  0 ; i < param->count; i += 4) {
       test_v4d(&data, i);
@@ -196,6 +241,15 @@ void LibmPerfTest8d(benchmark::State& st, InputParams* param) {
 
   if(nargs == 2)
     data.ip1 = (void *) objtest.inpbuff1;
+
+   if(nargs == 6)
+  {
+    data.ip1 = (void *) objtest.inpbuff1;
+    data.ip2 = (void *) objtest.inpbuff2;
+    data.ip3 = (void *) objtest.inpbuff3;
+    data.ip4 = (void *) objtest.inpbuff4;
+    data.ip5 = (void *) objtest.inpbuff5;
+  }
 
   for (auto _ : st) {
     for (int64_t i =  0 ; i < param->count; i += 8) {

@@ -1,0 +1,57 @@
+{
+    "version": 6,
+    "include": [
+        "Base.json",
+        "Generators/Make.json",
+        "x64-linux-gcc.json",
+        "x64-linux-llvm.json"
+    ],
+    "configurePresets": [
+        {
+            "name": "dev-gcc",
+            "displayName": "Developer Config with GCC-Debug",
+            "inherits": [ "make", "base-config-debug","x64-linux-gcc-debug"]
+        },
+        {
+            "name": "dev-clang",
+            "displayName": "Developer Config with Clang-Debug",
+            "inherits": [ "make", "base-config-debug","x64-linux-llvm-debug"]
+        },
+        {
+            "name": "dev-release-gcc",
+            "displayName": "Developer Config with GCC-Release",
+            "inherits": [ "make", "base-config-release","x64-linux-gcc-release"]
+        },
+        {
+            "name": "dev-release-clang",
+            "displayName": "Developer Config with Clang-Release",
+            "inherits": [ "make", "base-config-release","x64-linux-llvm-release"]
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "dev-gcc",
+            "displayName": "Developer Build with GCC-Debug",
+            "inherits": ["build-debug"],
+            "configurePreset": "dev-gcc"
+        },
+        {
+            "name": "dev-clang",
+            "displayName": "Developer Build with Clang-Debug",
+            "inherits": ["build-debug"],
+            "configurePreset": "dev-clang"
+        },
+        {
+            "name": "dev-release-gcc",
+            "displayName": "Developer Build with GCC-Release",
+            "inherits": ["build-release"],
+            "configurePreset": "dev-release-gcc"
+        },
+        {
+            "name": "dev-release-clang",
+            "displayName": "Developer Build with Clang-Release",
+            "inherits": ["build-release"],
+            "configurePreset": "dev-release-clang"
+        }
+    ]
+}

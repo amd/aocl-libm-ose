@@ -1,0 +1,17 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+          "name": "x86",
+          "hidden": true,
+          "architecture": {
+              "value": "x86",
+              "strategy": "external"
+          },
+          "toolset": {
+              "value": "host=x86",
+              "strategy": "external"
+          }
+        }
+    ]
+}

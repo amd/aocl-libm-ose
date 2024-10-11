@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2022, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2021-2024, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -44,13 +44,11 @@
 #define VRS4_LOGF_MAX_POLY_SIZE 12
 
 static const struct {
-    v_u32x8_t v_min, v_max, v_mask, v_off;
+    v_u32x8_t v_mask, v_off;
     v_f32x8_t v_one;
     v_f32x8_t ln2;
     v_f32x8_t poly[VRS4_LOGF_MAX_POLY_SIZE];
 } v_logf_data = {
-    .v_min  = _MM256_SET1_I32(0x00800000),
-    .v_max  = _MM256_SET1_I32(0x7f800000),
     .v_mask = _MM256_SET1_I32(MANTBITS_SP32),
     .v_off  = _MM256_SET1_I32(0x3f2aaaab),
     .v_one  = _MM256_SET1_PS8(1.0f),
@@ -89,14 +87,10 @@ static const struct {
     },
 };
 
-
-#define V_MIN   v_logf_data.v_min
-#define V_MAX   v_logf_data.v_max
 #define V_MASK  v_logf_data.v_mask
 #define V_OFF   v_logf_data.v_off
 #define V_ONE   v_logf_data.v_one
 #define LN2     v_logf_data.ln2
-
 
 /*
  * Short names for polynomial coefficients
@@ -116,6 +110,9 @@ static const struct {
 
 #define V_I32(x) x.i32x8
 #define V_F32(x) x.f32x8
+
+#define LOGF_MAX 0x7f800000
+#define SCALAR_LOGF ALM_PROTO(logf)
 
 /*
  * ISO-IEC-10967-2: Elementary Numerical Functions
@@ -170,42 +167,12 @@ static const struct {
  *
  */
 
-
-static inline v_f32x8_t
-logf_specialcase(v_f32x8_t _x,
-                 v_f32x8_t result,
-                 v_u32x8_t cond)
-{
-#if 1
-    v_f32x4_t _x1 = {_x[0], _x[1], _x[2], _x[3]},
-        _x2 = {_x[4], _x[5], _x[6], _x[7]};
-
-    v_u32x4_t _cond1 = {cond[0], cond[1], cond[2], cond[3]},
-        _cond2 = {cond[4], cond[5], cond[6], cond[7]};
-
-    v_f32x4_t _res1 = {result[0], result[1], result[2], result[3]},
-        _res2 = {result[4], result[5], result[6], result[7]};
-
-    _res1 = call_v4_f32(ALM_PROTO(logf), _x1, _res1, _cond1);
-    _res2 = call_v4_f32(ALM_PROTO(logf), _x2, _res2, _cond2);
-    //return v_call_f32_2(ALM_PROTO(logf), _x, result, cond);
-    return (v_f32x8_t) { _res1[0], _res1[1], _res1[2], _res1[3],
-        _res2[0], _res2[1], _res2[2], _res2[3] };
-
-#else
-    return v_call_f32_2(ALM_PROTO(logf), _x, result, cond);
-#endif
-
-}
-
 v_f32x8_t
 ALM_PROTO_OPT(vrs8_logf)(v_f32x8_t _x)
 {
     v_f32x8_t q, r, n;
 
     v_u32x8_t vx =  as_v8_u32_f32(_x);
-
-    v_u32x8_t cond = (vx - V_MIN >= V_MAX - V_MIN);
 
     vx -= V_OFF;
 
@@ -228,10 +195,12 @@ ALM_PROTO_OPT(vrs8_logf)(v_f32x8_t _x)
 
     q = n * LN2 + q;
 
-    if (unlikely(any_v8_u32_loop(cond))) {
-        return logf_specialcase(_x, q, cond);
+    vx =  as_v8_u32_f32(_x);
+    for(int i = 0; i < 8; i++)
+    {
+        if(unlikely(vx[i] > LOGF_MAX))
+            q[i] = SCALAR_LOGF(_x[i]);
     }
-
     return q;
 }
 

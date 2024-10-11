@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2023, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2024, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -74,6 +74,7 @@ enum {
     C_AMD_NEXTAFTER,
     C_AMD_NEXTTOWARD,
     C_AMD_POW,
+    C_AMD_POWX,
     C_AMD_REMAINDER,
     C_AMD_REMQUO,
     C_AMD_RINT,
@@ -100,6 +101,7 @@ enum {
     C_AMD_DIVI,
     C_AMD_FMAXI,
     C_AMD_FMINI,
+    C_AMD_LINEARFRAC,
 
     /*
      * INTEGER VARIANTS
@@ -152,7 +154,6 @@ extern void LIBM_IFACE_PROTO(exp)(void *arg);
 extern void LIBM_IFACE_PROTO(expm1)(void *arg);
 extern void LIBM_IFACE_PROTO(fabs)(void *arg);
 extern void LIBM_IFACE_PROTO(finite)(void *arg);
-extern void LIBM_IFACE_PROTO(fastpow)(void *arg);
 extern void LIBM_IFACE_PROTO(fdim)(void *arg);
 extern void LIBM_IFACE_PROTO(floor)(void *arg);
 extern void LIBM_IFACE_PROTO(fma)(void *arg);
@@ -176,6 +177,7 @@ extern void LIBM_IFACE_PROTO(nearbyint)(void *arg);
 extern void LIBM_IFACE_PROTO(nextafter)(void *arg);
 extern void LIBM_IFACE_PROTO(nexttoward)(void *arg);
 extern void LIBM_IFACE_PROTO(pow)(void *arg);
+extern void LIBM_IFACE_PROTO(powx)(void *arg);
 extern void LIBM_IFACE_PROTO(remainder)(void *arg);
 extern void LIBM_IFACE_PROTO(remquo)(void *arg);
 extern void LIBM_IFACE_PROTO(rint)(void *arg);
@@ -206,6 +208,7 @@ extern void LIBM_IFACE_PROTO(muli)(void *arg);
 extern void LIBM_IFACE_PROTO(divi)(void *arg);
 extern void LIBM_IFACE_PROTO(fmaxi)(void *arg);
 extern void LIBM_IFACE_PROTO(fmini)(void *arg);
+extern void LIBM_IFACE_PROTO(linearfrac)(void *arg);
 
 struct entry_pt_interface {
     void (*epi_init)(void *arg);
@@ -254,6 +257,7 @@ enum ALM_UARCH_VERSIONS {
     ALM_UARCH_VER_ZEN2,
     ALM_UARCH_VER_ZEN3,
     ALM_UARCH_VER_ZEN4,
+    ALM_UARCH_VER_ZEN5,
 
     ALM_UARCH_MAX,                       /* should be last, always */
 };

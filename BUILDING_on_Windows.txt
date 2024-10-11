@@ -1,9 +1,63 @@
-# How to build Libm on Windows using SCons
+# How to build Libm on windows using SCons
 
 ## Dependency libraries:
-  AOCL LibM library uses AOCL libaoclutils library to detect Zen architecture. Follow the steps below to compile AOCL libaoclutils library on windows.
+    1. AOCL LibM test framework uses GNU MPFR (an open source multi-precision floating point), GNU GMP (GNU Multiple Precision Arithmetic),
+       GNU MPC (C library for the arithmetic of complex numbers) libraries.
+       Maintain following directory structure to compile LibM on windows. Please note the aocl-libm and mpfr folders should be placed in the same directory.
+
+    Main_Directory
+    +---aocl-libm
+    |
+    +---mpfr
+        +---gmp_x64-windows
+        |   +---bin
+        |   |   +---gmp-10.dll
+        |   |   |
+        |   |   +---libgmp-10.dll
+        |   |
+        |   +---include
+        |   |   +---gmp.h
+        |   |   |
+        |   |   +---gmpxx.h
+        |   |
+        |   +---lib
+        |       +---gmp.lib
+        |       |
+        |       +---gmpxx.lib
+        |
+        +---mpfr_x64-windows
+        |   +---bin
+        |   |   +---mpfr-6.dll
+        |   |   |
+        |   |   +---libmpfr-6.dll
+        |   |
+        |   +---include
+        |   |   +---mpf2mpfr.h
+        |   |   |
+        |   |   +---mpfr.h
+        |   |
+        |   +---lib
+        |       +---mpfr.lib
+        |
+        +---mpc_x64-windows
+            +---bin
+            |   +---libmpc-3.dll
+            |   |
+            |   +---libgcc_s_seh-1.dll
+            |   |
+            |   +---libwinpthread-1.dll
+            |
+            +---include
+            |   +---mpc.h
+            |
+            +---lib
+                +---mpc.lib
+
+    If you find errors in mpfr library during libm compilation or usage then follow troubleshooting section at the end.
+
+    2. AOCL LibM library uses AOCL libaoclutils library to detect Zen architecture. Follow the steps below to compile AOCL libaoclutils library on windows.
            a)Clone the libaoclutils library code base.
-               git clone git@github.amd.com:AOCL/aocl-utils.git -b amd-main
+               git clone git@github.com:amd/aocl-utils.git -b main
            b)Follow the steps mentioned in the aocl-utils/README.md further to compile and install the libaoclutils library.
            c)Maintain following directory structure of libaoclutils files to compile LibM on windows
                libaoclutils
@@ -32,6 +86,9 @@
 ## Start building libm library
     scons ALM_CC="<clang executable path>" ALM_CXX="<clang++ executable path>" --aocl_utils_install_path="<libaoclutils library path>"
 
+## Building test framework
+    scons ALM_CC="<clang executable path>" ALM_CXX="<clang++ executable path>" --aocl_utils_install_path="<libaoclutils library path>" gtests
+
 ## To build in parallel, use following flag
     -j32
 
@@ -39,10 +96,74 @@
     --verbose=1
 
 ## To build with debug info, use following flag
-    --debug_mode=libs
+    --debug_mode=all
+
+## To build with avx512 feature, use following flag
+    --arch_config=avx512
+
+## To build with ASAN feature, use following flag
+    --use_asan=1
+    Note: Link aocl_utils dynamically (--aocl_utils_link=0) when compiling with --use_asan=1 option.
 
 ## To link static/dynamic libaoclutils library use following flag:
    0 for dynamic linking
    1 for static linking
    Default is static linking.
     --aocl_utils_link=1
+
+## To build tests with Microsoft default math library (for static functions using math.h
+   library and for vector functions using DirectXMath.h library) compatibility api, use the flag
+    --libabi=msvc
+
+## To build tests with the Intel math library
+    1. Install Intel HPC Toolkit V2023 via the following link
+        https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html
+    2. Look for svml_dispmd.lib and libirc.lib libraries in installed folders and copy the complete path
+    3. Add the Intel library path to INTEL_LIB_PATH variable using the command:
+        set INTEL_LIB_PATH=C:\Program Files (x86)\Intel\oneAPI\compiler\2023.2.0\windows\compiler\lib\intel64_win
+    4. Compile LibM with the flag
+        --libabi=msvc
+
+## To run the tests
+    To run the AOCL LibM test framework.
+
+    set PATH=%PATH%;..\mpfr\mpfr_x64-windows\bin
+    set PATH=%PATH%;..\mpfr\gmp_x64-windows\bin
+    build\aocl-release\gtests\cos\test_cos.exe -i f -e 1 -t perf
+
+    Test parameters:
+    Input type:
+    -i (f for single precision, d for double precision)
+    Vector input count:
+    -e (1 for scalar variants, 2/4/8/16 for vector variants, 32 for vector array variants)
+    Test Type:
+    -t (perf for performance, conf for conformance, accu for accuracy)
+    Input count:
+    -c (Integer value for number of inputs)
+    Input range:
+    -r (provide range: start,stop example: -r -50,50)
+    Number type:
+    -z (c for complex variant function, default is real variant function)
+
+## Troubleshooting
+    If you find errors in mpfr library during LibM compilation or usage, then re-install vcpkg
+        1. Download VCPKG using command "git clone https://github.com/microsoft/vcpkg"
+        2. Install VCPKG using the following commands
+            ○ .\vcpkg\bootstrap-vcpkg.bat
+            ○ .\vcpkg\vcpkg.exe install yasm-tool:x86-windows
+            ○ .\vcpkg\vcpkg.exe install gmp[core]:x64-windows
+            ○ .\vcpkg\vcpkg.exe install mpfr:x64-windows
+            ○ .\vcpkg\vcpkg.exe install mpc:x64-windows
+        3. Required packages will be installed in .\vcpkg\packages path
+
+    If problems persist with the mpfr library even after attempting with vcpkg, consider reinstalling
+    the mpfr library through Cygwin.
+        1. Download Cygwin from https://cygwin.com/
+        2. During the Cygwin installation process, select the following packages to install
+            ○ gcc-core
+            ○ mpclib-1.2.1-1-src (for more info visit https://www.multiprecision.org/mpc/packages.html)
+        3. Required packages will be installed in following paths
+            ○ /cygdrive/c/cygwin64/usr/x86_64-w64-mingw32/sys-root/mingw/lib
+            ○ /cygdrive/c/cygwin64/usr/x86_64-w64-mingw32/sys-root/mingw/bin
+
+    Note: It is recommended to use mpc library version 1.2.1 on windows.

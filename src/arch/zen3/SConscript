@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -44,6 +44,7 @@ incpaths = [
 ]
 
 machdict = {
+    'znver5' : 'znver5',
     'znver4' : 'znver4',
     'znver3' : 'znver3',
     'znver2' : 'znver2',
@@ -51,8 +52,10 @@ machdict = {
 }
 env_mach = e['ALM_MAX_ARCH']
 
-# if this is znver4, replace it with znver3.
-# sources in this directory should not be compiled with znver4.
+# If supported architecture is znver5 or znver4, replace it with znver3.
+# Because sources in this directory should not be compiled with flag greater than znver3.
+if env_mach == 'znver5':
+    env_mach = 'znver3'
 if env_mach == 'znver4':
     env_mach = 'znver3'
 

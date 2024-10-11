@@ -1,0 +1,37 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "project-vars",
+            "hidden": true,
+            "cacheVariables": {
+                "CUST_PROJ_NAME": "libm",
+                "CUST_PROJ_DESCRIPTION": "AOCL-LibM is a high-performance implementation of LibM",
+                "CUST_PROJ_URL"  : "https://aocl.amd.com/",
+                "VENDOR_NAME"    : "AMD",
+                "VENDOR_CONTACT" : "Prem Mallappa <pmallapp@amd.com>",
+                "CUST_PROJ_BUGREPORT": "aocl@amd.com",
+                "CUST_PROJ_PREFIX": "aocl",
+                "CUST_PROJ_CXX_STD": "17",
+                "CUST_PROJ_SOURCE_DIR": "Sources",
+                "CUST_PROJ_GTEST_TAG": "release-1.12.0",
+                "CUST_PROJ_GBENCH_TAG": "v1.8.4"
+            }
+        },
+        {
+            "name": "project-options",
+            "hidden": true,
+            "cacheVariables": {
+                "OPTION_BUILD_TESTS": "OFF",
+                "OPTION_BUILD_DOCS": "OFF",
+                "OPTION_BUILD_EXAMPLES": "OFF",
+                "OPTION_ENABLE_SLOW_TESTS": "OFF",
+                "OPTION_ENABLE_BROKEN_TESTS": "OFF",
+                "OPTION_ENABLE_ASSERTIONS": "OFF",
+                "OPTION_ENABLE_ASAN": "OFF",
+                "OPTION_ENABLE_COVERAGE": "OFF",
+                "OPTION_EXPORT_NAMESPACE": "OFF"
+            }
+        }
+    ]
+}

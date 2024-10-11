@@ -1,9 +1,31 @@
-# How to build on Linux
+# How to build
 
 ##Dependency libraries:
-### Installing AOCL libaoclutils library
+  1. AOCL LibM test framework uses GNU MPFR (an open source multi-precision floating point library)
+  Install mpfr:
+  https://www.mpfr.org/
+  Eg:
+  Ubuntu:
+    $ sudo apt install libmpfr-dev
+  CentOS:
+    $ sudo yum install mpfr-devel.x86_64
+  SLES:
+    $ sudo zypper install mpfr-devel
+
+  2. AOCL LibM test framework uses GNU MPC (an open source multi-precision complex floating-point library)
+  Install mpc:
+  https://www.multiprecision.org/
+  Eg:
+  Ubuntu:
+    $ sudo apt install libmpc-dev
+  CentOS:
+    $ sudo yum install libmpc-devel
+  SLES:
+    $ sudo zypper install mpc-devel
+
+## Installing AOCL libaoclutils library
     Clone the libaoclutils library code base.
-        git clone git@github.amd.com:AOCL/aocl-utils.git -b amd-main
+        git clone git@github.com:amd/aocl-utils.git -b main
     Follow the steps mentioned in the aocl-utils/README.md further to compile and install the libaoclutils library.
 
 ## Installing virtualenv
@@ -45,6 +67,12 @@
     $ scons <other options> --verbose=1
    ```
 
+  Building with ASAN feature
+   ``` shell
+    $ export ASAN_OPTIONS=verify_asan_link_order=0
+    $ scons <other options> --use_asan=1
+   ```
+
   To link static/dynamic libaoclutils library use following flag:
    0 for dynamic linking
    1 for static linking
@@ -53,6 +81,88 @@
 
   Building with debug
    ```sh
-    $ scons <other options> --debug_mode=libs
+    $ scons <other options> --debug_mode=all/libs/gtests
    ```
+
+  Developer mode - Developers get a new define for their experimentation.
+   ```sh
+    $ scons <other options> --developer=1
+   ```
+
+  Building test framework
+    $ scons <other options> gtests 
+  Building test framework to exercise avx512 variants:
+    $ scons <other options> gtests -j32 --arch_config=avx512 --aocl_utils_install_path=<libaoclutils library path>
+
+## Glibc compat library
+  An glibc compatible library, which has the table of functions compatible with
+  GLIBC. or compile with AOCC to generate proper API calls to amdlibm.
+  ``` sh
+    $ LD_PRELOAD=./build/aocl-release/src/compat/glibc-compat.o
+  ```
+
+## Possible future building
+  A fast library, with up to 4 ULP (when available).
+  ``` sh
+    $ LD_PRELOAD=/abs/path/libalmfast.so
+  ```
+
+### Building with glibc compatibility for tests
+
+  Following is to build tests with glibc compatibility api
+
+``` sh
+  $ scons --libabi=glibc
+```
+
+  With this, the tests will be compiled to call _libm_ functions without the
+  amd specific prefix.
+
+### Building with Intel Math (OneAPI) Libraries
+  To build tests to exercise Intel math libraries:
+  Install latest version of Intel OneAPI (Older MKL/SVML/IMF library versions are not supported!)
+
+  Add the Intel OneAPI library path to INTEL_LIB_PATH variable
+
+  $ export INTEL_LIB_PATH=<path to intel OneAPI installation which has include & lib folders>
+  then,
+  $ scons --libabi=svml;
+  Add the Intel lib paths to LD_LIBRARY_PATH variable as below:
+  $export LD_LIBRARY_PATH=:<intel OneAPI lib path>:$LD_LIBRARY_PATH;
+
+  Now run the test executable for the required function
+  $./build/svml-release/gtests/<function>/test_<function>     with the test parameters
+
+### To run the tests
+  To run the AOCL LibM test framework.
+  export the required paths:
+
+  $export LD_LIBRARY_PATH=./build/aocl-release/src/:$LD_LIBRARY_PATH;
+
+  $export LD_LIBRARY_PATH=./build/aocl-release/gtests/libs/mparith/32/:$LD_LIBRARY_PATH;
+
+  $export LD_LIBRARY_PATH=./build/aocl-release/gtests/libs/mparith/64/:$LD_LIBRARY_PATH;
+
+  $export LD_LIBRARY_PATH=./build/aocl-release/gtests/gapi/gtest/:$LD_LIBRARY_PATH;
+
+  $export LD_LIBRARY_PATH=./build/aocl-release/gtests/gapi/gbench/:$LD_LIBRARY_PATH;
+
+  Now run the test executable for the required function
+  $./build/aocl-release/gtests/<function>/test_<function>     with the test parameters
+  Example:
+   ./build/aocl-release/gtests/exp/test_exp
+
+  Test parameters:
+  Input type:
+  -i (f for single precision, d for double precision)
+  Vector input count:
+  -e (1 for scalar variants, 2/4/8/16 for vector variants, 32 for vector array variants)
+  Test Type:
+  -t (perf for performance, conf for conformance, accu for accuracy)
+  Input count:
+  -c (Integer value for number of inputs)
+  Input range:
+  -r (provide range: start,stop,step size example: -r -50,50,SIMPLE)
+  Number type:
+  -z (c for complex variant function, default is real variant function)
 

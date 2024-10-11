@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -44,10 +44,16 @@ float LIBM_FUNC(sqrtf)(float);
 double LIBM_FUNC(sqrt)(double);
 
 static uint32_t ipargs = 1;
+bool special_case = false;
 
 uint32_t GetnIpArgs( void )
 {
-	return ipargs;
+  return ipargs;
+}
+
+bool getSpecialCase(void)
+{
+  return special_case;
 }
 
 void ConfSetupf32(SpecParams *specp) {
@@ -116,19 +122,32 @@ int test_s1d(test_data *data, int idx)  {
 extern "C" {
 #endif
 
-int test_v2d(test_data *data, int idx)  {
-#if 0
-  double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op;
-  __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
-  __m128d op2 = LIBM_FUNC_VEC(d, 2, sqrt)(ip2);
-  _mm_store_pd(&op[0], op2);
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  __m128d LIBM_FUNC_VEC(d, 2, sqrt)(__m128d);
+  __m256d LIBM_FUNC_VEC(d, 4, sqrt)(__m256d);
+  __m128 LIBM_FUNC_VEC(s, 4, sqrtf)(__m128);
+  __m256 LIBM_FUNC_VEC(s, 8, sqrtf)(__m256);
+
+  /*avx512*/
+  #if defined(__AVX512__)
+    __m512d LIBM_FUNC_VEC(d, 8, sqrt) (__m512d);
+    __m512 LIBM_FUNC_VEC(s, 16, sqrtf) (__m512);
+  #endif
 #endif
+
+int test_v2d(test_data *data, int idx)  {
+  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+    double *ip  = (double*)data->ip;
+    double *op  = (double*)data->op;
+    __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
+    __m128d op2 = LIBM_FUNC_VEC(d, 2, sqrt)(ip2);
+    _mm_store_pd(&op[0], op2);
+  #endif
   return 0;
 }
 
 int test_v4s(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m128 ip4 = _mm_set_ps(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
@@ -139,7 +158,7 @@ int test_v4s(test_data *data, int idx)  {
 }
 
 int test_v4d(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
@@ -150,7 +169,7 @@ int test_v4d(test_data *data, int idx)  {
 }
 
 int test_v8s(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
@@ -162,29 +181,53 @@ int test_v8s(test_data *data, int idx)  {
 }
 
 int test_v8d(test_data *data, int idx)  {
-/* later change this to #if defined(__AVX512__)*/
-#if 0
-  double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op;
-  __m512d ip8 = _mm512_set_pd(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
-                             ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
-  __m512d op8 = LIBM_FUNC_VEC(d, 8, exp)(ip8);
-  _mm512_store_pd(&op[0], op8);
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  #if defined(__AVX512__)
+    double *ip  = (double*)data->ip;
+    double *op  = (double*)data->op;
+    __m512d ip8 = _mm512_set_pd(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
+                                ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+    __m512d op8 = LIBM_FUNC_VEC(d, 8, sqrt)(ip8);
+    _mm512_store_pd(&op[0], op8);
+  #endif
 #endif
   return 0;
 }
 
 int test_v16s(test_data *data, int idx)  {
-/* later change this to #if defined(__AVX512__)*/
-#if 0
-  float *ip = (float*)data->ip;
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  #if defined(__AVX512__)
+    float *ip = (float*)data->ip;
+    float *op  = (float*)data->op;
+    __m512 ip16 = _mm512_set_ps(ip[idx+15], ip[idx+14], ip[idx+13], ip[idx+12],
+                                ip[idx+11], ip[idx+10], ip[idx+9], ip[idx+8],
+                                ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
+                                ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+    __m512 op16 = LIBM_FUNC_VEC(s, 16, sqrtf)(ip16);
+    _mm512_store_ps(&op[0], op16);
+  #endif
+#endif
+  return 0;
+}
+
+int test_vad(test_data *data, int count)  {
+  double *ip  = (double*)data->ip;
+  double *op  = (double*)data->op;
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+  amd_vrda_sqrt(count, ip, op);
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  vdSqrt(count, ip, op);
+#endif
+  return 0;
+}
+
+int test_vas(test_data *data, int count)  {
+  float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
-  __m512 ip16 = _mm512_set_ps(ip[idx+15], ip[idx+14], ip[idx+13], ip[idx+12],
-                              ip[idx+11], ip[idx+10], ip[idx+9], ip[idx+8],
-                              ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
-                             ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
-  __m512 op16 = LIBM_FUNC_VEC(s, 16, sqrtf)(ip16);
-  _mm512_store_ps(&op[0], op16);
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+  amd_vrsa_sqrtf(count, ip, op);
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  vsSqrt(count, ip, op);
 #endif
   return 0;
 }

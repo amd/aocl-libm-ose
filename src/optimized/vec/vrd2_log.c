@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2018-2024, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -66,7 +66,7 @@
 static struct {
     double poly_logf[20];
     v_f64x2_t ln2, ln2_head, ln2_tail;
-    v_u64x2_t inf, v_max, v_min;
+    v_u64x2_t inf;
     v_u64x2_t two_by_three;
 } log_data = {
     .two_by_three = _MM_SET1_I64x2(0x3fe5555555555555),
@@ -74,8 +74,6 @@ static struct {
     .ln2 = _MM_SET1_PD2(0x1.62e42fefa39efp-1),
     .ln2_head = _MM_SET1_PD2(0x1.63p-1),
     .ln2_tail = _MM_SET1_PD2(-0x1.bd0105c610ca8p-13),
-    .v_max = _MM_SET1_I64x2(0x7ff0000000000000),
-    .v_min = _MM_SET1_I64x2(0x0010000000000000),
     /* Polynomial coefficients obtained using fpminimax algorithm from Sollya */
     .poly_logf = {
         0x1p0,
@@ -130,9 +128,8 @@ static struct {
 #define C18 _MM_SET1_PD2(log_data.poly_logf[17])
 #define C19 _MM_SET1_PD2(log_data.poly_logf[18])
 #define C20 _MM_SET1_PD2(log_data.poly_logf[19])
-#define V_MIN log_data.v_min
-#define V_MAX log_data.v_max
 
+#define LOG_ARG_MAX 0x7ff0000000000000
 
 __m128d
 ALM_PROTO_OPT(vrd2_log) (__m128d x)
@@ -144,8 +141,6 @@ ALM_PROTO_OPT(vrd2_log) (__m128d x)
 
     ux = as_v2_u64_f64(x);
 
-    v_u64x2_t condition = (ux - V_MIN >= V_MAX - V_MIN);
-
     ux = (ux - TWO_BY_THREE) & INF;
 
     v_i64x2_t int_exponent = (v_i64x2_t)ux;
@@ -156,8 +151,7 @@ ALM_PROTO_OPT(vrd2_log) (__m128d x)
 
     }
 
-	/* Reduce the mantissa, m to [2/3, 4/3] */
-
+    /* Reduce the mantissa, m to [2/3, 4/3] */
     m = as_v2_f64_u64(as_v2_u64_f64(x) - ux);
 
     f = m - C1;			/* f is in [-1/3,+1/3] */
@@ -167,23 +161,23 @@ ALM_PROTO_OPT(vrd2_log) (__m128d x)
      * r = C0 + f*C1 + f^2*C2 + f^3*C3 + .... + f^20*C20
      *
      */
-
     r =  POLY_EVAL_20(f, C0, C1, C2, C3, C4, C5, C6, C7,
                          C8, C9, C10, C11, C12, C13, C14,
                          C15, C16, C17, C18, C19, C20);
 
     /* Addition by using head and tail */
-
     r = n * ln2_head + (n * ln2_tail + r);
 
-    if (unlikely(any_v2_u64_loop(condition))) {
-        return (v_f64x2_t) {
-            condition[0] ? SCALAR_LOG(x[0]) : r[0],
-            condition[1] ? SCALAR_LOG(x[1]) : r[1],
-        };
+    ux = as_v2_u64_f64(x);
 
+    /* Check for special cases */
+    /* If input value is outside valid range, call scalar log(value) */
+    /* Otherwise, return the above computed result */
+    for(int i = 0; i < 2; i++)
+    {
+        if(unlikely(ux[i] > LOG_ARG_MAX))
+            r[i] = SCALAR_LOG(x[i]);
     }
-
     return r;
 }
 

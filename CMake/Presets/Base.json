@@ -1,0 +1,59 @@
+{
+    "version": 6,
+    "include": [
+        "Project.json"
+    ],
+    "configurePresets": [
+        {
+            "name": "base-config",
+            "hidden": true,
+            "inherits": [
+                "project-vars",
+                "project-options"
+            ],
+            "binaryDir" : "build/${presetName}",
+            "installDir": "build/${presetName}"
+        },
+        {
+            "name": "base-config-release",
+            "hidden": true,
+            "displayName": "Configure Release",
+            "inherits": "base-config",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "OPTION_ENABLE_ASSERTIONS": "ON",
+                "CMAKE_COMPILE_WARNING_AS_ERROR": true,
+                "CMAKE_EXPORT_COMPILE_COMMANDS": false,
+                "CMAKE_VERBOSE_MAKEFILE": "OFF"
+            }
+        },
+        {
+            "name": "base-config-debug",
+            "hidden": true,
+            "displayName": "Configure Debug",
+            "inherits": "base-config",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "OPTION_ENABLE_ASSERTIONS": "ON",
+                "CMAKE_COMPILE_WARNING_AS_ERROR": true,
+                "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+                "CMAKE_VERBOSE_MAKEFILE": "OFF"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "build-debug",
+            "displayName": "Build Debug",
+            "configurePreset": "base-config-debug",
+            "hidden": true
+        },
+        {
+            "name": "build-release",
+            "displayName": "Build Release",
+            "configurePreset": "base-config-release",
+            "targets": ["install"],
+            "hidden": true
+        }
+    ]
+}

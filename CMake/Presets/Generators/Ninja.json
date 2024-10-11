@@ -1,0 +1,15 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "ninja",
+            "hidden": true,
+            "generator": "Ninja"
+        },
+        {
+            "name": "ninja-multi-config",
+            "hidden": true,
+            "generator": "Ninja Multi-Config"
+        }
+    ]
+}

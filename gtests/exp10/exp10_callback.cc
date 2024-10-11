@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -40,16 +40,26 @@
 #include "test_exp10_data.h"
 #include "../libs/mparith/alm_mp_funcs.h"
 
-#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+/* The functions exp10() and exp10f() are unsupported in SVML & MSVC ABIs of Windows platform.
+ * So the below conditional compilation shall ensure that these 2 APIs will be enabled on
+ * either Linux platform (for all ABIs) or Windows Platform (for only AOCL ABI).
+ */
+#if ( (!defined(_WIN64) || !defined(_WIN32)) || ((defined (_WIN64) || defined (_WIN32)) && LIBM_PROTOTYPE == PROTOTYPE_AOCL) )
   double LIBM_FUNC(exp10)(double);
   float LIBM_FUNC(exp10f)(float);
 #endif
 
 static uint32_t ipargs = 1;
+bool special_case = false;
 
 uint32_t GetnIpArgs( void )
 {
-	return ipargs;
+  return ipargs;
+}
+
+bool getSpecialCase(void)
+{
+  return special_case;
 }
 
 void ConfSetupf32(SpecParams *specp) {
@@ -62,7 +72,7 @@ void ConfSetupf64(SpecParams *specp) {
   specp->countd = ARRAY_SIZE(test_exp10_conformance_data);
 }
 
-#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+#if ( (!defined(_WIN64) || !defined(_WIN32)) || ((defined (_WIN64) || defined (_WIN32)) && LIBM_PROTOTYPE == PROTOTYPE_AOCL) )
 float getFuncOp(float *data) {
   return LIBM_FUNC(exp10f)(data[0]);
 }
@@ -105,7 +115,7 @@ double getGlibcOp(double *data) {
 *FUNCTIONS*
 **********************/
 int test_s1s(test_data *data, int idx)  {
-  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  #if ( (!defined(_WIN64) || !defined(_WIN32)) || ((defined (_WIN64) || defined (_WIN32)) && LIBM_PROTOTYPE == PROTOTYPE_AOCL) )
     float *ip  = (float*)data->ip;
     float *op  = (float*)data->op;
     op[0] = LIBM_FUNC(exp10f)(ip[idx]);
@@ -114,7 +124,7 @@ int test_s1s(test_data *data, int idx)  {
 }
 
 int test_s1d(test_data *data, int idx)  {
-  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  #if ( (!defined(_WIN64) || !defined(_WIN32)) || ((defined (_WIN64) || defined (_WIN32)) && LIBM_PROTOTYPE == PROTOTYPE_AOCL) )
     double *ip  = (double*)data->ip;
     double *op  = (double*)data->op;
     op[0] = LIBM_FUNC(exp10)(ip[idx]);
@@ -225,6 +235,28 @@ int test_v16s(test_data *data, int idx)  {
   __m512 op16 = LIBM_FUNC_VEC(s, 16, exp10f)(ip16);
   _mm512_store_ps(&op[0], op16);
 #endif
+#endif
+  return 0;
+}
+
+int test_vad(test_data *data, int count)  {
+  double *ip  = (double*)data->ip;
+  double *op  = (double*)data->op;
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+  amd_vrda_exp10(count, ip, op);
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  vdExp10(count, ip, op);
+#endif
+  return 0;
+}
+
+int test_vas(test_data *data, int count)  {
+  float *ip  = (float*)data->ip;
+  float *op  = (float*)data->op;
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+  amd_vrsa_exp10f(count, ip, op);
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  vsExp10(count, ip, op);
 #endif
   return 0;
 }

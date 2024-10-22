@@ -25,36 +25,16 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-include(FetchContent)
-set(AU_BUILD_DOCS OFF)
-set(au                aoclutils)
-set(sourcedir         ${CMAKE_CURRENT_BINARY_DIR}/${au})
-set(binarydir         ${CMAKE_CURRENT_BINARY_DIR}/${au}_build)
-set(git_repo          "https://github.com/amd/aocl-utils.git")
-set(git_tag           "5.0")
-FetchContent_Declare(
-    ${au}
-    GIT_REPOSITORY ${git_repo}
-    GIT_TAG        ${git_tag}
-    SOURCE_DIR     ${sourcedir}
-    BINARY_DIR     ${binarydir}
-)
-set(libname au_cpuid)
-if(${CMAKE_BUILD_TYPE} MATCHES "Debug" )
-    string(APPEND libname -dbg)
-endif()
-set(AOCLUTILS_INCLUDE  ${sourcedir}/SDK/Bcl ${sourcedir}/SDK/Include ${binarydir}/generated)
-set(AOCLUTILS_PATH     ${binarydir}/Library/Cpuid)
-set(AOCLUTILS_INCLUDE  ${sourcedir}/SDK/Bcl ${sourcedir}/SDK/Include ${binarydir}/generated)
-set(AOCLUTILS_PATH     ${binarydir}/Library/Cpuid)
-set(AUCPUID_STATIC     ${CMAKE_STATIC_LIBRARY_PREFIX}${libname}${CMAKE_STATIC_LIBRARY_SUFFIX})
-set(AUCPUID_SHARED     ${CMAKE_SHARED_LIBRARY_PREFIX}${libname}${CMAKE_SHARED_LIBRARY_SUFFIX})
-set(AUCPUID_IMPORT     ${CMAKE_SHARED_LIBRARY_PREFIX}${libname}${CMAKE_STATIC_LIBRARY_SUFFIX})
-set(AOCLUTILS_STATIC   ${AOCLUTILS_PATH}/${AUCPUID_STATIC})
-if (WIN32)
-  set(AOCLUTILS_DLL    ${AOCLUTILS_PATH}/${AUCPUID_SHARED})
-  set(AOCLUTILS_SHARED ${AOCLUTILS_PATH}/${AUCPUID_IMPORT})
-else()
-  set(AOCLUTILS_SHARED ${AOCLUTILS_PATH}/${AUCPUID_SHARED})
-endif()
-FetchContent_MakeAvailable(${au})
+file(GLOB ZEN5_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.c")
+set(ZEN5_INCLUDE ${INCLUDE_PATHS} "${CMAKE_CURRENT_SOURCE_DIR}")
+get_zen5_arch_flags( zen5 )
+message(DEBUG "Zen5 Arch Flag : ${zen5}")
+set(ZEN5_FLAGS ${ZENCFLAGS} ${zen5} )
+
+add_library(zen5 OBJECT ${ZEN5_SRC})
+target_include_directories(zen5
+                           PUBLIC  ${${PROJECT_PREFIX}_COMMON_INCLUDES}
+                                   ${${PROJECT_PREFIX}_SDK_INCLUDES}
+                           PRIVATE ${${PROJECT_PREFIX}_PRIVATE_INCLUDES}
+                                   ${ZEN5_INCLUDE})
+target_compile_options(zen5 PRIVATE ${ZEN5_FLAGS})

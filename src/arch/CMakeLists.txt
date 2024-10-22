@@ -43,4 +43,8 @@ add_subdirectory(zen4)
 #add zen4 object library to libmobj
 list(APPEND libmobj $<TARGET_OBJECTS:zen4>)
 
+add_subdirectory(zen5)
+#add zen5 object library to libmobj
+list(APPEND libmobj $<TARGET_OBJECTS:zen5>)
+
 set(libmobj ${libmobj} PARENT_SCOPE)

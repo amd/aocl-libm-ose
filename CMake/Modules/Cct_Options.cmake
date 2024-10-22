@@ -25,6 +25,4 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-option(AU_INTERNAL "Use AOCL-Utils from Internal repo" OFF)
-
 option(OPTION_BUILD_TESTS "Enable the tests." OFF)

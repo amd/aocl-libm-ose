@@ -42,3 +42,4 @@ EXPORTS
     alm_mp_fdim
     alm_mpc_cexp
     alm_mp_linearfrac
+    alm_mp_add

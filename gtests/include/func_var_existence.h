@@ -86,6 +86,7 @@ static map<string, vector<string>> libm_funcs = {
     {"linearfrac",{"vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"add",       {"vrda", "vrsa"}},
     {"sub",       {"vrda", "vrsa"}},
+    {"mul",       {"vrda", "vrsa"}},
 };
 
 /* vector<string> getSupportedVariants(string func)

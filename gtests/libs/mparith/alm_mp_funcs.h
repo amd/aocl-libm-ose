@@ -86,6 +86,7 @@ double   alm_mp_erff        (float x);
 double   alm_mp_linearfracf (float x, float y, float sc_x, float sh_x, float sc_y, float sh_y);
 double   alm_mp_addf        (float x, float y);
 double   alm_mp_subf        (float x, float y);
+double   alm_mp_mulf        (float x, float y);
 
 /* Single precision ULP functions */
 float   alm_mp_acoshf_ULP    (float x,float z, double *, double *);
@@ -139,6 +140,7 @@ float   alm_mp_erff_ULP      (float x,float z,double *, double *);
 float   alm_mp_linearfracf_ULP (float x, float y, float sc_x, float sh_x, float sc_y, float sh_y, float z,double *, double *);
 float   alm_mp_addf_ULP      (float x, float y,float z, double *, double *);
 float   alm_mp_subf_ULP      (float x, float y,float z, double *, double *);
+float   alm_mp_mulf_ULP      (float x, float y,float z, double *, double *);
 
 long double  alm_mp_acos      (double x);
 long double  alm_mp_acosh     (double x);
@@ -190,6 +192,7 @@ long double  alm_mp_erf       (double x);
 long double  alm_mp_linearfrac (double x, double y, double sc_x, double sh_x, double sc_y, double sh_y);
 long double  alm_mp_add       (double x, double y);
 long double  alm_mp_sub       (double x, double y);
+long double  alm_mp_mul       (double x, double y);
 
 double  alm_mp_acosh_ULP     (double x,double z, double *, double *);
 double  alm_mp_acos_ULP      (double x,double z, double *, double *);
@@ -241,6 +244,7 @@ double  alm_mp_erf_ULP       (double x,double z,double *, double *);
 double  alm_mp_linearfrac_ULP(double x, double y, double sc_x, double sh_x, double sc_y, double sh_y, double z, double *, double *);
 double  alm_mp_add_ULP       (double x, double y,double z, double *, double *);
 double  alm_mp_sub_ULP       (double x, double y,double z, double *, double *);
+double  alm_mp_mul_ULP       (double x, double y,double z, double *, double *);
 
 // Complex Variants
 double _Complex    alm_mpc_cexpf      (float _Complex x);

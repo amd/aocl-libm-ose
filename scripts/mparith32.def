@@ -44,3 +44,4 @@ EXPORTS
     alm_mp_linearfracf
     alm_mp_addf
     alm_mp_subf
+    alm_mp_mulf

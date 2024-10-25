@@ -43,3 +43,4 @@ EXPORTS
     alm_mpc_cexpf
     alm_mp_linearfracf
     alm_mp_addf
+    alm_mp_subf

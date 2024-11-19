@@ -107,6 +107,12 @@ message(DEBUG "common includes ${${PROJECT_PREFIX}_COMMON_INCLUDES}")
 message(DEBUG "sdk include " "${${PROJECT_PREFIX}_SDK_INCLUDES}")
 message(DEBUG "private include" "${${PROJECT_PREFIX}_PRIVATE_INCLUDES}")
 
+if("${ALM_STATIC_DISPATCH}" MATCHES "(AVX2|ZEN2|ZEN3|ZEN4|ZEN5|AVX512)")
+  # Set the ALM_STATIC_DISPATCH macro based on user input
+  # default set to AVX2 if ALM_STATIC_DISPATCH is defined during cmake configured.
+  set(ALM_STATIC_DISPATCH "AVX2" CACHE STRING "Set the static dispatch architecture")
+endif()
+
 #------------------------------
 # AOCL_Utils CPUID_library requirements
 #------------------------------

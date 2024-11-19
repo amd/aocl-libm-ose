@@ -59,3 +59,16 @@ $ cmake --build --preset dev-release-gcc -v
   ```console
   $export LD_LIBRARY_PATH=./build/${presetName}/src:$LD_LIBRARY_PATH;
   ```
+
+
+# To configure cmake for STATIC_DISPATCH
+Available options for ALM_STATIC_DISPATCH:
+  "AVX2"    - Code path set to ZEN2 in aocl-libm library
+  "ZEN2"    - Code path set to ZEN2 in aocl-libm library
+  "ZEN3"    - Code path set to ZEN3 in aocl-libm library
+  "ZEN4"    - Code path set to ZEN4 in aocl-libm library
+  "ZEN5"    - Code path set to ZEN5 in aocl-libm library
+  "AVX512"  - Code path set to ZEN5 in aocl-libm library
+```console
+$ cmake --preset dev-release-gcc -DALM_STATIC_DISPATCH=ZEN3 --fresh
+```

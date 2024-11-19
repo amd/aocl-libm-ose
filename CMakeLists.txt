@@ -144,10 +144,10 @@ if (NOT DEFINED ${PROJECT_PREFIX}_CONFIG_OUTPUT_FILE)
     set(${PROJECT_PREFIX}_CONFIG_OUTPUT_FILE
             ${${PROJECT_PREFIX}_GENERATED}/Config.hh)
 endif()
-if(${CMAKE_BUILD_TYPE} EQUAL "Debug")
-    set(CONFIG_BUILD_TYPE_DEBUG "1")
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    set(CONFIG_BUILD_TYPE_DEBUG   "1")
 else()
-    set(CONFIG_BUILD_TYPE_DEBUG "0")
+    set(CONFIG_BUILD_TYPE_RELEASE "1")
 endif()
 
 #------------------------------------

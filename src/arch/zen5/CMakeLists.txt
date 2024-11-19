@@ -29,7 +29,7 @@ file(GLOB ZEN5_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.c")
 set(ZEN5_INCLUDE ${INCLUDE_PATHS} "${CMAKE_CURRENT_SOURCE_DIR}")
 get_zen5_arch_flags( zen5 )
 message(DEBUG "Zen5 Arch Flag : ${zen5}")
-set(ZEN5_FLAGS ${ZENCFLAGS} ${zen5} )
+set(ZEN5_FLAGS ${ZENCFLAGS} ${zen5} -mavx512f -mavx512dq )
 
 add_library(zen5 OBJECT ${ZEN5_SRC})
 target_include_directories(zen5

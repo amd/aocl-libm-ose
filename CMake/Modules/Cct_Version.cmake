@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2022-2023, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2022-2024, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -31,8 +31,8 @@
 #
 function(cct_extract_version_details var_prefix version_string)
 
-set(AU_VERSION_STRING_REGEX "^([0-9]+)\\.([0-9]+)\\.([0-9]+)([-])(rc|dev|\\.)?([0-9]*)$")
-string(REGEX MATCH ${AU_VERSION_STRING_REGEX} version_matches "${version_string}")
+set(ALM_VERSION_STRING_REGEX "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
+string(REGEX MATCH ${ALM_VERSION_STRING_REGEX} version_matches "${version_string}")
 
 # don't use CMAKE_MATCH_0 for `full` since it may not have the `v` prefix.
 if(CMAKE_MATCH_0)
@@ -50,7 +50,7 @@ if(CMAKE_MATCH_0)
     set(${var_prefix}_PATCH ${patch} PARENT_SCOPE)
     set(${var_prefix}_SUFFIX_EXTRA ${suffix_extra} PARENT_SCOPE)
 
-if(AU_CMAKE_VERBOSE)
+if(ALM_CMAKE_VERBOSE)
 	message("version string: " ${full})
 	message("version major: " ${major})
 	message("version minor: " ${minor})
@@ -63,14 +63,14 @@ endif()
 endfunction()
 
 function(dummy_dont_call)
-set(AU_VERSION_STRING_REGEX "^([0-9]+)\\.([0-9]+)\\.([0-9]+)([-]rc|\\.)?([0-9]*)$")
-string(REGEX REPLACE "${AU_VERSION_STRING_REGEX}" "\\1"
-        AU_VERSION_MAJOR "${AU_VERSION_STRING_PRE}")
-string(REGEX REPLACE "${AU_VERSION_STRING_REGEX}" "\\2"
-        AU_VERSION_MINOR "${AU_VERSION_STRING_PRE}")
-string(REGEX REPLACE "${AU_VERSION_STRING_REGEX}" "\\3"
-        AU_VERSION_PATCH "${AU_VERSION_STRING_PRE}")
-string(REGEX REPLACE "${AU_VERSION_STRING_REGEX}" "\\5"
-        AU_VERSION_PRERELEASE "${AU_VERSION_STRING_PRE}")
+set(ALM_VERSION_STRING_REGEX "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
+string(REGEX REPLACE "${ALM_VERSION_STRING_REGEX}" "\\1"
+        ALM_VERSION_MAJOR "${ALM_VERSION_STRING_PRE}")
+string(REGEX REPLACE "${ALM_VERSION_STRING_REGEX}" "\\2"
+        ALM_VERSION_MINOR "${ALM_VERSION_STRING_PRE}")
+string(REGEX REPLACE "${ALM_VERSION_STRING_REGEX}" "\\3"
+        ALM_VERSION_PATCH "${ALM_VERSION_STRING_PRE}")
+string(REGEX REPLACE "${ALM_VERSION_STRING_REGEX}" "\\5"
+        ALM_VERSION_PRERELEASE "${ALM_VERSION_STRING_PRE}")
 endfunction()
 

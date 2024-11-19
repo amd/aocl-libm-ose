@@ -6,8 +6,7 @@
 # Limitation for this Release
   CMake for aocl-libm on Linux is supoorted to build only libraries.
   CMake for aocl-libm on windows is not supported.
-  CMake is fetching AOCL-Utils from intrenal amd github i.e., from "github.amd.com/AOCL/aocl-utils".
-  So please use macro "-DAU_INTERNAL=ON" while cmake configuration after presetName before --fresh keyword.
+  CMake is fetching aocl-utils from external github i.e., from "https://github.com/amd/aocl-utils.git".
 
 # Building library
 ## To list the cmake configuration presetnames

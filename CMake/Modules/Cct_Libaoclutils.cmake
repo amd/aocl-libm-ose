@@ -31,7 +31,8 @@ set(au                aoclutils)
 set(sourcedir         ${CMAKE_CURRENT_BINARY_DIR}/${au})
 set(binarydir         ${CMAKE_CURRENT_BINARY_DIR}/${au}_build)
 set(git_repo          "https://github.com/amd/aocl-utils.git")
-set(git_tag           "5.0")
+set(git_tag           "dev")
+
 FetchContent_Declare(
     ${au}
     GIT_REPOSITORY ${git_repo}

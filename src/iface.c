@@ -171,6 +171,24 @@ alm_iface_fixup_one(const struct alm_arch_funcs *alm_funcs,
     return ret;
 }
 
+#ifdef ALM_STATIC_DISPATCH
+/* The below code is for static dispatch, set during cmake configure */
+static alm_uarch_ver_t
+alm_get_uach(void)
+{
+#if (ALM_STATIC_DISPATCH==AVX2) || (ALM_STATIC_DISPATCH==ZEN2)
+    return ALM_UARCH_VER_ZEN2;
+#elif ALM_STATIC_DISPATCH==ZEN3
+    return ALM_UARCH_VER_ZEN3;
+#elif ALM_STATIC_DISPATCH==ZEN4
+    return ALM_UARCH_VER_ZEN4;
+#elif (ALM_STATIC_DISPATCH==ZEN5) || (ALM_STATIC_DISPATCH==AVX512)
+    return ALM_UARCH_VER_ZEN5;
+#else
+   printf("Please set ALM_STATIC_DISPATCH to one of AVX2, ZEN2, ZEN3, ZEN4, ZEN5, AVX512 \n")
+#endif
+}
+#else
 static alm_uarch_ver_t
 alm_get_uach(void)
 {
@@ -199,6 +217,7 @@ alm_get_uach(void)
 
     return arch_ver;
 }
+#endif
 
 void
 alm_iface_fixup(alm_ep_wrapper_t *g_ep_wrapper,

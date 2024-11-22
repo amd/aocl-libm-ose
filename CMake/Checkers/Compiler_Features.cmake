@@ -28,15 +28,21 @@
 include(CheckCCompilerFlag)
 
 set(GCC_VERSION_MIN   "9.2")
+set(GCC_VERSION_MAX   "14.1")
 set(CLANG_VERSION_MIN "9.0")
+set(CLANG_VERSION_MAX "18.1")
 if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
-    if (CMAKE_C_COMPILER_VERSION VERSION_LESS 9.2)
-        message(FATAL_ERROR "GCC version must be at least 9.2 . Available version is ${CMAKE_C_COMPILER_VERSION}")
+    if ((CMAKE_C_COMPILER_VERSION VERSION_LESS ${GCC_VERSION_MIN}) OR
+        (CMAKE_C_COMPILER_VERSION VERSION_GREATER ${GCC_VERSION_MAX}))
+        message(FATAL_ERROR "Unsupported GCC Compiler version: ${CMAKE_C_COMPILER_VERSION}. \
+                             Please use GCC version between ${GCC_VERSION_MIN} and ${GCC_VERSION_MAX}.")
     endif()
-    set(CONFIG_COMPILER_IS_GCC 1)
+    set(CONFIG_COMPILER_IS_GCC   1)
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
-    if (CMAKE_C_COMPILER_VERSION VERSION_LESS 9.0)
-        message(FATAL_ERROR "Clang version must be at least 9.0 . Available version is ${CMAKE_C_COMPILER_VERSION}")
+    if ((CMAKE_C_COMPILER_VERSION VERSION_LESS ${CLANG_VERSION_MIN}) OR
+        (CMAKE_C_COMPILER_VERSION VERSION_GREATER ${CLANG_VERSION_MAX}))
+    message(FATAL_ERROR "Unsupported Clang Compiler version: ${CMAKE_C_COMPILER_VERSION}. \
+                         Please use Clang version between ${CLANG_VERSION_MIN} and ${CLANG_VERSION_MAX}.")
     endif()
     set(CONFIG_COMPILER_IS_CLANG 1)
 else()

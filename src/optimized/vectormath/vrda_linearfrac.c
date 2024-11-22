@@ -29,7 +29,7 @@
 C implementation of Linearfrac
 
 Signature:
-    void vrda_linearfrac(int length, double *a, double *b, double *scalea, double *shifta, double *scaleb, double *shiftb, double *result)
+    void vrda_linearfrac(int length, double *a, double *b, double scalea, double shifta, double scaleb, double shiftb, double *result)
 
 Implementation notes:
 
@@ -42,31 +42,108 @@ Implementation notes:
 #include <immintrin.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm_util_amd.h>
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
+#include <libm/types.h>
+#include <libm/typehelper.h>
+#include <libm/typehelper-vec.h>
+#include <libm/compiler.h>
+
+
+
 
 void ALM_PROTO_OPT(vrda_linearfrac)(int length, double *a, double *b, double scalea, double shifta, double scaleb, double shiftb, double *result)
 {
     int j = 0;
-    if(likely(length >= DOUBLE_ELEMENTS_256_BIT))
+    uint64_t scaleb_u = asuint64(scaleb);
+    uint64_t shiftb_u = asuint64(shiftb);
+
+    /* Special case where scaleb = 0 and shiftb = 1
+       In this case,
+       Output = (scalea * a + shifta) / (scaleb * b + shiftb)
+              = (scalea * a + shifta) / (0 * b + 1)
+              = (scalea * a + shifta) / 1
+              = (scalea * a + shifta)
+    */
+    if(((scaleb_u & ~SIGNBIT_DP64) == 0) && (shiftb_u == POS_ONE_F64))
     {
-        for (j = 0; j <= length - DOUBLE_ELEMENTS_256_BIT; j += DOUBLE_ELEMENTS_256_BIT)
+        /* Broadcast scalar values scalea and scaleb to vectors */
+        v_f64x4_t scalea_v = _mm256_broadcast_sd(&scalea);
+        v_f64x4_t shifta_v = _mm256_broadcast_sd(&shifta);
+        v_f64x4_t a_v, transa;
+
+        if(likely(length >= DOUBLE_ELEMENTS_256_BIT))
         {
-            __m256d ip41 = _mm256_loadu_pd(&a[j]);
-            __m256d ip42 = _mm256_loadu_pd(&b[j]);
-            __m256d op4 = ALM_PROTO(vrd4_linearfrac)(ip41, ip42, scalea, shifta, scaleb, shiftb);
-            _mm256_storeu_pd(&result[j], op4);
+            for (j = 0; j <= length - DOUBLE_ELEMENTS_256_BIT; j += DOUBLE_ELEMENTS_256_BIT)
+            {
+                a_v = _mm256_loadu_pd(&a[j]);
+                /* transa = (a * scalea) + shifta */
+                transa = _mm256_fmadd_pd(scalea_v, a_v, shifta_v);
+                _mm256_storeu_pd(&result[j], transa);
+            }
+            if (length - j)
+            {
+                a_v = _mm256_loadu_pd(&a[length - DOUBLE_ELEMENTS_256_BIT]);
+                /* transa = (a * scalea) + shifta */
+                transa = _mm256_fmadd_pd(scalea_v, a_v, shifta_v);
+                _mm256_storeu_pd(&result[length - DOUBLE_ELEMENTS_256_BIT], transa);
+            }
+            return;
         }
-        if (length - j)
-        {
-            __m256d ip41 = _mm256_loadu_pd(&a[length - DOUBLE_ELEMENTS_256_BIT]);
-            __m256d ip42 = _mm256_loadu_pd(&b[length - DOUBLE_ELEMENTS_256_BIT]);
-            __m256d op4 = ALM_PROTO(vrd4_linearfrac)(ip41, ip42, scalea, shifta, scaleb, shiftb);
-            _mm256_storeu_pd(&result[length - DOUBLE_ELEMENTS_256_BIT], op4);
-        }
-        return;
+            __m256i mask = GET_MASK_DOUBLE_256_BIT(length);
+            a_v = _mm256_maskload_pd(&a[j], mask);
+            /* transa = (a * scalea) + shifta */
+            transa = _mm256_fmadd_pd(scalea_v, a_v, shifta_v);
+            _mm256_maskstore_pd(&result[j], mask, transa);
     }
-    __m256i mask = GET_MASK_DOUBLE_256_BIT(length);
-    __m256d ip41 = _mm256_maskload_pd(&a[j], mask);
-    __m256d ip42 = _mm256_maskload_pd(&b[j], mask);
-    __m256d op4 = ALM_PROTO(vrd4_linearfrac)(ip41, ip42, scalea, shifta, scaleb, shiftb);
-    _mm256_maskstore_pd(&result[j], mask, op4);
+    else
+    {
+        /* Broadcast scalar values scalea, scaleb, shifta and shiftb to vectors*/
+        v_f64x4_t scalea_v = _mm256_broadcast_sd(&scalea);
+        v_f64x4_t scaleb_v = _mm256_broadcast_sd(&scaleb);
+        v_f64x4_t shifta_v = _mm256_broadcast_sd(&shifta);
+        v_f64x4_t shiftb_v = _mm256_broadcast_sd(&shiftb);
+
+        if(likely(length >= DOUBLE_ELEMENTS_256_BIT))
+        {
+
+            v_f64x4_t a_v, b_v, transa, transb, result_v;
+
+            for (j = 0; j <= length - DOUBLE_ELEMENTS_256_BIT; j += DOUBLE_ELEMENTS_256_BIT)
+            {
+                a_v = _mm256_loadu_pd(&a[j]);
+                b_v = _mm256_loadu_pd(&b[j]);
+                /* transa = (a * scalea) + shifta */
+                transa = _mm256_fmadd_pd(scalea_v, a_v, shifta_v);
+                /* transb = (b * scaleb) + shiftb */
+                transb = _mm256_fmadd_pd(scaleb_v, b_v, shiftb_v);
+                /* result = (transa / transb) = ((a * scalea) + shifta) / ((b * scaleb) + shiftb)*/
+                result_v = _mm256_div_pd(transa, transb);
+                _mm256_storeu_pd(&result[j], result_v);
+            }
+            if (length - j)
+            {
+                a_v = _mm256_loadu_pd(&a[length - DOUBLE_ELEMENTS_256_BIT]);
+                b_v= _mm256_loadu_pd(&b[length - DOUBLE_ELEMENTS_256_BIT]);
+                /* transa = (a * scalea) + shifta */
+                transa = _mm256_fmadd_pd(scalea_v, a_v, shifta_v);
+                /* transb = (b * scaleb) + shiftb */
+                transb = _mm256_fmadd_pd(scaleb_v, b_v, shiftb_v);
+                /* result = (transa / transb) = ((a * scalea) + shifta) / ((b * scaleb) + shiftb)*/
+                result_v = _mm256_div_pd(transa, transb);
+                _mm256_storeu_pd(&result[length - DOUBLE_ELEMENTS_256_BIT], result_v);
+            }
+            return;
+        }
+        __m256i mask = GET_MASK_DOUBLE_256_BIT(length);
+        v_f64x4_t a_v = _mm256_maskload_pd(&a[j], mask);
+        v_f64x4_t b_v = _mm256_maskload_pd(&b[j], mask);
+        /* transa = (a * scalea) + shifta */
+        v_f64x4_t transa = _mm256_fmadd_pd(scalea_v, a_v, shifta_v);
+        /* transb = (b * scaleb) + shiftb */
+        v_f64x4_t transb = _mm256_fmadd_pd(scaleb_v, b_v, shiftb_v);
+        /* result = (transa / transb) = ((a * scalea) + shifta) / ((b * scaleb) + shiftb)*/
+        v_f64x4_t result_v = _mm256_div_pd(transa, transb);
+        _mm256_maskstore_pd(&result[j], mask, result_v);
+    }
 }

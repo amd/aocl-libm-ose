@@ -35,7 +35,7 @@ void LibmPerfTestaf(benchmark::State& st, InputParams* param) {
   test_data data;
   data.ip  = (void *) objtest.inpbuff;
   data.op  = (void *) objtest.outbuff;
-  double szn = param->niter * param->count;
+  double szn = param->niter;
 
   if(nargs == 2)
     data.ip1 = (void *) objtest.inpbuff1;
@@ -46,7 +46,7 @@ void LibmPerfTestaf(benchmark::State& st, InputParams* param) {
     data.ip2 = (void *) objtest.inpbuff2;
     data.ip3 = (void *) objtest.inpbuff3;
     data.ip4 = (void *) objtest.inpbuff4;
-    data.ip5 = (void *) objtest.inpbuff5; 
+    data.ip5 = (void *) objtest.inpbuff5;
   }
 
   for (auto _ : st) {
@@ -59,11 +59,11 @@ void LibmPerfTestaf(benchmark::State& st, InputParams* param) {
 
 void LibmPerfTestad(benchmark::State& st, InputParams* param) {
   uint32_t nargs = GetnIpArgs();
-  AoclLibmTest<double> objtest(param, nargs); 
+  AoclLibmTest<double> objtest(param, nargs);
   test_data data;
   data.ip  = (void *) objtest.inpbuff;
   data.op  = (void *) objtest.outbuff;
-  double szn = param->niter * param->count;
+  double szn = param->niter;
 
   if(nargs == 2)
     data.ip1 = (void *) objtest.inpbuff1;

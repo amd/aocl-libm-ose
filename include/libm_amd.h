@@ -381,6 +381,9 @@ void FN_PROTOTYPE(vrda_fmini)( int len, double *lhs, int inc_a, double *rhs, int
 void FN_PROTOTYPE(vrda_linearfrac)(int len, double *x, double *y, double scx, double shx, double scy, double shy, double *result);
 void FN_PROTOTYPE(vrsa_linearfracf)(int len, float *x, float *y, float scx, float shx, float scy, float shy, float *result);
 
+/* Array variants of Powx */
+void FN_PROTOTYPE(vrda_powx)(int len, double *x, double y, double *result);
+
 #ifdef __cplusplus
 }
 #endif

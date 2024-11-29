@@ -190,6 +190,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_sin);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_pow);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_sqrt);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_linearfrac);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_powx);
 
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_expf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_exp2f);
@@ -205,6 +206,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_logf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_powf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_sqrtf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_linearfracf);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_powxf);
 
 extern alm_ep_func_t        G_ENTRY_PT_PTR(sincos);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(sincosf);

@@ -294,3 +294,5 @@ EXPORTS
     amd_vrsa_fminfi
     amd_vrda_fmini
     alm_main
+    amd_vrsa_powxf
+    amd_vrda_powx

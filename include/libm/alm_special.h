@@ -58,6 +58,7 @@ enum {
         ALM_E_OUT_ZERO = 1<<18,
 
         ALM_E_OVERFLOW = 1<<19,        /*overflow flag*/
+        ALM_E_UNDERFLOW = 1<<20,       /*Underflow flag*/
 
 };
 
@@ -229,6 +230,8 @@ float   _atanf_special_overflow(float x);
 double  alm_atan_special(double x);
 
 double alm_nextafter_special(double y, uint32_t code);
+
+double alm_expm1_special(double y, uint32_t code);
 
 extern  float _cbrtf_special            (float x);
 extern  float _cosf_special             (float x);

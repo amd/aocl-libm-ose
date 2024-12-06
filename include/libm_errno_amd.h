@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -30,8 +30,14 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <stdlib.h>
+
 #ifndef __set_errno
-#define __set_errno(x) errno = (x)
+    #ifdef WINDOWS
+        #define __set_errno(x) __set_errno(x)
+    #else
+        #define __set_errno(x) errno = (x)
+    #endif
 #endif
 
 #endif /* LIBM_ERRNO_AMD_H_INCLUDED */

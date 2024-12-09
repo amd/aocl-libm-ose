@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ test_log1pf_conformance_data[] = {
     {POS_INF_F32,POS_INF_F32,0}, //
     {NEG_INF_F32,NEG_INF_F32,FE_INVALID}, //
     {POS_ONE_F32,0x3f317218,0}, //
-    {NEG_ONE_F32,0xff800000,0}, //10
+    {NEG_ONE_F32,0xff800000,FE_DIVBYZERO}, //10
     {NEG_ZERO_F32,NEG_ZERO_F32,0}, //
     {POS_ZERO_F32,POS_ZERO_F32,0}, //
 
@@ -51,7 +51,7 @@ test_log1pf_conformance_data[] = {
 
 
     /*Other Input */
- 
+
     { 0xbf800000, 0xff800000, 0},//25
     { 0xbf7e0000, 0xc09b43d5, 0},
     { 0xbf7c0000, 0xc0851592, 0},
@@ -126,7 +126,7 @@ test_log1pf_conformance_data[] = {
     { 0x40c90fdb, 0x3ffe271a, 0}, //2pi
     { 0x41200000, 0x4019771e, 0}, //10
     { 0x447a0000, 0x40dd1485, 0}, //1000
-    { 0x71200000, 0x4289b07e, 0}, // 1.25*2^99 
+    { 0x71200000, 0x4289b07e, 0}, // 1.25*2^99
 
     { 0xc2af0000, 0x7fc00000, 0}, //-87.5
     { 0xc2e00000, 0x7fc00000, 0}, //-112
@@ -152,7 +152,7 @@ test_log1p_conformance_data[] = {
     {POS_INF_F64,POS_INF_F64,0}, //
     {NEG_INF_F64,NEG_QNAN_F64,FE_INVALID}, //
     {POS_ONE_F64,0x3FE62E42FEFA39EFLL,0}, //
-    {NEG_ONE_F64,NEG_INF_F64,0}, //
+    {NEG_ONE_F64,NEG_INF_F64,FE_DIVBYZERO}, //
     {NEG_ZERO_F64,NEG_ZERO_F64,0}, //
     {POS_ZERO_F64,POS_ZERO_F64,0}, //
     //{F64_POS_HDENORM,F64_POS_HDENORM,0}, //

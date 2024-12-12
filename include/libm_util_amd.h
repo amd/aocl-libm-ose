@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -281,6 +281,9 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
 #define FLOAT_ELEMENTS_256_BIT 8
 #define DOUBLE_ELEMENTS_256_BIT 4
 
+#define FLOAT_ELEMENTS_512_BIT 16
+#define DOUBLE_ELEMENTS_512_BIT 8
+
 #define GET_MASK_FLOAT_256_BIT(rem_ele) \
     (rem_ele == 1 ? _mm256_set_epi32(0, 0, 0, 0, 0, 0, 0, -1) : \
     (rem_ele == 2 ? _mm256_set_epi32(0, 0, 0, 0, 0, 0, -1, -1) : \
@@ -294,7 +297,5 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
     (rem_ele == 1 ? _mm256_set_epi64x(0, 0, 0, -1) : \
     (rem_ele == 2 ? _mm256_set_epi64x(0, 0, -1, -1) : \
     _mm256_set_epi64x(0, -1, -1, -1)))
-
-
 
 #endif /* LIBM_UTIL_AMD_H_INCLUDED */

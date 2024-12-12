@@ -25,50 +25,7 @@
  *
  */
 
-/*
-C implementation of vector array version of powx
-
-Signature:
-    void vrda_powx(int length, double *x, double y, double *result)
-
-Implementation notes:
-
-    A variation of power function - Computes vector raised to a scalar power
-    powx(x,y) = e^(y * log(x))
-
-*/
-
 #define ALM_OVERRIDE 1
+
 #include <libm/arch/zen5.h>
-
-#include <libm_macros.h>
-#include <immintrin.h>
-#include <libm/amd_funcs_internal.h>
-#include <libm_util_amd.h>
-#include <stdio.h>
-
-void ALM_PROTO_ARCH_ZN5(vrda_powx)(int length, double *x, double y, double *result)
-{
-    int j = 0;
-    int remainder = length % DOUBLE_ELEMENTS_512_BIT;
-
-    if(likely(length >= DOUBLE_ELEMENTS_512_BIT))
-    {
-        for (j = 0; j <= length - DOUBLE_ELEMENTS_512_BIT; j += DOUBLE_ELEMENTS_512_BIT)
-        {
-            __m512d ip8 = _mm512_loadu_pd(&x[j]);
-            __m512d op8 = ALM_PROTO(vrd8_powx)(ip8, y);
-            _mm512_storeu_pd(&result[j], op8);
-        }
-    }
-    remainder = length -j;
-
-    if(remainder)
-    {
-        __m512d zero = _mm512_set1_pd(0);
-        __mmask8 mask =  0xFF >> ( 8 - remainder );
-        __m512d ip41 = _mm512_mask_load_pd(zero, mask, &x[j]);
-        __m512d op4 = ALM_PROTO(vrd8_powx)(ip41, y);
-        _mm512_mask_store_pd(&result[j], mask, op4);
-    }
-}
+#include "../../optimized/vectormath/vrs4_powxf.c"

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,50 +25,57 @@
  *
  */
 
-/*
-C implementation of vector array version of powx
-
-Signature:
-    void vrda_powx(int length, double *x, double y, double *result)
-
-Implementation notes:
-
-    A variation of power function - Computes vector raised to a scalar power
-    powx(x,y) = e^(y * log(x))
-
-*/
-
-#define ALM_OVERRIDE 1
-#include <libm/arch/zen5.h>
-
-#include <libm_macros.h>
 #include <immintrin.h>
 #include <libm/amd_funcs_internal.h>
-#include <libm_util_amd.h>
-#include <stdio.h>
+#include <libm/types.h>
+#include <libm/typehelper.h>
+#include <libm/typehelper-vec.h>
+#include <libm/compiler.h>
+#include <libm/arch/zen5.h>
 
-void ALM_PROTO_ARCH_ZN5(vrda_powx)(int length, double *x, double y, double *result)
-{
-    int j = 0;
-    int remainder = length % DOUBLE_ELEMENTS_512_BIT;
+/*
+ *   __m512 ALM_PROTO_ARCH_ZN5(vrs16_powxf)(__m512, float);
+ *
+ * Spec:
+ *   - A variation of power function.
+ *   - Computes vector raised to a scalar power.
+ *
+ * Implementation Notes:
+ *
+ * Call vrs8_powxf twice to compute powxf() for 8 elements in each iteration
+ *
+ * Refer vrs8_powxf() for details of algorithm.
+ *
+ */
 
-    if(likely(length >= DOUBLE_ELEMENTS_512_BIT))
-    {
-        for (j = 0; j <= length - DOUBLE_ELEMENTS_512_BIT; j += DOUBLE_ELEMENTS_512_BIT)
-        {
-            __m512d ip8 = _mm512_loadu_pd(&x[j]);
-            __m512d op8 = ALM_PROTO(vrd8_powx)(ip8, y);
-            _mm512_storeu_pd(&result[j], op8);
-        }
-    }
-    remainder = length -j;
+v_f32x8_t vrs8_powxf(v_f32x8_t x, float y);
 
-    if(remainder)
-    {
-        __m512d zero = _mm512_set1_pd(0);
-        __mmask8 mask =  0xFF >> ( 8 - remainder );
-        __m512d ip41 = _mm512_mask_load_pd(zero, mask, &x[j]);
-        __m512d op4 = ALM_PROTO(vrd8_powx)(ip41, y);
-        _mm512_mask_store_pd(&result[j], mask, op4);
-    }
+v_f32x16_t
+ALM_PROTO_ARCH_ZN5(vrs16_powxf)(v_f32x16_t x, float y) {
+
+     v_f32x16_t ret;
+
+     v_f32x8_t result[2], _x[2];
+
+     _x[0] = (v_f32x8_t){ x[0], x[1], x[2], x[3],
+                          x[4], x[5], x[6], x[7] };
+
+
+     _x[1] = (v_f32x8_t){ x[8], x[9], x[10], x[11],
+                          x[12], x[13], x[14], x[15] };
+
+
+     for(int32_t i=0; i < 2; i++) {
+
+         result[i] =  ALM_PROTO_OPT(vrs8_powxf)(_x[i], y);
+
+     }
+
+     ret =  _mm512_setr_ps(result[0][0], result[0][1], result[0][2], result[0][3],
+                           result[0][4], result[0][5], result[0][6], result[0][7],
+                           result[1][0], result[1][1], result[1][2], result[1][3],
+                           result[1][4], result[1][5], result[1][6], result[1][7]);
+
+    return ret;
+
 }

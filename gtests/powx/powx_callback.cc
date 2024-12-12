@@ -146,8 +146,9 @@ int test_v2d(test_data *data, int idx)  {
     double *ip1  = (double*)data->ip;
     double *ip2 = (double*)data->ip1;
     double *op  = (double*)data->op;
-    __m128d ip21 = _mm_set_pd(ip1[idx+1], ip1[idx]);
+
     #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      __m128d ip21 = _mm_set_pd(ip1[idx+1], ip1[idx]);
       __m128d op2 = LIBM_FUNC_VEC(d, 2, powx)(ip21, ip2[idx]);
       _mm_store_pd(&op[0], op2);
     #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
@@ -163,8 +164,9 @@ int test_v4s(test_data *data, int idx)  {
     float *ip1  = (float*)data->ip;
     float *ip2 = (float*)data->ip1;
     float *op  = (float*)data->op;
-    __m128 ip41 = _mm_set_ps(ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
+
     #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      __m128 ip41 = _mm_set_ps(ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
       __m128 op4 = LIBM_FUNC_VEC(s, 4, powxf)(ip41, ip2[idx]);
       _mm_store_ps(&op[0], op4);
     #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
@@ -180,8 +182,9 @@ int test_v4d(test_data *data, int idx)  {
     double *ip1  = (double*)data->ip;
     double *ip2 = (double*)data->ip1;
     double *op  = (double*)data->op;
-    __m256d ip41 = _mm256_set_pd(ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
+
     #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      __m256d ip41 = _mm256_set_pd(ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
       __m256d op4 = LIBM_FUNC_VEC(d, 4, powx)(ip41, ip2[idx]);
       _mm256_store_pd(&op[0], op4);
     #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
@@ -197,9 +200,10 @@ int test_v8s(test_data *data, int idx)  {
     float *ip1  = (float*)data->ip;
     float *ip2 = (float*)data->ip1;
     float *op  = (float*)data->op;
-    __m256 ip81 = _mm256_set_ps(ip1[idx+7], ip1[idx+6], ip1[idx+5], ip1[idx+4],
-                                ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
+
     #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      __m256 ip81 = _mm256_set_ps(ip1[idx+7], ip1[idx+6], ip1[idx+5], ip1[idx+4],
+                                ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
       __m256 op8 = LIBM_FUNC_VEC(s, 8, powxf)(ip81, ip2[idx]);
       _mm256_store_ps(&op[0], op8);
     #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
@@ -217,9 +221,9 @@ int test_v8d(test_data *data, int idx)  {
       double *ip2 = (double*)data->ip1;
       double *op  = (double*)data->op;
 
-      __m512d ip8_1 = _mm512_set_pd(ip1[idx+7], ip1[idx+6], ip1[idx+5], ip1[idx+4],
-                                ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
       #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+        __m512d ip8_1 = _mm512_set_pd(ip1[idx+7], ip1[idx+6], ip1[idx+5], ip1[idx+4],
+                                ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
         __m512d op8 = LIBM_FUNC_VEC(d, 8, powx)(ip8_1, ip2[idx]);
         _mm512_store_pd(&op[0], op8);
       #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
@@ -236,11 +240,12 @@ int test_v16s(test_data *data, int idx)  {
       float *ip1 = (float*)data->ip;
       float *ip2 = (float*)data->ip1;
       float *op  = (float*)data->op;
-      __m512 ip16_1 = _mm512_set_ps(ip1[idx+15], ip1[idx+14], ip1[idx+13], ip1[idx+12],
+
+      #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+        __m512 ip16_1 = _mm512_set_ps(ip1[idx+15], ip1[idx+14], ip1[idx+13], ip1[idx+12],
                                   ip1[idx+11], ip1[idx+10], ip1[idx+9], ip1[idx+8],
                                   ip1[idx+7], ip1[idx+6], ip1[idx+5], ip1[idx+4],
                                 ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
-      #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
         __m512 op16 = LIBM_FUNC_VEC(s, 16, powxf)(ip16_1, ip2[idx]);
         _mm512_store_ps(&op[0], op16);
       #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
@@ -259,7 +264,7 @@ int test_vad(test_data *data, int count)  {
   #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
       amd_vrda_powx(count, ip1, ip2[0], op);
   #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
-    vdPowx(count, ip1, ip2, op);
+    vdPowx(count, ip1, ip2[0], op);
   #endif
   return 0;
 }
@@ -272,7 +277,7 @@ int test_vas(test_data *data, int count)  {
   #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
       amd_vrsa_powxf(count, ip1, ip2[0], op);
   #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
-    vsPowx(count, ip1, ip2, op);
+    vsPowx(count, ip1, ip2[0], op);
   #endif
   return 0;
 }

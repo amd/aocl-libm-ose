@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -107,10 +107,21 @@ message(DEBUG "common includes ${${PROJECT_PREFIX}_COMMON_INCLUDES}")
 message(DEBUG "sdk include " "${${PROJECT_PREFIX}_SDK_INCLUDES}")
 message(DEBUG "private include" "${${PROJECT_PREFIX}_PRIVATE_INCLUDES}")
 
-if("${ALM_STATIC_DISPATCH}" MATCHES "(AVX2|ZEN2|ZEN3|ZEN4|ZEN5|AVX512)")
-  # Set the ALM_STATIC_DISPATCH macro based on user input
-  # default set to AVX2 if ALM_STATIC_DISPATCH is defined during cmake configured.
-  set(ALM_STATIC_DISPATCH "AVX2" CACHE STRING "Set the static dispatch architecture")
+if(DEFINED ALM_STATIC_DISPATCH)
+  if (
+         ("${ALM_STATIC_DISPATCH}" STREQUAL "AVX2")
+      OR ("${ALM_STATIC_DISPATCH}" STREQUAL "ZEN2")
+      OR ("${ALM_STATIC_DISPATCH}" STREQUAL "ZEN3")
+      OR ("${ALM_STATIC_DISPATCH}" STREQUAL "ZEN4")
+      OR ("${ALM_STATIC_DISPATCH}" STREQUAL "ZEN5")
+      OR ("${ALM_STATIC_DISPATCH}" STREQUAL "AVX512") )
+    # Set the ALM_STATIC_DISPATCH macro based on user input
+    # default set to AVX2 if ALM_STATIC_DISPATCH is defined during cmake configured.
+    set(ALM_STATIC_DISPATCH "AVX2" CACHE STRING "Set the static dispatch architecture")
+    message("ALM_STATIC_DISPATCH set to ${ALM_STATIC_DISPATCH}")
+  else()
+    message(FATAL_ERROR "Valid option for ALM_STATIC_DISPATCH is set to any of the AVX2/ZEN2/ZEN3/ZEN4/ZEN5/AVX512")
+  endif()
 endif()
 
 #------------------------------

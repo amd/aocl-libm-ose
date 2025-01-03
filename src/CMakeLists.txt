@@ -74,15 +74,14 @@ else()
     message(ERROR,"Unsupported Compiler")
 endif()
 
-if("${ALM_STATIC_DISPATCH}" MATCHES "(AVX2|ZEN2|ZEN3|ZEN4|ZEN5|AVX512)")
+if(DEFINED ALM_STATIC_DISPATCH)
+  if("${ALM_STATIC_DISPATCH}" MATCHES "(AVX2|ZEN2|ZEN3|ZEN4|ZEN5|AVX512)")
     # Define the architecture macros
     add_compile_definitions(AVX2=1 ZEN2=2 ZEN3=3 ZEN4=4 ZEN5=5 AVX512=6)
 
     # Add the ALM_STATIC_DISPATCH definition
     add_compile_definitions(ALM_STATIC_DISPATCH=${ALM_STATIC_DISPATCH})
-else()
-    message("Valid option for ALM_STATIC_DISPATCH is set to any of AVX2/ZEN2/ZEN3/ZEN4/ZEN5/AVX512")
-    message("Defaulting to Dynamic Dispatch ")
+  endif()
 endif()
 
 # include paths under src.

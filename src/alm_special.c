@@ -881,3 +881,21 @@ float _fmodf_special(float x, float y, U32 errorCode)
     return y;
 }
 
+double alm_ldexp_special(double y, U32 code) {
+    flt64_t ym = {.d = y};
+
+    switch (code) {
+    case ALM_E_IN_X_NAN:
+        __alm_handle_error(ym.u, AMD_F_INVALID);
+        break;
+    case ALM_E_UNDERFLOW:
+        __alm_handle_error(ym.u, AMD_F_INEXACT|AMD_F_UNDERFLOW);
+        break;
+    case ALM_E_OVERFLOW:
+        __alm_handle_error(ym.u, AMD_F_INEXACT | AMD_F_OVERFLOW);
+        break;
+    default:
+        break;
+    }
+    return y;
+}

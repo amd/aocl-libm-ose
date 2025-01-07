@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -29,7 +29,8 @@
 #include "libm_util_amd.h"
 #include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
-
+#include "limits.h"
+#include <libm/typehelper.h>
 
 double ALM_PROTO_REF(ldexp)(double x, int n)
 {
@@ -37,20 +38,20 @@ double ALM_PROTO_REF(ldexp)(double x, int n)
     unsigned int sign;
     int exponent;
     val.f64 = x;
-	val_x.f64 = x;
+    val_x.f64 = x;
     sign = val.u32[1] & 0x80000000;
     val.u32[1] = val.u32[1] & 0x7fffffff; /* remove the sign bit */
 
     if (val.u64 > 0x7ff0000000000000)     /* x is NaN */
         #ifdef WINDOWS
-        return __alm_handle_error(val_x.u64|0x0008000000000000, 0);
+            return val_x.u64|0x0008000000000000;
         #else
         {
         if(!(val.u64 & 0x0008000000000000))// x is snan
-           return __alm_handle_error(val_x.u64|0x0008000000000000, AMD_F_INVALID);
+           return alm_ldexp_special(asdouble(val_x.u64|0x0008000000000000), ALM_E_IN_X_NAN);
         else
            return x;
-	    }
+        }
         #endif
 
     if(val.u64 == 0x7ff0000000000000)/* x = +-inf*/
@@ -63,50 +64,59 @@ double ALM_PROTO_REF(ldexp)(double x, int n)
 
     if(exponent == 0)/*x is denormal*/
     {
-	val.f64 = val.f64 * VAL_2PMULTIPLIER_DP;/*multiply by 2^53 to bring it to the normal range*/
+    val.f64 = val.f64 * VAL_2PMULTIPLIER_DP;/*multiply by 2^53 to bring it to the normal range*/
         exponent = (int)(val.u32[1] >> 20); /* get the exponent */
-	exponent = exponent + n - MULTIPLIER_DP;
-	if(exponent < -MULTIPLIER_DP)/*underflow*/
-	{
-	    val.u32[1] = sign | 0x00000000;
-	    val.u32[0] = 0x00000000;
-            return __alm_handle_error(val.u64, AMD_F_INEXACT|AMD_F_UNDERFLOW);
-	}
-	if(exponent > 2046)/*overflow*/
-	{
-	    val.u32[1] = sign | 0x7ff00000;
-	    val.u32[0] = 0x00000000;
-	    return __alm_handle_error(val.u64, AMD_F_INEXACT|AMD_F_OVERFLOW);
-	}
+    exponent = exponent + n - MULTIPLIER_DP;
+    if(exponent < -MULTIPLIER_DP)/*underflow*/
+    {
+        val.u32[1] = sign | 0x00000000;
+        val.u32[0] = 0x00000000;
+            return alm_ldexp_special(val.f64, ALM_E_UNDERFLOW);
+    }
+    if(exponent > 2046)/*overflow*/
+    {
+        val.u32[1] = sign | 0x7ff00000;
+        val.u32[0] = 0x00000000;
+        return alm_ldexp_special(val.f64, ALM_E_OVERFLOW);
+    }
 
-	exponent += MULTIPLIER_DP;
-	val.u32[1] = sign | ((unsigned int)exponent << 20) | (val.u32[1] & 0x000fffff);
-	val.f64 = val.f64 * VAL_2PMMULTIPLIER_DP;
+    exponent += MULTIPLIER_DP;
+    val.u32[1] = sign | ((unsigned int)exponent << 20) | (val.u32[1] & 0x000fffff);
+    val.f64 = val.f64 * VAL_2PMMULTIPLIER_DP;
         return val.f64;
+    }
+
+    /* Overflow check before calculating exponent
+       Without this check, exponent+n results in a very small number
+       and the code path ends up in Underflow case */
+    if(exponent > (INT_MAX - n))
+    {
+        return alm_ldexp_special(asdouble(PINFBITPATT_DP64), ALM_E_OVERFLOW);
     }
 
     exponent += n;
 
     if(exponent < -MULTIPLIER_DP)/*underflow*/
     {
-	val.u32[1] = sign | 0x00000000;
-	val.u32[0] = 0x00000000;
-        return __alm_handle_error(val.u64, AMD_F_INEXACT|AMD_F_UNDERFLOW);
+        val.u32[1] = sign | 0x00000000;
+        val.u32[0] = 0x00000000;
+        return alm_ldexp_special(val.f64, ALM_E_UNDERFLOW);
+
     }
 
     if(exponent < 1)/*x is normal but output is debnormal*/
     {
-	exponent += MULTIPLIER_DP;
-	val.u32[1] = sign | ((unsigned int)exponent << 20) | (val.u32[1] & 0x000fffff);
-	val.f64 = val.f64 * VAL_2PMMULTIPLIER_DP;
+        exponent += MULTIPLIER_DP;
+        val.u32[1] = sign | ((unsigned int)exponent << 20) | (val.u32[1] & 0x000fffff);
+        val.f64 = val.f64 * VAL_2PMMULTIPLIER_DP;
         return val.f64;
     }
 
     if(exponent > 2046)/*overflow*/
     {
-	val.u32[1] = sign | 0x7ff00000;
-	val.u32[0] = 0x00000000;
-	return __alm_handle_error(val.u64, AMD_F_INEXACT|AMD_F_OVERFLOW);
+        val.u32[1] = sign | 0x7ff00000;
+        val.u32[0] = 0x00000000;
+        return alm_ldexp_special(val.f64, ALM_E_OVERFLOW);
     }
 
     val.u32[1] = sign | ((unsigned int)exponent << 20) | (val.u32[1] & 0x000fffff);

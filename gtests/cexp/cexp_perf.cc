@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
   string funcnam = "AoclLibm";
   string libm;
   // NOTE: Todo: Accuracy for complex function variants to be designed!
-#if 0
+
   if((params->fwidth == ALM::FloatWidth::E_ALL) ||
     (params->fwidth == ALM::FloatWidth::E_F32)) {
     if((params->fqty == ALM::FloatQuantity::E_All) ||
@@ -52,21 +52,6 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
       string varnam = "_s1s(cexpf)";
       libm = funcnam + varnam;
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTestf, params)
-                 ->Args({(int)params->count})->Iterations(params->niter);
-    }
-
-    if((params->fqty == ALM::FloatQuantity::E_All) ||
-     (params->fqty == ALM::FloatQuantity::E_Vector_4)) {
-      string varnam = "_v4s(cexpf)";
-      libm = funcnam + varnam;
-      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest4f, params)
-                 ->Args({(int)params->count})->Iterations(params->niter);
-    }
-    if((params->fqty == ALM::FloatQuantity::E_All) ||
-     (params->fqty == ALM::FloatQuantity::E_Vector_8)) {
-      string varnam = "_v8s(cexpf)";
-      libm = funcnam + varnam;
-      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest8f, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
   }
@@ -80,30 +65,8 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTestd, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
-    if((params->fqty == ALM::FloatQuantity::E_All) ||
-     (params->fqty == ALM::FloatQuantity::E_Vector_2)) {
-      string varnam = "_v2d(cexp)";
-      libm = funcnam + varnam;
-      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest2d, params)
-                 ->Args({(int)params->count})->Iterations(params->niter);
-    }
-    if((params->fqty == ALM::FloatQuantity::E_All) ||
-     (params->fqty == ALM::FloatQuantity::E_Vector_4)) {
-      string varnam = "_v4d(cexp)";
-      libm = funcnam + varnam;
-      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest4d, params)
-                 ->Args({(int)params->count})->Iterations(params->niter);
-    }
-    if((params->fqty == ALM::FloatQuantity::E_All) ||
-     (params->fqty == ALM::FloatQuantity::E_Vector_8)) {
-      string varnam = "_v8d(cexp)";
-      libm = funcnam + varnam;
-      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest8d, params)
-                 ->Args({(int)params->count})->Iterations(params->niter);
-    }
   }
-#endif
-  size_t retval = 0; // benchmark::RunSpecifiedBenchmarks();
+  size_t retval = benchmark::RunSpecifiedBenchmarks();; // benchmark::RunSpecifiedBenchmarks();
 
   return (int)retval;
 }

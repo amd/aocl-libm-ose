@@ -46,8 +46,10 @@ if e['HOST_OS'] == 'win32':
         e['PDB'] = 'test_ldexp.pdb'
 
 ldexp_srcs = Glob('*.cc')
-ldexp_srcs.append('../VecArr/gtest_main_vec_arr.o')
-ldexp_srcs.append('../VecArr/gbench_main_vec_arr.o')
+ldexp_srcs.append('../Gtest_srcs/gtest_accu.o')
+ldexp_srcs.append('../Gtest_srcs/gbench_perf.o')
+ldexp_srcs.append('../Gtest_srcs/gtest_main_vec_arr.o')
+ldexp_srcs.append('../Gtest_srcs/gbench_main_vec_arr.o')
 
 ldexp = e.Program('test_ldexp', ldexp_srcs)
 

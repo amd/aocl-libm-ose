@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -88,6 +88,7 @@ double   alm_mp_addf        (float x, float y);
 double   alm_mp_subf        (float x, float y);
 double   alm_mp_mulf        (float x, float y);
 double   alm_mp_nextafterf  (float x, float y);
+void     alm_mp_sincosf     (float x, double* y1, double* y2);
 
 /* Single precision ULP functions */
 float   alm_mp_acoshf_ULP    (float x,float z, double *, double *);
@@ -196,6 +197,7 @@ long double  alm_mp_add       (double x, double y);
 long double  alm_mp_sub       (double x, double y);
 long double  alm_mp_mul       (double x, double y);
 long double  alm_mp_nextafter (double x, double y);
+void         alm_mp_sincos    (double x, long double* y1, long double* y2);
 
 double  alm_mp_acosh_ULP     (double x,double z, double *, double *);
 double  alm_mp_acos_ULP      (double x,double z, double *, double *);

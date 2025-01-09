@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -39,10 +39,24 @@
 #include "defs.h"
 #include "random.h"
 #include "debug.h"
+#include "benchmark.h"
 
 using namespace std;
 using namespace ALM;
 using namespace ALMTest;
+
+void LibmPerfTestf(benchmark::State& st, InputParams* param);
+void LibmPerfTest4f(benchmark::State& st, InputParams* param);
+void LibmPerfTest8f(benchmark::State& st, InputParams* param);
+void LibmPerfTest16f(benchmark::State& st, InputParams* param);
+
+void LibmPerfTestd(benchmark::State& st, InputParams* param);
+void LibmPerfTest2d(benchmark::State& st, InputParams* param);
+void LibmPerfTest4d(benchmark::State& st, InputParams* param);
+void LibmPerfTest8d(benchmark::State& st, InputParams* param);
+
+void LibmPerfTestaf(benchmark::State& st, InputParams* param);
+void LibmPerfTestad(benchmark::State& st, InputParams* param);
 
  /*
  * The Function populates the input values based on min value, max value

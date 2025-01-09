@@ -30,6 +30,7 @@ EXPORTS
     alm_mp_remquof
     alm_mp_rintf
     alm_mp_roundf
+    alm_mp_sincosf
     alm_mp_sinf
     alm_mp_sinhf
     alm_mp_sqrtf

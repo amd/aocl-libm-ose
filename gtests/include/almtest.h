@@ -34,12 +34,14 @@
 #include <tuple>
 #include <vector>
 #include "args.h"
-#include "gtest.h"
 #include "almstruct.h"
 #include "defs.h"
 #include "random.h"
 #include "verify.h"
 #include "debug.h"
+
+#undef I
+#include "gtest.h"
 
 extern "C"
 {

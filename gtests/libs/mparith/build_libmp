@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -48,7 +48,6 @@ excluded_list += [
      'logb.c',
      'mparith_c.c',
      'mparith_f.c',
-     'sincos.c',
      'sinpi.c',
      'tanpi.c',
      'controlword.c',
@@ -76,4 +75,3 @@ else:
     libmpso = mpenv.SharedLibrary('mparith%s'%mpenv['MPVARIANT'], objs, no_import_lib=False)
 
 Return('libmp', 'libmpso')
-

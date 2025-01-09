@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,7 +25,6 @@
  *
  */
 
-#include "gtest.h"
 #include "almtestperf.h"
 #include "callback.h"
 
@@ -35,19 +34,10 @@ void LibmPerfTestaf(benchmark::State& st, InputParams* param) {
   test_data data;
   data.ip  = (void *) objtest.inpbuff;
   data.op  = (void *) objtest.outbuff;
-  double szn = param->niter * param->count;
+  double szn = param->niter;
 
   if(nargs == 2)
     data.ip1 = (void *) objtest.inpbuff1;
-
-  if(nargs == 6)
-  {
-    data.ip1 = (void *) objtest.inpbuff1;
-    data.ip2 = (void *) objtest.inpbuff2;
-    data.ip3 = (void *) objtest.inpbuff3;
-    data.ip4 = (void *) objtest.inpbuff4;
-    data.ip5 = (void *) objtest.inpbuff5;
-  }
 
   for (auto _ : st) {
     test_vas(&data, param->count);
@@ -63,19 +53,10 @@ void LibmPerfTestad(benchmark::State& st, InputParams* param) {
   test_data data;
   data.ip  = (void *) objtest.inpbuff;
   data.op  = (void *) objtest.outbuff;
-  double szn = param->niter * param->count;
+  double szn = param->niter;
 
   if(nargs == 2)
     data.ip1 = (void *) objtest.inpbuff1;
-
-  if(nargs == 6)
-  {
-    data.ip1 = (void *) objtest.inpbuff1;
-    data.ip2 = (void *) objtest.inpbuff2;
-    data.ip3 = (void *) objtest.inpbuff3;
-    data.ip4 = (void *) objtest.inpbuff4;
-    data.ip5 = (void *) objtest.inpbuff5;
-  }
 
   for (auto _ : st) {
     test_vad(&data, param->count);

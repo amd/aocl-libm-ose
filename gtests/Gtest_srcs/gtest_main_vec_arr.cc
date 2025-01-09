@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,7 +25,6 @@
  *
  */
 
-#include "gtest.h"
 #include "almtest.h"
 #include "callback.h"
 
@@ -40,30 +39,12 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_ARRAY_FLOATS) {
   if(nargs == 2)
     data.ip1 = (void *)inpbuff1;
 
-  if(nargs == 6)
-  {
-    data.ip1 = (void *)inpbuff1;
-    data.ip2 = (void *)inpbuff2;
-    data.ip3 = (void *)inpbuff3;
-    data.ip4 = (void *)inpbuff4;
-    data.ip5 = (void *)inpbuff5;
-  }
-
   test_vas(&data, count);
   for (uint32_t i = 0; i < count; i++)
   {
     ip[0] = inpbuff[i];
     if(nargs == 2)
       ip[1] = inpbuff1[i];
-    
-    if(nargs == 6)
-    {
-      ip[1] = inpbuff1[i];
-      ip[2] = inpbuff2[0];
-      ip[3] = inpbuff3[0];
-      ip[4] = inpbuff4[0];
-      ip[5] = inpbuff5[0];
-    }
 
     double exptd = getExpected(ip);
     double ulp = getUlp(aop[i], exptd);
@@ -91,30 +72,12 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_ARRAY_DOUBLES) {
   if(nargs == 2)
     data.ip1 = (void *)inpbuff1;
 
-  if(nargs == 6)
-  {
-    data.ip1 = (void *)inpbuff1;
-    data.ip2 = (void *)inpbuff2;
-    data.ip3 = (void *)inpbuff3;
-    data.ip4 = (void *)inpbuff4;
-    data.ip5 = (void *)inpbuff5;
-  }
-
   test_vad(&data, count);
   for (uint32_t i = 0; i < count; i++)
   {
     ip[0] = inpbuff[i];
     if(nargs == 2)
       ip[1] = inpbuff1[i];
-
-    if(nargs == 6)
-    {
-      ip[1] = inpbuff1[i];
-      ip[2] = inpbuff2[i];
-      ip[3] = inpbuff3[i];
-      ip[4] = inpbuff4[i];
-      ip[5] = inpbuff5[i];
-    }
 
     long double exptd = getExpected(ip);
     double ulp = getUlp(aop[i], exptd);

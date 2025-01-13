@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -24,56 +24,32 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-import os
-from os import path
-from os.path import join as joinpath
+Import('env')
 
-Import('mpenv')
+e = env.Clone()
 
-excludes = Glob('*_old.c')
+if e['HOST_OS'] == 'win32':
+    exclude_flags=['/std:c17', '-funsigned-char', '-Wno-unused-parameter', '-march=native', '-std:c++17']
+    for i in exclude_flags:
+        if i in e['CFLAGS']:
+            e['CFLAGS'].remove(i)
+            e['CCFLAGS'].remove(i)
 
-# Get all Linux files, excluding the list
-linux_files = Glob('*linux.c')
+    e.Append(
+        CFLAGS = ['-DWINDOWS'],
+        LINKFLAGS = ['/SUBSYSTEM:CONSOLE','/NODEFAULTLIB:libcmt.lib'],
+        LIBS = ['Shlwapi']
+    )
 
-# We first exclude the OS specific files
-excludes += linux_files
+if e['HOST_OS'] == 'win32':
+    if e['BUILD'] == 'debug':
+        e['PDB'] = 'test_ldexp.pdb'
 
-excluded_list = [f.name for f in excludes]
+ldexp_srcs = Glob('*.cc')
+ldexp_srcs.append('../VecArr/gtest_main_vec_arr.o')
+ldexp_srcs.append('../VecArr/gbench_main_vec_arr.o')
 
-excluded_list += [
-     'cospi.c',
-     'finite.c',
-     'frexp.c',
-     'ilogb.c',
-     'logb.c',
-     'mparith_c.c',
-     'mparith_f.c',
-     'sincos.c',
-     'sinpi.c',
-     'tanpi.c',
-     'controlword.c',
-     'cycles.c',
-     'mallocDebug.c',
-     'nanny.c',
-     'statusword.c',
-]
+ldexp = e.Program('test_ldexp', ldexp_srcs)
 
-mparith_srcs = Glob('*.c', exclude=excluded_list)
-mparith_srcs += Glob('mparith/*.c', exclude=excluded_list)
-
-#print([x.path for x in mparith_srcs])
-
-objs = mpenv.StaticObject(mparith_srcs)
-
-if mpenv['HOST_OS'] != 'win32':
-    libmp = mpenv.Library('mparith%s'%mpenv['MPVARIANT'], objs)
-    libmpso = mpenv.SharedLibrary('mparith%s'%mpenv['MPVARIANT'], objs)
-else:
-    if mpenv['BUILD'] == 'debug':
-        mpenv['PDB'] = 'mparith%s.pdb'%mpenv['MPVARIANT']
-    libmp = mpenv.Library('mparith%s-static'%mpenv['MPVARIANT'], objs)
-    mpenv['WINDOWS_INSERT_DEF']=1
-    libmpso = mpenv.SharedLibrary('mparith%s'%mpenv['MPVARIANT'], objs, no_import_lib=False)
-
-Return('libmp', 'libmpso')
+Return('ldexp')
 

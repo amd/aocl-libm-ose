@@ -46,3 +46,4 @@ EXPORTS
     alm_mp_sub
     alm_mp_mul
     alm_mp_nextafter
+    alm_mp_ldexp

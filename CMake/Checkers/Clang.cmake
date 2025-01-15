@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -25,14 +25,45 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-#building single libalm-glibc-compat library
-include(Cct_Library)
 
-set(COMPACT_FLAGS ${LIBMCFLAGS} -O2 -mavx2 )
-cct_cxx_add_library(alm-glibc-compat
-    SOURCES                 glibc-compat.c
-    HEADERS                 ${INCLUDE_PATHS}
-    PRIVATE_COMPILE_FLAGS   ${COMPACT_FLAGS}
-    SHARED_LIB
-    INSTALL_LIB
-    )
+set(CLANG_VERSION_MIN "9.0")
+set(CLANG_VERSION_MAX "18.1")
+
+if ((CMAKE_C_COMPILER_VERSION VERSION_LESS ${CLANG_VERSION_MIN}) OR
+    (CMAKE_C_COMPILER_VERSION VERSION_GREATER ${CLANG_VERSION_MAX}))
+message(FATAL_ERROR "Unsupported Clang Compiler version: ${CMAKE_C_COMPILER_VERSION}. \
+                      Please use Clang version between ${CLANG_VERSION_MIN} and ${CLANG_VERSION_MAX}.")
+endif()
+set(CONFIG_COMPILER_IS_CLANG  1)
+
+#LIBM FLAGS abd CFLAGS Flags Macroes
+macro(get_warning_flags wflags)
+  if(NOT WIN32)
+    set(${wflags} -Wall -W -Wstrict-prototypes -Werror -Wno-unused-parameter)
+  else()
+    set(${wflags}  /W0 /MP -Wno-c++11-narrowing -fdiagnostics-absolute-paths -ferror-limit=0 )
+  endif()
+endmacro()
+
+macro(get_unalign_vec_move_flag uavmflag)
+  if(CMAKE_C_COMPILER_VERSION GREATER_EQUAL 14.0.6)
+    set(${uavmflag} -muse-unaligned-vector-move)
+  endif()
+endmacro()
+
+macro(get_pic_flag picflag)
+  if(NOT WIN32)
+    set(${picflag} -fPIC)
+  else()
+    set(${picflag})
+  endif()
+endmacro()
+
+#LINKER Flags for Shared library
+macro(get_linker_flag sharedlinkerflag)
+  if(NOT WIN32)
+    set(${sharedlinkerflag} "-fuse-ld=ld")
+  else()
+    set(${sharedlinkerflag} "/dll")
+  endif()
+endmacro()

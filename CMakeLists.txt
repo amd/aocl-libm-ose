@@ -88,7 +88,10 @@ if (NOT DEFINED ${${PROJECT_PREFIX}_GENERATED})
 endif()
 
 if(WIN32)
-  message(FATAL_ERROR  "CMAKE for ${PROJECT_NAME} not supported on Windows Platform")
+    set(CMAKE_COMPILE_WARNING_AS_ERROR FALSE)
+    if("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
+        message(FATAL_ERROR  "CMAKE for ${PROJECT_NAME} not supported on ${CMAKE_C_COMPILER_ID}")
+    endif()  
 endif()
 
 #------------------------------
@@ -132,8 +135,8 @@ include(Cct_Libaoclutils)
 #------------------------------
 # Setup Project Includes
 #------------------------------
-#set(${PROJECT_PREFIX}_INSTALL_DIR "${PROJECT_SOURCE_DIR}/build/package")
-set(${PROJECT_PREFIX}_INSTALL_DIR "${CMAKE_PROJECT_PREFIX}")
+#set(${PROJECT_PREFIX}_INSTALL_DIR "${PROJECT_SOURCE_DIR}/package")
+set(${PROJECT_PREFIX}_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}")
 message(DEBUG "Libm installation path" "${${PROJECT_PREFIX}_INSTALL_DIR}")
 
 #------------------------------
@@ -162,9 +165,15 @@ if (NOT DEFINED ${PROJECT_PREFIX}_CONFIG_OUTPUT_FILE)
             ${${PROJECT_PREFIX}_GENERATED}/Config.hh)
 endif()
 if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    set(CONFIG_BUILD_TYPE_DEBUG   "1")
+    set(CONFIG_BUILD_TYPE_DEBUG    1)
 else()
-    set(CONFIG_BUILD_TYPE_RELEASE "1")
+    set(CONFIG_BUILD_TYPE_RELEASE  1)
+endif()
+
+if(WIN32)
+  set(CONFIG_OS_IS_WINDOWS  1)
+else()
+  set(CONFIG_OS_IS_LINUX    1)
 endif()
 
 #------------------------------------

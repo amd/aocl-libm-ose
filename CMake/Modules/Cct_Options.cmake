@@ -25,4 +25,5 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+option(BUILD_SHARED_LIBS "Build shared libraries" ON )
 option(OPTION_BUILD_TESTS "Enable the tests." OFF)

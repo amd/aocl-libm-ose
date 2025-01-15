@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -25,14 +25,42 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-#building single libalm-glibc-compat library
-include(Cct_Library)
 
-set(COMPACT_FLAGS ${LIBMCFLAGS} -O2 -mavx2 )
-cct_cxx_add_library(alm-glibc-compat
-    SOURCES                 glibc-compat.c
-    HEADERS                 ${INCLUDE_PATHS}
-    PRIVATE_COMPILE_FLAGS   ${COMPACT_FLAGS}
-    SHARED_LIB
-    INSTALL_LIB
-    )
+set(GCC_VERSION_MIN   "9.2")
+set(GCC_VERSION_MAX   "14.2")
+
+if ((CMAKE_C_COMPILER_VERSION VERSION_LESS ${GCC_VERSION_MIN}) OR
+    (CMAKE_C_COMPILER_VERSION VERSION_GREATER ${GCC_VERSION_MAX}))
+    message(FATAL_ERROR "Unsupported GCC Compiler version: ${CMAKE_C_COMPILER_VERSION}. \
+                          Please use GCC version between ${GCC_VERSION_MIN} and ${GCC_VERSION_MAX}.")
+endif()
+set(CONFIG_COMPILER_IS_GCC   1)
+
+#LIBM FLAGS abd CFLAGS Flags Macroes
+macro(get_fast_flag ffpflag)
+  set(${ffpflag} -ffp-contract=fast)
+endmacro()
+
+macro(get_warning_flags wflags)
+  #Set gcc-compiler flags for aocl-libm
+  set(w1 -Wall -Wextra -Wcast-qual -Wconversion -Wdisabled-optimization -Wdouble-promotion)
+  set(w2 -Wformat=2 -Winit-self -Wno-init-self -Winvalid-pch -Wmissing-declarations -Wodr)
+  set(w3 -Wredundant-decls -Wshadow -Wsign-conversion -Wswitch-default -Wtrampolines -Wundef)
+  set(w4 -Wvector-operation-performance -Werror -Wlto-type-mismatch)
+  set(w5 -Wall -W -Wstrict-prototypes -Werror -Wno-unused-parameter)
+  set(${wflags} ${w1} ${w2} ${w3} ${w4} ${w5})
+endmacro()
+
+macro(get_unalign_vec_move_flag uavmflag)
+  set(${uavmflag})
+endmacro()
+
+macro(get_pic_flag picflag)
+  set(${picflag} -fPIC)
+endmacro()
+
+
+#LINKER Flags for Shared library
+macro(get_linker_flag sharedlinkerflag)
+  set(${sharedlinkerflag})
+endmacro()

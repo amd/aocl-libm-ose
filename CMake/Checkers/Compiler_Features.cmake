@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -27,26 +27,12 @@
 
 include(CheckCCompilerFlag)
 
-set(GCC_VERSION_MIN   "9.2")
-set(GCC_VERSION_MAX   "14.2")
-set(CLANG_VERSION_MIN "9.0")
-set(CLANG_VERSION_MAX "18.1")
 if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
-    if ((CMAKE_C_COMPILER_VERSION VERSION_LESS ${GCC_VERSION_MIN}) OR
-        (CMAKE_C_COMPILER_VERSION VERSION_GREATER ${GCC_VERSION_MAX}))
-        message(FATAL_ERROR "Unsupported GCC Compiler version: ${CMAKE_C_COMPILER_VERSION}. \
-                             Please use GCC version between ${GCC_VERSION_MIN} and ${GCC_VERSION_MAX}.")
-    endif()
-    set(CONFIG_COMPILER_IS_GCC   1)
+  include(Gcc)
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
-    if ((CMAKE_C_COMPILER_VERSION VERSION_LESS ${CLANG_VERSION_MIN}) OR
-        (CMAKE_C_COMPILER_VERSION VERSION_GREATER ${CLANG_VERSION_MAX}))
-    message(FATAL_ERROR "Unsupported Clang Compiler version: ${CMAKE_C_COMPILER_VERSION}. \
-                         Please use Clang version between ${CLANG_VERSION_MIN} and ${CLANG_VERSION_MAX}.")
-    endif()
-    set(CONFIG_COMPILER_IS_CLANG 1)
+  include(Clang)
 else()
-    message(WARNING "Unsupported compiler .")
+  message(WARNING "Unsupported compiler .")
 endif()
 
 check_c_compiler_flag("-msse2"           CONFIG_COMPILER_HAS_SSE2)
@@ -130,4 +116,45 @@ macro(get_zen5_arch_flags zen5)
   set(arch znver5 znver4 znver3 znver2 znver1 x86-64)
   get_arch(res arch)
   set(${zen5} -march=${res})
+endmacro()
+
+
+
+
+
+#Common LIBM FLAGS abd CFLAGS Flags Macroes
+macro(get_optz_flag optzflag)
+  set(${optzflag} -O3)
+endmacro()
+
+macro(get_fast_flag ffpflag)
+  if(NOT WIN32)
+    set(${ffpflag} -ffp-contract=fast)
+  else()
+    set(${ffpflag} /fp:fast)
+  endif()
+endmacro()
+
+macro(get_win_flag winflag)
+  set(${winflag}  -DAVX_XOP_FMA4_FMA3 -DDEBUG=0 -DENABLE_AMDLIBM_API=1 -DLIBABI=aocl -D__AVX2__ -Dlibalm_EXPORTS -m64 /DWIN32 /D_WINDOWS /DNDEBUG -march=native )
+endmacro()
+
+macro(get_au_flag auflag)
+  set(${auflag} -DUSE_AOCL_UTILS)
+endmacro()
+
+macro(get_avx2fma_flag fmaflag)
+  set(${fmaflag} -mavx2 -mfma)
+endmacro()
+
+macro(get_fastmath_flag fmflag)
+  set(${fmflag} -Dlibalmfast_EXPORTS)
+endmacro()
+
+macro(get_vec_flag vecflag)
+  set(${vecflag} -flax-vector-conversions)
+endmacro()
+
+macro(get_isa_flag isaflag)
+  set(${isaflag} -DAVX_XOP_FMA4_FMA3)
 endmacro()

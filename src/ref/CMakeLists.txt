@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ set(EXSRC amd_pow.c exp2.c exp_tables.c MapEntryPoints.c)
 
 set(REF_SRC ${REF_SOURCE} ${CMPLX_SRC})
 list(REMOVE_ITEM REF_SRC ${EXSRC})
-set(REF_FLAGS ${LIBMCFLAGS} -O2 -mavx2 -mavx -mfma )
+set(REF_FLAGS ${LIBMCFLAGS} -mavx ${fmaflag} )
 add_library(ref OBJECT ${REF_SRC})
 target_include_directories(ref
                            PUBLIC  ${${PROJECT_PREFIX}_COMMON_INCLUDES}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -260,9 +260,9 @@ int test_vad(test_data *data, int count)  {
   double *op  = (double*)data->op;
 
   #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
-      amd_vrda_linearfrac(count, ip1, ip2, ip3[count], ip4[count], ip5[count], ip6[count], op);
+      amd_vrda_linearfrac(count, ip1, ip2, ip3[0], ip4[0], ip5[0], ip6[0], op);
   #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
-    vdLinearFrac(count, ip1, ip2, ip3[count], ip4[count], ip5[count], ip6[count], op);
+    vdLinearFrac(count, ip1, ip2, ip3[0], ip4[0], ip5[0], ip6[0], op);
   #endif
   return 0;
 }
@@ -277,9 +277,9 @@ int test_vas(test_data *data, int count)  {
   float *op  = (float*)data->op;
 
   #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
-      amd_vrsa_linearfracf(count, ip1, ip2, ip3[count], ip4[count], ip5[count], ip6[count], op);
+      amd_vrsa_linearfracf(count, ip1, ip2, ip3[0], ip4[0], ip5[0], ip6[0], op);
   #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
-    vsLinearFrac(count, ip1, ip2, ip3[count], ip4[count], ip5[count], ip6[count], op);
+    vsLinearFrac(count, ip1, ip2, ip3[0], ip4[0], ip5[0], ip6[0], op);
   #endif
   return 0;
 }

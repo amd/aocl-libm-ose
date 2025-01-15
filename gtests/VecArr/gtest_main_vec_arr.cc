@@ -59,10 +59,10 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_ARRAY_FLOATS) {
     if(nargs == 6)
     {
       ip[1] = inpbuff1[i];
-      ip[2] = inpbuff2[i];
-      ip[3] = inpbuff3[i];
-      ip[4] = inpbuff4[i];
-      ip[5] = inpbuff5[i];
+      ip[2] = inpbuff2[0];
+      ip[3] = inpbuff3[0];
+      ip[4] = inpbuff4[0];
+      ip[5] = inpbuff5[0];
     }
 
     double exptd = getExpected(ip);

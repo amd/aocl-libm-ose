@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@
 include(CheckCCompilerFlag)
 
 set(GCC_VERSION_MIN   "9.2")
-set(GCC_VERSION_MAX   "14.1")
+set(GCC_VERSION_MAX   "14.2")
 set(CLANG_VERSION_MIN "9.0")
 set(CLANG_VERSION_MAX "18.1")
 if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")

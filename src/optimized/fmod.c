@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -66,22 +66,30 @@ double ALM_PROTO_OPT(fmod)(double x, double y)
     ax &= ~SIGNBIT_DP64;
     ay &= ~SIGNBIT_DP64;
 
-    // Input value checks for NAN, INF
-    if(unlikely(ay == 0))
+    /* Check if y is NaN. If yes return NaN */
+    if(unlikely(ay > POS_INF_F64))
     {
-        return _fmod_special(x, asdouble(QNANBITPATT_DP64), FMOD_Y_ZERO);
+        return x * y;
     }
 
+    /* Check if y is Zero. If yes, return NaN and raise exception*/
+    if(unlikely(ay == 0))
+    {
+        return _fmod_special(x, asdouble(ay | QNANBITPATT_DP64), FMOD_Y_ZERO);
+    }
+    /* Check if x is NaN or INF */
     if(unlikely((ax & EXPBITS_DP64) >= EXPBITS_DP64))
     {
-        // X is NAN or INF
-        if(((ax & EXPBITS_DP64) == EXPBITS_DP64))
+        /* X is NaN. Return NaN */
+        if(ax > POS_INF_F64)
         {
-            return _fmod_special(x, asdouble(ay | QNANBITPATT_DP64), FMOD_X_INF);
+            return x;
+
         }
+        /* X is INF. Return NaN and raise exception */
         else
         {
-            return _fmod_special(x, asdouble(ay | QNANBITPATT_DP64), FMOD_X_NAN);
+            return _fmod_special(x, asdouble(ay | QNANBITPATT_DP64), FMOD_X_INF);
         }
     }
 
@@ -151,5 +159,6 @@ double ALM_PROTO_OPT(fmod)(double x, double y)
         return w;
     }
     w = 0.0 - w;
+
     return w;
 }

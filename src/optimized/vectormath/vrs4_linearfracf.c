@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -49,21 +49,22 @@ Implementation notes:
 
 */
 
-#define VECTORLENGTH 4
-
 v_f32x4_t
 ALM_PROTO_OPT(vrs4_linearfracf)(v_f32x4_t a, v_f32x4_t b, float scalea, float shifta, float scaleb, float shiftb)
 {
-    v_f32x4_t result;
-    v_f32x4_t transa, transb;
+    /* Broadcast scalar values scalea, scaleb, shifta and shiftb to vectors*/
+    v_f32x4_t scalea_v = _mm_broadcast_ss(&scalea);
+    v_f32x4_t scaleb_v = _mm_broadcast_ss(&scaleb);
+    v_f32x4_t shifta_v = _mm_broadcast_ss(&shifta);
+    v_f32x4_t shiftb_v = _mm_broadcast_ss(&shiftb);
 
-    for(int i = 0; i < VECTORLENGTH; i++)
-    {
-         transa[i] = (scalea * a[i]) + shifta;
-         transb[i] = (scaleb * b[i]) + shiftb;
+    /* transa = (a * scalea) + shifta */
+    v_f32x4_t transa = _mm_fmadd_ps(scalea_v, a, shifta_v);
+    /* transb = (b * scaleb) + shiftb */
+    v_f32x4_t transb = _mm_fmadd_ps(scaleb_v, b, shiftb_v);
 
-         result[i] = transa[i] / transb[i];
-    }
+    /* result = (transa / transb) = ((a * scalea) + shifta) / ((b * scaleb) + shiftb)*/
+    v_f32x4_t result = _mm_div_ps(transa, transb);
 
     return result;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -50,21 +50,26 @@ Implementation notes:
 
 */
 
-#define VECTORLENGTH 16
-
 v_f32x16_t
 ALM_PROTO_ARCH_ZN5(vrs16_linearfracf)(v_f32x16_t a, v_f32x16_t b, float scalea, float shifta, float scaleb, float shiftb)
 {
-    v_f32x16_t result;
-    v_f32x16_t transa, transb;
+    /* Broadcast scalar values scalea, scaleb, shifta and shiftb to vectors*/
+    v_f32x16_t scalea_v = _mm512_set_ps(scalea, scalea, scalea, scalea, scalea, scalea, scalea, scalea,
+                                        scalea, scalea, scalea, scalea, scalea, scalea, scalea, scalea);
+    v_f32x16_t scaleb_v = _mm512_set_ps(scaleb, scaleb, scaleb, scaleb, scaleb, scaleb, scaleb, scaleb,
+                                        scaleb, scaleb, scaleb, scaleb, scaleb, scaleb, scaleb, scaleb);
+    v_f32x16_t shifta_v = _mm512_set_ps(shifta, shifta, shifta, shifta, shifta, shifta, shifta, shifta,
+                                        shifta, shifta, shifta, shifta, shifta, shifta, shifta, shifta);
+    v_f32x16_t shiftb_v = _mm512_set_ps(shiftb, shiftb, shiftb, shiftb, shiftb, shiftb, shiftb, shiftb,
+                                        shiftb, shiftb, shiftb, shiftb, shiftb, shiftb, shiftb, shiftb);
 
-    for(int i = 0; i < VECTORLENGTH; i++)
-    {
-         transa[i] = (scalea * a[i]) + shifta;
-         transb[i] = (scaleb * b[i]) + shiftb;
+    /* transa = (a * scalea) + shifta */
+    v_f32x16_t transa = _mm512_fmadd_ps(scalea_v, a, shifta_v);
+    /* transb = (b * scaleb) + shiftb */
+    v_f32x16_t transb = _mm512_fmadd_ps(scaleb_v, b, shiftb_v);
 
-         result[i] = transa[i] / transb[i];
-    }    
+    /* result = (transa / transb) = ((a * scalea) + shifta) / ((b * scaleb) + shiftb)*/
+    v_f32x16_t result = _mm512_div_ps(transa, transb);
 
     return result;
 }

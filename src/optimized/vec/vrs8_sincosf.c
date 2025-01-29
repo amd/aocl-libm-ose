@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -65,7 +65,7 @@ static struct {
  } v8_sincosf_data = {
      .max_arg = _MM256_SET1_I32(0x49800000),
      .sign_mask  = _MM256_SET1_I32(0x7fffffff),
-     .pi1   = _MM256_SET1_PS8(0x1.921fb6p1f),
+     .pi1   = _MM256_SET1_PS8(-0x1.921fb6p1f),
      .pi2   = _MM256_SET1_PS8(0x1.777a5cp-24f),
      .pi3   = _MM256_SET1_PS8(0x1.ee59dap-49f),
      .half  = _MM256_SET1_PS8(0x1p-1f),
@@ -80,7 +80,6 @@ static struct {
          _MM256_SET1_PS8(0x1.110e7cp-7f),
          _MM256_SET1_PS8(-0x1.9f6446p-13f),
          _MM256_SET1_PS8(0x1.5d38b6p-19f),
-
      },
 };
 
@@ -155,18 +154,18 @@ ALM_PROTO_OPT(vrs8_sincosf)(v_f32x8_t x, v_f32x8_t *result_sin, v_f32x8_t *resul
     n_sin = as_v8_u32_f32(dn_sin);
     dn_sin -= ALM_SHIFT;
 
-    F_sin = r - dn_sin * pi1;
-    F_sin = F_sin - dn_sin * pi2;
-    F_sin = F_sin - dn_sin * pi3;
+    F_sin = r + dn_sin * pi1;
+    F_sin = F_sin + dn_sin * pi2;
+    F_sin = F_sin + dn_sin * pi3;
 
     v_f32x8_t dn_cos =  (r * invpi + HALF) + ALM_SHIFT;
     n_cos = as_v8_u32_f32(dn_cos);
     dn_cos -= ALM_SHIFT;
     dn_cos -= HALF;
 
-    F_cos = r - dn_cos * pi1;
-    F_cos = F_cos - dn_cos * pi2;
-    F_cos = F_cos - dn_cos * pi3;
+    F_cos = r + dn_cos * pi1;
+    F_cos = F_cos + dn_cos * pi2;
+    F_cos = F_cos + dn_cos * pi3;
 
     /* Check whether n is odd or not */
     v_u32x8_t odd_sin =  n_sin << 31;
@@ -178,8 +177,8 @@ ALM_PROTO_OPT(vrs8_sincosf)(v_f32x8_t x, v_f32x8_t *result_sin, v_f32x8_t *resul
      *   poly = x + C1*x^3 + C3*x^5 + C5*x^7 + C7*x^9 + C9*x^11
      *
      */
-    poly_sin = F_sin + POLY_EVAL_ODD_9(F_sin, C1, C3, C5, C7, C9);
-    poly_cos = F_cos + POLY_EVAL_ODD_9(F_cos, C1, C3, C5, C7, C9);
+    poly_sin = POLY_EVAL_ODD_9(F_sin, C1, C3, C5, C7, C9);
+    poly_cos = POLY_EVAL_ODD_9(F_cos, C1, C3, C5, C7, C9);
 
     *result_sin = as_v8_f32_u32(as_v8_u32_f32(poly_sin) ^ sign ^ odd_sin);
     *result_cos = as_v8_f32_u32(as_v8_u32_f32(poly_cos) ^ odd_cos);

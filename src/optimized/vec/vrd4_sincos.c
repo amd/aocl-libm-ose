@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -59,22 +59,23 @@
 */
 
 static struct {
-    v_f64x4_t invpi, pi1, pi2, pi3, half, shift;
+    v_f64x4_t invpi, pi1, pi2, pi3, pi3c, half, shift;
     v_u64x4_t sign_mask, max_arg;
-    v_f64x4_t poly_sin[8];
+    v_f64x4_t poly_sincos[8];
  } v4_sincos_data = {
      .max_arg = _MM_SET1_I64(0x4160000000000000),
      .sign_mask  = _MM_SET1_I64(0x7fffffffffffffff),
      .pi1   = _MM_SET1_PD4(0x1.921fb54442d18p+1),
      .pi2   = _MM_SET1_PD4(0x1.1a62633145c06p-53),
      .pi3   = _MM_SET1_PD4(0x1.c1cd129024e09p-106),
+     .pi3c  = _MM_SET1_PD4(-0x1.f1976b7ed8fbcp-109),
      .half  = _MM_SET1_PD4(0x1p-1),
      .invpi = _MM_SET1_PD4(0x1.45f306dc9c883p-2),
      .shift = _MM_SET1_PD4(0x1.8p+52),
      /*
       * Polynomial coefficients obtained using Remez algorithm from Sollya
       */
-     .poly_sin = {
+     .poly_sincos = {
          _MM_SET1_PD4(-0x1.5555555555555p-3),
          _MM_SET1_PD4(0x1.11111111110bp-7),
          _MM_SET1_PD4(-0x1.a01a01a013e1ap-13),
@@ -91,20 +92,21 @@ static struct {
 #define pi1     v4_sincos_data.pi1
 #define pi2     v4_sincos_data.pi2
 #define pi3     v4_sincos_data.pi3
+#define pi3c    v4_sincos_data.pi3c
 #define invpi   v4_sincos_data.invpi
 #define HALF    v4_sincos_data.half
 #define ALM_SHIFT   v4_sincos_data.shift
 #define ARG_MAX     v4_sincos_data.max_arg
 #define SIGN_MASK64 v4_sincos_data.sign_mask
 
-#define C0  v4_sincos_data.poly_sin[0]
-#define C2  v4_sincos_data.poly_sin[1]
-#define C4  v4_sincos_data.poly_sin[2]
-#define C6  v4_sincos_data.poly_sin[3]
-#define C8  v4_sincos_data.poly_sin[4]
-#define C10 v4_sincos_data.poly_sin[5]
-#define C12 v4_sincos_data.poly_sin[6]
-#define C14 v4_sincos_data.poly_sin[7]
+#define C0  v4_sincos_data.poly_sincos[0]
+#define C2  v4_sincos_data.poly_sincos[1]
+#define C4  v4_sincos_data.poly_sincos[2]
+#define C6  v4_sincos_data.poly_sincos[3]
+#define C8  v4_sincos_data.poly_sincos[4]
+#define C10 v4_sincos_data.poly_sincos[5]
+#define C12 v4_sincos_data.poly_sincos[6]
+#define C14 v4_sincos_data.poly_sincos[7]
 
 
 static inline v_f64x4_t
@@ -133,7 +135,7 @@ cos_specialcase(v_f64x4_t _x,
         };
 }
 
-void 
+void
 ALM_PROTO_OPT(vrd4_sincos)(v_f64x4_t x, v_f64x4_t *result_sin, v_f64x4_t *result_cos)
 {
 
@@ -165,7 +167,7 @@ ALM_PROTO_OPT(vrd4_sincos)(v_f64x4_t x, v_f64x4_t *result_sin, v_f64x4_t *result
 
     F_cos = r - dn_cos * pi1;
     F_cos = F_cos - dn_cos * pi2;
-    F_cos = F_cos - dn_cos * pi3;
+    F_cos = F_cos - dn_cos * pi3c;
 
     /* Check whether n is odd or not */
     v_u64x4_t odd_sin =  n_sin << 63;

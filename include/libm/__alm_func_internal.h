@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2024, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2025, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -93,6 +93,7 @@ extern double    ALM_PROTO_INTERNAL(tanh)                 (double x);
 extern double    ALM_PROTO_INTERNAL(tanpi)                (double x);
 extern double    ALM_PROTO_INTERNAL(trunc)                (double x);
 extern double    ALM_PROTO_INTERNAL(erf)                  (double x);
+extern void      ALM_PROTO_INTERNAL(sincos)               (double x, double *s, double *c);
 /*
  * Single Precision functions
  */
@@ -149,6 +150,7 @@ extern float     ALM_PROTO_INTERNAL(tanhf)                (float x);
 extern float     ALM_PROTO_INTERNAL(tanpif)               (float x);
 extern float     ALM_PROTO_INTERNAL(truncf)               (float x);
 extern float     ALM_PROTO_INTERNAL(erff)                 (float x);
+extern void      ALM_PROTO_INTERNAL(sincosf)              (float x, float *s, float *c);
 /*
  * Integer variants
  */
@@ -276,6 +278,7 @@ extern __m128d   ALM_PROTO_INTERNAL(vrd2_atan)     (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_erf)      (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_sqrt)     (__m128d);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_fabs)     (__m128d);
+extern void      ALM_PROTO_INTERNAL(vrd2_sincos)   (__m128d x, __m128d* ys, __m128d* yc);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_linearfrac) (__m128d x, __m128d y, double sca, double sha, double scb, double shb);
 /*
  * Vector double precision, 4 element
@@ -325,9 +328,6 @@ extern __m512d   ALM_PROTO_INTERNAL(vrd8_erf)      (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_sqrt)     (__m512d x);
 extern void      ALM_PROTO_INTERNAL(vrd8_sincos)   (__m512d x, __m512d *s, __m512d *c);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_linearfrac)  (__m512d x, __m512d y, double sca, double sha, double scb, double shb);
-extern void      ALM_PROTO_INTERNAL(sincos)        (double x, double *s, double *c);
-extern void      ALM_PROTO_INTERNAL(sincosf)       (float x, float *s, float *c);
-extern void      ALM_PROTO_INTERNAL(vrd2_sincos)   (__m128d x, __m128d* ys, __m128d* yc);
 
 /*
 * Vector Array versions

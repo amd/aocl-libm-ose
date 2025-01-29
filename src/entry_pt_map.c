@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -324,6 +324,7 @@ LIBM_DECL_FN_MAP(vrd2_log10);
 LIBM_DECL_FN_MAP(vrd2_log1p);
 LIBM_DECL_FN_MAP(vrd2_sin);
 LIBM_DECL_FN_MAP(vrd2_cos);
+LIBM_DECL_FN_MAP(vrd2_sincos);
 LIBM_DECL_FN_MAP(vrd2_tan);
 LIBM_DECL_FN_MAP(vrd2_cosh);
 LIBM_DECL_FN_MAP(vrd2_atan);
@@ -689,6 +690,7 @@ WEAK_LIBM_ALIAS(vrd2_log10, FN_PROTOTYPE(vrd2_log10));
 WEAK_LIBM_ALIAS(vrd2_log1p, FN_PROTOTYPE(vrd2_log1p));
 WEAK_LIBM_ALIAS(vrd2_sin, FN_PROTOTYPE(vrd2_sin));
 WEAK_LIBM_ALIAS(vrd2_cos, FN_PROTOTYPE(vrd2_cos));
+WEAK_LIBM_ALIAS(vrd2_sincos, FN_PROTOTYPE(vrd2_sincos));
 WEAK_LIBM_ALIAS(vrd2_tan, FN_PROTOTYPE(vrd2_tan));
 WEAK_LIBM_ALIAS(vrd2_cosh, FN_PROTOTYPE(vrd2_cosh));
 WEAK_LIBM_ALIAS(vrd2_atan, FN_PROTOTYPE(vrd2_atan));

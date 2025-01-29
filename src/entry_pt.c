@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -328,6 +328,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd2_sin);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_tan);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_atan);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_erf);
+alm_func_t        G_ENTRY_PT_PTR(vrd2_sincos);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_sqrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_fabs);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_linearfrac);

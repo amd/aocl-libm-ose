@@ -1,5 +1,5 @@
 /*
-  * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+  * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
   *
   * Redistribution and use in source and binary forms, with or without modification,
   *  are permitted provided that the following conditions are met:
@@ -254,6 +254,7 @@ __m128d FN_PROTOTYPE(vrd2_erf)(__m128d x);
 __m128d FN_PROTOTYPE(vrd2_sqrt)(__m128d x);
 __m128d FN_PROTOTYPE(vrd2_fabs)(__m128d x);
 __m128d FN_PROTOTYPE(vrd2_linearfrac)(__m128d x, __m128d y, double sca, double sha, double scb, double shb);
+void  FN_PROTOTYPE(vrd2_sincos)(__m128d x, __m128d *sin, __m128d *cos);
 
 __m256d FN_PROTOTYPE(vrd4_exp)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_exp2)(__m256d x);
@@ -271,7 +272,6 @@ __m256d FN_PROTOTYPE(vrd4_sqrt)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_fabs)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_linearfrac)(__m256d x, __m256d y, double sca, double sha, double scb, double shb);
 void  FN_PROTOTYPE(vrd4_sincos)(__m256d x, __m256d *sin, __m256d *cos);
-
 
 __m128 FN_PROTOTYPE(vrs4_erff)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_expf)(__m128 x);
@@ -312,12 +312,7 @@ __m256 FN_PROTOTYPE(vrs8_log2f)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_fabsf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_sqrtf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_linearfracf)(__m256 x, __m256 y, float sca, float sha, float scb, float shb);
-
-void  FN_PROTOTYPE(vrd2_sincos)(__m128d x, __m128d* ys, __m128d* yc);
-void  FN_PROTOTYPE(vrda_sincos)(int n, double *x, double *ys, double *yc);
-
-void  FN_PROTOTYPE(vrs4_sincosf)(__m128 x, __m128* ys, __m128* yc);
-void  FN_PROTOTYPE(vrsa_sincosf)(int n, float *x, float *ys, float *yc);
+void FN_PROTOTYPE(vrs8_sincosf)(__m256 x, __m256 *sin, __m256 *cos);
 
 void FN_PROTOTYPE(vrda_exp)(int len, double* x, double* y);
 void FN_PROTOTYPE(vrsa_expf)(int len, float* x, float* y);

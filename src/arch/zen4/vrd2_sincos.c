@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@
  *
  */
 
-#define ALM_OVERRIDE  1
+#define ALM_OVERRIDE 1
 
-#include <libm/arch/avx2.h>
-#include "../../optimized/sincos.c"
+#include <libm/arch/zen4.h>
+#include "../../optimized/vec/vrd2_sincos.c"

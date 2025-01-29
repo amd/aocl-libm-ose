@@ -185,10 +185,10 @@ void LibmPerfTest8d(benchmark::State& st, InputParams* param) {
 void LibmPerfTestaf(benchmark::State& st, InputParams* param) {
   AoclLibmTest<float> objtest(param, 1);
   test_data data;
-  float scp[16] = {0};
+  std::vector<float> scp(param->count);
   data.ip  = (void *) objtest.inpbuff;
   data.op  = (void *) objtest.outbuff;
-  data.sc  = (void *)scp;
+  data.sc  = (void *)scp.data();
   double szn = param->niter;
 
   for (auto _ : st) {
@@ -202,10 +202,10 @@ void LibmPerfTestaf(benchmark::State& st, InputParams* param) {
 void LibmPerfTestad(benchmark::State& st, InputParams* param) {
   AoclLibmTest<double> objtest(param, 1);
   test_data data;
-  double scp[16] = {0};
+  std::vector<double> scp(param->count);
   data.ip  = (void *) objtest.inpbuff;
   data.op  = (void *) objtest.outbuff;
-  data.sc  = (void *)scp;
+  data.sc  = (void *)scp.data();
   double szn = param->niter;
 
   for (auto _ : st) {

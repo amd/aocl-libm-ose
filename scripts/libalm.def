@@ -136,6 +136,7 @@ EXPORTS
     amd_vrd2_tan
     amd_vrd2_powx
     amd_vrd2_linearfrac
+    amd_vrd2_sincos
     amd_vrd4_cos
     amd_vrd4_exp
     amd_vrd4_exp2
@@ -165,7 +166,7 @@ EXPORTS
     amd_vrda_sin
     amd_vrda_pow
     amd_vrda_linearfrac
-
+    amd_vrda_sincos
     amd_vrs4_atanf
     amd_vrs4_asinf
     amd_vrs4_acosf
@@ -217,6 +218,7 @@ EXPORTS
     amd_vrsa_powf
     amd_vrsa_sinf
     amd_vrsa_linearfracf
+    amd_vrsa_sincosf
     amd_vrs8_log10f
     amd_vrd4_atan
     amd_vrd8_exp

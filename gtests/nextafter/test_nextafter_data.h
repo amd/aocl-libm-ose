@@ -41,7 +41,7 @@ test_nextafter_conformance_data[] = {
     {0x0000000000000000,0x0000000000000000,0,0x0000000000000000,}, // nextafter(0,0) (x==y)
     {0x0000000000000000,0x0000000000000000,FE_INEXACT | FE_UNDERFLOW,0x0000000000000001,}, // nextafter(0,1) (x==0 & y+ve)
     {0x7ff0000000000000,0x40560CCCCCCCCCCD,0,0x7ff0000000000000,}, // nextafter(+inf,88.2)
-    {0x8000000000000000, 0x0000000000000000,FE_INEXACT | FE_UNDERFLOW,0x8000000000000001} // nextafter(0, -1) (x==-0 & y-ve)
+    {0x8000000000000000, 0x0000000000000000,FE_INEXACT | FE_UNDERFLOW,0x8000000000000001} // nextafter(-0, -1) (x==-0 & y-ve)
 };
 
 /* Test cases to check for exceptions for the nextafter() routine. These test cases are not exhaustive */
@@ -51,9 +51,10 @@ test_nextafterf_conformance_data[] = {
     {0x7fa00000,0x7fa00000,0,0x7fa00000,}, // nextafter(snan,snan)
     {0x7fa00000,0x400CCCCD,0,0x7fa00000,}, // nextafter(snan,2.2)
     {0x41266666,0x41266666,0,0x41266666,}, // nextafter(10.4,10.4) (x==y)
-    {0x00000000,0x40ACCCCD,FE_INEXACT,0x00000001,}, // nextafter(0,5.4)
+    {0x00000000,0x00000000,0,0x00000000,}, // nextafter(0, 0) (x==y)
+    {0x00000000,0x00000000,FE_INEXACT | FE_UNDERFLOW,0x00000001,}, // nextafter(0, 1) (x==0, y+ve)
     {0x7f800000,0x40ACCCCD,0,0x7f800000}, // nextafter(+inf,5.4)
-    {0x80000000, 0xC0800000,FE_INEXACT, 0x80000001}, // nextafter(-0,-4)
+    {0x80000000, 0x00000000,FE_INEXACT | FE_UNDERFLOW, 0x80000001}, // nextafter(-0,-1) (x==-0, y-ve)
 };
 
 #endif	/*__TEST_POW_DATA_H__*/

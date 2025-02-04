@@ -232,6 +232,7 @@ float   _atanf_special_overflow(float x);
 double  alm_atan_special(double x);
 
 double alm_nextafter_special(double y, uint32_t code);
+float  alm_nextafterf_special(float y, uint32_t code);
 
 double alm_expm1_special(double y, uint32_t code);
 

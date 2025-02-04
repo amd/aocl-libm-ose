@@ -487,6 +487,32 @@ double alm_nextafter_special(double y, U32 code) {
     return y;
 }
 
+float alm_nextafterf_special(float y, U32 code) {
+    flt32_t ym = {.f = y};
+
+    switch (code)
+    {
+    case ALM_E_IN_X_NAN:
+    case ALM_E_IN_Y_NAN:
+    case ALM_E_OUT_NAN:
+        __alm_handle_errorf(ym.u | QNAN_MASK_32, AMD_F_NONE);
+        break;
+    case AMD_F_INVALID:
+        __alm_handle_errorf(ym.u | QNAN_MASK_32, AMD_F_INVALID);
+        break;
+    case ALM_E_OVERFLOW:
+        __alm_handle_errorf(PINFBITPATT_SP32, AMD_F_OVERFLOW);
+        break;
+    case ALM_F_INEXACT_UNDERFLOW:
+        __alm_handle_errorf(PINFBITPATT_SP32, AMD_F_INEXACT | AMD_F_UNDERFLOW);
+        break;
+
+    default:
+        break;
+    }
+    return y;
+}
+
 /* pow */
 #define POW_X_ONE_Y_SNAN            1
 #define POW_X_ZERO_Z_INF            2

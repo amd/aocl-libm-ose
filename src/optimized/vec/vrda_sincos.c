@@ -47,12 +47,6 @@
  *         Store the output into result array.
  *         Repeat
  *
- *         For the remaining element/s,
- *         Pack the last 4 elements of input arrays into 256-bit registers,
- *             call vrd4_sincos()
- *         Store the output into result array.
- *     Return
- *
  *     If length is lesser than 4:
  *         Pack the elements of input arrays into 256-bit registers
  *         Mask the inputs which are not needed to be computed with a 0.

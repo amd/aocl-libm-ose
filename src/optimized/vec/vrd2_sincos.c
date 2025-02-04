@@ -71,7 +71,7 @@ static struct {
      .pi3c  = _MM_SET1_PD2(-0x1.f1976b7ed8fbcp-109),
      .half  = _MM_SET1_PD2(0x1p-1),
      .invpi = _MM_SET1_PD2(0x1.45f306dc9c883p-2),
-     .shift = _MM_SET1_PD2(0x1.8p+52), 
+     .shift = _MM_SET1_PD2(0x1.8p+52),
      /*
       * Polynomial coefficients obtained using Remez algorithm from Sollya
       */

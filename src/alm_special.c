@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -477,6 +477,10 @@ double alm_nextafter_special(double y, U32 code) {
     case ALM_E_OVERFLOW:
         __alm_handle_error(PINFBITPATT_DP64, AMD_F_OVERFLOW);
         break;
+    case ALM_F_INEXACT_UNDERFLOW:
+        __alm_handle_error(PINFBITPATT_DP64, AMD_F_INEXACT | AMD_F_UNDERFLOW);
+        break;
+
     default:
         break;
     }

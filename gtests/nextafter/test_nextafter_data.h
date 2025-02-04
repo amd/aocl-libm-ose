@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -38,9 +38,10 @@ test_nextafter_conformance_data[] = {
     {0x7FF4001000000000,0x7FF4001000000000,0,0x7FF4001000000000,}, // nextafter(snan,snan)
     {0x7FF4001000000000,0x400199999999999A,0,0x7FF4001000000000,}, // nextafter(snan,2.2)
     {0x40560CCCCCCCCCCD,0x40560CCCCCCCCCCD,0,0x40560CCCCCCCCCCD,}, // nextafter(88.2,88.2) (x==y)
-    {0x0000000000000000,0x40560CCCCCCCCCCD,FE_INEXACT,0x0000000000000001,}, // nextafter(0,88,2)
+    {0x0000000000000000,0x0000000000000000,0,0x0000000000000000,}, // nextafter(0,0) (x==y)
+    {0x0000000000000000,0x0000000000000000,FE_INEXACT | FE_UNDERFLOW,0x0000000000000001,}, // nextafter(0,1) (x==0 & y+ve)
     {0x7ff0000000000000,0x40560CCCCCCCCCCD,0,0x7ff0000000000000,}, // nextafter(+inf,88.2)
-    {0x8000000000000000, 0xC010000000000000,FE_INEXACT,0x8000000000000001} // nextafter(-0, -4)
+    {0x8000000000000000, 0x0000000000000000,FE_INEXACT | FE_UNDERFLOW,0x8000000000000001} // nextafter(0, -1) (x==-0 & y-ve)
 };
 
 /* Test cases to check for exceptions for the nextafter() routine. These test cases are not exhaustive */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -729,18 +729,18 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
 
     if (output_match==1 || exception_match==1) {
         (*nfail)++;
-        printf ("Input: 0x%llx (%lf) ", ip.lu, ip.d);
+        printf ("Input: 0x%lx (%lf) ", ip.lu, ip.d);
         if (nargs == 2)
-            printf ("Input2: 0x%llx (%lf) ", ip2.lu, ip2.d);
+            printf ("Input2: 0x%lx (%lf) ", ip2.lu, ip2.d);
         if (nargs == 6)
         {
-            printf ("Input2: 0x%llx (%lf) ", ip2.lu, ip2.d);
-            printf ("Input3: 0x%llx (%lf) ", ip3.lu, ip3.d);
-            printf ("Input4: 0x%llx (%lf) ", ip4.lu, ip4.d);
-            printf ("Input5: 0x%llx (%lf) ", ip5.lu, ip5.d);
-            printf ("Input6: 0x%llx (%lf) ", ip6.lu, ip6.d);
+            printf ("Input2: 0x%lx (%lf) ", ip2.lu, ip2.d);
+            printf ("Input3: 0x%lx (%lf) ", ip3.lu, ip3.d);
+            printf ("Input4: 0x%lx (%lf) ", ip4.lu, ip4.d);
+            printf ("Input5: 0x%lx (%lf) ", ip5.lu, ip5.d);
+            printf ("Input6: 0x%lx (%lf) ", ip6.lu, ip6.d);
         }
-        printf ("Expected: 0x%llx (%lf) Actual: 0x%llx (%lf) ULP: %lf\n", e.lu, e.d, a.lu, a.d, ulp);
+        printf ("Expected: 0x%lx (%lf) Actual: 0x%lx (%lf) ULP: %lf\n", e.lu, e.d, a.lu, a.d, ulp);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);
         return false;
@@ -947,11 +947,11 @@ class SpecTestFixtureComplexDouble : public ::testing::TestWithParam<SpecParams>
 
     if (output_match==1 || exception_match==1) {
         (*nfail)++;
-        printf ("Input:    0x%x +i 0x%x   (%f +i %f)\n", ip_real.lu, ip_imag.lu, ip_real.d, ip_imag.d);
+        printf ("Input:    0x%lx +i 0x%lx   (%lf +i %lf)\n", ip_real.lu, ip_imag.lu, ip_real.d, ip_imag.d);
         if (nargs == 2)
-            printf ("Input2:   0x%x +i 0x%x   (%f +i %f)\n", ip2_real.lu, ip2_imag.lu, ip2_real.d, ip2_imag.d);
-        printf ("Expected: 0x%x +i 0x%x   (%f +i %f)\n", e_real.lu, e_imag.lu, e_real.d, e_imag.d);
-        printf ("Actual:   0x%x +i 0x%x   (%f +i %f)\n", a_real.lu, a_imag.lu, a_real.d, a_imag.d);
+            printf ("Input2:   0x%lx +i 0x%lx   (%lf +i %lf)\n", ip2_real.lu, ip2_imag.lu, ip2_real.d, ip2_imag.d);
+        printf ("Expected: 0x%lx +i 0x%lx   (%lf +i %lf)\n", e_real.lu, e_imag.lu, e_real.d, e_imag.d);
+        printf ("Actual:   0x%lx +i 0x%lx   (%lf +i %lf)\n", a_real.lu, a_imag.lu, a_real.d, a_imag.d);
         printf ("ULP:      %lf\n", ulp);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);

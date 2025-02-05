@@ -105,6 +105,7 @@ extern "C" {
 #endif
 
 int test_v2d(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
     double *ip1 = (double*)data->ip;
     double *ip2 = (double*)data->ip1;
@@ -123,10 +124,12 @@ int test_v2d(test_data *data, int idx)  {
       vdLinearFrac(2, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
     #endif
   #endif
+#endif
   return 0;
 }
 
 int test_v4d(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
     double *ip1 = (double*)data->ip;
     double *ip2 = (double*)data->ip1;
@@ -145,10 +148,12 @@ int test_v4d(test_data *data, int idx)  {
       vdLinearFrac(4, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
     #endif
   #endif
+#endif
   return 0;
 }
 
 int test_v8d(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
     #if defined(__AVX512__)
         double *ip1 = (double*)data->ip;
@@ -171,10 +176,12 @@ int test_v8d(test_data *data, int idx)  {
         #endif
     #endif
   #endif
+#endif
   return 0;
 }
 
 int test_v16s(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
    #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
     #if defined(__AVX512__)
         float *ip1 = (float*)data->ip;
@@ -201,10 +208,12 @@ int test_v16s(test_data *data, int idx)  {
         #endif
     #endif
   #endif
+#endif
   return 0;
 }
 
 int test_v4s(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
     float *ip1 = (float*)data->ip;
     float *ip2 = (float*)data->ip1;
@@ -223,10 +232,12 @@ int test_v4s(test_data *data, int idx)  {
       vsLinearFrac(4, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
     #endif
   #endif
+#endif
   return 0;
 }
 
 int test_v8s(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
    #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
     float *ip1 = (float*)data->ip;
     float *ip2 = (float*)data->ip1;
@@ -247,10 +258,12 @@ int test_v8s(test_data *data, int idx)  {
       vsLinearFrac(8, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
     #endif
   #endif
+#endif
   return 0;
 }
 
 int test_vad(test_data *data, int count)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   double *ip1  = (double*)data->ip;
   double *ip2  = (double*)data->ip1;
   double *ip3  = (double*)data->ip2;
@@ -264,10 +277,12 @@ int test_vad(test_data *data, int count)  {
   #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
     vdLinearFrac(count, ip1, ip2, ip3[0], ip4[0], ip5[0], ip6[0], op);
   #endif
+#endif
   return 0;
 }
 
 int test_vas(test_data *data, int count)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   float *ip1  = (float*)data->ip;
   float *ip2  = (float*)data->ip1;
   float *ip3  = (float*)data->ip2;
@@ -281,6 +296,7 @@ int test_vas(test_data *data, int count)  {
   #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
     vsLinearFrac(count, ip1, ip2, ip3[0], ip4[0], ip5[0], ip6[0], op);
   #endif
+#endif
   return 0;
 }
 
@@ -288,4 +304,3 @@ int test_vas(test_data *data, int count)  {
 #ifdef __cplusplus
 }
 #endif
-

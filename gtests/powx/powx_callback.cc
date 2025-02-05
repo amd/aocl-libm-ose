@@ -110,17 +110,6 @@ int test_s1d(test_data *data, int idx)  {
 extern "C" {
 #endif
 
-/* GLIBC prototype declarations */
-#if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
-#define _ZGVdN2v_pow _ZGVbN2vv_pow
-#define _ZGVdN4v_pow _ZGVdN4vv_pow
-#define _ZGVsN4v_powf _ZGVbN4vv_powf
-#define _ZGVsN8v_powf _ZGVdN8vv_powf
-
-#define _ZGVsN16v_powf _ZGVeN16vv_powf
-#define _ZGVdN8v_pow _ZGVeN8vv_pow
-#endif
-
 /*vector routines*/
 #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
   __m128d LIBM_FUNC_VEC(d, 2, powx)(__m128d, double);
@@ -135,7 +124,7 @@ extern "C" {
 #endif
 
 int test_v2d(test_data *data, int idx)  {
-  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC && LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
     double *ip1  = (double*)data->ip;
     double *ip2 = (double*)data->ip1;
     double *op  = (double*)data->op;
@@ -153,7 +142,7 @@ int test_v2d(test_data *data, int idx)  {
 
 
 int test_v4s(test_data *data, int idx)  {
-  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC && LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
     float *ip1  = (float*)data->ip;
     float *ip2 = (float*)data->ip1;
     float *op  = (float*)data->op;
@@ -171,7 +160,7 @@ int test_v4s(test_data *data, int idx)  {
 
 
 int test_v4d(test_data *data, int idx)  {
-  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC && LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
     double *ip1  = (double*)data->ip;
     double *ip2 = (double*)data->ip1;
     double *op  = (double*)data->op;
@@ -189,7 +178,7 @@ int test_v4d(test_data *data, int idx)  {
 
 
 int test_v8s(test_data *data, int idx)  {
-  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC && LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
     float *ip1  = (float*)data->ip;
     float *ip2 = (float*)data->ip1;
     float *op  = (float*)data->op;
@@ -208,7 +197,7 @@ int test_v8s(test_data *data, int idx)  {
 
 
 int test_v8d(test_data *data, int idx)  {
-  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC && LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
     #if defined(__AVX512__)
       double *ip1 = (double*)data->ip;
       double *ip2 = (double*)data->ip1;
@@ -228,7 +217,7 @@ int test_v8d(test_data *data, int idx)  {
 }
 
 int test_v16s(test_data *data, int idx)  {
-  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
+  #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC && LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
     #if defined(__AVX512__)
       float *ip1 = (float*)data->ip;
       float *ip2 = (float*)data->ip1;
@@ -250,28 +239,30 @@ int test_v16s(test_data *data, int idx)  {
 }
 
 int test_vad(test_data *data, int count)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   double *ip1  = (double*)data->ip;
   double *ip2  = (double*)data->ip1;
   double *op  = (double*)data->op;
-
   #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
       amd_vrda_powx(count, ip1, ip2[0], op);
   #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
     vdPowx(count, ip1, ip2[0], op);
   #endif
+#endif
   return 0;
 }
 
 int test_vas(test_data *data, int count)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   float *ip1  = (float*)data->ip;
   float *ip2  = (float*)data->ip1;
   float *op  = (float*)data->op;
-
   #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
       amd_vrsa_powxf(count, ip1, ip2[0], op);
   #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
     vsPowx(count, ip1, ip2[0], op);
   #endif
+#endif
   return 0;
 }
 

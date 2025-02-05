@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -122,13 +122,6 @@ int test_s1d(test_data *data, int idx)  {
 extern "C" {
 #endif
 
-#if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
-#define _ZGVdN2v_fabs _ZGVbN2v_fabs
-#define _ZGVdN4v_fabs _ZGVdN4v_fabs
-#define _ZGVsN4v_fabsf _ZGVbN4v_fabsf
-#define _ZGVsN8v_fabsf _ZGVdN8v_fabsf
-#endif
-
 /*vector routines*/
 #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
   __m128d LIBM_FUNC_VEC(d, 2, fabs)(__m128d);
@@ -139,6 +132,7 @@ extern "C" {
 #endif
 
 int test_v2d(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
@@ -148,11 +142,12 @@ int test_v2d(test_data *data, int idx)  {
   #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
     vdAbs(2, ip, op);
   #endif
-
+#endif
   return 0;
 }
 
 int test_v4s(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
@@ -162,10 +157,12 @@ int test_v4s(test_data *data, int idx)  {
   #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
     vsAbs(4, ip, op);
   #endif
+#endif
   return 0;
 }
 
 int test_v4d(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
@@ -175,10 +172,12 @@ int test_v4d(test_data *data, int idx)  {
   #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
     vdAbs(4, ip, op);
   #endif
+#endif
   return 0;
 }
 
 int test_v8s(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
@@ -189,6 +188,7 @@ int test_v8s(test_data *data, int idx)  {
   #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
     vsAbs(8, ip, op);
   #endif
+#endif
   return 0;
 }
 
@@ -221,6 +221,7 @@ int test_v16s(test_data *data, int idx)  {
 }
 
 int test_vad(test_data *data, int count)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
@@ -228,16 +229,19 @@ int test_vad(test_data *data, int count)  {
 #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
   vdAbs(count, ip, op);
 #endif
+#endif
   return 0;
 }
 
 int test_vas(test_data *data, int count)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
   amd_vrsa_fabsf(count, ip, op);
 #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
   vsAbs(count, ip, op);
+#endif
 #endif
   return 0;
 }

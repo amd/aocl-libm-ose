@@ -64,32 +64,33 @@ double ALM_PROTO_REF(ldexp)(double x, int n)
 
     if(exponent == 0)/*x is denormal*/
     {
-    val.f64 = val.f64 * VAL_2PMULTIPLIER_DP;/*multiply by 2^53 to bring it to the normal range*/
+        val.f64 = val.f64 * VAL_2PMULTIPLIER_DP;/*multiply by 2^53 to bring it to the normal range*/
         exponent = (int)(val.u32[1] >> 20); /* get the exponent */
-    exponent = exponent + n - MULTIPLIER_DP;
-    if(exponent < -MULTIPLIER_DP)/*underflow*/
-    {
-        val.u32[1] = sign | 0x00000000;
-        val.u32[0] = 0x00000000;
+        exponent = exponent + n - MULTIPLIER_DP;
+        if(exponent < -MULTIPLIER_DP)/*underflow*/
+        {
+            val.u32[1] = sign | 0x00000000;
+            val.u32[0] = 0x00000000;
             return alm_ldexp_special(val.f64, ALM_E_UNDERFLOW);
-    }
-    if(exponent > 2046)/*overflow*/
-    {
-        val.u32[1] = sign | 0x7ff00000;
-        val.u32[0] = 0x00000000;
-        return alm_ldexp_special(val.f64, ALM_E_OVERFLOW);
-    }
+        }
+        if(exponent > 2046)/*overflow*/
+        {
+            val.u32[1] = sign | 0x7ff00000;
+            val.u32[0] = 0x00000000;
+            return alm_ldexp_special(val.f64, ALM_E_OVERFLOW);
+        }
 
-    exponent += MULTIPLIER_DP;
-    val.u32[1] = sign | ((unsigned int)exponent << 20) | (val.u32[1] & 0x000fffff);
-    val.f64 = val.f64 * VAL_2PMMULTIPLIER_DP;
+        exponent += MULTIPLIER_DP;
+        val.u32[1] = sign | ((unsigned int)exponent << 20) | (val.u32[1] & 0x000fffff);
+        val.f64 = val.f64 * VAL_2PMMULTIPLIER_DP;
         return val.f64;
     }
 
     /* Overflow check before calculating exponent
-       Without this check, exponent+n results in a very small number
+       Without this check, when n is a very large positive number
+       close to INT_MAX, exponent+n results in a very small number
        and the code path ends up in Underflow case */
-    if(exponent > (INT_MAX - n))
+    if((n>=0) && (exponent > (INT_MAX - n)))
     {
         return alm_ldexp_special(asdouble(PINFBITPATT_DP64), ALM_E_OVERFLOW);
     }
@@ -122,4 +123,3 @@ double ALM_PROTO_REF(ldexp)(double x, int n)
     val.u32[1] = sign | ((unsigned int)exponent << 20) | (val.u32[1] & 0x000fffff);
     return val.f64;
 }
-

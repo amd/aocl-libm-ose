@@ -15,7 +15,12 @@
         {
             "name": "win",
             "hidden": true,
-            "configurePreset": "win"
+            "configurePreset": "win",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
         }
     ]
 }

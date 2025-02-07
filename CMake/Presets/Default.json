@@ -33,12 +33,12 @@
         },
         {
             "name": "dev-win-llvm",
-            "displayName": "Developer Config with LLVM-Debug on windows",
+            "displayName": "Developer Config with LLVM-Debug",
             "inherits": [ "ninja","base-config-debug","x64-win-llvm-debug"]
         },
         {
             "name": "dev-win-release-llvm",
-            "displayName": "Developer Config with LLVM-Release on windows",
+            "displayName": "Developer Config with LLVM-Release",
             "inherits": [ "ninja","base-config-release","x64-win-llvm-release"]
         }
     ],
@@ -69,13 +69,13 @@
         },
         {
             "name": "dev-win-llvm",
-            "displayName": "Developer Config with LLVM-Debug on windows",
+            "displayName": "Developer Build with LLVM-Debug",
             "inherits": ["win","build-debug"],
             "configurePreset": "dev-win-llvm"
         },
         {
             "name": "dev-win-release-llvm",
-            "displayName": "Developer Config with LLVM-Release on windows",
+            "displayName": "Developer Build with LLVM-Release",
             "inherits": ["win","build-release"],
             "configurePreset": "dev-win-release-llvm"
         }

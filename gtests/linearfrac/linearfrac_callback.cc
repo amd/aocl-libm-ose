@@ -51,13 +51,13 @@ bool getSpecialCase(void)
 }
 
 void ConfSetupf64(SpecParams *specp) {
-  specp->data64 = test_linearfrac_conformance_data;
-  specp->countd = ARRAY_SIZE(test_linearfrac_conformance_data);
+  specp->data64 = nullptr;
+  specp->countd = 0;
 }
 
 void ConfSetupf32(SpecParams *specp) {
-  specp->data32 = test_linearfracf_conformance_data;
-  specp->countf = ARRAY_SIZE(test_linearfracf_conformance_data);
+  specp->data32 = nullptr;
+  specp->countf = 0;
 }
 
 

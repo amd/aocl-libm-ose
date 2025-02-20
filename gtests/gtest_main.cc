@@ -102,6 +102,22 @@ int gtest_main(int argc, char **argv, InputParams *inparams) {
     cout << "Supported variants: " << filter_data << endl;
   }
 
+  if (inparams->ttype == ALM::TestType::E_Conformance)
+  {
+    if(filter_data.length() == 0)
+    {
+      cout << "Conformance test does not support vector variants!" << endl;
+      return 1;
+    }
+    filter_data = validateFilterDataConf(inparams, filter_data);
+    if(filter_data.length() == 0)
+    {
+      cout << "No support for conformance test for  " << inparams->testFunction << "()" << endl;
+      return 1;
+    }
+    cout << "Supported variants: " << filter_data << endl;
+  }
+
   ::testing::GTEST_FLAG(filter) = filter_data.c_str();
   testing::InitGoogleTest(&argc, argv);
   int ret_val = RUN_ALL_TESTS();

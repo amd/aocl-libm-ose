@@ -33,6 +33,8 @@
 #include <map>
 #include <algorithm>
 
+#include "almstruct.h"
+
 using namespace std;
 
 /* map<string, vector<string>> libm_funcs
@@ -109,5 +111,10 @@ bool isVariantSupported(string func, string variant);
  * only the supported variants of that function is running.
  */
 string validateFilterData(string func, string filter_data);
+
+/* string validateFilterData(InputParams *params, string filter_data)
+ * return the valid filter-data to be applied for a given math function.
+ */
+string validateFilterDataConf(InputParams *params, string filter_data);
 
 #endif

@@ -36,6 +36,21 @@ message(FATAL_ERROR "Unsupported Clang Compiler version: ${CMAKE_C_COMPILER_VERS
 endif()
 set(CONFIG_COMPILER_IS_CLANG  1)
 
+macro(CHECK_COMPILER_VERSION CLANG_VERSION)
+  execute_process(
+    COMMAND ${CMAKE_C_COMPILER} --version
+    OUTPUT_VARIABLE CLANG_VERSION_OUTPUT
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if(CLANG_VERSION_OUTPUT MATCHES "AOCC")
+    string(REGEX MATCH "AMD clang version ([0-9.]+) \\(CLANG: AOCC_([0-9.]+)-Build#([0-9]+)"
+                      CLANG_VERSION_MATCH ${CLANG_VERSION_OUTPUT})
+    set(${CLANG_VERSION} "clang-${CMAKE_MATCH_1}-AOCC_${CMAKE_MATCH_2}-Build#${CMAKE_MATCH_3}")
+  else()
+    set(${CLANG_VERSION} "clang-${CMAKE_C_COMPILER_VERSION}")
+  endif()
+endmacro()
+
 #LIBM FLAGS abd CFLAGS Flags Macroes
 macro(get_warning_flags wflags)
   if(NOT WIN32)

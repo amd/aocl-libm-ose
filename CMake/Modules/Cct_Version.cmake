@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2022-2024, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2022-2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -30,12 +30,10 @@
 #   ${major}.${minor}.${patch}-${patch_extra}
 #
 function(cct_extract_version_details var_prefix version_string)
-
-set(ALM_VERSION_STRING_REGEX "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
-string(REGEX MATCH ${ALM_VERSION_STRING_REGEX} version_matches "${version_string}")
-
-# don't use CMAKE_MATCH_0 for `full` since it may not have the `v` prefix.
-if(CMAKE_MATCH_0)
+  set(ALM_VERSION_STRING_REGEX "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
+  string(REGEX MATCH ${ALM_VERSION_STRING_REGEX} version_matches "${version_string}")
+  # don't use CMAKE_MATCH_0 for `full` since it may not have the `v` prefix.
+  if(CMAKE_MATCH_0)
     set(major ${CMAKE_MATCH_1})
     set(minor ${CMAKE_MATCH_2})
     set(patch ${CMAKE_MATCH_3})
@@ -50,27 +48,25 @@ if(CMAKE_MATCH_0)
     set(${var_prefix}_PATCH ${patch} PARENT_SCOPE)
     set(${var_prefix}_SUFFIX_EXTRA ${suffix_extra} PARENT_SCOPE)
 
-if(ALM_CMAKE_VERBOSE)
-	message("version string: " ${full})
-	message("version major: " ${major})
-	message("version minor: " ${minor})
-	message("version patch: " ${patch})
-	message("version suffix: " ${suffix})
-	message("version suffix-extra: " ${suffix_extra})
-endif()
-
-endif()
+    if(ALM_CMAKE_VERBOSE)
+      message("version string: " ${full})
+      message("version major: " ${major})
+      message("version minor: " ${minor})
+      message("version patch: " ${patch})
+      message("version suffix: " ${suffix})
+      message("version suffix-extra: " ${suffix_extra})
+    endif()
+  endif()
 endfunction()
 
 function(dummy_dont_call)
-set(ALM_VERSION_STRING_REGEX "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
-string(REGEX REPLACE "${ALM_VERSION_STRING_REGEX}" "\\1"
-        ALM_VERSION_MAJOR "${ALM_VERSION_STRING_PRE}")
-string(REGEX REPLACE "${ALM_VERSION_STRING_REGEX}" "\\2"
-        ALM_VERSION_MINOR "${ALM_VERSION_STRING_PRE}")
-string(REGEX REPLACE "${ALM_VERSION_STRING_REGEX}" "\\3"
-        ALM_VERSION_PATCH "${ALM_VERSION_STRING_PRE}")
-string(REGEX REPLACE "${ALM_VERSION_STRING_REGEX}" "\\5"
-        ALM_VERSION_PRERELEASE "${ALM_VERSION_STRING_PRE}")
+  set(ALM_VERSION_STRING_REGEX "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
+  string(REGEX REPLACE "${ALM_VERSION_STRING_REGEX}" "\\1"
+          ALM_VERSION_MAJOR "${ALM_VERSION_STRING_PRE}")
+  string(REGEX REPLACE "${ALM_VERSION_STRING_REGEX}" "\\2"
+          ALM_VERSION_MINOR "${ALM_VERSION_STRING_PRE}")
+  string(REGEX REPLACE "${ALM_VERSION_STRING_REGEX}" "\\3"
+          ALM_VERSION_PATCH "${ALM_VERSION_STRING_PRE}")
+  string(REGEX REPLACE "${ALM_VERSION_STRING_REGEX}" "\\5"
+          ALM_VERSION_PRERELEASE "${ALM_VERSION_STRING_PRE}")
 endfunction()
-

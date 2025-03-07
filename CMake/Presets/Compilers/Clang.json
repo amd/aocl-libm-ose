@@ -15,18 +15,14 @@
             "hidden": true,
             "inherits": "llvm",
             "cacheVariables": {
-                "CMAKE_C_FLAGS_DEBUG": "-g -ggdb3l",
+                "CMAKE_C_FLAGS_DEBUG": "-g -ggdb3",
                 "CMAKE_CXX_FLAGS_DEBUG": "-g -ggdb3"
             }
         },
         {
             "name": "llvm-release",
             "hidden": true,
-            "inherits": "llvm",
-            "cacheVariables": {
-                "CMAKE_C_FLAGS_RELEASE": "-O3",
-                "CMAKE_CXX_FLAGS_RELEASE": "-O3"
-            }
+            "inherits": "llvm"
         },
         {
             "name": "llvm-win",
@@ -41,18 +37,14 @@
             "hidden": true,
             "inherits": "llvm-win",
             "cacheVariables": {
-                "CMAKE_C_FLAGS_DEBUG": "-g",
-                "CMAKE_CXX_FLAGS_DEBUG": "-g"
+                "CMAKE_C_FLAGS_DEBUG": "-g -ggdb3",
+                "CMAKE_CXX_FLAGS_DEBUG": "-g -ggdb3"
             }
         },
         {
             "name": "llvm-win-release",
             "hidden": true,
-            "inherits": "llvm-win",
-            "cacheVariables": {
-                "CMAKE_C_FLAGS_RELEASE": "-O3",
-                "CMAKE_CXX_FLAGS_RELEASE": "-O3"
-            }
+            "inherits": "llvm-win"
         }
     ]
 }

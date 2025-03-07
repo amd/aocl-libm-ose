@@ -75,6 +75,23 @@ endforeach()
 string(TOUPPER ${maxarch} UARCH)
 set(MAX_ALM_ARCH "CONFIG_COMPILER_HAS_${UARCH}")
 
+
+#get GLIBC_VERSION
+macro(CHECK_GLIBC_VERSION GLIBC_VERSION)
+  execute_process(
+      COMMAND ldd --version
+      OUTPUT_VARIABLE GLIBC_VERSION_OUTPUT
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  # Extract the version number from the output
+  string(REGEX MATCH "([0-9]+\\.[0-9]+)" GLIBC_VER ${GLIBC_VERSION_OUTPUT})
+
+  if (NOT GLIBC_VER MATCHES "^[0-9.]+$")
+      message(FATAL_ERROR "Unknown glibc version: ${GLIBC_VER}")
+  endif()
+  set(${GLIBC_VERSION} "-with-glibc-${GLIBC_VER}")
+endmacro()
+
 macro(get_arch res alist)
   foreach(ar ${${alist}})
     try_run(RUNRESULT COMPILERESULT "${PROJECT_BINARY_DIR}/temp" SOURCES  "${PROJECT_BINARY_DIR}/arch.c"

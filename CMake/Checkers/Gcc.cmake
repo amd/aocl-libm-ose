@@ -36,6 +36,10 @@ if ((CMAKE_C_COMPILER_VERSION VERSION_LESS ${GCC_VERSION_MIN}) OR
 endif()
 set(CONFIG_COMPILER_IS_GCC   1)
 
+macro(CHECK_COMPILER_VERSION GCC_VERSION)
+  set(${GCC_VERSION}  "gcc-${CMAKE_C_COMPILER_VERSION}")
+endmacro()
+
 #LIBM FLAGS abd CFLAGS Flags Macroes
 macro(get_fast_flag ffpflag)
   set(${ffpflag} -ffp-contract=fast)

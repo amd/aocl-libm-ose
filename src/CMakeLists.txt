@@ -32,18 +32,21 @@ cct_cxx_module("alm")
 # Get timestamp.
 string(TIMESTAMP BUILD_DATE "%Y%m%d")
 # Update using the timestamp.
-set(VERSION_STRING_BUILD_DATE "Libm Build ${BUILD_DATE}")
+set(VERSION_STRING_BUILD_DATE "Build ${BUILD_DATE}")
 set(LIBALM_VERSION_STRING "${VERSION_STRING_BUILD_DATE}")
 
 configure_file("${PROJECT_SOURCE_DIR}/CMake/version.build.hh.in"
                 "${PROJECT_SOURCE_DIR}/src/version.build.h"
                 @ONLY)
 
-# Get Compiler info.
-set(COMPILER "${CMAKE_C_COMPILER_ID}-${CMAKE_C_COMPILER_VERSION}")
+# Get Compiler info. Use the macro
+if(LINUX)
+  CHECK_GLIBC_VERSION(GLIBC_VERSION)
+endif()
+CHECK_COMPILER_VERSION(COMPILER)
 # Get System info.
 set(BUILD_SYSTEM "${CMAKE_SYSTEM}-${CMAKE_SYSTEM_PROCESSOR}")
-set(BUILD_SYS_INFO "${COMPILER}-${BUILD_SYSTEM}" )
+set(BUILD_SYS_INFO "${COMPILER}-${BUILD_SYSTEM}${GLIBC_VERSION}" )
 configure_file("${PROJECT_SOURCE_DIR}/CMake/buildsysinfo.hh.in"
                 "${PROJECT_SOURCE_DIR}/src/buildsysinfo.h"
                 @ONLY)
@@ -110,7 +113,7 @@ target_include_directories(src
                                    ${${PROJECT_PREFIX}_SDK_INCLUDES}
                            PRIVATE ${${PROJECT_PREFIX}_PRIVATE_INCLUDES}
                                    ${INCLUDES})
-target_compile_options(src PRIVATE ${LIBMCFLAGS})
+target_compile_options(src PRIVATE ${LIBMCFLAGS} "-O0")
 #add src object library to libmobj
 list(APPEND libmobj $<TARGET_OBJECTS:src>)
 
@@ -130,9 +133,10 @@ endif()
 if (BUILD_SHARED_LIBS)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
   add_library(libm_shared SHARED ${libmobj})
+  target_link_options(libm_shared PRIVATE -ealm_main)
   set_target_properties(libm_shared PROPERTIES POSITION_INDEPENDENT_CODE ON)
   target_link_libraries(libm_shared PRIVATE ${AOCL_UTILS_LIB})
-  set_target_properties(libm_shared PROPERTIES VERSION 5.0 SOVERSION 0)
+  set_target_properties(libm_shared PROPERTIES VERSION ${PROJECT_VERSION})
   set_target_properties(libm_shared PROPERTIES OUTPUT_NAME ${LIBALM})
   set_target_properties(libm_shared PROPERTIES PRIVATE_HEADER "${LIBM_PUBLIC_HEADERS}")
   set(libm libm_shared)

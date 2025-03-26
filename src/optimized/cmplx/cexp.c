@@ -39,15 +39,12 @@
  *   exp(x) = exp(a)*cos(b) + I*exp(a)*sin(b)
  *
  */
-
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/types.h>
 #include <libm/constants.h>
 #include <libm/typehelper.h>
 #include <stdio.h>
-#include <libm_util_amd.h>
-
 #if defined(__clang__)
 #define CMPLX(X, Y) __builtin_complex ((double) (X), (double) (Y))
 #endif
@@ -56,94 +53,51 @@ fc64_t
 ALM_PROTO_OPT(cexp)(fc64_t z)
 {
     double re, im;
-    double zy_re = POS_ZERO_F64, zy_im = POS_ZERO_F64;
-
+    double zy_re, zy_im;
     const double MAX_ARG = 0x1.62e42fefa39efp+9;
     const double EXP_MAX_ARG = 0x1.fffffffffff2ap+1023;
 
     re = creal(z);
-
     im = cimag(z);
 
-    uint64_t a_re = asuint64(re);
-    uint64_t a_im = asuint64(im);
-
-    /* Checks for INF */
-    if((a_im & POS_INF_F64) == 0)
-    {
-        /* If the imaginary part is INF, result depends on whether real part is +/-INF*/
-        if((a_re & NEG_INF_F64) == 0)
-        {
-            zy_re = POS_ZERO_F64;
-            zy_im = POS_ZERO_F64;
+    if((asuint64(re) & ~ALM_F64_SIGN_MASK) == 0) {
+        if((asuint64(im) & ~ALM_F64_SIGN_MASK) == 0) {
+            zy_re = 1.0;
+            zy_im = 0.0;
         }
-        else if((a_re & POS_INF_F64)==0)
-        {
-            zy_re = POS_INF_F64;
-            zy_im = POS_SNAN_F64;
-        }
-
-    }
-    else
-    {
-        if((a_re & ~ALM_F64_SIGN_MASK) == 0) {
-
-            if((a_im & ~ALM_F64_SIGN_MASK) == 0) {
-
-                zy_re = 1.0;
-
-                zy_im = 0.0;
-
-            } else {
-
-                ALM_PROTO(sincos)(im, &zy_im, &zy_re);
-
-            }
-        } else {
-
-            if((a_im & ~ALM_F64_SIGN_MASK) == 0) {
-
-                zy_re = ALM_PROTO(exp)(re);
-
-                zy_im = 0.0;
-
-            } else {
-                if(re > MAX_ARG) {
-
-                    double t = re - MAX_ARG;
-
-                    ALM_PROTO(sincos)(im, &zy_im, &zy_re);
-
-                    double r =  ALM_PROTO(exp)(t);
-
-                    zy_re *= r;
-
-                    zy_im *= r;
-
-                    zy_re *= EXP_MAX_ARG;
-
-                    zy_im *= EXP_MAX_ARG;
-
-                    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
-                        return (fc64_t) { zy_re, zy_im };
-                    #else
-                        return CMPLX(zy_re, zy_im);
-                    #endif
-
-
-                }
-
-                double t = ALM_PROTO(exp)(re);
-
-                ALM_PROTO(sincos)(im, &zy_im, &zy_re);
-
-                zy_re *= t;
-
-                zy_im *= t;
-            }
+        else {
+            ALM_PROTO(sincos)(im, &zy_im, &zy_re);
         }
     }
+    else {
 
+        if((asuint64(im) & ~ALM_F64_SIGN_MASK) == 0) {
+            zy_re = ALM_PROTO(exp)(re);
+            zy_im = 0.0;
+        }
+        else {
+
+            if(re > MAX_ARG) {
+                double t = re - MAX_ARG;
+                ALM_PROTO(sincos)(im, &zy_im, &zy_re);
+                double r =  ALM_PROTO(exp)(t);
+                zy_re *= r;
+                zy_im *= r;
+                zy_re *= EXP_MAX_ARG;
+                zy_im *= EXP_MAX_ARG;
+                #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+                    return (fc64_t) { zy_re, zy_im };
+                #else
+                    return CMPLX(zy_re, zy_im);
+                #endif
+            }
+
+            double t = ALM_PROTO(exp)(re);
+            ALM_PROTO(sincos)(im, &zy_im, &zy_re);
+            zy_re *= t;
+            zy_im *= t;
+        }
+    }
 
     #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
         return (fc64_t) { zy_re, zy_im };
@@ -152,4 +106,3 @@ ALM_PROTO_OPT(cexp)(fc64_t z)
     #endif
 
 }
-

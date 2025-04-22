@@ -62,14 +62,20 @@ $ cmake --build --preset dev-release-gcc -v
 
 
 ## Testing the Library
-  1. Build the library and test framework using SCons by
-     following the steps in BUILDING.txt.
-  2. To run the AOCL LibM test framework for the CMake-built
-     aocl-libm library, set the LD_LIBRARY_PATH to include
-     the CMake-built aocl-libm library:
-  ```console
-  $export LD_LIBRARY_PATH=./build/${presetName}/src:$LD_LIBRARY_PATH;
-  ```
+  To build all the apis present in gtests using a preset, run:
+```console
+$ cmake --build --preset dev-win-release-llvm --target gtests
+```
+
+To build single api present in gtests using a preset, run:
+```console
+$ cmake --build --preset dev-win-release-llvm --target test_exp
+```
+
+## To Clean build files
+```console
+$ cmake --build --preset dev-win-release-llvm --target clean
+```
 
 # Configure CMake for STATIC_DISPATCH
 Available options for ALM_STATIC_DISPATCH:
@@ -94,6 +100,12 @@ $ cmake --preset dev-release-gcc -DALM_STATIC_DISPATCH=ZEN3 --fresh
   where Visual Studio is installed:
 ```console
    "Path_To_VisualStudio\VC\Auxiliary\Build\vcvarsall.bat"  x64
+```
+
+## Set MPFR_PATH on Windows connamd prompt
+```console
+   set MPFR_PATH=path/to/mpfr
+   ex : set MPFR_PATH=C:/tools/mpfr
 ```
 
 ## List CMake Configuration Preset Names
@@ -145,11 +157,18 @@ $ cmake --build --preset dev-win-release-llvm -v
   build/{presetName} directory in release mode.
 
 ## Testing the Library
-  1.Build the library and test framework using SCons by
-    following the steps in BUILDING_on_Win.txt.
-  2.To run the AOCL LibM test framework for the CMake-built
-    aocl-libm library, set the PATH to include the
-    CMake-built aocl-libm library:
-    ```console
-    $set PATH=%PATH%;cmake_built_aocl-libm_library
-    ```
+  To build all the apis present in gtests using a preset, run:
+```console
+$ cmake --build --preset dev-win-release-llvm --target gtests
+```
+
+To build single api present in gtests using a preset, run:
+```console
+$ cmake --build --preset dev-win-release-llvm --target test_exp
+```
+
+## To Clean build files
+```console
+$ cmake --build --preset dev-win-release-llvm --target clean
+```
+

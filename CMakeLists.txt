@@ -28,7 +28,9 @@
 #------------------------------
 # Enable cmake minmum version
 #------------------------------
-cmake_minimum_required(VERSION 3.22)
+
+set(CMAKE_MIN_REQ_VERSION 3.22)
+cmake_minimum_required(VERSION ${CMAKE_MIN_REQ_VERSION})
 message(STATUS "CMAKE VERSION:${CMAKE_VERSION} (MIN REQUIRED: ${CMAKE_MINIMUM_REQUIRED_VERSION})")
 
 #------------------------------
@@ -220,6 +222,23 @@ if(${${PROJECT_PREFIX}_LIBM_BUILD_LIBRARY})
   add_subdirectory(src)
   add_custom_target(src_target DEPENDS au_cpuid_target)
   link_directories(${ALM_PATH})
+endif()
+
+if(WIN32)
+  set(REMOVE_COMMAND "del")
+else()
+  set(REMOVE_COMMAND "rm")
+endif()
+
+
+#------------------------------
+# Add Tests if ENABLE_TESTS is defined
+# These are Integration Tests,
+# Unit tests are expected to be in respective source folder
+#------------------------------
+if (${${PROJECT_PREFIX}_LIBM_BUILD_TESTS})
+  enable_testing()
+  add_subdirectory(gtests EXCLUDE_FROM_ALL)
 endif()
 
 if(WIN32)

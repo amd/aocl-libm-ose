@@ -29,6 +29,7 @@
 #ifndef __CALLBACK_H__
 #define __CALLBACK_H__
 
+#undef max
 #include "benchmark.h"
 #include "almtestperf.h"
 #include <external/amdlibm.h>

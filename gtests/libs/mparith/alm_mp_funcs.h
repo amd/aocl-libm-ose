@@ -33,7 +33,6 @@
 extern "C" {
 #endif
 
-#include <external/amdlibm.h>
 
 double   alm_mp_acosf       (float x);
 double   alm_mp_acoshf      (float x);
@@ -262,3 +261,4 @@ long double _Complex   alm_mpc_cexp       (double _Complex x);
 
 
 #endif
+

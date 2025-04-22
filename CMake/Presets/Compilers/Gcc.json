@@ -18,8 +18,8 @@
             "hidden": true,
             "inherits": "gcc",
             "cacheVariables": {
-                "CMAKE_C_FLAGS_DEBUG": "-g -ggdb3",
-                "CMAKE_CXX_FLAGS_DEBUG": "-g -ggdb3"
+                "CMAKE_C_FLAGS_DEBUG": "-g -ggdb3 -O1",
+                "CMAKE_CXX_FLAGS_DEBUG": "-g -ggdb3 -O1"
             }
         },
         {

@@ -6,8 +6,7 @@
             "hidden": true,
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "clang",
-                "CMAKE_CXX_COMPILER": "clang++",
-                "CMAKE_SHARED_LINKER_FLAGS": "-fuse-ld=ld"
+                "CMAKE_CXX_COMPILER": "clang++"
             }
         },
         {
@@ -15,8 +14,8 @@
             "hidden": true,
             "inherits": "llvm",
             "cacheVariables": {
-                "CMAKE_C_FLAGS_DEBUG": "-g -ggdb3",
-                "CMAKE_CXX_FLAGS_DEBUG": "-g -ggdb3"
+                "CMAKE_C_FLAGS_DEBUG": "-g -ggdb3 -O1",
+                "CMAKE_CXX_FLAGS_DEBUG": "-g -ggdb3 -O1"
             }
         },
         {
@@ -37,8 +36,8 @@
             "hidden": true,
             "inherits": "llvm-win",
             "cacheVariables": {
-                "CMAKE_C_FLAGS_DEBUG": "-g -ggdb3",
-                "CMAKE_CXX_FLAGS_DEBUG": "-g -ggdb3"
+                "CMAKE_C_FLAGS_DEBUG": "-g -ggdb3 -O1",
+                "CMAKE_CXX_FLAGS_DEBUG": "-g -ggdb3 -O1"
             }
         },
         {

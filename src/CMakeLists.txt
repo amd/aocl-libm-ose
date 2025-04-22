@@ -113,10 +113,15 @@ target_include_directories(src
                                    ${${PROJECT_PREFIX}_SDK_INCLUDES}
                            PRIVATE ${${PROJECT_PREFIX}_PRIVATE_INCLUDES}
                                    ${INCLUDES})
-target_compile_options(src PRIVATE ${LIBMCFLAGS} "-O0")
+target_compile_options(src PRIVATE ${LIBMCFLAGS} "-O1")
 #add src object library to libmobj
 list(APPEND libmobj $<TARGET_OBJECTS:src>)
 
+if(LINUX)
+  set(EXT_LIBS "-Wl,-Bdynamic -lc -lstdc++")
+elseif(WIN32)
+  set(EXT_LIBS "msvcrt")
+endif()
 
 #add include headers as part of the install
 set(LIBM_PUBLIC_HEADERS ${PROJECT_SOURCE_DIR}/include/external/amdlibm.h
@@ -124,38 +129,42 @@ set(LIBM_PUBLIC_HEADERS ${PROJECT_SOURCE_DIR}/include/external/amdlibm.h
 
 if (WIN32)
   set(LIBALM libalm)
-  set(CMAKE_SHARED_LIBRARY_PREFIX "")
-  set(CMAKE_STATIC_LIBRARY_PREFIX "")
+  set(CMAKE_STATIC_LIBRARY_SUFFIX  ".a")
 else()
   set(LIBALM alm)
 endif()
 
-if (BUILD_SHARED_LIBS)
+set(libm "")
+if(WIN32)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-  add_library(libm_shared SHARED ${libmobj})
-  target_link_options(libm_shared PRIVATE -ealm_main)
-  set_target_properties(libm_shared PROPERTIES POSITION_INDEPENDENT_CODE ON)
-  target_link_libraries(libm_shared PRIVATE ${AOCL_UTILS_LIB})
-  set_target_properties(libm_shared PROPERTIES VERSION ${PROJECT_VERSION})
-  set_target_properties(libm_shared PROPERTIES OUTPUT_NAME ${LIBALM})
-  set_target_properties(libm_shared PROPERTIES PRIVATE_HEADER "${LIBM_PUBLIC_HEADERS}")
-  set(libm libm_shared)
-else()
-  add_library(libm_static STATIC ${libmobj})
-  target_link_libraries(libm_static PRIVATE ${AOCL_UTILS_LIB})
-  set_target_properties(libm_static PROPERTIES OUTPUT_NAME ${LIBALM})
-  set_target_properties(libm_static PROPERTIES PRIVATE_HEADER "${LIBM_PUBLIC_HEADERS}")
-  set(libm libm_static)
-endif ()
+endif()
+add_library(libm_shared SHARED ${libmobj})
+set_target_properties(libm_shared PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(libm_shared PROPERTIES VERSION ${PROJECT_VERSION})
+set_target_properties(libm_shared PROPERTIES OUTPUT_NAME ${LIBALM})
+set_target_properties(libm_shared PROPERTIES PRIVATE_HEADER "${LIBM_PUBLIC_HEADERS}")
+set_target_properties(libm_shared PROPERTIES LINKER_LANGUAGE CXX)
+target_link_libraries(libm_shared PUBLIC ${EXT_LIBS} ${AOCL_UTILS_LIB})
+if(NOT WIN32)
+  target_link_options(libm_shared PRIVATE "-Wl,-e,alm_main")
+endif()
+list(APPEND libm libm_shared)
+
+add_library(libm_static STATIC ${libmobj})
+target_link_libraries(libm_static PUBLIC ${AOCL_UTILS_LIB})
+set_target_properties(libm_static PROPERTIES OUTPUT_NAME ${LIBALM})
+set_target_properties(libm_static PROPERTIES PRIVATE_HEADER "${LIBM_PUBLIC_HEADERS}")
+list(APPEND libm libm_static)
+
 
 add_subdirectory(fast)
 if(LINUX)
   add_subdirectory(compat)
 endif()
 
-list(APPEND libm libmfast)
 install(TARGETS ${libm}
         LIBRARY DESTINATION ${${PROJECT_PREFIX}_INSTALL_DIR}/lib
         ARCHIVE DESTINATION ${${PROJECT_PREFIX}_INSTALL_DIR}/lib
         RUNTIME DESTINATION ${${PROJECT_PREFIX}_INSTALL_DIR}/lib
         PRIVATE_HEADER DESTINATION ${${PROJECT_PREFIX}_INSTALL_DIR}/include)
+set(libm ${libm} PARENT_SCOPE)

@@ -15,23 +15,24 @@
                 "CUST_PROJ_CXX_STD": "17",
                 "CUST_PROJ_SOURCE_DIR": "Sources",
                 "CUST_PROJ_AU_TAG": "dev",
-                "CUST_PROJ_GTEST_TAG": "release-1.12.0",
-                "CUST_PROJ_GBENCH_TAG": "v1.8.4"
+                "CUST_PROJ_GTEST_TAG": "release-1.12.1",
+                "CUST_PROJ_GBENCH_TAG": "v1.9.2"
             }
         },
         {
             "name": "project-options",
             "hidden": true,
             "cacheVariables": {
-                "OPTION_BUILD_TESTS": "OFF",
-                "OPTION_BUILD_DOCS": "OFF",
-                "OPTION_BUILD_EXAMPLES": "OFF",
-                "OPTION_ENABLE_SLOW_TESTS": "OFF",
-                "OPTION_ENABLE_BROKEN_TESTS": "OFF",
-                "OPTION_ENABLE_ASSERTIONS": "OFF",
-                "OPTION_ENABLE_ASAN": "OFF",
-                "OPTION_ENABLE_COVERAGE": "OFF",
-                "OPTION_EXPORT_NAMESPACE": "OFF"
+                "LIBM_BUILD_LIBRARY": "ON",
+                "LIBM_BUILD_TESTS": "ON",
+                "LIBM_BUILD_DOCS": "OFF",
+                "LIBM_BUILD_EXAMPLES": "OFF",
+                "LIBM_ENABLE_SLOW_TESTS": "OFF",
+                "LIBM_ENABLE_BROKEN_TESTS": "OFF",
+                "LIBM_ENABLE_ASSERTIONS": "OFF",
+                "LIBM_ENABLE_ASAN": "OFF",
+                "LIBM_ENABLE_COVERAGE": "OFF",
+                "LIBM_EXPORT_NAMESPACE": "OFF"
             }
         }
     ]

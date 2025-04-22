@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -46,19 +46,18 @@ function(cct_display_banner)
     message(" - Main binary Target:     \"${CMAKE_BINARY_DIR}\"")
     message(" - Toolchain file used:    \"${CMAKE_TOOLCHAIN_FILE}\"")
     message("Test settings:")
-    message(" - Enabled? :              \"${${PROJECT_PREFIX}_OPTION_BUILD_TESTS}\"")
-    message(" - Enable Slow Tests:      \"${${PROJECT_PREFIX}_OPTION_ENABLE_SLOW_TESTS}\"")
-    message(" - Enable Broken Tests:    \"${${PROJECT_PREFIX}_OPTION_ENABLE_BROKEN_TESTS}\"")
+    message(" - Enabled? :              \"${${PROJECT_PREFIX}_LIBM_BUILD_TESTS}\"")
+    message(" - Enable Slow Tests:      \"${${PROJECT_PREFIX}_LIBM_ENABLE_SLOW_TESTS}\"")
+    message(" - Enable Broken Tests:    \"${${PROJECT_PREFIX}_LIBM_ENABLE_BROKEN_TESTS}\"")
     message("Code Coverage Settings:")
-    message(" - Enabled? :              \"${${PROJECT_PREFIX}_OPTION_ENABLE_COVERAGE}\"")
+    message(" - Enabled? :              \"${${PROJECT_PREFIX}_LIBM_ENABLE_COVERAGE}\"")
     message("Doc Settings:")
-    message(" - Enable?:                \"${${PROJECT_PREFIX}_OPTION_BUILD_DOCS}\"")
+    message(" - Enable?:                \"${${PROJECT_PREFIX}_LIBM_BUILD_DOCS}\"")
     message("Export Settings:")
-    message(" - Enable?:                \"${${PROJECT_PREFIX}_OPTION_ENABLE_EXPORT}\"")
-    message(" - Export namespace:       \"${${PROJECT_PREFIX}_OPTION_EXPORT_NAMESPACE}\"")
+    message(" - Enable?:                \"${${PROJECT_PREFIX}_LIBM_ENABLE_EXPORT}\"")
+    message(" - Export namespace:       \"${${PROJECT_PREFIX}_LIBM_EXPORT_NAMESPACE}\"")
     message(" - Install directory:      \"${CMAKE_INSTALL_PREFIX}\"")
     message("Package Settings:")
     message(" - Package:                \"${CPACK_PACKAGING_INSTALL_PREFIX}\"")
 
 endfunction(cct_display_banner)
-

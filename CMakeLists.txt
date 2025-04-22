@@ -56,7 +56,7 @@ message(DEBUG "Project name from cache " "${PROJECT_NAME}")
 if (NOT DEFINED PROJECT_PREFIX)
     message(FATAL_ERROR "Project Prefix must be set in Presets/Project.json")
 endif()
-message(DEBUG "Project Prefix " "${PARAM_PROJECT_PREFIX}")
+message(DEBUG "Project Prefix " "${PROJECT_PREFIX}")
 
 #------------------------------
 # Get Version details, this should update
@@ -83,9 +83,9 @@ project("${PROJECT_PREFIX}-${PROJECT_NAME}"
 
 message(DEBUG "Project with name \"${PROJECT_PREFIX}\" with version ${${PROJECT_PREFIX}_VERSION} registered")
 
+#Include GNUInstallDirs for standard install directories
 if(LINUX)
-    #Include GNUInstallDirs for standard install directories
-    include(GNUInstallDirs)
+  include(GNUInstallDirs)
 endif()
 
 if (NOT DEFINED ${${PROJECT_PREFIX}_GENERATED})
@@ -132,6 +132,9 @@ if(DEFINED ALM_STATIC_DISPATCH)
   endif()
 endif()
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/=.")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/=.")
+
 #------------------------------
 # AOCL_Utils CPUID_library requirements
 #------------------------------
@@ -146,7 +149,6 @@ endif()
 #------------------------------
 # Setup Project Includes
 #------------------------------
-#set(${PROJECT_PREFIX}_INSTALL_DIR "${PROJECT_SOURCE_DIR}/package")
 set(${PROJECT_PREFIX}_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}")
 message(DEBUG "Libm installation path" "${${PROJECT_PREFIX}_INSTALL_DIR}")
 
@@ -166,7 +168,6 @@ if (
 else()
     message(FATAL_ERROR "CUST_PROJ_CXX_STD should be set to one of 11/14/17/20/23 (set to ${CUST_PROJ_CXX_STD})")
 endif()
-
 
 #------------------------------
 # Generate Config.hh from Config.hh.in
@@ -191,7 +192,6 @@ endif()
 # Check compiler support for different ISAs
 #------------------------------------
 include(Compiler_Features)
-
 configure_file("${PROJECT_SOURCE_DIR}/CMake/Config.hh.in"
             "${${PROJECT_PREFIX}_CONFIG_OUTPUT_FILE}"
             @ONLY)
@@ -206,7 +206,6 @@ configure_file("${PROJECT_SOURCE_DIR}/CMake/Version.hh.in"
                 "${${PROJECT_PREFIX}_VERSION_OUTPUT_FILE}"
                 @ONLY)
 
-message(" - Project name:          ${PROJECT_NAME}")
 #------------------------------
 # Display banner of settings
 #------------------------------
@@ -216,13 +215,23 @@ cct_display_banner()
 #------------------------------
 # Add Source Directory
 #------------------------------
-add_subdirectory(src)
+if(${${PROJECT_PREFIX}_LIBM_BUILD_LIBRARY})
+  set(ALM_PATH     "${CMAKE_BINARY_DIR}/src")
+  add_subdirectory(src)
+  add_custom_target(src_target DEPENDS au_cpuid_target)
+  link_directories(${ALM_PATH})
+endif()
+
+if(WIN32)
+  set(REMOVE_COMMAND "del")
+else()
+  set(REMOVE_COMMAND "rm")
+endif()
 
 add_custom_target(distclean
-    COMMAND ${CMAKE_MAKE_PROGRAM} clean
-    COMMAND rm ${PROJECT_SOURCE_DIR}/src/buildsysinfo.h
-    COMMAND rm ${PROJECT_SOURCE_DIR}/src/version.build.h
-    COMMAND rm -rf ${PROJECT_BINARY_DIR}/build
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-    COMMENT "Remove cmake_generated files and directories"
+  COMMAND ${CMAKE_MAKE_PROGRAM} clean
+  COMMAND ${REMOVE_COMMAND} ${PROJECT_SOURCE_DIR}/src/buildsysinfo.h
+  COMMAND ${REMOVE_COMMAND} ${PROJECT_SOURCE_DIR}/src/version.build.h
+  WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+  COMMENT "Remove cmake_generated files and directories"
 )

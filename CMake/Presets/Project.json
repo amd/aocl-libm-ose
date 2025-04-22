@@ -14,6 +14,7 @@
                 "CUST_PROJ_PREFIX": "aocl",
                 "CUST_PROJ_CXX_STD": "17",
                 "CUST_PROJ_SOURCE_DIR": "Sources",
+                "CUST_PROJ_AU_TAG": "dev",
                 "CUST_PROJ_GTEST_TAG": "release-1.12.0",
                 "CUST_PROJ_GBENCH_TAG": "v1.8.4"
             }

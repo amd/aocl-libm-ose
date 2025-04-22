@@ -83,6 +83,11 @@ project("${PROJECT_PREFIX}-${PROJECT_NAME}"
 
 message(DEBUG "Project with name \"${PROJECT_PREFIX}\" with version ${${PROJECT_PREFIX}_VERSION} registered")
 
+if(LINUX)
+    #Include GNUInstallDirs for standard install directories
+    include(GNUInstallDirs)
+endif()
+
 if (NOT DEFINED ${${PROJECT_PREFIX}_GENERATED})
     set(${PROJECT_PREFIX}_GENERATED "${PROJECT_BINARY_DIR}/generated")
 endif()
@@ -91,7 +96,7 @@ if(WIN32)
     set(CMAKE_COMPILE_WARNING_AS_ERROR FALSE)
     if("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
         message(FATAL_ERROR  "CMAKE for ${PROJECT_NAME} not supported on ${CMAKE_C_COMPILER_ID}")
-    endif()  
+    endif()
 endif()
 
 #------------------------------
@@ -133,6 +138,9 @@ endif()
 # Check if the necessary includes and libraries are present before including Cct_Libaoclutils
 if (NOT (EXISTS "${AOCL_UTILS_INCLUDE_DIR}" AND EXISTS "${AOCL_UTILS_LIB}"))
   include(Cct_Libaoclutils)
+  link_directories(${AOCL_UTILS_PATH})
+  set(CMAKE_SKIP_RPATH TRUE)
+  set(CMAKE_SKIP_INSTALL_RPATH TRUE)
 endif()
 
 #------------------------------
@@ -218,4 +226,3 @@ add_custom_target(distclean
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     COMMENT "Remove cmake_generated files and directories"
 )
-

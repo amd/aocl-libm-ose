@@ -25,47 +25,103 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-include(FetchContent)
-set(AU_BUILD_DOCS OFF)
-set(au                aoclutils)
-set(sourcedir         ${CMAKE_CURRENT_BINARY_DIR}/${au})
-set(binarydir         ${CMAKE_CURRENT_BINARY_DIR}/${au}_build)
-set(git_repo          "https://github.com/amd/aocl-utils.git")
-set(git_tag           "dev")
+# Function to check if a directory exists
+function(directory_exists dir)
+    if(EXISTS ${dir} AND IS_DIRECTORY ${dir})
+        set(${ARGN} TRUE PARENT_SCOPE)
+    else()
+        set(${ARGN} FALSE PARENT_SCOPE)
+    endif()
+endfunction()
 
-FetchContent_Declare(
-    ${au}
-    GIT_REPOSITORY ${git_repo}
-    GIT_TAG        ${git_tag}
-    SOURCE_DIR     ${sourcedir}
-    BINARY_DIR     ${binarydir}
-)
+# Function to check if a library exists
+function(library_exists lib libpath)
+    find_library(${lib}_LIB NAMES ${lib} PATHS ${libpath} NO_DEFAULT_PATH)
+    if(${lib}_LIB)
+        set(${ARGN} TRUE PARENT_SCOPE)
+    else()
+        set(${ARGN} FALSE PARENT_SCOPE)
+    endif()
+endfunction()
 
-# Check if the content has already been populated
-FetchContent_GetProperties(${au})
-if(NOT ${au}_POPULATED)
-  FetchContent_MakeAvailable(${au})
+set(AU_SHARED OFF CACHE BOOL "Build shared libraries")
+set(AU_STATIC OFF CACHE BOOL "Build static libraries")
+if(NOT AU_SHARED)
+    set(AU_STATIC ON)
 endif()
 
-set(libname au_cpuid)
-if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-    string(APPEND libname -dbg)
-endif()
-set(AOCL_UTILS_INCLUDE_DIR  ${sourcedir}/SDK/Bcl ${sourcedir}/SDK/Include ${binarydir}/generated)
-set(AOCLUTILS_PATH          ${binarydir}/Library/Cpuid)
-set(AUCPUID_STATIC          ${CMAKE_STATIC_LIBRARY_PREFIX}${libname}${CMAKE_STATIC_LIBRARY_SUFFIX})
-set(AUCPUID_SHARED          ${CMAKE_SHARED_LIBRARY_PREFIX}${libname}${CMAKE_SHARED_LIBRARY_SUFFIX})
-set(AUCPUID_IMPORT          ${CMAKE_SHARED_LIBRARY_PREFIX}${libname}${CMAKE_STATIC_LIBRARY_SUFFIX})
-set(AOCLUTILS_STATIC        ${AOCLUTILS_PATH}/${AUCPUID_STATIC})
+set(AU_SOURCE_DIR "${CMAKE_SOURCE_DIR}/build/external/aocl-utils")
+set(AU_BINARY_DIR "${AU_SOURCE_DIR}/build")
+
 if (WIN32)
-  set(AOCLUTILS_DLL         ${AOCLUTILS_PATH}/${AUCPUID_SHARED})
-  set(AOCLUTILS_SHARED      ${AOCLUTILS_PATH}/${AUCPUID_IMPORT})
+  set(AOCLUTILS_DLL         au_cpuid.dll)
+  set(AOCLUTILS_SHARED      au_cpuid.lib)
+  set(AOCLUTILS_STATIC      au_cpuid_static.lib)
 else()
-  set(AOCLUTILS_SHARED      ${AOCLUTILS_PATH}/${AUCPUID_SHARED})
+  set(AOCLUTILS_SHARED      libau_cpuid.so)
+  set(AOCLUTILS_STATIC      libau_cpuid.a)
 endif()
 
-if(BUILD_SHARED_LIBS)
+if(AU_SHARED)
   set(AOCL_UTILS_LIB        ${AOCLUTILS_SHARED})
 else()
   set(AOCL_UTILS_LIB        ${AOCLUTILS_STATIC})
 endif()
+
+# Check if aocl-utils directory exists
+directory_exists(${AU_SOURCE_DIR} AOCL_UTILS_DIR_EXISTS)
+
+# Check if aocl-utils library exists
+library_exists(${AOCL_UTILS_LIB} ${AU_BINARY_DIR}/Library/Cpuid AOCL_UTILS_LIB_EXISTS)
+
+
+if(AOCL_UTILS_LIB_EXISTS)
+    message(STATUS "Aocl-Utils library found ...")
+elseif(AOCL_UTILS_DIR_EXISTS)
+    message(STATUS "Aocl-Utils directory found, building library...")
+
+    # Build aocl-utils with specified options
+    execute_process(COMMAND ${CMAKE_COMMAND} -G${CMAKE_GENERATOR} -S ${AU_SOURCE_DIR} -B ${AU_BINARY_DIR}
+                            -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+                            -DCMAKE_BUILD_TYPE=Release
+                            -DAU_BUILD_SHARED_LIBS=${AU_SHARED}
+                            -DAU_BUILD_STATIC_LIBS=${AU_STATIC}
+                            -DAU_CMAKE_VERBOSE=OFF
+                            -DAU_BUILD_TESTS=OFF
+                            -DAU_BUILD_EXAMPLES=OFF
+                    RESULTS_VARIABLE  result_au
+                    WORKING_DIRECTORY ${AU_SOURCE_DIR}
+    )
+    execute_process(COMMAND ${CMAKE_COMMAND} --build ${AU_BINARY_DIR} --config Release -v
+                    OUTPUT_VARIABLE   output_au
+                    WORKING_DIRECTORY ${AU_SOURCE_DIR}
+    )
+else()
+    message(STATUS "Aocl-Utils directory not found, cloning repository...")
+
+    # Clone aocl-utils with specific tag
+    execute_process(COMMAND git clone --branch "${${PROJECT_PREFIX}_PROJ_AU_TAG}" https://github.com/amd/aocl-utils.git ${AU_SOURCE_DIR})
+
+    # Build aocl-utils with specified options
+    execute_process(COMMAND ${CMAKE_COMMAND} -G${CMAKE_GENERATOR} -S ${AU_SOURCE_DIR} -B ${AU_BINARY_DIR}
+                             -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+                             -DCMAKE_BUILD_TYPE=Release
+                             -DAU_BUILD_SHARED_LIBS=${AU_SHARED}
+                             -DAU_BUILD_STATIC_LIBS=${AU_STATIC}
+                             -DAU_CMAKE_VERBOSE=OFF
+                             -DAU_BUILD_TESTS=OFF
+                             -DAU_BUILD_EXAMPLES=OFF
+                    RESULTS_VARIABLE  result_au
+                    WORKING_DIRECTORY ${AU_SOURCE_DIR}
+    )
+    execute_process(COMMAND ${CMAKE_COMMAND} --build ${AU_BINARY_DIR} --config Release
+                    OUTPUT_VARIABLE   output_au
+                    WORKING_DIRECTORY ${AU_SOURCE_DIR}
+    )
+endif()
+
+# Set additional AOCL utils paths and library names
+set(AOCL_UTILS_INCLUDE_DIR  ${AU_SOURCE_DIR}/SDK/Bcl
+                            ${AU_SOURCE_DIR}/SDK/Include
+                            ${AU_BINARY_DIR}/generated)
+set(AOCL_UTILS_PATH         ${AU_BINARY_DIR}/Library/Cpuid)

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -41,10 +41,9 @@ set(${PROJECT_PREFIX}_SOURCE_DIR ${PROJECT_SOURCE_DIR}/${CUST_PROJ_SOURCE_DIR})
 
 set(${PROJECT_PREFIX}_VENDOR_NAME ${VENDOR_NAME})
 set(${PROJECT_PREFIX}_VENDOR_CONTACT ${VENDOR_CONTACT})
-
-set(${PROJECT_PREFIX}_PROJ_GBENCH_TAG ${CUST_PROJ_GBENCH_TAG})
 set(${PROJECT_PREFIX}_PROJ_URL ${CUST_PROJ_URL})
 
+set(${PROJECT_PREFIX}_PROJ_AU_TAG ${CUST_PROJ_AU_TAG})
 set(${PROJECT_PREFIX}_PROJ_GTEST_TAG ${CUST_PROJ_GTEST_TAG})
 set(${PROJECT_PREFIX}_PROJ_GBENCH_TAG ${CUST_PROJ_GBENCH_TAG})
 
@@ -70,3 +69,4 @@ set(${PROJECT_PREFIX}_OPTION_ENABLE_COVERAGE ${OPTION_ENABLE_COVERAGE})
 # PACKAGE and EXPORT Settings
 #--------------------------
 set(${PROJECT_PREFIX}_OPTION_EXPORT_NAMESPACE ${OPTION_EXPORT_NAMESPACE})
+

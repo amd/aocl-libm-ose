@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -95,7 +95,7 @@ ALM_PROTO_OPT(expm1f)(float x)
         if (x > DATA.x.max)
             return __alm_handle_errorf(POS_INF_F32, AMD_F_OVERFLOW|AMD_F_INEXACT);
 
-        if (x < DATA.x.min)
+        if (x <= DATA.x.min)
             return -1.0;
 
         return asfloat(QNANBITPATT_SP32);

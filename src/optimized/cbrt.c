@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -34,7 +34,11 @@
  * NOTE: The algorithm is optimized from the assembly version of CBRT function
  * To calculate (x)^1/3
  * step 1) Extract exponent and mantissa from input.
- * step 2) Convert input from float to double.
+ * step 2) If it is subnormal input
+ *         Exponent would be 0 and mantissa is non zero
+ *         Normalise subnormal number:
+ *         Shifting mantissa bits to left until MSB is 1 and 
+ *         Number of times bits are shifted will contribute to exponent
  * step 3) Reduce the input [1, 2)
             3.1) Replace exponent with 3ff i.e 1
             3.2) Or with the mantissa
@@ -65,8 +69,6 @@
 #include <libm/alm_special.h>
 #include <cbrt_data.h>
 
-#define MANTISSA_MASK_64    0x000FFFFFFFFFFFFF
-#define ZERO_POINT_FIVE     0x3FE0000000000000
 #define ONE_BY_512          0.001953125                         // 0x3f60000000000000
 
 #define CBRT_EXP_COEFF_1    3.33333333333333314829616256247E-1  // 0x3fd5555555555555
@@ -87,6 +89,21 @@
 #define LOW_2_POW_P2        1.95203845333454543122158936132E-8  // 0x3e54f5b8f20ac166 // cbrt(2^2) Low
 #define HIGH_2_POW_P2       1.58740103244781494140625E0         // 0x3FF965FEA0000000 // cbrt(2^2) High
 
+static inline void cbrt_special(double x, U32 code) {
+    flt64_t ix = {.d = x};
+
+    switch (code){
+    case AMD_F_INVALID:
+        __alm_handle_error(ix.u | QNAN_MASK_64, AMD_F_INVALID);
+        break;
+    case ALM_E_OVERFLOW:
+        __alm_handle_error(ix.u, AMD_F_OVERFLOW);
+        break;
+    default:
+        break;
+    }
+}
+
 double
 ALM_PROTO_OPT(cbrt)(double x) {
     uint64_t uix64;
@@ -97,6 +114,8 @@ ALM_PROTO_OPT(cbrt)(double x) {
 
     int64_t quotient = 0;
     int64_t rem = 0;
+    double temp = 0;
+    double r = 0;
 
     ix =  asuint64(x);
 
@@ -106,31 +125,55 @@ ALM_PROTO_OPT(cbrt)(double x) {
     if (unlikely( ixe == PINFBITPATT_DP64 ))
     {
         if (ixm == 0)
-            __alm_handle_errorf(ix, AMD_F_OVERFLOW);
+            cbrt_special(x, AMD_F_OVERFLOW);
         else
-            __alm_handle_errorf(ix|QNAN_MASK_64, AMD_F_INVALID);
+            cbrt_special(x, AMD_F_INVALID);
 
         return x + x;
     }
+
+    ixe = ixe >> EXPSHIFTBITS_DP64; // shift right 52 bits for exponent value only
 
     if ( ixe == 0 )
     {
         // denormal number;
         if (ixm == 0) // is zero
-            return 0.0f;
-        x = x * TWOPOW53_DP64;
+            return 0.0;
 
-        ix = asuint64(x);
+        /******************************************************** */
+        /* Subnormal number                                       */
+        /* Exponent = 0 and mantissa != 0                         */
+        /* Before calculating cbrt will convert this input in to  */
+        /* normalised form                                        */
+        /* signBit ExponentBits MantissaBits                      */
+        /* Input to this loop:  (X = 0/1)                         */
+        /*  X   00000000000   00000XXXXXXXX.........              */
+        /* Output from this loop:                                 */
+        /*  X   XXXXXXXXXXX   XXXXXXXX.........00000              */
+        /**********************************************************/
+        
+        ixe = ONEEXPBITS_DP64;
+        //Get absolute value of the input
+        ixm = ix & POS_BITSET_DP64;
+        // Mantissa is represneted as 1.XXXX instead of 0.XXXXX
+        ixm = ixm | ixe;
+        temp = asdouble(ixm);
+        r = asdouble(ixe);
+        //Decimal digits is left shifted until MSB is set to 1
+        temp = temp - r;
+        //Normalised input
+        ix =  asuint64(temp);
 
         ixe = EXPBITS_DP64 & ix;  // exponent extractor
         ixm = MANTBITS_DP64 & ix; // mantissa extractor
+        ixe = ixe >> EXPSHIFTBITS_DP64;
+        ixe = ixe + (uint64_t)EMIN_DP64;
     }
 
     uix64 = asuint64(x);
 
     sign = uix64 >> 63; // extract sign bit
 
-    ixe = ixe >> 52; // shift right 52 bits for exponent value only
     ixe = ixe - 1023; // exponent - 0x3FF, bias removal
 
     quotient = (int64_t)ixe / 3; // quotient, scale factor
@@ -139,8 +182,8 @@ ALM_PROTO_OPT(cbrt)(double x) {
     quotient += 1023;
     uint64_t exponDouble = (uint64_t)quotient << 52;
 
-    uix64 = uix64 & MANTISSA_MASK_64;
-    uix64 = uix64 | ZERO_POINT_FIVE;
+    uix64 = ix & MANTBITS_DP64;
+    uix64 = uix64 | HALFEXPBITS_DP64;
 
     uint64_t mant_1 = ixm >> 43;
     uint64_t mant_2 = ixm >> 44;
@@ -150,10 +193,10 @@ ALM_PROTO_OPT(cbrt)(double x) {
 
     mant_1 += mant_2;
 
-    double temp = (double)mant_1;
+    temp = (double)mant_1;
     temp = ONE_BY_512 * temp;
 
-    double r = asdouble(uix64);
+    r = asdouble(uix64);
     r = r - temp;
 
     mant_1 = mant_1 - 256;

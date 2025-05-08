@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -112,6 +112,33 @@ string validateFilterData(string func, string filter_data)
         {
             if(find(supported_vars.begin(), supported_vars.end(), "vrsa") != supported_vars.end())
                 new_filter_data.append(temp + ":");
+        }
+    }
+    return new_filter_data;
+}
+
+string validateFilterDataConf(InputParams *params, string filter_data)
+{
+    string func = params->testFunction;
+    vector<string> supported_vars = getSupportedVariants(func);
+    stringstream ss(filter_data);
+    string new_filter_data, temp;
+
+
+    if((params->fqty == ALM::FloatQuantity::E_Scalar) || (params->fqty == ALM::FloatQuantity::E_All))
+    {
+        while(getline(ss, temp, ':'))
+        {
+            if( (temp.find("FLOAT") != string::npos) || (temp.find("COMPLEX_FLOAT") != string::npos) )
+            {
+                if(find(supported_vars.begin(), supported_vars.end(), "s1f") != supported_vars.end())
+                    new_filter_data.append(temp + ":");
+            }
+            else if( (temp.find("DOUBLE") != string::npos) || (temp.find("COMPLEX_DOUBLE") != string::npos) )
+            {
+                if(find(supported_vars.begin(), supported_vars.end(), "s1d") != supported_vars.end())
+                    new_filter_data.append(temp + ":");
+            }
         }
     }
     return new_filter_data;

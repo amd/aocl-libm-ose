@@ -26,7 +26,7 @@
 #
 
 file(GLOB ZEN3_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.c")
-set(ZEN3_INCLUDE ${INCLUDE_PATHS} "${CMAKE_CURRENT_SOURCE_DIR}/arch/zen3")
+set(ZEN3_INCLUDE ${INCLUDE_PATHS} "${CMAKE_CURRENT_SOURCE_DIR}")
 get_zen3_arch_flags( zen3 )
 message(DEBUG "Zen3 Arch Flag : ${zen3}")
 set(ZEN3_FLAGS ${ZENCFLAGS} ${zen3} )

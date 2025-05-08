@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-set(ZENCFLAGS ${LIBMCFLAGS} -O3 -flax-vector-conversions )
+
+set(ZENCFLAGS ${LIBMCFLAGS} ${vecflag})
 
 add_subdirectory(zen)
 #add zen1 object library to libmobj
@@ -42,5 +43,9 @@ list(APPEND libmobj $<TARGET_OBJECTS:zen3>)
 add_subdirectory(zen4)
 #add zen4 object library to libmobj
 list(APPEND libmobj $<TARGET_OBJECTS:zen4>)
+
+add_subdirectory(zen5)
+#add zen5 object library to libmobj
+list(APPEND libmobj $<TARGET_OBJECTS:zen5>)
 
 set(libmobj ${libmobj} PARENT_SCOPE)

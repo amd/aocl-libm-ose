@@ -30,6 +30,7 @@ EXPORTS
     alm_mp_remquo
     alm_mp_rint
     alm_mp_round
+    alm_mp_sincos
     alm_mp_sin
     alm_mp_sinh
     alm_mp_sqrt
@@ -42,3 +43,8 @@ EXPORTS
     alm_mp_fdim
     alm_mpc_cexp
     alm_mp_linearfrac
+    alm_mp_add
+    alm_mp_sub
+    alm_mp_mul
+    alm_mp_nextafter
+    alm_mp_ldexp

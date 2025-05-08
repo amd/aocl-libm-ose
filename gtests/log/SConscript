@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -46,10 +46,11 @@ if e['HOST_OS'] == 'win32':
         e['PDB'] = 'test_log.pdb'
 
 log_srcs = Glob('*.cc')
-log_srcs.append('../VecArr/gtest_main_vec_arr.o')
-log_srcs.append('../VecArr/gbench_main_vec_arr.o')
+log_srcs.append('../Gtest_srcs/gtest_accu.o')
+log_srcs.append('../Gtest_srcs/gbench_perf.o')
+log_srcs.append('../Gtest_srcs/gtest_main_vec_arr.o')
+log_srcs.append('../Gtest_srcs/gbench_main_vec_arr.o')
 
 log = e.Program('test_log', log_srcs)
 
 Return('log')
-

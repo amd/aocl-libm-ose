@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@ file(GLOB VECSRC LIST_DIRECTORIES false ${CMAKE_CURRENT_SOURCE_DIR}/vec/*.c)
 file(GLOB VECMATHSRC LIST_DIRECTORIES false ${CMAKE_CURRENT_SOURCE_DIR}/vectormath/*.c)
 
 set(OPT_SRC ${OPTSRC} ${DATASRC} ${CMPLXSRC} ${VECSRC} ${VECMATHSRC})
-set(OPT_FLAGS ${LIBMCFLAGS} -O3 -mavx2 -mfma -flax-vector-conversions )
+set(OPT_FLAGS ${LIBMCFLAGS} ${fmaflag} ${vecflag} )
 add_library(opt OBJECT ${OPT_SRC})
 target_include_directories(opt
                            PUBLIC  ${${PROJECT_PREFIX}_COMMON_INCLUDES}

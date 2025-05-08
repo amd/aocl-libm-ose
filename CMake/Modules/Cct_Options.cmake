@@ -25,6 +25,5 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-option(AU_INTERNAL "Use AOCL-Utils from Internal repo" OFF)
-
+option(BUILD_SHARED_LIBS "Build shared libraries" ON )
 option(OPTION_BUILD_TESTS "Enable the tests." OFF)

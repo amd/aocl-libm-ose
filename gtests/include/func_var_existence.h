@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -32,6 +32,8 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+
+#include "almstruct.h"
 
 using namespace std;
 
@@ -73,10 +75,11 @@ static map<string, vector<string>> libm_funcs = {
     {"logb",      {"s1d", "s1f"}},
     {"nearbyint", {"s1d", "s1f"}},
     {"pow",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
-    {"powx",      {"vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16"}},
+    {"powx",      {"vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrsa", "vrda"}},
     {"remainder", {"s1d", "s1f"}},
     {"rint",      {"s1d", "s1f"}},
     {"round",     {"s1d", "s1f"}},
+    {"sincos",    {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"sin",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"sinh",      {"s1d", "s1f"}},
     {"sqrt",      {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
@@ -84,6 +87,11 @@ static map<string, vector<string>> libm_funcs = {
     {"tanh",      {"s1d", "s1f", "vrs4", "vrs8", "vrs16"}},
     {"trunc",     {"s1d", "s1f"}},
     {"linearfrac",{"vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
+    {"add",       {"vrda", "vrsa"}},
+    {"sub",       {"vrda", "vrsa"}},
+    {"mul",       {"vrda", "vrsa"}},
+    {"nextafter", {"s1d", "s1f"}},
+    {"ldexp",     {"s1d", "s1f"}},
 };
 
 /* vector<string> getSupportedVariants(string func)
@@ -103,5 +111,10 @@ bool isVariantSupported(string func, string variant);
  * only the supported variants of that function is running.
  */
 string validateFilterData(string func, string filter_data);
+
+/* string validateFilterData(InputParams *params, string filter_data)
+ * return the valid filter-data to be applied for a given math function.
+ */
+string validateFilterDataConf(InputParams *params, string filter_data);
 
 #endif

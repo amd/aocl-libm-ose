@@ -65,7 +65,7 @@ void ToExponentAndMantissa(double val, double thresh, int precision,
         return;
       }
     }
-    mantissa_stream << val;
+    mantissa_stream << scaled;
     *exponent = 0;
   } else if (val < small_threshold) {
     // Negative powers

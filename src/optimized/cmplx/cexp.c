@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -39,14 +39,12 @@
  *   exp(x) = exp(a)*cos(b) + I*exp(a)*sin(b)
  *
  */
-
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/types.h>
 #include <libm/constants.h>
 #include <libm/typehelper.h>
 #include <stdio.h>
-
 #if defined(__clang__)
 #define CMPLX(X, Y) __builtin_complex ((double) (X), (double) (Y))
 #endif
@@ -56,72 +54,50 @@ ALM_PROTO_OPT(cexp)(fc64_t z)
 {
     double re, im;
     double zy_re, zy_im;
-
     const double MAX_ARG = 0x1.62e42fefa39efp+9;
     const double EXP_MAX_ARG = 0x1.fffffffffff2ap+1023;
 
     re = creal(z);
-
     im = cimag(z);
 
     if((asuint64(re) & ~ALM_F64_SIGN_MASK) == 0) {
-
         if((asuint64(im) & ~ALM_F64_SIGN_MASK) == 0) {
-
             zy_re = 1.0;
-
             zy_im = 0.0;
-
-        } else {
-
-            ALM_PROTO(sincos)(im, &zy_im, &zy_re);
-
         }
-    } else {
+        else {
+            ALM_PROTO(sincos)(im, &zy_im, &zy_re);
+        }
+    }
+    else {
 
         if((asuint64(im) & ~ALM_F64_SIGN_MASK) == 0) {
-
             zy_re = ALM_PROTO(exp)(re);
-
             zy_im = 0.0;
+        }
+        else {
 
-        } else {
             if(re > MAX_ARG) {
-
                 double t = re - MAX_ARG;
-
                 ALM_PROTO(sincos)(im, &zy_im, &zy_re);
-
                 double r =  ALM_PROTO(exp)(t);
-
                 zy_re *= r;
-
                 zy_im *= r;
-
                 zy_re *= EXP_MAX_ARG;
-
                 zy_im *= EXP_MAX_ARG;
-
                 #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
                     return (fc64_t) { zy_re, zy_im };
                 #else
                     return CMPLX(zy_re, zy_im);
                 #endif
-
-
             }
 
             double t = ALM_PROTO(exp)(re);
-
             ALM_PROTO(sincos)(im, &zy_im, &zy_re);
-
             zy_re *= t;
-
             zy_im *= t;
-
         }
     }
-
 
     #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
         return (fc64_t) { zy_re, zy_im };
@@ -130,4 +106,3 @@ ALM_PROTO_OPT(cexp)(fc64_t z)
     #endif
 
 }
-

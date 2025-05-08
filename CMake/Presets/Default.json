@@ -2,9 +2,13 @@
     "version": 6,
     "include": [
         "Base.json",
+        "Os/Linux.json",
+        "Os/Windows.json",
         "Generators/Make.json",
+        "Generators/Ninja.json",
         "x64-linux-gcc.json",
-        "x64-linux-llvm.json"
+        "x64-linux-llvm.json",
+        "x64-windows-llvm.json"
     ],
     "configurePresets": [
         {
@@ -26,32 +30,54 @@
             "name": "dev-release-clang",
             "displayName": "Developer Config with Clang-Release",
             "inherits": [ "make", "base-config-release","x64-linux-llvm-release"]
+        },
+        {
+            "name": "dev-win-llvm",
+            "displayName": "Developer Config with LLVM-Debug",
+            "inherits": [ "ninja","base-config-debug","x64-win-llvm-debug"]
+        },
+        {
+            "name": "dev-win-release-llvm",
+            "displayName": "Developer Config with LLVM-Release",
+            "inherits": [ "ninja","base-config-release","x64-win-llvm-release"]
         }
     ],
     "buildPresets": [
         {
             "name": "dev-gcc",
             "displayName": "Developer Build with GCC-Debug",
-            "inherits": ["build-debug"],
+            "inherits": ["linux","build-debug"],
             "configurePreset": "dev-gcc"
         },
         {
             "name": "dev-clang",
             "displayName": "Developer Build with Clang-Debug",
-            "inherits": ["build-debug"],
+            "inherits": ["linux","build-debug"],
             "configurePreset": "dev-clang"
         },
         {
             "name": "dev-release-gcc",
             "displayName": "Developer Build with GCC-Release",
-            "inherits": ["build-release"],
+            "inherits": ["linux","build-release"],
             "configurePreset": "dev-release-gcc"
         },
         {
             "name": "dev-release-clang",
             "displayName": "Developer Build with Clang-Release",
-            "inherits": ["build-release"],
+            "inherits": ["linux","build-release"],
             "configurePreset": "dev-release-clang"
+        },
+        {
+            "name": "dev-win-llvm",
+            "displayName": "Developer Build with LLVM-Debug",
+            "inherits": ["win","build-debug"],
+            "configurePreset": "dev-win-llvm"
+        },
+        {
+            "name": "dev-win-release-llvm",
+            "displayName": "Developer Build with LLVM-Release",
+            "inherits": ["win","build-release"],
+            "configurePreset": "dev-win-release-llvm"
         }
     ]
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@
 #include "libm_util_amd.h"
 #include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
+#include <libm/typehelper.h>
 
 double ALM_PROTO_REF(nextafter)(double x, double y)
 {
@@ -38,19 +39,16 @@ double ALM_PROTO_REF(nextafter)(double x, double y)
     checkbits.f64=x;
     checkbitsy.f64 = y;
 
-
-
-
     /* check if the number is nan */
     if(((checkbits.u64 & ~SIGNBIT_DP64) > EXPBITS_DP64 ))
     {
 #ifdef WINDOWS
-        return  __alm_handle_error(checkbits.u64 | QNAN_MASK_64, AMD_F_NONE);
+       return alm_nextafter_special(x, ALM_E_IN_X_NAN);
 #else
         if (checkbits.u64 & QNAN_MASK_64)
-            return  __alm_handle_error(checkbits.u64 | QNAN_MASK_64, AMD_F_NONE);
+            return alm_nextafter_special(x, ALM_E_IN_X_NAN);
         else
-            return  __alm_handle_error(checkbits.u64 | QNAN_MASK_64, AMD_F_INVALID);
+            return alm_nextafter_special(x, AMD_F_INVALID);
 #endif
     }
 
@@ -59,12 +57,12 @@ double ALM_PROTO_REF(nextafter)(double x, double y)
     if(((checkbitsy.u64 & ~SIGNBIT_DP64) > EXPBITS_DP64 ))
     {
 #ifdef WINDOWS
-        return  __alm_handle_error(checkbitsy.u64 | QNAN_MASK_64, AMD_F_NONE);
+        return alm_nextafter_special(y, ALM_E_IN_Y_NAN);
 #else
         if (checkbitsy.u64 & QNAN_MASK_64)
-            return  __alm_handle_error(checkbitsy.u64 | QNAN_MASK_64, AMD_F_NONE);
+            return alm_nextafter_special(y, ALM_E_IN_Y_NAN);
         else
-            return  __alm_handle_error(checkbitsy.u64 | QNAN_MASK_64, AMD_F_INVALID);
+            return alm_nextafter_special(y, AMD_F_INVALID);
 #endif
     }
 
@@ -76,11 +74,10 @@ double ALM_PROTO_REF(nextafter)(double x, double y)
 
     if( x == 0.0)
     {
-        checkbits.u64 = 1;
         if( dy > 0.0 )
-             return checkbits.f64;
+            return alm_nextafter_special(x, ALM_F_INEXACT_UNDERFLOW);
         else
-            return -checkbits.f64;
+            return alm_nextafter_special(-x, ALM_F_INEXACT_UNDERFLOW);
     }
 
 
@@ -98,7 +95,10 @@ double ALM_PROTO_REF(nextafter)(double x, double y)
     /* check if the result is nan or inf */
     if(((checkbits.u64 & ~SIGNBIT_DP64) >= EXPBITS_DP64 ))
     {
-        return  __alm_handle_error(checkbits.u64 | QNAN_MASK_64, AMD_F_NONE);
+        if((checkbits.u64 & ~SIGNBIT_DP64) == PINFBITPATT_DP64)
+            return alm_nextafter_special(asdouble(PINFBITPATT_DP64), ALM_E_OVERFLOW);
+        else
+            return alm_nextafter_special(asdouble(checkbits.u64), ALM_E_OUT_NAN);
     }
 
     return checkbits.f64;

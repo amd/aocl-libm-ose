@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -88,7 +88,10 @@ if (NOT DEFINED ${${PROJECT_PREFIX}_GENERATED})
 endif()
 
 if(WIN32)
-  message(FATAL_ERROR  "CMAKE for ${PROJECT_NAME} not supported on Windows Platform")
+    set(CMAKE_COMPILE_WARNING_AS_ERROR FALSE)
+    if("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
+        message(FATAL_ERROR  "CMAKE for ${PROJECT_NAME} not supported on ${CMAKE_C_COMPILER_ID}")
+    endif()  
 endif()
 
 #------------------------------
@@ -107,16 +110,36 @@ message(DEBUG "common includes ${${PROJECT_PREFIX}_COMMON_INCLUDES}")
 message(DEBUG "sdk include " "${${PROJECT_PREFIX}_SDK_INCLUDES}")
 message(DEBUG "private include" "${${PROJECT_PREFIX}_PRIVATE_INCLUDES}")
 
+if(DEFINED ALM_STATIC_DISPATCH)
+  if (
+         ("${ALM_STATIC_DISPATCH}" STREQUAL "AVX2")
+      OR ("${ALM_STATIC_DISPATCH}" STREQUAL "ZEN2")
+      OR ("${ALM_STATIC_DISPATCH}" STREQUAL "ZEN3")
+      OR ("${ALM_STATIC_DISPATCH}" STREQUAL "ZEN4")
+      OR ("${ALM_STATIC_DISPATCH}" STREQUAL "ZEN5")
+      OR ("${ALM_STATIC_DISPATCH}" STREQUAL "AVX512") )
+    # Set the ALM_STATIC_DISPATCH macro based on user input
+    # default set to AVX2 if ALM_STATIC_DISPATCH is defined during cmake configured.
+    set(ALM_STATIC_DISPATCH "AVX2" CACHE STRING "Set the static dispatch architecture")
+    message("ALM_STATIC_DISPATCH set to ${ALM_STATIC_DISPATCH}")
+  else()
+    message(FATAL_ERROR "Valid option for ALM_STATIC_DISPATCH is set to any of the AVX2/ZEN2/ZEN3/ZEN4/ZEN5/AVX512")
+  endif()
+endif()
+
 #------------------------------
 # AOCL_Utils CPUID_library requirements
 #------------------------------
-include(Cct_Libaoclutils)
+# Check if the necessary includes and libraries are present before including Cct_Libaoclutils
+if (NOT (EXISTS "${AOCL_UTILS_INCLUDE_DIR}" AND EXISTS "${AOCL_UTILS_LIB}"))
+  include(Cct_Libaoclutils)
+endif()
 
 #------------------------------
 # Setup Project Includes
 #------------------------------
-#set(${PROJECT_PREFIX}_INSTALL_DIR "${PROJECT_SOURCE_DIR}/build/package")
-set(${PROJECT_PREFIX}_INSTALL_DIR "${CMAKE_PROJECT_PREFIX}")
+#set(${PROJECT_PREFIX}_INSTALL_DIR "${PROJECT_SOURCE_DIR}/package")
+set(${PROJECT_PREFIX}_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}")
 message(DEBUG "Libm installation path" "${${PROJECT_PREFIX}_INSTALL_DIR}")
 
 #------------------------------
@@ -144,10 +167,16 @@ if (NOT DEFINED ${PROJECT_PREFIX}_CONFIG_OUTPUT_FILE)
     set(${PROJECT_PREFIX}_CONFIG_OUTPUT_FILE
             ${${PROJECT_PREFIX}_GENERATED}/Config.hh)
 endif()
-if(${CMAKE_BUILD_TYPE} EQUAL "Debug")
-    set(CONFIG_BUILD_TYPE_DEBUG "1")
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    set(CONFIG_BUILD_TYPE_DEBUG    1)
 else()
-    set(CONFIG_BUILD_TYPE_DEBUG "0")
+    set(CONFIG_BUILD_TYPE_RELEASE  1)
+endif()
+
+if(WIN32)
+  set(CONFIG_OS_IS_WINDOWS  1)
+else()
+  set(CONFIG_OS_IS_LINUX    1)
 endif()
 
 #------------------------------------

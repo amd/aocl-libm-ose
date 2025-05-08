@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,10 @@
 #
 
 set(ISA_INCLUDE ${INCLUDE_PATHS} "${CMAKE_CURRENT_SOURCE_DIR}/include")
-set(ISA_FLAGS -Wall -W -fPIC -DAVX_XOP_FMA4_FMA3 )
+
+get_isa_flag( isaflag )
+
+set(ISA_FLAGS ${isaflag})
 
 add_subdirectory(avx)
 #add avxasm object library to libmobj

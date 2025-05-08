@@ -31,7 +31,7 @@ To build and run this example application:
 
 1. make clean;
 
-2. export AOCL_UTILS_INSTALL_PATH=<path to where libaoclutils library is installed>
+2. export AOCL_UTILS_INSTALL_PATH=<path to where libau_cpuid library is installed>
 
 3. if required, set ARCH=avx512 in Makefile to compile AVX512 variants
 

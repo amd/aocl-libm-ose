@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -51,13 +51,13 @@ bool getSpecialCase(void)
 }
 
 void ConfSetupf64(SpecParams *specp) {
-  specp->data64 = test_linearfrac_conformance_data;
-  specp->countd = ARRAY_SIZE(test_linearfrac_conformance_data);
+  specp->data64 = nullptr;
+  specp->countd = 0;
 }
 
 void ConfSetupf32(SpecParams *specp) {
-  specp->data32 = test_linearfracf_conformance_data;
-  specp->countf = ARRAY_SIZE(test_linearfracf_conformance_data);
+  specp->data32 = nullptr;
+  specp->countf = 0;
 }
 
 
@@ -105,6 +105,7 @@ extern "C" {
 #endif
 
 int test_v2d(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
     double *ip1 = (double*)data->ip;
     double *ip2 = (double*)data->ip1;
@@ -114,19 +115,21 @@ int test_v2d(test_data *data, int idx)  {
     double *ip6 = (double*)data->ip5;
 
     double *op  = (double*)data->op;
-    __m128d ip21 = _mm_set_pd(ip1[idx+1], ip1[idx]);
-    __m128d ip22 = _mm_set_pd(ip2[idx+1], ip2[idx]);
     #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      __m128d ip21 = _mm_set_pd(ip1[idx+1], ip1[idx]);
+      __m128d ip22 = _mm_set_pd(ip2[idx+1], ip2[idx]);
       __m128d op2 = LIBM_FUNC_VEC(d, 2, linearfrac)(ip21, ip22, ip3[idx], ip4[idx], ip5[idx], ip6[idx]);
       _mm_store_pd(&op[0], op2);
     #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
-      vdlinearfrac(2, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
+      vdLinearFrac(2, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
     #endif
   #endif
+#endif
   return 0;
 }
 
 int test_v4d(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
     double *ip1 = (double*)data->ip;
     double *ip2 = (double*)data->ip1;
@@ -136,19 +139,21 @@ int test_v4d(test_data *data, int idx)  {
     double *ip6 = (double*)data->ip5;
 
     double *op  = (double*)data->op;
+    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
     __m256d ip41 = _mm256_set_pd(ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
     __m256d ip42 = _mm256_set_pd(ip2[idx+3], ip2[idx+2], ip2[idx+1], ip2[idx]);
-    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
       __m256d op4 = LIBM_FUNC_VEC(d, 4, linearfrac)(ip41, ip42, ip3[idx], ip4[idx], ip5[idx], ip6[idx]);
       _mm256_store_pd(&op[0], op4);
-    #elif
-      vdlinearfrac(4, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
+    #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+      vdLinearFrac(4, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
     #endif
   #endif
+#endif
   return 0;
 }
 
 int test_v8d(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
     #if defined(__AVX512__)
         double *ip1 = (double*)data->ip;
@@ -166,15 +171,17 @@ int test_v8d(test_data *data, int idx)  {
         #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
           __m512d op8 = LIBM_FUNC_VEC(d, 8, linearfrac)(ip8_1, ip8_2, ip3[idx], ip4[idx], ip5[idx], ip6[idx]);
           _mm512_store_pd(&op[0], op8);
-        #elif
-          vdlinearfrac(8, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
+        #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+          vdLinearFrac(8, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
         #endif
     #endif
   #endif
+#endif
   return 0;
 }
 
 int test_v16s(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
    #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
     #if defined(__AVX512__)
         float *ip1 = (float*)data->ip;
@@ -196,15 +203,17 @@ int test_v16s(test_data *data, int idx)  {
         #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
           __m512 op16 = LIBM_FUNC_VEC(s, 16, linearfracf)(ip16_1, ip16_2, ip3[idx], ip4[idx], ip5[idx], ip6[idx]);
           _mm512_store_ps(&op[0], op16);
-        #elif
-          vslinearfrac(16, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
+        #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+          vsLinearFrac(16, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
         #endif
     #endif
   #endif
+#endif
   return 0;
 }
 
 int test_v4s(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
     float *ip1 = (float*)data->ip;
     float *ip2 = (float*)data->ip1;
@@ -214,19 +223,21 @@ int test_v4s(test_data *data, int idx)  {
     float *ip6 = (float*)data->ip5;
 
     float *op  = (float*)data->op;
+    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
     __m128 ip41 = _mm_set_ps(ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
     __m128 ip42 = _mm_set_ps(ip2[idx+3], ip2[idx+2], ip2[idx+1], ip2[idx]);
-    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
       __m128 op4 = LIBM_FUNC_VEC(s, 4, linearfracf)(ip41, ip42, ip3[idx], ip4[idx], ip5[idx], ip6[idx]);
       _mm_store_ps(&op[0], op4);
-    #elif
-      vslinearfrac(4, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
+    #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+      vsLinearFrac(4, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
     #endif
   #endif
+#endif
   return 0;
 }
 
 int test_v8s(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
    #if (LIBM_PROTOTYPE != PROTOTYPE_MSVC)
     float *ip1 = (float*)data->ip;
     float *ip2 = (float*)data->ip1;
@@ -236,21 +247,23 @@ int test_v8s(test_data *data, int idx)  {
     float *ip6 = (float*)data->ip5;
 
     float *op  = (float*)data->op;
-    __m256 ip81 = _mm256_set_ps(ip1[idx+7], ip1[idx+6], ip1[idx+5], ip1[idx+4],
+    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      __m256 ip81 = _mm256_set_ps(ip1[idx+7], ip1[idx+6], ip1[idx+5], ip1[idx+4],
                                 ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
     __m256 ip82 = _mm256_set_ps(ip2[idx+7], ip2[idx+6], ip2[idx+5], ip2[idx+4],
                                 ip2[idx+3], ip2[idx+2], ip2[idx+1], ip2[idx]);
-    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
       __m256 op8 = LIBM_FUNC_VEC(s, 8, linearfracf)(ip81, ip82, ip3[idx], ip4[idx], ip5[idx], ip6[idx]);
       _mm256_store_ps(&op[0], op8);
-    #elif
-      vslinearfrac(8, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
+    #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+      vsLinearFrac(8, ip1, ip2, ip3[idx], ip4[idx], ip5[idx], ip6[idx], op);
     #endif
   #endif
+#endif
   return 0;
 }
 
 int test_vad(test_data *data, int count)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   double *ip1  = (double*)data->ip;
   double *ip2  = (double*)data->ip1;
   double *ip3  = (double*)data->ip2;
@@ -260,14 +273,16 @@ int test_vad(test_data *data, int count)  {
   double *op  = (double*)data->op;
 
   #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
-      amd_vrda_linearfrac(count, ip1, ip2, ip3[count], ip4[count], ip5[count], ip6[count], op);
+      amd_vrda_linearfrac(count, ip1, ip2, ip3[0], ip4[0], ip5[0], ip6[0], op);
   #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
-    vdlinearfrac(count, ip1, ip2, ip3[count], ip4[count], ip5[count], ip6[count], op);
+    vdLinearFrac(count, ip1, ip2, ip3[0], ip4[0], ip5[0], ip6[0], op);
   #endif
+#endif
   return 0;
 }
 
 int test_vas(test_data *data, int count)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   float *ip1  = (float*)data->ip;
   float *ip2  = (float*)data->ip1;
   float *ip3  = (float*)data->ip2;
@@ -277,10 +292,11 @@ int test_vas(test_data *data, int count)  {
   float *op  = (float*)data->op;
 
   #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
-      amd_vrsa_linearfracf(count, ip1, ip2, ip3[count], ip4[count], ip5[count], ip6[count], op);
+      amd_vrsa_linearfracf(count, ip1, ip2, ip3[0], ip4[0], ip5[0], ip6[0], op);
   #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
-    vslinearfrac(count, ip1, ip2, ip3[count], ip4[count], ip5[count], ip6[count], op);
+    vsLinearFrac(count, ip1, ip2, ip3[0], ip4[0], ip5[0], ip6[0], op);
   #endif
+#endif
   return 0;
 }
 
@@ -288,4 +304,3 @@ int test_vas(test_data *data, int count)  {
 #ifdef __cplusplus
 }
 #endif
-

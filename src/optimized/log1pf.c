@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -170,7 +170,7 @@ ALM_PROTO_OPT(log1pf)(float x) {
     if(unlikely(ux >= MINUS_ONE)) {
         /* x is negative or zero */
         if(ux == MINUS_ONE) {
-            return alm_logf_special(asfloat(NINFBITPATT_SP32), ALM_E_IN_X_NAN);
+            return alm_logf_special(asfloat(NINFBITPATT_SP32), AMD_F_DIVBYZERO);
         }
         return alm_logf_special(asfloat(ux | QNANBITPATT_SP32), ALM_E_IN_X_NEG);
     }

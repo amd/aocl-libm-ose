@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -30,13 +30,9 @@ set(AU_BUILD_DOCS OFF)
 set(au                aoclutils)
 set(sourcedir         ${CMAKE_CURRENT_BINARY_DIR}/${au})
 set(binarydir         ${CMAKE_CURRENT_BINARY_DIR}/${au}_build)
-if(AU_INTERNAL)
-  set(git_repo        "git@github.amd.com:AOCL/aocl-utils.git")
-  set(git_tag         "amd-main")
-else()
-  set(git_repo        "https://github.com/amd/aocl-utils.git")
-  set(git_tag         "5.0")
-endif()
+set(git_repo          "https://github.com/amd/aocl-utils.git")
+set(git_tag           "dev")
+
 FetchContent_Declare(
     ${au}
     GIT_REPOSITORY ${git_repo}
@@ -44,22 +40,32 @@ FetchContent_Declare(
     SOURCE_DIR     ${sourcedir}
     BINARY_DIR     ${binarydir}
 )
+
+# Check if the content has already been populated
+FetchContent_GetProperties(${au})
+if(NOT ${au}_POPULATED)
+  FetchContent_MakeAvailable(${au})
+endif()
+
 set(libname au_cpuid)
-if(${CMAKE_BUILD_TYPE} MATCHES "Debug" )
+if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
     string(APPEND libname -dbg)
 endif()
-set(AOCLUTILS_INCLUDE  ${sourcedir}/SDK/Bcl ${sourcedir}/SDK/Include ${binarydir}/generated)
-set(AOCLUTILS_PATH     ${binarydir}/Library/Cpuid)
-set(AOCLUTILS_INCLUDE  ${sourcedir}/SDK/Bcl ${sourcedir}/SDK/Include ${binarydir}/generated)
-set(AOCLUTILS_PATH     ${binarydir}/Library/Cpuid)
-set(AUCPUID_STATIC     ${CMAKE_STATIC_LIBRARY_PREFIX}${libname}${CMAKE_STATIC_LIBRARY_SUFFIX})
-set(AUCPUID_SHARED     ${CMAKE_SHARED_LIBRARY_PREFIX}${libname}${CMAKE_SHARED_LIBRARY_SUFFIX})
-set(AUCPUID_IMPORT     ${CMAKE_SHARED_LIBRARY_PREFIX}${libname}${CMAKE_STATIC_LIBRARY_SUFFIX})
-set(AOCLUTILS_STATIC   ${AOCLUTILS_PATH}/${AUCPUID_STATIC})
+set(AOCL_UTILS_INCLUDE_DIR  ${sourcedir}/SDK/Bcl ${sourcedir}/SDK/Include ${binarydir}/generated)
+set(AOCLUTILS_PATH          ${binarydir}/Library/Cpuid)
+set(AUCPUID_STATIC          ${CMAKE_STATIC_LIBRARY_PREFIX}${libname}${CMAKE_STATIC_LIBRARY_SUFFIX})
+set(AUCPUID_SHARED          ${CMAKE_SHARED_LIBRARY_PREFIX}${libname}${CMAKE_SHARED_LIBRARY_SUFFIX})
+set(AUCPUID_IMPORT          ${CMAKE_SHARED_LIBRARY_PREFIX}${libname}${CMAKE_STATIC_LIBRARY_SUFFIX})
+set(AOCLUTILS_STATIC        ${AOCLUTILS_PATH}/${AUCPUID_STATIC})
 if (WIN32)
-  set(AOCLUTILS_DLL    ${AOCLUTILS_PATH}/${AUCPUID_SHARED})
-  set(AOCLUTILS_SHARED ${AOCLUTILS_PATH}/${AUCPUID_IMPORT})
+  set(AOCLUTILS_DLL         ${AOCLUTILS_PATH}/${AUCPUID_SHARED})
+  set(AOCLUTILS_SHARED      ${AOCLUTILS_PATH}/${AUCPUID_IMPORT})
 else()
-  set(AOCLUTILS_SHARED ${AOCLUTILS_PATH}/${AUCPUID_SHARED})
+  set(AOCLUTILS_SHARED      ${AOCLUTILS_PATH}/${AUCPUID_SHARED})
 endif()
-FetchContent_MakeAvailable(${au})
+
+if(BUILD_SHARED_LIBS)
+  set(AOCL_UTILS_LIB        ${AOCLUTILS_SHARED})
+else()
+  set(AOCL_UTILS_LIB        ${AOCLUTILS_STATIC})
+endif()

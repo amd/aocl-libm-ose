@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -65,7 +65,6 @@ void sincos_double_precision()
  * *******************************************/
 void sincos_vector_single_precision_4()
 {
-    #if 0
     printf("Using Vector single precision - 4 floats (vrs4) sincos()\n");
     __m128 input;
     __m128 sin;
@@ -87,12 +86,10 @@ void sincos_vector_single_precision_4()
             sin_array[0], sin_array[1], sin_array[2], sin_array[3],
             cos_array[0], cos_array[1], cos_array[2], cos_array[3]);
     printf("----------\n");
-    #endif
 }
 
 void sincos_vector_single_precision_8()
 {
-    #if 0
     printf("Using Vector single precision - 8 floats (vrs8) sincos()\n");
     __m256 input;
     __m256 sin;
@@ -117,12 +114,10 @@ void sincos_vector_single_precision_8()
             cos_array[0], cos_array[1], cos_array[2], cos_array[3],
             cos_array[4], cos_array[5], cos_array[6], cos_array[7]);
     printf("----------\n");
-    #endif
 }
 
 void sincos_vector_double_precision_2()
 {
-    #if 0
     printf("Using Vector double precision - 2 doubles (vrd2) sincos()\n");
     __m128d input;
     __m128d sin;
@@ -144,7 +139,6 @@ void sincos_vector_double_precision_2()
             sin_array[0], sin_array[1],
             cos_array[0], cos_array[1]);
     printf("----------\n");
-    #endif
 }
 
 void sincos_vector_double_precision_4()
@@ -177,7 +171,6 @@ void sincos_vector_double_precision_4()
  * *******************************************/
 void sincos_single_precision_array()
 {
-    #if 0
     printf("Using Single Precision Vectory Array (vrsa) sincos()\n");
     int n=5;
     float input[10] = {1.0f, 3.0f, -5.0f, 0.0f, -9.0f, 11.0f, 13.0f, 15.0f, -17.0f, 19.0f};
@@ -203,12 +196,10 @@ void sincos_single_precision_array()
     }
     printf("}\n");
     printf("----------\n");
-    #endif
 }
 
 void sincos_double_precision_array()
 {
-    #if 0
     printf("Using Double Precision Vectory Array (vrda) sincos()\n");
     int n=8;
     double input[10] = {-0.0, -0.0, 4.0, 2.0, 6.0, -12.0, 14.0, -1.0, 3.0, -5.0};
@@ -234,7 +225,6 @@ void sincos_double_precision_array()
     }
     printf("}\n");
     printf("----------\n");
-    #endif
 }
 
 int use_sincos()

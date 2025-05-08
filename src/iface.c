@@ -171,26 +171,53 @@ alm_iface_fixup_one(const struct alm_arch_funcs *alm_funcs,
     return ret;
 }
 
+#ifdef ALM_STATIC_DISPATCH
+/* The below code is for static dispatch, set during cmake configure */
+static alm_uarch_ver_t
+alm_get_uach(void)
+{
+#if (ALM_STATIC_DISPATCH==AVX2) || (ALM_STATIC_DISPATCH==ZEN2)
+    return ALM_UARCH_VER_ZEN2;
+#elif ALM_STATIC_DISPATCH==ZEN3
+    return ALM_UARCH_VER_ZEN3;
+#elif ALM_STATIC_DISPATCH==ZEN4
+    return ALM_UARCH_VER_ZEN4;
+#elif (ALM_STATIC_DISPATCH==ZEN5) || (ALM_STATIC_DISPATCH==AVX512)
+    return ALM_UARCH_VER_ZEN5;
+#else
+   printf("Please set ALM_STATIC_DISPATCH to one of AVX2, ZEN2, ZEN3, ZEN4, ZEN5, AVX512 \n")
+#endif
+}
+#else
 static alm_uarch_ver_t
 alm_get_uach(void)
 {
     alm_uarch_ver_t arch_ver;
 
-    if (au_cpuid_arch_is_zen5(ALCI_CURRENT_CPU_NUM))
-        arch_ver = ALM_UARCH_VER_ZEN5;
-    else if (au_cpuid_arch_is_zen4(ALCI_CURRENT_CPU_NUM))
+    if (au_cpuid_arch_is_zen5(AU_CURRENT_CPU_NUM))
+    {
+        const char* const flags_array[]= {"avx512f"};
+
+        if(au_cpuid_has_flags(AU_CURRENT_CPU_NUM, flags_array, 1))
+            arch_ver = ALM_UARCH_VER_ZEN5;
+        else
+            arch_ver = ALM_UARCH_VER_ZEN3;
+
+    }
+    else if (au_cpuid_arch_is_zen4(AU_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN4;
-    else if (au_cpuid_arch_is_zen3(ALCI_CURRENT_CPU_NUM))
+    else if (au_cpuid_arch_is_zen3(AU_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN3;
-    else if (au_cpuid_arch_is_zen2(ALCI_CURRENT_CPU_NUM))
+    else if (au_cpuid_arch_is_zen2(AU_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN2;
-    else if (au_cpuid_arch_is_zen(ALCI_CURRENT_CPU_NUM))
+    else if (au_cpuid_arch_is_zen(AU_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN;
     else
         arch_ver = ALM_UARCH_VER_DEFAULT;
 
     return arch_ver;
 }
+#endif
 
 void
 alm_iface_fixup(alm_ep_wrapper_t *g_ep_wrapper,

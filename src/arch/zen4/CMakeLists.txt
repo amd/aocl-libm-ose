@@ -26,7 +26,7 @@
 #
 
 file(GLOB ZEN4_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.c")
-set(ZEN4_INCLUDE ${INCLUDE_PATHS} "${CMAKE_CURRENT_SOURCE_DIR}/arch/zen4")
+set(ZEN4_INCLUDE ${INCLUDE_PATHS} "${CMAKE_CURRENT_SOURCE_DIR}")
 get_zen4_arch_flags( zen4 )
 message(DEBUG "Zen4 Arch Flag : ${zen4}")
 set(ZEN4_FLAGS ${ZENCFLAGS} ${zen4} -mavx512f -mavx512dq )

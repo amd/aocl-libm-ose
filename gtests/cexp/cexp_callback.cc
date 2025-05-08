@@ -39,7 +39,6 @@
 #include "test_cexp_data.h"
 #include "../libs/mparith/alm_mp_funcs.h"
 #include <libm/types.h>
-#include <complex.h>
 
 static uint32_t ipargs = 1;
 bool special_case = false;

@@ -1,0 +1,25 @@
+{
+    "version": 6,
+    "include": [
+        "Arch/x64.json",
+        "Os/Windows.json",
+        "Compilers/Clang.json"
+    ],
+    "configurePresets": [
+        {
+            "name": "x64-win-llvm",
+            "hidden": true,
+            "inherits": [ "x64", "win", "llvm-win" ]
+        },
+        {
+            "name": "x64-win-llvm-debug",
+            "hidden": true,
+            "inherits": [ "x64", "win", "llvm-win-debug" ]
+        },
+        {
+            "name": "x64-win-llvm-release",
+            "hidden": true,
+            "inherits": [ "x64", "win", "llvm-win-release" ]
+        }
+    ]
+}

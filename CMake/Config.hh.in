@@ -40,11 +40,8 @@ namespace {
 /********************
  * Build System Info
  *******************/
-#if defined(DEBUG)
-#define CONFIG_BUILD_TYPE_DEBUG 1
-#else
-#define CONFIG_BUILD_TYPE_RELEASE 1
-#endif
+#cmakedefine01 CONFIG_BUILD_TYPE_DEBUG
+#cmakedefine01 CONFIG_BUILD_TYPE_RELEASE
 
 /******************
  * OS Info

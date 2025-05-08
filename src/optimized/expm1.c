@@ -99,7 +99,9 @@ ALM_PROTO_OPT(expm1)(double x)
 
     if(unlikely(x > MAX_EXPM1_ARG))
     {
-        return __alm_handle_error(POS_INF_F64, AMD_F_OVERFLOW|AMD_F_INEXACT);
+        /* Setting ERRNO to ERANGE for overflow */
+        __set_errno (ERANGE);
+        return alm_expm1_special(asdouble(PINFBITPATT_DP64), ALM_E_OVERFLOW);
     }
     if(unlikely(x < MIN_EXPM1_ARG))
     {
@@ -116,7 +118,7 @@ ALM_PROTO_OPT(expm1)(double x)
         }
         else if(abs_x < REAL_X_NEAR_0_THRESHOLD)
         {
-            return __alm_handle_error(asuint64(x), AMD_F_UNDERFLOW|AMD_F_INEXACT);
+            return alm_expm1_special(x, ALM_E_UNDERFLOW);
         }
 
         q1.u = (0x01E0000000000000 + asuint64(x)); // # 0x01E0000000000000 -> 30 in exponents place
@@ -173,7 +175,9 @@ ALM_PROTO_OPT(expm1)(double x)
 
             if((q1.u & POS_INF_F64) == POS_INF_F64)
             {
-                return __alm_handle_error(POS_INF_F64, AMD_F_OVERFLOW|AMD_F_INEXACT);
+                /* Setting ERRNO to ERANGE for overflow */
+                __set_errno (ERANGE);
+                return alm_expm1_special(asdouble(PINFBITPATT_DP64), ALM_E_OVERFLOW);
             }
             return q1.d;
         }

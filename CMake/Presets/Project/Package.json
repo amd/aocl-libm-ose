@@ -6,6 +6,19 @@
             "hidden": true
         },
         {
+            "name": "package-win",
+            "hidden": true,
+            "inherits": "package",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "generators": [
+                "ZIP"
+            ]
+        },
+        {
             "name": "package-linux",
             "hidden": true,
             "inherits": "package",

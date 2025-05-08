@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -39,68 +39,34 @@
 #error
 #endif
 
-void FUNC_SINCOS(REAL x, REAL *s, REAL *c)
-{
-    REAL ys, yc;
-    fp_params params;
-    int base, mantis, emin, emax;
-    int *xmp, *result_sin,*result_cos,*result_tan;
-    int ifail;
+#include <mpfr.h>
 
-    initMultiPrecision(ISDOUBLE, 0, &base, &mantis, &emin, &emax, &params);
-    xmp = new_mp(params);
-    result_sin = new_mp(params);
-    result_cos = new_mp(params);
-    result_tan = new_mp(params);
+void FUNC_SINCOS(REAL x, REAL_L *sin, REAL_L *cos) {
+    mpfr_rnd_t rnd = MPFR_RNDN;
+    mpfr_t mpx, mp_sin, mp_cos;
 
-    DTOMP(x, xmp, params, &ifail);
-    MPSINCOSTAN(xmp, params, result_sin, result_cos, result_tan, &ifail);
+    // Initialize MPFR variables with specified precision
+    mpfr_inits2(ALM_MP_PRECI_BITS, mpx, mp_sin, mp_cos, (mpfr_ptr) 0);
 
+    // Convert input to MPFR format based on defined type
+    #if defined(FLOAT)
+    mpfr_set_d(mpx, x, rnd);
+    #elif defined(DOUBLE)
+    mpfr_set_ld(mpx, x, rnd);
+    #endif
 
-    MPTOD(result_sin, params, &ys, &ifail);
-    MPTOD(result_cos, params, &yc, &ifail);
+    // Compute sine and cosine
+    mpfr_sin_cos(mp_sin, mp_cos, mpx, rnd);
 
-    *s = ys;
-    *c = yc;
+    // Convert results back to appropriate type
+    #if defined(FLOAT)
+    *sin = mpfr_get_d(mp_sin, rnd);
+    *cos = mpfr_get_d(mp_cos, rnd);
+    #elif defined(DOUBLE)
+    *sin = mpfr_get_ld(mp_sin, rnd);
+    *cos = mpfr_get_ld(mp_cos, rnd);
+    #endif
 
-    free(xmp);
-    free(result_sin);
-    free(result_cos);
-    free(result_tan);
-}
-
-void FUNC_SINCOS_ULP(REAL x, REAL s, REAL c,double   *sulps, double   *sreldiff)
-{
-    fp_params params;
-    int base, mantis, emin, emax;
-    int *xmp, *result_sin,*result_cos,*result_tan;
-    int ifail;
-	REAL reldiff,ulps;
-    REAL rel_1,ulp_1;
-
-    initMultiPrecision(ISDOUBLE, 0, &base, &mantis, &emin, &emax, &params);
-    xmp = new_mp(params);
-    result_sin = new_mp(params);
-    result_cos = new_mp(params);
-    result_tan = new_mp(params);
-
-    DTOMP(x, xmp, params, &ifail);
-    MPSINCOSTAN(xmp, params, result_sin, result_cos, result_tan, &ifail);
-
-   reldiff = MPRELDIFF(s, base, mantis, emin, emax,
-                      result_sin, params,&ulps, &ifail);
-
-   rel_1 = MPRELDIFF(c, base, mantis, emin, emax,
-                      result_cos, params,&ulp_1, &ifail);
-
-    *sreldiff =  reldiff > rel_1? reldiff : rel_1;
-    *sulps =  ulps > ulp_1? ulps : ulp_1;
-
-
-
-
-    free(xmp);
-    free(result_sin);
-    free(result_cos);
-    free(result_tan);
+    // Clear MPFR variables
+    mpfr_clears(mpx, mp_sin, mp_cos, (mpfr_ptr) 0);
 }

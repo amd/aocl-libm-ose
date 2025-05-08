@@ -15,18 +15,36 @@
             "hidden": true,
             "inherits": "llvm",
             "cacheVariables": {
-                "CMAKE_C_FLAGS_DEBUG": "-g -ggdb3 -O1",
-                "CMAKE_CXX_FLAGS_DEBUG": "-g -ggdb3 -O1"
+                "CMAKE_C_FLAGS_DEBUG": "-g -ggdb3",
+                "CMAKE_CXX_FLAGS_DEBUG": "-g -ggdb3"
             }
         },
         {
             "name": "llvm-release",
             "hidden": true,
-            "inherits": "llvm",
+            "inherits": "llvm"
+        },
+        {
+            "name": "llvm-win",
+            "hidden": true,
             "cacheVariables": {
-                "CMAKE_C_FLAGS_RELEASE": "-O2",
-                "CMAKE_CXX_FLAGS_RELEASE": "-O2"
+                "CMAKE_C_COMPILER": "C:/Program Files/LLVM/bin/clang-cl.exe",
+                "CMAKE_CXX_COMPILER": "C:/Program Files/LLVM/bin/clang-cl.exe"
             }
+        },
+        {
+            "name": "llvm-win-debug",
+            "hidden": true,
+            "inherits": "llvm-win",
+            "cacheVariables": {
+                "CMAKE_C_FLAGS_DEBUG": "-g -ggdb3",
+                "CMAKE_CXX_FLAGS_DEBUG": "-g -ggdb3"
+            }
+        },
+        {
+            "name": "llvm-win-release",
+            "hidden": true,
+            "inherits": "llvm-win"
         }
     ]
 }

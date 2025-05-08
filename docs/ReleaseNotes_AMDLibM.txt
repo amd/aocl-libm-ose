@@ -21,7 +21,7 @@ Optimized the performance of:
  - vrd8_exp2
 
 Optimised the performance and improved the accuracy of:
- - tanhf, vrs4_tanhf, vrs8_tanhf and vrs16_tanhf
+ - tanhf, vr4s_tanhf, vr8s_tanhf and vr16s_tanhf
  - atan
  
 Added optimized versions of fmax, fmaxf, fmod, fmodf, fdim and fdimf. 

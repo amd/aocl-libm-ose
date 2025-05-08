@@ -55,7 +55,8 @@ if mpenv['HOST_OS'] != 'win32':
     liblist.extend(['mpfr', 'm'])
 
 else:
-    mpcflags = ['-DIS_64BIT',
+    mpcflags = ['/W0',
+                '-DIS_64BIT',
                 '-DWINDOWS'
                ]
     liblist.extend(['mpfr', 'msvcrt'])

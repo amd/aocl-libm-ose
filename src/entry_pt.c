@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -196,6 +196,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrda_pow);
 alm_func_t        G_ENTRY_PT_PTR(vrda_fabs);
 alm_func_t        G_ENTRY_PT_PTR(vrda_sqrt);
 alm_func_t        G_ENTRY_PT_PTR(vrda_linearfrac);
+alm_func_t        G_ENTRY_PT_PTR(vrda_sincos);
 
 alm_func_t        G_ENTRY_PT_PTR(vrda_add);
 alm_func_t        G_ENTRY_PT_PTR(vrda_sub);
@@ -210,6 +211,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrda_muli);
 alm_func_t        G_ENTRY_PT_PTR(vrda_divi);
 alm_func_t        G_ENTRY_PT_PTR(vrda_fmaxi);
 alm_func_t        G_ENTRY_PT_PTR(vrda_fmini);
+alm_func_t        G_ENTRY_PT_PTR(vrda_powx);
 
 alm_func_t        G_ENTRY_PT_PTR(vrsa_cosf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_expf);
@@ -226,6 +228,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrsa_powf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_fabsf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_sqrtf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_linearfracf);
+alm_func_t        G_ENTRY_PT_PTR(vrsa_sincosf);
 
 alm_func_t        G_ENTRY_PT_PTR(vrsa_addf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_subf);
@@ -240,6 +243,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrsa_mulfi);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_divfi);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_fmaxfi);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_fminfi);
+alm_func_t        G_ENTRY_PT_PTR(vrsa_powxf);
 
 alm_func_t        G_ENTRY_PT_PTR(sincos);
 alm_func_t        G_ENTRY_PT_PTR(sincosf);
@@ -326,6 +330,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd2_sin);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_tan);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_atan);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_erf);
+alm_func_t        G_ENTRY_PT_PTR(vrd2_sincos);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_sqrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_fabs);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_linearfrac);

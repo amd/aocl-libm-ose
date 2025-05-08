@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@
 #building single libalm-glibc-compat library
 include(Cct_Library)
 
-set(COMPACT_FLAGS ${LIBMCFLAGS} -O3 -mavx2 )
+set(COMPACT_FLAGS ${LIBMCFLAGS} -O2 -mavx2 )
 cct_cxx_add_library(alm-glibc-compat
     SOURCES                 glibc-compat.c
     HEADERS                 ${INCLUDE_PATHS}

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -27,18 +27,12 @@
 
 include(CheckCCompilerFlag)
 
-set(GCC_VERSION_MIN   "9.2")
-set(CLANG_VERSION_MIN "9.0")
 if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
-    if (CMAKE_C_COMPILER_VERSION VERSION_LESS 9.2)
-        message(FATAL_ERROR "GCC version must be at least 9.2 . Available version is ${CMAKE_C_COMPILER_VERSION}")
-    endif()
+  include(Gcc)
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
-    if (CMAKE_C_COMPILER_VERSION VERSION_LESS 9.0)
-        message(FATAL_ERROR "Clang version must be at least 9.0 . Available version is ${CMAKE_C_COMPILER_VERSION}")
-    endif()
+  include(Clang)
 else()
-    message(WARNING "Unsupported compiler .")
+  message(WARNING "Unsupported compiler .")
 endif()
 
 check_c_compiler_flag("-msse2"           CONFIG_COMPILER_HAS_SSE2)
@@ -81,6 +75,23 @@ endforeach()
 string(TOUPPER ${maxarch} UARCH)
 set(MAX_ALM_ARCH "CONFIG_COMPILER_HAS_${UARCH}")
 
+
+#get GLIBC_VERSION
+macro(CHECK_GLIBC_VERSION GLIBC_VERSION)
+  execute_process(
+      COMMAND ldd --version
+      OUTPUT_VARIABLE GLIBC_VERSION_OUTPUT
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  # Extract the version number from the output
+  string(REGEX MATCH "([0-9]+\\.[0-9]+)" GLIBC_VER ${GLIBC_VERSION_OUTPUT})
+
+  if (NOT GLIBC_VER MATCHES "^[0-9.]+$")
+      message(FATAL_ERROR "Unknown glibc version: ${GLIBC_VER}")
+  endif()
+  set(${GLIBC_VERSION} "-with-glibc-${GLIBC_VER}")
+endmacro()
+
 macro(get_arch res alist)
   foreach(ar ${${alist}})
     try_run(RUNRESULT COMPILERESULT "${PROJECT_BINARY_DIR}/temp" SOURCES  "${PROJECT_BINARY_DIR}/arch.c"
@@ -122,4 +133,45 @@ macro(get_zen5_arch_flags zen5)
   set(arch znver5 znver4 znver3 znver2 znver1 x86-64)
   get_arch(res arch)
   set(${zen5} -march=${res})
+endmacro()
+
+
+
+
+
+#Common LIBM FLAGS abd CFLAGS Flags Macroes
+macro(get_optz_flag optzflag)
+  set(${optzflag} -O3)
+endmacro()
+
+macro(get_fast_flag ffpflag)
+  if(NOT WIN32)
+    set(${ffpflag} -ffp-contract=fast)
+  else()
+    set(${ffpflag} /fp:fast)
+  endif()
+endmacro()
+
+macro(get_win_flag winflag)
+  set(${winflag}  -DAVX_XOP_FMA4_FMA3 -DDEBUG=0 -DENABLE_AMDLIBM_API=1 -DLIBABI=aocl -D__AVX2__ -Dlibalm_EXPORTS -m64 /DWIN32 /D_WINDOWS /DNDEBUG -march=native )
+endmacro()
+
+macro(get_au_flag auflag)
+  set(${auflag} -DUSE_AOCL_UTILS)
+endmacro()
+
+macro(get_avx2fma_flag fmaflag)
+  set(${fmaflag} -mavx2 -mfma)
+endmacro()
+
+macro(get_fastmath_flag fmflag)
+  set(${fmflag} -Dlibalmfast_EXPORTS)
+endmacro()
+
+macro(get_vec_flag vecflag)
+  set(${vecflag} -flax-vector-conversions)
+endmacro()
+
+macro(get_isa_flag isaflag)
+  set(${isaflag} -DAVX_XOP_FMA4_FMA3)
 endmacro()

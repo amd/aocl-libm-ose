@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -27,15 +27,16 @@
 
 /******************************************
  * Implementation Notes:
- * This is a literal translation of ASM routine for fmodf + optimizations
- * 
+ * This is a literal translation of ASM routine for fmod + optimizations
+ *
  * Prototype:
  * double fmod(double x, double y)
- * 
+ *
  * Algorithm:
- * As designed in the ASM fmod float variant routine.
- * The same algorithm is extended into C, for double variant,
+ * As designed in the ASM fmod double variant routine.
+ * The same algorithm is extended into C,
  * with optimizations wherever possible.
+ *
  */
 
 #include <stdint.h>
@@ -49,6 +50,12 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 
+#define BIT_MASK_27_BITS 0xfffffffff8000000
+
+#define FMOD_X_NAN   1
+#define FMOD_Y_ZERO  2
+#define FMOD_X_INF   3
+
 double ALM_PROTO_OPT(fmod)(double x, double y)
 {
     uint64_t ax, ay;
@@ -59,23 +66,31 @@ double ALM_PROTO_OPT(fmod)(double x, double y)
     ax &= ~SIGNBIT_DP64;
     ay &= ~SIGNBIT_DP64;
 
-    // Input value checks for NAN, INF
-    if(ay == 0)
+    /* Check if y is NaN. If yes return NaN */
+    if(unlikely(ay > POS_INF_F64))
     {
-        return __alm_handle_error(ay | QNANBITPATT_DP64, AMD_F_INVALID);
+        return x * y;
     }
 
+    /* Check if y is Zero. If yes, return NaN and raise exception*/
+    if(unlikely(ay == 0))
+    {
+        return _fmod_special(x, asdouble(ay | QNANBITPATT_DP64), FMOD_Y_ZERO);
+    }
+    /* Check if x is NaN or INF */
     if(unlikely((ax & EXPBITS_DP64) >= EXPBITS_DP64))
     {
-        // X is NAN or INF
-        if( (ax & EXPBITS_DP64) == EXPBITS_DP64)
-            return __alm_handle_error(ay | QNANBITPATT_DP64, AMD_F_INVALID);
+        /* X is NaN. Return NaN */
+        if(ax > POS_INF_F64)
+        {
+            return x;
+
+        }
+        /* X is INF. Return NaN and raise exception */
         else
-            #ifdef WINDOWS
-                __alm_handle_error(ay | QNANBITPATT_DP64, AMD_F_INVALID);
-            #else
-                return x + x;
-            #endif
+        {
+            return _fmod_special(x, asdouble(ay | QNANBITPATT_DP64), FMOD_X_INF);
+        }
     }
 
     if(unlikely((ay & EXPBITS_DP64) > EXPBITS_DP64))
@@ -91,6 +106,7 @@ double ALM_PROTO_OPT(fmod)(double x, double y)
     double adx = asdouble(ax);
     double ady = asdouble(ay);
 
+    // Exponents of x and y
     uint64_t xe = (EXPBITS_DP64 & ax) >> 52;
     uint64_t ye = (EXPBITS_DP64 & ay) >> 52;
 
@@ -99,51 +115,50 @@ double ALM_PROTO_OPT(fmod)(double x, double y)
         return x;
     }
 
-    int64_t scale = 0x3FF0000000000000;
-    int64_t quo = 0;
-
-    if(ye < xe)
+    int64_t diff_exp = (int64_t)(xe - ye);
+    if(xe == 0 || ye == 0 || diff_exp > 52)
     {
-        int64_t diff_exp = (int64_t)(xe - ye);
-        if(xe == 0 || ye == 0 || diff_exp > 52)
-        {
-            /* This is a special case of fmod function applicable only for double variant.
-             * The x87 assembly instruction FPREM1 (Floating Point Partial fmod) has to be used for accurate calculation.
-             * Since its equivalent is not available in C, the assembly version function is called directly instead.
-             */
-            double result = __amd_bas64_fmod(x, y);
-            return result;
-        }
-        quo = diff_exp / 24;
-
-        scale = ((24 * quo) + 1023) << 52;
+        /* This is a special case of fmod function applicable only for double variant.
+         * The x87 assembly instruction FPREM1 (Floating Point Partial fmod) has to be used for accurate calculation.
+         * Since its equivalent intrinsic is not available in C, the assembly variant is called here directly instead.
+         */
+        double result = __amd_bas64_fmod(x, y);
+        return result;
     }
 
-    double w = asdouble((uint64_t)scale) * ady;
-    double two_p_MINUS_24 = asdouble(0x3E70000000000000);
-    double t=0, temp2=0;
+    double r = adx/ady;
+    uint64_t temp = (uint64_t)r;
+    r = (double)(temp);
 
-    while(quo > 0)
+    // Quad-Precision Multiplication of r and y
+    uint64_t ur = asuint64(r);
+    uint64_t uhy = ay & BIT_MASK_27_BITS;
+    uint64_t uhr = ur & BIT_MASK_27_BITS;
+
+    double hy = asdouble(uhy);
+    double hr = asdouble(uhr);
+    double ty = ady - hy;
+    double tr = r - hr;
+
+    double cc = (((((hy*hr) - (r*ady)) + (hy*tr)) + (ty*hr)) + (tr*ty));
+
+    double c = r*ady;
+    double v = adx - c;
+
+    double w = (((adx - v) - c) - cc);
+
+    w += v;
+
+    if(w < 0)
     {
-        quo--;
-
-        t = adx / w;
-        uint64_t tu = (uint64_t)t;
-        t = (double)(tu);
-
-        adx = adx - (t * w);
-        w *= two_p_MINUS_24;
+        w = w + ady;
     }
 
-    temp2 = adx / w;
-    uint64_t tu = (uint64_t)temp2;
-    temp2 = (double)(tu);
-
-    adx = adx - (temp2 * w);
-
-    if(x<0)
+    if(x > 0)
     {
-        adx = 0.0 - adx;
+        return w;
     }
-    return adx;
+    w = 0.0 - w;
+
+    return w;
 }

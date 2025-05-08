@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -255,7 +255,6 @@ bool update_ulp(double ulp, double &max_ulp_err, double ulp_threshold)
     LIBM_TEST_DPRINTF(VERBOSE2, ,"MaxULPError: ",max_ulp_err,
                        "Ulp: ", ulp);
     max_ulp_err = ulp;
-    return true;
   }
 
   if ((ulp - ulp_threshold) > 0.0)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -32,7 +32,9 @@
 #include "benchmark.h"
 #include "almtestperf.h"
 #include <external/amdlibm.h>
-#include <complex.h>
+
+#undef I
+#include "gtest.h"
 
 #if (LIBM_PROTOTYPE == PROTOTYPE_SVML)
   #include "mkl_vml_functions.h"
@@ -46,6 +48,7 @@ typedef struct {
   void *ip4;
   void *ip5;
   void *op;
+  void *sc;
 }test_data;
 
 /* Used _mm256_storeu_pd for windows as the test cases for some vectors was failing with SEH
@@ -72,6 +75,9 @@ long double _Complex getExpected(double _Complex *);
 
 double getExpected(float *);
 long double getExpected(double *);
+
+void getExpected(float *data, double *op);
+void getExpected(double *data, long double *op);
 
 float getGlibcOp(float *);
 double getGlibcOp(double *);

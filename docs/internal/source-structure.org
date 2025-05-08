@@ -1,0 +1,62 @@
+* AMDLIBM Directory Structure
+
+** Skeleton (top level)
+
+- doc - All relevant documentation should go here
+- include - All headers relevant for sources
+- src - All sources
+- gtests - All tests
+- utils - Any necessary utilities
+- scripts - Scripts necessary for building
+- examples - Example test applications
+
+** Documentation
+
+Mostly resides under 'doc/' folder.
+
+doc/internal - is internal reference only.
+
+doc/user - User manual, software developers manual etc. Released externally
+
+** Source
+
+Contains following directories
+
+src/
+   optimized/         - Contains optimized C implementations.
+   arch/              - Contains architecture specific (zen2/zen3/zen4) implementations.
+   ref/               - mostly reference implementations.
+   kern/              - Kernel variants.
+   isa/avx/           - AVX only source.
+   isa/avx/gas/       - Assembly only files for GNU ASsembler (128-bit instructions)
+   isa/avx2/          - AVX2 only source.
+   isa/avx2/gas/      - Assembly only files for GNU ASsembler (256-bit version)
+
+*** Naming convention
+v4s - Vector single precision packed 128-bit (4 32-bit elements)
+v8s - Vector single-precision packed 256-bit (8 32-bit elements)
+v2d - Vector double-precision packed 128-bit (2 64-bit elements)
+v4d - Vector double-precision packed 256-bit (4 64-bit elements)
+v8d - Vector double-precision packed 512-bit (8 64-bit elements)
+v16s - Vector single-precision packed 512-bit (16 32-bit elements)
+
+** Tests
+
+Test Framework files are located directly under the 'gtests/' folder.
+
+gtests/
+     include/      - test related headers only.
+     libs/         - contains external libraries necessary for testing
+     libs/mparith  - Contains the high precision mparith libraries used for Accuracy testing.
+     gapi/         - Contains the google libs which are used to exercise gtests and gbench (performance testing)
+     exp/          - exp() related tests
+     dynamic/      - Dynamic loading tests.
+     compat/       - Glibc libmvec compat layer tests.
+
+** Build Scripts
+
+Build system scripts are located in scripts/site_scons/
+
+site_scons/
+    alm/       - Contains ALM building scripts
+    site_tools/ - Versioning related scripts

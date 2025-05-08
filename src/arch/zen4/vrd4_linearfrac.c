@@ -28,4 +28,48 @@
 #define ALM_OVERRIDE 1
 
 #include <libm/arch/zen4.h>
-#include "../../optimized/vectormath/vrd4_linearfrac.c"
+#include <libm_util_amd.h>
+#include <libm/alm_special.h>
+
+#include <libm_macros.h>
+#include <libm/amd_funcs_internal.h>
+#include <libm/types.h>
+#include <libm/typehelper.h>
+#include <libm/typehelper-vec.h>
+#include <libm/compiler.h>
+
+/*
+C implementation of Linearfrac
+
+Signature:
+    v_f64x4_t linearfrac(v_f64x4_t a, v_f64x4_t b, double scalea, double shifta, double scaleb, double shiftb)
+
+Implementation notes:
+
+    Linearfrac function performs a linear fraction transformation of vector a by vector b
+    with scalar parameters
+    y[i] = (scalea.a[i]+shifta)/(scaleb.b[i]+shiftb)
+
+*/
+
+v_f64x4_t
+ALM_PROTO_ARCH_ZN4(vrd4_linearfrac)(v_f64x4_t a, v_f64x4_t b, double scalea, double shifta, double scaleb, double shiftb)
+{
+    /* Broadcast scalar values scalea, scaleb, shifta and shiftb to vectors*/  
+    v_f64x4_t scalea_v = _mm256_broadcast_sd(&scalea);
+    v_f64x4_t scaleb_v = _mm256_broadcast_sd(&scaleb);
+    v_f64x4_t shifta_v = _mm256_broadcast_sd(&shifta);
+    v_f64x4_t shiftb_v = _mm256_broadcast_sd(&shiftb);
+ 
+    /* transa = (a * scalea) + shifta */
+    v_f64x4_t transa = _mm256_fmadd_pd(scalea_v, a, shifta_v);
+    /* transb = (b * scaleb) + shiftb */
+    v_f64x4_t transb = _mm256_fmadd_pd(scaleb_v, b, shiftb_v);
+ 
+    /* result = (transa / transb) = ((a * scalea) + shifta) / ((b * scaleb) + shiftb)*/
+    v_f64x4_t result = _mm256_div_pd(transa, transb);
+ 
+    return result;
+    
+}
+

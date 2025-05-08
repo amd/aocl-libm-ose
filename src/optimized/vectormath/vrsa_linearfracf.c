@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -43,31 +43,92 @@ Implementation notes:
 #include <immintrin.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm_util_amd.h>
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
+#include <libm/types.h>
+#include <libm/typehelper.h>
+#include <libm/typehelper-vec.h>
+#include <libm/compiler.h>
 
 void ALM_PROTO_OPT(vrsa_linearfracf)(int length, float *a, float *b, float scalea, float shifta, float scaleb, float shiftb, float *result)
 {
-    int j = 0;
-    if(likely(length >= FLOAT_ELEMENTS_256_BIT))
+    int remainder, j = 0;
+    uint32_t scaleb_u = asuint32(scaleb);
+    uint32_t shiftb_u = asuint32(shiftb);
+
+    /* Special case where scaleb = 0 and shiftb = 1
+       In this case,
+       Output = (scalea * a + shifta) / (scaleb * b + shiftb)
+              = (scalea * a + shifta) / (0 * b + 1)
+              = (scalea * a + shifta) / 1
+              = (scalea * a + shifta)
+    */
+    if(((scaleb_u & ~SIGNBIT_SP32) == 0) && (shiftb_u == POS_ONE_F32))
     {
-        for (j = 0; j <= length - FLOAT_ELEMENTS_256_BIT; j += FLOAT_ELEMENTS_256_BIT)
+        /* Broadcast scalar values scalea and scaleb to vectors */
+        v_f32x8_t scalea_v = _mm256_broadcast_ss(&scalea);
+        v_f32x8_t shifta_v = _mm256_broadcast_ss(&shifta);
+        v_f32x8_t a_v, transa;
+
+        if(likely(length >= FLOAT_ELEMENTS_256_BIT))
         {
-            __m256 ip81 = _mm256_loadu_ps(&a[j]);
-            __m256 ip82 = _mm256_loadu_ps(&b[j]);
-            __m256 op8  = ALM_PROTO(vrs8_linearfracf)(ip81, ip82, scalea, shifta, scaleb, shiftb);
-            _mm256_storeu_ps(&result[j], op8);
-        }
-        if (length - j)
+            for (j = 0; j <= length - FLOAT_ELEMENTS_256_BIT; j += FLOAT_ELEMENTS_256_BIT)
+            {
+                a_v = _mm256_loadu_ps(&a[j]);
+                /* transa = (a * scalea) + shifta */
+                transa = _mm256_fmadd_ps(scalea_v, a_v, shifta_v);
+                _mm256_storeu_ps(&result[j], transa);
+            }
+        }    
+        remainder = length - j;
+        if (remainder)
         {
-            __m256 ip81 = _mm256_loadu_ps(&a[length - FLOAT_ELEMENTS_256_BIT]);
-            __m256 ip82 = _mm256_loadu_ps(&b[length - FLOAT_ELEMENTS_256_BIT]);
-            __m256 op8  = ALM_PROTO(vrs8_linearfracf)(ip81, ip82, scalea, shifta, scaleb, shiftb);
-            _mm256_storeu_ps(&result[length - FLOAT_ELEMENTS_256_BIT], op8);
+            __m256i mask = GET_MASK_FLOAT_256_BIT(remainder);
+            a_v = _mm256_maskload_ps(&a[j], mask);
+            /* transa = (a * scalea) + shifta */
+            transa = _mm256_fmadd_ps(scalea_v, a_v, shifta_v);
+            _mm256_maskstore_ps(&result[j], mask, transa);
         }
-        return;
     }
-    __m256i mask = GET_MASK_FLOAT_256_BIT(length);
-    __m256 ip81 = _mm256_maskload_ps(&a[j], mask);
-    __m256 ip82 = _mm256_maskload_ps(&b[j], mask);
-    __m256 op8  = ALM_PROTO(vrs8_linearfracf)(ip81, ip82, scalea, shifta, scaleb, shiftb);
-    _mm256_maskstore_ps(&result[j], mask, op8);
+    else
+    {
+        /* Broadcast scalar values scalea, scaleb, shifta and shiftb to vectors*/
+        v_f32x8_t scalea_v = _mm256_broadcast_ss(&scalea);
+        v_f32x8_t scaleb_v = _mm256_broadcast_ss(&scaleb);
+        v_f32x8_t shifta_v = _mm256_broadcast_ss(&shifta);
+        v_f32x8_t shiftb_v = _mm256_broadcast_ss(&shiftb);
+        v_f32x8_t a_v, b_v, transa, transb, result_v;
+
+        if(likely(length >= FLOAT_ELEMENTS_256_BIT))
+        {
+            
+            for (j = 0; j <= length - FLOAT_ELEMENTS_256_BIT; j += FLOAT_ELEMENTS_256_BIT)
+            {
+                a_v = _mm256_loadu_ps(&a[j]);
+                b_v = _mm256_loadu_ps(&b[j]);
+                /* transa = (a * scalea) + shifta */
+                transa = _mm256_fmadd_ps(scalea_v, a_v, shifta_v);
+                /* transb = (b * scaleb) + shiftb */
+                transb = _mm256_fmadd_ps(scaleb_v, b_v, shiftb_v);
+                /* result = (transa / transb) = ((a * scalea) + shifta) / ((b * scaleb) + shiftb)*/
+                result_v = _mm256_div_ps(transa, transb);
+                _mm256_storeu_ps(&result[j], result_v);
+            }
+        }
+        remainder = length - j;
+        if (remainder)
+        {
+            __m256i mask = GET_MASK_DOUBLE_256_BIT(length);
+            a_v = _mm256_maskload_ps(&a[j], mask);
+            b_v = _mm256_maskload_ps(&b[j], mask);
+            /* transa = (a * scalea) + shifta */
+            transa = _mm256_fmadd_ps(scalea_v, a_v, shifta_v);
+            /* transb = (b * scaleb) + shiftb */
+            transb = _mm256_fmadd_ps(scaleb_v, b_v, shiftb_v);
+            /* result = (transa / transb) = ((a * scalea) + shifta) / ((b * scaleb) + shiftb)*/
+            result_v = _mm256_div_ps(transa, transb);
+            _mm256_maskstore_ps(&result[j], mask, result_v);
+        }
+    }
+
 }

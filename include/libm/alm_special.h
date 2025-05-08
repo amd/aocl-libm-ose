@@ -1,6 +1,6 @@
 
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -58,6 +58,9 @@ enum {
         ALM_E_OUT_ZERO = 1<<18,
 
         ALM_E_OVERFLOW = 1<<19,        /*overflow flag*/
+        ALM_E_UNDERFLOW = 1<<20,       /*Underflow flag*/
+
+        ALM_F_INEXACT_UNDERFLOW  = 1<<21,
 
 };
 
@@ -227,6 +230,13 @@ float   alm_coshf_special(float x, uint32_t code);
 
 float   _atanf_special_overflow(float x);
 double  alm_atan_special(double x);
+
+double alm_nextafter_special(double y, uint32_t code);
+float  alm_nextafterf_special(float y, uint32_t code);
+
+double alm_expm1_special(double y, uint32_t code);
+
+double alm_ldexp_special(double y, uint32_t code);
 
 extern  float _cbrtf_special            (float x);
 extern  float _cosf_special             (float x);

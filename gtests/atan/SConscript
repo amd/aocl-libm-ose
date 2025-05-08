@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -45,8 +45,9 @@ if e['HOST_OS'] == 'win32':
         e['PDB'] = 'test_atan.pdb'
 
 atan_srcs = Glob('*.cc')
+atan_srcs.append('../Gtest_srcs/gtest_accu.o')
+atan_srcs.append('../Gtest_srcs/gbench_perf.o')
 
 atan = e.Program('test_atan', atan_srcs)
 
 Return('atan')
-

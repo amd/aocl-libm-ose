@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -217,6 +217,7 @@ int test_v16s(test_data *data, int idx)  {
 }
 
 int test_vad(test_data *data, int count)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
@@ -224,16 +225,19 @@ int test_vad(test_data *data, int count)  {
 #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
   vdLog2(count, ip, op);
 #endif
+#endif
   return 0;
 }
 
 int test_vas(test_data *data, int count)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
   amd_vrsa_log2f(count, ip, op);
 #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
   vsLog2(count, ip, op);
+#endif
 #endif
   return 0;
 }

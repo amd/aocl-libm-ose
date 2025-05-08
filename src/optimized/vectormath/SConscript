@@ -44,7 +44,7 @@ incpaths = [
 ]
 
 if e['HOST_OS'] != 'win32':
-    cflags = ['-g','-O3', '-fPIC', '-flax-vector-conversions']
+    cflags = ['-O3', '-fPIC', '-flax-vector-conversions']
 else:
     cflags=[]
 

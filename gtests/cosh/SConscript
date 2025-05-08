@@ -46,6 +46,8 @@ if e['HOST_OS'] == 'win32':
         e['PDB'] = 'test_cosh.pdb'
 
 cosh_srcs = Glob('*.cc')
+cosh_srcs.append('../Gtest_srcs/gtest_accu.o')
+cosh_srcs.append('../Gtest_srcs/gbench_perf.o')
 
 cosh = e.Program('test_cosh', cosh_srcs)
 

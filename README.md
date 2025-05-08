@@ -2,14 +2,14 @@
 
 AOCL-LibM is a high-performant implementation of LibM, the standard C library of basic floating-point mathematical functions. It includes many of the functions from the C99 standard. Single and double precision versions of the functions are provided, all optimized for accuracy and performance, including a small number of complex functions. There are also a number of vector and fast scalar variants provided, in which a small amount of the accuracy has been traded for greater performance.
 
-A list of the scalar functions present in the library is provided below. Note that an “f” at the end of the function name indicates that it is single-precision; otherwise, it is double-precision. They can be called by a standard C99 function call and naming convention and must be linked with AOCL-LibM before standard libm. 
+A list of the scalar functions present in the library is provided below. Note that an "f" at the end of the function name indicates that it is single-precision; otherwise, it is double-precision. They can be called by a standard C99 function call and naming convention and must be linked with AOCL-LibM before standard libm.
 
 For example:
 
     $ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/path/to/AOCL-LibM_library
-    $ clang -Wall -std=c99 myprogram.c -o myprogram –L<Path to AOCL-LibM Library> -lalm -lm
+    $ clang -Wall -std=c99 myprogram.c -o myprogram -L<Path to AOCL-LibM Library> -lalm -lm
     Or
-    $ gcc -Wall -std=c99 myprogram.c -o myprogram –L<Path to AOCL-LibM Library> -lalm -lm
+    $ gcc -Wall -std=c99 myprogram.c -o myprogram -L<Path to AOCL-LibM Library> -lalm -lm
 
 - Trigonometric
   - cosf, cos, sinf, sin, tanf, tan, sincosf and sincos
@@ -55,8 +55,9 @@ For example:
 
 ## INSTALLATION
 
-Please refer to the files BUILDING_on_Linux.txt or BUILDING_on_Windows.txt 
+Please refer to the file BUILDING-ose.txt.
 
 ## CONTACTS
 
 AOCL-LibM is developed and maintained by AMD. For support of these libraries and the other tools of AMD Zen Software Studio, see https://www.amd.com/en/developer/aocc/compiler-technical-support.html
+

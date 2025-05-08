@@ -1,6 +1,6 @@
 /*
 
-(C) 2008-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 
 Advanced Micro Devices, Inc.
 Software License Agreement
@@ -276,27 +276,30 @@ extern "C" {
     __m128d amd_vrd2_cos    (__m128d x);
     __m128d amd_vrd2_sin    (__m128d x);
     __m128d amd_vrd2_tan    (__m128d x);
+    void    amd_vrd2_sincos (__m128d x, __m128d *sin, __m128d *cos);
 
     __m128  amd_vrs4_sinf   (__m128  x);
     __m128  amd_vrs4_cosf   (__m128  x);
     __m128  amd_vrs4_tanf   (__m128  x);
-    void    amd_vrs4_sincosf(__m128 x, __m128 *sin, __m128 *cos);
+    void    amd_vrs4_sincosf(__m128  x, __m128 *sin, __m128 *cos);
 
     __m256  amd_vrs8_tanf   (__m256  x);
     __m256  amd_vrs8_sinf   (__m256  x);
     __m256  amd_vrs8_cosf   (__m256  x);
-    void    amd_vrs8_sincosf(__m256 x, __m256 *sin, __m256 *cos);
+    void    amd_vrs8_sincosf(__m256  x, __m256 *sin, __m256 *cos);
 
     __m256d amd_vrd4_sin    (__m256d x);
     __m256d amd_vrd4_cos    (__m256d x);
     __m256d amd_vrd4_tan    (__m256d x);
-    void amd_vrd4_sincos    (__m256d x, __m256d *sin, __m256d *cos);
+    void    amd_vrd4_sincos (__m256d x, __m256d *sin, __m256d *cos);
 
     /* array vector variants */
     void amd_vrda_cos       (int len, double *src, double *dst);
     void amd_vrsa_cosf      (int len, float  *src, float  *dst);
     void amd_vrda_sin       (int len, double *src, double *dst);
     void amd_vrsa_sinf      (int len, float  *src, float  *dst);
+    void amd_vrda_sincos    (int len, double *src, double *sin, double *cos);
+    void amd_vrsa_sincosf   (int len, float  *src, float  *sin, float  *cos);
 
 /* Inverse Trigonometric */
     __m128  amd_vrs4_asinf  (__m128  x);

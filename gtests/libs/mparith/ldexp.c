@@ -39,55 +39,35 @@
 #error
 #endif
 
+#include <mpfr.h>
+
 REAL_L FUNC_LDEXP(REAL x, int expn)
 {
-    REAL_L ret;
-    fp_params params;
-    int base, mantis, emin, emax;
-    int *xmp, *ymp;
-    int ifail;
+   REAL_L y1;
 
-    initMultiPrecision(ISDOUBLE, 0, &base, &mantis, &emin, &emax, &params);
-    xmp = new_mp(params);
-    ymp = new_mp(params);
+    mpfr_rnd_t rnd = MPFR_RNDN;
+    mpfr_t mpx, mpy, mp_exp, mp_rop;
 
-    DTOMP(x, xmp, params, &ifail);
-    MPLDEXP(xmp, expn, ymp, params, &ifail);
-    MPTOD(ymp, params, &ret, &ifail);
+    mpfr_inits2(ALM_MP_PRECI_BITS, mpx, mpy, mp_exp, mp_rop, (mpfr_ptr) 0);
 
-    free(xmp);
-    free(ymp);
+    #if defined(FLOAT)
+    mpfr_set_d(mpx, x, rnd);
+    mpfr_set_d(mpy, expn, rnd);
+    #elif defined(DOUBLE)
+    mpfr_set_ld(mpx, x, rnd);
+    mpfr_set_ld(mpy, expn, rnd);
+    #endif
 
-    return ret;
+    mpfr_exp2(mp_exp, mpy, rnd);
+    mpfr_mul(mp_rop, mp_exp, mpx, rnd);
+    
+    #if defined(FLOAT)
+    y1 = mpfr_get_d(mp_rop, rnd);
+    #elif defined(DOUBLE)
+    y1 = mpfr_get_ld(mp_rop, rnd);
+    #endif
+
+    mpfr_clears (mpx, mpy, mp_exp, mp_rop, (mpfr_ptr) 0);
+
+    return y1;
 }
-
-REAL FUNC_LDEXP_ULP(REAL x, int expn, REAL z, double *sulps, double *sreldiff)
-{
-    REAL ret;
-    fp_params params;
-    int base, mantis, emin, emax;
-    int *xmp, *ymp;
-    int ifail;
-    REAL reldiff,ulps;
-
-    initMultiPrecision(ISDOUBLE, 0, &base, &mantis, &emin, &emax, &params);
-    xmp = new_mp(params);
-    ymp = new_mp(params);
-
-    DTOMP(x, xmp, params, &ifail);
-    MPLDEXP(xmp, expn, ymp, params, &ifail);
-/********/
-    reldiff = MPRELDIFF(z, base, mantis, emin, emax,
-                      ymp, params,&ulps, &ifail);
-	*sreldiff = reldiff;
-	*sulps = ulps;
-
-/********/
-    MPTOD(ymp, params, &ret, &ifail);
-
-    free(xmp);
-    free(ymp);
-
-    return ret;
-}
-

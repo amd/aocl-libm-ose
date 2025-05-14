@@ -83,6 +83,9 @@
     4. .venv3\Scripts\activate
     5. pip install scons
 
+## To set mpfr path on command prompt
+    set MPFR_PATH="mpfr_installation_path\mpfr"
+
 ## Start building libm library
     scons ALM_CC="<clang executable path>" ALM_CXX="<clang++ executable path>" --aocl_utils_install_path="<libaoclutils library path>"
 

@@ -240,6 +240,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_mulfi);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_divfi);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_fmaxfi);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_fminfi);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_acosf);
 
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_fabs);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_fabsf);

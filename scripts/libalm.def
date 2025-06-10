@@ -298,3 +298,4 @@ EXPORTS
     alm_main
     amd_vrsa_powxf
     amd_vrda_powx
+    amd_vrsa_acosf

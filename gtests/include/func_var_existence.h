@@ -43,7 +43,7 @@ using namespace std;
  */
 static map<string, vector<string>> libm_funcs = {
     // { func,   { supported variants} }
-    {"acos",      {"s1d", "s1f", "vrs4", "vrs8", "vrs16"}},
+    {"acos",      {"s1d", "s1f", "vrs4", "vrs8", "vrs16", "vrsa"}},
     {"acosh",     {"s1d", "s1f"}},
     {"asin",      {"s1d", "s1f", "vrd8", "vrs4", "vrs8", "vrs16"}},
     {"asinh",     {"s1d", "s1f"}},

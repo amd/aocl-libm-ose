@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -134,7 +134,6 @@ void asin_vector_double_precision_4()
  * *******************************************/
 void asin_single_precision_array()
 {
-    #if 0
     printf("Using Single Precision Vectory Array (vrsa) asin()\n");
     int n=5;
     float input[10] = {1.0f, 3.0f, 5.0f, 7.0f, 9.0f, 11.0f, 13.0f, 15.0f, 17.0f, 19.0f};
@@ -154,7 +153,6 @@ void asin_single_precision_array()
     }
     printf("}\n");
     printf("----------\n");
-    #endif
 }
 
 void asin_double_precision_array()

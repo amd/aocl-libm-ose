@@ -372,6 +372,7 @@ extern "C" {
     void amd_vrsa_linearfracf     (int len, float *x, float *y, float scx, float shx, float scy, float shy, float *dst);
 
     void amd_vrsa_acosf           (int len, float  *src, float  *dst);
+    void amd_vrsa_asinf           (int len, float  *src, float  *dst);
 
 /* AVX512 variants */
 #if defined(__AVX512F__)

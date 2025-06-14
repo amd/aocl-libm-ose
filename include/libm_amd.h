@@ -381,8 +381,9 @@ void FN_PROTOTYPE(vrsa_linearfracf)(int len, float *x, float *y, float scx, floa
 /* Array variants of Powx */
 void FN_PROTOTYPE(vrda_powx)(int len, double *x, double y, double *result);
 
-/* Array variant of acosf */
+/* Array variant of acosf, asinf*/
 void FN_PROTOTYPE(vrsa_acosf)(int n, float *x, float *y);
+void FN_PROTOTYPE(vrsa_asinf)(int n, float *x, float *y);
 
 #ifdef __cplusplus
 }

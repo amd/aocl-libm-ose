@@ -246,6 +246,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrsa_fminfi);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_powxf);
 
 alm_func_t        G_ENTRY_PT_PTR(vrsa_acosf);
+alm_func_t        G_ENTRY_PT_PTR(vrsa_asinf);
 
 alm_func_t        G_ENTRY_PT_PTR(sincos);
 alm_func_t        G_ENTRY_PT_PTR(sincosf);

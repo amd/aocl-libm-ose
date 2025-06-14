@@ -229,10 +229,10 @@ int test_vas(test_data *data, int count)  {
 int test_vad(test_data *data, int count)  {
 #if 0 //Enable when support is added for vrda
 #if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
-  float *ip  = (float*)data->ip;
-  float *op  = (float*)data->op;
+  float *ip  = (double*)data->ip;
+  float *op  = (double*)data->op;
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
-  amd_vrda_acosf(count, ip, op);
+  amd_vrda_acos(count, ip, op);
 #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
   vdAcos(count, ip, op);
 #endif

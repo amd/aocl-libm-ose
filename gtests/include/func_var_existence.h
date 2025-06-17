@@ -47,7 +47,7 @@ static map<string, vector<string>> libm_funcs = {
     {"acosh",     {"s1d", "s1f"}},
     {"asin",      {"s1d", "s1f", "vrd8", "vrs4", "vrs8", "vrs16", "vrsa"}},
     {"asinh",     {"s1d", "s1f"}},
-    {"atan",      {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16"}},
+    {"atan",      {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrsa"}},
     {"atan2",     {"s1d", "s1f"}},
     {"atanh",     {"s1d", "s1f"}},
     {"cbrt",      {"s1d", "s1f", "vrd2", "vrs4", "vrda", "vrsa"}},

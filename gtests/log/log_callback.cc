@@ -87,11 +87,11 @@ long double getExpected(double *data) {
 
 // Used by the Complex Number Functions only!
 double _Complex getExpected(float _Complex *data) {
-  return {0};
+  return 0.0;
 }
 
 long double _Complex getExpected(double _Complex *data) {
-  return {0};
+  return 0.0;
 }
 
 float getGlibcOp(float *data) {

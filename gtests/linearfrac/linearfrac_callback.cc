@@ -72,11 +72,11 @@ double getExpected(float *data) {
 }
 
 double _Complex getExpected(float _Complex *data) {
-  return {0};
+  return 0.0;
 }
 
 long double _Complex getExpected(double _Complex *data) {
-  return {0};
+  return 0.0;
 }
 
 int test_s1s(test_data *data, int idx)  {

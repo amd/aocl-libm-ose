@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@
  *
  */
 
- 
+
 #include <cstdint>
 #include <stdlib.h>
 #include <cmath>
@@ -47,7 +47,7 @@ namespace ALMTest {
 template <typename T>
 static T rand_simple(T min, T max) {
   T range = (max - min);
-  T div = RAND_MAX / range;
+  T div = static_cast<T>(static_cast<T>(RAND_MAX) / range);
 
   return (min + (rand() / div));
 }

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -48,6 +48,8 @@ if e['HOST_OS'] == 'win32':
 cosh_srcs = Glob('*.cc')
 cosh_srcs.append('../Gtest_srcs/gtest_accu.o')
 cosh_srcs.append('../Gtest_srcs/gbench_perf.o')
+cosh_srcs.append('../Gtest_srcs/gtest_main_vec_arr.o')
+cosh_srcs.append('../Gtest_srcs/gbench_main_vec_arr.o')
 
 cosh = e.Program('test_cosh', cosh_srcs)
 

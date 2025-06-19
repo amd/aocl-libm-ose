@@ -48,6 +48,8 @@ if e['HOST_OS'] == 'win32':
 erf_srcs = Glob('*.cc')
 erf_srcs.append('../Gtest_srcs/gtest_accu.o')
 erf_srcs.append('../Gtest_srcs/gbench_perf.o')
+erf_srcs.append('../Gtest_srcs/gtest_main_vec_arr.o')
+erf_srcs.append('../Gtest_srcs/gbench_main_vec_arr.o')
 
 erf = e.Program('test_erf', erf_srcs)
 

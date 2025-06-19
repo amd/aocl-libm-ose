@@ -212,6 +212,36 @@ int test_v16s(test_data *data, int idx)  {
   return 0;
 }
 
+
+int test_vas(test_data *data, int count)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
+  float *ip  = (float*)data->ip;
+  float *op  = (float*)data->op;
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+  amd_vrsa_tanhf(count, ip, op);
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  vsTanh(count, ip, op);
+#endif
+#endif
+  return 0;
+}
+
+int test_vad(test_data *data, int count)  {
+#if 0 //Enable when support is added for vrda
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
+  double *ip  = (double*)data->ip;
+  double *op  = (double*)data->op;
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+  amd_vrda_tanh(count, ip, op);
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  vdTanh(count, ip, op);
+#endif
+#endif
+#endif
+  return 0;
+}
+
+
 #ifdef __cplusplus
 }
 #endif

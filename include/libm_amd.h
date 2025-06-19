@@ -388,6 +388,7 @@ void FN_PROTOTYPE(vrsa_atanf)(int n, float *x, float *y);
 void FN_PROTOTYPE(vrsa_coshf)(int n, float *x, float *y);
 void FN_PROTOTYPE(vrsa_erff)(int n, float *x, float *y);
 void FN_PROTOTYPE(vrsa_tanhf)(int n, float *x, float *y);
+void FN_PROTOTYPE(vrsa_tanf)(int n, float *x, float *y);
 
 #ifdef __cplusplus
 }

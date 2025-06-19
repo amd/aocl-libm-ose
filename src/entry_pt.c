@@ -250,6 +250,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrsa_asinf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_atanf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_coshf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_erff);
+alm_func_t        G_ENTRY_PT_PTR(vrsa_tanhf);
 
 alm_func_t        G_ENTRY_PT_PTR(sincos);
 alm_func_t        G_ENTRY_PT_PTR(sincosf);

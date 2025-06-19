@@ -303,3 +303,4 @@ EXPORTS
     amd_vrsa_atanf
     amd_vrsa_coshf
     amd_vrsa_erff
+    amd_vrsa_tanhf

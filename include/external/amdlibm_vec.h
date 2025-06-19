@@ -377,6 +377,7 @@ extern "C" {
     void amd_vrsa_coshf           (int len, float  *src, float  *dst);
     void amd_vrsa_erff            (int len, float  *src, float  *dst);
     void amd_vrsa_tanhf           (int len, float  *src, float  *dst);
+    void amd_vrsa_tanf            (int len, float  *src, float  *dst);
 
 /* AVX512 variants */
 #if defined(__AVX512F__)

@@ -83,7 +83,7 @@ static map<string, vector<string>> libm_funcs = {
     {"sin",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"sinh",      {"s1d", "s1f"}},
     {"sqrt",      {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
-    {"tan",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16"}},
+    {"tan",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrsa"}},
     {"tanh",      {"s1d", "s1f", "vrs4", "vrs8", "vrs16", "vrsa"}},
     {"trunc",     {"s1d", "s1f"}},
     {"linearfrac",{"vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},

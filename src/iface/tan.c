@@ -47,6 +47,7 @@ struct alm_arch_funcs __arch_funcs_tan = {
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_AVX2(vrd4_tan),   /* v4d ? */
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_tanf),
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_tan),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_tanf)
         },
 
          [ALM_UARCH_VER_ZEN] = {
@@ -56,6 +57,7 @@ struct alm_arch_funcs __arch_funcs_tan = {
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_tanf),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN(vrd2_tan),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN(vrd4_tan),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN(vrsa_tanf)
         },
 
         [ALM_UARCH_VER_ZEN2] = {
@@ -65,6 +67,7 @@ struct alm_arch_funcs __arch_funcs_tan = {
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_tanf),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN2(vrd2_tan),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN2(vrd4_tan),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN2(vrsa_tanf)
         },
 
         [ALM_UARCH_VER_ZEN3] = {
@@ -74,6 +77,7 @@ struct alm_arch_funcs __arch_funcs_tan = {
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_tanf),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN3(vrd2_tan),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN3(vrd4_tan),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN3(vrsa_tanf)
         },
 
         [ALM_UARCH_VER_ZEN4] = {
@@ -86,6 +90,7 @@ struct alm_arch_funcs __arch_funcs_tan = {
 
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_tanf),
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_tan),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN4(vrsa_tanf)
         },
 
         [ALM_UARCH_VER_ZEN5] = {
@@ -98,6 +103,7 @@ struct alm_arch_funcs __arch_funcs_tan = {
 
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN5(vrs16_tanf),
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN5(vrd8_tan),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN5(vrsa_tanf)
         },
     },
 };
@@ -115,6 +121,7 @@ LIBM_IFACE_PROTO(tan)(void *arg)
         [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_tan),
         [ALM_FUNC_VECT_DP_8] = &G_ENTRY_PT_PTR(vrd8_tan),
         [ALM_FUNC_VECT_SP_16] = &G_ENTRY_PT_PTR(vrs16_tanf),
+        [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_tanf)
 
         },
     };

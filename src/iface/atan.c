@@ -47,7 +47,8 @@ struct alm_arch_funcs __arch_funcs_atan = {
 
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_atanf),
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_atan),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_atanf)
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_atanf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX2(vrda_atan),
         },
 
         [ALM_UARCH_VER_ZEN] = {
@@ -57,7 +58,8 @@ struct alm_arch_funcs __arch_funcs_atan = {
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_atanf),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN(vrd2_atan),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN(vrd4_atan),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN(vrsa_atanf)
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN(vrsa_atanf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN(vrda_atan),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
@@ -67,7 +69,8 @@ struct alm_arch_funcs __arch_funcs_atan = {
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_atanf),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN2(vrd2_atan),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN2(vrd4_atan),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN2(vrsa_atanf)
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN2(vrsa_atanf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN2(vrda_atan),
         },
 
         [ALM_UARCH_VER_ZEN3] = {
@@ -77,7 +80,8 @@ struct alm_arch_funcs __arch_funcs_atan = {
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_atanf),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN3(vrd2_atan),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN3(vrd4_atan),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN3(vrsa_atanf)
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN3(vrsa_atanf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN3(vrda_atan),
         },
 
         [ALM_UARCH_VER_ZEN4] = {
@@ -90,7 +94,8 @@ struct alm_arch_funcs __arch_funcs_atan = {
 
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_atanf),
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_atan),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN4(vrsa_atanf)
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN4(vrsa_atanf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN4(vrda_atan),
         },
 
         [ALM_UARCH_VER_ZEN5] = {
@@ -103,7 +108,8 @@ struct alm_arch_funcs __arch_funcs_atan = {
 
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN5(vrs16_atanf),
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN5(vrd8_atan),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN5(vrsa_atanf)
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN5(vrsa_atanf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN5(vrda_atan),
         },
     },
 };
@@ -120,7 +126,8 @@ LIBM_IFACE_PROTO(atan)(void *arg) {
           [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_atan),
           [ALM_FUNC_VECT_SP_16] = &G_ENTRY_PT_PTR(vrs16_atanf),
           [ALM_FUNC_VECT_DP_8] = &G_ENTRY_PT_PTR(vrd8_atan),
-          [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_atanf)
+          [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_atanf),
+          [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_atan),
         },
     };
 

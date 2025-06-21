@@ -157,7 +157,6 @@ void cosh_single_precision_array()
 
 void cosh_double_precision_array()
 {
-    #if 0
     printf("Using Double Precision Vectory Array (vrda) cosh()\n");
     int n=8;
     double input[10] = {10.0, 8.0, 4.0, 2.0, 6.0, 12.0, 14.0, 1.0, 3.0, 5.0};
@@ -177,7 +176,6 @@ void cosh_double_precision_array()
     }
     printf("}\n");
     printf("----------\n");
-    #endif
 }
 
 int use_cosh()

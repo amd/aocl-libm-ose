@@ -274,6 +274,7 @@ LIBM_DECL_FN_MAP(vrsa_tanhf);
 LIBM_DECL_FN_MAP(vrsa_tanf);
 LIBM_DECL_FN_MAP(vrda_atan);
 LIBM_DECL_FN_MAP(vrda_erf);
+LIBM_DECL_FN_MAP(vrda_tan);
 
 LIBM_DECL_FN_MAP(vrsa_addf);
 LIBM_DECL_FN_MAP(vrsa_subf);
@@ -664,6 +665,7 @@ WEAK_LIBM_ALIAS(vrsa_tanhf, FN_PROTOTYPE(vrsa_tanhf));
 WEAK_LIBM_ALIAS(vrsa_tanf, FN_PROTOTYPE(vrsa_tanf));
 WEAK_LIBM_ALIAS(vrda_atan, FN_PROTOTYPE(vrda_atan));
 WEAK_LIBM_ALIAS(vrda_erf, FN_PROTOTYPE(vrda_erf));
+WEAK_LIBM_ALIAS(vrda_tan, FN_PROTOTYPE(vrda_tan));
 
 WEAK_LIBM_ALIAS(vrda_pow, FN_PROTOTYPE(vrda_pow));
 WEAK_LIBM_ALIAS(vrda_cbrt, FN_PROTOTYPE(vrda_cbrt));

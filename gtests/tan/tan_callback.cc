@@ -228,7 +228,6 @@ int test_vas(test_data *data, int count)  {
 }
 
 int test_vad(test_data *data, int count)  {
-#if 0 //Enable when support is added for vrda
 #if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
@@ -236,7 +235,6 @@ int test_vad(test_data *data, int count)  {
   amd_vrda_tan(count, ip, op);
 #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
   vdTan(count, ip, op);
-#endif
 #endif
 #endif
   return 0;

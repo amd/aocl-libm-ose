@@ -248,6 +248,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_erff);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_tanhf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_tanf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_atan);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_erf);
 
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_fabs);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_fabsf);

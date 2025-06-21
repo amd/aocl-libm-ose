@@ -380,6 +380,7 @@ extern "C" {
     void amd_vrsa_tanf            (int len, float  *src, float  *dst);
     void amd_vrda_atan            (int len, double  *src, double  *dst);
     void amd_vrda_erf             (int len, double  *src, double  *dst);
+    void amd_vrda_tan             (int len, double  *src, double  *dst);
 
 /* AVX512 variants */
 #if defined(__AVX512F__)

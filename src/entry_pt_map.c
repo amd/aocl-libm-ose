@@ -443,6 +443,8 @@ LIBM_DECL_FN_MAP(vrs16_sqrtf);
 LIBM_DECL_FN_MAP(vrs16_linearfracf);
 LIBM_DECL_FN_MAP(vrs16_sincosf);
 
+LIBM_DECL_FN_MAP(vrd2_acos);
+
 /*
  * WEAK_LIBM_ALIAS is used to map "amd_<func_name>" to "<func_name>".
  * This will enable applications to call AOCL-Libm functions directly without using the "amd_" prefix.
@@ -851,3 +853,5 @@ WEAK_LIBM_ALIAS(__vrs4_log2f, FN_PROTOTYPE(vrs4_log2f));
 WEAK_LIBM_ALIAS(__vrs4_log10f, FN_PROTOTYPE(vrs4_log10f));
 
 WEAK_LIBM_ALIAS(__vrs4_powf, FN_PROTOTYPE(vrs4_powf));
+
+WEAK_LIBM_ALIAS(__vrd2_acos, FN_PROTOTYPE(vrd2_acos));

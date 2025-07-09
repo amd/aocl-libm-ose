@@ -126,6 +126,7 @@ extern "C" {
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
 __m128 LIBM_FUNC_VEC(s, 4, acosf)(__m128);
 __m256 LIBM_FUNC_VEC(s, 8, acosf)(__m256);
+__m128d LIBM_FUNC_VEC(d, 2, acos)(__m128d);
 /*avx512*/
 # if defined(__AVX512__)
 //__m512d LIBM_FUNC_VEC(d, 8, acos) (__m512d);
@@ -134,10 +135,10 @@ __m512 LIBM_FUNC_VEC(s, 16, acosf) (__m512);
 #endif
 
 int test_v2d(test_data *data, int idx)  {
-#if 0
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   __m128d op2 = LIBM_FUNC_VEC(d, 2, acos)(ip2);
   _mm_store_pd(&op[0], op2);
 #endif

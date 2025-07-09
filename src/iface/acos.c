@@ -44,7 +44,8 @@ struct alm_arch_funcs __arch_funcs_acos = {
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_acosf),/* vrs4 ? */
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_acosf),/* vrs8 ? */
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_acosf), /*vrs16 acosf */
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_acosf)
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_acosf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_AVX2(vrd2_acos), /* vrd2 ? */
         },
 
         [ALM_UARCH_VER_ZEN] = {
@@ -52,7 +53,8 @@ struct alm_arch_funcs __arch_funcs_acos = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(acos),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN(vrs4_acosf),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_acosf),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN(vrsa_acosf)
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN(vrsa_acosf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN(vrd2_acos), /* vrd2 ? */
         },
 
         [ALM_UARCH_VER_ZEN2] = {
@@ -60,7 +62,8 @@ struct alm_arch_funcs __arch_funcs_acos = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(acos),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN2(vrs4_acosf),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_acosf),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN2(vrsa_acosf)
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN2(vrsa_acosf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN2(vrd2_acos), /* vrd2 ? */
         },
 
         [ALM_UARCH_VER_ZEN3] = {
@@ -68,7 +71,8 @@ struct alm_arch_funcs __arch_funcs_acos = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(acos),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN3(vrs4_acosf),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_acosf),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN3(vrsa_acosf)
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN3(vrsa_acosf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN3(vrd2_acos), /* vrd2 ? */
         },
 
         [ALM_UARCH_VER_ZEN4] = {
@@ -78,7 +82,8 @@ struct alm_arch_funcs __arch_funcs_acos = {
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN4(vrs8_acosf),
 
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_acosf),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN4(vrsa_acosf)
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN4(vrsa_acosf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN4(vrd2_acos), /* vrd2 ? */
         },
 
         [ALM_UARCH_VER_ZEN5] = {
@@ -88,7 +93,8 @@ struct alm_arch_funcs __arch_funcs_acos = {
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN5(vrs8_acosf),
 
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN5(vrs16_acosf),
-            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN5(vrsa_acosf)
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN5(vrsa_acosf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN5(vrd2_acos), /* vrd2 ? */
         },
     },
 };
@@ -103,9 +109,9 @@ LIBM_IFACE_PROTO(acos)(void *arg) {
         [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_acosf),
 
         [ALM_FUNC_VECT_SP_16] = &G_ENTRY_PT_PTR(vrs16_acosf),
-        [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_acosf)
-#if 0
+        [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_acosf),
         [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_acos),
+#if 0
         [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_acos),
 #endif
         },

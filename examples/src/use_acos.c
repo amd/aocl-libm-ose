@@ -93,7 +93,6 @@ void acos_vector_single_precision_8()
 
 void acos_vector_double_precision_2()
 {
-    #if 0
     printf("Using Vector double precision - 2 doubles (vrd2) acos()\n");
     __m128d input, result;
     double  input_array_vrd2[2] = {34.65, 67.89};
@@ -107,7 +106,6 @@ void acos_vector_double_precision_2()
             input_array_vrd2[0], input_array_vrd2[1],
             output_array[0], output_array[1]);
     printf("----------\n");
-    #endif
 }
 
 void acos_vector_double_precision_4()

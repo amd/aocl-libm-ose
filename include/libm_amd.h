@@ -77,6 +77,8 @@ double FN_PROTOTYPE(acos)(double x);
  double FN_PROTOTYPE( erf)(double x);
  float FN_PROTOTYPE(erff)(float x);
 
+ double FN_PROTOTYPE(erfc)(double x);
+
  double FN_PROTOTYPE( exp)(double x);
  float FN_PROTOTYPE(expf)(float x);
 

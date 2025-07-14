@@ -93,6 +93,7 @@ extern double    ALM_PROTO_INTERNAL(tanh)                 (double x);
 extern double    ALM_PROTO_INTERNAL(tanpi)                (double x);
 extern double    ALM_PROTO_INTERNAL(trunc)                (double x);
 extern double    ALM_PROTO_INTERNAL(erf)                  (double x);
+extern double    ALM_PROTO_INTERNAL(erfc)                 (double x);
 extern void      ALM_PROTO_INTERNAL(sincos)               (double x, double *s, double *c);
 /*
  * Single Precision functions

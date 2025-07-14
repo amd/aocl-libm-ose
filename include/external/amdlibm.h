@@ -1,6 +1,6 @@
 
 /*
-(C) 2008-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 
 Advanced Micro Devices, Inc.
 Software License Agreement
@@ -386,9 +386,11 @@ extern "C" {
     fc64_t amd_clog  (fc64_t x);
     fc32_t amd_clogf (fc32_t y);
 
+    /* Error functions */
     double amd_erf  (double x);
     float  amd_erff (float x);
 
+    double amd_erfc  (double x);
 
 #ifdef __cplusplus
 }

@@ -232,6 +232,7 @@ LIBM_DECL_FN_MAP(atan2f);
 
 LIBM_DECL_FN_MAP(erf);
 LIBM_DECL_FN_MAP(erff);
+LIBM_DECL_FN_MAP(erfc);
 
 
 /* Scalar Complex Number Variant Functions */
@@ -614,7 +615,7 @@ WEAK_LIBM_ALIAS(atan2, FN_PROTOTYPE(atan2));
 
 WEAK_LIBM_ALIAS(erff, FN_PROTOTYPE(erff));
 WEAK_LIBM_ALIAS(erf, FN_PROTOTYPE(erf));
-
+WEAK_LIBM_ALIAS(erfc, FN_PROTOTYPE(erfc));
 
 /* Scalar Complex Number Variant Functions */
 

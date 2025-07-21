@@ -126,7 +126,7 @@ set(LIBMPARITH mparith)
 
 if(MPARITH_SHARED_LIBS)
   # Combine 32-bit and 64-bit object libraries into a single shared library
-  add_library(mparith SHARED $<TARGET_OBJECTS:lib32> $<TARGET_OBJECTS:mparith64obj>)
+  add_library(mparith SHARED $<TARGET_OBJECTS:mparith32obj> $<TARGET_OBJECTS:mparith64obj>)
   set_target_properties(mparith PROPERTIES POSITION_INDEPENDENT_CODE ON)
   target_link_libraries(mparith PRIVATE ${MPARITH_DEPS_LIBS})
   target_link_directories(mparith PRIVATE ${MPARITH_DEPS_LIBS_DIRS})

@@ -100,7 +100,7 @@ else()
     message(STATUS "Aocl-Utils directory not found, cloning repository...")
 
     # Clone aocl-utils with specific tag
-    execute_process(COMMAND git clone --branch "${${PROJECT_PREFIX}_PROJ_AU_TAG}" https://github.com/amd/aocl-utils.git ${AU_SOURCE_DIR})
+    execute_process(COMMAND git clone --branch "${${PROJECT_PREFIX}_AU_GIT_TAG}" https://github.com/amd/aocl-utils.git ${AU_SOURCE_DIR})
 
     # Build aocl-utils with specified options
     execute_process(COMMAND ${CMAKE_COMMAND} -G${CMAKE_GENERATOR} -S ${AU_SOURCE_DIR} -B ${AU_BINARY_DIR}

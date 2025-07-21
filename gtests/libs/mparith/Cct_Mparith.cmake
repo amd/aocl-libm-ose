@@ -66,7 +66,7 @@ else()
   set(LIBMPARITH           ${MPARITH_STATIC})
 endif()
 
-# Check if aocl-utils directory exists
+# Check if mparith directory exists
 directory_exists(${MPARITH_LIB_DIR} MPARITH_LIB_DIR_EXISTS)
 library_exists(${LIBMPARITH} ${MPARITH_LIB_DIR} MPARITH_LIB_EXISTS)
 if(MPARITH_LIB_DIR_EXISTS AND MPARITH_LIB_EXISTS)

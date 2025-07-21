@@ -102,7 +102,7 @@ $ cmake --preset dev-release-gcc -DALM_STATIC_DISPATCH=ZEN3 --fresh
    "Path_To_VisualStudio\VC\Auxiliary\Build\vcvarsall.bat"  x64
 ```
 
-## Set MPFR_PATH on Windows connamd prompt
+## Set MPFR_PATH on Windows command prompt
 ```console
    set MPFR_PATH=path/to/mpfr
    ex : set MPFR_PATH=C:/tools/mpfr

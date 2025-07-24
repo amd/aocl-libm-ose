@@ -403,6 +403,7 @@ extern void      ALM_PROTO_INTERNAL(vrsa_linearfracf)(int len, float *x, float *
 extern void      ALM_PROTO_INTERNAL(vrda_powx)     (int n, double *s1, double s2, double* d);
 
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_acos)     (__m128d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_acos)     (__m256d x);
 #ifdef __cplusplus
 }
 #endif

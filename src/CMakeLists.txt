@@ -113,13 +113,8 @@ target_include_directories(src
                                    ${${PROJECT_PREFIX}_SDK_INCLUDES}
                            PRIVATE ${${PROJECT_PREFIX}_PRIVATE_INCLUDES}
                                    ${INCLUDES})
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  target_compile_options(src PRIVATE ${LIBMCFLAGS} "-O0")
-elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-  target_compile_options(src PRIVATE ${LIBMCFLAGS} "-O1")
-else()
-  target_compile_options(src PRIVATE ${LIBMCFLAGS} "-O1")
-endif()
+target_compile_options(src PRIVATE ${LIBMCFLAGS} "-O1")
+
 #add src object library to libmobj
 list(APPEND libmobj $<TARGET_OBJECTS:src>)
 

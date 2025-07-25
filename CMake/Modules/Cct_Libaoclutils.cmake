@@ -26,62 +26,34 @@
 #
 
 # Function to check if a directory exists
-function(directory_exists dir)
-    if(EXISTS ${dir} AND IS_DIRECTORY ${dir})
-        set(${ARGN} TRUE PARENT_SCOPE)
+function(directory_exists dir result_var)
+    if(EXISTS "${dir}" AND IS_DIRECTORY "${dir}")
+        set(${result_var} TRUE PARENT_SCOPE)
     else()
-        set(${ARGN} FALSE PARENT_SCOPE)
+        set(${result_var} FALSE PARENT_SCOPE)
     endif()
 endfunction()
 
 # Function to check if a library exists
-function(library_exists lib libpath)
-    find_library(${lib}_LIB NAMES ${lib} PATHS ${libpath} NO_DEFAULT_PATH)
-    if(${lib}_LIB)
-        set(${ARGN} TRUE PARENT_SCOPE)
+function(library_exists lib libpath result_var)
+    find_library(${lib}_FOUND NAMES ${lib} PATHS "${libpath}" NO_DEFAULT_PATH)
+    if(${lib}_FOUND)
+        set(${result_var} TRUE PARENT_SCOPE)
     else()
-        set(${ARGN} FALSE PARENT_SCOPE)
+        set(${result_var} FALSE PARENT_SCOPE)
     endif()
+    unset(${lib}_FOUND CACHE)
 endfunction()
 
-set(AU_SHARED OFF CACHE BOOL "Build shared libraries")
-set(AU_STATIC OFF CACHE BOOL "Build static libraries")
-if(NOT AU_SHARED)
-    set(AU_STATIC ON)
-endif()
+# Function to build aocl-utils
+function(build_aocl_utils source_dir binary_dir)
+    message(STATUS "Building aocl-utils from: ${source_dir}")
 
-set(AU_SOURCE_DIR "${CMAKE_SOURCE_DIR}/build/external/aocl-utils")
-set(AU_BINARY_DIR "${AU_SOURCE_DIR}/build")
-
-if (WIN32)
-  set(AOCLUTILS_DLL         au_cpuid.dll)
-  set(AOCLUTILS_SHARED      au_cpuid.lib)
-  set(AOCLUTILS_STATIC      au_cpuid_static.lib)
-else()
-  set(AOCLUTILS_SHARED      libau_cpuid.so)
-  set(AOCLUTILS_STATIC      libau_cpuid.a)
-endif()
-
-if(AU_SHARED)
-  set(AOCL_UTILS_LIB        ${AOCLUTILS_SHARED})
-else()
-  set(AOCL_UTILS_LIB        ${AOCLUTILS_STATIC})
-endif()
-
-# Check if aocl-utils directory exists
-directory_exists(${AU_SOURCE_DIR} AOCL_UTILS_DIR_EXISTS)
-
-# Check if aocl-utils library exists
-library_exists(${AOCL_UTILS_LIB} ${AU_BINARY_DIR}/Library/Cpuid AOCL_UTILS_LIB_EXISTS)
-
-
-if(AOCL_UTILS_LIB_EXISTS)
-    message(STATUS "Aocl-Utils library found ...")
-elseif(AOCL_UTILS_DIR_EXISTS)
-    message(STATUS "Aocl-Utils directory found, building library...")
-
-    # Build aocl-utils with specified options
-    execute_process(COMMAND ${CMAKE_COMMAND} -G${CMAKE_GENERATOR} -S ${AU_SOURCE_DIR} -B ${AU_BINARY_DIR}
+    # Configure the build
+    execute_process(COMMAND ${CMAKE_COMMAND}
+                            -G "${CMAKE_GENERATOR}"
+                            -S "${source_dir}"
+                            -B "${binary_dir}"
                             -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
                             -DCMAKE_BUILD_TYPE=Release
                             -DAU_BUILD_SHARED_LIBS=${AU_SHARED}
@@ -89,35 +61,117 @@ elseif(AOCL_UTILS_DIR_EXISTS)
                             -DAU_CMAKE_VERBOSE=OFF
                             -DAU_BUILD_TESTS=OFF
                             -DAU_BUILD_EXAMPLES=OFF
-                    RESULTS_VARIABLE  result_au
-                    WORKING_DIRECTORY ${AU_SOURCE_DIR}
+                    RESULT_VARIABLE configure_result
+                    OUTPUT_VARIABLE configure_output
+                    ERROR_VARIABLE configure_error
+                    WORKING_DIRECTORY "${source_dir}"
     )
-    execute_process(COMMAND ${CMAKE_COMMAND} --build ${AU_BINARY_DIR} --config Release -v
-                    OUTPUT_VARIABLE   output_au
-                    WORKING_DIRECTORY ${AU_SOURCE_DIR}
+
+    if(NOT configure_result EQUAL 0)
+        message(FATAL_ERROR "Failed to configure aocl-utils build:\n${configure_error}")
+    endif()
+
+    # Build the library
+    execute_process(COMMAND ${CMAKE_COMMAND} --build "${binary_dir}" --config Release
+                    RESULT_VARIABLE build_result
+                    OUTPUT_VARIABLE build_output
+                    ERROR_VARIABLE build_error
+                    WORKING_DIRECTORY "${source_dir}"
     )
+
+    if(NOT build_result EQUAL 0)
+        message(FATAL_ERROR "Failed to build aocl-utils:\n${build_error}")
+    endif()
+
+    message(STATUS "Successfully built aocl-utils")
+endfunction()
+
+# Validate required variables
+if(NOT DEFINED PROJECT_PREFIX)
+    message(FATAL_ERROR "PROJECT_PREFIX must be defined before including this module")
+endif()
+
+# Configuration options
+set(AU_SHARED OFF CACHE BOOL "Build shared libraries for aocl-utils")
+set(AU_STATIC OFF CACHE BOOL "Build static libraries for aocl-utils")
+
+# Ensure at least one library type is built
+if(NOT AU_SHARED AND NOT AU_STATIC)
+    set(AU_STATIC ON)
+    message(STATUS "Neither AU_SHARED nor AU_STATIC was set, defaulting to static libraries")
+endif()
+
+# Set paths
+set(AU_SOURCE_DIR "${PROJECT_SOURCE_DIR}/build/external/aocl-utils")
+set(AU_BINARY_DIR "${AU_SOURCE_DIR}/build")
+
+# Platform-specific library names
+if(WIN32)
+    set(AOCLUTILS_DLL         "au_cpuid.dll")
+    set(AOCLUTILS_SHARED      "au_cpuid.lib")
+    set(AOCLUTILS_STATIC      "au_cpuid_static.lib")
+else()
+    set(AOCLUTILS_SHARED      "libau_cpuid.so")
+    set(AOCLUTILS_STATIC      "libau_cpuid.a")
+endif()
+
+# Select the appropriate library based on configuration
+if(AU_SHARED)
+    set(AOCL_UTILS_LIB "${AOCLUTILS_SHARED}")
+else()
+    set(AOCL_UTILS_LIB "${AOCLUTILS_STATIC}")
+endif()
+
+# Check if aocl-utils directory exists
+directory_exists("${AU_SOURCE_DIR}" AOCL_UTILS_DIR_EXISTS)
+
+# Check if aocl-utils library exists
+library_exists("${AOCL_UTILS_LIB}" "${AU_BINARY_DIR}/Library/Cpuid" AOCL_UTILS_LIB_EXISTS)
+
+# Main logic for handling aocl-utils dependency
+if(AOCL_UTILS_LIB_EXISTS)
+    message(STATUS "Aocl-Utils library found at: ${AU_BINARY_DIR}/Library/Cpuid/${AOCL_UTILS_LIB}")
+
+elseif(AOCL_UTILS_DIR_EXISTS)
+    message(STATUS "Aocl-Utils directory found, building library...")
+    build_aocl_utils("${AU_SOURCE_DIR}" "${AU_BINARY_DIR}")
+
+    # Verify the library was built successfully
+    library_exists("${AOCL_UTILS_LIB}" "${AU_BINARY_DIR}/Library/Cpuid" AOCL_UTILS_LIB_BUILT)
+    if(NOT AOCL_UTILS_LIB_BUILT)
+        message(FATAL_ERROR "Failed to build aocl-utils library: ${AOCL_UTILS_LIB}")
+    endif()
+
 else()
     message(STATUS "Aocl-Utils directory not found, cloning repository...")
 
-    # Clone aocl-utils with specific tag
-    execute_process(COMMAND git clone --branch "${${PROJECT_PREFIX}_AU_GIT_TAG}" https://github.com/amd/aocl-utils.git ${AU_SOURCE_DIR})
+    # Validate git tag variable
+    if(NOT DEFINED ${PROJECT_PREFIX}_AU_GIT_TAG)
+        message(FATAL_ERROR "${${PROJECT_PREFIX}_AU_GIT_TAG} must be defined")
+    endif()
 
-    # Build aocl-utils with specified options
-    execute_process(COMMAND ${CMAKE_COMMAND} -G${CMAKE_GENERATOR} -S ${AU_SOURCE_DIR} -B ${AU_BINARY_DIR}
-                             -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-                             -DCMAKE_BUILD_TYPE=Release
-                             -DAU_BUILD_SHARED_LIBS=${AU_SHARED}
-                             -DAU_BUILD_STATIC_LIBS=${AU_STATIC}
-                             -DAU_CMAKE_VERBOSE=OFF
-                             -DAU_BUILD_TESTS=OFF
-                             -DAU_BUILD_EXAMPLES=OFF
-                    RESULTS_VARIABLE  result_au
-                    WORKING_DIRECTORY ${AU_SOURCE_DIR}
+    # Clone aocl-utils with specific tag
+    execute_process(COMMAND git clone --branch "${${PROJECT_PREFIX}_AU_GIT_TAG}" "${${PROJECT_PREFIX}_AU_GIT_REPO_URL}" "${AU_SOURCE_DIR}"
+                    RESULT_VARIABLE clone_result
+                    OUTPUT_VARIABLE clone_output
+                    ERROR_VARIABLE clone_error
     )
-    execute_process(COMMAND ${CMAKE_COMMAND} --build ${AU_BINARY_DIR} --config Release
-                    OUTPUT_VARIABLE   output_au
-                    WORKING_DIRECTORY ${AU_SOURCE_DIR}
-    )
+
+    if(NOT clone_result EQUAL 0)
+        message(FATAL_ERROR "Failed to clone aocl-utils repository:\n${clone_error}")
+    endif()
+
+    message(STATUS "Successfully cloned aocl-utils (tag: ${${PROJECT_PREFIX}_AU_GIT_TAG})")
+
+    # Build the cloned repository
+    build_aocl_utils("${AU_SOURCE_DIR}" "${AU_BINARY_DIR}")
+
+    # Verify the library was built successfully
+    library_exists("${AOCL_UTILS_LIB}" "${AU_BINARY_DIR}/Library/Cpuid" AOCL_UTILS_LIB_BUILT)
+    if(NOT AOCL_UTILS_LIB_BUILT)
+        message(FATAL_ERROR "Failed to build aocl-utils library after cloning: ${AOCL_UTILS_LIB}")
+    endif()
+
 endif()
 
 # Set additional AOCL utils paths and library names
@@ -125,3 +179,4 @@ set(AOCL_UTILS_INCLUDE_DIR  ${AU_SOURCE_DIR}/SDK/Bcl
                             ${AU_SOURCE_DIR}/SDK/Include
                             ${AU_BINARY_DIR}/generated)
 set(AOCL_UTILS_PATH         ${AU_BINARY_DIR}/Library/Cpuid)
+

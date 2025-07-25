@@ -28,13 +28,13 @@
 cmake_minimum_required(VERSION 3.22)
 project(mparith LANGUAGES C CXX)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}")
 include(mpfr)
 
 # Define build directories
-set(MPFR_SRC_DIR        ${CMAKE_CURRENT_SOURCE_DIR})
+set(MPFR_SRC_DIR        ${PROJECT_SOURCE_DIR})
 set(MPARITH_INC_DIR     ${MPFR_SRC_DIR} ${MPFR_INCLUDE_DIR} ${MPC_INCLUDE_DIR} ${GMP_INCLUDE_DIR})
-set(MPARITH_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs" CACHE PATH "Installation directory for mparith")
+set(MPARITH_DIR         "${CMAKE_CURRENT_SOURCE_DIR}/libs" CACHE PATH "Installation directory for mparith")
 
 # Installation directories
 set(MPARITH_LIB_DIR     ${MPARITH_DIR}/lib)

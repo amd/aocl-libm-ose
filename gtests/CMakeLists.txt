@@ -28,8 +28,8 @@
 cmake_minimum_required(VERSION ${CMAKE_MIN_REQ_VERSION})
 project(gtest-testsuite-libm LANGUAGES C CXX)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/gapi")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/libs/mparith")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/gapi")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/libs/mparith")
 
 # Define prototypes
 set(PROTOTYPE_GLIBC 0xf1)
@@ -52,31 +52,32 @@ set(GTEST_LIBS   "${GTEST_PATH}" "${GBENCH_PATH}")
 
 # Get common test sources excluding the excluded list
 file(GLOB COMMON_SRCS
-    ${CMAKE_CURRENT_SOURCE_DIR}/almtesttype.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/filter.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/func_var_existence.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/gbench_main.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/gtest_main.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/main.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/random.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/ulp.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/verify.cc
+    ${PROJECT_SOURCE_DIR}/almtesttype.cc
+    ${PROJECT_SOURCE_DIR}/cmdline.cc
+    ${PROJECT_SOURCE_DIR}/filter.cc
+    ${PROJECT_SOURCE_DIR}/func_var_existence.cc
+    ${PROJECT_SOURCE_DIR}/gbench_main.cc
+    ${PROJECT_SOURCE_DIR}/gtest_main.cc
+    ${PROJECT_SOURCE_DIR}/main.cc
+    ${PROJECT_SOURCE_DIR}/random.cc
+    ${PROJECT_SOURCE_DIR}/ulp.cc
+    ${PROJECT_SOURCE_DIR}/verify.cc
 )
 
 set(VR_SRC_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Gtest_srcs/gtest_accu.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/Gtest_srcs/gbench_perf.cc
+    ${PROJECT_SOURCE_DIR}/Gtest_srcs/gtest_accu.cc
+    ${PROJECT_SOURCE_DIR}/Gtest_srcs/gbench_perf.cc
 )
 
 set(VRA_SRC_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Gtest_srcs/gbench_main_vec_arr.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/Gtest_srcs/gtest_main_vec_arr.cc
+    ${PROJECT_SOURCE_DIR}/Gtest_srcs/gbench_main_vec_arr.cc
+    ${PROJECT_SOURCE_DIR}/Gtest_srcs/gtest_main_vec_arr.cc
 )
 
 # Compiler flags
 if(NOT WIN32)
     set(TEST_CFLAGS "-std=c++17")
+    list(APPEND TEST_CFLAGS "-O0")
     list(APPEND TEST_CFLAGS "-funsigned-char" )
     list(APPEND TEST_CFLAGS "-fno-strict-aliasing")
     list(APPEND TEST_CFLAGS "-fstack-protector-all")
@@ -93,6 +94,7 @@ if(NOT WIN32)
     endif()
 else()
     set(TEST_CFLAGS "-std:c++17")
+    list(APPEND TEST_CFLAGS "-O0")
     list(APPEND TEST_CFLAGS "-bigobj")
     list(APPEND TEST_CFLAGS "/W4")
     list(APPEND TEST_CFLAGS "-march=native")
@@ -190,10 +192,10 @@ if (${${PROJECT_PREFIX}_LIBM_ENABLE_ASAN})
 endif()
 
 # Include and library paths
-include_directories(${CMAKE_SOURCE_DIR}/include
-                    ${CMAKE_CURRENT_SOURCE_DIR}
-                    ${CMAKE_CURRENT_SOURCE_DIR}/include
-                    ${CMAKE_CURRENT_SOURCE_DIR}/include/almtest
+include_directories(${ALM_INCLUDE_DIR}
+                    ${PROJECT_SOURCE_DIR}
+                    ${PROJECT_SOURCE_DIR}/include
+                    ${PROJECT_SOURCE_DIR}/include/almtest
                     ${MPARITH_INCLUDE_DIR}
                     ${GTEST_INCLUDE_DIR}
                     ${GBENCH_INCLUDE_DIR})
@@ -215,8 +217,15 @@ elseif(LIBABI STREQUAL "glibc")
     list(APPEND LIBS "mvec")
 elseif(LIBABI STREQUAL "svml")
     add_definitions(-DLIBM_PROTOTYPE=${PROTOTYPE_SVML})
-    include_directories(${INTEL_LIB_PATH}/include)
-    link_directories(${INTEL_LIB_PATH}/lib)
+
+    if(DEFINED ENV{INTEL_PATH})
+        include_directories($ENV{INTEL_PATH}/include)
+        link_directories($ENV{INTEL_PATH}/lib)
+    else()
+        message(WARNING "Environment variable INTEL_PATH is not set.")
+	message(WARNING "export INTEL_PATH=path_to_mkl.")
+    endif()
+
     list(APPEND LIBS "mkl_intel_lp64" "mkl_core")
     if(NOT WIN32)
         list(APPEND LIBS "svml" "irc" "intlc" "mkl_gnu_thread")
@@ -255,7 +264,7 @@ add_library(gtest_vra OBJECT ${VRA_SRC_FILES})
 target_compile_options(gtest_vra PUBLIC ${TEST_CFLAGS})
 
 # Add test executables
-file(GLOB TEST_DIRS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*")
+file(GLOB TEST_DIRS RELATIVE ${PROJECT_SOURCE_DIR} "*")
 list(REMOVE_ITEM TEST_DIRS "include" "gapi" "libs")
 add_custom_target(common_target ALL DEPENDS common)
 set(TEST_DIRS "exp" "cos")

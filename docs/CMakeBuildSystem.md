@@ -64,17 +64,17 @@ $ cmake --build --preset dev-release-gcc -v
 ## Testing the Library
   To build all the apis present in gtests using a preset, run:
 ```console
-$ cmake --build --preset dev-win-release-llvm --target gtests
+$ cmake --build --preset dev-release-gcc --target gtests
 ```
 
 To build single api present in gtests using a preset, run:
 ```console
-$ cmake --build --preset dev-win-release-llvm --target test_exp
+$ cmake --build --preset dev-release-gcc --target test_exp
 ```
 
 ## To Clean build files
 ```console
-$ cmake --build --preset dev-win-release-llvm --target clean
+$ cmake --build --preset dev-release-gcc --target clean
 ```
 
 # Configure CMake for STATIC_DISPATCH

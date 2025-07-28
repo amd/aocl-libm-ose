@@ -29,7 +29,7 @@
 # Enable cmake minmum version
 #------------------------------
 
-set(CMAKE_MIN_REQ_VERSION 3.22)
+set(CMAKE_MIN_REQ_VERSION 3.26)
 cmake_minimum_required(VERSION ${CMAKE_MIN_REQ_VERSION})
 message(STATUS "CMAKE VERSION:${CMAKE_VERSION} (MIN REQUIRED: ${CMAKE_MINIMUM_REQUIRED_VERSION})")
 
@@ -68,7 +68,11 @@ message(DEBUG "Project Prefix " "${PROJECT_PREFIX}")
 #       ${PROJECT_PREFIX_VERSON_SUFFIX_EXTRA}
 #------------------------------
 include(Cct_Version)
-file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/src/version.txt"  ${PROJECT_PREFIX}_VERSION_FROM_FILE)
+include(Cct_Libraryversion)
+
+# Extract version from alm_version.h instead of version.txt
+extract_alm_version_from_header("${CMAKE_CURRENT_SOURCE_DIR}/src/alm_version.h" ${PROJECT_PREFIX}_VERSION_FROM_FILE)
+
 cct_extract_version_details(
         "${PROJECT_PREFIX}_VERSION"
         "${${PROJECT_PREFIX}_VERSION_FROM_FILE}")
@@ -87,7 +91,7 @@ message(DEBUG "Project with name \"${PROJECT_PREFIX}\" with version ${${PROJECT_
 
 #Include GNUInstallDirs for standard install directories
 if(LINUX)
-  include(GNUInstallDirs)
+    include(GNUInstallDirs)
 endif()
 
 if (NOT DEFINED ${${PROJECT_PREFIX}_GENERATED})
@@ -134,18 +138,18 @@ if(DEFINED ALM_STATIC_DISPATCH)
   endif()
 endif()
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/=.")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/=.")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=.")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=.")
 
 #------------------------------
 # AOCL_Utils CPUID_library requirements
 #------------------------------
 # Check if the necessary includes and libraries are present before including Cct_Libaoclutils
 if (NOT (EXISTS "${AOCL_UTILS_INCLUDE_DIR}" AND EXISTS "${AOCL_UTILS_LIB}"))
-  include(Cct_Libaoclutils)
-  link_directories(${AOCL_UTILS_PATH})
-  set(CMAKE_SKIP_RPATH TRUE)
-  set(CMAKE_SKIP_INSTALL_RPATH TRUE)
+    include(Cct_Libaoclutils)
+    link_directories(${AOCL_UTILS_PATH})
+    set(CMAKE_SKIP_RPATH TRUE)
+    set(CMAKE_SKIP_INSTALL_RPATH TRUE)
 endif()
 
 #------------------------------
@@ -185,9 +189,9 @@ else()
 endif()
 
 if(WIN32)
-  set(CONFIG_OS_IS_WINDOWS  1)
+    set(CONFIG_OS_IS_WINDOWS  1)
 else()
-  set(CONFIG_OS_IS_LINUX    1)
+    set(CONFIG_OS_IS_LINUX    1)
 endif()
 
 #------------------------------------
@@ -202,7 +206,7 @@ configure_file("${PROJECT_SOURCE_DIR}/CMake/Config.hh.in"
 # Generate Version.hh from Version.hh.in
 #------------------------------
 if (NOT DEFINED ${PROJECT_PREFIX}_VERSION_OUTPUT_FILE)
-  set(${PROJECT_PREFIX}_VERSION_OUTPUT_FILE ${${PROJECT_PREFIX}_GENERATED}/Version.hh)
+    set(${PROJECT_PREFIX}_VERSION_OUTPUT_FILE ${${PROJECT_PREFIX}_GENERATED}/Version.hh)
 endif()
 configure_file("${PROJECT_SOURCE_DIR}/CMake/Version.hh.in"
                 "${${PROJECT_PREFIX}_VERSION_OUTPUT_FILE}"
@@ -218,16 +222,19 @@ cct_display_banner()
 # Add Source Directory
 #------------------------------
 if(${${PROJECT_PREFIX}_LIBM_BUILD_LIBRARY})
-  set(ALM_PATH     "${CMAKE_BINARY_DIR}/src")
-  add_subdirectory(src)
-  add_custom_target(src_target DEPENDS au_cpuid_target)
-  link_directories(${ALM_PATH})
+    add_subdirectory(src)
+
+    set(ALM_PATH        "${CMAKE_BINARY_DIR}/src")
+    set(ALM_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
+    if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+        set(ALM_PATH        "${${PROJECT_PREFIX}_INSTALL_DIR}/lib")
+    endif()
 endif()
 
 if(WIN32)
-  set(REMOVE_COMMAND "del")
+    set(REMOVE_COMMAND "del")
 else()
-  set(REMOVE_COMMAND "rm")
+    set(REMOVE_COMMAND "rm")
 endif()
 
 
@@ -237,20 +244,20 @@ endif()
 # Unit tests are expected to be in respective source folder
 #------------------------------
 if (${${PROJECT_PREFIX}_LIBM_BUILD_TESTS})
-  enable_testing()
-  add_subdirectory(gtests EXCLUDE_FROM_ALL)
+    enable_testing()
+    add_subdirectory(gtests EXCLUDE_FROM_ALL)
 endif()
 
 if(WIN32)
-  set(REMOVE_COMMAND "del")
+    set(REMOVE_COMMAND "del")
 else()
-  set(REMOVE_COMMAND "rm")
+    set(REMOVE_COMMAND "rm")
 endif()
 
 add_custom_target(distclean
-  COMMAND ${CMAKE_MAKE_PROGRAM} clean
-  COMMAND ${REMOVE_COMMAND} ${PROJECT_SOURCE_DIR}/src/buildsysinfo.h
-  COMMAND ${REMOVE_COMMAND} ${PROJECT_SOURCE_DIR}/src/version.build.h
-  WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-  COMMENT "Remove cmake_generated files and directories"
+    COMMAND ${CMAKE_MAKE_PROGRAM} clean
+    COMMAND ${REMOVE_COMMAND} ${PROJECT_SOURCE_DIR}/src/buildsysinfo.h
+    COMMAND ${REMOVE_COMMAND} ${PROJECT_SOURCE_DIR}/src/version.build.h
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+    COMMENT "Remove cmake_generated files and directories"
 )

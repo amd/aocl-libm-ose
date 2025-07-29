@@ -74,7 +74,7 @@ test_cosf_conformance_data[] = {
     {0x42FCE5F1, 0x3F3504F3,0},  //126.449104
     //Special case for verified the ulps
     {0xd0a3e87f, 0xb10a4ed8, 0},   //-2.19993846E+10, close to pi/2
-    // newlly added 
+    // newly added
     {0xbfc90fdb, 0xb33bbd2e, 0}, // Cos(-1.5708 = +3pi/2)=-4.371139e-008
     {0x4096cbe4, 0x324cde2e, 0}, // Cos(4.71239  = -pi/2)=1.192488e-008
     {0xc096cbe4, 0x324cde2e, 0}, // Cos(-4.71239 = -3pi/2)=1.192488e-008

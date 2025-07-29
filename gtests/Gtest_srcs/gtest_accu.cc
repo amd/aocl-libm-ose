@@ -346,7 +346,7 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_8DOUBLES) {
 TEST_P(SpecTestFixtureFloat, CONFORMANCE_FLOAT) {
   int nfail = 0;
   float aop, op;
-  float ip[2];
+  float ip[6];
   test_data t;
   t.ip  = (void *)data;
   t.op  = (void *)&aop;

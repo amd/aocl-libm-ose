@@ -396,6 +396,7 @@ void FN_PROTOTYPE(vrda_cosh)(int n, double *x, double *y);
 
 __m128d FN_PROTOTYPE(vrd2_acos)(__m128d x);
 __m256d FN_PROTOTYPE(vrd4_acos)(__m256d x);
+void FN_PROTOTYPE(vrda_acos)(int n, double *x, double *y);
 
 #ifdef __cplusplus
 }

@@ -311,3 +311,4 @@ EXPORTS
     amd_vrda_cosh
     amd_vrd2_acos
     amd_vrd4_acos
+    amd_vrda_acos

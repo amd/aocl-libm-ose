@@ -445,6 +445,7 @@ LIBM_DECL_FN_MAP(vrs16_sincosf);
 
 LIBM_DECL_FN_MAP(vrd2_acos);
 LIBM_DECL_FN_MAP(vrd4_acos);
+LIBM_DECL_FN_MAP(vrda_acos);
 
 /*
  * WEAK_LIBM_ALIAS is used to map "amd_<func_name>" to "<func_name>".
@@ -857,3 +858,4 @@ WEAK_LIBM_ALIAS(__vrs4_powf, FN_PROTOTYPE(vrs4_powf));
 
 WEAK_LIBM_ALIAS(__vrd2_acos, FN_PROTOTYPE(vrd2_acos));
 WEAK_LIBM_ALIAS(__vrd4_acos, FN_PROTOTYPE(vrd4_acos));
+WEAK_LIBM_ALIAS(__vrda_acos, FN_PROTOTYPE(vrda_acos));

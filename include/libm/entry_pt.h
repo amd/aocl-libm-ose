@@ -393,4 +393,6 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd2_acos);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_acos);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_acos);
 
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd2_asin);
+
 #endif	/* __AMD_LIBM_ENTRY_PT_PTR_H__ */

@@ -393,6 +393,8 @@ alm_func_t        G_ENTRY_PT_PTR(vrd2_acos);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_acos);
 alm_func_t        G_ENTRY_PT_PTR(vrda_acos);
 
+alm_func_t        G_ENTRY_PT_PTR(vrd2_asin);
+
 #ifdef __cplusplus
 }
 #endif

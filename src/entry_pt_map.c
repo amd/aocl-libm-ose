@@ -448,6 +448,8 @@ LIBM_DECL_FN_MAP(vrd2_acos);
 LIBM_DECL_FN_MAP(vrd4_acos);
 LIBM_DECL_FN_MAP(vrda_acos);
 
+LIBM_DECL_FN_MAP(vrd2_asin);
+
 /*
  * WEAK_LIBM_ALIAS is used to map "amd_<func_name>" to "<func_name>".
  * This will enable applications to call AOCL-Libm functions directly without using the "amd_" prefix.
@@ -831,6 +833,8 @@ WEAK_LIBM_ALIAS(vrs16_sincosf, FN_PROTOTYPE(vrs16_sincosf));
 WEAK_LIBM_ALIAS(vrd2_acos, FN_PROTOTYPE(vrd2_acos));
 WEAK_LIBM_ALIAS(vrd4_acos, FN_PROTOTYPE(vrd4_acos));
 WEAK_LIBM_ALIAS(vrda_acos, FN_PROTOTYPE(vrda_acos));
+
+WEAK_LIBM_ALIAS(vrd2_asin, FN_PROTOTYPE(vrd2_asin));
 /*
  * SWLCSG-2283 & CPUPL-4422 - Weak Aliases with "__" prefix in order
  * to support GLIBC's "-mveclibabi=acml" option.

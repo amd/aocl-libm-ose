@@ -160,7 +160,9 @@ agreements with respect to the subject matter of this Agreement.
 #include <emmintrin.h>
 #include <immintrin.h>
 #if defined(_WIN64) || defined(_WIN32)
-    #include <avx512fintrin.h>
+    #if defined(__AVX512F__)
+        #include <avx512fintrin.h>
+    #endif
 #endif
 #ifndef AMD_LIBM_VEC_EXTERNAL_H
 #define AMD_LIBM_VEC_EXTERNAL_H
@@ -380,7 +382,7 @@ extern "C" {
     void amd_vrsa_tanf            (int len, float  *src, float  *dst);
     void amd_vrda_atan            (int len, double  *src, double  *dst);
     void amd_vrda_erf             (int len, double  *src, double  *dst);
-    void amd_vrda_tan             (int len, double  *src, double  *dst);    
+    void amd_vrda_tan             (int len, double  *src, double  *dst);
     void amd_vrda_cosh            (int len, double  *src, double  *dst);
 
     __m128d amd_vrd2_acos    (__m128d x);

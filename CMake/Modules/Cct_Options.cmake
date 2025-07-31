@@ -29,3 +29,7 @@
 option(BUILD_SHARED_LIBS "Build shared libraries." ON)
 option(BUILD_STATIC_LIBS "Build static libraries." ON)
 option(LIBM_BUILD_TESTS "Enable the tests." ON)
+option(LIBM_ENABLE_AVX512 "Enable AVX-512 support." ON)
+option(LIBM_BUILD_EXAMPLES "Enable the examples." OFF)
+option(LIBM_ENABLE_ASAN "Enable AddressSanitizer." OFF)
+option(LIBM_ENABLE_COVERAGE "Enable code coverage." OFF)

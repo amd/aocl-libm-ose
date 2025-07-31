@@ -110,12 +110,81 @@ else()
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
-# Architecture-specific settings
-if(ARCH_CONFIG STREQUAL "avx512")
-    list(APPEND TEST_CFLAGS "-mavx512f -D__AVX512__")
+# =============================================================================
+# AVX-512 Detection and Configuration
+# =============================================================================
+# Function to check AVX-512 support
+function(check_avx512_support)
+    message(STATUS "Checking for AVX-512 support...")
+
+    # Set appropriate flags based on compiler
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        set(AVX512_TEST_FLAGS "/arch:AVX512")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        set(AVX512_TEST_FLAGS "-march=znver5")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        set(AVX512_TEST_FLAGS "-march=znver5")
+    endif()
+
+    # Create a test file for AVX-512 compilation
+    file(WRITE ${PROJECT_BINARY_DIR}/avx512.cpp
+    "#include <immintrin.h>
+    int main() {
+        __m512 a = _mm512_set1_ps(1.0f);
+        __m512 b = _mm512_set1_ps(2.0f);
+        __m512 c = _mm512_add_ps(a, b);
+        return 0;
+    }")
+
+    # Try to compile a simple AVX-512 test
+    try_compile(HAVE_AVX512_COMPILE
+        ${PROJECT_BINARY_DIR}/avx512_test
+        ${PROJECT_BINARY_DIR}/avx512.cpp
+        COMPILE_DEFINITIONS ${AVX512_TEST_FLAGS}
+        OUTPUT_VARIABLE AVX512_COMPILE_OUTPUT
+    )
+
+    if(HAVE_AVX512_COMPILE)
+        message(STATUS "AVX-512 compilation test: PASSED")
+        set(AVX512_SUPPORTED TRUE PARENT_SCOPE)
+    else()
+        message(STATUS "AVX-512 compilation test: FAILED")
+        set(AVX512_SUPPORTED FALSE PARENT_SCOPE)
+    endif()
+
+    file(REMOVE ${PROJECT_BINARY_DIR}/avx512.cpp)
+    file(REMOVE_RECURSE ${PROJECT_BINARY_DIR}/avx512_test)
+endfunction()
+
+# Check AVX-512 support if enabled
+if (${${PROJECT_PREFIX}_LIBM_ENABLE_AVX512})
+    check_avx512_support()
+
+    if(AVX512_SUPPORTED)
+        message(STATUS "AVX-512 support enabled and available")
+
+        # Add AVX-512 compile flags
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+            list(APPEND TEST_CFLAGS "/arch:AVX512" "-D__AVX512__")
+        elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+            list(APPEND TEST_CFLAGS "-mavx512f" "-D__AVX512__")
+        elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+            list(APPEND TEST_CFLAGS "-mavx512f" "-D__AVX512__")
+        endif()
+
+        set(AVX512_ENABLED TRUE)
+    else()
+        message(STATUS "AVX-512 support is not available on target cpu")
+        set(AVX512_ENABLED FALSE)
+    endif()
+else()
+    message(STATUS "AVX-512 support disabled (use -DLIBM_ENABLE_AVX512=ON to enable)")
+    set(AVX512_ENABLED FALSE)
 endif()
 
-# Address sanitizer usage
+# =============================================================================
+
+# Address sanitizer support
 if (${${PROJECT_PREFIX}_LIBM_ENABLE_ASAN})
     list(APPEND TEST_CFLAGS "-fsanitize=address")
 endif()

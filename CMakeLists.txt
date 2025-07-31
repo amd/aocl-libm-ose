@@ -223,7 +223,6 @@ cct_display_banner()
 #------------------------------
 if(${${PROJECT_PREFIX}_LIBM_BUILD_LIBRARY})
     add_subdirectory(src)
-
     set(ALM_PATH        "${CMAKE_BINARY_DIR}/src")
     set(ALM_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
     if(${CMAKE_BUILD_TYPE} STREQUAL "Release")

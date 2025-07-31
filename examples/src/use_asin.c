@@ -93,10 +93,10 @@ void asin_vector_single_precision_8()
 
 void asin_vector_double_precision_2()
 {
-    #if 0
+
     printf("Using Vector double precision - 2 doubles (vrd2) asin()\n");
     __m128d input, result;
-    double  input_array_vrd2[2] = {34.65, 67.89};
+    double  input_array_vrd2[2] = {0.34, -0.67};
     double  output_array[2];
 
     input = _mm_loadu_pd(input_array_vrd2);
@@ -107,7 +107,7 @@ void asin_vector_double_precision_2()
             input_array_vrd2[0], input_array_vrd2[1],
             output_array[0], output_array[1]);
     printf("----------\n");
-    #endif
+
 }
 
 void asin_vector_double_precision_4()

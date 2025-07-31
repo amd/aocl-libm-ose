@@ -389,6 +389,8 @@ extern "C" {
     __m256d amd_vrd4_acos    (__m256d x);
 
     void amd_vrda_acos       (int len, double  *src, double  *dst);
+
+    __m128d amd_vrd2_asin    (__m128d x);
 /* AVX512 variants */
 #if defined(__AVX512F__)
 

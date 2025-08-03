@@ -149,7 +149,7 @@ int test_v2d(test_data *data, int idx)  {
 
 int test_v4s(test_data *data, int idx)  {
 /* glibc has no vector asinf variants */
-#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML || LIBM_PROTOTYPE == PROTOTYPE_MSVC)
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m128 ip4 = _mm_set_ps(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
@@ -164,11 +164,15 @@ int test_v4s(test_data *data, int idx)  {
 }
 
 int test_v4d(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
-  __m256d op4 = LIBM_FUNC_VEC(d, 4, asin)(ip4);
+    #if (LIBM_PROTOTYPE == PROTOTYPE_MSVC)
+    __m256d op4 = LIBM_FUNC_VEC(d, 4, ASin)(ip4);
+  #else
+    __m256d op4 = LIBM_FUNC_VEC(d, 4, asin)(ip4);
+  #endif
   _mm256_store_pd(&op[0], op4);
 #endif
   return 0;

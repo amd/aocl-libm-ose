@@ -157,10 +157,9 @@ void asin_single_precision_array()
 
 void asin_double_precision_array()
 {
-    #if 0
     printf("Using Double Precision Vectory Array (vrda) asin()\n");
     int n=8;
-    double input[10] = {10.0, 8.0, 4.0, 2.0, 6.0, 12.0, 14.0, 1.0, 3.0, 5.0};
+    double input[10] = {-1.0, -0.75, -0.4, -0.1, 0.0, 0.15, 0.4, 0.75, 0.85, 1.0};
     double output[10] = {0};
 
     amd_vrda_asin(n, input, output);
@@ -177,7 +176,7 @@ void asin_double_precision_array()
     }
     printf("}\n");
     printf("----------\n");
-    #endif
+
 }
 
 int use_asin()

@@ -450,6 +450,7 @@ LIBM_DECL_FN_MAP(vrda_acos);
 
 LIBM_DECL_FN_MAP(vrd2_asin);
 LIBM_DECL_FN_MAP(vrd4_asin);
+LIBM_DECL_FN_MAP(vrda_asin);
 
 /*
  * WEAK_LIBM_ALIAS is used to map "amd_<func_name>" to "<func_name>".
@@ -837,6 +838,7 @@ WEAK_LIBM_ALIAS(vrda_acos, FN_PROTOTYPE(vrda_acos));
 
 WEAK_LIBM_ALIAS(vrd2_asin, FN_PROTOTYPE(vrd2_asin));
 WEAK_LIBM_ALIAS(vrd4_asin, FN_PROTOTYPE(vrd4_asin));
+WEAK_LIBM_ALIAS(vrda_asin, FN_PROTOTYPE(vrda_asin));
 /*
  * SWLCSG-2283 & CPUPL-4422 - Weak Aliases with "__" prefix in order
  * to support GLIBC's "-mveclibabi=acml" option.

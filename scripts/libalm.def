@@ -315,3 +315,4 @@ EXPORTS
     amd_vrda_acos
     amd_vrd2_asin
     amd_vrd4_asin
+    amd_vrda_asin

@@ -401,6 +401,7 @@ __m256d FN_PROTOTYPE(vrd4_acos)(__m256d x);
 void FN_PROTOTYPE(vrda_acos)(int n, double *x, double *y);
 
 __m128d FN_PROTOTYPE(vrd2_asin)(__m128d x);
+__m256d FN_PROTOTYPE(vrd4_asin)(__m256d x);
 
 #ifdef __cplusplus
 }

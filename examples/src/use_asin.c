@@ -112,7 +112,7 @@ void asin_vector_double_precision_2()
 
 void asin_vector_double_precision_4()
 {
-    #if 0
+
     printf("Using Vector double precision - 4 doubles (vrd4) asin()\n");
     __m256d input, result;
     double input_array_vrd4[4] = {2.3, 4.5, 56.5, 43.4};
@@ -126,7 +126,7 @@ void asin_vector_double_precision_4()
             input_array_vrd4[0], input_array_vrd4[1], input_array_vrd4[2], input_array_vrd4[3],
             output_array_vrd4[0], output_array_vrd4[1], output_array_vrd4[2],output_array_vrd4[3]);
     printf("----------\n");
-    #endif
+
 }
 
 /**********************************************

@@ -45,7 +45,7 @@ static map<string, vector<string>> libm_funcs = {
     // { func,   { supported variants} }
     {"acos",      {"s1d", "s1f", "vrd2", "vrd4", "vrs4", "vrs8", "vrs16", "vrsa", "vrda"}},
     {"acosh",     {"s1d", "s1f"}},
-    {"asin",      {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrsa"}},
+    {"asin",      {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrsa", "vrda"}},
     {"asinh",     {"s1d", "s1f"}},
     {"atan",      {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrsa", "vrda"}},
     {"atan2",     {"s1d", "s1f"}},

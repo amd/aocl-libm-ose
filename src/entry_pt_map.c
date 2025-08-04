@@ -828,6 +828,9 @@ WEAK_LIBM_ALIAS(vrs16_sqrtf, FN_PROTOTYPE(vrs16_sqrtf));
 WEAK_LIBM_ALIAS(vrs16_linearfracf, FN_PROTOTYPE(vrs16_linearfracf));
 WEAK_LIBM_ALIAS(vrs16_sincosf, FN_PROTOTYPE(vrs16_sincosf));
 
+WEAK_LIBM_ALIAS(vrd2_acos, FN_PROTOTYPE(vrd2_acos));
+WEAK_LIBM_ALIAS(vrd4_acos, FN_PROTOTYPE(vrd4_acos));
+WEAK_LIBM_ALIAS(vrda_acos, FN_PROTOTYPE(vrda_acos));
 /*
  * SWLCSG-2283 & CPUPL-4422 - Weak Aliases with "__" prefix in order
  * to support GLIBC's "-mveclibabi=acml" option.
@@ -856,7 +859,3 @@ WEAK_LIBM_ALIAS(__vrs4_log2f, FN_PROTOTYPE(vrs4_log2f));
 WEAK_LIBM_ALIAS(__vrs4_log10f, FN_PROTOTYPE(vrs4_log10f));
 
 WEAK_LIBM_ALIAS(__vrs4_powf, FN_PROTOTYPE(vrs4_powf));
-
-WEAK_LIBM_ALIAS(__vrd2_acos, FN_PROTOTYPE(vrd2_acos));
-WEAK_LIBM_ALIAS(__vrd4_acos, FN_PROTOTYPE(vrd4_acos));
-WEAK_LIBM_ALIAS(__vrda_acos, FN_PROTOTYPE(vrda_acos));

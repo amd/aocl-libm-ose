@@ -49,11 +49,9 @@ endfunction()
 function(build_aocl_utils source_dir binary_dir)
     message(STATUS "Building aocl-utils from: ${source_dir}")
 
-    # Configure the build
-    execute_process(COMMAND ${CMAKE_COMMAND}
-                            -G "${CMAKE_GENERATOR}"
-                            -S "${source_dir}"
-                            -B "${binary_dir}"
+    # Configure aocl-utils
+    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" -S "${source_dir}" -B "${binary_dir}"
+                            -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
                             -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
                             -DCMAKE_BUILD_TYPE=Release
                             -DAU_BUILD_SHARED_LIBS=${AU_SHARED}

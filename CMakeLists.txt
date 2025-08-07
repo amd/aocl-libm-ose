@@ -84,15 +84,12 @@ set(${PROJECT_PREFIX}_VERSION       "${${PROJECT_PREFIX}_VERSION_MAJOR}.${${PROJ
 project("${PROJECT_PREFIX}-${PROJECT_NAME}"
    VERSION        "${${PROJECT_PREFIX}_VERSION}"
    DESCRIPTION    "${${PROJECT_PREFIX}_DESCRIPTION}"
-   HOMEPAGE_URL   "https://aocl.amd.com"
    LANGUAGES      C CXX ASM)
 
 message(DEBUG "Project with name \"${PROJECT_PREFIX}\" with version ${${PROJECT_PREFIX}_VERSION} registered")
 
 #Include GNUInstallDirs for standard install directories
-if(LINUX)
-    include(GNUInstallDirs)
-endif()
+include(GNUInstallDirs)
 
 if (NOT DEFINED ${${PROJECT_PREFIX}_GENERATED})
     set(${PROJECT_PREFIX}_GENERATED "${PROJECT_BINARY_DIR}/generated")
@@ -138,8 +135,10 @@ if(DEFINED ALM_STATIC_DISPATCH)
   endif()
 endif()
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=.")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=.")
+if(LINUX)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=.")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=.")
+endif()
 
 #------------------------------
 # AOCL_Utils CPUID_library requirements
@@ -229,13 +228,6 @@ if(${${PROJECT_PREFIX}_LIBM_BUILD_LIBRARY})
         set(ALM_PATH        "${${PROJECT_PREFIX}_INSTALL_DIR}/lib")
     endif()
 endif()
-
-if(WIN32)
-    set(REMOVE_COMMAND "del")
-else()
-    set(REMOVE_COMMAND "rm")
-endif()
-
 
 #------------------------------
 # Add Tests if ENABLE_TESTS is defined

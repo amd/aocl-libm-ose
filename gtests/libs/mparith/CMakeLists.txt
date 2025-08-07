@@ -25,7 +25,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.26)
 project(mparith LANGUAGES C CXX)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}")
@@ -132,7 +132,7 @@ if(MPARITH_SHARED_LIBS)
   target_link_directories(mparith PRIVATE ${MPARITH_DEPS_LIBS_DIRS})
   target_include_directories(mparith PRIVATE ${MPARITH_INC_DIR})
   set_target_properties(mparith PROPERTIES PRIVATE_HEADER "${MPARITH_HEADER}")
-  set_target_properties(mparith PROPERTIES OUTPUT_NAME mparith)
+  set_target_properties(mparith PROPERTIES OUTPUT_NAME ${LIBMPARITH})
 
   add_custom_command(TARGET mparith POST_BUILD
                      COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:mparith> ${MPARITH_LIB_DIR}/$<TARGET_FILE_NAME:mparith>)

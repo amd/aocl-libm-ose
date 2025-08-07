@@ -81,6 +81,7 @@ else()
     # Execute a custom command during configuration time
     execute_process(COMMAND ${CMAKE_COMMAND} -G${CMAKE_GENERATOR} -S ${MPFR_SRC_DIR} -B ${MPARITH_BINARY_DIR}
                             -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+                            -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
                             -DCMAKE_BUILD_TYPE=Release
                             -DBUILD_SHARED_LIBS=${MPARITH_SHARED_LIBS}
                             -DMPARITH_DIR=${MPARITH_DIR}

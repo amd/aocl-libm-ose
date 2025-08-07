@@ -1,174 +1,164 @@
-# CMake to build AOCL-LIBM library
+### Building AOCL-LIBM with CMake
 
-# Requirements
-  cmake version greater than 3.22(supports cmake presets)
+This guide provides instructions for building the AOCL-LIBM library using CMake on both Linux and Windows.
 
-# Limitation for this Release
-  CMake for aocl-libm on Linux: Supported to build only libraries.
-  CMake is fetching aocl-utils from an external GitHub repository: https://github.com/amd/aocl-utils.git.
+**Requirements:**
+  * CMake version 3.26 or higher
+  * GCC version   > 9.2 and < 14.1.0
+  * Clang version > 9.0 and < 18.1.0
+  * MPFR package: Must be installed and its path set (especially on Windows)
 
-# Steps to Build the Library on Linux
-##List CMake Configuration PresetNames
-  To list the available CMake configuration presets, run:
+
+**Note:**
+  * CMake automatically fetches aocl-utils from GitHub during configuration.
+  * On Windows, the build system uses the inbuilt Ninja tool provided by Visual Studio
+
+-----
+
+### Building on Linux 🐧
+
+#### **Step 1: List Presets**
+To view the available configuration presets, run:
 ```console
 $ cmake --list-presets
+```
+This will display a list like this:
+```
 Available configure presets:
 
-  "dev-gcc"           - Developer Config with GCC-Debug
-  "dev-clang"         - Developer Config with Clang-Debug
-  "dev-release-gcc"   - Developer Config with GCC-Release
-  "dev-release-clang" - Developer Config with Clang-Release
+  "dev-gcc"             - Developer Config with GCC-Debug
+  "dev-clang"           - Developer Config with Clang-Debug
+  "dev-release-gcc"     - Developer Config with GCC-Release
+  "dev-release-clang"   - Developer Config with Clang-Release
 ```
 
-## Configure CMake
-  To configure CMake using a preset, run:
+#### **Step 2: Configure CMake**
+To configure the project using a preset, for example, `dev-release-gcc`, run:
 ```console
 $ cmake --preset dev-release-gcc --fresh
 ```
 
-## List Build PresetNames
-  To list the available build presets, run:
-```console
-$ cmake --build --list-presets
-Available build presets:
-
-  "dev-gcc"           - Developer Build with GCC-Debug
-  "dev-clang"         - Developer Build with Clang-Debug
-  "dev-release-gcc"   - Developer Build with GCC-Release
-  "dev-release-clang" - Developer Build with Clang-Release
-```
-
-## Build the Library
-  To build the library using a preset, run:
+#### **Step 3: Build the Library**
+To build the library, use the same preset name with the `--build` command:
 ```console
 $ cmake --build --preset dev-release-gcc
 ```
 
-## Build in Parallel
-  To build the library in parallel, run:
+You can also build in **parallel** using `-j` or in **verbose mode** using `-v`:
 ```console
 $ cmake --build --preset dev-release-gcc -j
-```
-
-## Build in Verbose Mode
-  To build the library in verbose mode, run:
-```console
 $ cmake --build --preset dev-release-gcc -v
 ```
 
-## Installation
-  The CMake-built aocl-libm library is installed in the
-  build/{presetName} directory in release mode.
+#### **Step 4: Installation**
+The compiled library will be installed in the `build/{presetName}` directory.
+For the example above, this would be `build/dev-release-gcc`.
 
-
-## Testing the Library
-  To build all the apis present in gtests using a preset, run:
+#### **Step 5: Testing**
+Before running tests, you need to add the library's directory and any other dependent .so paths to `LD_LIBRARY_PATH`:
+To build all the APIs for testing, run:
 ```console
 $ cmake --build --preset dev-release-gcc --target gtests
 ```
 
-To build single api present in gtests using a preset, run:
+To build and test a **single API**, use the specific target name, for example:
 ```console
 $ cmake --build --preset dev-release-gcc --target test_exp
 ```
 
-## To Clean build files
+#### **Step 6: Clean Build Files**
+To clean all build files, run:
 ```console
 $ cmake --build --preset dev-release-gcc --target clean
 ```
 
-# Configure CMake for STATIC_DISPATCH
-Available options for ALM_STATIC_DISPATCH:
-  "AVX2"    - Code path set to ZEN2 in aocl-libm library
-  "ZEN2"    - Code path set to ZEN2 in aocl-libm library
-  "ZEN3"    - Code path set to ZEN3 in aocl-libm library
-  "ZEN4"    - Code path set to ZEN4 in aocl-libm library
-  "ZEN5"    - Code path set to ZEN5 in aocl-libm library
-  "AVX512"  - Code path set to ZEN5 in aocl-libm library
+-----
 
-  To configure CMake with a specific static dispatch option, run:
+### Static Dispatch Configuration (Linux Only)
+You can configure the library for a specific CPU architecture by setting the `ALM_STATIC_DISPATCH` option.
+
+**Available options:**
+  * `AVX2` or `ZEN2`: Code path for ZEN2
+  * `ZEN3`: Code path for ZEN3
+  * `ZEN4`: Code path for ZEN4
+  * `ZEN5` or `AVX512`: Code path for ZEN5
+
+To configure with a specific option, such as **ZEN3**, use the following command:
 ```console
 $ cmake --preset dev-release-gcc -DALM_STATIC_DISPATCH=ZEN3 --fresh
 ```
 
+-----
 
+### Building on Windows 💻
 
-# Steps to Build the Library on Windows
-## Configure Ninja on Windows
-  Open the command prompt and navigate to the aocl-libm directory.
-  Run the following command, replacing "Path_To_VisualStudio" with the actual path
-  where Visual Studio is installed:
-```console
-   "Path_To_VisualStudio\VC\Auxiliary\Build\vcvarsall.bat"  x64
-```
+#### **Step 1: Configure Ninja & MPFR**
+1.  Open a command prompt and navigate to the `aocl-libm` directory.
+2.  Run the Visual Studio `vcvarsall.bat` script.
+    Replace `"Path_To_VisualStudio"` with your actual installation path.
+    ```console
+    "Path_To_VisualStudio\VC\Auxiliary\Build\vcvarsall.bat" x64
+    ```
+3.  Set the `MPFR_PATH` environment variable:
+    ```console
+    set MPFR_PATH="C:\tools\mpfr"
+    ```
 
-## Set MPFR_PATH on Windows command prompt
-```console
-   set MPFR_PATH=path/to/mpfr
-   ex : set MPFR_PATH=C:/tools/mpfr
-```
-
-## List CMake Configuration Preset Names
-  To list the available CMake configuration presets, run:
+#### **Step 2: List Presets**
+To see the available presets for Windows, run:
 ```console
 $ cmake --list-presets
-Available configure presets:
-
-  "dev-win-llvm"         - Developer Config with LLVM-Debug
-  "dev-win-release-llvm" - Developer Config with LLVM-Release
 ```
 
-## Configure CMake
-  To configure CMake using a preset, run:
+This will display a list like this:
+```
+Available configure presets:
+
+  "dev-win-llvm"           - Developer Config with LLVM-Debug
+  "dev-win-release-llvm"   - Developer Config with LLVM-Release
+```
+
+#### **Step 3: Configure CMake**
+To configure with a preset, such as `dev-win-release-llvm`, run:
 ```console
 $ cmake --preset dev-win-release-llvm --fresh
 ```
 
-## List Build Preset Names
-  To list the available build presets, run:
-```console
-$ cmake --build --list-presets
-Available build presets:
-
-  "dev-win-llvm"         - Developer Build with LLVM-Debug
-  "dev-win-release-llvm" - Developer Build with LLVM-Release
-```
-
-## Build the Library
-  To build the library using a preset, run:
+#### **Step 4: Build the Library**
+To build the library, run:
 ```console
 $ cmake --build --preset dev-win-release-llvm
 ```
 
-## Build in Parallel
-   To build the library in parallel, run:
+You can also build in **parallel** using `-j` or in **verbose mode** using `-v`:
 ```console
 $ cmake --build --preset dev-win-release-llvm -j
-```
-
-## Build in Verbose Mode
-  To build the library in verbose mode, run:
-```console
 $ cmake --build --preset dev-win-release-llvm -v
 ```
 
-## Installation
-  The CMake-built aocl-libm library is installed in the
-  build/{presetName} directory in release mode.
+#### **Step 5: Installation**
+The library will be installed in the `build/{presetName}` directory.
+For the example above, this would be `build/dev-win-release-llvm`.
 
-## Testing the Library
-  To build all the apis present in gtests using a preset, run:
+#### **Step 6: Testing**
+Before running tests, you need to add the library's directory and any other dependent DLL
+paths to your command prompt's `PATH`:
+```console
+$ set PATH=path_to_aocl-libm_lib;%PATH%
+```
+
+To build all tests, run:
 ```console
 $ cmake --build --preset dev-win-release-llvm --target gtests
 ```
 
-To build single api present in gtests using a preset, run:
+To build and test a **single API**, such as `test_exp`, run:
 ```console
 $ cmake --build --preset dev-win-release-llvm --target test_exp
 ```
 
-## To Clean build files
+#### **Step 7: Clean Build Files**
+To clean the build files, run:
 ```console
 $ cmake --build --preset dev-win-release-llvm --target clean
 ```
-

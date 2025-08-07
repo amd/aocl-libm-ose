@@ -117,54 +117,81 @@ endif()
 # =============================================================================
 # Function to check AVX-512 support
 function(check_avx512_support)
-    message(STATUS "Checking for AVX-512 support...")
+    message(STATUS "Checking for AVX-512 hardware support...")
 
     # Set appropriate flags based on compiler
     if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         set(AVX512_TEST_FLAGS "/arch:AVX512")
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set(AVX512_TEST_FLAGS "-march=znver5")
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        set(AVX512_TEST_FLAGS "-march=znver5")
+    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+        set(AVX512_TEST_FLAGS "-mavx512f")
+    else()
+        set(AVX512_TEST_FLAGS "")
+        message(WARNING "Unknown compiler ID: ${CMAKE_CXX_COMPILER_ID}. No AVX-512 flags set.")
     endif()
 
-    # Create a test file for AVX-512 compilation
-    file(WRITE ${PROJECT_BINARY_DIR}/avx512.cpp
-    "#include <immintrin.h>
+    # Write test program to check AVX-512 support
+    file(WRITE "${PROJECT_BINARY_DIR}/avx512_test.cpp"
+    "#include <cstdio>
+    #include <cstdlib>
+
+    #if defined(_MSC_VER)
+    #include <intrin.h>
+    bool has_avx512() {
+        int cpuInfo[4];
+        __cpuid(cpuInfo, 0);
+        if (cpuInfo[0] < 7) return false;
+        __cpuid(cpuInfo, 7);
+        return (cpuInfo[1] & (1 << 16)) != 0; // Bit 16 of EBX indicates AVX-512F
+    }
+    #else
+    #include <cpuid.h>
+    bool has_avx512() {
+        unsigned eax, ebx, ecx, edx;
+        if (!__get_cpuid_max(0, nullptr) || __get_cpuid_max(0, nullptr) < 7) return false;
+        __cpuid_count(7, 0, eax, ebx, ecx, edx);
+        return (ebx & (1 << 16)) != 0; // Bit 16 of EBX indicates AVX-512F
+    }
+    #endif
+
     int main() {
-        __m512 a = _mm512_set1_ps(1.0f);
-        __m512 b = _mm512_set1_ps(2.0f);
-        __m512 c = _mm512_add_ps(a, b);
+        if (!has_avx512()) {
+            std::fprintf(stderr, \"FATAL: AVX-512 not supported on this CPU.\\n\");
+            return -1;
+        }
         return 0;
     }")
 
-    # Try to compile a simple AVX-512 test
-    try_compile(HAVE_AVX512_COMPILE
-        ${PROJECT_BINARY_DIR}/avx512_test
-        ${PROJECT_BINARY_DIR}/avx512.cpp
+    # Try to compile and run the test executable
+    try_run(AVX512_RUN_RESULT AVX512_COMPILE_RESULT
+        ${PROJECT_BINARY_DIR}/avx512_executable
+        "${PROJECT_BINARY_DIR}/avx512_test.cpp"
         COMPILE_DEFINITIONS ${AVX512_TEST_FLAGS}
-        OUTPUT_VARIABLE AVX512_COMPILE_OUTPUT
+        RUN_OUTPUT_VARIABLE AVX512_RUN_OUTPUT
+        COMPILE_OUTPUT_VARIABLE AVX512_COMPILE_OUTPUT
     )
 
-    if(HAVE_AVX512_COMPILE)
-        message(STATUS "AVX-512 compilation test: PASSED")
+    message(STATUS "AVX-512 compilation result : ${AVX512_COMPILE_RESULT}")
+
+    if(AVX512_RUN_RESULT EQUAL 0)
+        message(STATUS "AVX-512 run result         : PASSED")
         set(AVX512_SUPPORTED TRUE PARENT_SCOPE)
     else()
-        message(STATUS "AVX-512 compilation test: FAILED")
+        message(STATUS "AVX-512 run result         : FAILED")
         set(AVX512_SUPPORTED FALSE PARENT_SCOPE)
     endif()
 
-    file(REMOVE ${PROJECT_BINARY_DIR}/avx512.cpp)
-    file(REMOVE_RECURSE ${PROJECT_BINARY_DIR}/avx512_test)
+    # Clean up
+    file(REMOVE "${PROJECT_BINARY_DIR}/avx512_test.cpp")
+    file(REMOVE_RECURSE "${PROJECT_BINARY_DIR}/avx512_executable")
 endfunction()
+
 
 # Check AVX-512 support if enabled
 if (${${PROJECT_PREFIX}_LIBM_ENABLE_AVX512})
     check_avx512_support()
 
     if(AVX512_SUPPORTED)
-        message(STATUS "AVX-512 support enabled and available")
-
+        message(STATUS "AVX512 support enabled and available - adding AVX-512 flags")
         # Add AVX-512 compile flags
         if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
             list(APPEND TEST_CFLAGS "/arch:AVX512" "-D__AVX512__")
@@ -173,15 +200,11 @@ if (${${PROJECT_PREFIX}_LIBM_ENABLE_AVX512})
         elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
             list(APPEND TEST_CFLAGS "-mavx512f" "-D__AVX512__")
         endif()
-
-        set(AVX512_ENABLED TRUE)
     else()
-        message(STATUS "AVX-512 support is not available on target cpu")
-        set(AVX512_ENABLED FALSE)
+        message(STATUS "Target CPU does not support AVX512")
     endif()
 else()
     message(STATUS "AVX-512 support disabled (use -DLIBM_ENABLE_AVX512=ON to enable)")
-    set(AVX512_ENABLED FALSE)
 endif()
 
 # =============================================================================
@@ -250,8 +273,8 @@ if(OpenMP_CXX_FOUND)
   list(APPEND LIBS OpenMP::OpenMP_CXX)
 endif()
 
-set(CMAKE_EXECUTABLE_SUFFIX_C "")
-set(CMAKE_EXECUTABLE_SUFFIX_CXX "")
+# Set common executable suffix on windows and linux
+#set(CMAKE_EXECUTABLE_SUFFIX_CXX "")
 
 # Create a static library from COMMON_SRCS
 add_library(common OBJECT ${COMMON_SRCS})

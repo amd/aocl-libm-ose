@@ -106,7 +106,7 @@ else()
     list(APPEND TEST_CFLAGS "-Wno-unused-parameter")
     list(APPEND TEST_CFLAGS "-fstack-protector-all")
     list(APPEND TEST_CFLAGS "-Wno-multichar")
-    list(APPEND TEST_CFLAGS "-Wno-unused-parameter")
+    list(APPEND TEST_CFLAGS "-Wno-c++11-narrowing")
     list(APPEND TEST_CFLAGS "-Wno-missing-field-initializers")
     add_definitions(-DBENCHMARK_STATIC_DEFINE)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -252,9 +252,9 @@ elseif(LIBABI STREQUAL "svml")
     list(APPEND LIBS "mkl_intel_lp64" "mkl_core")
     if(NOT WIN32)
         list(APPEND LIBS "svml" "irc" "intlc" "mkl_gnu_thread")
-        list(APPEND LINK_FLAGS "-fopenmp")
+#        list(APPEND LINK_FLAGS "-fopenmp")
     else()
-        list(APPEND LIBS "svml_dispmd" "libirc" "mkl_intel_thread" "libomp")
+        list(APPEND LIBS "svml_dispmd" "libirc" "mkl_intel_thread" "libiomp")
     endif()
 endif()
 
@@ -266,7 +266,7 @@ if(NOT WIN32)
         list(APPEND LIBS "asan")
     endif()
 else()
-    list(APPEND LIBS "msvcrt")
+    list(APPEND LIBS "msvcrt" "Shlwapi")
 endif()
 find_package(OpenMP REQUIRED)
 if(OpenMP_CXX_FOUND)
@@ -290,10 +290,39 @@ target_compile_options(gtest_vra PUBLIC ${TEST_CFLAGS})
 file(GLOB TEST_DIRS RELATIVE ${PROJECT_SOURCE_DIR} "*")
 list(REMOVE_ITEM TEST_DIRS "include" "gapi" "libs")
 add_custom_target(common_target ALL DEPENDS common)
-set(TEST_DIRS "exp" "cos")
-foreach(TEST ${TEST_DIRS})
-    add_subdirectory(${TEST})
-    list(APPEND tests test_${TEST})
+
+set(tests "")
+
+# Define test directories with their linking requirements
+set(SPECIAL_TEST_DIRS "powx" "linearfrac" "sincos")
+set(VR_TEST_DIRS "acosh" "asinh" "atan2" "atanh" "cexp" "sinh" "ceil" "copysign" "fdim" "floor" "fmod" "hypot" "logb" "remainder" "rint" "round" "trunc" "nearbyint")
+set(VRA_TEST_DIRS "exp" "cos" "acos" "add" "asin" "atan" "cosh" "sin" "tan" "tanh" "cbrt" "erf" "exp10" "exp2" "expm1" "fabs" "fmax" "fmin" "ldexp" "log" "log10" "log1p" "log2" "mul" "nextafter" "pow" "sqrt" "sub")
+
+# Combine all test directories
+set(ALL_TEST_DIRS ${SPECIAL_TEST_DIRS} ${VR_TEST_DIRS} ${VRA_TEST_DIRS})
+
+foreach(api ${ALL_TEST_DIRS})
+    file(GLOB ${api}_SRCS "${api}/*.cc")
+    add_executable(test_${api} ${${api}_SRCS})
+
+    # Link with common libraries for all tests
+    target_link_libraries(test_${api} ${LIBS} $<TARGET_OBJECTS:common>)
+
+    # Add gtest_vr object library for VR and VRA test directories
+    if(api IN_LIST VR_TEST_DIRS OR api IN_LIST VRA_TEST_DIRS)
+        target_link_libraries(test_${api} $<TARGET_OBJECTS:gtest_vr>)
+    endif()
+
+    # Add gtest_vra object library for VRA test directories only
+    if(api IN_LIST VRA_TEST_DIRS)
+        target_link_libraries(test_${api} $<TARGET_OBJECTS:gtest_vra>)
+    endif()
+
+    set_target_properties(test_${api} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${BUILDROOT})
+    target_compile_options(test_${api} PUBLIC ${TEST_CFLAGS})
+    add_dependencies(test_${api} common_target)
+    list(APPEND tests test_${api})
 endforeach()
+
 add_custom_target(gtests ALL)
 add_dependencies(gtests ${tests})

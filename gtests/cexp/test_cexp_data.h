@@ -77,28 +77,28 @@ test_cexpf_conformance_data[] = {
         {{-0.0076, 1827.76},            {0.8, -0.6},                   0},
     #else
         /* Test inputs of -/+0 */
-        {{0.0 + 0.0 * I},                   {1.0 + 0.0 * I},                   0},
-        {{-0.0 + 0.0 * I},                  {1.0 + 0.0 * I},                   0},
+        {0.0 + 0.0 * I,                   1.0 + 0.0 * I,                   0},
+        {-0.0 + 0.0 * I,                  1.0 + 0.0 * I,                   0},
 
         /* Test inputs of -/+inf, Signalling NAN and Quiet NAN*/
-        {{POS_INF_F32 + 0.0 * I},           {POS_INF_F32 + 0.0 * I},           0},
-        {{NEG_INF_F32 + POS_INF_F32 * I},   {0.0 + 0.0 * I},                   0},
-        {{POS_INF_F32 + POS_INF_F32 * I},   {POS_INF_F32 + POS_QNAN_F32 * I},  0},
-        {{NEG_INF_F32 + POS_QNAN_F32 * I},  {0.0 + 0.0 * I},                   0},
-        {{POS_INF_F32 + POS_QNAN_F32 * I},  {POS_INF_F32 + POS_QNAN_F32 * I},  0},
-        {{8.1 + POS_INF_F32 * I},           {POS_QNAN_F32 + POS_QNAN_F32 * I}, FE_INEXACT},
-        {{POS_QNAN_F32 + 0.0 * I},          {POS_QNAN_F32 + 0.0 * I},          0},
-        {{POS_QNAN_F32 + 3.1 * I},          {POS_QNAN_F32 + POS_QNAN_F32 * I}, FE_INVALID},
-        {{POS_QNAN_F32 + POS_QNAN_F32 * I}, {POS_QNAN_F32 + POS_QNAN_F32 * I}, 0},
-        {{8.1 + POS_QNAN_F32 * I},          {POS_QNAN_F32 + POS_QNAN_F32 * I}, FE_INEXACT},
+        {POS_INF_F32 + 0.0 * I,           POS_INF_F32 + 0.0 * I,           0},
+        {NEG_INF_F32 + POS_INF_F32 * I,   0.0 + 0.0 * I,                   0},
+        {POS_INF_F32 + POS_INF_F32 * I,   POS_INF_F32 + POS_QNAN_F32 * I,  0},
+        {NEG_INF_F32 + POS_QNAN_F32 * I,  0.0 + 0.0 * I,                   0},
+        {POS_INF_F32 + POS_QNAN_F32 * I,  POS_INF_F32 + POS_QNAN_F32 * I,  0},
+        {8.1 + POS_INF_F32 * I,           POS_QNAN_F32 + POS_QNAN_F32 * I, FE_INEXACT},
+        {POS_QNAN_F32 + 0.0 * I,          POS_QNAN_F32 + 0.0 * I,          0},
+        {POS_QNAN_F32 + 3.1 * I,          POS_QNAN_F32 + POS_QNAN_F32 * I, FE_INVALID},
+        {POS_QNAN_F32 + POS_QNAN_F32 * I, POS_QNAN_F32 + POS_QNAN_F32 * I, 0},
+        {8.1 + POS_QNAN_F32 * I,          POS_QNAN_F32 + POS_QNAN_F32 * I, FE_INEXACT},
 
         /* Test inputs of some standard values */
-        {{0.0 + POS_PI_F32 * I},             {-1.0 + 0.0 * I},                   0}, // Euler's Formula
-        {{POS_PI_F32 + POS_PI_F32 * I},      {-23.1 + 0.0 * I},                  0},
+        {0.0 + POS_PI_F32 * I,             -1.0 + 0.0 * I,                   0}, // Euler's Formula
+        {POS_PI_F32 + POS_PI_F32 * I,      -23.1 + 0.0 * I,                  0},
 
         /* Test inputs of some random values */
-        {{-1.0 + 2.0 * I},                   {-0.153092 + 0.334512 * I},         0},
-        {{-0.0076 + 1827.76 * I},            {0.8 + -0.6 * I},                   0},
+        {-1.0 + 2.0 * I,                   -0.153092 + 0.334512 * I,         0},
+        {-0.0076 + 1827.76 * I,            0.8 + -0.6 * I,                   0},
     #endif
     // For z = -∞+yi, the result is +0cis(y)
     // For z = +∞+yi, the result is +∞cis(y)
@@ -137,28 +137,28 @@ test_cexp_conformance_data[] = {
         {{-0.0076, 1827.76},            {0.8, -0.6},                   0},
     #else
         /* Test inputs of -/+0 */
-        {{0.0 + 0.0 * I},                   {1.0 + 0.0 * I},                   0},
-        {{-0.0 + 0.0 * I},                  {1.0 + 0.0 * I},                   0},
+        {0.0 + 0.0 * I,                   1.0 + 0.0 * I,                   0},
+        {-0.0 + 0.0 * I,                  1.0 + 0.0 * I,                   0},
 
         /* Test inputs of -/+inf, Signalling NAN and Quiet NAN*/
-        {{POS_INF_F64 + 0.0 * I},           {POS_INF_F64 + 0.0 * I},           0},
-        {{NEG_INF_F64 + POS_INF_F64 * I},   {0.0 + 0.0 * I},                   0},
-        {{POS_INF_F64 + POS_INF_F64 * I},   {POS_INF_F64 + POS_QNAN_F64 * I},  0},
-        {{NEG_INF_F64 + POS_QNAN_F64 * I},  {0.0 + 0.0 * I},                   0},
-        {{POS_INF_F64 + POS_QNAN_F64 * I},  {POS_INF_F64 + POS_QNAN_F64 * I},  0},
-        {{8.1 + POS_INF_F64 * I},           {POS_QNAN_F64 + POS_QNAN_F64 * I}, FE_INEXACT},
-        {{POS_QNAN_F64 + 0.0 * I},          {POS_QNAN_F64 + 0.0 * I},          0},
-        {{POS_QNAN_F64 + 3.1 * I},          {POS_QNAN_F64 + POS_QNAN_F64 * I}, FE_INVALID},
-        {{POS_QNAN_F64 + POS_QNAN_F64 * I}, {POS_QNAN_F64 + POS_QNAN_F64 * I}, 0},
-        {{8.1 + POS_QNAN_F64 * I},          {POS_QNAN_F64 + POS_QNAN_F64 * I}, FE_INEXACT},
+        {POS_INF_F64 + 0.0 * I,           POS_INF_F64 + 0.0 * I,           0},
+        {NEG_INF_F64 + POS_INF_F64 * I,   0.0 + 0.0 * I,                   0},
+        {POS_INF_F64 + POS_INF_F64 * I,   POS_INF_F64 + POS_QNAN_F64 * I,  0},
+        {NEG_INF_F64 + POS_QNAN_F64 * I,  0.0 + 0.0 * I,                   0},
+        {POS_INF_F64 + POS_QNAN_F64 * I,  POS_INF_F64 + POS_QNAN_F64 * I,  0},
+        {8.1 + POS_INF_F64 * I,           POS_QNAN_F64 + POS_QNAN_F64 * I, FE_INEXACT},
+        {POS_QNAN_F64 + 0.0 * I,          POS_QNAN_F64 + 0.0 * I,          0},
+        {POS_QNAN_F64 + 3.1 * I,          POS_QNAN_F64 + POS_QNAN_F64 * I, FE_INVALID},
+        {POS_QNAN_F64 + POS_QNAN_F64 * I, POS_QNAN_F64 + POS_QNAN_F64 * I, 0},
+        {8.1 + POS_QNAN_F64 * I,          POS_QNAN_F64 + POS_QNAN_F64 * I, FE_INEXACT},
 
         /* Test inputs of some standard values */
-        {{0.0 + POS_PI_F64 * I},             {-1.0 + 0.0 * I},                   0}, // Euler's Formula
-        {{POS_PI_F64 + POS_PI_F64 * I},      {-23.1 + 0.0 * I},                  0},
+        {0.0 + POS_PI_F64 * I,             -1.0 + 0.0 * I,                   0}, // Euler's Formula
+        {POS_PI_F64 + POS_PI_F64 * I,      -23.1 + 0.0 * I,                  0},
 
         /* Test inputs of some random values */
-        {{-1.0 + 2.0 * I},                   {-0.153092 + 0.334512 * I},         0},
-        {{-0.0076 + 1827.76 * I},            {0.8 + -0.6 * I},                   0},
+        {-1.0 + 2.0 * I,                   -0.153092 + 0.334512 * I,         0},
+        {-0.0076 + 1827.76 * I,            0.8 + -0.6 * I,                   0},
     #endif
     // For z = -∞+yi, the result is +0cis(y)
     // For z = +∞+yi, the result is +∞cis(y)

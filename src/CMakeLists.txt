@@ -57,10 +57,9 @@ get_warning_flags( wflags )                         # warning flags
 get_unalign_vec_move_flag( uavmflag )               # disabling alignment checking for all AVX ops
 get_pic_flag( picflag )                             # position Independent Code flags
 get_au_flag( auflag )                               # aocl-utils defination
-get_linker_flag( sharedlinkerflag )                 # shared linker flags
 
 get_avx2fma_flag( fmaflag )                         # Fused Multiply-Add flags
-get_vec_flag( vecflag)                              #
+get_vec_flag( vecflag)                              # Vector flags
 
 
 set(LIBMCFLAGS ${optzflag})
@@ -71,10 +70,19 @@ set(LIBMCFLAGS ${LIBMCFLAGS} ${picflag})
 if(WIN32)
   get_win_flag( winflag )                           # windows flags
   set(LIBMCFLAGS ${LIBMCFLAGS} ${winflag})
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}  /dll")
+else()
+  include(CheckIPOSupported)
+  check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error)
+  if(ipo_supported)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+    message(STATUS "LTO supported: ${ipo_supported}")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -flto")
+  else()
+    message(STATUS "IPO/LTO not supported: ${ipo_error}")
+  endif()
 endif()
 set(LIBMCFLAGS ${LIBMCFLAGS} ${auflag})
-
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${sharedlinkerflag}")
 
 if(DEFINED ALM_STATIC_DISPATCH)
   if("${ALM_STATIC_DISPATCH}" MATCHES "(AVX2|ZEN2|ZEN3|ZEN4|ZEN5|AVX512)")

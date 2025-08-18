@@ -74,11 +74,3 @@ macro(get_pic_flag picflag)
   endif()
 endmacro()
 
-#LINKER Flags for Shared library
-macro(get_linker_flag sharedlinkerflag)
-  if(NOT WIN32)
-    set(${sharedlinkerflag} "-fuse-ld=ld")
-  else()
-    set(${sharedlinkerflag} "/dll")
-  endif()
-endmacro()

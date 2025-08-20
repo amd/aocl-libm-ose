@@ -88,6 +88,21 @@ project("${PROJECT_PREFIX}-${PROJECT_NAME}"
 
 message(DEBUG "Project with name \"${PROJECT_PREFIX}\" with version ${${PROJECT_PREFIX}_VERSION} registered")
 
+#------------------------------
+# Configure archiver to use 'rc' flags instead of 'qc'
+#------------------------------
+# Force CMake to use 'ar rc' instead of 'ar qc' for static library creation
+# This ensures proper member replacement in static libraries
+if(NOT WIN32)
+    set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
+    set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
+    set(CMAKE_C_ARCHIVE_APPEND "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
+    set(CMAKE_CXX_ARCHIVE_APPEND "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
+    # Ensure ranlib is called after archive creation
+    set(CMAKE_C_ARCHIVE_FINISH "<CMAKE_RANLIB> <TARGET>")
+    set(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> <TARGET>")
+endif()
+
 #Include GNUInstallDirs for standard install directories
 include(GNUInstallDirs)
 
@@ -129,7 +144,7 @@ if(DEFINED ALM_STATIC_DISPATCH)
     # Set the ALM_STATIC_DISPATCH macro based on user input
     # default set to AVX2 if ALM_STATIC_DISPATCH is defined during cmake configured.
     set(ALM_STATIC_DISPATCH "AVX2" CACHE STRING "Set the static dispatch architecture")
-    message("ALM_STATIC_DISPATCH set to ${ALM_STATIC_DISPATCH}")
+    message(STATUS "ALM_STATIC_DISPATCH set to ${ALM_STATIC_DISPATCH}")
   else()
     message(FATAL_ERROR "Valid option for ALM_STATIC_DISPATCH is set to any of the AVX2/ZEN2/ZEN3/ZEN4/ZEN5/AVX512")
   endif()
@@ -239,16 +254,10 @@ if (${${PROJECT_PREFIX}_LIBM_BUILD_TESTS})
     add_subdirectory(gtests EXCLUDE_FROM_ALL)
 endif()
 
-if(WIN32)
-    set(REMOVE_COMMAND "del")
-else()
-    set(REMOVE_COMMAND "rm")
-endif()
-
 add_custom_target(distclean
     COMMAND ${CMAKE_MAKE_PROGRAM} clean
-    COMMAND ${REMOVE_COMMAND} ${PROJECT_SOURCE_DIR}/src/buildsysinfo.h
-    COMMAND ${REMOVE_COMMAND} ${PROJECT_SOURCE_DIR}/src/version.build.h
+    COMMAND ${CMAKE_COMMAND} -E remove "${PROJECT_SOURCE_DIR}/src/buildsysinfo.h"
+    COMMAND ${CMAKE_COMMAND} -E remove "${PROJECT_SOURCE_DIR}/src/version.build.h"
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     COMMENT "Remove cmake_generated files and directories"
 )

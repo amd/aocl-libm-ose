@@ -35,7 +35,7 @@ get_fastmath_flag( fmflag )
 
 file(GLOB FAST_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.c")
 set(FAST_INCLUDE "${INCLUDE_PATHS}")
-set(FAST_FLAGS ${LIBMCFLAGS} ${fmaflag} ${fmflag})
+set(FAST_FLAGS  ${ffpflag} ${fmflag} ${wflags} ${picflag} ${winflag} ${fmaflag})
 
 add_library(libmfast_obj OBJECT ${FAST_SRC})
 target_include_directories(libmfast_obj
@@ -46,16 +46,24 @@ target_include_directories(libmfast_obj
 target_compile_options(libmfast_obj PRIVATE ${FAST_FLAGS})
 
 if(WIN32)
-    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+  set(LIBDEPS "${PROJECT_BINARY_DIR}/src/libalm.lib")
+else()
+  set(LIBDEPS "${PROJECT_BINARY_DIR}/src/libalm.so")
 endif()
 add_library(libmfast_shared SHARED $<TARGET_OBJECTS:libmfast_obj>)
-set_target_properties(libmfast_shared PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(libmfast_shared PRIVATE ${libm})
-set_target_properties(libmfast_shared PROPERTIES OUTPUT_NAME ${ALMFAST})
+set_target_properties(libmfast_shared PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    OUTPUT_NAME ${ALMFAST}
+)
+target_link_libraries(libmfast_shared PRIVATE "${LIBDEPS}")
 list(APPEND libm libmfast_shared)
 
 add_library(libmfast_static STATIC $<TARGET_OBJECTS:libmfast_obj>)
-set_target_properties(libmfast_static PROPERTIES OUTPUT_NAME ${ALMFAST})
+set_target_properties(libmfast_static PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    OUTPUT_NAME ${ALMFAST}
+)
 list(APPEND libm libmfast_static)
 
 set(libm ${libm} PARENT_SCOPE)

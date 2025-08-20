@@ -37,7 +37,7 @@ set(PROTOTYPE_AOCL  0xf2)
 set(PROTOTYPE_SVML  0xf4)
 
 set(LIBABI "aocl" CACHE STRING "Library ABI to use (aocl, glibc, svml)")
-message("LIBABI : ${LIBABI}")
+message(STATUS "LIBABI : ${LIBABI}")
 
 include(Cct_GtestGbench)
 include(mpfr)
@@ -185,13 +185,12 @@ function(check_avx512_support)
     file(REMOVE_RECURSE "${PROJECT_BINARY_DIR}/avx512_executable")
 endfunction()
 
-
 # Check AVX-512 support if enabled
 if (${${PROJECT_PREFIX}_LIBM_ENABLE_AVX512})
     check_avx512_support()
 
     if(AVX512_SUPPORTED)
-        message(STATUS "AVX512 support enabled and available - adding AVX-512 flags")
+        message(STATUS "AVX-512 support enabled and available - adding AVX-512 flags")
         # Add AVX-512 compile flags
         if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
             list(APPEND TEST_CFLAGS "/arch:AVX512" "-D__AVX512__")
@@ -201,12 +200,11 @@ if (${${PROJECT_PREFIX}_LIBM_ENABLE_AVX512})
             list(APPEND TEST_CFLAGS "-mavx512f" "-D__AVX512__")
         endif()
     else()
-        message(STATUS "Target CPU does not support AVX512")
+        message(STATUS "Target CPU does not support AVX-512")
     endif()
 else()
     message(STATUS "AVX-512 support disabled (use -DLIBM_ENABLE_AVX512=ON to enable)")
 endif()
-
 # =============================================================================
 
 # Address sanitizer support

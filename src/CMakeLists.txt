@@ -51,22 +51,19 @@ configure_file("${PROJECT_SOURCE_DIR}/CMake/buildsysinfo.hh.in"
                 "${PROJECT_SOURCE_DIR}/src/buildsysinfo.h"
                 @ONLY)
 
-get_optz_flag( optzflag )                           # optimization flags
 get_fast_flag( ffpflag )                            # ffp-contract flags
 get_warning_flags( wflags )                         # warning flags
 get_unalign_vec_move_flag( uavmflag )               # disabling alignment checking for all AVX ops
 get_pic_flag( picflag )                             # position Independent Code flags
 get_au_flag( auflag )                               # aocl-utils defination
-
 get_avx2fma_flag( fmaflag )                         # Fused Multiply-Add flags
-get_vec_flag( vecflag)                              # Vector flags
+get_vec_flag( vecflag )                             # Vectorization flags
 
-
-set(LIBMCFLAGS ${optzflag})
-set(LIBMCFLAGS ${LIBMCFLAGS} ${ffpflag})
+set(LIBMCFLAGS ${ffpflag})
 set(LIBMCFLAGS ${LIBMCFLAGS} ${wflags})
 set(LIBMCFLAGS ${LIBMCFLAGS} ${uavmflag})
 set(LIBMCFLAGS ${LIBMCFLAGS} ${picflag})
+set(LIBMCFLAGS ${LIBMCFLAGS} ${auflag})
 if(WIN32)
   get_win_flag( winflag )                           # windows flags
   set(LIBMCFLAGS ${LIBMCFLAGS} ${winflag})
@@ -75,14 +72,13 @@ else()
   include(CheckIPOSupported)
   check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error)
   if(ipo_supported)
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+    add_compile_options(-flto=auto)
+    add_link_options(-flto=auto)
     message(STATUS "LTO supported: ${ipo_supported}")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -flto")
   else()
     message(STATUS "IPO/LTO not supported: ${ipo_error}")
   endif()
 endif()
-set(LIBMCFLAGS ${LIBMCFLAGS} ${auflag})
 
 if(DEFINED ALM_STATIC_DISPATCH)
   if("${ALM_STATIC_DISPATCH}" MATCHES "(AVX2|ZEN2|ZEN3|ZEN4|ZEN5|AVX512)")
@@ -126,45 +122,44 @@ target_compile_options(src PRIVATE ${LIBMCFLAGS} "-O1")
 #add src object library to libmobj
 list(APPEND libmobj $<TARGET_OBJECTS:src>)
 
-if(LINUX)
-  set(EXT_LIBS "-Wl,-Bdynamic -lc -lstdc++")
-elseif(WIN32)
-  set(EXT_LIBS "msvcrt")
-endif()
-
 #add include headers as part of the install
 set(LIBM_PUBLIC_HEADERS ${PROJECT_SOURCE_DIR}/include/external/amdlibm.h
                         ${PROJECT_SOURCE_DIR}/include/external/amdlibm_vec.h)
 
+set(AOCL_UTILS_LIB ${AOCL_UTILS_PATH}/${AOCL_UTILS_LIB})
 if (WIN32)
   set(LIBALM libalm)
-  set(CMAKE_STATIC_LIBRARY_SUFFIX  ".a")
+  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+  set(EXTRA_LIBS ${AOCL_UTILS_LIB} "msvcrt")
+  set(CMAKE_STATIC_LIBRARY_SUFFIX  "-static.lib")
 else()
   set(LIBALM alm)
+  set(EXTRA_LIBS ${AOCL_UTILS_LIB} "-Wl,-Bdynamic -lc -lstdc++")
 endif()
 
 set(libm "")
-if(WIN32)
-  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-endif()
+
+#shared libraries
 add_library(libm_shared SHARED ${libmobj})
-set_target_properties(libm_shared PROPERTIES POSITION_INDEPENDENT_CODE ON)
-set_target_properties(libm_shared PROPERTIES VERSION ${PROJECT_VERSION})
-set_target_properties(libm_shared PROPERTIES OUTPUT_NAME ${LIBALM})
-set_target_properties(libm_shared PROPERTIES PRIVATE_HEADER "${LIBM_PUBLIC_HEADERS}")
-set_target_properties(libm_shared PROPERTIES LINKER_LANGUAGE CXX)
-target_link_libraries(libm_shared PUBLIC ${EXT_LIBS} ${AOCL_UTILS_LIB})
-if(NOT WIN32)
-  target_link_options(libm_shared PRIVATE "-Wl,-e,alm_main")
+set_target_properties(libm_shared PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    OUTPUT_NAME ${LIBALM}
+    PRIVATE_HEADER "${LIBM_PUBLIC_HEADERS}"
+)
+target_link_libraries(libm_shared PUBLIC ${EXTRA_LIBS})
+if(NOT MSVC)
+  set_target_properties(libm_shared PROPERTIES LINK_FLAGS "-ealm_main")
 endif()
 list(APPEND libm libm_shared)
-
+# Static library
 add_library(libm_static STATIC ${libmobj})
-target_link_libraries(libm_static PUBLIC ${AOCL_UTILS_LIB})
-set_target_properties(libm_static PROPERTIES OUTPUT_NAME ${LIBALM})
-set_target_properties(libm_static PROPERTIES PRIVATE_HEADER "${LIBM_PUBLIC_HEADERS}")
+set_target_properties(libm_static PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    OUTPUT_NAME ${LIBALM}
+    PRIVATE_HEADER "${LIBM_PUBLIC_HEADERS}"
+)
+target_link_libraries(libm_static PUBLIC ${EXTRA_LIBS})
 list(APPEND libm libm_static)
-
 
 add_subdirectory(fast)
 if(LINUX)

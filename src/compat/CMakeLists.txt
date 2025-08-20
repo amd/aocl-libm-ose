@@ -27,7 +27,7 @@
 
 set(COMPACT_LIB alm-glibc-compat)
 
-set(COMPACT_FLAGS ${LIBMCFLAGS} -O2 -mavx2 )
+set(COMPACT_FLAGS ${fmaflag} ${wflags} ${picflag})
 
 add_library(glibc_obj OBJECT glibc-compat.c  ${INCLUDE_PATHS})
 target_compile_options(glibc_obj PRIVATE ${COMPACT_FLAGS})
@@ -37,11 +37,17 @@ target_include_directories(glibc_obj
                             PRIVATE ${${PROJECT_PREFIX}_PRIVATE_INCLUDES})
 
 add_library(libmglibc_static STATIC $<TARGET_OBJECTS:glibc_obj>)
-set_target_properties(libmglibc_static PROPERTIES OUTPUT_NAME ${COMPACT_LIB})
+set_target_properties(libmglibc_static PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    OUTPUT_NAME ${COMPACT_LIB}
+)
 list(APPEND libm libmglibc_static)
+
 add_library(libmglibc_shared SHARED $<TARGET_OBJECTS:glibc_obj>)
-set_target_properties(libmglibc_shared PROPERTIES POSITION_INDEPENDENT_CODE ON)
-set_target_properties(libmglibc_shared PROPERTIES OUTPUT_NAME ${COMPACT_LIB})
+set_target_properties(libmglibc_shared PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    OUTPUT_NAME ${COMPACT_LIB}
+)
 list(APPEND libm libmglibc_shared)
 set(libm ${libm} PARENT_SCOPE)
 

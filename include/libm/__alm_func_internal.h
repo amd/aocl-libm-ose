@@ -281,6 +281,7 @@ extern __m128d   ALM_PROTO_INTERNAL(vrd2_sqrt)     (__m128d);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_fabs)     (__m128d);
 extern void      ALM_PROTO_INTERNAL(vrd2_sincos)   (__m128d x, __m128d* ys, __m128d* yc);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_linearfrac) (__m128d x, __m128d y, double sca, double sha, double scb, double shb);
+extern __m128d   ALM_PROTO_INTERNAL(vrd2_erfc)     (__m128d x);
 /*
  * Vector double precision, 4 element
  */

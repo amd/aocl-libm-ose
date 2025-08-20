@@ -353,6 +353,9 @@ extern "C" {
     __m256d amd_vrd4_erf    (__m256d x);
     __m256  amd_vrs8_erff   (__m256 x);
 
+/* erfc */
+    __m128d amd_vrd2_erfc   (__m128d x);
+
 /* sqrt */
     __m128d amd_vrd2_sqrt   (__m128d x);
     __m256d amd_vrd4_sqrt   (__m256d x);

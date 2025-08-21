@@ -124,6 +124,7 @@ extern "C" {
 
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
 __m128d LIBM_FUNC_VEC(d, 2, asin)(__m128d);
+__m256d LIBM_FUNC_VEC(d, 4, asin)(__m256d);
 __m128 LIBM_FUNC_VEC(s, 4, asinf)(__m128);
 __m256 LIBM_FUNC_VEC(s, 8, asinf)(__m256);
  #if defined(__AVX512__)

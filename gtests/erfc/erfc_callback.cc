@@ -120,6 +120,7 @@ extern "C" {
 
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   __m128d LIBM_FUNC_VEC(d, 2, erfc)(__m128d);
+  __m256d LIBM_FUNC_VEC(d, 4, erfc)(__m256d);
 #endif
 
 int test_v2d(test_data *data, int idx)  {
@@ -130,7 +131,7 @@ int test_v2d(test_data *data, int idx)  {
       __m128d op2 = LIBM_FUNC_VEC(d, 2, erfc)(ip2);
       _mm_store_pd(&op[0], op2);
     #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
-      vdErfc(2,op,ip);
+      vdErfc(2,ip,op);
   #endif
   return 0;
 }
@@ -141,7 +142,15 @@ int test_v4s(test_data *data, int idx)  {
 }
 
 int test_v4d(test_data *data, int idx)  {
-
+  double *ip  = (double*)data->ip;
+  double *op  = (double*)data->op;
+  #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+    __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+    __m256d op4 = LIBM_FUNC_VEC(d, 4, erfc)(ip4);
+    _mm256_store_pd(&op[0], op4);
+  #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+    vdErfc(4,ip,op);
+  #endif
   return 0;
 }
 

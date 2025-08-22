@@ -348,6 +348,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_sincos);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_sqrt);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_fabs);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_linearfrac);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_erfc);
 
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_cbrt);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd8_cos);

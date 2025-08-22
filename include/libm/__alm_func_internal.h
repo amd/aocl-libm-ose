@@ -306,6 +306,7 @@ extern __m256d   ALM_PROTO_INTERNAL(vrd4_sqrt)     (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_fabs)     (__m256d x);
 extern void      ALM_PROTO_INTERNAL(vrd4_sincos)   (__m256d x, __m256d *s, __m256d *c);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_linearfrac)  (__m256d x, __m256d y, double sca, double sha, double scb, double shb);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_erfc)      (__m256d x);
 /*
  * Vector double precision, 8 elements
  */

@@ -90,6 +90,27 @@ $ cmake --preset dev-release-gcc -DALM_STATIC_DISPATCH=ZEN3 --fresh
 
 -----
 
+### Address Sanitizer (Linux Only, GCC Compiler)
+To build with AddressSanitizer enabled, configure CMake using `-DLIBM_ENABLE_ASAN=ON`. This is **OFF by default**.
+  * **Redzone Size**: The default redzone size is 16 bytes. To increase it, set the `ASAN_OPTIONS` environment variable. For example, to set it to 2048 bytes, use:
+    ```console
+    $ ASAN_OPTIONS=redzone=2048 ./<executable_name>
+    ```
+
+### Code Coverage (Linux Only, GCC Compiler)
+To build for code coverage, configure CMake using `-DLIBM_ENABLE_COVERAGE=ON`. This is **OFF by default**.
+  * **Report Generation**: To generate an HTML code coverage report using LCOV, run the provided bash script.
+    1. Run the executable (with arguments)
+        ```console
+        $ ./<executable_name>
+        ```
+    2. Now run the following cmake command to generate `index.html` file in the `html_coverage_report` directory.
+        ```console
+        $ cmake --build --preset dev-release-gcc --target coverage
+        ```
+
+-----
+
 ### Building on Windows 💻
 
 #### **Step 1: Configure Ninja & MPFR**

@@ -232,6 +232,26 @@ configure_file("${PROJECT_SOURCE_DIR}/CMake/Version.hh.in"
 include(Cct_Banner)
 cct_display_banner()
 
+#--------------------------------------------
+#         Address Sanitizer flags
+#--------------------------------------------
+if(NOT WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "GNU" AND (${${PROJECT_PREFIX}_LIBM_ENABLE_ASAN}))
+    # GCC AddressSanitizer support
+    set(CMAKE_BUILD_TYPE Debug)
+    set(ASAN_FLAGS "-g" "-fsanitize=address" "-fno-omit-frame-pointer")
+    set(ASAN_LINK_FLAGS "-fsanitize=address")
+endif()
+
+#--------------------------------------------
+#         Code-coverage flags
+#--------------------------------------------
+if(NOT WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "GNU" AND (${${PROJECT_PREFIX}_LIBM_ENABLE_COVERAGE}))
+    # GCC Code coverage support
+    set(CMAKE_BUILD_TYPE Debug)
+    set(COVERAGE_FLAGS "-g" "-fprofile-arcs" "-ftest-coverage")
+    set(COVERAGE_LINK_FLAG "--coverage")
+endif()
+
 #------------------------------
 # Add Source Directory
 #------------------------------

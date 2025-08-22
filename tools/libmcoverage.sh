@@ -1,5 +1,6 @@
+#!/bin/bash
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -25,20 +26,19 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-set(ISA_INCLUDE ${INCLUDE_PATHS} "${CMAKE_CURRENT_SOURCE_DIR}/include")
+echo "Code Coverage for AOCL-LibM"
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <libm_binary_dir_path> <libm_out_dir_name>"
+    exit 1
+fi
+echo "libm_binary_dir_path : $1"
+echo "libm_out_dir_name    : $2"
 
-get_isa_flag( isaflag )
+#$1 : libm_binary_dir_path
+#$2 : libm_out_dir_name
+lcov --capture --directory "$1" --output-file "$2.info"
+lcov --remove "$2.info" -o "$2_filtered.info" '/usr/*' '/*/_deps/*'
+genhtml "$2_filtered.info" --output-directory "$2"
 
-set(ISA_FLAGS ${isaflag} ${ASAN_FLAGS} ${COVERAGE_FLAGS})
-
-add_subdirectory(avx)
-#add avxasm object library to libmobj
-list(APPEND libmobj $<TARGET_OBJECTS:avxasm>)
-
-add_subdirectory(avx2)
-#add avx2asm object library to libmobj
-list(APPEND libmobj $<TARGET_OBJECTS:avx2asm>)
-#add avx2 object library to libmobj
-list(APPEND libmobj $<TARGET_OBJECTS:avx2>)
-
-set(libmobj ${libmobj} PARENT_SCOPE)
+echo "Cleaning up intermediate files..."
+rm -f "$2.info" "$2_filtered.info"

@@ -77,7 +77,7 @@ set(VRA_SRC_FILES
 # Compiler flags
 if(NOT WIN32)
     set(TEST_CFLAGS "-std=c++17")
-    list(APPEND TEST_CFLAGS "-O0")
+    list(APPEND TEST_CFLAGS "-g")
     list(APPEND TEST_CFLAGS "-funsigned-char" )
     list(APPEND TEST_CFLAGS "-fno-strict-aliasing")
     list(APPEND TEST_CFLAGS "-fstack-protector-all")
@@ -94,7 +94,7 @@ if(NOT WIN32)
     endif()
 else()
     set(TEST_CFLAGS "-std:c++17")
-    list(APPEND TEST_CFLAGS "-O0")
+    list(APPEND TEST_CFLAGS "-g")
     list(APPEND TEST_CFLAGS "-bigobj")
     list(APPEND TEST_CFLAGS "/W4")
     list(APPEND TEST_CFLAGS "-march=native")
@@ -207,9 +207,16 @@ else()
 endif()
 # =============================================================================
 
-# Address sanitizer support
-if (${${PROJECT_PREFIX}_LIBM_ENABLE_ASAN})
-    list(APPEND TEST_CFLAGS "-fsanitize=address")
+# Add sanitizer flags if enabled
+if(NOT WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "GNU" AND (${${PROJECT_PREFIX}_LIBM_ENABLE_ASAN}))
+    list(APPEND TEST_CFLAGS ${ASAN_FLAGS})
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${ASAN_LINK_FLAGS}")
+endif()
+
+# Add coverage flags if enabled
+if(NOT WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "GNU" AND (${${PROJECT_PREFIX}_LIBM_ENABLE_COVERAGE}))
+    list(APPEND TEST_CFLAGS ${COVERAGE_FLAGS})
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${COVERAGE_LINK_FLAG}")
 endif()
 
 # Include and library paths
@@ -221,18 +228,24 @@ include_directories(${ALM_INCLUDE_DIR}
                     ${GTEST_INCLUDE_DIR}
                     ${GBENCH_INCLUDE_DIR})
 
-link_directories(${ALM_PATH} ${MPARITH_PATH} ${GTEST_LIBS})
+link_directories(${ALM_PATH} ${AOCL_UTILS_PATH} ${MPARITH_PATH} ${GTEST_LIBS})
 
 # Libraries to link
 set(LIBS ${GTEST_LIB} ${GBENCH_LIB} ${LIBMPARITH} ${MPFR_LIB} ${MPC_LIB} ${GMP_LIB})
 if(LIBABI STREQUAL "aocl")
     add_definitions(-DLIBM_PROTOTYPE=${PROTOTYPE_AOCL})
     if(NOT WIN32)
-        set(LIBALM "alm")
+        # Use static library when coverage is enabled to avoid gcov symbol conflicts
+        if(${${PROJECT_PREFIX}_LIBM_ENABLE_ASAN} OR ${${PROJECT_PREFIX}_LIBM_ENABLE_COVERAGE})
+            set(LIBALM "${CMAKE_BINARY_DIR}/src/libalm.a")
+        else()
+            set(LIBALM "alm")
+        endif()
     else()
         set(LIBALM "libalm")
     endif()
     list(APPEND LIBS ${LIBALM})
+    list(APPEND LIBS ${AOCL_UTILS_LIB})
 elseif(LIBABI STREQUAL "glibc")
     add_definitions(-DLIBM_PROTOTYPE=${PROTOTYPE_GLIBC})
     list(APPEND LIBS "mvec")
@@ -260,9 +273,6 @@ endif()
 # Add default math library for any unresolved functions
 if(NOT WIN32)
     list(APPEND LIBS "m")
-    if(USE_ASAN)
-        list(APPEND LIBS "asan")
-    endif()
 else()
     list(APPEND LIBS "msvcrt" "Shlwapi")
 endif()
@@ -324,3 +334,19 @@ endforeach()
 
 add_custom_target(gtests ALL)
 add_dependencies(gtests ${tests})
+
+if(NOT WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "GNU" AND (${${PROJECT_PREFIX}_LIBM_ENABLE_COVERAGE}))
+    add_custom_target(coverage
+        COMMAND lcov --capture --directory "${CMAKE_BINARY_DIR}/src" --output-file "coverage.info"
+        COMMAND lcov --remove "coverage.info" --output-file "coverage_filtered.info"
+                '/usr/*' '/*/_deps/*' '*/_deps/*'
+        COMMAND lcov --remove "coverage_filtered.info" --output-file "coverage_final.info"
+                "*/gtests/*" "*gtests/*" "${CMAKE_SOURCE_DIR}/gtests/*" "${CMAKE_BINARY_DIR}/gtests/*"
+                "${CMAKE_BINARY_DIR}/external/*" "*/external/*" "*external/*"
+        COMMAND genhtml "coverage_final.info" --output-directory "html_coverage_report"
+        COMMAND ${CMAKE_COMMAND} -E rm -f "coverage.info" "coverage_filtered.info" "coverage_final.info"
+        COMMENT "Generating and cleaning up code coverage report..."
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
+    add_dependencies(coverage ${tests})
+endif()

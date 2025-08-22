@@ -68,16 +68,16 @@ if(WIN32)
   get_win_flag( winflag )                           # windows flags
   set(LIBMCFLAGS ${LIBMCFLAGS} ${winflag})
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}  /dll")
-else()
-  include(CheckIPOSupported)
-  check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error)
-  if(ipo_supported)
-    add_compile_options(-flto=auto)
-    add_link_options(-flto=auto)
-    message(STATUS "LTO supported: ${ipo_supported}")
-  else()
-    message(STATUS "IPO/LTO not supported: ${ipo_error}")
-  endif()
+endif()
+
+# Add sanitizer flags if enabled
+if(${${PROJECT_PREFIX}_LIBM_ENABLE_ASAN} AND (NOT WIN32))
+  set(LIBMCFLAGS ${LIBMCFLAGS} ${ASAN_FLAGS})
+endif()
+
+# Add coverage flags if enabled
+if(${${PROJECT_PREFIX}_LIBM_ENABLE_COVERAGE} AND (NOT WIN32))
+  set(LIBMCFLAGS ${LIBMCFLAGS} ${COVERAGE_FLAGS})
 endif()
 
 if(DEFINED ALM_STATIC_DISPATCH)

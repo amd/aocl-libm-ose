@@ -130,7 +130,7 @@
 /* v4 - single precision */
 
 /* Access a f32x4 as u32x4 */
-inline v_u32x4_t
+static inline v_u32x4_t
 as_v4_u32_f32(v_f32x4_t x)
 {
     union {
@@ -141,7 +141,7 @@ as_v4_u32_f32(v_f32x4_t x)
 }
 
 /* Access a u32x4 as f32x4 */
-inline v_f32x4_t
+static inline v_f32x4_t
 as_v4_f32_u32(v_u32x4_t x)
 {
     union {
@@ -360,14 +360,14 @@ cast_v4_i32_to_f32(v_i32x4_t _xi32)
 }
 
 /* v4 float -> double */
-inline v_f64x4_t
+static inline v_f64x4_t
 cast_v4_f32_to_f64(v_f32x4_t _x)
 {
     return (v_f64x4_t){_x[0], _x[1], _x[2], _x[3]};
 }
 
 /* v4 double -> float */
-inline v_f32x4_t
+static inline v_f32x4_t
 cast_v4_f64_to_f32(v_f64x4_t _x)
 {
     return (v_f32x4_t){(float)_x[0], (float)_x[1], (float)_x[2], (float)_x[3]};
@@ -761,7 +761,7 @@ call2_v8_f64(double (*fn)(double, double),
 	    cond[5] ? fn(x[5], y[5]) : result[5],
 	    cond[6] ? fn(x[6], y[6]) : result[6],
 	    cond[7] ? fn(x[7], y[7]) : result[7],
-    
+
     };
 }
 

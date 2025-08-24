@@ -463,6 +463,9 @@ extern "C" {
      __m512d amd_vrd8_linearfrac   (__m512d x, __m512d y, double, double, double, double);
      __m512  amd_vrs16_linearfracf (__m512 x, __m512 y, float, float, float, float);
 
+    /* Erfc */
+    __m512d amd_vrd8_erfc    (__m512d x);
+
 #endif
 
 #ifdef __cplusplus

@@ -64,12 +64,14 @@ struct alm_arch_funcs __arch_funcs_erfc = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(erfc),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN4(vrd2_erfc),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN4(vrd4_erfc),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_erfc),
         },
 
         [ALM_UARCH_VER_ZEN5] = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN5(erfc),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN5(vrd2_erfc),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN5(vrd4_erfc),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN5(vrd8_erfc),
         },
     },
 };
@@ -82,6 +84,7 @@ LIBM_IFACE_PROTO(erfc)(void *arg)
         [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(erfc),
         [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_erfc),
         [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_erfc),
+        [ALM_FUNC_VECT_DP_8] = &G_ENTRY_PT_PTR(vrd8_erfc),
         },
     };
 

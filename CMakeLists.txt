@@ -274,6 +274,14 @@ if (${${PROJECT_PREFIX}_LIBM_BUILD_TESTS})
     add_subdirectory(gtests EXCLUDE_FROM_ALL)
 endif()
 
+#----------------------------------------------
+# Add Examples if LIBM_ENABLE_TESTS is defined
+#---------------------------------------------
+if (${${PROJECT_PREFIX}_LIBM_BUILD_EXAMPLES})
+    enable_testing()
+    add_subdirectory(examples EXCLUDE_FROM_ALL)
+endif()
+
 add_custom_target(distclean
     COMMAND ${CMAKE_MAKE_PROGRAM} clean
     COMMAND ${CMAKE_COMMAND} -E remove "${PROJECT_SOURCE_DIR}/src/buildsysinfo.h"

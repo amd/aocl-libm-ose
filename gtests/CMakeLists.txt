@@ -44,11 +44,12 @@ include(mpfr)
 include(Cct_Mparith)
 
 # Set build root and source paths
-set(BUILDROOT    "${CMAKE_BINARY_DIR}/${LIBABI}_gtests")
-set(MPARITH_PATH "${MPARITH_LIB_DIR}")
-set(GTEST_PATH   "${GTEST_LIB_PATH}")
-set(GBENCH_PATH  "${GBENCH_LIB_PATH}")
-set(GTEST_LIBS   "${GTEST_PATH}" "${GBENCH_PATH}")
+set(BUILDROOT       "${CMAKE_BINARY_DIR}/${LIBABI}_gtests")
+set(MPARITH_PATH    "${MPARITH_LIB_DIR}")
+set(GTEST_PATH      "${GTEST_LIB_PATH}")
+set(GBENCH_PATH     "${GBENCH_LIB_PATH}")
+set(GTEST_LIBS      "${GTEST_PATH}" "${GBENCH_PATH}")
+set(AOCL_UTILS_PATH "${AOCL_UTILS_PATH}/lib")
 
 # Get common test sources excluding the excluded list
 file(GLOB COMMON_SRCS

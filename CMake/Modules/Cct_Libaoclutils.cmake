@@ -59,6 +59,7 @@ function(build_aocl_utils source_dir binary_dir)
                             -DAU_CMAKE_VERBOSE=OFF
                             -DAU_BUILD_TESTS=OFF
                             -DAU_BUILD_EXAMPLES=OFF
+                            -DCMAKE_INSTALL_PREFIX=${AU_INSTALL_DIR}
                     RESULT_VARIABLE configure_result
                     OUTPUT_VARIABLE configure_output
                     ERROR_VARIABLE configure_error
@@ -70,7 +71,7 @@ function(build_aocl_utils source_dir binary_dir)
     endif()
 
     # Build the library
-    execute_process(COMMAND ${CMAKE_COMMAND} --build "${binary_dir}" --config Release
+    execute_process(COMMAND ${CMAKE_COMMAND} --build "${binary_dir}" --config Release --target install
                     RESULT_VARIABLE build_result
                     OUTPUT_VARIABLE build_output
                     ERROR_VARIABLE build_error
@@ -100,8 +101,9 @@ if(NOT AU_SHARED AND NOT AU_STATIC)
 endif()
 
 # Set paths
-set(AU_SOURCE_DIR "${PROJECT_SOURCE_DIR}/build/external/aocl-utils")
-set(AU_BINARY_DIR "${AU_SOURCE_DIR}/build")
+set(AU_SOURCE_DIR  "${PROJECT_SOURCE_DIR}/build/external/aocl-utils")
+set(AU_BINARY_DIR  "${AU_SOURCE_DIR}/build")
+set(AU_INSTALL_DIR "${AU_SOURCE_DIR}/amd-utils")
 
 # Platform-specific library names
 if(WIN32)
@@ -124,18 +126,18 @@ endif()
 directory_exists("${AU_SOURCE_DIR}" AOCL_UTILS_DIR_EXISTS)
 
 # Check if aocl-utils library exists
-library_exists("${AOCL_UTILS_LIB}" "${AU_BINARY_DIR}/Library/Cpuid" AOCL_UTILS_LIB_EXISTS)
+library_exists("${AOCL_UTILS_LIB}" "${AU_INSTALL_DIR}/lib" AOCL_UTILS_LIB_EXISTS)
 
 # Main logic for handling aocl-utils dependency
 if(AOCL_UTILS_LIB_EXISTS)
-    message(STATUS "Aocl-Utils library found at: ${AU_BINARY_DIR}/Library/Cpuid/${AOCL_UTILS_LIB}")
+    message(STATUS "Aocl-Utils library found at: ${AU_INSTALL_DIR}/lib/${AOCL_UTILS_LIB}")
 
 elseif(AOCL_UTILS_DIR_EXISTS)
     message(STATUS "Aocl-Utils directory found, building library...")
     build_aocl_utils("${AU_SOURCE_DIR}" "${AU_BINARY_DIR}")
 
     # Verify the library was built successfully
-    library_exists("${AOCL_UTILS_LIB}" "${AU_BINARY_DIR}/Library/Cpuid" AOCL_UTILS_LIB_BUILT)
+    library_exists("${AOCL_UTILS_LIB}" "${AU_INSTALL_DIR}/lib" AOCL_UTILS_LIB_BUILT)
     if(NOT AOCL_UTILS_LIB_BUILT)
         message(FATAL_ERROR "Failed to build aocl-utils library: ${AOCL_UTILS_LIB}")
     endif()
@@ -165,7 +167,7 @@ else()
     build_aocl_utils("${AU_SOURCE_DIR}" "${AU_BINARY_DIR}")
 
     # Verify the library was built successfully
-    library_exists("${AOCL_UTILS_LIB}" "${AU_BINARY_DIR}/Library/Cpuid" AOCL_UTILS_LIB_BUILT)
+    library_exists("${AOCL_UTILS_LIB}" "${AU_INSTALL_DIR}/lib" AOCL_UTILS_LIB_BUILT)
     if(NOT AOCL_UTILS_LIB_BUILT)
         message(FATAL_ERROR "Failed to build aocl-utils library after cloning: ${AOCL_UTILS_LIB}")
     endif()
@@ -173,8 +175,6 @@ else()
 endif()
 
 # Set additional AOCL utils paths and library names
-set(AOCL_UTILS_INCLUDE_DIR  ${AU_SOURCE_DIR}/SDK/Bcl
-                            ${AU_SOURCE_DIR}/SDK/Include
-                            ${AU_BINARY_DIR}/generated)
-set(AOCL_UTILS_PATH         ${AU_BINARY_DIR}/Library/Cpuid)
+set(AOCL_UTILS_INCLUDE_DIR  ${AU_INSTALL_DIR}/include)
+set(AOCL_UTILS_PATH         ${AU_INSTALL_DIR})
 

@@ -66,7 +66,41 @@ To build and test a **single API**, use the specific target name, for example:
 $ cmake --build --preset dev-release-gcc --target test_exp
 ```
 
-#### **Step 6: Clean Build Files**
+#### **Step 6: Building Examples**
+To build examples along with aocl-libm, configure CMake using `-DLIBM_BUILD_EXAMPLES=ON`. This is **OFF by default**.
+
+**Option 1: Build Examples with Main Library**
+```console
+$ cmake --preset dev-release-gcc -DLIBM_BUILD_EXAMPLES=ON --fresh
+$ cmake --build --preset dev-release-gcc -j
+$ cmake --build --preset dev-release-gcc --target test_libm  # Build examples specifically
+```
+
+**Option 2: Build Examples Only (Standalone)**
+Navigate to the examples folder and configure with library paths:
+```console
+$ cd examples
+$ mkdir build && cd build
+$ cmake .. -DAOCL_LIBM="/path/to/aocl-libm_package" -DAOCL_UTILS="/path/to/aocl-utils_package"
+$ cmake --build .                                            # test_libm executable is created
+```
+
+**Examples Build Options:**
+- `USE_STATIC_LIB=ON`: Use static library instead of dynamic (default: OFF)
+
+**Example with Options:**
+```console
+$ cmake --preset dev-release-gcc -DLIBM_BUILD_EXAMPLES=ON -DUSE_STATIC_LIB=ON --fresh
+$ cmake --build --preset dev-release-gcc --target test_libm
+```
+
+**Running Examples:**
+The `test_libm` executable will be created in the examples directory and can be run directly:
+```console
+$ ./test_libm
+```
+
+#### **Step 7: Clean Build Files**
 To clean all build files, run:
 ```console
 $ cmake --build --preset dev-release-gcc --target clean
@@ -108,7 +142,7 @@ To build for code coverage, configure CMake using `-DLIBM_ENABLE_COVERAGE=ON`. T
         ```console
         $ cmake --build --preset dev-release-gcc --target coverage
         ```
-
+Note: ASAN and Code Coverage is build for developers
 -----
 
 ### Building on Windows 💻

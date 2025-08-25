@@ -149,6 +149,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(tanhf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(tanpif);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(truncf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(erff);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(erfcf);
 
 /*
  * Complex variants

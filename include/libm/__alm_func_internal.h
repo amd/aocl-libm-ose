@@ -152,6 +152,7 @@ extern float     ALM_PROTO_INTERNAL(tanpif)               (float x);
 extern float     ALM_PROTO_INTERNAL(truncf)               (float x);
 extern float     ALM_PROTO_INTERNAL(erff)                 (float x);
 extern void      ALM_PROTO_INTERNAL(sincosf)              (float x, float *s, float *c);
+extern float     ALM_PROTO_INTERNAL(erfcf)                (float x);
 /*
  * Integer variants
  */

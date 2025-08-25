@@ -391,6 +391,7 @@ extern "C" {
     float  amd_erff (float x);
 
     double amd_erfc  (double x);
+    float  amd_erfcf (float x);
 
 #ifdef __cplusplus
 }

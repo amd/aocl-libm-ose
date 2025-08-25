@@ -108,6 +108,13 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest4d, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
+    if((params->fqty == ALM::FloatQuantity::E_All) ||
+     (params->fqty == ALM::FloatQuantity::E_Vector_Array)) {
+      string varnam = "_vad(acos)";
+      libm = funcnam + varnam;
+      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTestad, params)
+                 ->Args({(int)params->count})->Iterations(params->niter);
+    }
     #if defined(__AVX512__)
     if((params->fqty == ALM::FloatQuantity::E_All) ||
      (params->fqty == ALM::FloatQuantity::E_Vector_8)) {

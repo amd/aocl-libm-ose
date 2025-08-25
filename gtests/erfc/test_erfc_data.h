@@ -38,7 +38,57 @@
  */
 static libm_test_special_data_f32
 test_erfcf_conformance_data[] = {
+    {POS_ZERO_F32, POS_ONE_F32, 0},             // erfc(0) = 1
+    {NEG_ZERO_F32, POS_ONE_F32, 0},             // erfc(-0) = 1
+    {POS_INF_F32, POS_ZERO_F32, 0},             // erfc(+inf) = 0
+    {NEG_INF_F32, 0x40000000, 0},               // erfc(-inf) = 2
+    {POS_SNAN_F32, POS_SNAN_F32, FE_INVALID },  // erfc(+SNAN) = SNAN
+    {NEG_SNAN_F32, NEG_SNAN_F32, FE_INVALID },  // erfc(-SNAN) = -SNAN
+    {POS_QNAN_F32, POS_QNAN_F32, 0},            // erfc(+QNAN) = QNAN
+    {NEG_QNAN_F32, NEG_QNAN_F32, 0},            // erfc(-QNAN) = -QNAN
 
+    // erfc(x) = 0, for x > 4.0 (large positive values for single precision)
+    {0x40800000, POS_ZERO_F32, 0},              // erfc(4.0)
+    {0x40A00000, POS_ZERO_F32, 0},              // erfc(5.0)
+    {0x40C00000, POS_ZERO_F32, 0},              // erfc(6.0)
+    {0x41200000, POS_ZERO_F32, 0},              // erfc(10.0)
+    {0x41A00000, POS_ZERO_F32, 0},              // erfc(20.0)
+
+    // erfc(x) = 2, for x < -4.0 (large negative values for single precision)
+    {0xC0800000, 0x40000000, 0},                // erfc(-4.0)
+    {0xC1200000, 0x40000000, 0},                // erfc(-10.0)
+    {0xC1700000, 0x40000000, 0},                // erfc(-15.0)
+    {0xC1A00000, 0x40000000, 0},                // erfc(-20.0)
+    {0xC1C80000, 0x40000000, 0},                // erfc(-25.0)
+
+    // Additional test cases from core-math worst case values
+    // For tiny positive values: erfc(x) ≈ 1 - x*(2/√π)
+    {0x00000001, 0x3F7FFFFF, 0},                // erfc(tiny) ≈ 1
+    {0x80000001, 0x3F800001, 0},                // erfc(-tiny) ≈ 1
+
+    // For small denormal values
+    {0x007FFFFF, 0x3F65A9F8, 0},                // erfc(max_denormal)
+    {0x807FFFFF, 0x3F9A5608, 0},                // erfc(-max_denormal)
+
+    // For smallest normal values
+    {0x00800000, 0x3F65A9F8, 0},                // erfc(min_normal)
+    {0x80800000, 0x3F9A5608, 0},                // erfc(-min_normal)
+
+    // Special boundary cases near x = 1
+    {0x3F800000, 0x3E427FA0, 0},                // erfc(1) ≈ 0.157299...
+    {0xBF800000, 0x3FF285F7, 0},                // erfc(-1) ≈ 1.842700...
+
+    // Test cases around the transition points between approximation intervals
+    {0x3F580000, 0x3EA64220, 0},                // erfc(0.84375)
+    {0x3FA00000, 0x3D37CE00, 0},                // erfc(1.25)
+    {0x40300000, 0x3C297900, 0},                // erfc(2.75)
+
+    // Very small positive value that would cause underflow
+    {0x41900000, 0x00000000, 0},                // erfc(18) = 0 (underflow)
+
+    // Test symmetry around zero
+    {0x3F000000, 0x3F1B4DC0, 0},                // erfc(0.5)
+    {0xBF000000, 0x3FCCE4B1, 0},                // erfc(-0.5)
 };
 
 static libm_test_special_data_f64

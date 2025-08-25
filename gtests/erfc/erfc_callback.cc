@@ -41,7 +41,7 @@
 #include "../libs/mparith/alm_mp_funcs.h"
 
 double LIBM_FUNC(erfc)(double);
-
+float LIBM_FUNC(erfcf)(float);
 static uint32_t ipargs = 1;
 bool special_case = false;
 
@@ -66,7 +66,7 @@ void ConfSetupf64(SpecParams *specp) {
 }
 
 float getFuncOp(float *data) {
-  return 0;
+  return LIBM_FUNC(erfcf)(data[0]);
 }
 
 double getFuncOp(double *data) {
@@ -104,6 +104,9 @@ double getGlibcOp(double *data) {
 *FUNCTIONS*
 **********************/
 int test_s1s(test_data *data, int idx)  {
+  float *ip  = (float*)data->ip;
+  float *op  = (float*)data->op;
+  op[0] = LIBM_FUNC(erfcf)(ip[idx]);
   return 0;
 }
 

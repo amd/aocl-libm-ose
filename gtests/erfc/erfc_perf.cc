@@ -89,6 +89,18 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
     }
   }
 
+  if((params->fwidth == ALM::FloatWidth::E_ALL) ||
+    (params->fwidth == ALM::FloatWidth::E_F32)) {
+    if((params->fqty == ALM::FloatQuantity::E_All) ||
+     (params->fqty == ALM::FloatQuantity::E_Scalar)) {
+      string varnam = "_s1s(erfcf)";
+      libm = funcnam + varnam;
+      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTestf, params)
+                 ->Args({(int)params->count})->Iterations(params->niter);
+    }
+  }
+
+
   size_t retval = benchmark::RunSpecifiedBenchmarks();
 
   return (int)retval;

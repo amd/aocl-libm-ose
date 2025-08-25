@@ -252,9 +252,9 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_atan);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_erf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_tan);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_cosh);
-
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_fabs);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_fabsf);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_erfc);
 
 #include <immintrin.h>
 

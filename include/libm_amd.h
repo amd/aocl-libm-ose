@@ -397,6 +397,7 @@ void FN_PROTOTYPE(vrda_atan)(int n, double *x, double *y);
 void FN_PROTOTYPE(vrda_erf)(int n, double *x, double *y);
 void FN_PROTOTYPE(vrda_tan)(int n, double *x, double *y);
 void FN_PROTOTYPE(vrda_cosh)(int n, double *x, double *y);
+void FN_PROTOTYPE(vrda_erfc)(int n, double *x, double *y);
 
 __m128d FN_PROTOTYPE(vrd2_acos)(__m128d x);
 __m256d FN_PROTOTYPE(vrd4_acos)(__m256d x);

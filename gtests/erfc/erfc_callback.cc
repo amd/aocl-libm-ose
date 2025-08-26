@@ -221,7 +221,15 @@ int test_v16s(test_data *data, int idx)  {
 }
 
 int test_vas(test_data *data, int count)  {
-
+  #if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
+  float *ip  = (float*)data->ip;
+  float *op  = (float*)data->op;
+    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      amd_vrsa_erfcf(count, ip, op);
+    #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+      vsErfc(count, ip, op);
+    #endif
+  #endif
   return 0;
 }
 

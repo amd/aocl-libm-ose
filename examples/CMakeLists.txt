@@ -39,45 +39,51 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -mavx2 -march=native")
 check_c_compiler_flag("-mavx512f" COMPILER_SUPPORTS_AVX512)
 
 if(COMPILER_SUPPORTS_AVX512)
-        # Create a test program to check hardware support
-        file(WRITE "${PROJECT_BINARY_DIR}/check_avx512.c" "
-            #include <stdio.h>
-            #ifdef __GNUC__
-            #include <cpuid.h>
-            #else
-            #error Unsupported compiler
-            #endif
+    # Create a test program to check hardware support
+    file(WRITE "${PROJECT_BINARY_DIR}/check_avx512.c"
+        "#include <cstdio>
+        #include <cstdlib>
 
-            int main() {
-                unsigned int eax, ebx, ecx, edx;
-                unsigned int leaf = 7, subleaf = 0;
+        #if defined(_MSC_VER)
+        #include <intrin.h>
+        bool has_avx512() {
+            int cpuInfo[4];
+            __cpuid(cpuInfo, 0);
+            if (cpuInfo[0] < 7) return false;
+            __cpuid(cpuInfo, 7);
+            return (cpuInfo[1] & (1 << 16)) != 0; // Bit 16 of EBX indicates AVX-512F
+        }
+        #else
+        #include <cpuid.h>
+        bool has_avx512() {
+            unsigned eax, ebx, ecx, edx;
+            if (!__get_cpuid_max(0, nullptr) || __get_cpuid_max(0, nullptr) < 7) return false;
+            __cpuid_count(7, 0, eax, ebx, ecx, edx);
+            return (ebx & (1 << 16)) != 0; // Bit 16 of EBX indicates AVX-512F
+        }
+        #endif
 
-                if (!__get_cpuid_count(leaf, subleaf, &eax, &ebx, &ecx, &edx)) {
-                    return 1;
-                }
+        int main() {
+            if (!has_avx512()) {
+                return -1;
+            }
+            return 0;
+        }"
+    )
 
-                // Check for AVX-512F (bit 16 of EBX)
-                if (ebx & (1 << 16)) {
-                    return 0;
-                } else {
-                    return 1;
-                }
-            }"
-        )
+    # Try to compile and run the test program
+    try_run(RUN_RESULT COMPILE_RESULT
+        "${PROJECT_BINARY_DIR}"
+        "${PROJECT_BINARY_DIR}/check_avx512.c"
+    )
 
-        # Try to compile and run the test program
-        try_run(RUN_RESULT COMPILE_RESULT
-            "${PROJECT_BINARY_DIR}"
-            "${PROJECT_BINARY_DIR}/check_avx512.c"
-        )
-
-        if(RUN_RESULT EQUAL 0)
-            message(STATUS "Hardware supports AVX-512 - enabling AVX-512 flags")
-            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mavx512f")
-            add_compile_definitions(__AVX512__)
-        else()
-            message(STATUS "Hardware does NOT support AVX-512")
-        endif()
+    if(RUN_RESULT EQUAL 0)
+        message(STATUS "Hardware supports AVX-512 - enabling AVX-512 flags")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mavx512f")
+        add_compile_definitions(__AVX512__)
+    else()
+        message(STATUS "Hardware does NOT support AVX-512")
+    endif()
 else()
     message(STATUS "Compiler does NOT support AVX-512")
 endif()

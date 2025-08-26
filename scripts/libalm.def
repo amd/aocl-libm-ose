@@ -225,6 +225,7 @@ EXPORTS
     amd_vrd8_atan
     amd_vrs16_atanf
     amd_vrs16_erff
+    amd_vrs16_erfcf
     amd_vrs16_expf
     amd_vrs16_sqrtf
     amd_vrs16_linearfracf

@@ -469,6 +469,7 @@ extern "C" {
 
     /* Erfc */
     __m512d amd_vrd8_erfc    (__m512d x);
+    __m512  amd_vrs16_erfcf  (__m512 x);
 
 #endif
 

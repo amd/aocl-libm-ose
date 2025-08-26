@@ -394,6 +394,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_erff);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_sqrtf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_linearfracf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_sincosf);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs16_erfcf);
 
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd2_acos);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_acos);

@@ -266,6 +266,7 @@ EXPORTS
     amd_vrs8_erff
     amd_erfcf
     amd_vrs4_erfcf
+    amd_vrs8_erfcf
     amd_vrs16_cosf
     amd_vrd2_erf
     amd_vrd4_erf

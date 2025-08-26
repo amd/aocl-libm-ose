@@ -309,6 +309,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrs8_fabsf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_sqrtf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_linearfracf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_sincosf);
+alm_func_t        G_ENTRY_PT_PTR(vrs8_erfcf);
 
 alm_func_t        G_ENTRY_PT_PTR(vrs16_logf);
 alm_func_t        G_ENTRY_PT_PTR(vrs16_expf);

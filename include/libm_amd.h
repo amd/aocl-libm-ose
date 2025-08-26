@@ -319,6 +319,7 @@ __m256 FN_PROTOTYPE(vrs8_fabsf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_sqrtf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_linearfracf)(__m256 x, __m256 y, float sca, float sha, float scb, float shb);
 void FN_PROTOTYPE(vrs8_sincosf)(__m256 x, __m256 *sin, __m256 *cos);
+__m256 FN_PROTOTYPE(vrs8_erfcf)(__m256 x);
 
 void FN_PROTOTYPE(vrda_exp)(int len, double* x, double* y);
 void FN_PROTOTYPE(vrsa_expf)(int len, float* x, float* y);

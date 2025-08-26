@@ -233,6 +233,7 @@ extern __m256    ALM_PROTO_INTERNAL(vrs8_fabsf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_sqrtf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_linearfracf)     (__m256 x, __m256 y, float sca, float sha, float scb, float shb);
 extern void      ALM_PROTO_INTERNAL(vrs8_sincosf)         (__m256 x, __m256 *sin, __m256 *cos);
+extern __m256    ALM_PROTO_INTERNAL(vrs8_erfcf)           (__m256 x);
 /*
  * Vector Single precision, 16 elements
  */

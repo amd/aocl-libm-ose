@@ -356,6 +356,7 @@ extern "C" {
 /* erfc */
     __m128d amd_vrd2_erfc   (__m128d x);
     __m256d amd_vrd4_erfc   (__m256d x);
+    __m128  amd_vrs4_erfcf  (__m128 x);
 
     void amd_vrda_erfc      (int len, double  *src, double  *dst);
 

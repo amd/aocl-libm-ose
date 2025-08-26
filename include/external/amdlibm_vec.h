@@ -392,6 +392,7 @@ extern "C" {
     void amd_vrda_erf             (int len, double  *src, double  *dst);
     void amd_vrda_tan             (int len, double  *src, double  *dst);
     void amd_vrda_cosh            (int len, double  *src, double  *dst);
+    void amd_vrsa_erfcf           (int len, float  *src, float  *dst);
 
     __m128d amd_vrd2_acos    (__m128d x);
     __m256d amd_vrd4_acos    (__m256d x);

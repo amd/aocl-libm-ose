@@ -64,6 +64,7 @@ file(GLOB MPARITH_SRCS
            cos.c
            cosh.c
            erf.c
+           erfc.c
            exp.c
            exp2.c
            exp10.c

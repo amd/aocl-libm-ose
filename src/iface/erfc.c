@@ -43,6 +43,7 @@ struct alm_arch_funcs __arch_funcs_erfc = {
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX2(vrda_erfc),
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(erfcf),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_erfcf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_erfcf),
         },
 
         [ALM_UARCH_VER_ZEN] = {
@@ -52,6 +53,7 @@ struct alm_arch_funcs __arch_funcs_erfc = {
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN(vrda_erfc),
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(erfcf),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN(vrs4_erfcf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_erfcf),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
@@ -61,6 +63,7 @@ struct alm_arch_funcs __arch_funcs_erfc = {
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN2(vrda_erfc),
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(erfcf),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN2(vrs4_erfcf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_erfcf),
         },
 
         [ALM_UARCH_VER_ZEN3] = {
@@ -70,6 +73,7 @@ struct alm_arch_funcs __arch_funcs_erfc = {
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN3(vrda_erfc),
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(erfcf),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN3(vrs4_erfcf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_erfcf),
         },
 
         [ALM_UARCH_VER_ZEN4] = {
@@ -80,6 +84,7 @@ struct alm_arch_funcs __arch_funcs_erfc = {
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN4(vrda_erfc),
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(erfcf),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN4(vrs4_erfcf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN4(vrs8_erfcf),
         },
 
         [ALM_UARCH_VER_ZEN5] = {
@@ -90,6 +95,7 @@ struct alm_arch_funcs __arch_funcs_erfc = {
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN5(vrda_erfc),
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN5(erfcf),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN5(vrs4_erfcf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN5(vrs8_erfcf),
         },
     },
 };
@@ -106,6 +112,7 @@ LIBM_IFACE_PROTO(erfc)(void *arg)
         [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_erfc),
         [ALM_FUNC_SCAL_SP]   = &G_ENTRY_PT_PTR(erfcf),
         [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_erfcf),
+        [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_erfcf),
         },
     };
 

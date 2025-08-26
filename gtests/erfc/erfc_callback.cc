@@ -125,6 +125,7 @@ extern "C" {
   __m128d LIBM_FUNC_VEC(d, 2, erfc)(__m128d);
   __m256d LIBM_FUNC_VEC(d, 4, erfc)(__m256d);
   __m128 LIBM_FUNC_VEC(s, 4, erfcf)(__m128);
+  __m256 LIBM_FUNC_VEC(s, 8, erfcf)(__m256);
 
   #if defined(__AVX512__)
     __m512d LIBM_FUNC_VEC(d, 8, erfc) (__m512d);
@@ -171,7 +172,16 @@ int test_v4d(test_data *data, int idx)  {
 }
 
 int test_v8s(test_data *data, int idx)  {
-
+  float *ip  = (float*)data->ip;
+  float *op  = (float*)data->op;
+  #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+    __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
+                               ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+    __m256 op8 = LIBM_FUNC_VEC(s, 8, erfcf)(ip8);
+    _mm256_store_ps(&op[0], op8);
+  #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+    vsErfc(8,ip,op);
+  #endif
   return 0;
 }
 

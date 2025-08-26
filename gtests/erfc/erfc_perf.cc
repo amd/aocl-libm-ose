@@ -106,6 +106,14 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest4f, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
+
+    if((params->fqty == ALM::FloatQuantity::E_All) ||
+     (params->fqty == ALM::FloatQuantity::E_Vector_8)) {
+      string varnam = "_v8s(erfcf)";
+      libm = funcnam + varnam;
+      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest8f, params)
+                 ->Args({(int)params->count})->Iterations(params->niter);
+    }
   }
 
 

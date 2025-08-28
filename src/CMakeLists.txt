@@ -25,10 +25,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-
-include(Cct_Library)
-cct_cxx_module("alm")
-
 # Get timestamp.
 string(TIMESTAMP BUILD_DATE "%Y%m%d")
 # Update using the timestamp.

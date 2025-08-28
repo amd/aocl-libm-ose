@@ -47,14 +47,16 @@ target_compile_options(libmfast_obj PRIVATE ${FAST_FLAGS})
 
 if(WIN32)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+  set(FASTLIBMDEPS "${PROJECT_BINARY_DIR}/src/libalm.lib")
+else()
+  set(FASTLIBMDEPS "libm_shared")
 endif()
-
 add_library(libmfast_shared SHARED $<TARGET_OBJECTS:libmfast_obj>)
 set_target_properties(libmfast_shared PROPERTIES
     POSITION_INDEPENDENT_CODE ON
     OUTPUT_NAME ${ALMFAST}
 )
-target_link_libraries(libmfast_shared PRIVATE ${libm_shared})
+target_link_libraries(libmfast_shared PRIVATE ${FASTLIBMDEPS})
 list(APPEND libm libmfast_shared)
 
 add_library(libmfast_static STATIC $<TARGET_OBJECTS:libmfast_obj>)

@@ -43,7 +43,6 @@ struct alm_arch_funcs __arch_funcs_tanh = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(tanh),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_tanhf), /* v4s */
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_tanhf), /* v8s ? */
-            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_tanhf), /* v16s */
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_tanhf),
         },
 

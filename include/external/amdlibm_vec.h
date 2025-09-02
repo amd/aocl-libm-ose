@@ -161,7 +161,9 @@ agreements with respect to the subject matter of this Agreement.
 #include <immintrin.h>
 #if defined(_WIN64) || defined(_WIN32)
     #if defined(__AVX512F__)
-        #include <avx512fintrin.h>
+        #if __has_include(<avx512fintrin.h>)
+            #include <avx512fintrin.h>
+        #endif
     #endif
 #endif
 #ifndef AMD_LIBM_VEC_EXTERNAL_H

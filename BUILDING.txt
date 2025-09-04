@@ -166,10 +166,6 @@
   Number type:
   -z (c for complex variant function, default is real variant function)
 
-### Building and installing AOCL-LibM using CMAKE
-    AOCL-LibM has a CMAKE based build system. Please follow the steps in docs/CMakeBuildSystem.md to build and install AOCL-LibM using CMAKE.
-    Please note that:
-      1. CMake for AOCL-LibM is only supported on Linux
-      2. CMake build system does not support Windows platform
-
-    A static dispatch feature is also implemented in CMAKE build system. Please refer CMakeBuildSystem.md for steps to enable and use static dispatch.
+### Configuring, Building, Installing, Building and Testing gtests and examples using CMAKE
+    AOCL-LibM has a CMAKE based build system.
+    Please follow the steps in docs/CMakeBuildSystem.md to build and install AOCL-LibM using CMAKE.

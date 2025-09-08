@@ -144,7 +144,7 @@ ALM_PROTO_ARCH_ZN4(vrs16_expf)(v_f32x16_t _x)
     vx = vx & V16_MASK;
 
     /* Check if -103 < vx < 88 */
-    v_u32x16_t cond = (vx > V16_ARG_MAX);
+    v_i32x16_t cond = (vx > V16_ARG_MAX);
 
     /* x * (64.0/ln(2)) */
     z   = _x * V16_TBL_LN2;

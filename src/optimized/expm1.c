@@ -200,5 +200,4 @@ ALM_PROTO_OPT(expm1)(double x)
         q1.d = asdouble(q1.u + ((uint64_t)m << 52));
         return q1.d;
     }
-    return 0;
 }

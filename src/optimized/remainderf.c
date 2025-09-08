@@ -59,16 +59,11 @@ float ALM_PROTO_OPT(remainderf)(float x, float y)
         if( (fax & EXPBITS_SP32) == EXPBITS_SP32)
             return __alm_handle_errorf(fay | QNANBITPATT_SP32, AMD_F_INVALID);
         else
-#ifdef WINDOWS
-            __alm_handle_errorf(fay | QNANBITPATT_SP32, AMD_F_INVALID);
-#else
-            return x + x;
-#endif
-    }
-
-    if(unlikely((fay & EXPBITS_SP32) > EXPBITS_SP32))
-    {
-        return (x*y)/(x*y);
+           #ifdef WINDOWS
+              __alm_handle_errorf(fay | QNANBITPATT_SP32, AMD_F_INVALID);
+           #else
+              return x + x;
+           #endif
     }
 
     if(fax == fay)

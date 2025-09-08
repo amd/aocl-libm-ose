@@ -93,11 +93,6 @@ double ALM_PROTO_OPT(fmod)(double x, double y)
         }
     }
 
-    if(unlikely((ay & EXPBITS_DP64) > EXPBITS_DP64))
-    {
-        return 1.0;
-    }
-
     if(ax == ay)
     {
         return 0.0;

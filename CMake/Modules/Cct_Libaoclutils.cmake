@@ -35,12 +35,24 @@ function(directory_exists dir result_var)
 endfunction()
 
 # Function to check if a library exists
-function(library_exists lib libpath result_var)
-    find_library(${lib}_FOUND NAMES ${lib} PATHS "${libpath}" NO_DEFAULT_PATH)
-    if(${lib}_FOUND)
-        set(${result_var} TRUE PARENT_SCOPE)
+function(library_exists lib libpath libdir result_var)
+    if(EXISTS "${libpath}/lib" AND IS_DIRECTORY "${libpath}/lib")
+        set(lib_search_path "${libpath}/lib")
+    elseif(EXISTS "${libpath}/lib64" AND IS_DIRECTORY "${libpath}/lib64")
+        set(lib_search_path "${libpath}/lib64")
     else()
         set(${result_var} FALSE PARENT_SCOPE)
+        set(${libdir} "" PARENT_SCOPE)
+        return()
+    endif()
+
+    find_library(${lib}_FOUND NAMES ${lib} PATHS "${lib_search_path}" NO_DEFAULT_PATH)
+    if(${lib}_FOUND)
+        set(${result_var} TRUE PARENT_SCOPE)
+        set(${libdir} "${lib_search_path}" PARENT_SCOPE)
+    else()
+        set(${result_var} FALSE PARENT_SCOPE)
+        set(${libdir} "" PARENT_SCOPE)
     endif()
     unset(${lib}_FOUND CACHE)
 endfunction()
@@ -60,6 +72,7 @@ function(build_aocl_utils source_dir binary_dir)
                             -DAU_BUILD_TESTS=OFF
                             -DAU_BUILD_EXAMPLES=OFF
                             -DCMAKE_INSTALL_PREFIX=${AU_INSTALL_DIR}
+                            -DCMAKE_INSTALL_LIBDIR=lib
                     RESULT_VARIABLE configure_result
                     OUTPUT_VARIABLE configure_output
                     ERROR_VARIABLE configure_error
@@ -126,18 +139,18 @@ endif()
 directory_exists("${AU_SOURCE_DIR}" AOCL_UTILS_DIR_EXISTS)
 
 # Check if aocl-utils library exists
-library_exists("${AOCL_UTILS_LIB}" "${AU_INSTALL_DIR}/lib" AOCL_UTILS_LIB_EXISTS)
+library_exists("${AOCL_UTILS_LIB}" "${AU_INSTALL_DIR}" AU_INSTALL_LIBDIR AOCL_UTILS_LIB_EXISTS)
 
 # Main logic for handling aocl-utils dependency
 if(AOCL_UTILS_LIB_EXISTS)
-    message(STATUS "Aocl-Utils library found at: ${AU_INSTALL_DIR}/lib/${AOCL_UTILS_LIB}")
+    message(STATUS "Aocl-Utils library found at: ${AU_INSTALL_LIBDIR}/${AOCL_UTILS_LIB}")
 
 elseif(AOCL_UTILS_DIR_EXISTS)
     message(STATUS "Aocl-Utils directory found, building library...")
     build_aocl_utils("${AU_SOURCE_DIR}" "${AU_BINARY_DIR}")
 
     # Verify the library was built successfully
-    library_exists("${AOCL_UTILS_LIB}" "${AU_INSTALL_DIR}/lib" AOCL_UTILS_LIB_BUILT)
+    library_exists("${AOCL_UTILS_LIB}" "${AU_INSTALL_DIR}" AU_INSTALL_LIBDIR AOCL_UTILS_LIB_BUILT)
     if(NOT AOCL_UTILS_LIB_BUILT)
         message(FATAL_ERROR "Failed to build aocl-utils library: ${AOCL_UTILS_LIB}")
     endif()
@@ -167,14 +180,14 @@ else()
     build_aocl_utils("${AU_SOURCE_DIR}" "${AU_BINARY_DIR}")
 
     # Verify the library was built successfully
-    library_exists("${AOCL_UTILS_LIB}" "${AU_INSTALL_DIR}/lib" AOCL_UTILS_LIB_BUILT)
+    library_exists("${AOCL_UTILS_LIB}" "${AU_INSTALL_DIR}" AU_INSTALL_LIBDIR AOCL_UTILS_LIB_BUILT)
     if(NOT AOCL_UTILS_LIB_BUILT)
         message(FATAL_ERROR "Failed to build aocl-utils library after cloning: ${AOCL_UTILS_LIB}")
     endif()
 
 endif()
 
-# Set additional AOCL utils paths and library names
+# Set AOCL_UTILS include path and AOCL_UTILS library path
 set(AOCL_UTILS_INCLUDE_DIR  ${AU_INSTALL_DIR}/include)
+set(AOCL_UTILS_LIB_DIR      ${AU_INSTALL_LIBDIR})
 set(AOCL_UTILS_PATH         ${AU_INSTALL_DIR})
-

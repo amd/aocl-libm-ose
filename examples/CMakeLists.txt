@@ -92,7 +92,11 @@ set(AOCL_LIBM  ${CMAKE_BINARY_DIR} CACHE STRING "Path to Aocl-LibM.")
 set(AOCL_UTILS ${AOCL_UTILS_PATH} CACHE STRING "Path to Aocl-Utils.")
 
 set(AMD_LIBM_LIB_PATH    "${AOCL_LIBM}/lib")
-set(AMD_UTILS_LIB_PATH   "${AOCL_UTILS}/lib")
+if(EXISTS "${AOCL_UTILS}/lib" AND IS_DIRECTORY "${AOCL_UTILS}/lib")
+    set(AMD_UTILS_LIB_PATH "${AOCL_UTILS}/lib")
+elseif(EXISTS "${AOCL_UTILS}/lib64" AND IS_DIRECTORY "${AOCL_UTILS}/lib64")
+    set(AMD_UTILS_LIB_PATH "${AOCL_UTILS}/lib64")
+endif()
 
 # Header paths
 include_directories("${AOCL_LIBM}/include"

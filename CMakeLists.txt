@@ -42,6 +42,16 @@ list(APPEND CMAKE_MODULE_PATH
     "${CMAKE_CURRENT_SOURCE_DIR}/CMake/Checkers"
 )
 
+# Check if a preset was used for configuration
+if (NOT DEFINED CMAKE_PRESET)
+  message(STATUS "No CMake preset detected - using manual configuration")
+endif()
+
+#------------------------------
+# Setup Options
+#------------------------------
+include(Cct_Options)
+
 #------------------------------
 # Setup Variables
 #------------------------------
@@ -116,11 +126,6 @@ if(WIN32)
         message(FATAL_ERROR  "CMAKE for ${PROJECT_NAME} not supported on ${CMAKE_C_COMPILER_ID}")
     endif()
 endif()
-
-#------------------------------
-# Setup Options
-#------------------------------
-include(Cct_Options)
 
 #------------------------------
 # Setup Project Includes

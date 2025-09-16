@@ -166,17 +166,9 @@ agreements with respect to the subject matter of this Agreement.
         #endif
     #endif
 #endif
+
 #ifndef AMD_LIBM_VEC_EXTERNAL_H
 #define AMD_LIBM_VEC_EXTERNAL_H
-
-/*
- * We don’t expect anyone to include this file directly.
-* but rely on AOCC to generate appropriate calls to vector functions
-*/
-
-#ifndef AMD_LIBM_VEC_EXPERIMENTAL
-#error "The functionality in this header is experimental, please define AMD_LIBM_VEC_EXPERIMENTAL"
-#endif /* EXPERIMENTAL */
 
 #ifdef __cplusplus
 extern "C" {

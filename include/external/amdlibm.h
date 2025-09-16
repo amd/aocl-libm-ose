@@ -398,7 +398,7 @@ extern "C" {
 #endif
 
 
-#ifdef REPLACE_WITH_AMDLIBM
+#if defined(REPLACE_WITH_AMDLIBM) || (defined(_MSC_VER) && !defined(__clang__))
 
  /* Trigonometric */
 

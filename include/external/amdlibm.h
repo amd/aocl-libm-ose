@@ -161,6 +161,8 @@ agreements with respect to the subject matter of this Agreement.
 #define __AMDLIBM_H__
 
 #include <complex.h>
+#include "amdlibm_vec.h"
+
 #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
   #ifdef __cplusplus
     extern "C" {

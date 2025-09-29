@@ -153,586 +153,580 @@ enforcement of rights or subsequent actions in the event of future breaches.
 14. ENTIRE AGREEMENT:  This Agreement constitutes the entire agreement between
 the parties and supersedes any prior or contemporaneous oral or written
 agreements with respect to the subject matter of this Agreement.
-
 */
-
-
 #ifndef __AMDLIBM_H__
 #define __AMDLIBM_H__
+
 
 #include <complex.h>
 #include "amdlibm_vec.h"
 
-#if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+
+#if ((defined (_WIN64) || defined (_WIN32)) && defined (__clang__))
   #ifdef __cplusplus
     extern "C" {
   #endif
-  typedef _C_float_complex _Fcomplex;
-  typedef _C_double_complex _Dcomplex;
-  typedef _C_ldouble_complex _Lcomplex;
+    /* Clang on Windows */
+    typedef _C_float_complex _Fcomplex;
+    typedef _C_double_complex _Dcomplex;
+    typedef _C_ldouble_complex _Lcomplex;
   #ifdef __cplusplus
     }
   #endif
 #endif
 
+
 #if (defined (_WIN64) || defined (_WIN32))
+  /* Windows */
   typedef    _Fcomplex     fc32_t;
   typedef    _Dcomplex     fc64_t;
   typedef    _Lcomplex     fc128_t;
 #else
+  /* Linux */
   typedef    float _Complex       fc32_t;
   typedef    double _Complex      fc64_t;
   typedef    long double _Complex fc128_t;
 #endif
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/* Trigonometric */
+  double amd_sin (double x);
+  float amd_sinf (float x);
 
- /* Trigonometric */
+  double amd_cos (double x);
+  float amd_cosf (float x);
 
-    double amd_cos  (double x);
-    float  amd_cosf (float  x);
+  double amd_tan (double x);
+  float amd_tanf (float x);
 
-    double amd_sin  (double x);
-    float  amd_sinf (float  x);
+/* Inverse Trigonometric */
+  double amd_asin (double x);
+  float amd_asinf (float x);
 
-    double amd_tan  (double x);
-    float  amd_tanf (float  x);
+  double amd_acos (double x);
+  float amd_acosf (float x);
 
-    double amd_acos  (double x);
-    float  amd_acosf (float  x);
+  double amd_atan (double x);
+  float amd_atanf (float x);
 
-    double amd_asin  (double x);
-    float  amd_asinf (float  x);
+  double amd_atan2 (double x, double y);
+  float amd_atan2f (float x, float y);
 
-    double amd_atan  (double x);
-    float  amd_atanf (float  x);
+  void amd_sincos (double x, double *s, double *c);
+  void amd_sincosf (float x, float *s, float *c);
 
-    double amd_atan2  (double x, double y);
-    float  amd_atan2f (float  x, float  y);
+/* Hyperbolic */
+  double amd_sinh (double x);
+  float amd_sinhf (float x);
 
-    void amd_sincos  (double x, double *s, double *c);
-    void amd_sincosf (float  x, float  *s, float  *c);
+  double amd_cosh (double x);
+  float amd_coshf (float x);
 
+  double amd_tanh (double x);
+  float amd_tanhf (float x);
 
- /* Hyperbolic */
+/* Inverse Hyperbolic */
+  double amd_asinh (double x);
+  float amd_asinhf (float x);
 
-    double amd_cosh  (double x);
-    float  amd_coshf (float  x);
+  double amd_acosh (double x);
+  float amd_acoshf (float x);
 
-    double amd_sinh  (double x);
-    float  amd_sinhf (float  x);
+  double amd_atanh (double x);
+  float amd_atanhf (float x);
 
-    double amd_tanh  (double x);
-    float  amd_tanhf (float  x);
+/* Exponential */
+  double amd_exp (double x);
+  float amd_expf (float x);
 
-    double amd_acosh  (double x);
-    float  amd_acoshf (float  x);
+  double amd_exp2 (double x);
+  float amd_exp2f (float x);
 
-    double amd_asinh  (double x);
-    float  amd_asinhf (float  x);
+  double amd_exp10 (double x);
+  float amd_exp10f (float x);
 
-    double amd_atanh  (double x);
-    float  amd_atanhf (float  x);
+  double amd_expm1 (double x);
+  float amd_expm1f (float x);
 
+/* Logarithmic */
+  double amd_log (double x);
+  float amd_logf (float x);
 
- /* Exponential & Logarithmic */
+  double amd_log2 (double x);
+  float amd_log2f (float x);
 
-    double amd_exp  (double x);
-    float  amd_expf (float  x);
+  double amd_log10 (double x);
+  float amd_log10f (float x);
 
-    double amd_exp2  (double x);
-    float  amd_exp2f (float  x);
+  double amd_log1p (double x);
+  float amd_log1pf (float x);
 
-    double amd_exp10  (double x);
-    float  amd_exp10f (float  x);
+/* Power & Root */
+  double amd_pow (double x, double y);
+  float amd_powf (float x, float y);
 
-    double amd_expm1  (double x);
-    float  amd_expm1f (float  x);
+  double amd_sqrt (double x);
+  float amd_sqrtf (float x);
 
-    double amd_log  (double x);
-    float  amd_logf (float  x);
+  double amd_cbrt (double x);
+  float amd_cbrtf (float x);
 
-    double amd_log2  (double x);
-    float  amd_log2f (float  x);
+/* Error */
+  double amd_erf (double x);
+  float amd_erff (float x);
 
-    double amd_log10  (double x);
-    float  amd_log10f (float  x);
+/* Complementary Error */
+  double amd_erfc (double x);
+  float amd_erfcf (float x);
 
-    double amd_log1p  (double x);
-    float  amd_log1pf (float  x);
+/* Remainder */
+  double amd_fmod (double x, double y);
+  float amd_fmodf (float x, float y);
 
-    double amd_logb  (double x);
-    float  amd_logbf (float  x);
+  double amd_remainder (double x, double y);
+  float amd_remainderf (float x, float y);
 
-    int amd_ilogb  (double x);
-    int amd_ilogbf (float  x);
+  double amd_remquo (double x, double y, int *quo);
+  float amd_remquof (float x, float y, int *quo);
 
-    double amd_modf  (double x, double *iptr);
-    float  amd_modff (float  x, float  *iptr);
+/* Maximum, Minimum & Difference */
+  double amd_fmax  (double x, double y);
+  float amd_fmaxf (float x, float y);
 
-    double amd_frexp  (double value, int *exp);
-    float  amd_frexpf (float  value, int *exp);
+  double amd_fmin (double x, double y);
+  float amd_fminf (float x, float y);
 
-    double amd_ldexp  (double x, int exp);
-    float  amd_ldexpf (float  x, int exp);
+  double amd_fdim (double x, double y);
+  float amd_fdimf (float x, float y);
 
-    double amd_scalbn  (double x, int n);
-    float  amd_scalbnf (float  x, int n);
+/* Euclidean Distance */
+  double amd_hypot (double x, double y);
+  float amd_hypotf (float x, float y);
 
-    double amd_scalbln  (double x, long int n);
-    float  amd_scalblnf (float  x, long int n);
+/* Nearest Integer */
+  double amd_ceil (double x);
+  float amd_ceilf (float x);
 
+  double amd_floor (double x);
+  float amd_floorf (float x);
 
- /* Power & Absolute value */
+  double amd_trunc (double x);
+  float amd_truncf (float x);
 
-    double amd_pow  (double x, double y);
-    float  amd_powf (float  x, float  y);
+  double amd_nearbyint (double x);
+  float amd_nearbyintf (float x);
 
-    double amd_cbrt  (double x);
-    float  amd_cbrtf (float  x);
+  double amd_rint (double x);
+  float amd_rintf (float x);
 
-    double amd_sqrt  (double x);
-    float  amd_sqrtf (float  x);
+  long int amd_lrint (double x);
+  long int amd_lrintf (float x);
 
-    double amd_hypot  (double x, double y);
-    float  amd_hypotf (float  x, float  y);
+  long long int amd_llrint (double x);
+  long long int amd_llrintf (float x);
 
-    double amd_fabs  (double x);
-    float  amd_fabsf (float  x);
+  double amd_round (double f);
+  float amd_roundf (float f);
 
+  long int amd_lround (double d);
+  long int amd_lroundf (float f);
 
- /* Nearest integer */
+  long long int amd_llround (double d);
+  long long int amd_llroundf (float f);
 
-    double amd_ceil  (double x);
-    float  amd_ceilf (float  x);
+/* Foating-Point Manipulation */
+  double amd_fabs (double x);
+  float amd_fabsf (float x);
 
-    double amd_floor  (double x);
-    float  amd_floorf (float  x);
+  double amd_modf (double x, double *iptr);
+  float amd_modff (float x, float *iptr);
 
-    double amd_trunc  (double x);
-    float  amd_truncf (float  x);
+  double amd_frexp (double value, int *exp);
+  float amd_frexpf (float value, int *exp);
 
-    long int amd_lrint  (double x);
-    long int amd_lrintf (float  x);
+  double amd_copysign (double x, double y);
+  float amd_copysignf (float x, float y);
 
-    long long int amd_llrint  (double x);
-    long long int amd_llrintf (float  x);
+  double amd_nan (const char *tagp);
+  float amd_nanf (const char *tagp);
 
-    double amd_rint  (double x);
-    float  amd_rintf (float  x);
+  int amd_finite (double x);
+  int amd_finitef (float x);
 
-    long int amd_lround  (double d);
-    long int amd_lroundf (float  f);
+  double amd_ldexp (double x, int exp);
+  float amd_ldexpf (float x, int exp);
 
-    long long int amd_llround  (double d);
-    long long int amd_llroundf (float  f);
+  double amd_scalbn (double x, int n);
+  float amd_scalbnf (float x, int n);
 
-    double amd_round  (double f);
-    float  amd_roundf (float  f);
+  double amd_scalbln (double x, long int n);
+  float amd_scalblnf (float x, long int n);
 
-    double amd_nearbyint  (double x);
-    float  amd_nearbyintf (float  x);
+  double amd_logb (double x);
+  float amd_logbf (float x);
 
+  int amd_ilogb (double x);
+  int amd_ilogbf (float x);
 
- /* Remainder */
+  double amd_nextafter (double x, double y);
+  float amd_nextafterf (float x, float y);
 
-    double amd_fmod  (double x, double y);
-    float  amd_fmodf (float  x, float  y);
+  double amd_nexttoward (double x, long double y);
+  float amd_nexttowardf (float x, long double y);
 
-    double amd_remainder  (double x, double y);
-    float  amd_remainderf (float  x, float  y);
+/* Complex Variants */
+  fc64_t amd_cexp (fc64_t x);
+  fc32_t amd_cexpf (fc32_t y);
 
-    double amd_remquo  (double x, double y, int *quo);
-    float  amd_remquof (float  x, float  y, int *quo);
+  fc64_t amd_clog (fc64_t x);
+  fc32_t amd_clogf (fc32_t y);
 
-
- /* Manipulation */
-
-    double amd_copysign  (double x, double y);
-    float  amd_copysignf (float  x, float  y);
-
-    double amd_nextafter  (double x, double y);
-    float  amd_nextafterf (float  x, float  y);
-
-    double amd_nexttoward  (double x, long double y);
-    float  amd_nexttowardf (float  x, long double y);
-
-    double amd_nan  (const char *tagp);
-    float  amd_nanf (const char *tagp);
-
-    int amd_finite  (double x);
-    int amd_finitef (float  x);
-
-
- /* Maximum, Minimum & Difference */
-
-    double amd_fdim  (double x, double y);
-    float  amd_fdimf (float  x, float  y);
-
-    double amd_fmax  (double x, double y);
-    float  amd_fmaxf (float  x, float  y);
-
-    double amd_fmin  (double x, double y);
-    float  amd_fminf (float  x, float  y);
-
- /* complex variants */
-    fc64_t amd_cexp  (fc64_t x);
-    fc32_t amd_cexpf (fc32_t y);
-
-    fc64_t amd_cpow  (fc64_t x, fc64_t y);
-    fc32_t amd_cpowf  (fc32_t x, fc32_t y);
-
-    fc64_t amd_clog  (fc64_t x);
-    fc32_t amd_clogf (fc32_t y);
-
-    /* Error functions */
-    double amd_erf  (double x);
-    float  amd_erff (float x);
-
-    double amd_erfc  (double x);
-    float  amd_erfcf (float x);
+  fc64_t amd_cpow (fc64_t x, fc64_t y);
+  fc32_t amd_cpowf (fc32_t x, fc32_t y);
 
 #ifdef __cplusplus
 }
 #endif
 
 
-#if defined(REPLACE_WITH_AMDLIBM) || (defined(_MSC_VER) && !defined(__clang__))
-
- /* Trigonometric */
-
-#undef cos
-#define cos amd_cos
-#undef cosf
-#define cosf amd_cosf
-
-#undef sin
-#define sin amd_sin
-#undef sinf
-#define sinf amd_sinf
-
-#undef tan
-#define tan amd_tan
-#undef tanf
-#define tanf amd_tanf
-
-#undef acos
-#define acos amd_acos
-#undef acosf
-#define acosf amd_acosf
-
-#undef asin
-#define asin amd_asin
-#undef asinf
-#define asinf amd_asinf
-
-#undef atan
-#define atan amd_atan
-#undef atanf
-#define atanf amd_atanf
-
-#undef atan2
-#define atan2 amd_atan2
-#undef atan2f
-#define atan2f amd_atan2f
-
-#undef sincos
-#define sincos amd_sincos
-#undef sincosf
-#define sincosf amd_sincosf
-
-
- /* Hyperbolic */
-
-#undef cosh
-#define cosh amd_cosh
-#undef coshf
-#define coshf amd_coshf
-
-#undef sinh
-#define sinh amd_sinh
-#undef sinhf
-#define sinhf amd_sinhf
-
-#undef tanh
-#define tanh amd_tanh
-#undef tanhf
-#define tanhf amd_tanhf
-
-#undef acosh
-#define acosh amd_acosh
-#undef acoshf
-#define acoshf amd_acoshf
-
-#undef asinh
-#define asinh amd_asinh
-#undef asinhf
-#define asinhf amd_asinhf
-
-#undef atanh
-#define atanh amd_atanh
-#undef atanhf
-#define atanhf amd_atanhf
-
-
- /* Exponential & Logarithmic */
-
-#undef exp
-#define exp amd_exp
-#undef expf
-#define expf amd_expf
-
-#undef exp2
-#define exp2 amd_exp2
-#undef exp2f
-#define exp2f amd_exp2f
-
-#undef exp10
-#define exp10 amd_exp10
-#undef exp10f
-#define exp10f amd_exp10f
-
-#undef expm1
-#define expm1 amd_expm1
-#undef expm1f
-#define expm1f amd_expm1f
-
-#undef log
-#define log amd_log
-#undef logf
-#define logf amd_logf
-
-#undef log2
-#define log2 amd_log2
-#undef log2f
-#define log2f amd_log2f
-
-#undef log10
-#define log10 amd_log10
-#undef log10f
-#define log10f amd_log10f
-
-#undef log1p
-#define log1p amd_log1p
-#undef log1pf
-#define log1pf amd_log1pf
-
-#undef _logb
-#define _logb amd_logb
-#undef _logbf
-#define _logbf amd_logbf
-
-#undef logb
-#define logb amd_logb
-#undef logbf
-#define logbf amd_logbf
-
-#undef ilogb
-#define ilogb amd_ilogb
-#undef ilogbf
-#define ilogbf amd_ilogbf
-
-#undef modf
-#define modf amd_modf
-#undef modff
-#define modff amd_modff
-
-#undef frexp
-#define frexp amd_frexp
-#undef frexpf
-#define frexpf amd_frexpf
-
-#undef ldexp
-#define ldexp amd_ldexp
-#undef ldexpf
-#define ldexpf amd_ldexpf
-
-#undef scalbn
-#define scalbn amd_scalbn
-#undef scalbnf
-#define scalbnf amd_scalbnf
-
-#undef scalbln
-#define scalbln amd_scalbln
-#undef scalblnf
-#define scalblnf amd_scalblnf
-
-
- /* Power & Absolute value */
-
-#undef pow
-#define pow amd_pow
-#undef powf
-#define powf amd_powf
-
-#undef cbrt
-#define cbrt amd_cbrt
-#undef cbrtf
-#define cbrtf amd_cbrtf
-
-#undef sqrt
-#define sqrt amd_sqrt
-#undef sqrtf
-#define sqrtf amd_sqrtf
-
-#undef _hypot
-#define _hypot amd_hypot
-#undef _hypotf
-#define _hypotf amd_hypotf
-
-#undef hypot
-#define hypot amd_hypot
-#undef hypotf
-#define hypotf amd_hypotf
-
-#undef fabs
-#define fabs amd_fabs
-#undef fabsf
-#define fabsf amd_fabsf
-
-
- /* Nearest integer */
-
-#undef ceil
-#define ceil amd_ceil
-#undef ceilf
-#define ceilf amd_ceilf
-
-#undef floor
-#define floor amd_floor
-#undef floorf
-#define floorf amd_floorf
-
-#undef trunc
-#define trunc amd_trunc
-#undef truncf
-#define truncf amd_truncf
-
-#undef lrint
-#define lrint amd_lrint
-#undef lrintf
-#define lrintf amd_lrintf
-
-#undef llrint
-#define llrint amd_llrint
-#undef llrintf
-#define llrintf amd_llrintf
-
-#undef rint
-#define rint amd_rint
-#undef rintf
-#define rintf amd_rintf
-
-#undef lround
-#define lround amd_lround
-#undef lroundf
-#define lroundf amd_lroundf
-
-#undef llround
-#define llround amd_llround
-#undef llroundf
-#define llroundf amd_llroundf
-
-#undef round
-#define round amd_round
-#undef roundf
-#define roundf amd_roundf
-
-#undef nearbyint
-#define nearbyint amd_nearbyint
-#undef nearbyintf
-#define nearbyintf amd_nearbyintf
-
-
- /* Remainder */
-
-#undef fmod
-#define fmod amd_fmod
-#undef fmodf
-#define fmodf amd_fmodf
-
-#undef remainder
-#define remainder amd_remainder
-#undef remainderf
-#define remainderf amd_remainderf
-
-#undef remquo
-#define remquo amd_remquo
-#undef remquof
-#define remquof amd_remquof
-
- /* Manipulation */
-
-#undef _copysign
-#define _copysign amd_copysign
-#undef _copysignf
-#define _copysignf amd_copysignf
-
-#undef copysign
-#define copysign amd_copysign
-#undef copysignf
-#define copysignf amd_copysignf
-
-#undef nextafter
-#define nextafter amd_nextafter
-#undef nextafterf
-#define nextafterf amd_nextafterf
-
-#undef nexttoward
-#define nexttoward amd_nexttoward
-#undef nexttowardf
-#define nexttowardf amd_nexttowardf
-
-#undef nan
-#define nan amd_nan
-#undef nanf
-#define nanf amd_nanf
-
-#undef _finite
-#define _finite amd_finite
-#undef _finitef
-#define _finitef amd_finitef
-
-#undef finite
-#define finite amd_finite
-#undef finitef
-#define finitef amd_finitef
-
-
- /* Maximum, Minimum & Difference */
-
-#undef fdim
-#define fdim amd_fdim
-#undef fdimf
-#define fdimf amd_fdimf
-
-#undef fmax
-#define fmax amd_fmax
-#undef fmaxf
-#define fmaxf amd_fmaxf
-
-#undef fmin
-#define fmin amd_fmin
-#undef fminf
-#define fminf amd_fminf
-
- /* complex */
-#undef cexp
-#define cexp amd_cexp
-#undef cexpf
-#define cexpf amd_cexpf
-
-/* erf */
-#undef erf
-#define erf amd_erf
-#undef erff
-#define erff amd_erff
-
-#endif
+/*
+ *  Standard Math API symbols can be replaced by respective
+ *  AOCL-LibM API symbols by enabling flag REPLACE_WITH_AMDLIBM.
+ *  This replacement is always enabled for MSVC Compiler.
+ */
+#if defined (REPLACE_WITH_AMDLIBM) \
+      || (defined (_MSC_VER) && !defined (__clang__))
+
+/* Trigonometric */
+  #undef sin
+  #define sin amd_sin
+  #undef sinf
+  #define sinf amd_sinf
+
+  #undef cos
+  #define cos amd_cos
+  #undef cosf
+  #define cosf amd_cosf
+
+  #undef tan
+  #define tan amd_tan
+  #undef tanf
+  #define tanf amd_tanf
+
+  #undef sincos
+  #define sincos amd_sincos
+  #undef sincosf
+  #define sincosf amd_sincosf
+
+/* Inverse Trigonometric */
+  #undef asin
+  #define asin amd_asin
+  #undef asinf
+  #define asinf amd_asinf
+
+  #undef acos
+  #define acos amd_acos
+  #undef acosf
+  #define acosf amd_acosf
+
+  #undef atan
+  #define atan amd_atan
+  #undef atanf
+  #define atanf amd_atanf
+
+  #undef atan2
+  #define atan2 amd_atan2
+  #undef atan2f
+  #define atan2f amd_atan2f
+
+/* Hyperbolic */
+  #undef sinh
+  #define sinh amd_sinh
+  #undef sinhf
+  #define sinhf amd_sinhf
+
+  #undef cosh
+  #define cosh amd_cosh
+  #undef coshf
+  #define coshf amd_coshf
+
+  #undef tanh
+  #define tanh amd_tanh
+  #undef tanhf
+  #define tanhf amd_tanhf
+
+/* Inverse Hyperbolic */
+  #undef asinh
+  #define asinh amd_asinh
+  #undef asinhf
+  #define asinhf amd_asinhf
+
+  #undef acosh
+  #define acosh amd_acosh
+  #undef acoshf
+  #define acoshf amd_acoshf
+
+  #undef atanh
+  #define atanh amd_atanh
+  #undef atanhf
+  #define atanhf amd_atanhf
+
+/* Exponential */
+  #undef exp
+  #define exp amd_exp
+  #undef expf
+  #define expf amd_expf
+
+  #undef exp2
+  #define exp2 amd_exp2
+  #undef exp2f
+  #define exp2f amd_exp2f
+
+  #undef exp10
+  #define exp10 amd_exp10
+  #undef exp10f
+  #define exp10f amd_exp10f
+
+  #undef expm1
+  #define expm1 amd_expm1
+  #undef expm1f
+  #define expm1f amd_expm1f
+
+/* Logarithmic */
+  #undef log
+  #define log amd_log
+  #undef logf
+  #define logf amd_logf
+
+  #undef log2
+  #define log2 amd_log2
+  #undef log2f
+  #define log2f amd_log2f
+
+  #undef log10
+  #define log10 amd_log10
+  #undef log10f
+  #define log10f amd_log10f
+
+  #undef log1p
+  #define log1p amd_log1p
+  #undef log1pf
+  #define log1pf amd_log1pf
+
+/* Power & Root */
+  #undef pow
+  #define pow amd_pow
+  #undef powf
+  #define powf amd_powf
+
+  #undef sqrt
+  #define sqrt amd_sqrt
+  #undef sqrtf
+  #define sqrtf amd_sqrtf
+
+  #undef cbrt
+  #define cbrt amd_cbrt
+  #undef cbrtf
+  #define cbrtf amd_cbrtf
+
+/* Error */
+  #undef erf
+  #define erf amd_erf
+  #undef erff
+  #define erff amd_erff
+
+/* Complementary Error */
+  #undef erfc
+  #define erfc amd_erfc
+  #undef erfcf
+  #define erfcf amd_erfcf
+
+/* Remainder */
+  #undef fmod
+  #define fmod amd_fmod
+  #undef fmodf
+  #define fmodf amd_fmodf
+
+  #undef remainder
+  #define remainder amd_remainder
+  #undef remainderf
+  #define remainderf amd_remainderf
+
+  #undef remquo
+  #define remquo amd_remquo
+  #undef remquof
+  #define remquof amd_remquof
+
+/* Maximum, Minimum & Difference */
+  #undef fmax
+  #define fmax amd_fmax
+  #undef fmaxf
+  #define fmaxf amd_fmaxf
+
+  #undef fmin
+  #define fmin amd_fmin
+  #undef fminf
+  #define fminf amd_fminf
+
+  #undef fdim
+  #define fdim amd_fdim
+  #undef fdimf
+  #define fdimf amd_fdimf
+
+/* Euclidean Distance */
+  #undef _hypot
+  #define _hypot amd_hypot
+  #undef _hypotf
+  #define _hypotf amd_hypotf
+
+  #undef hypot
+  #define hypot amd_hypot
+  #undef hypotf
+  #define hypotf amd_hypotf
+
+/* Nearest Integer */
+  #undef ceil
+  #define ceil amd_ceil
+  #undef ceilf
+  #define ceilf amd_ceilf
+
+  #undef floor
+  #define floor amd_floor
+  #undef floorf
+  #define floorf amd_floorf
+
+  #undef trunc
+  #define trunc amd_trunc
+  #undef truncf
+  #define truncf amd_truncf
+
+  #undef nearbyint
+  #define nearbyint amd_nearbyint
+  #undef nearbyintf
+  #define nearbyintf amd_nearbyintf
+
+  #undef rint
+  #define rint amd_rint
+  #undef rintf
+  #define rintf amd_rintf
+
+  #undef lrint
+  #define lrint amd_lrint
+  #undef lrintf
+  #define lrintf amd_lrintf
+
+  #undef llrint
+  #define llrint amd_llrint
+  #undef llrintf
+  #define llrintf amd_llrintf
+
+  #undef round
+  #define round amd_round
+  #undef roundf
+  #define roundf amd_roundf
+
+  #undef lround
+  #define lround amd_lround
+  #undef lroundf
+  #define lroundf amd_lroundf
+
+  #undef llround
+  #define llround amd_llround
+  #undef llroundf
+  #define llroundf amd_llroundf
+
+/* Floating-Point Manipulation */
+  #undef fabs
+  #define fabs amd_fabs
+  #undef fabsf
+  #define fabsf amd_fabsf
+
+  #undef modf
+  #define modf amd_modf
+  #undef modff
+  #define modff amd_modff
+
+  #undef frexp
+  #define frexp amd_frexp
+  #undef frexpf
+  #define frexpf amd_frexpf
+
+  #undef _copysign
+  #define _copysign amd_copysign
+  #undef _copysignf
+  #define _copysignf amd_copysignf
+
+  #undef copysign
+  #define copysign amd_copysign
+  #undef copysignf
+  #define copysignf amd_copysignf
+
+  #undef nan
+  #define nan amd_nan
+  #undef nanf
+  #define nanf amd_nanf
+
+  #undef _finite
+  #define _finite amd_finite
+  #undef _finitef
+  #define _finitef amd_finitef
+
+  #undef finite
+  #define finite amd_finite
+  #undef finitef
+  #define finitef amd_finitef
+
+  #undef ldexp
+  #define ldexp amd_ldexp
+  #undef ldexpf
+  #define ldexpf amd_ldexpf
+
+  #undef scalbn
+  #define scalbn amd_scalbn
+  #undef scalbnf
+  #define scalbnf amd_scalbnf
+
+  #undef scalbln
+  #define scalbln amd_scalbln
+  #undef scalblnf
+  #define scalblnf amd_scalblnf
+
+  #undef _logb
+  #define _logb amd_logb
+  #undef _logbf
+  #define _logbf amd_logbf
+
+  #undef logb
+  #define logb amd_logb
+  #undef logbf
+  #define logbf amd_logbf
+
+  #undef ilogb
+  #define ilogb amd_ilogb
+  #undef ilogbf
+  #define ilogbf amd_ilogbf
+
+  #undef nextafter
+  #define nextafter amd_nextafter
+  #undef nextafterf
+  #define nextafterf amd_nextafterf
+
+  #undef nexttoward
+  #define nexttoward amd_nexttoward
+  #undef nexttowardf
+  #define nexttowardf amd_nexttowardf
+
+/* Complex Variant */
+  #undef cexp
+  #define cexp amd_cexp
+  #undef cexpf
+  #define cexpf amd_cexpf
+
+#endif /* REPLACE_WITH_AMDLIBM */
 
 
 #endif /* __AMDLIBM_H__ */
-

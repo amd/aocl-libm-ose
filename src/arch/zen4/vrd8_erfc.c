@@ -118,7 +118,6 @@ static const struct {
     _MM512_SET1_PD8(0x1.15dc9221c1a1p-13),  // qq4
     _MM512_SET1_PD8(-0x1.09c4342a2612p-18)  // qq5
 },
-
 .poly_bound2 = {
     _MM512_SET1_PD8(-0x1.359b8bef77538p-9), // pa0
     _MM512_SET1_PD8(0x1.a8d00ad92b34dp-2),  // pa1
@@ -134,7 +133,6 @@ static const struct {
     _MM512_SET1_PD8(0x1.bedc26b51dd1cp-7),  // qa5
     _MM512_SET1_PD8(0x1.88b545735151dp-7)   // qa6
 },
-
 .poly_bound3 = {
     _MM512_SET1_PD8(-0x1.43412600d6435p-7), // ra0
     _MM512_SET1_PD8(-0x1.63416e4ba736p-1), // ra1
@@ -153,7 +151,6 @@ static const struct {
     _MM512_SET1_PD8(0x1.a47ef8e484a93p2),   // sa7
     _MM512_SET1_PD8(-0x1.eeff2ee749a62p-5)  // sa8
 },
-
 .poly_bound4 = {
     _MM512_SET1_PD8(-0x1.4341239e86f4ap-7), // rb0
     _MM512_SET1_PD8(-0x1.993ba70c285dep-1), // rb1
@@ -276,15 +273,15 @@ ALM_PROTO_ARCH_ZN4(vrd8_erfc)(v_f64x8_t _x) {
 
     v_u64x8_t ix = (ux_abs >> 32) & MASK_32;
 
+    __mmask8 sign_mask = _mm512_cmp_pd_mask(_x, ZERO, _CMP_LT_OQ);
+
     // Check for NaN or Inf
     v_u64x8_t inf_nan_cond = ix >= INF_NAN;
     if(unlikely(test_condition_for_all(inf_nan_cond))) {
         v_u64x8_t inf_cond = ux_abs == INF;
-
-        __mmask8 sign_mask = _mm512_cmp_pd_mask(as_v8_f64_u64(sign), ZERO, _CMP_LT_OQ);
         __mmask8 inf_cond_mask = _mm512_cmp_pd_mask(as_v8_f64_u64(inf_cond), ZERO, _CMP_NEQ_OQ);
     
-        v_f64x8_t inf_result = _mm512_mask_blend_pd(sign_mask, TWO, ZERO);
+        v_f64x8_t inf_result = _mm512_mask_blend_pd(sign_mask, ZERO, TWO);
         v_f64x8_t nan_result = _x - _x; // return NaN
         result = _mm512_mask_blend_pd(inf_cond_mask, nan_result, inf_result);
         return result;
@@ -308,9 +305,9 @@ ALM_PROTO_ARCH_ZN4(vrd8_erfc)(v_f64x8_t _x) {
         v_f64x8_t poly_result = ONE - (_x + _x * y);
 
         // Select appropriate result based on sub-conditions
-        __mmask8 sub1_mask = _mm512_cmp_pd_mask(as_v8_f64_u64(sub1_cond), ZERO, _CMP_NEQ_OQ);
+        __mmask8 sub1_mask = _mm512_movepi64_mask((__m512i)sub1_cond);
         result = _mm512_mask_blend_pd(sub1_mask, poly_result, small_result2);
-        __mmask8 sub2_mask = _mm512_cmp_pd_mask(as_v8_f64_u64(sub2_cond), ZERO, _CMP_NEQ_OQ);
+        __mmask8 sub2_mask = _mm512_movepi64_mask((__m512i)sub2_cond);
         result = _mm512_mask_blend_pd(sub2_mask, result, small_result1);
         return result;
     }
@@ -329,7 +326,6 @@ ALM_PROTO_ARCH_ZN4(vrd8_erfc)(v_f64x8_t _x) {
         v_f64x8_t pos_result = (ONE - ERX) - ratio;
         v_f64x8_t neg_result = ONE + (ERX + ratio);
 
-        __mmask8 sign_mask = _mm512_cmp_pd_mask(as_v8_f64_u64(sign), ZERO, _CMP_NEQ_OQ);
         result = _mm512_mask_blend_pd(sign_mask, pos_result, neg_result);
         return result;
     }
@@ -377,7 +373,6 @@ ALM_PROTO_ARCH_ZN4(vrd8_erfc)(v_f64x8_t _x) {
         v_f64x8_t pos_result = final_result;
         v_f64x8_t neg_result = TWO - final_result;
 
-        __mmask8 sign_mask = _mm512_cmp_pd_mask(as_v8_f64_u64(sign), ZERO, _CMP_NEQ_OQ);
         result = _mm512_mask_blend_pd(sign_mask, pos_result, neg_result);
         return result;
     }
@@ -387,7 +382,6 @@ ALM_PROTO_ARCH_ZN4(vrd8_erfc)(v_f64x8_t _x) {
     if(test_condition_for_all(cond4)) {
         v_f64x8_t pos_result = TINY * TINY;  // Underflow
         v_f64x8_t neg_result = TWO;
-        __mmask8 sign_mask = _mm512_cmp_pd_mask(as_v8_f64_u64(sign), ZERO, _CMP_NEQ_OQ);
         result = _mm512_mask_blend_pd(sign_mask, pos_result, neg_result);
         return result;
     }

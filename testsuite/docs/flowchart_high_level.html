@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMD LibM Test Suite - High-Level Architecture</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            line-height: 1.6;
+        }
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+            margin-top: 0;
+            font-size: 2.5em;
+            text-align: center;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 50px;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            font-size: 1.8em;
+        }
+        .chart-container {
+            background-color: #f8f9fa;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            min-height: 300px;
+        }
+        .info {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+            font-size: 1.1em;
+        }
+        .description {
+            background-color: #fff9e6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #f39c12;
+        }
+        .description h3 {
+            margin-top: 0;
+            color: #e67e22;
+        }
+        .key-points {
+            background-color: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #4caf50;
+        }
+        .key-points h4 {
+            margin-top: 0;
+            color: #2e7d32;
+        }
+        .key-points ul {
+            margin: 10px 0;
+        }
+        .key-points li {
+            margin: 8px 0;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 AMD LibM Test Suite</h1>
+        <h1 style="font-size: 1.5em; margin-top: -20px; border: none;">High-Level Architecture Overview</h1>
+
+        <div class="info">
+            <strong>🎯 Purpose:</strong> Overview of the AMDLibM Test-Suite Architecture, Workflow, and Testing strategies<br>
+        </div>
+
+        <!-- FLOWCHART 1: Overall System Architecture -->
+        <h2>1. 🏗️ Overall System Architecture</h2>
+
+        <div class="description">
+            <h3>Overview</h3>
+            <p>This diagram shows the complete end-to-end architecture of the AMD LibM test suite, illustrating how different components interact to validate math library functions across multiple architectures and data types.</p>
+        </div>
+
+        <div class="chart-container">
+            <div class="mermaid">
+graph TB
+    subgraph Input["📋 INPUT LAYER"]
+        YAML[YAML Test<br/>Configurations<br/>━━━━━━━━━<br/>• Function specs<br/>• Input ranges<br/>• ULP thresholds<br/>• Variants]
+        CLI[Command Line<br/>Arguments<br/>━━━━━━━━━<br/>• Test mode<br/>• Library paths<br/>• Output options]
+    end
+
+    subgraph Core["⚙️ CORE PROCESSING ENGINE"]
+        Parser[YAML Parser<br/>━━━━━━━━━<br/>• Parse test specs<br/>• Validate config<br/>• Generate metadata]
+
+        Dispatcher[Test Dispatcher<br/>━━━━━━━━━<br/>• Route by variant<br/>• Type resolution<br/>• API lookup]
+
+        LibMgr[Library Manager<br/>━━━━━━━━━<br/>• Load shim library<br/>• Load reference<br/>• Symbol resolution]
+    end
+
+    subgraph Execution["🔬 EXECUTION LAYER"]
+        TypeHandler[Type-Specific<br/>Handlers<br/>━━━━━━━━━<br/>• Scalar: float/double<br/>• Vector: SSE/AVX/AVX-512<br/>• Array: VRA mode]
+
+        UnitTestExec[Unit Test<br/>Executor<br/>━━━━━━━━━<br/>• Single value tests<br/>• Expected results<br/>• Exception validation]
+
+        RangeTestExec[Range Test<br/>Executor<br/>━━━━━━━━━<br/>• Accuracy tests<br/>• Performance tests<br/>• Batch processing]
+
+        InputGen[Input Generator<br/>━━━━━━━━━<br/>• Linear/Exponential<br/>• Random/Bit-step<br/>• Special values]
+    end
+
+    subgraph Validation["✅ VALIDATION LAYER"]
+        FuncCall[Function Execution<br/>━━━━━━━━━<br/>• Call shim function<br/>• Call reference<br/>• Capture exceptions]
+
+        Verify[Accuracy Verification<br/>━━━━━━━━━<br/>• Compute ULP error<br/>• Check thresholds<br/>• Status tracking]
+
+        PerfMeas[Performance<br/>Measurement<br/>━━━━━━━━━<br/>• High-res timing<br/>• Multi-iteration<br/>• Statistical analysis]
+    end
+
+    subgraph Output["📊 OUTPUT LAYER"]
+        Serialize[YAML Serializer<br/>━━━━━━━━━<br/>• Format results<br/>• Hex conversion<br/>• Metadata Output]
+
+        Reports[Test Reports<br/>━━━━━━━━━<br/>• Pass/Fail status<br/>• ULP errors<br/>• Performance metrics<br/>• Exception info]
+
+        Files[Output Files<br/>━━━━━━━━━<br/>• YAML dumps<br/>• Console logs<br/>• Statistics]
+    end
+
+    subgraph Libraries["📚 EXTERNAL LIBRARIES"]
+        ShimLib[Shim Library <br/>amd/mkl/gcc<br/>━━━━━━━━━<br/>Function under test]
+        RefLib[Reference Library<br/>━━━━━━━━━<br/>MPFR<br/>High-precision]
+    end
+
+    %% Input connections
+    YAML --> Parser
+    CLI --> Parser
+    Parser --> Dispatcher
+
+    %% Core processing
+    Dispatcher --> LibMgr
+    LibMgr --> TypeHandler
+    TypeHandler --> UnitTestExec
+    TypeHandler --> RangeTestExec
+
+    %% Unit Test flow - direct to validation
+    UnitTestExec --> FuncCall
+
+    %% Range Test flow - through input generation
+    RangeTestExec --> InputGen
+    InputGen --> FuncCall
+
+    %% Validation flow
+    FuncCall --> Verify
+    FuncCall --> PerfMeas
+
+    %% Library connections
+    LibMgr -.Load.-> ShimLib
+    LibMgr -.Load.-> RefLib
+    FuncCall -.Call.-> ShimLib
+    FuncCall -.Call.-> RefLib
+
+    %% Output flow
+    Verify --> Serialize
+    PerfMeas --> Serialize
+    Serialize --> Reports
+    Reports --> Files
+
+    %% Styling
+    classDef inputStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:3px,color:#000
+    classDef coreStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px,color:#000
+    classDef execStyle fill:#fff3e0,stroke:#f57c00,stroke-width:3px,color:#000
+    classDef validStyle fill:#e8f5e9,stroke:#388e3c,stroke-width:3px,color:#000
+    classDef outputStyle fill:#fce4ec,stroke:#c2185b,stroke-width:3px,color:#000
+    classDef libStyle fill:#fff9c4,stroke:#f9a825,stroke-width:3px,color:#000
+
+    class YAML,CLI inputStyle
+    class Parser,Dispatcher,LibMgr coreStyle
+    class TypeHandler,UnitTestExec,RangeTestExec,InputGen execStyle
+    class FuncCall,Verify,PerfMeas validStyle
+    class Serialize,Reports,Files outputStyle
+    class ShimLib,RefLib libStyle
+            </div>
+        </div>
+
+        <div class="key-points">
+            <h4>🔑 Key Components</h4>
+            <ul>
+                <li><strong>Input Layer:</strong> YAML configurations define test specifications; CLI provides runtime parameters</li>
+                <li><strong>Core Engine:</strong> Parses configurations, dispatches tests to appropriate handlers, manages libraries</li>
+                <li><strong>Execution Layer:</strong> Separates Unit Test (direct validation) and Range Test (input generation) execution paths</li>
+                <li><strong>Validation Layer:</strong> Compares against reference implementation, computes ULP errors, measures performance</li>
+                <li><strong>Output Layer:</strong> Serializes results to YAML format with detailed metrics and diagnostics</li>
+                <li><strong>External Libraries:</strong> Shim library (function under test) and reference library (high-precision ground truth)</li>
+            </ul>
+        </div>
+
+        <!-- FLOWCHART 2: Test Workflow & Execution Pipeline -->
+        <h2>2. 🔄 Test Workflow & Execution Pipeline</h2>
+
+        <div class="description">
+            <h3>Overview</h3>
+            <p>This flowchart illustrates the complete test execution workflow from initialization through cleanup, showing the three primary test modes and how they integrate into the overall pipeline.</p>
+        </div>
+
+        <div class="chart-container">
+            <div class="mermaid">
+flowchart TD
+    Start([🎬 START]) --> Init[Initialize Environment<br/>━━━━━━━━━━━━━━<br/>1. Parse command line<br/>2. Load shim library<br/>3. Load reference library<br/>4. Validate libraries]
+
+    Init --> LoadConfig[Load Test Configuration<br/>━━━━━━━━━━━━━━<br/>• Read YAML files<br/>• Parse test specifications<br/>• Extract function metadata]
+
+    LoadConfig --> ProcessTests{For Each<br/>Test Specification}
+
+    ProcessTests -->|Next Test| ParseTest[Parse Test Parameters<br/>━━━━━━━━━━━━━━<br/>• Function name & API<br/>• Input ranges/values<br/>• Expected outputs<br/>• Variants: ss/sd/vrs4/vrd2...]
+
+    ParseTest --> SplitVariants[Split into Variants<br/>━━━━━━━━━━━━━━<br/>Scalar: float, double<br/>Vector: SSE, AVX, AVX-512<br/>Array: VRA pointer mode]
+
+    SplitVariants --> IterVariant{For Each<br/>Variant}
+
+    IterVariant -->|Next| CreateContext[Create Test Context<br/>━━━━━━━━━━━━━━<br/>• Type-specific structures<br/>• Input parameters<br/>• Output buffers<br/>• ULP thresholds]
+
+    CreateContext --> RouteAPI[Route to API Handler<br/>━━━━━━━━━━━━━━<br/>Prototype 01-06 based on<br/>function signature]
+
+    RouteAPI --> SelectMode{Test Mode?}
+
+    SelectMode -->|Unit Test| UnitMode[Unit Test Mode<br/>━━━━━━━━━━━━━━<br/>✓ Single input/output pair<br/>✓ Execute shim function<br/>✓ Execute reference<br/>✓ Capture FP exceptions<br/>✓ Compute ULP error<br/>✓ Verify expected exception]
+
+    SelectMode -->|Accuracy<br/>Range Test| AccuracyMode[Accuracy Range Mode<br/>━━━━━━━━━━━━━━<br/>✓ Generate input sequence<br/>✓ Batch execution SIMD/scalar<br/>✓ Compare vs reference<br/>✓ Compute ULP per element<br/>✓ Track max error<br/>✓ Report failures]
+
+    SelectMode -->|Performance<br/>Range Test| PerfMode[Performance Mode<br/>━━━━━━━━━━━━━━<br/>✓ Generate input sequence<br/>✓ Warm-up iteration<br/>✓ Multi-iteration timing<br/>✓ High-resolution timer<br/>✓ Statistical analysis<br/>✓ Throughput calculation]
+
+    UnitMode --> Verify[Verification & Analysis<br/>━━━━━━━━━━━━━━<br/>• Compare actual vs expected<br/>• Check ULP threshold<br/>• Validate exceptions<br/>• Determine PASS/FAIL]
+
+    AccuracyMode --> Verify
+    PerfMode --> PerfAnalysis[Performance Analysis<br/>━━━━━━━━━━━━━━<br/>• Min/Median/Mean time<br/>• Operations per second<br/>• Latency statistics]
+
+    PerfAnalysis --> Serialize
+
+    Verify --> Serialize[Serialize Results<br/>━━━━━━━━━━━━━━<br/>• Create YAML output<br/>• Format input/output hex<br/>• Include ULP errors<br/>• Add status & metadata]
+
+    Serialize --> WriteOutput[Write Output<br/>━━━━━━━━━━━━━━<br/>• Append to YAML file<br/>• Print to console<br/>• Update statistics]
+
+    WriteOutput --> IterVariant
+
+    IterVariant -->|All Done| ProcessTests
+
+    ProcessTests -->|All Done| Summary[Generate Summary<br/>━━━━━━━━━━━━━━<br/>• Total tests executed<br/>• Pass/Fail counts<br/>• Max ULP errors<br/>• Performance metrics]
+
+    Summary --> Cleanup[Cleanup & Shutdown<br/>━━━━━━━━━━━━━━<br/>• Close libraries<br/>• Free resources<br/>• Finalize reports]
+
+    Cleanup --> End([🏁 END])
+
+    %% Styling
+    style Start fill:#4caf50,stroke:#2e7d32,stroke-width:4px,color:#fff
+    style End fill:#f44336,stroke:#c62828,stroke-width:4px,color:#fff
+    style SelectMode fill:#ff9800,stroke:#e65100,stroke-width:3px
+    style UnitMode fill:#2196f3,stroke:#1565c0,stroke-width:2px
+    style AccuracyMode fill:#2196f3,stroke:#1565c0,stroke-width:2px
+    style PerfMode fill:#2196f3,stroke:#1565c0,stroke-width:2px
+    style Verify fill:#4caf50,stroke:#2e7d32,stroke-width:2px
+    style Serialize fill:#9c27b0,stroke:#6a1b9a,stroke-width:2px
+            </div>
+        </div>
+
+        <div class="key-points">
+            <h4>🔑 Workflow Stages</h4>
+            <ul>
+                <li><strong>Initialization (Phase 1):</strong> Load libraries, validate environment, prepare execution context</li>
+                <li><strong>Configuration (Phase 2):</strong> Parse YAML test specifications, extract metadata, prepare test matrix</li>
+                <li><strong>Test Generation (Phase 3):</strong> Split into variants, create type-specific contexts, route to handlers</li>
+                <li><strong>Execution (Phase 4):</strong> Three modes - Unit (single value), Accuracy (batch validation), Performance (timing)</li>
+                <li><strong>Verification (Phase 5):</strong> Compare results, compute ULP errors, check thresholds, determine status</li>
+                <li><strong>Reporting (Phase 6):</strong> Serialize to YAML, generate statistics, write output files</li>
+                <li><strong>Cleanup (Phase 7):</strong> Release resources, finalize reports, graceful shutdown</li>
+            </ul>
+        </div>
+
+        <!-- FLOWCHART 3: Variant & Architecture Coverage -->
+        <h2>3. 🎯 Variant & Architecture Coverage Strategy</h2>
+
+        <div class="description">
+            <h3>Overview</h3>
+            <p>This diagram shows how the test suite comprehensively validates math functions across different data types, SIMD architectures, and calling conventions to ensure correctness and performance across all supported platforms.</p>
+        </div>
+
+        <div class="chart-container">
+            <div class="mermaid">
+graph TD
+    Start([Math Function<br/>e.g., sin cos exp log]) --> Coverage{Test Coverage<br/>Strategy}
+
+    Coverage --> Scalar[SCALAR VARIANTS<br/>━━━━━━━━━━━━━]
+    Coverage --> Vector[VECTOR VARIANTS<br/>━━━━━━━━━━━━━]
+    Coverage --> Array[ARRAY VARIANTS<br/>━━━━━━━━━━━━━]
+
+    subgraph ScalarTests["📊 SCALAR TESTING"]
+        Scalar --> SS[ss - Single Precision<br/>━━━━━━━━━━━━━<br/>Type: float 32-bit<br/>API: float func float<br/>Use: Standard C API]
+        Scalar --> SD[sd - Double Precision<br/>━━━━━━━━━━━━━<br/>Type: double 64-bit<br/>API: double func double<br/>Use: High-precision apps]
+    end
+
+    subgraph VectorTests["⚡ VECTOR/SIMD TESTING"]
+        Vector --> SSE[SSE Variants<br/>━━━━━━━━━━━━━]
+        Vector --> AVX[AVX Variants<br/>━━━━━━━━━━━━━]
+        Vector --> AVX512[AVX-512 Variants<br/>━━━━━━━━━━━━━]
+
+        SSE --> VRS4[vrs4 - SSE Float<br/>━━━━━━━━━━━━━<br/>Type: __m128 4×float<br/>Width: 128-bit<br/>Elements: 4<br/>Architecture: SSE2+]
+        SSE --> VRD2[vrd2 - SSE Double<br/>━━━━━━━━━━━━━<br/>Type: __m128d 2×double<br/>Width: 128-bit<br/>Elements: 2<br/>Architecture: SSE2+]
+
+        AVX --> VRS8[vrs8 - AVX Float<br/>━━━━━━━━━━━━━<br/>Type: __m256 8×float<br/>Width: 256-bit<br/>Elements: 8<br/>Architecture: AVX/AVX2]
+        AVX --> VRD4[vrd4 - AVX Double<br/>━━━━━━━━━━━━━<br/>Type: __m256d 4×double<br/>Width: 256-bit<br/>Elements: 4<br/>Architecture: AVX/AVX2]
+
+        AVX512 --> VRS16[vrs16 - AVX-512 Float<br/>━━━━━━━━━━━━━<br/>Type: __m512 16×float<br/>Width: 512-bit<br/>Elements: 16<br/>Architecture: AVX-512]
+        AVX512 --> VRD8[vrd8 - AVX-512 Double<br/>━━━━━━━━━━━━━<br/>Type: __m512d 8×double<br/>Width: 512-bit<br/>Elements: 8<br/>Architecture: AVX-512]
+    end
+
+    subgraph ArrayTests["📦 ARRAY/BATCH TESTING"]
+        Array --> VRSA[vrsa - Float Array<br/>━━━━━━━━━━━━━<br/>Type: float* pointer<br/>API: void func float* out, float* in, int n<br/>Use: Batch processing]
+        Array --> VRDA[vrda - Double Array<br/>━━━━━━━━━━━━━<br/>Type: double* pointer<br/>API: void func double* out, double* in, int n<br/>Use: Batch processing]
+    end
+
+    SS --> TestExec[Test Execution Engine<br/>━━━━━━━━━━━━━━━━━]
+    SD --> TestExec
+    VRS4 --> TestExec
+    VRD2 --> TestExec
+    VRS8 --> TestExec
+    VRD4 --> TestExec
+    VRS16 --> TestExec
+    VRD8 --> TestExec
+    VRSA --> TestExec
+    VRDA --> TestExec
+
+    TestExec --> Validation{Validation<br/>Strategy}
+
+    Validation --> Accuracy[Accuracy Testing<br/>━━━━━━━━━━━━━<br/>✓ Compare vs reference<br/>✓ Compute ULP error<br/>✓ Check threshold<br/>✓ Scalar: 0.5 ULP<br/>✓ Vector: 4.0 ULP]
+
+    Validation --> Performance[Performance Testing<br/>━━━━━━━━━━━━━<br/>✓ Measure latency<br/>✓ Calculate throughput<br/>✓ Compare variants<br/>✓ Identify optimal path]
+
+    Validation --> Exceptions[Exception Testing<br/>━━━━━━━━━━━━━<br/>✓ Invalid inputs<br/>✓ Domain errors<br/>✓ Range errors<br/>✓ FP exceptions]
+
+    Validation --> Special[Special Value Testing<br/>━━━━━━━━━━━━━<br/>✓ ±Infinity<br/>✓ NaN quiet/signal<br/>✓ Subnormals<br/>✓ Zero ±0.0<br/>✓ Max/Min values]
+
+    Accuracy --> Results[Comprehensive<br/>Test Results<br/>━━━━━━━━━━━━━<br/>✓ 10 variants per function<br/>✓ Multiple architectures<br/>✓ Complete coverage<br/>✓ YAML serialized output]
+    Performance --> Results
+    Exceptions --> Results
+    Special --> Results
+
+    Results --> Quality([✅ Quality Assurance<br/>Production-Ready Library])
+
+    %% Styling
+    classDef scalarStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:3px,color:#000
+    classDef vectorStyle fill:#fff3e0,stroke:#f57c00,stroke-width:3px,color:#000
+    classDef arrayStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px,color:#000
+    classDef testStyle fill:#e8f5e9,stroke:#388e3c,stroke-width:3px,color:#000
+    classDef resultStyle fill:#4caf50,stroke:#2e7d32,stroke-width:4px,color:#fff
+
+    class SS,SD scalarStyle
+    class VRS4,VRD2,VRS8,VRD4,VRS16,VRD8 vectorStyle
+    class VRSA,VRDA arrayStyle
+    class Accuracy,Performance,Exceptions,Special testStyle
+    class Quality resultStyle
+            </div>
+        </div>
+
+        <div class="key-points">
+            <h4>🔑 Coverage Highlights</h4>
+            <ul>
+                <li><strong>Scalar Coverage:</strong> Tests standard C APIs for float and double precision operations</li>
+                <li><strong>SIMD Coverage:</strong> Validates SSE (128-bit), AVX (256-bit), and AVX-512 (512-bit) vectorized implementations</li>
+                <li><strong>Array/Batch Coverage:</strong> Tests pointer-based batch APIs for high-throughput scenarios</li>
+                <li><strong>Architecture Detection:</strong> Automatically skips AVX-512 tests on unsupported hardware</li>
+                <li><strong>Validation Types:</strong> Accuracy (ULP errors), Performance (timing), Exceptions (error handling), Special values (edge cases)</li>
+                <li><strong>Comprehensive Testing:</strong> Each math function tested across ~10 variants ensuring complete platform coverage</li>
+                <li><strong>Quality Metrics:</strong> Scalar ULP threshold 0.5, Vector ULP threshold 4.0, Performance comparison across variants</li>
+            </ul>
+        </div>
+
+        <div class="summary" style="margin-top: 50px; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-left: 5px solid #667eea; padding: 30px; border-radius: 10px;">
+            <h3 style="margin-top: 0; color: #2c3e50; font-size: 1.5em;">📌 Executive Summary</h3>
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                The AMD LibM Test Suite provides <strong>comprehensive validation</strong> of mathematical library functions across multiple dimensions:
+            </p>
+            <ul style="font-size: 1.05em; line-height: 1.8;">
+                <li><strong>Multi-Architecture:</strong> Tests scalar, SSE, AVX, and AVX-512 implementations</li>
+                <li><strong>Multi-Precision:</strong> Validates both single (32-bit) and double (64-bit) precision</li>
+                <li><strong>Multi-Mode:</strong> Supports unit testing, accuracy validation, and performance benchmarking</li>
+                <li><strong>YAML-Driven:</strong> Flexible configuration system for test specification and extensibility</li>
+                <li><strong>Reference Validation:</strong> Uses high-precision MPARITH/MPFR libraries for ground truth</li>
+                <li><strong>ULP Accuracy:</strong> Rigorous error measurement with configurable thresholds</li>
+                <li><strong>Cross-Platform:</strong> Supports Windows and Linux with platform-specific optimizations</li>
+            </ul>
+            <p style="font-size: 1.1em; margin-top: 20px;">
+                <strong>Result:</strong> Production-ready math library with verified correctness and performance across all target platforms and architectures.
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            graph: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+    </script>
+</body>
+</html>

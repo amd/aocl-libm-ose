@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMD LibM Test Suite - YAML Parser Flowcharts</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            line-height: 1.6;
+        }
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+            margin-top: 0;
+            font-size: 2.5em;
+            text-align: center;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 50px;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            font-size: 1.8em;
+        }
+        h3 {
+            color: #2c3e50;
+            margin-top: 30px;
+            padding: 10px 15px;
+            background-color: #ecf0f1;
+            border-left: 5px solid #3498db;
+            font-size: 1.4em;
+        }
+        .chart-container {
+            background-color: #f8f9fa;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            min-height: 300px;
+        }
+        .info {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+            font-size: 1.1em;
+        }
+        .description {
+            background-color: #fff9e6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #f39c12;
+        }
+        .description h4 {
+            margin-top: 0;
+            color: #e67e22;
+        }
+        .key-points {
+            background-color: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #4caf50;
+        }
+        .key-points h4 {
+            margin-top: 0;
+            color: #2e7d32;
+        }
+        .key-points ul {
+            margin: 10px 0;
+        }
+        .key-points li {
+            margin: 8px 0;
+            padding-left: 10px;
+        }
+        .code-example {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+        }
+        .code-example .comment {
+            color: #95a5a6;
+        }
+        .code-example .keyword {
+            color: #e74c3c;
+        }
+        .code-example .string {
+            color: #2ecc71;
+        }
+        .toc {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .toc h3 {
+            margin-top: 0;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .toc li {
+            padding: 5px 0;
+        }
+        .toc a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        .yaml-structure {
+            background-color: #f5f5f5;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📄 AMD LibM Test Suite</h1>
+        <h1 style="font-size: 1.5em; margin-top: -20px; border: none;">YAML Parser Module - Complete Reference</h1>
+
+        <div class="info">
+            <strong>📅 Generated:</strong> October 13, 2025<br>
+            <strong>🎯 Purpose:</strong> Comprehensive documentation of the YAML parsing subsystem<br>
+            <strong>📚 Components:</strong> read_yaml_file(), read_test(), extractApiName()<br>
+            <strong>🔧 Library:</strong> yaml-cpp
+        </div>
+
+        <div class="toc">
+            <h3>Table of Contents</h3>
+            <ul>
+                <li><a href="#overview">1. YAML Parser Architecture Overview</a></li>
+                <li><a href="#structure">2. YAML File Structure</a></li>
+                <li><a href="#main-flow">3. read_yaml_file() - Main Parser Flow</a></li>
+                <li><a href="#read-test">4. read_test() - Individual Test Parser</a></li>
+                <li><a href="#input-processing">5. Input Processing Logic</a></li>
+                <li><a href="#ulp-threshold">6. ULP Threshold Calculation</a></li>
+                <li><a href="#extract-api">7. extractApiName() - API Name Extraction</a></li>
+                <li><a href="#data-structures">8. Data Structures & Relationships</a></li>
+                <li><a href="#example">9. Complete Example Walkthrough</a></li>
+            </ul>
+        </div>
+
+        <!-- 1. Overview -->
+        <h2 id="overview">1. 📐 YAML Parser Architecture Overview</h2>
+
+        <div class="description">
+            <h4>Purpose</h4>
+            <p>The YAML parser subsystem reads test configuration files and converts them into internal data structures (YamlInputs) that drive the test execution engine. It handles hierarchical test organization, input ranges, variants, and threshold specifications.</p>
+        </div>
+
+        <div class="chart-container">
+            <div class="mermaid">
+graph TB
+    YAMLFile[YAML Test File<br/>━━━━━━━━━━━━<br/>test_sequences<br/>test_sets<br/>tests] --> LoadFile[YAML LoadFile<br/>━━━━━━━━━━━━<br/>yaml-cpp library]
+
+    LoadFile --> ReadYAML[read_yaml_file<br/>━━━━━━━━━━━━<br/>Main parser loop]
+
+    ReadYAML --> ExtractMeta[Extract Metadata<br/>━━━━━━━━━━━━<br/>• test_sequence name<br/>• function name<br/>• test_set IDs]
+
+    ExtractMeta --> ReadTest[read_test<br/>━━━━━━━━━━━━<br/>Parse individual test]
+
+    ReadTest --> ProcessInputs[Process Inputs<br/>━━━━━━━━━━━━<br/>• Single values<br/>• Input ranges]
+
+    ReadTest --> ProcessVariants[Process Variants<br/>━━━━━━━━━━━━<br/>ss, sd, vrs4, etc.]
+
+    ReadTest --> ProcessULP[Process ULP Thresholds<br/>━━━━━━━━━━━━<br/>Default or custom]
+
+    ReadTest --> ProcessExpect[Process Expectations<br/>━━━━━━━━━━━━<br/>• Expected values<br/>• Expected exceptions]
+
+    ProcessInputs --> CreateStruct[Create YamlInputs<br/>━━━━━━━━━━━━<br/>Populate structure]
+    ProcessVariants --> CreateStruct
+    ProcessULP --> CreateStruct
+    ProcessExpect --> CreateStruct
+
+    CreateStruct --> ExtractAPI[extractApiName<br/>━━━━━━━━━━━━<br/>Extract API from ID]
+
+    ExtractAPI --> AppendVector[Append to vector<br/>━━━━━━━━━━━━<br/>params.push_back]
+
+    AppendVector --> MoreTests{More<br/>tests?}
+    MoreTests -->|Yes| ReadTest
+    MoreTests -->|No| Return[Return params vector<br/>━━━━━━━━━━━━<br/>Ready for execution]
+
+    style YAMLFile fill:#e3f2fd,stroke:#1976d2,stroke-width:3px
+    style ReadYAML fill:#fff3e0,stroke:#f57c00,stroke-width:3px
+    style ReadTest fill:#e8f5e9,stroke:#4caf50,stroke-width:3px
+    style Return fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
+            </div>
+        </div>
+
+        <!-- 2. YAML Structure -->
+        <h2 id="structure">2. 📋 YAML File Structure</h2>
+
+        <div class="description">
+            <h4>Overview</h4>
+            <p>Test configuration files follow a hierarchical structure with three levels: test sequences, test sets, and individual tests. This organization allows logical grouping and efficient test management.</p>
+        </div>
+
+        <div class="yaml-structure">
+<span class="comment"># Top Level: Array of test sequences</span>
+- <span class="keyword">test_sequence:</span> <span class="string">"accuracy_tests"</span>
+  <span class="keyword">function:</span> <span class="string">"sin"</span>
+  <span class="keyword">test_sets:</span>
+    <span class="comment"># Second Level: Array of test sets</span>
+    - <span class="keyword">id:</span> <span class="string">"basic_range"</span>
+      <span class="keyword">description:</span> <span class="string">"Basic range testing for sin function"</span>
+      <span class="keyword">tests:</span>
+        <span class="comment"># Third Level: Array of individual tests</span>
+        - <span class="keyword">id:</span> <span class="string">"accu_sin_range_01"</span>
+          <span class="keyword">input:</span>
+            - [<span class="string">"0.0"</span>, <span class="string">"6.28318530718"</span>]  <span class="comment"># Range: [start, stop]</span>
+          <span class="keyword">type:</span>
+            - <span class="string">"linear"</span>
+          <span class="keyword">steps:</span>
+            - <span class="string">"10000"</span>
+          <span class="keyword">variants:</span>
+            - <span class="string">"ss"</span>
+            - <span class="string">"sd"</span>
+            - <span class="string">"vrs4"</span>
+          <span class="keyword">uth:</span>
+            - <span class="string">"0.5"</span>
+            - <span class="string">"0.5"</span>
+            - <span class="string">"4.0"</span>
+        </div>
+
+        <div class="chart-container">
+            <div class="mermaid">
+graph TD
+    File[YAML File] --> Seq1[test_sequence 1]
+    File --> Seq2[test_sequence 2]
+    File --> SeqN[test_sequence N]
+
+    Seq1 --> Meta1[Metadata<br/>• sequence name<br/>• function name]
+    Seq1 --> Sets1[test_sets array]
+
+    Sets1 --> Set1_1[test_set 1<br/>• id<br/>• description]
+    Sets1 --> Set1_2[test_set 2]
+    Sets1 --> Set1_M[test_set M]
+
+    Set1_1 --> Tests1[tests array]
+
+    Tests1 --> Test1[test 1<br/>━━━━━━━━━━━━<br/>• id<br/>• input<br/>• type<br/>• steps<br/>• variants<br/>• uth<br/>• expect<br/>• expect_exception]
+    Tests1 --> Test2[test 2]
+    Tests1 --> TestK[test K]
+
+    style File fill:#e3f2fd,stroke:#1976d2,stroke-width:3px
+    style Seq1 fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    style Set1_1 fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
+    style Test1 fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+            </div>
+        </div>
+
+        <!-- 3. Main Flow -->
+        <h2 id="main-flow">3. 🔄 read_yaml_file() - Main Parser Flow</h2>
+
+        <div class="description">
+            <h4>Overview</h4>
+            <p>The main entry point for YAML parsing. Iterates through all test sequences, test sets, and individual tests, calling read_test() for each test case and accumulating results in a vector.</p>
+        </div>
+
+        <div class="chart-container">
+            <div class="mermaid">
+flowchart TD
+    Start([read_yaml_file<br/>filename, params]) --> LoadFile[Load YAML File<br/>━━━━━━━━━━━━<br/>config = YAML LoadFile filename]
+
+    LoadFile --> CheckLoad{File loaded<br/>successfully?}
+    CheckLoad -->|No| ThrowError[Throw Exception<br/>━━━━━━━━━━━━<br/>yaml-cpp error]
+    CheckLoad -->|Yes| IterSeq[Initialize Loop<br/>━━━━━━━━━━━━<br/>i = 0]
+
+    IterSeq --> CheckSeq{i < config.size?}
+    CheckSeq -->|No| ReturnSuccess[Return 0<br/>━━━━━━━━━━━━<br/>Parsing complete]
+
+    CheckSeq -->|Yes| GetSeq[Get Test Sequence<br/>━━━━━━━━━━━━<br/>test_sequence = config i]
+
+    GetSeq --> ExtractSeqName[Extract Sequence Name<br/>━━━━━━━━━━━━<br/>test_type = test_sequence<br/>test_sequence.as string]
+
+    ExtractSeqName --> ExtractFunc[Extract Function Name<br/>━━━━━━━━━━━━<br/>function = test_sequence<br/>function.as string]
+
+    ExtractFunc --> GetSets[Get Test Sets<br/>━━━━━━━━━━━━<br/>test_sets = test_sequence<br/>test_sets]
+
+    GetSets --> IterSets[Initialize Sets Loop<br/>━━━━━━━━━━━━<br/>j = 0]
+
+    IterSets --> CheckSets{j < test_sets.size?}
+    CheckSets -->|No| IncrSeq[Increment i++]
+    IncrSeq --> CheckSeq
+
+    CheckSets -->|Yes| GetSet[Get Test Set<br/>━━━━━━━━━━━━<br/>test_set = test_sets j]
+
+    GetSet --> ExtractSetID[Extract Set ID<br/>━━━━━━━━━━━━<br/>test_set_id = test_set<br/>id.as string]
+
+    ExtractSetID --> CheckDesc{Has<br/>description?}
+    CheckDesc -->|Yes| ReadDesc[Read Description<br/>━━━━━━━━━━━━<br/>Optional field]
+    CheckDesc -->|No| GetTests
+    ReadDesc --> GetTests[Get Tests Array<br/>━━━━━━━━━━━━<br/>tests = test_set tests]
+
+    GetTests --> IterTests[Initialize Tests Loop<br/>━━━━━━━━━━━━<br/>k = 0]
+
+    IterTests --> CheckTests{k < tests.size?}
+    CheckTests -->|No| IncrSets[Increment j++]
+    IncrSets --> CheckSets
+
+    CheckTests -->|Yes| GetTest[Get Individual Test<br/>━━━━━━━━━━━━<br/>test = tests k]
+
+    GetTest --> CreateParam[Create YamlInputs<br/>━━━━━━━━━━━━<br/>param = new YamlInputs]
+
+    CreateParam --> ExtractID[Extract Test ID<br/>━━━━━━━━━━━━<br/>id = test id.as string]
+
+    ExtractID --> CallExtractAPI[Call extractApiName<br/>━━━━━━━━━━━━<br/>apiName = extractApiName id]
+
+    CallExtractAPI --> SetAPIName[Set API Name<br/>━━━━━━━━━━━━<br/>param.api_name = apiName]
+
+    SetAPIName --> SetTestType[Set Test Type<br/>━━━━━━━━━━━━<br/>param.test_type = test_set_id]
+
+    SetTestType --> CallReadTest[Call read_test<br/>━━━━━━━━━━━━<br/>read_test test, param]
+
+    CallReadTest --> PushBack[Add to Vector<br/>━━━━━━━━━━━━<br/>params.push_back param]
+
+    PushBack --> IncrTests[Increment k++]
+    IncrTests --> CheckTests
+
+    ThrowError --> ErrorEnd([Exception Thrown])
+    ReturnSuccess --> End([Return Success])
+
+    style Start fill:#4caf50,stroke:#2e7d32,stroke-width:3px,color:#fff
+    style End fill:#2196f3,stroke:#1565c0,stroke-width:3px,color:#fff
+    style ErrorEnd fill:#f44336,stroke:#c62828,stroke-width:3px,color:#fff
+    style CallReadTest fill:#ff9800,stroke:#e65100,stroke-width:3px
+            </div>
+        </div>
+
+        <!-- 4. read_test -->
+        <h2 id="read-test">4. 🔍 read_test() - Individual Test Parser</h2>
+
+        <div class="description">
+            <h4>Overview</h4>
+            <p>Parses a single test case YAML node and populates a YamlInputs structure. Handles both single-value inputs and input ranges, processes variants, ULP thresholds, expected values, and expected exceptions.</p>
+        </div>
+
+        <div class="chart-container">
+            <div class="mermaid">
+flowchart TD
+    Start([read_test<br/>test, param]) --> ExtractID[Extract Test ID<br/>━━━━━━━━━━━━<br/>test_id = test id.as string<br/>param.test_id = test_id]
+
+    ExtractID --> CheckDesc{Has<br/>description?}
+    CheckDesc -->|Yes| ReadDesc[Read Description<br/>━━━━━━━━━━━━<br/>Optional, not stored]
+    CheckDesc -->|No| GetNodes
+    ReadDesc --> GetNodes[Get YAML Nodes<br/>━━━━━━━━━━━━<br/>• input<br/>• expect<br/>• type<br/>• steps<br/>• variants<br/>• expect_exception<br/>• uth]
+
+    GetNodes --> InitCounter[Initialize Counter<br/>━━━━━━━━━━━━<br/>n = 0<br/>For range indexing]
+
+    InitCounter --> IterInputs[Iterate Over Inputs<br/>━━━━━━━━━━━━<br/>for i = 0 to input.size]
+
+    IterInputs --> GetInput[Get Input Node<br/>━━━━━━━━━━━━<br/>inp = input i]
+
+    GetInput --> CheckInputType{inp<br/>IsSequence?}
+
+    CheckInputType -->|Yes: Range| CreateRange[Create InputRange<br/>━━━━━━━━━━━━<br/>range = new InputRange]
+    CheckInputType -->|No: Single| AddSingleInput[Add Single Input<br/>━━━━━━━━━━━━<br/>param.input.push_back<br/>inp.as string]
+
+    CreateRange --> ExtractStart[Extract Start Value<br/>━━━━━━━━━━━━<br/>range.srt = inp 0.as string]
+
+    ExtractStart --> ExtractStop[Extract Stop Value<br/>━━━━━━━━━━━━<br/>range.stp = inp 1.as string]
+
+    ExtractStop --> DetermineType{n == 0?}
+
+    DetermineType -->|Yes: First| SetTypeFirst[Set Type from First<br/>━━━━━━━━━━━━<br/>range.type = type 0<br/>Default: expstep]
+    DetermineType -->|No: Subsequent| SetTypeNth[Set Type from Nth<br/>━━━━━━━━━━━━<br/>range.type = type n<br/>Or use type n-1]
+
+    SetTypeFirst --> SetSteps
+    SetTypeNth --> SetSteps[Set Step Count<br/>━━━━━━━━━━━━<br/>range.count = steps n<br/>Default: 1000]
+
+    SetSteps --> AddRange[Add Range to Param<br/>━━━━━━━━━━━━<br/>param.range.push_back range]
+
+    AddRange --> IncrN[Increment n++]
+    IncrN --> IterInputs
+    AddSingleInput --> IterInputs
+
+    IterInputs -->|Done| CheckExpect{Has expect<br/>value?}
+
+    CheckExpect -->|Yes| SetExpect[Set Expected Value<br/>━━━━━━━━━━━━<br/>param.xv = expect 0.as string]
+    CheckExpect -->|No| ProcessVariants
+    SetExpect --> ProcessVariants[Process Variants<br/>━━━━━━━━━━━━<br/>See next flowchart]
+
+    ProcessVariants --> ProcessException[Process Exceptions<br/>━━━━━━━━━━━━<br/>See detailed flow]
+
+    ProcessException --> ProcessULPFlow[Process ULP Thresholds<br/>━━━━━━━━━━━━<br/>See detailed flow]
+
+    ProcessULPFlow --> ReturnSuccess[Return 0<br/>━━━━━━━━━━━━<br/>Test parsed successfully]
+
+    ReturnSuccess --> End([Complete])
+
+    style Start fill:#4caf50,stroke:#2e7d32,stroke-width:3px,color:#fff
+    style End fill:#2196f3,stroke:#1565c0,stroke-width:3px,color:#fff
+    style CheckInputType fill:#ff9800,stroke:#e65100,stroke-width:2px
+    style ProcessVariants fill:#9c27b0,stroke:#6a1b9a,stroke-width:2px
+    style ProcessULPFlow fill:#9c27b0,stroke:#6a1b9a,stroke-width:2px
+            </div>
+        </div>
+
+        <!-- 5. Input Processing -->
+        <h2 id="input-processing">5. 📊 Input Processing Logic</h2>
+
+        <div class="description">
+            <h4>Overview</h4>
+            <p>Detailed flow showing how the parser distinguishes between single input values and input ranges, and how it processes each type accordingly.</p>
+        </div>
+
+        <div class="chart-container">
+            <div class="mermaid">
+flowchart TD
+    Start([Input Processing<br/>from read_test]) --> CheckNode{Input Node<br/>Type?}
+
+    CheckNode -->|Sequence: start, stop| ProcessRange[Process as Range<br/>━━━━━━━━━━━━]
+    CheckNode -->|Scalar: single value| ProcessSingle[Process as Single Value<br/>━━━━━━━━━━━━]
+
+    ProcessRange --> ExtractBounds[Extract Boundaries<br/>━━━━━━━━━━━━<br/>start = input 0<br/>stop = input 1]
+
+    ExtractBounds --> DetermineRangeType[Determine Range Type<br/>━━━━━━━━━━━━]
+
+    DetermineRangeType --> RangeTypeLogic{Which<br/>range?}
+
+    RangeTypeLogic -->|First n=0| UseFirstType[Use type 0<br/>━━━━━━━━━━━━<br/>Or default: expstep]
+    RangeTypeLogic -->|Subsequent n>0| UseNthType[Use type n<br/>━━━━━━━━━━━━<br/>Or previous type n-1]
+
+    UseFirstType --> GetSteps
+    UseNthType --> GetSteps[Get Step Count<br/>━━━━━━━━━━━━<br/>If steps n exists<br/>Else default: 1000]
+
+    GetSteps --> CreateRangeStruct[Create InputRange<br/>━━━━━━━━━━━━<br/>srt, stp, type, count]
+
+    CreateRangeStruct --> AddToRangeVector[Add to param.range<br/>━━━━━━━━━━━━<br/>vector of ranges]
+
+    ProcessSingle --> ConvertToString[Convert to String<br/>━━━━━━━━━━━━<br/>value = node.as string]
+
+    ConvertToString --> AddToInputVector[Add to param.input<br/>━━━━━━━━━━━━<br/>vector of strings]
+
+    AddToRangeVector --> Continue[Continue Processing<br/>━━━━━━━━━━━━<br/>Next input or variants]
+    AddToInputVector --> Continue
+
+    Continue --> End([Processing Complete])
+
+    style Start fill:#4caf50,stroke:#2e7d32,stroke-width:3px,color:#fff
+    style End fill:#2196f3,stroke:#1565c0,stroke-width:3px,color:#fff
+    style CheckNode fill:#ff9800,stroke:#e65100,stroke-width:2px
+            </div>
+        </div>
+
+        <div class="key-points">
+            <h4>🔑 Input Types</h4>
+            <ul>
+                <li><strong>Single Value:</strong> Scalar YAML node → stored in param.input[] as string</li>
+                <li><strong>Range:</strong> Sequence [start, stop] → stored in param.range[] as InputRange structure</li>
+                <li><strong>Multiple Ranges:</strong> Can have multiple ranges for multi-parameter functions (e.g., pow(x, y))</li>
+                <li><strong>Type Specification:</strong> Each range has associated type (linear, expstep, bitstep, random, etc.)</li>
+                <li><strong>Step Count:</strong> Number of values to generate in range (default: 1000)</li>
+            </ul>
+        </div>
+
+        <!-- 6. ULP Threshold -->
+        <h2 id="ulp-threshold">6. 📏 ULP Threshold Calculation</h2>
+
+        <div class="description">
+            <h4>Overview</h4>
+            <p>ULP (Unit in Last Place) thresholds define acceptable error margins. The parser applies different default thresholds for scalar vs. vector variants and allows custom overrides via the 'uth' field.</p>
+        </div>
+
+        <div class="chart-container">
+            <div class="mermaid">
+flowchart TD
+    Start([ULP Threshold Processing]) --> CheckUTHExists{uth field<br/>exists?}
+
+    CheckUTHExists -->|Yes: Custom| CustomPath[Custom ULP Path<br/>━━━━━━━━━━━━]
+    CheckUTHExists -->|No: Default| DefaultPath[Default ULP Path<br/>━━━━━━━━━━━━]
+
+    CustomPath --> InitCustom[Initialize<br/>━━━━━━━━━━━━<br/>thold = empty string]
+
+    InitCustom --> IterCustom[Iterate Variants<br/>━━━━━━━━━━━━<br/>for i = 0 to uth.size]
+
+    IterCustom --> GetUTH[Get ULP Value<br/>━━━━━━━━━━━━<br/>ut = uth i.as string]
+
+    GetUTH --> GetVariant[Get Variant<br/>━━━━━━━━━━━━<br/>vr = variants i.as string]
+
+    GetVariant --> CheckUTHEmpty{ut is<br/>empty?}
+
+    CheckUTHEmpty -->|Yes| CheckVariantTypeCustom{Variant<br/>Type?}
+    CheckUTHEmpty -->|No| AppendCustom[Append to String<br/>━━━━━━━━━━━━<br/>thold += ut + ;]
+
+    CheckVariantTypeCustom -->|ss or sd| UseScalarDefault1[Use Scalar Default<br/>━━━━━━━━━━━━<br/>ut = 0.5]
+    CheckVariantTypeCustom -->|Other vector| UseVectorDefault1[Use Vector Default<br/>━━━━━━━━━━━━<br/>ut = 4.0]
+
+    UseScalarDefault1 --> AppendCustom
+    UseVectorDefault1 --> AppendCustom
+
+    AppendCustom --> MoreCustom{More<br/>variants?}
+    MoreCustom -->|Yes| IterCustom
+    MoreCustom -->|No| RemoveTrailing1[Remove Trailing ;<br/>━━━━━━━━━━━━<br/>thold.pop_back]
+
+    RemoveTrailing1 --> SetParam1[Set Parameter<br/>━━━━━━━━━━━━<br/>param.ulp_threshold = thold]
+
+    DefaultPath --> InitDefault[Initialize<br/>━━━━━━━━━━━━<br/>thold = empty string]
+
+    InitDefault --> IterDefault[Iterate Variants<br/>━━━━━━━━━━━━<br/>for i = 0 to variants.size]
+
+    IterDefault --> GetDefaultVariant[Get Variant<br/>━━━━━━━━━━━━<br/>vr = variants i.as string]
+
+    GetDefaultVariant --> CheckDefaultType{Variant<br/>Type?}
+
+    CheckDefaultType -->|ss or sd| UseScalarDefault2[Use Scalar Default<br/>━━━━━━━━━━━━<br/>ut = 0.5]
+    CheckDefaultType -->|Other vector| UseVectorDefault2[Use Vector Default<br/>━━━━━━━━━━━━<br/>ut = 4.0]
+
+    UseScalarDefault2 --> AppendDefault[Append to String<br/>━━━━━━━━━━━━<br/>thold += ut + ;]
+    UseVectorDefault2 --> AppendDefault
+
+    AppendDefault --> MoreDefault{More<br/>variants?}
+    MoreDefault -->|Yes| IterDefault
+    MoreDefault -->|No| RemoveTrailing2[Remove Trailing ;<br/>━━━━━━━━━━━━<br/>thold.pop_back]
+
+    RemoveTrailing2 --> SetParam2[Set Parameter<br/>━━━━━━━━━━━━<br/>param.ulp_threshold = thold]
+
+    SetParam1 --> End([ULP Processing Complete])
+    SetParam2 --> End
+
+    style Start fill:#4caf50,stroke:#2e7d32,stroke-width:3px,color:#fff
+    style End fill:#2196f3,stroke:#1565c0,stroke-width:3px,color:#fff
+    style CheckUTHExists fill:#ff9800,stroke:#e65100,stroke-width:2px
+    style CheckVariantTypeCustom fill:#ff9800,stroke:#e65100,stroke-width:2px
+    style CheckDefaultType fill:#ff9800,stroke:#e65100,stroke-width:2px
+            </div>
+        </div>
+
+        <div class="key-points">
+            <h4>🔑 ULP Threshold Rules</h4>
+            <ul>
+                <li><strong>Scalar Variants (ss, sd):</strong> Default ULP = 0.5 (very strict accuracy)</li>
+                <li><strong>Vector Variants (vrs4, vrd2, etc.):</strong> Default ULP = 4.0 (relaxed for SIMD)</li>
+                <li><strong>Custom Override:</strong> Can specify per-variant thresholds via 'uth' array</li>
+                <li><strong>Empty ULP Value:</strong> Falls back to default based on variant type</li>
+                <li><strong>Format:</strong> Semicolon-separated string (e.g., "0.5;0.5;4.0;4.0")</li>
+                <li><strong>Alignment:</strong> Must have same count as variants array</li>
+            </ul>
+        </div>
+
+        <!-- 7. extractApiName -->
+        <h2 id="extract-api">7. 🔤 extractApiName() - API Name Extraction</h2>
+
+        <div class="description">
+            <h4>Overview</h4>
+            <p>Extracts the actual API/function name from test IDs by removing common prefixes. This allows flexible test naming while maintaining clean API references.</p>
+        </div>
+
+        <div class="chart-container">
+            <div class="mermaid">
+flowchart TD
+    Start([extractApiName<br/>id]) --> DefinePrefixes[Define Known Prefixes<br/>━━━━━━━━━━━━<br/>• accu_<br/>• perf_<br/>• conf_<br/>• unittest_<br/>• vt_]
+
+    DefinePrefixes --> IterPrefixes[Iterate Prefixes<br/>━━━━━━━━━━━━<br/>for each prefix]
+
+    IterPrefixes --> CheckLength{id.length ><br/>prefix.length?}
+
+    CheckLength -->|No| NextPrefix[Try Next Prefix]
+    NextPrefix --> IterPrefixes
+
+    CheckLength -->|Yes| CheckMatch{id starts with<br/>prefix?}
+
+    CheckMatch -->|No| NextPrefix
+    CheckMatch -->|Yes| ExtractRemaining[Extract Remaining<br/>━━━━━━━━━━━━<br/>remaining = id.substr<br/>prefix.length]
+
+    ExtractRemaining --> FindUnderscore[Find Next Underscore<br/>━━━━━━━━━━━━<br/>pos = remaining.find _]
+
+    FindUnderscore --> CheckUnderscore{Underscore<br/>found?}
+
+    CheckUnderscore -->|Yes| ExtractAPI[Extract API Name<br/>━━━━━━━━━━━━<br/>return remaining.substr 0, pos]
+    CheckUnderscore -->|No| ReturnRemaining[Return Remaining<br/>━━━━━━━━━━━━<br/>return remaining]
+
+    IterPrefixes -->|No match| ReturnOriginal[Return Original ID<br/>━━━━━━━━━━━━<br/>return id]
+
+    ExtractAPI --> End([API Name Extracted])
+    ReturnRemaining --> End
+    ReturnOriginal --> End
+
+    style Start fill:#4caf50,stroke:#2e7d32,stroke-width:3px,color:#fff
+    style End fill:#2196f3,stroke:#1565c0,stroke-width:3px,color:#fff
+    style CheckMatch fill:#ff9800,stroke:#e65100,stroke-width:2px
+            </div>
+        </div>
+
+        <div class="code-example">
+<span class="comment">// Example transformations:</span>
+<span class="string">"accu_sin_range_01"</span>     → <span class="string">"sin"</span>
+<span class="string">"perf_cos_special_02"</span>   → <span class="string">"cos"</span>
+<span class="string">"unittest_exp_edge_03"</span>  → <span class="string">"exp"</span>
+<span class="string">"vt_log_basic_01"</span>       → <span class="string">"log"</span>
+<span class="string">"sin_special"</span>           → <span class="string">"sin_special"</span> <span class="comment">(no prefix)</span>
+        </div>
+
+        <!-- 8. Data Structures -->
+        <h2 id="data-structures">8. 🗂️ Data Structures & Relationships</h2>
+
+        <div class="description">
+            <h4>Overview</h4>
+            <p>Visual representation of how YAML data maps to C++ structures and flows through the parsing pipeline.</p>
+        </div>
+
+        <div class="chart-container">
+            <div class="mermaid">
+graph TB
+    subgraph YAMLDoc["YAML Document"]
+        Seq[test_sequence<br/>━━━━━━━━━━━━<br/>• name<br/>• function]
+        Set[test_set<br/>━━━━━━━━━━━━<br/>• id<br/>• description]
+        Test[test<br/>━━━━━━━━━━━━<br/>• id<br/>• input<br/>• type<br/>• steps<br/>• variants<br/>• uth<br/>• expect<br/>• expect_exception]
+    end
+
+    subgraph Structures["C++ Structures"]
+        InputRange[InputRange<br/>━━━━━━━━━━━━<br/>• srt: string<br/>• stp: string<br/>• type: string<br/>• count: string]
+
+        YamlInputs[YamlInputs<br/>━━━━━━━━━━━━<br/>• test_id: string<br/>• api_name: string<br/>• test_type: string<br/>• input: vector string<br/>• range: vector InputRange<br/>• variants: string<br/>• ulp_threshold: string<br/>• xv: string expect<br/>• xxv: string exception]
+    end
+
+    subgraph Output["Output"]
+        ParamsVector[vector YamlInputs<br/>━━━━━━━━━━━━<br/>One entry per test<br/>Ready for execution]
+    end
+
+    Seq -->|function name| YamlInputs
+    Set -->|test_set id| YamlInputs
+    Test -->|all fields| YamlInputs
+    Test -->|input ranges| InputRange
+    InputRange -->|stored in| YamlInputs
+    YamlInputs -->|push_back| ParamsVector
+
+    ParamsVector -->|passed to| Executor[process_libm<br/>Test Executor]
+
+    style Seq fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    style Set fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    style Test fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
+    style InputRange fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+    style YamlInputs fill:#fce4ec,stroke:#e91e63,stroke-width:2px
+    style ParamsVector fill:#e0f2f1,stroke:#009688,stroke-width:3px
+    style Executor fill:#fff9c4,stroke:#f9a825,stroke-width:2px
+            </div>
+        </div>
+
+        <!-- 9. Complete Example -->
+        <h2 id="example">9. 📝 Complete Example Walkthrough</h2>
+
+        <div class="description">
+            <h4>Overview</h4>
+            <p>A complete end-to-end example showing how a YAML test configuration is parsed and converted into the internal YamlInputs structure.</p>
+        </div>
+
+        <div class="yaml-structure">
+<span class="comment"># Input YAML</span>
+- <span class="keyword">test_sequence:</span> <span class="string">"accuracy_suite"</span>
+  <span class="keyword">function:</span> <span class="string">"sin"</span>
+  <span class="keyword">test_sets:</span>
+    - <span class="keyword">id:</span> <span class="string">"basic_range"</span>
+      <span class="keyword">tests:</span>
+        - <span class="keyword">id:</span> <span class="string">"accu_sin_range_01"</span>
+          <span class="keyword">input:</span>
+            - [<span class="string">"0.0"</span>, <span class="string">"6.28318530718"</span>]
+          <span class="keyword">type:</span>
+            - <span class="string">"linear"</span>
+          <span class="keyword">steps:</span>
+            - <span class="string">"10000"</span>
+          <span class="keyword">variants:</span>
+            - <span class="string">"ss"</span>
+            - <span class="string">"vrs4"</span>
+          <span class="keyword">uth:</span>
+            - <span class="string">"0.5"</span>
+            - <span class="string">"4.0"</span>
+        </div>
+
+        <div class="chart-container">
+            <div class="mermaid">
+flowchart LR
+    YAML[YAML Input<br/>━━━━━━━━━━━━<br/>test_sequence: accuracy_suite<br/>function: sin<br/>id: accu_sin_range_01<br/>input: 0.0, 6.28318530718<br/>type: linear<br/>steps: 10000<br/>variants: ss, vrs4<br/>uth: 0.5, 4.0] --> Parse[Parser Execution<br/>━━━━━━━━━━━━]
+
+    Parse --> Extract1[Extract API<br/>━━━━━━━━━━━━<br/>accu_sin_range_01 → sin]
+    Parse --> Extract2[Build Range<br/>━━━━━━━━━━━━<br/>srt: 0.0<br/>stp: 6.28318530718<br/>type: linear<br/>count: 10000]
+    Parse --> Extract3[Process Variants<br/>━━━━━━━━━━━━<br/>variants: ss;vrs4]
+    Parse --> Extract4[Process ULP<br/>━━━━━━━━━━━━<br/>ulp_threshold: 0.5;4.0]
+
+    Extract1 --> Result[YamlInputs Result<br/>━━━━━━━━━━━━<br/>test_id: accu_sin_range_01<br/>api_name: sin<br/>test_type: basic_range<br/>range 0.srt: 0.0<br/>range 0.stp: 6.28318530718<br/>range 0.type: linear<br/>range 0.count: 10000<br/>variants: ss;vrs4<br/>ulp_threshold: 0.5;4.0]
+    Extract2 --> Result
+    Extract3 --> Result
+    Extract4 --> Result
+
+    Result --> Vector[Added to<br/>params vector<br/>━━━━━━━━━━━━<br/>Ready for test<br/>execution]
+
+    style YAML fill:#e3f2fd,stroke:#1976d2,stroke-width:3px
+    style Parse fill:#fff3e0,stroke:#f57c00,stroke-width:3px
+    style Result fill:#e8f5e9,stroke:#4caf50,stroke-width:3px
+    style Vector fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
+            </div>
+        </div>
+
+        <div class="code-example">
+<span class="comment">// Resulting C++ Structure:</span>
+YamlInputs param;
+param.test_id        = <span class="string">"accu_sin_range_01"</span>;
+param.api_name       = <span class="string">"sin"</span>;               <span class="comment">// Extracted from ID</span>
+param.test_type      = <span class="string">"basic_range"</span>;
+param.variants       = <span class="string">"ss;vrs4"</span>;
+param.ulp_threshold  = <span class="string">"0.5;4.0"</span>;
+param.range[0].srt   = <span class="string">"0.0"</span>;
+param.range[0].stp   = <span class="string">"6.28318530718"</span>;
+param.range[0].type  = <span class="string">"linear"</span>;
+param.range[0].count = <span class="string">"10000"</span>;
+        </div>
+
+        <div style="background-color: #e8f5e9; padding: 25px; border-radius: 8px; margin-top: 40px; border-left: 5px solid #4caf50;">
+            <h3 style="margin-top: 0; color: #2e7d32;">✅ Summary</h3>
+            <p style="font-size: 1.05em; line-height: 1.8;">
+                The YAML parser provides a robust, hierarchical approach to test configuration:
+            </p>
+            <ul style="font-size: 1.05em; line-height: 1.8;">
+                <li><strong>Three-level hierarchy:</strong> test_sequences → test_sets → tests</li>
+                <li><strong>Flexible input specification:</strong> Single values or ranges with multiple generator types</li>
+                <li><strong>Multi-variant support:</strong> Test same function across scalar, SSE, AVX, AVX-512</li>
+                <li><strong>Intelligent defaults:</strong> ULP thresholds auto-configured based on variant type</li>
+                <li><strong>API name extraction:</strong> Clean separation of test naming from API references</li>
+                <li><strong>Extensible:</strong> Easy to add new fields and test types</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            graph: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+1. Create and navigate to the build directory:
+    ```sh
+    mkdir build && cd build
+    ```
+
+2. Configure CMake for `libm_testsuite`:
+    ```sh
+    cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=g++ -DALM_DEPS=ON
+    ```
+    - `-DCMAKE_BUILD_TYPE=Debug` : to build the testsuite in debug mode
+    - `-DCMAKE_BUILD_TYPE=Release` : to build the testsuite in release mode
+    - `-DCMAKE_CXX_COMPILER=g++` : select C++ compiler (g++ or clang++)
+    - `-DALM_DEPS=ON` : build dependent libraries (amd, mkl, gcc, and YAML Libraries)
+    - `-DALM_DEPS=OFF` : default (disable dependent builds)
+
+3. Build `libm_testsuite`:
+    ```sh
+    cmake --build . --target Debug -j
+    ```
+
+4. Run the executable:
+
+    **For AMD:**
+    ```sh
+    export LD_LIBRARY_PATH=/path/to/amd_library:$LD_LIBRARY_PATH
+    ```
+    - Run your application:
+      ```sh
+      ./libm_testsuite ../deps/libshimamd.so ../spec/generic.yml
+      ```
+    **For GCC:**
+    - Run your application:
+      ```sh
+      ./libm_testsuite ../deps/libshimgcc.so ../spec/generic.yml
+      ```
+	  
+    **For MKL:**
+    - Update `LD_LIBRARY_PATH`:
+      ```sh
+      export LD_LIBRARY_PATH=/opt/intel/oneapi/2024.0/lib:$LD_LIBRARY_PATH
+      export LD_LIBRARY_PATH=/opt/intel/oneapi/mkl/latest/lib:$LD_LIBRARY_PATH
+      ```
+    - Run your application:
+      ```sh
+      ./libm_testsuite ../deps/libshimmkl.so ../spec/generic.yml
+      ```
+
+
+#Steps to Build and Run on Windows
+
+## Prerequisites
+1. Install Visual Studio 2022 with C++ development tools
+2. Install LLVM/Clang
+3. Install CMake and Ninja
+4. Install MPFR dependencies at C:\drives\mpfr
+
+## Build Steps
+
+1. Open Windows PowerShell as Administrator and set up the Visual Studio environment:
+   # Initialize Visual Studio environment
+   ```   
+   "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcshall64.bat" x64
+   ```
+
+2. Verify tool versions:
+   ninja --version
+   cmake --version
+   clang --version
+   ```
+
+3. Set environment paths in PowerShell:
+   ```
+   set REF_MPFR="C:\KiranMV\mpfr"
+   set PATH=C:\Users\aoclwinuser\Jagadish\sept\testsuite\amd-main\build\dev-win-release-llvm\lib;%PATH%
+   set PATH=C:\KiranMV\mpfr\mpfr_x64-windows\bin;C:\KiranMV\mpfr\gmp_x64-windows\bin;C:\KiranMV\mpfr\mpc_x64-windows\bin;%PATH%
+   ```
+   
+4. Create and navigate to build directory:
+   ```
+   mkdir build && build
+   ```
+
+5. Configure with CMake:
+   # For standard build
+   ```
+   cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Debug -DALM_DEPS=ON -DCMAKE_C_COMPILER="C:/Program Files/LLVM/bin/clang.exe" -DCMAKE_CXX_COMPILER="C:/Program Files/LLVM/bin/clang++.exe"
+   ```
+
+6. Build the project:
+   ```
+   cmake --build . --config Debug
+   ```
+
+7. Run test cases:
+   # Test with AMD shim
+   ```   
+   .\libm_testsuite.exe ..\libs\shimamd.dll ..\config\exp\generic.yml
+   ```
+   
+   # Test with MKL shim
+   ```   
+   .\libm_testsuite.exe ..\libs\shimmkl.dll ..\config\exp\generic.yml
+   ```
+
+## Troubleshooting
+
+- If you get "DLL not found" errors, ensure all DLLs are in the libs directory
+- Check that MPFR dependencies are properly installed at C:\drives\mpfr
+- For AVX-512 builds, ensure your CPU supports AVX-512 instruction set
+- Use `dumpbin /dependents .\libs\shimamd.dll` to check DLL dependencies
+- Output files will be created in the dumps directory at the project root

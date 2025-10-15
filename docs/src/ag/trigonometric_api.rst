@@ -24,34 +24,29 @@
 ..  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ..  POSSIBILITY OF SUCH DAMAGE.
 
-##########
-AOCL-LibM
-##########
+.. _trigonometric:
 
-AOCL-LibM is a high performant implementation of math library.
+Trigonometric Functions
+=======================
 
+Sin
+---
 
-.. toctree::
-   :maxdepth: 1
+.. doxygenfunction:: amd_sinf
+  :project: libm
 
-   ag/trigonometric_api.rst
-   ag/invtrigonometric_api.rst
-   ag/hyperbolic_api.rst
-   ag/invhyperbolic_api.rst
-   ag/exponential_api.rst
-   ag/logarithmic_api.rst
-   ag/power_root_api.rst
-   ag/error_api.rst
-   ag/linearfrac_api.rst
-   ag/remainder_quotient.rst
-   ag/euclidean_distance_api.rst
-   ag/nearest_integer_api.rst
-   ag/fp_manipulation_api.rst
-   ag/arithmetic_api.rst
+.. doxygenfunction:: amd_sin
+   :project: libm
 
 
-* AOCL-LibM is developed and maintained by AMD.
-* For support, send an email to* toolchainsupport@amd.com
+Sincos
+------
+
+.. doxygenfunction:: amd_vrs4_sincosf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_sincos
+   :project: libm
 
 
 .. End of Doc

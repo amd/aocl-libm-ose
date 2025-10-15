@@ -24,34 +24,11 @@
 ..  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ..  POSSIBILITY OF SUCH DAMAGE.
 
-##########
-AOCL-LibM
-##########
+.. _fpmanipulation:
 
-AOCL-LibM is a high performant implementation of math library.
+Floating Point Manipulation Functions
+=====================================
 
-
-.. toctree::
-   :maxdepth: 1
-
-   ag/trigonometric_api.rst
-   ag/invtrigonometric_api.rst
-   ag/hyperbolic_api.rst
-   ag/invhyperbolic_api.rst
-   ag/exponential_api.rst
-   ag/logarithmic_api.rst
-   ag/power_root_api.rst
-   ag/error_api.rst
-   ag/linearfrac_api.rst
-   ag/remainder_quotient.rst
-   ag/euclidean_distance_api.rst
-   ag/nearest_integer_api.rst
-   ag/fp_manipulation_api.rst
-   ag/arithmetic_api.rst
-
-
-* AOCL-LibM is developed and maintained by AMD.
-* For support, send an email to* toolchainsupport@amd.com
-
+Contents need to be added.
 
 .. End of Doc

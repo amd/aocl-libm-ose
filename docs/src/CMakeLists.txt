@@ -83,6 +83,21 @@ if (LIBM_BUILD_DOCS)
 
   set (SPHINX_INPUT_FILES_APIGUIDE
        ${CMAKE_CURRENT_SOURCE_DIR}/index.rst
+       ${CMAKE_CURRENT_SOURCE_DIR}/ag/arithmetic_api.rst
+       ${CMAKE_CURRENT_SOURCE_DIR}/ag/error_api.rst
+       ${CMAKE_CURRENT_SOURCE_DIR}/ag/euclidean_distance_api.rst
+       ${CMAKE_CURRENT_SOURCE_DIR}/ag/exponential_api.rst
+       ${CMAKE_CURRENT_SOURCE_DIR}/ag/fp_manipulation_api.rst
+       ${CMAKE_CURRENT_SOURCE_DIR}/ag/hyperbolic_api.rst
+       ${CMAKE_CURRENT_SOURCE_DIR}/ag/invhyperbolic_api.rst
+       ${CMAKE_CURRENT_SOURCE_DIR}/ag/invtrigonometric_api.rst
+       ${CMAKE_CURRENT_SOURCE_DIR}/ag/linearfrac_api.rst
+       ${CMAKE_CURRENT_SOURCE_DIR}/ag/logarithmic_api.rst
+       ${CMAKE_CURRENT_SOURCE_DIR}/ag/nearest_integer_api.rst
+       ${CMAKE_CURRENT_SOURCE_DIR}/ag/power_root_api.rst
+       ${CMAKE_CURRENT_SOURCE_DIR}/ag/remainder_quotient.rst
+       ${CMAKE_CURRENT_SOURCE_DIR}/ag/trigonometric_api.rst
+       ${CMAKE_CURRENT_SOURCE_DIR}/ag/trigonometric_api.rst
   )
 
   set (SPHINX_INPUT_FILES

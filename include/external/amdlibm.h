@@ -154,6 +154,14 @@ enforcement of rights or subsequent actions in the event of future breaches.
 the parties and supersedes any prior or contemporaneous oral or written
 agreements with respect to the subject matter of this Agreement.
 */
+
+
+/** @file amdlibm.h
+ *  @brief AOCL-LibM header file for scaler variant.
+ *
+ *  This file declares the public APIs from AOCL-LibM library.
+ */
+
 #ifndef __AMDLIBM_H__
 #define __AMDLIBM_H__
 
@@ -194,7 +202,23 @@ extern "C" {
 #endif
 
 /* Trigonometric */
+
+  /**
+   * @brief computes sine of x
+   * @param[in] x must be in radians in double precision
+   * @return on sucess, sine of x is returned in double precision.
+   *         If x is NaN, a NaN is returned.
+   *         If x is +/- INF, domain error occurs, and NaN is returned.
+   */
   double amd_sin (double x);
+
+  /**
+   * @brief computes sine of x
+   * @param[in] x must be in radians in single precision
+   * @return on sucess, sine of x is returned in single precision.
+   *         If x is NaN, a NaN is returned.
+   *         If x is +/- INF, domain error occurs, and NaN is returned.
+   */
   float amd_sinf (float x);
 
   double amd_cos (double x);

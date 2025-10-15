@@ -153,6 +153,14 @@ enforcement of rights or subsequent actions in the event of future breaches.
 the parties and supersedes any prior or contemporaneous oral or written
 agreements with respect to the subject matter of this Agreement.
 */
+
+
+/** @file amdlibm_vec.h
+ *  @brief AOCL-LibM header file for vector variant.
+ *
+ *  This file declares the public APIs from AOCL-LibM library.
+ */
+
 #ifndef __AMDLIBM_VEC_H__
 #define __AMDLIBM_VEC_H__
 
@@ -186,7 +194,20 @@ extern "C" {
   __m128d amd_vrd2_tan (__m128d x);
   __m128 amd_vrs4_tanf (__m128 x);
 
+  /**
+   * @brief Computes sine and cosine of x
+   * @param[in] x in radians in double precision
+   * @param[out] vector of sine of x in double precision
+   * @param[out] vector of cosine of x in single precision
+   */
   void amd_vrd2_sincos (__m128d x, __m128d *sin, __m128d *cos);
+
+  /**
+   * @brief
+   * @param[in]
+   * @param[out]
+   * @param[out]
+   */
   void amd_vrs4_sincosf (__m128 x, __m128 *sin, __m128 *cos);
 
 /* Inverse Trigonometric */

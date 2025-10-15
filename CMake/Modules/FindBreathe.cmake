@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -25,14 +25,14 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-# Build both shared and static libraries by default
-option(BUILD_SHARED_LIBS "Build shared libraries." ON)
-option(BUILD_STATIC_LIBS "Build static libraries." ON)
+include (FindPackageHandleStandardArgs)
 
-option(LIBM_BUILD_LIBRARY "Enable Building libraries." ON)
-option(LIBM_ENABLE_AVX512 "Enable AVX-512 support." ON)
-option(LIBM_BUILD_TESTS "Enable Building tests." OFF)
-option(LIBM_BUILD_EXAMPLES "Enable Building examples." OFF)
-option(LIBM_BUILD_DOCS "LibM Doc build with DOXYGEN/Sphinx" OFF)
-option(LIBM_ENABLE_ASAN "Enable AddressSanitizer." OFF)
-option(LIBM_ENABLE_COVERAGE "Enable code coverage." OFF)
+## Find if breathe is installed
+find_program (BREATHE_EXECUTABLE
+              NAMES breathe-apidoc breathe-apidoc.exe
+              DOC "Breathe is a Sphinx extension to work with doxygen"
+)
+
+mark_as_advanced (BREATHE_EXECUTABLE)
+
+find_package_handle_standard_args (Breathe DEFAULT_MSG BREATHE_EXECUTABLE)

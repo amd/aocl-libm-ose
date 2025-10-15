@@ -287,6 +287,13 @@ if (${${PROJECT_PREFIX}_LIBM_BUILD_EXAMPLES})
     add_subdirectory(examples EXCLUDE_FROM_ALL)
 endif()
 
+#----------------------------------------------------------
+# Add LibM documentation build if LIBM_BUILD_DOC is enabled
+#----------------------------------------------------------
+if (${${PROJECT_PREFIX}_LIBM_BUILD_DOCS})
+  add_subdirectory(docs/src EXCLUDE_FROM_ALL)
+endif ()
+
 add_custom_target(distclean
     COMMAND ${CMAKE_MAKE_PROGRAM} clean
     COMMAND ${CMAKE_COMMAND} -E remove "${PROJECT_SOURCE_DIR}/src/buildsysinfo.h"

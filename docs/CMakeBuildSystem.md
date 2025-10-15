@@ -215,6 +215,14 @@ To build for code coverage, configure CMake using `-DLIBM_ENABLE_COVERAGE=ON`. T
         ```
 Note: ASAN and Code Coverage are features built for developers.
 
+### **Step 12: Sphinx & Doxygen based documentation Build**
+To build LibM documentation, configure CMake using `-DLIBM_BUILD_DOCS=ON`. This is **OFF by default**.
+```console
+$ cmake --preset dev-release-gcc -DLIBM_BUILD_DOCS=ON --fresh
+$ cmake --build --preset dev-release-gcc --target libmdoc
+```
+Note: LibM documentation is found here: **<build>/aocl_docs/html/index.html**
+
 -----
 
 

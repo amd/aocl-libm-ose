@@ -29,6 +29,7 @@
                 "LIBM_BUILD_TESTS": "ON",
                 "LIBM_ENABLE_AVX512": "ON",
                 "LIBM_BUILD_EXAMPLES": "OFF",
+                "LIBM_BUILD_DOCS": "OFF",
                 "LIBM_ENABLE_ASAN": "OFF",
                 "LIBM_ENABLE_COVERAGE": "OFF"
             }

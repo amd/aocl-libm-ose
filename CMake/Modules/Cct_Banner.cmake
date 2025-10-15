@@ -56,6 +56,8 @@ function(cct_display_banner)
     message(" - Enabled? :              \"${${PROJECT_PREFIX}_LIBM_ENABLE_COVERAGE}\"")
     message("Examples settings:")
     message(" - Enabled? :              \"${${PROJECT_PREFIX}_LIBM_BUILD_EXAMPLES}\"")
+    message("Documentation settings:")
+    message(" - Enabled? :              \"${${PROJECT_PREFIX}_LIBM_BUILD_DOCS}\"")
     message(" - Install directory:      \"${CMAKE_INSTALL_PREFIX}\"")
 
 endfunction(cct_display_banner)

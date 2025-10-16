@@ -202,214 +202,839 @@ extern "C" {
 #endif
 
 /* Trigonometric */
-
   /**
-   * @brief computes sine of x
-   * @param[in] x must be in radians in double precision
-   * @return on sucess, sine of x is returned in double precision.
-   *         If x is NaN, a NaN is returned.
-   *         If x is +/- INF, domain error occurs, and NaN is returned.
+   * @brief Computes the sine of a double-precision angle.
+   * @param x Input angle in radians.
+   * @return Sine of x.
    */
   double amd_sin (double x);
-
   /**
-   * @brief computes sine of x
-   * @param[in] x must be in radians in single precision
-   * @return on sucess, sine of x is returned in single precision.
-   *         If x is NaN, a NaN is returned.
-   *         If x is +/- INF, domain error occurs, and NaN is returned.
+   * @brief Computes the sine of a single-precision angle.
+   * @param x Input angle in radians.
+   * @return Sine of x.
    */
   float amd_sinf (float x);
-
+  
+  /**
+   * @brief Computes the cosine of a double-precision angle.
+   * @param x Input angle in radians.
+   * @return Cosine of x.
+   */
   double amd_cos (double x);
+  /**
+   * @brief Computes the cosine of a single-precision angle.
+   * @param x Input angle in radians.
+   * @return Cosine of x.
+   */
   float amd_cosf (float x);
 
+  /**
+   * @brief Computes the tangent of a double-precision angle.
+   * @param x Input angle in radians.
+   * @return Tangent of x.
+   */
   double amd_tan (double x);
+  /**
+   * @brief Computes the tangent of a single-precision angle.
+   * @param x Input angle in radians.
+   * @return Tangent of x.
+   */
   float amd_tanf (float x);
 
 /* Inverse Trigonometric */
+  /**
+   * @brief Computes the principal value of the arc-sine of a double-precision value.
+   * @param x Input value.
+   * @return Arc-sine of x in radians.
+   */
   double amd_asin (double x);
+  /**
+   * @brief Computes the principal value of the arc-sine of a single-precision value.
+   * @param x Input value.
+   * @return Arc-sine of x in radians.
+   */
   float amd_asinf (float x);
 
+  /**
+   * @brief Computes the principal value of the arc-cosine of a double-precision value.
+   * @param x Input value.
+   * @return Arc-cosine of x in radians.
+   */
   double amd_acos (double x);
+  /**
+   * @brief Computes the principal value of the arc-cosine of a single-precision value.
+   * @param x Input value.
+   * @return Arc-cosine of x in radians.
+   */
   float amd_acosf (float x);
 
+  /**
+   * @brief Computes the principal value of the arc-tangent of a double-precision value.
+   * @param x Input value.
+   * @return Arc-tangent of x in radians.
+   */
   double amd_atan (double x);
+  /**
+   * @brief Computes the principal value of the arc-tangent of a single-precision value.
+   * @param x Input value.
+   * @return Arc-tangent of x in radians.
+   */
   float amd_atanf (float x);
 
+  /**
+   * @brief Computes the arc-tangent of the quotient of two double-precision values.
+   * @param x First argument.
+   * @param y Second argument.
+   * @return Angle in radians, using the signs of both arguments to determine the correct quadrant.
+   */
   double amd_atan2 (double x, double y);
+  /**
+   * @brief Computes the arc-tangent of the quotient of two single-precision values.
+   * @param x First argument.
+   * @param y Second argument.
+   * @return Angle in radians, using the signs of both arguments to determine the correct quadrant.
+   */
   float amd_atan2f (float x, float y);
 
+  /**
+   * @brief Computes both sine and cosine of a double-precision angle.
+   * @param x Input angle in radians.
+   * @param s Output pointer for sine of x.
+   * @param c Output pointer for cosine of x.
+   */
   void amd_sincos (double x, double *s, double *c);
+  /**
+   * @brief Computes both sine and cosine of a single-precision angle.
+   * @param x Input angle in radians.
+   * @param s Output pointer for sine of x.
+   * @param c Output pointer for cosine of x.
+   */
   void amd_sincosf (float x, float *s, float *c);
 
 /* Hyperbolic */
+  /**
+   * @brief Computes the hyperbolic sine of a double-precision value.
+   * @param x Input value.
+   * @return Hyperbolic sine of x.
+   */
   double amd_sinh (double x);
+  /**
+   * @brief Computes the hyperbolic sine of a single-precision value.
+   * @param x Input value.
+   * @return Hyperbolic sine of x.
+   */
   float amd_sinhf (float x);
 
+  /**
+   * @brief Computes the hyperbolic cosine of a double-precision value.
+   * @param x Input value.
+   * @return Hyperbolic cosine of x.
+   */
   double amd_cosh (double x);
+  /**
+   * @brief Computes the hyperbolic cosine of a single-precision value.
+   * @param x Input value.
+   * @return Hyperbolic cosine of x.
+   */
   float amd_coshf (float x);
 
+  /**
+   * @brief Computes the hyperbolic tangent of a double-precision value.
+   * @param x Input value.
+   * @return Hyperbolic tangent of x.
+   */
   double amd_tanh (double x);
+  /**
+   * @brief Computes the hyperbolic tangent of a single-precision value.
+   * @param x Input value.
+   * @return Hyperbolic tangent of x.
+   */
   float amd_tanhf (float x);
 
 /* Inverse Hyperbolic */
+  /**
+   * @brief Computes the inverse hyperbolic sine of a double-precision value.
+   * @param x Input value.
+   * @return Inverse hyperbolic sine of x.
+   */
   double amd_asinh (double x);
+  /**
+   * @brief Computes the inverse hyperbolic sine of a single-precision value.
+   * @param x Input value.
+   * @return Inverse hyperbolic sine of x.
+   */
   float amd_asinhf (float x);
 
+  /**
+   * @brief Computes the inverse hyperbolic cosine of a double-precision value.
+   * @param x Input value.
+   * @return Inverse hyperbolic cosine of x.
+   */
   double amd_acosh (double x);
+  /**
+   * @brief Computes the inverse hyperbolic cosine of a single-precision value.
+   * @param x Input value.
+   * @return Inverse hyperbolic cosine of x.
+   */
   float amd_acoshf (float x);
+  
 
+  /**
+   * @brief Computes the inverse hyperbolic tangent of a double-precision value.
+   * @param x Input value.
+   * @return Inverse hyperbolic tangent of x.
+   */
   double amd_atanh (double x);
+  /**
+   * @brief Computes the inverse hyperbolic tangent of a single-precision value.
+   * @param x Input value.
+   * @return Inverse hyperbolic tangent of x.
+   */
   float amd_atanhf (float x);
 
 /* Exponential */
+  /**
+   * @brief Computes e raised to a double-precision power.
+   * @param x Exponent.
+   * @return e^x.
+   */
   double amd_exp (double x);
+  /**
+   * @brief Computes e raised to a single-precision power.
+   * @param x Exponent.
+   * @return e^x.
+   */
   float amd_expf (float x);
 
+  /**
+   * @brief Computes 2 raised to a double-precision exponent.
+   * @param x Exponent.
+   * @return 2^x.
+   */
   double amd_exp2 (double x);
+  /**
+   * @brief Computes 2 raised to a single-precision exponent.
+   * @param x Exponent.
+   * @return 2^x.
+   */
   float amd_exp2f (float x);
 
+  /**
+   * @brief Computes 10 raised to a double-precision exponent.
+   * @param x Exponent.
+   * @return 10^x.
+   */
   double amd_exp10 (double x);
+  /**
+   * @brief Computes 10 raised to a single-precision exponent.
+   * @param x Exponent.
+   * @return 10^x.
+   */
   float amd_exp10f (float x);
 
+  /**
+   * @brief Computes exp(x) - 1 with reduced error for small x (double-precision).
+   * @param x Input value.
+   * @return exp(x) - 1.
+   */
   double amd_expm1 (double x);
+  /**
+   * @brief Computes exp(x) - 1 with reduced error for small x (single-precision).
+   * @param x Input value.
+   * @return exp(x) - 1.
+   */
   float amd_expm1f (float x);
 
 /* Logarithmic */
+  /**
+   * @brief Computes the natural logarithm (base e) of a double-precision value.
+   * @param x Input value.
+   * @return Natural logarithm of x.
+   */
   double amd_log (double x);
+  /**
+   * @brief Computes the natural logarithm (base e) of a single-precision value.
+   * @param x Input value.
+   * @return Natural logarithm of x.
+   */
   float amd_logf (float x);
 
+  /**
+   * @brief Computes the base-2 logarithm of a double-precision value.
+   * @param x Input value.
+   * @return Base-2 logarithm of x.
+   */
   double amd_log2 (double x);
+  /**
+   * @brief Computes the base-2 logarithm of a single-precision value.
+   * @param x Input value.
+   * @return Base-2 logarithm of x.
+   */
   float amd_log2f (float x);
 
+  /**
+   * @brief Computes the base-10 logarithm of a double-precision value.
+   * @param x Input value.
+   * @return Base-10 logarithm of x.
+   */
   double amd_log10 (double x);
+  /**
+   * @brief Computes the base-10 logarithm of a single-precision value.
+   * @param x Input value.
+   * @return Base-10 logarithm of x.
+   */
   float amd_log10f (float x);
 
+  /**
+   * @brief Computes log(1 + x) with reduced error for small x (double-precision).
+   * @param x Input value.
+   * @return log(1 + x).
+   */
   double amd_log1p (double x);
+  /**
+   * @brief Computes log(1 + x) with reduced error for small x (single-precision).
+   * @param x Input value.
+   * @return log(1 + x).
+   */
   float amd_log1pf (float x);
 
 /* Power & Root */
+  /**
+   * @brief Computes the result of raising a double-precision base to a double-precision exponent.
+   * @param x Base.
+   * @param y Exponent.
+   * @return x raised to the power y.
+   */
   double amd_pow (double x, double y);
+  /**
+   * @brief Computes the result of raising a single-precision base to a single-precision exponent..
+   * @param x Base.
+   * @param y Exponent.
+   * @return x raised to the power y.
+   */
   float amd_powf (float x, float y);
 
+  /**
+   * @brief Computes the square root of a double-precision value.
+   * @param x Input value.
+   * @return Square root of x.
+   */
   double amd_sqrt (double x);
+  /**
+   * @brief Computes the square root of a single-precision value.
+   * @param x Input value.
+   * @return Square root of x.
+   */
   float amd_sqrtf (float x);
 
+  /**
+   * @brief Computes the cube root of a double-precision value.
+   * @param x Input value.
+   * @return Cube root of x.
+   */
   double amd_cbrt (double x);
+  /**
+   * @brief Computes the cube root of a single-precision value.
+   * @param x Input value.
+   * @return Cube root of x.
+   */
   float amd_cbrtf (float x);
 
 /* Error */
+  /**
+   * @brief Computes the Gaussian error function for a double-precision value.
+   * @param x Input value.
+   * @return erf(x).
+   */
   double amd_erf (double x);
+  /**
+   * @brief Computes the Gaussian error function for a single-precision value.
+   * @param x Input value.
+   * @return erf(x).
+   */
   float amd_erff (float x);
 
 /* Complementary Error */
+  /**
+   * @brief Computes the complementary error function for a double-precision value.
+   * @param x Input value.
+   * @return erfc(x).
+   */
   double amd_erfc (double x);
+  /**
+   * @brief Computes the complementary error function for a single-precision value.
+   * @param x Input value.
+   * @return erfcf(x).
+   */
   float amd_erfcf (float x);
 
 /* Remainder */
+  /**
+   * @brief Computes the remainder of the division operation x/y (double-precision).
+   * @param x Numerator.
+   * @param y Denominator.
+   * @return Remainder of x divided by y.
+   */
   double amd_fmod (double x, double y);
+  /**
+   * @brief Computes the remainder of the division operation x/y (single-precision).
+   * @param x Numerator.
+   * @param y Denominator.
+   * @return Remainder of x divided by y.
+   */
   float amd_fmodf (float x, float y);
 
+  /**
+   * @brief Computes the IEEE 754-style remainder of x with respect to y (double-precision).
+   * @param x Numerator.
+   * @param y Denominator.
+   * @return Remainder value.
+   */
   double amd_remainder (double x, double y);
+  /**
+   * @brief Computes the IEEE 754-style remainder of x with respect to y (single-precision).
+   * @param x Numerator.
+   * @param y Denominator.
+   * @return Remainder value.
+   */
   float amd_remainderf (float x, float y);
 
+  /**
+   * @brief Computes the remainder and part of the quotient for double-precision inputs.
+   * @param x Numerator.
+   * @param y Denominator.
+   * @param quo Output pointer receiving a part of the quotient.
+   * @return Remainder value.
+   */
   double amd_remquo (double x, double y, int *quo);
+  /**
+   * @brief Computes the remainder and part of the quotient for single-precision inputs.
+   * @param x Numerator.
+   * @param y Denominator.
+   * @param quo Output pointer receiving a part of the quotient.
+   * @return Remainder value.
+   */
   float amd_remquof (float x, float y, int *quo);
 
 /* Maximum, Minimum & Difference */
+  /**
+   * @brief Returns the larger of two double-precision values.
+   * @param x First value.
+   * @param y Second value.
+   * @return Maximum of x and y.
+   */
   double amd_fmax  (double x, double y);
+  /**
+   * @brief Returns the larger of two single-precision values.
+   * @param x First value.
+   * @param y Second value.
+   * @return Maximum of x and y.
+   */
   float amd_fmaxf (float x, float y);
 
+  /**
+   * @brief Returns the smaller of two double-precision values.
+   * @param x First value.
+   * @param y Second value.
+   * @return Minimum of x and y.
+   */
   double amd_fmin (double x, double y);
+  /**
+   * @brief Returns the smaller of two single-precision values.
+   * @param x First value.
+   * @param y Second value.
+   * @return Minimum of x and y.
+   */
   float amd_fminf (float x, float y);
 
+  /**
+   * @brief Computes the positive difference max(x - y, 0) for double-precision values.
+   * @param x Minuend.
+   * @param y Subtrahend.
+   * @return Positive difference.
+   */
   double amd_fdim (double x, double y);
+  /**
+   * @brief Computes the positive difference max(x - y, 0) for single-precision values.
+   * @param x Minuend.
+   * @param y Subtrahend.
+   * @return Positive difference.
+   */
   float amd_fdimf (float x, float y);
 
 /* Euclidean Distance */
+  /**
+   * @brief Computes sqrt(x^2 + y^2) for two double-precision inputs.
+   * @param x First value.
+   * @param y Second value.
+   * @return Euclidean norm of (x, y).
+   */
   double amd_hypot (double x, double y);
+  /**
+   * @brief Computes sqrt(x^2 + y^2) for two single-precision inputs.
+   * @param x First value.
+   * @param y Second value.
+   * @return Euclidean norm of (x, y).
+   */
   float amd_hypotf (float x, float y);
 
 /* Nearest Integer */
+  /**
+   * @brief Rounds a double-precision value upward to the nearest integer value.
+   * @param x Input value.
+   * @return Smallest integer value not less than x.
+   */
   double amd_ceil (double x);
+  /**
+   * @brief Rounds a single-precision value upward to the nearest integer value.
+   * @param x Input value.
+   * @return Smallest integer value not less than x.
+   */
   float amd_ceilf (float x);
 
+  /**
+   * @brief Rounds a double-precision value downward to the nearest integer value.
+   * @param x Input value.
+   * @return Largest integer value not greater than x.
+   */
   double amd_floor (double x);
+  /**
+   * @brief Rounds a single-precision value downward to the nearest integer value.
+   * @param x Input value.
+   * @return Largest integer value not greater than x.
+   */
   float amd_floorf (float x);
 
+  /**
+   * @brief Truncates a double-precision value toward zero.
+   * @param x Input value.
+   * @return Truncated integer value as double.
+   */
   double amd_trunc (double x);
+  /**
+   * @brief Truncates a single-precision value toward zero.
+   * @param x Input value.
+   * @return Truncated integer value as float.
+   */
   float amd_truncf (float x);
 
+  /**
+   * @brief Rounds a double-precision value to an integer value according to current rounding mode.
+   * @param x Input value.
+   * @return Rounded value.
+   */
   double amd_nearbyint (double x);
+  /**
+   * @brief Rounds a single-precision value to an integer value according to current rounding mode.
+   * @param x Input value.
+   * @return Rounded value.
+   */
   float amd_nearbyintf (float x);
 
+  /**
+   * @brief Rounds a double-precision value to an integer value according to current rounding mode, as double.
+   * @param x Input value.
+   * @return Rounded value.
+   */
   double amd_rint (double x);
+  /**
+   * @brief Rounds a single-precision value to an integer value according to current rounding mode, as float.
+   * @param x Input value.
+   * @return Rounded value.
+   */
   float amd_rintf (float x);
 
+  /**
+   * @brief Rounds a double-precision value to a long int according to current rounding mode.
+   * @param x Input value.
+   * @return Rounded long int.
+   */
   long int amd_lrint (double x);
+  /**
+   * @brief Rounds a single-precision value to a long int according to current rounding mode.
+   * @param x Input value.
+   * @return Rounded long int.
+   */
   long int amd_lrintf (float x);
 
+  /**
+   * @brief Rounds a double-precision value to a long long int according to current rounding mode.
+   * @param x Input value.
+   * @return Rounded long long int.
+   */
   long long int amd_llrint (double x);
+  /**
+   * @brief Rounds a single-precision value to a long long int according to current rounding mode.
+   * @param x Input value.
+   * @return Rounded long long int.
+   */
   long long int amd_llrintf (float x);
 
+  /**
+   * @brief Rounds a double-precision value to the nearest integer, halfway cases away from zero.
+   * @param f Input value.
+   * @return Rounded value.
+   */
   double amd_round (double f);
+  /**
+   * @brief Rounds a single-precision value to the nearest integer, halfway cases away from zero.
+   * @param f Input value.
+   * @return Rounded value.
+   */
   float amd_roundf (float f);
 
+  /**
+   * @brief Rounds a double-precision value to the nearest integer and returns it as long int.
+   * @param d Input value.
+   * @return Rounded long int.
+   */
   long int amd_lround (double d);
+  /**
+   * @brief Rounds a single-precision value to the nearest integer and returns it as long int.
+   * @param f Input value.
+   * @return Rounded long int.
+   */
   long int amd_lroundf (float f);
 
+  /**
+   * @brief Rounds a double-precision value to the nearest integer and returns it as long long int.
+   * @param d Input value.
+   * @return Rounded long long int.
+   */
   long long int amd_llround (double d);
+  /**
+   * @brief Rounds a single-precision value to the nearest integer and returns it as long long int.
+   * @param f Input value.
+   * @return Rounded long long int.
+   */
   long long int amd_llroundf (float f);
 
 /* Foating-Point Manipulation */
+  /**
+   * @brief Computes the absolute value of a double-precision number.
+   * @param x Input value.
+   * @return |x|.
+   */
   double amd_fabs (double x);
+  /**
+   * @brief Computes the absolute value of a single-precision number.
+   * @param x Input value.
+   * @return |x|.
+   */
   float amd_fabsf (float x);
 
+  /**
+   * @brief Decomposes a double-precision number into fractional and integer parts.
+   * @param x Input value.
+   * @param iptr Output pointer to receive integer part.
+   * @return Fractional part of x.
+   */
   double amd_modf (double x, double *iptr);
+  /**
+   * @brief Decomposes a single-precision number into fractional and integer parts.
+   * @param x Input value.
+   * @param iptr Output pointer to receive integer part.
+   * @return Fractional part of x.
+   */
   float amd_modff (float x, float *iptr);
 
+  /**
+   * @brief Decomposes a double-precision value into normalized fraction and exponent.
+   * @param value Input value.
+   * @param exp Output pointer to receive exponent.
+   * @return Normalized fraction.
+   */
   double amd_frexp (double value, int *exp);
+  /**
+   * @brief Decomposes a single-precision value into normalized fraction and exponent.
+   * @param value Input value.
+   * @param exp Output pointer to receive exponent.
+   * @return Normalized fraction.
+   */
   float amd_frexpf (float value, int *exp);
 
+  /**
+   * @brief Produces a value with the magnitude of x and the sign of y (double-precision).
+   * @param x Magnitude source.
+   * @param y Sign source.
+   * @return Value with magnitude of x and sign of y.
+   */
   double amd_copysign (double x, double y);
+  /**
+   * @brief Produces a value with the magnitude of x and the sign of y (single-precision).
+   * @param x Magnitude source.
+   * @param y Sign source.
+   * @return Value with magnitude of x and sign of y.
+   */
   float amd_copysignf (float x, float y);
 
+  /**
+   * @brief Generates a quiet NaN (double-precision) with an optional tag.
+   * @param tagp Implementation-defined tag string.
+   * @return Quiet NaN.
+   */
   double amd_nan (const char *tagp);
+  /**
+   * @brief Generates a quiet NaN (single-precision) with an optional tag.
+   * @param tagp Implementation-defined tag string.
+   * @return Quiet NaN.
+   */
   float amd_nanf (const char *tagp);
 
+  /**
+   * @brief Tests if a double-precision value is finite (not infinite or NaN).
+   * @param x Input value.
+   * @return Non-zero if finite, zero otherwise.
+   */
   int amd_finite (double x);
+  /**
+   * @brief Tests if a single-precision value is finite (not infinite or NaN).
+   * @param x Input value.
+   * @return Non-zero if finite, zero otherwise.
+   */
   int amd_finitef (float x);
 
+  /**
+   * @brief Multiplies a double-precision floating-point number by 2 raised to exp.
+   * @param x Input value.
+   * @param exp Exponent of two.
+   * @return x * 2^exp.
+   */
   double amd_ldexp (double x, int exp);
+  /**
+   * @brief Multiplies a single-precision floating-point number by 2 raised to exp.
+   * @param x Input value.
+   * @param exp Exponent of two.
+   * @return x * 2^exp.
+   */
   float amd_ldexpf (float x, int exp);
 
+  /**
+   * @brief Multiplies a double-precision value by 2 raised to n, using integer scaling.
+   * @param x Input value.
+   * @param n Integer scale.
+   * @return x * 2^n.
+   */
   double amd_scalbn (double x, int n);
+  /**
+   * @brief Multiplies a single-precision value by 2 raised to n, using integer scaling.
+   * @param x Input value.
+   * @param n Integer scale.
+   * @return x * 2^n.
+   */
   float amd_scalbnf (float x, int n);
 
+  /**
+   * @brief Multiplies a double-precision value by 2 raised to n, long integer scale.
+   * @param x Input value.
+   * @param n Long integer scale.
+   * @return x * 2^n.
+   */
   double amd_scalbln (double x, long int n);
+  /**
+   * @brief Multiplies a single-precision value by 2 raised to n, long integer scale.
+   * @param x Input value.
+   * @param n Long integer scale.
+   * @return x * 2^n.
+   */
   float amd_scalblnf (float x, long int n);
 
+  /**
+   * @brief Extracts the exponent of a double-precision floating-point value.
+   * @param x Input value.
+   * @return Exponent as double.
+   */
   double amd_logb (double x);
+  /**
+   * @brief Extracts the exponent of a single-precision floating-point value.
+   * @param x Input value.
+   * @return Exponent as float.
+   */
   float amd_logbf (float x);
 
+  /**
+   * @brief Returns the integer exponent of a double-precision value.
+   * @param x Input value.
+   * @return Integer exponent.
+   */
   int amd_ilogb (double x);
+  /**
+   * @brief Returns the integer exponent of a single-precision value.
+   * @param x Input value.
+   * @return Integer exponent.
+   */
   int amd_ilogbf (float x);
 
+  /**
+   * @brief Returns the next representable double after x in the direction of y.
+   * @param x Starting value.
+   * @param y Direction target.
+   * @return Next representable value from x toward y.
+   */
   double amd_nextafter (double x, double y);
+  /**
+   * @brief Returns the next representable float after x in the direction of y.
+   * @param x Starting value.
+   * @param y Direction target.
+   * @return Next representable value from x toward y.
+   */
   float amd_nextafterf (float x, float y);
 
+  /**
+   * @brief Returns the next representable double after x toward long double y.
+   * @param x Starting value.
+   * @param y Direction target (long double).
+   * @return Next representable value from x toward y.
+   */
   double amd_nexttoward (double x, long double y);
+  /**
+   * @brief Returns the next representable float after x toward long double y.
+   * @param x Starting value.
+   * @param y Direction target (long double).
+   * @return Next representable value from x toward y.
+   */
   float amd_nexttowardf (float x, long double y);
 
 /* Complex Variants */
+  /**
+   * @brief Computes the complex exponential of a double-precision complex value.
+   * @param x Input complex value.
+   * @return Complex exponential of x.
+   */
   fc64_t amd_cexp (fc64_t x);
+  /**
+   * @brief Computes the complex exponential of a single-precision complex value.
+   * @param y Input complex value.
+   * @return Complex exponential of y.
+   */
   fc32_t amd_cexpf (fc32_t y);
 
+  /**
+   * @brief Computes the complex natural logarithm of a double-precision complex value.
+   * @param x Input complex value.
+   * @return Complex natural logarithm of x.
+   */
   fc64_t amd_clog (fc64_t x);
+  /**
+   * @brief Computes the complex natural logarithm of a single-precision complex value.
+   * @param y Input complex value.
+   * @return Complex natural logarithm of y.
+   */
   fc32_t amd_clogf (fc32_t y);
 
+  /**
+   * @brief Raises a double-precision complex base to a double-precision complex exponent.
+   * @param x Complex base.
+   * @param y Complex exponent.
+   * @return x raised to the power y.
+   */
   fc64_t amd_cpow (fc64_t x, fc64_t y);
+  /**
+   * @brief Raises a single-precision complex base to a single-precision complex exponent.
+   * @param x Complex base.
+   * @param y Complex exponent.
+   * @return x raised to the power y.
+   */
   fc32_t amd_cpowf (fc32_t x, fc32_t y);
 
 #ifdef __cplusplus

@@ -186,11 +186,10 @@ def All(almenv):
     result = conf.CheckProg(almenv.compiler.CxxCmd())
 
     if not conf.CheckForToolchain():
-        print ('Unsupported compiler version')
-        print ('Supported versions:')
+        print('This compiler version is not recommended for building.')
+        print('Please use one of the supported versions:')
         for k,v in toolchain_versions.items():
             print (k + ' min: ' + v['min'] + ' max ' + v['max'])
-        Exit(1)
 
     if conf.CheckLibAbi():
         Exit(1)

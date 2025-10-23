@@ -29,6 +29,17 @@
 Euclidean Distance Functions
 ============================
 
-Contents need to be added.
+Scalar
+^^^^^^
+
+Hypot
+-----
+
+.. doxygenfunction:: amd_hypotf
+  :project: libm
+
+.. doxygenfunction:: amd_hypot
+  :project: libm
+
 
 .. End of Doc

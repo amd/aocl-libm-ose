@@ -29,6 +29,89 @@
 Hyperbolic Functions
 ====================
 
-Contents need to be added.
+Scalar
+^^^^^^
+
+Sinh
+----
+
+.. doxygenfunction:: amd_sinhf
+  :project: libm
+
+.. doxygenfunction:: amd_sinh
+  :project: libm
+
+
+Cosh
+----
+
+.. doxygenfunction:: amd_coshf
+  :project: libm
+
+.. doxygenfunction:: amd_cosh
+  :project: libm
+
+
+Tanh
+----
+
+.. doxygenfunction:: amd_tanhf
+  :project: libm
+
+.. doxygenfunction:: amd_tanh
+  :project: libm
+
+
+Vector
+^^^^^^
+
+Cosh
+----
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_coshf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_cosh
+  :project: libm
+
+**AVX2**
+
+.. doxygenfunction:: amd_vrs8_coshf
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_coshf
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_cosh
+  :project: libm
+
+
+Tanh
+----
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_tanhf
+  :project: libm
+
+**AVX2**
+
+.. doxygenfunction:: amd_vrs8_tanhf
+  :project: libm
+
+**AVX512**
+
+.. doxygenfunction:: amd_vrs16_tanhf
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_tanhf
+  :project: libm
+
 
 .. End of Doc

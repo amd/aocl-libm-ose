@@ -29,6 +29,154 @@
 Inverse Trigonometric Functions
 ===============================
 
-Contents need to be added.
+Scalar
+^^^^^^
+
+Asin
+----
+
+.. doxygenfunction:: amd_asinf
+  :project: libm
+
+.. doxygenfunction:: amd_asin
+  :project: libm
+
+
+Acos
+----
+
+.. doxygenfunction:: amd_acosf
+  :project: libm
+
+.. doxygenfunction:: amd_acos
+  :project: libm
+
+
+Atan
+----
+
+.. doxygenfunction:: amd_atanf
+  :project: libm
+
+.. doxygenfunction:: amd_atan
+  :project: libm
+
+
+Atan2
+-----
+
+.. doxygenfunction:: amd_atan2f
+  :project: libm
+
+.. doxygenfunction:: amd_atan2
+  :project: libm
+
+
+Vector
+^^^^^^
+
+Asin
+----
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_asinf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_asin
+  :project: libm
+
+**AVX2**
+
+.. doxygenfunction:: amd_vrs8_asinf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd4_asin
+  :project: libm
+
+**AVX512**
+
+.. doxygenfunction:: amd_vrs16_asinf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd8_asin
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_asinf
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_asin
+  :project: libm
+
+
+Acos
+----
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_acosf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_acos
+  :project: libm
+
+**AVX2**
+
+.. doxygenfunction:: amd_vrs8_acosf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd4_acos
+  :project: libm
+
+**AVX512**
+
+.. doxygenfunction:: amd_vrs16_acosf
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_acosf
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_acos
+  :project: libm
+
+
+Atan
+----
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_atanf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_atan
+  :project: libm
+
+**AVX2**
+
+.. doxygenfunction:: amd_vrs8_atanf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd4_atan
+  :project: libm
+
+**AVX512**
+
+.. doxygenfunction:: amd_vrs16_atanf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd8_atan
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_atanf
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_atan
+  :project: libm
 
 .. End of Doc

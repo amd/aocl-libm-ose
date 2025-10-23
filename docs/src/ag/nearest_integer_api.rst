@@ -24,11 +24,112 @@
 ..  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ..  POSSIBILITY OF SUCH DAMAGE.
 
-.. _nearestinteger:
+.. _nearest_integer:
 
 Nearest Integer Functions
 =========================
 
-Contents need to be added.
+Scalar
+^^^^^^
+
+Ceil
+----
+
+.. doxygenfunction:: amd_ceilf
+  :project: libm
+
+.. doxygenfunction:: amd_ceil
+  :project: libm
+
+
+Floor
+-----
+
+.. doxygenfunction:: amd_floorf
+  :project: libm
+
+.. doxygenfunction:: amd_floor
+  :project: libm
+
+
+Trunc
+-----
+
+.. doxygenfunction:: amd_truncf
+  :project: libm
+
+.. doxygenfunction:: amd_trunc
+  :project: libm
+
+
+Nearbyint
+---------
+
+.. doxygenfunction:: amd_nearbyintf
+  :project: libm
+
+.. doxygenfunction:: amd_nearbyint
+  :project: libm
+
+
+Rint
+----
+
+.. doxygenfunction:: amd_rintf
+  :project: libm
+
+.. doxygenfunction:: amd_rint
+  :project: libm
+
+
+Lrint
+-----
+
+.. doxygenfunction:: amd_lrintf
+  :project: libm
+
+.. doxygenfunction:: amd_lrint
+  :project: libm
+
+
+Llrint
+------
+
+.. doxygenfunction:: amd_llrintf
+  :project: libm
+
+.. doxygenfunction:: amd_llrint
+  :project: libm
+
+
+Round
+-----
+
+.. doxygenfunction:: amd_roundf
+  :project: libm
+
+.. doxygenfunction:: amd_round
+  :project: libm
+
+
+Lround
+------
+
+.. doxygenfunction:: amd_lroundf
+  :project: libm
+
+.. doxygenfunction:: amd_lround
+  :project: libm
+
+
+Llround
+-------
+
+.. doxygenfunction:: amd_llroundf
+  :project: libm
+
+.. doxygenfunction:: amd_llround
+  :project: libm
+
 
 .. End of Doc

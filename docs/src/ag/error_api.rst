@@ -29,6 +29,102 @@
 Error Functions
 ===============
 
-Contents need to be added.
+Scalar
+^^^^^^
+
+Erf
+---
+
+.. doxygenfunction:: amd_erff
+  :project: libm
+
+.. doxygenfunction:: amd_erf
+  :project: libm
+
+
+Erfc
+----
+
+.. doxygenfunction:: amd_erfcf
+  :project: libm
+
+.. doxygenfunction:: amd_erfc
+  :project: libm
+
+
+Vector
+^^^^^^
+
+Erf
+---
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_erff
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_erf
+  :project: libm
+
+**AVX2**
+
+.. doxygenfunction:: amd_vrs8_erff
+  :project: libm
+
+.. doxygenfunction:: amd_vrd4_erf
+  :project: libm
+
+**AVX512**
+
+.. doxygenfunction:: amd_vrs16_erff
+  :project: libm
+
+.. doxygenfunction:: amd_vrd8_erf
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_erff
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_erf
+  :project: libm
+
+
+Erfc
+----
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_erfcf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_erfc
+  :project: libm
+
+**AVX2**
+
+.. doxygenfunction:: amd_vrs8_erfcf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd4_erfc
+  :project: libm
+
+**AVX512**
+
+.. doxygenfunction:: amd_vrs16_erfcf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd8_erfc
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_erfcf
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_erfc
+  :project: libm
+
 
 .. End of Doc

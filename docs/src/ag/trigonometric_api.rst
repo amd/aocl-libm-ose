@@ -29,6 +29,9 @@
 Trigonometric Functions
 =======================
 
+Scalar
+^^^^^^
+
 Sin
 ---
 
@@ -36,17 +39,184 @@ Sin
   :project: libm
 
 .. doxygenfunction:: amd_sin
-   :project: libm
+  :project: libm
+
+
+Cos
+---
+
+.. doxygenfunction:: amd_cosf
+  :project: libm
+
+.. doxygenfunction:: amd_cos
+  :project: libm
+
+
+Tan
+---
+
+.. doxygenfunction:: amd_tanf
+  :project: libm
+
+.. doxygenfunction:: amd_tan
+  :project: libm
 
 
 Sincos
 ------
 
+.. doxygenfunction:: amd_sincosf
+  :project: libm
+
+.. doxygenfunction:: amd_sincos
+  :project: libm
+
+
+Vector
+^^^^^^
+
+Sin
+---
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_sinf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_sin
+  :project: libm
+
+**AVX2**
+
+.. doxygenfunction:: amd_vrs8_sinf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd4_sin
+  :project: libm
+
+**AVX512**
+
+.. doxygenfunction:: amd_vrs16_sinf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd8_sin
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_sinf
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_sin
+  :project: libm
+
+
+Cos
+---
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_cosf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_cos
+  :project: libm
+
+**AVX2**
+
+.. doxygenfunction:: amd_vrs8_cosf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd4_cos
+  :project: libm
+
+**AVX512**
+
+.. doxygenfunction:: amd_vrs16_cosf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd8_cos
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_cosf
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_cos
+  :project: libm
+
+
+Tan
+---
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_tanf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_tan
+  :project: libm
+
+**AVX2**
+
+.. doxygenfunction:: amd_vrs8_tanf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd4_tan
+  :project: libm
+
+**AVX512**
+
+.. doxygenfunction:: amd_vrs16_tanf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd8_tan
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_tanf
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_tan
+  :project: libm
+
+
+Sincos
+------
+
+**AVX**
+
 .. doxygenfunction:: amd_vrs4_sincosf
   :project: libm
 
 .. doxygenfunction:: amd_vrd2_sincos
-   :project: libm
+  :project: libm
+
+**AVX2**
+
+.. doxygenfunction:: amd_vrs8_sincosf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd4_sincos
+  :project: libm
+
+**AVX512**
+
+.. doxygenfunction:: amd_vrs16_sincosf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd8_sincos
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_sincosf
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_sincos
+  :project: libm
 
 
 .. End of Doc

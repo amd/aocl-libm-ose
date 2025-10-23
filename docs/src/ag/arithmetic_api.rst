@@ -29,6 +29,127 @@
 Arithmetic Functions
 ====================
 
-Contents need to be added.
+Vector
+^^^^^^
+
+Add
+---
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrda_add
+  :project: libm
+
+.. doxygenfunction:: amd_vrsa_addf
+  :project: libm
+
+
+**Indexed Arithmetic**
+
+.. doxygenfunction:: amd_vrda_addi
+  :project: libm
+
+.. doxygenfunction:: amd_vrsa_addfi
+  :project: libm
+
+
+Sub
+---
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrda_sub
+  :project: libm
+
+.. doxygenfunction:: amd_vrsa_subf
+  :project: libm
+
+
+**Indexed Arithmetic**
+
+.. doxygenfunction:: amd_vrda_subi
+  :project: libm
+
+.. doxygenfunction:: amd_vrsa_subfi
+  :project: libm
+
+
+Mul
+---
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrda_mul
+  :project: libm
+
+.. doxygenfunction:: amd_vrsa_mulf
+  :project: libm
+
+
+**Indexed Arithmetic**
+
+.. doxygenfunction:: amd_vrda_muli
+  :project: libm
+
+.. doxygenfunction:: amd_vrsa_mulfi
+  :project: libm
+
+
+Div
+---
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrda_div
+  :project: libm
+
+.. doxygenfunction:: amd_vrsa_divf
+  :project: libm
+
+
+**Indexed Arithmetic**
+
+.. doxygenfunction:: amd_vrda_divi
+  :project: libm
+
+.. doxygenfunction:: amd_vrsa_divfi
+  :project: libm
+
+
+Linearfrac
+----------
+
+**AVX**
+
+.. doxygenfunction:: amd_vrd2_linearfrac
+  :project: libm
+
+.. doxygenfunction:: amd_vrs4_linearfracf
+  :project: libm
+
+**AVX2**
+
+.. doxygenfunction:: amd_vrd4_linearfrac
+  :project: libm
+
+.. doxygenfunction:: amd_vrs8_linearfracf
+  :project: libm
+
+**AVX512**
+
+.. doxygenfunction:: amd_vrd8_linearfrac
+  :project: libm
+
+.. doxygenfunction:: amd_vrs16_linearfracf
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrda_linearfrac
+  :project: libm
+
+.. doxygenfunction:: amd_vrsa_linearfracf
+  :project: libm
+
 
 .. End of Doc

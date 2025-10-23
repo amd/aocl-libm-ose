@@ -42,12 +42,13 @@ AOCL-LibM is a high performant implementation of math library.
    ag/logarithmic_api.rst
    ag/power_root_api.rst
    ag/error_api.rst
-   ag/linearfrac_api.rst
    ag/remainder_quotient.rst
    ag/euclidean_distance_api.rst
    ag/nearest_integer_api.rst
    ag/fp_manipulation_api.rst
    ag/arithmetic_api.rst
+   ag/complex_api.rst
+   ag/min_max_diff.rst
 
 
 * AOCL-LibM is developed and maintained by AMD.

@@ -29,6 +29,162 @@
 Exponential Functions
 =====================
 
-Contents need to be added.
+Scalar
+^^^^^^
+
+Exp
+---
+
+.. doxygenfunction:: amd_expf
+  :project: libm
+
+.. doxygenfunction:: amd_exp
+  :project: libm
+
+
+Exp2
+----
+
+.. doxygenfunction:: amd_exp2f
+  :project: libm
+
+.. doxygenfunction:: amd_exp2
+  :project: libm
+
+
+Exp10
+-----
+
+.. doxygenfunction:: amd_exp10f
+  :project: libm
+
+.. doxygenfunction:: amd_exp10
+  :project: libm
+
+
+Expm1
+-----
+
+.. doxygenfunction:: amd_expm1f
+  :project: libm
+
+.. doxygenfunction:: amd_expm1
+  :project: libm
+
+
+Vector
+^^^^^^
+
+Exp
+---
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_expf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_exp
+  :project: libm
+
+**AVX2**
+
+.. doxygenfunction:: amd_vrs8_expf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd4_exp
+  :project: libm
+
+**AVX512**
+
+.. doxygenfunction:: amd_vrs16_expf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd8_exp
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_expf
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_exp
+  :project: libm
+
+
+Exp2
+----
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_exp2f
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_exp2
+  :project: libm
+
+**AVX2**
+
+.. doxygenfunction:: amd_vrs8_exp2f
+  :project: libm
+
+.. doxygenfunction:: amd_vrd4_exp2
+  :project: libm
+
+**AVX512**
+
+.. doxygenfunction:: amd_vrs16_exp2f
+  :project: libm
+
+.. doxygenfunction:: amd_vrd8_exp2
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_exp2f
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_exp2
+  :project: libm
+
+
+Exp10
+-----
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_exp10f
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_exp10
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_exp10f
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_exp10
+  :project: libm
+
+
+Expm1
+-----
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_expm1f
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_expm1
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_expm1f
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_expm1
+  :project: libm
+
 
 .. End of Doc

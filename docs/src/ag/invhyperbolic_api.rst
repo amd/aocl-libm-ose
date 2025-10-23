@@ -24,11 +24,42 @@
 ..  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ..  POSSIBILITY OF SUCH DAMAGE.
 
-.. _invhyperbolic:
+.. _inverse_hyperbolic:
 
 Inverse Hyperbolic Functions
 ============================
 
-Contents need to be added.
+Scalar
+^^^^^^
+
+Asinh
+-----
+
+.. doxygenfunction:: amd_asinhf
+  :project: libm
+
+.. doxygenfunction:: amd_asinh
+  :project: libm
+
+
+Acosh
+-----
+
+.. doxygenfunction:: amd_acoshf
+  :project: libm
+
+.. doxygenfunction:: amd_acosh
+  :project: libm
+
+
+Atanh
+-----
+
+.. doxygenfunction:: amd_atanhf
+  :project: libm
+
+.. doxygenfunction:: amd_atanh
+  :project: libm
+
 
 .. End of Doc

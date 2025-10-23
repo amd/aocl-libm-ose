@@ -24,11 +24,173 @@
 ..  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ..  POSSIBILITY OF SUCH DAMAGE.
 
-.. _fpmanipulation:
+.. _floating_point_manipulation:
 
-Floating Point Manipulation Functions
+Floating-Point Manipulation Functions
 =====================================
 
-Contents need to be added.
+Scalar
+^^^^^^
+
+Fabs
+----
+
+.. doxygenfunction:: amd_fabsf
+  :project: libm
+
+.. doxygenfunction:: amd_fabs
+  :project: libm
+
+
+Modf
+----
+
+.. doxygenfunction:: amd_modff
+  :project: libm
+
+.. doxygenfunction:: amd_modf
+  :project: libm
+
+
+Frexp
+-----
+
+.. doxygenfunction:: amd_frexpf
+  :project: libm
+
+.. doxygenfunction:: amd_frexp
+  :project: libm
+
+
+Copysign
+--------
+
+.. doxygenfunction:: amd_copysignf
+  :project: libm
+
+.. doxygenfunction:: amd_copysign
+  :project: libm
+
+
+Nan
+---
+
+.. doxygenfunction:: amd_nanf
+  :project: libm
+
+.. doxygenfunction:: amd_nan
+  :project: libm
+
+
+Finite
+------
+
+.. doxygenfunction:: amd_finitef
+  :project: libm
+
+.. doxygenfunction:: amd_finite
+  :project: libm
+
+
+Ldexp
+-----
+
+.. doxygenfunction:: amd_ldexpf
+  :project: libm
+
+.. doxygenfunction:: amd_ldexp
+  :project: libm
+
+
+Scalbn
+------
+
+.. doxygenfunction:: amd_scalbnf
+  :project: libm
+
+.. doxygenfunction:: amd_scalbn
+  :project: libm
+
+
+Scalbln
+-------
+
+.. doxygenfunction:: amd_scalblnf
+  :project: libm
+
+.. doxygenfunction:: amd_scalbln
+  :project: libm
+
+
+Logb
+----
+
+.. doxygenfunction:: amd_logbf
+  :project: libm
+
+.. doxygenfunction:: amd_logb
+  :project: libm
+
+
+Ilogb
+-----
+
+.. doxygenfunction:: amd_ilogbf
+  :project: libm
+
+.. doxygenfunction:: amd_ilogb
+  :project: libm
+
+
+Nextafter
+---------
+
+.. doxygenfunction:: amd_nextafterf
+  :project: libm
+
+.. doxygenfunction:: amd_nextafter
+  :project: libm
+
+
+Nexttoward
+----------
+
+.. doxygenfunction:: amd_nexttowardf
+  :project: libm
+
+.. doxygenfunction:: amd_nexttoward
+  :project: libm
+
+
+Vector
+^^^^^^
+
+Fabs
+----
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_fabsf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_fabs
+  :project: libm
+
+**AVX2**
+
+.. doxygenfunction:: amd_vrs8_fabsf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd4_fabs
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_fabsf
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_fabs
+  :project: libm
+
 
 .. End of Doc

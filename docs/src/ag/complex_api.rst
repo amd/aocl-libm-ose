@@ -24,11 +24,42 @@
 ..  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ..  POSSIBILITY OF SUCH DAMAGE.
 
-.. _linearfrac:
+.. _complex:
 
-Linear Fraction Functions
-=========================
+Complex Functions
+=================
 
-Contents need to be added.
+Scalar
+^^^^^^
+
+Cexp
+----
+
+.. doxygenfunction:: amd_cexpf
+  :project: libm
+
+.. doxygenfunction:: amd_cexp
+  :project: libm
+
+
+Clog
+----
+
+.. doxygenfunction:: amd_clogf
+  :project: libm
+
+.. doxygenfunction:: amd_clog
+  :project: libm
+
+
+Cpow
+----
+
+.. doxygenfunction:: amd_cpowf
+  :project: libm
+
+.. doxygenfunction:: amd_cpow
+  :project: libm
+
 
 .. End of Doc

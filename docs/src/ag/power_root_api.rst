@@ -24,11 +24,165 @@
 ..  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ..  POSSIBILITY OF SUCH DAMAGE.
 
-.. _powerroot:
+.. _power_root:
 
 Power and Root Functions
 ========================
 
-Contents need to be added.
+Scalar
+^^^^^^
+
+Pow
+---
+
+.. doxygenfunction:: amd_powf
+  :project: libm
+
+.. doxygenfunction:: amd_pow
+  :project: libm
+
+
+Sqrt
+----
+
+.. doxygenfunction:: amd_sqrtf
+  :project: libm
+
+.. doxygenfunction:: amd_sqrt
+  :project: libm
+
+
+Cbrt
+----
+
+.. doxygenfunction:: amd_cbrtf
+  :project: libm
+
+.. doxygenfunction:: amd_cbrt
+  :project: libm
+
+
+Vector
+^^^^^^
+
+Pow
+---
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_powf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_pow
+  :project: libm
+
+**AVX2**
+
+.. doxygenfunction:: amd_vrs8_powf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd4_pow
+  :project: libm
+
+**AVX512**
+
+.. doxygenfunction:: amd_vrs16_powf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd8_pow
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_powf
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_pow
+  :project: libm
+
+
+Powx
+----
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_powxf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_powx
+  :project: libm
+
+**AVX2**
+
+.. doxygenfunction:: amd_vrs8_powxf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd4_powx
+  :project: libm
+
+**AVX512**
+
+.. doxygenfunction:: amd_vrs16_powxf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd8_powx
+  :project: libm
+
+
+Sqrt
+----
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_sqrtf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_sqrt
+  :project: libm
+
+**AVX2**
+
+.. doxygenfunction:: amd_vrs8_sqrtf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd4_sqrt
+  :project: libm
+
+**AVX512**
+
+.. doxygenfunction:: amd_vrs16_sqrtf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd8_sqrt
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_sqrtf
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_sqrt
+  :project: libm
+
+
+Cbrt
+----
+
+**AVX**
+
+.. doxygenfunction:: amd_vrs4_cbrtf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd2_cbrt
+  :project: libm
+
+**Vector array**
+
+.. doxygenfunction:: amd_vrsa_cbrtf
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_cbrt
+  :project: libm
+
 
 .. End of Doc

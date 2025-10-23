@@ -91,13 +91,13 @@ if (LIBM_BUILD_DOCS)
        ${CMAKE_CURRENT_SOURCE_DIR}/ag/hyperbolic_api.rst
        ${CMAKE_CURRENT_SOURCE_DIR}/ag/invhyperbolic_api.rst
        ${CMAKE_CURRENT_SOURCE_DIR}/ag/invtrigonometric_api.rst
-       ${CMAKE_CURRENT_SOURCE_DIR}/ag/linearfrac_api.rst
        ${CMAKE_CURRENT_SOURCE_DIR}/ag/logarithmic_api.rst
        ${CMAKE_CURRENT_SOURCE_DIR}/ag/nearest_integer_api.rst
        ${CMAKE_CURRENT_SOURCE_DIR}/ag/power_root_api.rst
        ${CMAKE_CURRENT_SOURCE_DIR}/ag/remainder_quotient.rst
        ${CMAKE_CURRENT_SOURCE_DIR}/ag/trigonometric_api.rst
-       ${CMAKE_CURRENT_SOURCE_DIR}/ag/trigonometric_api.rst
+       ${CMAKE_CURRENT_SOURCE_DIR}/ag/complex_api.rst
+       ${CMAKE_CURRENT_SOURCE_DIR}/ag/min_max_diff.rst
   )
 
   set (SPHINX_INPUT_FILES

@@ -24,11 +24,32 @@
 ..  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ..  POSSIBILITY OF SUCH DAMAGE.
 
-.. _remainderquotient:
+.. _remainder_quotient:
 
-Remainder Quotient Functions
-============================
+Remainder and Quotient Functions
+================================
 
-Contents need to be added.
+Scalar
+^^^^^^
+
+Remainder
+---------
+
+.. doxygenfunction:: amd_remainderf
+  :project: libm
+
+.. doxygenfunction:: amd_remainder
+  :project: libm
+
+
+Remquo
+------
+
+.. doxygenfunction:: amd_remquof
+  :project: libm
+
+.. doxygenfunction:: amd_remquo
+  :project: libm
+
 
 .. End of Doc

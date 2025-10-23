@@ -31,8 +31,8 @@ set(CLANG_VERSION_MAX "19.0.0")
 
 if ((CMAKE_C_COMPILER_VERSION VERSION_LESS ${CLANG_VERSION_MIN}) OR
     (CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL ${CLANG_VERSION_MAX}))
-message(FATAL_ERROR "Unsupported Clang Compiler version: ${CMAKE_C_COMPILER_VERSION}. \
-                      Please use Clang version between ${CLANG_VERSION_MIN} and ${CLANG_VERSION_MAX}.")
+      message(WARNING "Clang compiler ${CMAKE_C_COMPILER_VERSION} version is not recommended for building.  \
+      We recommend using supported versions between ${CLANG_VERSION_MIN} and ${CLANG_VERSION_MAX}.")
 endif()
 set(CONFIG_COMPILER_IS_CLANG  1)
 

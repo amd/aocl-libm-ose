@@ -66,7 +66,7 @@ void ALM_PROTO_ARCH_ZN5(vrda_powx)(int length, double *x, double y, double *resu
     if(remainder)
     {
         __m512d zero = _mm512_set1_pd(0);
-        __mmask8 mask =  0xFF >> ( 8 - remainder );
+        __mmask8 mask = (__mmask8)(0xFF >> ( 8 - remainder ));
         __m512d ip41 = _mm512_mask_loadu_pd(zero, mask, &x[j]);
         __m512d op4 = ALM_PROTO(vrd8_powx)(ip41, y);
         _mm512_mask_storeu_pd(&result[j], mask, op4);

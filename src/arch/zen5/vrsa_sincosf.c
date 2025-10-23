@@ -50,7 +50,7 @@ void ALM_PROTO_ARCH_ZN5(vrsa_sincosf)(int length, float *x, float *sin, float *c
     if(remainder)
     {
         __m512 zero = _mm512_set1_ps(0);
-        __mmask16 mask =  0xFFFF >> ( 16 - remainder );
+        __mmask16 mask = (__mmask16)(0xFFFF >> ( 16 - remainder ));
         __m512 ip16 = _mm512_mask_loadu_ps(zero, mask, &x[j]);
         ALM_PROTO(vrs16_sincosf)(ip16, &opsin, &opcos);
         _mm512_mask_storeu_ps(&sin[j], mask, opsin);

@@ -64,7 +64,7 @@ void ALM_PROTO_ARCH_ZN5(vrsa_powxf)(int length, float *x, float y, float *result
     if(remainder)
     {
         __m512 zero = _mm512_set1_ps(0);
-        __mmask16 mask =  0xFFFF >> ( 16 - remainder );
+        __mmask16 mask = (__mmask16)(0xFFFF >> ( 16 - remainder ));
         __m512 ip16 = _mm512_mask_loadu_ps(zero, mask, &x[j]);
         __m512 op16  = ALM_PROTO(vrs16_powxf)(ip16, y);
         _mm512_mask_storeu_ps(&result[j], mask, op16);

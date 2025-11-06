@@ -47,6 +47,7 @@ configure_file("${PROJECT_SOURCE_DIR}/CMake/buildsysinfo.hh.in"
                 "${PROJECT_SOURCE_DIR}/src/buildsysinfo.h"
                 @ONLY)
 
+get_optz_flag( optzflag )
 get_fast_flag( ffpflag )                            # ffp-contract flags
 get_warning_flags( wflags )                         # warning flags
 get_unalign_vec_move_flag( uavmflag )               # disabling alignment checking for all AVX ops
@@ -55,7 +56,8 @@ get_au_flag( auflag )                               # aocl-utils defination
 get_avx2fma_flag( fmaflag )                         # Fused Multiply-Add flags
 get_vec_flag( vecflag )                             # Vectorization flags
 
-set(LIBMCFLAGS ${ffpflag})
+set(LIBMCFLAGS ${optzflag})
+set(LIBMCFLAGS ${LIBMCFLAGS} ${ffpflag})
 set(LIBMCFLAGS ${LIBMCFLAGS} ${wflags})
 set(LIBMCFLAGS ${LIBMCFLAGS} ${uavmflag})
 set(LIBMCFLAGS ${LIBMCFLAGS} ${picflag})

@@ -103,21 +103,21 @@ file(GLOB MPARITH_SRCS
 
 # Compiler flags
 if(NOT WIN32)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wwrite-strings -fno-strict-aliasing -D_GNU_SOURCE -D_ISOC99_SOURCE -DIS_64BIT")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -Wwrite-strings -fno-strict-aliasing -D_GNU_SOURCE -D_ISOC99_SOURCE -DIS_64BIT")
     set(MPARITH_DEPS_LIBS mpfr mpc m)
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0 -DIS_64BIT -DWINDOWS")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W0 -DIS_64BIT -DWINDOWS")
     set(MPARITH_DEPS_LIBS ${MPFR_LIB} ${MPC_LIB} ${GMP_LIB} msvcrt)
     set(MPARITH_DEPS_LIBS_DIRS "${MPFR_LIBRARY_DIR} ${MPC_LIBRARY_DIR} ${GMP_LIBRARY_DIR}")
 endif()
 
 # Create object libraries
 add_library(mparith32obj OBJECT ${MPARITH_SRCS})
-target_compile_definitions(mparith32obj PRIVATE -DFLOAT -Dlibmparith32_EXPORTS)
+target_compile_definitions(mparith32obj PRIVATE -DFLOAT -Dlibmparith_EXPORTS)
 target_include_directories(mparith32obj PRIVATE ${MPARITH_INC_DIR})
 
 add_library(mparith64obj OBJECT ${MPARITH_SRCS})
-target_compile_definitions(mparith64obj PRIVATE -DDOUBLE -Dlibmparith64_EXPORTS)
+target_compile_definitions(mparith64obj PRIVATE -DDOUBLE -Dlibmparith_EXPORTS)
 target_include_directories(mparith64obj PRIVATE ${MPARITH_INC_DIR})
 
 set(ALM_MP_FUNCS_H alm_mp_funcs.h)

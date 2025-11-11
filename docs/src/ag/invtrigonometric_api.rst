@@ -72,6 +72,89 @@ Atan2
   :project: libm
 
 
+Fast Variants
+^^^^^^^^^^^^^
+
+Fast variants of inverse trigonometric functions provide improved performance by trading a small amount of accuracy. These functions do not handle special cases like NaNs or INFs and are optimized for performance-critical applications where the input range is known and controlled.
+
+Asin
+----
+
+**amd_fastasinf**
+
+.. code-block:: c
+
+   float amd_fastasinf(float x)
+
+Computes the principal value of the arc sine of ``x``, expressed in radians.
+
+- **Maximum ULP:** 2.20
+- **Note:** Does not handle special cases like NaNs or INFs
+
+**amd_fastasin**
+
+.. code-block:: c
+
+   double amd_fastasin(double x)
+
+Computes the principal value of the arc sine of ``x``, expressed in radians.
+
+- **Maximum ULP:** 2.26
+- **Note:** Does not handle special cases like NaNs or INFs
+
+
+Acos
+----
+
+**amd_fastacosf**
+
+.. code-block:: c
+
+   float amd_fastacosf(float x)
+
+Computes the principal value of the arc cosine of ``x``, expressed in radians.
+
+- **Maximum ULP:** 2.21
+- **Note:** Does not handle special cases like NaNs or INFs
+
+**amd_fastacos**
+
+.. code-block:: c
+
+   double amd_fastacos(double x)
+
+Computes the principal value of the arc cosine of ``x``, expressed in radians.
+
+- **Maximum ULP:** 2.27
+- **Note:** Does not handle special cases like NaNs or INFs
+
+
+Atan
+----
+
+**amd_fastatanf**
+
+.. code-block:: c
+
+   float amd_fastatanf(float x)
+
+Computes the principal value of the arc tangent of ``x``, expressed in radians.
+
+- **Maximum ULP:** 2.16
+- **Note:** Does not handle special cases like NaNs or INFs
+
+**amd_fastatan**
+
+.. code-block:: c
+
+   double amd_fastatan(double x)
+
+Computes the principal value of the arc tangent of ``x``, expressed in radians.
+
+- **Maximum ULP:** 2.18
+- **Note:** Does not handle special cases like NaNs or INFs
+
+
 Vector
 ^^^^^^
 

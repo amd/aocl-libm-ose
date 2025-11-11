@@ -72,6 +72,89 @@ Sincos
   :project: libm
 
 
+Fast Variants
+^^^^^^^^^^^^^
+
+Fast variants of trigonometric functions provide improved performance by trading a small amount of accuracy. These functions do not handle special cases like NaNs or INFs and are optimized for performance-critical applications where the input range is known and controlled.
+
+Sin
+---
+
+**amd_fastsinf**
+
+.. code-block:: c
+
+   float amd_fastsinf(float x)
+
+Computes the sine of ``x`` (measured in radians).
+
+- **Maximum ULP:** 2.22
+- **Note:** Does not handle special cases like NaNs or INFs
+
+**amd_fastsin**
+
+.. code-block:: c
+
+   double amd_fastsin(double x)
+
+Computes the sine of ``x`` (measured in radians).
+
+- **Maximum ULP:** 2.32
+- **Note:** Does not handle special cases like NaNs or INFs
+
+
+Cos
+---
+
+**amd_fastcosf**
+
+.. code-block:: c
+
+   float amd_fastcosf(float x)
+
+Computes the cosine of ``x`` (measured in radians).
+
+- **Maximum ULP:** 2.20
+- **Note:** Does not handle special cases like NaNs or INFs
+
+**amd_fastcos**
+
+.. code-block:: c
+
+   double amd_fastcos(double x)
+
+Computes the cosine of ``x`` (measured in radians).
+
+- **Maximum ULP:** 2.34
+- **Note:** Does not handle special cases like NaNs or INFs
+
+
+Tan
+---
+
+**amd_fasttanf**
+
+.. code-block:: c
+
+   float amd_fasttanf(float x)
+
+Computes the tangent of ``x`` (measured in radians).
+
+- **Maximum ULP:** 2.27
+- **Note:** Does not handle special cases like NaNs or INFs
+
+**amd_fasttan**
+
+.. code-block:: c
+
+   double amd_fasttan(double x)
+
+Computes the tangent of ``x`` (measured in radians).
+
+- **Maximum ULP:** 2.67
+- **Note:** Does not handle special cases like NaNs or INFs
+
+
 Vector
 ^^^^^^
 

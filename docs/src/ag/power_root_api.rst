@@ -62,6 +62,39 @@ Cbrt
   :project: libm
 
 
+Fast Variants
+^^^^^^^^^^^^^
+
+Fast variants of power functions provide improved performance by trading a small amount of accuracy. These functions do not handle special cases like NaNs or INFs and are optimized for performance-critical applications where the input range is known and controlled.
+
+Pow
+---
+
+**amd_fastpowf**
+
+.. code-block:: c
+
+   float amd_fastpowf(float x, float y)
+
+Computes ``x`` raised to the power ``y`` (x^y).
+
+- **Maximum ULP:** 1.99
+- **Note:** Does not handle special cases like NaNs or INFs
+- **Implementation:** Uses the identity x^y = e^(y*ln(x)) for general cases, with optimizations for special values like y=0.5 (square root), x=0, and y=0
+
+**amd_fastpow**
+
+.. code-block:: c
+
+   double amd_fastpow(double x, double y)
+
+Computes ``x`` raised to the power ``y`` (x^y).
+
+- **Maximum ULP:** 1.99
+- **Note:** Does not handle special cases like NaNs or INFs
+- **Implementation:** Uses the identity x^y = e^(y*ln(x)) for general cases, with optimizations for special values like y=0.5 (square root), x=0, and y=0
+
+
 Vector
 ^^^^^^
 

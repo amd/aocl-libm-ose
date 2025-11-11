@@ -72,6 +72,37 @@ Expm1
   :project: libm
 
 
+Fast Variants
+^^^^^^^^^^^^^
+
+Fast variants of exponential functions provide improved performance by trading a small amount of accuracy. These functions do not handle special cases like NaNs or INFs and are optimized for performance-critical applications where the input range is known and controlled.
+
+Exp
+---
+
+**amd_fastexpf**
+
+.. code-block:: c
+
+   float amd_fastexpf(float x)
+
+Computes the base-e exponential of ``x`` (e^x).
+
+- **Maximum ULP:** 1.98
+- **Note:** Does not handle special cases like NaNs or INFs
+
+**amd_fastexp**
+
+.. code-block:: c
+
+   double amd_fastexp(double x)
+
+Computes the base-e exponential of ``x`` (e^x).
+
+- **Maximum ULP:** 1.95
+- **Note:** Does not handle special cases like NaNs or INFs
+
+
 Vector
 ^^^^^^
 

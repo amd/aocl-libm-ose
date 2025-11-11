@@ -72,6 +72,37 @@ Log1p
   :project: libm
 
 
+Fast Variants
+^^^^^^^^^^^^^
+
+Fast variants of logarithmic functions provide improved performance by trading a small amount of accuracy. These functions do not handle special cases like NaNs or INFs and are optimized for performance-critical applications where the input range is known and controlled.
+
+Log
+---
+
+**amd_fastlogf**
+
+.. code-block:: c
+
+   float amd_fastlogf(float x)
+
+Computes the natural (base-e) logarithm of ``x`` (ln(x)).
+
+- **Maximum ULP:** 1.97
+- **Note:** Does not handle special cases like NaNs or INFs
+
+**amd_fastlog**
+
+.. code-block:: c
+
+   double amd_fastlog(double x)
+
+Computes the natural (base-e) logarithm of ``x`` (ln(x)).
+
+- **Maximum ULP:** 1.93
+- **Note:** Does not handle special cases like NaNs or INFs
+
+
 Vector
 ^^^^^^
 

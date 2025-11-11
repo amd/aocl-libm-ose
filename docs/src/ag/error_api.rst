@@ -52,6 +52,37 @@ Erfc
   :project: libm
 
 
+Fast Variants
+^^^^^^^^^^^^^
+
+Fast variants of error functions provide improved performance by trading a small amount of accuracy. These functions are not IEEE 754 compliant and do not handle special cases like NaNs or INFs. They are optimized for performance-critical applications where the input range is known and controlled.
+
+Erf
+---
+
+**amd_fasterff**
+
+.. code-block:: c
+
+   float amd_fasterff(float x)
+
+Computes the error function of ``x``, defined as erf(x) = (2/√π) * ∫₀ˣ e^(-t²) dt.
+
+- **Maximum ULP:** 1.88
+- **Note:** Not IEEE 754 compliant; does not handle special cases like NaNs or INFs
+
+**amd_fasterf**
+
+.. code-block:: c
+
+   double amd_fasterf(double x)
+
+Computes the error function of ``x``, defined as erf(x) = (2/√π) * ∫₀ˣ e^(-t²) dt.
+
+- **Maximum ULP:** 1.88
+- **Note:** Not IEEE 754 compliant; does not handle special cases like NaNs or INFs
+
+
 Vector
 ^^^^^^
 

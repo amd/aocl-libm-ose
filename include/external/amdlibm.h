@@ -1,6 +1,6 @@
 
 /*
-(C) 2008-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 
 Advanced Micro Devices, Inc.
 Software License Agreement
@@ -575,6 +575,14 @@ extern "C" {
    * @return cdfnorm(x).
    */
   double amd_cdfnorm (double x);
+
+  /* Inverse Complementary Error */
+  /**
+   * @brief Computes the inverse complementary error function for a double-precision value.
+   * @param x Input value.
+   * @return erfcinv(x).
+   */
+  double amd_erfcinv (double x);
 
 /* Remainder */
   /**
@@ -1202,6 +1210,10 @@ extern "C" {
   #undef erfcf
   #define erfcf amd_erfcf
 
+/* Inverse Complementary Error */
+  #undef erfcinv
+  #define erfcinv amd_erfcinv
+  
 /* Special */
   #undef cdfnorm
   #define cdfnorm amd_cdfnorm

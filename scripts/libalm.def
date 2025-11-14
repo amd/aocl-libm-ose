@@ -338,3 +338,4 @@ EXPORTS
     amd_vrda_asin
     amd_vrda_erfc
     amd_vrda_cdfnorm
+    amd_erfcinv

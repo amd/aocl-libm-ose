@@ -50,3 +50,4 @@ EXPORTS
     alm_mp_ldexp
     alm_mp_erfc
     alm_mp_cdfnorm
+    alm_mp_erfcinv

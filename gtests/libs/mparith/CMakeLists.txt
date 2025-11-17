@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -65,6 +65,7 @@ file(GLOB MPARITH_SRCS
            cosh.c
            erf.c
            erfc.c
+           erfcinv.c
            exp.c
            exp2.c
            exp10.c

@@ -124,7 +124,7 @@ list(APPEND libmobj $<TARGET_OBJECTS:src>)
 set(LIBM_PUBLIC_HEADERS ${PROJECT_SOURCE_DIR}/include/external/amdlibm.h
                         ${PROJECT_SOURCE_DIR}/include/external/amdlibm_vec.h)
 
-set(AOCL_UTILS_LIB ${AOCL_UTILS_LIB_DIR}/${AOCL_UTILS_LIB})
+set(AOCL_UTILS_LIB ${AOCL_UTILS_LIB})
 if (WIN32)
   set(LIBALM libalm)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)

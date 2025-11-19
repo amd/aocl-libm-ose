@@ -1,0 +1,36 @@
+error_notifications:
+  recipients:
+    - dl.CSG_AIEnablement@amd.com
+assistantDefaults:
+  skip_draft: false
+  label_exclusions: []
+  exclude_pr_authors: []
+  exclude_comment_authors: []
+  filtered_ticket_ids: []
+  skip_comment_from_pr_author: false
+  post_info_reply_comment: true
+teams:
+  - name: csg
+    branches:
+      - amd-main
+      - AOCL-*-RC
+
+    assistants:
+      - type: PRSummary
+        enabled: true
+      - type: CodingStandard
+        enabled: true
+      - type: AIReviewCommentFix
+        enabled: true
+      - type: CodeQLHistorical
+        enabled: true
+      - type: CodeQLScheduled
+        enabled: true
+        params:
+          schedule: 30 11 * * 7
+      - type: CoverityHistorical
+        enabled: true
+      - type: CodePorting
+        enabled: true
+      - type: CodePortingHistorical
+        enabled: true

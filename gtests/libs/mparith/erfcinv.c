@@ -47,9 +47,18 @@
  * y_{n+1} = y_n - (erfc(y_n) - x) / ( -(2/sqrt(pi)) * exp(-y_n^2) )
  * using Newton-Raphson iteration.
  */
+static struct
+{
+    const double sqrt_pi_by_2;
+    const double log_sqrt_pi;
 
-#define SQRT_PI_BY_2 0.88622692545275801365
-#define LOG_SQRT_PI 0.57236494292470008707
+} erfcinv_mpfr_data = {
+    .sqrt_pi_by_2 = 0x1.c5bf891b4ef6bp-1,
+    .log_sqrt_pi = 0x1.250d048e7a1bdp-1
+};
+
+#define SQRT_PI_BY_2 erfcinv_mpfr_data.sqrt_pi_by_2
+#define LOG_SQRT_PI erfcinv_mpfr_data.log_sqrt_pi
 
 /* Provide initial guess for erfcinv */
 static void initial_guess_erfcinv(mpfr_ptr y, mpfr_srcptr x) {

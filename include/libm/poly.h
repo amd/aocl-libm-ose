@@ -689,5 +689,7 @@
         a1;                                             \
         })        
 
+#include <libm/poly-common.h>
+
 #endif /* LIBM_POLY_H */
 

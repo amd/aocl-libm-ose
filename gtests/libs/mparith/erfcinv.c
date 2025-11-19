@@ -230,11 +230,6 @@ cleanup_all:
 }
 
 static int mpfr_erfcinv(mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd) {
-    if (mpfr_nan_p(x)) {
-        mpfr_set(y, x, rnd); // NaN propagation
-        return 0;
-    }
-    
     mpfr_t one, two, zero;
     mpfr_init2(one, mpfr_get_prec(x));
     mpfr_init2(two, mpfr_get_prec(x));
@@ -353,6 +348,13 @@ static int mpfr_erfcinv(mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd) {
 REAL_L FUNC_ERFCINV(REAL x)
 {
     REAL_L y;
+
+    /* NaN handling outside MPFR:
+     * mpfr_get_d/mpfr_get_ld may return an implementation-defined NaN
+     * (sign/payload can change). Returning input preserves sign/payload. */
+    if (isnan(x)) {
+        return (REAL_L)x;
+    }
 
     mpfr_rnd_t rnd = MPFR_RNDN;
     mpfr_t mpx, mp_rop;

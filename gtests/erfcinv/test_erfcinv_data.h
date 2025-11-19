@@ -51,8 +51,8 @@ test_erfcinv_conformance_data[] = {
     {NEG_ONE_F64 , NEG_QNAN_F64, FE_INVALID  }, // erfcinv(-1) = -QNAN
     {0x4008000000000000, NEG_QNAN_F64, FE_INVALID  }, // erfcinv(3) = -QNAN
 
-    {POS_SNAN_F64, POS_SNAN_F64, FE_INVALID },  // erfcinv(+SNAN) = SNAN
-    {NEG_SNAN_F64, NEG_SNAN_F64, FE_INVALID },  // erfcinv(-SNAN) = -SNAN
+    {POS_SNAN_F64, POS_QNAN_F64, FE_INVALID },  // erfcinv(+SNAN) = QNAN
+    {NEG_SNAN_F64, NEG_QNAN_F64, FE_INVALID },  // erfcinv(-SNAN) = -QNAN
     {POS_QNAN_F64, POS_QNAN_F64, 0},            // erfcinv(+QNAN) = QNAN
     {NEG_QNAN_F64, NEG_QNAN_F64, 0},            // erfcinv(-QNAN) = -QNAN
 
@@ -70,7 +70,7 @@ test_erfcinv_conformance_data[] = {
     {0x3FFFFFFFFFFFFFFF, 0xC0173856D153F081, 0},
 
     // Test cases around the transition points between approximation intervals
-    {0x2B2BFF2EE48E0530, 0x3FF5130C3ACAE4DE, 0},  // erfcinv(1e-100)
+    {0x2B2BFF2EE48E0530, 0x402E219301E62922, 0},  // erfcinv(1e-100)
     {0x3FB0000000000000, 0x3FF5130C3ACAE4DE, 0},  // erfcinv(0.0625)
     {0x3FE8000000000000, 0x3FCCD70681D5FF70, 0},  // erfcinv(0.75)
     {0x3FEE000000000000, 0x3FAC636951597E17, 0},  // erfcinv(0.9375)
@@ -79,7 +79,6 @@ test_erfcinv_conformance_data[] = {
     {0x3FE0000000000000, 0x3FDE861FBB24C00A, 0},  // erfcinv(0.5)
     {0x3FF8000000000000, 0xBFDE861FBB24C00A, 0},  // erfcinv(1.5)
 
-    // TODO: Any other special cases to be added: underflow, overflow?
 };
 
 #endif  /*__TEST_ERFCINV_DATA_H___*/

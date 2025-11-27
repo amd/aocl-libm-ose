@@ -515,6 +515,12 @@ extern "C" {
    * @return Vector of rounded value.
    */
   __m128d amd_vrd2_round (__m128d x);
+  /**
+   * @brief Computes round per-lane for four single-precision elements.
+   * @param x Input vector x.
+   * @return Vector of rounded value.
+   */
+  __m128 amd_vrs4_roundf (__m128 x);
 
 /* Linearfrac */
   /**
@@ -544,6 +550,7 @@ extern "C" {
   __m128 amd_vrs4_linearfracf (__m128 x, __m128 y,
                                float scx, float shx,
                                float scy, float shy);
+
 #endif /* __AVX__ */
 
 

@@ -303,6 +303,7 @@ __m128 FN_PROTOTYPE(vrs4_sqrtf)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_linearfracf)(__m128 x, __m128 y, float sca, float sha, float scb, float shb);
 void FN_PROTOTYPE(vrs4_sincosf)(__m128 x, __m128 *sin, __m128 *cos);
 __m128 FN_PROTOTYPE(vrs4_erfcf)(__m128 x);
+__m128 FN_PROTOTYPE(vrs4_roundf)(__m128 x);
 
 __m256 FN_PROTOTYPE(vrs8_erff)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_expf)(__m256 x);

@@ -186,6 +186,7 @@ EXPORTS
     amd_vrs4_logf
     amd_vrs4_powf
     amd_vrs4_powxf
+    amd_vrs4_roundf
     amd_vrs4_sinf
     amd_vrs4_sincosf
     amd_vrs4_tanf

@@ -206,6 +206,7 @@ extern __m128    ALM_PROTO_INTERNAL(vrs4_sqrtf)           (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_linearfracf)     (__m128 x, __m128 y, float sca, float sha, float scb, float shb);
 extern void      ALM_PROTO_INTERNAL(vrs4_sincosf)         (__m128 x, __m128 *sin, __m128 *cos);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_erfcf)           (__m128 x);
+extern __m128    ALM_PROTO_INTERNAL(vrs4_roundf)          (__m128 x);
 /*
  * Vector Single precision, 8 elements
  */

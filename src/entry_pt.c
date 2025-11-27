@@ -290,6 +290,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrs4_sqrtf);
 alm_func_t        G_ENTRY_PT_PTR(vrs4_linearfracf);
 alm_func_t        G_ENTRY_PT_PTR(vrs4_sincosf);
 alm_func_t        G_ENTRY_PT_PTR(vrs4_erfcf);
+alm_func_t        G_ENTRY_PT_PTR(vrs4_roundf);
 
 alm_func_t        G_ENTRY_PT_PTR(vrs8_logf);
 alm_func_t        G_ENTRY_PT_PTR(vrs8_log10f);

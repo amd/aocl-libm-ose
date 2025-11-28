@@ -1,0 +1,384 @@
+- test_sequence: validation_tests_hypot
+  function: hypot
+  test_sets:
+  - id: range-tests_01
+    tests:
+    - id: hypot_001
+      description: 'Full value distribution range tests: x in [-FLT_MAX, -SMALLEST_SUBNORMAL], y in [-FLT_MAX, -SMALLEST_SUBNORMAL]  expstep'
+      input:
+      - [0xFF7FFFFF, -min_subnormal]
+      - [0xFF7FFFFF, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [1000, 1000]
+      variants : [ss]
+
+    - id: hypot_002
+      description: 'Full value distribution range tests: x in [SMALLEST_SUBNORMAL, +FLT_MAX], y in [-FLT_MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [min_subnormal, max]
+      - [0xFF7FFFFF, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [1000, 1000]
+      variants : [ss]
+
+    - id: hypot_003
+      description: 'Full value distribution range tests: x in [-FLT_MAX, -SMALLEST_SUBNORMAL], y in [SMALLEST_SUBNORMAL, +FLT_MAX] expstep'
+      input:
+      - [0xFF7FFFFF, -min_subnormal]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [1000, 1000]
+      variants : [ss]
+
+    - id: hypot_004
+      description: 'Full value distribution range tests: x in [SMALLEST_SUBNORMAL, +FLT_MAX], y in [SMALLEST_SUBNORMAL, +FLT_MAX]  expstep'
+      input:
+      - [min_subnormal, max]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [1000, 1000]
+      variants : [ss]
+
+    - id: hypot_005
+      description: 'Full value distribution range tests: x in [-1E8, -0], y in [-1E8, -0] linearstep'
+      input:
+      - [-100000000.0, -0.0]
+      - [-100000000.0, -0.0]
+      type: [linearstep, linearstep]
+      steps: [500, 500]
+      variants : [ss]
+
+    - id: hypot_006
+      description: 'Full value distribution range tests: x in [+0, +1E8], y in [-1E8, -0] linearstep'
+      input:
+      - [0.0, 100000000.0]
+      - [-100000000.0, -0.0]
+      type: [linearstep, linearstep]
+      steps: [500, 500]
+      variants : [ss]
+
+    - id: hypot_007
+      description: 'Full value distribution range tests: x in [-1E8, -0], y in [+0, +1E8] linearstep'
+      input:
+      - [-100000000.0, -0.0]
+      - [0.0, 100000000.0]
+      type: [linearstep, linearstep]
+      steps: [500, 500]
+      variants : [ss]
+
+    - id: hypot_008
+      description: 'Full value distribution range tests: x in [+0, +1E8], y in [+0, +1E8] linearstep'
+      input:
+      - [0.0, 100000000.0]
+      - [0.0, 100000000.0]
+      type: [linearstep, linearstep]
+      steps: [500, 500]
+      variants : [ss]
+
+    - id: hypot_009
+      description: 'Full value distribution range tests: x in [-1, -0], y in [-1, -0] expstep'
+      input:
+      - [-1.0, -0.0]
+      - [-1.0, -0.0]
+      type: [linearstep, linearstep]
+      steps: [500, 500]
+      variants : [ss]
+
+    - id: hypot_010
+      description: 'Full value distribution range tests: x in [+0, +1], y in [-1, -0] expstep'
+      input:
+      - [0.0, 1.0]
+      - [-1.0, -0.0]
+      type: [linearstep, linearstep]
+      steps: [500, 500]
+      variants : [ss]
+
+    - id: hypot_011
+      description: 'Full value distribution range tests: x in [-1, -0], y in [+0, +1] expstep'
+      input:
+      - [-1.0, -0.0]
+      - [0.0, 1.0]
+      type: [linearstep, linearstep]
+      steps: [500, 500]
+      variants : [ss]
+
+    - id: hypot_012
+      description: 'Full value distribution range tests: x in [+0, +1], y in [+0, +1] expstep'
+      input:
+      - [0.0, 1.0]
+      - [0.0, 1.0]
+      type: [linearstep, linearstep]
+      steps: [500, 500]
+      variants : [ss]
+
+    - id: hypot_013
+      description: 'Subnormal values range tests: x, y in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [-max_subnormal, max_subnormal]
+      - [-max_subnormal, max_subnormal]
+      type: [linearstep, linearstep]
+      steps: [100, 100]
+      variants : [ss]
+
+    - id: hypot_014
+      description: Test around 0, x is negativ, y is negative
+      input:
+      - [0x80000000, 0x80000FFF]
+      - [0x80000000, 0x80000FFF]
+      type: [bitstep, bitstep]
+      steps: [64, 64]
+      variants : [ss]
+
+    - id: hypot_015
+      description: Test around 0, x is positive, y is negative
+      input:
+      - [0.0, 0x00000FFF]
+      - [0x80000000, 0x80000FFF]
+      type: [bitstep, bitstep]
+      steps: [64, 64]
+      variants : [ss]
+
+    - id: hypot_016
+      description: Test around 0, x is negativ, y is positive
+      input:
+      - [0x80000000, 0x80000FFF]
+      - [0.0, 0x00000FFF]
+      type: [bitstep, bitstep]
+      steps: [64, 64]
+      variants : [ss]
+
+    - id: hypot_017
+      description: Test around 0, x is positive, y is positive
+      input:
+      - [0.0, 0x00000FFF]
+      - [0.0, 0x00000FFF]
+      type: [bitstep, bitstep]
+      steps: [64, 64]
+      variants : [ss]
+
+    - id: hypot_018
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x807ff000, 0x80800FFF]
+      - [0x807ff000, 0x80800FFF]
+      type: [bitstep, bitstep]
+      steps: [64, 64]
+      variants : [ss]
+
+    - id: hypot_019
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x007ff000, 0x00800fff]
+      - [0x807ff000, 0x80800FFF]
+      type: [bitstep, bitstep]
+      steps: [64, 64]
+      variants : [ss]
+
+    - id: hypot_020
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x807ff000, 0x80800FFF]
+      - [0x007ff000, 0x00800fff]
+      type: [bitstep, bitstep]
+      steps: [64, 64]
+      variants : [ss]
+
+    - id: hypot_021
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x007ff000, 0x00800fff]
+      - [0x007ff000, 0x00800fff]
+      type: [bitstep, bitstep]
+      steps: [64, 64]
+      variants : [ss]
+
+#Double precision
+    - id: hypot_001
+      description: 'Full value distribution range tests: x in [-DBL-MAX, -SMALLEST_SUBNORMAL], y in [-DBL-MAX, -SMALLEST_SUBNORMAL]  expstep'
+      input:
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [1000, 1000]
+      variants : [sd]
+
+    - id: hypot_002
+      description: 'Full value distribution range tests: x in [+SMALLEST_SUBNORMAL, +DBL-MAX], y in [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [min_subnormal, max]
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [1000, 1000]
+      variants : [sd]
+
+    - id: hypot_003
+      description: 'Full value distribution range tests: x in [-DBL-MAX, -SMALLEST_SUBNORMAL], y in [SMALLEST_SUBNORMAL, +DBL-MAX] expstep'
+      input:
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [1000, 1000]
+      variants : [sd]
+
+    - id: hypot_004
+      description: 'Full value distribution range tests: x in [+SMALLEST_SUBNORMAL, +DBL-MAX], y in [SMALLEST_SUBNORMAL, +DBL-MAX] expstep'
+      input:
+      - [min_subnormal, max]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [1000, 1000]
+      variants : [sd]
+
+    - id: hypot_005
+      description: 'Full value distribution range tests: x in [-1E8, -0], y in [-1E8, -0] linearstep'
+      input:
+      - [-100000000.0, -0.0]
+      - [-100000000.0, -0.0]
+      type: [linearstep, linearstep]
+      steps: [500, 500]
+      variants : [sd]
+
+    - id: hypot_006
+      description: 'Full value distribution range tests: x in [+0, +1E8], y in [-1E8, -0] linearstep'
+      input:
+      - [0.0, 100000000.0]
+      - [-100000000.0, -0.0]
+      type: [linearstep, linearstep]
+      steps: [500, 500]
+      variants : [sd]
+
+    - id: hypot_007
+      description: 'Full value distribution range tests: x in [-1E8, -0], y in [+0, +1E8] linearstep'
+      input:
+      - [-100000000.0, -0.0]
+      - [0.0, 100000000.0]
+      type: [linearstep, linearstep]
+      steps: [500, 500]
+      variants : [sd]
+
+    - id: hypot_008
+      description: 'Full value distribution range tests: x in [+0, +1E8], y in [+0, +1E8] linearstep'
+      input:
+      - [0.0, 100000000.0]
+      - [0.0, 100000000.0]
+      type: [linearstep, linearstep]
+      steps: [500, 500]
+      variants : [sd]
+
+    - id: hypot_009
+      description: 'Full value distribution range tests: x in [-1, -0], y in [-1, -0] expstep'
+      input:
+      - [-1.0, -0.0]
+      - [-1.0, -0.0]
+      type: [linearstep, linearstep]
+      steps: [500, 500]
+      variants : [sd]
+
+    - id: hypot_010
+      description: 'Full value distribution range tests: x in [+0, +1], y in [-1, -0] expstep'
+      input:
+      - [0.0, 1.0]
+      - [-1.0, -0.0]
+      type: [linearstep, linearstep]
+      steps: [500, 500]
+      variants : [sd]
+
+    - id: hypot_011
+      description: 'Full value distribution range tests: x in [-1, -0], y in [+0, +1] expstep'
+      input:
+      - [-1.0, -0.0]
+      - [0.0, 1.0]
+      type: [linearstep, linearstep]
+      steps: [500, 500]
+      variants : [sd]
+
+    - id: hypot_012
+      description: 'Full value distribution range tests: x in [+0, +1], y in [+0, +1] expstep'
+      input:
+      - [0.0, 1.0]
+      - [0.0, 1.0]
+      type: [linearstep, linearstep]
+      steps: [500, 500]
+      variants : [sd]
+
+    - id: hypot_013
+      description: 'Subnormal values range tests: x, y in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [0x800FFFFFFFFFFFFF, 0x000FFFFFFFFFFFFF]
+      - [0x800FFFFFFFFFFFFF, 0x000FFFFFFFFFFFFF]
+      type: [linearstep, linearstep]
+      steps: [100, 100]
+      variants : [sd]
+
+    - id: hypot_014
+      description: Test around 0, x is negativ, y is negative
+      input:
+      - [-0.0, 0x8000000000000FFF]
+      - [-0.0, 0x8000000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [64, 64]
+      variants : [sd]
+
+    - id: hypot_015
+      description: Test around 0, x is positive, y is negative
+      input:
+      - [0.0, 0x0000000000000FFF]
+      - [-0.0, 0x8000000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [64, 64]
+      variants : [sd]
+
+    - id: hypot_016
+      description: Test around 0, x is negativ, y is positive
+      input:
+      - [-0.0, 0x8000000000000FFF]
+      - [0.0, 0x0000000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [64, 64]
+      variants : [sd]
+
+    - id: hypot_017
+      description: Test around 0, x is positive, y is positive
+      input:
+      - [0.0, 0x0000000000000FFF]
+      - [0.0, 0x0000000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [64, 64]
+      variants : [sd]
+
+    - id: hypot_018
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x800FFFFFFFFFF000, 0x801000000000FFFF]
+      - [0x800FFFFFFFFFF000, 0x801000000000FFFF]
+      type: [bitstep, bitstep]
+      steps: [64, 64]
+      variants : [sd]
+
+    - id: hypot_019
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [64, 64]
+      variants : [sd]
+
+    - id: hypot_020
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [64, 64]
+      variants : [sd]
+
+    - id: hypot_021
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [64, 64]
+      variants : [sd]
+

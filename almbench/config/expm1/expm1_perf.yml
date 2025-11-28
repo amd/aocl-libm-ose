@@ -1,0 +1,46 @@
+- test_sequence: perf_tests
+  function: expm1
+  timing_enabled: true
+  test_sets:
+  - id: expm1
+    tests:
+# Single Precision
+    - id: expm1_001
+      description: 'Positive values: x in [SMALLEST_SUBNORMAL, FLT_MAX], linearstep'
+      input: [[min_subnormal, max]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrsa]
+    - id: expm1_002
+      description: 'x in [-min_subnormal, min_subnormal], linearstep'
+      input: [[-min_subnormal, min_subnormal]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrsa]
+    - id: expm1_003
+      description: 'Negative values: x in [-FLT_MAX, -SMALLEST_SUBNORMAL], linearstep'
+      input: [[-max, -min_subnormal]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrsa]
+#Double precision
+    - id: expm1_001
+      description: 'Positive values: x in [SMALLEST_SUBNORMAL, DBL_MAX], linearstep'
+      input: [[min_subnormal, max]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrda]
+    - id: expm1_002
+      description: 'x in [-min_subnormal, min_subnormal], linearstep'
+      input: [[-min_subnormal, min_subnormal]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrda]
+    - id: expm1_003
+      description: 'Negative values: x in [-DBL_MAX, -SMALLEST_SUBNORMAL], linearstep'
+      input: [[-max, -min_subnormal]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrda]
+
+

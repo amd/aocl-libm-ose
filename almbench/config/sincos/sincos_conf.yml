@@ -1,0 +1,694 @@
+- test_sequence: unit_tests_sincos
+  ignore_exceptions: [underflow, inexact]
+  function: sincos
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+  # Single precision
+    # Test case 1: 0
+    - id: sincos_001
+      description: "sincos(+0)"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000, 0x3F800000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: sincos_002
+      description: "sincos(-0)"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x80000000, 0x3F800000]
+      expect_exception: []
+
+    # Test case 3: +inf
+    - id: sincos_003
+      description: "sincos(+inf)"
+      variants: [ss]
+      input: [0x7F800000]
+      expect: [0x7FC00000, 0x7FC00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 4: -inf
+    - id: sincos_004
+      description: "sincos(-inf)"
+      variants: [ss]
+      input: [0xFF800000]
+      expect: [0x7FC00000, 0x7FC00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 5: -nan
+    - id: sincos_005
+      description: "sincos(-nan)"
+      variants: [ss]
+      input: [0xFFC00000]
+      expect: [0xFFC00000, 0xFFC00000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: sincos_006
+      description: "sincos(+nan)"
+      variants: [ss]
+      input: [0x7FC00000]
+      expect: [0x7FC00000, 0x7FC00000]
+      expect_exception: []
+
+    # Test case 7: +subnorm (MAX) - Largest positive subnormal
+    - id: sincos_007
+      description: "sincos(+largest_subnormal)"
+      variants: [ss]
+      input: [0x007FFFFF]
+      expect: [0x007FFFFF, 0x3F800000]
+      expect_exception: [inexact, underflow]
+
+    # Test case 8: -subnorm (MAX) - Largest negative subnormal
+    - id: sincos_008
+      description: "sincos(-largest_subnormal)"
+      variants: [ss]
+      input: [0x807FFFFF]
+      expect: [0x807FFFFF, 0x3F800000]
+      expect_exception: [inexact, underflow]
+
+    # Test case 9: +subnorm (MIN) - Smallest positive subnormal
+    - id: sincos_009
+      description: "sincos(+smallest_subnormal)"
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x00000001, 0x3F800000]
+      expect_exception: [inexact, underflow]
+
+    # Test case 10: -subnorm (MIN) - Smallest negative subnormal
+    - id: sincos_010
+      description: "sincos(-smallest_subnormal)"
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x80000001, 0x3F800000]
+      expect_exception: [inexact, underflow]
+
+    # Test case 11: +POS - Positive normal value
+    - id: sincos_011
+      description: "sincos(+1.0)"
+      variants: [ss]
+      input: [0x3F800000]
+      expect: [0x3F576AA4, 0x3F08A5F3]
+      expect_exception: [inexact]
+
+    # Test case 12: -POS - Negative normal value
+    - id: sincos_012
+      description: "sincos(-1.0)"
+      variants: [ss]
+      input: [0xBF800000]
+      expect: [0xBF576AA4, 0x3F08A5F3]
+      expect_exception: [inexact]
+
+    # Test case 13: +NEG - Another positive value
+    - id: sincos_013
+      description: "sincos(+2.0)"
+      variants: [ss]
+      input: [0x40000000]
+      expect: [0x3F68C7B7, 0xBEDBB7AF]
+      expect_exception: [inexact]
+
+    # Test case 14: -NEG - Another negative value
+    - id: sincos_014
+      description: "sincos(-2.0)"
+      variants: [ss]
+      input: [0xC0000000]
+      expect: [0xBF68C7B7, 0xBEDBB7AF]
+      expect_exception: [inexact]
+
+    # Test case 15: qnan - Quiet NaN
+    - id: sincos_015
+      description: "sincos(qnan)"
+      variants: [ss]
+      input: [0x7FC00000]
+      expect: [0x7FC00000, 0x7FC00000]
+      expect_exception: []
+
+    # Test case 16: snan - Signaling NaN
+    - id: sincos_016
+      description: "sincos(snan)"
+      variants: [ss]
+      input: [0x7F800001]
+      expect: [0x7FC00001, 0x7FC00001]
+      expect_exception: [invalidoperation]
+
+# Test cases from gtests test_sincos_data.h
+#------------------------------------------
+    - id: sincos_01
+      description: "sincosf(snan) = {snan, snan}"
+      input: [0x7fa00000]
+      expect: [0x7fa00000, 0x7fa00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: sincos_002
+      description: "sincosf(-snan) = {-snan, -snan}"
+      input: [0xffa00000]
+      expect: [0xffa00000, 0xffa00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: sincos_003
+      description: "sincosf(qnan) = {qnan, qnan}"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000, 0x7fc00000]
+      expect_exception: []
+
+    - id: sincos_004
+      description: "sincosf(-qnan) = {-qnan, -qnan}"
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0xffc00000, 0xffc00000]
+      expect_exception: []
+
+    - id: sincos_005
+      description: "sincosf(0) = {0, 1}"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000, 0x3f800000]
+      expect_exception: []
+
+    - id: sincos_006
+      description: "sincosf(-0) = {-0, 1}"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x80000000, 0x3f800000]
+      expect_exception: []
+
+    - id: sincos_007
+      description: "sincosf(inf) = {nan, nan}"
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0xffc00000, 0x7fc00000]
+      expect_exception: [invalidoperation]
+
+    - id: sincos_008
+      description: "sincosf(-inf) = {nan, nan}"
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0xffc00000, 0x7fc00000]
+      expect_exception: [invalidoperation]
+
+    - id: sincos_009
+      description: "sincosf(0) = {sin(0), cos(0)}"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000, 0x3f800000]
+      expect_exception: []
+
+    - id: sincos_010
+      description: "sincosf(pi/2) = {1, 0}"
+      variants: [ss]
+      input: [0x3FC90FDB]
+      expect: [0x3f800000, 0xb33bbd2e]
+      expect_exception: [inexact]
+
+    - id: sincos_011
+      description: "sincosf(pi) = {0, -1}"
+      variants: [ss]
+      input: [0x40490FDB]
+      expect: [0x00000000, 0xbf800000]
+      expect_exception: [inexact]
+
+    - id: sincos_012
+      description: "sincosf(3pi/2) = {-1, 0}"
+      variants: [ss]
+      input: [0x40C90FDB]
+      expect: [0xbf800000, 0xb33bbd2e]
+      expect_exception: [inexact]
+
+    - id: sincos_013
+      description: "sincosf(2pi) = {0, 1}"
+      variants: [ss]
+      input: [0x4116CBE4]
+      expect: [0x00000000, 0x3f800000]
+      expect_exception: [inexact]
+
+    - id: sincos_014
+      description: "sincosf(1) = {sin(1), cos(1)}"
+      variants: [ss]
+      input: [0x3F800000]
+      expect: [0x3f576aa4, 0x3f0a5140]
+      expect_exception: [inexact]
+
+    - id: sincos_015
+      description: "sincosf(-1) = {sin(-1), cos(-1)}"
+      variants: [ss]
+      input: [0xBF800000]
+      expect: [0xbf576aa4, 0x3f0a5140]
+      expect_exception: [inexact]
+
+    - id: sincos_016
+      description: "sincosf(10) = {sin(10), cos(10)}"
+      variants: [ss]
+      input: [0x41200000]
+      expect: [0xbf0b44f8, 0xbf56cd64]
+      expect_exception: [inexact]
+
+    - id: sincos_017
+      description: "sincosf(50000) = {sin(50000), cos(50000)}"
+      variants: [ss]
+      input: [0x48F42400]
+      expect: [0x3e361962, 0xbf7beb6c]
+      expect_exception: [inexact]
+
+    - id: sincos_018
+      description: "sincosf(-50000) = {sin(-50000), cos(-50000)}"
+      variants: [ss]
+      input: [0xC8F42400]
+      expect: [0xbe361962, 0xbf7beb6c]
+      expect_exception: [inexact]
+
+    - id: sincos_019
+      description: "// 1.57074 = pi/2 - 6e-05"
+      variants: [ss]
+      input: [0x3fc90de3]
+      expect: [0x3f800000, 0xb33bbd2e]
+      expect_exception: [inexact]
+
+    - id: sincos_020
+      description: "// 1.57086 = pi/2 + 6e-05"
+      variants: [ss]
+      input: [0x3fc911d2]
+      expect: [0x3f800000, 0xb33bbd2e]
+      expect_exception: [inexact]
+
+    - id: sincos_021
+      description: "// 1.56689 = pi/2 - 0.00390625"
+      variants: [ss]
+      input: [0x3fc88fdb]
+      expect: [0x3f7fff80, 0xb33bbd2e]
+      expect_exception: [inexact]
+
+    - id: sincos_022
+      description: " 1.57470 = pi/2 + 0.00390625"
+      variants: [ss]
+      input: [0x3fc98fdb]
+      expect: [0x3f7fff80, 0xb33bbd2e]
+      expect_exception: [inexact]
+
+#Double precision
+    # Test case 1: 0
+    - id: sincos_001
+      description: "sincos(+0.0)"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000, 0x3FF0000000000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: sincos_002
+      description: "sincos(-0.0)"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000, 0x3FF0000000000000]
+      expect_exception: []
+
+    # Test case 3: +inf
+    - id: sincos_003
+      description: "sincos(+inf)"
+      variants: [sd]
+      input: [0x7FF0000000000000]
+      expect: [0x7FF8000000000000, 0x7FF8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 4: -inf
+    - id: sincos_004
+      description: "sincos(-inf)"
+      variants: [sd]
+      input: [0xFFF0000000000000]
+      expect: [0x7FF8000000000000, 0x7FF8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 5: -nan
+    - id: sincos_005
+      description: "sincos(-nan)"
+      variants: [sd]
+      input: [0xFFF8000000000000]
+      expect: [0xFFF8000000000000, 0xFFF8000000000000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: sincos_006
+      description: "sincos(+nan)"
+      variants: [sd]
+      input: [0x7FF8000000000000]
+      expect: [0x7FF8000000000000, 0x7FF8000000000000]
+      expect_exception: []
+
+    # Test case 7: +subnorm (MAX) - Largest positive subnormal
+    - id: sincos_007
+      description: "sincos(+largest_subnormal)"
+      variants: [sd]
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x000FFFFFFFFFFFFF, 0x3FF0000000000000]
+      expect_exception: [inexact, underflow]
+
+    # Test case 8: -subnorm (MAX) - Largest negative subnormal
+    - id: sincos_008
+      description: "sincos(-largest_subnormal)"
+      variants: [sd]
+      input: [0x800FFFFFFFFFFFFF]
+      expect: [0x800FFFFFFFFFFFFF, 0x3FF0000000000000]
+      expect_exception: [inexact, underflow]
+
+    # Test case 9: +subnorm (MIN) - Smallest positive subnormal
+    - id: sincos_009
+      description: "sincos(+smallest_subnormal)"
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001, 0x3FF0000000000000]
+      expect_exception: [inexact, underflow]
+
+    # Test case 10: -subnorm (MIN) - Smallest negative subnormal
+    - id: sincos_010
+      description: "sincos(-smallest_subnormal)"
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0x8000000000000001, 0x3FF0000000000000]
+      expect_exception: [inexact, underflow]
+
+    # Test case 11: +POS - Positive normal value
+    - id: sincos_011
+      description: "sincos(+1.0)"
+      variants: [sd]
+      input: [0x3FF0000000000000]
+      expect: [0x3FEAED548F090CEE, 0x3FE14A280FB5068B]
+      expect_exception: [inexact]
+
+    # Test case 12: -POS - Negative normal value
+    - id: sincos_012
+      description: "sincos(-1.0)"
+      variants: [sd]
+      input: [0xBFF0000000000000]
+      expect: [0xBFEAED548F090CEE, 0x3FE14A280FB5068B]
+      expect_exception: [inexact]
+
+    # Test case 13: +NEG - Another positive value
+    - id: sincos_013
+      description: "sincos(+2.0)"
+      variants: [sd]
+      input: [0x4000000000000000]
+      expect: [0x3FED18F6EDD1B446, 0xBFDB6F8FCFC9F8F4]
+      expect_exception: [inexact]
+
+    # Test case 14: -NEG - Another negative value
+    - id: sincos_014
+      description: "sincos(-2.0)"
+      variants: [sd]
+      input: [0xC000000000000000]
+      expect: [0xBFED18F6EDD1B446, 0xBFDB6F8FCFC9F8F4]
+      expect_exception: [inexact]
+
+    # Test case 15: qnan - Quiet NaN
+    - id: sincos_015
+      description: "sincos(qnan)"
+      variants: [sd]
+      input: [0x7FF8000000000000]
+      expect: [0x7FF8000000000000, 0x7FF8000000000000]
+      expect_exception: []
+
+    # Test case 16: snan - Signaling NaN
+    - id: sincos_016
+      description: "sincos(snan)"
+      variants: [sd]
+      input: [0x7FF0000000000001]
+      expect: [0x7FF8000000000001, 0x7FF8000000000001]
+      expect_exception: [invalidoperation]
+
+# Test cases from gtests test_sincos_data.h
+#-------------------------------
+    - id: sincos_001
+      description: "sincos(snan) = {snan, snan}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x7ff4000000000001]
+      expect: [0x7ff4001000000000, 0x7ff4000000000001]
+      expect_exception: [invalidoperation]
+
+    - id: sincos_002
+      description: "sincos(-snan) = {-snan, -snan}"
+      api_name: sincos
+      variants: [sd]
+      input: [0xfff2000000000000]
+      expect: [0xfff2000000000000, 0xfff2000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: sincos_003
+      description: "sincos(qnan) = {qnan, qnan}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x7ff87ff7e0000000]
+      expect: [0x7ff87ff7e0000000, 0x7ff87ff7e0000000]
+      expect_exception: []
+
+    - id: sincos_004
+      description: "sincos(-qnan) = {-qnan, -qnan}"
+      api_name: sincos
+      variants: [sd]
+      input: [0xfffa000000000000]
+      expect: [0xfffa000000000000, 0xfffa000000000000]
+      expect_exception: []
+
+    - id: sincos_005
+      description: "sincos(inf) = {inf, snan}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0xfff8000000000000, 0x7ff4000000000001]
+      expect_exception: [invalidoperation]
+
+    - id: sincos_006
+      description: "sincos(-inf) = {-inf, snan}"
+      api_name: sincos
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xfff8000000000000, 0x7ff4000000000001]
+      expect_exception: [invalidoperation]
+
+    - id: sincos_007
+      description: "sincos(0) = {0, 1}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000, 0x3ff0000000000000]
+      expect_exception: []
+
+    - id: sincos_008
+      description: "sincos(-0) = {-0, 1}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000, 0x3ff0000000000000]
+      expect_exception: []
+
+    - id: sincos_009
+      description: "sincos(1) ≈ {0.84, 0.54}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x3ff0000000000000]
+      expect: [0x3feaed548f090cee, 0x3feaed548f090cee]
+      expect_exception: [inexact]
+
+    - id: sincos_010
+      description: "sincos(pi) = {0, 0}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x400921fb54442d18]
+      expect: [0x0000000000000000, 0x0000000000000000]
+      expect_exception: [inexact]
+
+    - id: sincos_011
+      description: "sincos(n*Pi) = {0, 0}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x3ff921fb544486e0]
+      expect: [0x0000000000000000, 0x0000000000000000]
+      expect_exception: [inexact]
+
+    - id: sincos_012
+      description: "sincos(smallest positive normal)"
+      api_name: sincos
+      variants: [sd]
+      input: [0x0010000000000000]
+      expect: [0x0010000000000000, 0x0010000000000000]
+      expect_exception: []
+
+    - id: sincos_013
+      description: "sincos(largest negative normal)"
+      api_name: sincos
+      variants: [sd]
+      input: [0xFFEFFFFFFFFFFFFF]
+      expect: [0xFFEFFFFFFFFFFFFF, 0xFFEFFFFFFFFFFFFF]
+      expect_exception: [inexact]
+
+    - id: sincos_014
+      description: "sincos(π/2) = {1, 0}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x3FF921FB54442D18]
+      expect: [0x0000000000000000, 0x0000000000000000]
+      expect_exception: [inexact]
+
+    - id: sincos_015
+      description: "sincos(270°) = {0, 0}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x4012D97C7F336528]
+      expect: [0x0000000000000000, 0x0000000000000000]
+      expect_exception: [inexact]
+
+    - id: sincos_016
+      description: "sincos(1) ≈ {0.84147, 0.54030}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x3FF0000000000000]
+      expect: [0x3FEF333333333333, 0x3FEF333333333333]
+      expect_exception: [inexact]
+
+    - id: sincos_017
+      description: "sincos(2) ≈ {0.90930, -0.41615}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x4000000000000000]
+      expect: [0x3FE6A09E667F3BCD, 0x3FE6A09E667F3BCD]
+      expect_exception: [inexact]
+
+    - id: sincos_018
+      description: "sincos(-1) ≈ {-0.84147, 0.54030}"
+      api_name: sincos
+      variants: [sd]
+      input: [0xBFF0000000000000]
+      expect: [0xBFEF333333333333, 0x3FEF333333333333]
+      expect_exception: [inexact]
+
+    - id: sincos_019
+      description: "sincos(-2) ≈ {-0.90930, -0.41615}"
+      api_name: sincos
+      variants: [sd]
+      input: [0xC000000000000000]
+      expect: [0xBFE6A09E667F3BCD, 0x3FE6A09E667F3BCD]
+      expect_exception: [inexact]
+
+    - id: sincos_020
+      description: "sincos(π/2) = {1, 0}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x3FF921FB54442D18]
+      expect: [0x3FF0000000000000, 0x0000000000000000]
+      expect_exception: [inexact]
+
+    - id: sincos_021
+      description: "sincos(π) = {0, -1}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x400921FB54442D18]
+      expect: [0x0000000000000000, 0xBFF0000000000000]
+      expect_exception: [inexact]
+
+    - id: sincos_022
+      description: "sincos(3π/2) = {-1, 0}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x401921FB54442D18]
+      expect: [0xBFF0000000000000, 0x0000000000000000]
+      expect_exception: [inexact]
+
+    - id: sincos_023
+      description: "sincos(0.5) ≈ {0.47943, 0.87758}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x3FE0000000000000]
+      expect: [0x3FD3333333333333, 0x3FD3333333333333]
+      expect_exception: [inexact]
+
+    - id: sincos_024
+      description: "sincos(1.5) ≈ {0.99749, 0.07074}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x3FF8000000000000]
+      expect: [0x3FEF5C28F5C28F5C, 0x3FEF5C28F5C28F5C]
+      expect_exception: [inexact]
+
+    - id: sincos_025
+      description: "sincos(2.5) ≈ {0.59847, -0.80114}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x4004000000000000]
+      expect: [0x3FEA9B6666666666, 0x3FEA9B6666666666]
+      expect_exception: [inexact]
+
+    - id: sincos_026
+      description: "sincos(-0.5) ≈ {-0.47943, 0.87758}"
+      api_name: sincos
+      variants: [sd]
+      input: [0xBFE0000000000000]
+      expect: [0xBFD3333333333333, 0x3FD3333333333333]
+      expect_exception: [inexact]
+
+    - id: sincos_027
+      description: "sincos(-1.5) ≈ {-0.99749, 0.07074}"
+      api_name: sincos
+      variants: [sd]
+      input: [0xBFF8000000000000]
+      expect: [0xBFEF5C28F5C28F5C, 0x3FEF5C28F5C28F5C]
+      expect_exception: [inexact]
+
+    - id: sincos_028
+      description: "sincos(-2.5) ≈ {-0.59847, -0.80114}"
+      api_name: sincos
+      variants: [sd]
+      input: [0xC004000000000000]
+      expect: [0xBFEA9B6666666666, 0x3FEA9B6666666666]
+      expect_exception: [inexact]
+
+    - id: sincos_029
+      description: "sincos(1.25) ≈ {0.94898, 0.31623}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x3FF4000000000000]
+      expect: [0x3FEF0A3D70A3D70A, 0x3FEF0A3D70A3D70A]
+      expect_exception: [inexact]
+
+    - id: sincos_030
+      description: "sincos(1.375) ≈ {0.98079, 0.19509}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x3FF6000000000000]
+      expect: [0x3FEF2B851EB851EB, 0x3FEF2B851EB851EB]
+      expect_exception: [inexact]
+
+    - id: sincos_031
+      description: "sincos(1.4375) ≈ {0.99371, 0.11196}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x3FF7000000000000]
+      expect: [0x3FEF3C6EF9DB22D0, 0x3FEF3C6EF9DB22D0]
+      expect_exception: [inexact]
+
+    - id: sincos_032
+      description: "sincos(1.5625) ≈ {0.99969, 0.02454}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x3FF9000000000000]
+      expect: [0x3FEF5E1EB851EB85, 0x3FEF5E1EB851EB85]
+      expect_exception: [inexact]
+
+    - id: sincos_033
+      description: "sincos(1.625) ≈ {0.99863, -0.05234}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x3FFA000000000000]
+      expect: [0x3FEF6F5C28F5C28F, 0x3FEF6F5C28F5C28F]
+      expect_exception: [inexact]
+
+    - id: sincos_034
+      description: "sincos(1.6875) ≈ {0.99027, -0.13917}"
+      api_name: sincos
+      variants: [sd]
+      input: [0x3FFB000000000000]
+      expect: [0x3FEF80A3D70A3D70, 0x3FEF80A3D70A3D70]
+      expect_exception: [inexact]

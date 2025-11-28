@@ -1,0 +1,185 @@
+- test_sequence: validation_tests_trunc
+  function: trunc
+  test_sets:
+  - id: accu_range-tests_01
+    tests:
+    - id: trunc_001
+      description: 'Full value distribution range tests: [-FLT_MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [0xFF7FFFFF, -min_subnormal]
+      type: [expstep]
+      steps: [10000]
+      variants : [ss]
+
+    - id: trunc_002
+      description: 'Full value distribution range tests: [+SMALLEST_SUBNORMAL, FLT_MAX] expstep'
+      input:
+      - [min_subnormal, max]
+      type: [expstep]
+      steps: [10000]
+      variants : [ss]
+
+    - id: trunc_003
+      description: 'Subnormal values range tests: [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [-max_subnormal, max_subnormal]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss]
+
+    - id: trunc_004
+      description: Test around 0, negative values
+      input:
+      - [0x80000000, 0x800000FF]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+
+    - id: trunc_005
+      description: Test around 0, positive values
+      input:
+      - [0.0, 0x000000FF]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+
+    - id: trunc_006
+      description: Test around -LARGEST_SUBNORMAL
+      input:
+      - [0x807ff000, 0x80800FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+
+    - id: trunc_007
+      description: Test around +LARGEST_SUBNORMAL
+      input:
+      - [0x007ff000, 0x00800fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+
+    - id: trunc_008
+      description: Test around -1
+      input:
+      - [0xBF7FFF00, 0xBF8000FF]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+
+    - id: trunc_009
+      description: Test around +1
+      input:
+      - [0x3F7FFF00, 0x3F8000FF]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+
+    - id: trunc_010
+      description: Test around -1.5
+      input:
+      - [0xBFBFFF00, 0xBFC000FF]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+
+    - id: trunc_011
+      description: Test around +1.5
+      input:
+      - [0x3FBFFF00, 0x3FC000FF]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+
+ #Double precision
+    - id: trunc_001
+      description: 'Full value distribution range tests: [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd]
+
+    - id: trunc_002
+      description: 'Full value distribution range tests: [+SMALLEST_SUBNORMAL, DBL-MAX] expstep'
+      input:
+      - [min_subnormal, max]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd]
+
+    - id: trunc_003
+      description: 'Subnormal values range tests: [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [0x800FFFFFFFFFFFFF, 0x000FFFFFFFFFFFFF]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd]
+
+    - id: trunc_004
+      description: Test around 0, negative values
+      input:
+      - [-0.0, 0x80000000000000FF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+
+    - id: trunc_005
+      description: Test around 0, positive values
+      input:
+      - [0.0, 0x00000000000000FF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+
+    - id: trunc_006
+      description: Test around -LARGEST_SUBNORMAL
+      input:
+      - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+
+    - id: trunc_007
+      description: Test around +LARGEST_SUBNORMAL
+      input:
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+
+    - id: trunc_008
+      description: Test around -1
+      input:
+      - [0xBFEFFFFFFFFFFF00, 0xBFF00000000000FF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+
+    - id: trunc_009
+      description: Test around +1
+      input:
+      - [0x3FEFFFFFFFFFFF00, 0x3FF00000000000FF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+
+    - id: trunc_010
+      description: Test around -1.5
+      input:
+      - [0xBFF7FFFFFFFFFF00, 0xBFF80000000000FF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+
+    - id: trunc_011
+      description: Test around +1.5
+      input:
+      - [0x3FF7FFFFFFFFFF00, 0x3FF80000000000FF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+
+
+
+

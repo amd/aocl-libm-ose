@@ -1,0 +1,2015 @@
+- test_sequence: unit_tests_acosh
+  ignore_exceptions: [underflow, inexact]
+  function: acosh
+  test_sets:
+  - id: special-values
+    description: Special values for acosh function
+    tests:
+    # Single Precision Tests
+    - id: acosh_001
+      description: "acoshf(0) = nan (invalid domain)"
+      input: [0x00000000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_002
+      description: "acoshf(-0) = nan (invalid domain)"
+      input: [0x80000000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_003
+      description: "acoshf(inf) = inf"
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: acosh_004
+      description: "acoshf(-inf) = nan (invalid domain)"
+      input: [0xff800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_005
+      description: "acoshf(-nan) = nan"
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: acosh_006
+      description: "acoshf(+nan) = nan"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: acosh_007
+      description: "acoshf(subnorm_max) = nan (invalid domain)"
+      input: [0x007fffff]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_008
+      description: "acoshf(subnorm_max) = nan (invalid domain)"
+      input: [0x007fffff]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_009
+      description: "acoshf(subnorm_min) = nan (invalid domain)"
+      input: [0x00000001]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_010
+      description: "acoshf(subnorm_min) = nan (invalid domain)"
+      input: [0x00000001]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_011
+      description: "acoshf(1.0) = 0 (boundary case)"
+      input: [0x3f800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: acosh_012
+      description: "acoshf(-1.0) = nan (invalid domain)"
+      input: [0xbf800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_013
+      description: "acoshf(2.0) = acosh(2)"
+      input: [0x40000000]
+      expect: [0x3fb504f3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_014
+      description: "acoshf(-2.0) = nan (invalid domain)"
+      input: [0xc0000000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+# Test cases from gtests test_acos_data.h
+#-------------------------------
+    - id: acosh_001
+      description: "denormal min"
+      input: [0x00000001]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_002
+      description: "denormal intermediate"
+      input: [0x0005fde6]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_003
+      description: "denormal max"
+      input: [0x007fffff]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_004
+      description: "-denormal min"
+      input: [0x80000001]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_005
+      description: "-denormal intermediate"
+      input: [0x805def12]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_006
+      description: "-denormal max"
+      input: [0x807fffff]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_007
+      description: "normal min"
+      input: [0x00800000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_008
+      description: "normal intermediate"
+      input: [0x43b3c4ea]
+      expect: [0x40d27eb3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_009
+      description: "normal max"
+      input: [0x7f7fffff]
+      expect: [0x42b2d4fc]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_010
+      description: "-normal min"
+      input: [0x80800000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_011
+      description: "-normal intermediate"
+      input: [0xc5812e71]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_012
+      description: "-normal max"
+      input: [0xff7fffff]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_013
+      description: "inf"
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: acosh_014
+      description: "-inf"
+      input: [0xff800000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_015
+      description: "qnan min"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: acosh_016
+      description: "qnan intermediate"
+      input: [0x7fe1a570]
+      expect: [0x7fe1a570]
+      expect_exception: []
+      variants: [ss]
+
+    - id: acosh_017
+      description: "qnan max"
+      input: [0x7fffffff]
+      expect: [0x7fffffff]
+      expect_exception: []
+      variants: [ss]
+
+    - id: acosh_018
+      description: "indeterninate"
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: acosh_019
+      description: "-qnan min"
+      input: [0xffc00001]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: acosh_020
+      description: "-qnan intermediate"
+      input: [0xffd2ba31]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: acosh_021
+      description: "-qnan max"
+      input: [0xffffffff]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: acosh_022
+      description: "snan min"
+      input: [0x7f800001]
+      expect: [0x7fc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_023
+      description: "snan intermediate"
+      input: [0x7fa0bd90]
+      expect: [0x7fe0bd90]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_024
+      description: "snan max"
+      input: [0x7fbfffff]
+      expect: [0x7fffffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_025
+      description: "-snan min"
+      input: [0xff800001]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_026
+      description: "-snan intermediate"
+      input: [0xff95fffa]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_027
+      description: "-snan max"
+      input: [0xffbfffff]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_028
+      description: "pi/2"
+      input: [0x3fc90fdb]
+      expect: [0x3f82f91f]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_029
+      description: "pi"
+      input: [0x40490fdb]
+      expect: [0x3fe7e018]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_030
+      description: "2pi"
+      input: [0x40c90fdb]
+      expect: [0x4021938d]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_031
+      description: "e --"
+      input: [0x402df853]
+      expect: [0x3fd42777]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_032
+      description: "e"
+      input: [0x402df854]
+      expect: [0x3fd42777]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_033
+      description: "e ++"
+      input: [0x402df855]
+      expect: [0x3fd42778]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_034
+      description: "0"
+      input: [0x00000000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_035
+      description: "0.000023"
+      input: [0x37c0f01f]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_036
+      description: "0.49999"
+      input: [0x3efffeb0]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_037
+      description: "0.500012"
+      input: [0x3f0000c9]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_038
+      description: "-0"
+      input: [0x80000000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_039
+      description: "-0.000023"
+      input: [0xb7c0f01f]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_040
+      description: "-0.49999"
+      input: [0xbefffeb0]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_041
+      description: "-0.500012"
+      input: [0xbf0000c9]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_042
+      description: "1"
+      input: [0x3f800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: acosh_043
+      description: "0.93750006"
+      input: [0x3f700001]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_044
+      description: "1.0624998"
+      input: [0x3f87fffe]
+      expect: [0x3eb416d6]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_045
+      description: "1.49999"
+      input: [0x3fbfffac]
+      expect: [0x3f7660cf]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_046
+      description: "1.500012"
+      input: [0x3fc00064]
+      expect: [0x3f766218]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_047
+      description: "-1"
+      input: [0xbf800000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_048
+      description: "-0.93750006"
+      input: [0xbf700001]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_049
+      description: "-1.0624998"
+      input: [0xbf87fffe]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_050
+      description: "-1.49999"
+      input: [0xbfbfffac]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_051
+      description: "-1.500012"
+      input: [0xbfc00064]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_052
+      description: "2"
+      input: [0x40000000]
+      expect: [0x3fa89214]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_053
+      description: "-2"
+      input: [0xc0000000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_054
+      description: "10"
+      input: [0x41200000]
+      expect: [0x403f90f7]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_055
+      description: "-10"
+      input: [0xc1200000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_056
+      description: "1000"
+      input: [0x447a0000]
+      expect: [0x40f33a97]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_057
+      description: "-1000"
+      input: [0xc47a0000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_058
+      description: "67.4"
+      input: [0x4286cccc]
+      expect: [0x409ceb6a]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_059
+      description: "-67.4"
+      input: [0xc286cccc]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_060
+      description: "1983.6"
+      input: [0x44f7f333]
+      expect: [0x410492b4]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_061
+      description: "-1983.6"
+      input: [0xc4f7f333]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_062
+      description: "87.5"
+      input: [0x42af0000]
+      expect: [0x40a545a9]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_063
+      description: "-87.5"
+      input: [0xc2af0000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_064
+      description: "-87.5"
+      input: [0xc2af0000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_065
+      description: "132473"
+      input: [0x48015e40]
+      expect: [0x4147cbe7]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_066
+      description: "-132473"
+      input: [0xc8015e40]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_067
+      description: "2^23"
+      input: [0x4b000000]
+      expect: [0x41851592]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_068
+      description: "2^23 + 1"
+      input: [0x4b000001]
+      expect: [0x41851592]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_069
+      description: "2^23 -1 + 0.5"
+      input: [0x4affffff]
+      expect: [0x41851592]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_070
+      description: "-2^23"
+      input: [0xcb000000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_071
+      description: "-(2^23 + 1)"
+      input: [0xcb000001]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_072
+      description: "-(2^23 -1 + 0.5)"
+      input: [0xcaffffff]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_073
+      description: "acosh test case 73"
+      input: [0x38800000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_074
+      description: "acosh test case 74"
+      input: [0x387fffff]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_075
+      description: "acosh test case 75"
+      input: [0x38800001]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_076
+      description: "acosh test case 76"
+      input: [0x7f7fffec]
+      expect: [0x42b2d4fc]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_077
+      description: "acosh test case 77"
+      input: [0x7f7fff6c]
+      expect: [0x42b2d4fb]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_078
+      description: "acosh test case 78"
+      input: [0x42b2d4fd]
+      expect: [0x40a5f71e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_079
+      description: "acosh test case 79"
+      input: [0x42b2d4ff]
+      expect: [0x40a5f71e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_080
+      description: "acosh test case 80"
+      input: [0x7f7f820b]
+      expect: [0x42b2d400]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_081
+      description: "acosh test case 81"
+      input: [0x4d675844]
+      expect: [0x41a00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_082
+      description: "acosh test case 82"
+      input: [0x4e1d3710]
+      expect: [0x41a80000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_083
+      description: "acosh test case 83"
+      input: [0x4caa36c8]
+      expect: [0x41980000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_084
+      description: "acosh test case 84"
+      input: [0x46000000]
+      expect: [0x411b43d5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_085
+      description: "acosh test case 85"
+      input: [0x46000001]
+      expect: [0x411b43d5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_086
+      description: "acosh test case 86"
+      input: [0x45ffffff]
+      expect: [0x411b43d5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_087
+      description: "acosh test case 87"
+      input: [0x3f317217]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_088
+      description: "acosh test case 88"
+      input: [0x40000000]
+      expect: [0x3fa89214]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_089
+      description: "acosh test case 89"
+      input: [0x40000001]
+      expect: [0x3fa89215]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_090
+      description: "acosh test case 90"
+      input: [0x3fffffff]
+      expect: [0x3fa89213]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_091
+      description: "acosh test case 91"
+      input: [0x3f800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: acosh_092
+      description: "acosh test case 92"
+      input: [0x40584817]
+      expect: [0x3ff1b07f]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_093
+      description: "acosh test case 93"
+      input: [0x40d84817]
+      expect: [0x40264d67]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_094
+      description: "acosh test case 94"
+      input: [0x41323612]
+      expect: [0x40467f16]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_095
+      description: "acosh test case 95"
+      input: [0x41f6e585]
+      expect: [0x4083eace]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_096
+      description: "acosh test case 96"
+      input: [0x4283dc5f]
+      expect: [0x409c36cd]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_097
+      description: "acosh test case 97"
+      input: [0x42e8afbb]
+      expect: [0x40ae63b9]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_098
+      description: "acosh test case 98"
+      input: [0x43859b33]
+      expect: [0x40c8ff7e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_099
+      description: "acosh test case 99"
+      input: [0x4401a272]
+      expect: [0x40de368f]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_100
+      description: "acosh test case 100"
+      input: [0x44599481]
+      expect: [0x40eec8c6]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_101
+      description: "acosh test case 101"
+      input: [0x44a551e3]
+      expect: [0x40fc2cd1]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_102
+      description: "acosh test case 102"
+      input: [0x48490495]
+      expect: [0x414ed924]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_103
+      description: "acosh test case 103"
+      input: [0x511bd2ce]
+      expect: [0x41c9332f]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_104
+      description: "acosh test case 104"
+      input: [0x62bdb16c]
+      expect: [0x42466d64]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_105
+      description: "acosh test case 105"
+      input: [0x80000000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_106
+      description: "acosh test case 106"
+      input: [0xff800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_107
+      description: "acosh test case 107"
+      input: [0x7f800001]
+      expect: [0x7fc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_108
+      description: "acosh test case 108"
+      input: [0xff800001]
+      expect: [0xffc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: acosh_109
+      description: "acosh test case 109"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: acosh_110
+      description: "acosh test case 110"
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: acosh_111
+      description: "9000, > 0x46000000"
+      input: [0x460ca000]
+      expect: [0x411cc521]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_112
+      description: "1.5"
+      input: [0x3fc00000]
+      expect: [0x3f766165]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: acosh_113
+      description: "1.2345"
+      input: [0x3f9e0419]
+      expect: [0x3f2c0fa0]
+      expect_exception: [inexact]
+      variants: [ss]
+#--------------------------------
+
+    # Double Precision Tests
+    - id: acosh_001
+      description: "acosh(0) = nan (invalid domain)"
+      input: [0x0000000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_002
+      description: "acosh(-0) = nan (invalid domain)"
+      input: [0x8000000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_003
+      description: "acosh(inf) = inf"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: acosh_004
+      description: "acosh(-inf) = nan (invalid domain)"
+      input: [0xfff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_005
+      description: "acosh(-nan) = nan"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: acosh_006
+      description: "acosh(+nan) = nan"
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: acosh_007
+      description: "acosh(subnorm_max) = nan (invalid domain)"
+      input: [0x000fffffffffffff]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_008
+      description: "acosh(subnorm_max) = nan (invalid domain)"
+      input: [0x000fffffffffffff]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_009
+      description: "acosh(subnorm_min) = nan (invalid domain)"
+      input: [0x0000000000000001]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_010
+      description: "acosh(subnorm_min) = nan (invalid domain)"
+      input: [0x0000000000000001]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_011
+      description: "acosh(1.0) = 0 (boundary case)"
+      input: [0x3ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: acosh_012
+      description: "acosh(-1.0) = nan (invalid domain)"
+      input: [0xbff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_013
+      description: "acosh(2.0) = acosh(2)"
+      input: [0x4000000000000000]
+      expect: [0x3ff6a09e667f3bcd]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_014
+      description: "acosh(-2.0) = nan (invalid domain)"
+      input: [0xc000000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+# Test cases from gtests test_acos_data.h
+#-------------------------------
+    - id: acosh_001
+      description: "1"
+      input: [0x3ff40c044a37af12]
+      expect: [0x3fe64e33d8cdb78c]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_002
+      description: "denormal min"
+      input: [0x0000000000000001]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_003
+      description: "denormal intermediate"
+      input: [0x0005fde623545abc]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_004
+      description: "denormal max"
+      input: [0x000fffffffffffff]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_005
+      description: "-denormal min"
+      input: [0x8000000000000001]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_006
+      description: "-denormal intermediate"
+      input: [0x8002344ade5def12]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_007
+      description: "-denormal max"
+      input: [0x800fffffffffffff]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_008
+      description: "normal min"
+      input: [0x0010000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_009
+      description: "normal intermediate"
+      input: [0x43b3c4eafedcab02]
+      expect: [0x40453f2b7feeadcc]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_010
+      description: "normal max"
+      input: [0x7fefffffffffffff]
+      expect: [0x408633ce8fb9f87e]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_011
+      description: "-normal min"
+      input: [0x8010000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_012
+      description: "-normal intermediate"
+      input: [0xc5812e71245acfdb]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_013
+      description: "-normal max"
+      input: [0xffefffffffffffff]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_014
+      description: "inf"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: acosh_015
+      description: "-inf"
+      input: [0xfff0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_016
+      description: "qnan min"
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: acosh_017
+      description: "qnan intermediate"
+      input: [0x7ffe1a5701234dc3]
+      expect: [0x7ffe1a5701234dc3]
+      expect_exception: []
+      variants: [sd]
+
+    - id: acosh_018
+      description: "qnan max"
+      input: [0x7fffffffffffffff]
+      expect: [0x7fffffffffffffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: acosh_019
+      description: "indeterninate"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: acosh_020
+      description: "-qnan min"
+      input: [0xfff8000000000001]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: acosh_021
+      description: "-qnan intermediate"
+      input: [0xfff9123425dcba31]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: acosh_022
+      description: "-qnan max"
+      input: [0xffffffffffffffff]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: acosh_023
+      description: "snan min"
+      input: [0x7ff0000000000001]
+      expect: [0x7ff8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_024
+      description: "snan intermediate"
+      input: [0x7ff5344752a0bd90]
+      expect: [0x7ffd344752a0bd90]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_025
+      description: "snan max"
+      input: [0x7ff7ffffffffffff]
+      expect: [0x7fffffffffffffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_026
+      description: "-snan min"
+      input: [0xfff0000000000001]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_027
+      description: "-snan intermediate"
+      input: [0xfff432438995fffa]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_028
+      description: "-snan max"
+      input: [0xfff7ffffffffffff]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_029
+      description: "pi/2"
+      input: [0x3ff921fb54442d18]
+      expect: [0x3ff05f23c6cbaf31]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_030
+      description: "pi"
+      input: [0x400921fb54442d18]
+      expect: [0x3ffcfc02f90106c1]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_031
+      description: "2pi"
+      input: [0x401921fb54442d18]
+      expect: [0x400432718f372526]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_032
+      description: "e --"
+      input: [0x3ffb7e151628aed3]
+      expect: [0x3ff22ec7e51925b9]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_033
+      description: "e"
+      input: [0x4005bf0a8b145769]
+      expect: [0x3ffa84eef63326e7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_034
+      description: "e ++"
+      input: [0x400dbf0a8b145769]
+      expect: [0x3fffce1775f12536]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_035
+      description: "0"
+      input: [0x0000000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_036
+      description: "0.0000000000000000023"
+      input: [0x3c4536b8b14b676c]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_037
+      description: "0.4999989999999999999"
+      input: [0x3fdffffbce4217d3]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_038
+      description: "0.500000000000012"
+      input: [0x3fe000000000006c]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_039
+      description: "-0"
+      input: [0x8000000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_040
+      description: "-0.000000000000000000023"
+      input: [0xbbdb2752ce74ff42]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_041
+      description: "-0.4999989999999999999"
+      input: [0xbfdffffbce4217d3]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_042
+      description: "-0.500000000000012"
+      input: [0xbfe000000000006c]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_043
+      description: "1"
+      input: [0x3ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: acosh_044
+      description: "0.9999998893750006"
+      input: [0x3fefffffc49bd0dc]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_045
+      description: "1.0000000000000624998"
+      input: [0x3ff0000000000119]
+      expect: [0x3e97b4dfc079256b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_046
+      description: "1.499998999999999967"
+      input: [0x3ff7fffef39085f4]
+      expect: [0x3feecc2ace93e00e]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_047
+      description: "1.50000000000000012"
+      input: [0x3ff8000000000001]
+      expect: [0x3feecc2caec5160b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_048
+      description: "-1"
+      input: [0xbff0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_049
+      description: "-0.9999998893750006"
+      input: [0xbfefffffc49bd0dc]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_050
+      description: "-1.0000000000000624998"
+      input: [0xbff0000000000119]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_051
+      description: "-1.499998999999999967"
+      input: [0xbff7fffef39085f4]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_052
+      description: "-1.50000000000000012"
+      input: [0xbff8000000000001]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_053
+      description: "2"
+      input: [0x4000000000000000]
+      expect: [0x3ff5124271980435]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_054
+      description: "-2"
+      input: [0xc000000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_055
+      description: "10"
+      input: [0x4024000000000000]
+      expect: [0x4007f21ed1ce05d4]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_056
+      description: "-10"
+      input: [0xc024000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_057
+      description: "1000"
+      input: [0x408f400000000000]
+      expect: [0x401e6752e8a84ed4]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_058
+      description: "-1000"
+      input: [0xc08f400000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_059
+      description: "67.4"
+      input: [0x4050d9999999999a]
+      expect: [0x40139d6d46400cc2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_060
+      description: "-67.4"
+      input: [0xc050d9999999999a]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_061
+      description: "1983.6"
+      input: [0x409efe6666666666]
+      expect: [0x4020925671dfb9ae]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_062
+      description: "-1983.6"
+      input: [0xc09efe6666666666]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_063
+      description: "87.5"
+      input: [0x4055e00000000000]
+      expect: [0x4014a8b5181890bd]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_064
+      description: "-87.5"
+      input: [0xc055e00000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_065
+      description: "87.5"
+      input: [0x4055e00000000000]
+      expect: [0x4014a8b5181890bd]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_066
+      description: "-87.5"
+      input: [0xc055e00000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_067
+      description: "132473"
+      input: [0x41002bc800000000]
+      expect: [0x4028f97cef99ff43]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_068
+      description: "-132473"
+      input: [0xc1002bc800000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_069
+      description: "2^52"
+      input: [0x4330000000000000]
+      expect: [0x40425e4f7b2737fa]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_070
+      description: "2^52 + 1"
+      input: [0x4330000000000001]
+      expect: [0x40425e4f7b2737fa]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_071
+      description: "2^52 -1 + 0.5"
+      input: [0x432fffffffffffff]
+      expect: [0x40425e4f7b2737fa]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_072
+      description: "-2^52"
+      input: [0xc330000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_073
+      description: "-(2^52 + 1)"
+      input: [0xc330000000000001]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_074
+      description: "-(2^52 -1 + 0.5)"
+      input: [0xc32fffffffffffff]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_075
+      description: ""
+      input: [0x3e30000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_076
+      description: ""
+      input: [0x3e2fffffffffffff]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_077
+      description: ""
+      input: [0x3e30000000000001]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_078
+      description: ""
+      input: [0xfe37e43c8800759c]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_079
+      description: ""
+      input: [0xfe37e43c8800758c]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_080
+      description: ""
+      input: [0xfe37e43c880075ac]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_081
+      description: ""
+      input: [0x408633ce8fb9f87e]
+      expect: [0x401d094cb3a2e27f]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_082
+      description: ""
+      input: [0x7feffffffffffd3b]
+      expect: [0x408633ce8fb9f87d]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_083
+      description: ""
+      input: [0x408633ce8fb9f87f]
+      expect: [0x401d094cb3a2e27f]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_084
+      description: ""
+      input: [0x408633ce8fb9f8ff]
+      expect: [0x401d094cb3a2e296]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_085
+      description: ""
+      input: [0x7feffffffffe093b]
+      expect: [0x408633ce8fb9f800]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_086
+      description: ""
+      input: [0x41aceb088b68e804]
+      expect: [0x4034000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_087
+      description: ""
+      input: [0x41c3a6e1fd9eecfd]
+      expect: [0x4035000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_088
+      description: ""
+      input: [0x419546d8f9ed26e2]
+      expect: [0x4033000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_089
+      description: ""
+      input: [0x4196a09e667f3bcd]
+      expect: [0x40330fc1931f09ca]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_090
+      description: ""
+      input: [0x4196a09e667f3bcc]
+      expect: [0x40330fc1931f09ca]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_091
+      description: ""
+      input: [0x4196a09e667f3bce]
+      expect: [0x40330fc1931f09ca]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_092
+      description: ""
+      input: [0x3fe62e42e0000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_093
+      description: ""
+      input: [0x3e6efa39ef35793c]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_094
+      description: ""
+      input: [0x3ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: acosh_095
+      description: ""
+      input: [0x3ff0000000000001]
+      expect: [0x3e56a09e667f3bcc]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_096
+      description: ""
+      input: [0x3feffffffffffff7]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_097
+      description: ""
+      input: [0x4060000000000000]
+      expect: [0x40162e3efef439e2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_098
+      description: ""
+      input: [0x4060000000000001]
+      expect: [0x40162e3efef439e2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_099
+      description: ""
+      input: [0x405fffffffffffff]
+      expect: [0x40162e3efef439e2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_100
+      description: ""
+      input: [0x3ff8000000000000]
+      expect: [0x3feecc2caec5160a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_101
+      description: ""
+      input: [0x3ff8000000000001]
+      expect: [0x3feecc2caec5160b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_102
+      description: ""
+      input: [0x3ff7ffffffffffff]
+      expect: [0x3feecc2caec51608]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_103
+      description: ""
+      input: [0x4040000000000000]
+      expect: [0x4010a272393ad5fb]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_104
+      description: ""
+      input: [0x4040000000000001]
+      expect: [0x4010a272393ad5fb]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_105
+      description: ""
+      input: [0x403fffffffffffff]
+      expect: [0x4010a272393ad5fb]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_106
+      description: ""
+      input: [0x4020000000000000]
+      expect: [0x40062636e408c33b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_107
+      description: ""
+      input: [0x4020000000000001]
+      expect: [0x40062636e408c33c]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_108
+      description: ""
+      input: [0x401fffffffffffff]
+      expect: [0x40062636e408c33b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_109
+      description: ""
+      input: [0x4010000000000000]
+      expect: [0x400081eb4b421591]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_110
+      description: ""
+      input: [0x4010000000000001]
+      expect: [0x400081eb4b421592]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_111
+      description: ""
+      input: [0x400fffffffffffff]
+      expect: [0x400081eb4b421591]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_112
+      description: ""
+      input: [0x4000000000000000]
+      expect: [0x3ff5124271980435]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_113
+      description: ""
+      input: [0x4000000000000001]
+      expect: [0x3ff5124271980436]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_114
+      description: ""
+      input: [0x3ffffffffffffffb]
+      expect: [0x3ff5124271980432]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_115
+      description: ""
+      input: [0x3ffc000000000000]
+      expect: [0x3ff28a7cbb850063]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_116
+      description: ""
+      input: [0x3ffc000000000001]
+      expect: [0x3ff28a7cbb850063]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_117
+      description: ""
+      input: [0x3ffbffffffffffff]
+      expect: [0x3ff28a7cbb850062]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_118
+      description: ""
+      input: [0x3ff8000000000000]
+      expect: [0x3feecc2caec5160a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_119
+      description: ""
+      input: [0x3ffc000000000000]
+      expect: [0x3ff28a7cbb850063]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_120
+      description: ""
+      input: [0x3ffaaa88c50b0c79]
+      expect: [0x3ff193d10e5c0d18]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_121
+      description: ""
+      input: [0x3ff1fa2163fdd65a]
+      expect: [0x3fdf7f49962df105]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_122
+      description: ""
+      input: [0x3ff2147ae147ae14]
+      expect: [0x3fe02523a6a33560]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_123
+      description: ""
+      input: [0x3ff0f5c28f5c28f6]
+      expect: [0x3fd60f9522de1c73]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_124
+      description: ""
+      input: [0x3ff0dad538ac18f8]
+      expect: [0x3fd4d4139c60af76]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_125
+      description: ""
+      input: [0x3ff17961804d9839]
+      expect: [0x3fdb442906f1bc39]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_126
+      description: ""
+      input: [0x3ff17961804d9839]
+      expect: [0x3fdb442906f1bc39]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_127
+      description: ""
+      input: [0x3ff3c47c30d306a3]
+      expect: [0x3fe58ceae7b87440]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_128
+      description: ""
+      input: [0xc196a09e667f3bcd]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: acosh_129
+      description: ""
+      input: [0x3ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: acosh_130
+      description: ""
+      input: [0x400b0902de00d1b7]
+      expect: [0x3ffe360fd1e19969]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_131
+      description: ""
+      input: [0x401b0902de00d1b7]
+      expect: [0x4004c9acee4a3151]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_132
+      description: ""
+      input: [0x402646c226809d4a]
+      expect: [0x4008cfe2a958feeb]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_133
+      description: ""
+      input: [0x403edcb09e98dcdb]
+      expect: [0x40107d59b557e190]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_134
+      description: ""
+      input: [0x40507b8bd66277c4]
+      expect: [0x401386d999aa5105]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_135
+      description: ""
+      input: [0x405d15f75104d552]
+      expect: [0x4015cc772a14b8b0]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_136
+      description: ""
+      input: [0x4070b36657b84dba]
+      expect: [0x40191fefb51bd5ac]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_137
+      description: ""
+      input: [0x4080344e3ffef391]
+      expect: [0x401bc6d1deb359c0]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_138
+      description: ""
+      input: [0x408b3290268900c6]
+      expect: [0x401dd918b117fc4f]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_139
+      description: ""
+      input: [0x4094aa3c6fbd273e]
+      expect: [0x401f859a250cdb87]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_140
+      description: ""
+      input: [0x41092092ba93c86b]
+      expect: [0x4029db248521d916]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_141
+      description: ""
+      input: [0x42237a59f4429268]
+      expect: [0x40392665e1572e41]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_142
+      description: ""
+      input: [0x4457b62df67fc4fd]
+      expect: [0x4048cdac82cb51b7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_143
+      description: ""
+      input: [0x48c191ef3d6a018a]
+      expect: [0x4058a14ffccd501e]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_144
+      description: ""
+      input: [0x51934b4f70b3a04c]
+      expect: [0x40688b21b9ce55e4]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: acosh_145
+      description: ""
+      input: [0x6337443f25f59cbb]
+      expect: [0x4078800a984ed8c7]
+      expect_exception: [inexact]
+      variants: [sd]
+#-------------------------------

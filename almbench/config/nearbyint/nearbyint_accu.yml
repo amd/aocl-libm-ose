@@ -1,0 +1,103 @@
+- test_sequence: validation_tests_nearbyint
+  function: nearbyint
+  test_sets:
+  - id: accu_range-tests_01
+    tests:
+     - id: nearbyint_001
+       description: 'Full value distribution range tests: [+SMALLEST_SUBNORMAL, FLT_MAX] expstep'
+       input:
+       - [min_subnormal, max]
+       type: [expstep]
+       steps: [10000]
+       variants : [ss]
+
+     - id: nearbyint_002
+       description: 'Full value distribution range tests: [-FLT_MAX, -SMALLEST_SUBNORMAL] expstep'
+       input:
+       - [-max, -min_subnormal]
+       type: [expstep]
+       steps: [1000]
+       variants : [ss]
+
+     - id: nearbyint_003
+       description: 'Subnormal values range tests: [0, LARGEST_SUBNORMAL] linearstep'
+       input:
+       - [0.0, max_subnormal]
+       type: [linearstep]
+       steps: [5000]
+       variants : [ss]
+
+     - id: nearbyint_004
+       description: 'Test around 0'
+       input:
+       - [0.0, 0x00000FFF]
+       type: [bitstep]
+       steps: [1]
+       variants : [ss]
+
+     - id: nearbyint_005
+       description: 'Test around LARGEST_SUBNORMAL'
+       input:
+       - [0x007FF000, 0x00800fff]
+       type: [bitstep]
+       steps: [1]
+       variants : [ss]
+
+     - id: nearbyint_006
+       description: 'Test around 1'
+       input:
+       - [0x3F7FF000, 0x3F800FFF]
+       type: [bitstep]
+       steps: [1]
+       variants : [ss]
+
+#Double precision
+     - id: nearbyint_001
+       description: 'Full value distribution range tests: [+SMALLEST_SUBNORMAL, DBL-MAX] expstep'
+       input:
+       - [min_subnormal, max]
+       type: [expstep]
+       steps: [10000]
+       variants : [sd]
+
+     - id: nearbyint_002
+       description: 'Full value distribution range tests: [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep'
+       input:
+       - [-max, -min_subnormal]
+       type: [expstep]
+       steps: [1000]
+       variants : [sd]
+
+     - id: nearbyint_003
+       description: 'Subnormal values range tests: [0, LARGEST_SUBNORMAL] linearstep'
+       input:
+       - [0.0, 0x000FFFFFFFFFFFFF]
+       type: [linearstep]
+       steps: [5000]
+       variants : [sd]
+
+     - id: nearbyint_004
+       description: 'Test around 0'
+       input:
+       - [0.0, 0x0000000000000FFF]
+       type: [bitstep]
+       steps: [1]
+       variants : [sd]
+
+     - id: nearbyint_005
+       description: 'Test around LARGEST_SUBNORMAL'
+       input:
+       - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+       type: [bitstep]
+       steps: [1]
+       variants : [sd]
+
+     - id: nearbyint_006
+       description: 'Test around 1'
+       input:
+       - [0x3FEFFFFFFFFFF000, 0x3FF0000000000FFF]
+       type: [bitstep]
+       steps: [1]
+       variants : [sd]
+
+

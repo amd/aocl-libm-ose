@@ -1,0 +1,1609 @@
+- test_sequence: unit_tests_sinh
+  ignore_exceptions: [underflow, inexact]
+  function: sinh
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    # Test case 1: 0
+    - id: sinh_001
+      description: "sinhf(0) = 0"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: sinh_002
+      description: "sinhf(-0) = -0"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: sinh_003
+      description: "sinhf(inf) = inf"
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: sinh_004
+      description: "sinhf(-inf) = -inf"
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0xff800000]
+      expect_exception: []
+
+    # Test case 5: -nan
+    - id: sinh_005
+      description: "sinhf(-nan) = -nan"
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: sinh_006
+      description: "sinhf(+nan) = +nan"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: sinh_007
+      description: "sinhf(+subnorm_max) = +subnorm_max"
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: [inexact, underflow]
+
+    # Test case 8: - subnorm (MAX)
+    - id: sinh_008
+      description: "sinhf(-subnorm_max) = -subnorm_max"
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0x807fffff]
+      expect_exception: [inexact, underflow]
+
+    # Test case 9: + subnorm (MIN)
+    - id: sinh_009
+      description: "sinhf(+subnorm_min) = +subnorm_min"
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+
+    # Test case : - subnorm (MIN)
+    - id: sinh_010
+      description: "sinhf(-subnorm_min) = -subnorm_min"
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x80000001]
+      expect_exception: [inexact, underflow]
+
+    # Test case 11: + POS
+    - id: sinh_011
+      description: "sinhf(1.0) ≈ 1.1752"
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x3f966d66]
+      expect_exception: ['inexact']
+
+    # Test case 12: -POS
+    - id: sinh_012
+      description: "sinhf(-1.0) ≈ -1.1752"
+      variants: [ss]
+      input: [0xbf800000]
+      expect: [0xbf966d66]
+      expect_exception: ['inexact']
+
+    # Test case 13: +NEG
+    - id: sinh_013
+      description: "sinhf(2.0) ≈ 3.6269"
+      variants: [ss]
+      input: [0x40000000]
+      expect: [0x40682146]
+      expect_exception: ['inexact']
+
+    # Test case 14: -NEG
+    - id: sinh_014
+      description: "sinhf(-2.0) ≈ -3.6269"
+      variants: [ss]
+      input: [0xc0000000]
+      expect: [0xc0682146]
+      expect_exception: ['inexact']
+
+    # Test case 15: qnan
+    - id: sinh_015
+      description: "sinhf(qnan) = qnan"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: sinh_016
+      description: "sinhf(snan) = snan"
+      variants: [ss]
+      input: [0x7fa00000]
+      expect: [0x7fa00000]
+      expect_exception: [invalidoperation]
+# Test cases from gtests test_sinh_00data.h
+#-------------------------------
+    - id: sinh_001
+      description: "min= 0.00006103515625, small enough that sinh(x) = 1"
+      input: [0x38800000]
+      expect: [0x38800000]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_002
+      description: "min - 1 bit"
+      input: [0x387FFFFF]
+      expect: [0x38800000]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_003
+      description: "min + 1 bit"
+      input: [0x38800001]
+      expect: [0x38800001]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_004
+      description: "lambda + x = 1, x = -9.9999994e+29"
+      input: [0xF149F2C9]
+      expect: [0xff800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_005
+      description: "lambda + x < 1"
+      input: [0xF149F2C8]
+      expect: [0xff800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_006
+      description: "lambda + x > 1"
+      input: [0xF149F2CA]
+      expect: [0xff800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_007
+      description: "max arg, x = 89.41598629223294,max sinhf arg"
+      input: [0x42B2D4FC]
+      expect: [0x7f7fffec]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_008
+      description: "max arg - 1 bit"
+      input: [0x42B2D4FB]
+      expect: [0x7f7fff6c]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_009
+      description: "max arg + 1 bit"
+      input: [0x42B2D4FD]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_010
+      description: "> max"
+      input: [0x42B2D4FF]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_011
+      description: "< max"
+      input: [0x42B2D400]
+      expect: [0x7f7f820b]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_012
+      description: "small_threshold = 20"
+      input: [0x41A00000]
+      expect: [0x4d675844]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_013
+      description: "small_threshold+1 = 21"
+      input: [0x41A80000]
+      expect: [0x4e1d3710]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_014
+      description: "small_threshold - 1 = 19"
+      input: [0x41980000]
+      expect: [0x4caa36c8]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_015
+      description: "0"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_016
+      description: "0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_017
+      description: ""
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_018
+      description: ""
+      input: [0xFF800000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_019
+      description: ""
+      input: [0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: sinh_020
+      description: ""
+      input: [0xffb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: sinh_021
+      description: ""
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_022
+      description: ""
+      input: [0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_023
+      description: "95"
+      input: [0x42BE0000]
+      expect: [0x7F800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_024
+      description: "-103"
+      input: [0xc2ce0000]
+      expect: [0xFF800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_025
+      description:
+      input: [0xc9f5087f]
+      expect: [0xFF800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_026
+      description:
+      input: [0xca20fa65]
+      expect: [0xFF800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_027
+      description:
+      input: [0xca8272da]
+      expect: [0xFF800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_028
+      description:
+      input: [0xc935c441]
+      expect: [0xFF800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_029
+      description:
+      input: [0xc6daf501]
+      expect: [0xFF800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_030
+      description:
+      input: [0xc7b775d0]
+      expect: [0xFF800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_031
+      description: "denormal min"
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+    - id: sinh_032
+      description: "denormal intermediate"
+      input: [0x0005fde6]
+      expect: [0x0005fde6]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+    - id: sinh_033
+      description: "denormal max"
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+    - id: sinh_034
+      description: "-denormal min"
+      input: [0x80000001]
+      expect: [0x80000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+    - id: sinh_035
+      description: "-denormal intermediate"
+      input: [0x805def12]
+      expect: [0x805def12]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+    - id: sinh_036
+      description: "-denormal max"
+      input: [0x807FFFFF]
+      expect: [0x807fffff]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+    - id: sinh_037
+      description: "normal min"
+      input: [0x00800000]
+      expect: [0x00800000]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_038
+      description: "normal intermediate"
+      input: [0x43b3c4ea]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_039
+      description: "normal max"
+      input: [0x7f7fffff]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_040
+      description: "-normal min"
+      input: [0x80800000]
+      expect: [0x80800000]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_041
+      description: "-normal intermediate"
+      input: [0xc5812e71]
+      expect: [0xff800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_042
+      description: "-normal max"
+      input: [0xFF7FFFFF]
+      expect: [0xff800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_043
+      description: "inf"
+      input: [0x7F800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_044
+      description: "-inf"
+      input: [0xfF800000]
+      expect: [0xff800000]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_045
+      description: "qnan min"
+      input: [0x7Fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_046
+      description: "qnan intermediate"
+      input: [0x7Fe1a570]
+      expect: [0x7fe1a570]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_047
+      description: "qnan max"
+      input: [0x7FFFFFFF]
+      expect: [0x7fffffff]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_048
+      description: "indeterninate"
+      input: [0xfFc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_049
+      description: "-qnan min"
+      input: [0xFFC00001]
+      expect: [0xffc00001]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_050
+      description: "-qnan intermediate"
+      input: [0xFFd2ba31]
+      expect: [0xffd2ba31]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_051
+      description: "-qnan max"
+      input: [0xFFFFFFFF]
+      expect: [0xffffffff]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_052
+      description: "snan min"
+      input: [0x7F800001]
+      expect: [0x7fc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: sinh_053
+      description: "snan intermediate"
+      input: [0x7Fa0bd90]
+      expect: [0x7fe0bd90]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: sinh_054
+      description: "snan max"
+      input: [0x7FBFFFFF]
+      expect: [0x7fffffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: sinh_055
+      description: "-snan min"
+      input: [0xFF800001]
+      expect: [0xffc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: sinh_056
+      description: "-snan intermediate"
+      input: [0xfF95fffa]
+      expect: [0xffd5fffa]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: sinh_057
+      description: "-snan max"
+      input: [0xFFBFFFFF]
+      expect: [0xffffffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: sinh_058
+      description: "pi/2"
+      input: [0x3FC90FDB]
+      expect: [0x4013487c]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_059
+      description: "pi"
+      input: [0x40490FDB]
+      expect: [0x4138c7a4]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_060
+      description: "2pi"
+      input: [0x40C90FDB]
+      expect: [0x4385df5a]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_061
+      description: "e --"
+      input: [0x402DF853]
+      expect: [0x40f1698d]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_062
+      description: "e"
+      input: [0x402DF854]
+      expect: [0x40f16991]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_063
+      description: "e ++"
+      input: [0x402DF855]
+      expect: [0x40f16995]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_064
+      description: "0"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_065
+      description: "0.000023"
+      input: [0x37C0F01F]
+      expect: [0x37c0f01f]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_066
+      description: "0.49999"
+      input: [0x3EFFFEB0]
+      expect: [0x3f0565c3]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_067
+      description: "0.500012"
+      input: [0x3F0000C9]
+      expect: [0x3f056763]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_068
+      description: "-0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_069
+      description: "-0.000023"
+      input: [0xb7C0F01F]
+      expect: [0xb7c0f01f]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_070
+      description: "-0.49999"
+      input: [0xbEFFFEB0]
+      expect: [0xbf0565c3]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_071
+      description: "-0.500012"
+      input: [0xbF0000C9]
+      expect: [0xbf056763]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_072
+      description: "1"
+      input: [0x3f800000]
+      expect: [0x3f966cfe]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_073
+      description: "0.93750006"
+      input: [0x3f700001]
+      expect: [0x3f8a5df2]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_074
+      description: "1.0624998"
+      input: [0x3F87FFFE]
+      expect: [0x3fa31281]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_075
+      description: "1.49999"
+      input: [0x3FBFFFAC]
+      expect: [0x400845bb]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_076
+      description: "1.500012"
+      input: [0x3FC00064]
+      expect: [0x40084693]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_077
+      description: "-1"
+      input: [0xbf800000]
+      expect: [0xbf966cfe]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_078
+      description: "-0.93750006"
+      input: [0xbf700001]
+      expect: [0xbf8a5df2]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_079
+      description: "-1.0624998"
+      input: [0xbF87FFFE]
+      expect: [0xbfa31281]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_080
+      description: "-1.49999"
+      input: [0xbFBFFFAC]
+      expect: [0xc00845bb]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_081
+      description: "-1.500012"
+      input: [0xbFC00064]
+      expect: [0xc0084693]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_082
+      description: "2"
+      input: [0x40000000]
+      expect: [0x40681e7b]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_083
+      description: "-2"
+      input: [0xc0000000]
+      expect: [0xc0681e7b]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_084
+      description: "10"
+      input: [0x41200000]
+      expect: [0x462c14ee]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_085
+      description: "-10"
+      input: [0xc1200000]
+      expect: [0xc62c14ee]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_086
+      description: "1000"
+      input: [0x447A0000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_087
+      description: "-1000"
+      input: [0xc47A0000]
+      expect: [0xff800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_088
+      description: "67.4"
+      input: [0x4286CCCC]
+      expect: [0x6f96eb6f]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_089
+      description: "-67.4"
+      input: [0xc286CCCC]
+      expect: [0xef96eb6f]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_090
+      description: "1983.6"
+      input: [0x44F7F333]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_091
+      description: "-1983.6"
+      input: [0xc4F7F333]
+      expect: [0xff800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_092
+      description: "87.5"
+      input: [0x42AF0000]
+      expect: [0x7e16bab3]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_093
+      description: "-87.5"
+      input: [0xc2AF0000]
+      expect: [0xfe16bab3]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_094
+      description: "132473"
+      input: [0x48015E40]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_095
+      description: "-132473"
+      input: [0xc8015E40]
+      expect: [0xff800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_096
+      description: "2^23"
+      input: [0x4B000000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_097
+      description: "2^23 + 1"
+      input: [0x4B000001]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_098
+      description: "2^23 -1 + 0.5"
+      input: [0x4AFFFFFF]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_099
+      description: "-2^23"
+      input: [0xcB000000]
+      expect: [0xff800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_100
+      description: "-(2^23 + 1)"
+      input: [0xcB000001]
+      expect: [0xff800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_101
+      description: "-(2^23 -1 + 0.5)"
+      input: [0xcAFFFFFF]
+      expect: [0xff800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_102
+      description:
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_103
+      description:
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_104
+      description:
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_105
+      description:
+      input: [0xff800000]
+      expect: [0xff800000]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_106
+      description:
+      input: [0x7f800001]
+      expect: [0x7fc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: sinh_107
+      description:
+      input: [0xff800001]
+      expect: [0xffc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: sinh_108
+      description:
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_109
+      description:
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: sinh_110
+      description: "2^(-15), < 2 ^(-14), x"
+      input: [0x38000000]
+      expect: [0x38000000]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_111
+      description: "-2^(-15), < 2 ^(-14), x"
+      input: [0xb8000000]
+      expect: [0xb8000000]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_112
+      description: "90, > max_sinh_arg, +inf"
+      input: [0x42b40000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_113
+      description: "-90, > max_sinh_arg, -inf"
+      input: [0xc2b40000]
+      expect: [0xff800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+    - id: sinh_114
+      description: "30, > small_threshold"
+      input: [0x41f00000]
+      expect: [0x549b8238]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_115
+      description: "-30, > small_threshold"
+      input: [0xc1f00000]
+      expect: [0xd49b8238]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_116
+      description: "1"
+      input: [0x3f800000]
+      expect: [0x3f966cfe]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_117
+      description: "-1"
+      input: [0xbf800000]
+      expect: [0xbf966cfe]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_118
+      description: "0.1"
+      input: [0x3dcccccd]
+      expect: [0x3dcd243a]
+      expect_exception: ['inexact']
+      variants: [ss]
+    - id: sinh_119
+      description: "-0.0002"
+      input: [0xb951b717]
+      expect: [0xb951b717]
+      expect_exception: ['inexact']
+      variants: [ss]
+#--------------------------------
+    # Double precision tests
+    # Test case 1: 0
+    - id: sinh_001
+      description: "sinh(0) = 0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: sinh_002
+      description: "sinh(-0) = -0"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: sinh_003
+      description: "sinh(inf) = inf"
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: sinh_004
+      description: "sinh(-inf) = -inf"
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+
+    # Test case 5: -nan
+    - id: sinh_005
+      description: "sinh(-nan) = -nan"
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: sinh_006
+      description: "sinh(+nan) = +nan"
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: sinh_007
+      description: "sinh(+subnorm_max) = +subnorm_max"
+      variants: [sd]
+      input: [0x000fffffffffffff]
+      expect: [0x000fffffffffffff]
+      expect_exception: [inexact, underflow]
+
+    # Test case 8: - subnorm (MAX)
+    - id: sinh_008
+      description: "sinh(-subnorm_max) = -subnorm_max"
+      variants: [sd]
+      input: [0x800fffffffffffff]
+      expect: [0x800fffffffffffff]
+      expect_exception: [inexact, underflow]
+
+    # Test case 9: + subnorm (MIN)
+    - id: sinh_009
+      description: "sinh(+subnorm_min) = +subnorm_min"
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+
+    # Test case : - subnorm (MIN)
+    - id: sinh_010
+      description: "sinh(-subnorm_min) = -subnorm_min"
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0x8000000000000001]
+      expect_exception: [inexact, underflow]
+
+    # Test case 11: + POS
+    - id: sinh_011
+      description: "sinh(1.0) ≈ 1.1752011936438014"
+      variants: [sd]
+      input: [0x3ff0000000000000]
+      expect: [0x3ff2cd9fc44eb982]
+      expect_exception: ['inexact']
+
+    # Test case 12: -POS
+    - id: sinh_012
+      description: "sinh(-1.0) ≈ -1.1752011936438014"
+      variants: [sd]
+      input: [0xbff0000000000000]
+      expect: [0xbff2cd9fc44eb982]
+      expect_exception: ['inexact']
+
+    # Test case 13: +NEG
+    - id: sinh_013
+      description: "sinh(2.0) ≈ 3.626860407847019"
+      variants: [sd]
+      input: [0x4000000000000000]
+      expect: [0x400d042c0a47ba1e]
+      expect_exception: ['inexact']
+
+    # Test case 14: -NEG
+    - id: sinh_014
+      description: "sinh(-2.0) ≈ -3.626860407847019"
+      variants: [sd]
+      input: [0xc000000000000000]
+      expect: [0xc00d042c0a47ba1e]
+      expect_exception: ['inexact']
+
+    # Test case 15: qnan
+    - id: sinh_015
+      description: "sinh(qnan) = qnan"
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: sinh_016
+      description: "sinh(snan) = snan"
+      variants: [sd]
+      input: [0x7ff4000000000001]
+      expect: [0x7ff4000000000001]
+      expect_exception: [invalidoperation]
+
+    # Additional meaningful test cases
+    - id: sinh_017
+      description: "sinhf(0.5) ≈ 0.529530549221"
+      variants: [ss]
+      input: [0x3f000000]
+      expect: [0x3f05aaa3]
+      expect_exception: ['inexact']
+
+    - id: sinh_018
+      description: "sinhf(-0.5) ≈ -0.529530549221"
+      variants: [ss]
+      input: [0xbf000000]
+      expect: [0xbf05aaa3]
+      expect_exception: ['inexact']
+
+    - id: sinh_019
+      description: "sinhf(.0) ≈ 113.2329"
+      variants: [ss]
+      input: [0x41200000]
+      expect: [0x462bd64f]
+      expect_exception: ['inexact']
+
+    - id: sinh_020
+      description: "sinhf(-.0) ≈ -113.2329"
+      variants: [ss]
+      input: [0xc1200000]
+      expect: [0xc62bd64f]
+      expect_exception: ['inexact']
+
+    - id: sinh_021
+      description: "sinh(0.5) ≈ 0.52953054937474"
+      variants: [sd]
+      input: [0x3fe0000000000000]
+      expect: [0x3fe0b55860904980]
+      expect_exception: ['inexact']
+
+    - id: sinh_022
+      description: "sinh(-0.5) ≈ -0.52953054937474"
+      variants: [sd]
+      input: [0xbfe0000000000000]
+      expect: [0xbfe0b55860904980]
+      expect_exception: ['inexact']
+
+    - id: sinh_023
+      description: "sinh(.0) ≈ 113.2329203323"
+      variants: [sd]
+      input: [0x4024000000000000]
+      expect: [0x40c57ac9f4836b8a]
+      expect_exception: ['inexact']
+
+    - id: sinh_024
+      description: "sinh(-.0) ≈ -113.2329203323"
+      variants: [sd]
+      input: [0xc024000000000000]
+      expect: [0xc0c57ac9f4836b8a]
+      expect_exception: ['inexact']
+# Test cases from gtests test_sinh_data.h
+#-------------------------------
+    - id: sinh_001
+      description: "min, small enough that sinh(x) = 1"
+      input: [0x3e30000000000000]
+      expect: [0x3e30000000000000]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_002
+      description: "min - 1 bit"
+      input: [0x3E2FFFFFFFFFFFFF]
+      expect: [0x3e2fffffffffffff]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_003
+      description: "min + 1 bit"
+      input: [0x3e30000000000001]
+      expect: [0x3e30000000000001]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_004
+      description: "lambda + x = 1, x = -1.0000000000000000e+300"
+      input: [0xFE37E43C8800759C]
+      expect: [0xfff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_005
+      description: "lambda + x < 1"
+      input: [0xFE37E43C8800758C]
+      expect: [0xfff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_006
+      description: "lambda + x > 1"
+      input: [0xFE37E43C880075AC]
+      expect: [0xfff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_007
+      description: "max arg, x = 89.41598629223294,max sinhf arg"
+      input: [0x408633ce8fb9f87e]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_008
+      description: "max arg - 1 bit"
+      input: [0x408633ce8fb9f87d]
+      expect: [0x7feffffffffffd3b]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_009
+      description: "max arg + 1 bit"
+      input: [0x408633ce8fb9f87f]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_010
+      description: "> max"
+      input: [0x408633ce8fb9f8ff]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_011
+      description: "< max"
+      input: [0x408633ce8fb9f800]
+      expect: [0x7feffffffffe093b]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_012
+      description: "small_threshold = 20"
+      input: [0x4034000000000000]
+      expect: [0x41aceb088b68e804]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_013
+      description: "small_threshold+1 = 21"
+      input: [0x4035000000000000]
+      expect: [0x41c3a6e1fd9eecfd]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_014
+      description: "small_threshold - 1 = 19"
+      input: [0x4033000000000000]
+      expect: [0x419546d8f9ed26e1]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_015
+      description: "0"
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sinh_016
+      description: "0"
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sinh_017
+      description: ""
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sinh_018
+      description: ""
+      input: [0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sinh_019
+      description: ""
+      input: [0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: sinh_020
+      description: ""
+      input: [0xfff2000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: sinh_021
+      description: ""
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+    - id: sinh_022
+      description: ""
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sinh_023
+      description:
+      input: [0x43E0000020000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_024
+      description: "7.104760e+002"
+      input: [0x408633CED916872B]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_025
+      description: "-708.3964185322642 largest denormal result"
+      input: [0xC0FF5D35B020C49C]
+      expect: [0xfff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_026
+      description: "-1000"
+      input: [0xC08F400000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_027
+      description: "denormal min"
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+    - id: sinh_028
+      description: "denormal intermediate"
+      input: [0x0005fde623545abc]
+      expect: [0x0005fde623545abc]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+    - id: sinh_029
+      description: "denormal max"
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x000fffffffffffff]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+    - id: sinh_030
+      description: "-denormal min"
+      input: [0x8000000000000001]
+      expect: [0x8000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+    - id: sinh_031
+      description: "-denormal intermediate"
+      input: [0x8002344ade5def12]
+      expect: [0x8002344ade5def12]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+    - id: sinh_032
+      description: "-denormal max"
+      input: [0x800FFFFFFFFFFFFF]
+      expect: [0x800fffffffffffff]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+    - id: sinh_033
+      description: "normal min"
+      input: [0x0010000000000000]
+      expect: [0x0010000000000000]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_034
+      description: "normal intermediate"
+      input: [0x43b3c4eafedcab02]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_035
+      description: "normal max"
+      input: [0x7FEFFFFFFFFFFFFF]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_036
+      description: "-normal min"
+      input: [0x8010000000000000]
+      expect: [0x8010000000000000]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_037
+      description: "-normal intermediate"
+      input: [0xc5812e71245acfdb]
+      expect: [0xfff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_038
+      description: "-normal max"
+      input: [0xFFEFFFFFFFFFFFFF]
+      expect: [0xfff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_039
+      description: "inf"
+      input: [0x7FF0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sinh_040
+      description: "-inf"
+      input: [0xFFF0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sinh_041
+      description: "qnan min"
+      input: [0x7FF8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sinh_042
+      description: "qnan intermediate"
+      input: [0x7FFe1a5701234dc3]
+      expect: [0x7ffe1a5701234dc3]
+      expect_exception: []
+      variants: [sd]
+    - id: sinh_043
+      description: "qnan max"
+      input: [0x7FFFFFFFFFFFFFFF]
+      expect: [0x7fffffffffffffff]
+      expect_exception: []
+      variants: [sd]
+    - id: sinh_044
+      description: "indeterninate"
+      input: [0xFFF8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sinh_045
+      description: "-qnan min"
+      input: [0xFFF8000000000001]
+      expect: [0xfff8000000000001]
+      expect_exception: []
+      variants: [sd]
+    - id: sinh_046
+      description: "-qnan intermediate"
+      input: [0xFFF9123425dcba31]
+      expect: [0xfff9123425dcba31]
+      expect_exception: []
+      variants: [sd]
+    - id: sinh_047
+      description: "-qnan max"
+      input: [0xFFFFFFFFFFFFFFFF]
+      expect: [0xffffffffffffffff]
+      expect_exception: []
+      variants: [sd]
+    - id: sinh_048
+      description: "snan min"
+      input: [0x7FF0000000000001]
+      expect: [0x7ff8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: sinh_049
+      description: "snan intermediate"
+      input: [0x7FF5344752a0bd90]
+      expect: [0x7ffd344752a0bd90]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: sinh_050
+      description: "snan max"
+      input: [0x7FF7FFFFFFFFFFFF]
+      expect: [0x7fffffffffffffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: sinh_051
+      description: "-snan min"
+      input: [0xFFF0000000000001]
+      expect: [0xfff8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: sinh_052
+      description: "-snan intermediate"
+      input: [0xfFF432438995fffa]
+      expect: [0xfffc32438995fffa]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: sinh_053
+      description: "-snan max"
+      input: [0xFFF7FFFFFFFFFFFF]
+      expect: [0xffffffffffffffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: sinh_054
+      description: "pi/2"
+      input: [0x3FF921FB54442D18]
+      expect: [0x4002690f661dd820]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_055
+      description: "pi"
+      input: [0x400921FB54442D18]
+      expect: [0x402718f45d72e671]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_056
+      description: "2pi"
+      input: [0x401921FB54442D18]
+      expect: [0x4070bbeb1603926a]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_057
+      description: "e --"
+      input: [0x3FFB7E151628AED3]
+      expect: [0x4005950fa1f030c5]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_058
+      description: "e"
+      input: [0x4005BF0A8B145769]
+      expect: [0x401e2d3246d48e6f]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_059
+      description: "e ++"
+      input: [0x400DBF0A8B145769]
+      expect: [0x403495aaf7d6b9d9]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_060
+      description: "0.0000000000000000023"
+      input: [0x3C4536B8B14B676C]
+      expect: [0x3c4536b8b14b676c]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_061
+      description: "0.4999989999999999999"
+      input: [0x3FDFFFFBCE4217D3]
+      expect: [0x3fe0accdb2828938]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_062
+      description: "0.500000000000012"
+      input: [0x3FE000000000006C]
+      expect: [0x3fe0acd00fe63c11]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_063
+      description: "-0.000000000000000000023"
+      input: [0xBBDB2752CE74FF42]
+      expect: [0xbbdb2752ce74ff42]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_064
+      description: "-0.4999989999999999999"
+      input: [0xBFDFFFFBCE4217D3]
+      expect: [0xbfe0accdb2828938]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_065
+      description: "-0.500000000000012"
+      input: [0xBFE000000000006C]
+      expect: [0xbfe0acd00fe63c11]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_066
+      description: "1"
+      input: [0x3FF0000000000000]
+      expect: [0x3ff2cd9fc44eb982]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_067
+      description: "0.9999998893750006"
+      input: [0x3FEFFFFFC49BD0DC]
+      expect: [0x3ff2cd9f967c1586]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_068
+      description: "1.0000000000000624998"
+      input: [0x3FF0000000000119]
+      expect: [0x3ff2cd9fc44ebb34]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_069
+      description: "1.499998999999999967"
+      input: [0x3FF7FFFEF39085F4]
+      expect: [0x400108c26f0145f0]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_070
+      description: "1.50000000000000012"
+      input: [0x3FF8000000000001]
+      expect: [0x400108c3aabd6a62]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_071
+      description: "-1"
+      input: [0xBFF0000000000000]
+      expect: [0xbff2cd9fc44eb982]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_072
+      description: "-0.9999998893750006"
+      input: [0xBFEFFFFFC49BD0DC]
+      expect: [0xbff2cd9f967c1586]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_073
+      description: "-1.0000000000000624998"
+      input: [0xBFF0000000000119]
+      expect: [0xbff2cd9fc44ebb34]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_074
+      description: "-1.499998999999999967"
+      input: [0xBFF7FFFEF39085F4]
+      expect: [0xc00108c26f0145f0]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_075
+      description: "-1.50000000000000012"
+      input: [0xBFF8000000000001]
+      expect: [0xc00108c3aabd6a62]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_076
+      description: "2"
+      input: [0x4000000000000000]
+      expect: [0x400d03cf63b6e19f]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_077
+      description: "-2"
+      input: [0xC000000000000000]
+      expect: [0xc00d03cf63b6e19f]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_078
+      description: "10"
+      input: [0x4024000000000000]
+      expect: [0x40c5829dced69992]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_079
+      description: "-10"
+      input: [0xC024000000000000]
+      expect: [0xc0c5829dced69992]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_080
+      description: "1000"
+      input: [0x408F400000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_081
+      description: "-1000"
+      input: [0xC08F400000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_082
+      description: "67.4"
+      input: [0x4050D9999999999A]
+      expect: [0x45f2dd7567cd83ee]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_083
+      description: "-67.4"
+      input: [0xC050D9999999999A]
+      expect: [0xc5f2dd7567cd83ee]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_084
+      description: "1983.6"
+      input: [0x409EFE6666666666]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_085
+      description: "-1983.6"
+      input: [0xC09EFE6666666666]
+      expect: [0xfff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_086
+      description: "87.5"
+      input: [0x4055E00000000000]
+      expect: [0x47c2d7566d26536b]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_087
+      description: "-87.5"
+      input: [0xC055E00000000000]
+      expect: [0xc7c2d7566d26536b]
+      expect_exception: ['inexact']
+      variants: [sd]
+    - id: sinh_088
+      description: "132473"
+      input: [0x41002BC800000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_089
+      description: "-132473"
+      input: [0xC1002BC800000000]
+      expect: [0xfff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_090
+      description: "2^52"
+      input: [0x4330000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_091
+      description: "2^52 + 1"
+      input: [0x4330000000000001]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_092
+      description: "2^52 -1 + 0.5"
+      input: [0x432FFFFFFFFFFFFF]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_093
+      description: "-2^52"
+      input: [0xC330000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_094
+      description: "-(2^52 + 1)"
+      input: [0xC330000000000001]
+      expect: [0xfff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+    - id: sinh_095
+      description: "-(2^52 -1 + 0.5)"
+      input: [0xC32FFFFFFFFFFFFF]
+      expect: [0xfff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+#--------------------------------

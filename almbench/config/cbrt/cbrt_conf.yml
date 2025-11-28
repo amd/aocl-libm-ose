@@ -1,0 +1,2975 @@
+- test_sequence: unit_tests_cbrt
+  ignore_exceptions: [underflow, inexact]
+  function: cbrt
+  test_sets:
+  - id: special-values
+    description: Special values for cbrt function
+    tests:
+    # Single Precision Tests
+    - id: cbrt_001
+      description: "cbrtf(0) = 0"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_002
+      description: "cbrtf(-0) = -0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_003
+      description: "cbrtf(inf) = inf"
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_004
+      description: "cbrtf(-inf) = -inf"
+      input: [0xff800000]
+      expect: [0xff800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_005
+      description: "cbrtf(-nan) = nan"
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_006
+      description: "cbrtf(+nan) = nan"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_007
+      description: "cbrtf(subnorm_max) = cbrt(subnorm_max)"
+      input: [0x007fffff]
+      expect: [0x2a54cc76]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_008
+      description: "cbrtf(subnorm_max) = cbrt(subnorm_max)"
+      input: [0x007fffff]
+      expect: [0x2a54cc76]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_009
+      description: "cbrtf(subnorm_min) = cbrt(subnorm_min)"
+      input: [0x00000001]
+      expect: [0x15555555]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_010
+      description: "cbrtf(subnorm_min) = cbrt(subnorm_min)"
+      input: [0x00000001]
+      expect: [0x15555555]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_011
+      description: "cbrtf(8.0) = 2.0"
+      input: [0x41000000]
+      expect: [0x40000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_012
+      description: "cbrtf(-8.0) = -2.0"
+      input: [0xc1000000]
+      expect: [0xc0000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_013
+      description: "cbrtf(27.0) = 3.0"
+      input: [0x41d80000]
+      expect: [0x40400000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_014
+      description: "cbrtf(-27.0) = -3.0"
+      input: [0xc1d80000]
+      expect: [0xc0400000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+# Test cases from gtests test_cbrt_data.h
+#-------------------------------
+    - id: cbrt_001
+      description: min= 0.00006103515625, small enough that cbrt(x) = 1
+      input: [0x38800000]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_002
+      description: min - 1 bit
+      input: [0x387FFFFF]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_003
+      description: min + 1 bit
+      input: [0x38800001]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_004
+      description: lambda + x = 1, x = -9.9999994e+29
+      input: [0xF149F2C9]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_005
+      description: lambda + x < 1
+      input: [0xF149F2C8]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_006
+      description: lambda + x > 1
+      input: [0xF149F2CA]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_007
+      description: max arg + 1 bit
+      input: [0x42B2D4FD]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_008
+      description: '> max '
+      input: [0x42B2D4FF]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_009
+      description: normal intermediate
+      input: [0x43B3C4EA]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_010
+      description: normal max
+      input: [0x7F7FFFFF]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_011
+      description: -normal intermediate
+      input: [0xC5812E71]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_012
+      description: -normal max
+      input: [0xFF7FFFFF]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_013
+      description: 1000
+      input: [0x447A0000]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_014
+      description: -1000
+      input: [0xC47A0000]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_015
+      description: 1983.6
+      input: [0x44F7F333]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_016
+      description: -1983.6
+      input: [0xC4F7F333]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_017
+      description: 132473
+      input: [0x48015E40]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_018
+      description: -132473
+      input: [0xC8015E40]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_019
+      description: 2^23
+      input: [0x4B000000]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_020
+      description: 2^23 + 1
+      input: [0x4B000001]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_021
+      description: -2^23
+      input: [0xCB000000]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_022
+      description: -(2^23 + 1)
+      input: [0xCB000001]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_023
+      description: -(2^23 -1 + 0.5)
+      input: [0xCAFFFFFF]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_024
+      description: 2^23 -1 + 0.5
+      input: [0x4AFFFFFF]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_025
+      description: max arg, x = 89.41598629223294,max cbrtf arg
+      input: [0x42B2D4FC]
+      expect: [0x7F7FFFEC]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_026
+      description: max arg - 1 bit
+      input: [0x42B2D4FB]
+      expect: [0x7F7FFF6C]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_027
+      description: < max
+      input: [0x42B2D400]
+      expect: [0x7F7F820B]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_028
+      description: small_threshold = 20
+      input: [0x41A00000]
+      expect: [0x4D675844]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_029
+      description: small_threshold+1 = 21
+      input: [0x41A80000]
+      expect: [0x4E1D3710]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_030
+      description: small_threshold - 1 = 19
+      input: [0x41980000]
+      expect: [0x4CAA36C8]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_031
+      description: 0
+      input: [0x00000000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_032
+      description: 0
+      input: [0x80000000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_033
+      description: ""
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_034
+      description: ""
+      input: [0xFF800000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_035
+      description: ""
+      input: [0x7FB00000]
+      expect: [0x7FB00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cbrt_036
+      description: ""
+      input: [0xFFB00000]
+      expect: [0xFFB00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cbrt_037
+      description: ""
+      input: [0x7FF00000]
+      expect: [0x7FF00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_038
+      description: ""
+      input: [0xFFF00000]
+      expect: [0xFFF00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_039
+      description: '95'
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_040
+      description: denormal min
+      input: [0x00000001]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_041
+      description: denormal intermediate
+      input: [0x0005FDE6]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_042
+      description: denormal max
+      input: [0x007FFFFF]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_043
+      description: -denormal min
+      input: [0x80000001]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_044
+      description: -denormal intermediate
+      input: [0x805DEF12]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_045
+      description: -denormal max
+      input: [0x807FFFFF]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_046
+      description: normal min
+      input: [0x00800000]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_047
+      description: -normal min
+      input: [0x80800000]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_048
+      description: inf
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_049
+      description: -inf
+      input: [0xFF800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_050
+      description: qnan min
+      input: [0x7FC00000]
+      expect: [0x7FC00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_051
+      description: qnan intermediate
+      input: [0x7FE1A570]
+      expect: [0x7FE1A570]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_052
+      description: qnan max
+      input: [0x7FFFFFFF]
+      expect: [0x7FFFFFFF]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_053
+      description: indeterninate
+      input: [0xFFC00000]
+      expect: [0xFFC00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_054
+      description: -qnan min
+      input: [0xFFC00001]
+      expect: [0xFFC00001]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_055
+      description: -qnan intermediate
+      input: [0xFFD2BA31]
+      expect: [0xFFD2BA31]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_056
+      description: -qnan max
+      input: [0xFFFFFFFF]
+      expect: [0xFFFFFFFF]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_057
+      description: snan min
+      input: [0x7F800001]
+      expect: [0x7FC00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cbrt_058
+      description: snan intermediate
+      input: [0x7FA0BD90]
+      expect: [0x7FE0BD90]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cbrt_059
+      description: snan max
+      input: [0x7FBFFFFF]
+      expect: [0x7FFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cbrt_060
+      description: -snan min
+      input: [0xFF800001]
+      expect: [0xFFC00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cbrt_061
+      description: -snan intermediate
+      input: [0xFF95FFFA]
+      expect: [0xFFD5FFFA]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cbrt_062
+      description: -snan max
+      input: [0xFFBFFFFF]
+      expect: [0xFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cbrt_063
+      description: pi/2
+      input: [0x3FC90FDB]
+      expect: [0x40209662]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_064
+      description: pi
+      input: [0x40490FDB]
+      expect: [0x413978A5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_065
+      description: 2pi
+      input: [0x40C90FDB]
+      expect: [0x4385DF97]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_066
+      description: e --
+      input: [0x402DF853]
+      expect: [0x40F38620]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_067
+      description: e
+      input: [0x402DF854]
+      expect: [0x40F38624]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_068
+      description: e ++
+      input: [0x402DF855]
+      expect: [0x40F38628]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_069
+      description: 0
+      input: [0x00000000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_070
+      description: 0.000023
+      input: [0x37C0F01F]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_071
+      description: 0.49999
+      input: [0x3EFFFEB0]
+      expect: [0x3F9055E0]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_072
+      description: 0.500012
+      input: [0x3F0000C9]
+      expect: [0x3F905641]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_073
+      description: -0
+      input: [0x80000000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_074
+      description: -0.000023
+      input: [0xB7C0F01F]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_075
+      description: -0.49999
+      input: [0xBEFFFEB0]
+      expect: [0x3F9055E0]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_076
+      description: -0.500012
+      input: [0xBF0000C9]
+      expect: [0x3F905641]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_077
+      description: 1
+      input: [0x3F800000]
+      expect: [0x3FC583AB]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_078
+      description: 0.93750006
+      input: [0x3F700001]
+      expect: [0x3FBC7E14]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_079
+      description: 1.0624998
+      input: [0x3F87FFFE]
+      expect: [0x3FCF4ED3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_080
+      description: 1.49999
+      input: [0x3FBFFFAC]
+      expect: [0x40168D88]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_081
+      description: 1.500012
+      input: [0x3FC00064]
+      expect: [0x40168E4C]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_082
+      description: -1
+      input: [0xBF800000]
+      expect: [0x3FC583AB]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_083
+      description: -0.93750006
+      input: [0xBF700001]
+      expect: [0x3FBC7E14]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_084
+      description: -1.0624998
+      input: [0xBF87FFFE]
+      expect: [0x3FCF4ED3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_085
+      description: -1.49999
+      input: [0xBFBFFFAC]
+      expect: [0x40168D88]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_086
+      description: -1.500012
+      input: [0xBFC00064]
+      expect: [0x40168E4C]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_087
+      description: -2
+      input: [0xC0000000]
+      expect: [0x4070C7D0]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_088
+      description: 10
+      input: [0x41200000]
+      expect: [0x462C14EF]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_089
+      description: -10
+      input: [0xC1200000]
+      expect: [0x462C14EF]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_090
+      description: 67.4
+      input: [0x4286CCCC]
+      expect: [0x6F96EB6F]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_091
+      description: -67.4
+      input: [0xC286CCCC]
+      expect: [0x6F96EB6F]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_092
+      description: 87.5
+      input: [0x42AF0000]
+      expect: [0x7E16BAB3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_093
+      description: -87.5
+      input: [0xC2AF0000]
+      expect: [0x7E16BAB3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_094
+      description: 1.4013e-45
+      input: [0x00000001]
+      expect: [0x26A14518]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_095
+      description: 5.50259e-40
+      input: [0x0005FDE6]
+      expect: [0x29B88612]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_096
+      description: 1.25
+      input: [0x3FA00000]
+      expect: [0x3F89E242]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_097
+      description: 0.125
+      input: [0x3E000000]
+      expect: [0x3F000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_098
+      description: 0.375
+      input: [0x3EC00000]
+      expect: [0x3F389BA2]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_099
+      description: 0.625
+      input: [0x3F200000]
+      expect: [0x3F5AE07E]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_100
+      description: 0.25
+      input: [0x3E800000]
+      expect: [0x3F214518]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_101
+      description: 0.5
+      input: [0x3F000000]
+      expect: [0x3F4B2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_102
+      description: 1.5
+      input: [0x3FC00000]
+      expect: [0x3F9285FF]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_103
+      description: 2.25
+      input: [0x40100000]
+      expect: [0x3FA7BA3A]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_104
+      description: 2.5
+      input: [0x40200000]
+      expect: [0x3FADB905]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_105
+      description: 4
+      input: [0x40800000]
+      expect: [0x3FCB2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_106
+      description: 4.25
+      input: [0x40880000]
+      expect: [0x3FCF55CD]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_107
+      description: 4.5
+      input: [0x40900000]
+      expect: [0x3FD352C7]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_108
+      description: 8
+      input: [0x41000000]
+      expect: [0x40000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_109
+      description: 8.25
+      input: [0x41040000]
+      expect: [0x400151D7]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_110
+      description: 8.5
+      input: [0x41080000]
+      expect: [0x40029CEB]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_111
+      description: 16
+      input: [0x41800000]
+      expect: [0x40214518]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_112
+      description: 16.25
+      input: [0x41820000]
+      expect: [0x40221B02]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_113
+      description: 16.5
+      input: [0x41840000]
+      expect: [0x4022EEBE]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_114
+      description: 32
+      input: [0x42000000]
+      expect: [0x404B2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_115
+      description: 32.25
+      input: [0x42010000]
+      expect: [0x404BB711]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_116
+      description: 32.5
+      input: [0x42020000]
+      expect: [0x404C3D7A]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_117
+      description: 64
+      input: [0x42800000]
+      expect: [0x40800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_118
+      description: 64.25
+      input: [0x42808000]
+      expect: [0x40802A9C]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_119
+      description: 64.5
+      input: [0x42810000]
+      expect: [0x4080551D]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_120
+      description: 128
+      input: [0x43000000]
+      expect: [0x40A14518]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_121
+      description: 128.25
+      input: [0x43004000]
+      expect: [0x40A15FF4]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_122
+      description: 128.5
+      input: [0x43008000]
+      expect: [0x40A17AC8]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_123
+      description: 256
+      input: [0x43800000]
+      expect: [0x40CB2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_124
+      description: 256.25
+      input: [0x43802000]
+      expect: [0x40CB40E2]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_125
+      description: 256.5
+      input: [0x43804000]
+      expect: [0x40CB51CD]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_126
+      description: 512
+      input: [0x44000000]
+      expect: [0x41000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_127
+      description: 512.25
+      input: [0x44001000]
+      expect: [0x41000555]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_128
+      description: 512.5
+      input: [0x44002000]
+      expect: [0x41000AAA]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_129
+      description: 1024
+      input: [0x44800000]
+      expect: [0x41214518]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_130
+      description: 1024.25
+      input: [0x44800800]
+      expect: [0x41214874]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_131
+      description: 1024.5
+      input: [0x44801000]
+      expect: [0x41214BD0]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_132
+      description: 2048
+      input: [0x45000000]
+      expect: [0x414B2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_133
+      description: 2048.25
+      input: [0x45000400]
+      expect: [0x414B3213]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_134
+      description: 2048.5
+      input: [0x45000800]
+      expect: [0x414B3431]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_135
+      description: 4096
+      input: [0x45800000]
+      expect: [0x41800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_136
+      description: 4096.25
+      input: [0x45800200]
+      expect: [0x418000AB]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_137
+      description: 4096.5
+      input: [0x45800400]
+      expect: [0x41800155]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_138
+      description: 8192
+      input: [0x46000000]
+      expect: [0x41A14518]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_139
+      description: 8192.25
+      input: [0x46000100]
+      expect: [0x41A14583]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_140
+      description: 8192.5
+      input: [0x46000200]
+      expect: [0x41A145EF]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_141
+      description: 16384
+      input: [0x46800000]
+      expect: [0x41CB2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_142
+      description: 16384.2
+      input: [0x46800080]
+      expect: [0x41CB3039]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_143
+      description: 16384.5
+      input: [0x46800100]
+      expect: [0x41CB307D]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_144
+      description: 32768
+      input: [0x47000000]
+      expect: [0x42000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_145
+      description: 32768.2
+      input: [0x47000040]
+      expect: [0x42000015]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_146
+      description: 32768.5
+      input: [0x47000080]
+      expect: [0x4200002B]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_147
+      description: 65536
+      input: [0x47800000]
+      expect: [0x42214518]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_148
+      description: 65536.2
+      input: [0x47800020]
+      expect: [0x42214525]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_149
+      description: 65536.5
+      input: [0x47800040]
+      expect: [0x42214533]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_150
+      description: 131072
+      input: [0x48000000]
+      expect: [0x424B2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_151
+      description: 131072
+      input: [0x48000010]
+      expect: [0x424B2FFE]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_152
+      description: 131072
+      input: [0x48000020]
+      expect: [0x424B3006]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_153
+      description: 262144
+      input: [0x48800000]
+      expect: [0x42800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_154
+      description: 262144
+      input: [0x48800008]
+      expect: [0x42800003]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_155
+      description: 262144
+      input: [0x48800010]
+      expect: [0x42800005]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_156
+      description: 524288
+      input: [0x49000000]
+      expect: [0x42A14518]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_157
+      description: 524288
+      input: [0x49000004]
+      expect: [0x42A14519]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_158
+      description: 524288
+      input: [0x49000008]
+      expect: [0x42A1451B]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_159
+      description: 1.04858e+06
+      input: [0x49800000]
+      expect: [0x42CB2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_160
+      description: 1.04858e+06
+      input: [0x49800002]
+      expect: [0x42CB2FF6]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_161
+      description: 1.04858e+06
+      input: [0x49800004]
+      expect: [0x42CB2FF7]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_162
+      description: 2.09715e+06
+      input: [0x4A000000]
+      expect: [0x43000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_163
+      description: 2.09715e+06
+      input: [0x4A000001]
+      expect: [0x43000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_164
+      description: 2.09715e+06
+      input: [0x4A000002]
+      expect: [0x43000001]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_165
+      description: 4.1943e+06
+      input: [0x4A800000]
+      expect: [0x43214518]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_166
+      description: 1.67772e+07
+      input: [0x4B800000]
+      expect: [0x43800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_167
+      description: 3.35544e+07
+      input: [0x4C000000]
+      expect: [0x43A14518]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_168
+      description: 6.71089e+07
+      input: [0x4C800000]
+      expect: [0x43CB2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_169
+      description: 1.34218e+08
+      input: [0x4D000000]
+      expect: [0x44000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_170
+      description: 2.68435e+08
+      input: [0x4D800000]
+      expect: [0x44214518]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_171
+      description: 5.36871e+08
+      input: [0x4E000000]
+      expect: [0x444B2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_172
+      description: 1.07374e+09
+      input: [0x4E800000]
+      expect: [0x44800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_173
+      description: 2.14748e+09
+      input: [0x4F000000]
+      expect: [0x44A14518]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_174
+      description: 4.29497e+09
+      input: [0x4F800000]
+      expect: [0x44CB2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_175
+      description: 8.58993e+09
+      input: [0x50000000]
+      expect: [0x45000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_176
+      description: 1.71799e+10
+      input: [0x50800000]
+      expect: [0x45214518]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_177
+      description: 3.43597e+10
+      input: [0x51000000]
+      expect: [0x454B2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_178
+      description: 1.17549e-38
+      input: [0x007FFFFF]
+      expect: [0x2A7FFFFF]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_179
+      description: -1.4013e-45
+      input: [0x80000001]
+      expect: [0xA6A14518]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_180
+      description: -8.62646e-39
+      input: [0x805DEF12]
+      expect: [0xAA66E923]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_181
+      description: -1.17549e-38
+      input: [0x807FFFFF]
+      expect: [0xAA7FFFFF]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_182
+      description: 1.17549e-38
+      input: [0x00800000]
+      expect: [0x2A800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_183
+      description: 359.538
+      input: [0x43B3C4EA]
+      expect: [0x40E38B39]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_184
+      description: -1.17549e-38
+      input: [0x80800000]
+      expect: [0xAA800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_185
+      description: -4133.81
+      input: [0xC5812E71]
+      expect: [0xC1806481]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_186
+      description: -3.40282e+38
+      input: [0xFF7FFFFF]
+      expect: [0xD4CB2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_187
+      description: nan
+      input: [0xFFC00000]
+      expect: [0xFFC00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_188
+      description: nan
+      input: [0xFFC00001]
+      expect: [0xFFC00001]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_189
+      description: nan
+      input: [0xFFD2BA31]
+      expect: [0xFFD2BA31]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_190
+      description: nan
+      input: [0xFFFFFFFF]
+      expect: [0xFFFFFFFF]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_191
+      description: nan
+      input: [0xFF800001]
+      expect: [0xFFC00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cbrt_192
+      description: nan
+      input: [0xFF95FFFA]
+      expect: [0xFFD5FFFA]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cbrt_193
+      description: nan
+      input: [0xFFBFFFFF]
+      expect: [0xFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cbrt_194
+      description: 1.5708
+      input: [0x3FC90FDB]
+      expect: [0x3F94CB13]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_195
+      description: 3.14159
+      input: [0x40490FDB]
+      expect: [0x3FBB77BF]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_196
+      description: 6.28319
+      input: [0x40C90FDB]
+      expect: [0x3FEC31D0]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_197
+      description: 2.71828
+      input: [0x402DF853]
+      expect: [0x3FB2A36D]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_198
+      description: 2.71828
+      input: [0x402DF854]
+      expect: [0x3FB2A36D]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_199
+      description: 2.71828
+      input: [0x402DF855]
+      expect: [0x3FB2A36E]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_200
+      description: 0
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_201
+      description: 2.3e-05
+      input: [0x37C0F01F]
+      expect: [0x3CE8F836]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_202
+      description: 0.49999
+      input: [0x3EFFFEB0]
+      expect: [0x3F4B2F9C]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_203
+      description: 0.500012
+      input: [0x3F0000C9]
+      expect: [0x3F4B3060]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_204
+      description: -2.3e-05
+      input: [0xB7C0F01F]
+      expect: [0xBCE8F836]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_205
+      description: -0.49999
+      input: [0xBEFFFEB0]
+      expect: [0xBF4B2F9C]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_206
+      description: -0.500012
+      input: [0xBF0000C9]
+      expect: [0xBF4B3060]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_207
+      description: 1
+      input: [0x3F800000]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_208
+      description: 0.9375
+      input: [0x3F700001]
+      expect: [0x3F7A8D31]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_209
+      description: 1.0625
+      input: [0x3F87FFFE]
+      expect: [0x3F829CEB]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_210
+      description: 1.49999
+      input: [0x3FBFFFAC]
+      expect: [0x3F9285EA]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_211
+      description: 1.50001
+      input: [0x3FC00064]
+      expect: [0x3F928618]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_212
+      description: -1
+      input: [0xBF800000]
+      expect: [0xBF800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_213
+      description: -0.9375
+      input: [0xBF700001]
+      expect: [0xBF7A8D31]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_214
+      description: -1.0625
+      input: [0xBF87FFFE]
+      expect: [0xBF829CEB]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_215
+      description: -1.49999
+      input: [0xBFBFFFAC]
+      expect: [0xBF9285EA]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_216
+      description: -1.50001
+      input: [0xBFC00064]
+      expect: [0xBF928618]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_217
+      description: 2
+      input: [0x40000000]
+      expect: [0x3FA14518]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_218
+      description: -2
+      input: [0xC0000000]
+      expect: [0xBFA14518]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_219
+      description: 10
+      input: [0x41200000]
+      expect: [0x4009E242]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_220
+      description: -10
+      input: [0xC1200000]
+      expect: [0xC009E242]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_221
+      description: 1000
+      input: [0x447A0000]
+      expect: [0x41200000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_222
+      description: -1000
+      input: [0xC47A0000]
+      expect: [0xC1200000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_223
+      description: 67.4
+      input: [0x4286CCCC]
+      expect: [0x40823A48]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_224
+      description: -67.4
+      input: [0xC286CCCC]
+      expect: [0xC0823A48]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_225
+      description: 1983.6
+      input: [0x44F7F333]
+      expect: [0x414908EC]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_226
+      description: -1983.6
+      input: [0xC4F7F333]
+      expect: [0xC14908EC]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_227
+      description: 87.5
+      input: [0x42AF0000]
+      expect: [0x408E108C]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_228
+      description: -87.5
+      input: [0xC2AF0000]
+      expect: [0xC08E108C]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_229
+      description: 132473
+      input: [0x48015E40]
+      expect: [0x424BE8A1]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_230
+      description: -132473
+      input: [0xC8015E40]
+      expect: [0xC24BE8A1]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_231
+      description: 8.38861e+06
+      input: [0x4B000001]
+      expect: [0x434B2FF6]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_232
+      description: 8.38861e+06
+      input: [0x4AFFFFFF]
+      expect: [0x434B2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_233
+      description: -8.38861e+06
+      input: [0xCB000000]
+      expect: [0xC34B2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_234
+      description: -8.38861e+06
+      input: [0xCB000001]
+      expect: [0xC34B2FF6]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_235
+      description: -8.38861e+06
+      input: [0xCAFFFFFF]
+      expect: [0xC34B2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_236
+      description: 3.40282e+38
+      input: [0x7F7FFFFF]
+      expect: [0x54CB2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_237
+      description: nan
+      input: [0x7FE00000]
+      expect: [0x7FE00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_238
+      description: nan
+      input: [0x7FB00000]
+      expect: [0x7FF00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cbrt_239
+      description: nan
+      input: [0x7FC00000]
+      expect: [0x7FC00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_240
+      description: nan
+      input: [0x7FE1A570]
+      expect: [0x7FE1A570]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_241
+      description: nan
+      input: [0x7FFFFFFF]
+      expect: [0x7FFFFFFF]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_242
+      description: nan
+      input: [0x7F800001]
+      expect: [0x7FC00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cbrt_243
+      description: nan
+      input: [0x7FA0BD90]
+      expect: [0x7FE0BD90]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cbrt_244
+      description: nan
+      input: [0x7FBFFFFF]
+      expect: [0x7FFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cbrt_245
+      description: ""
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_246
+      description: ""
+      input: [0xFF800000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cbrt_247
+      description: 343, 7
+      input: [0x43AB8000]
+      expect: [0x40E00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_248
+      description: -512, -8
+      input: [0xC4000000]
+      expect: [0xC1000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_249
+      description: 2571353, 137
+      input: [0x4A1CF164]
+      expect: [0x43090000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_250
+      description: -681472, -88
+      input: [0xC9266000]
+      expect: [0xC2B00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_251
+      description: 1481089
+      input: [0x49B4CC08]
+      expect: [0x42E3FA06]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_252
+      description: 2.845E-06
+      input: [0x363EECBA]
+      expect: [0x3C68280B]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_253
+      description: 0.0625
+      input: [0x3D800000]
+      expect: [0x3ECB2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_254
+      description: -34.53
+      input: [0xC20A1EB8]
+      expect: [0xC050682D]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_255
+      description: -0.3
+      input: [0xBE99999A]
+      expect: [0xBF2B5FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_256
+      description: -0.642365
+      input: [0xBF247208]
+      expect: [0xBF5CE2B2]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_257
+      description: 0.3
+      input: [0x3E99999A]
+      expect: [0x3F2B5FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_258
+      description: 0.642365
+      input: [0x3F247208]
+      expect: [0x3F5CE2B2]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_259
+      description: 0.5
+      input: [0x3F000000]
+      expect: [0x3F4B2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_260
+      description: 34.53
+      input: [0x420A1EB8]
+      expect: [0x4050682D]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_261
+      description: 28467.3555
+      input: [0x46DE66B6]
+      expect: [0x41F44571]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_262
+      description: -100
+      input: [0xC2C80000]
+      expect: [0xC09487E5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_263
+      description: 100
+      input: [0x42C80000]
+      expect: [0x409487E5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_264
+      description: 1.416786E+30
+      input: [0x718F0F0F]
+      expect: [0x50275C7A]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cbrt_265
+      description: 2^-130
+      input: [0x00080000]
+      expect: [0x29CB2FF5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+#-------------------------------
+    # Double Precision Tests
+    - id: cbrt_001
+      description: "cbrt(0) = 0"
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cbrt_002
+      description: "cbrt(-0) = -0"
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cbrt_003
+      description: "cbrt(inf) = inf"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cbrt_004
+      description: "cbrt(-inf) = -inf"
+      input: [0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cbrt_005
+      description: "cbrt(-nan) = nan"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cbrt_006
+      description: "cbrt(+nan) = nan"
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cbrt_007
+      description: "cbrt(subnorm_max) = cbrt(subnorm_max)"
+      input: [0x000fffffffffffff]
+      expect: [0x354a998ceb1f0ad2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_008
+      description: "cbrt(subnorm_max) = cbrt(subnorm_max)"
+      input: [0x000fffffffffffff]
+      expect: [0x354a998ceb1f0ad2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_009
+      description: "cbrt(subnorm_min) = cbrt(subnorm_min)"
+      input: [0x0000000000000001]
+      expect: [0x2aaaaaaaaaaaaa9b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_010
+      description: "cbrt(subnorm_min) = cbrt(subnorm_min)"
+      input: [0x0000000000000001]
+      expect: [0x2aaaaaaaaaaaaa9b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_011
+      description: "cbrt(8.0) = 2.0"
+      input: [0x4020000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_012
+      description: "cbrt(-8.0) = -2.0"
+      input: [0xc020000000000000]
+      expect: [0xc000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_013
+      description: "cbrt(27.0) = 3.0"
+      input: [0x403b000000000000]
+      expect: [0x4008000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_014
+      description: "cbrt(-27.0) = -3.0"
+      input: [0xc03b000000000000]
+      expect: [0xc008000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+# Test cases from gtests test_cbrt_data.h
+#-------------------------------
+    - id: cbrt_001
+      description: ""
+      input: [0x7FF0000000000001]
+      expect: [0x7FF8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cbrt_002
+      description: ""
+      input: [0xFFF0000000000001]
+      expect: [0xFFF8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cbrt_003
+      description: ""
+      input: [0x7FF8000000000000]
+      expect: [0x7FF8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cbrt_004
+      description: ""
+      input: [0xFFF8000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cbrt_005
+      description: ""
+      input: [0x7FF0000000000000]
+      expect: [0x7FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cbrt_006
+      description: ""
+      input: [0xFFF0000000000000]
+      expect: [0xFFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cbrt_007
+      description: ""
+      input: [0x3FF0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_008
+      description: ""
+      input: [0xBFF0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_009
+      description: ""
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cbrt_010
+      description: ""
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cbrt_011
+      description: NaN
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x2AA428A2F98D728A]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_012
+      description: ""
+      input: [0x800FFFFFFFFFFFFF]
+      expect: [0xAAA428A2F98D728A]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_013
+      description: ""
+      input: [0x0000000000000001]
+      expect: [0x2990000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_014
+      description: ""
+      input: [0x8000000000000001]
+      expect: [0xA990000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_015
+      description: ""
+      input: [0x7FEFFFFFFFFFFFFF]
+      expect: [0x554428A2F98D728B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_016
+      description: ""
+      input: [0xFFEFFFFFFFFFFFFF]
+      expect: [0xD54428A2F98D728B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_017
+      description: ""
+      input: [0x0010000000000000]
+      expect: [0x2AA428A2F98D728B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_018
+      description: ""
+      input: [0x8010000000000000]
+      expect: [0xAAA428A2F98D728B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_019
+      description: ""
+      input: [0x400921FB60000000]
+      expect: [0x3FF76EF7EAD69852]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_020
+      description: ""
+      input: [0xC00921FB60000000]
+      expect: [0xBFF76EF7EAD69852]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_021
+      description: ""
+      input: [0x3FF921FB60000000]
+      expect: [0x3FF2996267C5DEEE]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_022
+      description: ""
+      input: [0xBFF921FB60000000]
+      expect: [0xBFF2996267C5DEEE]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_023
+      description: ""
+      input: [0x00000001FF09CFF6]
+      expect: [0x2A3FFADE2D204819]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_024
+      description: (0.499999 ,0.499999)^1/3 = (0.7937 ,0.793700)
+      input: [0x3FDFFFFBCE4217D3]
+      expect: [0x3FE965FD8929CD67]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_025
+      description: (-0 ,-0.000000)^1/3 = (-0 ,-0.000000)
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cbrt_026
+      description: (4.94066e-324 ,0.000000)^1/3 = (1.70318e-108 ,0.000000)
+      input: [0x0000000000000001]
+      expect: [0x2990000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_027
+      description: (8.33261e-309 ,0.000000)^1/3 = (2.02734e-103 ,0.000000)
+      input: [0x0005FDE623545ABC]
+      expect: [0x2A9D0F87E1BD5C8A]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_028
+      description: (2.22507e-308 ,0.000000)^1/3 = (2.81264e-103 ,0.000000)
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x2AA428A2F98D728A]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_029
+      description: (-4.94066e-324 ,-0.000000)^1/3 = (-1.70318e-108 ,-0.000000)
+      input: [0x8000000000000001]
+      expect: [0xA990000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_030
+      description: (-3.06541e-309 ,-0.000000)^1/3 = (-1.45266e-103 ,-0.000000)
+      input: [0x8002344ADE5DEF12]
+      expect: [0xAA94D2AA3036CD87]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_031
+      description: (-3.06541e-309 ,-0.000000)^1/3 = (-1.45266e-103 ,-0.000000)
+      input: [0x88F2344ADE5DEF12]
+      expect: [0xAD9A83D4BB116375]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_032
+      description: (-2.22507e-308 ,-0.000000)^1/3 = (-2.81264e-103 ,-0.000000)
+      input: [0x800FFFFFFFFFFFFF]
+      expect: [0xAAA428A2F98D728A]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_033
+      description: (2.22507e-308 ,0.000000)^1/3 = (2.81264e-103 ,0.000000)
+      input: [0x0010000000000000]
+      expect: [0x2AA428A2F98D728B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_034
+      description: (-2.22507e-308 ,-0.000000)^1/3 = (-2.81264e-103 ,-0.000000)
+      input: [0x8010000000000000]
+      expect: [0xAAA428A2F98D728B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_035
+      description: (2.76725e+19 ,27672498390639312896.000000)^1/3 = (3.0247e+06 ,3024703.370614)
+      input: [0x43F800876ABCDA00]
+      expect: [0x4147139FAF7044D9]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_036
+      description: (5.53454e+19 ,55345350463248924672.000000)^1/3 = (3.8109e+06 ,3810895.564127)
+      input: [0x44080091781CDBA0]
+      expect: [0x414D1327C8354FCC]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_037
+      description: (5.53506e+19 ,55350630119951302656.000000)^1/3 = (3.81102e+06 ,3811016.740103)
+      input: [0x4408012786ABCDE0]
+      expect: [0x414D13645EBBB035]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_038
+      description: (-1.79769e+308 ,-179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490...
+      input: [0xFFEFFFFFFFFFFFFF]
+      expect: [0xD54428A2F98D728B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_039
+      description: (-709.533 ,-709.532946)^1/3 = (-8.91916 ,-8.919165)
+      input: [0xC0862C4379671324]
+      expect: [0xC021D69CC4F64C8E]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_040
+      description: (1e-08 ,0.000000)^1/3 = (0.00215443 ,0.002154)
+      input: [0x3E45798EE2308C3A]
+      expect: [0x3F61A62D511F2B53]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_041
+      description: (0.1 ,0.100000)^1/3 = (0.464159 ,0.464159)
+      input: [0x3FB999999999999A]
+      expect: [0x3FDDB4C7760BCFF3]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_042
+      description: (0.5 ,0.500000)^1/3 = (0.793701 ,0.793701)
+      input: [0x3FE0000000000000]
+      expect: [0x3FE965FEA53D6E3D]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_043
+      description: (0.9 ,0.900000)^1/3 = (0.965489 ,0.965489)
+      input: [0x3FECCCCCCCCCCCCD]
+      expect: [0x3FEEE549FE7085E7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_044
+      description: (1.9 ,1.900000)^1/3 = (1.23856 ,1.238562)
+      input: [0x3FFE666666666666]
+      expect: [0x3FF3D126BBBD1B43]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_045
+      description: (-1e-08 ,-0.000000)^1/3 = (-0.00215443 ,-0.002154)
+      input: [0xBE45798EE2308C3A]
+      expect: [0xBF61A62D511F2B53]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_046
+      description: (-0.1 ,-0.100000)^1/3 = (-0.464159 ,-0.464159)
+      input: [0xBFB999999999999A]
+      expect: [0xBFDDB4C7760BCFF3]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_047
+      description: (-0.5 ,-0.500000)^1/3 = (-0.793701 ,-0.793701)
+      input: [0xBFE0000000000000]
+      expect: [0xBFE965FEA53D6E3D]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_048
+      description: (-0.9 ,-0.900000)^1/3 = (-0.965489 ,-0.965489)
+      input: [0xBFECCCCCCCCCCCCD]
+      expect: [0xBFEEE549FE7085E7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_049
+      description: (-1.1 ,-1.100000)^1/3 = (-1.03228 ,-1.032280)
+      input: [0xBFF199999999999A]
+      expect: [0xBFF08438278323A4]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_050
+      description: (-1.5 ,-1.500000)^1/3 = (-1.14471 ,-1.144714)
+      input: [0xBFF8000000000000]
+      expect: [0xBFF250BFE1B082F5]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_051
+      description: (-1.9 ,-1.900000)^1/3 = (-1.23856 ,-1.238562)
+      input: [0xBFFE666666666666]
+      expect: [0xBFF3D126BBBD1B43]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_052
+      description: (-1 ,-1.000000)^1/3 = (-1 ,-1.000000)
+      input: [0xBFF0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_053
+      description: (10 ,10.000000)^1/3 = (2.15443 ,2.154435)
+      input: [0x4024000000FFF000]
+      expect: [0x40013C484181F573]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_054
+      description: (1002 ,1001.999512)^1/3 = (10.0067 ,10.006661)
+      input: [0x408F4FFF00000000]
+      expect: [0x4024036904B5157E]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_055
+      description: (1001.5 ,1001.500000)^1/3 = (10.005 ,10.004998)
+      input: [0x408F4C0000000000]
+      expect: [0x4024028F08580058]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_056
+      description: (1024.9 ,1024.900000)^1/3 = (10.0823 ,10.082320)
+      input: [0x409003999999999A]
+      expect: [0x40242A25E8C2DFA3]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_057
+      description: (6.81697e+13 ,68169720922112.000000)^1/3 = (40850.5 ,40850.480761)
+      input: [0x42CF000000000000]
+      expect: [0x40E3F24F62645865]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_058
+      description: (5.27766e+13 ,52776558141439.992188)^1/3 = (37510 ,37509.996302)
+      input: [0x42C80000000FFFFF]
+      expect: [0x40E250BFE1B494E6]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_059
+      description: (7.48049e+13 ,74804904345599.984375)^1/3 = (42135 ,42135.034835)
+      input: [0x42D10237F00FFFFF]
+      expect: [0x40E492E11D5EC942]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_060
+      description: (1.49756e+14 ,149756231686677.500000)^1/3 = (53104.1 ,53104.130355)
+      input: [0x42E1067ADFC342B0]
+      expect: [0x40E9EE042BDDCCF1]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_061
+      description: (1.49756e+14 ,149756231686672.250000)^1/3 = (53104.1 ,53104.130355)
+      input: [0x42E1067ADFC34208]
+      expect: [0x40E9EE042BDDCC9C]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_062
+      description: (2.11106e+14 ,211106232831957.968750)^1/3 = (59543.4 ,59543.407614)
+      input: [0x42E800000091FABF]
+      expect: [0x40ED12ED0B2C94F9]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_063
+      description: (4.22212e+14 ,422212466259196.937500)^1/3 = (75020 ,75019.992671)
+      input: [0x42F8000001234FCF]
+      expect: [0x40F250BFE1FA9D9F]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_064
+      description: (4.22212e+14 ,422212465118415.500000)^1/3 = (75020 ,75019.992603)
+      input: [0x42F80000000CCCF8]
+      expect: [0x40F250BFE1B3C48E]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_065
+      description: (5.98439e+14 ,598439236312063.875000)^1/3 = (84270.1 ,84270.069743)
+      input: [0x43010237F0CCDFFF]
+      expect: [0x40F492E11DAAF0D8]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_066
+      description: (8.44428e+14 ,844427833786176.250000)^1/3 = (94519.4 ,94519.376178)
+      input: [0x430800056891FA02]
+      expect: [0x40F7137604D34CA5]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_067
+      description: (1.19688e+15 ,1196878469267519.750000)^1/3 = (106174 ,106173.634646)
+      input: [0x43110237F00000FF]
+      expect: [0x40F9EBDA2782C2A7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_068
+      description: (1.19688e+15 ,1196878469267519.500000)^1/3 = (106174 ,106173.634646)
+      input: [0x43110237F00000FE]
+      expect: [0x40F9EBDA2782C2A6]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_069
+      description: (2.53327e+15 ,2533274790395903.500000)^1/3 = (136320 ,136320.373428)
+      input: [0x4321FFFFFFFFFFFF]
+      expect: [0x4100A402FCC79298]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_070
+      description: (2.39376e+15 ,2393756938535039.500000)^1/3 = (133770 ,133770.397235)
+      input: [0x43210237F00000FF]
+      expect: [0x410054532D8952A7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_071
+      description: (4.78751e+15 ,4787513877070079.000000)^1/3 = (168540 ,168540.139329)
+      input: [0x43310237F00000FF]
+      expect: [0x410492E11D585626]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_072
+      description: (6.75542e+15 ,6755422670289408.000000)^1/3 = (189039 ,189038.752356)
+      input: [0x433800056891FA00]
+      expect: [0x4107137604D34CA4]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_073
+      description: (1.08086e+17 ,108086391056891904.000000)^1/3 = (476347 ,476347.260687)
+      input: [0x4378000000000000]
+      expect: [0x411D12ED0AF1A27F]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_074
+      description: (-6.64674e+26 ,-664673756588022451306233856.000000)^1/3 = (-8.72709e+08 ,-872709112.238718)
+      input: [0xC5812E71245ACFDB]
+      expect: [0xC1CA023DFC1E8E4D]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_075
+      description: (-1.79769e+308 ,-179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490...
+      input: [0xFFEFFFFFFFFFFFFF]
+      expect: [0xD54428A2F98D728B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_076
+      description: (1.5708 ,1.570796)^1/3 = (1.16245 ,1.162447)
+      input: [0x3FF921FB54442D18]
+      expect: [0x3FF2996264E0E3FE]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_077
+      description: (3.14159 ,3.141593)^1/3 = (1.46459 ,1.464592)
+      input: [0x400921FB54442D18]
+      expect: [0x3FF76EF7E73104B7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_078
+      description: (6.28319 ,6.283185)^1/3 = (1.84527 ,1.845270)
+      input: [0x401921FB54442D18]
+      expect: [0x3FFD8639FDCB60EA]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_079
+      description: (1.71828 ,1.718282)^1/3 = (1.19775 ,1.197746)
+      input: [0x3FFB7E151628AED3]
+      expect: [0x3FF329F7E9744467]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_080
+      description: (2.71828 ,2.718282)^1/3 = (1.39561 ,1.395612)
+      input: [0x4005BF0A8B145769]
+      expect: [0x3FF6546DB1BA2D13]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_081
+      description: (3.71828 ,3.718282)^1/3 = (1.54922 ,1.549224)
+      input: [0x400DBF0A8B145769]
+      expect: [0x3FF8C99EACDCAFA5]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_082
+      description: (2.3e-18 ,0.000000)^1/3 = (1.32001e-06 ,0.000001)
+      input: [0x3C4536B8B14B676C]
+      expect: [0x3EB625621463F313]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_083
+      description: (0.5 ,0.500000)^1/3 = (0.793701 ,0.793701)
+      input: [0x3FE000000000006C]
+      expect: [0x3FE965FEA53D6E76]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_084
+      description: (-0 ,-0.000000)^1/3 = (-0 ,-0.000000)
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cbrt_085
+      description: (-2.3e-20 ,-0.000000)^1/3 = (-2.84387e-07 ,-0.000000)
+      input: [0xBBDB2752CE74FF42]
+      expect: [0xBE9315B9ECC4CE0F]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_086
+      description: (-0.499999 ,-0.499999)^1/3 = (-0.7937 ,-0.793700)
+      input: [0xBFDFFFFBCE4217D3]
+      expect: [0xBFE965FD8929CD67]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_087
+      description: (-0.5 ,-0.500000)^1/3 = (-0.793701 ,-0.793701)
+      input: [0xBFE000000000006C]
+      expect: [0xBFE965FEA53D6E76]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_088
+      description: (1 ,1.000000)^1/3 = (1 ,1.000000)
+      input: [0x3FF0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_089
+      description: (1 ,1.000000)^1/3 = (1 ,1.000000)
+      input: [0x3FEFFFFFC49BD0DC]
+      expect: [0x3FEFFFFFEC33F03D]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_090
+      description: (1 ,1.000000)^1/3 = (1 ,1.000000)
+      input: [0x3FF0000000000119]
+      expect: [0x3FF000000000005E]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_091
+      description: (1.5 ,1.499999)^1/3 = (1.14471 ,1.144714)
+      input: [0x3FF7FFFEF39085F4]
+      expect: [0x3FF250BF9D679517]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_092
+      description: (1.5 ,1.500000)^1/3 = (1.14471 ,1.144714)
+      input: [0x3FF8000000000001]
+      expect: [0x3FF250BFE1B082F5]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_093
+      description: (-1 ,-1.000000)^1/3 = (-1 ,-1.000000)
+      input: [0xBFF0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_094
+      description: (-1 ,-1.000000)^1/3 = (-1 ,-1.000000)
+      input: [0xBFEFFFFFC49BD0DC]
+      expect: [0xBFEFFFFFEC33F03D]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_095
+      description: (-1 ,-1.000000)^1/3 = (-1 ,-1.000000)
+      input: [0xBFF0000000000119]
+      expect: [0xBFF000000000005E]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_096
+      description: (-1.5 ,-1.499999)^1/3 = (-1.14471 ,-1.144714)
+      input: [0xBFF7FFFEF39085F4]
+      expect: [0xBFF250BF9D679517]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_097
+      description: (-1.5 ,-1.500000)^1/3 = (-1.14471 ,-1.144714)
+      input: [0xBFF8000000000001]
+      expect: [0xBFF250BFE1B082F5]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_098
+      description: (2 ,2.000000)^1/3 = (1.25992 ,1.259921)
+      input: [0x4000000000000000]
+      expect: [0x3FF428A2F98D728B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_099
+      description: (-2 ,-2.000000)^1/3 = (-1.25992 ,-1.259921)
+      input: [0xC000000000000000]
+      expect: [0xBFF428A2F98D728B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_100
+      description: (10 ,10.000000)^1/3 = (2.15443 ,2.154435)
+      input: [0x4024000000000000]
+      expect: [0x40013C484138704F]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_101
+      description: (-10 ,-10.000000)^1/3 = (-2.15443 ,-2.154435)
+      input: [0xC024000000000000]
+      expect: [0xC0013C484138704F]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_102
+      description: (1000 ,1000.000000)^1/3 = (10 ,10.000000)
+      input: [0x408F400000000000]
+      expect: [0x4024000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_103
+      description: (-1000 ,-1000.000000)^1/3 = (-10 ,-10.000000)
+      input: [0xC08F400000000000]
+      expect: [0xC024000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_104
+      description: (67.4 ,67.400000)^1/3 = (4.06961 ,4.069615)
+      input: [0x4050D9999999999A]
+      expect: [0x4010474916E2D86B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_105
+      description: (-67.4 ,-67.400000)^1/3 = (-4.06961 ,-4.069615)
+      input: [0xC050D9999999999A]
+      expect: [0xC010474916E2D86B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_106
+      description: (1983.6 ,1983.600000)^1/3 = (12.5647 ,12.564678)
+      input: [0x409EFE6666666666]
+      expect: [0x4029211D7CC31CBD]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_107
+      description: (-1983.6 ,-1983.600000)^1/3 = (-12.5647 ,-12.564678)
+      input: [0xC09EFE6666666666]
+      expect: [0xC029211D7CC31CBD]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_108
+      description: (87.5 ,87.500000)^1/3 = (4.43952 ,4.439520)
+      input: [0x4055E00000000000]
+      expect: [0x4011C211887D70A0]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_109
+      description: (-87.5 ,-87.500000)^1/3 = (-4.43952 ,-4.439520)
+      input: [0xC055E00000000000]
+      expect: [0xC011C211887D70A0]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_110
+      description: (132473 ,132473.000000)^1/3 = (50.9772 ,50.977178)
+      input: [0x41002BC800000000]
+      expect: [0x40497D142B9B48DF]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_111
+      description: (-132473 ,-132473.000000)^1/3 = (-50.9772 ,-50.977178)
+      input: [0xC1002BC800000000]
+      expect: [0xC0497D142B9B48DF]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_112
+      description: (4.5036e+15 ,4503599627370496.000000)^1/3 = (165140 ,165140.371852)
+      input: [0xC330000000000000]
+      expect: [0xC10428A2F98D728B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_113
+      description: (4.5036e+15 ,4503599627370497.000000)^1/3 = (165140 ,165140.371852)
+      input: [0x4330000000000001]
+      expect: [0x410428A2F98D728B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_114
+      description: (4.5036e+15 ,4503599627370495.500000)^1/3 = (165140 ,165140.371852)
+      input: [0x432FFFFFFFFFFFFF]
+      expect: [0x410428A2F98D728B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_115
+      description: (-4.5036e+15 ,-4503599627370496.000000)^1/3 = (-165140 ,-165140.371852)
+      input: [0xC330000000000000]
+      expect: [0xC10428A2F98D728B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_116
+      description: (-4.5036e+15 ,-4503599627370497.000000)^1/3 = (-165140 ,-165140.371852)
+      input: [0xC330000000000001]
+      expect: [0xC10428A2F98D728B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_117
+      description: (-4.5036e+15 ,-4503599627370495.500000)^1/3 = (-165140 ,-165140.371852)
+      input: [0xC32FFFFFFFFFFFFF]
+      expect: [0xC10428A2F98D728B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_118
+      description: (1.3525e+16 ,13525021061936128.000000)^1/3 = (238257 ,238257.172414)
+      input: [0x43480677ADFCFA00]
+      expect: [0x410D1589611A8EB5]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_119
+      description: (2.70266e+16 ,27026607336581120.000000)^1/3 = (300099 ,300098.513338)
+      input: [0x435801239871FA00]
+      expect: [0x4112510A0DA873D6]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_120
+      description: (5.41933e+16 ,54193322387972640.000000)^1/3 = (378427 ,378426.835076)
+      input: [0x4368111144444444]
+      expect: [0x411718EB571E0C64]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_121
+      description: (2.2518e+17 ,225179981368524768.000000)^1/3 = (608382 ,608382.331599)
+      input: [0x4388FFFFFFFFFFFF]
+      expect: [0x412290FCA9C761F7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_122
+      description: (4.5036e+17 ,450359962737049536.000000)^1/3 = (766514 ,766513.705966)
+      input: [0x4398FFFFFFFFFFFF]
+      expect: [0x412764636974629C]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_123
+      description: (9.0072e+17 ,900719925474099072.000000)^1/3 = (965747 ,965746.753180)
+      input: [0x43A8FFFFFFFFFFFF]
+      expect: [0x412D78E581A0C12F]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_124
+      description: (1.77742e+18 ,1777420370899369728.000000)^1/3 = (1.21133e+06 ,1211332.541689)
+      input: [0x43B8AAAA68FFFFFF]
+      expect: [0x41327BC48AAC21DE]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_125
+      description: (3.55484e+18 ,3554840750388674048.000000)^1/3 = (1.52618e+06 ,1526183.368926)
+      input: [0x43C8AAAA69FFFFFF]
+      expect: [0x413749A75E71EE87]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_126
+      description: (6.91819e+18 ,6918190807731404800.000000)^1/3 = (1.90545e+06 ,1905449.801840)
+      input: [0x43D8009678ABCD00]
+      expect: [0x413D1329CD456A1B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_127
+      description: (1.79769e+308 ,17976931348623157081452742373170435679807056752584499659891747680315726078002853876058955863276687817154045895351438246423432132688946418276846754670353751698604991057655128207624549009...
+      input: [0x7FEFFFFFFFFFFFFF]
+      expect: [0x554428A2F98D728B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_128
+      description: (1.38565e+19 ,13856513517244612608.000000)^1/3 = (2.40188e+06 ,2401880.096083)
+      input: [0x43E8098734209870]
+      expect: [0x4142532C0C4C744C]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_129
+      description: (1.42452e+18 ,1424521762500706816.000000)^1/3 = (1.12518e+06 ,1125182.656762)
+      input: [0x43B3C4EAFEDCAB02]
+      expect: [0x41312B3EA8218C32]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cbrt_130
+      description: (-1.73833895195870167397466018576152301829197566259896e-310 ,-0.000000)^1/3 = (-5.5809931214954306443504636562311623283571665772106e-104 ,-0.000000)
+      input: [0x80001FFFFFFFFFFF]
+      expect: [0xAA7FFFFFFFFFFFAB]
+      expect_exception: [inexact]
+      variants: [sd]
+#------------------------------

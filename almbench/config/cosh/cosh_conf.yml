@@ -1,0 +1,1623 @@
+- test_sequence: unit_tests_cosh
+  ignore_exceptions: [underflow, inexact]
+  function: cosh
+  test_sets:
+  - id: special-values
+    description: Special values for cosh function
+    tests:
+    # Single Precision Tests
+    - id: cosh_001
+      description: "coshf(0) = 1"
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_002
+      description: "coshf(-0) = 1"
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_003
+      description: "coshf(inf) = inf"
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_004
+      description: "coshf(-inf) = inf"
+      input: [0xff800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_005
+      description: "coshf(-nan) = nan"
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_006
+      description: "coshf(+nan) = nan"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_007
+      description: "coshf(subnorm_max) ≈ 1"
+      input: [0x007fffff]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_008
+      description: "coshf(subnorm_max) ≈ 1"
+      input: [0x007fffff]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_009
+      description: "coshf(subnorm_min) ≈ 1"
+      input: [0x00000001]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_010
+      description: "coshf(subnorm_min) ≈ 1"
+      input: [0x00000001]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_011
+      description: "coshf(1.0) = cosh(1)"
+      input: [0x3f800000]
+      expect: [0x3fc583ea]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_012
+      description: "coshf(-1.0) = cosh(1)"
+      input: [0xbf800000]
+      expect: [0x3fc583ea]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_013
+      description: "coshf(2.0) = cosh(2)"
+      input: [0x40000000]
+      expect: [0x40761713]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_014
+      description: "coshf(-2.0) = cosh(2)"
+      input: [0xc0000000]
+      expect: [0x40761713]
+      expect_exception: [inexact]
+      variants: [ss]
+
+# Test cases from gtests test_cosh_data.h
+#-------------------------------
+    - id: cosh_001
+      description: coshf(-1.536e+20) = -INF
+      input: [0xc9b60000]
+      expect: [0xff800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_002
+      description: coshf(6.104e-05) = 1.0
+      input: [0x38800000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_003
+      description: coshf(min-1bit) = 1.0
+      input: [0x387FFFFF]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_004
+      description: coshf(min+1bit) = 1.0
+      input: [0x38800001]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_005
+      description: coshf(-1.0e+30) = +INF (overflow)
+      input: [0xF149F2C9]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_006
+      description: coshf(lambda-1) = +INF (overflow)
+      input: [0xF149F2C8]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_007
+      description: coshf(lambda+1) = +INF (overflow)
+      input: [0xF149F2CA]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_008
+      description: coshf(89.416) ≈ 3.4e+38 (inexact)
+      input: [0x42B2D4FC]
+      expect: [0x7f7fffec]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_009
+      description: coshf(max-1bit) ≈ 3.4e+38
+      input: [0x42B2D4FB]
+      expect: [0x7f7fff6c]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_010
+      description: coshf(max+1bit) = +INF (overflow)
+      input: [0x42B2D4FD]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_011
+      description: coshf(>max) = +INF (overflow)
+      input: [0x42B2D4FF]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_012
+      description: coshf(<max) ≈ 3.4e+38 (inexact)
+      input: [0x42B2D400]
+      expect: [0x7f7f820b]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_013
+      description: coshf(20.0) ≈ 2.42e+08
+      input: [0x41A00000]
+      expect: [0x4d675844]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_014
+      description: coshf(21.0) ≈ 6.59e+08
+      input: [0x41A80000]
+      expect: [0x4e1d3710]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_015
+      description: coshf(19.0) ≈ 8.9e+07
+      input: [0x41980000]
+      expect: [0x4caa36c8]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_016
+      description: coshf(+0) = 1.0
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_017
+      description: coshf(-0) = 1.0
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_018
+      description: coshf(+INF) = +INF
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_019
+      description: coshf(-INF) = -INF
+      input: [0xFF800000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_020
+      description: coshf(+SNAN) = +SNAN (invalid)
+      input: [0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cosh_021
+      description: coshf(-SNAN) = -SNAN (invalid)
+      input: [0xffb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cosh_022
+      description: coshf(+QNAN) = +QNAN
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_023
+      description: coshf(-QNAN) = -QNAN
+      input: [0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_024
+      description: coshf(+INF) = +INF (overflow)
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_025
+      description: coshf(denormal min) = 1.0
+      input: [0x00000001]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_026
+      description: coshf(denormal mid) = 1.0
+      input: [0x0005fde6]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_027
+      description: coshf(denormal max) = 1.0
+      input: [0x007fffff]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_028
+      description: coshf(-denormal min) = 1.0
+      input: [0x80000001]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_029
+      description: coshf(-denormal mid) = 1.0
+      input: [0x805def12]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_030
+      description: coshf(-denormal max) = 1.0
+      input: [0x807FFFFF]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_031
+      description: coshf(normal min) = 1.0
+      input: [0x00800000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_032
+      description: coshf(normal mid) = +INF (overflow)
+      input: [0x43b3c4ea]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_033
+      description: coshf(normal max) = +INF (overflow)
+      input: [0x7f7fffff]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_034
+      description: coshf(-normal min) = 1.0
+      input: [0x80800000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_035
+      description: coshf(-normal mid) = +INF (overflow)
+      input: [0xc5812e71]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_036
+      description: coshf(-normal max) = +INF (overflow)
+      input: [0xFF7FFFFF]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_037
+      description: coshf(+INF) = +INF
+      input: [0x7F800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_038
+      description: coshf(-INF) = +INF
+      input: [0xfF800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_039
+      description: coshf(QNAN min) = QNAN
+      input: [0x7Fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_040
+      description: coshf(QNAN mid) = QNAN
+      input: [0x7Fe1a570]
+      expect: [0x7fe1a570]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_041
+      description: coshf(QNAN max) = QNAN
+      input: [0x7FFFFFFF]
+      expect: [0x7fffffff]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_042
+      description: coshf(indeterminate) = indeterminate
+      input: [0xfFc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_043
+      description: coshf(-QNAN min) = -QNAN
+      input: [0xFFC00001]
+      expect: [0xffc00001]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_044
+      description: coshf(-QNAN mid) = -QNAN
+      input: [0xFFd2ba31]
+      expect: [0xffd2ba31]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_045
+      description: coshf(-QNAN max) = -QNAN
+      input: [0xFFFFFFFF]
+      expect: [0xffffffff]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_046
+      description: coshf(SNAN min) = QNAN (invalid)
+      input: [0x7F800001]
+      expect: [0x7fc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cosh_047
+      description: coshf(SNAN mid) = QNAN (invalid)
+      input: [0x7Fa0bd90]
+      expect: [0x7fe0bd90]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cosh_048
+      description: coshf(SNAN max) = QNAN (invalid)
+      input: [0x7FBFFFFF]
+      expect: [0x7fffffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cosh_049
+      description: coshf(-SNAN min) = -QNAN (invalid)
+      input: [0xFF800001]
+      expect: [0xffc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cosh_050
+      description: coshf(-SNAN mid) = -QNAN (invalid)
+      input: [0xfF95fffa]
+      expect: [0xffd5fffa]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cosh_051
+      description: coshf(-SNAN max) = -QNAN (invalid)
+      input: [0xFFBFFFFF]
+      expect: [0xffffffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cosh_052
+      description: coshf(π/2) ≈ 2.509 (inexact)
+      input: [0x3FC90FDB]
+      expect: [0x40209662]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_053
+      description: coshf(π) ≈ 11.592 (inexact)
+      input: [0x40490FDB]
+      expect: [0x413978a5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_054
+      description: coshf(2π) ≈ 267.75 (inexact)
+      input: [0x40C90FDB]
+      expect: [0x4385df97]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_055
+      description: coshf(e--) ≈ 7.556 (inexact)
+      input: [0x402DF853]
+      expect: [0x40f38620]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_056
+      description: coshf(e) ≈ 7.556 (inexact)
+      input: [0x402DF854]
+      expect: [0x40f38624]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_057
+      description: coshf(e++) ≈ 7.556 (inexact)
+      input: [0x402DF855]
+      expect: [0x40f38628]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_058
+      description: coshf(0) = 1.0
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_059
+      description: coshf(0.000023) = 1.0
+      input: [0x37C0F01F]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_060
+      description: coshf(0.49999) ≈ 1.128
+      input: [0x3EFFFEB0]
+      expect: [0x3f9055e0]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_061
+      description: coshf(0.500012) ≈ 1.128 (inexact)
+      input: [0x3F0000C9]
+      expect: [0x3f905641]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_062
+      description: coshf(-0) = 1.0
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_063
+      description: coshf(-0.000023) = 1.0
+      input: [0xb7C0F01F]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_064
+      description: coshf(-0.49999) ≈ 1.128
+      input: [0xbEFFFEB0]
+      expect: [0x3f9055e0]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_065
+      description: coshf(-0.500012) ≈ 1.128 (inexact)
+      input: [0xbF0000C9]
+      expect: [0x3f905641]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_066
+      description: coshf(1.0) ≈ 1.543 (inexact)
+      input: [0x3f800000]
+      expect: [0x3fc583ab]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_067
+      description: coshf(0.9375) ≈ 1.471
+      input: [0x3f700001]
+      expect: [0x3fbc7e14]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_068
+      description: coshf(1.0625) ≈ 1.619
+      input: [0x3F87FFFE]
+      expect: [0x3fcf4ed3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_069
+      description: coshf(1.49999) ≈ 2.352
+      input: [0x3FBFFFAC]
+      expect: [0x40168d88]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_070
+      description: coshf(1.500012) ≈ 2.352 (inexact)
+      input: [0x3FC00064]
+      expect: [0x40168e4c]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_071
+      description: coshf(-1.0) ≈ 1.543 (inexact)
+      input: [0xbf800000]
+      expect: [0x3fc583ab]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_072
+      description: coshf(-0.9375) ≈ 1.471
+      input: [0xbf700001]
+      expect: [0x3fbc7e14]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_073
+      description: coshf(-1.0625) ≈ 1.619
+      input: [0xbF87FFFE]
+      expect: [0x3fcf4ed3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_074
+      description: coshf(-1.49999) ≈ 2.352
+      input: [0xbFBFFFAC]
+      expect: [0x40168d88]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_075
+      description: coshf(-1.500012) ≈ 2.352 (inexact)
+      input: [0xbFC00064]
+      expect: [0x40168e4c]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_076
+      description: coshf(-2.0) ≈ 3.762 (inexact)
+      input: [0xc0000000]
+      expect: [0x4070c7d0]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_077
+      description: coshf(10.0) ≈ 11013.2 (inexact)
+      input: [0x41200000]
+      expect: [0x462c14ef]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_078
+      description: coshf(-10.0) ≈ 11013.2 (inexact)
+      input: [0xc1200000]
+      expect: [0x462c14ef]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_079
+      description: coshf(1000.0) = +INF (overflow)
+      input: [0x447A0000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_080
+      description: coshf(-1000.0) = +INF (overflow)
+      input: [0xc47A0000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_081
+      description: coshf(67.4) ≈ 1.24e+29
+      input: [0x4286CCCC]
+      expect: [0x6f96eb6f]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_082
+      description: coshf(-67.4) ≈ 1.24e+29
+      input: [0xc286CCCC]
+      expect: [0x6f96eb6f]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_083
+      description: coshf(1983.6) = +INF (overflow)
+      input: [0x44F7F333]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_084
+      description: coshf(-1983.6) = +INF (overflow)
+      input: [0xc4F7F333]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_085
+      description: coshf(87.5) ≈ 1.57e+37
+      input: [0x42AF0000]
+      expect: [0x7e16bab3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_086
+      description: coshf(-87.5) ≈ 1.57e+37
+      input: [0xc2AF0000]
+      expect: [0x7e16bab3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_087
+      description: coshf(132473) = +INF (overflow)
+      input: [0x48015E40]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_088
+      description: coshf(-132473) = +INF (overflow)
+      input: [0xc8015E40]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_089
+      description: coshf(2^23) = +INF (overflow)
+      input: [0x4B000000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_090
+      description: coshf(2^23+1) = +INF (overflow)
+      input: [0x4B000001]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_091
+      description: coshf(2^23-0.5) = +INF (overflow)
+      input: [0x4AFFFFFF]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_092
+      description: coshf(-2^23) = +INF (overflow)
+      input: [0xcB000000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_093
+      description: coshf(-(2^23+1)) = +INF (overflow)
+      input: [0xcB000001]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_094
+      description: coshf(-(2^23-0.5)) = +INF (overflow)
+      input: [0xcAFFFFFF]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_095
+      description: coshf(+INF) = +INF
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_096
+      description: coshf(-INF) = +INF
+      input: [0xff800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_097
+      description: coshf(SNAN) = QNAN
+      input: [0x7f800001]
+      expect: [0x7fc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cosh_098
+      description: coshf(-SNAN) = -QNAN
+      input: [0xff800001]
+      expect: [0xffc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cosh_099
+      description: coshf(QNAN) = QNAN
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_100
+      description: coshf(-QNAN) = -QNAN
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cosh_101
+      description: coshf(2^-15) = 1.0
+      input: [0x38000000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_102
+      description: coshf(-2^-15) = 1.0
+      input: [0xb8000000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_103
+      description: coshf(90.0) = +INF
+      input: [0x42b40000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: cosh_104
+      description: coshf(30.0) ≈ 5.34e+12
+      input: [0x41f00000]
+      expect: [0x549b8238]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_105
+      description: coshf(-5.0) ≈ 74.21 (inexact)
+      input: [0xc0a00000]
+      expect: [0x42946b7e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_106
+      description: coshf(0.1) ≈ 1.005
+      input: [0x3dcccccd]
+      expect: [0x3f80a3fa]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cosh_107
+      description: coshf(-0.0002) = 1.0
+      input: [0xb951b717]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+#-------------------------------
+    # Double Precision Tests
+    - id: cosh_001
+      description: "0"
+      input: [0x0000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_002
+      description: "-0"
+      input: [0x8000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_003
+      description: "inf"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_004
+      description: "-inf"
+      input: [0xfff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_005
+      description: "indeterninate"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_006
+      description: "qnan min"
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_007
+      description: "denormal max"
+      input: [0x000fffffffffffff]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_008
+      description: "denormal max"
+      input: [0x000fffffffffffff]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_009
+      description: "denormal min"
+      input: [0x0000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_010
+      description: "denormal min"
+      input: [0x0000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_011
+      description: "1"
+      input: [0x3ff0000000000000]
+      expect: [0x3ff8b07d48570c27]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_012
+      description: "-1"
+      input: [0xbff0000000000000]
+      expect: [0x3ff8b07d48570c27]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_013
+      description: "2"
+      input: [0x4000000000000000]
+      expect: [0x400ec2e269fbc605]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_014
+      description: "-2"
+      input: [0xc000000000000000]
+      expect: [0x400ec2e269fbc605]
+      expect_exception: [inexact]
+      variants: [sd]
+# Test cases from gtests test_cosh_data.h
+#-------------------------------
+    - id: cosh_001
+      description: "min, small enough that cosh(x) = 1"
+      input: [0x3e30000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_002
+      description: "min - 1 bit"
+      input: [0x3E2FFFFFFFFFFFFF]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_003
+      description: "min + 1 bit"
+      input: [0x3e30000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_004
+      description: "lambda + x = 1, x = -1.0000000000000000e+300"
+      input: [0xFE37E43C8800759C]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_005
+      description: "lambda + x < 1"
+      input: [0xFE37E43C8800758C]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_006
+      description: "lambda + x > 1"
+      input: [0xFE37E43C880075AC]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_007
+      description: "max arg, x = 89.41598629223294,max coshf arg"
+      input: [0x408633ce8fb9f87e]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_008
+      description: "max arg - 1 bit"
+      input: [0x408633ce8fb9f87d]
+      expect: [0x7feffffffffffd3b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_009
+      description: "max arg + 1 bit"
+      input: [0x408633ce8fb9f87f]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_010
+      description: "> max"
+      input: [0x408633ce8fb9f8ff]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_011
+      description: "< max"
+      input: [0x408633ce8fb9f800]
+      expect: [0x7feffffffffe093b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_012
+      description: "small_threshold = 20"
+      input: [0x4034000000000000]
+      expect: [0x41aceb088b68e804]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_013
+      description: "small_threshold+1 = 21"
+      input: [0x4035000000000000]
+      expect: [0x41c3a6e1fd9eecfd]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_014
+      description: "small_threshold - 1 = 19"
+      input: [0x4033000000000000]
+      expect: [0x419546d8f9ed26e2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_015
+      description: "0"
+      input: [0x0000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_016
+      description: "-0"
+      input: [0x8000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_017
+      description: "inf"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_018
+      description: "-inf"
+      input: [0xfff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_019
+      description: cosh(+SNAN) = +SNAN (invalid)
+      input: [0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cosh_020
+      description: cosh(-SNAN) = -SNAN (invalid)
+      input: [0xfff2000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cosh_021
+      description: cosh(+QNAN) = +QNAN
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_022
+      description: "indeterninate"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_023
+      description: "710.5"
+      input: [0x4086340000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_024
+      description: "denormal min"
+      input: [0x0000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_025
+      description: "denormal intermediate"
+      input: [0x0005fde623545abc]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_026
+      description: "denormal max"
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_027
+      description: "-denormal min"
+      input: [0x8000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_028
+      description: "-denormal intermediate"
+      input: [0x8002344ade5def12]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_029
+      description: "-denormal max"
+      input: [0x800FFFFFFFFFFFFF]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_030
+      description: "normal min"
+      input: [0x0010000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_031
+      description: "normal intermediate"
+      input: [0x43b3c4eafedcab02]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_032
+      description: "normal max"
+      input: [0x7FEFFFFFFFFFFFFF]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_033
+      description: "-normal min"
+      input: [0x8010000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_034
+      description: "-normal intermediate"
+      input: [0xc5812e71245acfdb]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_035
+      description: "-normal max"
+      input: [0xFFEFFFFFFFFFFFFF]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_036
+      description: "inf"
+      input: [0x7FF0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_037
+      description: "-inf"
+      input: [0xFFF0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_038
+      description: "qnan min"
+      input: [0x7FF8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_039
+      description: "qnan intermediate"
+      input: [0x7FFe1a5701234dc3]
+      expect: [0x7ffe1a5701234dc3]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_040
+      description: "qnan max"
+      input: [0x7FFFFFFFFFFFFFFF]
+      expect: [0x7fffffffffffffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_041
+      description: "indeterninate"
+      input: [0xFFF8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_042
+      description: "-qnan min"
+      input: [0xFFF8000000000001]
+      expect: [0xfff8000000000001]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_043
+      description: "-qnan intermediate"
+      input: [0xFFF9123425dcba31]
+      expect: [0xfff9123425dcba31]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_044
+      description: "-qnan max"
+      input: [0xFFFFFFFFFFFFFFFF]
+      expect: [0xffffffffffffffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_045
+      description: "snan min"
+      input: [0x7FF0000000000001]
+      expect: [0x7ff8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cosh_046
+      description: "snan intermediate"
+      input: [0x7FF5344752a0bd90]
+      expect: [0x7ffd344752a0bd90]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cosh_047
+      description: "snan max"
+      input: [0x7FF7FFFFFFFFFFFF]
+      expect: [0x7fffffffffffffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cosh_048
+      description: "-snan min"
+      input: [0xFFF0000000000001]
+      expect: [0xfff8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cosh_049
+      description: "-snan intermediate"
+      input: [0xfFF432438995fffa]
+      expect: [0xfffc32438995fffa]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cosh_050
+      description: "-snan max"
+      input: [0xFFF7FFFFFFFFFFFF]
+      expect: [0xffffffffffffffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cosh_051
+      description: "pi/2"
+      input: [0x3FF921FB54442D18]
+      expect: [0x400412cc2a8d4e9e]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_052
+      description: "pi"
+      input: [0x400921FB54442D18]
+      expect: [0x40272f147fee4000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_053
+      description: "2pi"
+      input: [0x401921FB54442D18]
+      expect: [0x4070bbf2bc2b69c6]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_054
+      description: "e --"
+      input: [0x3FFB7E151628AED3]
+      expect: [0x4007046b4f3f7e0c]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_055
+      description: "e"
+      input: [0x4005BF0A8B145769]
+      expect: [0x401e70c4a4f41684]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_056
+      description: "e ++"
+      input: [0x400DBF0A8B145769]
+      expect: [0x40349be1e586228d]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_057
+      description: "0"
+      input: [0x0000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_058
+      description: "0.0000000000000000023"
+      input: [0x3C4536B8B14B676C]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_059
+      description: "0.4999989999999999999"
+      input: [0x3FDFFFFBCE4217D3]
+      expect: [0x3ff20ac0fa498d2c]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_060
+      description: "0.500000000000012"
+      input: [0x3FE000000000006C]
+      expect: [0x3ff20ac1862ae8ed]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_061
+      description: "-0"
+      input: [0x8000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_062
+      description: "-0.000000000000000000023"
+      input: [0xBBDB2752CE74FF42]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cosh_063
+      description: "-0.4999989999999999999"
+      input: [0xBFDFFFFBCE4217D3]
+      expect: [0x3ff20ac0fa498d2c]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_064
+      description: "-0.500000000000012"
+      input: [0xBFE000000000006C]
+      expect: [0x3ff20ac1862ae8ed]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_065
+      description: "1"
+      input: [0x3FF0000000000000]
+      expect: [0x3ff8b07551d9f550]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_066
+      description: "0.9999998893750006"
+      input: [0x3FEFFFFFC49BD0DC]
+      expect: [0x3ff8b0752ef3f8a2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_067
+      description: "1.0000000000000624998"
+      input: [0x3FF0000000000119]
+      expect: [0x3ff8b07551d9f69b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_068
+      description: "1.499998999999999967"
+      input: [0x3FF7FFFEF39085F4]
+      expect: [0x4002d1bb0418ae52]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_069
+      description: "1.50000000000000012"
+      input: [0x3FF8000000000001]
+      expect: [0x4002d1bc21e22023]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_070
+      description: "-1"
+      input: [0xBFF0000000000000]
+      expect: [0x3ff8b07551d9f550]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_071
+      description: "-0.9999998893750006"
+      input: [0xBFEFFFFFC49BD0DC]
+      expect: [0x3ff8b0752ef3f8a2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_072
+      description: "-1.0000000000000624998"
+      input: [0xBFF0000000000119]
+      expect: [0x3ff8b07551d9f69b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_073
+      description: "-1.499998999999999967"
+      input: [0xBFF7FFFEF39085F4]
+      expect: [0x4002d1bb0418ae52]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_074
+      description: "-1.50000000000000012"
+      input: [0xBFF8000000000001]
+      expect: [0x4002d1bc21e22023]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_075
+      description: "2"
+      input: [0x4000000000000000]
+      expect: [0x400e18fa0df2d9bc]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_076
+      description: "-2"
+      input: [0xC000000000000000]
+      expect: [0x400e18fa0df2d9bc]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_077
+      description: "10"
+      input: [0x4024000000000000]
+      expect: [0x40c5829dd053712d]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_078
+      description: "-10"
+      input: [0xC024000000000000]
+      expect: [0x40c5829dd053712d]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_079
+      description: "1000"
+      input: [0x408F400000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_080
+      description: "-1000"
+      input: [0xC08F400000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_081
+      description: "67.4"
+      input: [0x4050D9999999999A]
+      expect: [0x45f2dd7567cd83ee]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_082
+      description: "-67.4"
+      input: [0xC050D9999999999A]
+      expect: [0x45f2dd7567cd83ee]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_083
+      description: "1983.6"
+      input: [0x409EFE6666666666]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_084
+      description: "-1983.6"
+      input: [0xC09EFE6666666666]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_085
+      description: "87.5"
+      input: [0x4055E00000000000]
+      expect: [0x47c2d7566d26536b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_086
+      description: "-87.5"
+      input: [0xC055E00000000000]
+      expect: [0x47c2d7566d26536b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cosh_087
+      description: "132473"
+      input: [0x41002BC800000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_088
+      description: "-132473"
+      input: [0xC1002BC800000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_089
+      description: "2^52"
+      input: [0x4330000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_090
+      description: "2^52 + 1"
+      input: [0x4330000000000001]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_091
+      description: "2^52 -1 + 0.5"
+      input: [0x432FFFFFFFFFFFFF]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_092
+      description: "-2^52"
+      input: [0xC330000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_093
+      description: "-(2^52 + 1)"
+      input: [0xC330000000000001]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: cosh_094
+      description: "-(2^52 -1 + 0.5)"
+      input: [0xC32FFFFFFFFFFFFF]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+#Special case
+    - id: cosh_095
+      description: "2^53-1"
+      input: [0x433FFFFFFFFFFFFF]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+#-------------------------------

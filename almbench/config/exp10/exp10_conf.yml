@@ -1,0 +1,1178 @@
+- test_sequence: unit_tests_exp10
+  ignore_exceptions: [underflow, inexact]
+  function: exp10
+  test_sets:
+  - id: special-values
+    description: Special values for exp10 function
+    tests:
+    #case 1: 0
+    - id: exp10_001
+      description: "exp10f(0) = 1"
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    #case 2: -0
+    - id: exp10_002
+      description: "exp10f(-0) = 1"
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    #case 3: inf
+    - id: exp10_003
+      description: "exp10f(+inf) = +inf"
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+
+    #case 4: -inf
+    - id: exp10_004
+      description: "exp10f(-inf) = 0"
+      input: [0xff800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    #case 5: -nan
+    - id: exp10_005
+      description: "exp10f(-nan) = -nan"
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    #case 6: +nan
+    - id: exp10_006
+      description: "exp10f(+nan) = +nan"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    #case 7: + subnorm (MAX)
+    - id: exp10_007
+      description: "exp10f(subnorm_max_pos) ≈ 1.0"
+      input: [0x007fffff]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    #case 8: - subnorm (MAX)
+    - id: exp10_008
+      description: "exp10f(subnorm_max_neg) ≈ 1.0"
+      input: [0x807fffff]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    #case 9: + subnorm (MIN)
+    - id: exp10_009
+      description: "exp10f(subnorm_min_pos) ≈ 1.0"
+      input: [0x00000001]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    #case 10: - subnorm (MIN)
+    - id: exp10_010
+      description: "exp10f(subnorm_min_neg) ≈ 1.0"
+      input: [0x80000001]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    #case 11: + POS
+    - id: exp10_011
+      description: "exp10f(1.0) = 10.0"
+      input: [0x3f800000]
+      expect: [0x41200000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    #case 12: -POS
+    - id: exp10_012
+      description: "exp10f(-1.0) = 0.1"
+      input: [0xbf800000]
+      expect: [0x3dcccccd]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    #case 13: +NEG
+    - id: exp10_013
+      description: "exp10f(2.0) = 100.0"
+      input: [0x40000000]
+      expect: [0x42c80000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    #case 14: -NEG
+    - id: exp10_014
+      description: "exp10f(-2.0) = 0.01"
+      input: [0xc0000000]
+      expect: [0x3c23d70a]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    #case 15: qnan
+    - id: exp10_015
+      description: "exp10f(qnan) = qnan"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    #case 16: snan
+    - id: exp10_016
+      description: "exp10f(snan) = qnan"
+      input: [0x7fa00000]
+      expect: [0x7fa00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+#Test cases from gtests test_exp10_data.h
+#-----------------------------------------
+    # Case 1: F32_POS_HNORMAL
+    - id: exp10_001
+      description: "exp10f F32_POS_HNORMAL"
+      input: [0x7f7fffff]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 2: F32_NEG_HNORMAL
+    - id: exp10_002
+      description: "exp10f F32_NEG_HNORMAL"
+      input: [0xff7fffff]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 3: 1000
+    - id: exp10_003
+      description: "exp10f 1000"
+      input: [0x447a0000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 4: 64
+    - id: exp10_004
+      description: "exp10f 64"
+      input: [0x42800000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 5: 96
+    - id: exp10_005
+      description: "exp10f 96"
+      input: [0x42c00000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 6: -87.5
+    - id: exp10_006
+      description: "exp10f -87.5"
+      input: [0xc2af0000]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 7: -112
+    - id: exp10_007
+      description: "exp10f -112"
+      input: [0xc2e00000]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 8: -128
+    - id: exp10_008
+      description: "exp10f -128"
+      input: [0xc3000000]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 9: -87.3365  smallest normal result
+    - id: exp10_009
+      description: "exp10f -87.3365  smallest normal result"
+      input: [0xc2aeac4f]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 10: -87.3365  largest denormal result
+    - id: exp10_010
+      description: "exp10f -87.3365  largest denormal result"
+      input: [0xc2aeac50]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 11: -103
+    - id: exp10_011
+      description: "exp10f -103"
+      input: [0xc2ce0000]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 12: 38.531   largest value
+    - id: exp10_012
+      description: "exp10f 38.531   largest value"
+      input: [0x421A209B]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 13: 38.531   overflow
+    - id: exp10_013
+      description: "exp10f 38.531   overflow"
+      input: [0x421A209C]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 14: large   overflow
+    - id: exp10_014
+      description: "exp10f large   overflow"
+      input: [0x50000000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 15: -28467.3555
+    - id: exp10_015
+      description: "exp10f -28467.3555"
+      input: [0xc6de66b6]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 16: 28467.3555
+    - id: exp10_016
+      description: "exp10f 28467.3555"
+      input: [0x46de66b6]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 17: -100
+    - id: exp10_017
+      description: "exp10f -100"
+      input: [0xc2c80000]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 18: 100
+    - id: exp10_018
+      description: "exp10f 100"
+      input: [0x42c80000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 19: snan
+    - id: exp10_019
+      description: "exp10f snan"
+      input: [0x7Fa00000]
+      expect: [0x7Fe00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    # Case 20: -snan
+    - id: exp10_020
+      description: "exp10f -snan"
+      input: [0xfFa00000]
+      expect: [0xfFe00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    # Case 21: expf(qnan) = qnan
+    - id: exp10_021
+      description: "exp10f expf(qnan) = qnan"
+      input: [0x7fe00000]
+      expect: [0x7fe00000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 22: expf(-qnan) = -qnan
+    - id: exp10_022
+      description: "exp10f expf(-qnan) = -qnan"
+      input: [0xffe00000]
+      expect: [0xffe00000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 23: inf
+    - id: exp10_023
+      description: "exp10f inf"
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 24: -inf
+    - id: exp10_024
+      description: "exp10f -inf"
+      input: [0xFF800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 25: 1
+    - id: exp10_025
+      description: "exp10f 1"
+      input: [0x3f800000]
+      expect: [0x41200000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 26: -1
+    - id: exp10_026
+      description: "exp10f -1"
+      input: [0xBF800000]
+      expect: [0x3dcccccd]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 27: exp(0)=1
+    - id: exp10_027
+      description: "exp10f exp(0)=1"
+      input: [0x00000000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 28: exp(-0)=1
+    - id: exp10_028
+      description: "exp10f exp(-0)=1"
+      input: [0x80000000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 29: F32_POS_HDENORM
+    - id: exp10_029
+      description: "exp10f F32_POS_HDENORM"
+      input: [0x007fffff]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 30: F32_NEG_HDENORM
+    - id: exp10_030
+      description: "exp10f F32_NEG_HDENORM"
+      input: [0x807fffff]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 31: F32_POS_LDENORM
+    - id: exp10_031
+      description: "exp10f F32_POS_LDENORM"
+      input: [0x00000001]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 32: F32_NEG_LDENORM
+    - id: exp10_032
+      description: "exp10f F32_NEG_LDENORM"
+      input: [0x80000001]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 33: F32_POS_LNORMAL
+    - id: exp10_033
+      description: "exp10f F32_POS_LNORMAL"
+      input: [0x00800000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 34: F32_NEG_LNORMAL
+    - id: exp10_034
+      description: "exp10f F32_NEG_LNORMAL"
+      input: [0x80800000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 35: expf(nan)=nan
+    - id: exp10_035
+      description: "exp10f expf(nan)=nan"
+      input: [0x7fbfffff]
+      expect: [0x00000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    # Case 36: expf(-nan)=-nan
+    - id: exp10_036
+      description: "exp10f expf(-nan)=-nan"
+      input: [0xffffffff]
+      expect: [0xffffffff]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 37: pi/2
+    - id: exp10_037
+      description: "exp10f pi/2"
+      input: [0x3FC90FDB]
+      expect: [0x4214e309]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 38: 0.0078125
+    - id: exp10_038
+      description: "exp10f 0.0078125"
+      input: [0x3c000000]
+      expect: [0x3f8252cc]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 39: 0.0156249991
+    - id: exp10_039
+      description: "exp10f 0.0156249991"
+      input: [0x3c7fffff]
+      expect: [0x3f84b063]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 40: 0.504444
+    - id: exp10_040
+      description: "exp10f 0.504444"
+      input: [0x3f012345]
+      expect: [0x404c77b1]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 41: 2
+    - id: exp10_041
+      description: "exp10f 2"
+      input: [0x40000000]
+      expect: [0x42c80000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 42: 1.0000000e-7
+    - id: exp10_042
+      description: "exp10f 1.0000000e-7"
+      input: [0x33d6bf95]
+      expect: [0x3f800002]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 43: pi
+    - id: exp10_043
+      description: "exp10f pi"
+      input: [0x40490FDB]
+      expect: [0x44ad2e98]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 44: 2pi
+    - id: exp10_044
+      description: "exp10f 2pi"
+      input: [0x40c90fdb]
+      expect: [0x49ea5003]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 45: 10
+    - id: exp10_045
+      description: "exp10f 10"
+      input: [0x41200000]
+      expect: [0x501502f9]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 46: 37.5
+    - id: exp10_046
+      description: "exp10f 37.5"
+      input: [0x42160000]
+      expect: [0x7dbe529a]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 47: 38
+    - id: exp10_047
+      description: "exp10f 38"
+      input: [0x42180000]
+      expect: [0x7e967699]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 48: 38.531   largest value  --
+    - id: exp10_048
+      description: "exp10f 38.531   largest value  --"
+      input: [0x421A209A]
+      expect: [0x7f7fffb3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 49: -34.53
+    - id: exp10_049
+      description: "exp10f -34.53"
+      input: [0xc20a1eb8]
+      expect: [0x061ce9e4]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 50: -0.3
+    - id: exp10_050
+      description: "exp10f -0.3"
+      input: [0xbe99999a]
+      expect: [0x3f004dce]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 51: -0.642365
+    - id: exp10_051
+      description: "exp10f -0.642365"
+      input: [0xbf247208]
+      expect: [0x3e694f95]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 52: -0.5
+    - id: exp10_052
+      description: "exp10f -0.5"
+      input: [0xbf000000]
+      expect: [0x3ea1e89b]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 53: 0.3
+    - id: exp10_053
+      description: "exp10f 0.3"
+      input: [0x3e99999a]
+      expect: [0x3fff64c2]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 54: 0.642365
+    - id: exp10_054
+      description: "exp10f 0.642365"
+      input: [0x3f247208]
+      expect: [0x408c72a3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 55: 0.5
+    - id: exp10_055
+      description: "exp10f 0.5"
+      input: [0x3f000000]
+      expect: [0x404a62c2]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 56: 34.53
+    - id: exp10_056
+      description: "exp10f 34.53"
+      input: [0x420a1eb8]
+      expect: [0x78d0d408]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 57: exp10f test case 57
+    - id: exp10_057
+      description: ""
+      input: [0xc23369f5]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 58: exp10f test case 58
+    - id: exp10_058
+      description: ""
+      input: [0xc2349e35]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 59: exp10f test case 59
+    - id: exp10_059
+      description: ""
+      input: [0xc2349e36]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+#-----------------------------------------
+    # Double precision tests
+    #case 1: 0
+    - id: exp10_001
+      description: "exp10(0) = 1"
+      input: [0x0000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    #case 2: -0
+    - id: exp10_002
+      description: "exp10(-0) = 1"
+      input: [0x8000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    #case 3: inf
+    - id: exp10_003
+      description: "exp10(+inf) = +inf"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    #case 4: -inf
+    - id: exp10_004
+      description: "exp10(-inf) = 0"
+      input: [0xfff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    #case 5: -nan
+    - id: exp10_005
+      description: "exp10(-nan) = -nan"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    #case 6: +nan
+    - id: exp10_006
+      description: "exp10(+nan) = +nan"
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    #case 7: + subnorm (MAX)
+    - id: exp10_007
+      description: "exp10(subnorm_max_pos) ≈ 1.0"
+      input: [0x000fffffffffffff]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    #case 8: - subnorm (MAX)
+    - id: exp10_008
+      description: "exp10(subnorm_max_neg) ≈ 1.0"
+      input: [0x800fffffffffffff]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    #case 9: + subnorm (MIN)
+    - id: exp10_009
+      description: "exp10(subnorm_min_pos) ≈ 1.0"
+      input: [0x0000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    #case 10: - subnorm (MIN)
+    - id: exp10_010
+      description: "exp10(subnorm_min_neg) ≈ 1.0"
+      input: [0x8000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    #case 11: + POS
+    - id: exp10_011
+      description: "exp10(1.0) = 10.0"
+      input: [0x3ff0000000000000]
+      expect: [0x4024000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    #case 12: -POS
+    - id: exp10_012
+      description: "exp10(-1.0) = 0.1"
+      input: [0xbff0000000000000]
+      expect: [0x3fb999999999999a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    #case 13: +NEG
+    - id: exp10_013
+      description: "exp10(2.0) = 100.0"
+      input: [0x4000000000000000]
+      expect: [0x4059000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    #case 14: -NEG
+    - id: exp10_014
+      description: "exp10(-2.0) = 0.01"
+      input: [0xc000000000000000]
+      expect: [0x3f847ae147ae147b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    #case 15: qnan
+    - id: exp10_015
+      description: "exp10(qnan) = qnan"
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    #case 16: snan
+    - id: exp10_016
+      description: "exp10(snan) = qnan"
+      input: [0x7ff4000000000001]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+#Test cases from gtests test_exp10_data.h
+#-----------------------------------------
+    # Case 1: F64_POS_HNORMAL
+    - id: exp10_001
+      description: "exp10 F64_POS_HNORMAL"
+      input: [0x7FEfffffFFFFFFFF]
+      expect: [0x7fF0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    # Case 2: F64_NEG_HNORMAL
+    - id: exp10_002
+      description: "exp10 F64_NEG_HNORMAL"
+      input: [0xfFEfffffFFFFFFFF]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 3: 1000
+    - id: exp10_003
+      description: "exp10 1000"
+      input: [0x408F400000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    # Case 4: 896
+    - id: exp10_004
+      description: "exp10 896"
+      input: [0x408C000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    # Case 5: -322.5
+    - id: exp10_005
+      description: "exp10 -322.5"
+      input: [0xC074280000000000]
+      expect: [0x0000000000000006]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 6: -812
+    - id: exp10_006
+      description: "exp10 -812"
+      input: [0xC089600000000000]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 7: -708.3964185322641 smallest normal result
+    - id: exp10_007
+      description: "exp10 -708.3964185322641 smallest normal result"
+      input: [0xc086232bdd7abcd2]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 8: -708.3964185322642 largest denormal result
+    - id: exp10_008
+      description: "exp10 -708.3964185322642 largest denormal result"
+      input: [0xc086232bdd7abcd3]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 9: -745
+    - id: exp10_009
+      description: "exp10 -745"
+      input: [0xC087480000000000]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 10: 308.  largest value
+    - id: exp10_010
+      description: "exp10 308.  largest value"
+      input: [0x40734413509f79ff]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    # Case 11: 308.  overflow
+    - id: exp10_011
+      description: "exp10 308.  overflow"
+      input: [0x40734413509f7a00]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    # Case 12: large   overflow
+    - id: exp10_012
+      description: "exp10 large   overflow"
+      input: [0x4200000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    # Case 13: -128467.3555
+    - id: exp10_013
+      description: "exp10 -128467.3555"
+      input: [0xC0FF5D35B020C49C]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 14: 128467.3555
+    - id: exp10_014
+      description: "exp10 128467.3555"
+      input: [0x40FF5D35B020C49C]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    # Case 15: -1000
+    - id: exp10_015
+      description: "exp10 -1000"
+      input: [0xC08F400000000000]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 16: snan
+    - id: exp10_016
+      description: "exp10 snan"
+      input: [0x7FF0000000000001]
+      expect: [0x7FF8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    # Case 17: -snan
+    - id: exp10_017
+      description: "exp10 -snan"
+      input: [0xffF0000000000001]
+      expect: [0xffF8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    # Case 18: qnan
+    - id: exp10_018
+      description: "exp10 qnan"
+      input: [0x7FF8000000000000]
+      expect: [0x7FF8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 19: -qnan
+    - id: exp10_019
+      description: "exp10 -qnan"
+      input: [0xFFF8000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 20: inf
+    - id: exp10_020
+      description: "exp10 inf"
+      input: [0x7fF0000000000000]
+      expect: [0x7fF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 21: -inf
+    - id: exp10_021
+      description: "exp10 -inf"
+      input: [0xffF0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 22: 1
+    - id: exp10_022
+      description: "exp10 1"
+      input: [0x3fF0000000000000]
+      expect: [0x4024000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 23: -1
+    - id: exp10_023
+      description: "exp10 -1"
+      input: [0xbfF0000000000000]
+      expect: [0x3fb999999999999a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 24: 0
+    - id: exp10_024
+      description: "exp10 0"
+      input: [0x0000000000000000]
+      expect: [0x3fF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 25: -0
+    - id: exp10_025
+      description: "exp10 -0"
+      input: [0x8000000000000000]
+      expect: [0x3fF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 26: F64_POS_HDENORM
+    - id: exp10_026
+      description: "exp10 F64_POS_HDENORM"
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x3fF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 27: F64_NEG_HDENORM
+    - id: exp10_027
+      description: "exp10 F64_NEG_HDENORM"
+      input: [0x800fffffFFFFFFFF]
+      expect: [0x3fF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 28: F64_POS_LDENORM
+    - id: exp10_028
+      description: "exp10 F64_POS_LDENORM"
+      input: [0x0000000000000001]
+      expect: [0x3fF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 29: F64_NEG_LDENORM
+    - id: exp10_029
+      description: "exp10 F64_NEG_LDENORM"
+      input: [0x8000000000000001]
+      expect: [0x3fF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 30: F64_POS_LNORMAL
+    - id: exp10_030
+      description: "exp10 F64_POS_LNORMAL"
+      input: [0x0010000000000000]
+      expect: [0x3fF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 31: F64_NEG_LNORMAL
+    - id: exp10_031
+      description: "exp10 F64_NEG_LNORMAL"
+      input: [0x8010000000000000]
+      expect: [0x3fF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 32: pi/2
+    - id: exp10_032
+      description: "exp10 pi/2"
+      input: [0x3FF921FB60000000]
+      expect: [0x40429c6121c48762]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 33: 0.0000078125
+    - id: exp10_033
+      description: "exp10 0.0000078125"
+      input: [0x3EE0624DD2F1A9FC]
+      expect: [0x3ff00012dcea13ea]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 34: 0.0000156249991
+    - id: exp10_034
+      description: "exp10 0.0000156249991"
+      input: [0x3EF0624DC31C6CA1]
+      expect: [0x3ff00025b9ea4057]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 35: 0.504444
+    - id: exp10_035
+      description: "exp10 0.504444"
+      input: [0x3FE02467BE553AC5]
+      expect: [0x40098ef48d8d12ba]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 36: 1
+    - id: exp10_036
+      description: "exp10 1"
+      input: [0x3FF0000000000000]
+      expect: [0x4024000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 37: 2
+    - id: exp10_037
+      description: "exp10 2"
+      input: [0x4000000000000000]
+      expect: [0x4059000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 38: 1.0000000e-13
+    - id: exp10_038
+      description: "exp10 1.0000000e-13"
+      input: [0x3D3C25C268497682]
+      expect: [0x3ff000000000040d]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 39: pi
+    - id: exp10_039
+      description: "exp10 pi"
+      input: [0x400921FB60000000]
+      expect: [0x4095a5d2f45a52a3]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 40: 2pi
+    - id: exp10_040
+      description: "exp10 2pi"
+      input: [0x401921FB54442D18]
+      expect: [0x413d49ff9565591a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 41: 10
+    - id: exp10_041
+      description: "exp10 10"
+      input: [0x4024000000000000]
+      expect: [0x4202a05f20000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 42: 128
+    - id: exp10_042
+      description: "exp10 128"
+      input: [0x4060000000000000]
+      expect: [0x5a827748f9301d32]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 43: 307.5
+    - id: exp10_043
+      description: "exp10 307.5"
+      input: [0x4073380000000000]
+      expect: [0x7fc68423588e3be1]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 44: 308
+    - id: exp10_044
+      description: "exp10 308"
+      input: [0x4073400000000000]
+      expect: [0x7fe1ccf385ebc8a0]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 45: -256
+    - id: exp10_045
+      description: "exp10 -256"
+      input: [0xC070000000000000]
+      expect: [0x0ac8062864ac6f43]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 46: 308.   largest value  --
+    - id: exp10_046
+      description: "exp10 308.   largest value  --"
+      input: [0x40734413509f79fe]
+      expect: [0x7feffffffffffba1]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 47: -64.53
+    - id: exp10_047
+      description: "exp10 -64.53"
+      input: [0xC05021EB851EB852]
+      expect: [0x3288dd27ccc64b88]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 48: -0.3
+    - id: exp10_048
+      description: "exp10 -0.3"
+      input: [0xBFD3333333333333]
+      expect: [0x3fe009b9cf334252]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 49: -0.642365
+    - id: exp10_049
+      description: "exp10 -0.642365"
+      input: [0xBFE48E410B630A91]
+      expect: [0x3fcd29f2930fdf8a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 50: -0.5
+    - id: exp10_050
+      description: "exp10 -0.5"
+      input: [0xBFE0000000000000]
+      expect: [0x3fd43d136248490f]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 51: 0.3
+    - id: exp10_051
+      description: "exp10 0.3"
+      input: [0x3FD3333333333333]
+      expect: [0x3fffec982d5bb8af]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 52: 0.642365
+    - id: exp10_052
+      description: "exp10 0.642365"
+      input: [0x3FE48E410B630A91]
+      expect: [0x40118e547a2a0560]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 53: 0.5
+    - id: exp10_053
+      description: "exp10 0.5"
+      input: [0x3FE0000000000000]
+      expect: [0x40094c583ada5b53]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 54: 64.53
+    - id: exp10_054
+      description: "exp10 64.53"
+      input: [0x405021EB851EB852]
+      expect: [0x4d549794b5f069d2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 55:
+    - id: exp10_055
+      description: ""
+      input: [0x0000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+#-----------------------------------------

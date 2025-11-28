@@ -1,0 +1,2063 @@
+- test_sequence: unit_tests_cos
+  ignore_exceptions: [underflow, inexact]
+  function: cos
+  test_sets:
+  - id: special-values
+    description: Special values for cos function
+    tests:
+    # Single Precision Tests
+    - id: cos_001
+      description: "cosf(0) = 1"
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_002
+      description: "cosf(-0) = 1"
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_003
+      description: "cosf(inf) = nan"
+      input: [0x7f800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cos_004
+      description: "cosf(-inf) = nan"
+      input: [0xff800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cos_005
+      description: "cosf(-nan) = nan"
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_006
+      description: "cosf(+nan) = nan"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_007
+      description: "cosf(subnorm_max) ≈ 1 (small angle)"
+      input: [0x007fffff]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_008
+      description: "cosf(subnorm_max) ≈ 1 (small angle)"
+      input: [0x007fffff]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_009
+      description: "cosf(subnorm_min) ≈ 1 (small angle)"
+      input: [0x00000001]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_010
+      description: "cosf(subnorm_min) ≈ 1 (small angle)"
+      input: [0x00000001]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_011
+      description: "cosf(π/2) ≈ 0"
+      input: [0x3fc90fdb]
+      expect: [0x00000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_012
+      description: "cosf(-π/2) ≈ 0"
+      input: [0xbfc90fdb]
+      expect: [0x00000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_013
+      description: "cosf(π) ≈ -1"
+      input: [0x40490fdb]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_014
+      description: "cosf(-π) ≈ -1"
+      input: [0xc0490fdb]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+# Test cases from gtests test_cos_data.h
+#-------------------------------
+    - id: cos_001
+      description: cosf(1.569805) ≈ 0.0
+      input: [0x3fc8f5c3]
+      expect: [0x0]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_002
+      description: cosf(+0) = +1
+      input: [0x00000000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_003
+      description: cosf(-0) = +1
+      input: [0x80000000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_004
+      description: cosf(0.5) ≈ 0.877583
+      input: [0x3F000000]
+      expect: [0x3f60a940]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_005
+      description: cosf(0.7) ≈ 0.764842
+      input: [0x3F333333]
+      expect: [0x3F43CCB3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_006
+      description: cosf(0.8) ≈ 0.696707
+      input: [0x3F4CCCCD]
+      expect: [0x3F325B5F]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_007
+      description: cosf(1.5) ≈ 0.070737
+      input: [0x3fc00000]
+      expect: [0x3D90DEAA]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_008
+      description: cosf(π/2) ≈ -4.37e-08
+      input: [0x3FC90FDB]
+      expect: [0xb33bbd2e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_009
+      description: cosf(-3.92) ≈ -0.712207
+      input: [0xC07AE148]
+      expect: [0xBF3647C6]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_010
+      description: cosf(0.785398) ≈ 0.707107
+      input: [0x3F490FDB]
+      expect: [0x3f3504f3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_011
+      description: cosf(+SNAN) = +SNAN (invalid)
+      input: [0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cos_012
+      description: cosf(-SNAN) = -SNAN (invalid)
+      input: [0xffb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cos_013
+      description: cosf(+INF) = QNAN (invalid)
+      input: [0x7F800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cos_014
+      description: cosf(-INF) = QNAN (invalid)
+      input: [0xFF800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cos_015
+      description: cosf(+QNAN) = +QNAN
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_016
+      description: cosf(-QNAN) = -QNAN
+      input: [0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_017
+      description: cosf(small positive) ≈ 0.999969
+      input: [0x3C000001]
+      expect: [0x3f7ffe00]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_018
+      description: cosf(very small positive) ≈ 1.0
+      input: [0x39000001]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_019
+      description: cosf(1.0) ≈ 0.540302
+      input: [0x3F800000]
+      expect: [0x3f0a5140]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_020
+      description: cosf(2.0) ≈ -0.416147
+      input: [0x40000000]
+      expect: [0xbed51133]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_021
+      description: cosf(π) = -π
+      input: [0x40490fd8]
+      expect: [0xc0490fd8]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_022
+      description: cosf(2π) = 1.0
+      input: [0x40C90FDB]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_023
+      description: cosf(10.0) ≈ -0.839072
+      input: [0x41200000]
+      expect: [0xbf56cd64]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_024
+      description: cosf(1000.0) ≈ 0.562379
+      input: [0x447A0000]
+      expect: [0x3f0ff813]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_025
+      description: cosf(-4e5) ≈ 0.980785
+      input: [0xC8C35000]
+      expect: [0x3f7d62d4]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_026
+      description: cosf(500000) ≈ -0.982287
+      input: [0x48F42400]
+      expect: [0xbf7beb6c]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_027
+      description: cosf(501350.25) ≈ -0.687766
+      input: [0x48F4CCC8]
+      expect: [0xbf2fd6b2]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_028
+      description: cosf(-784000) ≈ -0.975702
+      input: [0xC93F6800]
+      expect: [0xbf7cf1b1]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_029
+      description: cosf(505.796417) = -1.0
+      input: [0x43FCE5F1]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_030
+      description: cosf(182165.25) = -1.0
+      input: [0x4831E550]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_031
+      description: cosf(126.449104) ≈ 0.707107
+      input: [0x42FCE5F1]
+      expect: [0x3F3504F3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_032
+      description: cosf(-2.19993846E+10) ≈ -1.055e-08
+      input: [0xd0a3e87f]
+      expect: [0xb10a4ed8]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_033
+      description: cosf(-π/2) ≈ -4.37e-08
+      input: [0xbfc90fdb]
+      expect: [0xb33bbd2e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_034
+      description: cosf(3π/2) ≈ 1.19e-08
+      input: [0x4096cbe4]
+      expect: [0x324cde2e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_035
+      description: cosf(-3π/2) ≈ 1.19e-08
+      input: [0xc096cbe4]
+      expect: [0x324cde2e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_036
+      description: cosf(10π) = 1.0
+      input: [0x41fb53d1]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_037
+      description: cosf(21π/2) ≈ 1.82e-06
+      input: [0x4203f267]
+      expect: [0x35f4cbd9]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_038
+      description: cosf(32π) = 1.0
+      input: [0x42c90fdb]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_039
+      description: cosf(65π/2) ≈ 3.77e-07
+      input: [0x42cc341a]
+      expect: [0x34ca9ee6]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_040
+      description: cosf(0.392699) ≈ 0.923880
+      input: [0x3ec90fdb]
+      expect: [0x3f6c835e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_041
+      description: cosf(0.785398) ≈ 0.707107
+      input: [0x3f490fdb]
+      expect: [0x3f3504f3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_042
+      description: cosf(1.178097) ≈ 0.382683
+      input: [0x3f96cbe4]
+      expect: [0x3ec3ef15]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_043
+      description: cosf(1.570796) ≈ -4.37e-08
+      input: [0x3fc90fdb]
+      expect: [0xb33bbd2e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_044
+      description: cosf(1.963495) ≈ -0.382683
+      input: [0x3ffb53d1]
+      expect: [0xbec3ef14]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_045
+      description: cosf(2.356194) ≈ -0.707107
+      input: [0x4016cbe4]
+      expect: [0xbf3504f3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_046
+      description: cosf(2.748893) ≈ -0.923880
+      input: [0x402feddf]
+      expect: [0xbf6c835e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_047
+      description: cosf(π) = -1.0
+      input: [0x40490fdb]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_048
+      description: cosf(3.534292) ≈ -0.923880
+      input: [0x406231d6]
+      expect: [0xbf6c835e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_049
+      description: cosf(3.926991) ≈ -0.707107
+      input: [0x407b53d1]
+      expect: [0xbf3504f4]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_050
+      description: cosf(4.319690) ≈ -0.382684
+      input: [0x408a3ae6]
+      expect: [0xbec3ef1a]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_051
+      description: cosf(3π/2) ≈ 1.19e-08
+      input: [0x4096cbe4]
+      expect: [0x324cde2e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_052
+      description: cosf(5.105088) ≈ 0.382684
+      input: [0x40a35ce2]
+      expect: [0x3ec3ef1b]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_053
+      description: cosf(5.497787) ≈ 0.707107
+      input: [0x40afeddf]
+      expect: [0x3f3504f1]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_054
+      description: cosf(5.890486) ≈ 0.923880
+      input: [0x40bc7edd]
+      expect: [0x3f6c835f]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_055
+      description: cosf(2π) = 1.0
+      input: [0x40c90fdb]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_056
+      description: cosf(-0.392699) ≈ 0.923880
+      input: [0xbec90fdb]
+      expect: [0x3f6c835e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_057
+      description: cosf(-0.785398) ≈ 0.707107
+      input: [0xbf490fdb]
+      expect: [0x3f3504f3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_058
+      description: cosf(-1.178097) ≈ 0.382683
+      input: [0xbf96cbe4]
+      expect: [0x3ec3ef15]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_059
+      description: cosf(-π/2) ≈ -4.37e-08
+      input: [0xbfc90fdb]
+      expect: [0xb33bbd2e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_060
+      description: cosf(-1.963495) ≈ -0.382683
+      input: [0xbffb53d1]
+      expect: [0xbec3ef14]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_061
+      description: cosf(-2.356194) ≈ -0.707107
+      input: [0xc016cbe4]
+      expect: [0xbf3504f3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_062
+      description: cosf(-2.748893) ≈ -0.923880
+      input: [0xc02feddf]
+      expect: [0xbf6c835e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_063
+      description: cosf(-π) = -1.0
+      input: [0xc0490fdb]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_064
+      description: cosf(-3.534292) ≈ -0.923880
+      input: [0xc06231d6]
+      expect: [0xbf6c835e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_065
+      description: cosf(-3.926991) ≈ -0.707107
+      input: [0xc07b53d1]
+      expect: [0xbf3504f4]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_066
+      description: cosf(-4.319690) ≈ -0.382684
+      input: [0xc08a3ae6]
+      expect: [0xbec3ef1a]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_067
+      description: cosf(-3π/2) ≈ 1.19e-08
+      input: [0xc096cbe4]
+      expect: [0x324cde2e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_068
+      description: cosf(-5.105088) ≈ 0.382684
+      input: [0xc0a35ce2]
+      expect: [0x3ec3ef1b]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_069
+      description: cosf(-5.497787) ≈ 0.707107
+      input: [0xc0afeddf]
+      expect: [0x3f3504f1]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_070
+      description: cosf(-5.890486) ≈ 0.923880
+      input: [0xc0bc7edd]
+      expect: [0x3f6c835f]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_071
+      description: cosf(-2π) = 1.0
+      input: [0xc0c90fdb]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_072
+      description: cosf(-1.150402) ≈ 0.408120
+      input: [0xbf934063]
+      expect: [0x3ed0f51e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_073
+      description: cosf(+0) = 1.0
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_074
+      description: cosf(+0) = 1.0
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_075
+      description: cosf(-0) = 1.0
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_076
+      description: cosf(+0) = 1.0
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_077
+      description: cosf(-1.526e-15) = 1.0
+      input: [0xa6dbe299]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_078
+      description: cosf(+0) = 1.0
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_079
+      description: cosf(-3.924e-44) = 1.0
+      input: [0x8000001c]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_080
+      description: cosf(2.505014) ≈ -0.804134
+      input: [0x40205226]
+      expect: [0xbf4ddbbe]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_081
+      description: cosf(1.908952) ≈ -0.331747
+      input: [0x3ff45887]
+      expect: [0xbea9dacd]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_082
+      description: cosf(-0) = 1.0
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_083
+      description: cosf(+0) = 1.0
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_084
+      description: cosf(-3.340743) ≈ -0.980235
+      input: [0xc055cebc]
+      expect: [0xbf7af0af]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_085
+      description: cosf(-5.572972) ≈ 0.758223
+      input: [0xc0b255c9]
+      expect: [0x3f421ae2]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_086
+      description: cosf(-0) = 1.0
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_087
+      description: cosf(+0) = 1.0
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_088
+      description: cosf(2.931226) ≈ -0.977954
+      input: [0x403b9936]
+      expect: [0xbf7a5b39]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_089
+      description: cosf(0.368386) ≈ 0.932910
+      input: [0x3ebc9d26]
+      expect: [0x3f6ed32a]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_090
+      description: cosf(-0.0726878) ≈ 0.997359
+      input: [0xbd94dd55]
+      expect: [0x3f7f52f2]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_091
+      description: cosf(-0) = 1.0
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_092
+      description: cosf(+INF) = QNAN (invalid)
+      input: [0x7f800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cos_093
+      description: cosf(-INF) = QNAN (invalid)
+      input: [0xff800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cos_094
+      description: cosf(QNAN) = QNAN
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_095
+      description: cosf(QNAN) = QNAN
+      input: [0x7fc00001]
+      expect: [0x7fc00001]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_096
+      description: cosf(+INF) = QNAN
+      input: [0x7f800001]
+      expect: [0x7fc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: cos_097
+      description: cosf(+QNAN) = +QNAN
+      input: [0x7fef8000]
+      expect: [0x7fef8000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_098
+      description: cosf(-QNAN) = -QNAN
+      input: [0xffef8000]
+      expect: [0xffef8000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_099
+      description: cosf(-0) = 1.0
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: cos_100
+      description: cosf(2.356203) ≈ -0.707106
+      input: [0x4016cb60]
+      expect: [0xbf35037e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_101
+      description: cosf(2.356212) ≈ -0.707109
+      input: [0x4016cd61]
+      expect: [0xbf350929]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_102
+      description: cosf(2.356221) ≈ -0.707115
+      input: [0x4016cf62]
+      expect: [0xbf350ed4]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: cos_103
+      description: cosf(2.356230) ≈ -0.707120
+      input: [0x4016d163]
+      expect: [0xbf35147e]
+      expect_exception: [inexact]
+      variants: [ss]
+#------------------------------
+    # Double Precision Tests
+    - id: cos_001
+      description: "cos(0) = 1"
+      input: [0x0000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_002
+      description: "cos(-0) = 1"
+      input: [0x8000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_003
+      description: "cos(inf) = nan"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cos_004
+      description: "cos(-inf) = nan"
+      input: [0xfff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cos_005
+      description: "cos(-nan) = nan"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_006
+      description: "cos(+nan) = nan"
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_007
+      description: "cos(subnorm_max) ≈ 1 (small angle)"
+      input: [0x000fffffffffffff]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_008
+      description: "cos(subnorm_max) ≈ 1 (small angle)"
+      input: [0x000fffffffffffff]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_009
+      description: "cos(subnorm_min) ≈ 1 (small angle)"
+      input: [0x0000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_010
+      description: "cos(subnorm_min) ≈ 1 (small angle)"
+      input: [0x0000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_011
+      description: "cos(π/2) ≈ 0"
+      input: [0x3ff921fb54442d18]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_012
+      description: "cos(-π/2) ≈ 0"
+      input: [0xbff921fb54442d18]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_013
+      description: "cos(π) ≈ -1"
+      input: [0x400921fb54442d18]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_014
+      description: "cos(-π) ≈ -1"
+      input: [0xc00921fb54442d18]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+# Test cases from gtests test_cos_data.h
+#-------------------------------
+    - id: cos_001
+      description: cos(+0) = +1
+      input: [0x0000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_002
+      description: cos(-0) = +1
+      input: [0x8000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_003
+      description: cos(+SNAN) = +SNAN (invalid)
+      input: [0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cos_004
+      description: cos(-SNAN) = -SNAN (invalid)
+      input: [0xfff2000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cos_005
+      description: cos(+INF) = +SNAN (invalid)
+      input: [0x7ff0000000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cos_006
+      description: cos(-INF) = +SNAN (invalid)
+      input: [0xfff0000000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cos_007
+      description: cos(+QNAN) = +QNAN
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_008
+      description: cos(-QNAN) = -QNAN
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_009
+      description: cos(1000005.3689) ≈ 0.295156
+      input: [0x412e848abcdef000]
+      expect: [0x3fd2d92261ee0d59]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_010
+      description: cos(3.458e+17) ≈ 0.011225
+      input: [0x439332270327f466]
+      expect: [0x3f8720ef3d9337a0]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_011
+      description: cos(3.458e+17) ≈ 0.011225
+      input: [0x439332270327f466]
+      expect: [0x3f8720ef3d9337a0]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_012
+      description: cos(3.458e+17) ≈ 0.011225
+      input: [0x439332270327f466]
+      expect: [0x3f8720ef3d9337a0]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_013
+      description: cos(3.926991) ≈ -0.707107
+      input: [0x400f6a7a2955385e]
+      expect: [0xbfe6a09e667f3bce]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_014
+      description: cos(3.926991) ≈ -0.707107
+      input: [0x400f6a7a2955385d]
+      expect: [0xbfe6a09e667f3bd0]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_015
+      description: cos(3.926991) ≈ -0.707107
+      input: [0x400f6a7a2955385f]
+      expect: [0xbfe6a09e667f3bcb]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_016
+      description: cos(2.356194) ≈ -0.707107
+      input: [0x4002d97c7f3321d2]
+      expect: [0xbfe6a09e667f3bcc]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_017
+      description: cos(2.356194) ≈ -0.707107
+      input: [0x4002d97c7f3321d1]
+      expect: [0xbfe6a09e667f3bc9]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_018
+      description: cos(2.356194) ≈ -0.707107
+      input: [0x4002d97c7f3321d3]
+      expect: [0xbfe6a09e667f3bcf]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_019
+      description: cos(7.068526) ≈ 0.707107
+      input: [0x401c463abeccb2bb]
+      expect: [0x3fe6a09e667f3bce]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_020
+      description: cos(7.068526) ≈ 0.707107
+      input: [0x401c463abeccb2ba]
+      expect: [0x3fe6a09e667f3bd4]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_021
+      description: cos(7.068526) ≈ 0.707107
+      input: [0x401c463abeccb2bc]
+      expect: [0x3fe6a09e667f3bc9]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_022
+      description: cos(5.497787) ≈ 0.707107
+      input: [0x4015fdbbe9bba775]
+      expect: [0x3fe6a09e667f3bcb]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_023
+      description: cos(5.497787) ≈ 0.707107
+      input: [0x4015fdbbe9bba774]
+      expect: [0x3fe6a09e667f3bc6]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_024
+      description: cos(5.497787) ≈ 0.707107
+      input: [0x4015fdbbe9bba776]
+      expect: [0x3fe6a09e667f3bd1]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_025
+      description: cos(3.926991) ≈ -0.707107
+      input: [0x400f6a7a2955385e]
+      expect: [0xbfe6a09e667f3bce]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_026
+      description: cos(7.068526) ≈ 0.707107
+      input: [0x401c463abeccb2bb]
+      expect: [0x3fe6a09e667f3bce]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_027
+      description: cos(5.497787) ≈ 0.707107
+      input: [0x4015fdbbe9bba775]
+      expect: [0x3fe6a09e667f3bcb]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_028
+      description: cos(2.356194) ≈ -0.707107
+      input: [0x4002d97c7f3321d2]
+      expect: [0xbfe6a09e667f3bcc]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_029
+      description: cos(45.553093) ≈ -1.64e-17
+      input: [0x4046c6cbc45dc8de]
+      expect: [0xbc26d61b58c99c43]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_030
+      description: cos(16.419219) ≈ -0.764593
+      input: [0x40306b51f0157e66]
+      expect: [0xbfe83dca43349085]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_031
+      description: cos(4.712450) ≈ 6.25e-05
+      input: [0x4012d98c7f3321d2]
+      expect: [0x3f0fffffffaa40c6]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_032
+      description: cos(5.588e-09) = 1.0
+      input: [0x3e38000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_033
+      description: cos(-5.588e-09) = 1.0
+      input: [0xbe38000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_034
+      description: cos(9.155e-05) ≈ 1.0
+      input: [0x3f18000000000000]
+      expect: [0x3feffffffdc00000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_035
+      description: cos(-9.155e-05) ≈ 1.0
+      input: [0xbf18000000000000]
+      expect: [0x3feffffffdc00000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_036
+      description: cos(0.5) ≈ 0.877583
+      input: [0x3fe0000000000000]
+      expect: [0x3fec1528065b7d50]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_037
+      description: cos(-0.5) ≈ 0.877583
+      input: [0xbfe0000000000000]
+      expect: [0x3fec1528065b7d50]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_038
+      description: cos(0.999865) ≈ 0.539084
+      input: [0x3feffee4e9dabc6b]
+      expect: [0x3fe14b164296c5e0]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_039
+      description: cos(π/4) ≈ 0.707107
+      input: [0x3fe921fb54442d18]
+      expect: [0x3fe6a09e667f3bcd]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_040
+      description: cos(-π/4) ≈ 0.707107
+      input: [0xbfe921fb54442d18]
+      expect: [0x3fe6a09e667f3bcd]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_041
+      description: cos(π/4) ≈ 0.707107
+      input: [0x3fe921fb54442d18]
+      expect: [0x3fe6a09e667f3bcd]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_042
+      description: cos(small value) ≈ 1.0
+      input: [0x3f20000000000001]
+      expect: [0x3feffffffc000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_043
+      description: cos(very small value) = 1.0
+      input: [0x3e40000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_044
+      description: cos(1000005.3689) ≈ 0.295156
+      input: [0x412e848abcdef000]
+      expect: [0x3fd2d92261ee0d59]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_045
+      description: cos(3.458e+17) ≈ 0.011225
+      input: [0x439332270327f466]
+      expect: [0x3f8720ef3d9337a0]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_046
+      description: cos(0.808690) ≈ 0.690731
+      input: [0x3fe9e0c8f112ab1e]
+      expect: [0x3fe618243eefd4fd]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_047
+      description: cos(16.419219) ≈ -0.764593
+      input: [0x40306b51f0157e66]
+      expect: [0xbfe83dca43349085]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_048
+      description: cos(14.936240) ≈ -0.717356
+      input: [0x402ddf5adb92c01a]
+      expect: [0xbfe6ef49dae5cece]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_049
+      description: cos(14.928646) ≈ -0.693109
+      input: [0x402ddb778a9ebd8a]
+      expect: [0xbfe6c3bcf257d639]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_050
+      description: cos(7.068526) ≈ 0.707126
+      input: [0x401c462b9064a63b]
+      expect: [0x3fe6a0f446b1f80a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_051
+      description: cos(0.785398) ≈ 0.707107
+      input: [0x3fe921fb54442d19]
+      expect: [0x3fe6a09e667f3bcc]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_052
+      description: cos(0.785398) ≈ 0.707107
+      input: [0x3fe921fb54442d20]
+      expect: [0x3fe6a09e667f3bc7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_053
+      description: cos(1.065586) ≈ 0.467773
+      input: [0x3ff10ca44655d48a]
+      expect: [0x3fdef9b63399ad36]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_054
+      description: cos(π) = -1.0
+      input: [0x400921FB54442D18]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_055
+      description: cos(-π) = -1.0
+      input: [0xc00921fb54442d18]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_056
+      description: cos(3.142535) ≈ -1.0
+      input: [0x400923e979f8b36a]
+      expect: [0xbfefffff118a9e97]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_057
+      description: cos(2.356883) ≈ -0.707111
+      input: [0x4002dae59bb5c33e]
+      expect: [0xbfe6a49b6cfd78bd]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_058
+      description: cos(5.497842) ≈ 0.707126
+      input: [0x4015fdca5f9a0e38]
+      expect: [0x3fe6a0f032d9f6da]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_059
+      description: cos(6459.852379) ≈ 0.740852
+      input: [0x40b93bda357dadda]
+      expect: [0x3fe7ad37100a511a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_060
+      description: cos(90962.317034) ≈ 0.800151
+      input: [0x40f63525129291ff]
+      expect: [0x3fe99a6170de0d7d]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_061
+      description: cos(1.570427) ≈ 9.476e-05
+      input: [0x3ff9207824b27c17]
+      expect: [0x3f3832f911d6420b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_062
+      description: cos(10.997278) ≈ 0.00108
+      input: [0x4025fe9b31eb183d]
+      expect: [0x3f5be9050b9f7107]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_063
+      description: cos(3.458e+17) ≈ 0.011225
+      input: [0x439332270327f466]
+      expect: [0x3f8720ef3d9337a0]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_064
+      description: cos(45.553093) ≈ -1.64e-17
+      input: [0x4046c6cbc45dc8de]
+      expect: [0xbc26d61b58c99c43]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_065
+      description: cos(518341.758052) ≈ -0.572061
+      input: [0x411fa317083ee0a2]
+      expect: [0xbfe2512769b8cee7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_066
+      description: cos(2.0) ≈ -0.416147
+      input: [0x4000000000000000]
+      expect: [0xbfdaa22657537205]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_067
+      description: cos(3.0) ≈ -0.989992
+      input: [0x4008000000000000]
+      expect: [0xbfefae04be85e5d2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_068
+      description: cos(10.0) ≈ -0.839072
+      input: [0x4024000000000000]
+      expect: [0xbfead9ac890c6b1f]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_069
+      description: cos(-2.0) ≈ -0.416147
+      input: [0xc000000000000000]
+      expect: [0xbfdaa22657537205]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_070
+      description: cos(π/2) ≈ 6.12e-17
+      input: [0x3ff921fb54442d18]
+      expect: [0x3c91a62633145c07]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_071
+      description: cos(3π/2) ≈ -1.84e-16
+      input: [0x4012d97c7f3321d2]
+      expect: [0xbcaa79394c9e8a0a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_072
+      description: cos(2π) = 1.0
+      input: [0x401921fb54442d18]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_073
+      description: cos(-3.141581) ≈ -1.0
+      input: [0xc00921f554442d18]
+      expect: [0xbfeffffffff70000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_074
+      description: cos(-1.570791) ≈ 5.416e-05
+      input: [0xbff921f557442d18]
+      expect: [0x3ed7f40000008b3a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_075
+      description: cos(-1.570669) ≈ 0.000122
+      input: [0xbff9217557442d18]
+      expect: [0x3f20bf9fff3c46cf]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_076
+      description: cos(3.141593) = -1.0
+      input: [0x400921fb56442d18]
+      expect: [0xbfefffffffffffff]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_077
+      description: cos(4.712450) ≈ 6.25e-05
+      input: [0x4012d98c7f3321d2]
+      expect: [0x3f0fffffffaa40c6]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_078
+      description: cos(2.22e-16) = 1.0
+      input: [0x3cb0000000000000]
+      expect: [0x3fefffffffffffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_079
+      description: cos(4.941e-324) = 1.0
+      input: [0x0000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_080
+      description: cos(-3π/2) ≈ -1.84e-16
+      input: [0xc012d97c7f3321d2]
+      expect: [0xbcaa79394c9e8a0a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_081
+      description: cos(21π/2) ≈ 6.61e-15
+      input: [0x40407e4cef4cbd97]
+      expect: [0x3cfdca8488c2ae32]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_082
+      description: cos(65π/2) ≈ 9.31e-15
+      input: [0x4059868341953dcc]
+      expect: [0x3d04f65f65f056bb]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_083
+      description: cos(-21π/2) ≈ 6.61e-15
+      input: [0xc0407e4cef4cbd97]
+      expect: [0x3cfdca8488c2ae32]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_084
+      description: cos(-65π/2) ≈ 9.31e-15
+      input: [0xc059868341953dcc]
+      expect: [0x3d04f6f565f056bb]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_085
+      description: cos(10π) = 1.0
+      input: [0x403f6a7a2955385e]
+      expect: [0x3fefffffffffffff]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_086
+      description: cos(32π) = 1.0
+      input: [0x405921fb54442d18]
+      expect: [0x3fefffffffffffff]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_087
+      description: cos(-10π) = 1.0
+      input: [0xc03f6a7a2955385e]
+      expect: [0x3fefffffffffffff]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_088
+      description: cos(-32π) = 1.0
+      input: [0xc05921fb54442d18]
+      expect: [0x3fefffffffffffff]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_089
+      description: cos(8.988e+307) ≈ -0.217
+      input: [0x7fe0000000000001]
+      expect: [0xbfcbc6a1978019b9]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_090
+      description: cos(0.392699) ≈ 0.923880
+      input: [0x3fd921fb54442d18]
+      expect: [0x3fed906dcf328d46]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_091
+      description: cos(π/4) ≈ 0.707107
+      input: [0x3fe921fb54442d18]
+      expect: [0x3fe6a09e667f3bcd]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_092
+      description: cos(1.178097) ≈ 0.382683
+      input: [0x3ff2d97c7f3321d2]
+      expect: [0x3fd87de2a6aea964]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_093
+      description: cos(1.963495) ≈ -0.382683
+      input: [0x3fff6a7a2955385e]
+      expect: [0xbfd87de2a6aea962]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_094
+      description: cos(2.356194) ≈ -0.707107
+      input: [0x4002d97c7f3321d2]
+      expect: [0xbfe6a09e667f3bcc]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_095
+      description: cos(2.748894) ≈ -0.923880
+      input: [0x4005fdbbe9bba775]
+      expect: [0xbfed906bcf328d46]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_096
+      description: cos(π) = -1.0
+      input: [0x400921fb54442d18]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_097
+      description: cos(3.534292) ≈ -0.923880
+      input: [0x400c463abeccb2bb]
+      expect: [0xbfed906bcf328d47]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_098
+      description: cos(3.926991) ≈ -0.707107
+      input: [0x400f6a7a2955385e]
+      expect: [0xbfe6a09e667f3bce]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_099
+      description: cos(4.319690) ≈ -0.382683
+      input: [0x4011475cc9eedf00]
+      expect: [0xbfd87de2a6aea96d]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_100
+      description: cos(5.105088) ≈ 0.382683
+      input: [0x40146b9c347764a4]
+      expect: [0x3fd87de3a6aea967]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_101
+      description: cos(5.497787) ≈ 0.707107
+      input: [0x4015fdbbe9bba775]
+      expect: [0x3fe6a09e667f3bcb]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_102
+      description: cos(5.890486) ≈ 0.923880
+      input: [0x40178fdb9effea46]
+      expect: [0x3fed906bcf328d44]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_103
+      description: cos(2π) = 1.0
+      input: [0x401921fb54442d18]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_104
+      description: cos(-0.392699) ≈ 0.923880
+      input: [0xbfd921fb54442d18]
+      expect: [0x3fed906bcf328d46]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_105
+      description: cos(-π/4) ≈ 0.707107
+      input: [0xbfe921fb54442d18]
+      expect: [0x3fe6a09e667f3bcd]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_106
+      description: cos(-1.178097) ≈ 0.382683
+      input: [0xbff2d97c7f3321d2]
+      expect: [0x3fd87de2a6aea964]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_107
+      description: cos(-1.963495) ≈ -0.382683
+      input: [0xbfff6a7a2955385e]
+      expect: [0xbfd87de2a6aea962]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_108
+      description: cos(-2.356194) ≈ -0.707107
+      input: [0xc002d97c7f3321d2]
+      expect: [0xbfe6a09e667f3bcc]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_109
+      description: cos(-2.748894) ≈ -0.923880
+      input: [0xc005fdbbe9bba775]
+      expect: [0xbfed906bcf328d46]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_110
+      description: cos(-π) = -1.0
+      input: [0xc00921fb54442d18]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_111
+      description: cos(-3.534292) ≈ -0.923880
+      input: [0xc00c463abeccb2bb]
+      expect: [0xbfed906bcf328d47]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_112
+      description: cos(-3.926991) ≈ -0.707107
+      input: [0xc00f6a7a2955385e]
+      expect: [0xbfe6a09e667f3bce]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_113
+      description: cos(-4.319690) ≈ -0.382683
+      input: [0xc011475cc9eedf00]
+      expect: [0xbfd87de2a6aea96d]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_114
+      description: cos(-5.105088) ≈ 0.382683
+      input: [0xc0146b9c347764a4]
+      expect: [0x3fd87de2a6aea967]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_115
+      description: cos(-5.497787) ≈ 0.707107
+      input: [0xc015fdbbe9bba775]
+      expect: [0x3fe6a09e667f3bcb]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_116
+      description: cos(-5.890486) ≈ 0.923880
+      input: [0xc0178fdb9effea46]
+      expect: [0x3fed906bcf328d44]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_117
+      description: cos(-2π) = 1.0
+      input: [0xc01921fb54442d18]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_118
+      description: cos(-1.150402) ≈ 0.408120
+      input: [0xbff2680c64e45772]
+      expect: [0x3fda1ea3a4ff623d]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_119
+      description: cos(3.864e-251) = 1.0
+      input: [0x0bf1b461bf13177f]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_120
+      description: cos(5.705e-246) = 1.0
+      input: [0x0d03f22c4a275d0a]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_121
+      description: cos(-3.928e-183) = 1.0
+      input: [0x9a10b0675b81292b]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_122
+      description: cos(5.659e-145) = 1.0
+      input: [0x21fc43e98867c4a0]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_123
+      description: cos(-1.526e-15) = 1.0
+      input: [0xbcdb7c5310fae10f]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_124
+      description: cos(2.973e-285) = 1.0
+      input: [0x04dc4b977f03c30a]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_125
+      description: cos(-3.887e-44) = 1.0
+      input: [0xb6ebbd7a73688abe]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_126
+      description: cos(2.505014) ≈ -0.804134
+      input: [0x40040a44b3f85dab]
+      expect: [0xbfe9bb779d065d70]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_127
+      description: cos(1.908952) ≈ -0.331747
+      input: [0x3ffe8b10d6798036]
+      expect: [0xbfd53b59780ed5e4]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_128
+      description: cos(-1.843e-125) = 1.0
+      input: [0xa608f43d1956f811]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_129
+      description: cos(2.109e-48) = 1.0
+      input: [0x3608a9c8126d98b0]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_130
+      description: cos(-3.340743) ≈ -0.980235
+      input: [0xc00ab9d7847d5de8]
+      expect: [0xbfef5e15ccf4ec0f]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_131
+      description: cos(-5.572972) ≈ 0.758223
+      input: [0xc0164ab92935b7bf]
+      expect: [0x3fe8435c711372d8]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_132
+      description: cos(-4.412e-118) = 1.0
+      input: [0xa791cda82cee365e]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_133
+      description: cos(9.928e-134) = 1.0
+      input: [0x24520a13503dcebe]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_134
+      description: cos(2.931226) ≈ -0.977954
+      input: [0x40077326c7c423de]
+      expect: [0xbfef4b673257a3da]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_135
+      description: cos(0.368386) ≈ 0.932910
+      input: [0x3fd793a4b27b58c8]
+      expect: [0x3fedda65476c8031]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_136
+      description: cos(-0.072688) ≈ 0.997359
+      input: [0xbfb29baa97f00ffa]
+      expect: [0x3fefea5e460342e6]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_137
+      description: cos(-5.033e-113) = 1.0
+      input: [0xa89efc4d47cd8d7d]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_138
+      description: cos(+0) = 1.0
+      input: [0x0000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_139
+      description: cos(-0) = 1.0
+      input: [0x8000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_140
+      description: cos(+INF) = QNAN
+      input: [0x7ff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cos_141
+      description: cos(-INF) = QNAN
+      input: [0xfff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cos_142
+      description: cos(+QNAN) = +QNAN
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_143
+      description: cos(+QNAN) = +QNAN
+      input: [0x7ffdf00000000000]
+      expect: [0x7ffdf00000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_144
+      description: cos(-QNAN) = -QNAN
+      input: [0xfffdf00000000000]
+      expect: [0xfffdf00000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_145
+      description: cos(-QNAN) = -QNAN
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_146
+      description: cos(+SNAN) = +QNAN
+      input: [0x7ff4000000000000]
+      expect: [0x7ffc000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cos_147
+      description: cos(-SNAN) = -QNAN
+      input: [0xfff4000000000000]
+      expect: [0xfffc000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: cos_148
+      description: cos(1.0) ≈ 0.540302
+      input: [0x3ff0000000000000]
+      expect: [0x3fe14a280fb5068c]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_149
+      description: end
+      input: [0x000000000000dead]
+      expect: [0x000000000000beef]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cos_150
+      description: ""
+      input: [0xBFE83DCA43349085]
+      expect: [0x3FE73FB4E2E7A5BA]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_151
+      description: ""
+      input: [0xBFE6EF49DAE5CECE]
+      expect: [0x3FE82087D3F96825]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_152
+      description: cos(1.0) ≈ 0.540302
+      input: [0x3FF0000000000000]
+      expect: [0x3fe14a280fb5068c]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_153
+      description: cos(4π) = 1.0
+      input: [0x402921fb54442d18]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_154
+      description: cos(2^16 π) = 1.0
+      input: [0x410921fb54442d18]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_155
+      description: cos(8π) = 1.0
+      input: [0x403921fb54442d18]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_156
+      description: cos(8π close) = 1.0
+      input: [0x403921fb54442d19]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_157
+      description: cos(π/2 close) ≈ -2.45e-16
+      input: [0x3ff921fb57442d18]
+      expect: [0xbe47fffffdcb3b39]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_158
+      description: cos(π close) = -1.0
+      input: [0x400921fb52442d18]
+      expect: [0xbfefffffffffffff]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_159
+      description: cos(2^16 π close) ≈ 1.0
+      input: [0x410921fb56442d18]
+      expect: [0x3fefffff0000019c]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_160
+      description: cos(-π/2 close) ≈ -2.45e-16
+      input: [0xbff921fb57442d18]
+      expect: [0xbe47fffffdcb3b39]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_161
+      description: cos(-π) = -1.0
+      input: [0xc00921fb54442d18]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: cos_162
+      description: cos(π close) ≈ -1.0
+      input: [0x400921f554442d18]
+      expect: [0xbfeffffffff70000]
+      expect_exception: [inexact]
+      variants: [sd]
+#-------------------------------

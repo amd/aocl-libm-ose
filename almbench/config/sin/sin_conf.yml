@@ -1,0 +1,1791 @@
+---
+- test_sequence: unit_tests_sin
+  function: sin
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    # Test case 1: 0
+    - id: sin_001
+      description: "sinf(0) = 0"
+      api_name: sin
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: sin_002
+      description: "sinf(-0) = -0"
+      api_name: sin
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: sin_003
+      description: "sinf(inf) = nan"
+      api_name: sin
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 4: -inf
+    - id: sin_004
+      description: "sinf(-inf) = nan"
+      api_name: sin
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 5: -nan
+    - id: sin_005
+      description: "sinf(-nan) = nan"
+      api_name: sin
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0xFFC00000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: sin_006
+      description: "sinf(+nan) = nan"
+      api_name: sin
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: sin_007
+      description: "sinf(max positive subnormal float)"
+      api_name: sin
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x007fffff]  # sin(x) ≈ x for very small x
+      expect_exception: [inexact, underflow]
+
+    # Test case 8: - subnorm (MAX)
+    - id: sin_008
+      description: "sinf(max negative subnormal float)"
+      api_name: sin
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0x807fffff]  # sin(x) ≈ x for very small x
+      expect_exception: [inexact, underflow]
+
+    # Test case 9: + subnorm (MIN)
+    - id: sin_009
+      description: "sinf(min positive subnormal float)"
+      api_name: sin
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x00000001]  # sin(x) ≈ x for very small x
+      expect_exception: [inexact, underflow]
+
+    # Test case 10: - subnorm (MIN)
+    - id: sin_010
+      description: "sinf(min negative subnormal float)"
+      api_name: sin
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x80000001]  # sin(x) ≈ x for very small x
+      expect_exception: [inexact, underflow]
+
+    # Test case 11: + POS (positive normal)
+    - id: sin_011
+      description: "sinf(π/2) = 1"
+      api_name: sin
+      variants: [ss]
+      input: [0x3fc90fdb]  # π/2 ≈ 1.5708
+      expect: [0x3f800000]  # 1.0
+      expect_exception: [inexact]
+
+    # Test case 12: -POS (negative positive normal)
+    - id: sin_012
+      description: "sinf(-π/2) = -1"
+      api_name: sin
+      variants: [ss]
+      input: [0xbfc90fdb]  # -π/2 ≈ -1.5708
+      expect: [0xbf800000]  # -1.0
+      expect_exception: [inexact]
+
+    # Test case 13: +NEG
+    - id: sin_013
+      description: "sinf(π) = 0"
+      api_name: sin
+      variants: [ss]
+      input: [0x40490fdb]  # π ≈ 3.14159
+      expect: [0x00000000]  # 0.0
+      expect_exception: [inexact]
+
+    # Test case 14: -NEG (negative value)
+    - id: sin_014
+      description: "sinf(-π) = 0"
+      api_name: sin
+      variants: [ss]
+      input: [0xc0490fdb]  # -π ≈ -3.14159
+      expect: [0x80000000]  # -0.0
+      expect_exception: [inexact]
+
+    # Test case 15: qnan
+    - id: sin_015
+      description: "sinf(qnan) = qnan"
+      api_name: sin
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: sin_016
+      description: "sinf(snan) = qnan"
+      api_name: sin
+      variants: [ss]
+      input: [0x7fa00000]
+      expect: [0x7FE00000]
+      expect_exception: [invalidoperation]
+# Test cases from gtests test_sin_data.h
+#-------------------------------
+    - id: sin_001
+      description: "sinf(nan)=nan"
+      input: [0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: sin_002
+      description: "sinf(-nan)=-nan"
+      input: [0xffb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: sin_003
+      description: "sinf(qnan) = qnan"
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: sin_004
+      description: "sinf(-qnan) = -qnan"
+      input: [0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: sin_005
+      description: "sinf(0)=0"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: sin_006
+      description: "sinf(-0) = -0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: sin_007
+      description: "sin(POS_ONE_F32) = 0x3f576aa4 (inexact)"
+      input: [0x3F800000]
+      expect: [0x3f576aa4]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_008
+      description: "sin(POS_INF_F32) = 0xffc00000 (invalid)"
+      input: [0x7F800000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: sin_009
+      description: "sin(NEG_INF_F32) = 0xffc00000 (invalid)"
+      input: [0xFF800000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: sin_010
+      description: "-1"
+      input: [0xbf800000]
+      expect: [0xbf576aa4]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_011
+      description: "sin(pi)=0"
+      input: [0x40490fd8]
+      expect: [0x0]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_012
+      description: "sin(0x3B800000) = 0x3B7FFFD5"
+      input: [0x3B800000]
+      expect: [0x3B7FFFD5]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_013
+      description: "3: sin(1.570796370506)=  1.000000000000"
+      input: [0x3FC90FDB]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_014
+      description: "1.57074 = pi/2 - 6e-05"
+      input: [0x3fc90de3]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_015
+      description: "1.57086 = pi/2 + 6e-05"
+      input: [0x3fc911d2]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_016
+      description: "1.56689 = pi/2 - 0.00390625"
+      input: [0x3fc88fdb]
+      expect: [0x3f7fff80]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_017
+      description: "1.57470 = pi/2 + 0.00390625"
+      input: [0x3fc98fdb]
+      expect: [0x3f7fff80]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_018
+      description: "sin(2)"
+      input: [0x40000000]
+      expect: [0x3f68c7b7]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_019
+      description: "10"
+      input: [0x41200000]
+      expect: [0xbf0b44f8]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_020
+      description: "sin(-4e5) = 0x3e11f59f"
+      input: [0xC8C35000]
+      expect: [0x3e11f59f]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_021
+      description: "sin(50000) = 0x3e361962"
+      input: [0x48F42400]
+      expect: [0x3e361962]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_022
+      description: "sin(501350.25) = 0x3f3a0e4a"
+      input: [0x48F4CCC8]
+      expect: [0x3f3a0e4a]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_023
+      description: "sin(-784000) = 0xbe1dbf77"
+      input: [0xC93F6800]
+      expect: [0xbe1dbf77]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_024
+      description: "sin(505.796417) = 0xb20fd1de"
+      input: [0x43FCE5F1]
+      expect: [0xb20fd1de]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_025
+      description: "sin(182165.25) = 0x379a62a2"
+      input: [0x4831E550]
+      expect: [0x379a62a2]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_026
+      description: "sin(126.449104) = 0x3F3504F3"
+      input: [0x42FCE5F1]
+      expect: [0x3F3504F3]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_027
+      description: "4.399877E+10, close to pi/2"
+      input: [0x5123e87f]
+      expect: [0xb18a4ed8]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_028
+      description: "sinf(1.19209e-007 = full prec)=1.192093e-007"
+      input: [0x34000000]
+      expect: [0x34000000]
+      expect_exception: []
+      variants: [ss]
+    - id: sin_029
+      description: "sinf(1.4013e-045 = smallest)=1.401299e-045"
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+    - id: sin_030
+      description: "sinf(3.14159 = pi)=-8.742278e-008"
+      input: [0x40490fdb]
+      expect: [0xb3bbbd2e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_031
+      description: "sinf(-3.14159 = -pi)=8.742278e-008"
+      input: [0xc0490fdb]
+      expect: [0x33bbbd2e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_032
+      description: "sinf(6.28319 = 2pi)=1.748456e-007"
+      input: [0x40c90fdb]
+      expect: [0x343bbd2e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_033
+      description: "sinf(-6.28319 = -2pi)=-1.748456e-007"
+      input: [0xc0c90fdb]
+      expect: [0xb43bbd2e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_034
+      description: "sinf(31.4159 = +10pi)=-5.562837e-007"
+      input: [0x41fb5ed1]
+      expect: [0xb5155386]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_035
+      description: "sinf(32.9867 = 21pi/2)=1.000000e+000"
+      input: [0x4203f267]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_036
+      description: "sinf(100.531 = 32pi)=2.797529e-006"
+      input: [0x42c90fdb]
+      expect: [0x363bbd2e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_037
+      description: "sinf(102.102 = 65pi/2)= 1.000000e+000"
+      input: [0x42cc341a]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_038
+      description: "0: sin(0.392699092627)=  0.382683442461"
+      input: [0x3ec90fdb]
+      expect: [0x3ec3ef16]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_039
+      description: "1: sin(0.785398185253)=  0.707106796641"
+      input: [0x3f490fdb]
+      expect: [0x3f3504f3]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_040
+      description: "2: sin(1.178097248077)=  0.923879533652"
+      input: [0x3f96cbe4]
+      expect: [0x3f6c835e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_041
+      description: "3: sin(1.570796370506)=  1.000000000000"
+      input: [0x3fc90fdb]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_042
+      description: "4: sin(1.963495373726)=  0.923879545816"
+      input: [0x3ffb53d1]
+      expect: [0x3f6c835f]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_043
+      description: "5: sin(2.356194496155)=  0.707106776970"
+      input: [0x4016cbe4]
+      expect: [0x3f3504f3]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_044
+      description: "6: sin(2.748893499374)=  0.382683499362"
+      input: [0x402feddf]
+      expect: [0x3ec3ef17]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_045
+      description: "sinf(3.14159 = pi)=-8.742278e-008"
+      input: [0x40490fdb]
+      expect: [0xb3bbbd2e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_046
+      description: "8: sin(3.534291744232)=  -0.382683440628"
+      input: [0x406231d6]
+      expect: [0xbec3ef15]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_047
+      description: "9: sin(3.926990747452)=  -0.707106732018"
+      input: [0x407b53d1]
+      expect: [0xbf3504f2]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_048
+      description: "10: sin(4.319689750671)= -0.923879475869"
+      input: [0x408a3ae6]
+      expect: [0xbf6c835e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_049
+      description: "11: sin(4.712388992310)= -1.000000000000"
+      input: [0x4096cbe4]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_050
+      description: "12: sin(5.105088233948)= -0.923879466742"
+      input: [0x40a35ce2]
+      expect: [0xbf6c835d]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_051
+      description: "13: sin(5.497786998749)= -0.707106883741"
+      input: [0x40afeddf]
+      expect: [0xbf3504f5]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_052
+      description: "14: sin(5.890486240387)= -0.382683418594"
+      input: [0x40bc7edd]
+      expect: [0xbec3ef15]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_053
+      description: "sinf(6.28319 = 2pi)=1.748456e-007"
+      input: [0x40c90fdb]
+      expect: [0x343bbd2e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_054
+      description: "16: sin(-0.392699092627)=    -0.382683442461"
+      input: [0xbec90fdb]
+      expect: [0xbec3ef16]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_055
+      description: "17: sin(-0.785398185253)=    -0.707106796641"
+      input: [0xbf490fdb]
+      expect: [0xbf3504f3]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_056
+      description: "18: sin(-1.178097248077)=    -0.923879533652"
+      input: [0xbf96cbe4]
+      expect: [0xbf6c835e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_057
+      description: "19: sin(-1.570796370506)=    -1.000000000000"
+      input: [0xbfc90fdb]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_058
+      description: "20: sin(-1.963495373726)=    -0.923879545816"
+      input: [0xbffb53d1]
+      expect: [0xbf6c835f]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_059
+      description: "21: sin(-2.356194496155)=    -0.707106776970"
+      input: [0xc016cbe4]
+      expect: [0xbf3504f3]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_060
+      description: "22: sin(-2.748893499374)=    -0.382683499362"
+      input: [0xc02feddf]
+      expect: [0xbec3ef17]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_061
+      description: "sinf(-3.14159 = -pi)=8.742278e-008"
+      input: [0xc0490fdb]
+      expect: [0x33bbbd2e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_062
+      description: "24: sin(-3.534291744232)=    0.382683440628"
+      input: [0xc06231d6]
+      expect: [0x3ec3ef15]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_063
+      description: "25: sin(-3.926990747452)=    0.707106732018"
+      input: [0xc07b53d1]
+      expect: [0x3f3504f2]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_064
+      description: "26: sin(-4.319689750671)=    0.923879475869"
+      input: [0xc08a3ae6]
+      expect: [0x3f6c835e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_065
+      description: "27: sin(-4.712388992310)=    1.000000000000"
+      input: [0xc096cbe4]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_066
+      description: "28: sin(-5.105088233948)=    0.923879466742"
+      input: [0xc0a35ce2]
+      expect: [0x3f6c835d]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_067
+      description: "29: sin(-5.497786998749)=    0.707106883741"
+      input: [0xc0afeddf]
+      expect: [0x3f3504f5]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_068
+      description: "30: sin(-5.890486240387)=    0.382683418594"
+      input: [0xc0bc7edd]
+      expect: [0x3ec3ef15]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_069
+      description: "sinf(-6.28319 = -2pi)=-1.748456e-007"
+      input: [0xc0c90fdb]
+      expect: [0xb43bbd2e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_070
+      description: "32: sin(-8.059206008911)=    -0.979015284506"
+      input: [0xc100f282]
+      expect: [0xbf7aa0bf]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_071
+      description: "sinf(-0) = -0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: sin_072
+      description: "sinf(-0) = -0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: sin_073
+      description: "35: sin(-4.059226989746)=    0.794166228295"
+      input: [0xc081e530]
+      expect: [0x3f4b4e7a]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_074
+      description: "sinf(-0) = -0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: sin_075
+      description: "37: sin(-3.780015468597)=    0.595929645730"
+      input: [0xc071ebc6]
+      expect: [0x3f188ed8]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_076
+      description: "38: sin(3.290346860886)= -0.148206213033"
+      input: [0x4052950b]
+      expect: [0xbe17c35f]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_077
+      description: "39: sin(-3.847585439682)=    0.648789627409"
+      input: [0xc0763ed7]
+      expect: [0x3f261714]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_078
+      description: "40: sin(7.955778598785)= 0.994823161763"
+      input: [0x40fe95bd]
+      expect: [0x3f7eacbb]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_079
+      description: "41: sin(-8.715235710144)=    -0.651486563068"
+      input: [0xc10b719b]
+      expect: [0xbf26c7d3]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_080
+      description: "42: sin(8.263872146606)= 0.917164460006"
+      input: [0x410438d2]
+      expect: [0x3f6acb4a]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_081
+      description: "43: sin(-7.765380859375)=    -0.996077518366"
+      input: [0xc0f87e00]
+      expect: [0xbf7efef0]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_082
+      description: "44: sin(-7.177150726318)=    -0.779561513939"
+      input: [0xc0e5ab38]
+      expect: [0xbf479158]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_083
+      description: "sinf(0)=0"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: sin_084
+      description: "46: sin(3.908476591110)= -0.693894808066"
+      input: [0x407a247b]
+      expect: [0xbf31a317]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_085
+      description: "47: sin(-4.799226760864)=    0.996231968665"
+      input: [0xc0999344]
+      expect: [0x3f7f090f]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_086
+      description: "sinf(-0) = -0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: sin_087
+      description: "sinf(-0) = -0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: sin_088
+      description: "sinf(0)=0"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: sin_089
+      description: "51: sin(2.449998140335)= 0.637766134505"
+      input: [0x401cccc5]
+      expect: [0x3f2344a4]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_090
+      description: "0.5"
+      input: [0x3f000000]
+      expect: [0x3ef57744]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_091
+      description: ".7"
+      input: [0x3f333333]
+      expect: [0x3f24eb73]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_092
+      description: ".8"
+      input: [0x3f4ccccd]
+      expect: [0x3f37a4a6]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_093
+      description: "1.5"
+      input: [0x3fc00000]
+      expect: [0x3f7f5bd5]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_094
+      description: "-3.92"
+      input: [0xc07ae148]
+      expect: [0x3f33BFDD]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_095
+      description: "sin(1) = 0x3f576aa4"
+      input: [0x3f800000]
+      expect: [0x3f576aa4]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: sin_096
+      description: "1000"
+      input: [0x447a0000]
+      expect: [0x3F53AE61]
+      expect_exception: [inexact]
+      variants: [ss]
+#-------------------------------
+#Double precision
+    # Test case 1: 0 (double)
+    - id: sin_001
+      description: "sin(0) = 0"
+      api_name: sin
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 2: -0 (double)
+    - id: sin_002
+      description: "sin(-0) = -0"
+      api_name: sin
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 3: inf (double)
+    - id: sin_003
+      description: "sin(inf) = nan"
+      api_name: sin
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 4: -inf (double)
+    - id: sin_004
+      description: "sin(-inf) = nan"
+      api_name: sin
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 5: -nan (double)
+    - id: sin_005
+      description: "sin(-nan) = nan"
+      api_name: sin
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: []
+
+    # Test case 6: +nan (double)
+    - id: sin_006
+      description: "sin(+nan) = nan"
+      api_name: sin
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX) (double)
+    - id: sin_007
+      description: "sin(max positive subnormal double)"
+      api_name: sin
+      variants: [sd]
+      input: [0x000fffffffffffff]
+      expect: [0x000fffffffffffff]  # sin(x) ≈ x for very small x
+      expect_exception: [inexact, underflow]
+
+    # Test case 8: - subnorm (MAX) (double)
+    - id: sin_008
+      description: "sin(max negative subnormal double)"
+      api_name: sin
+      variants: [sd]
+      input: [0x800fffffffffffff]
+      expect: [0x800fffffffffffff]  # sin(x) ≈ x for very small x
+      expect_exception: [inexact, underflow]
+
+    # Test case 9: + subnorm (MIN) (double)
+    - id: sin_009
+      description: "sin(min positive subnormal double)"
+      api_name: sin
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]  # sin(x) ≈ x for very small x
+      expect_exception: [inexact, underflow]
+
+    # Test case 10: - subnorm (MIN) (double)
+    - id: sin_010
+      description: "sin(min negative subnormal double)"
+      api_name: sin
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0x8000000000000001]  # sin(x) ≈ x for very small x
+      expect_exception: [inexact, underflow]
+
+    # Test case 11: + POS (positive normal) (double)
+    - id: sin_011
+      description: "sin(π/2) = 1"
+      api_name: sin
+      variants: [sd]
+      input: [0x3ff921fb54442d18]  # π/2 ≈ 1.5707963267948966
+      expect: [0x3ff0000000000000]  # 1.0
+      expect_exception: [inexact]
+
+    # Test case 12: -POS (negative positive normal) (double)
+    - id: sin_012
+      description: "sin(-π/2) = -1"
+      api_name: sin
+      variants: [sd]
+      input: [0xbff921fb54442d18]  # -π/2 ≈ -1.5707963267948966
+      expect: [0xbff0000000000000]  # -1.0
+      expect_exception: [inexact]
+
+    # Test case 13: +NEG (double)
+    - id: sin_013
+      description: "sin(π) = 0"
+      api_name: sin
+      variants: [sd]
+      input: [0x400921fb54442d18]  # π ≈ 3.141592653589793
+      expect: [0x0000000000000000]  # 0.0
+      expect_exception: [inexact]
+
+    # Test case 14: -NEG (negative value) (double)
+    - id: sin_014
+      description: "sin(-π) = 0"
+      api_name: sin
+      variants: [sd]
+      input: [0xc00921fb54442d18]  # -π ≈ -3.141592653589793
+      expect: [0x8000000000000000]  # -0.0
+      expect_exception: [inexact]
+
+    # Test case 15: qnan (double)
+    - id: sin_015
+      description: "sin(qnan) = qnan"
+      api_name: sin
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 16: snan (double)
+    - id: sin_016
+      description: "sin(snan) = qnan"
+      api_name: sin
+      variants: [sd]
+      input: [0x7ff4000000000001]
+      expect: [0x7ff8000000000001]
+      expect_exception: [invalidoperation]
+
+    # Additional meaningful test cases
+    - id: sin_017
+      description: "sin(π/6) = 0.5"
+      api_name: sin
+      variants: [sd]
+      input: [0x3fe0c152382d7365]  # π/6 ≈ 0.5235987755982988
+      expect: [0x3fe0000000000000]  # 0.5
+      expect_exception: [inexact]
+
+    - id: sin_018
+      description: "sin(π/4) = √2/2"
+      api_name: sin
+      variants: [sd]
+      input: [0x3fe921fb54442d18]  # π/4 ≈ 0.7853981633974483
+      expect: [0x3fe6a09e667f3bcd]  # √2/2 ≈ 0.7071067811865476
+      expect_exception: [inexact]
+
+    - id: sin_019
+      description: "sin(3π/2) = -1"
+      api_name: sin
+      variants: [sd]
+      input: [0x4012d97c7f3321d2]  # 3π/2 ≈ 4.71238898038469
+      expect: [0xbff0000000000000]  # -1.0
+      expect_exception: [inexact]
+
+    - id: sin_020
+      description: "sin(2π) = 0"
+      api_name: sin
+      variants: [sd]
+      input: [0x401921fb54442d18]  # 2π ≈ 6.283185307179586
+      expect: [0x0000000000000000]  # 0.0
+      expect_exception: [inexact]
+# Test cases from gtests test_sin_data.h
+#-------------------------------
+    - id: sin_001
+      description: "sin(0)=0"
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sin_002
+      description: "sin(-0)=-0"
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sin_003
+      description: "sin(1)=0.84"
+      input: [0x3FF0000000000000]
+      expect: [0x3feaed548f090cee]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_004
+      description: "sin(inf)=inf"
+      input: [0x7ff0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: sin_005
+      description: "sin(-inf)=-inf"
+      input: [0xfff0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: sin_006
+      description: "sin(snan)=snan"
+      input: [0x7FF4001000000000]
+      expect: [0x7ff4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: sin_007
+      description: "sin(-snan)=-snan"
+      input: [0xfff2000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: sin_008
+      description: "sin(qnan)=qnan"
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7e0000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sin_009
+      description: "sin(-qnan)"
+      input: [0xfff8000000000000]
+      expect: [0xfffa000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sin_010
+      description: "sin(pi)=0"
+      input: [0x400921FB54442D18]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_011
+      description: "sin(n*Pi)=sin(pi) for any n=1,2,3.."
+      input: [0x3ff921fb544486e0]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_012
+      description: "sin(270)"
+      input: [0x4012D97C7F336528]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_013
+      description: "-2"
+      input: [0xc000000000000000]
+      expect: [0xbfed18f6ead1b446]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_014
+      description: "9.1552734375E-05  =  2^-14 *1.5"
+      input: [0x3f18000000000000]
+      expect: [0x3F17FFFFFF700000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_015
+      description: "-9.1552734375E-05     = -2^-14 *1.5"
+      input: [0xbf18000000000000]
+      expect: [0xbF17FFFFFF700000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_016
+      description: "1000005.3688883781 > 5e5"
+      input: [0x412E848abcdef000]
+      expect: [0xbfee94b095ab2499]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_017
+      description: "3.1415926535897931 = pi"
+      input: [0x400921FB54442D18]
+      expect: [0x3ca1a62633145c07]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_018
+      description: ""
+      input: [0x400f6a7a2955385e]
+      expect: [0xbfe6a09e667f3bcc]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_019
+      description: ""
+      input: [0x400f6a7a2955385d]
+      expect: [0xbfe6a09e667f3bc9]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_020
+      description: ""
+      input: [0x400f6a7a2955385f]
+      expect: [0xbfe6a09e667f3bce]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_021
+      description: "5.5879354476928711E-09 = 2^-28*1.5"
+      input: [0x3e38000000000000]
+      expect: [0x3E38000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sin_022
+      description: "-5.5879354476928711E-09 = -2^-28*1.5"
+      input: [0xbe38000000000000]
+      expect: [0xBE38000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sin_023
+      description: "9.1552734375E-05  =  2^-14 *1.5"
+      input: [0x3f18000000000000]
+      expect: [0x3F17FFFFFF700000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_024
+      description: "-9.1552734375E-05     = -2^-14 *1.5"
+      input: [0xbf18000000000000]
+      expect: [0xbF17FFFFFF700000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_025
+      description: "0.5"
+      input: [0x3fe0000000000000]
+      expect: [0x3fdeaee8744b05f0]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_026
+      description: "-0.5"
+      input: [0xbfe0000000000000]
+      expect: [0xBFDEAEE8744B05F0]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_027
+      description: "0.999865013834904"
+      input: [0x3FEFFEE4E9DABC6B]
+      expect: [0x3FEAECBB972204E8]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_028
+      description: "0.78539816339744828 = pi/4"
+      input: [0x3fe921fb54442d18]
+      expect: [0x3FE6A09E667F3BCC]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_029
+      description: "-0.78539816339744828 =-pi/4"
+      input: [0xbfe921fb54442d18]
+      expect: [0xBFE6A09E667F3BCC]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_030
+      description: "1000005.3688883781 > 5e5"
+      input: [0x412E848abcdef000]
+      expect: [0xbfee94b095ab2499]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_031
+      description: "3.4580273251621926E+17"
+      input: [0x439332270327F466]
+      expect: [0xbfefff7a431a18dc]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_032
+      description: "1.5707963267948966 = pi/2"
+      input: [0x3ff921fb54442d18]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_033
+      description: "3.1415926535897931 = pi"
+      input: [0x400921fb54442d18]
+      expect: [0x3ca1a62633145c07]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_034
+      description: "4.71238898038469 = 3pi/2"
+      input: [0x4012D97C7F3321D2]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_035
+      description: "6.2831853071795862 = 2pi"
+      input: [0x401921fb54442d18]
+      expect: [0xbcb1a62633145c07]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_036
+      description: "12.566370614359172 = 4pi"
+      input: [0x402921fb54442d18]
+      expect: [0xbcc1a62633145c07]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_037
+      description: "205887.41614566068 =  (2^16)pi"
+      input: [0x410921fb54442d18]
+      expect: [0xbda1a62633145c07]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_038
+      description: "25.132741228718345 = 8pi"
+      input: [0x403921fb54442d18]
+      expect: [0xbcd1a62633145c07]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_039
+      description: "25.132741228718348 close to 8pi"
+      input: [0x403921fb54442d19]
+      expect: [0x3ce72cece675d1fd]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_040
+      description: "1.5707963379707675 close to pi/2"
+      input: [0x3ff921fb57442d18]
+      expect: [0x3fefffffffffffff]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_041
+      description: "3.1415926386886319 close to pi"
+      input: [0x400921fb52442d18]
+      expect: [0x3e5000000234c4c6]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_042
+      description: "205887.41712222318 close to (2^16)pi"
+      input: [0x410921fb56442d18]
+      expect: [0x3f4fffffa6412185]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_043
+      description: "-1.5707963379707675 close to - pi/2"
+      input: [0xbff921fb57442d18]
+      expect: [0xbfefffffffffffff]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_044
+      description: "-3.1415926535897931 = - pi"
+      input: [0xc00921fb54442d18]
+      expect: [0xbca1a62633145c07]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_045
+      description: "3.1415812094979962 close to pi"
+      input: [0x400921f554442d18]
+      expect: [0x3ee7fffffffeda62]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_046
+      description: "-3.1415812094979962 close to -pi"
+      input: [0xc00921f554442d18]
+      expect: [0xbee7fffffffeda62]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_047
+      description: "-1.570790615924869 close to -pi/2"
+      input: [0xbff921f557442d18]
+      expect: [0xbfeffffffffdc23f]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_048
+      description: "-1.570668545612369 close to -pi/2"
+      input: [0xbff9217557442d18]
+      expect: [0xbfeffffffb9df240]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_049
+      description: "3.1415926684909543 close to pi"
+      input: [0x400921fb56442d18]
+      expect: [0xbe4ffffffb967673]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_050
+      description: "4.71245001554094 close to 3pi/2"
+      input: [0x4012D98C7F3321D2]
+      expect: [0xbfefffffff000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_051
+      description: "sin(3.14159 = pi)=0"
+      input: [0x400921fb54442d18]
+      expect: [0x3ca1a62633145c07]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_052
+      description: "sin(-3.14159 = -pi)=0"
+      input: [0xc00921fb54442d18]
+      expect: [0xbca1a62633145c07]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_053
+      description: "sin(6.28319 = 2pi)=0"
+      input: [0x401921fb54442d18]
+      expect: [0xbcb1a62633145c07]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_054
+      description: "sin(-6.28319 = -2pi)=0"
+      input: [0xc01921fb54442d18]
+      expect: [0x3cb1a62633145c07]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_055
+      description: "sin(31.4159 = 10pi)=0"
+      input: [0x403f6a7a2955385e]
+      expect: [0xbcd60fafbfd97309]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_056
+      description: "sin(100.531 = 32pi)=0"
+      input: [0x405921fb54442d18]
+      expect: [0xbcf1a62633145c07]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_057
+      description: "sin(2.22045e-016 = full prec)=2.220446e-016"
+      input: [0x3cb0000000000000]
+      expect: [0x3cafffffffffffff]
+      expect_exception: []
+      variants: [sd]
+    - id: sin_058
+      description: "sin(4.94066e-324 = smallest)=4.940e-324"
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+    - id: sin_059
+      description: "sin(8.9884657412464672e+307 = very close to max double)=1.000000000000"
+      input: [0x7fe0000001ffbcac]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_060
+      description: "sin(32.9867 = 21pi/2)=1.000000e+000"
+      input: [0x40407e4cef4cbd97]
+      expect: [0x3fefffffffffffff]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_061
+      description: "sin(102.102 = 65pi/2)=1.000000e+000"
+      input: [0x4059868341953dcc]
+      expect: [0x3fefffffffffffff]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_062
+      description: "sin(0.392699081699)= 0.382683432365"
+      input: [0x3fd921fb54442d18]
+      expect: [0x3fd87de2a6aea963]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_063
+      description: "sin(0.785398163397)= 0.707106781187"
+      input: [0x3fe921fb54442d18]
+      expect: [0x3fe6a09e667f3bcc]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_064
+      description: "sin(1.178097245096)= 0.923879532511"
+      input: [0x3ff2d97c7f3321d2]
+      expect: [0x3fed906dcf328d46]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_065
+      description: "sin(1.570796326795)= 1.000000000000"
+      input: [0x3ff921fb54442d18]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_066
+      description: "sin(1.963495408494)= 0.923879532511"
+      input: [0x3fff6a7a2955385e]
+      expect: [0x3fed906dcf328d46]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_067
+      description: "sin(2.356194490192)= 0.707106781187"
+      input: [0x4002d97c7f3321d2]
+      expect: [0x3fe6a09e667f3bcd]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_068
+      description: "sin(2.748893571891)= 0.382683432365"
+      input: [0x4005fdbbe9bba775]
+      expect: [0x3fd87de2a6aea965]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_069
+      description: "sin(3.534291735289)= -0.382683432365"
+      input: [0x400c463abeccb2bb]
+      expect: [0xbfd87de2a6aea961]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_070
+      description: "sin(3.926990816987)= -0.707106781187"
+      input: [0x400f6a7a2955385e]
+      expect: [0xbfe6a09e667f3bcc]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_071
+      description: "sin(4.319689898686)= -0.923879532511"
+      input: [0x4011475cc9eedf00]
+      expect: [0xbfed906bcf328d44]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_072
+      description: "sin(4.712388980385)= -1.000000000000"
+      input: [0x4012d97c7f3321d2]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_073
+      description: "sin(5.105088062083)= -0.923879532511"
+      input: [0x40146b9c347764a4]
+      expect: [0xbfed906bcf328d45]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_074
+      description: "sin(5.497787143782)= -0.707106781187"
+      input: [0x4015fdbbe9bba775]
+      expect: [0xbfe6a09e667f3bce]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_075
+      description: "sin(5.890486225481)= -0.382683432365"
+      input: [0x40178fdb9effea46]
+      expect: [0xbfd87de2a6aea96e]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_076
+      description: "sin(-0.392699081699)=    -0.382683432365"
+      input: [0xbfd921fb54442d18]
+      expect: [0xbfd87de2a6aea963]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_077
+      description: "sin(-0.785398163397)=    -0.707106781187"
+      input: [0xbfe921fb54442d18]
+      expect: [0xbfe6a09e667f3bcc]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_078
+      description: "sin(-1.178097245096)=    -0.923879532511"
+      input: [0xbff2d97c7f3321d2]
+      expect: [0xbfed906bcf328d46]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_079
+      description: "sin(-1.570796326795)=    -1.000000000000"
+      input: [0xbff921fb54442d18]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_080
+      description: "sin(-1.963495408494)=    -0.923879532511"
+      input: [0xbfff6a7a2955385e]
+      expect: [0xbfed906bcf328d46]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_081
+      description: "sin(-2.356194490192)=    -0.707106781187"
+      input: [0xc002d97c7f3321d2]
+      expect: [0xbfe6a09e667f3bcd]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_082
+      description: "sin(-2.748893571891)=    -0.382683432365"
+      input: [0xc005fdbbe9bba775]
+      expect: [0xbfd87de2a6aea965]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_083
+      description: "sin(-3.534291735289)=    0.382683432365"
+      input: [0xc00c463abeccb2bb]
+      expect: [0x3fd87de2a6aea961]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_084
+      description: "sin(-3.926990816987)=    0.707106781187"
+      input: [0xc00f6a7a2955385e]
+      expect: [0x3fe6a09e667f3bcc]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_085
+      description: "sin(-4.319689898686)=    0.923879532511"
+      input: [0xc011475cc9eedf00]
+      expect: [0x3fed906bcf328d44]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_086
+      description: "sin(-4.712388980385)=    1.000000000000"
+      input: [0xc012d97c7f3321d2]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_087
+      description: "sin(-5.105088062083)=    0.923879532511"
+      input: [0xc0146b9c347764a4]
+      expect: [0x3fed906bcf328d45]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_088
+      description: "sin(-5.497787143782)=    0.707106781187"
+      input: [0xc015fdbbe9bba775]
+      expect: [0x3fe6a09e667f3bce]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_089
+      description: "sin(-5.890486225481)=    0.382683432365"
+      input: [0xc0178fdb9effea46]
+      expect: [0x3fd87de2a6aea96e]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_090
+      description: "sin(-8.059206010010)=    -0.979015284282"
+      input: [0xc0201e5040097167]
+      expect: [0xbfef5417dc88d953]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_091
+      description: "sin(-0.000000000000)=    -0.000000000000"
+      input: [0x89b8254bfc0c9a3b]
+      expect: [0x89b8254bfc0c9a3b]
+      expect_exception: []
+      variants: [sd]
+    - id: sin_092
+      description: "sin(-0.000000000000)=    -0.000000000000"
+      input: [0x9bcf10572f0d0b62]
+      expect: [0x9bcf10572f0d0b62]
+      expect_exception: []
+      variants: [sd]
+    - id: sin_093
+      description: "sin(-4.059227027057)=    0.794166250969"
+      input: [0xc0103ca602810042]
+      expect: [0x3fe969cf576ffa60]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_094
+      description: "sin(-0.000000000000)=    -0.000000000000"
+      input: [0xa0c41c2aefd3f2b1]
+      expect: [0xa0c41c2aefd3f2b1]
+      expect_exception: []
+      variants: [sd]
+    - id: sin_095
+      description: "sin(-3.780015398555)=    0.595929589483"
+      input: [0xc00e3d78b6995cf5]
+      expect: [0x3fe311daee318dfd]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_096
+      description: "sin(3.290346894823)= -0.148206246596"
+      input: [0x400a52a1648e1512]
+      expect: [0xbfc2f86c1b18a78f]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_097
+      description: "sin(-3.847585482585)=    0.648789660056"
+      input: [0xc00ec7dae5c2205a]
+      expect: [0x3fe4c2e2887d99a1]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_098
+      description: "sin(7.955778729132)= 0.994823148517"
+      input: [0x401fd2b7a8bf5589]
+      expect: [0x3fefd5975b05e863]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_099
+      description: "sin(-8.715235723867)=    -0.651486552658"
+      input: [0xc0216e336075e013]
+      expect: [0xbfe4d8fa53ae583e]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_100
+      description: "sin(8.263871932202)= 0.917164545448"
+      input: [0x4020871a38ce46ad]
+      expect: [0x3fed596975f7fda6]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_101
+      description: "sin(-7.765380932291)=    -0.996077524818"
+      input: [0xc01f0fc004e4af8f]
+      expect: [0xbfefdfddf92bfc5d]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_102
+      description: "sin(-7.177150568426)=    -0.779561415047"
+      input: [0xc01cb566f5676cee]
+      expect: [0xbfe8f22ac7db24b0]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_103
+      description: "sin(0.000000000000)= 0.000000000000"
+      input: [0x30a93e9db15c19e7]
+      expect: [0x30a93e9db15c19e7]
+      expect_exception: []
+      variants: [sd]
+    - id: sin_104
+      description: "sin(3.908476629931)= -0.693894836020"
+      input: [0x400f448f6535e00f]
+      expect: [0xbfe63462f17241b8]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_105
+      description: "sin(-4.799226637601)=    0.996231979355"
+      input: [0xc013326877ba5aae]
+      expect: [0x3fefe121e351e782]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_106
+      description: "sin(-0.000000000000)=    -0.000000000000"
+      input: [0xad424b7a323fec56]
+      expect: [0xad424b7a323fec56]
+      expect_exception: []
+      variants: [sd]
+    - id: sin_107
+      description: "sin(-0.000000000000)=    -0.000000000000"
+      input: [0x96ca3a8c4e1a36da]
+      expect: [0x96ca3a8c4e1a36da]
+      expect_exception: []
+      variants: [sd]
+    - id: sin_108
+      description: "sin(0.000000000000)= 0.000000000000"
+      input: [0x0611f25d4e96f5f0]
+      expect: [0x0611f25d4e96f5f0]
+      expect_exception: []
+      variants: [sd]
+    - id: sin_109
+      description: "sin(2.449998155481)= 0.637766122840"
+      input: [0x40039998a2086896]
+      expect: [0x3fe468948002f939]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_110
+      description: "0"
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sin_111
+      description: "-0"
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sin_112
+      description: "0.80868956646495227"
+      input: [0x3FE9E0C8F112AB1E]
+      expect: [0x3FE725F420C5EF11]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_113
+      description: "16.41921902203321"
+      input: [0x40306B51F0157E66]
+      expect: [0xBFE4E39E91D623F6]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_114
+      description: "14.93624006430041"
+      input: [0x402DDF5ADB92C01A]
+      expect: [0x3FE650DDA3993550]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_115
+      description: "14.928646404149521"
+      input: [0x402DDB778A9EBD8A]
+      expect: [0x3FE67D4903528613]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_116
+      description: "7.0685255586081963"
+      input: [0x401c462b9064a63b]
+      expect: [0x3FE6A0488506901A]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_117
+      description: "0.78539816339744839"
+      input: [0x3FE921FB54442D19]
+      expect: [0x3FE6A09E667F3BCD]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_118
+      description: "0.78539816339744917"
+      input: [0x3fe921fb54442d20]
+      expect: [0x3FE6A09E667F3BD2]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_119
+      description: "1.0655863521072058"
+      input: [0x3FF10CA44655D48A]
+      expect: [0x3FEC0098D09C9F69]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_120
+      description: "3.1425351647398445"
+      input: [0x400923E979F8B36A]
+      expect: [0xBF4EE25AFBAE2B42]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_121
+      description: "2.3568832554668964"
+      input: [0x4002DAE59BB5C33E]
+      expect: [0x3FE69CA0ABE92212]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_122
+      description: "5.4978423059251824"
+      input: [0x4015FDCA5F9A0E38]
+      expect: [0xBFE6A04C98FCC90E]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_123
+      description: "6459.8523787068789"
+      input: [0x40b93bda357dadda]
+      expect: [0x3FE586F2678A5A63]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_124
+      description: "90962.317034311578"
+      input: [0x40F63525129291FF]
+      expect: [0x3FE33228B38E66C1]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_125
+      description: "1.5704270776257141"
+      input: [0x3FF9207824B27C17]
+      expect: [0x3FEFFFFFDB667252]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_126
+      description: "10.997277793834764"
+      input: [0x4025fe9b31eb183d]
+      expect: [0xBFEFFFFCF504B054]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_127
+      description: "45.553093477052"
+      input: [0x4046C6CBC45DC8DE]
+      expect: [0x3FF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_128
+      description: "518341.75805235852"
+      input: [0x411FA317083EE0A2]
+      expect: [0xBFEA3D31BD2D673C]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_129
+      description: "1"
+      input: [0x3FF0000000000000]
+      expect: [0x3feaed548f090cee]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_130
+      description: "2"
+      input: [0x4000000000000000]
+      expect: [0x3fed18f6ead1b446]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_131
+      description: "3"
+      input: [0x4008000000000000]
+      expect: [0x3FC210386DB6D55B]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_132
+      description: "10"
+      input: [0x4024000000000000]
+      expect: [0xBFE1689EF5F34F52]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_133
+      description:
+      input: [0x4002CCCCCCCCCCCD]
+      expect: [0x3FE6C463C3C6C9E8]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_134
+      description:
+      input: [0x400F5C28F5C28F5C]
+      expect: [0xBFE677FB7E636920]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_135
+      description:
+      input: [0x7506ac5b262ca1ff]
+      expect: [0x3FF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_136
+      description:
+      input: [0xC002CCCCCCCCCCCD]
+      expect: [0xBFE6C463C3C6C9E8]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_137
+      description:
+      input: [0xC00F5C28F5C28F5C]
+      expect: [0x3FE677FB7E636920]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_138
+      description:
+      input: [0xF506ac5b262ca1ff]
+      expect: [0xBFF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_139
+      description:
+      input: [0x7ff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: sin_140
+      description:
+      input: [0xfff0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: sin_141
+      description:
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sin_142
+      description:
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: sin_143
+      description:
+      input: [0xfff4000000000000]
+      expect: [0xfffc000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: sin_144
+      description:
+      input: [0x7ff4000000000000]
+      expect: [0x7ffc000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: sin_145
+      description:
+      input: [0x3FE0000000000000]
+      expect: [0x3FDEAEE8744B05F0]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_146
+      description:
+      input: [0xBFE83DCA43349085]
+      expect: [0xBFE5FD095C9B6AB0]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: sin_147
+      description:
+      input: [0xBFE6EF49DAE5CECE]
+      expect: [0xBFE5056342FA56AA]
+      expect_exception: [inexact]
+      variants: [sd]
+#-------------------------------

@@ -1,0 +1,341 @@
+- test_sequence: unit_tests_ldexp
+  ignore_exceptions: [underflow, inexact]
+  function: ldexp
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    # Test case 1: 0
+    - id: ldexp_001
+      description: "ldexpf(0, 1) = 0"
+      variants: [ss]
+      input: [0x00000000, 1]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: ldexp_002
+      description: "ldexpf(-0, 1) = -0"
+      variants: [ss]
+      input: [0x80000000, 1]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: ldexp_003
+      description: "ldexpf(inf, 1) = inf"
+      variants: [ss]
+      input: [0x7f800000, 1]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: ldexp_004
+      description: "ldexpf(-inf, 1) = -inf"
+      variants: [ss]
+      input: [0xff800000, 1]
+      expect: [0xff800000]
+      expect_exception: []
+
+    # Test case 5: -nan
+    - id: ldexp_005
+      description: "ldexpf(-nan, 1) = -nan"
+      variants: [ss]
+      input: [0xffc00000, 1]
+      expect: [0xffc00000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: ldexp_006
+      description: "ldexpf(+nan, 1) = +nan"
+      variants: [ss]
+      input: [0x7fc00000, 1]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: ldexp_007
+      description: "ldexpf(+subnorm_max, 1) = normalized value"
+      variants: [ss]
+      input: [0x007fffff, 1]
+      expect: [0x00ffffff]
+      expect_exception: []
+
+    # Test case 8: - subnorm (MAX)
+    - id: ldexp_008
+      description: "ldexpf(-subnorm_max, 1) = -normalized value"
+      variants: [ss]
+      input: [0x807fffff, 1]
+      expect: [0x80ffffff]
+      expect_exception: []
+
+    # Test case 9: + subnorm (MIN)
+    - id: ldexp_009
+      description: "ldexpf(+subnorm_min, 1) = +subnorm_min * 2"
+      variants: [ss]
+      input: [0x00000001, 1]
+      expect: [0x00000002]
+      expect_exception: []
+
+    # Test case 10: - subnorm (MIN)
+    - id: ldexp_010
+      description: "ldexpf(-subnorm_min, 1) = -subnorm_min * 2"
+      variants: [ss]
+      input: [0x80000001, 1]
+      expect: [0x80000002]
+      expect_exception: []
+
+    # Test case 11: + POS
+    - id: ldexp_011
+      description: "ldexpf(1.0, 2) = 4.0"
+      variants: [ss]
+      input: [0x3f800000, 2]
+      expect: [0x40800000]
+      expect_exception: []
+
+    # Test case 12: -POS
+    - id: ldexp_012
+      description: "ldexpf(-1.0, 2) = -4.0"
+      variants: [ss]
+      input: [0xbf800000, 2]
+      expect: [0xc0800000]
+      expect_exception: []
+
+    # Test case 13: +NEG
+    - id: ldexp_013
+      description: "ldexpf(2.0, -1) = 1.0"
+      variants: [ss]
+      input: [0x40000000, -1]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 14: -NEG
+    - id: ldexp_014
+      description: "ldexpf(-2.0, -1) = -1.0"
+      variants: [ss]
+      input: [0xc0000000, -1]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    # Test case 15: qnan
+    - id: ldexp_015
+      description: "ldexpf(qnan, 1) = qnan"
+      variants: [ss]
+      input: [0x7fc00000, 1]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: ldexp_016
+      description: "ldexpf(snan, 1) = snan"
+      variants: [ss]
+      input: [0x7fa00000, 1]
+      expect: [0x7FE00000]
+      expect_exception: [invalidoperation]
+
+# Test cases from gtests test_ldexp_data.h
+#-------------------------------
+    - id: ldexp_001
+      description: "ldexp(snan,snan) = snan"
+      input: [0x7fa00000, 0x7fa00000]
+      expect: [0x7fa00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: ldexp_002
+      description: "ldexp(snan,2.2) = snan"
+      input: [0x7fa00000, 0x400CCCCD]
+      expect: [0x7fa00000]
+      expect_exception: [inexact, invalidoperation]
+      variants: [ss]
+    - id: ldexp_003
+      description: "ldexp(10.4,10.4) (x==y) = 10.4"
+      input: [0x41266666, 0x41266666]
+      expect: [0x41266666]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: ldexp_004
+      description: "ldexp(0,5.4) = minimum denormal"
+      input: [0x00000000, 0x40ACCCCD]
+      expect: [0x00000001]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: ldexp_005
+      description: "ldexp(+inf,5.4) = +inf"
+      input: [0x7f800000, 0x40ACCCCD]
+      expect: [0x7f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: ldexp_006
+      description: "ldexp(-0,-4) = -minimum denormal"
+      input: [0x80000000, 0xC0800000]
+      expect: [0x80000001]
+      expect_exception: []
+      variants: [ss]
+#-------------------------------
+    # Double precision tests
+    # Test case 1: 0
+    - id: ldexp_001
+      description: "ldexp(0, 1) = 0"
+      variants: [sd]
+      input: [0x0000000000000000, 1]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: ldexp_002
+      description: "ldexp(-0, 1) = -0"
+      variants: [sd]
+      input: [0x8000000000000000, 1]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: ldexp_003
+      description: "ldexp(inf, 1) = inf"
+      variants: [sd]
+      input: [0x7ff0000000000000, 1]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: ldexp_004
+      description: "ldexp(-inf, 1) = -inf"
+      variants: [sd]
+      input: [0xfff0000000000000, 1]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+
+    # Test case 5: -nan
+    - id: ldexp_005
+      description: "ldexp(-nan, 1) = -nan"
+      variants: [sd]
+      input: [0xfff8000000000000, 1]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: ldexp_006
+      description: "ldexp(+nan, 1) = +nan"
+      variants: [sd]
+      input: [0x7ff8000000000000, 1]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: ldexp_007
+      description: "ldexp(+subnorm_max, 1) = normalized value"
+      variants: [sd]
+      input: [0x000fffffffffffff, 1]
+      expect: [0x001fffffffffffff]
+      expect_exception: []
+
+    # Test case 8: - subnorm (MAX)
+    - id: ldexp_008
+      description: "ldexp(-subnorm_max, 1) = -normalized value"
+      variants: [sd]
+      input: [0x800fffffffffffff, 1]
+      expect: [0x801fffffffffffff]
+      expect_exception: []
+
+    # Test case 9: + subnorm (MIN)
+    - id: ldexp_009
+      description: "ldexp(+subnorm_min, 1) = +subnorm_min * 2"
+      variants: [sd]
+      input: [0x0000000000000001, 1]
+      expect: [0x0000000000000002]
+      expect_exception: []
+
+    # Test case 10: - subnorm (MIN)
+    - id: ldexp_010
+      description: "ldexp(-subnorm_min, 1) = -subnorm_min * 2"
+      variants: [sd]
+      input: [0x8000000000000001, 1]
+      expect: [0x8000000000000002]
+      expect_exception: []
+
+    # Test case 11: + POS
+    - id: ldexp_011
+      description: "ldexp(1.0, 2) = 4.0"
+      variants: [sd]
+      input: [0x3ff0000000000000, 2]
+      expect: [0x4010000000000000]
+      expect_exception: []
+
+    # Test case 12: -POS
+    - id: ldexp_012
+      description: "ldexp(-1.0, 2) = -4.0"
+      variants: [sd]
+      input: [0xbff0000000000000, 2]
+      expect: [0xc010000000000000]
+      expect_exception: []
+
+    # Test case 13: +NEG
+    - id: ldexp_013
+      description: "ldexp(2.0, -1) = 1.0"
+      variants: [sd]
+      input: [0x4000000000000000, -1]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 14: -NEG
+    - id: ldexp_014
+      description: "ldexp(-2.0, -1) = -1.0"
+      variants: [sd]
+      input: [0xc000000000000000, -1]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    # Test case 15: qnan
+    - id: ldexp_015
+      description: "ldexp(qnan, 1) = qnan"
+      variants: [sd]
+      input: [0x7ff8000000000000, 1]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: ldexp_016
+      description: "ldexp(snan, 1) = snan"
+      variants: [sd]
+      input: [0x7ff4000000000001, 1]
+      expect: [0x7FFC000000000001]
+      expect_exception: [invalidoperation]
+# Test cases from gtests test_ldexp_data.h
+#-------------------------------
+    - id: ldexp_01
+      description: "ldexp(snan,snan) = snan"
+      input: [0x7FF4001000000000, 0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: ldexp_02
+      description: "ldexp(snan,2.2) = snan"
+      input: [0x7FF4001000000000, 0x400199999999999A]
+      expect: [0x7FF4001000000000]
+      expect_exception: [inexact, invalidoperation]
+      variants: [sd]
+    - id: ldexp_03
+      description: "ldexp(88.2,88.2) (x==y) = 88.2"
+      input: [0x40560CCCCCCCCCCD, 0x40560CCCCCCCCCCD]
+      expect: [0x40560CCCCCCCCCCD]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: ldexp_04
+      description: "ldexp(0,88.2) = minimum denormal"
+      input: [0x0000000000000000, 0x40560CCCCCCCCCCD]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: ldexp_05
+      description: "ldexp(+inf,88.2) = +inf"
+      input: [0x7ff0000000000000, 0x40560CCCCCCCCCCD]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: ldexp_06
+      description: "ldexp(-0, -4) = -minimum denormal"
+      input: [0x8000000000000000, 0xC010000000000000]
+      expect: [0x8000000000000001]
+      expect_exception: []
+      variants: [sd]
+#-------------------------------

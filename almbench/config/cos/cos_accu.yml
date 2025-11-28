@@ -1,0 +1,220 @@
+---
+- test_sequence: validation_tests_cos
+  function: cos
+  test_sets:
+  - id: range-tests_01
+    tests:
+    - id: cos_001
+      description: 'Full value distribution range tests: [-FLT_MAX, -0] expstep'
+      input:
+      - [0xFF7FFFFF, -min_subnormal]
+      type: [expstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: cos_002
+      description: 'Full value distribution range tests: [+0, FLT_MAX] expstep'
+      input:
+      - [min_subnormal, max]
+      type: [expstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: cos_003
+      description: 'Common value usage range tests: [-2*pi, -0] expstep'
+      input:
+      - [0xC0C90FDB, -min_subnormal]
+      type: [expstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: cos_004
+      description: 'Common value usage range tests: [+0, +2*pi] expstep'
+      input:
+      - [min_subnormal, 0x40C90FDB]
+      type: [expstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: cos_005
+      description: 'Subnormal values range tests: [-LARGEST_SUBNORMAL, +LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [-max_subnormal, max_subnormal]
+      type: [linearstep]
+      steps: [2000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: cos_006
+      description: Test around -pi
+      input:
+      - [0xC048FFDB, 0xC0491FDB]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: cos_007
+      description: Test around +pi
+      input:
+      - [0x4048FFDB, 0x40491FDB]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: cos_008
+      description: Test around -(pi/4)
+      input:
+      - [0xBF48FFDB, 0xBF491FDB]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: cos_009
+      description: Test around +(pi/4)
+      input:
+      - [0x3F48FFDB, 0x3F491FDB]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: cos_010
+      description: Test around 0, negative values
+      input:
+      - [0x80000000, 0x80000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: cos_011
+      description: Test around 0, positive values
+      input:
+      - [0.0, 0x00000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: cos_012
+      description: Test around -LARGEST_SUBNORMAL
+      input:
+      - [0x807ff000, 0x80800FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: cos_013
+      description: Test around +LARGEST_SUBNORMAL
+      input:
+      - [0x007ff000, 0x00800fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+#Double precision
+
+  - id: range-tests_01
+    tests:
+    - id: cos_001
+      description: 'Full value distribution range tests: [-DBL_MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cos_002
+      description: 'Common value usage range tests: [-2*pi, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [0xC01921FB54442D18, -min_subnormal]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cos_003
+      description: 'Common value usage range tests: [+SMALLEST_SUBNORMAL, +2*pi] expstep'
+      input:
+      - [min_subnormal, 0x401921FB54442D18]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cos_004
+      description: 'Subnormal values range tests: [-LARGEST_SUBNORMAL, +LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [0x800FFFFFFFFFFFFF, 0x000FFFFFFFFFFFFF]
+      type: [linearstep]
+      steps: [2000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cos_005
+      description: Test around -pi
+      input:
+      - [0xC00921FB54441D18, 0xC00921FB54443D18]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cos_006
+      description: Test around +pi
+      input:
+      - [0x400921FB54441D18, 0x400921FB54443D18]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cos_007
+      description: Test around -(pi/4)
+      input:
+      - [0xBFE921FB54441D18, 0xBFE921FB54443D18]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cos_008
+      description: Test around +(pi/4)
+      input:
+      - [0x3FE921FB54441D18, 0x3FE921FB54443D18]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cos_009
+      description: Test around 0, negative values
+      input:
+      - [-0.0, 0x8000000000000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cos_010
+      description: Test around 0, positive values
+      input:
+      - [0.0, 0x0000000000000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cos_011
+      description: Test around -LARGEST_SUBNORMAL
+      input:
+      - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cos_012
+      description: Test around +LARGEST_SUBNORMAL
+      input:
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cos_013
+      description: 'Full value distribution range tests: [+SMALLEST_SUBNORMAL, DBL_MAX] expstep'
+      input:
+      - [min_subnormal, max]
+      type: [expstep]
+      steps: [1000000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+
+

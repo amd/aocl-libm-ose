@@ -1,0 +1,1969 @@
+- test_sequence: unit_tests_tanh
+  ignore_exceptions: [underflow, inexact]
+  function: tanh
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    # Test case 1: 0
+    - id: tanh_001
+      description: "tanhf(0) = 0"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: tanh_002
+      description: "tanhf(-0) = -0"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: tanh_003
+      description: "tanhf(inf) = 1.0"
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: tanh_004
+      description: "tanhf(-inf) = -1.0"
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    # Test case 5: -nan
+    - id: tanh_005
+      description: "tanhf(-nan) = -nan"
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: tanh_006
+      description: "tanhf(+nan) = +nan"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: tanh_007
+      description: "tanhf(+subnorm_max) ≈ +subnorm_max"
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: [inexact, underflow]
+
+    # Test case 8: - subnorm (MAX)
+    - id: tanh_008
+      description: "tanhf(-subnorm_max) ≈ -subnorm_max"
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0x807fffff]
+      expect_exception: [inexact, underflow]
+
+    # Test case 9: + subnorm (MIN)
+    - id: tanh_009
+      description: "tanhf(+subnorm_min) ≈ +subnorm_min"
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+
+    # Test case 10: - subnorm (MIN)
+    - id: tanh_010
+      description: "tanhf(-subnorm_min) ≈ -subnorm_min"
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x80000001]
+      expect_exception: [inexact, underflow]
+
+    # Test case 11: + POS
+    - id: tanh_011
+      description: "tanhf(1.0) ≈ 0.7616"
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x3f42f7d6]
+      expect_exception: [inexact]
+
+    # Test case 12: -POS
+    - id: tanh_012
+      description: "tanhf(-1.0) ≈ -0.7616"
+      variants: [ss]
+      input: [0xbf800000]
+      expect: [0xbf42f7d6]
+      expect_exception: [inexact]
+
+    # Test case 13: +POS2
+    - id: tanh_013
+      description: "tanhf(2.0) ≈ 0.9640"
+      variants: [ss]
+      input: [0x40000000]
+      expect: [0x3f76c4b1]
+      expect_exception: [inexact]
+
+    # Test case 14: -POS2
+    - id: tanh_014
+      description: "tanhf(-2.0) ≈ -0.9640"
+      variants: [ss]
+      input: [0xc0000000]
+      expect: [0xbf76c4b1]
+      expect_exception: [inexact]
+
+    # Test case 15: qnan
+    - id: tanh_015
+      description: "tanhf(qnan) = qnan"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: tanh_016
+      description: "tanhf(snan) = snan"
+      variants: [ss]
+      input: [0x7fa00000]
+      expect: [0x7FE00000]
+      expect_exception: [invalidoperation]
+# Test cases from gtests test_tanh_data.h
+#-------------------------------
+    - id: tanh_001
+      description: " denormal min"
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+
+    # Test case 2
+    - id: tanh_002
+      description: " denormal intermediate"
+      variants: [ss]
+      input: [0x0005fde6]
+      expect: [0x0005fde6]
+      expect_exception: [inexact, underflow]
+
+    # Test case 3
+    - id: tanh_003
+      description: " denormal max"
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: [inexact, underflow]
+
+    # Test case 4
+    - id: tanh_004
+      description: " -denormal min"
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x80000001]
+      expect_exception: [inexact, underflow]
+
+    # Test case 5
+    - id: tanh_005
+      description: " -denormal intermediate"
+      variants: [ss]
+      input: [0x805def12]
+      expect: [0x805def12]
+      expect_exception: [inexact, underflow]
+
+    # Test case 6
+    - id: tanh_006
+      description: " -denormal max"
+      variants: [ss]
+      input: [0x807FFFFF]
+      expect: [0x807fffff]
+      expect_exception: [inexact, underflow]
+
+    # Test case 7
+    - id: tanh_007
+      description: " normal min"
+      variants: [ss]
+      input: [0x00800000]
+      expect: [0x00800000]
+      expect_exception: [inexact]
+
+    # Test case 8
+    - id: tanh_008
+      description: " normal intermediate"
+      variants: [ss]
+      input: [0x43b3c4ea]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 9
+    - id: tanh_009
+      description: " normal max"
+      variants: [ss]
+      input: [0x7f7fffff]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 10
+    - id: tanh_010
+      description: " -normal min"
+      variants: [ss]
+      input: [0x80800000]
+      expect: [0x80800000]
+      expect_exception: [inexact]
+
+    # Test case 11
+    - id: tanh_011
+      description: " -normal intermediate"
+      variants: [ss]
+      input: [0xc5812e71]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    # Test case 12
+    - id: tanh_012
+      description: " -normal max"
+      variants: [ss]
+      input: [0xFF7FFFFF]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    # Test case 13
+    - id: tanh_013
+      description: " inf"
+      variants: [ss]
+      input: [0x7F800000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 14
+    - id: tanh_014
+      description: " -inf"
+      variants: [ss]
+      input: [0xfF800000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    # Test case 15
+    - id: tanh_015
+      description: " qnan min"
+      variants: [ss]
+      input: [0x7Fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 16
+    - id: tanh_016
+      description: " qnan intermediate"
+      variants: [ss]
+      input: [0x7Fe1a570]
+      expect: [0x7fe1a570]
+      expect_exception: []
+
+    # Test case 17
+    - id: tanh_017
+      description: " qnan max"
+      variants: [ss]
+      input: [0x7FFFFFFF]
+      expect: [0x7fffffff]
+      expect_exception: []
+
+    # Test case 18
+    - id: tanh_018
+      description: " indeterninate"
+      variants: [ss]
+      input: [0xfFc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+
+    # Test case 19
+    - id: tanh_019
+      description: " -qnan min"
+      variants: [ss]
+      input: [0xFFC00001]
+      expect: [0xffc00001]
+      expect_exception: []
+
+    # Test case 20
+    - id: tanh_020
+      description: " -qnan intermediate"
+      variants: [ss]
+      input: [0xFFd2ba31]
+      expect: [0xffd2ba31]
+      expect_exception: []
+
+    # Test case 21
+    - id: tanh_021
+      description: " -qnan max"
+      variants: [ss]
+      input: [0xFFFFFFFF]
+      expect: [0xffffffff]
+      expect_exception: []
+
+    # Test case 22
+    - id: tanh_022
+      description: " snan min"
+      variants: [ss]
+      input: [0x7F800001]
+      expect: [0x7fc00001]
+      expect_exception: [invalidoperation]
+
+    # Test case 23
+    - id: tanh_023
+      description: " snan intermediate"
+      variants: [ss]
+      input: [0x7Fa0bd90]
+      expect: [0x7fe0bd90]
+      expect_exception: [invalidoperation]
+
+    # Test case 24
+    - id: tanh_024
+      description: " snan max"
+      variants: [ss]
+      input: [0x7FBFFFFF]
+      expect: [0x7fffffff]
+      expect_exception: [invalidoperation]
+
+    # Test case 25
+    - id: tanh_025
+      description: " -snan min"
+      variants: [ss]
+      input: [0xFF800001]
+      expect: [0xffc00001]
+      expect_exception: [invalidoperation]
+
+    # Test case 26
+    - id: tanh_026
+      description: " -snan intermediate"
+      variants: [ss]
+      input: [0xfF95fffa]
+      expect: [0xffd5fffa]
+      expect_exception: [invalidoperation]
+
+    # Test case 27
+    - id: tanh_027
+      description: " -snan max"
+      variants: [ss]
+      input: [0xFFBFFFFF]
+      expect: [0xffffffff]
+      expect_exception: [invalidoperation]
+
+    # Test case 28
+    - id: tanh_028
+      description: " pi/2"
+      variants: [ss]
+      input: [0x3FC90FDB]
+      expect: [0x3f6aca7f]
+      expect_exception: [inexact]
+
+    # Test case 29
+    - id: tanh_029
+      description: " pi"
+      variants: [ss]
+      input: [0x40490FDB]
+      expect: [0x3f7f0bb0]
+      expect_exception: [inexact]
+
+    # Test case 30
+    - id: tanh_030
+      description: " 2pi"
+      variants: [ss]
+      input: [0x40C90FDB]
+      expect: [0x3f7fff8b]
+      expect_exception: [inexact]
+
+    # Test case 31
+    - id: tanh_031
+      description: " e --"
+      variants: [ss]
+      input: [0x402DF853]
+      expect: [0x3f7dc7bb]
+      expect_exception: [inexact]
+
+    # Test case 32
+    - id: tanh_032
+      description: " e"
+      variants: [ss]
+      input: [0x402DF854]
+      expect: [0x3f7dc7bb]
+      expect_exception: [inexact]
+
+    # Test case 33
+    - id: tanh_033
+      description: " e ++"
+      variants: [ss]
+      input: [0x402DF855]
+      expect: [0x3f7dc7bb]
+      expect_exception: [inexact]
+
+    # Test case 34
+    - id: tanh_034
+      description: " 0.000023"
+      variants: [ss]
+      input: [0x37C0F01F]
+      expect: [0x37c0f01f]
+      expect_exception: [inexact]
+
+    # Test case 35
+    - id: tanh_035
+      description: " 0.49999"
+      variants: [ss]
+      input: [0x3EFFFEB0]
+      expect: [0x3eec9996]
+      expect_exception: [inexact]
+
+    # Test case 36
+    - id: tanh_036
+      description: " 0.500012"
+      variants: [ss]
+      input: [0x3F0000C9]
+      expect: [0x3eec9bdb]
+      expect_exception: [inexact]
+
+    # Test case 37
+    - id: tanh_037
+      description: " -0.000023"
+      variants: [ss]
+      input: [0xb7C0F01F]
+      expect: [0xb7c0f01f]
+      expect_exception: [inexact]
+
+    # Test case 38
+    - id: tanh_038
+      description: " -0.49999"
+      variants: [ss]
+      input: [0xbEFFFEB0]
+      expect: [0xbeec9996]
+      expect_exception: [inexact]
+
+    # Test case 39
+    - id: tanh_039
+      description: " -0.500012"
+      variants: [ss]
+      input: [0xbF0000C9]
+      expect: [0xbeec9bdb]
+      expect_exception: [inexact]
+
+    # Test case 40
+    - id: tanh_040
+      description: " 1"
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x3f42f7d6]
+      expect_exception: [inexact]
+
+    # Test case 41
+    - id: tanh_041
+      description: " 0.93750006"
+      variants: [ss]
+      input: [0x3f700001]
+      expect: [0x3f3bec1d]
+      expect_exception: [inexact]
+
+    # Test case 42
+    - id: tanh_042
+      description: " 1.0624998"
+      variants: [ss]
+      input: [0x3F87FFFE]
+      expect: [0x3f495fd8]
+      expect_exception: [inexact]
+
+    # Test case 43
+    - id: tanh_043
+      description: " 1.49999"
+      variants: [ss]
+      input: [0x3FBFFFAC]
+      expect: [0x3f67b7ad]
+      expect_exception: [inexact]
+
+    # Test case 44
+    - id: tanh_044
+      description: " 1.500012"
+      variants: [ss]
+      input: [0x3FC00064]
+      expect: [0x3f67b7f0]
+      expect_exception: [inexact]
+
+    # Test case 45
+    - id: tanh_045
+      description: " -1"
+      variants: [ss]
+      input: [0xbf800000]
+      expect: [0xbf42f7d6]
+      expect_exception: [inexact]
+
+    # Test case 46
+    - id: tanh_046
+      description: " -0.93750006"
+      variants: [ss]
+      input: [0xbf700001]
+      expect: [0xbf3bec1d]
+      expect_exception: [inexact]
+
+    # Test case 47
+    - id: tanh_047
+      description: " -1.0624998"
+      variants: [ss]
+      input: [0xbF87FFFE]
+      expect: [0xbf495fd8]
+      expect_exception: [inexact]
+
+    # Test case 48
+    - id: tanh_048
+      description: " -1.49999"
+      variants: [ss]
+      input: [0xbFBFFFAC]
+      expect: [0xbf67b7ad]
+      expect_exception: [inexact]
+
+    # Test case 49
+    - id: tanh_049
+      description: " -1.500012"
+      variants: [ss]
+      input: [0xbFC00064]
+      expect: [0xbf67b7f0]
+      expect_exception: [inexact]
+
+    # Test case 50
+    - id: tanh_050
+      description: " 2"
+      variants: [ss]
+      input: [0x40000000]
+      expect: [0x3f76ca83]
+      expect_exception: [inexact]
+
+    # Test case 51
+    - id: tanh_051
+      description: " -2"
+      variants: [ss]
+      input: [0xc0000000]
+      expect: [0xbf76ca83]
+      expect_exception: [inexact]
+
+    # Test case 52
+    - id: tanh_052
+      description: " 10"
+      variants: [ss]
+      input: [0x41200000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 53
+    - id: tanh_053
+      description: " -10"
+      variants: [ss]
+      input: [0xc1200000]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    # Test case 54
+    - id: tanh_054
+      description: " 1000"
+      variants: [ss]
+      input: [0x447A0000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 55
+    - id: tanh_055
+      description: " -1000"
+      variants: [ss]
+      input: [0xc47A0000]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    # Test case 56
+    - id: tanh_056
+      description: " 67.4"
+      variants: [ss]
+      input: [0x4286CCCC]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 57
+    - id: tanh_057
+      description: " -67.4"
+      variants: [ss]
+      input: [0xc286CCCC]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    # Test case 58
+    - id: tanh_058
+      description: " 1983.6"
+      variants: [ss]
+      input: [0x44F7F333]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 59
+    - id: tanh_059
+      description: " -1983.6"
+      variants: [ss]
+      input: [0xc4F7F333]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    # Test case 60
+    - id: tanh_060
+      description: " 87.5"
+      variants: [ss]
+      input: [0x42AF0000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 61
+    - id: tanh_061
+      description: " -87.5"
+      variants: [ss]
+      input: [0xc2AF0000]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    # Test case 62
+    - id: tanh_062
+      description: " 132473"
+      variants: [ss]
+      input: [0x48015E40]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 63
+    - id: tanh_063
+      description: " -132473"
+      variants: [ss]
+      input: [0xc8015E40]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    # Test case 64
+    - id: tanh_064
+      description: " 2^23"
+      variants: [ss]
+      input: [0x4B000000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 65
+    - id: tanh_065
+      description: " 2^23 + 1"
+      variants: [ss]
+      input: [0x4B000001]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 66
+    - id: tanh_066
+      description: " 2^23 -1 + 0.5"
+      variants: [ss]
+      input: [0x4AFFFFFF]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 67
+    - id: tanh_067
+      description: " -2^23"
+      variants: [ss]
+      input: [0xcB000000]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    # Test case 68
+    - id: tanh_068
+      description: " -(2^23 + 1)"
+      variants: [ss]
+      input: [0xcB000001]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    # Test case 69
+    - id: tanh_069
+      description: " -(2^23 -1 + 0.5)"
+      variants: [ss]
+      input: [0xcAFFFFFF]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    # Test case 70
+    - id: tanh_070
+      description: " min= 0.00006103515625, small enough that cosh=1 or sinh(x) = 0"
+      variants: [ss]
+      input: [0x38800000]
+      expect: [0x38800000]
+      expect_exception: [inexact]
+
+    # Test case 71
+    - id: tanh_071
+      description: " min - 1 bit"
+      variants: [ss]
+      input: [0x387FFFFF]
+      expect: [0x387fffff]
+      expect_exception: [inexact]
+
+    # Test case 72
+    - id: tanh_072
+      description: " min + 1 bit"
+      variants: [ss]
+      input: [0x38800001]
+      expect: [0x38800001]
+      expect_exception: [inexact]
+
+    # Test case 73
+    - id: tanh_073
+      description: " lambda + x = 1, x = -9.9999994e+29"
+      variants: [ss]
+      input: [0xF149F2C9]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    # Test case 74
+    - id: tanh_074
+      description: " lambda + x < 1"
+      variants: [ss]
+      input: [0xF149F2C8]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    # Test case 75
+    - id: tanh_075
+      description: " lambda + x > 1"
+      variants: [ss]
+      input: [0xF149F2CA]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    # Test case 76
+    - id: tanh_076
+      description: " max arg, x = 89.41598629223294,max coshf arg"
+      variants: [ss]
+      input: [0x42B2D4FC]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 77
+    - id: tanh_077
+      description: " max arg - 1 bit"
+      variants: [ss]
+      input: [0x42B2D4FB]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 78
+    - id: tanh_078
+      description: " max arg + 1 bit"
+      variants: [ss]
+      input: [0x42B2D4FD]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 79
+    - id: tanh_079
+      description: " > max"
+      variants: [ss]
+      input: [0x42B2D4FF]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 80
+    - id: tanh_080
+      description: " < max"
+      variants: [ss]
+      input: [0x42B2D400]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 81
+    - id: tanh_081
+      description: " small_threshold = 20"
+      variants: [ss]
+      input: [0x41A00000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 82
+    - id: tanh_082
+      description: " small_threshold+1 = 21"
+      variants: [ss]
+      input: [0x41A80000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 83
+    - id: tanh_083
+      description: " small_threshold - 1 = 19"
+      variants: [ss]
+      input: [0x41980000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 84
+    - id: tanh_084
+      description: "tanhf(0x39000000) = 0x39000000"
+      variants: [ss]
+      input: [0x39000000]
+      expect: [0x39000000]
+      expect_exception: [inexact]
+
+    # Test case 85
+    - id: tanh_085
+      description: "tanhf(0x39000001) = 0x39000001"
+      variants: [ss]
+      input: [0x39000001]
+      expect: [0x39000001]
+      expect_exception: [inexact]
+
+    # Test case 86
+    - id: tanh_086
+      description: "tanhf(0x38ffffff) = 0x38ffffff"
+      variants: [ss]
+      input: [0x38ffffff]
+      expect: [0x38ffffff]
+      expect_exception: [inexact]
+
+    # Test case 87
+    - id: tanh_087
+      description: "tanhf(0x4238aa3b) = 0x3f800000"
+      variants: [ss]
+      input: [0x4238aa3b]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 88
+    - id: tanh_088
+      description: "tanhf(0x3cb17000) = 0x3cb168e6"
+      variants: [ss]
+      input: [0x3cb17000]
+      expect: [0x3cb168e6]
+      expect_exception: [inexact]
+
+    # Test case 89
+    - id: tanh_089
+      description: "tanhf(0x3585fdf4) = 0x3585fdf4"
+      variants: [ss]
+      input: [0x3585fdf4]
+      expect: [0x3585fdf4]
+      expect_exception: [inexact]
+
+    # Test case 90
+    - id: tanh_090
+      description: "tanhf(0x41200000) = 0x3f800000"
+      variants: [ss]
+      input: [0x41200000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 91
+    - id: tanh_091
+      description: "tanhf(0x4120000f) = 0x3f800000"
+      variants: [ss]
+      input: [0x4120000f]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 92
+    - id: tanh_092
+      description: "tanhf(0x411fffff) = 0x3f800000"
+      variants: [ss]
+      input: [0x411fffff]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 93
+    - id: tanh_093
+      description: " 0< x < 0.9"
+      variants: [ss]
+      input: [0x3F29465E]
+      expect: [0x3f14453b]
+      expect_exception: [inexact]
+
+    # Test case 94
+    - id: tanh_094
+      description: " 0.9 < x < 1.0"
+      variants: [ss]
+      input: [0x3F7C9A56]
+      expect: [0x3f4186e4]
+      expect_exception: [inexact]
+
+    # Test case 95
+    - id: tanh_095
+      description: " 0"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 96
+    - id: tanh_096
+      description: " 0"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 97
+    - id: tanh_097
+      description: "tanhf(0x7F800000) = 0x3f800000"
+      variants: [ss]
+      input: [0x7F800000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 98
+    - id: tanh_098
+      description: "tanhf(0xFF800000) = 0xbf800000"
+      variants: [ss]
+      input: [0xFF800000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    # Test case 99
+    - id: tanh_099
+      description: "tanhf(0x7fb00000) = 0x7ff00000"
+      variants: [ss]
+      input: [0x7fb00000]
+      expect: [0x7ff00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 100
+    - id: tanh_100
+      description: "tanhf(0xffb00000) = 0xfff00000"
+      variants: [ss]
+      input: [0xffb00000]
+      expect: [0xfff00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 101
+    - id: tanh_101
+      description: "tanhf(0x7ff00000) = 0x7ff00000"
+      variants: [ss]
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+
+    # Test case 102
+    - id: tanh_102
+      description: "tanhf(0xfff00000) = 0xfff00000"
+      variants: [ss]
+      input: [0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+
+    # Test case 103
+    - id: tanh_103
+      description: " 95"
+      variants: [ss]
+      input: [0x42BE0000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 104
+    - id: tanh_104
+      description: " 2^(-15), < 2 ^(-13), x"
+      variants: [ss]
+      input: [0x38000000]
+      expect: [0x38000000]
+      expect_exception: [inexact]
+
+    # Test case 105
+    - id: tanh_105
+      description: " -2^(-15), < 2 ^(-13), x"
+      variants: [ss]
+      input: [0xb8000000]
+      expect: [0xb8000000]
+      expect_exception: [inexact]
+
+    # Test case 106
+    - id: tanh_106
+      description: " 11, > large_threshold, +1"
+      variants: [ss]
+      input: [0x41300000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 107
+    - id: tanh_107
+      description: " -11, > max_sinh_arg, -1"
+      variants: [ss]
+      input: [0xc1300000]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    # Test case 108
+    - id: tanh_108
+      description: " 5, > 1"
+      variants: [ss]
+      input: [0x40a00000]
+      expect: [0x3f7ffa0d]
+      expect_exception: [inexact]
+
+    # Test case 109
+    - id: tanh_109
+      description: " -5, > 1"
+      variants: [ss]
+      input: [0xc0a00000]
+      expect: [0xbf7ffa0d]
+      expect_exception: [inexact]
+
+    # Test case 110
+    - id: tanh_110
+      description: " 1, > 0.9"
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x3f42f7d6]
+      expect_exception: [inexact]
+
+    # Test case 111
+    - id: tanh_111
+      description: " -1, > 0.9"
+      variants: [ss]
+      input: [0xbf800000]
+      expect: [0xbf42f7d6]
+      expect_exception: [inexact]
+
+    # Test case 112
+    - id: tanh_112
+      description: " 0.95, > 0.9"
+      variants: [ss]
+      input: [0x3f733333]
+      expect: [0x3f3d626c]
+      expect_exception: [inexact]
+
+    # Test case 113
+    - id: tanh_113
+      description: " -0.923, > 0.9"
+      variants: [ss]
+      input: [0xbf6c49ba]
+      expect: [0xbf3a3138]
+      expect_exception: [inexact]
+
+    # Test case 114
+    - id: tanh_114
+      description: " 0.1, < 0.9"
+      variants: [ss]
+      input: [0x3dcccccd]
+      expect: [0x3dcc1ebc]
+      expect_exception: [inexact]
+
+    # Test case 115
+    - id: tanh_115
+      description: " -0.0002, < 0.9"
+      variants: [ss]
+      input: [0xb951b717]
+      expect: [0xb951b717]
+      expect_exception: [inexact]
+
+#-----------------------------
+    # Double precision tests
+    # Test case 1: 0
+    - id: tanh_001
+      description: "tanh(0) = 0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: tanh_002
+      description: "tanh(-0) = -0"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: tanh_003
+      description: "tanh(inf) = 1.0"
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: tanh_004
+      description: "tanh(-inf) = -1.0"
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    # Test case 5: -nan
+    - id: tanh_005
+      description: "tanh(-nan) = -nan"
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: tanh_006
+      description: "tanh(+nan) = +nan"
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: tanh_007
+      description: "tanh(+subnorm_max) ≈ +subnorm_max"
+      variants: [sd]
+      input: [0x000fffffffffffff]
+      expect: [0x000fffffffffffff]
+      expect_exception: [inexact, underflow]
+
+    # Test case 8: - subnorm (MAX)
+    - id: tanh_008
+      description: "tanh(-subnorm_max) ≈ -subnorm_max"
+      variants: [sd]
+      input: [0x800fffffffffffff]
+      expect: [0x800fffffffffffff]
+      expect_exception: [inexact, underflow]
+
+    # Test case 9: + subnorm (MIN)
+    - id: tanh_009
+      description: "tanh(+subnorm_min) ≈ +subnorm_min"
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+
+    # Test case 10: - subnorm (MIN)
+    - id: tanh_010
+      description: "tanh(-subnorm_min) ≈ -subnorm_min"
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0x8000000000000001]
+      expect_exception: [inexact, underflow]
+
+    # Test case 11: + POS
+    - id: tanh_011
+      description: "tanh(1.0) ≈ 0.7615941559557649"
+      variants: [sd]
+      input: [0x3ff0000000000000]
+      expect: [0x3fe85efab514f394]
+      expect_exception: [inexact]
+
+    # Test case 12: -POS
+    - id: tanh_012
+      description: "tanh(-1.0) ≈ -0.7615941559557649"
+      variants: [sd]
+      input: [0xbff0000000000000]
+      expect: [0xbfe85efab514f394]
+      expect_exception: [inexact]
+
+    # Test case 13: +POS2
+    - id: tanh_013
+      description: "tanh(2.0) ≈ 0.9640275800758169"
+      variants: [sd]
+      input: [0x4000000000000000]
+      expect: [0x3fed906bcf328d46]
+      expect_exception: [inexact]
+
+    # Test case 14: -POS2
+    - id: tanh_014
+      description: "tanh(-2.0) ≈ -0.9640275800758169"
+      variants: [sd]
+      input: [0xc000000000000000]
+      expect: [0xbfed906bcf328d46]
+      expect_exception: [inexact]
+
+    # Test case 15: qnan
+    - id: tanh_015
+      description: "tanh(qnan) = qnan"
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: tanh_016
+      description: "tanh(snan) = snan"
+      variants: [sd]
+      input: [0x7ff4000000000001]
+      expect: [0x7ff4000000000001]
+      expect_exception: [invalidoperation]
+# Test cases from gtests test_tanh_data.h
+#-------------------------------
+    - id: tanh_001
+      description: "denormal min"
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+
+    # Test case 2
+    - id: tanh_002
+      description: "denormal intermediate"
+      variants: [sd]
+      input: [0x0005fde623545abc]
+      expect: [0x0005fde623545abc]
+      expect_exception: [inexact, underflow]
+
+    # Test case 3
+    - id: tanh_003
+      description: "denormal max"
+      variants: [sd]
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x000fffffffffffff]
+      expect_exception: [inexact, underflow]
+
+    # Test case 4
+    - id: tanh_004
+      description: "-denormal min"
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0x8000000000000001]
+      expect_exception: [inexact, underflow]
+
+    # Test case 5
+    - id: tanh_005
+      description: "-denormal intermediate"
+      variants: [sd]
+      input: [0x8002344ade5def12]
+      expect: [0x8002344ade5def12]
+      expect_exception: [inexact, underflow]
+
+    # Test case 6
+    - id: tanh_006
+      description: "-denormal max"
+      variants: [sd]
+      input: [0x800FFFFFFFFFFFFF]
+      expect: [0x800fffffffffffff]
+      expect_exception: [inexact, underflow]
+
+    # Test case 7
+    - id: tanh_007
+      description: "normal min"
+      variants: [sd]
+      input: [0x0010000000000000]
+      expect: [0x0010000000000000]
+      expect_exception: [inexact]
+
+    # Test case 8
+    - id: tanh_008
+      description: "normal intermediate"
+      variants: [sd]
+      input: [0x43b3c4eafedcab02]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 9
+    - id: tanh_009
+      description: "normal max"
+      variants: [sd]
+      input: [0x7FEFFFFFFFFFFFFF]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 10
+    - id: tanh_010
+      description: "-normal min"
+      variants: [sd]
+      input: [0x8010000000000000]
+      expect: [0x8010000000000000]
+      expect_exception: [inexact]
+
+    # Test case 11
+    - id: tanh_011
+      description: "-normal intermediate"
+      variants: [sd]
+      input: [0xc5812e71245acfdb]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 12
+    - id: tanh_012
+      description: "-normal max"
+      variants: [sd]
+      input: [0xFFEFFFFFFFFFFFFF]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 13
+    - id: tanh_013
+      description: "inf"
+      variants: [sd]
+      input: [0x7FF0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 14
+    - id: tanh_014
+      description: "-inf"
+      variants: [sd]
+      input: [0xFFF0000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    # Test case 15
+    - id: tanh_015
+      description: "qnan min"
+      variants: [sd]
+      input: [0x7FF8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 16
+    - id: tanh_016
+      description: "qnan intermediate"
+      variants: [sd]
+      input: [0x7FFe1a5701234dc3]
+      expect: [0x7ffe1a5701234dc3]
+      expect_exception: []
+
+    # Test case 17
+    - id: tanh_017
+      description: "qnan max"
+      variants: [sd]
+      input: [0x7FFFFFFFFFFFFFFF]
+      expect: [0x7fffffffffffffff]
+      expect_exception: []
+
+    # Test case 18
+    - id: tanh_018
+      description: "indeterninate"
+      variants: [sd]
+      input: [0xFFF8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+
+    # Test case 19
+    - id: tanh_019
+      description: "-qnan min"
+      variants: [sd]
+      input: [0xFFF8000000000001]
+      expect: [0xfff8000000000001]
+      expect_exception: []
+
+    # Test case 20
+    - id: tanh_020
+      description: "-qnan intermediate"
+      variants: [sd]
+      input: [0xFFF9123425dcba31]
+      expect: [0xfff9123425dcba31]
+      expect_exception: []
+
+    # Test case 21
+    - id: tanh_021
+      description: "-qnan max"
+      variants: [sd]
+      input: [0xFFFFFFFFFFFFFFFF]
+      expect: [0xffffffffffffffff]
+      expect_exception: []
+
+    # Test case 22
+    - id: tanh_022
+      description: "snan min"
+      variants: [sd]
+      input: [0x7FF0000000000001]
+      expect: [0x7ff8000000000001]
+      expect_exception: [invalidoperation]
+
+    # Test case 23
+    - id: tanh_023
+      description: "snan intermediate"
+      variants: [sd]
+      input: [0x7FF5344752a0bd90]
+      expect: [0x7ffd344752a0bd90]
+      expect_exception: [invalidoperation]
+
+    # Test case 24
+    - id: tanh_024
+      description: "snan max"
+      variants: [sd]
+      input: [0x7FF7FFFFFFFFFFFF]
+      expect: [0x7fffffffffffffff]
+      expect_exception: [invalidoperation]
+
+    # Test case 25
+    - id: tanh_025
+      description: "-snan min"
+      variants: [sd]
+      input: [0xFFF0000000000001]
+      expect: [0xfff8000000000001]
+      expect_exception: [invalidoperation]
+
+    # Test case 26
+    - id: tanh_026
+      description: "-snan intermediate"
+      variants: [sd]
+      input: [0xfFF432438995fffa]
+      expect: [0xfffc32438995fffa]
+      expect_exception: [invalidoperation]
+
+    # Test case 27
+    - id: tanh_027
+      description: "-snan max"
+      variants: [sd]
+      input: [0xFFF7FFFFFFFFFFFF]
+      expect: [0xffffffffffffffff]
+      expect_exception: [invalidoperation]
+
+    # Test case 28
+    - id: tanh_028
+      description: "pi/2"
+      variants: [sd]
+      input: [0x3FF921FB54442D18]
+      expect: [0x3fed594fdae482ba]
+      expect_exception: [inexact]
+
+    # Test case 29
+    - id: tanh_029
+      description: "pi"
+      variants: [sd]
+      input: [0x400921FB54442D18]
+      expect: [0x3fefe175fa292810]
+      expect_exception: [inexact]
+
+    # Test case 30
+    - id: tanh_030
+      description: "2pi"
+      variants: [sd]
+      input: [0x401921FB54442D18]
+      expect: [0x3feffff15f81f9ab]
+      expect_exception: [inexact]
+
+    # Test case 31
+    - id: tanh_031
+      description: "e --"
+      variants: [sd]
+      input: [0x3FFB7E151628AED3]
+      expect: [0x3fee0146c0b8d088]
+      expect_exception: [inexact]
+
+    # Test case 32
+    - id: tanh_032
+      description: "e"
+      variants: [sd]
+      input: [0x4005BF0A8B145769]
+      expect: [0x3fefb8f76b1e2ab6]
+      expect_exception: [inexact]
+
+    # Test case 33
+    - id: tanh_033
+      description: "e ++"
+      variants: [sd]
+      input: [0x400DBF0A8B145769]
+      expect: [0x3feff659b95529a7]
+      expect_exception: [inexact]
+
+    # Test case 34
+    - id: tanh_034
+      description: "0.0000000000000000023"
+      variants: [sd]
+      input: [0x3C4536B8B14B676C]
+      expect: [0x3c4536b8b14b676c]
+      expect_exception: [inexact]
+
+    # Test case 35
+    - id: tanh_035
+      description: "0.4999989999999999999"
+      variants: [sd]
+      input: [0x3FDFFFFBCE4217D3]
+      expect: [0x3fdd93508ae5560c]
+      expect_exception: [inexact]
+
+    # Test case 36
+    - id: tanh_036
+      description: "0.500000000000012"
+      variants: [sd]
+      input: [0x3FE000000000006C]
+      expect: [0x3fdd9353d7568b9d]
+      expect_exception: [inexact]
+
+    # Test case 37
+    - id: tanh_037
+      description: "-0.000000000000000000023"
+      variants: [sd]
+      input: [0xBBDB2752CE74FF42]
+      expect: [0xbbdb2752ce74ff42]
+      expect_exception: [inexact]
+
+    # Test case 38
+    - id: tanh_038
+      description: "-0.4999989999999999999"
+      variants: [sd]
+      input: [0xBFDFFFFBCE4217D3]
+      expect: [0xbfdd93508ae5560c]
+      expect_exception: [inexact]
+
+    # Test case 39
+    - id: tanh_039
+      description: "-0.500000000000012"
+      variants: [sd]
+      input: [0xBFE000000000006C]
+      expect: [0xbfdd9353d7568b9d]
+      expect_exception: [inexact]
+
+    # Test case 40
+    - id: tanh_040
+      description: "1"
+      variants: [sd]
+      input: [0x3FF0000000000000]
+      expect: [0x3fe85efab514f394]
+      expect_exception: [inexact]
+
+    # Test case 41
+    - id: tanh_041
+      description: "0.9999998893750006"
+      variants: [sd]
+      input: [0x3FEFFFFFC49BD0DC]
+      expect: [0x3fe85efa9c23956f]
+      expect_exception: [inexact]
+
+    # Test case 42
+    - id: tanh_042
+      description: "1.0000000000000624998"
+      variants: [sd]
+      input: [0x3FF0000000000119]
+      expect: [0x3fe85efab514f480]
+      expect_exception: [inexact]
+
+    # Test case 43
+    - id: tanh_043
+      description: "1.499998999999999967"
+      variants: [sd]
+      input: [0x3FF7FFFEF39085F4]
+      expect: [0x3fecf6f91769ce16]
+      expect_exception: [inexact]
+
+    # Test case 44
+    - id: tanh_044
+      description: "1.50000000000000012"
+      variants: [sd]
+      input: [0x3FF8000000000001]
+      expect: [0x3fecf6f9786df578]
+      expect_exception: [inexact]
+
+    # Test case 45
+    - id: tanh_045
+      description: "-1"
+      variants: [sd]
+      input: [0xBFF0000000000000]
+      expect: [0xbfe85efab514f394]
+      expect_exception: [inexact]
+
+    # Test case 46
+    - id: tanh_046
+      description: "-0.9999998893750006"
+      variants: [sd]
+      input: [0xBFEFFFFFC49BD0DC]
+      expect: [0xbfe85efa9c23956f]
+      expect_exception: [inexact]
+
+    # Test case 47
+    - id: tanh_047
+      description: "-1.0000000000000624998"
+      variants: [sd]
+      input: [0xBFF0000000000119]
+      expect: [0xbfe85efab514f480]
+      expect_exception: [inexact]
+
+    # Test case 48
+    - id: tanh_048
+      description: "-1.499998999999999967"
+      variants: [sd]
+      input: [0xBFF7FFFEF39085F4]
+      expect: [0xbfecf6f91769ce16]
+      expect_exception: [inexact]
+
+    # Test case 49
+    - id: tanh_049
+      description: "-1.50000000000000012"
+      variants: [sd]
+      input: [0xBFF8000000000001]
+      expect: [0xbfecf6f9786df578]
+      expect_exception: [inexact]
+
+    # Test case 50
+    - id: tanh_050
+      description: "2"
+      variants: [sd]
+      input: [0x4000000000000000]
+      expect: [0x3feed9505e1bc3d4]
+      expect_exception: [inexact]
+
+    # Test case 51
+    - id: tanh_051
+      description: "-2"
+      variants: [sd]
+      input: [0xC000000000000000]
+      expect: [0xbfeed9505e1bc3d4]
+      expect_exception: [inexact]
+
+    # Test case 52
+    - id: tanh_052
+      description: "10"
+      variants: [sd]
+      input: [0x4024000000000000]
+      expect: [0x3feffffffdc96f35]
+      expect_exception: [inexact]
+
+    # Test case 53
+    - id: tanh_053
+      description: "-10"
+      variants: [sd]
+      input: [0xC024000000000000]
+      expect: [0xbfeffffffdc96f35]
+      expect_exception: [inexact]
+
+    # Test case 54
+    - id: tanh_054
+      description: "1000"
+      variants: [sd]
+      input: [0x408F400000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 55
+    - id: tanh_055
+      description: "-1000"
+      variants: [sd]
+      input: [0xC08F400000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 56
+    - id: tanh_056
+      description: "67.4"
+      variants: [sd]
+      input: [0x4050D9999999999A]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 57
+    - id: tanh_057
+      description: "-67.4"
+      variants: [sd]
+      input: [0xC050D9999999999A]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 58
+    - id: tanh_058
+      description: "1983.6"
+      variants: [sd]
+      input: [0x409EFE6666666666]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 59
+    - id: tanh_059
+      description: "-1983.6"
+      variants: [sd]
+      input: [0xC09EFE6666666666]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 60
+    - id: tanh_060
+      description: "87.5"
+      variants: [sd]
+      input: [0x4055E00000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 61
+    - id: tanh_061
+      description: "-87.5"
+      variants: [sd]
+      input: [0xC055E00000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 62
+    - id: tanh_062
+      description: "132473"
+      variants: [sd]
+      input: [0x41002BC800000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 63
+    - id: tanh_063
+      description: "-132473"
+      variants: [sd]
+      input: [0xC1002BC800000000]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 64
+    - id: tanh_064
+      description: "2^52"
+      variants: [sd]
+      input: [0x4330000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 65
+    - id: tanh_065
+      description: "2^52 + 1"
+      variants: [sd]
+      input: [0x4330000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 66
+    - id: tanh_066
+      description: "2^52 -1 + 0.5"
+      variants: [sd]
+      input: [0x432FFFFFFFFFFFFF]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 67
+    - id: tanh_067
+      description: "-2^52"
+      variants: [sd]
+      input: [0xC330000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 68
+    - id: tanh_068
+      description: "-(2^52 + 1)"
+      variants: [sd]
+      input: [0xC330000000000001]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 69
+    - id: tanh_069
+      description: "-(2^52 -1 + 0.5)"
+      variants: [sd]
+      input: [0xC32FFFFFFFFFFFFF]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 70
+    - id: tanh_070
+      description: "min - 1 bit"
+      variants: [sd]
+      input: [0x3E2FFFFFFFFFFFFF]
+      expect: [0x3e2fffffffffffff]
+      expect_exception: [inexact]
+
+    # Test case 71
+    - id: tanh_071
+      description: "min + 1 bit"
+      variants: [sd]
+      input: [0x3e30000000000001]
+      expect: [0x3e30000000000001]
+      expect_exception: [inexact]
+
+    # Test case 72
+    - id: tanh_072
+      description: "lambda + x = 1, x = -1.0000000000000000e+300"
+      variants: [sd]
+      input: [0xFE37E43C8800759C]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 73
+    - id: tanh_073
+      description: "lambda + x < 1"
+      variants: [sd]
+      input: [0xFE37E43C8800758C]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 74
+    - id: tanh_074
+      description: "lambda + x > 1"
+      variants: [sd]
+      input: [0xFE37E43C880075AC]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 75
+    - id: tanh_075
+      description: "max arg, x = 89.41598629223294,max coshf arg"
+      variants: [sd]
+      input: [0x408633ce8fb9f87e]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 76
+    - id: tanh_076
+      description: "max arg - 1 bit"
+      variants: [sd]
+      input: [0x408633ce8fb9f87d]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 77
+    - id: tanh_077
+      description: "max arg + 1 bit"
+      variants: [sd]
+      input: [0x408633ce8fb9f87f]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 78
+    - id: tanh_078
+      description: "> max"
+      variants: [sd]
+      input: [0x408633ce8fb9f8ff]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 79
+    - id: tanh_079
+      description: "< max"
+      variants: [sd]
+      input: [0x408633ce8fb9f800]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 80
+    - id: tanh_080
+      description: "small_threshold = 20"
+      variants: [sd]
+      input: [0x4034000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 81
+    - id: tanh_081
+      description: "small_threshold+1 = 21"
+      variants: [sd]
+      input: [0x4035000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 82
+    - id: tanh_082
+      description: "small_threshold - 1 = 19"
+      variants: [sd]
+      input: [0x4033000000000000]
+      expect: [0x3fefffffffffffff]
+      expect_exception: [inexact]
+
+    # Test case 83
+    - id: tanh_083
+      description: "tanh(0x40471547652b82fe) = 0x3ff0000000000000"
+      variants: [sd]
+      input: [0x40471547652b82fe]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 84
+    - id: tanh_084
+      description: "tanh(0x3f962e42fe000000) = 0x3f962d5fb0a51def"
+      variants: [sd]
+      input: [0x3f962e42fe000000]
+      expect: [0x3f962d5fb0a51def]
+      expect_exception: [inexact]
+
+    # Test case 85
+    - id: tanh_085
+      description: "tanh(0x3dcf473de6af278e) = 0x3dcf473de6af278e"
+      variants: [sd]
+      input: [0x3dcf473de6af278e]
+      expect: [0x3dcf473de6af278e]
+      expect_exception: [inexact]
+
+    # Test case 86
+    - id: tanh_086
+      description: "tanh(0x3e30000000000000) = 0x3e30000000000000"
+      variants: [sd]
+      input: [0x3e30000000000000]
+      expect: [0x3e30000000000000]
+      expect_exception: [inexact]
+
+    # Test case 87
+    - id: tanh_087
+      description: "tanh(0x3e2fffffffffffff) = 0x3e2fffffffffffff"
+      variants: [sd]
+      input: [0x3e2fffffffffffff]
+      expect: [0x3e2fffffffffffff]
+      expect_exception: [inexact]
+
+    # Test case 88
+    - id: tanh_088
+      description: "0<x<0.9"
+      variants: [sd]
+      input: [0x3FE59CE075F6FD22]
+      expect: [0x3fe2d52985592f9b]
+      expect_exception: [inexact]
+
+    # Test case 89
+    - id: tanh_089
+      description: "0.9<x<1.0"
+      variants: [sd]
+      input: [0x3FEF934ACAFF6D33]
+      expect: [0x3fe830dc87af6b02]
+      expect_exception: [inexact]
+
+    # Test case 90
+    - id: tanh_090
+      description: "0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 91
+    - id: tanh_091
+      description: "0"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 92
+    - id: tanh_092
+      description: "tanh(0x7ff0000000000000) = 0x3ff0000000000000"
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 93
+    - id: tanh_093
+      description: "tanh(0xfff0000000000000) = 0xbff0000000000000"
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    # Test case 94
+    - id: tanh_094
+      description: "tanh(0x7FF4001000000000) = 0x7ff87ff7fdedffff"
+      variants: [sd]
+      input: [0x7FF4001000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+
+    # Test case 95
+    - id: tanh_095
+      description: "tanh(0xfff2000000000000) = 0xfff8000000000000"
+      variants: [sd]
+      input: [0xfff2000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 96
+    - id: tanh_096
+      description: "tanh(0x7ff87ff7fdedffff) = 0x7ff87ff7fdedffff"
+      variants: [sd]
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+
+    # Test case 97
+    - id: tanh_097
+      description: "tanh(0xfff8000000000000) = 0xfff8000000000000"
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+
+    # Test case 98
+    - id: tanh_098
+      description: "710.5"
+      variants: [sd]
+      input: [0x4086340000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+#-----------------------------

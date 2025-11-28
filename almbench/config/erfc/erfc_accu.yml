@@ -1,0 +1,182 @@
+- test_sequence: validation_tests_erfc
+  function: erfc
+  test_sets:
+  - id: accu_range-tests_01
+    tests:
+    - id: erfc_001
+      description: 'Full value distribution range tests: [+SMALLEST_SUBNORMAL, FLT_MAX] expstep'
+      input:
+      - [min_subnormal, max]
+      type: [expstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: erfc_002
+      description: 'Full value distribution range tests: [-FLT_MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [-max, -min_subnormal]
+      type: [expstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: erfc_003
+      description: 'Nominal use range tests: [-10, +10] linearstep'
+      input:
+      - [-10.0, 10.0]
+      type: [linearstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: erfc_004
+      description: 'Subnormal values range tests: [0, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [0.0, max_subnormal]
+      type: [linearstep]
+      steps: [5000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: erfc_005
+      description: 'Subnormal values range tests: [-LARGEST_SUBNORMAL, 0] linearstep'
+      input:
+      - [-max_subnormal, 0.0]
+      type: [linearstep]
+      steps: [5000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: erfc_006
+      description: 'Test around positive 0'
+      input:
+      - [0.0, 0x00000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: erfc_007
+      description: 'Test around negative 0'
+      input:
+      - [0x80000000, 0x80000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: erfc_008
+      description: 'Test around LARGEST_SUBNORMAL'
+      input:
+      - [0x007ff000, 0x00800fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: erfc_009
+      description: 'Test around -LARGEST_SUBNORMAL'
+      input:
+      - [0x807ff000, 0x80800fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: erfc_010
+      description: 'Test around +2.0'
+      input:
+      - [0x3ffff000, 0x40000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: erfc_011
+      description: 'Test around -2.0'
+      input:
+      - [0xbffff000, 0xc0000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+#Double precision
+    - id: erfc_001
+      description: 'Full value distribution range tests: [+SMALLEST_SUBNORMAL, DBL-MAX] expstep'
+      input:
+      - [min_subnormal, max]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfc_002
+      description: 'Full value distribution range tests: [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [-max, -min_subnormal]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfc_003
+      description: 'Nominal use range tests: [-10, +10] linearstep'
+      input:
+      - [-10.0, 10.0]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfc_004
+      description: 'Subnormal values range tests: [0, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [0.0, max_subnormal]
+      type: [linearstep]
+      steps: [5000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfc_005
+      description: 'Subnormal values range tests: [-LARGEST_SUBNORMAL, -0] linearstep'
+      input:
+      - [-max_subnormal, -0.0]
+      type: [linearstep]
+      steps: [5000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfc_006
+      description: 'Test around positive 0'
+      input:
+      - [0.0, 0x0000000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfc_007
+      description: 'Test around negative 0'
+      input:
+      - [0x8000000000000000, 0x8000000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfc_008
+      description: 'Test around LARGEST_SUBNORMAL'
+      input:
+      - [0x000ffffffffff000, 0x0010000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfc_009
+      description: 'Test around -LARGEST_SUBNORMAL'
+      input:
+      - [0x800ffffffffff000, 0x8010000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfc_010
+      description: 'Test around +2.0'
+      input:
+      - [0x3ffffffffffff000, 0x4000000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfc_011
+      description: 'Test around -2.0'
+      input:
+      - [0xbffffffffffff000, 0xc000000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+

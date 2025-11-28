@@ -1,0 +1,898 @@
+---
+- test_sequence: unit_tests_remainder
+  function: remainder
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    # Test case 1: 0
+    - id: remainder_001
+      description: "remainderf(0, 1.0) = 0"
+      api_name: remainder
+      variants: [ss]
+      input: [0x00000000, 0x3f800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: remainder_002
+      description: "remainderf(-0, 1.0) = -0"
+      api_name: remainder
+      variants: [ss]
+      input: [0x80000000, 0x3f800000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: remainder_003
+      description: "remainderf(inf, 1.0) = nan"
+      api_name: remainder
+      variants: [ss]
+      input: [0x7f800000, 0x3f800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 4: -inf
+    - id: remainder_004
+      description: "remainderf(-inf, 1.0) = nan"
+      api_name: remainder
+      variants: [ss]
+      input: [0xff800000, 0x3f800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 5: -nan
+    - id: remainder_005
+      description: "remainderf(-nan, 1.0) = nan"
+      api_name: remainder
+      variants: [ss]
+      input: [0xffc00000, 0x3f800000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: remainder_006
+      description: "remainderf(+nan, 1.0) = nan"
+      api_name: remainder
+      variants: [ss]
+      input: [0x7fc00000, 0x3f800000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: remainder_007
+      description: "remainderf(max positive subnormal float, 1.0)"
+      api_name: remainder
+      variants: [ss]
+      input: [0x007fffff, 0x3f800000]
+      expect: [0x007fffff]
+      expect_exception: []
+
+    # Test case 8: - subnorm (MAX)
+    - id: remainder_008
+      description: "remainderf(max negative subnormal float, 1.0)"
+      api_name: remainder
+      variants: [ss]
+      input: [0x807fffff, 0x3f800000]
+      expect: [0x807fffff]
+      expect_exception: []
+
+    # Test case 9: + subnorm (MIN)
+    - id: remainder_009
+      description: "remainderf(min positive subnormal float, 1.0)"
+      api_name: remainder
+      variants: [ss]
+      input: [0x00000001, 0x3f800000]
+      expect: [0x00000001]
+      expect_exception: []
+
+    # Test case 10: - subnorm (MIN)
+    - id: remainder_010
+      description: "remainderf(min negative subnormal float, 1.0)"
+      api_name: remainder
+      variants: [ss]
+      input: [0x80000001, 0x3f800000]
+      expect: [0x80000001]
+      expect_exception: []
+
+    # Test case 11: + POS (positive normal)
+    - id: remainder_011
+      description: "remainderf(5.0, 3.0) = -1.0"
+      api_name: remainder
+      variants: [ss]
+      input: [0x40a00000, 0x40400000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    # Test case 12: -POS (negative positive normal)
+    - id: remainder_012
+      description: "remainderf(-5.0, 3.0) = 1.0"
+      api_name: remainder
+      variants: [ss]
+      input: [0xc0a00000, 0x40400000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 13: +NEG
+    - id: remainder_013
+      description: "remainderf(7.0, 4.0) = -1.0"
+      api_name: remainder
+      variants: [ss]
+      input: [0x40e00000, 0x40800000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    # Test case 14: -NEG (negative value)
+    - id: remainder_014
+      description: "remainderf(-7.0, 4.0) = 1.0"
+      api_name: remainder
+      variants: [ss]
+      input: [0xc0e00000, 0x40800000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 15: qnan
+    - id: remainder_015
+      description: "remainderf(qnan, 1.0) = qnan"
+      api_name: remainder
+      variants: [ss]
+      input: [0x7fc00000, 0x3f800000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: remainder_016
+      description: "remainderf(snan, 1.0) = qnan"
+      api_name: remainder
+      variants: [ss]
+      input: [0x7fa00000, 0x3f800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+
+    # Special cases for second argument being zero
+    - id: remainder_017
+      description: "remainderf(1.0, 0) = nan"
+      api_name: remainder
+      variants: [ss]
+      input: [0x3f800000, 0x00000000]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+
+    - id: remainder_018
+      description: "remainderf(1.0, -0) = nan"
+      api_name: remainder
+      variants: [ss]
+      input: [0x3f800000, 0x80000000]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+
+# Test cases from gtests test_remainder_data.h
+#-------------------------------------------
+    - id: remainder_001
+      description: ""
+      input: [0x41200000, 0x3F800000]
+      expect: [0x40400000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_002
+      description: ""
+      input: [0xffdbc0b7, 0x7fc00311]
+      expect: [0x8367e3b0]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_003
+      description: ""
+      input: [0x7fb00000, 0x7ff00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: remainder_004
+      description: ""
+      input: [0xffb00000, 0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: remainder_005
+      description: ""
+      input: [0x7fc00001, 0x7ff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_006
+      description: ""
+      input: [0xffc00001, 0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_007
+      description: ""
+      input: [0x7ff00000, 0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_008
+      description: ""
+      input: [0xfff00000, 0x7ff00000]
+      expect: [0x7fb00000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_009
+      description: ""
+      input: [0x7F800000, 0x7ff00000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_010
+      description: ""
+      input: [0xFF800000, 0x7ff00000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_011
+      description: ""
+      input: [0xFF800000, 0x7ff00000]
+      expect: [0xffb00000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_012
+      description: ""
+      input: [0xFF800000, 0x7ff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_013
+      description: ""
+      input: [0x7F800000, 0x7ff00000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_014
+      description: ""
+      input: [0xFF800000, 0x7ff00000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_015
+      description: ""
+      input: [0x7F800000, 0x7ff00000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_016
+      description: ""
+      input: [0xFF800000, 0x7ff00000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_017
+      description: ""
+      input: [0x3F800000, 0x7ff00000]
+      expect: [0x7fb00000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_018
+      description: ""
+      input: [0xbf800000, 0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_019
+      description: ""
+      input: [0x00000000, 0x7ff00000]
+      expect: [0x7fb00000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_020
+      description: ""
+      input: [0x80000000, 0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_021
+      description: ""
+      input: [0x007fffff, 0x00000000]
+      expect: [0x007fffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: remainder_022
+      description: ""
+      input: [0x007fffff, 0x00000000]
+      expect: [0x807fffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: remainder_023
+      description: ""
+      input: [0x007fffff, 0x00000000]
+      expect: [0x00000001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: remainder_024
+      description: ""
+      input: [0x007fffff, 0x00000000]
+      expect: [0x80000001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: remainder_025
+      description: ""
+      input: [0x00000001, 0x00000001]
+      expect: [0x007fffff]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_026
+      description: ""
+      input: [0x00000001, 0x00000001]
+      expect: [0x807fffff]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_027
+      description: ""
+      input: [0x00000001, 0x00000000]
+      expect: [0x00000001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: remainder_028
+      description: ""
+      input: [0x00000001, 0x00000000]
+      expect: [0x80000001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: remainder_029
+      description: ""
+      input: [0x007fffff, 0x80000001]
+      expect: [0x00800000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_030
+      description: ""
+      input: [0x00000001, 0x00000001]
+      expect: [0xff7fffff]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_031
+      description: ""
+      input: [0xff7fffff, 0x80000000]
+      expect: [0x00000001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: remainder_032
+      description: ""
+      input: [0x00800000, 0x00000001]
+      expect: [0x807fffff]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_033
+      description: ""
+      input: [0x007fffff, 0x007fffff]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_034
+      description: ""
+      input: [0x00000001, 0x00000001]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_035
+      description: ""
+      input: [0x007fffff, 0x7fc00000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_036
+      description: ""
+      input: [0x00000001, 0x7fc00000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_037
+      description: ""
+      input: [0x7f7fffff, 0x00000000]
+      expect: [0x3F800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: remainder_038
+      description: ""
+      input: [0x00800000, 0x00800000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_039
+      description: ""
+      input: [0x7f7fffff, 0x7fc00000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_040
+      description: ""
+      input: [0x00800000, 0x7fc00000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_041
+      description: ""
+      input: [0x40490fd8, 0x00000000]
+      expect: [0xc0490fd8]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: remainder_042
+      description: ""
+      input: [0xbfc90fdb, 0x80000000]
+      expect: [0x3fc90fdb]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: remainder_043
+      description: ""
+      input: [0x3F800000, 0x3F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_044
+      description: ""
+      input: [0xbf800000, 0xbf800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: remainder_045
+      description: ""
+      input: [0x80000000, 0x80000000]
+      expect: [0xa8117a2e]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+#-------------------------------------------
+# Double precision tests
+    # Test case 1: 0 (double)
+    - id: remainder_001
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0x0000000000000000, 0x3ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 2: -0 (double)
+    - id: remainder_002
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0x8000000000000000, 0x3ff0000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 3: inf (double)
+    - id: remainder_003
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0x7ff0000000000000, 0x3ff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 4: -inf (double)
+    - id: remainder_004
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0xfff0000000000000, 0x3ff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 5: -nan (double)
+    - id: remainder_005
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0xfff8000000000000, 0x3ff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 6: +nan (double)
+    - id: remainder_006
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0x7ff8000000000000, 0x3ff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX) (double)
+    - id: remainder_007
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0x000fffffffffffff, 0x3ff0000000000000]
+      expect: [0x000fffffffffffff]
+      expect_exception: []
+
+    # Test case 8: - subnorm (MAX) (double)
+    - id: remainder_008
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0x800fffffffffffff, 0x3ff0000000000000]
+      expect: [0x800fffffffffffff]
+      expect_exception: []
+
+    # Test case 9: + subnorm (MIN) (double)
+    - id: remainder_009
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0x0000000000000001, 0x3ff0000000000000]
+      expect: [0x0000000000000001]
+      expect_exception: []
+
+    # Test case 10: - subnorm (MIN) (double)
+    - id: remainder_010
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0x8000000000000001, 0x3ff0000000000000]
+      expect: [0x8000000000000001]
+      expect_exception: []
+
+    # Test case 11: + POS (positive normal) (double)
+    - id: remainder_011
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0x4014000000000000, 0x4008000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    # Test case 12: -POS (negative positive normal) (double)
+    - id: remainder_012
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0xc014000000000000, 0x4008000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 13: +NEG (double)
+    - id: remainder_013
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0x401c000000000000, 0x4010000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    # Test case 14: -NEG (negative value) (double)
+    - id: remainder_014
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0xc01c000000000000, 0x4010000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 15: qnan (double)
+    - id: remainder_015
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0x7ff8000000000000, 0x3ff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 16: snan (double)
+    - id: remainder_016
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0x7ff4000000000001, 0x3ff0000000000000]
+      expect: [0x7FF8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Special cases for second argument being zero (double)
+    - id: remainder_017
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0x3ff0000000000000, 0x0000000000000000]
+      expect: [0x7FF8000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: remainder_018
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0x3ff0000000000000, 0x8000000000000000]
+      expect: [0x7FF8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Additional meaningful test cases
+    - id: remainder_019
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0x4004000000000000, 0x3ff0000000000000]
+      expect: [0x3FE0000000000000]
+      expect_exception: []
+
+    - id: remainder_020
+      description: ""
+      api_name: remainder
+      variants: [sd]
+      input: [0xc004000000000000, 0x3ff0000000000000]
+      expect: [0xBFE0000000000000]
+      expect_exception: []
+# Test cases from gtests test_remainder_data.h
+#-------------------------------------------
+    - id: remainder_001
+      description: ""
+      input: [0xfff6411204576b2b, 0x7ff8000000000001]
+      expect: [0xc1cbe9622d66ff38]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: remainder_002
+      description: ""
+      input: [0x7FF4001000000000, 0x7ff87ff7fdedffff]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: remainder_003
+      description: ""
+      input: [0xfff2000000000000, 0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: remainder_004
+      description: ""
+      input: [0x7FF8000000000001, 0x7ff87ff7fdedffff]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_005
+      description: ""
+      input: [0xffF8000000000001, 0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_006
+      description: ""
+      input: [0x7ff87ff7fdedffff, 0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_007
+      description: ""
+      input: [0xfff8000000000000, 0x7ff87ff7fdedffff]
+      expect: [0x7FF4001000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_008
+      description: ""
+      input: [0x7ff0000000000000, 0x7ff87ff7fdedffff]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_009
+      description: ""
+      input: [0xfff0000000000000, 0xfff8000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_010
+      description: ""
+      input: [0xfff0000000000000, 0xfff8000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_011
+      description: ""
+      input: [0xfff0000000000000, 0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_012
+      description: ""
+      input: [0x7ff0000000000000, 0x7ff87ff7fdedffff]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_013
+      description: ""
+      input: [0xfff0000000000000, 0xfff8000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_014
+      description: ""
+      input: [0x7ff0000000000000, 0x7ff87ff7fdedffff]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_015
+      description: ""
+      input: [0xfff0000000000000, 0xfff8000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_016
+      description: ""
+      input: [0x3FF0000000000000, 0x7ff87ff7fdedffff]
+      expect: [0x7FF4001000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_017
+      description: ""
+      input: [0xBFF0000000000000, 0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_018
+      description: ""
+      input: [0x0000000000000000, 0x7ff87ff7fdedffff]
+      expect: [0x7FF4001000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_019
+      description: ""
+      input: [0x8000000000000000, 0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_020
+      description: ""
+      input: [0x000FFFFFFFFFFFFF, 0x0000000000000000]
+      expect: [0x000FFFFFFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: remainder_021
+      description: ""
+      input: [0x000FFFFFFFFFFFFF, 0x0000000000000000]
+      expect: [0x800fffffFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: remainder_022
+      description: ""
+      input: [0x000FFFFFFFFFFFFF, 0x800000000000e907]
+      expect: [0x000000000002711E]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_023
+      description: ""
+      input: [0x000FFFFFFFFFFFFF, 0x0000000000000000]
+      expect: [0x0000000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: remainder_024
+      description: ""
+      input: [0x000FFFFFFFFFFFFF, 0x0000000000000000]
+      expect: [0x8000000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: remainder_025
+      description: ""
+      input: [0x0000000000000001, 0x0000000000000001]
+      expect: [0x000FFFFFFFFFFFFF]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_026
+      description: ""
+      input: [0x0000000000000001, 0x0000000000000001]
+      expect: [0x800fffffFFFFFFFF]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_027
+      description: ""
+      input: [0x0000000000000001, 0x0000000000000000]
+      expect: [0x0000000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: remainder_028
+      description: ""
+      input: [0x0000000000000001, 0x0000000000000000]
+      expect: [0x8000000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: remainder_029
+      description: ""
+      input: [0x000FFFFFFFFFFFFF, 0x8000000000000001]
+      expect: [0x0010000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_030
+      description: ""
+      input: [0x8000000000000001, 0x8000000000000001]
+      expect: [0xfFEfffffFFFFFFFF]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_031
+      description: ""
+      input: [0x0000000000000001, 0x0000000000000001]
+      expect: [0xfFEfffffFFFFFFFF]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_032
+      description: ""
+      input: [0x7FEfffffFFFFFFFF, 0x0000000000000000]
+      expect: [0x0000000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: remainder_033
+      description: ""
+      input: [0x0010000000000000, 0x0000000000000001]
+      expect: [0x800fffffFFFFFFFF]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_034
+      description: ""
+      input: [0x000FFFFFFFFFFFFF, 0x000fffffffffffff]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_035
+      description: ""
+      input: [0x0000000000000001, 0x0000000000000001]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_036
+      description: ""
+      input: [0x000FFFFFFFFFFFFF, 0xfff8000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_037
+      description: ""
+      input: [0x0000000000000001, 0xfff8000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_038
+      description: ""
+      input: [0x7FEfffffFFFFFFFF, 0x0000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: remainder_039
+      description: ""
+      input: [0x0010000000000000, 0x0010000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_040
+      description: ""
+      input: [0x7FEfffffFFFFFFFF, 0xfff8000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_041
+      description: ""
+      input: [0x0010000000000000, 0xfff8000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_042
+      description: ""
+      input: [0x400921FB54442D18, 0x0000000000000000]
+      expect: [0xc00921fb54442d18]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: remainder_043
+      description: ""
+      input: [0xBFF921FB60000000, 0x8000000000000000]
+      expect: [0x3FF921FB60000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: remainder_044
+      description: ""
+      input: [0x3FF0000000000000, 0x3FF0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_045
+      description: ""
+      input: [0xBFF0000000000000, 0xBFF0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: remainder_046
+      description: ""
+      input: [0x8000000000000000, 0x8000000000000000]
+      expect: [0xa8117a2e00000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+#-------------------------------------------

@@ -1,0 +1,504 @@
+---
+- test_sequence: validation_tests_pow
+  function: pow
+  test_sets:
+  - id: range-tests_01
+    tests:
+    - id: pow_001
+      description: 'Full value distribution range tests: x in [-FLT_MAX, -SMALLEST_SUBNORMAL] expstep, y in {2^x} bitstep  '
+      input:
+      - [0xFF7FFFFF, -min_subnormal]
+      - [-1.0, 0xFF7FFFFF]
+      type: [expstep, bitstep]
+      steps: [400, 10000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_002
+      description: 'Full value distribution range tests: x in [SMALLEST_SUBNORMAL, +FLT_MAX], y in [-FLT_MAX, -SMALLEST_SUBNORMAL] expstep  '
+      input:
+      - [min_subnormal, max]
+      - [0xFF7FFFFF, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [400, 400]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_003
+      description: 'Full value distribution range tests: x in [-FLT_MAX, -SMALLEST_SUBNORMAL] expstep, y in {2^x} bitstep'
+      input:
+      - [0xFF7FFFFF, -min_subnormal]
+      - [1.0, max]
+      type: [expstep, bitstep]
+      steps: [400, 10000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_004
+      description:  'Full value distribution range tests: x in [SMALLEST_SUBNORMAL, +FLT_MAX], y in [SMALLEST_SUBNORMAL expstep, +FLT_MAX] expstep '
+      input:
+      - [min_subnormal, max]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [400, 400]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_005
+      description: 'Special exponent value test: x in [SMALLEST_SUBNORMAL, FLT_MAX] expstep, y is 1/2'
+      input:
+      - [min_subnormal, max]
+      - 0x3F000000
+      type: [expstep]
+      steps: [3000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_006
+      description: 'Special exponent value test: x in [SMALLEST_SUBNORMAL, FLT_MAX] expstep, y is -(1/2)'
+      input:
+      - [min_subnormal, max]
+      - 0xBF000000
+      type: [expstep]
+      steps: [3000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_007
+      description: 'Special exponent value test: x in [SMALLEST_SUBNORMAL, FLT_MAX] expstep, y is 1/3'
+      input:
+      - [min_subnormal, max]
+      - 0x3EAAAAAB
+      type: [expstep]
+      steps: [3000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_008
+      description: 'Special exponent value test: x in [SMALLEST_SUBNORMAL, FLT_MAX] expstep, y is -(1/3)'
+      input:
+      - [min_subnormal, max]
+      - 0xBEAAAAAB
+      type: [expstep]
+      steps: [3000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_009
+      description: 'Special exponent value test: x in [-FLT_MAX, -SMALLEST_SUBNORMAL] expstep, y is -1'
+      input:
+      - [0xFF7FFFFF, -min_subnormal]
+      - 0xBF000000
+      type: [expstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_010
+      description: 'Special exponent value test: x in [SMALLEST_SUBNORMAL, FLT_MAX] expstep, y is -1'
+      input:
+      - [min_subnormal, max]
+      - 0xBF000000
+      type: [expstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_011
+      description: 'Special exponent value test: x in [-FLT_MAX, -SMALLEST_SUBNORMAL] expstep, y is -2'
+      input:
+      - [0xFF7FFFFF, -min_subnormal]
+      - 0xC0000000
+      type: [expstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_012
+      description: 'Special exponent value test: x in [SMALLEST_SUBNORMAL, FLT_MAX] expstep, y is -2'
+      input:
+      - [min_subnormal, max]
+      - 0xC0000000
+      type: [expstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_013
+      description: 'Special exponent value test: x in [-FLT_MAX, -SMALLEST_SUBNORMAL] expstep, y is -3'
+      input:
+      - [0xFF7FFFFF, -min_subnormal]
+      - 0xC0400000
+      type: [expstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_014
+      description: 'Special exponent value test: x in [SMALLEST_SUBNORMAL, FLT_MAX] expstep, y is -3'
+      input:
+      - [min_subnormal, max]
+      - 0xC0400000
+      type: [expstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_015
+      description: 'Special exponent value test: x in [-FLT_MAX, -SMALLEST_SUBNORMAL] expstep, y is 2'
+      input:
+      - [0xFF7FFFFF, -min_subnormal]
+      - 0x40000000
+      type: [expstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_016
+      description: 'Special exponent value test: x in [SMALLEST_SUBNORMAL, FLT_MAX] expstep, y is 2'
+      input:
+      - [min_subnormal, max]
+      - 0x40000000
+      type: [expstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_017
+      description: 'Special exponent value test: x in [-FLT_MAX, -SMALLEST_SUBNORMAL] expstep, y is 3'
+      input:
+      - [0xFF7FFFFF, -min_subnormal]
+      - 0x40400000
+      type: [expstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_018
+      description: 'Special exponent value test: x in [SMALLEST_SUBNORMAL, FLT_MAX] expstep, y is 3'
+      input:
+      - [min_subnormal, max]
+      - 0x40400000
+      type: [expstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_019
+      description: 'Low value range test: x in [-100000, -SMALLEST_SUBNORMAL] expstep, y in [-10, 0] linearstep'
+      input:
+      - [-100000.0, -min_subnormal]
+      - [-10.0, -0.0]
+      type: [expstep, linearstep]
+      steps: [10000, 10]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_020
+      description: 'Low value range test: x in [0, +100000] linearstep, y in [-10, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [0.0, 100000.0]
+      - [-10.0, -min_subnormal]
+      type: [linearstep, expstep]
+      steps: [20000, 50]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_021
+      description: 'Low value range test: x in [-100000, -SMALLEST_SUBNORMAL] expstep, y in [0, 10] linearstep'
+      input:
+      - [-100000.0, -min_subnormal]
+      - [0.0, 10.0]
+      type: [expstep, linearstep]
+      steps: [100000, 10]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_022
+      description: 'Low value range test: x in [0, +100000] expstep, y in [0, +10] linearstep'
+      input:
+      - [min_subnormal, 100000.0]
+      - [0.0, 10.0]
+      type: [expstep, linearstep]
+      steps: [20000, 50]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_023
+      description: 'Subnormal value range test: y in [-LARGEST_SUBNORMAL, -0] linearstep , x in [1e10, FLT_MAX] expstep'
+      input:
+      - [10000000000.0, max]
+      - [-max_subnormal, -min_subnormal]
+      type: [expstep, linearstep]
+      steps: [10, 10]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_024
+      description: 'Subnormal value range test: y in [0, LARGEST_SUBNORMAL] linearstep, x in [1e10, FLT_MAX] expstep'
+      input:
+      - [10000000000.0, max]
+      - [min_subnormal, max_subnormal]
+      type: [expstep, linearstep]
+      steps: [10, 10]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_025
+      description: 'Bugfix range test: y around 4.5035996273704970e+15, x around -1 bitstep'
+      input:
+      - [0xBF7FFFF0, 0xBF80000F]
+      - [0x597FFFF0, 0x5980000F]
+      type: [bitstep, bitstep]
+      steps: [1, 1]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_026
+      description: 'Bugfix range test: y between -5000 and 5000 linearstep, x around 1 expstep'
+      input:
+      - [0.9, 1.1]
+      - [-5000.0, 5000.0]
+      type: [expstep, linearstep]
+      steps: [1000, 1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_027
+      description: 'Bugfix range test: x around 0x1.d55902p-1, y around -0x1.fe037ep+9 bitstep'
+      input:
+      - [1.d55901p-1, 1.d55903p-1]
+      - [-1.fe037dp+9, -1.fe037fp+9]
+      type: [bitstep, bitstep]
+      steps: [1, 1]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: pow_028
+      description: 'Bugfix range test: x around 0x1.ffffeep-1, y around -0x1.000002p+27'
+      input:
+      - [1.ffffedp-1, 1.ffffefp-1]
+      - [-1.000001p+27, -1.000003p+27]
+      type: [bitstep, bitstep]
+      steps: [1, 1]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+#Double precision
+  - id: range-tests_01
+    tests:
+    - id: pow_001
+      description: 'Full value distribution range tests: x in [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep, y in {-2^x} bitstep'
+      input:
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      - [-1.0, 0xFFeFFFFFFFFFFFFF]
+      type: [expstep, bitstep]
+      steps: [400, 10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_002
+      description: 'Full value distribution range tests: x in [SMALLEST_SUBNORMAL, +DBL-MAX], y in [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [min_subnormal, max]
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [400, 400]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_003
+      description: 'Full value distribution range tests: x in [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep, y in {2^x} bitstep'
+      input:
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      - [1.0, 0x7FeFFFFFFFFFFFFF]
+      type: [expstep, bitstep]
+      steps: [400, 10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_004
+      description: 'Full value distribution range tests: x in [SMALLEST_SUBNORMAL, +DBL-MAX], y in [SMALLEST_SUBNORMAL, +DBL-MAX] expstep'
+      input:
+      - [min_subnormal, max]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [400, 400]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_005
+      description: 'Special exponent value test: x in [SMALLEST_SUBNORMAL, DBL-MAX] expstep, y is 1/2'
+      input:
+      - [min_subnormal, 0x7FEFFFFFFFFFFFFF]
+      - 0x3FE0000000000000
+      type: [expstep]
+      steps: [3000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_006
+      description: 'Special exponent value test: x in [SMALLEST_SUBNORMAL, DBL-MAX] expstep, y is -(1/2)'
+      input:
+      - [min_subnormal, 0x7FEFFFFFFFFFFFFF]
+      - 0xBFE0000000000000
+      type: [expstep]
+      steps: [3000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_007
+      description: 'Special exponent value test: x in [SMALLEST_SUBNORMAL, DBL-MAX] expstep, y is 1/3'
+      input:
+      - [min_subnormal, 0x7FEFFFFFFFFFFFFF]
+      - 0x3FD5555555555555
+      type: [expstep]
+      steps: [3000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_008
+      description: 'Special exponent value test: x in [SMALLEST_SUBNORMAL, DBL-MAX] expstep, y is -(1/3)'
+      input:
+      - [min_subnormal, 0x7FEFFFFFFFFFFFFF]
+      - 0xBFD5555555555555
+      type: [expstep]
+      steps: [3000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_009
+      description: 'Special exponent value test: x in [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep, y is -1'
+      input:
+      - [0xFFEFFFFFFFFFFFFF, -min_subnormal]
+      - 0xBFE0000000000000
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_010
+      description: 'Special exponent value test: x in [SMALLEST_SUBNORMAL, DBL-MAX] expstep, y is -1'
+      input:
+      - [min_subnormal, 0x7FEFFFFFFFFFFFFF]
+      - 0xBFE0000000000000
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_011
+      description: 'Special exponent value test: x in [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep, y is -2'
+      input:
+      - [0xFFEFFFFFFFFFFFFF, -min_subnormal]
+      - 0xC000000000000000
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_012
+      description: 'Special exponent value test: x in [SMALLEST_SUBNORMAL, DBL-MAX] expstep, y is -2'
+      input:
+      - [min_subnormal, 0x7FEFFFFFFFFFFFFF]
+      - 0xC000000000000000
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_013
+      description: 'Special exponent value test: x in [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep, y is -3'
+      input:
+      - [0xFFEFFFFFFFFFFFFF, -min_subnormal]
+      - 0xC008000000000000
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_014
+      description: 'Special exponent value test: x in [SMALLEST_SUBNORMAL, DBL-MAX] expstep, y is -3'
+      input:
+      - [min_subnormal, 0x7FEFFFFFFFFFFFFF]
+      - 0xC008000000000000
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_015
+      description: 'Special exponent value test: x in [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep, y is 2'
+      input:
+      - [0xFFEFFFFFFFFFFFFF, -min_subnormal]
+      - 0x4000000000000000
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_016
+      description: 'Special exponent value test: x in [SMALLEST_SUBNORMAL, DBL-MAX] expstep, y is 2'
+      input:
+      - [min_subnormal, 0x7FEFFFFFFFFFFFFF]
+      - 0x4000000000000000
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_017
+      description: 'Special exponent value test: x in [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep, y is 3'
+      input:
+      - [0xFFEFFFFFFFFFFFFF, -min_subnormal]
+      - 0x4008000000000000
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_018
+      description: 'Special exponent value test: x in [SMALLEST_SUBNORMAL, DBL-MAX] expstep, y is 3'
+      input:
+      - [min_subnormal, 0x7FEFFFFFFFFFFFFF]
+      - 0x4008000000000000
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_019
+      description: 'Low value range test: x in [-100000, -SMALLEST_SUBNORMAL] expstep, y in [-10, 0] linearstep'
+      input:
+      - [-100000.0, -min_subnormal]
+      - [-10.0, -0.0]
+      type: [expstep, linearstep]
+      steps: [10000, 10]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_020
+      description: 'Low value range test: x in [0, +100000] linearstep, y in [-10, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [0.0, 100000.0]
+      - [-10.0, -min_subnormal]
+      type: [linearstep, expstep]
+      steps: [10000, 50]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_021
+      description: 'Low value range test: x in [-100000, -SMALLEST_SUBNORMAL] expstep, y in [0, 10] linearstep'
+      input:
+      - [-100000.0, -min_subnormal]
+      - [0.0, 10.0]
+      type: [expstep, linearstep]
+      steps: [10000, 10]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_022
+      description: 'Low value range test: x in [SMALLEST_SUBNORMAL, +100000] expstep, y in [0, +10] linearstep'
+      input:
+      - [min_subnormal, 100000.0]
+      - [0.0, 10.0]
+      type: [expstep, linearstep]
+      steps: [10000, 50]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_023
+      description: 'Subnormal value range test: y in [-LARGEST_SUBNORMAL, -0] linearstep, x in [1e39, DBL-MAX] expstep'
+      input:
+      - [1.0e+39, 0x7FEFFFFFFFFFFFFF]
+      - [0x800FFFFFFFFFFFFF, -min_subnormal]
+      type: [expstep, linearstep]
+      steps: [10, 10]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_024
+      description: 'Subnormal value range test: y in [0, LARGEST_SUBNORMAL] linearstep, x in [1e39, DBL-MAX] expstep'
+      input:
+      - [1.0e+39, 0x7FEFFFFFFFFFFFFF]
+      - [min_subnormal, 0x000FFFFFFFFFFFFF]
+      type: [expstep, linearstep]
+      steps: [10, 10]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_025
+      description: 'Bugfix range test: y around 4.5035996273704970e+15, x around -1'
+      input:
+      - [0xBFEFFFFFFFFFFF00, 0xBFF00000000000FF]
+      - [0x432fffffffffff00, 0x43300000000000FF]
+      type: [bitstep, bitstep]
+      steps: [1, 1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_026
+      description: 'Bugfix range test: x around 0x1.fffffd2e3e669p-1, y around 0x1.344c9823eb66cp+32'
+      input:
+      - [1.fffffd2e3e668p-1, 1.fffffd2e3e66ap-1]
+      - [1.344c9823eb66bp+32, 1.344c9823eb66dp+32]
+      type: [bitstep, bitstep]
+      steps: [1, 1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: pow_027
+      description: 'Bugfix range test: x around 0x1.000002c5e2e99p+0, y around 0x1.c9eee35374af6p+31'
+      input:
+      - [1.000002c5e2e98p+0, 1.000002c5e2e9ap+0]
+      - [1.c9eee35374af5p+31, 1.c9eee35374af7p+31]
+      type: [bitstep, bitstep]
+      steps: [1, 1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+

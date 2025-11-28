@@ -1,0 +1,709 @@
+- test_sequence: unit_tests_erfc
+  ignore_exceptions: [underflow, inexact]
+  function: erfc
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    # Test case 1: 0
+    - id: erfc_001
+      description: "erfcf(0) = 1.0"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: erfc_002
+      description: "erfcf(-0) = 1.0"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: erfc_003
+      description: "erfcf(inf) = 0.0"
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: erfc_004
+      description: "erfcf(-inf) = 2.0"
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0x40000000]
+      expect_exception: []
+
+    # Test case 5: -nan
+    - id: erfc_005
+      description: "erfcf(-nan) = -nan"
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: erfc_006
+      description: "erfcf(+nan) = +nan"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: erfc_007
+      description: "erfcf(+subnorm_max) ≈ 1.0"
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 8: - subnorm (MAX)
+    - id: erfc_008
+      description: "erfcf(-subnorm_max) ≈ 1.0"
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 9: + subnorm (MIN)
+    - id: erfc_009
+      description: "erfcf(+subnorm_min) ≈ 1.0"
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 10: - subnorm (MIN)
+    - id: erfc_010
+      description: "erfcf(-subnorm_min) ≈ 1.0"
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 11: + POS
+    - id: erfc_011
+      description: "erfcf(1.0) ≈ 0.1573"
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x3E21130B]
+      expect_exception: [inexact]
+
+    # Test case 12: -POS
+    - id: erfc_012
+      description: "erfcf(-1.0) ≈ 1.8427"
+      variants: [ss]
+      input: [0xbf800000]
+      expect: [0x3FEBDD9E]
+      expect_exception: [inexact]
+
+    # Test case 13: +NEG
+    - id: erfc_013
+      description: "erfcf(2.0) ≈ 0.0047"
+      variants: [ss]
+      input: [0x40000000]
+      expect: [0x3b99999a]
+      expect_exception: [inexact]
+
+    # Test case 14: -NEG
+    - id: erfc_014
+      description: "erfcf(-2.0) ≈ 1.9953"
+      variants: [ss]
+      input: [0xc0000000]
+      expect: [0x3fff3333]
+      expect_exception: [inexact]
+
+    # Test case 15: qnan
+    - id: erfc_015
+      description: "erfcf(qnan) = qnan"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: erfc_016
+      description: "erfcf(snan) = snan"
+      variants: [ss]
+      input: [0x7fa00000]
+      expect: [0x7fa00000]
+      expect_exception: [invalidoperation]
+
+# Test cases from gtests test_erfc_data.h
+#-------------------------------
+    - id: erfc_001
+      description: erfc(+0) = 1.0
+      input: [0x00000000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erfc_002
+      description: erfc(-0) = 1.0
+      input: [0x80000000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erfc_003
+      description: erfc(+INF) = 0.0
+      input: [0x7F800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erfc_004
+      description: erfc(-INF) = 2.0
+      input: [0xFF800000]
+      expect: [0x40000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erfc_005
+      description: erfc(+SNAN) = +SNAN (invalid)
+      input: [0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: erfc_006
+      description: erfc(-SNAN) = -SNAN (invalid)
+      input: [0xffb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: erfc_007
+      description: erfc(+QNAN) = +QNAN
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erfc_008
+      description: erfc(-QNAN) = -QNAN
+      input: [0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erfc_009
+      description: erfc(4.0) = 0.0
+      input: [0x40800000]
+      expect: [0x00000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_010
+      description: erfc(5.0) = 0.0
+      input: [0x40A00000]
+      expect: [0x00000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_011
+      description: erfc(6.0) = 0.0
+      input: [0x40C00000]
+      expect: [0x00000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_012
+      description: erfc(10.0) = 0.0
+      input: [0x41200000]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: erfc_013
+      description: erfc(20.0) = 0.0
+      input: [0x41A00000]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: erfc_014
+      description: erfc(-4.0) = 2.0
+      input: [0xC0800000]
+      expect: [0x40000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_015
+      description: erfc(-10.0) = 2.0
+      input: [0xC1200000]
+      expect: [0x40000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_016
+      description: erfc(-15.0) = 2.0
+      input: [0xC1700000]
+      expect: [0x40000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_017
+      description: erfc(-20.0) = 2.0
+      input: [0xC1A00000]
+      expect: [0x40000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_018
+      description: erfc(-25.0) = 2.0
+      input: [0xC1C80000]
+      expect: [0x40000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_019
+      description: erfc(tiny+) ≈ 1.0
+      input: [0x00000001]
+      expect: [0x3F7FFFFF]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_020
+      description: erfc(tiny-) ≈ 1.0
+      input: [0x80000001]
+      expect: [0x3F800001]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_021
+      description: erfc(max denormal) ≈ 0.89
+      input: [0x007FFFFF]
+      expect: [0x3F65A9F8]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_022
+      description: erfc(-max denormal) ≈ 1.11
+      input: [0x807FFFFF]
+      expect: [0x3F9A5608]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_023
+      description: erfc(min normal) ≈ 0.89
+      input: [0x00800000]
+      expect: [0x3F65A9F8]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_024
+      description: erfc(-min normal) ≈ 1.11
+      input: [0x80800000]
+      expect: [0x3F9A5608]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_025
+      description: erfc(1.0) ≈ 0.157
+      input: [0x3F800000]
+      expect: [0x3E427FA0]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_026
+      description: erfc(-1.0) ≈ 1.843
+      input: [0xBF800000]
+      expect: [0x3FF285F7]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_027
+      description: erfc(0.84375) ≈ 0.325
+      input: [0x3F580000]
+      expect: [0x3EA64220]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_028
+      description: erfc(1.25) ≈ 0.089
+      input: [0x3FA00000]
+      expect: [0x3D37CE00]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_029
+      description: erfc(2.75) ≈ 0.0041
+      input: [0x40300000]
+      expect: [0x3C297900]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_030
+      description: erfc(18.0) = 0.0 (underflow)
+      input: [0x41900000]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: erfc_031
+      description: erfc(0.5) ≈ 0.479
+      input: [0x3F000000]
+      expect: [0x3F1B4DC0]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erfc_032
+      description: erfc(-0.5) ≈ 1.521
+      input: [0xBF000000]
+      expect: [0x3FCCE4B1]
+      expect_exception: [inexact]
+      variants: [ss]
+#-------------------------------
+    # Double precision tests
+    # Test case 1: 0
+    - id: erfc_001
+      description: "erfc(0) = 1.0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: erfc_002
+      description: "erfc(-0) = 1.0"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: erfc_003
+      description: "erfc(inf) = 0.0"
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: erfc_004
+      description: "erfc(-inf) = 2.0"
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: []
+
+    # Test case 5: -nan
+    - id: erfc_005
+      description: "erfc(-nan) = -nan"
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: erfc_006
+      description: "erfc(+nan) = +nan"
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: erfc_007
+      description: "erfc(+subnorm_max) ≈ 1.0"
+      variants: [sd]
+      input: [0x000fffffffffffff]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 8: - subnorm (MAX)
+    - id: erfc_008
+      description: "erfc(-subnorm_max) ≈ 1.0"
+      variants: [sd]
+      input: [0x800fffffffffffff]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 9: + subnorm (MIN)
+    - id: erfc_009
+      description: "erfc(+subnorm_min) ≈ 1.0"
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 10: - subnorm (MIN)
+    - id: erfc_010
+      description: "erfc(-subnorm_min) ≈ 1.0"
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 11: + POS
+    - id: erfc_011
+      description: "erfc(1.0) ≈ 0.15729920705028513"
+      variants: [sd]
+      input: [0x3ff0000000000000]
+      expect: [0x3fc41bbea5d95d8c]
+      expect_exception: [inexact]
+
+    # Test case 12: -POS
+    - id: erfc_012
+      description: "erfc(-1.0) ≈ 1.8427007929497149"
+      variants: [sd]
+      input: [0xbff0000000000000]
+      expect: [0x3ffd8441542a2274]
+      expect_exception: [inexact]
+
+    # Test case 13: +NEG
+    - id: erfc_013
+      description: "erfc(2.0) ≈ 0.004677734981047266"
+      variants: [sd]
+      input: [0x4000000000000000]
+      expect: [0x3f73333333333333]
+      expect_exception: [inexact]
+
+    # Test case 15: qnan
+    - id: erfc_014
+      description: "erfc(qnan) = qnan"
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: erfc_015
+      description: "erfc(snan) = snan"
+      variants: [sd]
+      input: [0x7ff4000000000001]
+      expect: [0x7ff4000000000001]
+      expect_exception: [invalidoperation]
+
+# Test cases from gtests test_erfc_data.h
+#-------------------------------
+    - id: erfc_001
+      description: erfc(+0) = 1.0
+      input: [0x0000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfc_002
+      description: erfc(-0) = 1.0
+      input: [0x8000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfc_003
+      description: erfc(+INF) = 0.0
+      input: [0x7ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfc_004
+      description: erfc(-INF) = 2.0
+      input: [0xfff0000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfc_005
+      description: erfc(+SNAN) = +SNAN (invalid)
+      input: [0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: erfc_006
+      description: erfc(-SNAN) = -SNAN (invalid)
+      input: [0xfff2000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: erfc_007
+      description: erfc(+QNAN) = +QNAN
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfc_008
+      description: erfc(-QNAN) = -QNAN
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfc_009
+      description: erfc(5.921875+) = 0.0
+      input: [0x4017B000C9539B89]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_010
+      description: erfc(10.4) = 0.0
+      input: [0x402499999999999A]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_011
+      description: erfc(22.5) = 0.0
+      input: [0x4036800000000000]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_012
+      description: erfc(432.0) = 0.0
+      input: [0x407B000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: erfc_013
+      description: erfc(1024.0) = 0.0
+      input: [0x4090000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: erfc_014
+      description: erfc(-5.921875-) = 2.0
+      input: [0xC017B000C9539B89]
+      expect: [0x4000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_015
+      description: erfc(-1024.0) = 2.0
+      input: [0xC090000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_016
+      description: erfc(-159.5) = 2.0
+      input: [0xC063C00000000000]
+      expect: [0x4000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_017
+      description: erfc(-82.0) = 2.0
+      input: [0xC054800000000000]
+      expect: [0x4000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_018
+      description: erfc(-23.68) = 2.0
+      input: [0xC037AE147AE147AE]
+      expect: [0x4000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_019
+      description: erfc(tiny) ≈ 1.0
+      input: [0x0000000000000001]
+      expect: [0x3FEFFFFFFFFFFFFF]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_020
+      description: erfc(-tiny) ≈ 1.0
+      input: [0x8000000000000001]
+      expect: [0x3FF0000000000001]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_021
+      description: erfc(denormal max) ≈ 0.999
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x3FEDEF2289BD643A]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_022
+      description: erfc(-denormal max) ≈ 1.001
+      input: [0x800FFFFFFFFFFFFF]
+      expect: [0x3FF120DD750429B6]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_023
+      description: erfc(normal min) ≈ 0.999
+      input: [0x0010000000000000]
+      expect: [0x3FEDEF2289BD6439]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_024
+      description: erfc(-normal min) ≈ 1.001
+      input: [0x8010000000000000]
+      expect: [0x3FF120DD750429B7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_025
+      description: erfc(1.0) ≈ 0.1573
+      input: [0x3FF0000000000000]
+      expect: [0x3FC84FD8F81F0DC4]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_026
+      description: erfc(-1.0) ≈ 1.8427
+      input: [0xBFF0000000000000]
+      expect: [0x3FFE50E2B7BEFEED]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_027
+      description: erfc(0.84375) ≈ 0.3252
+      input: [0x3FEB000000000000]
+      expect: [0x3FD4C8A1F7E93E02]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_028
+      description: erfc(1.25) ≈ 0.0896
+      input: [0x3FF4000000000000]
+      expect: [0x3FA6F9D5DC41CF5A]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_029
+      description: erfc(2.75) ≈ 0.0041
+      input: [0x4006000000000000]
+      expect: [0x3F84F2E2B26FB3A6]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_030
+      description: erfc(144.0) = 0.0 (underflow)
+      input: [0x4062000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: erfc_031
+      description: erfc(0.5) ≈ 0.4795
+      input: [0x3FE0000000000000]
+      expect: [0x3FE369D036CE7A1D]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erfc_032
+      description: erfc(-0.5) ≈ 1.5205
+      input: [0xBFE0000000000000]
+      expect: [0x3FF9C962FC9463B4]
+      expect_exception: [inexact]
+      variants: [sd]
+
+#-------------------------------

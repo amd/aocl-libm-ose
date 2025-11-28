@@ -1,0 +1,50 @@
+- test_sequence: perf_tests
+  function: ldexp
+  timing_enabled: true
+  test_sets:
+  - id: ldexp
+    tests:
+# Single Precision
+    - id: ldexp_001
+      description: 'Positive values: [SMALLEST_SUBNORMAL, FLT_MAX]'
+      input: [[min_subnormal, max], [-50000, 50000]]
+      type: [linearstep, linearstep]
+      steps: [200, 200]
+      variants : [ss]
+
+    - id: ldexp_002
+      description: ' Between tests [-max, -min_subnormal], [-max, -min_subnormal]'
+      input: [[-max, -min_subnormal], [-max, -min_subnormal]]
+      type: [linearstep, linearstep]
+      steps: [200, 200]
+      variants : [ss]
+
+    - id: ldexp_003
+      description: 'Negative values: [-FLT_MAX, -SMALLEST_SUBNORMAL]'
+      input: [[-max, -min_subnormal], [-50000, 50000]]
+      type: [linearstep, linearstep]
+      steps: [200, 200]
+      variants : [ss]
+
+#Double precision
+    - id: ldexp_001
+      description: 'Positive values: [SMALLEST_SUBNORMAL, DBL_MAX]'
+      input: [[min_subnormal, max], [-50000, 50000]]
+      type: [linearstep, linearstep]
+      steps: [200, 200]
+      variants : [sd]
+
+    - id: ldexp_002
+      description: '[[-max, -min_subnormal], [-max, -min_subnormal]]'
+      input: [[-max, -min_subnormal], [-max, -min_subnormal]]
+      type: [linearstep, linearstep]
+      steps: [200, 200]
+      variants : [sd]
+
+    - id: ldexp_003
+      description: 'Negative range tests: [-DBL_MAX, -SMALLEST_SUBNORMAL]'
+      input: [[-max, -min_subnormal], [-50000, 50000]]
+      type: [linearstep, linearstep]
+      steps: [200, 200]
+      variants : [sd]
+

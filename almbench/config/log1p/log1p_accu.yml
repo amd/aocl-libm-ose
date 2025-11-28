@@ -1,0 +1,137 @@
+- test_sequence: validation_tests_log1p
+  function: log1p
+  test_sets:
+  - id: range-tests_01
+    tests:
+    - id: log1p_001
+      description: 'Full value distribution range tests: [-FLT_MAX, -1] expstep'
+      input:
+      - [-MAX, -1.0]
+      type: [expstep]
+      steps: [100]
+      variants : [ss, vrs4, vrsa]
+
+    - id: log1p_002
+      description: 'Full value distribution range tests: [-1, 0] expstep'
+      input:
+      - [-1.0, 0.0]
+      type: [expstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrsa]
+
+    - id: log1p_003
+      description: 'Subnormal values range tests: [0, MAX_SUBNORMAL] linearstep'
+      input:
+      - [0.0, MAX_SUBNORMAL]
+      type: [linearstep]
+      steps: [2000]
+      variants : [ss, vrs4, vrsa]
+
+    - id: log1p_004
+      description: 'Subnormal values range tests: [-MAX_SUBNORMAL, 0] linearstep'
+      input:
+      - [-MAX_SUBNORMAL, -0.0]
+      type: [linearstep]
+      steps: [2000]
+      variants : [ss, vrs4, vrsa]
+
+    - id: log1p_005
+      description: Test around 0
+      input:
+      - [0.0, 0x00000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrsa]
+
+    - id: log1p_006
+      description: Test around +MAX_SUBNORMAL
+      input:
+      - [0x007fff00, 0x00800fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrsa]
+
+    - id: log1p_007
+      description: Test around 1
+      input:
+      - [0x3F7FF000, 0x3F800FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrsa]
+
+    - id: log1p_008
+      description: 'Full value distribution range tests: [+MIN_SUBNORMAL, FLT_MAX] expstep'
+      input:
+      - [MIN_SUBNORMAL, MAX]
+      type: [expstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrsa]
+
+#Double precision
+
+    - id: log1p_001
+      description: 'Full value distribution range tests: [+SMALLEST_SUBNORMAL, DBL-MAX] expstep'
+      input:
+      - [MIN_SUBNORMAL, MAX]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrda]
+
+    - id: log1p_002
+      description: 'Full value distribution range tests: [-DBL-MAX, -1.0] expstep'
+      input:
+      - [-MAX, -1.0]
+      type: [expstep]
+      steps: [100]
+      variants : [sd, vrd2, vrda]
+
+    - id: log1p_003
+      description: 'Full value distribution range tests: [-1.0, -0.0] expstep'
+      input:
+      - [-1.0, -0.0]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrda]
+
+    - id: log1p_004
+      description: 'Subnormal values range tests: [0, MAX_SUBNORMAL] linearstep'
+      input:
+      - [0.0, MAX_SUBNORMAL]
+      type: [linearstep]
+      steps: [2000]
+      variants : [sd, vrd2, vrda]
+
+    - id: log1p_005
+      description: 'Subnormal values range tests: [-MAX_SUBNORMAL, -0.0] linearstep'
+      input:
+      - [-MAX_SUBNORMAL, -0.0]
+      type: [linearstep]
+      steps: [2000]
+      variants : [sd, vrd2, vrda]
+
+    - id: log1p_006
+      description: "Test around 0"
+      input:
+      - [0.0, 0x0000000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrda]
+
+    - id: log1p_007
+      description: "Test around MAX_SUBNORMAL"
+      input:
+      - [0x000ffffffffff000, 0x0010000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrda]
+
+    - id: log1p_008
+      description: "Test around 1"
+      input:
+      - [0x3feffffffffff000, 0x3FF0000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrda]
+
+
+

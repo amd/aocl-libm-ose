@@ -1,0 +1,1780 @@
+- test_sequence: unit_tests_log
+  ignore_exceptions: [underflow, inexact]
+  function: log
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+
+    - id: log_001
+      description: expf (0.0)=0.0
+      input: [0x00000000]
+      expect: [0xFF800000]
+      expect_exception: [divbyzero]
+      variants : [ss]
+
+    - id: log_002
+      description: expf (-0.0)=-0.0
+      input: [0x80000000]
+      expect: [0xFF800000]
+      expect_exception: [divbyzero]
+      variants : [ss]
+
+    - id: log_003
+      description: expf (inf)=inf
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: log_004
+      description: expf (-inf)=-inf
+      input: [0xFF800000]
+      expect: [0x7FC00000]
+      expect_exception: [invalidoperation]
+      variants : [ss]
+
+    - id: log_005
+      description: expf (-nan)=-nan
+      input: [0xffb00000]
+      expect: [0x7FC00000]
+      expect_exception: [invalidoperation]
+      variants : [ss]
+
+    - id: log_006
+      description: expf (+nan)=+nan
+      input: [0x7fb00000]
+      expect: [0x7FC00000]
+      expect_exception: [invalidoperation]
+      variants : [ss]
+
+    - id: log_007
+      description: expf (1.1754942106924411e-38)=1.1754942106924411e-38
+      input: [0x007fffff]
+      expect: [0xC2AEAC50]
+      expect_exception: [inexact]
+      variants : [ss]
+
+    - id: log_008
+      description: expf (-1.1754942106924411e-38)=-1.1754942106924411e-38
+      input: [0x807fffff]
+      expect: [0x7FC00000]
+      expect_exception: [invalidoperation]
+      variants : [ss]
+
+    - id: log_009
+      description: expf (1.401298464324817e-45)=1.401298464324817e-45
+      input: [0x00000001]
+      expect: [0xC2CE8ED0]
+      expect_exception: [inexact]
+      variants : [ss]
+
+    - id: log_010
+      description: expf (-1.401298464324817e-45)=-1.401298464324817e-45
+      input: [0x80000001]
+      expect: [0x7FC00000]
+      expect_exception: [invalidoperation]
+      variants : [ss]
+
+    - id: log_011
+      description: expf (1.0)=1.0
+      input: [0x3f800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: log_012
+      description: expf (-1.0)=-1.0
+      input: [0xbf800000]
+      expect: [0x7FC00000]
+      expect_exception: [invalidoperation]
+      variants : [ss]
+
+    - id: log_013
+      description: expf (1.500011920928955)=1.500011920928955
+      input: [0x3FC00064]
+      expect: [0x3ECF9A2A]
+      expect_exception: [inexact]
+      variants : [ss]
+
+    - id: log_014
+      description: expf (-1.500011920928955)=-1.500011920928955
+      input: [0xbFC00064]
+      expect: [0x7FC00000]
+      expect_exception: [invalidoperation]
+      variants : [ss]
+
+    - id: log_015
+      description: expf (qnan)=qnan
+      input: [0x7fc00000]
+      expect: [0x7FC00000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: log_016
+      description: expf (snan)=snan
+      input: [0x7f800001]
+      expect: [0x7FC00000]
+      expect_exception: [invalidoperation]
+      variants : [ss]
+
+# Test cases from gtests test_log_data.h
+#-------------------------------
+    - id: log_001
+      description: "log(0) is -inf, raises divbyzero"
+      input: [0x00000000]
+      expect: [0xFF800000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+    - id: log_002
+      description: "log(1) = 0"
+      input: [0x3f800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: log_003
+      description: "log(-0) = -inf, raises divbyzero"
+      input: [0x80000000]
+      expect: [0xff800000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+    - id: log_004
+      description: "log(-1) = -nan, raises invalidoperation"
+      input: [0xbf800000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log_005
+      description: "log(inf) = inf"
+      input: [0x7F800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: log_006
+      description: "log(-inf) = -nan, raises invalidoperation"
+      input: [0xff800000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log_007
+      description: "log(nan) = nan, raises invalidoperation"
+      input: [0x7fbfffff]
+      expect: [0x7fffffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log_008
+      description: "log(snan) = nan, raises invalidoperation"
+      input: [0x7fa00000]
+      expect: [0x7fe00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log_009
+      description: "log(-nan) = -nan, raises invalidoperation"
+      input: [0xffa00000]
+      expect: [0xffe00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log_010
+      description: "log(qnan) = nan"
+      input: [0x7ffe0000]
+      expect: [0x7ffe0000]
+      expect_exception: []
+      variants: [ss]
+    - id: log_011
+      description: "log(1.4013e-045 = smallest) = -103.279"
+      input: [0x00000001]
+      expect: [0xc2ce8ed0]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_012
+      description: "log(2.718282 == M_E) = 1.000000e+000"
+      input: [0x402df854]
+      expect: [0x3f7fffff]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_013
+      description: "log(1.70141e+038 = largest) = 8.802969e+001"
+      input: [0x7effffff]
+      expect: [0x42b00f34]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_014
+      description: "logf(1.000000000000) = 0.000000000000"
+      input: [0x3f800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: log_015
+      description: "logf(0.311150789261) = -1.167477631377"
+      input: [0x3e9f4f28]
+      expect: [0xbf956fe8]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_016
+      description: "logf(4.140968799591) = 1.420929770024"
+      input: [0x408482d1]
+      expect: [0x3fb5e107]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_017
+      description: "logf(1.652786970139) = 0.502462935845"
+      input: [0x3fd38e86]
+      expect: [0x3f00a169]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_018
+      description: "logf(0.014164566062) = -4.257011780663"
+      input: [0x3c68127f]
+      expect: [0xc0883971]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_019
+      description: "logf(0.001162818633) = -6.756908365139"
+      input: [0x3a9869b8]
+      expect: [0xc0d83898]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_020
+      description: "logf(0.468279123306) = -0.758690743530"
+      input: [0x3eefc248]
+      expect: [0xbf42398e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_021
+      description: "logf(2.385085582733) = 0.869235007442"
+      input: [0x4018a53e]
+      expect: [0x3f5e862f]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_022
+      description: "logf(1379.411254882813) = 7.229412060224"
+      input: [0x44ac6d29]
+      expect: [0x40e75758]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_023
+      description: "logf(842.180175781250) = 6.735993976839"
+      input: [0x44528b88]
+      expect: [0x40d78d43]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_024
+      description: "logf(621.734436035156) = 6.432513049857"
+      input: [0x441b6f01]
+      expect: [0x40cdd726]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_025
+      description: "logf(0.455778449774) = -0.785748443293"
+      input: [0x3ee95bcb]
+      expect: [0xbf4926cf]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_026
+      description: "logf(0.004219419789) = -5.468057651247"
+      input: [0x3b8a430f]
+      expect: [0xc0aefa54]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_027
+      description: "logf(0.000000000000) = -82.779972616147"
+      input: [0x03be8346]
+      expect: [0xc2a58f59]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_028
+      description: "logf(2.628090858459) = 0.966257673259"
+      input: [0x402832a4]
+      expect: [0x3f775caa]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_029
+      description: "logf(17.878023147583) = 2.883572201417"
+      input: [0x418f0631]
+      expect: [0x40388c72]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_030
+      description: "logf(0.000000000000) = -66.160023638302"
+      input: [0x0fbb9125]
+      expect: [0xc28451ef]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_031
+      description: "logf(1.422325611115) = 0.352293286262"
+      input: [0x3fb60ec4]
+      expect: [0x3eb45fc9]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_032
+      description: "logf(41.206188201904) = 3.718588444152"
+      input: [0x4224d323]
+      expect: [0x406dfd5a]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_033
+      description: "logf(1.059088110924) = 0.057408265164"
+      input: [0x3f879033]
+      expect: [0x3d6b24ee]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_034
+      description: "logf(0.000000000000) = -67.890264888575"
+      input: [0x0e84fa8d]
+      expect: [0xc287c7d1]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_035
+      description: "logf(0.144498422742) = -1.934486686770"
+      input: [0x3e13f765]
+      expect: [0xbff79d42]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_036
+      description: "logf(0.000632494048) = -7.365839748079"
+      input: [0x3a25cdf5]
+      expect: [0xc0ebb4f6]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_037
+      description: "logf(2.419138908386) = 0.883411653868"
+      input: [0x401ad32c]
+      expect: [0x3f622744]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_038
+      description: "logf(0.189324304461) = -1.664293837770"
+      input: [0x3e41de3b]
+      expect: [0xbfd50795]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_039
+      description: "logf(0.580998539925) = -0.543007035172"
+      input: [0x3f14bc52]
+      expect: [0xbf0b0282]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_040
+      description: "logf(1.169101476669) = 0.156235485112"
+      input: [0x3f95a51e]
+      expect: [0x3e1ffc32]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_041
+      description: "logf(0.000000000000) = -71.241016028053"
+      input: [0x0c152eda]
+      expect: [0xc28e7b66]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_042
+      description: "logf(3785726706847081400000000000.000000000000) = 63.501035375825"
+      input: [0x6d43b7ad]
+      expect: [0x427e010f]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_043
+      description: "logf(0.001104181283) = -6.808651138852"
+      input: [0x3a90ba2d]
+      expect: [0xc0d9e078]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_044
+      description: "logf(324404837260130500000000000000000.000000000000) = 74.859545023358"
+      input: [0x757fe909]
+      expect: [0x4295b816]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_045
+      description: "logf(0.000000000000) = -75.813869469881"
+      input: [0x08c539e0]
+      expect: [0xc297a0b3]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_046
+      description: "logf(2.534323930740) = 0.929926907486"
+      input: [0x4022325d]
+      expect: [0x3f6e0fb1]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_047
+      description: "logf(0.000287726289) = -8.153500916325"
+      input: [0x3996d9f8]
+      expect: [0xc10274bd]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_048
+      description: "logf(0.465566456318) = -0.764500429151"
+      input: [0x3eee5eba]
+      expect: [0xbf43b64d]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_049
+      description: "logf(1.939828872681) = 0.662599759226"
+      input: [0x3ff84c50]
+      expect: [0x3f29a023]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_050
+      description: "logf(0.988232314587) = -0.011837472653"
+      input: [0x3f7cfccb]
+      expect: [0xbc41f1f5]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_051
+      description: "logf(0.928882896900) = -0.073772600966"
+      input: [0x3f6dcb45]
+      expect: [0xbd971617]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_052
+      description: "logf(0.003798389575) = -5.573178098258"
+      input: [0x3b78ee67]
+      expect: [0xc0b2577a]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_053
+      description: "logf(1.245417594910) = 0.219470891275"
+      input: [0x3f9f69d8]
+      expect: [0x3e60bcfa]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_054
+      description: "logf(1.#INF00000000) = 1.#INF00000000"
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: log_055
+      description: "logf(0.008540776558) = -4.762903343440"
+      input: [0x3c0bee9d]
+      expect: [0xc09869b4]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_056
+      description: "logf(18.261026382446) = 2.904769082922"
+      input: [0x41921695]
+      expect: [0x4039e7bd]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_057
+      description: "logf(0.009040330537) = -4.706059541456"
+      input: [0x3c141de5]
+      expect: [0xc096980a]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_058
+      description: "logf(1.415168881416) = 0.347248874798"
+      input: [0x3fb52441]
+      expect: [0x3eb1ca9b]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_059
+      description: "logf(0.000000933169) = -13.884679861090"
+      input: [0x357a7edd]
+      expect: [0xc15e27a6]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_060
+      description: "logf(20753.054687500000) = 9.940448728679"
+      input: [0x46a2221c]
+      expect: [0x411f0c14]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_061
+      description: "logf(2.367508172989) = 0.861837998232"
+      input: [0x40178541]
+      expect: [0x3f5ca16a]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_062
+      description: "logf(1.#INF00000000) = 1.#INF00000000"
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: log_063
+      description: "logf(2.172810792923) = 0.776021625658"
+      input: [0x400b0f55]
+      expect: [0x3f46a95a]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_064
+      description: "logf(1.161609768867) = 0.149806774891"
+      input: [0x3f94afa1]
+      expect: [0x3e1966f2]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_065
+      description: "logf(1.002567887306) = 0.002564595917"
+      input: [0x3f805425]
+      expect: [0x3b2812c8]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_066
+      description: "logf(45800122022480912000000.000000000000) = 52.178573708238"
+      input: [0x651b2d46]
+      expect: [0x4250b6dc]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_067
+      description: "logf(0.463661760092) = -0.768599957900"
+      input: [0x3eed6513]
+      expect: [0xbf44c2f8]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_068
+      description: "logf(1.352931380272) = 0.302273631178"
+      input: [0x3fad2cdb]
+      expect: [0x3e9ac39c]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_069
+      description: "logf(0.917538404465) = -0.086060842202"
+      input: [0x3f6ae3cc]
+      expect: [0xbdb040ab]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_070
+      description: "logf(1.096095561981) = 0.091754376314"
+      input: [0x3f8c4cdc]
+      expect: [0x3dbbe9b8]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_071
+      description: "logf(29.421215057373) = 3.381716014707"
+      input: [0x41eb5ea6]
+      expect: [0x40586e09]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_072
+      description: "logf(1.#INF00000000) = 1.#INF00000000"
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: log_073
+      description: "logf(0.901510536671) = -0.103683548475"
+      input: [0x3f66c965]
+      expect: [0xbdd4580a]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_074
+      description: "logf(3693.609375000000) = 8.214359409364"
+      input: [0x4566d9c0]
+      expect: [0x41036e04]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_075
+      description: "logf(0.903720140457) = -0.101235545660"
+      input: [0x3f675a34]
+      expect: [0xbdcf5495]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_076
+      description: "logf(0.396281391382) = -0.925630735775"
+      input: [0x3ecae565]
+      expect: [0xbf6cf623]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_077
+      description: "logf(1.754786133766) = 0.562346988390"
+      input: [0x3fe09cd5]
+      expect: [0x3f0ff5f9]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_078
+      description: "logf(136.182434082031) = 4.913995413900"
+      input: [0x43082eb4]
+      expect: [0x409d3f73]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_079
+      description: "logf(0.001276351977) = -6.663749287944"
+      input: [0x3aa74b44]
+      expect: [0xc0d53d6f]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_080
+      description: "logf(464073.125000000000) = 13.047797415774"
+      input: [0x48e29924]
+      expect: [0x4150c3c7]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_081
+      description: "logf(15.614974021912) = 2.748230327071"
+      input: [0x4179d6ef]
+      expect: [0x402fe301]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_082
+      description: "logf(0.002228640951) = -6.106363318210"
+      input: [0x3b120e64]
+      expect: [0xc0c36754]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_083
+      description: "logf(0.000183270618) = -8.604546708188"
+      input: [0x39402c55]
+      expect: [0xc109ac39]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_084
+      description: "logf(212605571256287230.000000000000) = 39.898215065820"
+      input: [0x5c3cd4e9]
+      expect: [0x421f97c6]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_085
+      description: "logf(2.531735181808) = 0.928904910269"
+      input: [0x402207f3]
+      expect: [0x3f6dccb6]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_086
+      description: "denormal test case"
+      input: [0x0005fde6]
+      expect: [0xc2b4cbdf]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_087
+      description: "largest denormal"
+      input: [0x007fffff]
+      expect: [0xc2aeac50]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_088
+      description: "smallest normal"
+      input: [0x00800000]
+      expect: [0xc2aeac50]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_089
+      description: "largest normal"
+      input: [0x7f7fffff]
+      expect: [0x42b17218]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_090
+      description: "log(1.0625)"
+      input: [0x3f880000]
+      expect: [0x3d785186]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_091
+      description: "log(1.06249988)"
+      input: [0x3f87ffff]
+      expect: [0x3d785168]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_092
+      description: "log(0.9375)"
+      input: [0x3f700000]
+      expect: [0xbd842cc6]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_093
+      description: "log(0.93750006)"
+      input: [0x3f700001]
+      expect: [0xbd842cbd]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_094
+      description: "log(pi/2)"
+      input: [0x3fc90fdb]
+      expect: [0x3ee735da]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_095
+      description: "log(0.0078125)"
+      input: [0x3c000000]
+      expect: [0xc09b43d5]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_096
+      description: "log(0.504444)"
+      input: [0x3f012345]
+      expect: [0xbf2f2e21]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_097
+      description: "log(2)"
+      input: [0x40000000]
+      expect: [0x3f317218]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_098
+      description: "log(pi)"
+      input: [0x40490fdb]
+      expect: [0x3f928683]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_099
+      description: "log(2pi)"
+      input: [0x40c90fdb]
+      expect: [0x3feb3f8e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_100
+      description: "log(10)"
+      input: [0x41200000]
+      expect: [0x40135d8e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_101
+      description: "log(1000)"
+      input: [0x447a0000]
+      expect: [0x40dd0c55]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_102
+      description: "log(-87.5) = nan"
+      input: [0xc2af0000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log_103
+      description: "log(-112) = nan"
+      input: [0xc2e00000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log_104
+      description: "log(-128) = nan"
+      input: [0xc3000000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log_105
+      description: "log(-64) = nan"
+      input: [0xc2800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log_106
+      description: "log(qnan) = qnan"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: log_107
+      description: "log(snan) = nan"
+      input: [0x7fa00000]
+      expect: [0x7fe00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log_108
+      description: "log(-qnan) = -qnan"
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: log_109
+      description: "log(64)"
+      input: [0x42800000]
+      expect: [0x40851592]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_110
+      description: "log(87.5)"
+      input: [0x42af0000]
+      expect: [0x408f17aa]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_111
+      description: "log(88)"
+      input: [0x42b00000]
+      expect: [0x408f4658]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_112
+      description: "log(96)"
+      input: [0x42c00000]
+      expect: [0x40920f24]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_113
+      description: "log(e) --"
+      input: [0x402df853]
+      expect: [0x3f7ffffe]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_114
+      description: "log(e) ++"
+      input: [0x402df855]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_115
+      description: "log(1.0078333940267947) max ulp error"
+      input: [0x3f8100af]
+      expect: [0x3bffaef8]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_116
+      description: "log(3)"
+      input: [0x40400000]
+      expect: [0x3f8c9f54]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_117
+      description: "log(1.00334) max ulp error"
+      input: [0x3f806d67]
+      expect: [0x3b5a70b3]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_118
+      description: "denormal"
+      input: [0x00000201]
+      expect: [0xc2c213ca]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_119
+      description: "inf snan"
+      input: [0x7f800001]
+      expect: [0x7fc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log_120
+      description: "-inf snan test"
+      input: [0xff800001]
+      expect: [0xffc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log_121
+      description: ""
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: log_122
+      description: ""
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: log_123
+      description: ""
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: log_124
+      description: ""
+      input: [0xff800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log_125
+      description: ""
+      input: [0x3f800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: log_126
+      description: ""
+      input: [0xbf800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log_127
+      description: ""
+      input: [0x00000000]
+      expect: [0xff800000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+    - id: log_128
+      description: ""
+      input: [0x80000000]
+      expect: [0xff800000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+    - id: log_129
+      description: ""
+      input: [0x007fffff]
+      expect: [0xc2aeac50]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_130
+      description: ""
+      input: [0x807fffff]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log_131
+      description: ""
+      input: [0x00000001]
+      expect: [0xc2ce8ed0]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_132
+      description: ""
+      input: [0x80000001]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log_133
+      description: ""
+      input: [0x7f7fffff]
+      expect: [0x42b17218]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_134
+      description: ""
+      input: [0xff7fffff]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log_135
+      description: ""
+      input: [0x00800000]
+      expect: [0xc2aeac50]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log_136
+      description: ""
+      input: [0x80800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+#-------------------------------
+# Double precision
+    - id: log_001
+      description: expf (0.0)=0.0
+      input: [0x0000000000000000]
+      expect: [0xFFF0000000000000]
+      expect_exception: [divbyzero]
+      variants: [sd]
+
+    - id: log_002
+      description: expf (-0.0)=-0.0
+      input: [0x8000000000000000]
+      expect: [0xFFF0000000000000]
+      expect_exception: [divbyzero]
+      variants: [sd]
+
+    - id: log_003
+      description: expf (inf)=inf
+      input: [0x7ff0000000000000]
+      expect: [0xFFF0000000000000]
+      expect_exception: [] #not updated properly..need to check further
+      variants: [sd]
+
+    - id: log_004
+      description: expf (-inf)=-inf
+      input: [0xfff0000000000000]
+      expect: [0xFFF0000000000000]
+      expect_exception: [] #not updated properly..need to check further
+      variants: [sd]
+
+    - id: log_005
+      description: expf (nan)=nan
+      input: [0x7ff8000000000000]
+      expect: [0xFFF0000000000000]
+      expect_exception: [] #not updated properly..need to check further
+      variants: [sd]
+
+    - id: log_006
+      description: expf (-nan)=-nan
+      input: [0xfff8000000000000]
+      expect: [0xFFF0000000000000]
+      expect_exception: [] #not updated properly..need to check further
+      variants: [sd]
+
+    - id: log_007
+      description: expf (5e-324)=5e-324
+      input: [0x0000000000000001]
+      expect: [0xFFF0000000000000]
+      expect_exception: [] #not updated properly..need to check further
+      variants: [sd]
+
+    - id: log_008
+      description: expf (-5e-324)=-5e-324
+      input: [0x8000000000000001]
+      expect: [0xFFF0000000000000]
+      expect_exception: [] #not updated properly..need to check further
+      variants: [sd]
+
+    - id: log_009
+      description: expf (2.2250738585072014e-308)=2.2250738585072014e-308
+      input: [0x0010000000000000]
+      expect: [0xFFF0000000000000]
+      expect_exception: [] #not updated properly..need to check further
+      variants: [sd]
+
+    - id: log_010
+      description: expf (-2.2250738585072014e-308)=-2.2250738585072014e-308
+      input: [0x8010000000000000]
+      expect: [0xFFF0000000000000]
+      expect_exception: [] #not updated properly..need to check further
+      variants: [sd]
+
+    - id: log_011
+      description: expf (1.0)=1.0
+      input: [0x3ff0000000000000]
+      expect: [0xFFF0000000000000]
+      expect_exception: [] #not updated properly..need to check further
+      variants: [sd]
+
+    - id: log_012
+      description: expf (-1.0)=-1.0
+      input: [0xbff0000000000000]
+      expect: [0xFFF0000000000000]
+      expect_exception: [] #not updated properly..need to check further
+      variants: [sd]
+
+    - id: log_013
+      description: expf (1.5000000000000002)=1.5000000000000002
+      input: [0x3ff8000000000001]
+      expect: [0xFFF0000000000000]
+      expect_exception: [] #not updated properly..need to check further
+      variants: [sd]
+
+    - id: log_014
+      description: expf (-1.5000000000000002)=-1.5000000000000002
+      input: [0xbff8000000000001]
+      expect: [0xFFF0000000000000]
+      expect_exception: [] #not updated properly..need to check further
+      variants: [sd]
+
+    - id: log_015
+      description: expf (qnan)=qnan
+      input: [0x7ff0000000000001]
+      expect: [0xFFF0000000000000]
+      expect_exception: [] #not updated properly..need to check further
+      variants: [sd]
+
+    - id: log_016
+      description: expf (snan)=snan
+      input: [0x7ff4001000000000]
+      expect: [0xFFF0000000000000]
+      expect_exception: [] #not updated properly..need to check further
+      variants: [sd]
+# Test cases from gtests test_log_data.h
+#-------------------------------
+    - id: log_001
+      description: "POS_ZERO_F64: log(+0) -> -inf (divide by zero)"
+      input: [0x0000000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: [divbyzero]
+      variants: [sd]
+    - id: log_002
+      description: "NEG_ZERO_F64: log(-0) -> -inf (divide by zero)"
+      input: [0x8000000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: [divbyzero]
+      variants: [sd]
+    - id: log_003
+      description: "POS_ONE_F64: log(1.0) = 0"
+      input: [0x3ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: log_004
+      description: "NEG_ONE_F64: log(-1.0) = NaN (invalid)"
+      input: [0xbff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log_005
+      description: "POS_INF_F64: log(+inf) = +inf"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: log_006
+      description: "NEG_INF_F64: log(-inf) = NaN (invalid)"
+      input: [0xfff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log_007
+      description: "+NaN propagate (quiet)"
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+    - id: log_008
+      description: "+sNaN -> qNaN (invalid)"
+      input: [0x7ff07ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log_009
+      description: "-sNaN -> -qNaN (invalid)"
+      input: [0xfff07ff7fdedffff]
+      expect: [0xfff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log_010
+      description: "Duplicate qNaN propagate"
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+    - id: log_011
+      description: "NEG_QNAN_F64 variant (invalid flagged in source)"
+      input: [0xfff2000000000000]
+      expect: [0xfffa000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log_012
+      description: "Smallest normal-ish test value 1.165366e-156"
+      input: [0x1f90000000000000]
+      expect: [0xc07670cdc7f7289d]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_013
+      description: "e constant: log(e) ≈ 1"
+      input: [0x4005bf0a8b145769]
+      expect: [0x3fefffffffffffff]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_014
+      description: "Largest finite: log(max)"
+      input: [0x7fefffffffffffff]
+      expect: [0x40862e42fefa39ef]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_015
+      description: "Canonical 1.0 again (duplicate)"
+      input: [0x3ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: log_016
+      description: "3.111507966480e-001"
+      input: [0x3fd3e9e507ee8de9]
+      expect: [0xbff2adfcfff9be7b]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_017
+      description: "4.140968976757e+000"
+      input: [0x4010905a2be3af94]
+      expect: [0x3ff6bc20e63ebf38]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_018
+      description: "1.652786962980e+000"
+      input: [0x3ffa71d0be141803]
+      expect: [0x3fe0142d2449b180]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_019
+      description: "1.416456593825e-002"
+      input: [0x3f8d024fdbbc0f01]
+      expect: [0xc011072e19391a74]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_020
+      description: "1.162818656642e-003"
+      input: [0x3f530d37067e3e98]
+      expect: [0xc01b0712fb2c5d84]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_021
+      description: "4.682791159431e-001"
+      input: [0x3fddf848f81806bc]
+      expect: [0xbfe84731d7d8aa93]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_022
+      description: "2.385085631118e+000"
+      input: [0x400314a7c67e7ec5]
+      expect: [0x3febd0c5fa1436ce]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_023
+      description: "1.379411270545e+003"
+      input: [0x40958da5241b1163]
+      expect: [0x401ceaeaff82efea]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_024
+      description: "8.421801849683e+002"
+      input: [0x408a517104d110e4]
+      expect: [0x401af1a8686db7a3]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_025
+      description: "6.217344079209e+002"
+      input: [0x40836de011429037]
+      expect: [0x4019bae4b0681054]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_026
+      description: "2.155919322765e-164"
+      input: [0x1df3dd395cc6e2b6]
+      expect: [0xc0778db11a593980]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_027
+      description: "4.557784614218e-001"
+      input: [0x3fdd2b796c81c93e]
+      expect: [0xbfe924d9dda20681]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_028
+      description: "4.219419887586e-003"
+      input: [0x3f714861e6cded36]
+      expect: [0xc015df4a7fafd6f3]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_029
+      description: "1.119733541164e-036"
+      input: [0x3877d068c644a143]
+      expect: [0xc054b1eb1232afa5]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_030
+      description: "2.628090871030e+000"
+      input: [0x4005065481afef57]
+      expect: [0x3feeeb9538d6688c]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_031
+      description: "1.787802313385e+001"
+      input: [0x4031e0c61fc50077]
+      expect: [0x4007118e4d4b8851]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_032
+      description: "1.849553192960e-029"
+      input: [0x39f77224ad676e8a]
+      expect: [0xc0508a3dd3a4af5a]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_033
+      description: "1.422325652441e+000"
+      input: [0x3ff6c1d88b17ebfa]
+      expect: [0x3fd68bf942f8dc18]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_034
+      description: "3.657158700400e-203"
+      input: [0x15e6eeb67b8d7ca7]
+      expect: [0xc07d220ca5506342]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_035
+      description: "4.120618848660e+001"
+      input: [0x40449a6462635eb6]
+      expect: [0x400dbfab4d44b91c]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_036
+      description: "1.059088075002e+000"
+      input: [0x3ff0f206565b73f3]
+      expect: [0x3fad649c97715aec]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_037
+      description: "3.278178228385e-030"
+      input: [0x39d09f5191af9654]
+      expect: [0xc050f8fa19cc6a01]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_038
+      description: "1.444984182071e-001"
+      input: [0x3fc27eec9642f79c]
+      expect: [0xbffef3a858503caa]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_039
+      description: "6.324940223153e-004"
+      input: [0x3f44b9be92046a8f]
+      expect: [0xc01d769eb4992941]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_040
+      description: "2.419138839811e+000"
+      input: [0x40035a6576cbc99d]
+      expect: [0x3fec44e875109724]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_041
+      description: "1.893243043410e-001"
+      input: [0x3fc83bc75fbdca10]
+      expect: [0xbffaa0f2936e31c5]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_042
+      description: "5.809985205220e-001"
+      input: [0x3fe2978a35955225]
+      expect: [0xbfe160505c1fc7c1]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_043
+      description: "1.169101524157e+000"
+      input: [0x3ff2b4a3ccbf539f]
+      expect: [0x3fc3ff8694be6825]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_044
+      description: "1.149264185844e-031"
+      input: [0x3982a5bd4de6aa36]
+      expect: [0xc051cf6cce4dddd5]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_045
+      description: "3.785726674723e+027"
+      input: [0x45a876f59c84624e]
+      expect: [0x404fc021ed4a6e34]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_046
+      description: "1.104181322156e-003"
+      input: [0x3f521745aab8891d]
+      expect: [0xc01b3c0f08ee254f]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_047
+      description: "3.244048434267e+032"
+      input: [0x46affd212a33a48f]
+      expect: [0x4052b702c93599c4]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_048
+      description: "1.187011241997e-033"
+      input: [0x3918a73bfade3e32]
+      expect: [0xc052f4167006690b]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_049
+      description: "2.534323854796e+000"
+      input: [0x4004464b95ce8ece]
+      expect: [0x3fedc1f602d3c2fc]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_050
+      description: "2.877262824452e-004"
+      input: [0x3f32db3ef92a4eef]
+      expect: [0xc0204e97acc89eb6]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_051
+      description: "4.655664484630e-001"
+      input: [0x3fddcbd73790dbd0]
+      expect: [0xbfe876c9a3ae3c62]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_052
+      description: "1.939828924238e+000"
+      input: [0x3fff098a0dd6ff8e]
+      expect: [0x3fe53404774bbb05]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_053
+      description: "9.882323304011e-001"
+      input: [0x3fef9f99687d878e]
+      expect: [0xbf883e3c8972babc]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_054
+      description: "9.288828817961e-001"
+      input: [0x3fedb96897e41cbe]
+      expect: [0xbfb2e2c32253eedc]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_055
+      description: "3.798389489560e-003"
+      input: [0x3f6f1dccd452fcdd]
+      expect: [0xc0164aef348b6f91]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_056
+      description: "1.245417576400e+000"
+      input: [0x3ff3ed3afb080914]
+      expect: [0x3fcc179f264f06d5]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_057
+      description: "4.910357298667e+042"
+      input: [0x48cc2f1f1ff509f1]
+      expect: [0x40589331e63ba9ae]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_058
+      description: "8.540776167564e-003"
+      input: [0x3f817dd39293c01c]
+      expect: [0xc0130d368bca2438]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_059
+      description: "1.826102610912e+001"
+      input: [0x403242d29b6a0e0c]
+      expect: [0x40073cf790aa581f]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_060
+      description: "9.040330389444e-003"
+      input: [0x3f8283bc9af10a4b]
+      expect: [0xc012d30146d61abc]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_061
+      description: "1.415168883766e+000"
+      input: [0x3ff6a48820a1737b]
+      expect: [0x3fd6395359fd661b]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_062
+      description: "9.331686839082e-007"
+      input: [0x3eaf4fdba323ecf3]
+      expect: [0xc02bc4f4c20a4501]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_063
+      description: "2.075305533822e+004"
+      input: [0x40d444438aa9561c]
+      expect: [0x4023e1827ff7d3f1]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_064
+      description: "2.367508246085e+000"
+      input: [0x4002f0a829cf8ec9]
+      expect: [0x3feb942d58aecfa9]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_065
+      description: "4.083779064291e+041"
+      input: [0x4892c0758f727b7a]
+      expect: [0x4057f40861dd0d5a]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_066
+      description: "2.172810816830e+000"
+      input: [0x400161eaa3357260]
+      expect: [0x3fe8d52b53ce442c]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_067
+      description: "1.161609773701e+000"
+      input: [0x3ff295f4214c26b9]
+      expect: [0x3fc32cde585f863a]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_068
+      description: "1.002567914144e+000"
+      input: [0x3ff00a84a73444b7]
+      expect: [0x3f65026752007ef7]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_069
+      description: "4.580012427333e+022"
+      input: [0x44a365a8cffe464b]
+      expect: [0x404a16db813ff11a]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_070
+      description: "4.636617531516e-001"
+      input: [0x3fddaca2588c4f70]
+      expect: [0xbfe8985ef8658fce]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_071
+      description: "1.352931345355e+000"
+      input: [0x3ff5a59b56a07ec2]
+      expect: [0x3fd3587364605e37]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_072
+      description: "9.175384054119e-001"
+      input: [0x3feb5c7980822ef7]
+      expect: [0xbfb60815524a73e0]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_073
+      description: "1.096095618351e+000"
+      input: [0x3ff1899b8f21b215]
+      expect: [0x3fb77d37da697289]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_074
+      description: "2.942121541755e+001"
+      input: [0x403d6bd4c60af47d]
+      expect: [0x400b0dc121e0d885]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_075
+      description: "7.845846250823e+106"
+      input: [0x56211ac2ead60dfa]
+      expect: [0x406ec449c2fc432f]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_076
+      description: "9.015105655629e-001"
+      input: [0x3fecd92caf82e997]
+      expect: [0xbfba8b00c02f92d6]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_077
+      description: "3.693609262392e+003"
+      input: [0x40acdb37f13d812a]
+      expect: [0x40206dc08333bb05]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_078
+      description: "9.037201365436e-001"
+      input: [0x3feceb467de62144]
+      expect: [0xbfb9ea92b0669357]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_079
+      description: "3.962813806940e-001"
+      input: [0x3fd95cac94860acb]
+      expect: [0xbfed9ec467c54a0b]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_080
+      description: "1.754786101827e+000"
+      input: [0x3ffc139a976d308a]
+      expect: [0x3fe1febf12bef9d6]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_081
+      description: "1.361824326421e+002"
+      input: [0x406105d67cfaf125]
+      expect: [0x4013a7ee6937ee4c]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_082
+      description: "1.276352006958e-003"
+      input: [0x3f54e96888324406]
+      expect: [0xc01aa7ade3207f62]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_083
+      description: "4.640731116803e+005"
+      input: [0x411c5324725c4fc9]
+      expect: [0x402a1878e62c9e80]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_084
+      description: "1.561497426172e+001"
+      input: [0x402f3adde80bf3b2]
+      expect: [0x4005fc603094db97]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_085
+      description: "2.228641042060e-003"
+      input: [0x3f6241cc8c7c456a]
+      expect: [0xc0186cea7eb88a70]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_086
+      description: "1.832706192871e-004"
+      input: [0x3f28058aa1df2f75]
+      expect: [0xc021358725413e82]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_087
+      description: "2.126055775893e+017"
+      input: [0x43879a9d2bcbd0da]
+      expect: [0x4043f2f8b6563432]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_088
+      description: "2.531735247496e+000"
+      input: [0x400440fe68d0ffab]
+      expect: [0x3fedb996d8444ae8]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_089
+      description: ""
+      input: [0x3ff0097d13350953]
+      expect: [0x3f62f4881b43f2d5]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_090
+      description: ""
+      input: [0x0003ec71c47096d5]
+      expect: [0xc0862e6a7c4872d2]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_091
+      description: "Highest positive denormal POS_HDENORM_F64"
+      input: [0x000fffffffffffff]
+      expect: [0xc086232bdd7abcd2]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_092
+      description: "1.0625"
+      input: [0x3ff1000000000000]
+      expect: [0x3faf0a30c01162a6]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_093
+      description: "1.0624999999999998"
+      input: [0x3ff0ffffffffffff]
+      expect: [0x3faf0a30c0116288]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_094
+      description: "0.9375"
+      input: [0x3fee000000000000]
+      expect: [0xbfb08598b59e3a07]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_095
+      description: "0.93750000000000011"
+      input: [0x3fee000000000001]
+      expect: [0xbfb08598b59e39fe]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_096
+      description: ""
+      input: [0x3ff199999999999a]
+      expect: [0x3fb8663f793c46cc]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_097
+      description: ""
+      input: [0x3ff1082b577d34ec]
+      expect: [0x3fafffffffffffd3]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_098
+      description: ""
+      input: [0x3ff2216045b6f5cc]
+      expect: [0x3fbffffffffffff2]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_099
+      description: "9.4625784658987686E-17"
+      input: [0x3c9b4626891a283b]
+      expect: [0xc04272c3d7f0cfea]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_100
+      description: "5.4253475234754763E-07"
+      input: [0x3ea2345689904135]
+      expect: [0xc02cdaa189f4f9f9]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_101
+      description: "234687.04765475"
+      input: [0x410ca5f86198d046]
+      expect: [0x4028bb656d0a5205]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_102
+      description: "82465.091346579866"
+      input: [0x40f422117627d4d2]
+      expect: [0x4026a3e81ffaa69e]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_103
+      description: "1.01"
+      input: [0x3ff028f5c28f5c29]
+      expect: [0x3f8460d6ccca367c]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_104
+      description: "1.25"
+      input: [0x3ff4000000000000]
+      expect: [0x3fcc8ff7c79a9a22]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_105
+      description: "1.5"
+      input: [0x3ff8000000000000]
+      expect: [0x3fd9f323ecbf984c]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_106
+      description: "Duplicate -1.0 (no invalid flag)"
+      input: [0xbff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log_107
+      description: "NEG_QNAN_F64 duplicate propagation"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: log_108
+      description: "NEG_SNAN_F64 duplicate (no invalid flag)"
+      input: [0xfff4000000000000]
+      expect: [0xfffc000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log_109
+      description: "+inf duplicate"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: log_110
+      description: "+qNaN duplicate"
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: log_111
+      description: "+sNaN duplicate"
+      input: [0x7ff4000000000000]
+      expect: [0x7ffc000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log_112
+      description: "+0.0 duplicate (no divbyzero flag)"
+      input: [0x0000000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: [divbyzero]
+      variants: [sd]
+    - id: log_113
+      description: "1.06"
+      input: [0x3ff0f5c28f5c28f6]
+      expect: [0x3fadd56c1d883ee6]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_114
+      description: "0.94"
+      input: [0x3fee147ae147ae14]
+      expect: [0xbfafae2206cabe40]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_115
+      description: "0.99"
+      input: [0x3fefae147ae147ae]
+      expect: [0xbf8495453e6fd4bc]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_116
+      description: "0.5"
+      input: [0x3fe0000000000000]
+      expect: [0xbfe62e42fefa39ef]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_117
+      description: "1.126e+015"
+      input: [0x4310005d38118000]
+      expect: [0x4041542740eb8cf2]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_118
+      description: "10"
+      input: [0x4024000000000000]
+      expect: [0x40026bb1bbb55516]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_119
+      description: "5.37"
+      input: [0x40157ae147ae147b]
+      expect: [0x3ffae4abce14d015]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_120
+      description: "1.0078333940267947 (max ulp error)"
+      input: [0x3ff02015e8b29697]
+      expect: [0x3f7ff5e7947206c3]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log_121
+      description: "Smallest increment > 1.0"
+      input: [0x3ff0000000000001]
+      expect: [0x3cafffffffffffff]
+      expect_exception: [inexact]
+      variants: [sd]
+#-------------------------------

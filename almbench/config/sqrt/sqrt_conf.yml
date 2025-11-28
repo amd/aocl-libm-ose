@@ -1,0 +1,4484 @@
+- test_sequence: unit_tests_sqrt
+  ignore_exceptions: [underflow, inexact]
+  function: sqrt
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    # Test case 1: 0
+    - id: sqrt_001
+      description: "sqrtf(0) = 0"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: sqrt_002
+      description: "sqrtf(-0) = -0"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: sqrt_003
+      description: "sqrtf(inf) = inf"
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: sqrt_004
+      description: "sqrtf(-inf) = nan"
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 5: -nan
+    - id: sqrt_005
+      description: "sqrtf(-nan) = -nan"
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: sqrt_006
+      description: "sqrtf(+nan) = +nan"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: sqrt_007
+      description: "sqrtf(+subnorm_max) = sqrt(+subnorm_max)"
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x1fffffff]
+      expect_exception: [inexact]
+
+    # Test case 8: - subnorm (MAX)
+    - id: sqrt_008
+      description: "sqrtf(-subnorm_max) = nan"
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 9: + subnorm (MIN)
+    - id: sqrt_009
+      description: "sqrtf(+subnorm_min) = sqrt(+subnorm_min)"
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x1a000000]
+      expect_exception: [inexact]
+
+    # Test case 10 : - subnorm (MIN)
+    - id: sqrt_010
+      description: "sqrtf(-subnorm_min) = nan"
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 11: + POS
+    - id: sqrt_011
+      description: "sqrtf(1.0) = 1.0"
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 12: -POS
+    - id: sqrt_012
+      description: "sqrtf(-1.0) = nan"
+      variants: [ss]
+      input: [0xbf800000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 13: +NEG (interpreting as larger positive)
+    - id: sqrt_013
+      description: "sqrtf(4.0) = 2.0"
+      variants: [ss]
+      input: [0x40800000]
+      expect: [0x40000000]
+      expect_exception: []
+
+    # Test case 14: -NEG (interpreting as negative)
+    - id: sqrt_014
+      description: "sqrtf(-4.0) = nan"
+      variants: [ss]
+      input: [0xc0800000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 15: qnan
+    - id: sqrt_015
+      description: "sqrtf(qnan) = qnan"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: sqrt_016
+      description: "sqrtf(snan) = snan"
+      variants: [ss]
+      input: [0x7fa00000]
+      expect: [0x7fa00000]
+      expect_exception: [invalidoperation]
+  # Additional meaningful test cases
+    - id: sqrt_017
+      description: "sqrtf(0.25) = 0.5"
+      variants: [ss]
+      input: [0x3e800000]
+      expect: [0x3f000000]
+      expect_exception: []
+
+    - id: sqrt_018
+      description: "sqrtf(9.0) = 3.0"
+      variants: [ss]
+      input: [0x410000]
+      expect: [0x40400000]
+      expect_exception: [inexact]
+
+    - id: sqrt_019
+      description: "sqrtf(16.0) = 4.0"
+      variants: [ss]
+      input: [0x41800000]
+      expect: [0x40800000]
+      expect_exception: []
+
+    - id: sqrt_020
+      description: "sqrtf(2.0) ≈ 1.414213562"
+      variants: [ss]
+      input: [0x40000000]
+      expect: [0x3fb504f3]
+      expect_exception: [inexact]
+# Test cases from gtests test_sqrt_data.h
+#-------------------------------
+    - id: sqrt_001
+      description: "min= 0.00006103515625, small enough that sqrt(x) = 1"
+      variants: [ss]
+      input: [0x38800000]
+      expect: [0x3f800000]
+      expect_exception: []
+    - id: sqrt_002
+      description: "min - 1 bit"
+      variants: [ss]
+      input: [0x387FFFFF]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+    - id: sqrt_003
+      description: "min + 1 bit"
+      variants: [ss]
+      input: [0x38800001]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+    - id: sqrt_004
+      description: "lambda + x = 1, x = -9.9999994e+29"
+      variants: [ss]
+      input: [0xF149F2C9]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_005
+      description: "lambda + x < 1"
+      variants: [ss]
+      input: [0xF149F2C8]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_006
+      description: "lambda + x > 1"
+      variants: [ss]
+      input: [0xF149F2CA]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_007
+      description: "max arg, x = 89.41598629223294,max sqrtf arg"
+      variants: [ss]
+      input: [0x42B2D4FC]
+      expect: [0x7f7fffec]
+      expect_exception: [inexact]
+    - id: sqrt_008
+      description: "max arg - 1 bit"
+      variants: [ss]
+      input: [0x42B2D4FB]
+      expect: [0x7f7fff6c]
+      expect_exception: [inexact]
+    - id: sqrt_009
+      description: "max arg + 1 bit"
+      variants: [ss]
+      input: [0x42B2D4FD]
+      expect: [0x7f800000]
+      expect_exception: [inexact]
+    - id: sqrt_010
+      description: "> max"
+      variants: [ss]
+      input: [0x42B2D4FF]
+      expect: [0x7f800000]
+      expect_exception: [inexact]
+    - id: sqrt_011
+      description: "normal intermediate"
+      variants: [ss]
+      input: [0x43b3c4ea]
+      expect: [0x7f800000]
+      expect_exception: [inexact]
+    - id: sqrt_012
+      description: "normal max"
+      variants: [ss]
+      input: [0x7f7fffff]
+      expect: [0x7f800000]
+      expect_exception: [inexact]
+    - id: sqrt_013
+      description: "2^23"
+      variants: [ss]
+      input: [0x4B000000]
+      expect: [0x7f800000]
+      expect_exception: [inexact]
+    - id: sqrt_014
+      description: "2^23 + 1"
+      variants: [ss]
+      input: [0x4B000001]
+      expect: [0x7f800000]
+      expect_exception: [inexact]
+    - id: sqrt_015
+      description: "2^23 -1 + 0.5"
+      variants: [ss]
+      input: [0x4AFFFFFF]
+      expect: [0x7f800000]
+      expect_exception: [inexact]
+    - id: sqrt_016
+      description: "1000"
+      variants: [ss]
+      input: [0x447A0000]
+      expect: [0x7f800000]
+      expect_exception: [inexact]
+    - id: sqrt_017
+      description: "1983.6"
+      variants: [ss]
+      input: [0x44F7F333]
+      expect: [0x7f800000]
+      expect_exception: [inexact]
+    - id: sqrt_018
+      description: "132473"
+      variants: [ss]
+      input: [0x48015E40]
+      expect: [0x7f800000]
+      expect_exception: [inexact]
+    - id: sqrt_019
+      description: "< max"
+      variants: [ss]
+      input: [0x42B2D400]
+      expect: [0x7f7f820b]
+      expect_exception: [inexact]
+    - id: sqrt_020
+      description: "small_threshold = 20"
+      variants: [ss]
+      input: [0x41A00000]
+      expect: [0x4d675844]
+      expect_exception: [inexact]
+    - id: sqrt_021
+      description: "small_threshold+1 = 21"
+      variants: [ss]
+      input: [0x41A80000]
+      expect: [0x4e1d3710]
+      expect_exception: [inexact]
+    - id: sqrt_022
+      description: "small_threshold - 1 = 19"
+      variants: [ss]
+      input: [0x41980000]
+      expect: [0x4caa36c8]
+      expect_exception: [inexact]
+    - id: sqrt_023
+      description: "0"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+    - id: sqrt_024
+      description: "0"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+    - id: sqrt_025
+      description: ""
+      variants: [ss]
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+    - id: sqrt_026
+      description: ""
+      variants: [ss]
+      input: [0xFF800000]
+      expect: [0xFF800000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_027
+      description: ""
+      variants: [ss]
+      input: [0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_028
+      description: ""
+      variants: [ss]
+      input: [0xffb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_029
+      description: ""
+      variants: [ss]
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+    - id: sqrt_030
+      description: ""
+      variants: [ss]
+      input: [0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+    - id: sqrt_031
+      description: "95"
+      variants: [ss]
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+    - id: sqrt_032
+      description: "denormal min"
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+    - id: sqrt_033
+      description: "denormal intermediate"
+      variants: [ss]
+      input: [0x0005fde6]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+    - id: sqrt_034
+      description: "denormal max"
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+    - id: sqrt_035
+      description: "-denormal min"
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x3f800000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_036
+      description: "-denormal intermediate"
+      variants: [ss]
+      input: [0x805def12]
+      expect: [0x3f800000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_037
+      description: "-denormal max"
+      variants: [ss]
+      input: [0x807FFFFF]
+      expect: [0x3f800000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_038
+      description: "normal min"
+      variants: [ss]
+      input: [0x00800000]
+      expect: [0x3f800000]
+      expect_exception: []
+    - id: sqrt_039
+      description: "-normal min"
+      variants: [ss]
+      input: [0x80800000]
+      expect: [0x3f800000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_040
+      description: "-normal intermediate"
+      variants: [ss]
+      input: [0xc5812e71]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_041
+      description: "-normal max"
+      variants: [ss]
+      input: [0xFF7FFFFF]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_042
+      description: "inf"
+      variants: [ss]
+      input: [0x7F800000]
+      expect: [0x7f800000]
+      expect_exception: []
+    - id: sqrt_043
+      description: "-inf"
+      variants: [ss]
+      input: [0xfF800000]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_044
+      description: "qnan min"
+      variants: [ss]
+      input: [0x7Fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+    - id: sqrt_045
+      description: "qnan intermediate"
+      variants: [ss]
+      input: [0x7Fe1a570]
+      expect: [0x7fe1a570]
+      expect_exception: []
+    - id: sqrt_046
+      description: "qnan max"
+      variants: [ss]
+      input: [0x7FFFFFFF]
+      expect: [0x7fffffff]
+      expect_exception: []
+    - id: sqrt_047
+      description: "indeterninate"
+      variants: [ss]
+      input: [0xfFc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+    - id: sqrt_048
+      description: "-qnan min"
+      variants: [ss]
+      input: [0xFFC00001]
+      expect: [0xffc00001]
+      expect_exception: []
+    - id: sqrt_049
+      description: "-qnan intermediate"
+      variants: [ss]
+      input: [0xFFd2ba31]
+      expect: [0xffd2ba31]
+      expect_exception: []
+    - id: sqrt_050
+      description: "-qnan max"
+      variants: [ss]
+      input: [0xFFFFFFFF]
+      expect: [0xffffffff]
+      expect_exception: []
+    - id: sqrt_051
+      description: "snan min"
+      variants: [ss]
+      input: [0x7F800001]
+      expect: [0x7fc00001]
+      expect_exception: [invalidoperation]
+    - id: sqrt_052
+      description: "snan intermediate"
+      variants: [ss]
+      input: [0x7Fa0bd90]
+      expect: [0x7fe0bd90]
+      expect_exception: [invalidoperation]
+    - id: sqrt_053
+      description: "snan max"
+      variants: [ss]
+      input: [0x7FBFFFFF]
+      expect: [0x7fffffff]
+      expect_exception: [invalidoperation]
+    - id: sqrt_054
+      description: "-snan min"
+      variants: [ss]
+      input: [0xFF800001]
+      expect: [0xffc00001]
+      expect_exception: [invalidoperation]
+    - id: sqrt_055
+      description: "-snan intermediate"
+      variants: [ss]
+      input: [0xfF95fffa]
+      expect: [0xffd5fffa]
+      expect_exception: [invalidoperation]
+    - id: sqrt_056
+      description: "-snan max"
+      variants: [ss]
+      input: [0xFFBFFFFF]
+      expect: [0xffffffff]
+      expect_exception: [invalidoperation]
+    - id: sqrt_057
+      description: "pi/2"
+      variants: [ss]
+      input: [0x3FC90FDB]
+      expect: [0x40209662]
+      expect_exception: [inexact]
+    - id: sqrt_058
+      description: "pi"
+      variants: [ss]
+      input: [0x40490FDB]
+      expect: [0x413978a5]
+      expect_exception: [inexact]
+    - id: sqrt_059
+      description: "2pi"
+      variants: [ss]
+      input: [0x40C90FDB]
+      expect: [0x4385df97]
+      expect_exception: [inexact]
+    - id: sqrt_060
+      description: "e --"
+      variants: [ss]
+      input: [0x402DF853]
+      expect: [0x40f38620]
+      expect_exception: [inexact]
+    - id: sqrt_061
+      description: "e"
+      variants: [ss]
+      input: [0x402DF854]
+      expect: [0x40f38624]
+      expect_exception: [inexact]
+    - id: sqrt_062
+      description: "e ++"
+      variants: [ss]
+      input: [0x402DF855]
+      expect: [0x40f38628]
+      expect_exception: [inexact]
+    - id: sqrt_063
+      description: "0"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+    - id: sqrt_064
+      description: "0.000023"
+      variants: [ss]
+      input: [0x37C0F01F]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+    - id: sqrt_065
+      description: "0.49999"
+      variants: [ss]
+      input: [0x3EFFFEB0]
+      expect: [0x3f9055e0]
+      expect_exception: [inexact]
+    - id: sqrt_066
+      description: "0.500012"
+      variants: [ss]
+      input: [0x3F0000C9]
+      expect: [0x3f905641]
+      expect_exception: [inexact]
+    - id: sqrt_067
+      description: "-0"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+    - id: sqrt_068
+      description: "-0.000023"
+      variants: [ss]
+      input: [0xb7C0F01F]
+      expect: [0x3f800000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_069
+      description: "-0.49999"
+      variants: [ss]
+      input: [0xbEFFFEB0]
+      expect: [0x3f9055e0]
+      expect_exception: [invalidoperation]
+    - id: sqrt_070
+      description: "-0.500012"
+      variants: [ss]
+      input: [0xbF0000C9]
+      expect: [0x3f905641]
+      expect_exception: [invalidoperation]
+    - id: sqrt_071
+      description: "1"
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x3fc583ab]
+      expect_exception: []
+    - id: sqrt_072
+      description: "0.93750006"
+      variants: [ss]
+      input: [0x3f700001]
+      expect: [0x3fbc7e14]
+      expect_exception: [inexact]
+    - id: sqrt_073
+      description: "1.0624998"
+      variants: [ss]
+      input: [0x3F87FFFE]
+      expect: [0x3fcf4ed3]
+      expect_exception: [inexact]
+    - id: sqrt_074
+      description: "1.49999"
+      variants: [ss]
+      input: [0x3FBFFFAC]
+      expect: [0x40168d88]
+      expect_exception: [inexact]
+    - id: sqrt_075
+      description: "1.500012"
+      variants: [ss]
+      input: [0x3FC00064]
+      expect: [0x40168e4c]
+      expect_exception: [inexact]
+    - id: sqrt_076
+      description: "-1"
+      variants: [ss]
+      input: [0xbf800000]
+      expect: [0x3fc583ab]
+      expect_exception: [invalidoperation]
+    - id: sqrt_077
+      description: "-0.93750006"
+      variants: [ss]
+      input: [0xbf700001]
+      expect: [0x3fbc7e14]
+      expect_exception: [invalidoperation]
+    - id: sqrt_078
+      description: "-1.0624998"
+      variants: [ss]
+      input: [0xbF87FFFE]
+      expect: [0x3fcf4ed3]
+      expect_exception: [invalidoperation]
+    - id: sqrt_079
+      description: "-1.49999"
+      variants: [ss]
+      input: [0xbFBFFFAC]
+      expect: [0x40168d88]
+      expect_exception: [invalidoperation]
+    - id: sqrt_080
+      description: "-1.500012"
+      variants: [ss]
+      input: [0xbFC00064]
+      expect: [0x40168e4c]
+      expect_exception: [invalidoperation]
+    - id: sqrt_081
+      description: "-2"
+      variants: [ss]
+      input: [0xc0000000]
+      expect: [0x4070c7d0]
+      expect_exception: [invalidoperation]
+    - id: sqrt_082
+      description: "10"
+      variants: [ss]
+      input: [0x41200000]
+      expect: [0x462c14ef]
+      expect_exception: [inexact]
+    - id: sqrt_083
+      description: "-10"
+      variants: [ss]
+      input: [0xc1200000]
+      expect: [0x462c14ef]
+      expect_exception: [invalidoperation]
+    - id: sqrt_084
+      description: "-1000"
+      variants: [ss]
+      input: [0xc47A0000]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_085
+      description: "67.4"
+      variants: [ss]
+      input: [0x4286CCCC]
+      expect: [0x6f96eb6f]
+      expect_exception: [inexact]
+    - id: sqrt_086
+      description: "-67.4"
+      variants: [ss]
+      input: [0xc286CCCC]
+      expect: [0x6f96eb6f]
+      expect_exception: [invalidoperation]
+    - id: sqrt_087
+      description: "-1983.6"
+      variants: [ss]
+      input: [0xc4F7F333]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_088
+      description: "87.5"
+      variants: [ss]
+      input: [0x42AF0000]
+      expect: [0x7e16bab3]
+      expect_exception: [inexact]
+    - id: sqrt_089
+      description: "-87.5"
+      variants: [ss]
+      input: [0xc2AF0000]
+      expect: [0x7e16bab3]
+      expect_exception: [invalidoperation]
+    - id: sqrt_090
+      description: "-132473"
+      variants: [ss]
+      input: [0xc8015E40]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_091
+      description: "-2^23"
+      variants: [ss]
+      input: [0xcB000000]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_092
+      description: "-(2^23 + 1)"
+      variants: [ss]
+      input: [0xcB000001]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_093
+      description: "-(2^23 -1 + 0.5)"
+      variants: [ss]
+      input: [0xcAFFFFFF]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_094
+      description: "-2.98023e-08"
+      variants: [ss]
+      input: [0xb3000000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_095
+      description: "-2.66e-08"
+      variants: [ss]
+      input: [0xb2e47e05]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_096
+      description: "-2.33977e-08"
+      variants: [ss]
+      input: [0xb2c8fc0a]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_097
+      description: "-2.01954e-08"
+      variants: [ss]
+      input: [0xb2ad7a0f]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_098
+      description: "-1.6993e-08"
+      variants: [ss]
+      input: [0xb291f814]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_099
+      description: "-1.37907e-08"
+      variants: [ss]
+      input: [0xb26cec32]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_100
+      description: "-1.05884e-08"
+      variants: [ss]
+      input: [0xb235e83c]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_101
+      description: "-7.38607e-09"
+      variants: [ss]
+      input: [0xb1fdc88b]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_102
+      description: "-4.18375e-09"
+      variants: [ss]
+      input: [0xb18fc09e]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_103
+      description: "-9.81423e-10"
+      variants: [ss]
+      input: [0xb086e2c4]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_104
+      description: "2.2209e-09"
+      variants: [ss]
+      input: [0x31189e78]
+      expect: [0x3845a99a]
+      expect_exception: [inexact]
+    - id: sqrt_105
+      description: "5.42322e-09"
+      variants: [ss]
+      input: [0x31ba5729]
+      expect: [0x389a7088]
+      expect_exception: [inexact]
+    - id: sqrt_106
+      description: "8.62554e-09"
+      variants: [ss]
+      input: [0x32142f8b]
+      expect: [0x38c2c53f]
+      expect_exception: [inexact]
+    - id: sqrt_107
+      description: "1.18279e-08"
+      variants: [ss]
+      input: [0x324b3381]
+      expect: [0x38e413ee]
+      expect_exception: [inexact]
+    - id: sqrt_108
+      description: "1.50302e-08"
+      variants: [ss]
+      input: [0x32811bbc]
+      expect: [0x39008d90]
+      expect_exception: [inexact]
+    - id: sqrt_109
+      description: "1.82325e-08"
+      variants: [ss]
+      input: [0x329c9db7]
+      expect: [0x390d9641]
+      expect_exception: [inexact]
+    - id: sqrt_110
+      description: "2.14348e-08"
+      variants: [ss]
+      input: [0x32b81fb2]
+      expect: [0x391984ab]
+      expect_exception: [inexact]
+    - id: sqrt_111
+      description: "2.46372e-08"
+      variants: [ss]
+      input: [0x32d3a1ad]
+      expect: [0x3924963d]
+      expect_exception: [inexact]
+    - id: sqrt_112
+      description: "2.78395e-08"
+      variants: [ss]
+      input: [0x32ef23a8]
+      expect: [0x392ef4e7]
+      expect_exception: [inexact]
+    - id: sqrt_113
+      description: "236.363"
+      variants: [ss]
+      input: [0x436c5cfa]
+      expect: [0x4175fc58]
+      expect_exception: [inexact]
+    - id: sqrt_114
+      description: "241.363"
+      variants: [ss]
+      input: [0x43715cfa]
+      expect: [0x417892ea]
+      expect_exception: [inexact]
+    - id: sqrt_115
+      description: "246.363"
+      variants: [ss]
+      input: [0x43765cfa]
+      expect: [0x417b22a8]
+      expect_exception: [inexact]
+    - id: sqrt_116
+      description: "251.363"
+      variants: [ss]
+      input: [0x437b5cfa]
+      expect: [0x417dabc7]
+      expect_exception: [inexact]
+    - id: sqrt_117
+      description: "256.363"
+      variants: [ss]
+      input: [0x43802e7d]
+      expect: [0x4180173c]
+      expect_exception: [inexact]
+    - id: sqrt_118
+      description: "261.363"
+      variants: [ss]
+      input: [0x4382ae7d]
+      expect: [0x41815577]
+      expect_exception: [inexact]
+    - id: sqrt_119
+      description: "266.363"
+      variants: [ss]
+      input: [0x43852e7d]
+      expect: [0x418290aa]
+      expect_exception: [inexact]
+    - id: sqrt_120
+      description: "271.363"
+      variants: [ss]
+      input: [0x4387ae7d]
+      expect: [0x4183c8eb]
+      expect_exception: [inexact]
+    - id: sqrt_121
+      description: "276.363"
+      variants: [ss]
+      input: [0x438a2e7d]
+      expect: [0x4184fe4f]
+      expect_exception: [inexact]
+    - id: sqrt_122
+      description: "281.363"
+      variants: [ss]
+      input: [0x438cae7d]
+      expect: [0x418630ea]
+      expect_exception: [inexact]
+    - id: sqrt_123
+      description: "286.363"
+      variants: [ss]
+      input: [0x438f2e7d]
+      expect: [0x418760cf]
+      expect_exception: [inexact]
+    - id: sqrt_124
+      description: "291.363"
+      variants: [ss]
+      input: [0x4391ae7d]
+      expect: [0x41888e0f]
+      expect_exception: [inexact]
+    - id: sqrt_125
+      description: "296.363"
+      variants: [ss]
+      input: [0x43942e7d]
+      expect: [0x4189b8bc]
+      expect_exception: [inexact]
+    - id: sqrt_126
+      description: "305.34"
+      variants: [ss]
+      input: [0x4398ab85]
+      expect: [0x418bcab6]
+      expect_exception: [inexact]
+    - id: sqrt_127
+      description: "4944.01"
+      variants: [ss]
+      input: [0x459a800b]
+      expect: [0x428ca093]
+      expect_exception: [inexact]
+    - id: sqrt_128
+      description: "9582.67"
+      variants: [ss]
+      input: [0x4615baaf]
+      expect: [0x42c3c841]
+      expect_exception: [inexact]
+    - id: sqrt_129
+      description: "14221.3"
+      variants: [ss]
+      input: [0x465e3558]
+      expect: [0x42ee81a9]
+      expect_exception: [inexact]
+    - id: sqrt_130
+      description: "18860"
+      variants: [ss]
+      input: [0x46935801]
+      expect: [0x430954ec]
+      expect_exception: [inexact]
+    - id: sqrt_131
+      description: "23498.7"
+      variants: [ss]
+      input: [0x46b79556]
+      expect: [0x43194af2]
+      expect_exception: [inexact]
+    - id: sqrt_132
+      description: "28137.3"
+      variants: [ss]
+      input: [0x46dbd2ab]
+      expect: [0x4327bdeb]
+      expect_exception: [inexact]
+    - id: sqrt_133
+      description: "32776"
+      variants: [ss]
+      input: [0x47000800]
+      expect: [0x43350a9b]
+      expect_exception: [inexact]
+    - id: sqrt_134
+      description: "37414.7"
+      variants: [ss]
+      input: [0x471226aa]
+      expect: [0x43416dc0]
+      expect_exception: [inexact]
+    - id: sqrt_135
+      description: "42053.3"
+      variants: [ss]
+      input: [0x47244554]
+      expect: [0x434d11af]
+      expect_exception: [inexact]
+    - id: sqrt_136
+      description: "46692"
+      variants: [ss]
+      input: [0x473663fe]
+      expect: [0x43581553]
+      expect_exception: [inexact]
+    - id: sqrt_137
+      description: "-70000.5"
+      variants: [ss]
+      input: [0xc788b83a]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_138
+      description: "-66136"
+      variants: [ss]
+      input: [0xc7812c04]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_139
+      description: "-62271.6"
+      variants: [ss]
+      input: [0xc7733f9c]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_140
+      description: "-58407.2"
+      variants: [ss]
+      input: [0xc7642730]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_141
+      description: "-54542.8"
+      variants: [ss]
+      input: [0xc7550ec4]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_142
+      description: "-50678.3"
+      variants: [ss]
+      input: [0xc745f658]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_143
+      description: "-46813.9"
+      variants: [ss]
+      input: [0xc736ddec]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_144
+      description: "-42949.5"
+      variants: [ss]
+      input: [0xc727c580]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_145
+      description: "-39085.1"
+      variants: [ss]
+      input: [0xc718ad14]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_146
+      description: "-35220.7"
+      variants: [ss]
+      input: [0xc70994a8]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_147
+      description: "-31356.2"
+      variants: [ss]
+      input: [0xc6f4f877]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_148
+      description: "-27491.8"
+      variants: [ss]
+      input: [0xc6d6c79e]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_149
+      description: "-23627.4"
+      variants: [ss]
+      input: [0xc6b896c5]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_150
+      description: "-19763"
+      variants: [ss]
+      input: [0xc69a65ec]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_151
+      description: "-15898.5"
+      variants: [ss]
+      input: [0xc6786a26]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_152
+      description: "-12034.1"
+      variants: [ss]
+      input: [0xc63c0874]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_153
+      description: "-8169.69"
+      variants: [ss]
+      input: [0xc5ff4d85]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_154
+      description: "-4305.27"
+      variants: [ss]
+      input: [0xc5868a22]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_155
+      description: "-440.843"
+      variants: [ss]
+      input: [0xc3dc6bee]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_156
+      description: "-0.287682"
+      variants: [ss]
+      input: [0xbe934b11]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_157
+      description: "-0.263448"
+      variants: [ss]
+      input: [0xbe86e2ab]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_158
+      description: "-0.239214"
+      variants: [ss]
+      input: [0xbe74f48a]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_159
+      description: "-0.21498"
+      variants: [ss]
+      input: [0xbe5c23be]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_160
+      description: "-0.190746"
+      variants: [ss]
+      input: [0xbe4352f2]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_161
+      description: "-0.166512"
+      variants: [ss]
+      input: [0xbe2a8226]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_162
+      description: "-0.142278"
+      variants: [ss]
+      input: [0xbe11b15a]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_163
+      description: "-0.118044"
+      variants: [ss]
+      input: [0xbdf1c11c]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_164
+      description: "-0.0938101"
+      variants: [ss]
+      input: [0xbdc01f84]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_165
+      description: "-0.0695761"
+      variants: [ss]
+      input: [0xbd8e7dec]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_166
+      description: "-0.0453421"
+      variants: [ss]
+      input: [0xbd39b8a7]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_167
+      description: "-0.0211081"
+      variants: [ss]
+      input: [0xbcaceaec]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_168
+      description: "0.00312589"
+      variants: [ss]
+      input: [0x3b4cdbad]
+      expect: [0x3d65017f]
+      expect_exception: [inexact]
+    - id: sqrt_169
+      description: "0.0273599"
+      variants: [ss]
+      input: [0x3ce021d7]
+      expect: [0x3e2960c7]
+      expect_exception: [inexact]
+    - id: sqrt_170
+      description: "0.0515939"
+      variants: [ss]
+      input: [0x3d53541c]
+      expect: [0x3e689824]
+      expect_exception: [inexact]
+    - id: sqrt_171
+      description: "0.0758279"
+      variants: [ss]
+      input: [0x3d9b4ba6]
+      expect: [0x3e8cfd1e]
+      expect_exception: [inexact]
+    - id: sqrt_172
+      description: "0.100062"
+      variants: [ss]
+      input: [0x3dcced3e]
+      expect: [0x3ea1f56d]
+      expect_exception: [inexact]
+    - id: sqrt_173
+      description: "0.124296"
+      variants: [ss]
+      input: [0x3dfe8ed6]
+      expect: [0x3eb4823f]
+      expect_exception: [inexact]
+    - id: sqrt_174
+      description: "0.14853"
+      variants: [ss]
+      input: [0x3e181837]
+      expect: [0x3ec55297]
+      expect_exception: [inexact]
+    - id: sqrt_175
+      description: "0.172764"
+      variants: [ss]
+      input: [0x3e30e903]
+      expect: [0x3ed4cfe9]
+      expect_exception: [inexact]
+    - id: sqrt_176
+      description: "0.196998"
+      variants: [ss]
+      input: [0x3e49b9cf]
+      expect: [0x3ee33f93]
+      expect_exception: [inexact]
+    - id: sqrt_177
+      description: "0.221232"
+      variants: [ss]
+      input: [0x3e628a9b]
+      expect: [0x3ef0d219]
+      expect_exception: [inexact]
+    - id: sqrt_178
+      description: "-15.232"
+      variants: [ss]
+      input: [0xc173b646]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_179
+      description: "-14.0576"
+      variants: [ss]
+      input: [0xc160ec1f]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_180
+      description: "-12.8833"
+      variants: [ss]
+      input: [0xc14e21f8]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_181
+      description: "-11.7089"
+      variants: [ss]
+      input: [0xc13b57d1]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_182
+      description: "-10.5346"
+      variants: [ss]
+      input: [0xc1288daa]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_183
+      description: "-9.36023"
+      variants: [ss]
+      input: [0xc115c383]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_184
+      description: "-8.18588"
+      variants: [ss]
+      input: [0xc102f95c]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_185
+      description: "-7.01152"
+      variants: [ss]
+      input: [0xc0e05e69]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_186
+      description: "-5.83717"
+      variants: [ss]
+      input: [0xc0baca1a]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_187
+      description: "-4.66282"
+      variants: [ss]
+      input: [0xc09535cb]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_188
+      description: "-3.48846"
+      variants: [ss]
+      input: [0xc05f42f8]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_189
+      description: "-2.31411"
+      variants: [ss]
+      input: [0xc0141a5a]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_190
+      description: "-1.13975"
+      variants: [ss]
+      input: [0xbf91e379]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_191
+      description: "0.0345996"
+      variants: [ss]
+      input: [0x3d0db84b]
+      expect: [0x3e3e794f]
+      expect_exception: [inexact]
+    - id: sqrt_192
+      description: "1.20895"
+      variants: [ss]
+      input: [0x3f9abefe]
+      expect: [0x3f8cbd36]
+      expect_exception: [inexact]
+    - id: sqrt_193
+      description: "2.38331"
+      variants: [ss]
+      input: [0x4018881d]
+      expect: [0x3fc59b20]
+      expect_exception: [inexact]
+    - id: sqrt_194
+      description: "3.55766"
+      variants: [ss]
+      input: [0x4063b0bb]
+      expect: [0x3ff16e3b]
+      expect_exception: [inexact]
+    - id: sqrt_195
+      description: "4.73202"
+      variants: [ss]
+      input: [0x40976cac]
+      expect: [0x400b3870]
+      expect_exception: [inexact]
+    - id: sqrt_196
+      description: "5.90637"
+      variants: [ss]
+      input: [0x40bd00fb]
+      expect: [0x401b8a13]
+      expect_exception: [inexact]
+    - id: sqrt_197
+      description: "7.08072"
+      variants: [ss]
+      input: [0x40e2954a]
+      expect: [0x402a4d37]
+      expect_exception: [inexact]
+    - id: sqrt_198
+      description: "8.25508"
+      variants: [ss]
+      input: [0x410414cc]
+      expect: [0x4037e1f0]
+      expect_exception: [inexact]
+    - id: sqrt_199
+      description: "9.42943"
+      variants: [ss]
+      input: [0x4116def3]
+      expect: [0x404486f8]
+      expect_exception: [inexact]
+    - id: sqrt_200
+      description: "10.6038"
+      variants: [ss]
+      input: [0x4129a91a]
+      expect: [0x405067f6]
+      expect_exception: [inexact]
+    - id: sqrt_201
+      description: "11.7781"
+      variants: [ss]
+      input: [0x413c7341]
+      expect: [0x405ba4ba]
+      expect_exception: [inexact]
+    - id: sqrt_202
+      description: "12.9525"
+      variants: [ss]
+      input: [0x414f3d68]
+      expect: [0x40665550]
+      expect_exception: [inexact]
+    - id: sqrt_203
+      description: "14.1268"
+      variants: [ss]
+      input: [0x4162078f]
+      expect: [0x40708c67]
+      expect_exception: [inexact]
+    - id: sqrt_204
+      description: "15.3012"
+      variants: [ss]
+      input: [0x4174d1b6]
+      expect: [0x407a58e1]
+      expect_exception: [inexact]
+    - id: sqrt_205
+      description: "15.232"
+      variants: [ss]
+      input: [0x4173b646]
+      expect: [0x4079c7cc]
+      expect_exception: [inexact]
+    - id: sqrt_206
+      description: "26.1084"
+      variants: [ss]
+      input: [0x41d0dde9]
+      expect: [0x40a3821e]
+      expect_exception: [inexact]
+    - id: sqrt_207
+      description: "36.9847"
+      variants: [ss]
+      input: [0x4213f057]
+      expect: [0x40c29bb1]
+      expect_exception: [inexact]
+    - id: sqrt_208
+      description: "47.8611"
+      variants: [ss]
+      input: [0x423f71ba]
+      expect: [0x40dd61a4]
+      expect_exception: [inexact]
+    - id: sqrt_209
+      description: "58.7374"
+      variants: [ss]
+      input: [0x426af31d]
+      expect: [0x40f53fc4]
+      expect_exception: [inexact]
+    - id: sqrt_210
+      description: "69.6138"
+      variants: [ss]
+      input: [0x428b3a40]
+      expect: [0x41057eec]
+      expect_exception: [inexact]
+    - id: sqrt_211
+      description: "80.4901"
+      variants: [ss]
+      input: [0x42a0faf1]
+      expect: [0x410f8bca]
+      expect_exception: [inexact]
+    - id: sqrt_212
+      description: "88.713638"
+      variants: [ss]
+      input: [0x42B16D62]
+      expect: [0x4116b35f]
+      expect_exception: [inexact]
+    - id: sqrt_213
+      description: "88.799995"
+      variants: [ss]
+      input: [0x42B19999]
+      expect: [0x4116c625]
+      expect_exception: [inexact]
+    - id: sqrt_214
+      description: "91.3665"
+      variants: [ss]
+      input: [0x42b6bba2]
+      expect: [0x4118eff3]
+      expect_exception: [inexact]
+    - id: sqrt_215
+      description: "102.243"
+      variants: [ss]
+      input: [0x42cc7c53]
+      expect: [0x4121c8c8]
+      expect_exception: [inexact]
+    - id: sqrt_216
+      description: "113.119"
+      variants: [ss]
+      input: [0x42e23d04]
+      expect: [0x412a2c08]
+      expect_exception: [inexact]
+    - id: sqrt_217
+      description: "123.996"
+      variants: [ss]
+      input: [0x42f7fdb5]
+      expect: [0x41322a4d]
+      expect_exception: [inexact]
+    - id: sqrt_218
+      description: "134.872"
+      variants: [ss]
+      input: [0x4306df33]
+      expect: [0x4139d0a1]
+      expect_exception: [inexact]
+    - id: sqrt_219
+      description: "145.748"
+      variants: [ss]
+      input: [0x4311bf8c]
+      expect: [0x41412977]
+      expect_exception: [inexact]
+    - id: sqrt_220
+      description: "156.625"
+      variants: [ss]
+      input: [0x431c9fe5]
+      expect: [0x41483d56]
+      expect_exception: [inexact]
+    - id: sqrt_221
+      description: "167.501"
+      variants: [ss]
+      input: [0x4327803e]
+      expect: [0x414f1351]
+      expect_exception: [inexact]
+    - id: sqrt_222
+      description: "178.377"
+      variants: [ss]
+      input: [0x43326097]
+      expect: [0x4155b158]
+      expect_exception: [inexact]
+    - id: sqrt_223
+      description: "189.254"
+      variants: [ss]
+      input: [0x433d40f0]
+      expect: [0x415c1c77]
+      expect_exception: [inexact]
+    - id: sqrt_224
+      description: "200.13"
+      variants: [ss]
+      input: [0x43482149]
+      expect: [0x41625903]
+      expect_exception: [inexact]
+    - id: sqrt_225
+      description: "211.006"
+      variants: [ss]
+      input: [0x435301a2]
+      expect: [0x41686abc]
+      expect_exception: [inexact]
+    - id: sqrt_226
+      description: "221.883"
+      variants: [ss]
+      input: [0x435de1fb]
+      expect: [0x416e54e8]
+      expect_exception: [inexact]
+    - id: sqrt_227
+      description: "232.759"
+      variants: [ss]
+      input: [0x4368c254]
+      expect: [0x41741a65]
+      expect_exception: [inexact]
+    - id: sqrt_228
+      description: "-17.425"
+      variants: [ss]
+      input: [0xc18b6666]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_229
+      description: "-16.6416"
+      variants: [ss]
+      input: [0xc18521ed]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_230
+      description: "-15.8581"
+      variants: [ss]
+      input: [0xc17dbae8]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_231
+      description: "-15.0747"
+      variants: [ss]
+      input: [0xc17131f6]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_232
+      description: "-14.2913"
+      variants: [ss]
+      input: [0xc164a904]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_233
+      description: "-13.5078"
+      variants: [ss]
+      input: [0xc1582012]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_234
+      description: "-12.7244"
+      variants: [ss]
+      input: [0xc14b9720]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_235
+      description: "-11.941"
+      variants: [ss]
+      input: [0xc13f0e2e]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_236
+      description: "-11.1575"
+      variants: [ss]
+      input: [0xc132853c]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_237
+      description: "-10.3741"
+      variants: [ss]
+      input: [0xc125fc4a]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_238
+      description: "-9.59066"
+      variants: [ss]
+      input: [0xc1197358]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_239
+      description: "-8.80723"
+      variants: [ss]
+      input: [0xc10cea66]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_240
+      description: "-8.02379"
+      variants: [ss]
+      input: [0xc1006174]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_241
+      description: "-7.24036"
+      variants: [ss]
+      input: [0xc0e7b104]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_242
+      description: "-6.45692"
+      variants: [ss]
+      input: [0xc0ce9f20]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_243
+      description: "-5.67349"
+      variants: [ss]
+      input: [0xc0b58d3c]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_244
+      description: "-4.89006"
+      variants: [ss]
+      input: [0xc09c7b58]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_245
+      description: "-4.10662"
+      variants: [ss]
+      input: [0xc0836974]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_246
+      description: "-3.5632"
+      variants: [ss]
+      input: [0xc0640b78]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_247
+      description: "-2.59521"
+      variants: [ss]
+      input: [0xc02617ec]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_248
+      description: "-1.62722"
+      variants: [ss]
+      input: [0xbfd048bf]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_249
+      description: "-0.65923"
+      variants: [ss]
+      input: [0xbf28c34d]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_250
+      description: "0.30876"
+      variants: [ss]
+      input: [0x3e9e15c9]
+      expect: [0x3f0e3fd9]
+      expect_exception: [inexact]
+    - id: sqrt_251
+      description: "1.27675"
+      variants: [ss]
+      input: [0x3fa36c8b]
+      expect: [0x3f90a1aa]
+      expect_exception: [inexact]
+    - id: sqrt_252
+      description: "2.24474"
+      variants: [ss]
+      input: [0x400fa9d2]
+      expect: [0x3fbfc683]
+      expect_exception: [inexact]
+    - id: sqrt_253
+      description: "3.21273"
+      variants: [ss]
+      input: [0x404d9d5e]
+      expect: [0x3fe56da8]
+      expect_exception: [inexact]
+    - id: sqrt_254
+      description: "4.18072"
+      variants: [ss]
+      input: [0x4085c875]
+      expect: [0x4002dc0d]
+      expect_exception: [inexact]
+    - id: sqrt_255
+      description: "5.14871"
+      variants: [ss]
+      input: [0x40a4c23b]
+      expect: [0x4011388e]
+      expect_exception: [inexact]
+    - id: sqrt_256
+      description: "6.1167"
+      variants: [ss]
+      input: [0x40c3bc01]
+      expect: [0x401e48d9]
+      expect_exception: [inexact]
+    - id: sqrt_257
+      description: "7.08469"
+      variants: [ss]
+      input: [0x40e2b5c7]
+      expect: [0x402a596d]
+      expect_exception: [inexact]
+    - id: sqrt_258
+      description: "8.05268"
+      variants: [ss]
+      input: [0x4100d7c7]
+      expect: [0x40359d47]
+      expect_exception: [inexact]
+    - id: sqrt_259
+      description: "9.02067"
+      variants: [ss]
+      input: [0x411054aa]
+      expect: [0x40403869]
+      expect_exception: [inexact]
+    - id: sqrt_260
+      description: "9.98866"
+      variants: [ss]
+      input: [0x411fd18d]
+      expect: [0x404a455f]
+      expect_exception: [inexact]
+    - id: sqrt_261
+      description: "10.9566"
+      variants: [ss]
+      input: [0x412f4e70]
+      expect: [0x4053d867]
+      expect_exception: [inexact]
+    - id: sqrt_262
+      description: "11.9246"
+      variants: [ss]
+      input: [0x413ecb53]
+      expect: [0x405d0159]
+      expect_exception: [inexact]
+    - id: sqrt_263
+      description: "12.8926"
+      variants: [ss]
+      input: [0x414e4836]
+      expect: [0x4065cce5]
+      expect_exception: [inexact]
+    - id: sqrt_264
+      description: "13.8606"
+      variants: [ss]
+      input: [0x415dc519]
+      expect: [0x406e4564]
+      expect_exception: [inexact]
+    - id: sqrt_265
+      description: "14.8286"
+      variants: [ss]
+      input: [0x416d41fc]
+      expect: [0x40767366]
+      expect_exception: [inexact]
+    - id: sqrt_266
+      description: "1481089, 1217"
+      variants: [ss]
+      input: [0x49b4cc08]
+      expect: [0x44982000]
+      expect_exception: []
+    - id: sqrt_267
+      description: "2.845E-06, 0.00168671273"
+      variants: [ss]
+      input: [0x363eecba]
+      expect: [0x3add14b0]
+      expect_exception: [inexact]
+    - id: sqrt_268
+      description: "0.0625, 0.25"
+      variants: [ss]
+      input: [0x3d800000]
+      expect: [0x3e800000]
+      expect_exception: []
+    - id: sqrt_269
+      description: "-34.53, nan"
+      variants: [ss]
+      input: [0xc20a1eb8]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_270
+      description: "-0.3, nan"
+      variants: [ss]
+      input: [0xbe99999a]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_271
+      description: "-0.642365, nan"
+      variants: [ss]
+      input: [0xbf247208]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_272
+      description: "0.3, 0.5477226"
+      variants: [ss]
+      input: [0x3e99999a]
+      expect: [0x3f0c378c]
+      expect_exception: [inexact]
+    - id: sqrt_273
+      description: "0.642365, 0.8014768"
+      variants: [ss]
+      input: [0x3f247208]
+      expect: [0x3f4d2d95]
+      expect_exception: [inexact]
+    - id: sqrt_274
+      description: "0.5, 0.707106769"
+      variants: [ss]
+      input: [0x3f000000]
+      expect: [0x3f3504f3]
+      expect_exception: [inexact]
+    - id: sqrt_275
+      description: "34.53, 5.876223"
+      variants: [ss]
+      input: [0x420a1eb8]
+      expect: [0x40bc0a05]
+      expect_exception: [inexact]
+    - id: sqrt_276
+      description: "28467.3555, 168.722717"
+      variants: [ss]
+      input: [0x46de66b6]
+      expect: [0x4328b904]
+      expect_exception: [inexact]
+    - id: sqrt_277
+      description: "-100, nan"
+      variants: [ss]
+      input: [0xc2c80000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_278
+      description: "100, 10"
+      variants: [ss]
+      input: [0x42c80000]
+      expect: [0x41200000]
+      expect_exception: []
+    - id: sqrt_279
+      description: "1.416786E+30, 1.19028818E+15"
+      variants: [ss]
+      input: [0x718f0f0f]
+      expect: [0x588751f2]
+      expect_exception: [inexact]
+    - id: sqrt_280
+      description: "2^-130, 2^-65"
+      variants: [ss]
+      input: [0x00080000]
+      expect: [0x1f000000]
+      expect_exception: []
+    - id: sqrt_281
+      description: ""
+      variants: [ss]
+      input: [0x7f800001]
+      expect: [0x7fc00001]
+      expect_exception: [invalidoperation]
+    - id: sqrt_282
+      description: ""
+      variants: [ss]
+      input: [0xff800001]
+      expect: [0xffc00001]
+      expect_exception: [invalidoperation]
+    - id: sqrt_283
+      description: ""
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+    - id: sqrt_284
+      description: ""
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+    - id: sqrt_285
+      description: ""
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+    - id: sqrt_286
+      description: ""
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_287
+      description: ""
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+    - id: sqrt_288
+      description: ""
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x7fc00000]
+      expect_exception: []
+    - id: sqrt_289
+      description: ""
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+    - id: sqrt_290
+      description: ""
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+    - id: sqrt_291
+      description: ""
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x1fffffff]
+      expect_exception: [inexact]
+    - id: sqrt_292
+      description: ""
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_293
+      description: ""
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x1a3504f3]
+      expect_exception: [inexact]
+    - id: sqrt_294
+      description: ""
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_295
+      description: ""
+      variants: [ss]
+      input: [0x7f7fffff]
+      expect: [0x5f7fffff]
+      expect_exception: [inexact]
+    - id: sqrt_296
+      description: ""
+      variants: [ss]
+      input: [0xff7fffff]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_297
+      description: ""
+      variants: [ss]
+      input: [0x00800000]
+      expect: [0x20000000]
+      expect_exception: []
+    - id: sqrt_298
+      description: ""
+      variants: [ss]
+      input: [0x80800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+
+#-------------------------------
+    # Double precision tests
+    # Test case 1: 0
+    - id: sqrt_001
+      description: "sqrt(0) = 0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: sqrt_002
+      description: "sqrt(-0) = -0"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: sqrt_003
+      description: "sqrt(inf) = inf"
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: sqrt_004
+      description: "sqrt(-inf) = nan"
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 5: -nan
+    - id: sqrt_005
+      description: "sqrt(-nan) = -nan"
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: sqrt_006
+      description: "sqrt(+nan) = +nan"
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: sqrt_007
+      description: "sqrt(+subnorm_max) = sqrt(+subnorm_max)"
+      variants: [sd]
+      input: [0x000fffffffffffff]
+      expect: [0x1fffffffffffffff]
+      expect_exception: [inexact]
+
+    # Test case 8: - subnorm (MAX)
+    - id: sqrt_008
+      description: "sqrt(-subnorm_max) = nan"
+      variants: [sd]
+      input: [0x800fffffffffffff]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 9: + subnorm (MIN)
+    - id: sqrt_009
+      description: "sqrt(+subnorm_min) = sqrt(+subnorm_min)"
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x1a00000000000000]
+      expect_exception: []
+
+    # Test case : - subnorm (MIN)
+    - id: sqrt_010
+      description: "sqrt(-subnorm_min) = nan"
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 1: + POS
+    - id: sqrt_011
+      description: "sqrt(1.0) = 1.0"
+      variants: [sd]
+      input: [0x3ff0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 12: -POS
+    - id: sqrt_012
+      description: "sqrt(-1.0) = nan"
+      variants: [sd]
+      input: [0xbff0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 13: +NEG (interpreting as larger positive)
+    - id: sqrt_013
+      description: "sqrt(4.0) = 2.0"
+      variants: [sd]
+      input: [0x40000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: [inexact]
+
+    # Test case 14: -NEG (interpreting as negative)
+    - id: sqrt_014
+      description: "sqrt(-4.0) = nan"
+      variants: [sd]
+      input: [0xc0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [inexact]
+
+    # Test case 15: qnan
+    - id: sqrt_015
+      description: "sqrt(qnan) = qnan"
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: sqrt_016
+      description: "sqrt(snan) = snan"
+      variants: [sd]
+      input: [0x7ff4000000000001]
+      expect: [0x7ff4000000000001]
+      expect_exception: [invalidoperation]
+
+    - id: sqrt_017
+      description: "sqrt(0.25) = 0.5"
+      variants: [sd]
+      input: [0x3fd0000000000000]
+      expect: [0x3fe0000000000000]
+      expect_exception: []
+
+    - id: sqrt_018
+      description: "sqrt(9.0) = 3.0"
+      variants: [sd]
+      input: [0x4022000000000000]
+      expect: [0x4008000000000000]
+      expect_exception: []
+
+    - id: sqrt_019
+      description: "sqrt(16.0) = 4.0"
+      variants: [sd]
+      input: [0x4030000000000000]
+      expect: [0x40000000000000]
+      expect_exception: []
+
+    - id: sqrt_020
+      description: "sqrt(2.0) ≈ 1.4142135623730951"
+      variants: [sd]
+      input: [0x4000000000000000]
+      expect: [0x3ff6a09e667f3bcd]
+      expect_exception: [inexact]
+# Test cases from gtests test_sqrt_data.h
+#-------------------------------
+    - id: sqrt_001
+      description: "min, small enough that sqrt(x) = 1"
+      variants: [sd]
+      input: [0x3e30000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+    - id: sqrt_002
+      description: "min - 1 bit"
+      variants: [sd]
+      input: [0x3E2FFFFFFFFFFFFF]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+    - id: sqrt_003
+      description: "min + 1 bit"
+      variants: [sd]
+      input: [0x3e30000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+    - id: sqrt_004
+      description: "lambda + x = 1, x = -1.0000000000000000e+300"
+      variants: [sd]
+      input: [0xFE37E43C8800759C]
+      expect: [0x7ff0000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_005
+      description: "lambda + x < 1"
+      variants: [sd]
+      input: [0xFE37E43C8800758C]
+      expect: [0x7ff0000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_006
+      description: "lambda + x > 1"
+      variants: [sd]
+      input: [0xFE37E43C880075AC]
+      expect: [0x7ff0000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_007
+      description: "max arg, x = 89.41598629223294,max sqrtf arg"
+      variants: [sd]
+      input: [0x408633ce8fb9f87e]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact]
+    - id: sqrt_008
+      description: "max arg + 1 bit"
+      variants: [sd]
+      input: [0x408633ce8fb9f87f]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact]
+    - id: sqrt_009
+      description: "> max"
+      variants: [sd]
+      input: [0x408633ce8fb9f8ff]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact]
+    - id: sqrt_010
+      description: "normal intermediate"
+      variants: [sd]
+      input: [0x43b3c4eafedcab02]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact]
+    - id: sqrt_011
+      description: "1000"
+      variants: [sd]
+      input: [0x408F400000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact]
+    - id: sqrt_012
+      description: "1983.6"
+      variants: [sd]
+      input: [0x409EFE6666666666]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact]
+    - id: sqrt_013
+      description: "132473"
+      variants: [sd]
+      input: [0x41002BC800000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact]
+    - id: sqrt_014
+      description: "2^52 + 1"
+      variants: [sd]
+      input: [0x4330000000000001]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact]
+    - id: sqrt_015
+      description: "2^52 -1 + 0.5"
+      variants: [sd]
+      input: [0x432FFFFFFFFFFFFF]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact]
+    - id: sqrt_016
+      description: "710.5"
+      variants: [sd]
+      input: [0x4086340000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact]
+    - id: sqrt_017
+      description: "normal max"
+      variants: [sd]
+      input: [0x7FEFFFFFFFFFFFFF]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact]
+    - id: sqrt_018
+      description: "max arg - 1 bit"
+      variants: [sd]
+      input: [0x408633ce8fb9f87d]
+      expect: [0x7feffffffffffd3b]
+      expect_exception: [inexact]
+    - id: sqrt_019
+      description: "< max"
+      variants: [sd]
+      input: [0x408633ce8fb9f800]
+      expect: [0x7feffffffffe093b]
+      expect_exception: [inexact]
+    - id: sqrt_020
+      description: "small_threshold = 20"
+      variants: [sd]
+      input: [0x4034000000000000]
+      expect: [0x41aceb088b68e804]
+      expect_exception: [inexact]
+    - id: sqrt_021
+      description: "small_threshold+1 = 21"
+      variants: [sd]
+      input: [0x4035000000000000]
+      expect: [0x41c3a6e1fd9eecfd]
+      expect_exception: [inexact]
+    - id: sqrt_022
+      description: "small_threshold - 1 = 19"
+      variants: [sd]
+      input: [0x4033000000000000]
+      expect: [0x419546d8f9ed26e2]
+      expect_exception: [inexact]
+    - id: sqrt_023
+      description: "0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+    - id: sqrt_024
+      description: "0"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+    - id: sqrt_025
+      description: ""
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+    - id: sqrt_026
+      description: ""
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_027
+      description: ""
+      variants: [sd]
+      input: [0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_028
+      description: ""
+      variants: [sd]
+      input: [0xfff2000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_029
+      description: ""
+      variants: [sd]
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+    - id: sqrt_030
+      description: ""
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+    - id: sqrt_031
+      description: "denormal min"
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+    - id: sqrt_032
+      description: "denormal intermediate"
+      variants: [sd]
+      input: [0x0005fde623545abc]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+    - id: sqrt_033
+      description: "denormal max"
+      variants: [sd]
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+    - id: sqrt_034
+      description: "-denormal min"
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_035
+      description: "-denormal intermediate"
+      variants: [sd]
+      input: [0x8002344ade5def12]
+      expect: [0x3ff0000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_036
+      description: "-denormal max"
+      variants: [sd]
+      input: [0x800FFFFFFFFFFFFF]
+      expect: [0x3ff0000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_037
+      description: "normal min"
+      variants: [sd]
+      input: [0x0010000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+    - id: sqrt_038
+      description: "-normal min"
+      variants: [sd]
+      input: [0x8010000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_039
+      description: "-normal intermediate"
+      variants: [sd]
+      input: [0xc5812e71245acfdb]
+      expect: [0x7ff0000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_040
+      description: "-normal max"
+      variants: [sd]
+      input: [0xFFEFFFFFFFFFFFFF]
+      expect: [0x7ff0000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_041
+      description: "inf"
+      variants: [sd]
+      input: [0x7FF0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+    - id: sqrt_042
+      description: "-inf"
+      variants: [sd]
+      input: [0xFFF0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_043
+      description: "qnan min"
+      variants: [sd]
+      input: [0x7FF8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+    - id: sqrt_044
+      description: "qnan intermediate"
+      variants: [sd]
+      input: [0x7FFe1a5701234dc3]
+      expect: [0x7ffe1a5701234dc3]
+      expect_exception: []
+    - id: sqrt_045
+      description: "qnan max"
+      variants: [sd]
+      input: [0x7FFFFFFFFFFFFFFF]
+      expect: [0x7fffffffffffffff]
+      expect_exception: []
+    - id: sqrt_046
+      description: "indeterninate"
+      variants: [sd]
+      input: [0xFFF8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+    - id: sqrt_047
+      description: "-qnan min"
+      variants: [sd]
+      input: [0xFFF8000000000001]
+      expect: [0xfff8000000000001]
+      expect_exception: []
+    - id: sqrt_048
+      description: "-qnan intermediate"
+      variants: [sd]
+      input: [0xFFF9123425dcba31]
+      expect: [0xfff9123425dcba31]
+      expect_exception: []
+    - id: sqrt_049
+      description: "-qnan max"
+      variants: [sd]
+      input: [0xFFFFFFFFFFFFFFFF]
+      expect: [0xffffffffffffffff]
+      expect_exception: []
+    - id: sqrt_050
+      description: "snan min"
+      variants: [sd]
+      input: [0x7FF0000000000001]
+      expect: [0x7ff8000000000001]
+      expect_exception: [invalidoperation]
+    - id: sqrt_051
+      description: "snan intermediate"
+      variants: [sd]
+      input: [0x7FF5344752a0bd90]
+      expect: [0x7ffd344752a0bd90]
+      expect_exception: [invalidoperation]
+    - id: sqrt_052
+      description: "snan max"
+      variants: [sd]
+      input: [0x7FF7FFFFFFFFFFFF]
+      expect: [0x7fffffffffffffff]
+      expect_exception: [invalidoperation]
+    - id: sqrt_053
+      description: "-snan min"
+      variants: [sd]
+      input: [0xFFF0000000000001]
+      expect: [0xfff8000000000001]
+      expect_exception: [invalidoperation]
+    - id: sqrt_054
+      description: "-snan intermediate"
+      variants: [sd]
+      input: [0xfFF432438995fffa]
+      expect: [0xfffc32438995fffa]
+      expect_exception: [invalidoperation]
+    - id: sqrt_055
+      description: "-snan max"
+      variants: [sd]
+      input: [0xFFF7FFFFFFFFFFFF]
+      expect: [0xffffffffffffffff]
+      expect_exception: [invalidoperation]
+    - id: sqrt_056
+      description: "pi/2"
+      variants: [sd]
+      input: [0x3FF921FB54442D18]
+      expect: [0x400412cc2a8d4e9e]
+      expect_exception: [inexact]
+    - id: sqrt_057
+      description: "pi"
+      variants: [sd]
+      input: [0x400921FB54442D18]
+      expect: [0x40272f147fee4000]
+      expect_exception: [inexact]
+    - id: sqrt_058
+      description: "2pi"
+      variants: [sd]
+      input: [0x401921FB54442D18]
+      expect: [0x4070bbf2bc2b69c6]
+      expect_exception: [inexact]
+    - id: sqrt_059
+      description: "e --"
+      variants: [sd]
+      input: [0x3FFB7E151628AED3]
+      expect: [0x4007046b4f3f7e0c]
+      expect_exception: [inexact]
+    - id: sqrt_060
+      description: "e"
+      variants: [sd]
+      input: [0x4005BF0A8B145769]
+      expect: [0x401e70c4a4f41684]
+      expect_exception: [inexact]
+    - id: sqrt_061
+      description: "e ++"
+      variants: [sd]
+      input: [0x400DBF0A8B145769]
+      expect: [0x40349be1e586228d]
+      expect_exception: [inexact]
+    - id: sqrt_062
+      description: "0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+    - id: sqrt_063
+      description: "0.0000000000000000023"
+      variants: [sd]
+      input: [0x3C4536B8B14B676C]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+    - id: sqrt_064
+      description: "0.4999989999999999999"
+      variants: [sd]
+      input: [0x3FDFFFFBCE4217D3]
+      expect: [0x3ff20ac0fa498d2c]
+      expect_exception: [inexact]
+    - id: sqrt_065
+      description: "0.500000000000012"
+      variants: [sd]
+      input: [0x3FE000000000006C]
+      expect: [0x3ff20ac1862ae8ed]
+      expect_exception: [inexact]
+    - id: sqrt_066
+      description: "-0"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+    - id: sqrt_067
+      description: "-0.000000000000000000023"
+      variants: [sd]
+      input: [0xBBDB2752CE74FF42]
+      expect: [0x3ff0000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_068
+      description: "-0.4999989999999999999"
+      variants: [sd]
+      input: [0xBFDFFFFBCE4217D3]
+      expect: [0x3ff20ac0fa498d2c]
+      expect_exception: [invalidoperation]
+    - id: sqrt_069
+      description: "-0.500000000000012"
+      variants: [sd]
+      input: [0xBFE000000000006C]
+      expect: [0x3ff20ac1862ae8ed]
+      expect_exception: [invalidoperation]
+    - id: sqrt_070
+      description: "1"
+      variants: [sd]
+      input: [0x3FF0000000000000]
+      expect: [0x3ff8b07551d9f550]
+      expect_exception: []
+    - id: sqrt_071
+      description: "0.9999998893750006"
+      variants: [sd]
+      input: [0x3FEFFFFFC49BD0DC]
+      expect: [0x3ff8b0752ef3f8a2]
+      expect_exception: [inexact]
+    - id: sqrt_072
+      description: "1.0000000000000624998"
+      variants: [sd]
+      input: [0x3FF0000000000119]
+      expect: [0x3ff8b07551d9f69b]
+      expect_exception: [inexact]
+    - id: sqrt_073
+      description: "1.499998999999999967"
+      variants: [sd]
+      input: [0x3FF7FFFEF39085F4]
+      expect: [0x4002d1bb0418ae52]
+      expect_exception: [inexact]
+    - id: sqrt_074
+      description: "1.50000000000000012"
+      variants: [sd]
+      input: [0x3FF8000000000001]
+      expect: [0x4002d1bc21e22023]
+      expect_exception: [inexact]
+    - id: sqrt_075
+      description: "-1"
+      variants: [sd]
+      input: [0xBFF0000000000000]
+      expect: [0x3ff8b07551d9f550]
+      expect_exception: [invalidoperation]
+    - id: sqrt_076
+      description: "-0.9999998893750006"
+      variants: [sd]
+      input: [0xBFEFFFFFC49BD0DC]
+      expect: [0x3ff8b0752ef3f8a2]
+      expect_exception: [invalidoperation]
+    - id: sqrt_077
+      description: "-1.0000000000000624998"
+      variants: [sd]
+      input: [0xBFF0000000000119]
+      expect: [0x3ff8b07551d9f69b]
+      expect_exception: [invalidoperation]
+    - id: sqrt_078
+      description: "-1.499998999999999967"
+      variants: [sd]
+      input: [0xBFF7FFFEF39085F4]
+      expect: [0x4002d1bb0418ae52]
+      expect_exception: [invalidoperation]
+    - id: sqrt_079
+      description: "-1.50000000000000012"
+      variants: [sd]
+      input: [0xBFF8000000000001]
+      expect: [0x4002d1bc21e22023]
+      expect_exception: [invalidoperation]
+    - id: sqrt_080
+      description: "2"
+      variants: [sd]
+      input: [0x4000000000000000]
+      expect: [0x400e18fa0df2d9bc]
+      expect_exception: [inexact]
+    - id: sqrt_081
+      description: "-2"
+      variants: [sd]
+      input: [0xC000000000000000]
+      expect: [0x400e18fa0df2d9bc]
+      expect_exception: [invalidoperation]
+    - id: sqrt_082
+      description: "10"
+      variants: [sd]
+      input: [0x4024000000000000]
+      expect: [0x40c5829dd053712d]
+      expect_exception: [inexact]
+    - id: sqrt_083
+      description: "-10"
+      variants: [sd]
+      input: [0xC024000000000000]
+      expect: [0x40c5829dd053712d]
+      expect_exception: [invalidoperation]
+    - id: sqrt_084
+      description: "-1000"
+      variants: [sd]
+      input: [0xC08F400000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_085
+      description: "67.4"
+      variants: [sd]
+      input: [0x4050D9999999999A]
+      expect: [0x45f2dd7567cd83ee]
+      expect_exception: [inexact]
+    - id: sqrt_086
+      description: "-67.4"
+      variants: [sd]
+      input: [0xC050D9999999999A]
+      expect: [0x45f2dd7567cd83ee]
+      expect_exception: [invalidoperation]
+    - id: sqrt_087
+      description: "-1983.6"
+      variants: [sd]
+      input: [0xC09EFE6666666666]
+      expect: [0x7ff0000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_088
+      description: "87.5"
+      variants: [sd]
+      input: [0x4055E00000000000]
+      expect: [0x47c2d7566d26536b]
+      expect_exception: [inexact]
+    - id: sqrt_089
+      description: "-87.5"
+      variants: [sd]
+      input: [0xC055E00000000000]
+      expect: [0x47c2d7566d26536b]
+      expect_exception: [invalidoperation]
+    - id: sqrt_090
+      description: "-132473"
+      variants: [sd]
+      input: [0xC1002BC800000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_091
+      description: "2^52"
+      variants: [sd]
+      input: [0x4330000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+    - id: sqrt_092
+      description: "-2^52"
+      variants: [sd]
+      input: [0xC330000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_093
+      description: "-(2^52 + 1)"
+      variants: [sd]
+      input: [0xC330000000000001]
+      expect: [0x7ff0000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_094
+      description: "-(2^52 -1 + 0.5)"
+      variants: [sd]
+      input: [0xC32FFFFFFFFFFFFF]
+      expect: [0x7ff0000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_095
+      description: "denormal min"
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x1e60000000000000]
+      expect_exception: []
+    - id: sqrt_096
+      description: "denormal intermediate"
+      variants: [sd]
+      input: [0x0005fde623545abc]
+      expect: [0x1ff3951f73e71d7b]
+      expect_exception: [inexact]
+    - id: sqrt_097
+      description: "denormal max"
+      variants: [sd]
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x1fffffffffffffff]
+      expect_exception: [inexact]
+    - id: sqrt_098
+      description: "-denormal min"
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_099
+      description: "-denormal intermediate"
+      variants: [sd]
+      input: [0x8002344ade5def12]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_100
+      description: "-denormal max"
+      variants: [sd]
+      input: [0x800FFFFFFFFFFFFF]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_101
+      description: "normal min"
+      variants: [sd]
+      input: [0x0010000000000000]
+      expect: [0x2000000000000000]
+      expect_exception: []
+    - id: sqrt_102
+      description: "normal intermediate"
+      variants: [sd]
+      input: [0x43b3c4eafedcab02]
+      expect: [0x41d1c8f7df8b4aa2]
+      expect_exception: [inexact]
+    - id: sqrt_103
+      description: "normal max"
+      variants: [sd]
+      input: [0x7FEFFFFFFFFFFFFF]
+      expect: [0x5fefffffffffffff]
+      expect_exception: [inexact]
+    - id: sqrt_104
+      description: "-normal min"
+      variants: [sd]
+      input: [0x8010000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_105
+      description: "-normal intermediate"
+      variants: [sd]
+      input: [0xc5812e71245acfdb]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_106
+      description: "-normal max"
+      variants: [sd]
+      input: [0xFFEFFFFFFFFFFFFF]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_107
+      description: "inf"
+      variants: [sd]
+      input: [0x7FF0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+    - id: sqrt_108
+      description: "-inf"
+      variants: [sd]
+      input: [0xFFF0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_109
+      description: "qnan min"
+      variants: [sd]
+      input: [0x7FF8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+    - id: sqrt_110
+      description: "qnan intermediate"
+      variants: [sd]
+      input: [0x7FFe1a5701234dc3]
+      expect: [0x7ffe1a5701234dc3]
+      expect_exception: []
+    - id: sqrt_111
+      description: "qnan max"
+      variants: [sd]
+      input: [0x7FFFFFFFFFFFFFFF]
+      expect: [0x7fffffffffffffff]
+      expect_exception: []
+    - id: sqrt_112
+      description: "indeterninate"
+      variants: [sd]
+      input: [0xFFF8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+    - id: sqrt_113
+      description: "-qnan min"
+      variants: [sd]
+      input: [0xFFF8000000000001]
+      expect: [0xfff8000000000001]
+      expect_exception: []
+    - id: sqrt_114
+      description: "-qnan intermediate"
+      variants: [sd]
+      input: [0xFFF9123425dcba31]
+      expect: [0xfff9123425dcba31]
+      expect_exception: []
+    - id: sqrt_115
+      description: "-qnan max"
+      variants: [sd]
+      input: [0xFFFFFFFFFFFFFFFF]
+      expect: [0xffffffffffffffff]
+      expect_exception: []
+    - id: sqrt_116
+      description: "snan min"
+      variants: [sd]
+      input: [0x7FF0000000000001]
+      expect: [0x7ff8000000000001]
+      expect_exception: [invalidoperation]
+    - id: sqrt_117
+      description: "snan intermediate"
+      variants: [sd]
+      input: [0x7FF5344752a0bd90]
+      expect: [0x7ffd344752a0bd90]
+      expect_exception: [invalidoperation]
+    - id: sqrt_118
+      description: "snan max"
+      variants: [sd]
+      input: [0x7FF7FFFFFFFFFFFF]
+      expect: [0x7fffffffffffffff]
+      expect_exception: [invalidoperation]
+    - id: sqrt_119
+      description: "-snan min"
+      variants: [sd]
+      input: [0xFFF0000000000001]
+      expect: [0xfff8000000000001]
+      expect_exception: [invalidoperation]
+    - id: sqrt_120
+      description: "-snan intermediate"
+      variants: [sd]
+      input: [0xfFF432438995fffa]
+      expect: [0xfffc32438995fffa]
+      expect_exception: [invalidoperation]
+    - id: sqrt_121
+      description: "-snan max"
+      variants: [sd]
+      input: [0xFFF7FFFFFFFFFFFF]
+      expect: [0xffffffffffffffff]
+      expect_exception: [invalidoperation]
+    - id: sqrt_122
+      description: "pi/2"
+      variants: [sd]
+      input: [0x3FF921FB54442D18]
+      expect: [0x3ff40d931ff62705]
+      expect_exception: [inexact]
+    - id: sqrt_123
+      description: "pi"
+      variants: [sd]
+      input: [0x400921FB54442D18]
+      expect: [0x3ffc5bf891b4ef6a]
+      expect_exception: [inexact]
+    - id: sqrt_124
+      description: "2pi"
+      variants: [sd]
+      input: [0x401921FB54442D18]
+      expect: [0x40040d931ff62705]
+      expect_exception: [inexact]
+    - id: sqrt_125
+      description: "e --"
+      variants: [sd]
+      input: [0x3FFB7E151628AED3]
+      expect: [0x3ff4f92b7e61eb29]
+      expect_exception: [inexact]
+    - id: sqrt_126
+      description: "e"
+      variants: [sd]
+      input: [0x4005BF0A8B145769]
+      expect: [0x3ffa61298e1e069c]
+      expect_exception: [inexact]
+    - id: sqrt_127
+      description: "e ++"
+      variants: [sd]
+      input: [0x400DBF0A8B145769]
+      expect: [0x3ffeda410adbd55c]
+      expect_exception: [inexact]
+    - id: sqrt_128
+      description: "0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+    - id: sqrt_129
+      description: "0.0000000000000000023"
+      variants: [sd]
+      input: [0x3C4536B8B14B676C]
+      expect: [0x3e1a0df7c04f6375]
+      expect_exception: [inexact]
+    - id: sqrt_130
+      description: "0.4999989999999999999"
+      variants: [sd]
+      input: [0x3FDFFFFBCE4217D3]
+      expect: [0x3fe6a09ceadf2b44]
+      expect_exception: [inexact]
+    - id: sqrt_131
+      description: "0.500000000000012"
+      variants: [sd]
+      input: [0x3FE000000000006C]
+      expect: [0x3fe6a09e667f3c19]
+      expect_exception: [inexact]
+    - id: sqrt_132
+      description: "-0"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+    - id: sqrt_133
+      description: "-0.000000000000000000023"
+      variants: [sd]
+      input: [0xBBDB2752CE74FF42]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_134
+      description: "-0.4999989999999999999"
+      variants: [sd]
+      input: [0xBFDFFFFBCE4217D3]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_135
+      description: "-0.500000000000012"
+      variants: [sd]
+      input: [0xBFE000000000006C]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_136
+      description: "1"
+      variants: [sd]
+      input: [0x3FF0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+    - id: sqrt_137
+      description: "0.9999998893750006"
+      variants: [sd]
+      input: [0x3FEFFFFFC49BD0DC]
+      expect: [0x3fefffffe24de860]
+      expect_exception: [inexact]
+    - id: sqrt_138
+      description: "1.0000000000000624998"
+      variants: [sd]
+      input: [0x3FF0000000000119]
+      expect: [0x3ff000000000008c]
+      expect_exception: [inexact]
+    - id: sqrt_139
+      description: "1.499998999999999967"
+      variants: [sd]
+      input: [0x3FF7FFFEF39085F4]
+      expect: [0x3ff3988da672841b]
+      expect_exception: [inexact]
+    - id: sqrt_140
+      description: "1.50000000000000012"
+      variants: [sd]
+      input: [0x3FF8000000000001]
+      expect: [0x3ff3988e1409212f]
+      expect_exception: [inexact]
+    - id: sqrt_141
+      description: "-1"
+      variants: [sd]
+      input: [0xBFF0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_142
+      description: "-0.9999998893750006"
+      variants: [sd]
+      input: [0xBFEFFFFFC49BD0DC]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_143
+      description: "-1.0000000000000624998"
+      variants: [sd]
+      input: [0xBFF0000000000119]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_144
+      description: "-1.499998999999999967"
+      variants: [sd]
+      input: [0xBFF7FFFEF39085F4]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_145
+      description: "-1.50000000000000012"
+      variants: [sd]
+      input: [0xBFF8000000000001]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_146
+      description: "2"
+      variants: [sd]
+      input: [0x4000000000000000]
+      expect: [0x3ff6a09e667f3bcd]
+      expect_exception: [inexact]
+    - id: sqrt_147
+      description: "-2"
+      variants: [sd]
+      input: [0xC000000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_148
+      description: "10"
+      variants: [sd]
+      input: [0x4024000000000000]
+      expect: [0x40094c583ada5b53]
+      expect_exception: [inexact]
+    - id: sqrt_149
+      description: "-10"
+      variants: [sd]
+      input: [0xC024000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_150
+      description: "1000"
+      variants: [sd]
+      input: [0x408F400000000000]
+      expect: [0x403f9f6e4990f227]
+      expect_exception: [inexact]
+    - id: sqrt_151
+      description: "-1000"
+      variants: [sd]
+      input: [0xC08F400000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_152
+      description: "67.4"
+      variants: [sd]
+      input: [0x4050D9999999999A]
+      expect: [0x40206b646433bf41]
+      expect_exception: [inexact]
+    - id: sqrt_153
+      description: "-67.4"
+      variants: [sd]
+      input: [0xC050D9999999999A]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_154
+      description: "1983.6"
+      variants: [sd]
+      input: [0x409EFE6666666666]
+      expect: [0x404644d0e18c772f]
+      expect_exception: [inexact]
+    - id: sqrt_155
+      description: "-1983.6"
+      variants: [sd]
+      input: [0xC09EFE6666666666]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_156
+      description: "87.5"
+      variants: [sd]
+      input: [0x4055E00000000000]
+      expect: [0x4022b5524ae1278e]
+      expect_exception: [inexact]
+    - id: sqrt_157
+      description: "-87.5"
+      variants: [sd]
+      input: [0xC055E00000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_158
+      description: "132473"
+      variants: [sd]
+      input: [0x41002BC800000000]
+      expect: [0x4076bf7e96796aca]
+      expect_exception: [inexact]
+    - id: sqrt_159
+      description: "-132473"
+      variants: [sd]
+      input: [0xC1002BC800000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_160
+      description: "2^52"
+      variants: [sd]
+      input: [0x4330000000000000]
+      expect: [0x4190000000000000]
+      expect_exception: []
+    - id: sqrt_161
+      description: "2^52 + 1"
+      variants: [sd]
+      input: [0x4330000000000001]
+      expect: [0x4190000000000000]
+      expect_exception: [inexact]
+    - id: sqrt_162
+      description: "2^52 -1 + 0.5"
+      variants: [sd]
+      input: [0x432FFFFFFFFFFFFF]
+      expect: [0x418fffffffffffff]
+      expect_exception: [inexact]
+    - id: sqrt_163
+      description: "-2^52"
+      variants: [sd]
+      input: [0xC330000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_164
+      description: "-(2^52 + 1)"
+      variants: [sd]
+      input: [0xC330000000000001]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_165
+      description: "-(2^52 -1 + 0.5)"
+      variants: [sd]
+      input: [0xC32FFFFFFFFFFFFF]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_166
+      description: "1.79769313486231570815e+308"
+      variants: [sd]
+      input: [0x7fefffffffffffff]
+      expect: [0x5fefffffffffffff]
+      expect_exception: [inexact]
+    - id: sqrt_167
+      description: "-1.79769313486231570815e+308"
+      variants: [sd]
+      input: [0xffefffffffffffff]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_168
+      description: "-5.55112e-17"
+      variants: [sd]
+      input: [0xbc90000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_169
+      description: "-4.996e-17"
+      variants: [sd]
+      input: [0xbc8ccccccccccccd]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_170
+      description: "-4.44089e-17"
+      variants: [sd]
+      input: [0xbc8999999999999a]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_171
+      description: "-3.88578e-17"
+      variants: [sd]
+      input: [0xbc86666666666667]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_172
+      description: "-3.33067e-17"
+      variants: [sd]
+      input: [0xbc83333333333334]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_173
+      description: "-2.77556e-17"
+      variants: [sd]
+      input: [0xbc80000000000001]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_174
+      description: "-2.22045e-17"
+      variants: [sd]
+      input: [0xbc7999999999999c]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_175
+      description: "-1.66533e-17"
+      variants: [sd]
+      input: [0xbc73333333333336]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_176
+      description: "-1.11022e-17"
+      variants: [sd]
+      input: [0xbc6999999999999f]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_177
+      description: "-5.55112e-18"
+      variants: [sd]
+      input: [0xbc599999999999a4]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_178
+      description: "-7.70372e-33"
+      variants: [sd]
+      input: [0xb944000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_179
+      description: "5.55112e-18"
+      variants: [sd]
+      input: [0x3c59999999999990]
+      expect: [0x3e243d136248490b]
+      expect_exception: [inexact]
+    - id: sqrt_180
+      description: "1.11022e-17"
+      variants: [sd]
+      input: [0x3c69999999999995]
+      expect: [0x3e2c9f25c5bfedd7]
+      expect_exception: [inexact]
+    - id: sqrt_181
+      description: "1.66533e-17"
+      variants: [sd]
+      input: [0x3c73333333333331]
+      expect: [0x3e3186f174f88471]
+      expect_exception: [inexact]
+    - id: sqrt_182
+      description: "2.22045e-17"
+      variants: [sd]
+      input: [0x3c79999999999998]
+      expect: [0x3e343d136248490e]
+      expect_exception: [inexact]
+    - id: sqrt_183
+      description: "2.77556e-17"
+      variants: [sd]
+      input: [0x3c7ffffffffffffe]
+      expect: [0x3e36a09e667f3bcc]
+      expect_exception: [inexact]
+    - id: sqrt_184
+      description: "3.33067e-17"
+      variants: [sd]
+      input: [0x3c83333333333332]
+      expect: [0x3e38c97ef43f7247]
+      expect_exception: [inexact]
+    - id: sqrt_185
+      description: "3.88578e-17"
+      variants: [sd]
+      input: [0x3c86666666666665]
+      expect: [0x3e3ac5eb3f7ab2f7]
+      expect_exception: [inexact]
+    - id: sqrt_186
+      description: "4.44089e-17"
+      variants: [sd]
+      input: [0x3c89999999999998]
+      expect: [0x3e3c9f25c5bfedd8]
+      expect_exception: [inexact]
+    - id: sqrt_187
+      description: "4.996e-17"
+      variants: [sd]
+      input: [0x3c8ccccccccccccb]
+      expect: [0x3e3e5b9d136c6d95]
+      expect_exception: [inexact]
+    - id: sqrt_188
+      description: "5.55112e-17"
+      variants: [sd]
+      input: [0x3c8ffffffffffffe]
+      expect: [0x3e3fffffffffffff]
+      expect_exception: [inexact]
+    - id: sqrt_189
+      description: "1809.11"
+      variants: [sd]
+      input: [0x409c4474e1726455]
+      expect: [0x4045444fb4b8d593]
+      expect_exception: [inexact]
+    - id: sqrt_190
+      description: "1827.65"
+      variants: [sd]
+      input: [0x409c8e99130401cc]
+      expect: [0x40456021565c4644]
+      expect_exception: [inexact]
+    - id: sqrt_191
+      description: "1846.18"
+      variants: [sd]
+      input: [0x409cd8bd44959f43]
+      expect: [0x40457bcef268595b]
+      expect_exception: [inexact]
+    - id: sqrt_192
+      description: "1864.72"
+      variants: [sd]
+      input: [0x409d22e176273cba]
+      expect: [0x4045975913650cc8]
+      expect_exception: [inexact]
+    - id: sqrt_193
+      description: "1883.26"
+      variants: [sd]
+      input: [0x409d6d05a7b8da31]
+      expect: [0x4045b2c0406b3be0]
+      expect_exception: [inexact]
+    - id: sqrt_194
+      description: "1901.79"
+      variants: [sd]
+      input: [0x409db729d94a77a8]
+      expect: [0x4045ce04fd42d57c]
+      expect_exception: [inexact]
+    - id: sqrt_195
+      description: "1920.33"
+      variants: [sd]
+      input: [0x409e014e0adc151f]
+      expect: [0x4045e927ca7fbfb6]
+      expect_exception: [inexact]
+    - id: sqrt_196
+      description: "1938.86"
+      variants: [sd]
+      input: [0x409e4b723c6db296]
+      expect: [0x40460429259d7b2c]
+      expect_exception: [inexact]
+    - id: sqrt_197
+      description: "1957.4"
+      variants: [sd]
+      input: [0x409e95966dff500d]
+      expect: [0x40461f0989199692]
+      expect_exception: [inexact]
+    - id: sqrt_198
+      description: "1975.93"
+      variants: [sd]
+      input: [0x409edfba9f90ed84]
+      expect: [0x404639c96c8d0267]
+      expect_exception: [inexact]
+    - id: sqrt_199
+      description: "1994.47"
+      variants: [sd]
+      input: [0x409f29ded1228afb]
+      expect: [0x4046546944c45393]
+      expect_exception: [inexact]
+    - id: sqrt_200
+      description: "2000.56"
+      variants: [sd]
+      input: [0x409f42421c044285]
+      expect: [0x40465d24536ba51c]
+      expect_exception: [inexact]
+    - id: sqrt_201
+      description: "10639.2"
+      variants: [sd]
+      input: [0x40c4c79d6d6dc1a5]
+      expect: [0x4059c96298191e81]
+      expect_exception: [inexact]
+    - id: sqrt_202
+      description: "19277.9"
+      variants: [sd]
+      input: [0x40d2d3794bad7d7c]
+      expect: [0x40615b09188f80a4]
+      expect_exception: [inexact]
+    - id: sqrt_203
+      description: "27916.6"
+      variants: [sd]
+      input: [0x40db4323e0a41a26]
+      expect: [0x4064e2a3cf61c7f8]
+      expect_exception: [inexact]
+    - id: sqrt_204
+      description: "36555.2"
+      variants: [sd]
+      input: [0x40e1d9673acd5b68]
+      expect: [0x4067e636f7d6729f]
+      expect_exception: [inexact]
+    - id: sqrt_205
+      description: "45193.9"
+      variants: [sd]
+      input: [0x40e6113c8548a9bd]
+      expect: [0x406a92d56539cd38]
+      expect_exception: [inexact]
+    - id: sqrt_206
+      description: "53832.6"
+      variants: [sd]
+      input: [0x40ea4911cfc3f812]
+      expect: [0x406d00970ffd285b]
+      expect_exception: [inexact]
+    - id: sqrt_207
+      description: "62471.2"
+      variants: [sd]
+      input: [0x40ee80e71a3f4667]
+      expect: [0x406f3e28723a96d1]
+      expect_exception: [inexact]
+    - id: sqrt_208
+      description: "71109.9"
+      variants: [sd]
+      input: [0x40f15c5e325d4a5e]
+      expect: [0x4070aaa14489b3dc]
+      expect_exception: [inexact]
+    - id: sqrt_209
+      description: "79748.6"
+      variants: [sd]
+      input: [0x40f37848d79af188]
+      expect: [0x4071a65da4def67d]
+      expect_exception: [inexact]
+    - id: sqrt_210
+      description: "88387.2"
+      variants: [sd]
+      input: [0x40f594337cd898b2]
+      expect: [0x407294cc4dcaf763]
+      expect_exception: [inexact]
+    - id: sqrt_211
+      description: "97025.9"
+      variants: [sd]
+      input: [0x40f7b01e22163fdc]
+      expect: [0x407377d624053bda]
+      expect_exception: [inexact]
+    - id: sqrt_212
+      description: "105665"
+      variants: [sd]
+      input: [0x40f9cc08c753e706]
+      expect: [0x407450f931b0c1b2]
+      expect_exception: [inexact]
+    - id: sqrt_213
+      description: "114303"
+      variants: [sd]
+      input: [0x40fbe7f36c918e30]
+      expect: [0x40752166bdc8bf13]
+      expect_exception: [inexact]
+    - id: sqrt_214
+      description: "122942"
+      variants: [sd]
+      input: [0x40fe03de11cf355a]
+      expect: [0x4075ea174c457728]
+      expect_exception: [inexact]
+    - id: sqrt_215
+      description: "131581"
+      variants: [sd]
+      input: [0x41000fe45b866e42]
+      expect: [0x4076abd860eb4491]
+      expect_exception: [inexact]
+    - id: sqrt_216
+      description: "140219"
+      variants: [sd]
+      input: [0x41011dd9ae2541d7]
+      expect: [0x407767563ea281c8]
+      expect_exception: [inexact]
+    - id: sqrt_217
+      description: "148858"
+      variants: [sd]
+      input: [0x41022bcf00c4156c]
+      expect: [0x40781d22fb795ce6]
+      expect_exception: [inexact]
+    - id: sqrt_218
+      description: "-170000"
+      variants: [sd]
+      input: [0xc104c083a6d698fe]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_219
+      description: "-160136"
+      variants: [sd]
+      input: [0xc1038c4043b70ef5]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_220
+      description: "-150272"
+      variants: [sd]
+      input: [0xc10257fce09784ec]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_221
+      description: "-140407"
+      variants: [sd]
+      input: [0xc10123b97d77fae3]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_222
+      description: "-130543"
+      variants: [sd]
+      input: [0xc0ffdeec34b0e1b4]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_223
+      description: "-120678"
+      variants: [sd]
+      input: [0xc0fd76656e71cda2]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_224
+      description: "-110814"
+      variants: [sd]
+      input: [0xc0fb0ddea832b990]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_225
+      description: "-100949"
+      variants: [sd]
+      input: [0xc0f8a557e1f3a57e]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_226
+      description: "-91085.1"
+      variants: [sd]
+      input: [0xc0f63cd11bb4916c]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_227
+      description: "-81220.6"
+      variants: [sd]
+      input: [0xc0f3d44a55757d5a]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_228
+      description: "-71356.2"
+      variants: [sd]
+      input: [0xc0f16bc38f366948]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_229
+      description: "-61491.8"
+      variants: [sd]
+      input: [0xc0ee067991eeaa6c]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_230
+      description: "-51627.4"
+      variants: [sd]
+      input: [0xc0e9356c05708248]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_231
+      description: "-41763"
+      variants: [sd]
+      input: [0xc0e4645e78f25a24]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_232
+      description: "-31898.5"
+      variants: [sd]
+      input: [0xc0df26a1d8e86400]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_233
+      description: "-22034.1"
+      variants: [sd]
+      input: [0xc0d58486bfec13b8]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_234
+      description: "-12169.7"
+      variants: [sd]
+      input: [0xc0c7c4d74ddf86e0]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_235
+      description: "-2305.26"
+      variants: [sd]
+      input: [0xc0a202846f9b9940]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_236
+      description: "-0.287682"
+      variants: [sd]
+      input: [0xbfd269621134db92]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_237
+      description: "-0.263448"
+      variants: [sd]
+      input: [0xbfd0dc554dd7fa10]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_238
+      description: "-0.239214"
+      variants: [sd]
+      input: [0xbfce9e9114f6311b]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_239
+      description: "-0.21498"
+      variants: [sd]
+      input: [0xbfcb84778e3c6e16]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_240
+      description: "-0.190746"
+      variants: [sd]
+      input: [0xbfc86a5e0782ab11]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_241
+      description: "-0.166512"
+      variants: [sd]
+      input: [0xbfc5504480c8e80c]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_242
+      description: "-0.142278"
+      variants: [sd]
+      input: [0xbfc2362afa0f2507]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_243
+      description: "-0.118044"
+      variants: [sd]
+      input: [0xbfbe3822e6aac404]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_244
+      description: "-0.0938101"
+      variants: [sd]
+      input: [0xbfb803efd9373dfa]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_245
+      description: "-0.0695761"
+      variants: [sd]
+      input: [0xbfb1cfbccbc3b7f0]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_246
+      description: "-0.0453421"
+      variants: [sd]
+      input: [0xbfa737137ca063cd]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_247
+      description: "-0.0211081"
+      variants: [sd]
+      input: [0xbf959d5ac372af74]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_248
+      description: "0.00312593"
+      variants: [sd]
+      input: [0x3f699b8b92db4590]
+      expect: [0x3faca03c20a6bb3e]
+      expect_exception: [inexact]
+    - id: sqrt_249
+      description: "0.0273599"
+      variants: [sd]
+      input: [0x3f9c043da82980d8]
+      expect: [0x3fc52c19f1433c87]
+      expect_exception: [inexact]
+    - id: sqrt_250
+      description: "0.0515939"
+      variants: [sd]
+      input: [0x3faa6a84eefbcc7f]
+      expect: [0x3fcd13054fd1ba54]
+      expect_exception: [inexact]
+    - id: sqrt_251
+      description: "0.0758279"
+      variants: [sd]
+      input: [0x3fb3697584f16c49]
+      expect: [0x3fd19fa4171843f8]
+      expect_exception: [inexact]
+    - id: sqrt_252
+      description: "0.100062"
+      variants: [sd]
+      input: [0x3fb99da89264f252]
+      expect: [0x3fd43eae0291d350]
+      expect_exception: [inexact]
+    - id: sqrt_253
+      description: "0.124296"
+      variants: [sd]
+      input: [0x3fbfd1db9fd8785c]
+      expect: [0x3fd69048328d5d2b]
+      expect_exception: [inexact]
+    - id: sqrt_254
+      description: "0.14853"
+      variants: [sd]
+      input: [0x3fc3030756a5ff33]
+      expect: [0x3fd8aa532c11134b]
+      expect_exception: [inexact]
+    - id: sqrt_255
+      description: "0.172764"
+      variants: [sd]
+      input: [0x3fc61d20dd5fc238]
+      expect: [0x3fda99fd7005bf02]
+      expect_exception: [inexact]
+    - id: sqrt_256
+      description: "0.196998"
+      variants: [sd]
+      input: [0x3fc9373a6419853d]
+      expect: [0x3fdc67f2b3b906ca]
+      expect_exception: [inexact]
+    - id: sqrt_257
+      description: "0.221232"
+      variants: [sd]
+      input: [0x3fcc5153ead34842]
+      expect: [0x3fde1a4364ab9afd]
+      expect_exception: [inexact]
+    - id: sqrt_258
+      description: "36.232"
+      variants: [sd]
+      input: [0x40421db22d0e5604]
+      expect: [0x401813c3fa6dcfe7]
+      expect_exception: [inexact]
+    - id: sqrt_259
+      description: "67.1084"
+      variants: [sd]
+      input: [0x4050c6ef459d9902]
+      expect: [0x40206249be7646a7]
+      expect_exception: [inexact]
+    - id: sqrt_260
+      description: "97.9847"
+      variants: [sd]
+      input: [0x40587f0574b40702]
+      expect: [0x4023cc255c7bf934]
+      expect_exception: [inexact]
+    - id: sqrt_261
+      description: "128.861"
+      variants: [sd]
+      input: [0x40601b8dd1e53a81]
+      expect: [0x4026b411d814a23f]
+      expect_exception: [inexact]
+    - id: sqrt_262
+      description: "159.737"
+      variants: [sd]
+      input: [0x4063f798e9707181]
+      expect: [0x4029470734237dfe]
+      expect_exception: [inexact]
+    - id: sqrt_263
+      description: "190.614"
+      variants: [sd]
+      input: [0x4067d3a400fba881]
+      expect: [0x402b9cd2a49ed54b]
+      expect_exception: [inexact]
+    - id: sqrt_264
+      description: "221.49"
+      variants: [sd]
+      input: [0x406bafaf1886df81]
+      expect: [0x402dc3dcd7c0b437]
+      expect_exception: [inexact]
+    - id: sqrt_265
+      description: "252.366"
+      variants: [sd]
+      input: [0x406f8bba30121681]
+      expect: [0x402fc5a7e7e41653]
+      expect_exception: [inexact]
+    - id: sqrt_266
+      description: "283.243"
+      variants: [sd]
+      input: [0x4071b3e2a3cea6c1]
+      expect: [0x4030d46f10c78363]
+      expect_exception: [inexact]
+    - id: sqrt_267
+      description: "314.119"
+      variants: [sd]
+      input: [0x4073a1e82f944241]
+      expect: [0x4031b93141d78a25]
+      expect_exception: [inexact]
+    - id: sqrt_268
+      description: "344.996"
+      variants: [sd]
+      input: [0x40758fedbb59ddc1]
+      expect: [0x403292f54e2688bc]
+      expect_exception: [inexact]
+    - id: sqrt_269
+      description: "375.872"
+      variants: [sd]
+      input: [0x40777df3471f7941]
+      expect: [0x4033632dafaeb753]
+      expect_exception: [inexact]
+    - id: sqrt_270
+      description: "406.748"
+      variants: [sd]
+      input: [0x40796bf8d2e514c1]
+      expect: [0x40342b0216453df5]
+      expect_exception: [inexact]
+    - id: sqrt_271
+      description: "437.625"
+      variants: [sd]
+      input: [0x407b59fe5eaab041]
+      expect: [0x4034eb62f9f0316f]
+      expect_exception: [inexact]
+    - id: sqrt_272
+      description: "468.501"
+      variants: [sd]
+      input: [0x407d4803ea704bc1]
+      expect: [0x4035a5170bcd95f0]
+      expect_exception: [inexact]
+    - id: sqrt_273
+      description: "499.377"
+      variants: [sd]
+      input: [0x407f36097635e741]
+      expect: [0x403658c4b7973394]
+      expect_exception: [inexact]
+    - id: sqrt_274
+      description: "530.254"
+      variants: [sd]
+      input: [0x4080920780fdc161]
+      expect: [0x403706f9085f0269]
+      expect_exception: [inexact]
+    - id: sqrt_275
+      description: "561.13"
+      variants: [sd]
+      input: [0x4081890a46e08f21]
+      expect: [0x4037b02cc44fa893]
+      expect_exception: [inexact]
+    - id: sqrt_276
+      description: "592.006"
+      variants: [sd]
+      input: [0x4082800d0cc35ce1]
+      expect: [0x403854c84841a839]
+      expect_exception: [inexact]
+    - id: sqrt_277
+      description: "622.883"
+      variants: [sd]
+      input: [0x4083770fd2a62aa1]
+      expect: [0x4038f5267e094a13]
+      expect_exception: [inexact]
+    - id: sqrt_278
+      description: "653.759"
+      variants: [sd]
+      input: [0x40846e129888f861]
+      expect: [0x403991972b5fd873]
+      expect_exception: [inexact]
+    - id: sqrt_279
+      description: "684.635"
+      variants: [sd]
+      input: [0x408565155e6bc621]
+      expect: [0x403a2a60c47841cd]
+      expect_exception: [inexact]
+    - id: sqrt_280
+      description: "709.771883"
+      variants: [sd]
+      input: [0x40862E2CD0FE8AB5]
+      expect: [0x403aa43c3f6483d3]
+      expect_exception: [inexact]
+    - id: sqrt_281
+      description: "709.8"
+      variants: [sd]
+      input: [0x40862E6666666666]
+      expect: [0x403aa45ed47d25ff]
+      expect_exception: [inexact]
+    - id: sqrt_282
+      description: "715.512"
+      variants: [sd]
+      input: [0x40865c18244e93e1]
+      expect: [0x403abfc1e0cc8c7a]
+      expect_exception: [inexact]
+    - id: sqrt_283
+      description: "746.388"
+      variants: [sd]
+      input: [0x4087531aea3161a1]
+      expect: [0x403b51f26832b89c]
+      expect_exception: [inexact]
+    - id: sqrt_284
+      description: "777.264"
+      variants: [sd]
+      input: [0x40884a1db0142f61]
+      expect: [0x403be124886624a3]
+      expect_exception: [inexact]
+    - id: sqrt_285
+      description: "808.141"
+      variants: [sd]
+      input: [0x4089412075f6fd21]
+      expect: [0x403c6d857f0e020d]
+      expect_exception: [inexact]
+    - id: sqrt_286
+      description: "839.017"
+      variants: [sd]
+      input: [0x408a38233bd9cae1]
+      expect: [0x403cf73e41527056]
+      expect_exception: [inexact]
+    - id: sqrt_287
+      description: "869.894"
+      variants: [sd]
+      input: [0x408b2f2601bc98a1]
+      expect: [0x403d7e7407eac5bb]
+      expect_exception: [inexact]
+    - id: sqrt_288
+      description: "900.77"
+      variants: [sd]
+      input: [0x408c2628c79f6661]
+      expect: [0x403e0348c4fa202f]
+      expect_exception: [inexact]
+    - id: sqrt_289
+      description: "931.646"
+      variants: [sd]
+      input: [0x408d1d2b8d823421]
+      expect: [0x403e85db87e168b1]
+      expect_exception: [inexact]
+    - id: sqrt_290
+      description: "962.523"
+      variants: [sd]
+      input: [0x408e142e536501e1]
+      expect: [0x403f0648d24a8b77]
+      expect_exception: [inexact]
+    - id: sqrt_291
+      description: "993.399"
+      variants: [sd]
+      input: [0x408f0b311947cfa1]
+      expect: [0x403f84aae1039740]
+      expect_exception: [inexact]
+    - id: sqrt_292
+      description: "1024.28"
+      variants: [sd]
+      input: [0x40900119ef954eb1]
+      expect: [0x4040008cf55dbd0b]
+      expect_exception: [inexact]
+    - id: sqrt_293
+      description: "1055.15"
+      variants: [sd]
+      input: [0x40907c9b5286b591]
+      expect: [0x40403dd62b257a96]
+      expect_exception: [inexact]
+    - id: sqrt_294
+      description: "1086.03"
+      variants: [sd]
+      input: [0x4090f81cb5781c71]
+      expect: [0x40407a3b74f1e0fe]
+      expect_exception: [inexact]
+    - id: sqrt_295
+      description: "1116.9"
+      variants: [sd]
+      input: [0x4091739e18698351]
+      expect: [0x4040b5c67a202c90]
+      expect_exception: [inexact]
+    - id: sqrt_296
+      description: "1147.78"
+      variants: [sd]
+      input: [0x4091ef1f7b5aea31]
+      expect: [0x4040f080385e2d1f]
+      expect_exception: [inexact]
+    - id: sqrt_297
+      description: "1178.66"
+      variants: [sd]
+      input: [0x40926aa0de4c5111]
+      expect: [0x40412a71138aa08b]
+      expect_exception: [inexact]
+    - id: sqrt_298
+      description: "1209.53"
+      variants: [sd]
+      input: [0x4092e622413db7f1]
+      expect: [0x404163a0e3b950b8]
+      expect_exception: [inexact]
+    - id: sqrt_299
+      description: "1240.41"
+      variants: [sd]
+      input: [0x409361a3a42f1ed1]
+      expect: [0x40419c17019d6f28]
+      expect_exception: [inexact]
+    - id: sqrt_300
+      description: "1271.29"
+      variants: [sd]
+      input: [0x4093dd25072085b1]
+      expect: [0x4041d3da5191f65d]
+      expect_exception: [inexact]
+    - id: sqrt_301
+      description: "1302.16"
+      variants: [sd]
+      input: [0x409458a66a11ec91]
+      expect: [0x40420af14d6f16e8]
+      expect_exception: [inexact]
+    - id: sqrt_302
+      description: "1333.04"
+      variants: [sd]
+      input: [0x4094d427cd035371]
+      expect: [0x404241620d5480ad]
+      expect_exception: [inexact]
+    - id: sqrt_303
+      description: "1363.92"
+      variants: [sd]
+      input: [0x40954fa92ff4ba51]
+      expect: [0x404277324f8a624e]
+      expect_exception: [inexact]
+    - id: sqrt_304
+      description: "1394.79"
+      variants: [sd]
+      input: [0x4095cb2a92e62131]
+      expect: [0x4042ac677f960417]
+      expect_exception: [inexact]
+    - id: sqrt_305
+      description: "1425.67"
+      variants: [sd]
+      input: [0x409646abf5d78811]
+      expect: [0x4042e106bc9ac0ac]
+      expect_exception: [inexact]
+    - id: sqrt_306
+      description: "1456.54"
+      variants: [sd]
+      input: [0x4096c22d58c8eef1]
+      expect: [0x40431514df1ca5d0]
+      expect_exception: [inexact]
+    - id: sqrt_307
+      description: "1487.42"
+      variants: [sd]
+      input: [0x40973daebbba55d1]
+      expect: [0x404348967e371c60]
+      expect_exception: [inexact]
+    - id: sqrt_308
+      description: "1518.3"
+      variants: [sd]
+      input: [0x4097b9301eabbcb1]
+      expect: [0x40437b8ff4577ed9]
+      expect_exception: [inexact]
+    - id: sqrt_309
+      description: "1549.17"
+      variants: [sd]
+      input: [0x409834b1819d2391]
+      expect: [0x4043ae0563896e3e]
+      expect_exception: [inexact]
+    - id: sqrt_310
+      description: "1580.05"
+      variants: [sd]
+      input: [0x4098b032e48e8a71]
+      expect: [0x4043dffab960ed1e]
+      expect_exception: [inexact]
+    - id: sqrt_311
+      description: "1610.93"
+      variants: [sd]
+      input: [0x40992bb4477ff151]
+      expect: [0x40441173b28cc31b]
+      expect_exception: [inexact]
+    - id: sqrt_312
+      description: "1641.8"
+      variants: [sd]
+      input: [0x4099a735aa715831]
+      expect: [0x40444273de1a5d90]
+      expect_exception: [inexact]
+    - id: sqrt_313
+      description: "1672.68"
+      variants: [sd]
+      input: [0x409a22b70d62bf11]
+      expect: [0x404472fea0734333]
+      expect_exception: [inexact]
+    - id: sqrt_314
+      description: "1703.56"
+      variants: [sd]
+      input: [0x409a9e38705425f1]
+      expect: [0x4044a317361b3933]
+      expect_exception: [inexact]
+    - id: sqrt_315
+      description: "1734.43"
+      variants: [sd]
+      input: [0x409b19b9d3458cd1]
+      expect: [0x4044d2c0b635628a]
+      expect_exception: [inexact]
+    - id: sqrt_316
+      description: "1765.31"
+      variants: [sd]
+      input: [0x409b953b3636f3b1]
+      expect: [0x404501fe14d5e8e2]
+      expect_exception: [inexact]
+    - id: sqrt_317
+      description: "1796.18"
+      variants: [sd]
+      input: [0x409c10bc99285a91]
+      expect: [0x404530d225251d24]
+      expect_exception: [inexact]
+    - id: sqrt_318
+      description: "-37.425"
+      variants: [sd]
+      input: [0xc042b66666666666]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_319
+      description: "-36.4416"
+      variants: [sd]
+      input: [0xc04238853c148344]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_320
+      description: "-35.4581"
+      variants: [sd]
+      input: [0xc041baa411c2a022]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_321
+      description: "-34.4747"
+      variants: [sd]
+      input: [0xc0413cc2e770bd00]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_322
+      description: "-33.4913"
+      variants: [sd]
+      input: [0xc040bee1bd1ed9de]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_323
+      description: "-32.5078"
+      variants: [sd]
+      input: [0xc040410092ccf6bc]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_324
+      description: "-31.5244"
+      variants: [sd]
+      input: [0xc03f863ed0f62735]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_325
+      description: "-30.541"
+      variants: [sd]
+      input: [0xc03e8a7c7c5260f2]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_326
+      description: "-29.5575"
+      variants: [sd]
+      input: [0xc03d8eba27ae9aaf]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_327
+      description: "-28.5741"
+      variants: [sd]
+      input: [0xc03c92f7d30ad46c]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_328
+      description: "-27.5907"
+      variants: [sd]
+      input: [0xc03b97357e670e29]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_329
+      description: "-26.6072"
+      variants: [sd]
+      input: [0xc03a9b7329c347e6]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_330
+      description: "-25.6238"
+      variants: [sd]
+      input: [0xc0399fb0d51f81a3]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_331
+      description: "-24.6404"
+      variants: [sd]
+      input: [0xc038a3ee807bbb60]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_332
+      description: "-23.6569"
+      variants: [sd]
+      input: [0xc037a82c2bd7f51d]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_333
+      description: "-22.6735"
+      variants: [sd]
+      input: [0xc036ac69d7342eda]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_334
+      description: "-21.6901"
+      variants: [sd]
+      input: [0xc035b0a782906897]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_335
+      description: "-20.7066"
+      variants: [sd]
+      input: [0xc034b4e52deca254]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_336
+      description: "-19.7232"
+      variants: [sd]
+      input: [0xc033b922d948dc11]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_337
+      description: "-18.7398"
+      variants: [sd]
+      input: [0xc032bd6084a515ce]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_338
+      description: "-17.7563"
+      variants: [sd]
+      input: [0xc031c19e30014f8b]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_339
+      description: "-16.7729"
+      variants: [sd]
+      input: [0xc030c5dbdb5d8948]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_340
+      description: "-15.7895"
+      variants: [sd]
+      input: [0xc02f94330d738609]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_341
+      description: "-14.806"
+      variants: [sd]
+      input: [0xc02d9cae642bf982]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_342
+      description: "-13.8226"
+      variants: [sd]
+      input: [0xc02ba529bae46cfb]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_343
+      description: "-12.8391"
+      variants: [sd]
+      input: [0xc029ada5119ce074]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_344
+      description: "-11.8557"
+      variants: [sd]
+      input: [0xc027b620685553ed]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_345
+      description: "-10.8723"
+      variants: [sd]
+      input: [0xc025be9bbf0dc766]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_346
+      description: "-9.88885"
+      variants: [sd]
+      input: [0xc023c71715c63adf]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_347
+      description: "-8.90541"
+      variants: [sd]
+      input: [0xc021cf926c7eae58]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_348
+      description: "-7.92198"
+      variants: [sd]
+      input: [0xc01fb01b866e43a3]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_349
+      description: "-6.93855"
+      variants: [sd]
+      input: [0xc01bc11233df2a96]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_350
+      description: "-5.95511"
+      variants: [sd]
+      input: [0xc017d208e1501189]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_351
+      description: "-4.97168"
+      variants: [sd]
+      input: [0xc013e2ff8ec0f87c]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_352
+      description: "-3.98824"
+      variants: [sd]
+      input: [0xc00fe7ec7863bede]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_353
+      description: "-3.5632"
+      variants: [sd]
+      input: [0xc00c816f0068db8c]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_354
+      description: "-2.59521"
+      variants: [sd]
+      input: [0xc004c2fd75e2046d]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_355
+      description: "-1.62722"
+      variants: [sd]
+      input: [0xbffa0917d6b65a9c]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_356
+      description: "-0.65923"
+      variants: [sd]
+      input: [0xbfe51869835158bb]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+    - id: sqrt_357
+      description: "0.30876"
+      variants: [sd]
+      input: [0x3fd3c2b94d940784]
+      expect: [0x3fe1c7fb2ff2c3ad]
+      expect_exception: [inexact]
+    - id: sqrt_358
+      description: "1.27675"
+      variants: [sd]
+      input: [0x3ff46d916872b020]
+      expect: [0x3ff21435483e81c3]
+      expect_exception: [inexact]
+    - id: sqrt_359
+      description: "2.24474"
+      variants: [sd]
+      input: [0x4001f53a3ec02f2f]
+      expect: [0x3ff7f8d06bc5ba65]
+      expect_exception: [inexact]
+    - id: sqrt_360
+      description: "3.21273"
+      variants: [sd]
+      input: [0x4009b3abc947064e]
+      expect: [0x3ffcadb50d829c21]
+      expect_exception: [inexact]
+    - id: sqrt_361
+      description: "4.18072"
+      variants: [sd]
+      input: [0x4010b90ea9e6eeb7]
+      expect: [0x40005b81a9725b49]
+      expect_exception: [inexact]
+    - id: sqrt_362
+      description: "5.14871"
+      variants: [sd]
+      input: [0x401498476f2a5a47]
+      expect: [0x40022711cad294bc]
+      expect_exception: [inexact]
+    - id: sqrt_363
+      description: "6.1167"
+      variants: [sd]
+      input: [0x40187780346dc5d7]
+      expect: [0x4003c91b25f510e2]
+      expect_exception: [inexact]
+    - id: sqrt_364
+      description: "7.08469"
+      variants: [sd]
+      input: [0x401c56b8f9b13167]
+      expect: [0x40054b2d9d89fcc8]
+      expect_exception: [inexact]
+    - id: sqrt_365
+      description: "8.05268"
+      variants: [sd]
+      input: [0x40201af8df7a4e7b]
+      expect: [0x4006b3a8df16c813]
+      expect_exception: [inexact]
+    - id: sqrt_366
+      description: "9.02067"
+      variants: [sd]
+      input: [0x40220a95421c0443]
+      expect: [0x4008070d22e4e7be]
+      expect_exception: [inexact]
+    - id: sqrt_367
+      description: "9.98866"
+      variants: [sd]
+      input: [0x4023fa31a4bdba0b]
+      expect: [0x400948abe8ab0216]
+      expect_exception: [inexact]
+    - id: sqrt_368
+      description: "10.9567"
+      variants: [sd]
+      input: [0x4025e9ce075f6fd3]
+      expect: [0x400a7b0cd68f4c1d]
+      expect_exception: [inexact]
+    - id: sqrt_369
+      description: "11.9246"
+      variants: [sd]
+      input: [0x4027d96a6a01259b]
+      expect: [0x400ba02b195afd54]
+      expect_exception: [inexact]
+    - id: sqrt_370
+      description: "12.8926"
+      variants: [sd]
+      input: [0x4029c906cca2db63]
+      expect: [0x400cb99cac9fe249]
+      expect_exception: [inexact]
+    - id: sqrt_371
+      description: "13.8606"
+      variants: [sd]
+      input: [0x402bb8a32f44912b]
+      expect: [0x400dc8ac8c901109]
+      expect_exception: [inexact]
+    - id: sqrt_372
+      description: "14.8286"
+      variants: [sd]
+      input: [0x402da83f91e646f3]
+      expect: [0x400ece6cc8773030]
+      expect_exception: [inexact]
+    - id: sqrt_373
+      description: "15.7966"
+      variants: [sd]
+      input: [0x402f97dbf487fcbb]
+      expect: [0x400fcbc35778a4b0]
+      expect_exception: [inexact]
+    - id: sqrt_374
+      description: "16.7646"
+      variants: [sd]
+      input: [0x4030c3bc2b94d941]
+      expect: [0x401060b9b748e3f4]
+      expect_exception: [inexact]
+    - id: sqrt_375
+      description: "17.7326"
+      variants: [sd]
+      input: [0x4031bb8a5ce5b425]
+      expect: [0x4010d812386ea485]
+      expect_exception: [inexact]
+    - id: sqrt_376
+      description: "18.7006"
+      variants: [sd]
+      input: [0x4032b3588e368f09]
+      expect: [0x40114c3398320950]
+      expect_exception: [inexact]
+    - id: sqrt_377
+      description: "19.6686"
+      variants: [sd]
+      input: [0x4033ab26bf8769ed]
+      expect: [0x4011bd5cfc862d5d]
+      expect_exception: [inexact]
+    - id: sqrt_378
+      description: "20.6366"
+      variants: [sd]
+      input: [0x4034a2f4f0d844d1]
+      expect: [0x40122bc5dc595f54]
+      expect_exception: [inexact]
+    - id: sqrt_379
+      description: "21.6045"
+      variants: [sd]
+      input: [0x40359ac322291fb5]
+      expect: [0x4012979f3f318032]
+      expect_exception: [inexact]
+    - id: sqrt_380
+      description: "22.5725"
+      variants: [sd]
+      input: [0x403692915379fa99]
+      expect: [0x40130114bcf5acf5]
+      expect_exception: [inexact]
+    - id: sqrt_381
+      description: "23.5405"
+      variants: [sd]
+      input: [0x40378a5f84cad57d]
+      expect: [0x4013684d4cd0560a]
+      expect_exception: [inexact]
+    - id: sqrt_382
+      description: "24.5085"
+      variants: [sd]
+      input: [0x4038822db61bb061]
+      expect: [0x4013cd6bee20ad8f]
+      expect_exception: [inexact]
+    - id: sqrt_383
+      description: "25.4765"
+      variants: [sd]
+      input: [0x403979fbe76c8b45]
+      expect: [0x4014309033a797b6]
+      expect_exception: [inexact]
+    - id: sqrt_384
+      description: "26.4445"
+      variants: [sd]
+      input: [0x403a71ca18bd6629]
+      expect: [0x401491d6b71ba8ff]
+      expect_exception: [inexact]
+    - id: sqrt_385
+      description: "27.4125"
+      variants: [sd]
+      input: [0x403b69984a0e410d]
+      expect: [0x4014f15979dacdbc]
+      expect_exception: [inexact]
+    - id: sqrt_386
+      description: "28.3805"
+      variants: [sd]
+      input: [0x403c61667b5f1bf1]
+      expect: [0x40154f30365d5398]
+      expect_exception: [inexact]
+    - id: sqrt_387
+      description: "29.3485"
+      variants: [sd]
+      input: [0x403d5934acaff6d5]
+      expect: [0x4015ab70a540fd81]
+      expect_exception: [inexact]
+    - id: sqrt_388
+      description: "30.3165"
+      variants: [sd]
+      input: [0x403e5102de00d1b9]
+      expect: [0x4016062eb8281a5a]
+      expect_exception: [inexact]
+    - id: sqrt_389
+      description: "31.2844"
+      variants: [sd]
+      input: [0x403f48d10f51ac9d]
+      expect: [0x40165f7ccc32b2aa]
+      expect_exception: [inexact]
+    - id: sqrt_390
+      description: "32.2524"
+      variants: [sd]
+      input: [0x4040204fa05143c0]
+      expect: [0x4016b76bd57d2ad2]
+      expect_exception: [inexact]
+    - id: sqrt_391
+      description: "33.2204"
+      variants: [sd]
+      input: [0x40409c36b8f9b132]
+      expect: [0x40170e0b84c94ade]
+      expect_exception: [inexact]
+    - id: sqrt_392
+      description: "34.1884"
+      variants: [sd]
+      input: [0x4041181dd1a21ea4]
+      expect: [0x4017636a683f7bbc]
+      expect_exception: [inexact]
+    - id: sqrt_393
+      description: "35.1564"
+      variants: [sd]
+      input: [0x40419404ea4a8c16]
+      expect: [0x4017b796080a8b33]
+      expect_exception: [inexact]
+    - id: sqrt_394
+      description: "36.1244"
+      variants: [sd]
+      input: [0x40420fec02f2f988]
+      expect: [0x40180a9aff6db6ff]
+      expect_exception: [inexact]
+    - id: sqrt_395
+      description: "37.0924"
+      variants: [sd]
+      input: [0x40428bd31b9b66fa]
+      expect: [0x40185c8512d916ab]
+      expect_exception: [inexact]
+
+#-------------------------------

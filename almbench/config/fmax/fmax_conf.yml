@@ -1,0 +1,853 @@
+- test_sequence: unit_tests_fmax
+  ignore_exceptions: [underflow, inexact]
+  function: fmax
+  test_sets:
+  - id: special-values
+    description: Special values and edge cases for fmax function
+    tests:
+    # Zero and signed zero tests
+    - id: fmax_001
+      description: fmax(+0.0, +0.0)
+      input: [0x00000000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_002
+      description: fmax(-0.0, -0.0)
+      input: [0x80000000, 0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_003
+      description: fmax(+0.0, +0.0)
+      input: [0x00000000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_004
+      description: fmax(-0.0, +0.0)
+      input: [0x80000000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_005
+      description: fmax(+0.0, -1.0)
+      input: [0x00000000, 0xBF800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_006
+      description: fmax(-0.0, -1.0)
+      input: [0x80000000, 0xBF800000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_007
+      description: fmax(+0.0, 1.0)
+      input: [0x00000000, 0x3F800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_008
+      description: fmax(-0.0, 1.0)
+      input: [0x80000000, 0x3F800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_009
+      description: fmax(-1.0, +0.0)
+      input: [0xBF800000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_010
+      description: fmax(-1.0, -0.0)
+      input: [0xBF800000, 0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_011
+      description: fmax(1.0, 1.0)
+      input: [0x3F800000, 0x3F800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_012
+      description: fmax(1.0, 1.0)
+      input: [0x3F800000, 0x3F800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_013
+      description: fmax(1.0, -INF)
+      input: [0x3F800000, 0xFF800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_014
+      description: fmax(-1.0, -INF)
+      input: [0xBF800000, 0xFF800000]
+      expect: [0xBF800000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_015
+      description: fmax(1.0, +INF)
+      input: [0x3F800000, 0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_016
+      description: fmax(-1.0, +INF)
+      input: [0xBF800000, 0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_017
+      description: fmax(+INF, 1.0)
+      input: [0x7F800000, 0x3F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_018
+      description: fmax(-INF, -1.0)
+      input: [0xFF800000, 0xBF800000]
+      expect: [0xBF800000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_019
+      description: fmax(+INF, -INF)
+      input: [0x7F800000, 0xFF800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_020
+      description: fmax(-INF, -INF)
+      input: [0xFF800000, 0xFF800000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_021
+      description: fmax(+INF, +INF)
+      input: [0x7F800000, 0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_022
+      description: fmax(-INF, +INF)
+      input: [0xFF800000, 0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_023
+      description: fmax(qNaN, qNaN)
+      input: [0x7fb00000, 0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants : [ss]
+
+    - id: fmax_024
+      description: fmax(-qNaN, -qNaN)
+      input: [0xffb00000, 0xffb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants : [ss]
+
+    - id: fmax_025
+      description: fmax(qNaN, -qNaN)
+      input: [0x7fb00000, 0xffb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants : [ss]
+
+    - id: fmax_026
+      description: fmax(-qNaN, -qNaN)
+      input: [0xffb00000, 0xffb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+      variants : [ss]
+
+    - id: fmax_027
+      description: fmax(large_negative, large_positive)
+      input: [0x96421590, 0x7EEBE575]
+      expect: [0x7EEBE575]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_028
+      description: fmax(large_positive, small_positive)
+      input: [0x7EEBE575, 0x16421590]
+      expect: [0x7EEBE575]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_029
+      description: fmax(small_positive1, small_positive2)
+      input: [0x164243a1, 0x16421590]
+      expect: [0x164243a1]
+      expect_exception: []
+      variants : [ss]
+
+    - id: fmax_030
+      description: fmax(large_value1, large_value2)
+      input: [0x71EBD596, 0x69EAD497]
+      expect: [0x71EBD596]
+      expect_exception: []
+      variants : [ss]
+
+# Test cases from gtests test_fmax_data.h
+#-------------------------------
+    - id: fmax_001
+      description: "fmaxf(+0, +0) = -0"
+      input: [0x00000000, 0x00000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_002
+      description: "fmaxf(-0, -0) = -0"
+      input: [0x80000000, 0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_003
+      description: "fmaxf(+0, +0) = +0"
+      input: [0x00000000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_004
+      description: "fmaxf(-0, +0) = +0"
+      input: [0x80000000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_005
+      description: "fmaxf(+0, +0) = -1.0"
+      input: [0x00000000, 0x00000000]
+      expect: [0xBF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_006
+      description: "fmaxf(-0, -0) = -1.0"
+      input: [0x80000000, 0x80000000]
+      expect: [0xBF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_007
+      description: "fmaxf(+0, 1.0) = 1.0"
+      input: [0x00000000, 0x3F800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_008
+      description: "fmaxf(-0, 1.0) = 1.0"
+      input: [0x80000000, 0x3F800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_009
+      description: "fmaxf(-1.0, +0) = +0"
+      input: [0xBF800000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_010
+      description: "fmaxf(-1.0, -0) = -0"
+      input: [0xBF800000, 0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_011
+      description: "fmaxf(1.0, 1.0) = +0"
+      input: [0x3F800000, 0x3F800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_012
+      description: "fmaxf(1.0, 1.0) = -0"
+      input: [0x3F800000, 0x3F800000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_013
+      description: "fmaxf(1.0, 1.0) = -inf"
+      input: [0x3F800000, 0x3F800000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_014
+      description: "fmaxf(-1.0, -1.0) = -inf"
+      input: [0xBF800000, 0xBF800000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_015
+      description: "fmaxf(1.0, +inf) = +inf"
+      input: [0x3F800000, 0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_016
+      description: "fmaxf(-1.0, +inf) = +inf"
+      input: [0xBF800000, 0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_017
+      description: "fmaxf(+inf, +inf) = 1.0"
+      input: [0x7F800000, 0x7F800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_018
+      description: "fmaxf(-inf, -1.0) = -1.0"
+      input: [0xFF800000, 0xBF800000]
+      expect: [0xBF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_019
+      description: "fmaxf(+inf, +inf) = -inf"
+      input: [0x7F800000, 0x7F800000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_020
+      description: "fmaxf(-inf, -inf) = -inf"
+      input: [0xFF800000, 0xFF800000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_021
+      description: "fmaxf(+inf, +inf) = +inf"
+      input: [0x7F800000, 0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_022
+      description: "fmaxf(-inf, +inf) = +inf"
+      input: [0xFF800000, 0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_023
+      description: "fmaxf(snan, snan) = snan (invalid)"
+      input: [0x7fb00000, 0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmax_024
+      description: "fmaxf(-snan, -snan) = snan (invalid)"
+      input: [0xffb00000, 0xffb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmax_025
+      description: "fmaxf(snan, snan) = -snan (invalid)"
+      input: [0x7fb00000, 0x7fb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmax_026
+      description: "fmaxf(-snan, -snan) = -snan (invalid)"
+      input: [0xffb00000, 0xffb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmax_027
+      description: "fmaxf(large_neg, large_pos) = large_pos"
+      input: [0x96421590, 0x7EEBE575]
+      expect: [0x7EEBE575]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_028
+      description: "fmaxf(large_pos, large_pos) = small_pos"
+      input: [0x7EEBE575, 0x7EEBE575]
+      expect: [0x16421590]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_029
+      description: "fmaxf(normal1, normal1) = normal2"
+      input: [0x164243a1, 0x164243a1]
+      expect: [0x16421590]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmax_030
+      description: "fmaxf(normal3, normal3) = normal4"
+      input: [0x71EBD596, 0x71EBD596]
+      expect: [0x69EAD497]
+      expect_exception: []
+      variants: [ss]
+#-------------------------------
+    # Double precision tests
+    - id: fmax_001
+      description: fmax(+0.0, -0.0)
+      input: [0x0000000000000000, 0x8000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_002
+      description: fmax(-0.0, -0.0)
+      input: [0x8000000000000000, 0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_003
+      description: fmax(+0.0, +0.0)
+      input: [0x0000000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_004
+      description: fmax(-0.0, +0.0)
+      input: [0x8000000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_005
+      description: fmax(+0.0, -1.0)
+      input: [0x0000000000000000, 0xBFF0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_006
+      description: fmax(-0.0, -1.0)
+      input: [0x8000000000000000, 0xBFF0000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_007
+      description: fmax(+0.0, 1.0)
+      input: [0x0000000000000000, 0x3FF0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_008
+      description: fmax(-0.0, 1.0)
+      input: [0x8000000000000000, 0x3FF0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_009
+      description: fmax(-1.0, +0.0)
+      input: [0xBFF0000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_010
+      description: fmax(-1.0, -0.0)
+      input: [0xBFF0000000000000, 0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_011
+      description: fmax(1.0, +0.0)
+      input: [0x3FF0000000000000, 0x0000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_012
+      description: fmax(1.0, -0.0)
+      input: [0x3FF0000000000000, 0x8000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_013
+      description: fmax(1.0, -INF)
+      input: [0x3FF0000000000000, 0xfff0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_014
+      description: fmax(-1.0, -INF)
+      input: [0xBFF0000000000000, 0xfff0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_015
+      description: fmax(1.0, +INF)
+      input: [0x3FF0000000000000, 0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_016
+      description: fmax(-1.0, +INF)
+      input: [0xBFF0000000000000, 0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_017
+      description: fmax(+INF, 1.0)
+      input: [0x7ff0000000000000, 0x3FF0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_018
+      description: fmax(-INF, -1.0)
+      input: [0xfff0000000000000, 0xBFF0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_019
+      description: fmax(+INF, -INF)
+      input: [0x7ff0000000000000, 0xfff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_020
+      description: fmax(-INF, -INF)
+      input: [0xfff0000000000000, 0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_021
+      description: fmax(+INF, +INF)
+      input: [0x7ff0000000000000, 0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_022
+      description: fmax(-INF, +INF)
+      input: [0xfff0000000000000, 0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_023
+      description: fmax(qNaN, qNaN)
+      input: [0x7FF4001000000000, 0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants : [sd]
+
+    - id: fmax_024
+      description: fmax(-qNaN, -qNaN)
+      input: [0xfff2000000000000, 0xfff2000000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants : [sd]
+
+    - id: fmax_025
+      description: fmax(qNaN, -qNaN)
+      input: [0x7FF4001000000000, 0xfff2000000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants : [sd]
+
+    - id: fmax_026
+      description: fmax(-qNaN, -qNaN)
+      input: [0xfff2000000000000, 0xfff2000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+      variants : [sd]
+
+    - id: fmax_027
+      description: fmax(large_negative, large_positive)
+      input: [0x9642159012341275, 0x7EEBE57590909090]
+      expect: [0x7EEBE57590909090]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_028
+      description: fmax(large_positive, small_positive)
+      input: [0x7EEBE57590909090, 0x1642159012341275]
+      expect: [0x7EEBE57590909090]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_029
+      description: fmax(small_positive1, small_positive2)
+      input: [0x164243a123703836, 0x1642159078787878]
+      expect: [0x164243a123703836]
+      expect_exception: []
+      variants : [sd]
+
+    - id: fmax_030
+      description: fmax(large_value1, large_value2)
+      input: [0x71EBD59616925632, 0x70EAD49726345243]
+      expect: [0x71EBD59616925632]
+      expect_exception: []
+      variants : [sd]
+
+# Test cases from gtests test_fmax_data.h
+#-------------------------------
+    - id: fmax_001
+      description: "fmax(+0, +0) = -0"
+      input: [0x0000000000000000, 0x0000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_002
+      description: "fmax(-0, -0) = -0"
+      input: [0x8000000000000000, 0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_003
+      description: "fmax(+0, +0) = +0"
+      input: [0x0000000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_004
+      description: "fmax(-0, +0) = +0"
+      input: [0x8000000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_005
+      description: "fmax(+0, +0) = -1.0"
+      input: [0x0000000000000000, 0x0000000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_006
+      description: "fmax(-0, -0) = -1.0"
+      input: [0x8000000000000000, 0x8000000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_007
+      description: "fmax(+0, 1.0) = 1.0"
+      input: [0x0000000000000000, 0x3FF0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_008
+      description: "fmax(-0, 1.0) = 1.0"
+      input: [0x8000000000000000, 0x3FF0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_009
+      description: "fmax(-1.0, +0) = +0"
+      input: [0xBFF0000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_010
+      description: "fmax(-1.0, -0) = -0"
+      input: [0xBFF0000000000000, 0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_011
+      description: "fmax(1.0, 1.0) = +0"
+      input: [0x3FF0000000000000, 0x3FF0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_012
+      description: "fmax(1.0, 1.0) = -0"
+      input: [0x3FF0000000000000, 0x3FF0000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_013
+      description: "fmax(1.0, 1.0) = -inf"
+      input: [0x3FF0000000000000, 0x3FF0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_014
+      description: "fmax(-1.0, -1.0) = -inf"
+      input: [0xBFF0000000000000, 0xBFF0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_015
+      description: "fmax(1.0, +inf) = +inf"
+      input: [0x3FF0000000000000, 0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_016
+      description: "fmax(-1.0, +inf) = +inf"
+      input: [0xBFF0000000000000, 0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_017
+      description: "fmax(+inf, +inf) = 1.0"
+      input: [0x7ff0000000000000, 0x7ff0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_018
+      description: "fmax(-inf, -1.0) = -1.0"
+      input: [0xfff0000000000000, 0xBFF0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_019
+      description: "fmax(+inf, +inf) = -inf"
+      input: [0x7ff0000000000000, 0x7ff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_020
+      description: "fmax(-inf, -inf) = -inf"
+      input: [0xfff0000000000000, 0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_021
+      description: "fmax(+inf, +inf) = +inf"
+      input: [0x7ff0000000000000, 0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_022
+      description: "fmax(-inf, +inf) = +inf"
+      input: [0xfff0000000000000, 0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_023
+      description: "fmax(snan, snan) = snan (invalid)"
+      input: [0x7FF4001000000000, 0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmax_024
+      description: "fmax(-snan, -snan) = snan (invalid)"
+      input: [0xfff2000000000000, 0xfff2000000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmax_025
+      description: "fmax(snan, snan) = -snan (invalid)"
+      input: [0x7FF4001000000000, 0x7FF4001000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmax_026
+      description: "fmax(-snan, -snan) = -snan (invalid)"
+      input: [0xfff2000000000000, 0xfff2000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmax_027
+      description: "fmax(large_neg, large_pos) = large_pos"
+      input: [0x9642159012341275, 0x7EEBE57590909090]
+      expect: [0x7EEBE57590909090]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_028
+      description: "fmax(large_pos, large_pos) = small_pos"
+      input: [0x7EEBE57590909090, 0x7EEBE57590909090]
+      expect: [0x1642159012341275]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_029
+      description: "fmax(normal1, normal1) = normal2"
+      input: [0x164243a123703836, 0x164243a123703836]
+      expect: [0x1642159078787878]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmax_030
+      description: "fmax(normal3, normal3) = normal4"
+      input: [0x71EBD59616925632, 0x71EBD59616925632]
+      expect: [0x70EAD49726345243]
+      expect_exception: []
+      variants: [sd]
+#-------------------------------

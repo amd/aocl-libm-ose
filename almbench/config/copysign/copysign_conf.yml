@@ -1,0 +1,350 @@
+- test_sequence: unit_tests_copysign
+  ignore_exceptions: [underflow, inexact]
+  function: copysign
+  test_sets:
+  - id: special-values
+    description: Special values for copysign function
+    tests:
+    # Single Precision Tests
+    - id: copysign_001
+      description: "copysignf(0, +1) = +0"
+      input: [0x00000000, 0x3f800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_002
+      description: "copysignf(-0, +1) = +0"
+      input: [0x80000000, 0x3f800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_003
+      description: "copysignf(inf, +1) = +inf"
+      input: [0x7f800000, 0x3f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_004
+      description: "copysignf(-inf, +1) = +inf"
+      input: [0xff800000, 0x3f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_005
+      description: "copysignf(-nan, +1) = +nan"
+      input: [0xffc00000, 0x3f800000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_006
+      description: "copysignf(+nan, +1) = +nan"
+      input: [0x7fc00000, 0x3f800000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_007
+      description: "copysignf(subnorm_max, +1) = +subnorm_max"
+      input: [0x007fffff, 0x3f800000]
+      expect: [0x007fffff]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_008
+      description: "copysignf(subnorm_max, -1) = -subnorm_max"
+      input: [0x007fffff, 0xbf800000]
+      expect: [0x807fffff]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_009
+      description: "copysignf(subnorm_min, +1) = +subnorm_min"
+      input: [0x00000001, 0x3f800000]
+      expect: [0x00000001]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_010
+      description: "copysignf(subnorm_min, -1) = -subnorm_min"
+      input: [0x00000001, 0xbf800000]
+      expect: [0x80000001]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_011
+      description: "copysignf(1.0, +1) = +1.0"
+      input: [0x3f800000, 0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_012
+      description: "copysignf(-1.0, +1) = +1.0"
+      input: [0xbf800000, 0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_013
+      description: "copysignf(2.0, -1) = -2.0"
+      input: [0x40000000, 0xbf800000]
+      expect: [0xc0000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_014
+      description: "copysignf(-2.0, -1) = -2.0"
+      input: [0xc0000000, 0xbf800000]
+      expect: [0xc0000000]
+      expect_exception: []
+      variants: [ss]
+
+# Test cases from gtests test_copysign_data.h
+#-------------------------------
+    - id: copysign_001
+      description: copysignf(+0, -0) = -0
+      input: [0x00000000, 0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_002
+      description: copysignf(-0, -0) = -0
+      input: [0x80000000, 0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_003
+      description: copysignf(+0, +0) = +0
+      input: [0x00000000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_004
+      description: copysignf(-0, +0) = +0
+      input: [0x80000000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_005
+      description: copysignf(-1.0, +0) = +1.0
+      input: [0xBF800000, 0x00000000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_006
+      description: copysignf(-1.0, -0) = -1.0
+      input: [0xBF800000, 0x80000000]
+      expect: [0xBF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_007
+      description: copysignf(+1.0, -inf) = -1.0
+      input: [0x3F800000, 0xFF800000]
+      expect: [0xBF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_008
+      description: copysignf(-1.0, +inf) = +1.0
+      input: [0xBF800000, 0x7F800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_009
+      description: copysignf(+1.0, +inf) = +1.0
+      input: [0x3F800000, 0x7F800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: copysign_010
+      description: copysignf(-1.0, -inf) = -1.0
+      input: [0xBF800000, 0xFF800000]
+      expect: [0xBF800000]
+      expect_exception: []
+      variants: [ss]
+
+#-------------------------------
+    # Double Precision Tests
+    - id: copysign_001
+      description: "copysign(0, +1) = +0"
+      input: [0x0000000000000000, 0x3ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_002
+      description: "copysign(-0, +1) = +0"
+      input: [0x8000000000000000, 0x3ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_003
+      description: "copysign(inf, +1) = +inf"
+      input: [0x7ff0000000000000, 0x3ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_004
+      description: "copysign(-inf, +1) = +inf"
+      input: [0xfff0000000000000, 0x3ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_005
+      description: "copysign(-nan, +1) = +nan"
+      input: [0xfff8000000000000, 0x3ff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_006
+      description: "copysign(+nan, +1) = +nan"
+      input: [0x7ff8000000000000, 0x3ff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_007
+      description: "copysign(subnorm_max, +1) = +subnorm_max"
+      input: [0x000fffffffffffff, 0x3ff0000000000000]
+      expect: [0x000fffffffffffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_008
+      description: "copysign(subnorm_max, -1) = -subnorm_max"
+      input: [0x000fffffffffffff, 0xbff0000000000000]
+      expect: [0x800fffffffffffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_009
+      description: "copysign(subnorm_min, +1) = +subnorm_min"
+      input: [0x0000000000000001, 0x3ff0000000000000]
+      expect: [0x0000000000000001]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_010
+      description: "copysign(subnorm_min, -1) = -subnorm_min"
+      input: [0x0000000000000001, 0xbff0000000000000]
+      expect: [0x8000000000000001]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_011
+      description: "copysign(1.0, +1) = +1.0"
+      input: [0x3ff0000000000000, 0x3ff0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_012
+      description: "copysign(-1.0, +1) = +1.0"
+      input: [0xbff0000000000000, 0x3ff0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_013
+      description: "copysign(2.0, -1) = -2.0"
+      input: [0x4000000000000000, 0xbff0000000000000]
+      expect: [0xc000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_014
+      description: "copysign(-2.0, -1) = -2.0"
+      input: [0xc000000000000000, 0xbff0000000000000]
+      expect: [0xc000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+# Test cases from gtests test_copysign_data.h
+#-------------------------------
+    - id: copysign_001
+      description: copysign(+0, -0) = -0
+      input: [0x0000000000000000, 0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_002
+      description: copysign(-0, -0) = -0
+      input: [0x8000000000000000, 0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_003
+      description: copysign(+0, +0) = +0
+      input: [0x0000000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_004
+      description: copysign(-0, +0) = +0
+      input: [0x8000000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_005
+      description: copysign(-1.0, +0) = +1.0
+      input: [0xBFF0000000000000, 0x0000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_006
+      description: copysign(-1.0, -0) = -1.0
+      input: [0xBFF0000000000000, 0x8000000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_007
+      description: copysign(1.0, -inf) = -1.0
+      input: [0x3FF0000000000000, 0xfff0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_008
+      description: copysign(-1.0, +inf) = +1.0
+      input: [0xBFF0000000000000, 0x7ff0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_009
+      description: copysign(1.0, +inf) = +1.0
+      input: [0x3FF0000000000000, 0x7ff0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: copysign_010
+      description: copysign(-1.0, -inf) = -1.0
+      input: [0xBFF0000000000000, 0xfff0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+#------------------------------

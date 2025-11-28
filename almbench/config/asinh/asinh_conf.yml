@@ -1,0 +1,2008 @@
+- test_sequence: unit_tests_asinh
+  ignore_exceptions: [underflow, inexact]
+  function: asinh
+  test_sets:
+  - id: special-values
+    description: Special values for asinh function
+    tests:
+    # Single Precision Tests
+    - id: asinh_001
+      description: "asinhf(0) = 0"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_002
+      description: "asinhf(-0) = -0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_003
+      description: "asinhf(inf) = inf"
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_004
+      description: "asinhf(-inf) = -inf"
+      input: [0xff800000]
+      expect: [0xff800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_005
+      description: "asinhf(-nan) = -nan"
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_006
+      description: "asinhf(+nan) = +nan"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_007
+      description: "asinhf(subnorm_max) = subnorm_max (approximately)"
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asinh_008
+      description: "asinhf(subnorm_max) = subnorm_max (approximately)"
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asinh_009
+      description: "asinhf(subnorm_min) = subnorm_min (approximately)"
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asinh_010
+      description: "asinhf(subnorm_min) = subnorm_min (approximately)"
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asinh_011
+      description: "asinhf(1.0) = asinh(1)"
+      input: [0x3f800000]
+      expect: [0x3f0d6798]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_012
+      description: "asinhf(-1.0) = -asinh(1)"
+      input: [0xbf800000]
+      expect: [0xbf0d6798]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_013
+      description: "asinhf(2.0) = asinh(2)"
+      input: [0x40000000]
+      expect: [0x3fb504f3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_014
+      description: "asinhf(-2.0) = -asinh(2)"
+      input: [0xc0000000]
+      expect: [0xbfb504f3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+# Test cases from gtests test_asinh_data.h
+#-------------------------------
+    - id: asinh_001
+      description: "denormal min"
+      input: [0x00000001]
+      expect: [0xFFC00000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asinh_002
+      description: "denormal intermediate0x37c0f01f"
+      input: [0x0005FDE6]
+      expect: [0xFFC00000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asinh_003
+      description: "denormal max"
+      input: [0x007FFFFF]
+      expect: [0xFFC00000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asinh_004
+      description: "-denormal min"
+      input: [0x80000001]
+      expect: [0xFFC00000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asinh_005
+      description: "-denormal intermediate"
+      input: [0x805DEF12]
+      expect: [0xFFC00000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asinh_006
+      description: "-denormal max"
+      input: [0x807FFFFF]
+      expect: [0xFFC00000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asinh_007
+      description: "normal min"
+      input: [0x00800000]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_008
+      description: "normal intermediate"
+      input: [0x43B3C4EA]
+      expect: [0x40D27EB3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_009
+      description: "normal max"
+      input: [0x7F7FFFFF]
+      expect: [0x42B2D4FC]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_010
+      description: "-normal min"
+      input: [0x80800000]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_011
+      description: "-normal intermediate"
+      input: [0xC5812E71]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_012
+      description: "-normal max"
+      input: [0xFF7FFFFF]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_013
+      description: "inf"
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_014
+      description: "-inf"
+      input: [0xFF800000]
+      expect: [0xFFC00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_015
+      description: "qnan min"
+      input: [0x7FC00000]
+      expect: [0x7FC00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_016
+      description: "qnan intermediate"
+      input: [0x7FE1A570]
+      expect: [0x7FE1A570]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_017
+      description: "qnan max"
+      input: [0x7FFFFFFF]
+      expect: [0x7FFFFFFF]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_018
+      description: "indeterninate"
+      input: [0xFFC00000]
+      expect: [0xFFC00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_019
+      description: "-qnan min"
+      input: [0xFFC00001]
+      expect: [0xFFC00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_020
+      description: "-qnan intermediate"
+      input: [0xFFD2BA31]
+      expect: [0xFFC00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_021
+      description: "-qnan max"
+      input: [0xFFFFFFFF]
+      expect: [0xFFC00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_022
+      description: "snan min"
+      input: [0x7F800001]
+      expect: [0x7FC00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asinh_023
+      description: "snan intermediate"
+      input: [0x7FA0BD90]
+      expect: [0x7FE0BD90]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asinh_024
+      description: "snan max"
+      input: [0x7FBFFFFF]
+      expect: [0x7FFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asinh_025
+      description: "-snan min"
+      input: [0xFF800001]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asinh_026
+      description: "-snan intermediate"
+      input: [0xFF95FFFA]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asinh_027
+      description: "-snan max"
+      input: [0xFFBFFFFF]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asinh_028
+      description: "pi/2"
+      input: [0x3FC90FDB]
+      expect: [0x3F82F91F]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_029
+      description: "pi"
+      input: [0x40490FDB]
+      expect: [0x3FE7E018]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_030
+      description: "2pi"
+      input: [0x40C90FDB]
+      expect: [0x4021938D]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_031
+      description: "e --"
+      input: [0x402DF853]
+      expect: [0x3FD42777]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_032
+      description: "e"
+      input: [0x402DF854]
+      expect: [0x3FD42777]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_033
+      description: "e ++"
+      input: [0x402DF855]
+      expect: [0x3FD42778]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_034
+      description: "0"
+      input: [0x00000000]
+      expect: [0xFFC00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_035
+      description: "0.000023"
+      input: [0x37C0F01F]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_036
+      description: "0.49999"
+      input: [0x3EFFFEB0]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_037
+      description: "0.500012"
+      input: [0x3F0000C9]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_038
+      description: "-0"
+      input: [0x80000000]
+      expect: [0xFFC00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_039
+      description: "-0.000023"
+      input: [0xB7C0F01F]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_040
+      description: "-0.49999"
+      input: [0xBEFFFEB0]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_041
+      description: "-0.500012"
+      input: [0xBF0000C9]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_042
+      description: "1"
+      input: [0x3F800000]
+      expect: [0x00000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_043
+      description: "0.93750006"
+      input: [0x3F700001]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_044
+      description: "1.0624998"
+      input: [0x3F87FFFE]
+      expect: [0x3EB416D6]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_045
+      description: "1.49999"
+      input: [0x3FBFFFAC]
+      expect: [0x3F7660CF]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_046
+      description: "1.500012"
+      input: [0x3FC00064]
+      expect: [0x3F766218]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_047
+      description: "-1"
+      input: [0xBF800000]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_048
+      description: "-0.93750006"
+      input: [0xBF700001]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_049
+      description: "-1.0624998"
+      input: [0xBF87FFFE]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_050
+      description: "-1.49999"
+      input: [0xBFBFFFAC]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_051
+      description: "-1.500012"
+      input: [0xBFC00064]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_052
+      description: "2"
+      input: [0x40000000]
+      expect: [0x3FA89214]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_053
+      description: "-2"
+      input: [0xC0000000]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_054
+      description: "10"
+      input: [0x41200000]
+      expect: [0x403F90F7]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_055
+      description: "-10"
+      input: [0xC1200000]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_056
+      description: "1000"
+      input: [0x447A0000]
+      expect: [0x40F33A97]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_057
+      description: "-1000"
+      input: [0xC47A0000]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_058
+      description: "67.4"
+      input: [0x4286CCCC]
+      expect: [0x409CEB6A]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_059
+      description: "-67.4"
+      input: [0xC286CCCC]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_060
+      description: "1983.6"
+      input: [0x44F7F333]
+      expect: [0x410492B4]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_061
+      description: "-1983.6"
+      input: [0xC4F7F333]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_062
+      description: "87.5"
+      input: [0x42AF0000]
+      expect: [0x40A545A9]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_063
+      description: "-87.5"
+      input: [0xC2AF0000]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_064
+      description: "-87.5"
+      input: [0xC2AF0000]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_065
+      description: "132473"
+      input: [0x48015E40]
+      expect: [0x4147CBE7]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_066
+      description: "-132473"
+      input: [0xC8015E40]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_067
+      description: "2^23"
+      input: [0x4B000000]
+      expect: [0x41851592]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_068
+      description: "2^23 + 1"
+      input: [0x4B000001]
+      expect: [0x41851592]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_069
+      description: "2^23 -1 + 0.5"
+      input: [0x4AFFFFFF]
+      expect: [0x41851592]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_070
+      description: "-2^23"
+      input: [0xCB000000]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_071
+      description: "-(2^23 + 1)"
+      input: [0xCB000001]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_072
+      description: "-(2^23 -1 + 0.5)"
+      input: [0xCAFFFFFF]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_073
+      description: ""
+      input: [0x38800000]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_074
+      description: ""
+      input: [0x387FFFFF]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_075
+      description: ""
+      input: [0x38800001]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_076
+      description: ""
+      input: [0x7F7FFFEC]
+      expect: [0x42B2D4FC]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_077
+      description: ""
+      input: [0x7F7FFF6C]
+      expect: [0x42B2D4FB]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_078
+      description: ""
+      input: [0x42B2D4FD]
+      expect: [0x40A5F71E]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_079
+      description: ""
+      input: [0x42B2D4FF]
+      expect: [0x40A5F71E]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_080
+      description: ""
+      input: [0x7F7F820B]
+      expect: [0x42B2D400]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_081
+      description: ""
+      input: [0x4D675844]
+      expect: [0x41A00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_082
+      description: ""
+      input: [0x4E1D3710]
+      expect: [0x41A80000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_083
+      description: ""
+      input: [0x4CAA36C8]
+      expect: [0x41980000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_084
+      description: ""
+      input: [0x46000000]
+      expect: [0x411B43D5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_085
+      description: ""
+      input: [0x46000001]
+      expect: [0x411B43D5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_086
+      description: ""
+      input: [0x45FFFFFF]
+      expect: [0x411B43D5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_087
+      description: ""
+      input: [0x3F317217]
+      expect: [0xFFC00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_088
+      description: ""
+      input: [0x40000000]
+      expect: [0x3FA89214]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_089
+      description: ""
+      input: [0x40000001]
+      expect: [0x3FA89215]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_090
+      description: ""
+      input: [0x3FFFFFFF]
+      expect: [0x3FA89213]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_091
+      description: ""
+      input: [0x3F800000]
+      expect: [0x00000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_092
+      description: ""
+      input: [0x40584817]
+      expect: [0x3FF1B07F]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_093
+      description: ""
+      input: [0x40D84817]
+      expect: [0x40264D67]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_094
+      description: ""
+      input: [0x41323612]
+      expect: [0x40467F16]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_095
+      description: ""
+      input: [0x41F6E585]
+      expect: [0x4083EACE]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_096
+      description: ""
+      input: [0x4283DC5F]
+      expect: [0x409C36CD]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_097
+      description: ""
+      input: [0x42E8AFBB]
+      expect: [0x40AE63B9]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_098
+      description: ""
+      input: [0x43859B33]
+      expect: [0x40C8FF7E]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_099
+      description: ""
+      input: [0x4401A272]
+      expect: [0x40DE368F]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_100
+      description: ""
+      input: [0x44599481]
+      expect: [0x40EEC8C6]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_101
+      description: ""
+      input: [0x44A551E3]
+      expect: [0x40FC2CD1]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_102
+      description: ""
+      input: [0x48490495]
+      expect: [0x414ED924]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_103
+      description: ""
+      input: [0x511BD2CE]
+      expect: [0x41C9332F]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_104
+      description: ""
+      input: [0x62BDB16C]
+      expect: [0x42466D64]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_105
+      description: ""
+      input: [0x80000000]
+      expect: [0x7FC00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_106
+      description: ""
+      input: [0xFF800000]
+      expect: [0x7FC00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_107
+      description: ""
+      input: [0x7F800001]
+      expect: [0x7FC00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asinh_108
+      description: ""
+      input: [0xFF800001]
+      expect: [0xFFC00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asinh_109
+      description: ""
+      input: [0x7FC00000]
+      expect: [0x7FC00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_110
+      description: ""
+      input: [0xFFC00000]
+      expect: [0xFFC00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asinh_111
+      description: "9000, > 0x46000000"
+      input: [0x460CA000]
+      expect: [0x411CC521]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_112
+      description: "1.5"
+      input: [0x3FC00000]
+      expect: [0x3F766165]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asinh_113
+      description: "1.2345"
+      input: [0x3F9E0419]
+      expect: [0x3F2C0FA0]
+      expect_exception: [inexact]
+      variants: [ss]
+#-------------------------------
+    # Double Precision Tests
+    - id: asinh_001
+      description: "asinh(0) = 0"
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asinh_002
+      description: "asinh(-0) = -0"
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asinh_003
+      description: "asinh(inf) = inf"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asinh_004
+      description: "asinh(-inf) = -inf"
+      input: [0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asinh_005
+      description: "asinh(-nan) = -nan"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asinh_006
+      description: "asinh(+nan) = +nan"
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asinh_007
+      description: "asinh(subnorm_max) = subnorm_max (approximately)"
+      input: [0x000fffffffffffff]
+      expect: [0x000fffffffffffff]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asinh_008
+      description: "asinh(subnorm_max) = subnorm_max (approximately)"
+      input: [0x000fffffffffffff]
+      expect: [0x000fffffffffffff]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asinh_009
+      description: "asinh(subnorm_min) = subnorm_min (approximately)"
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asinh_010
+      description: "asinh(subnorm_min) = subnorm_min (approximately)"
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asinh_011
+      description: "asinh(1.0) = asinh(1)"
+      input: [0x3ff0000000000000]
+      expect: [0x3fe1acf2fe96c653]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_012
+      description: "asinh(-1.0) = -asinh(1)"
+      input: [0xbff0000000000000]
+      expect: [0xbfe1acf2fe96c653]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_013
+      description: "asinh(2.0) = asinh(2)"
+      input: [0x4000000000000000]
+      expect: [0x3ff6a09e667f3bcd]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_014
+      description: "asinh(-2.0) = -asinh(2)"
+      input: [0xc000000000000000]
+      expect: [0xbff6a09e667f3bcd]
+      expect_exception: [inexact]
+      variants: [sd]
+# Test cases from gtests test_asinh_data.h
+#-------------------------------
+    - id: asinh_001
+      description: "denormal min"
+      input: [0x0000000000000001]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asinh_002
+      description: "denormal intermediate"
+      input: [0x0005FDE623545ABC]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asinh_003
+      description: "-denormal min"
+      input: [0x8000000000000001]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asinh_004
+      description: "-denormal intermediate"
+      input: [0x8002344ADE5DEF12]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asinh_005
+      description: "-denormal max"
+      input: [0x800FFFFFFFFFFFFF]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asinh_006
+      description: "normal min"
+      input: [0x0010000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_007
+      description: "-normal min"
+      input: [0x8010000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_008
+      description: "-normal intermediate"
+      input: [0xC5812E71245ACFDB]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_009
+      description: "-normal max"
+      input: [0xFFEFFFFFFFFFFFFF]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_010
+      description: "0.0000000000000000023"
+      input: [0x3C4536B8B14B676C]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_011
+      description: "0.4999989999999999999"
+      input: [0x3FDFFFFBCE4217D3]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_012
+      description: "0.500000000000012"
+      input: [0x3FE000000000006C]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_013
+      description: "-0.000000000000000000023"
+      input: [0xBBDB2752CE74FF42]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_014
+      description: "-0.4999989999999999999"
+      input: [0xBFDFFFFBCE4217D3]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_015
+      description: "-0.500000000000012"
+      input: [0xBFE000000000006C]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_016
+      description: "0.9999998893750006"
+      input: [0x3FEFFFFFC49BD0DC]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_017
+      description: "-1"
+      input: [0xBFF0000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_018
+      description: "-0.9999998893750006"
+      input: [0xBFEFFFFFC49BD0DC]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_019
+      description: "-1.0000000000000624998"
+      input: [0xBFF0000000000119]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_020
+      description: "-1.499998999999999967"
+      input: [0xBFF7FFFEF39085F4]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_021
+      description: "-1.50000000000000012"
+      input: [0xBFF8000000000001]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_022
+      description: "-2"
+      input: [0xC000000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_023
+      description: "-10"
+      input: [0xC024000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_024
+      description: "-1000"
+      input: [0xC08F400000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_025
+      description: "-67.4"
+      input: [0xC050D9999999999A]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_026
+      description: "-1983.6"
+      input: [0xC09EFE6666666666]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_027
+      description: "-87.5"
+      input: [0xC055E00000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_028
+      description: "-87.5"
+      input: [0xC055E00000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_029
+      description: "-132473"
+      input: [0xC1002BC800000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_030
+      description: "-2^52"
+      input: [0xC330000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_031
+      description: "-(2^52 + 1)"
+      input: [0xC330000000000001]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_032
+      description: "-(2^52 -1 + 0.5)"
+      input: [0xC32FFFFFFFFFFFFF]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_033
+      description: ""
+      input: [0x3E30000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_034
+      description: ""
+      input: [0x3E2FFFFFFFFFFFFF]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_035
+      description: ""
+      input: [0x3E30000000000001]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_036
+      description: ""
+      input: [0xFE37E43C8800759C]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_037
+      description: ""
+      input: [0xFE37E43C8800758C]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_038
+      description: ""
+      input: [0xFE37E43C880075AC]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_039
+      description: ""
+      input: [0x3FE62E42E0000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_040
+      description: ""
+      input: [0x3E6EFA39EF35793C]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_041
+      description: ""
+      input: [0x3FEFFFFFFFFFFFF7]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_042
+      description: ""
+      input: [0xC196A09E667F3BCD]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_043
+      description: "denormal max"
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0xFFF8000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asinh_044
+      description: "normal intermediate"
+      input: [0x43B3C4EAFEDCAB02]
+      expect: [0x40453F2B7FEEADCC]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_045
+      description: "normal max"
+      input: [0x7FEFFFFFFFFFFFFF]
+      expect: [0x408633CE8FB9F87E]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_046
+      description: "inf"
+      input: [0x7FF0000000000000]
+      expect: [0x7FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asinh_047
+      description: "-inf"
+      input: [0xFFF0000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asinh_048
+      description: "qnan min"
+      input: [0x7FF8000000000000]
+      expect: [0x7FF8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asinh_049
+      description: "qnan intermediate"
+      input: [0x7FFE1A5701234DC3]
+      expect: [0x7FFE1A5701234DC3]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asinh_050
+      description: "qnan max"
+      input: [0x7FFFFFFFFFFFFFFF]
+      expect: [0x7FFFFFFFFFFFFFFF]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asinh_051
+      description: "indeterninate"
+      input: [0xFFF8000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asinh_052
+      description: "-qnan min"
+      input: [0xFFF8000000000001]
+      expect: [0xFFF8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asinh_053
+      description: "-qnan intermediate"
+      input: [0xFFF9123425DCBA31]
+      expect: [0xFFF8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asinh_054
+      description: "-qnan max"
+      input: [0xFFFFFFFFFFFFFFFF]
+      expect: [0xFFF8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asinh_055
+      description: "snan min"
+      input: [0x7FF0000000000001]
+      expect: [0x7FF8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asinh_056
+      description: "snan intermediate"
+      input: [0x7FF5344752A0BD90]
+      expect: [0x7FFD344752A0BD90]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asinh_057
+      description: "snan max"
+      input: [0x7FF7FFFFFFFFFFFF]
+      expect: [0x7FFFFFFFFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asinh_058
+      description: "-snan min"
+      input: [0xFFF0000000000001]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asinh_059
+      description: "-snan intermediate"
+      input: [0xFFF432438995FFFA]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asinh_060
+      description: "-snan max"
+      input: [0xFFF7FFFFFFFFFFFF]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asinh_061
+      description: "pi/2"
+      input: [0x3FF921FB54442D18]
+      expect: [0x3FF05F23C6CBAF31]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_062
+      description: "pi"
+      input: [0x400921FB54442D18]
+      expect: [0x3FFCFC02F90106C1]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_063
+      description: "2pi"
+      input: [0x401921FB54442D18]
+      expect: [0x400432718F372526]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_064
+      description: "e --"
+      input: [0x3FFB7E151628AED3]
+      expect: [0x3FF22EC7E51925B9]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_065
+      description: "e"
+      input: [0x4005BF0A8B145769]
+      expect: [0x3FFA84EEF63326E7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_066
+      description: "e ++"
+      input: [0x400DBF0A8B145769]
+      expect: [0x3FFFCE1775F12536]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_067
+      description: "0"
+      input: [0x0000000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asinh_068
+      description: "-0"
+      input: [0x8000000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asinh_069
+      description: "1"
+      input: [0x3FF0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_070
+      description: "1.0000000000000624998"
+      input: [0x3FF0000000000119]
+      expect: [0x3E97B4DFC079256B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_071
+      description: "1.499998999999999967"
+      input: [0x3FF7FFFEF39085F4]
+      expect: [0x3FEECC2ACE93E00E]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_072
+      description: "1.50000000000000012"
+      input: [0x3FF8000000000001]
+      expect: [0x3FEECC2CAEC5160B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_073
+      description: "2"
+      input: [0x4000000000000000]
+      expect: [0x3FF5124271980435]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_074
+      description: "10"
+      input: [0x4024000000000000]
+      expect: [0x4007F21ED1CE05D4]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_075
+      description: "1000"
+      input: [0x408F400000000000]
+      expect: [0x401E6752E8A84ED4]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_076
+      description: "67.4"
+      input: [0x4050D9999999999A]
+      expect: [0x40139D6D46400CC2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_077
+      description: "1983.6"
+      input: [0x409EFE6666666666]
+      expect: [0x4020925671DFB9AE]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_078
+      description: "87.5"
+      input: [0x4055E00000000000]
+      expect: [0x4014A8B5181890BD]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_079
+      description: "87.5"
+      input: [0x4055E00000000000]
+      expect: [0x4014A8B5181890BD]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_080
+      description: "132473"
+      input: [0x41002BC800000000]
+      expect: [0x4028F97CEF99FF43]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_081
+      description: "2^52"
+      input: [0x4330000000000000]
+      expect: [0x40425E4F7B2737FA]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_082
+      description: "2^52 + 1"
+      input: [0x4330000000000001]
+      expect: [0x40425E4F7B2737FA]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_083
+      description: "2^52 -1 + 0.5"
+      input: [0x432FFFFFFFFFFFFF]
+      expect: [0x40425E4F7B2737FA]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_084
+      description: ""
+      input: [0x408633CE8FB9F87E]
+      expect: [0x401D094CB3A2E27F]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_085
+      description: ""
+      input: [0x7FEFFFFFFFFFFD3B]
+      expect: [0x408633CE8FB9F87D]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_086
+      description: ""
+      input: [0x408633CE8FB9F87F]
+      expect: [0x401D094CB3A2E27F]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_087
+      description: ""
+      input: [0x408633CE8FB9F8FF]
+      expect: [0x401D094CB3A2E296]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_088
+      description: ""
+      input: [0x7FEFFFFFFFFE093B]
+      expect: [0x408633CE8FB9F800]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_089
+      description: ""
+      input: [0x41ACEB088B68E804]
+      expect: [0x4034000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_090
+      description: ""
+      input: [0x41C3A6E1FD9EECFD]
+      expect: [0x4035000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_091
+      description: ""
+      input: [0x419546D8F9ED26E2]
+      expect: [0x4033000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_092
+      description: ""
+      input: [0x4196A09E667F3BCD]
+      expect: [0x40330FC1931F09CA]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_093
+      description: ""
+      input: [0x4196A09E667F3BCC]
+      expect: [0x40330FC1931F09CA]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_094
+      description: ""
+      input: [0x4196A09E667F3BCE]
+      expect: [0x40330FC1931F09CA]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_095
+      description: ""
+      input: [0x3FF0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_096
+      description: ""
+      input: [0x3FF0000000000001]
+      expect: [0x3E56A09E667F3BCC]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_097
+      description: ""
+      input: [0x4060000000000000]
+      expect: [0x40162E3EFEF439E2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_098
+      description: ""
+      input: [0x4060000000000001]
+      expect: [0x40162E3EFEF439E2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_099
+      description: ""
+      input: [0x405FFFFFFFFFFFFF]
+      expect: [0x40162E3EFEF439E2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_100
+      description: ""
+      input: [0x3FF8000000000000]
+      expect: [0x3FEECC2CAEC5160A]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_101
+      description: ""
+      input: [0x3FF8000000000001]
+      expect: [0x3FEECC2CAEC5160B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_102
+      description: ""
+      input: [0x3FF7FFFFFFFFFFFF]
+      expect: [0x3FEECC2CAEC51608]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_103
+      description: ""
+      input: [0x4040000000000000]
+      expect: [0x4010A272393AD5FB]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_104
+      description: ""
+      input: [0x4040000000000001]
+      expect: [0x4010A272393AD5FB]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_105
+      description: ""
+      input: [0x403FFFFFFFFFFFFF]
+      expect: [0x4010A272393AD5FB]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_106
+      description: ""
+      input: [0x4020000000000000]
+      expect: [0x40062636E408C33B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_107
+      description: ""
+      input: [0x4020000000000001]
+      expect: [0x40062636E408C33C]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_108
+      description: ""
+      input: [0x401FFFFFFFFFFFFF]
+      expect: [0x40062636E408C33B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_109
+      description: ""
+      input: [0x4010000000000000]
+      expect: [0x400081EB4B421591]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_110
+      description: ""
+      input: [0x4010000000000001]
+      expect: [0x400081EB4B421592]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_111
+      description: ""
+      input: [0x400FFFFFFFFFFFFF]
+      expect: [0x400081EB4B421591]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_112
+      description: ""
+      input: [0x4000000000000000]
+      expect: [0x3FF5124271980435]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_113
+      description: ""
+      input: [0x4000000000000001]
+      expect: [0x3FF5124271980436]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_114
+      description: ""
+      input: [0x3FFFFFFFFFFFFFFB]
+      expect: [0x3FF5124271980432]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_115
+      description: ""
+      input: [0x3FFC000000000000]
+      expect: [0x3FF28A7CBB850063]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_116
+      description: ""
+      input: [0x3FFC000000000001]
+      expect: [0x3FF28A7CBB850063]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_117
+      description: ""
+      input: [0x3FFBFFFFFFFFFFFF]
+      expect: [0x3FF28A7CBB850062]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_118
+      description: ""
+      input: [0x3FF8000000000000]
+      expect: [0x3FEECC2CAEC5160A]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_119
+      description: ""
+      input: [0x3FFC000000000000]
+      expect: [0x3FF28A7CBB850063]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_120
+      description: ""
+      input: [0x3FFAAA88C50B0C79]
+      expect: [0x3FF193D10E5C0D18]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_121
+      description: ""
+      input: [0x3FF1FA2163FDD65A]
+      expect: [0x3FDF7F49962DF105]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_122
+      description: ""
+      input: [0x3FF2147AE147AE14]
+      expect: [0x3FE02523A6A33560]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_123
+      description: ""
+      input: [0x3FF0F5C28F5C28F6]
+      expect: [0x3FD60F9522DE1C73]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_124
+      description: ""
+      input: [0x3FF0DAD538AC18F8]
+      expect: [0x3FD4D4139C60AF76]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_125
+      description: ""
+      input: [0x3FF17961804D9839]
+      expect: [0x3FDB442906F1BC39]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_126
+      description: ""
+      input: [0x3FF17961804D9839]
+      expect: [0x3FDB442906F1BC39]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_127
+      description: ""
+      input: [0x3FF3C47C30D306A3]
+      expect: [0x3FE58CEAE7B87440]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_128
+      description: ""
+      input: [0x3FF0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_129
+      description: ""
+      input: [0x400B0902DE00D1B7]
+      expect: [0x3FFE360FD1E19969]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_130
+      description: ""
+      input: [0x401B0902DE00D1B7]
+      expect: [0x4004C9ACEE4A3151]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_131
+      description: ""
+      input: [0x402646C226809D4A]
+      expect: [0x4008CFE2A958FEEB]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_132
+      description: ""
+      input: [0x403EDCB09E98DCDB]
+      expect: [0x40107D59B557E190]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_133
+      description: ""
+      input: [0x40507B8BD66277C4]
+      expect: [0x401386D999AA5105]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_134
+      description: ""
+      input: [0x405D15F75104D552]
+      expect: [0x4015CC772A14B8B0]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_135
+      description: ""
+      input: [0x4070B36657B84DBA]
+      expect: [0x40191FEFB51BD5AC]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_136
+      description: ""
+      input: [0x4080344E3FFEF391]
+      expect: [0x401BC6D1DEB359C0]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_137
+      description: ""
+      input: [0x408B3290268900C6]
+      expect: [0x401DD918B117FC4F]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_138
+      description: ""
+      input: [0x4094AA3C6FBD273E]
+      expect: [0x401F859A250CDB87]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_139
+      description: ""
+      input: [0x41092092BA93C86B]
+      expect: [0x4029DB248521D916]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_140
+      description: ""
+      input: [0x42237A59F4429268]
+      expect: [0x40392665E1572E41]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_141
+      description: ""
+      input: [0x4457B62DF67FC4FD]
+      expect: [0x4048CDAC82CB51B7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_142
+      description: ""
+      input: [0x48C191EF3D6A018A]
+      expect: [0x4058A14FFCCD501E]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_143
+      description: ""
+      input: [0x51934B4F70B3A04C]
+      expect: [0x40688B21B9CE55E4]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asinh_144
+      description: ""
+      input: [0x6337443F25F59CBB]
+      expect: [0x4078800A984ED8C7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+#-------------------------------

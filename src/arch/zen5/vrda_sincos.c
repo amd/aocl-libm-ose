@@ -31,7 +31,7 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_ARCH_ZN5(vrda_sincos)(int length, double *x, double *sin, double *cos)
+void ALM_PROTO_ARCH_ZN5(vrda_sincos)(int length, const double *x, double *sin, double *cos)
 {
     int j = 0;
     __m512d opsin, opcos;

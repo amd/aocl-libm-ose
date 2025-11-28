@@ -34,7 +34,7 @@
  * ---------------------
  * Signature
  * ---------------------
- * void vrda_sqrt(int length, double *input, double *result)
+ * void vrda_sqrt(int length, const double *input, double *result)
  *
  * vrda_sqrt() computes the sqrt values for 'length' number of elements
  * present in the 'input' array.
@@ -68,7 +68,7 @@
  *         Store the output using masked store
  *     Return
  */
-void ALM_PROTO_OPT(vrda_sqrt)(int length, double *input, double *result)
+void ALM_PROTO_OPT(vrda_sqrt)(int length, const double *input, double *result)
 {
     if (likely(length >= DOUBLE_ELEMENTS_256_BIT))
     {

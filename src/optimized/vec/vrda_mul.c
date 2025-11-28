@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
 
-void ALM_PROTO_OPT(vrda_mul)(int len, double *lhs, double *rhs, double *dst)
+void ALM_PROTO_OPT(vrda_mul)(int len, const double *lhs, const double *rhs, double *dst)
 {
     for (int i = 0; i < len ; i++)
     {

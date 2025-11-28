@@ -28,7 +28,7 @@
  * ---------------------
  * Signature
  * ---------------------
- * void vrda_pow(int length, double *input1, double *input2, double *result)
+ * void vrda_pow(int length, const double *input1, const double *input2, double *result)
  *
  * vrda_pow() computes the pow values for 'length' number of elements as
  * values in the 'input1' array raised to 'input2' array.
@@ -69,7 +69,7 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_OPT(vrda_pow)(int length, double *input1, double *input2, double *result)
+void ALM_PROTO_OPT(vrda_pow)(int length, const double *input1, const double *input2, double *result)
 {
     int j = 0;
 

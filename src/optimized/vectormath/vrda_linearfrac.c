@@ -29,7 +29,7 @@
  * ---------------------
  * Signature
  * ---------------------
- * void vrda_linearfrac(int length, double *a, double *b, double scalea, 
+ * void vrda_linearfrac(int length, const double *a, const double *b, double scalea, 
  *                      double shifta, double scaleb, double shiftb, double *result)
  *
  * vrda_linearfrac() computes the linear fraction transformation for 'length' 
@@ -116,7 +116,7 @@
 #include <libm/typehelper-vec.h>
 #include <libm/compiler.h>
 
-void ALM_PROTO_OPT(vrda_linearfrac)(int length, double *a, double *b, double scalea, double shifta, double scaleb, double shiftb, double *result)
+void ALM_PROTO_OPT(vrda_linearfrac)(int length, const double *a, const double *b, double scalea, double shifta, double scaleb, double shiftb, double *result)
 {
     int j = 0;
     uint64_t scaleb_u = asuint64(scaleb);

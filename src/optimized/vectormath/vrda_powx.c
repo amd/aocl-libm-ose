@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@
 C implementation of vector array version of powx
 
 Signature:
-    void vrda_powx(int length, double *x, double y, double *result)
+    void vrda_powx(int length, const double *x, double y, double *result)
 
 Implementation notes:
 
@@ -44,7 +44,7 @@ Implementation notes:
 #include <libm_util_amd.h>
 #include <stdio.h>
 
-void ALM_PROTO_OPT(vrda_powx)(int length, double *x, double y, double *result)
+void ALM_PROTO_OPT(vrda_powx)(int length, const double *x, double y, double *result)
 {
     int j = 0;
     int remainder = length % DOUBLE_ELEMENTS_256_BIT;

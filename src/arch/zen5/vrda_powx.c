@@ -29,7 +29,7 @@
 C implementation of vector array version of powx
 
 Signature:
-    void vrda_powx(int length, double *x, double y, double *result)
+    void vrda_powx(int length, const double *x, double y, double *result)
 
 Implementation notes:
 
@@ -47,7 +47,7 @@ Implementation notes:
 #include <libm_util_amd.h>
 #include <stdio.h>
 
-void ALM_PROTO_ARCH_ZN5(vrda_powx)(int length, double *x, double y, double *result)
+void ALM_PROTO_ARCH_ZN5(vrda_powx)(int length, const double *x, double y, double *result)
 {
     int j = 0;
     int remainder = length % DOUBLE_ELEMENTS_512_BIT;

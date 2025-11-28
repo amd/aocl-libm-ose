@@ -29,10 +29,10 @@
  * ---------------------
  * Signature
  * ---------------------
- * void vrda_sincos(int length, double *input, double *sin, double *cos)
+ * void vrda_sincos(int length, const double *x, double *sin, double *cos)
  *
  * vrda_sincos() computes the sine and cosine values for 'length' number of elements
- * present in the 'input' array.
+ * present in the 'x' array.
  * The corresponding sine ouput is stored in the 'sin' array.
  * The corresponding cosine ouput is stored in the 'cos' array.
  *
@@ -60,7 +60,7 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_OPT(vrda_sincos)(int length, double *x, double *sin, double *cos)
+void ALM_PROTO_OPT(vrda_sincos)(int length, const double *x, double *sin, double *cos)
 {
     int j = 0;
     __m256d opsin, opcos;

@@ -323,72 +323,72 @@ __m256 FN_PROTOTYPE(vrs8_linearfracf)(__m256 x, __m256 y, float sca, float sha, 
 void FN_PROTOTYPE(vrs8_sincosf)(__m256 x, __m256 *sin, __m256 *cos);
 __m256 FN_PROTOTYPE(vrs8_erfcf)(__m256 x);
 
-void FN_PROTOTYPE(vrda_exp)(int len, double* x, double* y);
+void FN_PROTOTYPE(vrda_exp)(int len, const double *x, double* y);
 void FN_PROTOTYPE(vrsa_expf)(int len, float* x, float* y);
-void FN_PROTOTYPE(vrda_exp10)(int len, double* x, double* y);
+void FN_PROTOTYPE(vrda_exp10)(int len, const double *x, double* y);
 void FN_PROTOTYPE(vrsa_exp10f)(int len, float* x, float* y);
-void FN_PROTOTYPE(vrda_exp2)(int len, double* x, double* y);
+void FN_PROTOTYPE(vrda_exp2)(int len, const double *x, double* y);
 void FN_PROTOTYPE(vrsa_exp2f)(int len, float* x, float* y);
-void FN_PROTOTYPE(vrda_expm1)(int len, double* x, double* y);
+void FN_PROTOTYPE(vrda_expm1)(int len, const double *x, double* y);
 void FN_PROTOTYPE(vrsa_expm1f)(int len, float* x, float* y);
-void FN_PROTOTYPE(vrda_sin)(int n, double *x, double *y);
+void FN_PROTOTYPE(vrda_sin)(int n, const double *x, double *y);
 void FN_PROTOTYPE(vrsa_sinf)(int n, float *x, float *y);
-void FN_PROTOTYPE(vrda_cos)(int n, double *x, double *y);
+void FN_PROTOTYPE(vrda_cos)(int n, const double *x, double *y);
 void FN_PROTOTYPE(vrsa_cosf)(int n, float *x, float *y);
 void FN_PROTOTYPE(vrsa_cbrtf)( int len, float *src, float* dst );
-void FN_PROTOTYPE(vrda_cbrt)( int len, double *src, double* dst );
+void FN_PROTOTYPE(vrda_cbrt)( int len, const double *src, double* dst );
 void FN_PROTOTYPE(vrsa_logf)( int len, float *src, float* dst );
-void FN_PROTOTYPE(vrda_log)( int len, double *src, double* dst );
+void FN_PROTOTYPE(vrda_log)( int len, const double *src, double* dst );
 void FN_PROTOTYPE(vrsa_log2f)( int len, float *src, float* dst );
-void FN_PROTOTYPE(vrda_log2)( int len, double *src, double* dst );
+void FN_PROTOTYPE(vrda_log2)( int len, const double *src, double* dst );
 void FN_PROTOTYPE(vrsa_log10f)( int len, float *src, float* dst );
-void FN_PROTOTYPE(vrda_log10)( int len, double *src, double* dst );
+void FN_PROTOTYPE(vrda_log10)( int len, const double *src, double* dst );
 void FN_PROTOTYPE(vrsa_log1pf)( int len, float *src, float* dst );
-void FN_PROTOTYPE(vrda_log1p)( int len, double *src, double* dst );
+void FN_PROTOTYPE(vrda_log1p)( int len, const double *src, double* dst );
 void FN_PROTOTYPE(vrsa_powxf)( int len, float *src1, float src2, float* dst );
-void FN_PROTOTYPE(vrda_pow)( int len, double *src1, double *src2, double* dst );
+void FN_PROTOTYPE(vrda_pow)( int len, const double *src1, const double *src2, double* dst );
 void FN_PROTOTYPE(vrsa_powf)( int len, float *src1, float *src2, float* dst );
-void FN_PROTOTYPE(vrda_fabs)(int len, double* x, double* y);
+void FN_PROTOTYPE(vrda_fabs)(int len, const double *x, double* y);
 void FN_PROTOTYPE(vrsa_fabsf)(int len, float* x, float* y);
-void FN_PROTOTYPE(vrda_sqrt)(int len, double* x, double* y);
+void FN_PROTOTYPE(vrda_sqrt)(int len, const double *x, double* y);
 void FN_PROTOTYPE(vrsa_sqrtf)(int len, float* x, float* y);
 void FN_PROTOTYPE(vrsa_sincosf)(int len, float* x, float* sin, float* cos);
-void FN_PROTOTYPE(vrda_sincos)(int len, double* x, double* sin, double* cos);
+void FN_PROTOTYPE(vrda_sincos)(int len, const double *x, double* sin, double* cos);
 
 /* Arithmetic array vector variants */
 void FN_PROTOTYPE(vrsa_addf)( int len, float *lhs, float *rhs, float *dst );
-void FN_PROTOTYPE(vrda_add)( int len, double *lhs, double *rhs, double *dst );
+void FN_PROTOTYPE(vrda_add)( int len, const double *lhs, const double *rhs, double *dst );
 void FN_PROTOTYPE(vrsa_subf)( int len, float *lhs, float *rhs, float *dst );
-void FN_PROTOTYPE(vrda_sub)( int len, double *lhs, double *rhs, double *dst );
+void FN_PROTOTYPE(vrda_sub)( int len, const double *lhs, const double *rhs, double *dst );
 void FN_PROTOTYPE(vrsa_mulf)( int len, float *lhs, float *rhs, float *dst );
-void FN_PROTOTYPE(vrda_mul)( int len, double *lhs, double *rhs, double *dst );
+void FN_PROTOTYPE(vrda_mul)( int len, const double *lhs, const double *rhs, double *dst );
 void FN_PROTOTYPE(vrsa_divf)( int len, float *lhs, float *rhs, float *dst );
-void FN_PROTOTYPE(vrda_div)( int len, double *lhs, double *rhs, double *dst );
+void FN_PROTOTYPE(vrda_div)( int len, const double *lhs, const double *rhs, double *dst );
 void FN_PROTOTYPE(vrsa_fmaxf)( int len, float *lhs, float *rhs, float *dst );
-void FN_PROTOTYPE(vrda_fmax)( int len, double *lhs, double *rhs, double *dst );
+void FN_PROTOTYPE(vrda_fmax)( int len, const double *lhs, const double *rhs, double *dst );
 void FN_PROTOTYPE(vrsa_fminf)( int len, float *lhs, float *rhs, float *dst );
-void FN_PROTOTYPE(vrda_fmin)( int len, double *lhs, double *rhs, double *dst );
+void FN_PROTOTYPE(vrda_fmin)( int len, const double *lhs, const double *rhs, double *dst );
 
 /* Arithmetic array vector variants with increment */
 void FN_PROTOTYPE(vrsa_addfi)( int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res );
-void FN_PROTOTYPE(vrda_addi)( int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res );
+void FN_PROTOTYPE(vrda_addi)( int len, const double *lhs, int inc_a, const double *rhs, int inc_b, double *dst, int inc_res );
 void FN_PROTOTYPE(vrsa_subfi)( int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res );
-void FN_PROTOTYPE(vrda_subi)( int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res );
+void FN_PROTOTYPE(vrda_subi)( int len, const double *lhs, int inc_a, const double *rhs, int inc_b, double *dst, int inc_res );
 void FN_PROTOTYPE(vrsa_mulfi)( int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res );
-void FN_PROTOTYPE(vrda_muli)( int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res );
+void FN_PROTOTYPE(vrda_muli)( int len, const double *lhs, int inc_a, const double *rhs, int inc_b, double *dst, int inc_res );
 void FN_PROTOTYPE(vrsa_divfi)( int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res );
-void FN_PROTOTYPE(vrda_divi)( int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res );
+void FN_PROTOTYPE(vrda_divi)( int len, const double *lhs, int inc_a, const double *rhs, int inc_b, double *dst, int inc_res );
 void FN_PROTOTYPE(vrsa_fmaxfi)( int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res );
-void FN_PROTOTYPE(vrda_fmaxi)( int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res );
+void FN_PROTOTYPE(vrda_fmaxi)( int len, const double *lhs, int inc_a, const double *rhs, int inc_b, double *dst, int inc_res );
 void FN_PROTOTYPE(vrsa_fminfi)( int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res );
-void FN_PROTOTYPE(vrda_fmini)( int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res );
+void FN_PROTOTYPE(vrda_fmini)( int len, const double *lhs, int inc_a, const double *rhs, int inc_b, double *dst, int inc_res );
 
 /* Linearfrac */
-void FN_PROTOTYPE(vrda_linearfrac)(int len, double *x, double *y, double scx, double shx, double scy, double shy, double *result);
+void FN_PROTOTYPE(vrda_linearfrac)(int len, const double *x, const double *y, double scx, double shx, double scy, double shy, double *result);
 void FN_PROTOTYPE(vrsa_linearfracf)(int len, float *x, float *y, float scx, float shx, float scy, float shy, float *result);
 
 /* Array variants of Powx */
-void FN_PROTOTYPE(vrda_powx)(int len, double *x, double y, double *result);
+void FN_PROTOTYPE(vrda_powx)(int len, const double *x, double y, double *result);
 
 /* Array variant of of float precision*/
 void FN_PROTOTYPE(vrsa_acosf)(int n, float *x, float *y);
@@ -398,20 +398,20 @@ void FN_PROTOTYPE(vrsa_coshf)(int n, float *x, float *y);
 void FN_PROTOTYPE(vrsa_erff)(int n, float *x, float *y);
 void FN_PROTOTYPE(vrsa_tanhf)(int n, float *x, float *y);
 void FN_PROTOTYPE(vrsa_tanf)(int n, float *x, float *y);
-void FN_PROTOTYPE(vrda_atan)(int n, double *x, double *y);
-void FN_PROTOTYPE(vrda_erf)(int n, double *x, double *y);
-void FN_PROTOTYPE(vrda_tan)(int n, double *x, double *y);
-void FN_PROTOTYPE(vrda_cosh)(int n, double *x, double *y);
-void FN_PROTOTYPE(vrda_erfc)(int n, double *x, double *y);
+void FN_PROTOTYPE(vrda_atan)(int n, const double *x, double *y);
+void FN_PROTOTYPE(vrda_erf)(int n, const double *x, double *y);
+void FN_PROTOTYPE(vrda_tan)(int n, const double *x, double *y);
+void FN_PROTOTYPE(vrda_cosh)(int n, const double *x, double *y);
+void FN_PROTOTYPE(vrda_erfc)(int n, const double *x, double *y);
 void FN_PROTOTYPE(vrsa_erfcf)(int n, float *x, float *y);
 
 __m128d FN_PROTOTYPE(vrd2_acos)(__m128d x);
 __m256d FN_PROTOTYPE(vrd4_acos)(__m256d x);
-void FN_PROTOTYPE(vrda_acos)(int n, double *x, double *y);
+void FN_PROTOTYPE(vrda_acos)(int n, const double *x, double *y);
 
 __m128d FN_PROTOTYPE(vrd2_asin)(__m128d x);
 __m256d FN_PROTOTYPE(vrd4_asin)(__m256d x);
-void FN_PROTOTYPE(vrda_asin)(int n, double *x, double *y);
+void FN_PROTOTYPE(vrda_asin)(int n, const double *x, double *y);
 
 #ifdef __cplusplus
 }

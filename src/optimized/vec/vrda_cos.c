@@ -28,7 +28,7 @@
  * ---------------------
  * Signature
  * ---------------------
- * void vrda_cos(int length, double *input, double *result)
+ * void vrda_cos(int length, const double *input, double *result)
  *
  * vrda_cos() computes the cosine values for 'length' number of elements
  * present in the 'input' array.
@@ -67,7 +67,7 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_OPT(vrda_cos)(int length, double *input, double *result)
+void ALM_PROTO_OPT(vrda_cos)(int length, const double *input, double *result)
 {
     int j = 0;
 

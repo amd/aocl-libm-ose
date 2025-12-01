@@ -291,8 +291,8 @@ set(tests "")
 
 # Define test directories with their linking requirements
 set(SPECIAL_TEST_DIRS "powx" "linearfrac" "sincos")
-set(VR_TEST_DIRS "acosh" "asinh" "atan2" "atanh" "cexp" "sinh" "ceil" "copysign" "fdim" "floor" "fmod" "hypot" "logb" "remainder" "rint" "round" "trunc" "nearbyint")
-set(VRA_TEST_DIRS "exp" "cos" "acos" "add" "asin" "atan" "cosh" "sin" "tan" "tanh" "cbrt" "erf" "erfc" "exp10" "exp2" "expm1" "fabs" "fmax" "fmin" "ldexp" "log" "log10" "log1p" "log2" "mul" "nextafter" "pow" "sqrt" "sub")
+set(VR_TEST_DIRS "acosh" "asinh" "atan2" "atanh" "cexp" "sinh" "ceil" "copysign" "fdim" "floor" "fmod" "hypot" "logb" "remainder" "rint" "trunc" "nearbyint")
+set(VRA_TEST_DIRS "exp" "cos" "acos" "add" "asin" "atan" "cosh" "sin" "tan" "tanh" "cbrt" "erf" "erfc" "exp10" "exp2" "expm1" "fabs" "fmax" "fmin" "ldexp" "log" "log10" "log1p" "log2" "mul" "nextafter" "pow" "round" "sqrt" "sub")
 
 # Combine all test directories
 set(ALL_TEST_DIRS ${SPECIAL_TEST_DIRS} ${VR_TEST_DIRS} ${VRA_TEST_DIRS})

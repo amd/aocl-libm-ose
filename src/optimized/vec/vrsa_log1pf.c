@@ -29,7 +29,7 @@
  * ---------------------
  * Signature
  * ---------------------
- * void vrsa_log1pf(int length, float *input, float *result)
+ * void vrsa_log1pf(int length, const float *input, float *result)
  *
  * vrsa_log1pf() computes the log1p values for 'length' number of elements
  * present in the 'input' array.
@@ -72,7 +72,7 @@
 #include <stdio.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_OPT(vrsa_log1pf)(int length, float *input, float *result)
+void ALM_PROTO_OPT(vrsa_log1pf)(int length, const float *input, float *result)
 {
     if (likely(length >= FLOAT_ELEMENTS_128_BIT))
     {

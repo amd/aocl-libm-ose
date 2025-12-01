@@ -29,7 +29,7 @@
  * ---------------------
  * Signature
  * ---------------------
- * void vrsa_expm1f(int length, float *input, float *result)
+ * void vrsa_expm1f(int length, const float *input, float *result)
  *
  * vrsa_expm1f() computes the expm1 values for 'length' number of elements
  * present in the 'input' array.
@@ -71,7 +71,7 @@
 #include <stdio.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_OPT(vrsa_expm1f)(int length, float *input, float *result)
+void ALM_PROTO_OPT(vrsa_expm1f)(int length, const float *input, float *result)
 {
     if (likely(length >= FLOAT_ELEMENTS_128_BIT))
     {

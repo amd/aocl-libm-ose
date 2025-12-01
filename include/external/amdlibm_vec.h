@@ -1133,7 +1133,7 @@ extern "C" {
    * @param src Input array of length len.
    * @param dst Output array of length len for sines.
    */
-  void amd_vrsa_sinf (int len, float *src, float *dst);
+  void amd_vrsa_sinf (int len, const float *src, float *dst);
 
   /**
    * @brief Computes cosine elementwise for double array.
@@ -1148,7 +1148,7 @@ extern "C" {
    * @param src Input array of length len.
    * @param dst Output array of length len for cosines.
    */
-  void amd_vrsa_cosf (int len, float *src, float *dst);
+  void amd_vrsa_cosf (int len, const float *src, float *dst);
 
   /**
    * @brief Computes tangent elementwise for double array.
@@ -1163,7 +1163,7 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array for tangents.
    */
-  void amd_vrsa_tanf (int len, float *src, float *dst);
+  void amd_vrsa_tanf (int len, const float *src, float *dst);
 
   /**
    * @brief Computes sine and cosine elementwise for double array.
@@ -1180,7 +1180,7 @@ extern "C" {
    * @param sin Output array for sines.
    * @param cos Output array for cosines.
    */
-  void amd_vrsa_sincosf (int len, float *src, float *sin, float *cos);
+  void amd_vrsa_sincosf (int len, const float *src, float *sin, float *cos);
 #endif
 
 
@@ -1199,7 +1199,7 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array for arc-sines in radians.
    */
-  void amd_vrsa_asinf (int len, float *src, float *dst);
+  void amd_vrsa_asinf (int len, const float *src, float *dst);
 
   /**
    * @brief Computes arc-cosine elementwise for double array.
@@ -1214,7 +1214,7 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array for arc-cosines in radians.
    */
-  void amd_vrsa_acosf (int len, float *src, float *dst);
+  void amd_vrsa_acosf (int len, const float *src, float *dst);
 
   /**
    * @brief Computes arc-tangent elementwise for double array.
@@ -1229,7 +1229,7 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array for arc-tangents in radians.
    */
-  void amd_vrsa_atanf (int len, float *src, float *dst);
+  void amd_vrsa_atanf (int len, const float *src, float *dst);
 #endif
 
 
@@ -1251,14 +1251,14 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array for cosh values.
    */
-  void amd_vrsa_coshf (int len, float *src, float *dst);
+  void amd_vrsa_coshf (int len, const float *src, float *dst);
   /**
    * @brief Computes hyperbolic tangent elementwise for float array.
    * @param len Number of elements.
    * @param src Input array.
    * @param dst Output array for tanh values.
    */
-  void amd_vrsa_tanhf (int len, float *src, float *dst);
+  void amd_vrsa_tanhf (int len, const float *src, float *dst);
 #endif
 
 
@@ -1277,7 +1277,7 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array of exponentials.
    */
-  void amd_vrsa_expf (int len, float *src, float *dst);
+  void amd_vrsa_expf (int len, const float *src, float *dst);
 
   /**
    * @brief Computes 2^x elementwise for double array.
@@ -1292,7 +1292,7 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array of base-2 exponentials.
    */
-  void amd_vrsa_exp2f (int len, float *src, float *dst);
+  void amd_vrsa_exp2f (int len, const float *src, float *dst);
 #endif
 
   /**
@@ -1310,7 +1310,7 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array of base-10 exponentials.
    */
-  void amd_vrsa_exp10f (int len, float *src, float *dst);
+  void amd_vrsa_exp10f (int len, const float *src, float *dst);
 #endif
 
   /**
@@ -1329,7 +1329,7 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array of expm1 values.
    */
-  void amd_vrsa_expm1f (int len, float *src, float *dst);
+  void amd_vrsa_expm1f (int len, const float *src, float *dst);
 #endif
 
 
@@ -1348,7 +1348,7 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array of ln values.
    */
-  void amd_vrsa_logf (int len, float *src, float *dst);
+  void amd_vrsa_logf (int len, const float *src, float *dst);
 
   /**
    * @brief Computes base-2 logarithm elementwise for double array.
@@ -1363,7 +1363,7 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array of log2 values.
    */
-  void amd_vrsa_log2f (int len, float *src, float *dst);
+  void amd_vrsa_log2f (int len, const float *src, float *dst);
 #endif
 
   /**
@@ -1381,7 +1381,7 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array of log10 values.
    */
-  void amd_vrsa_log10f (int len, float *src, float *dst);
+  void amd_vrsa_log10f (int len, const float *src, float *dst);
 #endif
 
   /**
@@ -1399,7 +1399,7 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array of log1p values.
    */
-  void amd_vrsa_log1pf (int len, float *src, float *dst);
+  void amd_vrsa_log1pf (int len, const float *src, float *dst);
 #endif
 
 
@@ -1420,7 +1420,7 @@ extern "C" {
    * @param src2 Exponent array.
    * @param dst Output array of powers.
    */
-  void amd_vrsa_powf (int len, float *src1, float *src2, float *dst);
+  void amd_vrsa_powf (int len, const float *src1, const float *src2, float *dst);
 
   /**
    * @brief Computes elementwise square root for double array.
@@ -1435,7 +1435,7 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array of square roots.
    */
-  void amd_vrsa_sqrtf (int len, float *src, float *dst);
+  void amd_vrsa_sqrtf (int len, const float *src, float *dst);
 #endif
 
   /**
@@ -1453,7 +1453,7 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array of cube roots.
    */
-  void amd_vrsa_cbrtf (int len, float *src, float *dst);
+  void amd_vrsa_cbrtf (int len, const float *src, float *dst);
 #endif
 
 
@@ -1472,7 +1472,7 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array of erf values.
    */
-  void amd_vrsa_erff (int len, float *src, float *dst);
+  void amd_vrsa_erff (int len, const float *src, float *dst);
 
 /* Complementary Error */
   /**
@@ -1488,7 +1488,7 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array of erfc values.
    */
-  void amd_vrsa_erfcf (int len, float *src, float *dst);
+  void amd_vrsa_erfcf (int len, const float *src, float *dst);
 #endif
 
 
@@ -1507,7 +1507,7 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array of absolute values.
    */
-  void amd_vrsa_fabsf (int len, float *src, float *dst);
+  void amd_vrsa_fabsf (int len, const float *src, float *dst);
 
 /* Linearfrac */
   /**
@@ -1535,7 +1535,7 @@ extern "C" {
    * @param shy Shift for y.
    * @param dst Output array for results.
    */
-  void amd_vrsa_linearfracf (int len, float *x, float *y, float scx,
+  void amd_vrsa_linearfracf (int len, const float *x, const float *y, float scx,
                              float shx, float scy, float shy, float *dst);
 #endif
 
@@ -1556,7 +1556,7 @@ extern "C" {
    * @param rhs Right-hand array.
    * @param dst Output array of maxima.
    */
-  void amd_vrsa_fmaxf (int len, float *lhs, float *rhs, float *dst);
+  void amd_vrsa_fmaxf (int len, const float *lhs, const float *rhs, float *dst);
 
   /**
    * @brief Computes elementwise minimum for double arrays.
@@ -1573,7 +1573,7 @@ extern "C" {
    * @param rhs Right-hand array.
    * @param dst Output array of minima.
    */
-  void amd_vrsa_fminf (int len, float *lhs, float *rhs, float *dst);
+  void amd_vrsa_fminf (int len, const float *lhs, const float *rhs, float *dst);
 
 /* Arithmetic */
   /**
@@ -1591,7 +1591,7 @@ extern "C" {
    * @param rhs Right-hand array.
    * @param dst Output array of sums.
    */
-  void amd_vrsa_addf (int len, float *lhs, float *rhs, float *dst);
+  void amd_vrsa_addf (int len, const float *lhs, const float *rhs, float *dst);
 
   /**
    * @brief Computes elementwise difference for double arrays.
@@ -1608,7 +1608,7 @@ extern "C" {
    * @param rhs Right-hand array.
    * @param dst Output array of differences.
    */
-  void amd_vrsa_subf (int len, float *lhs, float *rhs, float *dst);
+  void amd_vrsa_subf (int len, const float *lhs, const float *rhs, float *dst);
 
   /**
    * @brief Computes elementwise product for double arrays.
@@ -1625,7 +1625,7 @@ extern "C" {
    * @param rhs Right-hand array.
    * @param dst Output array of products.
    */
-  void amd_vrsa_mulf (int len, float *lhs, float *rhs, float *dst);
+  void amd_vrsa_mulf (int len, const float *lhs, const float *rhs, float *dst);
 
   /**
    * @brief Computes elementwise quotient for double arrays.
@@ -1642,7 +1642,7 @@ extern "C" {
    * @param rhs Denominator array.
    * @param dst Output array of quotients.
    */
-  void amd_vrsa_divf (int len, float *lhs, float *rhs, float *dst);
+  void amd_vrsa_divf (int len, const float *lhs, const float *rhs, float *dst);
 
 /* Indexed Arithmetic */
   /**
@@ -1667,8 +1667,8 @@ extern "C" {
    * @param dst Output array.
    * @param inc_res Stride for output (in elements).
    */
-  void amd_vrsa_addfi (int len, float *lhs, int inc_a,
-                       float *rhs, int inc_b, float *dst, int inc_res);
+  void amd_vrsa_addfi (int len, const float *lhs, int inc_a,
+                       const float *rhs, int inc_b, float *dst, int inc_res);
 
   /**
    * @brief Computes elementwise difference with strides for double arrays.
@@ -1692,8 +1692,8 @@ extern "C" {
    * @param dst Output array.
    * @param inc_res Stride for output (in elements).
    */
-  void amd_vrsa_subfi (int len, float *lhs, int inc_a,
-                       float *rhs, int inc_b, float *dst, int inc_res );
+  void amd_vrsa_subfi (int len, const float *lhs, int inc_a,
+                       const float *rhs, int inc_b, float *dst, int inc_res );
 
   /**
    * @brief Computes elementwise product with strides for double arrays.
@@ -1717,8 +1717,8 @@ extern "C" {
    * @param dst Output array.
    * @param inc_res Stride for output (in elements).
    */
-  void amd_vrsa_mulfi (int len, float *lhs, int inc_a,
-                       float *rhs, int inc_b, float *dst, int inc_res);
+  void amd_vrsa_mulfi (int len, const float *lhs, int inc_a,
+                       const float *rhs, int inc_b, float *dst, int inc_res);
 
   /**
    * @brief Computes elementwise quotient with strides for double arrays.
@@ -1742,8 +1742,8 @@ extern "C" {
    * @param dst Output array.
    * @param inc_res Stride for output (in elements).
    */
-  void amd_vrsa_divfi (int len, float *lhs, int inc_a,
-                       float *rhs, int inc_b, float *dst, int inc_res);
+  void amd_vrsa_divfi (int len, const float *lhs, int inc_a,
+                       const float *rhs, int inc_b, float *dst, int inc_res);
 
 /* Indexed Maximum & Minimum */
   /**
@@ -1768,8 +1768,8 @@ extern "C" {
    * @param dst Output array.
    * @param inc_res Stride for output (in elements).
    */
-  void amd_vrsa_fmaxfi (int len, float *lhs, int inc_a,
-                        float *rhs, int inc_b, float *dst, int inc_res);
+  void amd_vrsa_fmaxfi (int len, const float *lhs, int inc_a,
+                        const float *rhs, int inc_b, float *dst, int inc_res);
 
   /**
    * @brief Computes elementwise minimum with strides for double arrays.
@@ -1793,8 +1793,8 @@ extern "C" {
    * @param dst Output array.
    * @param inc_res Stride for output (in elements).
    */
-  void amd_vrsa_fminfi (int len, float *lhs, int inc_a,
-                        float *rhs, int inc_b, float *dst, int inc_res);
+  void amd_vrsa_fminfi (int len, const float *lhs, int inc_a,
+                        const float *rhs, int inc_b, float *dst, int inc_res);
 
 #ifdef __cplusplus
 }

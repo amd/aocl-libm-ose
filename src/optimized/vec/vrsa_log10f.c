@@ -28,7 +28,7 @@
  * ---------------------
  * Signature
  * ---------------------
- * void vrsa_log10f(int length, float *input, float *result)
+ * void vrsa_log10f(int length, const float *input, float *result)
  *
  * vrsa_log10f() computes the log10 values for 'length' number of elements
  * present in the 'input' array.
@@ -68,7 +68,7 @@
 #include <stdio.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_OPT(vrsa_log10f)(int length, float *input, float *result)
+void ALM_PROTO_OPT(vrsa_log10f)(int length, const float *input, float *result)
 {
     if (likely(length >= FLOAT_ELEMENTS_256_BIT))
     {

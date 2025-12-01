@@ -29,7 +29,7 @@
  * ---------------------
  * Signature
  * ---------------------
- * void vrsa_expf(int length, float *input, float *result)
+ * void vrsa_expf(int length, const float *input, float *result)
  *
  * vrsa_expf() computes the exp values for 'length' number of elements
  * present in the 'input' array.
@@ -69,7 +69,7 @@
 #include <stdio.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_OPT(vrsa_expf)(int length, float *input, float *result)
+void ALM_PROTO_OPT(vrsa_expf)(int length, const float *input, float *result)
 {
     int j = 0;
 

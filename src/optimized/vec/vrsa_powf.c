@@ -28,7 +28,7 @@
  * ---------------------
  * Signature
  * ---------------------
- * void vrsa_powf(int length, float *input1, float *input2, float *result)
+ * void vrsa_powf(int length, const float *input1, const float *input2, float *result)
  *
  * vrsa_powf() computes the pow values for 'length' number of elements as
  * values in the 'input1' array raised to 'input2' array.
@@ -70,7 +70,7 @@
 #include <stdio.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_OPT(vrsa_powf)(int length, float *input1, float *input2, float *result)
+void ALM_PROTO_OPT(vrsa_powf)(int length, const float *input1, const float *input2, float *result)
 {
     int j = 0;
 

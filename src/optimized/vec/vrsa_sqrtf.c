@@ -35,7 +35,7 @@
  * ---------------------
  * Signature
  * ---------------------
- * void vrsa_sqrtf(int length, float *input, float *result)
+ * void vrsa_sqrtf(int length, const float *input, float *result)
  *
  * vrsa_sqrtf() computes the sqrt values for 'length' number of elements
  * present in the 'input' array.
@@ -69,7 +69,7 @@
  *         Store the output using masked store
  *     Return
  */
-void ALM_PROTO_OPT(vrsa_sqrtf)(int length, float *input, float *result)
+void ALM_PROTO_OPT(vrsa_sqrtf)(int length, const float *input, float *result)
 {
     if (likely(length >= FLOAT_ELEMENTS_256_BIT))
     {

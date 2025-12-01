@@ -29,7 +29,7 @@
  * ---------------------
  * Signature
  * ---------------------
- * void vrsa_erfcf(int length, float *input, float *output)
+ * void vrsa_erfcf(int length, const float *input, float *output)
  *
  * vrsa_erfcf() computes the complementary error function for 'length' number of elements
  * present in the 'input' array.
@@ -60,7 +60,7 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_OPT(vrsa_erfcf)(int length, float *input, float *output)
+void ALM_PROTO_OPT(vrsa_erfcf)(int length, const float *input, float *output)
 {
     int j = 0;
     __m256  operfcf;

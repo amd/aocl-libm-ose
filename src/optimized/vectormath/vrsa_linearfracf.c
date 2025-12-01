@@ -29,7 +29,7 @@
 C implementation of Linearfrac
 
 Signature:
-    void vrsa_linearfracf(int length, float *a, float *b, float *scalea, float *shifta, float *scaleb, float *shiftb, float *result)
+    void vrsa_linearfracf(int length, const float *a, const float *b, float scalea, float shifta, float scaleb, float shiftb, float *result)
 
 Implementation notes:
 
@@ -50,7 +50,7 @@ Implementation notes:
 #include <libm/typehelper-vec.h>
 #include <libm/compiler.h>
 
-void ALM_PROTO_OPT(vrsa_linearfracf)(int length, float *a, float *b, float scalea, float shifta, float scaleb, float shiftb, float *result)
+void ALM_PROTO_OPT(vrsa_linearfracf)(int length, const float *a, const float *b, float scalea, float shifta, float scaleb, float shiftb, float *result)
 {
     int remainder, j = 0;
     uint32_t scaleb_u = asuint32(scaleb);

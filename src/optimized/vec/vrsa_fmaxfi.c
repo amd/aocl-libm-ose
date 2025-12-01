@@ -1,6 +1,6 @@
 
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@
  */
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
-void ALM_PROTO_OPT(vrsa_fmaxfi)(int n, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res)
+void ALM_PROTO_OPT(vrsa_fmaxfi)(int n, const float *lhs, int inc_a, const float *rhs, int inc_b, float *dst, int inc_res)
 {
     for (int i=0; i<n ; ++i)
     {

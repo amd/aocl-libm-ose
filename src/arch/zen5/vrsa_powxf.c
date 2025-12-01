@@ -29,7 +29,7 @@
 C implementation of vector array version of powxf
 
 Signature:
-    void vrsa_powxf(int length, float *x, float y, float *result)
+    void vrsa_powxf(int length, const float *x, float y, float *result)
 
 Implementation notes:
 
@@ -45,7 +45,7 @@ Implementation notes:
 #include <libm/amd_funcs_internal.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_ARCH_ZN5(vrsa_powxf)(int length, float *x, float y, float *result)
+void ALM_PROTO_ARCH_ZN5(vrsa_powxf)(int length, const float *x, float y, float *result)
 {
     int j = 0;
     int remainder = length % DOUBLE_ELEMENTS_512_BIT;

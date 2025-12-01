@@ -29,7 +29,7 @@
  * ---------------------
  * Signature
  * ---------------------
- * void vrsa_cbrtf(int length, float *input, float *result)
+ * void vrsa_cbrtf(int length, const float *input, float *result)
  *
  * vrsa_cbrtf() computes the cube root values for 'length' number of elements
  * present in the 'input' array.
@@ -72,7 +72,7 @@
 #include <stdio.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_OPT(vrsa_cbrtf)(int length, float *input, float *result)
+void ALM_PROTO_OPT(vrsa_cbrtf)(int length, const float *input, float *result)
 {
 
     if (likely(length >= FLOAT_ELEMENTS_128_BIT))

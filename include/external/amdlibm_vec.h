@@ -508,6 +508,14 @@ extern "C" {
    */
   __m128 amd_vrs4_fabsf (__m128 x);
 
+/* Nearest Integer */
+  /**
+   * @brief Computes round per-lane for two double-precision elements.
+   * @param x Input vector x.
+   * @return Vector of rounded value.
+   */
+  __m128d amd_vrd2_round (__m128d x);
+
 /* Linearfrac */
   /**
    * @brief Computes a linear fractional transform for two double-precision lanes.

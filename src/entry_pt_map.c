@@ -350,6 +350,7 @@ LIBM_DECL_FN_MAP(vrd2_sqrt);
 LIBM_DECL_FN_MAP(vrd2_fabs);
 LIBM_DECL_FN_MAP(vrd2_linearfrac);
 LIBM_DECL_FN_MAP(vrd2_erfc);
+LIBM_DECL_FN_MAP(vrd2_round);
 
 LIBM_DECL_FN_MAP(vrd4_pow);
 LIBM_DECL_FN_MAP(vrd4_powx);
@@ -746,6 +747,7 @@ WEAK_LIBM_ALIAS(vrd2_sqrt, FN_PROTOTYPE(vrd2_sqrt));
 WEAK_LIBM_ALIAS(vrd2_fabs, FN_PROTOTYPE(vrd2_fabs));
 WEAK_LIBM_ALIAS(vrd2_linearfrac, FN_PROTOTYPE(vrd2_linearfrac));
 WEAK_LIBM_ALIAS(vrd2_erfc, FN_PROTOTYPE(vrd2_erfc));
+WEAK_LIBM_ALIAS(vrd2_round, FN_PROTOTYPE(vrd2_round));
 
 WEAK_LIBM_ALIAS(vrd4_pow, FN_PROTOTYPE(vrd4_pow));
 WEAK_LIBM_ALIAS(vrd4_powx, FN_PROTOTYPE(vrd4_powx));

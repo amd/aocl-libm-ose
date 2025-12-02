@@ -171,7 +171,6 @@ int test_v4d(test_data *data, int idx)  {
 }
 
 int test_v8s(test_data *data, int idx)  {
-#if 0
 #if ((LIBM_PROTOTYPE != PROTOTYPE_MSVC) && (LIBM_PROTOTYPE != PROTOTYPE_GLIBC))
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
@@ -179,7 +178,6 @@ int test_v8s(test_data *data, int idx)  {
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m256 op8 = LIBM_FUNC_VEC(s, 8, roundf)(ip8);
   _mm256_store_ps(&op[0], op8);
-#endif
 #endif
   return 0;
 }

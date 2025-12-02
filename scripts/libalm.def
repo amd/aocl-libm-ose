@@ -202,6 +202,7 @@ EXPORTS
     amd_vrs8_logf
     amd_vrs8_powf
     amd_vrs8_powxf
+    amd_vrs8_roundf
     amd_vrs8_sinf
     amd_vrs8_sincosf
     amd_vrs8_tanf

@@ -114,28 +114,8 @@ Atan
   :project: libm
 
 
-Atan2
------
-
-.. doxygenfunction:: amd_vrs4_atan2f
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_atan2
-  :project: libm
-
-
 Hyperbolic Functions
 ====================
-
-Sinh
-----
-
-.. doxygenfunction:: amd_vrs4_sinhf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_sinh
-  :project: libm
-
 
 Cosh
 ----
@@ -153,42 +133,13 @@ Tanh
 .. doxygenfunction:: amd_vrs4_tanhf
   :project: libm
 
-.. doxygenfunction:: amd_vrd2_tanh
-  :project: libm
+.. .. doxygenfunction:: amd_vrd2_tanh
+..   :project: libm
+..   (Function not yet documented in Doxygen)
 
 
 Inverse Hyperbolic Functions
 =============================
-
-Asinh
------
-
-.. doxygenfunction:: amd_vrs4_asinhf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_asinh
-  :project: libm
-
-
-Acosh
------
-
-.. doxygenfunction:: amd_vrs4_acoshf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_acosh
-  :project: libm
-
-
-Atanh
------
-
-.. doxygenfunction:: amd_vrs4_atanhf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_atanh
-  :project: libm
-
 
 Exponential Functions
 =====================
@@ -266,16 +217,6 @@ Log10
   :project: libm
 
 
-Log1p
------
-
-.. doxygenfunction:: amd_vrs4_log1pf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_log1p
-  :project: libm
-
-
 Power and Root Functions
 =========================
 
@@ -319,16 +260,6 @@ Cbrt
   :project: libm
 
 
-Hypot
------
-
-.. doxygenfunction:: amd_vrs4_hypotf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_hypot
-  :project: libm
-
-
 Error Functions
 ===============
 
@@ -355,98 +286,8 @@ Erfc
 Nearest Integer Functions
 ==========================
 
-Ceil
-----
-
-.. doxygenfunction:: amd_vrs4_ceilf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_ceil
-  :project: libm
-
-
-Floor
------
-
-.. doxygenfunction:: amd_vrs4_floorf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_floor
-  :project: libm
-
-
-Trunc
------
-
-.. doxygenfunction:: amd_vrs4_truncf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_trunc
-  :project: libm
-
-
-Round
------
-
-.. doxygenfunction:: amd_vrs4_roundf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_round
-  :project: libm
-
-
-Rint
-----
-
-.. doxygenfunction:: amd_vrs4_rintf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_rint
-  :project: libm
-
-
-Nearbyint
----------
-
-.. doxygenfunction:: amd_vrs4_nearbyintf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_nearbyint
-  :project: libm
-
-
 Minimum, Maximum, and Difference
 =================================
-
-Fmin
-----
-
-.. doxygenfunction:: amd_vrs4_fminf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_fmin
-  :project: libm
-
-
-Fmax
-----
-
-.. doxygenfunction:: amd_vrs4_fmaxf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_fmax
-  :project: libm
-
-
-Fdim
-----
-
-.. doxygenfunction:: amd_vrs4_fdimf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_fdim
-  :project: libm
-
 
 Fabs
 ----
@@ -458,46 +299,5 @@ Fabs
   :project: libm
 
 
-Copysign
---------
-
-.. doxygenfunction:: amd_vrs4_copysignf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_copysign
-  :project: libm
-
-
 Arithmetic Functions
 ====================
-
-Fma
----
-
-.. doxygenfunction:: amd_vrs4_fmaf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_fma
-  :project: libm
-
-
-Fmod
-----
-
-.. doxygenfunction:: amd_vrs4_fmodf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_fmod
-  :project: libm
-
-
-Remainder
----------
-
-.. doxygenfunction:: amd_vrs4_remainderf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_remainder
-  :project: libm
-
-.. End of Doc

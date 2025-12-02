@@ -35,21 +35,21 @@ Scalar
 Remainder
 ---------
 
-.. doxygenfunction:: amd_remainderf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_remainderf`` documentation.
 
-.. doxygenfunction:: amd_remainder
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_remainder`` documentation.
+
 
 
 Remquo
 ------
 
-.. doxygenfunction:: amd_remquof
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_remquof`` documentation.
 
-.. doxygenfunction:: amd_remquo
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_remquo`` documentation.
+
 
 
 .. End of Doc

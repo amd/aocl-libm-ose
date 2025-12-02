@@ -542,16 +542,6 @@ Nan
 Arithmetic Functions
 ====================
 
-Fma
----
-
-.. doxygenfunction:: amd_fmaf
-  :project: libm
-
-.. doxygenfunction:: amd_fma
-  :project: libm
-
-
 Minimum, Maximum, and Difference
 =================================
 

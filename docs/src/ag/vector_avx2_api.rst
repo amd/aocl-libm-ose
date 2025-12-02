@@ -114,28 +114,8 @@ Atan
   :project: libm
 
 
-Atan2
------
-
-.. doxygenfunction:: amd_vrs8_atan2f
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_atan2
-  :project: libm
-
-
 Hyperbolic Functions
 ====================
-
-Sinh
-----
-
-.. doxygenfunction:: amd_vrs8_sinhf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_sinh
-  :project: libm
-
 
 Cosh
 ----
@@ -143,8 +123,9 @@ Cosh
 .. doxygenfunction:: amd_vrs8_coshf
   :project: libm
 
-.. doxygenfunction:: amd_vrd4_cosh
-  :project: libm
+.. .. doxygenfunction:: amd_vrd4_cosh
+..   :project: libm
+..   (Function not yet documented in Doxygen)
 
 
 Tanh
@@ -153,42 +134,13 @@ Tanh
 .. doxygenfunction:: amd_vrs8_tanhf
   :project: libm
 
-.. doxygenfunction:: amd_vrd4_tanh
-  :project: libm
+.. .. doxygenfunction:: amd_vrd4_tanh
+..   :project: libm
+..   (Function not yet documented in Doxygen)
 
 
 Inverse Hyperbolic Functions
 =============================
-
-Asinh
------
-
-.. doxygenfunction:: amd_vrs8_asinhf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_asinh
-  :project: libm
-
-
-Acosh
------
-
-.. doxygenfunction:: amd_vrs8_acoshf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_acosh
-  :project: libm
-
-
-Atanh
------
-
-.. doxygenfunction:: amd_vrs8_atanhf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_atanh
-  :project: libm
-
 
 Exponential Functions
 =====================
@@ -210,26 +162,6 @@ Exp2
   :project: libm
 
 .. doxygenfunction:: amd_vrd4_exp2
-  :project: libm
-
-
-Exp10
------
-
-.. doxygenfunction:: amd_vrs8_exp10f
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_exp10
-  :project: libm
-
-
-Expm1
------
-
-.. doxygenfunction:: amd_vrs8_expm1f
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_expm1
   :project: libm
 
 
@@ -262,18 +194,9 @@ Log10
 .. doxygenfunction:: amd_vrs8_log10f
   :project: libm
 
-.. doxygenfunction:: amd_vrd4_log10
-  :project: libm
-
-
-Log1p
------
-
-.. doxygenfunction:: amd_vrs8_log1pf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_log1p
-  :project: libm
+.. .. doxygenfunction:: amd_vrd4_log10
+..   :project: libm
+..   (Function not yet documented in Doxygen)
 
 
 Power and Root Functions
@@ -309,26 +232,6 @@ Sqrt
   :project: libm
 
 
-Cbrt
-----
-
-.. doxygenfunction:: amd_vrs8_cbrtf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_cbrt
-  :project: libm
-
-
-Hypot
------
-
-.. doxygenfunction:: amd_vrs8_hypotf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_hypot
-  :project: libm
-
-
 Error Functions
 ===============
 
@@ -355,98 +258,8 @@ Erfc
 Nearest Integer Functions
 ==========================
 
-Ceil
-----
-
-.. doxygenfunction:: amd_vrs8_ceilf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_ceil
-  :project: libm
-
-
-Floor
------
-
-.. doxygenfunction:: amd_vrs8_floorf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_floor
-  :project: libm
-
-
-Trunc
------
-
-.. doxygenfunction:: amd_vrs8_truncf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_trunc
-  :project: libm
-
-
-Round
------
-
-.. doxygenfunction:: amd_vrs8_roundf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_round
-  :project: libm
-
-
-Rint
-----
-
-.. doxygenfunction:: amd_vrs8_rintf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_rint
-  :project: libm
-
-
-Nearbyint
----------
-
-.. doxygenfunction:: amd_vrs8_nearbyintf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_nearbyint
-  :project: libm
-
-
 Minimum, Maximum, and Difference
 =================================
-
-Fmin
-----
-
-.. doxygenfunction:: amd_vrs8_fminf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_fmin
-  :project: libm
-
-
-Fmax
-----
-
-.. doxygenfunction:: amd_vrs8_fmaxf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_fmax
-  :project: libm
-
-
-Fdim
-----
-
-.. doxygenfunction:: amd_vrs8_fdimf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_fdim
-  :project: libm
-
 
 Fabs
 ----
@@ -458,48 +271,5 @@ Fabs
   :project: libm
 
 
-Copysign
---------
-
-.. doxygenfunction:: amd_vrs8_copysignf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_copysign
-  :project: libm
-
-
 Arithmetic Functions
 ====================
-
-Fma
----
-
-.. doxygenfunction:: amd_vrs8_fmaf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_fma
-  :project: libm
-
-
-Fmod
-----
-
-.. doxygenfunction:: amd_vrs8_fmodf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_fmod
-  :project: libm
-
-
-Remainder
----------
-
-.. doxygenfunction:: amd_vrs8_remainderf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_remainder
-  :project: libm
-
-
-
-.. End of Doc

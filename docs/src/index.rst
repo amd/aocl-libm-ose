@@ -165,6 +165,7 @@ within that mathematical domain.
    ag/arithmetic_api.rst
    ag/complex_api.rst
    ag/min_max_diff.rst
+   ag/linearfrac_api.rst
 
 
 By Implementation Variant

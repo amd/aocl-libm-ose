@@ -35,41 +35,41 @@ Scalar
 Asin
 ----
 
-.. doxygenfunction:: amd_asinf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_asinf`` documentation.
 
-.. doxygenfunction:: amd_asin
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_asin`` documentation.
+
 
 
 Acos
 ----
 
-.. doxygenfunction:: amd_acosf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_acosf`` documentation.
 
-.. doxygenfunction:: amd_acos
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_acos`` documentation.
+
 
 
 Atan
 ----
 
-.. doxygenfunction:: amd_atanf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_atanf`` documentation.
 
-.. doxygenfunction:: amd_atan
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_atan`` documentation.
+
 
 
 Atan2
 -----
 
-.. doxygenfunction:: amd_atan2f
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_atan2f`` documentation.
 
-.. doxygenfunction:: amd_atan2
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_atan2`` documentation.
+
 
 
 Fast Variants
@@ -163,35 +163,35 @@ Asin
 
 **AVX**
 
-.. doxygenfunction:: amd_vrs4_asinf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_asinf`` documentation.
 
-.. doxygenfunction:: amd_vrd2_asin
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_asin`` documentation.
+
 
 **AVX2**
 
-.. doxygenfunction:: amd_vrs8_asinf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_asinf`` documentation.
 
-.. doxygenfunction:: amd_vrd4_asin
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_asin`` documentation.
+
 
 **AVX512**
 
-.. doxygenfunction:: amd_vrs16_asinf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_asinf`` documentation.
 
-.. doxygenfunction:: amd_vrd8_asin
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd8_asin`` documentation.
+
 
 **Vector array**
 
-.. doxygenfunction:: amd_vrsa_asinf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_asinf`` documentation.
 
-.. doxygenfunction:: amd_vrda_asin
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_asin`` documentation.
+
 
 
 Acos
@@ -199,32 +199,32 @@ Acos
 
 **AVX**
 
-.. doxygenfunction:: amd_vrs4_acosf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_acosf`` documentation.
 
-.. doxygenfunction:: amd_vrd2_acos
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_acos`` documentation.
+
 
 **AVX2**
 
-.. doxygenfunction:: amd_vrs8_acosf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_acosf`` documentation.
 
-.. doxygenfunction:: amd_vrd4_acos
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_acos`` documentation.
+
 
 **AVX512**
 
-.. doxygenfunction:: amd_vrs16_acosf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_acosf`` documentation.
+
 
 **Vector array**
 
-.. doxygenfunction:: amd_vrsa_acosf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_acosf`` documentation.
 
-.. doxygenfunction:: amd_vrda_acos
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_acos`` documentation.
+
 
 
 Atan
@@ -232,34 +232,34 @@ Atan
 
 **AVX**
 
-.. doxygenfunction:: amd_vrs4_atanf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_atanf`` documentation.
 
-.. doxygenfunction:: amd_vrd2_atan
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_atan`` documentation.
+
 
 **AVX2**
 
-.. doxygenfunction:: amd_vrs8_atanf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_atanf`` documentation.
 
-.. doxygenfunction:: amd_vrd4_atan
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_atan`` documentation.
+
 
 **AVX512**
 
-.. doxygenfunction:: amd_vrs16_atanf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_atanf`` documentation.
 
-.. doxygenfunction:: amd_vrd8_atan
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd8_atan`` documentation.
+
 
 **Vector array**
 
-.. doxygenfunction:: amd_vrsa_atanf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_atanf`` documentation.
 
-.. doxygenfunction:: amd_vrda_atan
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_atan`` documentation.
+
 
 .. End of Doc

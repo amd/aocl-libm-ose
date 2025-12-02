@@ -24,42 +24,11 @@
 ..  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ..  POSSIBILITY OF SUCH DAMAGE.
 
-.. _inverse_hyperbolic:
+.. _linearfrac:
 
-Inverse Hyperbolic Functions
-============================
+Linear Fraction Functions
+=========================
 
-Scalar
-^^^^^^
-
-Asinh
------
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_asinhf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_asinh`` documentation.
-
-
-
-Acosh
------
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_acoshf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_acosh`` documentation.
-
-
-
-Atanh
------
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_atanhf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_atanh`` documentation.
-
-
+Contents need to be added.
 
 .. End of Doc

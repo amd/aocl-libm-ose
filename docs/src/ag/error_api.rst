@@ -35,21 +35,21 @@ Scalar
 Erf
 ---
 
-.. doxygenfunction:: amd_erff
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_erff`` documentation.
 
-.. doxygenfunction:: amd_erf
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_erf`` documentation.
+
 
 
 Erfc
 ----
 
-.. doxygenfunction:: amd_erfcf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_erfcf`` documentation.
 
-.. doxygenfunction:: amd_erfc
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_erfc`` documentation.
+
 
 
 Fast Variants
@@ -91,35 +91,35 @@ Erf
 
 **AVX**
 
-.. doxygenfunction:: amd_vrs4_erff
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_erff`` documentation.
 
-.. doxygenfunction:: amd_vrd2_erf
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_erf`` documentation.
+
 
 **AVX2**
 
-.. doxygenfunction:: amd_vrs8_erff
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_erff`` documentation.
 
-.. doxygenfunction:: amd_vrd4_erf
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_erf`` documentation.
+
 
 **AVX512**
 
-.. doxygenfunction:: amd_vrs16_erff
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_erff`` documentation.
 
-.. doxygenfunction:: amd_vrd8_erf
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd8_erf`` documentation.
+
 
 **Vector array**
 
-.. doxygenfunction:: amd_vrsa_erff
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_erff`` documentation.
 
-.. doxygenfunction:: amd_vrda_erf
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_erf`` documentation.
+
 
 
 Erfc
@@ -127,35 +127,35 @@ Erfc
 
 **AVX**
 
-.. doxygenfunction:: amd_vrs4_erfcf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_erfcf`` documentation.
 
-.. doxygenfunction:: amd_vrd2_erfc
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_erfc`` documentation.
+
 
 **AVX2**
 
-.. doxygenfunction:: amd_vrs8_erfcf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_erfcf`` documentation.
 
-.. doxygenfunction:: amd_vrd4_erfc
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_erfc`` documentation.
+
 
 **AVX512**
 
-.. doxygenfunction:: amd_vrs16_erfcf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_erfcf`` documentation.
 
-.. doxygenfunction:: amd_vrd8_erfc
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd8_erfc`` documentation.
+
 
 **Vector array**
 
-.. doxygenfunction:: amd_vrsa_erfcf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_erfcf`` documentation.
 
-.. doxygenfunction:: amd_vrda_erfc
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_erfc`` documentation.
+
 
 
 .. End of Doc

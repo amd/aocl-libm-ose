@@ -35,11 +35,11 @@ Scalar
 Hypot
 -----
 
-.. doxygenfunction:: amd_hypotf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_hypotf`` documentation.
 
-.. doxygenfunction:: amd_hypot
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_hypot`` documentation.
+
 
 
 .. End of Doc

@@ -35,31 +35,31 @@ Scalar
 Pow
 ---
 
-.. doxygenfunction:: amd_powf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_powf`` documentation.
 
-.. doxygenfunction:: amd_pow
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_pow`` documentation.
+
 
 
 Sqrt
 ----
 
-.. doxygenfunction:: amd_sqrtf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_sqrtf`` documentation.
 
-.. doxygenfunction:: amd_sqrt
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_sqrt`` documentation.
+
 
 
 Cbrt
 ----
 
-.. doxygenfunction:: amd_cbrtf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_cbrtf`` documentation.
 
-.. doxygenfunction:: amd_cbrt
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_cbrt`` documentation.
+
 
 
 Fast Variants
@@ -103,35 +103,35 @@ Pow
 
 **AVX**
 
-.. doxygenfunction:: amd_vrs4_powf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_powf`` documentation.
 
-.. doxygenfunction:: amd_vrd2_pow
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_pow`` documentation.
+
 
 **AVX2**
 
-.. doxygenfunction:: amd_vrs8_powf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_powf`` documentation.
 
-.. doxygenfunction:: amd_vrd4_pow
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_pow`` documentation.
+
 
 **AVX512**
 
-.. doxygenfunction:: amd_vrs16_powf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_powf`` documentation.
 
-.. doxygenfunction:: amd_vrd8_pow
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd8_pow`` documentation.
+
 
 **Vector array**
 
-.. doxygenfunction:: amd_vrsa_powf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_powf`` documentation.
 
-.. doxygenfunction:: amd_vrda_pow
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_pow`` documentation.
+
 
 
 Powx
@@ -139,27 +139,27 @@ Powx
 
 **AVX**
 
-.. doxygenfunction:: amd_vrs4_powxf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_powxf`` documentation.
 
-.. doxygenfunction:: amd_vrd2_powx
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_powx`` documentation.
+
 
 **AVX2**
 
-.. doxygenfunction:: amd_vrs8_powxf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_powxf`` documentation.
 
-.. doxygenfunction:: amd_vrd4_powx
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_powx`` documentation.
+
 
 **AVX512**
 
-.. doxygenfunction:: amd_vrs16_powxf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_powxf`` documentation.
 
-.. doxygenfunction:: amd_vrd8_powx
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd8_powx`` documentation.
+
 
 
 Sqrt
@@ -167,35 +167,35 @@ Sqrt
 
 **AVX**
 
-.. doxygenfunction:: amd_vrs4_sqrtf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_sqrtf`` documentation.
 
-.. doxygenfunction:: amd_vrd2_sqrt
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_sqrt`` documentation.
+
 
 **AVX2**
 
-.. doxygenfunction:: amd_vrs8_sqrtf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_sqrtf`` documentation.
 
-.. doxygenfunction:: amd_vrd4_sqrt
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_sqrt`` documentation.
+
 
 **AVX512**
 
-.. doxygenfunction:: amd_vrs16_sqrtf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_sqrtf`` documentation.
 
-.. doxygenfunction:: amd_vrd8_sqrt
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd8_sqrt`` documentation.
+
 
 **Vector array**
 
-.. doxygenfunction:: amd_vrsa_sqrtf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_sqrtf`` documentation.
 
-.. doxygenfunction:: amd_vrda_sqrt
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_sqrt`` documentation.
+
 
 
 Cbrt
@@ -203,19 +203,19 @@ Cbrt
 
 **AVX**
 
-.. doxygenfunction:: amd_vrs4_cbrtf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_cbrtf`` documentation.
 
-.. doxygenfunction:: amd_vrd2_cbrt
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_cbrt`` documentation.
+
 
 **Vector array**
 
-.. doxygenfunction:: amd_vrsa_cbrtf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_cbrtf`` documentation.
 
-.. doxygenfunction:: amd_vrda_cbrt
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_cbrt`` documentation.
+
 
 
 .. End of Doc

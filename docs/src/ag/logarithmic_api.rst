@@ -35,41 +35,41 @@ Scalar
 Log
 ---
 
-.. doxygenfunction:: amd_logf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_logf`` documentation.
 
-.. doxygenfunction:: amd_log
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_log`` documentation.
+
 
 
 Log2
 ----
 
-.. doxygenfunction:: amd_log2f
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_log2f`` documentation.
 
-.. doxygenfunction:: amd_log2
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_log2`` documentation.
+
 
 
 Log10
 -----
 
-.. doxygenfunction:: amd_log10f
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_log10f`` documentation.
 
-.. doxygenfunction:: amd_log10
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_log10`` documentation.
+
 
 
 Log1p
 -----
 
-.. doxygenfunction:: amd_log1pf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_log1pf`` documentation.
 
-.. doxygenfunction:: amd_log1p
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_log1p`` documentation.
+
 
 
 Fast Variants
@@ -111,35 +111,35 @@ Log
 
 **AVX**
 
-.. doxygenfunction:: amd_vrs4_logf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_logf`` documentation.
 
-.. doxygenfunction:: amd_vrd2_log
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_log`` documentation.
+
 
 **AVX2**
 
-.. doxygenfunction:: amd_vrs8_logf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_logf`` documentation.
 
-.. doxygenfunction:: amd_vrd4_log
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_log`` documentation.
+
 
 **AVX512**
 
-.. doxygenfunction:: amd_vrs16_logf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_logf`` documentation.
 
-.. doxygenfunction:: amd_vrd8_log
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd8_log`` documentation.
+
 
 **Vector array**
 
-.. doxygenfunction:: amd_vrsa_logf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_logf`` documentation.
 
-.. doxygenfunction:: amd_vrda_log
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_log`` documentation.
+
 
 
 Log2
@@ -147,35 +147,35 @@ Log2
 
 **AVX**
 
-.. doxygenfunction:: amd_vrs4_log2f
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_log2f`` documentation.
 
-.. doxygenfunction:: amd_vrd2_log2
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_log2`` documentation.
+
 
 **AVX2**
 
-.. doxygenfunction:: amd_vrs8_log2f
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_log2f`` documentation.
 
-.. doxygenfunction:: amd_vrd4_log2
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_log2`` documentation.
+
 
 **AVX512**
 
-.. doxygenfunction:: amd_vrs16_log2f
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_log2f`` documentation.
 
-.. doxygenfunction:: amd_vrd8_log2
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd8_log2`` documentation.
+
 
 **Vector array**
 
-.. doxygenfunction:: amd_vrsa_log2f
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_log2f`` documentation.
 
-.. doxygenfunction:: amd_vrda_log2
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_log2`` documentation.
+
 
 
 Log10
@@ -183,21 +183,21 @@ Log10
 
 **AVX2**
 
-.. doxygenfunction:: amd_vrs8_log10f
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_log10f`` documentation.
+
 
 **AVX512**
 
-.. doxygenfunction:: amd_vrs16_log10f
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_log10f`` documentation.
+
 
 **Vector array**
 
-.. doxygenfunction:: amd_vrsa_log10f
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_log10f`` documentation.
 
-.. doxygenfunction:: amd_vrda_log10
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_log10`` documentation.
+
 
 
 Log1p
@@ -205,19 +205,19 @@ Log1p
 
 **AVX**
 
-.. doxygenfunction:: amd_vrs4_log1pf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_log1pf`` documentation.
 
-.. doxygenfunction:: amd_vrd2_log1p
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_log1p`` documentation.
+
 
 **Vector array**
 
-.. doxygenfunction:: amd_vrsa_log1pf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_log1pf`` documentation.
 
-.. doxygenfunction:: amd_vrda_log1p
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_log1p`` documentation.
+
 
 
 .. End of Doc

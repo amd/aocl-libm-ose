@@ -35,41 +35,41 @@ Scalar
 Sin
 ---
 
-.. doxygenfunction:: amd_sinf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_sinf`` documentation.
 
-.. doxygenfunction:: amd_sin
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_sin`` documentation.
+
 
 
 Cos
 ---
 
-.. doxygenfunction:: amd_cosf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_cosf`` documentation.
 
-.. doxygenfunction:: amd_cos
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_cos`` documentation.
+
 
 
 Tan
 ---
 
-.. doxygenfunction:: amd_tanf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_tanf`` documentation.
 
-.. doxygenfunction:: amd_tan
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_tan`` documentation.
+
 
 
 Sincos
 ------
 
-.. doxygenfunction:: amd_sincosf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_sincosf`` documentation.
 
-.. doxygenfunction:: amd_sincos
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_sincos`` documentation.
+
 
 
 Fast Variants
@@ -163,35 +163,35 @@ Sin
 
 **AVX**
 
-.. doxygenfunction:: amd_vrs4_sinf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_sinf`` documentation.
 
-.. doxygenfunction:: amd_vrd2_sin
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_sin`` documentation.
+
 
 **AVX2**
 
-.. doxygenfunction:: amd_vrs8_sinf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_sinf`` documentation.
 
-.. doxygenfunction:: amd_vrd4_sin
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_sin`` documentation.
+
 
 **AVX512**
 
-.. doxygenfunction:: amd_vrs16_sinf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_sinf`` documentation.
 
-.. doxygenfunction:: amd_vrd8_sin
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd8_sin`` documentation.
+
 
 **Vector array**
 
-.. doxygenfunction:: amd_vrsa_sinf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_sinf`` documentation.
 
-.. doxygenfunction:: amd_vrda_sin
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_sin`` documentation.
+
 
 
 Cos
@@ -199,35 +199,35 @@ Cos
 
 **AVX**
 
-.. doxygenfunction:: amd_vrs4_cosf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_cosf`` documentation.
 
-.. doxygenfunction:: amd_vrd2_cos
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_cos`` documentation.
+
 
 **AVX2**
 
-.. doxygenfunction:: amd_vrs8_cosf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_cosf`` documentation.
 
-.. doxygenfunction:: amd_vrd4_cos
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_cos`` documentation.
+
 
 **AVX512**
 
-.. doxygenfunction:: amd_vrs16_cosf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_cosf`` documentation.
 
-.. doxygenfunction:: amd_vrd8_cos
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd8_cos`` documentation.
+
 
 **Vector array**
 
-.. doxygenfunction:: amd_vrsa_cosf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_cosf`` documentation.
 
-.. doxygenfunction:: amd_vrda_cos
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_cos`` documentation.
+
 
 
 Tan
@@ -235,35 +235,35 @@ Tan
 
 **AVX**
 
-.. doxygenfunction:: amd_vrs4_tanf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_tanf`` documentation.
 
-.. doxygenfunction:: amd_vrd2_tan
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_tan`` documentation.
+
 
 **AVX2**
 
-.. doxygenfunction:: amd_vrs8_tanf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_tanf`` documentation.
 
-.. doxygenfunction:: amd_vrd4_tan
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_tan`` documentation.
+
 
 **AVX512**
 
-.. doxygenfunction:: amd_vrs16_tanf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_tanf`` documentation.
 
-.. doxygenfunction:: amd_vrd8_tan
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd8_tan`` documentation.
+
 
 **Vector array**
 
-.. doxygenfunction:: amd_vrsa_tanf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_tanf`` documentation.
 
-.. doxygenfunction:: amd_vrda_tan
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_tan`` documentation.
+
 
 
 Sincos
@@ -271,35 +271,35 @@ Sincos
 
 **AVX**
 
-.. doxygenfunction:: amd_vrs4_sincosf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_sincosf`` documentation.
 
-.. doxygenfunction:: amd_vrd2_sincos
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_sincos`` documentation.
+
 
 **AVX2**
 
-.. doxygenfunction:: amd_vrs8_sincosf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_sincosf`` documentation.
 
-.. doxygenfunction:: amd_vrd4_sincos
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_sincos`` documentation.
+
 
 **AVX512**
 
-.. doxygenfunction:: amd_vrs16_sincosf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_sincosf`` documentation.
 
-.. doxygenfunction:: amd_vrd8_sincos
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd8_sincos`` documentation.
+
 
 **Vector array**
 
-.. doxygenfunction:: amd_vrsa_sincosf
-  :project: libm
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_sincosf`` documentation.
 
-.. doxygenfunction:: amd_vrda_sincos
-  :project: libm
+
+See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_sincos`` documentation.
+
 
 
 .. End of Doc

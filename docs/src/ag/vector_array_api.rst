@@ -24,42 +24,69 @@
 ..  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ..  POSSIBILITY OF SUCH DAMAGE.
 
-.. _inverse_hyperbolic:
+.. _vector_array_api:
 
-Inverse Hyperbolic Functions
-============================
+=============================
+Vector Array Functions
+=============================
 
-Scalar
-^^^^^^
+Overview
+========
 
-Asinh
------
+Vector array functions in AOCL-LibM provide a flexible interface for processing 
+variable-length arrays of floating-point numbers. Unlike fixed-size vector functions 
+(AVX, AVX2, AVX512), array functions can handle arrays of arbitrary length, making 
+them ideal for data processing scenarios where the data size is not known at compile time.
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_asinhf`` documentation.
+These functions are prefixed with ``amd_vrsa_`` for single precision arrays and 
+``amd_vrda_`` for double precision arrays.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_asinh`` documentation.
-
-
-
-Acosh
------
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_acoshf`` documentation.
+.. note::
+   Vector array functions are currently under development. This section will be 
+   expanded as more functions become available.
 
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_acosh`` documentation.
+Trigonometric Functions
+=======================
+
+Sin
+---
+
+.. doxygenfunction:: amd_vrsa_sinf
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_sin
+  :project: libm
 
 
+Cos
+---
 
-Atanh
------
+.. doxygenfunction:: amd_vrsa_cosf
+  :project: libm
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_atanhf`` documentation.
+.. doxygenfunction:: amd_vrda_cos
+  :project: libm
 
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_atanh`` documentation.
+Tan
+---
 
+.. doxygenfunction:: amd_vrsa_tanf
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_tan
+  :project: libm
+
+
+Sincos
+------
+
+.. doxygenfunction:: amd_vrsa_sincosf
+  :project: libm
+
+.. doxygenfunction:: amd_vrda_sincos
+  :project: libm
 
 
 .. End of Doc

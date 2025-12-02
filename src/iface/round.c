@@ -39,6 +39,7 @@ static const struct alm_arch_funcs __arch_funcs_round = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(round),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_roundf),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_AVX2(vrd2_round),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_roundf),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_AVX2(vrd4_round),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX2(vrda_round)
         },
@@ -48,6 +49,7 @@ static const struct alm_arch_funcs __arch_funcs_round = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(round),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN(vrs4_roundf),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN(vrd2_round),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_roundf),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN(vrd4_round),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN(vrda_round)
         },
@@ -57,6 +59,7 @@ static const struct alm_arch_funcs __arch_funcs_round = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(round),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN2(vrs4_roundf),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN2(vrd2_round),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_roundf),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN2(vrd4_round),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN2(vrda_round)
         },
@@ -66,6 +69,7 @@ static const struct alm_arch_funcs __arch_funcs_round = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(round),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN3(vrs4_roundf),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN3(vrd2_round),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_roundf),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN3(vrd4_round),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN3(vrda_round)
         },
@@ -75,10 +79,10 @@ static const struct alm_arch_funcs __arch_funcs_round = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(round),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN4(vrs4_roundf),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN4(vrd2_round),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN4(vrs8_roundf),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN4(vrd4_round),
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_round),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN4(vrda_round)
-
         },
 
         [ALM_UARCH_VER_ZEN5] = {
@@ -86,6 +90,7 @@ static const struct alm_arch_funcs __arch_funcs_round = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN5(round),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN5(vrs4_roundf),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN5(vrd2_round),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN5(vrs8_roundf),
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN5(vrd4_round),
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN5(vrd8_round),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN5(vrda_round)
@@ -101,6 +106,7 @@ LIBM_IFACE_PROTO(round)(void *arg) {
             [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(round),
             [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_roundf),
             [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_round),
+            [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_roundf),
             [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_round),
             [ALM_FUNC_VECT_DP_8] = &G_ENTRY_PT_PTR(vrd8_round),
             [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_round)

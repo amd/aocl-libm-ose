@@ -240,6 +240,7 @@ EXPORTS
     amd_vrs16_log2f
     amd_vrd8_pow
     amd_vrd8_powx
+    amd_vrd8_round
     amd_vrs16_powf
     amd_vrs16_powxf
     amd_vrs16_sinf

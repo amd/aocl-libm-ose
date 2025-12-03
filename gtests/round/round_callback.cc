@@ -187,7 +187,6 @@ int test_v8s(test_data *data, int idx)  {
 }
 
 int test_v8d(test_data *data, int idx)  {
-#if 0
 #if ((LIBM_PROTOTYPE != PROTOTYPE_MSVC) && (LIBM_PROTOTYPE != PROTOTYPE_GLIBC))
   #if defined(__AVX512__)
       double *ip  = (double*)data->ip;
@@ -197,7 +196,6 @@ int test_v8d(test_data *data, int idx)  {
       __m512d op8 = LIBM_FUNC_VEC(d, 8, round)(ip8);
       _mm512_store_pd(&op[0], op8);
   #endif
-#endif
 #endif
   return 0;
 }

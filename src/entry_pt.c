@@ -376,6 +376,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd4_sqrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_fabs);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_linearfrac);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_erfc);
+alm_func_t        G_ENTRY_PT_PTR(vrd4_round);
 
 //alm_func_t        G_ENTRY_PT_PTR(vrd8_cbrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_cos);

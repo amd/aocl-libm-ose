@@ -278,6 +278,7 @@ __m256d FN_PROTOTYPE(vrd4_fabs)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_linearfrac)(__m256d x, __m256d y, double sca, double sha, double scb, double shb);
 void  FN_PROTOTYPE(vrd4_sincos)(__m256d x, __m256d *sin, __m256d *cos);
 __m256d FN_PROTOTYPE(vrd4_erfc)(__m256d x);
+__m256d FN_PROTOTYPE(vrd4_round)(__m256d x);
 
 __m128 FN_PROTOTYPE(vrs4_erff)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_expf)(__m128 x);

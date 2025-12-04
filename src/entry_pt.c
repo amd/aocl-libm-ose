@@ -92,6 +92,7 @@ alm_func_t        G_ENTRY_PT_PTR(trunc);
 alm_func_t        G_ENTRY_PT_PTR(erf);
 alm_func_t        G_ENTRY_PT_PTR(erfc);
 alm_func_t        G_ENTRY_PT_PTR(linearfrac);
+alm_func_t        G_ENTRY_PT_PTR(cdfnorm);
 
 /*
  * required by NAG tests

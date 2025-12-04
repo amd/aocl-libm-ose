@@ -1,0 +1,323 @@
+/*
+ * Copyright (C) 2026 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+/*
+    Signature:
+    double amd_erfinv(double x);
+
+    Computes the inverse error function erfinv(x) for a given input x.
+
+    SPEC:
+    erfinv(±0)   = ±0
+    erfinv(±1)   = ±Inf, DIVBYZERO Exception
+    erfinv(±Inf) =  QNaN, INVALID Exception
+    erfinv(QNaN) =  QNaN
+    erfinv(SNaN) =  QNaN, INVALID Exception
+
+    erfinv(x)    =  QNaN, INVALID Exception if |x|>1
+    erfinv(-x)   = -erfinv(x)
+
+
+    Implementation Notes:
+    Reference:
+      Rational Chebyshev Approximations for the Inverse of the Error Function
+      by J.M.Blair, C.A.Edwards and J.H.Johnson; Mathematics Of Computation,
+      Volume 30, Number 136, October 1976, Pages 827-830.
+
+    The function uses rational and asymptotic approximations for different ranges of x.
+
+    1. For |x| <= 0.75
+        erfinv(x) = x * Poly_P1(x^2 - offset) / Poly_Q1(x^2 - offset)
+
+    2. For 0.75 < |x| <= 0.9375
+        erfinv(x) = x * Poly_P2(x^2 - offset) / Poly_Q2(x^2 - offset)
+
+    3. For 0.9375 < |x| < 1.0
+        erfinv(x) = s^-1 * Poly_P3(s) / Poly_Q3(s)
+        where s = [-ln(1-x)]^(-1/2)
+*/
+
+#include <libm_util_amd.h>
+#include <libm/alm_special.h>
+#include <libm/amd_funcs_internal.h>
+#include <libm_macros.h>
+#include <libm/types.h>
+#include <libm/typehelper.h>
+#include <libm/compiler.h>
+#include <libm/poly.h>
+
+
+static const struct
+{
+    const double exp_offset1; /* 0.5625 */
+    const double exp_offset2; /* 0.87890625 */
+
+    double poly_bound1[14]; /* Table 17: P7, Q7  */
+    double poly_bound2[16]; /* Table 37: P8, Q8  */
+    double poly_bound3[20]; /* Table 58: P11, Q9 */
+
+} erfinv_data = {
+
+    .exp_offset1 = 0x1.2000000000000p-1,
+    .exp_offset2 = 0x1.c200000000000p-1,
+
+     /* Table 17 by Blair et al */
+    .poly_bound1 =
+    {
+       0x1.007ce8f01b2e8p+4, /* P100 */
+      -0x1.6b23cc5c6c6d7p+6, /* P101 */
+       0x1.74e5f6ceb3548p+7, /* P102 */
+      -0x1.5200bb15cc6bbp+7, /* P103 */
+       0x1.05d193233a849p+6, /* P104 */
+      -0x1.148c5474ee5e1p+3, /* P105 */
+       0x1.689181bbafd0cp-3, /* P106 */
+
+       0x1.d8fb0f913bd7bp+3, /* Q100 */
+      -0x1.6d7f25a3f1c24p+6, /* Q101 */
+       0x1.a450d8e7f4cbbp+7, /* Q102 */
+      -0x1.bc34804858570p+7, /* Q103 */
+       0x1.ae6b0c504ee02p+6, /* Q104 */
+      -0x1.499dfec1a7f5fp+4, /* Q105 */
+       0x1.0p+0,             /* Q106 */
+    },
+
+     /* Table 37 by Blair et al */
+    .poly_bound2 =
+    {
+      -0x1.f3596123109edp-7, /* P200 */
+       0x1.60b8fe375999ep-2, /* P201 */
+      -0x1.779bb9bef7c0fp+1, /* P202 */
+       0x1.786ea384470a2p+3, /* P203 */
+      -0x1.6a7c1453c85d3p+4, /* P204 */
+       0x1.31f0fc5613142p+4, /* P205 */
+      -0x1.5ea6c007d4dbbp+2, /* P206 */
+       0x1.e66f265ce9e50p-3, /* P207 */
+
+      -0x1.636b2dcf4edbep-7, /* Q200 */
+       0x1.0b5411e2acf29p-2, /* Q201 */
+      -0x1.3413109467a0bp+1, /* Q202 */
+       0x1.563e8136c554ap+3, /* Q203 */
+      -0x1.7b77aab1dcafbp+4, /* Q204 */
+       0x1.8a3e174e05ddcp+4, /* Q205 */
+      -0x1.4075c56404eecp+3, /* Q206 */
+       0x1.0000000000000p+0, /* Q207 */
+    },
+
+     /* Table 58 by Blair et al */
+    .poly_bound3 =
+    {
+       0x1.d98db2f393c93p-15, /* P300 */
+       0x1.5ea5105db7d1bp-8, /* P301 */
+       0x1.099dcb79c5e37p-3, /* P302 */
+       0x1.0ae8df6736f5ap+0, /* P303 */
+       0x1.6a463706dce53p+1, /* P304 */
+       0x1.501296c195ce7p+1, /* P305 */
+       0x1.0a1bd4227162ep+1, /* P306 */
+       0x1.7451fe635fbb3p-1, /* P307 */
+       0x1.11ae803f200b1p-4, /* P308 */
+      -0x1.237ce1b409b07p-6, /* P309 */
+       0x1.25db922abee60p-9, /* P310 */
+
+       0x1.d98d1a3412e13p-15, /* Q300 */
+       0x1.5ea77aa937936p-8, /* Q301 */
+       0x1.09f744281bf43p-3, /* Q302 */
+       0x1.0de629224eb8ap+0, /* Q303 */
+       0x1.84dafe0d3b477p+1, /* Q304 */
+       0x1.e1add024b4c8dp+1, /* Q305 */
+       0x1.f06bab8543d1ap+1, /* Q306 */
+       0x1.04c46273c9ec0p+1, /* Q307 */
+       0x1.0000000000000p+0, /* Q308 */
+    },
+};
+
+#define EXP_OFFSET1 erfinv_data.exp_offset1
+#define EXP_OFFSET2 erfinv_data.exp_offset2
+
+#define P100 erfinv_data.poly_bound1[0]
+#define P101 erfinv_data.poly_bound1[1]
+#define P102 erfinv_data.poly_bound1[2]
+#define P103 erfinv_data.poly_bound1[3]
+#define P104 erfinv_data.poly_bound1[4]
+#define P105 erfinv_data.poly_bound1[5]
+#define P106 erfinv_data.poly_bound1[6]
+
+#define Q100 erfinv_data.poly_bound1[7]
+#define Q101 erfinv_data.poly_bound1[8]
+#define Q102 erfinv_data.poly_bound1[9]
+#define Q103 erfinv_data.poly_bound1[10]
+#define Q104 erfinv_data.poly_bound1[11]
+#define Q105 erfinv_data.poly_bound1[12]
+#define Q106 erfinv_data.poly_bound1[13]
+
+
+#define P200 erfinv_data.poly_bound2[0]
+#define P201 erfinv_data.poly_bound2[1]
+#define P202 erfinv_data.poly_bound2[2]
+#define P203 erfinv_data.poly_bound2[3]
+#define P204 erfinv_data.poly_bound2[4]
+#define P205 erfinv_data.poly_bound2[5]
+#define P206 erfinv_data.poly_bound2[6]
+#define P207 erfinv_data.poly_bound2[7]
+
+#define Q200 erfinv_data.poly_bound2[8]
+#define Q201 erfinv_data.poly_bound2[9]
+#define Q202 erfinv_data.poly_bound2[10]
+#define Q203 erfinv_data.poly_bound2[11]
+#define Q204 erfinv_data.poly_bound2[12]
+#define Q205 erfinv_data.poly_bound2[13]
+#define Q206 erfinv_data.poly_bound2[14]
+#define Q207 erfinv_data.poly_bound2[15]
+
+
+#define P300 erfinv_data.poly_bound3[0]
+#define P301 erfinv_data.poly_bound3[1]
+#define P302 erfinv_data.poly_bound3[2]
+#define P303 erfinv_data.poly_bound3[3]
+#define P304 erfinv_data.poly_bound3[4]
+#define P305 erfinv_data.poly_bound3[5]
+#define P306 erfinv_data.poly_bound3[6]
+#define P307 erfinv_data.poly_bound3[7]
+#define P308 erfinv_data.poly_bound3[8]
+#define P309 erfinv_data.poly_bound3[9]
+#define P310 erfinv_data.poly_bound3[10]
+
+#define Q300 erfinv_data.poly_bound3[11]
+#define Q301 erfinv_data.poly_bound3[12]
+#define Q302 erfinv_data.poly_bound3[13]
+#define Q303 erfinv_data.poly_bound3[14]
+#define Q304 erfinv_data.poly_bound3[15]
+#define Q305 erfinv_data.poly_bound3[16]
+#define Q306 erfinv_data.poly_bound3[17]
+#define Q307 erfinv_data.poly_bound3[18]
+#define Q308 erfinv_data.poly_bound3[19]
+
+
+#define UPPER32_MASK      0x7fffffff
+#define INFU              0x7ff0000000000000
+#define ZERO              0x0                /* 0.0 */
+#define ONEU              0x3ff0000000000000 /* 1.0 */
+
+/* Boundary values for intervals */
+#define BOUND1 0x3fe80000 /* 0.75; double(0.75)>>32; */
+#define BOUND2 0x3fee0000 /* 0.9375; double(0.9375)>>32; */
+
+
+double ALM_PROTO_OPT(erfinv)(double x)
+{
+  double P, Q, z, y, t, absx;
+  uint64_t ux;
+  uint32_t ix;
+  uint64_t sign = 0;
+
+  ux = asuint64(x);
+  sign =  ux & SIGNBIT_DP64;
+  ux = ux & ~SIGNBIT_DP64;
+  ix = ( ux >> 32 ) & UPPER32_MASK;
+
+  /* Check for NaN, Inf, Boundary */
+  if (ux >= ONEU) {
+    if (ux == INFU) /* Check for ±INF */
+      return __alm_handle_error((POS_QNAN_F64 | sign), AMD_F_INVALID);
+    else if (ux > INFU) /* Check for ±NAN */
+      return __alm_handle_error((POS_QNAN_F64 | sign), AMD_F_NONE);
+    else if (ux == ONEU) /* Check for ±1 */
+      return __alm_handle_error((POS_INF_F64 | sign), AMD_F_DIVBYZERO);
+    else  /* Check for |x|>1 */
+      return __alm_handle_error(POS_QNAN_F64, AMD_F_INVALID);
+  }
+
+  if (ux == ZERO) { /* |x| == 0 */
+
+    return x;
+
+  } else if (ix <= BOUND1) { /* |x| <= 0.75 */
+
+    /* Use x^2 - offset to center the polynomial for better accuracy */
+    double x2 = x * x;
+    z = x2 - EXP_OFFSET1;
+
+    /* Evaluate rational approximation P(z)/Q(z) */
+    P = POLY_EVAL_HORNER_7(z, P100, P101, P102, P103, P104, P105, P106);
+    Q = POLY_EVAL_HORNER_7(z, Q100, Q101, Q102, Q103, Q104, Q105, Q106);
+
+    /* Compute x * (P/Q) with better accuracy by delaying multiplication */
+    t = P / Q;
+    t *= x;
+
+    return t;
+
+  } else if (ix <= BOUND2) { /* 0.75 < |x| <= 0.9375 */
+
+    /* Use x^2 - offset to center the polynomial for better accuracy */
+    double x2 = x * x;
+    z = x2 - EXP_OFFSET2;
+
+    /* Evaluate rational approximation P(z)/Q(z) */
+    P = POLY_EVAL_HORNER_8(z, P200, P201, P202, P203, P204, P205, P206, P207);
+    Q = POLY_EVAL_HORNER_8(z, Q200, Q201, Q202, Q203, Q204, Q205, Q206, Q207);
+
+    /* Compute x * (P/Q) with better accuracy by delaying multiplication */
+    t = P / Q;
+    t *= x;
+
+    return t;
+
+  } else { /* 0.9375 < |x| < 1.0 */
+           /* Special Value: (1-1e-100) */
+
+    /* CRITICAL FIX: Use |x| for the log(1-|x|) computation, then restore sign at the end
+     * Blair's algorithm: erfinv(x) = sign(x) * P(s)/Q(s) * s^-1
+     * where s = sqrt(-log(1 - |x|))
+     *
+     * For better accuracy near |x| = 1, use log1p when possible:
+     * log(1 - |x|) = log1p(-|x|) which is more accurate
+     */
+    absx = asdouble(ux);
+
+    /* Use log1p for better accuracy: log(1-absx) = log1p(-absx) */
+    y = ALM_PROTO(sqrt)(-1.0 * ALM_PROTO(log1p)(-absx));
+    z = 1.0 / y;
+
+    /* Evaluate rational approximation P(z)/Q(z) */
+    P = POLY_EVAL_HORNER_11N(z, P300, P301, P302, P303, P304, P305,
+                                P306, P307, P308, P309, P310);
+    Q = POLY_EVAL_HORNER_9(z, Q300, Q301, Q302, Q303, Q304, Q305, Q306,
+                              Q307, Q308);
+
+    /* Compute y * (P/Q) */
+    t = P / Q;
+    t *= y;
+
+    /* Restore the sign: erfinv(-x) = -erfinv(x) */
+    if (sign)
+      t = -t;
+
+    return t;
+
+  }
+
+}

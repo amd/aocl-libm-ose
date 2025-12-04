@@ -1509,6 +1509,15 @@ extern "C" {
    */
   void amd_vrsa_fabsf (int len, const float *src, float *dst);
 
+/* Nearest Integer */
+  /**
+   * @brief Computes rounded value elementwise for double array.
+   * @param len Number of elements.
+   * @param src Input array x.
+   * @param dst Output array y.
+   */
+  void amd_vrda_round (int len, const double *src, double *dst);
+
 /* Linearfrac */
   /**
    * @brief Computes a linear fractional transform elementwise for double arrays.

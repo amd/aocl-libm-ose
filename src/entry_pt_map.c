@@ -311,6 +311,7 @@ LIBM_DECL_FN_MAP(vrda_fabs);
 LIBM_DECL_FN_MAP(vrda_sqrt);
 LIBM_DECL_FN_MAP(vrda_linearfrac);
 LIBM_DECL_FN_MAP(vrda_sincos);
+LIBM_DECL_FN_MAP(vrda_round);
 
 LIBM_DECL_FN_MAP(vrda_add);
 LIBM_DECL_FN_MAP(vrda_sub);
@@ -724,7 +725,7 @@ WEAK_LIBM_ALIAS(vrda_fmaxi, FN_PROTOTYPE(vrda_fmaxi));
 WEAK_LIBM_ALIAS(vrda_fmini, FN_PROTOTYPE(vrda_fmini));
 
 WEAK_LIBM_ALIAS(vrda_powx, FN_PROTOTYPE(vrda_powx));
-
+WEAK_LIBM_ALIAS(vrda_round, FN_PROTOTYPE(vrda_round));
 
 /* Vector Functions */
 

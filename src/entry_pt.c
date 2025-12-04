@@ -199,6 +199,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrda_fabs);
 alm_func_t        G_ENTRY_PT_PTR(vrda_sqrt);
 alm_func_t        G_ENTRY_PT_PTR(vrda_linearfrac);
 alm_func_t        G_ENTRY_PT_PTR(vrda_sincos);
+alm_func_t        G_ENTRY_PT_PTR(vrda_round);
 
 alm_func_t        G_ENTRY_PT_PTR(vrda_add);
 alm_func_t        G_ENTRY_PT_PTR(vrda_sub);

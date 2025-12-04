@@ -422,6 +422,9 @@ extern void      ALM_PROTO_INTERNAL(vrda_acos)     (int n, const double *x, doub
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_asin)     (__m128d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_asin)     (__m256d x);
 extern void      ALM_PROTO_INTERNAL(vrda_asin)     (int n, const double *x, double *y);
+
+extern void      ALM_PROTO_INTERNAL(vrda_round)     (int n, const double *x, double *y);
+
 #ifdef __cplusplus
 }
 #endif

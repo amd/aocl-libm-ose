@@ -219,7 +219,6 @@ int test_v16s(test_data *data, int idx)  {
 }
 
 int test_vad(test_data *data, int count)  {
-#if 0
 #if ((LIBM_PROTOTYPE != PROTOTYPE_MSVC) && (LIBM_PROTOTYPE != PROTOTYPE_GLIBC))
   double *ip = (double*)data->ip;
   double *op = (double*)data->op;
@@ -227,7 +226,6 @@ int test_vad(test_data *data, int count)  {
   amd_vrda_round(count, ip, op);
 #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
   vdRound(count, ip, op);
-#endif
 #endif
 #endif
   return 0;

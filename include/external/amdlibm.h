@@ -554,6 +554,14 @@ extern "C" {
    */
   float amd_erff (float x);
 
+/* Inverse Error */
+  /**
+   * @brief Computes the Gaussian inverse error function for a double-precision value.
+   * @param x Input value.
+   * @return erfinv(x).
+   */
+  double amd_erfinv (double x);
+
 /* Complementary Error */
   /**
    * @brief Computes the complementary error function for a double-precision value.
@@ -1203,6 +1211,10 @@ extern "C" {
   #define erf amd_erf
   #undef erff
   #define erff amd_erff
+
+/* Inverse Error */
+  #undef erfinv
+  #define erfinv amd_erfinv
 
 /* Complementary Error */
   #undef erfc

@@ -92,6 +92,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(tanpi);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(trunc);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(erf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(erfc);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(erfinv);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(cdfnorm);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(erfcinv);
 

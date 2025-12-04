@@ -91,6 +91,7 @@ enum {
     C_AMD_TRUNC,
     C_AMD_ERF,
     C_AMD_ERFC,
+    C_AMD_ERFINV,
     C_AMD_ERFCINV,
     C_AMD_SINCOS,
     C_AMD_ADD,
@@ -197,6 +198,7 @@ extern void LIBM_IFACE_PROTO(tanpi)(void *arg);
 extern void LIBM_IFACE_PROTO(trunc)(void *arg);
 extern void LIBM_IFACE_PROTO(erf)(void *arg);
 extern void LIBM_IFACE_PROTO(erfc)(void *arg);
+extern void LIBM_IFACE_PROTO(erfinv)(void *arg);
 extern void LIBM_IFACE_PROTO(erfcinv)(void *arg);
 extern void LIBM_IFACE_PROTO(cexp)(void *arg);
 extern void LIBM_IFACE_PROTO(clog)(void *arg);

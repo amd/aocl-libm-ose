@@ -93,6 +93,7 @@ static map<string, vector<string>> libm_funcs = {
     {"nextafter", {"s1d", "s1f"}},
     {"ldexp",     {"s1d", "s1f"}},
     {"erfc",      {"s1d", "vrd2", "vrd4", "vrd8", "vrda", "s1f", "vrs4", "vrs8", "vrs16", "vrsa"}},
+    {"cdfnorm",   {"s1d"}},
 };
 
 /* vector<string> getSupportedVariants(string func)

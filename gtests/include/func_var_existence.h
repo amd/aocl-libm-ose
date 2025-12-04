@@ -57,6 +57,7 @@ static map<string, vector<string>> libm_funcs = {
     {"cos",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"cosh",      {"s1d", "s1f", "vrd2", "vrs4", "vrs8", "vrsa", "vrda"}},
     {"erf",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrsa", "vrda"}},
+    {"erfinv",    {"s1d", /*"s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrsa", "vrda"*/}},
     {"exp",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"exp2",      {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"exp10",     {"s1d", "s1f", "vrd2", "vrs4", "vrda", "vrsa"}},

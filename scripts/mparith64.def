@@ -38,6 +38,7 @@ EXPORTS
     alm_mp_tanh
     alm_mp_trunc
     alm_mp_erf
+    alm_mp_erfinv
     alm_mp_fmin
     alm_mp_fmax
     alm_mp_fdim

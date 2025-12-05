@@ -25,33 +25,64 @@
  *
  */
 
-/*
- * C implementation of erfcinv double precision array version (vrda)
+/********************************************
+ * ---------------------
+ * Signature
+ * ---------------------
+ * void vrda_erfcinv(int length, double *input, double *result)
  *
- * Signature:
- *    void amd_vrda_erfcinv(int len, double *src, double *dst)
+ * vrda_erfcinv() computes the inverse complementary error function for 'length' number of elements
+ * present in the 'input' array.
+ * The corresponding output is stored in the 'result' array.
  *
- * Computes the inverse complementary error function erfcinv(x) for a given input x.
- * erfcinv(x) = erfinv(1-x)
+ * ---------------------
+ * Implementation Notes
+ * ---------------------
  *
+ * For any given length,
+ *     If length is greater than 4:
+ *         Pack 4 elements of input array into a 256-bit register
+ *             call vrd4_erfcinv()
+ *         Store the output into result array.
+ *         Repeat
+ *
+ *         For the remaining element/s,
+ *         Pack the last 4 elements of input array into a 256-bit register,
+ *             call vrd4_erfcinv()
+ *         Store the output into result array.
+ *     Return
+ *
+ *     If length is lesser than 4:
+ *         Pack the elements of input array into a 256-bit register
+ *         Mask the inputs which are not needed to be computed with a 0.
+ *             call vrd4_erfcinv()
+ *         Store the output of unmasked elements into result array.
+ * Return
  */
 
-#include <stdint.h>
-#include <libm_util_amd.h>
-#include <libm/alm_special.h>
 #include <libm_macros.h>
-#include <libm/types.h>
-#include <libm/typehelper.h>
-#include <libm/compiler.h>
+#include <immintrin.h>
 #include <libm/amd_funcs_internal.h>
+#include <libm_util_amd.h>
 
-#define SCALAR_ERFCINV ALM_PROTO_OPT(erfcinv)
-
-void
-ALM_PROTO_OPT(vrda_erfcinv)(int len, double *src, double *dst) {
-    /* Placeholder - call scalar for now */
-    for(int i = 0; i < len; i++) {
-        dst[i] = SCALAR_ERFCINV(src[i]);
+void ALM_PROTO_OPT(vrda_erfcinv)(int length, double *input, double *result)
+{
+    int j = 0;
+    if (likely(length >= DOUBLE_ELEMENTS_256_BIT))
+    {
+        for (j = 0; j <= length - DOUBLE_ELEMENTS_256_BIT; j += DOUBLE_ELEMENTS_256_BIT)
+        {
+            __m256d ip4 = _mm256_loadu_pd(&input[j]);
+            __m256d op4 = ALM_PROTO(vrd4_erfcinv)(ip4);
+            _mm256_storeu_pd(&result[j], op4);
+        }
+    }
+    int remainder = length - j;
+    if (remainder)
+    {
+        __m256i mask = GET_MASK_DOUBLE_256_BIT(remainder);
+        __m256d ip4 = _mm256_maskload_pd(&input[j], mask);
+        __m256d op4 = ALM_PROTO(vrd4_erfcinv)(ip4);
+        _mm256_maskstore_pd(&result[j], mask, op4);
     }
 }
-

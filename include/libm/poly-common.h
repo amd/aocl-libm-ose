@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -36,16 +36,16 @@
   * Type-Generic High Precision Estrin Polynomial Evaluation
   ***********************************************************/
 
- static inline void poly_eval_split_double(double a, double *aH, double *aL) {
-     *aH = asdouble(asuint64(a) & 0xfffffffff8000000ULL);
-     *aL = a - *aH;
- }
- 
- static inline void poly_eval_split_float(float a, float *aH, float *aL) {
-     *aH = asfloat(asuint32(a) & 0xfffff000U);
-     *aL = a - *aH;
- }
- 
+static inline void poly_eval_split_double(double a, double *aH, double *aL) {
+    *aH = asdouble(asuint64(a) & 0xfffffffff8000000ULL);
+    *aL = a - *aH;
+}
+
+static inline void poly_eval_split_float(float a, float *aH, float *aL) {
+    *aH = asfloat(asuint32(a) & 0xfffff000U);
+    *aL = a - *aH;
+}
+
 /* 128-bit vector (v_f64x2_t) */
 static inline void poly_eval_split_v_f64x2(v_f64x2_t a, v_f64x2_t *aH, v_f64x2_t *aL) {
     v_u64x2_t mask = {0xfffffffff8000000ULL, 0xfffffffff8000000ULL};
@@ -90,8 +90,8 @@ static inline void poly_eval_split_v_f64x8(v_f64x8_t a, v_f64x8_t *aH, v_f64x8_t
         v_f64x2_t: poly_eval_split_v_f64x2, \
         v_f64x4_t: poly_eval_split_v_f64x4)(a, &(aH), &(aL))
 #endif
-
-#define POLY_EVAL_ZERO(r) ((__typeof(r)){0})
+ 
+ #define POLY_EVAL_ZERO(r) ((__typeof(r)){0})
  
  /* A_X_B_PLUS_C: <aH, aL> = <aH, aL> * <bH, bL> + <cH, cL> */
 #define POLY_EVAL_A_X_B_PLUS_C(aH, aL, b, bH, bL, cH, cL) do { \

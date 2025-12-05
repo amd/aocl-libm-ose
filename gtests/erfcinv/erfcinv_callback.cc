@@ -128,8 +128,27 @@ int test_s1d(test_data *data, int idx)  {
 extern "C" {
 #endif
 
-int test_v2d(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  __m128d LIBM_FUNC_VEC(d, 2, erfcinv)(__m128d);
+  __m256d LIBM_FUNC_VEC(d, 4, erfcinv)(__m256d);
+  #if defined(__AVX512__)
+  __m512d LIBM_FUNC_VEC(d, 8, erfcinv)(__m512d);
+  #endif
+  void LIBM_FUNC_VEC(d, a, erfcinv)(int, double *, double *);
+#endif
 
+int test_v2d(test_data *data, int idx)  {
+  #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+    double *ip  = (double*)data->ip;
+    double *op  = (double*)data->op;
+    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
+      __m128d op2 = LIBM_FUNC_VEC(d, 2, erfcinv)(ip2);
+      _mm_store_pd(&op[0], op2);
+    #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+      vdErfcInv(2,&ip[idx],op);
+    #endif
+  #endif
   return 0;
 }
 
@@ -139,7 +158,17 @@ int test_v4s(test_data *data, int idx)  {
 }
 
 int test_v4d(test_data *data, int idx)  {
-
+  #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+    double *ip  = (double*)data->ip;
+    double *op  = (double*)data->op;
+    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+      __m256d op4 = LIBM_FUNC_VEC(d, 4, erfcinv)(ip4);
+      _mm256_store_pd(&op[0], op4);
+    #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+      vdErfcInv(4,&ip[idx],op);
+    #endif
+  #endif
   return 0;
 }
 
@@ -149,7 +178,20 @@ int test_v8s(test_data *data, int idx)  {
 }
 
 int test_v8d(test_data *data, int idx)  {
-
+  #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+    #if defined(__AVX512__)
+      double *ip  = (double*)data->ip;
+      double *op  = (double*)data->op;  
+      #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+        __m512d ip8 = _mm512_set_pd(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
+                                    ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+        __m512d op8 = LIBM_FUNC_VEC(d, 8, erfcinv)(ip8);
+        _mm512_store_pd(&op[0], op8);
+      #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+        vdErfcInv(8,&ip[idx],op);
+      #endif
+    #endif
+  #endif
   return 0;
 }
 
@@ -164,7 +206,15 @@ int test_vas(test_data *data, int count)  {
 }
 
 int test_vad(test_data *data, int count)  {
-
+  #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+    double *ip  = (double*)data->ip;
+    double *op  = (double*)data->op;
+    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      LIBM_FUNC_VEC(d, a, erfcinv)(count, ip, op);
+    #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+      vdErfcInv(count, ip, op);
+    #endif
+  #endif
   return 0;
 }
 

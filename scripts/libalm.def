@@ -246,6 +246,7 @@ EXPORTS
     amd_vrd8_round
     amd_vrs16_powf
     amd_vrs16_powxf
+    amd_vrs16_roundf
     amd_vrs16_sinf
     amd_vrs16_sincosf
     amd_vrd8_tan

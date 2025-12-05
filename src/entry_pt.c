@@ -335,6 +335,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrs16_sqrtf);
 alm_func_t        G_ENTRY_PT_PTR(vrs16_linearfracf);
 alm_func_t        G_ENTRY_PT_PTR(vrs16_sincosf);
 alm_func_t        G_ENTRY_PT_PTR(vrs16_erfcf);
+alm_func_t        G_ENTRY_PT_PTR(vrs16_roundf);
 
 alm_func_t        G_ENTRY_PT_PTR(vrd2_cbrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_cos);

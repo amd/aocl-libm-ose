@@ -1097,6 +1097,12 @@ extern "C" {
    * @return Vector of rounded value.
    */
   __m512d amd_vrd8_round (__m512d x);
+  /**
+   * @brief Computes round per-lane for sixteen single-precision elements.
+   * @param x Input vector x.
+   * @return Vector of rounded value.
+   */
+  __m512 amd_vrs16_roundf (__m512 x);
 
 /* Linearfrac */
   /**

@@ -263,6 +263,7 @@ extern __m512    ALM_PROTO_INTERNAL(vrs16_sqrtf)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_linearfracf)     (__m512 x, __m512 y, float sca, float sha, float scb, float shb);
 extern void      ALM_PROTO_INTERNAL(vrs16_sincosf)         (__m512 x, __m512 *sin, __m512 *cos);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_erfcf)           (__m512 x);
+extern __m512    ALM_PROTO_INTERNAL(vrs16_roundf)          (__m512 x);
 /*
  * Vector Double precision
  */

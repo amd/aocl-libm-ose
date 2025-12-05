@@ -121,6 +121,7 @@ EXPORTS
     amd_truncf
     amd_cdfnorm
     amd_cdfnorminv
+    amd_erfcinv
     amd_vrd2_cbrt
     amd_vrd2_cos
     amd_vrd2_cosh
@@ -295,6 +296,9 @@ EXPORTS
     amd_vrd2_cdfnorminv
     amd_vrd4_cdfnorminv
     amd_vrd8_cdfnorminv
+    amd_vrd2_erfcinv
+    amd_vrd4_erfcinv
+    amd_vrd8_erfcinv
     amd_vrda_sqrt
     amd_vrsa_sqrtf
     amd_vrsa_addf
@@ -347,5 +351,5 @@ EXPORTS
     amd_vrda_asin
     amd_vrda_erfc
     amd_vrda_cdfnorm
-    amd_erfcinv
     amd_vrda_cdfnorminv
+    amd_vrda_erfcinv

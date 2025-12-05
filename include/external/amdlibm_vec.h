@@ -500,6 +500,13 @@ extern "C" {
    * @return Vector of erfinv values.
    */
   __m256d amd_vrd4_erfinv (__m256d x);
+/* Inverse Complementary Error */
+  /**
+   * @brief Computes erfcinv per-lane for two double-precision elements.
+   * @param x Input vector.
+   * @return Vector of erfcinv values.
+   */
+  __m128d amd_vrd2_erfcinv (__m128d x);
 
 /* Inverse Cumulative Normal Distribution */
   /**
@@ -835,6 +842,13 @@ extern "C" {
    * @return Vector of rounded value.
    */
   __m256 amd_vrs8_roundf (__m256 x);
+/* Inverse Complementary Error */
+  /**
+   * @brief Computes erfcinv per-lane for four double-precision elements.
+   * @param x Input vector.
+   * @return Vector of erfcinv values.
+   */
+  __m256d amd_vrd4_erfcinv (__m256d x);
 
 /* Inverse Cumulative Normal Distribution */
   /**
@@ -1157,6 +1171,13 @@ extern "C" {
    * @return Vector of rounded value.
    */
   __m512 amd_vrs16_roundf (__m512 x);
+/* Inverse Complementary Error */
+  /**
+   * @brief Computes erfcinv per-lane for eight double-precision elements.
+   * @param x Input vector.
+   * @return Vector of erfcinv values.
+   */
+  __m512d amd_vrd8_erfcinv (__m512d x);
 
 /* Inverse Cumulative Normal Distribution */
   /**
@@ -1615,6 +1636,14 @@ extern "C" {
    * @param dst Output array of cdfnorminv values.
    */
   void amd_vrda_cdfnorminv (int len, const double *src, double *dst);
+/* Inverse Complementary Error */
+  /**
+   * @brief Computes erfcinv elementwise for double array.
+   * @param len Number of elements.
+   * @param src Input array.
+   * @param dst Output array of erfcinv values.
+   */
+  void amd_vrda_erfcinv (int len, double *src, double *dst);
 #endif
 
 

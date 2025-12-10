@@ -228,5 +228,10 @@ enum class TestFailType {
 
   E_MAX
 };
+
+/* ULP (Units in Last Place) thresholds for accuracy testing */
+#define SCALAR_ULPTHD  2.0      /*Actaully for scalar cases ulpthd <= 0.5  */      /* ULP threshold for scalar tests */
+#define VECTOR_ULPTHD  4.0      /* ULP threshold for vector tests */
+
 } // namespace ALM
 #endif

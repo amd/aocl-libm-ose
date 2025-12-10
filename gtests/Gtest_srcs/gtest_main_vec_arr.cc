@@ -93,3 +93,60 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_ARRAY_DOUBLES) {
   "Vec_Array","Accuracy","vad",count,(count-nfail), nfail, max_ulp_err);
   ptr->tstcnt++;
 }
+
+
+TEST_P(SpecTestFixtureFloatArray, CONFORMANCE_VECTOR_ARRAY_FLOATS) {
+  int nfail = 0;
+  float ip[6] = {0};
+  test_data tdata;
+  tdata.ip  = (void *)data;
+  tdata.op  = (void *)aop_array;
+
+  if(nargs == 2)
+    tdata.ip1 = (void *)data1;
+
+  test_vas(&tdata, count);
+  for (uint32_t i = 0; i < count; i++) {
+    ip[0] = data[i];
+    if(nargs == 2)  {
+      ip[1] = data1[i];
+    }
+
+    float expected_op = getExpected(ip);
+
+    ConfVerifyFlt(nargs, ip[0], ip[1], aop_array[i], expected_op, &nfail);
+
+  }
+
+  sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d",
+  "VecArr","Conformance","vrsa",count,(count-nfail), nfail);
+  ptr->tstcnt++;
+}
+
+TEST_P(SpecTestFixtureDoubleArray, CONFORMANCE_VECTOR_ARRAY_DOUBLES) {
+  int nfail = 0;
+  double ip[6] = {0};
+  test_data tdata;
+  tdata.ip  = (void *)data;
+  tdata.op  = (void *)aop_array;
+
+  if(nargs == 2)
+    tdata.ip1 = (void *)data1;
+
+  test_vad(&tdata, count);
+  for (uint32_t i = 0; i < count; i++) {
+    ip[0] = data[i];
+    if(nargs == 2)  {
+      ip[1] = data1[i];
+    }
+
+    double expected_op = getExpected(ip);
+
+    ConfVerifyDbl(nargs, ip[0], ip[1], aop_array[i], expected_op, &nfail);
+
+  }
+
+  sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d",
+  "VecArr","Conformance","vrda",count,(count-nfail), nfail);
+  ptr->tstcnt++;
+}

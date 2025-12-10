@@ -604,7 +604,7 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
     double ulp = getUlp(a.f, (double)e.f);
 
     /* if both are nans, output will always match, regardless of the sign bit */
-    if (((e.u ^ a.u) && (ulp > 2.0)) && (both_nans == false))
+    if (((e.u ^ a.u) && (ulp > SCALAR_ULPTHD)) && (both_nans == false))
         output_match=1;
 
     if (output_match==1 || exception_match==1) {
@@ -688,6 +688,102 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
 
 /*
  * The derived class for Conformance and special cases for
+ * datatype "float" array variants (vrsa_*) where data members
+ * and member functions are declared and defined
+ */
+class SpecTestFixtureFloatArray : public ::testing::TestWithParam<SpecParams> {
+ public:
+  static bool ConfTestVerifyFloatArray(float *ip, int count, int except, int *nfail) {
+    bool all_pass = true;
+    for(int i = 0; i < count; i++) {
+      bool flag = ConformanceVerify(&ip[i], except);
+      if(!flag) {
+        (*nfail)++;
+        all_pass = false;
+      }
+    }
+    return all_pass;
+  }
+
+  template <typename T>
+  bool ConfVerifyFlt(int nargs, T input, T input2, T actual_output, T expected_output, int *nfail) {
+    int output_match = 0;
+
+    val e = {.f = expected_output};
+    val a = {.f = actual_output};
+    val ip = {.f = input};
+    val ip2 = {.f = input2};
+
+    #if defined(_WIN64) || defined(_WIN32)
+      bool both_nans = _isnanf(fabsf(e.f)) && _isnanf(fabsf(a.f));
+    #else
+      bool both_nans = isnanf(fabsf(e.f)) && isnanf(fabsf(a.f));
+    #endif
+
+    /* if op and expected dont match, check if ulp error is > 1.0 */
+    double ulp = getUlp(a.f, (double)e.f);
+
+    /* if both are nans, output will always match, regardless of the sign bit */
+    if (((e.u ^ a.u) && (ulp > VECTOR_ULPTHD)) && (both_nans == false))
+        output_match=1;
+
+    if (output_match==1) {
+        (*nfail)++;
+        printf ("Input: 0x%x (%f) ", ip.u, ip.f);
+        if (nargs == 2)
+            printf ("Input2: 0x%x (%f) ", ip2.u, ip2.f);
+        printf ("Expected: 0x%x (%f) Actual: 0x%x (%f) ULP: %f\n", e.u, e.f, a.u, a.f, ulp);
+        return false;
+    }
+    return true;
+  }
+
+  void SetUp() override {
+    libm_test_special_data_f32 *dataf32 = GetParam().data32;
+    count = GetParam().countf;
+    vflag = GetParam().verboseflag;
+    ptr = GetParam().prttstres;
+    nargs = GetParam().nargs;
+
+    SpecialSetUp(&idata, &expected_expection, count, dataf32, nargs, &idata1, &idata2, &idata3, &idata4, &idata5, &iop);
+    data = (float *)idata;
+    op = (float *)iop;
+
+    if (nargs == 2) {
+      data1 = (float *)idata1;
+    }
+    // Allocate aligned array for output
+    unsigned int arr_size = count * sizeof(float);
+    if((arr_size % _ALIGN_FACTOR) != 0) {
+      int factor = (arr_size / _ALIGN_FACTOR) + 1;
+      arr_size = _ALIGN_FACTOR * factor;
+    }
+    aocl_libm_aligned_alloc(arr_size, aop_array);
+  }
+
+  void TearDown() override {
+    aocl_libm_aligned_free(idata);
+    aocl_libm_aligned_free(iop);
+    if (nargs == 2) {
+      aocl_libm_aligned_free(idata1);
+    }
+    aocl_libm_aligned_free(expected_expection);
+    aocl_libm_aligned_free(aop_array);
+  }
+
+ protected:
+  uint32_t *idata, *idata1, *idata2, *idata3, *idata4, *idata5, *iop;
+  uint32_t nargs;
+  float *data, *data1, *data2, *data3, *data4, *data5, *op;
+  float *aop_array;
+  int *expected_expection;
+  uint32_t count;
+  PrintTstRes *ptr;
+  int vflag;
+};
+
+/*
+ * The derived class for Conformance and special cases for
  * datatype "double" where all the data members and member functions are
  * declared and defined
  */
@@ -724,7 +820,7 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
     double ulp = getUlp(a.d, (long double)e.d);
 
     /* if both are nans, output will always match, regardless of the sign bit */
-    if (((e.lu ^ a.lu) && (ulp > 2.0)) && (both_nans == false))
+    if (((e.lu ^ a.lu) && (ulp > SCALAR_ULPTHD)) && (both_nans == false))
         output_match=1;
 
     if (output_match==1 || exception_match==1) {
@@ -808,6 +904,99 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
   int vflag;
 };
 
+/*
+ * The derived class for Conformance and special cases for
+ * datatype "double" array variants (vrda_*) where data members
+ * and member functions are declared and defined
+ */
+class SpecTestFixtureDoubleArray : public ::testing::TestWithParam<SpecParams> {
+ public:
+  static bool ConfTestVerifyDoubleArray(double *ip, int count, int except, int *nfail) {
+    bool all_pass = true;
+    for(int i = 0; i < count; i++) {
+      bool flag = ConformanceVerify(&ip[i], except);
+      if(!flag) {
+        (*nfail)++;
+        all_pass = false;
+      }
+    }
+    return all_pass;
+  }
+
+  template <typename T>
+  bool ConfVerifyDbl(int nargs, T input, T input2, T actual_output, T expected_output, int *nfail) {
+    int output_match = 0;
+
+    val e = {.d = expected_output};
+    val a = {.d = actual_output};
+    val ip = {.d = input};
+    val ip2 = {.d = input2};
+
+    bool both_nans = isnan(fabs(e.d)) && isnan(fabs(a.d));
+
+    /* if op and expected dont match, check if ulp error is > 1.0 */
+    double ulp = getUlp(a.d, (long double)e.d);
+
+    /* if both are nans, output will always match, regardless of the sign bit */
+    if (((e.lu ^ a.lu) && (ulp > VECTOR_ULPTHD)) && (both_nans == false))
+        output_match=1;
+
+    if (output_match==1) {
+        (*nfail)++;
+        printf ("Input: 0x%lx (%lf) ", ip.lu, ip.d);
+        if (nargs == 2)
+            printf ("Input2: 0x%lx (%lf) ", ip2.lu, ip2.d);
+        printf ("Expected: 0x%lx (%lf) Actual: 0x%lx (%lf) ULP: %lf\n", e.lu, e.d, a.lu, a.d, ulp);
+        return false;
+    }
+    return true;
+  }
+
+  void SetUp() override {
+    libm_test_special_data_f64 *dataf64 = GetParam().data64;
+    count = GetParam().countd;
+    vflag = GetParam().verboseflag;
+    ptr = GetParam().prttstres;
+    nargs = GetParam().nargs;
+
+    SpecialSetUp(&idata, &expected_expection, count, dataf64, nargs, &idata1, &idata2, &idata3, &idata4, &idata5, &iop);
+    data = (double *)idata;
+    op = (double *)iop;
+
+    if (nargs == 2) {
+      data1 = (double *)idata1;
+    }
+
+    // Allocate aligned array for output
+    unsigned int arr_size = count * sizeof(double);
+    if((arr_size % _ALIGN_FACTOR) != 0) {
+      int factor = (arr_size / _ALIGN_FACTOR) + 1;
+      arr_size = _ALIGN_FACTOR * factor;
+    }
+    aocl_libm_aligned_alloc(arr_size, aop_array);
+  }
+
+  void TearDown() override {
+    aocl_libm_aligned_free(idata);
+    aocl_libm_aligned_free(iop);
+    if (nargs == 2) {
+      aocl_libm_aligned_free(idata1);
+    }
+    aocl_libm_aligned_free(expected_expection);
+    aocl_libm_aligned_free(aop_array);
+  }
+
+ protected:
+  uint64_t *idata, *idata1, *idata2, *idata3, *idata4, *idata5, *iop;
+  double *data, *data1, *data2, *data3, *data4, *data5, *op;
+  double *aop_array;
+  uint32_t nargs;
+  int *expected_expection;
+  uint32_t count;
+  PrintTstRes *ptr;
+  int vflag;
+};
+
 class SpecTestFixtureComplexFloat : public ::testing::TestWithParam<SpecParams> {
  public:
 // NOTE: These functions are not in use currently!
@@ -845,7 +1034,7 @@ class SpecTestFixtureComplexFloat : public ::testing::TestWithParam<SpecParams> 
     double ulp = getUlp( (float _Complex)actual_output, (double _Complex)expected_output );
 
     /* if both are nans, output will always match, regardless of the sign bit */
-    if (((e_real.u ^ a_real.u) && (e_imag.u ^ a_imag.u) && (ulp > 2.0)) && (both_nans == false))
+    if (((e_real.u ^ a_real.u) && (e_imag.u ^ a_imag.u) && (ulp > SCALAR_ULPTHD)) && (both_nans == false))
         output_match=1;
 
     if (output_match==1 || exception_match==1) {
@@ -942,7 +1131,7 @@ class SpecTestFixtureComplexDouble : public ::testing::TestWithParam<SpecParams>
     double ulp = getUlp( (double _Complex)actual_output, (long double _Complex)expected_output );
 
     /* if both are nans, output will always match, regardless of the sign bit */
-    if (((e_real.lu ^ a_real.lu) && (e_imag.lu ^ a_imag.lu) && (ulp > 2.0)) && (both_nans == false))
+    if (((e_real.lu ^ a_real.lu) && (e_imag.lu ^ a_imag.lu) && (ulp > SCALAR_ULPTHD)) && (both_nans == false))
         output_match=1;
 
     if (output_match==1 || exception_match==1) {

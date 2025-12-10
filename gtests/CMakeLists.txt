@@ -98,8 +98,7 @@ else()
     list(APPEND TEST_CFLAGS "-Wno-c++11-narrowing")
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
-set(CMAKE_CXX_FLAGS_RELEASE "")
-set(CMAKE_CXX_FLAGS_DEBUG "")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG}")
 add_definitions(-DBENCHMARK_STATIC_DEFINE)
 
 # =============================================================================

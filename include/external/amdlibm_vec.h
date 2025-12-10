@@ -522,6 +522,14 @@ extern "C" {
    */
   __m128 amd_vrs4_roundf (__m128 x);
 
+/* Cumulative Normal Distribution */
+  /**
+   * @brief Computes cumulative normal distribution for two double-precision elements.
+   * @param x Input vector x
+   * @return Vector of cdfnorm values
+   */
+  __m128d amd_vrd2_cdfnorm (__m128d x);
+
 /* Linearfrac */
   /**
    * @brief Computes a linear fractional transform for two double-precision lanes.

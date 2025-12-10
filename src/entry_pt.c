@@ -361,6 +361,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd2_fabs);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_linearfrac);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_erfc);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_round);
+alm_func_t        G_ENTRY_PT_PTR(vrd2_cdfnorm);
 
 alm_func_t        G_ENTRY_PT_PTR(vrd4_cbrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_cos);

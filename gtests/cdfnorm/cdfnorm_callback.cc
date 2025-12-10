@@ -105,6 +105,18 @@ extern "C" {
 #endif
 
 int test_v2d(test_data *data, int idx)  {
+  #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+    double *ip  = (double*)data->ip;
+    double *op  = (double*)data->op;
+
+    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
+      __m128d op2 = LIBM_FUNC_VEC(d, 2, cdfnorm)(ip2);
+      _mm_store_pd(&op[0], op2);
+    #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+      vdCdfNorm(2,ip,op);
+    #endif
+  #endif
   return 0;
 }
 

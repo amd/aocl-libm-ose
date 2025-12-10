@@ -428,6 +428,7 @@ extern __m256d   ALM_PROTO_INTERNAL(vrd4_asin)     (__m256d x);
 extern void      ALM_PROTO_INTERNAL(vrda_asin)     (int n, const double *x, double *y);
 
 extern void      ALM_PROTO_INTERNAL(vrda_round)     (int n, const double *x, double *y);
+extern void      ALM_PROTO_INTERNAL(vrsa_roundf)    (int n, const float *x, float *y);
 
 #ifdef __cplusplus
 }

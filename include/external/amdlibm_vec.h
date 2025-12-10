@@ -1538,6 +1538,13 @@ extern "C" {
    * @param dst Output array y.
    */
   void amd_vrda_round (int len, const double *src, double *dst);
+  /**
+   * @brief Computes rounded value elementwise for float array.
+   * @param len Number of elements.
+   * @param src Input array x.
+   * @param dst Output array y.
+   */
+  void amd_vrsa_roundf (int len, const float *src, float *dst);
 
 /* Linearfrac */
   /**

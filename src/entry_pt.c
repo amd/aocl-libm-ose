@@ -233,6 +233,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrsa_fabsf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_sqrtf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_linearfracf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_sincosf);
+alm_func_t        G_ENTRY_PT_PTR(vrsa_roundf);
 
 alm_func_t        G_ENTRY_PT_PTR(vrsa_addf);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_subf);

@@ -222,6 +222,7 @@ EXPORTS
     amd_vrsa_log2f
     amd_vrsa_logf
     amd_vrsa_powf
+    amd_vrsa_roundf
     amd_vrsa_sinf
     amd_vrsa_linearfracf
     amd_vrsa_sincosf

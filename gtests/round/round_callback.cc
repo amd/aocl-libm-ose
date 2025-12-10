@@ -226,7 +226,6 @@ int test_vad(test_data *data, int count)  {
 }
 
 int test_vas(test_data *data, int count)  {
-#if 0
 #if ((LIBM_PROTOTYPE != PROTOTYPE_MSVC) && (LIBM_PROTOTYPE != PROTOTYPE_GLIBC))
   float *ip = (float*)data->ip;
   float *op = (float*)data->op;
@@ -234,7 +233,6 @@ int test_vas(test_data *data, int count)  {
   amd_vrsa_roundf(count, ip, op);
 #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
   vsRound(count, ip, op);
-#endif
 #endif
 #endif
   return 0;

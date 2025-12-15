@@ -175,6 +175,17 @@ void AlmTestFramework::CreateGtestFilters(InputParams *params,
       SubFilterFwidth(params, ttype, fqty);
     }
     break;
+    case ALM::TestType::E_InPlace:
+    {
+      // Note: In-place tests are currently only implemented for E_Vector_Array quantities.
+      // SubFilterFqty is called directly (without prior SubFilterFwidth) because it
+      // internally calls SubFilterFwidth for each quantity type, including E_Vector_Array.
+      // The validateInplaceFilterData() function in gtest_main.cc will filter out
+      // unsupported variants (non-vector-array quantities) from the generated filter string.
+      ttype = ttype + "*INPLACE";
+      SubFilterFqty(params, ttype);
+    }
+    break;
     case ALM::TestType::E_Accuracy:
     default:
     {

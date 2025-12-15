@@ -94,11 +94,12 @@ cmdLine::cmdLine() : arguments(NULL) {
       {"spec", TestType::E_SpecialCase},
       {"conf", TestType::E_Conformance},
       {"perf", TestType::E_Performance},
+      {"inplace", TestType::E_InPlace},
   };
 
   cmd.testtype = new args::MapFlag<std::string, TestType, ToLowerReader>(
       *cmd.parser, "type",
-      "TestType <type> = [accu, spec, conf, perf]",
+      "TestType <type> = [accu, spec, conf, perf, inplace]",
       {'t', "type"}, test_map);
 
   cmd.Iterations = new args::ValueFlag<uint64_t>(

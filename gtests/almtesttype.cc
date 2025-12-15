@@ -25,7 +25,7 @@
  *
  */
 
- 
+
 #include <cstdio>
 #include <string>
 #include <vector>
@@ -37,7 +37,7 @@
 vector<AccuParams> accuData;
 vector<SpecParams> specData;
 
-int AlmTestFramework::AlmTestType(InputParams *params, InputData *inData, 
+int AlmTestFramework::AlmTestType(InputParams *params, InputData *inData,
                                    PrintTstRes *ptr) {
   sprintf(ptr->print[ptr->tstcnt], "%s%s", "***************************",
   "*******************************************************************");
@@ -47,7 +47,8 @@ int AlmTestFramework::AlmTestType(InputParams *params, InputData *inData,
   "TEST", "TYPE", "DATATYPE", "No.Tests", "Passed", "Failed", "MAX ULP ERR" );
    ptr->tstcnt++;
 
-  if (params->ttype == ALM::TestType::E_Accuracy) {
+  if((params->ttype == ALM::TestType::E_Accuracy) ||
+     (params->ttype == ALM::TestType::E_InPlace)) {
     AccuParams accup;
     memset(&accup, 0, sizeof(AccuParams));
     accup.nargs = GetnIpArgs();

@@ -106,6 +106,16 @@ int gtest_main(int argc, char **argv, InputParams *inparams) {
       return 1;
     }
   }
+  if (inparams->ttype == ALM::TestType::E_InPlace)
+  {
+    filter_data = validateInplaceFilterData(inparams->testFunction, filter_data);
+    if(filter_data.length() == 0){
+      cout << inparams->testFunction << "() does not support IN-PLACE variants!" << endl;
+      return 1;
+    }
+    cout << "Running IN-PLACE accuracy tests with memory boundary checking for "
+          << inparams->testFunction << "() - Testing vrsa/vrda variants where input == output buffer" << endl;
+  }
 
   if (inparams->ttype == ALM::TestType::E_Conformance)
   {

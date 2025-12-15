@@ -114,6 +114,12 @@ bool isVariantSupported(string func, string variant);
  */
 string validateFilterData(string func, string filter_data);
 
+/* string validateInplaceFilterData(string func, string filter_data)
+ * return the valid filter-data to be applied for a given math function
+ * for IN-PLACE tests.
+ */
+string validateInplaceFilterData(string func, string filter_data);
+
 /* string validateFilterData(InputParams *params, string filter_data)
  * return the valid filter-data to be applied for a given math function.
  */

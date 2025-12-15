@@ -117,6 +117,28 @@ string validateFilterData(string func, string filter_data)
     return new_filter_data;
 }
 
+string validateInplaceFilterData(string func, string filter_data)
+{
+    vector<string> supported_vars = getSupportedVariants(func);
+    stringstream ss(filter_data);
+    string new_filter_data, temp;
+
+    while(getline(ss, temp, ':'))
+    {
+        if(temp.find("VECTOR_ARRAY_DOUBLE") != string::npos)
+        {
+            if(find(supported_vars.begin(), supported_vars.end(), "vrda") != supported_vars.end())
+                new_filter_data.append(temp + ":");
+        }
+        else if(temp.find("VECTOR_ARRAY_FLOAT") != string::npos)
+        {
+            if(find(supported_vars.begin(), supported_vars.end(), "vrsa") != supported_vars.end())
+                new_filter_data.append(temp + ":");
+        }
+    }
+    return new_filter_data;
+}
+
 string validateFilterDataConf(InputParams *params, string filter_data)
 {
     string func = params->testFunction;

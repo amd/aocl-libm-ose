@@ -62,6 +62,14 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
 
+    if((params->fqty == ALM::FloatQuantity::E_All) ||
+     (params->fqty == ALM::FloatQuantity::E_Vector_4)) {
+      string varnam = "_v4d(cdfnorm)";
+      libm = funcnam + varnam;
+      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest4d, params)
+                 ->Args({(int)params->count})->Iterations(params->niter);
+    }
+
   }
 
   size_t retval = benchmark::RunSpecifiedBenchmarks();

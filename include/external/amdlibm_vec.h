@@ -1106,6 +1106,14 @@ extern "C" {
    */
   __m512 amd_vrs16_erfcf (__m512 x);
 
+/* Cumulative Normal Distribution */
+  /**
+   * @brief Computes cumulative normal distribution for eight double-precision elements.
+   * @param x Input vector x
+   * @return Vector of cdfnorm values
+   */
+  __m512d amd_vrd8_cdfnorm (__m512d x);
+
 /* Nearest Integer */
   /**
    * @brief Computes round per-lane for eight double-precision elements.

@@ -345,6 +345,7 @@ extern void      ALM_PROTO_INTERNAL(vrd8_sincos)   (__m512d x, __m512d *s, __m51
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_linearfrac)  (__m512d x, __m512d y, double sca, double sha, double scb, double shb);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_erfc)     (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_round)    (__m512d x);
+extern __m512d   ALM_PROTO_INTERNAL(vrd8_cdfnorm)  (__m512d x);
 
 /*
 * Vector Array versions

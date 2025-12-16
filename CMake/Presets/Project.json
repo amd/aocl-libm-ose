@@ -14,11 +14,7 @@
                 "CUST_PROJ_PREFIX": "aocl",
                 "CUST_PROJ_CXX_STD": "17",
                 "AU_GIT_REPO_URL" : "https://github.com/amd/aocl-utils.git",
-                "AU_GIT_TAG": "main",
-                "GTEST_GIT_REPO_URL" : "https://github.com/google/googletest.git",
-                "GTEST_GIT_TAG": "release-1.12.1",
-                "GBENCH_GIT_REPO_URL" : "https://github.com/google/benchmark.git",
-                "GBENCH_GIT_TAG": "v1.9.2"
+                "AU_GIT_TAG": "main"
             }
         },
         {

@@ -102,6 +102,11 @@ extern "C" {
 
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   __m128d LIBM_FUNC_VEC(d, 2, cdfnorm)(__m128d);
+  __m256d LIBM_FUNC_VEC(d, 4, cdfnorm)(__m256d);
+
+  #if defined(__AVX512__)
+    __m512d LIBM_FUNC_VEC(d, 8, cdfnorm) (__m512d);
+  #endif
 #endif
 
 int test_v2d(test_data *data, int idx)  {
@@ -144,6 +149,20 @@ int test_v8s(test_data *data, int idx)  {
 }
 
 int test_v8d(test_data *data, int idx)  {
+  #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+    #if defined(__AVX512__)
+      double *ip  = (double*)data->ip;
+      double *op  = (double*)data->op;
+      #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+        __m512d ip8 = _mm512_set_pd(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
+                                ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+        __m512d op8 = LIBM_FUNC_VEC(d, 8, cdfnorm)(ip8);
+        _mm512_store_pd(&op[0], op8);
+      #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+        vdCdfNorm(8,ip,op);
+      #endif
+    #endif
+  #endif
   return 0;
 }
 

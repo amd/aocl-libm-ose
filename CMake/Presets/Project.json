@@ -7,31 +7,33 @@
             "cacheVariables": {
                 "CUST_PROJ_NAME": "libm",
                 "CUST_PROJ_DESCRIPTION": "AOCL-LibM is a high-performance implementation of LibM",
-                "CUST_PROJ_URL"  : "https://aocl.amd.com/",
+                "CUST_PROJ_URL"  : "https://github.com/amd/aocl-libm-ose",
                 "VENDOR_NAME"    : "AMD",
                 "VENDOR_CONTACT" : "Prem Mallappa <pmallapp@amd.com>",
                 "CUST_PROJ_BUGREPORT": "aocl@amd.com",
                 "CUST_PROJ_PREFIX": "aocl",
                 "CUST_PROJ_CXX_STD": "17",
-                "CUST_PROJ_SOURCE_DIR": "Sources",
-                "CUST_PROJ_GTEST_TAG": "release-1.12.0",
-                "CUST_PROJ_GBENCH_TAG": "v1.8.4"
+                "AU_GIT_REPO_URL" : "https://github.com/amd/aocl-utils.git",
+                "AU_GIT_TAG": "main",
+                "GTEST_GIT_REPO_URL" : "https://github.com/google/googletest.git",
+                "GTEST_GIT_TAG": "release-1.12.1",
+                "GBENCH_GIT_REPO_URL" : "https://github.com/google/benchmark.git",
+                "GBENCH_GIT_TAG": "v1.9.2"
             }
         },
         {
             "name": "project-options",
             "hidden": true,
             "cacheVariables": {
-                "OPTION_BUILD_TESTS": "OFF",
-                "OPTION_BUILD_DOCS": "OFF",
-                "OPTION_BUILD_EXAMPLES": "OFF",
-                "OPTION_ENABLE_SLOW_TESTS": "OFF",
-                "OPTION_ENABLE_BROKEN_TESTS": "OFF",
-                "OPTION_ENABLE_ASSERTIONS": "OFF",
-                "OPTION_ENABLE_ASAN": "OFF",
-                "OPTION_ENABLE_COVERAGE": "OFF",
-                "OPTION_EXPORT_NAMESPACE": "OFF"
+                "LIBM_BUILD_LIBRARY": "ON",
+                "LIBM_BUILD_TESTS": "ON",
+                "LIBM_ENABLE_AVX512": "ON",
+                "LIBM_BUILD_EXAMPLES": "OFF",
+                "LIBM_BUILD_DOCS": "OFF",
+                "LIBM_ENABLE_ASAN": "OFF",
+                "LIBM_ENABLE_COVERAGE": "OFF"
             }
         }
     ]
 }
+

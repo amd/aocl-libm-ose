@@ -18,14 +18,18 @@
             "hidden": true,
             "inherits": "gcc",
             "cacheVariables": {
-                "CMAKE_C_FLAGS_DEBUG": "-g -ggdb3",
-                "CMAKE_CXX_FLAGS_DEBUG": "-g -ggdb3"
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_C_FLAGS_DEBUG": "-g -ggdb3 -O1",
+                "CMAKE_CXX_FLAGS_DEBUG": "-g -ggdb3 -O1"
             }
         },
         {
             "name": "gcc-release",
             "hidden": true,
-            "inherits": "gcc"
+            "inherits": "gcc",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
         }
      ]
 }

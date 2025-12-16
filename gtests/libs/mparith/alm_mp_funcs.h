@@ -33,7 +33,6 @@
 extern "C" {
 #endif
 
-#include <external/amdlibm.h>
 
 double   alm_mp_acosf       (float x);
 double   alm_mp_acoshf      (float x);
@@ -83,6 +82,7 @@ double   alm_mp_tanhf       (float x);
 double   alm_mp_tanpif      (float x);
 double   alm_mp_truncf      (float x);
 double   alm_mp_erff        (float x);
+double   alm_mp_erfcf       (float x);
 double   alm_mp_linearfracf (float x, float y, float sc_x, float sh_x, float sc_y, float sh_y);
 double   alm_mp_addf        (float x, float y);
 double   alm_mp_subf        (float x, float y);
@@ -139,6 +139,7 @@ float   alm_mp_tanpif_ULP    (float x,float z, double *, double *);
 float   alm_mp_tanf_ULP      (float x,float z, double *, double *);
 float   alm_mp_truncf_ULP    (float x,float z,double *, double *);
 float   alm_mp_erff_ULP      (float x,float z,double *, double *);
+float   alm_mp_erfcf_ULP     (float x,float z,double *, double *);
 float   alm_mp_linearfracf_ULP (float x, float y, float sc_x, float sh_x, float sc_y, float sh_y, float z,double *, double *);
 float   alm_mp_addf_ULP      (float x, float y,float z, double *, double *);
 float   alm_mp_subf_ULP      (float x, float y,float z, double *, double *);
@@ -192,6 +193,7 @@ long double  alm_mp_tanh      (double x);
 long double  alm_mp_tanpi     (double x);
 long double  alm_mp_trunc     (double x);
 long double  alm_mp_erf       (double x);
+long double  alm_mp_erfc      (double x);
 long double  alm_mp_linearfrac (double x, double y, double sc_x, double sh_x, double sc_y, double sh_y);
 long double  alm_mp_add       (double x, double y);
 long double  alm_mp_sub       (double x, double y);
@@ -246,6 +248,7 @@ double  alm_mp_tanpi_ULP     (double x,double z, double *, double *);
 double  alm_mp_tan_ULP       (double x,double z, double *, double *);
 double  alm_mp_trunc_ULP     (double x,double z,double *, double *);
 double  alm_mp_erf_ULP       (double x,double z,double *, double *);
+double  alm_mp_erfc_ULP      (double x,double z,double *, double *);
 double  alm_mp_linearfrac_ULP(double x, double y, double sc_x, double sh_x, double sc_y, double sh_y, double z, double *, double *);
 double  alm_mp_add_ULP       (double x, double y,double z, double *, double *);
 double  alm_mp_sub_ULP       (double x, double y,double z, double *, double *);
@@ -262,3 +265,4 @@ long double _Complex   alm_mpc_cexp       (double _Complex x);
 
 
 #endif
+

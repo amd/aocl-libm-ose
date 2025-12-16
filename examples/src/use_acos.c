@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -93,7 +93,6 @@ void acos_vector_single_precision_8()
 
 void acos_vector_double_precision_2()
 {
-    #if 0
     printf("Using Vector double precision - 2 doubles (vrd2) acos()\n");
     __m128d input, result;
     double  input_array_vrd2[2] = {34.65, 67.89};
@@ -107,12 +106,10 @@ void acos_vector_double_precision_2()
             input_array_vrd2[0], input_array_vrd2[1],
             output_array[0], output_array[1]);
     printf("----------\n");
-    #endif
 }
 
 void acos_vector_double_precision_4()
 {
-    #if 0
     printf("Using Vector double precision - 4 doubles (vrd4) acos()\n");
     __m256d input, result;
     double input_array_vrd4[4] = {2.3, 4.5, 56.5, 43.4};
@@ -126,7 +123,6 @@ void acos_vector_double_precision_4()
             input_array_vrd4[0], input_array_vrd4[1], input_array_vrd4[2], input_array_vrd4[3],
             output_array_vrd4[0], output_array_vrd4[1], output_array_vrd4[2],output_array_vrd4[3]);
     printf("----------\n");
-    #endif
 }
 
 /**********************************************
@@ -134,7 +130,6 @@ void acos_vector_double_precision_4()
  * *******************************************/
 void acos_single_precision_array()
 {
-    #if 0
     printf("Using Single Precision Vectory Array (vrsa) acos()\n");
     int n=5;
     float input[10] = {1.0f, 3.0f, 5.0f, 7.0f, 9.0f, 11.0f, 13.0f, 15.0f, 17.0f, 19.0f};
@@ -154,15 +149,13 @@ void acos_single_precision_array()
     }
     printf("}\n");
     printf("----------\n");
-    #endif
 }
 
 void acos_double_precision_array()
 {
-    #if 0
     printf("Using Double Precision Vectory Array (vrda) acos()\n");
     int n=8;
-    double input[10] = {10.0, 8.0, 4.0, 2.0, 6.0, 12.0, 14.0, 1.0, 3.0, 5.0};
+    double input[10] = {-1.0, -0.8, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0};
     double output[10] = {0};
 
     amd_vrda_acos(n, input, output);
@@ -179,9 +172,7 @@ void acos_double_precision_array()
     }
     printf("}\n");
     printf("----------\n");
-    #endif
 }
-
 int use_acos()
 {
     printf("\n\n***** acos() *****\n");

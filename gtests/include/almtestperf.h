@@ -37,9 +37,10 @@
 #include "args.h"
 #include "almstruct.h"
 #include "defs.h"
-#include "random.h"
 #include "debug.h"
+#undef max
 #include "benchmark.h"
+#include "random.h"
 
 using namespace std;
 using namespace ALM;

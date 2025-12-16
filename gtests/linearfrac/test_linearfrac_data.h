@@ -39,6 +39,7 @@
 */
 
 /* TODO: Add more test cases */
+#if 0 //Currently not using below code anywhere we were getting compilation warning saying below code is not used.
 static libm_test_special_data_f64
 test_linearfrac_conformance_data[] = {
     {0x400999999999999a, 0x0000000000000000, 0x4014666666666666, 0x4014666666666666, 0x4014666666666666, 0x0000000000000000, 0,0x7ff0000000000000 },
@@ -46,9 +47,8 @@ test_linearfrac_conformance_data[] = {
     {0x10000000000000, 0x10000000000000, 0x10000000000000,  0x42dc122183e46000, 0x42dc122183e46000, 0x42dc122183e46000, 0, 0x10000000000000},
     {0x43DFFD0004000000, 0x3FF8000000000000, 0x4004000000000000, },
 };
-
 static libm_test_special_data_f32
 test_linearfracf_conformance_data[] = {
 };
-
+#endif
 #endif

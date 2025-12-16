@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -184,12 +184,14 @@ int aocl_libm_aligned_alloc(unsigned int arr_size, T* &buff)
 template <typename T>
 int aocl_libm_aligned_free(T* &buff)
 {
-    #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
-      _aligned_free(buff);
-    #else
-      free(buff);
-    #endif
-    buff = nullptr;
+    if (buff != nullptr) {
+      #if (defined _WIN32 || defined _WIN64 ) && (defined(__clang__))
+        _aligned_free(buff);
+      #else
+        free(buff);
+      #endif
+      buff = nullptr;
+    }
     return 0;
 }
 #endif

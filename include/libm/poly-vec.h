@@ -302,7 +302,7 @@
             __typeof(x) x4 = x2 * x2;                                   \
             __typeof(x) q = mul_add(mul_add(c3, x, c2),                 \
                                     x2,                                 \
-                                    mul_add((x * c4),                   \
+                                    mul_add( c4,                        \
                                             x4,                         \
                                             mul_add(c1, x, c0)));       \
             q;                                                          \

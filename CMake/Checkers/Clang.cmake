@@ -27,10 +27,10 @@
 
 
 set(CLANG_VERSION_MIN "9.0.0")
-set(CLANG_VERSION_MAX "18.1.0")
+set(CLANG_VERSION_MAX "19.0.0")
 
 if ((CMAKE_C_COMPILER_VERSION VERSION_LESS ${CLANG_VERSION_MIN}) OR
-    (CMAKE_C_COMPILER_VERSION VERSION_GREATER ${CLANG_VERSION_MAX}))
+    (CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL ${CLANG_VERSION_MAX}))
 message(FATAL_ERROR "Unsupported Clang Compiler version: ${CMAKE_C_COMPILER_VERSION}. \
                       Please use Clang version between ${CLANG_VERSION_MIN} and ${CLANG_VERSION_MAX}.")
 endif()
@@ -61,24 +61,14 @@ macro(get_warning_flags wflags)
 endmacro()
 
 macro(get_unalign_vec_move_flag uavmflag)
-  if(CMAKE_C_COMPILER_VERSION GREATER_EQUAL 14.0.6)
-    set(${uavmflag} -muse-unaligned-vector-move)
+  if(NOT WIN32)
+    if(CMAKE_C_COMPILER_VERSION GREATER_EQUAL 14.0.6)
+      set(${uavmflag} -muse-unaligned-vector-move)
+    endif()
   endif()
 endmacro()
 
 macro(get_pic_flag picflag)
-  if(NOT WIN32)
-    set(${picflag} -fPIC)
-  else()
-    set(${picflag})
-  endif()
+  set(${picflag} -fPIC)
 endmacro()
 
-#LINKER Flags for Shared library
-macro(get_linker_flag sharedlinkerflag)
-  if(NOT WIN32)
-    set(${sharedlinkerflag} "-fuse-ld=ld")
-  else()
-    set(${sharedlinkerflag} "/dll")
-  endif()
-endmacro()

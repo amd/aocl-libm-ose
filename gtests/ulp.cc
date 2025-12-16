@@ -240,7 +240,7 @@ double getUlp(double _Complex aop, long double  _Complex exptd) {
     long double ld_exptd = abs(complex<long double>(__real__ exptd, __imag__ exptd));
   #else
     double d_aop = cabs(aop);
-    long double ld_exptd = cabs(exptd);
+    long double ld_exptd = cabsl(exptd);
   #endif
   return ALM::ComputeUlp(d_aop, ld_exptd);
 }

@@ -6,11 +6,13 @@ set(CMAKE_C_COMPILER clang-cl)
 set(CMAKE_CXX_COMPILER clang-cl)
 
 # Specify the linker
+set(CMAKE_STATIC_LINKER_ARCHIVE lib)
 set(CMAKE_LINKER lld-link)
 
 # Specify the paths to the LLVM tools
-set(LLVM_ROOT "C:/LLVM16")
+set(LLVM_ROOT "C:/Program Files/LLVM")
 set(CMAKE_C_COMPILER "${LLVM_ROOT}/bin/clang-cl.exe")
 set(CMAKE_CXX_COMPILER "${LLVM_ROOT}/bin/clang-cl.exe")
 set(CMAKE_LINKER "${LLVM_ROOT}/bin/lld-link.exe")
+set(CMAKE_STATIC_LINKER_ARCHIVE "${LLVM_ROOT}/bin/llvm-lib.exe")
 

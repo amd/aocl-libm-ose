@@ -83,11 +83,6 @@ float ALM_PROTO_OPT(fmodf)(float x, float y)
        }
     }
 
-    if(unlikely((fay & EXPBITS_SP32) > EXPBITS_SP32))
-    {
-        return (x*y)/(x*y);
-    }
-
     if(fax == fay)
     {
         return (0.0f * x);

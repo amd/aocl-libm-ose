@@ -50,7 +50,7 @@ void ALM_PROTO_ARCH_ZN5(vrda_sincos)(int length, double *x, double *sin, double 
     if(remainder)
     {
         __m512d zero = _mm512_set1_pd(0);
-        __mmask8 mask =  0xFF >> ( 8 - remainder );
+        __mmask8 mask = (__mmask8)(0xFF >> ( 8 - remainder ));
         __m512d ip8 = _mm512_mask_loadu_pd(zero, mask, &x[j]);
         ALM_PROTO(vrd8_sincos)(ip8, &opsin, &opcos);
         _mm512_mask_storeu_pd(&sin[j], mask, opsin);

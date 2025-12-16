@@ -76,6 +76,13 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
     #endif
+    if((params->fqty == ALM::FloatQuantity::E_All) ||
+     (params->fqty == ALM::FloatQuantity::E_Vector_Array)) {
+      string varnam = "_vas(tanhf)";
+      libm = funcnam + varnam;
+      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTestaf, params)
+                 ->Args({(int)params->count})->Iterations(params->niter);
+    }
   }
 
   if((params->fwidth == ALM::FloatWidth::E_ALL) ||

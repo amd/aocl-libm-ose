@@ -145,15 +145,11 @@ macro(get_optz_flag optzflag)
 endmacro()
 
 macro(get_fast_flag ffpflag)
-  if(NOT WIN32)
-    set(${ffpflag} -ffp-contract=fast)
-  else()
-    set(${ffpflag} /fp:fast)
-  endif()
+  set(${ffpflag} -ffp-contract=fast)
 endmacro()
 
 macro(get_win_flag winflag)
-  set(${winflag}  -DAVX_XOP_FMA4_FMA3 -DDEBUG=0 -DENABLE_AMDLIBM_API=1 -DLIBABI=aocl -D__AVX2__ -Dlibalm_EXPORTS -m64 /DWIN32 /D_WINDOWS /DNDEBUG -march=native )
+  set(${winflag}  -DAVX_XOP_FMA4_FMA3 -DENABLE_AMDLIBM_API=1 -DLIBABI=aocl -Dlibalm_EXPORTS -m64 /arch:AVX2)
 endmacro()
 
 macro(get_au_flag auflag)

@@ -21,9 +21,8 @@
             "inherits": "base-config",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "OPTION_ENABLE_ASSERTIONS": "ON",
                 "CMAKE_COMPILE_WARNING_AS_ERROR": true,
-                "CMAKE_EXPORT_COMPILE_COMMANDS": false,
+                "CMAKE_EXPORT_COMPILE_COMMANDS": true,
                 "CMAKE_VERBOSE_MAKEFILE": "OFF"
             }
         },
@@ -34,7 +33,6 @@
             "inherits": "base-config",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "OPTION_ENABLE_ASSERTIONS": "ON",
                 "CMAKE_COMPILE_WARNING_AS_ERROR": true,
                 "CMAKE_EXPORT_COMPILE_COMMANDS": true,
                 "CMAKE_VERBOSE_MAKEFILE": "OFF"

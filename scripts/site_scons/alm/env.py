@@ -74,6 +74,8 @@ def append_spack_env(mydict):
                     'SPACK_SHORT_SPEC',
                     'SPACK_SYSTEM_DIRS',
                     'SPACK_MANAGED_DIRS',
+                    'SPACK_COMPILER_WRAPPER_PATH',
+                    'SPACK_CC_LINKER_ARG',
                 ]
 
     # add these keys to mydict if they exist in environ
@@ -294,5 +296,3 @@ class AlmEnvironment(object):
         compile_helper.UpdateEnvComStr(self.env)
 
         return self.env
-
-

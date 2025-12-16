@@ -72,11 +72,11 @@ double getExpected(float *data) {
 }
 
 double _Complex getExpected(float _Complex *data) {
-  return {0};
+  return 0.0;
 }
 
 long double _Complex getExpected(double _Complex *data) {
-  return {0};
+  return 0.0;
 }
 
 int test_s1s(test_data *data, int idx)  {
@@ -164,11 +164,12 @@ int test_v8d(test_data *data, int idx)  {
         double *ip6 = (double*)data->ip5;
 
         double *op  = (double*)data->op;
+        #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
         __m512d ip8_1 = _mm512_set_pd(ip1[idx+7], ip1[idx+6], ip1[idx+5], ip1[idx+4],
                                 ip1[idx+3], ip1[idx+2], ip1[idx+1], ip1[idx]);
         __m512d ip8_2 = _mm512_set_pd(ip2[idx+7], ip2[idx+6], ip2[idx+5], ip2[idx+4],
                                 ip2[idx+3], ip2[idx+2], ip2[idx+1], ip2[idx]);
-        #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+
           __m512d op8 = LIBM_FUNC_VEC(d, 8, linearfrac)(ip8_1, ip8_2, ip3[idx], ip4[idx], ip5[idx], ip6[idx]);
           _mm512_store_pd(&op[0], op8);
         #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
@@ -192,6 +193,7 @@ int test_v16s(test_data *data, int idx)  {
         float *ip6 = (float*)data->ip5;
 
         float *op  = (float*)data->op;
+        #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
         __m512 ip16_1 = _mm512_set_ps(ip1[idx+15], ip1[idx+14], ip1[idx+13], ip1[idx+12],
                                       ip1[idx+11], ip1[idx+10], ip1[idx+9], ip1[idx+8],
                                       ip1[idx+7], ip1[idx+6], ip1[idx+5], ip1[idx+4],
@@ -200,7 +202,7 @@ int test_v16s(test_data *data, int idx)  {
                                       ip2[idx+11], ip2[idx+10], ip2[idx+9], ip2[idx+8],
                                       ip2[idx+7], ip2[idx+6], ip2[idx+5], ip2[idx+4],
                                       ip2[idx+3], ip2[idx+2], ip2[idx+1], ip2[idx]);
-        #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+
           __m512 op16 = LIBM_FUNC_VEC(s, 16, linearfracf)(ip16_1, ip16_2, ip3[idx], ip4[idx], ip5[idx], ip6[idx]);
           _mm512_store_ps(&op[0], op16);
         #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)

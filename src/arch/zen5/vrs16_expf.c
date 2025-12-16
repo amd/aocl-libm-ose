@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -179,7 +179,7 @@ ALM_PROTO_ARCH_ZN5(vrs16_expf)(v_f32x16_t _x)
      * Else, return the above computed result
      */
 
-    if(unlikely(any_v16_u32(cond))) {
+    if(unlikely(any_v16_u32((v_i32x16_t)cond))) {
 
         result = call_v16_f32(SCALAR_EXPF, _x, result, cond);
 

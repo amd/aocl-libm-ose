@@ -63,12 +63,12 @@ long double getExpected(double *data) {
 
 // FIXME: To be used by the Complex Number Functions only!
 double _Complex getExpected(float _Complex *data) {
-  return {0};
+  return 0.0;
 }
 
 // FIXME: To be used by the Complex Number Functions only!
 long double _Complex getExpected(double _Complex *data) {
-  return {0};
+  return 0.0;
 }
 
 void ConfSetupf32(SpecParams *specp) {

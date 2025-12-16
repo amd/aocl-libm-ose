@@ -43,11 +43,11 @@ using namespace std;
  */
 static map<string, vector<string>> libm_funcs = {
     // { func,   { supported variants} }
-    {"acos",      {"s1d", "s1f", "vrs4", "vrs8", "vrs16"}},
+    {"acos",      {"s1d", "s1f", "vrd2", "vrd4", "vrs4", "vrs8", "vrs16", "vrsa", "vrda"}},
     {"acosh",     {"s1d", "s1f"}},
-    {"asin",      {"s1d", "s1f", "vrd8", "vrs4", "vrs8", "vrs16"}},
+    {"asin",      {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrsa", "vrda"}},
     {"asinh",     {"s1d", "s1f"}},
-    {"atan",      {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16"}},
+    {"atan",      {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrsa", "vrda"}},
     {"atan2",     {"s1d", "s1f"}},
     {"atanh",     {"s1d", "s1f"}},
     {"cbrt",      {"s1d", "s1f", "vrd2", "vrs4", "vrda", "vrsa"}},
@@ -55,8 +55,8 @@ static map<string, vector<string>> libm_funcs = {
     {"cexp",      {"s1d", "s1f"}},
     {"copysign",  {"s1d", "s1f"}},
     {"cos",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
-    {"cosh",      {"s1d", "s1f", "vrd2", "vrs4", "vrs8"}},
-    {"erf",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16"}},
+    {"cosh",      {"s1d", "s1f", "vrd2", "vrs4", "vrs8", "vrsa", "vrda"}},
+    {"erf",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrsa", "vrda"}},
     {"exp",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"exp2",      {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"exp10",     {"s1d", "s1f", "vrd2", "vrs4", "vrda", "vrsa"}},
@@ -83,8 +83,8 @@ static map<string, vector<string>> libm_funcs = {
     {"sin",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"sinh",      {"s1d", "s1f"}},
     {"sqrt",      {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
-    {"tan",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16"}},
-    {"tanh",      {"s1d", "s1f", "vrs4", "vrs8", "vrs16"}},
+    {"tan",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrsa", "vrda"}},
+    {"tanh",      {"s1d", "s1f", "vrs4", "vrs8", "vrs16", "vrsa"}},
     {"trunc",     {"s1d", "s1f"}},
     {"linearfrac",{"vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"add",       {"vrda", "vrsa"}},
@@ -92,6 +92,7 @@ static map<string, vector<string>> libm_funcs = {
     {"mul",       {"vrda", "vrsa"}},
     {"nextafter", {"s1d", "s1f"}},
     {"ldexp",     {"s1d", "s1f"}},
+    {"erfc",      {"s1d", "vrd2", "vrd4", "vrd8", "vrda", "s1f", "vrs4", "vrs8", "vrs16", "vrsa"}},
 };
 
 /* vector<string> getSupportedVariants(string func)

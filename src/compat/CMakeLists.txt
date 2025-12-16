@@ -25,14 +25,29 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-#building single libalm-glibc-compat library
-include(Cct_Library)
+set(COMPACT_LIB alm-glibc-compat)
 
-set(COMPACT_FLAGS ${LIBMCFLAGS} -O2 -mavx2 )
-cct_cxx_add_library(alm-glibc-compat
-    SOURCES                 glibc-compat.c
-    HEADERS                 ${INCLUDE_PATHS}
-    PRIVATE_COMPILE_FLAGS   ${COMPACT_FLAGS}
-    SHARED_LIB
-    INSTALL_LIB
-    )
+set(COMPACT_FLAGS ${fmaflag} ${wflags} ${picflag})
+
+add_library(glibc_obj OBJECT glibc-compat.c  ${INCLUDE_PATHS})
+target_compile_options(glibc_obj PRIVATE ${COMPACT_FLAGS})
+target_include_directories(glibc_obj
+                            PUBLIC  ${${PROJECT_PREFIX}_COMMON_INCLUDES}
+                                    ${${PROJECT_PREFIX}_SDK_INCLUDES}
+                            PRIVATE ${${PROJECT_PREFIX}_PRIVATE_INCLUDES})
+
+add_library(libmglibc_static STATIC $<TARGET_OBJECTS:glibc_obj>)
+set_target_properties(libmglibc_static PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    OUTPUT_NAME ${COMPACT_LIB}
+)
+list(APPEND libm libmglibc_static)
+
+add_library(libmglibc_shared SHARED $<TARGET_OBJECTS:glibc_obj>)
+set_target_properties(libmglibc_shared PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    OUTPUT_NAME ${COMPACT_LIB}
+)
+list(APPEND libm libmglibc_shared)
+set(libm ${libm} PARENT_SCOPE)
+

@@ -57,7 +57,7 @@
 
     2. AOCL LibM library uses AOCL libaoclutils library to detect Zen architecture. Follow the steps below to compile AOCL libaoclutils library on windows.
            a)Clone the libaoclutils library code base.
-               git clone git@github.com:amd/aocl-utils.git -b main
+               git clone git@github.amd.com:AOCL/aocl-utils.git -b amd-main
            b)Follow the steps mentioned in the aocl-utils/README.md further to compile and install the libaoclutils library.
            c)Maintain following directory structure of libaoclutils files to compile LibM on windows
                libaoclutils
@@ -82,6 +82,9 @@
     3. virtualenv -p python .venv3
     4. .venv3\Scripts\activate
     5. pip install scons
+
+## To set mpfr path on command prompt
+    set MPFR_PATH="mpfr_installation_path\mpfr"
 
 ## Start building libm library
     scons ALM_CC="<clang executable path>" ALM_CXX="<clang++ executable path>" --aocl_utils_install_path="<libaoclutils library path>"

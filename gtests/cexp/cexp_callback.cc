@@ -84,11 +84,19 @@ long double getExpected(double *data) {
 }
 
 fc32_t getGlibcOp(fc32_t *data) {
+#if defined(_WIN64) || defined(_WIN32)
+ return {0.0, 0.0};
+#else
   return cexpf(data[0]);
+#endif
 }
 
 fc64_t getGlibcOp(fc64_t *data) {
+#if defined(_WIN64) || defined(_WIN32)
+  return {0.0, 0.0};
+#else
   return cexp(data[0]);
+#endif
 }
 
 /**********************

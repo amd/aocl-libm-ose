@@ -129,7 +129,8 @@ v_f64x4_t
 ALM_PROTO_OPT(vrd4_exp2)(v_f64x4_t input)
 {
     v_f64x4_t   r, dn;
-    v_i64x4_t   vx, n, m, cond;
+    v_i64x4_t   vx, n, m;
+    v_u64x4_t cond;
 
     /* Get absolute value */
     vx   = as_v4_i64_f64(input);

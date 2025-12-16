@@ -313,9 +313,9 @@ ALM_PROTO_OPT(vrs8_powxf)(__m256 x,float y)
 
         /* Avoiding the use of vgatherpd instruction for performance reasons */
 
-        F_INV = look_table_access(TAB_F_INV, VECTOR_LENGTH, index_array[lane]);
+        F_INV = look_table_access(TAB_F_INV, VECTOR_LENGTH, (v_u32x4_t)index_array[lane]);
 
-        LOG_256 = look_table_access(TAB_LOG, VECTOR_LENGTH, index_array[lane]);
+        LOG_256 = look_table_access(TAB_LOG, VECTOR_LENGTH, (v_u32x4_t)index_array[lane]);
 
         r = fd * F_INV;
 

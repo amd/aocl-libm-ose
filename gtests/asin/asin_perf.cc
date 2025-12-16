@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -76,6 +76,13 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
     #endif
+    if((params->fqty == ALM::FloatQuantity::E_All) ||
+     (params->fqty == ALM::FloatQuantity::E_Vector_Array)) {
+      string varnam = "_vas(asinf)";
+      libm = funcnam + varnam;
+      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTestaf, params)
+                 ->Args({(int)params->count})->Iterations(params->niter);
+    }
   }
 
   if((params->fwidth == ALM::FloatWidth::E_ALL) ||
@@ -101,6 +108,13 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest4d, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
+    if((params->fqty == ALM::FloatQuantity::E_All) ||
+     (params->fqty == ALM::FloatQuantity::E_Vector_Array)) {
+      string varnam = "_vad(asin)";
+      libm = funcnam + varnam;
+      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTestad, params)
+                 ->Args({(int)params->count})->Iterations(params->niter);
+     }
     #if defined(__AVX512__)
     if((params->fqty == ALM::FloatQuantity::E_All) ||
      (params->fqty == ALM::FloatQuantity::E_Vector_8)) {

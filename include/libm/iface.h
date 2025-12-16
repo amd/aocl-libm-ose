@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2024, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2025, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -90,6 +90,7 @@ enum {
     C_AMD_TANPI,
     C_AMD_TRUNC,
     C_AMD_ERF,
+    C_AMD_ERFC,
     C_AMD_SINCOS,
     C_AMD_ADD,
     C_AMD_SUB,
@@ -193,6 +194,7 @@ extern void LIBM_IFACE_PROTO(tanh)(void *arg);
 extern void LIBM_IFACE_PROTO(tanpi)(void *arg);
 extern void LIBM_IFACE_PROTO(trunc)(void *arg);
 extern void LIBM_IFACE_PROTO(erf)(void *arg);
+extern void LIBM_IFACE_PROTO(erfc)(void *arg);
 extern void LIBM_IFACE_PROTO(cexp)(void *arg);
 extern void LIBM_IFACE_PROTO(clog)(void *arg);
 extern void LIBM_IFACE_PROTO(cpow)(void *arg);

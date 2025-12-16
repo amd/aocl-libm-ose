@@ -29,7 +29,7 @@ set(ISA_INCLUDE ${INCLUDE_PATHS} "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 get_isa_flag( isaflag )
 
-set(ISA_FLAGS ${isaflag})
+set(ISA_FLAGS ${isaflag} ${ASAN_FLAGS} ${COVERAGE_FLAGS})
 
 add_subdirectory(avx)
 #add avxasm object library to libmobj

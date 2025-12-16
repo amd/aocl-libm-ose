@@ -6,8 +6,7 @@
             "hidden": true,
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "clang",
-                "CMAKE_CXX_COMPILER": "clang++",
-                "CMAKE_SHARED_LINKER_FLAGS": "-fuse-ld=ld"
+                "CMAKE_CXX_COMPILER": "clang++"
             }
         },
         {
@@ -15,21 +14,26 @@
             "hidden": true,
             "inherits": "llvm",
             "cacheVariables": {
-                "CMAKE_C_FLAGS_DEBUG": "-g -ggdb3",
-                "CMAKE_CXX_FLAGS_DEBUG": "-g -ggdb3"
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_C_FLAGS_DEBUG": "-g -ggdb3 -O1",
+                "CMAKE_CXX_FLAGS_DEBUG": "-g -ggdb3 -O1"
             }
         },
         {
             "name": "llvm-release",
             "hidden": true,
-            "inherits": "llvm"
+            "inherits": "llvm",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
         },
         {
             "name": "llvm-win",
             "hidden": true,
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "C:/Program Files/LLVM/bin/clang-cl.exe",
-                "CMAKE_CXX_COMPILER": "C:/Program Files/LLVM/bin/clang-cl.exe"
+                "CMAKE_CXX_COMPILER": "C:/Program Files/LLVM/bin/clang-cl.exe",
+                "CMAKE_LINKER": "C:/Program Files/LLVM/bin/lld-link.exe"
             }
         },
         {
@@ -37,14 +41,18 @@
             "hidden": true,
             "inherits": "llvm-win",
             "cacheVariables": {
-                "CMAKE_C_FLAGS_DEBUG": "-g -ggdb3",
-                "CMAKE_CXX_FLAGS_DEBUG": "-g -ggdb3"
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_C_FLAGS_DEBUG": "-g -O1",
+                "CMAKE_CXX_FLAGS_DEBUG": "-g -O1"
             }
         },
         {
             "name": "llvm-win-release",
             "hidden": true,
-            "inherits": "llvm-win"
+            "inherits": "llvm-win",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
         }
     ]
 }

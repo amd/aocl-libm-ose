@@ -27,8 +27,6 @@
 
 if (WIN32)
   set(ALMFAST libalmfast)
-  set(CMAKE_SHARED_LIBRARY_PREFIX "")
-  set(CMAKE_STATIC_LIBRARY_PREFIX "")
 else()
   set(ALMFAST almfast)
 endif()
@@ -37,20 +35,36 @@ get_fastmath_flag( fmflag )
 
 file(GLOB FAST_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.c")
 set(FAST_INCLUDE "${INCLUDE_PATHS}")
-set(FAST_FLAGS ${LIBMCFLAGS} ${fmaflag} ${fmflag})
+set(FAST_FLAGS  ${ffpflag} ${fmflag} ${wflags} ${picflag} ${winflag} ${fmaflag})
 
-if (BUILD_SHARED_LIBS)
-  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-  add_library(libmfast SHARED ${FAST_SRC})
-  set_target_properties(libmfast PROPERTIES POSITION_INDEPENDENT_CODE ON)
-  target_link_libraries(libmfast PRIVATE ${libm})
-else()
-  add_library(libmfast STATIC ${FAST_SRC})
-endif ()
-target_include_directories(libmfast
+add_library(libmfast_obj OBJECT ${FAST_SRC})
+target_include_directories(libmfast_obj
                            PUBLIC  ${${PROJECT_PREFIX}_COMMON_INCLUDES}
                                    ${${PROJECT_PREFIX}_SDK_INCLUDES}
                            PRIVATE ${${PROJECT_PREFIX}_PRIVATE_INCLUDES}
                                    ${FAST_INCLUDE})
-target_compile_options(libmfast PRIVATE ${FAST_FLAGS})
-set_target_properties(libmfast PROPERTIES OUTPUT_NAME ${ALMFAST})
+target_compile_options(libmfast_obj PRIVATE ${FAST_FLAGS})
+
+if(WIN32)
+  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+  set(FASTLIBMDEPS "${PROJECT_BINARY_DIR}/src/libalm.lib")
+else()
+  set(FASTLIBMDEPS "libm_shared")
+endif()
+add_library(libmfast_shared SHARED $<TARGET_OBJECTS:libmfast_obj>)
+set_target_properties(libmfast_shared PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    OUTPUT_NAME ${ALMFAST}
+)
+target_link_libraries(libmfast_shared PRIVATE ${FASTLIBMDEPS})
+list(APPEND libm libmfast_shared)
+
+add_library(libmfast_static STATIC $<TARGET_OBJECTS:libmfast_obj>)
+set_target_properties(libmfast_static PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    OUTPUT_NAME ${ALMFAST}
+)
+list(APPEND libm libmfast_static)
+
+set(libm ${libm} PARENT_SCOPE)
+

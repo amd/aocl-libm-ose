@@ -25,7 +25,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-file(GLOB AVX_ASM LIST_DIRECTORIES false ${CMAKE_CURRENT_SOURCE_DIR}/gas/*.S)
+set(AVX_ASM
+    ${CMAKE_CURRENT_SOURCE_DIR}/gas/remainder_piby2_new.S
+    ${CMAKE_CURRENT_SOURCE_DIR}/gas/remainder_piby2f_new.S
+    ${CMAKE_CURRENT_SOURCE_DIR}/gas/remainder.S
+    ${CMAKE_CURRENT_SOURCE_DIR}/gas/fmod.S
+)
+
 add_library(avxasm OBJECT ${AVX_ASM})
 target_include_directories(avxasm
                            PUBLIC  ${${PROJECT_PREFIX}_COMMON_INCLUDES}
@@ -33,3 +39,6 @@ target_include_directories(avxasm
                            PRIVATE ${${PROJECT_PREFIX}_PRIVATE_INCLUDES}
                                    ${ISA_INCLUDE})
 target_compile_options(avxasm PRIVATE ${ISA_FLAGS})
+if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set_target_properties(avxasm PROPERTIES MSVC_DEBUG_INFORMATION_FORMAT "")
+endif()

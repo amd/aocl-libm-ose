@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -86,11 +86,11 @@ long double getExpected(double *data) {
 
 // Used by the Complex Number Functions only!
 double _Complex getExpected(float _Complex *data) {
-  return {0};
+  return 0.0;
 }
 
 long double _Complex getExpected(double _Complex *data) {
-  return {0};
+  return 0.0;
 }
 
 float getGlibcOp(float *data) {
@@ -123,6 +123,8 @@ extern "C" {
 #endif
 
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+__m128d LIBM_FUNC_VEC(d, 2, asin)(__m128d);
+__m256d LIBM_FUNC_VEC(d, 4, asin)(__m256d);
 __m128 LIBM_FUNC_VEC(s, 4, asinf)(__m128);
 __m256 LIBM_FUNC_VEC(s, 8, asinf)(__m256);
  #if defined(__AVX512__)
@@ -132,11 +134,15 @@ __m256 LIBM_FUNC_VEC(s, 8, asinf)(__m256);
 #endif
 
 int test_v2d(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
-  __m128d op2 = LIBM_FUNC_VEC(d, 2, asin)(ip2);
+  #if (LIBM_PROTOTYPE == PROTOTYPE_MSVC)
+    __m128d op2 = LIBM_FUNC_VEC(d, 2, ASin)(ip2);
+  #else
+    __m128d op2 = LIBM_FUNC_VEC(d, 2, asin)(ip2);
+  #endif
   _mm_store_pd(&op[0], op2);
 #endif
   return 0;
@@ -144,7 +150,7 @@ int test_v2d(test_data *data, int idx)  {
 
 int test_v4s(test_data *data, int idx)  {
 /* glibc has no vector asinf variants */
-#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML || LIBM_PROTOTYPE == PROTOTYPE_MSVC)
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
   __m128 ip4 = _mm_set_ps(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
@@ -159,11 +165,15 @@ int test_v4s(test_data *data, int idx)  {
 }
 
 int test_v4d(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
-  __m256d op4 = LIBM_FUNC_VEC(d, 4, asin)(ip4);
+    #if (LIBM_PROTOTYPE == PROTOTYPE_MSVC)
+    __m256d op4 = LIBM_FUNC_VEC(d, 4, ASin)(ip4);
+  #else
+    __m256d op4 = LIBM_FUNC_VEC(d, 4, asin)(ip4);
+  #endif
   _mm256_store_pd(&op[0], op4);
 #endif
   return 0;
@@ -206,6 +216,32 @@ int test_v16s(test_data *data, int idx)  {
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m512 op16 = LIBM_FUNC_VEC(s, 16, asinf)(ip16);
   _mm512_store_ps(&op[0], op16);
+#endif
+#endif
+  return 0;
+}
+
+int test_vas(test_data *data, int count)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
+  float *ip  = (float*)data->ip;
+  float *op  = (float*)data->op;
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+  amd_vrsa_asinf(count, ip, op);
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  vsAsin(count, ip, op);
+#endif
+#endif
+  return 0;
+}
+
+int test_vad(test_data *data, int count)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
+  double *ip  = (double*)data->ip;
+  double *op  = (double*)data->op;
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+  amd_vrda_asin(count, ip, op);
+#elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  vdAsin(count, ip, op);
 #endif
 #endif
   return 0;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -87,7 +87,7 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_TANPI]      = {LIBM_IFACE_PROTO(tanpi), NULL},
     [C_AMD_TRUNC]      = {LIBM_IFACE_PROTO(trunc), NULL},
     [C_AMD_ERF]      =   {LIBM_IFACE_PROTO(erf), NULL},
-
+    [C_AMD_ERFC]      =   {LIBM_IFACE_PROTO(erfc), NULL},
     [C_AMD_SINCOS]     = {LIBM_IFACE_PROTO(sincos), NULL},
 
     /* Integer variants */
@@ -196,16 +196,24 @@ alm_get_uach(void)
 
     if (au_cpuid_arch_is_zen5(AU_CURRENT_CPU_NUM))
     {
-        const char* const flags_array[]= {"avx512f"};
+        const char* const flags_array[] = {"avx512f"};
 
-        if(au_cpuid_has_flags(AU_CURRENT_CPU_NUM, flags_array, 1))
+        if (au_cpuid_has_flags(AU_CURRENT_CPU_NUM, flags_array, 1))
             arch_ver = ALM_UARCH_VER_ZEN5;
         else
             arch_ver = ALM_UARCH_VER_ZEN3;
 
     }
     else if (au_cpuid_arch_is_zen4(AU_CURRENT_CPU_NUM))
-        arch_ver = ALM_UARCH_VER_ZEN4;
+    {
+        const char* const flags_array[] = {"avx512f"};
+
+        if (au_cpuid_has_flags(AU_CURRENT_CPU_NUM, flags_array, 1))
+            arch_ver = ALM_UARCH_VER_ZEN4;
+        else
+            arch_ver = ALM_UARCH_VER_ZEN3;
+
+    }
     else if (au_cpuid_arch_is_zen3(AU_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN3;
     else if (au_cpuid_arch_is_zen2(AU_CURRENT_CPU_NUM))
@@ -213,8 +221,12 @@ alm_get_uach(void)
     else if (au_cpuid_arch_is_zen(AU_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN;
     else
+    {
         arch_ver = ALM_UARCH_VER_DEFAULT;
-
+        const char* const flags_array[] = {"avx512f"};
+        if (au_cpuid_has_flags(AU_CURRENT_CPU_NUM, flags_array, 1))
+            arch_ver = ALM_UARCH_VER_ZEN4;
+    }
     return arch_ver;
 }
 #endif

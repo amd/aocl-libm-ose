@@ -118,13 +118,14 @@ targets += alm_libs
 gtest_objs = []
 if 'tests' in COMMAND_LINE_TARGETS or ('gtests' in COMMAND_LINE_TARGETS) :
     if aenv['HOST_OS'] == 'win32':
+        mpfr_root = os.environ['MPFR_PATH'].strip('"')
         #initialize different library paths
-        mpfr_inc = Dir('..\mpfr\mpfr_x64-windows\include')
-        gmp_inc = Dir('..\mpfr\gmp_x64-windows\include')
-        mpc_inc = Dir('..\mpfr\mpc_x64-windows\include')
-        mpfr_lib = Dir('..\mpfr\mpfr_x64-windows\lib')
-        gmp_lib = Dir('..\mpfr\gmp_x64-windows\lib')
-        mpc_lib = Dir('..\mpfr\mpc_x64-windows\lib')
+        mpfr_inc = Dir(rf'{mpfr_root}/mpfr_x64-windows/include')
+        gmp_inc = Dir(rf'{mpfr_root}/gmp_x64-windows/include')
+        mpc_inc = Dir(rf'{mpfr_root}/mpc_x64-windows/include')
+        mpfr_lib = Dir(rf'{mpfr_root}/mpfr_x64-windows/lib')
+        gmp_lib = Dir(rf'{mpfr_root}/gmp_x64-windows/lib')
+        mpc_lib = Dir(rf'{mpfr_root}/mpc_x64-windows/lib')
 
         aenv['ENV']['INCLUDE'] = [aenv['ENV']['INCLUDE'], mpfr_inc, gmp_inc, mpc_inc]
         aenv.Append(LIBS=['gmp.lib', 'mpfr.lib', 'mpc.lib'],LIBPATH=[mpfr_lib, gmp_lib, mpc_lib])

@@ -347,7 +347,7 @@ ALM_PROTO_OPT(vrs4_powxf)(__m128 _x,float _y)
         v_i32x4_t inf_condition = (v_i32x4_t)(x > EXPF_MAXF);
 
         /* set infinity to values of x greater than infinity */
-        inf_condition |= condition; 
+        inf_condition |= (v_i32x4_t)condition;
 
         v_i32x4_t zero_condition = (v_i32x4_t)(x < EXPF_MINF);
 

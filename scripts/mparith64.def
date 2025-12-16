@@ -48,3 +48,4 @@ EXPORTS
     alm_mp_mul
     alm_mp_nextafter
     alm_mp_ldexp
+    alm_mp_erfc

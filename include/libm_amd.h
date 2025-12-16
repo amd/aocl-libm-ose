@@ -77,6 +77,9 @@ double FN_PROTOTYPE(acos)(double x);
  double FN_PROTOTYPE( erf)(double x);
  float FN_PROTOTYPE(erff)(float x);
 
+ double FN_PROTOTYPE(erfc)(double x);
+ float FN_PROTOTYPE(erfcf)(float x);
+
  double FN_PROTOTYPE( exp)(double x);
  float FN_PROTOTYPE(expf)(float x);
 
@@ -255,6 +258,7 @@ __m128d FN_PROTOTYPE(vrd2_sqrt)(__m128d x);
 __m128d FN_PROTOTYPE(vrd2_fabs)(__m128d x);
 __m128d FN_PROTOTYPE(vrd2_linearfrac)(__m128d x, __m128d y, double sca, double sha, double scb, double shb);
 void  FN_PROTOTYPE(vrd2_sincos)(__m128d x, __m128d *sin, __m128d *cos);
+__m128d FN_PROTOTYPE(vrd2_erfc)(__m128d x);
 
 __m256d FN_PROTOTYPE(vrd4_exp)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_exp2)(__m256d x);
@@ -272,6 +276,7 @@ __m256d FN_PROTOTYPE(vrd4_sqrt)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_fabs)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_linearfrac)(__m256d x, __m256d y, double sca, double sha, double scb, double shb);
 void  FN_PROTOTYPE(vrd4_sincos)(__m256d x, __m256d *sin, __m256d *cos);
+__m256d FN_PROTOTYPE(vrd4_erfc)(__m256d x);
 
 __m128 FN_PROTOTYPE(vrs4_erff)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_expf)(__m128 x);
@@ -295,6 +300,7 @@ __m128 FN_PROTOTYPE(vrs4_fabsf)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_sqrtf)(__m128 x);
 __m128 FN_PROTOTYPE(vrs4_linearfracf)(__m128 x, __m128 y, float sca, float sha, float scb, float shb);
 void FN_PROTOTYPE(vrs4_sincosf)(__m128 x, __m128 *sin, __m128 *cos);
+__m128 FN_PROTOTYPE(vrs4_erfcf)(__m128 x);
 
 __m256 FN_PROTOTYPE(vrs8_erff)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_expf)(__m256 x);
@@ -313,6 +319,7 @@ __m256 FN_PROTOTYPE(vrs8_fabsf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_sqrtf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_linearfracf)(__m256 x, __m256 y, float sca, float sha, float scb, float shb);
 void FN_PROTOTYPE(vrs8_sincosf)(__m256 x, __m256 *sin, __m256 *cos);
+__m256 FN_PROTOTYPE(vrs8_erfcf)(__m256 x);
 
 void FN_PROTOTYPE(vrda_exp)(int len, double* x, double* y);
 void FN_PROTOTYPE(vrsa_expf)(int len, float* x, float* y);
@@ -380,6 +387,29 @@ void FN_PROTOTYPE(vrsa_linearfracf)(int len, float *x, float *y, float scx, floa
 
 /* Array variants of Powx */
 void FN_PROTOTYPE(vrda_powx)(int len, double *x, double y, double *result);
+
+/* Array variant of of float precision*/
+void FN_PROTOTYPE(vrsa_acosf)(int n, float *x, float *y);
+void FN_PROTOTYPE(vrsa_asinf)(int n, float *x, float *y);
+void FN_PROTOTYPE(vrsa_atanf)(int n, float *x, float *y);
+void FN_PROTOTYPE(vrsa_coshf)(int n, float *x, float *y);
+void FN_PROTOTYPE(vrsa_erff)(int n, float *x, float *y);
+void FN_PROTOTYPE(vrsa_tanhf)(int n, float *x, float *y);
+void FN_PROTOTYPE(vrsa_tanf)(int n, float *x, float *y);
+void FN_PROTOTYPE(vrda_atan)(int n, double *x, double *y);
+void FN_PROTOTYPE(vrda_erf)(int n, double *x, double *y);
+void FN_PROTOTYPE(vrda_tan)(int n, double *x, double *y);
+void FN_PROTOTYPE(vrda_cosh)(int n, double *x, double *y);
+void FN_PROTOTYPE(vrda_erfc)(int n, double *x, double *y);
+void FN_PROTOTYPE(vrsa_erfcf)(int n, float *x, float *y);
+
+__m128d FN_PROTOTYPE(vrd2_acos)(__m128d x);
+__m256d FN_PROTOTYPE(vrd4_acos)(__m256d x);
+void FN_PROTOTYPE(vrda_acos)(int n, double *x, double *y);
+
+__m128d FN_PROTOTYPE(vrd2_asin)(__m128d x);
+__m256d FN_PROTOTYPE(vrd4_asin)(__m256d x);
+void FN_PROTOTYPE(vrda_asin)(int n, double *x, double *y);
 
 #ifdef __cplusplus
 }

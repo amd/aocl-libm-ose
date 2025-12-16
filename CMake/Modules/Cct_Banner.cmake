@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -40,25 +40,24 @@ function(cct_display_banner)
     message(" - Version Minor:         \"${${PROJECT_PREFIX}_VERSION_MINOR}\"")
     message(" - Version Patch:         \"${${PROJECT_PREFIX}_VERSION_PATCH}\"")
     message(" - Build Generator:       \"${CMAKE_GENERATOR}\"")
+    message(" - Bug report:            \"${${PROJECT_PREFIX}_PROJ_BUGREPORT}\"")
     message("Base Settings:")
     message(" - Build standard version: \"${CMAKE_CXX_STANDARD}\"")
     message(" - Build type:             \"${CMAKE_BUILD_TYPE}\"")
     message(" - Main binary Target:     \"${CMAKE_BINARY_DIR}\"")
     message(" - Toolchain file used:    \"${CMAKE_TOOLCHAIN_FILE}\"")
     message("Test settings:")
-    message(" - Enabled? :              \"${${PROJECT_PREFIX}_OPTION_BUILD_TESTS}\"")
-    message(" - Enable Slow Tests:      \"${${PROJECT_PREFIX}_OPTION_ENABLE_SLOW_TESTS}\"")
-    message(" - Enable Broken Tests:    \"${${PROJECT_PREFIX}_OPTION_ENABLE_BROKEN_TESTS}\"")
+    message(" - Enabled? :              \"${${PROJECT_PREFIX}_LIBM_BUILD_TESTS}\"")
+    message("Check AVX-512:")
+    message(" - Enabled? :              \"${${PROJECT_PREFIX}_LIBM_ENABLE_AVX512}\"")
+    message("Address Sanatizer Settings:")
+    message(" - Enabled? :              \"${${PROJECT_PREFIX}_LIBM_ENABLE_ASAN}\"")
     message("Code Coverage Settings:")
-    message(" - Enabled? :              \"${${PROJECT_PREFIX}_OPTION_ENABLE_COVERAGE}\"")
-    message("Doc Settings:")
-    message(" - Enable?:                \"${${PROJECT_PREFIX}_OPTION_BUILD_DOCS}\"")
-    message("Export Settings:")
-    message(" - Enable?:                \"${${PROJECT_PREFIX}_OPTION_ENABLE_EXPORT}\"")
-    message(" - Export namespace:       \"${${PROJECT_PREFIX}_OPTION_EXPORT_NAMESPACE}\"")
+    message(" - Enabled? :              \"${${PROJECT_PREFIX}_LIBM_ENABLE_COVERAGE}\"")
+    message("Examples settings:")
+    message(" - Enabled? :              \"${${PROJECT_PREFIX}_LIBM_BUILD_EXAMPLES}\"")
+    message("Documentation settings:")
+    message(" - Enabled? :              \"${${PROJECT_PREFIX}_LIBM_BUILD_DOCS}\"")
     message(" - Install directory:      \"${CMAKE_INSTALL_PREFIX}\"")
-    message("Package Settings:")
-    message(" - Package:                \"${CPACK_PACKAGING_INSTALL_PREFIX}\"")
 
 endfunction(cct_display_banner)
-

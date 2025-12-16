@@ -25,10 +25,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-
-include(Cct_Library)
-cct_cxx_module("alm")
-
 # Get timestamp.
 string(TIMESTAMP BUILD_DATE "%Y%m%d")
 # Update using the timestamp.
@@ -51,30 +47,36 @@ configure_file("${PROJECT_SOURCE_DIR}/CMake/buildsysinfo.hh.in"
                 "${PROJECT_SOURCE_DIR}/src/buildsysinfo.h"
                 @ONLY)
 
-get_optz_flag( optzflag )                           # optimization flags
+get_optz_flag( optzflag )
 get_fast_flag( ffpflag )                            # ffp-contract flags
 get_warning_flags( wflags )                         # warning flags
 get_unalign_vec_move_flag( uavmflag )               # disabling alignment checking for all AVX ops
 get_pic_flag( picflag )                             # position Independent Code flags
 get_au_flag( auflag )                               # aocl-utils defination
-get_linker_flag( sharedlinkerflag )                 # shared linker flags
-
 get_avx2fma_flag( fmaflag )                         # Fused Multiply-Add flags
-get_vec_flag( vecflag)                              #
-
+get_vec_flag( vecflag )                             # Vectorization flags
 
 set(LIBMCFLAGS ${optzflag})
 set(LIBMCFLAGS ${LIBMCFLAGS} ${ffpflag})
 set(LIBMCFLAGS ${LIBMCFLAGS} ${wflags})
 set(LIBMCFLAGS ${LIBMCFLAGS} ${uavmflag})
 set(LIBMCFLAGS ${LIBMCFLAGS} ${picflag})
+set(LIBMCFLAGS ${LIBMCFLAGS} ${auflag})
 if(WIN32)
   get_win_flag( winflag )                           # windows flags
   set(LIBMCFLAGS ${LIBMCFLAGS} ${winflag})
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}  /dll")
 endif()
-set(LIBMCFLAGS ${LIBMCFLAGS} ${auflag})
 
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${sharedlinkerflag}")
+# Add sanitizer flags if enabled
+if(${${PROJECT_PREFIX}_LIBM_ENABLE_ASAN} AND (NOT WIN32))
+  set(LIBMCFLAGS ${LIBMCFLAGS} ${ASAN_FLAGS})
+endif()
+
+# Add coverage flags if enabled
+if(${${PROJECT_PREFIX}_LIBM_ENABLE_COVERAGE} AND (NOT WIN32))
+  set(LIBMCFLAGS ${LIBMCFLAGS} ${COVERAGE_FLAGS})
+endif()
 
 if(DEFINED ALM_STATIC_DISPATCH)
   if("${ALM_STATIC_DISPATCH}" MATCHES "(AVX2|ZEN2|ZEN3|ZEN4|ZEN5|AVX512)")
@@ -113,49 +115,58 @@ target_include_directories(src
                                    ${${PROJECT_PREFIX}_SDK_INCLUDES}
                            PRIVATE ${${PROJECT_PREFIX}_PRIVATE_INCLUDES}
                                    ${INCLUDES})
-target_compile_options(src PRIVATE ${LIBMCFLAGS} "-O0")
+target_compile_options(src PRIVATE ${LIBMCFLAGS} "-O1")
+
 #add src object library to libmobj
 list(APPEND libmobj $<TARGET_OBJECTS:src>)
-
 
 #add include headers as part of the install
 set(LIBM_PUBLIC_HEADERS ${PROJECT_SOURCE_DIR}/include/external/amdlibm.h
                         ${PROJECT_SOURCE_DIR}/include/external/amdlibm_vec.h)
 
+set(AOCL_UTILS_LIB ${AOCL_UTILS_LIB_DIR}/${AOCL_UTILS_LIB})
 if (WIN32)
   set(LIBALM libalm)
-  set(CMAKE_SHARED_LIBRARY_PREFIX "")
-  set(CMAKE_STATIC_LIBRARY_PREFIX "")
+  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+  set(EXTRA_LIBS ${AOCL_UTILS_LIB} "msvcrt")
+  set(CMAKE_STATIC_LIBRARY_SUFFIX  "-static.lib")
 else()
   set(LIBALM alm)
+  set(EXTRA_LIBS ${AOCL_UTILS_LIB} "-Wl,-Bdynamic -lc -lstdc++")
 endif()
 
-if (BUILD_SHARED_LIBS)
-  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-  add_library(libm_shared SHARED ${libmobj})
-  target_link_options(libm_shared PRIVATE -ealm_main)
-  set_target_properties(libm_shared PROPERTIES POSITION_INDEPENDENT_CODE ON)
-  target_link_libraries(libm_shared PRIVATE ${AOCL_UTILS_LIB})
-  set_target_properties(libm_shared PROPERTIES VERSION ${PROJECT_VERSION})
-  set_target_properties(libm_shared PROPERTIES OUTPUT_NAME ${LIBALM})
-  set_target_properties(libm_shared PROPERTIES PRIVATE_HEADER "${LIBM_PUBLIC_HEADERS}")
-  set(libm libm_shared)
-else()
-  add_library(libm_static STATIC ${libmobj})
-  target_link_libraries(libm_static PRIVATE ${AOCL_UTILS_LIB})
-  set_target_properties(libm_static PROPERTIES OUTPUT_NAME ${LIBALM})
-  set_target_properties(libm_static PROPERTIES PRIVATE_HEADER "${LIBM_PUBLIC_HEADERS}")
-  set(libm libm_static)
-endif ()
+set(libm "")
+
+#shared libraries
+add_library(libm_shared SHARED ${libmobj})
+set_target_properties(libm_shared PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    OUTPUT_NAME ${LIBALM}
+    PRIVATE_HEADER "${LIBM_PUBLIC_HEADERS}"
+)
+target_link_libraries(libm_shared PUBLIC ${EXTRA_LIBS})
+if(NOT MSVC)
+  set_target_properties(libm_shared PROPERTIES LINK_FLAGS "-ealm_main")
+endif()
+list(APPEND libm libm_shared)
+# Static library
+add_library(libm_static STATIC ${libmobj})
+set_target_properties(libm_static PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    OUTPUT_NAME ${LIBALM}
+    PRIVATE_HEADER "${LIBM_PUBLIC_HEADERS}"
+)
+target_link_libraries(libm_static PUBLIC ${EXTRA_LIBS})
+list(APPEND libm libm_static)
 
 add_subdirectory(fast)
 if(LINUX)
   add_subdirectory(compat)
 endif()
 
-list(APPEND libm libmfast)
 install(TARGETS ${libm}
         LIBRARY DESTINATION ${${PROJECT_PREFIX}_INSTALL_DIR}/lib
         ARCHIVE DESTINATION ${${PROJECT_PREFIX}_INSTALL_DIR}/lib
         RUNTIME DESTINATION ${${PROJECT_PREFIX}_INSTALL_DIR}/lib
         PRIVATE_HEADER DESTINATION ${${PROJECT_PREFIX}_INSTALL_DIR}/include)
+set(libm ${libm} PARENT_SCOPE)

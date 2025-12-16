@@ -63,8 +63,3 @@ macro(get_pic_flag picflag)
   set(${picflag} -fPIC)
 endmacro()
 
-
-#LINKER Flags for Shared library
-macro(get_linker_flag sharedlinkerflag)
-  set(${sharedlinkerflag})
-endmacro()

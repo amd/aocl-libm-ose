@@ -183,7 +183,7 @@ void LibmPerfTestaf(benchmark::State& st, InputParams* param) {
   test_data data;
   data.ip  = (void *) objtest.inpbuff;
   data.op  = (void *) objtest.outbuff;
-  double szn = param->niter;
+  double szn = param->niter * param->count;
   data.ip1 = (void *) objtest.inpbuff1;
   data.ip2 = (void *) objtest.inpbuff2;
   data.ip3 = (void *) objtest.inpbuff3;
@@ -204,7 +204,7 @@ void LibmPerfTestad(benchmark::State& st, InputParams* param) {
   test_data data;
   data.ip  = (void *) objtest.inpbuff;
   data.op  = (void *) objtest.outbuff;
-  double szn = param->niter;
+  double szn = param->niter * param->count;
 
   data.ip1 = (void *) objtest.inpbuff1;
   data.ip2 = (void *) objtest.inpbuff2;

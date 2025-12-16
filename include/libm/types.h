@@ -48,6 +48,8 @@ typedef    double              f64_t;
 typedef    long double         f80_t;
 
 #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+typedef _C_double_complex  _Dcomplex;
+typedef _C_float_complex   _Fcomplex;
 typedef    _Fcomplex     fc32_t;
 typedef    _Dcomplex     fc64_t;
 #else

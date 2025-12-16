@@ -271,10 +271,6 @@ if(NOT WIN32)
 else()
     list(APPEND LIBS "msvcrt" "Shlwapi")
 endif()
-find_package(OpenMP REQUIRED)
-if(OpenMP_CXX_FOUND)
-  list(APPEND LIBS OpenMP::OpenMP_CXX)
-endif()
 
 # Set common executable suffix on windows and linux
 #set(CMAKE_EXECUTABLE_SUFFIX_CXX "")

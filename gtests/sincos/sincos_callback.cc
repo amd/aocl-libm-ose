@@ -37,6 +37,7 @@
 #include <fmaintrin.h>
 #include <immintrin.h>
 #include "callback.h"
+#include "test_sincos_data.h"
 #include "../libs/mparith/alm_mp_funcs.h"
 
 void LIBM_FUNC(sincosf)(float, float*, float*);
@@ -56,13 +57,13 @@ bool getSpecialCase(void)
 }
 
 void ConfSetupf32(SpecParams *specp) {
-  specp->data32 = nullptr;
-  specp->countf = 0;
+  specp->datasc32 = sincosf_conformance_data;
+  specp->countf = ARRAY_SIZE(sincosf_conformance_data);
 }
 
 void ConfSetupf64(SpecParams *specp) {
-  specp->data64 = nullptr;
-  specp->countd = 0;
+  specp->datasc64 = sincos_conformance_data;
+  specp->countd = ARRAY_SIZE(sincos_conformance_data);
 }
 
 void getExpected(float *data, double *op) {

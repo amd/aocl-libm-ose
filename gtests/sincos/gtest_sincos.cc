@@ -413,32 +413,23 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_ARRAY_DOUBLES) {
 
 TEST_P(SpecTestFixtureSinCosF, CONFORMANCE_FLOAT) {
   int nfail = 0;
-  test_data data;
+  test_data tdata;
   float ip[2];
   float aop[2] = {0};
   double scp[2] = {0};
-  data.ip  = (void *)ip;
-  data.op  = (void *)&aop[0];
-  data.sc  = (void *)&aop[1];
-  uint32_t count = sizeof(sincosf_conformance_data) / sizeof(libm_spec_sincosf_data);
-  libm_spec_sincosf_data *sincos = sincosf_conformance_data;
-  val i32;
+  tdata.ip  = (void *)data;
+  tdata.op  = (void *)&aop[0];
+  tdata.sc  = (void *)&aop[1];
 
   for (uint32_t i = 0; i < count; i++) {
-    i32.u = sincos[i].in,
-    ip[0] = i32.f;
     feclearexcept (FE_ALL_EXCEPT);
-    test_s1s(&data, 0);
+    ip[0] = data[i];
+    test_s1s(&tdata, i);
     int raised_exception = fetestexcept(FE_ALL_EXCEPT);
     feclearexcept (FE_ALL_EXCEPT);
 
-    i32.u = sincos[i].sin;
-    scp[0] = i32.f;
-    i32.u = sincos[i].cos;
-    scp[1] = i32.f;
-
     getExpected(ip,scp);
-    int eef = (int)sincos[i].exptdexpt;
+    int eef = expected_expection[i];
 
     SpecTestFixtureSinCosF::ConfVerifyFlt<float,double>(ip[0], aop, scp, raised_exception, eef, &nfail);
 
@@ -455,32 +446,23 @@ TEST_P(SpecTestFixtureSinCosF, CONFORMANCE_FLOAT) {
 
 TEST_P(SpecTestFixtureSinCos, CONFORMANCE_DOUBLE) {
   int nfail = 0;
-  test_data data;
+  test_data tdata;
   double ip[2];
   double aop[2] = {0};
   long double scp[2] = {0};
-  data.ip  = (void *)ip;
-  data.op  = (void *)&aop[0];
-  data.sc  = (void *)&aop[1];
-  uint32_t count = sizeof(sincos_conformance_data) / sizeof(libm_spec_sincos_data);
-  libm_spec_sincos_data *sincos = sincos_conformance_data;
-  val i64;
+  tdata.ip  = (void *)data;
+  tdata.op  = (void *)&aop[0];
+  tdata.sc  = (void *)&aop[1];
 
   for (uint32_t i = 0; i < count; i++) {
-    i64.lu = sincos[i].in,
-    ip[0] = i64.d;
     feclearexcept (FE_ALL_EXCEPT);
-    test_s1d(&data, 0);
+    ip[0] = data[i];
+    test_s1d(&tdata, i);
     int raised_exception = fetestexcept(FE_ALL_EXCEPT);
     feclearexcept (FE_ALL_EXCEPT);
 
-    i64.lu = sincos[i].sin;
-    scp[0] = i64.d;
-    i64.lu = sincos[i].cos;
-    scp[1] = i64.d;
-
     getExpected(ip,scp);
-    int eef = (int)sincos[i].exptdexpt;
+    int eef = expected_expection[i];
 
     SpecTestFixtureSinCos::ConfVerifyDbl<double, long double>(ip[0], aop, scp, raised_exception, eef, &nfail);
 
@@ -495,6 +477,62 @@ TEST_P(SpecTestFixtureSinCos, CONFORMANCE_DOUBLE) {
   ptr->tstcnt++;
 }
 
+TEST_P(SpecTestFixtureSinCosFloatArray, CONFORMANCE_VECTOR_ARRAY_FLOATS) {
+  int nfail = 0;
+  float ip[2];
+  test_data tdata;
+  float aop_temp[2];
+  double expected_op[2];
+  tdata.ip  = (void *)data;
+  tdata.op  = (void *)aop_array;
+  tdata.sc  = (void *)scp_array;
+
+  test_vas(&tdata, count);
+  for (uint32_t i = 0; i < count; i++) {
+    ip[0] = data[i];
+
+    getExpected(ip, expected_op);
+
+    aop_temp[0] = aop_array[i];
+    aop_temp[1] = scp_array[i];
+
+    ConfVerifyFlt<float, double>(ip[0], aop_temp, expected_op, &nfail);
+
+  }
+
+  sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d",
+  "VecArr","Conformance","vrsa",count,(count-nfail), nfail);
+  ptr->tstcnt++;
+}
+
+TEST_P(SpecTestFixtureSinCosDoubleArray, CONFORMANCE_VECTOR_ARRAY_DOUBLES) {
+  int nfail = 0;
+  double ip[2];
+  test_data tdata;
+  double aop_temp[2];
+  long double expected_op[2];
+  tdata.ip  = (void *)data;
+  tdata.op  = (void *)aop_array;
+  tdata.sc  = (void *)scp_array;
+
+  test_vad(&tdata, count);
+  for (uint32_t i = 0; i < count; i++) {
+    ip[0] = data[i];
+
+    getExpected(ip, expected_op);
+
+    aop_temp[0] = aop_array[i];
+    aop_temp[1] = scp_array[i];
+
+    ConfVerifyDbl<double, long double>(ip[0], aop_temp, expected_op, &nfail);
+
+  }
+
+  sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d",
+  "VecArr","Conformance","vrda",count,(count-nfail), nfail);
+  ptr->tstcnt++;
+}
+
 
 /*****************************************************************************/
 /***                            INSTANTIATE_TEST_SUITE_P                   ***/
@@ -503,5 +541,11 @@ INSTANTIATE_TEST_SUITE_P(SpecTests, SpecTestFixtureSinCosF,
                          ::testing::ValuesIn(specData));
 
 INSTANTIATE_TEST_SUITE_P(SpecTests, SpecTestFixtureSinCos,
+                         ::testing::ValuesIn(specData));
+
+INSTANTIATE_TEST_SUITE_P(SpecTests, SpecTestFixtureSinCosFloatArray,
+                         ::testing::ValuesIn(specData));
+
+INSTANTIATE_TEST_SUITE_P(SpecTests, SpecTestFixtureSinCosDoubleArray,
                          ::testing::ValuesIn(specData));
 /*****************************************************************************/

@@ -157,8 +157,8 @@ typedef struct {
   libm_test_special_data_f64 *data64;
   libm_test_complex_data_f32 *cdata32;
   libm_test_complex_data_f64 *cdata64;
-  const libm_spec_sincosf_data *datasc32;
-  const libm_spec_sincos_data  *datasc64;
+  libm_spec_sincosf_data *datasc32;
+  libm_spec_sincos_data  *datasc64;
   uint32_t countf;
   uint32_t countd;
   int verboseflag;

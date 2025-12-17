@@ -42,6 +42,9 @@
 #include "verify.h"
 #include <external/amdlibm.h>
 #include "func_var_existence.h"
+#include "linearfrac.h"
+
+extern vector<SpecParams> specData;
 
 /* Real Number Function Variants */
 
@@ -285,93 +288,6 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_8DOUBLES) {
   ptr->tstcnt++;
 }
 
-TEST_P(SpecTestFixtureFloat, CONFORMANCE_FLOAT) {
-  int nfail = 0;
-  float aop, op;
-  float ip[6];
-  test_data t;
-  t.ip  = (void *)data;
-  t.op  = (void *)&aop;
-
-  t.ip1 = (void *)data1;
-  t.ip2 = (void *)data2;
-  t.ip3 = (void *)data3;
-  t.ip4 = (void *)data4;
-  t.ip5 = (void *)data5;
-
-  for (uint32_t i = 0; i < count; i++) {
-    feclearexcept (FE_ALL_EXCEPT);
-    test_s1s(&t, i);
-    int raised_exception = fetestexcept(FE_ALL_EXCEPT);
-    feclearexcept (FE_ALL_EXCEPT);
-
-    ip[0] = data[i];
-    ip[1] = data1[i];
-    ip[2] = data2[i];
-    ip[3] = data3[i];
-    ip[4] = data4[i];
-    ip[5] = data5[i];
-
-    op = getExpected(ip);
-    int eef = expected_expection[i];
-
-    SpecTestFixtureFloat::ConfVerifyFlt(nargs, ip[0], ip[1], ip[2], ip[3], ip[4], ip[5], aop, op, raised_exception, eef, &nfail);
-
-    if (vflag == 1) {
-      cout << "Input1: " << ip[0] << " Input2: " << ip[1] << " Input3: " << ip[2] << " Input4: " << ip[3] << " Input5: " << ip[4] << " Input6: " << ip[5] << endl;
-      cout << " Output: " << aop << " Expected: " << op << endl;
-      PrintConfExpections(raised_exception, eef);
-    }
-  }
-  sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d",
-  "Scalar","Conformance","s1s",count,(count-nfail), nfail);
-  ptr->tstcnt++;
-}
-
-TEST_P(SpecTestFixtureDouble, CONFORMANCE_DOUBLE) {
-  int nfail = 0;
-  double aop, op;
-  double ip[6];
-  test_data t;
-  t.ip  = (void *)data;
-  t.op  = (void *)&aop;
-
-  t.ip1 = (void *)data1;
-  t.ip2 = (void *)data2;
-  t.ip3 = (void *)data3;
-  t.ip4 = (void *)data4;
-  t.ip5 = (void *)data5;
-
-  for (uint32_t i = 0; i < count; i++) {
-    feclearexcept (FE_ALL_EXCEPT);
-    test_s1d(&t, i);
-    int raised_exception = fetestexcept(FE_ALL_EXCEPT);
-    feclearexcept (FE_ALL_EXCEPT);
-
-    ip[0] = data[i];
-    ip[1] = data1[i];
-    ip[2] = data2[i];
-    ip[3] = data3[i];
-    ip[4] = data4[i];
-    ip[5] = data5[i];
-
-    op = getExpected(ip);
-    int eef = expected_expection[i];
-
-    SpecTestFixtureDouble::ConfVerifyDbl(nargs, ip[0], ip[1], ip[2], ip[3], ip[4], ip[5], aop, op, raised_exception, eef, &nfail);
-
-    if (vflag == 1) {
-      cout << "Input1: " << ip[0] << " Input2: " << ip[1] << " Input3: " << ip[2] << " Input4: " << ip[3] << " Input5: " << ip[4] << " Input6: " << ip[5] << endl ;
-      cout << "Output " << aop << " Expected: " << op << endl;
-      PrintConfExpections(raised_exception, eef);
-    }
-  }
-  sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d",
-  "Scalar","Conformance","s1d",count,(count-nfail), nfail);
-  ptr->tstcnt++;
-}
-
-
 TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_ARRAY_FLOATS) {
   int nfail = 0;
   double max_ulp_err = inData->max_ulp_err;
@@ -449,3 +365,87 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_ARRAY_DOUBLES) {
   "Vec_Array","Accuracy","vad",count,(count-nfail), nfail, max_ulp_err);
   ptr->tstcnt++;
 }
+
+TEST_P(SpecTestFixtureLinearFracFloatArray, CONFORMANCE_VECTOR_ARRAY_FLOATS) {
+  int nfail = 0;
+  int cnt = 0;
+  test_data tdata;
+  tdata.ip  = (void *)data1;
+  tdata.ip1 = (void *)data2;
+  tdata.op  = (void *)aop_array;
+  float ip[6];
+
+  for (uint32_t j = 0; j < (count-8); j++) {/*vrsa takes zen3 path */
+      tdata.ip2 = (void *)&data3[j];
+      tdata.ip3 = (void *)&data4[j];
+      tdata.ip4 = (void *)&data5[j];
+      tdata.ip5 = (void *)&data6[j];
+
+      test_vas(&tdata, count);
+
+      ip[2] = data3[j];
+      ip[3] = data4[j];
+      ip[4] = data5[j];
+      ip[5] = data6[j];
+      for (uint32_t i = 0; i < count; i+=8) {
+        ip[0] = data1[i];
+        ip[1] = data2[i];
+
+        double expected_op = getExpected(ip);
+
+        ConfVerifyFlt(ip[0], ip[1], ip[2], ip[3], ip[4], ip[5], aop_array[i], expected_op, &nfail);
+        cnt++;
+      }
+  }
+
+  sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d",
+  "VecArr","Conformance","vrsa",cnt,(cnt-nfail), nfail);
+  ptr->tstcnt++;
+}
+
+TEST_P(SpecTestFixtureLinearFracDoubleArray, CONFORMANCE_VECTOR_ARRAY_DOUBLES) {
+  int nfail = 0;
+  int cnt = 0;
+  test_data tdata;
+  tdata.ip  = (void *)data1;
+  tdata.ip1 = (void *)data2;
+  tdata.op  = (void *)aop_array;
+  double ip[6];
+
+  for (uint32_t j = 0; j < (count-4); j++) {/*vrda takes zen3 path */
+      tdata.ip2 = (void *)&data3[j];
+      tdata.ip3 = (void *)&data4[j];
+      tdata.ip4 = (void *)&data5[j];
+      tdata.ip5 = (void *)&data6[j];
+
+      test_vad(&tdata, count);
+
+      ip[2] = data3[j];
+      ip[3] = data4[j];
+      ip[4] = data5[j];
+      ip[5] = data6[j];
+      for (uint32_t i = 0; i < count; i+=4) {
+        ip[0] = data1[i];
+        ip[1] = data2[i];
+
+        long double expected_op = getExpected(ip);
+
+        ConfVerifyDbl(ip[0], ip[1], ip[2], ip[3], ip[4], ip[5], aop_array[i], expected_op, &nfail);
+        cnt++;
+      }
+  }
+
+  sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d",
+  "VecArr","Conformance","vrda",cnt,(cnt-nfail), nfail);
+  ptr->tstcnt++;
+}
+
+/*****************************************************************************/
+/***                            INSTANTIATE_TEST_SUITE_P                   ***/
+/*****************************************************************************/
+INSTANTIATE_TEST_SUITE_P(SpecTests, SpecTestFixtureLinearFracFloatArray,
+                         ::testing::ValuesIn(specData));
+
+INSTANTIATE_TEST_SUITE_P(SpecTests, SpecTestFixtureLinearFracDoubleArray,
+                         ::testing::ValuesIn(specData));
+/*****************************************************************************/

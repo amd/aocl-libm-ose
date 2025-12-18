@@ -258,9 +258,10 @@ elseif(LIBABI STREQUAL "svml")
 
     list(APPEND LIBS "mkl_intel_lp64" "mkl_core")
     if(NOT WIN32)
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fopenmp")
         list(APPEND LIBS "svml" "irc" "intlc" "mkl_gnu_thread")
     else()
-        list(APPEND LIBS "svml_dispmd" "libirc" "mkl_intel_thread" "libiomp")
+        list(APPEND LIBS "svml_dispmd" "libirc" "mkl_intel_thread" "libomp")
     endif()
 endif()
 

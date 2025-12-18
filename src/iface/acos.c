@@ -43,6 +43,7 @@ struct alm_arch_funcs __arch_funcs_acos = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(acos),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_acosf),/* vrs4 ? */
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_acosf),/* vrs8 ? */
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_acosf), /*vrs16 acosf */
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_acosf),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_AVX2(vrd2_acos), /* vrd2 ? */
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_AVX2(vrd4_acos), /* vrd4 ? */

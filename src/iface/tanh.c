@@ -52,6 +52,7 @@ struct alm_arch_funcs __arch_funcs_tanh = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(tanh),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN(vrs4_tanhf),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_tanhf),
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_tanhf), /* v16s */
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN(vrsa_tanhf),
         },
 
@@ -60,6 +61,7 @@ struct alm_arch_funcs __arch_funcs_tanh = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(tanh),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN2(vrs4_tanhf),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_tanhf),
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_tanhf), /* v16s */
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN2(vrsa_tanhf),
         },
 
@@ -68,6 +70,7 @@ struct alm_arch_funcs __arch_funcs_tanh = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(tanh),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN3(vrs4_tanhf),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_tanhf),
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_tanhf), /* v16s */
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN3(vrsa_tanhf),
         },
 

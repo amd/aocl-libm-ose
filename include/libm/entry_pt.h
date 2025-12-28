@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2025, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2026, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -260,6 +260,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_fabs);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_fabsf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_erfc);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrsa_erfcf);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_cdfnorm);
 
 #include <immintrin.h>
 

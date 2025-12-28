@@ -1,5 +1,5 @@
 /*
-  * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+  * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
   *
   * Redistribution and use in source and binary forms, with or without modification,
   *  are permitted provided that the following conditions are met:
@@ -412,6 +412,7 @@ void FN_PROTOTYPE(vrda_tan)(int n, const double *x, double *y);
 void FN_PROTOTYPE(vrda_cosh)(int n, const double *x, double *y);
 void FN_PROTOTYPE(vrda_erfc)(int n, const double *x, double *y);
 void FN_PROTOTYPE(vrsa_erfcf)(int n, const float *x, float *y);
+void FN_PROTOTYPE(vrda_cdfnorm)(int n, const double *x, double *y);
 
 __m128d FN_PROTOTYPE(vrd2_acos)(__m128d x);
 __m256d FN_PROTOTYPE(vrd4_acos)(__m256d x);

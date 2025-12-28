@@ -1,5 +1,5 @@
 /*
-(C) 2008-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 
 Advanced Micro Devices, Inc.
 Software License Agreement
@@ -1534,6 +1534,16 @@ extern "C" {
    * @param dst Output array of erfc values.
    */
   void amd_vrsa_erfcf (int len, const float *src, float *dst);
+
+/* Cumulative Normal Distribution */
+/**
+   * @brief Computes cumulative normal distribution of double array
+   * @param len Number of elements.
+   * @param src Input array.
+   * @param dst Output array of cdfnorm values.
+   */
+  void amd_vrda_cdfnorm (int len, const double *src, double *dst);
+
 #endif
 
 

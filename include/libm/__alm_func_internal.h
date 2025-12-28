@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2025, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2026, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -421,6 +421,7 @@ extern void      ALM_PROTO_INTERNAL(vrsa_linearfracf)(int len, const float *x, c
 extern void      ALM_PROTO_INTERNAL(vrda_powx)     (int n, const double *s1, double s2, double* d);
 extern void      ALM_PROTO_INTERNAL(vrda_erfc)     (int n, const double *x, double *y);
 extern void      ALM_PROTO_INTERNAL(vrsa_erfcf)    (int n, const float *x, float *y);
+extern void      ALM_PROTO_INTERNAL(vrda_cdfnorm)  (int n, const double *x, double *y);
 
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_acos)     (__m128d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_acos)     (__m256d x);

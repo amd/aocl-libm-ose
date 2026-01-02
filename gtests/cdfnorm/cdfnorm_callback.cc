@@ -90,9 +90,15 @@ int test_s1s(test_data *data, int idx)  {
 }
 
 int test_s1d(test_data *data, int idx)  {
-  double *ip  = (double*)data->ip;
-  double *op  = (double*)data->op;
-  op[0] = LIBM_FUNC(cdfnorm)(ip[idx]);
+  #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+    double *ip  = (double*)data->ip;
+    double *op  = (double*)data->op;
+    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      op[0] = LIBM_FUNC(cdfnorm)(ip[idx]);
+    #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+      vdCdfNorm(1,&ip[idx],op);
+    #endif
+  #endif
   return 0;
 }
 
@@ -119,7 +125,7 @@ int test_v2d(test_data *data, int idx)  {
       __m128d op2 = LIBM_FUNC_VEC(d, 2, cdfnorm)(ip2);
       _mm_store_pd(&op[0], op2);
     #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
-      vdCdfNorm(2,ip,op);
+      vdCdfNorm(2,&ip[idx],op);
     #endif
   #endif
   return 0;
@@ -138,7 +144,7 @@ int test_v4d(test_data *data, int idx)  {
       __m256d op4 = LIBM_FUNC_VEC(d, 4, cdfnorm)(ip4);
       _mm256_store_pd(&op[0], op4);
     #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
-      vdCdfNorm(4,ip,op);
+      vdCdfNorm(4,&ip[idx],op);
     #endif
   #endif
   return 0;
@@ -159,7 +165,7 @@ int test_v8d(test_data *data, int idx)  {
         __m512d op8 = LIBM_FUNC_VEC(d, 8, cdfnorm)(ip8);
         _mm512_store_pd(&op[0], op8);
       #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
-        vdCdfNorm(8,ip,op);
+        vdCdfNorm(8,&ip[idx],op);
       #endif
     #endif
   #endif

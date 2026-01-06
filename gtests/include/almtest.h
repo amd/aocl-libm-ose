@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -1206,4 +1206,72 @@ class AlmTestFramework {
   int AlmTestType(InputParams *, InputData *, PrintTstRes *);
   void CreateGtestFilters(InputParams *, string &filter_data);
 };
+
+/* ========================================================================
+ * In-Place Vector Array Testing - Guard Zone Utilities
+ * ======================================================================== */
+
+/*
+ * Initialize guard zone with sentinel pattern (templated for any data type)
+ *
+ * Purpose:
+ *   Fills a memory region with a sentinel pattern to detect out-of-bounds writes.
+ *   Used to create guard zones before/after test buffers in in-place operations.
+ *
+ * Parameters:
+ *   buffer  - Pointer to the guard zone memory region
+ *   size    - Number of elements in the guard zone
+ *   pattern - Sentinel value to fill (e.g., ALM_GUARD_PATTERN_F32/F64)
+ *
+ * Usage:
+ *   InitGuardZone(guard_buffer, ALM_GUARD_ZONE_SIZE, ALM_GUARD_PATTERN_F32);
+ */
+template<typename T>
+inline void InitGuardZone(void* buffer, uint32_t size, T pattern) {
+  T *guard_ptr = static_cast<T*>(buffer);
+  for(uint32_t i = 0; i < size; i++) {
+    guard_ptr[i] = pattern;
+  }
+}
+
+/*
+ * Check guard zone and return violation count (templated for any data type)
+ *
+ * Purpose:
+ *   Verifies that a guard zone remains intact after test execution.
+ *   Detects memory corruption from buffer overruns/underruns.
+ *
+ * Parameters:
+ *   buffer    - Pointer to the guard zone memory region
+ *   size      - Number of elements in the guard zone
+ *   pattern   - Expected sentinel value
+ *   zone_name - Descriptive name for error reporting ("BEFORE data", "AFTER data")
+ *   vflag     - Verbosity flag: 1 = print violations, 0 = silent
+ *
+ * Returns:
+ *   Number of violations detected (0 = clean, >0 = corrupted)
+ *
+ * Usage:
+ *   int violations = CheckGuardZone(guard_buffer, ALM_GUARD_ZONE_SIZE,
+ *                                   ALM_GUARD_PATTERN_F32, "BEFORE data", vflag);
+ */
+template<typename T>
+inline int CheckGuardZone(void* buffer, uint32_t size, T pattern,
+                          const char* zone_name, int vflag) {
+  int violations = 0;
+  T *guard_ptr = static_cast<T*>(buffer);
+  for(uint32_t i = 0; i < size; i++) {
+    if(guard_ptr[i] != pattern) {
+      violations++;
+      if(vflag == 1) {
+        cout << "MEMORY VIOLATION: Guard zone " << zone_name
+             << " corrupted at offset " << i
+             << " (expected 0x" << std::hex << pattern
+             << ", got 0x" << guard_ptr[i] << std::dec << ")" << endl;
+      }
+    }
+  }
+  return violations;
+}
+
 #endif

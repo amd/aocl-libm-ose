@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -246,7 +246,7 @@ enum class TestFailType {
  * =================================================================== */
 // Guard zone size in elements (sufficient to detect AVX-512 overreach)
 // - For float:  16 elements = 64 bytes (16 floats)
-// - For double: 16 elements = 128 bytes (8 doubles)
+// - For double: 8  elements = 64 bytes (8 doubles)
 #define ALM_GUARD_ZONE_SIZE 16
 
 // Sentinel patterns for guard zone corruption detection

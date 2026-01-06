@@ -872,6 +872,25 @@ extern "C" {
   __m256 amd_vrs8_linearfracf (__m256 x, __m256 y,
                                float scx, float shx,
                                float scy, float shy);
+
+  /**
+   * @brief Raises elements of x to a scalar single-precision exponent.
+   * @param len Number of elements.
+   * @param src Input array.
+   * @param y Scalar exponent.
+   * @param dst Output array of x^y.
+   */
+  void amd_vrsa_powxf(int len, const float *src, float y, float *dst);
+
+  /**
+   * @brief Raises elements of x to a scalar double-precision exponent.
+   * @param len Number of elements.
+   * @param src Input array.
+   * @param y Scalar exponent.
+   * @param dst Output array of x^y.
+   */
+  void amd_vrda_powx(int len, const double *src, double y, double *dst);
+
 #endif /* __AVX2__ */
 
 

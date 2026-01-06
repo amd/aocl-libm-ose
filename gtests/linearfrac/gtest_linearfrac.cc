@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -307,10 +307,10 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_ARRAY_FLOATS) {
   {
     ip[0] = inpbuff[i];
     ip[1] = inpbuff1[i];
-    ip[2] = inpbuff2[i];
-    ip[3] = inpbuff3[i];
-    ip[4] = inpbuff4[i];
-    ip[5] = inpbuff5[i];
+    ip[2] = inpbuff2[0];
+    ip[3] = inpbuff3[0];
+    ip[4] = inpbuff4[0];
+    ip[5] = inpbuff5[0];
 
     double exptd = getExpected(ip);
     double ulp = getUlp(aop[i], exptd);
@@ -346,10 +346,10 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_ARRAY_DOUBLES) {
   {
     ip[0] = inpbuff[i];
     ip[1] = inpbuff1[i];
-    ip[2] = inpbuff2[i];
-    ip[3] = inpbuff3[i];
-    ip[4] = inpbuff4[i];
-    ip[5] = inpbuff5[i];
+    ip[2] = inpbuff2[0];
+    ip[3] = inpbuff3[0];
+    ip[4] = inpbuff4[0];
+    ip[5] = inpbuff5[0];
 
     long double exptd = getExpected(ip);
     double ulp = getUlp(aop[i], exptd);

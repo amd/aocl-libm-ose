@@ -467,12 +467,14 @@ One can configure the library for a specific CPU architecture by setting the `AL
 
 **Available Static Dispatch Options:**
 
-| Option Value | Architecture | Code Path       | Minimum CPU Requirement          |
-|--------------|--------------|-----------------|----------------------------------|
-| `AVX2`       | x86-64       | ZEN3 optimized  | AMD Zen 3                        |
-| `ZEN3`       | x86-64       | ZEN3 optimized  | AMD Zen 3                        |
-| `AVX512`     | x86-64       | ZEN5 optimized  | AMD Zen 5                        |
-| `ZEN5`       | x86-64       | ZEN5 optimized  | AMD Zen 5                        |
+| Option Value | Code Path       | Minimum CPU Requirement          |
+|--------------|-----------------|----------------------------------|
+| `ZEN2`       | ZEN2 optimized  | AMD Zen 2                        |
+| `ZEN3`       | ZEN3 optimized  | AMD Zen 3                        |
+| `ZEN4`       | ZEN4 optimized  | AMD Zen 4                        |
+| `ZEN5`       | ZEN5 optimized  | AMD Zen 5                        |
+| `AVX2`       | ZEN2 optimized  | AMD Zen 2                        |
+| `AVX512`     | ZEN5 optimized  | AMD Zen 5                        |
 
 To configure with a specific option, such as **ZEN3**, use the following command:
 ```console

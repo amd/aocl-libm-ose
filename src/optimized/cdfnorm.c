@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -54,10 +54,10 @@
   The implementation uses a four-region approach optimized for accuracy across
   the entire double precision domain:
   
-  Region 1 [a ≥ 0]: Positive arguments
+  Region 1 [a > -0.5]: Positive and small negative arguments
     Use transformation Φ(a) = (1/2)[1 + erf(a/√2)] with AMD's optimized erf.
   
-  Region 2 [-1.5 < a < 0]: Small negative arguments  
+  Region 2 [-1.5 < a ≤ -0.5]: Moderate negative arguments  
     Use transformation Φ(a) = (1/2)erfc(-a/√2) with AMD's optimized erfc.
     The transformation x = -a/√2 is computed in extended precision (long double)
     to minimize rounding error, then converted to double for the erfc call.
@@ -98,8 +98,9 @@
     where φ(a) = (1/√(2π)) exp(-a²/2) is the standard normal PDF.
     The series is computed in long double precision for maximum accuracy.
   
-  Region 5 [a ≤ -39]: Underflow to zero
-    Below a ≈ -39, Φ(a) underflows to exactly zero in double precision.
+  Saturation:
+    - a ≥ 37.5: Returns 1.0
+    - a ≤ -39: Returns 0.0 (underflow to zero in double precision)
 */
 
 #include <math.h>
@@ -414,7 +415,7 @@ double ALM_PROTO_OPT(cdfnorm)(double a) {
   uint64_t ux;
   uint32_t ix;
   
-  /* Extract absolute value bits for special value detection */
+  /* Extract sign and check for special values */
   ux = asuint64(a);
   uint64_t sign = ux & SIGNBIT_DP64;
   ux &= ~SIGNBIT_DP64;
@@ -439,27 +440,35 @@ double ALM_PROTO_OPT(cdfnorm)(double a) {
   /*
    * Four-region implementation:
    *
-   * Region 1 [a ≥ 0]: Use Φ(a) = (1/2)[1 + erf(a/√2)]
-   * Region 2 [-1.5 < a < 0]: Use Φ(a) = (1/2)erfc(-a/√2) with extended transform
+   * Region 1 [a > -0.5]: Use Φ(a) = (1/2)[1 + erf(a/√2)]
+   * Region 2 [-1.5 < a ≤ -0.5]: Use Φ(a) = (1/2)erfc(-a/√2) with extended transform
    * Region 3 [-10 < a ≤ -1.5]: Use extended precision throughout with rational approximations
    * Region 4 [a ≤ -10]: Use asymptotic expansion
    */
   
-  if (a >= ZERO) {
-    /* Region 1: Positive arguments */
+      if (a > -0.5) {
+    /*
+     * Region 1: Positive and small negative arguments
+     * Use erf formulation: Φ(a) = 0.5 + 0.5·erf(a/√2)
+     */
     double x = a * SQRTH;
     y = HALF + HALF * ALM_PROTO_OPT(erf)(x);
     
-  } else if (a > HIGHPREC_ERFC_THRESHOLD) {
-    /* Region 2: Small negative arguments */
+  } else if (a > HIGHPREC_ERFC_THRESHOLD) {  /* -1.5 < a <= -0.5 */
+    /*
+     * Region 2: Moderate negative arguments
+     * Use erfc formulation: Φ(a) = 0.5·erfc(-a/√2)
+     */
     long double a_ext = (long double)a;
     long double x_ext = -a_ext * SQRTH_LD;
     double x = (double)x_ext;
     
     y = HALF * ALM_PROTO_OPT(erfc)(x);
     
-  } else if (a > ASYMPTOTIC_THRESHOLD) {
-    /* Region 3: Critical negative range - use extended precision */
+  } else if (a > ASYMPTOTIC_THRESHOLD) {  /* -10 < a <= -1.5 */
+    /*
+     * Region 3: Critical negative range - use extended precision
+     */
     long double a_ext = (long double)a;
     long double x_ext = -a_ext * SQRTH_LD;
     

@@ -50,12 +50,12 @@
  * This AVX-512 implementation uses mask registers (__mmask8) for efficient
  * conditional execution and blending, minimizing scalar fallback.
  *
- * Region 1 [a ≥ 0]: Positive arguments
+ * Region 1 [a > -0.5]: Positive and small negative arguments
  *   Use transformation Φ(a) = (1/2)[1 + erf(a/√2)] with vector erf.
  *   Fully vectorized using amd_vrd8_erf.
  *
- * Region 2 [-1.5 < a < 0]: Small negative arguments
- *   Use transformation Φ(a) = (1/2)erfc(-a/√2) with vector erfc.
+ * Region 2 [-1.5 < a ≤ -0.5]: Moderate negative arguments
+ *   Use transformation Φ(a) = (1/2)erfc(|a|/√2) with vector erfc.
  *   Fully vectorized using amd_vrd8_erfc.
  *
  * Region 3 [-39 < a ≤ -1.5]: Large negative arguments
@@ -109,6 +109,7 @@ static const struct {
     v_f64x8_t   hi_cut;                    /* 37.5: saturation to 1.0 */
     v_f64x8_t   lo_cut;                    /* -39.0: underflow to 0.0 */
     v_f64x8_t   highprec_erfc_threshold;   /* -1.5: transition to Region 3 */
+    v_f64x8_t   small_neg_threshold;       /* -0.5: Region 1/Region 2 boundary */
 } v8_cdfnorm_data = {
     .sign_mask                = _MM512_SET1_U64x8((uint64_t)0x7FFFFFFFFFFFFFFFULL),
     .sign_zero                = _MM512_SET1_U64x8((uint64_t)0x0000000000000000ULL),
@@ -120,7 +121,8 @@ static const struct {
     .sqrth                    = _MM512_SET1_PD8(0x1.6a09e667f3bcdp-1),  /* 1/√2 */
     .hi_cut                   = _MM512_SET1_PD8(0x1.2cp+5),             /* 37.5 */
     .lo_cut                   = _MM512_SET1_PD8(-0x1.38p+5),            /* -39.0 */
-    .highprec_erfc_threshold  = _MM512_SET1_PD8(-0x1.8p+0),            /* -1.5 */
+    .highprec_erfc_threshold  = _MM512_SET1_PD8(-0x1.8p+0),             /* -1.5 */
+    .small_neg_threshold      = _MM512_SET1_PD8(-0x1p-1),            /* -0.5 */
 };
 
 #define SIGN_MASK            v8_cdfnorm_data.sign_mask
@@ -134,6 +136,7 @@ static const struct {
 #define HI_CUT               v8_cdfnorm_data.hi_cut
 #define LO_CUT               v8_cdfnorm_data.lo_cut
 #define HIGHPREC_THRESHOLD   v8_cdfnorm_data.highprec_erfc_threshold
+#define SMALL_NEG_THRESHOLD  v8_cdfnorm_data.small_neg_threshold
 
 #define SCALAR_CDFNORM ALM_PROTO_OPT(cdfnorm)
 
@@ -151,17 +154,23 @@ ALM_PROTO_ARCH_ZN5(vrd8_cdfnorm)(v_f64x8_t a) {
      * This is more efficient than vector comparisons + helper functions.
      */
     __mmask8 k_inf_nan = _mm512_cmp_epu64_mask(ua_abs, INF_MASK, _MM_CMPINT_NLT);
-    __mmask8 k_positive = _mm512_cmp_pd_mask(a, ZERO, _CMP_GE_OQ);
     __mmask8 k_sat_one = _mm512_cmp_pd_mask(a, HI_CUT, _CMP_GE_OQ);
     __mmask8 k_sat_zero = _mm512_cmp_pd_mask(a, LO_CUT, _CMP_LE_OQ);
-    __mmask8 k_region2 = (~k_positive) & _mm512_cmp_pd_mask(a, HIGHPREC_THRESHOLD, _CMP_GT_OQ);
     
     /*
-     * Region 3: negative values that are NOT in region2 AND NOT saturating to zero.
+     * Region 1: a > -0.5 (positive and small negative, uses erf)
+     * Region 2: -1.5 < a <= -0.5 (moderate negative, uses erfc)
+     * Region 3: a <= -1.5 (large negative, needs scalar for high precision)
+     */
+    __mmask8 k_region1 = _mm512_cmp_pd_mask(a, SMALL_NEG_THRESHOLD, _CMP_GT_OQ);
+    __mmask8 k_region2 = ((__mmask8)(~k_region1)) & _mm512_cmp_pd_mask(a, HIGHPREC_THRESHOLD, _CMP_GT_OQ);
+    
+    /*
+     * Region 3: negative values that are NOT in region1, NOT in region2, AND NOT saturating to zero.
      * This covers -39 < a <= -1.5, which the scalar cdfnorm handles with
      * high-precision rational approximations and asymptotic expansion.
      */
-    __mmask8 k_region3 = (~k_positive) & (~k_region2) & (~k_sat_zero);
+    __mmask8 k_region3 = ((__mmask8)(~k_region1)) & ((__mmask8)(~k_region2)) & ((__mmask8)(~k_sat_zero));
 
     /*
      * Handle special values (Inf/NaN) and Region 3 via scalar.
@@ -188,14 +197,14 @@ ALM_PROTO_ARCH_ZN5(vrd8_cdfnorm)(v_f64x8_t a) {
         return ZERO;
     }
 
-    /* Fast path: all positive (Region 1 only) */
-    if (k_positive == 0xFF) {
+    /* Fast path: all in Region 1 (a > -0.5) */
+    if (k_region1 == 0xFF) {
         v_f64x8_t x = _mm512_mul_pd(a, SQRTH);
         v_f64x8_t erf_x = ALM_PROTO(vrd8_erf)(x);
         return _mm512_add_pd(HALF, _mm512_mul_pd(HALF, erf_x));
     }
 
-    /* Fast path: all small negative (Region 2 only) */
+    /* Fast path: all in Region 2 (-1.5 < a <= -0.5) */
     if (k_region2 == 0xFF) {
         v_f64x8_t x = _mm512_mul_pd(a_abs, SQRTH);
         v_f64x8_t erfc_x = ALM_PROTO(vrd8_erfc)(x);
@@ -205,23 +214,22 @@ ALM_PROTO_ARCH_ZN5(vrd8_cdfnorm)(v_f64x8_t a) {
     /*
      * Mixed case: combination of Region 1, Region 2, and saturation.
      * Compute both erf and erfc paths, then blend using masks.
-     * This avoids scalar fallback for this common mixed case.
      */
     
-    /* Region 1: Φ(a) = 0.5 * (1 + erf(a/√2)) for positive values */
-    v_f64x8_t x_pos = _mm512_mul_pd(a, SQRTH);
-    v_f64x8_t erf_x = ALM_PROTO(vrd8_erf)(x_pos);
+    /* Region 1: Φ(a) = 0.5 * (1 + erf(a/√2)) for a > -0.5 */
+    v_f64x8_t x_r1 = _mm512_mul_pd(a, SQRTH);
+    v_f64x8_t erf_x = ALM_PROTO(vrd8_erf)(x_r1);
     v_f64x8_t result_r1 = _mm512_add_pd(HALF, _mm512_mul_pd(HALF, erf_x));
     
-    /* Region 2: Φ(a) = 0.5 * erfc(-a/√2) for small negative values */
-    v_f64x8_t x_neg = _mm512_mul_pd(a_abs, SQRTH);
-    v_f64x8_t erfc_x = ALM_PROTO(vrd8_erfc)(x_neg);
+    /* Region 2: Φ(a) = 0.5 * erfc(|a|/√2) for -1.5 < a <= -0.5 */
+    v_f64x8_t x_r2 = _mm512_mul_pd(a_abs, SQRTH);
+    v_f64x8_t erfc_x = ALM_PROTO(vrd8_erfc)(x_r2);
     v_f64x8_t result_r2 = _mm512_mul_pd(HALF, erfc_x);
     
-    /* Blend Region 1 and Region 2 based on sign */
-    result = _mm512_mask_blend_pd(k_positive, result_r2, result_r1);
+    /* Blend Region 1 and Region 2 */
+    result = _mm512_mask_blend_pd(k_region1, result_r2, result_r1);
     
-    /* Apply saturation overrides (mask=1 selects second argument) */
+    /* Apply saturation overrides */
     result = _mm512_mask_blend_pd(k_sat_one, result, ONE);
     result = _mm512_mask_blend_pd(k_sat_zero, result, ZERO);
     

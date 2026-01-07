@@ -49,26 +49,28 @@
  *
  * The implementation uses a hybrid vectorized/scalar approach:
  *
- * Region 1 [a ≥ 0]: Positive arguments
+ * Region 1 [a > -0.5]: Positive and small negative arguments
  *   Use transformation Φ(a) = (1/2)[1 + erf(a/√2)] with vector erf.
  *   Fully vectorized using amd_vrd4_erf.
  *
- * Region 2 [-1.5 < a < 0]: Small negative arguments
- *   Use transformation Φ(a) = (1/2)erfc(-a/√2) with vector erfc.
+ * Region 2 [-1.5 < a ≤ -0.5]: Moderate negative arguments
+ *   Use transformation Φ(a) = (1/2)erfc(|a|/√2) with vector erfc.
  *   Fully vectorized using amd_vrd4_erfc.
  *
- * Region 3 [a ≤ -1.5]: Large negative arguments
+ * Region 3 [-39 < a ≤ -1.5]: Large negative arguments
  *   Falls back to optimized scalar implementation for high accuracy.
  *   The scalar version uses long double precision and interval-specific
- *   polynomials.
+ *   polynomials/rational approximations.
  *
  * Mixed regions:
  *   When vector elements span multiple regions (including mixed special
  *   and normal values), falls back to scalar processing for all elements.
  *
- * Special cases:
+ * Saturation:
  *   - a ≥ 37.5: Returns 1.0 (saturation)
  *   - a ≤ -39.0: Returns 0.0 (underflow)
+ *
+ * Special cases:
  *   - Φ(+∞) = 1
  *   - Φ(-∞) = 0
  *   - Φ(NaN) = NaN
@@ -87,9 +89,6 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/poly-vec.h>
 
-/* Mask constants for vector comparison operations */
-#define VEC_ALL_ONES_U64    0xFFFFFFFFFFFFFFFFULL
-
 static const struct {
     v_u64x4_t   sign_mask;
     v_u64x4_t   sign_zero;
@@ -101,6 +100,7 @@ static const struct {
     v_f64x4_t   sqrth;
     v_f64x4_t   hi_cut;                    /* 37.5: saturation to 1.0 */
     v_f64x4_t   lo_cut;                    /* -39.0: underflow to 0.0 */
+    v_f64x4_t   small_neg_threshold;       /* -0.5: Region 1/Region 2 boundary */
     v_f64x4_t   highprec_erfc_threshold;   /* -1.5: transition to Region 3 */
 } v_cdfnorm_data = {
     .sign_mask                = _MM_SET1_I64(0x7FFFFFFFFFFFFFFFULL),
@@ -113,7 +113,8 @@ static const struct {
     .sqrth                    = _MM_SET1_PD4(0x1.6a09e667f3bcdp-1),  /* 1/√2 */
     .hi_cut                   = _MM_SET1_PD4(0x1.2cp+5),             /* 37.5 */
     .lo_cut                   = _MM_SET1_PD4(-0x1.38p+5),            /* -39.0 */
-    .highprec_erfc_threshold  = _MM_SET1_PD4(-0x1.8p+0),            /* -1.5 */
+    .small_neg_threshold      = _MM_SET1_PD4(-0x1p-1),               /* -0.5 */
+    .highprec_erfc_threshold  = _MM_SET1_PD4(-0x1.8p+0),             /* -1.5 */
 };
 
 #define SIGN_MASK            v_cdfnorm_data.sign_mask
@@ -126,7 +127,11 @@ static const struct {
 #define SQRTH                v_cdfnorm_data.sqrth
 #define HI_CUT               v_cdfnorm_data.hi_cut
 #define LO_CUT               v_cdfnorm_data.lo_cut
+#define SMALL_NEG_THRESHOLD  v_cdfnorm_data.small_neg_threshold
 #define HIGHPREC_THRESHOLD   v_cdfnorm_data.highprec_erfc_threshold
+
+/* Mask constants for vector comparison operations */
+#define VEC_ALL_ONES_U64    0xFFFFFFFFFFFFFFFFULL
 
 #define SCALAR_CDFNORM ALM_PROTO_OPT(cdfnorm)
 
@@ -156,12 +161,10 @@ v_f64x4_t
 ALM_PROTO_OPT(vrd4_cdfnorm)(v_f64x4_t a) {
     v_f64x4_t result;
 
-    /* Extract absolute value and sign */
+    /* Extract absolute value */
     v_u64x4_t ua = as_v4_u64_f64(a);
     v_u64x4_t ua_abs = ua & SIGN_MASK;
     v_f64x4_t a_abs = as_v4_f64_u64(ua_abs);
-    v_u64x4_t sign = ua & ~SIGN_MASK;
-    v_u64x4_t is_positive = (sign == SIGN_ZERO);
 
     /*
      * Handle special values: infinities and NaN
@@ -176,6 +179,7 @@ ALM_PROTO_OPT(vrd4_cdfnorm)(v_f64x4_t a) {
         if (test_condition_all(inf_nan_mask)) {
             /* All elements are Inf or NaN - fast vector path */
             v_u64x4_t is_inf = (ua_abs == INF);
+            v_u64x4_t is_positive = ((ua & ~SIGN_MASK) == SIGN_ZERO);
             
             /* For infinity: return 0 if -∞, 1 if +∞ */
             v_f64x4_t inf_result = _mm256_blendv_pd(ZERO, ONE, as_v4_f64_u64(is_positive));
@@ -211,11 +215,12 @@ ALM_PROTO_OPT(vrd4_cdfnorm)(v_f64x4_t a) {
     }
 
     /*
-     * Region 1 [a ≥ 0]: Positive arguments
+     * Region 1 [a > -0.5]: Positive and small negative arguments
      * Use Φ(a) = (1/2)[1 + erf(a/√2)]
-     * Fully vectorized path
      */
-    if (test_condition_all(is_positive)) {
+    v_u64x4_t region1_mask = (a > SMALL_NEG_THRESHOLD);
+    
+    if (test_condition_all(region1_mask)) {
         v_f64x4_t x = _mm256_mul_pd(a, SQRTH);
         v_f64x4_t erf_x = ALM_PROTO_OPT(vrd4_erf)(x);
         result = _mm256_add_pd(HALF, _mm256_mul_pd(HALF, erf_x));
@@ -223,14 +228,14 @@ ALM_PROTO_OPT(vrd4_cdfnorm)(v_f64x4_t a) {
     }
 
     /*
-     * Region 2 [-1.5 < a < 0]: Small negative arguments
-     * Use Φ(a) = (1/2)erfc(-a/√2)
+     * Region 2 [-1.5 < a ≤ -0.5]: Moderate negative arguments
+     * Use Φ(a) = (1/2)erfc(|a|/√2)
      * Fully vectorized path
      */
-    v_u64x4_t region2_mask = (~is_positive) & (a > HIGHPREC_THRESHOLD);
+    v_u64x4_t region2_mask = (~region1_mask) & (a > HIGHPREC_THRESHOLD);
     
     if (test_condition_all(region2_mask)) {
-        /* x = -a/√2, computed as a_abs * (1/√2) since a is negative */
+        /* x = |a|/√2, computed as a_abs * (1/√2) */
         v_f64x4_t x = _mm256_mul_pd(a_abs, SQRTH);
         v_f64x4_t erfc_x = ALM_PROTO_OPT(vrd4_erfc)(x);
         result = _mm256_mul_pd(HALF, erfc_x);
@@ -240,7 +245,9 @@ ALM_PROTO_OPT(vrd4_cdfnorm)(v_f64x4_t a) {
     /*
      * Region 3 [a ≤ -1.5]: Large negative arguments
      * OR mixed regions where elements span different regions
-     * Fall back to scalar implementation for high accuracy
+     * Fall back to scalar implementation for high accuracy.
+     * The scalar cdfnorm handles this with high-precision rational
+     * approximations and asymptotic expansion.
      */
     for (uint64_t i = 0; i < 4; i++) {
         result[i] = SCALAR_CDFNORM(a[i]);

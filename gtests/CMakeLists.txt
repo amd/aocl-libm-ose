@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -257,7 +257,6 @@ elseif(LIBABI STREQUAL "svml")
 
     list(APPEND LIBS "mkl_intel_lp64" "mkl_core")
     if(NOT WIN32)
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fopenmp")
         list(APPEND LIBS "svml" "irc" "intlc" "mkl_gnu_thread")
     else()
         list(APPEND LIBS "svml_dispmd" "libirc" "mkl_intel_thread" "libomp")
@@ -268,6 +267,7 @@ endif()
 # Add default math library for any unresolved functions
 if(NOT WIN32)
     list(APPEND LIBS "m")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fopenmp")
 else()
     list(APPEND LIBS "msvcrt" "Shlwapi")
 endif()

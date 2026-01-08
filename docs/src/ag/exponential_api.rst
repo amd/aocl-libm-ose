@@ -35,40 +35,33 @@ Scalar
 Exp
 ---
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_expf`` documentation.
+See :ref:`scalar_api` for ``amd_expf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_exp`` documentation.
-
+See :ref:`scalar_api` for ``amd_exp`` documentation.
 
 
 Exp2
 ----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_exp2f`` documentation.
+See :ref:`scalar_api` for ``amd_exp2f`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_exp2`` documentation.
-
+See :ref:`scalar_api` for ``amd_exp2`` documentation.
 
 
 Exp10
 -----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_exp10f`` documentation.
+See :ref:`scalar_api` for ``amd_exp10f`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_exp10`` documentation.
-
+See :ref:`scalar_api` for ``amd_exp10`` documentation.
 
 
 Expm1
 -----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_expm1f`` documentation.
+See :ref:`scalar_api` for ``amd_expm1f`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_expm1`` documentation.
+See :ref:`scalar_api` for ``amd_expm1`` documentation.
 
 
 
@@ -109,112 +102,25 @@ Vector
 Exp
 ---
 
-**AVX**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_expf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_exp`` documentation.
-
-
-**AVX2**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_expf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_exp`` documentation.
-
-
-**AVX512**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_expf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd8_exp`` documentation.
-
-
-**Vector array**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_expf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_exp`` documentation.
-
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for exp vector variants documentation.
 
 
 Exp2
 ----
 
-**AVX**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_exp2f`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_exp2`` documentation.
-
-
-**AVX2**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_exp2f`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_exp2`` documentation.
-
-
-**AVX512**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_exp2f`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd8_exp2`` documentation.
-
-
-**Vector array**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_exp2f`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_exp2`` documentation.
-
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for exp2 vector variants documentation.
 
 
 Exp10
 -----
 
-**AVX**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_exp10f`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_exp10`` documentation.
-
-
-**Vector array**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_exp10f`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_exp10`` documentation.
-
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for exp10 vector variants documentation.
 
 
 Expm1
 -----
 
-**AVX**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_expm1f`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_expm1`` documentation.
-
-
-**Vector array**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_expm1f`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_expm1`` documentation.
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for expm1 vector variants documentation.
 
 
 

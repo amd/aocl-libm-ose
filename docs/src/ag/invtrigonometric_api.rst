@@ -35,40 +35,33 @@ Scalar
 Asin
 ----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_asinf`` documentation.
+See :ref:`scalar_api` for ``amd_asinf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_asin`` documentation.
-
+See :ref:`scalar_api` for ``amd_asin`` documentation.
 
 
 Acos
 ----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_acosf`` documentation.
+See :ref:`scalar_api` for ``amd_acosf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_acos`` documentation.
-
+See :ref:`scalar_api` for ``amd_acos`` documentation.
 
 
 Atan
 ----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_atanf`` documentation.
+See :ref:`scalar_api` for ``amd_atanf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_atan`` documentation.
-
+See :ref:`scalar_api` for ``amd_atan`` documentation.
 
 
 Atan2
 -----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_atan2f`` documentation.
+See :ref:`scalar_api` for ``amd_atan2f`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_atan2`` documentation.
+See :ref:`scalar_api` for ``amd_atan2`` documentation.
 
 
 
@@ -161,105 +154,19 @@ Vector
 Asin
 ----
 
-**AVX**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_asinf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_asin`` documentation.
-
-
-**AVX2**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_asinf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_asin`` documentation.
-
-
-**AVX512**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_asinf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd8_asin`` documentation.
-
-
-**Vector array**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_asinf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_asin`` documentation.
-
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for asin vector variants documentation.
 
 
 Acos
 ----
 
-**AVX**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_acosf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_acos`` documentation.
-
-
-**AVX2**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_acosf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_acos`` documentation.
-
-
-**AVX512**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_acosf`` documentation.
-
-
-**Vector array**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_acosf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_acos`` documentation.
-
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for acos vector variants documentation.
 
 
 Atan
 ----
 
-**AVX**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_atanf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_atan`` documentation.
-
-
-**AVX2**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_atanf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_atan`` documentation.
-
-
-**AVX512**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs16_atanf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd8_atan`` documentation.
-
-
-**Vector array**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_atanf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_atan`` documentation.
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for atan vector variants documentation.
 
 
 .. End of Doc

@@ -35,100 +35,81 @@ Scalar
 Ceil
 ----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_ceilf`` documentation.
+See :ref:`scalar_api` for ``amd_ceilf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_ceil`` documentation.
-
+See :ref:`scalar_api` for ``amd_ceil`` documentation.
 
 
 Floor
 -----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_floorf`` documentation.
+See :ref:`scalar_api` for ``amd_floorf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_floor`` documentation.
-
+See :ref:`scalar_api` for ``amd_floor`` documentation.
 
 
 Trunc
 -----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_truncf`` documentation.
+See :ref:`scalar_api` for ``amd_truncf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_trunc`` documentation.
-
+See :ref:`scalar_api` for ``amd_trunc`` documentation.
 
 
 Nearbyint
 ---------
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_nearbyintf`` documentation.
+See :ref:`scalar_api` for ``amd_nearbyintf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_nearbyint`` documentation.
-
+See :ref:`scalar_api` for ``amd_nearbyint`` documentation.
 
 
 Rint
 ----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_rintf`` documentation.
+See :ref:`scalar_api` for ``amd_rintf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_rint`` documentation.
-
+See :ref:`scalar_api` for ``amd_rint`` documentation.
 
 
 Lrint
 -----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_lrintf`` documentation.
+See :ref:`scalar_api` for ``amd_lrintf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_lrint`` documentation.
-
+See :ref:`scalar_api` for ``amd_lrint`` documentation.
 
 
 Llrint
 ------
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_llrintf`` documentation.
+See :ref:`scalar_api` for ``amd_llrintf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_llrint`` documentation.
-
+See :ref:`scalar_api` for ``amd_llrint`` documentation.
 
 
 Round
 -----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_roundf`` documentation.
+See :ref:`scalar_api` for ``amd_roundf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_round`` documentation.
-
+See :ref:`scalar_api` for ``amd_round`` documentation.
 
 
 Lround
 ------
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_lroundf`` documentation.
+See :ref:`scalar_api` for ``amd_lroundf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_lround`` documentation.
-
+See :ref:`scalar_api` for ``amd_lround`` documentation.
 
 
 Llround
 -------
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_llroundf`` documentation.
+See :ref:`scalar_api` for ``amd_llroundf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_llround`` documentation.
+See :ref:`scalar_api` for ``amd_llround`` documentation.
 
 
 

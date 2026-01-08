@@ -35,20 +35,17 @@ Scalar
 Remainder
 ---------
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_remainderf`` documentation.
+See :ref:`scalar_api` for ``amd_remainderf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_remainder`` documentation.
-
+See :ref:`scalar_api` for ``amd_remainder`` documentation.
 
 
 Remquo
 ------
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_remquof`` documentation.
+See :ref:`scalar_api` for ``amd_remquof`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_remquo`` documentation.
+See :ref:`scalar_api` for ``amd_remquo`` documentation.
 
 
 

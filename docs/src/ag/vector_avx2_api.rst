@@ -1,4 +1,4 @@
-..  Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+..  Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
 
 ..  Redistribution and use in source and binary forms, with or without
 ..  modification, are permitted provided that the following conditions are met:
@@ -255,8 +255,27 @@ Erfc
   :project: libm
 
 
+Special Functions
+=================
+
+CdfNorm
+-------
+
+See :ref:`special_functions` for ``amd_vrd4_cdfnorm`` documentation.
+
+
 Nearest Integer Functions
-==========================
+=========================
+
+Round
+-----
+
+.. doxygenfunction:: amd_vrs8_roundf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd4_round
+  :project: libm
+
 
 Minimum, Maximum, and Difference
 =================================
@@ -273,3 +292,10 @@ Fabs
 
 Arithmetic Functions
 ====================
+
+Linearfrac
+----------
+
+See :ref:`arithmetic` for ``amd_vrd4_linearfrac`` documentation.
+
+See :ref:`arithmetic` for ``amd_vrs8_linearfracf`` documentation.

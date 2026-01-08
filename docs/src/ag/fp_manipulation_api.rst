@@ -35,130 +35,105 @@ Scalar
 Fabs
 ----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_fabsf`` documentation.
+See :ref:`scalar_api` for ``amd_fabsf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_fabs`` documentation.
-
+See :ref:`scalar_api` for ``amd_fabs`` documentation.
 
 
 Modf
 ----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_modff`` documentation.
+See :ref:`scalar_api` for ``amd_modff`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_modf`` documentation.
-
+See :ref:`scalar_api` for ``amd_modf`` documentation.
 
 
 Frexp
 -----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_frexpf`` documentation.
+See :ref:`scalar_api` for ``amd_frexpf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_frexp`` documentation.
-
+See :ref:`scalar_api` for ``amd_frexp`` documentation.
 
 
 Copysign
 --------
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_copysignf`` documentation.
+See :ref:`scalar_api` for ``amd_copysignf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_copysign`` documentation.
-
+See :ref:`scalar_api` for ``amd_copysign`` documentation.
 
 
 Nan
 ---
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_nanf`` documentation.
+See :ref:`scalar_api` for ``amd_nanf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_nan`` documentation.
-
+See :ref:`scalar_api` for ``amd_nan`` documentation.
 
 
 Finite
 ------
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_finitef`` documentation.
+See :ref:`scalar_api` for ``amd_finitef`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_finite`` documentation.
-
+See :ref:`scalar_api` for ``amd_finite`` documentation.
 
 
 Ldexp
 -----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_ldexpf`` documentation.
+See :ref:`scalar_api` for ``amd_ldexpf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_ldexp`` documentation.
-
+See :ref:`scalar_api` for ``amd_ldexp`` documentation.
 
 
 Scalbn
 ------
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_scalbnf`` documentation.
+See :ref:`scalar_api` for ``amd_scalbnf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_scalbn`` documentation.
-
+See :ref:`scalar_api` for ``amd_scalbn`` documentation.
 
 
 Scalbln
 -------
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_scalblnf`` documentation.
+See :ref:`scalar_api` for ``amd_scalblnf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_scalbln`` documentation.
-
+See :ref:`scalar_api` for ``amd_scalbln`` documentation.
 
 
 Logb
 ----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_logbf`` documentation.
+See :ref:`scalar_api` for ``amd_logbf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_logb`` documentation.
-
+See :ref:`scalar_api` for ``amd_logb`` documentation.
 
 
 Ilogb
 -----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_ilogbf`` documentation.
+See :ref:`scalar_api` for ``amd_ilogbf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_ilogb`` documentation.
-
+See :ref:`scalar_api` for ``amd_ilogb`` documentation.
 
 
 Nextafter
 ---------
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_nextafterf`` documentation.
+See :ref:`scalar_api` for ``amd_nextafterf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_nextafter`` documentation.
-
+See :ref:`scalar_api` for ``amd_nextafter`` documentation.
 
 
 Nexttoward
 ----------
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_nexttowardf`` documentation.
+See :ref:`scalar_api` for ``amd_nexttowardf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_nexttoward`` documentation.
+See :ref:`scalar_api` for ``amd_nexttoward`` documentation.
 
 
 
@@ -168,28 +143,7 @@ Vector
 Fabs
 ----
 
-**AVX**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs4_fabsf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd2_fabs`` documentation.
-
-
-**AVX2**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrs8_fabsf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrd4_fabs`` documentation.
-
-
-**Vector array**
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrsa_fabsf`` documentation.
-
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_vrda_fabs`` documentation.
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for fabs vector variants documentation.
 
 
 

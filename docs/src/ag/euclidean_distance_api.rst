@@ -35,10 +35,9 @@ Scalar
 Hypot
 -----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_hypotf`` documentation.
+See :ref:`scalar_api` for ``amd_hypotf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_hypot`` documentation.
+See :ref:`scalar_api` for ``amd_hypot`` documentation.
 
 
 

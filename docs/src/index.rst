@@ -1,4 +1,4 @@
-..  Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+..  Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
 
 ..  Redistribution and use in source and binary forms, with or without
 ..  modification, are permitted provided that the following conditions are met:
@@ -133,6 +133,31 @@ AOCL-LibM provides two complementary ways to browse and access the API documenta
 Choose the categorization that best suits your needs:
 
 
+By Implementation Variant
+--------------------------
+
+Functions grouped by their execution model and performance characteristics. This view is useful
+when you need to optimize code for specific hardware capabilities or performance requirements.
+
+**When to use this view:**
+
+- When optimizing performance-critical code paths
+- When targeting specific SIMD instruction sets (AVX, AVX2, AVX512)
+- When you need to process arrays of data efficiently
+- When accuracy requirements allow for fast variants
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Implementation Variant Categories
+
+   ag/scalar_api.rst
+   ag/fast_scalar_api.rst
+   ag/vector_avx_api.rst
+   ag/vector_avx2_api.rst
+   ag/vector_avx512_api.rst
+   ag/vector_array_api.rst
+
+
 By Mathematical Domain
 ----------------------
 
@@ -158,6 +183,7 @@ within that mathematical domain.
    ag/logarithmic_api.rst
    ag/power_root_api.rst
    ag/error_api.rst
+   ag/special_functions_api.rst
    ag/remainder_quotient.rst
    ag/euclidean_distance_api.rst
    ag/nearest_integer_api.rst
@@ -166,31 +192,6 @@ within that mathematical domain.
    ag/complex_api.rst
    ag/min_max_diff.rst
    ag/linearfrac_api.rst
-
-
-By Implementation Variant
---------------------------
-
-Functions grouped by their execution model and performance characteristics. This view is useful
-when you need to optimize code for specific hardware capabilities or performance requirements.
-
-**When to use this view:**
-
-- When optimizing performance-critical code paths
-- When targeting specific SIMD instruction sets (AVX, AVX2, AVX512)
-- When you need to process arrays of data efficiently
-- When accuracy requirements allow for fast variants
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Implementation Variant Categories
-
-   ag/scalar_api.rst
-   ag/fast_scalar_api.rst
-   ag/vector_avx_api.rst
-   ag/vector_avx2_api.rst
-   ag/vector_avx512_api.rst
-   ag/vector_array_api.rst
 
 
 * AOCL-LibM is developed and maintained by AMD.

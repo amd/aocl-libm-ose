@@ -35,30 +35,25 @@ Scalar
 Asinh
 -----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_asinhf`` documentation.
+See :ref:`scalar_api` for ``amd_asinhf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_asinh`` documentation.
-
+See :ref:`scalar_api` for ``amd_asinh`` documentation.
 
 
 Acosh
 -----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_acoshf`` documentation.
+See :ref:`scalar_api` for ``amd_acoshf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_acosh`` documentation.
-
+See :ref:`scalar_api` for ``amd_acosh`` documentation.
 
 
 Atanh
 -----
 
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_atanhf`` documentation.
+See :ref:`scalar_api` for ``amd_atanhf`` documentation.
 
-
-See :ref:`scalar_api`, :ref:`vector_avx_api`, :ref:`vector_avx2_api`, or :ref:`vector_avx512_api` for ``amd_atanh`` documentation.
+See :ref:`scalar_api` for ``amd_atanh`` documentation.
 
 
 

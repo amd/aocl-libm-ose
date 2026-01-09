@@ -371,7 +371,6 @@ alm_func_t        G_ENTRY_PT_PTR(vrd4_exp2);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_exp10);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_log);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_log2);
-alm_func_t        G_ENTRY_PT_PTR(vrd4_log10);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_log1p);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_pow);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_powx);

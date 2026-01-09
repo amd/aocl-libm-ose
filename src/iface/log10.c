@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -113,7 +113,6 @@ LIBM_IFACE_PROTO(log10)(void *arg) {
            [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_log10f),
            [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_log10f),
            [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_log10),
-           [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_log10),
            [ALM_FUNC_VECT_SP_16] = &G_ENTRY_PT_PTR(vrs16_log10f),
 
            [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_log10f),

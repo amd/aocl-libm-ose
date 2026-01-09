@@ -339,13 +339,6 @@ extern "C" {
    * @return Vector of base-10 exponentials.
    */
   __m128 amd_vrs4_exp10f (__m128 x);
-
-  /**
-   * @brief Computes exp(x)-1 for two double-precision lanes.
-   * @param x Input vector.
-   * @return Vector of expm1 values.
-   */
-  __m128d amd_vrd2_expm1 (__m128d x);
   /**
    * @brief Computes exp(x)-1 for four single-precision lanes.
    * @param x Input vector.

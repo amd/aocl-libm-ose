@@ -120,7 +120,7 @@ See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or 
 Expm1
 -----
 
-See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for expm1 vector variants documentation.
+See :ref:`vector_avx_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for expm1 vector variants documentation.
 
 
 

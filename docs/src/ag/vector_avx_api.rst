@@ -180,9 +180,6 @@ Expm1
 .. doxygenfunction:: amd_vrs4_expm1f
   :project: libm
 
-.. doxygenfunction:: amd_vrd2_expm1
-  :project: libm
-
 
 Logarithmic Functions
 =====================

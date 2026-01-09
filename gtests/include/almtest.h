@@ -67,7 +67,7 @@ void ConfSetupf64(SpecParams *);
 
 /*
  * The Function populates the input values based on min value, max value
- * and the type of generation(simple or random or linear)
+ * and the type of generation(simple or random or linear or binadex)
  */
 template <typename T>
 int PopulateInputSamples(T **inpbuff, InputRange &range, uint32_t len) {

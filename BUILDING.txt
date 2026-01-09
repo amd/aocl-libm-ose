@@ -162,7 +162,7 @@
   Input count:
   -c (Integer value for number of inputs)
   Input range:
-  -r (provide range: start,stop,step size example: -r -50,50,SIMPLE)
+  -r (provide range: start,stop,<algorithm> where <algorithm> is simple/random/linear/binadex; example: -r 0.0,5.0,binadex)
   Number type:
   -z (c for complex variant function, default is real variant function)
 

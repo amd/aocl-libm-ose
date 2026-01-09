@@ -297,7 +297,7 @@ $ build\{presetName}\aocl_gtests\test_<function> <Test parameters>
 | Vector input count | `-e` | Number of vector elements  | `1` (scalar), `2/4/8/16` (vector), `32` (vector array)                  |
 | Test Type          | `-t` | Type of test to run        | `perf` (performance), `conf` (conformance)*, `accu` (accuracy), `inplace` (in-place)** |
 | Input count        | `-c` | Number of test inputs      | Any positive integer                                                    |
-| Input range        | `-r` | Input value range          | `start,stop,step_size` with generation algorithm                        |
+| Input range        | `-r` | Input value range          | `start,stop,<algorithm>` where `<algorithm>` is `simple`, `random`, `linear`, or `binadex` |
 | Number type        | `-z` | Complex or real variant    | `c` (complex), default is real                                          |
 
 **Notes:**

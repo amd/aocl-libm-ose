@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -61,7 +61,7 @@ void LibmPerfTestad(benchmark::State& st, InputParams* param);
 
  /*
  * The Function populates the input values based on min value, max value
- * and the type of generation(simple or random or linear)
+ * and the type of generation(simple or random or linear or binadex)
  */
 template <typename T>
 int PopulateInputSamples(T *inpbuff, InputRange &range, unsigned int len) {

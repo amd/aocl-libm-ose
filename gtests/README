@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -59,7 +59,7 @@ command line arguments ./build/aocl-release/funcname/func_exe (--type=) (--range
                          --count=Number of input_size
                          --input=float or double
                          --vector=1 or 2 or 4 or 8 or 16
-                         --range="min,max,algorithm(simple or random or linear)"
+                         --range="min,max,algorithm(simple or random or linear or binadex)"
                          --verbose=1-5(1-prints information only for failed cases, 4/5-prints information for all the cases)
                          --Iterations=loop count to measure performance
                          --numbertype=c for complex variant function, default is real variant function

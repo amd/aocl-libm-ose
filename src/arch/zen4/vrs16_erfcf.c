@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -78,7 +78,7 @@ static const struct {
     v_u32x16_t   b1_sub1, b1_sub2, b3_sub1, b3_sub2;
     v_u32x16_t   sign_mask, split_mask, sign_bit_mask;
     v_u32x16_t   inf_nan;
-    v_f32x16_t   tiny, one, two, zero, half, erx;
+    v_f32x16_t   tiny, one, two, zero, half, erx, two_over_sqrt_pi;
     v_f32x16_t   poly_bound1[10];
     v_f32x16_t   poly_bound2[13];
     v_f32x16_t   poly_bound3[16];
@@ -101,7 +101,8 @@ static const struct {
     .zero        = _MM512_SET1_PS16(0.0f),
     .half        = _MM512_SET1_PS16(0.5f),
     .erx         = _MM512_SET1_PS16(8.4506291151e-01f),
-
+    .two_over_sqrt_pi = _MM512_SET1_PS16(0x1.20dd76p+0f),  /* 2.0f / sqrtf(M_PI) */
+    
     .poly_bound1 = {
         _MM512_SET1_PS16(1.2837916613e-01f),   /* pp0 */
         _MM512_SET1_PS16(-3.2504209876e-01f),  /* pp1 */
@@ -186,7 +187,7 @@ static const struct {
 #define ZERO      v_erfcf_data.zero
 #define HALF      v_erfcf_data.half
 #define ERX       v_erfcf_data.erx
-
+#define TWO_OVER_SQRT_PI v_erfcf_data.two_over_sqrt_pi
 /* Polynomial coefficients for |x| < 0.84375 */
 #define PP0 v_erfcf_data.poly_bound1[0]
 #define PP1 v_erfcf_data.poly_bound1[1]
@@ -286,7 +287,7 @@ ALM_PROTO_ARCH_ZN4(vrs16_erfcf)(v_f32x16_t _x) {
         v_u32x16_t sub2_cond = hx < B1_SUB2; // Note: using hx (not ix) to check sign
         
         // For very small values: return 1 - x
-        v_f32x16_t small_result = ONE - _x;
+        v_f32x16_t small_result = ONE - TWO_OVER_SQRT_PI * _x;
         
         v_f32x16_t z = _x * _x;
         v_f32x16_t r = POLY_EVAL_4(z, PP0, PP1, PP2, PP3, PP4);

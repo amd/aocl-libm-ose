@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -79,6 +79,7 @@ static struct
     const double erx;   // erf(1) = 0.845062911510467529297
     const double zero;  // 0.0
     const double exp_offset; // 0.5625
+    const double two_over_sqrt_pi;  // 2/sqrt(π) ≈ 1.1283791670955126
 
     double poly_bound1[10];
     double poly_bound2[13];
@@ -93,6 +94,7 @@ static struct
     .erx = 0x1.b0ac160000000000012e3b40a0e9b4f7dda7edf83p-1,
     .zero = 0.0,
     .exp_offset = 0x1.2p-1,
+    .two_over_sqrt_pi = 0x1.20dd750429b6dp+0,  /* 2/sqrt(π) = 1.1283791670955126 */
 
     .poly_bound1 =
     {
@@ -165,12 +167,13 @@ static struct
 
 };
 
-#define TINY       erfc_data.tiny
-#define ONE        erfc_data.one
-#define TWO        erfc_data.two
-#define ERX        erfc_data.erx
-#define ZERO       erfc_data.zero
-#define EXP_OFFSET erfc_data.exp_offset
+#define TINY             erfc_data.tiny
+#define ONE              erfc_data.one
+#define TWO              erfc_data.two
+#define ERX              erfc_data.erx
+#define ZERO             erfc_data.zero
+#define EXP_OFFSET       erfc_data.exp_offset
+#define TWO_OVER_SQRT_PI erfc_data.two_over_sqrt_pi
 
 #define PP0 erfc_data.poly_bound1[0]
 #define PP1 erfc_data.poly_bound1[1]
@@ -246,7 +249,6 @@ static struct
 
 /* Boundary values for sub-intervals */
 #define B1_SUB1 0x3e300000 /* 2**-28 */
-#define B1_SUB2 0x00800000 /* 2**-23 */
 #define B3_SUB1 0x4006DB6D /* 1/0.35 ~ 2.857 */
 #define B3_SUB2 0x40180000 /* 6 */
 
@@ -273,10 +275,8 @@ double ALM_PROTO_OPT(erfc)(double x) {
     if (ix < BOUND1) {
         /* |x| < 0.84375 */
         if (ix < B1_SUB1) {
-            /* |x| < 2**-28 */
-            if (ix < B1_SUB2)
-                return ONE - (x + x * x);
-            return ONE - x;
+            /* |x| < 2**-28: erfc(x) ≈ 1 - (2/√π)x */
+            return ONE - TWO_OVER_SQRT_PI * x;
         }
         z = x * x;
 

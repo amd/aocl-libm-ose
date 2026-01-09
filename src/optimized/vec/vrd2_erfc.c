@@ -80,7 +80,7 @@ static const struct {
     v_u64x2_t   b1_sub1, b1_sub2, b3_sub1, b3_sub2;
     v_u64x2_t   sign_mask, mask_32;
     v_u64x2_t   inf_nan, inf;
-    v_f64x2_t   tiny, one, two, zero, erx, exp_offset;
+    v_f64x2_t   tiny, one, two, zero, erx, exp_offset, two_over_sqrt_pi;
     v_f64x2_t   poly_bound1[10];
     v_f64x2_t   poly_bound2[13];
     v_f64x2_t   poly_bound3[16];
@@ -103,6 +103,7 @@ static const struct {
     .zero        = _MM_SET1_PD2(0.0),
     .erx         = _MM_SET1_PD2(0x1.b0ac16p-1),
     .exp_offset  = _MM_SET1_PD2(0x1.2p-1),
+    .two_over_sqrt_pi = _MM_SET1_PD2(0x1.20dd750429b6dp+0),  /* 2/sqrt(π) */
 
 
     .poly_bound1 = {
@@ -189,6 +190,7 @@ static const struct {
 #define ZERO      v_erfc_data.zero
 #define ERX       v_erfc_data.erx
 #define EXP_OFFSET v_erfc_data.exp_offset
+#define TWO_OVER_SQRT_PI v_erfc_data.two_over_sqrt_pi
 
 /* Polynomial coefficients for |x| < 0.84375 */
 #define PP0 v_erfc_data.poly_bound1[0]
@@ -292,7 +294,7 @@ ALM_PROTO_OPT(vrd2_erfc)(v_f64x2_t _x) {
 
         // For very small values
         v_f64x2_t small_result1 = ONE - (_x + _x * _x);
-        v_f64x2_t small_result2 = ONE - _x;
+        v_f64x2_t small_result2 = ONE - TWO_OVER_SQRT_PI * _x;
 
         v_f64x2_t z = _x * _x;
         v_f64x2_t r = POLY_EVAL_4(z, PP0, PP1, PP2, PP3, PP4);

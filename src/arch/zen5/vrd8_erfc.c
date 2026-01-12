@@ -34,32 +34,44 @@
  * Computes the complementary error function erfc(x) = 1 - erf(x) for a given input x.
  *
  * SPEC:
- * erfc(+inf) = 0
- * erfc(-inf) = 2
- * erfc(NaN) = NaN
+ *    erfc(+inf) = 0
+ *    erfc(-inf) = 2
+ *    erfc(NaN) = NaN
  *
- * Implementation Notes:
+ * IMPLEMENTATION NOTES
+ * ====================
+ *
+ * This AVX-512 implementation uses mask registers (__mmask8) for efficient
+ * conditional execution and blending, minimizing scalar fallback.
+ *
  * The function uses polynomial approximations for different ranges of x.
- * 1. For |x| < 0.84375,
- *     erfc(x) = 1 - (2/sqrt(pi)) * x * Poly
- *     where Poly is a direct polynomial approximation of erfc
+ * When all vector elements fall within the same region, the fast vector path
+ * is used. When elements span different main regions, scalar fallback is used.
  *
- * 2. For 0.84375 <= |x| < 1.25,
- *     erfc(x) = (1 - erx) - Poly1(s)/Poly2(s),
- *     where s = |x| - 1,
- *     erx = erf(1) = 0.845062911510467529297,
- *     Poly1 and Poly2 are rational approximations for erfc
+ * Region 1: |x| < 0.84375
+ *    erfc(x) = 1 - (2/sqrt(pi)) * x * Poly
+ *    where Poly is a direct polynomial approximation
  *
- * 3. For 1.25 <= |x| < 2.85,
- *       erfc(x) = exp(-x^2) * Poly1(s) / Poly2(s),
- *       where s = |x| - 2
+ * Region 2: 0.84375 <= |x| < 1.25
+ *    erfc(x) = (1 - erx) - Poly1(s)/Poly2(s)
+ *    where s = |x| - 1, erx = erf(1) = 0.845062911510467529297
  *
- * 4. For 2.85 <= |x| < 28,
- *       erfc = exp(-x^2) * Poly(s) / x,
- *       where s = 1/x^2
+ * Region 3: 1.25 <= |x| < 28
+ *    Split into two sub-regions with different polynomials:
+ *    - R3a (1.25 <= |x| < 2.857): Uses RA/SA polynomial coefficients
+ *    - R3b (2.857 <= |x| < 28): Uses RB/SB polynomial coefficients
+ *    erfc(x) = exp(-x^2) * R(s) / S(s) / x, where s = 1/x^2
  *
- * 5. For |x| >= 28,
- *       Results in underflow
+ *    When vector elements span R3a and R3b sub-regions, both polynomial
+ *    paths are computed and blended using _mm512_mask_blend_pd intrinsics,
+ *    avoiding expensive scalar fallback.
+ *
+ * Region 4: |x| >= 28
+ *    Results in underflow (returns tiny*tiny for positive x, 2 for negative x)
+ *
+ * Special Values:
+ *    When all elements are Inf/NaN, fast vector path is used.
+ *    When mixed with normal values, scalar fallback ensures correctness.
  *
  */
 
@@ -262,6 +274,11 @@ static inline int test_condition_for_all(v_u64x8_t cond) {
     return 1;
 }
 
+static inline int test_condition_for_none(v_u64x8_t cond) {
+    return (cond[0] | cond[1] | cond[2] | cond[3] | 
+            cond[4] | cond[5] | cond[6] | cond[7]) == 0;
+}
+
 v_f64x8_t
 ALM_PROTO_ARCH_ZN5(vrd8_erfc)(v_f64x8_t _x) {
     v_f64x8_t result;
@@ -278,12 +295,23 @@ ALM_PROTO_ARCH_ZN5(vrd8_erfc)(v_f64x8_t _x) {
 
     // Check for NaN or Inf
     v_u64x8_t inf_nan_cond = ix >= INF_NAN;
-    if(unlikely(test_condition_for_all(inf_nan_cond))) {
-        v_u64x8_t inf_cond = ux_abs == INF;
-        __mmask8 inf_cond_mask = _mm512_cmp_pd_mask(as_v8_f64_u64(inf_cond), ZERO, _CMP_NEQ_OQ);
-        v_f64x8_t inf_result = _mm512_mask_blend_pd(sign_mask, ZERO, TWO);
-        v_f64x8_t nan_result = _x - _x; // return NaN
-        result = _mm512_mask_blend_pd(inf_cond_mask, nan_result, inf_result);
+    __mmask8 any_special_mask = _mm512_movepi64_mask((__m512i)inf_nan_cond);
+    
+    if(unlikely(any_special_mask)) {
+        if(any_special_mask == 0xFF) {
+            /* All elements are Inf or NaN - fast vector path */
+            v_u64x8_t inf_cond = ux_abs == INF;
+            __mmask8 inf_cond_mask = _mm512_movepi64_mask((__m512i)inf_cond);
+        
+            v_f64x8_t inf_result = _mm512_mask_blend_pd(sign_mask, ZERO, TWO);
+            v_f64x8_t nan_result = _x - _x; // return NaN
+            result = _mm512_mask_blend_pd(inf_cond_mask, nan_result, inf_result);
+            return result;
+        }
+        /* Mixed special + normal values: fall back to scalar */
+        for(uint64_t i = 0; i < 8; i++) {
+            result[i] = SCALAR_ERFC(_x[i]);
+        }
         return result;
     }
 
@@ -338,15 +366,17 @@ ALM_PROTO_ARCH_ZN5(vrd8_erfc)(v_f64x8_t _x) {
         v_f64x8_t s = ONE / (x * x);
         v_f64x8_t R, S;
 
-        // Check sub-range for different polynomial coefficients
+                // Check sub-range for different polynomial coefficients
         v_u64x8_t sub_cond = ix < B3_SUB1;
-        if(test_condition_for_all(sub_cond)) {
-            // |x| < 2.857
+        int all_in_sub1 = test_condition_for_all(sub_cond);
+        int none_in_sub1 = test_condition_for_none(sub_cond);
+        
+        if(all_in_sub1) {
+            // All |x| < 2.857
             R = POLY_EVAL_7(s, RA0, RA1, RA2, RA3, RA4, RA5, RA6, RA7);
             S = POLY_EVAL_8(s, ONE, SA1, SA2, SA3, SA4, SA5, SA6, SA7, SA8);
-
-        } else {
-            // |x| >= 2.857
+        } else if(none_in_sub1) {
+            // All |x| >= 2.857
             v_u64x8_t large_cond = (sign != (v_u64x8_t){0, 0}) & (ix >= B3_SUB2);
             if(test_condition_for_all(large_cond)) {
                 return TWO;
@@ -354,6 +384,17 @@ ALM_PROTO_ARCH_ZN5(vrd8_erfc)(v_f64x8_t _x) {
 
             R = POLY_EVAL_6(s, RB0, RB1, RB2, RB3, RB4, RB5, RB6);
             S = POLY_EVAL_7(s, ONE, SB1, SB2, SB3, SB4, SB5, SB6, SB7);
+        } else {
+            // Mixed R3a + R3b: compute both and blend
+            v_f64x8_t R_a = POLY_EVAL_7(s, RA0, RA1, RA2, RA3, RA4, RA5, RA6, RA7);
+            v_f64x8_t S_a = POLY_EVAL_8(s, ONE, SA1, SA2, SA3, SA4, SA5, SA6, SA7, SA8);
+            
+            v_f64x8_t R_b = POLY_EVAL_6(s, RB0, RB1, RB2, RB3, RB4, RB5, RB6);
+            v_f64x8_t S_b = POLY_EVAL_7(s, ONE, SB1, SB2, SB3, SB4, SB5, SB6, SB7);
+            
+            __mmask8 sub_mask = _mm512_movepi64_mask((__m512i)sub_cond);
+            R = _mm512_mask_blend_pd(sub_mask, R_b, R_a);
+            S = _mm512_mask_blend_pd(sub_mask, S_b, S_a);
         }
 
         // High-precision exponential calculation

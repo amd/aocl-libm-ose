@@ -258,7 +258,7 @@ elseif(LIBABI STREQUAL "svml")
 
     list(APPEND LIBS "mkl_intel_lp64" "mkl_core")
     if(NOT WIN32)
-        list(APPEND LIBS "svml" "irc" "intlc" "mkl_gnu_thread")
+        list(APPEND LIBS "svml" "irc" "intlc" "mkl_intel_thread" "iomp5")
     else()
         list(APPEND LIBS "svml_dispmd" "libirc" "mkl_intel_thread" "libomp")
     endif()
@@ -268,7 +268,8 @@ endif()
 # Add default math library for any unresolved functions
 if(NOT WIN32)
     list(APPEND LIBS "m")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fopenmp")
+    # Add pthread library for gtest/benchmark on Unix systems
+    list(APPEND LIBS "pthread")
 else()
     list(APPEND LIBS "msvcrt" "Shlwapi")
 endif()

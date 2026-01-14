@@ -35,41 +35,117 @@ Scalar
 Asin
 ----
 
-.. doxygenfunction:: amd_asinf
-  :project: libm
+See :ref:`scalar_api` for ``amd_asinf`` documentation.
 
-.. doxygenfunction:: amd_asin
-  :project: libm
+See :ref:`scalar_api` for ``amd_asin`` documentation.
 
 
 Acos
 ----
 
-.. doxygenfunction:: amd_acosf
-  :project: libm
+See :ref:`scalar_api` for ``amd_acosf`` documentation.
 
-.. doxygenfunction:: amd_acos
-  :project: libm
+See :ref:`scalar_api` for ``amd_acos`` documentation.
 
 
 Atan
 ----
 
-.. doxygenfunction:: amd_atanf
-  :project: libm
+See :ref:`scalar_api` for ``amd_atanf`` documentation.
 
-.. doxygenfunction:: amd_atan
-  :project: libm
+See :ref:`scalar_api` for ``amd_atan`` documentation.
 
 
 Atan2
 -----
 
-.. doxygenfunction:: amd_atan2f
-  :project: libm
+See :ref:`scalar_api` for ``amd_atan2f`` documentation.
 
-.. doxygenfunction:: amd_atan2
-  :project: libm
+See :ref:`scalar_api` for ``amd_atan2`` documentation.
+
+
+
+Fast Variants
+^^^^^^^^^^^^^
+
+Fast variants of inverse trigonometric functions provide improved performance by trading a small amount of accuracy. These functions do not handle special cases like NaNs or INFs and are optimized for performance-critical applications where the input range is known and controlled.
+
+Asin
+----
+
+**amd_fastasinf**
+
+.. code-block:: c
+
+   float amd_fastasinf(float x)
+
+Computes the principal value of the arc sine of ``x``, expressed in radians.
+
+- **Maximum ULP:** 2.20
+- **Note:** Does not handle special cases like NaNs or INFs
+
+**amd_fastasin**
+
+.. code-block:: c
+
+   double amd_fastasin(double x)
+
+Computes the principal value of the arc sine of ``x``, expressed in radians.
+
+- **Maximum ULP:** 2.26
+- **Note:** Does not handle special cases like NaNs or INFs
+
+
+Acos
+----
+
+**amd_fastacosf**
+
+.. code-block:: c
+
+   float amd_fastacosf(float x)
+
+Computes the principal value of the arc cosine of ``x``, expressed in radians.
+
+- **Maximum ULP:** 2.21
+- **Note:** Does not handle special cases like NaNs or INFs
+
+**amd_fastacos**
+
+.. code-block:: c
+
+   double amd_fastacos(double x)
+
+Computes the principal value of the arc cosine of ``x``, expressed in radians.
+
+- **Maximum ULP:** 2.27
+- **Note:** Does not handle special cases like NaNs or INFs
+
+
+Atan
+----
+
+**amd_fastatanf**
+
+.. code-block:: c
+
+   float amd_fastatanf(float x)
+
+Computes the principal value of the arc tangent of ``x``, expressed in radians.
+
+- **Maximum ULP:** 2.16
+- **Note:** Does not handle special cases like NaNs or INFs
+
+**amd_fastatan**
+
+.. code-block:: c
+
+   double amd_fastatan(double x)
+
+Computes the principal value of the arc tangent of ``x``, expressed in radians.
+
+- **Maximum ULP:** 2.18
+- **Note:** Does not handle special cases like NaNs or INFs
 
 
 Vector
@@ -78,105 +154,19 @@ Vector
 Asin
 ----
 
-**AVX**
-
-.. doxygenfunction:: amd_vrs4_asinf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_asin
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_asinf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_asin
-  :project: libm
-
-**AVX512**
-
-.. doxygenfunction:: amd_vrs16_asinf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd8_asin
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_asinf
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_asin
-  :project: libm
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for asin vector variants documentation.
 
 
 Acos
 ----
 
-**AVX**
-
-.. doxygenfunction:: amd_vrs4_acosf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_acos
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_acosf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_acos
-  :project: libm
-
-**AVX512**
-
-.. doxygenfunction:: amd_vrs16_acosf
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_acosf
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_acos
-  :project: libm
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for acos vector variants documentation.
 
 
 Atan
 ----
 
-**AVX**
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for atan vector variants documentation.
 
-.. doxygenfunction:: amd_vrs4_atanf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_atan
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_atanf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_atan
-  :project: libm
-
-**AVX512**
-
-.. doxygenfunction:: amd_vrs16_atanf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd8_atan
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_atanf
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_atan
-  :project: libm
 
 .. End of Doc

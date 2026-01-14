@@ -35,31 +35,26 @@ Scalar
 Sinh
 ----
 
-.. doxygenfunction:: amd_sinhf
-  :project: libm
+See :ref:`scalar_api` for ``amd_sinhf`` documentation.
 
-.. doxygenfunction:: amd_sinh
-  :project: libm
+See :ref:`scalar_api` for ``amd_sinh`` documentation.
 
 
 Cosh
 ----
 
-.. doxygenfunction:: amd_coshf
-  :project: libm
+See :ref:`scalar_api` for ``amd_coshf`` documentation.
 
-.. doxygenfunction:: amd_cosh
-  :project: libm
+See :ref:`scalar_api` for ``amd_cosh`` documentation.
 
 
 Tanh
 ----
 
-.. doxygenfunction:: amd_tanhf
-  :project: libm
+See :ref:`scalar_api` for ``amd_tanhf`` documentation.
 
-.. doxygenfunction:: amd_tanh
-  :project: libm
+See :ref:`scalar_api` for ``amd_tanh`` documentation.
+
 
 
 Vector
@@ -68,50 +63,14 @@ Vector
 Cosh
 ----
 
-**AVX**
-
-.. doxygenfunction:: amd_vrs4_coshf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_cosh
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_coshf
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_coshf
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_cosh
-  :project: libm
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for cosh vector variants documentation.
 
 
 Tanh
 ----
 
-**AVX**
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for tanh vector variants documentation.
 
-.. doxygenfunction:: amd_vrs4_tanhf
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_tanhf
-  :project: libm
-
-**AVX512**
-
-.. doxygenfunction:: amd_vrs16_tanhf
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_tanhf
-  :project: libm
 
 
 .. End of Doc

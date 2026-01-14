@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -78,7 +78,7 @@ static map<string, vector<string>> libm_funcs = {
     {"powx",      {"vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrsa", "vrda"}},
     {"remainder", {"s1d", "s1f"}},
     {"rint",      {"s1d", "s1f"}},
-    {"round",     {"s1d", "s1f"}},
+    {"round",     {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"sincos",    {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"sin",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"sinh",      {"s1d", "s1f"}},
@@ -93,6 +93,7 @@ static map<string, vector<string>> libm_funcs = {
     {"nextafter", {"s1d", "s1f"}},
     {"ldexp",     {"s1d", "s1f"}},
     {"erfc",      {"s1d", "vrd2", "vrd4", "vrd8", "vrda", "s1f", "vrs4", "vrs8", "vrs16", "vrsa"}},
+    {"cdfnorm",   {"s1d", "vrd2", "vrd4", "vrd8", "vrda"}},
 };
 
 /* vector<string> getSupportedVariants(string func)
@@ -112,6 +113,12 @@ bool isVariantSupported(string func, string variant);
  * only the supported variants of that function is running.
  */
 string validateFilterData(string func, string filter_data);
+
+/* string validateInplaceFilterData(string func, string filter_data)
+ * return the valid filter-data to be applied for a given math function
+ * for IN-PLACE tests.
+ */
+string validateInplaceFilterData(string func, string filter_data);
 
 /* string validateFilterData(InputParams *params, string filter_data)
  * return the valid filter-data to be applied for a given math function.

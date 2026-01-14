@@ -35,41 +35,65 @@ Scalar
 Log
 ---
 
-.. doxygenfunction:: amd_logf
-  :project: libm
+See :ref:`scalar_api` for ``amd_logf`` documentation.
 
-.. doxygenfunction:: amd_log
-  :project: libm
+See :ref:`scalar_api` for ``amd_log`` documentation.
 
 
 Log2
 ----
 
-.. doxygenfunction:: amd_log2f
-  :project: libm
+See :ref:`scalar_api` for ``amd_log2f`` documentation.
 
-.. doxygenfunction:: amd_log2
-  :project: libm
+See :ref:`scalar_api` for ``amd_log2`` documentation.
 
 
 Log10
 -----
 
-.. doxygenfunction:: amd_log10f
-  :project: libm
+See :ref:`scalar_api` for ``amd_log10f`` documentation.
 
-.. doxygenfunction:: amd_log10
-  :project: libm
+See :ref:`scalar_api` for ``amd_log10`` documentation.
 
 
 Log1p
 -----
 
-.. doxygenfunction:: amd_log1pf
-  :project: libm
+See :ref:`scalar_api` for ``amd_log1pf`` documentation.
 
-.. doxygenfunction:: amd_log1p
-  :project: libm
+See :ref:`scalar_api` for ``amd_log1p`` documentation.
+
+
+
+Fast Variants
+^^^^^^^^^^^^^
+
+Fast variants of logarithmic functions provide improved performance by trading a small amount of accuracy. These functions do not handle special cases like NaNs or INFs and are optimized for performance-critical applications where the input range is known and controlled.
+
+Log
+---
+
+**amd_fastlogf**
+
+.. code-block:: c
+
+   float amd_fastlogf(float x)
+
+Computes the natural (base-e) logarithm of ``x`` (ln(x)).
+
+- **Maximum ULP:** 1.97
+- **Note:** Does not handle special cases like NaNs or INFs
+
+**amd_fastlog**
+
+.. code-block:: c
+
+   double amd_fastlog(double x)
+
+Computes the natural (base-e) logarithm of ``x`` (ln(x)).
+
+- **Maximum ULP:** 1.93
+- **Note:** Does not handle special cases like NaNs or INFs
 
 
 Vector
@@ -78,115 +102,26 @@ Vector
 Log
 ---
 
-**AVX**
-
-.. doxygenfunction:: amd_vrs4_logf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_log
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_logf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_log
-  :project: libm
-
-**AVX512**
-
-.. doxygenfunction:: amd_vrs16_logf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd8_log
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_logf
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_log
-  :project: libm
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for log vector variants documentation.
 
 
 Log2
 ----
 
-**AVX**
-
-.. doxygenfunction:: amd_vrs4_log2f
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_log2
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_log2f
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_log2
-  :project: libm
-
-**AVX512**
-
-.. doxygenfunction:: amd_vrs16_log2f
-  :project: libm
-
-.. doxygenfunction:: amd_vrd8_log2
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_log2f
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_log2
-  :project: libm
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for log2 vector variants documentation.
 
 
 Log10
 -----
 
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_log10f
-  :project: libm
-
-**AVX512**
-
-.. doxygenfunction:: amd_vrs16_log10f
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_log10f
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_log10
-  :project: libm
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for log10 vector variants documentation.
 
 
 Log1p
 -----
 
-**AVX**
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for log1p vector variants documentation.
 
-.. doxygenfunction:: amd_vrs4_log1pf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_log1p
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_log1pf
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_log1p
-  :project: libm
 
 
 .. End of Doc

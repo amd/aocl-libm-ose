@@ -568,6 +568,14 @@ extern "C" {
    */
   float amd_erfcf (float x);
 
+/* Special */
+  /**
+   * @brief Computes the cumulative normal distribution function values of a double-precision value
+   * @param x Input value.
+   * @return cdfnorm(x).
+   */
+  double amd_cdfnorm (double x);
+
 /* Remainder */
   /**
    * @brief Computes the remainder of the division operation x/y (double-precision).
@@ -1193,6 +1201,10 @@ extern "C" {
   #define erfc amd_erfc
   #undef erfcf
   #define erfcf amd_erfcf
+
+/* Special */
+  #undef cdfnorm
+  #define cdfnorm amd_cdfnorm
 
 /* Remainder */
   #undef fmod

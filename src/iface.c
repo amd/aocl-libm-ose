@@ -89,6 +89,7 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_ERF]      =   {LIBM_IFACE_PROTO(erf), NULL},
     [C_AMD_ERFC]      =   {LIBM_IFACE_PROTO(erfc), NULL},
     [C_AMD_SINCOS]     = {LIBM_IFACE_PROTO(sincos), NULL},
+    [C_AMD_CDFNORM]    = {LIBM_IFACE_PROTO(cdfnorm), NULL},
 
     /* Integer variants */
     [C_AMD_FINITE]     = {LIBM_IFACE_PROTO(finite), NULL},

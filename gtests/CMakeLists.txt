@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -76,42 +76,30 @@ set(VRA_SRC_FILES
 )
 
 # Compiler flags
+set(TEST_CFLAGS "-std=c++17")
+list(APPEND TEST_CFLAGS "-g")
+list(APPEND TEST_CFLAGS "-w")
+list(APPEND TEST_CFLAGS "-Wall")
+list(APPEND TEST_CFLAGS "-march=native")
+list(APPEND TEST_CFLAGS "-funsigned-char" )
+list(APPEND TEST_CFLAGS "-fno-strict-aliasing")
+list(APPEND TEST_CFLAGS "-Wno-unused-parameter")
+list(APPEND TEST_CFLAGS "-fstack-protector-all")
+list(APPEND TEST_CFLAGS "-Wno-multichar")
+list(APPEND TEST_CFLAGS "-Wno-missing-field-initializers")
 if(NOT WIN32)
-    set(TEST_CFLAGS "-std=c++17")
-    list(APPEND TEST_CFLAGS "-g")
-    list(APPEND TEST_CFLAGS "-funsigned-char" )
-    list(APPEND TEST_CFLAGS "-fno-strict-aliasing")
-    list(APPEND TEST_CFLAGS "-fstack-protector-all")
-    list(APPEND TEST_CFLAGS "-W")
-    list(APPEND TEST_CFLAGS "-Wall")
-    list(APPEND TEST_CFLAGS "-Wno-multichar")
-    list(APPEND TEST_CFLAGS "-Wno-unused-parameter")
-    list(APPEND TEST_CFLAGS "-Wno-missing-field-initializers")
-    list(APPEND TEST_CFLAGS "-march=native")
     list(APPEND TEST_CFLAGS "-fPIC")
     list(APPEND TEST_CFLAGS "-Wno-tautological-overlap-compare")
     if((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"))
         list(APPEND TEST_CFLAGS "-fext-numeric-literals")
     endif()
 else()
-    set(TEST_CFLAGS "-std:c++17")
-    list(APPEND TEST_CFLAGS "-g")
-    list(APPEND TEST_CFLAGS "-bigobj")
-    list(APPEND TEST_CFLAGS "/W4")
-    list(APPEND TEST_CFLAGS "-march=native")
-    list(APPEND TEST_CFLAGS "/Wall")
-    list(APPEND TEST_CFLAGS "/w")
-    list(APPEND TEST_CFLAGS "/MP")
-    list(APPEND TEST_CFLAGS "-funsigned-char")
-    list(APPEND TEST_CFLAGS "-fno-strict-aliasing")
-    list(APPEND TEST_CFLAGS "-Wno-unused-parameter")
-    list(APPEND TEST_CFLAGS "-fstack-protector-all")
-    list(APPEND TEST_CFLAGS "-Wno-multichar")
+    list(APPEND TEST_CFLAGS "/EHsc")
     list(APPEND TEST_CFLAGS "-Wno-c++11-narrowing")
-    list(APPEND TEST_CFLAGS "-Wno-missing-field-initializers")
-    add_definitions(-DBENCHMARK_STATIC_DEFINE)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG}")
+add_definitions(-DBENCHMARK_STATIC_DEFINE)
 
 # =============================================================================
 # AVX-512 Detection and Configuration
@@ -236,16 +224,23 @@ set(LIBS ${GTEST_LIB} ${GBENCH_LIB} ${LIBMPARITH} ${MPFR_LIB} ${MPC_LIB} ${GMP_L
 if(LIBABI STREQUAL "aocl")
     add_definitions(-DLIBM_PROTOTYPE=${PROTOTYPE_AOCL})
     if(NOT WIN32)
-        # Use static library when coverage is enabled to avoid gcov symbol conflicts
+        # Use static library when ASAN or coverage is enabled to avoid gcov symbol conflicts
         if(${${PROJECT_PREFIX}_LIBM_ENABLE_ASAN} OR ${${PROJECT_PREFIX}_LIBM_ENABLE_COVERAGE})
             set(LIBALM "${CMAKE_BINARY_DIR}/src/libalm.a")
+            if(DEFINED AOCL_UTILS_LIB)
+                list(APPEND LIBS ${LIBALM} ${AOCL_UTILS_LIB})
+            else()
+                message(WARNING "AOCL_UTILS_LIB is not defined. AOCL utils must be available when coverage or ASAN is enabled.")
+                list(APPEND LIBS ${LIBALM})
+            endif()
         else()
             set(LIBALM "alm")
+            list(APPEND LIBS ${LIBALM})
         endif()
     else()
         set(LIBALM "libalm")
+        list(APPEND LIBS ${LIBALM})
     endif()
-    list(APPEND LIBS ${LIBALM})
 elseif(LIBABI STREQUAL "glibc")
     add_definitions(-DLIBM_PROTOTYPE=${PROTOTYPE_GLIBC})
     list(APPEND LIBS "mvec")
@@ -264,7 +259,7 @@ elseif(LIBABI STREQUAL "svml")
     if(NOT WIN32)
         list(APPEND LIBS "svml" "irc" "intlc" "mkl_gnu_thread")
     else()
-        list(APPEND LIBS "svml_dispmd" "libirc" "mkl_intel_thread" "libiomp")
+        list(APPEND LIBS "svml_dispmd" "libirc" "mkl_intel_thread" "libomp")
     endif()
 endif()
 
@@ -272,12 +267,9 @@ endif()
 # Add default math library for any unresolved functions
 if(NOT WIN32)
     list(APPEND LIBS "m")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fopenmp")
 else()
     list(APPEND LIBS "msvcrt" "Shlwapi")
-endif()
-find_package(OpenMP REQUIRED)
-if(OpenMP_CXX_FOUND)
-  list(APPEND LIBS OpenMP::OpenMP_CXX)
 endif()
 
 # Set common executable suffix on windows and linux
@@ -302,8 +294,8 @@ set(tests "")
 
 # Define test directories with their linking requirements
 set(SPECIAL_TEST_DIRS "powx" "linearfrac" "sincos")
-set(VR_TEST_DIRS "acosh" "asinh" "atan2" "atanh" "cexp" "sinh" "ceil" "copysign" "fdim" "floor" "fmod" "hypot" "logb" "remainder" "rint" "round" "trunc" "nearbyint")
-set(VRA_TEST_DIRS "exp" "cos" "acos" "add" "asin" "atan" "cosh" "sin" "tan" "tanh" "cbrt" "erf" "erfc" "exp10" "exp2" "expm1" "fabs" "fmax" "fmin" "ldexp" "log" "log10" "log1p" "log2" "mul" "nextafter" "pow" "sqrt" "sub")
+set(VR_TEST_DIRS "acosh" "asinh" "atan2" "atanh" "cexp" "sinh" "ceil" "copysign" "fdim" "floor" "fmod" "hypot" "logb" "remainder" "rint" "trunc" "nearbyint")
+set(VRA_TEST_DIRS "exp" "cos" "acos" "add" "asin" "atan" "cosh" "sin" "tan" "tanh" "cbrt" "erf" "erfc" "exp10" "exp2" "expm1" "fabs" "fmax" "fmin" "ldexp" "log" "log10" "log1p" "log2" "mul" "nextafter" "pow" "round" "sqrt" "sub")
 
 # Combine all test directories
 set(ALL_TEST_DIRS ${SPECIAL_TEST_DIRS} ${VR_TEST_DIRS} ${VRA_TEST_DIRS})

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -24,6 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 /*
  * C implementation of erfcf single precision 512-bit vector version (vrs16)
  *
@@ -33,28 +34,42 @@
  * Computes the complementary error function erfcf(x) = 1 - erff(x) for a given input x.
  *
  * SPEC:
- * erfcf(+inf) = 0
- * erfcf(-inf) = 2
- * erfcf(NaN) = NaN
+ *    erfcf(+inf) = 0
+ *    erfcf(-inf) = 2
+ *    erfcf(NaN) = NaN
  *
- * Implementation Notes:
+ * IMPLEMENTATION NOTES
+ * ====================
+ *
+ * This AVX-512 implementation uses mask registers (__mmask16) for efficient
+ * conditional execution and blending, minimizing scalar fallback.
+ *
  * The function uses polynomial approximations for different ranges of x.
- * 1. For |x| < 0.84375,
- *     erfcf(x) = 1 - (2/sqrt(pi)) * x * Poly
- *     where Poly is a direct polynomial approximation of erfcf
+ * When all vector elements fall within the same region, the fast vector path
+ * is used. When elements span different main regions, scalar fallback is used.
  *
- * 2. For 0.84375 <= |x| < 1.25,
- *     erfcf(x) = (1 - erx) - Poly1(s)/Poly2(s),
- *     where s = |x| - 1,
- *     erx = erf(1) = 0.845062911510467529297,
- *     Poly1 and Poly2 are rational approximations for erfcf
+ * Region 1: |x| < 0.84375
+ *    erfcf(x) = 1 - (2/sqrt(pi)) * x * Poly
  *
- * 3. For 1.25 <= |x| < 28,
- *     erfcf(x) = exp(-x^2) * Poly1(s) / Poly2(s),
- *     where computation depends on sub-ranges
+ * Region 2: 0.84375 <= |x| < 1.25
+ *    erfcf(x) = (1 - erx) - Poly1(s)/Poly2(s)
  *
- * 4. For |x| >= 28,
- *     Results in underflow
+ * Region 3: 1.25 <= |x| < 28
+ *    Split into two sub-regions with different polynomials:
+ *    - R3a (1.25 <= |x| < 2.857): Uses RA/SA polynomial coefficients
+ *    - R3b (2.857 <= |x| < 28): Uses RB/SB polynomial coefficients
+ *    erfcf(x) = exp(-x^2) * R(s) / S(s) / x, where s = 1/x^2
+ *
+ *    When vector elements span R3a and R3b sub-regions, both polynomial
+ *    paths are computed and blended using _mm512_mask_blend_ps intrinsics,
+ *    avoiding expensive scalar fallback.
+ *
+ * Region 4: |x| >= 28
+ *    Results in underflow
+ *
+ * Special Values:
+ *    When all elements are Inf/NaN, fast vector path is used.
+ *    When mixed with normal values, scalar fallback ensures correctness.
  *
  */
 
@@ -78,7 +93,7 @@ static const struct {
     v_u32x16_t   b1_sub1, b1_sub2, b3_sub1, b3_sub2;
     v_u32x16_t   sign_mask, split_mask, sign_bit_mask;
     v_u32x16_t   inf_nan;
-    v_f32x16_t   tiny, one, two, zero, half, erx;
+    v_f32x16_t   tiny, one, two, zero, half, erx, two_over_sqrt_pi;
     v_f32x16_t   poly_bound1[10];
     v_f32x16_t   poly_bound2[13];
     v_f32x16_t   poly_bound3[16];
@@ -101,7 +116,8 @@ static const struct {
     .zero        = _MM512_SET1_PS16(0.0f),
     .half        = _MM512_SET1_PS16(0.5f),
     .erx         = _MM512_SET1_PS16(8.4506291151e-01f),
-
+    .two_over_sqrt_pi = _MM512_SET1_PS16(0x1.20dd76p+0f),   /* 2.0f / sqrtf(M_PI) */
+    
     .poly_bound1 = {
         _MM512_SET1_PS16(1.2837916613e-01f),   /* pp0 */
         _MM512_SET1_PS16(-3.2504209876e-01f),  /* pp1 */
@@ -186,7 +202,7 @@ static const struct {
 #define ZERO      v_erfcf_data.zero
 #define HALF      v_erfcf_data.half
 #define ERX       v_erfcf_data.erx
-
+#define TWO_OVER_SQRT_PI v_erfcf_data.two_over_sqrt_pi
 /* Polynomial coefficients for |x| < 0.84375 */
 #define PP0 v_erfcf_data.poly_bound1[0]
 #define PP1 v_erfcf_data.poly_bound1[1]
@@ -258,6 +274,13 @@ static inline int test_condition_for_all_v16(v_u32x16_t cond) {
     return 1;
 }
 
+static inline int test_condition_for_none_v16(v_u32x16_t cond) {
+    return (cond[0] | cond[1] | cond[2] | cond[3] |
+            cond[4] | cond[5] | cond[6] | cond[7] |
+            cond[8] | cond[9] | cond[10] | cond[11] |
+            cond[12] | cond[13] | cond[14] | cond[15]) == 0;
+}
+
 v_f32x16_t
 ALM_PROTO_ARCH_ZN4(vrs16_erfcf)(v_f32x16_t _x) {
     v_f32x16_t result;
@@ -267,15 +290,26 @@ ALM_PROTO_ARCH_ZN4(vrs16_erfcf)(v_f32x16_t _x) {
     v_u32x16_t ix = hx & SIGN_MASK;
     v_f32x16_t x_abs = as_v16_f32_u32(ix);
 
-    // Check for NaN or Inf
+        // Check for NaN or Inf
     v_u32x16_t inf_nan_cond = ix >= INF_NAN;
+    
     if(unlikely(any_v16_u32_loop(inf_nan_cond))) {
-        v_u32x16_t inf_cond = ix == INF_NAN;
-        v_u32x16_t sign_bit = hx >> 31;
-        v_f32x16_t inf_result = as_v16_f32_u32((sign_bit << 1) + as_v16_u32_f32(ONE));
-        v_f32x16_t nan_result = _x + _x; // NaN propagation
-        __mmask16 inf_mask = _mm512_cmp_epi32_mask(inf_cond, _mm512_set1_epi32(-1), _MM_CMPINT_EQ);
-        result = _mm512_mask_blend_ps(inf_mask, nan_result, inf_result);
+        if(test_condition_for_all_v16(inf_nan_cond)) {
+            /* All elements are Inf or NaN - fast vector path */
+            v_u32x16_t inf_cond = ix == INF_NAN;
+            /* erfc(+inf) = 0, erfc(-inf) = 2 */
+            __mmask16 sign_mask = _mm512_cmp_epi32_mask((__m512i)(hx & SIGN_BIT_MASK), 
+                                                         _mm512_setzero_si512(), _MM_CMPINT_NE);
+            v_f32x16_t inf_result = _mm512_mask_blend_ps(sign_mask, ZERO, TWO);
+            v_f32x16_t nan_result = _x + _x; // NaN propagation
+            __mmask16 inf_mask = _mm512_cmp_epi32_mask((__m512i)inf_cond, _mm512_set1_epi32(-1), _MM_CMPINT_EQ);
+            result = _mm512_mask_blend_ps(inf_mask, nan_result, inf_result);
+            return result;
+        }
+        /* Mixed special + normal values: fall back to scalar */
+        for(uint32_t i = 0; i < 16; i++) {
+            result[i] = SCALAR_ERFCF(_x[i]);
+        }
         return result;
     }
 
@@ -286,7 +320,7 @@ ALM_PROTO_ARCH_ZN4(vrs16_erfcf)(v_f32x16_t _x) {
         v_u32x16_t sub2_cond = hx < B1_SUB2; // Note: using hx (not ix) to check sign
         
         // For very small values: return 1 - x
-        v_f32x16_t small_result = ONE - _x;
+        v_f32x16_t small_result = ONE - TWO_OVER_SQRT_PI * _x;
         
         v_f32x16_t z = _x * _x;
         v_f32x16_t r = POLY_EVAL_4(z, PP0, PP1, PP2, PP3, PP4);
@@ -335,12 +369,15 @@ ALM_PROTO_ARCH_ZN4(vrs16_erfcf)(v_f32x16_t _x) {
         
         // Check sub-range for different polynomial coefficients
         v_u32x16_t sub_cond = ix < B3_SUB1;
-        if(test_condition_for_all_v16(sub_cond)) {
-            // |x| < 2.857143
+        int all_in_sub1 = test_condition_for_all_v16(sub_cond);
+        int none_in_sub1 = test_condition_for_none_v16(sub_cond);
+        
+        if(all_in_sub1) {
+            // All |x| < 2.857143
             R = POLY_EVAL_7(s, RA0, RA1, RA2, RA3, RA4, RA5, RA6, RA7);
             S = POLY_EVAL_8(s, ONE, SA1, SA2, SA3, SA4, SA5, SA6, SA7, SA8);
-        } else {
-            // |x| >= 2.857143
+        } else if(none_in_sub1) {
+            // All |x| >= 2.857143
             v_u32x16_t neg_cond = hx & SIGN_BIT_MASK;
             v_u32x16_t large_cond = neg_cond & (ix >= B3_SUB2);
             if(test_condition_for_all_v16(large_cond)) {
@@ -349,6 +386,18 @@ ALM_PROTO_ARCH_ZN4(vrs16_erfcf)(v_f32x16_t _x) {
             
             R = POLY_EVAL_6(s, RB0, RB1, RB2, RB3, RB4, RB5, RB6);
             S = POLY_EVAL_7(s, ONE, SB1, SB2, SB3, SB4, SB5, SB6, SB7);
+        } else {
+            // Mixed R3a + R3b: compute both and blend
+            v_f32x16_t R_a = POLY_EVAL_7(s, RA0, RA1, RA2, RA3, RA4, RA5, RA6, RA7);
+            v_f32x16_t S_a = POLY_EVAL_8(s, ONE, SA1, SA2, SA3, SA4, SA5, SA6, SA7, SA8);
+            
+            v_f32x16_t R_b = POLY_EVAL_6(s, RB0, RB1, RB2, RB3, RB4, RB5, RB6);
+            v_f32x16_t S_b = POLY_EVAL_7(s, ONE, SB1, SB2, SB3, SB4, SB5, SB6, SB7);
+            
+            __mmask16 sub_mask = _mm512_cmp_epi32_mask((__m512i)sub_cond, 
+                                                       _mm512_set1_epi32(-1), _MM_CMPINT_EQ);
+            R = _mm512_mask_blend_ps(sub_mask, R_b, R_a);
+            S = _mm512_mask_blend_ps(sub_mask, S_b, S_a);
         }
         
         // High-precision exponential calculation matching scalar implementation

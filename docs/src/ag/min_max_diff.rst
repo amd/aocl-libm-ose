@@ -35,31 +35,26 @@ Scalar
 Fmax
 ----
 
-.. doxygenfunction:: amd_fmaxf
-  :project: libm
+See :ref:`scalar_api` for ``amd_fmaxf`` documentation.
 
-.. doxygenfunction:: amd_fmax
-  :project: libm
+See :ref:`scalar_api` for ``amd_fmax`` documentation.
 
 
 Fmin
 ----
 
-.. doxygenfunction:: amd_fminf
-  :project: libm
+See :ref:`scalar_api` for ``amd_fminf`` documentation.
 
-.. doxygenfunction:: amd_fmin
-  :project: libm
+See :ref:`scalar_api` for ``amd_fmin`` documentation.
 
 
 Fdim
 ----
 
-.. doxygenfunction:: amd_fdimf
-  :project: libm
+See :ref:`scalar_api` for ``amd_fdimf`` documentation.
 
-.. doxygenfunction:: amd_fdim
-  :project: libm
+See :ref:`scalar_api` for ``amd_fdim`` documentation.
+
 
 
 Vector
@@ -68,41 +63,14 @@ Vector
 Fmax
 ----
 
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_fmaxf
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_fmax
-  :project: libm
-
-**Indexed Maximum & Minimum**
-
-.. doxygenfunction:: amd_vrda_fmaxi
-  :project: libm
-
-.. doxygenfunction:: amd_vrsa_fmaxfi
-  :project: libm
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for fmax vector variants documentation.
 
 
 Fmin
 ----
 
-**Vector array**
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for fmin vector variants documentation.
 
-.. doxygenfunction:: amd_vrsa_fminf
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_fmin
-  :project: libm
-
-**Indexed Maximum & Minimum**
-
-.. doxygenfunction:: amd_vrda_fmini
-  :project: libm
-
-.. doxygenfunction:: amd_vrsa_fminfi
-  :project: libm
 
 
 .. End of Doc

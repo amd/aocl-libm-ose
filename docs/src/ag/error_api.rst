@@ -35,21 +35,49 @@ Scalar
 Erf
 ---
 
-.. doxygenfunction:: amd_erff
-  :project: libm
+See :ref:`scalar_api` for ``amd_erff`` documentation.
 
-.. doxygenfunction:: amd_erf
-  :project: libm
+See :ref:`scalar_api` for ``amd_erf`` documentation.
 
 
 Erfc
 ----
 
-.. doxygenfunction:: amd_erfcf
-  :project: libm
+See :ref:`scalar_api` for ``amd_erfcf`` documentation.
 
-.. doxygenfunction:: amd_erfc
-  :project: libm
+See :ref:`scalar_api` for ``amd_erfc`` documentation.
+
+
+
+Fast Variants
+^^^^^^^^^^^^^
+
+Fast variants of error functions provide improved performance by trading a small amount of accuracy. These functions are not IEEE 754 compliant and do not handle special cases like NaNs or INFs. They are optimized for performance-critical applications where the input range is known and controlled.
+
+Erf
+---
+
+**amd_fasterff**
+
+.. code-block:: c
+
+   float amd_fasterff(float x)
+
+Computes the error function of ``x``, defined as erf(x) = (2/√π) * ∫₀ˣ e^(-t²) dt.
+
+- **Maximum ULP:** 1.88
+- **Note:** Not IEEE 754 compliant; does not handle special cases like NaNs or INFs
+
+**amd_fasterf**
+
+.. code-block:: c
+
+   double amd_fasterf(double x)
+
+Computes the error function of ``x``, defined as erf(x) = (2/√π) * ∫₀ˣ e^(-t²) dt.
+
+- **Maximum ULP:** 1.88
+- **Note:** Not IEEE 754 compliant; does not handle special cases like NaNs or INFs
 
 
 Vector
@@ -58,73 +86,14 @@ Vector
 Erf
 ---
 
-**AVX**
-
-.. doxygenfunction:: amd_vrs4_erff
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_erf
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_erff
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_erf
-  :project: libm
-
-**AVX512**
-
-.. doxygenfunction:: amd_vrs16_erff
-  :project: libm
-
-.. doxygenfunction:: amd_vrd8_erf
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_erff
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_erf
-  :project: libm
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for erf vector variants documentation.
 
 
 Erfc
 ----
 
-**AVX**
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for erfc vector variants documentation.
 
-.. doxygenfunction:: amd_vrs4_erfcf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_erfc
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_erfcf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_erfc
-  :project: libm
-
-**AVX512**
-
-.. doxygenfunction:: amd_vrs16_erfcf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd8_erfc
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_erfcf
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_erfc
-  :project: libm
 
 
 .. End of Doc

@@ -106,8 +106,13 @@ message(DEBUG "Project with name \"${PROJECT_PREFIX}\" with version ${${PROJECT_
 if(NOT WIN32)
     set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
     set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
-    set(CMAKE_C_ARCHIVE_APPEND "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
-    set(CMAKE_CXX_ARCHIVE_APPEND "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
+
+    # Fix for large static libraries: CMake splits ar commands when the command line is too long,
+    # but the default append rule uses 'r' which replaces instead of appending.
+    # Set the append rule to use 'q' (quick append) to properly concatenate all object files.
+    set(CMAKE_C_ARCHIVE_APPEND "<CMAKE_AR> q <TARGET> <LINK_FLAGS> <OBJECTS>")
+    set(CMAKE_CXX_ARCHIVE_APPEND "<CMAKE_AR> q <TARGET> <LINK_FLAGS> <OBJECTS>")
+
     # Ensure ranlib is called after archive creation
     set(CMAKE_C_ARCHIVE_FINISH "<CMAKE_RANLIB> <TARGET>")
     set(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> <TARGET>")

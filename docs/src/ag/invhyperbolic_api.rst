@@ -35,31 +35,26 @@ Scalar
 Asinh
 -----
 
-.. doxygenfunction:: amd_asinhf
-  :project: libm
+See :ref:`scalar_api` for ``amd_asinhf`` documentation.
 
-.. doxygenfunction:: amd_asinh
-  :project: libm
+See :ref:`scalar_api` for ``amd_asinh`` documentation.
 
 
 Acosh
 -----
 
-.. doxygenfunction:: amd_acoshf
-  :project: libm
+See :ref:`scalar_api` for ``amd_acoshf`` documentation.
 
-.. doxygenfunction:: amd_acosh
-  :project: libm
+See :ref:`scalar_api` for ``amd_acosh`` documentation.
 
 
 Atanh
 -----
 
-.. doxygenfunction:: amd_atanhf
-  :project: libm
+See :ref:`scalar_api` for ``amd_atanhf`` documentation.
 
-.. doxygenfunction:: amd_atanh
-  :project: libm
+See :ref:`scalar_api` for ``amd_atanh`` documentation.
+
 
 
 .. End of Doc

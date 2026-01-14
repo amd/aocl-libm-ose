@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -78,7 +78,8 @@ static struct
     const float zero;  // 0.0
     const float half;  // 0.5
     const float erx;   // erf(1) = 0.845062911510467529297
-    const float exp_offset; //
+    const float exp_offset;
+    const float two_over_sqrt_pi;
 
     float poly_bound1[10];
     float poly_bound2[13];
@@ -94,6 +95,7 @@ static struct
     .half       = 0x1p-1f,
     .erx        = 0x1.b0ac16p-1f,
     .exp_offset = 0x1.2p-1f,
+    .two_over_sqrt_pi = 0x1.20dd76p+0f,  /* 2/sqrt(π) */
 
 .poly_bound1 =
 {
@@ -172,6 +174,7 @@ static struct
 #define HALF       erfcf_data.half
 #define ERX        erfcf_data.erx
 #define EXP_OFFSET erfcf_data.exp_offset
+#define TWO_OVER_SQRT_PI erfcf_data.two_over_sqrt_pi
 
 #define PP0 erfcf_data.poly_bound1[0]
 #define PP1 erfcf_data.poly_bound1[1]
@@ -261,7 +264,7 @@ float ALM_PROTO_OPT(erfcf)(float x) {
 
     if (ix < BOUND1) {             /* |x|<0.84375 */
         if (ix < B1_SUB1)          /* |x|<2**-26 */
-            return ONE - x;
+            return ONE - TWO_OVER_SQRT_PI * x;
         z = x * x;
         r = POLY_EVAL_5( z, PP0, PP1, PP2, PP3, PP4 );
         s = POLY_EVAL_6(z, ONE, QQ1, QQ2, QQ3, QQ4, QQ5);

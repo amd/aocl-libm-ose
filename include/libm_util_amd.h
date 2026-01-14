@@ -298,4 +298,9 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
     (rem_ele == 2 ? _mm256_set_epi64x(0, 0, -1, -1) : \
     _mm256_set_epi64x(0, -1, -1, -1)))
 
+#define GET_MASK_FLOAT_128_BIT(rem_ele) \
+    (rem_ele == 1 ? _mm_set_epi32(0, 0, 0, -1) : \
+    (rem_ele == 2 ? _mm_set_epi32(0, 0, -1, -1) : \
+    _mm_set_epi32(0, -1, -1, -1)))
+
 #endif /* LIBM_UTIL_AMD_H_INCLUDED */

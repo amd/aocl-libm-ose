@@ -35,11 +35,10 @@ Scalar
 Hypot
 -----
 
-.. doxygenfunction:: amd_hypotf
-  :project: libm
+See :ref:`scalar_api` for ``amd_hypotf`` documentation.
 
-.. doxygenfunction:: amd_hypot
-  :project: libm
+See :ref:`scalar_api` for ``amd_hypot`` documentation.
+
 
 
 .. End of Doc

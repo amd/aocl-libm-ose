@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -34,28 +34,41 @@
  * Computes the complementary error function erfcf(x) = 1 - erff(x) for a given input x.
  *
  * SPEC:
- * erfcf(+inf) = 0
- * erfcf(-inf) = 2
- * erfcf(NaN) = NaN
+ *    erfcf(+inf) = 0
+ *    erfcf(-inf) = 2
+ *    erfcf(NaN) = NaN
  *
- * Implementation Notes:
+ * IMPLEMENTATION NOTES
+ * ====================
+ *
  * The function uses polynomial approximations for different ranges of x.
- * 1. For |x| < 0.84375,
- *     erfcf(x) = 1 - (2/sqrt(pi)) * x * Poly
- *     where Poly is a direct polynomial approximation of erfcf
+ * When all vector elements fall within the same region, the fast vector path
+ * is used. When elements span different main regions, scalar fallback is used.
  *
- * 2. For 0.84375 <= |x| < 1.25,
- *     erfcf(x) = (1 - erx) - Poly1(s)/Poly2(s),
- *     where s = |x| - 1,
- *     erx = erf(1) = 0.845062911510467529297,
- *     Poly1 and Poly2 are rational approximations for erfcf
+ * Region 1: |x| < 0.84375
+ *    erfcf(x) = 1 - (2/sqrt(pi)) * x * Poly
+ *    where Poly is a direct polynomial approximation
  *
- * 3. For 1.25 <= |x| < 28,
- *     erfcf(x) = exp(-x^2) * Poly1(s) / Poly2(s),
- *     where computation depends on sub-ranges
+ * Region 2: 0.84375 <= |x| < 1.25
+ *    erfcf(x) = (1 - erx) - Poly1(s)/Poly2(s)
+ *    where s = |x| - 1, erx = erf(1) = 0.845062911510467529297
  *
- * 4. For |x| >= 28,
- *     Results in underflow
+ * Region 3: 1.25 <= |x| < 28
+ *    Split into two sub-regions with different polynomials:
+ *    - R3a (1.25 <= |x| < 2.857): Uses RA/SA polynomial coefficients
+ *    - R3b (2.857 <= |x| < 28): Uses RB/SB polynomial coefficients
+ *    erfcf(x) = exp(-x^2) * R(s) / S(s) / x, where s = 1/x^2
+ *
+ *    When vector elements span R3a and R3b sub-regions, both polynomial
+ *    paths are computed and blended using vector blend intrinsics,
+ *    avoiding expensive scalar fallback.
+ *
+ * Region 4: |x| >= 28
+ *    Results in underflow (returns tiny*tiny for positive x, 2 for negative x)
+ *
+ * Special Values:
+ *    When all elements are Inf/NaN, fast vector path is used.
+ *    When mixed with normal values, scalar fallback ensures correctness.
  *
  */
 
@@ -76,7 +89,7 @@ static const struct {
     v_u32x4_t   b1_sub1, b1_sub2, b3_sub1, b3_sub2;
     v_u32x4_t   sign_mask, split_mask, sign_bit_mask;
     v_u32x4_t   inf_nan;
-    v_f32x4_t   tiny, one, two, zero, half, erx;
+    v_f32x4_t   tiny, one, two, zero, half, erx, two_over_sqrt_pi;
     v_f32x4_t   poly_bound1[10];
     v_f32x4_t   poly_bound2[13];
     v_f32x4_t   poly_bound3[16];
@@ -99,6 +112,7 @@ static const struct {
     .zero        = _MM_SET1_PS4(0.0f),
     .half        = _MM_SET1_PS4(0.5f),
     .erx         = _MM_SET1_PS4(8.4506291151e-01f),
+    .two_over_sqrt_pi = _MM_SET1_PS4(0x1.20dd76p+0f),  /* 2.0f / sqrtf(M_PI) */
 
     .poly_bound1 = {
         _MM_SET1_PS4(1.2837916613e-01f),   /* pp0 */
@@ -184,7 +198,7 @@ static const struct {
 #define ZERO      v_erfcf_data.zero
 #define HALF      v_erfcf_data.half
 #define ERX       v_erfcf_data.erx
-
+#define TWO_OVER_SQRT_PI v_erfcf_data.two_over_sqrt_pi
 /* Polynomial coefficients for |x| < 0.84375 */
 #define PP0 v_erfcf_data.poly_bound1[0]
 #define PP1 v_erfcf_data.poly_bound1[1]
@@ -256,6 +270,10 @@ static inline int test_condition_for_all_v4(v_u32x4_t cond) {
     return 1;
 }
 
+static inline int test_condition_for_none_v4(v_u32x4_t cond) {
+    return (cond[0] | cond[1] | cond[2] | cond[3]) == 0;
+}
+
 v_f32x4_t
 ALM_PROTO_OPT(vrs4_erfcf)(v_f32x4_t _x) {
     v_f32x4_t result;
@@ -265,14 +283,25 @@ ALM_PROTO_OPT(vrs4_erfcf)(v_f32x4_t _x) {
     v_u32x4_t ix = hx & SIGN_MASK;
     v_f32x4_t x_abs = as_v4_f32_u32(ix);
 
-    // Check for NaN or Inf
+        // Check for NaN or Inf
     v_u32x4_t inf_nan_cond = ix >= INF_NAN;
-    if(unlikely(test_condition_for_all_v4(inf_nan_cond))) {
-        v_u32x4_t inf_cond = ix == INF_NAN;
-        v_u32x4_t sign_bit = hx >> 31;
-        v_f32x4_t inf_result = as_v4_f32_u32((sign_bit << 1) + as_v4_u32_f32(ONE));
-        v_f32x4_t nan_result = _x + _x; // NaN propagation
-        result = _mm_blendv_ps(nan_result, inf_result, as_v4_f32_u32(inf_cond));
+    int any_special = (inf_nan_cond[0] | inf_nan_cond[1] | inf_nan_cond[2] | inf_nan_cond[3]) != 0;
+    
+    if(unlikely(any_special)) {
+        if(test_condition_for_all_v4(inf_nan_cond)) {
+            /* All elements are Inf or NaN - fast vector path */
+            v_u32x4_t inf_cond = ix == INF_NAN;
+            v_u32x4_t sign_bit = hx & SIGN_BIT_MASK;  /* 0x80000000 if negative */
+            /* erfc(+inf) = 0, erfc(-inf) = 2 */
+            v_f32x4_t inf_result = _mm_blendv_ps(ZERO, TWO, as_v4_f32_u32(sign_bit));
+            v_f32x4_t nan_result = _x + _x; // NaN propagation
+            result = _mm_blendv_ps(nan_result, inf_result, as_v4_f32_u32(inf_cond));
+            return result;
+        }
+        /* Mixed special + normal values: fall back to scalar */
+        for(uint32_t i = 0; i < 4; i++) {
+            result[i] = SCALAR_ERFCF(_x[i]);
+        }
         return result;
     }
 
@@ -283,7 +312,7 @@ ALM_PROTO_OPT(vrs4_erfcf)(v_f32x4_t _x) {
         v_u32x4_t sub2_cond = hx < B1_SUB2; // Note: using hx (not ix) to check sign
         
         // For very small values: return 1 - x
-        v_f32x4_t small_result = ONE - _x;
+        v_f32x4_t small_result = ONE - TWO_OVER_SQRT_PI * _x;
         
         v_f32x4_t z = _x * _x;
         v_f32x4_t r = POLY_EVAL_4(z, PP0, PP1, PP2, PP3, PP4);
@@ -329,12 +358,15 @@ ALM_PROTO_OPT(vrs4_erfcf)(v_f32x4_t _x) {
         
         // Check sub-range for different polynomial coefficients
         v_u32x4_t sub_cond = ix < B3_SUB1;
-        if(test_condition_for_all_v4(sub_cond)) {
-            // |x| < 2.857143
+        int all_in_sub1 = test_condition_for_all_v4(sub_cond);
+        int none_in_sub1 = test_condition_for_none_v4(sub_cond);
+        
+        if(all_in_sub1) {
+            // All |x| < 2.857143
             R = POLY_EVAL_7(s, RA0, RA1, RA2, RA3, RA4, RA5, RA6, RA7);
             S = POLY_EVAL_8(s, ONE, SA1, SA2, SA3, SA4, SA5, SA6, SA7, SA8);
-        } else {
-            // |x| >= 2.857143
+        } else if(none_in_sub1) {
+            // All |x| >= 2.857143
             v_u32x4_t neg_cond = hx & SIGN_BIT_MASK;
             v_u32x4_t large_cond = neg_cond & (ix >= B3_SUB2);
             if(test_condition_for_all_v4(large_cond)) {
@@ -343,6 +375,16 @@ ALM_PROTO_OPT(vrs4_erfcf)(v_f32x4_t _x) {
             
             R = POLY_EVAL_6(s, RB0, RB1, RB2, RB3, RB4, RB5, RB6);
             S = POLY_EVAL_7(s, ONE, SB1, SB2, SB3, SB4, SB5, SB6, SB7);
+        } else {
+            // Mixed R3a + R3b: compute both and blend
+            v_f32x4_t R_a = POLY_EVAL_7(s, RA0, RA1, RA2, RA3, RA4, RA5, RA6, RA7);
+            v_f32x4_t S_a = POLY_EVAL_8(s, ONE, SA1, SA2, SA3, SA4, SA5, SA6, SA7, SA8);
+            
+            v_f32x4_t R_b = POLY_EVAL_6(s, RB0, RB1, RB2, RB3, RB4, RB5, RB6);
+            v_f32x4_t S_b = POLY_EVAL_7(s, ONE, SB1, SB2, SB3, SB4, SB5, SB6, SB7);
+            
+            R = _mm_blendv_ps(R_b, R_a, as_v4_f32_u32(sub_cond));
+            S = _mm_blendv_ps(S_b, S_a, as_v4_f32_u32(sub_cond));
         }
         
         // High-precision exponential calculation matching scalar implementation

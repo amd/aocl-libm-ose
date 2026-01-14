@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2025, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2026, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -95,6 +95,7 @@ extern double    ALM_PROTO_INTERNAL(trunc)                (double x);
 extern double    ALM_PROTO_INTERNAL(erf)                  (double x);
 extern double    ALM_PROTO_INTERNAL(erfc)                 (double x);
 extern void      ALM_PROTO_INTERNAL(sincos)               (double x, double *s, double *c);
+extern double    ALM_PROTO_INTERNAL(cdfnorm)              (double x);
 /*
  * Single Precision functions
  */
@@ -206,6 +207,7 @@ extern __m128    ALM_PROTO_INTERNAL(vrs4_sqrtf)           (__m128 x);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_linearfracf)     (__m128 x, __m128 y, float sca, float sha, float scb, float shb);
 extern void      ALM_PROTO_INTERNAL(vrs4_sincosf)         (__m128 x, __m128 *sin, __m128 *cos);
 extern __m128    ALM_PROTO_INTERNAL(vrs4_erfcf)           (__m128 x);
+extern __m128    ALM_PROTO_INTERNAL(vrs4_roundf)          (__m128 x);
 /*
  * Vector Single precision, 8 elements
  */
@@ -234,6 +236,7 @@ extern __m256    ALM_PROTO_INTERNAL(vrs8_sqrtf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_linearfracf)     (__m256 x, __m256 y, float sca, float sha, float scb, float shb);
 extern void      ALM_PROTO_INTERNAL(vrs8_sincosf)         (__m256 x, __m256 *sin, __m256 *cos);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_erfcf)           (__m256 x);
+extern __m256    ALM_PROTO_INTERNAL(vrs8_roundf)          (__m256 x);
 /*
  * Vector Single precision, 16 elements
  */
@@ -261,6 +264,7 @@ extern __m512    ALM_PROTO_INTERNAL(vrs16_sqrtf)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_linearfracf)     (__m512 x, __m512 y, float sca, float sha, float scb, float shb);
 extern void      ALM_PROTO_INTERNAL(vrs16_sincosf)         (__m512 x, __m512 *sin, __m512 *cos);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_erfcf)           (__m512 x);
+extern __m512    ALM_PROTO_INTERNAL(vrs16_roundf)          (__m512 x);
 /*
  * Vector Double precision
  */
@@ -286,6 +290,8 @@ extern __m128d   ALM_PROTO_INTERNAL(vrd2_fabs)     (__m128d);
 extern void      ALM_PROTO_INTERNAL(vrd2_sincos)   (__m128d x, __m128d* ys, __m128d* yc);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_linearfrac) (__m128d x, __m128d y, double sca, double sha, double scb, double shb);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_erfc)     (__m128d x);
+extern __m128d   ALM_PROTO_INTERNAL(vrd2_round)    (__m128d x);
+extern __m128d   ALM_PROTO_INTERNAL(vrd2_cdfnorm)     (__m128d x);
 /*
  * Vector double precision, 4 element
  */
@@ -296,7 +302,6 @@ extern __m256d   ALM_PROTO_INTERNAL(vrd4_exp10)    (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_exp2)     (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_exp)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_expm1)    (__m256d x);
-extern __m256d   ALM_PROTO_INTERNAL(vrd4_log10)    (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_log1p)    (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_log2)     (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_log)      (__m256d x);
@@ -311,6 +316,8 @@ extern __m256d   ALM_PROTO_INTERNAL(vrd4_fabs)     (__m256d x);
 extern void      ALM_PROTO_INTERNAL(vrd4_sincos)   (__m256d x, __m256d *s, __m256d *c);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_linearfrac)  (__m256d x, __m256d y, double sca, double sha, double scb, double shb);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_erfc)      (__m256d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_round)     (__m256d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_cdfnorm)   (__m256d x);
 /*
  * Vector double precision, 8 elements
  */
@@ -336,89 +343,96 @@ extern __m512d   ALM_PROTO_INTERNAL(vrd8_sqrt)     (__m512d x);
 extern void      ALM_PROTO_INTERNAL(vrd8_sincos)   (__m512d x, __m512d *s, __m512d *c);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_linearfrac)  (__m512d x, __m512d y, double sca, double sha, double scb, double shb);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_erfc)     (__m512d x);
+extern __m512d   ALM_PROTO_INTERNAL(vrd8_round)    (__m512d x);
+extern __m512d   ALM_PROTO_INTERNAL(vrd8_cdfnorm)  (__m512d x);
 
 /*
 * Vector Array versions
 */
-extern void      ALM_PROTO_INTERNAL(vrda_cbrt)     (int len, double *src, double* dst );
-extern void      ALM_PROTO_INTERNAL(vrda_cos)      (int n, double *x, double *y);
-extern void      ALM_PROTO_INTERNAL(vrda_exp10)    (int n, double* x, double* y);
-extern void      ALM_PROTO_INTERNAL(vrda_exp2)     (int n, double* x, double* y);
-extern void      ALM_PROTO_INTERNAL(vrda_exp)      (int n, double* x, double* y);
-extern void      ALM_PROTO_INTERNAL(vrda_expm1)    (int n, double* x, double* y);
-extern void      ALM_PROTO_INTERNAL(vrda_log10)    (int n, double *src, double* dst);
-extern void      ALM_PROTO_INTERNAL(vrda_log1p)    (int n, double *src, double* dst);
-extern void      ALM_PROTO_INTERNAL(vrda_log2)     (int n, double *src, double* dst);
-extern void      ALM_PROTO_INTERNAL(vrda_log)      (int n, double *src, double* dst);
-extern void      ALM_PROTO_INTERNAL(vrda_pow)      (int n, double *src1, double *src2, double* dst);
-extern void      ALM_PROTO_INTERNAL(vrda_sincos)   (int n, double *, double *, double *);
-extern void      ALM_PROTO_INTERNAL(vrda_sin)      (int n, double *x, double *y);
-extern void      ALM_PROTO_INTERNAL(vrda_add)      (int len, double *lhs, double *rhs, double *dst);
-extern void      ALM_PROTO_INTERNAL(vrda_sub)      (int len, double *lhs, double *rhs, double *dst);
-extern void      ALM_PROTO_INTERNAL(vrda_mul)      (int len, double *lhs, double *rhs, double *dst);
-extern void      ALM_PROTO_INTERNAL(vrda_div)      (int len, double *lhs, double *rhs, double *dst);
-extern void      ALM_PROTO_INTERNAL(vrda_fmax)     (int len, double *lhs, double *rhs, double *dst);
-extern void      ALM_PROTO_INTERNAL(vrda_fmin)     (int len, double *lhs, double *rhs, double *dst);
-extern void      ALM_PROTO_INTERNAL(vrda_fabs)     (int n, double* x, double* y);
-extern void      ALM_PROTO_INTERNAL(vrda_sqrt)      (int n, double *x, double *y);
-extern void      ALM_PROTO_INTERNAL(vrsa_cbrtf)    (int len, float *src, float* dst);
-extern void      ALM_PROTO_INTERNAL(vrsa_cosf)     (int n, float *x, float *y);
-extern void      ALM_PROTO_INTERNAL(vrsa_exp10f)   (int n, float* x, float* y);
-extern void      ALM_PROTO_INTERNAL(vrsa_exp2f)    (int n, float* x, float* y);
-extern void      ALM_PROTO_INTERNAL(vrsa_expf)     (int n, float* x, float* y);
-extern void      ALM_PROTO_INTERNAL(vrsa_expm1f)   (int n, float* x, float* y);
-extern void      ALM_PROTO_INTERNAL(vrsa_log10f)   (int n, float *src, float* dst);
-extern void      ALM_PROTO_INTERNAL(vrsa_log1pf)   (int n, float *src, float* dst);
-extern void      ALM_PROTO_INTERNAL(vrsa_log2f)    (int n, float *src, float* dst);
-extern void      ALM_PROTO_INTERNAL(vrsa_logf)     (int n, float *src, float* dst);
-extern void      ALM_PROTO_INTERNAL(vrsa_powf)     (int n, float *s1, float *s2, float* d);
-extern void      ALM_PROTO_INTERNAL(vrsa_powxf)    (int n, float *s1, float s2, float* d);
-extern void      ALM_PROTO_INTERNAL(vrsa_sincosf)  (int n, float *x, float *ys, float *yc);
-extern void      ALM_PROTO_INTERNAL(vrsa_sinf)     (int n, float *x, float *y);
-extern void      ALM_PROTO_INTERNAL(vrsa_addf)     (int len, float *lhs, float *rhs, float *dst);
-extern void      ALM_PROTO_INTERNAL(vrsa_subf)     (int len, float *lhs, float *rhs, float *dst);
-extern void      ALM_PROTO_INTERNAL(vrsa_mulf)     (int len, float *lhs, float *rhs, float *dst);
-extern void      ALM_PROTO_INTERNAL(vrsa_divf)     (int len, float *lhs, float *rhs, float *dst);
-extern void      ALM_PROTO_INTERNAL(vrsa_fmaxf)    (int len, float *lhs, float *rhs, float *dst);
-extern void      ALM_PROTO_INTERNAL(vrsa_fminf)    (int len, float *lhs, float *rhs, float *dst);
-extern void      ALM_PROTO_INTERNAL(vrsa_fabsf)    (int n, float* x, float* y);
-extern void      ALM_PROTO_INTERNAL(vrsa_sqrtf)    (int n, float* x, float* y);
-extern void      ALM_PROTO_INTERNAL(vrsa_addfi)    (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
-extern void      ALM_PROTO_INTERNAL(vrsa_subfi)    (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
-extern void      ALM_PROTO_INTERNAL(vrsa_mulfi)    (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
-extern void      ALM_PROTO_INTERNAL(vrsa_divfi)    (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
-extern void      ALM_PROTO_INTERNAL(vrsa_fmaxfi)   (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
-extern void      ALM_PROTO_INTERNAL(vrsa_fminfi)   (int len, float *lhs, int inc_a, float *rhs, int inc_b, float *dst, int inc_res);
-extern void      ALM_PROTO_INTERNAL(vrsa_acosf)    (int n, float *x, float *y);
-extern void      ALM_PROTO_INTERNAL(vrsa_asinf)    (int n, float *x, float *y);
-extern void      ALM_PROTO_INTERNAL(vrsa_atanf)    (int n, float *x, float *y);
-extern void      ALM_PROTO_INTERNAL(vrsa_coshf)    (int n, float *x, float *y);
-extern void      ALM_PROTO_INTERNAL(vrsa_erff)     (int n, float *x, float *y);
-extern void      ALM_PROTO_INTERNAL(vrsa_tanhf)    (int n, float *x, float *y);
-extern void      ALM_PROTO_INTERNAL(vrsa_tanf)    (int n, float *x, float *y);
-extern void      ALM_PROTO_INTERNAL(vrda_atan)     (int n, double *x, double *y);
-extern void      ALM_PROTO_INTERNAL(vrda_erf)      (int n, double *x, double *y);
-extern void      ALM_PROTO_INTERNAL(vrda_tan)      (int n, double *x, double *y);
-extern void      ALM_PROTO_INTERNAL(vrda_cosh)     (int n, double *x, double *y);
-extern void      ALM_PROTO_INTERNAL(vrda_addi)     (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
-extern void      ALM_PROTO_INTERNAL(vrda_subi)     (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
-extern void      ALM_PROTO_INTERNAL(vrda_muli)     (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
-extern void      ALM_PROTO_INTERNAL(vrda_divi)     (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
-extern void      ALM_PROTO_INTERNAL(vrda_fmaxi)    (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
-extern void      ALM_PROTO_INTERNAL(vrda_fmini)    (int len, double *lhs, int inc_a, double *rhs, int inc_b, double *dst, int inc_res);
-extern void      ALM_PROTO_INTERNAL(vrda_linearfrac)(int len, double *x, double *y, double scx, double shx, double scy, double shy, double *result);
-extern void      ALM_PROTO_INTERNAL(vrsa_linearfracf)(int len, float *x, float *y, float scx, float shx, float scy, float shy, float *result);
-extern void      ALM_PROTO_INTERNAL(vrda_powx)     (int n, double *s1, double s2, double* d);
-extern void      ALM_PROTO_INTERNAL(vrda_erfc)     (int n, double *x, double *y);
-extern void      ALM_PROTO_INTERNAL(vrsa_erfcf)    (int n, float *x, float *y);
+extern void      ALM_PROTO_INTERNAL(vrda_cbrt)     (int len, const double *src, double* dst );
+extern void      ALM_PROTO_INTERNAL(vrda_cos)      (int n, const double *x, double *y);
+extern void      ALM_PROTO_INTERNAL(vrda_exp10)    (int n, const double *x, double* y);
+extern void      ALM_PROTO_INTERNAL(vrda_exp2)     (int n, const double *x, double* y);
+extern void      ALM_PROTO_INTERNAL(vrda_exp)      (int n, const double *x, double* y);
+extern void      ALM_PROTO_INTERNAL(vrda_expm1)    (int n, const double *x, double* y);
+extern void      ALM_PROTO_INTERNAL(vrda_log10)    (int n, const double *src, double* dst);
+extern void      ALM_PROTO_INTERNAL(vrda_log1p)    (int n, const double *src, double* dst);
+extern void      ALM_PROTO_INTERNAL(vrda_log2)     (int n, const double *src, double* dst);
+extern void      ALM_PROTO_INTERNAL(vrda_log)      (int n, const double *src, double* dst);
+extern void      ALM_PROTO_INTERNAL(vrda_pow)      (int n, const double *src1, const double *src2, double* dst);
+extern void      ALM_PROTO_INTERNAL(vrda_sincos)   (int n, const double *, double *, double *);
+extern void      ALM_PROTO_INTERNAL(vrda_sin)      (int n, const double *x, double *y);
+extern void      ALM_PROTO_INTERNAL(vrda_add)      (int len, const double *lhs, const double *rhs, double *dst);
+extern void      ALM_PROTO_INTERNAL(vrda_sub)      (int len, const double *lhs, const double *rhs, double *dst);
+extern void      ALM_PROTO_INTERNAL(vrda_mul)      (int len, const double *lhs, const double *rhs, double *dst);
+extern void      ALM_PROTO_INTERNAL(vrda_div)      (int len, const double *lhs, const double *rhs, double *dst);
+extern void      ALM_PROTO_INTERNAL(vrda_fmax)     (int len, const double *lhs, const double *rhs, double *dst);
+extern void      ALM_PROTO_INTERNAL(vrda_fmin)     (int len, const double *lhs, const double *rhs, double *dst);
+extern void      ALM_PROTO_INTERNAL(vrda_fabs)     (int n, const double *x, double* y);
+extern void      ALM_PROTO_INTERNAL(vrda_sqrt)      (int n, const double *x, double *y);
+extern void      ALM_PROTO_INTERNAL(vrsa_cbrtf)    (int len, const float *src, float *dst);
+extern void      ALM_PROTO_INTERNAL(vrsa_cosf)     (int n, const float *x, float *y);
+extern void      ALM_PROTO_INTERNAL(vrsa_exp10f)   (int n, const float *x, float *y);
+extern void      ALM_PROTO_INTERNAL(vrsa_exp2f)    (int n, const float *x, float *y);
+extern void      ALM_PROTO_INTERNAL(vrsa_expf)     (int n, const float *x, float *y);
+extern void      ALM_PROTO_INTERNAL(vrsa_expm1f)   (int n, const float *x, float *y);
+extern void      ALM_PROTO_INTERNAL(vrsa_log10f)   (int n, const float *src, float *dst);
+extern void      ALM_PROTO_INTERNAL(vrsa_log1pf)   (int n, const float *src, float *dst);
+extern void      ALM_PROTO_INTERNAL(vrsa_log2f)    (int n, const float *src, float *dst);
+extern void      ALM_PROTO_INTERNAL(vrsa_logf)     (int n, const float *src, float *dst);
+extern void      ALM_PROTO_INTERNAL(vrsa_powf)     (int n, const float *s1, const float *s2, float *d);
+extern void      ALM_PROTO_INTERNAL(vrsa_powxf)    (int n, const float *s1, float s2, float *d);
+extern void      ALM_PROTO_INTERNAL(vrsa_sincosf)  (int n, const float *x, float *ys, float *yc);
+extern void      ALM_PROTO_INTERNAL(vrsa_sinf)     (int n, const float *x, float *y);
+extern void      ALM_PROTO_INTERNAL(vrsa_addf)     (int len, const float *lhs, const float *rhs, float *dst);
+extern void      ALM_PROTO_INTERNAL(vrsa_subf)     (int len, const float *lhs, const float *rhs, float *dst);
+extern void      ALM_PROTO_INTERNAL(vrsa_mulf)     (int len, const float *lhs, const float *rhs, float *dst);
+extern void      ALM_PROTO_INTERNAL(vrsa_divf)     (int len, const float *lhs, const float *rhs, float *dst);
+extern void      ALM_PROTO_INTERNAL(vrsa_fmaxf)    (int len, const float *lhs, const float *rhs, float *dst);
+extern void      ALM_PROTO_INTERNAL(vrsa_fminf)    (int len, const float *lhs, const float *rhs, float *dst);
+extern void      ALM_PROTO_INTERNAL(vrsa_fabsf)    (int n, const float *x, float *y);
+extern void      ALM_PROTO_INTERNAL(vrsa_sqrtf)    (int n, const float *x, float *y);
+extern void      ALM_PROTO_INTERNAL(vrsa_addfi)    (int len, const float *lhs, int inc_a, const float *rhs, int inc_b, float *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrsa_subfi)    (int len, const float *lhs, int inc_a, const float *rhs, int inc_b, float *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrsa_mulfi)    (int len, const float *lhs, int inc_a, const float *rhs, int inc_b, float *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrsa_divfi)    (int len, const float *lhs, int inc_a, const float *rhs, int inc_b, float *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrsa_fmaxfi)   (int len, const float *lhs, int inc_a, const float *rhs, int inc_b, float *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrsa_fminfi)   (int len, const float *lhs, int inc_a, const float *rhs, int inc_b, float *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrsa_acosf)    (int n, const float *x, float *y);
+extern void      ALM_PROTO_INTERNAL(vrsa_asinf)    (int n, const float *x, float *y);
+extern void      ALM_PROTO_INTERNAL(vrsa_atanf)    (int n, const float *x, float *y);
+extern void      ALM_PROTO_INTERNAL(vrsa_coshf)    (int n, const float *x, float *y);
+extern void      ALM_PROTO_INTERNAL(vrsa_erff)     (int n, const float *x, float *y);
+extern void      ALM_PROTO_INTERNAL(vrsa_tanhf)    (int n, const float *x, float *y);
+extern void      ALM_PROTO_INTERNAL(vrsa_tanf)    (int n, const float *x, float *y);
+extern void      ALM_PROTO_INTERNAL(vrda_atan)     (int n, const double *x, double *y);
+extern void      ALM_PROTO_INTERNAL(vrda_erf)      (int n, const double *x, double *y);
+extern void      ALM_PROTO_INTERNAL(vrda_tan)      (int n, const double *x, double *y);
+extern void      ALM_PROTO_INTERNAL(vrda_cosh)     (int n, const double *x, double *y);
+extern void      ALM_PROTO_INTERNAL(vrda_addi)     (int len, const double *lhs, int inc_a, const double *rhs, int inc_b, double *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrda_subi)     (int len, const double *lhs, int inc_a, const double *rhs, int inc_b, double *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrda_muli)     (int len, const double *lhs, int inc_a, const double *rhs, int inc_b, double *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrda_divi)     (int len, const double *lhs, int inc_a, const double *rhs, int inc_b, double *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrda_fmaxi)    (int len, const double *lhs, int inc_a, const double *rhs, int inc_b, double *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrda_fmini)    (int len, const double *lhs, int inc_a, const double *rhs, int inc_b, double *dst, int inc_res);
+extern void      ALM_PROTO_INTERNAL(vrda_linearfrac)(int len, const double *x, const double *y, double scx, double shx, double scy, double shy, double *result);
+extern void      ALM_PROTO_INTERNAL(vrsa_linearfracf)(int len, const float *x, const float *y, float scx, float shx, float scy, float shy, float *result);
+extern void      ALM_PROTO_INTERNAL(vrda_powx)     (int n, const double *s1, double s2, double* d);
+extern void      ALM_PROTO_INTERNAL(vrda_erfc)     (int n, const double *x, double *y);
+extern void      ALM_PROTO_INTERNAL(vrsa_erfcf)    (int n, const float *x, float *y);
+extern void      ALM_PROTO_INTERNAL(vrda_cdfnorm)  (int n, const double *x, double *y);
 
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_acos)     (__m128d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_acos)     (__m256d x);
-extern void      ALM_PROTO_INTERNAL(vrda_acos)     (int n, double *x, double *y);
+extern void      ALM_PROTO_INTERNAL(vrda_acos)     (int n, const double *x, double *y);
 
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_asin)     (__m128d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_asin)     (__m256d x);
-extern void      ALM_PROTO_INTERNAL(vrda_asin)     (int n, double *x, double *y);
+extern void      ALM_PROTO_INTERNAL(vrda_asin)     (int n, const double *x, double *y);
+
+extern void      ALM_PROTO_INTERNAL(vrda_round)     (int n, const double *x, double *y);
+extern void      ALM_PROTO_INTERNAL(vrsa_roundf)    (int n, const float *x, float *y);
+
 #ifdef __cplusplus
 }
 #endif

@@ -210,11 +210,11 @@ double ComputeUlp(FAT output, FAT_L _expected) {
 
 }  // namespace ALM
 
-double getUlp(float aop, double exptd) {
+double getUlpr(float aop, double exptd) {
   return ALM::ComputeUlp(aop, exptd);
 }
 
-double getUlp(double aop, long double exptd) {
+double getUlpr(double aop, long double exptd) {
   return ALM::ComputeUlp(aop, exptd);
 }
 
@@ -223,7 +223,7 @@ double getUlp(double aop, long double exptd) {
  * The magnitudes of actual and expected outputs will determine the resultant ULP.
  */
 
-double getUlp(float _Complex aop, double _Complex exptd) {
+double getUlpc(float _Complex aop, double _Complex exptd) {
   #if (defined _WIN32 || defined _WIN64 )
     float f_aop = abs(complex<float> (__real__ aop, __imag__ aop));
     double d_exptd = abs(complex<double> (__real__ exptd, __imag__ exptd));
@@ -234,7 +234,7 @@ double getUlp(float _Complex aop, double _Complex exptd) {
   return ALM::ComputeUlp(f_aop, d_exptd);
 }
 
-double getUlp(double _Complex aop, long double  _Complex exptd) {
+double getUlpc(double _Complex aop, long double _Complex exptd) {
   #if (defined _WIN32 || defined _WIN64 )
     double d_aop = abs(complex<double>(__real__ aop, __imag__ aop));
     long double ld_exptd = abs(complex<long double>(__real__ exptd, __imag__ exptd));
@@ -245,12 +245,43 @@ double getUlp(double _Complex aop, long double  _Complex exptd) {
   return ALM::ComputeUlp(d_aop, ld_exptd);
 }
 
+// Helper template to check and report infinity/NaN in ULP computation with input values
+template<typename T, typename T_L>
+inline double CheckAndReportUlp(T aop, T_L exptd, double ulp_result)
+{
+  if (std::isinf(ulp_result)) {
+    std::cout << "ULP computation resulted in Infinity - aop: " << aop << ", exptd: " << exptd << ", ulp: " << ulp_result << std::endl;
+  } else if (std::isnan(ulp_result)) {
+    std::cout << "ULP computation resulted in NaN - aop: " << aop << ", exptd: " << exptd << ", ulp: " << ulp_result << std::endl;
+  }
+  return ulp_result;
+}
+
+double getUlp(float aop, double exptd) {
+  return CheckAndReportUlp(aop, exptd, getUlpr(aop, exptd));
+}
+
+double getUlp(double aop, long double exptd) {
+  return CheckAndReportUlp(aop, exptd, getUlpr(aop, exptd));
+}
+
+double getUlp(float _Complex aop, double _Complex exptd) {
+  return CheckAndReportUlp(aop, exptd, getUlpc(aop, exptd));
+}
+
+double getUlp(double _Complex aop, long double _Complex exptd) {
+  return CheckAndReportUlp(aop, exptd, getUlpc(aop, exptd));
+}
+
 bool update_ulp(double ulp, double &max_ulp_err, double ulp_threshold)
 {
+/* Removed early return for infinite ULP to allow tracking and logging via CheckAndReportUlp.
+ * Infinite ULP values now update max_ulp_err and are logged for debugging.
+ * The threshold comparison below will still correctly fail for infinite values.
   if (isinf(ulp)) {
     return false;
   }
-
+*/
   if ((ulp - max_ulp_err) > 0.0) {
     LIBM_TEST_DPRINTF(VERBOSE2, ,"MaxULPError: ",max_ulp_err,
                        "Ulp: ", ulp);

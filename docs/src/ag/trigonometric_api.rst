@@ -35,41 +35,117 @@ Scalar
 Sin
 ---
 
-.. doxygenfunction:: amd_sinf
-  :project: libm
+See :ref:`scalar_api` for ``amd_sinf`` documentation.
 
-.. doxygenfunction:: amd_sin
-  :project: libm
+See :ref:`scalar_api` for ``amd_sin`` documentation.
 
 
 Cos
 ---
 
-.. doxygenfunction:: amd_cosf
-  :project: libm
+See :ref:`scalar_api` for ``amd_cosf`` documentation.
 
-.. doxygenfunction:: amd_cos
-  :project: libm
+See :ref:`scalar_api` for ``amd_cos`` documentation.
 
 
 Tan
 ---
 
-.. doxygenfunction:: amd_tanf
-  :project: libm
+See :ref:`scalar_api` for ``amd_tanf`` documentation.
 
-.. doxygenfunction:: amd_tan
-  :project: libm
+See :ref:`scalar_api` for ``amd_tan`` documentation.
 
 
 Sincos
 ------
 
-.. doxygenfunction:: amd_sincosf
-  :project: libm
+See :ref:`scalar_api` for ``amd_sincosf`` documentation.
 
-.. doxygenfunction:: amd_sincos
-  :project: libm
+See :ref:`scalar_api` for ``amd_sincos`` documentation.
+
+
+
+Fast Variants
+^^^^^^^^^^^^^
+
+Fast variants of trigonometric functions provide improved performance by trading a small amount of accuracy. These functions do not handle special cases like NaNs or INFs and are optimized for performance-critical applications where the input range is known and controlled.
+
+Sin
+---
+
+**amd_fastsinf**
+
+.. code-block:: c
+
+   float amd_fastsinf(float x)
+
+Computes the sine of ``x`` (measured in radians).
+
+- **Maximum ULP:** 2.22
+- **Note:** Does not handle special cases like NaNs or INFs
+
+**amd_fastsin**
+
+.. code-block:: c
+
+   double amd_fastsin(double x)
+
+Computes the sine of ``x`` (measured in radians).
+
+- **Maximum ULP:** 2.32
+- **Note:** Does not handle special cases like NaNs or INFs
+
+
+Cos
+---
+
+**amd_fastcosf**
+
+.. code-block:: c
+
+   float amd_fastcosf(float x)
+
+Computes the cosine of ``x`` (measured in radians).
+
+- **Maximum ULP:** 2.20
+- **Note:** Does not handle special cases like NaNs or INFs
+
+**amd_fastcos**
+
+.. code-block:: c
+
+   double amd_fastcos(double x)
+
+Computes the cosine of ``x`` (measured in radians).
+
+- **Maximum ULP:** 2.34
+- **Note:** Does not handle special cases like NaNs or INFs
+
+
+Tan
+---
+
+**amd_fasttanf**
+
+.. code-block:: c
+
+   float amd_fasttanf(float x)
+
+Computes the tangent of ``x`` (measured in radians).
+
+- **Maximum ULP:** 2.27
+- **Note:** Does not handle special cases like NaNs or INFs
+
+**amd_fasttan**
+
+.. code-block:: c
+
+   double amd_fasttan(double x)
+
+Computes the tangent of ``x`` (measured in radians).
+
+- **Maximum ULP:** 2.67
+- **Note:** Does not handle special cases like NaNs or INFs
 
 
 Vector
@@ -78,145 +154,26 @@ Vector
 Sin
 ---
 
-**AVX**
-
-.. doxygenfunction:: amd_vrs4_sinf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_sin
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_sinf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_sin
-  :project: libm
-
-**AVX512**
-
-.. doxygenfunction:: amd_vrs16_sinf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd8_sin
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_sinf
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_sin
-  :project: libm
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for sin vector variants documentation.
 
 
 Cos
 ---
 
-**AVX**
-
-.. doxygenfunction:: amd_vrs4_cosf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_cos
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_cosf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_cos
-  :project: libm
-
-**AVX512**
-
-.. doxygenfunction:: amd_vrs16_cosf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd8_cos
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_cosf
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_cos
-  :project: libm
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for cos vector variants documentation.
 
 
 Tan
 ---
 
-**AVX**
-
-.. doxygenfunction:: amd_vrs4_tanf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_tan
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_tanf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_tan
-  :project: libm
-
-**AVX512**
-
-.. doxygenfunction:: amd_vrs16_tanf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd8_tan
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_tanf
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_tan
-  :project: libm
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for tan vector variants documentation.
 
 
 Sincos
 ------
 
-**AVX**
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for sincos vector variants documentation.
 
-.. doxygenfunction:: amd_vrs4_sincosf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_sincos
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_sincosf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_sincos
-  :project: libm
-
-**AVX512**
-
-.. doxygenfunction:: amd_vrs16_sincosf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd8_sincos
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_sincosf
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_sincos
-  :project: libm
 
 
 .. End of Doc

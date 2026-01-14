@@ -118,6 +118,19 @@ typedef struct {
   InputRange range[MAX_INPUT_RANGES];
 } InputParams;
 
+typedef struct {
+  uint32_t in;
+  uint32_t sin;
+  uint32_t cos;
+  uint32_t exptdexpt;
+}libm_spec_sincosf_data;
+
+typedef struct {
+  uint64_t in;
+  uint64_t sin;
+  uint64_t cos;
+  uint64_t exptdexpt;
+}libm_spec_sincos_data;
 
 /*
  * The structure is passed to the AccuTestFixtureFloat
@@ -144,6 +157,8 @@ typedef struct {
   libm_test_special_data_f64 *data64;
   libm_test_complex_data_f32 *cdata32;
   libm_test_complex_data_f64 *cdata64;
+  libm_spec_sincosf_data *datasc32;
+  libm_spec_sincos_data  *datasc64;
   uint32_t countf;
   uint32_t countd;
   int verboseflag;

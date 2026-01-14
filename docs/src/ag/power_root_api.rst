@@ -35,31 +35,59 @@ Scalar
 Pow
 ---
 
-.. doxygenfunction:: amd_powf
-  :project: libm
+See :ref:`scalar_api` for ``amd_powf`` documentation.
 
-.. doxygenfunction:: amd_pow
-  :project: libm
+See :ref:`scalar_api` for ``amd_pow`` documentation.
 
 
 Sqrt
 ----
 
-.. doxygenfunction:: amd_sqrtf
-  :project: libm
+See :ref:`scalar_api` for ``amd_sqrtf`` documentation.
 
-.. doxygenfunction:: amd_sqrt
-  :project: libm
+See :ref:`scalar_api` for ``amd_sqrt`` documentation.
 
 
 Cbrt
 ----
 
-.. doxygenfunction:: amd_cbrtf
-  :project: libm
+See :ref:`scalar_api` for ``amd_cbrtf`` documentation.
 
-.. doxygenfunction:: amd_cbrt
-  :project: libm
+See :ref:`scalar_api` for ``amd_cbrt`` documentation.
+
+
+
+Fast Variants
+^^^^^^^^^^^^^
+
+Fast variants of power functions provide improved performance by trading a small amount of accuracy. These functions do not handle special cases like NaNs or INFs and are optimized for performance-critical applications where the input range is known and controlled.
+
+Pow
+---
+
+**amd_fastpowf**
+
+.. code-block:: c
+
+   float amd_fastpowf(float x, float y)
+
+Computes ``x`` raised to the power ``y`` (x^y).
+
+- **Maximum ULP:** 1.99
+- **Note:** Does not handle special cases like NaNs or INFs
+- **Implementation:** Uses the identity x^y = e^(y*ln(x)) for general cases, with optimizations for special values like y=0.5 (square root), x=0, and y=0
+
+**amd_fastpow**
+
+.. code-block:: c
+
+   double amd_fastpow(double x, double y)
+
+Computes ``x`` raised to the power ``y`` (x^y).
+
+- **Maximum ULP:** 1.99
+- **Note:** Does not handle special cases like NaNs or INFs
+- **Implementation:** Uses the identity x^y = e^(y*ln(x)) for general cases, with optimizations for special values like y=0.5 (square root), x=0, and y=0
 
 
 Vector
@@ -68,121 +96,26 @@ Vector
 Pow
 ---
 
-**AVX**
-
-.. doxygenfunction:: amd_vrs4_powf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_pow
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_powf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_pow
-  :project: libm
-
-**AVX512**
-
-.. doxygenfunction:: amd_vrs16_powf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd8_pow
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_powf
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_pow
-  :project: libm
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for pow vector variants documentation.
 
 
 Powx
 ----
 
-**AVX**
-
-.. doxygenfunction:: amd_vrs4_powxf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_powx
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_powxf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_powx
-  :project: libm
-
-**AVX512**
-
-.. doxygenfunction:: amd_vrs16_powxf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd8_powx
-  :project: libm
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for powx vector variants documentation.
 
 
 Sqrt
 ----
 
-**AVX**
-
-.. doxygenfunction:: amd_vrs4_sqrtf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_sqrt
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_sqrtf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_sqrt
-  :project: libm
-
-**AVX512**
-
-.. doxygenfunction:: amd_vrs16_sqrtf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd8_sqrt
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_sqrtf
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_sqrt
-  :project: libm
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for sqrt vector variants documentation.
 
 
 Cbrt
 ----
 
-**AVX**
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for cbrt vector variants documentation.
 
-.. doxygenfunction:: amd_vrs4_cbrtf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_cbrt
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_cbrtf
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_cbrt
-  :project: libm
 
 
 .. End of Doc

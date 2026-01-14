@@ -35,131 +35,106 @@ Scalar
 Fabs
 ----
 
-.. doxygenfunction:: amd_fabsf
-  :project: libm
+See :ref:`scalar_api` for ``amd_fabsf`` documentation.
 
-.. doxygenfunction:: amd_fabs
-  :project: libm
+See :ref:`scalar_api` for ``amd_fabs`` documentation.
 
 
 Modf
 ----
 
-.. doxygenfunction:: amd_modff
-  :project: libm
+See :ref:`scalar_api` for ``amd_modff`` documentation.
 
-.. doxygenfunction:: amd_modf
-  :project: libm
+See :ref:`scalar_api` for ``amd_modf`` documentation.
 
 
 Frexp
 -----
 
-.. doxygenfunction:: amd_frexpf
-  :project: libm
+See :ref:`scalar_api` for ``amd_frexpf`` documentation.
 
-.. doxygenfunction:: amd_frexp
-  :project: libm
+See :ref:`scalar_api` for ``amd_frexp`` documentation.
 
 
 Copysign
 --------
 
-.. doxygenfunction:: amd_copysignf
-  :project: libm
+See :ref:`scalar_api` for ``amd_copysignf`` documentation.
 
-.. doxygenfunction:: amd_copysign
-  :project: libm
+See :ref:`scalar_api` for ``amd_copysign`` documentation.
 
 
 Nan
 ---
 
-.. doxygenfunction:: amd_nanf
-  :project: libm
+See :ref:`scalar_api` for ``amd_nanf`` documentation.
 
-.. doxygenfunction:: amd_nan
-  :project: libm
+See :ref:`scalar_api` for ``amd_nan`` documentation.
 
 
 Finite
 ------
 
-.. doxygenfunction:: amd_finitef
-  :project: libm
+See :ref:`scalar_api` for ``amd_finitef`` documentation.
 
-.. doxygenfunction:: amd_finite
-  :project: libm
+See :ref:`scalar_api` for ``amd_finite`` documentation.
 
 
 Ldexp
 -----
 
-.. doxygenfunction:: amd_ldexpf
-  :project: libm
+See :ref:`scalar_api` for ``amd_ldexpf`` documentation.
 
-.. doxygenfunction:: amd_ldexp
-  :project: libm
+See :ref:`scalar_api` for ``amd_ldexp`` documentation.
 
 
 Scalbn
 ------
 
-.. doxygenfunction:: amd_scalbnf
-  :project: libm
+See :ref:`scalar_api` for ``amd_scalbnf`` documentation.
 
-.. doxygenfunction:: amd_scalbn
-  :project: libm
+See :ref:`scalar_api` for ``amd_scalbn`` documentation.
 
 
 Scalbln
 -------
 
-.. doxygenfunction:: amd_scalblnf
-  :project: libm
+See :ref:`scalar_api` for ``amd_scalblnf`` documentation.
 
-.. doxygenfunction:: amd_scalbln
-  :project: libm
+See :ref:`scalar_api` for ``amd_scalbln`` documentation.
 
 
 Logb
 ----
 
-.. doxygenfunction:: amd_logbf
-  :project: libm
+See :ref:`scalar_api` for ``amd_logbf`` documentation.
 
-.. doxygenfunction:: amd_logb
-  :project: libm
+See :ref:`scalar_api` for ``amd_logb`` documentation.
 
 
 Ilogb
 -----
 
-.. doxygenfunction:: amd_ilogbf
-  :project: libm
+See :ref:`scalar_api` for ``amd_ilogbf`` documentation.
 
-.. doxygenfunction:: amd_ilogb
-  :project: libm
+See :ref:`scalar_api` for ``amd_ilogb`` documentation.
 
 
 Nextafter
 ---------
 
-.. doxygenfunction:: amd_nextafterf
-  :project: libm
+See :ref:`scalar_api` for ``amd_nextafterf`` documentation.
 
-.. doxygenfunction:: amd_nextafter
-  :project: libm
+See :ref:`scalar_api` for ``amd_nextafter`` documentation.
 
 
 Nexttoward
 ----------
 
-.. doxygenfunction:: amd_nexttowardf
-  :project: libm
+See :ref:`scalar_api` for ``amd_nexttowardf`` documentation.
 
-.. doxygenfunction:: amd_nexttoward
-  :project: libm
+See :ref:`scalar_api` for ``amd_nexttoward`` documentation.
+
 
 
 Vector
@@ -168,29 +143,8 @@ Vector
 Fabs
 ----
 
-**AVX**
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for fabs vector variants documentation.
 
-.. doxygenfunction:: amd_vrs4_fabsf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_fabs
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_fabsf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_fabs
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_fabsf
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_fabs
-  :project: libm
 
 
 .. End of Doc

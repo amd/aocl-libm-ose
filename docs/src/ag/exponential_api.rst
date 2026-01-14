@@ -35,41 +35,65 @@ Scalar
 Exp
 ---
 
-.. doxygenfunction:: amd_expf
-  :project: libm
+See :ref:`scalar_api` for ``amd_expf`` documentation.
 
-.. doxygenfunction:: amd_exp
-  :project: libm
+See :ref:`scalar_api` for ``amd_exp`` documentation.
 
 
 Exp2
 ----
 
-.. doxygenfunction:: amd_exp2f
-  :project: libm
+See :ref:`scalar_api` for ``amd_exp2f`` documentation.
 
-.. doxygenfunction:: amd_exp2
-  :project: libm
+See :ref:`scalar_api` for ``amd_exp2`` documentation.
 
 
 Exp10
 -----
 
-.. doxygenfunction:: amd_exp10f
-  :project: libm
+See :ref:`scalar_api` for ``amd_exp10f`` documentation.
 
-.. doxygenfunction:: amd_exp10
-  :project: libm
+See :ref:`scalar_api` for ``amd_exp10`` documentation.
 
 
 Expm1
 -----
 
-.. doxygenfunction:: amd_expm1f
-  :project: libm
+See :ref:`scalar_api` for ``amd_expm1f`` documentation.
 
-.. doxygenfunction:: amd_expm1
-  :project: libm
+See :ref:`scalar_api` for ``amd_expm1`` documentation.
+
+
+
+Fast Variants
+^^^^^^^^^^^^^
+
+Fast variants of exponential functions provide improved performance by trading a small amount of accuracy. These functions do not handle special cases like NaNs or INFs and are optimized for performance-critical applications where the input range is known and controlled.
+
+Exp
+---
+
+**amd_fastexpf**
+
+.. code-block:: c
+
+   float amd_fastexpf(float x)
+
+Computes the base-e exponential of ``x`` (e^x).
+
+- **Maximum ULP:** 1.98
+- **Note:** Does not handle special cases like NaNs or INFs
+
+**amd_fastexp**
+
+.. code-block:: c
+
+   double amd_fastexp(double x)
+
+Computes the base-e exponential of ``x`` (e^x).
+
+- **Maximum ULP:** 1.95
+- **Note:** Does not handle special cases like NaNs or INFs
 
 
 Vector
@@ -78,113 +102,26 @@ Vector
 Exp
 ---
 
-**AVX**
-
-.. doxygenfunction:: amd_vrs4_expf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_exp
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_expf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_exp
-  :project: libm
-
-**AVX512**
-
-.. doxygenfunction:: amd_vrs16_expf
-  :project: libm
-
-.. doxygenfunction:: amd_vrd8_exp
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_expf
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_exp
-  :project: libm
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for exp vector variants documentation.
 
 
 Exp2
 ----
 
-**AVX**
-
-.. doxygenfunction:: amd_vrs4_exp2f
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_exp2
-  :project: libm
-
-**AVX2**
-
-.. doxygenfunction:: amd_vrs8_exp2f
-  :project: libm
-
-.. doxygenfunction:: amd_vrd4_exp2
-  :project: libm
-
-**AVX512**
-
-.. doxygenfunction:: amd_vrs16_exp2f
-  :project: libm
-
-.. doxygenfunction:: amd_vrd8_exp2
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_exp2f
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_exp2
-  :project: libm
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for exp2 vector variants documentation.
 
 
 Exp10
 -----
 
-**AVX**
-
-.. doxygenfunction:: amd_vrs4_exp10f
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_exp10
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_exp10f
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_exp10
-  :project: libm
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for exp10 vector variants documentation.
 
 
 Expm1
 -----
 
-**AVX**
+See :ref:`vector_avx_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for expm1 vector variants documentation.
 
-.. doxygenfunction:: amd_vrs4_expm1f
-  :project: libm
-
-.. doxygenfunction:: amd_vrd2_expm1
-  :project: libm
-
-**Vector array**
-
-.. doxygenfunction:: amd_vrsa_expm1f
-  :project: libm
-
-.. doxygenfunction:: amd_vrda_expm1
-  :project: libm
 
 
 .. End of Doc

@@ -35,101 +35,82 @@ Scalar
 Ceil
 ----
 
-.. doxygenfunction:: amd_ceilf
-  :project: libm
+See :ref:`scalar_api` for ``amd_ceilf`` documentation.
 
-.. doxygenfunction:: amd_ceil
-  :project: libm
+See :ref:`scalar_api` for ``amd_ceil`` documentation.
 
 
 Floor
 -----
 
-.. doxygenfunction:: amd_floorf
-  :project: libm
+See :ref:`scalar_api` for ``amd_floorf`` documentation.
 
-.. doxygenfunction:: amd_floor
-  :project: libm
+See :ref:`scalar_api` for ``amd_floor`` documentation.
 
 
 Trunc
 -----
 
-.. doxygenfunction:: amd_truncf
-  :project: libm
+See :ref:`scalar_api` for ``amd_truncf`` documentation.
 
-.. doxygenfunction:: amd_trunc
-  :project: libm
+See :ref:`scalar_api` for ``amd_trunc`` documentation.
 
 
 Nearbyint
 ---------
 
-.. doxygenfunction:: amd_nearbyintf
-  :project: libm
+See :ref:`scalar_api` for ``amd_nearbyintf`` documentation.
 
-.. doxygenfunction:: amd_nearbyint
-  :project: libm
+See :ref:`scalar_api` for ``amd_nearbyint`` documentation.
 
 
 Rint
 ----
 
-.. doxygenfunction:: amd_rintf
-  :project: libm
+See :ref:`scalar_api` for ``amd_rintf`` documentation.
 
-.. doxygenfunction:: amd_rint
-  :project: libm
+See :ref:`scalar_api` for ``amd_rint`` documentation.
 
 
 Lrint
 -----
 
-.. doxygenfunction:: amd_lrintf
-  :project: libm
+See :ref:`scalar_api` for ``amd_lrintf`` documentation.
 
-.. doxygenfunction:: amd_lrint
-  :project: libm
+See :ref:`scalar_api` for ``amd_lrint`` documentation.
 
 
 Llrint
 ------
 
-.. doxygenfunction:: amd_llrintf
-  :project: libm
+See :ref:`scalar_api` for ``amd_llrintf`` documentation.
 
-.. doxygenfunction:: amd_llrint
-  :project: libm
+See :ref:`scalar_api` for ``amd_llrint`` documentation.
 
 
 Round
 -----
 
-.. doxygenfunction:: amd_roundf
-  :project: libm
+See :ref:`scalar_api` for ``amd_roundf`` documentation.
 
-.. doxygenfunction:: amd_round
-  :project: libm
+See :ref:`scalar_api` for ``amd_round`` documentation.
 
 
 Lround
 ------
 
-.. doxygenfunction:: amd_lroundf
-  :project: libm
+See :ref:`scalar_api` for ``amd_lroundf`` documentation.
 
-.. doxygenfunction:: amd_lround
-  :project: libm
+See :ref:`scalar_api` for ``amd_lround`` documentation.
 
 
 Llround
 -------
 
-.. doxygenfunction:: amd_llroundf
-  :project: libm
+See :ref:`scalar_api` for ``amd_llroundf`` documentation.
 
-.. doxygenfunction:: amd_llround
-  :project: libm
+See :ref:`scalar_api` for ``amd_llround`` documentation.
+
 
 
 .. End of Doc

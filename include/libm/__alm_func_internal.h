@@ -98,6 +98,7 @@ extern double    ALM_PROTO_INTERNAL(erfinv)               (double x);
 extern double    ALM_PROTO_INTERNAL(erfcinv)              (double x);
 extern void      ALM_PROTO_INTERNAL(sincos)               (double x, double *s, double *c);
 extern double    ALM_PROTO_INTERNAL(cdfnorm)              (double x);
+extern double    ALM_PROTO_INTERNAL(cdfnorminv)           (double x);
 /*
  * Single Precision functions
  */

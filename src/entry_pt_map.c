@@ -240,6 +240,7 @@ LIBM_DECL_FN_MAP(erfcinv);
 /* Scalar Special Functions */
 
 LIBM_DECL_FN_MAP(cdfnorm);
+LIBM_DECL_FN_MAP(cdfnorminv);
 
 /* Scalar Complex Number Variant Functions */
 
@@ -653,6 +654,7 @@ WEAK_LIBM_ALIAS(erfcinv, FN_PROTOTYPE(erfcinv));
 /* Scalar Special Functions */
 
 WEAK_LIBM_ALIAS(cdfnorm, FN_PROTOTYPE(cdfnorm));
+WEAK_LIBM_ALIAS(cdfnorminv, FN_PROTOTYPE(cdfnorminv));
 
 /* Scalar Complex Number Variant Functions */
 

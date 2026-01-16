@@ -201,6 +201,7 @@ double FN_PROTOTYPE( remainder)(double x, double y);
  float FN_PROTOTYPE(coshf)(float fx);
 
  double FN_PROTOTYPE(cdfnorm)(double x);
+ double FN_PROTOTYPE(cdfnorminv)(double x);
 
  double FN_PROTOTYPE(frexp)(double value, int *exp);
  float FN_PROTOTYPE(frexpf)(float value, int *exp);

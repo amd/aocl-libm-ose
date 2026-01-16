@@ -106,6 +106,7 @@ enum {
     C_AMD_FMINI,
     C_AMD_LINEARFRAC,
     C_AMD_CDFNORM,
+    C_AMD_CDFNORMINV,
 
     /*
      * INTEGER VARIANTS
@@ -217,6 +218,7 @@ extern void LIBM_IFACE_PROTO(fmaxi)(void *arg);
 extern void LIBM_IFACE_PROTO(fmini)(void *arg);
 extern void LIBM_IFACE_PROTO(linearfrac)(void *arg);
 extern void LIBM_IFACE_PROTO(cdfnorm)(void *arg);
+extern void LIBM_IFACE_PROTO(cdfnorminv)(void *arg);
 
 struct entry_pt_interface {
     void (*epi_init)(void *arg);

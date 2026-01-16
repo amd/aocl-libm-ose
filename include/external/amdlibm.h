@@ -584,6 +584,13 @@ extern "C" {
    */
   double amd_cdfnorm (double x);
 
+  /**
+   * @brief Computes the inverse cumulative normal distribution function
+   * @param x Input value.
+   * @return cdfnorminv(x).
+   */
+  double amd_cdfnorminv (double x);
+
   /* Inverse Complementary Error */
   /**
    * @brief Computes the inverse complementary error function for a double-precision value.
@@ -1229,6 +1236,9 @@ extern "C" {
 /* Special */
   #undef cdfnorm
   #define cdfnorm amd_cdfnorm
+
+  #undef cdfnorminv
+  #define cdfnorminv amd_cdfnorminv
 
 /* Remainder */
   #undef fmod

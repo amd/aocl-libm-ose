@@ -120,6 +120,7 @@ EXPORTS
     amd_trunc
     amd_truncf
     amd_cdfnorm
+    amd_cdfnorminv
     amd_vrd2_cbrt
     amd_vrd2_cos
     amd_vrd2_cosh

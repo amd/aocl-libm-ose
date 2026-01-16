@@ -95,6 +95,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(erfc);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(erfinv);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(cdfnorm);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(erfcinv);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(cdfnorminv);
 
 /*
  * Single Precision functions

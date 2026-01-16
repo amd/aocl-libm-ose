@@ -51,3 +51,4 @@ EXPORTS
     alm_mp_erfcf
     alm_mp_cdfnormf
     alm_mp_erfcinvf
+    alm_mp_cdfnorminvf

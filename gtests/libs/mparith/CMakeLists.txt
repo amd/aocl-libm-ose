@@ -58,6 +58,8 @@ file(GLOB MPARITH_SRCS
            atan2.c
            atanh.c
            cbrt.c
+           cdfnorm.c
+           cdfnorminv.c
            ceil.c
            cexp.c
            copysign.c

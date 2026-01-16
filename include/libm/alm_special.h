@@ -240,6 +240,8 @@ double alm_ldexp_special(double y, uint32_t code);
 
 double alm_erfcinv_special(double x);
 
+double alm_cdfnorminv_special(double x);
+
 extern  float _cbrtf_special            (float x);
 extern  float _cosf_special             (float x);
 extern  float _fabsf_special            (float x);

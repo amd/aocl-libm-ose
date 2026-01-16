@@ -934,3 +934,8 @@ double alm_erfcinv_special(double x) {
     flt64_t fl = {.d = x};
     return __alm_handle_error(fl.u, AMD_F_INVALID);
 }
+
+double alm_cdfnorminv_special(double x) {
+    flt64_t fl = {.d = x};
+    return __alm_handle_error(fl.u, AMD_F_INVALID);
+}

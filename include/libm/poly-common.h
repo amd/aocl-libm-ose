@@ -250,14 +250,14 @@
  
  /* Estrin degree 8 with [c0,c1] at higher precision */
  #define POLY_EVAL_ESTRIN_8_TAIL_2(r, c0H, c0L, c1H, c1L, c2, c3, c4, c5, c6, c7) ({ \
-     __typeof(r) _L0_0_H, _L0_0_L; \
-     POLY_EVAL_ESTRIN_L0_TAIL_2(r, c0H, c0L, c1H, c1L, _L0_0_H, _L0_0_L); \
-     \
-     __typeof(r) _L0_1_H = c3 * r + c2; \
-     __typeof(r) _L0_1_L = POLY_EVAL_ZERO(r); \
-     \
-     POLY_EVAL_ESTRIN_8_TAIL_COMMON(r, _L0_0_H, _L0_0_L, _L0_1_H, _L0_1_L, c4, c5, c6, c7); \
- })
+    __typeof(r) _L0_0_H, _L0_0_L; \
+    POLY_EVAL_ESTRIN_L0_TAIL_2(r, c0H, c0L, c1H, c1L, _L0_0_H, _L0_0_L); \
+    \
+    __typeof(r) _L0_1_H = c3 * r + c2; \
+    __typeof(r) _L0_1_L = POLY_EVAL_ZERO(r); \
+    \
+    POLY_EVAL_ESTRIN_8_TAIL_COMMON(r, _L0_0_H, _L0_0_L, _L0_1_H, _L0_1_L, c4, c5, c6, c7); \
+})
  
  /* Estrin degree 9 with c0 at higher precision */
  #define POLY_EVAL_ESTRIN_9_TAIL_1(r, c0H, c0L, c1, c2, c3, c4, c5, c6, c7, c8) ({ \

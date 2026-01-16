@@ -58,6 +58,7 @@ test_cdfnorminv_conformance_data[] = {
     {NEG_INF_F64, NEG_QNAN_F64, FE_INVALID},               // cdfnorminv(-inf) = -QNAN
 
     /* Out of domain values */
+    {0x8000000000000001ULL, NEG_QNAN_F64, FE_INVALID},     // cdfnorminv(-min_denormal) = -QNAN
     {0xBFF0000000000000ULL, NEG_QNAN_F64, FE_INVALID},     // cdfnorminv(-1) = -QNAN
     {0x4000000000000000ULL, NEG_QNAN_F64, FE_INVALID},     // cdfnorminv(2) = -QNAN
 
@@ -67,9 +68,9 @@ test_cdfnorminv_conformance_data[] = {
     {0x0010000000000000ULL, 0xC042C27B05BF1A0BULL, 0},  // cdfnorminv(min_normal)
 
     /* cdfnorminv(x) ≈ 0.5 */
-    {0x3FDFFFFFFFFFFFF0ULL, 0xBCE40D931FF62706ULL, 0},     // cdfnorminv(value just before 0.5)
+    {0x3FDFFFFFFFFFFFFFULL, 0xBCA40D931FF62706ULL, 0},     // cdfnorminv(0.5 - 1 ULP)
     {0x3FE0000000000000ULL, 0x0000000000000000ULL, 0},     // cdfnorminv(0.5) = 0
-    {0x3FE0000000000001ULL, 0x3CB40D931FF62706ULL, 0},     // cdfnorminv(value just after 0.5)
+    {0x3FE0000000000001ULL, 0x3CB40D931FF62706ULL, 0},     // cdfnorminv(0.5 + 1 ULP)
 
     /* cdfnorminv(x) ≈ 1 */
     {0x3FEFFFFFFFFFFFFFULL, 0x40206B48528CEA52ULL, 0},  // cdfnorminv(value just before 1.0)
@@ -77,9 +78,9 @@ test_cdfnorminv_conformance_data[] = {
     /* Test cases around the transition points between approximation intervals */
 
     /* Central/Tail boundary: p ≈ 0.075 */
-    {0x3FB3333333333333ULL, 0xBFF7085226D3E524ULL, 0},  // p just below 0.075 (tail region)
-    {0x3FB3333333333334ULL, 0xBFF7085226D3E524ULL, 0},  // p = 0.075 (boundary - central region)
-    {0x3FB3333333333335ULL, 0xBFF7085226D3E523ULL, 0},  // p just above 0.075 (central region)
+    {0x3FB3333333333332ULL, 0xBFF7085226D3E525ULL, 0},  // p just below 0.075 (tail region)
+    {0x3FB3333333333333ULL, 0xBFF7085226D3E524ULL, 0},  // p = 0.075 (boundary - central region)
+    {0x3FB3333333333334ULL, 0xBFF7085226D3E524ULL, 0},  // p just above 0.075 (central region)
 
     /* Central/Tail boundary: p ≈ 0.925 */
     {0x3FED999999999999ULL, 0x3FF7085226D3E522ULL, 0},  // p just below 0.925 (central region)

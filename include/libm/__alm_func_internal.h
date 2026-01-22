@@ -435,7 +435,7 @@ extern void      ALM_PROTO_INTERNAL(vrda_erfinv)   (int n, const double *x, doub
 extern void      ALM_PROTO_INTERNAL(vrsa_erfcf)    (int n, const float *x, float *y);
 extern void      ALM_PROTO_INTERNAL(vrda_cdfnorm)  (int n, const double *x, double *y);
 extern void      ALM_PROTO_INTERNAL(vrda_cdfnorminv)  (int n, const double *x, double *y);
-extern void      ALM_PROTO_INTERNAL(vrda_erfcinv)  (int n, double *x, double *y);
+extern void      ALM_PROTO_INTERNAL(vrda_erfcinv)  (int n, const double *x, double *y);
 
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_acos)     (__m128d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_acos)     (__m256d x);

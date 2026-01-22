@@ -425,7 +425,7 @@ void FN_PROTOTYPE(vrsa_erfcf)(int n, const float *x, float *y);
 void FN_PROTOTYPE(vrda_erfinv)(int n, const double *x, double *y);
 void FN_PROTOTYPE(vrda_cdfnorm)(int n, const double *x, double *y);
 void FN_PROTOTYPE(vrda_cdfnorminv)(int n, const double *x, double *y);
-void FN_PROTOTYPE(vrda_erfcinv)(int n, double *x, double *y);
+void FN_PROTOTYPE(vrda_erfcinv)(int n, const double *x, double *y);
 
 __m128d FN_PROTOTYPE(vrd2_acos)(__m128d x);
 __m256d FN_PROTOTYPE(vrd4_acos)(__m256d x);

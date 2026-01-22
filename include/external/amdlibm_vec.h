@@ -1643,7 +1643,7 @@ extern "C" {
    * @param src Input array.
    * @param dst Output array of erfcinv values.
    */
-  void amd_vrda_erfcinv (int len, double *src, double *dst);
+  void amd_vrda_erfcinv (int len, const double *src, double *dst);
 #endif
 
 

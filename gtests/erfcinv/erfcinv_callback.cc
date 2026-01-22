@@ -134,7 +134,7 @@ extern "C" {
   #if defined(__AVX512__)
   __m512d LIBM_FUNC_VEC(d, 8, erfcinv)(__m512d);
   #endif
-  void LIBM_FUNC_VEC(d, a, erfcinv)(int, double *, double *);
+  void LIBM_FUNC_VEC(d, a, erfcinv)(int, const double *, double *);
 #endif
 
 int test_v2d(test_data *data, int idx)  {

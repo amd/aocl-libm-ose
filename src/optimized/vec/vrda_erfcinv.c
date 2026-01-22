@@ -65,7 +65,7 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_OPT(vrda_erfcinv)(int length, double *input, double *result)
+void ALM_PROTO_OPT(vrda_erfcinv)(int length, const double *input, double *result)
 {
     int j = 0;
     if (likely(length >= DOUBLE_ELEMENTS_256_BIT))

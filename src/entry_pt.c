@@ -382,6 +382,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd4_sin);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_tan);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_atan);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_erf);
+alm_func_t        G_ENTRY_PT_PTR(vrd4_erfinv);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_sincos);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_sqrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_fabs);

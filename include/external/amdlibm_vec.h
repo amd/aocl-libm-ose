@@ -494,6 +494,12 @@ extern "C" {
    * @return Vector of erfinv values.
    */
   __m128d amd_vrd2_erfinv (__m128d x);
+  /**
+   * @brief Computes Inverse Error function per-lane for four double-precision elements.
+   * @param x Input vector.
+   * @return Vector of erfinv values.
+   */
+  __m256d amd_vrd4_erfinv (__m256d x);
 
 /* Remainder */
   /**

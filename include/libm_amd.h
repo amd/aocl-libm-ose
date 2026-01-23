@@ -281,6 +281,7 @@ __m256d FN_PROTOTYPE(vrd4_atan)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_pow)(__m256d x, __m256d y);
 __m256d FN_PROTOTYPE(vrd4_powx)(__m256d x, double y);
 __m256d FN_PROTOTYPE(vrd4_erf)(__m256d x);
+__m256d FN_PROTOTYPE(vrd4_erfinv)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_sqrt)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_fabs)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_linearfrac)(__m256d x, __m256d y, double sca, double sha, double scb, double shb);

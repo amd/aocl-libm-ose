@@ -129,7 +129,24 @@ int test_s1d(test_data *data, int idx)  {
 extern "C" {
 #endif
 
+/*vector routines, glibc doesnt have these */
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+  __m128d LIBM_FUNC_VEC(d, 2, erfinv)(__m128d);
+#endif
+
 int test_v2d(test_data *data, int idx)  {
+  #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+    double *ip  = (double*)data->ip;
+    double *op  = (double*)data->op;
+
+    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
+      __m128d op2 = LIBM_FUNC_VEC(d, 2, erfinv)(ip2);
+      _mm_store_pd(&op[0], op2);
+    #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+      vdErfInv(2, ip, op);
+    #endif
+  #endif
   return 0;
 }
 

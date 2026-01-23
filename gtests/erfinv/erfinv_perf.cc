@@ -53,6 +53,13 @@ int AlmTestPerfFramework::AlmTestPerformance(InputParams *params) {
       benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTestd, params)
                  ->Args({(int)params->count})->Iterations(params->niter);
     }
+    if((params->fqty == ALM::FloatQuantity::E_All) ||
+     (params->fqty == ALM::FloatQuantity::E_Vector_2)) {
+      string varnam = "_v2d(erfinv)";
+      libm = funcnam + varnam;
+      benchmark::RegisterBenchmark(libm.c_str(), &LibmPerfTest2d, params)
+                 ->Args({(int)params->count})->Iterations(params->niter);
+    }
   }
 
   size_t retval = benchmark::RunSpecifiedBenchmarks();

@@ -39,31 +39,37 @@ struct alm_arch_funcs __arch_funcs_erfinv = {
         [ALM_UARCH_VER_DEFAULT] = {
             [ALM_FUNC_SCAL_DP]   = &ALM_PROTO_ARCH_AVX2(erfinv),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_AVX2(vrd2_erfinv),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_AVX2(vrd4_erfinv),
         },
 
         [ALM_UARCH_VER_ZEN] = {
             [ALM_FUNC_SCAL_DP]   = &ALM_PROTO_ARCH_ZN(erfinv),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN(vrd2_erfinv),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN(vrd4_erfinv),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
             [ALM_FUNC_SCAL_DP]   = &ALM_PROTO_ARCH_ZN2(erfinv),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN2(vrd2_erfinv),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN2(vrd4_erfinv),
         },
 
         [ALM_UARCH_VER_ZEN3] = {
             [ALM_FUNC_SCAL_DP]   = &ALM_PROTO_ARCH_ZN3(erfinv),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN3(vrd2_erfinv),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN3(vrd4_erfinv),
         },
 
         [ALM_UARCH_VER_ZEN4] = {
             [ALM_FUNC_SCAL_DP]   = &ALM_PROTO_ARCH_ZN4(erfinv),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN4(vrd2_erfinv),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN4(vrd4_erfinv),
         },
 
         [ALM_UARCH_VER_ZEN5] = {
             [ALM_FUNC_SCAL_DP]   = &ALM_PROTO_ARCH_ZN5(erfinv),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN5(vrd2_erfinv),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN5(vrd4_erfinv),
         },
     },
 };
@@ -75,6 +81,7 @@ LIBM_IFACE_PROTO(erfinv)(void *arg)
        .g_ep = {
         [ALM_FUNC_SCAL_DP]   = &G_ENTRY_PT_PTR(erfinv),
         [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_erfinv),
+        [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_erfinv),
         },
     };
 

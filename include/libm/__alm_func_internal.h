@@ -288,6 +288,7 @@ extern __m128d   ALM_PROTO_INTERNAL(vrd2_sin)      (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_tan)      (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_atan)     (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_erf)      (__m128d x);
+extern __m128d   ALM_PROTO_INTERNAL(vrd2_erfinv)   (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_sqrt)     (__m128d);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_fabs)     (__m128d);
 extern void      ALM_PROTO_INTERNAL(vrd2_sincos)   (__m128d x, __m128d* ys, __m128d* yc);

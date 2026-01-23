@@ -334,6 +334,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd2_sin);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd2_tan);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd2_atan);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd2_erf);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd2_erfinv);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd2_sincos);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd2_sqrt);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd2_fabs);

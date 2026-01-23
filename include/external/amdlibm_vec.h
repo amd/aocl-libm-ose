@@ -487,6 +487,14 @@ extern "C" {
    */
   __m128 amd_vrs4_erfcf (__m128 x);
 
+/* Inverse Error */
+  /**
+   * @brief Computes Inverse Error function per-lane for two double-precision elements.
+   * @param x Input vector.
+   * @return Vector of erfinv values.
+   */
+  __m128d amd_vrd2_erfinv (__m128d x);
+
 /* Remainder */
   /**
    * @brief Computes absolute value per-lane for two double-precision elements.

@@ -260,6 +260,7 @@ __m128d FN_PROTOTYPE(vrd2_tan)(__m128d x);
 __m128d FN_PROTOTYPE(vrd2_cosh)(__m128d x);
 __m128d FN_PROTOTYPE(vrd2_atan)(__m128d x);
 __m128d FN_PROTOTYPE(vrd2_erf)(__m128d x);
+__m128d FN_PROTOTYPE(vrd2_erfinv)(__m128d x);
 __m128d FN_PROTOTYPE(vrd2_sqrt)(__m128d x);
 __m128d FN_PROTOTYPE(vrd2_fabs)(__m128d x);
 __m128d FN_PROTOTYPE(vrd2_linearfrac)(__m128d x, __m128d y, double sca, double sha, double scb, double shb);

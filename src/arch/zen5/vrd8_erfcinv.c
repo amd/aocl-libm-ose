@@ -75,9 +75,9 @@
 #define V8_SET1_F64(x) {(x), (x), (x), (x), (x), (x), (x), (x)}
 
 static const struct {
-    v_u64x8_t   bound1, bound2, bound3, bound4, one_u, b1_sub1;
-    v_u64x8_t   sign_mask, mask_32;
-    v_u64x8_t   inf_nan, inf, qnan;
+    v_u64x8_t   bound1, bound2, bound3, bound4, b1_sub1;
+    v_u64x8_t   sign_mask;
+    v_u64x8_t   inf_nan, inf, neg_qnan;
     v_f64x8_t   one, two, zero, exp_offset3, exp_offset4;
     v_f64x8_t   poly_bound2_H[19];  /* 11 num + 8 den, Table 58 Blair et al */
     v_f64x8_t   poly_bound2_T[4];   /* Tail coefficients */
@@ -89,13 +89,11 @@ static const struct {
      .bound2      = V8_SET1_U64(0x3FE8000000000000),  /* 0.75 */
      .bound3      = V8_SET1_U64(0x3FEE000000000000),  /* 0.9375 */
      .bound4      = V8_SET1_U64(0x4000000000000000),  /* 2.0 */
-     .one_u       = V8_SET1_U64(0x3FF0000000000000),  /* 1.0 */
      .b1_sub1     = V8_SET1_U64(0x2B2BFF2EE48E0530),  /* 1e-100 */
      .sign_mask   = V8_SET1_U64(0x7FFFFFFFFFFFFFFF),
-     .mask_32     = V8_SET1_U64(0x7FFFFFFF),
      .inf_nan     = V8_SET1_U64(0x7FF0000000000000),
      .inf         = V8_SET1_U64(0x7FF0000000000000),
-     .qnan        = V8_SET1_U64(QNANBITPATT_DP64),
+     .neg_qnan    = V8_SET1_U64(0xFFF8000000000000),
      .one         = V8_SET1_F64(1.0),
      .two         = V8_SET1_F64(2.0),
      .zero        = V8_SET1_F64(0.0),
@@ -193,13 +191,11 @@ static const struct {
 #define BOUND2    v8_erfcinv_data.bound2
 #define BOUND3    v8_erfcinv_data.bound3
 #define BOUND4    v8_erfcinv_data.bound4
-#define ONE_U     v8_erfcinv_data.one_u
 #define B1_SUB1   v8_erfcinv_data.b1_sub1
 #define SIGN_MASK v8_erfcinv_data.sign_mask
-#define MASK_32   v8_erfcinv_data.mask_32
 #define INF_NAN   v8_erfcinv_data.inf_nan
 #define INF       v8_erfcinv_data.inf
-#define QNAN      v8_erfcinv_data.qnan
+#define NEG_QNAN  v8_erfcinv_data.neg_qnan
 #define ONE       v8_erfcinv_data.one
 #define TWO       v8_erfcinv_data.two
 #define ZERO      v8_erfcinv_data.zero
@@ -306,14 +302,14 @@ ALM_PROTO_ARCH_ZN5(vrd8_erfcinv)(v_f64x8_t _x) {
         
         v_f64x8_t inf_result = as_v8_f64_u64(INF);
         v_f64x8_t nan_result = _x - _x;  /* Propagate NaN for NaN inputs */
-        v_f64x8_t qnan_result = as_v8_f64_u64(QNAN);  /* Error NaN for out-of-bounds */
+        v_f64x8_t qnan_result = as_v8_f64_u64(NEG_QNAN);  /* Error NaN for out-of-bounds */
         
-        /* Apply in reverse priority order using AVX-512 mask blend */
-        /* NaN input returns x-x */
-        result = _mm512_mask_blend_pd(to_mask8(nan_cond), _x, nan_result);
-        /* Negative or > 2 returns error QNaN */
-        result = _mm512_mask_blend_pd(to_mask8(oob_cond), result, qnan_result);
-        /* x == 0 returns +INF */
+        /* Apply in reverse priority order (last blend has highest priority) */
+        /* Negative or > 2 returns error -QNaN */
+        result = _mm512_mask_blend_pd(to_mask8(oob_cond), _x, qnan_result);
+        /* NaN input returns x-x (preserves NaN sign) */
+        result = _mm512_mask_blend_pd(to_mask8(nan_cond), result, nan_result);
+        /* x == 0 returns +INF (highest priority) */
         result = _mm512_mask_blend_pd(to_mask8(zero_cond), result, inf_result);
         return result;
     }

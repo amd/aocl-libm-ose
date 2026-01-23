@@ -70,9 +70,9 @@
 #include <libm/poly-vec.h>
 
 static const struct {
-    v_u64x4_t   bound1, bound2, bound3, bound4, one_u, b1_sub1;
-    v_u64x4_t   sign_mask, mask_32;
-    v_u64x4_t   inf_nan, inf, qnan;
+    v_u64x4_t   bound1, bound2, bound3, bound4, b1_sub1;
+    v_u64x4_t   sign_mask;
+    v_u64x4_t   inf_nan, inf, neg_qnan;
     v_f64x4_t   one, two, zero, exp_offset3, exp_offset4;
     v_f64x4_t   poly_bound2_H[19];  /* 11 num + 8 den, Table 58 Blair et al */
     v_f64x4_t   poly_bound2_T[4];   /* Tail coefficients */
@@ -84,13 +84,11 @@ static const struct {
      .bound2      = _MM_SET1_I64(0x3FE8000000000000),  /* 0.75 */
      .bound3      = _MM_SET1_I64(0x3FEE000000000000),  /* 0.9375 */
      .bound4      = _MM_SET1_I64(0x4000000000000000),  /* 2.0 */
-     .one_u       = _MM_SET1_I64(0x3FF0000000000000),  /* 1.0 */
      .b1_sub1     = _MM_SET1_I64(0x2B2BFF2EE48E0530),  /* 1e-100 */
      .sign_mask   = _MM_SET1_I64(0x7FFFFFFFFFFFFFFF),
-     .mask_32     = _MM_SET1_I64(0x7FFFFFFF),
      .inf_nan     = _MM_SET1_I64(0x7FF0000000000000),
      .inf         = _MM_SET1_I64(0x7FF0000000000000),
-     .qnan        = _MM_SET1_I64(QNANBITPATT_DP64),
+     .neg_qnan    = _MM_SET1_I64(0xFFF8000000000000),
      .one         = _MM_SET1_PD4(1.0),
      .two         = _MM_SET1_PD4(2.0),
      .zero        = _MM_SET1_PD4(0.0),
@@ -188,13 +186,11 @@ static const struct {
 #define BOUND2    v4_erfcinv_data.bound2
 #define BOUND3    v4_erfcinv_data.bound3
 #define BOUND4    v4_erfcinv_data.bound4
-#define ONE_U     v4_erfcinv_data.one_u
 #define B1_SUB1   v4_erfcinv_data.b1_sub1
 #define SIGN_MASK v4_erfcinv_data.sign_mask
-#define MASK_32   v4_erfcinv_data.mask_32
 #define INF_NAN   v4_erfcinv_data.inf_nan
 #define INF        v4_erfcinv_data.inf
-#define QNAN       v4_erfcinv_data.qnan
+#define NEG_QNAN  v4_erfcinv_data.neg_qnan
 #define ONE       v4_erfcinv_data.one
 #define TWO       v4_erfcinv_data.two
 #define ZERO      v4_erfcinv_data.zero
@@ -292,14 +288,14 @@ ALM_PROTO_OPT(vrd4_erfcinv)(v_f64x4_t _x) {
         
         v_f64x4_t inf_result = as_v4_f64_u64(INF);
         v_f64x4_t nan_result = _x - _x;  /* Propagate NaN for NaN inputs */
-        v_f64x4_t qnan_result = as_v4_f64_u64(QNAN);  /* Error NaN for out-of-bounds */
+        v_f64x4_t qnan_result = as_v4_f64_u64(NEG_QNAN);  /* Error NaN for out-of-bounds */
         
-        /* Apply in reverse priority order */
-        /* NaN input returns x-x */
-        result = _mm256_blendv_pd(_x, nan_result, as_v4_f64_u64(nan_cond));
-        /* Negative or > 2 returns error QNaN */
-        result = _mm256_blendv_pd(result, qnan_result, as_v4_f64_u64(oob_cond));
-        /* x == 0 returns +INF */
+        /* Apply in reverse priority order (last blend has highest priority) */
+        /* Negative or > 2 returns error -QNaN */
+        result = _mm256_blendv_pd(_x, qnan_result, as_v4_f64_u64(oob_cond));
+        /* NaN input returns x-x (preserves NaN sign) */
+        result = _mm256_blendv_pd(result, nan_result, as_v4_f64_u64(nan_cond));
+        /* x == 0 returns +INF (highest priority) */
         result = _mm256_blendv_pd(result, inf_result, as_v4_f64_u64(zero_cond));
         return result;
     }

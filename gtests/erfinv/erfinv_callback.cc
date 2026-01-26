@@ -207,6 +207,16 @@ int test_vas(test_data *data, int count)  {
 }
 
 int test_vad(test_data *data, int count)  {
+  #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+    double *ip  = (double*)data->ip;
+    double *op  = (double*)data->op;
+
+    #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+      amd_vrda_erfinv(count, ip, op);
+    #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+      vdErfInv(count, ip, op);
+    #endif
+  #endif
   return 0;
 }
 

@@ -425,6 +425,7 @@ extern void      ALM_PROTO_INTERNAL(vrda_linearfrac)(int len, const double *x, c
 extern void      ALM_PROTO_INTERNAL(vrsa_linearfracf)(int len, const float *x, const float *y, float scx, float shx, float scy, float shy, float *result);
 extern void      ALM_PROTO_INTERNAL(vrda_powx)     (int n, const double *s1, double s2, double* d);
 extern void      ALM_PROTO_INTERNAL(vrda_erfc)     (int n, const double *x, double *y);
+extern void      ALM_PROTO_INTERNAL(vrda_erfinv)   (int n, const double *x, double *y);
 extern void      ALM_PROTO_INTERNAL(vrsa_erfcf)    (int n, const float *x, float *y);
 extern void      ALM_PROTO_INTERNAL(vrda_cdfnorm)  (int n, const double *x, double *y);
 

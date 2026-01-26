@@ -1561,6 +1561,13 @@ extern "C" {
    */
   void amd_vrda_erfc (int len, const double *src, double *dst);
   /**
+   * @brief Computes inverse error function for variable-length double array.
+   * @param len Number of elements to process.
+   * @param src Source array.
+   * @param dst Destination array.
+   */
+  void amd_vrda_erfinv (int len, const double *src, double *dst);
+  /**
    * @brief Computes erfc elementwise for float array.
    * @param len Number of elements.
    * @param src Input array.

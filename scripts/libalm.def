@@ -333,6 +333,7 @@ EXPORTS
     amd_vrsa_tanf
     amd_vrda_atan
     amd_vrda_erf
+    amd_vrda_erfinv
     amd_vrda_tan
     amd_vrda_cosh
     amd_vrd2_acos

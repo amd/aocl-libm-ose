@@ -265,6 +265,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrda_erf);
 alm_func_t        G_ENTRY_PT_PTR(vrda_tan);
 alm_func_t        G_ENTRY_PT_PTR(vrda_cosh);
 alm_func_t        G_ENTRY_PT_PTR(vrda_erfc);
+alm_func_t        G_ENTRY_PT_PTR(vrda_erfinv);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_erfcf);
 alm_func_t        G_ENTRY_PT_PTR(vrda_cdfnorm);
 

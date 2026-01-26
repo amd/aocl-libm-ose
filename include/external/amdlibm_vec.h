@@ -1113,6 +1113,14 @@ extern "C" {
    */
   __m512 amd_vrs16_erfcf (__m512 x);
 
+/* Inverse Error */
+  /**
+   * @brief Computes Inverse Error function per-lane for eight double-precision elements.
+   * @param x Input vector.
+   * @return Vector of erfinv values.
+   */
+  __m512d amd_vrd8_erfinv (__m512d x);
+
 /* Cumulative Normal Distribution */
   /**
    * @brief Computes cumulative normal distribution for eight double-precision elements.

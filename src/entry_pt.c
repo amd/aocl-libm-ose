@@ -412,6 +412,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd8_sincos);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_linearfrac);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_sqrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_erfc);
+alm_func_t        G_ENTRY_PT_PTR(vrd8_erfinv);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_round);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_cdfnorm);
 

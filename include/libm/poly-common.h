@@ -25,12 +25,12 @@
  *
  */
 
- #ifndef __LIBM_POLY_COMMON_H__
- #define __LIBM_POLY_COMMON_H__
+#ifndef __LIBM_POLY_COMMON_H__
+#define __LIBM_POLY_COMMON_H__
  
- #include <libm/types.h>
- #include <libm/typehelper.h>
- #include <libm/typehelper-vec.h>
+#include <libm/types.h>
+#include <libm/typehelper.h>
+#include <libm/typehelper-vec.h>
  
  /***********************************************************
   * Type-Generic High Precision Estrin Polynomial Evaluation
@@ -46,15 +46,55 @@
      *aL = a - *aH;
  }
  
- #define POLY_EVAL_ZERO(r) ((__typeof(r)){0})
- 
- #define POLY_EVAL_SPLIT(a, aH, aL) \
-     _Generic((a), \
-         double: poly_eval_split_double, \
-         float:  poly_eval_split_float)(a, &(aH), &(aL))
+/* 128-bit vector (v_f64x2_t) */
+static inline void poly_eval_split_v_f64x2(v_f64x2_t a, v_f64x2_t *aH, v_f64x2_t *aL) {
+    v_u64x2_t mask = {0xfffffffff8000000ULL, 0xfffffffff8000000ULL};
+    v_u64x2_t au = as_v2_u64_f64(a);
+    *aH = as_v2_f64_u64(au & mask);
+    *aL = a - *aH;
+}
+
+/* 256-bit vector (v_f64x4_t) */
+static inline void poly_eval_split_v_f64x4(v_f64x4_t a, v_f64x4_t *aH, v_f64x4_t *aL) {
+    v_u64x4_t mask = {0xfffffffff8000000ULL, 0xfffffffff8000000ULL,
+                      0xfffffffff8000000ULL, 0xfffffffff8000000ULL};
+    v_u64x4_t au = as_v4_u64_f64(a);
+    *aH = as_v4_f64_u64(au & mask);
+    *aL = a - *aH;
+}
+
+#ifdef __AVX512F__
+/* 512-bit vector (v_f64x8_t) */
+static inline void poly_eval_split_v_f64x8(v_f64x8_t a, v_f64x8_t *aH, v_f64x8_t *aL) {
+    v_u64x8_t mask = {0xfffffffff8000000ULL, 0xfffffffff8000000ULL,
+                      0xfffffffff8000000ULL, 0xfffffffff8000000ULL,
+                      0xfffffffff8000000ULL, 0xfffffffff8000000ULL,
+                      0xfffffffff8000000ULL, 0xfffffffff8000000ULL};
+    v_u64x8_t au = as_v8_u64_f64(a);
+    *aH = as_v8_f64_u64(au & mask);
+    *aL = a - *aH;
+}
+
+#define POLY_EVAL_SPLIT(a, aH, aL) \
+    _Generic((a), \
+        double: poly_eval_split_double, \
+        float:  poly_eval_split_float, \
+        v_f64x2_t: poly_eval_split_v_f64x2, \
+        v_f64x4_t: poly_eval_split_v_f64x4, \
+        v_f64x8_t: poly_eval_split_v_f64x8)(a, &(aH), &(aL))
+#else
+#define POLY_EVAL_SPLIT(a, aH, aL) \
+    _Generic((a), \
+        double: poly_eval_split_double, \
+        float:  poly_eval_split_float, \
+        v_f64x2_t: poly_eval_split_v_f64x2, \
+        v_f64x4_t: poly_eval_split_v_f64x4)(a, &(aH), &(aL))
+#endif
+
+#define POLY_EVAL_ZERO(r) ((__typeof(r)){0})
  
  /* A_X_B_PLUS_C: <aH, aL> = <aH, aL> * <bH, bL> + <cH, cL> */
- #define POLY_EVAL_A_X_B_PLUS_C(aH, aL, b, bH, bL, cH, cL) do { \
+#define POLY_EVAL_A_X_B_PLUS_C(aH, aL, b, bH, bL, cH, cL) do { \
      __typeof(b) _wH, _wL, _xH, _xL, _yH, _yL, _z; \
      __typeof(b) _aHH, _aHL; \
      /* <_wH, _wL> = TwoProduct(aH, b) */ \
@@ -80,10 +120,10 @@
  } while(0)
  
  /* L0 = c1*r + c0 */
- #define POLY_EVAL_ESTRIN_L0_SIMPLE(r, c0, c1, L0) L0 = (c1) * (r) + (c0)
+#define POLY_EVAL_ESTRIN_L0_SIMPLE(r, c0, c1, L0) L0 = (c1) * (r) + (c0)
  
  /* L0_TAIL_1: <L0_H, L0_L> = c1*r + <c0H, c0L> */
- #define POLY_EVAL_ESTRIN_L0_TAIL_1(r, c0H, c0L, c1, L0_H, L0_L) do { \
+#define POLY_EVAL_ESTRIN_L0_TAIL_1(r, c0H, c0L, c1, L0_H, L0_L) do { \
      __typeof(r) _t0 = (c1) * (r); \
      __typeof(r) _t0H, _t0L; \
      POLY_EVAL_SPLIT(_t0, _t0H, _t0L); \
@@ -94,7 +134,7 @@
  } while(0)
  
  /* L0_TAIL_2: <L0_H, L0_L> = <c1H, c1L>*r + <c0H, c0L> */
- #define POLY_EVAL_ESTRIN_L0_TAIL_2(r, c0H, c0L, c1H, c1L, L0_H, L0_L) do { \
+#define POLY_EVAL_ESTRIN_L0_TAIL_2(r, c0H, c0L, c1H, c1L, L0_H, L0_L) do { \
      __typeof(r) _rH, _rL; \
      POLY_EVAL_SPLIT(r, _rH, _rL); \
      L0_H = (c1H); L0_L = (c1L); \
@@ -108,7 +148,7 @@
   * L2: L2_0 = L1_1*r^4 + L1_0
   * Final: q = L2_0
   */
- #define POLY_EVAL_ESTRIN_8_TAIL_COMMON(r, L0_0_H, L0_0_L, L0_1_H, L0_1_L, c4, c5, c6, c7) ({ \
+#define POLY_EVAL_ESTRIN_8_TAIL_COMMON(r, L0_0_H, L0_0_L, L0_1_H, L0_1_L, c4, c5, c6, c7) ({ \
      __typeof(r) _L0_2 = c5 * r + c4; \
      __typeof(r) _L0_3 = c7 * r + c6; \
      __typeof(r) _r2 = r * r; \
@@ -136,7 +176,7 @@
   * L2: L2_0 = L1_1*r^4 + L1_0, L2_1 = L1_2
   * Final: q = L2_1*r^8 + L2_0
   */
- #define POLY_EVAL_ESTRIN_9_TAIL_COMMON(r, L0_0_H, L0_0_L, L0_1_H, L0_1_L, c4, c5, c6, c7, c8) ({ \
+#define POLY_EVAL_ESTRIN_9_TAIL_COMMON(r, L0_0_H, L0_0_L, L0_1_H, L0_1_L, c4, c5, c6, c7, c8) ({ \
      __typeof(r) _L0_2 = c5 * r + c4; \
      __typeof(r) _L0_3 = c7 * r + c6; \
      __typeof(r) _L0_4 = c8; \
@@ -175,7 +215,7 @@
   * L2: L2_0 = L1_1*r^4 + L1_0, L2_1 = L1_2
   * Final: q = L2_1*r^8 + L2_0
   */
- #define POLY_EVAL_ESTRIN_10_TAIL_COMMON(r, L0_0_H, L0_0_L, L0_1_H, L0_1_L, c4, c5, c6, c7, c8, c9) ({ \
+#define POLY_EVAL_ESTRIN_10_TAIL_COMMON(r, L0_0_H, L0_0_L, L0_1_H, L0_1_L, c4, c5, c6, c7, c8, c9) ({ \
      __typeof(r) _L0_2 = c5 * r + c4; \
      __typeof(r) _L0_3 = c7 * r + c6; \
      __typeof(r) _L0_4 = c9 * r + c8; \
@@ -214,7 +254,7 @@
   * L2: L2_0 = L1_1*r^4 + L1_0, L2_1 = L1_2
   * Final: q = L2_1*r^8 + L2_0
   */
- #define POLY_EVAL_ESTRIN_11_TAIL_COMMON(r, L0_0_H, L0_0_L, L0_1_H, L0_1_L, c4, c5, c6, c7, c8, c9, c10) ({ \
+#define POLY_EVAL_ESTRIN_11_TAIL_COMMON(r, L0_0_H, L0_0_L, L0_1_H, L0_1_L, c4, c5, c6, c7, c8, c9, c10) ({ \
      __typeof(r) _L0_2 = c5 * r + c4; \
      __typeof(r) _L0_3 = c7 * r + c6; \
      __typeof(r) _L0_4 = c9 * r + c8; \
@@ -248,8 +288,8 @@
      _qH + _qL; \
  })
  
- /* Estrin degree 8 with [c0,c1] at higher precision */
- #define POLY_EVAL_ESTRIN_8_TAIL_2(r, c0H, c0L, c1H, c1L, c2, c3, c4, c5, c6, c7) ({ \
+/* Estrin degree 8 with [c0,c1] at higher precision */
+#define POLY_EVAL_ESTRIN_8_TAIL_2(r, c0H, c0L, c1H, c1L, c2, c3, c4, c5, c6, c7) ({ \
     __typeof(r) _L0_0_H, _L0_0_L; \
     POLY_EVAL_ESTRIN_L0_TAIL_2(r, c0H, c0L, c1H, c1L, _L0_0_H, _L0_0_L); \
     \
@@ -260,7 +300,7 @@
 })
  
  /* Estrin degree 9 with c0 at higher precision */
- #define POLY_EVAL_ESTRIN_9_TAIL_1(r, c0H, c0L, c1, c2, c3, c4, c5, c6, c7, c8) ({ \
+#define POLY_EVAL_ESTRIN_9_TAIL_1(r, c0H, c0L, c1, c2, c3, c4, c5, c6, c7, c8) ({ \
      __typeof(r) _L0_0_H, _L0_0_L; \
      POLY_EVAL_ESTRIN_L0_TAIL_1(r, c0H, c0L, c1, _L0_0_H, _L0_0_L); \
      \
@@ -271,7 +311,7 @@
  })
  
  /* Estrin degree 9 with [c0,c1] at higher precision */
- #define POLY_EVAL_ESTRIN_9_TAIL_2(r, c0H, c0L, c1H, c1L, c2, c3, c4, c5, c6, c7, c8) ({ \
+#define POLY_EVAL_ESTRIN_9_TAIL_2(r, c0H, c0L, c1H, c1L, c2, c3, c4, c5, c6, c7, c8) ({ \
      __typeof(r) _L0_0_H, _L0_0_L; \
      POLY_EVAL_ESTRIN_L0_TAIL_2(r, c0H, c0L, c1H, c1L, _L0_0_H, _L0_0_L); \
      \
@@ -282,7 +322,7 @@
  })
  
  /* Estrin degree 9 with [c0,c3] at higher precision */
- #define POLY_EVAL_ESTRIN_9_TAIL_4(r, c0H, c0L, c1H, c1L, c2H, c2L, c3H, c3L, c4, c5, c6, c7, c8) ({ \
+#define POLY_EVAL_ESTRIN_9_TAIL_4(r, c0H, c0L, c1H, c1L, c2H, c2L, c3H, c3L, c4, c5, c6, c7, c8) ({ \
      __typeof(r) _L0_0_H, _L0_0_L; \
      POLY_EVAL_ESTRIN_L0_TAIL_2(r, c0H, c0L, c1H, c1L, _L0_0_H, _L0_0_L); \
      \
@@ -293,7 +333,7 @@
  })
  
  /* Estrin degree 10 with [c0,c3] at higher precision */
- #define POLY_EVAL_ESTRIN_10_TAIL_4(r, c0H, c0L, c1H, c1L, c2H, c2L, c3H, c3L, c4, c5, c6, c7, c8, c9) ({ \
+#define POLY_EVAL_ESTRIN_10_TAIL_4(r, c0H, c0L, c1H, c1L, c2H, c2L, c3H, c3L, c4, c5, c6, c7, c8, c9) ({ \
      __typeof(r) _L0_0_H, _L0_0_L; \
      POLY_EVAL_ESTRIN_L0_TAIL_2(r, c0H, c0L, c1H, c1L, _L0_0_H, _L0_0_L); \
      \
@@ -304,7 +344,7 @@
  })
  
  /* Estrin degree 11 with c0 at higher precision */
- #define POLY_EVAL_ESTRIN_11_TAIL_1(r, c0H, c0L, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10) ({ \
+#define POLY_EVAL_ESTRIN_11_TAIL_1(r, c0H, c0L, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10) ({ \
      __typeof(r) _L0_0_H, _L0_0_L; \
      POLY_EVAL_ESTRIN_L0_TAIL_1(r, c0H, c0L, c1, _L0_0_H, _L0_0_L); \
      \
@@ -315,7 +355,7 @@
  })
  
  /* Estrin degree 11 with [c0,c1] at higher precision */
- #define POLY_EVAL_ESTRIN_11_TAIL_2(r, c0H, c0L, c1H, c1L, c2, c3, c4, c5, c6, c7, c8, c9, c10) ({ \
+#define POLY_EVAL_ESTRIN_11_TAIL_2(r, c0H, c0L, c1H, c1L, c2, c3, c4, c5, c6, c7, c8, c9, c10) ({ \
      __typeof(r) _L0_0_H, _L0_0_L; \
      POLY_EVAL_ESTRIN_L0_TAIL_2(r, c0H, c0L, c1H, c1L, _L0_0_H, _L0_0_L); \
      \
@@ -325,4 +365,4 @@
      POLY_EVAL_ESTRIN_11_TAIL_COMMON(r, _L0_0_H, _L0_0_L, _L0_1_H, _L0_1_L, c4, c5, c6, c7, c8, c9, c10); \
  })
  
- #endif /* __LIBM_POLY_COMMON_H__ */
+#endif /* __LIBM_POLY_COMMON_H__ */

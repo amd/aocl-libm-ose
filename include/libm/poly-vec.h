@@ -192,6 +192,14 @@
          q;                                                                         \
          })
 
+#define POLY_EVAL_HORNER_8(x, c0, c1, c2, c3, c4, c5, c6, c7) ({          \
+        __typeof(x) _q = mul_add( mul_add( mul_add( mul_add(              \
+                        mul_add( mul_add( mul_add(                        \
+                        c7, x, c6), x, c5), x, c4),                       \
+                        x, c3), x, c2), x, c1), x, c0);                   \
+         _q;                                                              \
+         })
+
 /*
  * p(x) = c10*x^10 + c9*x^9 + c8*x^8 + c7*x^7 + c6*x^6 + c5*x^5 + c4*x^4 + \
  *                      c3*x^3 + c2*x^2 + c1*x + c0
@@ -416,6 +424,7 @@
         q;                                                              \
         })
 
+#include <libm/poly-common.h>
 
 #endif  /* LIBM_POLY_VEC_H */
 

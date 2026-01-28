@@ -200,7 +200,7 @@ RangeType str_to_enum(const std::string &key)
  * Handles test execution for a specific API variant and input type.
  */
 template <typename T>
-void libm_api_variant(struct AlmLibs alibs, const struct YamlInputs &param,
+void libm_api_variant(struct AlmLibs *alibs, const struct YamlInputs &param,
                       std::string &variant, TestMode test_mode, const std::string &vendor,
                       std::string &ulp_threshold)
 {
@@ -261,10 +261,10 @@ void libm_api_variant(struct AlmLibs alibs, const struct YamlInputs &param,
  * process_libm:
  * Executes tests for each variant specified in the YAML input using the appropriate libm API variant.
  */
-void process_libm(struct AlmLibs alibs, const std::vector<struct YamlInputs> &params, TestMode test_mode)
+void process_libm(struct AlmLibs *alibs, const std::vector<struct YamlInputs> &params, TestMode test_mode)
 {
     typedef const char* (*get_vendor_name_t)();
-    get_vendor_name_t get_vendor_string = (get_vendor_name_t)DL_SYM(alibs.pshimlib, "get_vendor_name");
+    get_vendor_name_t get_vendor_string = (get_vendor_name_t)DL_SYM(alibs->pshimlib, "get_vendor_name");
     const char *vendor_cstr = get_vendor_string();
     std::cout << "Vendor: " << vendor_cstr << std::endl;
     std::string vendor(vendor_cstr);
@@ -315,4 +315,3 @@ void process_libm(struct AlmLibs alibs, const std::vector<struct YamlInputs> &pa
         std::cout << std::endl;
     }
 }
-

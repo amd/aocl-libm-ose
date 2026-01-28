@@ -1219,11 +1219,12 @@ static void lib_init(void) {
 }
 #endif
 
-extern "C" const char* get_vendor_name() {
+extern "C" {
+
+SHIM_EXPORT const char* get_vendor_name() {
     return "MKL";
 }
 
-extern "C" {
 
 // ============================================================================
 // SINGLE PRECISION SCALAR (ss) VARIANTS

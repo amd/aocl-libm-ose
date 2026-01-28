@@ -91,6 +91,7 @@ double   alm_mp_subf        (float x, float y);
 double   alm_mp_mulf        (float x, float y);
 double   alm_mp_nextafterf  (float x, float y);
 void     alm_mp_sincosf     (float x, double* y1, double* y2);
+double   alm_mp_nearbyintf  (float x);
 double   alm_mp_cdfnormf    (float x);
 
 /* Single precision ULP functions */
@@ -208,6 +209,7 @@ long double  alm_mp_sub       (double x, double y);
 long double  alm_mp_mul       (double x, double y);
 long double  alm_mp_nextafter (double x, double y);
 void         alm_mp_sincos    (double x, long double* y1, long double* y2);
+long double  alm_mp_nearbyint (double x);
 long double  alm_mp_cdfnorm   (double x);
 
 double  alm_mp_acosh_ULP     (double x,double z, double *, double *);
@@ -277,4 +279,3 @@ long double _Complex   alm_mpc_cexp       (double _Complex x);
 
 
 #endif
-

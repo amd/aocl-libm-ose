@@ -26,73 +26,41 @@
  */
 
 
+#include <mpfr.h>
 #include "precision.h"
 
-
 #if defined(FLOAT)
-#define FUNC_FREXP alm_mp_frexpf
-
+#define FUNC_NEARBYINT alm_mp_nearbyintf
 #elif defined(DOUBLE)
-#define FUNC_FREXP alm_mp_frexp
-
+#define FUNC_NEARBYINT alm_mp_nearbyint
 #else
-#error
+#error "Define either FLOAT or DOUBLE"
 #endif
 
-REAL_L FUNC_FREXP(REAL x, int *ptr)
+#include <mpfr.h>
+
+REAL_L FUNC_NEARBYINT(REAL x)
 {
-    REAL_L ret;
-    fp_params params;
-    int base, mantis, emin, emax;
-    int *xmp, *ymp;
-    int ifail;
+    REAL_L y;
+    mpfr_rnd_t rnd = MPFR_RNDN;  // Round to nearest
+    mpfr_t mpx, mp_rop;
 
-    initMultiPrecision(ISDOUBLE, 0, &base, &mantis, &emin, &emax, &params);
-    xmp = new_mp(params);
-    ymp = new_mp(params);
+    mpfr_inits2(ALM_MP_PRECI_BITS, mpx, mp_rop, (mpfr_ptr) 0);
 
-    DTOMP(x, xmp, params, &ifail);
-    MPFREXP(xmp, ymp, ptr, params, &ifail);
+#if defined(FLOAT)
+    mpfr_set_d(mpx, x, rnd);
+#elif defined(DOUBLE)
+    mpfr_set_ld(mpx, x, rnd);
+#endif
 
-    MPTOD(ymp, params, &ret, &ifail);
+    mpfr_rint(mp_rop, mpx, rnd);  // Round to nearest integer
 
-    free(xmp);
-    free(ymp);
+#if defined(FLOAT)
+    y = mpfr_get_d(mp_rop, rnd);
+#elif defined(DOUBLE)
+    y = mpfr_get_ld(mp_rop, rnd);
+#endif
 
-    return ret;
+    mpfr_clears(mpx, mp_rop, (mpfr_ptr) 0);
+    return y;
 }
-
-REAL FUNC_FREXP_ULP123(REAL x, int *ptr, REAL z, double *sulps, double *sreldiff);
-
-REAL FUNC_FREXP_ULP123(REAL x, int *ptr, REAL z, double *sulps, double *sreldiff)
-{
-    REAL ret;
-    fp_params params;
-    int base, mantis, emin, emax;
-    int *xmp, *ymp;
-    int ifail;
-    REAL reldiff,ulps;
-
-    initMultiPrecision(ISDOUBLE, 0, &base, &mantis, &emin, &emax, &params);
-    xmp = new_mp(params);
-    ymp = new_mp(params);
-
-    DTOMP(x, xmp, params, &ifail);
-    MPFREXP(xmp, ymp, ptr, params, &ifail);
-/********/
-    reldiff = MPRELDIFF(z, base, mantis, emin, emax,
-                      ymp, params,&ulps, &ifail);
-	*sreldiff = reldiff;
-	*sulps = ulps;
-
-/********/
-
-    MPTOD(ymp, params, &ret, &ifail);
-
-    free(xmp);
-    free(ymp);
-
-    return ret;
-}
-
-

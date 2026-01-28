@@ -41,7 +41,6 @@
 // Platform-specific includes
 #ifdef _WIN32
     #define WIN32_LEAN_AND_MEAN
-    #define _CRT_SECURE_NO_WARNINGS  // Suppress MSVC security warnings
     #pragma warning(push)
     #pragma warning(disable: 4996)  // Disable deprecated function warnings
     #include <windows.h>

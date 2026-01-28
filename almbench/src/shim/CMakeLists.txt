@@ -41,32 +41,45 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 
-# Set the output directory for the libraries
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/libs)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/libs)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/libs)
-
+include(CheckIncludeFile)
+include(CheckCXXCompilerFlag)
 # Compiler-specific optimizations
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT WIN32))
+  check_cxx_compiler_flag("-mavx512f" COMPILER_SUPPORTS_AVX512F)
   set(COMMON_COMPILE_OPTIONS
-    -Wall -Wextra -Wpedantic -Wno-unused-parameter
+    -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-unknown-pragmas
     $<$<CONFIG:Release>:-O3 -DNDEBUG -march=native>
     $<$<CONFIG:Debug>:-g -O0>
     -fPIC
   )
+  if(COMPILER_SUPPORTS_AVX512F)
+    list(APPEND COMMON_COMPILE_OPTIONS -mavx512f)
+  endif()
   set(COMMON_LINK_OPTIONS
     $<$<CONFIG:Release>:-s>  # Strip symbols in release
   )
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND WIN32))
+  check_cxx_compiler_flag("-mavx512f" COMPILER_SUPPORTS_AVX512F_CLANG)
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    check_cxx_compiler_flag("/arch:AVX512" COMPILER_SUPPORTS_AVX512F_MSVC)
+  endif()
   set(COMMON_COMPILE_OPTIONS
     $<$<CXX_COMPILER_ID:MSVC>:/W4>
     $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra -Wpedantic -Wno-unused-parameter>
     $<$<CONFIG:Release>:$<$<CXX_COMPILER_ID:MSVC>:/O2 /DNDEBUG> $<$<CXX_COMPILER_ID:Clang>:-O2 -DNDEBUG>>
     $<$<CONFIG:Debug>:$<$<CXX_COMPILER_ID:MSVC>:/Od /Zi> $<$<CXX_COMPILER_ID:Clang>:-O0 -g>>
     $<$<CXX_COMPILER_ID:Clang>:-D_CRT_SECURE_NO_WARNINGS -Wno-microsoft-cast -D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH>
+    $<$<CXX_COMPILER_ID:Clang>:-Wno-missing-prototypes -Wno-old-style-cast -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-unsafe-buffer-usage>
+    $<$<CXX_COMPILER_ID:Clang>:-Wno-nonportable-system-include-path -Wno-zero-as-null-pointer-constant -Wno-shorten-64-to-32 -Wno-undef -Wno-switch-default -Wno-unused-command-line-argument>
     $<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>
     $<$<CXX_COMPILER_ID:Clang>:-mavx2 -mfma>
   )
+  if(COMPILER_SUPPORTS_AVX512F_MSVC)
+    list(APPEND COMMON_COMPILE_OPTIONS $<$<CXX_COMPILER_ID:MSVC>:/arch:AVX512>)
+  endif()
+  if(COMPILER_SUPPORTS_AVX512F_CLANG)
+    list(APPEND COMMON_COMPILE_OPTIONS $<$<CXX_COMPILER_ID:Clang>:-mavx512f>)
+  endif()
   set(COMMON_LINK_OPTIONS)
 endif()
 
@@ -93,7 +106,7 @@ else()
 endif()
 set(SHIMAMD_SOURCES shim_amd.cc)
 add_library(shimamd SHARED ${SHIMAMD_SOURCES})
-target_include_directories(shimamd PRIVATE ${INCS})
+target_include_directories(shimamd PRIVATE ${SHIM_INCS})
 target_compile_options(shimamd PRIVATE ${COMMON_COMPILE_OPTIONS})
 target_link_options(shimamd PRIVATE ${COMMON_LINK_OPTIONS})
 target_link_libraries(shimamd PRIVATE ${PLATFORM_LIBRARIES})
@@ -115,7 +128,7 @@ target_compile_definitions(shimamd PRIVATE
 if(NOT WIN32)
   set(SHIMGLIBC shimglibc)
   add_library(shimglibc SHARED shim_glibc.cc)
-  target_include_directories(shimglibc PRIVATE ${INCS})
+  target_include_directories(shimglibc PRIVATE ${SHIM_INCS})
   target_compile_options(shimglibc PRIVATE ${COMMON_COMPILE_OPTIONS})
   target_link_options(shimglibc PRIVATE ${COMMON_LINK_OPTIONS})
   target_link_libraries(shimglibc PRIVATE ${PLATFORM_LIBRARIES})
@@ -140,7 +153,7 @@ else()
   set(SHIMMKL shimmkl)
 endif()
 add_library(shimmkl SHARED shim_mkl.cc)
-target_include_directories(shimmkl PRIVATE ${INCS})
+target_include_directories(shimmkl PRIVATE ${SHIM_INCS})
 target_compile_options(shimmkl PRIVATE ${COMMON_COMPILE_OPTIONS})
 target_link_options(shimmkl PRIVATE ${COMMON_LINK_OPTIONS})
 target_link_libraries(shimmkl PRIVATE ${PLATFORM_LIBRARIES})
@@ -158,20 +171,37 @@ target_compile_definitions(shimmkl PRIVATE
 # =============================================================================
 # Installation configuration
 # =============================================================================
+
+# Create include directory in output location
+set(SHIM_INCLUDE_DIR "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/include")
+file(MAKE_DIRECTORY ${SHIM_INCLUDE_DIR})
+
+# Copy alm_test.h header to output include directory
+if(SHIM_INCS)
+  list(GET SHIM_INCS 0 FIRST_INC_DIR)
+  if(EXISTS "${FIRST_INC_DIR}/alm_test.h")
+    add_custom_command(TARGET shimamd POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy
+                       "${FIRST_INC_DIR}/alm_test.h"
+                       "${SHIM_INCLUDE_DIR}/alm_test.h"
+                       COMMENT "Installing alm_test.h to ${SHIM_INCLUDE_DIR}")
+  endif()
+endif()
+
 if(WIN32)
   # Windows: only install AMD and MKL shims
   install(TARGETS shimamd shimmkl
-    LIBRARY DESTINATION libs
-    ARCHIVE DESTINATION libs
-    RUNTIME DESTINATION libs
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION lib
     PUBLIC_HEADER DESTINATION include
   )
 else()
   # Linux: install all shims including GLIBC
   install(TARGETS shimamd shimglibc shimmkl
-    LIBRARY DESTINATION libs
-    ARCHIVE DESTINATION libs
-    RUNTIME DESTINATION libs
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION lib
     PUBLIC_HEADER DESTINATION include
   )
 endif()
@@ -221,11 +251,11 @@ message(STATUS "Compiler:             ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPI
 message(STATUS "Output Directory:     ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 message(STATUS "")
 message(STATUS "Libraries to build:")
-message(STATUS "  📚 shimamd          - AMD AOCL optimized functions")
+message(STATUS "  shimamd          - AMD AOCL optimized functions")
 if(NOT WIN32)
-  message(STATUS "  📚 shimglibc      - GLIBC libm vectorized functions")
+  message(STATUS "  shimglibc        - GLIBC libm vectorized functions")
 endif()
-message(STATUS "  📚 shimmkl          - Intel MKL optimized functions")
+message(STATUS "  shimmkl          - Intel MKL optimized functions")
 message(STATUS "")
 message(STATUS "Platform libraries:   ${PLATFORM_LIBRARIES}")
 message(STATUS "═══════════════════════════════════════════════════════════")
@@ -235,9 +265,8 @@ message(STATUS "")
 # Usage information
 # =============================================================================
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
-  message(STATUS "🚀 Building optimized release libraries for maximum performance")
+  message(STATUS "Building optimized release libraries for maximum performance")
 else()
-  message(STATUS "🔍 Building debug libraries with symbols for development")
+  message(STATUS "Building debug libraries with symbols for development")
 endif()
 message(STATUS "")
-

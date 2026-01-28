@@ -31,6 +31,7 @@
 #include <algorithm>
 #include "generator.h"
 #include "libm_yaml.h"
+#include "alm_test.h"
 
 
 /*
@@ -48,10 +49,10 @@ enum ApiTypes {
 };
 
 
-void process_libm(struct AlmLibs alibs, const std::vector<struct YamlInputs> &params, TestMode test_mode );
+void process_libm(struct AlmLibs *alibs, const std::vector<struct YamlInputs> &params, TestMode test_mode );
 
 template <typename T, typename U>
-int validate_api(struct AlmLibs alibs, struct InParams<T, U> *ipp, struct YamlOutputs<U> *yop);
+int validate_api(struct AlmLibs *alibs, struct InParams<T, U> *ipp, struct YamlOutputs<U> *yop);
 
 
 
@@ -61,42 +62,42 @@ int validate_api(struct AlmLibs alibs, struct InParams<T, U> *ipp, struct YamlOu
  * Each function validates a specific API signature using the provided libraries.
  */
 template <typename T, typename U>
-int api_prototype_01(struct AlmLibs alibs,
+int api_prototype_01(struct AlmLibs *alibs,
                      struct InParams<T, U> *ipp,
                      const std::string &libapi,
                      const std::string &refapi,
                      struct YamlOutputs<U> *yop);
 
 template <typename T, typename U>
-int api_prototype_02(struct AlmLibs alibs,
+int api_prototype_02(struct AlmLibs *alibs,
                      struct InParams<T, U> *ipp,
                      const std::string &libapi,
                      const std::string &refapi,
                      struct YamlOutputs<U> *yop);
 
 template <typename T, typename U>
-int api_prototype_03(struct AlmLibs alibs,
+int api_prototype_03(struct AlmLibs *alibs,
                      struct InParams<T, U> *ipp,
                      const std::string &libapi,
                      const std::string &refapi,
                      struct YamlOutputs<U> *yop);
 
 template <typename T, typename U>
-int api_prototype_04(struct AlmLibs alibs,
+int api_prototype_04(struct AlmLibs *alibs,
                      struct InParams<T, U> *ipp,
                      const std::string &libapi,
                      const std::string &refapi,
                      struct YamlOutputs<U> *yop);
 
 template <typename T, typename U>
-int api_prototype_05(struct AlmLibs alibs,
+int api_prototype_05(struct AlmLibs *alibs,
                      struct InParams<T, U> *ipp,
                      const std::string &libapi,
                      const std::string &refapi,
                      struct YamlOutputs<U> *yop);
 
 template <typename T, typename U>
-int api_prototype_06(struct AlmLibs alibs,
+int api_prototype_06(struct AlmLibs *alibs,
                      struct InParams<T, U> *ipp,
                      const std::string &libapi,
                      const std::string &refapi,

@@ -1738,11 +1738,11 @@ static void lib_init(void) {
     init_gcc_symbols();
 }
 
-extern "C" const char* get_vendor_name() {
-    return "GCC";
-}
-
 extern "C" {
+
+SHIM_EXPORT const char* get_vendor_name() {
+    return "GLIBC";
+}
 
 // High-performance shim functions with null pointer safety checks
 // Organized by variant to match struct definition order

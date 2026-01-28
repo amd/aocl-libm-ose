@@ -39,25 +39,26 @@ if(WIN32)
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/deps/yaml")
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/src/mparith")
-
-option(ALM_DEPS "Enable to Build shim shared libraries(amd, gcc, mkl)." OFF)
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/src/shim")
+get_filename_component(MPARITH_MODULE_PATH "${PROJECT_SOURCE_DIR}/../gtests/libs/mparith" REALPATH)
+list(APPEND CMAKE_MODULE_PATH "${MPARITH_MODULE_PATH}")
 
 # Set common CXX flags
 if(WIN32)
     # Windows-specific flags (using MSVC)
     if(MSVC)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /arch:AVX2")
+        #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi /W4 /arch:AVX2")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi /Zo /d2Zi+ /W4 /arch:AVX2")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4244 /wd4267 /wd4996")
     else()
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -faligned-new -fno-strict-aliasing")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -faligned-new -fno-strict-aliasing")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx2 -Wall -Wno-unknown-pragmas")
     endif()
     # Enable Windows-specific symbols export
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 else()
     # Linux-specific flags (GCC/Clang)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -faligned-new -fno-strict-aliasing")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -faligned-new -fno-strict-aliasing")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx2 -Wall -fPIC -Wno-unknown-pragmas")
 endif()
 
@@ -149,13 +150,15 @@ endif()
 
 # Include YAML dependency
 include(yaml)
-set(INCS "${INCS}" "${YAML_INCLUDE_DIR}")
+include(Cct_Shim)
+set(MPARITH_SHARED_LIBS ON)
+include(Cct_Mparith)
 
-if (ALM_DEPS)
-    add_subdirectory(src/shim)
-    #include(Cct_Mparith)
-    add_subdirectory(src/mparith)
-endif()
+set(INCS "${INCS}" "${YAML_INCLUDE_DIR}" "${MPARITH_INCLUDE_DIR}")
+set(MPARITH_PATH    "${MPARITH_LIB_DIR}")
+
+# Add link directories for libraries
+link_directories(${MPARITH_PATH})
 
 add_executable(${PROJECT_NAME} ${SRCS})
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCS})
@@ -166,31 +169,22 @@ if(WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         -D_CRT_SECURE_NO_WARNINGS
         -Wno-microsoft-cast
         -D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH
-        -ffp-exception-behavior=ignore
     )
+
 endif()
 
 # Platform-specific linking
-if(WIN32)
-    # Windows-specific libraries
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${YAML_LIB} ${MPFR_LIB} ${MPC_LIB} ${GMP_LIB})
-    # Set the reference library path for Windows - use forward slashes for portability
-    get_filename_component(MPARITH_LIB_ABS "${CMAKE_SOURCE_DIR}/libs/libmparith.dll" ABSOLUTE)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC REF_MPARITH="${MPARITH_LIB_ABS}")
-else()
+set(LIBS_LIST ${YAML_LIB}  ${LIBMPARITH} ${MPFR_LIB} ${MPC_LIB} ${GMP_LIB})
+if(LINUX)
     # Linux-specific libraries (including dl for dynamic loading)
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${YAML_LIB} dl ${MPFR_LIB} ${MPC_LIB} ${GMP_LIB})
-    # Set the reference library path for Linux
-    target_compile_definitions(${PROJECT_NAME} PUBLIC REF_MPARITH="${CMAKE_SOURCE_DIR}/libs/libmparith.so")
+    set(LIBS_LIST ${LIBS_LIST} dl)
 endif()
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS_LIST})
+target_compile_definitions(${PROJECT_NAME} PUBLIC REF_LIB="${LIBMPARITH}")
 
-
-add_custom_target(distclean
+add_custom_target(almbench-distclean
     COMMAND ${CMAKE_MAKE_PROGRAM} clean
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/CMakeCache.txt
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/deps/yaml-cpp
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/dumps
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/libs
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     COMMENT "Remove cmake_generated files and directories"
 )

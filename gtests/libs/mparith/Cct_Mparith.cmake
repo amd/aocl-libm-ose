@@ -44,17 +44,17 @@ function(library_exists lib libpath)
     endif()
 endfunction()
 
-set(MPFR_SRC_DIR        "${CMAKE_CURRENT_SOURCE_DIR}/libs/mparith")
+set(MPFR_SRC_DIR        "${CMAKE_CURRENT_LIST_DIR}")
 set(MPARITH_DIR         "${CMAKE_SOURCE_DIR}/build/external/mparith")
-set(MPARITH_SHARED_LIBS OFF CACHE BOOL "Build mparith shared library")
 
 # Installation directories
 set(MPARITH_LIB_DIR     ${MPARITH_DIR}/lib)
 set(MPARITH_INCLUDE_DIR ${MPARITH_DIR}/include)
 
 if (WIN32)
-  set(MPARITH_STATIC       mparith.lib)
-  set(MPARITH_SHARED       mparith.dll)
+  set(MPARITH_STATIC       libmparith-static.lib)
+  set(MPARITH_LIB          libmparith.lib)
+  set(MPARITH_SHARED       libmparith.dll)
 else()
   set(MPARITH_STATIC       libmparith.a)
   set(MPARITH_SHARED       libmparith.so)
@@ -83,12 +83,12 @@ else()
                             -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
                             -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
                             -DCMAKE_BUILD_TYPE=Release
-                            -DBUILD_SHARED_LIBS=${MPARITH_SHARED_LIBS}
                             -DMPARITH_DIR=${MPARITH_DIR}
                     RESULTS_VARIABLE  result_mparith
                     OUTPUT_VARIABLE   config_mparith
                     WORKING_DIRECTORY ${MPFR_SRC_DIR}
     )
+
     execute_process(COMMAND ${CMAKE_COMMAND} --build ${MPARITH_BINARY_DIR} --config Release
                     OUTPUT_VARIABLE   output_mparith
                     WORKING_DIRECTORY ${MPFR_SRC_DIR}

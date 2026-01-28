@@ -53,9 +53,10 @@ set(YAML_REPO         "https://github.com/jbeder/yaml-cpp.git")
 set(YAML_TAG          "yaml-cpp-0.7.0")
 
 # Paths for source and build directories
-set(YAML_SOURCE_DIR   "${CMAKE_SOURCE_DIR}/deps/yaml-cpp")
-set(YAML_BINARY_DIR   "${YAML_SOURCE_DIR}/build")
+set(YAML_SOURCE_DIR   "${CMAKE_SOURCE_DIR}/build/external/yaml/yaml-cpp")
+set(YAML_BINARY_DIR   "${CMAKE_SOURCE_DIR}/build/external/yaml/yaml-cpp/build")
 set(YAML_LIB_PATH     "${YAML_BINARY_DIR}")
+
 
 # Option to build shared libraries (OFF by default)
 set(YAML_SHARED_LIBS  OFF CACHE BOOL "Build shared libraries")
@@ -64,9 +65,9 @@ set(YAML_SHARED_LIBS  OFF CACHE BOOL "Build shared libraries")
 if (WIN32)
   if(CMAKE_BUILD_TYPE MATCHES "Debug")
     set(YAML_LIB_NAME      yaml-cppd.lib)
-  else()    
+  else()
     set(YAML_LIB_NAME      yaml-cpp.lib)
-  endif()  
+  endif()
 else()
   # On Linux, check for both static and shared libraries
   if(YAML_SHARED_LIBS)
@@ -75,9 +76,9 @@ else()
     set(YAML_LIB_NAME      libyaml-cpp.a)
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
 	  set(YAML_LIB_NAME      libyaml-cppd.a)
-    else()    
+    else()
 	  set(YAML_LIB_NAME      libyaml-cpp.a)
-    endif()	
+    endif()
   endif()
 endif()
 
@@ -140,6 +141,7 @@ if(NOT YAML_LIB_EXISTS)
                            -DYAML_CPP_INSTALL=OFF
                            -DBUILD_SHARED_LIBS=${YAML_SHARED_LIBS}
                            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                           -DCMAKE_PREFIX_PATH=${YAML_LIB_PATH}
                            ${RUNTIME_CONFIG}
                     RESULT_VARIABLE  config_result
                     OUTPUT_VARIABLE  config_output
@@ -186,4 +188,3 @@ if(EXISTS "${YAML_LIB}")
 else()
     message(FATAL_ERROR "yaml-cpp library not found at: ${YAML_LIB}")
 endif()
-

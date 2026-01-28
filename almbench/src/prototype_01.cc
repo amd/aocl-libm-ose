@@ -169,7 +169,7 @@ static void range_test_vra(struct InParams<T, U> *ipp,
  * (unit_test, range, or VRA) and executes the test.
  */
 template <typename T, typename U>
-int api_prototype_01(struct AlmLibs alibs,
+int api_prototype_01(struct AlmLibs *alibs,
                      struct InParams<T, U> *ipp,
                      const std::string &libapi,
                      const std::string &refapi,
@@ -177,8 +177,8 @@ int api_prototype_01(struct AlmLibs alibs,
 {
     using UL = typename mpfr::op_type<U>::mopt;
 
-    auto shim_func = load_function<void (*)(struct InParams<T, U> *)>(alibs.pshimlib, libapi);
-    auto ref_func  = load_function<UL (*)(U)>(alibs.preflib, refapi);
+    auto shim_func = load_function<void (*)(struct InParams<T, U> *)>(alibs->pshimlib, libapi);
+    auto ref_func  = load_function<UL (*)(U)>(alibs->preflib, refapi);
 
     if (ipp->range.empty()) {
         unit_test<T, U, UL>(ipp, ref_func, shim_func, yop);
@@ -197,42 +197,42 @@ int api_prototype_01(struct AlmLibs alibs,
  * scalar and SIMD types with float and double precision.
  */
 template int api_prototype_01<float, float>(
-    struct AlmLibs,
+    struct AlmLibs *,
     struct InParams<float, float> *,
     const std::string &,
     const std::string &,
     struct YamlOutputs<float> *);
 
 template int api_prototype_01<double, double>(
-    struct AlmLibs,
+    struct AlmLibs *,
     struct InParams<double, double> *,
     const std::string &,
     const std::string &,
     struct YamlOutputs<double> *);
 
 template int api_prototype_01<libm::AlignedM128, float>(
-    struct AlmLibs,
+    struct AlmLibs *,
     struct InParams<libm::AlignedM128, float> *,
     const std::string &,
     const std::string &,
     struct YamlOutputs<float> *);
 
 template int api_prototype_01<libm::AlignedM128d, double>(
-    struct AlmLibs,
+    struct AlmLibs *,
     struct InParams<libm::AlignedM128d, double> *,
     const std::string &,
     const std::string &,
     struct YamlOutputs<double> *);
 
 template int api_prototype_01<libm::AlignedM256, float>(
-    struct AlmLibs,
+    struct AlmLibs *,
     struct InParams<libm::AlignedM256, float> *,
     const std::string &,
     const std::string &,
     struct YamlOutputs<float> *);
 
 template int api_prototype_01<libm::AlignedM256d, double>(
-    struct AlmLibs,
+    struct AlmLibs *,
     struct InParams<libm::AlignedM256d, double> *,
     const std::string &,
     const std::string &,
@@ -240,14 +240,14 @@ template int api_prototype_01<libm::AlignedM256d, double>(
 
 #ifdef __AVX512F__
 template int api_prototype_01<libm::AlignedM512, float>(
-    struct AlmLibs,
+    struct AlmLibs *,
     struct InParams<libm::AlignedM512, float> *,
     const std::string &,
     const std::string &,
     struct YamlOutputs<float> *);
 
 template int api_prototype_01<libm::AlignedM512d, double>(
-    struct AlmLibs,
+    struct AlmLibs *,
     struct InParams<libm::AlignedM512d, double> *,
     const std::string &,
     const std::string &,

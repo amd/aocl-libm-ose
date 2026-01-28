@@ -27,6 +27,7 @@
 
 #include <iostream>
 #include <cstring>
+#include <map>
 #include "dll_utils.h"
 #include "alm_test.h"
 #include "math_api_template.h"
@@ -131,8 +132,10 @@ int main(int argc, char *argv[])
         }
     }
 
-    std::string reflib    = REF_MPARITH;  // Use the hardcoded reference library
-    struct AlmLibs almlibs;
+    std::string reflib    = REF_LIB;  // Use the hardcoded reference library
+    struct AlmLibs almlibs = {};
+
+    /* Parse optional arguments */
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--type") == 0 ||
             std::strcmp(argv[i], "-t") == 0) {
@@ -168,7 +171,7 @@ int main(int argc, char *argv[])
 #else
     std::cout << "Shim library loaded   : " << shimlib << std::endl;
 #endif
-
+    std::cout << "Mparith library: " << reflib.c_str() << std::endl;
     DL_HANDLE prefobj = DL_LOAD(reflib.c_str());
     if (!prefobj) {
         std::cerr << "Error loading the Mparith reference library - " << DL_ERROR() << std::endl;
@@ -196,7 +199,7 @@ int main(int argc, char *argv[])
     read_yaml_file(yaml_file, params);
 
     /* Execute tests using loaded libraries */
-    process_libm(almlibs, params, test_mode);
+    process_libm(&almlibs, params, test_mode);
 
     /* Clean up */
     DL_CLOSE(pshimobj);

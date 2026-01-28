@@ -47,8 +47,8 @@ void check_outfile_dir(struct YamlOutputs<S> *yop) {
     namespace fs = std::filesystem;
 
     /* Get current working directory (where the .exe is run) */
-    fs::path base_dir = fs::current_path();
-    fs::path dir_path = base_dir / "dumps" / yop->api_name;
+    fs::path base_dir = fs::current_path() / "build";
+    fs::path dir_path = base_dir / "almbench_results" / yop->api_name;
     if (!fs::exists(dir_path)) {
         try {
             if (!fs::create_directories(dir_path)) {
@@ -391,7 +391,7 @@ bool find_key_for_value(const map<ApiTypes, vector<string>> &map,
  */
 bool is_variant_supported(const string &func, const string &variant, const string &vendor)
 {
-    const map<string, vector<string>> &libm_funcs = (vendor == "gcc") ? api_table_glibc : api_table_amd;
+    const map<string, vector<string>> &libm_funcs = (vendor == "glibc") ? api_table_glibc : api_table_amd;
     auto it = libm_funcs.find(func);
     if (it != libm_funcs.end()) {
         const auto &variants = it->second;
@@ -406,6 +406,7 @@ bool is_variant_supported(const string &func, const string &variant, const strin
  */
 ApiTypes check_api_type(const string &api_name, string &variant)
 {
+    (void)variant;  // Unused parameter
     string func_name = api_ends_with_f(api_name);
     ApiTypes res;
     if (!find_key_for_value(libm_api_names, func_name, res)) {
@@ -470,7 +471,7 @@ bool is_vrarr(string &variant)
  * Template function to validate and dispatch API execution.
  */
 template <typename T, typename U>
-int validate_api(struct AlmLibs alibs,
+int validate_api(struct AlmLibs *alibs,
                  struct InParams<T, U> *ipp,
                  struct YamlOutputs<U> *yop)
 {
@@ -515,13 +516,13 @@ int validate_api(struct AlmLibs alibs,
 }
 
 /* Explicit template instantiations */
-template int validate_api<float, float>(struct AlmLibs, struct InParams<float, float>*, struct YamlOutputs<float>*);
-template int validate_api<double, double>(struct AlmLibs, struct InParams<double, double>*, struct YamlOutputs<double>*);
-template int validate_api<libm::AlignedM128, float>(struct AlmLibs, struct InParams<libm::AlignedM128, float>*, struct YamlOutputs<float>*);
-template int validate_api<libm::AlignedM128d, double>(struct AlmLibs, struct InParams<libm::AlignedM128d, double>*, struct YamlOutputs<double>*);
-template int validate_api<libm::AlignedM256, float>(struct AlmLibs, struct InParams<libm::AlignedM256, float>*, struct YamlOutputs<float>*);
-template int validate_api<libm::AlignedM256d, double>(struct AlmLibs, struct InParams<libm::AlignedM256d, double>*, struct YamlOutputs<double>*);
+template int validate_api<float, float>(struct AlmLibs *, struct InParams<float, float>*, struct YamlOutputs<float>*);
+template int validate_api<double, double>(struct AlmLibs *, struct InParams<double, double>*, struct YamlOutputs<double>*);
+template int validate_api<libm::AlignedM128, float>(struct AlmLibs *, struct InParams<libm::AlignedM128, float>*, struct YamlOutputs<float>*);
+template int validate_api<libm::AlignedM128d, double>(struct AlmLibs *, struct InParams<libm::AlignedM128d, double>*, struct YamlOutputs<double>*);
+template int validate_api<libm::AlignedM256, float>(struct AlmLibs *, struct InParams<libm::AlignedM256, float>*, struct YamlOutputs<float>*);
+template int validate_api<libm::AlignedM256d, double>(struct AlmLibs *, struct InParams<libm::AlignedM256d, double>*, struct YamlOutputs<double>*);
 #ifdef __AVX512F__
-template int validate_api<libm::AlignedM512, float>(struct AlmLibs, struct InParams<libm::AlignedM512, float>*, struct YamlOutputs<float>*);
-template int validate_api<libm::AlignedM512d, double>(struct AlmLibs, struct InParams<libm::AlignedM512d, double>*, struct YamlOutputs<double>*);
+template int validate_api<libm::AlignedM512, float>(struct AlmLibs *, struct InParams<libm::AlignedM512, float>*, struct YamlOutputs<float>*);
+template int validate_api<libm::AlignedM512d, double>(struct AlmLibs *, struct InParams<libm::AlignedM512d, double>*, struct YamlOutputs<double>*);
 #endif

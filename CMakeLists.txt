@@ -274,6 +274,13 @@ if(${${PROJECT_PREFIX}_LIBM_BUILD_LIBRARY})
     endif()
 endif()
 
+#----------------------------------------------------------
+# Add almbench if LIBM_BUILD_ALMBENCH is enabled
+#----------------------------------------------------------
+if (${${PROJECT_PREFIX}_LIBM_BUILD_ALMBENCH})
+    add_subdirectory(almbench EXCLUDE_FROM_ALL)
+endif()
+
 #------------------------------
 # Add Tests if ENABLE_TESTS is defined
 # These are Integration Tests,

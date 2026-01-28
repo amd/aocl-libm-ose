@@ -1266,12 +1266,13 @@ static void lib_init(void) {
 }
 #endif
 
-extern "C" const char* get_vendor_name() {
+extern "C" {
+
+SHIM_EXPORT const char* get_vendor_name() {
     return "AMD";
 }
 
-extern "C" {
-
+// ============================================================================
 // High-performance shim functions - Direct function pointer calls (no checks)
 // Organized by variant to match struct definition order
 // ============================================================================

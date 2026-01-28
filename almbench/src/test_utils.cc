@@ -157,4 +157,3 @@ template class Runner<libm::AlignedM256d, double>;
 template class Runner<libm::AlignedM512, float>;
 template class Runner<libm::AlignedM512d, double>;
 #endif
-

@@ -296,6 +296,7 @@ extern __m128d   ALM_PROTO_INTERNAL(vrd2_linearfrac) (__m128d x, __m128d y, doub
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_erfc)     (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_round)    (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_cdfnorm)     (__m128d x);
+extern __m128d   ALM_PROTO_INTERNAL(vrd2_cdfnorminv)  (__m128d x);
 /*
  * Vector double precision, 4 element
  */
@@ -323,6 +324,7 @@ extern __m256d   ALM_PROTO_INTERNAL(vrd4_linearfrac)  (__m256d x, __m256d y, dou
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_erfc)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_round)     (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_cdfnorm)   (__m256d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_cdfnorminv)  (__m256d x);
 /*
  * Vector double precision, 8 elements
  */
@@ -351,6 +353,7 @@ extern __m512d   ALM_PROTO_INTERNAL(vrd8_erfc)     (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_erfinv)   (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_round)    (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_cdfnorm)  (__m512d x);
+extern __m512d   ALM_PROTO_INTERNAL(vrd8_cdfnorminv)  (__m512d x);
 
 /*
 * Vector Array versions
@@ -428,6 +431,7 @@ extern void      ALM_PROTO_INTERNAL(vrda_erfc)     (int n, const double *x, doub
 extern void      ALM_PROTO_INTERNAL(vrda_erfinv)   (int n, const double *x, double *y);
 extern void      ALM_PROTO_INTERNAL(vrsa_erfcf)    (int n, const float *x, float *y);
 extern void      ALM_PROTO_INTERNAL(vrda_cdfnorm)  (int n, const double *x, double *y);
+extern void      ALM_PROTO_INTERNAL(vrda_cdfnorminv)  (int n, const double *x, double *y);
 
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_acos)     (__m128d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_acos)     (__m256d x);

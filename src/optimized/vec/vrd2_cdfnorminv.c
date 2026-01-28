@@ -265,11 +265,7 @@ static const struct {
 #define SCALAR_CDFNORMINV ALM_PROTO_OPT(cdfnorminv)
 
 static inline int test_condition_for_all(v_u64x2_t cond) {
-    for (int i = 0; i < 2; i++) {
-        if (cond[i] != 0xFFFFFFFFFFFFFFFFULL)
-            return 0;
-    }
-    return 1;
+    return _mm_movemask_pd(_mm_castsi128_pd((__m128i)cond)) == 0x3;
 }
 
 v_f64x2_t
@@ -282,7 +278,7 @@ ALM_PROTO_OPT(vrd2_cdfnorminv)(v_f64x2_t _x) {
     v_u64x2_t ux_abs = ux & SIGN_MASK;
 
     /* Special cases: NaN, outside domain [0,1] */
-    v_u64x2_t valid_cond = (ux_abs > ZERO_U) & (ux_abs < ONE_U);
+    v_u64x2_t valid_cond = (sign == zero_u64) & (ux_abs > ZERO_U) & (ux_abs < ONE_U);
     v_u64x2_t special_cond = ~valid_cond;
     
     if (unlikely(test_condition_for_all(special_cond))) {

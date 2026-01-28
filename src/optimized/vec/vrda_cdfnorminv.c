@@ -25,24 +25,64 @@
  *
  */
 
-/*
- * C implementation of cdfnorminv double precision array version (vrda)
+/********************************************
+ * ---------------------
+ * Signature
+ * ---------------------
+ * void vrda_cdfnorminv(int length, double *input, double *result)
  *
- * Signature:
- *    void amd_vrda_cdfnorminv(int length, double *input, double *result)
+ * vrda_cdfnorminv() computes the inverse standard normal CDF for 'length' number of elements
+ * present in the 'input' array.
+ * The corresponding output is stored in the 'result' array.
  *
- * Initial implementation: scalar fallback for functional correctness.
- * TODO: Replace with optimized vector implementation using vrd4.
+ * ---------------------
+ * Implementation Notes
+ * ---------------------
+ *
+ * For any given length,
+ *     If length is greater than 4:
+ *         Pack 4 elements of input array into a 256-bit register
+ *             call vrd4_cdfnorminv()
+ *         Store the output into result array.
+ *         Repeat
+ *
+ *         For the remaining element/s,
+ *         Pack the last 4 elements of input array into a 256-bit register,
+ *             call vrd4_cdfnorminv()
+ *         Store the output into result array.
+ *     Return
+ *
+ *     If length is lesser than 4:
+ *         Pack the elements of input array into a 256-bit register
+ *         Mask the inputs which are not needed to be computed with a 0.
+ *             call vrd4_cdfnorminv()
+ *         Store the output of unmasked elements into result array.
+ * Return
  */
 
 #include <libm_macros.h>
+#include <immintrin.h>
 #include <libm/amd_funcs_internal.h>
+#include <libm_util_amd.h>
 
-#define SCALAR_CDFNORMINV ALM_PROTO_OPT(cdfnorminv)
-
-void
-ALM_PROTO_OPT(vrda_cdfnorminv)(int length, const double *input, double *result) {
-    for (int i = 0; i < length; i++) {
-        result[i] = SCALAR_CDFNORMINV(input[i]);
+void ALM_PROTO_OPT(vrda_cdfnorminv)(int length, const double *input, double *result)
+{
+    int j = 0;
+    if (likely(length >= DOUBLE_ELEMENTS_256_BIT))
+    {
+        for (j = 0; j <= length - DOUBLE_ELEMENTS_256_BIT; j += DOUBLE_ELEMENTS_256_BIT)
+        {
+            __m256d ip4 = _mm256_loadu_pd(&input[j]);
+            __m256d op4 = ALM_PROTO(vrd4_cdfnorminv)(ip4);
+            _mm256_storeu_pd(&result[j], op4);
+        }
+    }
+    int remainder = length - j;
+    if (remainder)
+    {
+        __m256i mask = GET_MASK_DOUBLE_256_BIT(remainder);
+        __m256d ip4 = _mm256_maskload_pd(&input[j], mask);
+        __m256d op4 = ALM_PROTO(vrd4_cdfnorminv)(ip4);
+        _mm256_maskstore_pd(&result[j], mask, op4);
     }
 }

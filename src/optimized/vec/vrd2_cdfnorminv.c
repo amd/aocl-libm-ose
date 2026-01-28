@@ -41,13 +41,16 @@
  * cdfnorminv(x > 1) = -QNaN
  *
  * Implementation Notes:
- * Uses Wichura's AS241 algorithm with three regions:
- * 1. Central region (|q| <= 0.425, where q = x - 0.5):
+ * Uses Wichura's AS241 algorithm. Regions defined by q = x - 0.5:
+ *
+ * 1. Central region (|q| <= 0.425, i.e., x in [0.075, 0.925]):            [Vector]
  *     cdfnorminv(x) = q * P(r)/Q(r), where r = 0.180625 - q^2
- * 2. Tail region (r <= 5.0, where r = sqrt(-log(min(x, 1-x))) - 1.6):
- *     cdfnorminv(x) = P(r)/Q(r), negated if x < 0.5
- * 3. Extreme tail (r > 5.0, where r = sqrt(-log(min(x, 1-x))) - 5.0):
- *     cdfnorminv(x) = P(r)/Q(r), negated if x < 0.5
+ * 2. Tail region (r <= 5.0, where r = sqrt(-log(min(x, 1-x)))):           [Vector]
+ *     cdfnorminv(x) = P(r-1.6)/Q(r-1.6), negated if x < 0.5
+ * 3. Extreme tail (r > 5.0, subnormal inputs):                            [Scalar fallback]
+ *     Falls back to scalar for accuracy
+ * 4. Mixed ranges:                                                        [Scalar fallback]
+ *     Calls scalar cdfnorminv for each element
  */
 
 #include <stdint.h>
@@ -75,7 +78,6 @@ static const struct {
     v_f64x2_t   poly_bound_1_H[16];  /* Head parts */
     v_f64x2_t   poly_bound_1_T[16];  /* Tail parts */
     v_f64x2_t   poly_bound_2[16];    /* 8 num + 8 den - tail region */
-    v_f64x2_t   poly_bound_3[16];    /* 8 num + 8 den - extreme tail */
 } v2_cdfnorminv_data = {
     .one_u       = _MM_SET1_I64x2(0x3FF0000000000000),  /* 1.0 */
     .zero_u      = _MM_SET1_I64x2(0x0000000000000000),  /* 0.0 */
@@ -174,28 +176,6 @@ static const struct {
         _MM_SET1_PD2(0x1.f207a7eab17bfp-7),
         _MM_SET1_PD2(0x1.1f18cbfdf2728p-11),
         _MM_SET1_PD2(0x1.20d3f686439e4p-30)
-    },
-
-    /* Extreme tail region coefficients (r > 5.0) - Wichura AS241 */
-    .poly_bound_3 = {
-        /* Numerator P30-P37 */
-        _MM_SET1_PD2(0x1.aa1b1c13ee526p+2),
-        _MM_SET1_PD2(0x1.5daea6e875003p+2),
-        _MM_SET1_PD2(0x1.c8ea6461fa445p+0),
-        _MM_SET1_PD2(0x1.2fad9315255cfp-2),
-        _MM_SET1_PD2(0x1.b2b41193b4ee7p-6),
-        _MM_SET1_PD2(0x1.45c1908425345p-10),
-        _MM_SET1_PD2(0x1.c6ec6cc59e02ap-16),
-        _MM_SET1_PD2(0x1.afb74d693bf93p-23),
-        /* Denominator Q30-Q37 */
-        _MM_SET1_PD2(0x1p+0),
-        _MM_SET1_PD2(0x1.331d34fc7d77fp-1),
-        _MM_SET1_PD2(0x1.186eb183443fbp-3),
-        _MM_SET1_PD2(0x1.e76f93215462ap-7),
-        _MM_SET1_PD2(0x1.9c8bc979dc5d7p-11),
-        _MM_SET1_PD2(0x1.35c2c496374bfp-16),
-        _MM_SET1_PD2(0x1.31446f740b9ep-23),
-        _MM_SET1_PD2(0x1.269bff1f8c19p-49)
     }
 };
 
@@ -282,24 +262,6 @@ static const struct {
 #define Q26  v2_cdfnorminv_data.poly_bound_2[14]
 #define Q27  v2_cdfnorminv_data.poly_bound_2[15]
 
-/* Extreme tail region polynomial coefficients */
-#define P30  v2_cdfnorminv_data.poly_bound_3[0]
-#define P31  v2_cdfnorminv_data.poly_bound_3[1]
-#define P32  v2_cdfnorminv_data.poly_bound_3[2]
-#define P33  v2_cdfnorminv_data.poly_bound_3[3]
-#define P34  v2_cdfnorminv_data.poly_bound_3[4]
-#define P35  v2_cdfnorminv_data.poly_bound_3[5]
-#define P36  v2_cdfnorminv_data.poly_bound_3[6]
-#define P37  v2_cdfnorminv_data.poly_bound_3[7]
-#define Q30  v2_cdfnorminv_data.poly_bound_3[8]
-#define Q31  v2_cdfnorminv_data.poly_bound_3[9]
-#define Q32  v2_cdfnorminv_data.poly_bound_3[10]
-#define Q33  v2_cdfnorminv_data.poly_bound_3[11]
-#define Q34  v2_cdfnorminv_data.poly_bound_3[12]
-#define Q35  v2_cdfnorminv_data.poly_bound_3[13]
-#define Q36  v2_cdfnorminv_data.poly_bound_3[14]
-#define Q37  v2_cdfnorminv_data.poly_bound_3[15]
-
 #define SCALAR_CDFNORMINV ALM_PROTO_OPT(cdfnorminv)
 
 static inline int test_condition_for_all(v_u64x2_t cond) {
@@ -385,16 +347,8 @@ ALM_PROTO_OPT(vrd2_cdfnorminv)(v_f64x2_t _x) {
             return _mm_blendv_pd(val, -val, as_v2_f64_u64(sign_q));
         }
         
-        v_u64x2_t tail_extreme = ~tail_normal;
-        if (test_condition_for_all(tail_extreme)) {
-            /* All in extreme tail (r > 5.0) */
-            r = r - BOUND_2;
-            v_f64x2_t P = POLY_EVAL_HORNER_8(r, P30, P31, P32, P33, P34, P35, P36, P37);
-            v_f64x2_t Q = POLY_EVAL_HORNER_8(r, Q30, Q31, Q32, Q33, Q34, Q35, Q36, Q37);
-            v_f64x2_t val = P / Q;
-            /* Negate if x < 0.5 (sign_q has MSB set) */
-            return _mm_blendv_pd(val, -val, as_v2_f64_u64(sign_q));
-        }
+        /* Extreme tail (r > 5.0) falls through to scalar as ALM_PROTO_OPT(vrd2_log)
+         * isn't accurate enough for subnormals and errors get amplified with further computation. */
     }
 
     /* Mixed ranges fall back to scalar */

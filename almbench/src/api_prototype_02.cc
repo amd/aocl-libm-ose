@@ -33,11 +33,11 @@
 #include "dll_utils.h"
 
 #include "alm_test.h"
-#include "math_api_template.h"
+#include "api_template.h"
 #include "ulp.h"
 #include "packer.h"
 #include "alm_mp_funcs.h"
-#include "test_utils.h"
+#include "api_runner.h"
 
 /*
  * unit_test:

@@ -38,10 +38,18 @@ static std::string g_api_filter;
 static std::string g_type_filter; // "UT", "VT", "PERF" or empty
 
 // Setters used by main.cc
-void set_api_filter(const std::string& api) { g_api_filter = api; }
-void set_type_filter(const std::string& type) {
-    if (type == "CONF" || type == "ACCU" || type == "PERF" || type == "conf" || type == "accu" || type == "perf") g_type_filter = type;
-    else g_type_filter.clear();
+void set_api_filter(const std::string& api)
+{
+    g_api_filter = api;
+}
+
+void set_type_filter(const std::string& type)
+{
+    if (type == "CONF" || type == "ACCU" || type == "PERF" ||
+        type == "conf" || type == "accu" || type == "perf")
+        g_type_filter = type;
+    else
+        g_type_filter.clear();
 }
 // Utility: first path segment equals API (acos/..., tanh/...)
 static bool firstSegmentEquals(const std::string& rel, const std::string& api) {
@@ -94,9 +102,12 @@ static int read_test(const YAML::Node &test, struct YamlInputs &param)
             range.stp = inp[1].as<std::string>();
 
             if (n == 0) {
-                range.type = type ? type[0].as<std::string>() : "expstep";
+                range.type = type ? type[0].as<std::string>()
+                                  : "expstep";
             } else {
-                range.type = (type && type[n]) ? type[n].as<std::string>() : type[n - 1].as<std::string>();
+                range.type = (type && type[n])
+                    ? type[n].as<std::string>()
+                    : type[n - 1].as<std::string>();
             }
 
             range.count = steps ? steps[n].as<std::string>() : "1000";
@@ -228,7 +239,8 @@ std::string extractApiName(const std::string& id) {
  * parse_yaml_content:
  * Process the actual test content from a YAML node.
  */
-static int parse_yaml_content(const YAML::Node &config, std::vector<struct YamlInputs> &params)
+static int parse_yaml_content(const YAML::Node &config,
+                              std::vector<struct YamlInputs> &params)
 {
     // Helper to process a single test_sequence-like map block
     auto process_block = [&](const YAML::Node& seq) -> int {
@@ -238,8 +250,10 @@ static int parse_yaml_content(const YAML::Node &config, std::vector<struct YamlI
         const YAML::Node test_sets = seq["test_sets"];
         if (!test_sets || !test_sets.IsSequence()) return 0;
 
-        std::string test_type = seq["test_sequence"] ? seq["test_sequence"].as<std::string>() : "";
-        std::string function  = seq["function"]      ? seq["function"].as<std::string>()      : "";
+        std::string test_type = seq["test_sequence"]
+            ? seq["test_sequence"].as<std::string>() : "";
+        std::string function = seq["function"]
+            ? seq["function"].as<std::string>() : "";
 
         // Support generic.yml using “function: allApis” by inferring from each test’s id
         const bool inferApiFromId = (function == "allApis");

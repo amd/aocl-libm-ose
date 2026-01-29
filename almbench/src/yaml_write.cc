@@ -372,7 +372,7 @@ void populate_system_metadata(struct TestMetadata<S> *metadata) {
     metadata->library_version = lib_version;
 
     // Test execution environment
-    metadata->test_runner = "libm_almbench";
+    metadata->test_runner = "libm_testsuite";
 
     if (metadata->count == 0) {
         metadata->count = 1000; // Default test count

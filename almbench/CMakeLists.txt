@@ -27,7 +27,7 @@
 
 
 cmake_minimum_required(VERSION 3.26)
-project(libm_almbench LANGUAGES C CXX)
+project(libm_testsuite LANGUAGES C CXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -63,18 +63,18 @@ else()
 endif()
 
 set(SRCS  "${PROJECT_SOURCE_DIR}/src/main.cc"
-            "${PROJECT_SOURCE_DIR}/src/prototype_01.cc"
-            "${PROJECT_SOURCE_DIR}/src/prototype_02.cc"
-            "${PROJECT_SOURCE_DIR}/src/prototype_03.cc"
-            "${PROJECT_SOURCE_DIR}/src/prototype_04.cc"
-            "${PROJECT_SOURCE_DIR}/src/prototype_05.cc"
-            "${PROJECT_SOURCE_DIR}/src/prototype_06.cc"
-            "${PROJECT_SOURCE_DIR}/src/checkapi.cc"
+            "${PROJECT_SOURCE_DIR}/src/api_prototype_01.cc"
+            "${PROJECT_SOURCE_DIR}/src/api_prototype_02.cc"
+            "${PROJECT_SOURCE_DIR}/src/api_prototype_03.cc"
+            "${PROJECT_SOURCE_DIR}/src/api_prototype_04.cc"
+            "${PROJECT_SOURCE_DIR}/src/api_prototype_05.cc"
+            "${PROJECT_SOURCE_DIR}/src/api_prototype_06.cc"
+            "${PROJECT_SOURCE_DIR}/src/api_validator.cc"
             "${PROJECT_SOURCE_DIR}/src/generator.cc"
-            "${PROJECT_SOURCE_DIR}/src/almbench_process.cc"
+            "${PROJECT_SOURCE_DIR}/src/libm_process.cc"
             "${PROJECT_SOURCE_DIR}/src/packer.cc"
             "${PROJECT_SOURCE_DIR}/src/hrt_utils.cc"
-            "${PROJECT_SOURCE_DIR}/src/test_utils.cc"
+            "${PROJECT_SOURCE_DIR}/src/api_runner.cc"
             "${PROJECT_SOURCE_DIR}/src/ulp.cc"
             "${PROJECT_SOURCE_DIR}/src/verify.cc"
             "${PROJECT_SOURCE_DIR}/src/yaml_read.cc"
@@ -160,17 +160,20 @@ set(MPARITH_PATH    "${MPARITH_LIB_DIR}")
 # Add link directories for libraries
 link_directories(${MPARITH_PATH})
 
-add_executable(${PROJECT_NAME} ${SRCS})
-target_include_directories(${PROJECT_NAME} PRIVATE ${INCS})
+set(EXE_NAME "libm_runner")
+add_executable(${EXE_NAME} ${SRCS})
+target_include_directories(${EXE_NAME} PRIVATE ${INCS})
+
+# Ensure executable name is consistent across platforms without extension
+set_target_properties(${EXE_NAME} PROPERTIES OUTPUT_NAME "libm_runner" SUFFIX "")
 
 # Platform-specific compile options for Windows with Clang
 if(WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    target_compile_options(${PROJECT_NAME} PRIVATE
+    target_compile_options(${EXE_NAME} PRIVATE
         -D_CRT_SECURE_NO_WARNINGS
         -Wno-microsoft-cast
         -D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH
     )
-
 endif()
 
 # Platform-specific linking
@@ -179,10 +182,10 @@ if(LINUX)
     # Linux-specific libraries (including dl for dynamic loading)
     set(LIBS_LIST ${LIBS_LIST} dl)
 endif()
-target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS_LIST})
-target_compile_definitions(${PROJECT_NAME} PUBLIC REF_LIB="${LIBMPARITH}")
+target_link_libraries(${EXE_NAME} PRIVATE ${LIBS_LIST})
+target_compile_definitions(${EXE_NAME} PUBLIC REF_LIB="${LIBMPARITH}")
 
-add_custom_target(almbench-distclean
+add_custom_target(${EXE_NAME}-distclean
     COMMAND ${CMAKE_MAKE_PROGRAM} clean
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/CMakeCache.txt
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}

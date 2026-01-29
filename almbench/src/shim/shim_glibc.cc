@@ -403,7 +403,8 @@ typedef void (*gcc_fmax_vrsa_func_t)(int, const float*, const float*, float*);
 typedef void (*gcc_fmaxfi_vrsa_func_t)(int, const float*, float, float*);
 typedef void (*gcc_fmin_vrsa_func_t)(int, const float*, const float*, float*);
 typedef void (*gcc_fminfi_vrsa_func_t)(int, const float*, float, float*);
-typedef void (*gcc_linearfrac_vrsa_func_t)(int, const float*, const float*, float, float, float, float, float*);
+typedef void (*gcc_linearfrac_vrsa_func_t)(int, const float*,
+    const float*, float, float, float, float, float*);
 typedef void (*gcc_log_vrsa_func_t)(int, const float*, float*);
 typedef void (*gcc_log10_vrsa_func_t)(int, const float*, float*);
 typedef void (*gcc_log1p_vrsa_func_t)(int, const float*, float*);

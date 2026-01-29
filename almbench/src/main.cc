@@ -30,13 +30,16 @@
 #include <map>
 #include "dll_utils.h"
 #include "alm_test.h"
-#include "math_api_template.h"
+#include "api_template.h"
 #include <string>
 
 // Helper to uppercase a string
-static std::string to_upper(std::string s) {
+static std::string to_upper(std::string s)
+{
     std::transform(s.begin(), s.end(), s.begin(),
-                   [](unsigned char c){ return static_cast<char>(std::toupper(c)); });
+        [](unsigned char c) {
+            return static_cast<char>(std::toupper(c));
+        });
     return s;
 }
 
@@ -47,15 +50,24 @@ static std::string to_upper(std::string s) {
 void print_usage(const char *program_name)
 {
     std::cerr << "Usage: " << program_name
-              << " <shim_shared_library> <yaml_file> [--type|-t <test_type>]" << std::endl;
+              << " <shim_shared_library> <yaml_file>"
+              << " [--type|-t <test_type>]" << std::endl;
     std::cerr << "Description:\n"
-              << "  This program loads shared libraries and executes specified functions.\n"
+              << "  This program loads shared libraries and "
+              << "executes specified functions.\n"
               << "  Arguments:\n"
-              << "    <shim_shared_library>    Path to the shim shared library.\n"
-              << "    <yaml_file>              Path to the YAML configuration file.\n"
-              << "    [--type|-t <test_type>]  Optional test type: 'accu' for accuracy (default), 'perf' for performance.\n"
+              << "    <shim_shared_library>    Path to the shim "
+              << "shared library.\n"
+              << "    <yaml_file>              Path to the YAML "
+              << "configuration file.\n"
+              << "    [--type|-t <test_type>]  Optional test type:\n"
+              << "                             'accu' for accuracy "
+              << "(default),\n"
+              << "                             'perf' for "
+              << "performance.\n"
               << "  Note:\n"
-              << "    The reference library is automatically loaded at build time." << std::endl;
+              << "    The reference library is automatically loaded "
+              << "at build time." << std::endl;
 }
 
 void set_api_filter(const std::string& api);
@@ -72,63 +84,70 @@ int main(int argc, char *argv[])
     }
 
     std::vector<YamlInputs> params;
-    std::string shimlib   = argv[1];
-    std::string yaml_file = argv[2];
+    std::string shimlib   = std::string(argv[1]);
+    std::string yaml_file = std::string(argv[2]);
 
     std::string api_name; // optional
 
     // Force stderr to be unbuffered for immediate visibility
     setvbuf(stderr, nullptr, _IONBF, 0);
-    std::fprintf(stderr, "[libm_almbench] starting. argc=%d\n", argc);
+    std::fprintf(stderr, "[%s] starting. argc=%d\n", argv[0], argc);
     TestMode test_mode = TestMode::E_ACCURACY;
 
     // Auto-detect test_mode from yaml filename if not explicitly set
     if (yaml_file.find("_perf.yml") != std::string::npos) {
         test_mode = TestMode::E_PERFORMANCE;
-        std::fprintf(stderr, "[libm_almbench] Auto-detected PERFORMANCE mode from filename\n");
+        std::fprintf(stderr,
+            "[%s] Auto-detected PERFORMANCE mode "
+            "from filename\n", argv[0]);
     } else if (yaml_file.find("_accu.yml") != std::string::npos) {
         test_mode = TestMode::E_ACCURACY;
-        std::fprintf(stderr, "[libm_almbench] Auto-detected ACCURACY mode from filename\n");
+        std::fprintf(stderr,
+            "[%s] Auto-detected ACCURACY mode "
+            "from filename\n", argv[0]);
     } else if (yaml_file.find("_conf.yml") != std::string::npos) {
         test_mode = TestMode::E_ACCURACY;
-        std::fprintf(stderr, "[libm_almbench] Auto-detected ACCURACY mode from filename (conf)\n");
+        std::fprintf(stderr,
+            "[%s] Auto-detected ACCURACY mode "
+            "from filename (conf)\n", argv[0]);
     }
 
  // Arg3 may be API or TYPE (case-insensitive for type)
-    if (argc >= 4 && argv[3][0] != '-') {
-        std::string a3 = argv[3];
-        std::string t3 = to_upper(a3);
+    if (argc >= 4 && std::strlen(argv[3]) > 0 && argv[3][0] != '-') {
+        std::string t3 = to_upper(argv[3]);
         if (t3 == "CONF" || t3 == "ACCU" || t3 == "PERF") {
             set_type_filter(t3);
-            set_api_filter(""); // no API filter when only type is provided
-            std::fprintf(stderr, "[libm_almbench] TYPE filter: %s\n", t3.c_str());
+            set_api_filter("");  // no API filter when type only
+            std::fprintf(stderr,
+                "[%s] TYPE filter: %s\n", argv[0], t3.c_str());
             // Set test_mode based on type filter
-            if (t3 == "PERF") {
+            if (t3 == "PERF")
                 test_mode = TestMode::E_PERFORMANCE;
-            } else if (t3 == "ACCU") {
+            else if (t3 == "ACCU")
                 test_mode = TestMode::E_ACCURACY;
-            }
         } else {
-            set_api_filter(a3);
-            std::fprintf(stderr, "[libm_almbench] API filter: %s\n", a3.c_str());
+            set_api_filter(argv[3]);
+            std::fprintf(stderr,
+                "[%s] API filter: %s\n", argv[0], argv[3]);
         }
     }
 
-    // Arg4, if present, is TYPE (case-insensitive) when both API and TYPE are provided
-    if (argc >= 5 && argv[4][0] != '-') {
-        std::string a4 = argv[4];
-        std::string t4 = to_upper(a4);
+    // Arg4 is TYPE when both API and TYPE are provided
+    if (argc >= 5 && std::strlen(argv[4]) > 0 && argv[4][0] != '-') {
+        std::string t4 = to_upper(argv[4]);
         if (t4 == "CONF" || t4 == "ACCU" || t4 == "PERF") {
             set_type_filter(t4);
-            std::fprintf(stderr, "[libm_almbench] TYPE filter: %s\n", t4.c_str());
+            std::fprintf(stderr,
+                "[%s] TYPE filter: %s\n", argv[0], t4.c_str());
             // Set test_mode based on type filter
-            if (t4 == "PERF") {
+            if (t4 == "PERF")
                 test_mode = TestMode::E_PERFORMANCE;
-            } else if (t4 == "ACCU") {
+            else if (t4 == "ACCU")
                 test_mode = TestMode::E_ACCURACY;
-            }
         } else {
-            std::fprintf(stderr, "[libm_almbench] Warning: unknown type arg: %s (ignored)\n", a4.c_str());
+            std::fprintf(stderr,
+                "[%s] Warning: unknown type arg: %s "
+                "(ignored)\n", argv[0], argv[4]);
         }
     }
 
@@ -193,7 +212,7 @@ int main(int argc, char *argv[])
     almlibs.preflib  = prefobj;
 
     // ...existing code...
-    std::fprintf(stderr, "[libm_almbench] reading YAML: %s\n", yaml_file.c_str());
+    std::fprintf(stderr, "[%s] reading YAML: %s\n", argv[0], yaml_file.c_str());
 
     /* Read YAML file and populate test parameters */
     read_yaml_file(yaml_file, params);

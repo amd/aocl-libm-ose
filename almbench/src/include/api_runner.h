@@ -30,7 +30,7 @@
 #include <string>
 #include <iostream>
 #include "alm_test.h"
-#include "math_api_template.h"
+#include "api_template.h"
 #include "ulp.h"
 #include "packer.h"
 #include "alm_mp_funcs.h"

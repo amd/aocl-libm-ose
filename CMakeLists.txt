@@ -275,9 +275,9 @@ if(${${PROJECT_PREFIX}_LIBM_BUILD_LIBRARY})
 endif()
 
 #----------------------------------------------------------
-# Add almbench if LIBM_BUILD_ALMBENCH is enabled
+# Add libm_testsuite if LIBM_BUILD_TESTSUITE is enabled
 #----------------------------------------------------------
-if (${${PROJECT_PREFIX}_LIBM_BUILD_ALMBENCH})
+if (${${PROJECT_PREFIX}_LIBM_BUILD_TESTSUITE})
     add_subdirectory(almbench EXCLUDE_FROM_ALL)
 endif()
 

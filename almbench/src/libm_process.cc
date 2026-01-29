@@ -31,7 +31,7 @@
 #include <regex>
 #include <unordered_map>
 #include "alm_test.h"
-#include "math_api_template.h"
+#include "api_template.h"
 
 /*
  * is_hex_string:

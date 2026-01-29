@@ -26,7 +26,7 @@
  */
 
 #include "alm_test.h"
-#include "test_utils.h"
+#include "api_runner.h"
 #include "numeric_wrapper.h"
 
 /*

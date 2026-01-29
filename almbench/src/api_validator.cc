@@ -32,7 +32,7 @@
 #include "dll_utils.h"
 #include <filesystem>
 #include "alm_test.h"
-#include "math_api_template.h"
+#include "api_template.h"
 #include "alm_mp_funcs.h"
 #include "ulp.h"
 
@@ -48,7 +48,7 @@ void check_outfile_dir(struct YamlOutputs<S> *yop) {
 
     /* Get current working directory (where the .exe is run) */
     fs::path base_dir = fs::current_path() / "build";
-    fs::path dir_path = base_dir / "almbench_results" / yop->api_name;
+    fs::path dir_path = base_dir / "libm_testsuite_results" / yop->api_name;
     if (!fs::exists(dir_path)) {
         try {
             if (!fs::create_directories(dir_path)) {

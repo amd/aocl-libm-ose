@@ -33,11 +33,11 @@
 #include "dll_utils.h"
 
 #include "alm_test.h"
-#include "math_api_template.h"
+#include "api_template.h"
 #include "ulp.h"
 #include "packer.h"
 #include "alm_mp_funcs.h"
-#include "test_utils.h"
+#include "api_runner.h"
 
 /*
  * unit_test:
@@ -45,24 +45,27 @@
  * with a reference implementation using ULP error.
  */
 template <typename T, typename U, typename UL>
-static void unit_test(struct InParams<T, U> *ipp,
-                      UL (*ref_func)(U, U),
+static void unit_test(struct InParams<T, U>* ipp,
+                      void (*ref_func)(U, UL*, UL*),
                       void (*shim_func)(struct InParams<T, U> *),
                       struct YamlOutputs<U> *yop)
 {
     yop->exception_raised = run_libm_api_with_exceptions<T, U>(shim_func, ipp);
 
     U* ip = reinterpret_cast<U*>(&ipp->ip[0]);
-    U* op = reinterpret_cast<U*>(&ipp->op[0]);
+    U* ops = reinterpret_cast<U*>(&ipp->op[0]);
+    U* opc = reinterpret_cast<U*>(&ipp->op[1]);
 
-    UL mpfrop = ref_func(ip[0], ip[1]);
+    UL msin, mcos;
+    ref_func(ip[0], &msin, &mcos);
     double ulp;
     ulp_data udata;
-    int uflag = update_ulp(op[0], mpfrop, udata, ulp);
+    int uflag = update_ulp(ops[0], msin, udata, ulp);
+        uflag |= update_ulp(opc[0], mcos, udata, ulp);
 
     yop->iptr[0] = ip;
-    yop->iptr[1] = ip + 1;
-    yop->optr[0] = op;
+    yop->optr[0] = ops;
+    yop->optr[1] = opc;
     yop->ulp     = &ulp;
     yop->status  = &uflag;
     write_yaml_output<U>(yop);
@@ -75,49 +78,48 @@ static void unit_test(struct InParams<T, U> *ipp,
  */
 template <typename T, typename U, typename UL>
 static void range_test(struct InParams<T, U>* ipp,
-                       UL (*ref_func)(U, U),
+                       void (*ref_func)(U, UL*, UL*),
                        void (*shim_func)(struct InParams<T, U> *),
                        struct YamlOutputs<U> *yop)
 {
-    uint64_t elem        = sizeof(T) / sizeof(U);
-    auto& x              = ipp->range[0];
-    auto& y              = ipp->range[1];
-    uint64_t xcount      = align_to(x.count, elem);
-    uint64_t ycount      = align_to(y.count, elem);
-    uint64_t N           = align_to(xcount, elem);
-    yop->n[0]            = elem;
-    yop->n[1]            = 1;
+    uint64_t elem  = sizeof(T) / sizeof(U);
+    auto& range    = ipp->range[0];
+    uint64_t count = align_to(range.count, elem);
+    uint64_t N     = align_to(count, elem);
+    yop->n[0]      = elem;
     double max_ulp[MAX_ELEM] = {0.0};
     int status[MAX_ELEM] = {0};
-    yop->ulp             = &max_ulp[0];
+    yop->ulp             = max_ulp;
     yop->status          = &status[0];
 
     Runner<T, U>   runner(shim_func, yop->test_mode);
-    MultiStepGenerator<U> arr1(x.srt, x.stp, xcount, x.type, elem);
-    MultiStepGenerator<U> arr2(y.srt, y.stp, ycount, y.type, 1);
+    MultiStepGenerator<U> val(range.srt, range.stp, range.count, range.type, elem);
 
     FloatPacker<T> fp;
     ulp_data udata;
     double ulp;
 
     for (uint64_t i = 0; i < N; ++i) {
-        U* ip1 = arr1.wrap_next();
-        U* ip2 = arr2.wrap_next();
-        ipp->ip[0] = fp.pack(ip1);
-        ipp->ip[1] = T{ip2[0]};
+        U* ip = val.wrap_next();
+        ipp->ip[0] = fp.pack(ip);
 
-        yop->duration = runner.run(ipp);
+       yop->duration = runner.run(ipp);
 
-        U* op = reinterpret_cast<U*>(&ipp->op[0]);
+        U* ops = reinterpret_cast<U*>(&ipp->op[0]);
+        U* opc = reinterpret_cast<U*>(&ipp->op[1]);
+        UL msin, mcos;
+        int uflag;
         for (uint64_t j = 0; j < elem; ++j) {
-            UL mpfrop = ref_func(ip1[j], ip2[0]);
-            status[j]  = update_ulp(op[j], mpfrop, udata, ulp);
+            ref_func(ip[j], &msin, &mcos);
+            uflag  = update_ulp(ops[j], msin, udata, ulp);
+            uflag |= update_ulp(opc[j], mcos, udata, ulp);
+            status[j]  = uflag;
             max_ulp[j] = ulp;
         }
 
-        yop->iptr[0] = ip1;
-        yop->iptr[1] = ip2;
-        yop->optr[0] = op;
+        yop->iptr[0] = ip;
+        yop->optr[0] = ops;
+        yop->optr[1] = opc;
         write_yaml_output<U>(yop);
     }
 }
@@ -129,63 +131,61 @@ static void range_test(struct InParams<T, U>* ipp,
  */
 template <typename T, typename U, typename UL>
 static void range_test_vra(struct InParams<T, U>* ipp,
-                           UL (*ref_func)(U, U),
+                           void (*ref_func)(U, UL*, UL*),
                            void (*shim_func)(struct InParams<T, U> *),
-                           struct YamlOutputs<U> *yop)
+                           YamlOutputs<U>* yop)
 {
-    uint64_t elem = sizeof(T) / sizeof(U);
-    auto& x        = ipp->range[0];
-    auto& y        = ipp->range[1];
-    uint64_t count = x.count;
+    uint64_t elem  = sizeof(T) / sizeof(U);
+    auto& range    = ipp->range[0];
+    uint64_t count = range.count;
     uint64_t N     = align_to(count, elem);
     count =  (count >= 100) ? 100 : count ;
 
-    ipp->count     = count;
-    std::vector<U>  op(count);
+    std::vector<U> ops(count), opc(count);
     std::vector<double> max_ulp(count);
     std::vector<int> status(count);
+    ipp->count   = count;
+    ipp->optr[0] = ops.data();
+    ipp->optr[1] = opc.data();
+    yop->n[0]    = count;
+    yop->optr[0] = ops.data();
+    yop->optr[1] = opc.data();
+    yop->ulp     = max_ulp.data();
+    yop->status  = status.data();
 
-    ipp->optr[0]  = op.data();
-    yop->n[0]     = count;
-    yop->n[1]     = 1;
-    yop->optr[0]  = op.data();
-    yop->ulp      = max_ulp.data();
-    yop->status   = status.data();
+    Runner<T, U>   runner(shim_func, yop->test_mode);
+    MultiStepGenerator<U> val(range.srt, range.stp, range.count, range.type, count);
 
     ulp_data udata;
     double ulp;
 
-    Runner<T, U>   runner(shim_func, yop->test_mode);
-    MultiStepGenerator<U> arr1(x.srt, x.stp, x.count, x.type, count);
-    MultiStepGenerator<U> arr2(y.srt, y.stp, y.count, y.type, 1);
-
     for (uint64_t i = 0; i < N; ++i) {
-        U* ip1 = arr1.wrap_next();
-        U* ip2 = arr2.wrap_next();
-        ipp->iptr[0] = ip1;
-        ipp->iptr[1] = ip2;
+        U* ip = val.wrap_next();
+        ipp->iptr[0] = ip;
 
         yop->duration = runner.run(ipp);
-
+        UL msin, mcos;
+        int uflag;
         for (uint64_t j = 0; j < count; ++j) {
-            UL mpfrop = ref_func(ip1[j], ip2[0]);
-            status[j] = update_ulp(op[j], mpfrop, udata, ulp);
+            ref_func(ip[j], &msin, &mcos);
+            uflag  = update_ulp(ops[j], msin, udata, ulp);
+            uflag |= update_ulp(opc[j], mcos, udata, ulp);
+            status[j]  = uflag;
             max_ulp[j] = ulp;
         }
 
-        yop->iptr[0] = ip1;
-        yop->iptr[1] = ip2;
+        yop->iptr[0] = ip;
         write_yaml_output<U>(yop);
     }
 }
 
 /*
- * api_prototype_03:
- * Main dispatcher function that selects the appropriate test mode
- * (unit_test, range, or VRA) and executes the test.
+ * api_prototype_04:
+ * main dispatcher for dual-output APIs like sincos
+ * selects unit, range, or vra test mode
  */
 template <typename T, typename U>
-int api_prototype_03(struct AlmLibs *alibs,
+int api_prototype_04(struct AlmLibs *alibs,
                      struct InParams<T, U>* ipp,
                      const std::string& libapi,
                      const std::string& refapi,
@@ -194,7 +194,7 @@ int api_prototype_03(struct AlmLibs *alibs,
     using UL = typename mpfr::op_type<U>::mopt;
 
     auto shim_func = load_function<void (*)(struct InParams<T, U> *)>(alibs->pshimlib, libapi);
-    auto ref_func  = load_function<UL (*)(U, U)>(alibs->preflib, refapi);
+    auto ref_func  = load_function<void (*)(U, UL*, UL*)>(alibs->preflib, refapi);
 
     if (ipp->range.empty()) {
         unit_test<T, U, UL>(ipp, ref_func, shim_func, yop);
@@ -209,45 +209,45 @@ int api_prototype_03(struct AlmLibs *alibs,
 
 /*
  * Template instantiations:
- * Explicitly instantiate the api_prototype_03 function for supported
+ * Explicitly instantiate the api_prototype_04 function for supported
  * scalar and SIMD types with float and double precision.
  */
-template int api_prototype_03<float, float>(
+template int api_prototype_04<float, float>(
     struct AlmLibs *,
     struct InParams<float, float> *,
     const std::string &,
     const std::string &,
     struct YamlOutputs<float> *);
 
-template int api_prototype_03<double, double>(
+template int api_prototype_04<double, double>(
     struct AlmLibs *,
     struct InParams<double, double> *,
     const std::string &,
     const std::string &,
     struct YamlOutputs<double> *);
 
-template int api_prototype_03<libm::AlignedM128, float>(
+template int api_prototype_04<libm::AlignedM128, float>(
     struct AlmLibs *,
     struct InParams<libm::AlignedM128, float> *,
     const std::string &,
     const std::string &,
     struct YamlOutputs<float> *);
 
-template int api_prototype_03<libm::AlignedM128d, double>(
+template int api_prototype_04<libm::AlignedM128d, double>(
     struct AlmLibs *,
     struct InParams<libm::AlignedM128d, double> *,
     const std::string &,
     const std::string &,
     struct YamlOutputs<double> *);
 
-template int api_prototype_03<libm::AlignedM256, float>(
+template int api_prototype_04<libm::AlignedM256, float>(
     struct AlmLibs *,
     struct InParams<libm::AlignedM256, float> *,
     const std::string &,
     const std::string &,
     struct YamlOutputs<float> *);
 
-template int api_prototype_03<libm::AlignedM256d, double>(
+template int api_prototype_04<libm::AlignedM256d, double>(
     struct AlmLibs *,
     struct InParams<libm::AlignedM256d, double> *,
     const std::string &,
@@ -255,14 +255,14 @@ template int api_prototype_03<libm::AlignedM256d, double>(
     struct YamlOutputs<double> *);
 
 #ifdef __AVX512F__
-template int api_prototype_03<libm::AlignedM512, float>(
+template int api_prototype_04<libm::AlignedM512, float>(
     struct AlmLibs *,
     struct InParams<libm::AlignedM512, float> *,
     const std::string &,
     const std::string &,
     struct YamlOutputs<float> *);
 
-template int api_prototype_03<libm::AlignedM512d, double>(
+template int api_prototype_04<libm::AlignedM512d, double>(
     struct AlmLibs *,
     struct InParams<libm::AlignedM512d, double> *,
     const std::string &,

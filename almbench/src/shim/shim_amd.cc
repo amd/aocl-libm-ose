@@ -359,7 +359,8 @@ typedef void (*amd_fmax_vrsa_func_t)(int, const float*, const float*, float*);
 typedef void (*amd_fmaxfi_vrsa_func_t)(int, const float*, float, float*);
 typedef void (*amd_fmin_vrsa_func_t)(int, const float*, const float*, float*);
 typedef void (*amd_fminfi_vrsa_func_t)(int, const float*, float, float*);
-typedef void (*amd_linearfrac_vrsa_func_t)(int, const float*, const float*, float, float, float, float, float*);
+typedef void (*amd_linearfrac_vrsa_func_t)(int, const float*,
+    const float*, float, float, float, float, float*);
 typedef void (*amd_log_vrsa_func_t)(int, const float*, float*);
 typedef void (*amd_log10_vrsa_func_t)(int, const float*, float*);
 typedef void (*amd_log1p_vrsa_func_t)(int, const float*, float*);
@@ -398,7 +399,8 @@ typedef void (*amd_fmax_vrda_func_t)(int, const double*, const double*, double*)
 typedef void (*amd_fmaxi_vrda_func_t)(int, const double*, double, double*);
 typedef void (*amd_fmin_vrda_func_t)(int, const double*, const double*, double*);
 typedef void (*amd_fmini_vrda_func_t)(int, const double*, double, double*);
-typedef void (*amd_linearfrac_vrda_func_t)(int, const double*, const double*, double, double, double, double, double*);
+typedef void (*amd_linearfrac_vrda_func_t)(int, const double*,
+    const double*, double, double, double, double, double*);
 typedef void (*amd_log_vrda_func_t)(int, const double*, double*);
 typedef void (*amd_log10_vrda_func_t)(int, const double*, double*);
 typedef void (*amd_log1p_vrda_func_t)(int, const double*, double*);

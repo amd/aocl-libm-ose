@@ -134,7 +134,7 @@ struct TestMetadata {
           library_version("unknown"),
           library("aocl-libm"),
 
-          test_runner("libm_almbench"),
+          test_runner("libm_testsuite"),
 
           api_name("unknown"),
           test_id("unknown"),

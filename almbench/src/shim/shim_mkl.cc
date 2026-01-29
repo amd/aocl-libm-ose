@@ -216,7 +216,8 @@ typedef __m128 (*mkl_exp10_vrs4_func_t)(__m128);
 typedef __m128 (*mkl_exp2_vrs4_func_t)(__m128);
 typedef __m128 (*mkl_expm1_vrs4_func_t)(__m128);
 typedef __m128 (*mkl_fabs_vrs4_func_t)(int, float*, float*);
-typedef __m128 (*mkl_linearfrac_vrs4_func_t)(int, const float*, const float*, float, float, float, float, float*);
+typedef __m128 (*mkl_linearfrac_vrs4_func_t)(int, const float*,
+    const float*, float, float, float, float, float*);
 typedef __m128 (*mkl_log_vrs4_func_t)(__m128);
 typedef __m128 (*mkl_log10_vrs4_func_t)(__m128);
 typedef __m128 (*mkl_log1p_vrs4_func_t)(__m128);
@@ -260,7 +261,8 @@ typedef __m256 (*mkl_erfc_vrs8_func_t)(__m256);
 typedef __m256 (*mkl_exp_vrs8_func_t)(__m256);
 typedef __m256 (*mkl_exp2_vrs8_func_t)(__m256);
 typedef __m256 (*mkl_fabs_vrs8_func_t)(int, float*, float*);
-typedef __m256 (*mkl_linearfrac_vrs8_func_t)(int, const float*, const float*, float, float, float, float, float*);
+typedef __m256 (*mkl_linearfrac_vrs8_func_t)(int, const float*,
+    const float*, float, float, float, float, float*);
 typedef __m256 (*mkl_log_vrs8_func_t)(__m256);
 typedef __m256 (*mkl_log10_vrs8_func_t)(__m256);
 typedef __m256 (*mkl_log2_vrs8_func_t)(__m256);
@@ -294,7 +296,8 @@ typedef void (*mkl_fmax_vrsa_func_t)(int, const float*, const float*, float*);
 typedef void (*mkl_fmaxfi_vrsa_func_t)(int, const float*, float, float*);
 typedef void (*mkl_fmin_vrsa_func_t)(int, const float*, const float*, float*);
 typedef void (*mkl_fminfi_vrsa_func_t)(int, const float*, float, float*);
-typedef void (*mkl_linearfrac_vrsa_func_t)(int, const float*, const float*, float, float, float, float, float*);
+typedef void (*mkl_linearfrac_vrsa_func_t)(int, const float*,
+    const float*, float, float, float, float, float*);
 typedef void (*mkl_log_vrsa_func_t)(int, const float*, float*);
 typedef void (*mkl_log10_vrsa_func_t)(int, const float*, float*);
 typedef void (*mkl_log1p_vrsa_func_t)(int, const float*, float*);
@@ -378,7 +381,8 @@ typedef __m512 (*mkl_erfc_vrs16_func_t)(__m512);
 typedef __m512 (*mkl_exp_vrs16_func_t)(__m512);
 typedef __m512 (*mkl_exp10_vrs16_func_t)(__m512);
 typedef __m512 (*mkl_exp2_vrs16_func_t)(__m512);
-typedef __m512 (*mkl_linearfrac_vrs16_func_t)(int, const float*, const float*, float, float, float, float, float*);
+typedef __m512 (*mkl_linearfrac_vrs16_func_t)(int, const float*,
+    const float*, float, float, float, float, float*);
 typedef __m512 (*mkl_log_vrs16_func_t)(__m512);
 typedef __m512 (*mkl_log10_vrs16_func_t)(__m512);
 typedef __m512 (*mkl_log2_vrs16_func_t)(__m512);

@@ -275,11 +275,7 @@ static inline int test_condition_for_all(v_u64x8_t cond) {
 
 /* Convert mask from comparison result to __mmask8 for AVX-512 blend */
 static inline __mmask8 to_mask8(v_u64x8_t cond) {
-    __mmask8 mask = 0;
-    for (int i = 0; i < 8; i++) {
-        if (cond[i]) mask |= (__mmask8)(1 << i);
-    }
-    return mask;
+    return _mm512_cmpneq_epi64_mask((__m512i)cond, (__m512i)ZERO_U);
 }
 
 v_f64x8_t

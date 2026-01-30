@@ -69,6 +69,7 @@
 #include <libm/typehelper.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
+#include "erfinv_data.h"
 
 
 static const struct
@@ -82,75 +83,75 @@ static const struct
 
 } erfinv_data = {
 
-    .exp_offset1 = 0x1.2000000000000p-1,
-    .exp_offset2 = 0x1.c200000000000p-1,
+    .exp_offset1 = ERFINV_OFFSET1,
+    .exp_offset2 = ERFINV_OFFSET2,
 
      /* Table 17 by Blair et al */
     .poly_bound1 =
     {
-       0x1.007ce8f01b2e8p+4, /* P100 */
-      -0x1.6b23cc5c6c6d7p+6, /* P101 */
-       0x1.74e5f6ceb3548p+7, /* P102 */
-      -0x1.5200bb15cc6bbp+7, /* P103 */
-       0x1.05d193233a849p+6, /* P104 */
-      -0x1.148c5474ee5e1p+3, /* P105 */
-       0x1.689181bbafd0cp-3, /* P106 */
+       ERFINV_P100,
+       ERFINV_P101,
+       ERFINV_P102,
+       ERFINV_P103,
+       ERFINV_P104,
+       ERFINV_P105,
+       ERFINV_P106,
 
-       0x1.d8fb0f913bd7bp+3, /* Q100 */
-      -0x1.6d7f25a3f1c24p+6, /* Q101 */
-       0x1.a450d8e7f4cbbp+7, /* Q102 */
-      -0x1.bc34804858570p+7, /* Q103 */
-       0x1.ae6b0c504ee02p+6, /* Q104 */
-      -0x1.499dfec1a7f5fp+4, /* Q105 */
-       0x1.0p+0,             /* Q106 */
+       ERFINV_Q100,
+       ERFINV_Q101,
+       ERFINV_Q102,
+       ERFINV_Q103,
+       ERFINV_Q104,
+       ERFINV_Q105,
+       ERFINV_Q106,
     },
 
      /* Table 37 by Blair et al */
     .poly_bound2 =
     {
-      -0x1.f3596123109edp-7, /* P200 */
-       0x1.60b8fe375999ep-2, /* P201 */
-      -0x1.779bb9bef7c0fp+1, /* P202 */
-       0x1.786ea384470a2p+3, /* P203 */
-      -0x1.6a7c1453c85d3p+4, /* P204 */
-       0x1.31f0fc5613142p+4, /* P205 */
-      -0x1.5ea6c007d4dbbp+2, /* P206 */
-       0x1.e66f265ce9e50p-3, /* P207 */
+       ERFINV_P200,
+       ERFINV_P201,
+       ERFINV_P202,
+       ERFINV_P203,
+       ERFINV_P204,
+       ERFINV_P205,
+       ERFINV_P206,
+       ERFINV_P207,
 
-      -0x1.636b2dcf4edbep-7, /* Q200 */
-       0x1.0b5411e2acf29p-2, /* Q201 */
-      -0x1.3413109467a0bp+1, /* Q202 */
-       0x1.563e8136c554ap+3, /* Q203 */
-      -0x1.7b77aab1dcafbp+4, /* Q204 */
-       0x1.8a3e174e05ddcp+4, /* Q205 */
-      -0x1.4075c56404eecp+3, /* Q206 */
-       0x1.0000000000000p+0, /* Q207 */
+       ERFINV_Q200,
+       ERFINV_Q201,
+       ERFINV_Q202,
+       ERFINV_Q203,
+       ERFINV_Q204,
+       ERFINV_Q205,
+       ERFINV_Q206,
+       ERFINV_Q207,
     },
 
      /* Table 58 by Blair et al */
     .poly_bound3 =
     {
-       0x1.d98db2f393c93p-15, /* P300 */
-       0x1.5ea5105db7d1bp-8, /* P301 */
-       0x1.099dcb79c5e37p-3, /* P302 */
-       0x1.0ae8df6736f5ap+0, /* P303 */
-       0x1.6a463706dce53p+1, /* P304 */
-       0x1.501296c195ce7p+1, /* P305 */
-       0x1.0a1bd4227162ep+1, /* P306 */
-       0x1.7451fe635fbb3p-1, /* P307 */
-       0x1.11ae803f200b1p-4, /* P308 */
-      -0x1.237ce1b409b07p-6, /* P309 */
-       0x1.25db922abee60p-9, /* P310 */
+       ERFINV_P300,
+       ERFINV_P301,
+       ERFINV_P302,
+       ERFINV_P303,
+       ERFINV_P304,
+       ERFINV_P305,
+       ERFINV_P306,
+       ERFINV_P307,
+       ERFINV_P308,
+       ERFINV_P309,
+       ERFINV_P310,
 
-       0x1.d98d1a3412e13p-15, /* Q300 */
-       0x1.5ea77aa937936p-8, /* Q301 */
-       0x1.09f744281bf43p-3, /* Q302 */
-       0x1.0de629224eb8ap+0, /* Q303 */
-       0x1.84dafe0d3b477p+1, /* Q304 */
-       0x1.e1add024b4c8dp+1, /* Q305 */
-       0x1.f06bab8543d1ap+1, /* Q306 */
-       0x1.04c46273c9ec0p+1, /* Q307 */
-       0x1.0000000000000p+0, /* Q308 */
+       ERFINV_Q300,
+       ERFINV_Q301,
+       ERFINV_Q302,
+       ERFINV_Q303,
+       ERFINV_Q304,
+       ERFINV_Q305,
+       ERFINV_Q306,
+       ERFINV_Q307,
+       ERFINV_Q308,
     },
 };
 

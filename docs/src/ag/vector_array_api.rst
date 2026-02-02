@@ -294,6 +294,20 @@ Erfc
   :project: libm
 
 
+Erfinv
+------
+
+.. doxygenfunction:: amd_vrda_erfinv
+  :project: libm
+
+
+Erfcinv
+-------
+
+.. doxygenfunction:: amd_vrda_erfcinv
+  :project: libm
+
+
 Special Functions
 =================
 
@@ -301,6 +315,12 @@ CdfNorm
 -------
 
 See :ref:`special_functions` for ``amd_vrda_cdfnorm`` documentation.
+
+
+CdfNormInv
+----------
+
+See :ref:`special_functions` for ``amd_vrda_cdfnorminv`` documentation.
 
 
 Floating-Point Manipulation Functions

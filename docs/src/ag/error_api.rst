@@ -48,6 +48,18 @@ See :ref:`scalar_api` for ``amd_erfcf`` documentation.
 See :ref:`scalar_api` for ``amd_erfc`` documentation.
 
 
+Erfinv
+------
+
+See :ref:`scalar_api` for ``amd_erfinv`` documentation.
+
+
+Erfcinv
+-------
+
+See :ref:`scalar_api` for ``amd_erfcinv`` documentation.
+
+
 
 Fast Variants
 ^^^^^^^^^^^^^
@@ -93,6 +105,18 @@ Erfc
 ----
 
 See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for erfc vector variants documentation.
+
+
+Erfinv
+------
+
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for erfinv vector variants documentation.
+
+
+Erfcinv
+-------
+
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for erfcinv vector variants documentation.
 
 
 

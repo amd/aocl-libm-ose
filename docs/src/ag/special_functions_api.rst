@@ -97,4 +97,65 @@ Vector
   :project: libm
 
 
+CdfNormInv (Inverse Normal Distribution CDF)
+============================================
+
+The inverse cumulative distribution function of the standard normal distribution,
+also known as the quantile function or probit function, computes the value x such
+that Φ(x) = p for a given probability p:
+
+.. math::
+
+   \Phi^{-1}(p) = x \text{ such that } \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{x} e^{-t^2/2} dt = p
+
+This function is fundamental in statistics for computing confidence intervals,
+percentiles, and in quantitative finance for risk calculations and option pricing.
+
+**Relationship to Inverse Error Function:**
+
+The inverse normal CDF is related to the inverse error function by:
+
+.. math::
+
+   \Phi^{-1}(p) = \sqrt{2} \cdot \text{erf}^{-1}(2p - 1)
+
+.. note::
+   Currently, only double-precision variants of cdfnorminv are available. Single-precision
+   variants (cdfnorminvf) may be added in future releases.
+
+
+Scalar
+^^^^^^
+
+.. doxygenfunction:: amd_cdfnorminv
+  :project: libm
+
+
+Vector
+^^^^^^
+
+**AVX (128-bit)**
+
+.. doxygenfunction:: amd_vrd2_cdfnorminv
+  :project: libm
+
+
+**AVX2 (256-bit)**
+
+.. doxygenfunction:: amd_vrd4_cdfnorminv
+  :project: libm
+
+
+**AVX512 (512-bit)**
+
+.. doxygenfunction:: amd_vrd8_cdfnorminv
+  :project: libm
+
+
+**Array**
+
+.. doxygenfunction:: amd_vrda_cdfnorminv
+  :project: libm
+
+
 .. End of Doc

@@ -413,20 +413,21 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_ARRAY_DOUBLES) {
 
 TEST_P(SpecTestFixtureSinCosF, CONFORMANCE_FLOAT) {
   int nfail = 0;
-  test_data tdata;
+  test_data t;
   float ip[2];
   float aop[2] = {0};
   double scp[2] = {0};
-  tdata.ip  = (void *)data;
-  tdata.op  = (void *)&aop[0];
-  tdata.sc  = (void *)&aop[1];
+  t.ip  = (void *)data;
+  t.op  = (void *)&aop[0];
+  t.sc  = (void *)&aop[1];
 
   for (uint32_t i = 0; i < count; i++) {
     feclearexcept (FE_ALL_EXCEPT);
-    ip[0] = data[i];
-    test_s1s(&tdata, i);
+    test_s1s(&t, i);
     int raised_exception = fetestexcept(FE_ALL_EXCEPT);
     feclearexcept (FE_ALL_EXCEPT);
+
+    ip[0] = data[i];
 
     getExpected(ip,scp);
     int eef = expected_expection[i];
@@ -446,20 +447,21 @@ TEST_P(SpecTestFixtureSinCosF, CONFORMANCE_FLOAT) {
 
 TEST_P(SpecTestFixtureSinCos, CONFORMANCE_DOUBLE) {
   int nfail = 0;
-  test_data tdata;
+  test_data t;
   double ip[2];
   double aop[2] = {0};
   long double scp[2] = {0};
-  tdata.ip  = (void *)data;
-  tdata.op  = (void *)&aop[0];
-  tdata.sc  = (void *)&aop[1];
+  t.ip  = (void *)data;
+  t.op  = (void *)&aop[0];
+  t.sc  = (void *)&aop[1];
 
   for (uint32_t i = 0; i < count; i++) {
     feclearexcept (FE_ALL_EXCEPT);
-    ip[0] = data[i];
-    test_s1d(&tdata, i);
+    test_s1d(&t, i);
     int raised_exception = fetestexcept(FE_ALL_EXCEPT);
     feclearexcept (FE_ALL_EXCEPT);
+
+    ip[0] = data[i];
 
     getExpected(ip,scp);
     int eef = expected_expection[i];

@@ -28,6 +28,8 @@
 #ifndef __LIBM_POLY_H__
 #define __LIBM_POLY_H__
 
+#include <libm/typehelper.h>
+#include <libm/poly-common.h>
 /*
 * poly = C0*r^0 + C1*r^1 + c2*r^2
 */
@@ -701,7 +703,47 @@
         a1;                                             \
         })        
 
-#include <libm/poly-common.h>
+
+/*
+ * =============================================================================
+ * Double-Double Polynomial Evaluation Macros
+ * =============================================================================
+ * These macros evaluate polynomials using double-double arithmetic for
+ * extended precision. Coefficients are stored as double arrays but evaluated
+ * with approximately 106 bits of mantissa precision.
+ */
+
+/*
+ * Double-Double Horner polynomial evaluation (degree 5).
+ * Evaluates p(x) = c[5]*x^5 + c[4]*x^4 + ... + c[1]*x + c[0]
+ * using Horner's method with double-double precision.
+ */
+#define DD_POLY_EVAL_HORNER_6(x, c) ({                          \
+    dd_t _dd_r = dd_from_d((c)[5]);                             \
+    _dd_r = dd_add_d(dd_mul(_dd_r, (x)), (c)[4]);               \
+    _dd_r = dd_add_d(dd_mul(_dd_r, (x)), (c)[3]);               \
+    _dd_r = dd_add_d(dd_mul(_dd_r, (x)), (c)[2]);               \
+    _dd_r = dd_add_d(dd_mul(_dd_r, (x)), (c)[1]);               \
+    _dd_r = dd_add_d(dd_mul(_dd_r, (x)), (c)[0]);               \
+    _dd_r;                                                       \
+})
+
+/*
+ * Double-Double Horner polynomial evaluation (degree 6).
+ * Evaluates p(x) = c[6]*x^6 + c[5]*x^5 + ... + c[1]*x + c[0]
+ */
+#define DD_POLY_EVAL_HORNER_7(x, c) ({                          \
+    dd_t _dd_r = dd_from_d((c)[6]);                             \
+    _dd_r = dd_add_d(dd_mul(_dd_r, (x)), (c)[5]);               \
+    _dd_r = dd_add_d(dd_mul(_dd_r, (x)), (c)[4]);               \
+    _dd_r = dd_add_d(dd_mul(_dd_r, (x)), (c)[3]);               \
+    _dd_r = dd_add_d(dd_mul(_dd_r, (x)), (c)[2]);               \
+    _dd_r = dd_add_d(dd_mul(_dd_r, (x)), (c)[1]);               \
+    _dd_r = dd_add_d(dd_mul(_dd_r, (x)), (c)[0]);               \
+    _dd_r;                                                       \
+})
+
+
 
 #endif /* LIBM_POLY_H */
 

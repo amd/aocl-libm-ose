@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2026, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -78,6 +78,17 @@ typedef union {
     int64_t  i;
     uint64_t u;
 } flt64_t;
+/*
+ * Double-Double Precision Type
+ * Represents a value as the unevaluated sum of two IEEE doubles: x = hi + lo,
+ * where |lo| <= 0.5 * ulp(hi). Provides approximately 106 bits of mantissa
+ * precision for extended precision arithmetic.
+ */
+typedef struct {
+    double hi;  /* High part (primary value) */
+    double lo;  /* Low part (correction term) */
+} dd_t;
+
 
 
 /*****************************

@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+#  Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
 #
 #  Redistribution and use in source and binary forms, with or without
 #  modification, are permitted provided that the following conditions are met:
@@ -164,8 +164,8 @@ set(EXE_NAME "libm_runner")
 add_executable(${EXE_NAME} ${SRCS})
 target_include_directories(${EXE_NAME} PRIVATE ${INCS})
 
-# Ensure executable name is consistent across platforms without extension
-set_target_properties(${EXE_NAME} PROPERTIES OUTPUT_NAME "libm_runner" SUFFIX "")
+# Ensure executable name is consistent across platforms
+set_target_properties(${EXE_NAME} PROPERTIES OUTPUT_NAME ${EXE_NAME} SUFFIX ".x")
 
 # Platform-specific compile options for Windows with Clang
 if(WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")

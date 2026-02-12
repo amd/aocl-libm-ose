@@ -70,13 +70,13 @@ set PATH=C:\path\to\aocl_libm\build\{dev-win-release-llvm}\lib;%PATH%
 Run the test suite with the following syntax:
 
 ```console
-$ ./libm_runner <path_to_shim> <path_to_yml>
+$ ./libm_runner.x <path_to_shim> <path_to_yml>
 ```
 
 **Example:**
 
 ```console
-$ ./build/{presetName}/almbench/libm_runner build/external/shim/libshimamd.so almbench/config/generic.yml
+$ ./build/{presetName}/almbench/libm_runner.x build/external/shim/libshimamd.so almbench/config/generic.yml
 ```
 
 ---
@@ -142,13 +142,13 @@ export LD_LIBRARY_PATH=/path/to/mparith/library:$LD_LIBRARY_PATH
 **Run tests:**
 
 ```sh
-./libm_runner ../path/to/shim/libshimamd.so ../config/generic.yml
+./libm_runner.x ../path/to/shim/libshimamd.so ../config/generic.yml
 ```
 
 **Example:**
 
 ```sh
-./libm_runner external/shim/libshimamd.so ../config/generic.yml
+./libm_runner.x external/shim/libshimamd.so ../config/generic.yml
 ```
 
 #### GLIBC Shim
@@ -156,7 +156,7 @@ export LD_LIBRARY_PATH=/path/to/mparith/library:$LD_LIBRARY_PATH
 **Run tests:**
 
 ```sh
-./libm_runner ../path/to/shim/libshimglibc.so ../config/generic.yml
+./libm_runner.x ../path/to/shim/libshimglibc.so ../config/generic.yml
 ```
 
 #### Intel MKL Shim
@@ -170,7 +170,7 @@ export LD_LIBRARY_PATH=/path/to/mkl/lib:$LD_LIBRARY_PATH
 **Run tests:**
 
 ```sh
-./libm_runner ../path/to/shim/libshimmkl.so ../config/generic.yml
+./libm_runner.x ../path/to/shim/libshimmkl.so ../config/generic.yml
 ```
 
 ---
@@ -248,7 +248,7 @@ set PATH=C:\path\to\aocl_libm\build\{dev-win-release-llvm}\lib;%PATH%
 
 **Run tests:**
 ```cmd
-.\libm_runner ..\path\to\shim\libshimamd.dll ..\config\generic.yml
+.\libm_runner.x ..\path\to\shim\libshimamd.dll ..\config\generic.yml
 ```
 
 #### Intel MKL Shim
@@ -260,7 +260,7 @@ set PATH=C:\path\to\mkl\bin;%PATH%
 
 **Run tests:**
 ```cmd
-.\libm_runner ..\path\to\shim\libshimmkl.dll ..\config\generic.yml
+.\libm_runner.x ..\path\to\shim\libshimmkl.dll ..\config\generic.yml
 ```
 
 ---
@@ -347,7 +347,7 @@ set PATH=C:\path\to\mkl\bin;%PATH%
 To test the accuracy of all mathematical functions, use the `generic.yml` configuration:
 
 ```sh
-./libm_runner ../path/to/shim/libshimamd.so ../config/generic.yml
+./libm_runner.x ../path/to/shim/libshimamd.so ../config/generic.yml
 ```
 
 #### Testing Individual APIs
@@ -364,13 +364,13 @@ For targeted testing of specific functions, use the corresponding YAML configura
 
 ```sh
 # Test sine function accuracy
-./libm_runner ../path/to/shim/libshimamd.so ../config/sin/sin_accu.yml
+./libm_runner.x ../path/to/shim/libshimamd.so ../config/sin/sin_accu.yml
 
 # Test sine function conformance
-./libm_runner ../path/to/shim/libshimamd.so ../config/sin/sin_conf.yml
+./libm_runner.x ../path/to/shim/libshimamd.so ../config/sin/sin_conf.yml
 
 # Benchmark sine function performance
-./libm_runner ../path/to/shim/libshimamd.so ../config/sin/sin_perf.yml
+./libm_runner.x ../path/to/shim/libshimamd.so ../config/sin/sin_perf.yml
 ```
 
 #### Using Master Configuration
@@ -380,23 +380,23 @@ The `master.yml` file provides flexible test execution across multiple APIs and 
 **Syntax:**
 
 ```sh
-./libm_runner <shim_library> ../config/master.yml [API] [TEST_TYPE]
+./libm_runner.x <shim_library> ../config/master.yml [API] [TEST_TYPE]
 ```
 
 **Examples:**
 
 ```sh
 # Run all tests for acos function
-./libm_runner ../path/to/shim/libshimamd.so ../config/master.yml acos
+./libm_runner.x ../path/to/shim/libshimamd.so ../config/master.yml acos
 
 # Run accuracy tests for acos function
-./libm_runner ../path/to/shim/libshimamd.so ../config/master.yml acos ACCU
+./libm_runner.x ../path/to/shim/libshimamd.so ../config/master.yml acos ACCU
 
 # Run accuracy tests for acos function (lowercase)
-./libm_runner ../path/to/shim/libshimamd.so ../config/master.yml acos accu
+./libm_runner.x ../path/to/shim/libshimamd.so ../config/master.yml acos accu
 
 # Run conformance tests across all APIs
-./libm_runner ../path/to/shim/libshimamd.so ../config/master.yml CONF
+./libm_runner.x ../path/to/shim/libshimamd.so ../config/master.yml CONF
 ```
 
 ---

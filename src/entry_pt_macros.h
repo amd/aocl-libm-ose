@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -49,7 +49,29 @@
  * jmp *(%rax)
  * -----------
  */
-#if defined(__GNUC__)
+#if defined(_WIN32) || defined(_WIN64)
+/*
+* Windows PE/COFF trampoline implementation:
+*
+* Windows doesn't support @GOTPCREL (ELF/Linux-specific), so we use direct
+* RIP-relative addressing to load the function pointer from the global variable.
+*
+* Syntax: AT&T (requires -masm=att flag in CMakeLists.txt for Clang 19+)
+*
+* Difference from Linux: Direct load vs GOT indirection
+* - Windows: Load function pointer directly from data section
+* - Linux:   Load GOT entry address, then dereference it
+*/
+#define LIBM_DECL_FN_MAP(fn)						\
+	asm (                                                           \
+	"\n\t"".p2align 4"                                              \
+	"\n\t"".globl " MK_FN_NAME(fn)                                  \
+	"\n\t" MK_FN_NAME(fn) " :"                                      \
+	"\n\t" "movq " STRINGIFY(G_ENTRY_PT_ASM(fn)) "(%rip), %rax"     \
+	"\n\t" "jmpq *%rax"                                             \
+	);
+
+#elif defined(__GNUC__)
 #define LIBM_DECL_FN_MAP(fn)						\
 	asm (								\
 	"\n\t"".p2align 4"						\

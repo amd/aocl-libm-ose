@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -160,7 +160,11 @@ if(DEFINED ALM_STATIC_DISPATCH)
   endif()
 endif()
 
-if(LINUX)
+if(WIN32)
+    # Use AT&T assembly syntax on Windows (required for Clang 19+ compatibility)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -masm=att")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -masm=att")
+else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=.")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=.")
 endif()

@@ -246,10 +246,14 @@ size_t count_binades(T min, T max) {
 
 template <typename T>
 static T rand_simple(T min, T max) {
-  T range = (max - min);
-  T div = static_cast<T>(static_cast<T>(RAND_MAX) / range);
-
-  return (min + (rand() / div));
+  /*
+   * Generate a random value uniformly distributed in [min, max].
+   * Uses overflow-safe linear interpolation: (1-t)*min + t*max
+   * This avoids computing (max - min) which overflows when
+   * min = -DBL_MAX and max = DBL_MAX.
+   */
+  T t = static_cast<T>(rand()) / static_cast<T>(RAND_MAX);
+  return (T(1) - t) * min + t * max;
 }
 
 template <typename T>
@@ -307,7 +311,8 @@ T rand_logdist(int i, int n, T a, T b, T logba) {
     else if (tx == 1.0)
       x = b;
     else
-      x = a + tx * (b - a);
+      /* Overflow-safe interpolation: avoids (b - a) overflow */
+      x = (T(1) - tx) * a + tx * b;
   }
 
   if (x < a)
@@ -336,12 +341,15 @@ template <typename T>
 int Random<T>::fillSimple(T *data, uint32_t nelem, T min, T max) {
   T *ptr = data;
   for (uint32_t i = 0; i < nelem; i++) {
-    double val = 0.0;
-    val = (min * (nelem - i) + max * i) / nelem;
+    /*
+     * Overflow-safe linear interpolation: (1-t)*min + t*max
+     * Avoids (max - min) which overflows for extreme ranges like [-DBL_MAX, DBL_MAX]
+     */
+    T t = (nelem > 1) ? static_cast<T>(i) / static_cast<T>(nelem - 1) : T(0);
+    T val = (T(1) - t) * min + t * max;
 
     *ptr++ = (T)val;
   }
-
   return 0;
 }
 

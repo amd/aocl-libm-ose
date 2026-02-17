@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -440,7 +440,7 @@ TEST_P(AccuTestFixtureComplexFloat, ACCURACY_SCALAR_COMPLEX_FLOAT) {
   if(nargs == 2)
     data.ip1 = (void *)complex_inpbuff1;
 
-  for (uint32_t i = 0; i < count*count; i++) {
+  for (uint32_t i = 0; i < count; i++) {
     test_s1s(&data, i);
 
     ip[0] = complex_inpbuff[i];
@@ -458,7 +458,7 @@ TEST_P(AccuTestFixtureComplexFloat, ACCURACY_SCALAR_COMPLEX_FLOAT) {
         PrintUlpResultsComplexFloat(nargs, ip[0], ip[1], exptd, aop[0], ulp);
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
-  "Scalar","Accuracy","s1s complex",count*count,(count*count - nfail), nfail, max_ulp_err);
+  "Scalar","Accuracy","s1s complex",count,(count - nfail), nfail, max_ulp_err);
   ptr->tstcnt++;
 }
 
@@ -473,14 +473,17 @@ TEST_P(AccuTestFixtureComplexDouble, ACCURACY_SCALAR_COMPLEX_DOUBLE) {
   if(nargs == 2)
     data.ip1 = (void *)complex_inpbuff1;
 
-  for (uint32_t i = 0; i < count*count; i++) {
+  for (uint32_t i = 0; i < count; i++) {
     test_s1d(&data, i);
 
     ip[0] = complex_inpbuff[i];
     if(nargs == 2)
       ip[1] = complex_inpbuff1[i];
-
+#if (defined _WIN32 || defined _WIN64)
+    double _Complex exptd = getExpected(ip);
+#else
     long double _Complex exptd = getExpected(ip);
+#endif
     double ulp = getUlp(aop[0], exptd);
 
     if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
@@ -491,7 +494,7 @@ TEST_P(AccuTestFixtureComplexDouble, ACCURACY_SCALAR_COMPLEX_DOUBLE) {
         PrintUlpResultsComplexDouble(nargs, ip[0], ip[1], exptd, aop[0], ulp);
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
-  "Scalar","Accuracy","s1d complex",count*count,(count*count - nfail), nfail, max_ulp_err);
+  "Scalar","Accuracy","s1d complex",count,(count - nfail), nfail, max_ulp_err);
   ptr->tstcnt++;
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -179,7 +179,11 @@ void PrintUlpResultsComplexFloat(int nargs, float _Complex input1, float _Comple
   printf ("ULP:      %lf\n\n", ulp);
 }
 
+#if (defined _WIN32 || defined _WIN64)
+void PrintUlpResultsComplexDouble(int nargs, double _Complex input1, double _Complex input2, double _Complex expected, double _Complex actual, double ulp) {
+#else
 void PrintUlpResultsComplexDouble(int nargs, double _Complex input1, double _Complex input2, long double _Complex expected, double _Complex actual, double ulp) {
+#endif
   printf ("Input1:   %lf +i %lf\n", (double)(__real__ input1), (double)(__imag__ input1));
   if (nargs == 2) {
     printf ("Input2:   %lf +i %lf\n", (double)(__real__ input2), (double)(__imag__ input2));

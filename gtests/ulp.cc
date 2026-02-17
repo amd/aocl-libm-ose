@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -24,8 +24,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-
 #include <climits>
 #include <limits>
 #include <cmath>
@@ -234,17 +232,20 @@ double getUlpc(float _Complex aop, double _Complex exptd) {
   return ALM::ComputeUlp(f_aop, d_exptd);
 }
 
+#if (defined _WIN32 || defined _WIN64)
+double getUlpc(double _Complex aop, double _Complex exptd) {
+#else
 double getUlpc(double _Complex aop, long double _Complex exptd) {
+#endif
   #if (defined _WIN32 || defined _WIN64 )
     double d_aop = abs(complex<double>(__real__ aop, __imag__ aop));
-    long double ld_exptd = abs(complex<long double>(__real__ exptd, __imag__ exptd));
+    double ld_exptd = abs(complex<double>(__real__ exptd, __imag__ exptd));
   #else
     double d_aop = cabs(aop);
     long double ld_exptd = cabsl(exptd);
   #endif
   return ALM::ComputeUlp(d_aop, ld_exptd);
 }
-
 // Helper template to check and report infinity/NaN in ULP computation with input values
 template<typename T, typename T_L>
 inline double CheckAndReportUlp(T aop, T_L exptd, double ulp_result)
@@ -269,7 +270,11 @@ double getUlp(float _Complex aop, double _Complex exptd) {
   return CheckAndReportUlp(aop, exptd, getUlpc(aop, exptd));
 }
 
+#if (defined _WIN32 || defined _WIN64)
+double getUlp(double _Complex aop, double _Complex exptd) {
+#else
 double getUlp(double _Complex aop, long double _Complex exptd) {
+#endif
   return CheckAndReportUlp(aop, exptd, getUlpc(aop, exptd));
 }
 

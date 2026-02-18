@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -62,7 +62,18 @@ cmplx_objs   = SConscript('cmplx/SConscript',
                         src_dir    = '#src/optimized/cmplx',
                         variant_dir= joinpath(builddir, 'cmplx'))
 
+avx512_vec_objs = SConscript('vec/avx512/SConscript',
+                            exports    = {'env' : e},
+                            duplicate  = 0,
+                            src_dir    = '#src/optimized/vec/avx512',
+                            variant_dir= joinpath(builddir, 'vec', 'avx512'))
 
-objs = e.StaticObject(source) + vec_objs + cmplx_objs + vectormath_objs
+avx512_vectormath_objs = SConscript('vectormath/avx512/SConscript',
+                            exports    = {'env' : e},
+                            duplicate  = 0,
+                            src_dir    = '#src/optimized/vectormath/avx512',
+                            variant_dir= joinpath(builddir, 'vectormath', 'avx512'))
+
+objs = e.StaticObject(source) + vec_objs + cmplx_objs + vectormath_objs + avx512_vec_objs + avx512_vectormath_objs
 
 Return('objs')

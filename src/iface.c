@@ -182,14 +182,16 @@ alm_get_uach(void)
 {
 #if (ALM_STATIC_DISPATCH==AVX2) || (ALM_STATIC_DISPATCH==ZEN2)
     return ALM_UARCH_VER_ZEN2;
+#elif ALM_STATIC_DISPATCH==AVX512  /* Select AVX512 ISA Path */
+    return ALM_UARCH_VER_AVX512;
 #elif ALM_STATIC_DISPATCH==ZEN3
     return ALM_UARCH_VER_ZEN3;
 #elif ALM_STATIC_DISPATCH==ZEN4
     return ALM_UARCH_VER_ZEN4;
-#elif (ALM_STATIC_DISPATCH==ZEN5) || (ALM_STATIC_DISPATCH==AVX512)
+#elif ALM_STATIC_DISPATCH==ZEN5
     return ALM_UARCH_VER_ZEN5;
 #else
-   printf("Please set ALM_STATIC_DISPATCH to one of AVX2, ZEN2, ZEN3, ZEN4, ZEN5, AVX512 \n")
+    printf("Please set ALM_STATIC_DISPATCH to one of AVX2, ZEN2, ZEN3, ZEN4, ZEN5, AVX512 \n");
 #endif
 }
 #else
@@ -226,10 +228,13 @@ alm_get_uach(void)
         arch_ver = ALM_UARCH_VER_ZEN;
     else
     {
+        /* Select deafult (AVX2 ISA) code-path */
         arch_ver = ALM_UARCH_VER_DEFAULT;
-        const char* const flags_array[] = {"avx512f"};
-        if (au_cpuid_has_flags(AU_CURRENT_CPU_NUM, flags_array, 1))
-            arch_ver = ALM_UARCH_VER_ZEN4;
+
+        /* Select AVX512 ISA code-path */
+        const char* const flags_array[] = {"avx512f", "avx512dq"};
+        if (au_cpuid_has_flags(AU_CURRENT_CPU_NUM, flags_array, 2))
+            arch_ver = ALM_UARCH_VER_AVX512;
     }
     return arch_ver;
 }

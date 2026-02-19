@@ -243,8 +243,20 @@ double ALM_PROTO_OPT(erfinv)(double x)
   if (ux >= ONEU) {
     if (ux == INFU) /* Check for ±INF */
       return __alm_handle_error((POS_QNAN_F64 | sign), AMD_F_INVALID);
-    else if (ux > INFU) /* Check for ±NAN */
-      return __alm_handle_error((POS_QNAN_F64 | sign), AMD_F_NONE);
+    else if (ux > INFU) { /* Check for ±NAN */
+      /*
+       * Properly handle sNaN vs qNaN:
+       * sNaN has quiet bit (bit 51) = 0, should raise FE_INVALID
+       * qNaN has quiet bit (bit 51) = 1, no exception
+       * Note: Using ux (absolute value) is safe since sign bit (63) doesn't
+       * affect quiet bit (51) - this pattern is used in atanh.c, floor.c, etc.
+       */
+      if ((ux & QNAN_MASK_64) != 0) {
+        return __alm_handle_error((POS_QNAN_F64 | sign), AMD_F_NONE);
+      } else {
+        return __alm_handle_error((POS_QNAN_F64 | sign), AMD_F_INVALID);
+      }
+    }
     else if (ux == ONEU) /* Check for ±1 */
       return __alm_handle_error((POS_INF_F64 | sign), AMD_F_DIVBYZERO);
     else  /* Check for |x|>1 */

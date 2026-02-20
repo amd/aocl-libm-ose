@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -45,6 +45,15 @@ struct alm_arch_funcs __arch_funcs_tanh = {
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_tanhf), /* v8s ? */
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_tanhf), /* v16s */
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_tanhf),
+        },
+
+        [ALM_UARCH_VER_AVX512] = {
+            [ALM_FUNC_SCAL_SP]      = &ALM_PROTO_ARCH_AVX512(tanhf),
+            [ALM_FUNC_SCAL_DP]      = &ALM_PROTO_ARCH_AVX512(tanh),
+            [ALM_FUNC_VECT_SP_4]    = &ALM_PROTO_ARCH_AVX512(vrs4_tanhf),
+            [ALM_FUNC_VECT_SP_8]    = &ALM_PROTO_ARCH_AVX512(vrs8_tanhf),
+            [ALM_FUNC_VECT_SP_16]   = &ALM_PROTO_ARCH_AVX512(vrs16_tanhf),
+            [ALM_FUNC_VECT_SP_ARR]  = &ALM_PROTO_ARCH_AVX512(vrsa_tanhf),
         },
 
         [ALM_UARCH_VER_ZEN] = {

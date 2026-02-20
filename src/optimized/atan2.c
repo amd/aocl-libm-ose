@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -176,16 +176,25 @@ double ALM_PROTO_OPT(atan2)(double y, double x) {
             return asdouble(yneg | asuint64(PI_BY_4)); // return val_with_flags(-piby4,AMD_F_INEXACT);
         }
 
-        if(aux > PINFBITPATT_DP64) {
-
-            return x + x; /* Raise invalid if it's a signalling NaN */
-
-        }
-
-        if(auy > PINFBITPATT_DP64) {
-
-            return y + y; /* Raise invalid if it's a signalling NaN */
-
+        /* IEEE 754: If either x or y is NaN, return NaN */
+        if ((aux > PINFBITPATT_DP64) || (auy > PINFBITPATT_DP64)) {
+#ifdef WINDOWS
+            /*
+             * Branchless sNaN vs qNaN handling:
+             * sNaN (quiet bit = 0): raise FE_INVALID
+             * qNaN (quiet bit = 1): no exception
+             */
+            int xnan = (aux > PINFBITPATT_DP64);
+            int ynan = (auy > PINFBITPATT_DP64);
+            int is_snan = (xnan && !(aux & QNAN_MASK_64)) ||
+                          (ynan && !(auy & QNAN_MASK_64));
+            return __alm_handle_error(
+                (xnan ? ux : uy) | QNAN_MASK_64,
+                is_snan ? AMD_F_INVALID : AMD_F_NONE
+            );
+#else
+            return x + y; /* Propagate NaN, raise invalid for sNaN */
+#endif
         }
 
         if(ux == PINFBITPATT_DP64) { /* x is +infinity, y is finite */

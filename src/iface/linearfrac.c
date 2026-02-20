@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -45,6 +45,16 @@ struct alm_arch_funcs __arch_funcs_linearfrac = {
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_linearfracf),
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_linearfracf),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX2(vrda_linearfrac),
+        },
+        [ALM_UARCH_VER_AVX512] = {
+            [ALM_FUNC_VECT_SP_4]   = &ALM_PROTO_ARCH_AVX512(vrs4_linearfracf),
+            [ALM_FUNC_VECT_DP_2]   = &ALM_PROTO_ARCH_AVX512(vrd2_linearfrac),
+            [ALM_FUNC_VECT_SP_8]   = &ALM_PROTO_ARCH_AVX512(vrs8_linearfracf),
+            [ALM_FUNC_VECT_DP_4]   = &ALM_PROTO_ARCH_AVX512(vrd4_linearfrac),
+            [ALM_FUNC_VECT_SP_16]  = &ALM_PROTO_ARCH_AVX512(vrs16_linearfracf),
+            [ALM_FUNC_VECT_DP_8]   = &ALM_PROTO_ARCH_AVX512(vrd8_linearfrac),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX512(vrsa_linearfracf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX512(vrda_linearfrac),
         },
 
         [ALM_UARCH_VER_ZEN] = {

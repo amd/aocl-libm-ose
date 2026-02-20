@@ -2,7 +2,7 @@
   function: cos
   timing_enabled: true
   test_sets:
-  - id: cos
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: cos_001

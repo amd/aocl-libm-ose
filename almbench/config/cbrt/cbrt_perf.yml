@@ -2,7 +2,7 @@
   function: cbrt
   timing_enabled: true
   test_sets:
-  - id: cbrt
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: cbrt_001

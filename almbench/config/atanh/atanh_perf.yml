@@ -2,7 +2,7 @@
   function: atanh
   timing_enabled: true
   test_sets:
-  - id: atanh
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: atanh_001

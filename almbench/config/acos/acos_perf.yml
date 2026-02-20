@@ -2,7 +2,7 @@
   function: acos
   timing_enabled: true
   test_sets:
-  - id: acos
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: acos_001

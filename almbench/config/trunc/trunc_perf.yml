@@ -2,7 +2,7 @@
   function: trunc
   timing_enabled: true
   test_sets:
-  - id: trunc
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: trunc_001

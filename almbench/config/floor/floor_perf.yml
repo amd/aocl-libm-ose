@@ -2,7 +2,7 @@
   function: floor
   timing_enabled: true
   test_sets:
-  - id: floor
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: floor_001

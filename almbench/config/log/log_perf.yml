@@ -2,7 +2,7 @@
   function: log
   timing_enabled: true
   test_sets:
-  - id: log
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: log_001

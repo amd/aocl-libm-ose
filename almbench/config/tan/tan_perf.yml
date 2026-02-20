@@ -2,7 +2,7 @@
   function: tan
   timing_enabled: true
   test_sets:
-  - id: tan
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: tan_001

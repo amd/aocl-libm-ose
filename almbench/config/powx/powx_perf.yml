@@ -2,7 +2,7 @@
   function: powx
   timing_enabled: true
   test_sets:
-  - id: powx
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: powx_001

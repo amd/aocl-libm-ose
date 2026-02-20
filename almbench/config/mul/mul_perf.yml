@@ -2,7 +2,7 @@
   function: mul
   timing_enabled: true
   test_sets:
-  - id: mul
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: mul_001

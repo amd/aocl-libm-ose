@@ -2,7 +2,7 @@
   function: round
   timing_enabled: true
   test_sets:
-  - id: round
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: round_001

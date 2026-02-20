@@ -2,7 +2,7 @@
   function: sqrt
   timing_enabled: true
   test_sets:
-  - id: sqrt
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: sqrt_001

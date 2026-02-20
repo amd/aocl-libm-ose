@@ -2,7 +2,7 @@
   function: nearbyint
   timing_enabled: true
   test_sets:
-  - id: nearbyint
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: nearbyint_001

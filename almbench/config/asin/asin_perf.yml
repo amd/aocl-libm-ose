@@ -2,7 +2,7 @@
   function: asin
   timing_enabled: true
   test_sets:
-  - id: asin
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: asin_001

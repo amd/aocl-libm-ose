@@ -2,7 +2,7 @@
   function: add
   timing_enabled: true
   test_sets:
-  - id: add
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: add_001

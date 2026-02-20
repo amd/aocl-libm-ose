@@ -262,9 +262,6 @@ static int parse_yaml_content(const YAML::Node &config,
             const YAML::Node test_set = test_sets[j];
             if (!test_set || !test_set.IsMap()) continue;
 
-            std::string test_set_id = test_set["id"] ? test_set["id"].as<std::string>()
-                                                      : (test_type.empty() ? "default" : test_type);
-
             // Prefer "tests" array; if missing, synthesize from inline maps having "id"
             YAML::Node tests = test_set["tests"];
             if (!tests || !tests.IsSequence()) {
@@ -294,7 +291,7 @@ static int parse_yaml_content(const YAML::Node &config,
                                                      : (function.empty() ? extractApiName(id) : function);
 
                 param.api_name  = apiName;
-                param.test_type = test_set_id;
+                param.test_type = test_type;
 
                 read_test(test, param);
                 params.push_back(param);

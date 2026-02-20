@@ -2,7 +2,7 @@
   function: fmin
   timing_enabled: true
   test_sets:
-  - id: fmin
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: fmin_001

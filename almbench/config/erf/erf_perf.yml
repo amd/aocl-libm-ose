@@ -2,7 +2,7 @@
   function: erf
   timing_enabled: true
   test_sets:
-  - id: erf
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: erf_001

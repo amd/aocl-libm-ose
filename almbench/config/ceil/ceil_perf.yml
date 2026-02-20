@@ -2,7 +2,7 @@
   function: ceil
   timing_enabled: true
   test_sets:
-  - id: ceil
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: ceil_001

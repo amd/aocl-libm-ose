@@ -278,6 +278,9 @@ void process_libm(struct AlmLibs *alibs, const std::vector<struct YamlInputs> &p
         std::stringstream ulp(ulp_threshold);
         std::string uth;
 
+        // Derive test_mode from test_type
+        test_mode = (param.test_type.find("perf") != std::string::npos) ? TestMode::E_PERFORMANCE : TestMode::E_ACCURACY;
+
         while (std::getline(ss, variant, ';')) {
             std::getline(ulp, uth, ';');
             if (variant == "ss") {

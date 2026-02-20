@@ -2,7 +2,7 @@
   function: atan
   timing_enabled: true
   test_sets:
-  - id: atan
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: atan_001

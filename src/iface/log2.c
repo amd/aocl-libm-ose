@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -30,7 +30,6 @@
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
 
-//
 #include <libm/arch/all.h>
 
 
@@ -49,6 +48,19 @@ struct alm_arch_funcs __arch_funcs_log2 = {
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX2(vrda_log2),
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_log2f),
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_log2)
+        },
+
+        [ALM_UARCH_VER_AVX512] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX512(log2f),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX512(log2),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX512(vrs4_log2f),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX512(vrs8_log2f), /* v8s ? */
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_AVX512(vrd2_log2),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_AVX512(vrd4_log2),  /* v4d ? */
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX512(vrsa_log2f),  /*vector array variants*/
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX512(vrda_log2),
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_AVX512(vrs16_log2f),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_AVX512(vrd8_log2)
         },
 
         [ALM_UARCH_VER_ZEN] = {

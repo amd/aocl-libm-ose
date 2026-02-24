@@ -29,4 +29,4 @@
 
 #include <libm/arch/avx512.h>
 
-#include "../../optimized/vec/vrsa_powf.c"
+#include "../../optimized/vectormath/vrda_powx.c"

@@ -41,7 +41,7 @@ incpaths = [
 ]
 
 e.MergeFlags({
-    'CFLAGS'  : ['-mavx512f', '-mavx512dq', '-O3', '-fPIC', '-flax-vector-conversions'],
+    'CFLAGS'  : ['-mavx512f', '-mavx512dq', '-mfma', '-O3', '-fPIC', '-flax-vector-conversions'],
     'CPPPATH' : incpaths
 })
 

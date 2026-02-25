@@ -161,7 +161,7 @@ macro(get_avx2fma_flag fmaflag)
 endmacro()
 
 macro(get_avx512_flag avx512flag)
-  set(${avx512flag} -mavx512f -mavx512dq)
+  set(${avx512flag} -mavx512f -mavx512dq -mfma)
 endmacro()
 
 macro(get_fastmath_flag fmflag)

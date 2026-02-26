@@ -147,7 +147,7 @@ set_target_properties(libm_shared PROPERTIES
 )
 target_link_libraries(libm_shared PUBLIC ${EXTRA_LIBS})
 if(NOT MSVC)
-  set_target_properties(libm_shared PROPERTIES LINK_FLAGS "-ealm_main")
+  set_target_properties(libm_shared PROPERTIES LINK_FLAGS "-Wl,-ealm_main")
 endif()
 list(APPEND libm libm_shared)
 # Static library

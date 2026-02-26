@@ -245,24 +245,32 @@ double ComputeUlp(FAT output, FAT_L _expected) {
       f_low = std::numeric_limits<FAT>::lowest();  // -FLT_MAX, -DBL_MAX etc
 #endif
 
-  // if both are NAN
-  if (isnan(output) && isnan(expected)) return 0.0;
+  // Handle NaN cases
+  if (isnan(output) && isnan(expected)) {
+    // Both are NaN: check if sign bits match
+    if (signbit(output) == signbit(expected)) {
+      return 0.0;  // Same sign NaN (payload ignored)
+    } else {
+      return INFINITY;  // Different sign NaN (e.g., -nan vs nan)
+    }
+  }
 
-  // if either one is NAN
-  if (isnan(output) || isnan(expected)) return INFINITY;
+  // if either one (but not both) is NAN
+  if (isnan(output) || isnan(expected))
+      return INFINITY;
 
   // if both are zero (handles +0 == -0)
   if (output == 0 && expected == 0) return 0.0;
 
-  // if output and expected are infinity
-  if (isinf(output) && (isinf(expected) || (expected > fmax))) return 0.0;
-
-  // if output and expected are -infinity
-  if (isNInf<FAT>(output) && (isNInf<FAT>(expected) || (expected < f_low)))
-    return 0.0;
-
-  // if output and input are infinity with opposite signs
-  if (isinf(output) && isinf(expected)) return INFINITY;
+  // Handle infinity cases
+  if (isinf(output) && isinf(expected)) {
+    // Both are infinity: check if sign bits match
+    if (signbit(output) == signbit(expected)) {
+      return 0.0;  // Same sign infinity (both +inf or both -inf)
+    } else {
+      return INFINITY;  // Different sign infinity (e.g., +inf vs -inf)
+    }
+  }
 
 #if (defined _WIN32 || defined _WIN64)
   // Windows-only: Handle subnormals and zeros using bitwise comparison to avoid

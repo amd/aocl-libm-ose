@@ -47,7 +47,6 @@ struct alm_arch_funcs __arch_funcs_atan2 = {
         },
 
         [ALM_UARCH_VER_AVX512] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_REF(atan2f),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX512(atan2),
         },
 

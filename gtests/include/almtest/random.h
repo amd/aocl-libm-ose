@@ -71,9 +71,11 @@ class Random {
     if (randfd == -1) throw "Unable to open file /dev/urandom";
   }
 
-  Random(ALM::RangeType d) : dist(d){};
+  Random(ALM::RangeType d) : dist(d), randfd(-1) {};
 
 #if defined(__GNUC__)
+/* randfd must be set to -1 or a valid file descriptor 
+ * else we risk closing a valid file descriptor */
   ~Random() { close(randfd); }
 #else
   ~Random() {}

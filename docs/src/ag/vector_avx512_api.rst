@@ -101,10 +101,6 @@ Acos
 .. doxygenfunction:: amd_vrs16_acosf
   :project: libm
 
-.. .. doxygenfunction:: amd_vrd8_acos
-..   :project: libm
-..   (Function not yet documented in Doxygen)
-
 
 Atan
 ----
@@ -124,10 +120,6 @@ Tanh
 
 .. doxygenfunction:: amd_vrs16_tanhf
   :project: libm
-
-.. .. doxygenfunction:: amd_vrd8_tanh
-..   :project: libm
-..   (Function not yet documented in Doxygen)
 
 
 Inverse Hyperbolic Functions
@@ -184,10 +176,6 @@ Log10
 
 .. doxygenfunction:: amd_vrs16_log10f
   :project: libm
-
-.. .. doxygenfunction:: amd_vrd8_log10
-..   :project: libm
-..   (Function not yet documented in Doxygen)
 
 
 Power and Root Functions

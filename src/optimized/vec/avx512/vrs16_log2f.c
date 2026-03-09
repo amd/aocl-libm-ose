@@ -48,23 +48,23 @@ static const struct {
     v_f32x16_t ln2;
     v_f32x16_t poly[VRS4_LOGF_MAX_POLY_SIZE];
 } v_logf_data = {
-    .v_min  = _MM256_SET1_I32(0x00800000),
-    .v_max  = _MM256_SET1_I32(0x7f800000),
-    .v_mask = _MM256_SET1_I32(MANTBITS_SP32),
-    .v_off  = _MM256_SET1_I32(0x3f2aaaab),
-    .v_one  = _MM256_SET1_PS8(1.0f),
-    .ln2    = _MM256_SET1_PS8(0x1.62e43p-1f), /* ln(2) */
+    .v_min  = _MM512_SET1_U32x16((uint32_t)0x00800000),
+    .v_max  = _MM512_SET1_U32x16((uint32_t)0x7f800000),
+    .v_mask = _MM512_SET1_U32x16((uint32_t)(MANTBITS_SP32)),
+    .v_off  = _MM512_SET1_U32x16((uint32_t)0x3f2aaaab),
+    .v_one  = _MM512_SET1_PS16(1.0f),
+    .ln2    = _MM512_SET1_PS16(0x1.62e43p-1f), /* ln(2) */
     .poly = {
-            _MM256_SET1_PS8(0.0f),
-            _MM256_SET1_PS8(0x1.7154770a8161cp0f),
-            _MM256_SET1_PS8(-0x1.715433cb77dfep-1f),
-            _MM256_SET1_PS8(0x1.ec6e977351a82p-2f),
-            _MM256_SET1_PS8(-0x1.71811bf7a93d7p-2f),
-            _MM256_SET1_PS8(0x1.27d4a45f12fcp-2f),
-            _MM256_SET1_PS8(-0x1.e335fcfb7fcb4p-3f),
-            _MM256_SET1_PS8(0x1.9889eeabc6284p-3f),
-            _MM256_SET1_PS8(-0x1.cf3075d14b775p-3f),
-            _MM256_SET1_PS8(0x1.b2c4e715a67f9p-3f),
+            _MM512_SET1_PS16(0.0f),
+            _MM512_SET1_PS16(0x1.7154770a8161cp0f),
+            _MM512_SET1_PS16(-0x1.715433cb77dfep-1f),
+            _MM512_SET1_PS16(0x1.ec6e977351a82p-2f),
+            _MM512_SET1_PS16(-0x1.71811bf7a93d7p-2f),
+            _MM512_SET1_PS16(0x1.27d4a45f12fcp-2f),
+            _MM512_SET1_PS16(-0x1.e335fcfb7fcb4p-3f),
+            _MM512_SET1_PS16(0x1.9889eeabc6284p-3f),
+            _MM512_SET1_PS16(-0x1.cf3075d14b775p-3f),
+            _MM512_SET1_PS16(0x1.b2c4e715a67f9p-3f),
     },
 };
 

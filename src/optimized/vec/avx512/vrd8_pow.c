@@ -34,6 +34,7 @@
 #include <libm/typehelper.h>
 #include <libm/typehelper-vec.h>
 #include <libm/compiler.h>
+#include <libm/constants.h>
 
 #define AMD_LIBM_FMA_USABLE 1           /* needed for poly-vec.h */
 #include <libm/poly-vec.h>
@@ -100,6 +101,7 @@ static struct {
     v_f64x8_t poly[11];
     v_i64x8_t exp_bias;
     v_u64x8_t exp_max;
+    v_u64x8_t inf_val;
 } v_exp_data  = {
     .ln2_tblsz_head = _MM512_SET1_PD8(0x1.63p-1),
 	.ln2_tblsz_tail = _MM512_SET1_PD8(-0x1.bd0105c610ca8p-13),
@@ -108,6 +110,7 @@ static struct {
     .Huge = _MM512_SET1_PD8(0x1.8000000000000p+52),
     .exp_max = _MM512_SET1_U64x8(0x4086200000000000UL),
     .exp_bias = _MM512_SET1_I64x8(DOUBLE_PRECISION_BIAS),
+    .inf_val = _MM512_SET1_U64x8((uint64_t)ALM_F64_INF),
     .poly = {
 		_MM512_SET1_PD8(0x1.0p0),
 		_MM512_SET1_PD8(0x1.000000000001p-1),
@@ -136,6 +139,7 @@ static struct {
 #define EXP_HUGE        v_exp_data.Huge
 #define EXP_MAX         v_exp_data.exp_max
 #define EXP_BIAS        v_exp_data.exp_bias
+#define INF_VAL         v_exp_data.inf_val
 
 /*
  * Short names for polynomial coefficients
@@ -182,6 +186,8 @@ ALM_PROTO_OPT(vrd8_pow)(__m512d _x,__m512d _y)
     __m512d result;
 
     v_u64x8_t ux = as_v8_u64_f64(_x);
+
+    v_i64x8_t condition = (v_i64x8_t)(ux >= INF_VAL);
 
     /* This portion of the code is a vectorized version of the scalar log.c, with some checks removed */
 
@@ -274,6 +280,8 @@ ALM_PROTO_OPT(vrd8_pow)(__m512d _x,__m512d _y)
     /* check if y*log(x) > 1024*ln(2) */
     v_i64x8_t condition2 = (v_i64x8_t)(v >= EXP_MAX);
 
+    condition = condition | condition2;
+
     z = ylogx_h * INVLN2_EXP;
 
     v_f64x8_t dn = z + EXP_HUGE;
@@ -293,10 +301,8 @@ ALM_PROTO_OPT(vrd8_pow)(__m512d _x,__m512d _y)
 
     result = poly2 * as_v8_f64_i64(m);
 
-    for(int i = 0; i < VECTOR_LENGTH; i++) {
-        if(unlikely((condition2)[i])){
-            result[i] = ALM_PROTO_OPT(pow)(_x[i], _y[i]);
-         }
+    if (unlikely(any_v8_u64_loop((v_u64x8_t)condition))) {
+        return call2_v8_f64(ALM_PROTO_OPT(pow), _x, _y, result, condition);
     }
 
     return result;

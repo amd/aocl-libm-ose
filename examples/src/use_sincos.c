@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -169,28 +169,28 @@ void sincos_vector_double_precision_4()
 /**********************************************
  *     Vector Array Variants
  * *******************************************/
+#define N 10
 void sincos_single_precision_array()
 {
-    printf("Using Single Precision Vectory Array (vrsa) sincos()\n");
-    int n=5;
-    float input[10] = {1.0f, 3.0f, -5.0f, 0.0f, -9.0f, 11.0f, 13.0f, 15.0f, -17.0f, 19.0f};
-    float sin[10];
-    float cos[10];
+    printf("Using Single Precision Vector Array (vrsa) sincos()\n");
+    float input[N] = {1.0f, 3.0f, -5.0f, 0.0f, -9.0f, 11.0f, 13.0f, 15.0f, -17.0f, 19.0f};
+    float sin[N];
+    float cos[N];
 
-    amd_vrsa_sincosf(n, input, sin, cos);
+    amd_vrsa_sincosf(N, input, sin, cos);
 
     printf("Input: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", input[i]);
     }
-    printf("}, Ouput: sin: {");
-    for(int i=0; i<10; ++i)
+    printf("}, Output: sin: {");
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", sin[i]);
     }
     printf("}, cos: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", cos[i]);
     }
@@ -200,26 +200,25 @@ void sincos_single_precision_array()
 
 void sincos_double_precision_array()
 {
-    printf("Using Double Precision Vectory Array (vrda) sincos()\n");
-    int n=8;
-    double input[10] = {-0.0, -0.0, 4.0, 2.0, 6.0, -12.0, 14.0, -1.0, 3.0, -5.0};
-    double sin[10];
-    double cos[10];
+    printf("Using Double Precision Vector Array (vrda) sincos()\n");
+    double input[N] = {-0.0, -0.0, 4.0, 2.0, 6.0, -12.0, 14.0, -1.0, 3.0, -5.0};
+    double sin[N];
+    double cos[N];
 
-    amd_vrda_sincos(n, input, sin, cos);
+    amd_vrda_sincos(N, input, sin, cos);
 
     printf("Input: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", input[i]);
     }
-    printf("}, Ouput: sin: {");
-    for(int i=0; i<10; ++i)
+    printf("}, Output: sin: {");
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", sin[i]);
     }
     printf("}, cos: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", cos[i]);
     }

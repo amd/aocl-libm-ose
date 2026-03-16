@@ -27,10 +27,10 @@
 
 
 set(GCC_VERSION_MIN   "9.2.0")
-set(GCC_VERSION_MAX   "14.2.1")
+set(GCC_VERSION_MAX   "15.3.0")
 
 if ((CMAKE_C_COMPILER_VERSION VERSION_LESS ${GCC_VERSION_MIN}) OR
-    (CMAKE_C_COMPILER_VERSION VERSION_GREATER ${GCC_VERSION_MAX}))
+    (CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL ${GCC_VERSION_MAX}))
       message(WARNING "GCC compiler ${CMAKE_C_COMPILER_VERSION} version is not recommended for building. \
       We recommend using supported versions between ${GCC_VERSION_MIN} and ${GCC_VERSION_MAX}.")
 endif()

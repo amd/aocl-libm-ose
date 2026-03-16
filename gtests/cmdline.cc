@@ -201,6 +201,10 @@ bool cmdLine::Echo(InputParams *inparams) {
       inparams->range[i].type = (enum RangeType)r.r_type;
       i++;
     }
+    // Default remaining ranges to range[0] for functions with multiple inputs (e.g., linearfrac)
+    for (; i < MAX_INPUT_RANGES; i++) {
+      inparams->range[i] = inparams->range[0];
+    }
   } else {
     for(auto i = 0; i < MAX_INPUT_RANGES; i++) {
     inparams->range[i].min = DBL_MIN;

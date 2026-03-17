@@ -59,6 +59,20 @@ $ export LD_LIBRARY_PATH=/path/to/amd/library:$LD_LIBRARY_PATH
 $ export LD_LIBRARY_PATH=/path/to/mparith/library:$LD_LIBRARY_PATH
 ```
 
+**Note: Load Alternative AMD Library**
+
+By default, the AMD shim loads `libalm.so` (Linux) or `libalm.dll` (Windows). To test alternative AMD libraries like `libalmfast`, set the `AMD_LIBM_LIBRARY` environment variable:
+
+```console
+# Linux
+$ export AMD_LIBM_LIBRARY=libalmfast.so
+
+# Windows
+set AMD_LIBM_LIBRARY=libalmfast.dll
+```
+
+If the specified library cannot be loaded, the shim automatically falls back to the default library.
+
 on windows
 ```sh
 set PATH=C:\path\to\mparith\lib;%PATH%
@@ -138,6 +152,14 @@ The LibM Testsuite supports multiple math library implementations through shims.
 export LD_LIBRARY_PATH=/path/to/amd/library:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=/path/to/mparith/library:$LD_LIBRARY_PATH
 ```
+
+**Optional: Specify alternative AMD library (e.g., libalmfast):**
+
+```sh
+export AMD_LIBM_LIBRARY=libalmfast.so
+```
+
+> **Note:** By default, the AMD shim loads `libalm.so`. Use `AMD_LIBM_LIBRARY` to test alternative libraries like `libalmfast.so`. The shim will automatically fall back to `libalm.so` if the specified library fails to load.
 
 **Run tests:**
 
@@ -245,6 +267,14 @@ cmake --build . --config Debug
 set PATH=C:\path\to\mparith\lib;%PATH%
 set PATH=C:\path\to\aocl_libm\build\{dev-win-release-llvm}\lib;%PATH%
 ```
+
+**Optional: Specify alternative AMD library (e.g., libalmfast):**
+
+```cmd
+set AMD_LIBM_LIBRARY=libalmfast.dll
+```
+
+> **Note:** By default, the AMD shim loads `libalm.dll`. Use `AMD_LIBM_LIBRARY` to test alternative libraries like `libalmfast.dll`. The shim will automatically fall back to `libalm.dll` if the specified library fails to load.
 
 **Run tests:**
 ```cmd

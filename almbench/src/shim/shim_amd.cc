@@ -42,6 +42,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <immintrin.h>
 #include "alm_test.h"
 
@@ -417,7 +418,9 @@ typedef void (*amd_subi_vrda_func_t)(int, const double*, double, double*);
 typedef void (*amd_tan_vrda_func_t)(int, const double*, double*);
 
 #ifdef __AVX512F__
-// --- Double Precision 512-bit Vector (vrd8) Functions ---
+// ============================================================================
+// DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
+// ============================================================================
 typedef __m512d (*amd_asin_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_atan_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_cos_vrd8_func_t)(__m512d);
@@ -435,7 +438,9 @@ typedef void (*amd_sincos_vrd8_func_t)(__m512d, __m512d*, __m512d*);
 typedef __m512d (*amd_sqrt_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_tan_vrd8_func_t)(__m512d);
 
-// --- Single Precision 512-bit Vector (vrs16) Functions ---
+// ============================================================================
+// SINGLE PRECISION 512-BIT VECTOR (vrs16) VARIANTS
+// ============================================================================
 typedef __m512 (*amd_acos_vrs16_func_t)(__m512);
 typedef __m512 (*amd_asin_vrs16_func_t)(__m512);
 typedef __m512 (*amd_atan_vrs16_func_t)(__m512);
@@ -840,34 +845,117 @@ static T load_amd_symbol(LIB_HANDLE lib, const char* name) {
 #ifndef _WIN32
 static void check_amd_installation() {
     const char* ld_library_path = getenv("LD_LIBRARY_PATH");
-    std::cout << "LD_LIBRARY_PATH: " << ld_library_path << std::endl;
-    if (!ld_library_path) {
-        printf("LD_LIBRARY_PATH does not contain AMD paths\n");
-    }
+    printf("Diagnostic: LD_LIBRARY_PATH = %s\n", ld_library_path ? ld_library_path : "(not set)");
 }
 #endif
+
+// Helper function to validate and trim library name from environment variable
+// Returns a pointer to a static buffer containing the trimmed string, or nullptr if invalid
+// Handles null, empty, and whitespace-only strings
+static const char* is_valid_library_name(const char* str) {
+    static char trimmed[512];  // Static buffer for trimmed string
+
+    if (!str || str[0] == '\0') {
+        return nullptr;  // null or empty string
+    }
+
+    // Skip leading whitespace
+    while (*str && isspace((unsigned char)*str)) {
+        str++;
+    }
+
+    // If string is all whitespace or empty after trimming
+    if (*str == '\0') {
+        return nullptr;
+    }
+
+    // Copy to buffer and find end
+    size_t len = 0;
+    while (*str && len < sizeof(trimmed) - 1) {
+        trimmed[len++] = *str++;
+    }
+    trimmed[len] = '\0';
+
+    // Trim trailing whitespace
+    while (len > 0 && isspace((unsigned char)trimmed[len - 1])) {
+        trimmed[--len] = '\0';
+    }
+
+    return trimmed;
+}
 
 // Automatic initialization at library load time
 static void init_amd_symbols(void) {
 
-    // Try to load Intel MKL libraries in order of preference
     LIB_HANDLE amd_core = nullptr;
+    const char* loaded_lib = nullptr;
 
+    // Platform-specific constants
 #ifdef _WIN32
-    // Windows AMD library names
-    amd_core = LOAD_LIBRARY("libalm.dll");
-    if (!amd_core) {
-        printf("Error: Failed to load AMD Math Function library (libalm.dll)\n");
-    }
+    const char* default_lib = "libalm.dll";
+    const char* env_var_name = "PATH";
 #else
-    check_amd_installation();
-
-    // Linux MKL library loading
-    amd_core = LOAD_LIBRARY("libalm.so");
-    if (!amd_core) {
-        printf("Error: Failed to load AMD Math Function library (libalm.so)\n");
-    }
+    const char* default_lib = "libalm.so";
+    const char* env_var_name = "LD_LIBRARY_PATH";
 #endif
+
+#if AMD_SHIM_DEBUG && !defined(_WIN32)
+    check_amd_installation();
+#endif
+
+    // Check for user-specified library via environment variable (runtime flexibility)
+    // This allows loading alternative libraries like libalmfast.so/libalmfast.dll
+    const char* env_lib = is_valid_library_name(getenv("AMD_LIBM_LIBRARY"));
+
+    // Try to load user-specified library first
+    if (env_lib) {
+        DEBUG_PRINT("Loading user-specified library: %s\n", env_lib);
+        amd_core = LOAD_LIBRARY(env_lib);
+        if (!amd_core) {
+            #ifdef _WIN32
+                DWORD error = GetLastError();
+                printf("Warning: Failed to load library '%s' (Error code: %lu)\n", env_lib, error);
+            #else
+                const char* error = dlerror();
+                printf("Warning: Failed to load library '%s' (%s)\n", env_lib, error ? error : "unknown error");
+            #endif
+            printf("Ensure the library path is set in %s environment variable\n", env_var_name);
+            printf("Falling back to default library...\n");
+        } else {
+            loaded_lib = env_lib;
+            DEBUG_PRINT("Successfully loaded %s\n", loaded_lib);
+        }
+    }
+
+    // Load default library if no custom library specified or custom load failed
+    if (!amd_core) {
+        DEBUG_PRINT("Loading default library: %s\n", default_lib);
+        amd_core = LOAD_LIBRARY(default_lib);
+        if (!amd_core) {
+            #ifdef _WIN32
+                DWORD error = GetLastError();
+                printf("Error: Failed to load AMD Math library (%s) (Error code: %lu)\n", default_lib, error);
+            #else
+                const char* error = dlerror();
+                printf("Error: Failed to load AMD Math library (%s) (%s)\n", default_lib, error ? error : "unknown error");
+                check_amd_installation();
+            #endif
+            printf("Ensure the library path is set in %s environment variable\n", env_var_name);
+            exit(EXIT_FAILURE);
+        }
+        loaded_lib = default_lib;
+        DEBUG_PRINT("Successfully loaded %s\n", loaded_lib);
+    }
+
+    // Verify we have a valid library handle before proceeding with symbol loading
+    // This should never happen due to the exit() calls above, but serves as a safeguard
+    if (!amd_core) {
+        printf("Fatal error: No AMD Math library could be loaded\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Print which library was loaded
+    printf("Loaded AMD Math library: %s\n", loaded_lib);
 
     // Load symbols organized by variant
     // ============================================================================

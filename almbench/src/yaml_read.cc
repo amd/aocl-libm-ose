@@ -83,6 +83,7 @@ static int read_test(const YAML::Node &test, struct YamlInputs &param)
     const YAML::Node variants = test["variants"];
     const YAML::Node exp_excep = test["expect_exception"];
     const YAML::Node uth = test["uth"];
+    const YAML::Node derived_node = test["derived"];
 
     uint32_t n = 0;
     param.test_id = test_id;
@@ -111,6 +112,26 @@ static int read_test(const YAML::Node &test, struct YamlInputs &param)
             }
 
             range.count = steps ? steps[n].as<std::string>() : "1000";
+
+            /* If type is "derived", populate derived config from YAML */
+            if (range.type == "derived" && derived_node) {
+                const YAML::Node d_range = derived_node["range"];
+                if (!d_range || !d_range.IsSequence() || d_range.size() < 2)
+                    throw YAML::Exception(derived_node.Mark(),
+                        "derived: 'range' must be a sequence of [start, stop]");
+                if (!derived_node["func"])
+                    throw YAML::Exception(derived_node.Mark(),
+                        "derived: 'func' is required");
+
+                range.derived.emplace();
+                range.derived->z_srt   = d_range[0].as<std::string>();
+                range.derived->z_stp   = d_range[1].as<std::string>();
+                range.derived->z_type  = derived_node["type"]
+                    ? derived_node["type"].as<std::string>() : "expstep";
+                range.derived->z_count = derived_node["steps"]
+                    ? derived_node["steps"].as<std::string>() : "1000";
+                range.derived->func    = derived_node["func"].as<std::string>();
+            }
 
             param.range.push_back(range);
             n++;

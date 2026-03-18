@@ -31,6 +31,19 @@
 #include "alm_test.h"
 #include <string>
 #include <vector>
+#include <optional>
+/*
+ * DerivedGenConfig:
+ * String-based configuration for derived input generation, parsed from YAML.
+ */
+struct DerivedGenConfig {
+    std::string z_srt;    /* Start value for derived sub-generator */
+    std::string z_stp;    /* Stop value for derived sub-generator */
+    std::string z_type;   /* Range type for derived sub-generator */
+    std::string z_count;  /* Step count for derived sub-generator */
+    std::string func;     /* Name of combining function (e.g. "mul") */
+};
+
 /*
  * InputRange:
  * Represents a numeric input range for range-based tests.
@@ -40,6 +53,7 @@ struct InputRange {
     std::string stp;     /* Stop value */
     std::string type;    /* Range generation type (e.g., linear, expstep) */
     std::string count;   /* Number of values to generate */
+    std::optional<DerivedGenConfig> derived; /* Config for derived generation */
 };
 
 /*

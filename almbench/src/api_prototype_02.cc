@@ -26,6 +26,7 @@
  */
 
 #include <iostream>
+#include <stdexcept>
 #include <chrono>
 #include <vector>
 #include <algorithm>
@@ -38,6 +39,99 @@
 #include "packer.h"
 #include "alm_mp_funcs.h"
 #include "api_runner.h"
+#include "generator.h"
+
+/*
+ * build_bivariate_generators:
+ * Creates generator pair for two-input functions. Exactly one range
+ * may be 'derived', in which case the other is the primary generator.
+ * Returns {arr1, arr2, first_derived, primary_count}.
+ * Throws std::runtime_error if derived func is unknown.
+ */
+template <typename U>
+struct GenPair {
+    std::unique_ptr<IGenerator<U>> arr1;
+    std::unique_ptr<IGenerator<U>> arr2;
+    bool first_derived;
+    uint64_t primary_count;
+};
+
+/*
+ * make_derived_pair:
+ * Creates a primary MultiStepGenerator and a DerivedGenerator from it.
+ * Throws std::runtime_error if derived func is not found.
+ */
+template <typename U>
+static std::pair<std::unique_ptr<MultiStepGenerator<U>>,
+                 std::unique_ptr<DerivedGenerator<U>>>
+make_derived_pair(const InpRng<U>& primary_rng, uint64_t primary_count,
+                  const DerivedConfig<U>& dcfg, size_t array_size)
+{
+    auto primary = std::make_unique<MultiStepGenerator<U>>(
+        primary_rng.srt, primary_rng.stp, primary_count,
+        primary_rng.type, array_size);
+
+    auto &fmap = derived_func_map<U>();
+    auto it = fmap.find(dcfg.func);
+    if (it == fmap.end())
+        throw std::runtime_error("Unknown derived func: " + dcfg.func);
+
+    auto derived = std::make_unique<DerivedGenerator<U>>(
+        *primary, dcfg.z_srt, dcfg.z_stp,
+        dcfg.z_count, dcfg.z_type, array_size, it->second);
+
+    return {std::move(primary), std::move(derived)};
+}
+
+template <typename U>
+static GenPair<U> build_bivariate_generators(
+    const InpRng<U>& x, const InpRng<U>& y,
+    uint64_t xcount, uint64_t ycount, size_t array_size)
+{
+    GenPair<U> gp;
+    gp.first_derived = (x.type == RangeType::E_Derived);
+
+    if (gp.first_derived) {
+        auto [primary, derived] = make_derived_pair(y, ycount, *x.derived, array_size);
+        gp.arr2 = std::move(primary);
+        gp.arr1 = std::move(derived);
+        gp.primary_count = ycount;
+    } else if (y.type == RangeType::E_Derived) {
+        auto [primary, derived] = make_derived_pair(x, xcount, *y.derived, array_size);
+        gp.arr1 = std::move(primary);
+        gp.arr2 = std::move(derived);
+        gp.primary_count = xcount;
+    } else {
+        gp.arr1 = std::make_unique<MultiStepGenerator<U>>(
+            x.srt, x.stp, xcount, x.type, array_size);
+        gp.arr2 = std::make_unique<MultiStepGenerator<U>>(
+            y.srt, y.stp, ycount, y.type, array_size);
+        gp.primary_count = xcount;
+    }
+
+    return gp;
+}
+
+/*
+ * next_pair:
+ * Advances both generators in the correct order.
+ * Primary must be advanced before derived (see DerivedGenerator contract).
+ */
+template <typename U>
+static std::pair<U*, U*> next_pair(GenPair<U>& gp)
+{
+    U *ip1, *ip2;
+    /* wrap_next for primary must be called before call for derived
+     * to respect derived generator contract */
+    if (gp.first_derived) {
+        ip2 = gp.arr2->wrap_next();
+        ip1 = gp.arr1->wrap_next();
+    } else {
+        ip1 = gp.arr1->wrap_next();
+        ip2 = gp.arr2->wrap_next();
+    }
+    return {ip1, ip2};
+}
 
 /*
  * unit_test:
@@ -84,7 +178,6 @@ static void range_test(struct InParams<T, U>* ipp,
     auto& y              = ipp->range[1];
     uint64_t xcount      = align_to(x.count, elem);
     uint64_t ycount      = align_to(y.count, elem);
-    uint64_t N           = align_to(xcount, elem);
     yop->n[0]            = elem;
     yop->n[1]            = elem;
     double max_ulp[MAX_ELEM] = {0.0};
@@ -93,16 +186,16 @@ static void range_test(struct InParams<T, U>* ipp,
     yop->status          = &status[0];
 
     Runner<T, U>   runner(shim_func, yop->test_mode);
-    MultiStepGenerator<U> arr1(x.srt, x.stp, xcount, x.type, elem);
-    MultiStepGenerator<U> arr2(y.srt, y.stp, ycount, y.type, elem);
+
+    auto gp = build_bivariate_generators<U>(x, y, xcount, ycount, elem);
+    uint64_t N = align_to(gp.primary_count, elem);
 
     FloatPacker<T> fp;
     ulp_data udata;
     double ulp;
 
     for (uint64_t i = 0; i < N; ++i) {
-        U* ip1 = arr1.wrap_next();
-        U* ip2 = arr2.wrap_next();
+        auto [ip1, ip2] = next_pair(gp);
         ipp->ip[0] = fp.pack(ip1);
         ipp->ip[1] = fp.pack(ip2);
 
@@ -137,7 +230,6 @@ static void range_test_vra(struct InParams<T, U>* ipp,
     auto& x        = ipp->range[0];
     auto& y        = ipp->range[1];
     uint64_t count = x.count;
-    uint64_t N     = align_to(count, elem);
     count =  (count >= 100) ? 100 : count ;
 
     ipp->count     = count;
@@ -156,12 +248,12 @@ static void range_test_vra(struct InParams<T, U>* ipp,
     double ulp;
 
     Runner<T, U>   runner(shim_func, yop->test_mode);
-    MultiStepGenerator<U> arr1(x.srt, x.stp, x.count, x.type, count);
-    MultiStepGenerator<U> arr2(y.srt, y.stp, y.count, y.type, count);
+
+    auto gp = build_bivariate_generators<U>(x, y, x.count, y.count, count);
+    uint64_t N = align_to(gp.primary_count, elem);
 
     for (uint64_t i = 0; i < N; ++i) {
-        U* ip1 = arr1.wrap_next();
-        U* ip2 = arr2.wrap_next();
+        auto [ip1, ip2] = next_pair(gp);
         ipp->iptr[0] = ip1;
         ipp->iptr[1] = ip2;
 

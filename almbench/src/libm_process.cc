@@ -185,6 +185,7 @@ RangeType str_to_enum(const std::string &key)
         {"linearstep",  RangeType::E_Linear},
         {"expstep",     RangeType::E_Expstep},
         {"bitstep",     RangeType::E_Bitstep},
+        {"derived",     RangeType::E_Derived},
         {"MAX",         RangeType::E_MAX}
     };
 
@@ -255,8 +256,8 @@ void libm_api_variant(struct AlmLibs *alibs, const struct YamlInputs &param,
     yop->test_id = param.test_id;
 
     if (!param.range.empty()) {
-        struct InpRng<U> iprng;
         for (const auto &range : param.range) {
+            struct InpRng<U> iprng;
             if constexpr (std::is_same_v<U, fc32_t> || std::is_same_v<U, fc64_t>) {
                 iprng.srt = str_to_complex<U>(range.srt);
                 iprng.stp = str_to_complex<U>(range.stp);
@@ -266,9 +267,18 @@ void libm_api_variant(struct AlmLibs *alibs, const struct YamlInputs &param,
             }
             iprng.type  = str_to_enum(range.type);
             iprng.count = std::stoull(range.count);
+            if (iprng.type == RangeType::E_Derived && range.derived) {
+                iprng.derived.emplace();
+                iprng.derived->z_srt   = str_to_float<U>(range.derived->z_srt);
+                iprng.derived->z_stp   = str_to_float<U>(range.derived->z_stp);
+                iprng.derived->z_type  = str_to_enum(range.derived->z_type);
+                iprng.derived->z_count = std::stoull(range.derived->z_count);
+                iprng.derived->func    = range.derived->func;
+            }
             ipp->range.push_back(iprng);
         }
         for (const auto &input : param.input) {
+            struct InpRng<U> iprng;
             if constexpr (std::is_same_v<U, fc32_t> || std::is_same_v<U, fc64_t>) {
                 U value = str_to_complex<U>(input);
                 iprng.srt   = value;

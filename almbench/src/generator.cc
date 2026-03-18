@@ -463,3 +463,68 @@ template class MultiStepGenerator<float>;
 template class MultiStepGenerator<double>;
 template class MultiStepGenerator<std::complex<float>>;
 template class MultiStepGenerator<std::complex<double>>;
+
+/* DerivedGenerator implementation */
+template <typename S>
+DerivedGenerator<S>::DerivedGenerator(MultiStepGenerator<S> &primary,
+                                     S z_srt, S z_stp, uint64_t z_count,
+                                     RangeType z_type, size_t array_size,
+                                     DerivedFuncT<S> func)
+    : primary(primary),
+      z_gen(z_srt, z_stp, z_count, z_type, array_size),
+      func(std::move(func)),
+      array_size(array_size),
+      array(nullptr)
+{
+    // Use std::unique_ptr with aligned allocation
+    S* raw_array = new (std::align_val_t(64)) S[array_size];
+    array.reset(raw_array);
+}
+
+/*
+ * DerivedGenerator::next():
+ * Combines the primary array with the z sub-generator element-wise.
+ * Fills array_size elements per call (one SIMD vector's worth).
+ *
+ * Primary and z_gen may have different step counts (count vs z_count).
+ * If z_count < count, z_gen wraps around (repeating earlier z values).
+ * If z_count > count, primary wraps first. This allows independent
+ * control of x-sweep density vs z-sweep density in the YAML config.
+ *
+ * Implicit contracts expected from the caller:
+ *  - primary.wrap_next() must be called BEFORE derived.wrap_next()
+ *    so that get_array() returns the current iteration's x values.
+ *  - primary, z_gen, and this generator must all share the same
+ *    array_size (enforced by passing the same value at construction).
+ */
+template <typename S>
+S *DerivedGenerator<S>::next()
+{
+    S *x = primary.get_array();
+    S *z = z_gen.wrap_next();
+    for (size_t i = 0; i < array_size; i++) {
+        array[i] = func(x[i], z[i]);
+    }
+    return array.get();
+}
+
+template <typename S>
+bool DerivedGenerator<S>::has_next() const
+{
+    return z_gen.has_next();
+}
+
+template <typename S>
+void DerivedGenerator<S>::reset()
+{
+    z_gen.reset();
+}
+
+template <typename S>
+uint64_t DerivedGenerator<S>::get_index()
+{
+    return z_gen.get_index();
+}
+
+template class DerivedGenerator<float>;
+template class DerivedGenerator<double>;

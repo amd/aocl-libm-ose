@@ -35,6 +35,7 @@
  #include <cstdint>
  #include <cfenv>
  #include <cmath>
+ #include <optional>
  #include "dll_utils.h"
 
  #pragma STDC FENV_ACCESS ON
@@ -221,8 +222,23 @@
      E_Linear,
      E_Expstep,
      E_Bitstep,
-     E_MAX
+     E_Derived,
+    E_MAX
  };
+
+/*
+ * DerivedConfig:
+ * Configuration for derived (bivariate) input generation.
+ * The second array is computed from the first via a registered function.
+ */
+template <typename U>
+struct DerivedConfig {
+    U         z_srt;     /* Start value for derived sub-generator */
+    U         z_stp;     /* Stop value for derived sub-generator */
+    RangeType z_type;    /* Range generation type for derived sub-generator */
+    uint64_t  z_count;   /* Number of values for derived sub-generator */
+    std::string func;    /* Name of combining function (e.g. "mul") */
+};
 
  /*
   * InpRng:
@@ -234,7 +250,8 @@
      U         stp;       /* Stop value */
      RangeType type;      /* Range generation type */
      uint64_t  count;     /* Number of values to generate */
- };
+     std::optional<DerivedConfig<U>> derived; /* Config for derived generation (used when type == E_Derived) */
+};
 
  /*
   * InParams:

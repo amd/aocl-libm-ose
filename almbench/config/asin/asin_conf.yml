@@ -1,0 +1,3143 @@
+- test_sequence: unit_tests_asin
+  ignore_exceptions: [underflow, inexact]
+  function: asin
+  test_sets:
+  - id: special-values
+    description: Special values for asin function
+    tests:
+    # Single Precision Tests
+    - id: asin_001
+      description: "asinf(0) = 0"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_002
+      description: "asinf(-0) = -0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_003
+      description: "asinf(inf) = nan (invalid domain)"
+      input: [0x7f800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_004
+      description: "asinf(-inf) = nan (invalid domain)"
+      input: [0xff800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_005
+      description: "asinf(-nan) = nan"
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_006
+      description: "asinf(+nan) = nan"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_007
+      description: "asinf(subnorm_max) = subnorm_max"
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asin_008
+      description: "asinf(subnorm_max) = subnorm_max"
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asin_009
+      description: "asinf(subnorm_min) = subnorm_min"
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asin_010
+      description: "asinf(subnorm_min) = subnorm_min"
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asin_011
+      description: "asinf(1.0) = π/2"
+      input: [0x3f800000]
+      expect: [0x3fc90fdb]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_012
+      description: "asinf(-1.0) = -π/2"
+      input: [0xbf800000]
+      expect: [0xbfc90fdb]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_013
+      description: "asinf(2.0) = nan (invalid domain)"
+      input: [0x40000000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_014
+      description: "asinf(-2.0) = nan (invalid domain)"
+      input: [0xc0000000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+# Test cases from gtests test_asin_data.h
+#-------------------------------
+    - id: asin_001
+      description: "asin(+INF) = +IND (raise \"invalid\" fp exception)"
+      input: [0x7f800000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_002
+      description: "asin(-INF) = +IND (raise \"invalid\" fp exception)"
+      input: [0xff800000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_003
+      description: "asin(+QNaN)=	+QNaN"
+      input: [0x7fef8000]
+      expect: [0x7fef8000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_004
+      description: "asin(-QNaN)=	-QNaN"
+      input: [0xffef8000]
+      expect: [0xffef8000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_005
+      description: "asin(+SNaN)=	+SNaN"
+      input: [0x7f800001]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_006
+      description: "asin(-SNaN)=	-SNaN"
+      input: [0xff800001]
+      expect: [0xffc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_007
+      description: "asin(+0) = +0 STD:F9.1.6"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_008
+      description: "asin(-0) = -0 STD:F9.1.6"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_009
+      description: "min= 0.00006103515625, small enough that asin(x) = 1"
+      input: [0x38800000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_010
+      description: "min - 1 bit"
+      input: [0x387fffff]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_011
+      description: "min + 1 bit"
+      input: [0x38800001]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_012
+      description: "lambda + x = 1, x = -9.9999994e+29"
+      input: [0xf149f2c9]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_013
+      description: "lambda + x < 1"
+      input: [0xf149f2c8]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_014
+      description: "lambda + x > 1"
+      input: [0xf149f2ca]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_015
+      description: "max arg, x = 89.41598629223294,max asinf arg"
+      input: [0x42b2d4fc]
+      expect: [0x7f7fffec]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_016
+      description: "max arg - 1 bit"
+      input: [0x42b2d4fb]
+      expect: [0x7f7fff6c]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_017
+      description: "max arg + 1 bit"
+      input: [0x42b2d4fd]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_018
+      description: "> max"
+      input: [0x42b2d4ff]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_019
+      description: "< max"
+      input: [0x42b2d400]
+      expect: [0x7f7f820b]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_020
+      description: "small_threshold = 20"
+      input: [0x41a00000]
+      expect: [0x4d675844]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_021
+      description: "small_threshold+1 = 21"
+      input: [0x41a80000]
+      expect: [0x4e1d3710]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_022
+      description: "small_threshold - 1 = 19"
+      input: [0x41980000]
+      expect: [0x4caa36c8]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_023
+      description: "0"
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_024
+      description: "0"
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_025
+      description: ""
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_026
+      description: ""
+      input: [0xff800000]
+      expect: [0xff800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_027
+      description: ""
+      input: [0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_028
+      description: ""
+      input: [0xffb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_029
+      description: ""
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_030
+      description: ""
+      input: [0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_031
+      description: "95"
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_032
+      description: "denormal min"
+      input: [0x00000001]
+      expect: [0x3f800000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asin_033
+      description: "denormal intermediate"
+      input: [0x0005fde6]
+      expect: [0x3f800000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asin_034
+      description: "denormal max"
+      input: [0x007fffff]
+      expect: [0x3f800000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asin_035
+      description: "-denormal min"
+      input: [0x80000001]
+      expect: [0x3f800000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asin_036
+      description: "-denormal intermediate"
+      input: [0x805def12]
+      expect: [0x3f800000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asin_037
+      description: "-denormal max"
+      input: [0x807fffff]
+      expect: [0x3f800000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asin_038
+      description: "normal min"
+      input: [0x00800000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_039
+      description: "normal intermediate"
+      input: [0x43b3c4ea]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_040
+      description: "normal max"
+      input: [0x7f7fffff]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_041
+      description: "-normal min"
+      input: [0x80800000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_042
+      description: "-normal intermediate"
+      input: [0xc5812e71]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_043
+      description: "-normal max"
+      input: [0xff7fffff]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_044
+      description: "inf"
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_045
+      description: "-inf"
+      input: [0xff800000]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_046
+      description: "qnan min"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_047
+      description: "qnan intermediate"
+      input: [0x7fe1a570]
+      expect: [0x7fe1a570]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_048
+      description: "qnan max"
+      input: [0x7fffffff]
+      expect: [0x7fffffff]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_049
+      description: "indeterninate"
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_050
+      description: "-qnan min"
+      input: [0xffc00001]
+      expect: [0xffc00001]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_051
+      description: "-qnan intermediate"
+      input: [0xffd2ba31]
+      expect: [0xffd2ba31]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_052
+      description: "-qnan max"
+      input: [0xffffffff]
+      expect: [0xffffffff]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_053
+      description: "snan min"
+      input: [0x7f800001]
+      expect: [0x7fc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_054
+      description: "snan intermediate"
+      input: [0x7fa0bd90]
+      expect: [0x7fe0bd90]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_055
+      description: "snan max"
+      input: [0x7fbfffff]
+      expect: [0x7fffffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_056
+      description: "-snan min"
+      input: [0xff800001]
+      expect: [0xffc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_057
+      description: "-snan intermediate"
+      input: [0xff95fffa]
+      expect: [0xffd5fffa]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_058
+      description: "-snan max"
+      input: [0xffbfffff]
+      expect: [0xffffffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_059
+      description: "pi/2"
+      input: [0x3fc90fdb]
+      expect: [0x40209662]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_060
+      description: "pi"
+      input: [0x40490fdb]
+      expect: [0x413978a5]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_061
+      description: "2pi"
+      input: [0x40c90fdb]
+      expect: [0x4385df97]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_062
+      description: "e --"
+      input: [0x402df853]
+      expect: [0x40f38620]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_063
+      description: "e"
+      input: [0x402df854]
+      expect: [0x40f38624]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_064
+      description: "e ++"
+      input: [0x402df855]
+      expect: [0x40f38628]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_065
+      description: "0"
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_066
+      description: "0.000023"
+      input: [0x37c0f01f]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_067
+      description: "0.49999"
+      input: [0x3efffeb0]
+      expect: [0x3f9055e0]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_068
+      description: "0.500012"
+      input: [0x3f0000c9]
+      expect: [0x3f905641]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_069
+      description: "-0"
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_070
+      description: "-0.000023"
+      input: [0xb7c0f01f]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_071
+      description: "-0.49999"
+      input: [0xbefffeb0]
+      expect: [0x3f9055e0]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_072
+      description: "-0.500012"
+      input: [0xbf0000c9]
+      expect: [0x3f905641]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_073
+      description: "1"
+      input: [0x3f800000]
+      expect: [0x3fc583ab]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_074
+      description: "0.93750006"
+      input: [0x3f700001]
+      expect: [0x3fbc7e14]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_075
+      description: "1.0624998"
+      input: [0x3f87fffe]
+      expect: [0x3fcf4ed3]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_076
+      description: "1.49999"
+      input: [0x3fbfffac]
+      expect: [0x40168d88]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_077
+      description: "1.500012"
+      input: [0x3fc00064]
+      expect: [0x40168e4c]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_078
+      description: "-1"
+      input: [0xbf800000]
+      expect: [0x3fc583ab]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_079
+      description: "-0.93750006"
+      input: [0xbf700001]
+      expect: [0x3fbc7e14]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_080
+      description: "-1.0624998"
+      input: [0xbf87fffe]
+      expect: [0x3fcf4ed3]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_081
+      description: "-1.49999"
+      input: [0xbfbfffac]
+      expect: [0x40168d88]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_082
+      description: "-1.500012"
+      input: [0xbfc00064]
+      expect: [0x40168e4c]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_083
+      description: "-2"
+      input: [0xc0000000]
+      expect: [0x4070c7d0]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_084
+      description: "10"
+      input: [0x41200000]
+      expect: [0x462c14ef]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_085
+      description: "-10"
+      input: [0xc1200000]
+      expect: [0x462c14ef]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_086
+      description: "1000"
+      input: [0x447a0000]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_087
+      description: "-1000"
+      input: [0xc47a0000]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_088
+      description: "67.4"
+      input: [0x4286cccc]
+      expect: [0x6f96eb6f]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_089
+      description: "-67.4"
+      input: [0xc286cccc]
+      expect: [0x6f96eb6f]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_090
+      description: "1983.6"
+      input: [0x44f7f333]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_091
+      description: "-1983.6"
+      input: [0xc4f7f333]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_092
+      description: "87.5"
+      input: [0x42af0000]
+      expect: [0x7e16bab3]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_093
+      description: "-87.5"
+      input: [0xc2af0000]
+      expect: [0x7e16bab3]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_094
+      description: "132473"
+      input: [0x48015e40]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_095
+      description: "-132473"
+      input: [0xc8015e40]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_096
+      description: "2^23"
+      input: [0x4b000000]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_097
+      description: "2^23 + 1"
+      input: [0x4b000001]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_098
+      description: "2^23 -1 + 0.5"
+      input: [0x4affffff]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_099
+      description: "-2^23"
+      input: [0xcb000000]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_100
+      description: "-(2^23 + 1)"
+      input: [0xcb000001]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_101
+      description: "-(2^23 -1 + 0.5)"
+      input: [0xcaffffff]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_102
+      description: "0.125"
+      input: [0x3e000000]
+      expect: [0x3e000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_103
+      description: "0.375"
+      input: [0x3ec00000]
+      expect: [0x3ec00000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_104
+      description: "0.625"
+      input: [0x3f200000]
+      expect: [0x3f200000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_105
+      description: "0.25"
+      input: [0x3e800000]
+      expect: [0x3e800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_106
+      description: "0.75"
+      input: [0x3f400000]
+      expect: [0x3f400000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_107
+      description: "0.5"
+      input: [0x3f000000]
+      expect: [0x3f000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_108
+      description: "1"
+      input: [0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_109
+      description: "1.25"
+      input: [0x3fa00000]
+      expect: [0x3fa00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_110
+      description: "1.5"
+      input: [0x3fc00000]
+      expect: [0x3fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_111
+      description: "2.25"
+      input: [0x40100000]
+      expect: [0x40100000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_112
+      description: "2.5"
+      input: [0x40200000]
+      expect: [0x40200000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_113
+      description: "4"
+      input: [0x40800000]
+      expect: [0x40800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_114
+      description: "4.25"
+      input: [0x40880000]
+      expect: [0x40880000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_115
+      description: "4.5"
+      input: [0x40900000]
+      expect: [0x40900000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_116
+      description: "8"
+      input: [0x41000000]
+      expect: [0x41000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_117
+      description: "8.25"
+      input: [0x41040000]
+      expect: [0x41040000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_118
+      description: "8.5"
+      input: [0x41080000]
+      expect: [0x41080000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_119
+      description: "16"
+      input: [0x41800000]
+      expect: [0x41800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_120
+      description: "16.25"
+      input: [0x41820000]
+      expect: [0x41820000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_121
+      description: "16.5"
+      input: [0x41840000]
+      expect: [0x41840000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_122
+      description: "32"
+      input: [0x42000000]
+      expect: [0x42000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_123
+      description: "32.25"
+      input: [0x42010000]
+      expect: [0x42010000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_124
+      description: "32.5"
+      input: [0x42020000]
+      expect: [0x42020000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_125
+      description: "64"
+      input: [0x42800000]
+      expect: [0x42800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_126
+      description: "64.25"
+      input: [0x42808000]
+      expect: [0x42808000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_127
+      description: "64.5"
+      input: [0x42810000]
+      expect: [0x42810000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_128
+      description: "128"
+      input: [0x43000000]
+      expect: [0x43000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_129
+      description: "128.25"
+      input: [0x43004000]
+      expect: [0x43004000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_130
+      description: "128.5"
+      input: [0x43008000]
+      expect: [0x43008000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_131
+      description: "256"
+      input: [0x43800000]
+      expect: [0x43800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_132
+      description: "256.25"
+      input: [0x43802000]
+      expect: [0x43802000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_133
+      description: "256.5"
+      input: [0x43804000]
+      expect: [0x43804000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_134
+      description: "512"
+      input: [0x44000000]
+      expect: [0x44000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_135
+      description: "512.25"
+      input: [0x44001000]
+      expect: [0x44001000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_136
+      description: "512.5"
+      input: [0x44002000]
+      expect: [0x44002000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_137
+      description: "1024"
+      input: [0x44800000]
+      expect: [0x44800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_138
+      description: "1024.25"
+      input: [0x44800800]
+      expect: [0x44800800]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_139
+      description: "1024.5"
+      input: [0x44801000]
+      expect: [0x44801000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_140
+      description: "2048"
+      input: [0x45000000]
+      expect: [0x45000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_141
+      description: "2048.25"
+      input: [0x45000400]
+      expect: [0x45000400]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_142
+      description: "2048.5"
+      input: [0x45000800]
+      expect: [0x45000800]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_143
+      description: "4096"
+      input: [0x45800000]
+      expect: [0x45800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_144
+      description: "4096.25"
+      input: [0x45800200]
+      expect: [0x45800200]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_145
+      description: "4096.5"
+      input: [0x45800400]
+      expect: [0x45800400]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_146
+      description: "8192"
+      input: [0x46000000]
+      expect: [0x46000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_147
+      description: "8192.25"
+      input: [0x46000100]
+      expect: [0x46000100]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_148
+      description: "8192.5"
+      input: [0x46000200]
+      expect: [0x46000200]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_149
+      description: "16384"
+      input: [0x46800000]
+      expect: [0x46800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_150
+      description: "16384.2"
+      input: [0x46800080]
+      expect: [0x46800080]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_151
+      description: "16384.5"
+      input: [0x46800100]
+      expect: [0x46800100]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_152
+      description: "32768"
+      input: [0x47000000]
+      expect: [0x47000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_153
+      description: "32768.2"
+      input: [0x47000040]
+      expect: [0x47000040]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_154
+      description: "32768.5"
+      input: [0x47000080]
+      expect: [0x47000080]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_155
+      description: "65536"
+      input: [0x47800000]
+      expect: [0x47800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_156
+      description: "65536.2"
+      input: [0x47800020]
+      expect: [0x47800020]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_157
+      description: "65536.5"
+      input: [0x47800040]
+      expect: [0x47800040]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_158
+      description: "131072"
+      input: [0x48000000]
+      expect: [0x48000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_159
+      description: "131072"
+      input: [0x48000010]
+      expect: [0x48000010]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_160
+      description: "131072"
+      input: [0x48000020]
+      expect: [0x48000020]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_161
+      description: "262144"
+      input: [0x48800000]
+      expect: [0x48800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_162
+      description: "262144"
+      input: [0x48800008]
+      expect: [0x48800008]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_163
+      description: "262144"
+      input: [0x48800010]
+      expect: [0x48800010]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_164
+      description: "524288"
+      input: [0x49000000]
+      expect: [0x49000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_165
+      description: "524288"
+      input: [0x49000004]
+      expect: [0x49000004]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_166
+      description: "524288"
+      input: [0x49000008]
+      expect: [0x49000008]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_167
+      description: "1.04858e+06"
+      input: [0x49800000]
+      expect: [0x49800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_168
+      description: "1.04858e+06"
+      input: [0x49800002]
+      expect: [0x49800002]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_169
+      description: "1.04858e+06"
+      input: [0x49800004]
+      expect: [0x49800004]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_170
+      description: "2.09715e+06"
+      input: [0x4a000000]
+      expect: [0x4a000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_171
+      description: "2.09715e+06"
+      input: [0x4a000001]
+      expect: [0x4a000001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_172
+      description: "2.09715e+06"
+      input: [0x4a000002]
+      expect: [0x4a000002]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_173
+      description: "4.1943e+06"
+      input: [0x4a800000]
+      expect: [0x4a800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_174
+      description: "8.38861e+06"
+      input: [0x4b000000]
+      expect: [0x4b000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_175
+      description: "1.67772e+07"
+      input: [0x4b800000]
+      expect: [0x4b800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_176
+      description: "3.35544e+07"
+      input: [0x4c000000]
+      expect: [0x4c000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_177
+      description: "6.71089e+07"
+      input: [0x4c800000]
+      expect: [0x4c800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_178
+      description: "1.34218e+08"
+      input: [0x4d000000]
+      expect: [0x4d000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_179
+      description: "2.68435e+08"
+      input: [0x4d800000]
+      expect: [0x4d800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_180
+      description: "5.36871e+08"
+      input: [0x4e000000]
+      expect: [0x4e000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_181
+      description: "1.07374e+09"
+      input: [0x4e800000]
+      expect: [0x4e800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_182
+      description: "2.14748e+09"
+      input: [0x4f000000]
+      expect: [0x4f000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_183
+      description: "4.29497e+09"
+      input: [0x4f800000]
+      expect: [0x4f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_184
+      description: "8.58993e+09"
+      input: [0x50000000]
+      expect: [0x50000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_185
+      description: "1.71799e+10"
+      input: [0x50800000]
+      expect: [0x50800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_186
+      description: "3.43597e+10"
+      input: [0x51000000]
+      expect: [0x51000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_187
+      description: "1.4013e-45"
+      input: [0x1]
+      expect: [0x1]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asin_188
+      description: "5.50259e-40"
+      input: [0x5fde6]
+      expect: [0x5fde6]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asin_189
+      description: "1.17549e-38"
+      input: [0x7fffff]
+      expect: [0x7fffff]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asin_190
+      description: "-1.4013e-45"
+      input: [0x80000001]
+      expect: [0x1]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asin_191
+      description: "-8.62646e-39"
+      input: [0x805def12]
+      expect: [0x5def12]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asin_192
+      description: "-1.17549e-38"
+      input: [0x807fffff]
+      expect: [0x7fffff]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: asin_193
+      description: "1.17549e-38"
+      input: [0x800000]
+      expect: [0x800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_194
+      description: "359.538"
+      input: [0x43b3c4ea]
+      expect: [0x43b3c4ea]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_195
+      description: "-1.17549e-38"
+      input: [0x80800000]
+      expect: [0x800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_196
+      description: "-4133.81"
+      input: [0xc5812e71]
+      expect: [0x45812e71]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_197
+      description: "-3.40282e+38"
+      input: [0xff7fffff]
+      expect: [0x7f7fffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_198
+      description: "-inf"
+      input: [0xff800000]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_199
+      description: "nan"
+      input: [0xffc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_200
+      description: "nan"
+      input: [0xffc00001]
+      expect: [0x7fc00001]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_201
+      description: "nan"
+      input: [0xffd2ba31]
+      expect: [0x7fd2ba31]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_202
+      description: "nan"
+      input: [0xffffffff]
+      expect: [0x7fffffff]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_203
+      description: "nan"
+      input: [0xff800001]
+      expect: [0x7f800001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_204
+      description: "nan"
+      input: [0xff95fffa]
+      expect: [0x7f95fffa]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_205
+      description: "nan"
+      input: [0xffbfffff]
+      expect: [0x7fbfffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_206
+      description: "1.5708"
+      input: [0x3fc90fdb]
+      expect: [0x3fc90fdb]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_207
+      description: "3.14159"
+      input: [0x40490fdb]
+      expect: [0x40490fdb]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_208
+      description: "6.28319"
+      input: [0x40c90fdb]
+      expect: [0x40c90fdb]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_209
+      description: "2.71828"
+      input: [0x402df853]
+      expect: [0x402df853]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_210
+      description: "2.71828"
+      input: [0x402df854]
+      expect: [0x402df854]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_211
+      description: "2.71828"
+      input: [0x402df855]
+      expect: [0x402df855]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_212
+      description: "0"
+      input: [0x0]
+      expect: [0x0]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_213
+      description: "2.3e-05"
+      input: [0x37c0f01f]
+      expect: [0x37c0f01f]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_214
+      description: "0.49999"
+      input: [0x3efffeb0]
+      expect: [0x3efffeb0]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_215
+      description: "0.500012"
+      input: [0x3f0000c9]
+      expect: [0x3f0000c9]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_216
+      description: "-0"
+      input: [0x80000000]
+      expect: [0x0]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_217
+      description: "-2.3e-05"
+      input: [0xb7c0f01f]
+      expect: [0x37c0f01f]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_218
+      description: "-0.49999"
+      input: [0xbefffeb0]
+      expect: [0x3efffeb0]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_219
+      description: "-0.500012"
+      input: [0xbf0000c9]
+      expect: [0x3f0000c9]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_220
+      description: "1"
+      input: [0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_221
+      description: "0.9375"
+      input: [0x3f700001]
+      expect: [0x3f700001]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_222
+      description: "1.0625"
+      input: [0x3f87fffe]
+      expect: [0x3f87fffe]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_223
+      description: "1.49999"
+      input: [0x3fbfffac]
+      expect: [0x3fbfffac]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_224
+      description: "1.50001"
+      input: [0x3fc00064]
+      expect: [0x3fc00064]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_225
+      description: "-1"
+      input: [0xbf800000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_226
+      description: "-0.9375"
+      input: [0xbf700001]
+      expect: [0x3f700001]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_227
+      description: "-1.0625"
+      input: [0xbf87fffe]
+      expect: [0x3f87fffe]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_228
+      description: "-1.49999"
+      input: [0xbfbfffac]
+      expect: [0x3fbfffac]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_229
+      description: "-1.50001"
+      input: [0xbfc00064]
+      expect: [0x3fc00064]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_230
+      description: "2"
+      input: [0x40000000]
+      expect: [0x40000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_231
+      description: "-2"
+      input: [0xc0000000]
+      expect: [0x40000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_232
+      description: "10"
+      input: [0x41200000]
+      expect: [0x41200000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_233
+      description: "-10"
+      input: [0xc1200000]
+      expect: [0x41200000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_234
+      description: "1000"
+      input: [0x447a0000]
+      expect: [0x447a0000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_235
+      description: "-1000"
+      input: [0xc47a0000]
+      expect: [0x447a0000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_236
+      description: "67.4"
+      input: [0x4286cccc]
+      expect: [0x4286cccc]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_237
+      description: "-67.4"
+      input: [0xc286cccc]
+      expect: [0x4286cccc]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_238
+      description: "1983.6"
+      input: [0x44f7f333]
+      expect: [0x44f7f333]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_239
+      description: "-1983.6"
+      input: [0xc4f7f333]
+      expect: [0x44f7f333]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_240
+      description: "87.5"
+      input: [0x42af0000]
+      expect: [0x42af0000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_241
+      description: "-87.5"
+      input: [0xc2af0000]
+      expect: [0x42af0000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_242
+      description: "132473"
+      input: [0x48015e40]
+      expect: [0x48015e40]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_243
+      description: "-132473"
+      input: [0xc8015e40]
+      expect: [0x48015e40]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_244
+      description: "8.38861e+06"
+      input: [0x4b000001]
+      expect: [0x4b000001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_245
+      description: "8.38861e+06"
+      input: [0x4affffff]
+      expect: [0x4affffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_246
+      description: "-8.38861e+06"
+      input: [0xcb000000]
+      expect: [0x4b000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_247
+      description: "-8.38861e+06"
+      input: [0xcb000001]
+      expect: [0x4b000001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_248
+      description: "-8.38861e+06"
+      input: [0xcaffffff]
+      expect: [0x4affffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_249
+      description: "3.40282e+38"
+      input: [0x7f7fffff]
+      expect: [0x7f7fffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_250
+      description: "-inf"
+      input: [0xff800000]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_251
+      description: "nan"
+      input: [0x7fe00000]
+      expect: [0x7fe00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_252
+      description: "nan"
+      input: [0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_253
+      description: "-0"
+      input: [0x80000000]
+      expect: [0x0]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_254
+      description: "inf"
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_255
+      description: "nan"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_256
+      description: "nan"
+      input: [0x7fe1a570]
+      expect: [0x7fe1a570]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_257
+      description: "nan"
+      input: [0x7fffffff]
+      expect: [0x7fffffff]
+      expect_exception: []
+      variants: [ss]
+
+    - id: asin_258
+      description: "nan"
+      input: [0x7f800001]
+      expect: [0x7f800001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_259
+      description: "nan"
+      input: [0x7fa0bd90]
+      expect: [0x7fa0bd90]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_260
+      description: "nan"
+      input: [0x7fbfffff]
+      expect: [0x7fbfffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_261
+      description: "2.19993846E+10, close to pi/2"
+      input: [0x50a3e87f]
+      expect: [0x50a3e87f]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_262
+      description: "8.20986125E+05, close to 0"
+      input: [0x49486fa2]
+      expect: [0x49486fa2]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_263
+      description: "0.5"
+      input: [0x3f000000]
+      expect: [0x3f000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: asin_264
+      description: "-3.92"
+      input: [0xc07ae148]
+      expect: [0x407ae148]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_265
+      description: "-123456"
+      input: [0xc7f12000]
+      expect: [0x47f12000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: asin_266
+      description: "-4e5"
+      input: [0xc8c35000]
+      expect: [0x48c35000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+#-------------------------------
+    # Double Precision Tests
+    - id: asin_001
+      description: "asin(0) = 0"
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_002
+      description: "asin(-0) = -0"
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_003
+      description: "asin(inf) = nan (invalid domain)"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_004
+      description: "asin(-inf) = nan (invalid domain)"
+      input: [0xfff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_005
+      description: "asin(-nan) = nan"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_006
+      description: "asin(+nan) = nan"
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_007
+      description: "asin(subnorm_max) = subnorm_max"
+      input: [0x000fffffffffffff]
+      expect: [0x000fffffffffffff]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asin_008
+      description: "asin(subnorm_max) = subnorm_max"
+      input: [0x000fffffffffffff]
+      expect: [0x000fffffffffffff]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asin_009
+      description: "asin(subnorm_min) = subnorm_min"
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asin_010
+      description: "asin(subnorm_min) = subnorm_min"
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asin_011
+      description: "asin(1.0) = π/2"
+      input: [0x3ff0000000000000]
+      expect: [0x3ff921fb54442d18]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_012
+      description: "asin(-1.0) = -π/2"
+      input: [0xbff0000000000000]
+      expect: [0xbff921fb54442d18]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_013
+      description: "asin(2.0) = nan (invalid domain)"
+      input: [0x4000000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_014
+      description: "asin(-2.0) = nan (invalid domain)"
+      input: [0xc000000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+# Test cases from gtests test_asin_data.h
+#-------------------------------
+    - id: asin_001
+      description: "min, small enough that asin(x) = 1 //"
+      input: [0x3E30000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_002
+      description: "min - 1 bit"
+      input: [0x3E2FFFFFFFFFFFFF]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_003
+      description: "min + 1 bit"
+      input: [0x3E30000000000001]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_004
+      description: "lambda + x = 1, x = -1.0000000000000000e+300"
+      input: [0xFE37E43C8800759C]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_005
+      description: "lambda + x < 1"
+      input: [0xFE37E43C8800758C]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_006
+      description: "lambda + x > 1"
+      input: [0xFE37E43C880075AC]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_007
+      description: "max arg, x = 89.41598629223294,max asinf arg"
+      input: [0x408633CE8FB9F87E]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_008
+      description: "max arg - 1 bit"
+      input: [0x408633CE8FB9F87D]
+      expect: [0x7FEFFFFFFFFFFD3B]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_009
+      description: "max arg + 1 bit"
+      input: [0x408633CE8FB9F87F]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_010
+      description: "> max"
+      input: [0x408633CE8FB9F8FF]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_011
+      description: "< max"
+      input: [0x408633CE8FB9F800]
+      expect: [0x7FEFFFFFFFFE093B]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_012
+      description: "small_threshold = 20"
+      input: [0x4034000000000000]
+      expect: [0x41ACEB088B68E804]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_013
+      description: "small_threshold+1 = 21"
+      input: [0x4035000000000000]
+      expect: [0x41C3A6E1FD9EECFD]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_014
+      description: "small_threshold - 1 = 19"
+      input: [0x4033000000000000]
+      expect: [0x419546D8F9ED26E2]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_015
+      description: "0"
+      input: [0x0000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_016
+      description: "0"
+      input: [0x8000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_017
+      description: ""
+      input: [0x7FF0000000000000]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_018
+      description: ""
+      input: [0xFFF0000000000000]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_019
+      description: ""
+      input: [0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_020
+      description: ""
+      input: [0xFFF2000000000000]
+      expect: [0xFFF2000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_021
+      description: ""
+      input: [0x7FF87FF7FDEDFFFF]
+      expect: [0x7FF87FF7FDEDFFFF]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_022
+      description: ""
+      input: [0xFFF8000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_023
+      description: "710.5"
+      input: [0x4086340000000000]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_024
+      description: "denormal min"
+      input: [0x0000000000000001]
+      expect: [0x3FF0000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asin_025
+      description: "denormal intermediate"
+      input: [0x0005FDE623545ABC]
+      expect: [0x3FF0000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asin_026
+      description: "denormal max"
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x3FF0000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asin_027
+      description: "-denormal min"
+      input: [0x8000000000000001]
+      expect: [0x3FF0000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asin_028
+      description: "-denormal intermediate"
+      input: [0x8002344ADE5DEF12]
+      expect: [0x3FF0000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asin_029
+      description: "-denormal max"
+      input: [0x800FFFFFFFFFFFFF]
+      expect: [0x3FF0000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: asin_030
+      description: "normal min"
+      input: [0x0010000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_031
+      description: "normal intermediate"
+      input: [0x43B3C4EAFEDCAB02]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_032
+      description: "normal max"
+      input: [0x7FEFFFFFFFFFFFFF]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_033
+      description: "-normal min"
+      input: [0x8010000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_034
+      description: "-normal intermediate"
+      input: [0xC5812E71245ACFDB]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_035
+      description: "-normal max"
+      input: [0xFFEFFFFFFFFFFFFF]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_036
+      description: "inf"
+      input: [0x7FF0000000000000]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_037
+      description: "-inf"
+      input: [0xFFF0000000000000]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_038
+      description: "qnan min"
+      input: [0x7FF8000000000000]
+      expect: [0x7FF8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_039
+      description: "qnan intermediate"
+      input: [0x7FFE1A5701234DC3]
+      expect: [0x7FFE1A5701234DC3]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_040
+      description: "qnan max"
+      input: [0x7FFFFFFFFFFFFFFF]
+      expect: [0x7FFFFFFFFFFFFFFF]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_041
+      description: "indeterninate"
+      input: [0xFFF8000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_042
+      description: "-qnan min"
+      input: [0xFFF8000000000001]
+      expect: [0xFFF8000000000001]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_043
+      description: "-qnan intermediate"
+      input: [0xFFF9123425DCBA31]
+      expect: [0xFFF9123425DCBA31]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_044
+      description: "-qnan max"
+      input: [0xFFFFFFFFFFFFFFFF]
+      expect: [0xFFFFFFFFFFFFFFFF]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_045
+      description: "snan min"
+      input: [0x7FF0000000000001]
+      expect: [0x7FF8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_046
+      description: "snan intermediate"
+      input: [0x7FF5344752A0BD90]
+      expect: [0x7FFD344752A0BD90]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_047
+      description: "snan max"
+      input: [0x7FF7FFFFFFFFFFFF]
+      expect: [0x7FFFFFFFFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_048
+      description: "-snan min"
+      input: [0xFFF0000000000001]
+      expect: [0xFFF8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_049
+      description: "-snan intermediate"
+      input: [0xFFF432438995FFFA]
+      expect: [0xFFFC32438995FFFA]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_050
+      description: "-snan max"
+      input: [0xFFF7FFFFFFFFFFFF]
+      expect: [0xFFFFFFFFFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_051
+      description: "pi/2"
+      input: [0x3FF921FB54442D18]
+      expect: [0x400412CC2A8D4E9E]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_052
+      description: "pi"
+      input: [0x400921FB54442D18]
+      expect: [0x40272F147FEE4000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_053
+      description: "2pi"
+      input: [0x401921FB54442D18]
+      expect: [0x4070BBF2BC2B69C6]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_054
+      description: "e --"
+      input: [0x3FFB7E151628AED3]
+      expect: [0x4007046B4F3F7E0C]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_055
+      description: "e"
+      input: [0x4005BF0A8B145769]
+      expect: [0x401E70C4A4F41684]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_056
+      description: "e ++"
+      input: [0x400DBF0A8B145769]
+      expect: [0x40349BE1E586228D]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_057
+      description: "0"
+      input: [0x0000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_058
+      description: "0.0000000000000000023"
+      input: [0x3C4536B8B14B676C]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_059
+      description: "0.4999989999999999999"
+      input: [0x3FDFFFFBCE4217D3]
+      expect: [0x3FF20AC0FA498D2C]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asin_060
+      description: "0.500000000000012"
+      input: [0x3FE000000000006C]
+      expect: [0x3FF20AC1862AE8ED]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asin_061
+      description: "-0"
+      input: [0x8000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_062
+      description: "-0.000000000000000000023"
+      input: [0xBBDB2752CE74FF42]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_063
+      description: "-0.4999989999999999999"
+      input: [0xBFDFFFFBCE4217D3]
+      expect: [0x3FF20AC0FA498D2C]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asin_064
+      description: "-0.500000000000012"
+      input: [0xBFE000000000006C]
+      expect: [0x3FF20AC1862AE8ED]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asin_065
+      description: "1"
+      input: [0x3FF0000000000000]
+      expect: [0x3FF8B07551D9F550]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_066
+      description: "0.9999998893750006"
+      input: [0x3FEFFFFFC49BD0DC]
+      expect: [0x3FF8B0752EF3F8A2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asin_067
+      description: "1.0000000000000624998"
+      input: [0x3FF0000000000119]
+      expect: [0x3FF8B07551D9F69B]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_068
+      description: "1.499998999999999967"
+      input: [0x3FF7FFFEF39085F4]
+      expect: [0x4002D1BB0418AE52]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_069
+      description: "1.50000000000000012"
+      input: [0x3FF8000000000001]
+      expect: [0x4002D1BC21E22023]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_070
+      description: "-1"
+      input: [0xBFF0000000000000]
+      expect: [0x3FF8B07551D9F550]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_071
+      description: "-0.9999998893750006"
+      input: [0xBFEFFFFFC49BD0DC]
+      expect: [0x3FF8B0752EF3F8A2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asin_072
+      description: "-1.0000000000000624998"
+      input: [0xBFF0000000000119]
+      expect: [0x3FF8B07551D9F69B]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_073
+      description: "-1.499998999999999967"
+      input: [0xBFF7FFFEF39085F4]
+      expect: [0x4002D1BB0418AE52]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_074
+      description: "-1.50000000000000012"
+      input: [0xBFF8000000000001]
+      expect: [0x4002D1BC21E22023]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_075
+      description: "2"
+      input: [0x4000000000000000]
+      expect: [0x400E18FA0DF2D9BC]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_076
+      description: "-2"
+      input: [0xC000000000000000]
+      expect: [0x400E18FA0DF2D9BC]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_077
+      description: "10"
+      input: [0x4024000000000000]
+      expect: [0x40C5829DD053712D]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_078
+      description: "-10"
+      input: [0xC024000000000000]
+      expect: [0x40C5829DD053712D]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_079
+      description: "1000"
+      input: [0x408F400000000000]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_080
+      description: "-1000"
+      input: [0xC08F400000000000]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_081
+      description: "67.4"
+      input: [0x4050D9999999999A]
+      expect: [0x45F2DD7567CD83EE]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_082
+      description: "-67.4"
+      input: [0xC050D9999999999A]
+      expect: [0x45F2DD7567CD83EE]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_083
+      description: "1983.6"
+      input: [0x409EFE6666666666]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_084
+      description: "-1983.6"
+      input: [0xC09EFE6666666666]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_085
+      description: "87.5"
+      input: [0x4055E00000000000]
+      expect: [0x47C2D7566D26536B]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_086
+      description: "-87.5"
+      input: [0xC055E00000000000]
+      expect: [0x47C2D7566D26536B]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_087
+      description: "132473"
+      input: [0x41002BC800000000]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_088
+      description: "-132473"
+      input: [0xC1002BC800000000]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_089
+      description: "2^52"
+      input: [0x4330000000000000]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_090
+      description: "2^52 + 1"
+      input: [0x4330000000000001]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_091
+      description: "2^52 -1 + 0.5"
+      input: [0x432FFFFFFFFFFFFF]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_092
+      description: "-2^52"
+      input: [0xC330000000000000]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_093
+      description: "-(2^52 + 1)"
+      input: [0xC330000000000001]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_094
+      description: "-(2^52 -1 + 0.5)"
+      input: [0xC32FFFFFFFFFFFFF]
+      expect: [0x7FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_095
+      description: "1.5708"
+      input: [0x3FF921FB54442D18]
+      expect: [0x3FF921FB54442D18]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_096
+      description: "3.14159"
+      input: [0x400921FB54442D18]
+      expect: [0x400921FB54442D18]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_097
+      description: "6.28319"
+      input: [0x401921FB54442D18]
+      expect: [0x401921FB54442D18]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_098
+      description: "1.71828"
+      input: [0x3FFB7E151628AED3]
+      expect: [0x3FFB7E151628AED3]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_099
+      description: "2.71828"
+      input: [0x4005BF0A8B145769]
+      expect: [0x4005BF0A8B145769]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_100
+      description: "3.71828"
+      input: [0x400DBF0A8B145769]
+      expect: [0x400DBF0A8B145769]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_101
+      description: "0"
+      input: [0x0]
+      expect: [0x0]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_102
+      description: "2.3e-18"
+      input: [0x3C4536B8B14B676C]
+      expect: [0x3C4536B8B14B676C]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_103
+      description: "0.499999"
+      input: [0x3FDFFFFBCE4217D3]
+      expect: [0x3FDFFFFBCE4217D3]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asin_104
+      description: "0.5"
+      input: [0x3FE000000000006C]
+      expect: [0x3FE000000000006C]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asin_105
+      description: "-0"
+      input: [0x8000000000000000]
+      expect: [0x0]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_106
+      description: "-2.3e-20"
+      input: [0xBBDB2752CE74FF42]
+      expect: [0x3BDB2752CE74FF42]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_107
+      description: "-0.499999"
+      input: [0xBFDFFFFBCE4217D3]
+      expect: [0x3FDFFFFBCE4217D3]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asin_108
+      description: "-0.5"
+      input: [0xBFE000000000006C]
+      expect: [0x3FE000000000006C]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asin_109
+      description: "1"
+      input: [0x3FF0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_110
+      description: "1"
+      input: [0x3FEFFFFFC49BD0DC]
+      expect: [0x3FEFFFFFC49BD0DC]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asin_111
+      description: "1"
+      input: [0x3FF0000000000119]
+      expect: [0x3FF0000000000119]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_112
+      description: "1.5"
+      input: [0x3FF7FFFEF39085F4]
+      expect: [0x3FF7FFFEF39085F4]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_113
+      description: "1.5"
+      input: [0x3FF8000000000001]
+      expect: [0x3FF8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_114
+      description: "-1"
+      input: [0xBFF0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: asin_115
+      description: "-1"
+      input: [0xBFEFFFFFC49BD0DC]
+      expect: [0x3FEFFFFFC49BD0DC]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: asin_116
+      description: "-1"
+      input: [0xBFF0000000000119]
+      expect: [0x3FF0000000000119]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_117
+      description: "-1.5"
+      input: [0xBFF7FFFEF39085F4]
+      expect: [0x3FF7FFFEF39085F4]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_118
+      description: "-1.5"
+      input: [0xBFF8000000000001]
+      expect: [0x3FF8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_119
+      description: "2"
+      input: [0x4000000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_120
+      description: "-2"
+      input: [0xC000000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_121
+      description: "10"
+      input: [0x4024000000000000]
+      expect: [0x4024000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_122
+      description: "-10"
+      input: [0xC024000000000000]
+      expect: [0x4024000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_123
+      description: "1000"
+      input: [0x408F400000000000]
+      expect: [0x408F400000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_124
+      description: "-1000"
+      input: [0xC08F400000000000]
+      expect: [0x408F400000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_125
+      description: "67.4"
+      input: [0x4050D9999999999A]
+      expect: [0x4050D9999999999A]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_126
+      description: "-67.4"
+      input: [0xC050D9999999999A]
+      expect: [0x4050D9999999999A]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_127
+      description: "1983.6"
+      input: [0x409EFE6666666666]
+      expect: [0x409EFE6666666666]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_128
+      description: "-1983.6"
+      input: [0xC09EFE6666666666]
+      expect: [0x409EFE6666666666]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_129
+      description: "87.5"
+      input: [0x4055E00000000000]
+      expect: [0x4055E00000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_130
+      description: "-87.5"
+      input: [0xC055E00000000000]
+      expect: [0x4055E00000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_131
+      description: "132473"
+      input: [0x41002BC800000000]
+      expect: [0x41002BC800000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_132
+      description: "-132473"
+      input: [0xC1002BC800000000]
+      expect: [0x41002BC800000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_133
+      description: "4.5036e+15"
+      input: [0x4330000000000000]
+      expect: [0x4330000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_134
+      description: "4.5036e+15"
+      input: [0x4330000000000001]
+      expect: [0x4330000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_135
+      description: "4.5036e+15"
+      input: [0x432FFFFFFFFFFFFF]
+      expect: [0x432FFFFFFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_136
+      description: "-4.5036e+15"
+      input: [0xC330000000000000]
+      expect: [0x4330000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_137
+      description: "-4.5036e+15"
+      input: [0xC330000000000001]
+      expect: [0x4330000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_138
+      description: "-4.5036e+15"
+      input: [0xC32FFFFFFFFFFFFF]
+      expect: [0x432FFFFFFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_139
+      description: "1.3525e+16"
+      input: [0x43480677ADFCFA00]
+      expect: [0x43480677ADFCFA00]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_140
+      description: "2.70266e+16"
+      input: [0x435801239871FA00]
+      expect: [0x435801239871FA00]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_141
+      description: "5.41933e+16"
+      input: [0x4368111144444444]
+      expect: [0x4368111144444444]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_142
+      description: "2.2518e+17"
+      input: [0x4388FFFFFFFFFFFF]
+      expect: [0x4388FFFFFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_143
+      description: "4.5036e+17"
+      input: [0x4398FFFFFFFFFFFF]
+      expect: [0x4398FFFFFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_144
+      description: "9.0072e+17"
+      input: [0x43A8FFFFFFFFFFFF]
+      expect: [0x43A8FFFFFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_145
+      description: "1.77742e+18"
+      input: [0x43B8AAAA68FFFFFF]
+      expect: [0x43B8AAAA68FFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_146
+      description: "3.55484e+18"
+      input: [0x43C8AAAA69FFFFFF]
+      expect: [0x43C8AAAA69FFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_147
+      description: "6.91819e+18"
+      input: [0x43D8009678ABCD00]
+      expect: [0x43D8009678ABCD00]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_148
+      description: "1.79769e+308"
+      input: [0x7FEFFFFFFFFFFFFF]
+      expect: [0x7FEFFFFFFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_149
+      description: "1.38565e+19"
+      input: [0x43E8098734209870]
+      expect: [0x43E8098734209870]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_150
+      description: "2.76725e+19"
+      input: [0x43F800876ABCDA00]
+      expect: [0x43F800876ABCDA00]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_151
+      description: "5.53454e+19"
+      input: [0x44080091781CDBA0]
+      expect: [0x44080091781CDBA0]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_152
+      description: "5.53506e+19"
+      input: [0x4408012786ABCDE0]
+      expect: [0x4408012786ABCDE0]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: asin_153
+      description: "1.42452e+18"
+      input: [0x43B3C4EAFEDCAB02]
+      expect: [0x43B3C4EAFEDCAB02]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+#-------------------------------

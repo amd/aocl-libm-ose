@@ -1,0 +1,3494 @@
+
+- test_sequence: unit_tests_fabs
+  ignore_exceptions: [underflow, inexact]
+  function: fabs
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    - id: fabs_001
+      description: "fabsf(snan) = snan"
+      input: [0x7fa00000]
+      expect: [0x7fa00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fabs_002
+      description: "fabsf(-snan) = snan"
+      input: [0xffa00000]
+      expect: [0x7fa00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fabs_003
+      description: "fabsf(qnan) = qnan"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    - id: fabs_004
+      description: "fabsf(-qnan) = qnan"
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    - id: fabs_005
+      description: "fabsf(0) = 0"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: fabs_006
+      description: "fabsf(-0) = 0"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: fabs_007
+      description: "fabsf(inf) = inf"
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    - id: fabs_008
+      description: "fabsf(-inf) = inf"
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    - id: fabs_009
+      description: "fabsf(+subnorm_max) = +subnorm_max"
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: []
+
+    - id: fabs_010
+      description: "fabsf(-subnorm_max) = +subnorm_max"
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0x007fffff]
+      expect_exception: []
+
+    - id: fabs_011
+      description: "fabsf(+subnorm_min) = +subnorm_min"
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: []
+
+    - id: fabs_012
+      description: "fabsf(-subnorm_min) = +subnorm_min"
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x00000001]
+      expect_exception: []
+
+    - id: fabs_013
+      description: "fabsf(+1.0) = +1.0"
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: fabs_014
+      description: "fabsf(-1.0) = +1.0"
+      variants: [ss]
+      input: [0xbf800000]
+      expect: [0x3f800000]
+      expect_exception: []
+# Test cases from gtests test_fabs_data.h
+#---------------------------------------
+    - id: fabs_001
+      description: "min= 0.00006103515625, small enough that fabs(x) = 1"
+      variants: [ss]
+      input: [0x38800000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 2
+    - id: fabs_002
+      description: "min - 1 bit"
+      variants: [ss]
+      input: [0x387FFFFF]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 3
+    - id: fabs_003
+      description: "min + 1 bit"
+      variants: [ss]
+      input: [0x38800001]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 4
+    - id: fabs_004
+      description: "lambda + x = 1, x = -9.9999994e+29"
+      variants: [ss]
+      input: [0xF149F2C9]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 5
+    - id: fabs_005
+      description: "lambda + x < 1"
+      variants: [ss]
+      input: [0xF149F2C8]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 6
+    - id: fabs_006
+      description: "lambda + x > 1"
+      variants: [ss]
+      input: [0xF149F2CA]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 7
+    - id: fabs_007
+      description: "max arg, x = 89.41598629223294,max fabsf arg"
+      variants: [ss]
+      input: [0x42B2D4FC]
+      expect: [0x7f7fffec]
+      expect_exception: []
+
+    # Test case 8
+    - id: fabs_008
+      description: "max arg - 1 bit"
+      variants: [ss]
+      input: [0x42B2D4FB]
+      expect: [0x7f7fff6c]
+      expect_exception: []
+
+    # Test case 9
+    - id: fabs_009
+      description: "max arg + 1 bit"
+      variants: [ss]
+      input: [0x42B2D4FD]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 10
+    - id: fabs_010
+      description: "> max"
+      variants: [ss]
+      input: [0x42B2D4FF]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 11
+    - id: fabs_011
+      description: "< max"
+      variants: [ss]
+      input: [0x42B2D400]
+      expect: [0x7f7f820b]
+      expect_exception: []
+
+    # Test case 12
+    - id: fabs_012
+      description: "small_threshold = 20"
+      variants: [ss]
+      input: [0x41A00000]
+      expect: [0x4d675844]
+      expect_exception: []
+
+    # Test case 13
+    - id: fabs_013
+      description: "small_threshold+1 = 21"
+      variants: [ss]
+      input: [0x41A80000]
+      expect: [0x4e1d3710]
+      expect_exception: []
+
+    # Test case 14
+    - id: fabs_014
+      description: "small_threshold - 1 = 19"
+      variants: [ss]
+      input: [0x41980000]
+      expect: [0x4caa36c8]
+      expect_exception: []
+
+    # Test case 15
+    - id: fabs_015
+      description: "0"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 16
+    - id: fabs_016
+      description: "0"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 17
+    - id: fabs_017
+      description: "fabsf(0x7F800000) = 0x7F800000"
+      variants: [ss]
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+
+    # Test case 18
+    - id: fabs_018
+      description: "fabsf(0xFF800000) = 0xFF800000"
+      variants: [ss]
+      input: [0xFF800000]
+      expect: [0xFF800000]
+      expect_exception: []
+
+    # Test case 19
+    - id: fabs_019
+      description: "fabsf(0x7fb00000) = 0x7fb00000"
+      variants: [ss]
+      input: [0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: []
+
+    # Test case 20
+    - id: fabs_020
+      description: "fabsf(0xffb00000) = 0xffb00000"
+      variants: [ss]
+      input: [0xffb00000]
+      expect: [0xffb00000]
+      expect_exception: []
+
+    # Test case 21
+    - id: fabs_021
+      description: "fabsf(0x7ff00000) = 0x7ff00000"
+      variants: [ss]
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+
+    # Test case 22
+    - id: fabs_022
+      description: "fabsf(0xfff00000) = 0xfff00000"
+      variants: [ss]
+      input: [0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+
+    # Test case 23
+    - id: fabs_023
+      description: "95"
+      variants: [ss]
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+
+    # Test case 24
+    - id: fabs_024
+      description: "denormal min"
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 25
+    - id: fabs_025
+      description: "denormal intermediate"
+      variants: [ss]
+      input: [0x0005fde6]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 26
+    - id: fabs_026
+      description: "denormal max"
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 27
+    - id: fabs_027
+      description: "-denormal min"
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 28
+    - id: fabs_028
+      description: "-denormal intermediate"
+      variants: [ss]
+      input: [0x805def12]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 29
+    - id: fabs_029
+      description: "-denormal max"
+      variants: [ss]
+      input: [0x807FFFFF]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 30
+    - id: fabs_030
+      description: "normal min"
+      variants: [ss]
+      input: [0x00800000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 31
+    - id: fabs_031
+      description: "normal intermediate"
+      variants: [ss]
+      input: [0x43b3c4ea]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 32
+    - id: fabs_032
+      description: "normal max"
+      variants: [ss]
+      input: [0x7f7fffff]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 33
+    - id: fabs_033
+      description: "-normal min"
+      variants: [ss]
+      input: [0x80800000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 34
+    - id: fabs_034
+      description: "-normal intermediate"
+      variants: [ss]
+      input: [0xc5812e71]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 35
+    - id: fabs_035
+      description: "-normal max"
+      variants: [ss]
+      input: [0xFF7FFFFF]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 36
+    - id: fabs_036
+      description: "inf"
+      variants: [ss]
+      input: [0x7F800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 37
+    - id: fabs_037
+      description: "-inf"
+      variants: [ss]
+      input: [0xfF800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 38
+    - id: fabs_038
+      description: "qnan min"
+      variants: [ss]
+      input: [0x7Fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 39
+    - id: fabs_039
+      description: "qnan intermediate"
+      variants: [ss]
+      input: [0x7Fe1a570]
+      expect: [0x7fe1a570]
+      expect_exception: []
+
+    # Test case 40
+    - id: fabs_040
+      description: "qnan max"
+      variants: [ss]
+      input: [0x7FFFFFFF]
+      expect: [0x7fffffff]
+      expect_exception: []
+
+    # Test case 41
+    - id: fabs_041
+      description: "indeterninate"
+      variants: [ss]
+      input: [0xfFc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+
+    # Test case 42
+    - id: fabs_042
+      description: "-qnan min"
+      variants: [ss]
+      input: [0xFFC00001]
+      expect: [0xffc00001]
+      expect_exception: []
+
+    # Test case 43
+    - id: fabs_043
+      description: "-qnan intermediate"
+      variants: [ss]
+      input: [0xFFd2ba31]
+      expect: [0xffd2ba31]
+      expect_exception: []
+
+    # Test case 44
+    - id: fabs_044
+      description: "-qnan max"
+      variants: [ss]
+      input: [0xFFFFFFFF]
+      expect: [0xffffffff]
+      expect_exception: []
+
+    # Test case 45
+    - id: fabs_045
+      description: "snan min"
+      variants: [ss]
+      input: [0x7F800001]
+      expect: [0x7fc00001]
+      expect_exception: []
+
+    # Test case 46
+    - id: fabs_046
+      description: "snan intermediate"
+      variants: [ss]
+      input: [0x7Fa0bd90]
+      expect: [0x7fe0bd90]
+      expect_exception: []
+
+    # Test case 47
+    - id: fabs_047
+      description: "snan max"
+      variants: [ss]
+      input: [0x7FBFFFFF]
+      expect: [0x7fffffff]
+      expect_exception: []
+
+    # Test case 48
+    - id: fabs_048
+      description: "-snan min"
+      variants: [ss]
+      input: [0xFF800001]
+      expect: [0xffc00001]
+      expect_exception: []
+
+    # Test case 49
+    - id: fabs_049
+      description: "-snan intermediate"
+      variants: [ss]
+      input: [0xfF95fffa]
+      expect: [0xffd5fffa]
+      expect_exception: []
+
+    # Test case 50
+    - id: fabs_050
+      description: "-snan max"
+      variants: [ss]
+      input: [0xFFBFFFFF]
+      expect: [0xffffffff]
+      expect_exception: []
+
+    # Test case 51
+    - id: fabs_051
+      description: "pi/2"
+      variants: [ss]
+      input: [0x3FC90FDB]
+      expect: [0x40209662]
+      expect_exception: []
+
+    # Test case 52
+    - id: fabs_052
+      description: "pi"
+      variants: [ss]
+      input: [0x40490FDB]
+      expect: [0x413978a5]
+      expect_exception: []
+
+    # Test case 53
+    - id: fabs_053
+      description: "2pi"
+      variants: [ss]
+      input: [0x40C90FDB]
+      expect: [0x4385df97]
+      expect_exception: []
+
+    # Test case 54
+    - id: fabs_054
+      description: "e --"
+      variants: [ss]
+      input: [0x402DF853]
+      expect: [0x40f38620]
+      expect_exception: []
+
+    # Test case 55
+    - id: fabs_055
+      description: "e"
+      variants: [ss]
+      input: [0x402DF854]
+      expect: [0x40f38624]
+      expect_exception: []
+
+    # Test case 56
+    - id: fabs_056
+      description: "e ++"
+      variants: [ss]
+      input: [0x402DF855]
+      expect: [0x40f38628]
+      expect_exception: []
+
+    # Test case 57
+    - id: fabs_057
+      description: "0"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 58
+    - id: fabs_058
+      description: "0.000023"
+      variants: [ss]
+      input: [0x37C0F01F]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 59
+    - id: fabs_059
+      description: "0.49999"
+      variants: [ss]
+      input: [0x3EFFFEB0]
+      expect: [0x3f9055e0]
+      expect_exception: []
+
+    # Test case 60
+    - id: fabs_060
+      description: "0.500012"
+      variants: [ss]
+      input: [0x3F0000C9]
+      expect: [0x3f905641]
+      expect_exception: []
+
+    # Test case 61
+    - id: fabs_061
+      description: "-0"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 62
+    - id: fabs_062
+      description: "-0.000023"
+      variants: [ss]
+      input: [0xb7C0F01F]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 63
+    - id: fabs_063
+      description: "-0.49999"
+      variants: [ss]
+      input: [0xbEFFFEB0]
+      expect: [0x3f9055e0]
+      expect_exception: []
+
+    # Test case 64
+    - id: fabs_064
+      description: "-0.500012"
+      variants: [ss]
+      input: [0xbF0000C9]
+      expect: [0x3f905641]
+      expect_exception: []
+
+    # Test case 65
+    - id: fabs_065
+      description: "1"
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x3fc583ab]
+      expect_exception: []
+
+    # Test case 66
+    - id: fabs_066
+      description: "0.93750006"
+      variants: [ss]
+      input: [0x3f700001]
+      expect: [0x3fbc7e14]
+      expect_exception: []
+
+    # Test case 67
+    - id: fabs_067
+      description: "1.0624998"
+      variants: [ss]
+      input: [0x3F87FFFE]
+      expect: [0x3fcf4ed3]
+      expect_exception: []
+
+    # Test case 68
+    - id: fabs_068
+      description: "1.49999"
+      variants: [ss]
+      input: [0x3FBFFFAC]
+      expect: [0x40168d88]
+      expect_exception: []
+
+    # Test case 69
+    - id: fabs_069
+      description: "1.500012"
+      variants: [ss]
+      input: [0x3FC00064]
+      expect: [0x40168e4c]
+      expect_exception: []
+
+    # Test case 70
+    - id: fabs_070
+      description: "-1"
+      variants: [ss]
+      input: [0xbf800000]
+      expect: [0x3fc583ab]
+      expect_exception: []
+
+    # Test case 71
+    - id: fabs_071
+      description: "-0.93750006"
+      variants: [ss]
+      input: [0xbf700001]
+      expect: [0x3fbc7e14]
+      expect_exception: []
+
+    # Test case 72
+    - id: fabs_072
+      description: "-1.0624998"
+      variants: [ss]
+      input: [0xbF87FFFE]
+      expect: [0x3fcf4ed3]
+      expect_exception: []
+
+    # Test case 73
+    - id: fabs_073
+      description: "-1.49999"
+      variants: [ss]
+      input: [0xbFBFFFAC]
+      expect: [0x40168d88]
+      expect_exception: []
+
+    # Test case 74
+    - id: fabs_074
+      description: "-1.500012"
+      variants: [ss]
+      input: [0xbFC00064]
+      expect: [0x40168e4c]
+      expect_exception: []
+
+    # Test case 75
+    - id: fabs_075
+      description: "-2"
+      variants: [ss]
+      input: [0xc0000000]
+      expect: [0x4070c7d0]
+      expect_exception: []
+
+    # Test case 76
+    - id: fabs_076
+      description: "10"
+      variants: [ss]
+      input: [0x41200000]
+      expect: [0x462c14ef]
+      expect_exception: []
+
+    # Test case 77
+    - id: fabs_077
+      description: "-10"
+      variants: [ss]
+      input: [0xc1200000]
+      expect: [0x462c14ef]
+      expect_exception: []
+
+    # Test case 78
+    - id: fabs_078
+      description: "1000"
+      variants: [ss]
+      input: [0x447A0000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 79
+    - id: fabs_079
+      description: "-1000"
+      variants: [ss]
+      input: [0xc47A0000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 80
+    - id: fabs_080
+      description: "67.4"
+      variants: [ss]
+      input: [0x4286CCCC]
+      expect: [0x6f96eb6f]
+      expect_exception: []
+
+    # Test case 81
+    - id: fabs_081
+      description: "-67.4"
+      variants: [ss]
+      input: [0xc286CCCC]
+      expect: [0x6f96eb6f]
+      expect_exception: []
+
+    # Test case 82
+    - id: fabs_082
+      description: "1983.6"
+      variants: [ss]
+      input: [0x44F7F333]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 83
+    - id: fabs_083
+      description: "-1983.6"
+      variants: [ss]
+      input: [0xc4F7F333]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 84
+    - id: fabs_084
+      description: "87.5"
+      variants: [ss]
+      input: [0x42AF0000]
+      expect: [0x7e16bab3]
+      expect_exception: []
+
+    # Test case 85
+    - id: fabs_085
+      description: "-87.5"
+      variants: [ss]
+      input: [0xc2AF0000]
+      expect: [0x7e16bab3]
+      expect_exception: []
+
+    # Test case 86
+    - id: fabs_086
+      description: "132473"
+      variants: [ss]
+      input: [0x48015E40]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 87
+    - id: fabs_087
+      description: "-132473"
+      variants: [ss]
+      input: [0xc8015E40]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 88
+    - id: fabs_088
+      description: "2^23"
+      variants: [ss]
+      input: [0x4B000000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 89
+    - id: fabs_089
+      description: "2^23 + 1"
+      variants: [ss]
+      input: [0x4B000001]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 90
+    - id: fabs_090
+      description: "2^23 -1 + 0.5"
+      variants: [ss]
+      input: [0x4AFFFFFF]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 91
+    - id: fabs_091
+      description: "-2^23"
+      variants: [ss]
+      input: [0xcB000000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 92
+    - id: fabs_092
+      description: "-(2^23 + 1)"
+      variants: [ss]
+      input: [0xcB000001]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 93
+    - id: fabs_093
+      description: "-(2^23 -1 + 0.5)"
+      variants: [ss]
+      input: [0xcAFFFFFF]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 94
+    - id: fabs_094
+      description: "0.125"
+      variants: [ss]
+      input: [0x3e000000]
+      expect: [0x3e000000]
+      expect_exception: []
+
+    # Test case 95
+    - id: fabs_095
+      description: "0.375"
+      variants: [ss]
+      input: [0x3ec00000]
+      expect: [0x3ec00000]
+      expect_exception: []
+
+    # Test case 96
+    - id: fabs_096
+      description: "0.625"
+      variants: [ss]
+      input: [0x3f200000]
+      expect: [0x3f200000]
+      expect_exception: []
+
+    # Test case 97
+    - id: fabs_097
+      description: "0.25"
+      variants: [ss]
+      input: [0x3e800000]
+      expect: [0x3e800000]
+      expect_exception: []
+
+    # Test case 98
+    - id: fabs_098
+      description: "0.75"
+      variants: [ss]
+      input: [0x3f400000]
+      expect: [0x3f400000]
+      expect_exception: []
+
+    # Test case 99
+    - id: fabs_099
+      description: "0.5"
+      variants: [ss]
+      input: [0x3f000000]
+      expect: [0x3f000000]
+      expect_exception: []
+
+    # Test case 100
+    - id: fabs_100
+      description: "1"
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 101
+    - id: fabs_101
+      description: "1.25"
+      variants: [ss]
+      input: [0x3fa00000]
+      expect: [0x3fa00000]
+      expect_exception: []
+
+    # Test case 102
+    - id: fabs_102
+      description: "1.5"
+      variants: [ss]
+      input: [0x3fc00000]
+      expect: [0x3fc00000]
+      expect_exception: []
+
+    # Test case 103
+    - id: fabs_103
+      description: "2.25"
+      variants: [ss]
+      input: [0x40100000]
+      expect: [0x40100000]
+      expect_exception: []
+
+    # Test case 104
+    - id: fabs_104
+      description: "2.5"
+      variants: [ss]
+      input: [0x40200000]
+      expect: [0x40200000]
+      expect_exception: []
+
+    # Test case 105
+    - id: fabs_105
+      description: "4"
+      variants: [ss]
+      input: [0x40800000]
+      expect: [0x40800000]
+      expect_exception: []
+
+    # Test case 106
+    - id: fabs_106
+      description: "4.25"
+      variants: [ss]
+      input: [0x40880000]
+      expect: [0x40880000]
+      expect_exception: []
+
+    # Test case 107
+    - id: fabs_107
+      description: "4.5"
+      variants: [ss]
+      input: [0x40900000]
+      expect: [0x40900000]
+      expect_exception: []
+
+    # Test case 108
+    - id: fabs_108
+      description: "8"
+      variants: [ss]
+      input: [0x41000000]
+      expect: [0x41000000]
+      expect_exception: []
+
+    # Test case 109
+    - id: fabs_109
+      description: "8.25"
+      variants: [ss]
+      input: [0x41040000]
+      expect: [0x41040000]
+      expect_exception: []
+
+    # Test case 110
+    - id: fabs_110
+      description: "8.5"
+      variants: [ss]
+      input: [0x41080000]
+      expect: [0x41080000]
+      expect_exception: []
+
+    # Test case 111
+    - id: fabs_111
+      description: "16"
+      variants: [ss]
+      input: [0x41800000]
+      expect: [0x41800000]
+      expect_exception: []
+
+    # Test case 112
+    - id: fabs_112
+      description: "16.25"
+      variants: [ss]
+      input: [0x41820000]
+      expect: [0x41820000]
+      expect_exception: []
+
+    # Test case 113
+    - id: fabs_113
+      description: "16.5"
+      variants: [ss]
+      input: [0x41840000]
+      expect: [0x41840000]
+      expect_exception: []
+
+    # Test case 114
+    - id: fabs_114
+      description: "32"
+      variants: [ss]
+      input: [0x42000000]
+      expect: [0x42000000]
+      expect_exception: []
+
+    # Test case 115
+    - id: fabs_115
+      description: "32.25"
+      variants: [ss]
+      input: [0x42010000]
+      expect: [0x42010000]
+      expect_exception: []
+
+    # Test case 116
+    - id: fabs_116
+      description: "32.5"
+      variants: [ss]
+      input: [0x42020000]
+      expect: [0x42020000]
+      expect_exception: []
+
+    # Test case 117
+    - id: fabs_117
+      description: "64"
+      variants: [ss]
+      input: [0x42800000]
+      expect: [0x42800000]
+      expect_exception: []
+
+    # Test case 118
+    - id: fabs_118
+      description: "64.25"
+      variants: [ss]
+      input: [0x42808000]
+      expect: [0x42808000]
+      expect_exception: []
+
+    # Test case 119
+    - id: fabs_119
+      description: "64.5"
+      variants: [ss]
+      input: [0x42810000]
+      expect: [0x42810000]
+      expect_exception: []
+
+    # Test case 120
+    - id: fabs_120
+      description: "128"
+      variants: [ss]
+      input: [0x43000000]
+      expect: [0x43000000]
+      expect_exception: []
+
+    # Test case 121
+    - id: fabs_121
+      description: "128.25"
+      variants: [ss]
+      input: [0x43004000]
+      expect: [0x43004000]
+      expect_exception: []
+
+    # Test case 122
+    - id: fabs_122
+      description: "128.5"
+      variants: [ss]
+      input: [0x43008000]
+      expect: [0x43008000]
+      expect_exception: []
+
+    # Test case 123
+    - id: fabs_123
+      description: "256"
+      variants: [ss]
+      input: [0x43800000]
+      expect: [0x43800000]
+      expect_exception: []
+
+    # Test case 124
+    - id: fabs_124
+      description: "256.25"
+      variants: [ss]
+      input: [0x43802000]
+      expect: [0x43802000]
+      expect_exception: []
+
+    # Test case 125
+    - id: fabs_125
+      description: "256.5"
+      variants: [ss]
+      input: [0x43804000]
+      expect: [0x43804000]
+      expect_exception: []
+
+    # Test case 126
+    - id: fabs_126
+      description: "512"
+      variants: [ss]
+      input: [0x44000000]
+      expect: [0x44000000]
+      expect_exception: []
+
+    # Test case 127
+    - id: fabs_127
+      description: "512.25"
+      variants: [ss]
+      input: [0x44001000]
+      expect: [0x44001000]
+      expect_exception: []
+
+    # Test case 128
+    - id: fabs_128
+      description: "512.5"
+      variants: [ss]
+      input: [0x44002000]
+      expect: [0x44002000]
+      expect_exception: []
+
+    # Test case 129
+    - id: fabs_129
+      description: "1024"
+      variants: [ss]
+      input: [0x44800000]
+      expect: [0x44800000]
+      expect_exception: []
+
+    # Test case 130
+    - id: fabs_130
+      description: "1024.25"
+      variants: [ss]
+      input: [0x44800800]
+      expect: [0x44800800]
+      expect_exception: []
+
+    # Test case 131
+    - id: fabs_131
+      description: "1024.5"
+      variants: [ss]
+      input: [0x44801000]
+      expect: [0x44801000]
+      expect_exception: []
+
+    # Test case 132
+    - id: fabs_132
+      description: "2048"
+      variants: [ss]
+      input: [0x45000000]
+      expect: [0x45000000]
+      expect_exception: []
+
+    # Test case 133
+    - id: fabs_133
+      description: "2048.25"
+      variants: [ss]
+      input: [0x45000400]
+      expect: [0x45000400]
+      expect_exception: []
+
+    # Test case 134
+    - id: fabs_134
+      description: "2048.5"
+      variants: [ss]
+      input: [0x45000800]
+      expect: [0x45000800]
+      expect_exception: []
+
+    # Test case 135
+    - id: fabs_135
+      description: "4096"
+      variants: [ss]
+      input: [0x45800000]
+      expect: [0x45800000]
+      expect_exception: []
+
+    # Test case 136
+    - id: fabs_136
+      description: "4096.25"
+      variants: [ss]
+      input: [0x45800200]
+      expect: [0x45800200]
+      expect_exception: []
+
+    # Test case 137
+    - id: fabs_137
+      description: "4096.5"
+      variants: [ss]
+      input: [0x45800400]
+      expect: [0x45800400]
+      expect_exception: []
+
+    # Test case 138
+    - id: fabs_138
+      description: "8192"
+      variants: [ss]
+      input: [0x46000000]
+      expect: [0x46000000]
+      expect_exception: []
+
+    # Test case 139
+    - id: fabs_139
+      description: "8192.25"
+      variants: [ss]
+      input: [0x46000100]
+      expect: [0x46000100]
+      expect_exception: []
+
+    # Test case 140
+    - id: fabs_140
+      description: "8192.5"
+      variants: [ss]
+      input: [0x46000200]
+      expect: [0x46000200]
+      expect_exception: []
+
+    # Test case 141
+    - id: fabs_141
+      description: "16384"
+      variants: [ss]
+      input: [0x46800000]
+      expect: [0x46800000]
+      expect_exception: []
+
+    # Test case 142
+    - id: fabs_142
+      description: "16384.2"
+      variants: [ss]
+      input: [0x46800080]
+      expect: [0x46800080]
+      expect_exception: []
+
+    # Test case 143
+    - id: fabs_143
+      description: "16384.5"
+      variants: [ss]
+      input: [0x46800100]
+      expect: [0x46800100]
+      expect_exception: []
+
+    # Test case 144
+    - id: fabs_144
+      description: "32768"
+      variants: [ss]
+      input: [0x47000000]
+      expect: [0x47000000]
+      expect_exception: []
+
+    # Test case 145
+    - id: fabs_145
+      description: "32768.2"
+      variants: [ss]
+      input: [0x47000040]
+      expect: [0x47000040]
+      expect_exception: []
+
+    # Test case 146
+    - id: fabs_146
+      description: "32768.5"
+      variants: [ss]
+      input: [0x47000080]
+      expect: [0x47000080]
+      expect_exception: []
+
+    # Test case 147
+    - id: fabs_147
+      description: "65536"
+      variants: [ss]
+      input: [0x47800000]
+      expect: [0x47800000]
+      expect_exception: []
+
+    # Test case 148
+    - id: fabs_148
+      description: "65536.2"
+      variants: [ss]
+      input: [0x47800020]
+      expect: [0x47800020]
+      expect_exception: []
+
+    # Test case 149
+    - id: fabs_149
+      description: "65536.5"
+      variants: [ss]
+      input: [0x47800040]
+      expect: [0x47800040]
+      expect_exception: []
+
+    # Test case 150
+    - id: fabs_150
+      description: "131072"
+      variants: [ss]
+      input: [0x48000000]
+      expect: [0x48000000]
+      expect_exception: []
+
+    # Test case 151
+    - id: fabs_151
+      description: "131072"
+      variants: [ss]
+      input: [0x48000010]
+      expect: [0x48000010]
+      expect_exception: []
+
+    # Test case 152
+    - id: fabs_152
+      description: "131072"
+      variants: [ss]
+      input: [0x48000020]
+      expect: [0x48000020]
+      expect_exception: []
+
+    # Test case 153
+    - id: fabs_153
+      description: "262144"
+      variants: [ss]
+      input: [0x48800000]
+      expect: [0x48800000]
+      expect_exception: []
+
+    # Test case 154
+    - id: fabs_154
+      description: "262144"
+      variants: [ss]
+      input: [0x48800008]
+      expect: [0x48800008]
+      expect_exception: []
+
+    # Test case 155
+    - id: fabs_155
+      description: "262144"
+      variants: [ss]
+      input: [0x48800010]
+      expect: [0x48800010]
+      expect_exception: []
+
+    # Test case 156
+    - id: fabs_156
+      description: "524288"
+      variants: [ss]
+      input: [0x49000000]
+      expect: [0x49000000]
+      expect_exception: []
+
+    # Test case 157
+    - id: fabs_157
+      description: "524288"
+      variants: [ss]
+      input: [0x49000004]
+      expect: [0x49000004]
+      expect_exception: []
+
+    # Test case 158
+    - id: fabs_158
+      description: "524288"
+      variants: [ss]
+      input: [0x49000008]
+      expect: [0x49000008]
+      expect_exception: []
+
+    # Test case 159
+    - id: fabs_159
+      description: "1.04858e+06"
+      variants: [ss]
+      input: [0x49800000]
+      expect: [0x49800000]
+      expect_exception: []
+
+    # Test case 160
+    - id: fabs_160
+      description: "1.04858e+06"
+      variants: [ss]
+      input: [0x49800002]
+      expect: [0x49800002]
+      expect_exception: []
+
+    # Test case 161
+    - id: fabs_161
+      description: "1.04858e+06"
+      variants: [ss]
+      input: [0x49800004]
+      expect: [0x49800004]
+      expect_exception: []
+
+    # Test case 162
+    - id: fabs_162
+      description: "2.09715e+06"
+      variants: [ss]
+      input: [0x4a000000]
+      expect: [0x4a000000]
+      expect_exception: []
+
+    # Test case 163
+    - id: fabs_163
+      description: "2.09715e+06"
+      variants: [ss]
+      input: [0x4a000001]
+      expect: [0x4a000001]
+      expect_exception: []
+
+    # Test case 164
+    - id: fabs_164
+      description: "2.09715e+06"
+      variants: [ss]
+      input: [0x4a000002]
+      expect: [0x4a000002]
+      expect_exception: []
+
+    # Test case 165
+    - id: fabs_165
+      description: "4.1943e+06"
+      variants: [ss]
+      input: [0x4a800000]
+      expect: [0x4a800000]
+      expect_exception: []
+
+    # Test case 166
+    - id: fabs_166
+      description: "8.38861e+06"
+      variants: [ss]
+      input: [0x4b000000]
+      expect: [0x4b000000]
+      expect_exception: []
+
+    # Test case 167
+    - id: fabs_167
+      description: "1.67772e+07"
+      variants: [ss]
+      input: [0x4b800000]
+      expect: [0x4b800000]
+      expect_exception: []
+
+    # Test case 168
+    - id: fabs_168
+      description: "3.35544e+07"
+      variants: [ss]
+      input: [0x4c000000]
+      expect: [0x4c000000]
+      expect_exception: []
+
+    # Test case 169
+    - id: fabs_169
+      description: "6.71089e+07"
+      variants: [ss]
+      input: [0x4c800000]
+      expect: [0x4c800000]
+      expect_exception: []
+
+    # Test case 170
+    - id: fabs_170
+      description: "1.34218e+08"
+      variants: [ss]
+      input: [0x4d000000]
+      expect: [0x4d000000]
+      expect_exception: []
+
+    # Test case 171
+    - id: fabs_171
+      description: "2.68435e+08"
+      variants: [ss]
+      input: [0x4d800000]
+      expect: [0x4d800000]
+      expect_exception: []
+
+    # Test case 172
+    - id: fabs_172
+      description: "5.36871e+08"
+      variants: [ss]
+      input: [0x4e000000]
+      expect: [0x4e000000]
+      expect_exception: []
+
+    # Test case 173
+    - id: fabs_173
+      description: "1.07374e+09"
+      variants: [ss]
+      input: [0x4e800000]
+      expect: [0x4e800000]
+      expect_exception: []
+
+    # Test case 174
+    - id: fabs_174
+      description: "2.14748e+09"
+      variants: [ss]
+      input: [0x4f000000]
+      expect: [0x4f000000]
+      expect_exception: []
+
+    # Test case 175
+    - id: fabs_175
+      description: "4.29497e+09"
+      variants: [ss]
+      input: [0x4f800000]
+      expect: [0x4f800000]
+      expect_exception: []
+
+    # Test case 176
+    - id: fabs_176
+      description: "8.58993e+09"
+      variants: [ss]
+      input: [0x50000000]
+      expect: [0x50000000]
+      expect_exception: []
+
+    # Test case 177
+    - id: fabs_177
+      description: "1.71799e+10"
+      variants: [ss]
+      input: [0x50800000]
+      expect: [0x50800000]
+      expect_exception: []
+
+    # Test case 178
+    - id: fabs_178
+      description: "3.43597e+10"
+      variants: [ss]
+      input: [0x51000000]
+      expect: [0x51000000]
+      expect_exception: []
+
+    # Test case 179
+    - id: fabs_179
+      description: "1.4013e-45"
+      variants: [ss]
+      input: [0x1]
+      expect: [0x1]
+      expect_exception: []
+
+    # Test case 180
+    - id: fabs_180
+      description: "5.50259e-40"
+      variants: [ss]
+      input: [0x5fde6]
+      expect: [0x5fde6]
+      expect_exception: []
+
+    # Test case 181
+    - id: fabs_181
+      description: "1.17549e-38"
+      variants: [ss]
+      input: [0x7fffff]
+      expect: [0x7fffff]
+      expect_exception: []
+
+    # Test case 182
+    - id: fabs_182
+      description: "-1.4013e-45"
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x1]
+      expect_exception: []
+
+    # Test case 183
+    - id: fabs_183
+      description: "-8.62646e-39"
+      variants: [ss]
+      input: [0x805def12]
+      expect: [0x5def12]
+      expect_exception: []
+
+    # Test case 184
+    - id: fabs_184
+      description: "-1.17549e-38"
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0x7fffff]
+      expect_exception: []
+
+    # Test case 185
+    - id: fabs_185
+      description: "1.17549e-38"
+      variants: [ss]
+      input: [0x800000]
+      expect: [0x800000]
+      expect_exception: []
+
+    # Test case 186
+    - id: fabs_186
+      description: "359.538"
+      variants: [ss]
+      input: [0x43b3c4ea]
+      expect: [0x43b3c4ea]
+      expect_exception: []
+
+    # Test case 187
+    - id: fabs_187
+      description: "-1.17549e-38"
+      variants: [ss]
+      input: [0x80800000]
+      expect: [0x800000]
+      expect_exception: []
+
+    # Test case 188
+    - id: fabs_188
+      description: "-4133.81"
+      variants: [ss]
+      input: [0xc5812e71]
+      expect: [0x45812e71]
+      expect_exception: []
+
+    # Test case 189
+    - id: fabs_189
+      description: "-3.40282e+38"
+      variants: [ss]
+      input: [0xff7fffff]
+      expect: [0x7f7fffff]
+      expect_exception: []
+
+    # Test case 190
+    - id: fabs_190
+      description: "-inf"
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 191
+    - id: fabs_191
+      description: "nan"
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 192
+    - id: fabs_192
+      description: "nan"
+      variants: [ss]
+      input: [0xffc00001]
+      expect: [0x7fc00001]
+      expect_exception: []
+
+    # Test case 193
+    - id: fabs_193
+      description: "nan"
+      variants: [ss]
+      input: [0xffd2ba31]
+      expect: [0x7fd2ba31]
+      expect_exception: []
+
+    # Test case 194
+    - id: fabs_194
+      description: "nan"
+      variants: [ss]
+      input: [0xffffffff]
+      expect: [0x7fffffff]
+      expect_exception: []
+
+    # Test case 195
+    - id: fabs_195
+      description: "nan"
+      variants: [ss]
+      input: [0xff800001]
+      expect: [0x7f800001]
+      expect_exception: []
+
+    # Test case 196
+    - id: fabs_196
+      description: "nan"
+      variants: [ss]
+      input: [0xff95fffa]
+      expect: [0x7f95fffa]
+      expect_exception: []
+
+    # Test case 197
+    - id: fabs_197
+      description: "nan"
+      variants: [ss]
+      input: [0xffbfffff]
+      expect: [0x7fbfffff]
+      expect_exception: []
+
+    # Test case 198
+    - id: fabs_198
+      description: "1.5708"
+      variants: [ss]
+      input: [0x3fc90fdb]
+      expect: [0x3fc90fdb]
+      expect_exception: []
+
+    # Test case 199
+    - id: fabs_199
+      description: "3.14159"
+      variants: [ss]
+      input: [0x40490fdb]
+      expect: [0x40490fdb]
+      expect_exception: []
+
+    # Test case 200
+    - id: fabs_200
+      description: "6.28319"
+      variants: [ss]
+      input: [0x40c90fdb]
+      expect: [0x40c90fdb]
+      expect_exception: []
+
+    # Test case 201
+    - id: fabs_201
+      description: "2.71828"
+      variants: [ss]
+      input: [0x402df853]
+      expect: [0x402df853]
+      expect_exception: []
+
+    # Test case 202
+    - id: fabs_202
+      description: "2.71828"
+      variants: [ss]
+      input: [0x402df854]
+      expect: [0x402df854]
+      expect_exception: []
+
+    # Test case 203
+    - id: fabs_203
+      description: "2.71828"
+      variants: [ss]
+      input: [0x402df855]
+      expect: [0x402df855]
+      expect_exception: []
+
+    # Test case 204
+    - id: fabs_204
+      description: "0"
+      variants: [ss]
+      input: [0x0]
+      expect: [0x0]
+      expect_exception: []
+
+    # Test case 205
+    - id: fabs_205
+      description: "2.3e-05"
+      variants: [ss]
+      input: [0x37c0f01f]
+      expect: [0x37c0f01f]
+      expect_exception: []
+
+    # Test case 206
+    - id: fabs_206
+      description: "0.49999"
+      variants: [ss]
+      input: [0x3efffeb0]
+      expect: [0x3efffeb0]
+      expect_exception: []
+
+    # Test case 207
+    - id: fabs_207
+      description: "0.500012"
+      variants: [ss]
+      input: [0x3f0000c9]
+      expect: [0x3f0000c9]
+      expect_exception: []
+
+    # Test case 208
+    - id: fabs_208
+      description: "-0"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x0]
+      expect_exception: []
+
+    # Test case 209
+    - id: fabs_209
+      description: "-2.3e-05"
+      variants: [ss]
+      input: [0xb7c0f01f]
+      expect: [0x37c0f01f]
+      expect_exception: []
+
+    # Test case 210
+    - id: fabs_210
+      description: "-0.49999"
+      variants: [ss]
+      input: [0xbefffeb0]
+      expect: [0x3efffeb0]
+      expect_exception: []
+
+    # Test case 211
+    - id: fabs_211
+      description: "-0.500012"
+      variants: [ss]
+      input: [0xbf0000c9]
+      expect: [0x3f0000c9]
+      expect_exception: []
+
+    # Test case 212
+    - id: fabs_212
+      description: "1"
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 213
+    - id: fabs_213
+      description: "0.9375"
+      variants: [ss]
+      input: [0x3f700001]
+      expect: [0x3f700001]
+      expect_exception: []
+
+    # Test case 214
+    - id: fabs_214
+      description: "1.0625"
+      variants: [ss]
+      input: [0x3f87fffe]
+      expect: [0x3f87fffe]
+      expect_exception: []
+
+    # Test case 215
+    - id: fabs_215
+      description: "1.49999"
+      variants: [ss]
+      input: [0x3fbfffac]
+      expect: [0x3fbfffac]
+      expect_exception: []
+
+    # Test case 216
+    - id: fabs_216
+      description: "1.50001"
+      variants: [ss]
+      input: [0x3fc00064]
+      expect: [0x3fc00064]
+      expect_exception: []
+
+    # Test case 217
+    - id: fabs_217
+      description: "-1"
+      variants: [ss]
+      input: [0xbf800000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 218
+    - id: fabs_218
+      description: "-0.9375"
+      variants: [ss]
+      input: [0xbf700001]
+      expect: [0x3f700001]
+      expect_exception: []
+
+    # Test case 219
+    - id: fabs_219
+      description: "-1.0625"
+      variants: [ss]
+      input: [0xbf87fffe]
+      expect: [0x3f87fffe]
+      expect_exception: []
+
+    # Test case 220
+    - id: fabs_220
+      description: "-1.49999"
+      variants: [ss]
+      input: [0xbfbfffac]
+      expect: [0x3fbfffac]
+      expect_exception: []
+
+    # Test case 221
+    - id: fabs_221
+      description: "-1.50001"
+      variants: [ss]
+      input: [0xbfc00064]
+      expect: [0x3fc00064]
+      expect_exception: []
+
+    # Test case 222
+    - id: fabs_222
+      description: "2"
+      variants: [ss]
+      input: [0x40000000]
+      expect: [0x40000000]
+      expect_exception: []
+
+    # Test case 223
+    - id: fabs_223
+      description: "-2"
+      variants: [ss]
+      input: [0xc0000000]
+      expect: [0x40000000]
+      expect_exception: []
+
+    # Test case 224
+    - id: fabs_224
+      description: "10"
+      variants: [ss]
+      input: [0x41200000]
+      expect: [0x41200000]
+      expect_exception: []
+
+    # Test case 225
+    - id: fabs_225
+      description: "-10"
+      variants: [ss]
+      input: [0xc1200000]
+      expect: [0x41200000]
+      expect_exception: []
+
+    # Test case 226
+    - id: fabs_226
+      description: "1000"
+      variants: [ss]
+      input: [0x447a0000]
+      expect: [0x447a0000]
+      expect_exception: []
+
+    # Test case 227
+    - id: fabs_227
+      description: "-1000"
+      variants: [ss]
+      input: [0xc47a0000]
+      expect: [0x447a0000]
+      expect_exception: []
+
+    # Test case 228
+    - id: fabs_228
+      description: "67.4"
+      variants: [ss]
+      input: [0x4286cccc]
+      expect: [0x4286cccc]
+      expect_exception: []
+
+    # Test case 229
+    - id: fabs_229
+      description: "-67.4"
+      variants: [ss]
+      input: [0xc286cccc]
+      expect: [0x4286cccc]
+      expect_exception: []
+
+    # Test case 230
+    - id: fabs_230
+      description: "1983.6"
+      variants: [ss]
+      input: [0x44f7f333]
+      expect: [0x44f7f333]
+      expect_exception: []
+
+    # Test case 231
+    - id: fabs_231
+      description: "-1983.6"
+      variants: [ss]
+      input: [0xc4f7f333]
+      expect: [0x44f7f333]
+      expect_exception: []
+
+    # Test case 232
+    - id: fabs_232
+      description: "87.5"
+      variants: [ss]
+      input: [0x42af0000]
+      expect: [0x42af0000]
+      expect_exception: []
+
+    # Test case 233
+    - id: fabs_233
+      description: "-87.5"
+      variants: [ss]
+      input: [0xc2af0000]
+      expect: [0x42af0000]
+      expect_exception: []
+
+    # Test case 234
+    - id: fabs_234
+      description: "132473"
+      variants: [ss]
+      input: [0x48015e40]
+      expect: [0x48015e40]
+      expect_exception: []
+
+    # Test case 235
+    - id: fabs_235
+      description: "-132473"
+      variants: [ss]
+      input: [0xc8015e40]
+      expect: [0x48015e40]
+      expect_exception: []
+
+    # Test case 236
+    - id: fabs_236
+      description: "8.38861e+06"
+      variants: [ss]
+      input: [0x4b000001]
+      expect: [0x4b000001]
+      expect_exception: []
+
+    # Test case 237
+    - id: fabs_237
+      description: "8.38861e+06"
+      variants: [ss]
+      input: [0x4affffff]
+      expect: [0x4affffff]
+      expect_exception: []
+
+    # Test case 238
+    - id: fabs_238
+      description: "-8.38861e+06"
+      variants: [ss]
+      input: [0xcb000000]
+      expect: [0x4b000000]
+      expect_exception: []
+
+    # Test case 239
+    - id: fabs_239
+      description: "-8.38861e+06"
+      variants: [ss]
+      input: [0xcb000001]
+      expect: [0x4b000001]
+      expect_exception: []
+
+    # Test case 240
+    - id: fabs_240
+      description: "-8.38861e+06"
+      variants: [ss]
+      input: [0xcaffffff]
+      expect: [0x4affffff]
+      expect_exception: []
+
+    # Test case 241
+    - id: fabs_241
+      description: "3.40282e+38"
+      variants: [ss]
+      input: [0x7f7fffff]
+      expect: [0x7f7fffff]
+      expect_exception: []
+
+    # Test case 242
+    - id: fabs_242
+      description: "-inf"
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 243
+    - id: fabs_243
+      description: "nan"
+      variants: [ss]
+      input: [0x7fe00000]
+      expect: [0x7fe00000]
+      expect_exception: []
+
+    # Test case 244
+    - id: fabs_244
+      description: "nan"
+      variants: [ss]
+      input: [0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: []
+
+    # Test case 245
+    - id: fabs_245
+      description: "-0"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x0]
+      expect_exception: []
+
+    # Test case 246
+    - id: fabs_246
+      description: "inf"
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 247
+    - id: fabs_247
+      description: "nan"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 248
+    - id: fabs_248
+      description: "nan"
+      variants: [ss]
+      input: [0x7fe1a570]
+      expect: [0x7fe1a570]
+      expect_exception: []
+
+    # Test case 249
+    - id: fabs_249
+      description: "nan"
+      variants: [ss]
+      input: [0x7fffffff]
+      expect: [0x7fffffff]
+      expect_exception: []
+
+    # Test case 250
+    - id: fabs_250
+      description: "nan"
+      variants: [ss]
+      input: [0x7f800001]
+      expect: [0x7f800001]
+      expect_exception: []
+
+    # Test case 251
+    - id: fabs_251
+      description: "nan"
+      variants: [ss]
+      input: [0x7fa0bd90]
+      expect: [0x7fa0bd90]
+      expect_exception: []
+
+    # Test case 252
+    - id: fabs_252
+      description: "nan"
+      variants: [ss]
+      input: [0x7fbfffff]
+      expect: [0x7fbfffff]
+      expect_exception: []
+
+    # Test case 253
+    - id: fabs_253
+      description: "2.19993846E+10, close to pi/2"
+      variants: [ss]
+      input: [0x50a3e87f]
+      expect: [0x50a3e87f]
+      expect_exception: []
+
+    # Test case 254
+    - id: fabs_254
+      description: "8.20986125E+05, close to 0"
+      variants: [ss]
+      input: [0x49486fa2]
+      expect: [0x49486fa2]
+      expect_exception: []
+
+    # Test case 255
+    - id: fabs_255
+      description: "0.5"
+      variants: [ss]
+      input: [0x3F000000]
+      expect: [0x3F000000]
+      expect_exception: []
+
+    # Test case 256
+    - id: fabs_256
+      description: "-3.92"
+      variants: [ss]
+      input: [0xC07AE148]
+      expect: [0x407AE148]
+      expect_exception: []
+
+    # Test case 257
+    - id: fabs_257
+      description: "-123456"
+      variants: [ss]
+      input: [0xc7f12000]
+      expect: [0x47f12000]
+      expect_exception: []
+
+    # Test case 258
+    - id: fabs_258
+      description: "-4e5"
+      variants: [ss]
+      input: [0xC8C35000]
+      expect: [0x48C35000]
+      expect_exception: []
+#-------------------------------
+#Double precision
+    - id: fabs_001
+      description: "fabs(snan) = snan"
+      variants: [sd]
+      input: [0x7ff4000000000001]
+      expect: [0x7ff4000000000001]
+      expect_exception: []
+
+    - id: fabs_002
+      description: "fabs(-snan) = snan"
+      variants: [sd]
+      input: [0xfff2000000000000]
+      expect: [0x7ff2000000000000]
+      expect_exception: []
+
+    - id: fabs_003
+      description: "fabs(qnan) = qnan"
+      variants: [sd]
+      input: [0x7ff87ff7e0000000]
+      expect: [0x7ff87ff7e0000000]
+      expect_exception: []
+
+    - id: fabs_004
+      description: "fabs(-qnan) = qnan"
+      variants: [sd]
+      input: [0xfffa000000000000]
+      expect: [0x7ffa000000000000]
+      expect_exception: []
+
+    - id: fabs_005
+      description: "fabs(inf) = inf"
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    - id: fabs_006
+      description: "fabs(-inf) = inf"
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    - id: fabs_007
+      description: "fabs(0) = 0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: fabs_008
+      description: "fabs(-0) = 0"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: fabs_009
+      description: "fabs(+subnorm_max) = +subnorm_max"
+      variants: [sd]
+      input: [0x000fffffffffffff]
+      expect: [0x000fffffffffffff]
+      expect_exception: []
+
+    - id: fabs_010
+      description: "fabs(-subnorm_max) = +subnorm_max"
+      variants: [sd]
+      input: [0x800fffffffffffff]
+      expect: [0x000fffffffffffff]
+      expect_exception: []
+
+    - id: fabs_011
+      description: "fabs(+subnorm_min) = +subnorm_min"
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: []
+
+    - id: fabs_012
+      description: "fabs(-subnorm_min) = +subnorm_min"
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: []
+
+    - id: fabs_013
+      description: "fabs(+1.0) = +1.0"
+      variants: [sd]
+      input: [0x3ff0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: fabs_014
+      description: "fabs(-1.0) = +1.0"
+      variants: [sd]
+      input: [0xbff0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+# Test cases from gtests test_fabs_data.h
+#---------------------------------------
+    - id: fabs_001
+      description: "min, small enough that fabs(x) = 1 //"
+      variants: [sd]
+      input: [0x3e30000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 2
+    - id: fabs_002
+      description: "min - 1 bit"
+      variants: [sd]
+      input: [0x3e2fffffffffffff]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 3
+    - id: fabs_003
+      description: "min + 1 bit"
+      variants: [sd]
+      input: [0x3e30000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 4
+    - id: fabs_004
+      description: "lambda + x = 1, x = -1.0000000000000000e+300"
+      variants: [sd]
+      input: [0xfe37e43c8800759c]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 5
+    - id: fabs_005
+      description: "lambda + x < 1"
+      variants: [sd]
+      input: [0xfe37e43c8800758c]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 6
+    - id: fabs_006
+      description: "lambda + x > 1"
+      variants: [sd]
+      input: [0xfe37e43c880075ac]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 7
+    - id: fabs_007
+      description: "max arg, x = 89.41598629223294,max fabsf arg"
+      variants: [sd]
+      input: [0x408633ce8fb9f87e]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 8
+    - id: fabs_008
+      description: "max arg - 1 bit"
+      variants: [sd]
+      input: [0x408633ce8fb9f87d]
+      expect: [0x7feffffffffffd3b]
+      expect_exception: []
+
+    # Test case 9
+    - id: fabs_009
+      description: "max arg + 1 bit"
+      variants: [sd]
+      input: [0x408633ce8fb9f87f]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 10
+    - id: fabs_010
+      description: "> max"
+      variants: [sd]
+      input: [0x408633ce8fb9f8ff]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 11
+    - id: fabs_011
+      description: "< max"
+      variants: [sd]
+      input: [0x408633ce8fb9f800]
+      expect: [0x7feffffffffe093b]
+      expect_exception: []
+
+    # Test case 12
+    - id: fabs_012
+      description: "small_threshold = 20"
+      variants: [sd]
+      input: [0x4034000000000000]
+      expect: [0x41aceb088b68e804]
+      expect_exception: []
+
+    # Test case 13
+    - id: fabs_013
+      description: "small_threshold+1 = 21"
+      variants: [sd]
+      input: [0x4035000000000000]
+      expect: [0x41c3a6e1fd9eecfd]
+      expect_exception: []
+
+    # Test case 14
+    - id: fabs_014
+      description: "small_threshold - 1 = 19"
+      variants: [sd]
+      input: [0x4033000000000000]
+      expect: [0x419546d8f9ed26e2]
+      expect_exception: []
+
+    # Test case 15
+    - id: fabs_015
+      description: "0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 16
+    - id: fabs_016
+      description: "0"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 17
+    - id: fabs_017
+      description: ""
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 18
+    - id: fabs_018
+      description: ""
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 19
+    - id: fabs_019
+      description: ""
+      variants: [sd]
+      input: [0x7ff4001000000000]
+      expect: [0x7ff4001000000000]
+      expect_exception: []
+
+    # Test case 20
+    - id: fabs_020
+      description: ""
+      variants: [sd]
+      input: [0xfff2000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: []
+
+    # Test case 21
+    - id: fabs_021
+      description: ""
+      variants: [sd]
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+
+    # Test case 22
+    - id: fabs_022
+      description: ""
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+
+    # Test case 23
+    - id: fabs_023
+      description: "710.5"
+      variants: [sd]
+      input: [0x4086340000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 24
+    - id: fabs_024
+      description: "denormal min"
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 25
+    - id: fabs_025
+      description: "denormal intermediate"
+      variants: [sd]
+      input: [0x0005fde623545abc]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 26
+    - id: fabs_026
+      description: "denormal max"
+      variants: [sd]
+      input: [0x000fffffffffffff]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 27
+    - id: fabs_027
+      description: "-denormal min"
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 28
+    - id: fabs_028
+      description: "-denormal intermediate"
+      variants: [sd]
+      input: [0x8002344ade5def12]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 29
+    - id: fabs_029
+      description: "-denormal max"
+      variants: [sd]
+      input: [0x800fffffffffffff]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 30
+    - id: fabs_030
+      description: "normal min"
+      variants: [sd]
+      input: [0x0010000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 31
+    - id: fabs_031
+      description: "normal intermediate"
+      variants: [sd]
+      input: [0x43b3c4eafedcab02]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 32
+    - id: fabs_032
+      description: "normal max"
+      variants: [sd]
+      input: [0x7fefffffffffffff]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 33
+    - id: fabs_033
+      description: "-normal min"
+      variants: [sd]
+      input: [0x8010000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 34
+    - id: fabs_034
+      description: "-normal intermediate"
+      variants: [sd]
+      input: [0xc5812e71245acfdb]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 35
+    - id: fabs_035
+      description: "-normal max"
+      variants: [sd]
+      input: [0xffefffffffffffff]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 36
+    - id: fabs_036
+      description: "inf"
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 37
+    - id: fabs_037
+      description: "-inf"
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 38
+    - id: fabs_038
+      description: "qnan min"
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 39
+    - id: fabs_039
+      description: "qnan intermediate"
+      variants: [sd]
+      input: [0x7ffe1a5701234dc3]
+      expect: [0x7ffe1a5701234dc3]
+      expect_exception: []
+
+    # Test case 40
+    - id: fabs_040
+      description: "qnan max"
+      variants: [sd]
+      input: [0x7fffffffffffffff]
+      expect: [0x7fffffffffffffff]
+      expect_exception: []
+
+    # Test case 41
+    - id: fabs_041
+      description: "indeterninate"
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+
+    # Test case 42
+    - id: fabs_042
+      description: "-qnan min"
+      variants: [sd]
+      input: [0xfff8000000000001]
+      expect: [0xfff8000000000001]
+      expect_exception: []
+
+    # Test case 43
+    - id: fabs_043
+      description: "-qnan intermediate"
+      variants: [sd]
+      input: [0xfff9123425dcba31]
+      expect: [0xfff9123425dcba31]
+      expect_exception: []
+
+    # Test case 44
+    - id: fabs_044
+      description: "-qnan max"
+      variants: [sd]
+      input: [0xffffffffffffffff]
+      expect: [0xffffffffffffffff]
+      expect_exception: []
+
+    # Test case 45
+    - id: fabs_045
+      description: "snan min"
+      variants: [sd]
+      input: [0x7ff0000000000001]
+      expect: [0x7ff8000000000001]
+      expect_exception: []
+
+    # Test case 46
+    - id: fabs_046
+      description: "snan intermediate"
+      variants: [sd]
+      input: [0x7ff5344752a0bd90]
+      expect: [0x7ffd344752a0bd90]
+      expect_exception: []
+
+    # Test case 47
+    - id: fabs_047
+      description: "snan max"
+      variants: [sd]
+      input: [0x7ff7ffffffffffff]
+      expect: [0x7fffffffffffffff]
+      expect_exception: []
+
+    # Test case 48
+    - id: fabs_048
+      description: "-snan min"
+      variants: [sd]
+      input: [0xfff0000000000001]
+      expect: [0xfff8000000000001]
+      expect_exception: []
+
+    # Test case 49
+    - id: fabs_049
+      description: "-snan intermediate"
+      variants: [sd]
+      input: [0xfff432438995fffa]
+      expect: [0xfffc32438995fffa]
+      expect_exception: []
+
+    # Test case 50
+    - id: fabs_050
+      description: "-snan max"
+      variants: [sd]
+      input: [0xfff7ffffffffffff]
+      expect: [0xffffffffffffffff]
+      expect_exception: []
+
+    # Test case 51
+    - id: fabs_051
+      description: "pi/2"
+      variants: [sd]
+      input: [0x3ff921fb54442d18]
+      expect: [0x400412cc2a8d4e9e]
+      expect_exception: []
+
+    # Test case 52
+    - id: fabs_052
+      description: "pi"
+      variants: [sd]
+      input: [0x400921fb54442d18]
+      expect: [0x40272f147fee4000]
+      expect_exception: []
+
+    # Test case 53
+    - id: fabs_053
+      description: "2pi"
+      variants: [sd]
+      input: [0x401921fb54442d18]
+      expect: [0x4070bbf2bc2b69c6]
+      expect_exception: []
+
+    # Test case 54
+    - id: fabs_054
+      description: "e --"
+      variants: [sd]
+      input: [0x3ffb7e151628aed3]
+      expect: [0x4007046b4f3f7e0c]
+      expect_exception: []
+
+    # Test case 55
+    - id: fabs_055
+      description: "e"
+      variants: [sd]
+      input: [0x4005bf0a8b145769]
+      expect: [0x401e70c4a4f41684]
+      expect_exception: []
+
+    # Test case 56
+    - id: fabs_056
+      description: "e ++"
+      variants: [sd]
+      input: [0x400dbf0a8b145769]
+      expect: [0x40349be1e586228d]
+      expect_exception: []
+
+    # Test case 57
+    - id: fabs_057
+      description: "0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 58
+    - id: fabs_058
+      description: "0.0000000000000000023"
+      variants: [sd]
+      input: [0x3c4536b8b14b676c]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 59
+    - id: fabs_059
+      description: "0.4999989999999999999"
+      variants: [sd]
+      input: [0x3fdffffbce4217d3]
+      expect: [0x3ff20ac0fa498d2c]
+      expect_exception: []
+
+    # Test case 60
+    - id: fabs_060
+      description: "0.500000000000012"
+      variants: [sd]
+      input: [0x3fe000000000006c]
+      expect: [0x3ff20ac1862ae8ed]
+      expect_exception: []
+
+    # Test case 61
+    - id: fabs_061
+      description: "-0"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 62
+    - id: fabs_062
+      description: "-0.000000000000000000023"
+      variants: [sd]
+      input: [0xbbdb2752ce74ff42]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 63
+    - id: fabs_063
+      description: "-0.4999989999999999999"
+      variants: [sd]
+      input: [0xbfdffffbce4217d3]
+      expect: [0x3ff20ac0fa498d2c]
+      expect_exception: []
+
+    # Test case 64
+    - id: fabs_064
+      description: "-0.500000000000012"
+      variants: [sd]
+      input: [0xbfe000000000006c]
+      expect: [0x3ff20ac1862ae8ed]
+      expect_exception: []
+
+    # Test case 65
+    - id: fabs_065
+      description: "1"
+      variants: [sd]
+      input: [0x3ff0000000000000]
+      expect: [0x3ff8b07551d9f550]
+      expect_exception: []
+
+    # Test case 66
+    - id: fabs_066
+      description: "0.9999998893750006"
+      variants: [sd]
+      input: [0x3fefffffc49bd0dc]
+      expect: [0x3ff8b0752ef3f8a2]
+      expect_exception: []
+
+    # Test case 67
+    - id: fabs_067
+      description: "1.0000000000000624998"
+      variants: [sd]
+      input: [0x3ff0000000000119]
+      expect: [0x3ff8b07551d9f69b]
+      expect_exception: []
+
+    # Test case 68
+    - id: fabs_068
+      description: "1.499998999999999967"
+      variants: [sd]
+      input: [0x3ff7fffef39085f4]
+      expect: [0x4002d1bb0418ae52]
+      expect_exception: []
+
+    # Test case 69
+    - id: fabs_069
+      description: "1.50000000000000012"
+      variants: [sd]
+      input: [0x3ff8000000000001]
+      expect: [0x4002d1bc21e22023]
+      expect_exception: []
+
+    # Test case 70
+    - id: fabs_070
+      description: "-1"
+      variants: [sd]
+      input: [0xbff0000000000000]
+      expect: [0x3ff8b07551d9f550]
+      expect_exception: []
+
+    # Test case 71
+    - id: fabs_071
+      description: "-0.9999998893750006"
+      variants: [sd]
+      input: [0xbfefffffc49bd0dc]
+      expect: [0x3ff8b0752ef3f8a2]
+      expect_exception: []
+
+    # Test case 72
+    - id: fabs_072
+      description: "-1.0000000000000624998"
+      variants: [sd]
+      input: [0xbff0000000000119]
+      expect: [0x3ff8b07551d9f69b]
+      expect_exception: []
+
+    # Test case 73
+    - id: fabs_073
+      description: "-1.499998999999999967"
+      variants: [sd]
+      input: [0xbff7fffef39085f4]
+      expect: [0x4002d1bb0418ae52]
+      expect_exception: []
+
+    # Test case 74
+    - id: fabs_074
+      description: "-1.50000000000000012"
+      variants: [sd]
+      input: [0xbff8000000000001]
+      expect: [0x4002d1bc21e22023]
+      expect_exception: []
+
+    # Test case 75
+    - id: fabs_075
+      description: "2"
+      variants: [sd]
+      input: [0x4000000000000000]
+      expect: [0x400e18fa0df2d9bc]
+      expect_exception: []
+
+    # Test case 76
+    - id: fabs_076
+      description: "-2"
+      variants: [sd]
+      input: [0xc000000000000000]
+      expect: [0x400e18fa0df2d9bc]
+      expect_exception: []
+
+    # Test case 77
+    - id: fabs_077
+      description: "10"
+      variants: [sd]
+      input: [0x4024000000000000]
+      expect: [0x40c5829dd053712d]
+      expect_exception: []
+
+    # Test case 78
+    - id: fabs_078
+      description: "-10"
+      variants: [sd]
+      input: [0xc024000000000000]
+      expect: [0x40c5829dd053712d]
+      expect_exception: []
+
+    # Test case 79
+    - id: fabs_079
+      description: "1000"
+      variants: [sd]
+      input: [0x408f400000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 80
+    - id: fabs_080
+      description: "-1000"
+      variants: [sd]
+      input: [0xc08f400000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 81
+    - id: fabs_081
+      description: "67.4"
+      variants: [sd]
+      input: [0x4050d9999999999a]
+      expect: [0x45f2dd7567cd83ee]
+      expect_exception: []
+
+    # Test case 82
+    - id: fabs_082
+      description: "-67.4"
+      variants: [sd]
+      input: [0xc050d9999999999a]
+      expect: [0x45f2dd7567cd83ee]
+      expect_exception: []
+
+    # Test case 83
+    - id: fabs_083
+      description: "1983.6"
+      variants: [sd]
+      input: [0x409efe6666666666]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 84
+    - id: fabs_084
+      description: "-1983.6"
+      variants: [sd]
+      input: [0xc09efe6666666666]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 85
+    - id: fabs_085
+      description: "87.5"
+      variants: [sd]
+      input: [0x4055e00000000000]
+      expect: [0x47c2d7566d26536b]
+      expect_exception: []
+
+    # Test case 86
+    - id: fabs_086
+      description: "-87.5"
+      variants: [sd]
+      input: [0xc055e00000000000]
+      expect: [0x47c2d7566d26536b]
+      expect_exception: []
+
+    # Test case 87
+    - id: fabs_087
+      description: "132473"
+      variants: [sd]
+      input: [0x41002bc800000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 88
+    - id: fabs_088
+      description: "-132473"
+      variants: [sd]
+      input: [0xc1002bc800000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 89
+    - id: fabs_089
+      description: "2^52"
+      variants: [sd]
+      input: [0x4330000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 90
+    - id: fabs_090
+      description: "2^52 + 1"
+      variants: [sd]
+      input: [0x4330000000000001]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 91
+    - id: fabs_091
+      description: "2^52 -1 + 0.5"
+      variants: [sd]
+      input: [0x432fffffffffffff]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 92
+    - id: fabs_092
+      description: "-2^52"
+      variants: [sd]
+      input: [0xc330000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 93
+    - id: fabs_093
+      description: "-(2^52 + 1)"
+      variants: [sd]
+      input: [0xc330000000000001]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 94
+    - id: fabs_094
+      description: "-(2^52 -1 + 0.5)"
+      variants: [sd]
+      input: [0xc32fffffffffffff]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 95
+    - id: fabs_095
+      description: "1.5708"
+      variants: [sd]
+      input: [0x3ff921fb54442d18]
+      expect: [0x3ff921fb54442d18]
+      expect_exception: []
+
+    # Test case 96
+    - id: fabs_096
+      description: "3.14159"
+      variants: [sd]
+      input: [0x400921fb54442d18]
+      expect: [0x400921fb54442d18]
+      expect_exception: []
+
+    # Test case 97
+    - id: fabs_097
+      description: "6.28319"
+      variants: [sd]
+      input: [0x401921fb54442d18]
+      expect: [0x401921fb54442d18]
+      expect_exception: []
+
+    # Test case 98
+    - id: fabs_098
+      description: "1.71828"
+      variants: [sd]
+      input: [0x3ffb7e151628aed3]
+      expect: [0x3ffb7e151628aed3]
+      expect_exception: []
+
+    # Test case 99
+    - id: fabs_099
+      description: "2.71828"
+      variants: [sd]
+      input: [0x4005bf0a8b145769]
+      expect: [0x4005bf0a8b145769]
+      expect_exception: []
+
+    # Test case 100
+    - id: fabs_100
+      description: "3.71828"
+      variants: [sd]
+      input: [0x400dbf0a8b145769]
+      expect: [0x400dbf0a8b145769]
+      expect_exception: []
+
+    # Test case 101
+    - id: fabs_101
+      description: "0"
+      variants: [sd]
+      input: [0x0]
+      expect: [0x0]
+      expect_exception: []
+
+    # Test case 102
+    - id: fabs_102
+      description: "2.3e-18"
+      variants: [sd]
+      input: [0x3c4536b8b14b676c]
+      expect: [0x3c4536b8b14b676c]
+      expect_exception: []
+
+    # Test case 103
+    - id: fabs_103
+      description: "0.499999"
+      variants: [sd]
+      input: [0x3fdffffbce4217d3]
+      expect: [0x3fdffffbce4217d3]
+      expect_exception: []
+
+    # Test case 104
+    - id: fabs_104
+      description: "0.5"
+      variants: [sd]
+      input: [0x3fe000000000006c]
+      expect: [0x3fe000000000006c]
+      expect_exception: []
+
+    # Test case 105
+    - id: fabs_105
+      description: "-0"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x0]
+      expect_exception: []
+
+    # Test case 106
+    - id: fabs_106
+      description: "-2.3e-20"
+      variants: [sd]
+      input: [0xbbdb2752ce74ff42]
+      expect: [0x3bdb2752ce74ff42]
+      expect_exception: []
+
+    # Test case 107
+    - id: fabs_107
+      description: "-0.499999"
+      variants: [sd]
+      input: [0xbfdffffbce4217d3]
+      expect: [0x3fdffffbce4217d3]
+      expect_exception: []
+
+    # Test case 108
+    - id: fabs_108
+      description: "-0.5"
+      variants: [sd]
+      input: [0xbfe000000000006c]
+      expect: [0x3fe000000000006c]
+      expect_exception: []
+
+    # Test case 109
+    - id: fabs_109
+      description: "1"
+      variants: [sd]
+      input: [0x3ff0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 110
+    - id: fabs_110
+      description: "1"
+      variants: [sd]
+      input: [0x3fefffffc49bd0dc]
+      expect: [0x3fefffffc49bd0dc]
+      expect_exception: []
+
+    # Test case 111
+    - id: fabs_111
+      description: "1"
+      variants: [sd]
+      input: [0x3ff0000000000119]
+      expect: [0x3ff0000000000119]
+      expect_exception: []
+
+    # Test case 112
+    - id: fabs_112
+      description: "1.5"
+      variants: [sd]
+      input: [0x3ff7fffef39085f4]
+      expect: [0x3ff7fffef39085f4]
+      expect_exception: []
+
+    # Test case 113
+    - id: fabs_113
+      description: "1.5"
+      variants: [sd]
+      input: [0x3ff8000000000001]
+      expect: [0x3ff8000000000001]
+      expect_exception: []
+
+    # Test case 114
+    - id: fabs_114
+      description: "-1"
+      variants: [sd]
+      input: [0xbff0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 115
+    - id: fabs_115
+      description: "-1"
+      variants: [sd]
+      input: [0xbfefffffc49bd0dc]
+      expect: [0x3fefffffc49bd0dc]
+      expect_exception: []
+
+    # Test case 116
+    - id: fabs_116
+      description: "-1"
+      variants: [sd]
+      input: [0xbff0000000000119]
+      expect: [0x3ff0000000000119]
+      expect_exception: []
+
+    # Test case 117
+    - id: fabs_117
+      description: "-1.5"
+      variants: [sd]
+      input: [0xbff7fffef39085f4]
+      expect: [0x3ff7fffef39085f4]
+      expect_exception: []
+
+    # Test case 118
+    - id: fabs_118
+      description: "-1.5"
+      variants: [sd]
+      input: [0xbff8000000000001]
+      expect: [0x3ff8000000000001]
+      expect_exception: []
+
+    # Test case 119
+    - id: fabs_119
+      description: "2"
+      variants: [sd]
+      input: [0x4000000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: []
+
+    # Test case 120
+    - id: fabs_120
+      description: "-2"
+      variants: [sd]
+      input: [0xc000000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: []
+
+    # Test case 121
+    - id: fabs_121
+      description: "10"
+      variants: [sd]
+      input: [0x4024000000000000]
+      expect: [0x4024000000000000]
+      expect_exception: []
+
+    # Test case 122
+    - id: fabs_122
+      description: "-10"
+      variants: [sd]
+      input: [0xc024000000000000]
+      expect: [0x4024000000000000]
+      expect_exception: []
+
+    # Test case 123
+    - id: fabs_123
+      description: "1000"
+      variants: [sd]
+      input: [0x408f400000000000]
+      expect: [0x408f400000000000]
+      expect_exception: []
+
+    # Test case 124
+    - id: fabs_124
+      description: "-1000"
+      variants: [sd]
+      input: [0xc08f400000000000]
+      expect: [0x408f400000000000]
+      expect_exception: []
+
+    # Test case 125
+    - id: fabs_125
+      description: "67.4"
+      variants: [sd]
+      input: [0x4050d9999999999a]
+      expect: [0x4050d9999999999a]
+      expect_exception: []
+
+    # Test case 126
+    - id: fabs_126
+      description: "-67.4"
+      variants: [sd]
+      input: [0xc050d9999999999a]
+      expect: [0x4050d9999999999a]
+      expect_exception: []
+
+    # Test case 127
+    - id: fabs_127
+      description: "1983.6"
+      variants: [sd]
+      input: [0x409efe6666666666]
+      expect: [0x409efe6666666666]
+      expect_exception: []
+
+    # Test case 128
+    - id: fabs_128
+      description: "-1983.6"
+      variants: [sd]
+      input: [0xc09efe6666666666]
+      expect: [0x409efe6666666666]
+      expect_exception: []
+
+    # Test case 129
+    - id: fabs_129
+      description: "87.5"
+      variants: [sd]
+      input: [0x4055e00000000000]
+      expect: [0x4055e00000000000]
+      expect_exception: []
+
+    # Test case 130
+    - id: fabs_130
+      description: "-87.5"
+      variants: [sd]
+      input: [0xc055e00000000000]
+      expect: [0x4055e00000000000]
+      expect_exception: []
+
+    # Test case 131
+    - id: fabs_131
+      description: "132473"
+      variants: [sd]
+      input: [0x41002bc800000000]
+      expect: [0x41002bc800000000]
+      expect_exception: []
+
+    # Test case 132
+    - id: fabs_132
+      description: "-132473"
+      variants: [sd]
+      input: [0xc1002bc800000000]
+      expect: [0x41002bc800000000]
+      expect_exception: []
+
+    # Test case 133
+    - id: fabs_133
+      description: "4.5036e+15"
+      variants: [sd]
+      input: [0x4330000000000000]
+      expect: [0x4330000000000000]
+      expect_exception: []
+
+    # Test case 134
+    - id: fabs_134
+      description: "4.5036e+15"
+      variants: [sd]
+      input: [0x4330000000000001]
+      expect: [0x4330000000000001]
+      expect_exception: []
+
+    # Test case 135
+    - id: fabs_135
+      description: "4.5036e+15"
+      variants: [sd]
+      input: [0x432fffffffffffff]
+      expect: [0x432fffffffffffff]
+      expect_exception: []
+
+    # Test case 136
+    - id: fabs_136
+      description: "-4.5036e+15"
+      variants: [sd]
+      input: [0xc330000000000000]
+      expect: [0x4330000000000000]
+      expect_exception: []
+
+    # Test case 137
+    - id: fabs_137
+      description: "-4.5036e+15"
+      variants: [sd]
+      input: [0xc330000000000001]
+      expect: [0x4330000000000001]
+      expect_exception: []
+
+    # Test case 138
+    - id: fabs_138
+      description: "-4.5036e+15"
+      variants: [sd]
+      input: [0xc32fffffffffffff]
+      expect: [0x432fffffffffffff]
+      expect_exception: []
+
+    # Test case 139
+    - id: fabs_139
+      description: "1.3525e+16"
+      variants: [sd]
+      input: [0x43480677adfcfa00]
+      expect: [0x43480677adfcfa00]
+      expect_exception: []
+
+    # Test case 140
+    - id: fabs_140
+      description: "2.70266e+16"
+      variants: [sd]
+      input: [0x435801239871fa00]
+      expect: [0x435801239871fa00]
+      expect_exception: []
+
+    # Test case 141
+    - id: fabs_141
+      description: "5.41933e+16"
+      variants: [sd]
+      input: [0x4368111144444444]
+      expect: [0x4368111144444444]
+      expect_exception: []
+
+    # Test case 142
+    - id: fabs_142
+      description: "2.2518e+17"
+      variants: [sd]
+      input: [0x4388ffffffffffff]
+      expect: [0x4388ffffffffffff]
+      expect_exception: []
+
+    # Test case 143
+    - id: fabs_143
+      description: "4.5036e+17"
+      variants: [sd]
+      input: [0x4398ffffffffffff]
+      expect: [0x4398ffffffffffff]
+      expect_exception: []
+
+    # Test case 144
+    - id: fabs_144
+      description: "9.0072e+17"
+      variants: [sd]
+      input: [0x43a8ffffffffffff]
+      expect: [0x43a8ffffffffffff]
+      expect_exception: []
+
+    # Test case 145
+    - id: fabs_145
+      description: "1.77742e+18"
+      variants: [sd]
+      input: [0x43b8aaaa68ffffff]
+      expect: [0x43b8aaaa68ffffff]
+      expect_exception: []
+
+    # Test case 146
+    - id: fabs_146
+      description: "3.55484e+18"
+      variants: [sd]
+      input: [0x43c8aaaa69ffffff]
+      expect: [0x43c8aaaa69ffffff]
+      expect_exception: []
+
+    # Test case 147
+    - id: fabs_147
+      description: "6.91819e+18"
+      variants: [sd]
+      input: [0x43d8009678abcd00]
+      expect: [0x43d8009678abcd00]
+      expect_exception: []
+
+    # Test case 148
+    - id: fabs_148
+      description: "1.79769e+308"
+      variants: [sd]
+      input: [0x7fefffffffffffff]
+      expect: [0x7fefffffffffffff]
+      expect_exception: []
+
+    # Test case 149
+    - id: fabs_149
+      description: "1.38565e+19"
+      variants: [sd]
+      input: [0x43e8098734209870]
+      expect: [0x43e8098734209870]
+      expect_exception: []
+
+    # Test case 150
+    - id: fabs_150
+      description: "2.76725e+19"
+      variants: [sd]
+      input: [0x43f800876abcda00]
+      expect: [0x43f800876abcda00]
+      expect_exception: []
+
+    # Test case 151
+    - id: fabs_151
+      description: "5.53454e+19"
+      variants: [sd]
+      input: [0x44080091781cdba0]
+      expect: [0x44080091781cdba0]
+      expect_exception: []
+
+    # Test case 152
+    - id: fabs_152
+      description: "5.53506e+19"
+      variants: [sd]
+      input: [0x4408012786abcde0]
+      expect: [0x4408012786abcde0]
+      expect_exception: []
+
+    # Test case 153
+    - id: fabs_153
+      description: "1.42452e+18"
+      variants: [sd]
+      input: [0x43b3c4eafedcab02]
+      expect: [0x43b3c4eafedcab02]
+      expect_exception: []
+
+#---------------------------------------

@@ -1,0 +1,628 @@
+- test_sequence: unit_tests_fmin
+  ignore_exceptions: [underflow, inexact]
+  function: fmin
+  test_sets:
+  - id: special-values
+    description: Special values for fmin function
+    tests:
+    # Single precision tests
+    - id: fmin_001
+      description: "fminf(0, 0) = 0"
+      input: [0x00000000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_002
+      description: "fminf(-0, -0) = -0"
+      input: [0x80000000, 0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_003
+      description: "fminf(inf, inf) = inf"
+      input: [0x7f800000, 0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_004
+      description: "fminf(-inf, -inf) = -inf"
+      input: [0xff800000, 0xff800000]
+      expect: [0xff800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_005
+      description: "fminf(-nan, 1.0) = 1.0"
+      input: [0xffc00000, 0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_006
+      description: "fminf(+nan, 1.0) = 1.0"
+      input: [0x7fc00000, 0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_007
+      description: "fminf(subnorm_max, 1.0) = subnorm_max"
+      input: [0x007fffff, 0x3f800000]
+      expect: [0x007fffff]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_008
+      description: "fminf(subnorm_max, 2.0) = subnorm_max"
+      input: [0x007fffff, 0x40000000]
+      expect: [0x007fffff]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_009
+      description: "fminf(subnorm_min, 1.0) = subnorm_min"
+      input: [0x00000001, 0x3f800000]
+      expect: [0x00000001]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_010
+      description: "fminf(subnorm_min, 2.0) = subnorm_min"
+      input: [0x00000001, 0x40000000]
+      expect: [0x00000001]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_011
+      description: "fminf(1.0, 2.0) = 1.0"
+      input: [0x3f800000, 0x40000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_012
+      description: "fminf(-1.0, 2.0) = -1.0"
+      input: [0xbf800000, 0x40000000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_013
+      description: "fminf(1.0, -2.0) = -2.0"
+      input: [0x3f800000, 0xc0000000]
+      expect: [0xc0000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_014
+      description: "fminf(-1.0, -2.0) = -2.0"
+      input: [0xbf800000, 0xc0000000]
+      expect: [0xc0000000]
+      expect_exception: []
+      variants: [ss]
+
+# Test cases from gtests test_fmin_data.h
+#-------------------------------
+    - id: fmin_001
+      description: "fminf(+0, -0) = -0"
+      input: [0x00000000, 0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_002
+      description: "fminf(-0, -0) = -0"
+      input: [0x80000000, 0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_003
+      description: "fminf(+0, +0) = +0"
+      input: [0x00000000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_004
+      description: "fminf(-0, -0) = +0"
+      input: [0x80000000, 0x80000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_005
+      description: "fminf(+0, -1.0) = -1.0"
+      input: [0x00000000, 0xBF800000]
+      expect: [0xBF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_006
+      description: "fminf(-0, -1.0) = -1.0"
+      input: [0x80000000, 0xBF800000]
+      expect: [0xBF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_007
+      description: "fminf(+0, +0) = 1.0"
+      input: [0x00000000, 0x00000000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_008
+      description: "fminf(-0, -0) = 1.0"
+      input: [0x80000000, 0x80000000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_009
+      description: "fminf(-1.0, -1.0) = +0"
+      input: [0xBF800000, 0xBF800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_010
+      description: "fminf(-1.0, -1.0) = -0"
+      input: [0xBF800000, 0xBF800000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_011
+      description: "fminf(1.0, +0) = +0"
+      input: [0x3F800000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_012
+      description: "fminf(1.0, -0) = -0"
+      input: [0x3F800000, 0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_013
+      description: "fminf(1.0, -inf) = -inf"
+      input: [0x3F800000, 0xFF800000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_014
+      description: "fminf(-1.0, -inf) = -inf"
+      input: [0xBF800000, 0xFF800000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_015
+      description: "fminf(1.0, 1.0) = +inf"
+      input: [0x3F800000, 0x3F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_016
+      description: "fminf(-1.0, -1.0) = +inf"
+      input: [0xBF800000, 0xBF800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_017
+      description: "fminf(+inf, 1.0) = 1.0"
+      input: [0x7F800000, 0x3F800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_018
+      description: "fminf(-inf, -inf) = -1.0"
+      input: [0xFF800000, 0xFF800000]
+      expect: [0xBF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_019
+      description: "fminf(+inf, -inf) = -inf"
+      input: [0x7F800000, 0xFF800000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_020
+      description: "fminf(-inf, -inf) = -inf"
+      input: [0xFF800000, 0xFF800000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_021
+      description: "fminf(+inf, +inf) = +inf"
+      input: [0x7F800000, 0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_022
+      description: "fminf(-inf, -inf) = +inf"
+      input: [0xFF800000, 0xFF800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_023
+      description: "fminf(snan, snan) = snan (invalid)"
+      input: [0x7fb00000, 0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmin_024
+      description: "fminf(-snan, -snan) = snan (invalid)"
+      input: [0xffb00000, 0xffb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmin_025
+      description: "fminf(snan, snan) = -snan (invalid)"
+      input: [0x7fb00000, 0x7fb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmin_026
+      description: "fminf(-snan, -snan) = -snan (invalid)"
+      input: [0xffb00000, 0xffb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmin_027
+      description: "fminf(large_neg, large_neg) = large_pos"
+      input: [0x96421590, 0x96421590]
+      expect: [0x7EEBE575]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_028
+      description: "fminf(large_pos, small_pos) = small_pos"
+      input: [0x7EEBE575, 0x16421590]
+      expect: [0x16421590]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_029
+      description: "fminf(normal1, normal2) = normal2"
+      input: [0x164243a1, 0x16421590]
+      expect: [0x16421590]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmin_030
+      description: "fminf(normal3, normal4) = normal4"
+      input: [0x71EBD596, 0x69EAD497]
+      expect: [0x69EAD497]
+      expect_exception: []
+      variants: [ss]
+#-------------------------------
+    # Double precision tests
+    - id: fmin_001
+      description: "fmin(0.0, 0.0) = 0.0"
+      input: [0x0000000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_002
+      description: "fmin(-0.0, -0.0) = -0.0"
+      input: [0x8000000000000000, 0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_003
+      description: "fmin(inf, inf) = inf"
+      input: [0x7ff0000000000000, 0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_004
+      description: "fmin(-inf, -inf) = -inf"
+      input: [0xfff0000000000000, 0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_005
+      description: "fmin(-nan, 1.0) = 1.0"
+      input: [0xfff8000000000000, 0x3ff0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_006
+      description: "fmin(+nan, 1.0) = 1.0"
+      input: [0x7ff8000000000000, 0x3ff0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_007
+      description: "fmin(subnorm_max, 1.0) = subnorm_max"
+      input: [0x000fffffffffffff, 0x3ff0000000000000]
+      expect: [0x000fffffffffffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_008
+      description: "fmin(subnorm_max, 2.0) = subnorm_max"
+      input: [0x000fffffffffffff, 0x4000000000000000]
+      expect: [0x000fffffffffffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_009
+      description: "fmin(subnorm_min, 1.0) = subnorm_min"
+      input: [0x0000000000000001, 0x3ff0000000000000]
+      expect: [0x0000000000000001]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_010
+      description: "fmin(subnorm_min, 2.0) = subnorm_min"
+      input: [0x0000000000000001, 0x4000000000000000]
+      expect: [0x0000000000000001]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_011
+      description: "fmin(1.0, 2.0) = 1.0"
+      input: [0x3ff0000000000000, 0x4000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_012
+      description: "fmin(-1.0, 2.0) = -1.0"
+      input: [0xbff0000000000000, 0x4000000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_013
+      description: "fmin(1.0, -2.0) = -2.0"
+      input: [0x3ff0000000000000, 0xc000000000000000]
+      expect: [0xc000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_014
+      description: "fmin(-1.0, -2.0) = -2.0"
+      input: [0xbff0000000000000, 0xc000000000000000]
+      expect: [0xc000000000000000]
+      expect_exception: []
+      variants: [sd]
+# Test cases from gtests test_fmin_data.h
+#-------------------------------
+    - id: fmin_001
+      description: "fmin(+0, -0) = -0"
+      input: [0x0000000000000000, 0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_002
+      description: "fmin(-0, -0) = -0"
+      input: [0x8000000000000000, 0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_003
+      description: "fmin(+0, +0) = +0"
+      input: [0x0000000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_004
+      description: "fmin(-0, -0) = +0"
+      input: [0x8000000000000000, 0x8000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_005
+      description: "fmin(+0, -1.0) = -1.0"
+      input: [0x0000000000000000, 0xBFF0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_006
+      description: "fmin(-0, -1.0) = -1.0"
+      input: [0x8000000000000000, 0xBFF0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_007
+      description: "fmin(+0, +0) = 1.0"
+      input: [0x0000000000000000, 0x0000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_008
+      description: "fmin(-0, -0) = 1.0"
+      input: [0x8000000000000000, 0x8000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_009
+      description: "fmin(-1.0, -1.0) = +0"
+      input: [0xBFF0000000000000, 0xBFF0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_010
+      description: "fmin(-1.0, -1.0) = -0"
+      input: [0xBFF0000000000000, 0xBFF0000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_011
+      description: "fmin(1.0, +0) = +0"
+      input: [0x3FF0000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_012
+      description: "fmin(1.0, -0) = -0"
+      input: [0x3FF0000000000000, 0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_013
+      description: "fmin(1.0, -inf) = -inf"
+      input: [0x3FF0000000000000, 0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_014
+      description: "fmin(-1.0, -inf) = -inf"
+      input: [0xBFF0000000000000, 0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_015
+      description: "fmin(1.0, 1.0) = +inf"
+      input: [0x3FF0000000000000, 0x3FF0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_016
+      description: "fmin(-1.0, -1.0) = +inf"
+      input: [0xBFF0000000000000, 0xBFF0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_017
+      description: "fmin(+inf, 1.0) = 1.0"
+      input: [0x7ff0000000000000, 0x3FF0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_018
+      description: "fmin(-inf, -inf) = -1.0"
+      input: [0xfff0000000000000, 0xfff0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_019
+      description: "fmin(+inf, -inf) = -inf"
+      input: [0x7ff0000000000000, 0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_020
+      description: "fmin(-inf, -inf) = -inf"
+      input: [0xfff0000000000000, 0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_021
+      description: "fmin(+inf, +inf) = +inf"
+      input: [0x7ff0000000000000, 0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_022
+      description: "fmin(-inf, -inf) = +inf"
+      input: [0xfff0000000000000, 0xfff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_023
+      description: "fmin(snan, snan) = snan (invalid)"
+      input: [0x7FF4001000000000, 0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmin_024
+      description: "fmin(-snan, -snan) = snan (invalid)"
+      input: [0xfff2000000000000, 0xfff2000000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmin_025
+      description: "fmin(snan, snan) = -snan (invalid)"
+      input: [0x7FF4001000000000, 0x7FF4001000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmin_026
+      description: "fmin(-snan, -snan) = -snan (invalid)"
+      input: [0xfff2000000000000, 0xfff2000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmin_027
+      description: "fmin(large_neg, large_neg) = large_pos"
+      input: [0x9642159012341275, 0x9642159012341275]
+      expect: [0x7EEBE57590909090]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_028
+      description: "fmin(large_pos, small_pos) = small_pos"
+      input: [0x7EEBE57590909090, 0x1642159012341275]
+      expect: [0x1642159012341275]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_029
+      description: "fmin(normal1, normal2) = normal2"
+      input: [0x164243a123703836, 0x1642159078787878]
+      expect: [0x1642159078787878]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmin_030
+      description: "fmin(normal3, normal4) = normal4"
+      input: [0x71EBD59616925632, 0x70EAD49726345243]
+      expect: [0x70EAD49726345243]
+      expect_exception: []
+      variants: [sd]
+#-------------------------------

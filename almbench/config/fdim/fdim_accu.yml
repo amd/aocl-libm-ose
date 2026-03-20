@@ -1,0 +1,114 @@
+- test_sequence: validation_tests_fdim
+  function: fdim
+  test_sets:
+  - id: range-tests_01
+    tests:
+    - id: fdim_001
+      description: 'Full value distribution range tests: [+SMALLEST_SUBNORMAL, FLT_MAX] expstep'
+      input:
+      - [min_subnormal, max]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [1000, 1000]
+      variants : [ss]
+
+    - id: fdim_002
+      description: 'Full value distribution range tests: [-FLT_MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [-max, -min_subnormal]
+      - [-max, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [1000, 1000]
+      variants : [ss]
+
+    - id: fdim_003
+      description: 'Subnormal values range tests: [0, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [0.0, max_subnormal]
+      - [0.0, max_subnormal]
+      type: [linearstep, linearstep]
+      steps: [500, 500]
+      variants : [ss]
+
+    - id: fdim_004
+      description: 'Test around 0'
+      input:
+      - [0.0, 0x000000FF]
+      - [0.0, 0x000000FF]
+      type: [bitstep, bitstep]
+      steps: [1, 1]
+      variants : [ss]
+
+    - id: fdim_005
+      description: 'Test around LARGEST_SUBNORMAL'
+      input:
+      - [0x007FFF00, 0x008000FF]
+      - [0x007FFF00, 0x008000FF]
+      type: [bitstep, bitstep]
+      steps: [1, 1]
+      variants : [ss]
+
+    - id: fdim_006
+      description: 'Test around 1'
+      input:
+      - [0x3F7FFF00, 0x3F8000FF]
+      - [0x3F7FFF00, 0x3F8000FF]
+      type: [bitstep, bitstep]
+      steps: [1, 1]
+      variants : [ss]
+#Double precision
+    - id: fdim_001
+      description: 'Full value distribution range tests: [+SMALLEST_SUBNORMAL, DBL-MAX] expstep'
+      input:
+      - [min_subnormal, max]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [1000, 1000]
+      variants : [sd]
+
+    - id: fdim_002
+      description: 'Full value distribution range tests: [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [-max, -min_subnormal]
+      - [-max, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [1000, 1000]
+      variants : [sd]
+
+    - id: fdim_003
+      description: 'Subnormal values range tests: [0, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [0.0, 0x000FFFFFFFFFFFFF]
+      - [0.0, 0x000FFFFFFFFFFFFF]
+      type: [linearstep, linearstep]
+      steps: [500, 500]
+      variants : [sd]
+
+    - id: fdim_004
+      description: 'Test around 0'
+      input:
+      - [0.0, 0x00000000000000FF]
+      - [0.0, 0x00000000000000FF]
+      type: [bitstep, bitstep]
+      steps: [1, 1]
+      variants : [sd]
+
+    - id: fdim_005
+      description: 'Test around LARGEST_SUBNORMAL'
+      input:
+      - [0x000FFFFFFFFFFF00, 0x00100000000000FF]
+      - [0x000FFFFFFFFFFF00, 0x00100000000000FF]
+      type: [bitstep, bitstep]
+      steps: [1, 1]
+      variants : [sd]
+
+    - id: fdim_006
+      description: 'Test around 1'
+      input:
+      - [0x3FEFFFFFFFFFFF00, 0x3FF00000000000FF]
+      - [0x3FEFFFFFFFFFFF00, 0x3FF00000000000FF]
+      type: [bitstep, bitstep]
+      steps: [1, 1]
+      variants : [sd]
+
+

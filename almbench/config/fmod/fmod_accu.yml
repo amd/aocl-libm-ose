@@ -1,0 +1,244 @@
+- test_sequence: validation_tests_fmod
+  function: fmod
+  test_sets:
+  - id: accuu_range-tests_01
+    tests:
+    - id: fmod_001
+      description: 'Full value distribution range tests: x in [-FLT_MAX, -SMALLEST_SUBNORMAL], y in [-FLT_MAX, -SMALLEST_SUBNORMAL]
+        expstep'
+      input:
+      - [0xFF7FFFFF, -min_subnormal]
+      - [0xFF7FFFFF, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [100, 100]
+      variants : [ss]
+
+    - id: fmod_002
+      description: 'Full value distribution range tests: x in [SMALLEST_SUBNORMAL, +FLT_MAX], y in [-FLT_MAX, -SMALLEST_SUBNORMAL]
+        expstep'
+      input:
+      - [min_subnormal, max]
+      - [0xFF7FFFFF, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [100, 100]
+      variants : [ss]
+
+    - id: fmod_003
+      description: 'Full value distribution range tests: x in [-FLT_MAX, -SMALLEST_SUBNORMAL], y in [SMALLEST_SUBNORMAL, +FLT_MAX]
+        expstep'
+      input:
+      - [0xFF7FFFFF, -min_subnormal]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [100, 100]
+      variants : [ss]
+
+    - id: fmod_004
+      description: 'Full value distribution range tests: x in [SMALLEST_SUBNORMAL, +FLT_MAX], y in [SMALLEST_SUBNORMAL, +FLT_MAX]
+        expstep'
+      input:
+      - [min_subnormal, max]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [100, 100]
+      variants : [ss]
+
+    - id: fmod_005
+      description: 'Subnormal values range tests: x, y in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [-max_subnormal, max_subnormal]
+      - [-max_subnormal, max_subnormal]
+      type: [linearstep, linearstep]
+      steps: [100, 100]
+      variants : [ss]
+
+    - id: fmod_006
+      description: Test around 0, x is negativ, y is negative
+      input:
+      - [0x80000000, 0x80000FFF]
+      - [0x80000000, 0x80000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ss]
+
+    - id: fmod_007
+      description: Test around 0, x is positive, y is negative
+      input:
+      - [0.0, 0x00000FFF]
+      - [0x80000000, 0x80000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ss]
+
+    - id: fmod_008
+      description: Test around 0, x is negativ, y is positive
+      input:
+      - [0x80000000, 0x80000FFF]
+      - [0.0, 0x00000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ss]
+
+    - id: fmod_009
+      description: Test around 0, x is positive, y is positive
+      input:
+      - [0.0, 0x00000FFF]
+      - [0.0, 0x00000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ss]
+
+    - id: fmod_010
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x807ff000, 0x80800FFF]
+      - [0x807ff000, 0x80800FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ss]
+
+    - id: fmod_011
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x007ff000, 0x00800fff]
+      - [0x807ff000, 0x80800FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ss]
+
+    - id: fmod_012
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x807ff000, 0x80800FFF]
+      - [0x007ff000, 0x00800fff]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ss]
+
+    - id: fmod_013
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x007ff000, 0x00800fff]
+      - [0x007ff000, 0x00800fff]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ss]
+
+#Double precision
+    - id: fmod_001
+      description: 'Full value distribution range tests: x in [-DBL-MAX, -SMALLEST_SUBNORMAL], y in [-DBL-MAX, -SMALLEST_SUBNORMAL]  expstep  '
+      input:
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [100, 100]
+      variants : [ sd]
+
+    - id: fmod_002
+      description: 'Full value distribution range tests: x in [SMALLEST_SUBNORMAL, +DBL-MAX], y in [-DBL-MAX, -SMALLEST_SUBNORMAL]  expstep  '
+      input:
+      - [min_subnormal, max]
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [100, 100]
+      variants : [ sd]
+
+    - id: fmod_003
+      description: 'Full value distribution range tests: x in [-DBL-MAX, -SMALLEST_SUBNORMAL], y in [SMALLEST_SUBNORMAL, +DBL-MAX]  expstep  '
+      input:
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [100, 100]
+      variants : [ sd]
+
+    - id: fmod_004
+      description: 'Full value distribution range tests: x in [SMALLEST_SUBNORMAL, +DBL-MAX], y in [SMALLEST_SUBNORMAL, +DBL-MAX] expstep  '
+      input:
+      - [min_subnormal, max]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [100, 100]
+      variants : [ sd]
+
+    - id: fmod_005
+      description: 'Subnormal values range tests: x, y in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL] linearstep  '
+      input:
+      - [0x800FFFFFFFFFFFFF, 0x000FFFFFFFFFFFFF]
+      - [0x800FFFFFFFFFFFFF, 0x000FFFFFFFFFFFFF]
+      type: [linearstep, linearstep]
+      steps: [100, 100]
+      variants : [ sd]
+
+    - id: fmod_006
+      description: Test around 0, x is negativ, y is negative
+      input:
+      - [-0.0, 0x8000000000000FFF]
+      - [-0.0, 0x8000000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ sd]
+
+    - id: fmod_007
+      description: Test around 0, x is positive, y is negative
+      input:
+      - [0.0, 0x0000000000000FFF]
+      - [-0.0, 0x8000000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ sd]
+
+    - id: fmod_008
+      description: Test around 0, x is negativ, y is positive
+      input:
+      - [-0.0, 0x8000000000000FFF]
+      - [0.0, 0x0000000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ sd]
+
+    - id: fmod_009
+      description: Test around 0, x is positive, y is positive
+      input:
+      - [0.0, 0x0000000000000FFF]
+      - [0.0, 0x0000000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ sd]
+
+    - id: fmod_010
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
+      - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ sd]
+
+    - id: fmod_011
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ sd]
+
+    - id: fmod_012
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ sd]
+
+    - id: fmod_013
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ sd]
+

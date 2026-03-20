@@ -340,6 +340,20 @@ Erfc
   :project: libm
 
 
+Erfinv
+------
+
+.. doxygenfunction:: amd_erfinv
+  :project: libm
+
+
+Erfcinv
+-------
+
+.. doxygenfunction:: amd_erfcinv
+  :project: libm
+
+
 Special Functions
 =================
 
@@ -347,6 +361,12 @@ CdfNorm
 -------
 
 See :ref:`special_functions` for ``amd_cdfnorm`` documentation.
+
+
+CdfNormInv
+----------
+
+See :ref:`special_functions` for ``amd_cdfnorminv`` documentation.
 
 
 Remainder and Quotient Functions

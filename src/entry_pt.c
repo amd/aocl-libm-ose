@@ -90,9 +90,12 @@ alm_func_t        G_ENTRY_PT_PTR(tanh);
 alm_func_t        G_ENTRY_PT_PTR(tanpi);
 alm_func_t        G_ENTRY_PT_PTR(trunc);
 alm_func_t        G_ENTRY_PT_PTR(erf);
+alm_func_t        G_ENTRY_PT_PTR(erfinv);
 alm_func_t        G_ENTRY_PT_PTR(erfc);
+alm_func_t        G_ENTRY_PT_PTR(erfcinv);
 alm_func_t        G_ENTRY_PT_PTR(linearfrac);
 alm_func_t        G_ENTRY_PT_PTR(cdfnorm);
+alm_func_t        G_ENTRY_PT_PTR(cdfnorminv);
 
 /*
  * required by NAG tests
@@ -262,8 +265,11 @@ alm_func_t        G_ENTRY_PT_PTR(vrda_erf);
 alm_func_t        G_ENTRY_PT_PTR(vrda_tan);
 alm_func_t        G_ENTRY_PT_PTR(vrda_cosh);
 alm_func_t        G_ENTRY_PT_PTR(vrda_erfc);
+alm_func_t        G_ENTRY_PT_PTR(vrda_erfinv);
 alm_func_t        G_ENTRY_PT_PTR(vrsa_erfcf);
 alm_func_t        G_ENTRY_PT_PTR(vrda_cdfnorm);
+alm_func_t        G_ENTRY_PT_PTR(vrda_cdfnorminv);
+alm_func_t        G_ENTRY_PT_PTR(vrda_erfcinv);
 
 alm_func_t        G_ENTRY_PT_PTR(sincos);
 alm_func_t        G_ENTRY_PT_PTR(sincosf);
@@ -356,6 +362,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd2_sin);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_tan);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_atan);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_erf);
+alm_func_t        G_ENTRY_PT_PTR(vrd2_erfinv);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_sincos);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_sqrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_fabs);
@@ -363,6 +370,8 @@ alm_func_t        G_ENTRY_PT_PTR(vrd2_linearfrac);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_erfc);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_round);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_cdfnorm);
+alm_func_t        G_ENTRY_PT_PTR(vrd2_cdfnorminv);
+alm_func_t        G_ENTRY_PT_PTR(vrd2_erfcinv);
 
 alm_func_t        G_ENTRY_PT_PTR(vrd4_cbrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_cos);
@@ -378,6 +387,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd4_sin);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_tan);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_atan);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_erf);
+alm_func_t        G_ENTRY_PT_PTR(vrd4_erfinv);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_sincos);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_sqrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_fabs);
@@ -385,6 +395,8 @@ alm_func_t        G_ENTRY_PT_PTR(vrd4_linearfrac);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_erfc);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_round);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_cdfnorm);
+alm_func_t        G_ENTRY_PT_PTR(vrd4_cdfnorminv);
+alm_func_t        G_ENTRY_PT_PTR(vrd4_erfcinv);
 
 //alm_func_t        G_ENTRY_PT_PTR(vrd8_cbrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_cos);
@@ -407,8 +419,11 @@ alm_func_t        G_ENTRY_PT_PTR(vrd8_sincos);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_linearfrac);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_sqrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_erfc);
+alm_func_t        G_ENTRY_PT_PTR(vrd8_erfinv);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_round);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_cdfnorm);
+alm_func_t        G_ENTRY_PT_PTR(vrd8_cdfnorminv);
+alm_func_t        G_ENTRY_PT_PTR(vrd8_erfcinv);
 
 alm_func_t        G_ENTRY_PT_PTR(vrd2_acos);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_acos);

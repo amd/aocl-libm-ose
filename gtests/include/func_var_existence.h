@@ -57,6 +57,7 @@ static map<string, vector<string>> libm_funcs = {
     {"cos",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"cosh",      {"s1d", "s1f", "vrd2", "vrs4", "vrs8", "vrsa", "vrda"}},
     {"erf",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrsa", "vrda"}},
+    {"erfinv",    {"s1d", "vrd2", "vrd4", "vrd8", "vrda", /*"s1f", "vrs4", "vrs8", "vrs16", "vrsa"*/}},
     {"exp",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"exp2",      {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"exp10",     {"s1d", "s1f", "vrd2", "vrs4", "vrda", "vrsa"}},
@@ -94,6 +95,8 @@ static map<string, vector<string>> libm_funcs = {
     {"ldexp",     {"s1d", "s1f"}},
     {"erfc",      {"s1d", "vrd2", "vrd4", "vrd8", "vrda", "s1f", "vrs4", "vrs8", "vrs16", "vrsa"}},
     {"cdfnorm",   {"s1d", "vrd2", "vrd4", "vrd8", "vrda"}},
+    {"cdfnorminv",{"s1d", "vrd2", "vrd4", "vrd8", "vrda"}},
+    {"erfcinv",   {"s1d", "vrd2", "vrd4", "vrd8", "vrda"}},
 };
 
 /* vector<string> getSupportedVariants(string func)

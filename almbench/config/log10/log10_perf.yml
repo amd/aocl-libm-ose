@@ -1,0 +1,49 @@
+- test_sequence: perf_tests
+  function: log10
+  timing_enabled: true
+  test_sets:
+  - id: log10
+    tests:
+# Single Precision
+    - id: log10_001
+      description: 'Positive values: x in [SMALLEST_SUBNORMAL, FLT_MAX], linearstep'
+      input: [[min_subnormal, max]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: log10_002
+      description: 'x in [-min_subnormal, min_subnormal], linearstep'
+      input: [[-min_subnormal, min_subnormal]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: log10_003
+      description: 'Negative values: x in [-FLT_MAX, -SMALLEST_SUBNORMAL], linearstep'
+      input: [[-max, -min_subnormal]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+#Double precision
+    - id: log10_001
+      description: 'Positive values: x in [SMALLEST_SUBNORMAL, DBL_MAX], linearstep'
+      input: [[min_subnormal, max]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrda]
+
+    - id: log10_002
+      description: '[[-min_subnormal, min_subnormal]], linearstep'
+      input: [[-min_subnormal, min_subnormal]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrda]
+
+    - id: log10_003
+      description: 'Negative values: x in [-DBL_MAX, -SMALLEST_SUBNORMAL], linearstep'
+      input: [[-max, -min_subnormal]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrda]

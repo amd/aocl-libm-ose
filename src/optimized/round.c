@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,75 +25,121 @@
  *
  */
 
-/* Implementation notes
-    double amd_round (double x);
-    when x = NAN, return x, raise FE_INVALID
-    when x is QNAN, return x
-    when x is INF, return x.
-*/
-
 #include "fn_macros.h"
 #include "libm_util_amd.h"
 #include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/typehelper.h>
 
-double ALM_PROTO_OPT(round)(double f) {
-    uint64_t ux, ux_temp, sign, exponent, mantissa;
-    int intexp;            /*Needs to be signed */
-    double temp, r;
+/*
+ * ISO-IEC-10967-2: Elementary Numerical Functions
+ * Signature:
+ *   double round(double x)
+ *
+ * Mathematical Definition:
+ *   round(x) = sign(x) × floor( |x| + 0.5 )
+ *
+ *   Where:
+ *   - sign(x) = { +1 if x ≥ 0, -1 if x < 0 }
+ *   - Ties ( x = n + 0.5 ),  round away from zero
+ *
+ * Special Values:
+ *   round(±0)   = ±0
+ *   round(±∞)   = ±∞
+ *   round(qNaN) = qNaN (no exception)
+ *   round(sNaN) = qNaN (raises FE_INVALID)
+ *
+ ******************************************
+ * Implementation Using Bit Operations
+ * -----------------------------------
+ * IEEE 754 double-precision format:
+ *   x = (-1)^s × 2^(e-1023) × 1.f
+ *   Where: s = sign bit, e = 11-bit exponent, f = 52-bit fraction
+ *
+ * Algorithm by Value Range:
+ * ------------------------
+ * Case 1: |x| ≥ 2^52
+ *   → x is integer (no fractional bits in representation)
+ *   → return x
+ *
+ * Case 2: 0.5 ≤ |x| < 1.0  (e = 1022, exponent = -1)
+ *   → round(x) = sign(x) × 1.0
+ *   → Construct: s | 0x3FF0000000000000  (exponent for 1.0)
+ *
+ * Case 3: |x| < 0.5  (e < 1022, exponent < -1)
+ *   → round(x) = sign(x) × 0.0
+ *   → Construct: s | 0x0 (signed zero)
+ *
+ * Case 4: 1.0 ≤ |x| < 2^52  (0 ≤ exponent < 52)
+ *   → Add 0.5 to |x|, then truncate fractional bits
+ *   → Operations:
+ *     Step 1: ux = ux + (0x0008000000000000 >> exponent)  // Add 0.5 ULP
+ *     Step 2: ux = ux & ~(0x000FFFFFFFFFFFFF >> exponent) // Clear fraction
+ *   → Implements: x + sign(x) * 0.5, then mask off (52-exponent) LSBs
+ *
+ *******************************************
+ */
 
-    ux = asuint64(f);
-    sign = ux & SIGNBIT_DP64;
+#define INTEGERBITS_DP64        52
+#define INF_NAN_DP64            0x7ff0000000000000ULL
+#define HALF_MANTISSA_BIT_DP64  0x0008000000000000ULL
 
-    /*  if NAN or INF */
-    if (unlikely((ux & EXPBITS_DP64) == EXPBITS_DP64)) {
-        #ifdef WINDOWS
-            return __alm_handle_error(ux |= QNAN_MASK_64, 0);
-        #else
-            /* If NaN, raise exception, no exception for Infinity */
-            if (f != f) {
-                return __alm_handle_error(ux, AMD_F_INVALID);
+double ALM_PROTO_OPT(round)(double x)
+{
+    uint64_t ux = asuint64(x);         /* Bit representation of x */
+    uint64_t uax = ux & ~SIGNBIT_DP64; /* Absolute value of x */
+
+    /* Fast path: Check for NaN or Infinity using bit pattern */
+    if (unlikely(uax >= INF_NAN_DP64)) {
+        /* Check if NaN (mantissa != 0) using bit operations - faster than x != x */
+        if (uax > INF_NAN_DP64) {
+            /* Check if it's a signaling NaN (quiet bit not set) */
+            if (!(ux & QNAN_MASK_64)) {
+                /* Signaling NaN - raise FE_INVALID and return quiet NaN */
+                return __alm_handle_error(ux | QNAN_MASK_64, AMD_F_INVALID);
             }
-            return f;
-        #endif
-    }
-
-    /*Get the exponent of the input*/
-    intexp = (ux & EXPBITS_DP64) >> 52;
-    intexp -= 0x3FF;
-    /*If exponent > 51 then the number is already rounded*/
-    if (intexp > 51) {
-        return f;
-    }
-
-    if (intexp < 0) {
-        temp = f;
-        ux_temp = asuint64(temp);
-        ux_temp &= 0x7FFFFFFFFFFFFFFF;
-        /*Add with a large number (2^52 +1) = 4503599627370497.0
-        to force an overflow*/
-        temp = asdouble(ux_temp) + asdouble(0x4330000000000001);
-        /*Subtract back with the large number*/
-        temp -= asdouble(0x4330000000000001);
-        ux_temp = asuint64(temp);
-
-        if (sign) {
-            ux_temp |= SIGNBIT_DP64;
+            /* Quiet NaN - return as is, no exception */
+            return x;
         }
-
-        return asdouble(ux_temp);
+        /* Infinity case - return as is */
+        return x;
     }
-    else {
-        ux &= 0x7FFFFFFFFFFFFFFF;
-        r = asdouble(ux);
-        r += 0.5;
-        exponent = asuint64(r) & EXPBITS_DP64;
-        /*right shift then left shift to discard the decimal places*/
-        mantissa = (asuint64(r) & MANTBITS_DP64) >> (52 - intexp);
-        mantissa = mantissa << (52 - intexp);
-        ux_temp = sign | exponent | mantissa;
 
-        return asdouble(ux_temp);
+    /* Extract biased exponent */
+    int32_t intexp = (int32_t)(uax >> EXPSHIFTBITS_DP64) - EXPBIAS_DP64;
+
+    /* Fast path: Already an integer (exp >= 52) or large value */
+    if (intexp >= INTEGERBITS_DP64) {
+        return x;
     }
+
+    /* Handle small values: |x| < 1.0 */
+    if (intexp < 0) {
+        /* Extract sign bit, clear magnitude */
+        ux = ux & SIGNBIT_DP64;
+
+        /* Special case: 0.5 <= |x| < 1.0 rounds to ±1.0 */
+        if (intexp == -1) {
+            ux = ux | ONEEXPBITS_DP64;  /* Set exponent for 1.0 */
+        }
+        /* Otherwise: |x| < 0.5 rounds to ±0.0 (already in ux) */
+        return asdouble(ux);
+    }
+
+    /* Handle medium values: 1.0 <= |x| < 2^52 */
+    /* Calculate fractional bit mask */
+    uint64_t mantissa = MANTBITS_DP64 >> intexp;
+
+    /* Check if already integral - avoid unnecessary computation */
+    if (unlikely((ux & mantissa) == 0)) {
+        return x;
+    }
+
+    /* Add 0.5 ULP at the current exponent for rounding */
+    ux = ux + (HALF_MANTISSA_BIT_DP64 >> intexp);
+
+    /* Clear fractional bits */
+    ux = ux & ~mantissa;
+
+    return asdouble(ux);
 }

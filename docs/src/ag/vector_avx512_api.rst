@@ -246,6 +246,20 @@ Erfc
   :project: libm
 
 
+Erfinv
+------
+
+.. doxygenfunction:: amd_vrd8_erfinv
+  :project: libm
+
+
+Erfcinv
+-------
+
+.. doxygenfunction:: amd_vrd8_erfcinv
+  :project: libm
+
+
 Special Functions
 =================
 
@@ -253,6 +267,12 @@ CdfNorm
 -------
 
 See :ref:`special_functions` for ``amd_vrd8_cdfnorm`` documentation.
+
+
+CdfNormInv
+----------
+
+See :ref:`special_functions` for ``amd_vrd8_cdfnorminv`` documentation.
 
 
 Nearest Integer Functions

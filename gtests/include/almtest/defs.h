@@ -159,6 +159,7 @@ enum class RangeType {
   E_Simple,
   E_Random,
   E_Linear,
+  E_Binadex,  /* Uniform coverage of all IEEE 754 binades */
 
   E_MAX
 };
@@ -173,6 +174,9 @@ inline std::ostream& operator<<(std::ostream& os, RangeType& rt) {
       break;
     case RangeType::E_Linear:
       os << "Linear";
+      break;
+    case RangeType::E_Binadex:
+      os << "Binadex";
       break;
     default:
       os << "Unknown";

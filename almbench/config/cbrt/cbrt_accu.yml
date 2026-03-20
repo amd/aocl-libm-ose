@@ -1,0 +1,214 @@
+---
+- test_sequence: validation_tests_cbrt
+  function: cbrt
+  test_sets:
+  - id: range-tests_01
+    description: 'Full value distribution range tests'
+    tests:
+    - id: cbrt_001
+      description: '[+SMALLEST_SUBNORMAL, FLT_MAX] expstep'
+      input:
+      - [min_subnormal, max]
+      type: [expstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrsa]
+
+    - id: cbrt_002
+      description: '[-FLT_MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [-max, -min_subnormal]
+      type: [expstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrsa]
+
+  - id: normal-range
+    description: 'Common value usage range tests'
+    tests:
+    - id: cbrt_003
+      description: '[0, 1]'
+      input:
+      - [0.0, 1.0]
+      type: [linearstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrsa]
+
+    - id: cbrt_004
+      description: '[0, -1]'
+      input:
+      - [0.0, -1.0]
+      type: [linearstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrsa]
+
+    - id: cbrt_005
+      description: '[0, 1000]'
+      input:
+      - [0.0, 1000.0]
+      type: [linearstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrsa]
+
+    - id: cbrt_006
+      description: '[0, -1000]'
+      input:
+      - [0.0, -1000.0]
+      type: [linearstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrsa]
+
+  - id: subnormal-range
+    description: 'Subnormal values range tests'
+    tests:
+    - id: cbrt_007
+      description: '[0, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [0.0, max_subnormal]
+      type: [linearstep]
+      steps: [5000]
+      variants : [ss, vrs4, vrsa]
+
+    - id: cbrt_008
+      description: '[-LARGEST_SUBNORMAL, -0] linearstep'
+      input:
+      - [-max_subnormal, -0.0]
+      type: [linearstep]
+      steps: [5000]
+      variants : [ss, vrs4, vrsa]
+
+    - id: cbrt_009
+      description: 'Test around positive 0'
+      input:
+      - [0.0, 0x00000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrsa]
+
+    - id: cbrt_010
+      description: 'Test around negative 0'
+      input:
+      - [0x80000000, 0x80000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrsa]
+
+    - id: cbrt_011
+      description: 'Test around LARGEST_SUBNORMAL'
+      input:
+      - [0x007FF000, 0x00800fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrsa]
+
+    - id: cbrt_012
+      description: 'Test around -LARGEST_SUBNORMAL'
+      input:
+      - [0x807ff000, 0x80800fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrsa]
+
+#Double precision
+  - id: range-tests_01
+    description: 'Full value distribution range tests'
+    tests:
+    - id: cbrt_001
+      description: '[+SMALLEST_SUBNORMAL, DBL_MAX] expstep'
+      input:
+      - [min_subnormal, max]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrda]
+
+    - id: cbrt_002
+      description: '[-DBL_MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [-max, -min_subnormal]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrda]
+
+  - id: normal-range
+    description: 'Common value usage range tests'
+    tests:
+    - id: cbrt_003
+      description: '[0, 1]'
+      input:
+      - [0.0, 1.0]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrda]
+
+    - id: cbrt_004
+      description: '[0, -1]'
+      input:
+      - [0.0, -1.0]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrda]
+
+    - id: cbrt_005
+      description: '[0, 1000]'
+      input:
+      - [0.0, 1000.0]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrda]
+
+    - id: cbrt_006
+      description: '[0, -1000]'
+      input:
+      - [0.0, -1000.0]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrda]
+
+  - id: subnormal-range
+    description: 'Subnormal values range tests'
+    tests:
+    - id: cbrt_007
+      description: '[0, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [0.0, 0x000FFFFFFFFFFFFF]
+      type: [linearstep]
+      steps: [5000]
+      variants : [sd, vrd2, vrda]
+
+    - id: cbrt_008
+      description: '[-LARGEST_SUBNORMAL, -0] linearstep'
+      input:
+      - [-max_subnormal, -0.0]
+      type: [linearstep]
+      steps: [5000]
+      variants : [sd, vrd2, vrda]
+
+    - id: cbrt_009
+      description: 'Test around positive 0'
+      input:
+      - [0.0, 0x0000000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrda]
+
+    - id: cbrt_010
+      description: 'Test around negative 0'
+      input:
+      - [0x8000000000000000, 0x8000000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrda]
+
+    - id: cbrt_011
+      description: 'Test around LARGEST_SUBNORMAL'
+      input:
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrda]
+
+    - id: cbrt_012
+      description: 'Test around -LARGEST_SUBNORMAL'
+      input:
+      - [0x800ffffffffff000, 0x8010000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrda]

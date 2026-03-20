@@ -487,6 +487,34 @@ extern "C" {
    */
   __m128 amd_vrs4_erfcf (__m128 x);
 
+/* Inverse Error */
+  /**
+   * @brief Computes Inverse Error function per-lane for two double-precision elements.
+   * @param x Input vector.
+   * @return Vector of erfinv values.
+   */
+  __m128d amd_vrd2_erfinv (__m128d x);
+  /**
+   * @brief Computes Inverse Error function per-lane for four double-precision elements.
+   * @param x Input vector.
+   * @return Vector of erfinv values.
+   */
+  __m256d amd_vrd4_erfinv (__m256d x);
+/* Inverse Complementary Error */
+  /**
+   * @brief Computes erfcinv per-lane for two double-precision elements.
+   * @param x Input vector.
+   * @return Vector of erfcinv values.
+   */
+  __m128d amd_vrd2_erfcinv (__m128d x);
+
+/* Inverse Cumulative Normal Distribution */
+  /**
+   * @brief Computes cdfnorminv per-lane for two double-precision elements.
+   * @param x Input vector with values in (0, 1).
+   * @return Vector of cdfnorminv values.
+   */
+  __m128d amd_vrd2_cdfnorminv (__m128d x);
 /* Remainder */
   /**
    * @brief Computes absolute value per-lane for two double-precision elements.
@@ -814,6 +842,21 @@ extern "C" {
    * @return Vector of rounded value.
    */
   __m256 amd_vrs8_roundf (__m256 x);
+/* Inverse Complementary Error */
+  /**
+   * @brief Computes erfcinv per-lane for four double-precision elements.
+   * @param x Input vector.
+   * @return Vector of erfcinv values.
+   */
+  __m256d amd_vrd4_erfcinv (__m256d x);
+
+/* Inverse Cumulative Normal Distribution */
+  /**
+   * @brief Computes cdfnorminv per-lane for four double-precision elements.
+   * @param x Input vector with values in (0, 1).
+   * @return Vector of cdfnorminv values.
+   */
+  __m256d amd_vrd4_cdfnorminv (__m256d x);
 
 /* Remainder */
   /**
@@ -1099,6 +1142,14 @@ extern "C" {
    */
   __m512 amd_vrs16_erfcf (__m512 x);
 
+/* Inverse Error */
+  /**
+   * @brief Computes Inverse Error function per-lane for eight double-precision elements.
+   * @param x Input vector.
+   * @return Vector of erfinv values.
+   */
+  __m512d amd_vrd8_erfinv (__m512d x);
+
 /* Cumulative Normal Distribution */
   /**
    * @brief Computes cumulative normal distribution for eight double-precision elements.
@@ -1120,6 +1171,21 @@ extern "C" {
    * @return Vector of rounded value.
    */
   __m512 amd_vrs16_roundf (__m512 x);
+/* Inverse Complementary Error */
+  /**
+   * @brief Computes erfcinv per-lane for eight double-precision elements.
+   * @param x Input vector.
+   * @return Vector of erfcinv values.
+   */
+  __m512d amd_vrd8_erfcinv (__m512d x);
+
+/* Inverse Cumulative Normal Distribution */
+  /**
+   * @brief Computes cdfnorminv per-lane for eight double-precision elements.
+   * @param x Input vector with values in (0, 1).
+   * @return Vector of cdfnorminv values.
+   */
+  __m512d amd_vrd8_cdfnorminv (__m512d x);
 
 /* Linearfrac */
   /**
@@ -1539,6 +1605,13 @@ extern "C" {
    */
   void amd_vrda_erfc (int len, const double *src, double *dst);
   /**
+   * @brief Computes inverse error function for variable-length double array.
+   * @param len Number of elements to process.
+   * @param src Source array.
+   * @param dst Destination array.
+   */
+  void amd_vrda_erfinv (int len, const double *src, double *dst);
+  /**
    * @brief Computes erfc elementwise for float array.
    * @param len Number of elements.
    * @param src Input array.
@@ -1555,6 +1628,22 @@ extern "C" {
    */
   void amd_vrda_cdfnorm (int len, const double *src, double *dst);
 
+/* Inverse Cumulative Normal Distribution */
+  /**
+   * @brief Computes cdfnorminv elementwise for double array.
+   * @param len Number of elements.
+   * @param src Input array with values in (0, 1).
+   * @param dst Output array of cdfnorminv values.
+   */
+  void amd_vrda_cdfnorminv (int len, const double *src, double *dst);
+/* Inverse Complementary Error */
+  /**
+   * @brief Computes erfcinv elementwise for double array.
+   * @param len Number of elements.
+   * @param src Input array.
+   * @param dst Output array of erfcinv values.
+   */
+  void amd_vrda_erfcinv (int len, const double *src, double *dst);
 #endif
 
 

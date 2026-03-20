@@ -1,0 +1,399 @@
+  include:
+  # ===========================================
+  # UNIT TESTS (UT/ut)
+  # ===========================================
+  - acos/acos_conf.yml
+  - acosh/acosh_conf.yml
+  - asin/asin_conf.yml
+  - asinh/asinh_conf.yml
+  - atan/atan_conf.yml
+  - atan2/atan2_conf.yml
+  - atanh/atanh_conf.yml
+  - cbrt/cbrt_conf.yml
+  - ceil/ceil_conf.yml
+  - copysign/copysign_conf.yml
+  - cos/cos_conf.yml
+  - cosh/cosh_conf.yml
+  - erf/erf_conf.yml
+  - erfc/erfc_conf.yml
+  - exp/exp_conf.yml
+  - exp10/exp10_conf.yml
+  - exp2/exp2_conf.yml
+  - expm1/expm1_conf.yml
+  - fabs/fabs_conf.yml
+  - fdim/fdim_conf.yml
+  - floor/floor_conf.yml
+  - fmax/fmax_conf.yml
+  - fmin/fmin_conf.yml
+  - fmod/fmod_conf.yml
+  - hypot/hypot_conf.yml
+  - ldexp/ldexp_conf.yml
+  - log/log_conf.yml
+  - log10/log10_conf.yml
+  - log1p/log1p_conf.yml
+  - log2/log2_conf.yml
+  - logb/logb_conf.yml
+  - nearbyint/nearbyint_conf.yml
+  - nextafter/nextafter_conf.yml
+  - pow/pow_conf.yml
+  - remainder/remainder_conf.yml
+  - rint/rint_conf.yml
+  - round/round_conf.yml
+  - sin/sin_conf.yml
+  - sincos/sincos_conf.yml
+  - sinh/sinh_conf.yml
+  - sqrt/sqrt_conf.yml
+  - tan/tan_conf.yml
+  - tanh/tanh_conf.yml
+  - trunc/trunc_conf.yml
+
+# ===========================================
+# VERIFICATION TESTS (VT/vt)
+# ===========================================
+
+  - acos/acos_accu.yml
+  - acosh/acosh_accu.yml
+  - add/add_accu.yml
+  - asin/asin_accu.yml
+  - asinh/asinh_accu.yml
+  - atan/atan_accu.yml
+  - atan2/atan2_accu.yml
+  - atanh/atanh_accu.yml
+  - cbrt/cbrt_accu.yml
+  - ceil/ceil_accu.yml
+  - copysign/copysign_accu.yml
+  - cos/cos_accu.yml
+  - cosh/cosh_accu.yml
+  - erf/erf_accu.yml
+  - erfc/erfc_accu.yml
+  - exp/exp_accu.yml
+  - exp10/exp10_accu.yml
+  - exp2/exp2_accu.yml
+  - expm1/expm1_accu.yml
+  - fabs/fabs_accu.yml
+  - fdim/fdim_accu.yml
+  - floor/floor_accu.yml
+  - fmax/fmax_accu.yml
+  - fmin/fmin_accu.yml
+  - fmod/fmod_accu.yml
+  - hypot/hypot_accu.yml
+  - ldexp/ldexp_accu.yml
+  - linearfrac/linearfrac_accu.yml
+  - log/log_accu.yml
+  - log10/log10_accu.yml
+  - log1p/log1p_accu.yml
+  - log2/log2_accu.yml
+  - logb/logb_accu.yml
+  - mul/mul_accu.yml
+  - nearbyint/nearbyint_accu.yml
+  - nextafter/nextafter_accu.yml
+  - pow/pow_accu.yml
+  - powx/powx_accu.yml
+  - remainder/remainder_accu.yml
+  - rint/rint_accu.yml
+  - round/round_accu.yml
+  - sin/sin_accu.yml
+  - sincos/sincos_accu.yml
+  - sinh/sinh_accu.yml
+  - sqrt/sqrt_accu.yml
+  - sub/sub_accu.yml
+  - tan/tan_accu.yml
+  - tanh/tanh_accu.yml
+  - trunc/trunc_accu.yml
+
+  # ===========================================
+  # PERFORMANCE TESTS (PERF/perf)
+  # ===========================================
+  - acos/acos_perf.yml
+  - acosh/acosh_perf.yml
+  - add/add_perf.yml
+  - asin/asin_perf.yml
+  - asinh/asinh_perf.yml
+  - atan/atan_perf.yml
+  - atan2/atan2_perf.yml
+  - atanh/atanh_perf.yml
+  - cbrt/cbrt_perf.yml
+  - ceil/ceil_perf.yml
+  - copysign/copysign_perf.yml
+  - cos/cos_perf.yml
+  - cosh/cosh_perf.yml
+  - erf/erf_perf.yml
+  - erfc/erfc_perf.yml
+  - exp/exp_perf.yml
+  - exp10/exp10_perf.yml
+  - exp2/exp2_perf.yml
+  - expm1/expm1_perf.yml
+  - fabs/fabs_perf.yml
+  - fdim/fdim_perf.yml
+  - floor/floor_perf.yml
+  - fmax/fmax_perf.yml
+  - fmin/fmin_perf.yml
+  - fmod/fmod_perf.yml
+  - hypot/hypot_perf.yml
+  - ldexp/ldexp_perf.yml
+  - linearfrac/linearfrac_perf.yml
+  - log/log_perf.yml
+  - log10/log10_perf.yml
+  - log1p/log1p_perf.yml
+  - log2/log2_perf.yml
+  - logb/logb_perf.yml
+  - mul/mul_perf.yml
+  - nearbyint/nearbyint_perf.yml
+  - nextafter/nextafter_perf.yml
+  - pow/pow_perf.yml
+  - powx/powx_perf.yml
+  - remainder/remainder_perf.yml
+  - rint/rint_perf.yml
+  - round/round_perf.yml
+  - sin/sin_perf.yml
+  - sincos/sincos_perf.yml
+  - sinh/sinh_perf.yml
+  - sqrt/sqrt_perf.yml
+  - sub/sub_perf.yml
+  - tan/tan_perf.yml
+  - tanh/tanh_perf.yml
+  - trunc/trunc_perf.yml
+
+#================================================================================================
+# When API name comes as command line aargument, then specific API yaml files should get executed.
+#================================================================================================
+
+  acos:
+  - acos/acos_conf.yml
+  - acos/acos_accu.yml
+  - acos/acos_perf.yml
+
+  acosh:
+  - acosh/acosh_conf.yml
+  - acosh/acosh_accu.yml
+  - acosh/acosh_perf.yml
+
+  add:
+  - add/add_accu.yml
+  - add/add_perf.yml
+
+  asin:
+  - asin/asin_conf.yml
+  - asin/asin_accu.yml
+  - asin/asin_perf.yml
+
+  asinh:
+  - asinh/asinh_conf.yml
+  - asinh/asinh_accu.yml
+  - asinh/asinh_perf.yml
+
+  atan:
+  - atan/atan_conf.yml
+  - atan/atan_accu.yml
+  - atan/atan_perf.yml
+
+  atan2:
+  - atan2/atan2_conf.yml
+  - atan2/atan2_accu.yml
+  - atan2/atan2_perf.yml
+
+  atanh:
+  - atanh/atanh_conf.yml
+  - atanh/atanh_accu.yml
+  - atanh/atanh_perf.yml
+
+  cbrt:
+  - cbrt/cbrt_conf.yml
+  - cbrt/cbrt_accu.yml
+  - cbrt/cbrt_perf.yml
+
+  ceil:
+  - ceil/ceil_conf.yml
+  - ceil/ceil_accu.yml
+  - ceil/ceil_perf.yml
+
+  copysign:
+  - copysign/copysign_conf.yml
+  - copysign/copysign_accu.yml
+  - copysign/copysign_perf.yml
+
+  cos:
+  - cos/cos_conf.yml
+  - cos/cos_accu.yml
+  - cos/cos_perf.yml
+
+  cosh:
+  - cosh/cosh_conf.yml
+  - cosh/cosh_accu.yml
+  - cosh/cosh_perf.yml
+
+  erf:
+  - erf/erf_conf.yml
+  - erf/erf_accu.yml
+  - erf/erf_perf.yml
+
+  erfc:
+  - erfc/erfc_conf.yml
+  - erfc/erfc_accu.yml
+  - erfc/erfc_perf.yml
+
+  exp:
+  - exp/exp_conf.yml
+  - exp/exp_accu.yml
+  - exp/exp_perf.yml
+
+  exp10:
+  - exp10/exp10_conf.yml
+  - exp10/exp10_accu.yml
+  - exp10/exp10_perf.yml
+
+  exp2:
+  - exp2/exp2_conf.yml
+  - exp2/exp2_accu.yml
+  - exp2/exp2_perf.yml
+
+  expm1:
+  - expm1/expm1_conf.yml
+  - expm1/expm1_accu.yml
+  - expm1/expm1_perf.yml
+
+  fabs:
+  - fabs/fabs_conf.yml
+  - fabs/fabs_accu.yml
+  - fabs/fabs_perf.yml
+
+  fdim:
+  - fdim/fdim_conf.yml
+  - fdim/fdim_accu.yml
+  - fdim/fdim_perf.yml
+
+  floor:
+  - floor/floor_conf.yml
+  - floor/floor_accu.yml
+  - floor/floor_perf.yml
+
+  fmax:
+  - fmax/fmax_conf.yml
+  - fmax/fmax_accu.yml
+  - fmax/fmax_perf.yml
+
+  fmin:
+  - fmin/fmin_conf.yml
+  - fmin/fmin_accu.yml
+  - fmin/fmin_perf.yml
+
+  fmod:
+  - fmod/fmod_conf.yml
+  - fmod/fmod_accu.yml
+  - fmod/fmod_perf.yml
+
+  hypot:
+  - hypot/hypot_conf.yml
+  - hypot/hypot_accu.yml
+  - hypot/hypot_perf.yml
+
+  ldexp:
+  - ldexp/ldexp_conf.yml
+  - ldexp/ldexp_accu.yml
+  - ldexp/ldexp_perf.yml
+
+  linearfrac:
+  - linearfrac/linearfrac_accu.yml
+  - linearfrac/linearfrac_perf.yml
+
+  log:
+  - log/log_conf.yml
+  - log/log_accu.yml
+  - log/log_perf.yml
+
+  log10:
+  - log10/log10_conf.yml
+  - log10/log10_accu.yml
+  - log10/log10_perf.yml
+
+  log1p:
+  - log1p/log1p_conf.yml
+  - log1p/log1p_accu.yml
+  - log1p/log1p_perf.yml
+
+  log2:
+  - log2/log2_conf.yml
+  - log2/log2_accu.yml
+  - log2/log2_perf.yml
+
+  logb:
+  - logb/logb_conf.yml
+  - logb/logb_accu.yml
+  - logb/logb_perf.yml
+
+  mul:
+  - mul/mul_accu.yml
+  - mul/mul_perf.yml
+
+  nearbyint:
+  - nearbyint/nearbyint_conf.yml
+  - nearbyint/nearbyint_accu.yml
+  - nearbyint/nearbyint_perf.yml
+
+  nextafter:
+  - nextafter/nextafter_conf.yml
+  - nextafter/nextafter_accu.yml
+  - nextafter/nextafter_perf.yml
+
+  pow:
+  - pow/pow_conf.yml
+  - pow/pow_accu.yml
+  - pow/pow_perf.yml
+
+  powx:
+  - powx/powx_accu.yml
+  - powx/powx_perf.yml
+
+  remainder:
+  - remainder/remainder_conf.yml
+  - remainder/remainder_accu.yml
+  - remainder/remainder_perf.yml
+
+  rint:
+  - rint/rint_conf.yml
+  - rint/rint_accu.yml
+  - rint/rint_perf.yml
+
+  round:
+  - round/round_conf.yml
+  - round/round_accu.yml
+  - round/round_perf.yml
+
+  sin:
+  - sin/sin_conf.yml
+  - sin/sin_accu.yml
+  - sin/sin_perf.yml
+
+  sincos:
+  - sincos/sincos_conf.yml
+  - sincos/sincos_accu.yml
+  - sincos/sincos_perf.yml
+
+  sinh:
+  - sinh/sinh_conf.yml
+  - sinh/sinh_accu.yml
+  - sinh/sinh_perf.yml
+
+  sqrt:
+  - sqrt/sqrt_conf.yml
+  - sqrt/sqrt_accu.yml
+  - sqrt/sqrt_perf.yml
+
+  sub:
+  - sub/sub_accu.yml
+  - sub/sub_perf.yml
+
+  tan:
+  - tan/tan_conf.yml
+  - tan/tan_accu.yml
+  - tan/tan_perf.yml
+
+  tanh:
+  - tanh/tanh_conf.yml
+  - tanh/tanh_accu.yml
+  - tanh/tanh_perf.yml
+
+  trunc:
+  - trunc/trunc_conf.yml
+  - trunc/trunc_accu.yml
+  - trunc/trunc_perf.yml

@@ -1,0 +1,248 @@
+- test_sequence: validation_tests_sub
+  function: sub
+  test_sets:
+  - id: sub_range-tests_01
+    tests:
+    - id: sub_001
+      description: 'Basic range tests: small positive values linearstep'
+      input:
+      - [0.1, 10.0]
+      - [0.1, 10.0]
+      type: [linearstep, linearstep]
+      steps: [20, 20]
+      variants : [vrsa]
+
+    - id: sub_002
+      description: 'Medium range tests: moderate values linearstep'
+      input:
+      - [-50.0, 50.0]
+      - [-50.0, 50.0]
+      type: [linearstep, linearstep]
+      steps: [25, 25]
+      variants : [vrsa]
+
+    - id: sub_003
+      description: 'Large range tests: extended values linearstep'
+      input:
+      - [-1000.0, 1000.0]
+      - [-1000.0, 1000.0]
+      type: [linearstep, linearstep]
+      steps: [50, 50]
+      variants : [vrsa]
+
+    - id: sub_004
+      description: 'Edge case tests: values around zero'
+      input:
+      - [-1.0, 1.0]
+      - [-1.0, 1.0]
+      type: [linearstep, linearstep]
+      steps: [10, 10]
+      variants : [vrsa]
+
+    - id: sub_005
+      description: 'Precision tests: small incremental values'
+      input:
+      - [0.0, 1.0]
+      - [0.0, 1.0]
+      type: [linearstep, linearstep]
+      steps: [100, 100]
+      variants : [vrsa]
+
+    - id: sub_006
+      description: 'Vector variant tests: basic range vrs8'
+      input:
+      - [0.1, 5.0]
+      - [0.1, 5.0]
+      type: [linearstep, linearstep]
+      steps: [15, 15]
+      variants : [vrsa]
+
+    - id: sub_007
+      description: 'Vector variant tests: basic range vrs16'
+      input:
+      - [0.1, 5.0]
+      - [0.1, 5.0]
+      type: [linearstep, linearstep]
+      steps: [15, 15]
+      variants : [vrsa]
+
+    - id: sub_008
+      description: 'Vector variant tests: basic range vrsa'
+      input:
+      - [0.1, 5.0]
+      - [0.1, 5.0]
+      type: [linearstep, linearstep]
+      steps: [15, 15]
+      variants : [vrsa]
+
+    - id: sub_009
+      description: 'Boundary tests: extreme small values'
+      input:
+      - [0.001, 0.1]
+      - [0.001, 0.1]
+      type: [linearstep, linearstep]
+      steps: [20, 20]
+      variants : [vrsa]
+
+    - id: sub_010
+      description: 'Boundary tests: large magnitude values'
+      input:
+      - [1000.0, 10000.0]
+      - [1000.0, 10000.0]
+      type: [linearstep, linearstep]
+      steps: [30, 30]
+      variants : [vrsa]
+
+# Double precision tests
+    - id: sub_001
+      description: 'Double precision: basic range tests linearstep'
+      input:
+      - [0.1, 10.0]
+      - [0.1, 10.0]
+      type: [linearstep, linearstep]
+      steps: [25, 25]
+      variants : [vrda]
+
+    - id: sub_002
+      description: 'Double precision: medium range tests linearstep'
+      input:
+      - [-100.0, 100.0]
+      - [-100.0, 100.0]
+      type: [linearstep, linearstep]
+      steps: [40, 40]
+      variants : [vrda]
+
+    - id: sub_003
+      description: 'Double precision: vector variant vrd4'
+      input:
+      - [0.1, 5.0]
+      - [0.1, 5.0]
+      type: [linearstep, linearstep]
+      steps: [20, 20]
+      variants : [vrda]
+
+    - id: sub_004
+      description: 'Double precision: vector variant vrd8'
+      input:
+      - [0.1, 5.0]
+      - [0.1, 5.0]
+      type: [linearstep, linearstep]
+      steps: [20, 20]
+      variants : [vrda]
+
+    - id: sub_005
+      description: 'Double precision: vector variant vrda'
+      input:
+      - [0.1, 5.0]
+      - [0.1, 5.0]
+      type: [linearstep, linearstep]
+      steps: [20, 20]
+      variants : [vrda]
+
+    - id: sub_006
+      description: 'Double precision: negative range tests'
+      input:
+      - [-10.0, -0.5]
+      - [-10.0, -0.5]
+      type: [linearstep, linearstep]
+      steps: [15, 15]
+      variants : [vrda]
+
+    - id: sub_007
+      description: 'Double precision: mixed positive negative values'
+      input:
+      - [-25.0, 25.0]
+      - [-25.0, 25.0]
+      type: [linearstep, linearstep]
+      steps: [30, 30]
+      variants : [vrda]
+
+    - id: sub_008
+      description: 'Double precision: high precision decimal values'
+      input:
+      - [0.001, 0.999]
+      - [0.001, 0.999]
+      type: [linearstep, linearstep]
+      steps: [50, 50]
+      variants : [vrda]
+
+    - id: sub_009
+      description: 'Double precision: large magnitude subtraction'
+      input:
+      - [100.0, 1000.0]
+      - [100.0, 1000.0]
+      type: [linearstep, linearstep]
+      steps: [25, 25]
+      variants : [vrda]
+
+    - id: sub_010
+      description: 'Double precision: very large values'
+      input:
+      - [10000.0, 100000.0]
+      - [10000.0, 100000.0]
+      type: [linearstep, linearstep]
+      steps: [20, 20]
+      variants : [vrda]
+
+    - id: sub_011
+      description: 'Double precision: mathematical constants range'
+      input:
+      - [3.14159, 31.4159]
+      - [2.71828, 27.1828]
+      type: [linearstep, linearstep]
+      steps: [15, 15]
+      variants : [vrda]
+
+    - id: sub_012
+      description: 'Double precision: fractional boundary tests'
+      input:
+      - [0.25, 2.75]
+      - [0.25, 2.75]
+      type: [linearstep, linearstep]
+      steps: [25, 25]
+      variants : [vrda]
+
+    - id: sub_013
+      description: 'Double precision: exponential range tests'
+      input:
+      - [1e-10, 1e-5]
+      - [1e-10, 1e-5]
+      type: [linearstep, linearstep]
+      steps: [10, 10]
+      variants : [vrda]
+
+    - id: sub_014
+      description: 'Double precision: comprehensive mixed range'
+      input:
+      - [-3.14159, 3.14159]
+      - [-2.71828, 2.71828]
+      type: [linearstep, linearstep]
+      steps: [35, 35]
+      variants : [vrda]
+
+    - id: sub_015
+      description: 'Double precision: underflow boundary testing'
+      input:
+      - [1e6, 1e7]
+      - [1e6, 1e7]
+      type: [linearstep, linearstep]
+      steps: [15, 15]
+      variants : [vrda]
+
+    - id: sub_016
+      description: 'Double precision: cancellation effect tests'
+      input:
+      - [1.0, 1.1]
+      - [1.0, 1.1]
+      type: [linearstep, linearstep]
+      steps: [100, 100]
+      variants : [vrda]
+
+    - id: sub_017
+      description: 'Double precision: symmetric subtraction tests'
+      input:
+      - [-10.0, 10.0]
+      - [-10.0, 10.0]
+      type: [linearstep, linearstep]
+      steps: [25, 25]
+      variants : [vrda]

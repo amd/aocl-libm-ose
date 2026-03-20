@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -60,6 +60,8 @@ void RangeReader::operator()(const std::string &name, const std::string &value,
       dest.r_type = RangeType::E_Linear;
     else if (dist == "random")
       dest.r_type = RangeType::E_Random;
+    else if (dist == "binadex")
+      dest.r_type = RangeType::E_Binadex;
     else
       dest.r_type = RangeType::E_Simple;
   }

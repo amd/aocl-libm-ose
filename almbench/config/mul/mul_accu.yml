@@ -1,0 +1,248 @@
+- test_sequence: validation_tests_mul
+  function: mul
+  test_sets:
+  - id: mul_range-tests_01
+    tests:
+    - id: mul_001
+      description: 'Basic range tests: small positive values linearstep'
+      input:
+      - [0.1, 5.0]
+      - [0.1, 5.0]
+      type: [linearstep, linearstep]
+      steps: [20, 20]
+      variants : [vrsa]
+
+    - id: mul_002
+      description: 'Medium range tests: moderate values linearstep'
+      input:
+      - [-10.0, 10.0]
+      - [-10.0, 10.0]
+      type: [linearstep, linearstep]
+      steps: [25, 25]
+      variants : [vrsa]
+
+    - id: mul_003
+      description: 'Large range tests: extended values linearstep'
+      input:
+      - [-50.0, 50.0]
+      - [-50.0, 50.0]
+      type: [linearstep, linearstep]
+      steps: [30, 30]
+      variants : [vrsa]
+
+    - id: mul_004
+      description: 'Edge case tests: values around zero'
+      input:
+      - [-1.0, 1.0]
+      - [-1.0, 1.0]
+      type: [linearstep, linearstep]
+      steps: [10, 10]
+      variants : [vrsa]
+
+    - id: mul_005
+      description: 'Precision tests: small incremental values'
+      input:
+      - [0.0, 2.0]
+      - [0.0, 2.0]
+      type: [linearstep, linearstep]
+      steps: [50, 50]
+      variants : [vrsa]
+
+    - id: mul_006
+      description: 'Vector variant tests: basic range vrs8'
+      input:
+      - [0.1, 3.0]
+      - [0.1, 3.0]
+      type: [linearstep, linearstep]
+      steps: [15, 15]
+      variants : [vrsa]
+
+    - id: mul_007
+      description: 'Vector variant tests: basic range vrs16'
+      input:
+      - [0.1, 3.0]
+      - [0.1, 3.0]
+      type: [linearstep, linearstep]
+      steps: [15, 15]
+      variants : [vrsa]
+
+    - id: mul_008
+      description: 'Vector variant tests: basic range vrsa'
+      input:
+      - [0.1, 3.0]
+      - [0.1, 3.0]
+      type: [linearstep, linearstep]
+      steps: [15, 15]
+      variants : [vrsa]
+
+    - id: mul_009
+      description: 'Boundary tests: extreme small values'
+      input:
+      - [0.001, 0.1]
+      - [0.001, 0.1]
+      type: [linearstep, linearstep]
+      steps: [20, 20]
+      variants : [vrsa]
+
+    - id: mul_010
+      description: 'Boundary tests: large magnitude values'
+      input:
+      - [10.0, 100.0]
+      - [10.0, 100.0]
+      type: [linearstep, linearstep]
+      steps: [20, 20]
+      variants : [vrsa]
+
+# Double precision tests
+    - id: mul_001
+      description: 'Double precision: basic range tests linearstep'
+      input:
+      - [0.1, 5.0]
+      - [0.1, 5.0]
+      type: [linearstep, linearstep]
+      steps: [25, 25]
+      variants : [vrda]
+
+    - id: mul_002
+      description: 'Double precision: medium range tests linearstep'
+      input:
+      - [-20.0, 20.0]
+      - [-20.0, 20.0]
+      type: [linearstep, linearstep]
+      steps: [30, 30]
+      variants : [vrda]
+
+    - id: mul_003
+      description: 'Double precision: vector variant vrd4'
+      input:
+      - [0.1, 3.0]
+      - [0.1, 3.0]
+      type: [linearstep, linearstep]
+      steps: [20, 20]
+      variants : [vrda]
+
+    - id: mul_004
+      description: 'Double precision: vector variant vrd8'
+      input:
+      - [0.1, 3.0]
+      - [0.1, 3.0]
+      type: [linearstep, linearstep]
+      steps: [20, 20]
+      variants : [vrda]
+
+    - id: mul_005
+      description: 'Double precision: vector variant vrda'
+      input:
+      - [0.1, 3.0]
+      - [0.1, 3.0]
+      type: [linearstep, linearstep]
+      steps: [20, 20]
+      variants : [vrda]
+
+    - id: mul_006
+      description: 'Double precision: negative range tests'
+      input:
+      - [-5.0, -0.5]
+      - [-5.0, -0.5]
+      type: [linearstep, linearstep]
+      steps: [15, 15]
+      variants : [vrda]
+
+    - id: mul_007
+      description: 'Double precision: mixed positive negative values'
+      input:
+      - [-15.0, 15.0]
+      - [-15.0, 15.0]
+      type: [linearstep, linearstep]
+      steps: [25, 25]
+      variants : [vrda]
+
+    - id: mul_008
+      description: 'Double precision: high precision decimal values'
+      input:
+      - [0.001, 0.999]
+      - [0.001, 0.999]
+      type: [linearstep, linearstep]
+      steps: [40, 40]
+      variants : [vrda]
+
+    - id: mul_009
+      description: 'Double precision: large magnitude multiplication'
+      input:
+      - [10.0, 100.0]
+      - [10.0, 100.0]
+      type: [linearstep, linearstep]
+      steps: [20, 20]
+      variants : [vrda]
+
+    - id: mul_010
+      description: 'Double precision: controlled large values'
+      input:
+      - [100.0, 1000.0]
+      - [100.0, 1000.0]
+      type: [linearstep, linearstep]
+      steps: [15, 15]
+      variants : [vrda]
+
+    - id: mul_011
+      description: 'Double precision: mathematical constants range'
+      input:
+      - [1.0, 3.14159]
+      - [1.0, 2.71828]
+      type: [linearstep, linearstep]
+      steps: [15, 15]
+      variants : [vrda]
+
+    - id: mul_012
+      description: 'Double precision: fractional boundary tests'
+      input:
+      - [0.25, 1.75]
+      - [0.25, 1.75]
+      type: [linearstep, linearstep]
+      steps: [25, 25]
+      variants : [vrda]
+
+    - id: mul_013
+      description: 'Double precision: exponential range tests'
+      input:
+      - [1e-5, 1e-2]
+      - [1e-5, 1e-2]
+      type: [linearstep, linearstep]
+      steps: [10, 10]
+      variants : [vrda]
+
+    - id: mul_014
+      description: 'Double precision: comprehensive mixed range'
+      input:
+      - [-2.5, 2.5]
+      - [-2.0, 2.0]
+      type: [linearstep, linearstep]
+      steps: [30, 30]
+      variants : [vrda]
+
+    - id: mul_015
+      description: 'Double precision: overflow prevention testing'
+      input:
+      - [1e3, 1e4]
+      - [1e-4, 1e-3]
+      type: [linearstep, linearstep]
+      steps: [12, 12]
+      variants : [vrda]
+
+    - id: mul_016
+      description: 'Double precision: cancellation effect tests'
+      input:
+      - [0.9, 1.1]
+      - [0.9, 1.1]
+      type: [linearstep, linearstep]
+      steps: [50, 50]
+      variants : [vrda]
+
+    - id: mul_017
+      description: 'Double precision: symmetric multiplication tests'
+      input:
+      - [-5.0, 5.0]
+      - [-5.0, 5.0]
+      type: [linearstep, linearstep]
+      steps: [20, 20]
+      variants : [vrda]

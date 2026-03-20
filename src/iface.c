@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -86,10 +86,13 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_TANH]       = {LIBM_IFACE_PROTO(tanh), NULL},
     [C_AMD_TANPI]      = {LIBM_IFACE_PROTO(tanpi), NULL},
     [C_AMD_TRUNC]      = {LIBM_IFACE_PROTO(trunc), NULL},
-    [C_AMD_ERF]      =   {LIBM_IFACE_PROTO(erf), NULL},
-    [C_AMD_ERFC]      =   {LIBM_IFACE_PROTO(erfc), NULL},
+    [C_AMD_ERF]        = {LIBM_IFACE_PROTO(erf), NULL},
+    [C_AMD_ERFC]       = {LIBM_IFACE_PROTO(erfc), NULL},
+    [C_AMD_ERFINV]     = {LIBM_IFACE_PROTO(erfinv), NULL},
+    [C_AMD_ERFCINV]    = {LIBM_IFACE_PROTO(erfcinv), NULL},
     [C_AMD_SINCOS]     = {LIBM_IFACE_PROTO(sincos), NULL},
     [C_AMD_CDFNORM]    = {LIBM_IFACE_PROTO(cdfnorm), NULL},
+    [C_AMD_CDFNORMINV] = {LIBM_IFACE_PROTO(cdfnorminv), NULL},
 
     /* Integer variants */
     [C_AMD_FINITE]     = {LIBM_IFACE_PROTO(finite), NULL},

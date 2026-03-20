@@ -1,0 +1,166 @@
+- test_sequence: validation_tests_logb
+  function: logb
+  test_sets:
+  - id: accu_range-tests_01
+    tests:
+    - id: logb_001
+      description: 'Full value distribution range tests: [+MIN_SUBNORMAL, FLT_MAX] expstep'
+      input:
+      - [MIN_SUBNORMAL, MAX]
+      type: [expstep]
+      steps: [10000]
+      variants : [ss]
+
+    - id: logb_002
+      description: 'Full value distribution range tests: [-FLT_MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [-MAX, -MIN_SUBNORMAL]
+      type: [expstep]
+      steps: [10000]
+      variants : [ss]
+
+    - id: logb_003
+      description: 'Subnormal values range tests: [0, MAX_SUBNORMAL] linearstep'
+      input:
+      - [0.0, MAX_SUBNORMAL]
+      type: [linearstep]
+      steps: [5000]
+      variants : [ss]
+
+    - id: logb_004
+      description: 'Subnormal values range tests: [-MAX_SUBNORMAL, 0.0] linearstep'
+      input:
+      - [-MAX_SUBNORMAL, 0.0]
+      type: [linearstep]
+      steps: [5000]
+      variants : [ss]
+
+    - id: logb_005
+      description: 'Test around positive 0'
+      input:
+      - [0.0, 0x00000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+
+    - id: logb_006
+      description: 'Test around negative 0'
+      input:
+      - [0x80000000, 0x80000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+
+    - id: logb_007
+      description: 'Test around LARGEST_SUBNORMAL'
+      input:
+      - [0x007ff000, 0x00800fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+
+    - id: logb_008
+      description: 'Test around -LARGEST_SUBNORMAL'
+      input:
+      - [0x807ff000, 0x80800fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+
+    - id: logb_009
+      description: 'Test around 1'
+      input:
+      - [0x3f7ff000, 0x3f800fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+
+    - id: logb_010
+      description: 'Test around -1'
+      input:
+      - [0xbf7ff000, 0xbf800fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+
+#Double precision
+    - id: logb_001
+      description: 'Full value distribution range tests: [+MIN_SUBNORMAL, DBL-MAX] expstep'
+      input:
+      - [MIN_SUBNORMAL, MAX]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd]
+
+    - id: logb_002
+      description: 'Full value distribution range tests: [-DBL-MAX, -MIN_SUBNORMAL] expstep'
+      input:
+      - [-MAX, -MIN_SUBNORMAL]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd]
+
+    - id: logb_003
+      description: 'Subnormal values range tests: [0, MAX_SUBNORMAL] linearstep'
+      input:
+      - [0.0, MAX_SUBNORMAL]
+      type: [linearstep]
+      steps: [5000]
+      variants : [sd]
+
+    - id: logb_004
+      description: 'Subnormal values range tests: [-MAX_SUBNORMAL, -0] linearstep'
+      input:
+      - [-MAX_SUBNORMAL, 0.0]
+      type: [linearstep]
+      steps: [5000]
+      variants : [sd]
+
+    - id: logb_005
+      description: 'Test around positive 0'
+      input:
+      - [0.0, 0x0000000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+
+    - id: logb_006
+      description: 'Test around negative 0'
+      input:
+      - [0x8000000000000000, 0x8000000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+
+    - id: logb_007
+      description: 'Test around MAX_SUBNORMAL'
+      input:
+      - [0x000ffffffffff000, 0x0010000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+
+    - id: logb_008
+      description: 'Test around -LARGEST_SUBNORMAL'
+      input:
+      - [0x800ffffffffff000, 0x8010000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+
+    - id: logb_009
+      description: 'Test around 1'
+      input:
+      - [0x3feffffffffff000, 0x3ff0000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+
+    - id: logb_010
+      description: 'Test around -1'
+      input:
+      - [0xbfeffffffffff000, 0xbff0000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+

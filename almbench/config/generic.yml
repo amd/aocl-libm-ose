@@ -1,0 +1,523 @@
+- test_sequence: validation_tests_allApis
+  function: allApis
+  test_sets:
+  - id: range-tests_allApis
+    tests:
+    - id: accu_acos
+      description: 'x in [MAX, MIN] expstep'
+      input:
+      - [ -1.0, 1.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, sd, "vrd2", "vrd4", "vrsa", "vrda" ]
+
+    - id: accu_acosh
+      description: 'x in [MAX, MIN] linearstep'
+      input:
+      - [ 4.0, 1.0e+19]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss]
+
+    - id: accu_asin
+      description: 'x in [MAX, MIN] linearstep'
+      input:
+      - [ -1.0, 1.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, sd, vrs4, vrs8, vrs16, vrd2, vrd4, vrd8, vrsa, vrda]
+
+    - id: accu_asinh
+      description: 'x in [MAX, MIN] linearstep'
+      input:
+      - [ 4.0, 1.0e+19 ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss]
+
+    - id: accu_atan
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -5.0, 5.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, sd, vrs4, vrs8, vrs16, vrd2, vrd4, vrd8, vrsa, vrda]
+
+    - id: accu_atan2
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [-10000.0, 10000.0 ]
+      - [-10000.0, 10000.0 ]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [ss, sd]
+
+    - id: accu_atanh
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [  0.77, 0.99999 ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss]
+
+    - id: accu_cbrt
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -10000.0, 10000.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrsa, sd, vrd2, vrda]
+
+    - id: accu_ceil
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -10000.0, 10000.0 ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, sd]
+
+    #- id: accu_cexp
+     # description: 'x in [MIN, MAX] linearstep'
+      #input:
+      #- [  ]
+      #type: [linearstep]
+      #steps: [1000]
+      #variants : [ss, sd]
+
+    - id: accu_copysign
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [-10000.0, 10000.0 ]
+      - [-10000.0, 10000.0 ]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [ss, sd]
+
+    - id: accu_cos
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [-10000.0, 10000.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa, sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: accu_cosh
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [-87.0, 87.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, "vrsa"]
+
+    - id: accu_erf
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [-4.0, 4.0 ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, "vrsa"]
+
+    - id: accu_exp
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -87.0, 87.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: accu_exp2
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -87.0, 87.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: accu_exp10
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [-10.0, 35.0 ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrsa, sd, vrd2, vrda]
+
+    - id: accu_expm1
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -70.0, 70.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrsa]
+
+    - id: accu_fabs
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -10000.0, 10000.0] #Range couldnot find from reference doc.
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrsa, sd, vrd2, vrd4, vrda]
+
+    - id: accu_fdim
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -10000.0, 10000.0 ]
+      - [ -10000.0, 10000.0 ]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [ss, sd]
+
+    - id: accu_floor
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -10000.0, 10000.0 ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, sd]
+
+    - id: accu_fmax
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -10000.0, 10000.0 ]
+      - [ -10000.0, 10000.0 ]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [ss, vrsa, sd ,vrda]
+
+    - id: accu_fmin
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -10000.0, 10000.0]
+      - [ -10000.0, 10000.0]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [ss, vrsa, sd ,vrda]
+
+    - id: accu_fmod
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -10000.0, 10000.0]
+      - [ -10000.0, 10000.0]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [ss, sd]
+
+    - id: accu_hypot
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [-10000.0, 10000.0 ]
+      - [-10000.0, 10000.0 ]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [ss, sd]
+
+    - id: accu_log
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [-10000.0, 10000]  #Range couldnot find from reference doc
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa, sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: accu_log1p
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [  1.0, 999.0 ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrsa, sd, vrd2, vrda]
+
+    - id: accu_log2
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ 0.1, 10000.0  ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa, sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: accu_log10
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ 0.1, 10000.0 ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa, sd, vrd2, vrda]
+
+    - id: accu_nearbyint
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -10000.0, 10000.0  ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, sd]
+
+    - id: accu_pow
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [  0.1, 10.0  ]
+      - [  0.1, 10.0  ]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: accu_powx
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [  0.1, 10.0   ]
+      - [  0.1, 10.0   ]
+      type: [linearstep, linearstep]
+      steps: [1000, 10]
+      variants : [ vrs4, vrs8, vrs16, vrsa]
+
+    - id: accu_remainder
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [   -10000.0, 10000.0  ]
+      - [   -10000.0, 10000.0  ]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [ss, sd]
+
+    - id: accu_rint
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [  -10000.0, 10000.0  ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, sd]
+
+    - id: accu_round
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -10000.0, 10000.0 ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, sd]
+
+    - id: accu_sincos
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [-10000.0, 10000.0 ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa, sd, vrd2, vrd4, vrd8, vrda ]
+
+    - id: accu_sin
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [-10000.0, 10000.0  ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa, sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: accu_sinh
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -87.0, 87.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss]
+
+    - id: accu_sqrt
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ 0.0, 10000.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa, sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: accu_tan
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [-1000.0, 1000.0 ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa, sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: accu_tanh
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [-9.0, 9.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, "vrsa"]
+
+    - id: accu_trunc
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [-10000.0, 10000.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, sd]
+
+    - id: accu_linearfrac
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ 0.000001, 100000.0]
+      - [ 0.000001, 100000.0]
+      - [ 0.000001, 100000.0]
+      - [ 0.000001, 100000.0]
+      - [ 0.000001, 100000.0]
+      - [ 0.000001, 100000.0]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [1000, 1000,1000, 1000,1000, 1000]
+      variants : [vrs4, vrs8, vrs16, vrsa, vrd2, vrd4, vrd8, vrda]
+
+    - id: accu_add
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [  -10000.0, 10000.0]
+      - [  -10000.0, 10000.0]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [ vrsa, vrda]
+
+    - id: accu_sub
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [  -10000.0, 10000.0 ]
+      - [  -10000.0, 10000.0 ]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [vrsa, vrda]
+
+    - id: accu_mul
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -10000.0, 10000.0  ]
+      - [ -10000.0, 10000.0  ]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [ vrsa, vrda]
+
+    - id: accu_nextafter
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -1000.0, 1000.0 ]
+      - [ -1000.0, 1000.0 ]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [ss, sd ]
+
+    - id: accu_ldexp
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -1000.0, 1000.0 ] #Ranges are not there in reference doc
+      - [ -1000.0, 1000.0 ]
+      type: [linearstep]
+      steps: [1000, 1000]
+      variants : [ss, sd]
+
+    - id: accu_erfc
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -10.0, 10.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa, sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: accu_logb
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -10000.0, 10000.0 ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [ss, sd]
+
+#Double precision
+    - id: accu_acosh
+      description: 'x in [MAX, MIN] linearstep'
+      input:
+      - [ 1.001, 1.0e+154]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd]
+
+    - id: accu_asinh
+      description: 'x in [MAX, MIN] linearstep'
+      input:
+      - [  0.002, 1.0e+154 ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd]
+
+    - id: accu_atanh
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [0.005, 0.99999 ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd]
+
+    - id: accu_cosh
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [-675.0, 675.0 ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, "vrda"]
+
+    - id: accu_erf
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [-5.9, 5.9 ]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, "vrda"]
+
+    - id: accu_exp
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [  -707.0, 707.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: accu_exp2
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -707.0, 707.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: accu_expm1
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [-500.0, 500.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrda]
+
+    - id: accu_pow
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [  5.0, 100.0  ]
+      - [  5.0, 100.0  ]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: accu_powx
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [  5.0, 100.0   ]
+      - [  5.0, 100.0   ]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: accu_sinh
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -675.0, 675.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd]
+
+    - id: accu_tanh
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [-19.0, 19.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd]

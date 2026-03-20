@@ -1,0 +1,410 @@
+---
+- test_sequence: validation_tests_atan2
+  function: atan2
+  test_sets:
+  - id: range-tests_01
+    description: 'Full value distribution range tests'
+    tests:
+    - id: atan2_001
+      description: 'y in [-FLT_MAX, -SMALLEST_SUBNORMAL], x in [-FLT_MAX, -SMALLEST_SUBNORMAL]
+        expstep'
+      input:
+      - [0xFF7FFFFF, -min_subnormal]
+      - [0xFF7FFFFF, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants : [ss]
+
+    - id: atan2_002
+      description: 'y in [SMALLEST_SUBNORMAL, +FLT_MAX], x in [-FLT_MAX, -SMALLEST_SUBNORMAL]
+        expstep'
+      input:
+      - [min_subnormal, max]
+      - [0xFF7FFFFF, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants : [ss]
+
+    - id: atan2_003
+      description: 'y in [-FLT_MAX, -SMALLEST_SUBNORMAL], x in [SMALLEST_SUBNORMAL, +FLT_MAX]
+        expstep'
+      input:
+      - [0xFF7FFFFF, -min_subnormal]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants : [ss]
+
+    - id: atan2_004
+      description: 'y in [SMALLEST_SUBNORMAL, +FLT_MAX], x in [SMALLEST_SUBNORMAL, +FLT_MAX]
+        expstep'
+      input:
+      - [min_subnormal, max]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants : [ss]
+
+  - id: normal-range
+    description: 'Common value usage range tests'
+    tests:
+    - id: atan2_005
+      description: 'y, x in [-1, 0] linearstep'
+      input:
+      - [-1.0, 0.0]
+      - [-1.0, 0.0]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [ss]
+
+    - id: atan2_006
+      description: 'y in [-1, 0], x in [0, +1] linearstep'
+      input:
+      - [-1.0, 0.0]
+      - [0.0, 1.0]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [ss]
+
+    - id: atan2_007
+      description: 'y in [0, +1], x in [-1, 0] linearstep'
+      input:
+      - [0.0, 1.0]
+      - [-1.0, 0.0]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [ss]
+
+    - id: atan2_008
+      description: 'y, x in [0, +1] linearstep'
+      input:
+      - [0.0, 1.0]
+      - [0.0, 1.0]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [ss]
+
+  - id: subnormal-range
+    description: 'Subnormal values range test'
+    tests:
+    - id: atan2_009
+      description: 'y, x in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [-max_subnormal, max_subnormal]
+      - [-max_subnormal, max_subnormal]
+      type: [linearstep, linearstep]
+      steps: [10, 10]
+      variants : [ss]
+
+    - id: atan2_010
+      description: 'x in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL], y in [1, 100] linearstep'
+      input:
+      - [1.0, 100.0]
+      - [-max_subnormal, max_subnormal]
+      type: [linearstep, linearstep]
+      steps: [10, 10]
+      variants : [ss]
+
+    - id: atan2_011
+      description: 'x in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL], y in [-100, -1] linearstep'
+      input:
+      - [-100.0, -1.0]
+      - [-max_subnormal, max_subnormal]
+      type: [linearstep, linearstep]
+      steps: [10, 10]
+      variants : [ss]
+
+    - id: atan2_012
+      description: 'x in [1, 100], y in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [-max_subnormal, max_subnormal]
+      - [1.0, 100.0]
+      type: [linearstep, linearstep]
+      steps: [10, 10]
+      variants : [ss]
+
+    - id: atan2_013
+      description: 'x in [-100, -1], y in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [-max_subnormal, max_subnormal]
+      - [-100.0, 1.0]
+      type: [linearstep, linearstep]
+      steps: [10, 10]
+      variants : [ss]
+
+    - id: atan2_014
+      description: Test around 0, x is negativ, y is negative
+      input:
+      - [0x80000000, 0x80000FFF]
+      - [0x80000000, 0x80000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ss]
+
+    - id: atan2_015
+      description: Test around 0, x is positive, y is negative
+      input:
+      - [0x80000000, 0x80000FFF]
+      - [0.0, 0x00000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ss]
+
+    - id: atan2_016
+      description: Test around 0, x is negativ, y is positive
+      input:
+      - [0.0, 0x00000FFF]
+      - [0x80000000, 0x80000FFF]
+      type: [bitstep, bitstep]
+      steps: [32, 32]
+      variants : [ss]
+
+    - id: atan2_017
+      description: Test around 0, x is positive, y is positive
+      input:
+      - [0.0, 0x00000FFF]
+      - [0.0, 0x00000FFF]
+      type: [bitstep, bitstep]
+      steps: [32, 32]
+      variants : [ss]
+
+    - id: atan2_018
+      description: Test around -/- LARGEST_SUBNORMAL
+      input:
+      - [0x807ff000, 0x80800FFF]
+      - [0x807ff000, 0x80800FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ss]
+
+    - id: atan2_019
+      description: Test around -/+ LARGEST_SUBNORMAL
+      input:
+      - [0x807ff000, 0x80800FFF]
+      - [0x007ff000, 0x00800fff]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ss]
+
+    - id: atan2_020
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x007ff000, 0x00800fff]
+      - [0x807ff000, 0x80800FFF]
+      type: [bitstep, bitstep]
+      steps: [64, 64]
+      variants : [ss]
+
+    - id: atan2_021
+      description: Test around +/+ LARGEST_SUBNORMAL
+      input:
+      - [0x007ff000, 0x00800fff]
+      - [0x007ff000, 0x00800fff]
+      type: [bitstep, bitstep]
+      steps: [64, 64]
+      variants : [ss]
+
+#Double precision
+  - id: range-tests_01
+    description: 'Full value distribution range tests'
+    tests:
+    - id: atan2_001
+      description: 'y in [-DBL_MAX , -SMALLEST_SUBNORMAL], x in [-DBL_MAX , -SMALLEST_SUBNORMAL]'
+      input:
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [400, 400]
+      variants : [sd]
+
+    - id: atan2_002
+      description: 'y in [SMALLEST_SUBNORMAL, +DBL_MAX ], x in [-DBL_MAX , -SMALLEST_SUBNORMAL]'
+      input:
+      - [min_subnormal, max]
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [400, 400]
+      variants : [sd]
+
+    - id: atan2_003
+      description: 'y in [-DBL_MAX , -SMALLEST_SUBNORMAL], x in [SMALLEST_SUBNORMAL, +DBL_MAX ]'
+      input:
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [400, 400]
+      variants : [sd]
+
+    - id: atan2_004
+      description: 'Full value distribution range tests: y in [SMALLEST_SUBNORMAL, +DBL_MAX ], x in [SMALLEST_SUBNORMAL, +DBL_MAX ]'
+      input:
+      - [min_subnormal, max]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [400, 400]
+      variants : [sd]
+
+    - id: atan2_005
+      description: 'Common value usage range tests: y, x in [-1, 0] linearstep'
+      input:
+      - [-1.0, 0.0]
+      - [-1.0, 0.0]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [sd]
+
+  - id: normal-range
+    description: 'Common value usage range tests'
+    tests:
+    - id: atan2_006
+      description: 'y in [-1, 0], x in [0, +1] linearstep'
+      input:
+      - [-1.0, -0.0]
+      - [-0.0, 1.0]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [sd]
+
+    - id: atan2_007
+      description: 'y in [0, +1], x in [-1, 0] linearstep'
+      input:
+      - [-0.0, 1.0]
+      - [-1.0, 0.0]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [sd]
+
+    - id: atan2_008
+      description: 'y, x in [0, +1] linearstep'
+      input:
+      - [-0.0, 1.0]
+      - [-0.0, 1.0]
+      type: [linearstep, linearstep]
+      steps: [1000, 1000]
+      variants : [sd]
+
+  - id: subnormal-range
+    description: 'Subnormal values range test'
+    tests:
+    - id: atan2_009
+      description: 'y, x in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [0x800FFFFFFFFFFFFF, 0x000FFFFFFFFFFFFF]
+      - [0x800FFFFFFFFFFFFF, 0x000FFFFFFFFFFFFF]
+      type: [linearstep, linearstep]
+      steps: [10, 10]
+      variants : [sd]
+
+    - id: atan2_010
+      description: 'x in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL], y in [1, 100] linearstep'
+      input:
+      - [1.0, 100.0]
+      - [0x800FFFFFFFFFFFFF, 0x000FFFFFFFFFFFFF]
+      type: [linearstep, linearstep]
+      steps: [10, 10]
+      variants : [sd]
+
+    - id: atan2_011
+      description: 'x in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL], y in [-100, -1] linearstep'
+      input:
+      - [-100.0, -1.0]
+      - [0x800FFFFFFFFFFFFF, 0x000FFFFFFFFFFFFF]
+      type: [linearstep, linearstep]
+      steps: [10, 10]
+      variants : [sd]
+
+    - id: atan2_012
+      description: 'x in [1, 100], y in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [0x800FFFFFFFFFFFFF, 0x000FFFFFFFFFFFFF]
+      - [1.0, 100.0]
+      type: [linearstep, linearstep]
+      steps: [10, 10]
+      variants : [sd]
+
+    - id: atan2_013
+      description: 'x in [-100, -1], y in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [0x800FFFFFFFFFFFFF, 0x000FFFFFFFFFFFFF]
+      - [-100.0, 1.0]
+      type: [linearstep, linearstep]
+      steps: [10, 10]
+      variants : [sd]
+
+    - id: atan2_014
+      description: Test around 0, x is negativ, y is negative
+      input:
+      - [-0.0, 0x8000000000000FFF]
+      - [-0.0, 0x8000000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [sd]
+
+    - id: atan2_015
+      description: Test around 0, x is positive, y is negative
+      input:
+      - [-0.0, 0x8000000000000FFF]
+      - [0.0, 0x0000000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [sd]
+
+    - id: atan2_016
+      description: Test around 0, x is negativ, y is positive
+      input:
+      - [0.0, 0x0000000000000FFF]
+      - [-0.0, 0x8000000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [sd]
+
+    - id: atan2_017
+      description: Test around 0, x is positive, y is positive
+      input:
+      - [0.0, 0x0000000000000FFF]
+      - [0.0, 0x0000000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [sd]
+
+    - id: atan2_018
+      description: Test around (-LARGEST_SUBNORMAL, -LARGEST_SUBNORMAL)
+      input:
+      - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
+      - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [sd]
+
+    - id: atan2_019
+      description: Test around (-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL)
+      input:
+      - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [sd]
+
+    - id: atan2_020
+      description: Test around (LARGEST_SUBNORMAL, -LARGEST_SUBNORMAL)
+      input:
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [sd]
+
+    - id: atan2_021
+      description: Test around (LARGEST_SUBNORMAL, LARGEST_SUBNORMAL)
+      input:
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [sd]
+
+
+
+
+
+

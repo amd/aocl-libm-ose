@@ -1,0 +1,2315 @@
+- test_sequence: unit_tests_exp
+  ignore_exceptions: [underflow, inexact]
+  function: exp
+  test_sets:
+  - id: special-values
+    description: Special values for exp function
+    tests:
+    # Case 1: exp(0) = 1
+    - id: exp_001
+      description: "expf(0) = 1"
+      input: [0x00000000]  # +0.0f
+      expect: [0x3f800000]  # 1.0f
+      expect_exception: []
+      variants: [ss]
+
+    # Case 2: exp(-0) = 1
+    - id: exp_002
+      description: "expf(-0) = 1"
+      input: [0x80000000]  # -0.0f
+      expect: [0x3f800000]  # 1.0f
+      expect_exception: []
+      variants: [ss]
+
+    # Case 3: exp(+inf) = +inf
+    - id: exp_003
+      description: "expf(+inf) = +inf"
+      input: [0x7f800000]  # +inf
+      expect: [0x7f800000]  # +inf
+      expect_exception: []
+      variants: [ss]
+
+    # Case 4: exp(-inf) = 0
+    - id: exp_004
+      description: "expf(-inf) = 0"
+      input: [0xff800000]  # -inf
+      expect: [0x00000000]  # +0.0f
+      expect_exception: []
+      variants: [ss]
+
+    # Case 5: exp(-nan) = -nan
+    - id: exp_005
+      description: "expf(-nan) = -nan"
+      input: [0xffc00000]  # -nan
+      expect: [0xffc00000]  # -nan
+      expect_exception: []
+      variants: [ss]
+
+    # Case 6: exp(+nan) = +nan
+    - id: exp_006
+      description: "expf(+nan) = +nan"
+      input: [0x7fc00000]  # +nan
+      expect: [0x7fc00000]  # +nan
+      expect_exception: []
+      variants: [ss]
+
+    # Case 7: exp(subnorm MAX positive)
+    - id: exp_007
+      description: "expf(subnorm_max_pos)"
+      input: [0x007fffff]  # largest positive subnormal
+      expect: [0x3f800000]  # ≈ 1.0f
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 8: exp(subnorm MAX negative)
+    - id: exp_008
+      description: "expf(subnorm_max_neg)"
+      input: [0x807fffff]  # largest negative subnormal
+      expect: [0x3f800000]  # ≈ 1.0f
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 9: exp(subnorm MIN positive)
+    - id: exp_009
+      description: "expf(subnorm_min_pos)"
+      input: [0x00000001]  # smallest positive subnormal
+      expect: [0x3f800000]  # ≈ 1.0f
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 10: exp(subnorm MIN negative)
+    - id: exp_010
+      description: "expf(subnorm_min_neg)"
+      input: [0x80000001]  # smallest negative subnormal
+      expect: [0x3f800000]  # ≈ 1.0f
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 11: exp(1) = e ≈ 2.71828 (POS)
+    - id: exp_011
+      description: "expf(1.0) = e"
+      input: [0x3f800000]  # 1.0f
+      expect: [0x402df854]  # e ≈ 2.71828f
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 12: exp(-1) = 1/e ≈ 0.36788 (-POS)
+    - id: exp_012
+      description: "expf(-1.0) = 1/e"
+      input: [0xbf800000]  # -1.0f
+      expect: [0x3ebc5ab2]  # 1/e ≈ 0.36788f
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 13: exp(large positive) (+NEG - near overflow)
+    - id: exp_013
+      description: "expf(large_pos)"
+      input: [0x42b00000]  # 88.0f (near overflow)
+      expect: [0x7f7fffff]  # large finite value
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 14: exp(large negative) (-NEG - underflow)
+    - id: exp_014
+      description: "expf(large_neg)"
+      input: [0xc2b00000]  # -88.0f
+      expect: [0x00800000]  # very small positive
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+ # Test cases from gtests test_exp_0data.h
+#-------------------------------
+    # Case 1: expf (-103.278938)=-103.278938
+    - id: exp_001
+      description: "expf expf (-103.278938)=-103.278938"
+      input: [0xc2ce8ed1]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 2: denormal
+    - id: exp_002
+      description: "expf denormal"
+      input: [0xc435f37e]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 3: 1000
+    - id: exp_003
+      description: "expf 1000"
+      input: [0x447a0000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 4: -700
+    - id: exp_004
+      description: "expf -700"
+      input: [0xc42f0000]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 5: smallest no for result infinity
+    - id: exp_005
+      description: "expf smallest no for result infinity"
+      input: [0x44317218]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 6: expf(8.872284e+001 = log(maximum) = 1.701415e+038
+    - id: exp_006
+      description: "expf expf(8.872284e+001 = log(maximum) = 1.701415e+038"
+      input: [0x7f7fff84]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 7: exp(-1000.000000000000)=  0
+    - id: exp_007
+      description: "expf exp(-1000.000000000000)=  0"
+      input: [0xc47a0000]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 8: exp(-708.396418532264190) ; first underflow
+    - id: exp_008
+      description: "expf exp(-708.396418532264190) ; first underflow"
+      input: [0xc431195f]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 9: 1000
+    - id: exp_009
+      description: "expf 1000"
+      input: [0x447a0000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 10: 96
+    - id: exp_010
+      description: "expf 96"
+      input: [0x42c00000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 11: -87.5
+    - id: exp_011
+      description: "expf -87.5"
+      input: [0xc2af0000]
+      expect: [0x006cb2bc]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 12: -112
+    - id: exp_012
+      description: "expf -112"
+      input: [0xc2e00000]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 13: -128
+    - id: exp_013
+      description: "expf -128"
+      input: [0xc3000000]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 14: -87.3365  largest denormal result
+    - id: exp_014
+      description: "expf -87.3365  largest denormal result"
+      input: [0xc2aeac50]
+      expect: [0x007fffe6]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 15:
+    - id: exp_015
+      description: "expf "
+      input: [0xc2ce0000]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 16: 88.7228   overflow
+    - id: exp_016
+      description: "expf 88.7228   overflow"
+      input: [0x42b17218]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 17: large   overflow
+    - id: exp_017
+      description: "expf large   overflow"
+      input: [0x50000000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 18: smallest number
+    - id: exp_018
+      description: "expf smallest number"
+      input: [0xff7fffff]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 19: largest number
+    - id: exp_019
+      description: "expf largest number"
+      input: [0x7f7fffff]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 20: -28467.3555
+    - id: exp_020
+      description: "expf -28467.3555"
+      input: [0xc6de66b6]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 21: 28467.3555
+    - id: exp_021
+      description: "expf 28467.3555"
+      input: [0x46de66b6]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 22: -100
+    - id: exp_022
+      description: "expf -100"
+      input: [0xc2c80000]
+      expect: [0x0000001b]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 23: 100
+    - id: exp_023
+      description: "expf 100"
+      input: [0x42c80000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    # Case 24: expf(nan)=nan
+    - id: exp_024
+      description: "expf expf(nan)=nan"
+      input: [0x7fbfffff]
+      expect: [0x00000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    # Case 25: expf(-nan)=-nan
+    - id: exp_025
+      description: "expf expf(-nan)=-nan"
+      input: [0xffffffff]
+      expect: [0xffffffff]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 26: expf(qnan) = qnan
+    - id: exp_026
+      description: "expf expf(qnan) = qnan"
+      input: [0x7fe00000]
+      expect: [0x7fe00000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 27: expf(-qnan) = -qnan
+    - id: exp_027
+      description: "expf expf(-qnan) = -qnan"
+      input: [0xffe00000]
+      expect: [0xffe00000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 28: exp(0)=1
+    - id: exp_028
+      description: "expf exp(0)=1"
+      input: [0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 29: exp(-0)
+    - id: exp_029
+      description: "expf exp(-0)"
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 30: exp(1)  = E
+    - id: exp_030
+      description: "expf exp(1)  = E"
+      input: [0x3f800000]
+      expect: [0x402df854]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 31: inf
+    - id: exp_031
+      description: "expf inf"
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 32: -inf
+    - id: exp_032
+      description: "expf -inf"
+      input: [0xff800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 33: -1
+    - id: exp_033
+      description: "expf -1"
+      input: [0xbf800000]
+      expect: [0x3ebc5ab2]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 34: pi
+    - id: exp_034
+      description: "expf pi"
+      input: [0x40490fdb]
+      expect: [0x41b92025]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 35: expf(1.192093e-007 = fullprec) =1.000000e+000
+    - id: exp_035
+      description: "expf expf(1.192093e-007 = fullprec) =1.000000e+000"
+      input: [0x34000000]
+      expect: [0x3f800001]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 36: exp(-1.167477607727)=     0.311150796620
+    - id: exp_036
+      description: "expf exp(-1.167477607727)=     0.311150796620"
+      input: [0xbf956fe8]
+      expect: [0x3e9f4f28]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 37: exp(1.420929789543)=      4.140968880418
+    - id: exp_037
+      description: "expf exp(1.420929789543)=      4.140968880418"
+      input: [0x3fb5e107]
+      expect: [0x408482d1]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 38: exp(0.502462923527)=      1.652786949780
+    - id: exp_038
+      description: "expf exp(0.502462923527)=      1.652786949780"
+      input: [0x3f00a169]
+      expect: [0x3fd38e86]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 39: exp(-4.257011890411)=     0.014164564508
+    - id: exp_039
+      description: "expf exp(-4.257011890411)=     0.014164564508"
+      input: [0xc0883971]
+      expect: [0x3c68127d]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 40: exp(-6.756908416748)=     0.001162818573
+    - id: exp_040
+      description: "expf exp(-6.756908416748)=     0.001162818573"
+      input: [0xc0d83898]
+      expect: [0x3a9869b7]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 41: exp(-0.758690774441)=     0.468279108831
+    - id: exp_041
+      description: "expf exp(-0.758690774441)=     0.468279108831"
+      input: [0xbf42398f]
+      expect: [0x3eefc248]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 42: exp(0.869235038757)=      2.385085657423
+    - id: exp_042
+      description: "expf exp(0.869235038757)=      2.385085657423"
+      input: [0x3f5e8630]
+      expect: [0x4018a53e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 43: exp(7.229412078857)=      1379.411280586528
+    - id: exp_043
+      description: "expf exp(7.229412078857)=      1379.411280586528"
+      input: [0x40e75758]
+      expect: [0x44ac6d29]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 44: exp(6.735993862152)=     842.180079194122
+    - id: exp_044
+      description: "expf exp(6.735993862152)=     842.180079194122"
+      input: [0x40d78d43]
+      expect: [0x44528b86]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 45: exp(6.432513237000)=     621.734552387876
+    - id: exp_045
+      description: "expf exp(6.432513237000)=     621.734552387876"
+      input: [0x40cdd726]
+      expect: [0x441b6f03]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 46: exp(-0.785748422146)=    0.455778459412
+    - id: exp_046
+      description: "expf exp(-0.785748422146)=    0.455778459412"
+      input: [0xbf492640]
+      expect: [0x3ee95c4e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 47: exp(-5.468057632446)=    0.004219419868
+    - id: exp_047
+      description: "expf exp(-5.468057632446)=    0.004219419868"
+      input: [0xc0aefa54]
+      expect: [0x3b8a430f]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 48: exp(-82.779975891113)=   0.000000000000
+    - id: exp_048
+      description: "expf exp(-82.779975891113)=   0.000000000000"
+      input: [0xc2a58f59]
+      expect: [0x03be831d]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 49: exp(0.966257691383)=     2.628090906092
+    - id: exp_049
+      description: "expf exp(0.966257691383)=     2.628090906092"
+      input: [0x3f775caa]
+      expect: [0x402832a4]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 50: exp(2.883572101593)=     17.878021362924
+    - id: exp_050
+      description: "expf exp(2.883572101593)=     17.878021362924"
+      input: [0x40388c72]
+      expect: [0x418f0630]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 51: exp(-66.160026550293)=   0.000000000000
+    - id: exp_051
+      description: "expf exp(-66.160026550293)=   0.000000000000"
+      input: [0xc28451ef]
+      expect: [0x0fbb9101]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 52: exp(0.352293312550)=     1.422325648504
+    - id: exp_052
+      description: "expf exp(0.352293312550)=     1.422325648504"
+      input: [0x3eb45fca]
+      expect: [0x3fb60ec4]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 53: exp(3.718588352203)=     41.206184413049
+    - id: exp_053
+      description: "expf exp(3.718588352203)=     41.206184413049"
+      input: [0x406dfd5a]
+      expect: [0x4224d322]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 54: exp(0.057408232242)=     1.059088076057
+    - id: exp_054
+      description: "expf exp(0.057408232242)=     1.059088076057"
+      input: [0x3d6b24e5]
+      expect: [0x3f879033]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 55: exp(-67.890266418457)=   0.000000000000
+    - id: exp_055
+      description: "expf exp(-67.890266418457)=   0.000000000000"
+      input: [0xc287c7d1]
+      expect: [0x0e84fa80]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 56: exp(-1.934486746788)=    0.144498414069
+    - id: exp_056
+      description: "expf exp(-1.934486746788)=    0.144498414069"
+      input: [0xbff79d43]
+      expect: [0x3e13f764]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 57: exp(-7.365839958191)=    0.000632493915
+    - id: exp_057
+      description: "expf exp(-7.365839958191)=    0.000632493915"
+      input: [0xc0ebb4f6]
+      expect: [0x3a25cdf3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 58: exp(0.883411645889)=     2.419138889085
+    - id: exp_058
+      description: "expf exp(0.883411645889)=     2.419138889085"
+      input: [0x3f622744]
+      expect: [0x401ad32c]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 59: exp(-1.664293885231)=    0.189324295476
+    - id: exp_059
+      description: "expf exp(-1.664293885231)=    0.189324295476"
+      input: [0xbfd50795]
+      expect: [0x3e41de3a]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 60: exp(-0.543007075787)=    0.580998516328
+    - id: exp_060
+      description: "expf exp(-0.543007075787)=    0.580998516328"
+      input: [0xbf0b0283]
+      expect: [0x3f14bc52]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 61: exp(0.156235530972)=     1.169101530285
+    - id: exp_061
+      description: "expf exp(0.156235530972)=     1.169101530285"
+      input: [0x3e1ffc35]
+      expect: [0x3f95a51e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 62: exp(-71.241012573242)=   0.000000000000
+    - id: exp_062
+      description: "expf exp(-71.241012573242)=   0.000000000000"
+      input: [0xc28e7b66]
+      expect: [0x0c152efc]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 63: exp(63.501033782959)=    3785720676697755300000000000.000000000000
+    - id: exp_063
+      description: "expf exp(63.501033782959)=    3785720676697755300000000000.000000000000"
+      input: [0x427e010f]
+      expect: [0x6d43b799]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 64: exp(-6.808650970459)=    0.001104181469
+    - id: exp_064
+      description: "expf exp(-6.808650970459)=    0.001104181469"
+      input: [0xc0d90e78]
+      expect: [0x3a90ba2f]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 65: exp(74.859542846680)=    324404131136078150000000000000000.000000000000
+    - id: exp_065
+      description: "expf exp(74.859542846680)=    324404131136078150000000000000000.000000000000"
+      input: [0x4295b816]
+      expect: [0x757fe8e4]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 66: exp(-75.813873291016)=   0.000000000000
+    - id: exp_066
+      description: "expf exp(-75.813873291016)=   0.000000000000"
+      input: [0xc297a0b4]
+      expect: [0x08c539af]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 67: exp(0.929926872253)=     2.534323841450
+    - id: exp_067
+      description: "expf exp(0.929926872253)=     2.534323841450"
+      input: [0x3f6e0f0b]
+      expect: [0x4022325d]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 68: exp(-8.153500556946)=    0.000287726392
+    - id: exp_068
+      description: "expf exp(-8.153500556946)=    0.000287726392"
+      input: [0xc10274bd]
+      expect: [0x3996d9fc]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 69: exp(-0.764500439167)=    0.465566451655
+    - id: exp_069
+      description: "expf exp(-0.764500439167)=    0.465566451655"
+      input: [0xbf43b64d]
+      expect: [0x3eee5eba]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 70: exp(0.662599802017)=     1.939828955688
+    - id: exp_070
+      description: "expf exp(0.662599802017)=     1.939828955688"
+      input: [0x3f29a024]
+      expect: [0x3ff84c51]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 71: exp(-0.011837456375)=    0.988232330673
+    - id: exp_071
+      description: "expf exp(-0.011837456375)=    0.988232330673"
+      input: [0xbc41f1e4]
+      expect: [0x3f7cfccb]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 72: exp(-0.073772616684)=    0.928882882300
+    - id: exp_072
+      description: "expf exp(-0.073772616684)=    0.928882882300"
+      input: [0xbd971619]
+      expect: [0x3f6dcd45]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 73: exp(-5.573178291321)=    0.003798388841
+    - id: exp_073
+      description: "expf exp(-5.573178291321)=    0.003798388841"
+      input: [0xc0b2577a]
+      expect: [0x3b78ee64]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 74: exp(0.219470873475)=     1.245417572741
+    - id: exp_074
+      description: "expf exp(0.219470873475)=     1.245417572741"
+      input: [0x3e60bcf9]
+      expect: [0x3f9f69d8]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 75: exp(-4.762903213501)=    0.008540777668
+    - id: exp_075
+      description: "expf exp(-4.762903213501)=    0.008540777668"
+      input: [0xc09869b4]
+      expect: [0x3c0bee9e]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 76: exp(2.904769182205)=     18.261028195468
+    - id: exp_076
+      description: "expf exp(2.904769182205)=     18.261028195468"
+      input: [0x4039e7bd]
+      expect: [0x41921696]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 77: exp(-4.706059455872)=    0.009040331310
+    - id: exp_077
+      description: "expf exp(-4.706059455872)=    0.009040331310"
+      input: [0xc096980a]
+      expect: [0x3c141de6]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 78: exp(0.347248882055)=     1.415168891687
+    - id: exp_078
+      description: "expf exp(0.347248882055)=     1.415168891687"
+      input: [0x3eb1ca9b]
+      expect: [0x3fb52441]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 79: exp(-13.884679794312)=   0.000000933169
+    - id: exp_079
+      description: "expf exp(-13.884679794312)=   0.000000933169"
+      input: [0xc15e27a6]
+      expect: [0x357a7ede]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 80: exp(9.940448760986)=     20753.055357968085
+    - id: exp_080
+      description: "expf exp(9.940448760986)=     20753.055357968085"
+      input: [0x411f0c14]
+      expect: [0x46a2221c]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 81: exp(0.861838042736)=     2.367508278352
+    - id: exp_081
+      description: "expf exp(0.861838042736)=     2.367508278352"
+      input: [0x3f5ca16b]
+      expect: [0x40178541]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 82: exp(0.776021659374)=     2.172810866183
+    - id: exp_082
+      description: "expf exp(0.776021659374)=     2.172810866183"
+      input: [0x3f46a95b]
+      expect: [0x400b0f55]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 83: exp(0.149806782603)=     1.161609777826
+    - id: exp_083
+      description: "expf exp(0.149806782603)=     1.161609777826"
+      input: [0x3e1966f3]
+      expect: [0x3f94afa1]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 84: exp(0.002564622788)=     1.002567914246
+    - id: exp_084
+      description: "expf exp(0.002564622788)=     1.002567914246"
+      input: [0x3b28133b]
+      expect: [0x3f805425]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 85: exp(52.178573608398)=    45800117449823512000000.000000000000
+    - id: exp_085
+      description: "expf exp(52.178573608398)=    45800117449823512000000.000000000000"
+      input: [0x4250b6dc]
+      expect: [0x651b2d45]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 86: exp(-0.768599987030)=    0.463661746585
+    - id: exp_086
+      description: "expf exp(-0.768599987030)=    0.463661746585"
+      input: [0xbf44c2f8]
+      expect: [0x3eed6513]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 87: exp(0.302273601294)=     1.352931339840
+    - id: exp_087
+      description: "expf exp(0.302273601294)=     1.352931339840"
+      input: [0x3e9ac39b]
+      expect: [0x3fad2cdb]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 88: exp(-0.086060844362)=    0.917538402483
+    - id: exp_088
+      description: "expf exp(-0.086060844362)=    0.917538402483"
+      input: [0xbdb040ab]
+      expect: [0x3f6ae3cc]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 89: exp(0.091754429042)=     1.096095619777
+    - id: exp_089
+      description: "expf exp(0.091754429042)=     1.096095619777"
+      input: [0x3dbbe9bf]
+      expect: [0x3f8c4cdc]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 90: exp(3.381716012955)=     29.421215005818
+    - id: exp_090
+      description: "expf exp(3.381716012955)=     29.421215005818"
+      input: [0x40586e09]
+      expect: [0x41eb5ea6]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 91: exp(-0.103683516383)=    0.901510565602
+    - id: exp_091
+      description: "expf exp(-0.103683516383)=    0.901510565602"
+      input: [0xbdd45806]
+      expect: [0x3f66c965]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 92: exp(8.214359283447)=     3693.608909913918
+    - id: exp_092
+      description: "expf exp(8.214359283447)=     3693.608909913918"
+      input: [0x41036e04]
+      expect: [0x4566d9be]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 93: exp(-0.101235553622)=    0.903720133261
+    - id: exp_093
+      description: "expf exp(-0.101235553622)=    0.903720133261"
+      input: [0xbdcf5496]
+      expect: [0x3f675a34]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 94: exp(-0.925630748272)=    0.396281386430
+    - id: exp_094
+      description: "expf exp(-0.925630748272)=    0.396281386430"
+      input: [0xbf6cf623]
+      expect: [0x3ecae565]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 95: exp(0.562346994877)=     1.754786145149
+    - id: exp_095
+      description: "expf exp(0.562346994877)=     1.754786145149"
+      input: [0x3f0ff5f9]
+      expect: [0x3fe09cd5]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 96: exp(4.913995265961)=     136.182413935256
+    - id: exp_096
+      description: "expf exp(4.913995265961)=     136.182413935256"
+      input: [0x409d3f73]
+      expect: [0x43082eb3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 97: exp(-6.663749217987)=    0.001276352066
+    - id: exp_097
+      description: "expf exp(-6.663749217987)=    0.001276352066"
+      input: [0xc0d53d6f]
+      expect: [0x3aa74b45]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 98: exp(13.047797203064)=    464073.026286976060
+    - id: exp_098
+      description: "expf exp(13.047797203064)=    464073.026286976060"
+      input: [0x4150c3c7]
+      expect: [0x48e29921]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 99: exp(2.748230457306)=     15.614976055522
+    - id: exp_099
+      description: "expf exp(2.748230457306)=     15.614976055522"
+      input: [0x402fe302]
+      expect: [0x4179d6f1]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 100: exp(-6.106363296509)=    0.002228641000
+    - id: exp_100
+      description: "expf exp(-6.106363296509)=    0.002228641000"
+      input: [0xc0c36754]
+      expect: [0x3b120e64]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 101: exp(-8.604546546936)=    0.000183270648
+    - id: exp_101
+      description: "expf exp(-8.604546546936)=    0.000183270648"
+      input: [0xc109ac39]
+      expect: [0x39402c57]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 102: exp(39.898216247559)=    212605822500666240.000000000000
+    - id: exp_102
+      description: "expf exp(39.898216247559)=    212605822500666240.000000000000"
+      input: [0x421f97c6]
+      expect: [0x5c3cd4f8]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 103: exp(0.928904950619)=     2.531735283964
+    - id: exp_103
+      description: "expf exp(0.928904950619)=     2.531735283964"
+      input: [0x3f6dccb7]
+      expect: [0x402207f3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 104: -inf
+    - id: exp_104
+      description: "expf -inf"
+      input: [0xff800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 105: qnan
+    - id: exp_105
+      description: "expf qnan"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 106: snan
+    - id: exp_106
+      description: "expf snan"
+      input: [0x7fa00000]
+      expect: [0x7fe00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    # Case 107: qnan
+    - id: exp_107
+      description: "expf qnan"
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 108: snan
+    - id: exp_108
+      description: "expf snan"
+      input: [0xffa00000]
+      expect: [0xffe00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    # Case 109: pi/2
+    - id: exp_109
+      description: "expf pi/2"
+      input: [0x3fc90fdb]
+      expect: [0x4099ef6f]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 110: 0.0078125
+    - id: exp_110
+      description: "expf 0.0078125"
+      input: [0x3c000000]
+      expect: [0x3f810101]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 111: 0.504444
+    - id: exp_111
+      description: "expf 0.504444"
+      input: [0x3f012345]
+      expect: [0x3fd3f9f2]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 112: 1
+    - id: exp_112
+      description: "expf 1"
+      input: [0x3f800000]
+      expect: [0x402df854]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 113: 2
+    - id: exp_113
+      description: "expf 2"
+      input: [0x40000000]
+      expect: [0x40ec7326]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 114: pi
+    - id: exp_114
+      description: "expf pi"
+      input: [0x40490fdb]
+      expect: [0x41b92025]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 115: 2pi
+    - id: exp_115
+      description: "expf 2pi"
+      input: [0x40c90fdb]
+      expect: [0x4405df79]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 116: 10
+    - id: exp_116
+      description: "expf 10"
+      input: [0x41200000]
+      expect: [0x46ac14ee]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 117: 64
+    - id: exp_117
+      description: "expf 64"
+      input: [0x42800000]
+      expect: [0x6da12cc1]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 118: 87.5
+    - id: exp_118
+      description: "expf 87.5"
+      input: [0x42af0000]
+      expect: [0x7e96bab3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 119: 88
+    - id: exp_119
+      description: "expf 88"
+      input: [0x42b00000]
+      expect: [0x7ef882b7]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 120: -87.3365  smallest normal result
+    - id: exp_120
+      description: "expf -87.3365  smallest normal result"
+      input: [0xc2aeac4f]
+      expect: [0x00800026]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 121: 88.7228   largest value  --
+    - id: exp_121
+      description: "expf 88.7228   largest value  --"
+      input: [0x42b17216]
+      expect: [0x7f7fff04]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 122: 88.7228   largest value
+    - id: exp_122
+      description: "expf 88.7228   largest value"
+      input: [0x42b17217]
+      expect: [0x7f7fff84]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 123:
+    - id: exp_123
+      description: ""
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 124:
+    - id: exp_124
+      description: ""
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 125:
+    - id: exp_125
+      description: ""
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 126:
+    - id: exp_126
+      description: ""
+      input: [0xff800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 127:
+    - id: exp_127
+      description: ""
+      input: [0x007fffff]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 128:
+    - id: exp_128
+      description: ""
+      input: [0x807fffff]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 129:
+    - id: exp_129
+      description: ""
+      input: [0x00000001]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 130:
+    - id: exp_130
+      description: ""
+      input: [0x80000001]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 131:
+    - id: exp_131
+      description: ""
+      input: [0x00800000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 132:
+    - id: exp_132
+      description: ""
+      input: [0x80800000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 133: -34.53
+    - id: exp_133
+      description: "expf -34.53"
+      input: [0xc20a1eb8]
+      expect: [0x269162c0]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 134: -0.3
+    - id: exp_134
+      description: "expf -0.3"
+      input: [0xbe99999a]
+      expect: [0x3f3da643]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 135: -0.642365
+    - id: exp_135
+      description: "expf -0.642365"
+      input: [0xbf247208]
+      expect: [0x3f06ab02]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 136: -0.5
+    - id: exp_136
+      description: "expf -0.5"
+      input: [0xbf000000]
+      expect: [0x3f1b4598]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 137: 0.3
+    - id: exp_137
+      description: "expf 0.3"
+      input: [0x3e99999a]
+      expect: [0x3facc82d]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 138: 0.642365
+    - id: exp_138
+      description: "expf 0.642365"
+      input: [0x3f247208]
+      expect: [0x3ff35307]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 139: 0.5
+    - id: exp_139
+      description: "expf 0.5"
+      input: [0x3f000000]
+      expect: [0x3fd3094c]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 140: 34.53
+    - id: exp_140
+      description: "expf 34.53"
+      input: [0x420a1eb8]
+      expect: [0x586162f9]
+      expect_exception: [inexact]
+      variants: [ss]
+#------------------------------
+    # Double precision tests
+    # Case 1: exp(0) = 1
+    - id: exp_001
+      description: "exp(0) = 1"
+      input: [0x0000000000000000]  # +0.0
+      expect: [0x3ff0000000000000]  # 1.0
+      expect_exception: []
+      variants: [sd]
+
+    # Case 2: exp(-0) = 1
+    - id: exp_002
+      description: "exp(-0) = 1"
+      input: [0x8000000000000000]  # -0.0
+      expect: [0x3ff0000000000000]  # 1.0
+      expect_exception: []
+      variants: [sd]
+
+    # Case 3: exp(+inf) = +inf
+    - id: exp_003
+      description: "exp(+inf) = +inf"
+      input: [0x7ff0000000000000]  # +inf
+      expect: [0x7ff0000000000000]  # +inf
+      expect_exception: []
+      variants: [sd]
+
+    # Case 4: exp(-inf) = 0
+    - id: exp_004
+      description: "exp(-inf) = 0"
+      input: [0xfff0000000000000]  # -inf
+      expect: [0x0000000000000000]  # +0.0
+      expect_exception: []
+      variants: [sd]
+
+    # Case 5: exp(-nan) = -nan
+    - id: exp_005
+      description: "exp(-nan) = -nan"
+      input: [0xfff8000000000000]  # -nan
+      expect: [0xfff8000000000000]  # -nan
+      expect_exception: []
+      variants: [sd]
+
+    # Case 6: exp(+nan) = +nan
+    - id: exp_006
+      description: "exp(+nan) = +nan"
+      input: [0x7ff8000000000000]  # +nan
+      expect: [0x7ff8000000000000]  # +nan
+      expect_exception: []
+      variants: [sd]
+
+    # Case 7: exp(subnorm MAX positive)
+    - id: exp_007
+      description: "exp(subnorm_max_pos)"
+      input: [0x000fffffffffffff]  # largest positive subnormal
+      expect: [0x3ff0000000000000]  # ≈ 1.0
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 8: exp(subnorm MAX negative)
+    - id: exp_008
+      description: "exp(subnorm_max_neg)"
+      input: [0x800fffffffffffff]  # largest negative subnormal
+      expect: [0x3ff0000000000000]  # ≈ 1.0
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 9: exp(subnorm MIN positive)
+    - id: exp_009
+      description: "exp(subnorm_min_pos)"
+      input: [0x0000000000000001]  # smallest positive subnormal
+      expect: [0x3ff0000000000000]  # ≈ 1.0
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 10: exp(subnorm MIN negative)
+    - id: exp_010
+      description: "exp(subnorm_min_neg)"
+      input: [0x8000000000000001]  # smallest negative subnormal
+      expect: [0x3ff0000000000000]  # ≈ 1.0
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 11: exp(1) = e ≈ 2.71828182845904523536 (POS)
+    - id: exp_011
+      description: "exp(1.0) = e"
+      input: [0x3ff0000000000000]  # 1.0
+      expect: [0x4005bf0a8b145769]  # e ≈ 2.718281828459045
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 12: exp(-1) = 1/e ≈ 0.36787944117144232160 (-POS)
+    - id: exp_012
+      description: "exp(-1.0) = 1/e"
+      input: [0xbff0000000000000]  # -1.0
+      expect: [0x3fd78b56362cef38]  # 1/e ≈ 0.3678794411714423
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 13: exp(large positive) (+NEG - near overflow)
+    - id: exp_013
+      description: "exp(large_pos)"
+      input: [0x4086200000000000]  # 708.0 (near overflow)
+      expect: [0x7fefffffffffffff]  # large finite value
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 14: exp(large negative) (-NEG - underflow)
+    - id: exp_014
+      description: "exp(large_neg)"
+      input: [0xc086200000000000]  # -708.0
+      expect: [0x0010000000000000]  # very small positive
+      expect_exception: [inexact]
+      variants: [sd]
+ # Test cases from gtests test_exp_data.h
+#-------------------------------
+    # Case 1: exp(x>ln(2)*1024)
+    - id: exp_001
+      description: "exp exp(x>ln(2)*1024)"
+      input: [0x4086300000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    # Case 2: 2: exp(-1.167477607636e+000)=  3.111507966480e-001
+    - id: exp_002
+      description: "exp 2: exp(-1.167477607636e+000)=  3.111507966480e-001"
+      input: [0xbff2adfcfff9be7b]
+      expect: [0x3fd3e9e507ee8de9]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 3: 3: exp(1.420929812808e+000)=   4.140968976757e+000
+    - id: exp_003
+      description: "exp 3: exp(1.420929812808e+000)=   4.140968976757e+000"
+      input: [0x3ff6bc20e63ebf38]
+      expect: [0x3f8d024fdbbc0f01]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 4: 4: exp(5.024629315135e-001)=   1.652786962980e+000
+    - id: exp_004
+      description: "exp 4: exp(5.024629315135e-001)=   1.652786962980e+000"
+      input: [0x3fe0142d2449b180]
+      expect: [0x3ffa71d0be141803]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 5: 5: exp(-4.257011789427e+000)=  1.416456593825e-002
+    - id: exp_005
+      description: "exp 5: exp(-4.257011789427e+000)=  1.416456593825e-002"
+      input: [0xc011072e19391a74]
+      expect: [0x3f8d024fdbbc0f01]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 6: 6: exp(-6.756908344825e+000)=  1.162818656642e-003
+    - id: exp_006
+      description: "exp 6: exp(-6.756908344825e+000)=  1.162818656642e-003"
+      input: [0xc01b0712fb2c5d84]
+      expect: [0x3f530d37067e3e98]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 7: 7: exp(-7.586907592534e-001)=  4.682791159431e-001
+    - id: exp_007
+      description: "exp 7: exp(-7.586907592534e-001)=  4.682791159431e-001"
+      input: [0xbfe84731d7d8aa93]
+      expect: [0x3fddf848f81806bc]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 8: 8: exp(8.692350277285e-001)=   2.385085631118e+000
+    - id: exp_008
+      description: "exp 8: exp(8.692350277285e-001)=   2.385085631118e+000"
+      input: [0x3febd0c5fa1436cf]
+      expect: [0x400314a7c67e7ec5]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 9: 9: exp(7.229412071578e+000)=   1.379411270545e+003
+    - id: exp_009
+      description: "exp 9: exp(7.229412071578e+000)=   1.379411270545e+003"
+      input: [0x401ceaeaff82efea]
+      expect: [0x40958da5241b1163]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 10: 10: exp(6.735993987748e+000)=  8.421801849683e+002
+    - id: exp_010
+      description: "exp 10: exp(6.735993987748e+000)=  8.421801849683e+002"
+      input: [0x401af1a8686db7a3]
+      expect: [0x408a517104d110e4]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 11: 11: exp(6.432513004638e+000)=  6.217344079209e+002
+    - id: exp_011
+      description: "exp 11: exp(6.432513004638e+000)=  6.217344079209e+002"
+      input: [0x4019bae4b0681054]
+      expect: [0x40836de011429037]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 12: 12: exp(-3.768557380185e+002)= 2.155919322765e-164
+    - id: exp_012
+      description: "exp 12: exp(-3.768557380185e+002)= 2.155919322765e-164"
+      input: [0xc0778db11a593980]
+      expect: [0x1df3dd395cc6e2b6]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 13: 13: exp(-7.857484177368e-001)= 4.557784614218e-001
+    - id: exp_013
+      description: "exp 13: exp(-7.857484177368e-001)= 4.557784614218e-001"
+      input: [0xbfe924d9dda20681]
+      expect: [0x3fdd2b796c81c93e]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 14: 14: exp(-5.468057627780e+000)= 4.219419887586e-003
+    - id: exp_014
+      description: "exp 14: exp(-5.468057627780e+000)= 4.219419887586e-003"
+      input: [0xc015df4a7fafd6f3]
+      expect: [0x3f714861e6cded36]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 15: 15: exp(-8.277997260046e+001)= 1.119733541164e-036
+    - id: exp_015
+      description: "exp 15: exp(-8.277997260046e+001)= 1.119733541164e-036"
+      input: [0xc054b1eb1232afa5]
+      expect: [0x3877d068c644a143]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 16: 16: exp(9.662576780422e-001)=  2.628090871030e+000
+    - id: exp_016
+      description: "exp 16: exp(9.662576780422e-001)=  2.628090871030e+000"
+      input: [0x3feeeb9538d6688c]
+      expect: [0x4005065481afef57]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 17: 17: exp(2.883572200649e+000)=  1.787802313385e+001
+    - id: exp_017
+      description: "exp 17: exp(2.883572200649e+000)=  1.787802313385e+001"
+      input: [0x4007118e4d4b8851]
+      expect: [0x4031e0c61fc50077]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 18: 18: exp(-6.616002360423e+001)= 1.849553192960e-029
+    - id: exp_018
+      description: "exp 18: exp(-6.616002360423e+001)= 1.849553192960e-029"
+      input: [0xc0508a3dd3a4af5a]
+      expect: [0x39f77224ad676e8a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 19: 19: exp(3.522933153176e-001)=  1.422325652441e+000
+    - id: exp_019
+      description: "exp 19: exp(3.522933153176e-001)=  1.422325652441e+000"
+      input: [0x3fd68bf942f8dc18]
+      expect: [0x3ff6c1d88b17edfa]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 20: 20: exp(-4.661280873432e+002)= 3.657158700400e-203
+    - id: exp_020
+      description: "exp 20: exp(-4.661280873432e+002)= 3.657158700400e-203"
+      input: [0xc07d220ca5506342]
+      expect: [0x15e6eeb67b8d7ca7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 21: 21: exp(3.718588451061e+000)=  4.120618848660e+001
+    - id: exp_021
+      description: "exp 21: exp(3.718588451061e+000)=  4.120618848660e+001"
+      input: [0x400dbfab4d44b91c]
+      expect: [0x40449a6462635eb6]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 22: 22: exp(5.740823124568e-002)=  1.059088075002e+000
+    - id: exp_022
+      description: "exp 22: exp(5.740823124568e-002)=  1.059088075002e+000"
+      input: [0x3fad649c97715ae2]
+      expect: [0x3ff0f206565b73f3]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 23: 23: exp(-6.789026493990e+001)= 3.278178228385e-030
+    - id: exp_023
+      description: "exp 23: exp(-6.789026493990e+001)= 3.278178228385e-030"
+      input: [0xc050f8fa19cc6a01]
+      expect: [0x39d09f5191af9654]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 24: 24: exp(-1.934486718153e+000)= 1.444984182071e-001
+    - id: exp_024
+      description: "exp 24: exp(-1.934486718153e+000)= 1.444984182071e-001"
+      input: [0xbffef3a858503caa]
+      expect: [0x3fc27eec9642f79c]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 25: 25: exp(-7.365839788292e+000)= 6.324940223153e-004
+    - id: exp_025
+      description: "exp 25: exp(-7.365839788292e+000)= 6.324940223153e-004"
+      input: [0xc01d769eb4992941]
+      expect: [0x3f44b9be92046a8f]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 26: 26: exp(8.834116255209e-001)=  2.419138839811e+000
+    - id: exp_026
+      description: "exp 26: exp(8.834116255209e-001)=  2.419138839811e+000"
+      input: [0x3fec44e875109724]
+      expect: [0x40035a6576cbc99d]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 27: 27: exp(-1.664293838406e+000)= 1.893243043410e-001
+    - id: exp_027
+      description: "exp 27: exp(-1.664293838406e+000)= 1.893243043410e-001"
+      input: [0xbffaa0f2936e31c5]
+      expect: [0x3fc83bc75fbdca10]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 28: 28: exp(-5.430070685672e-001)= 5.809985205220e-001
+    - id: exp_028
+      description: "exp 28: exp(-5.430070685672e-001)= 5.809985205220e-001"
+      input: [0xbfe160505c1fc7c1]
+      expect: [0x3fe2978a35955225]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 29: 29: exp(1.562355257309e-001)=  1.169101524157e+000
+    - id: exp_029
+      description: "exp 29: exp(1.562355257309e-001)=  1.169101524157e+000"
+      input: [0x3fc3ff8694be6825]
+      expect: [0x3ff2b4a3ccbf539f]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 30: 30: exp(-7.124101598362e+001)= 1.149264185844e-031
+    - id: exp_030
+      description: "exp 30: exp(-7.124101598362e+001)= 1.149264185844e-031"
+      input: [0xc051cf6cce4dddd5]
+      expect: [0x3982a5db4de6aa36]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 31: 31: exp(6.350103536734e+001)=  3.785726674723e+027
+    - id: exp_031
+      description: "exp 31: exp(6.350103536734e+001)=  3.785726674723e+027"
+      input: [0x404fc021ed4a6e34]
+      expect: [0x45a876f59c84624e]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 32: 32: exp(-6.808651103530e+000)= 1.104181322156e-003
+    - id: exp_032
+      description: "exp 32: exp(-6.808651103530e+000)= 1.104181322156e-003"
+      input: [0xc01b3c0f08ee254f]
+      expect: [0x3f521745aab8891d]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 33: 33: exp(7.485954504237e+001)=  3.244048434267e+032
+    - id: exp_033
+      description: "exp 33: exp(7.485954504237e+001)=  3.244048434267e+032"
+      input: [0x4052b702c93599c4]
+      expect: [0x46affd212a33a48f]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 34: 34: exp(-7.581386948229e+001)= 1.187011241997e-033
+    - id: exp_034
+      description: "exp 34: exp(-7.581386948229e+001)= 1.187011241997e-033"
+      input: [0xc052f4167006690b]
+      expect: [0x3918a73bfade3e32]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 35: 35: exp(9.299268775195e-001)=  2.534323854796e+000
+    - id: exp_035
+      description: "exp 35: exp(9.299268775195e-001)=  2.534323854796e+000"
+      input: [0x3fedc1f602d3c2fc]
+      expect: [0x4004464b95ce8ece]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 36: 36: exp(-8.153500937929e+000)= 2.877262824452e-004
+    - id: exp_036
+      description: "exp 36: exp(-8.153500937929e+000)= 2.877262824452e-004"
+      input: [0xc0204e97acc89eb6]
+      expect: [0x3f32db3ef92a4eef]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 37: 37: exp(-7.645004460227e-001)= 4.655664484630e-001
+    - id: exp_037
+      description: "exp 37: exp(-7.645004460227e-001)= 4.655664484630e-001"
+      input: [0xbfe876c9a3ae3c62]
+      expect: [0x3fddcbd73790dbd0]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 38: 38: exp(6.625997858044e-001)=  1.939828924238e+000
+    - id: exp_038
+      description: "exp 38: exp(6.625997858044e-001)=  1.939828924238e+000"
+      input: [0x3fe53404774bbb05]
+      expect: [0x3fff098a0dd6ff8e]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 39: .00000001
+    - id: exp_039
+      description: "exp .00000001"
+      input: [0x3e45798ee2308c3a]
+      expect: [0x3ff0000002af31dc]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 40: 1
+    - id: exp_040
+      description: "exp 1"
+      input: [0x3ff0000000000000]
+      expect: [0x4005bf0a8b145769]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 41: 2
+    - id: exp_041
+      description: "exp 2"
+      input: [0x4000000000000000]
+      expect: [0x401d8e64b8d4ddae]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 42: 10
+    - id: exp_042
+      description: "exp 10"
+      input: [0x4024000000000000]
+      expect: [0x40d5829dcf950560]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 43: 1000
+    - id: exp_043
+      description: "exp 1000"
+      input: [0x408f400000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    # Case 44: 640
+    - id: exp_044
+      description: "exp 640"
+      input: [0x4084000000000000]
+      expect: [0x79a40a4b9c27178a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 45: -700
+    - id: exp_045
+      description: "exp -700"
+      input: [0xc085e00000000000]
+      expect: [0x00d14f2b0fb9307f]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 46: -501.1
+    - id: exp_046
+      description: "exp -501.1"
+      input: [0xc07f51999999999a]
+      expect: [0x12c0be4b336b18b7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 47: -730
+    - id: exp_047
+      description: "exp -730"
+      input: [0xc086d00000000000]
+      expect: [0x00000000001c7ea3]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 48: smallest normal  result, x=-1022*ln(2)
+    - id: exp_048
+      description: "exp smallest normal  result, x=-1022*ln(2)"
+      input: [0xc086232bdd7abcd2]
+      expect: [0x001000000000007c]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 49: largest denormal result
+    - id: exp_049
+      description: "exp largest denormal result"
+      input: [0xc086232bdd7abcd3]
+      expect: [0x000ffffffffffe7c]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 50: x=-1074*ln(2)
+    - id: exp_050
+      description: "exp x=-1074*ln(2)"
+      input: [0xc0874385446d71c4]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 51: smallest input for smallest denormal result, x=-1075*ln(2)
+    - id: exp_051
+      description: "exp smallest input for smallest denormal result, x=-1075*ln(2)"
+      input: [0xc0874910d52d3051]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 52: largest input for result zero
+    - id: exp_052
+      description: "exp largest input for result zero"
+      input: [0xc0874910d52d3052]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 53: -1000
+    - id: exp_053
+      description: "exp -1000"
+      input: [0xc08f400000000000]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 54: smallest input for result inf
+    - id: exp_054
+      description: "exp smallest input for result inf"
+      input: [0x40862e42fefa39f0]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    # Case 55: 709
+    - id: exp_055
+      description: "exp 709"
+      input: [0x4086280000000000]
+      expect: [0x7fdd422d2be5dc9b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 56: largest number
+    - id: exp_056
+      description: "exp largest number"
+      input: [0x7fefffffffffffff]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    # Case 57: exp test case 57
+    - id: exp_057
+      description: "exp exp test case 57"
+      input: [0xc08625aad16d5438]
+      expect: [0x000bb63ae9a2ac50]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 58: exp test case 58
+    - id: exp_058
+      description: ""
+      input: [0xc087440b864646f5]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 59: exp test case 59
+    - id: exp_059
+      description: ""
+      input: [0xc0862328f5c28f5c]
+      expect: [0x001005d07e8f743f]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 60: exp test case 60
+    - id: exp_060
+      description: ""
+      input: [0xc087492000000000]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 61: exp test case 61
+    - id: exp_061
+      description: ""
+      input: [0x40862e6666666666]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    # Case 62: exp test case 62
+    - id: exp_062
+      description: ""
+      input: [0xc0874593fa89185f]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 63: exp test case 63
+    - id: exp_063
+      description: ""
+      input: [0xc08743e609f06b07]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 64: exp test case 64
+    - id: exp_064
+      description: ""
+      input: [0xc0874409d4de2a93]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 65: exp test case 65
+    - id: exp_065
+      description: ""
+      input: [0xc08744b894a31d87]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 66: exp test case 66
+    - id: exp_066
+      description: ""
+      input: [0xc08744ddf48a3b9c]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 67: exp test case 67
+    - id: exp_067
+      description: ""
+      input: [0xc08745723e498e76]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 68: exp test case 68
+    - id: exp_068
+      description: ""
+      input: [0xc08627fa8b8965a4]
+      expect: [0x0008c5deb69c6fc8]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 69: exp test case 69
+    - id: exp_069
+      description: ""
+      input: [0x0000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 70: exp(0)
+    - id: exp_070
+      description: "exp exp(0)"
+      input: [0x0000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 71: exp(infinity)
+    - id: exp_071
+      description: "exp exp(infinity)"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 72: exp(inf)=inf
+    - id: exp_072
+      description: "exp exp(inf)=inf"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 73: exp(-inf)
+    - id: exp_073
+      description: "exp exp(-inf)"
+      input: [0xfff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 74: exp(snan)
+    - id: exp_074
+      description: "exp exp(snan)"
+      input: [0x7ff4001000000000]
+      expect: [0x7ffc001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    # Case 75: exp(-snan)
+    - id: exp_075
+      description: "exp exp(-snan)"
+      input: [0xfff2000000000000]
+      expect: [0xfffa000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    # Case 76: exp(qnan)
+    - id: exp_076
+      description: "exp exp(qnan)"
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 77: exp(-qnan)
+    - id: exp_077
+      description: "exp exp(-qnan)"
+      input: [0xfff2000000000000]
+      expect: [0xfffa000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    # Case 78: exp(ln(2)*1024)
+    - id: exp_078
+      description: "exp exp(ln(2)*1024)"
+      input: [0x40862e42fefa39ef]
+      expect: [0x7fefffffffffff2a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 79: 39: exp(-1.183745665034e-002)=    9.882323304011e-001
+    - id: exp_079
+      description: "exp 39: exp(-1.183745665034e-002)=    9.882323304011e-001"
+      input: [0xbf883e3c8972babc]
+      expect: [0x3fef9f99687d878e]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 80: 40: exp(-7.377261722643e-002)=    9.288828817961e-001
+    - id: exp_080
+      description: "exp 40: exp(-7.377261722643e-002)=    9.288828817961e-001"
+      input: [0xbfb2e2c32253eee0]
+      expect: [0x3fedb96897e41cbe]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 81: 41: exp(-5.573178120623e+000)=    3.798389489560e-003
+    - id: exp_081
+      description: "exp 41: exp(-5.573178120623e+000)=    3.798389489560e-003"
+      input: [0xc0164aef348b6f91]
+      expect: [0x3f6f1dccd452fcdd]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 82: 42: exp(2.194708764128e-001)= 1.245417576400e+000
+    - id: exp_082
+      description: "exp 42: exp(2.194708764128e-001)= 1.245417576400e+000"
+      input: [0x3fcc179f264f06d5]
+      expect: [0x3ff3ed3afb080914]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 83: 43: exp(9.829992061449e+001)= 4.910357298667e+042
+    - id: exp_083
+      description: "exp 43: exp(9.829992061449e+001)= 4.910357298667e+042"
+      input: [0x40589331e63ba9ae]
+      expect: [0x48cc2f1f1ff509f1]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 84: 44: exp(-4.762903389180e+000)=    8.540776167564e-003
+    - id: exp_084
+      description: "exp 44: exp(-4.762903389180e+000)=    8.540776167564e-003"
+      input: [0xc0130d368bca2438]
+      expect: [0x3f817dd39293c01c]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 85: 45: exp(2.904769067954e+000)= 1.826102610912e+001
+    - id: exp_085
+      description: "exp 45: exp(2.904769067954e+000)= 1.826102610912e+001"
+      input: [0x40073cf790aa581f]
+      expect: [0x403242d29b6a0e0c]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 86: 46: exp(-4.706059557741e+000)=    9.040330389444e-003
+    - id: exp_086
+      description: "exp 46: exp(-4.706059557741e+000)=    9.040330389444e-003"
+      input: [0xc012d30146d61abc]
+      expect: [0x3f8283bc9af10a4b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 87: 47: exp(3.472488764579e-001)= 1.415168883766e+000
+    - id: exp_087
+      description: "exp 47: exp(3.472488764579e-001)= 1.415168883766e+000"
+      input: [0x3fd6395359fd661b]
+      expect: [0x3ff6a48820a1737b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 88: 48: exp(-1.388467985511e+001)=    9.331686839082e-007
+    - id: exp_088
+      description: "exp 48: exp(-1.388467985511e+001)=    9.331686839082e-007"
+      input: [0xc02bc4f4c20a4501]
+      expect: [0x3eaf4fdba323ecf3]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 89: 49: exp(9.940448760035e+000)= 2.075305533822e+004
+    - id: exp_089
+      description: "exp 49: exp(9.940448760035e+000)= 2.075305533822e+004"
+      input: [0x4023e1827ff7d3f1]
+      expect: [0x40d444438aa9561c]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 90: 50: exp(8.618380291068e-001)= 2.367508246085e+000
+    - id: exp_090
+      description: "exp 50: exp(8.618380291068e-001)= 2.367508246085e+000"
+      input: [0x3feb942d58aecfa9]
+      expect: [0x4002f0a829cf8ec9]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 91: 51: exp(9.581301161372e+001)= 4.083779064291e+041
+    - id: exp_091
+      description: "exp 51: exp(9.581301161372e+001)= 4.083779064291e+041"
+      input: [0x4057f40861dd0d5a]
+      expect: [0x4892c0758f727b7a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 92: 52: exp(7.760216366606e-001)= 2.172810816830e+000
+    - id: exp_092
+      description: "exp 52: exp(7.760216366606e-001)= 2.172810816830e+000"
+      input: [0x3fe8d52b53ce442d]
+      expect: [0x400161eaa3357260]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 93: 53: exp(1.498067790517e-001)= 1.161609773701e+000
+    - id: exp_093
+      description: "exp 53: exp(1.498067790517e-001)= 1.161609773701e+000"
+      input: [0x3fc32cde585f863a]
+      expect: [0x3ff295f4214c26b9]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 94: 54: exp(2.564622685909e-003)= 1.002567914144e+000
+    - id: exp_094
+      description: "exp 54: exp(2.564622685909e-003)= 1.002567914144e+000"
+      input: [0x3f65026752007e17]
+      expect: [0x3ff00a84a73444b7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 95: 55: exp(5.217857375738e+001)= 4.580012427333e+022
+    - id: exp_095
+      description: "exp 55: exp(5.217857375738e+001)= 4.580012427333e+022"
+      input: [0x404a16db813ff11a]
+      expect: [0x44a365a8cffe464b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 96: 56: exp(-7.685999728678e-001)=    4.636617531516e-001
+    - id: exp_096
+      description: "exp 56: exp(-7.685999728678e-001)=    4.636617531516e-001"
+      input: [0xbfe8985ef8658fce]
+      expect: [0x3fddaca2588c4f70]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 97: 57: exp(3.022736053694e-001)= 1.352931345355e+000
+    - id: exp_097
+      description: "exp 57: exp(3.022736053694e-001)= 1.352931345355e+000"
+      input: [0x3fd3587364605e37]
+      expect: [0x3ff5a59b56a07ec2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 98: 58: exp(-8.606084116987e-002)=    9.175384054119e-001
+    - id: exp_098
+      description: "exp 58: exp(-8.606084116987e-002)=    9.175384054119e-001"
+      input: [0xbfb60815524a73dd]
+      expect: [0x3fed5c7980822ef7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 99: 59: exp(9.175442774126e-002)= 1.096095618351e+000
+    - id: exp_099
+      description: "exp 59: exp(9.175442774126e-002)= 1.096095618351e+000"
+      input: [0x3fb77d37da697284]
+      expect: [0x3ff1899b8f21b215]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 100: 60: exp(3.381716026949e+000)= 2.942121541755e+001
+    - id: exp_100
+      description: "exp 60: exp(3.381716026949e+000)= 2.942121541755e+001"
+      input: [0x400b0dc121e0d885]
+      expect: [0x403d6bd4c60af47d]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 101: 61: exp(2.461340041091e+002)= 7.845846250823e+106
+    - id: exp_101
+      description: "exp 61: exp(2.461340041091e+002)= 7.845846250823e+106"
+      input: [0x406ec449c2fc432f]
+      expect: [0x56211ac2ead60dfa]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 102: 62: exp(-1.036835164264e-001)=    9.015105655629e-001
+    - id: exp_102
+      description: "exp 62: exp(-1.036835164264e-001)=    9.015105655629e-001"
+      input: [0xbfba8b00c02f92d6]
+      expect: [0x3fecd92caf82e997]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 103: 63: exp(8.214359378876e+000)= 3.693609262392e+003
+    - id: exp_103
+      description: "exp 63: exp(8.214359378876e+000)= 3.693609262392e+003"
+      input: [0x40206dc08333bb05]
+      expect: [0x40acdb37f13d812a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 104: 64: exp(-1.012355499902e-001)=    9.037201365436e-001
+    - id: exp_104
+      description: "exp 64: exp(-1.012355499902e-001)=    9.037201365436e-001"
+      input: [0xbfb9ea92b0669357]
+      expect: [0x3feceb467de62144]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 105: 65: exp(-9.256307627459e-001)=    3.962813806940e-001
+    - id: exp_105
+      description: "exp 65: exp(-9.256307627459e-001)=    3.962813806940e-001"
+      input: [0xbfed9ec467c54a0b]
+      expect: [0x3fd95cac94860acb]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 106: 66: exp(5.623469701894e-001)= 1.754786101827e+000
+    - id: exp_106
+      description: "exp 66: exp(5.623469701894e-001)= 1.754786101827e+000"
+      input: [0x3fe1febf12bef9d6]
+      expect: [0x3ffc139a976d308a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 107: 67: exp(4.913995403327e+000)= 1.361824326421e+002
+    - id: exp_107
+      description: "exp 67: exp(4.913995403327e+000)= 1.361824326421e+002"
+      input: [0x4013a7ee6937ee4c]
+      expect: [0x406105d67cfaf125]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 108: 68: exp(-6.663749264582e+000)=    1.276352006958e-003
+    - id: exp_108
+      description: "exp 68: exp(-6.663749264582e+000)=    1.276352006958e-003"
+      input: [0xc01aa7ade3207f62]
+      expect: [0x3f54e96888324406]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 109: 69: exp(1.304779738707e+001)= 4.640731116803e+005
+    - id: exp_109
+      description: "exp 69: exp(1.304779738707e+001)= 4.640731116803e+005"
+      input: [0x402a1878e62c9e80]
+      expect: [0x411c5324725c4fc9]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 110: 70: exp(2.748230342429e+000)= 1.561497426172e+001
+    - id: exp_110
+      description: "exp 70: exp(2.748230342429e+000)= 1.561497426172e+001"
+      input: [0x4005fc603094db97]
+      expect: [0x402f3adde80bf3b2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 111: 71: exp(-6.106363277448e+000)=    2.228641042060e-003
+    - id: exp_111
+      description: "exp 71: exp(-6.106363277448e+000)=    2.228641042060e-003"
+      input: [0xc0186cea7eb88a70]
+      expect: [0x3f6241cc8c7c456a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 112: 72: exp(-8.604546703543e+000)=    1.832706192871e-004
+    - id: exp_112
+      description: "exp 72: exp(-8.604546703543e+000)=    1.832706192871e-004"
+      input: [0xc021358725413e82]
+      expect: [0x3f28058aa1df2f75]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 113: 73: exp(3.989821509561e+001)= 2.126055775893e+017
+    - id: exp_113
+      description: "exp 73: exp(3.989821509561e+001)= 2.126055775893e+017"
+      input: [0x4043f2f8b6563432]
+      expect: [0x43879a9d2bcdd0da]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 114: 74: exp(9.289049362145e-001)= 2.531735247496e+000
+    - id: exp_114
+      description: "exp 74: exp(9.289049362145e-001)= 2.531735247496e+000"
+      input: [0x3fedb996d8444ae9]
+      expect: [0x400440fe68d0ffab]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 115:
+    - id: exp_115
+      description: ""
+      input: [0xffefffffffffffff]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 116:
+    - id: exp_116
+      description: ""
+      input: [0xc0862c4379671324]
+      expect: [0x00052288f82fe4ba]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 117: denormal result
+    - id: exp_117
+      description: "exp denormal result"
+      input: [0xc086be6fb2739468]
+      expect: [0x0000000001000000]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 118: -1
+    - id: exp_118
+      description: "exp -1"
+      input: [0xbff0000000000000]
+      expect: [0x3fd78b56362cef38]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 119:
+    - id: exp_119
+      description: ""
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 120:
+    - id: exp_120
+      description: ""
+      input: [0xfff4000000000000]
+      expect: [0xfffc000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+#------------------------------

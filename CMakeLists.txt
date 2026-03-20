@@ -274,6 +274,13 @@ if(${${PROJECT_PREFIX}_LIBM_BUILD_LIBRARY})
     endif()
 endif()
 
+#----------------------------------------------------------
+# Add libm_testsuite if LIBM_BUILD_TESTSUITE is enabled
+#----------------------------------------------------------
+if (${${PROJECT_PREFIX}_LIBM_BUILD_TESTSUITE})
+    add_subdirectory(almbench EXCLUDE_FROM_ALL)
+endif()
+
 #------------------------------
 # Add Tests if ENABLE_TESTS is defined
 # These are Integration Tests,

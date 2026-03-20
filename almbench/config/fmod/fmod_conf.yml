@@ -1,0 +1,903 @@
+- test_sequence: unit_tests_fmod
+  ignore_exceptions: [underflow, inexact]
+  function: fmod
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    - id: fmod_001
+      description: "fmodf(0, 1.0) = 0"
+      input: [0x00000000, 0x3f800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_002
+      description: "fmodf(-0, 1.0) = -0"
+      input: [0x80000000, 0x3f800000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_003
+      description: "fmodf(inf, 1.0) = nan"
+      variants: [ss]
+      input: [0x7f800000, 0x3f800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+
+    - id: fmod_004
+      description: "fmodf(-inf, 1.0) = nan"
+      variants: [ss]
+      input: [0xff800000, 0x3f800000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+
+    - id: fmod_005
+      description: "fmodf(-nan, 1.0) = -nan"
+      variants: [ss]
+      input: [0xffa00000, 0x3f800000]
+      expect: [0xffa00000]
+      expect_exception: [invalidoperation]
+
+    - id: fmod_006
+      description: "fmodf(+nan, 1.0) = +nan"
+      variants: [ss]
+      input: [0x7fa00000, 0x3f800000]
+      expect: [0x7fa00000]
+      expect_exception: [invalidoperation]
+
+    - id: fmod_007
+      description: "fmodf(+subnorm_max, 1.0) = +subnorm_max"
+      variants: [ss]
+      input: [0x007fffff, 0x3f800000]
+      expect: [0x007fffff]
+      expect_exception: []
+
+    - id: fmod_008
+      description: "fmodf(-subnorm_max, 1.0) = -subnorm_max"
+      variants: [ss]
+      input: [0x807fffff, 0x3f800000]
+      expect: [0x807fffff]
+      expect_exception: []
+
+    - id: fmod_009
+      description: "fmodf(+subnorm_min, 1.0) = +subnorm_min"
+      variants: [ss]
+      input: [0x00000001, 0x3f800000]
+      expect: [0x00000001]
+      expect_exception: []
+
+    - id: fmod_010
+      description: "fmodf(-subnorm_min, 1.0) = -subnorm_min"
+      variants: [ss]
+      input: [0x80000001, 0x3f800000]
+      expect: [0x80000001]
+      expect_exception: []
+
+    - id: fmod_011
+      description: "fmodf(+3.5, 2.0) = +1.5"
+      variants: [ss]
+      input: [0x40600000, 0x40000000]
+      expect: [0x3fc00000]
+      expect_exception: []
+
+    - id: fmod_012
+      description: "fmodf(-3.5, 2.0) = -1.5"
+      variants: [ss]
+      input: [0xc0600000, 0x40000000]
+      expect: [0xbfc00000]
+      expect_exception: []
+
+    - id: fmod_013
+      description: "fmodf(+5.0, 3.0) = +2.0"
+      variants: [ss]
+      input: [0x40a00000, 0x40400000]
+      expect: [0x40000000]
+      expect_exception: []
+
+    - id: fmod_014
+      description: "fmodf(-5.0, 3.0) = -2.0"
+      variants: [ss]
+      input: [0xc0a00000, 0x40400000]
+      expect: [0xc0000000]
+      expect_exception: []
+
+    - id: fmod_015
+      description: "fmodf(qnan, 1.0) = qnan"
+      variants: [ss]
+      input: [0x7fc00000, 0x3f800000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    - id: fmod_016
+      description: "fmodf(snan, 1.0) = snan"
+      variants: [ss]
+      input: [0x7fa00000, 0x3f800000]
+      expect: [0x7fa00000]
+      expect_exception: [invalidoperation]
+
+
+# Test cases from gtests test_fmod_data.h
+#-------------------------------
+    - id: fmod_001
+      description: "fmodf(-qnan, +qnan) = -inf"
+      input: [0xfff00000, 0x7ff00000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_002
+      description: "fmodf(special_nan1, special_nan2)"
+      input: [0xfff4b200, 0x7fc00001]
+      expect: [0x5c713452]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_003
+      description: "fmodf(+snan, +qnan) = +snan "
+      input: [0x7fb00000, 0x7ff00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmod_004
+      description: "fmodf(-snan, +qnan) = +qnan "
+      input: [0xffb00000, 0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmod_005
+      description: "fmodf(+snan_q, +qnan) = -qnan"
+      input: [0x7fc00001, 0x7ff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_006
+      description: "fmodf(-snan_q, +qnan) = +qnan"
+      input: [0xffc00001, 0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_007
+      description: "fmodf(+qnan, +qnan) = +qnan"
+      input: [0x7ff00000, 0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_008
+      description: "fmodf(-qnan, +qnan) = +snan"
+      input: [0xfff00000, 0x7ff00000]
+      expect: [0x7fb00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_009
+      description: "fmodf(+inf, +qnan) = +inf"
+      input: [0x7F800000, 0x7ff00000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_010
+      description: "fmodf(-inf, +qnan) = -inf "
+      input: [0xFF800000, 0x7ff00000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_011
+      description: "fmodf(-inf, +qnan) = -snan "
+      input: [0xFF800000, 0x7ff00000]
+      expect: [0xffb00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_012
+      description: "fmodf(-inf, +qnan) = -qnan"
+      input: [0xFF800000, 0x7ff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_013
+      description: "fmodf(+inf, +qnan) = +1.0 "
+      input: [0x7F800000, 0x7ff00000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_014
+      description: "fmodf(-inf, +qnan) = -1.0 "
+      input: [0xFF800000, 0x7ff00000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_015
+      description: "fmodf(+inf, +qnan) = +0 "
+      input: [0x7F800000, 0x7ff00000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_016
+      description: "fmodf(-inf, +qnan) = -0 "
+      input: [0xFF800000, 0x7ff00000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_017
+      description: "fmodf(+1.0, +qnan) = +snan "
+      input: [0x3F800000, 0x7ff00000]
+      expect: [0x7fb00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_018
+      description: "fmodf(-1.0, -qnan) = -qnan"
+      input: [0xbf800000, 0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_019
+      description: "fmodf(+0, +qnan) = +snan "
+      input: [0x00000000, 0x7ff00000]
+      expect: [0x7fb00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_020
+      description: "fmodf(-0, -qnan) = -qnan"
+      input: [0x80000000, 0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_021
+      description: "fmodf(+hdenorm, +0) = +hdenorm"
+      input: [0x007fffff, 0x00000000]
+      expect: [0x007fffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmod_022
+      description: "fmodf(+hdenorm, +0) = -hdenorm"
+      input: [0x007fffff, 0x00000000]
+      expect: [0x807fffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmod_023
+      description: "fmodf(+hdenorm, +0) = +ldenorm"
+      input: [0x007fffff, 0x00000000]
+      expect: [0x00000001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmod_024
+      description: "fmodf(+hdenorm, +0) = -ldenorm"
+      input: [0x007fffff, 0x00000000]
+      expect: [0x80000001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmod_025
+      description: "fmodf(+ldenorm, 1) = +hdenorm"
+      input: [0x00000001, 0x00000001]
+      expect: [0x007fffff]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_026
+      description: "fmodf(+ldenorm, 1) = -hdenorm"
+      input: [0x00000001, 0x00000001]
+      expect: [0x807fffff]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_027
+      description: "fmodf(+ldenorm, +0) = +ldenorm"
+      input: [0x00000001, 0x00000000]
+      expect: [0x00000001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmod_028
+      description: "fmodf(+ldenorm, +0) = -ldenorm"
+      input: [0x00000001, 0x00000000]
+      expect: [0x80000001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmod_029
+      description: "fmodf(+hdenorm, +hdenorm) = +lnormal"
+      input: [0x007fffff, 0x007fffff]
+      expect: [0x00800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_030
+      description: "fmodf(+ldenorm, 1) = -hnormal"
+      input: [0x00000001, 0x00000001]
+      expect: [0xff7fffff]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_031
+      description: "fmodf(-hnormal, -0) = +ldenorm"
+      input: [0xff7fffff, 0x80000000]
+      expect: [0x00000001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmod_032
+      description: "fmodf(+lnormal, 1) = -hdenorm (underflow)"
+      input: [0x00800000, 0x00000001]
+      expect: [0x807fffff]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_033
+      description: "fmodf(+hdenorm, +hdenorm) = +1.0"
+      input: [0x007fffff, 0x007fffff]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_034
+      description: "fmodf(+ldenorm, 1) = -1.0"
+      input: [0x00000001, 0x00000001]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_035
+      description: "fmodf(+hdenorm, qnan) = +0 "
+      input: [0x007fffff, 0x7fc00000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_036
+      description: "fmodf(+ldenorm, qnan) = -0 "
+      input: [0x00000001, 0x7fc00000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_037
+      description: "fmodf(+hnormal, +0) = +1.0"
+      input: [0x7f7fffff, 0x00000000]
+      expect: [0x3F800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmod_038
+      description: "fmodf(+lnormal, +lnormal) = -1.0"
+      input: [0x00800000, 0x00800000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_039
+      description: "fmodf(+hnormal, qnan) = +0 "
+      input: [0x7f7fffff, 0x7fc00000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_040
+      description: "fmodf(+lnormal, qnan) = -0 "
+      input: [0x00800000, 0x7fc00000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_041
+      description: "fmodf(+pi, +0) = -pi"
+      input: [0x40490fd8, 0x00000000]
+      expect: [0xc0490fd8]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmod_042
+      description: "fmodf(-pi/2, -0) = +pi/2"
+      input: [0xbfc90fdb, 0x80000000]
+      expect: [0x3fc90fdb]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fmod_043
+      description: "fmodf(+1.0, +1.0) = +inf"
+      input: [0x3F800000, 0x3F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_044
+      description: "fmodf(-1.0, -1.0) = +inf"
+      input: [0xbf800000, 0xbf800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: fmod_045
+      description: "fmodf(-0, -0)"
+      input: [0x80000000, 0x80000000]
+      expect: [0xa8117a2e]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+#-------------------------------
+#Double precision
+    - id: fmod_001
+      description: "fmod(0, 1.0) = 0"
+      variants: [sd]
+      input: [0x0000000000000000, 0x3ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: fmod_002
+      description: "fmod(-0, 1.0) = -0"
+      variants: [sd]
+      input: [0x8000000000000000, 0x3ff0000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    - id: fmod_003
+      description: "fmod(inf, 1.0) = nan"
+      variants: [sd]
+      input: [0x7ff0000000000000, 0x3ff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: fmod_004
+      description: "fmod(-inf, 1.0) = nan"
+      variants: [sd]
+      input: [0xfff0000000000000, 0x3ff0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: fmod_005
+      description: "fmod(-nan, 1.0) = -nan"
+      variants: [sd]
+      input: [0xfff4000000000000, 0x3ff0000000000000]
+      expect: [0xfff4000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: fmod_006
+      description: "fmod(+nan, 1.0) = +nan"
+      variants: [sd]
+      input: [0x7ff4000000000000, 0x3ff0000000000000]
+      expect: [0x7ff4000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: fmod_007
+      description: "fmod(+subnorm_max, 1.0) = +subnorm_max"
+      variants: [sd]
+      input: [0x000fffffffffffff, 0x3ff0000000000000]
+      expect: [0x000fffffffffffff]
+      expect_exception: []
+
+    - id: fmod_008
+      description: "fmod(-subnorm_max, 1.0) = -subnorm_max"
+      variants: [sd]
+      input: [0x800fffffffffffff, 0x3ff0000000000000]
+      expect: [0x800fffffffffffff]
+      expect_exception: []
+
+    - id: fmod_009
+      description: "fmod(+subnorm_min, 1.0) = +subnorm_min"
+      variants: [sd]
+      input: [0x0000000000000001, 0x3ff0000000000000]
+      expect: [0x0000000000000001]
+      expect_exception: []
+
+    - id: fmod_010
+      description: "fmod(-subnorm_min, 1.0) = -subnorm_min"
+      variants: [sd]
+      input: [0x8000000000000001, 0x3ff0000000000000]
+      expect: [0x8000000000000001]
+      expect_exception: []
+
+    - id: fmod_011
+      description: "fmod(+3.5, 2.0) = +1.5"
+      variants: [sd]
+      input: [0x400c000000000000, 0x4000000000000000]
+      expect: [0x3ff8000000000000]
+      expect_exception: []
+
+    - id: fmod_012
+      description: "fmod(-3.5, 2.0) = -1.5"
+      variants: [sd]
+      input: [0xc00c000000000000, 0x4000000000000000]
+      expect: [0xbff8000000000000]
+      expect_exception: []
+
+    - id: fmod_013
+      description: "fmod(+5.0, 3.0) = +2.0"
+      variants: [sd]
+      input: [0x4014000000000000, 0x4008000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: []
+
+    - id: fmod_014
+      description: "fmod(-5.0, 3.0) = -2.0"
+      variants: [sd]
+      input: [0xc014000000000000, 0x4008000000000000]
+      expect: [0xc000000000000000]
+      expect_exception: []
+
+    - id: fmod_015
+      description: "fmod(qnan, 1.0) = qnan"
+      variants: [sd]
+      input: [0x7ff8000000000000, 0x3ff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    - id: fmod_016
+      description: "fmod(snan, 1.0) = snan"
+      variants: [sd]
+      input: [0x7ff4000000000001, 0x3ff0000000000000]
+      expect: [0x7ff4000000000001]
+      expect_exception: [invalidoperation]
+
+# Test cases from gtests test_fmod_data.h
+#-------------------------------
+    - id: fmod_001
+      description: "fmod(-qnan, -qnan) = -inf"
+      input: [0xfff8000000000000, 0xfff8000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_002
+      description: "fmod(special_value1, special_nan)"
+      input: [0x3cab03fe1ef3a8fd, 0x7ff8000000000001]
+      expect: [0xfffd2eb531b604d6]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_003
+      description: "fmod(-qnan, +qnan) = +snan "
+      input: [0xfff8000000000000, 0x7ff87ff7fdedffff]
+      expect: [0x7FF4001000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_004
+      description: "fmod(+hdenorm, +0) = -ldenorm"
+      input: [0x000FFFFFFFFFFFFF, 0x0000000000000000]
+      expect: [0x8000000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmod_005
+      description: "fmod(+snan, +qnan) = +snan "
+      input: [0x7FF4001000000000, 0x7ff87ff7fdedffff]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmod_006
+      description: "fmod(-hdenorm, special_neg) = special_result"
+      input: [0x800fffffFFFFFFFF, 0x8000000000018817]
+      expect: [0x000000000002711E]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_007
+      description: "fmod(+hdenorm, +0) = -hdenorm"
+      input: [0x000FFFFFFFFFFFFF, 0x0000000000000000]
+      expect: [0x800fffffFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmod_008
+      description: "fmod(-snan, +qnan) = +qnan "
+      input: [0xfff2000000000000, 0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmod_009
+      description: "fmod(+snan_q, +qnan) = -qnan"
+      input: [0x7FF8000000000001, 0x7ff87ff7fdedffff]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_010
+      description: "fmod(-snan_q, +qnan) = +qnan"
+      input: [0xffF8000000000001, 0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_011
+      description: "fmod(+qnan, +qnan) = +qnan"
+      input: [0x7ff87ff7fdedffff, 0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_012
+      description: "fmod(+inf, +qnan) = +inf "
+      input: [0x7ff0000000000000, 0x7ff87ff7fdedffff]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_013
+      description: "fmod(-inf, -qnan) = -inf "
+      input: [0xfff0000000000000, 0xfff8000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_014
+      description: "fmod(-inf, -qnan) = -snan "
+      input: [0xfff0000000000000, 0xfff8000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_015
+      description: "fmod(-inf, -qnan) = -qnan"
+      input: [0xfff0000000000000, 0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_016
+      description: "fmod(+inf, +qnan) = +1.0 "
+      input: [0x7ff0000000000000, 0x7ff87ff7fdedffff]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_017
+      description: "fmod(-inf, -qnan) = -1.0 "
+      input: [0xfff0000000000000, 0xfff8000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_018
+      description: "fmod(+inf, +qnan) = +0 "
+      input: [0x7ff0000000000000, 0x7ff87ff7fdedffff]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_019
+      description: "fmod(-inf, -qnan) = -0 "
+      input: [0xfff0000000000000, 0xfff8000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_020
+      description: "fmod(+1.0, +qnan) = +snan "
+      input: [0x3FF0000000000000, 0x7ff87ff7fdedffff]
+      expect: [0x7FF4001000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_021
+      description: "fmod(-1.0, -qnan) = -qnan"
+      input: [0xBFF0000000000000, 0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_022
+      description: "fmod(+0, +qnan) = +snan "
+      input: [0x0000000000000000, 0x7ff87ff7fdedffff]
+      expect: [0x7FF4001000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_023
+      description: "fmod(-0, -qnan) = -qnan"
+      input: [0x8000000000000000, 0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_024
+      description: "fmod(+hdenorm, +0) = +hdenorm"
+      input: [0x000FFFFFFFFFFFFF, 0x0000000000000000]
+      expect: [0x000FFFFFFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmod_025
+      description: "fmod(+hdenorm, +0) = -hdenorm"
+      input: [0x000FFFFFFFFFFFFF, 0x0000000000000000]
+      expect: [0x800fffffFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmod_026
+      description: "fmod(-hdenorm, special_neg) = special_result"
+      input: [0x800fffffFFFFFFFF, 0x8000000000018817]
+      expect: [0x000000000002711E]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_027
+      description: "fmod(+hdenorm, +0) = -ldenorm"
+      input: [0x000FFFFFFFFFFFFF, 0x0000000000000000]
+      expect: [0x8000000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmod_028
+      description: "fmod(+ldenorm, 1) = +hdenorm"
+      input: [0x0000000000000001, 0x0000000000000001]
+      expect: [0x000FFFFFFFFFFFFF]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_029
+      description: "fmod(+ldenorm, 1) = -hdenorm"
+      input: [0x0000000000000001, 0x0000000000000001]
+      expect: [0x800fffffFFFFFFFF]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_030
+      description: "fmod(+ldenorm, +0) = +ldenorm"
+      input: [0x0000000000000001, 0x0000000000000000]
+      expect: [0x0000000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmod_031
+      description: "fmod(+ldenorm, +0) = -ldenorm"
+      input: [0x0000000000000001, 0x0000000000000000]
+      expect: [0x8000000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmod_032
+      description: "fmod(+hdenorm, +hdenorm) = +lnormal"
+      input: [0x000FFFFFFFFFFFFF, 0x000fffffffffffffLL]
+      expect: [0x0010000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_033
+      description: "fmod(+hdenorm, +hdenorm) = +lnormal"
+      input: [0x000FFFFFFFFFFFFF, 0x000fffffffffffffLL]
+      expect: [0x0010000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_034
+      description: "fmod(-ldenorm, special_neg) = -hnormal"
+      input: [0x8000000000000001, 0x8000000000000001]
+      expect: [0xfFEfffffFFFFFFFF]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_035
+      description: "fmod(+ldenorm, 1) = -hnormal"
+      input: [0x0000000000000001, 0x0000000000000001]
+      expect: [0xfFEfffffFFFFFFFF]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_036
+      description: "fmod(+hnormal, +0) = +ldenorm"
+      input: [0x7FEfffffFFFFFFFF, 0x0000000000000000]
+      expect: [0x0000000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmod_037
+      description: "fmod(+lnormal, 1) = -hdenorm"
+      input: [0x0010000000000000, 0x0000000000000001]
+      expect: [0x800fffffFFFFFFFF]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_038
+      description: "fmod(+hdenorm, +hdenorm) = +1.0"
+      input: [0x000FFFFFFFFFFFFF, 0x000fffffffffffffLL]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_039
+      description: "fmod(+ldenorm, 1) = -1.0"
+      input: [0x0000000000000001, 0x0000000000000001]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_040
+      description: "fmod(+hdenorm, -qnan) = +0 "
+      input: [0x000FFFFFFFFFFFFF, 0xfff8000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_041
+      description: "fmod(+ldenorm, -qnan) = -0 "
+      input: [0x0000000000000001, 0xfff8000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_042
+      description: "fmod(+hnormal, +0) = +1.0"
+      input: [0x7FEfffffFFFFFFFF, 0x0000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmod_043
+      description: "fmod(+lnormal, +lnormal) = -1.0"
+      input: [0x0010000000000000, 0x0010000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_044
+      description: "fmod(+hnormal, -qnan) = +0 "
+      input: [0x7FEfffffFFFFFFFF, 0xfff8000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_045
+      description: "fmod(+lnormal, -qnan) = -0 "
+      input: [0x0010000000000000, 0xfff8000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_046
+      description: "fmod(+pi, +0) = -pi"
+      input: [0x400921FB54442D18, 0x0000000000000000]
+      expect: [0xc00921fb54442d18]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmod_047
+      description: "fmod(-pi/2, -0) = +pi/2"
+      input: [0xBFF921FB60000000, 0x8000000000000000]
+      expect: [0x3FF921FB60000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: fmod_048
+      description: "fmod(+1.0, +1.0) = +inf"
+      input: [0x3FF0000000000000, 0x3FF0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_049
+      description: "fmod(-1.0, -1.0) = +inf"
+      input: [0xBFF0000000000000, 0xBFF0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: fmod_050
+      description: "fmod(-0, -0)"
+      input: [0x8000000000000000, 0x8000000000000000]
+      expect: [0xa8117a2e00000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+#-------------------------------

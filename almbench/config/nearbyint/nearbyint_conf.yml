@@ -1,0 +1,1180 @@
+---
+- test_sequence: unit_tests_nearbyint
+  function: nearbyint
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    # Test case 1: 0
+    - id: nearbyint_001
+      description: "nearbyintf(0) = 0"
+      api_name: nearbyint
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: nearbyint_002
+      description: "nearbyintf(-0) = -0"
+      api_name: nearbyint
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: nearbyint_003
+      description: "nearbyintf(inf) = inf"
+      api_name: nearbyint
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: nearbyint_004
+      description: "nearbyintf(-inf) = -inf"
+      api_name: nearbyint
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0xff800000]
+      expect_exception: []
+
+    # Test case 5: -nan
+    - id: nearbyint_005
+      description: "nearbyintf(-nan) = nan"
+      api_name: nearbyint
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0xFFC00000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: nearbyint_006
+      description: "nearbyintf(+nan) = nan"
+      api_name: nearbyint
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: nearbyint_007
+      description: "nearbyintf(max positive subnormal float) = 0"
+      api_name: nearbyint
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 8: - subnorm (MAX)
+    - id: nearbyint_008
+      description: "nearbyintf(max negative subnormal float) = -0"
+      api_name: nearbyint
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 9: + subnorm (MIN)
+    - id: nearbyint_009
+      description: "nearbyintf(min positive subnormal float) = 0"
+      api_name: nearbyint
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 10: - subnorm (MIN)
+    - id: nearbyint_010
+      description: "nearbyintf(min negative subnormal float) = -0"
+      api_name: nearbyint
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 11: + POS (positive normal)
+    - id: nearbyint_011
+      description: "nearbyintf(1.5) = 2"
+      api_name: nearbyint
+      variants: [ss]
+      input: [0x3fc00000]
+      expect: [0x40000000]
+      expect_exception: []
+
+    # Test case 12: -POS (negative positive normal)
+    - id: nearbyint_012
+      description: "nearbyintf(-1.5) = -2"
+      api_name: nearbyint
+      variants: [ss]
+      input: [0xbfc00000]
+      expect: [0xc0000000]
+      expect_exception: []
+
+    # Test case 13: +NEG
+    - id: nearbyint_013
+      description: "nearbyintf(2.3) = 2"
+      api_name: nearbyint
+      variants: [ss]
+      input: [0x40133333]
+      expect: [0x40000000]
+      expect_exception: []
+
+    # Test case 14: -NEG (negative value)
+    - id: nearbyint_014
+      description: "nearbyintf(-2.3) = -2"
+      api_name: nearbyint
+      variants: [ss]
+      input: [0xc0133333]
+      expect: [0xc0000000]
+      expect_exception: []
+
+    # Test case 15: qnan
+    - id: nearbyint_015
+      description: "nearbyintf(qnan) = qnan"
+      api_name: nearbyint
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: nearbyint_016
+      description: "nearbyintf(snan) = qnan"
+      api_name: nearbyint
+      variants: [ss]
+      input: [0x7fa00000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+
+# Test cases from gtests test_nearbyint_data.h
+#-------------------------------
+    - id: nearbyint_001
+      description: "POS_SNAN_F32: sNaN -> qNaN (invalid)"
+      input: [0x7fb00000]
+      expect: [0x7ff00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: nearbyint_002
+      description: "NEG_SNAN_F32: -sNaN -> -qNaN (invalid)"
+      input: [0xffb00000]
+      expect: [0xfff00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: nearbyint_003
+      description: "POS_QNAN_F32: qNaN -> qNaN"
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_004
+      description: "NEG_QNAN_F32: -qNaN -> -qNaN"
+      input: [0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_005
+      description: "POS_INF_F32: nearbyint(+∞) -> +∞"
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_006
+      description: "NEG_INF_F32: nearbyint(-∞) -> -∞"
+      input: [0xFF800000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_007
+      description: "POS_ONE_F32: nearbyint(1.0) = 1.0"
+      input: [0x3F800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_008
+      description: "NEG_ONE_F32: nearbyint(-1.0) = -1.0"
+      input: [0xbf800000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_009
+      description: "POS_ZERO_F32: nearbyint(+0.0) = +0.0"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_010
+      description: "NEG_ZERO_F32: nearbyint(-0.0) = -0.0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_011
+      description: "POS_PI_F32: nearbyint(π) = 4.0"
+      input: [0x40490fd8]
+      expect: [0x40800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_012
+      description: "NEG_PI_F32: nearbyint(-π) = -3.0"
+      input: [0xc0490fd8]
+      expect: [0xc0400000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_013
+      description: "POS_LDENORM_F32: nearbyint(smallest positive denormal) = 1.0"
+      input: [0x00000001]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_014
+      description: "nearbyint(denormal intermediate) = 1.0"
+      input: [0x0005fde6]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_015
+      description: "POS_HDENORM_F32: nearbyint(largest positive denormal) = 1.0"
+      input: [0x007fffff]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_016
+      description: "NEG_LDENORM_F32: nearbyint(smallest negative denormal) = -0.0"
+      input: [0x80000001]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_017
+      description: "nearbyint(-denormal intermediate) = -0.0"
+      input: [0x805def12]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_018
+      description: "NEG_HDENORM_F32: nearbyint(largest negative denormal) = -0.0"
+      input: [0x807FFFFF]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_019
+      description: "POS_LNORMAL_F32: nearbyint(smallest positive normal) = 1.0"
+      input: [0x00800000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_020
+      description: "nearbyint(normal intermediate) = 360.0"
+      input: [0x43b3c4ea]
+      expect: [0x43b40000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_021
+      description: "POS_HNORMAL_F32: nearbyint(largest positive normal) = largest positive normal"
+      input: [0x7f7fffff]
+      expect: [0x7f7fffff]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_022
+      description: "NEG_LNORMAL_F32: nearbyint(smallest negative normal) = -0.0"
+      input: [0x80800000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_023
+      description: "nearbyint(-normal intermediate) = -4100.0"
+      input: [0xc5812e71]
+      expect: [0xc5812800]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_024
+      description: "NEG_HNORMAL_F32: nearbyint(largest negative normal) = largest negative normal"
+      input: [0xFF7FFFFF]
+      expect: [0xff7fffff]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_025
+      description: "qNaN min propagation"
+      input: [0x7Fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_026
+      description: "qNaN intermediate propagation"
+      input: [0x7Fe1a570]
+      expect: [0x7fe1a570]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_027
+      description: "qNaN max propagation"
+      input: [0x7FFFFFFF]
+      expect: [0x7fffffff]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_028
+      description: "indeterminate qNaN propagation"
+      input: [0xfFc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_029
+      description: "-qNaN min propagation"
+      input: [0xFFC00001]
+      expect: [0xffc00001]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_030
+      description: "-qNaN intermediate propagation"
+      input: [0xFFd2ba31]
+      expect: [0xffd2ba31]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_031
+      description: "-qNaN max propagation"
+      input: [0xFFFFFFFF]
+      expect: [0xffffffff]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_032
+      description: "POS_PI_BY2_F32: nearbyint(π/2) = 2.0"
+      input: [0x3FC90FDB]
+      expect: [0x40000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_033
+      description: "nearbyint(2π) = 7.0"
+      input: [0x40C90FDB]
+      expect: [0x40e00000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_034
+      description: "nearbyint(e --) = 3.0"
+      input: [0x402DF853]
+      expect: [0x40400000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_035
+      description: "nearbyint(e) = 3.0"
+      input: [0x402DF854]
+      expect: [0x40400000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_036
+      description: "nearbyint(e ++) = 3.0"
+      input: [0x402DF855]
+      expect: [0x40400000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_037
+      description: "nearbyint(0.000023) = 1.0"
+      input: [0x37C0F01F]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_038
+      description: "nearbyint(0.49999) = 1.0"
+      input: [0x3EFFFEB0]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_039
+      description: "nearbyint(0.500012) = 1.0"
+      input: [0x3F0000C9]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_040
+      description: "nearbyint(-0.000023) = -0.0"
+      input: [0xb7C0F01F]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_041
+      description: "nearbyint(0.49999) = 1.0 "
+      input: [0x3EFFFEB0]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_042
+      description: "nearbyint(0.500012) = 1.0 "
+      input: [0x3F0000C9]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_043
+      description: "nearbyint(-0.000023) = -0.0 "
+      input: [0xb7C0F01F]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_044
+      description: "nearbyint(-0.49999) = -0.0"
+      input: [0xbEFFFEB0]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_045
+      description: "nearbyint(-0.500012) = -0.0"
+      input: [0xbF0000C9]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_046
+      description: "nearbyint(0.93750006) = 1.0"
+      input: [0x3f700001]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_047
+      description: "nearbyint(1.0624998) = 2.0"
+      input: [0x3F87FFFE]
+      expect: [0x40000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_048
+      description: "nearbyint(1.49999) = 2.0"
+      input: [0x3FBFFFAC]
+      expect: [0x40000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_049
+      description: "nearbyint(1.500012) = 2.0"
+      input: [0x3FC00064]
+      expect: [0x40000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_050
+      description: "nearbyint(-0.93750006) = -0.0"
+      input: [0xbf700001]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_051
+      description: "nearbyint(-1.0624998) = -1.0"
+      input: [0xbF87FFFE]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_052
+      description: "nearbyint(-1.49999) = -1.0"
+      input: [0xbFBFFFAC]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_053
+      description: "nearbyint(-1.500012) = -1.0"
+      input: [0xbFC00064]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_054
+      description: "nearbyint(2.0) = 2.0"
+      input: [0x40000000]
+      expect: [0x40000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_055
+      description: "nearbyint(-2.0) = -2.0"
+      input: [0xc0000000]
+      expect: [0xc0000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_056
+      description: "nearbyint(10.0) = 10.0"
+      input: [0x41200000]
+      expect: [0x41200000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_057
+      description: "nearbyint(-10.0) = -10.0"
+      input: [0xc1200000]
+      expect: [0xc1200000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_058
+      description: "nearbyint(1000.0) = 1000.0"
+      input: [0x447A0000]
+      expect: [0x447a0000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_059
+      description: "nearbyint(-1000.0) = -1000.0"
+      input: [0xc47A0000]
+      expect: [0xc47a0000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_060
+      description: "nearbyint(67.4) = 68.0"
+      input: [0x4286CCCC]
+      expect: [0x42880000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_061
+      description: "nearbyint(-67.4) = -67.0"
+      input: [0xc286CCCC]
+      expect: [0xc2860000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_062
+      description: "nearbyint(1983.6) = 1984.0"
+      input: [0x44F7F333]
+      expect: [0x44f80000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_063
+      description: "nearbyint(-1983.6) = -1983.0"
+      input: [0xc4F7F333]
+      expect: [0xc4f7e000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_064
+      description: "nearbyint(87.5) = 88.0"
+      input: [0x42AF0000]
+      expect: [0x42b00000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_065
+      description: "nearbyint(-87.5) = -87.0"
+      input: [0xc2AF0000]
+      expect: [0xc2ae0000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_066
+      description: "nearbyint(132473.0) = 132473.0"
+      input: [0x48015E40]
+      expect: [0x48015e40]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_067
+      description: "nearbyint(-132473.0) = -132473.0"
+      input: [0xc8015E40]
+      expect: [0xc8015e40]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_068
+      description: "nearbyint(2^23) = 2^23"
+      input: [0x4B000000]
+      expect: [0x4b000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_069
+      description: "nearbyint(2^23 + 1) = 2^23 + 1"
+      input: [0x4B000001]
+      expect: [0x4b000001]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_070
+      description: "nearbyint(-(2^23 + 1)) = -(2^23 + 1)"
+      input: [0xcB000001]
+      expect: [0xcb000001]
+      expect_exception: []
+      variants: [ss]
+    - id: nearbyint_071
+      description: "nearbyint(-(2^23 - 1 + 0.5)) = -(2^23 - 1)"
+      input: [0xcAFFFFFF]
+      expect: [0xcafffffe]
+      expect_exception: []
+      variants: [ss]
+#------------------------------
+#Double precision
+    # Test case 1: 0 (double)
+    - id: nearbyint_001
+      description: "nearbyint(0) = 0"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 2: -0 (double)
+    - id: nearbyint_002
+      description: "nearbyint(-0) = -0"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 3: inf (double)
+    - id: nearbyint_003
+      description: "nearbyint(inf) = inf"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 4: -inf (double)
+    - id: nearbyint_004
+      description: "nearbyint(-inf) = -inf"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+
+    # Test case 5: -nan (double)
+    - id: nearbyint_005
+      description: "nearbyint(-nan) = nan"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 6: +nan (double)
+    - id: nearbyint_006
+      description: "nearbyint(+nan) = nan"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX) (double)
+    - id: nearbyint_007
+      description: "nearbyint(max positive subnormal double) = 0"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0x000fffffffffffff]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 8: - subnorm (MAX) (double)
+    - id: nearbyint_008
+      description: "nearbyint(max negative subnormal double) = -0"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0x800fffffffffffff]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 9: + subnorm (MIN) (double)
+    - id: nearbyint_009
+      description: "nearbyint(min positive subnormal double) = 0"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 10: - subnorm (MIN) (double)
+    - id: nearbyint_010
+      description: "nearbyint(min negative subnormal double) = -0"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 11: + POS (positive normal) (double)
+    - id: nearbyint_011
+      description: "nearbyint(1.5) = 2"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0x3ff8000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: []
+
+    # Test case 12: -POS (negative positive normal) (double)
+    - id: nearbyint_012
+      description: "nearbyint(-1.5) = -2"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0xbff8000000000000]
+      expect: [0xc000000000000000]
+      expect_exception: []
+
+    # Test case 13: +NEG (double)
+    - id: nearbyint_013
+      description: "nearbyint(2.3) = 2"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0x4002666666666666]
+      expect: [0x4000000000000000]
+      expect_exception: []
+
+    # Test case 14: -NEG (negative value) (double)
+    - id: nearbyint_014
+      description: "nearbyint(-2.3) = -2"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0xc002666666666666]
+      expect: [0xc000000000000000]
+      expect_exception: []
+
+    # Test case 15: qnan (double)
+    - id: nearbyint_015
+      description: "nearbyint(qnan) = qnan"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 16: snan (double)
+    - id: nearbyint_016
+      description: "nearbyint(snan) = qnan"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0x7ff4000000000001]
+      expect: [0x7ff8000000000001]
+      expect_exception: [invalidoperation]
+
+    # Additional meaningful test cases
+    - id: nearbyint_017
+      description: "nearbyint(0.4) = 0"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0x3fd999999999999a]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: nearbyint_018
+      description: "nearbyint(0.6) = 1"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0x3fe3333333333333]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: nearbyint_019
+      description: "nearbyint(-0.4) = -0"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0xbfd999999999999a]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    - id: nearbyint_020
+      description: "nearbyint(-0.6) = -1"
+      api_name: nearbyint
+      variants: [sd]
+      input: [0xbfe3333333333333]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+# Test cases from gtests test_nearbyint_data.h
+#-------------------------------
+    - id: nearbyint_001
+      description: "POS_SNAN_F64: sNaN -> qNaN (invalid)"
+      input: [0x7FF4001000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: nearbyint_002
+      description: "NEG_SNAN_F64: -sNaN -> -qNaN (invalid)"
+      input: [0xfff2000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: nearbyint_003
+      description: "POS_QNAN_F64: qNaN -> qNaN"
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_004
+      description: "NEG_QNAN_F64: -qNaN -> -qNaN"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_005
+      description: "POS_INF_F64: nearbyint(+∞) -> +∞"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_006
+      description: "NEG_INF_F64: nearbyint(-∞) -> -∞"
+      input: [0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_007
+      description: "POS_ONE_F64: nearbyint(1.0) = 1.0"
+      input: [0x3FF0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_008
+      description: "NEG_ONE_F64: nearbyint(-1.0) = -1.0"
+      input: [0xBFF0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_009
+      description: "POS_ZERO_F64: nearbyint(+0.0) = +0.0"
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_010
+      description: "NEG_ZERO_F64: nearbyint(-0.0) = -0.0"
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_011
+      description: "POS_PI_F64: nearbyint(π) = 4.0"
+      input: [0x400921FB54442D18]
+      expect: [0x4010000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_012
+      description: "NEG_PI_F64: nearbyint(-π) = -3.0"
+      input: [0xc00921fb54442d18]
+      expect: [0xc008000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_013
+      description: "POS_LDENORM_F64: nearbyint(smallest positive denormal) = 1.0"
+      input: [0x0000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_014
+      description: "nearbyint(denormal intermediate) = 1.0"
+      input: [0x0005fde623545abc]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_015
+      description: "POS_HDENORM_F64: nearbyint(largest positive denormal) = 1.0"
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_016
+      description: "NEG_LDENORM_F64: nearbyint(smallest negative denormal) = -0.0"
+      input: [0x8000000000000001]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_017
+      description: "nearbyint(-denormal intermediate) = -0.0"
+      input: [0x8002344ade5def12]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_018
+      description: "NEG_HDENORM_F64: nearbyint(largest negative denormal) = -0.0"
+      input: [0x800FFFFFFFFFFFFF]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_019
+      description: "POS_LNORMAL_F64: nearbyint(smallest positive normal) = 1.0"
+      input: [0x0010000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_020
+      description: "nearbyint(normal intermediate) = 359.69"
+      input: [0x43b3c4eafedcab02]
+      expect: [0x43b3c4eafedcab02]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_021
+      description: "POS_HNORMAL_F64: nearbyint(largest positive normal) = largest positive normal"
+      input: [0x7FEFFFFFFFFFFFFF]
+      expect: [0x7fefffffffffffff]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_022
+      description: "NEG_LNORMAL_F64: nearbyint(smallest negative normal) = -0.0"
+      input: [0x8010000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_023
+      description: "nearbyint(-normal intermediate) = -133681.11"
+      input: [0xc5812e71245acfdb]
+      expect: [0xc5812e71245acfdb]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_024
+      description: "NEG_HNORMAL_F64: nearbyint(largest negative normal) = largest negative normal"
+      input: [0xFFEFFFFFFFFFFFFF]
+      expect: [0xffefffffffffffff]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_025
+      description: "qNaN min propagation"
+      input: [0x7FF8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_026
+      description: "qNaN intermediate propagation"
+      input: [0x7FFe1a5701234dc3]
+      expect: [0x7ffe1a5701234dc3]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_027
+      description: "qNaN max propagation"
+      input: [0x7FFFFFFFFFFFFFFF]
+      expect: [0x7fffffffffffffff]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_028
+      description: "indeterminate qNaN propagation"
+      input: [0xFFF8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_029
+      description: "-qNaN min propagation"
+      input: [0xFFF8000000000001]
+      expect: [0xfff8000000000001]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_030
+      description: "-qNaN intermediate propagation"
+      input: [0xFFF9123425dcba31]
+      expect: [0xfff9123425dcba31]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_031
+      description: "-qNaN max propagation"
+      input: [0xFFFFFFFFFFFFFFFF]
+      expect: [0xffffffffffffffff]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_032
+      description: "nearbyint(π/2) = 2.0"
+      input: [0x3FF921FB54442D18]
+      expect: [0x4000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_033
+      description: "nearbyint(2π) = 7.0"
+      input: [0x401921FB54442D18]
+      expect: [0x401c000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_034
+      description: "nearbyint(e --) = 2.0"
+      input: [0x3FFB7E151628AED3]
+      expect: [0x4000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_035
+      description: "nearbyint(e) = 3.0"
+      input: [0x4005BF0A8B145769]
+      expect: [0x4008000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_036
+      description: "nearbyint(e ++) = 4.0"
+      input: [0x400DBF0A8B145769]
+      expect: [0x4010000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_037
+      description: "nearbyint(2.3e-15) = 1.0"
+      input: [0x3C4536B8B14B676C]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_038
+      description: "nearbyint(0.4999989999999999999) = 1.0"
+      input: [0x3FDFFFFBCE4217D3]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_039
+      description: "nearbyint(0.500000000000012) = 1.0"
+      input: [0x3FE000000000006C]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_040
+      description: "nearbyint(-2.3e-17) = -0.0"
+      input: [0xBBDB2752CE74FF42]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_041
+      description: "nearbyint(-0.4999989999999999999) = -0.0"
+      input: [0xBFDFFFFBCE4217D3]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_042
+      description: "nearbyint(-0.500000000000012) = -0.0"
+      input: [0xBFE000000000006C]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_043
+      description: "nearbyint(0.9999998893750006) = 1.0"
+      input: [0x3FEFFFFFC49BD0DC]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_044
+      description: "nearbyint(1.0000000000000624998) = 2.0"
+      input: [0x3FF0000000000119]
+      expect: [0x4000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_045
+      description: "nearbyint(1.499998999999999967) = 2.0"
+      input: [0x3FF7FFFEF39085F4]
+      expect: [0x4000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_046
+      description: "nearbyint(1.50000000000000012) = 2.0"
+      input: [0x3FF8000000000001]
+      expect: [0x4000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_047
+      description: "nearbyint(-0.9999998893750006) = -0.0"
+      input: [0xBFEFFFFFC49BD0DC]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_048
+      description: "nearbyint(-1.0000000000000624998) = -1.0"
+      input: [0xBFF0000000000119]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_049
+      description: "nearbyint(-1.499998999999999967) = -1.0"
+      input: [0xBFF7FFFEF39085F4]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_050
+      description: "nearbyint(-1.50000000000000012) = -1.0"
+      input: [0xBFF8000000000001]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_051
+      description: "nearbyint(2.0) = 2.0"
+      input: [0x4000000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_052
+      description: "nearbyint(-2.0) = -2.0"
+      input: [0xC000000000000000]
+      expect: [0xc000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_053
+      description: "nearbyint(10.0) = 10.0"
+      input: [0x4024000000000000]
+      expect: [0x4024000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_054
+      description: "nearbyint(-10.0) = -10.0"
+      input: [0xC024000000000000]
+      expect: [0xc024000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_055
+      description: "nearbyint(1000.0) = 1000.0"
+      input: [0x408F400000000000]
+      expect: [0x408f400000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_056
+      description: "nearbyint(-1000.0) = -1000.0"
+      input: [0xC08F400000000000]
+      expect: [0xc08f400000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_057
+      description: "nearbyint(67.4) = 68.0"
+      input: [0x4050D9999999999A]
+      expect: [0x4051000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_058
+      description: "nearbyint(-67.4) = -67.0"
+      input: [0xC050D9999999999A]
+      expect: [0xc050c00000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_059
+      description: "nearbyint(1983.6) = 1984.0"
+      input: [0x409EFE6666666666]
+      expect: [0x409f000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_060
+      description: "nearbyint(-1983.6) = -1983.0"
+      input: [0xC09EFE6666666666]
+      expect: [0xc09efc0000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_061
+      description: "nearbyint(87.5) = 88.0"
+      input: [0x4055E00000000000]
+      expect: [0x4056000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_062
+      description: "nearbyint(-87.5) = -87.0"
+      input: [0xC055E00000000000]
+      expect: [0xc055c00000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_063
+      description: "nearbyint(132473.0) = 132473.0"
+      input: [0x41002BC800000000]
+      expect: [0x41002bc800000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_064
+      description: "nearbyint(-132473.0) = -132473.0"
+      input: [0xC1002BC800000000]
+      expect: [0xc1002bc800000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_065
+      description: "nearbyint(2^52) = 2^52"
+      input: [0x4330000000000000]
+      expect: [0x4330000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_066
+      description: "nearbyint(2^52 + 1) = 2^52 + 1"
+      input: [0x4330000000000001]
+      expect: [0x4330000000000001]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_067
+      description: "nearbyint(2^52 - 1 + 0.5) = 2^52"
+      input: [0x432FFFFFFFFFFFFF]
+      expect: [0x4330000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_068
+      description: "nearbyint(-2^52) = -2^52"
+      input: [0xC330000000000000]
+      expect: [0xc330000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_069
+      description: "nearbyint(-(2^52 + 1)) = -(2^52 + 1)"
+      input: [0xC330000000000001]
+      expect: [0xc330000000000001]
+      expect_exception: []
+      variants: [sd]
+    - id: nearbyint_070
+      description: "nearbyint(-(2^52 - 1 + 0.5)) = -(2^52 - 1)"
+      input: [0xC32FFFFFFFFFFFFF]
+      expect: [0xc32fffffffffffff]
+      expect_exception: []
+      variants: [sd]
+#------------------------------

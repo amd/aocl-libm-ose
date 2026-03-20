@@ -1,6 +1,6 @@
 
 /*
-(C) 2008-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+(C) 2008-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 
 Advanced Micro Devices, Inc.
 Software License Agreement
@@ -554,6 +554,14 @@ extern "C" {
    */
   float amd_erff (float x);
 
+/* Inverse Error */
+  /**
+   * @brief Computes the Gaussian inverse error function for a double-precision value.
+   * @param x Input value.
+   * @return erfinv(x).
+   */
+  double amd_erfinv (double x);
+
 /* Complementary Error */
   /**
    * @brief Computes the complementary error function for a double-precision value.
@@ -575,6 +583,21 @@ extern "C" {
    * @return cdfnorm(x).
    */
   double amd_cdfnorm (double x);
+
+  /**
+   * @brief Computes the inverse cumulative normal distribution function
+   * @param x Input value.
+   * @return cdfnorminv(x).
+   */
+  double amd_cdfnorminv (double x);
+
+  /* Inverse Complementary Error */
+  /**
+   * @brief Computes the inverse complementary error function for a double-precision value.
+   * @param x Input value.
+   * @return erfcinv(x).
+   */
+  double amd_erfcinv (double x);
 
 /* Remainder */
   /**
@@ -1196,15 +1219,26 @@ extern "C" {
   #undef erff
   #define erff amd_erff
 
+/* Inverse Error */
+  #undef erfinv
+  #define erfinv amd_erfinv
+
 /* Complementary Error */
   #undef erfc
   #define erfc amd_erfc
   #undef erfcf
   #define erfcf amd_erfcf
 
+/* Inverse Complementary Error */
+  #undef erfcinv
+  #define erfcinv amd_erfcinv
+  
 /* Special */
   #undef cdfnorm
   #define cdfnorm amd_cdfnorm
+
+  #undef cdfnorminv
+  #define cdfnorminv amd_cdfnorminv
 
 /* Remainder */
   #undef fmod

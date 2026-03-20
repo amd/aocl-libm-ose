@@ -1,0 +1,523 @@
+- test_sequence: unit_tests_erf
+  ignore_exceptions: [underflow, inexact]
+  function: erf
+  test_sets:
+  - id: special-values
+    description: Special values for erf function
+    tests:
+    # Single Precision Tests
+    - id: erf_001
+      description: "erff(0) = 0"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_002
+      description: "erff(-0) = -0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_003
+      description: "erff(inf) = 1"
+      input: [0x7f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_004
+      description: "erff(-inf) = -1"
+      input: [0xff800000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_005
+      description: "erff(-nan) = nan"
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_006
+      description: "erff(+nan) = nan"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_007
+      description: "erff(subnorm_max) ≈ subnorm_max (small value)"
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erf_008
+      description: "erff(subnorm_max) ≈ subnorm_max (small value)"
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erf_009
+      description: "erff(subnorm_min) ≈ subnorm_min (small value)"
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: erf_010
+      description: "erff(subnorm_min) ≈ subnorm_min (small value)"
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: erf_011
+      description: "erff(1.0) = erf(1)"
+      input: [0x3f800000]
+      expect: [0x3f57bb4a]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erf_012
+      description: "erff(-1.0) = -erf(1)"
+      input: [0xbf800000]
+      expect: [0xbf57bb4a]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erf_013
+      description: "erff(2.0) = erf(2)"
+      input: [0x40000000]
+      expect: [0x3f7d6bb4]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erf_014
+      description: "erff(-2.0) = -erf(2)"
+      input: [0xc0000000]
+      expect: [0xbf7d6bb4]
+      expect_exception: [inexact]
+      variants: [ss]
+
+# Test cases from gtests test_erf_data.h
+#-------------------------------
+    - id: erf_001
+      description: erf(0x0) = 0x0
+      input: [0x0]
+      expect: [0x0]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_002
+      description: erf(+0) = 0
+      input: [0x00000000]
+      expect: [0x0]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_003
+      description: erf(-0) = 0
+      input: [0x80000000]
+      expect: [0x0]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_004
+      description: erf(cutoff+) = 1.0
+      input: [0x407AD447]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erf_005
+      description: erf(cutoff-) = -1.0
+      input: [0xc07AD447]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: erf_006
+      description: erf(+SNAN) = +SNAN (invalid)
+      input: [0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: erf_007
+      description: erf(-SNAN) = -SNAN (invalid)
+      input: [0xffb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: erf_008
+      description: erf(+INF) = 1.0
+      input: [0x7F800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_009
+      description: erf(-INF) = -1.0
+      input: [0xFF800000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_010
+      description: erf(+QNAN) = +QNAN
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_011
+      description: erf(-QNAN) = -QNAN
+      input: [0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_012
+      description: erf(+INF ) = 1.0
+      input: [0x7f800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_013
+      description: erf(-INF ) = -1.0
+      input: [0xff800000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_014
+      description: erf(NaN) = NaN
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_015
+      description: erf(NaN+1) = NaN+1
+      input: [0x7fc00001]
+      expect: [0x7fc00001]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_016
+      description: erf(+INF+1) = 1.0
+      input: [0x7f800001]
+      expect: [0x3F800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: erf_017
+      description: erf(+QNAN) = +QNAN
+      input: [0x7fef8000]
+      expect: [0x7fef8000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_018
+      description: erf(-QNAN) = -QNAN
+      input: [0xffef8000]
+      expect: [0xffef8000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: erf_019
+      description: erf(-0 alternate) = 1.0
+      input: [0x80000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+#-------------------------------
+    # Double Precision Tests
+    - id: erf_001
+      description: "erf(0) = 0"
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erf_002
+      description: "erf(-0) = -0"
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erf_003
+      description: "erf(inf) = 1"
+      input: [0x7ff0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erf_004
+      description: "erf(-inf) = -1"
+      input: [0xfff0000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erf_005
+      description: "erf(-nan) = nan"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erf_006
+      description: "erf(+nan) = nan"
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erf_007
+      description: "erf(subnorm_max) ≈ subnorm_max (small value)"
+      input: [0x000fffffffffffff]
+      expect: [0x000fffffffffffff]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_008
+      description: "erf(subnorm_max) ≈ subnorm_max (small value)"
+      input: [0x000fffffffffffff]
+      expect: [0x000fffffffffffff]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_009
+      description: "erf(subnorm_min) ≈ subnorm_min (small value)"
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: erf_010
+      description: "erf(subnorm_min) ≈ subnorm_min (small value)"
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: erf_011
+      description: "erf(1.0) = erf(1)"
+      input: [0x3ff0000000000000]
+      expect: [0x3feaf7696938885c]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_012
+      description: "erf(-1.0) = -erf(1)"
+      input: [0xbff0000000000000]
+      expect: [0xbfeaf7696938885c]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_013
+      description: "erf(2.0) = erf(2)"
+      input: [0x4000000000000000]
+      expect: [0x3fefad7768b39918]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_014
+      description: "erf(-2.0) = -erf(2)"
+      input: [0xc000000000000000]
+      expect: [0xbfefad7768b39918]
+      expect_exception: [inexact]
+      variants: [sd]
+# Test cases from gtests test_erf_data.h
+#-------------------------------
+    - id: erf_001
+      description: erf(+0) = +0
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erf_002
+      description: erf(-0) = +0
+      input: [0x8000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erf_003
+      description: erf(+INF) = 1.0
+      input: [0x7ff0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erf_004
+      description: erf(-INF) = -1.0
+      input: [0xfff0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erf_005
+      description: erf(+SNAN) = +SNAN (invalid)
+      input: [0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: erf_006
+      description: erf(-SNAN) = -SNAN (invalid)
+      input: [0xfff2000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: erf_007
+      description: erf(+QNAN) = +QNAN
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erf_008
+      description: erf(-QNAN) = -QNAN
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erf_009
+      description: erf(5.921875+) = 1.0
+      input: [0x4017B000C9539B89]
+      expect: [0x3FF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_010
+      description: erf(10.4) = 1.0
+      input: [0x402499999999999A]
+      expect: [0x3FF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_011
+      description: erf(22.5) = 1.0
+      input: [0x4036800000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_012
+      description: erf(432.0) = 1.0
+      input: [0x407B000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_013
+      description: erf(1024.0) = 1.0
+      input: [0x4090000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_014
+      description: erf(-5.921875-) = -1.0
+      input: [0xC017B000C9539B89]
+      expect: [0xBFF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_015
+      description: erf(-1024.0) = -1.0
+      input: [0xC090000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_016
+      description: erf(-159.5) = -1.0
+      input: [0xC063C00000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_017
+      description: erf(-82.0) = -1.0
+      input: [0xC054800000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_018
+      description: erf(-23.68) = -1.0
+      input: [0xC037AE147AE147AE]
+      expect: [0xBFF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_019
+      description: erf(denormal min) ≈ denormal min
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: erf_020
+      description: erf(-denormal min) ≈ -denormal min
+      input: [0x8000000000000001]
+      expect: [0x8000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: erf_021
+      description: erf(denormal max) ≈ 1.281e-308
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x00120DD750429B6C]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_022
+      description: erf(-denormal max) ≈ -1.281e-308
+      input: [0x800FFFFFFFFFFFFF]
+      expect: [0x80120DD750429B6C]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_023
+      description: erf(normal min) ≈ 1.281e-308
+      input: [0x0010000000000000]
+      expect: [0x00120DD750429B6D]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_024
+      description: erf(-normal min) ≈ -1.281e-308
+      input: [0x8010000000000000]
+      expect: [0x80120dd750429b6d]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_025
+      description: erf(1.0) ≈ 0.8427 (worst case)
+      input: [0x3FF0000000000000]
+      expect: [0xBE343791E2362FE3]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: erf_026
+      description: erf(-1.0) ≈ -0.8427 (worst case)
+      input: [0xBFF0000000000000]
+      expect: [0xBFEAF767A741088B]
+      expect_exception: [inexact]
+      variants: [sd]
+#-------------------------------

@@ -23,6 +23,7 @@
             "cacheVariables": {
                 "LIBM_BUILD_LIBRARY": "ON",
                 "LIBM_BUILD_TESTS": "ON",
+                "LIBM_BUILD_TESTSUITE": "OFF",
                 "LIBM_ENABLE_AVX512": "ON",
                 "LIBM_BUILD_EXAMPLES": "OFF",
                 "LIBM_BUILD_DOCS": "OFF",
@@ -32,4 +33,3 @@
         }
     ]
 }
-

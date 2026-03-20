@@ -1,0 +1,314 @@
+---
+- test_sequence: validation_tests_sincos
+  function: sincos
+  test_sets:
+  - id: range-tests_01
+    tests:
+    - id: sincos_001
+      description: "Small positive range [0.1, 1.0] - single precision"
+      input:
+      - [0x3dcccccd, 0x3f800000]  # 0.1f to 1.0f
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_002
+      description: "Small negative range [-1.0, -0.1] - single precision"
+      input:
+      - [0xbf800000, 0xbdcccccd]  # -1.0f to -0.1f
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_003
+      description: "Medium range [1.0, 10.0] - single precision"
+      input:
+      - [0x3f800000, 0x41200000]  # 1.0f to 10.0f
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_004
+      description: "Pi multiples range [0, 4π] - single precision"
+      input:
+      - [0x00000000, 0x41490fdb]  # 0.0f to 4*π
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_005
+      description: "Large range [10, 1000] - single precision"
+      input:
+      - [0x41200000, 0x447a0000]  # 10.0f to 1000.0f
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_006
+      description: "Very large range [1e3, 1e5] - single precision"
+      input:
+      - [0x447a0000, 0x47c35000]  # 1000.0f to 100000.0f
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_007
+      description: "Argument reduction critical range - single precision"
+      input:
+      - [0x4a989680, 0x4b800000]  # Large values near single precision limit
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_008
+      description: "Medium negative range [-10.0, -1.0] - single precision"
+      input:
+      - [0xc1200000, 0xbf800000]  # -10.0f to -1.0f
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_009
+      description: "Around zero range [-0.1, 0.1] - single precision"
+      input:
+      - [0xbdcccccd, 0x3dcccccd]  # -0.1f to 0.1f
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+  - id: precision-critical-single
+    description: Precision critical values near mathematical constants - single precision
+    tests:
+    - id: sincos_001
+      description: "Values very close to π - single precision"
+      input:
+      - [0x40490fda, 0x40490fdc]  # Around π in single precision
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_002
+      description: "Values very close to π/2 - single precision"
+      input:
+      - [0x3fc90fda, 0x3fc90fdc]  # Around π/2 in single precision
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_003
+      description: "Values very close to zero - single precision"
+      input:
+      - [0x32000000, 0x39000000]  # Very small positive values
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_004
+      description: "Denormal range testing - single precision"
+      input:
+      - [0x00000001, 0x007fffff]  # Single precision denormal range
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_005
+      description: "Values close to 2π - single precision"
+      input:
+      - [0x40c90fda, 0x40c90fdc]  # Around 2π in single precision
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_006
+      description: "Values close to 3π/2 - single precision"
+      input:
+      - [0x4096cbe3, 0x4096cbe5]  # Around 3π/2 in single precision
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+  - id: edge-cases-single
+    description: Edge cases and special values for single precision sincos
+    tests:
+    - id: sincos_001
+      description: "Exact multiples of π/4 - single precision"
+      input:
+      - [0x3f490fdb, 0x3f490fdb]  # π/4
+      type: [expstep, expstep]
+      steps: [1, 1]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_002
+      description: "Exact multiples of π/6 - single precision"
+      input:
+      - [0x3f060a92, 0x3f060a92]  # π/6
+      type: [expstep, expstep]
+      steps: [1, 1]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_003
+      description: "Exact multiples of π/3 - single precision"
+      input:
+      - [0x3f860a92, 0x3f860a92]  # π/3
+      type: [expstep, expstep]
+      steps: [1, 1]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_004
+      description: "Large argument reduction test - single precision"
+      input:
+      - [0x47000000, 0x4a000000]  # Large values requiring argument reduction
+      type: [expstep, expstep]
+      steps: [100, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_005
+      description: "Very small values near machine epsilon - single precision"
+      input:
+      - [0x34000000, 0x35000000]  # Around FLT_EPSILON
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_006
+      description: "Values that may cause precision loss, vrs4, vrs8, vrs16, vrsa - single precision"
+      input:
+      - [0x49742400, 0x497424ff]  # Values that stress, vrs4, vrs8, vrs16, vrsa precision
+      type: [expstep, expstep]
+      steps: [100, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+  - id: boundary-testing-single
+    description: Boundary value testing for single precision sincos
+    tests:
+    - id: sincos_001
+      description: "Near single precision infinity boundary"
+      input:
+      - [0x7f7fffff, 0x7f7fffff]  # Just below +infinity
+      type: [expstep, expstep]
+      steps: [1, 1]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_002
+      description: "Near negative single precision infinity boundary"
+      input:
+      - [0xff7fffff, 0xff7fffff]  # Just below -infinity
+      type: [expstep, expstep]
+      steps: [1, 1]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_003
+      description: "Minimum positive normal value"
+      input:
+      - [0x00800000, 0x00800000]  # FLT_MIN
+      type: [expstep, expstep]
+      steps: [1, 1]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_004
+      description: "Maximum positive normal value"
+      input:
+      - [0x7f7fffff, 0x7f7fffff]  # FLT_MAX
+      type: [expstep, expstep]
+      steps: [1, 1]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: sincos_005
+      description: "Around argument reduction threshold"
+      input:
+      - [0x48000000, 0x49000000]  # Values around 2^15 to 2^18
+      type: [expstep, expstep]
+      steps: [100, 10]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+  #Double precision
+    - id: sincos_001
+      description: "Small positive range [0.1, 1.0]"
+      input:
+      - [0x3fb999999999999a, 0x3ff0000000000000]
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: sincos_002
+      description: "Small negative range [-1.0, -0.1]"
+      input:
+      - [0xbff0000000000000, 0xbfb999999999999a]
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: sincos_003
+      description: "Medium range [1.0, 10.0]"
+      input:
+      - [0x3ff0000000000000, 0x4024000000000000]
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: sincos_004
+      description: "Pi multiples range [0, 4π]"
+      input:
+      - [0x0000000000000000, 0x4028f5c28f5c28f6]
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: sincos_005
+      description: "Large range [10, 1000]"
+      input:
+      - [0x4024000000000000, 0x408f400000000000]
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: sincos_006
+      description: "Very large range [1e3, 1e6]"
+      input:
+      - [0x408f400000000000, 0x412e848000000000]
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: sincos_007
+      description: "Argument reduction critical range"
+      input:
+      - [0x415312d000000000, 0x4170000000000000]
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [sd, vrd2, vrd4, vrd8, vrda]
+
+  - id: precision-critical-double
+    description: Precision critical values near mathematical constants
+    tests:
+    - id: sincos_001
+      description: "Values very close to π"
+      input:
+      - [0x400921fb54442d10, 0x400921fb54442d20]
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: sincos_002
+      description: "Values very close to π/2"
+      input:
+      - [0x3ff921fb54442d10, 0x3ff921fb54442d20]
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: sincos_003
+      description: "Values very close to zero"
+      input:
+      - [0x3e40000000000000, 0x3f20000000000000]
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: sincos_004
+      description: "Denormal range testing"
+      input:
+      - [0x0000000000000001, 0x000fffffffffffff]
+      type: [expstep, expstep]
+      steps: [1000, 10]
+      variants: [sd, vrd2, vrd4, vrd8, vrda]

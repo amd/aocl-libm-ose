@@ -1,0 +1,89 @@
+---
+- test_sequence: validation_tests_acosh
+  function: acosh
+  test_sets:
+  - id: range-tests_01
+    description: 'Full value distribution range tests'
+    tests:
+    - id: acosh_001
+      description: '[+1.0, FLT_MAX] expstep'
+      input:
+      - [1.0, MAX]
+      type: [expstep]
+      steps: [10000]
+      variants : [ss]
+
+  - id: subnormal-range
+    description: 'Subnormal value range tests'
+    tests:
+    - id: acosh_002
+      description: '[-FLT_MAX, -MIN_SUBNORMAL] expstep'
+      input:
+      - [-MAX, -MIN_SUBNORMAL]
+      type: [expstep]
+      steps: [10000]
+      variants : [ss]
+
+    - id: acosh_003
+      description: '[-MIN_SUBNORMAL, +1.0] linearstep'
+      input:
+      - [-MIN_SUBNORMAL, 0x3f800000]
+      type: [linearstep]
+      steps: [10000]
+      variants : [ss]
+
+  - id: normal-range
+    description: 'Common value usage range tests'
+    tests:
+    - id: acosh_004
+      description: 'Test around 1'
+      input:
+      - [0x3f800000, 0x3f800fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+
+  #Double precision
+  - id: range-tests_01
+    description: 'Full value distribution range tests'
+    tests:
+    - id: acosh_001
+      description: '[+1.0, DBL-MAX] expstep'
+      input:
+      - [1.0, MAX]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd]
+
+  - id: subnormal-range
+    description: 'Subnormal value range tests'
+    tests:
+    - id: acosh_002
+      description: '[-DBL-MAX, -MIN_SUBNORMAL] expstep'
+      input:
+      - [-MAX, -MIN_SUBNORMAL]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd]
+
+    - id: acosh_003
+      description: '[-MIN_SUBNORMAL, 1.0] linearstep'
+      input:
+      - [-MIN_SUBNORMAL, 1.0]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd]
+
+  - id: normal-range
+    description: 'Common value usage range tests'
+    tests:
+    - id: acosh_004
+      description: 'Test around 1'
+      input:
+      - [0x3ff0000000000000, 0x3ff0000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+
+
+

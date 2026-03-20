@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -38,59 +38,82 @@
 #include <libm/arch/zen4.h>
 
 /*
+ * C implementation of round double precision 512-bit vector version (vrd8)
+ *
  * Signature:
- *    v_f64x8_t amd_vrd8_round(v_f64x8_t x)
+ *   v_f64x8_t amd_vrd8_round(v_f64x8_t x)
  *
- * Computes round() of 8 64-bit double values packed in a vector
+ * Computes round() of 8 64-bit double values packed in a vector.
  *
- * *************************************************************
+ * SPECIFICATION:
+ *    round(x) rounds x to the nearest integer value
+ *    round(±∞) = ±∞
+ *    round(NaN) = NaN
+ *    round(±0) = ±0
+ *    Ties (fractional part = 0.5) round away from zero
+ *
+ ******************************************
  * Implementation Notes
  * ---------------------
- *   Implements "round to nearest, ties away from zero" semantics
- *   for all eight elements simultaneously using vector operations.
+ * Implements "round to nearest, ties away from zero" semantics
+ * for 8 packed double precision values using AVX-512 vector operations.
  *
- *   Algorithm:
- *   1. For typical values with |x| < 2^52:
- *      a. Extract sign bits from all eight input elements
- *      b. Create ±0.5 by ORing sign bits with +0.5 constant
- *      c. Add x + (±0.5) in floating-point
- *      d. Round result toward zero to complete rounding
- *   2. For special cases (|x| >= 2^52, NaN, Inf):
- *      Use vector blend to return x unchanged (round(x) = x for these)
+ * The implementation uses a two-phase approach to correctly handle tie cases:
+ *   1. Round using IEEE "round to nearest-even"
+ *   2. Detect exact ties (remainder == 0.5) and round away from zero
  *
- *   This correctly implements: sign(x) * trunc(|x| + 0.5)
- *   which rounds halfway cases away from zero as required by round().
+ * Algorithm:
+ *   1. Extract sign bits and compute absolute values
+ *   2. Apply round-to-nearest-even using roundscale instruction
+ *      - For |x| >= 2^52: Returns input unchanged (already integer)
+ *   3. Calculate fractional part: remainder = abs_x - rounded_even
+ *   4. Detect ties via exact floating-point comparison (remainder == 0.5)
+ *   5. Use AVX-512 opmask operations to conditionally add 1.0 for ties
+ *   6. Restore original sign to final result
  *
- * Requires: AVX-512F (Zen4 or later)
- * *************************************************************
+ * Special cases:
+ *   - Special values (±∞, NaN, ±0) preserved through the algorithm
+ *
+ ******************************************
  */
 
-/* Threshold: 2^52 = 0x4330000000000000 */
-#define ROUND_ARG_MAX _mm512_set1_pd(0x1.0p52)
+static const struct {
+    v_f64x8_t half;
+    v_f64x8_t one;
+    v_f64x8_t sign;
+} v_rnd8_data  = {
+    .half = _MM512_SET1_PD8(0.5),
+    .one  = _MM512_SET1_PD8(1.0),
+    .sign = _MM512_SET1_PD8(-0.0),
+};
+#define HALF8_DP64      v_rnd8_data.half
+#define SIGN8_DP64      v_rnd8_data.sign
+#define ONE8_DP64       v_rnd8_data.one
 
 v_f64x8_t
 ALM_PROTO_ARCH_ZN4(vrd8_round)(v_f64x8_t x)
 {
-    /* Convert to integer representation for bit operations */
-    v_u64x8_t ux = as_v8_u64_f64(x);
+    /* Extract sign bits and compute absolute values */
+    v_f64x8_t sign_bits = _mm512_and_pd(x, SIGN8_DP64);
+    v_f64x8_t abs_x = _mm512_andnot_pd(SIGN8_DP64, x);
 
-    /* Extract sign bits and magnitude from all eight input elements */
-    v_u64x8_t sign = ux & SIGNBIT_DP64;
-    v_u64x8_t abs_ux = ux & ~SIGNBIT_DP64;
-    v_f64x8_t abs_x = as_v8_f64_u64(abs_ux);
+    /* Round to nearest-even (for |x| >= 2^52, returns input unchanged) */
+    v_f64x8_t rounded_even = _mm512_roundscale_pd(abs_x, _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC);
 
-    /* Check if |x| >= 2^52 (already an integer) */
-    __mmask8 is_large = _mm512_cmp_pd_mask(abs_x, ROUND_ARG_MAX, _CMP_GE_OQ);
+    /* Calculate fractional part (ties yield exactly 0.5) */
+    v_f64x8_t remainder = _mm512_sub_pd(abs_x, rounded_even);
 
-    /* Create ±0.5 for all eight elements by ORing sign bits with +0.5 */
-    v_u64x8_t signed_half = HALFEXPBITS_DP64 | sign;
+    /* Detect ties (remainder == 0.5) using AVX-512 opmask */
+    __mmask8 is_tie = _mm512_cmp_pd_mask(remainder, HALF8_DP64, _CMP_EQ_OQ);
 
-    /* Add x + (±0.5) for all eight elements */
-    v_f64x8_t sum = x + as_v8_f64_u64(signed_half);
+    /* Masked move: 1.0 for ties, 0.0 for non-ties */
+    v_f64x8_t adjustment = _mm512_maskz_mov_pd(is_tie, ONE8_DP64);
 
-    /* Round toward zero using AVX-512 roundscale to complete "round half away from zero" */
-    v_f64x8_t rounded = _mm512_roundscale_pd(sum, _MM_FROUND_TO_ZERO);
+    /* Apply adjustment (adds 1.0 for ties to round away from zero) */
+    v_f64x8_t result_abs = _mm512_add_pd(rounded_even, adjustment);
 
-    /* Select result: use x for large values, rounded for small values */
-    return _mm512_mask_blend_pd(is_large, rounded, x);
+    /* Restore original sign */
+    v_f64x8_t result = _mm512_or_pd(result_abs, sign_bits);
+
+    return result;
 }

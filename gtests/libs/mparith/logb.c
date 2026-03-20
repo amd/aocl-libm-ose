@@ -28,7 +28,6 @@
 
 #include "precision.h"
 
-
 #if defined(FLOAT)
 #define FUNC_LOGB alm_mp_logbf
 
@@ -39,55 +38,45 @@
 #error
 #endif
 
+#include <mpfr.h>
+
 REAL_L FUNC_LOGB(REAL x)
 {
     REAL_L y;
-    fp_params params;
-    int base, mantis, emin, emax;
-    int *xmp, *ymp;
-    int ifail;
+    mpfr_rnd_t rnd = MPFR_RNDN;
+    mpfr_t mpx, mp_rop;
 
-    initMultiPrecision(ISDOUBLE, 0, &base, &mantis, &emin, &emax, &params);
-    xmp = new_mp(params);
-    ymp = new_mp(params);
+    // Initialize MPFR variables with required precision
+    mpfr_inits2(ALM_MP_PRECI_BITS, mpx, mp_rop, (mpfr_ptr) 0);
 
-    DTOMP(x, xmp, params, &ifail);
-    MPLOGB(xmp, emin, ymp, params, &ifail);
+#if defined(FLOAT)
+    mpfr_set_d(mpx, x, rnd);
+#elif defined(DOUBLE)
+    mpfr_set_ld(mpx, x, rnd);
+#endif
 
-    MPTOD(ymp, params, &y, &ifail);
+    // Handle special cases
+    if (mpfr_zero_p(mpx)) {
+        // x is ±0 → return -∞
+        mpfr_set_inf(mp_rop, -1);
+    } else if (mpfr_inf_p(mpx)) {
+        // x is ±∞ → return +∞
+        mpfr_set_inf(mp_rop, 1);
+    } else if (mpfr_nan_p(mpx)) {
+        // x is NaN → return NaN
+        mpfr_set_nan(mp_rop);
+    } else {
+        // Normal or subnormal → compute unbiased exponent
+        mpfr_exp_t exp = mpfr_get_exp(mpx);
+        mpfr_set_si(mp_rop, exp - 1, rnd);
+    }
 
-    free(xmp);
-    free(ymp);
+#if defined(FLOAT)
+    y = mpfr_get_d(mp_rop, rnd);
+#elif defined(DOUBLE)
+    y = mpfr_get_ld(mp_rop, rnd);
+#endif
 
-    return y;
-}
-
-REAL FUNC_LOGB_ULP(REAL x,REAL z, double   *sulps, double   *sreldiff)
-{
-    REAL y;
-    fp_params params;
-    int base, mantis, emin, emax;
-    int *xmp, *ymp;
-    int ifail;
-	REAL reldiff,ulps;
-
-    initMultiPrecision(ISDOUBLE, 0, &base, &mantis, &emin, &emax, &params);
-    xmp = new_mp(params);
-    ymp = new_mp(params);
-
-    DTOMP(x, xmp, params, &ifail);
-    MPLOGB(xmp, emin, ymp, params, &ifail);
-
-   reldiff = MPRELDIFF(z, base, mantis, emin, emax,
-                      ymp, params,&ulps, &ifail);
-	*sreldiff = reldiff;
-	*sulps = ulps;
-
-
-    MPTOD(ymp, params, &y, &ifail);
-
-    free(xmp);
-    free(ymp);
-
+    mpfr_clears(mpx, mp_rop, (mpfr_ptr) 0);
     return y;
 }

@@ -1,0 +1,2223 @@
+---
+- test_sequence: unit_tests_round
+  function: round
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    # Test case 1: 0
+    - id: round_001
+      description: "roundf(0) = 0"
+      api_name: round
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: round_002
+      description: "roundf(-0) = -0"
+      api_name: round
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: round_003
+      description: "roundf(inf) = inf"
+      api_name: round
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: round_004
+      description: "roundf(-inf) = -inf"
+      api_name: round
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0xff800000]
+      expect_exception: []
+
+    # Test case 5: -nan
+    - id: round_005
+      description: "roundf(-nan) = nan"
+      api_name: round
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0xFFC00000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: round_006
+      description: "roundf(+nan) = nan"
+      api_name: round
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: round_007
+      description: "roundf(max positive subnormal float) = 0"
+      api_name: round
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 8: - subnorm (MAX)
+    - id: round_008
+      description: "roundf(max negative subnormal float) = -0"
+      api_name: round
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 9: + subnorm (MIN)
+    - id: round_009
+      description: "roundf(min positive subnormal float) = 0"
+      api_name: round
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 10: - subnorm (MIN)
+    - id: round_010
+      description: "roundf(min negative subnormal float) = -0"
+      api_name: round
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 11: + POS (positive normal)
+    - id: round_011
+      description: "roundf(1.4) = 1"
+      api_name: round
+      variants: [ss]
+      input: [0x3fb33333]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 12: -POS (negative positive normal)
+    - id: round_012
+      description: "roundf(-1.4) = -1"
+      api_name: round
+      variants: [ss]
+      input: [0xbfb33333]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    # Test case 13: +NEG
+    - id: round_013
+      description: "roundf(1.6) = 2"
+      api_name: round
+      variants: [ss]
+      input: [0x3fcccccd]
+      expect: [0x40000000]
+      expect_exception: []
+
+    # Test case 14: -NEG (negative value)
+    - id: round_014
+      description: "roundf(-1.6) = -2"
+      api_name: round
+      variants: [ss]
+      input: [0xbfcccccd]
+      expect: [0xc0000000]
+      expect_exception: []
+
+    # Test case 15: qnan
+    - id: round_015
+      description: "roundf(qnan) = qnan"
+      api_name: round
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: round_016
+      description: "roundf(snan) = qnan"
+      api_name: round
+      variants: [ss]
+      input: [0x7fa00000]
+      expect: [0x7fa00000]
+      expect_exception: [invalidoperation]
+
+# Test cases from gtests test_round_data.h
+#------------------------------------
+    - id: round_001
+      description: "round(POS_SNAN_F32) = POS_QNAN_F32 (invalid)"
+      input: [0x7fb00000]
+      expect: [0x7ff00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: round_002
+      description: "round(NEG_SNAN_F32) = NEG_QNAN_F32 (invalid)"
+      input: [0xffb00000]
+      expect: [0xfff00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: round_003
+      description: "round(POS_QNAN_F32) = POS_QNAN_F32"
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_004
+      description: "round(NEG_QNAN_F32) = NEG_QNAN_F32"
+      input: [0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_005
+      description: "round(POS_INF_F32) = POS_INF_F32"
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_006
+      description: "round(NEG_INF_F32) = NEG_INF_F32"
+      input: [0xFF800000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_007
+      description: "round(POS_ONE_F32) = POS_ONE_F32"
+      input: [0x3F800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_008
+      description: "round(NEG_ONE_F32) = NEG_ONE_F32"
+      input: [0xbf800000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_009
+      description: "round(POS_ZERO_F32) = POS_ZERO_F32"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_010
+      description: "round(NEG_ZERO_F32) = NEG_ZERO_F32"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_011
+      description: "round(POS_PI_F32) = 0x40400000"
+      input: [0x40490fd8]
+      expect: [0x40400000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_012
+      description: "round(NEG_PI_F32) = 0xc0400000"
+      input: [0xc0490fd8]
+      expect: [0xc0400000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_013
+      description: "round(0.125000) = 0x00000000"
+      input: [0x3e000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_014
+      description: "round(0.375000) = 0x00000000"
+      input: [0x3ec00000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_015
+      description: "round(0.625000) = 0x3f800000"
+      input: [0x3f200000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_016
+      description: "round(0.250000) = 0x00000000"
+      input: [0x3e800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_017
+      description: "round(0.500000) = 0x3f800000"
+      input: [0x3f000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_018
+      description: "round(0.750000) = 0x3f800000"
+      input: [0x3f400000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_019
+      description: "round(0.500000) = 0x3f800000"
+      input: [0x3f000000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_020
+      description: "round(0.750000) = 0x3f800000"
+      input: [0x3f400000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_021
+      description: "round(1.000000) = 0x3f800000"
+      input: [0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_022
+      description: "round(1.000000) = 0x3f800000"
+      input: [0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_023
+      description: "round(1.250000) = 0x3f800000"
+      input: [0x3fa00000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_024
+      description: "round(1.500000) = 0x40000000"
+      input: [0x3fc00000]
+      expect: [0x40000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_025
+      description: "round(2.000000) = 0x40000000"
+      input: [0x40000000]
+      expect: [0x40000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_026
+      description: "round(2.250000) = 0x40000000"
+      input: [0x40100000]
+      expect: [0x40000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_027
+      description: "round(2.500000) = 0x40400000"
+      input: [0x40200000]
+      expect: [0x40400000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_028
+      description: "round(4.000000) = 0x40800000"
+      input: [0x40800000]
+      expect: [0x40800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_029
+      description: "round(4.250000) = 0x40800000"
+      input: [0x40880000]
+      expect: [0x40800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_030
+      description: "round(4.500000) = 0x40a00000"
+      input: [0x40900000]
+      expect: [0x40a00000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_031
+      description: "round(8.000000) = 0x41000000"
+      input: [0x41000000]
+      expect: [0x41000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_032
+      description: "round(8.250000) = 0x41000000"
+      input: [0x41040000]
+      expect: [0x41000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_033
+      description: "round(8.500000) = 0x41100000"
+      input: [0x41080000]
+      expect: [0x41100000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_034
+      description: "round(16.000000) = 0x41800000"
+      input: [0x41800000]
+      expect: [0x41800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_035
+      description: "round(16.250000) = 0x41800000"
+      input: [0x41820000]
+      expect: [0x41800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_036
+      description: "round(16.500000) = 0x41880000"
+      input: [0x41840000]
+      expect: [0x41880000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_037
+      description: "round(32.000000) = 0x42000000"
+      input: [0x42000000]
+      expect: [0x42000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_038
+      description: "round(32.250000) = 0x42000000"
+      input: [0x42010000]
+      expect: [0x42000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_039
+      description: "round(32.500000) = 0x42040000"
+      input: [0x42020000]
+      expect: [0x42040000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_040
+      description: "round(64.000000) = 0x42800000"
+      input: [0x42800000]
+      expect: [0x42800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_041
+      description: "round(64.250000) = 0x42800000"
+      input: [0x42808000]
+      expect: [0x42800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_042
+      description: "round(64.500000) = 0x42820000"
+      input: [0x42810000]
+      expect: [0x42820000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_043
+      description: "round(128.000000) = 0x43000000"
+      input: [0x43000000]
+      expect: [0x43000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_044
+      description: "round(128.250000) = 0x43000000"
+      input: [0x43004000]
+      expect: [0x43000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_045
+      description: "round(128.500000) = 0x43010000"
+      input: [0x43008000]
+      expect: [0x43010000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_046
+      description: "round(256.000000) = 0x43800000"
+      input: [0x43800000]
+      expect: [0x43800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_047
+      description: "round(256.250000) = 0x43800000"
+      input: [0x43802000]
+      expect: [0x43800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_048
+      description: "round(256.500000) = 0x43808000"
+      input: [0x43804000]
+      expect: [0x43808000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_049
+      description: "round(512.000000) = 0x44000000"
+      input: [0x44000000]
+      expect: [0x44000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_050
+      description: "round(512.250000) = 0x44000000"
+      input: [0x44001000]
+      expect: [0x44000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_051
+      description: "round(512.500000) = 0x44004000"
+      input: [0x44002000]
+      expect: [0x44004000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_052
+      description: "round(1024.000000) = 0x44800000"
+      input: [0x44800000]
+      expect: [0x44800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_053
+      description: "round(1024.250000) = 0x44800000"
+      input: [0x44800800]
+      expect: [0x44800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_054
+      description: "round(1024.500000) = 0x44802000"
+      input: [0x44801000]
+      expect: [0x44802000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_055
+      description: "round(2048.000000) = 0x45000000"
+      input: [0x45000000]
+      expect: [0x45000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_056
+      description: "round(2048.250000) = 0x45000000"
+      input: [0x45000400]
+      expect: [0x45000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_057
+      description: "round(2048.500000) = 0x45001000"
+      input: [0x45000800]
+      expect: [0x45001000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_058
+      description: "round(4096.000000) = 0x45800000"
+      input: [0x45800000]
+      expect: [0x45800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_059
+      description: "round(4096.250000) = 0x45800000"
+      input: [0x45800200]
+      expect: [0x45800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_060
+      description: "round(4096.500000) = 0x45800800"
+      input: [0x45800400]
+      expect: [0x45800800]
+      expect_exception: []
+      variants: [ss]
+    - id: round_061
+      description: "round(8192.000000) = 0x46000000"
+      input: [0x46000000]
+      expect: [0x46000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_062
+      description: "round(8192.250000) = 0x46000000"
+      input: [0x46000100]
+      expect: [0x46000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_063
+      description: "round(8192.500000) = 0x46000400"
+      input: [0x46000200]
+      expect: [0x46000400]
+      expect_exception: []
+      variants: [ss]
+    - id: round_064
+      description: "round(16384.000000) = 0x46800000"
+      input: [0x46800000]
+      expect: [0x46800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_065
+      description: "round(16384.250000) = 0x46800000"
+      input: [0x46800080]
+      expect: [0x46800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_066
+      description: "round(16384.500000) = 0x46800200"
+      input: [0x46800100]
+      expect: [0x46800200]
+      expect_exception: []
+      variants: [ss]
+    - id: round_067
+      description: "round(32768.000000) = 0x47000000"
+      input: [0x47000000]
+      expect: [0x47000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_068
+      description: "round(32768.250000) = 0x47000000"
+      input: [0x47000040]
+      expect: [0x47000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_069
+      description: "round(32768.500000) = 0x47000100"
+      input: [0x47000080]
+      expect: [0x47000100]
+      expect_exception: []
+      variants: [ss]
+    - id: round_070
+      description: "round(65536.000000) = 0x47800000"
+      input: [0x47800000]
+      expect: [0x47800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_071
+      description: "round(65536.250000) = 0x47800000"
+      input: [0x47800020]
+      expect: [0x47800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_072
+      description: "round(65536.500000) = 0x47800080"
+      input: [0x47800040]
+      expect: [0x47800080]
+      expect_exception: []
+      variants: [ss]
+    - id: round_073
+      description: "round(131072.000000) = 0x48000000"
+      input: [0x48000000]
+      expect: [0x48000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_074
+      description: "round(131072.250000) = 0x48000000"
+      input: [0x48000010]
+      expect: [0x48000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_075
+      description: "round(131072.500000) = 0x48000040"
+      input: [0x48000020]
+      expect: [0x48000040]
+      expect_exception: []
+      variants: [ss]
+    - id: round_076
+      description: "round(262144.000000) = 0x48800000"
+      input: [0x48800000]
+      expect: [0x48800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_077
+      description: "round(262144.250000) = 0x48800000"
+      input: [0x48800008]
+      expect: [0x48800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_078
+      description: "round(262144.500000) = 0x48800020"
+      input: [0x48800010]
+      expect: [0x48800020]
+      expect_exception: []
+      variants: [ss]
+    - id: round_079
+      description: "round(524288.000000) = 0x49000000"
+      input: [0x49000000]
+      expect: [0x49000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_080
+      description: "round(524288.250000) = 0x49000000"
+      input: [0x49000004]
+      expect: [0x49000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_081
+      description: "round(524288.500000) = 0x49000010"
+      input: [0x49000008]
+      expect: [0x49000010]
+      expect_exception: []
+      variants: [ss]
+    - id: round_082
+      description: "round(1048576.000000) = 0x49800000"
+      input: [0x49800000]
+      expect: [0x49800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_083
+      description: "round(1048576.250000) = 0x49800000"
+      input: [0x49800002]
+      expect: [0x49800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_084
+      description: "round(1048576.500000) = 0x49800008"
+      input: [0x49800004]
+      expect: [0x49800008]
+      expect_exception: []
+      variants: [ss]
+    - id: round_085
+      description: "round(2097152.000000) = 0x4a000000"
+      input: [0x4a000000]
+      expect: [0x4a000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_086
+      description: "round(2097152.250000) = 0x4a000000"
+      input: [0x4a000001]
+      expect: [0x4a000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_087
+      description: "round(2097152.500000) = 0x4a000004"
+      input: [0x4a000002]
+      expect: [0x4a000004]
+      expect_exception: []
+      variants: [ss]
+    - id: round_088
+      description: "round(4194304.000000) = 0x4a800000"
+      input: [0x4a800000]
+      expect: [0x4a800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_089
+      description: "round(8388608.000000) = 0x4b000000"
+      input: [0x4b000000]
+      expect: [0x4b000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_090
+      description: "round(16777216.000000) = 0x4b800000"
+      input: [0x4b800000]
+      expect: [0x4b800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_091
+      description: "round(33554432.000000) = 0x4c000000"
+      input: [0x4c000000]
+      expect: [0x4c000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_092
+      description: "round(67108864.000000) = 0x4c800000"
+      input: [0x4c800000]
+      expect: [0x4c800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_093
+      description: "round(134217728.000000) = 0x4d000000"
+      input: [0x4d000000]
+      expect: [0x4d000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_094
+      description: "round(268435456.000000) = 0x4d800000"
+      input: [0x4d800000]
+      expect: [0x4d800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_095
+      description: "round(536870912.000000) = 0x4e000000"
+      input: [0x4e000000]
+      expect: [0x4e000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_096
+      description: "round(1073741824.000000) = 0x4e800000"
+      input: [0x4e800000]
+      expect: [0x4e800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_097
+      description: "round(2147483648.000000) = 0x4f000000"
+      input: [0x4f000000]
+      expect: [0x4f000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_098
+      description: "round(4294967296.000000) = 0x4f800000"
+      input: [0x4f800000]
+      expect: [0x4f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_099
+      description: "round(8589934592.000000) = 0x50000000"
+      input: [0x50000000]
+      expect: [0x50000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_100
+      description: "round(17179869184.000000) = 0x50800000"
+      input: [0x50800000]
+      expect: [0x50800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_101
+      description: "round(34359738368.000000) = 0x51000000"
+      input: [0x51000000]
+      expect: [0x51000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_102
+      description: ""
+      input: [0x1]
+      expect: [0x0]
+      expect_exception: []
+      variants: [ss]
+    - id: round_103
+      description: ""
+      input: [0x5fde6]
+      expect: [0x0]
+      expect_exception: []
+      variants: [ss]
+    - id: round_104
+      description: ""
+      input: [0x7fffff]
+      expect: [0x0]
+      expect_exception: []
+      variants: [ss]
+    - id: round_105
+      description: ""
+      input: [0x80000001]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_106
+      description: ""
+      input: [0x805def12]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_107
+      description: ""
+      input: [0x807fffff]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_108
+      description: ""
+      input: [0x800000]
+      expect: [0x0]
+      expect_exception: []
+      variants: [ss]
+    - id: round_109
+      description: ""
+      input: [0x43b3c4ea]
+      expect: [0x43b40000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_110
+      description: ""
+      input: [0x7f7fffff]
+      expect: [0x7f7fffff]
+      expect_exception: []
+      variants: [ss]
+    - id: round_111
+      description: ""
+      input: [0x80800000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_112
+      description: ""
+      input: [0xc5812e71]
+      expect: [0xc5813000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_113
+      description: ""
+      input: [0xff7fffff]
+      expect: [0xff7fffff]
+      expect_exception: []
+      variants: [ss]
+    - id: round_114
+      description: ""
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_115
+      description: ""
+      input: [0xff800000]
+      expect: [0xff800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_116
+      description: ""
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_117
+      description: ""
+      input: [0x7fe1a570]
+      expect: [0x7fe1a570]
+      expect_exception: []
+      variants: [ss]
+    - id: round_118
+      description: ""
+      input: [0x3fc90fdb]
+      expect: [0x40000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_119
+      description: ""
+      input: [0x40490fdb]
+      expect: [0x40400000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_120
+      description: ""
+      input: [0x40c90fdb]
+      expect: [0x40c00000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_121
+      description: ""
+      input: [0x402df853]
+      expect: [0x40400000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_122
+      description: ""
+      input: [0x402df854]
+      expect: [0x40400000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_123
+      description: ""
+      input: [0x402df855]
+      expect: [0x40400000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_124
+      description: ""
+      input: [0x0]
+      expect: [0x0]
+      expect_exception: []
+      variants: [ss]
+    - id: round_125
+      description: ""
+      input: [0x37c0f01f]
+      expect: [0x0]
+      expect_exception: []
+      variants: [ss]
+    - id: round_126
+      description: ""
+      input: [0x3efffeb0]
+      expect: [0x0]
+      expect_exception: []
+      variants: [ss]
+    - id: round_127
+      description: ""
+      input: [0x3f0000c9]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_128
+      description: ""
+      input: [0x3f0000c9]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_129
+      description: ""
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_130
+      description: ""
+      input: [0xb7c0f01f]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_131
+      description: ""
+      input: [0xbefffeb0]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_132
+      description: ""
+      input: [0xbf0000c9]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_133
+      description: ""
+      input: [0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_134
+      description: ""
+      input: [0x3f700001]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_135
+      description: ""
+      input: [0x3f87fffe]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_136
+      description: ""
+      input: [0x3fbfffac]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_137
+      description: ""
+      input: [0x3fc00064]
+      expect: [0x40000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_138
+      description: ""
+      input: [0xbf800000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_139
+      description: ""
+      input: [0xbf700001]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_140
+      description: ""
+      input: [0xbf87fffe]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_141
+      description: ""
+      input: [0xbfbfffac]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_142
+      description: ""
+      input: [0xbfc00064]
+      expect: [0xc0000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_143
+      description: ""
+      input: [0x40000000]
+      expect: [0x40000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_144
+      description: ""
+      input: [0xc0000000]
+      expect: [0xc0000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_145
+      description: ""
+      input: [0x41200000]
+      expect: [0x41200000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_146
+      description: ""
+      input: [0xc1200000]
+      expect: [0xc1200000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_147
+      description: ""
+      input: [0x447a0000]
+      expect: [0x447a0000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_148
+      description: ""
+      input: [0xc47a0000]
+      expect: [0xc47a0000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_149
+      description: ""
+      input: [0x4286cccc]
+      expect: [0x42860000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_150
+      description: ""
+      input: [0xc286cccc]
+      expect: [0xc2860000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_151
+      description: ""
+      input: [0x44f7f333]
+      expect: [0x44f80000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_152
+      description: ""
+      input: [0xc4f7f333]
+      expect: [0xc4f80000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_153
+      description: ""
+      input: [0x42af0000]
+      expect: [0x42b00000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_154
+      description: ""
+      input: [0xc2af0000]
+      expect: [0xc2b00000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_155
+      description: ""
+      input: [0x48015e40]
+      expect: [0x48015e40]
+      expect_exception: []
+      variants: [ss]
+    - id: round_156
+      description: ""
+      input: [0xc8015e40]
+      expect: [0xc8015e40]
+      expect_exception: []
+      variants: [ss]
+    - id: round_157
+      description: ""
+      input: [0x4b000000]
+      expect: [0x4b000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_158
+      description: ""
+      input: [0x4b000001]
+      expect: [0x4b000001]
+      expect_exception: []
+      variants: [ss]
+    - id: round_159
+      description: ""
+      input: [0x4affffff]
+      expect: [0x4b000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_160
+      description: ""
+      input: [0xcb000000]
+      expect: [0xcb000000]
+      expect_exception: []
+      variants: [ss]
+    - id: round_161
+      description: ""
+      input: [0xcb000001]
+      expect: [0xcb000001]
+      expect_exception: []
+      variants: [ss]
+    - id: round_162
+      description: ""
+      input: [0xcaffffff]
+      expect: [0xcb000000]
+      expect_exception: []
+      variants: [ss]
+#-----------------------------------
+#Double precision
+    # Test case 1: 0 (double)
+    - id: round_001
+      description: "round(0) = 0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 2: -0 (double)
+    - id: round_002
+      description: "round(-0) = -0"
+
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 3: inf (double)
+    - id: round_003
+      description: "round(inf) = inf"
+      api_name: round
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 4: -inf (double)
+    - id: round_004
+      description: "round(-inf) = -inf"
+      api_name: round
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+
+    # Test case 5: -nan (double)
+    - id: round_005
+      description: "round(-nan) = nan"
+      api_name: round
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: []
+
+    # Test case 6: +nan (double)
+    - id: round_006
+      description: "round(+nan) = nan"
+      api_name: round
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX) (double)
+    - id: round_007
+      description: "round(max positive subnormal double) = 0"
+      api_name: round
+      variants: [sd]
+      input: [0x000fffffffffffff]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 8: - subnorm (MAX) (double)
+    - id: round_008
+      description: "round(max negative subnormal double) = -0"
+      api_name: round
+      variants: [sd]
+      input: [0x800fffffffffffff]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 9: + subnorm (MIN) (double)
+    - id: round_009
+      description: "round(min positive subnormal double) = 0"
+      api_name: round
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 10: - subnorm (MIN) (double)
+    - id: round_010
+      description: "round(min negative subnormal double) = -0"
+      api_name: round
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 11: + POS (positive normal) (double)
+    - id: round_011
+      description: "round(1.4) = 1"
+      api_name: round
+      variants: [sd]
+      input: [0x3ff6666666666666]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 12: -POS (negative positive normal) (double)
+    - id: round_012
+      description: "round(-1.4) = -1"
+      api_name: round
+      variants: [sd]
+      input: [0xbff6666666666666]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    # Test case 13: +NEG (double)
+    - id: round_013
+      description: "round(1.6) = 2"
+      api_name: round
+      variants: [sd]
+      input: [0x3ff999999999999a]
+      expect: [0x4000000000000000]
+      expect_exception: []
+
+    # Test case 14: -NEG (negative value) (double)
+    - id: round_014
+      description: "round(-1.6) = -2"
+      api_name: round
+      variants: [sd]
+      input: [0xbff999999999999a]
+      expect: [0xc000000000000000]
+      expect_exception: []
+
+    # Test case 15: qnan (double)
+    - id: round_015
+      description: "round(qnan) = qnan"
+      api_name: round
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 16: snan (double)
+    - id: round_016
+      description: "round(snan) = qnan"
+      api_name: round
+      variants: [sd]
+      input: [0x7ff4000000000001]
+      expect: [0x7FF4000000000001]
+      expect_exception: [invalidoperation]
+
+    # Additional meaningful test cases
+    - id: round_017
+      description: "round(0.5) = 1"
+      api_name: round
+      variants: [sd]
+      input: [0x3fe0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: round_018
+      description: "round(-0.5) = -1"
+      api_name: round
+      variants: [sd]
+      input: [0xbfe0000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: round_019
+      description: "round(2.5) = 3"
+      api_name: round
+      variants: [sd]
+      input: [0x4004000000000000]
+      expect: [0x4008000000000000]
+      expect_exception: []
+
+    - id: round_020
+      description: "round(-2.5) = -3"
+      api_name: round
+      variants: [sd]
+      input: [0xc004000000000000]
+      expect: [0xc008000000000000]
+      expect_exception: []
+# Test cases from gtests test_round_data.h
+#------------------------------------
+    - id: round_001
+      description: "round(min small enough that round(x) = 1)"
+      input: [0x3e30000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_002
+      description: "round(min - 1 bit)"
+      input: [0x3E2FFFFFFFFFFFFF]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_003
+      description: "round(min + 1 bit)"
+      input: [0x3e30000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_004
+      description: "round(lambda + x = 1, x = -1.0000000000000000e+300)"
+      input: [0xFE37E43C8800759C]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_005
+      description: "round(lambda + x < 1)"
+      input: [0xFE37E43C8800758C]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_006
+      description: "round(lambda + x > 1)"
+      input: [0xFE37E43C880075AC]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_007
+      description: "round(max arg, x = 89.41598629223294, max roundf arg)"
+      input: [0x408633ce8fb9f87e]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_008
+      description: "round(max arg - 1 bit)"
+      input: [0x408633ce8fb9f87d]
+      expect: [0x7feffffffffffd3b]
+      expect_exception: []
+      variants: [sd]
+    - id: round_009
+      description: "round(max arg + 1 bit)"
+      input: [0x408633ce8fb9f87f]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_010
+      description: "round(> max)"
+      input: [0x408633ce8fb9f8ff]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_011
+      description: "round(< max)"
+      input: [0x408633ce8fb9f800]
+      expect: [0x7feffffffffe093b]
+      expect_exception: []
+      variants: [sd]
+    - id: round_012
+      description: "round(small_threshold = 20)"
+      input: [0x4034000000000000]
+      expect: [0x41aceb088b68e804]
+      expect_exception: []
+      variants: [sd]
+    - id: round_013
+      description: "round(small_threshold+1 = 21)"
+      input: [0x4035000000000000]
+      expect: [0x41c3a6e1fd9eecfd]
+      expect_exception: []
+      variants: [sd]
+    - id: round_014
+      description: "round(small_threshold - 1 = 19)"
+      input: [0x4033000000000000]
+      expect: [0x419546d8f9ed26e2]
+      expect_exception: []
+      variants: [sd]
+    - id: round_015
+      description: "round(POS_ZERO_F64) = 0x3FF0000000000000"
+      input: [0x0000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_016
+      description: "round(NEG_ZERO_F64) = 0x3FF0000000000000"
+      input: [0x8000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_017
+      description: "round(POS_INF_F64) = POS_INF_F64"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_018
+      description: "round(NEG_INF_F64) = POS_INF_F64"
+      input: [0xfff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_019
+      description: "round(POS_SNAN_F64) = POS_SNAN_F64"
+      input: [0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: round_020
+      description: "round(NEG_SNAN_F64) = NEG_SNAN_F64"
+      input: [0xfff2000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: round_021
+      description: "round(POS_QNAN_F64) = POS_QNAN_F64"
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+    - id: round_022
+      description: "round(NEG_QNAN_F64) = NEG_QNAN_F64"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_023
+      description: "round(710.5) = POS_INF_F64"
+      input: [0x4086340000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_024
+      description: "round(denormal min) = 0x3ff0000000000000"
+      input: [0x0000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_025
+      description: "round(denormal intermediate) = 0x3ff0000000000000"
+      input: [0x0005fde623545abc]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_026
+      description: "round(denormal max) = 0x3ff0000000000000"
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_027
+      description: "round(-denormal min) = 0x3ff0000000000000"
+      input: [0x8000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_028
+      description: "round(-denormal intermediate) = 0x3ff0000000000000"
+      input: [0x8002344ade5def12]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_029
+      description: "round(-denormal max) = 0x3ff0000000000000"
+      input: [0x800FFFFFFFFFFFFF]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_030
+      description: "round(normal min) = 0x3ff0000000000000"
+      input: [0x0010000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_031
+      description: "round(normal intermediate) = 0x7ff0000000000000"
+      input: [0x43b3c4eafedcab02]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_032
+      description: "round(normal max) = 0x7ff0000000000000"
+      input: [0x7FEFFFFFFFFFFFFF]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_033
+      description: "round(-normal min) = 0x3ff0000000000000"
+      input: [0x8010000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_034
+      description: "round(-normal intermediate) = 0x7ff0000000000000"
+      input: [0xc5812e71245acfdb]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_035
+      description: "round(-normal max) = 0x7ff0000000000000"
+      input: [0xFFEFFFFFFFFFFFFF]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_036
+      description: "round(inf) = 0x7ff0000000000000"
+      input: [0x7FF0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_037
+      description: "round(-inf) = 0x7ff0000000000000"
+      input: [0xFFF0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_038
+      description: "round(qnan min) = 0x7ff8000000000000"
+      input: [0x7FF8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_039
+      description: "round(qnan intermediate) = 0x7ffe1a5701234dc3"
+      input: [0x7FFe1a5701234dc3]
+      expect: [0x7ffe1a5701234dc3]
+      expect_exception: []
+      variants: [sd]
+    - id: round_040
+      description: "round(qnan max) = 0x7fffffffffffffffLL"
+      input: [0x7FFFFFFFFFFFFFFF]
+      expect: [0x7fffffffffffffff]
+      expect_exception: []
+      variants: [sd]
+    - id: round_041
+      description: "round(indeterminate) = 0xfff8000000000000"
+      input: [0xFFF8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_042
+      description: "round(-qnan min) = 0xfff8000000000001"
+      input: [0xFFF8000000000001]
+      expect: [0xfff8000000000001]
+      expect_exception: []
+      variants: [sd]
+    - id: round_043
+      description: "round(-qnan intermediate) = 0xfff9123425dcba31"
+      input: [0xFFF9123425dcba31]
+      expect: [0xfff9123425dcba31]
+      expect_exception: []
+      variants: [sd]
+    - id: round_044
+      description: "round(-qnan max) = 0xffffffffffffffffLL"
+      input: [0xFFFFFFFFFFFFFFFF]
+      expect: [0xffffffffffffffff]
+      expect_exception: []
+      variants: [sd]
+    - id: round_045
+      description: "round(snan min) = 0x7ff8000000000001"
+      input: [0x7FF0000000000001]
+      expect: [0x7ff8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: round_046
+      description: "round(snan intermediate) = 0x7ffd344752a0bd90"
+      input: [0x7FF5344752a0bd90]
+      expect: [0x7ffd344752a0bd90]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: round_047
+      description: "round(snan max) = 0x7fffffffffffffffLL"
+      input: [0x7FF7FFFFFFFFFFFF]
+      expect: [0x7fffffffffffffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: round_048
+      description: "round(-snan min) = 0xfff8000000000001"
+      input: [0xFFF0000000000001]
+      expect: [0xfff8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: round_049
+      description: "round(-snan intermediate) = 0xfffc32438995fffaLL"
+      input: [0xfFF432438995fffa]
+      expect: [0xfffc32438995fffa]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: round_050
+      description: "round(-snan max) = 0xffffffffffffffffLL"
+      input: [0xFFF7FFFFFFFFFFFF]
+      expect: [0xffffffffffffffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: round_051
+      description: "round(pi/2) = 0x400412cc2a8d4e9e"
+      input: [0x3FF921FB54442D18]
+      expect: [0x400412cc2a8d4e9e]
+      expect_exception: []
+      variants: [sd]
+    - id: round_052
+      description: "round(pi) = 0x40272f147fee4000"
+      input: [0x400921FB54442D18]
+      expect: [0x40272f147fee4000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_053
+      description: "round(2pi) = 0x4070bbf2bc2b69c6"
+      input: [0x401921FB54442D18]
+      expect: [0x4070bbf2bc2b69c6]
+      expect_exception: []
+      variants: [sd]
+    - id: round_054
+      description: "round(e --) = 0x4007046b4f3f7e0c"
+      input: [0x3FFB7E151628AED3]
+      expect: [0x4007046b4f3f7e0c]
+      expect_exception: []
+      variants: [sd]
+    - id: round_055
+      description: "round(e) = 0x401e70c4a4f41684"
+      input: [0x4005BF0A8B145769]
+      expect: [0x401e70c4a4f41684]
+      expect_exception: []
+      variants: [sd]
+    - id: round_056
+      description: "round(e ++) = 0x40349be1e586228d"
+      input: [0x400DBF0A8B145769]
+      expect: [0x40349be1e586228d]
+      expect_exception: []
+      variants: [sd]
+    - id: round_057
+      description: "round(0) = 0x3ff0000000000000"
+      input: [0x0000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_058
+      description: "round(0.0000000000000000023) = 0x3ff0000000000000"
+      input: [0x3C4536B8B14B676C]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_059
+      description: "round(0.4999989999999999999) = 0x3ff20ac0fa498d2c"
+      input: [0x3FDFFFFBCE4217D3]
+      expect: [0x3ff20ac0fa498d2c]
+      expect_exception: []
+      variants: [sd]
+    - id: round_060
+      description: "round(0.500000000000012) = 0x3ff20ac1862ae8ed"
+      input: [0x3FE000000000006C]
+      expect: [0x3ff20ac1862ae8ed]
+      expect_exception: []
+      variants: [sd]
+    - id: round_061
+      description: "round(-0) = 0x3ff0000000000000"
+      input: [0x8000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_062
+      description: "round(-0.000000000000000000023) = 0x3ff0000000000000"
+      input: [0xBBDB2752CE74FF42]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_063
+      description: "round(-0.4999989999999999999) = 0x3ff20ac0fa498d2c"
+      input: [0xBFDFFFFBCE4217D3]
+      expect: [0x3ff20ac0fa498d2c]
+      expect_exception: []
+      variants: [sd]
+    - id: round_064
+      description: "round(-0.500000000000012) = 0x3ff20ac1862ae8ed"
+      input: [0xBFE000000000006C]
+      expect: [0x3ff20ac1862ae8ed]
+      expect_exception: []
+      variants: [sd]
+    - id: round_065
+      description: "round(1) = 0x3ff8b07551d9f550"
+      input: [0x3FF0000000000000]
+      expect: [0x3ff8b07551d9f550]
+      expect_exception: []
+      variants: [sd]
+    - id: round_066
+      description: "round(0.9999998893750006) = 0x3ff8b0752ef3f8a2"
+      input: [0x3FEFFFFFC49BD0DC]
+      expect: [0x3ff8b0752ef3f8a2]
+      expect_exception: []
+      variants: [sd]
+    - id: round_067
+      description: "round(1.0000000000000624998) = 0x3ff8b07551d9f69b"
+      input: [0x3FF0000000000119]
+      expect: [0x3ff8b07551d9f69b]
+      expect_exception: []
+      variants: [sd]
+    - id: round_068
+      description: "round(1.499998999999999967) = 0x4002d1bb0418ae52"
+      input: [0x3FF7FFFEF39085F4]
+      expect: [0x4002d1bb0418ae52]
+      expect_exception: []
+      variants: [sd]
+    - id: round_069
+      description: "round(1.50000000000000012) = 0x4002d1bc21e22023"
+      input: [0x3FF8000000000001]
+      expect: [0x4002d1bc21e22023]
+      expect_exception: []
+      variants: [sd]
+    - id: round_070
+      description: "round(-1) = 0x3ff8b07551d9f550"
+      input: [0xBFF0000000000000]
+      expect: [0x3ff8b07551d9f550]
+      expect_exception: []
+      variants: [sd]
+    - id: round_071
+      description: "round(-0.9999998893750006) = 0x3ff8b0752ef3f8a2"
+      input: [0xBFEFFFFFC49BD0DC]
+      expect: [0x3ff8b0752ef3f8a2]
+      expect_exception: []
+      variants: [sd]
+    - id: round_072
+      description: "round(-1.0000000000000624998) = 0x3ff8b07551d9f69b"
+      input: [0xBFF0000000000119]
+      expect: [0x3ff8b07551d9f69b]
+      expect_exception: []
+      variants: [sd]
+    - id: round_073
+      description: "round(-1.499998999999999967) = 0x4002d1bb0418ae52"
+      input: [0xBFF7FFFEF39085F4]
+      expect: [0x4002d1bb0418ae52]
+      expect_exception: []
+      variants: [sd]
+    - id: round_074
+      description: "round(-1.50000000000000012) = 0x4002d1bc21e22023"
+      input: [0xBFF8000000000001]
+      expect: [0x4002d1bc21e22023]
+      expect_exception: []
+      variants: [sd]
+    - id: round_075
+      description: "round(2) = 0x400e18fa0df2d9bc"
+      input: [0x4000000000000000]
+      expect: [0x400e18fa0df2d9bc]
+      expect_exception: []
+      variants: [sd]
+    - id: round_076
+      description: "round(-2) = 0x400e18fa0df2d9bc"
+      input: [0xC000000000000000]
+      expect: [0x400e18fa0df2d9bc]
+      expect_exception: []
+      variants: [sd]
+    - id: round_077
+      description: "round(10) = 0x40c5829dd053712d"
+      input: [0x4024000000000000]
+      expect: [0x40c5829dd053712d]
+      expect_exception: []
+      variants: [sd]
+    - id: round_078
+      description: "round(-10) = 0x40c5829dd053712d"
+      input: [0xC024000000000000]
+      expect: [0x40c5829dd053712d]
+      expect_exception: []
+      variants: [sd]
+    - id: round_079
+      description: "round(1000) = 0x7ff0000000000000"
+      input: [0x408F400000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_080
+      description: "round(-1000) = 0x7ff0000000000000"
+      input: [0xC08F400000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_081
+      description: "round(67.4) = 0x45f2dd7567cd83ee"
+      input: [0x4050D9999999999A]
+      expect: [0x45f2dd7567cd83ee]
+      expect_exception: []
+      variants: [sd]
+    - id: round_082
+      description: "round(-67.4) = 0x45f2dd7567cd83ee"
+      input: [0xC050D9999999999A]
+      expect: [0x45f2dd7567cd83ee]
+      expect_exception: []
+      variants: [sd]
+    - id: round_083
+      description: "round(1983.6) = 0x7ff0000000000000"
+      input: [0x409EFE6666666666]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_084
+      description: "round(-1983.6) = 0x7ff0000000000000"
+      input: [0xC09EFE6666666666]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_085
+      description: "round(87.5) = 0x47c2d7566d26536b"
+      input: [0x4055E00000000000]
+      expect: [0x47c2d7566d26536b]
+      expect_exception: []
+      variants: [sd]
+    - id: round_086
+      description: "round(-87.5) = 0x47c2d7566d26536b"
+      input: [0xC055E00000000000]
+      expect: [0x47c2d7566d26536b]
+      expect_exception: []
+      variants: [sd]
+    - id: round_087
+      description: "round(132473) = 0x7ff0000000000000"
+      input: [0x41002BC800000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_088
+      description: "round(-132473) = 0x7ff0000000000000"
+      input: [0xC1002BC800000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_089
+      description: "round(2^52) = 0x7ff0000000000000"
+      input: [0x4330000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_090
+      description: "round(2^52 + 1) = 0x7ff0000000000000"
+      input: [0x4330000000000001]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_091
+      description: "round(2^52 -1 + 0.5) = 0x7ff0000000000000"
+      input: [0x432FFFFFFFFFFFFF]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_092
+      description: "round(-2^52) = 0x7ff0000000000000"
+      input: [0xC330000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_093
+      description: "round(-(2^52 + 1)) = 0x7ff0000000000000"
+      input: [0xC330000000000001]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_094
+      description: "round(-(2^52 -1 + 0.5)) = 0x7ff0000000000000"
+      input: [0xC32FFFFFFFFFFFFF]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_095
+      description: "round(1.5708) = 0x3ff921fb54442d18"
+      input: [0x3ff921fb54442d18]
+      expect: [0x3ff921fb54442d18]
+      expect_exception: []
+      variants: [sd]
+    - id: round_096
+      description: "round(3.14159) = 0x400921fb54442d18"
+      input: [0x400921fb54442d18]
+      expect: [0x400921fb54442d18]
+      expect_exception: []
+      variants: [sd]
+    - id: round_097
+      description: "round(6.28319) = 0x401921fb54442d18"
+      input: [0x401921fb54442d18]
+      expect: [0x401921fb54442d18]
+      expect_exception: []
+      variants: [sd]
+    - id: round_098
+      description: "round(1.71828) = 0x3ffb7e151628aed3"
+      input: [0x3ffb7e151628aed3]
+      expect: [0x3ffb7e151628aed3]
+      expect_exception: []
+      variants: [sd]
+    - id: round_099
+      description: "round(2.71828) = 0x4005bf0a8b145769"
+      input: [0x4005bf0a8b145769]
+      expect: [0x4005bf0a8b145769]
+      expect_exception: []
+      variants: [sd]
+    - id: round_100
+      description: "round(3.71828) = 0x400dbf0a8b145769"
+      input: [0x400dbf0a8b145769]
+      expect: [0x400dbf0a8b145769]
+      expect_exception: []
+      variants: [sd]
+    - id: round_101
+      description: "round(0) = 0x0"
+      input: [0x0]
+      expect: [0x0]
+      expect_exception: []
+      variants: [sd]
+    - id: round_102
+      description: "round(2.3e-18) = 0x3c4536b8b14b676c"
+      input: [0x3c4536b8b14b676c]
+      expect: [0x3c4536b8b14b676c]
+      expect_exception: []
+      variants: [sd]
+    - id: round_103
+      description: "round(0.499999) = 0x3fdffffbce4217d3"
+      input: [0x3fdffffbce4217d3]
+      expect: [0x3fdffffbce4217d3]
+      expect_exception: []
+      variants: [sd]
+    - id: round_104
+      description: "round(0.5) = 0x3fe000000000006c"
+      input: [0x3fe000000000006c]
+      expect: [0x3fe000000000006c]
+      expect_exception: []
+      variants: [sd]
+    - id: round_105
+      description: "round(-0) = 0x0"
+      input: [0x8000000000000000]
+      expect: [0x0]
+      expect_exception: []
+      variants: [sd]
+    - id: round_106
+      description: "round(-2.3e-20) = 0x3bdb2752ce74ff42"
+      input: [0xbbdb2752ce74ff42]
+      expect: [0x3bdb2752ce74ff42]
+      expect_exception: []
+      variants: [sd]
+    - id: round_107
+      description: "round(-0.499999) = 0x3fdffffbce4217d3"
+      input: [0xbfdffffbce4217d3]
+      expect: [0x3fdffffbce4217d3]
+      expect_exception: []
+      variants: [sd]
+    - id: round_108
+      description: "round(-0.5) = 0x3fe000000000006c"
+      input: [0xbfe000000000006c]
+      expect: [0x3fe000000000006c]
+      expect_exception: []
+      variants: [sd]
+    - id: round_109
+      description: "round(1) = 0x3ff0000000000000"
+      input: [0x3ff0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_110
+      description: "round(1) = 0x3fefffffc49bd0dc"
+      input: [0x3fefffffc49bd0dc]
+      expect: [0x3fefffffc49bd0dc]
+      expect_exception: []
+      variants: [sd]
+    - id: round_111
+      description: "round(1) = 0x3ff0000000000119"
+      input: [0x3ff0000000000119]
+      expect: [0x3ff0000000000119]
+      expect_exception: []
+      variants: [sd]
+    - id: round_112
+      description: "round(1.5) = 0x3ff7fffef39085f4"
+      input: [0x3ff7fffef39085f4]
+      expect: [0x3ff7fffef39085f4]
+      expect_exception: []
+      variants: [sd]
+    - id: round_113
+      description: "round(1.5) = 0x3ff8000000000001"
+      input: [0x3ff8000000000001]
+      expect: [0x3ff8000000000001]
+      expect_exception: []
+      variants: [sd]
+    - id: round_114
+      description: "round(-1) = 0x3ff0000000000000"
+      input: [0xbff0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_115
+      description: "round(-1) = 0x3fefffffc49bd0dc"
+      input: [0xbfefffffc49bd0dc]
+      expect: [0x3fefffffc49bd0dc]
+      expect_exception: []
+      variants: [sd]
+    - id: round_116
+      description: "round(-1) = 0x3ff0000000000119"
+      input: [0xbff0000000000119]
+      expect: [0x3ff0000000000119]
+      expect_exception: []
+      variants: [sd]
+    - id: round_117
+      description: "round(-1.5) = 0x3ff7fffef39085f4"
+      input: [0xbff7fffef39085f4]
+      expect: [0x3ff7fffef39085f4]
+      expect_exception: []
+      variants: [sd]
+    - id: round_118
+      description: "round(-1.5) = 0x3ff8000000000001"
+      input: [0xbff8000000000001]
+      expect: [0x3ff8000000000001]
+      expect_exception: []
+      variants: [sd]
+    - id: round_119
+      description: "round(2) = 0x4000000000000000"
+      input: [0x4000000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_120
+      description: "round(-2) = 0x4000000000000000"
+      input: [0xc000000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_121
+      description: "round(10) = 0x4024000000000000"
+      input: [0x4024000000000000]
+      expect: [0x4024000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_122
+      description: "round(-10) = 0x4024000000000000"
+      input: [0xc024000000000000]
+      expect: [0x4024000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_123
+      description: "round(1000) = 0x408f400000000000"
+      input: [0x408f400000000000]
+      expect: [0x408f400000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_124
+      description: "round(-1000) = 0x408f400000000000"
+      input: [0xc08f400000000000]
+      expect: [0x408f400000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_125
+      description: "round(67.4) = 0x4050d9999999999a"
+      input: [0x4050d9999999999a]
+      expect: [0x4050d9999999999a]
+      expect_exception: []
+      variants: [sd]
+    - id: round_126
+      description: "round(-67.4) = 0x4050d9999999999a"
+      input: [0xc050d9999999999a]
+      expect: [0x4050d9999999999a]
+      expect_exception: []
+      variants: [sd]
+    - id: round_127
+      description: "round(1983.6) = 0x409efe6666666666"
+      input: [0x409efe6666666666]
+      expect: [0x409efe6666666666]
+      expect_exception: []
+      variants: [sd]
+    - id: round_128
+      description: "round(-1983.6) = 0x409efe6666666666"
+      input: [0xc09efe6666666666]
+      expect: [0x409efe6666666666]
+      expect_exception: []
+      variants: [sd]
+    - id: round_129
+      description: "round(87.5) = 0x4055e00000000000"
+      input: [0x4055e00000000000]
+      expect: [0x4055e00000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_130
+      description: "round(-87.5) = 0x4055e00000000000"
+      input: [0xc055e00000000000]
+      expect: [0x4055e00000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_131
+      description: "round(132473) = 0x41002bc800000000"
+      input: [0x41002bc800000000]
+      expect: [0x41002bc800000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_132
+      description: "round(-132473) = 0x41002bc800000000"
+      input: [0xc1002bc800000000]
+      expect: [0x41002bc800000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_133
+      description: "round(4.5036e+15) = 0x4330000000000000"
+      input: [0x4330000000000000]
+      expect: [0x4330000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_134
+      description: "round(4.5036e+15) = 0x4330000000000001"
+      input: [0x4330000000000001]
+      expect: [0x4330000000000001]
+      expect_exception: []
+      variants: [sd]
+    - id: round_135
+      description: "round(4.5036e+15) = 0x432fffffffffffff"
+      input: [0x432fffffffffffff]
+      expect: [0x432fffffffffffff]
+      expect_exception: []
+      variants: [sd]
+    - id: round_136
+      description: "round(-4.5036e+15) = 0x4330000000000000"
+      input: [0xc330000000000000]
+      expect: [0x4330000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: round_137
+      description: "round(-4.5036e+15) = 0x4330000000000001"
+      input: [0xc330000000000001]
+      expect: [0x4330000000000001]
+      expect_exception: []
+      variants: [sd]
+    - id: round_138
+      description: "round(-4.5036e+15) = 0x432fffffffffffff"
+      input: [0xc32fffffffffffff]
+      expect: [0x432fffffffffffff]
+      expect_exception: []
+      variants: [sd]
+    - id: round_139
+      description: "round(1.3525e+16) = 0x43480677adfcfa00"
+      input: [0x43480677adfcfa00]
+      expect: [0x43480677adfcfa00]
+      expect_exception: []
+      variants: [sd]
+    - id: round_140
+      description: "round(2.70266e+16) = 0x435801239871fa00"
+      input: [0x435801239871fa00]
+      expect: [0x435801239871fa00]
+      expect_exception: []
+      variants: [sd]
+    - id: round_141
+      description: "round(5.41933e+16) = 0x4368111144444444"
+      input: [0x4368111144444444]
+      expect: [0x4368111144444444]
+      expect_exception: []
+      variants: [sd]
+    - id: round_142
+      description: "round(2.2518e+17) = 0x4388ffffffffffff"
+      input: [0x4388ffffffffffff]
+      expect: [0x4388ffffffffffff]
+      expect_exception: []
+      variants: [sd]
+    - id: round_143
+      description: "round(4.5036e+17) = 0x4398ffffffffffff"
+      input: [0x4398ffffffffffff]
+      expect: [0x4398ffffffffffff]
+      expect_exception: []
+      variants: [sd]
+    - id: round_144
+      description: "round(9.0072e+17) = 0x43a8ffffffffffff"
+      input: [0x43a8ffffffffffff]
+      expect: [0x43a8ffffffffffff]
+      expect_exception: []
+      variants: [sd]
+    - id: round_145
+      description: "round(1.77742e+18) = 0x43b8aaaa68ffffff"
+      input: [0x43b8aaaa68ffffff]
+      expect: [0x43b8aaaa68ffffff]
+      expect_exception: []
+      variants: [sd]
+    - id: round_146
+      description: "round(3.55484e+18) = 0x43c8aaaa69ffffff"
+      input: [0x43c8aaaa69ffffff]
+      expect: [0x43c8aaaa69ffffff]
+      expect_exception: []
+      variants: [sd]
+    - id: round_147
+      description: "round(6.91819e+18) = 0x43d8009678abcd00"
+      input: [0x43d8009678abcd00]
+      expect: [0x43d8009678abcd00]
+      expect_exception: []
+      variants: [sd]
+    - id: round_148
+      description: "round(1.79769e+308) = 0x7fefffffffffffff"
+      input: [0x7fefffffffffffff]
+      expect: [0x7fefffffffffffff]
+      expect_exception: []
+      variants: [sd]
+    - id: round_149
+      description: "round(1.38565e+19) = 0x43e8098734209870"
+      input: [0x43e8098734209870]
+      expect: [0x43e8098734209870]
+      expect_exception: []
+      variants: [sd]
+    - id: round_150
+      description: "round(2.76725e+19) = 0x43f800876abcda00"
+      input: [0x43f800876abcda00]
+      expect: [0x43f800876abcda00]
+      expect_exception: []
+      variants: [sd]
+    - id: round_151
+      description: "round(5.53454e+19) = 0x44080091781cdba0"
+      input: [0x44080091781cdba0]
+      expect: [0x44080091781cdba0]
+      expect_exception: []
+      variants: [sd]
+    - id: round_152
+      description: "round(5.53506e+19) = 0x4408012786abcde0"
+      input: [0x4408012786abcde0]
+      expect: [0x4408012786abcde0]
+      expect_exception: []
+      variants: [sd]
+    - id: round_153
+      description: "round(1.42452e+18) = 0x43b3c4eafedcab02"
+      input: [0x43b3c4eafedcab02]
+      expect: [0x43b3c4eafedcab02]
+      expect_exception: []
+      variants: [sd]
+#------------------------------------

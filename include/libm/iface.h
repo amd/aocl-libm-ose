@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2025, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2026, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -91,6 +91,8 @@ enum {
     C_AMD_TRUNC,
     C_AMD_ERF,
     C_AMD_ERFC,
+    C_AMD_ERFINV,
+    C_AMD_ERFCINV,
     C_AMD_SINCOS,
     C_AMD_ADD,
     C_AMD_SUB,
@@ -104,6 +106,7 @@ enum {
     C_AMD_FMINI,
     C_AMD_LINEARFRAC,
     C_AMD_CDFNORM,
+    C_AMD_CDFNORMINV,
 
     /*
      * INTEGER VARIANTS
@@ -196,6 +199,8 @@ extern void LIBM_IFACE_PROTO(tanpi)(void *arg);
 extern void LIBM_IFACE_PROTO(trunc)(void *arg);
 extern void LIBM_IFACE_PROTO(erf)(void *arg);
 extern void LIBM_IFACE_PROTO(erfc)(void *arg);
+extern void LIBM_IFACE_PROTO(erfinv)(void *arg);
+extern void LIBM_IFACE_PROTO(erfcinv)(void *arg);
 extern void LIBM_IFACE_PROTO(cexp)(void *arg);
 extern void LIBM_IFACE_PROTO(clog)(void *arg);
 extern void LIBM_IFACE_PROTO(cpow)(void *arg);
@@ -213,6 +218,7 @@ extern void LIBM_IFACE_PROTO(fmaxi)(void *arg);
 extern void LIBM_IFACE_PROTO(fmini)(void *arg);
 extern void LIBM_IFACE_PROTO(linearfrac)(void *arg);
 extern void LIBM_IFACE_PROTO(cdfnorm)(void *arg);
+extern void LIBM_IFACE_PROTO(cdfnorminv)(void *arg);
 
 struct entry_pt_interface {
     void (*epi_init)(void *arg);

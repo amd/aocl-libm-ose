@@ -10,3 +10,4 @@ src/version.build.h
 src/buildsysinfo.h
 config.log
 .sconf_temp/
+.github/

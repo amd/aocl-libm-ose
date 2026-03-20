@@ -232,12 +232,15 @@ LIBM_DECL_FN_MAP(atan2f);
 
 LIBM_DECL_FN_MAP(erf);
 LIBM_DECL_FN_MAP(erff);
+LIBM_DECL_FN_MAP(erfinv);
 LIBM_DECL_FN_MAP(erfc);
 LIBM_DECL_FN_MAP(erfcf);
+LIBM_DECL_FN_MAP(erfcinv);
 
 /* Scalar Special Functions */
 
 LIBM_DECL_FN_MAP(cdfnorm);
+LIBM_DECL_FN_MAP(cdfnorminv);
 
 /* Scalar Complex Number Variant Functions */
 
@@ -282,9 +285,12 @@ LIBM_DECL_FN_MAP(vrda_erf);
 LIBM_DECL_FN_MAP(vrda_tan);
 LIBM_DECL_FN_MAP(vrda_cosh);
 LIBM_DECL_FN_MAP(vrda_erfc);
+LIBM_DECL_FN_MAP(vrda_erfinv);
 LIBM_DECL_FN_MAP(vrsa_erfcf);
 LIBM_DECL_FN_MAP(vrsa_roundf);
 LIBM_DECL_FN_MAP(vrda_cdfnorm);
+LIBM_DECL_FN_MAP(vrda_cdfnorminv);
+LIBM_DECL_FN_MAP(vrda_erfcinv);
 
 LIBM_DECL_FN_MAP(vrsa_addf);
 LIBM_DECL_FN_MAP(vrsa_subf);
@@ -352,12 +358,15 @@ LIBM_DECL_FN_MAP(vrd2_tan);
 LIBM_DECL_FN_MAP(vrd2_cosh);
 LIBM_DECL_FN_MAP(vrd2_atan);
 LIBM_DECL_FN_MAP(vrd2_erf);
+LIBM_DECL_FN_MAP(vrd2_erfinv);
 LIBM_DECL_FN_MAP(vrd2_sqrt);
 LIBM_DECL_FN_MAP(vrd2_fabs);
 LIBM_DECL_FN_MAP(vrd2_linearfrac);
 LIBM_DECL_FN_MAP(vrd2_erfc);
 LIBM_DECL_FN_MAP(vrd2_round);
 LIBM_DECL_FN_MAP(vrd2_cdfnorm);
+LIBM_DECL_FN_MAP(vrd2_cdfnorminv);
+LIBM_DECL_FN_MAP(vrd2_erfcinv);
 
 LIBM_DECL_FN_MAP(vrd4_pow);
 LIBM_DECL_FN_MAP(vrd4_powx);
@@ -371,12 +380,15 @@ LIBM_DECL_FN_MAP(vrd4_tan);
 LIBM_DECL_FN_MAP(vrd4_atan);
 LIBM_DECL_FN_MAP(vrd4_sincos);
 LIBM_DECL_FN_MAP(vrd4_erf);
+LIBM_DECL_FN_MAP(vrd4_erfinv);
 LIBM_DECL_FN_MAP(vrd4_sqrt);
 LIBM_DECL_FN_MAP(vrd4_fabs);
 LIBM_DECL_FN_MAP(vrd4_linearfrac);
 LIBM_DECL_FN_MAP(vrd4_erfc);
 LIBM_DECL_FN_MAP(vrd4_round);
 LIBM_DECL_FN_MAP(vrd4_cdfnorm);
+LIBM_DECL_FN_MAP(vrd4_cdfnorminv);
+LIBM_DECL_FN_MAP(vrd4_erfcinv);
 
 LIBM_DECL_FN_MAP(vrd8_pow);
 LIBM_DECL_FN_MAP(vrd8_powx);
@@ -394,8 +406,11 @@ LIBM_DECL_FN_MAP(vrd8_erf);
 LIBM_DECL_FN_MAP(vrd8_linearfrac);
 LIBM_DECL_FN_MAP(vrd8_sqrt);
 LIBM_DECL_FN_MAP(vrd8_erfc);
+LIBM_DECL_FN_MAP(vrd8_erfinv);
 LIBM_DECL_FN_MAP(vrd8_round);
 LIBM_DECL_FN_MAP(vrd8_cdfnorm);
+LIBM_DECL_FN_MAP(vrd8_cdfnorminv);
+LIBM_DECL_FN_MAP(vrd8_erfcinv);
 
 LIBM_DECL_FN_MAP(vrs4_powf);
 LIBM_DECL_FN_MAP(vrs4_powxf);
@@ -643,12 +658,15 @@ WEAK_LIBM_ALIAS(atan2, FN_PROTOTYPE(atan2));
 
 WEAK_LIBM_ALIAS(erff, FN_PROTOTYPE(erff));
 WEAK_LIBM_ALIAS(erf, FN_PROTOTYPE(erf));
+WEAK_LIBM_ALIAS(erfinv, FN_PROTOTYPE(erfinv));
 WEAK_LIBM_ALIAS(erfc, FN_PROTOTYPE(erfc));
 WEAK_LIBM_ALIAS(erfcf, FN_PROTOTYPE(erfcf));
+WEAK_LIBM_ALIAS(erfcinv, FN_PROTOTYPE(erfcinv));
 
 /* Scalar Special Functions */
 
 WEAK_LIBM_ALIAS(cdfnorm, FN_PROTOTYPE(cdfnorm));
+WEAK_LIBM_ALIAS(cdfnorminv, FN_PROTOTYPE(cdfnorminv));
 
 /* Scalar Complex Number Variant Functions */
 
@@ -725,8 +743,11 @@ WEAK_LIBM_ALIAS(vrda_fabs, FN_PROTOTYPE(vrda_fabs));
 WEAK_LIBM_ALIAS(vrda_sqrt, FN_PROTOTYPE(vrda_sqrt));
 WEAK_LIBM_ALIAS(vrda_linearfrac, FN_PROTOTYPE(vrda_linearfrac));
 WEAK_LIBM_ALIAS(vrda_erfc, FN_PROTOTYPE(vrda_erfc));
+WEAK_LIBM_ALIAS(vrda_erfinv, FN_PROTOTYPE(vrda_erfinv));
 WEAK_LIBM_ALIAS(vrsa_erfcf, FN_PROTOTYPE(vrsa_erfcf));
 WEAK_LIBM_ALIAS(vrda_cdfnorm, FN_PROTOTYPE(vrda_cdfnorm));
+WEAK_LIBM_ALIAS(vrda_cdfnorminv, FN_PROTOTYPE(vrda_cdfnorminv));
+WEAK_LIBM_ALIAS(vrda_erfcinv, FN_PROTOTYPE(vrda_erfcinv));
 
 WEAK_LIBM_ALIAS(vrda_add, FN_PROTOTYPE(vrda_add));
 WEAK_LIBM_ALIAS(vrda_sub, FN_PROTOTYPE(vrda_sub));
@@ -764,12 +785,15 @@ WEAK_LIBM_ALIAS(vrd2_tan, FN_PROTOTYPE(vrd2_tan));
 WEAK_LIBM_ALIAS(vrd2_cosh, FN_PROTOTYPE(vrd2_cosh));
 WEAK_LIBM_ALIAS(vrd2_atan, FN_PROTOTYPE(vrd2_atan));
 WEAK_LIBM_ALIAS(vrd2_erf, FN_PROTOTYPE(vrd2_erf));
+WEAK_LIBM_ALIAS(vrd2_erfinv, FN_PROTOTYPE(vrd2_erfinv));
 WEAK_LIBM_ALIAS(vrd2_sqrt, FN_PROTOTYPE(vrd2_sqrt));
 WEAK_LIBM_ALIAS(vrd2_fabs, FN_PROTOTYPE(vrd2_fabs));
 WEAK_LIBM_ALIAS(vrd2_linearfrac, FN_PROTOTYPE(vrd2_linearfrac));
 WEAK_LIBM_ALIAS(vrd2_erfc, FN_PROTOTYPE(vrd2_erfc));
 WEAK_LIBM_ALIAS(vrd2_round, FN_PROTOTYPE(vrd2_round));
 WEAK_LIBM_ALIAS(vrd2_cdfnorm, FN_PROTOTYPE(vrd2_cdfnorm));
+WEAK_LIBM_ALIAS(vrd2_cdfnorminv, FN_PROTOTYPE(vrd2_cdfnorminv));
+WEAK_LIBM_ALIAS(vrd2_erfcinv, FN_PROTOTYPE(vrd2_erfcinv));
 
 WEAK_LIBM_ALIAS(vrd4_pow, FN_PROTOTYPE(vrd4_pow));
 WEAK_LIBM_ALIAS(vrd4_powx, FN_PROTOTYPE(vrd4_powx));
@@ -783,12 +807,15 @@ WEAK_LIBM_ALIAS(vrd4_tan, FN_PROTOTYPE(vrd4_tan));
 WEAK_LIBM_ALIAS(vrd4_atan, FN_PROTOTYPE(vrd4_atan));
 WEAK_LIBM_ALIAS(vrd4_sincos, FN_PROTOTYPE(vrd4_sincos));
 WEAK_LIBM_ALIAS(vrd4_erf, FN_PROTOTYPE(vrd4_erf));
+WEAK_LIBM_ALIAS(vrd4_erfinv, FN_PROTOTYPE(vrd4_erfinv));
 WEAK_LIBM_ALIAS(vrd4_sqrt, FN_PROTOTYPE(vrd4_sqrt));
 WEAK_LIBM_ALIAS(vrd4_fabs, FN_PROTOTYPE(vrd4_fabs));
 WEAK_LIBM_ALIAS(vrd4_linearfrac, FN_PROTOTYPE(vrd4_linearfrac));
 WEAK_LIBM_ALIAS(vrd4_erfc, FN_PROTOTYPE(vrd4_erfc));
 WEAK_LIBM_ALIAS(vrd4_round, FN_PROTOTYPE(vrd4_round));
 WEAK_LIBM_ALIAS(vrd4_cdfnorm, FN_PROTOTYPE(vrd4_cdfnorm));
+WEAK_LIBM_ALIAS(vrd4_cdfnorminv, FN_PROTOTYPE(vrd4_cdfnorminv));
+WEAK_LIBM_ALIAS(vrd4_erfcinv, FN_PROTOTYPE(vrd4_erfcinv));
 
 WEAK_LIBM_ALIAS(vrd8_pow, FN_PROTOTYPE(vrd8_pow));
 WEAK_LIBM_ALIAS(vrd8_powx, FN_PROTOTYPE(vrd8_powx));
@@ -806,8 +833,11 @@ WEAK_LIBM_ALIAS(vrd8_erf, FN_PROTOTYPE(vrd8_erf));
 WEAK_LIBM_ALIAS(vrd8_linearfrac, FN_PROTOTYPE(vrd8_linearfrac));
 WEAK_LIBM_ALIAS(vrd8_sqrt, FN_PROTOTYPE(vrd8_sqrt));
 WEAK_LIBM_ALIAS(vrd8_erfc, FN_PROTOTYPE(vrd8_erfc));
+WEAK_LIBM_ALIAS(vrd8_erfinv, FN_PROTOTYPE(vrd8_erfinv));
 WEAK_LIBM_ALIAS(vrd8_round, FN_PROTOTYPE(vrd8_round));
 WEAK_LIBM_ALIAS(vrd8_cdfnorm, FN_PROTOTYPE(vrd8_cdfnorm));
+WEAK_LIBM_ALIAS(vrd8_cdfnorminv, FN_PROTOTYPE(vrd8_cdfnorminv));
+WEAK_LIBM_ALIAS(vrd8_erfcinv, FN_PROTOTYPE(vrd8_erfcinv));
 
 WEAK_LIBM_ALIAS(vrs4_powf, FN_PROTOTYPE(vrs4_powf));
 WEAK_LIBM_ALIAS(vrs4_powxf, FN_PROTOTYPE(vrs4_powxf));

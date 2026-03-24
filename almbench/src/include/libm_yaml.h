@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -196,6 +196,7 @@ struct PrintMetrics {
     uint64_t     tcnt;                                 // Total number of test cases executed
     uint64_t     fcnt;                                 // Number of failed test cases
     double       max_ulp_err;                          // Maximum ULP (Units in the Last Place) error observed
+    double       max_relative_err;                     // Maximum relative error observed
     double       min_time;                             // Minimum execution time recorded
     double       max_time;                             // Maximum execution time recorded
     double       median_time;                          // Median execution time
@@ -207,9 +208,10 @@ struct PrintMetrics {
 
     // Constructor to initialize the structure with a reference to the variant name
     PrintMetrics(std::string& var)
-        : variant(var), utflag(false), tcnt(0), fcnt(0), max_ulp_err(0.0),
-          min_time(0.0), max_time(0.0), median_time(0.0), mean_time(0.0),
-          stddev(0.0), cov(0.0), mops(0.0), count_above_avg(0) {}
+        : variant(var), utflag(false), exception_raised(0), tcnt(0), fcnt(0),
+          max_ulp_err(0.0), max_relative_err(0.0), min_time(0.0), max_time(0.0),
+          median_time(0.0), mean_time(0.0), stddev(0.0), cov(0.0), mops(0.0),
+          count_above_avg(0) {}
 };
 
 void print_table_header(bool nutflag);

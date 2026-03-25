@@ -63,11 +63,11 @@ void check_outfile_dir(struct YamlOutputs<S> *yop) {
      * If utflag is true, use "ut" prefix; otherwise, use "acc" or "perf" based on test_mode.
      */
     std::string outfile = "";
-    if (yop->utflag) {
+    if (yop->config.utflag) {
         outfile  = yop->vendor + "_conf_" + yop->api_name + "_" + yop->variant;
-    } else if (yop->test_mode == TestMode::E_ACCURACY) {
+    } else if (yop->config.test_mode == TestMode::E_ACCURACY) {
         outfile  = yop->vendor + "_accu_" + yop->api_name + "_" + yop->variant;
-    } else if (yop->test_mode == TestMode::E_PERFORMANCE) {
+    } else if (yop->config.test_mode == TestMode::E_PERFORMANCE) {
         outfile  = yop->vendor + "_perf_" + yop->api_name + "_" + yop->variant;
     } else {
         outfile  = yop->vendor + "_" + yop->api_name + "_" + yop->variant;
@@ -91,7 +91,7 @@ void header_metadata(const struct InParams<T, S> *ipp,
     metadata->variant = yop->variant;
     metadata->test_type = yop->test_type;
     metadata->range = ipp->input_range;
-    metadata->threshold = yop->ulp_threshold;
+    metadata->threshold = yop->config.ulp_threshold;
 }
 
 /*
@@ -499,13 +499,13 @@ int validate_api(struct AlmLibs *alibs,
         return -1;
     }
 
-    yop->is_vra = is_vrarr(yop->variant);
+    yop->config.is_vra = is_vrarr(yop->variant);
 
     string shimapi = deduce_shimapi(yop->api_name, yop->variant);
     string refapi = deduce_refapi(yop->api_name, yop->variant);
 
     check_outfile_dir(yop);
-    SetGlobalUlpThreshold(yop->ulp_threshold);
+    SetGlobalUlpThreshold(yop->config.ulp_threshold);
 
     switch (api_type) {
         case API_PROTOTYPE_01:

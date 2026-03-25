@@ -249,10 +249,12 @@ void libm_api_variant(struct AlmLibs *alibs, const struct YamlInputs &param,
 
     yop->variant = variant;
     yop->api_name = param.api_name;
-    yop->utflag = param.range.empty();
-    yop->test_mode = test_mode;
+    yop->config.utflag = param.range.empty();
+    yop->config.test_mode = test_mode;
     yop->vendor = vendor;
-    yop->ulp_threshold = std::stod(ulp_threshold);
+    yop->config.ulp_threshold = std::stod(ulp_threshold);
+    yop->config.warmup_count = std::stoull(param.warmup_count);
+    yop->config.batch_size = std::stoull(param.batch_size);
     yop->test_id = param.test_id;
 
     if (!param.range.empty()) {

@@ -92,12 +92,32 @@
    static inline long double fc_imag(fc128_t z) { return __imag__ z; }
  #endif
 
- enum class TestMode{
-     E_UNITTEST,
-     E_ACCURACY,
-     E_PERFORMANCE,
-     E_KNOWNTEST
- };
+enum class TestMode{
+    E_UNITTEST,
+    E_ACCURACY,
+    E_PERFORMANCE,
+    E_KNOWNTEST
+};
+
+/*
+ * TestConfig:
+ * Holds test execution configuration that controls how tests are run.
+ * Grouped separately from output data for clarity.
+ */
+struct TestConfig {
+    TestMode    test_mode;                   /* Test mode (accuracy or performance) */
+    bool        utflag;                      /* Unit test flag (true if no ranges) */
+    bool        is_vra;                      /* Vectorized real array flag */
+    double      ulp_threshold;               /* ULP threshold for accuracy tests */
+    uint64_t    warmup_count;                /* Number of untimed warmup calls before measurement */
+    uint64_t    batch_size;                  /* Number of API calls per timed batch */
+
+    TestConfig()
+        : test_mode(TestMode::E_ACCURACY),
+          utflag(false), is_vra(false),
+          ulp_threshold(0.0),
+          warmup_count(0), batch_size(1000) {}
+};
 
  extern bool verbose;
 

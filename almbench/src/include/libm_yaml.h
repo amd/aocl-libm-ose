@@ -70,6 +70,8 @@ struct YamlInputs {
     std::string xxv;                     /* Expected floating-point exception */
     std::string ulp_threshold;           /* ULP threshold for accuracy tests */
     std::vector<InputRange> range;       /* Input ranges for range tests */
+    std::string warmup_count;            /* Number of warmup iterations before measurement */
+    std::string batch_size;              /* Number of API calls per timed batch */
 };
 
 /*
@@ -86,21 +88,18 @@ struct YamlOutputs {
     S          *optr[MAX_OPPTR];             /* Output pointers */
     double     *ulp;                         /* ULP error values */
     int        *status;                     /* Status flags for each input */
-    bool        utflag;                      /* Unit test flag */
     int         exception_raised;            /* Raised exceptions */
-    double      ulp_threshold;               /* ULP threshold for accuracy tests */
     double      duration;                    /* Execution duration */
-    bool        is_vra;                      /* Vectorized real array flag */
-    TestMode    test_mode;                   /* Test mode (accuracy or performance) */
     std::string vendor;                      /* Vendor name */
     std::string outfile;                     /* Output yaml file name */
+    TestConfig  config;                      /* Test execution configuration */
 
 
     /* Constructor */
     YamlOutputs(std::string &var)
         : variant(var), ulp(nullptr), status(nullptr),
-          utflag(false), exception_raised(0),
-          duration(0.0), is_vra(false), test_mode(TestMode::E_ACCURACY),
+          exception_raised(0),
+          duration(0.0),
           vendor("amd"), outfile("amd_api_ut_ss.yaml")
     {
         std::fill(std::begin(n), std::end(n), 0);

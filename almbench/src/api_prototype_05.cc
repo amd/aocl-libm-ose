@@ -120,7 +120,7 @@ static void range_test(struct InParams<T, U>* ipp,
     yop->ulp             = max_ulp;
     yop->status          = &status[0];
 
-    Runner<T, U>   runner(shim_func, yop->test_mode);
+    Runner<T, U>   runner(shim_func, yop->config);
     MultiStepGenerator<U> g0(r1.srt, r1.stp, r1.count, r1.type, elem);
     MultiStepGenerator<U> g1(r2.srt, r2.stp, r2.count, r2.type, elem);
     MultiStepGenerator<U> g2(r3.srt, r3.stp, r3.count, r3.type, 1);
@@ -200,7 +200,7 @@ static void range_test_vra(struct InParams<T, U>* ipp,
     yop->status   = status.data();
 
 
-    Runner<T, U>   runner(shim_func, yop->test_mode);
+    Runner<T, U>   runner(shim_func, yop->config);
     MultiStepGenerator<U> g0(r[0].srt, r[0].stp, r[0].count, r[0].type, count);
     MultiStepGenerator<U> g1(r[1].srt, r[1].stp, r[1].count, r[1].type, count);
     MultiStepGenerator<U> g2(r[2].srt, r[2].stp, r[2].count, r[2].type, 1);
@@ -264,7 +264,7 @@ int api_prototype_05(struct AlmLibs *alibs,
 
     if (ipp->range.empty()) {
         unit_test<T, U, UL>(ipp, ref_func, shim_func, yop);
-    } else if (!yop->is_vra) {
+    } else if (!yop->config.is_vra) {
         range_test<T, U, UL>(ipp, ref_func, shim_func, yop);
     } else {
         range_test_vra<T, U, UL>(ipp, ref_func, shim_func, yop);

@@ -185,7 +185,7 @@ static void range_test(struct InParams<T, U>* ipp,
     yop->ulp             = &max_ulp[0];
     yop->status          = &status[0];
 
-    Runner<T, U>   runner(shim_func, yop->test_mode);
+    Runner<T, U>   runner(shim_func, yop->config);
 
     auto gp = build_bivariate_generators<U>(x, y, xcount, ycount, elem);
     uint64_t N = align_to(gp.primary_count, elem);
@@ -247,7 +247,7 @@ static void range_test_vra(struct InParams<T, U>* ipp,
     ulp_data udata;
     double ulp;
 
-    Runner<T, U>   runner(shim_func, yop->test_mode);
+    Runner<T, U>   runner(shim_func, yop->config);
 
     auto gp = build_bivariate_generators<U>(x, y, x.count, y.count, count);
     uint64_t N = align_to(gp.primary_count, elem);
@@ -290,7 +290,7 @@ int api_prototype_02(struct AlmLibs *alibs,
 
     if (ipp->range.empty()) {
         unit_test<T, U, UL>(ipp, ref_func, shim_func, yop);
-    } else if (!yop->is_vra) {
+    } else if (!yop->config.is_vra) {
         range_test<T, U, UL>(ipp, ref_func, shim_func, yop);
     } else {
         range_test_vra<T, U, UL>(ipp, ref_func, shim_func, yop);

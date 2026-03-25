@@ -139,7 +139,7 @@ YAML::Node serialize_yaml_outputs(const struct YamlOutputs<S> *yop)
     // Serialize input pointers
     for (int i = 0; i < MAX_IPPTR; ++i) {
         if (yop->iptr[i]) {
-            if (yop->utflag) {
+            if (yop->config.utflag) {
                 // Unit test mode: only serialize the first element
                 YAML::Node ip_node;
                 ip_node.push_back(to_hex(yop->iptr[i][0]));
@@ -164,7 +164,7 @@ YAML::Node serialize_yaml_outputs(const struct YamlOutputs<S> *yop)
     // Serialize yop pointers
     for (int i = 0; i < MAX_OPPTR; ++i) {
         if (yop->optr[i]) {
-            if (yop->utflag) {
+            if (yop->config.utflag) {
                 YAML::Node op_node;
                 op_node.push_back(to_hex(yop->optr[i][0]));
                 op_node.SetStyle(YAML::EmitterStyle::Flow);
@@ -186,7 +186,7 @@ YAML::Node serialize_yaml_outputs(const struct YamlOutputs<S> *yop)
 
     // Serialize ULP (Unit in Last Place) values
     if (yop->ulp) {
-        if (yop->utflag) {
+        if (yop->config.utflag) {
             YAML::Node ulp_node;
             ulp_node.push_back(to_hex(yop->ulp[0]));
             ulp_node.SetStyle(YAML::EmitterStyle::Flow);
@@ -206,7 +206,7 @@ YAML::Node serialize_yaml_outputs(const struct YamlOutputs<S> *yop)
 
     // Serialize ULP (Unit in Last Place) values
     if (yop->status) {
-        if (yop->utflag) {
+        if (yop->config.utflag) {
             YAML::Node status_node;
             status_node.push_back(yop->status[0]==TESTCASE_PASS ?"PASS":"FAIL");
             status_node.SetStyle(YAML::EmitterStyle::Flow);
@@ -224,14 +224,14 @@ YAML::Node serialize_yaml_outputs(const struct YamlOutputs<S> *yop)
     }
 
     // Serialize either raised exceptions or duration depending on mode
-    if (yop->utflag) {
+    if (yop->config.utflag) {
         std::string except = exception_to_string(yop->exception_raised);
         YAML::Node expt_node;
         expt_node.push_back(except);
         expt_node.SetStyle(YAML::EmitterStyle::Flow);
         node["exception_raised"] = expt_node;
     } else {
-        if(yop->test_mode == TestMode::E_PERFORMANCE) {
+        if(yop->config.test_mode == TestMode::E_PERFORMANCE) {
             YAML::Node duration_node;
             duration_node.push_back(yop->duration);
             duration_node.SetStyle(YAML::EmitterStyle::Flow);
@@ -240,7 +240,7 @@ YAML::Node serialize_yaml_outputs(const struct YamlOutputs<S> *yop)
     }
 
     // Print YAML to stdout in unit test mode
-    if (yop->utflag) {
+    if (yop->config.utflag) {
         YAML::Emitter out;
         out << node;
         std::cout << out.c_str() << std::endl;

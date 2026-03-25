@@ -83,6 +83,8 @@ static int read_test(const YAML::Node &test, struct YamlInputs &param)
     const YAML::Node variants = test["variants"];
     const YAML::Node exp_excep = test["expect_exception"];
     const YAML::Node uth = test["uth"];
+    const YAML::Node warmup = test["warmup"];
+    const YAML::Node batch_size = test["batch_size"];
     const YAML::Node derived_node = test["derived"];
 
     uint32_t n = 0;
@@ -247,6 +249,11 @@ static int read_test(const YAML::Node &test, struct YamlInputs &param)
 
         param.ulp_threshold = thold;
     }
+
+    /* Read optional perf config */
+    param.warmup_count = warmup ? warmup.as<std::string>() : "0";
+    param.batch_size   = batch_size ? batch_size.as<std::string>() : "1000";
+
     return 0;
 }
 

@@ -1,9 +1,10 @@
 ---
-- test_sequence: validation_tests_atan2_fast
+- test_sequence: perf_tests_atan2_fast
   function: atan2
+  timing_enabled: true
   test_sets:
   - id: binade-zone-tests
-    description: 'Binade zone accuracy tests (double precision, Q1: +y, +x)'
+    description: 'Binade zone performance tests (double precision, Q1: +y, +x)'
     tests:
     # Z0: subnormal ratio (0, 2^-1022)  subnormal scaling + linear path
     - id: atan2_z00
@@ -15,6 +16,8 @@
       steps: [500, 500]
       variants: [sd]
       uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
       derived:
         range: [0x0000000000000001, 0x000FFFFFFFFFFFFF]
         type: linearstep
@@ -31,6 +34,8 @@
       steps: [500, 500]
       variants: [sd]
       uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
       derived:
         range: [0x0010000000000000, 0x0FF0000000000000]
         type: expstep
@@ -47,6 +52,8 @@
       steps: [500, 500]
       variants: [sd]
       uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
       derived:
         range: [0x0FF0000000000000, 0x1FF0000000000000]
         type: expstep
@@ -63,6 +70,8 @@
       steps: [500, 500]
       variants: [sd]
       uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
       derived:
         range: [0x1FF0000000000000, 0x2FF0000000000000]
         type: expstep
@@ -79,6 +88,8 @@
       steps: [500, 500]
       variants: [sd]
       uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
       derived:
         range: [0x2FF0000000000000, 0x37F0000000000000]
         type: expstep
@@ -95,6 +106,8 @@
       steps: [500, 500]
       variants: [sd]
       uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
       derived:
         range: [0x37F0000000000000, 0x3BF0000000000000]
         type: expstep
@@ -111,6 +124,8 @@
       steps: [500, 500]
       variants: [sd]
       uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
       derived:
         range: [0x3BF0000000000000, 0x3DF0000000000000]
         type: expstep
@@ -127,6 +142,8 @@
       steps: [500, 500]
       variants: [sd]
       uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
       derived:
         range: [0x3DF0000000000000, 0x3EF0000000000000]
         type: expstep
@@ -143,6 +160,8 @@
       steps: [500, 500]
       variants: [sd]
       uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
       derived:
         range: [0x3EF0000000000000, 0x3F70000000000000]
         type: expstep
@@ -159,6 +178,8 @@
       steps: [500, 500]
       variants: [sd]
       uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
       derived:
         range: [0x3F70000000000000, 0x3FB0000000000000]
         type: expstep
@@ -175,6 +196,8 @@
       steps: [500, 500]
       variants: [sd]
       uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
       derived:
         range: [0x3FB0000000000000, 0x3FF0000000000000]
         type: expstep
@@ -191,6 +214,8 @@
       steps: [500, 500]
       variants: [sd]
       uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
       derived:
         range: [1.0, 2.0]
         type: expstep
@@ -207,6 +232,8 @@
       steps: [500, 500]
       variants: [sd]
       uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
       derived:
         range: [2.0, 8.0]
         type: expstep
@@ -218,7 +245,7 @@
   # z sampled across all zones [subnormal, 2.0] in one sweep.
   # ====================================================================
   - id: quadrant-tests
-    description: 'Quadrant coverage accuracy tests (double precision)'
+    description: 'Quadrant coverage performance tests (double precision)'
     tests:
     # Q4: atan2(-y, +x)  — +x, neg_mul gives -y
     - id: atan2_q4
@@ -230,6 +257,8 @@
       steps: [500, 500]
       variants: [sd]
       uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
       derived:
         range: [0x0000000000000001, 2.0]
         type: expstep
@@ -246,6 +275,8 @@
       steps: [500, 500]
       variants: [sd]
       uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
       derived:
         range: [0x0000000000000001, 2.0]
         type: expstep
@@ -262,6 +293,8 @@
       steps: [500, 500]
       variants: [sd]
       uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
       derived:
         range: [0x0000000000000001, 2.0]
         type: expstep

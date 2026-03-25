@@ -87,7 +87,7 @@ static void range_test(struct InParams<T, U> *ipp,
     yop->ulp             = &max_ulp[0];
     yop->status          = &status[0];
 
-    Runner<T, U>   runner(shim_func, yop->test_mode);
+    Runner<T, U>   runner(shim_func, yop->config);
     MultiStepGenerator<U> val(range.srt, range.stp, count, range.type, elem);
 
     FloatPacker<T> fp;
@@ -143,7 +143,7 @@ static void range_test_vra(struct InParams<T, U> *ipp,
     ulp_data udata;
     double ulp;
 
-    Runner<T, U>   runner(shim_func, yop->test_mode);
+    Runner<T, U>   runner(shim_func, yop->config);
     MultiStepGenerator<U> val(range.srt, range.stp, range.count, range.type, count);
 
     for (uint64_t i = 0; i < N; ++i) {
@@ -182,7 +182,7 @@ int api_prototype_01(struct AlmLibs *alibs,
 
     if (ipp->range.empty()) {
         unit_test<T, U, UL>(ipp, ref_func, shim_func, yop);
-    } else if (!yop->is_vra) {
+    } else if (!yop->config.is_vra) {
         range_test<T, U, UL>(ipp, ref_func, shim_func, yop);
     } else {
         range_test_vra<T, U, UL>(ipp, ref_func, shim_func, yop);

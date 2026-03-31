@@ -145,7 +145,11 @@ file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")
 
 # Create the executable
 add_executable(test_libm ${SOURCES})
-target_link_libraries(test_libm ${LIBALM} ${AMD_UTILS} m stdc++)
+set(LIBS ${LIBALM} ${AMD_UTILS})
+if(NOT WIN32)
+    list(APPEND LIBS m stdc++)
+endif()
+target_link_libraries(test_libm ${LIBS})
 
 # Configuration summary
 message(STATUS "=== AOCL LibM Examples Configuration ===")

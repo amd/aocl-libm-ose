@@ -682,10 +682,20 @@ $ cmake --build . --target install
 #### **6.5 Build Examples (Standalone)**
 
 Navigate to the examples folder and configure with library paths:
+
+**Linux:**
 ```console
 $ cd examples
 $ mkdir build && cd build
 $ cmake .. -DAOCL_LIBM=<user_specified_prefix_path> -DAOCL_UTILS=<path_to_aocl_utils_package>
+$ cmake --build .
+```
+
+**Windows:**
+```console
+$ cd examples
+$ mkdir build && cd build
+$ cmake .. -G "Ninja" -DAOCL_LIBM=<user_specified_prefix_path> -DAOCL_UTILS=<path_to_aocl_utils_package> -DCMAKE_C_COMPILER="<clang-cl executable path>"
 $ cmake --build .
 ```
 

@@ -31,6 +31,7 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
+#include <type_traits>
 #include "dll_utils.h"
 
 #include "alm_test.h"
@@ -91,16 +92,24 @@ static GenPair<U> build_bivariate_generators(
     GenPair<U> gp;
     gp.first_derived = (x.type == RangeType::E_Derived);
 
-    if (gp.first_derived) {
-        auto [primary, derived] = make_derived_pair(y, ycount, *x.derived, array_size);
-        gp.arr2 = std::move(primary);
-        gp.arr1 = std::move(derived);
-        gp.primary_count = ycount;
-    } else if (y.type == RangeType::E_Derived) {
-        auto [primary, derived] = make_derived_pair(x, xcount, *y.derived, array_size);
-        gp.arr1 = std::move(primary);
-        gp.arr2 = std::move(derived);
-        gp.primary_count = xcount;
+    if constexpr (!std::is_same_v<U, fc32_t> && !std::is_same_v<U, fc64_t>) {
+        if (gp.first_derived) {
+            auto [primary, derived] = make_derived_pair(y, ycount, *x.derived, array_size);
+            gp.arr2 = std::move(primary);
+            gp.arr1 = std::move(derived);
+            gp.primary_count = ycount;
+        } else if (y.type == RangeType::E_Derived) {
+            auto [primary, derived] = make_derived_pair(x, xcount, *y.derived, array_size);
+            gp.arr1 = std::move(primary);
+            gp.arr2 = std::move(derived);
+            gp.primary_count = xcount;
+        } else {
+            gp.arr1 = std::make_unique<MultiStepGenerator<U>>(
+                x.srt, x.stp, xcount, x.type, array_size);
+            gp.arr2 = std::make_unique<MultiStepGenerator<U>>(
+                y.srt, y.stp, ycount, y.type, array_size);
+            gp.primary_count = xcount;
+        }
     } else {
         gp.arr1 = std::make_unique<MultiStepGenerator<U>>(
             x.srt, x.stp, xcount, x.type, array_size);

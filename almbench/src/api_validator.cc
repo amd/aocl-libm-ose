@@ -550,13 +550,13 @@ int validate_api<fc32_t, fc32_t>(struct AlmLibs *alibs,
         return -1;
     }
 
-    yop->is_vra = is_vrarr(yop->variant);
+    yop->config.is_vra = is_vrarr(yop->variant);
 
     string shimapi = deduce_shimapi(yop->api_name, yop->variant);
     string refapi = deduce_refapi(yop->api_name, yop->variant);
 
     check_outfile_dir(yop);
-    SetGlobalUlpThreshold(yop->ulp_threshold);
+    SetGlobalUlpThreshold(yop->config.ulp_threshold);
 
     if (yop->api_name == "cpow") {
         if (api_type == API_PROTOTYPE_02) {
@@ -582,13 +582,13 @@ int validate_api<fc64_t, fc64_t>(struct AlmLibs *alibs,
         return -1;
     }
 
-    yop->is_vra = is_vrarr(yop->variant);
+    yop->config.is_vra = is_vrarr(yop->variant);
 
     string shimapi = deduce_shimapi(yop->api_name, yop->variant);
     string refapi = deduce_refapi(yop->api_name, yop->variant);
 
     check_outfile_dir(yop);
-    SetGlobalUlpThreshold(yop->ulp_threshold);
+    SetGlobalUlpThreshold(yop->config.ulp_threshold);
 
     if (yop->api_name == "cpow") {
         if (api_type == API_PROTOTYPE_02) {

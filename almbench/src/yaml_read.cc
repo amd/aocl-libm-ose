@@ -133,6 +133,10 @@ static int read_test(const YAML::Node &test, struct YamlInputs &param)
                 range.derived->z_count = derived_node["steps"]
                     ? derived_node["steps"].as<std::string>() : "1000";
                 range.derived->func    = derived_node["func"].as<std::string>();
+            } else if (range.type == "derived") {
+                throw YAML::Exception(test.Mark(),
+                    "test '" + test_id + "': input[" + std::to_string(n) +
+                    "] has type 'derived' but no 'derived:' block found");
             }
 
             param.range.push_back(range);
@@ -140,6 +144,17 @@ static int read_test(const YAML::Node &test, struct YamlInputs &param)
         } else {
             param.input.push_back(inp.as<std::string>());
         }
+    }
+
+    /* Validate: at most one input range may have type 'derived' */
+    {
+        int derived_count = 0;
+        for (const auto& r : param.range)
+            if (r.type == "derived") derived_count++;
+        if (derived_count > 1)
+            throw YAML::Exception(test.Mark(),
+                "test '" + test_id + "': at most one input may have type 'derived', " +
+                std::to_string(derived_count) + " found");
     }
 
     /* Read expected output value if present */
@@ -252,7 +267,7 @@ static int read_test(const YAML::Node &test, struct YamlInputs &param)
 
     /* Read optional perf config */
     param.warmup_count = warmup ? warmup.as<std::string>() : "0";
-    param.batch_size   = batch_size ? batch_size.as<std::string>() : "1000";
+    param.batch_size   = batch_size ? batch_size.as<std::string>() : "1";
 
     return 0;
 }

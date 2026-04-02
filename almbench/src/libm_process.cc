@@ -255,6 +255,7 @@ void libm_api_variant(struct AlmLibs *alibs, const struct YamlInputs &param,
     yop->config.ulp_threshold = std::stod(ulp_threshold);
     yop->config.warmup_count = std::stoull(param.warmup_count);
     yop->config.batch_size = std::stoull(param.batch_size);
+    yop->config.batch_size = (yop->config.batch_size == 0) ? 1 : yop->config.batch_size;
     yop->test_id = param.test_id;
 
     if (!param.range.empty()) {
@@ -264,18 +265,27 @@ void libm_api_variant(struct AlmLibs *alibs, const struct YamlInputs &param,
                 iprng.srt = str_to_complex<U>(range.srt);
                 iprng.stp = str_to_complex<U>(range.stp);
             } else {
-                iprng.srt = str_to_float<U>(range.srt);
-                iprng.stp = str_to_float<U>(range.stp);
+                iprng.type = str_to_enum(range.type);
+                if (iprng.type != RangeType::E_Derived) {
+                    iprng.srt = str_to_float<U>(range.srt);
+                    iprng.stp = str_to_float<U>(range.stp);
+                } else {
+                    // For derived ranges, srt/stp may be non-numeric (e.g. "derived");
+                    iprng.srt = U{};
+                    iprng.stp = U{};
+                }
             }
             iprng.type  = str_to_enum(range.type);
             iprng.count = std::stoull(range.count);
-            if (iprng.type == RangeType::E_Derived && range.derived) {
-                iprng.derived.emplace();
-                iprng.derived->z_srt   = str_to_float<U>(range.derived->z_srt);
-                iprng.derived->z_stp   = str_to_float<U>(range.derived->z_stp);
-                iprng.derived->z_type  = str_to_enum(range.derived->z_type);
-                iprng.derived->z_count = std::stoull(range.derived->z_count);
-                iprng.derived->func    = range.derived->func;
+            if constexpr (!std::is_same_v<U, fc32_t> && !std::is_same_v<U, fc64_t>) {
+                if (iprng.type == RangeType::E_Derived && range.derived) {
+                    iprng.derived.emplace();
+                    iprng.derived->z_srt   = str_to_float<U>(range.derived->z_srt);
+                    iprng.derived->z_stp   = str_to_float<U>(range.derived->z_stp);
+                    iprng.derived->z_type  = str_to_enum(range.derived->z_type);
+                    iprng.derived->z_count = std::stoull(range.derived->z_count);
+                    iprng.derived->func    = range.derived->func;
+                }
             }
             ipp->range.push_back(iprng);
         }

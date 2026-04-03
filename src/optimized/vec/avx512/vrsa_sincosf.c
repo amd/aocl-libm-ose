@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -24,14 +24,44 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#define ALM_OVERRIDE 1
-#include <libm/arch/zen5.h>
+
+/********************************************
+ * ---------------------
+ * Signature
+ * ---------------------
+ * void vrsa_sincosf(int length, const float *input, float *sin, float *cos)
+ *
+ * vrsa_sincosf() computes the sine and cosine values for 'length' number of elements
+ * present in the 'input' array.
+ * The corresponding sine output is stored in the 'sin' array.
+ * The corresponding cosine output is stored in the 'cos' array.
+ *
+ * ---------------------
+ * Implementation Notes
+ * ---------------------
+ *
+ * For any given length,
+ *     If length is greater than 16:
+ *         Pack 16 elements of input array into a 512-bit register
+ *             call vrs16_sincosf()
+ *         Store the output into sin and cos array.
+ *         Repeat
+ *     Return
+ *
+ *     If length is lesser than 16:
+ *         Pack the elements of input array into a 512-bit register
+ *         Mask the inputs which are not needed to be computed with a 0.
+ *             call vrs16_sincosf()
+ *         Store the output of unmasked elements into result array.
+ * Return
+ */
+
 #include <libm_macros.h>
 #include <immintrin.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_ARCH_ZN5(vrsa_sincosf)(int length, const float *x, float *sin, float *cos)
+void ALM_PROTO_OPT(vrsa_sincosf)(int length, const float *x, float *sin, float *cos)
 {
     int j = 0;
     __m512 opsin, opcos;

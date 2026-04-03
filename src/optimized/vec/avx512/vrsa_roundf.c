@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,22 +25,18 @@
  *
  */
 
-#define ALM_OVERRIDE 1
-#include <libm/arch/zen5.h>
-
 #include <libm_macros.h>
 #include <immintrin.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm_util_amd.h>
 
-
 /********************************************
  * ---------------------
  * Signature
  * ---------------------
- * void vrda_round(int length, double *input, double *result)
+ * void vrsa_roundf(int length, const float *input, float *result)
  *
- * vrda_round() computes the round values for 'length' number of elements
+ * vrsa_roundf() computes the roundf values for 'length' number of elements
  * present in the 'input' array.
  * The corresponding output is stored in the 'result' array.
  *
@@ -51,59 +47,59 @@
  * The implementation uses a unified approach that handles both in-place
  * and out-of-place operations:
  *
- *     If length is greater than or equal to 8:
- *         Save the last 8 elements from input array before processing
- *         Process elements in chunks of 8 (n*8 complete elements):
- *             Load 8 elements from input array into a 512-bit register
- *             Call vrd8_round()
+ *     If length is greater than or equal to 16:
+ *         Save the last 16 elements from input array before processing
+ *         Process elements in chunks of 16 (n*16 complete elements):
+ *             Load 16 elements from input array into a 512-bit register
+ *             Call vrs16_roundf()
  *             Store the output into result array
  *         Repeat until all complete chunks are processed
  *
  *         For the remaining elements (if any):
- *             Use the pre-saved last 8 elements
- *             Call vrd8_round()
- *             Store the output at the last 8 positions in result array
+ *             Use the pre-saved last 16 elements
+ *             Call vrs16_roundf()
+ *             Store the output at the last 16 positions in result array
  *     Return
  *
- *     If length is less than 8:
+ *     If length is less than 16:
  *         Create a mask for the actual number of elements
  *         Load elements using masked load
- *         Call vrd8_round()
+ *         Call vrs16_roundf()
  *         Store the output using masked store
  *     Return
  */
 
-void ALM_PROTO_ARCH_ZN5(vrda_round)(int length, const double *input, double *result)
+void ALM_PROTO_OPT(vrsa_roundf)(int length, const float *input, float *result)
 {
-    if (likely(length >= DOUBLE_ELEMENTS_512_BIT))
+    if (likely(length >= FLOAT_ELEMENTS_512_BIT))
     {
-        /* Save the last 8 elements before processing. This avoids errors when the
+        /* Save the last 16 elements before processing. This avoids errors when the
            operation is in-place */
-        __m512d last_ip8 = _mm512_loadu_pd(&input[length - DOUBLE_ELEMENTS_512_BIT]);
+        __m512 last_ip16 = _mm512_loadu_ps(&input[length - FLOAT_ELEMENTS_512_BIT]);
 
         int j = 0;
 
-        // Process complete chunks of 8 (n*8 elements)
-        for (j = 0; j <= length - DOUBLE_ELEMENTS_512_BIT; j += DOUBLE_ELEMENTS_512_BIT)
+        // Process complete chunks of 16 (n*16 elements)
+        for (j = 0; j <= length - FLOAT_ELEMENTS_512_BIT; j += FLOAT_ELEMENTS_512_BIT)
         {
-            __m512d ip8 = _mm512_loadu_pd(&input[j]);
-            __m512d op8 = ALM_PROTO(vrd8_round)(ip8);
-            _mm512_storeu_pd(&result[j], op8);
+            __m512 ip16 = _mm512_loadu_ps(&input[j]);
+            __m512 op16 = ALM_PROTO(vrs16_roundf)(ip16);
+            _mm512_storeu_ps(&result[j], op16);
         }
 
-        // Handle remaining elements using the pre-saved last 8 elements
+        // Handle remaining elements using the pre-saved last 16 elements
         if (length - j)
         {
-            __m512d op8 = ALM_PROTO(vrd8_round)(last_ip8);
-            _mm512_storeu_pd(&result[length - DOUBLE_ELEMENTS_512_BIT], op8);
+            __m512 op16 = ALM_PROTO(vrs16_roundf)(last_ip16);
+            _mm512_storeu_ps(&result[length - FLOAT_ELEMENTS_512_BIT], op16);
         }
         return;
     }
 
-    // For length < 8, use masked operations
-    __m512d zero = _mm512_set1_pd(0);
-    __mmask8 mask = (__mmask8)(0xFF >> (8 - length));
-    __m512d ip8 = _mm512_mask_loadu_pd(zero, mask, &input[0]);
-    __m512d op8 = ALM_PROTO(vrd8_round)(ip8);
-    _mm512_mask_storeu_pd(&result[0], mask, op8);
+    // For length < 16, use masked operations
+    __m512 zero = _mm512_set1_ps(0);
+    __mmask16 mask = (__mmask16)(0xFFFF >> (16 - length));
+    __m512 ip16 = _mm512_mask_loadu_ps(zero, mask, &input[0]);
+    __m512 op16 = ALM_PROTO(vrs16_roundf)(ip16);
+    _mm512_mask_storeu_ps(&result[0], mask, op16);
 }

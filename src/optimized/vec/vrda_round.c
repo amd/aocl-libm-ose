@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@
  *
  * vrda_round() computes the round values for 'length' number of elements
  * present in the 'input' array.
- * The corresponding ouptut is stored in the 'result' array.
+ * The corresponding output is stored in the 'result' array.
  *
  * ---------------------
  * Implementation Notes

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,10 +26,10 @@
  */
 
 /*
-C implementation of vector array version of powx
+C implementation of vector array version of powxf
 
 Signature:
-    void vrda_powx(int length, const double *x, double y, double *result)
+    void vrsa_powxf(int length, const float *x, float y, float *result)
 
 Implementation notes:
 
@@ -38,37 +38,33 @@ Implementation notes:
 
 */
 
-#define ALM_OVERRIDE 1
-#include <libm/arch/zen5.h>
-
 #include <libm_macros.h>
 #include <immintrin.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm_util_amd.h>
-#include <stdio.h>
 
-void ALM_PROTO_ARCH_ZN5(vrda_powx)(int length, const double *x, double y, double *result)
+void ALM_PROTO_OPT(vrsa_powxf)(int length, const float *x, float y, float *result)
 {
     int j = 0;
     int remainder = length % DOUBLE_ELEMENTS_512_BIT;
 
-    if(likely(length >= DOUBLE_ELEMENTS_512_BIT))
+    if(likely(length >= FLOAT_ELEMENTS_512_BIT))
     {
-        for (j = 0; j <= length - DOUBLE_ELEMENTS_512_BIT; j += DOUBLE_ELEMENTS_512_BIT)
+        for (j = 0; j <= length - FLOAT_ELEMENTS_512_BIT; j += FLOAT_ELEMENTS_512_BIT)
         {
-            __m512d ip8 = _mm512_loadu_pd(&x[j]);
-            __m512d op8 = ALM_PROTO(vrd8_powx)(ip8, y);
-            _mm512_storeu_pd(&result[j], op8);
+            __m512 ip16 = _mm512_loadu_ps(&x[j]);
+            __m512 op16  = ALM_PROTO(vrs16_powxf)(ip16, y);
+            _mm512_storeu_ps(&result[j], op16);
         }
     }
     remainder = length -j;
 
     if(remainder)
     {
-        __m512d zero = _mm512_set1_pd(0);
-        __mmask8 mask = (__mmask8)(0xFF >> ( 8 - remainder ));
-        __m512d ip41 = _mm512_mask_loadu_pd(zero, mask, &x[j]);
-        __m512d op4 = ALM_PROTO(vrd8_powx)(ip41, y);
-        _mm512_mask_storeu_pd(&result[j], mask, op4);
+        __m512 zero = _mm512_set1_ps(0);
+        __mmask16 mask = (__mmask16)(0xFFFF >> ( 16 - remainder ));
+        __m512 ip16 = _mm512_mask_loadu_ps(zero, mask, &x[j]);
+        __m512 op16  = ALM_PROTO(vrs16_powxf)(ip16, y);
+        _mm512_mask_storeu_ps(&result[j], mask, op16);
     }
 }

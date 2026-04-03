@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -36,7 +36,6 @@
 #include <libm/compiler.h>
 #define AMD_LIBM_FMA_USABLE 1           /* needed for poly.h */
 #include <libm/poly-vec.h>
-#include <libm/arch/zen5.h>
 
 #define VECTOR_LENGTH 4
 #define N 8
@@ -257,7 +256,8 @@ look_table_access(const double* table,
 }
 
 __m256
-ALM_PROTO_ARCH_ZN5(vrs8_powf)(__m256 x,__m256 y) {
+ALM_PROTO_OPT(vrs8_powf)(__m256 x,__m256 y)
+{
 
     v_u32x8_t u;
 
@@ -283,7 +283,7 @@ ALM_PROTO_ARCH_ZN5(vrs8_powf)(__m256 x,__m256 y) {
 
     v_f64x8_t yd = _mm512_cvtps_pd(y);
 
-    v_f64x8_t exponent = _mm512_cvtepi32_pd((__m256i)int_exponent); 
+    v_f64x8_t exponent = _mm512_cvtepi32_pd((__m256i)int_exponent);
 
     v_f64x8_t fd = _mm512_cvtps_pd(f);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -24,14 +24,43 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#define ALM_OVERRIDE 1
-#include <libm/arch/zen5.h>
+
+/********************************************
+ * ---------------------
+ * Signature
+ * ---------------------
+ * void vrda_sincos(int length, const double *x, double *sin, double *cos)
+ *
+ * vrda_sincos() computes the sine and cosine values for 'length' number of elements
+ * present in the 'x' array.
+ * The corresponding sine ouput is stored in the 'sin' array.
+ * The corresponding cosine ouput is stored in the 'cos' array.
+ *
+ * ---------------------
+ * Implementation Notes
+ * ---------------------
+ *
+ * For any given length,
+ *     If length is greater than 8:
+ *         Pack 8 elements of input arrays into 512-bit registers
+ *             call vrd8_sincos()
+ *         Store the output into result array.
+ *         Repeat
+ *
+ *     If length is lesser than 8:
+ *         Pack the elements of input arrays into 512-bit registers
+ *         Mask the inputs which are not needed to be computed with a 0.
+ *             call vrd8_sincos()
+ *         Store the output of unmasked elements into result array.
+ * Return
+ */
+
 #include <libm_macros.h>
 #include <immintrin.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_ARCH_ZN5(vrda_sincos)(int length, const double *x, double *sin, double *cos)
+void ALM_PROTO_OPT(vrda_sincos)(int length, const double *x, double *sin, double *cos)
 {
     int j = 0;
     __m512d opsin, opcos;

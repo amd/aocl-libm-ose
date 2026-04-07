@@ -70,6 +70,12 @@
    static inline double      fc_imag(fc64_t  z) { return z._Val[1]; }
    static inline long double fc_real(fc128_t z) { return z._Val[0]; }
    static inline long double fc_imag(fc128_t z) { return z._Val[1]; }
+   static inline void fc_set_real(fc32_t&  z, float       v) { z._Val[0] = v; }
+   static inline void fc_set_real(fc64_t&  z, double      v) { z._Val[0] = v; }
+   static inline void fc_set_real(fc128_t& z, long double v) { z._Val[0] = v; }
+   static inline void fc_set_imag(fc32_t&  z, float       v) { z._Val[1] = v; }
+   static inline void fc_set_imag(fc64_t&  z, double      v) { z._Val[1] = v; }
+   static inline void fc_set_imag(fc128_t& z, long double v) { z._Val[1] = v; }
  #else
    /* Linux — __complex__ is the GCC/Clang keyword valid in both C and C++ */
    #if defined(__clang__)
@@ -90,6 +96,12 @@
    static inline double      fc_imag(fc64_t  z) { return __imag__ z; }
    static inline long double fc_real(fc128_t z) { return __real__ z; }
    static inline long double fc_imag(fc128_t z) { return __imag__ z; }
+   static inline void fc_set_real(fc32_t&  z, float       v) { __real__ z = v; }
+   static inline void fc_set_real(fc64_t&  z, double      v) { __real__ z = v; }
+   static inline void fc_set_real(fc128_t& z, long double v) { __real__ z = v; }
+   static inline void fc_set_imag(fc32_t&  z, float       v) { __imag__ z = v; }
+   static inline void fc_set_imag(fc64_t&  z, double      v) { __imag__ z = v; }
+   static inline void fc_set_imag(fc128_t& z, long double v) { __imag__ z = v; }
  #endif
 
 enum class TestMode{
@@ -100,12 +112,37 @@ enum class TestMode{
 };
 
 /*
+ * PerfMode:
+ * Selects measurement strategy for performance tests.
+ * E_THROUGHPUT: independent calls, CPU can overlap them (default)
+ * E_LATENCY: serialized calls with data dependency, CPU cannot pipeline iterations
+ */
+enum class PerfMode {
+    E_THROUGHPUT,
+    E_LATENCY
+};
+
+/*
+ * BenchArgs:
+ * CLI-facing benchmark knobs set by the user at runtime.
+ */
+struct BenchArgs {
+    TestMode test_mode;
+    PerfMode perf_mode;
+
+    BenchArgs()
+        : test_mode(TestMode::E_ACCURACY),
+          perf_mode(PerfMode::E_THROUGHPUT) {}
+};
+
+/*
  * TestConfig:
  * Holds test execution configuration that controls how tests are run.
  * Grouped separately from output data for clarity.
  */
 struct TestConfig {
     TestMode    test_mode;                   /* Test mode (accuracy or performance) */
+    PerfMode    perf_mode;                   /* Measurement strategy (throughput or latency) */
     bool        utflag;                      /* Unit test flag (true if no ranges) */
     bool        is_vra;                      /* Vectorized real array flag */
     double      ulp_threshold;               /* ULP threshold for accuracy tests */
@@ -114,6 +151,7 @@ struct TestConfig {
 
     TestConfig()
         : test_mode(TestMode::E_ACCURACY),
+          perf_mode(PerfMode::E_THROUGHPUT),
           utflag(false), is_vra(false),
           ulp_threshold(0.0),
           warmup_count(0), batch_size(1000) {}
@@ -147,6 +185,14 @@ struct TestConfig {
      double   d;
      uint64_t u;
  };
+
+/*
+ * Bit-level type-punning helpers.
+ */
+static inline uint32_t asuint32(float f)   { valf v = {.f = f}; return v.u; }
+static inline float    asfloat(uint32_t u) { valf v = {.u = u}; return v.f; }
+static inline uint64_t asuint64(double d)  { val  v = {.d = d}; return v.u; }
+static inline double   asdouble(uint64_t u){ val  v = {.u = u}; return v.d; }
 
  namespace libm {
      /* SIMD wrapper types */

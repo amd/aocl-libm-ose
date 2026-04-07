@@ -28,6 +28,7 @@
 #include "alm_test.h"
 #include "api_runner.h"
 #include "numeric_wrapper.h"
+#include <type_traits>
 
 /*
  * load_function:
@@ -127,8 +128,15 @@ template int run_libm_api_with_exceptions<fc64_t, fc64_t>(void (*)(InParams<fc64
 template <typename T, typename U>
 Runner<T, U>::Runner(void (*shim)(InParams<T, U>*), const TestConfig &config, uint64_t iterations)
     : shim_func(shim), iterations(iterations),
-      warmup_count(config.warmup_count), batch_size(config.batch_size) {
-    run_libm_api = (config.test_mode == TestMode::E_PERFORMANCE) ? &Runner::run_perf : &Runner::run_accu;
+      warmup_count(config.warmup_count), batch_size(config.batch_size),
+      is_vra(config.is_vra) {
+    if (config.test_mode == TestMode::E_PERFORMANCE) {
+        run_libm_api = (config.perf_mode == PerfMode::E_LATENCY)
+            ? &Runner::run_perf_latency
+            : &Runner::run_perf;
+    } else {
+        run_libm_api = &Runner::run_accu;
+    }
 }
 
 template <typename T, typename U>
@@ -164,6 +172,77 @@ template <typename T, typename U>
 double Runner<T, U>::run_accu(InParams<T, U>* ipp) {
     shim_func(ipp);
     return 0.0;
+}
+
+/*
+ * run_perf_latency:
+ * Measures single-call latency by introducing a data dependency between
+ * successive iterations: the low significand bits of the first input element
+ * are overwritten with bits from the previous output before each call.
+ * This prevents the CPU from pipelining iterations, yielding true latency
+ * rather than a throughput-amortised figure.
+ */
+template <typename T, typename U>
+double Runner<T, U>::run_perf_latency(InParams<T, U>* ipp) {
+    /* Masks for dependency injection (low significand bits). */
+    static constexpr uint64_t DEP_MASK_64 = 0xFFULL;
+    static constexpr uint32_t DEP_MASK_32 = 0xFFU;
+
+    U *inp0  = is_vra ? ipp->iptr[0] : reinterpret_cast<U*>(&ipp->ip[0]);
+    U *outp0 = is_vra ? ipp->optr[0] : reinterpret_cast<U*>(&ipp->op[0]);
+    if (!inp0 || !outp0) {
+        return 0.0; /* Invalid pointers */
+    }
+
+    /* Warmup: execute untimed calls to prime caches and/or branch predictors */
+    for (uint64_t w = 0; w < warmup_count; ++w) {
+        shim_func(ipp);
+    }
+
+    /* Timed iterations: each iteration calls the API batch_size times */
+    std::vector<double> durations;
+    durations.reserve(iterations);
+
+    for (uint64_t t = 0; t < iterations; ++t) {
+        uint64_t dep = 0;
+        timing_wrapper perf;
+        perf.start();
+        for (uint64_t b = 0; b < batch_size; ++b) {
+            /* Replace low significand bits of the first input element with
+             * bits extracted from the previous output. Force the CPU to wait
+             * for the store to complete before issuing the next call. */
+            if constexpr (std::is_same_v<U, double>) {
+                uint64_t bits = asuint64(inp0[0]);
+                inp0[0] = asdouble((bits & ~DEP_MASK_64) | (dep & DEP_MASK_64));
+            } else if constexpr (std::is_same_v<U, float>) {
+                uint32_t bits = asuint32(inp0[0]);
+                inp0[0] = asfloat((bits & ~DEP_MASK_32) | (static_cast<uint32_t>(dep) & DEP_MASK_32));
+            } else if constexpr (std::is_same_v<U, fc64_t>) {
+                uint64_t bits = asuint64(fc_real(inp0[0]));
+                fc_set_real(inp0[0], asdouble((bits & ~DEP_MASK_64) | (dep & DEP_MASK_64)));
+            } else if constexpr (std::is_same_v<U, fc32_t>) {
+                uint32_t bits = asuint32(fc_real(inp0[0]));
+                fc_set_real(inp0[0], asfloat((bits & ~DEP_MASK_32) | (static_cast<uint32_t>(dep) & DEP_MASK_32)));
+            }
+
+            shim_func(ipp);
+
+            /* Extract bits from first output element for next iteration. */
+            if constexpr (std::is_same_v<U, double>) {
+                dep = asuint64(outp0[0]);
+            } else if constexpr (std::is_same_v<U, float>) {
+                dep = asuint32(outp0[0]);
+            } else if constexpr (std::is_same_v<U, fc64_t>) {
+                dep = asuint64(fc_real(outp0[0]));
+            } else if constexpr (std::is_same_v<U, fc32_t>) {
+                dep = asuint32(fc_real(outp0[0]));
+            }
+        }
+        durations.push_back(perf.stop());
+    }
+
+    double mtime = *std::min_element(durations.begin(), durations.end());
+    return mtime / static_cast<double>(batch_size);
 }
 
 /* Explicit template instantiations for Runner class.

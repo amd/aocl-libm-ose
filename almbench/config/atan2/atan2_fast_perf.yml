@@ -6,7 +6,7 @@
   - id: binade-zone-tests
     description: 'Binade zone performance tests (double precision, Q1: +y, +x)'
     tests:
-    # Z0: subnormal ratio (0, 2^-1022)  subnormal scaling + linear path
+    # Z0: subnormal ratio (0, 2^-1022)  atan(r) ≈ r, subnormal region
     - id: atan2_z00
       description: 'Z0 subnormal ratio, x in [1, 10000]'
       input:
@@ -24,7 +24,7 @@
         steps: 500
         func: mul
 
-    # Z1: ratio [2^-1022, 2^-768)  linear path (poly = r), 254 binades
+    # Z1: ratio [2^-1022, 2^-768)  atan(r) ≈ r, deep linear
     - id: atan2_z01
       description: 'Z1: ratio [2^-1022, 2^-768), x in [1, 10000]'
       input:
@@ -42,7 +42,7 @@
         steps: 500
         func: mul
 
-    # Z2: ratio [2^-768, 2^-512)  linear path (poly = r), 256 binades
+    # Z2: ratio [2^-768, 2^-512)  atan(r) ≈ r, deep linear
     - id: atan2_z02
       description: 'Z2: ratio [2^-768, 2^-512), x in [1, 10000]'
       input:
@@ -60,7 +60,7 @@
         steps: 500
         func: mul
 
-    # Z3: ratio [2^-512, 2^-256)  linear path (poly = r), 256 binades
+    # Z3: ratio [2^-512, 2^-256)  atan(r) ≈ r, deep linear
     - id: atan2_z03
       description: 'Z3: ratio [2^-512, 2^-256), x in [1, 10000]'
       input:
@@ -78,7 +78,7 @@
         steps: 500
         func: mul
 
-    # Z4: ratio [2^-256, 2^-128)  linear path (poly = r), 128 binades
+    # Z4: ratio [2^-256, 2^-128)  atan(r) ≈ r, deep linear
     - id: atan2_z04
       description: 'Z4: ratio [2^-256, 2^-128), x in [1, 10000]'
       input:
@@ -96,7 +96,7 @@
         steps: 500
         func: mul
 
-    # Z5: ratio [2^-128, 2^-64)  linear path (poly = r), 64 binades
+    # Z5: ratio [2^-128, 2^-64)  atan(r) ≈ r, deep linear
     - id: atan2_z05
       description: 'Z5: ratio [2^-128, 2^-64), x in [1, 10000]'
       input:
@@ -114,7 +114,7 @@
         steps: 500
         func: mul
 
-    # Z6: ratio [2^-64, 2^-32)  straddles tiny_r boundary, 32 binades
+    # Z6: ratio [2^-64, 2^-32)  atan(r) ≈ r, linear
     - id: atan2_z06
       description: 'Z6: ratio [2^-64, 2^-32), x in [1, 10000]'
       input:
@@ -132,7 +132,7 @@
         steps: 500
         func: mul
 
-    # Z7: ratio [2^-32, 2^-16)  poly j=0, above tiny_r, 16 binades
+    # Z7: ratio [2^-32, 2^-16)  atan(r) ≈ r, linear
     - id: atan2_z07
       description: 'Z7: ratio [2^-32, 2^-16), x in [1, 10000]'
       input:
@@ -150,7 +150,7 @@
         steps: 500
         func: mul
 
-    # Z8: ratio [2^-16, 2^-8)  poly j=0, 8 binades
+    # Z8: ratio [2^-16, 2^-8)  atan(r) ≈ r − r³/3, near-linear
     - id: atan2_z08
       description: 'Z8: ratio [2^-16, 2^-8), x in [1, 10000]'
       input:
@@ -168,7 +168,7 @@
         steps: 500
         func: mul
 
-    # Z9: ratio [2^-8, 2^-4)  poly j=0..3
+    # Z9: ratio [2^-8, 2^-4)  atan(r) ≈ r − r³/3, near-linear
     - id: atan2_z09
       description: 'Z9: ratio [2^-8, 2^-4), x in [1, 10000]'
       input:
@@ -186,7 +186,7 @@
         steps: 500
         func: mul
 
-    # Z10: ratio [2^-4, 1.0)  polynomial path, no swap, j=4..63
+    # Z10: ratio [2^-4, 1.0)  non-linear, atan curves toward π/4
     - id: atan2_z10
       description: 'Z10: ratio [2^-4, 1.0), poly no-swap, x in [1, 10000]'
       input:
@@ -204,7 +204,7 @@
         steps: 500
         func: mul
 
-    # Z11: ratio [1.0, 2.0)  swap boundary, poly+swap, j=32..63
+    # Z11: ratio [1.0, 2.0)  near atan(1) = π/4, y ≈ x crossover
     - id: atan2_z11
       description: 'Z11: ratio [1.0, 2.0), swap boundary, x in [1, 5000]'
       input:
@@ -222,7 +222,7 @@
         steps: 500
         func: mul
 
-    # Z12: ratio [2.0, 8.0)  polynomial path + swap, j=8..32
+    # Z12: ratio [2.0, 8.0)  atan2 approaching π/2, flattening
     - id: atan2_z12
       description: 'Z12: ratio [2.0, 8.0), poly+swap, x in [1, 1250]'
       input:
@@ -247,7 +247,7 @@
   - id: quadrant-tests
     description: 'Quadrant coverage performance tests (double precision)'
     tests:
-    # Q4: atan2(-y, +x)  — +x, neg_mul gives -y
+    # Q4: atan2(-y, +x) ∈ (-π/2, 0), fourth quadrant
     - id: atan2_q4
       description: 'Q4: y=-(x*z)<0, x>0, z in [subnormal, 2]'
       input:
@@ -265,7 +265,7 @@
         steps: 500
         func: neg_mul
 
-    # Q3: atan2(-y, -x)  — -x, mul gives -y (since x<0, z>0)
+    # Q3: atan2(-y, -x) ∈ (-π, -π/2), third quadrant
     - id: atan2_q3
       description: 'Q3: y=x*z<0 (x<0), x<0, z in [subnormal, 2]'
       input:
@@ -283,7 +283,7 @@
         steps: 500
         func: mul
 
-    # Q2: atan2(+y, -x)  — -x, neg_mul gives +y (negate of negative)
+    # Q2: atan2(+y, -x) ∈ (π/2, π), second quadrant
     - id: atan2_q2
       description: 'Q2: y=-(x*z)>0 (x<0), x<0, z in [subnormal, 2]'
       input:

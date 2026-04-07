@@ -239,7 +239,7 @@ static T str_to_complex(const std::string &word)
  */
 template <typename T>
 void libm_api_variant(struct AlmLibs *alibs, const struct YamlInputs &param,
-                      std::string &variant, TestMode test_mode, const std::string &vendor,
+                      std::string &variant, BenchArgs bench_args, const std::string &vendor,
                       std::string &ulp_threshold)
 {
     using U = typename libm::type_info<T>::real_type;
@@ -249,9 +249,10 @@ void libm_api_variant(struct AlmLibs *alibs, const struct YamlInputs &param,
 
     yop->variant = variant;
     yop->api_name = param.api_name;
-    yop->config.utflag = param.range.empty();
-    yop->config.test_mode = test_mode;
     yop->vendor = vendor;
+    yop->config.test_mode     = bench_args.test_mode;
+    yop->config.perf_mode     = bench_args.perf_mode;
+    yop->config.utflag        = param.range.empty();
     yop->config.ulp_threshold = std::stod(ulp_threshold);
     yop->config.warmup_count = std::stoull(param.warmup_count);
     yop->config.batch_size = std::stoull(param.batch_size);
@@ -338,7 +339,8 @@ void libm_api_variant(struct AlmLibs *alibs, const struct YamlInputs &param,
  * process_libm:
  * Executes tests for each variant specified in the YAML input using the appropriate libm API variant.
  */
-void process_libm(struct AlmLibs *alibs, const std::vector<struct YamlInputs> &params, TestMode test_mode)
+void process_libm(struct AlmLibs *alibs, const std::vector<struct YamlInputs> &params,
+                  BenchArgs bench_args)
 {
     typedef const char* (*get_vendor_name_t)();
     get_vendor_name_t get_vendor_string = (get_vendor_name_t)DL_SYM(alibs->pshimlib, "get_vendor_name");
@@ -355,43 +357,45 @@ void process_libm(struct AlmLibs *alibs, const std::vector<struct YamlInputs> &p
         std::stringstream ulp(ulp_threshold);
         std::string uth;
 
-        // Derive test_mode from test_type
-        test_mode = (param.test_type.find("perf") != std::string::npos) ? TestMode::E_PERFORMANCE : TestMode::E_ACCURACY;
+        // Derive test_mode from test_type; preserve perf_mode from CLI
+        BenchArgs args = bench_args;
+        args.test_mode = (param.test_type.find("perf") != std::string::npos)
+            ? TestMode::E_PERFORMANCE : TestMode::E_ACCURACY;
 
         while (std::getline(ss, variant, ';')) {
             std::getline(ulp, uth, ';');
             if (variant == "ss") {
-                libm_api_variant<float>(alibs, param, variant, test_mode, vendor, uth);
+                libm_api_variant<float>(alibs, param, variant, args, vendor, uth);
             } else if (variant == "vrs4") {
-                libm_api_variant<libm::AlignedM128>(alibs, param, variant, test_mode, vendor, uth);
+                libm_api_variant<libm::AlignedM128>(alibs, param, variant, args, vendor, uth);
             } else if (variant == "vrs8") {
-                libm_api_variant<libm::AlignedM256>(alibs, param, variant, test_mode, vendor, uth);
+                libm_api_variant<libm::AlignedM256>(alibs, param, variant, args, vendor, uth);
             } else if (variant == "vrs16") {
             #ifdef __AVX512F__
-                libm_api_variant<libm::AlignedM512>(alibs, param, variant, test_mode, vendor, uth);
+                libm_api_variant<libm::AlignedM512>(alibs, param, variant, args, vendor, uth);
             #else
                 std::cout << "AVX-512 not supported, skipping variant: " << variant << std::endl;
             #endif
             } else if (variant == "vrsa") {
-                libm_api_variant<float>(alibs, param, variant, test_mode, vendor, uth);
+                libm_api_variant<float>(alibs, param, variant, args, vendor, uth);
             } else if (variant == "sd") {
-                libm_api_variant<double>(alibs, param, variant, test_mode, vendor, uth);
+                libm_api_variant<double>(alibs, param, variant, args, vendor, uth);
             } else if (variant == "vrd2") {
-                libm_api_variant<libm::AlignedM128d>(alibs, param, variant, test_mode, vendor, uth);
+                libm_api_variant<libm::AlignedM128d>(alibs, param, variant, args, vendor, uth);
             } else if (variant == "vrd4") {
-                libm_api_variant<libm::AlignedM256d>(alibs, param, variant, test_mode, vendor, uth);
+                libm_api_variant<libm::AlignedM256d>(alibs, param, variant, args, vendor, uth);
             } else if (variant == "vrd8") {
             #ifdef __AVX512F__
-                libm_api_variant<libm::AlignedM512d>(alibs, param, variant, test_mode, vendor, uth);
+                libm_api_variant<libm::AlignedM512d>(alibs, param, variant, args, vendor, uth);
             #else
                 std::cout << "AVX-512 not supported, skipping variant: " << variant << std::endl;
             #endif
             } else if (variant == "vrda") {
-                libm_api_variant<double>(alibs, param, variant, test_mode, vendor, uth);
+                libm_api_variant<double>(alibs, param, variant, args, vendor, uth);
             } else if (variant == "sc") {
-                libm_api_variant<fc32_t>(alibs, param, variant, test_mode, vendor, uth);
+                libm_api_variant<fc32_t>(alibs, param, variant, args, vendor, uth);
             } else if (variant == "sz") {
-                libm_api_variant<fc64_t>(alibs, param, variant, test_mode, vendor, uth);
+                libm_api_variant<fc64_t>(alibs, param, variant, args, vendor, uth);
             } else {
                 std::cout << "Invalid datatype: " << variant << std::endl;
             }
@@ -401,8 +405,8 @@ void process_libm(struct AlmLibs *alibs, const std::vector<struct YamlInputs> &p
 }
 
 template void libm_api_variant<fc32_t>(struct AlmLibs *alibs, const struct YamlInputs &param,
-                                       std::string &variant, TestMode test_mode,
+                                       std::string &variant, BenchArgs bench_args,
                                        const std::string &vendor, std::string &ulp_threshold);
 template void libm_api_variant<fc64_t>(struct AlmLibs *alibs, const struct YamlInputs &param,
-                                       std::string &variant, TestMode test_mode,
+                                       std::string &variant, BenchArgs bench_args,
                                        const std::string &vendor, std::string &ulp_threshold);

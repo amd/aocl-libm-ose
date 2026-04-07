@@ -49,7 +49,8 @@ enum ApiTypes {
 };
 
 
-void process_libm(struct AlmLibs *alibs, const std::vector<struct YamlInputs> &params, TestMode test_mode );
+void process_libm(struct AlmLibs *alibs, const std::vector<struct YamlInputs> &params,
+                  BenchArgs bench_args = BenchArgs{});
 
 template <typename T, typename U>
 int validate_api(struct AlmLibs *alibs, struct InParams<T, U> *ipp, struct YamlOutputs<U> *yop);

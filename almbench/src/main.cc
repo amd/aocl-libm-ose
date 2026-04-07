@@ -51,7 +51,7 @@ void print_usage(const char *program_name)
 {
     std::cerr << "Usage: " << program_name
               << " <shim_shared_library> <yaml_file>"
-              << " [--type|-t <test_type>]" << std::endl;
+              << " [--type|-t <test_type>] [--perf-mode <mode>]" << std::endl;
     std::cerr << "Description:\n"
               << "  This program loads shared libraries and "
               << "executes specified functions.\n"
@@ -65,6 +65,9 @@ void print_usage(const char *program_name)
               << "(default),\n"
               << "                             'perf' for "
               << "performance.\n"
+              << "    [--perf-mode <mode>]     Performance measurement mode:\n"
+              << "                             'throughput' (default),\n"
+              << "                             'latency'.\n"
               << "  Note:\n"
               << "    The reference library is automatically loaded "
               << "at build time." << std::endl;
@@ -78,7 +81,7 @@ void set_api_filter(const std::string& api);
  */
 int main(int argc, char *argv[])
 {
-    if (argc < 3 || argc > 5) {
+    if (argc < 3) {
         print_usage(argv[0]);
         return 1;
     }
@@ -92,21 +95,21 @@ int main(int argc, char *argv[])
     // Force stderr to be unbuffered for immediate visibility
     setvbuf(stderr, nullptr, _IONBF, 0);
     std::fprintf(stderr, "[%s] starting. argc=%d\n", argv[0], argc);
-    TestMode test_mode = TestMode::E_ACCURACY;
+    BenchArgs bench_args;
 
     // Auto-detect test_mode from yaml filename if not explicitly set
     if (yaml_file.find("_perf.yml") != std::string::npos) {
-        test_mode = TestMode::E_PERFORMANCE;
+        bench_args.test_mode = TestMode::E_PERFORMANCE;
         std::fprintf(stderr,
             "[%s] Auto-detected PERFORMANCE mode "
             "from filename\n", argv[0]);
     } else if (yaml_file.find("_accu.yml") != std::string::npos) {
-        test_mode = TestMode::E_ACCURACY;
+        bench_args.test_mode = TestMode::E_ACCURACY;
         std::fprintf(stderr,
             "[%s] Auto-detected ACCURACY mode "
             "from filename\n", argv[0]);
     } else if (yaml_file.find("_conf.yml") != std::string::npos) {
-        test_mode = TestMode::E_ACCURACY;
+        bench_args.test_mode = TestMode::E_ACCURACY;
         std::fprintf(stderr,
             "[%s] Auto-detected ACCURACY mode "
             "from filename (conf)\n", argv[0]);
@@ -122,9 +125,9 @@ int main(int argc, char *argv[])
                 "[%s] TYPE filter: %s\n", argv[0], t3.c_str());
             // Set test_mode based on type filter
             if (t3 == "PERF")
-                test_mode = TestMode::E_PERFORMANCE;
+                bench_args.test_mode = TestMode::E_PERFORMANCE;
             else if (t3 == "ACCU")
-                test_mode = TestMode::E_ACCURACY;
+                bench_args.test_mode = TestMode::E_ACCURACY;
         } else {
             set_api_filter(argv[3]);
             std::fprintf(stderr,
@@ -141,9 +144,9 @@ int main(int argc, char *argv[])
                 "[%s] TYPE filter: %s\n", argv[0], t4.c_str());
             // Set test_mode based on type filter
             if (t4 == "PERF")
-                test_mode = TestMode::E_PERFORMANCE;
+                bench_args.test_mode = TestMode::E_PERFORMANCE;
             else if (t4 == "ACCU")
-                test_mode = TestMode::E_ACCURACY;
+                bench_args.test_mode = TestMode::E_ACCURACY;
         } else {
             std::fprintf(stderr,
                 "[%s] Warning: unknown type arg: %s "
@@ -160,12 +163,23 @@ int main(int argc, char *argv[])
             std::strcmp(argv[i], "-t") == 0) {
             if (i + 1 < argc) {
                 std::string test_type = argv[++i];
-                if (test_type == "accu") {
-                    test_mode = TestMode::E_ACCURACY;
-                } else if (test_type == "perf") {
-                    test_mode = TestMode::E_PERFORMANCE;
+                if (test_type == "perf") {
+                    bench_args.test_mode = TestMode::E_PERFORMANCE;
                 } else {
-                    test_mode = TestMode::E_ACCURACY;
+                    bench_args.test_mode = TestMode::E_ACCURACY;
+                }
+            }
+        } else if (std::strcmp(argv[i], "--perf-mode") == 0) {
+            if (i + 1 < argc) {
+                std::string mode_str = argv[++i];
+                if (mode_str == "latency") {
+                    bench_args.perf_mode = PerfMode::E_LATENCY;
+                } else if (mode_str == "throughput") {
+                    bench_args.perf_mode = PerfMode::E_THROUGHPUT;
+                } else {
+                    std::cerr << "Warning: Unknown perf-mode '" << mode_str 
+                            << "', using throughput\n";
+                    bench_args.perf_mode = PerfMode::E_THROUGHPUT;
                 }
             }
         }
@@ -218,7 +232,7 @@ int main(int argc, char *argv[])
     read_yaml_file(yaml_file, params);
 
     /* Execute tests using loaded libraries */
-    process_libm(&almlibs, params, test_mode);
+    process_libm(&almlibs, params, bench_args);
 
     /* Clean up */
     DL_CLOSE(pshimobj);

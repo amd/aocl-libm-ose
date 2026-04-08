@@ -1,4 +1,5 @@
-# Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+#
+# Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -26,50 +27,58 @@
 Import('env')
 from os.path import join as joinpath
 
-builddir = joinpath(env['BUILDROOT'], 'src', 'optimized')
-
 e = env.Clone()
 
-p = joinpath(Dir('.').srcnode().path)
-
-incpaths = [
-    '#' +  p,
-    '#' +  joinpath(p, 'include'),
-    '#' +  joinpath(p, 'gas', 'include')
-
+# AVX2 assembly sources
+avx2_asm = [
+    'gas/fmaf_fma3.S',
+    'gas/fma_fma3.S',
+    'gas/log_fma3.S',
+    'gas/log1p_fma3.S',
+    'gas/vrs4_cbrtf_fma3.S',
+    'gas/vrs4_exp10f_fma3.S',
+    'gas/vrs4_expm1f_fma3.S',
+    'gas/vrs4_log1pf_fma3.S',
+    'gas/vrd2_cbrt_fma3.S',
+    'gas/vrd2_exp10_fma3.S',
+    'gas/vrd2_log10_fma3.S',
+    'gas/vrd2_log1p_fma3.S',
+    'gas/vrda_expm1_fma3.S',
 ]
+
+# Set up include paths
+p = joinpath(Dir('.').srcnode().path)
+incpaths = [
+    '#' + p,
+    '#' + joinpath(p, 'include'),
+    '#' + joinpath(p, 'gas', 'include'),
+    '#include',
+    '#include/libm',
+    '#src/isa/include',
+]
+
+isa_flags = []
+
 if e['HOST_OS'] != 'win32':
-    cflags = ['-O3', '-fPIC', '-mavx2', '-mfma', '-flax-vector-conversions']
-    asflags = []
-else:
-    cflags = []
-    asflags = ['-DAVX_XOP_FMA4_FMA3',
-               '-DDEBUG=0',
-               '-DENABLE_AMDLIBM_API=1',
-               '-DLIBABI=aocl',
-               '-D__AVX2__',
-               '-Dlibalm_EXPORTS',
-               #'/showIncludes',
-               '/Iinclude',
-               '/Isrc\\isa',
-               '/Isrc\\isa\\include',
-               '/Isrc\\isa\\avx2',
-               '/Isrc\\isa\\avx2\\include',
-               '/Isrc\\isa\\avx2\\gas\\include'
-           ]
+    isa_flags.extend(['-O3', '-fPIC', '-mavx2', '-mfma', '-flax-vector-conversions'])
+
+# On Windows, clang-cl does not pass CPPPATH to the assembler for .S files,
+# so we add explicit -I flags to ASFLAGS.
+if e['HOST_OS'] == 'win32':
+    isa_flags.extend(['-I' + Dir('#include').abspath,
+                      '-I' + Dir('#include/libm').abspath,
+                      '-I' + Dir('#' + p).abspath,
+                      '-I' + Dir('#' + joinpath(p, 'include')).abspath,
+                      '-I' + Dir('#' + joinpath(p, 'gas', 'include')).abspath,
+                      '-I' + Dir('#src/isa/include').abspath])
 
 e.Append(
-    CFLAGS = cflags,
-    ASFLAGS = asflags,
     CPPPATH = incpaths,
+    ASFLAGS = isa_flags,
+    CCFLAGS = isa_flags,
 )
 
-experimental_src = []
-
-source = Glob('*.c', exclude=experimental_src)
-source += Glob('gas/*.S', exclude=experimental_src)
-#source = Glob('*.c')
-
-objs = e.StaticObject(source)
+# Build assembly objects
+objs = e.StaticObject(avx2_asm)
 
 Return('objs')

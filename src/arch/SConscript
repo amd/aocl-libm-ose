@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -25,41 +25,131 @@
 
 # Inherit global environment
 Import('env')
-import os
 from os.path import join as joinpath
-from os.path import dirname,isdir
+import importlib.util
+import os
 
-builddir = joinpath(env['BUILDROOT'], 'src', 'arch')
+# Load optimized_srcs without polluting sys.path
+_spec = importlib.util.spec_from_file_location(
+    'optimized_srcs',
+    File('#src/optimized/optimized_srcs.py').abspath)
+_mod = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_mod)
+gather_optimized_srcs = _mod.gather_optimized_srcs
 
 e = env.Clone()
 
-if '-ffast-math' in e['CFLAGS']:
-    e['CFLAGS'].remove('-ffast-math')
+# ---------------------------------------------------------------------------
+# Resolve per-variant -march using ALM_MAX_ARCH from CheckZenVer (check.py).
+# If the compiler doesn't support a variant's preferred flag, cap at the
+# maximum supported arch.  Mirrors CMake get_zenX_arch_flags() fallback.
+# ---------------------------------------------------------------------------
+_ZNVER_ORDER = ['znver1', 'znver2', 'znver3', 'znver4', 'znver5']
 
-incpaths = [
-    '#' + joinpath(Dir('.').srcnode().path),
-    '#' + joinpath(Dir('.').srcnode().path, 'include')
+# CheckZenVer (check.py) historically stored 'x86_64' when no znver* flag is
+# supported, but GCC/Clang expect '-march=x86-64' (dash, not underscore).
+_ARCH_NORMALIZE = {'x86_64': 'x86-64'}
+
+def _resolve_march(env, preferred):
+    """Return *preferred* if the compiler supports it, else ALM_MAX_ARCH."""
+    max_arch = env.get('ALM_MAX_ARCH', 'x86-64')
+    max_arch = _ARCH_NORMALIZE.get(max_arch, max_arch)
+    if max_arch not in _ZNVER_ORDER:
+        return max_arch
+    if preferred not in _ZNVER_ORDER:
+        return preferred
+    max_idx = _ZNVER_ORDER.index(max_arch)
+    pref_idx = _ZNVER_ORDER.index(preferred)
+    if pref_idx <= max_idx:
+        return preferred
+    return max_arch
+
+# ---------------------------------------------------------------------------
+# Arch-specific compilation using -include to inject arch header.
+# Mirrors the pattern in src/arch/CMakeLists.txt.
+#   zen/zen2/zen3 (has_avx512=0): COMMON_SRCS compiled without AVX512 flags
+#   zen4/zen5 (has_avx512=1): COMMON_SRCS + AVX512_SRCS compiled with AVX512 flags
+# ---------------------------------------------------------------------------
+
+avx2_srcs, avx512_srcs = gather_optimized_srcs(Glob)
+
+arch_includes = [
+    '#include',
+    '#include/libm'
 ]
 
-e.Append(
-    CPPPATH = incpaths
-)
+# Arch list: (name, define, preferred_march, has_avx512)
+arch_list = [
+    ('zen',  'ZEN',  'znver1', False),
+    ('zen2', 'ZEN2', 'znver2', False),
+    ('zen3', 'ZEN3', 'znver3', False),
+    ('zen4', 'ZEN4', 'znver4', True),
+    ('zen5', 'ZEN5', 'znver5', True),
+]
 
-objs = []
+arch_header = joinpath(Dir('#src/arch').abspath, 'zen_arch.h')
+if e['HOST_OS'] != 'win32':
+    arch_common_flags = ['-mfma', '-O3', '-fPIC', '-flax-vector-conversions']
+else:
+    arch_common_flags = ['-mfma', '-O3']
 
-dirs = ['zen', 'zen2', 'zen3', 'zen4', 'zen5']
+arch_objs = []
 
-for d in dirs:
-    aenv = e.Clone()
-    sdir = joinpath(aenv['CWD'], d)
-    aenv.Append(
-        CWD = sdir
+for arch_name, arch_def, preferred_march, has_avx512 in arch_list:
+    arch_env = e.Clone()
+
+    # These rearrangements are not value-safe:
+    #   (a ⊕ b) ⊕ c ⇒ a ⊕ (b ⊕ c)
+    #   a ⊗ (b ⊕ c) ⇒ (a ⊗ b) ⊕ (a ⊕ c)
+    # Strip -ffast-math (may be inherited from -Ofast) to prevent
+    # unsafe floating-point reassociation in math library code.
+    if '-ffast-math' in arch_env['CFLAGS']:
+        arch_env['CFLAGS'].remove('-ffast-math')
+
+    arch_march = _resolve_march(e, preferred_march)
+
+    # Select source files
+    if has_avx512:
+        srcs = avx512_srcs
+        arch_flags = ['-mavx512f', '-mavx512dq']
+    else:
+        srcs = avx2_srcs
+        arch_flags = ['-mavx2']
+
+    # Set up compiler flags
+    # Explicit ISA flags (-mavx2/-mfma/-mavx512f) are required even though
+    # -march=znverX implies them, because _resolve_march() can fall back to
+    # x86-64 when no znver* flag is supported — and x86-64 does not enable
+    # AVX2/FMA/AVX512 implicitly.
+    arch_cflags = ['-DALM_BUILD_' + arch_def + '=1']
+    if e['HOST_OS'] != 'win32':
+        arch_cflags.extend(['-include', arch_header,
+                            '-march=' + arch_march])
+    else:
+        arch_cflags.extend(['/FI' + arch_header,
+                            '-march=' + arch_march])
+
+    arch_cflags.extend(arch_common_flags)
+    arch_cflags.extend(arch_flags)
+
+
+    arch_env.Append(
+        CFLAGS = arch_cflags,
+        CPPPATH = arch_includes,
     )
-    objs += SConscript('%s/SConscript'%d,
-                       exports = { 'env': aenv },
-                       duplicate = 0,
-                       src_dir = sdir,
-                       variant_dir = joinpath(builddir, d)
-    )
+
+    # Build objects into arch-specific subdirectory to avoid target conflicts
+    for src in srcs:
+        src_str = str(src)
+        src_norm = os.path.normpath(src_str).replace('\\', '/')
+        idx = src_norm.find('src/optimized/')
+        if idx >= 0:
+            rel = src_norm[idx + len('src/optimized/'):]
+        else:
+            rel = os.path.basename(src_norm)
+        target = joinpath(arch_name, os.path.splitext(rel)[0])
+        arch_objs.append(arch_env.StaticObject(target=target, source=src))
+
+objs = arch_objs
 
 Return('objs')

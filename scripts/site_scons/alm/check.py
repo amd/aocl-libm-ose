@@ -163,7 +163,7 @@ def All(almenv):
                 return ret
 
         ctx.Message("Unable to detect compiler support for Zen architecture\n")
-        ctx.env['ALM_MAX_ARCH'] = 'x86_64'
+        ctx.env['ALM_MAX_ARCH'] = 'x86-64'
         return None
 
     def CheckUnalignedVectorMove(ctx):

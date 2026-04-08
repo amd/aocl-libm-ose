@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -53,13 +53,3 @@ target_compile_options(avx2asm PRIVATE ${ISA_FLAGS})
 if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     set_target_properties(avx2asm PROPERTIES MSVC_DEBUG_INFORMATION_FORMAT "")
 endif()
-
-file(GLOB AVX2_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.c")
-set(AVX2_FLAGS ${LIBMCFLAGS} ${fmaflag} ${vecflag})
-add_library(avx2 OBJECT ${AVX2_SRC})
-target_include_directories(avx2
-                           PUBLIC  ${${PROJECT_PREFIX}_COMMON_INCLUDES}
-                                   ${${PROJECT_PREFIX}_SDK_INCLUDES}
-                           PRIVATE ${${PROJECT_PREFIX}_PRIVATE_INCLUDES}
-                                   ${AVX2_INCLUDE})
-target_compile_options(avx2 PRIVATE ${AVX2_FLAGS})

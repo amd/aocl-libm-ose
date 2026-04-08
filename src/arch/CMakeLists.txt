@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -25,27 +25,71 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+# ---------------------------------------------------------------------------
+# Arch-specific compilation using -include to inject arch header.
+# ---------------------------------------------------------------------------
+get_zen1_arch_flags(ZEN1_MARCH)
+get_zen2_arch_flags(ZEN2_MARCH)
+get_zen3_arch_flags(ZEN3_MARCH)
+get_zen4_arch_flags(ZEN4_MARCH)
+get_zen5_arch_flags(ZEN5_MARCH)
 
-set(ZENCFLAGS ${LIBMCFLAGS} ${vecflag})
+set(ALM_WRAPPER_ARCH_LIST)
+list(APPEND ALM_WRAPPER_ARCH_LIST "zen:ZEN:${ZEN1_MARCH}:0")
+list(APPEND ALM_WRAPPER_ARCH_LIST "zen2:ZEN2:${ZEN2_MARCH}:0")
+list(APPEND ALM_WRAPPER_ARCH_LIST "zen3:ZEN3:${ZEN3_MARCH}:0")
+list(APPEND ALM_WRAPPER_ARCH_LIST "zen4:ZEN4:${ZEN4_MARCH}:1")
+list(APPEND ALM_WRAPPER_ARCH_LIST "zen5:ZEN5:${ZEN5_MARCH}:1")
 
-add_subdirectory(zen)
-#add zen1 object library to libmobj
-list(APPEND libmobj $<TARGET_OBJECTS:zen1>)
+set(ZEN_INCLUDES
+    ${${PROJECT_PREFIX}_COMMON_INCLUDES}
+    ${${PROJECT_PREFIX}_SDK_INCLUDES}
+    ${${PROJECT_PREFIX}_PRIVATE_INCLUDES}
+    ${INCLUDE_PATHS}
+)
 
-add_subdirectory(zen2)
-#add zen2 object library to libmobj
-list(APPEND libmobj $<TARGET_OBJECTS:zen2>)
+set(ZEN_FLAGS ${LIBMCFLAGS} ${vecflag})
+set(ARCH_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/zen_arch.h)
 
-add_subdirectory(zen3)
-#add zen3 object library to libmobj
-list(APPEND libmobj $<TARGET_OBJECTS:zen3>)
+# clang-cl counts GCC-style -include as an extra input and rejects /Fo; use /FI like MSVC.
+if(MSVC)
+  set(ARCH_FORCE_INCLUDE "/FI${ARCH_HEADER}")
+else()
+  set(ARCH_FORCE_INCLUDE "-include;${ARCH_HEADER}")
+endif()
 
-add_subdirectory(zen4)
-#add zen4 object library to libmobj
-list(APPEND libmobj $<TARGET_OBJECTS:zen4>)
+foreach(ARCH_ENTRY IN LISTS ALM_WRAPPER_ARCH_LIST)
+    string(REPLACE ":" ";" _PARTS "${ARCH_ENTRY}")
+    list(GET _PARTS 0 ARCH_DIR)
+    list(GET _PARTS 1 ARCH_DEF)
+    list(GET _PARTS 2 ARCH_MARCH)
+    list(GET _PARTS 3 ARCH_HAS_AVX512)
 
-add_subdirectory(zen5)
-#add zen5 object library to libmobj
-list(APPEND libmobj $<TARGET_OBJECTS:zen5>)
+    if(ARCH_HAS_AVX512)
+        # zen4/zen5: one target — COMMON_SRCS + AVX512-specific sources,
+        # all compiled with AVX512 flags.  No separate base target is created,
+        # so there is no risk of duplicate symbols between two targets sharing
+        # the same -DALM_BUILD_<ARCH> define.
+        add_library(${ARCH_DIR} OBJECT ${AVX512_SRCS})
+        target_compile_options(${ARCH_DIR} PRIVATE
+            ${ARCH_FORCE_INCLUDE}
+            -DALM_BUILD_${ARCH_DEF}=1
+            -march=${ARCH_MARCH}
+            ${ZEN_FLAGS} ${avx512flag}
+        )
+    else()
+        # zen/zen2/zen3: COMMON_SRCS only, no AVX512 flags.
+        add_library(${ARCH_DIR} OBJECT ${AVX2_SRCS})
+        target_compile_options(${ARCH_DIR} PRIVATE
+            ${ARCH_FORCE_INCLUDE}
+            -DALM_BUILD_${ARCH_DEF}=1
+            -march=${ARCH_MARCH}
+            ${ZEN_FLAGS} ${fmaflag}
+        )
+    endif()
+
+    target_include_directories(${ARCH_DIR} PRIVATE ${ZEN_INCLUDES})
+    list(APPEND libmobj $<TARGET_OBJECTS:${ARCH_DIR}>)
+endforeach()
 
 set(libmobj ${libmobj} PARENT_SCOPE)

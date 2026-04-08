@@ -32,17 +32,71 @@ get_isa_flag( isaflag )
 set(ISA_FLAGS ${isaflag} ${ASAN_FLAGS} ${COVERAGE_FLAGS})
 
 add_subdirectory(avx)
-#add avxasm object library to libmobj
+# add avxasm object library to libmobj
 list(APPEND libmobj $<TARGET_OBJECTS:avxasm>)
 
 add_subdirectory(avx2)
-#add avx2asm object library to libmobj
+# add avx2asm object library to libmobj
 list(APPEND libmobj $<TARGET_OBJECTS:avx2asm>)
-#add avx2 object library to libmobj
-list(APPEND libmobj $<TARGET_OBJECTS:avx2>)
 
-add_subdirectory(avx512)
-# add avx512 object library to libmobj
-list(APPEND libmobj $<TARGET_OBJECTS:avx512>)
+# ---------------------------------------------------------------------------
+# ISA-specific compilation using -include to inject ISA header.
+# Mirrors the pattern in src/arch/CMakeLists.txt.
+#   avx2  (ISA_HAS_AVX512=0): COMMON_SRCS compiled with fmaflag
+#   avx512(ISA_HAS_AVX512=1): COMMON_SRCS + AVX512_SRCS compiled with avx512flag
+# ---------------------------------------------------------------------------
+set(ALM_ISA_LIST)
+
+if(CONFIG_COMPILER_HAS_AVX2)
+    list(APPEND ALM_ISA_LIST "avx2:AVX2:0")
+endif()
+if(CONFIG_COMPILER_HAS_AVX512)
+    list(APPEND ALM_ISA_LIST "avx512:AVX512:1")
+endif()
+
+set(ISA_INCLUDES
+    ${${PROJECT_PREFIX}_COMMON_INCLUDES}
+    ${${PROJECT_PREFIX}_SDK_INCLUDES}
+    ${${PROJECT_PREFIX}_PRIVATE_INCLUDES}
+    ${INCLUDE_PATHS}
+)
+
+set(ISA_CFLAGS ${LIBMCFLAGS} ${vecflag})
+set(ISA_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/x86_isa.h)
+
+# clang-cl counts GCC-style -include as an extra input and rejects /Fo; use /FI like MSVC.
+if(MSVC)
+  set(ISA_FORCE_INCLUDE "/FI${ISA_HEADER}")
+else()
+  set(ISA_FORCE_INCLUDE "-include;${ISA_HEADER}")
+endif()
+
+foreach(ISA_ENTRY IN LISTS ALM_ISA_LIST)
+    string(REPLACE ":" ";" _PARTS "${ISA_ENTRY}")
+    list(GET _PARTS 0 ISA_DIR)
+    list(GET _PARTS 1 ISA_DEF)
+    list(GET _PARTS 2 ISA_HAS_AVX512)
+
+    if(ISA_HAS_AVX512)
+        # avx512: COMMON_SRCS + AVX512-specific sources, compiled with AVX512 flags.
+        add_library(isa_${ISA_DIR} OBJECT ${AVX512_SRCS})
+        target_compile_options(isa_${ISA_DIR} PRIVATE
+            ${ISA_FORCE_INCLUDE}
+            -DALM_BUILD_${ISA_DEF}=1
+            ${ISA_CFLAGS} ${avx512flag}
+        )
+    else()
+        # avx2: COMMON_SRCS only, compiled with FMA/AVX2 flags.
+        add_library(isa_${ISA_DIR} OBJECT ${AVX2_SRCS})
+        target_compile_options(isa_${ISA_DIR} PRIVATE
+            ${ISA_FORCE_INCLUDE}
+            -DALM_BUILD_${ISA_DEF}=1
+            ${ISA_CFLAGS} ${fmaflag}
+        )
+    endif()
+
+    target_include_directories(isa_${ISA_DIR} PRIVATE ${ISA_INCLUDES})
+    list(APPEND libmobj $<TARGET_OBJECTS:isa_${ISA_DIR}>)
+endforeach()
 
 set(libmobj ${libmobj} PARENT_SCOPE)

@@ -23,7 +23,6 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
 
 # Get timestamp.
 string(TIMESTAMP BUILD_DATE "%Y%m%d")
@@ -103,8 +102,8 @@ set(INCLUDES "${INCLUDE_PATHS}" "${AOCL_UTILS_INCLUDE_DIR}")
 #libmobj variable is to collect object libraries in subdirectories
 set(libmobj "")
 
-add_subdirectory(isa)
 add_subdirectory(optimized)
+add_subdirectory(isa)
 add_subdirectory(iface)
 add_subdirectory(arch)
 add_subdirectory(ref)
@@ -118,10 +117,10 @@ target_include_directories(src
                                    ${INCLUDES})
 target_compile_options(src PRIVATE ${LIBMCFLAGS} "-O1")
 
-#add src object library to libmobj
+# add src object library to libmobj
 list(APPEND libmobj $<TARGET_OBJECTS:src>)
 
-#add include headers as part of the install
+# add include headers as part of the install
 set(LIBM_PUBLIC_HEADERS ${PROJECT_SOURCE_DIR}/include/external/amdlibm.h
                         ${PROJECT_SOURCE_DIR}/include/external/amdlibm_vec.h)
 

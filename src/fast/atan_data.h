@@ -29,25 +29,37 @@
 #define ATAN_FAST_DATA_H
 
 /* ------------------------------------------------------------------ */
-/* Per-interval minimax polynomial table (64 intervals x 8 doubles)    */
-/* Each interval = 64 bytes = 1 cache line.                            */
+/* Per-interval minimax polynomial table (65 intervals x 8 doubles)   */
+/* Each interval = 64 bytes = 1 cache line.                           */
 /* atan(j/64 + d) ~ c[0] + c[1]*d + ... + c[7]*d^7                    */
+/* Entry 64 for the r=1.0 edge case to avoid clamping checks.         */
 /* ------------------------------------------------------------------ */
 
 /* Integer bit-manipulation masks */
-#define ATAN_FAST_SIGN_MASK   0x7FFFFFFFFFFFFFFFUL
 #define ATAN_FAST_SUBNORM_LIM 0x0010000000000000UL
 
 static struct {
-    double tbl[64][8];   /* per-interval minimax coefficients */
-    double piby2;        /* pi/2 */
-    double pi;           /* pi   */
-    double inv_n;        /* 1/64 */
+    double inv_n;        /* -1/64 */
     double tbl_n;        /* 64.0 */
     double tiny_r;       /* small-r threshold */
+    double fast_r;       /* fast-path threshold */
     double scale_up;     /* subnormal scaling factor */
-} __attribute__((aligned(64))) atan2_fast_data = {
-  .tbl = {
+    double ALIGN(16) recon_tbl[4][2]; /* reconstruction: [swap][xneg] → {sign, offset} */
+    double ALIGN(16) tbl[65][8];   /* per-interval minimax coefficients */
+    double ALIGN(16) fast_poly[7]; /* minimax poly for atan(r)/r on [0, 0.125] */
+} atan2_fast_data = {
+  .inv_n    = -0x1p-6,                 /* -1/64 (negated for FMA) */
+  .tbl_n    = 64.0,
+  .tiny_r   = 0x1p-26,
+  .fast_r   = 0x1p-3,                  /* 0.125 */
+  .scale_up = 0x1p54,
+  .recon_tbl = {
+    {  1.0,  0.0                  },
+    { -1.0,  0x1.921fb54442d18p1  },   /* pi   */
+    { -1.0,  0x1.921fb54442d18p0  },   /* pi/2 */
+    {  1.0,  0x1.921fb54442d18p0  },   /* pi/2 */
+  },
+.tbl = {
   /* j= 0 */ { 0x0.0p+0, 0x1.0000000000000p+0,
     -0x1.d41bc0918635p-49, -0x1.555555554a53fp-2,
     -0x1.95ef17cdb3a8ep-31, 0x1.9999a7de0e3dcp-3,
@@ -303,22 +315,31 @@ static struct {
   /* j=63 */ { 0x1.8e17aa99cc05ep-1, 0x1.0407ffbefddc1p-1,
     -0x1.03ffbebc3d3ap-2, 0x1.5513a208f6a7fp-4,
     0x1.0a6f25e7c1cd8p-9, -0x1.bd43d081354a6p-6,
-    0x1.e1db3dd35ac22p-6, -0x1.1c375d13d69a4p-3 }
+    0x1.e1db3dd35ac22p-6, -0x1.1c375d13d69a4p-3 },
+  /* j=64: reached only when r=1.0 exactly (numer==denom); d=0, only c[0] matters */
+  { 0x1.921fb54442d18p-1, 0x1.0p-1,
+    -0x1.0p-2, 0x1.5555555555555p-4,
+    0x0p+0, 0x0p+0,
+    0x0p+0, 0x0p+0 }
   },
-  .piby2    = 0x1.921fb54442d18p0,     /* pi/2 */
-  .pi       = 0x1.921fb54442d18p1,     /* pi   */
-  .inv_n    = 0x1p-6,                  /* 1/64 */
-  .tbl_n    = 64.0,
-  .tiny_r   = 0x1p-32,
-  .scale_up = 0x1p54,
+  .fast_poly = {
+    -0x1.5555555555555p-2,
+     0x1.999999999983cp-3,
+    -0x1.249249243aaddp-3,
+     0x1.c71c70bfa00fbp-4,
+    -0x1.745c5a6c7b8a7p-4,
+     0x1.3ace13b4ea9dep-4,
+    -0x1.04475aee8318cp-4,
+  },
 };
 
-#define ATAN_FAST_TBL       atan2_fast_data.tbl
-#define ATAN_FAST_PIBY2     atan2_fast_data.piby2
-#define ATAN_FAST_PI        atan2_fast_data.pi
-#define ATAN_FAST_INV_N     atan2_fast_data.inv_n
-#define ATAN_FAST_TBL_N     atan2_fast_data.tbl_n
-#define ATAN_FAST_TINY_R    atan2_fast_data.tiny_r
-#define ATAN_FAST_SCALE_UP  atan2_fast_data.scale_up
+#define ATAN_FAST_TBL        atan2_fast_data.tbl
+#define ATAN_FAST_INV_N      atan2_fast_data.inv_n
+#define ATAN_FAST_TBL_N      atan2_fast_data.tbl_n
+#define ATAN_FAST_TINY_R     atan2_fast_data.tiny_r
+#define ATAN_FAST_FAST_R     atan2_fast_data.fast_r
+#define ATAN_FAST_SCALE_UP   atan2_fast_data.scale_up
+#define ATAN_FAST_RECON_TBL  atan2_fast_data.recon_tbl
+#define ATAN_FAST_FAST_POLY  atan2_fast_data.fast_poly
 
 #endif /* ATAN_FAST_DATA_H */

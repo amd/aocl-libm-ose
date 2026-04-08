@@ -115,6 +115,26 @@
         })
 
 /*
+ * Degree-7 Estrin (depth 3).
+ * p(r) = c0 + c1*r + c2*r^2 + c3*r^3 + c4*r^4 + c5*r^5 + c6*r^6 + c7*r^7
+ *       = (c0+c1*r) + r^2*(c2+c3*r) + r^4*((c4+c5*r) + r^2*(c6+c7*r))
+ */
+#define POLY_EVAL_ESTRIN_8(r, c0, c1, c2, c3, c4, c5, c6, c7) ({  \
+            __typeof(r) _r2, _r4;                              \
+            __typeof(r) _p0, _p1, _p2, _p3;                    \
+            __typeof(r) _q0, _q1;                              \
+            _r2 = (r) * (r);                                   \
+            _r4 = _r2 * _r2;                                   \
+            _p0 = (c1) * (r) + (c0);                           \
+            _p1 = (c3) * (r) + (c2);                           \
+            _p2 = (c5) * (r) + (c4);                           \
+            _p3 = (c7) * (r) + (c6);                           \
+            _q0 = _p1 * _r2 + _p0;                             \
+            _q1 = _p3 * _r2 + _p2;                             \
+            _q1 * _r4 + _q0;                                   \
+        })
+
+/*
     This function returns a polynomial:
     p(r) = c0*r^0 + c1*r^1 + c2*r^2 + c3r^3 + c4*r^4 + c5*r^5 +
             c6*r^6 + c7*r^7

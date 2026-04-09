@@ -1,0 +1,286 @@
+---
+- test_sequence: perf_tests_atan_fast
+  function: atan
+  timing_enabled: true
+  test_sets:
+  - id: double-precision-tests
+    description: 'Curve-region performance tests for fast atan (double precision)'
+    tests:
+    # Subnormal: atan(x) = x exactly
+    - id: atan_d01
+      description: 'Subnormal inputs, atan(x) = x'
+      input:
+      - [0x0000000000000001, 0x000fffffffffffff]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Tiny: atan(x) ≈ x, deep linear region
+    - id: atan_d02
+      description: 'Tiny positive, deep linear, atan(x) ≈ x'
+      input:
+      - [0x000fffffffffffff, 0x3cd203af9ee75616]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very small: still nearly linear
+    - id: atan_d03
+      description: 'Very small, near-linear'
+      input:
+      - [0x3cd203af9ee75616, 0x3eb0c6f7a0b5ed8d]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Small: cubic correction becomes visible
+    - id: atan_d04
+      description: 'Small, atan(x) ≈ x − x³/3'
+      input:
+      - [0x3eb0c6f7a0b5ed8d, 0x3fb0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Moderate low: curvature increasing
+    - id: atan_d05
+      description: 'Moderate low, increasing curvature'
+      input:
+      - [0x3fb0000000000000, 0x3fe0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Moderate high: approaching atan(1) = π/4
+    - id: atan_d06
+      description: 'Moderate high, approaching π/4'
+      input:
+      - [0x3fe0000000000000, 0x3ff0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Around 1: algorithm swap boundary, atan(1) = π/4
+    - id: atan_d07
+      description: 'Around x=1, swap boundary, atan(1)=π/4'
+      input:
+      - [0x3ff0000000000000, 0x4000000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Post-swap: atan(x) = π/2 − atan(1/x), flattening
+    - id: atan_d08
+      description: 'Post-swap, using reciprocal identity, flattening'
+      input:
+      - [0x4000000000000000, 0x4030000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Large: nearly flat at π/2
+    - id: atan_d09
+      description: 'Large, atan(x) ≈ π/2, nearly flat'
+      input:
+      - [0x4030000000000000, 0x412e848000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very large through DBL_MAX
+    - id: atan_d10
+      description: 'Very large to DBL_MAX, atan(x) = π/2'
+      input:
+      - [0x412e848000000000, 0x7fefffffffffffff]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative moderate: covers near-zero through curvature and swap
+    - id: atan_d11
+      description: 'Negative, [−1.0, −min_normal], curvature + near-zero'
+      input:
+      - [0xbff0000000000000, 0x8010000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative large: post-swap, flattening
+    - id: atan_d12
+      description: 'Negative large, [−10^6, −1.0], post-swap flattening'
+      input:
+      - [0xc12e848000000000, 0xbff0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative very large through -DBL_MAX
+    - id: atan_d13
+      description: 'Negative very large, [−DBL_MAX, −10^6], atan → −π/2'
+      input:
+      - [0xffefffffffffffff, 0xc12e848000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+  - id: single-precision-tests
+    description: 'Curve-region performance tests for fast atanf (single precision)'
+    tests:
+    # Subnormal float inputs
+    - id: atan_s01
+      description: 'Subnormal inputs, atanf(x) = x'
+      input:
+      - [0x36a0000000000000, 0x380fffffc0000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Tiny
+    - id: atan_s02
+      description: 'Tiny positive, atanf(x) ≈ x'
+      input:
+      - [0x380fffffc0000000, 0x3eb0c6f7a0b5ed8d]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Small: curvature beginning
+    - id: atan_s03
+      description: 'Small, curvature beginning'
+      input:
+      - [0x3eb0c6f7a0b5ed8d, 0x3fb0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Moderate: approaching π/4
+    - id: atan_s04
+      description: 'Moderate, approaching atan(1)=π/4'
+      input:
+      - [0x3fb0000000000000, 0x3fe0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near 1: swap boundary
+    - id: atan_s05
+      description: 'Near x=1, swap boundary'
+      input:
+      - [0x3fe0000000000000, 0x4000000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Post-swap: flattening
+    - id: atan_s06
+      description: 'Post-swap, flattening toward π/2'
+      input:
+      - [0x4000000000000000, 0x4030000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Large
+    - id: atan_s07
+      description: 'Large, nearly flat at π/2'
+      input:
+      - [0x4030000000000000, 0x412e848000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very large through FLT_MAX
+    - id: atan_s08
+      description: 'Very large to FLT_MAX, atanf → π/2'
+      input:
+      - [0x412e848000000000, 0x47efffffe0000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative moderate: near-zero through swap
+    - id: atan_s09
+      description: 'Negative, [−2.0, −flt_sub_min], curvature + near-zero'
+      input:
+      - [0xc000000000000000, 0xb6a0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative large through -FLT_MAX
+    - id: atan_s10
+      description: 'Negative large, [−FLT_MAX, −2.0], atanf → −π/2'
+      input:
+      - [0xc7efffffe0000000, 0xc000000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000

@@ -1,0 +1,286 @@
+---
+- test_sequence: perf_tests_tan_fast
+  function: tan
+  timing_enabled: true
+  test_sets:
+  - id: double-precision-tests
+    description: 'Curve-region performance tests for fast tan (double precision)'
+    tests:
+    # Subnormal: tan(x) = x exactly
+    - id: tan_d01
+      description: 'Subnormal inputs, tan(x) = x'
+      input:
+      - [0x0000000000000001, 0x000fffffffffffff]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Tiny: tan(x) ≈ x
+    - id: tan_d02
+      description: 'Tiny positive, tan(x) ≈ x'
+      input:
+      - [0x000fffffffffffff, 0x3ddb7cdfd9d7bdbb]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Small: tan(x) ≈ x + x³/3
+    - id: tan_d03
+      description: 'Small, tan(x) ≈ x + x³/3'
+      input:
+      - [0x3ddb7cdfd9d7bdbb, 0x3f1a36e2eb1c432d]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Core lower: [1e-4, π/8]
+    - id: tan_d04
+      description: 'Core range lower, [1e-4, π/8]'
+      input:
+      - [0x3f1a36e2eb1c432d, 0x3fd921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Core upper: [π/8, π/4]
+    - id: tan_d05
+      description: 'Core range upper, [π/8, π/4]'
+      input:
+      - [0x3fd921fb54442d18, 0x3fe921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Above core to near singularity: [π/4, π/2 − 0.01]
+    - id: tan_d06
+      description: 'Above core, approaching π/2 singularity'
+      input:
+      - [0x3fe921fb54442d18, 0x3ff8f90591b4d0ef]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near singularity: [π/2 − 0.01, π/2 + 0.01], tan diverges
+    - id: tan_d07
+      description: 'Near π/2 singularity, tan(x) → ±∞'
+      input:
+      - [0x3ff8f90591b4d0ef, 0x3ff94af116d38941]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Post-singularity: [π/2 + 0.01, π]
+    - id: tan_d08
+      description: 'Post-singularity, [π/2+0.01, π]'
+      input:
+      - [0x3ff94af116d38941, 0x400921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Few periods: [π, 10π]
+    - id: tan_d09
+      description: 'Few periods, [π, 10π]'
+      input:
+      - [0x400921fb54442d18, 0x403f6a7a2955385e]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Many periods: [10π, 1000π]
+    - id: tan_d10
+      description: 'Many periods, [10π, 1000π]'
+      input:
+      - [0x403f6a7a2955385e, 0x40a88b2f704a9409]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Large: standard reduction
+    - id: tan_d11
+      description: 'Large, [1000π, 10^16], standard reduction'
+      input:
+      - [0x40a88b2f704a9409, 0x4341c37937e08000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very large: Payne-Hanek through DBL_MAX
+    - id: tan_d12
+      description: 'Very large, [10^16, DBL_MAX], Payne-Hanek reduction'
+      input:
+      - [0x4341c37937e08000, 0x7fefffffffffffff]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative full sweep through -DBL_MAX
+    - id: tan_d13
+      description: 'Negative, [−DBL_MAX, −1e-10], includes singularities'
+      input:
+      - [0xffefffffffffffff, 0xbddb7cdfd9d7bdbb]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+  - id: single-precision-tests
+    description: 'Curve-region performance tests for fast tanf (single precision)'
+    tests:
+    # Subnormal float inputs
+    - id: tan_s01
+      description: 'Subnormal inputs, tanf(x) = x'
+      input:
+      - [0x36a0000000000000, 0x380fffffc0000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Tiny
+    - id: tan_s02
+      description: 'Tiny positive, tanf(x) ≈ x'
+      input:
+      - [0x380fffffc0000000, 0x3eb0c6f7a0b5ed8d]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Core lower
+    - id: tan_s03
+      description: 'Core range lower, [1e-6, π/8]'
+      input:
+      - [0x3eb0c6f7a0b5ed8d, 0x3fd921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Core upper
+    - id: tan_s04
+      description: 'Core range upper, [π/8, π/4]'
+      input:
+      - [0x3fd921fb54442d18, 0x3fe921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Through singularity: [π/4, π/2 + 0.01]
+    - id: tan_s05
+      description: 'Through π/2 singularity, [π/4, π/2+0.01]'
+      input:
+      - [0x3fe921fb54442d18, 0x3ff94af116d38941]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Post-singularity to π: [π/2 + 0.01, π]
+    - id: tan_s06
+      description: 'Post-singularity, [π/2+0.01, π]'
+      input:
+      - [0x3ff94af116d38941, 0x400921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Few periods: [π, 100π]
+    - id: tan_s07
+      description: 'Few periods, [π, 100π]'
+      input:
+      - [0x400921fb54442d18, 0x4073a28c59d5433b]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Large
+    - id: tan_s08
+      description: 'Large, [100π, 10^16], standard reduction'
+      input:
+      - [0x4073a28c59d5433b, 0x4341c37937e08000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very large through FLT_MAX
+    - id: tan_s09
+      description: 'Very large, [10^16, FLT_MAX], extended reduction'
+      input:
+      - [0x4341c37937e08000, 0x47efffffe0000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative through -FLT_MAX
+    - id: tan_s10
+      description: 'Negative, [−FLT_MAX, −1e-6], includes singularities'
+      input:
+      - [0xc7efffffe0000000, 0xbeb0c6f7a0b5ed8d]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000

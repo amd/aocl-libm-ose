@@ -1,0 +1,286 @@
+---
+- test_sequence: perf_tests_sin_fast
+  function: sin
+  timing_enabled: true
+  test_sets:
+  - id: double-precision-tests
+    description: 'Curve-region performance tests for fast sin (double precision)'
+    tests:
+    # Subnormal: sin(x) = x exactly
+    - id: sin_d01
+      description: 'Subnormal inputs, sin(x) = x'
+      input:
+      - [0x0000000000000001, 0x000fffffffffffff]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Tiny: sin(x) ≈ x, no reduction needed
+    - id: sin_d02
+      description: 'Tiny positive, sin(x) ≈ x'
+      input:
+      - [0x000fffffffffffff, 0x3ddb7cdfd9d7bdbb]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Small: sin(x) ≈ x − x³/6
+    - id: sin_d03
+      description: 'Small, sin(x) ≈ x − x³/6'
+      input:
+      - [0x3ddb7cdfd9d7bdbb, 0x3f1a36e2eb1c432d]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near-linear to core transition
+    - id: sin_d04
+      description: 'Near-linear, transitioning to polynomial'
+      input:
+      - [0x3f1a36e2eb1c432d, 0x3fb999999999999a]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Core reduced range lower half: [0.1, π/8]
+    - id: sin_d05
+      description: 'Core range lower half, [0.1, π/8]'
+      input:
+      - [0x3fb999999999999a, 0x3fd921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Core reduced range upper half: [π/8, π/4]
+    - id: sin_d06
+      description: 'Core range upper half, [π/8, π/4]'
+      input:
+      - [0x3fd921fb54442d18, 0x3fe921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # First reduction band: [π/4, 2π]
+    - id: sin_d07
+      description: 'First reduction, [π/4, 2π], identity applications + full period'
+      input:
+      - [0x3fe921fb54442d18, 0x401921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Few periods: [2π, 20π]
+    - id: sin_d08
+      description: 'Few periods, [2π, 20π], Cody-Waite reduction'
+      input:
+      - [0x401921fb54442d18, 0x404f6a7a2955385e]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Many periods: [20π, 2000π]
+    - id: sin_d09
+      description: 'Many periods, [20π, 2000π]'
+      input:
+      - [0x404f6a7a2955385e, 0x40b88b2f704a9409]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Large: standard range reduction limit
+    - id: sin_d10
+      description: 'Large, [2000π, 10^16], standard reduction'
+      input:
+      - [0x40b88b2f704a9409, 0x4341c37937e08000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very large: Payne-Hanek territory through DBL_MAX
+    - id: sin_d11
+      description: 'Very large, [10^16, DBL_MAX], Payne-Hanek reduction'
+      input:
+      - [0x4341c37937e08000, 0x7fefffffffffffff]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative core range
+    - id: sin_d12
+      description: 'Negative core, [−π/4, −1e-10], sign-flip path'
+      input:
+      - [0xbfe921fb54442d18, 0xbddb7cdfd9d7bdbb]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative large through -DBL_MAX
+    - id: sin_d13
+      description: 'Negative large, [−DBL_MAX, −π/4]'
+      input:
+      - [0xffefffffffffffff, 0xbfe921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+  - id: single-precision-tests
+    description: 'Curve-region performance tests for fast sinf (single precision)'
+    tests:
+    # Subnormal float inputs
+    - id: sin_s01
+      description: 'Subnormal inputs, sinf(x) = x'
+      input:
+      - [0x36a0000000000000, 0x380fffffc0000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Tiny
+    - id: sin_s02
+      description: 'Tiny positive, sinf(x) ≈ x'
+      input:
+      - [0x380fffffc0000000, 0x3eb0c6f7a0b5ed8d]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Core lower
+    - id: sin_s03
+      description: 'Core range lower, [1e-6, π/8]'
+      input:
+      - [0x3eb0c6f7a0b5ed8d, 0x3fd921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Core upper
+    - id: sin_s04
+      description: 'Core range upper, [π/8, π/4]'
+      input:
+      - [0x3fd921fb54442d18, 0x3fe921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # First reduction through full period: [π/4, 2π]
+    - id: sin_s05
+      description: 'First reduction, [π/4, 2π]'
+      input:
+      - [0x3fe921fb54442d18, 0x401921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Few periods: [2π, 200π]
+    - id: sin_s06
+      description: 'Few periods, [2π, 200π]'
+      input:
+      - [0x401921fb54442d18, 0x4083a28c59d5433b]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Large
+    - id: sin_s07
+      description: 'Large, [200π, 10^16], standard reduction'
+      input:
+      - [0x4083a28c59d5433b, 0x4341c37937e08000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very large through FLT_MAX
+    - id: sin_s08
+      description: 'Very large, [10^16, FLT_MAX], extended reduction'
+      input:
+      - [0x4341c37937e08000, 0x47efffffe0000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative core
+    - id: sin_s09
+      description: 'Negative core, [−π/4, −1e-6]'
+      input:
+      - [0xbfe921fb54442d18, 0xbeb0c6f7a0b5ed8d]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative large through -FLT_MAX
+    - id: sin_s10
+      description: 'Negative large, [−FLT_MAX, −π/4]'
+      input:
+      - [0xc7efffffe0000000, 0xbfe921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000

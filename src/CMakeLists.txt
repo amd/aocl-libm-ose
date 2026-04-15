@@ -132,7 +132,17 @@ if (WIN32)
   set(CMAKE_STATIC_LIBRARY_SUFFIX  "-static.lib")
 else()
   set(LIBALM alm)
-  set(EXTRA_LIBS ${AOCL_UTILS_LIB} "-Wl,-Bdynamic -lc -lstdc++")
+
+  # Cct_Libaoclutils.cmake ensures the ABI is compatible (validation + rebuild).
+  # AU_EXPECT_LIBCXX (set in top-level CMakeLists.txt) tells us the expected runtime.
+  if(AU_EXPECT_LIBCXX)
+    message(STATUS "aocl-utils built with libc++, linking -lc++ -lc++abi")
+    set(CXX_RUNTIME_LIBS "-lc++ -lc++abi")
+  else()
+    message(STATUS "aocl-utils built with libstdc++, linking -lstdc++")
+    set(CXX_RUNTIME_LIBS "-lstdc++")
+  endif()
+  set(EXTRA_LIBS ${AOCL_UTILS_LIB} "-Wl,-Bdynamic -lc ${CXX_RUNTIME_LIBS}")
 endif()
 
 set(libm "")

@@ -173,13 +173,8 @@ endif()
 #------------------------------
 # AOCL_Utils CPUID_library requirements
 #------------------------------
-# Check if the necessary includes and libraries are present before including Cct_Libaoclutils
-if (NOT (EXISTS "${AOCL_UTILS_INCLUDE_DIR}" AND EXISTS "${AOCL_UTILS_LIB}"))
-    include(Cct_Libaoclutils)
-    link_directories(${AOCL_UTILS_LIB_DIR})
-    set(CMAKE_SKIP_RPATH TRUE)
-    set(CMAKE_SKIP_INSTALL_RPATH TRUE)
-endif()
+
+include(Cct_Libaoclutils)
 
 #------------------------------
 # Setup Project Includes

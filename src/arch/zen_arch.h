@@ -29,7 +29,7 @@
  * Compile-time architecture dispatch header.
  *
  * The build system selects the target architecture by passing exactly one of
- * -DALM_BUILD_ZEN, -DALM_BUILD_ZEN2, ..., -DALM_BUILD_ZEN5 along with
+ * -DALM_BUILD_ZEN, -DALM_BUILD_ZEN2, ..., -DALM_BUILD_ZEN6 along with
  * -include zen_arch.h when compiling sources under src/optimized/.
  * This header maps that define to the corresponding arch header, so the same
  * optimized source file can produce correctly-named symbols for every Zen
@@ -46,15 +46,17 @@
 /* Ensure exactly one ALM_BUILD_ZEN* is defined */
 #if !defined(ALM_BUILD_ZEN)  && !defined(ALM_BUILD_ZEN2) && \
     !defined(ALM_BUILD_ZEN3) && !defined(ALM_BUILD_ZEN4) && \
-    !defined(ALM_BUILD_ZEN5)
+    !defined(ALM_BUILD_ZEN5) && !defined(ALM_BUILD_ZEN6)
 #  error "No target architecture defined. Pass -DALM_BUILD_ZENx to the compiler."
 #elif (defined(ALM_BUILD_ZEN)  + defined(ALM_BUILD_ZEN2) + \
        defined(ALM_BUILD_ZEN3) + defined(ALM_BUILD_ZEN4) + \
-       defined(ALM_BUILD_ZEN5)) > 1
+       defined(ALM_BUILD_ZEN5) + defined(ALM_BUILD_ZEN6)) > 1
 #  error "Multiple ALM_BUILD_ZEN* macros defined. Define exactly one."
 #endif
 
-#if   defined(ALM_BUILD_ZEN5)
+#if   defined(ALM_BUILD_ZEN6)
+#  include <libm/arch/zen6.h>
+#elif defined(ALM_BUILD_ZEN5)
 #  include <libm/arch/zen5.h>
 #elif defined(ALM_BUILD_ZEN4)
 #  include <libm/arch/zen4.h>

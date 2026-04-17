@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2026, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2026, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,11 +25,62 @@
  *
  */
 
-#include <libm/arch/avx2.h>
-#include <libm/arch/avx512.h>
-#include <libm/arch/zen.h>
-#include <libm/arch/zen2.h>
-#include <libm/arch/zen3.h>
-#include <libm/arch/zen4.h>
-#include <libm/arch/zen5.h>
-#include <libm/arch/zen6.h>
+#ifndef __ALM_ARCH_ZEN6_H__
+#define __ALM_ARCH_ZEN6_H__
+
+/*
+ * This architecture is for "Zen6", same as --march=znver6 (currently unsupported in many compilers)
+ */
+#define ALM_ARCH_ZN6    zn6
+#define ALM_PREFIX_ZN6  amd
+
+#ifndef ALM_PREFIX
+#define ALM_PREFIX      ALM_PREFIX_ZN6
+#endif
+
+#ifndef ALM_ARCH
+#define ALM_ARCH        ALM_ARCH_ZN6
+#endif
+
+/*
+ * Override all previously defined prototypes
+ */
+#if defined(ALM_OVERRIDE)
+
+#include <libm_macros.h>
+
+#ifndef  ALM_PREFIX_ZN6
+#undef   ALM_PREFIX_ZN6
+#define  ALM_PREFIX_ZN6    amd
+#endif
+
+#define  ALM_PROTO_OPT(x)                    ALM_PROTO_ARCH_ZN6(x)
+
+
+#endif /* ALM_OVERRIDE */
+
+
+#ifndef ALM_PROTO_ARCH
+#define __ALM_PROTO_ARCH(a, x, y)            ALM_MAKE_PROTO_SFX(a, x, y)
+#define  __ALM_MAKE_PROTO_ARCH(a, x, y)    __ALM_PROTO_ARCH(a, x, y)
+#endif
+
+#ifdef   ALM_PROTO_ARCH
+#undef   ALM_PROTO_ARCH
+#define  ALM_PROTO_ARCH(x)                   ALM_PROTO_ARCH_ZN6(x)
+#endif
+
+#define  ALM_PROTO_ARCH_ZN6(x)             __ALM_PROTO_ARCH(ALM_PREFIX_ZN6, x, ALM_ARCH_ZN6)
+
+/*
+#define ALM_PROTO_ARCH_CHANGE_INTERNAL  1
+#include <libm/arch/alm_funcs.h>
+#undef  ALM_PROTO_CHANGE_INTENRAL
+*/
+#pragma push_macro("ALM_PROTO_INTERNAL")
+#define ALM_PROTO_INTERNAL ALM_PROTO_ARCH
+#include "../__alm_func_internal.h"
+#undef ALM_PROTO_INTERNAL
+#pragma pop_macro("ALM_PROTO_INTERNAL")
+
+#endif  /* __ALM_ARCH_ZEN6_H__ */

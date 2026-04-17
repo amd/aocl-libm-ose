@@ -33,6 +33,7 @@ get_zen2_arch_flags(ZEN2_MARCH)
 get_zen3_arch_flags(ZEN3_MARCH)
 get_zen4_arch_flags(ZEN4_MARCH)
 get_zen5_arch_flags(ZEN5_MARCH)
+get_zen6_arch_flags(ZEN6_MARCH)
 
 set(ALM_WRAPPER_ARCH_LIST)
 list(APPEND ALM_WRAPPER_ARCH_LIST "zen:ZEN:${ZEN1_MARCH}:0")
@@ -40,6 +41,7 @@ list(APPEND ALM_WRAPPER_ARCH_LIST "zen2:ZEN2:${ZEN2_MARCH}:0")
 list(APPEND ALM_WRAPPER_ARCH_LIST "zen3:ZEN3:${ZEN3_MARCH}:0")
 list(APPEND ALM_WRAPPER_ARCH_LIST "zen4:ZEN4:${ZEN4_MARCH}:1")
 list(APPEND ALM_WRAPPER_ARCH_LIST "zen5:ZEN5:${ZEN5_MARCH}:1")
+list(APPEND ALM_WRAPPER_ARCH_LIST "zen6:ZEN6:${ZEN6_MARCH}:1")
 
 set(ZEN_INCLUDES
     ${${PROJECT_PREFIX}_COMMON_INCLUDES}
@@ -66,7 +68,7 @@ foreach(ARCH_ENTRY IN LISTS ALM_WRAPPER_ARCH_LIST)
     list(GET _PARTS 3 ARCH_HAS_AVX512)
 
     if(ARCH_HAS_AVX512)
-        # zen4/zen5: one target — COMMON_SRCS + AVX512-specific sources,
+        # zen4/zen5/zen6: one target — COMMON_SRCS + AVX512-specific sources,
         # all compiled with AVX512 flags.  No separate base target is created,
         # so there is no risk of duplicate symbols between two targets sharing
         # the same -DALM_BUILD_<ARCH> define.

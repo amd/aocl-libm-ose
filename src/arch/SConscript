@@ -44,7 +44,7 @@ e = env.Clone()
 # If the compiler doesn't support a variant's preferred flag, cap at the
 # maximum supported arch.  Mirrors CMake get_zenX_arch_flags() fallback.
 # ---------------------------------------------------------------------------
-_ZNVER_ORDER = ['znver1', 'znver2', 'znver3', 'znver4', 'znver5']
+_ZNVER_ORDER = ['znver1', 'znver2', 'znver3', 'znver4', 'znver5', 'znver6']
 
 # CheckZenVer (check.py) historically stored 'x86_64' when no znver* flag is
 # supported, but GCC/Clang expect '-march=x86-64' (dash, not underscore).
@@ -68,7 +68,7 @@ def _resolve_march(env, preferred):
 # Arch-specific compilation using -include to inject arch header.
 # Mirrors the pattern in src/arch/CMakeLists.txt.
 #   zen/zen2/zen3 (has_avx512=0): COMMON_SRCS compiled without AVX512 flags
-#   zen4/zen5 (has_avx512=1): COMMON_SRCS + AVX512_SRCS compiled with AVX512 flags
+#   zen4/zen5/zen6 (has_avx512=1): COMMON_SRCS + AVX512_SRCS compiled with AVX512 flags
 # ---------------------------------------------------------------------------
 
 avx2_srcs, avx512_srcs = gather_optimized_srcs(Glob)
@@ -85,6 +85,7 @@ arch_list = [
     ('zen3', 'ZEN3', 'znver3', False),
     ('zen4', 'ZEN4', 'znver4', True),
     ('zen5', 'ZEN5', 'znver5', True),
+    ('zen6', 'ZEN6', 'znver6', True),
 ]
 
 arch_header = joinpath(Dir('#src/arch').abspath, 'zen_arch.h')

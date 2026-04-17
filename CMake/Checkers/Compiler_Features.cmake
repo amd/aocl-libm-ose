@@ -46,6 +46,7 @@ check_c_compiler_flag("-march=znver2"    CONFIG_COMPILER_HAS_ZEN2)
 check_c_compiler_flag("-march=znver3"    CONFIG_COMPILER_HAS_ZEN3)
 check_c_compiler_flag("-march=znver4"    CONFIG_COMPILER_HAS_ZEN4)
 check_c_compiler_flag("-march=znver5"    CONFIG_COMPILER_HAS_ZEN5)
+check_c_compiler_flag("-march=znver6"    CONFIG_COMPILER_HAS_ZEN6)
 
 check_c_compiler_flag("-mavx2"           CONFIG_TARGET_IS_AVX2)
 check_c_compiler_flag("-march=x86-64"    CONFIG_TARGET_IS_X86_64)
@@ -53,7 +54,7 @@ check_c_compiler_flag("-march=x86-64-v2" CONFIG_TARGET_IS_X86_64_v2)
 check_c_compiler_flag("-march=x86-64-v3" CONFIG_TARGET_IS_X86_64_v3)
 check_c_compiler_flag("-march=x86-64-v4" CONFIG_TARGET_IS_X86_64_v4)
 
-set(archlist znver5 znver4 znver3 znver2 znver1)
+set(archlist znver6 znver5 znver4 znver3 znver2 znver1)
 set(archdetect_code "
   #include <stdio.h>
   int main() { return 0; } ")
@@ -135,7 +136,11 @@ macro(get_zen5_arch_flags zen5)
   set(${zen5} ${res})
 endmacro()
 
-
+macro(get_zen6_arch_flags zen6)
+  set(arch znver6 znver5 znver4 znver3 znver2 znver1 x86-64)
+  get_arch(res arch)
+  set(${zen6} ${res})
+endmacro()
 
 
 

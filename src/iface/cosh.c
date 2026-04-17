@@ -99,6 +99,15 @@ struct alm_arch_funcs __arch_funcs_cosh = {
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN5(vrsa_coshf),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN5(vrda_cosh),
         },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN6(coshf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN6(cosh),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN6(vrs4_coshf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN6(vrs8_coshf),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN6(vrsa_coshf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN6(vrda_cosh),
+        },
     },
 };
 

@@ -70,6 +70,11 @@ struct alm_arch_funcs __arch_funcs_ilogb = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN5(ilogbf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN5(ilogb),
         },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN6(ilogbf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN6(ilogb),
+        },
     },
 };
 

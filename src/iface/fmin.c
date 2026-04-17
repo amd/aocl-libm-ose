@@ -77,6 +77,13 @@ struct alm_arch_funcs __arch_funcs_fmin = {
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN5(vrsa_fminf),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN5(vrda_fmin),
         },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP]     = &ALM_PROTO_ARCH_ZN6(fminf),
+            [ALM_FUNC_SCAL_DP]     = &ALM_PROTO_ARCH_ZN6(fmin),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN6(vrsa_fminf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN6(vrda_fmin),
+        },
     },
 };
 void

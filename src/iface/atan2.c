@@ -70,6 +70,10 @@ struct alm_arch_funcs __arch_funcs_atan2 = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN5(atan2),
         },
 
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN6(atan2),
+        },
+
     },
 };
 

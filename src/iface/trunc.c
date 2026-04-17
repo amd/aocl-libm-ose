@@ -67,6 +67,11 @@ static const struct alm_arch_funcs __arch_funcs_trunc = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN5(truncf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN5(trunc),
         },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN6(truncf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN6(trunc),
+        },
     },
 };
 

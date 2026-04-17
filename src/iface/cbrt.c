@@ -87,6 +87,13 @@ struct alm_arch_funcs __arch_funcs_cbrt = {
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN5(vrsa_cbrtf),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN5(vrda_cbrt),
         },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN6(cbrtf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN6(cbrt),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN6(vrsa_cbrtf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN6(vrda_cbrt),
+        },
     },
 };
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -122,6 +122,18 @@ struct alm_arch_funcs __arch_funcs_acos = {
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN5(vrd2_acos), /* vrd2 ? */
             [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN5(vrd4_acos), /* vrd4 ? */
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN5(vrda_acos),
+        },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN6(acosf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN6(acos),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN6(vrs4_acosf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN6(vrs8_acosf),
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN6(vrs16_acosf),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN6(vrsa_acosf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN6(vrd2_acos),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN6(vrd4_acos),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN6(vrda_acos),
         },
     },
 };

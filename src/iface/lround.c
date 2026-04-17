@@ -63,6 +63,11 @@ struct alm_arch_funcs __arch_funcs_lround = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_REF(lroundf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN5(lround),
         },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_REF(lroundf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN6(lround),
+        },
     },
 };
 

@@ -69,6 +69,11 @@ struct alm_arch_funcs __arch_funcs_cpow = {
             [ALM_FUNC_SCAL_SP_CMPLX] = &ALM_PROTO_ARCH_ZN5(cpowf),
             [ALM_FUNC_SCAL_DP_CMPLX] = &ALM_PROTO_ARCH_ZN5(cpow),
         },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP_CMPLX] = &ALM_PROTO_ARCH_ZN6(cpowf),
+            [ALM_FUNC_SCAL_DP_CMPLX] = &ALM_PROTO_ARCH_ZN6(cpow),
+        },
     },
 };
 

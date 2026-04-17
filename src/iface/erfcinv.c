@@ -91,6 +91,14 @@ struct alm_arch_funcs __arch_funcs_erfcinv = {
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN5(vrda_erfcinv),
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN5(vrd8_erfcinv),
         },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN6(erfcinv),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN6(vrd2_erfcinv),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN6(vrd4_erfcinv),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN6(vrda_erfcinv),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN6(vrd8_erfcinv),
+        },
     },
 };
 

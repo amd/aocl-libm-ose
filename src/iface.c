@@ -190,8 +190,10 @@ alm_get_uach(void)
     return ALM_UARCH_VER_ZEN4;
 #elif ALM_STATIC_DISPATCH==ZEN5
     return ALM_UARCH_VER_ZEN5;
+#elif ALM_STATIC_DISPATCH==ZEN6
+    return ALM_UARCH_VER_ZEN6;
 #else
-    printf("Please set ALM_STATIC_DISPATCH to one of AVX2, ZEN2, ZEN3, ZEN4, ZEN5, AVX512 \n");
+    printf("Please set ALM_STATIC_DISPATCH to one of AVX2, ZEN2, ZEN3, ZEN4, ZEN5, ZEN6, AVX512 \n");
 #endif
 }
 #else

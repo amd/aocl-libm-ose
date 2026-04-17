@@ -200,7 +200,17 @@ alm_get_uach(void)
 {
     alm_uarch_ver_t arch_ver;
 
-    if (au_cpuid_arch_is_zen5(AU_CURRENT_CPU_NUM))
+    if (au_cpuid_arch_is_zen6(AU_CURRENT_CPU_NUM))
+    {
+        const char* const flags_array[] = {"avx512f"};
+
+        if (au_cpuid_has_flags(AU_CURRENT_CPU_NUM, flags_array, 1))
+            arch_ver = ALM_UARCH_VER_ZEN6;
+        else
+            arch_ver = ALM_UARCH_VER_ZEN3;
+
+    }
+    else if (au_cpuid_arch_is_zen5(AU_CURRENT_CPU_NUM))
     {
         const char* const flags_array[] = {"avx512f"};
 

@@ -46,6 +46,9 @@
   - tan/tan_conf.yml
   - tanh/tanh_conf.yml
   - trunc/trunc_conf.yml
+  - clog/clog_conf.yml
+  - cexp/cexp_conf.yml
+  - cpow/cpow_conf.yml
 
 # ===========================================
 # VERIFICATION TESTS (VT/vt)
@@ -100,6 +103,9 @@
   - tan/tan_accu.yml
   - tanh/tanh_accu.yml
   - trunc/trunc_accu.yml
+  - clog/clog_accu.yml
+  - cexp/cexp_accu.yml
+  - cpow/cpow_accu.yml
 
   # ===========================================
   # PERFORMANCE TESTS (PERF/perf)
@@ -153,6 +159,9 @@
   - tan/tan_perf.yml
   - tanh/tanh_perf.yml
   - trunc/trunc_perf.yml
+  - clog/clog_perf.yml
+  - cexp/cexp_perf.yml
+  - cpow/cpow_perf.yml
 
 #================================================================================================
 # When API name comes as command line aargument, then specific API yaml files should get executed.
@@ -397,3 +406,18 @@
   - trunc/trunc_conf.yml
   - trunc/trunc_accu.yml
   - trunc/trunc_perf.yml
+
+  clog:
+  - clog/clog_conf.yml
+  - clog/clog_accu.yml
+  - clog/clog_perf.yml
+
+  cexp:
+  - cexp/cexp_conf.yml
+  - cexp/cexp_accu.yml
+  - cexp/cexp_perf.yml
+
+  cpow:
+  - cpow/cpow_conf.yml
+  - cpow/cpow_accu.yml
+  - cpow/cpow_perf.yml

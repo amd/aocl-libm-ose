@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -27,6 +27,45 @@
 
 
 #include "generator.h"
+
+#include <complex>
+#include <stdexcept>
+#include <type_traits>
+
+namespace {
+
+template <typename T>
+std::unique_ptr<IGenerator<T>> make_scalar_generator(T rmin, T rmax, uint64_t step,
+                                                     RangeType step_type)
+{
+    switch (step_type) {
+    case E_Bitstep:
+        if constexpr (!std::is_same_v<T, int>) {
+            return std::make_unique<BitGenerator<T>>(rmin, rmax, static_cast<T>(step));
+        } else {
+            throw std::invalid_argument("BitGenerator cannot be used with int type");
+        }
+    case E_Linear:
+        return std::make_unique<LinearGenerator<T>>(rmin, rmax, step);
+    case E_Expstep:
+        return std::make_unique<ExponentialGenerator<T>>(rmin, rmax, step);
+    case E_Random:
+        return std::make_unique<RandomGenerator<T>>(rmin, rmax, step);
+    case E_Integer:
+        return std::make_unique<IntegerRandomGenerator<T>>(rmin, rmax, step);
+    case E_Fixedval:
+        return std::make_unique<FillBuffer<T>>(rmin, step);
+    case E_Simple:
+    case E_MAX:
+        break;
+    default:
+        std::cout << "Invalid RangeType" << std::endl;
+        break;
+    }
+    return nullptr;
+}
+
+} /* namespace */
 
 /* BitGenerator: Generates values by stepping through bit patterns */
 template <typename S, typename U>
@@ -249,36 +288,7 @@ MultiStepGenerator<S>::MultiStepGenerator(S rmin, S rmax, uint64_t step,
       step_type(step_type), array_size(array_size),
       array(nullptr)
 {
-    switch (step_type) {
-    case E_Bitstep:
-        if constexpr (!std::is_same_v<S, int>) {
-            generator = std::make_unique<BitGenerator<S>>(rmin, rmax, step);
-        } else {
-            throw std::invalid_argument("BitGenerator cannot be used with int type");
-        }
-        break;
-    case E_Linear:
-        generator = std::make_unique<LinearGenerator<S>>(rmin, rmax, step);
-        break;
-    case E_Expstep:
-        generator = std::make_unique<ExponentialGenerator<S>>(rmin, rmax, step);
-        break;
-    case E_Random:
-        generator = std::make_unique<RandomGenerator<S>>(rmin, rmax, step);
-        break;
-    case E_Integer:
-        generator = std::make_unique<IntegerRandomGenerator<S>>(rmin, rmax, step);
-        break;
-    case E_Fixedval:
-        generator = std::make_unique<FillBuffer<S>>(rmin, step);
-        break;
-    case E_Simple:
-    case E_MAX:
-        break;
-    default:
-        std::cout << "Invalid RangeType" << std::endl;
-        break;
-    }
+    generator = make_scalar_generator(rmin, rmax, step, step_type);
 
     // Use std::unique_ptr with aligned allocation
     S* raw_array = new (std::align_val_t(64)) S[array_size];
@@ -318,6 +328,138 @@ uint64_t MultiStepGenerator<S>::get_index()
     return generator->get_index();
 }
 
+/* MultiStepGenerator<std::complex<T>> */
+template <typename T>
+MultiStepGenerator<std::complex<T>>::MultiStepGenerator(std::complex<T> rmin,
+                                                        std::complex<T> rmax,
+                                                        uint64_t step,
+                                                        RangeType step_type,
+                                                        size_t array_size)
+    : array_size(array_size),
+      real_gen(make_scalar_generator(rmin.real(), rmax.real(), step, step_type)),
+      imag_gen(make_scalar_generator(rmin.imag(), rmax.imag(), step, step_type))
+{
+    std::complex<T> *raw_array =
+        new (std::align_val_t(64)) std::complex<T>[array_size];
+    array.reset(raw_array);
+}
+
+template <typename T>
+std::complex<T> *MultiStepGenerator<std::complex<T>>::next()
+{
+    for (size_t i = 0; i < array_size; i++) {
+        array[i] = std::complex<T>(*real_gen->next(), *imag_gen->next());
+    }
+    return array.get();
+}
+
+template <typename T>
+bool MultiStepGenerator<std::complex<T>>::has_next() const
+{
+    return real_gen->has_next() && imag_gen->has_next();
+}
+
+template <typename T>
+std::complex<T> *MultiStepGenerator<std::complex<T>>::get_array() const
+{
+    return array.get();
+}
+
+template <typename T>
+void MultiStepGenerator<std::complex<T>>::reset()
+{
+    real_gen->reset();
+    imag_gen->reset();
+}
+
+template <typename T>
+uint64_t MultiStepGenerator<std::complex<T>>::get_index()
+{
+    return real_gen->get_index();
+}
+
+/* MultiStepGenerator<fc32_t> */
+MultiStepGenerator<fc32_t>::MultiStepGenerator(fc32_t rmin, fc32_t rmax, uint64_t step,
+                                               RangeType step_type, size_t array_size)
+    : array_size(array_size),
+      real_gen(make_scalar_generator(fc_real(rmin), fc_real(rmax), step, step_type)),
+      imag_gen(make_scalar_generator(fc_imag(rmin), fc_imag(rmax), step, step_type))
+{
+    fc32_t *raw_array = new (std::align_val_t(64)) fc32_t[array_size];
+    array.reset(raw_array);
+}
+
+fc32_t *MultiStepGenerator<fc32_t>::next()
+{
+    for (size_t i = 0; i < array_size; i++) {
+        array[i] = libm::fc_pack(*real_gen->next(), *imag_gen->next());
+    }
+    return array.get();
+}
+
+bool MultiStepGenerator<fc32_t>::has_next() const
+{
+    return real_gen->has_next() && imag_gen->has_next();
+}
+
+fc32_t *MultiStepGenerator<fc32_t>::get_array() const
+{
+    return array.get();
+}
+
+void MultiStepGenerator<fc32_t>::reset()
+{
+    real_gen->reset();
+    imag_gen->reset();
+}
+
+uint64_t MultiStepGenerator<fc32_t>::get_index()
+{
+    return real_gen->get_index();
+}
+
+/* MultiStepGenerator<fc64_t> */
+MultiStepGenerator<fc64_t>::MultiStepGenerator(fc64_t rmin, fc64_t rmax, uint64_t step,
+                                               RangeType step_type, size_t array_size)
+    : array_size(array_size),
+      real_gen(make_scalar_generator(fc_real(rmin), fc_real(rmax), step, step_type)),
+      imag_gen(make_scalar_generator(fc_imag(rmin), fc_imag(rmax), step, step_type))
+{
+    fc64_t *raw_array = new (std::align_val_t(64)) fc64_t[array_size];
+    array.reset(raw_array);
+}
+
+fc64_t *MultiStepGenerator<fc64_t>::next()
+{
+    for (size_t i = 0; i < array_size; i++) {
+        array[i] = libm::fc_pack(*real_gen->next(), *imag_gen->next());
+    }
+    return array.get();
+}
+
+bool MultiStepGenerator<fc64_t>::has_next() const
+{
+    return real_gen->has_next() && imag_gen->has_next();
+}
+
+fc64_t *MultiStepGenerator<fc64_t>::get_array() const
+{
+    return array.get();
+}
+
+void MultiStepGenerator<fc64_t>::reset()
+{
+    real_gen->reset();
+    imag_gen->reset();
+}
+
+uint64_t MultiStepGenerator<fc64_t>::get_index()
+{
+    return real_gen->get_index();
+}
+
 /* Explicit instantiations */
 template class MultiStepGenerator<float>;
 template class MultiStepGenerator<double>;
+template class MultiStepGenerator<std::complex<float>>;
+template class MultiStepGenerator<std::complex<double>>;

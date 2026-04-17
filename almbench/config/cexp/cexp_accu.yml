@@ -1,0 +1,204 @@
+- test_sequence: validation_tests_cexp
+  function: cexp
+  test_sets:
+
+#---------------------------------
+# Single precision (cexpf) accuracy tests
+# Input format: one complex range ["real_srt + i imag_srt", "real_stp + i imag_stp"]
+#---------------------------------
+  - id: cexpf-full-range
+    description: 'Full range accuracy tests for cexpf'
+    tests:
+    - id: cexpf_accu_001
+      description: 'Real: [min_subnormal, 90], Imag: [0.1, 0.1] - positive real axis'
+      input:
+      - ["min_subnormal + i 0.1", "90.0 + i 0.1"]
+      type: [expstep]
+      steps: [1000]
+      variants: [sc]
+
+    - id: cexpf_accu_002
+      description: 'Real: [-90, -min_subnormal], Imag: [0.1, 0.1] - negative real axis'
+      input:
+      - ["-90.0 + i 0.1", "-min_subnormal + i 0.1"]
+      type: [expstep]
+      steps: [1000]
+      variants: [sc]
+
+    - id: cexpf_accu_003
+      description: 'Real: [0.1, 0.1], Imag: [min_subnormal, 2*pi] - positive imag axis'
+      input:
+      - ["0.1 + i min_subnormal", "0.1 + i 6.283185307179586"]
+      type: [linearstep]
+      steps: [1000]
+      variants: [sc]
+
+    - id: cexpf_accu_004
+      description: 'Real: [0.1, 0.1], Imag: [-2*pi, -min_subnormal] - negative imag axis'
+      input:
+      - ["0.1 + i -6.283185307179586", "0.1 + i -min_subnormal"]
+      type: [linearstep]
+      steps: [1000]
+      variants: [sc]
+
+  - id: cexpf-unit-circle
+    description: 'Unit circle region tests for cexpf'
+    tests:
+    - id: cexpf_accu_005
+      description: 'Real: [-2, 2], Imag: [-2, 2] - central region'
+      input:
+      - ["-2.0 + i -2.0", "2.0 + i 2.0"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sc]
+
+    - id: cexpf_accu_006
+      description: 'Real: [0.9, 1.1], Imag: [-0.1, 0.1] - near z=1'
+      input:
+      - ["0.9 + i -0.1", "1.1 + i 0.1"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sc]
+
+    - id: cexpf_accu_007
+      description: 'Real: [-1.1, -0.9], Imag: [-0.1, 0.1] - near z=-1'
+      input:
+      - ["-1.1 + i -0.1", "-0.9 + i 0.1"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sc]
+
+  - id: cexpf-random-quadrants
+    description: 'Random sampling in all quadrants for cexpf'
+    tests:
+    - id: cexpf_accu_008
+      description: 'Quadrant I: Real: [0.1, 5], Imag: [0.1, 5]'
+      input:
+      - ["0.1 + i 0.1", "5.0 + i 5.0"]
+      type: [random]
+      steps: [1000000]
+      variants: [sc]
+
+    - id: cexpf_accu_009
+      description: 'Quadrant II: Real: [-5, -0.1], Imag: [0.1, 5]'
+      input:
+      - ["-5.0 + i 0.1", "-0.1 + i 5.0"]
+      type: [random]
+      steps: [1000000]
+      variants: [sc]
+
+    - id: cexpf_accu_010
+      description: 'Quadrant III: Real: [-5, -0.1], Imag: [-5, -0.1]'
+      input:
+      - ["-5.0 + i -5.0", "-0.1 + i -0.1"]
+      type: [random]
+      steps: [1000000]
+      variants: [sc]
+
+    - id: cexpf_accu_011
+      description: 'Quadrant IV: Real: [0.1, 5], Imag: [-5, -0.1]'
+      input:
+      - ["0.1 + i -5.0", "5.0 + i -0.1"]
+      type: [random]
+      steps: [1000000]
+      variants: [sc]
+
+#---------------------------------
+# Double precision (cexp) accuracy tests
+#---------------------------------
+  - id: cexpd-full-range
+    description: 'Full range accuracy tests for cexp'
+    tests:
+    - id: cexp_accu_001
+      description: 'Real: [min_subnormal, 710], Imag: [0.1, 0.1] - positive real axis'
+      input:
+      - ["min_subnormal + i 0.1", "710.0 + i 0.1"]
+      type: [expstep]
+      steps: [1000]
+      variants: [sz]
+
+    - id: cexp_accu_002
+      description: 'Real: [-710, -min_subnormal], Imag: [0.1, 0.1] - negative real axis'
+      input:
+      - ["-710.0 + i 0.1", "-min_subnormal + i 0.1"]
+      type: [expstep]
+      steps: [1000]
+      variants: [sz]
+
+    - id: cexp_accu_003
+      description: 'Real: [0.1, 0.1], Imag: [min_subnormal, 2*pi] - positive imag axis'
+      input:
+      - ["0.1 + i min_subnormal", "0.1 + i 6.283185307179586"]
+      type: [linearstep]
+      steps: [1000]
+      variants: [sz]
+
+    - id: cexp_accu_004
+      description: 'Real: [0.1, 0.1], Imag: [-2*pi, -min_subnormal] - negative imag axis'
+      input:
+      - ["0.1 + i -6.283185307179586", "0.1 + i -min_subnormal"]
+      type: [linearstep]
+      steps: [1000]
+      variants: [sz]
+
+  - id: cexpd-unit-circle
+    description: 'Unit circle region tests for cexp'
+    tests:
+    - id: cexp_accu_005
+      description: 'Real: [-2, 2], Imag: [-2, 2] - central region'
+      input:
+      - ["-2.0 + i -2.0", "2.0 + i 2.0"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sz]
+
+    - id: cexp_accu_006
+      description: 'Real: [0.9, 1.1], Imag: [-0.1, 0.1] - near z=1'
+      input:
+      - ["0.9 + i -0.1", "1.1 + i 0.1"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sz]
+
+    - id: cexp_accu_007
+      description: 'Real: [-1.1, -0.9], Imag: [-0.1, 0.1] - near z=-1'
+      input:
+      - ["-1.1 + i -0.1", "-0.9 + i 0.1"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sz]
+
+  - id: cexpd-random-quadrants
+    description: 'Random sampling in all quadrants for cexp'
+    tests:
+    - id: cexp_accu_008
+      description: 'Quadrant I: Real: [0.1, 5], Imag: [0.1, 5]'
+      input:
+      - ["0.1 + i 0.1", "5.0 + i 5.0"]
+      type: [random]
+      steps: [1000000]
+      variants: [sz]
+
+    - id: cexp_accu_009
+      description: 'Quadrant II: Real: [-5, -0.1], Imag: [0.1, 5]'
+      input:
+      - ["-5.0 + i 0.1", "-0.1 + i 5.0"]
+      type: [random]
+      steps: [1000000]
+      variants: [sz]
+
+    - id: cexp_accu_010
+      description: 'Quadrant III: Real: [-5, -0.1], Imag: [-5, -0.1]'
+      input:
+      - ["-5.0 + i -5.0", "-0.1 + i -0.1"]
+      type: [random]
+      steps: [1000000]
+      variants: [sz]
+
+    - id: cexp_accu_011
+      description: 'Quadrant IV: Real: [0.1, 5], Imag: [-5, -0.1]'
+      input:
+      - ["0.1 + i -5.0", "5.0 + i -0.1"]
+      type: [random]
+      steps: [1000000]
+      variants: [sz]

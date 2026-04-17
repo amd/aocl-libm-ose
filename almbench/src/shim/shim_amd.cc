@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -181,6 +181,10 @@ typedef float (*amd_tanh_ss_func_t)(float);
 typedef float (*amd_tanpi_ss_func_t)(float);
 typedef float (*amd_trunc_ss_func_t)(float);
 
+typedef fc32_t (*amd_clogf_func_t)(fc32_t);
+typedef fc32_t (*amd_cexpf_func_t)(fc32_t);
+typedef fc32_t (*amd_cpowf_func_t)(fc32_t, fc32_t);
+
 // --- Double Precision Scalar (sd) Functions ---
 typedef double (*amd_acos_sd_func_t)(double);
 typedef double (*amd_acosh_sd_func_t)(double);
@@ -242,6 +246,10 @@ typedef double (*amd_tan_sd_func_t)(double);
 typedef double (*amd_tanh_sd_func_t)(double);
 typedef double (*amd_tanpi_sd_func_t)(double);
 typedef double (*amd_trunc_sd_func_t)(double);
+
+typedef fc64_t (*amd_clog_func_t)(fc64_t);
+typedef fc64_t (*amd_cexp_func_t)(fc64_t);
+typedef fc64_t (*amd_cpow_func_t)(fc64_t, fc64_t);
 
 // --- Double Precision 128-bit Vector (vrd2) Functions ---
 typedef __m128d (*amd_acos_vrd2_func_t)(__m128d);
@@ -527,6 +535,9 @@ static struct {
     amd_tanh_ss_func_t tanhf;
     amd_tanpi_ss_func_t tanpif;
     amd_trunc_ss_func_t truncf;
+    amd_clogf_func_t clogf;
+    amd_cexpf_func_t cexpf;
+    amd_cpowf_func_t cpowf;
 
     // ============================================================================
     // DOUBLE PRECISION SCALAR (sd) VARIANTS
@@ -591,6 +602,9 @@ static struct {
     amd_tanh_sd_func_t tanh;
     amd_tanpi_sd_func_t tanpi;
     amd_trunc_sd_func_t trunc;
+    amd_clog_func_t clog;
+    amd_cexp_func_t cexp;
+    amd_cpow_func_t cpow;
 
     // ============================================================================
     // DOUBLE PRECISION 128-BIT VECTOR (vrd2) VARIANTS
@@ -1021,6 +1035,9 @@ static void init_amd_symbols(void) {
     amd_funcs.tanhf = load_amd_symbol<amd_tanh_ss_func_t>(amd_core, "amd_tanhf");
     amd_funcs.tanpif = load_amd_symbol<amd_tanpi_ss_func_t>(amd_core, "amd_tanpif");
     amd_funcs.truncf = load_amd_symbol<amd_trunc_ss_func_t>(amd_core, "amd_truncf");
+    amd_funcs.clogf = load_amd_symbol<amd_clogf_func_t>(amd_core, "amd_clogf");
+    amd_funcs.cexpf = load_amd_symbol<amd_cexpf_func_t>(amd_core, "amd_cexpf");
+    amd_funcs.cpowf = load_amd_symbol<amd_cpowf_func_t>(amd_core, "amd_cpowf");
 
     // ============================================================================
     // DOUBLE PRECISION SCALAR (sd) VARIANTS
@@ -1085,6 +1102,9 @@ static void init_amd_symbols(void) {
     amd_funcs.tanh = load_amd_symbol<amd_tanh_sd_func_t>(amd_core, "amd_tanh");
     amd_funcs.tanpi = load_amd_symbol<amd_tanpi_sd_func_t>(amd_core, "amd_tanpi");
     amd_funcs.trunc = load_amd_symbol<amd_trunc_sd_func_t>(amd_core, "amd_trunc");
+    amd_funcs.clog = load_amd_symbol<amd_clog_func_t>(amd_core, "amd_clog");
+    amd_funcs.cexp = load_amd_symbol<amd_cexp_func_t>(amd_core, "amd_cexp");
+    amd_funcs.cpow = load_amd_symbol<amd_cpow_func_t>(amd_core, "amd_cpow");
 
     // ============================================================================
     // DOUBLE PRECISION 128-BIT VECTOR (vrd2) VARIANTS
@@ -1614,6 +1634,18 @@ SHIM_EXPORT void shim_trunc_ss(InParams<float, float> *ipp) {
     ipp->op[0] = amd_funcs.truncf(ipp->ip[0]);
 }
 
+SHIM_EXPORT void shim_clog_sc(InParams<fc32_t, fc32_t> *ipp) {
+    ipp->op[0] = amd_funcs.clogf(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cexp_sc(InParams<fc32_t, fc32_t> *ipp) {
+    ipp->op[0] = amd_funcs.cexpf(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cpow_sc(InParams<fc32_t, fc32_t> *ipp) {
+    ipp->op[0] = amd_funcs.cpowf(ipp->ip[0], ipp->ip[1]);
+}
+
 // ============================================================================
 // DOUBLE PRECISION SCALAR (sd) VARIANTS
 // ============================================================================
@@ -1861,6 +1893,18 @@ SHIM_EXPORT void shim_tanpi_sd(InParams<double, double> *ipp) {
 
 SHIM_EXPORT void shim_trunc_sd(InParams<double, double> *ipp) {
     ipp->op[0] = amd_funcs.trunc(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_clog_sz(InParams<fc64_t, fc64_t> *ipp) {
+    ipp->op[0] = amd_funcs.clog(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cexp_sz(InParams<fc64_t, fc64_t> *ipp) {
+    ipp->op[0] = amd_funcs.cexp(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cpow_sz(InParams<fc64_t, fc64_t> *ipp) {
+    ipp->op[0] = amd_funcs.cpow(ipp->ip[0], ipp->ip[1]);
 }
 
 // ============================================================================

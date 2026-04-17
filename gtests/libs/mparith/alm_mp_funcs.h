@@ -276,6 +276,10 @@ double  alm_mp_cdfnorminv_ULP  (double x,double z,double *, double *);
 // Complex Variants
 double _Complex    alm_mpc_cexpf      (float _Complex x);
 long double _Complex   alm_mpc_cexp       (double _Complex x);
+double _Complex    alm_mpc_clogf      (float _Complex x);
+long double _Complex   alm_mpc_clog       (double _Complex x);
+double _Complex    alm_mpc_cpowf     (float _Complex x, float _Complex y);
+long double _Complex   alm_mpc_cpow      (double _Complex x, double _Complex y);
 
 #ifdef __cplusplus
 }

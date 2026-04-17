@@ -1,0 +1,72 @@
+- test_sequence: perf_tests
+  function: clog
+  timing_enabled: true
+  test_sets:
+  - id: range-tests_01
+    tests:
+# Single Precision (clogf)
+# Input format: complex range ["real_srt + i imag_srt", "real_stp + i imag_stp"]
+    - id: clogf_perf_001
+      description: 'Positive real axis: Real [min_subnormal, max], Imag [0.1, 0.1], linearstep'
+      input:
+      - ["min_subnormal + i 0.1", "max + i 0.1"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sc]
+
+    - id: clogf_perf_002
+      description: 'Near zero: Real [-min_subnormal, min_subnormal], Imag [0.1, 0.1], linearstep'
+      input:
+      - ["-min_subnormal + i 0.1", "min_subnormal + i 0.1"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sc]
+
+    - id: clogf_perf_003
+      description: 'Negative real axis: Real [-max, -min_subnormal], Imag [0.1, 0.1], linearstep'
+      input:
+      - ["0xFF7FFFFF + i 0.1", "-min_subnormal + i 0.1"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sc]
+
+    - id: clogf_perf_004
+      description: 'Unit square: Real [-1, 1], Imag [-1, 1], linearstep'
+      input:
+      - ["-1.0 + i -1.0", "1.0 + i 1.0"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sc]
+
+# Double Precision (clog)
+    - id: clog_perf_001
+      description: 'Positive real axis: Real [min_subnormal, max], Imag [0.1, 0.1], linearstep'
+      input:
+      - ["min_subnormal + i 0.1", "0x7FEFFFFFFFFFFFFF + i 0.1"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sz]
+
+    - id: clog_perf_002
+      description: 'Near zero: Real [-min_subnormal, min_subnormal], Imag [0.1, 0.1], linearstep'
+      input:
+      - ["-min_subnormal + i 0.1", "min_subnormal + i 0.1"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sz]
+
+    - id: clog_perf_003
+      description: 'Negative real axis: Real [-max, -min_subnormal], Imag [0.1, 0.1], linearstep'
+      input:
+      - ["0xFFEFFFFFFFFFFFFF + i 0.1", "-min_subnormal + i 0.1"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sz]
+
+    - id: clog_perf_004
+      description: 'Unit square: Real [-1, 1], Imag [-1, 1], linearstep'
+      input:
+      - ["-1.0 + i -1.0", "1.0 + i 1.0"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sz]

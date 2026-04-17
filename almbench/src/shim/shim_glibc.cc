@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -223,6 +223,9 @@ typedef float (*gcc_tan_ss_func_t)(float);
 typedef float (*gcc_tanh_ss_func_t)(float);
 typedef float (*gcc_tanpi_ss_func_t)(float);
 typedef float (*gcc_trunc_ss_func_t)(float);
+typedef fc32_t (*gcc_clog_sc_func_t)(fc32_t);
+typedef fc32_t (*gcc_cexp_sc_func_t)(fc32_t);
+typedef fc32_t (*gcc_cpow_sc_func_t)(fc32_t, fc32_t);
 
 // --- Double Precision Scalar (sd) Functions ---
 typedef double (*gcc_acos_sd_func_t)(double);
@@ -285,6 +288,9 @@ typedef double (*gcc_tan_sd_func_t)(double);
 typedef double (*gcc_tanh_sd_func_t)(double);
 typedef double (*gcc_tanpi_sd_func_t)(double);
 typedef double (*gcc_trunc_sd_func_t)(double);
+typedef fc64_t (*gcc_clog_sz_func_t)(fc64_t);
+typedef fc64_t (*gcc_cexp_sz_func_t)(fc64_t);
+typedef fc64_t (*gcc_cpow_sz_func_t)(fc64_t, fc64_t);
 
 // --- Double Precision 128-bit Vector (vrd2) Functions ---
 typedef __m128d (*gcc_acos_vrd2_func_t)(__m128d);
@@ -567,6 +573,9 @@ static struct {
     gcc_tanh_ss_func_t tanhf;
     gcc_tanpi_ss_func_t tanpif;
     gcc_trunc_ss_func_t truncf;
+    gcc_clog_sc_func_t clogf;
+    gcc_cexp_sc_func_t cexpf;
+    gcc_cpow_sc_func_t cpowf;
 
     // ============================================================================
     // DOUBLE PRECISION SCALAR (sd) VARIANTS
@@ -631,6 +640,9 @@ static struct {
     gcc_tanh_sd_func_t tanh;
     gcc_tanpi_sd_func_t tanpi;
     gcc_trunc_sd_func_t trunc;
+    gcc_clog_sz_func_t clog;
+    gcc_cexp_sz_func_t cexp;
+    gcc_cpow_sz_func_t cpow;
 
     // ============================================================================
     // DOUBLE PRECISION 128-BIT VECTOR (vrd2) VARIANTS
@@ -902,6 +914,12 @@ extern "C" {
     float powf(float, float); double pow(double, double);
     float sqrtf(float); double sqrt(double);
     float cbrtf(float); double cbrt(double);
+    fc32_t clogf(fc32_t);
+    fc64_t clog(fc64_t);
+    fc32_t cexpf(fc32_t);
+    fc64_t cexp(fc64_t);
+    fc32_t cpowf(fc32_t, fc32_t);
+    fc64_t cpow(fc64_t, fc64_t);
 
     // Error functions
     float erff(float); double erf(double);
@@ -1288,6 +1306,9 @@ static void init_gcc_symbols(void) {
     gcc_funcs.tanf = tanf;
     gcc_funcs.tanhf = tanhf;
     gcc_funcs.truncf = truncf;
+    gcc_funcs.clogf = clogf;
+    gcc_funcs.cexpf = cexpf;
+    gcc_funcs.cpowf = cpowf;
     gcc_funcs.sinpif = nullptr;
     gcc_funcs.cospif = nullptr;
     gcc_funcs.tanpif = nullptr;
@@ -1358,6 +1379,9 @@ static void init_gcc_symbols(void) {
     gcc_funcs.tan = tan;
     gcc_funcs.tanh = tanh;
     gcc_funcs.trunc = trunc;
+    gcc_funcs.clog = clog;
+    gcc_funcs.cexp = cexp;
+    gcc_funcs.cpow = cpow;
     gcc_funcs.sinpi = nullptr;
     gcc_funcs.cospi = nullptr;
     gcc_funcs.tanpi = nullptr;
@@ -1996,6 +2020,18 @@ SHIM_EXPORT void shim_trunc_ss(InParams<float, float> *ipp) {
     ipp->op[0] = gcc_funcs.truncf(ipp->ip[0]);
 }
 
+SHIM_EXPORT void shim_clog_sc(InParams<fc32_t, fc32_t> *ipp) {
+    ipp->op[0] = gcc_funcs.clogf(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cexp_sc(InParams<fc32_t, fc32_t> *ipp) {
+    ipp->op[0] = gcc_funcs.cexpf(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cpow_sc(InParams<fc32_t, fc32_t> *ipp) {
+    ipp->op[0] = gcc_funcs.cpowf(ipp->ip[0], ipp->ip[1]);
+}
+
 // ============================================================================
 // DOUBLE PRECISION SCALAR (sd) VARIANTS
 // ============================================================================
@@ -2243,6 +2279,18 @@ SHIM_EXPORT void shim_tanpi_sd(InParams<double, double> *ipp) {
 
 SHIM_EXPORT void shim_trunc_sd(InParams<double, double> *ipp) {
     ipp->op[0] = gcc_funcs.trunc(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_clog_sz(InParams<fc64_t, fc64_t> *ipp) {
+    ipp->op[0] = gcc_funcs.clog(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cexp_sz(InParams<fc64_t, fc64_t> *ipp) {
+    ipp->op[0] = gcc_funcs.cexp(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cpow_sz(InParams<fc64_t, fc64_t> *ipp) {
+    ipp->op[0] = gcc_funcs.cpow(ipp->ip[0], ipp->ip[1]);
 }
 
 // ============================================================================

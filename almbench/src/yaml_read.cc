@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -121,7 +121,35 @@ static int read_test(const YAML::Node &test, struct YamlInputs &param)
 
     /* Read expected output value if present */
     if (expect) {
-        param.xv = expect[0].as<std::string>();
+        /*
+         * Complex scalar APIs (clog, cexp, cpow): legacy YAML used
+         *   expect: [re, im]   (hex or decimal components)
+         * libm_process passes xv to str_to_complex(), which requires
+         *   "re+ i im"
+         * so merge two scalars when present.
+         *
+         * Use YAML::Node::Scalar() for each part so unquoted hex integers
+         * keep lexical "0x..." form; as<std::string>() can normalize to
+         * decimal and break str_to_float / the complex regex.
+         */
+        auto expect_scalar_lex = [](const YAML::Node &n) -> std::string {
+            if (!n || !n.IsScalar()) {
+                return {};
+            }
+            return n.Scalar();
+        };
+        if (expect.IsSequence()) {
+            if (expect.size() >= 2 &&
+                (param.api_name == "clog" || param.api_name == "cexp" ||
+                 param.api_name == "cpow")) {
+                param.xv = expect_scalar_lex(expect[0]) + "+ i " +
+                           expect_scalar_lex(expect[1]);
+            } else if (expect.size() >= 1) {
+                param.xv = expect_scalar_lex(expect[0]);
+            }
+        } else if (expect.IsScalar()) {
+            param.xv = expect.Scalar();
+        }
     }
 
     /* Read variants and concatenate them with semicolons */

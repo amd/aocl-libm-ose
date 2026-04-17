@@ -62,6 +62,8 @@ file(GLOB MPARITH_SRCS
            cdfnorminv.c
            ceil.c
            cexp.c
+           clog.c
+           cpow.c
            copysign.c
            cos.c
            cosh.c

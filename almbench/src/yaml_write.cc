@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -29,6 +29,8 @@
 #include <sstream>
 #include <iomanip>
 #include <cstdint>
+#include <cstring>
+#include <type_traits>
 
 #include <yaml-cpp/yaml.h>
 #include <fstream>
@@ -93,16 +95,28 @@ static std::string exception_to_string(int raised_exception)
 template <typename S>
 static std::string to_hex(const S &value)
 {
-    std::stringstream ss;
-    ss << "0x" << std::hex << std::uppercase << std::setfill('0');
-    if (sizeof(S) == sizeof(uint32_t)) {
-        uint32_t bits = *(reinterpret_cast<const uint32_t *>(&value));
-        ss << std::setw(8) << bits;
-    } else if (sizeof(S) == sizeof(uint64_t)) {
-        uint64_t bits = *(reinterpret_cast<const uint64_t *>(&value));
-        ss << std::setw(16) << bits;
+    if constexpr (std::is_same_v<S, fc32_t>) {
+        float re = fc_real(value);
+        float im = fc_imag(value);
+        return std::string("[") + to_hex(re) + "," + to_hex(im) + "]";
+    } else if constexpr (std::is_same_v<S, fc64_t>) {
+        double re = fc_real(value);
+        double im = fc_imag(value);
+        return std::string("[") + to_hex(re) + "," + to_hex(im) + "]";
+    } else {
+        std::stringstream ss;
+        ss << "0x" << std::hex << std::uppercase << std::setfill('0');
+        if (sizeof(S) == sizeof(uint32_t)) {
+            uint32_t bits;
+            std::memcpy(&bits, &value, sizeof(bits));
+            ss << std::setw(8) << bits;
+        } else if (sizeof(S) == sizeof(uint64_t)) {
+            uint64_t bits;
+            std::memcpy(&bits, &value, sizeof(bits));
+            ss << std::setw(16) << bits;
+        }
+        return ss.str();
     }
-    return ss.str();
 }
 
 /*
@@ -258,6 +272,8 @@ void write_yaml_output(const struct YamlOutputs<S> *yop)
 // Explicit template instantiations for float and double types
 template void write_yaml_output<float>(const struct YamlOutputs<float> *yop);
 template void write_yaml_output<double>(const struct YamlOutputs<double> *yop);
+template void write_yaml_output<fc32_t>(const struct YamlOutputs<fc32_t> *yop);
+template void write_yaml_output<fc64_t>(const struct YamlOutputs<fc64_t> *yop);
 
 #if 0
 template void populate_system_metadata<float>(struct TestMetadata<float> *metadata);

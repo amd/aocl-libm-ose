@@ -1,0 +1,204 @@
+- test_sequence: validation_tests_clog
+  function: clog
+  test_sets:
+
+#---------------------------------
+# Single precision (clogf) accuracy tests
+# Input format: one complex range ["real_srt + i imag_srt", "real_stp + i imag_stp"]
+#---------------------------------
+  - id: clogf-full-range
+    description: 'Full range accuracy tests for clogf'
+    tests:
+    - id: clogf_accu_001
+      description: 'Real: [min_subnormal, max], Imag: [0.1, 0.1] - positive real axis'
+      input:
+      - ["min_subnormal + i 0.1", "max + i 0.1"]
+      type: [expstep]
+      steps: [1000]
+      variants: [sc]
+
+    - id: clogf_accu_002
+      description: 'Real: [-max, -min_subnormal], Imag: [0.1, 0.1] - negative real axis'
+      input:
+      - ["0xFF7FFFFF + i 0.1", "-min_subnormal + i 0.1"]
+      type: [expstep]
+      steps: [1000]
+      variants: [sc]
+
+    - id: clogf_accu_003
+      description: 'Real: [0.1, 0.1], Imag: [min_subnormal, max] - positive imag axis'
+      input:
+      - ["0.1 + i min_subnormal", "0.1 + i max"]
+      type: [expstep]
+      steps: [1000]
+      variants: [sc]
+
+    - id: clogf_accu_004
+      description: 'Real: [0.1, 0.1], Imag: [-max, -min_subnormal] - negative imag axis'
+      input:
+      - ["0.1 + i 0xFF7FFFFF", "0.1 + i -min_subnormal"]
+      type: [expstep]
+      steps: [1000]
+      variants: [sc]
+
+  - id: clogf-unit-circle
+    description: 'Unit circle and nearby tests for clogf'
+    tests:
+    - id: clogf_accu_005
+      description: 'Real: [-1, 1], Imag: [-1, 1] - unit square'
+      input:
+      - ["-1.0 + i -1.0", "1.0 + i 1.0"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sc]
+
+    - id: clogf_accu_006
+      description: 'Real: [0.9, 1.1], Imag: [-0.1, 0.1] - near z=1'
+      input:
+      - ["0.9 + i -0.1", "1.1 + i 0.1"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sc]
+
+    - id: clogf_accu_007
+      description: 'Real: [-1.1, -0.9], Imag: [-0.1, 0.1] - near z=-1'
+      input:
+      - ["-1.1 + i -0.1", "-0.9 + i 0.1"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sc]
+
+  - id: clogf-random-quadrants
+    description: 'Random sampling in all quadrants for clogf'
+    tests:
+    - id: clogf_accu_008
+      description: 'Quadrant I: Real: [0.1, 10], Imag: [0.1, 10]'
+      input:
+      - ["0.1 + i 0.1", "10.0 + i 10.0"]
+      type: [random]
+      steps: [1000000]
+      variants: [sc]
+
+    - id: clogf_accu_009
+      description: 'Quadrant II: Real: [-10, -0.1], Imag: [0.1, 10]'
+      input:
+      - ["-10.0 + i 0.1", "-0.1 + i 10.0"]
+      type: [random]
+      steps: [1000000]
+      variants: [sc]
+
+    - id: clogf_accu_010
+      description: 'Quadrant III: Real: [-10, -0.1], Imag: [-10, -0.1]'
+      input:
+      - ["-10.0 + i -10.0", "-0.1 + i -0.1"]
+      type: [random]
+      steps: [1000000]
+      variants: [sc]
+
+    - id: clogf_accu_011
+      description: 'Quadrant IV: Real: [0.1, 10], Imag: [-10, -0.1]'
+      input:
+      - ["0.1 + i -10.0", "10.0 + i -0.1"]
+      type: [random]
+      steps: [1000000]
+      variants: [sc]
+
+#---------------------------------
+# Double precision (clog) accuracy tests
+#---------------------------------
+  - id: clogd-full-range
+    description: 'Full range accuracy tests for clog'
+    tests:
+    - id: clog_accu_001
+      description: 'Real: [min_subnormal, max], Imag: [0.1, 0.1] - positive real axis'
+      input:
+      - ["min_subnormal + i 0.1", "0x7FEFFFFFFFFFFFFF + i 0.1"]
+      type: [expstep]
+      steps: [1000]
+      variants: [sz]
+
+    - id: clog_accu_002
+      description: 'Real: [-max, -min_subnormal], Imag: [0.1, 0.1] - negative real axis'
+      input:
+      - ["0xFFEFFFFFFFFFFFFF + i 0.1", "-min_subnormal + i 0.1"]
+      type: [expstep]
+      steps: [1000]
+      variants: [sz]
+
+    - id: clog_accu_003
+      description: 'Real: [0.1, 0.1], Imag: [min_subnormal, max] - positive imag axis'
+      input:
+      - ["0.1 + i min_subnormal", "0.1 + i 0x7FEFFFFFFFFFFFFF"]
+      type: [expstep]
+      steps: [1000]
+      variants: [sz]
+
+    - id: clog_accu_004
+      description: 'Real: [0.1, 0.1], Imag: [-max, -min_subnormal] - negative imag axis'
+      input:
+      - ["0.1 + i 0xFFEFFFFFFFFFFFFF", "0.1 + i -min_subnormal"]
+      type: [expstep]
+      steps: [1000]
+      variants: [sz]
+
+  - id: clogd-unit-circle
+    description: 'Unit circle and nearby tests for clog'
+    tests:
+    - id: clog_accu_005
+      description: 'Real: [-1, 1], Imag: [-1, 1] - unit square'
+      input:
+      - ["-1.0 + i -1.0", "1.0 + i 1.0"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sz]
+
+    - id: clog_accu_006
+      description: 'Real: [0.9, 1.1], Imag: [-0.1, 0.1] - near z=1'
+      input:
+      - ["0.9 + i -0.1", "1.1 + i 0.1"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sz]
+
+    - id: clog_accu_007
+      description: 'Real: [-1.1, -0.9], Imag: [-0.1, 0.1] - near z=-1'
+      input:
+      - ["-1.1 + i -0.1", "-0.9 + i 0.1"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sz]
+
+  - id: clogd-random-quadrants
+    description: 'Random sampling in all quadrants for clog'
+    tests:
+    - id: clog_accu_008
+      description: 'Quadrant I: Real: [0.1, 10], Imag: [0.1, 10]'
+      input:
+      - ["0.1 + i 0.1", "10.0 + i 10.0"]
+      type: [random]
+      steps: [1000000]
+      variants: [sz]
+
+    - id: clog_accu_009
+      description: 'Quadrant II: Real: [-10, -0.1], Imag: [0.1, 10]'
+      input:
+      - ["-10.0 + i 0.1", "-0.1 + i 10.0"]
+      type: [random]
+      steps: [1000000]
+      variants: [sz]
+
+    - id: clog_accu_010
+      description: 'Quadrant III: Real: [-10, -0.1], Imag: [-10, -0.1]'
+      input:
+      - ["-10.0 + i -10.0", "-0.1 + i -0.1"]
+      type: [random]
+      steps: [1000000]
+      variants: [sz]
+
+    - id: clog_accu_011
+      description: 'Quadrant IV: Real: [0.1, 10], Imag: [-10, -0.1]'
+      input:
+      - ["0.1 + i -10.0", "10.0 + i -0.1"]
+      type: [random]
+      steps: [1000000]
+      variants: [sz]

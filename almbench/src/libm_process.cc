@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -30,8 +30,10 @@
 #include <cstring>
 #include <regex>
 #include <unordered_map>
+#include <type_traits>
 #include "alm_test.h"
 #include "api_template.h"
+#include "generator.h"
 
 /*
  * is_hex_string:
@@ -196,6 +198,41 @@ RangeType str_to_enum(const std::string &key)
 }
 
 /*
+ * str_to_complex:
+ * Parses strings like "0x... + i 0x..." or decimal "1.0+ i 2.0" into C complex types.
+ */
+template <typename T>
+static T str_to_complex(const std::string &word)
+{
+    using CT = typename libm::complex_component_type<T>::type;
+    std::regex cre(R"(^\s*(.+?)\s*([+-])\s*i\s*(.+)\s*$)");
+    std::smatch m;
+    if (!std::regex_match(word, m, cre)) {
+        std::cerr << "Invalid complex literal: " << word << std::endl;
+        return T{};
+    }
+    std::string re_s = m[1].str();
+    std::string im_s = m[3].str();
+    /* Trim */
+    auto trim = [](std::string &s) {
+        while (!s.empty() && std::isspace(static_cast<unsigned char>(s.front()))) {
+            s.erase(0, 1);
+        }
+        while (!s.empty() && std::isspace(static_cast<unsigned char>(s.back()))) {
+            s.pop_back();
+        }
+    };
+    trim(re_s);
+    trim(im_s);
+    CT re_v = str_to_float<CT>(re_s);
+    CT im_v = str_to_float<CT>(im_s);
+    if (m[2].str() == "-") {
+        im_v = -im_v;
+    }
+    return libm::fc_pack(re_v, im_v);
+}
+
+/*
  * libm_api_variant:
  * Handles test execution for a specific API variant and input type.
  */
@@ -220,31 +257,49 @@ void libm_api_variant(struct AlmLibs *alibs, const struct YamlInputs &param,
     if (!param.range.empty()) {
         struct InpRng<U> iprng;
         for (const auto &range : param.range) {
-            iprng.srt   = str_to_float<U>(range.srt);
-            iprng.stp   = str_to_float<U>(range.stp);
+            if constexpr (std::is_same_v<U, fc32_t> || std::is_same_v<U, fc64_t>) {
+                iprng.srt = str_to_complex<U>(range.srt);
+                iprng.stp = str_to_complex<U>(range.stp);
+            } else {
+                iprng.srt = str_to_float<U>(range.srt);
+                iprng.stp = str_to_float<U>(range.stp);
+            }
             iprng.type  = str_to_enum(range.type);
             iprng.count = std::stoull(range.count);
             ipp->range.push_back(iprng);
         }
         for (const auto &input : param.input) {
-            U value = str_to_float<U>(input);
-            iprng.srt  = value;
-            iprng.stp  = value;
-            iprng.type = RangeType::E_Fixedval; //range-test with single input
+            if constexpr (std::is_same_v<U, fc32_t> || std::is_same_v<U, fc64_t>) {
+                U value = str_to_complex<U>(input);
+                iprng.srt   = value;
+                iprng.stp   = value;
+            } else {
+                U value = str_to_float<U>(input);
+                iprng.srt   = value;
+                iprng.stp   = value;
+            }
+            iprng.type  = RangeType::E_Fixedval; /* range-test with single input */
             iprng.count = 1;
             ipp->range.push_back(iprng);
         }
     } else {
-        U inp;
         int i = 0;
         for (const auto &input : param.input) {
-            inp = str_to_float<U>(input);
-            ipp->ip[i++] = T{inp};
-         }
+            if constexpr (std::is_same_v<U, fc32_t> || std::is_same_v<U, fc64_t>) {
+                ipp->ip[i++] = str_to_complex<T>(input);
+            } else {
+                U inp = str_to_float<U>(input);
+                ipp->ip[i++] = T{inp};
+            }
+        }
     }
 
     if (!param.xv.empty()) {
-        ipp->xv = str_to_float<U>(param.xv);
+        if constexpr (std::is_same_v<U, fc32_t> || std::is_same_v<U, fc64_t>) {
+            ipp->xv = str_to_complex<U>(param.xv);
+        } else {
+            ipp->xv = str_to_float<U>(param.xv);
+        }
     }
 
     if (!param.xxv.empty()) {
@@ -311,6 +366,10 @@ void process_libm(struct AlmLibs *alibs, const std::vector<struct YamlInputs> &p
             #endif
             } else if (variant == "vrda") {
                 libm_api_variant<double>(alibs, param, variant, test_mode, vendor, uth);
+            } else if (variant == "sc") {
+                libm_api_variant<fc32_t>(alibs, param, variant, test_mode, vendor, uth);
+            } else if (variant == "sz") {
+                libm_api_variant<fc64_t>(alibs, param, variant, test_mode, vendor, uth);
             } else {
                 std::cout << "Invalid datatype: " << variant << std::endl;
             }
@@ -318,3 +377,10 @@ void process_libm(struct AlmLibs *alibs, const std::vector<struct YamlInputs> &p
         std::cout << std::endl;
     }
 }
+
+template void libm_api_variant<fc32_t>(struct AlmLibs *alibs, const struct YamlInputs &param,
+                                       std::string &variant, TestMode test_mode,
+                                       const std::string &vendor, std::string &ulp_threshold);
+template void libm_api_variant<fc64_t>(struct AlmLibs *alibs, const struct YamlInputs &param,
+                                       std::string &variant, TestMode test_mode,
+                                       const std::string &vendor, std::string &ulp_threshold);

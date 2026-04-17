@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -79,6 +79,16 @@ template void (*load_function(DL_HANDLE, const std::string&))(InParams<libm::Ali
 template void (*load_function(DL_HANDLE, const std::string&))(InParams<libm::AlignedM512d, double>*);
 #endif
 
+template fc64_t (*load_function(DL_HANDLE, const std::string&))(fc32_t);
+template fc128_t (*load_function(DL_HANDLE, const std::string&))(fc64_t);
+
+/* Two-argument complex (e.g. cpow): mpfr::op_type<U>::mopt for U = fc32_t / fc64_t */
+template fc64_t (*load_function(DL_HANDLE, const std::string&))(fc32_t, fc32_t);
+template fc128_t (*load_function(DL_HANDLE, const std::string&))(fc64_t, fc64_t);
+
+template void (*load_function(DL_HANDLE, const std::string&))(InParams<fc32_t, fc32_t>*);
+template void (*load_function(DL_HANDLE, const std::string&))(InParams<fc64_t, fc64_t>*);
+
 
 /*
  * run_libm_api_with_exceptions:
@@ -110,6 +120,9 @@ template int run_libm_api_with_exceptions<libm::AlignedM256d, double>(void (*)(I
 template int run_libm_api_with_exceptions<libm::AlignedM512, float>(void (*)(InParams<libm::AlignedM512, float>*), InParams<libm::AlignedM512, float>*);
 template int run_libm_api_with_exceptions<libm::AlignedM512d, double>(void (*)(InParams<libm::AlignedM512d, double>*), InParams<libm::AlignedM512d, double>*);
 #endif
+
+template int run_libm_api_with_exceptions<fc32_t, fc32_t>(void (*)(InParams<fc32_t, fc32_t>*), InParams<fc32_t, fc32_t>*);
+template int run_libm_api_with_exceptions<fc64_t, fc64_t>(void (*)(InParams<fc64_t, fc64_t>*), InParams<fc64_t, fc64_t>*);
 
 template <typename T, typename U>
 Runner<T, U>::Runner(void (*shim)(InParams<T, U>*), TestMode mode, uint64_t iterations)
@@ -157,3 +170,6 @@ template class Runner<libm::AlignedM256d, double>;
 template class Runner<libm::AlignedM512, float>;
 template class Runner<libm::AlignedM512d, double>;
 #endif
+
+template class Runner<fc32_t, fc32_t>;
+template class Runner<fc64_t, fc64_t>;

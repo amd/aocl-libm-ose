@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,175 +25,230 @@
  *
  */
 
-#pragma once
+ #pragma once
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <typeinfo>
-#include <immintrin.h>
-#include <cstdint>
-#include <cfenv>
-#include <cmath>
-#include "dll_utils.h"
+ #include <iostream>
+ #include <string>
+ #include <vector>
+ #include <typeinfo>
+ #include <immintrin.h>
+ #include <cstdint>
+ #include <cfenv>
+ #include <cmath>
+ #include "dll_utils.h"
 
-#pragma STDC FENV_ACCESS ON
+ #pragma STDC FENV_ACCESS ON
 
-#ifdef _WIN32
-    #undef max
-    #undef min
-#endif
+ #ifdef _WIN32
+     #undef max
+     #undef min
+ #endif
 
-#define MAX_IPPTR 6
-#define MAX_OPPTR 2
-#define MAX_ELEM  16
+ #define MAX_IPPTR 6
+ #define MAX_OPPTR 2
+ #define MAX_ELEM  16
 
-enum class TestMode{
-    E_UNITTEST,
-    E_ACCURACY,
-    E_PERFORMANCE,
-    E_KNOWNTEST
-};
+ #if (defined (_WIN64) || defined (_WIN32))
+   #include <complex.h>
+   #if defined (__clang__)
+     /* Clang on Windows */
+     extern "C" {
+       typedef _C_float_complex    _Fcomplex;
+       typedef _C_double_complex   _Dcomplex;
+       typedef _C_ldouble_complex  _Lcomplex;
+     }
+   #endif
+   typedef    _Fcomplex            fc32_t;
+   typedef    _Dcomplex            fc64_t;
+   typedef    _Lcomplex            fc128_t;
 
-extern bool verbose;
+   /* Portable component accessors for MSVC complex types */
+   static inline float       fc_real(fc32_t  z) { return z._Val[0]; }
+   static inline float       fc_imag(fc32_t  z) { return z._Val[1]; }
+   static inline double      fc_real(fc64_t  z) { return z._Val[0]; }
+   static inline double      fc_imag(fc64_t  z) { return z._Val[1]; }
+   static inline long double fc_real(fc128_t z) { return z._Val[0]; }
+   static inline long double fc_imag(fc128_t z) { return z._Val[1]; }
+ #else
+   /* Linux — __complex__ is the GCC/Clang keyword valid in both C and C++ */
+   #if defined(__clang__)
+     #pragma clang diagnostic push
+     #pragma clang diagnostic ignored "-Wc99-extensions"
+   #endif
+   typedef    float __complex__       fc32_t;
+   typedef    double __complex__      fc64_t;
+   typedef    long double __complex__ fc128_t;
+   #if defined(__clang__)
+     #pragma clang diagnostic pop
+   #endif
 
-/*
- * AlmLibs:
- * Holds pointers to shim and reference libraries.
- */
-struct AlmLibs {
-    DL_HANDLE pshimlib;
-    DL_HANDLE preflib;
-};
+   /* Portable component accessors for GCC/Clang complex types */
+   static inline float       fc_real(fc32_t  z) { return __real__ z; }
+   static inline float       fc_imag(fc32_t  z) { return __imag__ z; }
+   static inline double      fc_real(fc64_t  z) { return __real__ z; }
+   static inline double      fc_imag(fc64_t  z) { return __imag__ z; }
+   static inline long double fc_real(fc128_t z) { return __real__ z; }
+   static inline long double fc_imag(fc128_t z) { return __imag__ z; }
+ #endif
 
-/*
- * valf:
- * Union to represent a float as a 32-bit unsigned integer.
- */
-union valf {
-    float    f;
-    uint32_t u;
-};
+ enum class TestMode{
+     E_UNITTEST,
+     E_ACCURACY,
+     E_PERFORMANCE,
+     E_KNOWNTEST
+ };
 
-/*
- * val:
- * Union to represent a double as a 64-bit unsigned integer.
- */
-union val {
-    double   d;
-    uint64_t u;
-};
+ extern bool verbose;
 
-namespace libm {
-    /* SIMD wrapper types */
-    struct AlignedM128   { __m128 data; };
-    struct AlignedM128d  { __m128d data; };
-    struct AlignedM256   { __m256 data; };
-    struct AlignedM256d  { __m256d data; };
+ /*
+  * AlmLibs:
+  * Holds pointers to shim and reference libraries.
+  */
+ struct AlmLibs {
+     DL_HANDLE pshimlib;
+     DL_HANDLE preflib;
+ };
 
-    #ifdef __AVX512F__
-    struct AlignedM512   { __m512 data; };
-    struct AlignedM512d  { __m512d data; };
-    #endif
+ /*
+  * valf:
+  * Union to represent a float as a 32-bit unsigned integer.
+  */
+ union valf {
+     float    f;
+     uint32_t u;
+ };
 
-    /*
-    * type_info<T>:
-    * Provides metadata about SIMD types.
-    */
-    template <typename T>
-    struct type_info {
-        using real_type = T;
-        static constexpr bool is_simd = false;
-    };
+ /*
+  * val:
+  * Union to represent a double as a 64-bit unsigned integer.
+  */
+ union val {
+     double   d;
+     uint64_t u;
+ };
 
-    template <>
-    struct type_info<AlignedM128> {
-        using real_type = float;
-        static constexpr bool is_simd = true;
-    };
+ namespace libm {
+     /* SIMD wrapper types */
+     struct AlignedM128   { __m128 data; };
+     struct AlignedM128d  { __m128d data; };
+     struct AlignedM256   { __m256 data; };
+     struct AlignedM256d  { __m256d data; };
 
-    template <>
-    struct type_info<AlignedM128d> {
-        using real_type = double;
-        static constexpr bool is_simd = true;
-    };
+     #ifdef __AVX512F__
+     struct AlignedM512   { __m512 data; };
+     struct AlignedM512d  { __m512d data; };
+     #endif
 
-    template <>
-    struct type_info<AlignedM256> {
-        using real_type = float;
-        static constexpr bool is_simd = true;
-    };
+     /*
+     * type_info<T>:
+     * Provides metadata about SIMD types.
+     */
+     template <typename T>
+     struct type_info {
+         using real_type = T;
+         static constexpr bool is_simd = false;
+     };
 
-    template <>
-    struct type_info<AlignedM256d> {
-        using real_type = double;
-        static constexpr bool is_simd = true;
-    };
+     template <>
+     struct type_info<AlignedM128> {
+         using real_type = float;
+         static constexpr bool is_simd = true;
+     };
 
-    #ifdef __AVX512F__
-    template <>
-    struct type_info<AlignedM512> {
-        using real_type = float;
-        static constexpr bool is_simd = true;
-    };
+     template <>
+     struct type_info<AlignedM128d> {
+         using real_type = double;
+         static constexpr bool is_simd = true;
+     };
 
-    template <>
-    struct type_info<AlignedM512d> {
-        using real_type = double;
-        static constexpr bool is_simd = true;
-    };
-    #endif
-} /* namespace libm */
+     template <>
+     struct type_info<AlignedM256> {
+         using real_type = float;
+         static constexpr bool is_simd = true;
+     };
 
-/*
- * TestStatus:
- * Enumeration of test case statuses.
- */
-enum TestStatus {
-    TESTCASE_FAIL,
-    TESTCASE_PASS
-};
+     template <>
+     struct type_info<AlignedM256d> {
+         using real_type = double;
+         static constexpr bool is_simd = true;
+     };
 
-/*
- * RangeType:
- * Enumeration of supported input range generation strategies.
- */
-enum RangeType {
-    E_Simple,
-    E_Integer,
-    E_Fixedval,
-    E_Random,
-    E_Linear,
-    E_Expstep,
-    E_Bitstep,
-    E_MAX
-};
+     #ifdef __AVX512F__
+     template <>
+     struct type_info<AlignedM512> {
+         using real_type = float;
+         static constexpr bool is_simd = true;
+     };
 
-/*
- * InpRng:
- * Templated structure for typed input ranges.
- */
-template <typename U>
-struct InpRng {
-    U         srt;       /* Start value */
-    U         stp;       /* Stop value */
-    RangeType type;      /* Range generation type */
-    uint64_t  count;     /* Number of values to generate */
-};
+     template <>
+     struct type_info<AlignedM512d> {
+         using real_type = double;
+         static constexpr bool is_simd = true;
+     };
+     #endif
 
-/*
- * InParams:
- * Templated structure to hold input parameters for validation.
- */
-template <typename T, typename U>
-struct InParams {
-    U         *iptr[MAX_IPPTR];             /* Input pointers */
-    U         *optr[MAX_OPPTR];             /* Output pointers */
-    uint64_t   count;                       /* Number of elements */
-    T          ip[MAX_IPPTR];               /* Single input values */
-    T          op[MAX_OPPTR];               /* Single output values */
-    U          xv;                          /* Expected output value */
-    int        xxv;                         /* Expected exception */
-    std::vector<InpRng<U>> range;           /* Input ranges */
-    void      *sys;
-};
+     template <>
+     struct type_info<fc32_t> {
+         using real_type = fc32_t;
+         static constexpr bool is_simd = false;
+     };
+
+     template <>
+     struct type_info<fc64_t> {
+         using real_type = fc64_t;
+         static constexpr bool is_simd = false;
+     };
+ } /* namespace libm */
+
+ /*
+  * TestStatus:
+  * Enumeration of test case statuses.
+  */
+ enum TestStatus {
+     TESTCASE_FAIL,
+     TESTCASE_PASS
+ };
+
+ /*
+  * RangeType:
+  * Enumeration of supported input range generation strategies.
+  */
+ enum RangeType {
+     E_Simple,
+     E_Integer,
+     E_Fixedval,
+     E_Random,
+     E_Linear,
+     E_Expstep,
+     E_Bitstep,
+     E_MAX
+ };
+
+ /*
+  * InpRng:
+  * Templated structure for typed input ranges.
+  */
+ template <typename U>
+ struct InpRng {
+     U         srt;       /* Start value */
+     U         stp;       /* Stop value */
+     RangeType type;      /* Range generation type */
+     uint64_t  count;     /* Number of values to generate */
+ };
+
+ /*
+  * InParams:
+  * Templated structure to hold input parameters for validation.
+  */
+ template <typename T, typename U>
+ struct InParams {
+     U         *iptr[MAX_IPPTR];             /* Input pointers */
+     U         *optr[MAX_OPPTR];             /* Output pointers */
+     uint64_t   count;                       /* Number of elements */
+     T          ip[MAX_IPPTR];               /* Single input values */
+     T          op[MAX_OPPTR];               /* Single output values */
+     U          xv;                          /* Expected output value */
+     int        xxv;                         /* Expected exception */
+     std::vector<InpRng<U>> range;           /* Input ranges */
+     void      *sys;
+ };

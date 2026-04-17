@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -253,3 +253,17 @@ template int api_prototype_01<libm::AlignedM512d, double>(
     const std::string &,
     struct YamlOutputs<double> *);
 #endif
+
+template int api_prototype_01<fc32_t, fc32_t>(
+    struct AlmLibs *,
+    struct InParams<fc32_t, fc32_t> *,
+    const std::string &,
+    const std::string &,
+    struct YamlOutputs<fc32_t> *);
+
+template int api_prototype_01<fc64_t, fc64_t>(
+    struct AlmLibs *,
+    struct InParams<fc64_t, fc64_t> *,
+    const std::string &,
+    const std::string &,
+    struct YamlOutputs<fc64_t> *);

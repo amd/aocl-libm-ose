@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -114,6 +114,9 @@ typedef float (*mkl_tan_ss_func_t)(float);
 typedef float (*mkl_tanh_ss_func_t)(float);
 typedef float (*mkl_tanpi_ss_func_t)(float);
 typedef float (*mkl_trunc_ss_func_t)(float);
+typedef fc32_t (*mkl_clog_sc_func_t)(fc32_t);
+typedef fc32_t (*mkl_cexp_sc_func_t)(fc32_t);
+typedef fc32_t (*mkl_cpow_sc_func_t)(fc32_t, fc32_t);
 
 // --- Double Precision Scalar (sd) Functions ---
 typedef double (*mkl_acos_sd_func_t)(double);
@@ -176,6 +179,9 @@ typedef double (*mkl_tan_sd_func_t)(double);
 typedef double (*mkl_tanh_sd_func_t)(double);
 typedef double (*mkl_tanpi_sd_func_t)(double);
 typedef double (*mkl_trunc_sd_func_t)(double);
+typedef fc64_t (*mkl_clog_sz_func_t)(fc64_t);
+typedef fc64_t (*mkl_cexp_sz_func_t)(fc64_t);
+typedef fc64_t (*mkl_cpow_sz_func_t)(fc64_t, fc64_t);
 
 // --- Double Precision 128-bit Vector (vrd2) Functions ---
 typedef __m128d (*mkl_acos_vrd2_func_t)(__m128d);
@@ -460,6 +466,9 @@ static struct {
     mkl_tanh_ss_func_t tanhf;
     mkl_tanpi_ss_func_t tanpif;
     mkl_trunc_ss_func_t truncf;
+    mkl_clog_sc_func_t clogf;
+    mkl_cexp_sc_func_t cexpf;
+    mkl_cpow_sc_func_t cpowf;
 
     // ============================================================================
     // DOUBLE PRECISION SCALAR (sd) VARIANTS
@@ -524,6 +533,9 @@ static struct {
     mkl_tanh_sd_func_t tanh;
     mkl_tanpi_sd_func_t tanpi;
     mkl_trunc_sd_func_t trunc;
+    mkl_clog_sz_func_t clog;
+    mkl_cexp_sz_func_t cexp;
+    mkl_cpow_sz_func_t cpow;
 
     // ============================================================================
     // DOUBLE PRECISION 128-BIT VECTOR (vrd2) VARIANTS
@@ -909,6 +921,9 @@ static void init_mkl_symbols(void) {
     mkl_funcs.tanhf = load_mkl_symbol<mkl_tanh_ss_func_t>(mkl_core, "tanhf");
     mkl_funcs.tanpif = load_mkl_symbol<mkl_tanpi_ss_func_t>(mkl_core, "tanpif");
     mkl_funcs.truncf = load_mkl_symbol<mkl_trunc_ss_func_t>(mkl_core, "truncf");
+    mkl_funcs.clogf = load_mkl_symbol<mkl_clog_sc_func_t>(mkl_core, "clogf");
+    mkl_funcs.cexpf = load_mkl_symbol<mkl_cexp_sc_func_t>(mkl_core, "cexpf");
+    mkl_funcs.cpowf = load_mkl_symbol<mkl_cpow_sc_func_t>(mkl_core, "cpowf");
 
     // ============================================================================
     // DOUBLE PRECISION SCALAR (sd) VARIANTS
@@ -973,6 +988,9 @@ static void init_mkl_symbols(void) {
     mkl_funcs.tanh = load_mkl_symbol<mkl_tanh_sd_func_t>(mkl_core, "tanh");
     mkl_funcs.tanpi = load_mkl_symbol<mkl_tanpi_sd_func_t>(mkl_core, "tanpi");
     mkl_funcs.trunc = load_mkl_symbol<mkl_trunc_sd_func_t>(mkl_core, "trunc");
+    mkl_funcs.clog = load_mkl_symbol<mkl_clog_sz_func_t>(mkl_core, "clog");
+    mkl_funcs.cexp = load_mkl_symbol<mkl_cexp_sz_func_t>(mkl_core, "cexp");
+    mkl_funcs.cpow = load_mkl_symbol<mkl_cpow_sz_func_t>(mkl_core, "cpow");
 
     // ============================================================================
     // DOUBLE PRECISION 128-BIT VECTOR (vrd2) VARIANTS
@@ -1485,6 +1503,18 @@ SHIM_EXPORT void shim_trunc_ss(InParams<float, float> *ipp) {
     ipp->op[0] = mkl_funcs.truncf(ipp->ip[0]);
 }
 
+SHIM_EXPORT void shim_clog_sc(InParams<fc32_t, fc32_t> *ipp) {
+    ipp->op[0] = mkl_funcs.clogf(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cexp_sc(InParams<fc32_t, fc32_t> *ipp) {
+    ipp->op[0] = mkl_funcs.cexpf(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cpow_sc(InParams<fc32_t, fc32_t> *ipp) {
+    ipp->op[0] = mkl_funcs.cpowf(ipp->ip[0], ipp->ip[1]);
+}
+
 // ============================================================================
 // DOUBLE PRECISION SCALAR (sd) VARIANTS
 // ============================================================================
@@ -1738,6 +1768,18 @@ SHIM_EXPORT void shim_tanpi_sd(InParams<double, double> *ipp) {
 
 SHIM_EXPORT void shim_trunc_sd(InParams<double, double> *ipp) {
     ipp->op[0] = mkl_funcs.trunc(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_clog_sz(InParams<fc64_t, fc64_t> *ipp) {
+    ipp->op[0] = mkl_funcs.clog(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cexp_sz(InParams<fc64_t, fc64_t> *ipp) {
+    ipp->op[0] = mkl_funcs.cexp(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cpow_sz(InParams<fc64_t, fc64_t> *ipp) {
+    ipp->op[0] = mkl_funcs.cpow(ipp->ip[0], ipp->ip[1]);
 }
 
 // ============================================================================

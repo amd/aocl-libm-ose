@@ -1,0 +1,42 @@
+- test_sequence: perf_tests
+  function: cpow
+  timing_enabled: true
+  test_sets:
+  - id: cpow_range-tests_01
+    tests:
+    - id: cpow_001
+      description: 'Base: full value distribution range tests: [+SMALLEST_SUBNORMAL, DBL-MAX] expstep; Exponent: normal value'
+      input:
+      - ["min_subnormal+ i min_subnormal", "max+ i max"]
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      type: [expstep, linearstep]
+      steps: [100, 4]
+      variants: [sc, sz]
+
+    - id: cpow_002
+      description: 'Base: full value distribution range tests: [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep; Exponent: normal value'
+      input:
+      - ["-max+ i -max", "-min_subnormal+ i -min_subnormal"]
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      type: [expstep, linearstep]
+      steps: [100, 4]
+      variants: [sc, sz]
+
+    - id: cpow_003
+      description: 'Base: normal value; Exponent: full value distribution range tests: [+SMALLEST_SUBNORMAL, DBL-MAX] expstep'
+      input:
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      - ["min_subnormal+ i min_subnormal", "max+ i max"]
+      type: [linearstep, expstep]
+      steps: [4, 100]
+      variants: [sc, sz]
+
+    - id: cpow_004
+      description: 'Base: normal value; Exponent: full value distribution range tests: [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      - ["-max+ i -max", "-min_subnormal+ i -min_subnormal"]
+      type: [linearstep, expstep]
+      steps: [4, 100]
+      variants: [sc, sz]
+

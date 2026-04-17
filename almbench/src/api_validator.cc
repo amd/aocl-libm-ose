@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -128,7 +128,7 @@ static const map<string, vector<string>> api_table_amd = {
     {"atanh",     {"sd", "ss"}},
     {"cbrt",      {"sd", "ss", "vrs4", "vrd2", "vrsa", "vrda"}},
     {"ceil",      {"sd", "ss"}},
-    {"cexp",      {"sd", "ss"}},
+    {"cexp",      {"sc", "sz"}},
     {"copysign",  {"sd", "ss"}},
     {"cos",       {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
     {"cosh",      {"sd", "ss", "vrs4", "vrs8", "vrd2", "vrsa", "vrda"}},
@@ -168,6 +168,8 @@ static const map<string, vector<string>> api_table_amd = {
     {"tan",       {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
     {"tanh",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrsa"}},
     {"trunc",     {"sd", "ss"}},
+    {"clog",      {"sc", "sz"}},
+    {"cpow",      {"sc", "sz"}},
 };
 
 static const map<string, vector<string>> api_table_glibc = {
@@ -187,7 +189,7 @@ static const map<string, vector<string>> api_table_glibc = {
     {"atanh",     {"sd", "ss"}},
     {"cbrt",      {"sd", "ss", "vrs4", "vrd2"}},
     {"ceil",      {"sd", "ss"}},
-    {"cexp",      {"sd", "ss"}},
+    {"cexp",      {"sc", "sz"}},
     {"copysign",  {"sd", "ss"}},
     {"cos",       {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8"}},
     {"cosh",      {"sd", "ss", "vrs4", "vrs8", "vrd2"}},
@@ -227,6 +229,8 @@ static const map<string, vector<string>> api_table_glibc = {
     {"tan",       {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8"}},
     {"tanh",      {"sd", "ss", "vrs4", "vrs8", "vrs16"}},
     {"trunc",     {"sd", "ss"}},
+    {"clog",      {"sc", "sz"}},
+    {"cpow",      {"sc", "sz"}},
 
 #elif GLIBC_VERSION_CHECK(2,22)
     // Basic vector support functions (available in 2.22+)
@@ -240,7 +244,7 @@ static const map<string, vector<string>> api_table_glibc = {
     {"atanh",     {"sd", "ss"}},
     {"cbrt",      {"sd", "ss"}},
     {"ceil",      {"sd", "ss"}},
-    {"cexp",      {"sd", "ss"}},
+    {"cexp",      {"sc", "sz"}},
     {"copysign",  {"sd", "ss"}},
     {"cos",       {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8"}},
     {"cosh",      {"sd", "ss"}},
@@ -280,6 +284,8 @@ static const map<string, vector<string>> api_table_glibc = {
     {"tan",       {"sd", "ss"}},
     {"tanh",      {"sd", "ss"}},
     {"trunc",     {"sd", "ss"}},
+    {"clog",      {"sc", "sz"}},
+    {"cpow",      {"sc", "sz"}},
 
 #else
     // Minimal scalar-only support for older GLIBC versions
@@ -293,7 +299,7 @@ static const map<string, vector<string>> api_table_glibc = {
     {"atanh",     {"sd", "ss"}},
     {"cbrt",      {"sd", "ss"}},
     {"ceil",      {"sd", "ss"}},
-    {"cexp",      {"sd", "ss"}},
+    {"cexp",      {"sc", "sz"}},
     {"copysign",  {"sd", "ss"}},
     {"cos",       {"sd", "ss"}},
     {"cosh",      {"sd", "ss"}},
@@ -333,6 +339,8 @@ static const map<string, vector<string>> api_table_glibc = {
     {"tan",       {"sd", "ss"}},
     {"tanh",      {"sd", "ss"}},
     {"trunc",     {"sd", "ss"}},
+    {"clog",      {"sc", "sz"}},
+    {"cpow",      {"sc", "sz"}},
 
 #endif
 };
@@ -348,8 +356,9 @@ const map<ApiTypes, vector<string>> libm_api_names = {
                         "log", "log1p", "log2", "log10",
                         "logb", "cbrt", "ceil", "sqrt", "fabs",
                         "erf", "floor", "nearbyint",
-                        "rint", "round", "trunc"}},
-    {API_PROTOTYPE_02, {"add", "sub", "mul", "pow", "fmax", "fmin", "fdim", "fmod",
+                        "rint", "round", "trunc",
+                        "clog", "cexp"}},
+    {API_PROTOTYPE_02, {"add", "sub", "mul", "pow", "cpow", "fmax", "fmin", "fdim", "fmod",
                         "remainder", "atan2", "hypot", "copysign", "nextafter", "ldexp"}},
     {API_PROTOTYPE_03, {"powx"}},
     {API_PROTOTYPE_04, {"sincos"}},
@@ -445,6 +454,16 @@ string deduce_shimapi(const string &apitype, string &variant)
  */
 string deduce_refapi(const string &apiname, string &variant)
 {
+    /* Scalar complex (mparith alm_mpc_*), same naming as cexp.c / clog.c / cpow.c */
+    if (apiname == "clog" || apiname == "cexp" || apiname == "cpow") {
+        if (variant == "sc") {
+            return std::string("alm_mpc_") + apiname + "f";
+        }
+        if (variant == "sz") {
+            return std::string("alm_mpc_") + apiname;
+        }
+    }
+
     string ref_api = apiname;
     if (apiname == "powx") {
          ref_api = "pow";
@@ -486,7 +505,7 @@ int validate_api(struct AlmLibs *alibs,
     string refapi = deduce_refapi(yop->api_name, yop->variant);
 
     check_outfile_dir(yop);
-    set_global_ulp_threshold(yop->ulp_threshold);
+    SetGlobalUlpThreshold(yop->ulp_threshold);
 
     switch (api_type) {
         case API_PROTOTYPE_01:
@@ -513,6 +532,76 @@ int validate_api(struct AlmLibs *alibs,
     }
 
     return 0;
+}
+
+/*
+ * Full specializations for C complex scalars (fc32_t / fc64_t):
+ * Instantiating the primary validate_api<> would pull in api_prototype_02…06,
+ * whose implementations assume real floating-point types.  Complex APIs
+ * (clog, cexp, …) use API_PROTOTYPE_01; two-argument complex (cpow) uses API_PROTOTYPE_02.
+ */
+template <>
+int validate_api<fc32_t, fc32_t>(struct AlmLibs *alibs,
+                                 struct InParams<fc32_t, fc32_t> *ipp,
+                                 struct YamlOutputs<fc32_t> *yop)
+{
+    ApiTypes api_type = check_api_type(yop->api_name, yop->variant);
+    if (!check_api(yop->api_name, yop->variant, yop->vendor)) {
+        return -1;
+    }
+
+    yop->is_vra = is_vrarr(yop->variant);
+
+    string shimapi = deduce_shimapi(yop->api_name, yop->variant);
+    string refapi = deduce_refapi(yop->api_name, yop->variant);
+
+    check_outfile_dir(yop);
+    SetGlobalUlpThreshold(yop->ulp_threshold);
+
+    if (yop->api_name == "cpow") {
+        if (api_type == API_PROTOTYPE_02) {
+            return api_prototype_02<fc32_t, fc32_t>(alibs, ipp, shimapi, refapi, yop);
+        }
+    } else if (api_type == API_PROTOTYPE_01) {
+        return api_prototype_01<fc32_t, fc32_t>(alibs, ipp, shimapi, refapi, yop);
+    }
+    cerr << (yop->api_name == "cpow"
+                 ? "cpow requires API_PROTOTYPE_02 (got "
+                 : "Complex scalar APIs only support API_PROTOTYPE_01 (got ")
+         << api_prototype_to_string(api_type) << ")." << endl;
+    return -1;
+}
+
+template <>
+int validate_api<fc64_t, fc64_t>(struct AlmLibs *alibs,
+                                 struct InParams<fc64_t, fc64_t> *ipp,
+                                 struct YamlOutputs<fc64_t> *yop)
+{
+    ApiTypes api_type = check_api_type(yop->api_name, yop->variant);
+    if (!check_api(yop->api_name, yop->variant, yop->vendor)) {
+        return -1;
+    }
+
+    yop->is_vra = is_vrarr(yop->variant);
+
+    string shimapi = deduce_shimapi(yop->api_name, yop->variant);
+    string refapi = deduce_refapi(yop->api_name, yop->variant);
+
+    check_outfile_dir(yop);
+    SetGlobalUlpThreshold(yop->ulp_threshold);
+
+    if (yop->api_name == "cpow") {
+        if (api_type == API_PROTOTYPE_02) {
+            return api_prototype_02<fc64_t, fc64_t>(alibs, ipp, shimapi, refapi, yop);
+        }
+    } else if (api_type == API_PROTOTYPE_01) {
+        return api_prototype_01<fc64_t, fc64_t>(alibs, ipp, shimapi, refapi, yop);
+    }
+    cerr << (yop->api_name == "cpow"
+                 ? "cpow requires API_PROTOTYPE_02 (got "
+                 : "Complex scalar APIs only support API_PROTOTYPE_01 (got ")
+         << api_prototype_to_string(api_type) << ")." << endl;
+    return -1;
 }
 
 /* Explicit template instantiations */

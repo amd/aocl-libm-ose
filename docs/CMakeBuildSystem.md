@@ -464,6 +464,7 @@ One can configure the library for a specific CPU architecture by setting the `AL
 | `ZEN3`       | ZEN3 optimized  | AMD Zen 3                        |
 | `ZEN4`       | ZEN4 optimized  | AMD Zen 4                        |
 | `ZEN5`       | ZEN5 optimized  | AMD Zen 5                        |
+| `ZEN6`       | ZEN6 optimized  | AMD Zen 6                        |
 | `AVX2`       | ZEN2 optimized  | AMD Zen 2                        |
 | `AVX512`     | ZEN5 optimized  | AMD Zen 5                        |
 
@@ -472,7 +473,7 @@ To configure with a specific option, such as **ZEN3**, use the following command
 $ cmake --preset {presetName} -DALM_STATIC_DISPATCH=ZEN3 --fresh
 ```
 
-**Note:** The compiled library should only be executed on machines that match the target architecture specified during compilation (ex: ZEN3 binaries should run on ZEN3-compatible processors).
+**Note:** The compiled library should only be executed on machines that match the target architecture specified during compilation (e.g., ZEN3 binaries should run on ZEN3-compatible processors).
 
 ---
 
@@ -569,7 +570,7 @@ The following table lists all available CMake configuration options for building
 | **Library**   | `BUILD_SHARED_LIBS`         | Build shared libraries                   | ON             |   ✓   |    ✓    | `ON`, `OFF`                                         |
 | **Library**   | `BUILD_STATIC_LIBS`         | Build static libraries                   | ON             |   ✓   |    ✓    | `ON`, `OFF`                                         |
 | **Library**   | `LIBM_BUILD_LIBRARY`        | Enable building libraries                | ON             |   ✓   |    ✓    | `ON`, `OFF`                                         |
-| **Dispatch**  | `ALM_STATIC_DISPATCH`       | Static CPU architecture dispatch         | OFF            |   ✓   |    ✗    | `AVX2`, `ZEN3`, `ZEN5`, `AVX512`                    |
+| **Dispatch**  | `ALM_STATIC_DISPATCH`       | Static CPU architecture dispatch         | OFF            |   ✓   |    ✗    | `AVX2`, `ZEN2`, `ZEN3`, `ZEN4`, `ZEN5`, `ZEN6`, `AVX512` |
 | **Utils**     | `AOCL_UTILS_INCLUDE_DIR`    | Path to aocl-utils headers               | Auto-fetched   |   ✓   |    ✓    | Any valid path                                      |
 | **Utils**     | `AOCL_UTILS_LIB`            | Path to aocl-utils library               | Auto-fetched   |   ✓   |    ✓    | Any valid path                                      |
 | **Testing**   | `LIBM_BUILD_TESTS`          | Enable building tests                    | OFF            |   ✓   |    ✓    | `ON`, `OFF`                                         |
@@ -631,7 +632,7 @@ You can customize the build with these additional options:
 | `ALM_STATIC_DISPATCH`       | Static dispatch for CPU                 | OFF            |   ✓   |    ✗    |
 
 **Note:**
-- For `ALM_STATIC_DISPATCH`, valid values are: `AVX2`, `ZEN3`, `ZEN5`, `AVX512`
+- For `ALM_STATIC_DISPATCH`, valid values are: `AVX2`, `ZEN2`, `ZEN3`, `ZEN4`, `ZEN5`, `ZEN6`, `AVX512`
 - For complete list of all available options, see the [CMake Configuration Options](#5-cmake-configuration-options) section above.
 
 ---

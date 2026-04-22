@@ -68,7 +68,7 @@ Internal review and testing includes the following validation phases:
 
 | Phase | Checks |
 |:------|:-------|
-| **Accuracy** | Accuracy measured in ULP should not regress vs baseline across supported ISAs (AVX, AVX2, AVX512) and architectures (Zen-Zen5) |
+| **Accuracy** | Accuracy measured in ULP should not regress vs baseline across supported ISAs (AVX2, AVX512) and architectures (Zen-Zen6) |
 | **Conformance** | Special value handling (NaN, Inf, ±0) |
 | **Integration** | Full regression suite, multi-compiler (GCC, Clang, LLVM/Windows) |
 | **Build** | No warnings across all platforms |
@@ -119,13 +119,11 @@ When adding a new math function or variant, the following files typically need t
 
 | Category | Files/Directories | Description |
 |----------|-------------------|-------------|
-| **Public Headers** | `include/external/amdlibm.h`, `include/external/amdlibm_vec.h` | Add function declarations (all routines use the `amd_` prefix, e.g. `amd_exp`, `amd_vrd4_exp`, `amd_vrsa_expf`) |
-| **Internal Headers** | `include/libm/__alm_func_internal.h`, `include/libm/entry_pt.h`, `include/libm/iface.h`, `include/libm_amd.h` | Update internal declarations/macros needed for compilation, dispatch/redirect, and test/build integration. These headers are not part of the installed public API. |
-| **Interface Layer** | `src/iface/<func>.c` | Dispatch logic for the function |
-| **Optimized Implementation** | `src/optimized/<func>.c` | Primary optimized scalar implementation |
-| **ISA-Specific** | `src/isa/avx/`, `src/isa/avx2/`, `src/isa/avx512/` | Vector implementations (vrd2, vrd4, vrs4, vrs8, etc.) |
-| **Architecture-Specific** | `src/arch/zen*/` (zen, zen2, zen3, zen4, zen5) | Microarchitecture-tuned variants |
-| **Build System** | `src/*/CMakeLists.txt` | Add source files to build |
+| **Public Headers** | `include/external/amdlibm.h`, `include/external/amdlibm_vec.h` | Add function declarations (all routines use the `amd_` prefix, e.g., `amd_exp`, `amd_vrd4_exp`, `amd_vrsa_expf`) |
+| **Internal Headers** | `include/libm/__alm_func_internal.h`, `include/libm/entry_pt.h`, `include/libm/iface.h`, `include/libm_amd.h` | Update internal declarations/macros for compilation, dispatch/redirect, and test/build integration (not part of the installed public API) |
+| **Interface Layer** | `src/iface/<func>.c` | Add dispatch logic to route function calls to appropriate optimized implementations |
+| **Optimized Implementation** | `src/optimized/<func>.c` | Add optimized implementation (CMake automatically compiles for each architecture: Zen-Zen6, and ISA: AVX2, AVX512) |
+| **Build System** | `src/optimized/CMakeLists.txt` | Register source files in CMake (typically handled automatically; manual updates only if needed) |
 | **Tests** | `gtests/<func>/` | Create test directory with accuracy, conformance, and performance tests |
 
 For detailed architecture and implementation guidance, refer to the source code of existing functions as examples. For static vs dynamic dispatch, see [CMakeBuildSystem.md - Static Dispatch](docs/CMakeBuildSystem.md#48-static-dispatch-configuration-linux-only).

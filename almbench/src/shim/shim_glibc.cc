@@ -370,6 +370,7 @@ typedef __m256 (*gcc_asin_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_atan_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_cos_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_cosh_vrs8_func_t)(__m256);
+typedef __m256 (*gcc_cbrt_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_erf_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_erfc_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_exp_vrs8_func_t)(__m256);
@@ -730,6 +731,7 @@ static struct {
     gcc_atan_vrs8_func_t atan_vrs8;
     gcc_cos_vrs8_func_t cos_vrs8;
     gcc_cosh_vrs8_func_t cosh_vrs8;
+    gcc_cbrt_vrs8_func_t cbrt_vrs8;
     gcc_erf_vrs8_func_t erf_vrs8;
     gcc_erfc_vrs8_func_t erfc_vrs8;
     gcc_exp_vrs8_func_t exp_vrs8;
@@ -1474,6 +1476,7 @@ static void init_gcc_symbols(void) {
     gcc_funcs.atan_vrs8 = nullptr;
     gcc_funcs.cos_vrs8 = nullptr;
     gcc_funcs.cosh_vrs8 = nullptr;
+    gcc_funcs.cbrt_vrs8 = nullptr;
     gcc_funcs.erf_vrs8 = nullptr;
     gcc_funcs.erfc_vrs8 = nullptr;
     gcc_funcs.exp_vrs8 = nullptr;
@@ -1703,9 +1706,10 @@ static void init_gcc_symbols(void) {
     gcc_funcs.atan_vrd4 = _ZGVdN4v_atan;
     gcc_funcs.atan_vrs8 = _ZGVdN8v_atanf;
 
-    // TAN, ERF, ERFC - 256-bit (AVX2)
+    // TAN, CBRT, ERF, ERFC - 256-bit (AVX2)
     gcc_funcs.tan_vrd4 = _ZGVdN4v_tan;
     gcc_funcs.tan_vrs8 = _ZGVdN8v_tanf;
+    gcc_funcs.cbrt_vrs8 = _ZGVdN8v_cbrtf;
     gcc_funcs.erf_vrd4 = _ZGVdN4v_erf;
     gcc_funcs.erf_vrs8 = _ZGVdN8v_erff;
     gcc_funcs.erfc_vrd4 = _ZGVdN4v_erfc;
@@ -2608,6 +2612,10 @@ SHIM_EXPORT void shim_cos_vrs8(InParams<libm::AlignedM256, float> *ipp) {
 
 SHIM_EXPORT void shim_cosh_vrs8(InParams<libm::AlignedM256, float> *ipp) {
     ipp->op[0].data = gcc_funcs.cosh_vrs8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_cbrt_vrs8(InParams<libm::AlignedM256, float> *ipp) {
+    ipp->op[0].data = gcc_funcs.cbrt_vrs8(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_erf_vrs8(InParams<libm::AlignedM256, float> *ipp) {

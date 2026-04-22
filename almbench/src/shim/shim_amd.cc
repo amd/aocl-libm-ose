@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -329,6 +329,7 @@ typedef __m256 (*amd_asin_vrs8_func_t)(__m256);
 typedef __m256 (*amd_atan_vrs8_func_t)(__m256);
 typedef __m256 (*amd_cos_vrs8_func_t)(__m256);
 typedef __m256 (*amd_cosh_vrs8_func_t)(__m256);
+typedef __m256 (*amd_cbrt_vrs8_func_t)(__m256);
 typedef __m256 (*amd_erf_vrs8_func_t)(__m256);
 typedef __m256 (*amd_erfc_vrs8_func_t)(__m256);
 typedef __m256 (*amd_exp_vrs8_func_t)(__m256);
@@ -692,6 +693,7 @@ static struct {
     amd_atan_vrs8_func_t atan_vrs8;
     amd_cos_vrs8_func_t cos_vrs8;
     amd_cosh_vrs8_func_t cosh_vrs8;
+    amd_cbrt_vrs8_func_t cbrt_vrs8;
     amd_erf_vrs8_func_t erf_vrs8;
     amd_erfc_vrs8_func_t erfc_vrs8;
     amd_exp_vrs8_func_t exp_vrs8;
@@ -1192,6 +1194,7 @@ static void init_amd_symbols(void) {
     amd_funcs.atan_vrs8 = load_amd_symbol<amd_atan_vrs8_func_t>(amd_core, "amd_vrs8_atanf");
     amd_funcs.cos_vrs8 = load_amd_symbol<amd_cos_vrs8_func_t>(amd_core, "amd_vrs8_cosf");
     amd_funcs.cosh_vrs8 = load_amd_symbol<amd_cosh_vrs8_func_t>(amd_core, "amd_vrs8_coshf");
+    amd_funcs.cbrt_vrs8 = load_amd_symbol<amd_cbrt_vrs8_func_t>(amd_core, "amd_vrs8_cbrtf");
     amd_funcs.erf_vrs8 = load_amd_symbol<amd_erf_vrs8_func_t>(amd_core, "amd_vrs8_erff");
     amd_funcs.erfc_vrs8 = load_amd_symbol<amd_erfc_vrs8_func_t>(amd_core, "amd_vrs8_erfcf");
     amd_funcs.exp_vrs8 = load_amd_symbol<amd_exp_vrs8_func_t>(amd_core, "amd_vrs8_expf");
@@ -2219,6 +2222,10 @@ SHIM_EXPORT void shim_cos_vrs8(InParams<libm::AlignedM256, float> *ipp) {
 
 SHIM_EXPORT void shim_cosh_vrs8(InParams<libm::AlignedM256, float> *ipp) {
     ipp->op[0].data = amd_funcs.cosh_vrs8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_cbrt_vrs8(InParams<libm::AlignedM256, float> *ipp) {
+    ipp->op[0].data = amd_funcs.cbrt_vrs8(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_erf_vrs8(InParams<libm::AlignedM256, float> *ipp) {

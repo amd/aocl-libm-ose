@@ -260,6 +260,7 @@ typedef __m256d (*mkl_tan_vrd4_func_t)(__m256d);
 typedef __m256 (*mkl_acos_vrs8_func_t)(__m256);
 typedef __m256 (*mkl_asin_vrs8_func_t)(__m256);
 typedef __m256 (*mkl_atan_vrs8_func_t)(__m256);
+typedef __m256 (*mkl_cbrt_vrs8_func_t)(__m256);
 typedef __m256 (*mkl_cos_vrs8_func_t)(__m256);
 typedef __m256 (*mkl_cosh_vrs8_func_t)(__m256);
 typedef __m256 (*mkl_erf_vrs8_func_t)(__m256);
@@ -621,6 +622,7 @@ static struct {
     mkl_acos_vrs8_func_t acos_vrs8;
     mkl_asin_vrs8_func_t asin_vrs8;
     mkl_atan_vrs8_func_t atan_vrs8;
+    mkl_cbrt_vrs8_func_t cbrt_vrs8;
     mkl_cos_vrs8_func_t cos_vrs8;
     mkl_cosh_vrs8_func_t cosh_vrs8;
     mkl_erf_vrs8_func_t erf_vrs8;
@@ -1076,6 +1078,7 @@ static void init_mkl_symbols(void) {
     mkl_funcs.acos_vrs8 = load_mkl_symbol<mkl_acos_vrs8_func_t>(mkl_vml, "__svml_acosf8");
     mkl_funcs.asin_vrs8 = load_mkl_symbol<mkl_asin_vrs8_func_t>(mkl_vml, "__svml_asinf8");
     mkl_funcs.atan_vrs8 = load_mkl_symbol<mkl_atan_vrs8_func_t>(mkl_vml, "__svml_atanf8");
+    mkl_funcs.cbrt_vrs8 = load_mkl_symbol<mkl_cbrt_vrs8_func_t>(mkl_vml, "__svml_cbrtf8");
     mkl_funcs.cos_vrs8 = load_mkl_symbol<mkl_cos_vrs8_func_t>(mkl_vml, "__svml_cosf8");
     mkl_funcs.cosh_vrs8 = load_mkl_symbol<mkl_cosh_vrs8_func_t>(mkl_vml, "__svml_coshf8");
     mkl_funcs.erf_vrs8 = load_mkl_symbol<mkl_erf_vrs8_func_t>(mkl_vml, "__svml_erff8");
@@ -2104,6 +2107,10 @@ SHIM_EXPORT void shim_asin_vrs8(InParams<libm::AlignedM256, float> *ipp) {
 
 SHIM_EXPORT void shim_atan_vrs8(InParams<libm::AlignedM256, float> *ipp) {
     ipp->op[0].data = mkl_funcs.atan_vrs8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_cbrt_vrs8(InParams<libm::AlignedM256, float> *ipp) {
+    ipp->op[0].data = mkl_funcs.cbrt_vrs8(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_cos_vrs8(InParams<libm::AlignedM256, float> *ipp) {

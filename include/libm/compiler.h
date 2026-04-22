@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2026, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -73,10 +73,11 @@ To check that this is gcc compiler version 5.1 or greater:
 
 #define RODATA          __attribute__((section (".rodata")))
 
-#define HIDDEN         __attribute__ ((__visibility__ ("hidden")))
-#define NOINLINE       __attribute__ ((noinline))
-#define likely(x)      __builtin_expect (!!(x), 1)
-#define unlikely(x)    __builtin_expect (x, 0)
+#define HIDDEN            __attribute__ ((__visibility__ ("hidden")))
+#define NOINLINE          __attribute__ ((noinline))
+#define ALM_ALWAYS_INLINE __attribute__ ((always_inline))
+#define likely(x)         __builtin_expect (!!(x), 1)
+#define unlikely(x)       __builtin_expect (x, 0)
 
 
 #define strong_alias(aliasname, name)  _strong_alias(aliasname, name)
@@ -124,7 +125,10 @@ To check that this is gcc compiler version 5.1 or greater:
 
 
 #define FALLTHROUGH
+#define ALM_ALWAYS_INLINE __forceinline
 
+#else
+#define ALM_ALWAYS_INLINE  /* hint only: respect the `inline` keyword */
 #endif	/* GCC */
 
 #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))

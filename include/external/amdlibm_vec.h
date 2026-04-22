@@ -458,6 +458,12 @@ extern "C" {
    */
   __m128 amd_vrs4_cbrtf (__m128 x);
 
+  /**
+   * @brief Computes cube root per-lane for eight single-precision elements.
+   * @param x Input vector.
+   * @return Vector of cube roots.
+   */
+  __m256 amd_vrs8_cbrtf (__m256 x);
 
 /* Error */
   /**

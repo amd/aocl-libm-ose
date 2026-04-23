@@ -127,10 +127,34 @@ if env['HOST_OS'] == 'win32':
 # get libau_cpuid path
 aocl_utils_install_path_lib = os.path.join(env['aocl_utils_install_path'], 'lib')
 
+# If aocl-utils was built with clang (-stdlib=libc++), libau_cpuid.so has
+# NEEDED libc++.so.1 / libc++abi.so.1 that live in AOCC's lib/ directory.
+# Test executables link -lau_cpuid (see liblist below) so /usr/bin/ld must
+# be able to follow those transitive NEEDED entries at link time. Derive
+# AOCC's lib/ from env['CXX'] and add it to LIBPATH and -Wl,-rpath-link.
+def _gtest_aocc_lib_dir(_env):
+    import shutil as _sh
+    _cxx = str(_env.get('CXX') or '')
+    if not _cxx or 'clang' not in _cxx:
+        return None
+    _path = _cxx.split()[0]
+    if not os.path.isabs(_path):
+        _resolved = _sh.which(_path)
+        if not _resolved:
+            return None
+        _path = _resolved
+    _lib = os.path.join(os.path.dirname(os.path.dirname(_path)), 'lib')
+    return _lib if os.path.isdir(_lib) else None
+
+_aocc_lib_dir_gt = _gtest_aocc_lib_dir(env) if env['HOST_OS'] != 'win32' else None
+
 linkflags = []
 ccflags = []
 liblist = []
 libpath = ['#'+alm_path, aocl_utils_install_path_lib]
+if _aocc_lib_dir_gt:
+    libpath.append(_aocc_lib_dir_gt)
+    linkflags.append('-Wl,-rpath-link={0}'.format(_aocc_lib_dir_gt))
 incpath = ['#gtests/include',
            '#gtests/include/almtest',
            '#gtests/gapi/gtest',

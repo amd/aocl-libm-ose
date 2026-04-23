@@ -120,19 +120,96 @@ almenv.Append(CPPPATH = joinpath(aocl_utils_install_path, 'include'))
 almenv.Append(CCFLAGS = '-DUSE_AOCL_UTILS')
 aocl_utils_link = env['aocl_utils_link']
 
+# NOTE: AOCC's libc++.so.1 / libc++abi.so.1 live in <aocc>/lib/ and are not
+# on the system linker/loader search path. Callers building with AOCC +
+# libc++ aocl-utils must supply this path themselves, e.g.:
+#     scons LIBPATH=<aocc>/lib \
+#           LINKFLAGS='-Wl,-rpath-link=<aocc>/lib -Wl,-rpath,<aocc>/lib' ...
+# and/or export LD_LIBRARY_PATH=<aocc>/lib for runtime.
+
 if e['HOST_OS'] != 'win32':
+    import subprocess, re
+    nm_cmd = env.get('NM', 'nm')
+
+    def _detect_utils_abi(lib_path, nm_flags=None):
+        """Inspect libau_cpuid symbols to determine libc++ vs libstdc++.
+        Returns ('libcxx', True/False) tuple: True if libc++, False if libstdc++.
+        Raises RuntimeError on ambiguous or unreadable archives."""
+        try:
+            cmd = [nm_cmd] + (nm_flags or []) + [lib_path]
+            nm_out = subprocess.check_output(
+                cmd, stderr=subprocess.DEVNULL).decode(errors='ignore')
+        except (subprocess.CalledProcessError, OSError) as err:
+            raise RuntimeError(
+                "Unable to inspect symbols in '{}': {}."
+                " Cannot validate aocl-utils ABI.".format(lib_path, err))
+
+        has_libcxx    = bool(re.search(r'_ZNSt3__\d+',  nm_out))
+        has_libstdcxx = bool(re.search(r'_ZNSt7__cxx11', nm_out))
+
+        if has_libcxx and has_libstdcxx:
+            raise RuntimeError(
+                "'{}' contains both libc++ and libstdc++ symbols."
+                " Rebuild aocl-utils against a single C++ runtime."
+                .format(lib_path))
+        if not has_libcxx and not has_libstdcxx:
+            raise RuntimeError(
+                "Cannot determine C++ runtime of '{}'."
+                " Neither libc++ nor libstdc++ symbols found."
+                .format(lib_path))
+        return has_libcxx
+
+    def _check_abi_compat(is_libcxx, cxx_path, lib_name):
+        """Raise RuntimeError if the compiler and utils runtime mismatch.
+        Clang expects libc++; GCC expects libstdc++."""
+        is_clang = 'clang' in cxx_path
+        if is_libcxx and not is_clang:
+            raise RuntimeError(
+                "{} was built with libc++, but the compiler is '{}'."
+                " Either rebuild libm with Clang, or rebuild"
+                " aocl-utils against libstdc++.".format(lib_name, cxx_path))
+        if not is_libcxx and is_clang:
+            raise RuntimeError(
+                "{} was built with libstdc++, but the compiler is"
+                " Clang ('{}') which defaults to libc++. Either rebuild"
+                " aocl-utils with Clang, or rebuild libm with GCC."
+                .format(lib_name, cxx_path))
+
+    cxx_path = env.subst('$CXX')
+
     if int(aocl_utils_link):
         print("Linking Static libau_cpuid library")
         aocl_utils_static_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libau_cpuid.a')
         aocl_utils_static_lib_path = almenv.File(aocl_utils_static_lib_path)
         almenv.Append(LIBS=aocl_utils_static_lib_path)
-        # libstdc++ needs explicit loading when using libau_cpuid.a (static library)
-        almenv.Append(LIBS="stdc++")
+
+        is_libcxx = _detect_utils_abi(aocl_utils_static_lib_path.abspath)
+        _check_abi_compat(is_libcxx, cxx_path, 'libau_cpuid.a')
+
+        if is_libcxx:
+            print("Linking libalm with libc++ (-lc++ -lc++abi)")
+            for _e in (env, e, almenv):
+                _e.Append(CXXFLAGS=['-stdlib=libc++'],
+                          LINKFLAGS=['-stdlib=libc++'])
+            almenv.Append(LIBS=['c++', 'c++abi'])
+        else:
+            print("Linking libalm with libstdc++ (-lstdc++)")
+            almenv.Append(LIBS='stdc++')
     else:
         print("Linking Dynamic libau_cpuid library")
         aocl_utils_dynamic_lib_path = joinpath(aocl_utils_install_path, 'lib', 'libau_cpuid.so')
         aocl_utils_dynamic_lib_path = almenv.File(aocl_utils_dynamic_lib_path)
         almenv.Append(LIBS=aocl_utils_dynamic_lib_path)
+
+        is_libcxx = _detect_utils_abi(aocl_utils_dynamic_lib_path.abspath, ['-D'])
+        _check_abi_compat(is_libcxx, cxx_path, 'libau_cpuid.so')
+
+        if is_libcxx:
+            print("libau_cpuid.so depends on libc++;"
+                  " ensure LD_LIBRARY_PATH contains AOCC's lib/ at runtime,"
+                  " or pass LINKFLAGS='-Wl,-rpath,<aocc>/lib' to bake it.")
+        else:
+            print("libau_cpuid.so depends on libstdc++ (standard system path).")
 else:
     if int(aocl_utils_link):
         print("Linking Static libau_cpuid library")

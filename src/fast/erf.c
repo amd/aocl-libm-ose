@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -65,11 +65,11 @@
 double ALM_PROTO_FAST(erf)(double x) {
 
     /* Set the polynomial coefficients */
-  
+
     uint64_t AH[]={0x3ff20dd750429b6d, 0xbfd812746b0379bd, 0x3fbce2f21a040d16, 0xbf9b82ce311fa93e,
 		   0x3f7565bccf92b2f9, 0xbf4c02db03dd71d4, 0x3f1f9a2baa8fedd0, 0xbeef4ca4d6f3e2e1,
 		   0x3ebb97fd3d9926d0, 0xbe85c0726f04cb5a, 0x3e4d71b0f1b08156, 0xbe0abae491c28860};
-  
+
     uint64_t BH[]={0xbff20dd758d25ff4, 0xbfe45f2f7628562a, 0xbfba4f7e461b3921, 0x3f93992f604e0b05,
 		   0x3f27eebfdb640bcc, 0xbf5afdbe8e55573b, 0x3f41195488d78110, 0x3f09c68216ea9240,
 		   0xbf2114144e09abcc, 0x3f13f6794bb9cb84, 0xbeff22cc1d2f21fb, 0x3ee29e6dbb394a45,
@@ -104,7 +104,7 @@ double ALM_PROTO_FAST(erf)(double x) {
           sH = sH*x + asdouble(BH[i]);
 	}
 	double result1 = sH * x;
-	result = 1.0 - exp(result1);
+	result = 1.0 - ALM_PROTO_FAST(exp)(result1);
         result = asdouble(sign | asuint64(result));
     }
     else {

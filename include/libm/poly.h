@@ -30,6 +30,19 @@
 
 #include <libm/typehelper.h>
 #include <libm/poly-common.h>
+
+/*
+ * Explicit fma primitive (allows keeping rounding errors in check)
+ */
+ #if !defined(_LIBM_POLY_FMA)
+ #if defined(__GNUC__) || defined(__clang__)
+ #  define _LIBM_POLY_FMA(a, b, c)  __builtin_fma((a), (b), (c))
+ #else
+ #  include <math.h>
+ #  define _LIBM_POLY_FMA(a, b, c)  fma((a), (b), (c))
+ #endif
+ #endif
+
 /*
 * poly = C0*r^0 + C1*r^1 + c2*r^2
 */
@@ -591,7 +604,31 @@
                                                                              \
          q = (b0 + b1 * x4 ) + b2 * x8;                                      \
          q;                                                                  \
-         })
+})
+
+
+/*
+ * Estrin-FMA 12-coefficient evaluation (degree-11 polynomial):
+ *   poly = c1 + c2*x + c3*x^2 + c4*x^3 + ... + c12*x^11
+ *        = (c1+c2*x) + x^2*(c3+c4*x) + x^4*(c5+c6*x + x^2*(c7+c8*x))
+ *            + x^8*((c9+c10*x) + x^2*(c11+c12*x))
+ */
+#define POLY_EVAL_12_ESTRIN_FMA(x, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12) ({ \
+    __typeof(x) _x2  = (x) * (x);                                     \
+    __typeof(x) _x4  = _x2 * _x2;                                     \
+    __typeof(x) _x8  = _x4 * _x4;                                     \
+    __typeof(x) _p01 = _LIBM_POLY_FMA((c2),  (x), (c1));              \
+    __typeof(x) _p23 = _LIBM_POLY_FMA((c4),  (x), (c3));              \
+    __typeof(x) _p45 = _LIBM_POLY_FMA((c6),  (x), (c5));              \
+    __typeof(x) _p67 = _LIBM_POLY_FMA((c8),  (x), (c7));              \
+    __typeof(x) _p89 = _LIBM_POLY_FMA((c10), (x), (c9));              \
+    __typeof(x) _pab = _LIBM_POLY_FMA((c12), (x), (c11));             \
+    __typeof(x) _q01 = _LIBM_POLY_FMA(_x2, _p23, _p01);               \
+    __typeof(x) _q23 = _LIBM_POLY_FMA(_x2, _p67, _p45);               \
+    __typeof(x) _q45 = _LIBM_POLY_FMA(_x2, _pab, _p89);               \
+    __typeof(x) _r01 = _LIBM_POLY_FMA(_x4, _q23, _q01);               \
+    _LIBM_POLY_FMA(_x8, _q45, _r01);                                  \
+})
 
 
 /*

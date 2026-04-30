@@ -73,11 +73,12 @@ To check that this is gcc compiler version 5.1 or greater:
 
 #define RODATA          __attribute__((section (".rodata")))
 
-#define HIDDEN            __attribute__ ((__visibility__ ("hidden")))
-#define NOINLINE          __attribute__ ((noinline))
+#define HIDDEN         __attribute__ ((__visibility__ ("hidden")))
+#define NOINLINE       __attribute__ ((noinline))
+#define NOINLINE_COLD  __attribute__ ((noinline, cold))
 #define ALM_ALWAYS_INLINE __attribute__ ((always_inline))
-#define likely(x)         __builtin_expect (!!(x), 1)
-#define unlikely(x)       __builtin_expect (x, 0)
+#define likely(x)      __builtin_expect (!!(x), 1)
+#define unlikely(x)    __builtin_expect (x, 0)
 
 
 #define strong_alias(aliasname, name)  _strong_alias(aliasname, name)

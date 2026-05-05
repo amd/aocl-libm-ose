@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2022, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2019-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -51,6 +51,7 @@
 #include <libm/alm_special.h>
 #include <libm_macros.h>
 #include <libm/types.h>
+#include <libm/constants.h>
 #include <libm/typehelper.h>
 #include <libm/typehelper-vec.h>
 #include <libm/compiler.h>
@@ -60,16 +61,18 @@ static const struct {
     v_u64x4_t   bound1, bound2;
     v_u64x4_t   mask;
     v_u64x4_t   one;
+    v_u64x4_t   inf;
     v_f64x4_t   poly_1[12];
     v_f64x4_t   poly_2[22];
 } v_erf_data = {
-	      .bound1      =  _MM_SET1_I64(0x3FF0000000000000),
+	          .bound1      =  _MM_SET1_I64(0x3FF0000000000000),
               .bound2      =  _MM_SET1_I64(0x4017B00000000000),
               .mask        =  _MM_SET1_I64(0x7FFFFFFFFFFFFFFF),
               .one         =  _MM_SET1_I64(0x3FF0000000000000),
+              .inf         =  _MM_SET1_I64(ALM_F64_INF),
              // Polynomial coefficients obtained using Remez algorithm in Sollya
               .poly_1 = {
-                            _MM_SET1_PD4(0x1.20dd750429b6d082d8f38c297p0),
+                _MM_SET1_PD4(0x1.20dd750429b6d082d8f38c297p0),
 			    _MM_SET1_PD4(-0x1.812746b0379bccc7e43eecd0ae8p-2),
 			    _MM_SET1_PD4(0x1.ce2f21a040d15df6c56053f5b44p-4),
 			    _MM_SET1_PD4(-0x1.b82ce311fa93d8e3f0f9f708d1p-6),
@@ -83,7 +86,7 @@ static const struct {
 			    _MM_SET1_PD4(-0x1.abae491c2886060a263929c0d3p-31),
 		        },
               .poly_2 = {
-                            _MM_SET1_PD4(-0x1.20dd758d25ff45f5d6e045f72a4p0),
+                _MM_SET1_PD4(-0x1.20dd758d25ff45f5d6e045f72a4p0),
 			    _MM_SET1_PD4(-0x1.45f2f7628562a0532ccbf40ecfp-1),
 			    _MM_SET1_PD4(-0x1.a4f7e461b39210d97cccc33a68cp-4),
 			    _MM_SET1_PD4(0x1.3992f604e0b0562e8feadba923cp-6),
@@ -93,7 +96,7 @@ static const struct {
 			    _MM_SET1_PD4(0x1.9c68216ea92406952d1667e8288p-15),
 			    _MM_SET1_PD4(-0x1.114144e09abcc132a93422999cp-13),
 			    _MM_SET1_PD4(0x1.3f6794bb9cb840fd47a36d08898p-14),
-                            _MM_SET1_PD4(-0x1.f22cc1d2f21fb3fbb1b2408b054p-16),
+                _MM_SET1_PD4(-0x1.f22cc1d2f21fb3fbb1b2408b054p-16),
 			    _MM_SET1_PD4(0x1.29e6dbb394a45396edfd9b8a6p-17),
 			    _MM_SET1_PD4(-0x1.1d804d01ae12d4d3e8ff837f12p-19),
 			    _MM_SET1_PD4(0x1.bd40e69c394975b5cd06f59acb4p-22),
@@ -111,6 +114,7 @@ static const struct {
 #define ONE       v_erf_data.one
 #define BOUND1    v_erf_data.bound1
 #define BOUND2    v_erf_data.bound2
+#define INF       v_erf_data.inf
 
 /* Coefficients for 12-degree polynomial */
 #define A1  v_erf_data.poly_1[0]
@@ -188,7 +192,7 @@ ALM_PROTO_OPT(vrd4_erf)(v_f64x4_t _x) {
       return result;
     }
     
-    v_u64x4_t cond3 = uvx > BOUND2;
+    v_u64x4_t cond3 = (uvx > BOUND2) & (uvx <= INF);
     if(test_condition_for_all(cond3)) {
         return as_v4_f64_u64(sign | ONE);
     }

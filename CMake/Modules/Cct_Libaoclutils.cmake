@@ -125,6 +125,10 @@ function(build_aocl_utils source_dir binary_dir)
     if(LINUX)
         list(APPEND au_extra_args "-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}")
         list(APPEND au_extra_args "-DCMAKE_CXX_CLANG_TIDY:STRING=/bin/true")
+        if(AU_EXPECT_LIBCXX)
+            list(APPEND au_extra_args "-DCMAKE_EXE_LINKER_FLAGS:STRING=${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
+            list(APPEND au_extra_args "-DCMAKE_SHARED_LINKER_FLAGS:STRING=${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libc++")
+        endif()
     endif()
 
     execute_process(COMMAND ${CMAKE_COMMAND} --fresh -G "${CMAKE_GENERATOR}" -S "${source_dir}" -B "${binary_dir}"

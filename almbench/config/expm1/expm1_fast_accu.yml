@@ -1,0 +1,126 @@
+---
+- test_sequence: validation_tests_expm1_fast
+  function: expm1
+  test_sets:
+  - id: double-precision-tests
+    description: 'Curve-region accuracy tests for fast expm1 (double precision)'
+    tests:
+    # D01: positive subnormals (2^-1074..2^-1022); |x| so small that x²/2 underflows, expm1(x) = x exactly
+    - id: expm1_d01
+      description: 'Subnormal inputs, expm1(x) ≈ x'
+      input:
+      - [0x0000000000000001, 0x000fffffffffffff]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+
+    # D02: tiny positives (2^-1022..~1e-10); x²/2 below ulp(x)/2, so expm1(x) rounds to x; precision-critical (cancellation in exp(x)-1)
+    - id: expm1_d02
+      description: 'Tiny, expm1(x) ≈ x (precision-critical)'
+      input:
+      - [0x000fffffffffffff, 0x3ddb7cdfd9d7bdbb]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+
+    # D03: small positives (~1e-10..~1e-4); expm1(x) ≈ x + x²/2; quadratic term now contributes
+    - id: expm1_d03
+      description: 'Small, expm1(x) ≈ x + x²/2'
+      input:
+      - [0x3ddb7cdfd9d7bdbb, 0x3f1a36e2eb1c432d]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+
+    # D04: near-zero (~1e-4..ln(2)/2 ≈ 0.347); higher-order Taylor terms matter; curve still mildly nonlinear
+    - id: expm1_d04
+      description: 'Near-zero polynomial, [1e-4, ln(2)/2]'
+      input:
+      - [0x3f1a36e2eb1c432d, 0x3fd62e42fefa39ef]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+
+    # D05: transition (ln(2)/2..2); curve leaves the near-linear regime and enters clearly exponential growth
+    - id: expm1_d05
+      description: 'Crosses ln(2)/2 boundary'
+      input:
+      - [0x3fd62e42fefa39ef, 0x4000000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+
+    # D06: moderate (2..10); exp(x) ranges ~7.4..~22000, so expm1(x) ≈ exp(x); the -1 is negligible
+    - id: expm1_d06
+      description: 'Moderate, exp(x)−1 ≈ exp(x)'
+      input:
+      - [0x4000000000000000, 0x4024000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+
+    # D07: large (10..100); pure exponential growth, well inside double's finite range
+    - id: expm1_d07
+      description: 'Large, expm1 ≈ exp'
+      input:
+      - [0x4024000000000000, 0x4059000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+
+    # D08: very large (100..DBL_MAX); spans the overflow threshold ln(DBL_MAX) ≈ 709.78, result transitions finite → +Inf
+    - id: expm1_d08
+      description: 'Very large to DBL_MAX'
+      input:
+      - [0x4059000000000000, 0x7fefffffffffffff]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+
+    # D09: negative near-zero ([-ln(2)/2..-min_subnormal]); mirror of D02-D04; result lies in (-0.293, 0); cancellation in exp(x)-1 is severe
+    - id: expm1_d09
+      description: 'Negative near-zero, [−ln(2)/2, −min_normal]'
+      input:
+      - [0xbfd62e42fefa39ef, 0x800fffffffffffff]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+
+    # D10: negative moderate ([-10..-ln(2)/2]); exp(x) ranges ~4.5e-5..~0.5, expm1(x) approaches -1
+    - id: expm1_d10
+      description: 'Negative moderate, [−10, −ln(2)/2]'
+      input:
+      - [0xc024000000000000, 0xbfd62e42fefa39ef]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+
+    # D11: negative large ([-DBL_MAX..-10]); exp(x) is negligible, result saturates to -1
+    - id: expm1_d11
+      description: 'Negative large, expm1 → −1'
+      input:
+      - [0xffefffffffffffff, 0xc024000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+
+    # D12: edge near +overflow [≈709.7773..≈709.78271]; straddles ln(DBL_MAX) ≈ 709.7827, tests the exact finite → +Inf transition
+    - id: expm1_d12
+      description: 'Edge: micro-window straddling ln(DBL_MAX), finite → +Inf transition'
+      input:
+      - [0x40862e37e7d8ba74, 0x40862e42fefa39f1]
+      type: [linearstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]

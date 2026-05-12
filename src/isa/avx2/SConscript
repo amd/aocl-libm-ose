@@ -57,7 +57,7 @@ incpaths = [
     '#src/isa/include',
 ]
 
-isa_flags = []
+isa_flags = [ ]
 
 if e['HOST_OS'] != 'win32':
     isa_flags.extend(['-O3', '-fPIC', '-mavx2', '-mfma', '-flax-vector-conversions'])
@@ -65,7 +65,8 @@ if e['HOST_OS'] != 'win32':
 # On Windows, clang-cl does not pass CPPPATH to the assembler for .S files,
 # so we add explicit -I flags to ASFLAGS.
 if e['HOST_OS'] == 'win32':
-    isa_flags.extend(['-I' + Dir('#include').abspath,
+    isa_flags.extend(['/c',
+                      '-I' + Dir('#include').abspath,
                       '-I' + Dir('#include/libm').abspath,
                       '-I' + Dir('#' + p).abspath,
                       '-I' + Dir('#' + joinpath(p, 'include')).abspath,

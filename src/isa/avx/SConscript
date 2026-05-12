@@ -48,7 +48,7 @@ incpaths = [
 
 # ISA_FLAGS equivalent: ISA-specific flags + ASAN + COVERAGE
 # Mimics: ISA_FLAGS = ${isaflag} ${ASAN_FLAGS} ${COVERAGE_FLAGS}
-isa_flags = ['-DAVX_XOP_FMA4_FMA3']
+isa_flags = [ ]
 
 if e['HOST_OS'] != 'win32':
     isa_flags.extend(['-Wall', '-W', '-fPIC'])
@@ -56,7 +56,8 @@ if e['HOST_OS'] != 'win32':
 # On Windows, clang-cl does not pass CPPPATH to the assembler for .S files,
 # so we add explicit -I flags to ASFLAGS.
 if e['HOST_OS'] == 'win32':
-    isa_flags.extend(['-I' + Dir('#include').abspath,
+    isa_flags.extend(['/c',
+                      '-I' + Dir('#include').abspath,
                       '-I' + Dir('#include/libm').abspath,
                       '-I' + Dir('#' + p).abspath])
 

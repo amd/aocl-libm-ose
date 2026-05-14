@@ -1,0 +1,48 @@
+- test_sequence: perf_tests
+  function: erfcinv
+  timing_enabled: true
+  test_sets:
+  - id: range-tests_01
+    tests:
+# Double Precision
+    - id: erfcinv_001
+      description: 'Full domain: x in [SMALLEST_SUBNORMAL, 2.0), linearstep'
+      input: [[min_subnormal, 0x3FFFFFFFFFFFFFFF]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfcinv_002
+      description: 'Main domain: x in [0.0, 2.0], linearstep'
+      input: [[0.0, 2.0]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfcinv_003
+      description: 'Central region: x in [0.1, 1.9], linearstep'
+      input: [[0.1, 1.9]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfcinv_004
+      description: 'Around 1.0: x in [0.5, 1.5], linearstep'
+      input: [[0.5, 1.5]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfcinv_005
+      description: 'Lower region: x in [0.001, 0.5], linearstep'
+      input: [[0.001, 0.5]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfcinv_006
+      description: 'Upper region: x in [1.5, 1.999], linearstep'
+      input: [[1.5, 1.999]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]

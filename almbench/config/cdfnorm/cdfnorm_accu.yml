@@ -1,0 +1,160 @@
+---
+- test_sequence: validation_tests_cdfnorm
+  function: cdfnorm
+  test_sets:
+#Double precision (cdfnorm is double-precision only: sd, vrd2, vrd4, vrd8, vrda)
+  - id: range-tests_01
+    tests:
+
+# ============================================================================
+# Whole-domain sweeps (exercise every branch)
+# ============================================================================
+    - id: cdfnorm_001
+      description: 'Full value distribution range: [-DBL_MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [-max, -min_subnormal]
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorm_002
+      description: 'Full value distribution range: [+SMALLEST_SUBNORMAL, +DBL_MAX] expstep'
+      input:
+      - [min_subnormal, max]
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Saturation / special-value code paths
+#   if (a >= HI_CUT  =  37.5) -> return ONE
+#   if (a <= LO_CUT  = -39.0) -> return ZERO
+# ============================================================================
+    - id: cdfnorm_003
+      description: 'Saturation-to-one: a in [37.5, +DBL_MAX] (HI_CUT path, returns 1.0)'
+      input:
+      - [37.5, max]
+      type: [expstep]
+      steps: [2000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorm_004
+      description: 'Saturation-to-zero: a in [-DBL_MAX, -39.0] (LO_CUT path, returns 0.0)'
+      input:
+      - [-max, -39.0]
+      type: [expstep]
+      steps: [2000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Region 1: a > -0.5  ->  0.5 + 0.5 * erf(a / sqrt(2))
+# ============================================================================
+    - id: cdfnorm_005
+      description: 'Region 1 (erf path): a in (-0.5, 37.5) linearstep'
+      input:
+      - [-0.5, 37.5]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorm_006
+      description: 'Region 1: dense coverage of small positive/negative values around 0'
+      input:
+      - [-0.5, 0.5]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Region 2: -1.5 < a <= -0.5  ->  0.5 * erfc(-a / sqrt(2))
+# ============================================================================
+    - id: cdfnorm_007
+      description: 'Region 2 (erfc path, double/dd transform): a in (-1.5, -0.5] linearstep'
+      input:
+      - [-1.5, -0.5]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Region 3: -10 < a <= -1.5  (high-accuracy rational approximations)
+#   erfc_highaccuracy_* branches by z = -a / sqrt(2):
+#     z <  1.5  (0x1.8p+0)  <=> a in (-2.12132..., -1.5]    [sub 3a, center 0.5]
+#     z <  2.5  (0x1.4p+1)  <=> a in (-3.53553..., -2.12132]  [sub 3b, center 1.5]
+#     z <  4.5  (0x1.2p+2)  <=> a in (-6.36396..., -3.53553]  [sub 3c, center 3.5]
+#     z >= 4.5              <=> a in (-10,         -6.36396]  [sub 3d, 1/z form]
+# ============================================================================
+    - id: cdfnorm_008
+      description: 'Region 3a (rational 0.5..1.5, deg 5/6): a in (-2.12132, -1.5] linearstep'
+      input:
+      - [-2.12132034355964283, -1.5]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorm_009
+      description: 'Region 3b (rational 1.5..2.5, deg 5/5): a in (-3.53553, -2.12132] linearstep'
+      input:
+      - [-3.53553390593273775, -2.12132034355964283]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorm_010
+      description: 'Region 3c (rational 2.5..4.5, deg 5/5): a in (-6.36396, -3.53553] linearstep'
+      input:
+      - [-6.36396103067892849, -3.53553390593273775]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorm_011
+      description: 'Region 3d (rational 4.5..28, 1/z form, deg 6/6): a in (-10, -6.36396] linearstep'
+      input:
+      - [-10.0, -6.36396103067892849]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Region 4: a <= -10  (asymptotic expansion, Abramowitz & Stegun 26.2.12)
+#   Exercises the n<30 convergence loop and its early-exit conditions.
+# ============================================================================
+    - id: cdfnorm_012
+      description: 'Region 4 (asymptotic, near threshold): a in [-15, -10] linearstep'
+      input:
+      - [-15.0, -10.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorm_013
+      description: 'Region 4 (asymptotic, deep tail): a in [-39, -15] linearstep'
+      input:
+      - [-39.0, -15.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Subnormal inputs (routed through Region 1 with x = a * SQRTH subnormal)
+# ============================================================================
+    - id: cdfnorm_014
+      description: 'Subnormal range: [-LARGEST_SUBNORMAL, +LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [-max_subnormal, max_subnormal]
+      type: [linearstep]
+      steps: [2000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Bit-level stress around key region boundaries (branch selection)
+# ============================================================================
+    - id: cdfnorm_015
+      description: 'Boundary around 0 (subnormals + tiny normals, both signs)'
+      input:
+      - [0x8000000000000FFF, 0x0000000000000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+

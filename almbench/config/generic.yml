@@ -415,6 +415,8 @@
       steps: [1000]
       variants : [ss, vrs4, vrs8, vrs16, vrsa, sd, vrd2, vrd4, vrd8, vrda]
 
+
+
     - id: accu_logb
       description: 'x in [MIN, MAX] linearstep'
       input:
@@ -422,6 +424,7 @@
       type: [linearstep]
       steps: [1000]
       variants : [ss, sd]
+
 
 #Double precision
     - id: accu_acosh
@@ -521,3 +524,36 @@
       type: [linearstep]
       steps: [1000]
       variants : [sd]
+
+    - id: accu_cdfnorm
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ -10.0, 10.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: accu_cdfnorminv
+      description: 'x in (0, 1) linearstep'
+      input:
+      - [ 0.001, 0.999]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: accu_erfcinv
+      description: 'x in [MIN, MAX] linearstep'
+      input:
+      - [ 0.0, 2.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: accu_erfinv
+      description: 'x in [-0.99999, 0.99999] linearstep'
+      input:
+      - [-0.99999, 0.99999]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+

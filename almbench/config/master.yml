@@ -49,6 +49,10 @@
   - clog/clog_conf.yml
   - cexp/cexp_conf.yml
   - cpow/cpow_conf.yml
+  - cdfnorm/cdfnorm_conf.yml
+  - cdfnorminv/cdfnorminv_conf.yml
+  - erfcinv/erfcinv_conf.yml
+  - erfinv/erfinv_conf.yml
 
 # ===========================================
 # VERIFICATION TESTS (VT/vt)
@@ -106,6 +110,10 @@
   - clog/clog_accu.yml
   - cexp/cexp_accu.yml
   - cpow/cpow_accu.yml
+  - cdfnorm/cdfnorm_accu.yml
+  - cdfnorminv/cdfnorminv_accu.yml
+  - erfcinv/erfcinv_accu.yml
+  - erfinv/erfinv_accu.yml
 
   # ===========================================
   # PERFORMANCE TESTS (PERF/perf)
@@ -162,6 +170,10 @@
   - clog/clog_perf.yml
   - cexp/cexp_perf.yml
   - cpow/cpow_perf.yml
+  - cdfnorm/cdfnorm_perf.yml
+  - cdfnorminv/cdfnorminv_perf.yml
+  - erfcinv/erfcinv_perf.yml
+  - erfinv/erfinv_perf.yml
 
 #================================================================================================
 # When API name comes as command line aargument, then specific API yaml files should get executed.
@@ -406,7 +418,7 @@
   - trunc/trunc_conf.yml
   - trunc/trunc_accu.yml
   - trunc/trunc_perf.yml
-
+  
   clog:
   - clog/clog_conf.yml
   - clog/clog_accu.yml
@@ -421,3 +433,24 @@
   - cpow/cpow_conf.yml
   - cpow/cpow_accu.yml
   - cpow/cpow_perf.yml
+
+  cdfnorm:
+  - cdfnorm/cdfnorm_conf.yml
+  - cdfnorm/cdfnorm_accu.yml
+  - cdfnorm/cdfnorm_perf.yml
+
+  cdfnorminv:
+  - cdfnorminv/cdfnorminv_conf.yml
+  - cdfnorminv/cdfnorminv_accu.yml
+  - cdfnorminv/cdfnorminv_perf.yml
+
+  erfcinv:
+  - erfcinv/erfcinv_conf.yml
+  - erfcinv/erfcinv_accu.yml
+  - erfcinv/erfcinv_perf.yml
+
+  erfinv:
+  - erfinv/erfinv_conf.yml
+  - erfinv/erfinv_accu.yml
+  - erfinv/erfinv_perf.yml
+

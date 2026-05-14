@@ -53,6 +53,7 @@ static map<string, vector<string>> libm_funcs = {
     {"cbrt",      {"s1d", "s1f", "vrd2", "vrs4", "vrs8", "vrda", "vrsa"}},
     {"ceil",      {"s1d", "s1f"}},
     {"cexp",      {"s1d", "s1f"}},
+    {"clog",      {"s1d", "s1f"}},
     {"copysign",  {"s1d", "s1f"}},
     {"cos",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"cosh",      {"s1d", "s1f", "vrd2", "vrs4", "vrs8", "vrsa", "vrda"}},

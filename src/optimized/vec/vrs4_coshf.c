@@ -80,7 +80,6 @@ static struct {
 #define LOGV      v4_coshf_data.logV
 #define INVV2     v4_coshf_data.invV2
 #define ONE       v4_coshf_data.one
-#define HALFVM1   v4_coshf_data.halfVm1
 #define HALFV     v4_coshf_data.halfV
 #define ARG_MAX   v4_coshf_data.arg_max
 
@@ -105,7 +104,7 @@ v_f32x4_t ALM_PROTO_OPT(vrs4_coshf)(v_f32x4_t x)
 
     z = ALM_PROTO(vrs4_expf)(y - LOGV);
 
-    result = HALFV * (z + INVV2 * ONE / z);
+    result = HALFV * (z + INVV2 / z);
 
     if(unlikely(any_v4_u32_loop(cond))) {
 

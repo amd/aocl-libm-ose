@@ -139,7 +139,6 @@ ALM_PROTO_OPT(vrs8_tanf)(__m256 xf32x8)
     v_f32x8_t   poly;
     v_u32x8_t   sign, n;
     v_u32x8_t   ux = as_v8_u32_f32(xf32x8);
-    int32_t i = 0;
     v_u32x8_t  cond = (ux  & ~ALM_TANF_SIGN_MASK32) > ALM_TANF_ARG_MAX;
 
     sign = ux & ALM_TANF_SIGN_MASK32;
@@ -163,7 +162,8 @@ ALM_PROTO_OPT(vrs8_tanf)(__m256 xf32x8)
     F = F + nn * ALM_TANF_HALFPI2;
     F = F + nn * ALM_TANF_HALFPI3;
 
-    v_u32x8_t odd = n << 31;
+    /* Convert odd indicator to full mask: -1 (0xFFFFFFFF) when odd, 0 when even */
+    v_u32x8_t odd = (v_u32x8_t)(-(v_i32x8_t)(n & 1));
 
     /*
      * Calculate the polynomial approximation
@@ -175,12 +175,14 @@ ALM_PROTO_OPT(vrs8_tanf)(__m256 xf32x8)
 
     v_f32x8_t result = as_v8_f32_u32(as_v8_u32_f32(poly) ^ sign);
 
-    /* if n is odd, result = -1.0/result */
-    for(i = 0; i < V8_SIMD_WIDTH; i++) {
-
-        result[i] = odd[i] ? (-1.0f / result[i]) : result[i];
-
-    }
+    /* if n is odd, result = -1.0/result
+     * Vector blend instead of scalar loop */
+    v_f32x8_t neg_one = _MM256_SET1_PS8(-1.0f);
+    v_f32x8_t neg_recip = neg_one / result;
+    result = as_v8_f32_u32(
+        (as_v8_u32_f32(neg_recip) & odd) |
+        (as_v8_u32_f32(result)    & ~odd)
+    );
 
 
     if (any_v8_u32_loop(cond)) {

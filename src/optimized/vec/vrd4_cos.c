@@ -164,13 +164,14 @@ ALM_PROTO_OPT(vrd4_cos)(v_f64x4_t x)
     /* If n is odd, result is negative */
     result = as_v4_f64_u64( as_v4_u64_f64(poly) ^ odd);
 
-    /* Check for special cases */
-    /* If input value is outside valid range, call scalar cos(value) */
-    /* Otherwise, return the above computed result */
-    for(int i = 0; i < 4; i++)
     {
-        if(unlikely(ixd[i] > COS_MAX))
-            result[i] = SCALAR_COS(x[i]);
+        int any_special = 0;
+        for(int i = 0; i < 4; i++) any_special |= (ixd[i] > COS_MAX);
+        if(unlikely(any_special)) {
+            for(int i = 0; i < 4; i++) {
+                if(ixd[i] > COS_MAX) result[i] = SCALAR_COS(x[i]);
+            }
+        }
     }
     return result;
 

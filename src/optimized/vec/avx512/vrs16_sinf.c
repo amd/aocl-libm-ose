@@ -155,7 +155,7 @@ ALM_PROTO_OPT(vrs16_sinf)(v_f32x16_t x)
 
     result = as_v16_f32_u32(as_v16_u32_f32(poly) ^ sign ^ odd);
 
-    if(unlikely(any_v16_u32_loop(cmp))) {
+    if(unlikely(any_v16_u32_avx512(cmp))) {
 
         return sinf_specialcase(x, result, cmp);
 

@@ -175,7 +175,7 @@ ALM_PROTO_OPT(vrs16_expf)(v_f32x16_t _x)
      * Else, return the above computed result
      */
 
-    if(unlikely(any_v16_u32((v_i32x16_t)cond))) {
+    if(unlikely(any_v16_u32_avx512(cond))) {
 
         result = call_v16_f32(SCALAR_EXPF, _x, result, cond);
 

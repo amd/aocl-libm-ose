@@ -176,7 +176,7 @@ ALM_PROTO_OPT(vrd8_log2) (__m512d x)
 
     r = (n + ln2_tail * r) + r * ln2_head ;
 
-    if (unlikely(any_v8_u64_loop(condition))) {
+    if (unlikely(any_v8_u64_avx512(condition))) {
 
         return (v_f64x8_t) {
 

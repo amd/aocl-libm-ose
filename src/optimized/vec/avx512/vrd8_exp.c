@@ -167,7 +167,7 @@ ALM_PROTO_OPT(vrd8_exp)(v_f64x8_t x)
     // result = poly * 2^m
     v_f64x8_t ret = poly * as_v8_f64_i64(m);
 
-    if(unlikely(any_v8_u64_loop(cond))) {
+    if(unlikely(any_v8_u64_avx512(cond))) {
 
         return (v_f64x8_t) {
             (cond[0]) ? SCALAR_EXP(x[0]):ret[0],

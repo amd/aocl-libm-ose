@@ -180,7 +180,8 @@ ALM_PROTO_OPT(vrd8_tan)(v_f64x8_t x)
     F = F - dn * ALM_TAN_V8_HALFPI2;  // F = F - n*pi2/2
     F = F - dn * ALM_TAN_V8_HALFPI3;  // F = F - n*pi3/2
 
-    v_u64x8_t odd = (n << 63);
+    /* Convert odd indicator to full mask: -1 (0xFFFFFFFFFFFFFFFF) when odd, 0 when even */
+    v_u64x8_t odd = (v_u64x8_t)(-(v_i64x8_t)(n & 1));
 
     /*
      * Calculate the polynomial approximation
@@ -202,13 +203,15 @@ ALM_PROTO_OPT(vrd8_tan)(v_f64x8_t x)
 
     result = as_v8_f64_u64(as_v8_u64_f64(poly) ^ sign);
 
-#define V8_SIMD_WIDTH 8
+    /* if n is odd, result = -1.0/result -- vector blend instead of scalar loop */
+    v_f64x8_t neg_one = _MM512_SET1_PD8(-1.0);
+    v_f64x8_t neg_recip = neg_one / result;
+    result = as_v8_f64_u64(
+        (as_v8_u64_f64(neg_recip) & odd) |
+        (as_v8_u64_f64(result)    & ~odd)
+    );
 
-    for (int i = 0; i < V8_SIMD_WIDTH; i++) {
-        result[i] = odd[i] ? (-1.0 / result[i]) : result[i];
-    }
-
-    if (any_v8_u64_loop(cond))
+    if (unlikely(any_v8_u64_avx512(cond)))
         result = vrd8_tan_specialcase(x, result, cond);
 
     return result;

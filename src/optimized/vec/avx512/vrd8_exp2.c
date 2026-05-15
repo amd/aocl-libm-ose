@@ -69,14 +69,12 @@
 static struct {
     v_u64x8_t   mask;
     v_u64x8_t   arg_max;
-    v_u64x8_t   all_ones;
     v_f64x8_t   huge;
     v_f64x8_t   ln2;
     v_f64x8_t   poly[12];
     } exp2_data = {
     .mask           = _MM512_SET1_U64x8(0x7FFFFFFFFFFFFFFFUL),
     .arg_max        = _MM512_SET1_U64x8(0x408FF00000000000UL),
-    .all_ones       = _MM512_SET1_U64x8(0xFFFFFFFFFFFFFFFFUL),
     .huge           = _MM512_SET1_PD8(0x1.8p+52),
     .ln2            = _MM512_SET1_PD8(0x1.62e42fefa39efp-1),
     .poly           = {
@@ -98,7 +96,6 @@ static struct {
 #define ALM_V8_EXP2_LN2              exp2_data.ln2
 #define ALM_V8_EXP2_ARG_MAX          exp2_data.arg_max
 #define ALM_V8_EXP2_MASK             exp2_data.mask
-#define ALM_V8_EXP2_ALL_ONES         exp2_data.all_ones
 
 #define C1  exp2_data.poly[0]
 #define C3  exp2_data.poly[1]
@@ -150,7 +147,7 @@ ALM_PROTO_OPT(vrd8_exp2)(v_f64x8_t input)
     /* result = poly * 2^m */
     v_f64x8_t ret = as_v8_f64_u64(as_v8_u64_f64(poly) + m);
 
-    if(unlikely(_mm512_test_epi64_mask(cond, ALM_V8_EXP2_ALL_ONES))) {
+    if(unlikely(any_v8_u64_avx512(cond))) {
         ret = (v_f64x8_t) {
             (cond[0]) ? SCALAR_EXP2(input[0]) : ret[0],
             (cond[1]) ? SCALAR_EXP2(input[1]) : ret[1],

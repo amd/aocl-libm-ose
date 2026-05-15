@@ -184,7 +184,7 @@ ALM_PROTO_OPT(vrd8_cos)(v_f64x8_t x)
     /* If n is odd, result is negative */
     result = as_v8_f64_u64( as_v8_u64_f64(poly) ^ odd);
 
-    if(unlikely(any_v8_u64_loop(cond))) {
+    if(unlikely(any_v8_u64_avx512(cond))) {
         return cos_specialcase(x, result,cond);
     }
 

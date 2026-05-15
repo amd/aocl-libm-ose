@@ -180,7 +180,7 @@ ALM_PROTO_OPT(vrd8_log) (v_f64x8_t x)
 
     r = n * V8_LN2_HEAD + (n * V8_LN2_TAIL + r);
 
-    if (unlikely(any_v8_u64_loop(condition))) {
+    if (unlikely(any_v8_u64_avx512(condition))) {
            return v8_log_specialcase(x, r, condition);
     }
 

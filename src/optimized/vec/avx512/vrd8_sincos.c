@@ -194,7 +194,7 @@ ALM_PROTO_OPT(vrd8_sincos)(v_f64x8_t x, v_f64x8_t *result_sin, v_f64x8_t *result
     *result_sin = as_v8_f64_u64(as_v8_u64_f64(poly_sin) ^ sign ^ odd_sin);
     *result_cos = as_v8_f64_u64(as_v8_u64_f64(poly_cos) ^ odd_cos);
 
-    if(unlikely(any_v8_u64_loop(cmp))) {
+    if(unlikely(any_v8_u64_avx512(cmp))) {
       *result_sin = sin_specialcase(x, *result_sin, cmp);
       *result_cos = cos_specialcase(x, *result_cos, cmp);
     }

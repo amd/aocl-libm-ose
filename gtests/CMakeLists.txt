@@ -49,7 +49,6 @@ set(MPARITH_PATH    "${MPARITH_LIB_DIR}")
 set(GTEST_PATH      "${GTEST_LIB_PATH}")
 set(GBENCH_PATH     "${GBENCH_LIB_PATH}")
 set(GTEST_LIBS      "${GTEST_PATH}" "${GBENCH_PATH}")
-set(AOCL_UTILS_PATH "${AOCL_UTILS_LIB_DIR}")
 
 # Get common test sources excluding the excluded list
 file(GLOB COMMON_SRCS
@@ -217,7 +216,7 @@ include_directories(${ALM_INCLUDE_DIR}
                     ${GTEST_INCLUDE_DIR}
                     ${GBENCH_INCLUDE_DIR})
 
-link_directories(${ALM_PATH} ${AOCL_UTILS_PATH} ${MPARITH_PATH} ${GTEST_LIBS})
+link_directories(${ALM_PATH} ${MPARITH_PATH} ${GTEST_LIBS})
 
 # Libraries to link
 set(LIBS ${GTEST_LIB} ${GBENCH_LIB} ${LIBMPARITH} ${MPFR_LIB} ${MPC_LIB} ${GMP_LIB})
@@ -226,14 +225,12 @@ if(LIBABI STREQUAL "aocl")
     add_definitions(-DLIBM_PROTOTYPE=${PROTOTYPE_AOCL})
     if(NOT WIN32)
         # Use static library when ASAN or coverage is enabled to avoid gcov symbol conflicts
+        # CPU detection is built into libalm. When linking by path to libalm.a,
+        # we must also link alm_utils_static explicitly.
         if(${${PROJECT_PREFIX}_LIBM_ENABLE_ASAN} OR ${${PROJECT_PREFIX}_LIBM_ENABLE_COVERAGE})
             set(LIBALM "${CMAKE_BINARY_DIR}/src/libalm.a")
-            if(DEFINED AOCL_UTILS_LIB)
-                list(APPEND LIBS ${LIBALM} ${AOCL_UTILS_LIB})
-            else()
-                message(WARNING "AOCL_UTILS_LIB is not defined. AOCL utils must be available when coverage or ASAN is enabled.")
-                list(APPEND LIBS ${LIBALM})
-            endif()
+            set(ALM_UTILS "${CMAKE_BINARY_DIR}/utils/libalm_utils.a")
+            list(APPEND LIBS ${LIBALM} ${ALM_UTILS})
         else()
             set(LIBALM "alm")
             list(APPEND LIBS ${LIBALM})

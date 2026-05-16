@@ -104,40 +104,38 @@ else()
 endif()
 
 set(AOCL_LIBM  ${CMAKE_BINARY_DIR} CACHE STRING "Path to Aocl-LibM.")
-set(AOCL_UTILS ${AOCL_UTILS_PATH} CACHE STRING "Path to Aocl-Utils.")
 
 set(AMD_LIBM_LIB_PATH    "${AOCL_LIBM}/lib")
-if(EXISTS "${AOCL_UTILS}/lib" AND IS_DIRECTORY "${AOCL_UTILS}/lib")
-    set(AMD_UTILS_LIB_PATH "${AOCL_UTILS}/lib")
-elseif(EXISTS "${AOCL_UTILS}/lib64" AND IS_DIRECTORY "${AOCL_UTILS}/lib64")
-    set(AMD_UTILS_LIB_PATH "${AOCL_UTILS}/lib64")
-endif()
 
-# Header paths
-include_directories("${AOCL_LIBM}/include"
-                    "${AOCL_UTILS}/include")
+# Header paths (internal utils headers are included in libalm)
+include_directories("${AOCL_LIBM}/include")
 
 # Library configuration
+# CPU detection is built into libalm. For shared library linking, the utils
+# are embedded. For static library linking by path, we must also link the
+# utils static library explicitly.
 if(NOT WIN32)
     # Linux/Unix library configuration
     if(USE_STATIC_LIB)
         set(LIBALM "${AMD_LIBM_LIB_PATH}/libalm.a")
+        set(ALM_UTILS "${AMD_LIBM_LIB_PATH}/libalm_utils.a")
         message(STATUS "Using static library: ${LIBALM}")
     else()
         set(LIBALM "${AMD_LIBM_LIB_PATH}/libalm.so")
+        set(ALM_UTILS "")
         message(STATUS "Using dynamic library: ${LIBALM}")
     endif()
-    set(AMD_UTILS "${AMD_UTILS_LIB_PATH}/libau_cpuid.a")
 else()
     # Windows library configuration
     if(USE_STATIC_LIB)
         set(LIBALM "${AMD_LIBM_LIB_PATH}/libalm-static.lib")
+        set(ALM_UTILS "${AMD_LIBM_LIB_PATH}/alm_utils_static.lib")
         message(STATUS "Using static library: ${LIBALM}")
     else()
         set(LIBALM "${AMD_LIBM_LIB_PATH}/libalm.lib")
+        set(ALM_UTILS "")
         message(STATUS "Using dynamic library: ${LIBALM}")
     endif()
-    set(AMD_UTILS "${AMD_UTILS_LIB_PATH}/au_cpuid_static.lib")
 endif()
 
 # Collect all source files
@@ -145,9 +143,12 @@ file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")
 
 # Create the executable
 add_executable(test_libm ${SOURCES})
-set(LIBS ${LIBALM} ${AMD_UTILS})
+set(LIBS ${LIBALM})
+if(ALM_UTILS)
+    list(APPEND LIBS ${ALM_UTILS})
+endif()
 if(NOT WIN32)
-    list(APPEND LIBS m stdc++)
+    list(APPEND LIBS m)
 endif()
 target_link_libraries(test_libm ${LIBS})
 

@@ -97,7 +97,7 @@ set(INCLUDE_PATHS
   )
 include_directories(${INCLUDE_PATHS})
 
-set(INCLUDES "${INCLUDE_PATHS}" "${AOCL_UTILS_INCLUDE_DIR}")
+set(INCLUDES "${INCLUDE_PATHS}" "${ALM_UTILS_INCLUDE_DIR}")
 
 #libmobj variable is to collect object libraries in subdirectories
 set(libmobj "")
@@ -128,21 +128,11 @@ set(AOCL_UTILS_LIB ${AOCL_UTILS_LIB})
 if (WIN32)
   set(LIBALM libalm)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-  set(EXTRA_LIBS ${AOCL_UTILS_LIB} "msvcrt")
+  set(EXTRA_LIBS alm_utils_static "msvcrt")
   set(CMAKE_STATIC_LIBRARY_SUFFIX  "-static.lib")
 else()
   set(LIBALM alm)
-
-  # Cct_Libaoclutils.cmake ensures the ABI is compatible (validation + rebuild).
-  # AU_EXPECT_LIBCXX (set in top-level CMakeLists.txt) tells us the expected runtime.
-  if(AU_EXPECT_LIBCXX)
-    message(STATUS "aocl-utils built with libc++, linking -lc++ -lc++abi")
-    set(CXX_RUNTIME_LIBS "-lc++ -lc++abi")
-  else()
-    message(STATUS "aocl-utils built with libstdc++, linking -lstdc++")
-    set(CXX_RUNTIME_LIBS "-lstdc++")
-  endif()
-  set(EXTRA_LIBS ${AOCL_UTILS_LIB} "-Wl,-Bdynamic -lc ${CXX_RUNTIME_LIBS}")
+  set(EXTRA_LIBS alm_utils_static "-Wl,-Bdynamic -lc")
 endif()
 
 set(libm "")

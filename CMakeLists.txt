@@ -174,7 +174,8 @@ endif()
 # AOCL_Utils CPUID_library requirements
 #------------------------------
 
-include(Cct_Libaoclutils)
+# Internal utils (replaces external aocl-utils)
+add_subdirectory(utils)
 
 #------------------------------
 # Setup Project Includes

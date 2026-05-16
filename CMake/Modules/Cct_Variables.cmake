@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -44,11 +44,9 @@ set(${PROJECT_PREFIX}_VENDOR_CONTACT ${VENDOR_CONTACT})
 set(${PROJECT_PREFIX}_PROJ_URL ${CUST_PROJ_URL})
 set(${PROJECT_PREFIX}_PROJ_BUGREPORT ${CUST_PROJ_BUGREPORT})
 
-set(${PROJECT_PREFIX}_AU_GIT_REPO_URL ${AU_GIT_REPO_URL})
 set(${PROJECT_PREFIX}_GTEST_GIT_REPO_URL ${GTEST_GIT_REPO_URL})
 set(${PROJECT_PREFIX}_GBENCH_GIT_REPO_URL ${GBENCH_GIT_REPO_URL})
 
-set(${PROJECT_PREFIX}_AU_GIT_TAG ${AU_GIT_TAG})
 set(${PROJECT_PREFIX}_GTEST_GIT_TAG ${GTEST_GIT_TAG})
 set(${PROJECT_PREFIX}_GBENCH_GIT_TAG ${GBENCH_GIT_TAG})
 

@@ -27,9 +27,12 @@
 
 #include <stddef.h>                     /* for NULL */
 
-#ifdef USE_AOCL_UTILS
+/*
+ * CPU detection via internal utils module (alci/arch.h)
+ * Provides au_cpuid_* functions for architecture and feature detection.
+ */
 #include "alci/arch.h"
-#endif
+
 #include <libm/entry_pt.h>
 #include <libm/iface.h>
 

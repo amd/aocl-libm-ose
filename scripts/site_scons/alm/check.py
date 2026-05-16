@@ -89,19 +89,6 @@ def CheckPathDir(context, mydir):
         return False
     return True
 
-def CheckCPUIDInstall(context):
-    res = False
-    env = context.env
-    aocl_utils_install_path = env['aocl_utils_install_path']
-
-    context.Message ("Checking for valid AOCL UTILS install path")
-
-    # check if path exists, else exit error
-    if CheckPathDir(context, aocl_utils_install_path):
-        res = True
-    context.Result(res)
-    return res
-
 def CheckLibAbi(context):
     # If ABI is SVML, check for OneAPI library path in INTEL_LIB_PATH variable
     # Not using CheckLibWithHeader because this might be
@@ -179,7 +166,6 @@ def All(almenv):
             'CheckForToolchain' : CheckForToolchain,
             'CheckForOS'        : CheckForOS,
             'CheckLibAbi'       : CheckLibAbi,
-            'CheckCPUIDInstall' :   CheckCPUIDInstall,
             'CheckZenVer'       : lambda ctx : CheckZenVer(ctx),
             'CheckUnalignedVectorMove' : lambda ctx : CheckUnalignedVectorMove(ctx),
         },
@@ -205,9 +191,6 @@ def All(almenv):
     conf.CheckZenVer()
 
     conf.CheckUnalignedVectorMove()
-
-    if not conf.CheckCPUIDInstall():
-        Exit(1)
 
     return conf
 

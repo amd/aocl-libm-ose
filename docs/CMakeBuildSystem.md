@@ -53,7 +53,7 @@ This comprehensive guide provides instructions for building, testing, and instal
 | Visual Studio     | 2019 or later          |   ✗   |    ✓    | Provides Ninja build tool              |
 
 **Note:**
-  * CMake automatically fetches aocl-utils from GitHub during configuration and link statically, or one can link dynamically from an installed aocl-utils package.
+  * AOCL-LibM includes an internal CPUID utilities module (`utils/`) that provides CPU detection functionality. No external aocl-utils dependency is required.
   * On Windows, the build system uses the inbuilt Ninja tool provided by Visual Studio
 
 ---
@@ -405,7 +405,6 @@ $ LD_PRELOAD=${PWD}/build/{presetName}/lib/libalmfast.so
 | `LIBM_BUILD_EXAMPLES`   | Build example programs          | OFF     |   ✓   |    ✓    | `ON`, `OFF`     |
 | `USE_STATIC_LIB`        | Link with static library        | OFF     |   ✓   |    ✓    | `ON`, `OFF`     |
 | `AOCL_LIBM`             | Path to AOCL LibM package       | N/A     |   ✓   |    ✓    | Any valid path  |
-| `AOCL_UTILS`            | Path to AOCL Utils package      | N/A     |   ✓   |    ✓    | Any valid path  |
 
 To build examples along with aocl-libm, configure CMake using `-DLIBM_BUILD_EXAMPLES=ON`. This is **OFF by default**.
 
@@ -571,15 +570,12 @@ The following table lists all available CMake configuration options for building
 | **Library**   | `BUILD_STATIC_LIBS`         | Build static libraries                   | ON             |   ✓   |    ✓    | `ON`, `OFF`                                         |
 | **Library**   | `LIBM_BUILD_LIBRARY`        | Enable building libraries                | ON             |   ✓   |    ✓    | `ON`, `OFF`                                         |
 | **Dispatch**  | `ALM_STATIC_DISPATCH`       | Static CPU architecture dispatch         | OFF            |   ✓   |    ✗    | `AVX2`, `ZEN2`, `ZEN3`, `ZEN4`, `ZEN5`, `ZEN6`, `AVX512` |
-| **Utils**     | `AOCL_UTILS_INCLUDE_DIR`    | Path to aocl-utils headers               | Auto-fetched   |   ✓   |    ✓    | Any valid path                                      |
-| **Utils**     | `AOCL_UTILS_LIB`            | Path to aocl-utils library               | Auto-fetched   |   ✓   |    ✓    | Any valid path                                      |
 | **Testing**   | `LIBM_BUILD_TESTS`          | Enable building tests                    | OFF            |   ✓   |    ✓    | `ON`, `OFF`                                         |
 | **Testing**   | `LIBM_ENABLE_AVX512`        | Enable AVX-512 support                   | ON             |   ✓   |    ✗    | `ON`, `OFF`                                         |
 | **Testing**   | `LIBABI`                    | Library ABI compatibility                | `aocl`         |   ✓   |    ✗    | `aocl`, `glibc`, `svml`                             |
 | **Examples**  | `LIBM_BUILD_EXAMPLES`       | Build example programs                   | OFF            |   ✓   |    ✓    | `ON`, `OFF`                                         |
 | **Examples**  | `USE_STATIC_LIB`            | Link examples with static library        | OFF            |   ✓   |    ✓    | `ON`, `OFF`                                         |
 | **Examples**  | `AOCL_LIBM`                 | Path to AOCL LibM package                | Build dir      |   ✓   |    ✓    | Any valid path                                      |
-| **Examples**  | `AOCL_UTILS`                | Path to AOCL Utils package               | Build dir      |   ✓   |    ✓    | Any valid path                                      |
 | **Developer** | `LIBM_ENABLE_ASAN`          | Enable AddressSanitizer (GCC only)       | OFF            |   ✓   |    ✗    | `ON`, `OFF`                                         |
 | **Developer** | `LIBM_ENABLE_COVERAGE`      | Enable code coverage (GCC only)          | OFF            |   ✓   |    ✗    | `ON`, `OFF`                                         |
 | **Developer** | `LIBM_BUILD_DOCS`           | Build Sphinx/Doxygen documentation       | OFF            |   ✓   |    ✗    | `ON`, `OFF`                                         |
@@ -587,7 +583,7 @@ The following table lists all available CMake configuration options for building
 
 *Legend:* ✓ = Supported, ✗ = Not Supported
 
-**Note:** Options marked as "Auto-fetched" will automatically download from GitHub if not provided. Options marked as "Preset-dependent" have values set by the chosen preset configuration.
+**Note:** CPU detection functionality is provided by the internal utils module (`utils/`). No external dependencies need to be downloaded or configured.
 
 ---
 
@@ -611,12 +607,12 @@ Run CMake with your desired options. Here are common configuration examples:
 
 **Linux:**
 ```console
-$ cmake .. -DCMAKE_BUILD_TYPE=<Debug/Release> -DCMAKE_C_COMPILER=<gcc/clang> -DCMAKE_CXX_COMPILER=<g++/clang++> -DAOCL_UTILS_INCLUDE_DIR=<path_to_aocl_utils_include> -DAOCL_UTILS_LIB=<path_to_aocl_utils_lib/<libname>> -DCMAKE_INSTALL_PREFIX=<user_specified_prefix_path>
+$ cmake .. -DCMAKE_BUILD_TYPE=<Debug/Release> -DCMAKE_C_COMPILER=<gcc/clang> -DCMAKE_CXX_COMPILER=<g++/clang++> -DCMAKE_INSTALL_PREFIX=<user_specified_prefix_path>
 ```
 
 **Windows with LLVM:**
 ```console
-$ cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=<Debug/Release> -DCMAKE_C_COMPILER=<path_to_llvm>\bin\clang-cl.exe -DCMAKE_CXX_COMPILER=<path_to_llvm>\bin\clang-cl.exe -DAOCL_UTILS_INCLUDE_DIR=<path_to_aocl_utils_include> -DAOCL_UTILS_LIB=<path_to_aocl_utils_lib\<libname>> -DCMAKE_INSTALL_PREFIX=<user_specified_prefix_path>
+$ cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=<Debug/Release> -DCMAKE_C_COMPILER=<path_to_llvm>\bin\clang-cl.exe -DCMAKE_CXX_COMPILER=<path_to_llvm>\bin\clang-cl.exe -DCMAKE_INSTALL_PREFIX=<user_specified_prefix_path>
 ```
 
 You can customize the build with these additional options:
@@ -627,11 +623,10 @@ You can customize the build with these additional options:
 | `CMAKE_C_COMPILER`          | C compiler to use                       | System default |   ✓   |    ✓    |
 | `CMAKE_CXX_COMPILER`        | C++ compiler to use                     | System default |   ✓   |    ✓    |
 | `CMAKE_INSTALL_PREFIX`      | Installation directory                  | System default |   ✓   |    ✓    |
-| `AOCL_UTILS_INCLUDE_DIR`    | Path to aocl-utils include directory    | OFF            |   ✓   |    ✓    |
-| `AOCL_UTILS_LIB`            | Path to aocl-utils library              | OFF            |   ✓   |    ✓    |
 | `ALM_STATIC_DISPATCH`       | Static dispatch for CPU                 | OFF            |   ✓   |    ✗    |
 
 **Note:**
+- CPU detection is handled by the internal utils module. No external aocl-utils configuration is required.
 - For `ALM_STATIC_DISPATCH`, valid values are: `AVX2`, `ZEN2`, `ZEN3`, `ZEN4`, `ZEN5`, `ZEN6`, `AVX512`
 - For complete list of all available options, see the [CMake Configuration Options](#5-cmake-configuration-options) section above.
 
@@ -679,7 +674,7 @@ Navigate to the examples folder and configure with library paths:
 ```console
 $ cd examples
 $ mkdir build && cd build
-$ cmake .. -DAOCL_LIBM=<user_specified_prefix_path> -DAOCL_UTILS=<path_to_aocl_utils_package>
+$ cmake .. -DAOCL_LIBM=<user_specified_prefix_path>
 $ cmake --build .
 ```
 
@@ -687,7 +682,7 @@ $ cmake --build .
 ```console
 $ cd examples
 $ mkdir build && cd build
-$ cmake .. -G "Ninja" -DAOCL_LIBM=<user_specified_prefix_path> -DAOCL_UTILS=<path_to_aocl_utils_package> -DCMAKE_C_COMPILER="<clang-cl executable path>"
+$ cmake .. -G "Ninja" -DAOCL_LIBM=<user_specified_prefix_path> -DCMAKE_C_COMPILER="<clang-cl executable path>"
 $ cmake --build .
 ```
 
@@ -698,14 +693,12 @@ $ cmake --build .
 **Linux:**
 ```console
 $ export LD_LIBRARY_PATH=<user_specified_prefix_path>/lib:$LD_LIBRARY_PATH
-$ export LD_LIBRARY_PATH=<path_to_aocl_utils_package>/lib:$LD_LIBRARY_PATH
 $ ./build/examples/test_libm
 ```
 
 **Windows:**
 ```console
 $ set PATH=%PATH%;<user_specified_prefix_path>\lib
-$ set PATH=%PATH%;<path_to_aocl_utils_package>\lib
 $ build\examples\test_libm.exe
 ```
 

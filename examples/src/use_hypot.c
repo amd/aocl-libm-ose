@@ -149,29 +149,29 @@ void hypot_vector_double_precision_4()
 /**********************************************
  *     Vector Array Variants
  * *******************************************/
+#define N 10
 void hypot_single_precision_array()
 {
     #if 0
     printf("Using Single Precision Vectory Array (vrsa) hypot()\n");
-    int n=5;
-    float input[10] = {1.0f, 3.0f, -5.0f, 0.0f, -9.0f, 11.0f, 13.0f, 15.0f, -17.0f, 19.0f};
-    float input2[10] = {3.0f, -1.0f, -0.0f, -6.0f, 0.0f, 0.0f, 4.0f, -1.0f, 2.0f, -10.0f};
-    float output[10] = {0};
+    float input[N] = {1.0f, 3.0f, -5.0f, 0.0f, -9.0f, 11.0f, 13.0f, 15.0f, -17.0f, 19.0f};
+    float input2[N] = {3.0f, -1.0f, -0.0f, -6.0f, 0.0f, 0.0f, 4.0f, -1.0f, 2.0f, -10.0f};
+    float output[N] = {0};
 
-    amd_vrsa_hypotf(n, input, input2, output);
+    amd_vrsa_hypotf(N, input, input2, output);
 
     printf("Input: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", input[i]);
     }
     printf("}, Input2: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", input2[i]);
     }
     printf("}, Output: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", output[i]);
     }
@@ -184,25 +184,24 @@ void hypot_double_precision_array()
 {
     #if 0
     printf("Using Double Precision Vectory Array (vrda) hypot()\n");
-    int n=8;
-    double input[10] = {-0.0, -0.0, 4.0, 2.0, 6.0, -12.0, 14.0, -1.0, 3.0, -5.0};
-    double input2[10] = {0.0, -0.0, 3.0, -4.0, 5.0, 6.0, -7.0, 8.0, -9.0, -10.0};
-    double output[10] = {0};
+    double input[N] = {-0.0, -0.0, 4.0, 2.0, 6.0, -12.0, 14.0, -1.0, 3.0, -5.0};
+    double input2[N] = {0.0, -0.0, 3.0, -4.0, 5.0, 6.0, -7.0, 8.0, -9.0, -10.0};
+    double output[N] = {0};
 
-    amd_vrda_hypot(n, input, input2, output);
+    amd_vrda_hypot(N, input, input2, output);
 
     printf("Input: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", input[i]);
     }
     printf("}, Input2: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", input2[i]);
     }
     printf("}, Output: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", output[i]);
     }

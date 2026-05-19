@@ -42,6 +42,13 @@ struct alm_arch_funcs __arch_funcs_cdfnorm = {
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_cdfnorm),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX2(vrda_cdfnorm),
         },
+        [ALM_UARCH_VER_AVX512] = {
+            [ALM_FUNC_SCAL_DP]     = &ALM_PROTO_ARCH_AVX512(cdfnorm),
+            [ALM_FUNC_VECT_DP_2]   = &ALM_PROTO_ARCH_AVX512(vrd2_cdfnorm),
+            [ALM_FUNC_VECT_DP_4]   = &ALM_PROTO_ARCH_AVX512(vrd4_cdfnorm),
+            [ALM_FUNC_VECT_DP_8]   = &ALM_PROTO_ARCH_AVX512(vrd8_cdfnorm),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX512(vrda_cdfnorm),
+        },
         [ALM_UARCH_VER_ZEN] = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(cdfnorm),
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN(vrd2_cdfnorm),

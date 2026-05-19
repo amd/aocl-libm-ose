@@ -2,7 +2,7 @@
   function: acosh
   timing_enabled: true
   test_sets:
-  - id: acosh
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: acosh_001

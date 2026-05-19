@@ -39,7 +39,7 @@
 #include "random.h"
 #include "verify.h"
 #include "debug.h"
-
+#include <string.h>
 #undef I
 #include "gtest.h"
 
@@ -119,23 +119,20 @@ int PopulateInputSamples(T **inpbuff, InputRange &range, uint32_t len) {
  * {10+i0 10+i1 10+i2 ... 10+i10}
  * }
  *
- * Therefore, (count*count) values will be generated in the resulting buffer!
+ * Therefore, (count) values will be generated in the resulting buffer!
  */
 template <typename T, typename U>
 int PopulateComplexInputSamples(U *complex_inpbuff, T *inpbuff, uint32_t len) {
-    for(uint32_t i = 0; i < len; ++i)
+    for(uint32_t j = 0; j < len; ++j)
     {
-        for(uint32_t j = 0; j < len; ++j)
-        {
-            T real = inpbuff[i];
-            T imag = inpbuff[j];
-            #if defined(_WIN64) || defined(_WIN32)
-              U temp = {real, imag};
-            #else
-              U temp = real + imag*I;
-            #endif
-            complex_inpbuff[(i*len) + j] = temp;
-        }
+        T real = inpbuff[j];
+        T imag = inpbuff[len-1-j];
+        #if defined(_WIN64) || defined(_WIN32)
+          U temp = {real, imag};
+        #else
+          U temp = real + imag*I;
+        #endif
+        complex_inpbuff[j] = temp;
     }
     return 0;
 }
@@ -143,7 +140,11 @@ int PopulateComplexInputSamples(U *complex_inpbuff, T *inpbuff, uint32_t len) {
 double getUlp(float aop, double exptd);
 double getUlp(double aop, long double exptd);
 double getUlp(float _Complex aop, double _Complex exptd);
+#if (defined _WIN32 || defined _WIN64)
+double getUlp(double _Complex aop, double _Complex exptd);
+#else
 double getUlp(double _Complex aop, long double _Complex exptd);
+#endif
 bool update_ulp(double ulp, double &, double);
 
 /*
@@ -312,14 +313,14 @@ class AccuTestFixtureComplexFloat : public ::testing::TestWithParam<AccuParams> 
     ptr = GetParam().prttstres;
     nargs = GetParam().nargs;
 
-    complex_inpbuff = (float _Complex *)calloc(count*count, sizeof(float _Complex));
+    complex_inpbuff = (float _Complex *)calloc(count, sizeof(float _Complex));
 
     PopulateInputSamples(&inpbuff, range[0], count);
     PopulateComplexInputSamples(complex_inpbuff, inpbuff, count);
 
     if (nargs == 2)
     {
-      complex_inpbuff1 = (float _Complex *)calloc(count*count, sizeof(float _Complex));
+      complex_inpbuff1 = (float _Complex *)calloc(count, sizeof(float _Complex));
 
       PopulateInputSamples(&inpbuff1, range[1], count);
       PopulateComplexInputSamples(complex_inpbuff1, inpbuff1, count);
@@ -330,12 +331,12 @@ class AccuTestFixtureComplexFloat : public ::testing::TestWithParam<AccuParams> 
 
   void TearDown() override {
     aocl_libm_aligned_free(inpbuff);
-    aocl_libm_aligned_free(complex_inpbuff);
+    free(complex_inpbuff);
 
     if (nargs == 2)
     {
       aocl_libm_aligned_free(inpbuff1);
-      aocl_libm_aligned_free(complex_inpbuff1);
+      free(complex_inpbuff1);
     }
     aocl_libm_aligned_free(aop);
   }
@@ -367,14 +368,14 @@ class AccuTestFixtureComplexDouble : public ::testing::TestWithParam<AccuParams>
     ptr = GetParam().prttstres;
     nargs = GetParam().nargs;
 
-    complex_inpbuff = (double _Complex *)calloc(count*count, sizeof(double _Complex));
+    complex_inpbuff = (double _Complex *)calloc(count, sizeof(double _Complex));
 
     PopulateInputSamples(&inpbuff, range[0], count);
     PopulateComplexInputSamples(complex_inpbuff, inpbuff, count);
 
     if (nargs == 2)
     {
-      complex_inpbuff1 = (double _Complex *)calloc(count*count, sizeof(double _Complex));
+      complex_inpbuff1 = (double _Complex *)calloc(count, sizeof(double _Complex));
 
       PopulateInputSamples(&inpbuff1, range[1], count);
       PopulateComplexInputSamples(complex_inpbuff1, inpbuff1, count);
@@ -385,12 +386,12 @@ class AccuTestFixtureComplexDouble : public ::testing::TestWithParam<AccuParams>
 
   void TearDown() override {
     aocl_libm_aligned_free(inpbuff);
-    aocl_libm_aligned_free(complex_inpbuff);
+    free(complex_inpbuff);
 
     if (nargs == 2)
     {
       aocl_libm_aligned_free(inpbuff1);
-      aocl_libm_aligned_free(complex_inpbuff1);
+      free(complex_inpbuff1);
     }
     aocl_libm_aligned_free(aop);
   }
@@ -437,9 +438,9 @@ void SpecialSetUp(T **inp, int **exptdexpt, uint32_t count, U *data,
                   "Testing conformance/special case for ",count, " items");
 
   for (uint32_t i = 0; i < count; i++) {
-    in[i] = data[i].in;
+    memcpy(&in[i], &data[i].in, sizeof(in[i]));
     ee[i] = data[i].exptdexpt;
-    opp[i] = data[i].out;
+    memcpy(&opp[i], &data[i].out, sizeof(opp[i]));
   }
   *inp  = (T *)in;
   *exptdexpt = (int *)ee;
@@ -451,7 +452,7 @@ void SpecialSetUp(T **inp, int **exptdexpt, uint32_t count, U *data,
 
     LIBM_TEST_DPRINTF(DBG2, ,"Input1:", in2);
     for (uint32_t i = 0; i < count; i++) {
-      in2[i] = data[i].in2;
+      memcpy(&in2[i], &data[i].in2, sizeof(in2[i]));
     }
     *inp2 = (T *)in2;
   }
@@ -476,11 +477,11 @@ void SpecialSetUp(T **inp, int **exptdexpt, uint32_t count, U *data,
     LIBM_TEST_DPRINTF(DBG2, ,"Input5:", in6);
 
     for (uint32_t i = 0; i < count; i++) {
-      in2[i] = data[i].in2;
-      in3[i] = data[i].in3;
-      in4[i] = data[i].in4;
-      in5[i] = data[i].in5;
-      in6[i] = data[i].in6;
+      memcpy(&in2[i], &data[i].in2, sizeof(in2[i]));
+      memcpy(&in3[i], &data[i].in3, sizeof(in3[i]));
+      memcpy(&in4[i], &data[i].in4, sizeof(in4[i]));
+      memcpy(&in5[i], &data[i].in5, sizeof(in5[i]));
+      memcpy(&in6[i], &data[i].in6, sizeof(in6[i]));
     }
 
     *inp2 = (T *)in2;
@@ -515,9 +516,10 @@ void SpecialSetUpComplex(T **inp, int **exptdexpt, uint32_t count, U *data,
                   "Testing conformance/special case for ",count, " items");
 
   for (uint32_t i = 0; i < count; i++) {
-    in[i] = data[i].in;
+    // Construct complex numbers at runtime using memcpy to avoid corruption
+    memcpy(&in[i], &data[i].in, sizeof(in[i]));
     ee[i] = data[i].exptdexpt;
-    opp[i] = data[i].out;
+    memcpy(&opp[i], &data[i].out, sizeof(opp[i]));
   }
   *inp  = (T *)in;
   *exptdexpt = (int *)ee;
@@ -529,7 +531,7 @@ void SpecialSetUpComplex(T **inp, int **exptdexpt, uint32_t count, U *data,
 
     LIBM_TEST_DPRINTF(DBG2, ,"Input1:", in2);
     for (uint32_t i = 0; i < count; i++) {
-      in2[i] = data[i].in2;
+      memcpy(&in2[i], &data[i].in2, sizeof(in2[i]));
     }
     *inp2 = (T *)in2;
   }

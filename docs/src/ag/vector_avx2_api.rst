@@ -123,20 +123,12 @@ Cosh
 .. doxygenfunction:: amd_vrs8_coshf
   :project: libm
 
-.. .. doxygenfunction:: amd_vrd4_cosh
-..   :project: libm
-..   (Function not yet documented in Doxygen)
-
 
 Tanh
 ----
 
 .. doxygenfunction:: amd_vrs8_tanhf
   :project: libm
-
-.. .. doxygenfunction:: amd_vrd4_tanh
-..   :project: libm
-..   (Function not yet documented in Doxygen)
 
 
 Inverse Hyperbolic Functions
@@ -193,10 +185,6 @@ Log10
 
 .. doxygenfunction:: amd_vrs8_log10f
   :project: libm
-
-.. .. doxygenfunction:: amd_vrd4_log10
-..   :project: libm
-..   (Function not yet documented in Doxygen)
 
 
 Power and Root Functions

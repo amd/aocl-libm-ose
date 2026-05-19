@@ -47,6 +47,11 @@ struct alm_arch_funcs __arch_funcs_acosh = {
 #endif
         },
 
+        [ALM_UARCH_VER_AVX512] = {
+            [ALM_FUNC_SCAL_SP]      = &ALM_PROTO_ARCH_AVX512(acoshf),
+            [ALM_FUNC_SCAL_DP]      = &ALM_PROTO_ARCH_AVX512(acosh),
+        },
+
         [ALM_UARCH_VER_ZEN] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(acoshf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(acosh),

@@ -475,6 +475,46 @@ Nearbyint
   :project: libm
 
 
+Lrint
+-----
+
+.. doxygenfunction:: amd_lrintf
+  :project: libm
+
+.. doxygenfunction:: amd_lrint
+  :project: libm
+
+
+Llrint
+------
+
+.. doxygenfunction:: amd_llrintf
+  :project: libm
+
+.. doxygenfunction:: amd_llrint
+  :project: libm
+
+
+Lround
+------
+
+.. doxygenfunction:: amd_lroundf
+  :project: libm
+
+.. doxygenfunction:: amd_lround
+  :project: libm
+
+
+Llround
+-------
+
+.. doxygenfunction:: amd_llroundf
+  :project: libm
+
+.. doxygenfunction:: amd_llround
+  :project: libm
+
+
 Floating-Point Manipulation Functions
 ======================================
 
@@ -548,6 +588,16 @@ Nextafter
   :project: libm
 
 
+Nexttoward
+----------
+
+.. doxygenfunction:: amd_nexttowardf
+  :project: libm
+
+.. doxygenfunction:: amd_nexttoward
+  :project: libm
+
+
 Copysign
 --------
 
@@ -565,6 +615,16 @@ Nan
   :project: libm
 
 .. doxygenfunction:: amd_nan
+  :project: libm
+
+
+Finite
+------
+
+.. doxygenfunction:: amd_finitef
+  :project: libm
+
+.. doxygenfunction:: amd_finite
   :project: libm
 
 

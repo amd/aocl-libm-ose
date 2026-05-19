@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -67,21 +67,20 @@ typedef struct {
   uint64_t in5;
   uint64_t in6;
 }libm_test_special_data_f64;
-
 typedef struct {
-  float _Complex in;
-  float _Complex out;
+  struct { float real, imag; } in;
+  struct { float real, imag; } out;
   uint32_t exptdexpt;
-  float _Complex in2;
-  float _Complex in3;
+  struct { float real, imag; } in2;
+  struct { float real, imag; } in3;
 }libm_test_complex_data_f32;
 
 typedef struct {
-  double _Complex in;
-  double _Complex out;
+  struct { double real, imag; } in;
+  struct { double real, imag; } out;
   uint64_t exptdexpt;
-  double _Complex in2;
-  double _Complex in3;
+  struct { double real, imag; } in2;
+  struct { double real, imag; } in3;
 }libm_test_complex_data_f64;
 
 typedef struct {

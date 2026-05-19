@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -57,6 +57,9 @@ if aenv['HOST_OS'] == 'win32':
     shutil.copy(r'.\scripts\almfast.def', r'.\src\fast')
     shutil.copy(r'.\scripts\mparith32.def', r'.\gtests\libs\mparith')
     shutil.copy(r'.\scripts\mparith64.def', r'.\gtests\libs\mparith')
+    # Use AT&T assembly syntax on Windows (required for Clang 19+ compatibility)
+    aenv.Append(CFLAGS=['-masm=att'])
+    aenv.Append(CCFLAGS=['-masm=att'])
 
 # First check version of python and scons
 EnsurePythonVersion(3, 6)

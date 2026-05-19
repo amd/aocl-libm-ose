@@ -1,7 +1,7 @@
 /* Correctly-rounded hyperbolic tangent function for binary32 value.
 
 Copyright (c) 2022, Alexei Sibidanov.
-Copyright (C) 2023, Advanced Micro Devices, Inc. All rights reserved.
+Copyright (C) 2023-2026, Advanced Micro Devices, Inc. All rights reserved.
 
 This file was originally developed as part of the CORE-MATH project
 (https://core-math.gitlabpages.inria.fr/).
@@ -34,7 +34,7 @@ SOFTWARE.
  * ----------------------
  * To compute vrs16_tanhf(v_f32x16_t x)
  * 
- * If 0x39000000 <= |x| < 0x9.02cb2ffffd19d464063fp0f (approx 2.98e-8 <= |x| < 9.01):
+ * If 0x39000000 <= |x| < 0x9.02cb3p+0f (approx 2.98e-8 <= |x| < 9.01):
  *    In this case, tanhf(x) is approximated as the ratio of two polynomials of degree 8.
  *
  * For other cases, call scalar tanhf()

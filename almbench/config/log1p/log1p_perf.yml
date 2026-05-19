@@ -2,7 +2,7 @@
   function: log1p
   timing_enabled: true
   test_sets:
-  - id: log1p
+  - id: range-tests_01
     tests:
 # Single Precision
 

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -54,6 +54,7 @@ get_unalign_vec_move_flag( uavmflag )               # disabling alignment checki
 get_pic_flag( picflag )                             # position Independent Code flags
 get_au_flag( auflag )                               # aocl-utils defination
 get_avx2fma_flag( fmaflag )                         # Fused Multiply-Add flags
+get_avx512_flag( avx512flag )                       # AVX512 ISA flags
 get_vec_flag( vecflag )                             # Vectorization flags
 
 set(LIBMCFLAGS ${optzflag})
@@ -146,7 +147,7 @@ set_target_properties(libm_shared PROPERTIES
 )
 target_link_libraries(libm_shared PUBLIC ${EXTRA_LIBS})
 if(NOT MSVC)
-  set_target_properties(libm_shared PROPERTIES LINK_FLAGS "-ealm_main")
+  set_target_properties(libm_shared PROPERTIES LINK_FLAGS "-Wl,-ealm_main")
 endif()
 list(APPEND libm libm_shared)
 # Static library

@@ -85,7 +85,7 @@ cmdLine *cmdLineStart(void) { return &cmd; }
 
 cmdLine::cmdLine() : arguments(NULL) {
   parser = new args::ArgumentParser("Testing tool for AMD LibM",
-                                    "Author: Prem Mallappa <pmallapp@amd.com>");
+                                    "Author: Nimmy Krishnan <Nimmy.Krishnan@amd.com>");
 
   cmd.arguments =
       new args::Group(*parser, "arguments", args::Group::Validators::DontCare,

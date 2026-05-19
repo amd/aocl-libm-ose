@@ -220,9 +220,13 @@ $ cmake --build --preset {presetName} -j %NUMBER_OF_PROCESSORS%
 Only when building in release mode (for example, using a `*-release-*` preset), the compiled library will be installed in the `build/{presetName}` directory or user specified prefix path.
 
 **Note:**
-- Installation only occurs when building in release mode. Libraries are installed to `build/{presetName}/lib` and header files to `build/{presetName}/include`.
-- In debug mode, the library is built but not installed. Libraries are found in `build/{presetName}/src` and header files are found in `include/external`.
+- In release mode, libraries are automatically installed to `build/{presetName}/lib` and header files to `build/{presetName}/include`.
+- In debug mode, the library is built but not installed automatically. Libraries are found in `build/{presetName}/src` and header files in `include/external`.
+  To explicitly install libraries and headers in debug mode, run:
 
+  ```console
+  $ cmake --build --preset {presetName} --target install
+  ```
 ---
 
 #### **4.5 Building and Executing gtests (Libm Test Framework)**
@@ -405,7 +409,11 @@ $ LD_PRELOAD=${PWD}/build/{presetName}/lib/libalmfast.so
 
 To build examples along with aocl-libm, configure CMake using `-DLIBM_BUILD_EXAMPLES=ON`. This is **OFF by default**.
 
-**Option 1: Build Examples along with Library configuration and Building**
+**Note:** Building examples is supported only in release mode (e.g., `*-release-*` presets).
+
+---
+
+**Build library with examples**
 ```console
 $ cmake --preset {presetName} -DLIBM_BUILD_EXAMPLES=ON --fresh
 $ cmake --build --preset {presetName}
@@ -413,21 +421,10 @@ $ cmake --build --preset {presetName} --target test_libm
 ```
 Executable will be created in `build/{presetName}/examples/test_libm`
 
-**Option 2: Build Examples Only (Standalone, Linux Only)**
-Navigate to the examples folder and configure with library paths:
-```console
-$ cd examples
-$ mkdir build && cd build
-$ cmake .. -DAOCL_LIBM=<path_to_aocl_libm_package> -DAOCL_UTILS=<path_to_aocl_utils_package>
-$ cmake --build .
-```
-Executable will be created in `build/test_libm`
 
 **Example to link Static Library:**
-```console
-$ cmake --preset {presetName} -DLIBM_BUILD_EXAMPLES=ON -DUSE_STATIC_LIB=ON --fresh
-$ cmake --build --preset {presetName} --target test_libm
-```
+
+To link examples with static library, use the **-DUSE_STATIC_LIB=ON** configure option while running cmake configure and follow the remaining steps mentioned in section "**Build library with examples**".
 
 **Running Examples:**
 
@@ -435,18 +432,12 @@ $ cmake --build --preset {presetName} --target test_libm
 ```console
 $ export LD_LIBRARY_PATH=${PWD}/build/{presetName}/lib:$LD_LIBRARY_PATH
 $ ./build/{presetName}/examples/test_libm
-# or
-$ export LD_LIBRARY_PATH=<path_to_aocl_libm_package>/lib:$LD_LIBRARY_PATH
-$ ./build/test_libm
 ```
 
 **Windows:**
 ```console
 $ set PATH=%PATH%;%CD%\build\{presetName}\lib
 $ build\{presetName}\examples\test_libm.exe
-# or
-$ set PATH=%PATH%;<path_to_aocl_libm_package>\lib
-$ build\test_libm.exe
 ```
 
 ---
@@ -682,10 +673,20 @@ $ cmake --build . --target install
 #### **6.5 Build Examples (Standalone)**
 
 Navigate to the examples folder and configure with library paths:
+
+**Linux:**
 ```console
 $ cd examples
 $ mkdir build && cd build
 $ cmake .. -DAOCL_LIBM=<user_specified_prefix_path> -DAOCL_UTILS=<path_to_aocl_utils_package>
+$ cmake --build .
+```
+
+**Windows:**
+```console
+$ cd examples
+$ mkdir build && cd build
+$ cmake .. -G "Ninja" -DAOCL_LIBM=<user_specified_prefix_path> -DAOCL_UTILS=<path_to_aocl_utils_package> -DCMAKE_C_COMPILER="<clang-cl executable path>"
 $ cmake --build .
 ```
 
@@ -696,12 +697,14 @@ $ cmake --build .
 **Linux:**
 ```console
 $ export LD_LIBRARY_PATH=<user_specified_prefix_path>/lib:$LD_LIBRARY_PATH
+$ export LD_LIBRARY_PATH=<path_to_aocl_utils_package>/lib:$LD_LIBRARY_PATH
 $ ./build/examples/test_libm
 ```
 
 **Windows:**
 ```console
 $ set PATH=%PATH%;<user_specified_prefix_path>\lib
+$ set PATH=%PATH%;<path_to_aocl_utils_package>\lib
 $ build\examples\test_libm.exe
 ```
 

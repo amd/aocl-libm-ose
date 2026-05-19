@@ -136,23 +136,23 @@ void sinh_vector_double_precision_4()
 /**********************************************
  *     Vector Array Variants
  * *******************************************/
+#define N 10
 void sinh_single_precision_array()
 {
     #if 0
     printf("Using Single Precision Vectory Array (vrsa) sinh()\n");
-    int n=5;
-    float input[10] = {1.0f, 3.0f, 5.0f, 7.0f, 9.0f, 11.0f, 13.0f, 15.0f, 17.0f, 19.0f};
-    float output[10] = {0};
+    float input[N] = {1.0f, 3.0f, 5.0f, 7.0f, 9.0f, 11.0f, 13.0f, 15.0f, 17.0f, 19.0f};
+    float output[N] = {0};
 
-    amd_vrsa_sinhf(n, input, output);
+    amd_vrsa_sinhf(N, input, output);
 
     printf("Input: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", input[i]);
     }
     printf("}, Output: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", output[i]);
     }
@@ -165,19 +165,18 @@ void sinh_double_precision_array()
 {
     #if 0
     printf("Using Double Precision Vectory Array (vrda) sinh()\n");
-    int n=8;
-    double input[10] = {10.0, 8.0, 4.0, 2.0, 6.0, 12.0, 14.0, 1.0, 3.0, 5.0};
-    double output[10] = {0};
+    double input[N] = {10.0, 8.0, 4.0, 2.0, 6.0, 12.0, 14.0, 1.0, 3.0, 5.0};
+    double output[N] = {0};
 
-    amd_vrda_sinh(n, input, output);
+    amd_vrda_sinh(N, input, output);
 
     printf("Input: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", input[i]);
     }
     printf("}, Output: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", output[i]);
     }

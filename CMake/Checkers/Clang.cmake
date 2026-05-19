@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@
 
 
 set(CLANG_VERSION_MIN "9.0.0")
-set(CLANG_VERSION_MAX "19.0.0")
+set(CLANG_VERSION_MAX "20.0.0")
 
 if ((CMAKE_C_COMPILER_VERSION VERSION_LESS ${CLANG_VERSION_MIN}) OR
     (CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL ${CLANG_VERSION_MAX}))
@@ -62,8 +62,14 @@ endmacro()
 
 macro(get_unalign_vec_move_flag uavmflag)
   if(NOT WIN32)
-    if(CMAKE_C_COMPILER_VERSION GREATER_EQUAL 14.0.6)
+    # Test if Clang compiler supports -muse-unaligned-vector-move flag
+    # This flag is AOCC-specific (AOCC >= 4.0.0 / Clang 14.0.6+)
+    include(CheckCCompilerFlag)
+    check_c_compiler_flag("-muse-unaligned-vector-move" COMPILER_SUPPORTS_UNALIGNED_VEC_MOVE)
+    if(COMPILER_SUPPORTS_UNALIGNED_VEC_MOVE)
       set(${uavmflag} -muse-unaligned-vector-move)
+    else()
+      set(${uavmflag} "")
     endif()
   endif()
 endmacro()
@@ -71,4 +77,3 @@ endmacro()
 macro(get_pic_flag picflag)
   set(${picflag} -fPIC)
 endmacro()
-

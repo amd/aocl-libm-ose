@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -49,7 +49,6 @@ else:
            '/Iinclude',
            '/Isrc\\isa',
            '/Isrc\\isa\\include',
-           '/Isrc\\isa\\avx512/gas\\include',
            '/c'
            ]
 e.Append(
@@ -58,7 +57,7 @@ e.Append(
     CPPDEFINES = ['AVX_XOP_FMA4_FMA3' ],
 )
 
-asm_list = ['avx/gas', 'fma4/gas', 'avx512/gas']
+asm_list = ['avx/gas', 'fma4/gas']
 asm_objs = []
 
 for asm_path in asm_list:
@@ -77,8 +76,14 @@ avx2_objs = SConscript('avx2/SConscript',
                        src_dir = '#src/isa/avx2',
                        variant_dir = joinpath(builddir, 'optimized'))
 
+# AVX-512 ISA wrappers.
+avx512_objs = SConscript('avx512/SConscript',
+                            exports    = {'env' : e},
+                            duplicate  = 0,
+                            src_dir    = '#src/isa/avx512',
+                            variant_dir = joinpath(builddir, 'avx512'))
 
-objs = asm_objs + avx2_objs
+objs = asm_objs + avx2_objs + avx512_objs
 
 #print('asm sources', list(asm_objs))
 Return('objs')

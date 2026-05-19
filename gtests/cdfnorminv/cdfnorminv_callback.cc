@@ -72,8 +72,10 @@ double getFuncOp(double *data) {
     double op;
     vdCdfNormInv(1,data,&op);
     return op;
-#else
+#elif (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
     return LIBM_FUNC(cdfnorminv)(data[0]);
+#else
+    return 0.0;
 #endif
 }
 

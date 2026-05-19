@@ -2,7 +2,7 @@
   function: hypot
   timing_enabled: true
   test_sets:
-  - id: hypot
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: hypot_001

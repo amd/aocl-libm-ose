@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -40,5 +40,9 @@ add_subdirectory(avx2)
 list(APPEND libmobj $<TARGET_OBJECTS:avx2asm>)
 #add avx2 object library to libmobj
 list(APPEND libmobj $<TARGET_OBJECTS:avx2>)
+
+add_subdirectory(avx512)
+# add avx512 object library to libmobj
+list(APPEND libmobj $<TARGET_OBJECTS:avx512>)
 
 set(libmobj ${libmobj} PARENT_SCOPE)

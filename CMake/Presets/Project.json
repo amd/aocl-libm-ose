@@ -9,7 +9,7 @@
                 "CUST_PROJ_DESCRIPTION": "AOCL-LibM is a high-performance implementation of LibM",
                 "CUST_PROJ_URL"  : "https://github.com/amd/aocl-libm-ose",
                 "VENDOR_NAME"    : "AMD",
-                "VENDOR_CONTACT" : "Prem Mallappa <pmallapp@amd.com>",
+                "VENDOR_CONTACT" : "Nimmy Krishnan <Nimmy.Krishnan@amd.com>",
                 "CUST_PROJ_BUGREPORT": "aocl@amd.com",
                 "CUST_PROJ_PREFIX": "aocl",
                 "CUST_PROJ_CXX_STD": "17",

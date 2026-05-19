@@ -40,7 +40,9 @@
 #include "test_erfcinv_data.h"
 #include "../libs/mparith/alm_mp_funcs.h"
 
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
 double LIBM_FUNC(erfcinv)(double);
+#endif
 
 static uint32_t ipargs = 1;
 bool special_case = false;
@@ -74,8 +76,10 @@ double getFuncOp(double *data) {
   double op;
   vdErfcInv(1,data,&op);
   return op;
-#else
+#elif (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
   return LIBM_FUNC(erfcinv)(data[0]);
+#else
+  return 0.0;
 #endif
 }
 
@@ -118,7 +122,7 @@ int test_s1d(test_data *data, int idx)  {
   double *op  = (double*)data->op;
 #if (LIBM_PROTOTYPE == PROTOTYPE_SVML)
   vdErfcInv(1,&ip[idx],op);
-#else
+#elif (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
   op[0] = LIBM_FUNC(erfcinv)(ip[idx]);
 #endif
   return 0;

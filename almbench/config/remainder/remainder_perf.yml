@@ -2,7 +2,7 @@
   function: remainder
   timing_enabled: true
   test_sets:
-  - id: remainder
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: remainder_001

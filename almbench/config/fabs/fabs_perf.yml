@@ -2,7 +2,7 @@
   function: fabs
   timing_enabled: true
   test_sets:
-  - id: fabs
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: fabs_001

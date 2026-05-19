@@ -857,7 +857,7 @@
     # Case 91: 0
     - id: exp2_091
       description: "exp2f 0"
-      input: [neg_zero_f32]
+      input: [0x80000000]
       expect: [0x3f800000]
       expect_exception: []
       variants: [ss]
@@ -865,48 +865,48 @@
     # Case 92: exp2f test case 92
     - id: exp2_092
       description: ""
-      input: [pos_inf_f32]
-      expect: [pos_inf_f32]
+      input: [0x7F800000]
+      expect: [0x7F800000]
       expect_exception: []
       variants: [ss]
 
     # Case 93: exp2f test case 93
     - id: exp2_093
       description: ""
-      input: [neg_inf_f32]
-      expect: [neg_inf_f32]
+      input: [0xFF800000]
+      expect: [0xFF800000]
       expect_exception: []
       variants: [ss]
 
     # Case 94: exp2f test case 94
     - id: exp2_094
       description: ""
-      input: [pos_snan_f32]
-      expect: [pos_snan_f32]
+      input: [0x7fb00000]
+      expect: [0x7fb00000]
       expect_exception: []
       variants: [ss]
 
     # Case 95: exp2f test case 95
     - id: exp2_095
       description: ""
-      input: [neg_snan_f32]
-      expect: [neg_snan_f32]
+      input: [0xffb00000]
+      expect: [0xffb00000]
       expect_exception: []
       variants: [ss]
 
     # Case 96: exp2f test case 96
     - id: exp2_096
       description: ""
-      input: [pos_qnan_f32]
-      expect: [pos_qnan_f32]
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
       expect_exception: []
       variants: [ss]
 
     # Case 97: exp2f test case 97
     - id: exp2_097
       description: ""
-      input: [neg_qnan_f32]
-      expect: [neg_qnan_f32]
+      input: [0xfff00000]
+      expect: [0xfff00000]
       expect_exception: []
       variants: [ss]
 
@@ -1009,8 +1009,8 @@
     # Case 110: qnan min
     - id: exp2_110
       description: "exp2f qnan min"
-      input: [POS_QNAN_F32]
-      expect: [POS_QNAN_F32]
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
       expect_exception: []
       variants: [ss]
 
@@ -1033,8 +1033,8 @@
     # Case 113: indeterninate
     - id: exp2_113
       description: "exp2f indeterninate"
-      input: [NEG_QNAN_F32]
-      expect: [NEG_QNAN_F32]
+      input: [0xfff00000]
+      expect: [0xfff00000]
       expect_exception: []
       variants: [ss]
 

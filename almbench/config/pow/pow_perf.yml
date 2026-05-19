@@ -2,7 +2,7 @@
   function: pow
   timing_enabled: true
   test_sets:
-  - id: pow
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: pow_001

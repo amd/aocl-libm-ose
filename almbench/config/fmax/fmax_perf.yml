@@ -2,7 +2,7 @@
   function: fmax
   timing_enabled: true
   test_sets:
-  - id: fmax
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: fmax_001

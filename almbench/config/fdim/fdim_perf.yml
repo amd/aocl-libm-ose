@@ -2,7 +2,7 @@
   function: fdim
   timing_enabled: true
   test_sets:
-  - id: fdim
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: fdim_001

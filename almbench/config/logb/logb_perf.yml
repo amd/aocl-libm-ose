@@ -2,7 +2,7 @@
   function: logb
   timing_enabled: true
   test_sets:
-  - id: logb
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: logb_001

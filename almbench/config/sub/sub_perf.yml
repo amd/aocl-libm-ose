@@ -2,7 +2,7 @@
   function: sub
   timing_enabled: true
   test_sets:
-  - id: sub
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: sub_001

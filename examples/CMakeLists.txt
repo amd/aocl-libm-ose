@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -39,33 +39,44 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -mavx2 -march=native")
 check_c_compiler_flag("-mavx512f" COMPILER_SUPPORTS_AVX512)
 
 if(COMPILER_SUPPORTS_AVX512)
+    # Set appropriate flags based on compiler
+    if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+        set(AVX512_TEST_FLAGS "/arch:AVX512")
+    elseif(CMAKE_C_COMPILER_ID MATCHES "Clang|GNU")
+        set(AVX512_TEST_FLAGS "-mavx512f")
+    else()
+        set(AVX512_TEST_FLAGS "")
+        message(WARNING "Unknown compiler ID: ${CMAKE_C_COMPILER_ID}. No AVX-512 flags set.")
+    endif()
+
     # Create a test program to check hardware support
     file(WRITE "${PROJECT_BINARY_DIR}/check_avx512.c"
-        "#include <cstdio>
-        #include <cstdlib>
+        "#include <stdio.h>
+        #include <stdbool.h>
 
         #if defined(_MSC_VER)
         #include <intrin.h>
-        bool has_avx512() {
+        static bool has_avx512() {
             int cpuInfo[4];
             __cpuid(cpuInfo, 0);
             if (cpuInfo[0] < 7) return false;
-            __cpuid(cpuInfo, 7);
+            __cpuidex(cpuInfo, 7, 0);
             return (cpuInfo[1] & (1 << 16)) != 0; // Bit 16 of EBX indicates AVX-512F
         }
         #else
         #include <cpuid.h>
-        bool has_avx512() {
-            unsigned eax, ebx, ecx, edx;
-            if (!__get_cpuid_max(0, nullptr) || __get_cpuid_max(0, nullptr) < 7) return false;
-            __cpuid_count(7, 0, eax, ebx, ecx, edx);
+        static bool has_avx512() {
+            unsigned int eax, ebx, ecx, edx;
+            unsigned int max_level = __get_cpuid_max(0, NULL);
+            if (max_level < 7) return false;
+            if (!__get_cpuid_count(7, 0, &eax, &ebx, &ecx, &edx)) return false;
             return (ebx & (1 << 16)) != 0; // Bit 16 of EBX indicates AVX-512F
         }
         #endif
 
         int main() {
             if (!has_avx512()) {
-                return -1;
+                return 1;
             }
             return 0;
         }"
@@ -73,17 +84,21 @@ if(COMPILER_SUPPORTS_AVX512)
 
     # Try to compile and run the test program
     try_run(RUN_RESULT COMPILE_RESULT
-        "${PROJECT_BINARY_DIR}"
+        "${PROJECT_BINARY_DIR}/check_avx512_executable"
         "${PROJECT_BINARY_DIR}/check_avx512.c"
+        COMPILE_DEFINITIONS ${AVX512_TEST_FLAGS}
     )
 
     if(RUN_RESULT EQUAL 0)
-        message(STATUS "Hardware supports AVX-512 - enabling AVX-512 flags")
+        message(STATUS "Hardware supports AVX-512 - Enabling AVX-512 flags")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mavx512f")
         add_compile_definitions(__AVX512__)
     else()
         message(STATUS "Hardware does NOT support AVX-512")
     endif()
+
+    file(REMOVE "${PROJECT_BINARY_DIR}/check_avx512.c")
+    file(REMOVE_RECURSE "${PROJECT_BINARY_DIR}/check_avx512_executable")
 else()
     message(STATUS "Compiler does NOT support AVX-512")
 endif()
@@ -122,7 +137,7 @@ else()
         set(LIBALM "${AMD_LIBM_LIB_PATH}/libalm.lib")
         message(STATUS "Using dynamic library: ${LIBALM}")
     endif()
-    set(AMD_UTILS "${AMD_UTILS_LIB_PATH}/libau_cpuid.lib")
+    set(AMD_UTILS "${AMD_UTILS_LIB_PATH}/au_cpuid_static.lib")
 endif()
 
 # Collect all source files
@@ -130,7 +145,11 @@ file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")
 
 # Create the executable
 add_executable(test_libm ${SOURCES})
-target_link_libraries(test_libm ${LIBALM} ${AMD_UTILS} m stdc++)
+set(LIBS ${LIBALM} ${AMD_UTILS})
+if(NOT WIN32)
+    list(APPEND LIBS m stdc++)
+endif()
+target_link_libraries(test_libm ${LIBS})
 
 # Configuration summary
 message(STATUS "=== AOCL LibM Examples Configuration ===")

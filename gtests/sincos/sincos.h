@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -135,7 +135,10 @@ class SpecTestFixtureSinCosF : public ::testing::TestWithParam<SpecParams> {
     count = GetParam().countf;
     nargs = GetParam().nargs;
 
-    ConfSetUpSinCos<float>(&data, &expected_expection, count, datasc32, &sop, &cop);
+    ConfSetUpSinCos<uint32_t>(&idata, &expected_expection, count, datasc32, &isop, &icop);
+    data = (float *)idata;
+    sop = (float *)isop;
+    cop = (float *)icop;
 
     unsigned int arr_size = count * sizeof(float);
     if((arr_size % _ALIGN_FACTOR) != 0) {
@@ -145,15 +148,16 @@ class SpecTestFixtureSinCosF : public ::testing::TestWithParam<SpecParams> {
   }
 
   void TearDown() override {
-    aocl_libm_aligned_free(data);
+    aocl_libm_aligned_free(idata);
     aocl_libm_aligned_free(expected_expection);
-    aocl_libm_aligned_free(sop);
-    aocl_libm_aligned_free(cop);
+    aocl_libm_aligned_free(isop);
+    aocl_libm_aligned_free(icop);
   }
 
  protected:
   int *expected_expection;
   float  *data, *sop, *cop;
+  uint32_t *idata, *isop, *icop;
   uint32_t count;
   PrintTstRes *ptr;
   int vflag;
@@ -213,7 +217,10 @@ class SpecTestFixtureSinCos : public ::testing::TestWithParam<SpecParams> {
     count = GetParam().countd;
     nargs = GetParam().nargs;
 
-    ConfSetUpSinCos<double>(&data, &expected_expection, count, datasc64, &sop, &cop);
+    ConfSetUpSinCos<uint64_t>(&idata, &expected_expection, count, datasc64, &isop, &icop);
+    data = (double *)idata;
+    sop = (double *)isop;
+    cop = (double *)icop;
 
     unsigned int arr_size = count * sizeof(double);
     if((arr_size % _ALIGN_FACTOR) != 0) {
@@ -223,14 +230,15 @@ class SpecTestFixtureSinCos : public ::testing::TestWithParam<SpecParams> {
   }
 
   void TearDown() override {
-    aocl_libm_aligned_free(data);
+    aocl_libm_aligned_free(idata);
     aocl_libm_aligned_free(expected_expection);
-    aocl_libm_aligned_free(sop);
-    aocl_libm_aligned_free(cop);
+    aocl_libm_aligned_free(isop);
+    aocl_libm_aligned_free(icop);
   }
 
  protected:
   int *expected_expection;
+  uint64_t *idata, *isop, *icop;
   double  *data, *sop, *cop;
   uint32_t count;
   PrintTstRes *ptr;
@@ -281,7 +289,10 @@ class SpecTestFixtureSinCosFloatArray : public ::testing::TestWithParam<SpecPara
     count = GetParam().countf;
     nargs = GetParam().nargs;
 
-    ConfSetUpSinCos<float>(&data, &expected_expection, count, datasc32, &sop, &cop);
+    ConfSetUpSinCos<uint32_t>(&idata, &expected_expection, count, datasc32, &isop, &icop);
+    data = (float *)idata;
+    sop = (float *)isop;
+    cop = (float *)icop;
 
     unsigned int arr_size = count * sizeof(float);
     if((arr_size % _ALIGN_FACTOR) != 0) {
@@ -293,10 +304,10 @@ class SpecTestFixtureSinCosFloatArray : public ::testing::TestWithParam<SpecPara
   }
 
   void TearDown() override {
-    aocl_libm_aligned_free(data);
+    aocl_libm_aligned_free(idata);
     aocl_libm_aligned_free(expected_expection);
-    aocl_libm_aligned_free(sop);
-    aocl_libm_aligned_free(cop);
+    aocl_libm_aligned_free(isop);
+    aocl_libm_aligned_free(icop);
     aocl_libm_aligned_free(aop_array);
     aocl_libm_aligned_free(scp_array);
   }
@@ -304,6 +315,7 @@ class SpecTestFixtureSinCosFloatArray : public ::testing::TestWithParam<SpecPara
  protected:
   int *expected_expection;
   uint32_t nargs;
+  uint32_t *idata, *isop, *icop;
   float  *data, *sop, *cop, *aop_array, *scp_array;
   uint32_t count;
   PrintTstRes *ptr;
@@ -353,7 +365,10 @@ class SpecTestFixtureSinCosDoubleArray : public ::testing::TestWithParam<SpecPar
     count = GetParam().countd;
     nargs = GetParam().nargs;
 
-    ConfSetUpSinCos<double>(&data, &expected_expection, count, datasc64, &sop, &cop);
+    ConfSetUpSinCos<uint64_t>(&idata, &expected_expection, count, datasc64, &isop, &icop);
+    data = (double *)idata;
+    sop = (double *)isop;
+    cop = (double *)icop;
 
     unsigned int arr_size = count * sizeof(double);
     if((arr_size % _ALIGN_FACTOR) != 0) {
@@ -365,10 +380,10 @@ class SpecTestFixtureSinCosDoubleArray : public ::testing::TestWithParam<SpecPar
   }
 
   void TearDown() override {
-    aocl_libm_aligned_free(data);
+    aocl_libm_aligned_free(idata);
     aocl_libm_aligned_free(expected_expection);
-    aocl_libm_aligned_free(sop);
-    aocl_libm_aligned_free(cop);
+    aocl_libm_aligned_free(isop);
+    aocl_libm_aligned_free(icop);
     aocl_libm_aligned_free(aop_array);
     aocl_libm_aligned_free(scp_array);
   }
@@ -376,6 +391,7 @@ class SpecTestFixtureSinCosDoubleArray : public ::testing::TestWithParam<SpecPar
  protected:
   int *expected_expection;
   uint32_t nargs;
+  uint64_t *idata, *isop, *icop;
   double  *data, *sop, *cop, *aop_array, *scp_array;
   uint32_t count;
   PrintTstRes *ptr;

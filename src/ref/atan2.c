@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -562,18 +562,24 @@ double ALM_PROTO_REF(atan2)(double y, double x)
 
   /* Special cases */
 
-  if (xnan)
+  /* IEEE 754: If either x or y is NaN, return NaN */
+  if (xnan || ynan) {
 #ifdef WINDOWS
-    return __alm_handle_error(ux|0x0008000000000000, 0);
+    /*
+     * Branchless sNaN vs qNaN handling:
+     * sNaN (quiet bit = 0): raise FE_INVALID
+     * qNaN (quiet bit = 1): no exception
+     */
+    int is_snan = (xnan && !(aux & QNAN_MASK_64)) ||
+                  (ynan && !(auy & QNAN_MASK_64));
+    return __alm_handle_error(
+        (xnan ? ux : uy) | QNAN_MASK_64,
+        is_snan ? AMD_F_INVALID : AMD_F_NONE
+    );
 #else
-    return x + x; /* Raise invalid if it's a signalling NaN */
+    return x + y; /* Propagate NaN, raise invalid for sNaN */
 #endif
-  else if (ynan)
-#ifdef WINDOWS
-    return __alm_handle_error(uy|0x0008000000000000, 0);
-#else
-    return y + y; /* Raise invalid if it's a signalling NaN */
-#endif
+  }
   else if (yzero)
     { /* Zero y gives +-0 for positive x
          and +-pi for negative x */
@@ -618,16 +624,11 @@ double ALM_PROTO_REF(atan2)(double y, double x)
 
       if (diffexp < -1074) /* Result underflows */
         {
+          /* Raise FE_UNDERFLOW on all platforms */
           if (yneg)
-#ifdef WINDOWS
-            return -0.0;  //val_with_flags(-0.0,AMD_F_INEXACT | AMD_F_UNDERFLOW);
+            return __alm_handle_error(NEG_ZERO_F64, AMD_F_INEXACT | AMD_F_UNDERFLOW);
           else
-            return  0.0; //val_with_flags(0.0,AMD_F_INEXACT | AMD_F_UNDERFLOW);
-#else
-            return __alm_handle_error(0x8000000000000000, AMD_F_INEXACT | AMD_F_UNDERFLOW);
-          else
-            return __alm_handle_error(0x0000000000000000, AMD_F_INEXACT | AMD_F_UNDERFLOW);
-#endif
+            return __alm_handle_error(POS_ZERO_F64, AMD_F_INEXACT | AMD_F_UNDERFLOW);
         }
       else
         {

@@ -2,7 +2,7 @@
   function: exp10
   timing_enabled: true
   test_sets:
-  - id: exp10
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: exp10_001

@@ -243,8 +243,17 @@ double ALM_PROTO_OPT(erfinv)(double x)
   if (ux >= ONEU) {
     if (ux == INFU) /* Check for ±INF */
       return __alm_handle_error((POS_QNAN_F64 | sign), AMD_F_INVALID);
-    else if (ux > INFU) /* Check for ±NAN */
-      return __alm_handle_error((POS_QNAN_F64 | sign), AMD_F_NONE);
+    else if (ux > INFU) { /* Check for ±NAN */
+      /*
+       * Branchless sNaN vs qNaN handling:
+       * sNaN has quiet bit (bit 51) = 0, should raise FE_INVALID
+       * qNaN has quiet bit (bit 51) = 1, no exception
+       */
+      return __alm_handle_error(
+          (POS_QNAN_F64 | sign),
+          (ux & QNAN_MASK_64) ? AMD_F_NONE : AMD_F_INVALID
+      );
+    }
     else if (ux == ONEU) /* Check for ±1 */
       return __alm_handle_error((POS_INF_F64 | sign), AMD_F_DIVBYZERO);
     else  /* Check for |x|>1 */

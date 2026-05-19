@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
@@ -33,7 +32,8 @@
 #include <math.h>
 
 #include <libm_errno_amd.h>
-
+/* Complex exponential special handler */
+#include <libm/types.h>
 /*
  * Error codes to specify if an input is or
  *  output will be special floating point numbers
@@ -216,6 +216,9 @@ float   alm_powf_special (float y, uint32_t code);
 
 double  alm_exp_special (double y, uint32_t code);
 float   alm_expf_special (float y, uint32_t code);
+
+fc64_t  alm_cexp_special (fc64_t z, uint32_t code);
+fc32_t  alm_cexpf_special (fc32_t z, uint32_t code);
 
 double  alm_log_special(double y, uint32_t code);
 float   alm_logf_special(float y, uint32_t code);

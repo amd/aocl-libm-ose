@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -57,13 +57,10 @@
  *     Return
  *
  *     If length is less than 4:
- *         Create a mask for the actual number of elements
- *         Load elements using masked load
- *         Call vrs4_log1pf()
- *         Store the output using masked store
+ *         Fallback to scalar: for each element call log1pf()
  *     Return
- * 
- * TODO: The above mentioned logic can be enhanced with vrs8_log1pf() API, once it is implemented. 
+ *
+ * TODO: The above mentioned logic can be enhanced with vrs8_log1pf() API, once it is implemented.
  */
 
 #include <libm_macros.h>
@@ -81,7 +78,7 @@ void ALM_PROTO_OPT(vrsa_log1pf)(int length, const float *input, float *result)
         __m128 last_ip4 = _mm_loadu_ps(&input[length - FLOAT_ELEMENTS_128_BIT]);
 
         int j = 0;
-        
+
         // Process complete chunks of 4 (n*4 elements)
         for (j = 0; j <= length - FLOAT_ELEMENTS_128_BIT; j += FLOAT_ELEMENTS_128_BIT)
         {
@@ -89,7 +86,7 @@ void ALM_PROTO_OPT(vrsa_log1pf)(int length, const float *input, float *result)
             __m128 op4 = ALM_PROTO(vrs4_log1pf)(ip4);
             _mm_storeu_ps(&result[j], op4);
         }
-        
+
         // Handle remaining elements using the pre-saved last 4 elements
         if (length - j)
         {
@@ -98,10 +95,10 @@ void ALM_PROTO_OPT(vrsa_log1pf)(int length, const float *input, float *result)
         }
         return;
     }
-    
-    // For length < 4, use masked operations
-    __m128i mask = GET_MASK_FLOAT_128_BIT(length);
-    __m128 ip4 = _mm_maskload_ps(&input[0], mask);
-    __m128 op4 = ALM_PROTO(vrs4_log1pf)(ip4);
-    _mm_maskstore_ps(&result[0], mask, op4);
+
+    // For length < 4, fallback to scalar
+    for (int j = 0; j < length; ++j)
+    {
+        result[j] = ALM_PROTO(log1pf)(input[j]);
+    }
 }

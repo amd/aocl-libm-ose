@@ -2,7 +2,7 @@
   function: sin
   timing_enabled: true
   test_sets:
-  - id: sin
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: sin_001

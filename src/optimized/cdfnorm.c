@@ -59,36 +59,23 @@
   
   Region 2 [-1.5 < a ≤ -0.5]: Moderate negative arguments  
     Use transformation Φ(a) = (1/2)erfc(-a/√2) with AMD's optimized erfc.
-    The transformation x = -a/√2 is computed in extended precision (long double)
+    The transformation x = -a/√2 is computed in extended precision
     to minimize rounding error, then converted to double for the erfc call.
   
   Region 3 [-10 < a ≤ -1.5]: Critical negative range
     This region requires special handling due to precision challenges. We use:
     
-    (a) Extended precision transformation: x = -a/√2 computed in long double
+    (a) Extended precision transformation: x = -a/√2
     
     (b) High-accuracy rational approximations: Piecewise rational functions
-        R(z) = P(z)/Q(z) that approximate erfc(z) with near-machine precision.
+        R(z) = P(z)/Q(z) that approximate erfc(z).
         Four subintervals cover [0.5, 28]:
         - [0.5, 1.5]: degree (5,6) centered at z=0.5
         - [1.5, 2.5]: degree (5,5) centered at z=1.5  
         - [2.5, 4.5]: degree (5,5) centered at z=3.5
         - [4.5, 28]: degree (6,6) using 1/z transformation
     
-    (c) Precise exp(-z²) evaluation: To avoid cancellation errors when
-        computing erfc(z) ≈ R(z) · exp(-z²)/z, we use a two-part exponential
-        computation. We split z into high and low parts:
-        
-          z_hi = z rounded to 26 mantissa bits
-          z_lo = z - z_hi
-          
-        Then compute:
-          z² = z_hi² + 2·z_hi·z_lo + z_lo²
-          
-        And split the exponential:
-          exp(-z²) = exp(-z_hi²) · exp(-error_term)
-          
-        where error_term captures the residual.
+    (c) Precise exp(-z²) evaluation using extended precision arithmetic.
   
   Region 4 [a ≤ -10]: Extreme negative tail
     Use asymptotic expansion from Abramowitz & Stegun 26.2.12:
@@ -96,7 +83,11 @@
       Φ(a) = φ(a)/|a| · [1 - 1/a² + 1·3/a⁴ - 1·3·5/a⁶ + ...]
       
     where φ(a) = (1/√(2π)) exp(-a²/2) is the standard normal PDF.
-    The series is computed in long double precision for maximum accuracy.
+  
+  PLATFORM-SPECIFIC IMPLEMENTATION:
+    - Linux: Uses long double (80-bit extended precision) for Regions 3 & 4.
+    - Windows: Uses double-double arithmetic (dd_t) since Windows long double
+      is only 64-bit. This provides consistent accuracy across platforms.
   
   Saturation:
     - a ≥ 37.5: Returns 1.0
@@ -113,6 +104,129 @@
 #include <libm_util_amd.h>
 #include <libm/poly.h>
 
+#if defined(_WIN32)
+
+static struct {
+  /* Basic constants */
+  const double zero;
+  const double half;
+  const double one;
+  const double sqrth;                       /* 1/√2 in double precision */
+  const double asymptotic_threshold;        /* -10.0 */
+  const double highprec_erfc_threshold;     /* -1.5 */
+  const double round_to_one_cut;            /* 37.5 */
+  const double underflow_to_zero_cut;       /* -39.0 */
+  
+  /* Double-double constants: 1/√2 */
+  const double sqrth_dd_hi;
+  const double sqrth_dd_lo;
+  
+  /* Double-double constants: 1/√(2π) */
+  const double one_over_sqrt_2pi_hi;
+  const double one_over_sqrt_2pi_lo;
+  
+  /* Taylor series coefficients for exp(r) */
+  const double exp_taylor[7];
+  
+  /* Rational approximation coefficients (double precision) */
+  const double erfc_0p5_1p5_Y;
+  const double erfc_0p5_1p5_P[6];
+  const double erfc_0p5_1p5_Q[7];
+  
+  const double erfc_1p5_2p5_Y;
+  const double erfc_1p5_2p5_P[6];
+  const double erfc_1p5_2p5_Q[6];
+  
+  const double erfc_2p5_4p5_Y;
+  const double erfc_2p5_4p5_P[6];
+  const double erfc_2p5_4p5_Q[6];
+  
+  const double erfc_4p5_28_Y;
+  const double erfc_4p5_28_P[7];
+  const double erfc_4p5_28_Q[7];
+  
+} cdfnorm_data = {
+  .zero = 0x0p+0,
+  .half = 0x1p-1,
+  .one  = 0x1p+0,
+  .sqrth = 0x1.6a09e667f3bcdp-1,
+  .asymptotic_threshold = -0x1.4p+3,
+  .highprec_erfc_threshold = -0x1.8p+0,
+  .round_to_one_cut = 0x1.2cp+5,
+  .underflow_to_zero_cut = -0x1.38p+5,
+  
+  .sqrth_dd_hi = 0x1.6a09e667f3bcdp-1,
+  .sqrth_dd_lo = -0x1.bdd3413b26456p-55,
+  
+  .one_over_sqrt_2pi_hi = 0x1.9884533d436510p-2,
+  .one_over_sqrt_2pi_lo = 0x1.4p-56,
+  
+  .exp_taylor = {
+    0x1p+0, 0x1p+0, 0x1p-1, 0x1.5555555555555p-3,
+    0x1.5555555555555p-5, 0x1.1111111111111p-7, 0x1.6c16c16c16c17p-10,
+  },
+  
+  .erfc_0p5_1p5_Y = 0x1.9fadap-2,
+  .erfc_0p5_1p5_P = {
+    -0x1.91c770d9d3c38p-4, 0x1.6cc761c5cdfcfp-3, 0x1.872cf216e5f4bp-3,
+    0x1.6c17f596974e2p-4, 0x1.3f917b098b969p-6, 0x1.d8f8dba7bf515p-10,
+  },
+  .erfc_0p5_1p5_Q = {
+    0x1p0, 0x1.d8fbb46b1d05ep0, 0x1.6d20b0730d505p0, 0x1.27f68988b9f55p-1,
+    0x1.fb4b28dd2f600p-4, 0x1.738a6d80ccf02p-7, 0x1.c5000f148a68ep-19,
+  },
+  
+  .erfc_1p5_2p5_Y = 0x1.0371ep-1,
+  .erfc_1p5_2p5_P = {
+    -0x1.8ef3808bfbe3ap-6, 0x1.3ca7645df54c9p-5, 0x1.680608a7660760p-5,
+    0x1.1fd54bd6a6245p-6, 0x1.a89fbecd94db8p-9, 0x1.ee97293c42ffap-13,
+  },
+  .erfc_1p5_2p5_Q = {
+    0x1p0, 0x1.8a37ddbaa96d0p0, 0x1.f6fd9e749acf6p-1,
+    0x1.4d8cee8caf21ap-2, 0x1.cdf6fb1d81fe3p-5, 0x1.0cf09d7005348p-8,
+  },
+  
+  .erfc_2p5_4p5_Y = 0x1.14c64p-1,
+  .erfc_2p5_4p5_P = {
+    0x1.83066cd0bf15ap-9, 0x1.c22e68cf6b2c5p-7, 0x1.13840e0e2140cp-7,
+    0x1.16f46da1af76bp-9, 0x1.066d54ccd32a6p-12, 0x1.7be0b780f7e4ep-17,
+  },
+  .erfc_2p5_4p5_Q = {
+    0x1p0, 0x1.0acc2fcb1378ap0, 0x1.c538522309af6p-2,
+    0x1.88993f34aac72p-4, 0x1.5b48e7dd47e9ap-7, 0x1.f6b2fb953735bp-12,
+  },
+  
+  .erfc_4p5_28_Y = 0x1.1da64p-1,
+  .erfc_4p5_28_P = {
+    0x1.9b9a82141fdacp-8, 0x1.1f5bd4085c48dp-6, -0x1.b383063c1348dp-3,
+    -0x1.601c882adf2bep-1, -0x1.46a330b7811e2p1, -0x1.9d17fc9bea3fbp1, -0x1.68a52784ed044p1,
+  },
+  .erfc_4p5_28_Q = {
+    0x1p0, 0x1.65732e0a14960p1, 0x1.61d0ae6a5ca5ep3, 0x1.fdc7da2dc1122p3,
+    0x1.6efce09ed824fp4, 0x1.b0349176f08c7p3, 0x1.5efb5c445a48fp2,
+  },
+};
+
+#define SQRTH_DD          ((dd_t){cdfnorm_data.sqrth_dd_hi, cdfnorm_data.sqrth_dd_lo})
+#define ONE_OVER_SQRT_2PI ((dd_t){cdfnorm_data.one_over_sqrt_2pi_hi, cdfnorm_data.one_over_sqrt_2pi_lo})
+#define EXP_TAYLOR        cdfnorm_data.exp_taylor
+#define ERFC_0P5_1P5_Y    cdfnorm_data.erfc_0p5_1p5_Y
+#define ERFC_0P5_1P5_P    cdfnorm_data.erfc_0p5_1p5_P
+#define ERFC_0P5_1P5_Q    cdfnorm_data.erfc_0p5_1p5_Q
+#define ERFC_1P5_2P5_Y    cdfnorm_data.erfc_1p5_2p5_Y
+#define ERFC_1P5_2P5_P    cdfnorm_data.erfc_1p5_2p5_P
+#define ERFC_1P5_2P5_Q    cdfnorm_data.erfc_1p5_2p5_Q
+#define ERFC_2P5_4P5_Y    cdfnorm_data.erfc_2p5_4p5_Y
+#define ERFC_2P5_4P5_P    cdfnorm_data.erfc_2p5_4p5_P
+#define ERFC_2P5_4P5_Q    cdfnorm_data.erfc_2p5_4p5_Q
+#define ERFC_4P5_28_Y     cdfnorm_data.erfc_4p5_28_Y
+#define ERFC_4P5_28_P     cdfnorm_data.erfc_4p5_28_P
+#define ERFC_4P5_28_Q     cdfnorm_data.erfc_4p5_28_Q
+
+#else /* Linux */
+/*
+ * Linux version: Use long double (80-bit extended precision).
+ */
 static struct {
   const double zero;
   const double half;
@@ -129,34 +243,21 @@ static struct {
   .zero = 0x0p+0,
   .half = 0x1p-1,
   .one  = 0x1p+0,
-  .sqrth = 0x1.6a09e667f3bcdp-1,                        /* 1/√2 in double precision */
-  .sqrth_ld = 0x1.6a09e667f3bcc908b2fb1366eap-1L,      /* 1/√2 in extended precision */
+  .sqrth = 0x1.6a09e667f3bcdp-1,
+  .sqrth_ld = 0x1.6a09e667f3bcc908b2fb1366eap-1L,
   .half_ld = 0x1p-1L,
-  .one_over_sqrt_two_pi_l = 0x1.9884533d43651814ap-2L,  /* 1/√(2π) */
-  .asymptotic_threshold = -0x1.4p+3,                    /* -10.0 */
-  .highprec_erfc_threshold = -0x1.8p+0,                 /* -1.5 */
-  .round_to_one_cut = 0x1.2cp+5,                        /* 37.5 */
-  .underflow_to_zero_cut = -0x1.38p+5,                  /* -39.0 */
+  .one_over_sqrt_two_pi_l = 0x1.9884533d43651814ap-2L,
+  .asymptotic_threshold = -0x1.4p+3,
+  .highprec_erfc_threshold = -0x1.8p+0,
+  .round_to_one_cut = 0x1.2cp+5,
+  .underflow_to_zero_cut = -0x1.38p+5,
 };
 
-#define ZERO                     cdfnorm_data.zero
-#define HALF                     cdfnorm_data.half
 #define HALF_LD                  cdfnorm_data.half_ld
-#define ONE                      cdfnorm_data.one
-#define SQRTH                    cdfnorm_data.sqrth
 #define SQRTH_LD                 cdfnorm_data.sqrth_ld
 #define ONE_OVER_SQRT_TWO_PI_L   cdfnorm_data.one_over_sqrt_two_pi_l
-#define ASYMPTOTIC_THRESHOLD     cdfnorm_data.asymptotic_threshold
-#define HIGHPREC_ERFC_THRESHOLD  cdfnorm_data.highprec_erfc_threshold
-#define HI_CUT                   cdfnorm_data.round_to_one_cut
-#define LO_CUT                   cdfnorm_data.underflow_to_zero_cut
 
-#define INF                 0x7ff0000000000000ULL
-#define UPPER32_MASK        0x7fffffffU
-#define INF_NAN             0x7ff00000U
-
-
-/* Rational approximation for interval [0.5, 1.5] */
+/* Long double rational approximation coefficients */
 static const long double erfc_rat_0p5_1p5_Y = 0x1.9fadap-2L;
 static const long double erfc_rat_0p5_1p5_P[] = {
     -0x1.91c770d9d3c378012fa57cc694ce716591a80918c7bd5c4d0cf1eb2a5d17b1e8p-4L,
@@ -176,7 +277,6 @@ static const long double erfc_rat_0p5_1p5_Q[] = {
     0x1.c5000f148a68e3c0e8efc4dcbfa6be4cf501a39af6919f621d61fc9ae691af6p-19L,
 };
 
-/* Rational approximation for interval [1.5, 2.5] */
 static const long double erfc_rat_1p5_2p5_Y = 0x1.0371ep-1L;
 static const long double erfc_rat_1p5_2p5_P[] = {
     -0x1.8ef3808bfbe39c5f54dd0d713c429ce52b8749ddfbe080d650e28fa886982b6ap-6L,
@@ -195,7 +295,6 @@ static const long double erfc_rat_1p5_2p5_Q[] = {
     0x1.0cf09d70053478a159ad57ccc29609e87bfedc3fde0cf0291a1c9aae22f3b2c6p-8L,
 };
 
-/* Rational approximation for interval [2.5, 4.5] */
 static const long double erfc_rat_2p5_4p5_Y = 0x1.14c64p-1L;
 static const long double erfc_rat_2p5_4p5_P[] = {
     0x1.83066cd0bf159e333b9d5e9b2009007ca4885b2c846292fc6bc9c6ec9bb1ef4cp-9L,
@@ -214,7 +313,6 @@ static const long double erfc_rat_2p5_4p5_Q[] = {
     0x1.f6b2fb953735b6d21a976fe6f8452ea234b6386453960e80cfa7d3608b19deccp-12L,
 };
 
-/* Rational approximation for interval [4.5, 28]*/
 static const long double erfc_rat_4p5_28_Y = 0x1.1da64p-1L;
 static const long double erfc_rat_4p5_28_P[] = {
     0x1.9b9a82141fdabcf25f50ef97231068e3648b528353cac936a625313038c9fb2ep-8L,
@@ -235,9 +333,134 @@ static const long double erfc_rat_4p5_28_Q[] = {
     0x1.5efb5c445a48f73b0de602deb3187d6dc4c6f891f7338d2f69daeb79c7cbd29ap2L,
 };
 
+#endif /* WINDOWS */
+
+/* Common access macros */
+#define ZERO                     cdfnorm_data.zero
+#define HALF                     cdfnorm_data.half
+#define ONE                      cdfnorm_data.one
+#define SQRTH                    cdfnorm_data.sqrth
+#define ASYMPTOTIC_THRESHOLD     cdfnorm_data.asymptotic_threshold
+#define HIGHPREC_ERFC_THRESHOLD  cdfnorm_data.highprec_erfc_threshold
+#define HI_CUT                   cdfnorm_data.round_to_one_cut
+#define LO_CUT                   cdfnorm_data.underflow_to_zero_cut
+
+#define INF                 0x7ff0000000000000ULL
+#define UPPER32_MASK        0x7fffffffU
+#define INF_NAN             0x7ff00000U
+
+
+/*============================================================================
+ * HELPER FUNCTIONS - Platform-specific implementations
+ *============================================================================*/
+
+#if defined(_WIN32)
+/*
+ * Windows: Double-double arithmetic for extended precision
+ */
+
+/*
+ * Extended precision exponential for negative arguments using double-double.
+ */
+static inline dd_t
+exp_negative_dd(dd_t x) {
+    double exp_main = ALM_PROTO_OPT(exp)(x.hi);
+    double r = x.lo;
+    double exp_lo = POLY_EVAL_HORNER_7(r, EXP_TAYLOR[0], EXP_TAYLOR[1], EXP_TAYLOR[2],
+                                       EXP_TAYLOR[3], EXP_TAYLOR[4], EXP_TAYLOR[5], EXP_TAYLOR[6]);
+    return dd_two_prod(exp_main, exp_lo);
+}
+
+/*
+ * Asymptotic expansion for extreme negative arguments (a ≤ -10).
+ */
+static inline double
+asymptotic_expansion_tail(double a) {
+    dd_t a_dd = dd_from_d(a);
+    dd_t sum = dd_from_d(1.0);
+    dd_t a_sq = dd_mul(a_dd, a_dd);
+    dd_t g = dd_from_d(1.0);
+    dd_t last_term = dd_from_d(DBL_MAX);
+    int n = 1;
+    
+    while (n < 30) {
+        double coef1 = 4.0 * n - 3.0;
+        dd_t x = dd_div_d(dd_from_d(coef1), dd_to_d(a_sq));
+        double coef2 = 4.0 * n - 1.0;
+        dd_t y = dd_mul(x, dd_div_d(dd_from_d(coef2), dd_to_d(a_sq)));
+        dd_t x_minus_y = dd_sub(x, y);
+        dd_t term = dd_mul(g, x_minus_y);
+        sum = dd_sub(sum, term);
+        g = dd_mul(g, y);
+        n++;
+        
+        dd_t abs_term = dd_abs(term);
+        if (dd_ge(abs_term, last_term)) break;
+        dd_t abs_sum = dd_abs(sum);
+        double threshold = dd_to_d(abs_sum) * DBL_EPSILON * 0.1;
+        if (dd_to_d(abs_term) < threshold) break;
+        last_term = abs_term;
+    }
+    
+    dd_t neg_half = dd_from_d(-0.5);
+    dd_t exp_arg = dd_mul(neg_half, a_sq);
+    dd_t exp_val = exp_negative_dd(exp_arg);
+    dd_t phi = dd_mul(exp_val, ONE_OVER_SQRT_2PI);
+    dd_t neg_phi = dd_neg(phi);
+    dd_t numerator = dd_mul(neg_phi, sum);
+    dd_t result = dd_div(numerator, a_dd);
+    
+    return dd_to_d(result);
+}
+
+/*
+ * High-precision erfc using double-double arithmetic.
+ */
+static inline dd_t
+erfc_highaccuracy_dd(dd_t z_dd) {
+    double z = z_dd.hi;
+    dd_t Y_dd, P_dd, Q_dd, t_dd;
+    
+    if (z < 1.5) {
+        Y_dd = dd_from_d(ERFC_0P5_1P5_Y);
+        t_dd = dd_add_d(z_dd, -0.5);
+        P_dd = DD_POLY_EVAL_HORNER_6(t_dd, ERFC_0P5_1P5_P);
+        Q_dd = DD_POLY_EVAL_HORNER_7(t_dd, ERFC_0P5_1P5_Q);
+    } else if (z < 2.5) {
+        Y_dd = dd_from_d(ERFC_1P5_2P5_Y);
+        t_dd = dd_add_d(z_dd, -1.5);
+        P_dd = DD_POLY_EVAL_HORNER_6(t_dd, ERFC_1P5_2P5_P);
+        Q_dd = DD_POLY_EVAL_HORNER_6(t_dd, ERFC_1P5_2P5_Q);
+    } else if (z < 4.5) {
+        Y_dd = dd_from_d(ERFC_2P5_4P5_Y);
+        t_dd = dd_add_d(z_dd, -3.5);
+        P_dd = DD_POLY_EVAL_HORNER_6(t_dd, ERFC_2P5_4P5_P);
+        Q_dd = DD_POLY_EVAL_HORNER_6(t_dd, ERFC_2P5_4P5_Q);
+    } else {
+        Y_dd = dd_from_d(ERFC_4P5_28_Y);
+        t_dd = dd_div_d(dd_from_d(1.0), z);
+        P_dd = DD_POLY_EVAL_HORNER_7(t_dd, ERFC_4P5_28_P);
+        Q_dd = DD_POLY_EVAL_HORNER_7(t_dd, ERFC_4P5_28_Q);
+    }
+    
+    dd_t ratio = dd_div(P_dd, Q_dd);
+    dd_t result = dd_add(Y_dd, ratio);
+    dd_t z_sq = dd_mul(z_dd, z_dd);
+    dd_t neg_z_sq = dd_neg(z_sq);
+    dd_t exp_neg_z2 = exp_negative_dd(neg_z_sq);
+    result = dd_mul(result, exp_neg_z2);
+    result = dd_div(result, z_dd);
+    
+    return result;
+}
+
+#else /* Linux */
+/*
+ * Linux: Long double (80-bit extended precision)
+ */
+
 /*
  * Extended precision exponential for negative arguments.
- * Computes exp(x) for x < 0 by splitting into main and correction parts.
  */
 static inline long double
 exp_negative_extended(long double x) {
@@ -252,13 +475,13 @@ exp_negative_extended(long double x) {
         exp_rem += term;
         term *= x_rem * 0x1p-1L;
         exp_rem += term;
-        term *= x_rem * 0x1.5555555555555556p-2L;  /* 1/3 */
+        term *= x_rem * 0x1.5555555555555556p-2L;
         exp_rem += term;
-        term *= x_rem * 0x1p-2L;  /* 1/4 */
+        term *= x_rem * 0x1p-2L;
         exp_rem += term;
-        term *= x_rem * 0x1.999999999999999ap-3L;  /* 1/5 */
+        term *= x_rem * 0x1.999999999999999ap-3L;
         exp_rem += term;
-        term *= x_rem * 0x1.5555555555555556p-3L;  /* 1/6 */
+        term *= x_rem * 0x1.5555555555555556p-3L;
         exp_rem += term;
     }
     
@@ -267,13 +490,6 @@ exp_negative_extended(long double x) {
 
 /*
  * Asymptotic expansion for extreme negative arguments (a ≤ -10).
- * Uses Abramowitz & Stegun formula 26.2.12:
- *   Φ(a) = φ(a)/|a| · Σ (-1)ⁿ (2n-1)!! / (2a²)ⁿ
- * where φ(a) = exp(-a²/2)/√(2π) is the standard normal PDF.
- * The algorithm uses a recurrence to build up double factorials:
- *   For n=1: term = (1/a² - 3/a⁴), giving:       1 - 1/a² + 3/a⁴
- *   For n=2: term = (3/a⁴)·(5/a² - 35/a⁴), giving: ... - 15/a⁶ + 105/a⁸  
- *   Where 3 = 1·3, 15 = 1·3·5, 105 = 1·3·5·7 are double factorials (2n-1)!!
  */
 static inline double
 asymptotic_expansion_tail(double a) {
@@ -286,8 +502,8 @@ asymptotic_expansion_tail(double a) {
     int n = 1;
     
     while (n < 30) {
-        x = (0x1p+2L * n - 0x1.8p+1L) / a_sq;  /* (4n - 3) / a² */
-        y = x * ((0x1p+2L * n - 0x1p+0L) / a_sq);  /* · (4n - 1) / a² */
+        x = (0x1p+2L * n - 0x1.8p+1L) / a_sq;
+        y = x * ((0x1p+2L * n - 0x1p+0L) / a_sq);
         term = g * (x - y);
         sum -= term;
         g *= y;
@@ -295,14 +511,12 @@ asymptotic_expansion_tail(double a) {
         
         long double abs_term = (term >= 0x0p+0L) ? term : -term;
         if (abs_term >= last_term) break;
-        
         long double abs_sum = (sum >= 0x0p+0L) ? sum : -sum;
-        if (abs_term < abs_sum * LDBL_EPSILON * 0x1.999999999999999ap-4L) break;  /* ε/10 */
-        
+        if (abs_term < abs_sum * LDBL_EPSILON * 0x1.999999999999999ap-4L) break;
         last_term = abs_term;
     }
     
-    long double exp_arg = -0x1p-1L * a_sq;  /* -a²/2 */
+    long double exp_arg = -0x1p-1L * a_sq;
     long double pdf = exp_negative_extended(exp_arg) * ONE_OVER_SQRT_TWO_PI_L;
     long double result = -pdf * sum / a_l;
     
@@ -310,20 +524,16 @@ asymptotic_expansion_tail(double a) {
 }
 
 /*
- * High-precision erfc implementation using extended precision throughout.
- * 
- * Computes erfc(z) for z ∈ [0.5, 28] using piecewise rational approximations
- * in the form R(z) exp(-z²)/z, where R(z) ≈ erfc(z) exp(z²) z.
+ * High-precision erfc using long double.
  */
 static inline long double
 erfc_highaccuracy_extended(long double z_ext) {
     long double result;
     long double Y;
     
-         if (z_ext < 0x1.8p+0L) {  /* z < 1.5 */
-        /* Interval [0.5, 1.5] */
+    if (z_ext < 0x1.8p+0L) {
         Y = erfc_rat_0p5_1p5_Y;
-        long double t = z_ext - 0x1p-1L;  /* z - 0.5 */
+        long double t = z_ext - 0x1p-1L;
         long double P = POLY_EVAL_HORNER_6(t, erfc_rat_0p5_1p5_P[0], erfc_rat_0p5_1p5_P[1],
                                            erfc_rat_0p5_1p5_P[2], erfc_rat_0p5_1p5_P[3],
                                            erfc_rat_0p5_1p5_P[4], erfc_rat_0p5_1p5_P[5]);
@@ -332,11 +542,9 @@ erfc_highaccuracy_extended(long double z_ext) {
                                            erfc_rat_0p5_1p5_Q[4], erfc_rat_0p5_1p5_Q[5],
                                            erfc_rat_0p5_1p5_Q[6]);
         result = Y + P / Q;
-        
-    } else if (z_ext < 0x1.4p+1L) {  /* z < 2.5 */
-        /* Interval [1.5, 2.5] */
+    } else if (z_ext < 0x1.4p+1L) {
         Y = erfc_rat_1p5_2p5_Y;
-        long double t = z_ext - 0x1.8p+0L;  /* z - 1.5 */
+        long double t = z_ext - 0x1.8p+0L;
         long double P = POLY_EVAL_HORNER_6(t, erfc_rat_1p5_2p5_P[0], erfc_rat_1p5_2p5_P[1],
                                            erfc_rat_1p5_2p5_P[2], erfc_rat_1p5_2p5_P[3],
                                            erfc_rat_1p5_2p5_P[4], erfc_rat_1p5_2p5_P[5]);
@@ -344,11 +552,9 @@ erfc_highaccuracy_extended(long double z_ext) {
                                            erfc_rat_1p5_2p5_Q[2], erfc_rat_1p5_2p5_Q[3],
                                            erfc_rat_1p5_2p5_Q[4], erfc_rat_1p5_2p5_Q[5]);
         result = Y + P / Q;
-        
-    } else if (z_ext < 0x1.2p+2L) {  /* z < 4.5 */
-        /* Interval [2.5, 4.5] */
+    } else if (z_ext < 0x1.2p+2L) {
         Y = erfc_rat_2p5_4p5_Y;
-        long double t = z_ext - 0x1.cp+1L;  /* z - 3.5 */
+        long double t = z_ext - 0x1.cp+1L;
         long double P = POLY_EVAL_HORNER_6(t, erfc_rat_2p5_4p5_P[0], erfc_rat_2p5_4p5_P[1],
                                            erfc_rat_2p5_4p5_P[2], erfc_rat_2p5_4p5_P[3],
                                            erfc_rat_2p5_4p5_P[4], erfc_rat_2p5_4p5_P[5]);
@@ -356,11 +562,9 @@ erfc_highaccuracy_extended(long double z_ext) {
                                            erfc_rat_2p5_4p5_Q[2], erfc_rat_2p5_4p5_Q[3],
                                            erfc_rat_2p5_4p5_Q[4], erfc_rat_2p5_4p5_Q[5]);
         result = Y + P / Q;
-        
     } else {
-        /* Interval [4.5, 28] using reciprocal */
         Y = erfc_rat_4p5_28_Y;
-        long double t = 0x1p+0L / z_ext;  /* 1/z */
+        long double t = 0x1p+0L / z_ext;
         long double P = POLY_EVAL_HORNER_7(t, erfc_rat_4p5_28_P[0], erfc_rat_4p5_28_P[1],
                                            erfc_rat_4p5_28_P[2], erfc_rat_4p5_28_P[3],
                                            erfc_rat_4p5_28_P[4], erfc_rat_4p5_28_P[5],
@@ -372,43 +576,26 @@ erfc_highaccuracy_extended(long double z_ext) {
         result = Y + P / Q;
     }
     
-    /*
-     * Two-part exp(-z²) computation to maintain precision.
-     * 
-     * Split z into high and low parts: z = z_hi + z_lo
-     * where z_hi has only 26 mantissa bits (half of double precision).
-     * 
-     * Then: z² = z_hi² + 2·z_hi·z_lo + z_lo²
-     * 
-     * Compute: exp(-z²) = exp(-z_hi²) · exp(-(2·z_hi·z_lo + z_lo²))
-     * 
-     * The second exponential is close to 1, so we can compute it accurately
-     * even though the error term is small.
-     */
-    long double z_hi, z_lo;
-    
-    /* Split z: convert to double for AMD's optimized functions */
+    /* Two-part exp(-z²) computation */
     double z_d = (double)z_ext;
-    
-    /* Extract high part with 26 mantissa bits using bit mask */
     double z_hi_d = asdouble(asuint64(z_d) & 0xfffffffff8000000ULL);
-    
-    /* Convert to extended precision for accurate arithmetic */
-    z_hi = (long double)z_hi_d;
-    z_lo = z_ext - z_hi;
-    
-    /* Compute z² and error term */
+    long double z_hi = (long double)z_hi_d;
+    long double z_lo = z_ext - z_hi;
     long double z_sq = z_ext * z_ext;
     long double err_sq = ((z_hi * z_hi - z_sq) + 0x1p+1L * z_hi * z_lo) + z_lo * z_lo;
-    
-    /* Split exponential computation */
     long double exp_main = exp_negative_extended(-z_sq);
     long double exp_corr = exp_negative_extended(-err_sq);
-    
     result *= exp_main * exp_corr / z_ext;
     
     return result;
 }
+
+#endif /* WINDOWS */
+
+
+/*============================================================================
+ * MAIN FUNCTION
+ *============================================================================*/
 
 double ALM_PROTO_OPT(cdfnorm)(double a) {
   double y;
@@ -446,7 +633,7 @@ double ALM_PROTO_OPT(cdfnorm)(double a) {
    * Region 4 [a ≤ -10]: Use asymptotic expansion
    */
   
-      if (a > -0.5) {
+  if (a > -0.5) {
     /*
      * Region 1: Positive and small negative arguments
      * Use erf formulation: Φ(a) = 0.5 + 0.5·erf(a/√2)
@@ -459,23 +646,34 @@ double ALM_PROTO_OPT(cdfnorm)(double a) {
      * Region 2: Moderate negative arguments
      * Use erfc formulation: Φ(a) = 0.5·erfc(-a/√2)
      */
+#if defined(_WIN32)
+    dd_t a_dd = dd_from_d(a);
+    dd_t neg_a_dd = dd_neg(a_dd);
+    dd_t x_dd = dd_mul(neg_a_dd, SQRTH_DD);
+    double x = dd_to_d(x_dd);
+#else
     long double a_ext = (long double)a;
     long double x_ext = -a_ext * SQRTH_LD;
     double x = (double)x_ext;
-    
+#endif
     y = HALF * ALM_PROTO_OPT(erfc)(x);
     
   } else if (a > ASYMPTOTIC_THRESHOLD) {  /* -10 < a <= -1.5 */
     /*
      * Region 3: Critical negative range - use extended precision
      */
+#if defined(_WIN32)
+    dd_t a_dd = dd_from_d(a);
+    dd_t neg_a_dd = dd_neg(a_dd);
+    dd_t x_dd = dd_mul(neg_a_dd, SQRTH_DD);
+    dd_t erfc_dd = erfc_highaccuracy_dd(x_dd);
+    y = 0.5 * dd_to_d(erfc_dd);
+#else
     long double a_ext = (long double)a;
     long double x_ext = -a_ext * SQRTH_LD;
-    
-    /* Compute erfc in extended precision, round only at end */
     long double erfc_ext = erfc_highaccuracy_extended(x_ext);
-    
     y = (double)(HALF_LD * erfc_ext);
+#endif
     
   } else {
     /* Region 4: Extreme negative tail - use asymptotic expansion */

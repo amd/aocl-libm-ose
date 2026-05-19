@@ -2,7 +2,7 @@
   function: nextafter
   timing_enabled: true
   test_sets:
-  - id: nextafter
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: nextafter_001

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -41,6 +41,10 @@ struct alm_arch_funcs __arch_funcs_add = {
         [ALM_UARCH_VER_DEFAULT] = {
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_addf),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX2(vrda_add),
+        },
+        [ALM_UARCH_VER_AVX512] = {
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX512(vrsa_addf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX512(vrda_add),
         },
 
         [ALM_UARCH_VER_ZEN] = {

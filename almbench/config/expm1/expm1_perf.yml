@@ -2,7 +2,7 @@
   function: expm1
   timing_enabled: true
   test_sets:
-  - id: expm1
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: expm1_001

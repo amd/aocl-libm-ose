@@ -2,7 +2,7 @@
   function: sincos
   timing_enabled: true
   test_sets:
-  - id: sincos
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: sincos_001

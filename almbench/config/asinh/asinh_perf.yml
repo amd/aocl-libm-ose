@@ -2,7 +2,7 @@
   function: asinh
   timing_enabled: true
   test_sets:
-  - id: asinh
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: asinh_001

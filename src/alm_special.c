@@ -930,6 +930,78 @@ double alm_ldexp_special(double y, U32 code) {
     return y;
 }
 
+/* cexp - complex exponential */
+fc64_t alm_cexp_special(fc64_t z, uint32_t code) {
+    double re = creal(z);
+    flt64_t rem = {.d = re};
+
+    switch (code) {
+    case ALM_E_OVERFLOW:
+        /* Raise overflow and inexact exceptions */
+        __alm_handle_error(rem.u, AMD_F_INEXACT | AMD_F_OVERFLOW);
+        break;
+
+    case ALM_E_UNDERFLOW:
+        /* Raise underflow and inexact exceptions */
+        __alm_handle_error(rem.u, AMD_F_INEXACT | AMD_F_UNDERFLOW);
+        break;
+
+    case ALM_E_IN_Y_INF:
+        /* Finite real + i*inf -> raise invalid */
+        __alm_handle_error(rem.u, AMD_F_INVALID);
+        break;
+
+    case (ALM_E_IN_X_INF | ALM_E_IN_Y_INF):
+        /* +inf + i*inf -> raise invalid */
+        __alm_handle_error(rem.u, AMD_F_INVALID);
+        break;
+
+    default:
+        break;
+    }
+
+    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+        return (fc64_t) { re, cimag(z) };
+    #else
+        return z;
+    #endif
+}
+
+fc32_t alm_cexpf_special(fc32_t z, uint32_t code) {
+    float re = crealf(z);
+    flt32_t rem = {.f = re};
+
+    switch (code) {
+    case ALM_E_OVERFLOW:
+        /* Raise overflow and inexact exceptions */
+        __alm_handle_errorf(rem.u, AMD_F_INEXACT | AMD_F_OVERFLOW);
+        break;
+
+    case ALM_E_UNDERFLOW:
+        /* Raise underflow and inexact exceptions */
+        __alm_handle_errorf(rem.u, AMD_F_INEXACT | AMD_F_UNDERFLOW);
+        break;
+
+    case ALM_E_IN_Y_INF:
+        /* Finite real + i*inf -> raise invalid */
+        __alm_handle_errorf(rem.u, AMD_F_INVALID);
+        break;
+
+    case (ALM_E_IN_X_INF | ALM_E_IN_Y_INF):
+        /* +inf + i*inf -> raise invalid */
+        __alm_handle_errorf(rem.u, AMD_F_INVALID);
+        break;
+
+    default:
+        break;
+    }
+
+    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+        return (fc32_t) { re, cimagf(z) };
+    #else
+        return z;
+    #endif
+}
 double alm_erfcinv_special(double x) {
     flt64_t fl = {.d = x};
     return __alm_handle_error(fl.u, AMD_F_INVALID);

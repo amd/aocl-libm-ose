@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -158,6 +158,10 @@ endmacro()
 
 macro(get_avx2fma_flag fmaflag)
   set(${fmaflag} -mavx2 -mfma)
+endmacro()
+
+macro(get_avx512_flag avx512flag)
+  set(${avx512flag} -mavx512f -mavx512dq -mfma)
 endmacro()
 
 macro(get_fastmath_flag fmflag)

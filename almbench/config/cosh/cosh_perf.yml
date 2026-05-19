@@ -2,7 +2,7 @@
   function: cosh
   timing_enabled: true
   test_sets:
-  - id: cosh
+  - id: range-tests_01
     tests:
 # Single Precision
     - id: cosh_001

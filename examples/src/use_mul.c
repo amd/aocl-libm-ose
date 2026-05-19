@@ -153,29 +153,29 @@ void mul_vector_double_precision_4()
 /**********************************************
  *     Vector Array Variants
  * *******************************************/
+#define N 10
 void mul_single_precision_array()
 {
     printf("Using Single Precision Vectory Array (vrsa) mul()\n");
-    int n=5;
-    float input[10] = {1.0f, 3.0f, -5.0f, 0.0f, -9.0f, 11.0f, 13.0f, 15.0f, -17.0f, 19.0f};
-    float input2[10] = {3.0f, -1.0f, -0.0f, -6.0f, 0.0f, 0.0f, 4.0f, -1.0f, 2.0f, -10.0f};
-    float output[10] = {0};
+    float input[N] = {1.0f, 3.0f, -5.0f, 0.0f, -9.0f, 11.0f, 13.0f, 15.0f, -17.0f, 19.0f};
+    float input2[N] = {3.0f, -1.0f, -0.0f, -6.0f, 0.0f, 0.0f, 4.0f, -1.0f, 2.0f, -10.0f};
+    float output[N] = {0};
 
-    amd_vrsa_mulf(n, input, input2, output);
+    amd_vrsa_mulf(N, input, input2, output);
 
-    printf("Number of elements: %d\n", n);
+    printf("Number of elements: %d\n", N);
     printf("Input: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", input[i]);
     }
     printf("}, Input2: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", input2[i]);
     }
     printf("}, Output: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", output[i]);
     }
@@ -186,26 +186,25 @@ void mul_single_precision_array()
 void mul_double_precision_array()
 {
     printf("Using Double Precision Vectory Array (vrda) mul()\n");
-    int n=8;
-    double input[10] = {-0.0, -0.0, 4.0, 2.0, 6.0, -12.0, 14.0, -1.0, 3.0, -5.0};
-    double input2[10] = {0.0, -0.0, 3.0, -4.0, 5.0, 6.0, -7.0, 8.0, -9.0, -10.0};
-    double output[10] = {0};
+    double input[N] = {-0.0, -0.0, 4.0, 2.0, 6.0, -12.0, 14.0, -1.0, 3.0, -5.0};
+    double input2[N] = {0.0, -0.0, 3.0, -4.0, 5.0, 6.0, -7.0, 8.0, -9.0, -10.0};
+    double output[N] = {0};
 
-    amd_vrda_mul(n, input, input2, output);
+    amd_vrda_mul(N, input, input2, output);
 
-    printf("Number of elements: %d\n", n);
+    printf("Number of elements: %d\n", N);
     printf("Input: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", input[i]);
     }
     printf("}, Input2: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", input2[i]);
     }
     printf("}, Output: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<N; ++i)
     {
         printf("%f, ", output[i]);
     }
@@ -222,28 +221,28 @@ void mul_single_precision_array_with_inc()
     printf("Using Single Precision Vectory Array with Increment (vrsa-i) mul()\n");
     // inc2=0 indicates that only the first element of the second input array is considered throughout
     int n=5, inc1=2, inc2=0, inco=2;
-    float input[10] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f};
-    float input2[10] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f};
-    float output[10] = {0};
+    float input[N] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f};
+    float input2[N] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f};
+    float output[N] = {0};
 
     amd_vrsa_mulfi(n, input, inc1, input2, inc2, output, inco);
 
     printf("Number of elements: %d\n", n);
     printf("Increments: arr_1: %d \t arr_2: %d \t res_arr: %d\n", inc1, inc2, inco);
     printf("Input: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<n; ++i)
     {
-        printf("%f, ", input[i]);
+        printf("%f, ", input[i*inc1]);
     }
     printf("}, Input2: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<n; ++i)
     {
-        printf("%f, ", input2[i]);
+        printf("%f, ", input2[i*inc2]);
     }
     printf("}, Output: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<n; ++i)
     {
-        printf("%f, ", output[i]);
+        printf("%f, ", output[i*inco]);
     }
     printf("}\n");
     printf("----------\n");
@@ -254,9 +253,9 @@ void mul_double_precision_array_with_inc()
     printf("Using Double Precision Vectory Array with Increment (vrda-i) mul()\n");
     // Negative increments can also be passed (inc2 is negative here, indicating reverse traversal through the array)
     int n=3, inc1=1, inc2=-2, inco=2;
-    double input[10] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
-    double input2[10] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
-    double output[10] = {0};
+    double input[N] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
+    double input2[N] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
+    double output[N] = {0};
 
     // The base pointer can be passed as any required element of the array(ip2+9 is passed here for reverse traversal from the end)
     amd_vrda_muli(n, input, inc1, input2+9, inc2, output, inco);
@@ -264,19 +263,19 @@ void mul_double_precision_array_with_inc()
     printf("Number of elements: %d\n", n);
     printf("Increments: arr_1: %d \t arr_2: %d \t res_arr: %d\n", inc1, inc2, inco);
     printf("Input: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<n; ++i)
     {
-        printf("%f, ", input[i]);
+        printf("%f, ", input[i*inc1]);
     }
     printf("}, Input2: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<n; ++i)
     {
-        printf("%f, ", input2[i]);
+        printf("%f, ", (input2+9)[i*inc2]);
     }
     printf("}, Output: {");
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<n; ++i)
     {
-        printf("%f, ", output[i]);
+        printf("%f, ", output[i*inco]);
     }
     printf("}\n");
     printf("----------\n");

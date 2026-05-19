@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -35,9 +35,9 @@ from os.path import join as joinpath
 
 toolchain_versions = {
     #Toolchain : {preferred_version, min_version}
-    'GCC' :     {'max':'14.2' ,  'min':'9.2'},
-    'CLANG':    {'max':'18.1',   'min':'9.0'},
-    'AOCC':     {'max':'18.1',   'min':'9.0'},
+    'GCC' :     {'max':'15.2' ,  'min':'9.2'},
+    'CLANG':    {'max':'19.9',   'min':'9.0'},
+    'AOCC':     {'max':'19.9',   'min':'9.0'},
     'MSVC':     {'max':'12.0',   'min':'2.2'},
 }
 
@@ -166,6 +166,13 @@ def All(almenv):
         ctx.env['ALM_MAX_ARCH'] = 'x86_64'
         return None
 
+    def CheckUnalignedVectorMove(ctx):
+        # Test if compiler supports -muse-unaligned-vector-move flag
+        # This flag is AOCC-specific (AOCC >= 4.0.0 / Clang 14.0.6+)
+        ret = CheckCompilerFlag(ctx, '-muse-unaligned-vector-move')
+        ctx.env['SUPPORTS_UNALIGNED_VEC_MOVE'] = ret
+        return ret
+
     conf = env.Configure (
         help = False,
         custom_tests = {
@@ -174,6 +181,7 @@ def All(almenv):
             'CheckLibAbi'       : CheckLibAbi,
             'CheckCPUIDInstall' :   CheckCPUIDInstall,
             'CheckZenVer'       : lambda ctx : CheckZenVer(ctx),
+            'CheckUnalignedVectorMove' : lambda ctx : CheckUnalignedVectorMove(ctx),
         },
         conf_dir = joinpath(env['BUILDDIR'], '.sconf_temp'),
     )
@@ -195,6 +203,8 @@ def All(almenv):
         Exit(1)
 
     conf.CheckZenVer()
+
+    conf.CheckUnalignedVectorMove()
 
     if not conf.CheckCPUIDInstall():
         Exit(1)

@@ -65,7 +65,6 @@
 #include <libm/types.h>
 #include <libm/constants.h>
 #include <libm/typehelper.h>
-#include <stdio.h>
 
 fc32_t
 ALM_PROTO_OPT(clogf)(fc32_t x) {

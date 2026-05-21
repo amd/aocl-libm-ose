@@ -527,3 +527,119 @@ uint64_t DerivedGenerator<S>::get_index()
 
 template class DerivedGenerator<float>;
 template class DerivedGenerator<double>;
+
+/*
+ * enumerate_combinations:
+ * Lexicographic nCr enumeration over indices [0, n). Each result is sorted
+ * ascending, length r. Returns empty vector when r == 0, n == 0, or r > n.
+ */
+std::vector<std::vector<size_t>> enumerate_combinations(size_t n, size_t r)
+{
+    std::vector<std::vector<size_t>> out;
+    if (r == 0 || n == 0 || r > n) {
+        return out;
+    }
+
+    std::vector<size_t> idx(r);
+    std::iota(idx.begin(), idx.end(), 0);
+
+    /* Generate using successor rule for lexicographic combinations */
+    while (true) {
+        out.push_back(idx);
+        ssize_t i = static_cast<ssize_t>(r) - 1;
+        while (i >= 0 && idx[i] == n - r + static_cast<size_t>(i)) {
+            --i;
+        }
+        if (i < 0) {
+            break;
+        }
+        ++idx[i];
+        for (size_t j = static_cast<size_t>(i) + 1; j < r; ++j) {
+            idx[j] = idx[j - 1] + 1;
+        }
+    }
+    return out;
+}
+
+/*
+ * make_multistep_subgen:
+ * Helper that constructs a scalar MultiStepGenerator<S> (array_size=1) from
+ * a typed InpRng<S>.  rng.count arrives as (steps / n) from libm_process;
+ * we multiply by lane_width here so each sub-gen covers (steps * lane_width / n)
+ * scalar values, matching the call rate each sub-gen actually receives
+ * across all outer iterations.
+ */
+template <typename S>
+static std::unique_ptr<MultiStepGenerator<S>>
+make_multistep_subgen(const InpRng<S> &rng, size_t lane_width)
+{
+    return std::make_unique<MultiStepGenerator<S>>(
+        rng.srt, rng.stp, rng.count * lane_width, rng.type, 1);
+}
+
+/* MultiRangeGenerator implementation */
+template <typename S>
+MultiRangeGenerator<S>::MultiRangeGenerator(
+    const std::vector<InpRng<S>> &per_ref_ranges, size_t lane_width_)
+    : lane_width(lane_width_), combo_idx(0), i(0), buf(nullptr)
+{
+    const size_t n_orig = per_ref_ranges.size();
+    const size_t n      = std::max(n_orig, lane_width);
+
+    subs.reserve(n);
+    for (size_t k = 0; k < n; ++k) {
+        const auto &rng = per_ref_ranges[k % n_orig];
+        subs.push_back(make_multistep_subgen<S>(rng, lane_width));
+    }
+
+    combos = enumerate_combinations(n, lane_width);
+    if (combos.empty()) {
+        throw std::logic_error(
+            "enumerate_combinations returned empty: n=" + std::to_string(n) +
+            " lane_width=" + std::to_string(lane_width) +
+            " — precondition violated (n >= lane_width must hold)");
+    }
+
+    S *raw = new (std::align_val_t(64)) S[lane_width];
+    buf.reset(raw);
+}
+
+template <typename S>
+S *MultiRangeGenerator<S>::next()
+{
+    const auto &combo = combos[combo_idx];
+    for (size_t k = 0; k < lane_width; ++k) {
+        buf[k] = *subs[combo[k]]->wrap_next();
+    }
+    combo_idx = (combo_idx + 1) % combos.size();
+    ++i;
+    return buf.get();
+}
+
+template <typename S>
+bool MultiRangeGenerator<S>::has_next() const
+{
+    /*
+     * MultiRangeGenerator is unbounded; the outer caller bounds total
+     * iterations via steps_mr. wrap_next() in sub-gens handles their own
+     * reset transparently.
+     */
+    return true;
+}
+
+template <typename S>
+void MultiRangeGenerator<S>::reset()
+{
+    for (auto &g : subs) g->reset();
+    combo_idx = 0;
+    i = 0;
+}
+
+template <typename S>
+uint64_t MultiRangeGenerator<S>::get_index()
+{
+    return i;
+}
+
+template class MultiRangeGenerator<float>;
+template class MultiRangeGenerator<double>;

@@ -32,6 +32,8 @@
 #include "libm_yaml.h"
 #include <cstdio>
 #include <functional>
+#include <unordered_map>
+#include <unordered_set>
 
 // Global filters (empty = no filter)
 static std::string g_api_filter;
@@ -65,11 +67,21 @@ static bool firstSegmentEquals(const std::string& rel, const std::string& api) {
 /*
  * read_test:
  * Parse a single test case from a YAML node and populate the YamlInputs struct.
- * Handles both single-value inputs and input ranges.
+ * Handles both single-value inputs and input ranges. The `id_registry` and
+ * `multi_range_ids` are per-file state used for `multi_range:` ref resolution
+ * and duplicate-id detection.
  */
-static int read_test(const YAML::Node &test, struct YamlInputs &param)
+static int read_test(const YAML::Node &test, struct YamlInputs &param,
+                     std::unordered_map<std::string, std::vector<InputRange>> &id_registry,
+                     std::unordered_set<std::string> &multi_range_ids)
 {
     std::string test_id = test["id"].as<std::string>();
+
+    /* Duplicate-id detection: within a single file, ids must be unique. */
+    if (id_registry.count(test_id) > 0 || multi_range_ids.count(test_id) > 0) {
+        throw YAML::Exception(test.Mark(),
+            "duplicate test id '" + test_id + "' within file");
+    }
 
     /* Optional description field (not stored) */
     if (test["description"]) {
@@ -79,70 +91,132 @@ static int read_test(const YAML::Node &test, struct YamlInputs &param)
     const YAML::Node input = test["input"];
     const YAML::Node expect = test["expect"];
     const YAML::Node type = test["type"];
-    const YAML::Node steps = test["steps"];
+    const YAML::Node steps       = test["steps"];
+    const YAML::Node steps_mr    = test["steps_mr"];
     const YAML::Node variants = test["variants"];
     const YAML::Node exp_excep = test["expect_exception"];
     const YAML::Node uth = test["uth"];
     const YAML::Node warmup = test["warmup"];
     const YAML::Node batch_size = test["batch_size"];
     const YAML::Node derived_node = test["derived"];
+    const YAML::Node multi_range_node = test["multi_range"];
 
     uint32_t n = 0;
     param.test_id = test_id;
 
     /*
-     * Process input values:
+     * multi_range branch: this test draws values from previously-declared
+     * test ids and mixes them across vector lanes. The block replaces the
+     * normal input:/type:/derived: triple entirely.
+     */
+    if (multi_range_node) {
+        if (input || type || derived_node) {
+            throw YAML::Exception(test.Mark(),
+                "test '" + test_id +
+                "': multi_range cannot coexist with input/type/derived");
+        }
+        const YAML::Node refs_node = multi_range_node["refs"];
+        if (!refs_node || !refs_node.IsSequence() || refs_node.size() < 1) {
+            throw YAML::Exception(multi_range_node.Mark(),
+                "test '" + test_id +
+                "': multi_range.refs must be a non-empty sequence");
+        }
+
+        MultiRangeGenConfig mr;
+        std::size_t expected_arity = 0;
+        for (std::size_t i = 0; i < refs_node.size(); i++) {
+            std::string ref_id = refs_node[i].as<std::string>();
+            if (multi_range_ids.count(ref_id) > 0) {
+                throw YAML::Exception(multi_range_node.Mark(),
+                    "test '" + test_id + "': ref '" + ref_id +
+                    "' is itself a multi_range test (not allowed)");
+            }
+            auto it = id_registry.find(ref_id);
+            if (it == id_registry.end()) {
+                throw YAML::Exception(multi_range_node.Mark(),
+                    "test '" + test_id + "': ref '" + ref_id +
+                    "' not found earlier in this file");
+            }
+            if (it->second.empty()) {
+                throw YAML::Exception(multi_range_node.Mark(),
+                    "test '" + test_id + "': ref '" + ref_id +
+                    "' has no range[] (unit test refs not supported)");
+            }
+            if (i == 0) {
+                expected_arity = it->second.size();
+            } else if (it->second.size() != expected_arity) {
+                throw YAML::Exception(multi_range_node.Mark(),
+                    "test '" + test_id + "': ref '" + ref_id +
+                    "' arity mismatch (expected " +
+                    std::to_string(expected_arity) + ", got " +
+                    std::to_string(it->second.size()) + ")");
+            }
+
+            MultiRangeRef entry;
+            entry.ref_id = ref_id;
+            entry.ranges = it->second;
+            mr.refs.push_back(std::move(entry));
+        }
+        param.multi_range = std::move(mr);
+
+        /* variants, uth, warmup, batch_size, steps for multi_range tests filled below. */
+    }
+
+    /*
+     * Process input values (no single range parsing for multi_range tests):
      * - If the input is a sequence, treat it as a range [start, stop]
      * - Otherwise, treat it as a single value
      */
-    for (std::size_t i = 0; i < input.size(); i++) {
-        const YAML::Node inp = input[i];
+    if (!multi_range_node) {
+        for (std::size_t i = 0; i < input.size(); i++) {
+            const YAML::Node inp = input[i];
 
-        if (inp.IsSequence()) {
-            struct InputRange range;
+            if (inp.IsSequence()) {
+                struct InputRange range;
 
-            range.srt = inp[0].as<std::string>();
-            range.stp = inp[1].as<std::string>();
+                range.srt = inp[0].as<std::string>();
+                range.stp = inp[1].as<std::string>();
 
-            if (n == 0) {
-                range.type = type ? type[0].as<std::string>()
-                                  : "expstep";
+                if (n == 0) {
+                    range.type = type ? type[0].as<std::string>()
+                                    : "expstep";
+                } else {
+                    range.type = (type && type[n])
+                        ? type[n].as<std::string>()
+                        : type[n - 1].as<std::string>();
+                }
+
+                range.count = steps ? steps[n].as<std::string>() : "1000";
+
+                /* If type is "derived", populate derived config from YAML */
+                if (range.type == "derived" && derived_node) {
+                    const YAML::Node d_range = derived_node["range"];
+                    if (!d_range || !d_range.IsSequence() || d_range.size() < 2)
+                        throw YAML::Exception(derived_node.Mark(),
+                            "derived: 'range' must be a sequence of [start, stop]");
+                    if (!derived_node["func"])
+                        throw YAML::Exception(derived_node.Mark(),
+                            "derived: 'func' is required");
+
+                    range.derived.emplace();
+                    range.derived->z_srt   = d_range[0].as<std::string>();
+                    range.derived->z_stp   = d_range[1].as<std::string>();
+                    range.derived->z_type  = derived_node["type"]
+                        ? derived_node["type"].as<std::string>() : "expstep";
+                    range.derived->z_count = derived_node["steps"]
+                        ? derived_node["steps"].as<std::string>() : "1000";
+                    range.derived->func    = derived_node["func"].as<std::string>();
+                } else if (range.type == "derived") {
+                    throw YAML::Exception(test.Mark(),
+                        "test '" + test_id + "': input[" + std::to_string(n) +
+                        "] has type 'derived' but no 'derived:' block found");
+                }
+
+                param.range.push_back(range);
+                n++;
             } else {
-                range.type = (type && type[n])
-                    ? type[n].as<std::string>()
-                    : type[n - 1].as<std::string>();
+                param.input.push_back(inp.as<std::string>());
             }
-
-            range.count = steps ? steps[n].as<std::string>() : "1000";
-
-            /* If type is "derived", populate derived config from YAML */
-            if (range.type == "derived" && derived_node) {
-                const YAML::Node d_range = derived_node["range"];
-                if (!d_range || !d_range.IsSequence() || d_range.size() < 2)
-                    throw YAML::Exception(derived_node.Mark(),
-                        "derived: 'range' must be a sequence of [start, stop]");
-                if (!derived_node["func"])
-                    throw YAML::Exception(derived_node.Mark(),
-                        "derived: 'func' is required");
-
-                range.derived.emplace();
-                range.derived->z_srt   = d_range[0].as<std::string>();
-                range.derived->z_stp   = d_range[1].as<std::string>();
-                range.derived->z_type  = derived_node["type"]
-                    ? derived_node["type"].as<std::string>() : "expstep";
-                range.derived->z_count = derived_node["steps"]
-                    ? derived_node["steps"].as<std::string>() : "1000";
-                range.derived->func    = derived_node["func"].as<std::string>();
-            } else if (range.type == "derived") {
-                throw YAML::Exception(test.Mark(),
-                    "test '" + test_id + "': input[" + std::to_string(n) +
-                    "] has type 'derived' but no 'derived:' block found");
-            }
-
-            param.range.push_back(range);
-            n++;
-        } else {
-            param.input.push_back(inp.as<std::string>());
         }
     }
 
@@ -269,6 +343,30 @@ static int read_test(const YAML::Node &test, struct YamlInputs &param)
     param.warmup_count = warmup ? warmup.as<std::string>() : "0";
     param.batch_size   = batch_size ? batch_size.as<std::string>() : "1";
 
+    /*
+     * For multi_range tests, `steps_mr:` is a top-level scalar that controls
+     * total outer iterations (distinct from the per-range `steps:` sequence
+     * used by normal tests).
+     */
+    if (multi_range_node) {
+        if (!steps_mr || !steps_mr.IsScalar()) {
+            throw YAML::Exception(test.Mark(),
+                "test '" + test_id +
+                "': multi_range tests require a top-level scalar 'steps_mr:'");
+        }
+        param.steps_mr = steps_mr.Scalar();
+    }
+
+    /*
+     * Register this test in the per-file id registry so later tests
+     * can resolve it via `multi_range.refs:`.
+     */
+    if (multi_range_node) {
+        multi_range_ids.insert(test_id);
+    } else {
+        id_registry[test_id] = param.range;
+    }
+
     return 0;
 }
 
@@ -313,6 +411,13 @@ std::string extractApiName(const std::string& id) {
 static int parse_yaml_content(const YAML::Node &config,
                               std::vector<struct YamlInputs> &params)
 {
+    /*
+     * Per-file id registry used to resolve `multi_range.refs:` and detect
+     * duplicate test ids.
+     */
+    std::unordered_map<std::string, std::vector<InputRange>> id_registry;
+    std::unordered_set<std::string>                          multi_range_ids;
+
     // Helper to process a single test_sequence-like map block
     auto process_block = [&](const YAML::Node& seq) -> int {
         if (!seq || !seq.IsMap()) return 0;
@@ -364,7 +469,7 @@ static int parse_yaml_content(const YAML::Node &config,
                 param.api_name  = apiName;
                 param.test_type = test_type;
 
-                read_test(test, param);
+                read_test(test, param, id_registry, multi_range_ids);
                 params.push_back(param);
             }
         }

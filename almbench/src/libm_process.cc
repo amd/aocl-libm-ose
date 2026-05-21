@@ -235,6 +235,44 @@ static T str_to_complex(const std::string &word)
 }
 
 /*
+ * input_range_to_typed:
+ * Convert a parsed InputRange (string-stage) to a typed InpRng<U>. Mirrors
+ * the inline logic in libm_api_variant; factored out so both the normal
+ * range[] path and the multi_range path can reuse it.
+ */
+template <typename U>
+static InpRng<U> input_range_to_typed(const InputRange &range)
+{
+    InpRng<U> iprng;
+    if constexpr (std::is_same_v<U, fc32_t> || std::is_same_v<U, fc64_t>) {
+        iprng.srt = str_to_complex<U>(range.srt);
+        iprng.stp = str_to_complex<U>(range.stp);
+    } else {
+        iprng.type = str_to_enum(range.type);
+        if (iprng.type != RangeType::E_Derived) {
+            iprng.srt = str_to_float<U>(range.srt);
+            iprng.stp = str_to_float<U>(range.stp);
+        } else {
+            iprng.srt = U{};
+            iprng.stp = U{};
+        }
+    }
+    iprng.type  = str_to_enum(range.type);
+    iprng.count = std::stoull(range.count);
+    if constexpr (!std::is_same_v<U, fc32_t> && !std::is_same_v<U, fc64_t>) {
+        if (iprng.type == RangeType::E_Derived && range.derived) {
+            iprng.derived.emplace();
+            iprng.derived->z_srt   = str_to_float<U>(range.derived->z_srt);
+            iprng.derived->z_stp   = str_to_float<U>(range.derived->z_stp);
+            iprng.derived->z_type  = str_to_enum(range.derived->z_type);
+            iprng.derived->z_count = std::stoull(range.derived->z_count);
+            iprng.derived->func    = range.derived->func;
+        }
+    }
+    return iprng;
+}
+
+/*
  * libm_api_variant:
  * Handles test execution for a specific API variant and input type.
  */
@@ -253,43 +291,54 @@ void libm_api_variant(struct AlmLibs *alibs, const struct YamlInputs &param,
     yop->vendor = vendor;
     yop->config.test_mode     = bench_args.test_mode;
     yop->config.perf_mode     = bench_args.perf_mode;
-    yop->config.utflag        = param.range.empty();
+    yop->config.utflag        = param.range.empty() && !param.multi_range.has_value();
     yop->config.ulp_threshold = std::stod(ulp_threshold);
     yop->config.warmup_count = std::stoull(param.warmup_count);
     yop->config.batch_size = std::stoull(param.batch_size);
     yop->config.batch_size = (yop->config.batch_size == 0) ? 1 : yop->config.batch_size;
     yop->test_id = param.test_id;
+    ipp->steps_mr = 0;
 
-    if (!param.range.empty()) {
+    /*
+     * multi_range path: gate complex types out and build a typed
+     * MultiRangeConfig from the resolved string-stage ranges. Override each
+     * sub-generator's count with (steps / n); make_multistep_subgen in
+     * generator.cc multiplies by lane_width to reach (steps * lane_width / n),
+     * which is the actual call rate per sub-gen across all outer iterations.
+     */
+    if (param.multi_range.has_value()) {
+        if constexpr (std::is_same_v<U, fc32_t> || std::is_same_v<U, fc64_t>) {
+            std::cerr << "multi_range not supported for complex APIs" << std::endl;
+            delete ipp;
+            delete yop;
+            return;
+        }
+        const auto &mr_str = *param.multi_range;
+        const std::size_t n = mr_str.refs.size();
+        const uint64_t T_total = param.steps_mr.empty()
+                                    ? 1000ULL
+                                    : std::stoull(param.steps_mr);
+        const uint64_t per_ref_count = (n > 0) ? (T_total / n) : T_total;
+
+        MultiRangeConfig<U> mr_typed;
+        for (const auto &entry : mr_str.refs) {
+            MultiRangeTypedRef<U> typed_entry;
+            typed_entry.ref_id = entry.ref_id;
+            for (const auto &range : entry.ranges) {
+                InpRng<U> iprng = input_range_to_typed<U>(range);
+                iprng.count = per_ref_count;
+                if (iprng.derived) {
+                    iprng.derived->z_count = per_ref_count;
+                }
+                typed_entry.ranges.push_back(std::move(iprng));
+            }
+            mr_typed.refs.push_back(std::move(typed_entry));
+        }
+        ipp->multi_range = std::move(mr_typed);
+        ipp->steps_mr = T_total;
+    } else if (!param.range.empty()) {
         for (const auto &range : param.range) {
-            struct InpRng<U> iprng;
-            if constexpr (std::is_same_v<U, fc32_t> || std::is_same_v<U, fc64_t>) {
-                iprng.srt = str_to_complex<U>(range.srt);
-                iprng.stp = str_to_complex<U>(range.stp);
-            } else {
-                iprng.type = str_to_enum(range.type);
-                if (iprng.type != RangeType::E_Derived) {
-                    iprng.srt = str_to_float<U>(range.srt);
-                    iprng.stp = str_to_float<U>(range.stp);
-                } else {
-                    // For derived ranges, srt/stp may be non-numeric (e.g. "derived");
-                    iprng.srt = U{};
-                    iprng.stp = U{};
-                }
-            }
-            iprng.type  = str_to_enum(range.type);
-            iprng.count = std::stoull(range.count);
-            if constexpr (!std::is_same_v<U, fc32_t> && !std::is_same_v<U, fc64_t>) {
-                if (iprng.type == RangeType::E_Derived && range.derived) {
-                    iprng.derived.emplace();
-                    iprng.derived->z_srt   = str_to_float<U>(range.derived->z_srt);
-                    iprng.derived->z_stp   = str_to_float<U>(range.derived->z_stp);
-                    iprng.derived->z_type  = str_to_enum(range.derived->z_type);
-                    iprng.derived->z_count = std::stoull(range.derived->z_count);
-                    iprng.derived->func    = range.derived->func;
-                }
-            }
-            ipp->range.push_back(iprng);
+            ipp->range.push_back(input_range_to_typed<U>(range));
         }
         for (const auto &input : param.input) {
             struct InpRng<U> iprng;

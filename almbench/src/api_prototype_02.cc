@@ -144,6 +144,87 @@ static std::pair<U*, U*> next_pair(GenPair<U>& gp)
 }
 
 /*
+ * build_bivariate_subpair_mr:
+ * Like build_bivariate_generators but for multi_range sub-gens:
+ * array_size=1 and counts scaled by lane_width so each scalar sub-gen
+ * covers (steps * lane_width / n) values, matching its actual call rate.
+ * x and y are taken by value so z_count can be scaled before forwarding.
+ */
+template <typename U>
+static GenPair<U> build_bivariate_subpair_mr(
+    InpRng<U> x, InpRng<U> y, size_t lane_width)
+{
+    const uint64_t xcount = x.count * static_cast<uint64_t>(lane_width);
+    const uint64_t ycount = y.count * static_cast<uint64_t>(lane_width);
+    if (x.derived) x.derived->z_count *= lane_width;
+    if (y.derived) y.derived->z_count *= lane_width;
+    return build_bivariate_generators(x, y, xcount, ycount, 1);
+}
+
+/*
+ * BivariateMRGen:
+ * Bivariate counterpart to MultiRangeGenerator for multi_range tests.
+ * Holds N GenPair sub-gens (one per ref, padded to lane_width) and cycles
+ * through all C(N, lane_width) lane combinations, placing one scalar per
+ * lane from the combo-selected sub-gen into the output buffers.
+ */
+template <typename U>
+struct BivariateMRGen {
+    struct AlignedDeleter {
+        void operator()(U *ptr) const {
+            operator delete[](ptr, std::align_val_t(64));
+        }
+    };
+
+    size_t lane_width;
+    std::vector<GenPair<U>> subs;
+    std::vector<std::vector<size_t>> combos;
+    size_t combo_idx = 0;
+    std::unique_ptr<U[], AlignedDeleter> buf1;
+    std::unique_ptr<U[], AlignedDeleter> buf2;
+
+    BivariateMRGen(const std::vector<std::vector<InpRng<U>>> &per_ref_ranges,
+                   size_t lane_width_)
+        : lane_width(lane_width_), combo_idx(0)
+    {
+        const size_t n_orig = per_ref_ranges.size();
+        const size_t n      = std::max(n_orig, lane_width);
+
+        subs.reserve(n);
+        for (size_t k = 0; k < n; ++k) {
+            const auto &two = per_ref_ranges[k % n_orig];
+            if (two.size() != 2)
+                throw std::runtime_error(
+                    "BivariateMRGen: each ref must have 2 ranges");
+            subs.push_back(
+                build_bivariate_subpair_mr(two[0], two[1], lane_width));
+        }
+
+        combos = enumerate_combinations(n, lane_width);
+        if (combos.empty())
+            throw std::logic_error(
+                "enumerate_combinations returned empty: n=" + std::to_string(n) +
+                " lane_width=" + std::to_string(lane_width) +
+                " — precondition violated (n >= lane_width must hold)");
+
+        buf1.reset(new (std::align_val_t(64)) U[lane_width]);
+        buf2.reset(new (std::align_val_t(64)) U[lane_width]);
+    }
+
+    std::pair<U *, U *> next_pair_mr()
+    {
+        const auto &combo = combos[combo_idx];
+        for (size_t k = 0; k < lane_width; ++k) {
+            auto [a1, a2] = next_pair(subs[combo[k]]);
+            buf1[k] = *a1;
+            buf2[k] = *a2;
+        }
+        combo_idx = (combo_idx + 1) % combos.size();
+        return {buf1.get(), buf2.get()};
+    }
+};
+
+/*
  * unit_test:
  * Executes a test function on a single input and compares the result
  * with a reference implementation using ULP error.
@@ -176,6 +257,45 @@ static void unit_test(struct InParams<T, U> *ipp,
 }
 
 /*
+ * run_bivariate_iters:
+ * Shared iteration kernel for bivariate range and multi_range tests.
+ * Runs N steps, calling get_pair() each iteration to obtain the next
+ * (ip1, ip2) input vector pair, then packs, runs, computes ULP error,
+ * and writes output.
+ * GetInputPair is any zero-argument callable returning std::pair<U*, U*>.
+ */
+template <typename T, typename U, typename UL, typename GetInputPair>
+static void run_bivariate_iters(uint64_t N, GetInputPair get_pair,
+                                struct InParams<T, U> *ipp,
+                                UL (*ref_func)(U, U),
+                                Runner<T, U> &runner, FloatPacker<T> &fp,
+                                uint64_t elem, double *max_ulp, int *status,
+                                struct YamlOutputs<U> *yop,
+                                YamlBatchWriter<U> *writer)
+{
+    double ulp;
+    for (uint64_t i = 0; i < N; ++i) {
+        auto [ip1, ip2] = get_pair();
+        ipp->ip[0] = fp.pack(ip1);
+        ipp->ip[1] = fp.pack(ip2);
+
+        yop->duration = runner.run(ipp);
+
+        U *op = reinterpret_cast<U *>(&ipp->op[0]);
+        for (uint64_t j = 0; j < elem; ++j) {
+            UL mpfrop  = ref_func(ip1[j], ip2[j]);
+            status[j]  = update_ulp(op[j], mpfrop, writer->stats().udata, ulp);
+            max_ulp[j] = ulp;
+        }
+
+        yop->iptr[0] = ip1;
+        yop->iptr[1] = ip2;
+        yop->optr[0] = op;
+        writer->push(yop);
+    }
+}
+
+/*
  * range_test:
  * Executes a test function over a range of inputs for non-VRA APIs.
  * Compares each result with a reference implementation using ULP error.
@@ -205,27 +325,9 @@ static void range_test(struct InParams<T, U>* ipp,
     uint64_t N = align_to(gp.primary_count, elem);
 
     FloatPacker<T> fp;
-    double ulp;
 
-    for (uint64_t i = 0; i < N; ++i) {
-        auto [ip1, ip2] = next_pair(gp);
-        ipp->ip[0] = fp.pack(ip1);
-        ipp->ip[1] = fp.pack(ip2);
-
-        yop->duration = runner.run(ipp);
-
-        U* op = reinterpret_cast<U*>(&ipp->op[0]);
-        for (uint64_t j = 0; j < elem; ++j) {
-            UL mpfrop  = ref_func(ip1[j], ip2[j]);
-            status[j]  = update_ulp(op[j], mpfrop, writer->stats().udata, ulp);
-            max_ulp[j] = ulp;
-        }
-
-        yop->iptr[0] = ip1;
-        yop->iptr[1] = ip2;
-        yop->optr[0] = op;
-        writer->push(yop);
-    }
+    run_bivariate_iters(N, [&]{ return next_pair(gp); },
+                        ipp, ref_func, runner, fp, elem, max_ulp, status, yop, writer);
 }
 
 /*
@@ -285,9 +387,59 @@ static void range_test_vra(struct InParams<T, U>* ipp,
 }
 
 /*
+ * range_test_multi:
+ * Executes a bivariate test that draws (x, y) pairs from N referenced
+ * sub-domains, cycling lane assignments through nCr combinations.
+ * Each lane k of both input vectors is taken from the same sub-pair, so
+ * the per-lane (x, y) correlation declared by each ref is preserved.
+ * Complex types are out of scope for v1.
+ */
+template <typename T, typename U, typename UL>
+static void range_test_multi(struct InParams<T, U>* ipp,
+                             UL (*ref_func)(U, U),
+                             void (*shim_func)(struct InParams<T, U> *),
+                             struct YamlOutputs<U> *yop,
+                             YamlBatchWriter<U> *writer)
+{
+    if constexpr (std::is_same_v<U, fc32_t> || std::is_same_v<U, fc64_t>) {
+        (void)ipp; (void)ref_func; (void)shim_func; (void)yop;
+        std::cerr << "multi_range not supported for complex APIs in v1" << std::endl;
+        return;
+    }
+
+    uint64_t elem               = sizeof(T) / sizeof(U);
+    double max_ulp[MAX_ELEM]    = {0.0};
+    int status[MAX_ELEM]        = {0};
+    yop->n[0]                   = elem;
+    yop->n[1]                   = elem;
+    yop->ulp                    = &max_ulp[0];
+    yop->status                 = &status[0];
+
+    Runner<T, U> runner(shim_func, yop->config);
+
+    /* Collect per-ref (x, y) range pairs. */
+    std::vector<std::vector<InpRng<U>>> per_ref;
+    per_ref.reserve(ipp->multi_range->refs.size());
+    for (const auto &entry : ipp->multi_range->refs) {
+        if (entry.ranges.size() != 2) {
+            std::cerr << "multi_range arity mismatch in api_prototype_02" << std::endl;
+            return;
+        }
+        per_ref.push_back(entry.ranges);
+    }
+
+    BivariateMRGen<U> gp(per_ref, static_cast<size_t>(elem));
+    uint64_t N = ipp->steps_mr ? ipp->steps_mr : 1000ULL;
+    FloatPacker<T> fp;
+
+    run_bivariate_iters(N, [&]{ return gp.next_pair_mr(); },
+                        ipp, ref_func, runner, fp, elem, max_ulp, status, yop, writer);
+}
+
+/*
  * api_prototype_02:
  * Main dispatcher function that selects the appropriate test mode
- * (unit_test, range, or VRA) and executes the test.
+ * (unit_test, range, VRA, or multi_range) and executes the test.
  */
 template <typename T, typename U>
 int api_prototype_02(struct AlmLibs *alibs,
@@ -302,7 +454,9 @@ int api_prototype_02(struct AlmLibs *alibs,
     auto shim_func = load_function<void (*)(struct InParams<T, U> *)>(alibs->pshimlib, libapi);
     auto ref_func  = load_function<UL (*)(U, U)>(alibs->preflib, refapi);
 
-    if (ipp->range.empty()) {
+    if (ipp->multi_range.has_value()) {
+        range_test_multi<T, U, UL>(ipp, ref_func, shim_func, yop, writer);
+    } else if (ipp->range.empty()) {
         unit_test<T, U, UL>(ipp, ref_func, shim_func, yop, writer);
     } else if (!yop->config.is_vra) {
         range_test<T, U, UL>(ipp, ref_func, shim_func, yop, writer);

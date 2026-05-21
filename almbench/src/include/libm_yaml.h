@@ -58,6 +58,27 @@ struct InputRange {
 };
 
 /*
+ * MultiRangeRef:
+ * One referenced test inside a multi_range block, resolved at parse time.
+ * Co-locates the referenced test's id (for diagnostics) with its full
+ * range[] recipe copied out of the referenced test's YamlInputs.
+ */
+struct MultiRangeRef {
+    std::string             ref_id;   /* Referenced test id */
+    std::vector<InputRange> ranges;   /* Resolved range list from that test */
+};
+
+/*
+ * MultiRangeGenConfig:
+ * String-stage config for a multi_range test. Stores the resolved per-ref
+ * range recipes in YAML-declaration order; this order determines the
+ * deterministic nCr combination enumeration downstream.
+ */
+struct MultiRangeGenConfig {
+    std::vector<MultiRangeRef> refs;
+};
+
+/*
  * YamlInputs:
  * Holds test configuration data parsed from YAML.
  */
@@ -73,6 +94,8 @@ struct YamlInputs {
     std::vector<InputRange> range;       /* Input ranges for range tests */
     std::string warmup_count;            /* Number of warmup iterations before measurement */
     std::string batch_size;              /* Number of API calls per timed batch */
+    std::string steps_mr;                /* Total outer iterations for multi_range tests */
+    std::optional<MultiRangeGenConfig> multi_range; /* Multi-range mix config (refs to other tests) */
 };
 
 /*

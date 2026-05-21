@@ -335,6 +335,48 @@ union IntOp {
     llint_t    ll;
 };
 
+/*
+ * MultiRangeTypedRef:
+ * Typed per-ref entry inside a MultiRangeConfig. `ranges` length == arity
+ * of the referenced test (1 for univariate, 2 for bivariate).
+ */
+template <typename U>
+struct MultiRangeTypedRef {
+    std::string            ref_id;
+    std::vector<InpRng<U>> ranges;
+};
+
+/*
+ * MultiRangeConfig:
+ * Typed multi-range mix config. Ordering of `refs` is preserved from YAML;
+ * it determines the deterministic nCr combination enumeration order.
+ */
+template <typename U>
+struct MultiRangeConfig {
+    std::vector<MultiRangeTypedRef<U>> refs;
+};
+
+/*
+ * MultiRangeTypedRef:
+ * Typed per-ref entry inside a MultiRangeConfig. `ranges` length == arity
+ * of the referenced test (1 for univariate, 2 for bivariate).
+ */
+template <typename U>
+struct MultiRangeTypedRef {
+    std::string            ref_id;
+    std::vector<InpRng<U>> ranges;
+};
+
+/*
+ * MultiRangeConfig:
+ * Typed multi-range mix config. Ordering of `refs` is preserved from YAML;
+ * it determines the deterministic nCr combination enumeration order.
+ */
+template <typename U>
+struct MultiRangeConfig {
+    std::vector<MultiRangeTypedRef<U>> refs;
+};
+
  /*
   * InParams:
   * Templated structure to hold input parameters for validation.
@@ -350,5 +392,7 @@ union IntOp {
      U          xv;                          /* Expected output value */
      int        xxv;                         /* Expected exception */
      std::vector<InpRng<U>> range;           /* Input ranges */
+     std::optional<MultiRangeConfig<U>> multi_range; /* Multi-range mix config */
+     uint64_t   steps_mr;                    /* Total outer iterations for multi_range */
      void      *sys;
- };
+};

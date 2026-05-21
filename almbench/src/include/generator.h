@@ -36,6 +36,8 @@
  #include <functional>
  #include <unordered_map>
  #include <string>
+ #include <vector>
+ #include <numeric>
  #include <immintrin.h>
 
  #include "alm_test.h"
@@ -492,3 +494,50 @@ private:
     };
     std::unique_ptr<S[], AlignedDeleter> array;
 };
+
+/*
+ * enumerate_combinations:
+ * Returns all r-element combinations of indices in [0, n), in lexicographic
+ * order. nCr entries, each a sorted vector of length r. If n == 0 or r == 0
+ * or r > n, returns an empty vector.
+ */
+std::vector<std::vector<size_t>> enumerate_combinations(size_t n, size_t r);
+
+/*
+ * MultiRangeGenerator:
+ * Generates per-iteration vectors whose lanes are drawn from N independent
+ * sub-generators, cycling through nCr lane combinations. Used for univariate
+ * APIs to simulate cross-subdomain workloads in vector code.
+ *
+ * If the number of referenced sub-domains n < lane_width, the ref list is
+ * cycled to lane_width and a single trivial combo is used. Otherwise all
+ * C(n, lane_width) combinations are enumerated in lexicographic order and
+ * round-robined across successive next() calls.
+ */
+template <typename S>
+class MultiRangeGenerator : public IGenerator<S> {
+public:
+    MultiRangeGenerator(const std::vector<InpRng<S>> &per_ref_ranges,
+                        size_t lane_width);
+    ~MultiRangeGenerator() = default;
+
+    S *next() override;
+    bool has_next() const override;
+    void reset() override;
+    uint64_t get_index() override;
+
+private:
+    size_t lane_width;
+    std::vector<std::unique_ptr<IGenerator<S>>> subs;  // size = max(n, lane_width)
+    std::vector<std::vector<size_t>>            combos;
+    size_t   combo_idx;
+    uint64_t i;
+
+    struct AlignedDeleter {
+        void operator()(S* ptr) const {
+            operator delete[](ptr, std::align_val_t(64));
+        }
+    };
+    std::unique_ptr<S[], AlignedDeleter> buf;
+};
+

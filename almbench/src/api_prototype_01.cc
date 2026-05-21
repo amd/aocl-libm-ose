@@ -39,6 +39,7 @@
 #include "alm_mp_funcs.h"
 #include "api_runner.h"
 #include "yaml_batch_writer.h"
+#include "generator.h"
 
 /*
  * unit_test:
@@ -70,6 +71,42 @@ static void unit_test(struct InParams<T, U> *ipp,
 }
 
 /*
+ * run_univariate_iters:
+ * Shared iteration kernel for univariate range and multi_range tests.
+ * Runs N steps, calling get_input() each iteration to obtain the next
+ * input vector, then packs, runs, computes ULP error, and writes output.
+ * GetInput is any zero-argument callable that returns U*.
+ */
+template <typename T, typename U, typename UL, typename GetInput>
+static void run_univariate_iters(uint64_t N, GetInput get_input,
+                                 struct InParams<T, U> *ipp,
+                                 UL (*ref_func)(U),
+                                 Runner<T, U> &runner, FloatPacker<T> &fp,
+                                 uint64_t elem, double *max_ulp, int *status,
+                                 struct YamlOutputs<U> *yop,
+                                 YamlBatchWriter<U> *writer)
+{
+    double ulp;
+    for (uint64_t i = 0; i < N; ++i) {
+        U *ip = get_input();
+        ipp->ip[0] = fp.pack(ip);
+
+        yop->duration = runner.run(ipp);
+
+        U *op = reinterpret_cast<U *>(&ipp->op[0]);
+        for (uint64_t j = 0; j < elem; ++j) {
+            UL mpfrop  = ref_func(ip[j]);
+            status[j]  = update_ulp(op[j], mpfrop, writer->stats().udata, ulp);
+            max_ulp[j] = ulp;
+        }
+
+        yop->iptr[0] = ip;
+        yop->optr[0] = op;
+        writer->push(yop);
+    }
+}
+
+/*
  * range_test:
  * Executes a test function over a range of inputs for non-VRA APIs.
  * Compares each result with a reference implementation using ULP error.
@@ -95,25 +132,9 @@ static void range_test(struct InParams<T, U> *ipp,
     MultiStepGenerator<U> val(range.srt, range.stp, count, range.type, elem);
 
     FloatPacker<T> fp;
-    double ulp;
 
-    for (uint64_t i = 0; i < N; ++i) {
-        U *ip = val.wrap_next();
-        ipp->ip[0] = fp.pack(ip);
-
-        yop->duration = runner.run(ipp);
-
-        U *op = (U *)&ipp->op[0];
-        for (uint64_t j = 0; j < elem; ++j) {
-            UL mpfrop  = ref_func(ip[j]);
-            status[j]  = update_ulp(op[j], mpfrop, writer->stats().udata, ulp);
-            max_ulp[j] = ulp;
-        }
-
-        yop->iptr[0] = ip;
-        yop->optr[0] = op;
-        writer->push(yop);
-    }
+    run_univariate_iters(N, [&]{ return val.wrap_next(); },
+                         ipp, ref_func, runner, fp, elem, max_ulp, status, yop, writer);
 }
 
 /*
@@ -167,9 +188,58 @@ static void range_test_vra(struct InParams<T, U> *ipp,
 }
 
 /*
+ * range_test_multi:
+ * Executes a univariate test that draws inputs from N referenced sub-domains,
+ * cycling lane assignments through nCr combinations. Used when the YAML
+ * test declares a `multi_range:` block instead of a normal input range.
+ * Only instantiated for real-valued U (float/double); 
+* complex types not supported yet.
+ */
+template <typename T, typename U, typename UL>
+static void range_test_multi(struct InParams<T, U> *ipp,
+                             UL (*ref_func)(U),
+                             void (*shim_func)(struct InParams<T, U> *),
+                             struct YamlOutputs<U> *yop,
+                             YamlBatchWriter<U> *writer)
+{
+    if constexpr (std::is_same_v<U, fc32_t> || std::is_same_v<U, fc64_t>) {
+        (void)ipp; (void)ref_func; (void)shim_func; (void)yop;
+        std::cerr << "multi_range not supported for complex APIs in v1" << std::endl;
+        return;
+    }
+
+    uint64_t elem            = sizeof(T) / sizeof(U);
+    double max_ulp[MAX_ELEM] = {0.0};
+    int status[MAX_ELEM]     = {0};
+    yop->n[0]   = elem;
+    yop->ulp    = &max_ulp[0];
+    yop->status = &status[0];
+
+    Runner<T, U> runner(shim_func, yop->config);
+
+    /* Collect univariate per-ref ranges (each ref has arity 1). */
+    std::vector<InpRng<U>> per_ref;
+    per_ref.reserve(ipp->multi_range->refs.size());
+    for (const auto &entry : ipp->multi_range->refs) {
+        if (entry.ranges.size() != 1) {
+            std::cerr << "multi_range arity mismatch in api_prototype_01" << std::endl;
+            return;
+        }
+        per_ref.push_back(entry.ranges[0]);
+    }
+
+    MultiRangeGenerator<U> val(per_ref, static_cast<size_t>(elem));
+    uint64_t N = ipp->steps_mr ? ipp->steps_mr : 1000ULL;
+    FloatPacker<T> fp;
+
+    run_univariate_iters(N, [&]{ return val.next(); },
+                            ipp, ref_func, runner, fp, elem, max_ulp, status, yop, writer);
+}
+
+/*
  * api_prototype_01:
  * Main dispatcher function that selects the appropriate test mode
- * (unit_test, range, or VRA) and executes the test.
+ * (unit_test, range, VRA, or multi_range) and executes the test.
  */
 template <typename T, typename U>
 int api_prototype_01(struct AlmLibs *alibs,
@@ -184,7 +254,9 @@ int api_prototype_01(struct AlmLibs *alibs,
     auto shim_func = load_function<void (*)(struct InParams<T, U> *)>(alibs->pshimlib, libapi);
     auto ref_func  = load_function<UL (*)(U)>(alibs->preflib, refapi);
 
-    if (ipp->range.empty()) {
+    if (ipp->multi_range.has_value()) {
+        range_test_multi<T, U, UL>(ipp, ref_func, shim_func, yop, writer);
+    } else if (ipp->range.empty()) {
         unit_test<T, U, UL>(ipp, ref_func, shim_func, yop, writer);
     } else if (!yop->config.is_vra) {
         range_test<T, U, UL>(ipp, ref_func, shim_func, yop, writer);

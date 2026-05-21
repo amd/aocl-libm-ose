@@ -97,7 +97,7 @@ alm_objs = []
 almenv = e.Clone()
 
 if e['HOST_OS'] != 'win32':
-    __linkflags = ['-Wl,-ealm_main',]
+    __linkflags = ['-Wl,-ealm_main', '-Wl,-z,noexecstack']
     __libs = ['c']
 
     if use_asan == 1:

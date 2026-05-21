@@ -194,3 +194,14 @@ add_custom_target(${EXE_NAME}-distclean
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     COMMENT "Remove cmake_generated files and directories"
 )
+
+# Tests
+if(DEFINED ALM_LIBM_BUILD_TESTS)
+    option(ALM_BENCH_BUILD_TESTS "Build almbench unit tests" ${ALM_LIBM_BUILD_TESTS})
+else()
+    option(ALM_BENCH_BUILD_TESTS "Build almbench unit tests" OFF)
+endif()
+if(ALM_BENCH_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()

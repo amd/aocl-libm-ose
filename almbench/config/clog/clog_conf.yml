@@ -177,38 +177,161 @@
       expect_exception: []
       variants: [sz]
 
+    # ===== C99 7.3.7.1 inf / NaN special cases =====
+    # (x, +inf), finite x -> (+inf, +pi/2)
+    - id: clog_023
+      description: "clog(1 + inf*i) = +inf + (pi/2)*i"
+      input: ["0x3ff0000000000000+ i 0x7ff0000000000000"]
+      expect: ["0x7ff0000000000000+ i 0x3ff921fb54442d18"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: clog_024
+      description: "clog(-1 + inf*i) = +inf + (pi/2)*i"
+      input: ["0xbff0000000000000+ i 0x7ff0000000000000"]
+      expect: ["0x7ff0000000000000+ i 0x3ff921fb54442d18"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: clog_025
+      description: "clog(1 - inf*i) = +inf - (pi/2)*i"
+      input: ["0x3ff0000000000000- i 0x7ff0000000000000"]
+      expect: ["0x7ff0000000000000+ i 0xbff921fb54442d18"]
+      expect_exception: []
+      variants: [sz]
+
+    # (-inf, y), finite positive y -> (+inf, +pi)
+    - id: clog_026
+      description: "clog(-inf + 1*i) = +inf + pi*i"
+      input: ["0xfff0000000000000+ i 0x3ff0000000000000"]
+      expect: ["0x7ff0000000000000+ i 0x400921fb54442d18"]
+      expect_exception: []
+      variants: [sz]
+
+    # (+inf, y), finite positive y -> (+inf, +0)
+    - id: clog_027
+      description: "clog(+inf + 1*i) = +inf + 0*i"
+      input: ["0x7ff0000000000000+ i 0x3ff0000000000000"]
+      expect: ["0x7ff0000000000000+ i 0x0000000000000000"]
+      expect_exception: []
+      variants: [sz]
+
+    # (+inf, +inf) -> (+inf, +pi/4)
+    - id: clog_028
+      description: "clog(+inf + inf*i) = +inf + (pi/4)*i"
+      input: ["0x7ff0000000000000+ i 0x7ff0000000000000"]
+      expect: ["0x7ff0000000000000+ i 0x3fe921fb54442d18"]
+      expect_exception: []
+      variants: [sz]
+
+    # (-inf, +inf) -> (+inf, +3*pi/4)
+    - id: clog_029
+      description: "clog(-inf + inf*i) = +inf + (3*pi/4)*i"
+      input: ["0xfff0000000000000+ i 0x7ff0000000000000"]
+      expect: ["0x7ff0000000000000+ i 0x4002d97c7f3321d2"]
+      expect_exception: []
+      variants: [sz]
+
+    # ===== Near-unit-circle (cancellation-band regression for SWLCSG-4214) =====
+    # |z|^2 - 1 cancels catastrophically here; the DD-add path is required.
+    - id: clog_030
+      description: "clog(1 + 3e-6*i): tiny imag, |z| ~= 1 (cancellation test)"
+      input: ["0x3ff0000000000000+ i 0x3ec92a7371109151"]
+      expect: ["0x3d93ca8cb1534567+ i 0x3ec92a7371109151"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: clog_031
+      description: "clog(1 + 1e-8*i): smaller imag, deeper into cancellation band"
+      input: ["0x3ff0000000000000+ i 0x3e45798ee2308c3a"]
+      expect: ["0x3c8cd2b297d889bc+ i 0x3e45798ee2308c3a"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: clog_032
+      description: "clog(1 + 1e-4*i): edge of cancellation band"
+      input: ["0x3ff0000000000000+ i 0x3f1a36e2e9a4f662"]
+      expect: ["0x3e35798ee0636111+ i 0x3f1a36e2e9a4f662"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: clog_033
+      description: "clog(cos(1e-3) + sin(1e-3)*i): exactly on unit circle"
+      input: ["0x3fefffffefffffd0+ i 0x3f50624dd2f1a9fc"]
+      expect: ["0x3c620ee32c47a252+ i 0x3f50624dd2f1a9fc"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: clog_034
+      description: "clog(0.6 + 0.8*i): exactly on unit circle (rational pt)"
+      input: ["0x3fe3333333333333+ i 0x3fe999999999999a"]
+      expect: ["0x3c7999999999999a+ i 0x3fedac670561bb50"]
+      expect_exception: []
+      variants: [sz]
+
+    # ===== Wide-magnitude boundary cases (~2^+/-500 threshold) =====
+    # Exercises the |larger| > 2^500 / < 2^-500 fast path added by SWLCSG-4214.
+    - id: clog_035
+      description: "clog(2^501 + 1*i): above wide-magnitude threshold"
+      input: ["0x5f40000000000000+ i 0x3ff0000000000000"]
+      expect: ["0x4075b4448e7fd9b1+ i 0x20a0000000000000"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: clog_036
+      description: "clog(2^-501 + 0*i): below wide-magnitude threshold"
+      input: ["0x20a0000000000000+ i 0x0000000000000000"]
+      expect: ["0xc075b4448e7fd9b1+ i 0x0000000000000000"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: clog_037
+      description: "clog(2^499 (1+i)): just below threshold (normal DD path)"
+      input: ["0x5f30000000000000+ i 0x5f30000000000000"]
+      expect: ["0x4075a3a1dc409e05+ i 0x3fe921fb54442d18"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: clog_038
+      description: "clog(2^501 (1+i)): just above threshold (wide-mag path)"
+      input: ["0x5f40000000000000+ i 0x5f40000000000000"]
+      expect: ["0x4075b9d01f3f983f+ i 0x3fe921fb54442d18"]
+      expect_exception: []
+      variants: [sz]
+
 #---------------------------------
 # Single precision (clogf) test cases
 # Note: Only active tests from test_clog_data.h (excludes #if 0 blocks)
 #---------------------------------
 
     # Test inputs of -/+0: clog(0) = -inf + i*arg(0)
+    # C99 7.3.7.1: (+/-0, +/-0) raises FE_DIVBYZERO via log(0).
     - id: clogf_001
       description: "clogf(0+0i) = -inf + 0i"
       input: ["0x00000000+ i 0x00000000"]
       expect: ["0xff800000+ i 0x00000000"]
-      expect_exception: []
+      expect_exception: [divbyzero]
       variants: [sc]
 
     - id: clogf_002
       description: "clogf(-0+0i) = -inf + pi*i"
       input: ["0x80000000+ i 0x00000000"]
       expect: ["0xff800000+ i 0x40490fdb"]
-      expect_exception: []
+      expect_exception: [divbyzero]
       variants: [sc]
 
     - id: clogf_003
       description: "clogf(0-0i) = -inf - 0i"
       input: ["0x00000000- i 0x00000000"]
       expect: ["0xff800000+ i 0x80000000"]
-      expect_exception: []
+      expect_exception: [divbyzero]
       variants: [sc]
 
     - id: clogf_004
       description: "clogf(-0-0i) = -inf - pi*i"
       input: ["0x80000000- i 0x00000000"]
       expect: ["0xff800000+ i 0xc0490fdb"]
-      expect_exception: []
+      expect_exception: [divbyzero]
       variants: [sc]
 
     # Test inputs of 1: clogf(1) = 0
@@ -327,5 +450,76 @@
       description: "clogf(1e-30+0i)"
       input: ["0x0da24260+ i 0x00000000"]
       expect: ["0xc28a27b5+ i 0x00000000"]
+      expect_exception: []
+      variants: [sc]
+
+    # ===== C99 7.3.7.1 inf / NaN special cases (float) =====
+    - id: clogf_021
+      description: "clogf(1 + inf*i) = +inf + (pi/2)*i"
+      input: ["0x3f800000+ i 0x7f800000"]
+      expect: ["0x7f800000+ i 0x3fc90fdb"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: clogf_022
+      description: "clogf(-inf + 1*i) = +inf + pi*i"
+      input: ["0xff800000+ i 0x3f800000"]
+      expect: ["0x7f800000+ i 0x40490fdb"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: clogf_023
+      description: "clogf(+inf + 1*i) = +inf + 0*i"
+      input: ["0x7f800000+ i 0x3f800000"]
+      expect: ["0x7f800000+ i 0x00000000"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: clogf_024
+      description: "clogf(+inf + inf*i) = +inf + (pi/4)*i"
+      input: ["0x7f800000+ i 0x7f800000"]
+      expect: ["0x7f800000+ i 0x3f490fdb"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: clogf_025
+      description: "clogf(-inf + inf*i) = +inf + (3*pi/4)*i"
+      input: ["0xff800000+ i 0x7f800000"]
+      expect: ["0x7f800000+ i 0x4016cbe4"]
+      expect_exception: []
+      variants: [sc]
+
+    # NaN-input cases are covered exhaustively in
+    # gtests/clog/test_clog_data.h (where the framework can compare NaN
+    # payloads correctly).  Omitted here because bit-exact NaN comparison
+    # cannot model C99's "FE_INVALID may be raised" wording.
+
+    # ===== Near-unit-circle (cancellation-band regression for SWLCSG-4214) =====
+    - id: clogf_026
+      description: "clogf(1 + 3e-6*i): tiny imag, |z| ~= 1"
+      input: ["0x3f800000+ i 0x3649539c"]
+      expect: ["0x2c9e5466+ i 0x3649539c"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: clogf_027
+      description: "clogf(1 + 1e-4*i): edge of cancellation band"
+      input: ["0x3f800000+ i 0x38d1b717"]
+      expect: ["0x31abcc76+ i 0x38d1b717"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: clogf_028
+      description: "clogf(0.6 + 0.8*i): exactly on unit circle"
+      input: ["0x3f19999a+ i 0x3f4ccccd"]
+      expect: ["0x32cccccd+ i 0x3f6d6338"]
+      expect_exception: []
+      variants: [sc]
+
+    # ===== Wide-magnitude boundary case (float) =====
+    - id: clogf_029
+      description: "clogf(2^100 + 1*i): wide-magnitude region"
+      input: ["0x71800000+ i 0x3f800000"]
+      expect: ["0x428aa123+ i 0x0d800000"]
       expect_exception: []
       variants: [sc]

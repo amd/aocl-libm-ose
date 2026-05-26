@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -134,7 +134,7 @@ static struct {
 #define B4  v_exp_data.poly[3]
 
 #define EXP_MAX   0x4086200000000000
-#define SCALAR_POW ALM_PROTO(pow)
+#define SCALAR_POW ALM_PROTO_OPT(pow)
 
 /*
  *   __m128d ALM_PROTO_OPT(vrd2_powx)(__m128d, double);
@@ -290,7 +290,7 @@ ALM_PROTO_OPT(vrd2_powx)(__m128d _x, double _y)
     /* Otherwise, return the above computed result */
     for(int i = 0; i < VECTOR_LENGTH; i++) {
         if(unlikely(v[i] >= EXP_MAX)){
-            result[i] = ALM_PROTO(pow)(_x[i], _y);
+            result[i] = ALM_PROTO_OPT(pow)(_x[i], _y);
          }
     }
 

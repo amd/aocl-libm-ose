@@ -53,7 +53,7 @@ void ALM_PROTO_OPT(vrsa_powxf)(int length, const float *x, float y, float *resul
         for (j = 0; j <= length - FLOAT_ELEMENTS_512_BIT; j += FLOAT_ELEMENTS_512_BIT)
         {
             __m512 ip16 = _mm512_loadu_ps(&x[j]);
-            __m512 op16  = ALM_PROTO(vrs16_powxf)(ip16, y);
+            __m512 op16  = ALM_PROTO_OPT(vrs16_powxf)(ip16, y);
             _mm512_storeu_ps(&result[j], op16);
         }
     }
@@ -64,7 +64,7 @@ void ALM_PROTO_OPT(vrsa_powxf)(int length, const float *x, float y, float *resul
         __m512 zero = _mm512_set1_ps(0);
         __mmask16 mask = (__mmask16)(0xFFFF >> ( 16 - remainder ));
         __m512 ip16 = _mm512_mask_loadu_ps(zero, mask, &x[j]);
-        __m512 op16  = ALM_PROTO(vrs16_powxf)(ip16, y);
+        __m512 op16  = ALM_PROTO_OPT(vrs16_powxf)(ip16, y);
         _mm512_mask_storeu_ps(&result[j], mask, op16);
     }
 }

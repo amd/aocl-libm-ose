@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -53,7 +53,7 @@ void ALM_PROTO_OPT(vrsa_powxf)(int length, const float *x, float y, float *resul
         for (j = 0; j <= length - FLOAT_ELEMENTS_256_BIT; j += FLOAT_ELEMENTS_256_BIT)
         {
             __m256 ip81 = _mm256_loadu_ps(&x[j]);
-            __m256 op8  = ALM_PROTO(vrs8_powxf)(ip81, y);
+            __m256 op8  = ALM_PROTO_OPT(vrs8_powxf)(ip81, y);
             _mm256_storeu_ps(&result[j], op8);
         }
     }
@@ -63,7 +63,7 @@ void ALM_PROTO_OPT(vrsa_powxf)(int length, const float *x, float y, float *resul
     {
         __m256i mask = GET_MASK_FLOAT_256_BIT(remainder);
         __m256 ip81 = _mm256_maskload_ps(&x[j], mask);
-        __m256 op8  = ALM_PROTO(vrs8_powxf)(ip81, y);
+        __m256 op8  = ALM_PROTO_OPT(vrs8_powxf)(ip81, y);
         _mm256_maskstore_ps(&result[j], mask, op8);
     }
 }

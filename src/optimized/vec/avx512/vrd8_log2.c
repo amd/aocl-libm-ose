@@ -100,7 +100,7 @@ static struct {
     },
 };
 
-#define SCALAR_LOG2 ALM_PROTO(log2)
+#define SCALAR_LOG2 ALM_PROTO_OPT(log2)
 
 #define EXPSHIFTBITS_SP64 52
 #define ln2 vrd8_log2_data.ln2

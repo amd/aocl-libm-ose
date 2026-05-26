@@ -337,8 +337,8 @@ v_f64x2_t ALM_PROTO_OPT(vrd2_erfinv)(v_f64x2_t x)
 
     /* Use scalar log1p as respective vector variant is not implemented */
     v_f64x2_t log_val;
-    log_val[0] = ALM_PROTO(log1p)(neg_absx[0]);
-    log_val[1] = ALM_PROTO(log1p)(neg_absx[1]);
+    log_val[0] = ALM_PROTO_OPT(log1p)(neg_absx[0]);
+    log_val[1] = ALM_PROTO_OPT(log1p)(neg_absx[1]);
     v_f64x2_t neg_log = as_v2_f64_u64(as_v2_u64_f64(log_val) ^ SIGN_MASK);
 
     v_f64x2_t y = _mm_sqrt_pd(neg_log);

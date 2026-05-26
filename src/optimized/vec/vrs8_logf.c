@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2024, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2021-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -112,7 +112,7 @@ static const struct {
 #define V_F32(x) x.f32x8
 
 #define LOGF_MAX 0x7f800000
-#define SCALAR_LOGF ALM_PROTO(logf)
+#define SCALAR_LOGF ALM_PROTO_OPT(logf)
 
 /*
  * ISO-IEC-10967-2: Elementary Numerical Functions

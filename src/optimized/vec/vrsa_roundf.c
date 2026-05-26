@@ -83,14 +83,14 @@ void ALM_PROTO_OPT(vrsa_roundf)(int length, const float *input, float *result)
         for (j = 0; j <= length - FLOAT_ELEMENTS_256_BIT; j += FLOAT_ELEMENTS_256_BIT)
         {
             __m256 ip8 = _mm256_loadu_ps(&input[j]);
-            __m256 op8 = ALM_PROTO(vrs8_roundf)(ip8);
+            __m256 op8 = ALM_PROTO_OPT(vrs8_roundf)(ip8);
             _mm256_storeu_ps(&result[j], op8);
         }
 
         // Handle remaining elements using the pre-saved last 8 elements
         if (length - j)
         {
-            __m256 op8 = ALM_PROTO(vrs8_roundf)(last_ip8);
+            __m256 op8 = ALM_PROTO_OPT(vrs8_roundf)(last_ip8);
             _mm256_storeu_ps(&result[length - FLOAT_ELEMENTS_256_BIT], op8);
         }
         return;
@@ -99,6 +99,6 @@ void ALM_PROTO_OPT(vrsa_roundf)(int length, const float *input, float *result)
     // For length < 8, use masked operations
     __m256i mask = GET_MASK_FLOAT_256_BIT(length);
     __m256 ip8 = _mm256_maskload_ps(&input[0], mask);
-    __m256 op8 = ALM_PROTO(vrs8_roundf)(ip8);
+    __m256 op8 = ALM_PROTO_OPT(vrs8_roundf)(ip8);
     _mm256_maskstore_ps(&result[0], mask, op8);
 }

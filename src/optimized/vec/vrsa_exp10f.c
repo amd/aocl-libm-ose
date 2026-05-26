@@ -98,6 +98,6 @@ void ALM_PROTO_OPT(vrsa_exp10f)(int length, const float *input, float *result)
     // For length < 4, fallback to scalar
     for (int j = 0; j < length; ++j)
     {
-        result[j] = ALM_PROTO(exp10f)(input[j]);
+        result[j] = ALM_PROTO_OPT(exp10f)(input[j]);
     }
 }

@@ -109,7 +109,7 @@ static struct {
 #define C11 exp2_data.poly[9]
 #define C12 exp2_data.poly[10]
 
-#define SCALAR_EXP2  ALM_PROTO(exp2)
+#define SCALAR_EXP2  ALM_PROTO_OPT(exp2)
 
 v_f64x8_t
 ALM_PROTO_OPT(vrd8_exp2)(v_f64x8_t input)

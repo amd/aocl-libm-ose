@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -71,7 +71,7 @@ void ALM_PROTO_OPT(vrsa_sincosf)(int length, const float *x, float *sin, float *
         for (j = 0; j <= length - FLOAT_ELEMENTS_256_BIT; j += FLOAT_ELEMENTS_256_BIT)
         {
             __m256 ip8 = _mm256_loadu_ps(&x[j]);
-            ALM_PROTO(vrs8_sincosf)(ip8, &opsin, &opcos);
+            ALM_PROTO_OPT(vrs8_sincosf)(ip8, &opsin, &opcos);
             _mm256_storeu_ps(&sin[j], opsin);
             _mm256_storeu_ps(&cos[j], opcos);
         }
@@ -81,7 +81,7 @@ void ALM_PROTO_OPT(vrsa_sincosf)(int length, const float *x, float *sin, float *
     {
         __m256i mask = GET_MASK_FLOAT_256_BIT(remainder);
         __m256 ip8 = _mm256_maskload_ps(&x[j], mask);
-        ALM_PROTO(vrs8_sincosf)(ip8, &opsin, &opcos);
+        ALM_PROTO_OPT(vrs8_sincosf)(ip8, &opsin, &opcos);
         _mm256_maskstore_ps(&sin[j], mask, opsin);
         _mm256_maskstore_ps(&cos[j], mask, opcos);
     }

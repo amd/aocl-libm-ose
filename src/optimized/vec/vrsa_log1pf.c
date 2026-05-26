@@ -99,6 +99,6 @@ void ALM_PROTO_OPT(vrsa_log1pf)(int length, const float *input, float *result)
     // For length < 4, fallback to scalar
     for (int j = 0; j < length; ++j)
     {
-        result[j] = ALM_PROTO(log1pf)(input[j]);
+        result[j] = ALM_PROTO_OPT(log1pf)(input[j]);
     }
 }

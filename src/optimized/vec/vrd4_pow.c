@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2023, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2018-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -283,7 +283,7 @@ ALM_PROTO_OPT(vrd4_pow)(__m256d _x,__m256d _y)
 
     for(int i = 0; i < VECTOR_LENGTH; i++) {
         if(unlikely((condition2)[i])){
-            result[i] = ALM_PROTO(pow)(_x[i], _y[i]);
+            result[i] = ALM_PROTO_OPT(pow)(_x[i], _y[i]);
          }
     }
 

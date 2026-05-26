@@ -73,7 +73,7 @@ void ALM_PROTO_OPT(vrda_erfcinv)(int length, const double *input, double *result
         for (j = 0; j <= length - DOUBLE_ELEMENTS_256_BIT; j += DOUBLE_ELEMENTS_256_BIT)
         {
             __m256d ip4 = _mm256_loadu_pd(&input[j]);
-            __m256d op4 = ALM_PROTO(vrd4_erfcinv)(ip4);
+            __m256d op4 = ALM_PROTO_OPT(vrd4_erfcinv)(ip4);
             _mm256_storeu_pd(&result[j], op4);
         }
     }
@@ -82,7 +82,7 @@ void ALM_PROTO_OPT(vrda_erfcinv)(int length, const double *input, double *result
     {
         __m256i mask = GET_MASK_DOUBLE_256_BIT(remainder);
         __m256d ip4 = _mm256_maskload_pd(&input[j], mask);
-        __m256d op4 = ALM_PROTO(vrd4_erfcinv)(ip4);
+        __m256d op4 = ALM_PROTO_OPT(vrd4_erfcinv)(ip4);
         _mm256_maskstore_pd(&result[j], mask, op4);
     }
 }

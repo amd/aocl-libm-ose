@@ -70,7 +70,7 @@ void ALM_PROTO_OPT(vrsa_tanhf)(int length, const float *input, float *output)
         for (j = 0; j <= length - FLOAT_ELEMENTS_256_BIT; j += FLOAT_ELEMENTS_256_BIT)
         {
             __m256 ip8 = _mm256_loadu_ps(&input[j]);
-            optanhf = ALM_PROTO(vrs8_tanhf)(ip8);
+            optanhf = ALM_PROTO_OPT(vrs8_tanhf)(ip8);
             _mm256_storeu_ps(&output[j], optanhf);
         }
     }
@@ -79,7 +79,7 @@ void ALM_PROTO_OPT(vrsa_tanhf)(int length, const float *input, float *output)
     {
         __m256i mask = GET_MASK_FLOAT_256_BIT(remainder);
         __m256 ip8 = _mm256_maskload_ps(&input[j], mask);
-        optanhf = ALM_PROTO(vrs8_tanhf)(ip8);
+        optanhf = ALM_PROTO_OPT(vrs8_tanhf)(ip8);
         _mm256_maskstore_ps(&output[j], mask, optanhf);
     }
 }

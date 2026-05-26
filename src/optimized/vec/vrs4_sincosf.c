@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -105,10 +105,10 @@ sin_specialcase(v_f32x4_t _x,
                 v_u32x4_t cond)
 {
     return (v_f32x4_t) {
-            (cond[0]) ? ALM_PROTO(sinf)(_x[0]):result[0],
-            (cond[1]) ? ALM_PROTO(sinf)(_x[1]):result[1],
-            (cond[2]) ? ALM_PROTO(sinf)(_x[2]):result[2],
-            (cond[3]) ? ALM_PROTO(sinf)(_x[3]):result[3],
+            (cond[0]) ? ALM_PROTO_OPT(sinf)(_x[0]):result[0],
+            (cond[1]) ? ALM_PROTO_OPT(sinf)(_x[1]):result[1],
+            (cond[2]) ? ALM_PROTO_OPT(sinf)(_x[2]):result[2],
+            (cond[3]) ? ALM_PROTO_OPT(sinf)(_x[3]):result[3],
         };
 }
 
@@ -118,10 +118,10 @@ cos_specialcase(v_f32x4_t _x,
                 v_u32x4_t cond)
 {
     return (v_f32x4_t) {
-            (cond[0]) ? ALM_PROTO(cosf)(_x[0]):result[0],
-            (cond[1]) ? ALM_PROTO(cosf)(_x[1]):result[1],
-            (cond[2]) ? ALM_PROTO(cosf)(_x[2]):result[2],
-            (cond[3]) ? ALM_PROTO(cosf)(_x[3]):result[3],
+            (cond[0]) ? ALM_PROTO_OPT(cosf)(_x[0]):result[0],
+            (cond[1]) ? ALM_PROTO_OPT(cosf)(_x[1]):result[1],
+            (cond[2]) ? ALM_PROTO_OPT(cosf)(_x[2]):result[2],
+            (cond[3]) ? ALM_PROTO_OPT(cosf)(_x[3]):result[3],
         };
 }
 

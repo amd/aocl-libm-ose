@@ -83,7 +83,7 @@ static const struct {
 #define C11 exp_data.poly[9]
 #define C12 exp_data.poly[10]
 
-#define SCALAR_EXP ALM_PROTO(exp)
+#define SCALAR_EXP ALM_PROTO_OPT(exp)
 
 
 /*

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -114,8 +114,8 @@ sin_specialcase(v_f64x2_t _x,
                 v_u64x2_t cond)
 {
     return (v_f64x2_t) {
-            (cond[0]) ? ALM_PROTO(sin)(_x[0]):result[0],
-            (cond[1]) ? ALM_PROTO(sin)(_x[1]):result[1],
+            (cond[0]) ? ALM_PROTO_OPT(sin)(_x[0]):result[0],
+            (cond[1]) ? ALM_PROTO_OPT(sin)(_x[1]):result[1],
         };
 }
 
@@ -125,8 +125,8 @@ cos_specialcase(v_f64x2_t _x,
                 v_u64x2_t cond)
 {
     return (v_f64x2_t) {
-            (cond[0]) ? ALM_PROTO(cos)(_x[0]):result[0],
-            (cond[1]) ? ALM_PROTO(cos)(_x[1]):result[1],
+            (cond[0]) ? ALM_PROTO_OPT(cos)(_x[0]):result[0],
+            (cond[1]) ? ALM_PROTO_OPT(cos)(_x[1]):result[1],
         };
 }
 

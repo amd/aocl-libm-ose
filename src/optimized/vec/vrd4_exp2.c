@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -97,7 +97,7 @@ static const struct {
 #define C11 exp2_data.poly[9]
 #define C12 exp2_data.poly[10]
 
-#define SCALAR_EXP2  ALM_PROTO(exp2)
+#define SCALAR_EXP2  ALM_PROTO_OPT(exp2)
 
 
 /*

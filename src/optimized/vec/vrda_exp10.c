@@ -1,6 +1,6 @@
 
 /*
- * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -53,6 +53,6 @@ void ALM_PROTO_OPT(vrda_exp10)(int length, const double *input, double *result)
 {
     for (int i = 0; i < length ; i++)
     {
-        result[i] = ALM_PROTO(exp10)(input[i]);
+        result[i] = ALM_PROTO_OPT(exp10)(input[i]);
     }
 }

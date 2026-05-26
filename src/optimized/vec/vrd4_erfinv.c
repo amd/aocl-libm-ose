@@ -339,7 +339,7 @@ v_f64x4_t ALM_PROTO_OPT(vrd4_erfinv)(v_f64x4_t x)
     v_f64x4_t log_val;
 
     for (uint64_t i = 0; i < 4; i++) {
-      log_val[i] = ALM_PROTO(log1p)(neg_absx[i]);
+      log_val[i] = ALM_PROTO_OPT(log1p)(neg_absx[i]);
     }
 
     v_f64x4_t neg_log = as_v4_f64_u64(as_v4_u64_f64(log_val) ^ SIGN_MASK);

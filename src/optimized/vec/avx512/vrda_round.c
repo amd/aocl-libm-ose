@@ -83,14 +83,14 @@ void ALM_PROTO_OPT(vrda_round)(int length, const double *input, double *result)
         for (j = 0; j <= length - DOUBLE_ELEMENTS_512_BIT; j += DOUBLE_ELEMENTS_512_BIT)
         {
             __m512d ip8 = _mm512_loadu_pd(&input[j]);
-            __m512d op8 = ALM_PROTO(vrd8_round)(ip8);
+            __m512d op8 = ALM_PROTO_OPT(vrd8_round)(ip8);
             _mm512_storeu_pd(&result[j], op8);
         }
 
         // Handle remaining elements using the pre-saved last 8 elements
         if (length - j)
         {
-            __m512d op8 = ALM_PROTO(vrd8_round)(last_ip8);
+            __m512d op8 = ALM_PROTO_OPT(vrd8_round)(last_ip8);
             _mm512_storeu_pd(&result[length - DOUBLE_ELEMENTS_512_BIT], op8);
         }
         return;
@@ -100,6 +100,6 @@ void ALM_PROTO_OPT(vrda_round)(int length, const double *input, double *result)
     __m512d zero = _mm512_set1_pd(0);
     __mmask8 mask = (__mmask8)(0xFF >> (8 - length));
     __m512d ip8 = _mm512_mask_loadu_pd(zero, mask, &input[0]);
-    __m512d op8 = ALM_PROTO(vrd8_round)(ip8);
+    __m512d op8 = ALM_PROTO_OPT(vrd8_round)(ip8);
     _mm512_mask_storeu_pd(&result[0], mask, op8);
 }

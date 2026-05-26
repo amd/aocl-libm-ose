@@ -71,7 +71,7 @@ void ALM_PROTO_OPT(vrsa_sincosf)(int length, const float *x, float *sin, float *
         for (j = 0; j <= length - FLOAT_ELEMENTS_512_BIT; j += FLOAT_ELEMENTS_512_BIT)
         {
             __m512 ip16 = _mm512_loadu_ps(&x[j]);
-            ALM_PROTO(vrs16_sincosf)(ip16, &opsin, &opcos);
+            ALM_PROTO_OPT(vrs16_sincosf)(ip16, &opsin, &opcos);
             _mm512_storeu_ps(&sin[j], opsin);
             _mm512_storeu_ps(&cos[j], opcos);
         }
@@ -82,7 +82,7 @@ void ALM_PROTO_OPT(vrsa_sincosf)(int length, const float *x, float *sin, float *
         __m512 zero = _mm512_set1_ps(0);
         __mmask16 mask = (__mmask16)(0xFFFF >> ( 16 - remainder ));
         __m512 ip16 = _mm512_mask_loadu_ps(zero, mask, &x[j]);
-        ALM_PROTO(vrs16_sincosf)(ip16, &opsin, &opcos);
+        ALM_PROTO_OPT(vrs16_sincosf)(ip16, &opsin, &opcos);
         _mm512_mask_storeu_ps(&sin[j], mask, opsin);
         _mm512_mask_storeu_ps(&cos[j], mask, opcos);
     }

@@ -110,7 +110,7 @@ sinf_specialcase(v_f32x16_t _x,
                  v_u32x16_t cond)
 {
 
-    return call_v16_f32(ALM_PROTO(sinf), _x, result, cond);
+    return call_v16_f32(ALM_PROTO_OPT(sinf), _x, result, cond);
 
 }
 

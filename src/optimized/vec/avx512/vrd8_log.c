@@ -101,7 +101,7 @@ v8_log_specialcase(v_f64x8_t _x,
                    v_f64x8_t result,
                    v_u64x8_t cond)
 {
-    return call_v8_f64(ALM_PROTO(log), _x, result, cond);
+    return call_v8_f64(ALM_PROTO_OPT(log), _x, result, cond);
 }
 
 #define EXPSHIFTBITS_SP64 52

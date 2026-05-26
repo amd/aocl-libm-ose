@@ -115,7 +115,7 @@ sin_specialcase(v_f64x8_t _x,
                  v_u64x8_t cond)
 {
 
-    return call_v8_f64(ALM_PROTO(sin), _x, result, cond);
+    return call_v8_f64(ALM_PROTO_OPT(sin), _x, result, cond);
 
 }
 

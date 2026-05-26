@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -145,7 +145,7 @@ all_v4_u64_loop(v_u64x4_t cond)
 static inline v_f64x4_t
 acos_specialcase(v_f64x4_t _x, v_f64x4_t result, v_u64x4_t cond)
 {
-    return call_v4_f64(ALM_PROTO(acos), _x, result, cond);
+    return call_v4_f64(ALM_PROTO_OPT(acos), _x, result, cond);
 }
 
 v_f64x4_t

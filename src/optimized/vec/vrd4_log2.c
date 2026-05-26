@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2022, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2021-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -99,7 +99,7 @@ static struct {
     },
 };
 
-#define SCALAR_LOG2 ALM_PROTO(log2)
+#define SCALAR_LOG2 ALM_PROTO_OPT(log2)
 
 #define EXPSHIFTBITS_SP64 52
 #define ln2 vrd4_log2_data.ln2

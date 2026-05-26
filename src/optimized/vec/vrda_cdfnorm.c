@@ -82,14 +82,14 @@ void ALM_PROTO_OPT(vrda_cdfnorm)(int length, const double *input, double *result
         for (j = 0; j <= length - DOUBLE_ELEMENTS_256_BIT; j += DOUBLE_ELEMENTS_256_BIT)
         {
             __m256d ip4 = _mm256_loadu_pd(&input[j]);
-            __m256d op4 = ALM_PROTO(vrd4_cdfnorm)(ip4);
+            __m256d op4 = ALM_PROTO_OPT(vrd4_cdfnorm)(ip4);
             _mm256_storeu_pd(&result[j], op4);
         }
         
         /* Handle remaining elements using the pre-saved last 4 elements */
         if (length - j)
         {
-            __m256d op4 = ALM_PROTO(vrd4_cdfnorm)(last_ip4);
+            __m256d op4 = ALM_PROTO_OPT(vrd4_cdfnorm)(last_ip4);
             _mm256_storeu_pd(&result[length - DOUBLE_ELEMENTS_256_BIT], op4);
         }
         return;
@@ -98,6 +98,6 @@ void ALM_PROTO_OPT(vrda_cdfnorm)(int length, const double *input, double *result
     /* For length < 4, use masked operations */
     __m256i mask = GET_MASK_DOUBLE_256_BIT(length);
     __m256d ip4 = _mm256_maskload_pd(&input[j], mask);
-    __m256d op4 = ALM_PROTO(vrd4_cdfnorm)(ip4);
+    __m256d op4 = ALM_PROTO_OPT(vrd4_cdfnorm)(ip4);
     _mm256_maskstore_pd(&result[j], mask, op4);
 }

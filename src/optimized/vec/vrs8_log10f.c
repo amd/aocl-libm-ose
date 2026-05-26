@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2022, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2021-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -155,7 +155,7 @@ log10f_specialcase(v_f32x8_t _x,
                  v_f32x8_t result,
                  v_u32x8_t cond)
 {
-    return call_v8_f32(ALM_PROTO(log10f), _x, result, cond);
+    return call_v8_f32(ALM_PROTO_OPT(log10f), _x, result, cond);
 }
 
 

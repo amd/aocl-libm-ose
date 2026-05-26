@@ -199,14 +199,14 @@ ALM_PROTO_OPT(vrd8_cdfnorm)(v_f64x8_t a) {
     /* Fast path: all in Region 1 (a > -0.5) */
     if (k_region1 == 0xFF) {
         v_f64x8_t x = _mm512_mul_pd(a, SQRTH);
-        v_f64x8_t erf_x = ALM_PROTO(vrd8_erf)(x);
+        v_f64x8_t erf_x = ALM_PROTO_OPT(vrd8_erf)(x);
         return _mm512_add_pd(HALF, _mm512_mul_pd(HALF, erf_x));
     }
 
     /* Fast path: all in Region 2 (-1.5 < a <= -0.5) */
     if (k_region2 == 0xFF) {
         v_f64x8_t x = _mm512_mul_pd(a_abs, SQRTH);
-        v_f64x8_t erfc_x = ALM_PROTO(vrd8_erfc)(x);
+        v_f64x8_t erfc_x = ALM_PROTO_OPT(vrd8_erfc)(x);
         return _mm512_mul_pd(HALF, erfc_x);
     }
 
@@ -217,12 +217,12 @@ ALM_PROTO_OPT(vrd8_cdfnorm)(v_f64x8_t a) {
 
     /* Region 1: Φ(a) = 0.5 * (1 + erf(a/√2)) for a > -0.5 */
     v_f64x8_t x_r1 = _mm512_mul_pd(a, SQRTH);
-    v_f64x8_t erf_x = ALM_PROTO(vrd8_erf)(x_r1);
+    v_f64x8_t erf_x = ALM_PROTO_OPT(vrd8_erf)(x_r1);
     v_f64x8_t result_r1 = _mm512_add_pd(HALF, _mm512_mul_pd(HALF, erf_x));
 
     /* Region 2: Φ(a) = 0.5 * erfc(|a|/√2) for -1.5 < a <= -0.5 */
     v_f64x8_t x_r2 = _mm512_mul_pd(a_abs, SQRTH);
-    v_f64x8_t erfc_x = ALM_PROTO(vrd8_erfc)(x_r2);
+    v_f64x8_t erfc_x = ALM_PROTO_OPT(vrd8_erfc)(x_r2);
     v_f64x8_t result_r2 = _mm512_mul_pd(HALF, erfc_x);
 
     /* Blend Region 1 and Region 2 */

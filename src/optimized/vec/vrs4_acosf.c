@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -137,7 +137,7 @@ all_v4_u32_loop(v_u32x4_t cond)
 static inline v_f32x4_t
 acosf_specialcase(v_f32x4_t _x, v_f32x4_t result, v_u32x4_t cond)
 {
-    return call_v4_f32(ALM_PROTO(acosf), _x, result, cond);
+    return call_v4_f32(ALM_PROTO_OPT(acosf), _x, result, cond);
 }
 
 v_f32x4_t

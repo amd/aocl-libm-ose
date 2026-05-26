@@ -83,14 +83,14 @@ void ALM_PROTO_OPT(vrsa_roundf)(int length, const float *input, float *result)
         for (j = 0; j <= length - FLOAT_ELEMENTS_512_BIT; j += FLOAT_ELEMENTS_512_BIT)
         {
             __m512 ip16 = _mm512_loadu_ps(&input[j]);
-            __m512 op16 = ALM_PROTO(vrs16_roundf)(ip16);
+            __m512 op16 = ALM_PROTO_OPT(vrs16_roundf)(ip16);
             _mm512_storeu_ps(&result[j], op16);
         }
 
         // Handle remaining elements using the pre-saved last 16 elements
         if (length - j)
         {
-            __m512 op16 = ALM_PROTO(vrs16_roundf)(last_ip16);
+            __m512 op16 = ALM_PROTO_OPT(vrs16_roundf)(last_ip16);
             _mm512_storeu_ps(&result[length - FLOAT_ELEMENTS_512_BIT], op16);
         }
         return;
@@ -100,6 +100,6 @@ void ALM_PROTO_OPT(vrsa_roundf)(int length, const float *input, float *result)
     __m512 zero = _mm512_set1_ps(0);
     __mmask16 mask = (__mmask16)(0xFFFF >> (16 - length));
     __m512 ip16 = _mm512_mask_loadu_ps(zero, mask, &input[0]);
-    __m512 op16 = ALM_PROTO(vrs16_roundf)(ip16);
+    __m512 op16 = ALM_PROTO_OPT(vrs16_roundf)(ip16);
     _mm512_mask_storeu_ps(&result[0], mask, op16);
 }

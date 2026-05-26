@@ -295,7 +295,7 @@ ALM_PROTO_OPT(vrd8_pow)(__m512d _x,__m512d _y)
 
     for(int i = 0; i < VECTOR_LENGTH; i++) {
         if(unlikely((condition2)[i])){
-            result[i] = ALM_PROTO(pow)(_x[i], _y[i]);
+            result[i] = ALM_PROTO_OPT(pow)(_x[i], _y[i]);
          }
     }
 

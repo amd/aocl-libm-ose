@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -85,14 +85,14 @@ void ALM_PROTO_OPT(vrda_pow)(int length, const double *input1, const double *inp
         {
             __m256d ip14 = _mm256_loadu_pd(&input1[j]);
             __m256d ip24 = _mm256_loadu_pd(&input2[j]);
-            __m256d op4 = ALM_PROTO(vrd4_pow)(ip14, ip24);
+            __m256d op4 = ALM_PROTO_OPT(vrd4_pow)(ip14, ip24);
             _mm256_storeu_pd(&result[j], op4);
         }
         
         // Handle remaining elements using the pre-saved last 4 elements
         if (length - j)
         {
-            __m256d op4 = ALM_PROTO(vrd4_pow)(last_ip14, last_ip24);
+            __m256d op4 = ALM_PROTO_OPT(vrd4_pow)(last_ip14, last_ip24);
             _mm256_storeu_pd(&result[length - DOUBLE_ELEMENTS_256_BIT], op4);
         }
         return;
@@ -102,6 +102,6 @@ void ALM_PROTO_OPT(vrda_pow)(int length, const double *input1, const double *inp
     __m256i mask = GET_MASK_DOUBLE_256_BIT(length);
     __m256d ip14 = _mm256_maskload_pd(&input1[j], mask);
     __m256d ip24 = _mm256_maskload_pd(&input2[j], mask);
-    __m256d op4 = ALM_PROTO(vrd4_pow)(ip14, ip24);
+    __m256d op4 = ALM_PROTO_OPT(vrd4_pow)(ip14, ip24);
     _mm256_maskstore_pd(&result[j], mask, op4);
 }

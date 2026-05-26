@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2024, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2018-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -99,7 +99,7 @@ static struct {
 };
 
 #define LOG_ARG_MAX 0x7ff0000000000000
-#define SCALAR_LOG ALM_PROTO(log)
+#define SCALAR_LOG ALM_PROTO_OPT(log)
 
 #define EXPSHIFTBITS_SP64 52
 #define ln2 log_data.ln2

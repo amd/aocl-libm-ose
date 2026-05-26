@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2018-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -239,7 +239,7 @@ powf_specialcase(v_f32x8_t _x,
                  v_f32x8_t result,
                  v_i32x8_t cond)
 {
-    return call2_v8_f32(ALM_PROTO(powf), _x, _y, result, cond);
+    return call2_v8_f32(ALM_PROTO_OPT(powf), _x, _y, result, cond);
 }
 
 static inline v_f64x4_t

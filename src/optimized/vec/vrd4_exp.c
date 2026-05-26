@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2024, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2019-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -93,7 +93,7 @@ static const struct {
 
 #define ARG_MAX  0x4086200000000000
 
-#define SCALAR_EXP ALM_PROTO(exp)
+#define SCALAR_EXP ALM_PROTO_OPT(exp)
 
 
 /*

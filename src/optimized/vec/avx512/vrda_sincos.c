@@ -70,7 +70,7 @@ void ALM_PROTO_OPT(vrda_sincos)(int length, const double *x, double *sin, double
         for (j = 0; j <= length - DOUBLE_ELEMENTS_512_BIT; j += DOUBLE_ELEMENTS_512_BIT)
         {
             __m512d ip8 = _mm512_loadu_pd(&x[j]);
-            ALM_PROTO(vrd8_sincos)(ip8, &opsin, &opcos);
+            ALM_PROTO_OPT(vrd8_sincos)(ip8, &opsin, &opcos);
             _mm512_storeu_pd(&sin[j], opsin);
             _mm512_storeu_pd(&cos[j], opcos);
         }
@@ -81,7 +81,7 @@ void ALM_PROTO_OPT(vrda_sincos)(int length, const double *x, double *sin, double
         __m512d zero = _mm512_set1_pd(0);
         __mmask8 mask = (__mmask8)(0xFF >> ( 8 - remainder ));
         __m512d ip8 = _mm512_mask_loadu_pd(zero, mask, &x[j]);
-        ALM_PROTO(vrd8_sincos)(ip8, &opsin, &opcos);
+        ALM_PROTO_OPT(vrd8_sincos)(ip8, &opsin, &opcos);
         _mm512_mask_storeu_pd(&sin[j], mask, opsin);
         _mm512_mask_storeu_pd(&cos[j], mask, opcos);
     }

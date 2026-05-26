@@ -337,7 +337,7 @@ ALM_PROTO_OPT(vrd8_cdfnorminv)(v_f64x8_t _x) {
         /* sign_q != 0 means q < 0, i.e., x < 0.5, so use x; otherwise use 1-x */
         v_u64x8_t sign_q = as_v8_u64_f64(q) & ~SIGN_MASK;
         v_f64x8_t min_x = _mm512_mask_blend_pd(to_mask8(sign_q), ONE - _x, _x);
-        v_f64x8_t r = ALM_PROTO(vrd8_sqrt)(-ALM_PROTO(vrd8_log)(min_x));
+        v_f64x8_t r = ALM_PROTO_OPT(vrd8_sqrt)(-ALM_PROTO_OPT(vrd8_log)(min_x));
 
         /* Check if tail (r <= 5.0) or extreme tail (r > 5.0) */
         v_u64x8_t tail_normal = (as_v8_u64_f64(r) <= as_v8_u64_f64(BOUND_2));
@@ -352,7 +352,7 @@ ALM_PROTO_OPT(vrd8_cdfnorminv)(v_f64x8_t _x) {
             return _mm512_mask_blend_pd(to_mask8(sign_q), val, -val);
         }
 
-        /* Extreme tail (r > 5.0) falls through to scalar as ALM_PROTO(vrd8_log)
+        /* Extreme tail (r > 5.0) falls through to scalar as ALM_PROTO_OPT(vrd8_log)
          * isn't accurate enough for subnormals and errors get amplified with further computation. */
     }
 

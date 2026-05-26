@@ -140,7 +140,7 @@ static struct {
 static inline v_f32x16_t
 acosf_specialcase(v_f32x16_t _x, v_f32x16_t result, v_u32x16_t cond)
 {
-    return call_v16_f32(ALM_PROTO(acosf), _x, result, cond);
+    return call_v16_f32(ALM_PROTO_OPT(acosf), _x, result, cond);
 }
 
 v_f32x16_t

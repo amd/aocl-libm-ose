@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -95,15 +95,15 @@ ALM_PROTO_OPT(cpow)(fc64_t x, fc64_t y) {
 
     arg_x = carg(x);
 
-    r = pow(abs_x, y_re);
+    r = ALM_PROTO_OPT(pow)(abs_x, y_re);
 
     theta = y_re * arg_x;
 
     if (asuint64(y_im) != 0) {
 
-        r = r * exp(-y_im * arg_x);
+        r = r * ALM_PROTO_OPT(exp)(-y_im * arg_x);
 
-        theta = theta + y_im * log(abs_x);
+        theta = theta + y_im * ALM_PROTO_OPT(log)(abs_x);
 
     }
 
@@ -120,7 +120,7 @@ ALM_PROTO_OPT(cpow)(fc64_t x, fc64_t y) {
     
     }
 
-    w = CMPLX(r * cos(theta), r * sin(theta));
+    w = CMPLX(r * ALM_PROTO_OPT(cos)(theta), r * ALM_PROTO_OPT(sin)(theta));
 
     return w;
 }

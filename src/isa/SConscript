@@ -36,6 +36,10 @@ _spec = importlib.util.spec_from_file_location(
 _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)
 gather_optimized_srcs = _mod.gather_optimized_srcs
+VRDA_UNARY_AVX512_FUNCS = _mod.VRDA_UNARY_AVX512_FUNCS
+VRSA_UNARY_AVX512_FUNCS = _mod.VRSA_UNARY_AVX512_FUNCS
+AVX512_VRDA_TEMPLATE = _mod.AVX512_VRDA_TEMPLATE
+AVX512_VRSA_TEMPLATE = _mod.AVX512_VRSA_TEMPLATE
 
 e = env.Clone()
 
@@ -126,6 +130,54 @@ for isa_name, isa_def, has_avx512 in isa_list:
             rel = os.path.basename(src_norm_path)
         target = joinpath(isa_name, os.path.splitext(rel)[0])
         isa_objs.append(isa_env.StaticObject(target=target, source=src))
+
+# ---------------------------------------------------------------------------
+# AVX-512 template-based array wrapper compilation
+#
+# This loop compiles the vrda/vrsa template files multiple times, once for
+# each function in the function lists. Each compilation receives:
+#   -DALM_FUNC=<name>     : The function name (sin, cos, sinf, etc.)
+#   -DALM_BUILD_AVX512=1  : Enables AVX-512 code paths in headers
+#
+# The template file uses PASTE(vrda_, ALM_FUNC) to construct the function
+# name at compile time. For example, with -DALM_FUNC=sin, the template
+# generates vrda_sin() which calls vrd8_sin() internally.
+#
+# This produces one object file per function (e.g., avx512/vrda_sin.o).
+# ---------------------------------------------------------------------------
+avx512_template_env = e.Clone()
+if '-ffast-math' in avx512_template_env['CFLAGS']:
+    avx512_template_env['CFLAGS'].remove('-ffast-math')
+
+avx512_template_cflags = ['-DALM_BUILD_AVX512=1']
+if e['HOST_OS'] != 'win32':
+    avx512_template_cflags.extend(['-include', isa_header])
+else:
+    avx512_template_cflags.extend(['/FI' + isa_header])
+avx512_template_cflags.extend(isa_common_flags)
+avx512_template_cflags.extend(['-mavx512f', '-mavx512dq'])
+
+vrda_template_src = File(joinpath('#src/optimized', AVX512_VRDA_TEMPLATE))
+vrsa_template_src = File(joinpath('#src/optimized', AVX512_VRSA_TEMPLATE))
+
+# Compile vrda (double) and vrsa (float) templates for each function
+# Format: (prefix, template_source, function_list)
+template_configs = [
+    ('vrda', vrda_template_src, VRDA_UNARY_AVX512_FUNCS),
+    ('vrsa', vrsa_template_src, VRSA_UNARY_AVX512_FUNCS),
+]
+
+# Outer loop: iterate over template configurations (vrda, vrsa)
+for prefix, template_src, func_list in template_configs:
+    # Inner loop: compile template once per function
+    for func in func_list:
+        tpl_env = avx512_template_env.Clone()
+        tpl_env.Append(
+            CFLAGS = avx512_template_cflags + ['-DALM_FUNC=' + func],
+            CPPPATH = isa_includes,
+        )
+        target = joinpath('avx512', prefix + '_' + func)
+        isa_objs.append(tpl_env.StaticObject(target=target, source=template_src))
 
 objs = avxsrcs_objs + avx2asm_objs + isa_objs
 

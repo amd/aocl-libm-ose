@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -65,7 +65,7 @@
 double ALM_PROTO_OPT(erf)(double x) {
 
     /* Set the polynomial coefficients */
-  
+
     uint64_t AH[]={0x3ff20dd750429b6d, 0xbfd812746b0379e7, 0x3fbce2f21a042bdd, 0xbf9b82ce3128899b,
 		   0x3f7565bcd0e64ab7, 0xbf4c02db3fed8f63, 0x3f1f9a326bfb70f8, 0xbeef4d255e146073,
 		   0x3ebb9e64d07be3ef, 0xbe85f6d6b51269e9, 0x3e4fc411710911f4, 0xbe14e55cc7bb4618,
@@ -83,7 +83,7 @@ double ALM_PROTO_OPT(erf)(double x) {
 		   0x3e5b585ab4ee56db, 0xbe343791e2362fe3, 0x3e08c7fac39ca5e7, 0xbdd9196ac7b021d3,
 		   0x3da4d0042e2379da, 0xbd6bd1338d1165b7, 0x3d2d3e62265eae4b, 0xbce749935116736a,
 		   0x3c9a6873aa639266, 0xbc42ff4fcbd3a152, 0x3bda0fa3f3374aaf};
- 
+
     uint64_t BL[]={0x3c8b2313a4818d9a, 0x3c772cb40cbce9be, 0xbbbac96f6b512800, 0x3c3c4b0af95c687b,
 		   0xbbc5d813d4ff2075, 0x3bf0f9b1617d1293, 0xbbe31f4143550988, 0x3b4ccb54bd312634,
 		   0xbbb09d2ee89a8bfb, 0xbbab40809add97f7, 0xbb8cb3fdc0627eae, 0xbb47ce138a9429fa,
@@ -201,7 +201,7 @@ double ALM_PROTO_OPT(erf)(double x) {
 	  sL = z - (sH-rH);
 	}
 	double result1 = sH * x + sL * x;
-	result = 1.0 - exp(result1);
+	result = 1.0 - ALM_PROTO_OPT(exp)(result1);
         result = asdouble(sign | asuint64(result));
     }
     else {

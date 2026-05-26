@@ -99,4 +99,49 @@ foreach(ISA_ENTRY IN LISTS ALM_ISA_LIST)
     list(APPEND libmobj $<TARGET_OBJECTS:isa_${ISA_DIR}>)
 endforeach()
 
+# ---------------------------------------------------------------------------
+# AVX-512 template-based array wrapper compilation
+#
+# This loop compiles the vrda/vrsa template files multiple times, once for
+# each function in the function lists. Each compilation receives:
+#   -DALM_FUNC=<name>  : The function name (sin, cos, sinf, etc.)
+#   -DALM_BUILD_AVX512=1 : Enables AVX-512 code paths in headers
+#
+# The template file uses PASTE(vrda_, ALM_FUNC) to construct the function
+# name at compile time. For example, with -DALM_FUNC=sin, the template
+# generates vrda_sin() which calls vrd8_sin() internally.
+#
+# This produces one object file per function (e.g., isa_vrda_sin_avx512.o).
+# ---------------------------------------------------------------------------
+if(CONFIG_COMPILER_HAS_AVX512)
+    # Compile both vrda (double) and vrsa (float) templates
+    # Format: "prefix:template_var:funcs_list_var"
+    set(_TEMPLATE_LIST
+        "vrda:AVX512_VRDA_TEMPLATE:VRDA_UNARY_AVX512_FUNCS"
+        "vrsa:AVX512_VRSA_TEMPLATE:VRSA_UNARY_AVX512_FUNCS"
+    )
+
+    # Outer loop: iterate over template configurations (vrda, vrsa)
+    foreach(_TMPL_ENTRY IN LISTS _TEMPLATE_LIST)
+        string(REPLACE ":" ";" _TMPL_PARTS "${_TMPL_ENTRY}")
+        list(GET _TMPL_PARTS 0 _PREFIX)       # vrda or vrsa
+        list(GET _TMPL_PARTS 1 _TEMPLATE_VAR) # variable holding template path
+        list(GET _TMPL_PARTS 2 _FUNCS_VAR)    # variable holding function list
+
+        # Inner loop: compile template once per function
+        foreach(func IN LISTS ${_FUNCS_VAR})
+            set(tgt isa_${_PREFIX}_${func}_avx512)
+            add_library(${tgt} OBJECT ${${_TEMPLATE_VAR}})
+            target_compile_options(${tgt} PRIVATE
+                ${ISA_FORCE_INCLUDE}
+                -DALM_BUILD_AVX512=1
+                -DALM_FUNC=${func}
+                ${ISA_CFLAGS} ${avx512flag}
+            )
+            target_include_directories(${tgt} PRIVATE ${ISA_INCLUDES})
+            list(APPEND libmobj $<TARGET_OBJECTS:${tgt}>)
+        endforeach()
+    endforeach()
+endif()
+
 set(libmobj ${libmobj} PARENT_SCOPE)

@@ -67,11 +67,19 @@ foreach(ARCH_ENTRY IN LISTS ALM_WRAPPER_ARCH_LIST)
     list(GET _PARTS 2 ARCH_MARCH)
     list(GET _PARTS 3 ARCH_HAS_AVX512)
 
-    if(ARCH_HAS_AVX512)
+    # Check both arch capability AND compiler support for AVX-512.
+    # Even if an arch supports AVX-512 (zen4/5/6), we fall back to AVX2
+    # compilation if the compiler doesn't support AVX-512 flags.
+    if(ARCH_HAS_AVX512 AND CONFIG_COMPILER_HAS_AVX512)
         # zen4/zen5/zen6: one target — COMMON_SRCS + AVX512-specific sources,
         # all compiled with AVX512 flags.  No separate base target is created,
         # so there is no risk of duplicate symbols between two targets sharing
         # the same -DALM_BUILD_<ARCH> define.
+        #
+        # Explicit ISA flags (avx512flag) are required even though -march=znverX
+        # implies them, because get_zenX_arch_flags() can fall back to x86-64
+        # when no znver* flag is supported — and x86-64 does not enable AVX-512
+        # implicitly.
         add_library(${ARCH_DIR} OBJECT ${AVX512_SRCS})
         target_compile_options(${ARCH_DIR} PRIVATE
             ${ARCH_FORCE_INCLUDE}
@@ -81,6 +89,7 @@ foreach(ARCH_ENTRY IN LISTS ALM_WRAPPER_ARCH_LIST)
         )
     else()
         # zen/zen2/zen3: COMMON_SRCS only, no AVX512 flags.
+        # Also used for zen4/5/6 when CONFIG_COMPILER_HAS_AVX512 is OFF.
         add_library(${ARCH_DIR} OBJECT ${AVX2_SRCS})
         target_compile_options(${ARCH_DIR} PRIVATE
             ${ARCH_FORCE_INCLUDE}
@@ -93,5 +102,66 @@ foreach(ARCH_ENTRY IN LISTS ALM_WRAPPER_ARCH_LIST)
     target_include_directories(${ARCH_DIR} PRIVATE ${ZEN_INCLUDES})
     list(APPEND libmobj $<TARGET_OBJECTS:${ARCH_DIR}>)
 endforeach()
+
+# ---------------------------------------------------------------------------
+# AVX-512 template-based array wrapper compilation for zen4/zen5/zen6
+#
+# This three-level nested loop compiles the vrda/vrsa templates for each
+# combination of:
+#   - Architecture (zen4, zen5, zen6 — all support AVX-512)
+#   - Template type (vrda for double, vrsa for float)
+#   - Function (sin, cos, exp, etc.)
+#
+# Each compilation receives arch-specific flags (-march=znver4, -DALM_BUILD_ZEN4)
+# plus the function-specific -DALM_FUNC=<name>. This generates separate object
+# files like zen4_vrda_sin.o, zen5_vrda_sin.o, etc., allowing the dispatcher
+# to select the optimal implementation at runtime.
+# ---------------------------------------------------------------------------
+if(CONFIG_COMPILER_HAS_AVX512)
+# Reuse ALM_WRAPPER_ARCH_LIST and filter for AVX-512 architectures (ARCH_HAS_AVX512=1)
+# to avoid maintaining a separate list that could drift.
+foreach(ARCH_ENTRY IN LISTS ALM_WRAPPER_ARCH_LIST)
+    string(REPLACE ":" ";" _PARTS "${ARCH_ENTRY}")
+    list(GET _PARTS 0 ARCH_DIR)
+    list(GET _PARTS 1 ARCH_DEF)
+    list(GET _PARTS 2 ARCH_MARCH)
+    list(GET _PARTS 3 ARCH_HAS_AVX512)
+
+    # Only compile templates for AVX-512 capable architectures
+    if(NOT ARCH_HAS_AVX512)
+        continue()
+    endif()
+
+    # Compile both vrda (double) and vrsa (float) templates
+    # Format: "prefix:template_var:funcs_list_var"
+    set(_TEMPLATE_LIST
+        "vrda:AVX512_VRDA_TEMPLATE:VRDA_UNARY_AVX512_FUNCS"
+        "vrsa:AVX512_VRSA_TEMPLATE:VRSA_UNARY_AVX512_FUNCS"
+    )
+
+    # Middle loop: iterate over template configurations (vrda, vrsa)
+    foreach(_TMPL_ENTRY IN LISTS _TEMPLATE_LIST)
+        string(REPLACE ":" ";" _TMPL_PARTS "${_TMPL_ENTRY}")
+        list(GET _TMPL_PARTS 0 _PREFIX)       # vrda or vrsa
+        list(GET _TMPL_PARTS 1 _TEMPLATE_VAR) # variable holding template path
+        list(GET _TMPL_PARTS 2 _FUNCS_VAR)    # variable holding function list
+
+        # Inner loop: compile template once per function
+        foreach(func IN LISTS ${_FUNCS_VAR})
+            set(tgt ${ARCH_DIR}_${_PREFIX}_${func})
+            add_library(${tgt} OBJECT ${${_TEMPLATE_VAR}})
+            target_compile_options(${tgt} PRIVATE
+                ${ARCH_FORCE_INCLUDE}
+                -DALM_BUILD_${ARCH_DEF}=1
+                -DALM_FUNC=${func}
+                -march=${ARCH_MARCH}
+                ${ZEN_FLAGS} ${avx512flag}
+            )
+            target_include_directories(${tgt} PRIVATE ${ZEN_INCLUDES})
+            list(APPEND libmobj $<TARGET_OBJECTS:${tgt}>)
+        endforeach()
+    endforeach()
+endforeach()
+endif() # CONFIG_COMPILER_HAS_AVX512
 
 set(libmobj ${libmobj} PARENT_SCOPE)

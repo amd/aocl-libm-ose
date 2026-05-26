@@ -62,6 +62,49 @@ set(LIBMCFLAGS ${LIBMCFLAGS} ${wflags})
 set(LIBMCFLAGS ${LIBMCFLAGS} ${uavmflag})
 set(LIBMCFLAGS ${LIBMCFLAGS} ${picflag})
 set(LIBMCFLAGS ${LIBMCFLAGS} ${auflag})
+
+# ---------------------------------------------------------------------------
+# AVX-512 template-based array wrapper generation
+#
+# Instead of maintaining individual vrda_*.c / vrsa_*.c files for each math
+# function, we use a single template file that is compiled multiple times
+# with different -DALM_FUNC=<name> definitions. This approach:
+#   - Reduces code duplication (one template instead of ~30 nearly-identical files)
+#   - Makes maintenance easier (fix once, apply everywhere)
+#   - Keeps behavior consistent across all array wrappers
+#
+# The template files (vrda_unary_avx512.c, vrsa_unary_avx512.c) use the
+# PASTE macro to construct function names from ALM_FUNC at compile time.
+#
+# These variables are defined here so they are available to both
+# src/optimized/ (for filtering) and src/isa/, src/arch/ (for compilation).
+# ---------------------------------------------------------------------------
+
+# List of unary double functions for vrda template.
+# Each function generates a vrda_<name> wrapper (e.g., vrda_sin, vrda_cos).
+# The wrapper calls the corresponding vrd8_<name> 8-wide vector function.
+# NOTE: Keep in sync with VRDA_UNARY_AVX512_FUNCS in optimized_srcs.py (SCons).
+set(VRDA_UNARY_AVX512_FUNCS
+    sin cos tan exp exp2 log log2
+    asin atan sqrt round
+    erf erfc erfinv erfcinv
+    cdfnorm cdfnorminv
+)
+
+# List of unary float functions for vrsa template.
+# Each function generates a vrsa_<name> wrapper (e.g., vrsa_sinf, vrsa_cosf).
+# The wrapper calls the corresponding vrs16_<name> 16-wide vector function.
+# NOTE: Keep in sync with VRSA_UNARY_AVX512_FUNCS in optimized_srcs.py (SCons).
+set(VRSA_UNARY_AVX512_FUNCS
+    sinf cosf tanf expf exp2f logf log2f log10f
+    asinf atanf acosf sqrtf roundf
+    erff erfcf tanhf
+)
+
+# Template file paths for AVX-512 array wrappers
+set(AVX512_VRDA_TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/optimized/vec/avx512/vrda_unary_avx512.c")
+set(AVX512_VRSA_TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/optimized/vec/avx512/vrsa_unary_avx512.c")
+
 if(WIN32)
   get_win_flag( winflag )                           # windows flags
   set(LIBMCFLAGS ${LIBMCFLAGS} ${winflag})

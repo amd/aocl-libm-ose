@@ -75,6 +75,13 @@ file(GLOB VECMATH_SRCS        CONFIGURE_DEPENDS "${OPT_DIR}/vectormath/*.c")
 file(GLOB AVX512_VEC_SRCS     CONFIGURE_DEPENDS "${OPT_DIR}/vec/avx512/*.c")
 file(GLOB AVX512_VECMATH_SRCS CONFIGURE_DEPENDS "${OPT_DIR}/vectormath/avx512/*.c")
 
+# Exclude template files from the glob — they are compiled separately in the
+# foreach loops in src/isa/ and src/arch/, not as part of the regular source list.
+# The function lists (VRDA_UNARY_AVX512_FUNCS, VRSA_UNARY_AVX512_FUNCS) and
+# template paths are defined in src/CMakeLists.txt and inherited here.
+list(FILTER AVX512_VEC_SRCS EXCLUDE REGEX "vrda_unary_avx512\\.c$")
+list(FILTER AVX512_VEC_SRCS EXCLUDE REGEX "vrsa_unary_avx512\\.c$")
+
 # Exclude files already compiled by the opt target to avoid duplicate symbols.
 # Files in common/ and data/ are not picked up by the top-level glob, so only
 # the non-arch scalar files need filtering.
@@ -88,8 +95,24 @@ list(REMOVE_ITEM VEC_SRCS ${_opt_abs})
 list(FILTER ARCH_OPT_SRCS EXCLUDE REGEX "(log_v3)[^/]*\\.c$")
 
 # For AVX512 build: keep base vec/vectormath files only if no avx512 replacement exists.
+# Also exclude files that are replaced by template compilation.
 set(_avx512_vec_names ${AVX512_VEC_SRCS})
 list(TRANSFORM _avx512_vec_names REPLACE ".+/" "")
+
+# Add template-based function names to the exclusion list.
+# These files (e.g., vrda_sin.c, vrsa_sinf.c) would conflict with the template-
+# generated symbols if they exist in the base vec/ directory. We filter them
+# out to ensure only the template-compiled versions are used.
+set(_EXCL_LIST "vrda:VRDA_UNARY_AVX512_FUNCS" "vrsa:VRSA_UNARY_AVX512_FUNCS")
+foreach(_entry IN LISTS _EXCL_LIST)
+    string(REPLACE ":" ";" _parts "${_entry}")
+    list(GET _parts 0 _prefix)
+    list(GET _parts 1 _funcs_var)
+    foreach(func IN LISTS ${_funcs_var})
+        list(APPEND _avx512_vec_names "${_prefix}_${func}.c")
+    endforeach()
+endforeach()
+
 set(FILTERED_VEC_SRCS "")
 foreach(_f ${VEC_SRCS})
     get_filename_component(_name "${_f}" NAME)

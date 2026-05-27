@@ -25,12 +25,15 @@
  *
  */
 
+#include <algorithm>
+#include <cctype>
 #include <iostream>
 #include <cstring>
 #include <map>
 #include "dll_utils.h"
 #include "alm_test.h"
 #include "api_template.h"
+#include "console_report.h"
 #include <string>
 
 // Helper to uppercase a string
@@ -51,7 +54,9 @@ void print_usage(const char *program_name)
 {
     std::cerr << "Usage: " << program_name
               << " <shim_shared_library> <yaml_file>"
-              << " [--type|-t <test_type>] [--perf-mode <mode>]" << std::endl;
+              << " [API] [TEST_TYPE]"
+              << " [--type|-t <test_type>] [--perf-mode <mode>]"
+              << " [--verbose-mode]" << std::endl;
     std::cerr << "Description:\n"
               << "  This program loads shared libraries and "
               << "executes specified functions.\n"
@@ -60,14 +65,22 @@ void print_usage(const char *program_name)
               << "shared library.\n"
               << "    <yaml_file>              Path to the YAML "
               << "configuration file.\n"
-              << "    [--type|-t <test_type>]  Optional test type:\n"
-              << "                             'accu' for accuracy "
-              << "(default),\n"
-              << "                             'perf' for "
-              << "performance.\n"
+              << "    [API]                    Optional filter to one function "
+              << "(e.g. acos).\n"
+              << "                             With master.yml, the next "
+              << "positional arg may be API or TEST_TYPE.\n"
+              << "    [TEST_TYPE]              Optional filter: conf, accu, or "
+              << "perf\n"
+              << "                             (case-insensitive). Use alone or "
+              << "after API.\n"
+              << "    [--type|-t <test_type>]  Force accuracy (accu) or "
+              << "performance (perf) mode.\n"
               << "    [--perf-mode <mode>]     Performance measurement mode:\n"
               << "                             'throughput' (default),\n"
               << "                             'latency'.\n"
+              << "    [--verbose-mode]         Also write per-test YAML files to the\n"
+              << "                             configured results directory. Summary\n"
+              << "                             tables are always printed to the console.\n"
               << "  Note:\n"
               << "    The reference library is automatically loaded "
               << "at build time." << std::endl;
@@ -182,6 +195,8 @@ int main(int argc, char *argv[])
                     bench_args.perf_mode = PerfMode::E_THROUGHPUT;
                 }
             }
+        } else if (std::strcmp(argv[i], "--verbose-mode") == 0) {
+            set_verbose_mode(true);
         }
     }
 

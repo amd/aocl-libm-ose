@@ -35,12 +35,18 @@
 #include "api_template.h"
 #include "alm_mp_funcs.h"
 #include "ulp.h"
+#include "console_report.h"
+#include "yaml_batch_writer.h"
 
 using namespace std;
 
 /*Ensure the output directory exists and set the output file name based on test mode*/
 template <typename S>
 void check_outfile_dir(struct YamlOutputs<S> *yop) {
+    if (!is_verbose_mode_enabled()) {
+        return;
+    }
+
     /* * Ensure the output directory exists.
      * If the directory does not exist, create it.
      */
@@ -511,28 +517,42 @@ int validate_api(struct AlmLibs *alibs,
     check_outfile_dir(yop);
     SetGlobalUlpThreshold(yop->config.ulp_threshold);
 
+    YamlBatchWriter<U> writer(yop->outfile);
+    writer.emit_yaml_file = is_verbose_mode_enabled();
+
     switch (api_type) {
         case API_PROTOTYPE_01:
-            api_prototype_01<T, U>(alibs, ipp, shimapi, refapi, yop);
+            api_prototype_01<T, U>(alibs, ipp, shimapi, refapi, yop, &writer);
             break;
         case API_PROTOTYPE_02:
-            api_prototype_02<T, U>(alibs, ipp, shimapi, refapi, yop);
+            api_prototype_02<T, U>(alibs, ipp, shimapi, refapi, yop, &writer);
             break;
         case API_PROTOTYPE_03:
-            api_prototype_03<T, U>(alibs, ipp, shimapi, refapi, yop);
+            api_prototype_03<T, U>(alibs, ipp, shimapi, refapi, yop, &writer);
             break;
         case API_PROTOTYPE_04:
-            api_prototype_04<T, U>(alibs, ipp, shimapi, refapi, yop);
+            api_prototype_04<T, U>(alibs, ipp, shimapi, refapi, yop, &writer);
             break;
         case API_PROTOTYPE_05:
-            api_prototype_05<T, U>(alibs, ipp, shimapi, refapi, yop);
+            api_prototype_05<T, U>(alibs, ipp, shimapi, refapi, yop, &writer);
             break;
         case API_PROTOTYPE_06:
-            api_prototype_06<T, U>(alibs, ipp, shimapi, refapi, yop);
+            api_prototype_06<T, U>(alibs, ipp, shimapi, refapi, yop, &writer);
             break;
         default:
             cerr << "Unknown API type." << endl;
             return -1;
+    }
+
+    /* Conformance (utflag): per-case rows already reported in unit_test(). */
+    if (!yop->config.utflag) {
+        auto &s = writer.stats();
+        if (yop->config.test_mode == TestMode::E_PERFORMANCE) {
+            report_perf_results<U>(yop, s.min_duration, yop->n[0],
+                                   s.udata, s.total_tests, s.fail_count);
+        } else {
+            report_accuracy_results<U>(yop, s.udata, s.total_tests, s.fail_count);
+        }
     }
 
     return 0;
@@ -562,18 +582,35 @@ int validate_api<fc32_t, fc32_t>(struct AlmLibs *alibs,
     check_outfile_dir(yop);
     SetGlobalUlpThreshold(yop->config.ulp_threshold);
 
+    YamlBatchWriter<fc32_t> writer(yop->outfile);
+    writer.emit_yaml_file = is_verbose_mode_enabled();
+
     if (yop->api_name == "cpow") {
         if (api_type == API_PROTOTYPE_02) {
-            return api_prototype_02<fc32_t, fc32_t>(alibs, ipp, shimapi, refapi, yop);
+            api_prototype_02<fc32_t, fc32_t>(alibs, ipp, shimapi, refapi, yop, &writer);
+        } else {
+            cerr << "cpow requires API_PROTOTYPE_02 (got "
+                 << api_prototype_to_string(api_type) << ")." << endl;
+            return -1;
         }
     } else if (api_type == API_PROTOTYPE_01) {
-        return api_prototype_01<fc32_t, fc32_t>(alibs, ipp, shimapi, refapi, yop);
+        api_prototype_01<fc32_t, fc32_t>(alibs, ipp, shimapi, refapi, yop, &writer);
+    } else {
+        cerr << "Complex scalar APIs only support API_PROTOTYPE_01 (got "
+             << api_prototype_to_string(api_type) << ")." << endl;
+        return -1;
     }
-    cerr << (yop->api_name == "cpow"
-                 ? "cpow requires API_PROTOTYPE_02 (got "
-                 : "Complex scalar APIs only support API_PROTOTYPE_01 (got ")
-         << api_prototype_to_string(api_type) << ")." << endl;
-    return -1;
+
+    if (!yop->config.utflag) {
+        auto &s = writer.stats();
+        if (yop->config.test_mode == TestMode::E_PERFORMANCE) {
+            report_perf_results<fc32_t>(yop, s.min_duration, 1,
+                                        s.udata, s.total_tests, s.fail_count);
+        } else {
+            report_accuracy_results<fc32_t>(yop, s.udata, s.total_tests, s.fail_count);
+        }
+    }
+    return 0;
 }
 
 template <>
@@ -594,18 +631,35 @@ int validate_api<fc64_t, fc64_t>(struct AlmLibs *alibs,
     check_outfile_dir(yop);
     SetGlobalUlpThreshold(yop->config.ulp_threshold);
 
+    YamlBatchWriter<fc64_t> writer(yop->outfile);
+    writer.emit_yaml_file = is_verbose_mode_enabled();
+
     if (yop->api_name == "cpow") {
         if (api_type == API_PROTOTYPE_02) {
-            return api_prototype_02<fc64_t, fc64_t>(alibs, ipp, shimapi, refapi, yop);
+            api_prototype_02<fc64_t, fc64_t>(alibs, ipp, shimapi, refapi, yop, &writer);
+        } else {
+            cerr << "cpow requires API_PROTOTYPE_02 (got "
+                 << api_prototype_to_string(api_type) << ")." << endl;
+            return -1;
         }
     } else if (api_type == API_PROTOTYPE_01) {
-        return api_prototype_01<fc64_t, fc64_t>(alibs, ipp, shimapi, refapi, yop);
+        api_prototype_01<fc64_t, fc64_t>(alibs, ipp, shimapi, refapi, yop, &writer);
+    } else {
+        cerr << "Complex scalar APIs only support API_PROTOTYPE_01 (got "
+             << api_prototype_to_string(api_type) << ")." << endl;
+        return -1;
     }
-    cerr << (yop->api_name == "cpow"
-                 ? "cpow requires API_PROTOTYPE_02 (got "
-                 : "Complex scalar APIs only support API_PROTOTYPE_01 (got ")
-         << api_prototype_to_string(api_type) << ")." << endl;
-    return -1;
+
+    if (!yop->config.utflag) {
+        auto &s = writer.stats();
+        if (yop->config.test_mode == TestMode::E_PERFORMANCE) {
+            report_perf_results<fc64_t>(yop, s.min_duration, 1,
+                                        s.udata, s.total_tests, s.fail_count);
+        } else {
+            report_accuracy_results<fc64_t>(yop, s.udata, s.total_tests, s.fail_count);
+        }
+    }
+    return 0;
 }
 
 /* Explicit template instantiations */

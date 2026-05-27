@@ -28,6 +28,7 @@
 #pragma once
 
 #include <iostream>
+#include <yaml-cpp/yaml.h>
 #include "alm_test.h"
 #include <string>
 #include <vector>
@@ -164,6 +165,12 @@ void set_api_filter(const std::string& api);
 void set_type_filter(const std::string& type);
 
 int read_yaml_file(const std::string &filename, std::vector<struct YamlInputs> &params);
+
+template <typename S>
+YAML::Node serialize_yaml_outputs(const struct YamlOutputs<S> *yop);
+
+template <typename S>
+void emit_yaml_stdout(const struct YamlOutputs<S> *yop);
 
 template <typename S>
 void write_yaml_output(const struct YamlOutputs<S> *yop);

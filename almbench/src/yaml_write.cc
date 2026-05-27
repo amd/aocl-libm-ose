@@ -26,6 +26,7 @@
  */
 
 
+#include <iostream>
 #include <sstream>
 #include <iomanip>
 #include <cstdint>
@@ -57,6 +58,8 @@
 
 #include "alm_test.h"
 #include "libm_yaml.h"
+#include "yaml_batch_writer.h"
+#include "console_report.h"
 
 #ifdef _WIN32
     #pragma warning(pop)  // Restore warnings
@@ -184,7 +187,6 @@ YAML::Node serialize_yaml_outputs(const struct YamlOutputs<S> *yop)
         }
     }
 
-    // Serialize ULP (Unit in Last Place) values
     if (yop->ulp) {
         if (yop->config.utflag) {
             YAML::Node ulp_node;
@@ -203,8 +205,6 @@ YAML::Node serialize_yaml_outputs(const struct YamlOutputs<S> *yop)
         }
     }
 
-
-    // Serialize ULP (Unit in Last Place) values
     if (yop->status) {
         if (yop->config.utflag) {
             YAML::Node status_node;
@@ -239,37 +239,43 @@ YAML::Node serialize_yaml_outputs(const struct YamlOutputs<S> *yop)
         }
     }
 
-    // Print YAML to stdout in unit test mode
-    if (yop->config.utflag) {
-        YAML::Emitter out;
-        out << node;
-        std::cout << out.c_str() << std::endl;
-    }
-
     return node;
 }
 
+template <typename S>
+void emit_yaml_stdout(const struct YamlOutputs<S> *yop)
+{
+    YAML::Node node = serialize_yaml_outputs<S>(yop);
+    YAML::Emitter out;
+    out << node;
+    std::cout << out.c_str() << std::endl;
+}
+
 /*
- * Writes the serialized YAML output to a file.
- * Appends to the file if it already exists.
+ * Legacy API: hot path uses YamlBatchWriter::push() from validate_api.
+ * Writes per-case YAML files only when --verbose-mode is enabled; conformance
+ * stdout in default mode is handled inside push() (utflag && !verbose).
+ * No in-tree callers; kept for external compatibility.
  */
 template <typename S>
 void write_yaml_output(const struct YamlOutputs<S> *yop)
 {
-    YAML::Node node = serialize_yaml_outputs<S>(yop);
-
-    std::ofstream fout(yop->outfile, std::ios::app);
-    if (!fout.is_open()) {
-        std::cerr << "Error: Could not open file " << yop->outfile << " for writing." << std::endl;
-        return;
-    }
-
-    fout << node << "\n";
-    fout.close();
+    YamlBatchWriter<S> writer(yop->outfile);
+    writer.emit_yaml_file = is_verbose_mode_enabled();
+    writer.push(yop);
 }
 
-
 // Explicit template instantiations for float and double types
+template YAML::Node serialize_yaml_outputs<float>(const struct YamlOutputs<float> *yop);
+template YAML::Node serialize_yaml_outputs<double>(const struct YamlOutputs<double> *yop);
+template YAML::Node serialize_yaml_outputs<fc32_t>(const struct YamlOutputs<fc32_t> *yop);
+template YAML::Node serialize_yaml_outputs<fc64_t>(const struct YamlOutputs<fc64_t> *yop);
+
+template void emit_yaml_stdout<float>(const struct YamlOutputs<float> *yop);
+template void emit_yaml_stdout<double>(const struct YamlOutputs<double> *yop);
+template void emit_yaml_stdout<fc32_t>(const struct YamlOutputs<fc32_t> *yop);
+template void emit_yaml_stdout<fc64_t>(const struct YamlOutputs<fc64_t> *yop);
+
 template void write_yaml_output<float>(const struct YamlOutputs<float> *yop);
 template void write_yaml_output<double>(const struct YamlOutputs<double> *yop);
 template void write_yaml_output<fc32_t>(const struct YamlOutputs<fc32_t> *yop);

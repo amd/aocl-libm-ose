@@ -34,6 +34,7 @@
 #include "alm_test.h"
 #include "api_template.h"
 #include "generator.h"
+#include "console_report.h"
 
 /*
  * is_hex_string:
@@ -157,7 +158,7 @@ int get_exception_flag(const std::string &name)
             if (ch != ' ' && ch != '_')
                 normalized += std::tolower(static_cast<unsigned char>(ch));
         }
-        std::cout << "Looking for exception: " << normalized << std::endl;
+
         auto it = exception_map.find(normalized);
         if (it != exception_map.end())
         {
@@ -342,6 +343,8 @@ void libm_api_variant(struct AlmLibs *alibs, const struct YamlInputs &param,
 void process_libm(struct AlmLibs *alibs, const std::vector<struct YamlInputs> &params,
                   BenchArgs bench_args)
 {
+    reset_console_reports();
+
     typedef const char* (*get_vendor_name_t)();
     get_vendor_name_t get_vendor_string = (get_vendor_name_t)DL_SYM(alibs->pshimlib, "get_vendor_name");
     const char *vendor_cstr = get_vendor_string();
@@ -400,8 +403,9 @@ void process_libm(struct AlmLibs *alibs, const std::vector<struct YamlInputs> &p
                 std::cout << "Invalid datatype: " << variant << std::endl;
             }
         }
-        std::cout << std::endl;
     }
+
+    print_console_reports();
 }
 
 template void libm_api_variant<fc32_t>(struct AlmLibs *alibs, const struct YamlInputs &param,

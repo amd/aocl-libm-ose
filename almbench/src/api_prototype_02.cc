@@ -41,6 +41,7 @@
 #include "alm_mp_funcs.h"
 #include "api_runner.h"
 #include "generator.h"
+#include "yaml_batch_writer.h"
 
 /*
  * build_bivariate_generators:
@@ -151,7 +152,8 @@ template <typename T, typename U, typename UL>
 static void unit_test(struct InParams<T, U> *ipp,
                       UL (*ref_func)(U, U),
                       void (*shim_func)(struct InParams<T, U> *),
-                      struct YamlOutputs<U> *yop)
+                      struct YamlOutputs<U> *yop,
+                      YamlBatchWriter<U> *writer)
 {
     yop->exception_raised = run_libm_api_with_exceptions<T, U>(shim_func, ipp);
 
@@ -160,15 +162,17 @@ static void unit_test(struct InParams<T, U> *ipp,
 
     UL mpfrop = ref_func(ip[0], ip[1]);
     double ulp;
-    ulp_data udata;
-    int uflag = update_ulp(op[0], mpfrop, udata, ulp);
+    int uflag = update_ulp(op[0], mpfrop, writer->stats().udata, ulp);
 
-    yop->iptr[0] = ip;
-    yop->iptr[1] = ip + 1;
-    yop->optr[0] = op;
-    yop->ulp     = &ulp;
-    yop->status  = &uflag;
-    write_yaml_output<U>(yop);
+    yop->n[0]      = 1;
+    yop->n[1]      = 1;
+    yop->iptr[0]   = ip;
+    yop->iptr[1]   = ip + 1;
+    yop->optr[0]   = op;
+    yop->ulp       = &ulp;
+    yop->status    = &uflag;
+
+    writer->push(yop);
 }
 
 /*
@@ -180,7 +184,8 @@ template <typename T, typename U, typename UL>
 static void range_test(struct InParams<T, U>* ipp,
                        UL (*ref_func)(U, U),
                        void (*shim_func)(struct InParams<T, U> *),
-                       struct YamlOutputs<U> *yop)
+                       struct YamlOutputs<U> *yop,
+                       YamlBatchWriter<U> *writer)
 {
     uint64_t elem        = sizeof(T) / sizeof(U);
     auto& x              = ipp->range[0];
@@ -200,7 +205,6 @@ static void range_test(struct InParams<T, U>* ipp,
     uint64_t N = align_to(gp.primary_count, elem);
 
     FloatPacker<T> fp;
-    ulp_data udata;
     double ulp;
 
     for (uint64_t i = 0; i < N; ++i) {
@@ -213,14 +217,14 @@ static void range_test(struct InParams<T, U>* ipp,
         U* op = reinterpret_cast<U*>(&ipp->op[0]);
         for (uint64_t j = 0; j < elem; ++j) {
             UL mpfrop  = ref_func(ip1[j], ip2[j]);
-            status[j]  = update_ulp(op[j], mpfrop, udata, ulp);
+            status[j]  = update_ulp(op[j], mpfrop, writer->stats().udata, ulp);
             max_ulp[j] = ulp;
         }
 
         yop->iptr[0] = ip1;
         yop->iptr[1] = ip2;
         yop->optr[0] = op;
-        write_yaml_output<U>(yop);
+        writer->push(yop);
     }
 }
 
@@ -233,7 +237,8 @@ template <typename T, typename U, typename UL>
 static void range_test_vra(struct InParams<T, U>* ipp,
                            UL (*ref_func)(U, U),
                            void (*shim_func)(struct InParams<T, U> *),
-                           struct YamlOutputs<U> *yop)
+                           struct YamlOutputs<U> *yop,
+                           YamlBatchWriter<U> *writer)
 {
     uint64_t elem = sizeof(T) / sizeof(U);
     auto& x        = ipp->range[0];
@@ -253,7 +258,6 @@ static void range_test_vra(struct InParams<T, U>* ipp,
     yop->ulp      = max_ulp.data();
     yop->status   = status.data();
 
-    ulp_data udata;
     double ulp;
 
     Runner<T, U>   runner(shim_func, yop->config);
@@ -270,13 +274,13 @@ static void range_test_vra(struct InParams<T, U>* ipp,
 
         for (uint64_t j = 0; j < count; ++j) {
             UL mpfrop = ref_func(ip1[j], ip2[j]);
-            status[j] = update_ulp(op[j], mpfrop, udata, ulp);
+            status[j] = update_ulp(op[j], mpfrop, writer->stats().udata, ulp);
             max_ulp[j] = ulp;
         }
 
         yop->iptr[0] = ip1;
         yop->iptr[1] = ip2;
-        write_yaml_output<U>(yop);
+        writer->push(yop);
     }
 }
 
@@ -290,7 +294,8 @@ int api_prototype_02(struct AlmLibs *alibs,
                      struct InParams<T, U>* ipp,
                      const std::string& libapi,
                      const std::string& refapi,
-                     YamlOutputs<U>* yop)
+                     YamlOutputs<U>* yop,
+                     YamlBatchWriter<U> *writer)
 {
     using UL = typename mpfr::op_type<U>::mopt;
 
@@ -298,11 +303,11 @@ int api_prototype_02(struct AlmLibs *alibs,
     auto ref_func  = load_function<UL (*)(U, U)>(alibs->preflib, refapi);
 
     if (ipp->range.empty()) {
-        unit_test<T, U, UL>(ipp, ref_func, shim_func, yop);
+        unit_test<T, U, UL>(ipp, ref_func, shim_func, yop, writer);
     } else if (!yop->config.is_vra) {
-        range_test<T, U, UL>(ipp, ref_func, shim_func, yop);
+        range_test<T, U, UL>(ipp, ref_func, shim_func, yop, writer);
     } else {
-        range_test_vra<T, U, UL>(ipp, ref_func, shim_func, yop);
+        range_test_vra<T, U, UL>(ipp, ref_func, shim_func, yop, writer);
     }
 
     return 0;
@@ -318,42 +323,48 @@ template int api_prototype_02<float, float>(
     struct InParams<float, float> *,
     const std::string &,
     const std::string &,
-    struct YamlOutputs<float> *);
+    struct YamlOutputs<float> *,
+    YamlBatchWriter<float> *);
 
 template int api_prototype_02<double, double>(
     struct AlmLibs *,
     struct InParams<double, double> *,
     const std::string &,
     const std::string &,
-    struct YamlOutputs<double> *);
+    struct YamlOutputs<double> *,
+    YamlBatchWriter<double> *);
 
 template int api_prototype_02<libm::AlignedM128, float>(
     struct AlmLibs *,
     struct InParams<libm::AlignedM128, float> *,
     const std::string &,
     const std::string &,
-    struct YamlOutputs<float> *);
+    struct YamlOutputs<float> *,
+    YamlBatchWriter<float> *);
 
 template int api_prototype_02<libm::AlignedM128d, double>(
     struct AlmLibs *,
     struct InParams<libm::AlignedM128d, double> *,
     const std::string &,
     const std::string &,
-    struct YamlOutputs<double> *);
+    struct YamlOutputs<double> *,
+    YamlBatchWriter<double> *);
 
 template int api_prototype_02<libm::AlignedM256, float>(
     struct AlmLibs *,
     struct InParams<libm::AlignedM256, float> *,
     const std::string &,
     const std::string &,
-    struct YamlOutputs<float> *);
+    struct YamlOutputs<float> *,
+    YamlBatchWriter<float> *);
 
 template int api_prototype_02<libm::AlignedM256d, double>(
     struct AlmLibs *,
     struct InParams<libm::AlignedM256d, double> *,
     const std::string &,
     const std::string &,
-    struct YamlOutputs<double> *);
+    struct YamlOutputs<double> *,
+    YamlBatchWriter<double> *);
 
 #ifdef __AVX512F__
 template int api_prototype_02<libm::AlignedM512, float>(
@@ -361,14 +372,16 @@ template int api_prototype_02<libm::AlignedM512, float>(
     struct InParams<libm::AlignedM512, float> *,
     const std::string &,
     const std::string &,
-    struct YamlOutputs<float> *);
+    struct YamlOutputs<float> *,
+    YamlBatchWriter<float> *);
 
 template int api_prototype_02<libm::AlignedM512d, double>(
     struct AlmLibs *,
     struct InParams<libm::AlignedM512d, double> *,
     const std::string &,
     const std::string &,
-    struct YamlOutputs<double> *);
+    struct YamlOutputs<double> *,
+    YamlBatchWriter<double> *);
 #endif
 
 template int api_prototype_02<fc32_t, fc32_t>(
@@ -376,11 +389,13 @@ template int api_prototype_02<fc32_t, fc32_t>(
     struct InParams<fc32_t, fc32_t> *,
     const std::string &,
     const std::string &,
-    struct YamlOutputs<fc32_t> *);
+    struct YamlOutputs<fc32_t> *,
+    YamlBatchWriter<fc32_t> *);
 
 template int api_prototype_02<fc64_t, fc64_t>(
     struct AlmLibs *,
     struct InParams<fc64_t, fc64_t> *,
     const std::string &,
     const std::string &,
-    struct YamlOutputs<fc64_t> *);
+    struct YamlOutputs<fc64_t> *,
+    YamlBatchWriter<fc64_t> *);

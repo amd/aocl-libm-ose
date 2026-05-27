@@ -78,7 +78,9 @@ set(SRCS  "${PROJECT_SOURCE_DIR}/src/main.cc"
             "${PROJECT_SOURCE_DIR}/src/ulp.cc"
             "${PROJECT_SOURCE_DIR}/src/verify.cc"
             "${PROJECT_SOURCE_DIR}/src/yaml_read.cc"
-            "${PROJECT_SOURCE_DIR}/src/yaml_write.cc")
+            "${PROJECT_SOURCE_DIR}/src/yaml_write.cc"
+            "${PROJECT_SOURCE_DIR}/src/yaml_batch_writer.cc"
+            "${PROJECT_SOURCE_DIR}/src/console_report.cc")
 
 set(INCS "${PROJECT_SOURCE_DIR}/src/include" "${PROJECT_SOURCE_DIR}/src/mparith")
 

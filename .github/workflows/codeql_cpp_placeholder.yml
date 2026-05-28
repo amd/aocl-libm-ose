@@ -1,6 +1,7 @@
 name: "CodeQL Advanced"
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "amd-main" ]
   pull_request:
@@ -38,6 +39,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -52,6 +55,7 @@ jobs:
       if: matrix.build-mode == 'manual' && matrix.compiler == 'gcc'
       shell: bash
       run: |
+        export PATH=/usr/local/bin:$PATH
         export CC=gcc
         export CXX=g++
         export gcc_path=$(which gcc)
@@ -63,8 +67,10 @@ jobs:
       if: matrix.build-mode == 'manual' && matrix.compiler == 'aocc'
       shell: bash
       run: |
+        export PATH=/usr/local/bin:$PATH
         export PATH="/home/amd/aocc-compiler-5.2.0/bin:$PATH"
-        export clang_path=$(which clang)
+        export CC=clang
+        export CXX=clang++
         export LIBRARY_PATH=/usr/lib64:/usr/lib/x86_64-linux-gnu:/usr/lib:$LIBRARY_PATH
         export LD_LIBRARY_PATH=/usr/lib64:/usr/lib/x86_64-linux-gnu:/usr/lib:$LD_LIBRARY_PATH
         export PATH=/home/amd/aocc-compiler-5.2.0/share/opt-viewer:$PATH

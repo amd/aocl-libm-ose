@@ -267,6 +267,7 @@ typedef __m256 (*mkl_erf_vrs8_func_t)(__m256);
 typedef __m256 (*mkl_erfc_vrs8_func_t)(__m256);
 typedef __m256 (*mkl_exp_vrs8_func_t)(__m256);
 typedef __m256 (*mkl_exp2_vrs8_func_t)(__m256);
+typedef __m256 (*mkl_exp10_vrs8_func_t)(__m256);
 typedef __m256 (*mkl_fabs_vrs8_func_t)(int, float*, float*);
 typedef __m256 (*mkl_linearfrac_vrs8_func_t)(int, const float*,
     const float*, float, float, float, float, float*);
@@ -629,6 +630,7 @@ static struct {
     mkl_erfc_vrs8_func_t erfc_vrs8;
     mkl_exp_vrs8_func_t exp_vrs8;
     mkl_exp2_vrs8_func_t exp2_vrs8;
+    mkl_exp10_vrs8_func_t exp10_vrs8;
     mkl_fabs_vrs8_func_t fabs_vrs8;
     mkl_linearfrac_vrs8_func_t linearfrac_vrs8;
     mkl_log_vrs8_func_t log_vrs8;
@@ -1085,6 +1087,7 @@ static void init_mkl_symbols(void) {
     mkl_funcs.erfc_vrs8 = load_mkl_symbol<mkl_erfc_vrs8_func_t>(mkl_vml, "__svml_erfcf8");
     mkl_funcs.exp_vrs8 = load_mkl_symbol<mkl_exp_vrs8_func_t>(mkl_vml, "__svml_expf8");
     mkl_funcs.exp2_vrs8 = load_mkl_symbol<mkl_exp2_vrs8_func_t>(mkl_vml, "__svml_exp2f8");
+    mkl_funcs.exp10_vrs8 = load_mkl_symbol<mkl_exp10_vrs8_func_t>(mkl_vml, "__svml_exp10f8");
     mkl_funcs.fabs_vrs8 = load_mkl_symbol<mkl_fabs_vrs8_func_t>(mkl_vma, "vsAbs");
     mkl_funcs.linearfrac_vrs8 = load_mkl_symbol<mkl_linearfrac_vrs8_func_t>(mkl_vma, "vsLinearFrac");
     mkl_funcs.log_vrs8 = load_mkl_symbol<mkl_log_vrs8_func_t>(mkl_vml, "__svml_logf8");
@@ -2135,6 +2138,10 @@ SHIM_EXPORT void shim_exp_vrs8(InParams<libm::AlignedM256, float> *ipp) {
 
 SHIM_EXPORT void shim_exp2_vrs8(InParams<libm::AlignedM256, float> *ipp) {
     ipp->op[0].data = mkl_funcs.exp2_vrs8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_exp10_vrs8(InParams<libm::AlignedM256, float> *ipp) {
+    ipp->op[0].data = mkl_funcs.exp10_vrs8(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_fabs_vrs8(InParams<libm::AlignedM256, float> *ipp) {

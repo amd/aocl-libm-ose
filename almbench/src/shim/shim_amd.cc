@@ -358,6 +358,7 @@ typedef void (*amd_sincos_vrs8_func_t)(__m256, __m256*, __m256*);
 typedef __m256 (*amd_sqrt_vrs8_func_t)(__m256);
 typedef __m256 (*amd_tan_vrs8_func_t)(__m256);
 typedef __m256 (*amd_tanh_vrs8_func_t)(__m256);
+typedef __m256 (*amd_exp10_vrs8_func_t)(__m256);
 
 // --- Single Precision Array (vrsa) Functions ---
 typedef void (*amd_acos_vrsa_func_t)(int, const float*, float*);
@@ -741,6 +742,7 @@ static struct {
     amd_sqrt_vrs8_func_t sqrt_vrs8;
     amd_tan_vrs8_func_t tan_vrs8;
     amd_tanh_vrs8_func_t tanh_vrs8;
+    amd_exp10_vrs8_func_t exp10_vrs8;
 
     // ============================================================================
     // SINGLE PRECISION ARRAY (vrsa) VARIANTS
@@ -1261,6 +1263,7 @@ static void init_amd_symbols(void) {
     amd_funcs.sqrt_vrs8 = load_amd_symbol<amd_sqrt_vrs8_func_t>(amd_core, "amd_vrs8_sqrtf");
     amd_funcs.tan_vrs8 = load_amd_symbol<amd_tan_vrs8_func_t>(amd_core, "amd_vrs8_tanf");
     amd_funcs.tanh_vrs8 = load_amd_symbol<amd_tanh_vrs8_func_t>(amd_core, "amd_vrs8_tanhf");
+    amd_funcs.exp10_vrs8 = load_amd_symbol<amd_exp10_vrs8_func_t>(amd_core, "amd_vrs8_exp10f");
 
     // ============================================================================
     // SINGLE PRECISION ARRAY (vrsa) VARIANTS
@@ -2400,6 +2403,10 @@ SHIM_EXPORT void shim_tan_vrs8(InParams<libm::AlignedM256, float> *ipp) {
 
 SHIM_EXPORT void shim_tanh_vrs8(InParams<libm::AlignedM256, float> *ipp) {
     ipp->op[0].data = amd_funcs.tanh_vrs8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_exp10_vrs8(InParams<libm::AlignedM256, float> *ipp) {
+    ipp->op[0].data = amd_funcs.exp10_vrs8(ipp->ip[0].data);
 }
 
 // ============================================================================

@@ -10,7 +10,7 @@
       - [min_subnormal, max]
       type: [expstep]
       steps: [10000]
-      variants : [ss, vrs4, vrsa]
+      variants : [ss, vrs4, vrs8, vrsa]
 
 
     - id:  exp10_002
@@ -19,7 +19,7 @@
       - [-max, -min_subnormal]
       type: [expstep]
       steps: [10000]
-      variants : [ss, vrs4, vrsa]
+      variants : [ss, vrs4, vrs8, vrsa]
 
     - id:  exp10_003
       description: 'Subnormal values range tests: [0, LARGEST_SUBNORMAL] linearstep'
@@ -27,7 +27,7 @@
       - [0.0, max_subnormal]
       type: [linearstep]
       steps: [5000]
-      variants : [ss, vrs4, vrsa]
+      variants : [ss, vrs4, vrs8, vrsa]
 
     - id:  exp10_004
       description: 'Subnormal values range tests: [-LARGEST_SUBNORMAL, 0] linearstep'
@@ -35,7 +35,7 @@
       - [-max_subnormal, 0.0]
       type: [linearstep]
       steps: [5000]
-      variants : [ss, vrs4, vrsa]
+      variants : [ss, vrs4, vrs8, vrsa]
 
     - id:  exp10_005
       description: 'Test around positive 0'
@@ -43,7 +43,7 @@
       - [0.0, 0x00000fff]
       type: [bitstep]
       steps: [1]
-      variants : [ss, vrs4, vrsa]
+      variants : [ss, vrs4, vrs8, vrsa]
 
     - id:  exp10_006
       description: 'Test around negative 0'
@@ -51,7 +51,7 @@
       - [0x80000000, 0x80000fff]
       type: [bitstep]
       steps: [1]
-      variants : [ss, vrs4, vrsa]
+      variants : [ss, vrs4, vrs8, vrsa]
 
     - id:  exp10_007
       description: 'Test around LARGEST_SUBNORMAL'
@@ -59,7 +59,7 @@
       - [0x007ff000, 0x00800fff]
       type: [bitstep]
       steps: [1]
-      variants : [ss, vrs4, vrsa]
+      variants : [ss, vrs4, vrs8, vrsa]
 
     - id:  exp10_008
       description: 'Test around -LARGEST_SUBNORMAL'
@@ -67,7 +67,7 @@
       - [0x807ff000, 0x80800fff]
       type: [bitstep]
       steps: [1]
-      variants : [ss, vrs4, vrsa]
+      variants : [ss, vrs4, vrs8, vrsa]
 
     - id:  exp10_009
       description: 'Moderate positive range tests: [1.0, 30.0] linearstep'
@@ -75,7 +75,7 @@
       - [1.0, 30.0]
       type: [linearstep]
       steps: [10000]
-      variants : [ss, vrs4, vrsa]
+      variants : [ss, vrs4, vrs8, vrsa]
 
     - id:  exp10_010
       description: 'Moderate negative range tests: [-30.0, -1.0] linearstep'
@@ -83,7 +83,7 @@
       - [-30.0, -1.0]
       type: [linearstep]
       steps: [10000]
-      variants : [ss, vrs4, vrsa]
+      variants : [ss, vrs4, vrs8, vrsa]
 
     - id:  exp10_011
       description: 'Near overflow range tests: [35.0, 38.5] linearstep'
@@ -91,7 +91,7 @@
       - [35.0, 38.5]
       type: [linearstep]
       steps: [5000]
-      variants : [ss, vrs4, vrsa]
+      variants : [ss, vrs4, vrs8, vrsa]
 
     - id:  exp10_012
       description: 'Near underflow range tests: [-45.0, -35.0] linearstep'
@@ -99,7 +99,7 @@
       - [-45.0, -35.0]
       type: [linearstep]
       steps: [5000]
-      variants : [ss, vrs4, vrsa]
+      variants : [ss, vrs4, vrs8, vrsa]
 
 #Double precision
   - id: range-tests_02

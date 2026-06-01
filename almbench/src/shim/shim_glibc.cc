@@ -375,6 +375,7 @@ typedef __m256 (*gcc_erf_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_erfc_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_exp_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_exp2_vrs8_func_t)(__m256);
+typedef __m256 (*gcc_exp10_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_fabs_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_linearfrac_vrs8_func_t)(__m256, __m256, float, float, float, float);
 typedef __m256 (*gcc_log_vrs8_func_t)(__m256);
@@ -736,6 +737,7 @@ static struct {
     gcc_erfc_vrs8_func_t erfc_vrs8;
     gcc_exp_vrs8_func_t exp_vrs8;
     gcc_exp2_vrs8_func_t exp2_vrs8;
+    gcc_exp10_vrs8_func_t exp10_vrs8;
     gcc_fabs_vrs8_func_t fabs_vrs8;
     gcc_linearfrac_vrs8_func_t linearfrac_vrs8;
     gcc_log_vrs8_func_t log_vrs8;
@@ -1481,6 +1483,7 @@ static void init_gcc_symbols(void) {
     gcc_funcs.erfc_vrs8 = nullptr;
     gcc_funcs.exp_vrs8 = nullptr;
     gcc_funcs.exp2_vrs8 = nullptr;
+    gcc_funcs.exp10_vrs8 = nullptr;
     gcc_funcs.fabs_vrs8 = nullptr;
     gcc_funcs.linearfrac_vrs8 = nullptr;
     gcc_funcs.log_vrs8 = nullptr;
@@ -1722,6 +1725,9 @@ static void init_gcc_symbols(void) {
     // EXP2 - 256-bit (AVX2)
     gcc_funcs.exp2_vrd4 = _ZGVdN4v_exp2;
     gcc_funcs.exp2_vrs8 = _ZGVdN8v_exp2f;
+
+    // EXP10 - 256-bit (AVX2)
+    gcc_funcs.exp10_vrs8 = _ZGVdN8v_exp10f;
 
     // LOG2, LOG10 - 256-bit (AVX2)
     gcc_funcs.log2_vrd4 = _ZGVdN4v_log2;
@@ -2632,6 +2638,10 @@ SHIM_EXPORT void shim_exp_vrs8(InParams<libm::AlignedM256, float> *ipp) {
 
 SHIM_EXPORT void shim_exp2_vrs8(InParams<libm::AlignedM256, float> *ipp) {
     ipp->op[0].data = gcc_funcs.exp2_vrs8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_exp10_vrs8(InParams<libm::AlignedM256, float> *ipp) {
+    ipp->op[0].data = gcc_funcs.exp10_vrs8(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_fabs_vrs8(InParams<libm::AlignedM256, float> *ipp) {

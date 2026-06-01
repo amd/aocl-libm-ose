@@ -34,7 +34,7 @@ This document provides comprehensive build, execution, and troubleshooting instr
 
 ### Default behavior
 
-By default, `libm_runner` prints **summary tables to the console** when a run finishes:
+By default, `libm_runner` prints **summary tables to the console** and writes an **HTML summary report** when a run finishes:
 
 - **Conformance** — unit/conformance tests (`*_conf.yml`, fixed inputs)
 - **Accuracy** — range/accuracy tests (`*_accu.yml`)
@@ -61,8 +61,7 @@ Summary tables are printed at the end of every run (default and `--verbose-mode`
 | TYPE | Conformance or Accuracy |
 | API / DATATYPE | Function and variant (for example `acos`, `s1s`) |
 | No.Tests | Total element-level checks |
-| < ULP | Pass count (within threshold) |
-| > ULP | Fail count |
+| > ULP threshold | Fail count (ULP above threshold or non-comparable) |
 | MAX ULP ERR | Worst ULP error seen (decimal) |
 
 **Performance** section columns:
@@ -73,10 +72,21 @@ Summary tables are printed at the end of every run (default and `--verbose-mode`
 | time_ns | Best (minimum) nanoseconds per shim call over the range sweep |
 | Elements | Elements processed per call (`n` for that variant) |
 | MOPS | Million operations per second: `elements × 1000 / time_ns` |
-| No.Tests / < ULP / > ULP | Full-range ULP checks during the perf sweep (same semantics as accuracy) |
+| No.Tests / > ULP threshold | Full-range ULP checks during the perf sweep (same semantics as accuracy) |
 | MAX ULP ERR | Worst ULP error over the perf range (decimal) |
 
 Performance runs measure timing on every range point and also compare each result against the reference (ULP). Large perf YAMLs therefore take longer than timing-only measurement.
+
+### HTML summary reports
+
+Every run also writes an HTML file with the same summary tables as the console output (Conformance, Accuracy, and Performance sections). The file is created under `build/libm_testsuite_reports/` relative to the current working directory:
+
+| Mode | HTML file |
+|------|-----------|
+| Default | `build/libm_testsuite_reports/almbench_default_console.html` |
+| `--verbose-mode` | `build/libm_testsuite_reports/almbench_verbose_mode.html` |
+
+The HTML report uses the same column layout and decimal **MAX ULP ERR** values as the console tables. Rows with ULP failures are highlighted. In `--verbose-mode`, the report also lists the path to the per-test YAML directory (`build/libm_testsuite_results/`).
 
 ### Command-line syntax
 
@@ -119,13 +129,15 @@ Without `--verbose-mode`, those files are not created; conformance per-case YAML
 
 ### Examples
 
-**Console summaries only (default):**
+**Console and HTML summaries only (default):**
 
 ```console
 $ ./build/{presetName}/almbench/libm_runner.x build/external/shim/libshimamd.so almbench/config/master.yml acos
 ```
 
-**Console summaries and per-test YAML files:**
+Open `build/libm_testsuite_reports/almbench_default_console.html` in a browser after the run.
+
+**Console/HTML summaries and per-test YAML files:**
 
 ```console
 $ ./build/{presetName}/almbench/libm_runner.x build/external/shim/libshimamd.so almbench/config/master.yml acos --verbose-mode

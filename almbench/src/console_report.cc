@@ -32,6 +32,9 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <ctime>
+#include <filesystem>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -145,7 +148,6 @@ struct AccuRowKeyHash {
 struct AccuRow {
     std::string shape;
     uint64_t total = 0;
-    uint64_t pass = 0;
     uint64_t fail = 0;
     double max_ulp_err = 0.0;
 };
@@ -171,11 +173,20 @@ struct PerfRow {
     std::string library;
     double time_ns = std::numeric_limits<double>::max();
     uint64_t elements_per_call = 0;
+    double mops = 0.0;
     uint64_t total = 0;
-    uint64_t pass = 0;
     uint64_t fail = 0;
     double max_ulp_err = 0.0;
 };
+
+static void update_perf_row_mops(PerfRow &row)
+{
+    if (is_valid_perf_time_ns(row.time_ns)) {
+        row.mops = static_cast<double>(row.elements_per_call) * 1000.0 / row.time_ns;
+    } else {
+        row.mops = 0.0;
+    }
+}
 
 static std::string format_perf_benchmark_name(const std::string &library,
                                               const std::string &datatype,
@@ -214,7 +225,6 @@ void report_accuracy_results(const struct YamlOutputs<U>* yop,
     row.shape = test_shape_label(yop->variant);
     row.total += total_tests;
     row.fail += fail_count;
-    row.pass += (total_tests - fail_count);
     if (udata.max_ulp_err > row.max_ulp_err) {
         row.max_ulp_err = udata.max_ulp_err;
     }
@@ -243,131 +253,340 @@ void report_perf_results(const struct YamlOutputs<U> *yop,
     if (is_valid_perf_time_ns(time_ns) && time_ns < row.time_ns) {
         row.time_ns = time_ns;
     }
+    update_perf_row_mops(row);
 
     row.total += total_tests;
     row.fail += fail_count;
-    row.pass += (total_tests - fail_count);
     if (udata.max_ulp_err > row.max_ulp_err) {
         row.max_ulp_err = udata.max_ulp_err;
     }
 }
 
-static void print_separator()
+namespace {
+
+constexpr const char kHtmlReportsDir[] = "build/libm_testsuite_reports";
+constexpr const char kYamlResultsDir[] = "build/libm_testsuite_results";
+constexpr const char kHtmlDefaultFile[] = "almbench_default_console.html";
+constexpr const char kHtmlVerboseModeFile[] = "almbench_verbose_mode.html";
+
+struct ReportView {
+    std::vector<AccuRowKey> conf_keys;
+    std::vector<AccuRowKey> accu_keys;
+    std::vector<PerfRowKey> perf_keys;
+};
+
+bool compare_accu_key(const AccuRowKey &a, const AccuRowKey &b)
 {
-    std::cout << "***************************"
-                 "*******************************************************************"
-              << std::endl;
+    if (a.api != b.api) {
+        return a.api < b.api;
+    }
+    return a.datatype < b.datatype;
 }
+
+bool compare_perf_key(const PerfRowKey &a, const PerfRowKey &b)
+{
+    if (a.api != b.api) {
+        return a.api < b.api;
+    }
+    return a.datatype < b.datatype;
+}
+
+void sort_accu_keys(std::vector<AccuRowKey> &keys)
+{
+    std::sort(keys.begin(), keys.end(), compare_accu_key);
+}
+
+ReportView build_report_view()
+{
+    ReportView view;
+    for (const auto &entry : g_accu_rows) {
+        if (entry.first.category == "Conformance") {
+            view.conf_keys.push_back(entry.first);
+        } else {
+            view.accu_keys.push_back(entry.first);
+        }
+    }
+    sort_accu_keys(view.conf_keys);
+    sort_accu_keys(view.accu_keys);
+
+    view.perf_keys.reserve(g_perf_rows.size());
+    for (const auto &entry : g_perf_rows) {
+        view.perf_keys.push_back(entry.first);
+    }
+    std::sort(view.perf_keys.begin(), view.perf_keys.end(), compare_perf_key);
+    return view;
+}
+
+bool report_view_empty(const ReportView &view)
+{
+    return view.conf_keys.empty() && view.accu_keys.empty() && view.perf_keys.empty();
+}
+
+std::string html_escape(const std::string &value)
+{
+    std::string out;
+    out.reserve(value.size());
+    for (char c : value) {
+        switch (c) {
+        case '&': out += "&amp;"; break;
+        case '<': out += "&lt;"; break;
+        case '>': out += "&gt;"; break;
+        case '"': out += "&quot;"; break;
+        default: out += c; break;
+        }
+    }
+    return out;
+}
+
+std::filesystem::path reports_directory()
+{
+    return std::filesystem::current_path() / kHtmlReportsDir;
+}
+
+const char *report_html_filename()
+{
+    return is_verbose_mode_enabled() ? kHtmlVerboseModeFile : kHtmlDefaultFile;
+}
+
+const char *report_mode_label()
+{
+    return is_verbose_mode_enabled() ? "--verbose-mode" : "default (console)";
+}
+
+std::string timestamp_string()
+{
+    std::time_t now = std::time(nullptr);
+    std::tm local_tm{};
+#if defined(_WIN32)
+    localtime_s(&local_tm, &now);
+#else
+    localtime_r(&now, &local_tm);
+#endif
+    char buffer[32] = {};
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &local_tm);
+    return buffer;
+}
+
+void append_separator(std::ostream &out)
+{
+    out << "***************************"
+           "*******************************************************************"
+        << std::endl;
+}
+
+void append_accu_section(std::ostream &out,
+                         const char *title,
+                         const std::vector<AccuRowKey> &keys)
+{
+    if (keys.empty()) {
+        return;
+    }
+    out << title << std::endl;
+    append_separator(out);
+    out << std::left
+        << std::setw(12) << "TEST"
+        << std::setw(12) << "TYPE"
+        << std::setw(12) << "API"
+        << std::setw(12) << "DATATYPE"
+        << std::setw(12) << "No.Tests"
+        << std::setw(18) << "> ULP threshold"
+        << "MAX ULP ERR"
+        << std::endl;
+    append_separator(out);
+    for (const auto &key : keys) {
+        const AccuRow &row = g_accu_rows.at(key);
+        out << std::left
+            << std::setw(12) << row.shape
+            << std::setw(12) << key.category
+            << std::setw(12) << key.api
+            << std::setw(12) << key.datatype
+            << std::setw(12) << row.total
+            << std::setw(18) << row.fail
+            << format_max_ulp_decimal(row.max_ulp_err)
+            << std::endl;
+    }
+    out << std::endl;
+}
+
+void append_perf_section(std::ostream &out, const ReportView &view)
+{
+    if (view.perf_keys.empty()) {
+        return;
+    }
+
+    out << "Performance — Detail (benchmark timing)" << std::endl;
+    append_separator(out);
+    out << std::left
+        << std::setw(40) << "Benchmark"
+        << std::setw(10) << "time_ns"
+        << std::setw(10) << "Elements"
+        << std::setw(10) << "MOPS"
+        << std::setw(10) << "No.Tests"
+        << std::setw(18) << "> ULP threshold"
+        << "MAX ULP ERR"
+        << std::endl;
+    append_separator(out);
+
+    for (const auto &key : view.perf_keys) {
+        const PerfRow &row = g_perf_rows.at(key);
+        if (!is_valid_perf_time_ns(row.time_ns)) {
+            continue;
+        }
+        const std::string bench_name =
+            format_perf_benchmark_name(row.library, key.datatype, key.api);
+        out << std::left
+            << std::setw(40) << bench_name
+            << std::setw(10) << std::fixed << std::setprecision(0) << row.time_ns
+            << std::setw(10) << row.elements_per_call
+            << std::setw(10) << std::fixed << std::setprecision(3) << row.mops
+            << std::setw(10) << row.total
+            << std::setw(18) << row.fail
+            << format_max_ulp_decimal(row.max_ulp_err)
+            << std::endl;
+    }
+    out << std::endl;
+}
+
+std::string format_console_report(const ReportView &view)
+{
+    std::ostringstream out;
+    if (!view.conf_keys.empty() || !view.accu_keys.empty()) {
+        append_accu_section(out, "Conformance ", view.conf_keys);
+        append_accu_section(out, "Accuracy ", view.accu_keys);
+    }
+    append_perf_section(out, view);
+    return out.str();
+}
+
+void append_accu_html_table(std::ostringstream &html,
+                            const char *section_title,
+                            const std::vector<AccuRowKey> &keys)
+{
+    if (keys.empty()) {
+        return;
+    }
+
+    html << "<section><h2>" << html_escape(section_title) << "</h2><table>"
+         << "<thead><tr>"
+         << "<th>TEST</th><th>TYPE</th><th>API</th><th>DATATYPE</th>"
+         << "<th>No.Tests</th><th>&gt; ULP threshold</th><th>MAX ULP ERR</th>"
+         << "</tr></thead><tbody>\n";
+
+    for (const auto &key : keys) {
+        const AccuRow &row = g_accu_rows.at(key);
+        const char *row_class = row.fail > 0 ? " class=\"fail-row\"" : "";
+        html << "<tr" << row_class << ">"
+             << "<td>" << html_escape(row.shape) << "</td>"
+             << "<td>" << html_escape(key.category) << "</td>"
+             << "<td>" << html_escape(key.api) << "</td>"
+             << "<td>" << html_escape(key.datatype) << "</td>"
+             << "<td>" << row.total << "</td>"
+             << "<td>" << row.fail << "</td>"
+             << "<td>" << html_escape(format_max_ulp_decimal(row.max_ulp_err)) << "</td>"
+             << "</tr>\n";
+    }
+    html << "</tbody></table></section>\n";
+}
+
+void append_perf_html_table(std::ostringstream &html, const ReportView &view)
+{
+    if (view.perf_keys.empty()) {
+        return;
+    }
+
+    html << "<section><h2>Performance — Detail (benchmark timing)</h2><table>"
+         << "<thead><tr>"
+         << "<th>Benchmark</th><th>time_ns</th><th>Elements</th><th>MOPS</th>"
+         << "<th>No.Tests</th><th>&gt; ULP threshold</th><th>MAX ULP ERR</th>"
+         << "</tr></thead><tbody>\n";
+
+    for (const auto &key : view.perf_keys) {
+        const PerfRow &row = g_perf_rows.at(key);
+        if (!is_valid_perf_time_ns(row.time_ns)) {
+            continue;
+        }
+        const std::string bench_name =
+            format_perf_benchmark_name(row.library, key.datatype, key.api);
+        const char *row_class = row.fail > 0 ? " class=\"fail-row\"" : "";
+        html << "<tr" << row_class << ">"
+             << "<td>" << html_escape(bench_name) << "</td>"
+             << "<td>" << std::fixed << std::setprecision(0) << row.time_ns << "</td>"
+             << "<td>" << row.elements_per_call << "</td>"
+             << "<td>" << std::fixed << std::setprecision(3) << row.mops << "</td>"
+             << "<td>" << row.total << "</td>"
+             << "<td>" << row.fail << "</td>"
+             << "<td>" << html_escape(format_max_ulp_decimal(row.max_ulp_err)) << "</td>"
+             << "</tr>\n";
+    }
+    html << "</tbody></table></section>\n";
+}
+
+void write_html_report(const ReportView &view)
+{
+    const std::filesystem::path report_dir = reports_directory();
+    std::error_code ec;
+    std::filesystem::create_directories(report_dir, ec);
+    if (ec) {
+        std::cerr << "Warning: failed to create HTML report directory "
+                  << report_dir << ": " << ec.message() << std::endl;
+        return;
+    }
+
+    const std::filesystem::path html_path = report_dir / report_html_filename();
+    std::ofstream out(html_path);
+    if (!out) {
+        std::cerr << "Warning: failed to write HTML report: " << html_path << std::endl;
+        return;
+    }
+
+    std::ostringstream body;
+    append_accu_html_table(body, "Conformance", view.conf_keys);
+    append_accu_html_table(body, "Accuracy", view.accu_keys);
+    append_perf_html_table(body, view);
+
+    out << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n"
+        << "<meta charset=\"UTF-8\">\n"
+        << "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
+        << "<title>LibM Testsuite Report</title>\n"
+        << "<style>\n"
+        << "body{font-family:'Segoe UI',Tahoma,sans-serif;margin:1.5rem;}\n"
+        << "table{border-collapse:collapse;width:100%;max-width:72rem;margin-bottom:1.5rem;}\n"
+        << "th,td{border:1px solid #ccc;padding:0.35rem 0.5rem;text-align:left;}\n"
+        << "th{background:#f4f4f4;}\n"
+        << "tr.fail-row td{background:#fdecea;}\n"
+        << "section{margin-bottom:1.5rem;}\n"
+        << "</style>\n</head>\n<body>\n"
+        << "<h1>LibM Testsuite Report</h1>"
+        << "<p>Mode: " << html_escape(report_mode_label()) << "</p>"
+        << "<p>Generated: " << html_escape(timestamp_string()) << "</p>";
+    if (is_verbose_mode_enabled()) {
+        out << "<p>YAML dumps: "
+            << html_escape(
+                   (std::filesystem::current_path() / kYamlResultsDir)
+                       .lexically_normal()
+                       .string())
+            << "</p>";
+    }
+    out << body.str() << "</body>\n</html>\n";
+
+    std::cout << "HTML summary report: " << html_path.lexically_normal() << std::endl;
+}
+
+}  // namespace
 
 void print_console_reports()
 {
-    if (!g_accu_rows.empty()) {
-        std::vector<AccuRowKey> conf_keys;
-        std::vector<AccuRowKey> accu_keys;
-        for (const auto &entry : g_accu_rows) {
-            if (entry.first.category == "Conformance") {
-                conf_keys.push_back(entry.first);
-            } else {
-                accu_keys.push_back(entry.first);
-            }
-        }
-        auto sort_keys = [](std::vector<AccuRowKey> &keys) {
-            std::sort(keys.begin(), keys.end(),
-                      [](const AccuRowKey &a, const AccuRowKey &b) {
-                          if (a.api != b.api) return a.api < b.api;
-                          return a.datatype < b.datatype;
-                      });
-        };
-        sort_keys(conf_keys);
-        sort_keys(accu_keys);
-
-        auto print_accu_section = [&](const char *title,
-                                      const std::vector<AccuRowKey> &keys) {
-            if (keys.empty()) {
-                return;
-            }
-            std::cout << title << std::endl;
-            print_separator();
-            std::cout << std::left
-                      << std::setw(12) << "TEST"
-                      << std::setw(12) << "TYPE"
-                      << std::setw(12) << "API"
-                      << std::setw(12) << "DATATYPE"
-                      << std::setw(12) << "No.Tests"
-                      << std::setw(12) << "< ULP"
-                      << std::setw(12) << "> ULP"
-                      << "MAX ULP ERR"
-                      << std::endl;
-            print_separator();
-            for (const auto &key : keys) {
-                const AccuRow &row = g_accu_rows.at(key);
-                std::cout << std::left
-                          << std::setw(12) << row.shape
-                          << std::setw(12) << key.category
-                          << std::setw(12) << key.api
-                          << std::setw(12) << key.datatype
-                          << std::setw(12) << row.total
-                          << std::setw(12) << row.pass
-                          << std::setw(12) << row.fail
-                          << format_max_ulp_decimal(row.max_ulp_err)
-                          << std::endl;
-            }
-            std::cout << std::endl;
-        };
-
-        print_accu_section("Conformance ", conf_keys);
-        print_accu_section("Accuracy ", accu_keys);
+    if (g_accu_rows.empty() && g_perf_rows.empty()) {
+        return;
     }
 
-    if (!g_perf_rows.empty()) {
-        std::cout << "Performance — Detail (benchmark timing)" << std::endl;
-        print_separator();
-        std::cout << std::left
-                  << std::setw(40) << "Benchmark"
-                  << std::setw(10) << "time_ns"
-                  << std::setw(10) << "Elements"
-                  << std::setw(10) << "MOPS"
-                  << std::setw(10) << "No.Tests"
-                  << std::setw(10) << "< ULP"
-                  << std::setw(10) << "> ULP"
-                  << "MAX ULP ERR"
-                  << std::endl;
-        print_separator();
-
-        std::vector<PerfRowKey> keys;
-        keys.reserve(g_perf_rows.size());
-        for (const auto &entry : g_perf_rows) {
-            keys.push_back(entry.first);
-        }
-        std::sort(keys.begin(), keys.end(),
-                  [](const PerfRowKey &a, const PerfRowKey &b) {
-                      if (a.api != b.api) return a.api < b.api;
-                      return a.datatype < b.datatype;
-                  });
-
-        for (const auto &key : keys) {
-            const PerfRow &row = g_perf_rows.at(key);
-            if (!is_valid_perf_time_ns(row.time_ns)) {
-                continue;
-            }
-            const double mops =
-                row.elements_per_call * 1000.0 / row.time_ns;
-            const std::string bench_name =
-                format_perf_benchmark_name(row.library, key.datatype, key.api);
-            std::cout << std::left
-                      << std::setw(40) << bench_name
-                      << std::setw(10) << std::fixed << std::setprecision(0)
-                      << row.time_ns
-                      << std::setw(10) << row.elements_per_call
-                      << std::setw(10) << std::fixed << std::setprecision(3) << mops
-                      << std::setw(10) << row.total
-                      << std::setw(10) << row.pass
-                      << std::setw(10) << row.fail
-                      << format_max_ulp_decimal(row.max_ulp_err)
-                      << std::endl;
-        }
-        std::cout << std::endl;
+    const ReportView view = build_report_view();
+    if (report_view_empty(view)) {
+        return;
     }
+
+    std::cout << format_console_report(view);
+    write_html_report(view);
 }
 
 template void report_accuracy_results<float>(const struct YamlOutputs<float>* yop,

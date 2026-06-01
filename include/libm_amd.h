@@ -322,6 +322,7 @@ __m128 FN_PROTOTYPE(vrs4_roundf)(__m128 x);
 __m256 FN_PROTOTYPE(vrs8_erff)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_cbrtf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_expf)(__m256 x);
+__m256 FN_PROTOTYPE(vrs8_exp10f)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_logf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_cosf)(__m256 x);
 __m256 FN_PROTOTYPE(vrs8_acosf)(__m256 x);

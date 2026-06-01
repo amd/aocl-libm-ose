@@ -201,6 +201,7 @@ EXPORTS
     amd_vrs8_coshf
     amd_vrs8_cbrtf
     amd_vrs8_exp2f
+    amd_vrs8_exp10f
     amd_vrs8_expf
     amd_vrs8_log2f
     amd_vrs8_logf

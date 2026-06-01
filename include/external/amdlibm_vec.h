@@ -727,6 +727,13 @@ extern "C" {
    */
   __m256 amd_vrs8_exp2f (__m256 x);
 
+  /**
+   * @brief Computes 10^x for eight single-precision lanes.
+   * @param x Input vector.
+   * @return Vector of base-10 exponentials.
+   */
+  __m256 amd_vrs8_exp10f (__m256 x);
+
 /* Logarithmic */
   /**
    * @brief Computes natural logarithm for four double-precision lanes.

@@ -303,6 +303,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs8_coshf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs8_cbrtf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs8_expf);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs8_exp2f);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs8_exp10f);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs8_log2f);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs8_log10f);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrs8_logf);

@@ -75,8 +75,10 @@
 #endif
 
 /*
- * Extended libmvec symbols (cbrt, cosh, expm1, log10, log1p, ...) need glibc 2.35+.
+ * Extended libmvec symbols (cbrt, cosh, expm1, exp10, log10, log1p, ...) need glibc 2.35+.
  * GLIBC_VERSION_CHECK uses compile-time __GLIBC__ / __GLIBC_MINOR__ from headers.
+ * Use in vector callback bodies that must run on all ABIs except GLIBC builds
+ * targeting libmvec older than 2.35.
  */
 #if defined(__GLIBC__)
 #define GLIBC_VERSION_CHECK(major, minor) \

@@ -35,22 +35,22 @@ static int tests_failed = 0;
 
 /*
  * Test 1: Architecture detection - "at-least" semantics
- * au_cpuid_arch_is_zenX() returns TRUE if CPU is zenX OR LATER
+ * alm_cpuid_arch_is_zenX() returns TRUE if CPU is zenX OR LATER
  * This matches aocl-utils behavior.
  *
- * Example: On Zen4, au_cpuid_arch_is_zen() through au_cpuid_arch_is_zen4()
- * all return TRUE, but au_cpuid_arch_is_zen5() return FALSE.
+ * Example: On Zen4, alm_cpuid_arch_is_zen() through alm_cpuid_arch_is_zen4()
+ * all return TRUE, but alm_cpuid_arch_is_zen5() return FALSE.
  */
 static void test_arch_detection_at_least_semantics(void)
 {
     TEST_GROUP("Architecture Detection - At-Least Semantics");
     
-    int is_zen = au_cpuid_arch_is_zen(AU_CURRENT_CPU_NUM);
-    int is_zen2 = au_cpuid_arch_is_zen2(AU_CURRENT_CPU_NUM);
-    int is_zen3 = au_cpuid_arch_is_zen3(AU_CURRENT_CPU_NUM);
-    int is_zen4 = au_cpuid_arch_is_zen4(AU_CURRENT_CPU_NUM);
-    int is_zen5 = au_cpuid_arch_is_zen5(AU_CURRENT_CPU_NUM);
-    int is_zen6 = au_cpuid_arch_is_zen6(AU_CURRENT_CPU_NUM);
+    int is_zen = alm_cpuid_arch_is_zen(ALM_CURRENT_CPU_NUM);
+    int is_zen2 = alm_cpuid_arch_is_zen2(ALM_CURRENT_CPU_NUM);
+    int is_zen3 = alm_cpuid_arch_is_zen3(ALM_CURRENT_CPU_NUM);
+    int is_zen4 = alm_cpuid_arch_is_zen4(ALM_CURRENT_CPU_NUM);
+    int is_zen5 = alm_cpuid_arch_is_zen5(ALM_CURRENT_CPU_NUM);
+    int is_zen6 = alm_cpuid_arch_is_zen6(ALM_CURRENT_CPU_NUM);
     
     /* Determine the actual architecture (highest that returns true) */
     const char* actual_arch = "Non-AMD or Unknown";
@@ -89,8 +89,8 @@ static void test_feature_detection_single(void)
     const char* avx512f[] = {"avx512f"};
     const char* avx512dq[] = {"avx512dq"};
     
-    int has_avx512f = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx512f, 1);
-    int has_avx512dq = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx512dq, 1);
+    int has_avx512f = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, avx512f, 1);
+    int has_avx512dq = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, avx512dq, 1);
     
     printf("  Feature flags detected:\n");
     printf("    AVX512F:  %d\n", has_avx512f);
@@ -116,10 +116,10 @@ static void test_feature_detection_combined(void)
     const char* avx_fma[] = {"avx", "fma"};
     const char* avx2_fma[] = {"avx2", "fma"};
     
-    int has_avx512_full = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx512_full, 4);
-    int has_avx512_basic = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx512_basic, 2);
-    int has_avx_fma = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx_fma, 2);
-    int has_avx2_fma = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx2_fma, 2);
+    int has_avx512_full = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, avx512_full, 4);
+    int has_avx512_basic = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, avx512_basic, 2);
+    int has_avx_fma = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, avx_fma, 2);
+    int has_avx2_fma = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, avx2_fma, 2);
     
     printf("  Combined feature flags:\n");
     printf("    AVX512 Full (F+DQ+BW+VL): %d\n", has_avx512_full);
@@ -146,14 +146,14 @@ static void test_dispatch_verification(void)
     const char* avx512f_flag[] = {"avx512f"};
     const char* avx512_both[] = {"avx512f", "avx512dq"};
     
-    int is_zen = au_cpuid_arch_is_zen(AU_CURRENT_CPU_NUM);
-    int is_zen2 = au_cpuid_arch_is_zen2(AU_CURRENT_CPU_NUM);
-    int is_zen3 = au_cpuid_arch_is_zen3(AU_CURRENT_CPU_NUM);
-    int is_zen4 = au_cpuid_arch_is_zen4(AU_CURRENT_CPU_NUM);
-    int is_zen5 = au_cpuid_arch_is_zen5(AU_CURRENT_CPU_NUM);
-    int is_zen6 = au_cpuid_arch_is_zen6(AU_CURRENT_CPU_NUM);
-    int has_avx512f = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx512f_flag, 1);
-    int has_avx512_both = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx512_both, 2);
+    int is_zen = alm_cpuid_arch_is_zen(ALM_CURRENT_CPU_NUM);
+    int is_zen2 = alm_cpuid_arch_is_zen2(ALM_CURRENT_CPU_NUM);
+    int is_zen3 = alm_cpuid_arch_is_zen3(ALM_CURRENT_CPU_NUM);
+    int is_zen4 = alm_cpuid_arch_is_zen4(ALM_CURRENT_CPU_NUM);
+    int is_zen5 = alm_cpuid_arch_is_zen5(ALM_CURRENT_CPU_NUM);
+    int is_zen6 = alm_cpuid_arch_is_zen6(ALM_CURRENT_CPU_NUM);
+    int has_avx512f = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, avx512f_flag, 1);
+    int has_avx512_both = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, avx512_both, 2);
     
     /* Simulate dispatch logic from iface.c alm_get_uach() */
     const char* expected_dispatch = "UNKNOWN";
@@ -210,34 +210,34 @@ static void test_api_consistency(void)
     TEST_GROUP("API Consistency - Cached Results");
     
     /* Call each function multiple times - should return consistent results */
-    int zen1_a = au_cpuid_arch_is_zen(AU_CURRENT_CPU_NUM);
-    int zen1_b = au_cpuid_arch_is_zen(AU_CURRENT_CPU_NUM);
-    TEST_ASSERT(zen1_a == zen1_b, "au_cpuid_arch_is_zen returns consistent results");
+    int zen1_a = alm_cpuid_arch_is_zen(ALM_CURRENT_CPU_NUM);
+    int zen1_b = alm_cpuid_arch_is_zen(ALM_CURRENT_CPU_NUM);
+    TEST_ASSERT(zen1_a == zen1_b, "alm_cpuid_arch_is_zen returns consistent results");
     
-    int zen2_a = au_cpuid_arch_is_zen2(AU_CURRENT_CPU_NUM);
-    int zen2_b = au_cpuid_arch_is_zen2(AU_CURRENT_CPU_NUM);
-    TEST_ASSERT(zen2_a == zen2_b, "au_cpuid_arch_is_zen2 returns consistent results");
+    int zen2_a = alm_cpuid_arch_is_zen2(ALM_CURRENT_CPU_NUM);
+    int zen2_b = alm_cpuid_arch_is_zen2(ALM_CURRENT_CPU_NUM);
+    TEST_ASSERT(zen2_a == zen2_b, "alm_cpuid_arch_is_zen2 returns consistent results");
     
-    int zen3_a = au_cpuid_arch_is_zen3(AU_CURRENT_CPU_NUM);
-    int zen3_b = au_cpuid_arch_is_zen3(AU_CURRENT_CPU_NUM);
-    TEST_ASSERT(zen3_a == zen3_b, "au_cpuid_arch_is_zen3 returns consistent results");
+    int zen3_a = alm_cpuid_arch_is_zen3(ALM_CURRENT_CPU_NUM);
+    int zen3_b = alm_cpuid_arch_is_zen3(ALM_CURRENT_CPU_NUM);
+    TEST_ASSERT(zen3_a == zen3_b, "alm_cpuid_arch_is_zen3 returns consistent results");
     
-    int zen4_a = au_cpuid_arch_is_zen4(AU_CURRENT_CPU_NUM);
-    int zen4_b = au_cpuid_arch_is_zen4(AU_CURRENT_CPU_NUM);
-    TEST_ASSERT(zen4_a == zen4_b, "au_cpuid_arch_is_zen4 returns consistent results");
+    int zen4_a = alm_cpuid_arch_is_zen4(ALM_CURRENT_CPU_NUM);
+    int zen4_b = alm_cpuid_arch_is_zen4(ALM_CURRENT_CPU_NUM);
+    TEST_ASSERT(zen4_a == zen4_b, "alm_cpuid_arch_is_zen4 returns consistent results");
     
-    int zen5_a = au_cpuid_arch_is_zen5(AU_CURRENT_CPU_NUM);
-    int zen5_b = au_cpuid_arch_is_zen5(AU_CURRENT_CPU_NUM);
-    TEST_ASSERT(zen5_a == zen5_b, "au_cpuid_arch_is_zen5 returns consistent results");
+    int zen5_a = alm_cpuid_arch_is_zen5(ALM_CURRENT_CPU_NUM);
+    int zen5_b = alm_cpuid_arch_is_zen5(ALM_CURRENT_CPU_NUM);
+    TEST_ASSERT(zen5_a == zen5_b, "alm_cpuid_arch_is_zen5 returns consistent results");
     
-    int zen6_a = au_cpuid_arch_is_zen6(AU_CURRENT_CPU_NUM);
-    int zen6_b = au_cpuid_arch_is_zen6(AU_CURRENT_CPU_NUM);
-    TEST_ASSERT(zen6_a == zen6_b, "au_cpuid_arch_is_zen6 returns consistent results");
+    int zen6_a = alm_cpuid_arch_is_zen6(ALM_CURRENT_CPU_NUM);
+    int zen6_b = alm_cpuid_arch_is_zen6(ALM_CURRENT_CPU_NUM);
+    TEST_ASSERT(zen6_a == zen6_b, "alm_cpuid_arch_is_zen6 returns consistent results");
     
     const char* flags[] = {"avx2", "fma"};
-    int flags_a = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, flags, 2);
-    int flags_b = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, flags, 2);
-    TEST_ASSERT(flags_a == flags_b, "au_cpuid_has_flags returns consistent results");
+    int flags_a = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, flags, 2);
+    int flags_b = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, flags, 2);
+    TEST_ASSERT(flags_a == flags_b, "alm_cpuid_has_flags returns consistent results");
 }
 
 /*
@@ -249,18 +249,18 @@ static void test_edge_cases(void)
     
     /* Empty flag array (count = 0) should return false (invalid input) */
     const char* empty_flags[] = {""};
-    int empty_result = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, empty_flags, 0);
+    int empty_result = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, empty_flags, 0);
     TEST_ASSERT(empty_result == 0, "Empty flag array returns false");
     
     /* Unknown flag should return false (to avoid false positives) */
     const char* unknown_flags[] = {"unknown_feature_xyz"};
-    int unknown_result = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, unknown_flags, 1);
+    int unknown_result = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, unknown_flags, 1);
     TEST_ASSERT(unknown_result == 0, "Unknown flag returns false");
     
     /* Test cpu parameter ignored (should work with any value) */
-    int zen_0 = au_cpuid_arch_is_zen(0);
-    int zen_1 = au_cpuid_arch_is_zen(1);
-    int zen_99 = au_cpuid_arch_is_zen(99);
+    int zen_0 = alm_cpuid_arch_is_zen(0);
+    int zen_1 = alm_cpuid_arch_is_zen(1);
+    int zen_99 = alm_cpuid_arch_is_zen(99);
     TEST_ASSERT(zen_0 == zen_1 && zen_1 == zen_99, 
         "CPU parameter is correctly ignored");
 }
@@ -285,8 +285,8 @@ static void test_static_dispatch_simulation(void)
     const char* avx2_flags[] = {"avx2"};
     const char* avx512_flags[] = {"avx512f", "avx512dq"};
     
-    int can_avx2 = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx2_flags, 1);
-    int can_avx512 = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx512_flags, 2);
+    int can_avx2 = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, avx2_flags, 1);
+    int can_avx512 = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, avx512_flags, 2);
     
     printf("  Current CPU capabilities:\n");
     printf("    Can execute AVX2 code:   %s\n", can_avx2 ? "YES" : "NO");
@@ -306,14 +306,14 @@ static void test_dynamic_dispatch_path(void)
     const char* avx512_both[] = {"avx512f", "avx512dq"};
     
     /* Get current CPU info */
-    int is_zen6 = au_cpuid_arch_is_zen6(AU_CURRENT_CPU_NUM);
-    int is_zen5 = au_cpuid_arch_is_zen5(AU_CURRENT_CPU_NUM);
-    int is_zen4 = au_cpuid_arch_is_zen4(AU_CURRENT_CPU_NUM);
-    int is_zen3 = au_cpuid_arch_is_zen3(AU_CURRENT_CPU_NUM);
-    int is_zen2 = au_cpuid_arch_is_zen2(AU_CURRENT_CPU_NUM);
-    int is_zen = au_cpuid_arch_is_zen(AU_CURRENT_CPU_NUM);
-    int has_avx512f = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx512f_flag, 1);
-    int has_avx512_both = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx512_both, 2);
+    int is_zen6 = alm_cpuid_arch_is_zen6(ALM_CURRENT_CPU_NUM);
+    int is_zen5 = alm_cpuid_arch_is_zen5(ALM_CURRENT_CPU_NUM);
+    int is_zen4 = alm_cpuid_arch_is_zen4(ALM_CURRENT_CPU_NUM);
+    int is_zen3 = alm_cpuid_arch_is_zen3(ALM_CURRENT_CPU_NUM);
+    int is_zen2 = alm_cpuid_arch_is_zen2(ALM_CURRENT_CPU_NUM);
+    int is_zen = alm_cpuid_arch_is_zen(ALM_CURRENT_CPU_NUM);
+    int has_avx512f = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, avx512f_flag, 1);
+    int has_avx512_both = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, avx512_both, 2);
     
     /* Enum values from iface.h */
     enum {
@@ -394,13 +394,13 @@ static void test_zen_feature_consistency(void)
     const char* avx512f[] = {"avx512f"};
     const char* avx512dq[] = {"avx512dq"};
     
-    int is_zen4 = au_cpuid_arch_is_zen4(AU_CURRENT_CPU_NUM);
-    int is_zen5 = au_cpuid_arch_is_zen5(AU_CURRENT_CPU_NUM);
-    int is_zen6 = au_cpuid_arch_is_zen6(AU_CURRENT_CPU_NUM);
-    int is_zen = au_cpuid_arch_is_zen(AU_CURRENT_CPU_NUM);
+    int is_zen4 = alm_cpuid_arch_is_zen4(ALM_CURRENT_CPU_NUM);
+    int is_zen5 = alm_cpuid_arch_is_zen5(ALM_CURRENT_CPU_NUM);
+    int is_zen6 = alm_cpuid_arch_is_zen6(ALM_CURRENT_CPU_NUM);
+    int is_zen = alm_cpuid_arch_is_zen(ALM_CURRENT_CPU_NUM);
     
-    int has_avx512f = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx512f, 1);
-    int has_avx512dq = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx512dq, 1);
+    int has_avx512f = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, avx512f, 1);
+    int has_avx512dq = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, avx512dq, 1);
     
     int is_any_zen = is_zen;
     
@@ -428,13 +428,13 @@ static void test_call_order_independence(void)
     TEST_GROUP("Call Order Independence");
     
     /* First call architecture detection, then feature flags */
-    int zen4_first = au_cpuid_arch_is_zen4(AU_CURRENT_CPU_NUM);
+    int zen4_first = alm_cpuid_arch_is_zen4(ALM_CURRENT_CPU_NUM);
     const char* avx512f[] = {"avx512f"};
-    int has_avx512f_first = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx512f, 1);
+    int has_avx512f_first = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, avx512f, 1);
     
     /* Now call in reverse order */
-    int has_avx512f_second = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx512f, 1);
-    int zen4_second = au_cpuid_arch_is_zen4(AU_CURRENT_CPU_NUM);
+    int has_avx512f_second = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, avx512f, 1);
+    int zen4_second = alm_cpuid_arch_is_zen4(ALM_CURRENT_CPU_NUM);
     
     TEST_ASSERT(zen4_first == zen4_second, 
         "Zen4 detection consistent regardless of call order");

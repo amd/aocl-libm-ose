@@ -3,9 +3,9 @@
  *
  * Unit tests for alm_utils CPUID module
  *
- * Note: au_cpuid_arch_is_zenX() uses "at-least" semantics (matching aocl-utils):
- * - au_cpuid_arch_is_zen() returns TRUE if Zen or later
- * - au_cpuid_arch_is_zen4() returns TRUE if Zen4 or later
+ * Note: alm_cpuid_arch_is_zenX() uses "at-least" semantics (matching aocl-utils):
+ * - alm_cpuid_arch_is_zen() returns TRUE if Zen or later
+ * - alm_cpuid_arch_is_zen4() returns TRUE if Zen4 or later
  * So on a Zen4 CPU, zen/zen2/zen3/zen4 all return TRUE.
  *
  * Usage:
@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "alci/arch.h"
 
 static void print_usage(const char* prog)
@@ -46,12 +47,12 @@ int main(int argc, char* argv[])
     printf("=== ALM Utils CPUID Test ===\n\n");
 
     /* Architecture detection - uses "at-least" semantics */
-    int is_zen = au_cpuid_arch_is_zen(AU_CURRENT_CPU_NUM);
-    int is_zen2 = au_cpuid_arch_is_zen2(AU_CURRENT_CPU_NUM);
-    int is_zen3 = au_cpuid_arch_is_zen3(AU_CURRENT_CPU_NUM);
-    int is_zen4 = au_cpuid_arch_is_zen4(AU_CURRENT_CPU_NUM);
-    int is_zen5 = au_cpuid_arch_is_zen5(AU_CURRENT_CPU_NUM);
-    int is_zen6 = au_cpuid_arch_is_zen6(AU_CURRENT_CPU_NUM);
+    bool is_zen = alm_cpuid_arch_is_zen(ALM_CURRENT_CPU_NUM);
+    bool is_zen2 = alm_cpuid_arch_is_zen2(ALM_CURRENT_CPU_NUM);
+    bool is_zen3 = alm_cpuid_arch_is_zen3(ALM_CURRENT_CPU_NUM);
+    bool is_zen4 = alm_cpuid_arch_is_zen4(ALM_CURRENT_CPU_NUM);
+    bool is_zen5 = alm_cpuid_arch_is_zen5(ALM_CURRENT_CPU_NUM);
+    bool is_zen6 = alm_cpuid_arch_is_zen6(ALM_CURRENT_CPU_NUM);
 
     printf("Architecture: zen=%d zen2=%d zen3=%d zen4=%d zen5=%d zen6=%d\n",
            is_zen, is_zen2, is_zen3, is_zen4, is_zen5, is_zen6);
@@ -77,8 +78,8 @@ int main(int argc, char* argv[])
     /* Feature detection */
     const char* avx512f[] = {"avx512f"};
     const char* avx512_both[] = {"avx512f", "avx512dq"};
-    int has_avx512f = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx512f, 1);
-    int has_avx512dq = au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx512_both, 2);
+    int has_avx512f = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, avx512f, 1);
+    int has_avx512dq = alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, avx512_both, 2);
 
     printf("Features: avx512f=%d avx512f+dq=%d\n", has_avx512f, has_avx512dq);
 

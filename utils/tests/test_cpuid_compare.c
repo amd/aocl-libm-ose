@@ -53,9 +53,25 @@
 #ifdef USE_EXTERNAL_AOCLUTILS
     #include <alci/arch.h>
     #define UTILS_SOURCE "external aocl-utils"
+    #define CPUID_ARCH_IS_ZEN(cpu)   au_cpuid_arch_is_zen(cpu)
+    #define CPUID_ARCH_IS_ZEN2(cpu)  au_cpuid_arch_is_zen2(cpu)
+    #define CPUID_ARCH_IS_ZEN3(cpu)  au_cpuid_arch_is_zen3(cpu)
+    #define CPUID_ARCH_IS_ZEN4(cpu)  au_cpuid_arch_is_zen4(cpu)
+    #define CPUID_ARCH_IS_ZEN5(cpu)  au_cpuid_arch_is_zen5(cpu)
+    #define CPUID_ARCH_IS_ZEN6(cpu)  au_cpuid_arch_is_zen6(cpu)
+    #define CPUID_HAS_FLAGS(cpu, flags, count) au_cpuid_has_flags(cpu, flags, count)
+    #define CURRENT_CPU_NUM AU_CURRENT_CPU_NUM
 #else
     #include "alci/arch.h"
     #define UTILS_SOURCE "internal alm_utils"
+    #define CPUID_ARCH_IS_ZEN(cpu)   alm_cpuid_arch_is_zen(cpu)
+    #define CPUID_ARCH_IS_ZEN2(cpu)  alm_cpuid_arch_is_zen2(cpu)
+    #define CPUID_ARCH_IS_ZEN3(cpu)  alm_cpuid_arch_is_zen3(cpu)
+    #define CPUID_ARCH_IS_ZEN4(cpu)  alm_cpuid_arch_is_zen4(cpu)
+    #define CPUID_ARCH_IS_ZEN5(cpu)  alm_cpuid_arch_is_zen5(cpu)
+    #define CPUID_ARCH_IS_ZEN6(cpu)  alm_cpuid_arch_is_zen6(cpu)
+    #define CPUID_HAS_FLAGS(cpu, flags, count) alm_cpuid_has_flags(cpu, flags, count)
+    #define CURRENT_CPU_NUM ALM_CURRENT_CPU_NUM
 #endif
 
 int main(void)
@@ -68,39 +84,39 @@ int main(void)
      * Architecture detection functions.
      * These are the common subset supported by both internal and external utils.
      */
-    printf("au_cpuid_arch_is_zen: %d\n",
-           au_cpuid_arch_is_zen(AU_CURRENT_CPU_NUM) ? 1 : 0);
+    printf("cpuid_arch_is_zen: %d\n",
+           CPUID_ARCH_IS_ZEN(CURRENT_CPU_NUM) ? 1 : 0);
 
-    printf("au_cpuid_arch_is_zen2: %d\n",
-           au_cpuid_arch_is_zen2(AU_CURRENT_CPU_NUM) ? 1 : 0);
+    printf("cpuid_arch_is_zen2: %d\n",
+           CPUID_ARCH_IS_ZEN2(CURRENT_CPU_NUM) ? 1 : 0);
 
-    printf("au_cpuid_arch_is_zen3: %d\n",
-           au_cpuid_arch_is_zen3(AU_CURRENT_CPU_NUM) ? 1 : 0);
+    printf("cpuid_arch_is_zen3: %d\n",
+           CPUID_ARCH_IS_ZEN3(CURRENT_CPU_NUM) ? 1 : 0);
 
-    printf("au_cpuid_arch_is_zen4: %d\n",
-           au_cpuid_arch_is_zen4(AU_CURRENT_CPU_NUM) ? 1 : 0);
+    printf("cpuid_arch_is_zen4: %d\n",
+           CPUID_ARCH_IS_ZEN4(CURRENT_CPU_NUM) ? 1 : 0);
 
-    printf("au_cpuid_arch_is_zen5: %d\n",
-           au_cpuid_arch_is_zen5(AU_CURRENT_CPU_NUM) ? 1 : 0);
+    printf("cpuid_arch_is_zen5: %d\n",
+           CPUID_ARCH_IS_ZEN5(CURRENT_CPU_NUM) ? 1 : 0);
 
-    printf("au_cpuid_arch_is_zen6: %d\n",
-           au_cpuid_arch_is_zen6(AU_CURRENT_CPU_NUM) ? 1 : 0);
+    printf("cpuid_arch_is_zen6: %d\n",
+           CPUID_ARCH_IS_ZEN6(CURRENT_CPU_NUM) ? 1 : 0);
 
     /*
      * Feature flag detection.
      * Test the flags that LibM actually uses.
      */
     const char* avx512f_flag[] = {"avx512f"};
-    printf("au_cpuid_has_flags[avx512f]: %d\n",
-           au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx512f_flag, 1) ? 1 : 0);
+    printf("cpuid_has_flags[avx512f]: %d\n",
+           CPUID_HAS_FLAGS(CURRENT_CPU_NUM, avx512f_flag, 1) ? 1 : 0);
 
     const char* avx512dq_flag[] = {"avx512dq"};
-    printf("au_cpuid_has_flags[avx512dq]: %d\n",
-           au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx512dq_flag, 1) ? 1 : 0);
+    printf("cpuid_has_flags[avx512dq]: %d\n",
+           CPUID_HAS_FLAGS(CURRENT_CPU_NUM, avx512dq_flag, 1) ? 1 : 0);
 
     const char* avx512_both[] = {"avx512f", "avx512dq"};
-    printf("au_cpuid_has_flags[avx512f,avx512dq]: %d\n",
-           au_cpuid_has_flags(AU_CURRENT_CPU_NUM, avx512_both, 2) ? 1 : 0);
+    printf("cpuid_has_flags[avx512f,avx512dq]: %d\n",
+           CPUID_HAS_FLAGS(CURRENT_CPU_NUM, avx512_both, 2) ? 1 : 0);
 
     /*
      * Note: Internal utils only implements avx512f and avx512dq flags

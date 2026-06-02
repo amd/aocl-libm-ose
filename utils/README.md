@@ -3,92 +3,59 @@
 This module provides CPU detection functionality for AOCL-LibM, replacing the
 external aocl-utils dependency with a self-contained, pure C implementation.
 
-## API Compatibility
+## API
 
-The module provides the same API as aocl-utils (`alci/arch.h`):
+The module provides CPU detection via `alci/arch.h`:
 
 ```c
 #include "alci/arch.h"
 
-// Type definitions matching aocl-utils
-typedef uint32_t au_cpu_num_t;
+// Type definition
+typedef uint32_t alm_cpu_num_t;
 
-// Architecture detection
-bool au_cpuid_arch_is_zen(au_cpu_num_t cpu_num);
-bool au_cpuid_arch_is_zen2(au_cpu_num_t cpu_num);
-bool au_cpuid_arch_is_zen3(au_cpu_num_t cpu_num);
-bool au_cpuid_arch_is_zen4(au_cpu_num_t cpu_num);
-bool au_cpuid_arch_is_zen5(au_cpu_num_t cpu_num);
-bool au_cpuid_arch_is_zen6(au_cpu_num_t cpu_num);
+// Architecture detection (uses "at-least" semantics)
+bool alm_cpuid_arch_is_zen(alm_cpu_num_t cpu_num);
+bool alm_cpuid_arch_is_zen2(alm_cpu_num_t cpu_num);
+bool alm_cpuid_arch_is_zen3(alm_cpu_num_t cpu_num);
+bool alm_cpuid_arch_is_zen4(alm_cpu_num_t cpu_num);
+bool alm_cpuid_arch_is_zen5(alm_cpu_num_t cpu_num);
+bool alm_cpuid_arch_is_zen6(alm_cpu_num_t cpu_num);
 
 // Feature flag detection
-bool au_cpuid_has_flags(au_cpu_num_t cpu_num, const char* const flags[], int count);
+bool alm_cpuid_has_flags(alm_cpu_num_t cpu_num, const char* const flags[], int count);
 
 // CPU number constant
-#define AU_CURRENT_CPU_NUM 0
+#define ALM_CURRENT_CPU_NUM 0
 ```
 
 ## Design Highlights
 
+- **Unique Symbol Prefix**: All types and macros use `ALM_`/`alm_` prefix to avoid
+  conflicts with external aocl-utils in BIY scenarios
+- **Static Inline Functions**: API functions are `static inline` in the header,
+  eliminating symbol exports entirely from the object file
 - **Single CPUID Query**: CPUID instructions are executed exactly once during
   initialization, minimizing runtime overhead
-- **Cached Results**: All CPU information stored in a global structure for
-  efficient repeated access
+- **Cached Results**: All CPU information stored in global variables for
+  efficient repeated access (only two symbols exported: `alm_g_detected_uarch`
+  and `alm_g_detected_features`)
 - **Efficient Feature Flags**: String-based flag requests converted to bitmask
   operations internally
 - **Pure C**: No C++ runtime dependencies (no libstdc++)
-- **Hidden Visibility**: Symbols are not exported to prevent conflicts (see below)
 
-## Symbol Visibility and aocl-utils Coexistence
+## BIY (Build-It-Yourself) Compatibility
 
-The internal utils use **hidden visibility** (`__attribute__((visibility("hidden")))`)
-for all public API functions. This design choice addresses the concern of symbol
-conflicts with external aocl-utils in Build-It-Yourself (BIY) scenarios.
+When building a unified AOCL library that combines multiple AOCL components
+(e.g., `libaocl.so` containing aocl-libm, aocl-utils, aocl-blas, etc.):
 
-### Why Hidden Visibility?
+- **No symbol conflicts**: The `alm_cpuid_*` prefix is different from the
+  external aocl-utils `au_cpuid_*` prefix, so both can coexist
+- **Independent operation**: Each library uses its own CPU detection:
+  - aocl-libm uses `alm_cpuid_*` (internal utils)
+  - aocl-utils provides `au_cpuid_*` (for other AOCL libraries)
 
-The API function names (`au_cpuid_arch_is_zen()`, `au_cpuid_has_flags()`, etc.)
-are intentionally identical to external aocl-utils for API compatibility. However,
-in scenarios where:
-
-1. A user builds libm with internal utils
-2. The same binary also links against external aocl-utils (e.g., for other AOCL
-   libraries like AOCL-BLAS)
-
-Symbol conflicts could occur at link time or runtime. Hidden visibility minimizes
-this risk:
-
-- **Shared libm (libalm.so)**: The internal utils symbols are not exported in
-  the dynamic symbol table. libalm.so binds to its own internal hidden symbols,
-  while other libraries or applications can use external aocl-utils separately
-  without conflicts.
-- **Static libm (libalm.a)**: When an application links libalm statically, the
-  `au_cpuid_*` symbols become part of the final binary. If the application also
-  links external aocl-utils (directly or via another AOCL library), symbol
-  conflicts may occur despite hidden visibility (hidden visibility only affects
-  shared library exports, not static linking).
-
-**Note:** The internal utils module is built as a **static library only** (no
-shared library variant). This is intentional to ensure the utils code is always
-embedded directly into libm.
-
-### Intended Use
-
-The internal utils module is designed to **replace** external aocl-utils for libm,
-not coexist with it. When building libm:
-
-- Use internal utils (default) OR link against external aocl-utils
-- Do not attempt to use both simultaneously within libm itself
-
-### For Users
-
-If you're building applications that link both:
-- AOCL-LibM (with internal utils)
-- Other AOCL libraries (using external aocl-utils)
-
-The hidden visibility ensures no symbol conflicts. The application will use:
-- Internal utils for libm's CPU detection (hidden, internal)
-- External aocl-utils for other libraries (visible, exported)
+This eliminates the "multiple definition" linker errors that would occur if
+both libraries used the same symbol names.
 
 ## Building
 

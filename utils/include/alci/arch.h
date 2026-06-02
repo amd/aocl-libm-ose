@@ -28,23 +28,18 @@
 /*
  * AOCL-LibM Internal Utils - CPU Architecture Detection
  *
- * This header provides API-compatible replacements for aocl-utils (libau_cpuid).
- * It uses the same function names and signatures to allow seamless switching
- * between internal and external utils.
+ * This header provides CPU detection functionality for AOCL-LibM.
+ * All functions are static inline, eliminating exported symbols entirely.
  *
- * Symbol Visibility:
- *   These functions have HIDDEN visibility to prevent symbol conflicts with
- *   external aocl-utils in BIY (Build-It-Yourself) scenarios. When libm is
- *   linked as a shared library (libalm.so), these symbols are not exported
- *   and will not conflict with any aocl-utils symbols.
- *
- *   Note: Hidden visibility only affects shared library exports. For static
- *   linking (libalm.a), symbol conflicts may still occur if the application
- *   also links external aocl-utils. See utils/README.md for details.
+ * Symbol Conflict Prevention:
+ *   - All types/enums use ALM_ prefix to avoid conflicts with external aocl-utils
+ *   - Static inline functions are not exported - no symbol table entries
+ *   - Each translation unit gets its own copy of the inline functions
+ *   - Global state is defined once in cpuid.c, accessed via extern
  *
  * Design:
  *   - CPUID is queried exactly once at program startup via constructor initialization
- *   - All CPU information is cached in a global structure
+ *   - All CPU information is cached in global structures (defined in cpuid.c)
  *   - Feature flags use efficient bitmask operations internally
  */
 
@@ -53,51 +48,62 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-
-/* Visibility attribute for internal symbols (Linux/ELF only, not Windows) */
-#if (defined(__GNUC__) || defined(__clang__)) && !defined(_WIN32)
-#define ALM_UTILS_HIDDEN __attribute__((__visibility__("hidden")))
-#else
-#define ALM_UTILS_HIDDEN
-#endif
-
-/* Constructor attribute for initialization functions */
-#if defined(__GNUC__) || defined(__clang__)
-#define ALM_UTILS_CONSTRUCTOR __attribute__((constructor))
-#define INITIALIZER(f) static void f(void) ALM_UTILS_CONSTRUCTOR; static void f(void)
-#elif defined(_MSC_VER)
-#pragma section(".CRT$XCU", read)
-#define INITIALIZER(f) \
-    static void __cdecl f(void); \
-    __declspec(allocate(".CRT$XCU")) void (__cdecl*f##_)(void) = f; \
-    static void __cdecl f(void)
-#else
-#error "Unsupported compiler - need constructor attribute"
-#endif
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /*
- * Type definitions matching aocl-utils API
+ * Type definitions for libm internal utils
  */
-#ifndef AU_CPU_NUM_T_DEFINED
-#define AU_CPU_NUM_T_DEFINED
-typedef uint32_t au_cpu_num_t;
-#endif
+typedef uint32_t alm_cpu_num_t;
 
 /*
  * CPU number constant for current CPU.
  * The cpu parameter is reserved for future use (e.g., per-core detection).
  * Currently ignored; detection always runs on the current CPU.
  */
-#define AU_CURRENT_CPU_NUM  0
+#define ALM_CURRENT_CPU_NUM  0
 
 /*
- * Architecture detection functions.
+ * Microarchitecture enumeration
+ * Used for "at-least" comparisons in architecture detection.
+ */
+typedef enum {
+    ALM_UARCH_UNKNOWN = 0,
+    ALM_UARCH_ZEN,
+    ALM_UARCH_ZENPLUS,
+    ALM_UARCH_ZEN2,
+    ALM_UARCH_ZEN3,
+    ALM_UARCH_ZEN4,
+    ALM_UARCH_ZEN5,
+    ALM_UARCH_ZEN6
+} alm_uarch_t;
+
+/*
+ * Feature flags bitmask
+ *   - AVX512F, AVX512DQ: used by LibM for ISA selection
+ *   - CLWB: used for Zen/Zen2 fallback detection (internal)
+ */
+typedef enum {
+    ALM_FEATURE_NONE      = 0,
+    ALM_FEATURE_AVX512F   = (1 << 0),
+    ALM_FEATURE_AVX512DQ  = (1 << 1),
+    ALM_FEATURE_CLWB      = (1 << 2)
+} alm_feature_t;
+
+/*
+ * Global CPU detection state (defined in cpuid.c, initialized before main)
+ * These are the only symbols exported from the utils object file.
+ */
+extern alm_uarch_t   alm_g_detected_uarch;
+extern unsigned int  alm_g_detected_features;
+
+/*
+ * Architecture detection functions - static inline.
  * Returns non-zero if the current CPU is the specified Zen generation OR LATER.
- * This matches aocl-utils "at-least" semantics.
+ * Uses "at-least" semantics.
  *
  * Detection is based on CPUID family/model/stepping:
  *   Family 0x17: Zen, Zen+, Zen2
@@ -118,25 +124,54 @@ typedef uint32_t au_cpu_num_t;
  *   Other families: Unknown
  *
  * Examples:
- *   On Zen6: au_cpuid_arch_is_zen() -> TRUE, au_cpuid_arch_is_zen6() -> TRUE
- *   On Zen5: au_cpuid_arch_is_zen5() -> TRUE, au_cpuid_arch_is_zen6() -> FALSE
- *   On Zen4: au_cpuid_arch_is_zen4() -> TRUE, au_cpuid_arch_is_zen5() -> FALSE
+ *   On Zen6: alm_cpuid_arch_is_zen() -> TRUE, alm_cpuid_arch_is_zen6() -> TRUE
+ *   On Zen5: alm_cpuid_arch_is_zen5() -> TRUE, alm_cpuid_arch_is_zen6() -> FALSE
+ *   On Zen4: alm_cpuid_arch_is_zen4() -> TRUE, alm_cpuid_arch_is_zen5() -> FALSE
  *
- * @param cpu_num  CPU number (currently ignored, use AU_CURRENT_CPU_NUM)
+ * @param cpu_num  CPU number (currently ignored, use ALM_CURRENT_CPU_NUM)
  * @return         true if CPU is at least the specified architecture, false otherwise
  */
-ALM_UTILS_HIDDEN bool au_cpuid_arch_is_zen(au_cpu_num_t cpu_num);
-ALM_UTILS_HIDDEN bool au_cpuid_arch_is_zen2(au_cpu_num_t cpu_num);
-ALM_UTILS_HIDDEN bool au_cpuid_arch_is_zen3(au_cpu_num_t cpu_num);
-ALM_UTILS_HIDDEN bool au_cpuid_arch_is_zen4(au_cpu_num_t cpu_num);
-ALM_UTILS_HIDDEN bool au_cpuid_arch_is_zen5(au_cpu_num_t cpu_num);
-ALM_UTILS_HIDDEN bool au_cpuid_arch_is_zen6(au_cpu_num_t cpu_num);
+static inline bool alm_cpuid_arch_is_zen(alm_cpu_num_t cpu_num)
+{
+    (void)cpu_num;
+    return alm_g_detected_uarch >= ALM_UARCH_ZEN;
+}
+
+static inline bool alm_cpuid_arch_is_zen2(alm_cpu_num_t cpu_num)
+{
+    (void)cpu_num;
+    return alm_g_detected_uarch >= ALM_UARCH_ZEN2;
+}
+
+static inline bool alm_cpuid_arch_is_zen3(alm_cpu_num_t cpu_num)
+{
+    (void)cpu_num;
+    return alm_g_detected_uarch >= ALM_UARCH_ZEN3;
+}
+
+static inline bool alm_cpuid_arch_is_zen4(alm_cpu_num_t cpu_num)
+{
+    (void)cpu_num;
+    return alm_g_detected_uarch >= ALM_UARCH_ZEN4;
+}
+
+static inline bool alm_cpuid_arch_is_zen5(alm_cpu_num_t cpu_num)
+{
+    (void)cpu_num;
+    return alm_g_detected_uarch >= ALM_UARCH_ZEN5;
+}
+
+static inline bool alm_cpuid_arch_is_zen6(alm_cpu_num_t cpu_num)
+{
+    (void)cpu_num;
+    return alm_g_detected_uarch >= ALM_UARCH_ZEN6;
+}
 
 /*
- * Feature flag detection.
+ * Feature flag detection - static inline.
  * Check if the CPU supports all specified feature flags.
  *
- * @param cpu_num  CPU number (currently ignored, use AU_CURRENT_CPU_NUM)
+ * @param cpu_num  CPU number (currently ignored, use ALM_CURRENT_CPU_NUM)
  * @param flags    Array of flag name strings (e.g., "avx512f", "avx512dq")
  * @param count    Number of flags in the array
  * @return         true if ALL specified flags are supported, false otherwise
@@ -145,7 +180,28 @@ ALM_UTILS_HIDDEN bool au_cpuid_arch_is_zen6(au_cpu_num_t cpu_num);
  *   "avx512f"   - AVX-512 Foundation
  *   "avx512dq"  - AVX-512 Doubleword and Quadword Instructions
  */
-ALM_UTILS_HIDDEN bool au_cpuid_has_flags(au_cpu_num_t cpu_num, const char* const flags[], int count);
+static inline bool alm_cpuid_has_flags(alm_cpu_num_t cpu_num, 
+                                       const char* const flags[], int count)
+{
+    unsigned int required = ALM_FEATURE_NONE;
+    int i;
+
+    (void)cpu_num;
+
+    if (count <= 0)
+        return false;
+
+    for (i = 0; i < count; i++) {
+        if (strcmp(flags[i], "avx512f") == 0)
+            required |= ALM_FEATURE_AVX512F;
+        else if (strcmp(flags[i], "avx512dq") == 0)
+            required |= ALM_FEATURE_AVX512DQ;
+        else
+            return false;  /* Unknown flag */
+    }
+
+    return (alm_g_detected_features & required) == required;
+}
 
 #ifdef __cplusplus
 }

@@ -29,7 +29,7 @@ target_include_directories(alm_utils_static
         $<BUILD_INTERFACE:${ALM_UTILS_INCLUDE_DIR}>
         $<INSTALL_INTERFACE:include>
     PRIVATE
-        $<$<NOT:$<BOOL:${ALM_UTILS_STANDALONE}>>:${PROJECT_SOURCE_DIR}/include>
+        $<$<NOT:$<BOOL:${ALM_UTILS_STANDALONE}>>:${${PROJECT_PREFIX}_SOURCE_DIR}/include>
 )
 # On Windows, use different names to avoid conflict between static lib and DLL import lib
 if(WIN32)

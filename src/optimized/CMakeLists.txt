@@ -66,7 +66,7 @@ set(libmobj ${libmobj} PARENT_SCOPE)
 # ---------------------------------------------------------------------------
 # Common source lists shared by src/arch/ and src/isa/.
 # ---------------------------------------------------------------------------
-set(OPT_DIR ${CMAKE_SOURCE_DIR}/src/optimized)
+set(OPT_DIR "${${PROJECT_PREFIX}_SOURCE_DIR}/src/optimized")
 file(GLOB ARCH_OPT_SRCS       CONFIGURE_DEPENDS "${OPT_DIR}/*.c")
 file(GLOB CMPLX_SRCS          CONFIGURE_DEPENDS "${OPT_DIR}/cmplx/*.c")
 file(GLOB VEC_SRCS            CONFIGURE_DEPENDS "${OPT_DIR}/vec/*.c")

@@ -30,8 +30,8 @@ string(TIMESTAMP BUILD_DATE "%Y%m%d")
 set(VERSION_STRING_BUILD_DATE "Build ${BUILD_DATE}")
 set(LIBALM_VERSION_STRING "${VERSION_STRING_BUILD_DATE}")
 
-configure_file("${PROJECT_SOURCE_DIR}/CMake/version.build.hh.in"
-                "${PROJECT_SOURCE_DIR}/src/version.build.h"
+configure_file("${${PROJECT_PREFIX}_SOURCE_DIR}/CMake/version.build.hh.in"
+                "${${PROJECT_PREFIX}_SOURCE_DIR}/src/version.build.h"
                 @ONLY)
 
 # Get Compiler info. Use the macro
@@ -42,8 +42,8 @@ CHECK_COMPILER_VERSION(COMPILER)
 # Get System info.
 set(BUILD_SYSTEM "${CMAKE_SYSTEM}-${CMAKE_SYSTEM_PROCESSOR}")
 set(BUILD_SYS_INFO "${COMPILER}-${BUILD_SYSTEM}${GLIBC_VERSION}" )
-configure_file("${PROJECT_SOURCE_DIR}/CMake/buildsysinfo.hh.in"
-                "${PROJECT_SOURCE_DIR}/src/buildsysinfo.h"
+configure_file("${${PROJECT_PREFIX}_SOURCE_DIR}/CMake/buildsysinfo.hh.in"
+                "${${PROJECT_PREFIX}_SOURCE_DIR}/src/buildsysinfo.h"
                 @ONLY)
 
 get_optz_flag( optzflag )
@@ -90,10 +90,10 @@ endif()
 
 # include paths under src.
 set(INCLUDE_PATHS
-  "${PROJECT_SOURCE_DIR}/include"
-  "${PROJECT_SOURCE_DIR}/src"
-  "${PROJECT_SOURCE_DIR}/src/optimized"
-  "${PROJECT_SOURCE_DIR}/src/kern"
+  "${${PROJECT_PREFIX}_SOURCE_DIR}/include"
+  "${${PROJECT_PREFIX}_SOURCE_DIR}/src"
+  "${${PROJECT_PREFIX}_SOURCE_DIR}/src/optimized"
+  "${${PROJECT_PREFIX}_SOURCE_DIR}/src/kern"
   )
 include_directories(${INCLUDE_PATHS})
 
@@ -121,8 +121,8 @@ target_compile_options(src PRIVATE ${LIBMCFLAGS} "-O1")
 list(APPEND libmobj $<TARGET_OBJECTS:src>)
 
 # add include headers as part of the install
-set(LIBM_PUBLIC_HEADERS ${PROJECT_SOURCE_DIR}/include/external/amdlibm.h
-                        ${PROJECT_SOURCE_DIR}/include/external/amdlibm_vec.h)
+set(LIBM_PUBLIC_HEADERS "${${PROJECT_PREFIX}_SOURCE_DIR}/include/external/amdlibm.h"
+                        "${${PROJECT_PREFIX}_SOURCE_DIR}/include/external/amdlibm_vec.h")
 
 if (WIN32)
   set(LIBALM libalm)
@@ -168,4 +168,6 @@ install(TARGETS ${libm}
         ARCHIVE DESTINATION ${${PROJECT_PREFIX}_INSTALL_DIR}/lib
         RUNTIME DESTINATION ${${PROJECT_PREFIX}_INSTALL_DIR}/lib
         PRIVATE_HEADER DESTINATION ${${PROJECT_PREFIX}_INSTALL_DIR}/include)
-set(libm ${libm} PARENT_SCOPE)
+
+# Propagate the libmobj target list to the parent scope
+set(libmobj ${libmobj} PARENT_SCOPE)

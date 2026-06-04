@@ -97,7 +97,7 @@ project("${PROJECT_PREFIX}-${PROJECT_NAME}"
    LANGUAGES      C CXX ASM)
 
 message(DEBUG "Project with name \"${PROJECT_PREFIX}\" with version ${${PROJECT_PREFIX}_VERSION} registered")
-
+set(${PROJECT_PREFIX}_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 #------------------------------
 # Configure archiver to use 'rc' flags instead of 'qc'
 #------------------------------
@@ -136,8 +136,8 @@ endif()
 # Setup Project Includes
 #------------------------------
 set(${PROJECT_PREFIX}_COMMON_INCLUDES "${${PROJECT_PREFIX}_GENERATED}")
-set(${PROJECT_PREFIX}_SDK_INCLUDES "${PROJECT_SOURCE_DIR}/include")
-set(${PROJECT_PREFIX}_PRIVATE_INCLUDES "${PROJECT_SOURCE_DIR}/include")
+set(${PROJECT_PREFIX}_SDK_INCLUDES "${${PROJECT_PREFIX}_SOURCE_DIR}/include")
+set(${PROJECT_PREFIX}_PRIVATE_INCLUDES "${${PROJECT_PREFIX}_SOURCE_DIR}/include")
 
 message(DEBUG "common includes ${${PROJECT_PREFIX}_COMMON_INCLUDES}")
 message(DEBUG "sdk include " "${${PROJECT_PREFIX}_SDK_INCLUDES}")
@@ -166,8 +166,8 @@ if(WIN32)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -masm=att")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -masm=att")
 else()
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=.")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=.")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fmacro-prefix-map=${${PROJECT_PREFIX}_SOURCE_DIR}/=.")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmacro-prefix-map=${${PROJECT_PREFIX}_SOURCE_DIR}/=.")
 endif()
 
 #------------------------------
@@ -207,7 +207,7 @@ if (NOT DEFINED ${PROJECT_PREFIX}_CONFIG_OUTPUT_FILE)
     set(${PROJECT_PREFIX}_CONFIG_OUTPUT_FILE
             ${${PROJECT_PREFIX}_GENERATED}/Config.hh)
 endif()
-if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CONFIG_BUILD_TYPE_DEBUG    1)
 else()
     set(CONFIG_BUILD_TYPE_RELEASE  1)
@@ -223,7 +223,7 @@ endif()
 # Check compiler support for different ISAs
 #------------------------------------
 include(Compiler_Features)
-configure_file("${PROJECT_SOURCE_DIR}/CMake/Config.hh.in"
+configure_file("${${PROJECT_PREFIX}_SOURCE_DIR}/CMake/Config.hh.in"
             "${${PROJECT_PREFIX}_CONFIG_OUTPUT_FILE}"
             @ONLY)
 
@@ -233,7 +233,7 @@ configure_file("${PROJECT_SOURCE_DIR}/CMake/Config.hh.in"
 if (NOT DEFINED ${PROJECT_PREFIX}_VERSION_OUTPUT_FILE)
     set(${PROJECT_PREFIX}_VERSION_OUTPUT_FILE ${${PROJECT_PREFIX}_GENERATED}/Version.hh)
 endif()
-configure_file("${PROJECT_SOURCE_DIR}/CMake/Version.hh.in"
+configure_file("${${PROJECT_PREFIX}_SOURCE_DIR}/CMake/Version.hh.in"
                 "${${PROJECT_PREFIX}_VERSION_OUTPUT_FILE}"
                 @ONLY)
 
@@ -269,8 +269,8 @@ endif()
 if(${${PROJECT_PREFIX}_LIBM_BUILD_LIBRARY})
     add_subdirectory(src)
     set(ALM_PATH        "${CMAKE_BINARY_DIR}/src")
-    set(ALM_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
-    if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    set(ALM_INCLUDE_DIR "${${PROJECT_PREFIX}_SOURCE_DIR}/include")
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
         set(ALM_PATH        "${${PROJECT_PREFIX}_INSTALL_DIR}/lib")
     endif()
 endif()
@@ -309,8 +309,12 @@ endif ()
 
 add_custom_target(distclean
     COMMAND ${CMAKE_MAKE_PROGRAM} clean
-    COMMAND ${CMAKE_COMMAND} -E remove "${PROJECT_SOURCE_DIR}/src/buildsysinfo.h"
-    COMMAND ${CMAKE_COMMAND} -E remove "${PROJECT_SOURCE_DIR}/src/version.build.h"
+    COMMAND ${CMAKE_COMMAND} -E remove "${${PROJECT_PREFIX}_SOURCE_DIR}/src/buildsysinfo.h"
+    COMMAND ${CMAKE_COMMAND} -E remove "${${PROJECT_PREFIX}_SOURCE_DIR}/src/version.build.h"
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     COMMENT "Remove cmake_generated files and directories"
 )
+
+if(${${PROJECT_PREFIX}_LIBM_BUILD_LIBRARY} AND ENABLE_AOCL_LIBM)
+    set(libmobj ${libmobj} PARENT_SCOPE)
+endif()

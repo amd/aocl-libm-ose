@@ -331,7 +331,7 @@ if(NOT WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "GNU" AND (${${PROJECT_PREFIX}_LIB
         COMMAND lcov --remove "coverage.info" --output-file "coverage_filtered.info"
                 '/usr/*' '/*/_deps/*' '*/_deps/*'
         COMMAND lcov --remove "coverage_filtered.info" --output-file "coverage_final.info"
-                "*/gtests/*" "*gtests/*" "${CMAKE_SOURCE_DIR}/gtests/*" "${CMAKE_BINARY_DIR}/gtests/*"
+                "*/gtests/*" "*gtests/*" "${${PROJECT_PREFIX}_SOURCE_DIR}/gtests/*" "${CMAKE_BINARY_DIR}/gtests/*"
                 "${CMAKE_BINARY_DIR}/external/*" "*/external/*" "*external/*"
         COMMAND genhtml "coverage_final.info" --output-directory "html_coverage_report"
         COMMAND ${CMAKE_COMMAND} -E rm -f "coverage.info" "coverage_filtered.info" "coverage_final.info"

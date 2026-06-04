@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+#  Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
 #
 #  Redistribution and use in source and binary forms, with or without
 #  modification, are permitted provided that the following conditions are met:
@@ -53,8 +53,8 @@ set(YAML_REPO         "https://github.com/jbeder/yaml-cpp.git")
 set(YAML_TAG          "yaml-cpp-0.7.0")
 
 # Paths for source and build directories
-set(YAML_SOURCE_DIR   "${CMAKE_SOURCE_DIR}/build/external/yaml/yaml-cpp")
-set(YAML_BINARY_DIR   "${CMAKE_SOURCE_DIR}/build/external/yaml/yaml-cpp/build")
+set(YAML_SOURCE_DIR   "${${PROJECT_PREFIX}_SOURCE_DIR}/build/external/yaml/yaml-cpp")
+set(YAML_BINARY_DIR   "${${PROJECT_PREFIX}_SOURCE_DIR}/build/external/yaml/yaml-cpp/build")
 set(YAML_LIB_PATH     "${YAML_BINARY_DIR}")
 
 

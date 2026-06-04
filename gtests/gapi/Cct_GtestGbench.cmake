@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -96,7 +96,7 @@ set(GTBM_SHARED OFF CACHE BOOL "Build shared libraries for Google Test and Googl
 
 # Set directory paths
 set(GAPI_SOURCE_DIR   "${CMAKE_CURRENT_LIST_DIR}")
-set(GAPI_BINARY_DIR   "${CMAKE_SOURCE_DIR}/build/external/gapi")
+set(GAPI_BINARY_DIR   "${${PROJECT_PREFIX}_SOURCE_DIR}/build/external/gapi")
 set(GAPI_LIB_PATH     "${GAPI_BINARY_DIR}")
 
 # Platform-specific library names
@@ -178,4 +178,3 @@ endif()
 # Set library paths for both gtest and gbench (they're in the same directory)
 set(GTEST_LIB_PATH "${GAPI_LIB_PATH}")
 set(GBENCH_LIB_PATH "${GAPI_LIB_PATH}")
-

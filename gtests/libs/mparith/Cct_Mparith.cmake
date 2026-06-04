@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -45,7 +45,7 @@ function(library_exists lib libpath)
 endfunction()
 
 set(MPFR_SRC_DIR        "${CMAKE_CURRENT_LIST_DIR}")
-set(MPARITH_DIR         "${CMAKE_SOURCE_DIR}/build/external/mparith")
+set(MPARITH_DIR         "${${PROJECT_PREFIX}_SOURCE_DIR}/build/external/mparith")
 
 # Installation directories
 set(MPARITH_LIB_DIR     ${MPARITH_DIR}/lib)

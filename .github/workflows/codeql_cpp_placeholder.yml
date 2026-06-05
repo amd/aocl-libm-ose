@@ -83,3 +83,7 @@ jobs:
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}/compiler:${{matrix.compiler}}"
+
+    - name: Cleanup workspace
+      if: always()
+      run: find "$GITHUB_WORKSPACE" -mindepth 1 -delete

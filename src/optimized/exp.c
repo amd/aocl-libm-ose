@@ -75,6 +75,9 @@
  *        e^x = (2^m) * (2^(j/64)) * e^r
  *
  */
+
+/* Comment to initiate git diff -> new PR */
+
 #include <stdint.h>
 #include <libm_util_amd.h>
 #include <libm/alm_special.h>

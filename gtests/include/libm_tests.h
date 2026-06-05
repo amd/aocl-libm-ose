@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -72,6 +72,17 @@
 
 #else
 #error "unknown LIBM_PROTOTYPE"
+#endif
+
+/*
+ * Extended libmvec symbols (cbrt, cosh, expm1, log10, log1p, ...) need glibc 2.35+.
+ * GLIBC_VERSION_CHECK uses compile-time __GLIBC__ / __GLIBC_MINOR__ from headers.
+ */
+#if defined(__GLIBC__)
+#define GLIBC_VERSION_CHECK(major, minor) \
+        (__GLIBC__ > (major) || (__GLIBC__ == (major) && __GLIBC_MINOR__ >= (minor)))
+#else
+#define GLIBC_VERSION_CHECK(major, minor) 0
 #endif
 
 #endif  /* __LIBM_TESTS_H__ */

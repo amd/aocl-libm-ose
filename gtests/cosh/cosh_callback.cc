@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -148,11 +148,13 @@ extern "C" {
 
 
 int test_v2d(test_data *data, int idx)  {
+#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC) || GLIBC_VERSION_CHECK(2, 35)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
   __m128d op2 = LIBM_FUNC_VEC(d, 2, cosh)(ip2);
   _mm_store_pd(&op[0], op2);
+#endif
   return 0;
 }
 

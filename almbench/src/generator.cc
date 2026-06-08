@@ -546,7 +546,7 @@ std::vector<std::vector<size_t>> enumerate_combinations(size_t n, size_t r)
     /* Generate using successor rule for lexicographic combinations */
     while (true) {
         out.push_back(idx);
-        ssize_t i = static_cast<ssize_t>(r) - 1;
+        ptrdiff_t i = static_cast<ptrdiff_t>(r) - 1;
         while (i >= 0 && idx[i] == n - r + static_cast<size_t>(i)) {
             --i;
         }

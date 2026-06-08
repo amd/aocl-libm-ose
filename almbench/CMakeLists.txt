@@ -196,8 +196,8 @@ add_custom_target(${EXE_NAME}-distclean
 )
 
 # Tests
-if(DEFINED ALM_LIBM_BUILD_TESTS)
-    option(ALM_BENCH_BUILD_TESTS "Build almbench unit tests" ${ALM_LIBM_BUILD_TESTS})
+if(DEFINED ${PROJECT_PREFIX}_LIBM_BUILD_TESTS)
+    option(ALM_BENCH_BUILD_TESTS "Build almbench unit tests" ${${PROJECT_PREFIX}_LIBM_BUILD_TESTS})
 else()
     option(ALM_BENCH_BUILD_TESTS "Build almbench unit tests" OFF)
 endif()

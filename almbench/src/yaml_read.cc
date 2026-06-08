@@ -33,7 +33,6 @@
 #include <cstdio>
 #include <functional>
 #include <unordered_map>
-#include <unordered_set>
 
 // Global filters (empty = no filter)
 static std::string g_api_filter;
@@ -67,21 +66,15 @@ static bool firstSegmentEquals(const std::string& rel, const std::string& api) {
 /*
  * read_test:
  * Parse a single test case from a YAML node and populate the YamlInputs struct.
- * Handles both single-value inputs and input ranges. The `id_registry` and
- * `multi_range_ids` are per-file state used for `multi_range:` ref resolution
- * and duplicate-id detection.
+ * Handles both single-value inputs and input ranges. The `id_registry` is
+ * per-test_set state used for `multi_range:` ref resolution (last-wins for
+ * normal test ids within the same test_set).
  */
 static int read_test(const YAML::Node &test, struct YamlInputs &param,
-                     std::unordered_map<std::string, std::vector<InputRange>> &id_registry,
-                     std::unordered_set<std::string> &multi_range_ids)
+                     std::unordered_map<std::string, std::vector<InputRange>> &id_registry)
 {
     std::string test_id = test["id"].as<std::string>();
-
-    /* Duplicate-id detection: within a single file, ids must be unique. */
-    if (id_registry.count(test_id) > 0 || multi_range_ids.count(test_id) > 0) {
-        throw YAML::Exception(test.Mark(),
-            "duplicate test id '" + test_id + "' within file");
-    }
+    const YAML::Node multi_range_node = test["multi_range"];
 
     /* Optional description field (not stored) */
     if (test["description"]) {
@@ -99,7 +92,6 @@ static int read_test(const YAML::Node &test, struct YamlInputs &param,
     const YAML::Node warmup = test["warmup"];
     const YAML::Node batch_size = test["batch_size"];
     const YAML::Node derived_node = test["derived"];
-    const YAML::Node multi_range_node = test["multi_range"];
 
     uint32_t n = 0;
     param.test_id = test_id;
@@ -110,10 +102,11 @@ static int read_test(const YAML::Node &test, struct YamlInputs &param,
      * normal input:/type:/derived: triple entirely.
      */
     if (multi_range_node) {
-        if (input || type || derived_node) {
+        if (input || type || derived_node || steps) {
             throw YAML::Exception(test.Mark(),
                 "test '" + test_id +
-                "': multi_range cannot coexist with input/type/derived");
+                "': multi_range cannot coexist with input/type/derived/steps; "
+                 "use steps_mr for multi_range tests");
         }
         const YAML::Node refs_node = multi_range_node["refs"];
         if (!refs_node || !refs_node.IsSequence() || refs_node.size() < 1) {
@@ -126,16 +119,11 @@ static int read_test(const YAML::Node &test, struct YamlInputs &param,
         std::size_t expected_arity = 0;
         for (std::size_t i = 0; i < refs_node.size(); i++) {
             std::string ref_id = refs_node[i].as<std::string>();
-            if (multi_range_ids.count(ref_id) > 0) {
-                throw YAML::Exception(multi_range_node.Mark(),
-                    "test '" + test_id + "': ref '" + ref_id +
-                    "' is itself a multi_range test (not allowed)");
-            }
             auto it = id_registry.find(ref_id);
             if (it == id_registry.end()) {
                 throw YAML::Exception(multi_range_node.Mark(),
                     "test '" + test_id + "': ref '" + ref_id +
-                    "' not found earlier in this file");
+                    "' not found earlier in this test_set");
             }
             if (it->second.empty()) {
                 throw YAML::Exception(multi_range_node.Mark(),
@@ -358,12 +346,10 @@ static int read_test(const YAML::Node &test, struct YamlInputs &param,
     }
 
     /*
-     * Register this test in the per-file id registry so later tests
-     * can resolve it via `multi_range.refs:`.
+     * Register range tests in the per-test_set id registry so later
+     * multi_range tests can resolve refs. Normal ids use last-wins.
      */
-    if (multi_range_node) {
-        multi_range_ids.insert(test_id);
-    } else {
+    if (!multi_range_node) {
         id_registry[test_id] = param.range;
     }
 
@@ -411,13 +397,6 @@ std::string extractApiName(const std::string& id) {
 static int parse_yaml_content(const YAML::Node &config,
                               std::vector<struct YamlInputs> &params)
 {
-    /*
-     * Per-file id registry used to resolve `multi_range.refs:` and detect
-     * duplicate test ids.
-     */
-    std::unordered_map<std::string, std::vector<InputRange>> id_registry;
-    std::unordered_set<std::string>                          multi_range_ids;
-
     // Helper to process a single test_sequence-like map block
     auto process_block = [&](const YAML::Node& seq) -> int {
         if (!seq || !seq.IsMap()) return 0;
@@ -437,6 +416,9 @@ static int parse_yaml_content(const YAML::Node &config,
         for (std::size_t j = 0; j < test_sets.size(); j++) {
             const YAML::Node test_set = test_sets[j];
             if (!test_set || !test_set.IsMap()) continue;
+
+            /* Per-test_set registry: refs resolve only among sibling tests. */
+            std::unordered_map<std::string, std::vector<InputRange>> id_registry;
 
             // Prefer "tests" array; if missing, synthesize from inline maps having "id"
             YAML::Node tests = test_set["tests"];
@@ -469,7 +451,7 @@ static int parse_yaml_content(const YAML::Node &config,
                 param.api_name  = apiName;
                 param.test_type = test_type;
 
-                read_test(test, param, id_registry, multi_range_ids);
+                read_test(test, param, id_registry);
                 params.push_back(param);
             }
         }

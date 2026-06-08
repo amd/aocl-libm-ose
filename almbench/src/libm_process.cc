@@ -28,6 +28,7 @@
 #include <yaml-cpp/yaml.h>
 #include "dll_utils.h"
 #include <cstring>
+#include <memory>
 #include <regex>
 #include <unordered_map>
 #include <type_traits>
@@ -283,8 +284,8 @@ void libm_api_variant(struct AlmLibs *alibs, const struct YamlInputs &param,
 {
     using U = typename libm::type_info<T>::real_type;
 
-    struct InParams<T, U> *ipp = new InParams<T, U>;
-    struct YamlOutputs<U> *yop = new YamlOutputs<U>(variant);
+    auto ipp = std::make_unique<InParams<T, U>>();
+    auto yop = std::make_unique<YamlOutputs<U>>(variant);
 
     yop->variant = variant;
     yop->api_name = param.api_name;
@@ -309,8 +310,6 @@ void libm_api_variant(struct AlmLibs *alibs, const struct YamlInputs &param,
     if (param.multi_range.has_value()) {
         if constexpr (std::is_same_v<U, fc32_t> || std::is_same_v<U, fc64_t>) {
             std::cerr << "multi_range not supported for complex APIs" << std::endl;
-            delete ipp;
-            delete yop;
             return;
         }
         const auto &mr_str = *param.multi_range;
@@ -318,7 +317,7 @@ void libm_api_variant(struct AlmLibs *alibs, const struct YamlInputs &param,
         const uint64_t T_total = param.steps_mr.empty()
                                     ? 1000ULL
                                     : std::stoull(param.steps_mr);
-        const uint64_t per_ref_count = (n > 0) ? (T_total / n) : T_total;
+        const uint64_t per_ref_count = (n > 0) ? std::max(T_total / n, uint64_t{1}) : T_total;
 
         MultiRangeConfig<U> mr_typed;
         for (const auto &entry : mr_str.refs) {
@@ -379,10 +378,7 @@ void libm_api_variant(struct AlmLibs *alibs, const struct YamlInputs &param,
         ipp->xxv = get_exception_flag(param.xxv);
     }
 
-    validate_api<T, U>(alibs, ipp, yop);
-
-    delete ipp;
-    delete yop;
+    validate_api<T, U>(alibs, ipp.get(), yop.get());
 }
 
 /*

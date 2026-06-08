@@ -530,6 +530,14 @@ int validate_api(struct AlmLibs *alibs,
     YamlBatchWriter<U> writer(yop->outfile);
     writer.emit_yaml_file = is_verbose_mode_enabled();
 
+    if (ipp->multi_range.has_value() &&
+        api_type != API_PROTOTYPE_01 && api_type != API_PROTOTYPE_02) {
+        std::cerr << "multi_range is only supported for api_prototype_01 and "
+                     "api_prototype_02; skipping test '"
+                  << yop->api_name << "'.\n";
+        return -1;
+    }
+
     switch (api_type) {
         case API_PROTOTYPE_01:
             api_prototype_01<T, U>(alibs, ipp, shimapi, refapi, yop, &writer);

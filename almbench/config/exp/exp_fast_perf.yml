@@ -150,6 +150,28 @@
       warmup: 1000
       batch_size: 10000
 
+    # Multi-range mix: all regions
+    - id: exp_mr_all
+      description: 'simd lanes cycle over all exp_d01..exp_d12 ranges'
+      multi_range:
+        refs: [exp_d01, exp_d02, exp_d03, exp_d04, exp_d05, exp_d06, exp_d07, exp_d08, exp_d09, exp_d10, exp_d11, exp_d12]
+      variants: [vrd2, vrd4, vrd8]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+      steps_mr: 5000
+
+    # Multi-range mix: non-extreme regions only
+    - id: exp_mr_mid
+      description: 'simd lanes cycle over exp_d03..d06 and d09..d11'
+      multi_range:
+        refs: [exp_d03, exp_d04, exp_d05, exp_d06, exp_d09, exp_d10, exp_d11]
+      variants: [vrd2, vrd4, vrd8]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+      steps_mr: 5000
+
   - id: single-precision-tests
     description: 'Curve-region performance tests for fast expf (single precision)'
     tests:
@@ -272,31 +294,3 @@
       uth: ["2.0"]
       warmup: 1000
       batch_size: 10000
-
-    # Multi-range mix: all regions
-  - id: multi-range-tests-all
-    description: 'Mixed exp curve regions across vector lanes (all d01-d12)'
-    tests:
-    - id: exp_mr_all
-      description: 'simd lanes cycle over all exp_d01..exp_d12 ranges'
-      multi_range:
-        refs: [exp_d01, exp_d02, exp_d03, exp_d04, exp_d05, exp_d06, exp_d07, exp_d08, exp_d09, exp_d10, exp_d11, exp_d12]
-      variants: [vrd2, vrd4, vrd8]
-      uth: ["2.0"]
-      warmup: 1000
-      batch_size: 10000
-      steps_mr: 5000
-
-    # Multi-range mix: non-extreme regions only
-  - id: multi-range-tests-mid
-    description: 'Mixed exp curve regions across vector lanes (mid bands)'
-    tests:
-    - id: exp_mr_mid
-      description: 'simd lanes cycle over exp_d03..d06 and d09..d11'
-      multi_range:
-        refs: [exp_d03, exp_d04, exp_d05, exp_d06, exp_d09, exp_d10, exp_d11]
-      variants: [vrd2, vrd4, vrd8]
-      uth: ["2.0"]
-      warmup: 1000
-      batch_size: 10000
-      steps_mr: 5000

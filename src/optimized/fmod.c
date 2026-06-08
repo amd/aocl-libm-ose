@@ -91,7 +91,8 @@ double ALM_PROTO_OPT(fmod)(double x, double y)
 
     if(ax == ay)
     {
-        return 0.0;
+        /* Return 0.0 with the sign of x */
+        return 0.0 * x;
     }
 
     double adx = asdouble(ax);
@@ -149,7 +150,9 @@ double ALM_PROTO_OPT(fmod)(double x, double y)
     {
         return w;
     }
-    w = 0.0 - w;
+
+    /* Negate to apply x's sign.*/
+    w = -w;
 
     return w;
 }

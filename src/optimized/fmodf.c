@@ -148,7 +148,8 @@ float ALM_PROTO_OPT(fmodf)(float x, float y)
 
     if(dx<0)
     {
-        adx = 0.0 - adx;
+        /* Negate to apply x's sign. */
+        adx = -adx;
     }
 
     return (float)adx;

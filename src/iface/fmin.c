@@ -1,6 +1,6 @@
 
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -41,6 +41,12 @@ struct alm_arch_funcs __arch_funcs_fmin = {
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_fminf),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX2(vrda_fmin),
         },
+        [ALM_UARCH_VER_AVX512] = {
+            [ALM_FUNC_SCAL_SP]     = &ALM_PROTO_ARCH_AVX512(fminf),
+            [ALM_FUNC_SCAL_DP]     = &ALM_PROTO_ARCH_AVX512(fmin),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX512(vrsa_fminf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX512(vrda_fmin),
+        },
         [ALM_UARCH_VER_ZEN] = {
             [ALM_FUNC_SCAL_SP]     = &ALM_PROTO_ARCH_ZN(fminf),
             [ALM_FUNC_SCAL_DP]     = &ALM_PROTO_ARCH_ZN(fmin),
@@ -70,6 +76,13 @@ struct alm_arch_funcs __arch_funcs_fmin = {
             [ALM_FUNC_SCAL_DP]     = &ALM_PROTO_ARCH_ZN5(fmin),
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN5(vrsa_fminf),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN5(vrda_fmin),
+        },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP]     = &ALM_PROTO_ARCH_ZN6(fminf),
+            [ALM_FUNC_SCAL_DP]     = &ALM_PROTO_ARCH_ZN6(fmin),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN6(vrsa_fminf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN6(vrda_fmin),
         },
     },
 };

@@ -1,0 +1,1020 @@
+
+- test_sequence: unit_tests_fdim
+  ignore_exceptions: [underflow, inexact]
+  function: fdim
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    - id: fdim_001
+      description: "fdimf(snan, 1.0) = snan"
+      input: [0x7fa00000, 0x3f800000]
+      expect: [0x7fa00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fdim_002
+      description: "fdimf(-snan, 1.0) = -snan"
+      input: [0xffa00000, 0x3f800000]
+      expect: [0xffa00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: fdim_003
+      description: "fdimf(qnan, 1.0) = qnan"
+      variants: [ss]
+      input: [0x7fc00000, 0x3f800000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    - id: fdim_004
+      description: "fdimf(-qnan, 1.0) = -qnan"
+      variants: [ss]
+      input: [0xffc00000, 0x3f800000]
+      expect: [0xffc00000]
+      expect_exception: []
+
+    - id: fdim_005
+      description: "fdimf(0, 0) = 0"
+      variants: [ss]
+      input: [0x00000000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: fdim_006
+      description: "fdimf(-0, 0) = 0"
+      variants: [ss]
+      input: [0x80000000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: fdim_007
+      description: "fdimf(inf, 1.0) = inf"
+      variants: [ss]
+      input: [0x7f800000, 0x3f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    - id: fdim_008
+      description: "fdimf(-inf, 1.0) = 0"
+      variants: [ss]
+      input: [0xff800000, 0x3f800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: fdim_009
+      description: "fdimf(+subnorm_max, 0) = +subnorm_max"
+      variants: [ss]
+      input: [0x007fffff, 0x00000000]
+      expect: [0x007fffff]
+      expect_exception: []
+
+    - id: fdim_010
+      description: "fdimf(-subnorm_max, 0) = 0"
+      variants: [ss]
+      input: [0x807fffff, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: fdim_011
+      description: "fdimf(+subnorm_min, 0) = +subnorm_min"
+      variants: [ss]
+      input: [0x00000001, 0x00000000]
+      expect: [0x00000001]
+      expect_exception: []
+
+    - id: fdim_012
+      description: "fdimf(-subnorm_min, 0) = 0"
+      variants: [ss]
+      input: [0x80000001, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: fdim_013
+      description: "fdimf(+2.0, +1.0) = +1.0"
+      variants: [ss]
+      input: [0x40000000, 0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: fdim_014
+      description: "fdimf(-2.0, +1.0) = 0"
+      variants: [ss]
+      input: [0xc0000000, 0x3f800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+# Test cases from gtests test_fdim_data.h
+#-------------------------------
+    - id: fdim_001
+      description: "fdim(+0.0, +0.0) = -0.0"
+      variants: [ss]
+      input: [0x00000000, 0x00000000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    - id: fdim_002
+      description: "fdim(-0.0, +0.0) = -0.0"
+      variants: [ss]
+      input: [0x80000000, 0x00000000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    - id: fdim_003
+      description: "fdim(+0.0, +0.0) = +0.0"
+      variants: [ss]
+      input: [0x00000000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: fdim_004
+      description: "fdim(-0.0, +0.0) = +0.0"
+      variants: [ss]
+      input: [0x80000000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: fdim_005
+      description: "fdim(+0.0, +1.0) = -1.0"
+      variants: [ss]
+      input: [0x00000000, 0x3f800000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: fdim_006
+      description: "fdim(-0.0, +1.0) = -1.0"
+      variants: [ss]
+      input: [0x80000000, 0x3f800000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: fdim_007
+      description: "fdim(+0.0, +0.0) = +1.0"
+      variants: [ss]
+      input: [0x00000000, 0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: fdim_008
+      description: "fdim(-0.0, +0.0) = +1.0"
+      variants: [ss]
+      input: [0x80000000, 0x00000000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: fdim_009
+      description: "fdim(-1.0, +0.0) = +0.0"
+      variants: [ss]
+      input: [0xbf800000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: fdim_010
+      description: "fdim(-1.0, +0.0) = -0.0"
+      variants: [ss]
+      input: [0xbf800000, 0x00000000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    - id: fdim_011
+      description: "fdim(+1.0, +1.0) = +0.0"
+      variants: [ss]
+      input: [0x3f800000, 0x3f800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: fdim_012
+      description: "fdim(+1.0, +1.0) = -0.0"
+      variants: [ss]
+      input: [0x3f800000, 0x3f800000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    - id: fdim_013
+      description: "fdim(+1.0, +inf) = -inf"
+      variants: [ss]
+      input: [0x3f800000, 0x7f800000]
+      expect: [0xff800000]
+      expect_exception: []
+
+    - id: fdim_014
+      description: "fdim(-1.0, +inf) = -inf"
+      variants: [ss]
+      input: [0xbf800000, 0x7f800000]
+      expect: [0xff800000]
+      expect_exception: []
+
+    - id: fdim_015
+      description: "fdim(+1.0, +0.0) = +inf"
+      variants: [ss]
+      input: [0x3f800000, 0x00000000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    - id: fdim_016
+      description: "fdim(-1.0, +0.0) = +inf"
+      variants: [ss]
+      input: [0xbf800000, 0x00000000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    - id: fdim_017
+      description: "fdim(+inf, +inf) = +1.0"
+      variants: [ss]
+      input: [0x7f800000, 0x7f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: fdim_018
+      description: "fdim(-inf, +0.0) = -1.0"
+      variants: [ss]
+      input: [0xff800000, 0x00000000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: fdim_019
+      description: "fdim(+inf, +inf) = -inf"
+      variants: [ss]
+      input: [0x7f800000, 0x7f800000]
+      expect: [0xff800000]
+      expect_exception: []
+
+    - id: fdim_020
+      description: "fdim(-inf, +0.0) = -inf"
+      variants: [ss]
+      input: [0xff800000, 0x00000000]
+      expect: [0xff800000]
+      expect_exception: []
+
+    - id: fdim_021
+      description: "fdim(+inf, +0.0) = +inf"
+      variants: [ss]
+      input: [0x7f800000, 0x00000000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    - id: fdim_022
+      description: "fdim(-inf, +0.0) = +inf"
+      variants: [ss]
+      input: [0xff800000, 0x00000000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    - id: fdim_023
+      description: "fdim(+snan, +snan) = +snan (should raise invalidoperation)"
+      variants: [ss]
+      input: [0x7fb00000, 0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_024
+      description: "fdim(-snan, -snan) = +snan (should raise invalidoperation)"
+      variants: [ss]
+      input: [0xffb00000, 0xffb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_025
+      description: "fdim(+snan, +snan) = -snan (should raise invalidoperation)"
+      variants: [ss]
+      input: [0x7fb00000, 0x7fb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_026
+      description: "fdim(-snan, -snan) = -snan (should raise invalidoperation)"
+      variants: [ss]
+      input: [0xffb00000, 0xffb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_027
+      description: "fdim(+1.0, +snan) = +snan (should raise invalidoperation)"
+      variants: [ss]
+      input: [0x3f800000, 0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_028
+      description: "fdim(-1.0, -snan) = +snan (should raise invalidoperation)"
+      variants: [ss]
+      input: [0xbf800000, 0xffb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_029
+      description: "fdim(+1.0, +snan) = -snan (should raise invalidoperation)"
+      variants: [ss]
+      input: [0x3f800000, 0x7fb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_030
+      description: "fdim(-1.0, -snan) = -snan (should raise invalidoperation)"
+      variants: [ss]
+      input: [0xbf800000, 0xffb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_031
+      description: "fdim(+snan, +snan) = +1.0 (should raise invalidoperation)"
+      variants: [ss]
+      input: [0x7fb00000, 0x7fb00000]
+      expect: [0x3f800000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_032
+      description: "fdim(-snan, -snan) = +1.0 (should raise invalidoperation)"
+      variants: [ss]
+      input: [0xffb00000, 0xffb00000]
+      expect: [0x3f800000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_033
+      description: "fdim(+snan, +snan) = -1.0 (should raise invalidoperation)"
+      variants: [ss]
+      input: [0x7fb00000, 0x7fb00000]
+      expect: [0xbf800000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_034
+      description: "fdim(-snan, -snan) = -1.0 (should raise invalidoperation)"
+      variants: [ss]
+      input: [0xffb00000, 0xffb00000]
+      expect: [0xbf800000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_035
+      description: "fdim(+qnan, +qnan) = +qnan"
+      variants: [ss]
+      input: [0x7ff00000, 0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+
+    - id: fdim_036
+      description: "fdim(-qnan, -qnan) = +qnan"
+      variants: [ss]
+      input: [0xfff00000, 0xfff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+
+    - id: fdim_037
+      description: "fdim(+qnan, +qnan) = -qnan"
+      variants: [ss]
+      input: [0x7ff00000, 0x7ff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+
+    - id: fdim_038
+      description: "fdim(-qnan, -qnan) = -qnan"
+      variants: [ss]
+      input: [0xfff00000, 0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+
+    - id: fdim_039
+      description: "fdim(+1.0, +qnan) = +qnan"
+      variants: [ss]
+      input: [0x3f800000, 0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+
+    - id: fdim_040
+      description: "fdim(-1.0, -qnan) = +qnan"
+      variants: [ss]
+      input: [0xbf800000, 0xfff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+
+    - id: fdim_041
+      description: "fdim(+1.0, +qnan) = -qnan"
+      variants: [ss]
+      input: [0x3f800000, 0x7ff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+
+    - id: fdim_042
+      description: "fdim(-1.0, -qnan) = -qnan"
+      variants: [ss]
+      input: [0xbf800000, 0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+
+    - id: fdim_043
+      description: "fdim(+qnan, +qnan) = +1.0"
+      variants: [ss]
+      input: [0x7ff00000, 0x7ff00000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: fdim_044
+      description: "fdim(-qnan, -qnan) = +1.0"
+      variants: [ss]
+      input: [0xfff00000, 0xfff00000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: fdim_045
+      description: "fdim(+qnan, +qnan) = -1.0"
+      variants: [ss]
+      input: [0x7ff00000, 0x7ff00000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: fdim_046
+      description: "fdim(-qnan, -qnan) = -1.0"
+      variants: [ss]
+      input: [0xfff00000, 0xfff00000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: fdim_047
+      description: "fdim(π, π/2) = π/2"
+      variants: [ss]
+      input: [0x40490fd8, 0x3fc90fdb]
+      expect: [0x3fc90fdb]
+      expect_exception: []
+
+    - id: fdim_048
+      description: "fdim(π, -π/2) = 3π/2"
+      variants: [ss]
+      input: [0x40490fd8, 0x4096cbe4]
+      expect: [0xbfc90fdb]
+      expect_exception: []
+
+    - id: fdim_049
+      description: "fdim(π/2, π) = 0.0"
+      variants: [ss]
+      input: [0x3fc90fdb, 0x00000000]
+      expect: [0x40490fd8]
+      expect_exception: []
+
+    - id: fdim_050
+      description: "fdim(π/2, -π) = 3π/2"
+      variants: [ss]
+      input: [0x3fc90fdb, 0x4096cbe4]
+      expect: [0xc0490fd8]
+      expect_exception: []
+
+    - id: fdim_051
+      description: "fdim(-π, π/2) = 0.0"
+      variants: [ss]
+      input: [0xc0490fd8, 0x00000000]
+      expect: [0x3fc90fdb]
+      expect_exception: []
+
+    - id: fdim_052
+      description: "fdim(-π, -π/2) = 0.0"
+      variants: [ss]
+      input: [0xc0490fd8, 0x00000000]
+      expect: [0xbfc90fdb]
+      expect_exception: []
+
+    - id: fdim_053
+      description: "fdim(-π/2, π) = 0.0"
+      variants: [ss]
+      input: [0xbfc90fdb, 0x00000000]
+      expect: [0x40490fd8]
+      expect_exception: []
+
+    - id: fdim_054
+      description: "fdim(-π/2, -π) = π/2"
+      variants: [ss]
+      input: [0xbfc90fdb, 0x3fc90fdb]
+      expect: [0xc0490fd8]
+      expect_exception: []
+
+    - id: fdim_055
+      description: ""
+      variants: [ss]
+      input: [0x96421590, 0x00000000]
+      expect: [0x7EEBE575]
+      expect_exception: []
+
+    - id: fdim_056
+      description: ""
+      variants: [ss]
+      input: [0x7EEBE575, 0x7EEBE575]
+      expect: [0x16421590]
+      expect_exception: []
+
+    - id: fdim_057
+      description: ""
+      variants: [ss]
+      input: [0x164243a1, 0x11384400]
+      expect: [0x16421590]
+      expect_exception: []
+
+    - id: fdim_058
+      description: ""
+      variants: [ss]
+      input: [0x71EBD596, 0x71ebd4ab]
+      expect: [0x69EAD497]
+      expect_exception: []
+#------------------------------
+#Double precision
+    - id: fdim_001
+      description: "fdim(snan, 1.0) = snan"
+      variants: [sd]
+      input: [0x7ff4000000000001, 0x3ff0000000000000]
+      expect: [0x7ff4000000000001]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_002
+      description: "fdim(-snan, 1.0) = -snan"
+      variants: [sd]
+      input: [0xfff2000000000000, 0x3ff0000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_003
+      description: "fdim(qnan, 1.0) = qnan"
+      variants: [sd]
+      input: [0x7ff87ff7e0000000, 0x3ff0000000000000]
+      expect: [0x7ff87ff7e0000000]
+      expect_exception: []
+
+    - id: fdim_004
+      description: "fdim(-qnan, 1.0) = -qnan"
+      variants: [sd]
+      input: [0xfffa000000000000, 0x3ff0000000000000]
+      expect: [0xfffa000000000000]
+      expect_exception: []
+
+    - id: fdim_005
+      description: "fdim(inf, 1.0) = inf"
+      variants: [sd]
+      input: [0x7ff0000000000000, 0x3ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    - id: fdim_006
+      description: "fdim(-inf, 1.0) = 0"
+      variants: [sd]
+      input: [0xfff0000000000000, 0x3ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: fdim_007
+      description: "fdim(0, 0) = 0"
+      variants: [sd]
+      input: [0x0000000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: fdim_008
+      description: "fdim(-0, 0) = 0"
+      variants: [sd]
+      input: [0x8000000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: fdim_009
+      description: "fdim(+subnorm_max, 0) = +subnorm_max"
+      variants: [sd]
+      input: [0x000fffffffffffff, 0x0000000000000000]
+      expect: [0x000fffffffffffff]
+      expect_exception: []
+
+    - id: fdim_010
+      description: "fdim(-subnorm_max, 0) = 0"
+      variants: [sd]
+      input: [0x800fffffffffffff, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: fdim_011
+      description: "fdim(+subnorm_min, 0) = +subnorm_min"
+      variants: [sd]
+      input: [0x0000000000000001, 0x0000000000000000]
+      expect: [0x0000000000000001]
+      expect_exception: []
+
+    - id: fdim_012
+      description: "fdim(-subnorm_min, 0) = 0"
+      variants: [sd]
+      input: [0x8000000000000001, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: fdim_013
+      description: "fdim(+2.0, +1.0) = +1.0"
+      variants: [sd]
+      input: [0x4000000000000000, 0x3ff0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: fdim_014
+      description: "fdim(-2.0, +1.0) = 0"
+      variants: [sd]
+      input: [0xc000000000000000, 0x3ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+# Test cases from gtests test_fdim_data.h
+#-------------------------------
+    - id: fdim_001
+      description: "fdim(+0.0, +0.0) = -0.0"
+      variants: [sd]
+      input: [0x0000000000000000, 0x0000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    - id: fdim_002
+      description: "fdim(-0.0, +0.0) = -0.0"
+      variants: [sd]
+      input: [0x8000000000000000, 0x0000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    - id: fdim_003
+      description: "fdim(+0.0, +0.0) = +0.0"
+      variants: [sd]
+      input: [0x0000000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: fdim_004
+      description: "fdim(-0.0, +0.0) = +0.0"
+      variants: [sd]
+      input: [0x8000000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: fdim_005
+      description: "fdim(+0.0, +1.0) = -1.0"
+      variants: [sd]
+      input: [0x0000000000000000, 0x3FF0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+
+    - id: fdim_006
+      description: "fdim(-0.0, +1.0) = -1.0"
+      variants: [sd]
+      input: [0x8000000000000000, 0x3FF0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+
+    - id: fdim_007
+      description: "fdim(+0.0, +0.0) = +1.0"
+      variants: [sd]
+      input: [0x0000000000000000, 0x0000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+
+    - id: fdim_008
+      description: "fdim(-0.0, +0.0) = +1.0"
+      variants: [sd]
+      input: [0x8000000000000000, 0x0000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+
+    - id: fdim_009
+      description: "fdim(-1.0, +0.0) = +0.0"
+      variants: [sd]
+      input: [0xBFF0000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: fdim_010
+      description: "fdim(-1.0, +0.0) = -0.0"
+      variants: [sd]
+      input: [0xBFF0000000000000, 0x0000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    - id: fdim_011
+      description: "fdim(+1.0, +1.0) = +0.0"
+      variants: [sd]
+      input: [0x3FF0000000000000, 0x3FF0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: fdim_012
+      description: "fdim(+1.0, +1.0) = -0.0"
+      variants: [sd]
+      input: [0x3FF0000000000000, 0x3FF0000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    - id: fdim_013
+      description: "fdim(+1.0, +inf) = -inf"
+      variants: [sd]
+      input: [0x3FF0000000000000, 0x7ff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+
+    - id: fdim_014
+      description: "fdim(-1.0, +inf) = -inf"
+      variants: [sd]
+      input: [0xBFF0000000000000, 0x7ff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+
+    - id: fdim_015
+      description: "fdim(+1.0, +0.0) = +inf"
+      variants: [sd]
+      input: [0x3FF0000000000000, 0x0000000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    - id: fdim_016
+      description: "fdim(-1.0, +0.0) = +inf"
+      variants: [sd]
+      input: [0xBFF0000000000000, 0x0000000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    - id: fdim_017
+      description: "fdim(+inf, +inf) = +1.0"
+      variants: [sd]
+      input: [0x7ff0000000000000, 0x7ff0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+
+    - id: fdim_018
+      description: "fdim(-inf, +0.0) = -1.0"
+      variants: [sd]
+      input: [0xfff0000000000000, 0x0000000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+
+    - id: fdim_019
+      description: "fdim(+inf, +inf) = -inf"
+      variants: [sd]
+      input: [0x7ff0000000000000, 0x7ff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+
+    - id: fdim_020
+      description: "fdim(-inf, +0.0) = -inf"
+      variants: [sd]
+      input: [0xfff0000000000000, 0x0000000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+
+    - id: fdim_021
+      description: "fdim(+inf, +0.0) = +inf"
+      variants: [sd]
+      input: [0x7ff0000000000000, 0x0000000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    - id: fdim_022
+      description: "fdim(-inf, +0.0) = +inf"
+      variants: [sd]
+      input: [0xfff0000000000000, 0x0000000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    - id: fdim_023
+      description: "fdim(+snan, +snan) = +snan (should raise invalidoperation)"
+      variants: [sd]
+      input: [0x7FF4001000000000, 0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_024
+      description: "fdim(-snan, -snan) = +snan (should raise invalidoperation)"
+      variants: [sd]
+      input: [0xfff2000000000000, 0xfff2000000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_025
+      description: "fdim(+snan, +snan) = -snan (should raise invalidoperation)"
+      variants: [sd]
+      input: [0x7FF4001000000000, 0x7FF4001000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_026
+      description: "fdim(-snan, -snan) = -snan (should raise invalidoperation)"
+      variants: [sd]
+      input: [0xfff2000000000000, 0xfff2000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_027
+      description: "fdim(+1.0, +snan) = +snan (should raise invalidoperation)"
+      variants: [sd]
+      input: [0x3FF0000000000000, 0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_028
+      description: "fdim(-1.0, -snan) = +snan (should raise invalidoperation)"
+      variants: [sd]
+      input: [0xBFF0000000000000, 0xfff2000000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_029
+      description: "fdim(+1.0, +snan) = -snan (should raise invalidoperation)"
+      variants: [sd]
+      input: [0x3FF0000000000000, 0x7FF4001000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_030
+      description: "fdim(-1.0, -snan) = -snan (should raise invalidoperation)"
+      variants: [sd]
+      input: [0xBFF0000000000000, 0xfff2000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_031
+      description: "fdim(+snan, +snan) = +1.0 (should raise invalidoperation)"
+      variants: [sd]
+      input: [0x7FF4001000000000, 0x7FF4001000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_032
+      description: "fdim(-snan, -snan) = +1.0 (should raise invalidoperation)"
+      variants: [sd]
+      input: [0xfff2000000000000, 0xfff2000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_033
+      description: "fdim(+snan, +snan) = -1.0 (should raise invalidoperation)"
+      variants: [sd]
+      input: [0x7FF4001000000000, 0x7FF4001000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_034
+      description: "fdim(-snan, -snan) = -1.0 (should raise invalidoperation)"
+      variants: [sd]
+      input: [0xfff2000000000000, 0xfff2000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: fdim_035
+      description: "fdim(+qnan, +qnan) = +qnan"
+      variants: [sd]
+      input: [0x7ff87ff7fdedffff, 0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+
+    - id: fdim_036
+      description: "fdim(-qnan, -qnan) = +qnan"
+      variants: [sd]
+      input: [0xfff8000000000000, 0xfff8000000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+
+    - id: fdim_037
+      description: "fdim(+qnan, +qnan) = -qnan"
+      variants: [sd]
+      input: [0x7ff87ff7fdedffff, 0x7ff87ff7fdedffff]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+
+    - id: fdim_038
+      description: "fdim(-qnan, -qnan) = -qnan"
+      variants: [sd]
+      input: [0xfff8000000000000, 0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+
+    - id: fdim_039
+      description: "fdim(+1.0, +qnan) = +qnan"
+      variants: [sd]
+      input: [0x3FF0000000000000, 0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+
+    - id: fdim_040
+      description: "fdim(-1.0, -qnan) = +qnan"
+      variants: [sd]
+      input: [0xBFF0000000000000, 0xfff8000000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+
+    - id: fdim_041
+      description: "fdim(+1.0, +qnan) = -qnan"
+      variants: [sd]
+      input: [0x3FF0000000000000, 0x7ff87ff7fdedffff]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+
+    - id: fdim_042
+      description: "fdim(-1.0, -qnan) = -qnan"
+      variants: [sd]
+      input: [0xBFF0000000000000, 0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+
+    - id: fdim_043
+      description: "fdim(+qnan, +qnan) = +1.0"
+      variants: [sd]
+      input: [0x7ff87ff7fdedffff, 0x7ff87ff7fdedffff]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+
+    - id: fdim_044
+      description: "fdim(-qnan, -qnan) = +1.0"
+      variants: [sd]
+      input: [0xfff8000000000000, 0xfff8000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+
+    - id: fdim_045
+      description: "fdim(+qnan, +qnan) = -1.0"
+      variants: [sd]
+      input: [0x7ff87ff7fdedffff, 0x7ff87ff7fdedffff]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+
+    - id: fdim_046
+      description: "fdim(-qnan, -qnan) = -1.0"
+      variants: [sd]
+      input: [0xfff8000000000000, 0xfff8000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+
+    - id: fdim_047
+      description: "fdim(π, π/2) = π/2"
+      variants: [sd]
+      input: [0x400921FB54442D18, 0x3FF921FB60000000]
+      expect: [0x3FF921FB60000000]
+      expect_exception: []
+
+    - id: fdim_048
+      description: "fdim(π, -π/2) = 3π/2"
+      variants: [sd]
+      input: [0x400921FB54442D18, 0x4012d97c7f3321d2]
+      expect: [0xBFF921FB60000000]
+      expect_exception: []
+
+    - id: fdim_049
+      description: "fdim(π/2, π) = 0.0"
+      variants: [sd]
+      input: [0x3FF921FB60000000, 0x0000000000000000]
+      expect: [0x400921FB54442D18]
+      expect_exception: []
+
+    - id: fdim_050
+      description: "fdim(π/2, -π) = 3π/2"
+      variants: [sd]
+      input: [0x3FF921FB60000000, 0x4012d97c7f3321d2]
+      expect: [0xc00921fb54442d18]
+      expect_exception: []
+
+    - id: fdim_051
+      description: "fdim(-π, π/2) = 0.0"
+      variants: [sd]
+      input: [0xc00921fb54442d18, 0x0000000000000000]
+      expect: [0x3FF921FB60000000]
+      expect_exception: []
+
+    - id: fdim_052
+      description: "fdim(-π, -π/2) = 0.0"
+      variants: [sd]
+      input: [0xc00921fb54442d18, 0x0000000000000000]
+      expect: [0xBFF921FB60000000]
+      expect_exception: []
+
+    - id: fdim_053
+      description: "fdim(-π/2, π) = 0.0"
+      variants: [sd]
+      input: [0xBFF921FB60000000, 0x0000000000000000]
+      expect: [0x400921FB54442D18]
+      expect_exception: []
+
+    - id: fdim_054
+      description: "fdim(-π/2, -π) = π/2"
+      variants: [sd]
+      input: [0xBFF921FB60000000, 0x3FF921FB60000000]
+      expect: [0xc00921fb54442d18]
+      expect_exception: []
+
+    - id: fdim_055
+      description: ""
+      variants: [sd]
+      input: [0x9642159012341275, 0x0000000000000000]
+      expect: [0x7EEBE57590909090]
+      expect_exception: []
+
+    - id: fdim_056
+      description: ""
+      variants: [sd]
+      input: [0x7EEBE57590909090, 0x7EEBE57590909090]
+      expect: [0x1642159012341275]
+      expect_exception: []
+
+    - id: fdim_057
+      description: ""
+      variants: [sd]
+      input: [0x164243a123703836, 0x15d708557bdfdf00]
+      expect: [0x1642159078787878]
+      expect_exception: []
+
+    - id: fdim_058
+      description: ""
+      variants: [sd]
+      input: [0x71EBD59616925632, 0x71ebd57b41fb2ffe]
+      expect: [0x70EAD49726345243]
+      expect_exception: []
+#-------------------------------

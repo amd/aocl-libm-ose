@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@
  * ---------------------
  * Signature
  * ---------------------
- * void vrsa_tanhf(int length, float *input, float *output)
+ * void vrsa_tanhf(int length, const float *input, float *output)
  *
  * vrsa_tanhf() computes the hyperbolic tangent values for 'length' number of elements
  * present in the 'input' array.
@@ -60,7 +60,7 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_OPT(vrsa_tanhf)(int length, float *input, float *output)
+void ALM_PROTO_OPT(vrsa_tanhf)(int length, const float *input, float *output)
 {
     int j = 0;
     __m256  optanhf;

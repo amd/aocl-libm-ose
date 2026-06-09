@@ -1,0 +1,174 @@
+---
+- test_sequence: validation_tests_erfcinv
+  function: erfcinv
+  test_sets:
+#Double precision (erfcinv is double-precision only: sd, vrd2, vrd4, vrd8, vrda)
+  - id: range-tests_01
+    tests:
+
+# ============================================================================
+# Whole-domain sweeps. Valid domain is [0, 2]; outside returns QNaN.
+#   Special spec values:  erfcinv(0) = +Inf,  erfcinv(2) = -Inf,  erfcinv(1) = 0
+# ============================================================================
+    - id: erfcinv_001
+      description: 'Full valid domain: x in [0, 2] linearstep'
+      input:
+      - [0.0, 2.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfcinv_002
+      description: 'Full valid domain (wide dynamic range near 0): x in [+SMALLEST_SUBNORMAL, 2.0] expstep'
+      input:
+      - [min_subnormal, 2.0]
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Branch B1a:  ix <= BOUND1 (0.0625)  AND  ux <= B1_SUB1 (1e-100)
+#   z = 1/sqrt(-log(x))
+#   P/Q via POLY_EVAL_ESTRIN_9_TAIL_4 / ESTRIN_10_TAIL_4 on poly_bound_1_H/T (Table 82 Blair)
+#   return P / (Q*z)
+# ============================================================================
+    - id: erfcinv_003
+      description: 'Branch B1a (extreme tiny, head+tail ESTRIN): x in [+SMALLEST_SUBNORMAL, 1e-100] expstep'
+      input:
+      - [min_subnormal, 1.0e-100]
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfcinv_004
+      description: 'Branch B1a: subnormal range [+SMALLEST_SUBNORMAL, +LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [min_subnormal, max_subnormal]
+      type: [linearstep]
+      steps: [2000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfcinv_005
+      description: 'Branch B1a: deep tail linearstep in [0, 1e-200]'
+      input:
+      - [0.0, 1.0e-200]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Branch B1b:  ix <= BOUND1 (0.0625)  AND  ux > B1_SUB1 (1e-100)
+#   same z = 1/sqrt(-log(x))
+#   P/Q via POLY_EVAL_ESTRIN_11_TAIL_2 / ESTRIN_9_TAIL_2 on poly_bound_2_H/T (Table 58 Blair)
+# ============================================================================
+    - id: erfcinv_006
+      description: 'Branch B1b (small-x, head+tail ESTRIN): x in (1e-100, 0.0625] expstep'
+      input:
+      - [1.0e-100, 0.0625]
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfcinv_007
+      description: 'Branch B1b: dense linearstep in (1e-20, 0.0625]'
+      input:
+      - [1.0e-20, 0.0625]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Branch B2a:  ix > BOUND1  AND  |1-x| <= 0.75  (ia <= BOUND2)
+#   <=>  x in [0.25, 1.75]
+#   z = 1 - x;  s = z*z - 0.5625
+#   P/Q via POLY_EVAL_HORNER_9/10 on poly_bound_3 (Table 22 Blair)
+#   return z * (P/Q)
+# ============================================================================
+    - id: erfcinv_008
+      description: 'Branch B2a central (Horner-9/10 P3/Q3, offset 0.5625): x in [0.25, 1.75] linearstep'
+      input:
+      - [0.25, 1.75]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfcinv_009
+      description: 'Branch B2a: x in [0.25, 1.0] linearstep (z = 1-x positive side)'
+      input:
+      - [0.25, 1.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfcinv_010
+      description: 'Branch B2a: x in [1.0, 1.75] linearstep (z = 1-x negative side)'
+      input:
+      - [1.0, 1.75]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfcinv_011
+      description: 'Branch B2a: dense sweep around x = 1 (z -> 0; erfcinv(1) = 0)'
+      input:
+      - [0.9, 1.1]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Branch B2b:  ix > BOUND1  AND  0.75 < |1-x| <= 0.9375  (ia in (BOUND2, BOUND3])
+#   <=>  x in (0.0625, 0.25) or x in (1.75, 1.9375]
+#   z = 1 - x;  s = (x*x - 2*x) + (1 - 0.87890625)   /* algebraically z^2 - 0.87890625 */
+#   P/Q via POLY_EVAL_ESTRIN_8_TAIL_2 on poly_bound_4_H/T (Table 37 Blair)
+#   return z * (P/Q)
+# ============================================================================
+    - id: erfcinv_012
+      description: 'Branch B2b lower piece (ESTRIN head/tail P4/Q4, offset 0.87890625): x in (0.0625, 0.25) linearstep'
+      input:
+      - [0.0625, 0.25]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfcinv_013
+      description: 'Branch B2b upper piece: x in (1.75, 1.9375] linearstep'
+      input:
+      - [1.75, 1.9375]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Branch B2c:  ix > BOUND1  AND  |1-x| > 0.9375  (ia > BOUND3)
+#   <=>  x in (1.9375, 2]
+#   y = 1 / sqrt(-log(2 - x))
+#   P/Q via POLY_EVAL_ESTRIN_11_TAIL_1 / ESTRIN_9_TAIL_1 on poly_bound_2_H/T (reused)
+#   return -(P/(Q*y))
+# ============================================================================
+    - id: erfcinv_014
+      description: 'Branch B2c extreme near-two (ESTRIN head/tail, negated): x in (1.9375, 2] linearstep'
+      input:
+      - [1.9375, 2.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfcinv_015
+      description: 'Branch B2c: deep near-two sweep (reverse expstep so step shrinks toward x = 2)'
+      input:
+      - [1.9375, 1.9999999999999998]
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Bit-level stress at domain endpoints
+# ============================================================================
+    - id: erfcinv_016
+      description: 'Test around x = +0.0 (spec: erfcinv(0) = +Inf; entry to B1a)'
+      input:
+      - [0x0000000000000000, 0x0000000000000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]

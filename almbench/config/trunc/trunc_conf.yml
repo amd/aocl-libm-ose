@@ -1,0 +1,993 @@
+- test_sequence: unit_tests_trunc
+  ignore_exceptions: [underflow, inexact]
+  function: trunc
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    # Test case 1: 0
+    - id: trunc_001
+      description: "truncf(0) = 0"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: trunc_002
+      description: "truncf(-0) = -0"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: trunc_003
+      description: "truncf(inf) = inf"
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: trunc_004
+      description: "truncf(-inf) = -inf"
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0xff800000]
+      expect_exception: []
+
+    # Test case 5: -nan
+    - id: trunc_005
+      description: "truncf(-nan) = -nan"
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: trunc_006
+      description: "truncf(+nan) = +nan"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: trunc_007
+      description: "truncf(+subnorm_max) = 0"
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 8: - subnorm (MAX)
+    - id: trunc_008
+      description: "truncf(-subnorm_max) = -0"
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 9: + subnorm (MIN)
+    - id: trunc_009
+      description: "truncf(+subnorm_min) = 0"
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 10: - subnorm (MIN)
+    - id: trunc_010
+      description: "truncf(-subnorm_min) = -0"
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 11: + POS
+    - id: trunc_011
+      description: "truncf(1.7) = 1.0"
+      variants: [ss]
+      input: [0x3fd9999a]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 12: -POS
+    - id: trunc_012
+      description: "truncf(-1.7) = -1.0"
+      variants: [ss]
+      input: [0xbfd9999a]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    # Test case 13: +NEG
+    - id: trunc_013
+      description: "truncf(2.3) = 2.0"
+      variants: [ss]
+      input: [0x40133333]
+      expect: [0x40000000]
+      expect_exception: []
+
+    # Test case 14: -NEG
+    - id: trunc_014
+      description: "truncf(-2.3) = -2.0"
+      variants: [ss]
+      input: [0xc0133333]
+      expect: [0xc0000000]
+      expect_exception: []
+
+    # Test case 15: qnan
+    - id: trunc_015
+      description: "truncf(qnan) = qnan"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: trunc_016
+      description: "truncf(snan) = snan"
+      variants: [ss]
+      input: [0x7fa00000]
+      expect: [0x7fa00000]
+      expect_exception: [invalidoperation]
+# Test cases from gtests test_trunc_data.h
+#-------------------------------
+    - id: trunc_001
+      description: "invalid"
+      variants: [ss]
+      input: [0x7fb00000]
+      expect: [0x7ff00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 2
+    - id: trunc_002
+      description: "invalid"
+      variants: [ss]
+      input: [0xffb00000]
+      expect: [0x7ff00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 3
+    - id: trunc_003
+      description: ""
+      variants: [ss]
+      input: [0x7fc00001]
+      expect: [0x7ff00000]
+      expect_exception: []
+
+    # Test case 4
+    - id: trunc_004
+      description: ""
+      variants: [ss]
+      input: [0xffc00001]
+      expect: [0x7ff00000]
+      expect_exception: []
+
+    # Test case 5
+    - id: trunc_005
+      description: ""
+      variants: [ss]
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+
+    # Test case 6
+    - id: trunc_006
+      description: ""
+      variants: [ss]
+      input: [0xfff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+
+    # Test case 7
+    - id: trunc_007
+      description: ""
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 8
+    - id: trunc_008
+      description: ""
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0xff800000]
+      expect_exception: []
+
+    # Test case 9
+    - id: trunc_009
+      description: ""
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 10
+    - id: trunc_010
+      description: ""
+      variants: [ss]
+      input: [0xbf800000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    # Test case 11
+    - id: trunc_011
+      description: ""
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 12
+    - id: trunc_012
+      description: ""
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 13
+    - id: trunc_013
+      description: ""
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 14
+    - id: trunc_014
+      description: ""
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 15
+    - id: trunc_015
+      description: ""
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 16
+    - id: trunc_016
+      description: ""
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 17
+    - id: trunc_017
+      description: ""
+      variants: [ss]
+      input: [0x7f7fffff]
+      expect: [0x7f7fffff]
+      expect_exception: []
+
+    # Test case 18
+    - id: trunc_018
+      description: ""
+      variants: [ss]
+      input: [0xff7fffff]
+      expect: [0xff7fffff]
+      expect_exception: []
+
+    # Test case 19
+    - id: trunc_019
+      description: ""
+      variants: [ss]
+      input: [0x00800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 20
+    - id: trunc_020
+      description: ""
+      variants: [ss]
+      input: [0xff7fffff]
+      expect: [0xff7fffff]
+      expect_exception: []
+
+    # Test case 21
+    - id: trunc_021
+      description: ""
+      variants: [ss]
+      input: [0x40490fd8]
+      expect: [0x40400000]
+      expect_exception: []
+
+    # Test case 22
+    - id: trunc_022
+      description: ""
+      variants: [ss]
+      input: [0xc0490fd8]
+      expect: [0xc0400000]
+      expect_exception: []
+
+    # Test case 23
+    - id: trunc_023
+      description: ""
+      variants: [ss]
+      input: [0x3fc90fdb]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 24
+    - id: trunc_024
+      description: ""
+      variants: [ss]
+      input: [0xbfc90fdb]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    # Test case 25
+    - id: trunc_025
+      description: ""
+      variants: [ss]
+      input: [0x3ff12345]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 26
+    - id: trunc_026
+      description: ""
+      variants: [ss]
+      input: [0xbff12345]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    # Test case 27
+    - id: trunc_027
+      description: ""
+      variants: [ss]
+      input: [0x3fb12345]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 28
+    - id: trunc_028
+      description: ""
+      variants: [ss]
+      input: [0xbfb12345]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    # Test case 29
+    - id: trunc_029
+      description: ""
+      variants: [ss]
+      input: [0x30b12345]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 30
+    - id: trunc_030
+      description: ""
+      variants: [ss]
+      input: [0xb0b12345]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 31
+    - id: trunc_031
+      description: ""
+      variants: [ss]
+      input: [0x400851eb]
+      expect: [0x40000000]
+      expect_exception: []
+
+    # Test case 32
+    - id: trunc_032
+      description: "equal to 2^24"
+      variants: [ss]
+      input: [0x4b800000]
+      expect: [0x4b800000]
+      expect_exception: []
+
+    # Test case 33
+    - id: trunc_033
+      description: "equal to 2^24"
+      variants: [ss]
+      input: [0xcb800000]
+      expect: [0xcb800000]
+      expect_exception: []
+
+    # Test case 34
+    - id: trunc_034
+      description: "less than 2^24"
+      variants: [ss]
+      input: [0x4b001234]
+      expect: [0x4b001234]
+      expect_exception: []
+
+    # Test case 35
+    - id: trunc_035
+      description: "less than 2^24"
+      variants: [ss]
+      input: [0xcb001234]
+      expect: [0xcb001234]
+      expect_exception: []
+
+    # Test case 36
+    - id: trunc_036
+      description: "less than 2^24"
+      variants: [ss]
+      input: [0x4ab70123]
+      expect: [0x4ab70122]
+      expect_exception: []
+
+    # Test case 37
+    - id: trunc_037
+      description: "less than 2^24"
+      variants: [ss]
+      input: [0xcab70123]
+      expect: [0xcab70122]
+      expect_exception: []
+
+    # Test case 38
+    - id: trunc_038
+      description: "greater than 2^24"
+      variants: [ss]
+      input: [0x4c000000]
+      expect: [0x4c000000]
+      expect_exception: []
+
+    # Test case 39
+    - id: trunc_039
+      description: "greater than 2^24"
+      variants: [ss]
+      input: [0xcc000000]
+      expect: [0xcc000000]
+      expect_exception: []
+
+    # Test case 40
+    - id: trunc_040
+      description: "less than 2^24"
+      variants: [ss]
+      input: [0x43abcdef]
+      expect: [0x43ab8000]
+      expect_exception: []
+
+    # Test case 41
+    - id: trunc_041
+      description: "less than 2^24"
+      variants: [ss]
+      input: [0xc3abcdef]
+      expect: [0xc3ab8000]
+      expect_exception: []
+#-------------------------------
+# Double precision tests
+    # Test case 1: 0
+    - id: trunc_001
+      description: "trunc(0) = 0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: trunc_002
+      description: "trunc(-0) = -0"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: trunc_003
+      description: "trunc(inf) = inf"
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: trunc_004
+      description: "trunc(-inf) = -inf"
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+
+    # Test case 5: -nan
+    - id: trunc_005
+      description: "trunc(-nan) = -nan"
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: trunc_006
+      description: "trunc(+nan) = +nan"
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: trunc_007
+      description: "trunc(+subnorm_max) = 0"
+      variants: [sd]
+      input: [0x000fffffffffffff]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 8: - subnorm (MAX)
+    - id: trunc_008
+      description: "trunc(-subnorm_max) = -0"
+      variants: [sd]
+      input: [0x800fffffffffffff]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 9: + subnorm (MIN)
+    - id: trunc_009
+      description: "trunc(+subnorm_min) = 0"
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 10: - subnorm (MIN)
+    - id: trunc_010
+      description: "trunc(-subnorm_min) = -0"
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 11: + POS
+    - id: trunc_011
+      description: "trunc(1.7) = 1.0"
+      variants: [sd]
+      input: [0x3ffb333333333333]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 12: -POS
+    - id: trunc_012
+      description: "trunc(-1.7) = -1.0"
+      variants: [sd]
+      input: [0xbffb333333333333]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    # Test case 13: +NEG
+    - id: trunc_013
+      description: "trunc(2.3) = 2.0"
+      variants: [sd]
+      input: [0x4002666666666666]
+      expect: [0x4000000000000000]
+      expect_exception: []
+
+    # Test case 14: -NEG
+    - id: trunc_014
+      description: "trunc(-2.3) = -2.0"
+      variants: [sd]
+      input: [0xc002666666666666]
+      expect: [0xc000000000000000]
+      expect_exception: []
+
+    # Test case 15: qnan
+    - id: trunc_015
+      description: "trunc(qnan) = qnan"
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: trunc_016
+      description: "trunc(snan) = snan"
+      variants: [sd]
+      input: [0x7ff4000000000001]
+      expect: [0x7ff4000000000001]
+      expect_exception: [invalidoperation]
+# Test cases from gtests test_trunc_data.h
+#-------------------------------
+    # Test case 1
+    - id: trunc_001
+      description: "invalid"
+      variants: [sd]
+      input: [0x7ff4001000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+
+    # Test case 2
+    - id: trunc_002
+      description: "invalid"
+      variants: [sd]
+      input: [0xfff2000000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+
+    # Test case 3
+    - id: trunc_003
+      description: ""
+      variants: [sd]
+      input: [0x7ff8000000000001]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+
+    # Test case 4
+    - id: trunc_004
+      description: ""
+      variants: [sd]
+      input: [0xfff8000000000001]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+
+    # Test case 5
+    - id: trunc_005
+      description: ""
+      variants: [sd]
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+
+    # Test case 6
+    - id: trunc_006
+      description: ""
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+
+    # Test case 7
+    - id: trunc_007
+      description: ""
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 8
+    - id: trunc_008
+      description: ""
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+
+    # Test case 9
+    - id: trunc_009
+      description: ""
+      variants: [sd]
+      input: [0x3ff0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 10
+    - id: trunc_010
+      description: ""
+      variants: [sd]
+      input: [0xbff0000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    # Test case 11
+    - id: trunc_011
+      description: ""
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 12
+    - id: trunc_012
+      description: ""
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 13
+    - id: trunc_013
+      description: ""
+      variants: [sd]
+      input: [0x000fffffffffffff]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 14
+    - id: trunc_014
+      description: ""
+      variants: [sd]
+      input: [0x800fffffffffffff]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 15
+    - id: trunc_015
+      description: ""
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 16
+    - id: trunc_016
+      description: ""
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 17
+    - id: trunc_017
+      description: ""
+      variants: [sd]
+      input: [0x7fefffffffffffff]
+      expect: [0x7fefffffffffffff]
+      expect_exception: []
+
+    # Test case 18
+    - id: trunc_018
+      description: ""
+      variants: [sd]
+      input: [0xffefffffffffffff]
+      expect: [0xffefffffffffffff]
+      expect_exception: []
+
+    # Test case 19
+    - id: trunc_019
+      description: ""
+      variants: [sd]
+      input: [0x0010000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 20
+    - id: trunc_020
+      description: ""
+      variants: [sd]
+      input: [0x8010000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 21
+    - id: trunc_021
+      description: ""
+      variants: [sd]
+      input: [0x400921fb54442d18]
+      expect: [0x4008000000000000]
+      expect_exception: []
+
+    # Test case 22
+    - id: trunc_022
+      description: ""
+      variants: [sd]
+      input: [0xc00921fb54442d18]
+      expect: [0xc008000000000000]
+      expect_exception: []
+
+    # Test case 23
+    - id: trunc_023
+      description: ""
+      variants: [sd]
+      input: [0x3ff921fb60000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 24
+    - id: trunc_024
+      description: ""
+      variants: [sd]
+      input: [0xbff921fb60000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    # Test case 25
+    - id: trunc_025
+      description: ""
+      variants: [sd]
+      input: [0x3fe1234abcdef123]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 26
+    - id: trunc_026
+      description: ""
+      variants: [sd]
+      input: [0xbfe1234abcdef123]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 27
+    - id: trunc_027
+      description: ""
+      variants: [sd]
+      input: [0x3fea234abcdef123]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 28
+    - id: trunc_028
+      description: ""
+      variants: [sd]
+      input: [0xbfea234abcdef123]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 29
+    - id: trunc_029
+      description: ""
+      variants: [sd]
+      input: [0x3ff1234abcdef123]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 30
+    - id: trunc_030
+      description: ""
+      variants: [sd]
+      input: [0xbff1234abcdef123]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    # Test case 31
+    - id: trunc_031
+      description: ""
+      variants: [sd]
+      input: [0x3ffa234abcdef123]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 32
+    - id: trunc_032
+      description: ""
+      variants: [sd]
+      input: [0xbffa234abcdef123]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    # Test case 33
+    - id: trunc_033
+      description: ""
+      variants: [sd]
+      input: [0x400853451234abcd]
+      expect: [0x4008000000000000]
+      expect_exception: []
+
+    # Test case 34
+    - id: trunc_034
+      description: ""
+      variants: [sd]
+      input: [0xc00853451234abcd]
+      expect: [0xc008000000000000]
+      expect_exception: []
+
+    # Test case 35
+    - id: trunc_035
+      description: ""
+      variants: [sd]
+      input: [0x4360056187178abc]
+      expect: [0x4360056187178abc]
+      expect_exception: []
+
+    # Test case 36
+    - id: trunc_036
+      description: ""
+      variants: [sd]
+      input: [0xc36abcdef0000000]
+      expect: [0xc36abcdef0000000]
+      expect_exception: []
+
+    # Test case 37
+    - id: trunc_037
+      description: ""
+      variants: [sd]
+      input: [0x4340000000000000]
+      expect: [0x4340000000000000]
+      expect_exception: []
+
+    # Test case 38
+    - id: trunc_038
+      description: ""
+      variants: [sd]
+      input: [0xc340000000000000]
+      expect: [0xc340000000000000]
+      expect_exception: []
+
+    # Test case 39
+    - id: trunc_039
+      description: ""
+      variants: [sd]
+      input: [0x4351234567891222]
+      expect: [0x4351234567891222]
+      expect_exception: []
+
+    # Test case 40
+    - id: trunc_040
+      description: ""
+      variants: [sd]
+      input: [0xc351234567891222]
+      expect: [0xc351234567891222]
+      expect_exception: []
+
+    # Test case 41
+    - id: trunc_041
+      description: ""
+      variants: [sd]
+      input: [0x433abcdef1234567]
+      expect: [0x433abcdef1234567]
+      expect_exception: []
+
+    # Test case 42
+    - id: trunc_042
+      description: ""
+      variants: [sd]
+      input: [0xc33abcdef1234567]
+      expect: [0xc33abcdef1234567]
+      expect_exception: []
+
+    # Test case 43
+    - id: trunc_043
+      description: ""
+      variants: [sd]
+      input: [0x431abcdef1234567]
+      expect: [0x431abcdef1234564]
+      expect_exception: []
+
+    # Test case 44
+    - id: trunc_044
+      description: ""
+      variants: [sd]
+      input: [0xc31abcdef1234567]
+      expect: [0xc31abcdef1234564]
+      expect_exception: []
+
+    # Test case 45
+    - id: trunc_045
+      description: ""
+      variants: [sd]
+      input: [0x411abcdef1234567]
+      expect: [0x411abcdc00000000]
+      expect_exception: []
+
+    # Test case 46
+    - id: trunc_046
+      description: ""
+      variants: [sd]
+      input: [0xc11abcdef1234567]
+      expect: [0xc11abcdc00000000]
+      expect_exception: []
+
+    # Test case 47
+    - id: trunc_047
+      description: ""
+      variants: [sd]
+      input: [0x400abcdef1234567]
+      expect: [0x4008000000000000]
+      expect_exception: []
+
+    # Test case 48
+    - id: trunc_048
+      description: ""
+      variants: [sd]
+      input: [0xc00abcdef1234567]
+      expect: [0xc008000000000000]
+      expect_exception: []
+
+    # Test case 49
+    - id: trunc_049
+      description: ""
+      variants: [sd]
+      input: [0x4006bcdef1234567]
+      expect: [0x4000000000000000]
+      expect_exception: []
+
+    # Test case 50
+    - id: trunc_050
+      description: ""
+      variants: [sd]
+      input: [0xc006bcdef1234567]
+      expect: [0xc000000000000000]
+      expect_exception: []
+#-------------------------------

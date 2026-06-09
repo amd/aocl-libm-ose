@@ -146,13 +146,12 @@ ALM_PROTO_OPT(vrd2_sin)(v_f64x2_t x)
 
     result = as_v2_f64_u64(as_v2_u64_f64(poly) ^ sign ^ odd);
 
-    /* Check for special cases */
-    /* If input value is outside valid range, call scalar sin(value) */
-    /* Otherwise, return the above computed result */
-    for(int i = 0; i < 2; i++)
-    {
-        if(ux[i] > SIN_ARG_MAX)
-            result[i] = SCALAR_SIN(x[i]);
+    v_u64x2_t cond = (ux > (v_u64x2_t){SIN_ARG_MAX, SIN_ARG_MAX});
+    if(unlikely(any_v2_u64_loop(cond))) {
+        for(int i = 0; i < 2; i++) {
+            if(ux[i] > SIN_ARG_MAX)
+                result[i] = SCALAR_SIN(x[i]);
+        }
     }
     return result;
 }

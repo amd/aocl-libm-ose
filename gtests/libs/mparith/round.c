@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -38,6 +38,18 @@
 #else
 #error
 #endif
+/*
+| Rounding Mode             | Macro         | Description                                                  |
+|---------------------------|---------------|--------------------------------------------------------------|
+| Round to nearest (even)   | `MPFR_RNDN`   | Rounds to the nearest value; ties go to the even number.     |
+| Round toward zero         | `MPFR_RNDZ`   | Truncates fractional part; rounds toward zero.               |
+| Round toward +∞           | `MPFR_RNDU`   | Always rounds upward (toward positive infinity).             |
+| Round toward −∞           | `MPFR_RNDD`   | Always rounds downward (toward negative infinity).           |
+| Round away from zero      | `MPFR_RNDA`   | Rounds away from zero; halfway cases go to greater magnitude.|
+| Faithful rounding         | `MPFR_RNDF`   | Returns one of the two nearest values; no guarantee which.   |
+| Nearest, away from zero   | `MPFR_RNDNA`  | Rounds to nearest; halfway cases go away from zero.          |
+|---------------------------|---------------|--------------------------------------------------------------|
+*/
 
 #include <mpfr.h>
 
@@ -45,7 +57,7 @@ REAL_L FUNC_ROUND(REAL x)
 {
     REAL_L y;
 
-    mpfr_rnd_t rnd = MPFR_RNDN;
+    mpfr_rnd_t rnd = MPFR_RNDNA;
     mpfr_t mpx, mp_rop;
 
     mpfr_inits2(ALM_MP_PRECI_BITS, mpx, mp_rop, (mpfr_ptr) 0);
@@ -59,9 +71,9 @@ REAL_L FUNC_ROUND(REAL x)
     mpfr_round(mp_rop, mpx);
 
 #if defined(FLOAT)
-    y = mpfr_get_d(mpx, rnd);
+    y = mpfr_get_d(mp_rop, rnd);
 #elif defined(DOUBLE)
-    y = mpfr_get_ld(mpx, rnd);
+    y = mpfr_get_ld(mp_rop, rnd);
 #endif
 
     mpfr_clears(mpx, mp_rop, (mpfr_ptr) 0);

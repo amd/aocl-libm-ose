@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2026, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -94,6 +94,23 @@
     _Generic((x),                                                       \
              uint64_t: (v_u64x8_t){(x), (x), (x), (x), (x), (x), (x), (x)})
 
+/*
+ * AVX-512 all-ones constants for mask test intrinsics
+ * Used with _mm512_test_epi64_mask() and _mm512_test_epi32_mask()
+ */
+#define V8_ALL_ONES_U64   _MM512_SET1_U64x8(UINT64_MAX)
+#define V16_ALL_ONES_U32  _MM512_SET1_U32x16(UINT32_MAX)
+
+/*
+ * AVX-512 optimized condition checks using mask test intrinsics.
+ * Returns non-zero if any lane in cond is set (non-zero).
+ * These are faster than loop-based versions for AVX-512 targets.
+ */
+#define any_v8_u64_avx512(cond) \
+    _mm512_test_epi64_mask((__m512i)(cond), (__m512i)V8_ALL_ONES_U64)
+
+#define any_v16_u32_avx512(cond) \
+    _mm512_test_epi32_mask((__m512i)(cond), (__m512i)V16_ALL_ONES_U32)
 
 /*
  * Naming convention

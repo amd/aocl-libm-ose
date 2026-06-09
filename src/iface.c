@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -27,9 +27,12 @@
 
 #include <stddef.h>                     /* for NULL */
 
-#ifdef USE_AOCL_UTILS
+/*
+ * CPU detection via internal utils module (alci/arch.h)
+ * Provides au_cpuid_* functions for architecture and feature detection.
+ */
 #include "alci/arch.h"
-#endif
+
 #include <libm/entry_pt.h>
 #include <libm/iface.h>
 
@@ -86,9 +89,13 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_TANH]       = {LIBM_IFACE_PROTO(tanh), NULL},
     [C_AMD_TANPI]      = {LIBM_IFACE_PROTO(tanpi), NULL},
     [C_AMD_TRUNC]      = {LIBM_IFACE_PROTO(trunc), NULL},
-    [C_AMD_ERF]      =   {LIBM_IFACE_PROTO(erf), NULL},
-    [C_AMD_ERFC]      =   {LIBM_IFACE_PROTO(erfc), NULL},
+    [C_AMD_ERF]        = {LIBM_IFACE_PROTO(erf), NULL},
+    [C_AMD_ERFC]       = {LIBM_IFACE_PROTO(erfc), NULL},
+    [C_AMD_ERFINV]     = {LIBM_IFACE_PROTO(erfinv), NULL},
+    [C_AMD_ERFCINV]    = {LIBM_IFACE_PROTO(erfcinv), NULL},
     [C_AMD_SINCOS]     = {LIBM_IFACE_PROTO(sincos), NULL},
+    [C_AMD_CDFNORM]    = {LIBM_IFACE_PROTO(cdfnorm), NULL},
+    [C_AMD_CDFNORMINV] = {LIBM_IFACE_PROTO(cdfnorminv), NULL},
 
     /* Integer variants */
     [C_AMD_FINITE]     = {LIBM_IFACE_PROTO(finite), NULL},
@@ -178,14 +185,18 @@ alm_get_uach(void)
 {
 #if (ALM_STATIC_DISPATCH==AVX2) || (ALM_STATIC_DISPATCH==ZEN2)
     return ALM_UARCH_VER_ZEN2;
+#elif ALM_STATIC_DISPATCH==AVX512  /* Select AVX512 ISA Path */
+    return ALM_UARCH_VER_AVX512;
 #elif ALM_STATIC_DISPATCH==ZEN3
     return ALM_UARCH_VER_ZEN3;
 #elif ALM_STATIC_DISPATCH==ZEN4
     return ALM_UARCH_VER_ZEN4;
-#elif (ALM_STATIC_DISPATCH==ZEN5) || (ALM_STATIC_DISPATCH==AVX512)
+#elif ALM_STATIC_DISPATCH==ZEN5
     return ALM_UARCH_VER_ZEN5;
+#elif ALM_STATIC_DISPATCH==ZEN6
+    return ALM_UARCH_VER_ZEN6;
 #else
-   printf("Please set ALM_STATIC_DISPATCH to one of AVX2, ZEN2, ZEN3, ZEN4, ZEN5, AVX512 \n")
+    printf("Please set ALM_STATIC_DISPATCH to one of AVX2, ZEN2, ZEN3, ZEN4, ZEN5, ZEN6, AVX512 \n");
 #endif
 }
 #else
@@ -194,18 +205,36 @@ alm_get_uach(void)
 {
     alm_uarch_ver_t arch_ver;
 
-    if (au_cpuid_arch_is_zen5(AU_CURRENT_CPU_NUM))
+    if (au_cpuid_arch_is_zen6(AU_CURRENT_CPU_NUM))
     {
-        const char* const flags_array[]= {"avx512f"};
+        const char* const flags_array[] = {"avx512f"};
 
-        if(au_cpuid_has_flags(AU_CURRENT_CPU_NUM, flags_array, 1))
+        if (au_cpuid_has_flags(AU_CURRENT_CPU_NUM, flags_array, 1))
+            arch_ver = ALM_UARCH_VER_ZEN6;
+        else
+            arch_ver = ALM_UARCH_VER_ZEN3;
+
+    }
+    else if (au_cpuid_arch_is_zen5(AU_CURRENT_CPU_NUM))
+    {
+        const char* const flags_array[] = {"avx512f"};
+
+        if (au_cpuid_has_flags(AU_CURRENT_CPU_NUM, flags_array, 1))
             arch_ver = ALM_UARCH_VER_ZEN5;
         else
             arch_ver = ALM_UARCH_VER_ZEN3;
 
     }
     else if (au_cpuid_arch_is_zen4(AU_CURRENT_CPU_NUM))
-        arch_ver = ALM_UARCH_VER_ZEN4;
+    {
+        const char* const flags_array[] = {"avx512f"};
+
+        if (au_cpuid_has_flags(AU_CURRENT_CPU_NUM, flags_array, 1))
+            arch_ver = ALM_UARCH_VER_ZEN4;
+        else
+            arch_ver = ALM_UARCH_VER_ZEN3;
+
+    }
     else if (au_cpuid_arch_is_zen3(AU_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN3;
     else if (au_cpuid_arch_is_zen2(AU_CURRENT_CPU_NUM))
@@ -213,8 +242,15 @@ alm_get_uach(void)
     else if (au_cpuid_arch_is_zen(AU_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN;
     else
+    {
+        /* Select deafult (AVX2 ISA) code-path */
         arch_ver = ALM_UARCH_VER_DEFAULT;
 
+        /* Select AVX512 ISA code-path */
+        const char* const flags_array[] = {"avx512f", "avx512dq"};
+        if (au_cpuid_has_flags(AU_CURRENT_CPU_NUM, flags_array, 2))
+            arch_ver = ALM_UARCH_VER_AVX512;
+    }
     return arch_ver;
 }
 #endif

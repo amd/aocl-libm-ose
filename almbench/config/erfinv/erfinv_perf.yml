@@ -1,0 +1,62 @@
+- test_sequence: perf_tests
+  function: erfinv
+  timing_enabled: true
+  test_sets:
+  - id: range-tests_01
+    tests:
+    # Double precision - erfinv domain is (-1, 1)
+    - id: erfinv_001
+      description: 'Positive values: x in [SMALLEST_SUBNORMAL, 0.9999999999], linearstep'
+      input: [[min_subnormal, 0.9999999999]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfinv_002
+      description: 'x in [-min_subnormal, min_subnormal], linearstep'
+      input: [[-min_subnormal, min_subnormal]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfinv_003
+      description: 'Negative values: x in [-0.9999999999, -SMALLEST_SUBNORMAL], linearstep'
+      input: [[-0.9999999999, -min_subnormal]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfinv_004
+      description: 'Range 1: x in [-0.75, 0.75], linearstep'
+      input: [[-0.75, 0.75]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfinv_005
+      description: 'Range 2: x in [0.75, 0.9375], linearstep'
+      input: [[0.75, 0.9375]]
+      type: [linearstep]
+      steps: [5000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfinv_006
+      description: 'Range 2: x in [-0.9375, -0.75], linearstep'
+      input: [[-0.9375, -0.75]]
+      type: [linearstep]
+      steps: [5000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfinv_007
+      description: 'Range 3 (tail): x in [0.9375, 0.9999999999], linearstep'
+      input: [[0.9375, 0.9999999999]]
+      type: [linearstep]
+      steps: [5000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfinv_008
+      description: 'Range 3 (tail): x in [-0.9999999999, -0.9375], linearstep'
+      input: [[-0.9999999999, -0.9375]]
+      type: [linearstep]
+      steps: [5000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]

@@ -65,7 +65,50 @@ namespace benchmark {
 #endif
 
 namespace {
+
+BENCHMARK_NORETURN static void DiagnoseAndExit(const char* msg) {
+  std::cerr << "ERROR: " << msg << std::endl;
+  std::exit(EXIT_FAILURE);
+}
+
 #if defined(BENCHMARK_OS_WINDOWS)
+// Windows timing strategy:
+// GetProcessTimes/GetThreadTimes provide true CPU time but have ~15.6ms
+// granularity, causing successive calls for fast operations (<15ms) to return
+// the same cumulative value. This produces zero time-deltas and infinite MOPS
+// in the benchmark framework.
+//
+// QueryPerformanceCounter (QPC) provides sub-microsecond wall-clock time.
+// Unlike CLOCK_THREAD_CPUTIME_ID on Linux (which measures CPU time), QPC
+// measures elapsed wall-clock time. For pure-compute benchmarks such as
+// AOCL-LibM math functions (no I/O, no sleep, no thread contention),
+// wall-clock time closely approximates CPU time.
+
+static double GetQPCFrequency() {
+  static double frequency = 0.0;
+  static std::once_flag init_flag;
+  std::call_once(init_flag, []() {
+    LARGE_INTEGER freq;
+    if (!QueryPerformanceFrequency(&freq) || freq.QuadPart == 0) {
+      DiagnoseAndExit("QueryPerformanceFrequency() failed or returned 0");
+    }
+    frequency = static_cast<double>(freq.QuadPart);
+  });
+  return frequency;
+}
+
+static double GetHighResolutionTime() {
+  LARGE_INTEGER counter;
+  if (!QueryPerformanceCounter(&counter)) {
+    DiagnoseAndExit("QueryPerformanceCounter() failed");
+  }
+  return static_cast<double>(counter.QuadPart) / GetQPCFrequency();
+}
+
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable: 4505)
+#endif
 double MakeTime(FILETIME const& kernel_time, FILETIME const& user_time) {
   ULARGE_INTEGER kernel;
   ULARGE_INTEGER user;
@@ -77,6 +120,9 @@ double MakeTime(FILETIME const& kernel_time, FILETIME const& user_time) {
           static_cast<double>(user.QuadPart)) *
          1e-7;
 }
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 #elif !defined(BENCHMARK_OS_FUCHSIA)
 double MakeTime(struct rusage const& ru) {
   return (static_cast<double>(ru.ru_utime.tv_sec) +
@@ -99,24 +145,16 @@ double MakeTime(struct timespec const& ts) {
 }
 #endif
 
-BENCHMARK_NORETURN static void DiagnoseAndExit(const char* msg) {
-  std::cerr << "ERROR: " << msg << std::endl;
-  std::exit(EXIT_FAILURE);
-}
-
 }  // end namespace
 
 double ProcessCPUUsage() {
 #if defined(BENCHMARK_OS_WINDOWS)
-  HANDLE proc = GetCurrentProcess();
-  FILETIME creation_time;
-  FILETIME exit_time;
-  FILETIME kernel_time;
-  FILETIME user_time;
-  if (GetProcessTimes(proc, &creation_time, &exit_time, &kernel_time,
-                      &user_time))
-    return MakeTime(kernel_time, user_time);
-  DiagnoseAndExit("GetProccessTimes() failed");
+  // GetProcessTimes has ~15.6ms granularity on Windows, causing successive
+  // calls for fast operations to return the same cumulative value (zero delta),
+  // which leads to infinite MOPS calculations. QPC provides sub-microsecond
+  // wall-clock time. For AOCL-LibM benchmarks (pure-compute math with no I/O),
+  // wall-clock time closely approximates CPU time.
+  return GetHighResolutionTime();
 #elif defined(BENCHMARK_OS_EMSCRIPTEN)
   // clock_gettime(CLOCK_PROCESS_CPUTIME_ID, ...) returns 0 on Emscripten.
   // Use Emscripten-specific API. Reported CPU time would be exactly the
@@ -139,14 +177,12 @@ double ProcessCPUUsage() {
 
 double ThreadCPUUsage() {
 #if defined(BENCHMARK_OS_WINDOWS)
-  HANDLE this_thread = GetCurrentThread();
-  FILETIME creation_time;
-  FILETIME exit_time;
-  FILETIME kernel_time;
-  FILETIME user_time;
-  GetThreadTimes(this_thread, &creation_time, &exit_time, &kernel_time,
-                 &user_time);
-  return MakeTime(kernel_time, user_time);
+  // GetThreadTimes has ~15.6ms granularity on Windows, causing successive
+  // calls for fast operations to return the same cumulative value (zero delta),
+  // which leads to infinite MOPS calculations. QPC provides sub-microsecond
+  // wall-clock time. For AOCL-LibM benchmarks (pure-compute math with no I/O),
+  // wall-clock time closely approximates CPU time.
+  return GetHighResolutionTime();
 #elif defined(BENCHMARK_OS_MACOSX)
   // FIXME We want to use clock_gettime, but its not available in MacOS 10.11. See
   // https://github.com/google/benchmark/pull/292

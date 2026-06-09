@@ -1,0 +1,276 @@
+---
+- test_sequence: validation_tests_powx
+  function: powx
+  test_sets:
+  - id: range-tests_01
+    tests:
+    - id: powx_001
+      description: 'Full value distribution range tests: x in [0.1, FLT_MAX] expstep, y fixed at 2.0'
+      input:
+      - [0.1, max]
+      - 0x40000000
+      type: [expstep]
+      steps: [1000]
+      variants : [ vrs4, vrs8, vrs16, vrsa]
+
+    - id: powx_002
+      description: 'Full value distribution range tests: x in [0.1, FLT_MAX] expstep, y fixed at 0.5'
+      input:
+      - [0.1, max]
+      - 0x3F000000
+      type: [expstep]
+      steps: [1000]
+      variants : [ vrs4, vrs8, vrs16, vrsa]
+
+    - id: powx_003
+      description: 'Full value distribution range tests: x in [0.1, FLT_MAX] expstep, y fixed at 3.0'
+      input:
+      - [0.1, max]
+      - 0x40400000
+      type: [expstep]
+      steps: [800]
+      variants : [ vrs4, vrs8, vrs16, vrsa]
+
+    - id: powx_004
+      description: 'Full value distribution range tests: x in [0.1, FLT_MAX] expstep, y fixed at -2.0'
+      input:
+      - [0.1, max]
+      - 0xC0000000
+      type: [expstep]
+      steps: [1000]
+      variants : [ vrs4, vrs8, vrs16, vrsa]
+
+    - id: powx_005
+      description: 'Special exponent value test: x in [0.1, 1000.0] linearstep, y fixed at 1/3'
+      input:
+      - [0.1, 1000.0]
+      - 0x3EAAAAAB
+      type: [linearstep]
+      steps: [2000]
+      variants : [ vrs4, vrs8, vrs16, vrsa]
+
+    - id: powx_006
+      description: 'Special exponent value test: x in [0.1, 1000.0] linearstep, y fixed at -1/3'
+      input:
+      - [0.1, 1000.0]
+      - 0xBEAAAAAB
+      type: [linearstep]
+      steps: [2000]
+      variants : [ vrs4, vrs8, vrs16, vrsa]
+
+    - id: powx_007
+      description: 'Special exponent value test: x in [0.001, 10.0] expstep, y fixed at 4.0'
+      input:
+      - [0.001, 10.0]
+      - 0x40800000
+      type: [expstep]
+      steps: [1500]
+      variants : [ vrs4, vrs8, vrs16, vrsa]
+
+    - id: powx_008
+      description: 'Special exponent value test: x in [0.001, 10.0] expstep, y fixed at -4.0'
+      input:
+      - [0.001, 10.0]
+      - 0xC0800000
+      type: [expstep]
+      steps: [1500]
+      variants : [ vrs4, vrs8, vrs16, vrsa]
+
+    - id: powx_009
+      description: 'Fractional base test: x in [0.1, 1.0] linearstep, y fixed at 5.0'
+      input:
+      - [0.1, 1.0]
+      - 0x40A00000
+      type: [linearstep]
+      steps: [1000]
+      variants : [ vrs4, vrs8, vrs16, vrsa]
+
+    - id: powx_010
+      description: 'Large base test: x in [1.0, 100.0] linearstep, y fixed at 0.25'
+      input:
+      - [1.0, 100.0]
+      - 0x3E800000
+      type: [linearstep]
+      steps: [1000]
+      variants : [ vrs4, vrs8, vrs16, vrsa]
+
+    - id: powx_011
+      description: 'Medium range test: x in [0.5, 50.0] expstep, y fixed at 1.5'
+      input:
+      - [0.5, 50.0]
+      - 0x3FC00000
+      type: [expstep]
+      steps: [1200]
+      variants : [ vrs4, vrs8, vrs16, vrsa]
+
+    - id: powx_012
+      description: 'Medium range test: x in [0.5, 50.0] expstep, y fixed at -1.5'
+      input:
+      - [0.5, 50.0]
+      - 0xBFC00000
+      type: [expstep]
+      steps: [1200]
+      variants : [ vrs4, vrs8, vrs16, vrsa]
+
+    - id: powx_013
+      description: 'Small base range test: x in [0.01, 1.0] expstep, y fixed at 10.0'
+      input:
+      - [0.01, 1.0]
+      - 0x41200000
+      type: [expstep]
+      steps: [800]
+      variants : [ vrs4, vrs8, vrs16, vrsa]
+
+    - id: powx_014
+      description: 'Large exponent test: x in [1.1, 2.0] linearstep, y fixed at 8.0'
+      input:
+      - [1.1, 2.0]
+      - 0x41000000
+      type: [linearstep]
+      steps: [500]
+      variants : [ vrs4, vrs8, vrs16, vrsa]
+
+    - id: powx_015
+      description: 'Unity boundary test: x in [0.9, 1.1] linearstep, y fixed at 100.0'
+      input:
+      - [0.9, 1.1]
+      - 0x42C80000
+      type: [linearstep]
+      steps: [1000]
+      variants : [ vrs4, vrs8, vrs16, vrsa]
+
+# Double precision tests
+    - id: powx_001
+      description: 'Double precision: Full value distribution range tests: x in [0.1, DBL_MAX] expstep, y fixed at 2.0'
+      input:
+      - [0.1, max]
+      - 0x4000000000000000
+      type: [expstep]
+      steps: [1500]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: powx_002
+      description: 'Double precision: Full value distribution range tests: x in [0.1, DBL_MAX] expstep, y fixed at 0.5'
+      input:
+      - [0.1, max]
+      - 0x3FE0000000000000
+      type: [expstep]
+      steps: [1500]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: powx_003
+      description: 'Double precision: Full value distribution range tests: x in [0.1, DBL_MAX] expstep, y fixed at 3.0'
+      input:
+      - [0.1, max]
+      - 0x4008000000000000
+      type: [expstep]
+      steps: [1200]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: powx_004
+      description: 'Double precision: Full value distribution range tests: x in [0.1, DBL_MAX] expstep, y fixed at -2.0'
+      input:
+      - [0.1, max]
+      - 0xC000000000000000
+      type: [expstep]
+      steps: [1500]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: powx_005
+      description: 'Double precision: Special exponent value test: x in [0.1, 10000.0] linearstep, y fixed at 1/3'
+      input:
+      - [0.1, 10000.0]
+      - 0x3FD5555555555555
+      type: [linearstep]
+      steps: [3000]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: powx_006
+      description: 'Double precision: Special exponent value test: x in [0.1, 10000.0] linearstep, y fixed at -1/3'
+      input:
+      - [0.1, 10000.0]
+      - 0xBFD5555555555555
+      type: [linearstep]
+      steps: [3000]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: powx_007
+      description: 'Double precision: Special exponent value test: x in [0.001, 100.0] expstep, y fixed at 4.0'
+      input:
+      - [0.001, 100.0]
+      - 0x4010000000000000
+      type: [expstep]
+      steps: [2000]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: powx_008
+      description: 'Double precision: Special exponent value test: x in [0.001, 100.0] expstep, y fixed at -4.0'
+      input:
+      - [0.001, 100.0]
+      - 0xC010000000000000
+      type: [expstep]
+      steps: [2000]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: powx_009
+      description: 'Double precision: Fractional base test: x in [0.1, 1.0] linearstep, y fixed at 5.0'
+      input:
+      - [0.1, 1.0]
+      - 0x4014000000000000
+      type: [linearstep]
+      steps: [2000]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: powx_010
+      description: 'Double precision: Large base test: x in [1.0, 1000.0] linearstep, y fixed at 0.25'
+      input:
+      - [1.0, 1000.0]
+      - 0x3FD0000000000000
+      type: [linearstep]
+      steps: [2000]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: powx_011
+      description: 'Double precision: Medium range test: x in [0.5, 500.0] expstep, y fixed at 1.5'
+      input:
+      - [0.5, 500.0]
+      - 0x3FF8000000000000
+      type: [expstep]
+      steps: [1800]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: powx_012
+      description: 'Double precision: Medium range test: x in [0.5, 500.0] expstep, y fixed at -1.5'
+      input:
+      - [0.5, 500.0]
+      - 0xBFF8000000000000
+      type: [expstep]
+      steps: [1800]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: powx_013
+      description: 'Double precision: Small base range test: x in [0.01, 1.0] expstep, y fixed at 10.0'
+      input:
+      - [0.01, 1.0]
+      - 0x4024000000000000
+      type: [expstep]
+      steps: [1500]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: powx_014
+      description: 'Double precision: Large exponent test: x in [1.1, 3.0] linearstep, y fixed at 8.0'
+      input:
+      - [1.1, 3.0]
+      - 0x4020000000000000
+      type: [linearstep]
+      steps: [1000]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: powx_015
+      description: 'Double precision: Unity boundary test: x in [0.99, 1.01] linearstep, y fixed at 1000.0'
+      input:
+      - [0.99, 1.01]
+      - 0x408F400000000000
+      type: [linearstep]
+      steps: [2000]
+      variants : [vrd2, vrd4, vrd8, vrda]

@@ -51,15 +51,14 @@ bool getSpecialCase(void)
 }
 
 void ConfSetupf64(SpecParams *specp) {
-  specp->data64 = nullptr;
-  specp->countd = 0;
+  specp->data64 = test_linearfrac_conformance_data;
+  specp->countd = ARRAY_SIZE(test_linearfrac_conformance_data);
 }
 
 void ConfSetupf32(SpecParams *specp) {
-  specp->data32 = nullptr;
-  specp->countf = 0;
+  specp->data32 = test_linearfracf_conformance_data;
+  specp->countf = ARRAY_SIZE(test_linearfracf_conformance_data);
 }
-
 
 long double getExpected(double *data) {
   auto val = alm_mp_linearfrac(data[0], data[1], data[2], data[3], data[4], data[5]);
@@ -275,7 +274,7 @@ int test_vad(test_data *data, int count)  {
   double *op  = (double*)data->op;
 
   #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
-      amd_vrda_linearfrac(count, ip1, ip2, ip3[0], ip4[0], ip5[0], ip6[0], op);
+    amd_vrda_linearfrac(count, ip1, ip2, ip3[0], ip4[0], ip5[0], ip6[0], op);
   #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
     vdLinearFrac(count, ip1, ip2, ip3[0], ip4[0], ip5[0], ip6[0], op);
   #endif
@@ -294,7 +293,7 @@ int test_vas(test_data *data, int count)  {
   float *op  = (float*)data->op;
 
   #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
-      amd_vrsa_linearfracf(count, ip1, ip2, ip3[0], ip4[0], ip5[0], ip6[0], op);
+    amd_vrsa_linearfracf(count, ip1, ip2, ip3[0], ip4[0], ip5[0], ip6[0], op);
   #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
     vsLinearFrac(count, ip1, ip2, ip3[0], ip4[0], ip5[0], ip6[0], op);
   #endif

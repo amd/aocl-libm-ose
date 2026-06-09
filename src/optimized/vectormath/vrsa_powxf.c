@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@
 C implementation of vector array version of powxf
 
 Signature:
-    void vrsa_powxf(int length, float *x, float y, float *result)
+    void vrsa_powxf(int length, const float *x, float y, float *result)
 
 Implementation notes:
 
@@ -43,10 +43,10 @@ Implementation notes:
 #include <libm/amd_funcs_internal.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_OPT(vrsa_powxf)(int length, float *x, float y, float *result)
+void ALM_PROTO_OPT(vrsa_powxf)(int length, const float *x, float y, float *result)
 {
     int j = 0;
-    int remainder = length % DOUBLE_ELEMENTS_256_BIT;
+    int remainder = length % FLOAT_ELEMENTS_256_BIT;
 
     if(likely(length >= FLOAT_ELEMENTS_256_BIT))
     {

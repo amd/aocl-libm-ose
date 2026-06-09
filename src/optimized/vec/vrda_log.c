@@ -1,6 +1,5 @@
-
 /*
- * Copyright (C) 2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -29,7 +28,7 @@
  * ---------------------
  * Signature
  * ---------------------
- * void vrda_log(int length, double *input, double *result)
+ * void vrda_log(int length, const double *input, double *result)
  *
  * vrda_log() computes the log values for 'length' number of elements
  * present in the 'input' array.
@@ -39,49 +38,63 @@
  * Implementation Notes
  * ---------------------
  *
- * For any given length,
- *     If length is greater than 4:
- *         Pack 4 elements of input array into a 256-bit register
- *             call vrd4_log()
- *         Store the output into result array.
- *         Repeat
+ * The implementation uses a unified approach that handles both in-place
+ * and out-of-place operations:
  *
- *         For the remaining element/s,
- *         Pack the last 4 elements of input array into a 256-bit register,
- *             call vrd4_log()
- *         Store the output into result array.
+ *     If length is greater than or equal to 4:
+ *         Save the last 4 elements from input array before processing
+ *         Process elements in chunks of 4 (n*4 complete elements):
+ *             Load 4 elements from input array into a 256-bit register
+ *             Call vrd4_log()
+ *             Store the output into result array
+ *         Repeat until all complete chunks are processed
+ *
+ *         For the remaining elements (if any):
+ *             Use the pre-saved last 4 elements
+ *             Call vrd4_log()
+ *             Store the output at the last 4 positions in result array
  *     Return
  *
- *     If length is lesser than 4:
- *         Pack the elements of input array into a 256-bit register
- *         Mask the inputs which are not needed to be computed with a 0.
- *             call vrd4_log()
- *         Store the output of unmasked elements into result array.
- * Return
+ *     If length is less than 4:
+ *         Create a mask for the actual number of elements
+ *         Load elements using masked load
+ *         Call vrd4_log()
+ *         Store the output using masked store
+ *     Return
  */
 #include <libm_macros.h>
 #include <immintrin.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm_util_amd.h>
-void ALM_PROTO_OPT(vrda_log)(int length, double *input, double *result)
+
+void ALM_PROTO_OPT(vrda_log)(int length, const double *input, double *result)
 {
     int j = 0;
-    if(likely(length >= DOUBLE_ELEMENTS_256_BIT))
+
+    if (likely(length >= DOUBLE_ELEMENTS_256_BIT))
     {
+        /* Save the last 4 elements before processing. This avoids errors when the
+           operation is in-place */
+        __m256d last_ip4 = _mm256_loadu_pd(&input[length - DOUBLE_ELEMENTS_256_BIT]);
+        
+        // Process complete chunks of 4 (n*4 elements)
         for (j = 0; j <= length - DOUBLE_ELEMENTS_256_BIT; j += DOUBLE_ELEMENTS_256_BIT)
         {
             __m256d ip4 = _mm256_loadu_pd(&input[j]);
             __m256d op4 = ALM_PROTO(vrd4_log)(ip4);
             _mm256_storeu_pd(&result[j], op4);
         }
+        
+        // Handle remaining elements using the pre-saved last 4 elements
         if (length - j)
         {
-            __m256d ip4 = _mm256_loadu_pd(&input[length - DOUBLE_ELEMENTS_256_BIT]);
-            __m256d op4 = ALM_PROTO(vrd4_log)(ip4);
+            __m256d op4 = ALM_PROTO(vrd4_log)(last_ip4);
             _mm256_storeu_pd(&result[length - DOUBLE_ELEMENTS_256_BIT], op4);
         }
         return;
     }
+    
+    // For length < 4, use masked operations
     __m256i mask = GET_MASK_DOUBLE_256_BIT(length);
     __m256d ip4 = _mm256_maskload_pd(&input[j], mask);
     __m256d op4 = ALM_PROTO(vrd4_log)(ip4);

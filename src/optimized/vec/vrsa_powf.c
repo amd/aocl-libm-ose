@@ -1,6 +1,5 @@
-
 /*
- * Copyright (C) 2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -29,7 +28,7 @@
  * ---------------------
  * Signature
  * ---------------------
- * void vrsa_powf(int length, float *input1, float *input2, float *result)
+ * void vrsa_powf(int length, const float *input1, const float *input2, float *result)
  *
  * vrsa_powf() computes the pow values for 'length' number of elements as
  * values in the 'input1' array raised to 'input2' array.
@@ -39,36 +38,50 @@
  * Implementation Notes
  * ---------------------
  *
- * For any given length,
- *     If length is greater than 8:
- *         Pack 8 elements of input arrays into 256-bit registers
- *             call vrs8_powf()
- *         Store the output into result array.
- *         Repeat
+ * The implementation uses a unified approach that handles both in-place
+ * and out-of-place operations:
  *
- *         For the remaining element/s,
- *         Pack the last 8 elements of input arrays into 256-bit registers,
- *             call vrs8_powf()
- *         Store the output into result array.
+ *     If length is greater than or equal to 8:
+ *         Save the last 8 elements from both input1 and input2 arrays before processing
+ *         Process elements in chunks of 8 (n*8 complete elements):
+ *             Load 8 elements from input1 array into a 256-bit register
+ *             Load 8 elements from input2 array into a 256-bit register
+ *             Call vrs8_powf()
+ *             Store the output into result array
+ *         Repeat until all complete chunks are processed
+ *
+ *         For the remaining elements (if any):
+ *             Use the pre-saved last 8 elements from both input arrays
+ *             Call vrs8_powf()
+ *             Store the output at the last 8 positions in result array
  *     Return
  *
- *     If length is lesser than 8:
- *         Pack the elements of input arrays into 256-bit registers
- *         Mask the inputs which are not needed to be computed with a 0.
- *             call vrs8_powf()
- *         Store the output of unmasked elements into result array.
- * Return
+ *     If length is less than 8:
+ *         Create a mask for the actual number of elements
+ *         Load elements from input1 using masked load
+ *         Load elements from input2 using masked load
+ *         Call vrs8_powf()
+ *         Store the output using masked store
+ *     Return
  */
 #include <libm_macros.h>
 #include <immintrin.h>
 #include <libm/amd_funcs_internal.h>
 #include <stdio.h>
 #include <libm_util_amd.h>
-void ALM_PROTO_OPT(vrsa_powf)(int length, float *input1, float *input2, float *result)
+
+void ALM_PROTO_OPT(vrsa_powf)(int length, const float *input1, const float *input2, float *result)
 {
     int j = 0;
-    if(likely(length >= FLOAT_ELEMENTS_256_BIT))
+
+    if (likely(length >= FLOAT_ELEMENTS_256_BIT))
     {
+        /* Save the last 8 elements from both input arrays before processing.
+           This avoids errors when the operation is in-place */
+        __m256 last_ip18 = _mm256_loadu_ps(&input1[length - FLOAT_ELEMENTS_256_BIT]);
+        __m256 last_ip28 = _mm256_loadu_ps(&input2[length - FLOAT_ELEMENTS_256_BIT]);
+        
+        // Process complete chunks of 8 (n*8 elements)
         for (j = 0; j <= length - FLOAT_ELEMENTS_256_BIT; j += FLOAT_ELEMENTS_256_BIT)
         {
             __m256 ip18 = _mm256_loadu_ps(&input1[j]);
@@ -76,15 +89,17 @@ void ALM_PROTO_OPT(vrsa_powf)(int length, float *input1, float *input2, float *r
             __m256 op8 = ALM_PROTO(vrs8_powf)(ip18, ip28);
             _mm256_storeu_ps(&result[j], op8);
         }
+        
+        // Handle remaining elements using the pre-saved last 8 elements
         if (length - j)
         {
-            __m256 ip18 = _mm256_loadu_ps(&input1[length - FLOAT_ELEMENTS_256_BIT]);
-            __m256 ip28 = _mm256_loadu_ps(&input2[length - FLOAT_ELEMENTS_256_BIT]);
-            __m256 op8 = ALM_PROTO(vrs8_powf)(ip18, ip28);
+            __m256 op8 = ALM_PROTO(vrs8_powf)(last_ip18, last_ip28);
             _mm256_storeu_ps(&result[length - FLOAT_ELEMENTS_256_BIT], op8);
         }
         return;
     }
+    
+    // For length < 8, use masked operations
     __m256i mask = GET_MASK_FLOAT_256_BIT(length);
     __m256 ip18 = _mm256_maskload_ps(&input1[j], mask);
     __m256 ip28 = _mm256_maskload_ps(&input2[j], mask);

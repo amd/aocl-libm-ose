@@ -29,7 +29,7 @@
  * ---------------------
  * Signature
  * ---------------------
- * void vrda_atan(int length, double *input, double *output)
+ * void vrda_atan(int length, const double *input, double *output)
  *
  * vrda_atan() computes the arc tangent values for 'length' number of elements
  * present in the 'input' array.
@@ -60,7 +60,7 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_OPT(vrda_atan)(int length, double *input, double *output)
+void ALM_PROTO_OPT(vrda_atan)(int length, const double *input, double *output)
 {
     int j = 0;
     __m256d  opatan;

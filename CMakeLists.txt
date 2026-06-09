@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -106,8 +106,13 @@ message(DEBUG "Project with name \"${PROJECT_PREFIX}\" with version ${${PROJECT_
 if(NOT WIN32)
     set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
     set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
-    set(CMAKE_C_ARCHIVE_APPEND "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
-    set(CMAKE_CXX_ARCHIVE_APPEND "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
+
+    # Fix for large static libraries: CMake splits ar commands when the command line is too long,
+    # but the default append rule uses 'r' which replaces instead of appending.
+    # Set the append rule to use 'q' (quick append) to properly concatenate all object files.
+    set(CMAKE_C_ARCHIVE_APPEND "<CMAKE_AR> q <TARGET> <LINK_FLAGS> <OBJECTS>")
+    set(CMAKE_CXX_ARCHIVE_APPEND "<CMAKE_AR> q <TARGET> <LINK_FLAGS> <OBJECTS>")
+
     # Ensure ranlib is called after archive creation
     set(CMAKE_C_ARCHIVE_FINISH "<CMAKE_RANLIB> <TARGET>")
     set(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> <TARGET>")
@@ -145,17 +150,22 @@ if(DEFINED ALM_STATIC_DISPATCH)
       OR ("${ALM_STATIC_DISPATCH}" STREQUAL "ZEN3")
       OR ("${ALM_STATIC_DISPATCH}" STREQUAL "ZEN4")
       OR ("${ALM_STATIC_DISPATCH}" STREQUAL "ZEN5")
+      OR ("${ALM_STATIC_DISPATCH}" STREQUAL "ZEN6")
       OR ("${ALM_STATIC_DISPATCH}" STREQUAL "AVX512") )
     # Set the ALM_STATIC_DISPATCH macro based on user input
     # default set to AVX2 if ALM_STATIC_DISPATCH is defined during cmake configured.
     set(ALM_STATIC_DISPATCH "AVX2" CACHE STRING "Set the static dispatch architecture")
     message(STATUS "ALM_STATIC_DISPATCH set to ${ALM_STATIC_DISPATCH}")
   else()
-    message(FATAL_ERROR "Valid option for ALM_STATIC_DISPATCH is set to any of the AVX2/ZEN2/ZEN3/ZEN4/ZEN5/AVX512")
+    message(FATAL_ERROR "Valid option for ALM_STATIC_DISPATCH is set to any of the AVX2/ZEN2/ZEN3/ZEN4/ZEN5/ZEN6/AVX512")
   endif()
 endif()
 
-if(LINUX)
+if(WIN32)
+    # Use AT&T assembly syntax on Windows (required for Clang 19+ compatibility)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -masm=att")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -masm=att")
+else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=.")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=.")
 endif()
@@ -163,13 +173,9 @@ endif()
 #------------------------------
 # AOCL_Utils CPUID_library requirements
 #------------------------------
-# Check if the necessary includes and libraries are present before including Cct_Libaoclutils
-if (NOT (EXISTS "${AOCL_UTILS_INCLUDE_DIR}" AND EXISTS "${AOCL_UTILS_LIB}"))
-    include(Cct_Libaoclutils)
-    link_directories(${AOCL_UTILS_LIB_DIR})
-    set(CMAKE_SKIP_RPATH TRUE)
-    set(CMAKE_SKIP_INSTALL_RPATH TRUE)
-endif()
+
+# Internal utils (replaces external aocl-utils)
+add_subdirectory(utils)
 
 #------------------------------
 # Setup Project Includes
@@ -269,6 +275,13 @@ if(${${PROJECT_PREFIX}_LIBM_BUILD_LIBRARY})
     endif()
 endif()
 
+#----------------------------------------------------------
+# Add libm_testsuite if LIBM_BUILD_TESTSUITE is enabled
+#----------------------------------------------------------
+if (${${PROJECT_PREFIX}_LIBM_BUILD_TESTSUITE})
+    add_subdirectory(almbench EXCLUDE_FROM_ALL)
+endif()
+
 #------------------------------
 # Add Tests if ENABLE_TESTS is defined
 # These are Integration Tests,
@@ -286,6 +299,13 @@ if (${${PROJECT_PREFIX}_LIBM_BUILD_EXAMPLES})
     enable_testing()
     add_subdirectory(examples EXCLUDE_FROM_ALL)
 endif()
+
+#----------------------------------------------------------
+# Add LibM documentation build if LIBM_BUILD_DOC is enabled
+#----------------------------------------------------------
+if (${${PROJECT_PREFIX}_LIBM_BUILD_DOCS})
+  add_subdirectory(docs/src EXCLUDE_FROM_ALL)
+endif ()
 
 add_custom_target(distclean
     COMMAND ${CMAKE_MAKE_PROGRAM} clean

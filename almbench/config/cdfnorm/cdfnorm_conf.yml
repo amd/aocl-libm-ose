@@ -1,0 +1,529 @@
+- test_sequence: unit_tests_cdfnorm
+  date: April 16, 2026
+  ignore_exceptions: [underflow, inexact]
+  function: cdfnorm
+  test_sets:
+  - id: special-values
+    description: Special values for cdfnorm (Cumulative Distribution Function of standard normal) from test_cdfnorm_data.h
+    tests:
+#-------------------------------
+# Single precision test cases (from test_cdfnorm_data.h) included all special cases
+#-------------------------------
+
+    # POS_ZERO_F32: cdfnormf(0) = 0.5
+    - id: cdfnormf_001
+      description: cdfnormf (POS_ZERO_F32) = 0.5
+      input: [0x00000000]
+      expect: [0x3F000000]
+      expect_exception: []
+      variants: [ss]
+
+    # NEG_ZERO_F32: cdfnormf(-0) = 0.5
+    - id: cdfnormf_002
+      description: cdfnormf (NEG_ZERO_F32) = 0.5
+      input: [0x80000000]
+      expect: [0x3F000000]
+      expect_exception: []
+      variants: [ss]
+
+    # POS_INF_F32: cdfnormf(+inf) = 1
+    - id: cdfnormf_003
+      description: cdfnormf (POS_INF_F32) = POS_ONE_F32
+      input: [0x7F800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    # NEG_INF_F32: cdfnormf(-inf) = 0
+    - id: cdfnormf_004
+      description: cdfnormf (NEG_INF_F32) = POS_ZERO_F32
+      input: [0xFF800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    # POS_SNAN_F32: cdfnormf(+SNAN) = SNAN (invalid)
+    - id: cdfnormf_005
+      description: cdfnormf (POS_SNAN_F32) = POS_SNAN_F32 (invalid)
+      input: [0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    # NEG_SNAN_F32: cdfnormf(-SNAN) = -SNAN (invalid)
+    - id: cdfnormf_006
+      description: cdfnormf (NEG_SNAN_F32) = NEG_SNAN_F32 (invalid)
+      input: [0xffb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    # POS_QNAN_F32: cdfnormf(+QNAN) = QNAN
+    - id: cdfnormf_007
+      description: cdfnormf (POS_QNAN_F32) = POS_QNAN_F32
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+
+    # NEG_QNAN_F32: cdfnormf(-QNAN) = -QNAN
+    - id: cdfnormf_008
+      description: cdfnormf (NEG_QNAN_F32) = NEG_QNAN_F32
+      input: [0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(4.0) = 1.0 (saturates)
+    - id: cdfnormf_009
+      description: cdfnormf (4.0) = 1.0
+      input: [0x40800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(5.0) = 1.0 (saturates)
+    - id: cdfnormf_010
+      description: cdfnormf (5.0) = 1.0
+      input: [0x40A00000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(6.0) = 1.0 (saturates)
+    - id: cdfnormf_011
+      description: cdfnormf (6.0) = 1.0
+      input: [0x40C00000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(10.0) = 1.0
+    - id: cdfnormf_012
+      description: cdfnormf (10.0) = 1.0
+      input: [0x41200000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(20.0) = 1.0
+    - id: cdfnormf_013
+      description: cdfnormf (20.0) = 1.0
+      input: [0x41A00000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(-4.0) = 0.0
+    - id: cdfnormf_014
+      description: cdfnormf (-4.0) = 0.0
+      input: [0xC0800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(-10.0) = 0.0
+    - id: cdfnormf_015
+      description: cdfnormf (-10.0) = 0.0
+      input: [0xC1200000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(-15.0) = 0.0
+    - id: cdfnormf_016
+      description: cdfnormf (-15.0) = 0.0
+      input: [0xC1700000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(-20.0) = 0.0
+    - id: cdfnormf_017
+      description: cdfnormf (-20.0) = 0.0
+      input: [0xC1A00000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(-25.0) = 0.0
+    - id: cdfnormf_018
+      description: cdfnormf (-25.0) = 0.0
+      input: [0xC1C80000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(tiny) = 0.5
+    - id: cdfnormf_019
+      description: cdfnormf (+Min subnormal) = 0.5
+      input: [0x00000001]
+      expect: [0x3F000000]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(-tiny) = 0.5
+    - id: cdfnormf_020
+      description: cdfnormf (-Min subnormal) = 0.5
+      input: [0x80000001]
+      expect: [0x3F000000]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(max_denormal) = 0.5
+    - id: cdfnormf_021
+      description: cdfnormf (+Max denormal) = 0.5
+      input: [0x007FFFFF]
+      expect: [0x3F000000]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(-max_denormal) = 0.5
+    - id: cdfnormf_022
+      description: cdfnormf (-Max denormal) = 0.5
+      input: [0x807FFFFF]
+      expect: [0x3F000000]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(min_normal) = 0.5
+    - id: cdfnormf_023
+      description: cdfnormf (+Min normal) = 0.5
+      input: [0x00800000]
+      expect: [0x3F000000]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(-min_normal) = 0.5
+    - id: cdfnormf_024
+      description: cdfnormf (-Min normal) = 0.5
+      input: [0x80800000]
+      expect: [0x3F000000]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(1.0) = 0.841345
+    - id: cdfnormf_025
+      description: cdfnormf (1.0) = 0.841345
+      input: [0x3F800000]
+      expect: [0x3F578BC6]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(-1.0) = 0.158655
+    - id: cdfnormf_026
+      description: cdfnormf (-1.0) = 0.158655
+      input: [0xBF800000]
+      expect: [0x3E220439]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(0.84375) = 0.800
+    - id: cdfnormf_027
+      description: cdfnormf (0.84375) = 0.800
+      input: [0x3F580000]
+      expect: [0x3F445DB0]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(1.25) = 0.894350
+    - id: cdfnormf_028
+      description: cdfnormf (1.25) = 0.894350
+      input: [0x3FA00000]
+      expect: [0x3F6AE5A0]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(2.75) = 0.997020
+    - id: cdfnormf_029
+      description: cdfnormf (2.75) = 0.997020
+      input: [0x40300000]
+      expect: [0x3F7FCA00]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(18.0) = 1.0 (saturates)
+    - id: cdfnormf_030
+      description: cdfnormf (18.0) = 1.0
+      input: [0x41900000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(0.5) = 0.691462
+    - id: cdfnormf_031
+      description: cdfnormf (0.5) = 0.691462
+      input: [0x3F000000]
+      expect: [0x3F198880]
+      expect_exception: []
+      variants: [ss]
+
+    # cdfnormf(-0.5) = 0.308538
+    - id: cdfnormf_032
+      description: cdfnormf (-0.5) = 0.308538
+      input: [0xBF000000]
+      expect: [0x3ECC7780]
+      expect_exception: []
+      variants: [ss]
+
+#-------------------------------
+# Double precision test cases (from test_cdfnorm_data.h) included all special cases
+#-------------------------------
+
+    # POS_ZERO_F64: cdfnorm(0) = 0.5
+    - id: cdfnorm_001
+      description: cdfnorm (POS_ZERO_F64) = 0.5
+      input: [0x0000000000000000]
+      expect: [0x3FE0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # NEG_ZERO_F64: cdfnorm(-0) = 0.5
+    - id: cdfnorm_002
+      description: cdfnorm (NEG_ZERO_F64) = 0.5
+      input: [0x8000000000000000]
+      expect: [0x3FE0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # POS_INF_F64: cdfnorm(+inf) = 1
+    - id: cdfnorm_003
+      description: cdfnorm (POS_INF_F64) = POS_ONE_F64
+      input: [0x7ff0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # NEG_INF_F64: cdfnorm(-inf) = 0
+    - id: cdfnorm_004
+      description: cdfnorm (NEG_INF_F64) = POS_ZERO_F64
+      input: [0xfff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # POS_SNAN_F64: cdfnorm(+SNAN) = SNAN (invalid)
+    - id: cdfnorm_005
+      description: cdfnorm (POS_SNAN_F64) = POS_SNAN_F64 (invalid)
+      input: [0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    # NEG_SNAN_F64: cdfnorm(-SNAN) = -SNAN (invalid)
+    - id: cdfnorm_006
+      description: cdfnorm (NEG_SNAN_F64) = NEG_SNAN_F64 (invalid)
+      input: [0xfff2000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    # POS_QNAN_F64: cdfnorm(+QNAN) = QNAN
+    - id: cdfnorm_007
+      description: cdfnorm (POS_QNAN_F64) = POS_QNAN_F64
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    # NEG_QNAN_F64: cdfnorm(-QNAN) = -QNAN
+    - id: cdfnorm_008
+      description: cdfnorm (NEG_QNAN_F64) = NEG_QNAN_F64
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(5.921875) ≈ 0.999999999
+    - id: cdfnorm_009
+      description: cdfnorm (5.921875) = 0.999999999
+      input: [0x4017B000C9539B89]
+      expect: [0x3FEFFFFFFFFFFFFF]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(10.3) = 1.0
+    - id: cdfnorm_010
+      description: cdfnorm (10.3) = 1.0
+      input: [0x402499999999999A]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(22.5) = 1.0
+    - id: cdfnorm_011
+      description: cdfnorm (22.5) = 1.0
+      input: [0x4036800000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(432.0) = 1.0
+    - id: cdfnorm_012
+      description: cdfnorm (432.0) = 1.0
+      input: [0x407B000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(1024.0) = 1.0
+    - id: cdfnorm_013
+      description: cdfnorm (1024.0) = 1.0
+      input: [0x4090000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(-5.921875) ≈ tiny -> 0
+    - id: cdfnorm_014
+      description: cdfnorm (-5.921875) = 0
+      input: [0xC017B000C9539B89]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(-1024.0) = 0
+    - id: cdfnorm_015
+      description: cdfnorm (-1024.0) = 0
+      input: [0xC090000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(-159.0) = 0
+    - id: cdfnorm_016
+      description: cdfnorm (-159.0) = 0
+      input: [0xC063C00000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(-82.0) = 0
+    - id: cdfnorm_017
+      description: cdfnorm (-82.0) = 0
+      input: [0xC054800000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(-23.68) = 0
+    - id: cdfnorm_018
+      description: cdfnorm (-23.68) = 0
+      input: [0xC037AE147AE147AE]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(tiny) ≈ 0.5 (min positive subnormal)
+    - id: cdfnorm_019
+      description: cdfnorm (0x0000000000000001) = 0.5
+      input: [0x0000000000000001]
+      expect: [0x3FE0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(-tiny) ≈ 0.5 (min negative subnormal)
+    - id: cdfnorm_020
+      description: cdfnorm (0x8000000000000001) = 0.5
+      input: [0x8000000000000001]
+      expect: [0x3FE0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(max_denormal) ≈ 0.5
+    - id: cdfnorm_021
+      description: cdfnorm (0x000FFFFFFFFFFFFF) = 0.5
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x3FE0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(-max_denormal) ≈ 0.5
+    - id: cdfnorm_022
+      description: cdfnorm (0x800FFFFFFFFFFFFF) = 0.5
+      input: [0x800FFFFFFFFFFFFF]
+      expect: [0x3FE0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(min_normal) ≈ 0.5
+    - id: cdfnorm_023
+      description: cdfnorm (0x0010000000000000) = 0.5
+      input: [0x0010000000000000]
+      expect: [0x3FE0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(-min_normal) ≈ 0.5
+    - id: cdfnorm_024
+      description: cdfnorm (0x8010000000000000) = 0.5
+      input: [0x8010000000000000]
+      expect: [0x3FE0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(1) ≈ 0.841344746
+    - id: cdfnorm_025
+      description: cdfnorm (POS_ONE_F64) = 0.841344746
+      input: [0x3FF0000000000000]
+      expect: [0x3FEAED548F090CEE]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(-1) ≈ 0.158655254
+    - id: cdfnorm_026
+      description: cdfnorm (-1.0) = 0.158655254
+      input: [0xBFF0000000000000]
+      expect: [0x3FC44F52E979BAE8]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(0.84375) ≈ 0.8006
+    - id: cdfnorm_027
+      description: cdfnorm (0.84375) = 0.8006
+      input: [0x3FEB000000000000]
+      expect: [0x3FE888B618EAA88C]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(1.25) ≈ 0.894350
+    - id: cdfnorm_028
+      description: cdfnorm (1.25) = 0.894350
+      input: [0x3FF4000000000000]
+      expect: [0x3FED5CB7ACFF59C0]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(2.75) ≈ 0.997020
+    - id: cdfnorm_029
+      description: cdfnorm (2.75) = 0.997020
+      input: [0x4006000000000000]
+      expect: [0x3FEFF94FAC4B8300]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(144) = 1.0 (saturates)
+    - id: cdfnorm_030
+      description: cdfnorm (144.0) = 1.0 (saturates)
+      input: [0x4062000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(0.5) ≈ 0.691462461
+    - id: cdfnorm_031
+      description: cdfnorm (0.5) = 0.691462461
+      input: [0x3FE0000000000000]
+      expect: [0x3FE6310FA4B3C6C4]
+      expect_exception: []
+      variants: [sd]
+
+    # cdfnorm(-0.5) ≈ 0.308537539
+    - id: cdfnorm_032
+      description: cdfnorm (-0.5) = 0.308537539
+      input: [0xBFE0000000000000]
+      expect: [0x3FD398EF0956C64A]
+      expect_exception: []
+      variants: [sd]
+
+#-------------------------------

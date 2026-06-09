@@ -1,7 +1,7 @@
 /* Correctly-rounded hyperbolic tangent function for binary32 value.
 
 Copyright (c) 2022, Alexei Sibidanov.
-Copyright (C) 2023, Advanced Micro Devices, Inc. All rights reserved.
+Copyright (C) 2023-2026, Advanced Micro Devices, Inc. All rights reserved.
 
 This file was originally developed as part of the CORE-MATH project
 (https://core-math.gitlabpages.inria.fr/).
@@ -46,10 +46,10 @@ SOFTWARE.
  * 1. 0 <= |x| < 0x39000000 (approx 2.98e-8)
  *    In this case, tanhf(x) = x
  *
- * 2. 0x39000000 <= |x| < 0x9.02cb2ffffd19d464063fp0f (approx 9.01)
+ * 2. 0x39000000 <= |x| < 0x9.02cb3p+0f (approx 9.01)
  *    In this case, tanhf(x) is approximated as the ratio of two polynomials of degree 8.
  *
- * 3. 0x9.02cb2ffffd19d464063fp0f <= |x| < +inf
+ * 3. 0x9.02cb3p+0f <= |x| < +inf
  *    In this case, tanhf(x) = 1 - 0x1p-25f (approx 2.98e-8)
  *    Subtraction of half unit roundoff ensures precison at the boundary.
  *
@@ -74,7 +74,7 @@ static struct
     float max_arg;
     double cn[8], cd[8];
 } tanhf_data = {
-    .max_arg = 0x9.02cb2ffffd19d464063fp0f,
+    .max_arg = 0x9.02cb3p+0f,
     .cn = {0x1p+0, 0x1.30877b8b72d33p-3, 0x1.694aa09ae9e5ep-8,
            0x1.4101377abb729p-14, 0x1.e0392b1db0018p-22, 0x1.2533756e546f7p-30,
            0x1.d62e5abe6ae8ap-41, 0x1.b06be534182dep-54
@@ -146,9 +146,19 @@ float ALM_PROTO_OPT(tanhf)(float x)
     else if (ux > PINFBITPATT_SP32)
         /* For +/-inf */
         return x + x;
-    if (y > TANHF_MAX_ARG)
-        /* For x > max_arg */
-        return asfloat(asuint32(1.0f - 0x1p-25f) ^ sign);
+    if (y > TANHF_MAX_ARG) {
+        /* For |x| > max_arg, return ±(1 - 2^-25)
+         * The s*1.0f - s*eps pattern ensures correct rounding for both
+         * positive and negative results in all directed rounding modes.
+         *
+         * volatile prevents compiler from optimizing away the subtraction,
+         * ensuring it happens at runtime with the current rounding mode.
+         */
+        volatile float s = sign ? -1.0f : 1.0f;
+        volatile float one = 1.0f;
+        volatile float eps = 0x1p-25f;
+        return (s * one - s * eps);
+    }
 
     /* For most of the input range we approximate using the ratio of two polynomials */ 
     double z = (double)x;

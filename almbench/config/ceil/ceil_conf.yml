@@ -1,0 +1,847 @@
+- test_sequence: unit_tests_ceil
+  ignore_exceptions: [underflow, inexact]
+  function: ceil
+  test_sets:
+  - id: special-values
+    description: Special values for ceil function
+    tests:
+    # Single Precision Tests
+    - id: ceil_001
+      description: "ceilf(0) = 0"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_002
+      description: "ceilf(-0) = -0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_003
+      description: "ceilf(inf) = inf"
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_004
+      description: "ceilf(-inf) = -inf"
+      input: [0xff800000]
+      expect: [0xff800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_005
+      description: "ceilf(-nan) = nan"
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_006
+      description: "ceilf(+nan) = nan"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_007
+      description: "ceilf(subnorm_max) = 1"
+      input: [0x007fffff]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_008
+      description: "ceilf(subnorm_max) = 1"
+      input: [0x007fffff]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_009
+      description: "ceilf(subnorm_min) = 1"
+      input: [0x00000001]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_010
+      description: "ceilf(subnorm_min) = 1"
+      input: [0x00000001]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_011
+      description: "ceilf(1.5) = 2"
+      input: [0x3fc00000]
+      expect: [0x40000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_012
+      description: "ceilf(-1.5) = -1"
+      input: [0xbfc00000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_013
+      description: "ceilf(2.7) = 3"
+      input: [0x402ccccd]
+      expect: [0x40400000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_014
+      description: "ceilf(-2.7) = -2"
+      input: [0xc02ccccd]
+      expect: [0xc0000000]
+      expect_exception: []
+      variants: [ss]
+
+# Test cases from gtests test_ceil_data.h
+#-------------------------------
+    - id: ceil_001
+      description: Invalid operation test case - signalling NaN
+      input: [0x7fb00000]
+      expect: [0x7ff00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: ceil_002
+      description: Invalid operation test case - negative signalling NaN
+      input: [0xffb00000]
+      expect: [0x7ff00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: ceil_003
+      description: Positive signalling quiet NaN
+      input: [0x7fc00001]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_004
+      description: Negative signalling quiet NaN
+      input: [0xffc00001]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_005
+      description: Positive quiet NaN
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_006
+      description: Negative quiet NaN
+      input: [0xfff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_007
+      description: Positive infinity
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_008
+      description: Negative infinity
+      input: [0xFF800000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_009
+      description: Positive one (1.0)
+      input: [0x3F800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_010
+      description: Negative one (-1.0)
+      input: [0xbf800000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_011
+      description: Negative zero (-0.0)
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_012
+      description: Positive zero (0.0)
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_013
+      description: Positive highest denormal number
+      input: [0x007fffff]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_014
+      description: Negative highest denormal number
+      input: [0x807fffff]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_015
+      description: Positive lowest denormal number
+      input: [0x00000001]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_016
+      description: Negative lowest denormal number
+      input: [0x80000001]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_017
+      description: Positive highest normal number
+      input: [0x7f7fffff]
+      expect: [0x7f7fffff]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_018
+      description: Negative highest normal number
+      input: [0xff7fffff]
+      expect: [0xff7fffff]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_019
+      description: Positive lowest normal number
+      input: [0x00800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_020
+      description: Negative highest normal number (duplicate)
+      input: [0xff7fffff]
+      expect: [0xff7fffff]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_021
+      description: Positive PI (3.14159) -> 4.0
+      input: [0x40490fd8]
+      expect: [0x40800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_022
+      description: Negative PI (-3.14159) -> -3.0
+      input: [0xc0490fd8]
+      expect: [0xc0400000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_023
+      description: Positive PI/2 (1.5708) -> 2.0
+      input: [0x3fc90fdb]
+      expect: [0x40000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_024
+      description: Negative PI/2 (-1.5708) -> -1.0
+      input: [0xbfc90fdb]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_025
+      description: (1.883651) -> 2.0
+      input: [0x3fF12345]
+      expect: [0x40000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_026
+      description: (-1.883651) -> -1.0
+      input: [0xbfF12345]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_027
+      description: (1.384531) -> 2.0
+      input: [0x3fb12345]
+      expect: [0x40000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_028
+      description: (-1.384531) -> -1.0
+      input: [0xbfb12345]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_029
+      description: Small positive denormal -> 1.0
+      input: [0x30b12345]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_030
+      description: Small negative denormal -> -0.0
+      input: [0xb0b12345]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_031
+      description: (2.6321) -> 3.0
+      input: [0x400851EB]
+      expect: [0x40400000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_032
+      description: Equal to 2^24 (16777216.0)
+      input: [0x4b800000]
+      expect: [0x4b800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_033
+      description: Equal to -2^24 (-16777216.0)
+      input: [0xcb800000]
+      expect: [0xcb800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_034
+      description: Large integer less than 2^24
+      input: [0x4b001234]
+      expect: [0x4b001234]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_035
+      description: Large negative integer less than -2^24
+      input: [0xcb001234]
+      expect: [0xcb001234]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_036
+      description: Fractional value less than 2^24 with rounding up
+      input: [0x4ab70123]
+      expect: [0x4ab70124]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_037
+      description: Fractional negative value less than -2^24
+      input: [0xcab70123]
+      expect: [0xcab70122]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_038
+      description: Large integer greater than 2^24
+      input: [0x4c000000]
+      expect: [0x4c000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_039
+      description: Large negative integer greater than -2^24
+      input: [0xcc000000]
+      expect: [0xcc000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_040
+      description: Large fractional value less than 2^24
+      input: [0x43ABCDEF]
+      expect: [0x43ac0000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: ceil_041
+      description: Large negative fractional value less than 2^24
+      input: [0xC3ABCDEF]
+      expect: [0xc3ab8000]
+      expect_exception: []
+      variants: [ss]
+#-------------------------------
+    # Double Precision Tests
+    - id: ceil_001
+      description: "ceil(0) = 0"
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_002
+      description: "ceil(-0) = -0"
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_003
+      description: "ceil(inf) = inf"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_004
+      description: "ceil(-inf) = -inf"
+      input: [0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_005
+      description: "ceil(-nan) = nan"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_006
+      description: "ceil(+nan) = nan"
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_007
+      description: "ceil(subnorm_max) = 1"
+      input: [0x000fffffffffffff]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_008
+      description: "ceil(subnorm_max) = 1"
+      input: [0x000fffffffffffff]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_009
+      description: "ceil(subnorm_min) = 1"
+      input: [0x0000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_010
+      description: "ceil(subnorm_min) = 1"
+      input: [0x0000000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_011
+      description: "ceil(1.5) = 2"
+      input: [0x3ff8000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_012
+      description: "ceil(-1.5) = -1"
+      input: [0xbff8000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_013
+      description: "ceil(2.7) = 3"
+      input: [0x4005999999999999]
+      expect: [0x4008000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_014
+      description: "ceil(-2.7) = -2"
+      input: [0xc005999999999999]
+      expect: [0xc000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+# Test cases from gtests test_ceil_data.h
+#-------------------------------
+    - id: ceil_001
+      description: Invalid operation test case - positive signalling NaN
+      input: [0x7FF4001000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: ceil_002
+      description: Invalid operation test case - negative signalling NaN
+      input: [0xfff2000000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: ceil_003
+      description: Positive signalling quiet NaN
+      input: [0x7FF8000000000001]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_004
+      description: Negative signalling quiet NaN
+      input: [0xffF8000000000001]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_005
+      description: Positive quiet NaN
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_006
+      description: Negative quiet NaN
+      input: [0xfff8000000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_007
+      description: Positive infinity
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_008
+      description: Negative infinity
+      input: [0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_009
+      description: Positive one (1.0)
+      input: [0x3FF0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_010
+      description: Negative one (-1.0)
+      input: [0xBFF0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_011
+      description: Negative zero (-0.0)
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_012
+      description: Positive zero (0.0)
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_013
+      description: Positive highest denormal number
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_014
+      description: Negative highest denormal number
+      input: [0x800fffffFFFFFFFF]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_015
+      description: Positive lowest denormal number
+      input: [0x0000000000000001]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_016
+      description: Negative lowest denormal number
+      input: [0x8000000000000001]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_017
+      description: Positive highest normal number
+      input: [0x7FEfffffFFFFFFFF]
+      expect: [0x7FEfffffFFFFFFFF]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_018
+      description: Negative highest normal number
+      input: [0xfFEfffffFFFFFFFF]
+      expect: [0xfFEfffffFFFFFFFF]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_019
+      description: Positive lowest normal number
+      input: [0x0010000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_020
+      description: Negative lowest normal number
+      input: [0x8010000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_021
+      description: Positive PI (3.141592653589793) -> 4.0
+      input: [0x400921FB54442D18]
+      expect: [0x4010000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_022
+      description: Negative PI (-3.141592653589793) -> -3.0
+      input: [0xc00921fb54442d18]
+      expect: [0xC008000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_023
+      description: Positive PI/2 (1.5707963267948966) -> 2.0
+      input: [0x3FF921FB60000000]
+      expect: [0x4000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_024
+      description: Negative PI/2 (-1.5707963267948966) -> -1.0
+      input: [0xBFF921FB60000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_025
+      description: Fractional value (0.571441) -> 1.0
+      input: [0x3Fe1234ABCDEF123]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_026
+      description: Negative fractional value (-0.571441) -> -0.0
+      input: [0xbFe1234ABCDEF123]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_027
+      description: Fractional value (0.82089) -> 1.0
+      input: [0x3FeA234ABCDEF123]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_028
+      description: Negative fractional value (-0.82089) -> -0.0
+      input: [0xbFeA234ABCDEF123]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_029
+      description: Fractional value (1.07163) -> 2.0
+      input: [0x3FF1234ABCDEF123]
+      expect: [0x4000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_030
+      description: Negative fractional value (-1.07163) -> -1.0
+      input: [0xbFF1234ABCDEF123]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_031
+      description: Fractional value (1.63407) -> 2.0
+      input: [0x3FFA234ABCDEF123]
+      expect: [0x4000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_032
+      description: Negative fractional value (-1.63407) -> -1.0
+      input: [0xbFFA234ABCDEF123]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_033
+      description: Large fractional value (3.0406) -> 4.0
+      input: [0x400853451234ABCD]
+      expect: [0x4010000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_034
+      description: Large negative fractional value (-3.0406) -> -3.0
+      input: [0xc00853451234ABCD]
+      expect: [0xc008000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_035
+      description: Very large integer (exactly representable)
+      input: [0x4360056187178ABC]
+      expect: [0x4360056187178ABC]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_036
+      description: Very large negative integer (exactly representable)
+      input: [0xc36ABCDEF0000000]
+      expect: [0xc36ABCDEF0000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_037
+      description: Large integer equal to 2^53
+      input: [0x4340000000000000]
+      expect: [0x4340000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_038
+      description: Large negative integer equal to -2^53
+      input: [0xc340000000000000]
+      expect: [0xc340000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_039
+      description: Large integer greater than 2^53
+      input: [0x4351234567891222]
+      expect: [0x4351234567891222]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_040
+      description: Large negative integer greater than -2^53
+      input: [0xc351234567891222]
+      expect: [0xc351234567891222]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_041
+      description: Large fractional value (exactly representable)
+      input: [0x433ABCDEF1234567]
+      expect: [0x433abcdef1234567]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_042
+      description: Large negative fractional value (exactly representable)
+      input: [0xc33ABCDEF1234567]
+      expect: [0xc33abcdef1234567]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_043
+      description: Large fractional value with rounding up
+      input: [0x431ABCDEF1234567]
+      expect: [0x431abcdef1234568]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_044
+      description: Large negative fractional value with rounding toward zero
+      input: [0xc31ABCDEF1234567]
+      expect: [0xc31abcdef1234564]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_045
+      description: Medium fractional value with specific rounding
+      input: [0x411ABCDEF1234567]
+      expect: [0x411abce000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_046
+      description: Medium negative fractional value with specific rounding
+      input: [0xc11ABCDEF1234567]
+      expect: [0xc11abcdc00000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_047
+      description: Small fractional value (2.67108) -> 3.0
+      input: [0x400ABCDEF1234567]
+      expect: [0x4008000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_048
+      description: Small negative fractional value (-2.67108) -> -2.0
+      input: [0xc00ABCDEF1234567]
+      expect: [0xc000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_049
+      description: Small fractional value (2.84033) -> 3.0
+      input: [0x4006BCDEF1234567]
+      expect: [0x4008000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: ceil_050
+      description: Small negative fractional value (-2.84033) -> -2.0
+      input: [0xc006BCDEF1234567]
+      expect: [0xc000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+#--------------------------------

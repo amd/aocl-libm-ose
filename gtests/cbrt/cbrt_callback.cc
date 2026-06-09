@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -177,14 +177,16 @@ int test_v4d(test_data *data, int idx)  {
 }
 
 int test_v8s(test_data *data, int idx)  {
-#if 0
   float *ip  = (float*)data->ip;
   float *op  = (float*)data->op;
-  __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
-                             ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
-  __m256 op8 = LIBM_FUNC_VEC(s, 8, cbrtf)(ip8);
-  _mm256_store_ps(&op[0], op8);
-#endif
+  #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
+    __m256 ip8 = _mm256_set_ps(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
+                               ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+    __m256 op8 = LIBM_FUNC_VEC(s, 8, cbrtf)(ip8);
+    _mm256_store_ps(&op[0], op8);
+  #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
+    vsCbrt(8, &ip[idx], op);
+  #endif
   return 0;
 }
 

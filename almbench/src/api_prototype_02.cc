@@ -1,0 +1,386 @@
+/*
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+#include <iostream>
+#include <stdexcept>
+#include <chrono>
+#include <vector>
+#include <algorithm>
+#include <numeric>
+#include <type_traits>
+#include "dll_utils.h"
+
+#include "alm_test.h"
+#include "api_template.h"
+#include "ulp.h"
+#include "packer.h"
+#include "alm_mp_funcs.h"
+#include "api_runner.h"
+#include "generator.h"
+
+/*
+ * build_bivariate_generators:
+ * Creates generator pair for two-input functions. Exactly one range
+ * may be 'derived', in which case the other is the primary generator.
+ * Returns {arr1, arr2, first_derived, primary_count}.
+ * Throws std::runtime_error if derived func is unknown.
+ */
+template <typename U>
+struct GenPair {
+    std::unique_ptr<IGenerator<U>> arr1;
+    std::unique_ptr<IGenerator<U>> arr2;
+    bool first_derived;
+    uint64_t primary_count;
+};
+
+/*
+ * make_derived_pair:
+ * Creates a primary MultiStepGenerator and a DerivedGenerator from it.
+ * Throws std::runtime_error if derived func is not found.
+ */
+template <typename U>
+static std::pair<std::unique_ptr<MultiStepGenerator<U>>,
+                 std::unique_ptr<DerivedGenerator<U>>>
+make_derived_pair(const InpRng<U>& primary_rng, uint64_t primary_count,
+                  const DerivedConfig<U>& dcfg, size_t array_size)
+{
+    auto primary = std::make_unique<MultiStepGenerator<U>>(
+        primary_rng.srt, primary_rng.stp, primary_count,
+        primary_rng.type, array_size);
+
+    auto &fmap = derived_func_map<U>();
+    auto it = fmap.find(dcfg.func);
+    if (it == fmap.end())
+        throw std::runtime_error("Unknown derived func: " + dcfg.func);
+
+    auto derived = std::make_unique<DerivedGenerator<U>>(
+        *primary, dcfg.z_srt, dcfg.z_stp,
+        dcfg.z_count, dcfg.z_type, array_size, it->second);
+
+    return {std::move(primary), std::move(derived)};
+}
+
+template <typename U>
+static GenPair<U> build_bivariate_generators(
+    const InpRng<U>& x, const InpRng<U>& y,
+    uint64_t xcount, uint64_t ycount, size_t array_size)
+{
+    GenPair<U> gp;
+    gp.first_derived = (x.type == RangeType::E_Derived);
+
+    if constexpr (!std::is_same_v<U, fc32_t> && !std::is_same_v<U, fc64_t>) {
+        if (gp.first_derived) {
+            auto [primary, derived] = make_derived_pair(y, ycount, *x.derived, array_size);
+            gp.arr2 = std::move(primary);
+            gp.arr1 = std::move(derived);
+            gp.primary_count = ycount;
+        } else if (y.type == RangeType::E_Derived) {
+            auto [primary, derived] = make_derived_pair(x, xcount, *y.derived, array_size);
+            gp.arr1 = std::move(primary);
+            gp.arr2 = std::move(derived);
+            gp.primary_count = xcount;
+        } else {
+            gp.arr1 = std::make_unique<MultiStepGenerator<U>>(
+                x.srt, x.stp, xcount, x.type, array_size);
+            gp.arr2 = std::make_unique<MultiStepGenerator<U>>(
+                y.srt, y.stp, ycount, y.type, array_size);
+            gp.primary_count = xcount;
+        }
+    } else {
+        gp.arr1 = std::make_unique<MultiStepGenerator<U>>(
+            x.srt, x.stp, xcount, x.type, array_size);
+        gp.arr2 = std::make_unique<MultiStepGenerator<U>>(
+            y.srt, y.stp, ycount, y.type, array_size);
+        gp.primary_count = xcount;
+    }
+
+    return gp;
+}
+
+/*
+ * next_pair:
+ * Advances both generators in the correct order.
+ * Primary must be advanced before derived (see DerivedGenerator contract).
+ */
+template <typename U>
+static std::pair<U*, U*> next_pair(GenPair<U>& gp)
+{
+    U *ip1, *ip2;
+    /* wrap_next for primary must be called before call for derived
+     * to respect derived generator contract */
+    if (gp.first_derived) {
+        ip2 = gp.arr2->wrap_next();
+        ip1 = gp.arr1->wrap_next();
+    } else {
+        ip1 = gp.arr1->wrap_next();
+        ip2 = gp.arr2->wrap_next();
+    }
+    return {ip1, ip2};
+}
+
+/*
+ * unit_test:
+ * Executes a test function on a single input and compares the result
+ * with a reference implementation using ULP error.
+ */
+template <typename T, typename U, typename UL>
+static void unit_test(struct InParams<T, U> *ipp,
+                      UL (*ref_func)(U, U),
+                      void (*shim_func)(struct InParams<T, U> *),
+                      struct YamlOutputs<U> *yop)
+{
+    yop->exception_raised = run_libm_api_with_exceptions<T, U>(shim_func, ipp);
+
+    U* ip = reinterpret_cast<U*>(&ipp->ip[0]);
+    U* op = reinterpret_cast<U*>(&ipp->op[0]);
+
+    UL mpfrop = ref_func(ip[0], ip[1]);
+    double ulp;
+    ulp_data udata;
+    int uflag = update_ulp(op[0], mpfrop, udata, ulp);
+
+    yop->iptr[0] = ip;
+    yop->iptr[1] = ip + 1;
+    yop->optr[0] = op;
+    yop->ulp     = &ulp;
+    yop->status  = &uflag;
+    write_yaml_output<U>(yop);
+}
+
+/*
+ * range_test:
+ * Executes a test function over a range of inputs for non-VRA APIs.
+ * Compares each result with a reference implementation using ULP error.
+ */
+template <typename T, typename U, typename UL>
+static void range_test(struct InParams<T, U>* ipp,
+                       UL (*ref_func)(U, U),
+                       void (*shim_func)(struct InParams<T, U> *),
+                       struct YamlOutputs<U> *yop)
+{
+    uint64_t elem        = sizeof(T) / sizeof(U);
+    auto& x              = ipp->range[0];
+    auto& y              = ipp->range[1];
+    uint64_t xcount      = align_to(x.count, elem);
+    uint64_t ycount      = align_to(y.count, elem);
+    yop->n[0]            = elem;
+    yop->n[1]            = elem;
+    double max_ulp[MAX_ELEM] = {0.0};
+    int status[MAX_ELEM] = {0};
+    yop->ulp             = &max_ulp[0];
+    yop->status          = &status[0];
+
+    Runner<T, U>   runner(shim_func, yop->config);
+
+    auto gp = build_bivariate_generators<U>(x, y, xcount, ycount, elem);
+    uint64_t N = align_to(gp.primary_count, elem);
+
+    FloatPacker<T> fp;
+    ulp_data udata;
+    double ulp;
+
+    for (uint64_t i = 0; i < N; ++i) {
+        auto [ip1, ip2] = next_pair(gp);
+        ipp->ip[0] = fp.pack(ip1);
+        ipp->ip[1] = fp.pack(ip2);
+
+        yop->duration = runner.run(ipp);
+
+        U* op = reinterpret_cast<U*>(&ipp->op[0]);
+        for (uint64_t j = 0; j < elem; ++j) {
+            UL mpfrop  = ref_func(ip1[j], ip2[j]);
+            status[j]  = update_ulp(op[j], mpfrop, udata, ulp);
+            max_ulp[j] = ulp;
+        }
+
+        yop->iptr[0] = ip1;
+        yop->iptr[1] = ip2;
+        yop->optr[0] = op;
+        write_yaml_output<U>(yop);
+    }
+}
+
+/*
+ * range_test_vra:
+ * Executes a test function over a range of inputs for VRA APIs.
+ * Compares each result with a reference implementation using ULP error.
+ */
+template <typename T, typename U, typename UL>
+static void range_test_vra(struct InParams<T, U>* ipp,
+                           UL (*ref_func)(U, U),
+                           void (*shim_func)(struct InParams<T, U> *),
+                           struct YamlOutputs<U> *yop)
+{
+    uint64_t elem = sizeof(T) / sizeof(U);
+    auto& x        = ipp->range[0];
+    auto& y        = ipp->range[1];
+    uint64_t count = x.count;
+    count =  (count >= 100) ? 100 : count ;
+
+    ipp->count     = count;
+    std::vector<U>  op(count);
+    std::vector<double> max_ulp(count);
+    std::vector<int> status(count);
+
+    ipp->optr[0]  = op.data();
+    yop->n[0]     = count;
+    yop->n[1]     = count;
+    yop->optr[0]  = op.data();
+    yop->ulp      = max_ulp.data();
+    yop->status   = status.data();
+
+    ulp_data udata;
+    double ulp;
+
+    Runner<T, U>   runner(shim_func, yop->config);
+
+    auto gp = build_bivariate_generators<U>(x, y, x.count, y.count, count);
+    uint64_t N = align_to(gp.primary_count, elem);
+
+    for (uint64_t i = 0; i < N; ++i) {
+        auto [ip1, ip2] = next_pair(gp);
+        ipp->iptr[0] = ip1;
+        ipp->iptr[1] = ip2;
+
+        yop->duration = runner.run(ipp);
+
+        for (uint64_t j = 0; j < count; ++j) {
+            UL mpfrop = ref_func(ip1[j], ip2[j]);
+            status[j] = update_ulp(op[j], mpfrop, udata, ulp);
+            max_ulp[j] = ulp;
+        }
+
+        yop->iptr[0] = ip1;
+        yop->iptr[1] = ip2;
+        write_yaml_output<U>(yop);
+    }
+}
+
+/*
+ * api_prototype_02:
+ * Main dispatcher function that selects the appropriate test mode
+ * (unit_test, range, or VRA) and executes the test.
+ */
+template <typename T, typename U>
+int api_prototype_02(struct AlmLibs *alibs,
+                     struct InParams<T, U>* ipp,
+                     const std::string& libapi,
+                     const std::string& refapi,
+                     YamlOutputs<U>* yop)
+{
+    using UL = typename mpfr::op_type<U>::mopt;
+
+    auto shim_func = load_function<void (*)(struct InParams<T, U> *)>(alibs->pshimlib, libapi);
+    auto ref_func  = load_function<UL (*)(U, U)>(alibs->preflib, refapi);
+
+    if (ipp->range.empty()) {
+        unit_test<T, U, UL>(ipp, ref_func, shim_func, yop);
+    } else if (!yop->config.is_vra) {
+        range_test<T, U, UL>(ipp, ref_func, shim_func, yop);
+    } else {
+        range_test_vra<T, U, UL>(ipp, ref_func, shim_func, yop);
+    }
+
+    return 0;
+}
+
+/*
+ * Template instantiations:
+ * Explicitly instantiate the api_prototype_02 function for supported
+ * scalar and SIMD types with float and double precision.
+ */
+template int api_prototype_02<float, float>(
+    struct AlmLibs *,
+    struct InParams<float, float> *,
+    const std::string &,
+    const std::string &,
+    struct YamlOutputs<float> *);
+
+template int api_prototype_02<double, double>(
+    struct AlmLibs *,
+    struct InParams<double, double> *,
+    const std::string &,
+    const std::string &,
+    struct YamlOutputs<double> *);
+
+template int api_prototype_02<libm::AlignedM128, float>(
+    struct AlmLibs *,
+    struct InParams<libm::AlignedM128, float> *,
+    const std::string &,
+    const std::string &,
+    struct YamlOutputs<float> *);
+
+template int api_prototype_02<libm::AlignedM128d, double>(
+    struct AlmLibs *,
+    struct InParams<libm::AlignedM128d, double> *,
+    const std::string &,
+    const std::string &,
+    struct YamlOutputs<double> *);
+
+template int api_prototype_02<libm::AlignedM256, float>(
+    struct AlmLibs *,
+    struct InParams<libm::AlignedM256, float> *,
+    const std::string &,
+    const std::string &,
+    struct YamlOutputs<float> *);
+
+template int api_prototype_02<libm::AlignedM256d, double>(
+    struct AlmLibs *,
+    struct InParams<libm::AlignedM256d, double> *,
+    const std::string &,
+    const std::string &,
+    struct YamlOutputs<double> *);
+
+#ifdef __AVX512F__
+template int api_prototype_02<libm::AlignedM512, float>(
+    struct AlmLibs *,
+    struct InParams<libm::AlignedM512, float> *,
+    const std::string &,
+    const std::string &,
+    struct YamlOutputs<float> *);
+
+template int api_prototype_02<libm::AlignedM512d, double>(
+    struct AlmLibs *,
+    struct InParams<libm::AlignedM512d, double> *,
+    const std::string &,
+    const std::string &,
+    struct YamlOutputs<double> *);
+#endif
+
+template int api_prototype_02<fc32_t, fc32_t>(
+    struct AlmLibs *,
+    struct InParams<fc32_t, fc32_t> *,
+    const std::string &,
+    const std::string &,
+    struct YamlOutputs<fc32_t> *);
+
+template int api_prototype_02<fc64_t, fc64_t>(
+    struct AlmLibs *,
+    struct InParams<fc64_t, fc64_t> *,
+    const std::string &,
+    const std::string &,
+    struct YamlOutputs<fc64_t> *);

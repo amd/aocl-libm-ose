@@ -1,0 +1,1085 @@
+- test_sequence: unit_tests_log
+  ignore_exceptions: [underflow, inexact]
+  function: log
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+
+    - id: log1p_001
+      description: log1pf (0.0)=0.0
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: log1p_002
+      description: log1pf (-0.0)=-0.0
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: log1p_003
+      description: log1pf (inf)=inf
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: log1p_004
+      description: log1pf (-inf)=-inf
+      input: [0xFF800000]
+      expect: [0xFF800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: log1p_005
+      description: log1pf (-nan)=-nan
+      input: [0xffb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: log1p_006
+      description: log1pf (+nan)=+nan
+      input: [0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: log1p_007
+      description: log1pf (1.1754942106924411e-38)=1.1754942106924411e-38
+      input: [0x007fffff]
+      expect: [0x33d6bf95]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: log1p_008
+      description: log1pf (-1.1754942106924411e-38)=-1.1754942106924411e-38
+      input: [0x807fffff]
+      expect: [0xb3d6bf95]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: log1p_09
+      description: log1pf (1.401298464324817e-45)=1.401298464324817e-45
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: log1p_010
+      description: log1pf (-1.401298464324817e-45)=-1.401298464324817e-45
+      input: [0x80000001]
+      expect: [0x80000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: log1p_011
+      description: log1pf (1.0)=1.0
+      input: [0x3f800000]
+      expect: [0x3f317218]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: log1p_012
+      description: log1pf (-1.0)=-1.0
+      input: [0xbf800000]
+      expect: [0xff800000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+
+    - id: log1p_013
+      description: log1pf (1.5)=1.5
+      input: [0x3fc00000]
+      expect: [0x3f7b0f9b]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: log1p_014
+      description: log1pf (-0.5)=-0.5
+      input: [0xbf000000]
+      expect: [0xbecc8ed8]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: log1p_015
+      description: log1pf (qnan)=qnan
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: log1p_016
+      description: log1pf (snan)=snan
+      input: [0x7f800001]
+      expect: [0x7fc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+# Test cases from gtests test_log1p_data.h
+#-------------------------------
+    - id: log1p_001
+      description: "POS_SNAN_F32:  log1p(sNaN) -> qNaN (invalid)"
+      input: [0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_002
+      description: "POS_QNAN_F32:  log1p(+qNaN) -> +qNaN"
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: log1p_003
+      description: "NEG_QNAN_F32:  log1p(-qNaN) -> +qNaN"
+      input: [0xfff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: log1p_004
+      description: "POS_INF_F32: log1p(+inf) -> +inf"
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: log1p_005
+      description: "NEG_INF_F32: log1p(-inf) -> -inf (invalid)"
+      input: [0xff800000]
+      expect: [0xff800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_006
+      description: "POS_ONE_F32: log1p(1.0) ≈ 0.693147"
+      input: [0x3f800000]
+      expect: [0x3f317218]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_007
+      description: "NEG_ONE_F32: log1p(-1.0) -> -inf (divide by zero)"
+      input: [0xbf800000]
+      expect: [0xff800000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+    - id: log1p_008
+      description: "NEG_ZERO_F32: log1p(-0.0) -> -0.0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: log1p_009
+      description: "POS_ZERO_F32: log1p(+0.0) -> +0.0"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: log1p_010
+      description: "POS_PI_F32: log1p(π) ≈ 1.42108"
+      input: [0x40490fd8]
+      expect: [0x3fb5e5f7]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_011
+      description: "NEG_PI_F32: log1p(-π) -> NaN (invalid)"
+      input: [0xc0490fd8]
+      expect: [0xfff00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_012
+      description: "log1p(-1.0) duplicate test"
+      input: [0xbf800000]
+      expect: [0xff800000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+    - id: log1p_013
+      description: "log1p(-0.992188) ≈ -4.5345"
+      input: [0xbf7e0000]
+      expect: [0xc09b43d5]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_014
+      description: "log1p(-0.984375) ≈ -4.1673"
+      input: [0xbf7c0000]
+      expect: [0xc0851592]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_015
+      description: "log1p(-0.496521) ≈ -0.683396"
+      input: [0xbefdb976]
+      expect: [0xbf2f2e21]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_016
+      description: "log1p(0.0) -> 0.0"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: log1p_017
+      description: "log1p(1.0) ≈ 0.693147"
+      input: [0x3f800000]
+      expect: [0x3f317218]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_018
+      description: "log1p(-0.999999) ≈ -13.8155"
+      input: [0xbf7ffffe]
+      expect: [0xc17f1402]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_019
+      description: "log1p(2.14159...) ≈ 1.14473"
+      input: [0x40090fdb]
+      expect: [0x3f928683]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_020
+      description: "log1p(5.28319...) ≈ 1.83258"
+      input: [0x40a90fdb]
+      expect: [0x3feb3f8e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_021
+      description: "log1p(9.0) ≈ 2.30259"
+      input: [0x41100000]
+      expect: [0x40135d8e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_022
+      description: "log1p(999.0) ≈ 6.90777"
+      input: [0x4479c000]
+      expect: [0x40dd0c55]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_023
+      description: "log1p(63.0) ≈ 4.1589"
+      input: [0x427c0000]
+      expect: [0x40851592]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_024
+      description: "log1p(86.5) ≈ 4.46591"
+      input: [0x42ad0000]
+      expect: [0x408f17aa]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_025
+      description: "log1p(87.0) ≈ 4.46755"
+      input: [0x42ae0000]
+      expect: [0x408f4658]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_026
+      description: "log1p(95.0) ≈ 4.55389"
+      input: [0x42be0000]
+      expect: [0x40920f24]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_027
+      description: "log1p(-88.5) -> NaN (invalid)"
+      input: [0xc2b10000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_028
+      description: "log1p(-113.0) -> NaN (invalid)"
+      input: [0xc2e20000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_029
+      description: "log1p(-129.0) -> NaN (invalid)"
+      input: [0xc3010000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_030
+      description: "log1p(-88.3369) -> NaN (invalid)"
+      input: [0xc2b0ac4f]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_031
+      description: "log1p(-88.337) -> NaN (invalid)"
+      input: [0xc2b0ac50]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_032
+      description: "log1p(-104.0) -> NaN (invalid)"
+      input: [0xc2d00000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_033
+      description: "log1p(87.8924) ≈ 4.4756"
+      input: [0x42af7216]
+      expect: [0x408f895b]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_034
+      description: "log1p(87.8924) ≈ 4.4756"
+      input: [0x42af7217]
+      expect: [0x408f895b]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_035
+      description: "log1p(87.8924) ≈ 4.47561"
+      input: [0x42af7218]
+      expect: [0x408f895c]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_036
+      description: "log1p(8.59e+09) ≈ 22.8741"
+      input: [0x50000000]
+      expect: [0x41b6fda9]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_037
+      description: "log1p(-35.5549) -> NaN (invalid)"
+      input: [0xc20e1eb8]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_038
+      description: "log1p(-7102.11) -> NaN (invalid)"
+      input: [0xc6de68b6]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_039
+      description: "log1p(-1.3) -> NaN (invalid)"
+      input: [0xbfa66666]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_040
+      description: "log1p(-1.64063) -> NaN (invalid)"
+      input: [0xbfd23904]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_041
+      description: "log1p(-1.5) -> NaN (invalid)"
+      input: [0xbfc00000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_042
+      description: "log1p(-0.7) ≈ -1.20397"
+      input: [0xbf333333]
+      expect: [0xbf9a1bc8]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_043
+      description: "log1p(-0.5) ≈ -0.693147"
+      input: [0xbf000000]
+      expect: [0xbf317218]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_044
+      description: "log1p(33.5549) ≈ 3.51596"
+      input: [0x42061eb8]
+      expect: [0x4062ad51]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_045
+      description: "log1p(7099.11) ≈ 8.86849"
+      input: [0x46de64b6]
+      expect: [0x41241aae]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_046
+      description: "log1p(-101.0) -> NaN (invalid)"
+      input: [0xc2ca0000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_047
+      description: "log1p(99.0) ≈ 4.60517"
+      input: [0x42c60000]
+      expect: [0x40935d8e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_048
+      description: "sNaN -> qNaN"
+      input: [0x7f800001]
+      expect: [0x7fc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_049
+      description: "sNaN -> qNaN"
+      input: [0xff800001]
+      expect: [0xffc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_050
+      description: "qNaN"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: log1p_051
+      description: ""
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: log1p_052
+      description: ""
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: log1p_053
+      description: ""
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: log1p_054
+      description: ""
+      input: [0x3f800000]
+      expect: [0x3f317218]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_055
+      description: "log1p(-1.0) -> qNaN"
+      input: [0xbf800000]
+      expect: [0x7fc00000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+    - id: log1p_056
+      description: "log1p(+0.0) -> +0.0"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: log1p_057
+      description: "log1p(-0.0) -> -0.0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: log1p_058
+      description: ""
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+    - id: log1p_059
+      description: ""
+      input: [0x807fffff]
+      expect: [0x807fffff]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+    - id: log1p_060
+      description: ""
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+    - id: log1p_061
+      description: ""
+      input: [0x80000001]
+      expect: [0x80000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+    - id: log1p_062
+      description: ""
+      input: [0x7f7fffff]
+      expect: [0x42b17218]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_063
+      description: ""
+      input: [0xff7fffff]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_064
+      description: "Smallest positive normal"
+      input: [0x00800000]
+      expect: [0x00800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_065
+      description: "Smallest negative normal"
+      input: [0x80800000]
+      expect: [0x80800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_066
+      description: ""
+      input: [0x3d800000]
+      expect: [0x3d785186]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_067
+      description: ""
+      input: [0x3cf5c28f]
+      expect: [0x3cf2254d]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_068
+      description: ""
+      input: [0x3f880000]
+      expect: [0x3f3952bf]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_069
+      description: ""
+      input: [0xbf800001]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_070
+      description: ""
+      input: [0xbf7fffff]
+      expect: [0xc1851592]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_071
+      description: ""
+      input: [0xbf7fff58]
+      expect: [0xc1382f62]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_072
+      description: ""
+      input: [0xbf7ae148]
+      expect: [0xc07a5e9a]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_073
+      description: ""
+      input: [0x3fc90fdb]
+      expect: [0x3f71b81f]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_074
+      description: ""
+      input: [0x3c000000]
+      expect: [0x3bff0153]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_075
+      description: ""
+      input: [0x3f012345]
+      expect: [0x3ed11ce8]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_076
+      description: ""
+      input: [0x40000000]
+      expect: [0x3f8c9f54]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_077
+      description: ""
+      input: [0x40490fdb]
+      expect: [0x3fb5e5f7]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_078
+      description: ""
+      input: [0x40c90fdb]
+      expect: [0x3ffe271a]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_079
+      description: ""
+      input: [0x41200000]
+      expect: [0x4019771e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_080
+      description: ""
+      input: [0x447a0000]
+      expect: [0x40dd1485]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_081
+      description: ""
+      input: [0x71200000]
+      expect: [0x4289b07e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_082
+      description: ""
+      input: [0xc2af0000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_083
+      description: ""
+      input: [0xc2e00000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_084
+      description: ""
+      input: [0xc3000000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_085
+      description: ""
+      input: [0xc2800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log1p_086
+      description: ""
+      input: [0x3fdbf0a8]
+      expect: [0x3f7fffff]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_087
+      description: ""
+      input: [0x3fdbf0a9]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_088
+      description: ""
+      input: [0x3fdbf0aa]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log1p_089
+      description: ""
+      input: [0x3fdbf0ab]
+      expect: [0x3f800001]
+      expect_exception: [inexact]
+      variants: [ss]
+#-------------------------------
+#Double precision
+    - id: log1p_001
+      description: log1p (0.0)=0.0
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: log1p_002
+      description: log1p (-0.0)=-0.0
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: log1p_003
+      description: log1p (inf)=inf
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: log1p_004
+      description: log1p (-inf)=-inf
+      input: [0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: log1p_005
+      description: log1p (-nan)=-nan
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: log1p_006
+      description: log1p (+nan)=+nan
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: log1p_007
+      description: log1p (2.2250738585072014e-308)=2.2250738585072014e-308
+      input: [0x0010000000000000]
+      expect: [0x3c8fffffffffffff]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: log1p_008
+      description: log1p (-2.2250738585072014e-308)=-2.2250738585072014e-308
+      input: [0x8010000000000000]
+      expect: [0xbc8fffffffffffff]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: log1p_009
+      description: log1p (5e-324)=5e-324
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: log1p_010
+      description: log1p (-5e-324)=-5e-324
+      input: [0x8000000000000001]
+      expect: [0x8000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: log1p_011
+      description: log1p (1.0)=1.0
+      input: [0x3ff0000000000000]
+      expect: [0x3fe62e42fefa39ef]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: log1p_012
+      description: log1p (-1.0)=-1.0
+      input: [0xbff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: [divbyzero]
+      variants: [sd]
+
+    - id: log1p_013
+      description: log1p (1.5)=1.5
+      input: [0x3ff8000000000000]
+      expect: [0x3fe9cd9f55f972f7]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: log1p_014
+      description: log1p (-0.5)=-0.5
+      input: [0xbfe0000000000000]
+      expect: [0xbfd2b803f4b5d2f1]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: log1p_015
+      description: log1p (qnan)=qnan
+      input: [0x7ff0000000000001]
+      expect: [0x7ff8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: log1p_016
+      description: log1p (snan)=snan
+      input: [0x7ff4001000000000]
+      expect: [0x7ff4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+# Test cases from gtests test_log1p_data.h
+#-------------------------------
+    - id: log1p_001
+      description: ""
+      input: [0x7ff4001000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log1p_002
+      description: ""
+      input: [0xfff2000000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log1p_003
+      description: ""
+      input: [0x7ff4001000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log1p_004
+      description: ""
+      input: [0xfff2000000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log1p_005
+      description: ""
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+    - id: log1p_006
+      description: ""
+      input: [0xfff8000000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+    - id: log1p_007
+      description: ""
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: log1p_008
+      description: ""
+      input: [0xfff0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log1p_009
+      description: ""
+      input: [0x3ff0000000000000]
+      expect: [0x3fe62e42fefa39ef]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_010
+      description: ""
+      input: [0xbff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: [divbyzero]
+      variants: [sd]
+    - id: log1p_011
+      description: ""
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: log1p_012
+      description: ""
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: log1p_013
+      description: ""
+      input: [0x400921fb54442d18]
+      expect: [0x3ff6bcbed6499138]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_014
+      description: ""
+      input: [0xc00921fb54442d18]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log1p_015
+      description: ""
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: log1p_016
+      description: ""
+      input: [0x3ee0624dd2f1a9fc]
+      expect: [0x3ee06249a135304f]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_017
+      description: ""
+      input: [0x3ef0624dc31c6ca1]
+      expect: [0x3ef062455fa6667c]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_018
+      description: ""
+      input: [0x3fe02467be553ac5]
+      expect: [0x3fda239be0d17dae]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_019
+      description: ""
+      input: [0x3ff0000000000000]
+      expect: [0x3fe62e42fefa39ef]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_020
+      description: ""
+      input: [0x4000000000000000]
+      expect: [0x3ff193ea7aad030b]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_021
+      description: ""
+      input: [0x3d3c25c268497682]
+      expect: [0x3d3c25c2684974f6]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_022
+      description: ""
+      input: [0x400921fb60000000]
+      expect: [0x3ff6bcbed6499138]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_023
+      description: ""
+      input: [0x401921fb54442d18]
+      expect: [0x3fffc4e3465e2150]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_024
+      description: ""
+      input: [0x4024000000000000]
+      expect: [0x40032ee3b77f374c]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_025
+      description: ""
+      input: [0x408f400000000000]
+      expect: [0x401ba2909ce4f864]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_026
+      description: ""
+      input: [0x4060000000000000]
+      expect: [0x40137072a9b5b6cb]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_027
+      description: ""
+      input: [0x4086240000000000]
+      expect: [0x401a421c25960b33]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_028
+      description: ""
+      input: [0x4086280000000000]
+      expect: [0x401a42d4d1ff8154]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_029
+      description: ""
+      input: [0x408c000000000000]
+      expect: [0x401b323bb32ce0e3]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_030
+      description: ""
+      input: [0xc086240000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log1p_031
+      description: ""
+      input: [0xc089600000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log1p_032
+      description: ""
+      input: [0xc070000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log1p_033
+      description: ""
+      input: [0xc086232bdd7abcd2]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log1p_034
+      description: ""
+      input: [0xc086232bdd7abcd3]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log1p_035
+      description: ""
+      input: [0xc087480000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log1p_036
+      description: ""
+      input: [0x40862e42fefa39ee]
+      expect: [0x401a43f5a6e6b0c2]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_037
+      description: ""
+      input: [0x40862e42fefa39ef]
+      expect: [0x401a43f5a6e6b0c2]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_038
+      description: ""
+      input: [0x40862e42fefa39ff]
+      expect: [0x401a43f5a6e6b0c5]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_039
+      description: ""
+      input: [0x4200000000000000]
+      expect: [0x4036dfb516f28bbf]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_040
+      description: ""
+      input: [0xc05021eb851eb852]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log1p_041
+      description: ""
+      input: [0xc0ff5d35b020c49c]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log1p_042
+      description: ""
+      input: [0xbfd3333333333333]
+      expect: [0xbfd6d3c324e13f4e]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_043
+      description: ""
+      input: [0xbfe48e410b630a91]
+      expect: [0xbff073ae445440c6]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_044
+      description: ""
+      input: [0xbfe0000000000000]
+      expect: [0xbfe62e42fefa39ef]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_045
+      description: ""
+      input: [0xbfe0000000000000]
+      expect: [0xbfe62e42fefa39ef]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_046
+      description: ""
+      input: [0x3fd3333333333333]
+      expect: [0x3fd0ca937be1b9dc]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_047
+      description: ""
+      input: [0x3fe48e410b630a91]
+      expect: [0x3fdfc0b68febaad0]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_048
+      description: ""
+      input: [0x3fe0000000000000]
+      expect: [0x3fd9f323ecbf984c]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_049
+      description: ""
+      input: [0x405021eb851eb852]
+      expect: [0x4010bae3641c731e]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_050
+      description: ""
+      input: [0x40ff5d35b020c49c]
+      expect: [0x402786e154d7d30b]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log1p_051
+      description: ""
+      input: [0xc08f400000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log1p_052
+      description: ""
+      input: [0x408f400000000000]
+      expect: [0x401ba2909ce4f864]
+      expect_exception: [inexact]
+      variants: [sd]
+
+#-------------------------------

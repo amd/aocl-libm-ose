@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -24,11 +24,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-
 #include <climits>
 #include <limits>
 #include <cmath>
+#include <cstring>
 #include <type_traits>
 #include "almstruct.h"
 #include "almtest.h"
@@ -117,14 +116,27 @@ long double Get() {
         break;
     }
 
-    int myexp = ((u128 >> nmantissa) & nexp_mask) - nexp_bias;
-    myexp = myexp - nmantissa; /* e-p-1 */
+    int biased_exp = (u128 >> nmantissa) & nexp_mask;
+
+    /* Handle subnormals: use minimum exponent instead of 0
+     * For subnormals, the effective exponent is (1 - bias), not (0 - bias)
+     * This matters on Windows where long double == double and powl(2, -1075) underflows
+     */
+    int actual_exp;
+    if (biased_exp == 0) {
+      // Subnormal: effective exponent is 1 - bias (e.g., -1022 for double)
+      actual_exp = 1 - nexp_bias;
+    } else {
+      // Normal: exponent is biased_exp - bias
+      actual_exp = biased_exp - nexp_bias;
+    }
+    int myexp = actual_exp - nmantissa; /* e-p-1 */
 
     /* 2^(e-p-1) */
     if (FloatWidth::E_F32 == width)
       return pow(2, myexp);
     else
-      return powl(2,myexp);
+      return powl(2, myexp);
   }
 };
 
@@ -135,6 +147,72 @@ template <typename T>
 bool isNInf(T _x) {
   return isinf(_x) && signbit(_x);
 }
+
+/*
+ * Windows-only: Helper functions to compute ULP using integer bit comparison.
+ * This avoids floating-point underflow issues on Windows where long double == double
+ * and powl(2, -1074) underflows to zero, causing incorrect ULP calculations for subnormals.
+ * On Linux, long double has 80-bit extended precision, so this is not needed.
+ */
+#if (defined _WIN32 || defined _WIN64)
+static double ComputeUlpBitwise(double output, double expected) {
+  // Reinterpret as integers for bit-level comparison
+  uint64_t out_bits, exp_bits;
+  std::memcpy(&out_bits, &output, sizeof(double));
+  std::memcpy(&exp_bits, &expected, sizeof(double));
+
+  // Handle sign: if same sign, simple difference; if different signs, this is a large error
+  bool out_neg = (out_bits >> 63) != 0;
+  bool exp_neg = (exp_bits >> 63) != 0;
+
+  if (out_neg != exp_neg) {
+    // Different signs - return sum of distances from zero
+    uint64_t out_mag = out_bits & 0x7FFFFFFFFFFFFFFFULL;
+    uint64_t exp_mag = exp_bits & 0x7FFFFFFFFFFFFFFFULL;
+    return (double)(out_mag + exp_mag);
+  }
+
+  // Same sign - compute absolute difference in bit representation
+  uint64_t out_mag = out_bits & 0x7FFFFFFFFFFFFFFFULL;
+  uint64_t exp_mag = exp_bits & 0x7FFFFFFFFFFFFFFFULL;
+
+  if (out_mag >= exp_mag)
+    return (double)(out_mag - exp_mag);
+  else
+    return (double)(exp_mag - out_mag);
+}
+
+static double ComputeUlpBitwise(float output, float expected) {
+  uint32_t out_bits, exp_bits;
+  std::memcpy(&out_bits, &output, sizeof(float));
+  std::memcpy(&exp_bits, &expected, sizeof(float));
+
+  bool out_neg = (out_bits >> 31) != 0;
+  bool exp_neg = (exp_bits >> 31) != 0;
+
+  if (out_neg != exp_neg) {
+    uint32_t out_mag = out_bits & 0x7FFFFFFFU;
+    uint32_t exp_mag = exp_bits & 0x7FFFFFFFU;
+    return (double)(out_mag + exp_mag);
+  }
+
+  uint32_t out_mag = out_bits & 0x7FFFFFFFU;
+  uint32_t exp_mag = exp_bits & 0x7FFFFFFFU;
+
+  if (out_mag >= exp_mag)
+    return (double)(out_mag - exp_mag);
+  else
+    return (double)(exp_mag - out_mag);
+}
+
+/**
+ * Helper to check if a value is subnormal (denormalized)
+ */
+template <typename T>
+static bool is_subnormal(T x) {
+  return std::fpclassify(x) == FP_SUBNORMAL;
+}
+#endif  // _WIN32 || _WIN64
 
 /**
  * ComputeUlp() - given two outputs, computes ULP
@@ -167,21 +245,43 @@ double ComputeUlp(FAT output, FAT_L _expected) {
       f_low = std::numeric_limits<FAT>::lowest();  // -FLT_MAX, -DBL_MAX etc
 #endif
 
-  // if both are NAN
-  if (isnan(output) && isnan(expected)) return 0.0;
+  // Handle NaN cases
+  if (isnan(output) && isnan(expected)) {
+    // Both are NaN: check if sign bits match
+    if (signbit(output) == signbit(expected)) {
+      return 0.0;  // Same sign NaN (payload ignored)
+    } else {
+      return INFINITY;  // Different sign NaN (e.g., -nan vs nan)
+    }
+  }
 
-  // if either one is NAN
-  if (isnan(output) || isnan(expected)) return INFINITY;
+  // if either one (but not both) is NAN
+  if (isnan(output) || isnan(expected))
+      return INFINITY;
 
-  // if output and expected are infinity
-  if (isinf(output) && (isinf(expected) || (expected > fmax))) return 0.0;
+  // if both are zero (handles +0 == -0)
+  if (output == 0 && expected == 0) return 0.0;
 
-  // if output and expected are -infinity
-  if (isNInf<FAT>(output) && (isNInf<FAT>(expected) || (expected < f_low)))
-    return 0.0;
+  // Handle infinity cases
+  if (isinf(output) && isinf(expected)) {
+    // Both are infinity: check if sign bits match
+    if (signbit(output) == signbit(expected)) {
+      return 0.0;  // Same sign infinity (both +inf or both -inf)
+    } else {
+      return INFINITY;  // Different sign infinity (e.g., +inf vs -inf)
+    }
+  }
 
-  // if output and input are infinity with opposite signs
-  if (isinf(output) && isinf(expected)) return INFINITY;
+#if (defined _WIN32 || defined _WIN64)
+  // Windows-only: Handle subnormals and zeros using bitwise comparison to avoid
+  // floating-point underflow in ULP calculation (long double == double on Windows,
+  // so powl(2,-1074) underflows to zero). On Linux, this is not needed because
+  // long double has 80-bit extended precision.
+  if (is_subnormal(output) || is_subnormal(expected) ||
+      output == 0 || expected == 0) {
+    return ComputeUlpBitwise(output, expected);
+  }
+#endif
 
   // If output and expected are finite (The most common case)
   if (isfinite(output)) {
@@ -210,11 +310,11 @@ double ComputeUlp(FAT output, FAT_L _expected) {
 
 }  // namespace ALM
 
-double getUlp(float aop, double exptd) {
+double getUlpr(float aop, double exptd) {
   return ALM::ComputeUlp(aop, exptd);
 }
 
-double getUlp(double aop, long double exptd) {
+double getUlpr(double aop, long double exptd) {
   return ALM::ComputeUlp(aop, exptd);
 }
 
@@ -223,7 +323,7 @@ double getUlp(double aop, long double exptd) {
  * The magnitudes of actual and expected outputs will determine the resultant ULP.
  */
 
-double getUlp(float _Complex aop, double _Complex exptd) {
+double getUlpc(float _Complex aop, double _Complex exptd) {
   #if (defined _WIN32 || defined _WIN64 )
     float f_aop = abs(complex<float> (__real__ aop, __imag__ aop));
     double d_exptd = abs(complex<double> (__real__ exptd, __imag__ exptd));
@@ -234,23 +334,72 @@ double getUlp(float _Complex aop, double _Complex exptd) {
   return ALM::ComputeUlp(f_aop, d_exptd);
 }
 
-double getUlp(double _Complex aop, long double  _Complex exptd) {
-  #if (defined _WIN32 || defined _WIN64 )
-    double d_aop = abs(complex<double>(__real__ aop, __imag__ aop));
-    long double ld_exptd = abs(complex<long double>(__real__ exptd, __imag__ exptd));
-  #else
-    double d_aop = cabs(aop);
-    long double ld_exptd = cabsl(exptd);
-  #endif
+#if (defined _WIN32 || defined _WIN64)
+double getUlpc(double _Complex aop, double _Complex exptd) {
+  double d_aop = abs(complex<double>(__real__ aop, __imag__ aop));
+  double d_exptd = abs(complex<double>(__real__ exptd, __imag__ exptd));
+  return ALM::ComputeUlp(d_aop, d_exptd);
+}
+// Overload for long double _Complex - delegates to double _Complex version
+// (long double == double on Windows)
+double getUlpc(double _Complex aop, long double _Complex exptd) {
+  return getUlpc(aop, (double _Complex)exptd);
+}
+#else
+double getUlpc(double _Complex aop, long double _Complex exptd) {
+  double d_aop = cabs(aop);
+  long double ld_exptd = cabsl(exptd);
   return ALM::ComputeUlp(d_aop, ld_exptd);
 }
+#endif
+// Helper template to check and report infinity/NaN in ULP computation with input values
+template<typename T, typename T_L>
+inline double CheckAndReportUlp(T aop, T_L exptd, double ulp_result)
+{
+  if (std::isinf(ulp_result)) {
+    std::cout << "ULP computation resulted in Infinity - aop: " << aop << ", exptd: " << exptd << ", ulp: " << ulp_result << std::endl;
+  } else if (std::isnan(ulp_result)) {
+    std::cout << "ULP computation resulted in NaN - aop: " << aop << ", exptd: " << exptd << ", ulp: " << ulp_result << std::endl;
+  }
+  return ulp_result;
+}
+
+double getUlp(float aop, double exptd) {
+  return CheckAndReportUlp(aop, exptd, getUlpr(aop, exptd));
+}
+
+double getUlp(double aop, long double exptd) {
+  return CheckAndReportUlp(aop, exptd, getUlpr(aop, exptd));
+}
+
+double getUlp(float _Complex aop, double _Complex exptd) {
+  return CheckAndReportUlp(aop, exptd, getUlpc(aop, exptd));
+}
+
+#if (defined _WIN32 || defined _WIN64)
+double getUlp(double _Complex aop, double _Complex exptd) {
+  return CheckAndReportUlp(aop, exptd, getUlpc(aop, exptd));
+}
+// Overload for long double _Complex - delegates to double _Complex version
+// (long double == double on Windows)
+double getUlp(double _Complex aop, long double _Complex exptd) {
+  return getUlp(aop, (double _Complex)exptd);
+}
+#else
+double getUlp(double _Complex aop, long double _Complex exptd) {
+  return CheckAndReportUlp(aop, exptd, getUlpc(aop, exptd));
+}
+#endif
 
 bool update_ulp(double ulp, double &max_ulp_err, double ulp_threshold)
 {
+/* Removed early return for infinite ULP to allow tracking and logging via CheckAndReportUlp.
+ * Infinite ULP values now update max_ulp_err and are logged for debugging.
+ * The threshold comparison below will still correctly fail for infinite values.
   if (isinf(ulp)) {
     return false;
   }
-
+*/
   if ((ulp - max_ulp_err) > 0.0) {
     LIBM_TEST_DPRINTF(VERBOSE2, ,"MaxULPError: ",max_ulp_err,
                        "Ulp: ", ulp);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -32,6 +32,7 @@
 #pragma once
 
 #include <iostream>
+#include <type_traits>
 
 namespace ALM {
 
@@ -158,6 +159,7 @@ enum class RangeType {
   E_Simple,
   E_Random,
   E_Linear,
+  E_Binadex,  /* Uniform coverage of all IEEE 754 binades */
 
   E_MAX
 };
@@ -172,6 +174,9 @@ inline std::ostream& operator<<(std::ostream& os, RangeType& rt) {
       break;
     case RangeType::E_Linear:
       os << "Linear";
+      break;
+    case RangeType::E_Binadex:
+      os << "Binadex";
       break;
     default:
       os << "Unknown";
@@ -191,6 +196,7 @@ enum class TestType {
   E_SpecialCase = 1 << 3,
   E_CornerCase  = 1 << 4,
   E_Performance = 1 << 5,
+  E_InPlace     = 1 << 6,
 
   E_MAX
 };
@@ -209,8 +215,11 @@ inline std::ostream& operator<<(std::ostream& os, TestType& cat) {
     case TestType::E_Performance:
       os << "PERFORMANCE";
       break;
+    case TestType::E_InPlace:
+      os << "IN-PLACE";
+      break;
     default:
-      os << "UKNOWN";
+      os << "UNKNOWN";
       break;
   }
   return os;
@@ -228,5 +237,25 @@ enum class TestFailType {
 
   E_MAX
 };
+
+
+/* ===================================================================
+ * ULP (Units in Last Place) thresholds for accuracy testing
+ * =================================================================== */
+#define SCALAR_ULPTHD  2.0      /*Actually for scalar cases ulpthd <= 0.5  */      /* ULP threshold for scalar tests */
+#define VECTOR_ULPTHD  4.0      /* ULP threshold for vector tests */
+
+/* ===================================================================
+ * Guard Zone Configuration for In-Place Memory Boundary Checking
+ * =================================================================== */
+// Guard zone size in elements (sufficient to detect AVX-512 overreach)
+// - For float:  16 elements = 64 bytes (16 floats)
+// - For double: 8  elements = 64 bytes (8 doubles)
+#define ALM_GUARD_ZONE_SIZE 16
+
+// Sentinel patterns for guard zone corruption detection
+#define ALM_GUARD_PATTERN_F32  0xDEADBEEF            // 32-bit pattern for float
+#define ALM_GUARD_PATTERN_F64  0xDEADBEEFCAFEBABEULL // 64-bit pattern for double
+
 } // namespace ALM
 #endif

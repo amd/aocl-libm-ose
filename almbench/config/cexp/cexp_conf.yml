@@ -1,0 +1,1278 @@
+- test_sequence: unit_tests_cexp
+  ignore_exceptions: [underflow, inexact]
+  function: cexp
+  test_sets:
+  - id: special-values
+    description: Special values for complex exponential (from test_cexp_data.h)
+    tests:
+
+# Double precision (cexp) - 97 tests
+
+    - id: cexp_001
+      description: "cexp(0.0+0.0i)"
+      input: ["0x0000000000000000+ i 0x0000000000000000"]
+      expect: ["0x3ff0000000000000+ i 0x0000000000000000"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_002
+      description: "cexp(-0.0+0.0i)"
+      input: ["0x8000000000000000+ i 0x0000000000000000"]
+      expect: ["0x3ff0000000000000+ i 0x0000000000000000"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_003
+      description: "cexp(0.0+-0.0i)"
+      input: ["0x0000000000000000+ i 0x8000000000000000"]
+      expect: ["0x3ff0000000000000+ i 0x8000000000000000"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_004
+      description: "cexp(-0.0+-0.0i)"
+      input: ["0x8000000000000000+ i 0x8000000000000000"]
+      expect: ["0x3ff0000000000000+ i 0x8000000000000000"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_005
+      description: "cexp(inf+0.0i)"
+      input: ["0x7ff0000000000000+ i 0x0000000000000000"]
+      expect: ["0x7ff0000000000000+ i 0x0000000000000000"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_006
+      description: "cexp(-inf+0.0i)"
+      input: ["0xfff0000000000000+ i 0x0000000000000000"]
+      expect: ["0x0000000000000000+ i 0x0000000000000000"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_007
+      description: "cexp(-inf+-0.0i)"
+      input: ["0xfff0000000000000+ i 0x8000000000000000"]
+      expect: ["0x0000000000000000+ i 0x8000000000000000"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_008
+      description: "cexp(-inf+infi)"
+      input: ["0xfff0000000000000+ i 0x7ff0000000000000"]
+      expect: ["0x0000000000000000+ i 0x0000000000000000"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_009
+      description: "cexp(inf+infi)"
+      input: ["0x7ff0000000000000+ i 0x7ff0000000000000"]
+      expect: ["0x7ff0000000000000+ i 0x7ff87ff7fdedffff"]
+      expect_exception: [invalidoperation]
+      variants: [sz]
+
+    - id: cexp_010
+      description: "cexp(inf+-infi)"
+      input: ["0x7ff0000000000000- i 0x7ff0000000000000"]
+      expect: ["0x7ff0000000000000+ i 0x7ff87ff7fdedffff"]
+      expect_exception: [invalidoperation]
+      variants: [sz]
+
+    - id: cexp_011
+      description: "cexp(-inf+nani)"
+      input: ["0xfff0000000000000+ i 0x7ff87ff7fdedffff"]
+      expect: ["0x0000000000000000+ i 0x0000000000000000"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_012
+      description: "cexp(inf+nani)"
+      input: ["0x7ff0000000000000+ i 0x7ff87ff7fdedffff"]
+      expect: ["0x7ff0000000000000+ i 0x7ff87ff7fdedffff"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_013
+      description: "cexp(8.1+infi)"
+      input: ["0x4020333333333333+ i 0x7ff0000000000000"]
+      expect: ["0x7ff87ff7fdedffff+ i 0x7ff87ff7fdedffff"]
+      expect_exception: [invalidoperation]
+      variants: [sz]
+
+    - id: cexp_014
+      description: "cexp(0.0+infi)"
+      input: ["0x0000000000000000+ i 0x7ff0000000000000"]
+      expect: ["0x7ff87ff7fdedffff+ i 0x7ff87ff7fdedffff"]
+      expect_exception: [invalidoperation]
+      variants: [sz]
+
+    - id: cexp_015
+      description: "cexp(-0.0+infi)"
+      input: ["0x8000000000000000+ i 0x7ff0000000000000"]
+      expect: ["0x7ff87ff7fdedffff+ i 0x7ff87ff7fdedffff"]
+      expect_exception: [invalidoperation]
+      variants: [sz]
+
+    - id: cexp_016
+      description: "cexp(1.0+infi)"
+      input: ["0x3ff0000000000000+ i 0x7ff0000000000000"]
+      expect: ["0x7ff87ff7fdedffff+ i 0x7ff87ff7fdedffff"]
+      expect_exception: [invalidoperation]
+      variants: [sz]
+
+    - id: cexp_017
+      description: "cexp(-5.0+-infi)"
+      input: ["0xc014000000000000- i 0x7ff0000000000000"]
+      expect: ["0x7ff87ff7fdedffff+ i 0x7ff87ff7fdedffff"]
+      expect_exception: [invalidoperation]
+      variants: [sz]
+
+    - id: cexp_018
+      description: "cexp(-100.0+infi)"
+      input: ["0xc059000000000000+ i 0x7ff0000000000000"]
+      expect: ["0x7ff87ff7fdedffff+ i 0x7ff87ff7fdedffff"]
+      expect_exception: [invalidoperation]
+      variants: [sz]
+
+    - id: cexp_019
+      description: "cexp(nan+0.0i)"
+      input: ["0x7ff87ff7fdedffff+ i 0x0000000000000000"]
+      expect: ["0x7ff87ff7fdedffff+ i 0x0000000000000000"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_020
+      description: "cexp(nan+3.1i)"
+      input: ["0x7ff87ff7fdedffff+ i 0x4008cccccccccccd"]
+      expect: ["0x7ff87ff7fdedffff+ i 0x7ff87ff7fdedffff"]
+      expect_exception: [invalidoperation]
+      variants: [sz]
+
+    - id: cexp_021
+      description: "cexp(nan+nani)"
+      input: ["0x7ff87ff7fdedffff+ i 0x7ff87ff7fdedffff"]
+      expect: ["0x7ff87ff7fdedffff+ i 0x7ff87ff7fdedffff"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_022
+      description: "cexp(nan+infi)"
+      input: ["0x7ff87ff7fdedffff+ i 0x7ff0000000000000"]
+      expect: ["0x7ff87ff7fdedffff+ i 0x7ff87ff7fdedffff"]
+      expect_exception: [invalidoperation]
+      variants: [sz]
+
+    - id: cexp_023
+      description: "cexp(nan+-infi)"
+      input: ["0x7ff87ff7fdedffff- i 0x7ff0000000000000"]
+      expect: ["0x7ff87ff7fdedffff+ i 0x7ff87ff7fdedffff"]
+      expect_exception: [invalidoperation]
+      variants: [sz]
+
+    - id: cexp_024
+      description: "cexp(8.1+nani)"
+      input: ["0x4020333333333333+ i 0x7ff87ff7fdedffff"]
+      expect: ["0x7ff87ff7fdedffff+ i 0x7ff87ff7fdedffff"]
+      expect_exception: [invalidoperation]
+      variants: [sz]
+
+    - id: cexp_025
+      description: "cexp(-inf+3.141592653589793i)"
+      input: ["0xfff0000000000000+ i 0x400921fb54442d18"]
+      expect: ["0x8000000000000000+ i 0x0000000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_026
+      description: "cexp(-inf+1.5707963267948966i)"
+      input: ["0xfff0000000000000+ i 0x3ff921fb54442d18"]
+      expect: ["0x0000000000000000+ i 0x0000000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_027
+      description: "cexp(-inf+1.0i)"
+      input: ["0xfff0000000000000+ i 0x3ff0000000000000"]
+      expect: ["0x0000000000000000+ i 0x0000000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_028
+      description: "cexp(-inf+-1.0i)"
+      input: ["0xfff0000000000000- i 0x3ff0000000000000"]
+      expect: ["0x0000000000000000+ i 0x8000000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_029
+      description: "cexp(-inf+4.71238898038469i)"
+      input: ["0xfff0000000000000+ i 0x4012d97c7f3321d2"]
+      expect: ["0x8000000000000000+ i 0x8000000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_030
+      description: "cexp(inf+3.141592653589793i)"
+      input: ["0x7ff0000000000000+ i 0x400921fb54442d18"]
+      expect: ["0xfff0000000000000+ i 0x7ff0000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_031
+      description: "cexp(inf+1.5707963267948966i)"
+      input: ["0x7ff0000000000000+ i 0x3ff921fb54442d18"]
+      expect: ["0x7ff0000000000000+ i 0x7ff0000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_032
+      description: "cexp(inf+1.0i)"
+      input: ["0x7ff0000000000000+ i 0x3ff0000000000000"]
+      expect: ["0x7ff0000000000000+ i 0x7ff0000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_033
+      description: "cexp(inf+-1.0i)"
+      input: ["0x7ff0000000000000- i 0x3ff0000000000000"]
+      expect: ["0x7ff0000000000000+ i 0xfff0000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_034
+      description: "cexp(inf+0.7853981633974483i)"
+      input: ["0x7ff0000000000000+ i 0x3fe921fb54442d18"]
+      expect: ["0x7ff0000000000000+ i 0x7ff0000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_035
+      description: "cexp(inf+-0.7853981633974483i)"
+      input: ["0x7ff0000000000000- i 0x3fe921fb54442d18"]
+      expect: ["0x7ff0000000000000+ i 0xfff0000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_036
+      description: "cexp(inf+4.71238898038469i)"
+      input: ["0x7ff0000000000000+ i 0x4012d97c7f3321d2"]
+      expect: ["0xfff0000000000000+ i 0xfff0000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_037
+      description: "cexp(0.0+3.141592653589793i)"
+      input: ["0x0000000000000000+ i 0x400921fb54442d18"]
+      expect: ["0xbff0000000000000+ i 0x0000000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_038
+      description: "cexp(3.141592653589793+3.141592653589793i)"
+      input: ["0x400921fb54442d18+ i 0x400921fb54442d18"]
+      expect: ["0xc03719999999999a+ i 0x0000000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_039
+      description: "cexp(1.0+0.0i)"
+      input: ["0x3ff0000000000000+ i 0x0000000000000000"]
+      expect: ["0x4005bf0a8b145769+ i 0x0000000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_040
+      description: "cexp(-1.0+0.0i)"
+      input: ["0xbff0000000000000+ i 0x0000000000000000"]
+      expect: ["0x3fd78b56362cef38+ i 0x0000000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_041
+      description: "cexp(2.0+-0.0i)"
+      input: ["0x4000000000000000+ i 0x8000000000000000"]
+      expect: ["0x401d8e64b8d4ddae+ i 0x8000000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_042
+      description: "cexp(-1.0+-0.0i)"
+      input: ["0xbff0000000000000+ i 0x8000000000000000"]
+      expect: ["0x3fd78b56362cef38+ i 0x8000000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_043
+      description: "cexp(inf+-0.0i)"
+      input: ["0x7ff0000000000000+ i 0x8000000000000000"]
+      expect: ["0x7ff0000000000000+ i 0x8000000000000000"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_044
+      description: "cexp(nan+-0.0i)"
+      input: ["0x7ff87ff7fdedffff+ i 0x8000000000000000"]
+      expect: ["0x7ff87ff7fdedffff+ i 0x8000000000000000"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_045
+      description: "cexp(-2.0+0.0i)"
+      input: ["0xc000000000000000+ i 0x0000000000000000"]
+      expect: ["0x3fc152aaa3bf81cc+ i 0x0000000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_046
+      description: "cexp(0.5+0.0i)"
+      input: ["0x3fe0000000000000+ i 0x0000000000000000"]
+      expect: ["0x3ffa61298e1e069c+ i 0x0000000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_047
+      description: "cexp(0.0+1.0i)"
+      input: ["0x0000000000000000+ i 0x3ff0000000000000"]
+      expect: ["0x3fe14a280fb5068c+ i 0x3feaed548f090cee"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_048
+      description: "cexp(-0.0+1.0i)"
+      input: ["0x8000000000000000+ i 0x3ff0000000000000"]
+      expect: ["0x3fe14a280fb5068c+ i 0x3feaed548f090cee"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_049
+      description: "cexp(0.0+-1.0i)"
+      input: ["0x0000000000000000- i 0x3ff0000000000000"]
+      expect: ["0x3fe14a280fb5068c+ i 0xbfeaed548f090cee"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_050
+      description: "cexp(0.0+1.5707963267948966i)"
+      input: ["0x0000000000000000+ i 0x3ff921fb54442d18"]
+      expect: ["0x3c91a62633145c07+ i 0x3ff0000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_051
+      description: "cexp(0.0+-1.5707963267948966i)"
+      input: ["0x0000000000000000- i 0x3ff921fb54442d18"]
+      expect: ["0x3c91a62633145c07+ i 0xbff0000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_052
+      description: "cexp(0.0+6.283185307179586i)"
+      input: ["0x0000000000000000+ i 0x401921fb54442d18"]
+      expect: ["0x3ff0000000000000+ i 0xbcb1a62633145c07"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_053
+      description: "cexp(-0.0+6.283185307179586i)"
+      input: ["0x8000000000000000+ i 0x401921fb54442d18"]
+      expect: ["0x3ff0000000000000+ i 0xbcb1a62633145c07"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_054
+      description: "cexp(0.0+0.5235987755982988i)"
+      input: ["0x0000000000000000+ i 0x3fe0c152382d7365"]
+      expect: ["0x3febb67ae8584cab+ i 0x3fdfffffffffffff"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_055
+      description: "cexp(0.0+100.0i)"
+      input: ["0x0000000000000000+ i 0x4059000000000000"]
+      expect: ["0x3feb981dbf665fdf+ i 0xbfe03425b78c4db8"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_056
+      description: "cexp(0.0+1000.0i)"
+      input: ["0x0000000000000000+ i 0x408f400000000000"]
+      expect: ["0x3fe1ff026793f1bb+ i 0x3fea75cc150a206b"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_057
+      description: "cexp(0.0+1024.0i)"
+      input: ["0x0000000000000000+ i 0x4090000000000000"]
+      expect: ["0x3fef98669d7aedb1+ i 0xbfc44ad2614e80b1"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_058
+      description: "cexp(1.0+1024.0i)"
+      input: ["0x3ff0000000000000+ i 0x4090000000000000"]
+      expect: ["0x400578a364c6c633+ i 0xbfdb947eae47eee9"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_059
+      description: "cexp(0.0+1000000.0i)"
+      input: ["0x0000000000000000+ i 0x412e848000000000"]
+      expect: ["0x3fedf9df9906d32c+ i 0xbfd6664b2568d866"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_060
+      description: "cexp(0.0+1000000000000000.0i)"
+      input: ["0x0000000000000000+ i 0x430c6bf526340000"]
+      expect: ["0xbfe2734662053d13+ i 0x3fea255cb9598a9a"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_061
+      description: "cexp(709.0+0.0i)"
+      input: ["0x4086280000000000+ i 0x0000000000000000"]
+      expect: ["0x7fdd422d2be5dc9b+ i 0x0000000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_062
+      description: "cexp(709.5+0.0i)"
+      input: ["0x40862c0000000000+ i 0x0000000000000000"]
+      expect: ["0x7fe8cf110ed8b428+ i 0x0000000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_063
+      description: "cexp(710.0+0.0i)"
+      input: ["0x4086300000000000+ i 0x0000000000000000"]
+      expect: ["0x7ff0000000000000+ i 0x0000000000000000"]
+      expect_exception: [inexact, overflow]
+      variants: [sz]
+
+    - id: cexp_064
+      description: "cexp(710.0+1.0i)"
+      input: ["0x4086300000000000+ i 0x3ff0000000000000"]
+      expect: ["0x7ff0000000000000+ i 0x7ff0000000000000"]
+      expect_exception: [inexact, overflow]
+      variants: [sz]
+
+    - id: cexp_065
+      description: "cexp(750.0+3.141592653589793i)"
+      input: ["0x4087700000000000+ i 0x400921fb54442d18"]
+      expect: ["0xfff0000000000000+ i 0x0000000000000000"]
+      expect_exception: [inexact, overflow]
+      variants: [sz]
+
+    - id: cexp_066
+      description: "cexp(-745.0+0.0i)"
+      input: ["0xc087480000000000+ i 0x0000000000000000"]
+      expect: ["0x0000000000000000+ i 0x0000000000000000"]
+      expect_exception: [inexact, underflow]
+      variants: [sz]
+
+    - id: cexp_067
+      description: "cexp(-750.0+1.0i)"
+      input: ["0xc087700000000000+ i 0x3ff0000000000000"]
+      expect: ["0x0000000000000000+ i 0x0000000000000000"]
+      expect_exception: [inexact, underflow]
+      variants: [sz]
+
+    - id: cexp_068
+      description: "cexp(-800.0+3.141592653589793i)"
+      input: ["0xc089000000000000+ i 0x400921fb54442d18"]
+      expect: ["0x8000000000000000+ i 0x0000000000000000"]
+      expect_exception: [inexact, underflow]
+      variants: [sz]
+
+    - id: cexp_069
+      description: "cexp(-1000.0+0.0i)"
+      input: ["0xc08f400000000000+ i 0x0000000000000000"]
+      expect: ["0x0000000000000000+ i 0x0000000000000000"]
+      expect_exception: [inexact, underflow]
+      variants: [sz]
+
+    - id: cexp_070
+      description: "cexp(-700.0+3.141592653589793i)"
+      input: ["0xc085e00000000000+ i 0x400921fb54442d18"]
+      expect: ["0x80d14f2b0fb9307f+ i 0x0000000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_071
+      description: "cexp(-700.0+1.5707963267948966i)"
+      input: ["0xc085e00000000000+ i 0x3ff921fb54442d18"]
+      expect: ["0x0000000000000000+ i 0x00d14f2b0fb9307f"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_072
+      description: "cexp(-700.0+0.7853981633974483i)"
+      input: ["0xc085e00000000000+ i 0x3fe921fb54442d18"]
+      expect: ["0x00c87a9e40e77178+ i 0x00c87a9e40e7716e"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_073
+      description: "cexp(700.0+3.141592653589793i)"
+      input: ["0x4085e00000000000+ i 0x400921fb54442d18"]
+      expect: ["0xff0d945df4f8ec69+ i 0x0000000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_074
+      description: "cexp(700.0+1.5707963267948966i)"
+      input: ["0x4085e00000000000+ i 0x3ff921fb54442d18"]
+      expect: ["0x0000000000000000+ i 0x7f0d945df4f8ec69"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_075
+      description: "cexp(700.0+-1.5707963267948966i)"
+      input: ["0x4085e00000000000- i 0x3ff921fb54442d18"]
+      expect: ["0x0000000000000000+ i 0xff0d945df4f8ec69"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_076
+      description: "cexp(700.0+0.7853981633974483i)"
+      input: ["0x4085e00000000000+ i 0x3fe921fb54442d18"]
+      expect: ["0x7f04ea78d9827063+ i 0x7f04ea78d9827063"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_077
+      description: "cexp(-1.0+2.0i)"
+      input: ["0xbff0000000000000+ i 0x4000000000000000"]
+      expect: ["0xbfc39884c6a3bde0+ i 0x3fd568a50507a6bd"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_078
+      description: "cexp(-0.0076+1827.76i)"
+      input: ["0xbf7f212d77318fc5+ i 0x409c8f0a3d70a3d7"]
+      expect: ["0x3fe999999999999a+ i 0xbfe3333333333333"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_079
+      description: "cexp(1.0+1.0i)"
+      input: ["0x3ff0000000000000+ i 0x3ff0000000000000"]
+      expect: ["0x3ff77fc5377c5a96+ i 0x40024c80edc62064"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_080
+      description: "cexp(2.0+-3.0i)"
+      input: ["0x4000000000000000- i 0x4008000000000000"]
+      expect: ["0xc01d42ac3880f572+ i 0x3ff0af13f8da5098"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_081
+      description: "cexp(-2.0+2.0i)"
+      input: ["0xc000000000000000+ i 0x4000000000000000"]
+      expect: ["0xbfc39da7f7b97ede+ i 0xbfa13fbe496698f8"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_082
+      description: "cexp(0.5+0.5i)"
+      input: ["0x3fe0000000000000+ i 0x3fe0000000000000"]
+      expect: ["0x3ff6161206d475bf+ i 0x3feb3b07f586e5cd"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_083
+      description: "cexp(-1.5+-2.5i)"
+      input: ["0xbff8000000000000- i 0x4004000000000000"]
+      expect: ["0xbfb0181a4a599adb+ i 0x3fb60263f8379713"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_084
+      description: "cexp(3.0+4.0i)"
+      input: ["0x4008000000000000+ i 0x4010000000000000"]
+      expect: ["0xc02a41efdb2650ef+ i 0xc02e66cd389cd7f4"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_085
+      description: "cexp(0.001+0.001i)"
+      input: ["0x3f50624dd2f1a9fc+ i 0x3f50624dd2f1a9fc"]
+      expect: ["0x3ff0041919b7ee34+ i 0x3f50624e5c620c3d"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_086
+      description: "cexp(-0.001+-0.001i)"
+      input: ["0xbf50624dd2f1a9fc- i 0x3f50624dd2f1a9fc"]
+      expect: ["0x3feff7cfe59ce921+ i 0xbf505e1c9e859615"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_087
+      description: "cexp(5e-324+0.0i)"
+      input: ["0x0000000000000001+ i 0x0000000000000000"]
+      expect: ["0x3ff0000000000000+ i 0x0000000000000000"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_088
+      description: "cexp(0.0+5e-324i)"
+      input: ["0x0000000000000000+ i 0x0000000000000001"]
+      expect: ["0x3ff0000000000000+ i 0x0000000000000001"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_089
+      description: "cexp(2.225073858507201e-308+0.0i)"
+      input: ["0x000fffffffffffff+ i 0x0000000000000000"]
+      expect: ["0x3ff0000000000000+ i 0x0000000000000000"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_090
+      description: "cexp(0.0+2.225073858507201e-308i)"
+      input: ["0x0000000000000000+ i 0x000fffffffffffff"]
+      expect: ["0x3ff0000000000000+ i 0x000fffffffffffff"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_091
+      description: "cexp(-5e-324+0.0i)"
+      input: ["0x8000000000000001+ i 0x0000000000000000"]
+      expect: ["0x3ff0000000000000+ i 0x0000000000000000"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_092
+      description: "cexp(0.0+-5e-324i)"
+      input: ["0x0000000000000000- i 0x0000000000000001"]
+      expect: ["0x3ff0000000000000+ i 0x8000000000000001"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_093
+      description: "cexp(5e-324+5e-324i)"
+      input: ["0x0000000000000001+ i 0x0000000000000001"]
+      expect: ["0x3ff0000000000000+ i 0x0000000000000001"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_094
+      description: "cexp(2.225073858507201e-308+2.225073858507201e-308i)"
+      input: ["0x000fffffffffffff+ i 0x000fffffffffffff"]
+      expect: ["0x3ff0000000000000+ i 0x000fffffffffffff"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_095
+      description: "cexp(1e-310+1e-310i)"
+      input: ["0x000012688b70e62b+ i 0x000012688b70e62b"]
+      expect: ["0x3ff0000000000000+ i 0x000012688b70e62b"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cexp_096
+      description: "cexp(1.0+-0.0i)"
+      input: ["0x3ff0000000000000+ i 0x8000000000000000"]
+      expect: ["0x4005bf0a8b145769+ i 0x8000000000000000"]
+      expect_exception: [inexact]
+      variants: [sz]
+
+    - id: cexp_097
+      description: "cexp(-750.0+3.141592653589793i)"
+      input: ["0xc087700000000000+ i 0x400921fb54442d18"]
+      expect: ["0x8000000000000000+ i 0x0000000000000000"]
+      expect_exception: [inexact, underflow]
+      variants: [sz]
+
+# Single precision (cexpf) - 84 tests
+
+    - id: cexpf_001
+      description: "cexpf(0.0+0.0i)"
+      input: ["0x00000000+ i 0x00000000"]
+      expect: ["0x3f800000+ i 0x00000000"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cexpf_002
+      description: "cexpf(-0.0+0.0i)"
+      input: ["0x80000000+ i 0x00000000"]
+      expect: ["0x3f800000+ i 0x00000000"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cexpf_003
+      description: "cexpf(0.0+-0.0i)"
+      input: ["0x00000000+ i 0x80000000"]
+      expect: ["0x3f800000+ i 0x80000000"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cexpf_004
+      description: "cexpf(-0.0+-0.0i)"
+      input: ["0x80000000+ i 0x80000000"]
+      expect: ["0x3f800000+ i 0x80000000"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cexpf_005
+      description: "cexpf(inf+0.0i)"
+      input: ["0x7f800000+ i 0x00000000"]
+      expect: ["0x7f800000+ i 0x00000000"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cexpf_006
+      description: "cexpf(-inf+0.0i)"
+      input: ["0xff800000+ i 0x00000000"]
+      expect: ["0x00000000+ i 0x00000000"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cexpf_007
+      description: "cexpf(-inf+-0.0i)"
+      input: ["0xff800000+ i 0x80000000"]
+      expect: ["0x00000000+ i 0x80000000"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cexpf_008
+      description: "cexpf(-inf+infi)"
+      input: ["0xff800000+ i 0x7f800000"]
+      expect: ["0x00000000+ i 0x00000000"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cexpf_009
+      description: "cexpf(inf+infi)"
+      input: ["0x7f800000+ i 0x7f800000"]
+      expect: ["0x7f800000+ i 0x7fc00000"]
+      expect_exception: [invalidoperation]
+      variants: [sc]
+
+    - id: cexpf_010
+      description: "cexpf(inf+-infi)"
+      input: ["0x7f800000- i 0x7f800000"]
+      expect: ["0x7f800000+ i 0x7fc00000"]
+      expect_exception: [invalidoperation]
+      variants: [sc]
+
+    - id: cexpf_011
+      description: "cexpf(-inf+nani)"
+      input: ["0xff800000+ i 0x7fc00000"]
+      expect: ["0x00000000+ i 0x00000000"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cexpf_012
+      description: "cexpf(inf+nani)"
+      input: ["0x7f800000+ i 0x7fc00000"]
+      expect: ["0x7f800000+ i 0x7fc00000"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cexpf_013
+      description: "cexpf(8.1+infi)"
+      input: ["0x4101999a+ i 0x7f800000"]
+      expect: ["0x7fc00000+ i 0x7fc00000"]
+      expect_exception: [invalidoperation]
+      variants: [sc]
+
+    - id: cexpf_014
+      description: "cexpf(0.0+infi)"
+      input: ["0x00000000+ i 0x7f800000"]
+      expect: ["0x7fc00000+ i 0x7fc00000"]
+      expect_exception: [invalidoperation]
+      variants: [sc]
+
+    - id: cexpf_015
+      description: "cexpf(-0.0+infi)"
+      input: ["0x80000000+ i 0x7f800000"]
+      expect: ["0x7fc00000+ i 0x7fc00000"]
+      expect_exception: [invalidoperation]
+      variants: [sc]
+
+    - id: cexpf_016
+      description: "cexpf(1.0+infi)"
+      input: ["0x3f800000+ i 0x7f800000"]
+      expect: ["0x7fc00000+ i 0x7fc00000"]
+      expect_exception: [invalidoperation]
+      variants: [sc]
+
+    - id: cexpf_017
+      description: "cexpf(-5.0+-infi)"
+      input: ["0xc0a00000- i 0x7f800000"]
+      expect: ["0x7fc00000+ i 0x7fc00000"]
+      expect_exception: [invalidoperation]
+      variants: [sc]
+
+    - id: cexpf_018
+      description: "cexpf(nan+0.0i)"
+      input: ["0x7fc00000+ i 0x00000000"]
+      expect: ["0x7fc00000+ i 0x00000000"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cexpf_019
+      description: "cexpf(nan+3.1i)"
+      input: ["0x7fc00000+ i 0x40466666"]
+      expect: ["0x7fc00000+ i 0x7fc00000"]
+      expect_exception: [invalidoperation]
+      variants: [sc]
+
+    - id: cexpf_020
+      description: "cexpf(nan+nani)"
+      input: ["0x7fc00000+ i 0x7fc00000"]
+      expect: ["0x7fc00000+ i 0x7fc00000"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cexpf_021
+      description: "cexpf(nan+infi)"
+      input: ["0x7fc00000+ i 0x7f800000"]
+      expect: ["0x7fc00000+ i 0x7fc00000"]
+      expect_exception: [invalidoperation]
+      variants: [sc]
+
+    - id: cexpf_022
+      description: "cexpf(nan+-infi)"
+      input: ["0x7fc00000- i 0x7f800000"]
+      expect: ["0x7fc00000+ i 0x7fc00000"]
+      expect_exception: [invalidoperation]
+      variants: [sc]
+
+    - id: cexpf_023
+      description: "cexpf(8.1+nani)"
+      input: ["0x4101999a+ i 0x7fc00000"]
+      expect: ["0x7fc00000+ i 0x7fc00000"]
+      expect_exception: [invalidoperation]
+      variants: [sc]
+
+    - id: cexpf_024
+      description: "cexpf(-inf+3.141592653589793i)"
+      input: ["0xff800000+ i 0x40490fdb"]
+      expect: ["0x80000000+ i 0x00000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_025
+      description: "cexpf(-inf+1.5707963267948966i)"
+      input: ["0xff800000+ i 0x3fc90fdb"]
+      expect: ["0x00000000+ i 0x00000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_026
+      description: "cexpf(-inf+1.0i)"
+      input: ["0xff800000+ i 0x3f800000"]
+      expect: ["0x00000000+ i 0x00000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_027
+      description: "cexpf(-inf+-1.0i)"
+      input: ["0xff800000- i 0x3f800000"]
+      expect: ["0x00000000+ i 0x80000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_028
+      description: "cexpf(-inf+4.71238898038469i)"
+      input: ["0xff800000+ i 0x4096cbe4"]
+      expect: ["0x80000000+ i 0x80000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_029
+      description: "cexpf(inf+3.141592653589793i)"
+      input: ["0x7f800000+ i 0x40490fdb"]
+      expect: ["0xff800000+ i 0x7f800000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_030
+      description: "cexpf(inf+1.5707963267948966i)"
+      input: ["0x7f800000+ i 0x3fc90fdb"]
+      expect: ["0x7f800000+ i 0x7f800000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_031
+      description: "cexpf(inf+1.0i)"
+      input: ["0x7f800000+ i 0x3f800000"]
+      expect: ["0x7f800000+ i 0x7f800000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_032
+      description: "cexpf(inf+-1.0i)"
+      input: ["0x7f800000- i 0x3f800000"]
+      expect: ["0x7f800000+ i 0xff800000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_033
+      description: "cexpf(inf+0.7853981633974483i)"
+      input: ["0x7f800000+ i 0x3f490fdb"]
+      expect: ["0x7f800000+ i 0x7f800000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_034
+      description: "cexpf(inf+-0.7853981633974483i)"
+      input: ["0x7f800000- i 0x3f490fdb"]
+      expect: ["0x7f800000+ i 0xff800000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_035
+      description: "cexpf(inf+4.71238898038469i)"
+      input: ["0x7f800000+ i 0x4096cbe4"]
+      expect: ["0xff800000+ i 0xff800000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_036
+      description: "cexpf(0.0+3.141592653589793i)"
+      input: ["0x00000000+ i 0x40490fdb"]
+      expect: ["0xbf800000+ i 0x00000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_037
+      description: "cexpf(3.141592653589793+3.141592653589793i)"
+      input: ["0x40490fdb+ i 0x40490fdb"]
+      expect: ["0xc1b8cccd+ i 0x00000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_038
+      description: "cexpf(1.0+0.0i)"
+      input: ["0x3f800000+ i 0x00000000"]
+      expect: ["0x402df854+ i 0x00000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_039
+      description: "cexpf(-1.0+0.0i)"
+      input: ["0xbf800000+ i 0x00000000"]
+      expect: ["0x3ebc5ab2+ i 0x00000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_040
+      description: "cexpf(2.0+-0.0i)"
+      input: ["0x40000000+ i 0x80000000"]
+      expect: ["0x40ec7326+ i 0x80000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_041
+      description: "cexpf(0.5+0.0i)"
+      input: ["0x3f000000+ i 0x00000000"]
+      expect: ["0x3fd3094d+ i 0x00000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_042
+      description: "cexpf(-1.0+-0.0i)"
+      input: ["0xbf800000+ i 0x80000000"]
+      expect: ["0x3ebc5ab2+ i 0x80000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_043
+      description: "cexpf(inf+-0.0i)"
+      input: ["0x7f800000+ i 0x80000000"]
+      expect: ["0x7f800000+ i 0x80000000"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cexpf_044
+      description: "cexpf(nan+-0.0i)"
+      input: ["0x7fc00000+ i 0x80000000"]
+      expect: ["0x7fc00000+ i 0x80000000"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cexpf_045
+      description: "cexpf(0.0+1.0i)"
+      input: ["0x00000000+ i 0x3f800000"]
+      expect: ["0x3f0a5140+ i 0x3f576aa4"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_046
+      description: "cexpf(-0.0+1.0i)"
+      input: ["0x80000000+ i 0x3f800000"]
+      expect: ["0x3f0a5140+ i 0x3f576aa4"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_047
+      description: "cexpf(0.0+-1.0i)"
+      input: ["0x00000000- i 0x3f800000"]
+      expect: ["0x3f0a5140+ i 0xbf576aa4"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_048
+      description: "cexpf(0.0+1.5707963267948966i)"
+      input: ["0x00000000+ i 0x3fc90fdb"]
+      expect: ["0x248d3132+ i 0x3f800000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_049
+      description: "cexpf(0.0+-1.5707963267948966i)"
+      input: ["0x00000000- i 0x3fc90fdb"]
+      expect: ["0x248d3132+ i 0xbf800000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_050
+      description: "cexpf(0.0+6.283185307179586i)"
+      input: ["0x00000000+ i 0x40c90fdb"]
+      expect: ["0x3f800000+ i 0xa58d3132"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_051
+      description: "cexpf(0.0+100.0i)"
+      input: ["0x00000000+ i 0x42c80000"]
+      expect: ["0x3f5cc0ee+ i 0xbf01a12e"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_052
+      description: "cexpf(0.0+1000.0i)"
+      input: ["0x00000000+ i 0x447a0000"]
+      expect: ["0x3f0ff813+ i 0x3f53ae61"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_053
+      description: "cexpf(0.0+1024.0i)"
+      input: ["0x00000000+ i 0x44800000"]
+      expect: ["0x3f7cc335+ i 0xbe225693"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_054
+      description: "cexpf(1.0+1024.0i)"
+      input: ["0x3f800000+ i 0x44800000"]
+      expect: ["0x402bc51b+ i 0xbedca3f6"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_055
+      description: "cexpf(0.0+1000000.0i)"
+      input: ["0x00000000+ i 0x49742400"]
+      expect: ["0x3f6fcefd+ i 0xbeb33259"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_056
+      description: "cexpf(88.0+0.0i)"
+      input: ["0x42b00000+ i 0x00000000"]
+      expect: ["0x7ef882b7+ i 0x00000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_057
+      description: "cexpf(88.5+0.0i)"
+      input: ["0x42b10000+ i 0x00000000"]
+      expect: ["0x7f800000+ i 0x00000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_058
+      description: "cexpf(89.0+1.0i)"
+      input: ["0x42b20000+ i 0x3f800000"]
+      expect: ["0x7f800000+ i 0x7f800000"]
+      expect_exception: [overflow]
+      variants: [sc]
+
+    - id: cexpf_059
+      description: "cexpf(-103.0+0.0i)"
+      input: ["0xc2ce0000+ i 0x00000000"]
+      expect: ["0x00000000+ i 0x00000000"]
+      expect_exception: [underflow]
+      variants: [sc]
+
+    - id: cexpf_060
+      description: "cexpf(-120.0+1.0i)"
+      input: ["0xc2f00000+ i 0x3f800000"]
+      expect: ["0x00000000+ i 0x00000000"]
+      expect_exception: [underflow]
+      variants: [sc]
+
+    - id: cexpf_061
+      description: "cexpf(-88.0+3.141592653589793i)"
+      input: ["0xc2b00000+ i 0x40490fdb"]
+      expect: ["0x8041edc4+ i 0x00000000"]
+      expect_exception: [underflow]
+      variants: [sc]
+
+    - id: cexpf_062
+      description: "cexpf(-88.0+1.5707963267948966i)"
+      input: ["0xc2b00000+ i 0x3fc90fdb"]
+      expect: ["0x00000000+ i 0x0041edc4"]
+      expect_exception: [underflow]
+      variants: [sc]
+
+    - id: cexpf_063
+      description: "cexpf(87.0+3.141592653589793i)"
+      input: ["0x42ae0000+ i 0x40490fdb"]
+      expect: ["0xfe36d809+ i 0x00000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_064
+      description: "cexpf(87.0+1.5707963267948966i)"
+      input: ["0x42ae0000+ i 0x3fc90fdb"]
+      expect: ["0x00000000+ i 0x7e36d809"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_065
+      description: "cexpf(87.0+-1.5707963267948966i)"
+      input: ["0x42ae0000- i 0x3fc90fdb"]
+      expect: ["0x00000000+ i 0xfe36d809"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_066
+      description: "cexpf(-1.0+2.0i)"
+      input: ["0xbf800000+ i 0x40000000"]
+      expect: ["0xbe1cc426+ i 0x3eab4528"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_067
+      description: "cexpf(-0.0076+1827.76i)"
+      input: ["0xbbf9096c+ i 0x44e47852"]
+      expect: ["0x3f4ccccd+ i 0xbf19999a"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_068
+      description: "cexpf(1.0+1.0i)"
+      input: ["0x3f800000+ i 0x3f800000"]
+      expect: ["0x3fbbfe29+ i 0x40126407"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_069
+      description: "cexpf(2.0+-3.0i)"
+      input: ["0x40000000- i 0x40400000"]
+      expect: ["0xc0ea1562+ i 0xbf8578a0"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_070
+      description: "cexpf(-2.0+2.0i)"
+      input: ["0xc0000000+ i 0x40000000"]
+      expect: ["0xbe1ced40+ i 0xbd09fdf2"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_071
+      description: "cexpf(0.5+0.5i)"
+      input: ["0x3f000000+ i 0x3f000000"]
+      expect: ["0x3fb0b090+ i 0x3f59d83f"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_072
+      description: "cexpf(0.001+0.001i)"
+      input: ["0x3a83126f+ i 0x3a83126f"]
+      expect: ["0x3f8020c9+ i 0x3a831273"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_073
+      description: "cexpf(-0.001+-0.001i)"
+      input: ["0xba83126f- i 0x3a83126f"]
+      expect: ["0x3f7fbe7f+ i 0xba82f0e5"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_074
+      description: "cexpf(1.401298464324817e-45+0.0i)"
+      input: ["0x00000001+ i 0x00000000"]
+      expect: ["0x3f800000+ i 0x00000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_075
+      description: "cexpf(0.0+1.401298464324817e-45i)"
+      input: ["0x00000000+ i 0x00000001"]
+      expect: ["0x3f800000+ i 0x00000001"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cexpf_076
+      description: "cexpf(1.1754942106924411e-38+0.0i)"
+      input: ["0x007fffff+ i 0x00000000"]
+      expect: ["0x3f800000+ i 0x00000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_077
+      description: "cexpf(0.0+1.1754942106924411e-38i)"
+      input: ["0x00000000+ i 0x007fffff"]
+      expect: ["0x3f800000+ i 0x007fffff"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cexpf_078
+      description: "cexpf(-1.401298464324817e-45+0.0i)"
+      input: ["0x80000001+ i 0x00000000"]
+      expect: ["0x3f800000+ i 0x00000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_079
+      description: "cexpf(0.0+-1.401298464324817e-45i)"
+      input: ["0x00000000- i 0x00000001"]
+      expect: ["0x3f800000+ i 0x80000001"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cexpf_080
+      description: "cexpf(1.401298464324817e-45+1.401298464324817e-45i)"
+      input: ["0x00000001+ i 0x00000001"]
+      expect: ["0x3f800000+ i 0x00000001"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_081
+      description: "cexpf(1.1754942106924411e-38+1.1754942106924411e-38i)"
+      input: ["0x007fffff+ i 0x007fffff"]
+      expect: ["0x3f800000+ i 0x007fffff"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_082
+      description: "cexpf(1e-40+1e-40i)"
+      input: ["0x000116c2+ i 0x000116c2"]
+      expect: ["0x3f800000+ i 0x000116c2"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_083
+      description: "cexpf(1.0+-0.0i)"
+      input: ["0x3f800000+ i 0x80000000"]
+      expect: ["0x402df854+ i 0x80000000"]
+      expect_exception: [inexact]
+      variants: [sc]
+
+    - id: cexpf_084
+      description: "cexpf(-103.0+3.14159i)"
+      input: ["0xc2ce0000+ i 0x40490fd0"]
+      expect: ["0x80000000+ i 0x00000000"]
+      expect_exception: [inexact, underflow]
+      variants: [sc]

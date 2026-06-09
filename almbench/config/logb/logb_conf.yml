@@ -1,0 +1,967 @@
+- test_sequence: unit_tests_logb
+  ignore_exceptions: [underflow, inexact]
+  function: logb
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    # Test case 1: 0
+    - id: logb_001
+      description: "logbf(0) = -inf"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0xff800000]
+      expect_exception: [divbyzero]
+
+    # Test case 2: -0
+    - id: logb_002
+      description: "logbf(-0) = -inf"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0xff800000]
+      expect_exception: [divbyzero]
+
+    # Test case 3: inf
+    - id: logb_003
+      description: "logbf(inf) = inf"
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: logb_004
+      description: "logbf(-inf) = inf"
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 5: -nan
+    - id: logb_005
+      description: "logbf(-nan) = -nan"
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: logb_006
+      description: "logbf(+nan) = +nan"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: logb_007
+      description: "logbf(+subnorm_max) = -126"
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0xc2fc0000]
+      expect_exception: []
+
+    # Test case 8: - subnorm (MAX)
+    - id: logb_008
+      description: "logbf(-subnorm_max) = -126"
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0xc2fc0000]
+      expect_exception: []
+
+    # Test case 9: + subnorm (MIN)
+    - id: logb_009
+      description: "logbf(+subnorm_min) = -149"
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0xc3150000]
+      expect_exception: []
+
+    # Test case 10: - subnorm (MIN)
+    - id: logb_010
+      description: "logbf(-subnorm_min) = -149"
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0xc3150000]
+      expect_exception: []
+
+    # Test case 11: + POS
+    - id: logb_011
+      description: "logbf(1.0) = 0"
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 12: -POS
+    - id: logb_012
+      description: "logbf(-1.0) = 0"
+      variants: [ss]
+      input: [0xbf800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 13: +NEG
+    - id: logb_013
+      description: "logbf(2.0) = 1"
+      variants: [ss]
+      input: [0x40000000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 14: -NEG
+    - id: logb_014
+      description: "logbf(-2.0) = 1"
+      variants: [ss]
+      input: [0xc0000000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    # Test case 15: qnan
+    - id: logb_015
+      description: "logbf(qnan) = qnan"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: logb_016
+      description: "logbf(snan) = snan"
+      variants: [ss]
+      input: [0x7fa00000]
+      expect: [0x7fa00000]
+      expect_exception: [invalidoperation]
+
+    # Additional meaningful test cases
+    - id: logb_017
+      description: "logbf(0.5) = -1"
+      variants: [ss]
+      input: [0x3f000000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: logb_018
+      description: "logbf(4.0) = 2"
+      variants: [ss]
+      input: [0x40800000]
+      expect: [0x40000000]
+      expect_exception: []
+
+# Test cases from gtests test_logb_data.h
+#-------------------------------
+    - id: logb_001
+      description: "POS_ZERO_F32: logb(+0.0) -> -∞"
+      input: [0x00000000]
+      expect: [0xFF800000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+    - id: logb_002
+      description: "NEG_ZERO_F32: logb(-0.0) -> -∞"
+      input: [0x80000000]
+      expect: [0xFF800000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+    - id: logb_003
+      description: "POS_INF_F32: logb(+∞) -> +∞"
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_004
+      description: "NEG_INF_F32: logb(-∞) -> +∞"
+      input: [0xFF800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_005
+      description: "POS_SNAN_F32: sNaN -> qNaN (invalid)"
+      input: [0x7fb00000]
+      expect: [0x7fc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: logb_006
+      description: "NEG_SNAN_F32: -sNaN -> -qNaN (invalid)"
+      input: [0xffb00000]
+      expect: [0xffc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: logb_007
+      description: "POS_QNAN_F32: qNaN -> qNaN"
+      input: [0x7ff00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_008
+      description: "NEG_QNAN_F32: -qNaN -> indefinite"
+      input: [0xfff00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_009
+      description: "POS_ONE_F32: logb(1.0) = 0.0"
+      input: [0x3F800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_010
+      description: "NEG_ONE_F32: logb(-1.0) = 0.0"
+      input: [0xbf800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_011
+      description: "POS_PI_F32: logb(π) = 1.0"
+      input: [0x40490fd8]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_012
+      description: "POS_PI_BY2_F32: logb(π/2) = 0.0"
+      input: [0x3fc90fdb]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_013
+      description: "POS_HDENORM_F32: logb(largest positive denormal) = -126.0"
+      input: [0x007fffff]
+      expect: [0xc2fe0000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_014
+      description: "NEG_HDENORM_F32: logb(largest negative denormal) = -126.0"
+      input: [0x807fffff]
+      expect: [0xc2fe0000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_015
+      description: "POS_LDENORM_F32: logb(smallest positive denormal) = -149.0"
+      input: [0x00000001]
+      expect: [0xc3150000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_016
+      description: "NEG_LDENORM_F32: logb(smallest negative denormal) = -149.0"
+      input: [0x80000001]
+      expect: [0xc3150000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_017
+      description: "POS_HNORMAL_F32: logb(largest positive normal) = 127.0"
+      input: [0x7f7fffff]
+      expect: [0x42fe0000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_018
+      description: "NEG_HNORMAL_F32: logb(largest negative normal) = 127.0"
+      input: [0xff7fffff]
+      expect: [0x42fe0000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_019
+      description: "POS_LNORMAL_F32: logb(smallest positive normal) = -126.0"
+      input: [0x00800000]
+      expect: [0xc2fc0000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_020
+      description: "NEG_LNORMAL_F32: logb(smallest negative normal) = -126.0"
+      input: [0x80800000]
+      expect: [0xc2fc0000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_021
+      description: "logb(-0.642365) = -1.0"
+      input: [0xbf247208]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_022
+      description: "logb(-0.5) = -1.0"
+      input: [0xbf000000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_023
+      description: "logb(0.642365) = -1.0"
+      input: [0x3f247208]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_024
+      description: "logb(0.5) = -1.0"
+      input: [0x3f000000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_025
+      description: "logb(0.504444) = -1.0"
+      input: [0x3f012345]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_026
+      description: "logb(2.0) = 1.0"
+      input: [0x40000000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_027
+      description: "logb(0.0078125) = -7.0"
+      input: [0x3c000000]
+      expect: [0xc0e00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_028
+      description: "logb(0.0156249991) = -7.0"
+      input: [0x3c7fffff]
+      expect: [0xc0e00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_029
+      description: "logb(1.0000000e-7) = -24.0"
+      input: [0x33d6bf95]
+      expect: [0xc1c00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_030
+      description: "logb(2π) = 2.0"
+      input: [0x40c90fdb]
+      expect: [0x40000000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_031
+      description: "logb(10.0) = 3.0"
+      input: [0x41200000]
+      expect: [0x40400000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_032
+      description: "logb(1000.0) = 9.0"
+      input: [0x447a0000]
+      expect: [0x41100000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_033
+      description: "logb(64.0) = 6.0"
+      input: [0x42800000]
+      expect: [0x40c00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_034
+      description: "logb(87.5) = 6.0"
+      input: [0x42af0000]
+      expect: [0x40c00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_035
+      description: "logb(88.0) = 6.0"
+      input: [0x42b00000]
+      expect: [0x40c00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_036
+      description: "logb(96.0) = 6.0"
+      input: [0x42c00000]
+      expect: [0x40c00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_037
+      description: "logb(-87.5) = 6.0"
+      input: [0xc2af0000]
+      expect: [0x40c00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_038
+      description: "logb(-112.0) = 6.0"
+      input: [0xc2e00000]
+      expect: [0x40c00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_039
+      description: "logb(-128.0) = 7.0"
+      input: [0xc3000000]
+      expect: [0x40e00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_040
+      description: "logb(-87.3365) = 6.0 - smallest normal result boundary"
+      input: [0xc2aeac4f]
+      expect: [0x40c00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_041
+      description: "logb(-87.3365) = 6.0 - largest denormal result boundary"
+      input: [0xc2aeac50]
+      expect: [0x40c00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_042
+      description: "logb(-103.0) = 6.0"
+      input: [0xc2ce0000]
+      expect: [0x40c00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_043
+      description: "logb(88.7228) = 6.0 - largest value --"
+      input: [0x42b17216]
+      expect: [0x40c00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_044
+      description: "logb(88.7228) = 6.0 - largest value"
+      input: [0x42b17217]
+      expect: [0x40c00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_045
+      description: "logb(88.7228) = 6.0 - overflow boundary"
+      input: [0x42b17218]
+      expect: [0x40c00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_046
+      description: "logb(large value) = 33.0 - overflow case"
+      input: [0x50000000]
+      expect: [0x42040000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_047
+      description: "logb(-34.53) = 5.0"
+      input: [0xc20a1eb8]
+      expect: [0x40a00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_048
+      description: "logb(-28467.3555) = 14.0"
+      input: [0xc6de66b6]
+      expect: [0x41600000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_049
+      description: "logb(-0.3) = -2.0"
+      input: [0xbe99999a]
+      expect: [0xc0000000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_050
+      description: "logb(0.3) = -2.0"
+      input: [0x3e99999a]
+      expect: [0xc0000000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_051
+      description: "logb(34.53) = 5.0"
+      input: [0x420a1eb8]
+      expect: [0x40a00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_052
+      description: "logb(28467.3555) = 14.0"
+      input: [0x46de66b6]
+      expect: [0x41600000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_053
+      description: "logb(-100.0) = 6.0"
+      input: [0xc2c80000]
+      expect: [0x40c00000]
+      expect_exception: []
+      variants: [ss]
+    - id: logb_054
+      description: "logb(100.0) = 6.0"
+      input: [0x42c80000]
+      expect: [0x40c00000]
+      expect_exception: []
+      variants: [ss]
+#-------------------------------
+    # Double precision tests
+    # Test case 1: 0
+    - id: logb_001
+      description: "logb(0) = -inf"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: [divbyzero]
+
+    # Test case 2: -0
+    - id: logb_002
+      description: "logb(-0) = -inf"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: [divbyzero]
+
+    # Test case 3: inf
+    - id: logb_003
+      description: "logb(inf) = inf"
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: logb_004
+      description: "logb(-inf) = inf"
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 5: -nan
+    - id: logb_005
+      description: "logb(-nan) = -nan"
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: logb_006
+      description: "logb(+nan) = +nan"
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: logb_007
+      description: "logb(+subnorm_max) = -1022"
+      variants: [sd]
+      input: [0x000fffffffffffff]
+      expect: [0xc08fe00000000000]
+      expect_exception: []
+
+    # Test case 8: - subnorm (MAX)
+    - id: logb_008
+      description: "logb(-subnorm_max) = -1022"
+      variants: [sd]
+      input: [0x800fffffffffffff]
+      expect: [0xc08fe00000000000]
+      expect_exception: []
+
+    # Test case 9: + subnorm (MIN)
+    - id: logb_009
+      description: "logb(+subnorm_min) = -1074"
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0xc0932a0000000000]
+      expect_exception: []
+
+    # Test case 10: - subnorm (MIN)
+    - id: logb_010
+      description: "logb(-subnorm_min) = -1074"
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0xc0932a0000000000]
+      expect_exception: []
+
+    # Test case 11: + POS
+    - id: logb_011
+      description: "logb(1.0) = 0"
+      variants: [sd]
+      input: [0x3ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 12: -POS
+    - id: logb_012
+      description: "logb(-1.0) = 0"
+      variants: [sd]
+      input: [0xbff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 13: +NEG
+    - id: logb_013
+      description: "logb(2.0) = 1"
+      variants: [sd]
+      input: [0x4000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 14: -NEG
+    - id: logb_014
+      description: "logb(-2.0) = 1"
+      variants: [sd]
+      input: [0xc000000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    # Test case 15: qnan
+    - id: logb_015
+      description: "logb(qnan) = qnan"
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: logb_016
+      description: "logb(snan) = snan"
+      variants: [sd]
+      input: [0x7ff4000000000001]
+      expect: [0x7ff4000000000001]
+      expect_exception: [invalidoperation]
+
+    # Additional meaningful test cases
+    - id: logb_017
+      description: "logb(0.5) = -1"
+      variants: [sd]
+      input: [0x3fe0000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: logb_018
+      description: "logb(4.0) = 2"
+      variants: [sd]
+      input: [0x4010000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: []
+# Test cases from gtests test_logb_data.h
+#-------------------------------
+    - id: logb_001
+      description: ""
+      input: [0x0000000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: [divbyzero]
+      variants: [sd]
+
+    - id: logb_002
+      description: ""
+      input: [0x8000000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: [divbyzero]
+      variants: [sd]
+
+    - id: logb_003
+      description: ""
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: logb_004
+      description: ""
+      input: [0xfff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: logb_005
+      description: ""
+      input: [0x7FF4001000000000]
+      expect: [0x7FF8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: logb_006
+      description: ""
+      input: [0xfff2000000000000]
+      expect: [0xffF8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: logb_007
+      description: ""
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: logb_008
+      description: ""
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: logb_009
+      description: ""
+      input: [0x3FF0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: logb_010
+      description: ""
+      input: [0xBFF0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: logb_011
+      description: ""
+      input: [0x400921FB54442D18]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: logb_012
+      description: ""
+      input: [0x3FF921FB60000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: logb_013
+      description: ""
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0xc08ff80000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: logb_014
+      description: ""
+      input: [0x800fffffFFFFFFFF]
+      expect: [0xc08ff80000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: logb_015
+      description: ""
+      input: [0x0000000000000001]
+      expect: [0xc090c80000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: logb_016
+      description: ""
+      input: [0x8000000000000001]
+      expect: [0xc090c80000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: logb_017
+      description: ""
+      input: [0x7FEfffffFFFFFFFF]
+      expect: [0x408ff80000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: logb_018
+      description: ""
+      input: [0xfFEfffffFFFFFFFF]
+      expect: [0x408ff80000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: logb_019
+      description: ""
+      input: [0x0010000000000000]
+      expect: [0xc08ff00000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: logb_020
+      description: ""
+      input: [0x8010000000000000]
+      expect: [0xc08ff00000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: logb_021
+      description: "logb(0.504444) = -1.0"
+      input: [0x3FE02467BE553AC5]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_022
+      description: "logb(2.0) = 1.0"
+      input: [0x4000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_023
+      description: "logb(0.642365) = -1.0"
+      input: [0x3FE48E410B630A91]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_024
+      description: "logb(0.5) = -1.0"
+      input: [0x3FE0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_025
+      description: "logb(-0.642365) = -1.0"
+      input: [0xBFE48E410B630A91]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_026
+      description: "logb(-0.5) = -1.0"
+      input: [0xBFE0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_027
+      description: "logb(0.0000078125) = -17.0"
+      input: [0x3EE0624DD2F1A9FC]
+      expect: [0xc031000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_028
+      description: "logb(0.0000156249991) = -16.0"
+      input: [0x3EF0624DC31C6CA1]
+      expect: [0xc030000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_029
+      description: "logb(1.0000000e-13) = -44.0"
+      input: [0x3D3C25C268497682]
+      expect: [0xc046000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_030
+      description: "logb(2π) = 2.0"
+      input: [0x401921FB54442D18]
+      expect: [0x4000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_031
+      description: "logb(10.0) = 3.0"
+      input: [0x4024000000000000]
+      expect: [0x4008000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_032
+      description: "logb(1000.0) = 9.0"
+      input: [0x408F400000000000]
+      expect: [0x4022000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_033
+      description: "logb(128.0) = 7.0"
+      input: [0x4060000000000000]
+      expect: [0x401c000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_034
+      description: "logb(708.5) = 9.0"
+      input: [0x4086240000000000]
+      expect: [0x4022000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_035
+      description: "logb(709.0) = 9.0"
+      input: [0x4086280000000000]
+      expect: [0x4022000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_036
+      description: "logb(896.0) = 9.0"
+      input: [0x408C000000000000]
+      expect: [0x4022000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_037
+      description: "logb(-708.5) = 9.0"
+      input: [0xC086240000000000]
+      expect: [0x4022000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_038
+      description: "logb(-812.0) = 9.0"
+      input: [0xC089600000000000]
+      expect: [0x4022000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_039
+      description: "logb(-256.0) = 8.0"
+      input: [0xC070000000000000]
+      expect: [0x4020000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_040
+      description: "logb(-708.3964185322641) = 9.0 - smallest normal"
+      input: [0xc086232bdd7abcd2]
+      expect: [0x4022000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_041
+      description: "logb(-708.3964185322642) = 9.0 - largest denormal"
+      input: [0xc086232bdd7abcd3]
+      expect: [0x4022000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_042
+      description: "logb(-745.0) = 9.0"
+      input: [0xC087480000000000]
+      expect: [0x4022000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_043
+      description: "logb(7.09782712893383973096e+02) = 9.0 - largest value --"
+      input: [0x40862e42fefa39ee]
+      expect: [0x4022000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_044
+      description: "logb(7.09782712893383973096e+02) = 9.0 - largest value"
+      input: [0x40862e42fefa39ef]
+      expect: [0x4022000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_045
+      description: "logb(7.09782712893383973096e+02) = 9.0 - overflow boundary"
+      input: [0x40862e42fefa39ff]
+      expect: [0x4022000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_046
+      description: "logb(large value) = 33.0 - overflow case"
+      input: [0x4200000000000000]
+      expect: [0x4040800000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_047
+      description: "logb(-64.53) = 6.0"
+      input: [0xC05021EB851EB852]
+      expect: [0x4018000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_048
+      description: "logb(-128467.3555) = 16.0"
+      input: [0xC0FF5D35B020C49C]
+      expect: [0x4030000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_049
+      description: "logb(-0.3) = -2.0"
+      input: [0xBFD3333333333333]
+      expect: [0xc000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_050
+      description: "logb(0.3) = -2.0"
+      input: [0x3FD3333333333333]
+      expect: [0xc000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_051
+      description: "logb(64.53) = 6.0"
+      input: [0x405021EB851EB852]
+      expect: [0x4018000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_052
+      description: "logb(128467.3555) = 16.0"
+      input: [0x40FF5D35B020C49C]
+      expect: [0x4030000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_053
+      description: "logb(-1000.0) = 9.0"
+      input: [0xC08F400000000000]
+      expect: [0x4022000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: logb_054
+      description: "logb(1000.0) = 9.0"
+      input: [0x408F400000000000]
+      expect: [0x4022000000000000]
+      expect_exception: []
+      variants: [sd]
+#-------------------------------

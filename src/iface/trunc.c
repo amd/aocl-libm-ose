@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -38,6 +38,10 @@ static const struct alm_arch_funcs __arch_funcs_trunc = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(truncf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(trunc),
         },
+        [ALM_UARCH_VER_AVX512] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX512(truncf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX512(trunc),
+        },
 
         [ALM_UARCH_VER_ZEN] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(truncf),
@@ -62,6 +66,11 @@ static const struct alm_arch_funcs __arch_funcs_trunc = {
         [ALM_UARCH_VER_ZEN5] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN5(truncf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN5(trunc),
+        },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN6(truncf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN6(trunc),
         },
     },
 };

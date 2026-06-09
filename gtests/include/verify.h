@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -118,7 +118,11 @@ void PrintConfExpections(int raised_exception, int expected_exception);
 void PrintUlpResultsFloat(int nargs, float input1, float input2, double expected, float actual, double ulp);
 void PrintUlpResultsDouble(int nargs, double input1, double input2, long double expected, double actual, double ulp);
 void PrintUlpResultsComplexFloat(int nargs, float _Complex input1, float _Complex input2, double _Complex expected, float _Complex actual, double ulp);
+#if (defined _WIN32 || defined _WIN64)
+void PrintUlpResultsComplexDouble(int nargs, double _Complex input1, double _Complex input2, double _Complex expected, double _Complex actual, double ulp);
+#else
 void PrintUlpResultsComplexDouble(int nargs, double _Complex input1, double _Complex input2, long double _Complex expected, double _Complex actual, double ulp);
+#endif
 
 }  // namespace Test
 #endif

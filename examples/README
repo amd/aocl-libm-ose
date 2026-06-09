@@ -31,15 +31,13 @@ To build and run this example application:
 
 1. make clean;
 
-2. export AOCL_UTILS_INSTALL_PATH=<path to where libau_cpuid library is installed>
+2. if required, set ARCH=avx512 in Makefile to compile AVX512 variants
 
-3. if required, set ARCH=avx512 in Makefile to compile AVX512 variants
-
-4. make (with arguments below)
+3. make (with arguments below)
     [Optional]  CC=clang/gcc (default: gcc)
     [Optional]  LIB=static/dynamic (default: dynamic)
 
-5. export LD_LIBRARY_PATH=<path to libalm.so>:$LD_LIBRARY_PATH (in case of dynamic lib)
+4. export LD_LIBRARY_PATH=<path to libalm.so>:$LD_LIBRARY_PATH (in case of dynamic lib)
 
-6. ./test_libm
+5. ./test_libm
 

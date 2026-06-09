@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -30,7 +30,6 @@
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
 
-//
 #include <libm/arch/all.h>
 
 
@@ -45,7 +44,18 @@ struct alm_arch_funcs __arch_funcs_log10 = {
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_log10f), /* vrs8 */
             [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_FMA3(vrd2_log10),
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_log10f),
-            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX2(vrda_log10)
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX2(vrda_log10),
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_log10f),
+        },
+
+        [ALM_UARCH_VER_AVX512] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX512(log10f),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX512(log10),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX512(vrs4_log10f),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX512(vrs8_log10f), /* vrs8 */
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX512(vrsa_log10f),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX512(vrda_log10),
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_AVX512(vrs16_log10f),
         },
 
         [ALM_UARCH_VER_ZEN] = {
@@ -53,6 +63,7 @@ struct alm_arch_funcs __arch_funcs_log10 = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(log10),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN(vrs4_log10f),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_log10f),
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_log10f),
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN(vrsa_log10f),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN(vrda_log10),
         },
@@ -62,6 +73,7 @@ struct alm_arch_funcs __arch_funcs_log10 = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(log10),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN2(vrs4_log10f),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_log10f),
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_log10f),
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN2(vrsa_log10f),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN2(vrda_log10),
         },
@@ -71,6 +83,7 @@ struct alm_arch_funcs __arch_funcs_log10 = {
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(log10),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN3(vrs4_log10f),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_log10f),
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_log10f),
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN3(vrsa_log10f),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN3(vrda_log10),
         },
@@ -82,7 +95,6 @@ struct alm_arch_funcs __arch_funcs_log10 = {
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN4(vrs8_log10f),
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN4(vrsa_log10f),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN4(vrda_log10),
-
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_log10f),
         },
 
@@ -93,9 +105,18 @@ struct alm_arch_funcs __arch_funcs_log10 = {
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN5(vrs8_log10f),
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN5(vrsa_log10f),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN5(vrda_log10),
-
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN5(vrs16_log10f),
-        }
+        },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN6(log10f),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN6(log10),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN6(vrs4_log10f),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN6(vrs8_log10f),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN6(vrsa_log10f),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN6(vrda_log10),
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN6(vrs16_log10f),
+        },
     },
 };
 
@@ -108,9 +129,7 @@ LIBM_IFACE_PROTO(log10)(void *arg) {
            [ALM_FUNC_VECT_SP_4] = &G_ENTRY_PT_PTR(vrs4_log10f),
            [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_log10f),
            [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_log10),
-           [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_log10),
            [ALM_FUNC_VECT_SP_16] = &G_ENTRY_PT_PTR(vrs16_log10f),
-
            [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_log10f),
            [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_log10),
         },

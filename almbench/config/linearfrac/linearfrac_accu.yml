@@ -1,0 +1,265 @@
+- test_sequence: validation_tests_linearfrac
+  function: linearfrac
+  test_sets:
+  - id: accu_range-tests_01
+    tests:
+    - id: linearfrac_001
+      description: 'Basic range tests: small positive values linearstep'
+      input:
+      - [0.1, 2.0]
+      - [0.1, 2.0]
+      - [0.5, 1.5]
+      - [0.0, 1.0]
+      - [0.5, 1.5]
+      - [0.0, 1.0]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [5, 5, 3, 3, 3, 3]
+      variants : [vrs4, vrs8, vrs16, vrsa]
+
+    - id: linearfrac_002
+      description: 'Medium range tests: moderate values linearstep'
+      input:
+      - [-5.0, 5.0]
+      - [-5.0, 5.0]
+      - [0.1, 2.0]
+      - [-2.0, 2.0]
+      - [0.1, 2.0]
+      - [-2.0, 2.0]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [4, 4, 3, 3, 3, 3]
+      variants : [vrs4, vrs8, vrs16, vrsa]
+
+    - id: linearfrac_003
+      description: 'Large range tests: extended values linearstep'
+      input:
+      - [-10.0, 10.0]
+      - [-10.0, 10.0]
+      - [0.01, 5.0]
+      - [-5.0, 5.0]
+      - [0.01, 5.0]
+      - [-5.0, 5.0]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [3, 3, 3, 3, 3, 3]
+      variants : [vrs4, vrs8, vrs16, vrsa]
+
+    - id: linearfrac_004
+      description: 'Edge case tests: values around zero'
+      input:
+      - [-1.0, 1.0]
+      - [-1.0, 1.0]
+      - [0.1, 1.0]
+      - [-0.5, 0.5]
+      - [0.1, 1.0]
+      - [-0.5, 0.5]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [4, 4, 2, 2, 2, 2]
+      variants : [vrs4, vrs8, vrs16, vrsa]
+
+    - id: linearfrac_005
+      description: 'Precision tests: small incremental values'
+      input:
+      - [0.0, 0.5]
+      - [0.0, 0.5]
+      - [1.0, 1.2]
+      - [0.0, 0.2]
+      - [1.0, 1.2]
+      - [0.0, 0.2]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [3, 3, 2, 2, 2, 2]
+      variants : [vrs4, vrs8, vrs16, vrsa]
+
+    - id: linearfrac_006
+      description: 'Vector variant tests: basic range vrs8'
+      input:
+      - [0.1, 1.0]
+      - [0.1, 1.0]
+      - [0.5, 1.5]
+      - [0.0, 1.0]
+      - [0.5, 1.5]
+      - [0.0, 1.0]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [3, 3, 2, 2, 2, 2]
+      variants : [vrs4, vrs8, vrs16, vrsa]
+
+    - id: linearfrac_007
+      description: 'Vector variant tests: basic range vrs16'
+      input:
+      - [0.1, 1.0]
+      - [0.1, 1.0]
+      - [0.5, 1.5]
+      - [0.0, 1.0]
+      - [0.5, 1.5]
+      - [0.0, 1.0]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [3, 3, 2, 2, 2, 2]
+      variants : [vrs4, vrs8, vrs16, vrsa]
+
+    - id: linearfrac_008
+      description: 'Vector variant tests: basic range vrsa'
+      input:
+      - [0.1, 1.0]
+      - [0.1, 1.0]
+      - [0.5, 1.5]
+      - [0.0, 1.0]
+      - [0.5, 1.5]
+      - [0.0, 1.0]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [3, 3, 2, 2, 2, 2]
+      variants : [vrs4, vrs8, vrs16, vrsa]
+
+    - id: linearfrac_009
+      description: 'Boundary tests: extreme small values'
+      input:
+      - [0.001, 0.01]
+      - [0.001, 0.01]
+      - [0.9, 1.1]
+      - [-0.1, 0.1]
+      - [0.9, 1.1]
+      - [-0.1, 0.1]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [2, 2, 2, 2, 2, 2]
+      variants : [vrs4, vrs8, vrs16, vrsa]
+
+    - id: linearfrac_010
+      description: 'Boundary tests: large magnitude values'
+      input:
+      - [100.0, 1000.0]
+      - [100.0, 1000.0]
+      - [0.1, 10.0]
+      - [-100.0, 100.0]
+      - [0.1, 10.0]
+      - [-100.0, 100.0]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [2, 2, 2, 2, 2, 2]
+      variants : [vrs4, vrs8, vrs16, vrsa]
+
+# Double precision tests
+    - id: linearfrac_001
+      description: 'Double precision: basic range tests linearstep'
+      input:
+      - [0.1, 2.0]
+      - [0.1, 2.0]
+      - [0.5, 1.5]
+      - [0.0, 1.0]
+      - [0.5, 1.5]
+      - [0.0, 1.0]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [4, 4, 2, 2, 2, 2]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: linearfrac_002
+      description: 'Double precision: medium range tests linearstep'
+      input:
+      - [-5.0, 5.0]
+      - [-5.0, 5.0]
+      - [0.1, 2.0]
+      - [-2.0, 2.0]
+      - [0.1, 2.0]
+      - [-2.0, 2.0]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [3, 3, 2, 2, 2, 2]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: linearfrac_003
+      description: 'Double precision: vector variant vrd4'
+      input:
+      - [0.1, 1.0]
+      - [0.1, 1.0]
+      - [0.5, 1.5]
+      - [0.0, 1.0]
+      - [0.5, 1.5]
+      - [0.0, 1.0]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [3, 3, 2, 2, 2, 2]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: linearfrac_004
+      description: 'Double precision: vector variant vrd8'
+      input:
+      - [0.1, 1.0]
+      - [0.1, 1.0]
+      - [0.5, 1.5]
+      - [0.0, 1.0]
+      - [0.5, 1.5]
+      - [0.0, 1.0]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [3, 3, 2, 2, 2, 2]
+      variants : vrd2, vrd4, vrd8, vrda]
+
+    - id: linearfrac_005
+      description: 'Double precision: vector variant vrda'
+      input:
+      - [0.1, 1.0]
+      - [0.1, 1.0]
+      - [0.5, 1.5]
+      - [0.0, 1.0]
+      - [0.5, 1.5]
+      - [0.0, 1.0]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [3, 3, 2, 2, 2, 2]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: linearfrac_006
+      description: 'Double precision: negative range tests'
+      input:
+      - [-2.0, -0.5]
+      - [-2.0, -0.5]
+      - [0.8, 1.2]
+      - [-1.0, 0.0]
+      - [0.8, 1.2]
+      - [-1.0, 0.0]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [3, 3, 2, 2, 2, 2]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: linearfrac_007
+      description: 'Double precision: mixed positive negative values'
+      input:
+      - [-1.5, 1.5]
+      - [-1.5, 1.5]
+      - [0.2, 2.0]
+      - [-0.8, 0.8]
+      - [0.2, 2.0]
+      - [-0.8, 0.8]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [3, 3, 2, 2, 2, 2]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: linearfrac_008
+      description: 'Double precision: high precision decimal values'
+      input:
+      - [0.001, 0.999]
+      - [0.001, 0.999]
+      - [1.001, 1.999]
+      - [-0.001, 0.001]
+      - [1.001, 1.999]
+      - [-0.001, 0.001]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [2, 2, 2, 2, 2, 2]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: linearfrac_009
+      description: 'Double precision: scaling factor edge cases'
+      input:
+      - [0.5, 2.5]
+      - [0.5, 2.5]
+      - [0.01, 0.99]
+      - [-10.0, 10.0]
+      - [0.01, 0.99]
+      - [-10.0, 10.0]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [2, 2, 2, 2, 2, 2]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: linearfrac_010
+      description: 'Double precision: large magnitude scaling'
+      input:
+      - [10.0, 100.0]
+      - [10.0, 100.0]
+      - [0.1, 1.0]
+      - [-50.0, 50.0]
+      - [0.1, 1.0]
+      - [-50.0, 50.0]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [2, 2, 2, 2, 2, 2]
+      variants : [vrd2, vrd4, vrd8, vrda]

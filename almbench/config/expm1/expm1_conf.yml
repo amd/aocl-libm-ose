@@ -1,0 +1,1026 @@
+- test_sequence: unit_tests_expm1
+  ignore_exceptions: [underflow, inexact]
+  function: expm1
+  test_sets:
+  - id: special-values
+    description: Special values for expm1 function
+    tests:
+    # Case 1: expm1(0) = 0
+    - id: expm1_001
+      description: "expm1f(0) = 0"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 2: expm1(-0) = -0
+    - id: expm1_002
+      description: "expm1f(-0) = -0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 3: exmp1(+inf) = +inf
+    - id: expm1_003
+      description: "expm1f(+inf) = +inf"
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 4: expm1(-inf) = -1
+    - id: expm1_004
+      description: "expm1f(-inf) = -1"
+      input: [0xff800000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 5: expm1(-nan) = -nan
+    - id: expm1_005
+      description: "expm1f(-nan) = -nan"
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 6: expm1(+nan) = +nan
+    - id: expm1_006
+      description: "expm1f(+nan) = +nan"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    # Case 7: expm1(subnorm MAX positive)
+    - id: expm1_007
+      description: "expm1f(subnorm_max_pos)"
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 8: expm1(subnorm MAX negative)
+    - id: expm1_008
+      description: "expm1f(subnorm_max_neg)"
+      input: [0x807fffff]
+      expect: [0x807fffff]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 9: expm1(subnorm MIN positive)
+    - id: expm1_009
+      description: "expm1f(subnorm_min_pos)"
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 10: expm1(subnorm MIN negative)
+    - id: expm1_010
+      description: "expm1f(subnorm_min_neg)"
+      input: [0x80000001]
+      expect: [0x80000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    # Case 11: expm1(1) = e - 1 ≈ 1.71828 (POS)
+    - id: expm1_011
+      description: "expm1f(1.0) = e - 1"
+      input: [0x3f800000]
+      expect: [0x3fdc28f6]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 12: expm1(-1) = 1/e - 1 ≈ -0.63212 (-POS)
+    - id: expm1_012
+      description: "expm1f(-1.0) = 1/e - 1"
+      input: [0xbf800000]
+      expect: [0xbf21cd1c]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 13: expm1(large positive) (+NEG - near overflow)
+    - id: expm1_013
+      description: "expm1f(large_pos)"
+      input: [0x42b00000]
+      expect: [0x7f7fffff]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    # Case 14: expm1(large negative) (-NEG - approaches -1)
+    - id: expm1_014
+      description: "expm1f(large_neg)"
+      input: [0xc2b00000]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+# Test cases from gtests test_expm1_data.h
+#-------------------------------
+    - id: expm1_001
+      description: expm1(+0) = +0
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: expm1_002
+      description: expm1(-0) = -0
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: expm1_003
+      description: expm1(1.0) ≈ 1.718
+      input: [0x3F800000]
+      expect: [0x3fdbf0a9]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_004
+      description: expm1(-1.0) ≈ -0.632
+      input: [0xbf800000]
+      expect: [0xbf21d2a7]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_005
+      description: expm1(+INF) = +INF
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: expm1_006
+      description: expm1(-INF) = -1.0
+      input: [0xFF800000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: expm1_007
+      description: expm1(+SNAN) = +QNAN (invalid)
+      input: [0x7fb00000]
+      expect: [0x7fc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: expm1_008
+      description: expm1(-SNAN) = -QNAN (invalid)
+      input: [0xffb00000]
+      expect: [0xffc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: expm1_009
+      description: expm1(+QNAN) = +QNAN
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: expm1_010
+      description: expm1(-QNAN) = -QNAN
+      input: [0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: expm1_011
+      description: expm1(max denormal) ≈ max denormal
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: expm1_012
+      description: expm1(-max denormal) ≈ -max denormal
+      input: [0x807fffff]
+      expect: [0x807fffff]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: expm1_013
+      description: expm1(min denormal) ≈ min denormal
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: expm1_014
+      description: expm1(-min denormal) ≈ -min denormal
+      input: [0x80000001]
+      expect: [0x80000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: expm1_015
+      description: expm1(max normal) = +INF (overflow)
+      input: [0x7f7fffff]
+      expect: [0x7F800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: expm1_016
+      description: expm1(-max normal) = -1.0
+      input: [0xff7fffff]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_017
+      description: expm1(min normal) ≈ min normal
+      input: [0x00800000]
+      expect: [0x00800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_018
+      description: expm1(-min normal) ≈ -min normal
+      input: [0x80800000]
+      expect: [0x80800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_019
+      description: expm1(π) ≈ 22.14
+      input: [0x40490fd8]
+      expect: [0x41b12025]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_020
+      description: expm1(π/2) ≈ 3.81
+      input: [0x3fc90fdb]
+      expect: [0x4073dedd]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_021
+      description: expm1(0.0078125) ≈ 0.00785
+      input: [0x3c000000]
+      expect: [0x3c008056]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_022
+      description: expm1(0.0156249991) ≈ 0.01574
+      input: [0x3c7fffff]
+      expect: [0x3c810156]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_023
+      description: expm1(0.5044444) ≈ 0.656
+      input: [0x3f012345]
+      expect: [0x3f27f3e3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_024
+      description: expm1(1.0) ≈ 1.718
+      input: [0x3f800000]
+      expect: [0x3fdbf0a9]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_025
+      description: expm1(2.0) ≈ 6.389
+      input: [0x40000000]
+      expect: [0x40cc7326]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_026
+      description: expm1(1.0e-7) ≈ 1.0e-7
+      input: [0x33d6bf95]
+      expect: [0x33d6bf96]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_027
+      description: expm1(2π) ≈ 402.43
+      input: [0x40c90fdb]
+      expect: [0x44059f79]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_028
+      description: expm1(10.0) ≈ 22025.5
+      input: [0x41200000]
+      expect: [0x46ac12ee]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_029
+      description: expm1(1000.0) = +INF (overflow)
+      input: [0x447a0000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: expm1_030
+      description: expm1(64.0) ≈ 6.24e+27
+      input: [0x42800000]
+      expect: [0x6da12cc1]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_031
+      description: expm1(87.5) ≈ 1.27e+38
+      input: [0x42af0000]
+      expect: [0x7e96bab3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_032
+      description: expm1(88.0) ≈ 1.65e+38
+      input: [0x42b00000]
+      expect: [0x7ef882b7]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_033
+      description: expm1(96.0) = +INF (overflow)
+      input: [0x42c00000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: expm1_034
+      description: expm1(-87.5) = -1.0
+      input: [0xc2af0000]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_035
+      description: expm1(-112.0) = -1.0
+      input: [0xc2e00000]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_036
+      description: expm1(-128.0) = -1.0
+      input: [0xc3000000]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_037
+      description: expm1(-87.3365 smallest) = -1.0
+      input: [0xc2aeac4f]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_038
+      description: expm1(-87.3365 largest) = -1.0
+      input: [0xc2aeac50]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_039
+      description: expm1(-103.0) = -1.0
+      input: [0xc2ce0000]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_040
+      description: expm1(88.7228 largest-2) ≈ 3.40e+38
+      input: [0x42b17216]
+      expect: [0x7f7fff04]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_041
+      description: expm1(88.7228 largest-1) ≈ 3.40e+38
+      input: [0x42b17217]
+      expect: [0x7f7fff84]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_042
+      description: expm1(88.7228 overflow) = +INF (overflow)
+      input: [0x42b17218]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: expm1_043
+      description: expm1(large) = +INF (overflow)
+      input: [0x50000000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: expm1_044
+      description: expm1(-34.53) = -1.0
+      input: [0xc20a1eb8]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_045
+      description: expm1(-28467.3555) = -1.0
+      input: [0xc6de66b6]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_046
+      description: expm1(-0.3) ≈ -0.259
+      input: [0xbe99999a]
+      expect: [0xbe84b37a]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_047
+      description: expm1(-0.642365) ≈ -0.474
+      input: [0xbf247208]
+      expect: [0xbef2a9fc]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_048
+      description: expm1(-0.5) ≈ -0.393
+      input: [0xbf000000]
+      expect: [0xbec974d0]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_049
+      description: expm1(0.3) ≈ 0.35
+      input: [0x3e99999a]
+      expect: [0x3eb320b2]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_050
+      description: expm1(0.642365) ≈ 0.9
+      input: [0x3f247208]
+      expect: [0x3f66a60f]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_051
+      description: expm1(0.5) ≈ 0.649
+      input: [0x3f000000]
+      expect: [0x3f261299]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_052
+      description: expm1(34.53) ≈ 6.55e+14
+      input: [0x420a1eb8]
+      expect: [0x586162f9]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_053
+      description: expm1(28467.3555) = +INF (overflow)
+      input: [0x46de66b6]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: expm1_054
+      description: expm1(-100.0) = -1.0
+      input: [0xc2c80000]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: expm1_055
+      description: expm1(100.0) = +INF (overflow)
+      input: [0x42c80000]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+
+    - id: expm1_056
+      description: ""
+      input: [0x5e317400]
+      expect: [0x7f800000]
+      expect_exception: [inexact, overflow]
+      variants: [ss]
+#-------------------------------
+    # Double precision tests
+    # Case 1: expm1(0) = 0
+    - id: expm1_001
+      description: "expm1(0) = 0"
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 2: expm1(-0) = -0
+    - id: expm1_002
+      description: "expm1(-0) = -0"
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 3: expm1(+inf) = +inf
+    - id: expm1_003
+      description: "expm1(+inf) = +inf"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 4: expm1(-inf) = -1
+    - id: expm1_004
+      description: "expm1(-inf) = -1"
+      input: [0xfff0000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 5: expm1(-nan) = -nan
+    - id: expm1_005
+      description: "expm1(-nan) = -nan"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 6: expm1(+nan) = +nan
+    - id: expm1_006
+      description: "expm1(+nan) = +nan"
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    # Case 7: expm1(subnorm MAX positive)
+    - id: expm1_007
+      description: "expm1(subnorm_max_pos)"
+      input: [0x000fffffffffffff]
+      expect: [0x000fffffffffffff]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 8: expm1(subnorm MAX negative)
+    - id: expm1_008
+      description: "expm1(subnorm_max_neg)"
+      input: [0x800fffffffffffff]
+      expect: [0x800fffffffffffff]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 9: expm1(subnorm MIN positive)
+    - id: expm1_009
+      description: "expm1(subnorm_min_pos)"
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 10: expm1(subnorm MIN negative)
+    - id: expm1_010
+      description: "expm1(subnorm_min_neg)"
+      input: [0x8000000000000001]
+      expect: [0x8000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    # Case 11: expm1(1) = e - 1 ≈ 1.7182818284590451 (POS)
+    - id: expm1_011
+      description: "expm1(1.0) = e - 1"
+      input: [0x3ff0000000000000]
+      expect: [0x3ffb7e151628aed3]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 12: expm1(-1) = 1/e - 1 ≈ -0.6321205588285577 (-POS)
+    - id: expm1_012
+      description: "expm1(-1.0) = 1/e - 1"
+      input: [0xbff0000000000000]
+      expect: [0xbfe4398a9db22a73]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 13: expm1(large positive) (+NEG - near overflow)
+    - id: expm1_013
+      description: "expm1(large_pos)"
+      input: [0x4086200000000000]
+      expect: [0x7fefffffffffffff]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    # Case 14: expm1(large negative) (-NEG - approaches -1)
+    - id: expm1_014
+      description: "expm1(large_neg)"
+      input: [0xc086200000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+# Test cases from gtests test_expm1_data.h
+#-------------------------------
+    - id: expm1_01
+      description: expm1(+0) = +0
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: expm1_02
+      description: expm1(-0) = -0
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: expm1_03
+      description: expm1(1.0) ≈ 1.718
+      input: [0x3FF0000000000000]
+      expect: [0x3ffb7e151628aed3]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_04
+      description: expm1(-1.0) ≈ -0.632
+      input: [0xBFF0000000000000]
+      expect: [0xbfe43a54e4e98864]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_05
+      description: expm1(+INF) = +INF
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: expm1_06
+      description: expm1(-INF) = -1.0
+      input: [0xfff0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: expm1_07
+      description: expm1(+SNAN) = +QNAN (invalid)
+      input: [0x7FF4001000000000]
+      expect: [0x7FF8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: expm1_08
+      description: expm1(-SNAN) = -QNAN (invalid)
+      input: [0xfff2000000000000]
+      expect: [0xffF8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: expm1_09
+      description: expm1(+QNAN) = +QNAN
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: expm1_010
+      description: expm1(-QNAN) = -QNAN
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: expm1_011
+      description: expm1(max denormal) ≈ max denormal (underflow)
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x000FFFFFFFFFFFFF]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: expm1_012
+      description: expm1(-max denormal) ≈ -max denormal (underflow)
+      input: [0x800fffffFFFFFFFF]
+      expect: [0x800fffffFFFFFFFF]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: expm1_013
+      description: expm1(min denormal) ≈ min denormal (underflow)
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: expm1_014
+      description: expm1(-min denormal) ≈ -min denormal (underflow)
+      input: [0x8000000000000001]
+      expect: [0x8000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: expm1_015
+      description: expm1(max normal) = +INF (overflow)
+      input: [0x7FEfffffFFFFFFFF]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: expm1_016
+      description: expm1(-max normal) = -1.0
+      input: [0xfFEfffffFFFFFFFF]
+      expect: [0xBFF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_017
+      description: expm1(min normal) ≈ min normal (underflow)
+      input: [0x0010000000000000]
+      expect: [0x0010000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_018
+      description: expm1(-min normal) ≈ -min normal (underflow)
+      input: [0x8010000000000000]
+      expect: [0x8010000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_019
+      description: expm1(π) ≈ 22.14
+      input: [0x400921FB54442D18]
+      expect: [0x4036240490a16562]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_020
+      description: expm1(π/2) ≈ 3.81
+      input: [0x3FF921FB60000000]
+      expect: [0x400e7bdbace4109a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_021
+      description: expm1(7.8125e-6) ≈ 7.8125e-6
+      input: [0x3EE0624DD2F1A9FC]
+      expect: [0x3ee0625204b0496a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_022
+      description: expm1(1.562e-5) ≈ 1.562e-5
+      input: [0x3EF0624DC31C6CA1]
+      expect: [0x3ef06256269b09c8]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_023
+      description: expm1(0.504444) ≈ 0.656
+      input: [0x3FE02467BE553AC5]
+      expect: [0x3fe4fe7af67676fa]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_024
+      description: expm1(1.0) ≈ 1.718
+      input: [0x3FF0000000000000]
+      expect: [0x3ffb7e151628aed3]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_025
+      description: expm1(2.0) ≈ 6.389
+      input: [0x4000000000000000]
+      expect: [0x40198e64b8d4ddae]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_026
+      description: expm1(1.0e-13) ≈ 1.0e-13
+      input: [0x3D3C25C268497682]
+      expect: [0x3d3c25c26849780e]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_027
+      description: expm1(2π) ≈ 402.43
+      input: [0x401921FB54442D18]
+      expect: [0x4080b3eee9177e18]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_028
+      description: expm1(10.0) ≈ 22025.5
+      input: [0x4024000000000000]
+      expect: [0x40d5825dcf950560]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_029
+      description: expm1(1000.0) = +INF (overflow)
+      input: [0x408F400000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: expm1_030
+      description: expm1(128.0) ≈ 3.87e+55
+      input: [0x4060000000000000]
+      expect: [0x4b795e54c5dd4218]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_031
+      description: expm1(708.5) ≈ 1.65e+307
+      input: [0x4086240000000000]
+      expect: [0x7fd1bf058bc994ad]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_032
+      description: expm1(709.0) ≈ 4.33e+307
+      input: [0x4086280000000000]
+      expect: [0x7fdd422d2be5dc9b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_033
+      description: expm1(896.0) = +INF (overflow)
+      input: [0x408C000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: expm1_034
+      description: expm1(-708.5) = -1.0
+      input: [0xC086240000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_035
+      description: expm1(-812.0) = -1.0
+      input: [0xC089600000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_036
+      description: expm1(-256.0) = -1.0
+      input: [0xC070000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_037
+      description: expm1(-708.396 smallest) = -1.0
+      input: [0xc086232bdd7abcd2]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_038
+      description: expm1(-708.396 largest) = -1.0
+      input: [0xc086232bdd7abcd3]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_039
+      description: expm1(-745.0) = -1.0
+      input: [0xC087480000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_040
+      description: expm1(709.783 largest-2) ≈ 1.798e+308
+      input: [0x40862e42fefa39ee]
+      expect: [0x7feffffffffffb2a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_041
+      description: expm1(709.783 largest-1) ≈ 1.798e+308
+      input: [0x40862e42fefa39ef]
+      expect: [0x7fefffffffffff2a]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_042
+      description: expm1(709.783 overflow) = +INF (overflow)
+      input: [0x40862e42fefa39ff]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: expm1_043
+      description: expm1(large) = +INF (overflow)
+      input: [0x4200000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: expm1_044
+      description: expm1(-64.53) = -1.0
+      input: [0xC05021EB851EB852]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_045
+      description: expm1(-128467.3555) = -1.0
+      input: [0xC0FF5D35B020C49C]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_046
+      description: expm1(-0.3) ≈ -0.259
+      input: [0xBFD3333333333333]
+      expect: [0xbfd0966f2c7907f6]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_047
+      description: expm1(-0.642365) ≈ -0.474
+      input: [0xBFE48E410B630A91]
+      expect: [0xbfde553f96c59dcf]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_048
+      description: expm1(-0.5) ≈ -0.393
+      input: [0xBFE0000000000000]
+      expect: [0xbfd92e9a0720d3ec]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_049
+      description: expm1(0.3) ≈ 0.35
+      input: [0x3FD3333333333333]
+      expect: [0x3fd6641632306a56]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_050
+      description: expm1(0.642365) ≈ 0.9
+      input: [0x3FE48E410B630A91]
+      expect: [0x3fecd4c1e623c665]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_051
+      description: expm1(0.5) ≈ 0.649
+      input: [0x3FE0000000000000]
+      expect: [0x3fe4c2531c3c0d38]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_052
+      description: expm1(64.53) ≈ 6.55e+27
+      input: [0x405021EB851EB852]
+      expect: [0x45c11d33b0716b95]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_053
+      description: expm1(128467.3555) = +INF (overflow)
+      input: [0x40FF5D35B020C49C]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: expm1_054
+      description: expm1(-1000.0) = -1.0
+      input: [0xC08F400000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: expm1_055
+      description: expm1(1000.0) = +INF (overflow)
+      input: [0x408F400000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+
+    - id: expm1_056
+      description: expm1(0.0) = 0.0
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: expm1_057
+      description: ""
+      input: [0x408fffbfff7cfe9e]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact, overflow]
+      variants: [sd]
+#-------------------------------

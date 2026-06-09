@@ -29,7 +29,7 @@
  * ---------------------
  * Signature
  * ---------------------
- * void vrsa_sincosf(int length, float *input, float *sin, float *cos)
+ * void vrsa_sincosf(int length, const float *input, float *sin, float *cos)
  *
  * vrsa_sincosf() computes the sine and cosine values for 'length' number of elements
  * present in the 'input' array.
@@ -61,7 +61,7 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm_util_amd.h>
 
-void ALM_PROTO_OPT(vrsa_sincosf)(int length, float *x, float *sin, float *cos)
+void ALM_PROTO_OPT(vrsa_sincosf)(int length, const float *x, float *sin, float *cos)
 {
     int j = 0;
     __m256 opsin, opcos;

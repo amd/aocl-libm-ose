@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,19 +25,25 @@
  *
  *
  *
- *
  * Implementation Notes
  * --------------------
  * Signature:
- *   float complex cexp(float complex x)
+ *   float complex cexpf(float complex x)
  *
  *   Let x = a + I*b
  *
- *   expf(x) = expf(a) + expf(I * b)
+ *   expf(x) = expf(a) * expf(I * b)
  *
  *   expf(I * b) = cosf(b) + I*sinf(b) (in polar form)
  *
  *   expf(x) = expf(a)*cosf(b) + I*expf(a)*sinf(b)
+ *
+ * Special Values:
+ *   Follows ISO/IEC 9899:2011 specifications.
+ *
+ * Sign of Zero:
+ *   This implementation carefully preserves the sign of zero in the imaginary
+ *   part. When the input has ±0 imaginary part, the output must preserve that sign.
  *
  */
 
@@ -46,81 +52,235 @@
 #include <libm/types.h>
 #include <libm/constants.h>
 #include <libm/typehelper.h>
+#include <libm/alm_special.h>
+#include <libm_util_amd.h>
 
-#if defined(__clang__)
-#define CMPLX(X, Y) __builtin_complex ((double) (X), (double) (Y))
-#define CMPLXF(X, Y) __builtin_complex ((float) (X), (float) (Y))
-#endif
+/* Mantissa mask for single precision (23 bits) */
+#define ALM_F32_MANTISSA_MASK 0x7FFFFF
+
+/* Underflow threshold: approximately log(FLT_MIN) */
+#define CEXPF_UNDERFLOW_THRESHOLD -103.0f
+
+/* Overflow threshold for scaled computation */
+#define CEXPF_MAX_ARG 0x1.62e42ep6f
+
+/* Maximum representable value before expf overflows */
+#define CEXPF_EXP_MAX_ARG 0x1.fffffep127f
 
 fc32_t
 ALM_PROTO_OPT(cexpf)(fc32_t z)
 {
-    float    re, im;
-    float    zy_re, zy_im;
+    float re, im;
+    float zy_re, zy_im;
+    float cos_im, sin_im;
 
-    float const MAX_ARG = 0x1.62e42ep6f;
+    re = crealf(z);
+    im = cimagf(z);
 
-    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
-        re = crealf(z);
-        im = (float)cimagf(z);
-    #else
-        re = crealf(z);
-        im = (float)cimag(z);
-    #endif
+    uint32_t a_re = asuint32(re);
+    uint32_t a_im = asuint32(im);
 
+    uint32_t re_exp = (a_re >> 23) & 0xFF;
+    uint32_t im_exp = (a_im >> 23) & 0xFF;
 
+    /* Check if either component is NaN or Inf - exponent field is all 1s */
+    int re_special = (re_exp == 0xFF);
+    int im_special = (im_exp == 0xFF);
 
-    if((asuint32(re) & ~ALM_F32_SIGN_MASK) == 0) {
+    /* Handle special cases */
+    if (re_special || im_special) {
 
-        if((asuint32(im) & ~ALM_F32_SIGN_MASK) == 0) {
-
-            zy_re = 1.0f;
-
-            zy_im = 0.0f;
-        } else {
-
-            ALM_PROTO(sincosf)(im, &zy_im, &zy_re);
-
-        }
-    } else {
-        if((asuint32(im) & ~ALM_F32_SIGN_MASK) == 0) {
-
-            zy_re = ALM_PROTO(expf)(re);
-
-            zy_im = 0.0f;
-
+        /* Check if imaginary is NaN */
+        if (im_special && ((a_im & ALM_F32_MANTISSA_MASK) != 0)) {
+            /* im is NaN */
+            if ((a_re & ~ALM_F32_SIGN_MASK) == 0) {
+                /* (±0, NaN) -> (NaN, NaN) */
+                zy_re = im;
+                zy_im = im;
+            } else if (re_special && ((a_re & ALM_F32_MANTISSA_MASK) == 0) &&
+                       (a_re & ALM_F32_SIGN_MASK) != 0) {
+                /* (-∞, NaN) -> (±0, ±0) */
+                zy_re = POS_ZERO_F32;
+                zy_im = POS_ZERO_F32;
             } else {
-
-            if(re > MAX_ARG) {
-
-            double t = ALM_PROTO(exp)((double)re);
-
-            ALM_PROTO(sincosf)(im, &zy_im, &zy_re);
-
-            double real = (double)zy_re * t;
-
-            double imag = (double)zy_im * t;
-
-            #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
-                return (fc32_t) {(float)real,(float)imag};
-            #else
-                return CMPLXF((float)real,(float)imag);
-            #endif
-
+                /* (x, NaN) or (+∞, NaN) -> (NaN, NaN) or (±∞, NaN) */
+                zy_re = re_special ? re : im;
+                zy_im = im;
+                /* If real is finite (not special), raise FE_INVALID */
+                if (!re_special) {
+                    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+                      return alm_cexpf_special((fc32_t) { zy_re, zy_im }, ALM_E_IN_Y_INF);
+                    #else
+                      return alm_cexpf_special(CMPLXF(zy_re, zy_im), ALM_E_IN_Y_INF);
+                    #endif
+                }
             }
+        }
+        /* Check if real is NaN */
+        else if (re_special && ((a_re & ALM_F32_MANTISSA_MASK) != 0)) {
+            /* re is NaN */
+            if ((a_im & ~ALM_F32_SIGN_MASK) == 0) {
+                /* (NaN, ±0) -> (NaN, ±0) - preserve sign of zero */
+                zy_re = re;
+                zy_im = im;
+            } else {
+                /* (NaN, y) -> (POS_NaN, POS_NaN) */
+                zy_re = asfloat(POS_QNAN_F32);
+                zy_im = asfloat(POS_QNAN_F32);
 
-            float t = ALM_PROTO(expf)(re);
+                #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+                    return alm_cexpf_special((fc32_t) { zy_re, zy_im }, ALM_E_IN_Y_INF);
+                #else
+                    return alm_cexpf_special(CMPLXF(zy_re, zy_im), ALM_E_IN_Y_INF);
+                #endif
+            }
+        }
+        /* Check if imaginary is INF */
+        else if (im_special) {
+            /* im is INF, re is finite or INF (but not NaN) */
+            if (!re_special) {
+                /* (finite, ±∞) -> (NaN, NaN) and raise FE_INVALID */
+                zy_re = asfloat(POS_QNAN_F32);
+                zy_im = asfloat(POS_QNAN_F32);
 
-            ALM_PROTO(sincosf)(im, &zy_im, &zy_re);
+                #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+                    return alm_cexpf_special((fc32_t) { zy_re, zy_im }, ALM_E_IN_Y_INF);
+                #else
+                    return alm_cexpf_special(CMPLXF(zy_re, zy_im), ALM_E_IN_Y_INF);
+                #endif
 
-            zy_re *= t;
+            } else if ((a_re & ALM_F32_SIGN_MASK) == 0) {
+                /* (+∞, ±∞) -> (±∞, NaN) and raise FE_INVALID */
+                zy_re = asfloat(POS_INF_F32);
+                zy_im = asfloat(NEG_QNAN_F32);
 
-            zy_im *= t;
+                #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+                    return alm_cexpf_special((fc32_t) { zy_re, zy_im }, ALM_E_IN_X_INF | ALM_E_IN_Y_INF);
+                #else
+                    return alm_cexpf_special(CMPLXF(zy_re, zy_im), ALM_E_IN_X_INF | ALM_E_IN_Y_INF);
+                #endif
+            } else {
+                /* (-∞, ±∞) -> (±0, ±0) */
+                zy_re = POS_ZERO_F32;
+                zy_im = POS_ZERO_F32;
+            }
+        }
+        /* Only real is INF (imaginary is finite) */
+        else {
+            int im_is_zero = ((a_im & ~ALM_F32_SIGN_MASK) == 0);
 
-       }
+            if ((a_re & ALM_F32_SIGN_MASK) != 0) {
+                /* (-∞, y) for finite y -> +0*cis(y) */
+                if (im_is_zero) {
+                    zy_re = POS_ZERO_F32;
+                    zy_im = im;  /* Preserve sign of zero */
+                } else {
+                    ALM_PROTO(sincosf)(im, &sin_im, &cos_im);
+                    zy_re = POS_ZERO_F32 * cos_im;
+                    zy_im = POS_ZERO_F32 * sin_im;
+                }
+            } else {
+                /* (+∞, y) for finite y -> +∞*cis(y) */
+                if (im_is_zero) {
+                    zy_re = asfloat(POS_INF_F32);
+                    zy_im = im;  /* Preserve sign of zero */
+                } else {
+                    ALM_PROTO(sincosf)(im, &sin_im, &cos_im);
+                    zy_re = asfloat(POS_INF_F32) * cos_im;
+                    zy_im = asfloat(POS_INF_F32) * sin_im;
+                }
+            }
+        }
+    }
+    /* Both components are finite */
+    else {
+        int re_is_zero = ((a_re & ~ALM_F32_SIGN_MASK) == 0);
+        int im_is_zero = ((a_im & ~ALM_F32_SIGN_MASK) == 0);
 
-   }
+        if (re_is_zero) {
+            if (im_is_zero) {
+                /* (±0, ±0) -> (1, ±0) - preserve sign of zero */
+                zy_re = 1.0f;
+                zy_im = im;
+            } else {
+                /* (±0, y) -> cis(y) */
+                ALM_PROTO(sincosf)(im, &zy_im, &zy_re);
+            }
+        } else if (im_is_zero) {
+            /* (x, ±0) -> (expf(x), ±0) - preserve sign of zero */
+            zy_re = ALM_PROTO(expf)(re);
+            zy_im = im;
 
+            /* Check for overflow or underflow */
+            uint32_t a_zy_re = asuint32(zy_re);
+            uint32_t zy_re_exp = (a_zy_re >> 23) & 0xFF;
+
+            if (zy_re_exp == 0xFF && ((a_zy_re & ALM_F32_MANTISSA_MASK) == 0)) {
+                /* Overflow */
+                #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+                    return alm_cexpf_special((fc32_t) { zy_re, zy_im }, ALM_E_OVERFLOW);
+                #else
+                    return alm_cexpf_special(CMPLXF(zy_re, zy_im), ALM_E_OVERFLOW);
+                #endif
+            } else if (zy_re == 0.0f && re < CEXPF_UNDERFLOW_THRESHOLD) {
+                /* Underflow */
+                #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+                    return alm_cexpf_special((fc32_t) { zy_re, zy_im }, ALM_E_UNDERFLOW);
+                #else
+                    return alm_cexpf_special(CMPLXF(zy_re, zy_im), ALM_E_UNDERFLOW);
+                #endif
+            }
+        } else {
+            /* General case: finite nonzero real and imaginary */
+
+            if (re > CEXPF_MAX_ARG) {
+                /* Potential overflow case - split computation to avoid premature overflow */
+                float t = re - CEXPF_MAX_ARG;
+                ALM_PROTO(sincosf)(im, &sin_im, &cos_im);
+                float r = ALM_PROTO(expf)(t);
+
+                zy_re = r * cos_im * CEXPF_EXP_MAX_ARG;
+                zy_im = r * sin_im * CEXPF_EXP_MAX_ARG;
+
+                /* Check if result overflowed */
+                uint32_t a_zy_re = asuint32(zy_re);
+                uint32_t a_zy_im = asuint32(zy_im);
+
+                if ((((a_zy_re >> 23) & 0xFF) == 0xFF && ((a_zy_re & ALM_F32_MANTISSA_MASK) == 0)) ||
+                    (((a_zy_im >> 23) & 0xFF) == 0xFF && ((a_zy_im & ALM_F32_MANTISSA_MASK) == 0))) {
+                    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+                        return alm_cexpf_special((fc32_t) { zy_re, zy_im }, ALM_E_OVERFLOW);
+                    #else
+                        return alm_cexpf_special(CMPLXF(zy_re, zy_im), ALM_E_OVERFLOW);
+                    #endif
+                }
+            } else if (re < CEXPF_UNDERFLOW_THRESHOLD) {
+                /* Potential underflow case */
+                float exp_re = ALM_PROTO(expf)(re);
+                if (exp_re == 0.0f) {
+                    ALM_PROTO(sincosf)(im, &sin_im, &cos_im);
+                    zy_re = exp_re * cos_im;
+                    zy_im = exp_re * sin_im;
+                    #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
+                        return alm_cexpf_special((fc32_t) { zy_re, zy_im }, ALM_E_UNDERFLOW);
+                    #else
+                        return alm_cexpf_special(CMPLXF(zy_re, zy_im), ALM_E_UNDERFLOW);
+                    #endif
+                } else {
+                    ALM_PROTO(sincosf)(im, &sin_im, &cos_im);
+                    zy_re = exp_re * cos_im;
+                    zy_im = exp_re * sin_im;
+                }
+            } else {
+                /* Normal computation */
+                float exp_re = ALM_PROTO(expf)(re);
+                ALM_PROTO(sincosf)(im, &sin_im, &cos_im);
+
+                zy_re = exp_re * cos_im;
+                zy_im = exp_re * sin_im;
+            }
+        }
+    }
 
     #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
         return (fc32_t) { zy_re, zy_im };
@@ -128,4 +288,3 @@ ALM_PROTO_OPT(cexpf)(fc32_t z)
         return CMPLXF(zy_re, zy_im);
     #endif
 }
-

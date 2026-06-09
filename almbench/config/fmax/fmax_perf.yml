@@ -1,0 +1,81 @@
+- test_sequence: perf_tests
+  function: fmax
+  timing_enabled: true
+  test_sets:
+  - id: range-tests_01
+    tests:
+# Single Precision
+    - id: fmax_001
+      description: 'Positive values: x, y in [SMALLEST_SUBNORMAL, FLT_MAX], linearstep'
+      input: [[min_subnormal, max], [min_subnormal, max]]
+      type: [linearstep, linearstep]
+      steps: [100, 100]
+      variants : [ss, vrsa]
+
+    - id: fmax_002
+      description: 'Mixed input values: x in [SMALLEST_SUBNORMAL, FLT_MAX], y in [-FLT_MAX, -SMALLEST_SUBNORMAL], linearstep'
+      input: [[min_subnormal, max], [-max, -min_subnormal]]
+      type: [linearstep, linearstep]
+      steps: [100, 100]
+      variants : [ss, vrsa]
+
+    - id: fmax_003
+      description: 'x, y in [-min_subnormal, min_subnormal], [-min_subnormal, min_subnormal], linearstep'
+      input: [[-min_subnormal, min_subnormal], [-min_subnormal, min_subnormal]]
+      type: [linearstep, linearstep]
+      steps: [100, 100]
+      variants : [ss, vrsa]
+
+    - id: fmax_004
+      description: 'Negative input values: x, y in [-FLT_MAX, -SMALLEST_SUBNORMAL], linearstep'
+      input: [[-max, -min_subnormal], [-max, -min_subnormal]]
+      type: [linearstep, linearstep]
+      steps: [100, 100]
+      variants : [ss, vrsa]
+
+    - id: fmax_005
+      description: 'Mixed input values: x in [-FLT_MAX, -SMALLEST_SUBNORMAL], y in [SMALLEST_SUBNORMAL, FLT_MAX], linearstep'
+      input: [[-max, -min_subnormal], [min_subnormal, max]]
+      type: [linearstep, linearstep]
+      steps: [100, 100]
+      variants : [ss, vrsa]
+
+#Double precision
+    - id: fmax_001
+      description: 'Positive values: x, y in [SMALLEST_SUBNORMAL, DBL_MAX], linearstep'
+      input: [[min_subnormal, max], [min_subnormal, max]]
+      type: [linearstep, linearstep]
+      steps: [100, 100]
+      variants : [sd, vrda]
+
+    - id: fmax_002
+      description: 'Mixed input values: x in [SMALLEST_SUBNORMAL, DBL_MAX], y in [-DBL_MAX, -SMALLEST_SUBNORMAL], linearstep'
+      input: [[min_subnormal, max], [-max, -min_subnormal]]
+      type: [linearstep, linearstep]
+      steps: [100, 100]
+      variants : [sd, vrda]
+
+    - id: fmax_003
+      description: 'x, y in [-min_subnormal, min_subnormal], [-min_subnormal, min_subnormal], linearstep'
+      input: [[-min_subnormal, min_subnormal], [-min_subnormal, min_subnormal]]
+      type: [linearstep, linearstep]
+      steps: [100, 100]
+      variants : [sd, vrda]
+
+    - id: fmax_004
+      description: 'Negative values: x, y in [-FLT_MAX, -SMALLEST_SUBNORMAL], linearstep'
+      input: [[-max, -min_subnormal], [-max, -min_subnormal]]
+      type: [linearstep, linearstep]
+      steps: [100, 100]
+      variants : [sd, vrda]
+
+    - id: fmax_005
+      description: 'Mixed input values: x in [-FLT_MAX, -SMALLEST_SUBNORMAL], y in [SMALLEST_SUBNORMAL, FLT_MAX], linearstep'
+      input: [[-max, -min_subnormal], [min_subnormal, max]]
+      type: [linearstep, linearstep]
+      steps: [100, 100]
+      variants : [sd, vrda]
+
+
+
+

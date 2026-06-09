@@ -1,0 +1,998 @@
+- test_sequence: unit_tests_atan2
+  ignore_exceptions: [underflow, inexact]
+  function: atan2
+  test_sets:
+  - id: special-values
+    description: Special values for atan2 function
+    tests:
+    # Single Precision Tests
+    - id: atan2_001
+      description: "atan2f(0, 1) = 0"
+      input: [0x00000000, 0x3f800000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atan2_002
+      description: "atan2f(-0, 1) = -0"
+      input: [0x80000000, 0x3f800000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atan2_003
+      description: "atan2f(inf, 1) = π/2"
+      input: [0x7f800000, 0x3f800000]
+      expect: [0x3fc90fdb]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_004
+      description: "atan2f(-inf, 1) = -π/2"
+      input: [0xff800000, 0x3f800000]
+      expect: [0xbfc90fdb]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_005
+      description: "atan2f(-nan, 1) = nan"
+      input: [0xffc00000, 0x3f800000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atan2_006
+      description: "atan2f(+nan, 1) = nan"
+      input: [0x7fc00000, 0x3f800000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atan2_007
+      description: "atan2f(subnorm_max, 1) = subnorm_max (small angle)"
+      input: [0x007fffff, 0x3f800000]
+      expect: [0x007fffff]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: atan2_008
+      description: "atan2f(subnorm_max, 1) = subnorm_max (small angle)"
+      input: [0x007fffff, 0x3f800000]
+      expect: [0x007fffff]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: atan2_009
+      description: "atan2f(subnorm_min, 1) = subnorm_min (small angle)"
+      input: [0x00000001, 0x3f800000]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: atan2_010
+      description: "atan2f(subnorm_min, 1) = subnorm_min (small angle)"
+      input: [0x00000001, 0x3f800000]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: atan2_011
+      description: "atan2f(1.0, 1.0) = π/4"
+      input: [0x3f800000, 0x3f800000]
+      expect: [0x3f490fdb]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_012
+      description: "atan2f(-1.0, 1.0) = -π/4"
+      input: [0xbf800000, 0x3f800000]
+      expect: [0xbf490fdb]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_013
+      description: "atan2f(1.0, -1.0) = 3π/4"
+      input: [0x3f800000, 0xbf800000]
+      expect: [0x4016cbe4]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_014
+      description: "atan2f(-1.0, -1.0) = -3π/4"
+      input: [0xbf800000, 0xbf800000]
+      expect: [0xc016cbe4]
+      expect_exception: [inexact]
+      variants: [ss]
+# Test cases from gtests test_atan2_data.h
+#-------------------------------
+    - id: atan2_001
+      description: ""
+      input: [0x00000000, 0x40490FD8]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atan2_002
+      description: ""
+      input: [0x80000000, 0xC0490FD8]
+      expect: [0x80000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_003
+      description: ""
+      input: [0x00000000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atan2_004
+      description: ""
+      input: [0x80000000, 0x80000000]
+      expect: [0x00000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_005
+      description: ""
+      input: [0x00000000, 0x40490FD8]
+      expect: [0xBF800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atan2_006
+      description: ""
+      input: [0x80000000, 0xC0490FD8]
+      expect: [0xBF800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_007
+      description: ""
+      input: [0x00000000, 0x00000000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atan2_008
+      description: ""
+      input: [0x80000000, 0x80000000]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_009
+      description: ""
+      input: [0xBF800000, 0xBFC90FDB]
+      expect: [0x00000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_010
+      description: ""
+      input: [0xBF800000, 0xBFC90FDB]
+      expect: [0x80000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_011
+      description: ""
+      input: [0x3F800000, 0x3FC90FDB]
+      expect: [0x00000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_012
+      description: ""
+      input: [0x3F800000, 0x3FC90FDB]
+      expect: [0x80000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_013
+      description: ""
+      input: [0x7F800000, 0x3FC90FDB]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_014
+      description: ""
+      input: [0x7F800000, 0x3FC90FDB]
+      expect: [0xBF800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_015
+      description: ""
+      input: [0xFF800000, 0xBFC90FDB]
+      expect: [0x3F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_016
+      description: ""
+      input: [0xFF800000, 0xBFC90FDB]
+      expect: [0xBF800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_017
+      description: ""
+      input: [0x7F800000, 0x4016CBE4]
+      expect: [0xFF800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_018
+      description: ""
+      input: [0xFF800000, 0xC016CBE4]
+      expect: [0xFF800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_019
+      description: ""
+      input: [0x7F800000, 0x3F490FDB]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_020
+      description: ""
+      input: [0xFF800000, 0xBF490FDB]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_021
+      description: ""
+      input: [0x3F800000, 0x40490FD8]
+      expect: [0xFF800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_022
+      description: ""
+      input: [0xBF800000, 0xC0490FD8]
+      expect: [0xFF800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_023
+      description: ""
+      input: [0x3F800000, 0x00000000]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_024
+      description: ""
+      input: [0xBF800000, 0x80000000]
+      expect: [0x7F800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_025
+      description: ""
+      input: [0x7FB00000, 0x7FB00000]
+      expect: [0x00000000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atan2_026
+      description: ""
+      input: [0x7FB00000, 0x7FB00000]
+      expect: [0x7FB00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atan2_027
+      description: ""
+      input: [0xFFB00000, 0xFFB00000]
+      expect: [0x7FB00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atan2_028
+      description: ""
+      input: [0x7FB00000, 0x7FB00000]
+      expect: [0xFFB00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atan2_029
+      description: ""
+      input: [0xFFB00000, 0xFFB00000]
+      expect: [0xFFB00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atan2_030
+      description: ""
+      input: [0x96421590, 0x80000000]
+      expect: [0x7EEBE575]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_031
+      description: ""
+      input: [0x16421590, 0x00000000]
+      expect: [0x7EEBE575]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_032
+      description: y<x, x>0 and |y|/|x|>0.0625
+      input: [0x40080008, 0x3F469296]
+      expect: [0x400AABCD]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_033
+      description: y<x, x>0 and |y|/|x|<10^-4
+      input: [0x400AABCD, 0x34800000]
+      expect: [0x4B0AABCD]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_034
+      description: y<x, x>0 and 10^-4<|y|/|x|<0.0625
+      input: [0x3E000000, 0x3D6C09DC]
+      expect: [0x400AABCD]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_035
+      description: y<x, x<0 and |y|/|x|>0.0625
+      input: [0xC00AABCD, 0xBFE86B51]
+      expect: [0xBF0AABCD]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_036
+      description: y<x, x<0 and |y|/|x|<10^-4
+      input: [0x3862E96F, 0x40490E38]
+      expect: [0xBF0AABCD]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_037
+      description: y<x, x<0 and 10^-4<|y|/|x|<0.0625
+      input: [0x3A83126F, 0x4048F19C]
+      expect: [0xBF0AABCD]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_038
+      description: y>x, x>0 and |x|/|y|>0.0625
+      input: [0x423C0000, 0x3FC0E71D]
+      expect: [0x40400000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_039
+      description: y>x, x>0 and |x|/|y|<10^-4
+      input: [0x4B0AABCD, 0x3FC90FD9]
+      expect: [0x400AABCD]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_040
+      description: y>x, x>0 and 10^-4<|x|/|y|<0.0625
+      input: [0x42480000, 0x3FC16421]
+      expect: [0x40400000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_041
+      description: y>x, x<0 and |x|/|y|>0.0625
+      input: [0x40F00000, 0x3FD19529]
+      expect: [0xBF000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_042
+      description: y>x, x<0 and |x|/|y|<10^-4
+      input: [0x459C4800, 0x3FC91321]
+      expect: [0xBF000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atan2_043
+      description: y>x, x<0 and 10^-4<|x|/|y|<0.0625
+      input: [0x400AABCD, 0x3FC92FDB]
+      expect: [0xBB0AABCD]
+      expect_exception: [inexact]
+      variants: [ss]
+#-------------------------------
+    # Double Precision Tests
+    - id: atan2_001
+      description: "atan2(0, 1) = 0"
+      input: [0x0000000000000000, 0x3ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_002
+      description: "atan2(-0, 1) = -0"
+      input: [0x8000000000000000, 0x3ff0000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_003
+      description: "atan2(inf, 1) = π/2"
+      input: [0x7ff0000000000000, 0x3ff0000000000000]
+      expect: [0x3ff921fb54442d18]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_004
+      description: "atan2(-inf, 1) = -π/2"
+      input: [0xfff0000000000000, 0x3ff0000000000000]
+      expect: [0xbff921fb54442d18]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_005
+      description: "atan2(-nan, 1) = nan"
+      input: [0xfff8000000000000, 0x3ff0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_006
+      description: "atan2(+nan, 1) = nan"
+      input: [0x7ff8000000000000, 0x3ff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_007
+      description: "atan2(subnorm_max, 1) = subnorm_max (small angle)"
+      input: [0x000fffffffffffff, 0x3ff0000000000000]
+      expect: [0x000fffffffffffff]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: atan2_008
+      description: "atan2(subnorm_max, 1) = subnorm_max (small angle)"
+      input: [0x000fffffffffffff, 0x3ff0000000000000]
+      expect: [0x000fffffffffffff]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: atan2_009
+      description: "atan2(subnorm_min, 1) = subnorm_min (small angle)"
+      input: [0x0000000000000001, 0x3ff0000000000000]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: atan2_010
+      description: "atan2(subnorm_min, 1) = subnorm_min (small angle)"
+      input: [0x0000000000000001, 0x3ff0000000000000]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: atan2_011
+      description: "atan2(1.0, 1.0) = π/4"
+      input: [0x3ff0000000000000, 0x3ff0000000000000]
+      expect: [0x3fe921fb54442d18]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_012
+      description: "atan2(-1.0, 1.0) = -π/4"
+      input: [0xbff0000000000000, 0x3ff0000000000000]
+      expect: [0xbfe921fb54442d18]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_013
+      description: "atan2(1.0, -1.0) = 3π/4"
+      input: [0x3ff0000000000000, 0xbff0000000000000]
+      expect: [0x4002d97c7f3321d2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_014
+      description: "atan2(-1.0, -1.0) = -3π/4"
+      input: [0xbff0000000000000, 0xbff0000000000000]
+      expect: [0xc002d97c7f3321d2]
+      expect_exception: [inexact]
+      variants: [sd]
+# Test cases from gtests test_atan2_data.h
+#-------------------------------
+    - id: atan2_001
+      description: ""
+      input: [0x3FC999999999999A, 0x3FE921FB54442D18]
+      expect: [0x3FC999999999999A]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_002
+      description: ""
+      input: [0x4380000000000000, 0xBFF921FB54442D18]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_003
+      description: ""
+      input: [0x0000000000000004, 0x0000000000000000]
+      expect: [0x4020000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_004
+      description: ""
+      input: [0x0000100000000000, 0x0000000400000000]
+      expect: [0x4090000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_005
+      description: ""
+      input: [0x0170000000000000, 0x0000000400000000]
+      expect: [0x4270000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_006
+      description: ""
+      input: [0x3AF0000000000000, 0x39B0000000000000]
+      expect: [0x4130000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_007
+      description: ""
+      input: [0x3C80000000000000, 0xBC60000000000000]
+      expect: [0xC010000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_008
+      description: ""
+      input: [0x4024000000000000, 0x3FB983E282E2CC4C]
+      expect: [0x4059000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_009
+      description: ""
+      input: [0x3E45798EE2308C3A, 0x3DDB7CDFD9D7BDBB]
+      expect: [0x4059000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_010
+      description: ""
+      input: [0x3F847AE147AE147B, 0x3F1A36E2E9A4F662]
+      expect: [0x4059000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_011
+      description: ""
+      input: [0x4024000000000000, 0xBFB983E282E2CC4C]
+      expect: [0xC059000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_012
+      description: ""
+      input: [0x3E45798EE2308C3A, 0xBDDB7CDFD9D7BDBB]
+      expect: [0xC059000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_013
+      description: ""
+      input: [0x3F847AE147AE147B, 0xBF1A36E2E9A4F662]
+      expect: [0xC059000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_014
+      description: ""
+      input: [0x4059000000000000, 0x3FF789BD2C160054]
+      expect: [0x4024000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_015
+      description: ""
+      input: [0x4059000000000000, 0x3FF921FB543D4DE0]
+      expect: [0x3E45798EE2308C3A]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_016
+      description: ""
+      input: [0x4059000000000000, 0x3FF9219278B88684]
+      expect: [0x3F847AE147AE147B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_017
+      description: ""
+      input: [0x4059000000000000, 0xBFF789BD2C160054]
+      expect: [0xC024000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_018
+      description: ""
+      input: [0x4059000000000000, 0xBFF921FB543D4DE0]
+      expect: [0xBE45798EE2308C3A]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_019
+      description: ""
+      input: [0x4059000000000000, 0xBFF9219278B88684]
+      expect: [0xBF847AE147AE147B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_020
+      description: ""
+      input: [0x0000000000000000, 0x400921FB54442D18]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_021
+      description: ""
+      input: [0x8000000000000000, 0xC00921FB54442D18]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_022
+      description: ""
+      input: [0x0000000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_023
+      description: ""
+      input: [0x8000000000000000, 0x8000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_024
+      description: ""
+      input: [0x0000000000000000, 0x400921FB54442D18]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_025
+      description: ""
+      input: [0x8000000000000000, 0xC00921FB54442D18]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_026
+      description: ""
+      input: [0x0000000000000000, 0x0000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_027
+      description: ""
+      input: [0x8000000000000000, 0x8000000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_028
+      description: ""
+      input: [0xBFF0000000000000, 0xBFF921FB54442D18]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_029
+      description: ""
+      input: [0xBFF0000000000000, 0xBFF921FB54442D18]
+      expect: [0x8000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_030
+      description: ""
+      input: [0x3FF0000000000000, 0x3FF921FB54442D18]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_031
+      description: ""
+      input: [0x3FF0000000000000, 0x3FF921FB54442D18]
+      expect: [0x8000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_032
+      description: ""
+      input: [0x7FF0000000000000, 0x3FF921FB54442D18]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_033
+      description: ""
+      input: [0xFFF0000000000000, 0xBFF921FB54442D18]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_034
+      description: ""
+      input: [0x7FF0000000000000, 0x4002D97C7F3321D2]
+      expect: [0xFFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_035
+      description: ""
+      input: [0xFFF0000000000000, 0xC002D97C7F3321D2]
+      expect: [0xFFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_036
+      description: ""
+      input: [0x7FF0000000000000, 0x3FE921FB54442D18]
+      expect: [0x7FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_037
+      description: ""
+      input: [0xFFF0000000000000, 0xBFE921FB54442D18]
+      expect: [0x7FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_038
+      description: ""
+      input: [0x3FF0000000000000, 0x400921FB54442D18]
+      expect: [0xFFF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_039
+      description: ""
+      input: [0xBFF0000000000000, 0xC00921FB54442D18]
+      expect: [0xFFF0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_040
+      description: ""
+      input: [0x3FF0000000000000, 0x0000000000000000]
+      expect: [0x7FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_041
+      description: ""
+      input: [0xBFF0000000000000, 0x8000000000000000]
+      expect: [0x7FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_042
+      description: ""
+      input: [0x7FF0000000000000, 0x3FF921FB60000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_043
+      description: ""
+      input: [0xFFF0000000000000, 0xBFF921FB60000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_044
+      description: ""
+      input: [0x7FF4001000000000, 0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atan2_045
+      description: ""
+      input: [0xFFF2000000000000, 0xFFF2000000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atan2_046
+      description: ""
+      input: [0x7FF4001000000000, 0x7FF4001000000000]
+      expect: [0xFFF2000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atan2_047
+      description: ""
+      input: [0xFFF2000000000000, 0xFFF2000000000000]
+      expect: [0xFFF2000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atan2_048
+      description: ""
+      input: [0x7FF4001000000000, 0x7FF4001000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atan2_049
+      description: ""
+      input: [0x3FF0000000000000, 0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atan2_050
+      description: ""
+      input: [0xB1DB0D2835C40259, 0x8000000000000000]
+      expect: [0x7FE1CCF385EBC8A0]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_051
+      description: ""
+      input: [0x31DB0D2835C40259, 0x0000000000000000]
+      expect: [0x7FE1CCF385EBC8A0]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_052
+      description: ""
+      input: [0x405FFFFFFFFFFFFF, 0x3FF911FB59997F3A]
+      expect: [0x3FE0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_053
+      description: ""
+      input: [0xBFCABCDABCDABCDF, 0x80040000001CB936]
+      expect: [0x7FCABCDABC1ABCDF]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_054
+      description: ""
+      input: [0xBFCABCDABCDABCDF, 0xC002D97C7F16689D]
+      expect: [0xBFCABCDABC1ABCDF]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_055
+      description: ""
+      input: [0xBFCABCDABCDABCDF, 0xC002D97C7F3321D2]
+      expect: [0xBFCABCDABCDABCDF]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_056
+      description: ""
+      input: [0x3FCABCDABCDABCDF, 0x4002D97C7F3321D2]
+      expect: [0xBFCABCDABCDABCDF]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_057
+      description: ""
+      input: [0x032000A000000000, 0x0004C9B8CE7D92D8]
+      expect: [0x431ABCDABCDABCDF]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_058
+      description: ""
+      input: [0x6210000000000000, 0x3FF921FB54442D18]
+      expect: [0x41AABCDABCDABCDF]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_059
+      description: ""
+      input: [0x6210000000000000, 0x3FF921FB54442D18]
+      expect: [0xC1AABCDABCDABCDF]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_060
+      description: ""
+      input: [0x3FCABCDABCDABCDF, 0x3FE921FB54442D18]
+      expect: [0x3FCABCDABCDABCDF]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_061
+      description: ""
+      input: [0x3FCABCDABCDABCDF, 0x3C70000000000000]
+      expect: [0x434ABCDABCDABCDF]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_062
+      description: ""
+      input: [0x3FEABCDABCDABCDF, 0x400921FB54442D18]
+      expect: [0xC37ABCDABCDABCDF]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_063
+      description: ""
+      input: [0xBFEABCDABCDABCDF, 0xC00921FB54442D18]
+      expect: [0xC37ABCDABCDABCDF]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atan2_064
+      description: ""
+      input: [0x43BABCDABCDABCDF, 0x3FF921FB54442D18]
+      expect: [0x03CABCDABCDABCDA]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_065
+      description: ""
+      input: [0x43BABCDABCDABCDF, 0x3FF921FB54442D18]
+      expect: [0x03C0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_066
+      description: ""
+      input: [0x41AABCDABCDABCDF, 0x1F8ABCDABCDABCDF]
+      expect: [0x6210000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_067
+      description: ""
+      input: [0xC1AABCDABCDABCDF, 0x9F8ABCDABCDABCDF]
+      expect: [0x6210000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_068
+      description: ""
+      input: [0x000FFFFFFFFFFFFF, 0x3FF921FF2E48E8A7]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: atan2_069
+      description: ""
+      input: [0x0000000000000001, 0x3CB00001DD9DC7D3]
+      expect: [0x000FFFFFFFFFFFFF]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: atan2_070
+      description: ""
+      input: [0x80000000000039A2, 0xBE4D0CE6FAC85DE8]
+      expect: [0x000000FDF0200000]
+      expect_exception: []
+      variants: [sd]
+#-------------------------------

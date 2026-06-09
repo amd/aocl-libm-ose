@@ -1,0 +1,355 @@
+- test_sequence: unit_tests_nextafter
+  ignore_exceptions: [underflow, inexact]
+  function: nextafter
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    # Test case 1: 0
+    - id: nextafter_001
+      description: "nextafterf(0, 1) = +min_subnormal"
+      variants: [ss]
+      input: [0x00000000, 0x3f800000]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+
+    # Test case 2: -0
+    - id: nextafter_002
+      description: "nextafterf(-0, 1) = +min_subnormal"
+      variants: [ss]
+      input: [0x80000000, 0x3f800000]
+      expect: [0x80000000]
+      expect_exception: [inexact, underflow]
+
+    # Test case 3: inf
+    - id: nextafter_003
+      description: "nextafterf(inf, 0) = +max_normal"
+      variants: [ss]
+      input: [0x7f800000, 0x00000000]
+      expect: [0x7f7fffff]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: nextafter_004
+      description: "nextafterf(-inf, 0) = -max_normal"
+      variants: [ss]
+      input: [0xff800000, 0x00000000]
+      expect: [0xff7fffff]
+      expect_exception: []
+
+    # Test case 5: -nan
+    - id: nextafter_005
+      description: "nextafterf(-nan, 1) = -nan"
+      variants: [ss]
+      input: [0xffc00000, 0x3f800000]
+      expect: [0xffc00000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: nextafter_006
+      description: "nextafterf(+nan, 1) = +nan"
+      variants: [ss]
+      input: [0x7fc00000, 0x3f800000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: nextafter_007
+      description: "nextafterf(+subnorm_max, inf) = +min_normal"
+      variants: [ss]
+      input: [0x007fffff, 0x7f800000]
+      expect: [0x00800000]
+      expect_exception: []
+
+    # Test case 8: - subnorm (MAX)
+    - id: nextafter_008
+      description: "nextafterf(-subnorm_max, -inf) = -min_normal"
+      variants: [ss]
+      input: [0x807fffff, 0xff800000]
+      expect: [0x80800000]
+      expect_exception: []
+
+    # Test case 9: + subnorm (MIN)
+    - id: nextafter_009
+      description: "nextafterf(+subnorm_min, 0) = 0"
+      variants: [ss]
+      input: [0x00000001, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: [inexact, underflow]
+
+    # Test case 10: - subnorm (MIN)
+    - id: nextafter_010
+      description: "nextafterf(-subnorm_min, 0) = -0"
+      variants: [ss]
+      input: [0x80000001, 0x00000000]
+      expect: [0x80000000]
+      expect_exception: [inexact, underflow]
+
+    # Test case 11: + POS
+    - id: nextafter_011
+      description: "nextafterf(1.0, 2.0) = next representable value after 1.0"
+      variants: [ss]
+      input: [0x3f800000, 0x40000000]
+      expect: [0x3f800001]
+      expect_exception: []
+
+    # Test case 12: -POS
+    - id: nextafter_012
+      description: "nextafterf(-1.0, -2.0) = next representable value after -1.0"
+      variants: [ss]
+      input: [0xbf800000, 0xc0000000]
+      expect: [0xbf800001]
+      expect_exception: []
+
+    # Test case 13: +NEG
+    - id: nextafter_013
+      description: "nextafterf(2.0, 1.0) = previous representable value before 2.0"
+      variants: [ss]
+      input: [0x40000000, 0x3f800000]
+      expect: [0x3fffffff]
+      expect_exception: []
+
+    # Test case 14: -NEG
+    - id: nextafter_014
+      description: "nextafterf(-2.0, -1.0) = previous representable value before -2.0"
+      variants: [ss]
+      input: [0xc0000000, 0xbf800000]
+      expect: [0xbfffffff]
+      expect_exception: []
+
+    # Test case 15: qnan
+    - id: nextafter_015
+      description: "nextafterf(qnan, 1) = qnan"
+      variants: [ss]
+      input: [0x7fc00000, 0x3f800000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: nextafter_016
+      description: "nextafterf(snan, 1) = snan"
+      variants: [ss]
+      input: [0x7fa00000, 0x3f800000]
+      expect: [0x7fa00000]
+      expect_exception: [invalidoperation]
+
+# Test cases from gtests test_nextafter_data.h
+#-------------------------------------------
+    - id: nextafter_001
+      description: "nextafter(snan,snan)"
+      input: [0x7fa00000, 0x7fa00000]
+      expect: [0x7fa00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: nextafter_002
+      description: "nextafter(snan,2.2)"
+      input: [0x7fa00000, 0x400CCCCD]
+      expect: [0x7fa00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: nextafter_003
+      description: "nextafter(10.4,10.4) (x==y)"
+      input: [0x41266666, 0x41266666]
+      expect: [0x41266666]
+      expect_exception: []
+      variants: [ss]
+    - id: nextafter_004
+      description: "nextafter(0, 0) (x==y)"
+      input: [0x00000000, 0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: nextafter_005
+      description: "nextafter(0, 1) (x==0, y+ve)"
+      input: [0x00000000, 0x00000000]
+      expect: [0x00000001]
+      expect_exception: []
+      variants: [ss]
+    - id: nextafter_006
+      description: "nextafter(+inf,5.4)"
+      input: [0x7F800000, 0x40ACCCCD]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: nextafter_007
+      description: "nextafter(-0,-1) (x==-0, y-ve)"
+      input: [0x80000000, 0x00000000]
+      expect: [0x80000001]
+      expect_exception: []
+      variants: [ss]
+
+#-------------------------------------------
+    # Double precision tests
+    # Test case 1: 0
+    - id: nextafter_001
+      description: "nextafter(0, 1) = +min_subnormal"
+      variants: [sd]
+      input: [0x0000000000000000, 0x3ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact, underflow]
+
+    # Test case 2: -0
+    - id: nextafter_002
+      description: "nextafter(-0, 1) = +min_subnormal"
+      variants: [sd]
+      input: [0x8000000000000000, 0x3ff0000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: [inexact, underflow]
+
+    # Test case 3: inf
+    - id: nextafter_003
+      description: "nextafter(inf, 0) = +max_normal"
+      variants: [sd]
+      input: [0x7ff0000000000000, 0x0000000000000000]
+      expect: [0x7fefffffffffffff]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: nextafter_004
+      description: "nextafter(-inf, 0) = -max_normal"
+      variants: [sd]
+      input: [0xfff0000000000000, 0x0000000000000000]
+      expect: [0xffefffffffffffff]
+      expect_exception: []
+
+    # Test case 5: -nan
+    - id: nextafter_005
+      description: "nextafter(-nan, 1) = -nan"
+      variants: [sd]
+      input: [0xfff8000000000000, 0x3ff0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: nextafter_006
+      description: "nextafter(+nan, 1) = +nan"
+      variants: [sd]
+      input: [0x7ff8000000000000, 0x3ff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: nextafter_007
+      description: "nextafter(+subnorm_max, inf) = +min_normal"
+      variants: [sd]
+      input: [0x000fffffffffffff, 0x7ff0000000000000]
+      expect: [0x0010000000000000]
+      expect_exception: []
+
+    # Test case 8: - subnorm (MAX)
+    - id: nextafter_008
+      description: "nextafter(-subnorm_max, -inf) = -min_normal"
+      variants: [sd]
+      input: [0x800fffffffffffff, 0xfff0000000000000]
+      expect: [0x8010000000000000]
+      expect_exception: []
+
+    # Test case 9: + subnorm (MIN)
+    - id: nextafter_009
+      description: "nextafter(+subnorm_min, 0) = 0"
+      variants: [sd]
+      input: [0x0000000000000001, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact, underflow]
+
+    # Test case 10: - subnorm (MIN)
+    - id: nextafter_010
+      description: "nextafter(-subnorm_min, 0) = -0"
+      variants: [sd]
+      input: [0x8000000000000001, 0x0000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: [inexact, underflow]
+
+    # Test case 11: + POS
+    - id: nextafter_011
+      description: "nextafter(1.0, 2.0) = next representable value after 1.0"
+      variants: [sd]
+      input: [0x3ff0000000000000, 0x4000000000000000]
+      expect: [0x3ff0000000000001]
+      expect_exception: []
+
+    # Test case 12: -POS
+    - id: nextafter_012
+      description: "nextafter(-1.0, -2.0) = next representable value after -1.0"
+      variants: [sd]
+      input: [0xbff0000000000000, 0xc000000000000000]
+      expect: [0xbff0000000000001]
+      expect_exception: []
+
+    # Test case 13: +NEG
+    - id: nextafter_013
+      description: "nextafter(2.0, 1.0) = previous representable value before 2.0"
+      variants: [sd]
+      input: [0x4000000000000000, 0x3ff0000000000000]
+      expect: [0x3fffffffffffffff]
+      expect_exception: []
+
+    # Test case 14: -NEG
+    - id: nextafter_014
+      description: "nextafter(-2.0, -1.0) = previous representable value before -2.0"
+      variants: [sd]
+      input: [0xc000000000000000, 0xbff0000000000000]
+      expect: [0xbfffffffffffffff]
+      expect_exception: []
+
+    # Test case 15: qnan
+    - id: nextafter_015
+      description: "nextafter(qnan, 1) = qnan"
+      variants: [sd]
+      input: [0x7ff8000000000000, 0x3ff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: nextafter_016
+      description: "nextafter(snan, 1) = snan"
+      variants: [sd]
+      input: [0x7ff4000000000001, 0x3ff0000000000000]
+      expect: [0x7ff4000000000001]
+      expect_exception: [invalidoperation]
+
+# Test cases from gtests test_nextafter_data.h
+#-------------------------------------------
+    - id: nextafter_001
+      description: "nextafter(snan,snan)"
+      input: [0x7FF4001000000000, 0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: nextafter_002
+      description: "nextafter(snan,2.2)"
+      input: [0x7FF4001000000000, 0x400199999999999A]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: nextafter_003
+      description: "nextafter(88.2,88.2) (x==y)"
+      input: [0x40560CCCCCCCCCCD, 0x40560CCCCCCCCCCD]
+      expect: [0x40560CCCCCCCCCCD]
+      expect_exception: []
+      variants: [sd]
+    - id: nextafter_004
+      description: "nextafter(0,0) (x==y)"
+      input: [0x0000000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nextafter_005
+      description: "// nextafter(0,1) (x==0 & y+ve)"
+      input: [0x0000000000000000, 0x0000000000000000]
+      expect: [0x0000000000000001]
+      expect_exception: []
+      variants: [sd]
+    - id: nextafter_006
+      description: "nextafter(+inf,88.2)"
+      input: [0x7ff0000000000000, 0x40560CCCCCCCCCCD]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: nextafter_007
+      description: "// nextafter(-0, -1) (x==-0 & y-ve)"
+      input: [0x8000000000000000, 0x0000000000000000]
+      expect: [0x8000000000000001]
+      expect_exception: []
+      variants: [sd]
+#-------------------------------------------

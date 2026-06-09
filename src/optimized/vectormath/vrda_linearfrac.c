@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,19 +25,86 @@
  *
  */
 
-/*
-C implementation of Linearfrac
-
-Signature:
-    void vrda_linearfrac(int length, double *a, double *b, double scalea, double shifta, double scaleb, double shiftb, double *result)
-
-Implementation notes:
-
-    Linearfrac function performs a linear fraction transformation of vector a by vector b
-    with scalar parameters
-    y[i] = (scalea.a[i]+shifta)/(scaleb.b[i]+shiftb)
-
-*/
+/********************************************
+ * ---------------------
+ * Signature
+ * ---------------------
+ * void vrda_linearfrac(int length, const double *a, const double *b, double scalea, 
+ *                      double shifta, double scaleb, double shiftb, double *result)
+ *
+ * vrda_linearfrac() computes the linear fraction transformation for 'length' 
+ * number of elements present in the 'a' and 'b' arrays.
+ * The corresponding output is stored in the 'result' array.
+ *
+ * Computation: result[i] = (scalea * a[i] + shifta) / (scaleb * b[i] + shiftb)
+ *
+ * ---------------------
+ * Implementation Notes
+ * ---------------------
+ *
+ * The implementation uses a unified approach that handles both in-place
+ * and out-of-place operations. It also optimizes for a special case.
+ *
+ * Special Case Optimization (when scaleb = 0 and shiftb = 1):
+ *     In this case, the denominator becomes (0 * b + 1) = 1
+ *     So the computation simplifies to: result[i] = (scalea * a[i] + shifta)
+ *
+ *     Broadcast scalar values scalea and shifta to 256-bit vectors
+ *
+ *     If length is greater than or equal to 4:
+ *         Save the last 4 elements from array 'a' before processing
+ *         Process elements in chunks of 4 (n*4 complete elements):
+ *             Load 4 elements from array 'a' into a 256-bit register
+ *             Compute transa = (a * scalea) + shifta using FMA instruction
+ *             Store the output into result array
+ *         Repeat until all complete chunks are processed
+ *
+ *         For the remaining elements (if any):
+ *             Use the pre-saved last 4 elements from array 'a'
+ *             Compute transa = (a * scalea) + shifta using FMA instruction
+ *             Store the output at the last 4 positions in result array
+ *     Return
+ *
+ *     If length is less than 4:
+ *         Create a mask for the actual number of elements
+ *         Load elements from array 'a' using masked load
+ *         Compute transa = (a * scalea) + shifta using FMA instruction
+ *         Store the output using masked store
+ *     Return
+ *
+ * General Case (when the special case condition is not met):
+ *     Broadcast scalar values scalea, shifta, scaleb, and shiftb to 256-bit vectors
+ *
+ *     If length is greater than or equal to 4:
+ *         Save the last 4 elements from both arrays 'a' and 'b' before processing
+ *         Process elements in chunks of 4 (n*4 complete elements):
+ *             Load 4 elements from array 'a' into a 256-bit register
+ *             Load 4 elements from array 'b' into a 256-bit register
+ *             Compute transa = (a * scalea) + shifta using FMA instruction
+ *             Compute transb = (b * scaleb) + shiftb using FMA instruction
+ *             Compute result = transa / transb using division instruction
+ *             Store the output into result array
+ *         Repeat until all complete chunks are processed
+ *
+ *         For the remaining elements (if any):
+ *             Use the pre-saved last 4 elements from arrays 'a' and 'b'
+ *             Compute transa = (a * scalea) + shifta using FMA instruction
+ *             Compute transb = (b * scaleb) + shiftb using FMA instruction
+ *             Compute result = transa / transb using division instruction
+ *             Store the output at the last 4 positions in result array
+ *     Return
+ *
+ *     If length is less than 4:
+ *         Create a mask for the actual number of elements
+ *         Load elements from array 'a' using masked load
+ *         Load elements from array 'b' using masked load
+ *         Compute transa = (a * scalea) + shifta using FMA instruction
+ *         Compute transb = (b * scaleb) + shiftb using FMA instruction
+ *         Compute result = transa / transb using division instruction
+ *         Store the output using masked store
+ *     Return
+ *
+ */
 #include <libm_macros.h>
 #include <immintrin.h>
 #include <libm/amd_funcs_internal.h>
@@ -49,10 +116,7 @@ Implementation notes:
 #include <libm/typehelper-vec.h>
 #include <libm/compiler.h>
 
-
-
-
-void ALM_PROTO_OPT(vrda_linearfrac)(int length, double *a, double *b, double scalea, double shifta, double scaleb, double shiftb, double *result)
+void ALM_PROTO_OPT(vrda_linearfrac)(int length, const double *a, const double *b, double scalea, double shifta, double scaleb, double shiftb, double *result)
 {
     int j = 0;
     uint64_t scaleb_u = asuint64(scaleb);
@@ -67,13 +131,18 @@ void ALM_PROTO_OPT(vrda_linearfrac)(int length, double *a, double *b, double sca
     */
     if(((scaleb_u & ~SIGNBIT_DP64) == 0) && (shiftb_u == POS_ONE_F64))
     {
-        /* Broadcast scalar values scalea and scaleb to vectors */
+        /* Broadcast scalar values scalea and shifta to vectors */
         v_f64x4_t scalea_v = _mm256_broadcast_sd(&scalea);
         v_f64x4_t shifta_v = _mm256_broadcast_sd(&shifta);
         v_f64x4_t a_v, transa;
 
         if(likely(length >= DOUBLE_ELEMENTS_256_BIT))
         {
+            /* Save the last 4 elements before processing. This avoids errors when the
+               operation is in-place */
+            __m256d last_a = _mm256_loadu_pd(&a[length - DOUBLE_ELEMENTS_256_BIT]);
+            
+            // Process complete chunks of 4 (n*4 elements)
             for (j = 0; j <= length - DOUBLE_ELEMENTS_256_BIT; j += DOUBLE_ELEMENTS_256_BIT)
             {
                 a_v = _mm256_loadu_pd(&a[j]);
@@ -81,20 +150,23 @@ void ALM_PROTO_OPT(vrda_linearfrac)(int length, double *a, double *b, double sca
                 transa = _mm256_fmadd_pd(scalea_v, a_v, shifta_v);
                 _mm256_storeu_pd(&result[j], transa);
             }
+            
+            // Handle remaining elements using the pre-saved last 4 elements
             if (length - j)
             {
-                a_v = _mm256_loadu_pd(&a[length - DOUBLE_ELEMENTS_256_BIT]);
                 /* transa = (a * scalea) + shifta */
-                transa = _mm256_fmadd_pd(scalea_v, a_v, shifta_v);
+                transa = _mm256_fmadd_pd(scalea_v, last_a, shifta_v);
                 _mm256_storeu_pd(&result[length - DOUBLE_ELEMENTS_256_BIT], transa);
             }
             return;
         }
-            __m256i mask = GET_MASK_DOUBLE_256_BIT(length);
-            a_v = _mm256_maskload_pd(&a[j], mask);
-            /* transa = (a * scalea) + shifta */
-            transa = _mm256_fmadd_pd(scalea_v, a_v, shifta_v);
-            _mm256_maskstore_pd(&result[j], mask, transa);
+        
+        // For length < 4, use masked operations
+        __m256i mask = GET_MASK_DOUBLE_256_BIT(length);
+        a_v = _mm256_maskload_pd(&a[0], mask);
+        /* transa = (a * scalea) + shifta */
+        transa = _mm256_fmadd_pd(scalea_v, a_v, shifta_v);
+        _mm256_maskstore_pd(&result[0], mask, transa);
     }
     else
     {
@@ -106,9 +178,14 @@ void ALM_PROTO_OPT(vrda_linearfrac)(int length, double *a, double *b, double sca
 
         if(likely(length >= DOUBLE_ELEMENTS_256_BIT))
         {
+            /* Save the last 4 elements from both arrays before processing. This avoids errors
+               when the operation is in-place */
+            __m256d last_a = _mm256_loadu_pd(&a[length - DOUBLE_ELEMENTS_256_BIT]);
+            __m256d last_b = _mm256_loadu_pd(&b[length - DOUBLE_ELEMENTS_256_BIT]);
 
             v_f64x4_t a_v, b_v, transa, transb, result_v;
 
+            // Process complete chunks of 4 (n*4 elements)
             for (j = 0; j <= length - DOUBLE_ELEMENTS_256_BIT; j += DOUBLE_ELEMENTS_256_BIT)
             {
                 a_v = _mm256_loadu_pd(&a[j]);
@@ -121,29 +198,31 @@ void ALM_PROTO_OPT(vrda_linearfrac)(int length, double *a, double *b, double sca
                 result_v = _mm256_div_pd(transa, transb);
                 _mm256_storeu_pd(&result[j], result_v);
             }
+            
+            // Handle remaining elements using the pre-saved last 4 elements
             if (length - j)
             {
-                a_v = _mm256_loadu_pd(&a[length - DOUBLE_ELEMENTS_256_BIT]);
-                b_v= _mm256_loadu_pd(&b[length - DOUBLE_ELEMENTS_256_BIT]);
                 /* transa = (a * scalea) + shifta */
-                transa = _mm256_fmadd_pd(scalea_v, a_v, shifta_v);
+                transa = _mm256_fmadd_pd(scalea_v, last_a, shifta_v);
                 /* transb = (b * scaleb) + shiftb */
-                transb = _mm256_fmadd_pd(scaleb_v, b_v, shiftb_v);
+                transb = _mm256_fmadd_pd(scaleb_v, last_b, shiftb_v);
                 /* result = (transa / transb) = ((a * scalea) + shifta) / ((b * scaleb) + shiftb)*/
                 result_v = _mm256_div_pd(transa, transb);
                 _mm256_storeu_pd(&result[length - DOUBLE_ELEMENTS_256_BIT], result_v);
             }
             return;
         }
+        
+        // For length < 4, use masked operations
         __m256i mask = GET_MASK_DOUBLE_256_BIT(length);
-        v_f64x4_t a_v = _mm256_maskload_pd(&a[j], mask);
-        v_f64x4_t b_v = _mm256_maskload_pd(&b[j], mask);
+        v_f64x4_t a_v = _mm256_maskload_pd(&a[0], mask);
+        v_f64x4_t b_v = _mm256_maskload_pd(&b[0], mask);
         /* transa = (a * scalea) + shifta */
         v_f64x4_t transa = _mm256_fmadd_pd(scalea_v, a_v, shifta_v);
         /* transb = (b * scaleb) + shiftb */
         v_f64x4_t transb = _mm256_fmadd_pd(scaleb_v, b_v, shiftb_v);
         /* result = (transa / transb) = ((a * scalea) + shifta) / ((b * scaleb) + shiftb)*/
         v_f64x4_t result_v = _mm256_div_pd(transa, transb);
-        _mm256_maskstore_pd(&result[j], mask, result_v);
+        _mm256_maskstore_pd(&result[0], mask, result_v);
     }
 }

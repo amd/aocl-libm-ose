@@ -58,7 +58,6 @@ static struct {
 #define LOGV      v8_coshf_data.logV
 #define INVV2     v8_coshf_data.invV2
 #define ONE       v8_coshf_data.one
-#define HALFVM1   v8_coshf_data.halfVm1
 #define HALFV     v8_coshf_data.halfV
 #define ARG_MAX   v8_coshf_data.arg_max
 
@@ -83,7 +82,7 @@ v_f32x8_t ALM_PROTO_OPT(vrs8_coshf)(v_f32x8_t x)
 
     z = ALM_PROTO(vrs8_expf)(y - LOGV);
 
-    result = HALFV * (z + INVV2 * ONE / z);
+    result = HALFV * (z + INVV2 / z);
 
     if(unlikely(any_v8_u32_loop(cond))) {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -181,7 +181,8 @@ ALM_PROTO_OPT(vrs4_tanf)(__m128 xf32x4)
     F = F + nn * ALM_TANF_HALFPI2;
     F = F + nn * ALM_TANF_HALFPI3;
 
-    v_u32x4_t odd = n << 31;
+    /* Convert odd indicator to full mask: -1 (0xFFFFFFFF) when odd, 0 when even */
+    v_u32x4_t odd = (v_u32x4_t)(-(v_i32x4_t)(n & 1));
 
     /*
      * Calculate the polynomial approximation

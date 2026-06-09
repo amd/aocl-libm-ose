@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -46,6 +46,7 @@ check_c_compiler_flag("-march=znver2"    CONFIG_COMPILER_HAS_ZEN2)
 check_c_compiler_flag("-march=znver3"    CONFIG_COMPILER_HAS_ZEN3)
 check_c_compiler_flag("-march=znver4"    CONFIG_COMPILER_HAS_ZEN4)
 check_c_compiler_flag("-march=znver5"    CONFIG_COMPILER_HAS_ZEN5)
+check_c_compiler_flag("-march=znver6"    CONFIG_COMPILER_HAS_ZEN6)
 
 check_c_compiler_flag("-mavx2"           CONFIG_TARGET_IS_AVX2)
 check_c_compiler_flag("-march=x86-64"    CONFIG_TARGET_IS_X86_64)
@@ -53,7 +54,7 @@ check_c_compiler_flag("-march=x86-64-v2" CONFIG_TARGET_IS_X86_64_v2)
 check_c_compiler_flag("-march=x86-64-v3" CONFIG_TARGET_IS_X86_64_v3)
 check_c_compiler_flag("-march=x86-64-v4" CONFIG_TARGET_IS_X86_64_v4)
 
-set(archlist znver5 znver4 znver3 znver2 znver1)
+set(archlist znver6 znver5 znver4 znver3 znver2 znver1)
 set(archdetect_code "
   #include <stdio.h>
   int main() { return 0; } ")
@@ -108,34 +109,38 @@ endmacro()
 macro(get_zen1_arch_flags zen1)
   set(arch znver1 x86-64)
   get_arch(res arch)
-  set(${zen1} -march=${res})
+  set(${zen1} ${res})
 endmacro()
 
 macro(get_zen2_arch_flags zen2)
   set(arch znver2 znver1 x86-64)
   get_arch(res arch)
-  set(${zen2} -march=${res})
+  set(${zen2} ${res})
 endmacro()
 
 macro(get_zen3_arch_flags zen3)
   set(arch znver3 znver2 znver1 x86-64)
   get_arch(res arch)
-  set(${zen3} -march=${res})
+  set(${zen3} ${res})
 endmacro()
 
 macro(get_zen4_arch_flags zen4)
   set(arch znver4 znver3 znver2 znver1 x86-64)
   get_arch(res arch)
-  set(${zen4} -march=${res})
+  set(${zen4} ${res})
 endmacro()
 
 macro(get_zen5_arch_flags zen5)
   set(arch znver5 znver4 znver3 znver2 znver1 x86-64)
   get_arch(res arch)
-  set(${zen5} -march=${res})
+  set(${zen5} ${res})
 endmacro()
 
-
+macro(get_zen6_arch_flags zen6)
+  set(arch znver6 znver5 znver4 znver3 znver2 znver1 x86-64)
+  get_arch(res arch)
+  set(${zen6} ${res})
+endmacro()
 
 
 
@@ -145,15 +150,11 @@ macro(get_optz_flag optzflag)
 endmacro()
 
 macro(get_fast_flag ffpflag)
-  if(NOT WIN32)
-    set(${ffpflag} -ffp-contract=fast)
-  else()
-    set(${ffpflag} /fp:fast)
-  endif()
+  set(${ffpflag} -ffp-contract=fast)
 endmacro()
 
 macro(get_win_flag winflag)
-  set(${winflag}  -DAVX_XOP_FMA4_FMA3 -DENABLE_AMDLIBM_API=1 -DLIBABI=aocl -Dlibalm_EXPORTS -m64 /arch:AVX2 -march=native)
+  set(${winflag}  -DAVX_XOP_FMA4_FMA3 -DENABLE_AMDLIBM_API=1 -DLIBABI=aocl -Dlibalm_EXPORTS -m64 /arch:AVX2)
 endmacro()
 
 macro(get_au_flag auflag)
@@ -162,6 +163,10 @@ endmacro()
 
 macro(get_avx2fma_flag fmaflag)
   set(${fmaflag} -mavx2 -mfma)
+endmacro()
+
+macro(get_avx512_flag avx512flag)
+  set(${avx512flag} -mavx512f -mavx512dq -mfma)
 endmacro()
 
 macro(get_fastmath_flag fmflag)

@@ -1,0 +1,72 @@
+- test_sequence: perf_tests
+  function: cexp
+  timing_enabled: true
+  test_sets:
+  - id: range-tests_01
+    tests:
+# Single Precision (cexpf)
+# Input format: complex range ["real_srt + i imag_srt", "real_stp + i imag_stp"]
+    - id: cexpf_perf_001
+      description: 'Positive real axis: Real [min_subnormal, 90], Imag [0.1, 0.1], linearstep'
+      input:
+      - ["min_subnormal + i 0.1", "90.0 + i 0.1"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sc]
+
+    - id: cexpf_perf_002
+      description: 'Central region: Real [-2, 2], Imag [-2, 2], linearstep'
+      input:
+      - ["-2.0 + i -2.0", "2.0 + i 2.0"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sc]
+
+    - id: cexpf_perf_003
+      description: 'Negative real axis: Real [-90, -min_subnormal], Imag [0.1, 0.1], linearstep'
+      input:
+      - ["-90.0 + i 0.1", "-min_subnormal + i 0.1"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sc]
+
+    - id: cexpf_perf_004
+      description: 'Imag axis: Real [0.1, 0.1], Imag [-2*pi, 2*pi], linearstep'
+      input:
+      - ["0.1 + i -6.283185307179586", "0.1 + i 6.283185307179586"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sc]
+
+# Double Precision (cexp)
+    - id: cexp_perf_001
+      description: 'Positive real axis: Real [min_subnormal, 710], Imag [0.1, 0.1], linearstep'
+      input:
+      - ["min_subnormal + i 0.1", "710.0 + i 0.1"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sz]
+
+    - id: cexp_perf_002
+      description: 'Central region: Real [-2, 2], Imag [-2, 2], linearstep'
+      input:
+      - ["-2.0 + i -2.0", "2.0 + i 2.0"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sz]
+
+    - id: cexp_perf_003
+      description: 'Negative real axis: Real [-710, -min_subnormal], Imag [0.1, 0.1], linearstep'
+      input:
+      - ["-710.0 + i 0.1", "-min_subnormal + i 0.1"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sz]
+
+    - id: cexp_perf_004
+      description: 'Imag axis: Real [0.1, 0.1], Imag [-2*pi, 2*pi], linearstep'
+      input:
+      - ["0.1 + i -6.283185307179586", "0.1 + i 6.283185307179586"]
+      type: [linearstep]
+      steps: [10000]
+      variants: [sz]

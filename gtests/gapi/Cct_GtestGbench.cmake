@@ -46,93 +46,45 @@ function(library_exists lib libpath result_var)
     unset(${lib}_FOUND CACHE)
 endfunction()
 
-# Function to build google Test
-function(build_gtest source_dir binary_dir)
-    message(STATUS "Building Google Test from: ${source_dir}")
+# Function to build gapi
+function(build_gapi source_dir binary_dir)
+    message(STATUS "Building gapi from: ${source_dir}")
 
-    # Configure Google Test build
+    # Configure gapi build
     execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" -S "${source_dir}" -B "${binary_dir}"
                             -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
                             -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-                            -DBUILD_GMOCK=OFF
-                            -Dgtest_force_shared_crt=ON
+                            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                             -DBUILD_SHARED_LIBS=${GTBM_SHARED}
-                            -DCMAKE_BUILD_TYPE=Release
-                    RESULT_VARIABLE gtest_configure_result
-                    OUTPUT_VARIABLE gtest_configure_output
-                    ERROR_VARIABLE gtest_configure_error
+                    RESULT_VARIABLE gapi_configure_result
+                    OUTPUT_VARIABLE gapi_configure_output
+                    ERROR_VARIABLE gapi_configure_error
                     WORKING_DIRECTORY "${source_dir}"
     )
 
-    if(NOT gtest_configure_result EQUAL 0)
-        message(FATAL_ERROR "Failed to configure Google Test build:\n${gtest_configure_error}")
+    if(NOT gapi_configure_result EQUAL 0)
+        message(FATAL_ERROR "Failed to configure gapi build:\n${gapi_configure_error}")
     endif()
 
-    # Build Google Test
-    execute_process(COMMAND ${CMAKE_COMMAND} --build "${binary_dir}" --config Release
-                    RESULT_VARIABLE gtest_build_result
-                    OUTPUT_VARIABLE gtest_build_output
-                    ERROR_VARIABLE  gtest_build_error
+    # Build gapi
+    execute_process(COMMAND ${CMAKE_COMMAND} --build "${binary_dir}"  --config ${CMAKE_BUILD_TYPE}
+                    RESULT_VARIABLE gapi_build_result
+                    OUTPUT_VARIABLE gapi_build_output
+                    ERROR_VARIABLE  gapi_build_error
                     WORKING_DIRECTORY "${source_dir}"
     )
 
-    if(NOT gtest_build_result EQUAL 0)
-        message(FATAL_ERROR "Failed to build Google Test:\n${gtest_build_error}")
+    if(NOT gapi_build_result EQUAL 0)
+        message(FATAL_ERROR "Failed to build gapi:\n${gapi_build_error}")
     endif()
 
-    message(STATUS "Successfully built Google Test")
+    message(STATUS "Successfully built gapi")
 endfunction()
 
-# Function to build Google Benchmark
-function(build_gbenchmark source_dir binary_dir)
-    message(STATUS "Building Google Benchmark from: ${source_dir}")
-
-    # Configure Google Benchmark build
-    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" -S "${source_dir}" -B "${binary_dir}"
-                            -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-                            -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-                            -DBENCHMARK_ENABLE_TESTING=OFF
-                            -DBENCHMARK_ENABLE_EXCEPTIONS=ON
-                            -DBENCHMARK_ENABLE_LTO=OFF
-                            -DBENCHMARK_ENABLE_WERROR=OFF
-                            -DBENCHMARK_ENABLE_GTEST_TESTS=OFF
-                            -DBENCHMARK_INSTALL_DOCS=OFF
-                            -DBENCHMARK_USE_BUNDLED_GTEST=OFF
-                            -DBUILD_SHARED_LIBS=${GTBM_SHARED}
-                            -DCMAKE_BUILD_TYPE=Release
-                    RESULT_VARIABLE gbench_configure_result
-                    OUTPUT_VARIABLE gbench_configure_output
-                    ERROR_VARIABLE gbench_configure_error
-                    WORKING_DIRECTORY "${source_dir}"
-        )
-
-    if(NOT gbench_configure_result EQUAL 0)
-        message(FATAL_ERROR "Failed to configure Google Benchmark build:\n${gbench_configure_error}")
-    endif()
-
-    # Build Google Benchmark
-    execute_process(COMMAND ${CMAKE_COMMAND} --build "${binary_dir}" --config Release
-                    RESULT_VARIABLE gbench_build_result
-                    OUTPUT_VARIABLE gbench_build_output
-                    ERROR_VARIABLE gbench_build_error
-                    WORKING_DIRECTORY "${source_dir}"
-    )
-
-    if(NOT gbench_build_result EQUAL 0)
-        message(FATAL_ERROR "Failed to build Google Benchmark:\n${gbench_build_error}")
-    endif()
-
-    message(STATUS "Successfully built Google Benchmark")
+# Function to configure and build gapi
+function(configure_build gapi_source_dir gapi_binary_dir)
+    build_gapi("${gapi_source_dir}" "${gapi_binary_dir}")
 endfunction()
-
-# Function to configure and build both google Test and gbenchmark
-function(configure_build gt_source_dir bm_source_dir gt_binary_dir bm_binary_dir)
-    build_gtest("${gt_source_dir}" "${gt_binary_dir}")
-    build_gbenchmark("${bm_source_dir}" "${bm_binary_dir}")
-endfunction()
-
-
-
 
 # Validate required variables
 if(NOT DEFINED PROJECT_PREFIX)
@@ -143,12 +95,9 @@ endif()
 set(GTBM_SHARED OFF CACHE BOOL "Build shared libraries for Google Test and Google Benchmark")
 
 # Set directory paths
-set(GT_SOURCE_DIR   "${CMAKE_SOURCE_DIR}/build/external/googletest")
-set(BM_SOURCE_DIR   "${CMAKE_SOURCE_DIR}/build/external/benchmark")
-set(GT_BINARY_DIR   "${GT_SOURCE_DIR}/build")
-set(BM_BINARY_DIR   "${BM_SOURCE_DIR}/build")
-set(GTEST_LIB_PATH  "${GT_BINARY_DIR}/lib")
-set(GBENCH_LIB_PATH "${BM_BINARY_DIR}/src")
+set(GAPI_SOURCE_DIR   "${CMAKE_CURRENT_LIST_DIR}")
+set(GAPI_BINARY_DIR   "${CMAKE_SOURCE_DIR}/build/external/gapi")
+set(GAPI_LIB_PATH     "${GAPI_BINARY_DIR}")
 
 # Platform-specific library names
 if(WIN32)
@@ -174,105 +123,39 @@ else()
     set(GBENCH_LIB "${GBENCH_STATIC}")
 endif()
 
-# Check if google Test and googlebenchmark directories exist
-directory_exists("${GT_SOURCE_DIR}" GTEST_DIR_EXISTS)
-directory_exists("${BM_SOURCE_DIR}" BENCHMARK_DIR_EXISTS)
-
 # Check if google Test and googlebenchmark libraries exist
-library_exists("${GTEST_LIB}" "${GTEST_LIB_PATH}" GTEST_LIB_EXISTS)
-library_exists("${GBENCH_LIB}" "${GBENCH_LIB_PATH}" BENCHMARK_LIB_EXISTS)
+library_exists("${GTEST_LIB}" "${GAPI_LIB_PATH}" GTEST_LIB_EXISTS)
+library_exists("${GBENCH_LIB}" "${GAPI_LIB_PATH}" BENCHMARK_LIB_EXISTS)
 
 # Main logic for handling Google Test and Google Benchmark dependencies
 if(GTEST_LIB_EXISTS AND BENCHMARK_LIB_EXISTS)
     message(STATUS "Google Test and Google Benchmark libraries found:")
-    message(STATUS "Google Test library     : ${GTEST_LIB_PATH}/${GTEST_LIB}")
-    message(STATUS "Google Benchmark library: ${GBENCH_LIB_PATH}/${GBENCH_LIB}")
+    message(STATUS "Google Test library     : ${GAPI_LIB_PATH}/${GTEST_LIB}")
+    message(STATUS "Google Benchmark library: ${GAPI_LIB_PATH}/${GBENCH_LIB}")
 
-elseif(GTEST_DIR_EXISTS AND BENCHMARK_DIR_EXISTS)
-    message(STATUS "Google Test and Google Benchmark directories found, building libraries...")
-    configure_build("${GT_SOURCE_DIR}" "${BM_SOURCE_DIR}" "${GT_BINARY_DIR}" "${BM_BINARY_DIR}")
+else()
+    configure_build("${GAPI_SOURCE_DIR}" "${GAPI_BINARY_DIR}")
 
     # Verify the libraries were built successfully
-    library_exists("${GTEST_LIB}" "${GTEST_LIB_PATH}" GTEST_LIB_BUILT)
-    library_exists("${GBENCH_LIB}" "${GBENCH_LIB_PATH}" GBENCH_LIB_BUILT)
-
+    library_exists("${GTEST_LIB}" "${GAPI_LIB_PATH}" GTEST_LIB_BUILT)
+    library_exists("${GBENCH_LIB}" "${GAPI_LIB_PATH}" GBENCH_LIB_BUILT)
     if(NOT GTEST_LIB_BUILT)
-        message(FATAL_ERROR "Failed to build Google Test library   : ${GTEST_LIB}")
+        message(FATAL_ERROR "Failed to build Google Test library: ${GTEST_LIB}")
     endif()
 
     if(NOT GBENCH_LIB_BUILT)
         message(FATAL_ERROR "Failed to build Google Benchmark library: ${GBENCH_LIB}")
     endif()
 
-else()
-    message(STATUS "Google Test or Google Benchmark directories not found, cloning repositories...")
-
-    # Validate required git variables
-    if(NOT GTEST_DIR_EXISTS)
-        if(NOT DEFINED ${PROJECT_PREFIX}_GTEST_GIT_TAG OR NOT DEFINED ${PROJECT_PREFIX}_GTEST_GIT_REPO_URL)
-            message(FATAL_ERROR "${PROJECT_PREFIX}_GTEST_GIT_TAG and ${PROJECT_PREFIX}_GTEST_GIT_REPO_URL must be defined")
-        endif()
-
-        # Clone Google Test with specific tag
-        execute_process(COMMAND git clone --branch "${${PROJECT_PREFIX}_GTEST_GIT_TAG}"
-                                                    "${${PROJECT_PREFIX}_GTEST_GIT_REPO_URL}" "${GT_SOURCE_DIR}"
-                        RESULT_VARIABLE gtest_clone_result
-                        OUTPUT_VARIABLE gtest_clone_output
-                        ERROR_VARIABLE gtest_clone_error
-        )
-
-        if(NOT gtest_clone_result EQUAL 0)
-            message(FATAL_ERROR "Failed to clone Google Test repository:\n${gtest_clone_error}")
-        endif()
-
-        message(STATUS "Successfully cloned Google Test (tag: ${${PROJECT_PREFIX}_GTEST_GIT_TAG})")
-    endif()
-
-    # Clone Google Benchmark with specific tag
-    if(NOT BENCHMARK_DIR_EXISTS)
-        if(NOT DEFINED ${PROJECT_PREFIX}_GBENCH_GIT_TAG OR NOT DEFINED ${PROJECT_PREFIX}_GBENCH_GIT_REPO_URL)
-            message(FATAL_ERROR "${PROJECT_PREFIX}_GBENCH_GIT_TAG and ${PROJECT_PREFIX}_GBENCH_GIT_REPO_URL must be defined")
-        endif()
-
-        execute_process(COMMAND git clone --branch "${${PROJECT_PREFIX}_GBENCH_GIT_TAG}"
-                                                    "${${PROJECT_PREFIX}_GBENCH_GIT_REPO_URL}" "${BM_SOURCE_DIR}"
-                        RESULT_VARIABLE gbench_clone_result
-                        OUTPUT_VARIABLE gbench_clone_output
-                        ERROR_VARIABLE gbench_clone_error
-        )
-
-        if(NOT gbench_clone_result EQUAL 0)
-            message(FATAL_ERROR "Failed to clone Google Benchmark repository:\n${gbench_clone_error}")
-        endif()
-
-        message(STATUS "Successfully cloned Google Benchmark (tag: ${${PROJECT_PREFIX}_GBENCH_GIT_TAG})")
-    endif()
-
-    # Build both libraries after cloning
-    configure_build("${GT_SOURCE_DIR}" "${BM_SOURCE_DIR}" "${GT_BINARY_DIR}" "${BM_BINARY_DIR}")
-
-    # Verify the libraries were built successfully
-    library_exists("${GTEST_LIB}" "${GTEST_LIB_PATH}" GTEST_LIB_BUILT)
-    library_exists("${GBENCH_LIB}" "${GBENCH_LIB_PATH}" GBENCH_LIB_BUILT)
-
-    if(NOT GTEST_LIB_BUILT)
-        message(FATAL_ERROR "Failed to build Google Test library after cloning: ${GTEST_LIB}")
-    endif()
-
-    if(NOT GBENCH_LIB_BUILT)
-        message(FATAL_ERROR "Failed to build Google Benchmark library after cloning: ${GBENCH_LIB}")
-    endif()
-
 endif()
 
 # Set include directories
 set(GTEST_INCLUDE_DIR
-    "${GT_SOURCE_DIR}/googletest/include"
-    "${GT_SOURCE_DIR}/googletest/include/gtest"
+    "${GAPI_SOURCE_DIR}/gtest"
 )
 set(GBENCH_INCLUDE_DIR
-    "${BM_SOURCE_DIR}/include"
-    "${BM_SOURCE_DIR}/include/benchmark"
+    "${GAPI_SOURCE_DIR}/gbench"
+    "${GAPI_SOURCE_DIR}/gbench/src"
 )
 
 # Validate that all paths exist
@@ -288,19 +171,11 @@ foreach(include_dir ${GBENCH_INCLUDE_DIR})
     endif()
 endforeach()
 
-if(NOT EXISTS "${GTEST_LIB_PATH}")
-    message(WARNING "Google Test library path does not exist: ${GTEST_LIB_PATH}")
+if(NOT EXISTS "${GAPI_LIB_PATH}")
+    message(WARNING "GAPI library path does not exist: ${GAPI_LIB_PATH}")
 endif()
 
-if(NOT EXISTS "${GBENCH_LIB_PATH}")
-    message(WARNING "Google Benchmark library path does not exist: ${GBENCH_LIB_PATH}")
-endif()
-
-# Export variables for parent scope
-set(GTEST_INCLUDE_DIR "${GTEST_INCLUDE_DIR}" PARENT_SCOPE)
-set(GBENCH_INCLUDE_DIR "${GBENCH_INCLUDE_DIR}" PARENT_SCOPE)
-set(GTEST_LIB_PATH "${GTEST_LIB_PATH}" PARENT_SCOPE)
-set(GBENCH_LIB_PATH "${GBENCH_LIB_PATH}" PARENT_SCOPE)
-set(GTEST_LIB "${GTEST_LIB}" PARENT_SCOPE)
-set(GBENCH_LIB "${GBENCH_LIB}" PARENT_SCOPE)
+# Set library paths for both gtest and gbench (they're in the same directory)
+set(GTEST_LIB_PATH "${GAPI_LIB_PATH}")
+set(GBENCH_LIB_PATH "${GAPI_LIB_PATH}")
 

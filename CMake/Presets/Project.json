@@ -9,16 +9,10 @@
                 "CUST_PROJ_DESCRIPTION": "AOCL-LibM is a high-performance implementation of LibM",
                 "CUST_PROJ_URL"  : "https://github.com/amd/aocl-libm-ose",
                 "VENDOR_NAME"    : "AMD",
-                "VENDOR_CONTACT" : "Prem Mallappa <pmallapp@amd.com>",
+                "VENDOR_CONTACT" : "Nimmy Krishnan <Nimmy.Krishnan@amd.com>",
                 "CUST_PROJ_BUGREPORT": "aocl@amd.com",
                 "CUST_PROJ_PREFIX": "aocl",
-                "CUST_PROJ_CXX_STD": "17",
-                "AU_GIT_REPO_URL" : "https://github.com/amd/aocl-utils.git",
-                "AU_GIT_TAG": "main",
-                "GTEST_GIT_REPO_URL" : "https://github.com/google/googletest.git",
-                "GTEST_GIT_TAG": "release-1.12.1",
-                "GBENCH_GIT_REPO_URL" : "https://github.com/google/benchmark.git",
-                "GBENCH_GIT_TAG": "v1.9.2"
+                "CUST_PROJ_CXX_STD": "17"
             }
         },
         {
@@ -27,12 +21,13 @@
             "cacheVariables": {
                 "LIBM_BUILD_LIBRARY": "ON",
                 "LIBM_BUILD_TESTS": "ON",
+                "LIBM_BUILD_TESTSUITE": "OFF",
                 "LIBM_ENABLE_AVX512": "ON",
                 "LIBM_BUILD_EXAMPLES": "OFF",
+                "LIBM_BUILD_DOCS": "OFF",
                 "LIBM_ENABLE_ASAN": "OFF",
                 "LIBM_ENABLE_COVERAGE": "OFF"
             }
         }
     ]
 }
-

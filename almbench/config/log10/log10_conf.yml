@@ -1,0 +1,1155 @@
+---
+- test_sequence: unit_tests_log10
+  function: log10
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    # Test case 1: 0
+    - id: log10_001
+      description: "log10f(0) = -inf"
+      api_name: log10
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0xff800000]
+      expect_exception: [divbyzero]
+
+    # Test case 2: -0
+    - id: log10_002
+      description: "log10f(-0) = -inf"
+      api_name: log10
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0xff800000]
+      expect_exception: [divbyzero]
+
+    # Test case 3: inf
+    - id: log10_003
+      description: "log10f(inf) = inf"
+      api_name: log10
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: log10_004
+      description: "log10f(-inf) = nan"
+      api_name: log10
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 5: -nan
+    - id: log10_005
+      description: "log10f(-nan) = nan"
+      api_name: log10
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: log10_006
+      description: "log10f(+nan) = nan"
+      api_name: log10
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: log10_007
+      description: "log10f(max positive subnormal float)"
+      api_name: log10
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0xC217B818]  # approximately -38.23
+      expect_exception: [inexact]
+
+    # Test case 8: - subnorm (MAX)
+    - id: log10_008
+      description: "log10f(max negative subnormal float) = nan"
+      api_name: log10
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 9: + subnorm (MIN)
+    - id: log10_009
+      description: "log10f(min positive subnormal float)"
+      api_name: log10
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0xC23369F4]  # approximately -45.65
+      expect_exception: [inexact]
+
+    # Test case 10: - subnorm (MIN)
+    - id: log10_010
+      description: "log10f(min negative subnormal float) = nan"
+      api_name: log10
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 11: + POS (positive normal)
+    - id: log10_011
+      description: "log10f(1.0) = 0"
+      api_name: log10
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 12: -POS (negative positive normal)
+    - id: log10_012
+      description: "log10f(-1.0) = nan"
+      api_name: log10
+      variants: [ss]
+      input: [0xbf800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 13: +NEG
+    - id: log10_013
+      description: "log10f(10.0) = 1"
+      api_name: log10
+      variants: [ss]
+      input: [0x41200000]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 14: -NEG (negative value)
+    - id: log10_014
+      description: "log10f(-10.0) = nan"
+      api_name: log10
+      variants: [ss]
+      input: [0xc1200000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 15: qnan
+    - id: log10_015
+      description: "log10f(qnan) = qnan"
+      api_name: log10
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: log10_016
+      description: "log10f(snan) = qnan"
+      api_name: log10
+      variants: [ss]
+      input: [0x7fa00000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+# Test cases from gtests test_log10_data.h
+#-------------------------------
+    - id: log10_001
+      description: "POS_SNAN_F32: sNaN -> qNaN (invalid)"
+      input: [0x7fb00000]
+      expect: [0x7ff00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_002
+      description: "POS_SNAN_F32: sNaN -> qNaN"
+      input: [0x7fb00000]
+      expect: [0x7ff00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_003
+      description: "POS_QNAN_F32: qNaN"
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: log10_004
+      description: "POS_INF_F32: log10(+∞) -> +∞"
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: log10_005
+      description: "NEG_INF_F32: log10(-∞) -> -qNaN (invalid)"
+      input: [0xFF800000]
+      expect: [0xfff00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_006
+      description: "POS_ONE_F32: log10(1.0) ≈ 0.434294"
+      input: [0x3F800000]
+      expect: [0x3f317218]
+      expect_exception: []
+      variants: [ss]
+    - id: log10_007
+      description: ""
+      input: [0xbf800000]
+      expect: [0xff800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_008
+      description: "NEG_ZERO_F32: log10(-0.0) -> -0.0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+    - id: log10_009
+      description: "POS_ZERO_F32: log10(+0.0) -> +0.0"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+    - id: log10_010
+      description: "POS_PI_F32: log10(π) ≈ 0.683772 (inexact)"
+      input: [0x40490fd8]
+      expect: [0x3fb5e5f7]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_011
+      description: "NEG_PI_F32: log10(-π) -> -qNaN (invalid)"
+      input: [0xc0490fd8]
+      expect: [0xfff00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_012
+      description: "log10(-1.0) -> -∞"
+      input: [0xbf800000]
+      expect: [0xff800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_013
+      description: "log10(-0.984375) ≈ -4.8434 (inexact)"
+      input: [0xbf7e0000]
+      expect: [0xc09b43d5]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_014
+      description: "log10(-0.96875) ≈ -4.15888 (inexact)"
+      input: [0xbf7c0000]
+      expect: [0xc0851592]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_015
+      description: "log10(-0.247058) ≈ -0.68377 (inexact)"
+      input: [0xbefdb976]
+      expect: [0xbf2f2e21]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_016
+      description: "log10(1.0) ≈ 0.434294 (inexact)"
+      input: [0x3f800000]
+      expect: [0x3f317218]
+      expect_exception: []
+      variants: [ss]
+    - id: log10_017
+      description: "log10(-0.999999) ≈ -15.9488 (inexact)"
+      input: [0xbf7ffffe]
+      expect: [0xc17f1402]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_018
+      description: "log10(π/2) ≈ 1.14473 (inexact)"
+      input: [0x40090fdb]
+      expect: [0x3f928683]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_019
+      description: "log10(5.28318) ≈ 1.72365 (inexact)"
+      input: [0x40a90fdb]
+      expect: [0x3feb3f8e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_020
+      description: "log10(9.0) ≈ 2.30259 (inexact)"
+      input: [0x41100000]
+      expect: [0x40135d8e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_021
+      description: "log10(1000.0) ≈ 6.90776 (inexact)"
+      input: [0x4479c000]
+      expect: [0x40dd0c55]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_022
+      description: "log10(63.0) ≈ 4.15888 (inexact)"
+      input: [0x427c0000]
+      expect: [0x40851592]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_023
+      description: "log10(86.5) ≈ 4.4571 (inexact)"
+      input: [0x42ad0000]
+      expect: [0x408f17aa]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_024
+      description: "log10(87.0) ≈ 4.46484 (inexact)"
+      input: [0x42ae0000]
+      expect: [0x408f4658]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_025
+      description: "log10(95.0) ≈ 4.55388 (inexact)"
+      input: [0x42be0000]
+      expect: [0x40920f24]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_026
+      description: "log10(-88.5) -> qNaN (invalid)"
+      input: [0xc2b10000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_027
+      description: "log10(-113.0) -> qNaN (invalid)"
+      input: [0xc2e20000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_028
+      description: "log10(-129.0) -> qNaN (invalid)"
+      input: [0xc3010000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_029
+      description: ""
+      input: [0xc2b0ac4f]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_030
+      description: ""
+      input: [0xc2b0ac50]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_031
+      description: ""
+      input: [0xc2d00000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_032
+      description: ""
+      input: [0x42af7216]
+      expect: [0x408f895b]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_033
+      description: ""
+      input: [0x42af7217]
+      expect: [0x408f895b]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_034
+      description: ""
+      input: [0x42af7218]
+      expect: [0x408f895c]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_035
+      description: ""
+      input: [0x50000000]
+      expect: [0x41b6fda9]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_036
+      description: ""
+      input: [0xc20e1eb8]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_037
+      description: ""
+      input: [0xc6de68b6]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_038
+      description: ""
+      input: [0xbfa66666]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_039
+      description: ""
+      input: [0xbfd23904]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_040
+      description: ""
+      input: [0xbfc00000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_041
+      description: ""
+      input: [0x3f333333]
+      expect: [0xbf9a1bc8]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_042
+      description: ""
+      input: [0x3f000000]
+      expect: [0xbf317218]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_043
+      description: ""
+      input: [0x42061eb8]
+      expect: [0x4062ad51]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_044
+      description: ""
+      input: [0x46de64b6]
+      expect: [0x41241aae]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_045
+      description: ""
+      input: [0xc2ca0000]
+      expect: [0xffc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_046
+      description: ""
+      input: [0x42c60000]
+      expect: [0x40935d8e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_047
+      description: ""
+      input: [0x7f800001]
+      expect: [0x7fc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_048
+      description: ""
+      input: [0xff800001]
+      expect: [0xffc00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_049
+      description: ""
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: log10_050
+      description: ""
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: log10_051
+      description: ""
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: log10_052
+      description: ""
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: log10_053
+      description: ""
+      input: [0x3f800000]
+      expect: [0x3f317218]
+      expect_exception: []
+      variants: [ss]
+    - id: log10_054
+      description: ""
+      input: [0xbf800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_055
+      description: ""
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+    - id: log10_056
+      description: ""
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+    - id: log10_057
+      description: ""
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_058
+      description: ""
+      input: [0x807fffff]
+      expect: [0x807fffff]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_059
+      description: ""
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_060
+      description: ""
+      input: [0x80000001]
+      expect: [0x80000001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_061
+      description: ""
+      input: [0x7f7fffff]
+      expect: [0x42b17218]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_062
+      description: ""
+      input: [0xff7fffff]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_063
+      description: ""
+      input: [0x00800000]
+      expect: [0x00800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_064
+      description: ""
+      input: [0x80800000]
+      expect: [0x80800000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_065
+      description: "log10(0.0625) ≈ 0.0616 (inexact)"
+      input: [0x3d800000]
+      expect: [0x3d785186]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_066
+      description: "log10(0.03) ≈ 0.0297 (inexact)"
+      input: [0x3cf5c28f]
+      expect: [0x3cf2254d]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_067
+      description: "log10(1.0625) ≈ 0.459432 (inexact)"
+      input: [0x3f880000]
+      expect: [0x3f3952bf]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_068
+      description: "log10(-1.00000012) -> qNaN"
+      input: [0xbf800001]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_069
+      description: "log10(-0.99999994) ≈ -8.25888 (inexact)"
+      input: [0xbf7fffff]
+      expect: [0xc1851592]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_070
+      description: "log10(-0.99999) ≈ -6.90776 (inexact)"
+      input: [0xbf7fff58]
+      expect: [0xc1382f62]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_071
+      description: "log10(-0.98) ≈ -3.91202 (inexact)"
+      input: [0xbf7ae148]
+      expect: [0xc07a5e9a]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_072
+      description: "POS_PI_BY2_F32: log10(π/2) ≈ 0.889881 (inexact)"
+      input: [0x3fc90fdb]
+      expect: [0x3f71b81f]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_073
+      description: "log10(0.0078125) ≈ 0.0625 (inexact)"
+      input: [0x3c000000]
+      expect: [0x3bff0153]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_074
+      description: "log10(0.504444) ≈ 0.204082 (inexact)"
+      input: [0x3f012345]
+      expect: [0x3ed11ce8]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_075
+      description: "log10(2.0) ≈ 0.693147 (inexact)"
+      input: [0x40000000]
+      expect: [0x3f8c9f54]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_076
+      description: "POS_PI_F32: log10(π) ≈ 0.683772 (inexact)"
+      input: [0x40490fdb]
+      expect: [0x3fb5e5f7]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_077
+      description: "log10(2π) ≈ 1.25276 (inexact)"
+      input: [0x40c90fdb]
+      expect: [0x3ffe271a]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_078
+      description: "log10(10.0) ≈ 2.30259 (inexact)"
+      input: [0x41200000]
+      expect: [0x4019771e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_079
+      description: "log10(1000.0) ≈ 6.90776 (inexact)"
+      input: [0x447a0000]
+      expect: [0x40dd1485]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_080
+      description: "log10(1.25*2^99) ≈ 69.0776 (inexact)"
+      input: [0x71200000]
+      expect: [0x4289b07e]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_081
+      description: "log10(-87.5) -> qNaN"
+      input: [0xc2af0000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_082
+      description: "log10(-112.0) -> qNaN"
+      input: [0xc2e00000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_083
+      description: "log10(-128.0) -> qNaN"
+      input: [0xc3000000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_084
+      description: "log10(-64.0) -> qNaN"
+      input: [0xc2800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: log10_085
+      description: "log10(e-1) ≈ 0.5 -- (inexact)"
+      input: [0x3fdbf0a8]
+      expect: [0x3f7fffff]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_086
+      description: "log10(e-1) ≈ 0.5 (inexact)"
+      input: [0x3fdbf0a9]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_087
+      description: "log10(e-1) ≈ 0.5 ++ (inexact)"
+      input: [0x3fdbf0aa]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: log10_088
+      description: "log10(e-1) ≈ 0.5000001 (inexact)"
+      input: [0x3fdbf0ab]
+      expect: [0x3f800001]
+      expect_exception: [inexact]
+      variants: [ss]
+#-------------------------------
+#Double precision
+    # Test case 1: 0 (double)
+    - id: log10_001
+      description: "log10(0) = -inf"
+      api_name: log10
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: [divbyzero]
+
+    # Test case 2: -0 (double)
+    - id: log10_002
+      description: "log10(-0) = -inf"
+      api_name: log10
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: [divbyzero]
+
+    # Test case 3: inf (double)
+    - id: log10_003
+      description: "log10(inf) = inf"
+      api_name: log10
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 4: -inf (double)
+    - id: log10_004
+      description: "log10(-inf) = nan"
+      api_name: log10
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 5: -nan (double)
+    - id: log10_005
+      description: "log10(-nan) = nan"
+      api_name: log10
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: []
+
+    # Test case 6: +nan (double)
+    - id: log10_006
+      description: "log10(+nan) = nan"
+      api_name: log10
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX) (double)
+    - id: log10_007
+      description: "log10(max positive subnormal double)"
+      api_name: log10
+      variants: [sd]
+      input: [0x000fffffffffffff]
+      expect: [0xC0733A7146F72A42]  # approximately -307.65
+      expect_exception: [inexact]
+
+    # Test case 8: - subnorm (MAX) (double)
+    - id: log10_008
+      description: "log10(max negative subnormal double) = nan"
+      api_name: log10
+      variants: [sd]
+      input: [0x800fffffffffffff]
+      expect: [0xFFFFFFFFFFFFFFFF]
+      expect_exception: [invalidoperation]
+
+    # Test case 9: + subnorm (MIN) (double)
+    - id: log10_009
+      description: "log10(min positive subnormal double)"
+      api_name: log10
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0xC07434E6420F4374]  # approximately -323.31
+      expect_exception: [inexact]
+
+    # Test case : - subnorm (MIN) (double)
+    - id: log10_010
+      description: "log10(min negative subnormal double) = nan"
+      api_name: log10
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0xFFF8000000000001]
+      expect_exception: [invalidoperation]
+
+    # Test case 11: + POS (positive normal) (double)
+    - id: log10_011
+      description: "log10(1.0) = 0"
+      api_name: log10
+      variants: [sd]
+      input: [0x3ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 12: -POS (negative positive normal) (double)
+    - id: log10_012
+      description: "log10(-1.0) = nan"
+      api_name: log10
+      variants: [sd]
+      input: [0xbff0000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 13: +NEG (double)
+    - id: log10_013
+      description: "log10(10.0) = 1"
+      api_name: log10
+      variants: [sd]
+      input: [0x4024000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 14: -NEG (negative value) (double)
+    - id: log10_014
+      description: "log10(-10.0) = nan"
+      api_name: log10
+      variants: [sd]
+      input: [0xc024000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 15: qnan (double)
+    - id: log10_015
+      description: "log10(qnan) = qnan"
+      api_name: log10
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7FF8000000000000]
+      expect_exception: []
+
+    # Test case 16: snan (double)
+    - id: log10_016
+      description: "log10(snan) = qnan"
+      api_name: log10
+      variants: [sd]
+      input: [0x7ff4000000000001]
+      expect: [0x7FFC000000000001]
+      expect_exception: [invalidoperation]
+
+    # Additional meaningful test cases
+    - id: log10_017
+      description: "log10(0.1) = -1"
+      api_name: log10
+      variants: [sd]
+      input: [0x3fb999999999999a]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+
+    - id: log10_018
+      description: "log10(100.0) = 2"
+      api_name: log10
+      variants: [sd]
+      input: [0x4059000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: [inexact]
+
+    - id: log10_019
+      description: "log10(1000.0) = 3"
+      api_name: log10
+      variants: [sd]
+      input: [0x408f400000000000]
+      expect: [0x4008000000000000]
+      expect_exception: [inexact]
+
+    - id: log10_020
+      description: "log10(0.01) = -2"
+      api_name: log10
+      variants: [sd]
+      input: [0x3f847ae147ae147b]
+      expect: [0xc000000000000000]
+      expect_exception: [inexact]
+# Test cases from gtests test_log10_data.h
+#-------------------------------
+    - id: log10_001
+      description: ""
+      input: [0x7FF4001000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log10_002
+      description: ""
+      input: [0x7FF4001000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log10_003
+      description: ""
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+    - id: log10_004
+      description: ""
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: log10_005
+      description: ""
+      input: [0xfff0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log10_006
+      description: ""
+      input: [0x3FF0000000000000]
+      expect: [0x3FE62E42FEFA39EF]
+      expect_exception: []
+      variants: [sd]
+    - id: log10_007
+      description: ""
+      input: [0xBFF0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log10_008
+      description: ""
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: [divbyzero]
+      variants: [sd]
+    - id: log10_009
+      description: ""
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: [divbyzero]
+      variants: [sd]
+    - id: log10_010
+      description: ""
+      input: [0x400921FB54442D18]
+      expect: [0x3ff6bcbed6499138]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_011
+      description: ""
+      input: [0xc00921fb54442d18]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log10_012
+      description: ""
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: [divbyzero]
+      variants: [sd]
+    - id: log10_013
+      description: ""
+      input: [0x3ee0624dd2f1a9fc]
+      expect: [0x3ee06249a135304f]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_014
+      description: ""
+      input: [0x3ef0624dc31c6ca1]
+      expect: [0x3ef062455fa6667c]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_015
+      description: ""
+      input: [0x3fe02467be553ac5]
+      expect: [0x3fda239be0d17dae]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_016
+      description: ""
+      input: [0x3ff0000000000000]
+      expect: [0x3fe62e42fefa39ef]
+      expect_exception: []
+      variants: [sd]
+    - id: log10_017
+      description: ""
+      input: [0x4000000000000000]
+      expect: [0x3ff193ea7aad030b]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_018
+      description: ""
+      input: [0x3d3c25c268497682]
+      expect: [0x3d3c25c2684974f6]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_019
+      description: ""
+      input: [0x400921fb60000000]
+      expect: [0x3ff6bcbed6499138]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_020
+      description: ""
+      input: [0x401921fb54442d18]
+      expect: [0x3fffc4e3465e2150]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_021
+      description: ""
+      input: [0x4024000000000000]
+      expect: [0x40032ee3b77f374c]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_022
+      description: ""
+      input: [0x408f400000000000]
+      expect: [0x401ba2909ce4f864]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_023
+      description: ""
+      input: [0x4060000000000000]
+      expect: [0x40137072a9b5b6cb]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_024
+      description: ""
+      input: [0x4086240000000000]
+      expect: [0x401a421c25960b33]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_025
+      description: ""
+      input: [0x4086280000000000]
+      expect: [0x401a42d4d1ff8154]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_026
+      description: ""
+      input: [0x408c000000000000]
+      expect: [0x401b323bb32ce0e3]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_027
+      description: ""
+      input: [0xc086240000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log10_028
+      description: ""
+      input: [0xc089600000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log10_029
+      description: ""
+      input: [0xc070000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log10_030
+      description: ""
+      input: [0xc086232bdd7abcd2]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log10_031
+      description: ""
+      input: [0xc086232bdd7abcd3]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log10_032
+      description: ""
+      input: [0xc087480000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log10_033
+      description: ""
+      input: [0x40862e42fefa39ee]
+      expect: [0x401a43f5a6e6b0c2]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_034
+      description: ""
+      input: [0x40862e42fefa39ef]
+      expect: [0x401a43f5a6e6b0c2]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_035
+      description: ""
+      input: [0x40862e42fefa39ff]
+      expect: [0x401a43f5a6e6b0c5]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_036
+      description: ""
+      input: [0x4200000000000000]
+      expect: [0x4036dfb516f28bbf]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_037
+      description: ""
+      input: [0xc05021eb851eb852]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log10_038
+      description: ""
+      input: [0xc0ff5d35b020c49c]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log10_039
+      description: ""
+      input: [0xbfd3333333333333]
+      expect: [0xbfd6d3c324e13f4e]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log10_040
+      description: ""
+      input: [0xbfe48e410b630a91]
+      expect: [0xbff073ae445440c6]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log10_041
+      description: ""
+      input: [0xbfe0000000000000]
+      expect: [0xbfe62e42fefa39ef]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log10_042
+      description: ""
+      input: [0xbfe0000000000000]
+      expect: [0xbfe62e42fefa39ef]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log10_043
+      description: ""
+      input: [0x3fd3333333333333]
+      expect: [0x3fd0ca937be1b9dc]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_044
+      description: ""
+      input: [0x3fe48e410b630a91]
+      expect: [0x3fdfc0b68febaad0]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_045
+      description: ""
+      input: [0x3fe0000000000000]
+      expect: [0x3fd9f323ecbf984c]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_046
+      description: ""
+      input: [0x405021eb851eb852]
+      expect: [0x4010bae3641c731e]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_047
+      description: ""
+      input: [0x40ff5d35b020c49c]
+      expect: [0x402786e154d7d30b]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: log10_048
+      description: ""
+      input: [0xc08f400000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: log10_049
+      description: ""
+      input: [0x408f400000000000]
+      expect: [0x401ba2909ce4f864]
+      expect_exception: [inexact]
+      variants: [sd]
+#-------------------------------

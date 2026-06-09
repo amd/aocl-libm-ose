@@ -1,0 +1,305 @@
+- test_sequence: unit_tests_cpow
+  ignore_exceptions: [underflow, inexact]
+  function: cpow
+  test_sets:
+  - id: special-values
+    description: Special values for complex power (cpow)
+    tests:
+#Single Precision
+    - id: cpow_01
+      description: "x is positive Inf, y is normal"
+      input: ["Inf+ i 1.0", "1.1+ i 3.3"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cpow_02
+      description: "x is negative Inf, y is normal"
+      input: ["-1.0+ i -Inf", "1.1+ i 3.3"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cpow_03
+      description: "x is positive quiet NaN, y is normal"
+      input: ["qNaN+ i 1.0", "1.1+ i 3.3"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cpow_04
+      description: "x is negative quiet NaN, y is normal"
+      input: ["-1.0+ i -qNaN", "1.1+ i 3.3"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cpow_05
+      description: "x is positive signaling NaN, y is normal"
+      input: ["sNaN+ i 1.0", "1.1+ i 3.3"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cpow_06
+      description: "x is negative signaling NaN, y is normal"
+      input: ["-1.0+ i 0xff800001", "1.1+ i 3.3"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cpow_07
+      description: "x is normal, y is positive Inf"
+      input: ["1.1+ i 3.3", "1.0+ i Inf"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cpow_08
+      description: "x is normal, y is negative Inf"
+      input: ["1.1+ i 3.3", "-Inf+ i -1.0"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cpow_09
+      description: "x is normal, y is positive quiet NaN"
+      input: ["1.1+ i 3.3", "1.0+ i qNaN"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cpow_10
+      description: "x is normal, y is negative quiet NaN"
+      input: ["1.1+ i 3.3", "-qNaN+ i -1.0"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cpow_11
+      description: "x is normal, y is positive signaling NaN"
+      input: ["1.1+ i 3.3", "1.0+ i sNaN"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cpow_12
+      description: "x is normal, y is negative signaling NaN"
+      input: ["1.1+ i 3.3", "0xff800001+ i -1.0"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sc]
+
+    - id: cpow_13
+      description: Maximum positive subnormal
+      input: ["max_subnormal+ i max_subnormal", "0x007fffff+ i 0x007fffff"]
+      expect: ["1.0+ i 0x83ac68bd"]
+      expect_daz: [0.0, 0.0]
+      variants: [sc]
+
+    - id: cpow_14
+      description: Minimum negative subnormal
+      input: ["-max_subnormal+ i -max_subnormal", "0x807fffff+ i 0x807fffff"]
+      expect: ["1.0+ i 0x03b2b13c"]
+      expect_daz: [0.0, 0.0]
+      variants: [sc]
+
+    - id: cpow_15
+      description: Minimum positive subnormal
+      input: ["min_subnormal+ i min_subnormal", "0x00000001+ i 0x00000001"]
+      expect: ["1.0+ i 0x80000066"]
+      expect_daz: [0.0, 0.0]
+      variants: [sc]
+
+    - id: cpow_16
+      description: Maximum negative subnormal
+      input: ["-min_subnormal+ i -min_subnormal", "0x80000001+ i 0x80000001"]
+      expect: ["1.0+ i 0x00000069"]
+      expect_daz: [0.0, 0.0]
+      variants: [sc]
+
+    - id: cpow_17
+      description: Random subnormal
+      input: ["0x000abcdf+ i 0x000abcdf", "0x000abcdf+ i 0x000abcdf"]
+      expect: ["1.0+ i 0x81ee106c"]
+      expect_daz: [0.0, 0.0]
+      variants: [sc]
+
+    - id: cpow_18
+      description: "Normal x, normal y"
+      input: ["1.0+ i 2.0", "4.0+ i 5.0"]
+      expect: ["0xbd636683+ i 0x3da6d5eb"]
+      variants: [sc]
+
+    - id: cpow_19
+      description: "Normal x, y is positive zero"
+      input: ["1.0+ i 2.0", "0.0+ i 0.0"]
+      expect: ["1.0+ i 0.0"]
+      variants: [sc]
+
+    - id: cpow_20
+      description: "Normal x, y is negative zero"
+      input: ["-1.0+ i -2.0", "-0.0+ i -0.0"]
+      expect: ["1.0+ i 0.0"]
+      variants: [sc]
+
+    - id: cpow_21
+      description: "x is positive zero, normal y"
+      input: ["0.0+ i 0.0", "1.0+ i 2.0"]
+      expect: ["0.0+ i 0.0"]
+      variants: [sc]
+
+    - id: cpow_22
+      description: "x is negative zero, normal y"
+      input: ["-0.0+ i -0.0", "-1.0+ i -2.0"]
+      expect: ["0.0+ i 0.0"]
+      variants: [sc]
+
+#Double Precision
+    - id: cpow_01
+      description: "x is positive Inf, y is normal"
+      input: ["Inf+ i 1.0", "1.1+ i 3.3"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cpow_02
+      description: "x is negative Inf, y is normal"
+      input: ["-1.0+ i -Inf", "1.1+ i 3.3"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cpow_03
+      description: "x is positive quiet NaN, y is normal"
+      input: ["qNaN+ i 1.0", "1.1+ i 3.3"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cpow_04
+      description: "x is negative quiet NaN, y is normal"
+      input: ["-1.0+ i -qNaN", "1.1+ i 3.3"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cpow_05
+      description: "x is positive signaling NaN, y is normal"
+      input: ["sNaN+ i 1.0", "1.1+ i 3.3"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cpow_06
+      description: "x is negative signaling NaN, y is normal"
+      input: ["-1.0+ i 0xfff0000000000001", "1.1+ i 3.3"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cpow_07
+      description: "x is normal, y is positive Inf"
+      input: ["1.1+ i 3.3", "1.0+ i Inf"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cpow_08
+      description: "x is normal, y is negative Inf"
+      input: ["1.1+ i 3.3", "-Inf+ i -1.0"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cpow_09
+      description: "x is normal, y is positive quiet NaN"
+      input: ["1.1+ i 3.3", "1.0+ i qNaN"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cpow_010
+      description: "x is normal, y is negative quiet NaN"
+      input: ["1.1+ i 3.3", "-qNaN+ i -1.0"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sz]
+    - id: cpow_011
+      description: "x is normal, y is positive signaling NaN"
+      input: ["1.1+ i 3.3", "1.0+ i sNaN"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cpow_012
+      description: "x is normal, y is negative signaling NaN"
+      input: ["1.1+ i 3.3", "0xfff0000000000001+ i -1.0"]
+      expect: ["qNaN+ i qNaN"]
+      expect_exception: []
+      variants: [sz]
+
+    - id: cpow_013
+      description: Maximum positive subnormal
+      input: ["max_subnormal+ i max_subnormal", "0x000fffffffffffff+ i 0x000fffffffffffff"]
+      expect: ["1.0+ i 0x80a61a1d9645cc7f"]
+      expect_daz: [0.0, 0.0]
+      variants: [sz]
+
+    - id: cpow_014
+      description: Minimum negative subnormal
+      input: ["-max_subnormal+ i -max_subnormal", "0x800fffffffffffff+ i 0x800fffffffffffff"]
+      expect: ["1.0+ i 0xa6333f919a10ac"]
+      expect_daz: [0.0, 0.0]
+      variants: [sz]
+    - id: cpow_015
+      description: Minimum positive subnormal
+      input: ["min_subnormal+ i min_subnormal", "0x0000000000000001+ i 0x0000000000000001"]
+      expect: ["1.0+ i 0x80000000000002e7"]
+      expect_daz: [0.0, 0.0]
+      variants: [sz]
+
+    - id: cpow_016
+      description: Maximum negative subnormal
+      input: ["-min_subnormal+ i -min_subnormal", "0x8000000000000001+ i 0x8000000000000001"]
+      expect: ["1.0+ i 0x00000000000002ea"]
+      expect_daz: [0.0, 0.0]
+      variants: [sz]
+
+    - id: cpow_017
+      description: Random subnormal
+      input: ["0x0000000abcdefabc+ i 0x0000000abcdefabc", "0x0000000abcdefabc+ i 0x0000000abcdefabc"]
+      expect: ["1.0+ i 0x80001e25d0ff7f0a"]
+      expect_daz: [0.0, 0.0]
+      variants: [sz]
+
+    - id: cpow_018
+      description: "Normal x, normal y"
+      input: ["1.0+ i 2.0", "4.0+ i 5.0"]
+      expect: ["0xbfac6cce7c99b71a+ i 0x3fb4dabe46b82253"]
+      variants: [sz]
+
+    - id: cpow_019
+      description: "Normal x, y is positive zero"
+      input: ["1.0+ i 2.0", "0.0+ i 0.0"]
+      expect: ["1.0+ i 0.0"]
+      variants: [sz]
+
+    - id: cpow_020
+      description: "Normal x, y is negative zero"
+      input: ["-1.0+ i -2.0", "-0.0+ i -0.0"]
+      expect: ["1.0+ i 0.0"]
+      variants: [sz]
+
+    - id: cpow_021
+      description: "x is positive zero, normal y"
+      input: ["0.0+ i 0.0", "1.0+ i 2.0"]
+      expect: ["0.0+ i 0.0"]
+      variants: [sz]
+
+    - id: cpow_022
+      description: "x is negative zero, normal y"
+      input: ["-0.0+ i -0.0", "-1.0+ i -2.0"]
+      expect: ["0.0+ i 0.0"]
+      variants: [sz]
+

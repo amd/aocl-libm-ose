@@ -1,0 +1,49 @@
+- test_sequence: perf_tests
+  function: linearfrac
+  timing_enabled: true
+  test_sets:
+  - id: range-tests_01
+    tests:
+# Single Precision
+    - id: linearfrac_001
+      description: 'Positive values: x, y in [SMALLEST_SUBNORMAL, FLT_MAX], linearstep'
+      input: [[min_subnormal, max], [min_subnormal, max], [min_subnormal, max], [min_subnormal, max], [min_subnormal, max], [min_subnormal, max]]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [100, 100, 100, 100, 100, 100]
+      variants : [vrs4, vrs8, vrs16, vrsa]
+
+    - id: linearfrac_002
+      description: 'Mixed input values: x in [SMALLEST_SUBNORMAL, FLT_MAX], y in [-FLT_MAX, -SMALLEST_SUBNORMAL], linearstep'
+      input: [[min_subnormal, max], [-max, -min_subnormal], [min_subnormal, max], [-max, -min_subnormal], [min_subnormal, max], [-max, -min_subnormal]]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [100, 100, 100, 100, 100, 100]
+      variants : [vrs4, vrs8, vrs16, vrsa]
+
+    - id: linearfrac_003
+      description: 'Negative input values: x, y in [-FLT_MAX, -SMALLEST_SUBNORMAL], linearstep'
+      input: [[-max, -min_subnormal], [-max, -min_subnormal], [-max, -min_subnormal], [-max, -min_subnormal], [-max, -min_subnormal], [-max, -min_subnormal]]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [100, 100, 100, 100, 100, 100]
+      variants : [vrs4, vrs8, vrs16, vrsa]
+
+#Double precision
+    - id: linearfrac_001
+      description: 'Positive values: x, y in [SMALLEST_SUBNORMAL, DBL_MAX], linearstep'
+      input: [[min_subnormal, max], [min_subnormal, max], [min_subnormal, max], [min_subnormal, max], [min_subnormal, max], [min_subnormal, max]]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [100, 100, 100, 100, 100, 100]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: linearfrac_002
+      description: 'Mixed input values: x in [SMALLEST_SUBNORMAL, DBL_MAX], y in [-DBL_MAX, -SMALLEST_SUBNORMAL], linearstep'
+      input: [[min_subnormal, max], [-max, -min_subnormal], [min_subnormal, max], [-max, -min_subnormal], [min_subnormal, max], [-max, -min_subnormal]]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [100, 100, 100, 100, 100, 100]
+      variants : [vrd2, vrd4, vrd8, vrda]
+
+    - id: linearfrac_003
+      description: 'Negative values: x, y in [-DBL_MAX, -SMALLEST_SUBNORMAL], linearstep'
+      input: [[-max, -min_subnormal], [-max, -min_subnormal], [-max, -min_subnormal], [-max, -min_subnormal], [-max, -min_subnormal], [-max, -min_subnormal]]
+      type: [linearstep, linearstep, linearstep, linearstep, linearstep, linearstep]
+      steps: [100, 100, 100, 100, 100, 100]
+      variants : [vrd2, vrd4, vrd8, vrda]

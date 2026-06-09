@@ -1,0 +1,274 @@
+---
+- test_sequence: perf_tests_erf_fast
+  function: erf
+  timing_enabled: true
+  test_sets:
+  - id: double-precision-tests
+    description: 'Curve-region performance tests for fast erf (double precision)'
+    tests:
+    # Subnormal: erf(x) ≈ 2x/√π (linear)
+    - id: erf_d01
+      description: 'Subnormal inputs, erf(x) ≈ 2x/√π'
+      input:
+      - [0x0000000000000001, 0x000fffffffffffff]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Tiny: linear region
+    - id: erf_d02
+      description: 'Tiny positive, linear region'
+      input:
+      - [0x000fffffffffffff, 0x3ddb7cdfd9d7bdbb]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Small: nearly linear, slight cubic correction
+    - id: erf_d03
+      description: 'Small, nearly linear with cubic correction'
+      input:
+      - [0x3ddb7cdfd9d7bdbb, 0x3fc0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # S-curve lower: sigmoid transition begins
+    - id: erf_d04
+      description: 'S-curve lower, sigmoid transition begins'
+      input:
+      - [0x3fc0000000000000, 0x3fe0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # S-curve mid: steepest region of the sigmoid
+    - id: erf_d05
+      description: 'S-curve mid, steepest sigmoid region'
+      input:
+      - [0x3fe0000000000000, 0x3ff0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # S-curve upper: transitioning toward saturation
+    - id: erf_d06
+      description: 'S-curve upper, approaching saturation'
+      input:
+      - [0x3ff0000000000000, 0x4000000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Approaching saturation: erf(x) ≈ 1 − small correction
+    - id: erf_d07
+      description: 'Approaching saturation, erf(x) ≈ 1 − ε'
+      input:
+      - [0x4000000000000000, 0x400c000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Saturated: erf(x) ≈ 1 to machine precision
+    - id: erf_d08
+      description: 'Saturated, erf(x) = 1 to machine precision'
+      input:
+      - [0x400c000000000000, 0x4018000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very large through DBL_MAX: erf = 1 exactly in FP
+    - id: erf_d09
+      description: 'Very large to DBL_MAX, erf = 1 exactly'
+      input:
+      - [0x4018000000000000, 0x7fefffffffffffff]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative: near-zero through S-curve
+    - id: erf_d10
+      description: 'Negative, [−2.0, −min_normal], S-curve + near-zero'
+      input:
+      - [0xc000000000000000, 0x8010000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative approaching saturation
+    - id: erf_d11
+      description: 'Negative approaching saturation, [−3.5, −2.0]'
+      input:
+      - [0xc00c000000000000, 0xc000000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative saturated through -DBL_MAX
+    - id: erf_d12
+      description: 'Negative saturated, [−DBL_MAX, −3.5], erf = −1'
+      input:
+      - [0xffefffffffffffff, 0xc00c000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+  - id: single-precision-tests
+    description: 'Curve-region performance tests for fast erff (single precision)'
+    tests:
+    # Subnormal float inputs
+    - id: erf_s01
+      description: 'Subnormal inputs, erff(x) ≈ 2x/√π'
+      input:
+      - [0x36a0000000000000, 0x380fffffc0000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Tiny to small: linear region
+    - id: erf_s02
+      description: 'Tiny to small, linear region'
+      input:
+      - [0x380fffffc0000000, 0x3fc0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # S-curve: sigmoid transition
+    - id: erf_s03
+      description: 'S-curve, sigmoid transition [0.125, 1.0]'
+      input:
+      - [0x3fc0000000000000, 0x3ff0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Upper S-curve
+    - id: erf_s04
+      description: 'Upper S-curve, [1.0, 2.0]'
+      input:
+      - [0x3ff0000000000000, 0x4000000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Approaching saturation
+    - id: erf_s05
+      description: 'Approaching saturation, [2.0, 3.5]'
+      input:
+      - [0x4000000000000000, 0x400c000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Saturated through FLT_MAX
+    - id: erf_s06
+      description: 'Saturated to FLT_MAX, erff = 1'
+      input:
+      - [0x400c000000000000, 0x47efffffe0000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative: S-curve through near-zero
+    - id: erf_s07
+      description: 'Negative, [−2.0, −flt_sub_max], S-curve + near-zero'
+      input:
+      - [0xc000000000000000, 0xb80fffffc0000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative approaching saturation
+    - id: erf_s08
+      description: 'Negative approaching saturation, [−3.5, −2.0]'
+      input:
+      - [0xc00c000000000000, 0xc000000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative saturated through -FLT_MAX
+    - id: erf_s09
+      description: 'Negative saturated, [−FLT_MAX, −3.5], erff = −1'
+      input:
+      - [0xc7efffffe0000000, 0xc00c000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative subnormal inputs
+    - id: erf_s10
+      description: 'Negative subnormal, erff(x) ≈ 2x/√π'
+      input:
+      - [0xb80fffffc0000000, 0xb6a0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -70,7 +70,15 @@ double _Complex getExpected(float _Complex *data) {
 
 long double _Complex getExpected(double _Complex *data) {
   auto val = alm_mpc_cexp(data[0]);
+#if (defined _WIN32 || defined _WIN64)
+  // Windows: long double == double (8 bytes), construct result properly
+  long double _Complex result;
+  __real__ result = __real__ val;
+  __imag__ result = __imag__ val;
+  return result;
+#else
   return val;
+#endif
 }
 
 // Used by the Real Number Functions only!
@@ -212,3 +220,5 @@ int test_v16s(test_data *data, int idx)  {
 #ifdef __cplusplus
 }
 #endif
+
+

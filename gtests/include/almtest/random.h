@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -53,6 +53,7 @@ class Random {
   int fillSimple(T *data, uint32_t nelem, T min, T max);
   int fillLinear(T *data, uint32_t nelem, T min, T max);
   int fillRandom(T *data, uint32_t nelem, T min, T max);
+  int fillBinadex(T *data, uint32_t nelem, T min, T max);
 
   int init_randfd(void) {
     uint64_t rand_val = 0xC001BEAFDEADBEAF;
@@ -70,9 +71,11 @@ class Random {
     if (randfd == -1) throw "Unable to open file /dev/urandom";
   }
 
-  Random(ALM::RangeType d) : dist(d){};
+  Random(ALM::RangeType d) : dist(d), randfd(-1) {};
 
 #if defined(__GNUC__)
+/* randfd must be set to -1 or a valid file descriptor 
+ * else we risk closing a valid file descriptor */
   ~Random() { close(randfd); }
 #else
   ~Random() {}

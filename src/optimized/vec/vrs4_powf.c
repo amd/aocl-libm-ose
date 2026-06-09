@@ -342,7 +342,7 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
         v_u32x4_t negative = (v_u32x4_t)(_x < ZERO);
 
         /*call scalar powf for all inputs */
-        if(any_v4_u32_loop(negative)) {
+        if(unlikely(any_v4_u32_loop(negative))) {
 
             return (v_f32x4_t) {powf(_x[0], _y[0]),
                                 powf(_x[1], _y[1]),

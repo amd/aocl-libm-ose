@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -39,7 +39,7 @@
 #include "random.h"
 #include "verify.h"
 #include "debug.h"
-
+#include <string.h>
 #undef I
 #include "gtest.h"
 
@@ -67,7 +67,7 @@ void ConfSetupf64(SpecParams *);
 
 /*
  * The Function populates the input values based on min value, max value
- * and the type of generation(simple or random or linear)
+ * and the type of generation(simple or random or linear or binadex)
  */
 template <typename T>
 int PopulateInputSamples(T **inpbuff, InputRange &range, uint32_t len) {
@@ -119,23 +119,20 @@ int PopulateInputSamples(T **inpbuff, InputRange &range, uint32_t len) {
  * {10+i0 10+i1 10+i2 ... 10+i10}
  * }
  *
- * Therefore, (count*count) values will be generated in the resulting buffer!
+ * Therefore, (count) values will be generated in the resulting buffer!
  */
 template <typename T, typename U>
 int PopulateComplexInputSamples(U *complex_inpbuff, T *inpbuff, uint32_t len) {
-    for(uint32_t i = 0; i < len; ++i)
+    for(uint32_t j = 0; j < len; ++j)
     {
-        for(uint32_t j = 0; j < len; ++j)
-        {
-            T real = inpbuff[i];
-            T imag = inpbuff[j];
-            #if defined(_WIN64) || defined(_WIN32)
-              U temp = {real, imag};
-            #else
-              U temp = real + imag*I;
-            #endif
-            complex_inpbuff[(i*len) + j] = temp;
-        }
+        T real = inpbuff[j];
+        T imag = inpbuff[len-1-j];
+        #if defined(_WIN64) || defined(_WIN32)
+          U temp = {real, imag};
+        #else
+          U temp = real + imag*I;
+        #endif
+        complex_inpbuff[j] = temp;
     }
     return 0;
 }
@@ -143,7 +140,11 @@ int PopulateComplexInputSamples(U *complex_inpbuff, T *inpbuff, uint32_t len) {
 double getUlp(float aop, double exptd);
 double getUlp(double aop, long double exptd);
 double getUlp(float _Complex aop, double _Complex exptd);
+#if (defined _WIN32 || defined _WIN64)
+double getUlp(double _Complex aop, double _Complex exptd);
+#else
 double getUlp(double _Complex aop, long double _Complex exptd);
+#endif
 bool update_ulp(double ulp, double &, double);
 
 /*
@@ -312,14 +313,14 @@ class AccuTestFixtureComplexFloat : public ::testing::TestWithParam<AccuParams> 
     ptr = GetParam().prttstres;
     nargs = GetParam().nargs;
 
-    complex_inpbuff = (float _Complex *)calloc(count*count, sizeof(float _Complex));
+    complex_inpbuff = (float _Complex *)calloc(count, sizeof(float _Complex));
 
     PopulateInputSamples(&inpbuff, range[0], count);
     PopulateComplexInputSamples(complex_inpbuff, inpbuff, count);
 
     if (nargs == 2)
     {
-      complex_inpbuff1 = (float _Complex *)calloc(count*count, sizeof(float _Complex));
+      complex_inpbuff1 = (float _Complex *)calloc(count, sizeof(float _Complex));
 
       PopulateInputSamples(&inpbuff1, range[1], count);
       PopulateComplexInputSamples(complex_inpbuff1, inpbuff1, count);
@@ -330,12 +331,12 @@ class AccuTestFixtureComplexFloat : public ::testing::TestWithParam<AccuParams> 
 
   void TearDown() override {
     aocl_libm_aligned_free(inpbuff);
-    aocl_libm_aligned_free(complex_inpbuff);
+    free(complex_inpbuff);
 
     if (nargs == 2)
     {
       aocl_libm_aligned_free(inpbuff1);
-      aocl_libm_aligned_free(complex_inpbuff1);
+      free(complex_inpbuff1);
     }
     aocl_libm_aligned_free(aop);
   }
@@ -367,14 +368,14 @@ class AccuTestFixtureComplexDouble : public ::testing::TestWithParam<AccuParams>
     ptr = GetParam().prttstres;
     nargs = GetParam().nargs;
 
-    complex_inpbuff = (double _Complex *)calloc(count*count, sizeof(double _Complex));
+    complex_inpbuff = (double _Complex *)calloc(count, sizeof(double _Complex));
 
     PopulateInputSamples(&inpbuff, range[0], count);
     PopulateComplexInputSamples(complex_inpbuff, inpbuff, count);
 
     if (nargs == 2)
     {
-      complex_inpbuff1 = (double _Complex *)calloc(count*count, sizeof(double _Complex));
+      complex_inpbuff1 = (double _Complex *)calloc(count, sizeof(double _Complex));
 
       PopulateInputSamples(&inpbuff1, range[1], count);
       PopulateComplexInputSamples(complex_inpbuff1, inpbuff1, count);
@@ -385,12 +386,12 @@ class AccuTestFixtureComplexDouble : public ::testing::TestWithParam<AccuParams>
 
   void TearDown() override {
     aocl_libm_aligned_free(inpbuff);
-    aocl_libm_aligned_free(complex_inpbuff);
+    free(complex_inpbuff);
 
     if (nargs == 2)
     {
       aocl_libm_aligned_free(inpbuff1);
-      aocl_libm_aligned_free(complex_inpbuff1);
+      free(complex_inpbuff1);
     }
     aocl_libm_aligned_free(aop);
   }
@@ -437,9 +438,9 @@ void SpecialSetUp(T **inp, int **exptdexpt, uint32_t count, U *data,
                   "Testing conformance/special case for ",count, " items");
 
   for (uint32_t i = 0; i < count; i++) {
-    in[i] = data[i].in;
+    memcpy(&in[i], &data[i].in, sizeof(in[i]));
     ee[i] = data[i].exptdexpt;
-    opp[i] = data[i].out;
+    memcpy(&opp[i], &data[i].out, sizeof(opp[i]));
   }
   *inp  = (T *)in;
   *exptdexpt = (int *)ee;
@@ -451,7 +452,7 @@ void SpecialSetUp(T **inp, int **exptdexpt, uint32_t count, U *data,
 
     LIBM_TEST_DPRINTF(DBG2, ,"Input1:", in2);
     for (uint32_t i = 0; i < count; i++) {
-      in2[i] = data[i].in2;
+      memcpy(&in2[i], &data[i].in2, sizeof(in2[i]));
     }
     *inp2 = (T *)in2;
   }
@@ -476,11 +477,11 @@ void SpecialSetUp(T **inp, int **exptdexpt, uint32_t count, U *data,
     LIBM_TEST_DPRINTF(DBG2, ,"Input5:", in6);
 
     for (uint32_t i = 0; i < count; i++) {
-      in2[i] = data[i].in2;
-      in3[i] = data[i].in3;
-      in4[i] = data[i].in4;
-      in5[i] = data[i].in5;
-      in6[i] = data[i].in6;
+      memcpy(&in2[i], &data[i].in2, sizeof(in2[i]));
+      memcpy(&in3[i], &data[i].in3, sizeof(in3[i]));
+      memcpy(&in4[i], &data[i].in4, sizeof(in4[i]));
+      memcpy(&in5[i], &data[i].in5, sizeof(in5[i]));
+      memcpy(&in6[i], &data[i].in6, sizeof(in6[i]));
     }
 
     *inp2 = (T *)in2;
@@ -515,9 +516,10 @@ void SpecialSetUpComplex(T **inp, int **exptdexpt, uint32_t count, U *data,
                   "Testing conformance/special case for ",count, " items");
 
   for (uint32_t i = 0; i < count; i++) {
-    in[i] = data[i].in;
+    // Construct complex numbers at runtime using memcpy to avoid corruption
+    memcpy(&in[i], &data[i].in, sizeof(in[i]));
     ee[i] = data[i].exptdexpt;
-    opp[i] = data[i].out;
+    memcpy(&opp[i], &data[i].out, sizeof(opp[i]));
   }
   *inp  = (T *)in;
   *exptdexpt = (int *)ee;
@@ -529,7 +531,7 @@ void SpecialSetUpComplex(T **inp, int **exptdexpt, uint32_t count, U *data,
 
     LIBM_TEST_DPRINTF(DBG2, ,"Input1:", in2);
     for (uint32_t i = 0; i < count; i++) {
-      in2[i] = data[i].in2;
+      memcpy(&in2[i], &data[i].in2, sizeof(in2[i]));
     }
     *inp2 = (T *)in2;
   }
@@ -604,7 +606,7 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
     double ulp = getUlp(a.f, (double)e.f);
 
     /* if both are nans, output will always match, regardless of the sign bit */
-    if (((e.u ^ a.u) && (ulp > 2.0)) && (both_nans == false))
+    if (((e.u ^ a.u) && (ulp > SCALAR_ULPTHD)) && (both_nans == false))
         output_match=1;
 
     if (output_match==1 || exception_match==1) {
@@ -688,6 +690,102 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
 
 /*
  * The derived class for Conformance and special cases for
+ * datatype "float" array variants (vrsa_*) where data members
+ * and member functions are declared and defined
+ */
+class SpecTestFixtureFloatArray : public ::testing::TestWithParam<SpecParams> {
+ public:
+  static bool ConfTestVerifyFloatArray(float *ip, int count, int except, int *nfail) {
+    bool all_pass = true;
+    for(int i = 0; i < count; i++) {
+      bool flag = ConformanceVerify(&ip[i], except);
+      if(!flag) {
+        (*nfail)++;
+        all_pass = false;
+      }
+    }
+    return all_pass;
+  }
+
+  template <typename T>
+  bool ConfVerifyFlt(int nargs, T input, T input2, T actual_output, T expected_output, int *nfail) {
+    int output_match = 0;
+
+    val e = {.f = expected_output};
+    val a = {.f = actual_output};
+    val ip = {.f = input};
+    val ip2 = {.f = input2};
+
+    #if defined(_WIN64) || defined(_WIN32)
+      bool both_nans = _isnanf(fabsf(e.f)) && _isnanf(fabsf(a.f));
+    #else
+      bool both_nans = isnanf(fabsf(e.f)) && isnanf(fabsf(a.f));
+    #endif
+
+    /* if op and expected dont match, check if ulp error is > 1.0 */
+    double ulp = getUlp(a.f, (double)e.f);
+
+    /* if both are nans, output will always match, regardless of the sign bit */
+    if (((e.u ^ a.u) && (ulp > VECTOR_ULPTHD)) && (both_nans == false))
+        output_match=1;
+
+    if (output_match==1) {
+        (*nfail)++;
+        printf ("Input: 0x%x (%f) ", ip.u, ip.f);
+        if (nargs == 2)
+            printf ("Input2: 0x%x (%f) ", ip2.u, ip2.f);
+        printf ("Expected: 0x%x (%f) Actual: 0x%x (%f) ULP: %f\n", e.u, e.f, a.u, a.f, ulp);
+        return false;
+    }
+    return true;
+  }
+
+  void SetUp() override {
+    libm_test_special_data_f32 *dataf32 = GetParam().data32;
+    count = GetParam().countf;
+    vflag = GetParam().verboseflag;
+    ptr = GetParam().prttstres;
+    nargs = GetParam().nargs;
+
+    SpecialSetUp(&idata, &expected_expection, count, dataf32, nargs, &idata1, &idata2, &idata3, &idata4, &idata5, &iop);
+    data = (float *)idata;
+    op = (float *)iop;
+
+    if (nargs == 2) {
+      data1 = (float *)idata1;
+    }
+    // Allocate aligned array for output
+    unsigned int arr_size = count * sizeof(float);
+    if((arr_size % _ALIGN_FACTOR) != 0) {
+      int factor = (arr_size / _ALIGN_FACTOR) + 1;
+      arr_size = _ALIGN_FACTOR * factor;
+    }
+    aocl_libm_aligned_alloc(arr_size, aop_array);
+  }
+
+  void TearDown() override {
+    aocl_libm_aligned_free(idata);
+    aocl_libm_aligned_free(iop);
+    if (nargs == 2) {
+      aocl_libm_aligned_free(idata1);
+    }
+    aocl_libm_aligned_free(expected_expection);
+    aocl_libm_aligned_free(aop_array);
+  }
+
+ protected:
+  uint32_t *idata, *idata1, *idata2, *idata3, *idata4, *idata5, *iop;
+  uint32_t nargs;
+  float *data, *data1, *data2, *data3, *data4, *data5, *op;
+  float *aop_array;
+  int *expected_expection;
+  uint32_t count;
+  PrintTstRes *ptr;
+  int vflag;
+};
+
+/*
+ * The derived class for Conformance and special cases for
  * datatype "double" where all the data members and member functions are
  * declared and defined
  */
@@ -724,7 +822,7 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
     double ulp = getUlp(a.d, (long double)e.d);
 
     /* if both are nans, output will always match, regardless of the sign bit */
-    if (((e.lu ^ a.lu) && (ulp > 2.0)) && (both_nans == false))
+    if (((e.lu ^ a.lu) && (ulp > SCALAR_ULPTHD)) && (both_nans == false))
         output_match=1;
 
     if (output_match==1 || exception_match==1) {
@@ -808,6 +906,99 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
   int vflag;
 };
 
+/*
+ * The derived class for Conformance and special cases for
+ * datatype "double" array variants (vrda_*) where data members
+ * and member functions are declared and defined
+ */
+class SpecTestFixtureDoubleArray : public ::testing::TestWithParam<SpecParams> {
+ public:
+  static bool ConfTestVerifyDoubleArray(double *ip, int count, int except, int *nfail) {
+    bool all_pass = true;
+    for(int i = 0; i < count; i++) {
+      bool flag = ConformanceVerify(&ip[i], except);
+      if(!flag) {
+        (*nfail)++;
+        all_pass = false;
+      }
+    }
+    return all_pass;
+  }
+
+  template <typename T>
+  bool ConfVerifyDbl(int nargs, T input, T input2, T actual_output, T expected_output, int *nfail) {
+    int output_match = 0;
+
+    val e = {.d = expected_output};
+    val a = {.d = actual_output};
+    val ip = {.d = input};
+    val ip2 = {.d = input2};
+
+    bool both_nans = isnan(fabs(e.d)) && isnan(fabs(a.d));
+
+    /* if op and expected dont match, check if ulp error is > 1.0 */
+    double ulp = getUlp(a.d, (long double)e.d);
+
+    /* if both are nans, output will always match, regardless of the sign bit */
+    if (((e.lu ^ a.lu) && (ulp > VECTOR_ULPTHD)) && (both_nans == false))
+        output_match=1;
+
+    if (output_match==1) {
+        (*nfail)++;
+        printf ("Input: 0x%lx (%lf) ", ip.lu, ip.d);
+        if (nargs == 2)
+            printf ("Input2: 0x%lx (%lf) ", ip2.lu, ip2.d);
+        printf ("Expected: 0x%lx (%lf) Actual: 0x%lx (%lf) ULP: %lf\n", e.lu, e.d, a.lu, a.d, ulp);
+        return false;
+    }
+    return true;
+  }
+
+  void SetUp() override {
+    libm_test_special_data_f64 *dataf64 = GetParam().data64;
+    count = GetParam().countd;
+    vflag = GetParam().verboseflag;
+    ptr = GetParam().prttstres;
+    nargs = GetParam().nargs;
+
+    SpecialSetUp(&idata, &expected_expection, count, dataf64, nargs, &idata1, &idata2, &idata3, &idata4, &idata5, &iop);
+    data = (double *)idata;
+    op = (double *)iop;
+
+    if (nargs == 2) {
+      data1 = (double *)idata1;
+    }
+
+    // Allocate aligned array for output
+    unsigned int arr_size = count * sizeof(double);
+    if((arr_size % _ALIGN_FACTOR) != 0) {
+      int factor = (arr_size / _ALIGN_FACTOR) + 1;
+      arr_size = _ALIGN_FACTOR * factor;
+    }
+    aocl_libm_aligned_alloc(arr_size, aop_array);
+  }
+
+  void TearDown() override {
+    aocl_libm_aligned_free(idata);
+    aocl_libm_aligned_free(iop);
+    if (nargs == 2) {
+      aocl_libm_aligned_free(idata1);
+    }
+    aocl_libm_aligned_free(expected_expection);
+    aocl_libm_aligned_free(aop_array);
+  }
+
+ protected:
+  uint64_t *idata, *idata1, *idata2, *idata3, *idata4, *idata5, *iop;
+  double *data, *data1, *data2, *data3, *data4, *data5, *op;
+  double *aop_array;
+  uint32_t nargs;
+  int *expected_expection;
+  uint32_t count;
+  PrintTstRes *ptr;
+  int vflag;
+};
+
 class SpecTestFixtureComplexFloat : public ::testing::TestWithParam<SpecParams> {
  public:
 // NOTE: These functions are not in use currently!
@@ -845,7 +1036,7 @@ class SpecTestFixtureComplexFloat : public ::testing::TestWithParam<SpecParams> 
     double ulp = getUlp( (float _Complex)actual_output, (double _Complex)expected_output );
 
     /* if both are nans, output will always match, regardless of the sign bit */
-    if (((e_real.u ^ a_real.u) && (e_imag.u ^ a_imag.u) && (ulp > 2.0)) && (both_nans == false))
+    if (((e_real.u ^ a_real.u) && (e_imag.u ^ a_imag.u) && (ulp > SCALAR_ULPTHD)) && (both_nans == false))
         output_match=1;
 
     if (output_match==1 || exception_match==1) {
@@ -942,7 +1133,7 @@ class SpecTestFixtureComplexDouble : public ::testing::TestWithParam<SpecParams>
     double ulp = getUlp( (double _Complex)actual_output, (long double _Complex)expected_output );
 
     /* if both are nans, output will always match, regardless of the sign bit */
-    if (((e_real.lu ^ a_real.lu) && (e_imag.lu ^ a_imag.lu) && (ulp > 2.0)) && (both_nans == false))
+    if (((e_real.lu ^ a_real.lu) && (e_imag.lu ^ a_imag.lu) && (ulp > SCALAR_ULPTHD)) && (both_nans == false))
         output_match=1;
 
     if (output_match==1 || exception_match==1) {
@@ -1017,4 +1208,72 @@ class AlmTestFramework {
   int AlmTestType(InputParams *, InputData *, PrintTstRes *);
   void CreateGtestFilters(InputParams *, string &filter_data);
 };
+
+/* ========================================================================
+ * In-Place Vector Array Testing - Guard Zone Utilities
+ * ======================================================================== */
+
+/*
+ * Initialize guard zone with sentinel pattern (templated for any data type)
+ *
+ * Purpose:
+ *   Fills a memory region with a sentinel pattern to detect out-of-bounds writes.
+ *   Used to create guard zones before/after test buffers in in-place operations.
+ *
+ * Parameters:
+ *   buffer  - Pointer to the guard zone memory region
+ *   size    - Number of elements in the guard zone
+ *   pattern - Sentinel value to fill (e.g., ALM_GUARD_PATTERN_F32/F64)
+ *
+ * Usage:
+ *   InitGuardZone(guard_buffer, ALM_GUARD_ZONE_SIZE, ALM_GUARD_PATTERN_F32);
+ */
+template<typename T>
+inline void InitGuardZone(void* buffer, uint32_t size, T pattern) {
+  T *guard_ptr = static_cast<T*>(buffer);
+  for(uint32_t i = 0; i < size; i++) {
+    guard_ptr[i] = pattern;
+  }
+}
+
+/*
+ * Check guard zone and return violation count (templated for any data type)
+ *
+ * Purpose:
+ *   Verifies that a guard zone remains intact after test execution.
+ *   Detects memory corruption from buffer overruns/underruns.
+ *
+ * Parameters:
+ *   buffer    - Pointer to the guard zone memory region
+ *   size      - Number of elements in the guard zone
+ *   pattern   - Expected sentinel value
+ *   zone_name - Descriptive name for error reporting ("BEFORE data", "AFTER data")
+ *   vflag     - Verbosity flag: 1 = print violations, 0 = silent
+ *
+ * Returns:
+ *   Number of violations detected (0 = clean, >0 = corrupted)
+ *
+ * Usage:
+ *   int violations = CheckGuardZone(guard_buffer, ALM_GUARD_ZONE_SIZE,
+ *                                   ALM_GUARD_PATTERN_F32, "BEFORE data", vflag);
+ */
+template<typename T>
+inline int CheckGuardZone(void* buffer, uint32_t size, T pattern,
+                          const char* zone_name, int vflag) {
+  int violations = 0;
+  T *guard_ptr = static_cast<T*>(buffer);
+  for(uint32_t i = 0; i < size; i++) {
+    if(guard_ptr[i] != pattern) {
+      violations++;
+      if(vflag == 1) {
+        cout << "MEMORY VIOLATION: Guard zone " << zone_name
+             << " corrupted at offset " << i
+             << " (expected 0x" << std::hex << pattern
+             << ", got 0x" << guard_ptr[i] << std::dec << ")" << endl;
+      }
+    }
+  }
+  return violations;
+}
+
 #endif

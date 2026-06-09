@@ -1,0 +1,206 @@
+---
+- test_sequence: validation_tests_acos
+  function: acos
+  test_sets:
+  - id: range-tests_01
+    tests:
+    - id: acos_001
+      description: '[-FLT_MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [-max, -min_subnormal]
+      type: [expstep]
+      steps: [1000]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: acos_002
+      description: '[+SMALLEST_SUBNORMAL, +FLT_MAX] expstep'
+      input:
+      - [min_subnormal, max]
+      type: [expstep]
+      steps: [1000]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+  - id: normal-range
+    description: 'Common value usage range tests'
+    tests:
+    - id: acos_003
+      description: '[-1, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [-1.0, -min_subnormal]
+      type: [expstep]
+      steps: [10000]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: acos_004
+      description: '[+SMALLEST_SUBNORMAL, +1] expstep'
+      input:
+      - [min_subnormal, 1.0]
+      type: [expstep]
+      steps: [10000]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: acos_005
+      description: '[-1, +1] linearstep'
+      input:
+      - [-1.0, 1.0]
+      type: [linearstep]
+      steps: [10000]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: acos_006
+      description: 'Test around -1'
+      input:
+      - [0xBF7FF000, 0xBF800001]
+      type: [bitstep]
+      steps: [1]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: acos_007
+      description: 'Test around +1'
+      input:
+      - [0x3F7FF000, 0x3F800001]
+      type: [bitstep]
+      steps: [1]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+  - id: subnormal-range
+    description: 'Subnormal values range tests'
+    tests:
+    - id: acos_008
+      description: '[-LARGEST_SUBNORMAL, +LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [-max_subnormal, max_subnormal]
+      type: [linearstep]
+      steps: [2000]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: acos_009
+      description: 'Test around 0, negative values'
+      input:
+      - [0x80000000, 0x80000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: acos_010
+      description: 'Test around 0, positive values'
+      input:
+      - [0.0, 0x00000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: acos_011
+      description: 'Test around -LARGEST_SUBNORMAL'
+      input:
+      - [0x807ff000, 0x80800FFF]
+      type: [bitstep]
+      steps: [1]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+    - id: acos_012
+      description: 'Test around +LARGEST_SUBNORMAL'
+      input:
+      - [0x007ff000, 0x00800fff]
+      type: [bitstep]
+      steps: [1]
+      variants: [ss, vrs4, vrs8, vrs16, vrsa]
+
+#Double precision
+  - id: full-range
+    description: 'Full value distribution range tests'
+    tests:
+    - id: acos_001
+      description: '[-DBL-MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [0xFFEFFFFFFFFFFFFF, -min_subnormal]
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrda]
+    - id: acos_002
+      description: '[+SMALLEST_SUBNORMAL, +DBL-MAX] expstep'
+      input:
+      - [min_subnormal, 0x7FEFFFFFFFFFFFFF]
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrda]
+  - id: normal-range
+    description: 'Common value usage range tests'
+    tests:
+    - id: acos_003
+      description: '[-1, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [-1.0, -min_subnormal]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrda]
+    - id: acos_004
+      description: '[+SMALLEST_SUBNORMAL, +1] expstep'
+      input:
+      - [min_subnormal, 1.0]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrda]
+    - id: acos_005
+      description: '[-1, +1] linearstep'
+      input:
+      - [-1.0, 1.0]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrda]
+    - id: acos_006
+      description: 'Test around -1'
+      input:
+      - [0xBFEFFFFFFFFFF000, 0xBFF0000000000001]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrda]
+
+    - id: acos_007
+      description: 'Test around +1'
+      input:
+      - [0x3FEFFFFFFFFFF000, 0x3FF0000000000001]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrda]
+  - id: subnormal-range
+    description: 'Subnormal range tests'
+    tests:
+    - id: acos_008
+      description: '[-LARGEST_SUBNORMAL, +LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [0x800FFFFFFFFFFFFF, 0x000FFFFFFFFFFFFF]
+      type: [linearstep]
+      steps: [2000]
+      variants : [sd, vrd2, vrd4, vrda]
+
+    - id: acos_009
+      description: 'Test around 0, negative values'
+      input:
+      - [-0.0, 0x8000000000000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrda]
+    - id: acos_010
+      description: 'Test around 0, positive values'
+      input:
+      - [0.0, 0x0000000000000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrda]
+
+    - id: acos_011
+      description: 'Test around -LARGEST_SUBNORMAL'
+      input:
+      - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrda]
+
+    - id: acos_012
+      description: 'Test around +LARGEST_SUBNORMAL'
+      input:
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrda]

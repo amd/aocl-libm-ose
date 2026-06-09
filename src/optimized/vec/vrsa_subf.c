@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
 
-void ALM_PROTO_OPT(vrsa_subf)(int len, float *lhs, float *rhs, float *dst)
+void ALM_PROTO_OPT(vrsa_subf)(int len, const float *lhs, const float *rhs, float *dst)
 {
     for (int i = 0; i < len ; i++)
     {

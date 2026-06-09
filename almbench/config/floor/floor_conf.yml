@@ -1,0 +1,594 @@
+
+- test_sequence: unit_tests_floor
+  ignore_exceptions: [underflow, inexact]
+  function: floor
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    - id: floor_001
+      description: "floorf(0) = 0"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: floor_002
+      description: "floorf(-0) = -0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: floor_003
+      description: "floorf(inf) = inf"
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    - id: floor_004
+      description: "floorf(-inf) = -inf"
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0xff800000]
+      expect_exception: []
+
+    - id: floor_005
+      description: "floorf(-nan) = -nan"
+      variants: [ss]
+      input: [0xffa00000]
+      expect: [0xffa00000]
+      expect_exception: [invalidoperation]
+
+    - id: floor_006
+      description: "floorf(+nan) = +nan"
+      variants: [ss]
+      input: [0x7fa00000]
+      expect: [0x7fa00000]
+      expect_exception: [invalidoperation]
+
+    - id: floor_007
+      description: "floorf(+subnorm_max) = 0"
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: floor_008
+      description: "floorf(-subnorm_max) = -1"
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: floor_009
+      description: "floorf(+subnorm_min) = 0"
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: floor_010
+      description: "floorf(-subnorm_min) = -1"
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: floor_011
+      description: "floorf(+1.5) = +1.0"
+      variants: [ss]
+      input: [0x3fc00000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: floor_012
+      description: "floorf(-1.5) = -2.0"
+      variants: [ss]
+      input: [0xbfc00000]
+      expect: [0xc0000000]
+      expect_exception: []
+
+    - id: floor_013
+      description: "floorf(+2.7) = +2.0"
+      variants: [ss]
+      input: [0x402ccccd]
+      expect: [0x40000000]
+      expect_exception: []
+
+    - id: floor_014
+      description: "floorf(-2.7) = -3.0"
+      variants: [ss]
+      input: [0xc02ccccd]
+      expect: [0xc0400000]
+      expect_exception: []
+
+    - id: floor_015
+      description: "floorf(qnan) = qnan"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    - id: floor_016
+      description: "floorf(snan) = snan"
+      variants: [ss]
+      input: [0x7fa00000]
+      expect: [0x7fa00000]
+      expect_exception: [invalidoperation]
+
+# Test cases from gtests test_floor_data.h
+#-------------------------------
+    - id: floor_001
+      description: "floor(+snan) = +qnan"
+      variants: [ss]
+      input: [0x7fb00000]
+      expect: [0x7ff00000]
+      expect_exception: [invalidoperation]
+
+    - id: floor_002
+      description: "floor(-snan) = +qnan"
+      variants: [ss]
+      input: [0xffb00000]
+      expect: [0x7ff00000]
+      expect_exception: [invalidoperation]
+
+    - id: floor_003
+      description: "floor(+snan_quiet) = +qnan"
+      variants: [ss]
+      input: [0x7fc00001]
+      expect: [0x7ff00000]
+      expect_exception: []
+
+    - id: floor_004
+      description: "floor(-snan_quiet) = +qnan"
+      variants: [ss]
+      input: [0xffc00001]
+      expect: [0x7ff00000]
+      expect_exception: []
+
+    - id: floor_005
+      description: "floor(+qnan) = +qnan"
+      variants: [ss]
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+
+    - id: floor_006
+      description: "floor(-qnan) = +qnan"
+      variants: [ss]
+      input: [0xfff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+
+    - id: floor_007
+      description: "floor(+inf) = +inf"
+      variants: [ss]
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+
+    - id: floor_008
+      description: "floor(-inf) = -inf"
+      variants: [ss]
+      input: [0xFF800000]
+      expect: [0xFF800000]
+      expect_exception: []
+
+    - id: floor_009
+      description: "floor(+1.0) = +1.0"
+      variants: [ss]
+      input: [0x3F800000]
+      expect: [0x3F800000]
+      expect_exception: []
+
+    - id: floor_010
+      description: "floor(-1.0) = -1.0"
+      variants: [ss]
+      input: [0xbf800000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: floor_011
+      description: "floor(-0.0) = -0.0"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    - id: floor_012
+      description: "floor(+0.0) = +0.0"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: floor_013
+      description: "floor(+max_denorm) = +0.0"
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: floor_014
+      description: "floor(-max_denorm) = -1.0"
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: floor_015
+      description: "floor(+min_denorm) = +0.0"
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: floor_016
+      description: "floor(-min_denorm) = -1.0"
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: floor_017
+      description: "floor(+max_normal) = +max_normal"
+      variants: [ss]
+      input: [0x7f7fffff]
+      expect: [0x7f7fffff]
+      expect_exception: []
+
+    - id: floor_018
+      description: "floor(-max_normal) = -max_normal"
+      variants: [ss]
+      input: [0xff7fffff]
+      expect: [0xff7fffff]
+      expect_exception: []
+
+    - id: floor_019
+      description: "floor(+min_normal) = +0.0"
+      variants: [ss]
+      input: [0x00800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: floor_020
+      description: "floor(-max_normal) = -max_normal"
+      variants: [ss]
+      input: [0xff7fffff]
+      expect: [0xff7fffff]
+      expect_exception: []
+
+    - id: floor_021
+      description: "floor(π) = 3.0"
+      variants: [ss]
+      input: [0x40490fd8]
+      expect: [0x40400000]
+      expect_exception: []
+
+    - id: floor_022
+      description: "floor(-π) = -4.0"
+      variants: [ss]
+      input: [0xc0490fd8]
+      expect: [0xc0800000]
+      expect_exception: []
+
+    - id: floor_023
+      description: "floor(π/2) = 1.0"
+      variants: [ss]
+      input: [0x3fc90fdb]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: floor_024
+      description: "floor(-π/2) = -2.0"
+      variants: [ss]
+      input: [0xbfc90fdb]
+      expect: [0xc0000000]
+      expect_exception: []
+
+    - id: floor_025
+      description: "floor(2.13...) = 2.0"
+      variants: [ss]
+      input: [0x400851EB]
+      expect: [0x40000000]
+      expect_exception: []
+
+    - id: floor_026
+      description: "floor(2^24) = 2^24 (exact)"
+      variants: [ss]
+      input: [0x4b800000]
+      expect: [0x4b800000]
+      expect_exception: []
+
+    - id: floor_027
+      description: "floor(2^25) = 2^25 (exact)"
+      variants: [ss]
+      input: [0x4c000000]
+      expect: [0x4c000000]
+      expect_exception: []
+#--------------------------------
+#Double precision
+    - id: floor_001
+      description: "floor(0) = 0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: floor_002
+      description: "floor(-0) = -0"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    - id: floor_003
+      description: "floor(inf) = inf"
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    - id: floor_004
+      description: "floor(-inf) = -inf"
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+
+    - id: floor_005
+      description: "floor(-nan) = -nan"
+      variants: [sd]
+      input: [0xfff4000000000000]
+      expect: [0xfff4000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: floor_006
+      description: "floor(+nan) = +nan"
+      variants: [sd]
+      input: [0x7ff4000000000000]
+      expect: [0x7ff4000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: floor_007
+      description: "floor(+subnorm_max) = 0"
+      variants: [sd]
+      input: [0x000fffffffffffff]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: floor_008
+      description: "floor(-subnorm_max) = -1"
+      variants: [sd]
+      input: [0x800fffffffffffff]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: floor_009
+      description: "floor(+subnorm_min) = 0"
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: floor_010
+      description: "floor(-subnorm_min) = -1"
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: floor_011
+      description: "floor(+1.5) = +1.0"
+      variants: [sd]
+      input: [0x3ff8000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: floor_012
+      description: "floor(-1.5) = -2.0"
+      variants: [sd]
+      input: [0xbff8000000000000]
+      expect: [0xc000000000000000]
+      expect_exception: []
+
+    - id: floor_013
+      description: "floor(+2.7) = +2.0"
+      variants: [sd]
+      input: [0x4005999999999999]
+      expect: [0x4000000000000000]
+      expect_exception: []
+
+    - id: floor_014
+      description: "floor(-2.7) = -3.0"
+      variants: [sd]
+      input: [0xc005999999999999]
+      expect: [0xc008000000000000]
+      expect_exception: []
+
+    - id: floor_015
+      description: "floor(qnan) = qnan"
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    - id: floor_016
+      description: "floor(snan) = snan"
+      variants: [sd]
+      input: [0x7ff4000000000001]
+      expect: [0x7ff4000000000001]
+      expect_exception: [invalidoperation]
+
+# Test cases from gtests test_floor_data.h
+#-------------------------------
+    - id: floor_001
+      description: "floor(+snan) = +qnan"
+      variants: [sd]
+      input: [0x7FF4001000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+
+    - id: floor_002
+      description: "floor(-snan) = +qnan"
+      variants: [sd]
+      input: [0xfff2000000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+
+    - id: floor_003
+      description: "floor(+snan_quiet) = +qnan"
+      variants: [sd]
+      input: [0x7FF8000000000001]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+
+    - id: floor_004
+      description: "floor(-snan_quiet) = +qnan"
+      variants: [sd]
+      input: [0xffF8000000000001]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+
+    - id: floor_005
+      description: "floor(+qnan) = +qnan"
+      variants: [sd]
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+
+    - id: floor_006
+      description: "floor(-qnan) = +qnan"
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+
+    - id: floor_007
+      description: "floor(+inf) = +inf"
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    - id: floor_008
+      description: "floor(-inf) = -inf"
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+
+    - id: floor_009
+      description: "floor(+1.0) = +1.0"
+      variants: [sd]
+      input: [0x3FF0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+
+    - id: floor_010
+      description: "floor(-1.0) = -1.0"
+      variants: [sd]
+      input: [0xBFF0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+
+    - id: floor_011
+      description: "floor(-0.0) = -0.0"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    - id: floor_012
+      description: "floor(+0.0) = +0.0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: floor_013
+      description: "floor(+max_denorm) = +0.0"
+      variants: [sd]
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: floor_014
+      description: "floor(-max_denorm) = -1.0"
+      variants: [sd]
+      input: [0x800fffffFFFFFFFF]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+
+    - id: floor_015
+      description: "floor(+min_denorm) = +0.0"
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: floor_016
+      description: "floor(-min_denorm) = -1.0"
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+
+    - id: floor_017
+      description: "floor(+max_normal) = +max_normal"
+      variants: [sd]
+      input: [0x7FEfffffFFFFFFFF]
+      expect: [0x7FEfffffFFFFFFFF]
+      expect_exception: []
+
+    - id: floor_018
+      description: "floor(-max_normal) = -max_normal"
+      variants: [sd]
+      input: [0xfFEfffffFFFFFFFF]
+      expect: [0xfFEfffffFFFFFFFF]
+      expect_exception: []
+
+    - id: floor_019
+      description: "floor(+min_normal) = +0.0"
+      variants: [sd]
+      input: [0x0010000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: floor_020
+      description: "floor(-min_normal) = -0.0"
+      variants: [sd]
+      input: [0x8010000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    - id: floor_021
+      description: "floor(π) = 3.0"
+      variants: [sd]
+      input: [0x400921FB54442D18]
+      expect: [0x4008000000000000]
+      expect_exception: []
+
+    - id: floor_022
+      description: "floor(-π) = -4.0"
+      variants: [sd]
+      input: [0xc00921fb54442d18]
+      expect: [0xC010000000000000]
+      expect_exception: []
+
+    - id: floor_023
+      description: "floor(π/2) = 1.0"
+      variants: [sd]
+      input: [0x3FF921FB60000000]
+      expect: [0x3fF0000000000000]
+      expect_exception: []
+
+    - id: floor_024
+      description: "floor(-π/2) = -2.0"
+      variants: [sd]
+      input: [0xBFF921FB60000000]
+      expect: [0xC000000000000000]
+      expect_exception: []
+#-------------------------------

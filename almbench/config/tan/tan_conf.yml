@@ -1,0 +1,2246 @@
+- test_sequence: unit_tests_tan
+  ignore_exceptions: [underflow, inexact]
+  function: tan
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    # Test case 1: 0
+    - id: tan_001
+      description: "tanf(0) = 0"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: tan_002
+      description: "tanf(-0) = -0"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: tan_003
+      description: "tanf(inf) = nan"
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 4: -inf
+    - id: tan_004
+      description: "tanf(-inf) = nan"
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 5: -nan
+    - id: tan_005
+      description: "tanf(-nan) = -nan"
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: tan_006
+      description: "tanf(+nan) = +nan"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: tan_007
+      description: "tanf(+subnorm_max) = +subnorm_max"
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: [inexact, underflow]
+
+    # Test case 8: - subnorm (MAX)
+    - id: tan_008
+      description: "tanf(-subnorm_max) = -subnorm_max"
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0x807fffff]
+      expect_exception: [inexact, underflow]
+
+    # Test case 9: + subnorm (MIN)
+    - id: tan_009
+      description: "tanf(+subnorm_min) = +subnorm_min"
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+
+    # Test case : - subnorm (MIN)
+    - id: tan_010
+      description: "tanf(-subnorm_min) = -subnorm_min"
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x80000001]
+      expect_exception: [inexact, underflow]
+
+    # Test case 11: + POS
+    - id: tan_011
+      description: "tanf(1.0) ≈ 1.5574"
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x3fc7592f]
+      expect_exception: [inexact]
+
+    # Test case 12: -POS
+    - id: tan_012
+      description: "tanf(-1.0) ≈ -1.5574"
+      variants: [ss]
+      input: [0xbf800000]
+      expect: [0xbfc7592f]
+      expect_exception: [inexact]
+
+    # Test case 13: +NEG
+    - id: tan_013
+      description: "tanf(2.0) ≈ -2.1850"
+      variants: [ss]
+      input: [0x40000000]
+      expect: [0xc00bd9b7]
+      expect_exception: [inexact]
+
+    # Test case 14: -NEG
+    - id: tan_014
+      description: "tanf(-2.0) ≈ 2.1850"
+      variants: [ss]
+      input: [0xc0000000]
+      expect: [0x400bd9b7]
+      expect_exception: [inexact]
+
+    # Test case 15: qnan
+    - id: tan_015
+      description: "tanf(qnan) = qnan"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: tan_016
+      description: "tanf(snan) = snan"
+      variants: [ss]
+      input: [0x7fa00000]
+      expect: [0x7fa00000]
+      expect_exception: [invalidoperation]
+
+    #Additional test cases
+    - id: tan_017
+      description: "tanf(π/4) ≈ 1.0"
+      variants: [ss]
+      input: [0x3f490fdb]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    - id: tan_018
+      description: "tanf(-π/4) ≈ -1.0"
+      variants: [ss]
+      input: [0xbf490fdb]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    - id: tan_019
+      description: "tanf(π/6) ≈ 0.5774"
+      variants: [ss]
+      input: [0x3f060a92]
+      expect: [0x3f13cd3a]
+      expect_exception: [inexact]
+
+    - id: tan_020
+      description: "tanf(-π/6) ≈ -0.5774"
+      variants: [ss]
+      input: [0xbf060a92]
+      expect: [0xbf13cd3a]
+      expect_exception: [inexact]
+
+    - id: tan_021
+      description: "tanf(0.5) ≈ 0.5463"
+      variants: [ss]
+      input: [0x3f000000]
+      expect: [0x3f0bcd51]
+      expect_exception: [inexact]
+
+    - id: tan_022
+      description: "tanf(-0.5) ≈ -0.5463"
+      variants: [ss]
+      input: [0xbf000000]
+      expect: [0xbf0bcd51]
+      expect_exception: [inexact]
+# Test cases from gtests test_tan_data.h
+#-------------------------------
+    - id: tan_001
+      description: "tanf(0x7fb00000) = 0x7fb00000"
+      variants: [ss]
+      input: [0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 2
+    - id: tan_002
+      description: "tanf(0xffb00000) = 0xffb00000"
+      variants: [ss]
+      input: [0xffb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 3
+    - id: tan_003
+      description: "tanf(0x7f800000) = 0x7ff00000"
+      variants: [ss]
+      input: [0x7F800000]
+      expect: [0x7ff00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 4
+    - id: tan_004
+      description: "tanf(0xff800000) = 0x7ff00000"
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0x7ff00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 5
+    - id: tan_005
+      description: "tanf(0x7ff00000) = 0x7ff00000"
+      variants: [ss]
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+
+    # Test case 6
+    - id: tan_006
+      description: "tanf(0xffc00000) = 0xffc00000"
+      variants: [ss]
+      input: [0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+
+    # Test case 7
+    - id: tan_007
+      description: "tanf(0x00000000) = 0x00000000"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 8
+    - id: tan_008
+      description: "tanf(0x80000000) = 0x80000000"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 9
+    - id: tan_009
+      description: " min_float*180/pi"
+      variants: [ss]
+      input: [0x00000039]
+      expect: [0x00000039]
+      expect_exception: [inexact, underflow]
+
+    # Test case 10
+    - id: tan_010
+      description: " 6e-05, < 2^(-13)"
+      variants: [ss]
+      input: [0x387BA882]
+      expect: [0x387BA882]
+      expect_exception: [inexact]
+
+    # Test case 11
+    - id: tan_011
+      description: " tan(45)=1"
+      variants: [ss]
+      input: [0x3F490FDB]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 12
+    - id: tan_012
+      description: " tan(-45) = -tan(45) = -1"
+      variants: [ss]
+      input: [0xbf490fdb]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    # Test case 13
+    - id: tan_013
+      description: " tan(90)=+INF"
+      variants: [ss]
+      input: [0x3fc90fdb]
+      expect: [0x7f800000]
+      expect_exception: [inexact]
+
+    # Test case 14
+    - id: tan_014
+      description: " tan(-Pi/2) = -INF"
+      variants: [ss]
+      input: [0xbfc90fdb]
+      expect: [0xff800000]
+      expect_exception: [inexact]
+
+    # Test case 15
+    - id: tan_015
+      description: "tanf(0x3C000001) = 0x3c0000ac"
+      variants: [ss]
+      input: [0x3C000001]
+      expect: [0x3c0000ac]
+      expect_exception: [inexact]
+
+    # Test case 16
+    - id: tan_016
+      description: "tanf(0x39000001) = 0x39000001"
+      variants: [ss]
+      input: [0x39000001]
+      expect: [0x39000001]
+      expect_exception: [inexact]
+
+    # Test case 17
+    - id: tan_017
+      description: " 1"
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x3fc75923]
+      expect_exception: [inexact]
+
+    # Test case 18
+    - id: tan_018
+      description: " -1"
+      variants: [ss]
+      input: [0xbf800000]
+      expect: [0xbfc75923]
+      expect_exception: [inexact]
+
+    # Test case 19
+    - id: tan_019
+      description: " 2"
+      variants: [ss]
+      input: [0x40000000]
+      expect: [0xc00bd7b1]
+      expect_exception: [inexact]
+
+    # Test case 20
+    - id: tan_020
+      description: " pi"
+      variants: [ss]
+      input: [0x40490fdb]
+      expect: [0x33bbbd2e]
+      expect_exception: [inexact]
+
+    # Test case 21
+    - id: tan_021
+      description: " tan(-pi)=-tan(pi)"
+      variants: [ss]
+      input: [0xc0490fdb]
+      expect: [0xb3bbbd2e]
+      expect_exception: [inexact]
+
+    # Test case 22
+    - id: tan_022
+      description: " 2pi"
+      variants: [ss]
+      input: [0x40C90FDB]
+      expect: [0x343bbd2e]
+      expect_exception: [inexact]
+
+    # Test case 23
+    - id: tan_023
+      description: " 10"
+      variants: [ss]
+      input: [0x41200000]
+      expect: [0x3f25fafa]
+      expect_exception: [inexact]
+
+    # Test case 24
+    - id: tan_024
+      description: " 1000"
+      variants: [ss]
+      input: [0x447A0000]
+      expect: [0x3fbc3395]
+      expect_exception: [inexact]
+
+    # Test case 25
+    - id: tan_025
+      description: " -4e5"
+      variants: [ss]
+      input: [0xC8C35000]
+      expect: [0x3e137717]
+      expect_exception: [inexact]
+
+    # Test case 26
+    - id: tan_026
+      description: " 500000"
+      variants: [ss]
+      input: [0x48F42400]
+      expect: [0xbe390c74]
+      expect_exception: [inexact]
+
+    # Test case 27
+    - id: tan_027
+      description: " 501350.25 > 5.0e5"
+      variants: [ss]
+      input: [0x48F4CCC8]
+      expect: [0xbf876fff]
+      expect_exception: [inexact]
+
+    # Test case 28
+    - id: tan_028
+      description: " -784000"
+      variants: [ss]
+      input: [0xC93F6800]
+      expect: [0x3e1fa759]
+      expect_exception: [inexact]
+
+    # Test case 29
+    - id: tan_029
+      description: " 505.796417, remainder is ~0, very close multiple of piby2"
+      variants: [ss]
+      input: [0x43FCE5F1]
+      expect: [0x320fd1de]
+      expect_exception: [inexact]
+
+    # Test case 30
+    - id: tan_030
+      description: " 182165.25, remainder is ~piby4"
+      variants: [ss]
+      input: [0x4831E550]
+      expect: [0xb79a62a2]
+      expect_exception: [inexact]
+
+    # Test case 31
+    - id: tan_031
+      description: " 126.449104"
+      variants: [ss]
+      input: [0x42FCE5F1]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 32
+    - id: tan_032
+      description: " 4.399877E+10, close to pi/2"
+      variants: [ss]
+      input: [0x5123e87f]
+      expect: [0x318a4ed8]
+      expect_exception: [inexact]
+
+    # Test case 33
+    - id: tan_033
+      description: " 2.19993846E+10, close to pi/2, ported from OpenCL"
+      variants: [ss]
+      input: [0x50a3e87f]
+      expect: [0xcdeceba8]
+      expect_exception: [inexact]
+
+    # Test case 34
+    - id: tan_034
+      description: " tanf(0.392699092627)=	0.414213575176"
+      variants: [ss]
+      input: [0x3ec90fdb]
+      expect: [0x3ed413cd]
+      expect_exception: [inexact]
+
+    # Test case 35
+    - id: tan_035
+      description: " tanf(0.785398185253)=	1.000000043711"
+      variants: [ss]
+      input: [0x3f490fdb]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 36
+    - id: tan_036
+      description: " tanf(1.178097248077)=	2.414213582730"
+      variants: [ss]
+      input: [0x3f96cbe4]
+      expect: [0x401a827a]
+      expect_exception: [inexact]
+
+    # Test case 37
+    - id: tan_037
+      description: " tanf(1.570796370506)=	-22877332.428855401000"
+      variants: [ss]
+      input: [0x3fc90fdb]
+      expect: [0xcbae8a4a]
+      expect_exception: [inexact]
+
+    # Test case 38
+    - id: tan_038
+      description: " tanf(1.963495373726)=	-2.414213799782"
+      variants: [ss]
+      input: [0x3ffb53d1]
+      expect: [0xc01a827b]
+      expect_exception: [inexact]
+
+    # Test case 39
+    - id: tan_039
+      description: " tanf(2.356194496155)=	-0.999999988075"
+      variants: [ss]
+      input: [0x4016cbe4]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    # Test case 40
+    - id: tan_040
+      description: " tanf(2.748893499374)=	-0.414213647332"
+      variants: [ss]
+      input: [0x402feddf]
+      expect: [0xbed413d0]
+      expect_exception: [inexact]
+
+    # Test case 41
+    - id: tan_041
+      description: " tanf(3.141592741013)=	0.000000087423"
+      variants: [ss]
+      input: [0x40490fdb]
+      expect: [0x33bbbd2e]
+      expect_exception: [inexact]
+
+    # Test case 42
+    - id: tan_042
+      description: " tanf(3.534291744232)=	0.414213572851"
+      variants: [ss]
+      input: [0x406231d6]
+      expect: [0x3ed413cd]
+      expect_exception: [inexact]
+
+    # Test case 43
+    - id: tan_043
+      description: " tanf(3.926990747452)=	0.999999860929"
+      variants: [ss]
+      input: [0x407b53d1]
+      expect: [0x3f7ffffe]
+      expect_exception: [inexact]
+
+    # Test case 44
+    - id: tan_044
+      description: " tanf(4.319689750671)=	2.414212551667"
+      variants: [ss]
+      input: [0x408a3ae6]
+      expect: [0x401a8275]
+      expect_exception: [inexact]
+
+    # Test case 45
+    - id: tan_045
+      description: " tanf(4.712388992310)=	-83858283.006641403000"
+      variants: [ss]
+      input: [0x4096cde4]
+      expect: [0xcc9ff26d]
+      expect_exception: [inexact]
+
+    # Test case 46
+    - id: tan_046
+      description: " tanf(5.105088233948)=	-2.414212388810"
+      variants: [ss]
+      input: [0x40a35ce2]
+      expect: [0xc01a8275]
+      expect_exception: [inexact]
+
+    # Test case 47
+    - id: tan_047
+      description: " tanf(5.497786998749)=	-1.000000290067"
+      variants: [ss]
+      input: [0x40afeddf]
+      expect: [0xbf800002]
+      expect_exception: [inexact]
+
+    # Test case 48
+    - id: tan_048
+      description: " tanf(5.890486240387)=	-0.414213544910"
+      variants: [ss]
+      input: [0x40bc7edd]
+      expect: [0xbed413cc]
+      expect_exception: [inexact]
+
+    # Test case 49
+    - id: tan_049
+      description: " tanf(6.283185482025)=	0.000000174846"
+      variants: [ss]
+      input: [0x40c90fdb]
+      expect: [0x343bbd2e]
+      expect_exception: [inexact]
+
+    # Test case 50
+    - id: tan_050
+      description: " tanf(-0.392699092627)=	-0.414213575176"
+      variants: [ss]
+      input: [0xbec90fdb]
+      expect: [0xbed413cd]
+      expect_exception: [inexact]
+
+    # Test case 51
+    - id: tan_051
+      description: " tanf(-0.785398185253)=	-1.000000043711"
+      variants: [ss]
+      input: [0xbf490fdb]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+
+    # Test case 52
+    - id: tan_052
+      description: " tanf(-1.178097248077)=	-2.414213582730"
+      variants: [ss]
+      input: [0xbf96cbe4]
+      expect: [0xc01a827a]
+      expect_exception: [inexact]
+
+    # Test case 53
+    - id: tan_053
+      description: " tanf(-1.570796370506)=	22877332.428855401000"
+      variants: [ss]
+      input: [0xbfc90fdb]
+      expect: [0x4bae8a4a]
+      expect_exception: [inexact]
+
+    # Test case 54
+    - id: tan_054
+      description: " tanf(-1.963495373726)=	2.414213799782"
+      variants: [ss]
+      input: [0xbffb53d1]
+      expect: [0x401a827b]
+      expect_exception: [inexact]
+
+    # Test case 55
+    - id: tan_055
+      description: " tanf(-2.356194496155)=	0.999999988075"
+      variants: [ss]
+      input: [0xc016cbe4]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+
+    # Test case 56
+    - id: tan_056
+      description: " tanf(-2.748893499374)=	0.414213647332"
+      variants: [ss]
+      input: [0xc02feddf]
+      expect: [0x3ed413d0]
+      expect_exception: [inexact]
+
+    # Test case 57
+    - id: tan_057
+      description: " tanf(-3.141592741013)=	-0.000000087423"
+      variants: [ss]
+      input: [0xc0490fdb]
+      expect: [0xb3bbbd2e]
+      expect_exception: [inexact]
+
+    # Test case 58
+    - id: tan_058
+      description: " tanf(-3.534291744232)=	-0.414213572851"
+      variants: [ss]
+      input: [0xc06231d6]
+      expect: [0xbed413cd]
+      expect_exception: [inexact]
+
+    # Test case 59
+    - id: tan_059
+      description: " tanf(-3.926990747452)=	-0.999999860929"
+      variants: [ss]
+      input: [0xc07b53d1]
+      expect: [0xbf7ffffe]
+      expect_exception: [inexact]
+
+    # Test case 60
+    - id: tan_060
+      description: " tanf(-4.319689750671)=	-2.414212551667"
+      variants: [ss]
+      input: [0xc08a3ae6]
+      expect: [0xc01a8275]
+      expect_exception: [inexact]
+
+    # Test case 61
+    - id: tan_061
+      description: " tanf(-4.712388992310)=	83858283.006641403000"
+      variants: [ss]
+      input: [0xc096cbe4]
+      expect: [0x4c9ff26d]
+      expect_exception: [inexact]
+
+    # Test case 62
+    - id: tan_062
+      description: " tanf(-5.105088233948)=	2.414212388810"
+      variants: [ss]
+      input: [0xc0a35ce2]
+      expect: [0x401a8275]
+      expect_exception: [inexact]
+
+    # Test case 63
+    - id: tan_063
+      description: " tanf(-5.497786998749)=	1.000000290067"
+      variants: [ss]
+      input: [0xc0afeddf]
+      expect: [0x3f800002]
+      expect_exception: [inexact]
+
+    # Test case 64
+    - id: tan_064
+      description: " tanf(-5.890486240387)=	0.414213544910"
+      variants: [ss]
+      input: [0xc0bc7edd]
+      expect: [0x3ed413cc]
+      expect_exception: [inexact]
+
+    # Test case 65
+    - id: tan_065
+      description: " tanf(-6.283185482025)=	-0.000000174846"
+      variants: [ss]
+      input: [0xc0c90fdb]
+      expect: [0xb43bbd2e]
+      expect_exception: [inexact]
+
+    # Test case 66
+    - id: tan_066
+      description: " tanf(0.000000000000)=	0.000000000000"
+      variants: [ss]
+      input: [0x0b8cbda0]
+      expect: [0x0b8cbda0]
+      expect_exception: [inexact]
+
+    # Test case 67
+    - id: tan_067
+      description: " tanf(7.692740917206)=	6.148067141030"
+      variants: [ss]
+      input: [0x40f62aef]
+      expect: [0x40c4bcf7]
+      expect_exception: [inexact]
+
+    # Test case 68
+    - id: tan_068
+      description: " tanf(8.434880256653)=	-1.523337008903"
+      variants: [ss]
+      input: [0x4106f545]
+      expect: [0xbfc2fcb5]
+      expect_exception: [inexact]
+
+    # Test case 69
+    - id: tan_069
+      description: " tanf(0.000000000000)=	0.000000000000"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 70
+    - id: tan_070
+      description: " tanf(2.440211057663)=	-0.844652902331"
+      variants: [ss]
+      input: [0x401c2c6b]
+      expect: [0xbf583b2c]
+      expect_exception: [inexact]
+
+    # Test case 71
+    - id: tan_071
+      description: " tanf(0.088919974864)=	0.089155074801"
+      variants: [ss]
+      input: [0x3db61bad]
+      expect: [0x3db696f0]
+      expect_exception: [inexact]
+
+    # Test case 72
+    - id: tan_072
+      description: " tanf(-1.014021277428)=	-1.606513405596"
+      variants: [ss]
+      input: [0xbf81cb73]
+      expect: [0xbfcda23b]
+      expect_exception: [inexact]
+
+    # Test case 73
+    - id: tan_073
+      description: " tanf(0.000000000000)=	0.000000000000"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 74
+    - id: tan_074
+      description: " tanf(7.077369689941)=	1.017728662856"
+      variants: [ss]
+      input: [0x40e279d0]
+      expect: [0x3f8244ef]
+      expect_exception: [inexact]
+
+    # Test case 75
+    - id: tan_075
+      description: " tanf(-0.841758906841)=	-1.119588220024"
+      variants: [ss]
+      input: [0xbf577d83]
+      expect: [0xbf8f4eab]
+      expect_exception: [inexact]
+
+    # Test case 76
+    - id: tan_076
+      description: " tanf(0.097425438464)=	0.097734858153"
+      variants: [ss]
+      input: [0x3dc786fd]
+      expect: [0x3dc82937]
+      expect_exception: [inexact]
+
+    # Test case 77
+    - id: tan_077
+      description: " tanf(0.000000000000)=	0.000000000000"
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 78
+    - id: tan_078
+      description: " tanf(-4.965018749237)=	3.873791284822"
+      variants: [ss]
+      input: [0xc09ee16f]
+      expect: [0x4077ec32]
+      expect_exception: [inexact]
+
+    # Test case 79
+    - id: tan_079
+      description: " tanf(-1.412661194801)=	-6.270905678201"
+      variants: [ss]
+      input: [0xbfb4d215]
+      expect: [0xc0c8ab42]
+      expect_exception: [inexact]
+
+    # Test case 80
+    - id: tan_080
+      description: " tanf(-3.146494388580)=	-0.004901774249"
+      variants: [ss]
+      input: [0xc049602a]
+      expect: [0xbba09f10]
+      expect_exception: [inexact]
+
+    # Test case 81
+    - id: tan_081
+      description: " tanf(0.000000000000)=	0.000000000000"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 82
+    - id: tan_082
+      description: " tanf(6.675530910492)=	0.413799497292"
+      variants: [ss]
+      input: [0x40d59df3]
+      expect: [0x3ed3dd87]
+      expect_exception: [inexact]
+
+    # Test case 83
+    - id: tan_083
+      description: " tanf(0.000000000000)=	0.000000000000"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 84
+    - id: tan_084
+      description: " tanf(0.000000000000)=	0.000000000000"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 85
+    - id: tan_085
+      description: " tanf(0.000000000000)=	0.000000000000"
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 86
+    - id: tan_086
+      description: "tanf(0x7f800001) = 0x7fc00001"
+      variants: [ss]
+      input: [0x7f800001]
+      expect: [0x7fc00001]
+      expect_exception: [invalidoperation]
+
+    # Test case 87
+    - id: tan_087
+      description: "tanf(0xff800001) = 0xffc00001"
+      variants: [ss]
+      input: [0xff800001]
+      expect: [0xffc00001]
+      expect_exception: [invalidoperation]
+
+    # Test case 88
+    - id: tan_088
+      description: "tanf(0x7fc00000) = 0x7fc00000"
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 89
+    - id: tan_089
+      description: "tanf(0xffc00000) = 0xffc00000"
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+
+    # Test case 90
+    - id: tan_090
+      description: "tanf(0x7f800000) = 0x7fc00000"
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 91
+    - id: tan_091
+      description: "tanf(0xff800000) = 0x7fc00000"
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+
+    # Test case 92
+    - id: tan_092
+      description: "tanf(0xff7fffff) = 0x80000000"
+      variants: [ss]
+      input: [0xff7fffff]
+      expect: [0x80000000]
+      expect_exception: [inexact]
+
+    # Test case 93
+    - id: tan_093
+      description: "tanf(0x807fffff) = 0x807fffff"
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0x807fffff]
+      expect_exception: [inexact, underflow]
+
+    # Test case 94
+    - id: tan_094
+      description: "tanf(0x00800000) = 0x00800000"
+      variants: [ss]
+      input: [0x00800000]
+      expect: [0x00800000]
+      expect_exception: [inexact]
+
+    # Test case 95
+    - id: tan_095
+      description: "tanf(0x80800000) = 0x80800000"
+      variants: [ss]
+      input: [0x80800000]
+      expect: [0x80800000]
+      expect_exception: [inexact]
+
+    # Test case 96
+    - id: tan_096
+      description: " 8.20986125E+05, close to 0"
+      variants: [ss]
+      input: [0x49486fa2]
+      expect: [0x37be4eea]
+      expect_exception: [inexact]
+
+    # Test case 97
+    - id: tan_097
+      description: " 0.5"
+      variants: [ss]
+      input: [0x3F000000]
+      expect: [0x3f0bda7b]
+      expect_exception: [inexact]
+
+    # Test case 98
+    - id: tan_098
+      description: " .7"
+      variants: [ss]
+      input: [0x3F333333]
+      expect: [0x3f57a036]
+      expect_exception: [inexact]
+
+    # Test case 99
+    - id: tan_099
+      description: " .8"
+      variants: [ss]
+      input: [0x3F4CCCCD]
+      expect: [0x3f83cb32]
+      expect_exception: [inexact]
+
+    # Test case 100
+    - id: tan_100
+      description: " 1.5"
+      variants: [ss]
+      input: [0x3fc00000]
+      expect: [0x41619f6b]
+      expect_exception: [inexact]
+
+    # Test case 101
+    - id: tan_101
+      description: " -3.92"
+      variants: [ss]
+      input: [0xC07AE148]
+      expect: [0xbf7c720e]
+      expect_exception: [inexact]
+
+    # Test case 102
+    - id: tan_102
+      description: "tanf(0x007fffff) = 0x007fffff"
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: [inexact, underflow]
+
+    # Test case 103
+    - id: tan_103
+      description: "tanf(0x00000001) = 0x00000001"
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+
+    # Test case 104
+    - id: tan_104
+      description: "tanf(0x80000001) = 0x80000001"
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x80000001]
+      expect_exception: [inexact, underflow]
+
+    # Test case 105
+    - id: tan_105
+      description: " according to NAG answer"
+      variants: [ss]
+      input: [0x7f7fffff]
+      expect: [0xbf1c9eca]
+      expect_exception: [inexact]
+
+    # Test case 106
+    - id: tan_106
+      description: "tanf(0xff7fffff) = 0x3f1c9eca"
+      variants: [ss]
+      input: [0xff7fffff]
+      expect: [0x3f1c9eca]
+      expect_exception: [inexact]
+
+    # Test case 107
+    - id: tan_107
+      description: "tanf(0x00800000) = 0x00800000"
+      variants: [ss]
+      input: [0x00800000]
+      expect: [0x00800000]
+      expect_exception: [inexact]
+
+    # Test case 108
+    - id: tan_108
+      description: "tanf(0x80800000) = 0x80800000"
+      variants: [ss]
+      input: [0x80800000]
+      expect: [0x80800000]
+      expect_exception: [inexact]
+#------------------------------
+    # Double precision tests
+    # Test case 1: 0
+    - id: tan_001
+      description: "tan(0) = 0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: tan_002
+      description: "tan(-0) = -0"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: tan_003
+      description: "tan(inf) = nan"
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 4: -inf
+    - id: tan_004
+      description: "tan(-inf) = nan"
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 5: -nan
+    - id: tan_005
+      description: "tan(-nan) = -nan"
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: tan_006
+      description: "tan(+nan) = +nan"
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: tan_007
+      description: "tan(+subnorm_max) = +subnorm_max"
+      variants: [sd]
+      input: [0x000fffffffffffff]
+      expect: [0x000fffffffffffff]
+      expect_exception: [inexact, underflow]
+
+    # Test case 8: - subnorm (MAX)
+    - id: tan_008
+      description: "tan(-subnorm_max) = -subnorm_max"
+      variants: [sd]
+      input: [0x800fffffffffffff]
+      expect: [0x800fffffffffffff]
+      expect_exception: [inexact, underflow]
+
+    # Test case 9: + subnorm (MIN)
+    - id: tan_009
+      description: "tan(+subnorm_min) = +subnorm_min"
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+
+    # Test case : - subnorm (MIN)
+    - id: tan_010
+      description: "tan(-subnorm_min) = -subnorm_min"
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0x8000000000000001]
+      expect_exception: [inexact, underflow]
+
+    # Test case 11: + POS
+    - id: tan_011
+      description: "tan(1.0) ≈ 1.5574077246549023"
+      variants: [sd]
+      input: [0x3ff0000000000000]
+      expect: [0x3ff8eb245cbee3a5]
+      expect_exception: [inexact]
+
+    # Test case 12: -POS
+    - id: tan_012
+      description: "tan(-1.0) ≈ -1.5574077246549023"
+      variants: [sd]
+      input: [0xbff0000000000000]
+      expect: [0xbff8eb245cbee3a5]
+      expect_exception: [inexact]
+
+    # Test case 13: +NEG
+    - id: tan_013
+      description: "tan(2.0) ≈ -2.1850398632615189"
+      variants: [sd]
+      input: [0x4000000000000000]
+      expect: [0xc0017b36ebb1916d]
+      expect_exception: [inexact]
+
+    # Test case 14: -NEG
+    - id: tan_014
+      description: "tan(-2.0) ≈ 2.1850398632615189"
+      variants: [sd]
+      input: [0xc000000000000000]
+      expect: [0x40017b36ebb1916d]
+      expect_exception: [inexact]
+
+    # Test case 15: qnan
+    - id: tan_015
+      description: "tan(qnan) = qnan"
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: tan_016
+      description: "tan(snan) = snan"
+      variants: [sd]
+      input: [0x7ff4000000000001]
+      expect: [0x7ff4000000000001]
+      expect_exception: [invalidoperation]
+
+    # Additional meaningful test cases
+    - id: tan_017
+      description: "tan(π/4) ≈ 1.0"
+      variants: [sd]
+      input: [0x3fe921fb54442d18]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    - id: tan_018
+      description: "tan(-π/4) ≈ -1.0"
+      variants: [sd]
+      input: [0xbfe921fb54442d18]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+
+    - id: tan_019
+      description: "tan(π/6) ≈ 0.5773502691896257"
+      variants: [sd]
+      input: [0x3fe0c152382d7366]
+      expect: [0x3fe279a74590331c]
+      expect_exception: [inexact]
+
+    - id: tan_020
+      description: "tan(-π/6) ≈ -0.5773502691896257"
+      variants: [sd]
+      input: [0xbfe0c152382d7366]
+      expect: [0xbfe279a74590331c]
+      expect_exception: [inexact]
+
+    - id: tan_021
+      description: "tan(0.5) ≈ 0.5463024898437905"
+      variants: [sd]
+      input: [0x3fe0000000000000]
+      expect: [0x3fe179a2e7b516ea]
+      expect_exception: [inexact]
+
+    - id: tan_022
+      description: "tan(-0.5) ≈ -0.5463024898437905"
+      variants: [sd]
+      input: [0xbfe0000000000000]
+      expect: [0xbfe179a2e7b516ea]
+      expect_exception: [inexact]
+# Test cases from gtests test_tan_data.h
+#-------------------------------
+    - id: tan_001
+      description: " tan(0)=0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 2
+    - id: tan_002
+      description: " tan(-0)=-0"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 3
+    - id: tan_003
+      description: " positive snan"
+      variants: [sd]
+      input: [0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 4
+    - id: tan_004
+      description: "tan(0xfff2000000000000) = 0xfff2000000000000"
+      variants: [sd]
+      input: [0xfff2000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 5
+    - id: tan_005
+      description: "tan(0x7ff87ff7fdedffff) = 0x7ff87ff7fdedffff"
+      variants: [sd]
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+
+    # Test case 6
+    - id: tan_006
+      description: "tan(0xfff8000000000000) = 0xfff8000000000000"
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+
+    # Test case 7
+    - id: tan_007
+      description: "tan(0x7ff0000000000000) = 0x7ff87ff7fdedffff"
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: [invalidoperation]
+
+    # Test case 8
+    - id: tan_008
+      description: "tan(0xfff0000000000000) = 0xfff8000000000000"
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: [invalidoperation]
+
+    # Test case 9
+    - id: tan_009
+      description: " tan(pi/2)= +inf"
+      variants: [sd]
+      input: [0x3ff921fb55206ddf]
+      expect: [0x7ff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 10
+    - id: tan_010
+      description: " tan(-90)=-tan(90)=-INF"
+      variants: [sd]
+      input: [0xbff921fb55206ddf]
+      expect: [0xfff0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 11
+    - id: tan_011
+      description: " tan(45)"
+      variants: [sd]
+      input: [0x3fe921fb544486e0]
+      expect: [0x3FF0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 12
+    - id: tan_012
+      description: " tan(-45)=-1"
+      variants: [sd]
+      input: [0xbfe921fb544486e0]
+      expect: [0xBFF0000000000000]
+      expect_exception: [inexact]
+
+    # Test case 13
+    - id: tan_013
+      description: " tan(pi)=0"
+      variants: [sd]
+      input: [0x400921FB54442D18]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+
+    # Test case 14
+    - id: tan_014
+      description: " tan(-pi)=-0"
+      variants: [sd]
+      input: [0xc00921fb54442d18]
+      expect: [0x8000000000000000]
+      expect_exception: [inexact]
+
+    # Test case 15
+    - id: tan_015
+      description: "tan(0x000000000000023D) = 0x000000000000023D"
+      variants: [sd]
+      input: [0x000000000000023D]
+      expect: [0x000000000000023D]
+      expect_exception: [inexact, underflow]
+
+    # Test case 16
+    - id: tan_016
+      description: "tan(0x4f6344a970d9ac13) = 0x3fe9b03b3afff843"
+      variants: [sd]
+      input: [0x4f6344a970d9ac13]
+      expect: [0x3fe9b03b3afff843]
+      expect_exception: [inexact]
+
+    # Test case 17
+    - id: tan_017
+      description: "tan(0x723743730464dbf1) = 0xbff69b688e1dbfa6"
+      variants: [sd]
+      input: [0x723743730464dbf1]
+      expect: [0xbff69b688e1dbfa6]
+      expect_exception: [inexact]
+
+    # Test case 18
+    - id: tan_018
+      description: " 1.0655863521072058"
+      variants: [sd]
+      input: [0x3FF10CA44655D48A]
+      expect: [0x3ffcedb5c800bd1d]
+      expect_exception: [inexact]
+
+    # Test case 19
+    - id: tan_019
+      description: "tan(0x400f6a7a2955385e) = 0x3feffffffffffffd"
+      variants: [sd]
+      input: [0x400f6a7a2955385e]
+      expect: [0x3feffffffffffffd]
+      expect_exception: [inexact]
+
+    # Test case 20
+    - id: tan_020
+      description: "tan(0x3FF921FB54442D18) = 0x434d02967c31cdb5"
+      variants: [sd]
+      input: [0x3FF921FB54442D18]
+      expect: [0x434d02967c31cdb5]
+      expect_exception: [inexact]
+
+    # Test case 21
+    - id: tan_021
+      description: "tan(0x3FF921FB54442D19) = 0xc33617a15494767a"
+      variants: [sd]
+      input: [0x3FF921FB54442D19]
+      expect: [0xc33617a15494767a]
+      expect_exception: [inexact]
+
+    # Test case 22
+    - id: tan_022
+      description: "tan(0x3FF921FB54442D17) = 0x4329153d9443ed0b"
+      variants: [sd]
+      input: [0x3FF921FB54442D17]
+      expect: [0x4329153d9443ed0b]
+      expect_exception: [inexact]
+
+    # Test case 23
+    - id: tan_023
+      description: "tan(0x3FF921FB54442D1a) = 0xc3228f1859543aff"
+      variants: [sd]
+      input: [0x3FF921FB54442D1a]
+      expect: [0xc3228f1859543aff]
+      expect_exception: [inexact]
+
+    # Test case 24
+    - id: tan_024
+      description: "tan(0x000000000000023D) = 0x000000000000023D"
+      variants: [sd]
+      input: [0x000000000000023D]
+      expect: [0x000000000000023D]
+      expect_exception: [inexact, underflow]
+
+    # Test case 25
+    - id: tan_025
+      description: " 5.5879354476928711E-09 = 2^-28*1.5"
+      variants: [sd]
+      input: [0x3e38000000000000]
+      expect: [0x3E38000000000000]
+      expect_exception: []
+
+    # Test case 26
+    - id: tan_026
+      description: " -5.5879354476928711E-09 = -2^-28*1.5"
+      variants: [sd]
+      input: [0xbe38000000000000]
+      expect: [0xBE38000000000000]
+      expect_exception: []
+
+    # Test case 27
+    - id: tan_027
+      description: "tan(0x3fe921fb54442d18) = 0x3fefffffffffffff"
+      variants: [sd]
+      input: [0x3fe921fb54442d18]
+      expect: [0x3fefffffffffffff]
+      expect_exception: [inexact]
+
+    # Test case 28
+    - id: tan_028
+      description: "tan(0x3f20000000000001) = 0x3f20000001555556"
+      variants: [sd]
+      input: [0x3f20000000000001]
+      expect: [0x3f20000001555556]
+      expect_exception: [inexact]
+
+    # Test case 29
+    - id: tan_029
+      description: "tan(0x3e40000000000001) = 0x3e40000000000001"
+      variants: [sd]
+      input: [0x3e40000000000001]
+      expect: [0x3e40000000000001]
+      expect_exception: []
+
+    # Test case 30
+    - id: tan_030
+      description: " 0.80868956646495227"
+      variants: [sd]
+      input: [0x3FE9E0C8F112AB1E]
+      expect: [0x3ff0c363afc40f97]
+      expect_exception: [inexact]
+
+    # Test case 31
+    - id: tan_031
+      description: " 16.41921902203321"
+      variants: [sd]
+      input: [0x40306B51F0157E66]
+      expect: [0x3feb932a53046455]
+      expect_exception: [inexact]
+
+    # Test case 32
+    - id: tan_032
+      description: " 14.93624006430041"
+      variants: [sd]
+      input: [0x402DDF5ADB92C01A]
+      expect: [0xbfef22f55ab78c87]
+      expect_exception: [inexact]
+
+    # Test case 33
+    - id: tan_033
+      description: " 14.928646404149521"
+      variants: [sd]
+      input: [0x402DDB778A9EBD8A]
+      expect: [0xbfef9cf70c111d67]
+      expect_exception: [inexact]
+
+    # Test case 34
+    - id: tan_034
+      description: " 7.0685255586081963"
+      variants: [sd]
+      input: [0x401c462b9064a63b]
+      expect: [0x3fefff0d1d19082e]
+      expect_exception: [inexact]
+
+    # Test case 35
+    - id: tan_035
+      description: " 0.78539816339744839"
+      variants: [sd]
+      input: [0x3FE921FB54442D19]
+      expect: [0x3ff0000000000001]
+      expect_exception: [inexact]
+
+    # Test case 36
+    - id: tan_036
+      description: " 0.78539816339744917"
+      variants: [sd]
+      input: [0x3fe921fb54442d20]
+      expect: [0x3ff0000000000008]
+      expect_exception: [inexact]
+
+    # Test case 37
+    - id: tan_037
+      description: " 1.0655863521072058"
+      variants: [sd]
+      input: [0x3FF10CA44655D48A]
+      expect: [0x3ffcedb5c800bd1d]
+      expect_exception: [inexact]
+
+    # Test case 38
+    - id: tan_038
+      description: " 3.1425351647398445"
+      variants: [sd]
+      input: [0x400923E979F8B36A]
+      expect: [0x3f4ee25be1d30045]
+      expect_exception: [inexact]
+
+    # Test case 39
+    - id: tan_039
+      description: " 2.3568832554668964"
+      variants: [sd]
+      input: [0x4002DAE59BB5C33E]
+      expect: [0xbfeff4b918d4b96a]
+      expect_exception: [inexact]
+
+    # Test case 40
+    - id: tan_040
+      description: " 5.4978423059251824"
+      variants: [sd]
+      input: [0x4015FDCA5F9A0E38]
+      expect: [0xbfefff18a55dee76]
+      expect_exception: [inexact]
+
+    # Test case 41
+    - id: tan_041
+      description: " 6459.8523787068789"
+      variants: [sd]
+      input: [0x40b93bda357dadda]
+      expect: [0x3fed1849c8c910c6]
+      expect_exception: [inexact]
+
+    # Test case 42
+    - id: tan_042
+      description: " 90962.317034311578"
+      variants: [sd]
+      input: [0x40F63525129291FF]
+      expect: [0x3fe7fdf796804ff9]
+      expect_exception: [inexact]
+
+    # Test case 43
+    - id: tan_043
+      description: " 1.5704270776257141"
+      variants: [sd]
+      input: [0x3FF9207824B27C17]
+      expect: [0x40a52865814afd94]
+      expect_exception: [inexact]
+
+    # Test case 44
+    - id: tan_044
+      description: " 10.997277793834764"
+      variants: [sd]
+      input: [0x4025fe9b31eb183d]
+      expect: [0xc08258311cfd7912]
+      expect_exception: [inexact]
+
+    # Test case 45
+    - id: tan_045
+      description: " 45.553093477052"
+      variants: [sd]
+      input: [0x4046C6CBC45DC8DE]
+      expect: [0xc3b66b9ebc4850c6]
+      expect_exception: [inexact]
+
+    # Test case 46
+    - id: tan_046
+      description: " 1"
+      variants: [sd]
+      input: [0x3FF0000000000000]
+      expect: [0x3ff8eb245cbee3a6]
+      expect_exception: [inexact]
+
+    # Test case 47
+    - id: tan_047
+      description: " 2"
+      variants: [sd]
+      input: [0x4000000000000000]
+      expect: [0xc0017af62e0950f8]
+      expect_exception: [inexact]
+
+    # Test case 48
+    - id: tan_048
+      description: " 3"
+      variants: [sd]
+      input: [0x4008000000000000]
+      expect: [0xbfc23ef71254b86f]
+      expect_exception: [inexact]
+
+    # Test case 49
+    - id: tan_049
+      description: " 10"
+      variants: [sd]
+      input: [0x4024000000000000]
+      expect: [0x3fe4bf5f34be3782]
+      expect_exception: [inexact]
+
+    # Test case 50
+    - id: tan_050
+      description: " - 2"
+      variants: [sd]
+      input: [0xc000000000000000]
+      expect: [0x40017af62e0950f8]
+      expect_exception: [inexact]
+
+    # Test case 51
+    - id: tan_051
+      description: " 4.71238898038469 = 3pi/2"
+      variants: [sd]
+      input: [0x4012D97C7F3321D2]
+      expect: [0x4333570efd768923]
+      expect_exception: [inexact]
+
+    # Test case 52
+    - id: tan_052
+      description: " 12.566370614359172 = 4pi"
+      variants: [sd]
+      input: [0x402921fb54442d18]
+      expect: [0xbcc1a62633145c07]
+      expect_exception: [inexact]
+
+    # Test case 53
+    - id: tan_053
+      description: " 205887.41614566068 =  (2^16)pi"
+      variants: [sd]
+      input: [0x410921fb54442d18]
+      expect: [0xbda1a62633145c07]
+      expect_exception: [inexact]
+
+    # Test case 54
+    - id: tan_054
+      description: " 25.132741228718345 = 8pi"
+      variants: [sd]
+      input: [0x403921fb54442d18]
+      expect: [0xbcd1a62633145c07]
+      expect_exception: [inexact]
+
+    # Test case 55
+    - id: tan_055
+      description: " 25.132741228718348 close to 8pi"
+      variants: [sd]
+      input: [0x403921fb54442d19]
+      expect: [0x3ce72cece675d1fd]
+      expect_exception: [inexact]
+
+    # Test case 56
+    - id: tan_056
+      description: " 1.5707963379707675 close to pi/2"
+      variants: [sd]
+      input: [0x3ff921fb57442d18]
+      expect: [0xc1955555574b5994]
+      expect_exception: [inexact]
+
+    # Test case 57
+    - id: tan_057
+      description: " 3.1415926386886319 close to pi"
+      variants: [sd]
+      input: [0x400921fb52442d18]
+      expect: [0xbe5000000234c4c7]
+      expect_exception: [inexact]
+
+    # Test case 58
+    - id: tan_058
+      description: " 205887.41712222318 close to (2^16)p"
+      variants: [sd]
+      input: [0x410921fb56442d18]
+      expect: [0x3f5000005320928e]
+      expect_exception: [inexact]
+
+    # Test case 59
+    - id: tan_059
+      description: " -1.5707963379707675 close to - pi/2"
+      variants: [sd]
+      input: [0xbff921fb57442d18]
+      expect: [0x41955555574b5994]
+      expect_exception: [inexact]
+
+    # Test case 60
+    - id: tan_060
+      description: " 3.1415812094979962 close to pi"
+      variants: [sd]
+      input: [0x400921f554442d18]
+      expect: [0xbee8000000059a62]
+      expect_exception: [inexact]
+
+    # Test case 61
+    - id: tan_061
+      description: " -3.1415812094979962 close to -pi"
+      variants: [sd]
+      input: [0xc00921f554442d18]
+      expect: [0x3ee8000000059a62]
+      expect_exception: [inexact]
+
+    # Test case 62
+    - id: tan_062
+      description: " -1.570790615924869 close to -pi/2"
+      variants: [sd]
+      input: [0xbff921f557442d18]
+      expect: [0xc105600557ff5a82]
+      expect_exception: [inexact]
+
+    # Test case 63
+    - id: tan_063
+      description: " -1.570668545612369 close to -pi/2"
+      variants: [sd]
+      input: [0xbff9217557442d18]
+      expect: [0xc0be91e0ddf1c46e]
+      expect_exception: [inexact]
+
+    # Test case 64
+    - id: tan_064
+      description: " 3.1415926684909543 close to pi"
+      variants: [sd]
+      input: [0x400921fb56442d18]
+      expect: [0x3e4ffffffb967674]
+      expect_exception: [inexact]
+
+    # Test case 65
+    - id: tan_065
+      description: " 4.71245001554094 close to 3pi/2"
+      variants: [sd]
+      input: [0x4012D98C7F3321D2]
+      expect: [0xc0cfffffff55bf3a]
+      expect_exception: [inexact]
+
+    # Test case 66
+    - id: tan_066
+      description: " 1000005.3688883781"
+      variants: [sd]
+      input: [0x412e848abcdef000]
+      expect: [0xc009f5aedd6b6edb]
+      expect_exception: [inexact]
+
+    # Test case 67
+    - id: tan_067
+      description: " 3.4580273251621926E+17"
+      variants: [sd]
+      input: [0x439332270327f466]
+      expect: [0xc05622b8ed7db581]
+      expect_exception: [inexact]
+
+    # Test case 68
+    - id: tan_068
+      description: " 518341.75805235852"
+      variants: [sd]
+      input: [0x411fa317083ee0a2]
+      expect: [0x3ff6eb80ed54d249]
+      expect_exception: [inexact]
+
+    # Test case 69
+    - id: tan_069
+      description: " 3.3553869926485123E+177"
+      variants: [sd]
+      input: [0x64ca7f352f2afdae]
+      expect: [0x3ff456dcc676e139]
+      expect_exception: [inexact]
+
+    # Test case 70
+    - id: tan_070
+      description: " -5.8694348256855645E+95"
+      variants: [sd]
+      input: [0xd3d196202a791d3d]
+      expect: [0xc044a2abb21cf8bb]
+      expect_exception: [inexact]
+
+    # Test case 71
+    - id: tan_071
+      description: " 1.1159953350264303E+111"
+      variants: [sd]
+      input: [0x56fdb2fb3712813b]
+      expect: [0x4020eed0bfaadeed]
+      expect_exception: [inexact]
+
+    # Test case 72
+    - id: tan_072
+      description: " 9.397154915883978E+100"
+      variants: [sd]
+      input: [0x54e57b4e03dbe9b3]
+      expect: [0xc0009db1f2055098]
+      expect_exception: [inexact]
+
+    # Test case 73
+    - id: tan_073
+      description: " -2.8524095750052955E+205"
+      variants: [sd]
+      input: [0xea96be922b1706c5]
+      expect: [0xbfd9103e3f1cf2ab]
+      expect_exception: [inexact]
+
+    # Test case 74
+    - id: tan_074
+      description: " 1.9795803721016825E+180"
+      variants: [sd]
+      input: [0x655e883346944823]
+      expect: [0xbfe976a695ee9826]
+      expect_exception: [inexact]
+
+    # Test case 75
+    - id: tan_075
+      description: " tan(2.22045e-016 = fuprec)= 2.220446e-016"
+      variants: [sd]
+      input: [0x3cb0000000000000]
+      expect: [0x3cb0000000000000]
+      expect_exception: []
+
+    # Test case 76
+    - id: tan_076
+      description: " MM tan(32.2013=41pi/4)=1.000000e+000"
+      variants: [sd]
+      input: [0x404019c501fbace3]
+      expect: [0x3fefffffffffffb9]
+      expect_exception: [inexact]
+
+    # Test case 77
+    - id: tan_077
+      description: " MM tan(101.316=129pi/4)=1.000000e+000"
+      variants: [sd]
+      input: [0x4059543f4aecb572]
+      expect: [0x3fefffffffffff88]
+      expect_exception: [inexact]
+
+    # Test case 78
+    - id: tan_078
+      description: " MM tan(-32.2013=-41pi/4)=-1.000000e+000"
+      variants: [sd]
+      input: [0xc04019c501fbace3]
+      expect: [0xbfefffffffffffb9]
+      expect_exception: [inexact]
+
+    # Test case 79
+    - id: tan_079
+      description: " MM tan(-101.316=-129pi/4)=-1.000000e+000"
+      variants: [sd]
+      input: [0xc059543f4aecb572]
+      expect: [0xbfefffffffffff88]
+      expect_exception: [inexact]
+
+    # Test case 80
+    - id: tan_080
+      description: " 0: tan(3.926990816987e-001)=	4.142135623731e-001"
+      variants: [sd]
+      input: [0x3fd921fb54442d18]
+      expect: [0x3fda827999fcef32]
+      expect_exception: [inexact]
+
+    # Test case 81
+    - id: tan_081
+      description: " 1: tan(7.853981633974e-001)=	1.000000000000e+000"
+      variants: [sd]
+      input: [0x3fe921fb54442d18]
+      expect: [0x3fefffffffffffff]
+      expect_exception: [inexact]
+
+    # Test case 82
+    - id: tan_082
+      description: " 2: tan(1.178097245096e+000)=	2.414213562373e+000"
+      variants: [sd]
+      input: [0x3ff2d97c7f3321d2]
+      expect: [0x4003504f333f9de6]
+      expect_exception: [inexact]
+
+    # Test case 83
+    - id: tan_083
+      description: " 4: tan(1.963495408494e+000)=	-2.414213562373e+000"
+      variants: [sd]
+      input: [0x3fff6a7a2955385e]
+      expect: [0xc003504f333f9d37]
+      expect_exception: [inexact]
+
+    # Test case 84
+    - id: tan_084
+      description: " 5: tan(2.356194490192e+000)=	-1.000000000000e+000"
+      variants: [sd]
+      input: [0x4002d97c7f3321d2]
+      expect: [0xbff0000000000001]
+      expect_exception: [inexact]
+
+    # Test case 85
+    - id: tan_085
+      description: " 6: tan(2.748893571891e+000)=	-4.142135623731e-001"
+      variants: [sd]
+      input: [0x4005fdbbe9bba775]
+      expect: [0xbfda827999fcef35]
+      expect_exception: [inexact]
+
+    # Test case 86
+    - id: tan_086
+      description: " 8: tan(3.534291735289e+000)=	4.142135623731e-001"
+      variants: [sd]
+      input: [0x400c463abeccb2bb]
+      expect: [0x3fda827999fcef2f]
+      expect_exception: [inexact]
+
+    # Test case 87
+    - id: tan_087
+      description: " 9: tan(3.926990816987e+000)=	1.000000000000e+000"
+      variants: [sd]
+      input: [0x400f6a7a2955385e]
+      expect: [0x3feffffffffffffd]
+      expect_exception: [inexact]
+
+    # Test case 88
+    - id: tan_088
+      description: " 10: tan(4.319689898686e+000)=	2.414213562373e+000"
+      variants: [sd]
+      input: [0x4011475cc9eedf00]
+      expect: [0x4003504f333f9ddd]
+      expect_exception: [inexact]
+
+    # Test case 89
+    - id: tan_089
+      description: " 12: tan(5.105088062083e+000)=	-2.414213562373e+000"
+      variants: [sd]
+      input: [0x40146b9c347764a4]
+      expect: [0xc003504f333f9de3]
+      expect_exception: [inexact]
+
+    # Test case 90
+    - id: tan_090
+      description: " 13: tan(5.497787143782e+000)=	-1.000000000000e+000"
+      variants: [sd]
+      input: [0x4015fdbbe9bba775]
+      expect: [0xbff0000000000002]
+      expect_exception: [inexact]
+
+    # Test case 91
+    - id: tan_091
+      description: " 14: tan(5.890486225481e+000)=	-4.142135623731e-001"
+      variants: [sd]
+      input: [0x40178fdb9effea46]
+      expect: [0xbfda827999fcef40]
+      expect_exception: [inexact]
+
+    # Test case 92
+    - id: tan_092
+      description: " 16: tan(-3.926990816987e-001)=	-4.142135623731e-001"
+      variants: [sd]
+      input: [0xbfd921fb54442d18]
+      expect: [0xbfda827999fcef32]
+      expect_exception: [inexact]
+
+    # Test case 93
+    - id: tan_093
+      description: " 17: tan(-7.853981633974e-001)=	-1.000000000000e+000"
+      variants: [sd]
+      input: [0xbfe921fb54442d18]
+      expect: [0xbfefffffffffffff]
+      expect_exception: [inexact]
+
+    # Test case 94
+    - id: tan_094
+      description: " 18: tan(-1.178097245096e+000)=	-2.414213562373e+000"
+      variants: [sd]
+      input: [0xbff2d97c7f3321d2]
+      expect: [0xc003504f333f9de6]
+      expect_exception: [inexact]
+
+    # Test case 95
+    - id: tan_095
+      description: " 20: tan(-1.963495408494e+000)=	2.414213562373e+000"
+      variants: [sd]
+      input: [0xbfff6a7a2955385e]
+      expect: [0x4003504f333f9de7]
+      expect_exception: [inexact]
+
+    # Test case 96
+    - id: tan_096
+      description: " 21: tan(-2.356194490192e+000)=	1.000000000000e+000"
+      variants: [sd]
+      input: [0xc002d97c7f3321d2]
+      expect: [0x3ff0000000000001]
+      expect_exception: [inexact]
+
+    # Test case 97
+    - id: tan_097
+      description: " 22: tan(-2.748893571891e+000)=	4.142135623731e-001"
+      variants: [sd]
+      input: [0xc005fdbbe9bba775]
+      expect: [0x3fda827999fcef35]
+      expect_exception: [inexact]
+
+    # Test case 98
+    - id: tan_098
+      description: " 24: tan(-3.534291735289e+000)=	-4.142135623731e-001"
+      variants: [sd]
+      input: [0xc00c463abeccb2bb]
+      expect: [0xbfda817999fcef2f]
+      expect_exception: [inexact]
+
+    # Test case 99
+    - id: tan_099
+      description: " 25: tan(-3.926990816987e+000)=	-1.000000000000e+000"
+      variants: [sd]
+      input: [0xc00f6a7a2955385e]
+      expect: [0xbfeffffffffffffd]
+      expect_exception: [inexact]
+
+    # Test case 100
+    - id: tan_100
+      description: " 26: tan(-4.319689898686e+000)=	-2.414213562373e+000"
+      variants: [sd]
+      input: [0xc011475cc9eedf00]
+      expect: [0xc003504f333f9ddd]
+      expect_exception: [inexact]
+
+    # Test case 101
+    - id: tan_101
+      description: " 28: tan(-5.105088062083e+000)=	2.414213562373e+000"
+      variants: [sd]
+      input: [0xc0146d9c347764a4]
+      expect: [0x4003504f333f9de3]
+      expect_exception: [inexact]
+
+    # Test case 102
+    - id: tan_102
+      description: " 29: tan(-5.497787143782e+000)=	1.000000000000e+000"
+      variants: [sd]
+      input: [0xc015fdbbe9bba775]
+      expect: [0x3ff0000000000002]
+      expect_exception: [inexact]
+
+    # Test case 103
+    - id: tan_103
+      description: " 30: tan(-5.890486225481e+000)=	4.142135623731e-001"
+      variants: [sd]
+      input: [0xc0178fdb9effea46]
+      expect: [0x3fda827999fcef40]
+      expect_exception: [inexact]
+
+    # Test case 104
+    - id: tan_104
+      description: " 32: tan(5.421135524829e-032)=	5.421135524829e-032"
+      variants: [sd]
+      input: [0x397197b40472308c]
+      expect: [0x397197b40472308c]
+      expect_exception: []
+
+    # Test case 105
+    - id: tan_105
+      description: " 33: tan(7.692740923123e+000)=	6.148067370594e+000"
+      variants: [sd]
+      input: [0x401ec55de065a64d]
+      expect: [0x4018979ef90937d8]
+      expect_exception: [inexact]
+
+    # Test case 106
+    - id: tan_106
+      description: " 34: tan(8.434880219768e+000)=	-1.523337131381e+000"
+      variants: [sd]
+      input: [0x4020dea89ec32930]
+      expect: [0xbff85f96c1810b3c]
+      expect_exception: [inexact]
+
+    # Test case 107
+    - id: tan_107
+      description: " 35: tan(2.324269866831e-126)=	2.324269866831e-126"
+      variants: [sd]
+      input: [0x25d92c6ec03b4c10]
+      expect: [0x25d92c6ec03b4c10]
+      expect_exception: []
+
+    # Test case 108
+    - id: tan_108
+      description: " 36: tan(2.440211011033e+000)=	-8.446529822295e-001"
+      variants: [sd]
+      input: [0x4003858d59bdcbca]
+      expect: [0xbfeb0765b0e4a087]
+      expect_exception: [inexact]
+
+    # Test case 109
+    - id: tan_109
+      description: " 37: tan(8.891997837217e-002)=	8.915507833710e-002"
+      variants: [sd]
+      input: [0x3fb6c375af11c9ed]
+      expect: [0x3fb6d2de01baecac]
+      expect_exception: [inexact]
+
+    # Test case 110
+    - id: tan_110
+      description: " 38: tan(-1.014021232079e+000)=	-1.606513243206e+000"
+      variants: [sd]
+      input: [0xbff0396e53d3a2f2]
+      expect: [0xbff9b4473b029538]
+      expect_exception: [inexact]
+
+    # Test case 111
+    - id: tan_111
+      description: " 39: tan(-1.865808300064e-084)=	-1.865808300064e-084"
+      variants: [sd]
+      input: [0xae8cff4750eb0b3c]
+      expect: [0xae8cff4750eb0b3c]
+      expect_exception: []
+
+    # Test case 112
+    - id: tan_112
+      description: " 40: tan(7.077369499128e+000)=	1.017728274403e+000"
+      variants: [sd]
+      input: [0x401c4f39f331d997]
+      expect: [0x3ff0489d716c6add]
+      expect_exception: [inexact]
+
+    # Test case 113
+    - id: tan_113
+      description: " 41: tan(-8.417589147200e-001)=	-1.119588237778e+000"
+      variants: [sd]
+      input: [0xbfeaefb0643ad6dd]
+      expect: [0xbff1e9d55b23e812]
+      expect_exception: [inexact]
+
+    # Test case 114
+    - id: tan_114
+      description: " 42: tan(9.742543551008e-002)=	9.773485517082e-002"
+      variants: [sd]
+      input: [0x3fb8f0df93507871]
+      expect: [0x3fb90526c6a35134]
+      expect_exception: [inexact]
+
+    # Test case 115
+    - id: tan_115
+      description: " 43: tan(-3.819619208235e-128)=	-3.819619208235e-128"
+      variants: [sd]
+      input: [0xa57a79f2786ad67e]
+      expect: [0xa57a79f2786ad67e]
+      expect_exception: []
+
+    # Test case 116
+    - id: tan_116
+      description: " 46: tan(-3.146494361512e+000)=	-4.901747179969e-003"
+      variants: [sd]
+      input: [0xc0092c053c5df0c9]
+      expect: [0xbf7413dabd4cb544]
+      expect_exception: [inexact]
+
+    # Test case 117
+    - id: tan_117
+      description: " 47: tan(2.685487014566e-273)=	2.685487014566e-273"
+      variants: [sd]
+      input: [0x07573e93b389eae5]
+      expect: [0x07573e93b389eae5]
+      expect_exception: []
+
+    # Test case 118
+    - id: tan_118
+      description: " 48: tan(6.675530846416e+000)=	4.137994222441e-001"
+      variants: [sd]
+      input: [0x401ab3be5bb32e53]
+      expect: [0x3fda7bb092691889]
+      expect_exception: [inexact]
+
+    # Test case 119
+    - id: tan_119
+      description: " 49: tan(4.898648616191e-205)=	4.898648616191e-205"
+      variants: [sd]
+      input: [0x1583a8b9df6cdd6d]
+      expect: [0x1583a8b9df6cdd6d]
+      expect_exception: []
+
+    # Test case 120
+    - id: tan_120
+      description: " 50: tan(4.233146031196e-060)=	4.233146031196e-060"
+      variants: [sd]
+      input: [0x339b35a93cf0f495]
+      expect: [0x339b35a93cf0f495]
+      expect_exception: []
+
+    # Test case 121
+    - id: tan_121
+      description: " 51: tan(-7.814101979109e-271)=	-7.814101979109e-271"
+      variants: [sd]
+      input: [0x87da6b8e7d99488b]
+      expect: [0x87da6b8e7d99488b]
+      expect_exception: []
+
+    # Test case 122
+    - id: tan_122
+      description: " 3: tan(1.570796326795e+000)=	1.633177872838e+016"
+      variants: [sd]
+      input: [0x3ff921fb54442d18]
+      expect: [0x434d02d546d3eab2]
+      expect_exception: [inexact]
+
+    # Test case 123
+    - id: tan_123
+      description: " 7: tan(3.141592653590e+000)=	-1.224606353822e-016"
+      variants: [sd]
+      input: [0x400921fb54442d18]
+      expect: [0xbca1a60000000000]
+      expect_exception: [inexact]
+
+    # Test case 124
+    - id: tan_124
+      description: " 11: tan(4.712388980385e+000)=	5.443926242795e+015"
+      variants: [sd]
+      input: [0x4012d97c7f3321d2]
+      expect: [0x43335738d9e29c77]
+      expect_exception: [inexact]
+
+    # Test case 125
+    - id: tan_125
+      description: " 15: tan(6.283185307180e+000)=	-2.449212707645e-016"
+      variants: [sd]
+      input: [0x401921fb54442d18]
+      expect: [0xbcb1a60000000000]
+      expect_exception: [inexact]
+
+    # Test case 126
+    - id: tan_126
+      description: " 19: tan(-1.570796326795e+000)=	-1.633177872838e+016"
+      variants: [sd]
+      input: [0xbff921fb54442d18]
+      expect: [0xc34d02d546d3eab2]
+      expect_exception: [inexact]
+
+    # Test case 127
+    - id: tan_127
+      description: " 23: tan(-3.141592653590e+000)=	1.224606353822e-016"
+      variants: [sd]
+      input: [0xc00921fb54442d18]
+      expect: [0x3ca1a60000000000]
+      expect_exception: [inexact]
+
+    # Test case 128
+    - id: tan_128
+      description: " 27: tan(-4.712388980385e+000)=	-5.443926242795e+015"
+      variants: [sd]
+      input: [0xc012d97c7f3321d2]
+      expect: [0xc3335738d9e29c77]
+      expect_exception: [inexact]
+
+    # Test case 129
+    - id: tan_129
+      description: " 31: tan(-6.283185307180e+000)=	2.449212707645e-016"
+      variants: [sd]
+      input: [0xc01921fb44442d18]
+      expect: [0x3cb1a60000000000]
+      expect_exception: [inexact]
+#-------------------------------

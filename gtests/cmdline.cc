@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -60,6 +60,8 @@ void RangeReader::operator()(const std::string &name, const std::string &value,
       dest.r_type = RangeType::E_Linear;
     else if (dist == "random")
       dest.r_type = RangeType::E_Random;
+    else if (dist == "binadex")
+      dest.r_type = RangeType::E_Binadex;
     else
       dest.r_type = RangeType::E_Simple;
   }
@@ -83,7 +85,7 @@ cmdLine *cmdLineStart(void) { return &cmd; }
 
 cmdLine::cmdLine() : arguments(NULL) {
   parser = new args::ArgumentParser("Testing tool for AMD LibM",
-                                    "Author: Prem Mallappa <pmallapp@amd.com>");
+                                    "Author: Nimmy Krishnan <Nimmy.Krishnan@amd.com>");
 
   cmd.arguments =
       new args::Group(*parser, "arguments", args::Group::Validators::DontCare,
@@ -94,11 +96,12 @@ cmdLine::cmdLine() : arguments(NULL) {
       {"spec", TestType::E_SpecialCase},
       {"conf", TestType::E_Conformance},
       {"perf", TestType::E_Performance},
+      {"inplace", TestType::E_InPlace},
   };
 
   cmd.testtype = new args::MapFlag<std::string, TestType, ToLowerReader>(
       *cmd.parser, "type",
-      "TestType <type> = [accu, spec, conf, perf]",
+      "TestType <type> = [accu, spec, conf, perf, inplace]",
       {'t', "type"}, test_map);
 
   cmd.Iterations = new args::ValueFlag<uint64_t>(
@@ -197,6 +200,10 @@ bool cmdLine::Echo(InputParams *inparams) {
       inparams->range[i].max = r.r_range.second;
       inparams->range[i].type = (enum RangeType)r.r_type;
       i++;
+    }
+    // Default remaining ranges to range[0] for functions with multiple inputs (e.g., linearfrac)
+    for (; i < MAX_INPUT_RANGES; i++) {
+      inparams->range[i] = inparams->range[0];
     }
   } else {
     for(auto i = 0; i < MAX_INPUT_RANGES; i++) {

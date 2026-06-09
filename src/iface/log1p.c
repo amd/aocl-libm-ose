@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -46,6 +46,13 @@ struct alm_arch_funcs __arch_funcs_log1p = {
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX2(vrda_log1p),
         },
 
+        [ALM_UARCH_VER_AVX512] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX512(log1pf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX512(log1p),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX512(vrsa_log1pf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX512(vrda_log1p),
+        },
+
         [ALM_UARCH_VER_ZEN] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(log1pf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(log1p),
@@ -75,10 +82,17 @@ struct alm_arch_funcs __arch_funcs_log1p = {
         },
 
         [ALM_UARCH_VER_ZEN5] = {
-	        [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN5(log1pf),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN5(log1pf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN5(log1p),
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN5(vrsa_log1pf),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN5(vrda_log1p),
+        },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN6(log1pf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN6(log1p),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN6(vrsa_log1pf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN6(vrda_log1p),
         },
     },
 };

@@ -287,13 +287,14 @@ ALM_PROTO_OPT(vrd2_pow)(__m128d _x,__m128d _y)
 
     result = z * as_v2_f64_i64(m);
 
-    /* Check for special cases */
-    /* If y*log(x) is outside valid range, call scalar pow(value) */
-    /* Otherwise, return the above computed result */
-    for(int i = 0; i < VECTOR_LENGTH; i++) {
-        if(unlikely(v[i] >= EXP_MAX)){
-            result[i] = SCALAR_POW(_x[i], _y[i]);
-         }
+    {
+        int any_special = 0;
+        for(int i = 0; i < VECTOR_LENGTH; i++) any_special |= (v[i] >= EXP_MAX);
+        if(unlikely(any_special)) {
+            for(int i = 0; i < VECTOR_LENGTH; i++) {
+                if(v[i] >= EXP_MAX) result[i] = SCALAR_POW(_x[i], _y[i]);
+            }
+        }
     }
 
     return result;

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -124,13 +124,13 @@ if env['HOST_OS'] == 'win32':
         env['PDB'] = 'test.pdb'
         testcflags.remove('/O2')
 
-# get libau_cpuid path
-aocl_utils_install_path_lib = os.path.join(env['aocl_utils_install_path'], 'lib')
+# CPU detection is built into libalm (internal utils module, pure C).
 
 linkflags = []
 ccflags = []
 liblist = []
-libpath = ['#'+alm_path, aocl_utils_install_path_lib]
+# Internal utils is built into libalm, no external library path needed
+libpath = ['#'+alm_path]
 incpath = ['#gtests/include',
            '#gtests/include/almtest',
            '#gtests/gapi/gtest',
@@ -139,9 +139,6 @@ incpath = ['#gtests/include',
 
 abi = env['libabi']
 #print(abi, env['libabi'])
-
-if env['HOST_OS'] != 'win32':
-    liblist.extend(['au_cpuid'])
 
 # Default set to AOCL
 if abi == 'aocl':
@@ -201,7 +198,7 @@ else:
 
 # Add default math library for any unresolved functions
 if env['HOST_OS'] != 'win32':
-    liblist.extend(['m', 'gtest', 'benchmark','mparith32', 'mparith64', 'mpfr', 'mpc'])
+    liblist.extend(['m', 'gtest', 'benchmark', 'mparith32', 'mparith64', 'mpfr', 'mpc', 'stdc++'])
     if use_asan == 1:
         liblist.extend(['asan',])
 else:

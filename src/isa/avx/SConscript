@@ -1,0 +1,73 @@
+#
+# Copyright (C) 2026, Advanced Micro Devices. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without modification,
+# are permitted provided that the following conditions are met:
+# 1. Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+# 3. Neither the name of the copyright holder nor the names of its contributors
+#    may be used to endorse or promote products derived from this software without
+#    specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+# OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+# Inherit global environment
+Import('env')
+from os.path import join as joinpath
+
+e = env.Clone()
+
+# AVX assembly sources
+avx_asm = [
+    'gas/remainder_piby2_new.S',
+    'gas/remainder_piby2f_new.S',
+    'gas/remainder.S',
+    'gas/fmod.S',
+]
+
+# Set up include paths
+p = joinpath(Dir('.').srcnode().path)
+incpaths = [
+    '#' + p,
+    '#include',
+    '#include/libm',
+    '#src/isa/include',
+]
+
+# ISA_FLAGS equivalent: ISA-specific flags + ASAN + COVERAGE
+# Mimics: ISA_FLAGS = ${isaflag} ${ASAN_FLAGS} ${COVERAGE_FLAGS}
+isa_flags = [ ]
+
+if e['HOST_OS'] != 'win32':
+    isa_flags.extend(['-Wall', '-W', '-fPIC'])
+
+# On Windows, clang-cl does not pass CPPPATH to the assembler for .S files,
+# so we add explicit -I flags to ASFLAGS.
+if e['HOST_OS'] == 'win32':
+    isa_flags.extend(['/c',
+                      '-I' + Dir('#include').abspath,
+                      '-I' + Dir('#include/libm').abspath,
+                      '-I' + Dir('#' + p).abspath])
+
+e.Append(
+    CPPPATH = incpaths,
+    ASFLAGS = isa_flags,
+    CCFLAGS = isa_flags,
+)
+
+# Build assembly objects
+objs = e.StaticObject(avx_asm)
+
+Return('objs')

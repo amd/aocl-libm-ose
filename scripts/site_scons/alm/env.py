@@ -23,6 +23,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import os
 from os import environ
 from os import mkdir, makedirs
 from os.path import join as joinpath
@@ -134,10 +135,11 @@ class AlmEnvironment(object):
         try:
             cc_env = self.env['ALM_CC']
             if self.env['HOST_OS'] == 'win32':
+                llvm_bin = os.path.dirname(self.env['ALM_CC'])
                 self.env['AS'] = self.env['ALM_CC']
-                self.env['AR'] = 'llvm-lib'
-                self.env['DLIB'] = 'llvm-lib'
-                self.env['LINK'] = 'lld-link'
+                self.env['AR'] = os.path.join(llvm_bin, 'llvm-lib')
+                self.env['DLIB'] = os.path.join(llvm_bin, 'llvm-lib')
+                self.env['LINK'] = os.path.join(llvm_bin, 'lld-link')
         except KeyError as k:
             cc_env = self.env['CC']
 
@@ -167,8 +169,6 @@ class AlmEnvironment(object):
         abi   = opts.GetOption('libabi')
         arch_config  = opts.GetOption('arch_config')
         use_asan = opts.GetOption('use_asan')
-        aocl_utils_install_path = opts.GetOption('aocl_utils_install_path')
-        aocl_utils_link = opts.GetOption('aocl_utils_link')
 
         # fix the debug, it is set to 'none' instead of None
         # due to the way options are handled
@@ -233,8 +233,6 @@ class AlmEnvironment(object):
         abi        = opts.GetOption('libabi')
         arch_config = opts.GetOption('arch_config')
         use_asan    = opts.GetOption('use_asan')
-        aocl_utils_install_path = opts.GetOption('aocl_utils_install_path')
-        aocl_utils_link = opts.GetOption('aocl_utils_link')
 
         abi_dict = {
             'acml' : 'LIBABI_ACML',
@@ -257,8 +255,6 @@ class AlmEnvironment(object):
         env['libabi'] = abi
         env['arch_config'] = arch_config
         env['use_asan'] = use_asan
-        env['aocl_utils_install_path'] = aocl_utils_install_path
-        env['aocl_utils_link'] = aocl_utils_link
 
     def CheckDefault(self):
         '''

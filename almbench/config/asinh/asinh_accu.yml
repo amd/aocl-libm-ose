@@ -1,0 +1,182 @@
+---
+- test_sequence: validation_tests_asinh
+  function: asinh
+  test_sets:
+  - id: range-tests_01
+    description: 'Full value distribution range tests'
+    tests:
+    - id: asinh_001
+      description: '[+SMALLEST_SUBNORMAL, FLT_MAX] expstep'
+      input:
+      - [min_subnormal, max]
+      type: [expstep]
+      steps: [100]
+      variants : [ss]
+
+    - id: asinh_002
+      description: '[-FLT_MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [-max, -min_subnormal]
+      type: [expstep]
+      steps: [100]
+      variants : [ss]
+
+  - id: normal-range
+    description: 'Common value usage range tests'
+    tests:
+    - id: asinh_003
+      description: '[0.0, 12.0]'
+      input:
+      - [0.0, 12.0]
+      type: [linearstep]
+      steps: [100]
+      variants : [ss]
+
+    - id: asinh_004
+      description: '[0.0, -12.0]'
+      input:
+      - [0.0, -12.0]
+      type: [linearstep]
+      steps: [100]
+      variants : [ss]
+
+  - id: subnormal-range
+    description: 'Subnormal value range tests'
+    tests:
+    - id: asinh_005
+      description: '[0, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [0.0, max_subnormal]
+      type: [linearstep]
+      steps: [5000]
+      variants : [ss]
+
+    - id: asinh_006
+      description: '[-LARGEST_SUBNORMAL, 0] linearstep'
+      input:
+      - [-max_subnormal, -0.0]
+      type: [linearstep]
+      steps: [5000]
+      variants : [ss]
+
+    - id: asinh_007
+      description: 'positive 0'
+      input:
+      - [0.0, 0x00000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+
+    - id: asinh_008
+      description: 'negative 0'
+      input:
+      - [0x80000000, 0x80000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+
+    - id: asinh_009
+      description: ' LARGEST_SUBNORMAL'
+      input:
+      - [0x007FF000, 0x00800fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+
+    - id: asinh_010
+      description: ' -LARGEST_SUBNORMAL'
+      input:
+      - [0x807ff000, 0x80800fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss]
+#Double precision
+  - id: range-tests_01
+    description: 'Full value distribution range tests'
+    tests:
+    - id: asinh_001
+      description: '[+SMALLEST_SUBNORMAL, DBL-MAX] expstep'
+      input:
+      - [min_subnormal, max]
+      type: [expstep]
+      steps: [100]
+      variants : [sd]
+
+    - id: asinh_002
+      description: '[-DBL-MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [-max, -min_subnormal]
+      type: [expstep]
+      steps: [100]
+      variants : [sd]
+
+  - id: normal-range
+    description: 'Common value usage range tests'
+    tests:
+    - id: asinh_003
+      description: '[0.0, 12.0]'
+      input:
+      - [0.0, 12.0]
+      type: [linearstep]
+      steps: [100]
+      variants : [sd]
+
+    - id: asinh_004
+      description: '[0.0, -12.0]'
+      input:
+      - [0.0, -12.0]
+      type: [linearstep]
+      steps: [100]
+      variants : [sd]
+
+  - id: subnormal-range
+    description: 'Subnormal values range tests'
+    tests:
+    - id: asinh_005
+      description: '[0, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [0.0, 0x000FFFFFFFFFFFFF]
+      type: [linearstep]
+      steps: [5000]
+      variants : [sd]
+
+    - id: asinh_006
+      description: '[-LARGEST_SUBNORMAL, -0] linearstep'
+      input:
+      - [-max_subnormal, -0.0]
+      type: [linearstep]
+      steps: [5000]
+      variants : [sd]
+
+    - id: asinh_007
+      description: 'Test around positive 0'
+      input:
+      - [0.0, 0x0000000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+
+    - id: asinh_008
+      description: 'Test around negative 0'
+      input:
+      - [0x8000000000000000, 0x8000000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+
+    - id: asinh_009
+      description: 'Test around LARGEST_SUBNORMAL'
+      input:
+      - [0x000ffffffffff000, 0x0010000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+
+    - id: asinh_010
+      description: 'Test around -LARGEST_SUBNORMAL'
+      input:
+      - [0x800ffffffffff000, 0x8010000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd]
+

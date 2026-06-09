@@ -1,0 +1,1394 @@
+---
+- test_sequence: unit_tests_rint
+  function: rint
+  test_sets:
+  - id: special-values
+    description: Special values
+    tests:
+    # Test case 1: 0
+    - id: rint_001
+      description: "rintf(0) = 0"
+      api_name: rint
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    # Test case 2: -0
+    - id: rint_002
+      description: "rintf(-0) = -0"
+      api_name: rint
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+
+    # Test case 3: inf
+    - id: rint_003
+      description: "rintf(inf) = inf"
+      api_name: rint
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: []
+
+    # Test case 4: -inf
+    - id: rint_004
+      description: "rintf(-inf) = -inf"
+      api_name: rint
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0xff800000]
+      expect_exception: []
+
+    # Test case 5: -nan
+    - id: rint_005
+      description: "rintf(-nan) = nan"
+      api_name: rint
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0xFFC00000]
+      expect_exception: []
+
+    # Test case 6: +nan
+    - id: rint_006
+      description: "rintf(+nan) = nan"
+      api_name: rint
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX)
+    - id: rint_007
+      description: "rintf(max positive subnormal float) = 0"
+      api_name: rint
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x00000000]
+      expect_exception: [inexact]
+
+    # Test case 8: - subnorm (MAX)
+    - id: rint_008
+      description: "rintf(max negative subnormal float) = -0"
+      api_name: rint
+      variants: [ss]
+      input: [0x807fffff]
+      expect: [0x80000000]
+      expect_exception: [inexact]
+
+    # Test case 9: + subnorm (MIN)
+    - id: rint_009
+      description: "rintf(min positive subnormal float) = 0"
+      api_name: rint
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x00000000]
+      expect_exception: [inexact]
+
+    # Test case 10: - subnorm (MIN)
+    - id: rint_010
+      description: "rintf(min negative subnormal float) = -0"
+      api_name: rint
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x80000000]
+      expect_exception: [inexact]
+
+    # Test case 11: + POS (positive normal)
+    - id: rint_011
+      description: "rintf(1.5) = 2 (default rounding mode)"
+      api_name: rint
+      variants: [ss]
+      input: [0x3fc00000]
+      expect: [0x40000000]
+      expect_exception: [inexact]
+
+    # Test case 12: -POS (negative positive normal)
+    - id: rint_012
+      description: "rintf(-1.5) = -2 (default rounding mode)"
+      api_name: rint
+      variants: [ss]
+      input: [0xbfc00000]
+      expect: [0xc0000000]
+      expect_exception: [inexact]
+
+    # Test case 13: +NEG
+    - id: rint_013
+      description: "rintf(2.3) = 2"
+      api_name: rint
+      variants: [ss]
+      input: [0x40133333]
+      expect: [0x40000000]
+      expect_exception: [inexact]
+
+    # Test case 14: -NEG (negative value)
+    - id: rint_014
+      description: "rintf(-2.3) = -2"
+      api_name: rint
+      variants: [ss]
+      input: [0xc0133333]
+      expect: [0xc0000000]
+      expect_exception: [inexact]
+
+    # Test case 15: qnan
+    - id: rint_015
+      description: "rintf(qnan) = qnan"
+      api_name: rint
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+
+    # Test case 16: snan
+    - id: rint_016
+      description: "rintf(snan) = qnan"
+      api_name: rint
+      variants: [ss]
+      input: [0x7fa00000]
+      expect: [0x7FE00000]
+      expect_exception: [invalidoperation]
+# Test cases from gtests test_rint_data.h
+#------------------------------------
+    - id: rint_001
+      description: "rint(POS_ONE_F32) = POS_ONE_F32"
+      input: [0x3F800000]
+      expect: [0x3F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_002
+      description: "rint(NEG_ONE_F32) = NEG_ONE_F32"
+      input: [0xbf800000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_003
+      description: "rint(POS_ZERO_F32) = POS_ZERO_F32"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_004
+      description: "rint(NEG_ZERO_F32) = NEG_ZERO_F32"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_005
+      description: "rint(POS_INF_F32) = POS_INF_F32"
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_006
+      description: "rint(NEG_INF_F32) = NEG_INF_F32"
+      input: [0xFF800000]
+      expect: [0xFF800000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_007
+      description: "rint(POS_SNAN_F32) = POS_SNAN_F32 (invalid)"
+      input: [0x7fb00000]
+      expect: [0x7fb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: rint_008
+      description: "rint(NEG_SNAN_F32) = NEG_SNAN_F32 (invalid)"
+      input: [0xffb00000]
+      expect: [0xffb00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+    - id: rint_009
+      description: "rint(POS_QNAN_F32) = POS_QNAN_F32"
+      input: [0x7ff00000]
+      expect: [0x7ff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_010
+      description: "rint(NEG_QNAN_F32) = NEG_QNAN_F32"
+      input: [0xfff00000]
+      expect: [0xfff00000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_011
+      description: "rint(POS_HDENORM_F32) = 0x0 (inexact)"
+      input: [0x007fffff]
+      expect: [0x0]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_012
+      description: "rint(NEG_HDENORM_F32) = 0x80000000 (inexact)"
+      input: [0x807fffff]
+      expect: [0x80000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_013
+      description: "rint(POS_LDENORM_F32) = 0x0 (inexact)"
+      input: [0x00000001]
+      expect: [0x0]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_014
+      description: "rint(NEG_LDENORM_F32) = 0x80000000 (inexact)"
+      input: [0x80000001]
+      expect: [0x80000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_015
+      description: "rint(POS_HNORMAL_F32) = 0x7f7fffff"
+      input: [0x7f7fffff]
+      expect: [0x7f7fffff]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_016
+      description: "rint(NEG_HNORMAL_F32) = 0xff7fffff"
+      input: [0xff7fffff]
+      expect: [0xff7fffff]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_017
+      description: "rint(POS_LNORMAL_F32) = 0x0 (inexact)"
+      input: [0x00800000]
+      expect: [0x0]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_018
+      description: "rint(NEG_LNORMAL_F32) = 0x80000000 (inexact)"
+      input: [0x80800000]
+      expect: [0x80000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_019
+      description: "rint(POS_PI_F32) = 0x40400000 (inexact)"
+      input: [0x40490fd8]
+      expect: [0x40400000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_020
+      description: "rint(NEG_PI_F32) = 0xc0400000 (inexact)"
+      input: [0xc0490fd8]
+      expect: [0xc0400000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_021
+      description: "rint(POS_PI_BY2_F32) = 0x40000000 (inexact)"
+      input: [0x3fc90fdb]
+      expect: [0x40000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_022
+      description: "rint(NEG_PI_BY2_F32) = 0xc0000000 (inexact)"
+      input: [0xbfc90fdb]
+      expect: [0xc0000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_023
+      description: "rint(denormal min) = 0x00000000 (inexact)"
+      input: [0x00000001]
+      expect: [0x00000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_024
+      description: "rint(denormal intermediate) = 0x00000000 (inexact)"
+      input: [0x0005fde6]
+      expect: [0x00000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_025
+      description: "rint(denormal max) = 0x00000000 (inexact)"
+      input: [0x007fffff]
+      expect: [0x00000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_026
+      description: "rint(-denormal min) = 0x80000000 (inexact)"
+      input: [0x80000001]
+      expect: [0x80000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_027
+      description: "rint(-denormal intermediate) = 0x80000000 (inexact)"
+      input: [0x805def12]
+      expect: [0x80000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_028
+      description: "rint(-denormal max) = 0x80000000 (inexact)"
+      input: [0x807FFFFF]
+      expect: [0x80000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_029
+      description: "rint(normal min) = 0x00000000 (inexact)"
+      input: [0x00800000]
+      expect: [0x00000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_030
+      description: "rint(normal intermediate) = 0x43b40000 (inexact)"
+      input: [0x43b3c4ea]
+      expect: [0x43b40000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_031
+      description: "rint(normal max) = 0x7f7fffff"
+      input: [0x7f7fffff]
+      expect: [0x7f7fffff]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_032
+      description: "rint(-normal min) = 0x80000000 (inexact)"
+      input: [0x80800000]
+      expect: [0x80000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_033
+      description: "rint(-normal intermediate) = 0xc5813000 (inexact)"
+      input: [0xc5812e71]
+      expect: [0xc5813000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_034
+      description: "rint(-normal max) = 0xff7fffff"
+      input: [0xFF7FFFFF]
+      expect: [0xff7fffff]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_035
+      description: "rint(inf) = 0x7F800000"
+      input: [0x7F800000]
+      expect: [0x7F800000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_036
+      description: "rint(-inf) = 0xfF800000"
+      input: [0xfF800000]
+      expect: [0xfF800000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_037
+      description: "rint(qnan min) = 0x7Fc00000"
+      input: [0x7Fc00000]
+      expect: [0x7Fc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_038
+      description: "rint(qnan intermediate) = 0x7Fe1a570"
+      input: [0x7Fe1a570]
+      expect: [0x7Fe1a570]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_039
+      description: "rint(qnan max) = 0x7FFFFFFF"
+      input: [0x7FFFFFFF]
+      expect: [0x7FFFFFFF]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_040
+      description: "rint(indeterminate) = 0xfFc00000"
+      input: [0xfFc00000]
+      expect: [0xfFc00000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_041
+      description: "rint(-qnan min) = 0xFFC00001"
+      input: [0xFFC00001]
+      expect: [0xFFC00001]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_042
+      description: "rint(-qnan intermediate) = 0xFFd2ba31"
+      input: [0xFFd2ba31]
+      expect: [0xFFd2ba31]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_043
+      description: "rint(-qnan max) = 0xFFFFFFFF"
+      input: [0xFFFFFFFF]
+      expect: [0xFFFFFFFF]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_044
+      description: "rint(pi/2) = 0x40000000 (inexact)"
+      input: [0x3FC90FDB]
+      expect: [0x40000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_045
+      description: "rint(pi) = 0x40400000 (inexact)"
+      input: [0x40490FDB]
+      expect: [0x40400000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_046
+      description: "rint(2pi) = 0x40c00000 (inexact)"
+      input: [0x40C90FDB]
+      expect: [0x40c00000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_047
+      description: "rint(e --) = 0x40400000 (inexact)"
+      input: [0x402DF853]
+      expect: [0x40400000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_048
+      description: "rint(e) = 0x40400000 (inexact)"
+      input: [0x402DF854]
+      expect: [0x40400000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_049
+      description: "rint(e ++) = 0x40400000 (inexact)"
+      input: [0x402DF855]
+      expect: [0x40400000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_050
+      description: "rint(0) = 0x00000000"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_051
+      description: "rint(0.000023) = 0x00000000 (inexact)"
+      input: [0x37C0F01F]
+      expect: [0x00000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_052
+      description: "rint(0.49999) = 0x00000000 (inexact)"
+      input: [0x3EFFFEB0]
+      expect: [0x00000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_053
+      description: "rint(0.500012) = 0x3f800000 (inexact)"
+      input: [0x3F0000C9]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_054
+      description: "rint(-0) = 0x80000000"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_055
+      description: "rint(-0.000023) = 0x80000000 (inexact)"
+      input: [0xb7C0F01F]
+      expect: [0x80000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_056
+      description: "rint(-0.49999) = 0x80000000 (inexact)"
+      input: [0xbEFFFEB0]
+      expect: [0x80000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_057
+      description: "rint(-0.500012) = 0xbf800000 (inexact)"
+      input: [0xbF0000C9]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_058
+      description: "rint(1) = 0x3f800000"
+      input: [0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_059
+      description: "rint(0.93750006) = 0x3f800000 (inexact)"
+      input: [0x3f700001]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_060
+      description: "rint(1.0624998) = 0x3f800000 (inexact)"
+      input: [0x3F87FFFE]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_061
+      description: "rint(1.49999) = 0x3f800000 (inexact)"
+      input: [0x3FBFFFAC]
+      expect: [0x3f800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_062
+      description: "rint(1.500012) = 0x40000000 (inexact)"
+      input: [0x3FC00064]
+      expect: [0x40000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_063
+      description: "rint(-1) = 0xbf800000"
+      input: [0xbf800000]
+      expect: [0xbf800000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_064
+      description: "rint(-0.93750006) = 0xbf800000 (inexact)"
+      input: [0xbf700001]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_065
+      description: "rint(-1.0624998) = 0xbf800000 (inexact)"
+      input: [0xbF87FFFE]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_066
+      description: "rint(-1.49999) = 0xbf800000 (inexact)"
+      input: [0xbFBFFFAC]
+      expect: [0xbf800000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_067
+      description: "rint(-1.500012) = 0xc0000000 (inexact)"
+      input: [0xbFC00064]
+      expect: [0xc0000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_068
+      description: "rint(2) = 0x40000000"
+      input: [0x40000000]
+      expect: [0x40000000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_069
+      description: "rint(-2) = 0xc0000000"
+      input: [0xc0000000]
+      expect: [0xc0000000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_070
+      description: "rint(10) = 0x41200000"
+      input: [0x41200000]
+      expect: [0x41200000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_071
+      description: "rint(-10) = 0xc1200000"
+      input: [0xc1200000]
+      expect: [0xc1200000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_072
+      description: "rint(1000) = 0x447A0000"
+      input: [0x447A0000]
+      expect: [0x447A0000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_073
+      description: "rint(-1000) = 0xc47A0000"
+      input: [0xc47A0000]
+      expect: [0xc47A0000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_074
+      description: "rint(67.4) = 0x42860000 (inexact)"
+      input: [0x4286CCCC]
+      expect: [0x42860000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_075
+      description: "rint(-67.4) = 0xc2860000 (inexact)"
+      input: [0xc286CCCC]
+      expect: [0xc2860000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_076
+      description: "rint(1983.6) = 0x44F80000 (inexact)"
+      input: [0x44F7F333]
+      expect: [0x44F80000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_077
+      description: "rint(-1983.6) = 0xc4F80000 (inexact)"
+      input: [0xc4F7F333]
+      expect: [0xc4F80000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_078
+      description: "rint(87.5) = 0x42b00000 (inexact)"
+      input: [0x42AF0000]
+      expect: [0x42b00000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_079
+      description: "rint(-87.5) = 0xc2b00000 (inexact)"
+      input: [0xc2AF0000]
+      expect: [0xc2b00000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_080
+      description: "rint(132473) = 0x48015E40"
+      input: [0x48015E40]
+      expect: [0x48015E40]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_081
+      description: "rint(-132473) = 0xc8015E40"
+      input: [0xc8015E40]
+      expect: [0xc8015E40]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_082
+      description: "rint(2^23) = 0x4B000000"
+      input: [0x4B000000]
+      expect: [0x4B000000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_083
+      description: "rint(2^23 + 1) = 0x4B000001"
+      input: [0x4B000001]
+      expect: [0x4B000001]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_084
+      description: "rint(2^23 - 1 + 0.5) = 0x4b000000 (inexact)"
+      input: [0x4AFFFFFF]
+      expect: [0x4b000000]
+      expect_exception: [inexact]
+      variants: [ss]
+    - id: rint_085
+      description: "rint(-2^23) = 0xcB000000"
+      input: [0xcB000000]
+      expect: [0xcB000000]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_086
+      description: "rint(-(2^23 + 1)) = 0xcB000001"
+      input: [0xcB000001]
+      expect: [0xcB000001]
+      expect_exception: []
+      variants: [ss]
+    - id: rint_087
+      description: "rint(-(2^23 - 1 + 0.5)) = 0xcb000000 (inexact)"
+      input: [0xcAFFFFFF]
+      expect: [0xcb000000]
+      expect_exception: [inexact]
+      variants: [ss]
+#------------------------------------
+#Double precision
+    # Test case 1: 0 (double)
+    - id: rint_001
+      description: "rint(0) = 0"
+      api_name: rint
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    # Test case 2: -0 (double)
+    - id: rint_002
+      description: "rint(-0) = -0"
+      api_name: rint
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+
+    # Test case 3: inf (double)
+    - id: rint_003
+      description: "rint(inf) = inf"
+      api_name: rint
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+
+    # Test case 4: -inf (double)
+    - id: rint_004
+      description: "rint(-inf) = -inf"
+      api_name: rint
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+
+    # Test case 5: -nan (double)
+    - id: rint_005
+      description: "rint(-nan) = nan"
+      api_name: rint
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 6: +nan (double)
+    - id: rint_006
+      description: "rint(+nan) = nan"
+      api_name: rint
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 7: + subnorm (MAX) (double)
+    - id: rint_007
+      description: "rint(max positive subnormal double) = 0"
+      api_name: rint
+      variants: [sd]
+      input: [0x000fffffffffffff]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+
+    # Test case 8: - subnorm (MAX) (double)
+    - id: rint_008
+      description: "rint(max negative subnormal double) = -0"
+      api_name: rint
+      variants: [sd]
+      input: [0x800fffffffffffff]
+      expect: [0x8000000000000000]
+      expect_exception: [inexact]
+
+    # Test case 9: + subnorm (MIN) (double)
+    - id: rint_009
+      description: "rint(min positive subnormal double) = 0"
+      api_name: rint
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+
+    # Test case 10: - subnorm (MIN) (double)
+    - id: rint_010
+      description: "rint(min negative subnormal double) = -0"
+      api_name: rint
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0x8000000000000000]
+      expect_exception: [inexact]
+
+    # Test case 11: + POS (positive normal) (double)
+    - id: rint_011
+      description: "rint(1.5) = 2 (default rounding mode)"
+      api_name: rint
+      variants: [sd]
+      input: [0x3ff8000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: [inexact]
+
+    # Test case 12: -POS (negative positive normal) (double)
+    - id: rint_012
+      description: "rint(-1.5) = -2 (default rounding mode)"
+      api_name: rint
+      variants: [sd]
+      input: [0xbff8000000000000]
+      expect: [0xc000000000000000]
+      expect_exception: [inexact]
+
+    # Test case 13: +NEG (double)
+    - id: rint_013
+      description: "rint(2.3) = 2"
+      api_name: rint
+      variants: [sd]
+      input: [0x4002666666666666]
+      expect: [0x4000000000000000]
+      expect_exception: [inexact]
+
+    # Test case 14: -NEG (negative value) (double)
+    - id: rint_014
+      description: "rint(-2.3) = -2"
+      api_name: rint
+      variants: [sd]
+      input: [0xc002666666666666]
+      expect: [0xc000000000000000]
+      expect_exception: [inexact]
+
+    # Test case 15: qnan (double)
+    - id: rint_015
+      description: "rint(qnan) = qnan"
+      api_name: rint
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+
+    # Test case 16: snan (double)
+    - id: rint_016
+      description: "rint(snan) = qnan"
+      api_name: rint
+      variants: [sd]
+      input: [0x7ff4000000000001]
+      expect: [0x7FFC000000000001]
+      expect_exception: [invalidoperation]
+
+    # Additional meaningful test cases
+    - id: rint_017
+      description: "rint(0.4) = 0"
+      api_name: rint
+      variants: [sd]
+      input: [0x3fd999999999999a]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+
+    - id: rint_018
+      description: "rint(0.6) = 1"
+      api_name: rint
+      variants: [sd]
+      input: [0x3fe3333333333333]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+
+    - id: rint_019
+      description: "rint(-0.4) = -0"
+      api_name: rint
+      variants: [sd]
+      input: [0xbfd999999999999a]
+      expect: [0x8000000000000000]
+      expect_exception: [inexact]
+
+    - id: rint_020
+      description: "rint(-0.6) = -1"
+      api_name: rint
+      variants: [sd]
+      input: [0xbfe3333333333333]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+
+    # Test tie-breaking behavior (rounds to even in default mode)
+    - id: rint_021
+      description: "rint(2.5) = 2 (rounds to even)"
+      api_name: rint
+      variants: [sd]
+      input: [0x4004000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: [inexact]
+
+    - id: rint_022
+      description: "rint(3.5) = 4 (rounds to even)"
+      api_name: rint
+      variants: [sd]
+      input: [0x400c000000000000]
+      expect: [0x4010000000000000]
+      expect_exception: [inexact]
+# Test cases from gtests test_rint_data.h
+#------------------------------------
+    - id: rint_001
+      description: "rint(POS_ONE_F64) = POS_ONE_F64"
+      input: [0x3FF0000000000000]
+      expect: [0x3FF0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_002
+      description: "rint(NEG_ONE_F64) = NEG_ONE_F64"
+      input: [0xBFF0000000000000]
+      expect: [0xBFF0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_003
+      description: "rint(POS_ZERO_F64) = POS_ZERO_F64"
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_004
+      description: "rint(NEG_ZERO_F64) = NEG_ZERO_F64"
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_005
+      description: "rint(POS_INF_F64) = POS_INF_F64"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_006
+      description: "rint(NEG_INF_F64) = NEG_INF_F64"
+      input: [0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_007
+      description: "rint(POS_SNAN_F64) = POS_SNAN_F64 (invalid)"
+      input: [0x7FF4001000000000]
+      expect: [0x7FF4001000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: rint_008
+      description: "rint(NEG_SNAN_F64) = NEG_SNAN_F64 (invalid)"
+      input: [0xfff2000000000000]
+      expect: [0xfff2000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+    - id: rint_009
+      description: "rint(POS_QNAN_F64) = POS_QNAN_F64"
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_010
+      description: "rint(NEG_QNAN_F64) = NEG_QNAN_F64"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_011
+      description: "rint(POS_PI_F64) = 0x4008000000000000 (inexact)"
+      input: [0x400921FB54442D18]
+      expect: [0x4008000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_012
+      description: "rint(NEG_PI_F64) = 0xc008000000000000 (inexact)"
+      input: [0xc00921fb54442d18]
+      expect: [0xc008000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_013
+      description: "rint(POS_PI_BY2_F64) = 0x4000000000000000"
+      input: [0x3FF921FB60000000]
+      expect: [0x4000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_014
+      description: "rint(NEG_PI_BY2_F64) = 0xc000000000000000"
+      input: [0xBFF921FB60000000]
+      expect: [0xc000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_015
+      description: "rint(POS_HDENORM_F64) = 0x0000000000000000 (inexact)"
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_016
+      description: "rint(NEG_HDENORM_F64) = 0x8000000000000000 (inexact)"
+      input: [0x800fffffFFFFFFFF]
+      expect: [0x8000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_017
+      description: "rint(POS_LDENORM_F64) = 0x0000000000000000"
+      input: [0x0000000000000001]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_018
+      description: "rint(NEG_LDENORM_F64) = 0x8000000000000000"
+      input: [0x8000000000000001]
+      expect: [0x8000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_019
+      description: "rint(POS_HNORMAL_F64) = 0x7fefffffffffffffLL"
+      input: [0x7FEfffffFFFFFFFF]
+      expect: [0x7fefffffffffffffLL]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_020
+      description: "rint(NEG_HNORMAL_F64) = 0xffefffffffffffffLL"
+      input: [0xfFEfffffFFFFFFFF]
+      expect: [0xffefffffffffffffLL]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_021
+      description: "rint(POS_LNORMAL_F64) = 0x0000000000000000"
+      input: [0x0010000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_022
+      description: "rint(NEG_LNORMAL_F64) = 0x8000000000000000"
+      input: [0x8010000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_023
+      description: "rint(denormal min) = 0x0000000000000000"
+      input: [0x0000000000000001]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_024
+      description: "rint(denormal intermediate) = 0x0000000000000000 (inexact)"
+      input: [0x0005fde623545abc]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_025
+      description: "rint(denormal max) = 0x0000000000000000 (inexact)"
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_026
+      description: "rint(-denormal min) = 0x8000000000000000"
+      input: [0x8000000000000001]
+      expect: [0x8000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_027
+      description: "rint(-denormal intermediate) = 0x8000000000000000 (inexact)"
+      input: [0x8002344ade5def12]
+      expect: [0x8000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_028
+      description: "rint(-denormal max) = 0x8000000000000000 (inexact)"
+      input: [0x800FFFFFFFFFFFFF]
+      expect: [0x8000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_029
+      description: "rint(normal min) = 0x0000000000000000"
+      input: [0x0010000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_030
+      description: "rint(normal intermediate) = 0x43b3c4eafedcab02"
+      input: [0x43b3c4eafedcab02]
+      expect: [0x43b3c4eafedcab02]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_031
+      description: "rint(normal max) = 0x7fefffffffffffffLL"
+      input: [0x7FEFFFFFFFFFFFFF]
+      expect: [0x7fefffffffffffffLL]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_032
+      description: "rint(-normal min) = 0x8000000000000000"
+      input: [0x8010000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_033
+      description: "rint(-normal intermediate) = 0xc5812e71245acfdb"
+      input: [0xc5812e71245acfdb]
+      expect: [0xc5812e71245acfdb]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_034
+      description: "rint(-normal max) = 0xffefffffffffffffLL"
+      input: [0xFFEFFFFFFFFFFFFF]
+      expect: [0xffefffffffffffffLL]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_035
+      description: "rint(inf) = 0x7ff0000000000000"
+      input: [0x7FF0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_036
+      description: "rint(-inf) = 0xfff0000000000000"
+      input: [0xFFF0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_037
+      description: "rint(qnan min) = 0x7ff8000000000000"
+      input: [0x7FF8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_038
+      description: "rint(qnan intermediate) = 0x7ffe1a5701234dc3"
+      input: [0x7FFe1a5701234dc3]
+      expect: [0x7ffe1a5701234dc3]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_039
+      description: "rint(qnan max) = 0x7fffffffffffffffLL"
+      input: [0x7FFFFFFFFFFFFFFF]
+      expect: [0x7fffffffffffffffLL]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_040
+      description: "rint(indeterminate) = 0xfff8000000000000"
+      input: [0xFFF8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_041
+      description: "rint(-qnan min) = 0xfff8000000000001"
+      input: [0xFFF8000000000001]
+      expect: [0xfff8000000000001]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_042
+      description: "rint(-qnan intermediate) = 0xfff9123425dcba31"
+      input: [0xFFF9123425dcba31]
+      expect: [0xfff9123425dcba31]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_043
+      description: "rint(-qnan max) = 0xffffffffffffffffLL"
+      input: [0xFFFFFFFFFFFFFFFF]
+      expect: [0xffffffffffffffffLL]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_044
+      description: "rint(pi/2) = 0x4000000000000000 (inexact)"
+      input: [0x3FF921FB54442D18]
+      expect: [0x4000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_045
+      description: "rint(pi) = 0x4008000000000000 (inexact)"
+      input: [0x400921FB54442D18]
+      expect: [0x4008000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_046
+      description: "rint(2pi) = 0x4018000000000000 (inexact)"
+      input: [0x401921FB54442D18]
+      expect: [0x4018000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_047
+      description: "rint(e --) = 0x4000000000000000 (inexact)"
+      input: [0x3FFB7E151628AED3]
+      expect: [0x4000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_048
+      description: "rint(e) = 0x4008000000000000 (inexact)"
+      input: [0x4005BF0A8B145769]
+      expect: [0x4008000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_049
+      description: "rint(e ++) = 0x4010000000000000 (inexact)"
+      input: [0x400DBF0A8B145769]
+      expect: [0x4010000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_050
+      description: "rint(0) = 0x0000000000000000"
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_051
+      description: "rint(0.0000000000000000023) = 0x0000000000000000 (inexact)"
+      input: [0x3C4536B8B14B676C]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_052
+      description: "rint(0.4999989999999999999) = 0x0000000000000000 (inexact)"
+      input: [0x3FDFFFFBCE4217D3]
+      expect: [0x0000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_053
+      description: "rint(0.500000000000012) = 0x3ff0000000000000 (inexact)"
+      input: [0x3FE000000000006C]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_054
+      description: "rint(-0) = 0x8000000000000000"
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_055
+      description: "rint(-0.000000000000000000023) = 0x8000000000000000 (inexact)"
+      input: [0xBBDB2752CE74FF42]
+      expect: [0x8000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_056
+      description: "rint(-0.4999989999999999999) = 0x8000000000000000 (inexact)"
+      input: [0xBFDFFFFBCE4217D3]
+      expect: [0x8000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_057
+      description: "rint(-0.500000000000012) = 0xbff0000000000000 (inexact)"
+      input: [0xBFE000000000006C]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_058
+      description: "rint(1) = 0x3ff0000000000000"
+      input: [0x3FF0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_059
+      description: "rint(0.9999998893750006) = 0x3ff0000000000000 (inexact)"
+      input: [0x3FEFFFFFC49BD0DC]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_060
+      description: "rint(1.0000000000000624998) = 0x3ff0000000000000 (inexact)"
+      input: [0x3FF0000000000119]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_061
+      description: "rint(1.499998999999999967) = 0x3ff0000000000000 (inexact)"
+      input: [0x3FF7FFFEF39085F4]
+      expect: [0x3ff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_062
+      description: "rint(1.50000000000000012) = 0x4000000000000000 (inexact)"
+      input: [0x3FF8000000000001]
+      expect: [0x4000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_063
+      description: "rint(-1) = 0xbff0000000000000"
+      input: [0xBFF0000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_064
+      description: "rint(-0.9999998893750006) = 0xbff0000000000000 (inexact)"
+      input: [0xBFEFFFFFC49BD0DC]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_065
+      description: "rint(-1.0000000000000624998) = 0xbff0000000000000 (inexact)"
+      input: [0xBFF0000000000119]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_066
+      description: "rint(-1.499998999999999967) = 0xbff0000000000000 (inexact)"
+      input: [0xBFF7FFFEF39085F4]
+      expect: [0xbff0000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_067
+      description: "rint(-1.50000000000000012) = 0xc000000000000000 (inexact)"
+      input: [0xBFF8000000000001]
+      expect: [0xc000000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_068
+      description: "rint(2) = 0x4000000000000000"
+      input: [0x4000000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_069
+      description: "rint(-2) = 0xc000000000000000"
+      input: [0xC000000000000000]
+      expect: [0xc000000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_070
+      description: "rint(10) = 0x4024000000000000"
+      input: [0x4024000000000000]
+      expect: [0x4024000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_071
+      description: "rint(-10) = 0xc024000000000000"
+      input: [0xC024000000000000]
+      expect: [0xc024000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_072
+      description: "rint(1000) = 0x408f400000000000"
+      input: [0x408F400000000000]
+      expect: [0x408f400000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_073
+      description: "rint(-1000) = 0xc08f400000000000"
+      input: [0xC08F400000000000]
+      expect: [0xc08f400000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_074
+      description: "rint(67.4) = 0x4050c00000000000 (inexact)"
+      input: [0x4050D9999999999A]
+      expect: [0x4050c00000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_075
+      description: "rint(-67.4) = 0xc050c00000000000 (inexact)"
+      input: [0xC050D9999999999A]
+      expect: [0xc050c00000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_076
+      description: "rint(1983.6) = 0x409f000000000000 (inexact)"
+      input: [0x409EFE6666666666]
+      expect: [0x409f000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_077
+      description: "rint(-1983.6) = 0xc09f000000000000 (inexact)"
+      input: [0xC09EFE6666666666]
+      expect: [0xc09f000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_078
+      description: "rint(87.5) = 0x4056000000000000"
+      input: [0x4055E00000000000]
+      expect: [0x4056000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_079
+      description: "rint(-87.5) = 0xc056000000000000"
+      input: [0xC055E00000000000]
+      expect: [0xc056000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_080
+      description: "rint(132473) = 0x41002bc800000000"
+      input: [0x41002BC800000000]
+      expect: [0x41002bc800000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_081
+      description: "rint(-132473) = 0xc1002bc800000000"
+      input: [0xC1002BC800000000]
+      expect: [0xc1002bc800000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_082
+      description: "rint(2^52) = 0x4330000000000000"
+      input: [0x4330000000000000]
+      expect: [0x4330000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_083
+      description: "rint(2^52 + 1) = 0x4330000000000001"
+      input: [0x4330000000000001]
+      expect: [0x4330000000000001]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_084
+      description: "rint(2^52 -1 + 0.5) = 0x4330000000000000 (inexact)"
+      input: [0x432FFFFFFFFFFFFF]
+      expect: [0x4330000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+    - id: rint_085
+      description: "rint(-2^52) = 0xc330000000000000"
+      input: [0xC330000000000000]
+      expect: [0xc330000000000000]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_086
+      description: "rint(-(2^52 + 1)) = 0xc330000000000001"
+      input: [0xC330000000000001]
+      expect: [0xc330000000000001]
+      expect_exception: []
+      variants: [sd]
+    - id: rint_087
+      description: "rint(-(2^52 -1 + 0.5)) = 0xc330000000000000 (inexact)"
+      input: [0xC32FFFFFFFFFFFFF]
+      expect: [0xc330000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+#------------------------------------

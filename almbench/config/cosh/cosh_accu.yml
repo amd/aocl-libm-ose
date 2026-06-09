@@ -1,0 +1,137 @@
+- test_sequence: validation_tests_cosh
+  function: cosh
+  test_sets:
+  - id: range-tests_01
+    tests:
+    - id: cosh_001
+      description: 'Full value distribution range tests: [+SMALLEST_SUBNORMAL, FLT_MAX] expstep'
+      input:
+      - [min_subnormal, max]
+      type: [expstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrs8, vrsa]
+
+    - id: cosh_002
+      description: 'Full value distribution range tests: [-FLT_MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [-max, -min_subnormal]
+      type: [expstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrs8, vrsa]
+
+    - id: cosh_003
+      description: 'Subnormal values range tests: [0, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [0.0, max_subnormal]
+      type: [linearstep]
+      steps: [5000]
+      variants : [ss, vrs4, vrs8, vrsa]
+
+    - id: cosh_004
+      description: 'Subnormal values range tests: [-LARGEST_SUBNORMAL, -0] linearstep'
+      input:
+      - [-max_subnormal, -0.0]
+      type: [linearstep]
+      steps: [5000]
+      variants : [ss, vrs4, vrs8, vrsa]
+
+    - id: cosh_005
+      description: 'Test around positive 0'
+      input:
+      - [0.0, 0x00000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrs8, vrsa]
+
+    - id: cosh_006
+      description: 'Test around negative 0'
+      input:
+      - [0x80000000, 0x80000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrs8, vrsa]
+
+    - id: cosh_007
+      description: 'Test around LARGEST_SUBNORMAL'
+      input:
+      - [0x007ff000, 0x00800fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrs8, vrsa]
+
+    - id: cosh_008
+      description: 'Test around -LARGEST_SUBNORMAL'
+      input:
+      - [0x807ff000, 0x80800fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [ss, vrs4, vrs8, vrsa]
+
+#Double precision
+  - id: range-tests_01
+    tests:
+    - id: cosh_001
+      description: 'Full value distribution range tests: [+SMALLEST_SUBNORMAL, DBL-MAX] expstep'
+      input:
+      - [min_subnormal, max]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrda]
+
+    - id: cosh_002
+      description: 'Full value distribution range tests: [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [-max, -min_subnormal]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrda]
+
+    - id: cosh_003
+      description: 'Subnormal values range tests: [0, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [0.0, max_subnormal]
+      type: [linearstep]
+      steps: [5000]
+      variants : [sd, vrd2, vrda]
+
+    - id: cosh_004
+      description: 'Subnormal values range tests: [-LARGEST_SUBNORMAL, -0] linearstep'
+      input:
+      - [-max_subnormal, -0.0]
+      type: [linearstep]
+      steps: [5000]
+      variants : [sd, vrd2, vrda]
+
+    - id: cosh_005
+      description: 'Test around positive 0'
+      input:
+      - [0.0, 0x0000000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrda]
+
+    - id: cosh_006
+      description: 'Test around negative 0'
+      input:
+      - [0x8000000000000000, 0x8000000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrda]
+
+    - id: cosh_007
+      description: 'Test around LARGEST_SUBNORMAL'
+      input:
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrda]
+
+    - id: cosh_008
+      description: 'Test around -LARGEST_SUBNORMAL'
+      input:
+      - [0x800ffffffffff000, 0x8010000000000fff]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrda]
+
+

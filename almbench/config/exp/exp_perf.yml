@@ -1,0 +1,47 @@
+- test_sequence: perf_tests
+  function: exp
+  timing_enabled: true
+  test_sets:
+  - id: range-tests_01
+    tests:
+# Single Precision
+    - id: exp_001
+      description: 'Positive values: x in [SMALLEST_SUBNORMAL, 160.0], linearstep'
+      input: [[min_subnormal, 160.0]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+    - id: exp_002
+      description: 'x in [-160.0, 160.0], linearstep'
+      input: [[-160.0, 160.0]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+    - id: exp_003
+      description: 'Negative values: x in [-160.0, -SMALLEST_SUBNORMAL], linearstep'
+      input: [[-160.0, -min_subnormal]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
+#Double precision
+    - id: exp_001
+      description: 'Positive values: x in [SMALLEST_SUBNORMAL, 800.0], linearstep'
+      input: [[min_subnormal, 800.0]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+    - id: exp_002
+      description: 'x in [-800.0, 800.0], linearstep'
+      input: [[-800.0, 800.0]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+    - id: exp_003
+      description: 'Negative inputs: x in [-800.0, -SMALLEST_SUBNORMAL], linearstep'
+      input: [[-800.0, -min_subnormal]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+
+

@@ -170,10 +170,7 @@ ALM_PROTO_OPT(vrs4_acosf)(v_f32x4_t x)
 
         z= ALM_V4_ACOSF_HALF * (ALM_V4_ACOSF_MAX_ARG - aux);
 
-        aux[0] = -ALM_ACOSF_TWO * sqrtf(z[0]);
-        aux[1] = -ALM_ACOSF_TWO * sqrtf(z[1]);
-        aux[2] = -ALM_ACOSF_TWO * sqrtf(z[2]);
-        aux[3] = -ALM_ACOSF_TWO * sqrtf(z[3]);
+        aux = _MM_SET1_PS4(-ALM_ACOSF_TWO) * _mm_sqrt_ps(z);
 
     } else if (all_v4_u32_loop(cond2)) {
 
@@ -184,16 +181,17 @@ ALM_PROTO_OPT(vrs4_acosf)(v_f32x4_t x)
 
         outofrange = cond1 | outofrange;
 
+        v_f32x4_t z_hi = ALM_V4_ACOSF_HALF * (ALM_V4_ACOSF_MAX_ARG - aux);
+        v_f32x4_t aux_hi = _MM_SET1_PS4(-ALM_ACOSF_TWO) * _mm_sqrt_ps(z_hi);
+        v_f32x4_t z_lo = aux * aux;
+
         for (int i = 0; i < 4; i++) {
-
-            if (aux[i] > ALM_ACOSF_HALF) {
-                z[i]   = ALM_ACOSF_HALF * (ALM_ACOSF_ONE - aux[i]);
-                aux[i] = -ALM_ACOSF_TWO * sqrtf(z[i]);
-
+            if (cond1[i]) {
+                z[i] = z_hi[i];
+                aux[i] = aux_hi[i];
             } else {
                 n = 1;
-                z[i] = aux[i] * aux[i];
-
+                z[i] = z_lo[i];
             }
         }
     }

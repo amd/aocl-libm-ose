@@ -1,0 +1,143 @@
+---
+- test_sequence: validation_tests_erfinv
+  function: erfinv
+  test_sets:
+#Double precision (erfinv is double-precision only: sd, vrd2, vrd4, vrd8, vrda)
+  - id: range-tests_01
+    tests:
+
+# ============================================================================
+# Whole-domain sweeps. Valid domain is [-1, 1]; outside returns QNaN/Inf.
+# ============================================================================
+    - id: erfinv_001
+      description: 'Full valid domain: x in [-1.0, 1.0] linearstep'
+      input:
+      - [-1.0, 1.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfinv_002
+      description: 'Full valid positive domain: x in [+SMALLEST_SUBNORMAL, 1.0] expstep'
+      input:
+      - [min_subnormal, 1.0]
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfinv_003
+      description: 'Full valid negative domain: x in [-1.0, -SMALLEST_SUBNORMAL] expstep'
+      input:
+      - [-1.0, -min_subnormal]
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Region 1:  ix <= BOUND1 (0x3fe80000)   <=>   |x| <= 0.75
+#   z = x*x - 0.5625
+#   P/Q via POLY_EVAL_HORNER_7 on poly_bound1 (Table 17 Blair)
+#   t = x * (P/Q)
+# ============================================================================
+    - id: erfinv_004
+      description: 'Region 1 (Horner-7 P1/Q1, offset 0.5625), positive: x in (0, 0.75] linearstep'
+      input:
+      - [0.0, 0.75]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfinv_005
+      description: 'Region 1, negative (odd-symmetry path): x in [-0.75, 0) linearstep'
+      input:
+      - [-0.75, 0.0]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfinv_006
+      description: 'Region 1: dense linearstep around x = 0 (cancellation in t = x*(P/Q))'
+      input:
+      - [-0.1, 0.1]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Region 2:  BOUND1 < ix <= BOUND2 (0x3fee0000)   <=>   0.75 < |x| <= 0.9375
+#   z = x*x - 0.87890625
+#   P/Q via POLY_EVAL_HORNER_8 on poly_bound2 (Table 37 Blair)
+#   t = x * (P/Q)
+# ============================================================================
+    - id: erfinv_007
+      description: 'Region 2 (Horner-8 P2/Q2, offset 0.87890625), positive: x in (0.75, 0.9375] linearstep'
+      input:
+      - [0.75, 0.9375]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfinv_008
+      description: 'Region 2, negative: x in [-0.9375, -0.75) linearstep'
+      input:
+      - [-0.9375, -0.75]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Region 3:  ix > BOUND2   <=>   0.9375 < |x| < 1
+#   absx = |x|;   y = sqrt(-log1p(-|x|));   z = 1/y
+#   P/Q via POLY_EVAL_HORNER_11N / HORNER_9 on poly_bound3 (Table 58 Blair)
+#   t = y * (P/Q);  if sign:  t = -t
+# ============================================================================
+    - id: erfinv_009
+      description: 'Region 3 (log1p+sqrt, Horner-11N/9 P3/Q3), positive: x in (0.9375, 1) linearstep'
+      input:
+      - [0.9375, 0.99999999999999999]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfinv_010
+      description: 'Region 3, negative (exercises final sign negation): x in (-1, -0.9375) linearstep'
+      input:
+      - [-0.99999999999999999, -0.9375]
+      type: [linearstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfinv_011
+      description: 'Region 3: deep near-one sweep via expstep [0.9375, 1-ulp)'
+      input:
+      - [0.9375, 0.9999999999999999]
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfinv_012
+      description: 'Region 3 deep near-minus-one: expstep (-(1-ulp), -0.9375]'
+      input:
+      - [-0.9999999999999999, -0.9375]
+      type: [expstep]
+      steps: [1000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Zero path (ux == ZERO) returns x as-is
+# ============================================================================
+    - id: erfinv_013
+      description: 'Boundary around 0 (zero-fast-path + tiny subnormals, both signs)'
+      input:
+      - [0x8000000000000FFF, 0x0000000000000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: erfinv_014
+      description: 'Subnormal range test: [-LARGEST_SUBNORMAL, +LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [-max_subnormal, max_subnormal]
+      type: [linearstep]
+      steps: [2000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]

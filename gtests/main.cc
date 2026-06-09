@@ -25,7 +25,7 @@
  *
  */
 
- 
+
 #include <cstdio>
 #include <iostream>
 #include <string>
@@ -49,7 +49,7 @@ string getFunctionName(string s)
 
 int main(int argc, char **argv) {
   InputParams params;
- 
+
   ALM::Test::cmdLine *cmd = ALM::Test::cmdLineStart();
 
   if (cmd->Parse(argc, argv))
@@ -61,14 +61,15 @@ int main(int argc, char **argv) {
   params.testFunction = getFunctionName(argv[0]);
   if (cmd->Echo(&params))
     return EXIT_FAILURE;
-  
+
   if((params.ttype == ALM::TestType::E_Accuracy) ||
-    (params.ttype == ALM::TestType::E_SpecialCase) || 
-    (params.ttype == ALM::TestType::E_Conformance)) {
+    (params.ttype == ALM::TestType::E_SpecialCase) ||
+    (params.ttype == ALM::TestType::E_Conformance) ||
+    (params.ttype == ALM::TestType::E_InPlace)) {
       gtest_main(argc, argv, &params);
-    } else { 
+    } else {
       gbench_main(argc, argv, &params);
-    } 
+    }
 
   return 0;
 }

@@ -1,0 +1,318 @@
+---
+- test_sequence: validation_tests_copysign
+  function: copysign
+  test_sets:
+  - id: range-tests_01
+    description: 'Full value distribution range tests'
+    tests:
+    - id: copysign_001
+      description: 'Full value distribution range tests: x in [-FLT_MAX, -0], y in [-FLT_MAX, -0]'
+      input:
+      - [0xFF7FFFFF, -min_subnormal]
+      - [0xFF7FFFFF, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [100, 100]
+      variants : [ss]
+
+    - id: copysign_002
+      description: 'Full value distribution range tests: x in [0, +FLT_MAX], y in [-FLT_MAX, -0]'
+      input:
+      - [min_subnormal, max]
+      - [0xFF7FFFFF, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [100, 100]
+      variants : [ss]
+
+    - id: copysign_003
+      description: 'Full value distribution range tests: x in [-FLT_MAX, -0], y in [0, +FLT_MAX]'
+      input:
+      - [0xFF7FFFFF, -min_subnormal]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [100, 100]
+      variants : [ss]
+
+    - id: copysign_004
+      description: 'Full value distribution range tests: x in [0, +FLT_MAX], y in [0, +FLT_MAX]'
+      input:
+      - [min_subnormal, max]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [100, 100]
+      variants : [ss]
+
+    - id: copysign_005
+      description: 'Full value distribution range tests: x, y in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [-max_subnormal, max_subnormal]
+      - [-max_subnormal, max_subnormal]
+      type: [linearstep, linearstep]
+      steps: [100, 100]
+      variants : [ss]
+
+    - id: copysign_006
+      description: Test around 0, x is negativ, y is negative
+      input:
+      - [0x80000000, 0x80000FFF]
+      - [0x80000000, 0x80000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ss]
+
+    - id: copysign_007
+      description: Test around 0, x is positive, y is negative
+      input:
+      - [0.0, 0x00000FFF]
+      - [0x80000000, 0x80000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ss]
+
+    - id: copysign_008
+      description: Test around 0, x is negativ, y is positive
+      input:
+      - [0x80000000, 0x80000FFF]
+      - [0.0, 0x00000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ss]
+
+    - id: copysign_009
+      description: Test around 0, x is positive, y is positive
+      input:
+      - [0.0, 0x00000FFF]
+      - [0.0, 0x00000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [ss]
+
+    - id: copysign_010
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x807ff000, 0x80800FFF]
+      - [0x807ff000, 0x80800FFF]
+      type: [bitstep, bitstep]
+      steps: [512, 512]
+      variants : [ss]
+
+    - id: copysign_011
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x007ff000, 0x00800fff]
+      - [0x807ff000, 0x80800FFF]
+      type: [bitstep, bitstep]
+      steps: [512, 512]
+      variants : [ss]
+
+    - id: copysign_012
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x807ff000, 0x80800FFF]
+      - [0x007ff000, 0x00800fff]
+      type: [bitstep, bitstep]
+      steps: [512, 512]
+      variants : [ss]
+
+    - id: copysign_013
+      description: Test around +/- LARGEST_SUBNORMAL
+      input:
+      - [0x007ff000, 0x00800fff]
+      - [0x007ff000, 0x00800fff]
+      type: [bitstep, bitstep]
+      steps: [512, 512]
+      variants : [ss]
+
+    - id: copysign_014
+      description: Test around +/- INFINITY
+      input:
+      - [0xFF7FF000, 0xFF800000]
+      - [0xFF7FF000, 0xFF800000]
+      type: [bitstep, bitstep]
+      steps: [512, 512]
+      variants : [ss]
+
+    - id: copysign_015
+      description: Test around +/- INFINITY
+      input:
+      - [0x7F7FF000, 0x7F800000]
+      - [0xFF7FF000, 0xFF800000]
+      type: [bitstep, bitstep]
+      steps: [512, 512]
+      variants : [ss]
+
+    - id: copysign_016
+      description: Test around +/- INFINITY
+      input:
+      - [0xFF7FF000, 0xFF800000]
+      - [0x7F7FF000, 0x7F800000]
+      type: [bitstep, bitstep]
+      steps: [512, 512]
+      variants : [ss]
+
+    - id: copysign_017
+      description: Test around +/- INFINITY
+      input:
+      - [0x7F7FF000, 0x7F800000]
+      - [0x7F7FF000, 0x7F800000]
+      type: [bitstep, bitstep]
+      steps: [512, 512]
+      variants : [ss]
+
+  #Double precision
+  - id: range-tests_01
+    tests:
+    - id: copysign_001
+      description: 'Full value distribution range tests: x in [-DBL_MAX, -SMALLEST_SUBNORMAL], y in [-DBL_MAX, -SMALLEST_SUBNORMAL]'
+      input:
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [100, 100]
+      variants : [sd]
+
+    - id: copysign_002
+      description: 'Full value distribution range tests: x in [SMALLEST_SUBNORMAL, +DBL_MAX], y in [-DBL_MAX, -SMALLEST_SUBNORMAL]'
+      input:
+      - [min_subnormal, max]
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      type: [expstep, expstep]
+      steps: [100, 100]
+      variants : [sd]
+
+    - id: copysign_003
+      description: 'Full value distribution range tests: x in [-DBL_MAX, -SMALLEST_SUBNORMAL], y in [SMALLEST_SUBNORMAL, +DBL_MAX]'
+      input:
+      - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [100, 100]
+      variants : [sd]
+
+    - id: copysign_004
+      description: 'Full value distribution range tests: x in [SMALLEST_SUBNORMAL, +DBL_MAX], y in [SMALLEST_SUBNORMAL, +DBL_MAX]'
+      input:
+      - [min_subnormal, max]
+      - [min_subnormal, max]
+      type: [expstep, expstep]
+      steps: [100, 100]
+      variants : [sd]
+
+    - id: copysign_005
+      description: 'Full value distribution range tests: x, y in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL] linearstep'
+      input:
+      - [0x800FFFFFFFFFFFFF, 0x000FFFFFFFFFFFFF]
+      - [0x800FFFFFFFFFFFFF, 0x000FFFFFFFFFFFFF]
+      type: [linearstep, linearstep]
+      steps: [100, 100]
+      variants : [sd]
+
+    - id: copysign_006
+      description: Test around 0, x is negativ, y is negative
+      input:
+      - [-0.0, 0x8000000000000FFF]
+      - [-0.0, 0x8000000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [sd]
+
+    - id: copysign_007
+      description: Test around 0, x is positive, y is negative
+      input:
+      - [0.0, 0x0000000000000FFF]
+      - [-0.0, 0x8000000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [sd]
+
+    - id: copysign_008
+      description: Test around 0, x is negativ, y is positive
+      input:
+      - [-0.0, 0x8000000000000FFF]
+      - [0.0, 0x0000000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [sd]
+
+    - id: copysign_009
+      description: Test around 0, x is positive, y is positive
+      input:
+      - [0.0, 0x0000000000000FFF]
+      - [0.0, 0x0000000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [256, 256]
+      variants : [sd]
+
+    - id: copysign_010
+      description: Test around -LARGEST_SUBNORMAL,
+      input:
+      - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
+      - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [512, 512]
+      variants : [sd]
+
+    - id: copysign_011
+      description: Test around +LARGEST_SUBNORMAL,
+      input:
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [512, 512]
+      variants : [sd]
+
+    - id: copysign_012
+      description: Test around +LARGEST_SUBNORMAL,
+      input:
+      - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [512, 512]
+      variants : [sd]
+
+    - id: copysign_013
+      description: Test around +LARGEST_SUBNORMAL,
+      input:
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      type: [bitstep, bitstep]
+      steps: [512, 512]
+      variants : [sd]
+
+    - id: copysign_014
+      description: Test around +/- INFINITY,
+      input:
+      - [0xFFEFFFFFFFFFF000, 0xFFF0000000000000]
+      - [0xFFEFFFFFFFFFF000, 0xFFF0000000000000]
+      type: [bitstep, bitstep]
+      steps: [512, 512]
+      variants : [sd]
+
+    - id: copysign_015
+      description: Test around +/- INFINITY,
+      input:
+      - [0x7FEFFFFFFFFFF000, 0x7FF0000000000000]
+      - [0xFFEFFFFFFFFFF000, 0xFFF0000000000000]
+      type: [bitstep, bitstep]
+      steps: [512, 512]
+      variants : [sd]
+
+    - id: copysign_016
+      description: Test around +/- INFINITY,
+      input:
+      - [0xFFEFFFFFFFFFF000, 0xFFF0000000000000]
+      - [0x7FEFFFFFFFFFF000, 0x7FF0000000000000]
+      type: [bitstep, bitstep]
+      steps: [512, 512]
+      variants : [sd]
+
+    - id: copysign_017
+      description: Test around +/- INFINITY,
+      input:
+      - [0x7FEFFFFFFFFFF000, 0x7FF0000000000000]
+      - [0x7FEFFFFFFFFFF000, 0x7FF0000000000000]
+      type: [bitstep, bitstep]
+      steps: [512, 512]
+      variants : [sd]
+
+
+

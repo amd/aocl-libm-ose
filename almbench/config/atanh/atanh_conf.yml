@@ -1,0 +1,1993 @@
+- test_sequence: unit_tests_atanh
+  ignore_exceptions: [underflow, inexact]
+  function: atanh
+  test_sets:
+  - id: special-values
+    description: Special values for atanh function
+    tests:
+    # Single Precision Tests
+    - id: atanh_001
+      description: "atanhf(0) = 0"
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atanh_002
+      description: "atanhf(-0) = -0"
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atanh_003
+      description: "atanhf(inf) = nan (invalid domain)"
+      input: [0x7f800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_004
+      description: "atanhf(-inf) = nan (invalid domain)"
+      input: [0xff800000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_005
+      description: "atanhf(-nan) = nan"
+      input: [0xffc00000]
+      expect: [0xffc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atanh_006
+      description: "atanhf(+nan) = nan"
+      input: [0x7fc00000]
+      expect: [0x7fc00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atanh_007
+      description: "atanhf(subnorm_max) = subnorm_max (small value)"
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: atanh_008
+      description: "atanhf(subnorm_max) = subnorm_max (small value)"
+      input: [0x007fffff]
+      expect: [0x007fffff]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: atanh_009
+      description: "atanhf(subnorm_min) = subnorm_min (small value)"
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: atanh_010
+      description: "atanhf(subnorm_min) = subnorm_min (small value)"
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: atanh_011
+      description: "atanhf(0.5) = atanh(0.5)"
+      input: [0x3f000000]
+      expect: [0x3f0c9f54]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_012
+      description: "atanhf(-0.5) = -atanh(0.5)"
+      input: [0xbf000000]
+      expect: [0xbf0c9f54]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_013
+      description: "atanhf(2.0) = nan (invalid domain)"
+      input: [0x40000000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_014
+      description: "atanhf(-2.0) = nan (invalid domain)"
+      input: [0xc0000000]
+      expect: [0x7fc00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+# Test cases from gtests test_atanh_data.h
+#-------------------------------
+    - id: atanh_001
+      description: denormal min
+      input: [0x00000001]
+      expect: [0x00000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: atanh_002
+      description: denormal intermediate
+      input: [0x0005FDE6]
+      expect: [0x0005FDE6]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: atanh_003
+      description: denormal max
+      input: [0x007FFFFF]
+      expect: [0x007FFFFF]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: atanh_004
+      description: -denormal min
+      input: [0x80000001]
+      expect: [0x80000001]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: atanh_005
+      description: -denormal intermediate
+      input: [0x805DEF12]
+      expect: [0x805DEF12]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: atanh_006
+      description: -denormal max
+      input: [0x807FFFFF]
+      expect: [0x807FFFFF]
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+
+    - id: atanh_007
+      description: normal min
+      input: [0x00800000]
+      expect: [0x00800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_008
+      description: normal intermediate
+      input: [0x43B3C4EA]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_009
+      description: normal max
+      input: [0x7F7FFFFF]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_010
+      description: -normal min
+      input: [0x80800000]
+      expect: [0x80800000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_011
+      description: -normal intermediate
+      input: [0xC5812E71]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_012
+      description: -normal max
+      input: [0xFF7FFFFF]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_013
+      description: inf
+      input: [0x7F800000]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_014
+      description: -inf
+      input: [0xFF800000]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_015
+      description: qnan min
+      input: [0x7FC00000]
+      expect: [0x7FC00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atanh_016
+      description: qnan intermediate
+      input: [0x7FE1A570]
+      expect: [0x7FE1A570]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atanh_017
+      description: qnan max
+      input: [0x7FFFFFFF]
+      expect: [0x7FFFFFFF]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atanh_018
+      description: indeterninate
+      input: [0xFFC00000]
+      expect: [0xFFC00000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atanh_019
+      description: -qnan min
+      input: [0xFFC00001]
+      expect: [0xFFC00001]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atanh_020
+      description: -qnan intermediate
+      input: [0xFFD2BA31]
+      expect: [0xFFD2BA31]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atanh_021
+      description: -qnan max
+      input: [0xFFFFFFFF]
+      expect: [0xFFFFFFFF]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atanh_022
+      description: snan min
+      input: [0x7F800001]
+      expect: [0x7FC00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_023
+      description: snan intermediate
+      input: [0x7FA0BD90]
+      expect: [0x7FE0BD90]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_024
+      description: snan max
+      input: [0x7FBFFFFF]
+      expect: [0x7FFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_025
+      description: -snan min
+      input: [0xFF800001]
+      expect: [0xFFC00001]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_026
+      description: -snan intermediate
+      input: [0xFF95FFFA]
+      expect: [0xFFD5FFFA]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_027
+      description: -snan max
+      input: [0xFFBFFFFF]
+      expect: [0xFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_028
+      description: pi/2
+      input: [0x3FC90FDB]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_029
+      description: pi
+      input: [0x40490FDB]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_030
+      description: 2pi
+      input: [0x40C90FDB]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_031
+      description: e --
+      input: [0x402DF853]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_032
+      description: e
+      input: [0x402DF854]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_033
+      description: e ++
+      input: [0x402DF855]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_034
+      description: 0
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atanh_035
+      description: 0.000023
+      input: [0x37C0F01F]
+      expect: [0x37C0F01F]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_036
+      description: 0.49999
+      input: [0x3EFFFEB0]
+      expect: [0x3F0C9E74]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_037
+      description: 0.500012
+      input: [0x3F0000C9]
+      expect: [0x3F0CA060]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_038
+      description: -0
+      input: [0x80000000]
+      expect: [0x80000000]
+      expect_exception: []
+      variants: [ss]
+
+    - id: atanh_039
+      description: -0.000023
+      input: [0xB7C0F01F]
+      expect: [0xB7C0F01F]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_040
+      description: -0.49999
+      input: [0xBEFFFEB0]
+      expect: [0xBF0C9E74]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_041
+      description: -0.500012
+      input: [0xBF0000C9]
+      expect: [0xBF0CA060]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_042
+      description: 1
+      input: [0x3F800000]
+      expect: [0x7F800000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+
+    - id: atanh_043
+      description: 0.93750006
+      input: [0x3F700001]
+      expect: [0x3FDBC676]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_044
+      description: 1.0624998
+      input: [0x3F87FFFE]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_045
+      description: 1.49999
+      input: [0x3FBFFFAC]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_046
+      description: 1.500012
+      input: [0x3FC00064]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_047
+      description: -1
+      input: [0xBF800000]
+      expect: [0xFF800000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+
+    - id: atanh_048
+      description: -0.93750006
+      input: [0xBF700001]
+      expect: [0xBFDBC676]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_049
+      description: -1.0624998
+      input: [0xBF87FFFE]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_050
+      description: -1.49999
+      input: [0xBFBFFFAC]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_051
+      description: -1.500012
+      input: [0xBFC00064]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_052
+      description: 2
+      input: [0x40000000]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_053
+      description: -2
+      input: [0xC0000000]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_054
+      description: 10
+      input: [0x41200000]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_055
+      description: -10
+      input: [0xC1200000]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_056
+      description: 1000
+      input: [0x447A0000]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_057
+      description: -1000
+      input: [0xC47A0000]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_058
+      description: 67.4
+      input: [0x4286CCCC]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_059
+      description: -67.4
+      input: [0xC286CCCC]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_060
+      description: 1983.6
+      input: [0x44F7F333]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_061
+      description: -1983.6
+      input: [0xC4F7F333]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_062
+      description: 87.5
+      input: [0x42AF0000]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_063
+      description: -87.5
+      input: [0xC2AF0000]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_064
+      description: -87.5
+      input: [0xC2AF0000]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_065
+      description: 132473
+      input: [0x48015E40]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_066
+      description: -132473
+      input: [0xC8015E40]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_067
+      description: 2^23
+      input: [0x4B000000]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_068
+      description: 2^23 + 1
+      input: [0x4B000001]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_069
+      description: 2^23 -1 + 0.5
+      input: [0x4AFFFFFF]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_070
+      description: -2^23
+      input: [0xCB000000]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_071
+      description: -(2^23 + 1)
+      input: [0xCB000001]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_072
+      description: -(2^23 -1 + 0.5)
+      input: [0xCAFFFFFF]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_073
+      description: ""
+      input: [0x3F800000]
+      expect: [0x7F800000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+
+    - id: atanh_074
+      description: ""
+      input: [0x3F800001]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_075
+      description: ""
+      input: [0x3F7FFFFF]
+      expect: [0x410AA123]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_076
+      description: ""
+      input: [0xBF800000]
+      expect: [0xFF800000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+
+    - id: atanh_077
+      description: ""
+      input: [0xBF800001]
+      expect: [0xFFC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_078
+      description: ""
+      input: [0xBF7FFFFF]
+      expect: [0xC10AA123]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_079
+      description: ""
+      input: [0x39000000]
+      expect: [0x39000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_080
+      description: ""
+      input: [0x39000001]
+      expect: [0x39000001]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_081
+      description: ""
+      input: [0x38FFFFFF]
+      expect: [0x38FFFFFF]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_082
+      description: ""
+      input: [0xB9000000]
+      expect: [0xB9000000]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_083
+      description: ""
+      input: [0xB9000001]
+      expect: [0xB9000001]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_084
+      description: ""
+      input: [0xB8FFFFFF]
+      expect: [0xB8FFFFFF]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_085
+      description: ""
+      input: [0x3F000000]
+      expect: [0x3F0C9F54]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_086
+      description: ""
+      input: [0x3F000001]
+      expect: [0x3F0C9F55]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_087
+      description: ""
+      input: [0x3EFFFFFF]
+      expect: [0x3F0C9F53]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_088
+      description: ""
+      input: [0xBF000000]
+      expect: [0xBF0C9F54]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_089
+      description: ""
+      input: [0xBF000001]
+      expect: [0xBF0C9F55]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_090
+      description: ""
+      input: [0xBEFFFFFF]
+      expect: [0xBF0C9F53]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_091
+      description: ""
+      input: [0xBF800000]
+      expect: [0xFF800000]
+      expect_exception: [divbyzero]
+      variants: [ss]
+
+    - id: atanh_092
+      description: ""
+      input: [0xBF7F259C]
+      expect: [0xC04CA857]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_093
+      description: ""
+      input: [0xBF7D70D5]
+      expect: [0xC029652A]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_094
+      description: ""
+      input: [0xBF7AE1AB]
+      expect: [0xC0130DAC]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_095
+      description: ""
+      input: [0xBF77781E]
+      expect: [0xC0027DAB]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_096
+      description: ""
+      input: [0xBF73342E]
+      expect: [0xBFEA7CD2]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_097
+      description: ""
+      input: [0xBF6E15DC]
+      expect: [0xBFD44B3B]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_098
+      description: ""
+      input: [0xBF681D27]
+      expect: [0xBFC11AA4]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_099
+      description: ""
+      input: [0xBF614A0F]
+      expect: [0xBFB01E6D]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_100
+      description: ""
+      input: [0xBF599C94]
+      expect: [0xBFA0CEFB]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_101
+      description: ""
+      input: [0xBF5114B6]
+      expect: [0xBF92CD66]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_102
+      description: ""
+      input: [0xBF47B275]
+      expect: [0xBF85D44B]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_103
+      description: ""
+      input: [0xBF3D75D1]
+      expect: [0xBF735E0F]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_104
+      description: ""
+      input: [0xBF325ECA]
+      expect: [0xBF5C68C1]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_105
+      description: ""
+      input: [0xBF266D60]
+      expect: [0xBF46860E]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_106
+      description: ""
+      input: [0xBF19A193]
+      expect: [0xBF317E8E]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_107
+      description: ""
+      input: [0xBF0BFB63]
+      expect: [0xBF1D22C2]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_108
+      description: ""
+      input: [0xBEFAF5A0]
+      expect: [0xBF0948A3]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_109
+      description: ""
+      input: [0xBEDC3FB5]
+      expect: [0xBEEB937D]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_110
+      description: ""
+      input: [0xBEBBD504]
+      expect: [0xBEC5031E]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_111
+      description: ""
+      input: [0xBE99B58D]
+      expect: [0xBE9E9812]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_112
+      description: ""
+      input: [0xBE6BC2A0]
+      expect: [0xBE70104F]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_113
+      description: ""
+      input: [0xBE20B09B]
+      expect: [0xBE220759]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_114
+      description: ""
+      input: [0xBDA46A15]
+      expect: [0xBDA4C4DB]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_115
+      description: ""
+      input: [0xB99FDD00]
+      expect: [0xB99FDD00]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_116
+      description: ""
+      input: [0x3DA9FD72]
+      expect: [0x3DAA61CC]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_117
+      description: ""
+      input: [0x3E2DB6EC]
+      expect: [0x3E2F690D]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_118
+      description: ""
+      input: [0x3E84EC55]
+      expect: [0x3E880953]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_119
+      description: ""
+      input: [0x3EB4B1FA]
+      expect: [0x3EBCD02B]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_120
+      description: ""
+      input: [0x3EE62C65]
+      expect: [0x3EF7E1EB]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_121
+      description: ""
+      input: [0x3F0CADCB]
+      expect: [0x3F1E21CD]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_122
+      description: ""
+      input: [0x3F271FC6]
+      expect: [0x3F47BBFF]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_123
+      description: ""
+      input: [0x3F426C24]
+      expect: [0x3F7EB4A7]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_124
+      description: ""
+      input: [0x3F5E92E5]
+      expect: [0x3FAA5589]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_125
+      description: ""
+      input: [0x3F7B9409]
+      expect: [0x4017C7A0]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_126
+      description: ""
+      input: [0x40480000]
+      expect: [0x7FC00000]
+      expect_exception: [invalidoperation]
+      variants: [ss]
+
+    - id: atanh_127
+      description: 0.0001, < 0x39000000
+      input: [0x38D1B717]
+      expect: [0x38D1B717]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_128
+      description: 0.15   < 0.5
+      input: [0x3E19999A]
+      expect: [0x3E1AC48F]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_129
+      description: -0.15, < 0.5
+      input: [0xBE19999A]
+      expect: [0xBE1AC48F]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_130
+      description: 0.789, > 0.5
+      input: [0x3F49FBE7]
+      expect: [0x3F88CDAF]
+      expect_exception: [inexact]
+      variants: [ss]
+
+    - id: atanh_131
+      description: -0.789, > 0.5
+      input: [0xBF49FBE7]
+      expect: [0xBF88CDAF]
+      expect_exception: [inexact]
+      variants: [ss]
+#---------------------------------
+    # Double Precision Tests
+    - id: atanh_001
+      description: "atanh(0) = 0"
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atanh_002
+      description: "atanh(-0) = -0"
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atanh_003
+      description: "atanh(inf) = nan (invalid domain)"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_004
+      description: "atanh(-inf) = nan (invalid domain)"
+      input: [0xfff0000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_005
+      description: "atanh(-nan) = nan"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atanh_006
+      description: "atanh(+nan) = nan"
+      input: [0x7ff8000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atanh_007
+      description: "atanh(subnorm_max) = subnorm_max (small value)"
+      input: [0x000fffffffffffff]
+      expect: [0x000fffffffffffff]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: atanh_008
+      description: "atanh(subnorm_max) = subnorm_max (small value)"
+      input: [0x000fffffffffffff]
+      expect: [0x000fffffffffffff]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: atanh_009
+      description: "atanh(subnorm_min) = subnorm_min (small value)"
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: atanh_010
+      description: "atanh(subnorm_min) = subnorm_min (small value)"
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: atanh_011
+      description: "atanh(0.5) = atanh(0.5)"
+      input: [0x3fe0000000000000]
+      expect: [0x3fe193ea7aad030b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_012
+      description: "atanh(-0.5) = -atanh(0.5)"
+      input: [0xbfe0000000000000]
+      expect: [0xbfe193ea7aad030b]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_013
+      description: "atanh(2.0) = nan (invalid domain)"
+      input: [0x4000000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_014
+      description: "atanh(-2.0) = nan (invalid domain)"
+      input: [0xc000000000000000]
+      expect: [0x7ff8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+# Test cases from gtests test_atanh_data.h
+#-------------------------------
+    - id: atanh_001
+      description: denormal min
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: atanh_002
+      description: denormal intermediate
+      input: [0x0005FDE623545ABC]
+      expect: [0x0005FDE623545ABC]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: atanh_003
+      description: denormal max
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x000FFFFFFFFFFFFF]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: atanh_004
+      description: -denormal min
+      input: [0x8000000000000001]
+      expect: [0x8000000000000001]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: atanh_005
+      description: -denormal intermediate
+      input: [0x8002344ADE5DEF12]
+      expect: [0x8002344ADE5DEF12]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: atanh_006
+      description: -denormal max
+      input: [0x800FFFFFFFFFFFFF]
+      expect: [0x800FFFFFFFFFFFFF]
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+
+    - id: atanh_007
+      description: normal min
+      input: [0x0010000000000000]
+      expect: [0x0010000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_008
+      description: normal intermediate
+      input: [0x43B3C4EAFEDCAB02]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_009
+      description: normal max
+      input: [0x7FEFFFFFFFFFFFFF]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_010
+      description: -normal min
+      input: [0x8010000000000000]
+      expect: [0x8010000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_011
+      description: -normal intermediate
+      input: [0xC5812E71245ACFDB]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_012
+      description: -normal max
+      input: [0xFFEFFFFFFFFFFFFF]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_013
+      description: inf
+      input: [0x7FF0000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_014
+      description: -inf
+      input: [0xFFF0000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_015
+      description: qnan min
+      input: [0x7FF8000000000000]
+      expect: [0x7FF8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atanh_016
+      description: qnan intermediate
+      input: [0x7FFE1A5701234DC3]
+      expect: [0x7FFE1A5701234DC3]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atanh_017
+      description: qnan max
+      input: [0x7FFFFFFFFFFFFFFF]
+      expect: [0x7FFFFFFFFFFFFFFF]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atanh_018
+      description: indeterninate
+      input: [0xFFF8000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atanh_019
+      description: -qnan min
+      input: [0xFFF8000000000001]
+      expect: [0xFFF8000000000001]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atanh_020
+      description: -qnan intermediate
+      input: [0xFFF9123425DCBA31]
+      expect: [0xFFF9123425DCBA31]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atanh_021
+      description: -qnan max
+      input: [0xFFFFFFFFFFFFFFFF]
+      expect: [0xFFFFFFFFFFFFFFFF]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atanh_022
+      description: snan min
+      input: [0x7FF0000000000001]
+      expect: [0x7FF8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_023
+      description: snan intermediate
+      input: [0x7FF5344752A0BD90]
+      expect: [0x7FFD344752A0BD90]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_024
+      description: snan max
+      input: [0x7FF7FFFFFFFFFFFF]
+      expect: [0x7FFFFFFFFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_025
+      description: -snan min
+      input: [0xFFF0000000000001]
+      expect: [0xFFF8000000000001]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_026
+      description: -snan intermediate
+      input: [0xFFF432438995FFFA]
+      expect: [0xFFFC32438995FFFA]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_027
+      description: -snan max
+      input: [0xFFF7FFFFFFFFFFFF]
+      expect: [0xFFFFFFFFFFFFFFFF]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_028
+      description: pi/2
+      input: [0x3FF921FB54442D18]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_029
+      description: pi
+      input: [0x400921FB54442D18]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_030
+      description: 2pi
+      input: [0x401921FB54442D18]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_031
+      description: e --
+      input: [0x3FFB7E151628AED3]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_032
+      description: e
+      input: [0x4005BF0A8B145769]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_033
+      description: e ++
+      input: [0x400DBF0A8B145769]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_034
+      description: 0
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atanh_035
+      description: 0.0000000000000000023
+      input: [0x3C4536B8B14B676C]
+      expect: [0x3C4536B8B14B676C]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_036
+      description: 0.4999989999999999999
+      input: [0x3FDFFFFBCE4217D3]
+      expect: [0x3FE193E7AED93233]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_037
+      description: 0.500000000000012
+      input: [0x3FE000000000006C]
+      expect: [0x3FE193EA7AAD039B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_038
+      description: -0
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atanh_039
+      description: -0.000000000000000000023
+      input: [0xBBDB2752CE74FF42]
+      expect: [0xBBDB2752CE74FF42]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_040
+      description: -0.4999989999999999999
+      input: [0xBFDFFFFBCE4217D3]
+      expect: [0xBFE193E7AED93233]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_041
+      description: -0.500000000000012
+      input: [0xBFE000000000006C]
+      expect: [0xBFE193EA7AAD039B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_042
+      description: 1
+      input: [0x3FF0000000000000]
+      expect: [0x7FF0000000000000]
+      expect_exception: [divbyzero]
+      variants: [sd]
+
+    - id: atanh_043
+      description: 0.9999998893750006
+      input: [0x3FEFFFFFC49BD0DC]
+      expect: [0x4020B5D40C9A355C]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_044
+      description: 1.0000000000000624998
+      input: [0x3FF0000000000119]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_045
+      description: 1.499998999999999967
+      input: [0x3FF7FFFEF39085F4]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_046
+      description: 1.50000000000000012
+      input: [0x3FF8000000000001]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_047
+      description: -1
+      input: [0xBFF0000000000000]
+      expect: [0xFFF0000000000000]
+      expect_exception: [divbyzero]
+      variants: [sd]
+
+    - id: atanh_048
+      description: -0.9999998893750006
+      input: [0xBFEFFFFFC49BD0DC]
+      expect: [0xC020B5D40C9A355C]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_049
+      description: -1.0000000000000624998
+      input: [0xBFF0000000000119]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_050
+      description: -1.499998999999999967
+      input: [0xBFF7FFFEF39085F4]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_051
+      description: -1.50000000000000012
+      input: [0xBFF8000000000001]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_052
+      description: 2
+      input: [0x4000000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_053
+      description: -2
+      input: [0xC000000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_054
+      description: 10
+      input: [0x4024000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_055
+      description: -10
+      input: [0xC024000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_056
+      description: 1000
+      input: [0x408F400000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_057
+      description: -1000
+      input: [0xC08F400000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_058
+      description: 67.4
+      input: [0x4050D9999999999A]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_059
+      description: -67.4
+      input: [0xC050D9999999999A]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_060
+      description: 1983.6
+      input: [0x409EFE6666666666]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_061
+      description: -1983.6
+      input: [0xC09EFE6666666666]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_062
+      description: 87.5
+      input: [0x4055E00000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_063
+      description: -87.5
+      input: [0xC055E00000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_064
+      description: -87.5
+      input: [0xC055E00000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_065
+      description: 132473
+      input: [0x41002BC800000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_066
+      description: -132473
+      input: [0xC1002BC800000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_067
+      description: 2^52
+      input: [0x4330000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_068
+      description: 2^52 + 1
+      input: [0x4330000000000001]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_069
+      description: 2^52 -1 + 0.5
+      input: [0x432FFFFFFFFFFFFF]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_070
+      description: -2^52
+      input: [0xC330000000000000]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_071
+      description: -(2^52 + 1)
+      input: [0xC330000000000001]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_072
+      description: -(2^52 -1 + 0.5)
+      input: [0xC32FFFFFFFFFFFFF]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_073
+      description: ""
+      input: [0x3FF0000000000000]
+      expect: [0x7FF0000000000000]
+      expect_exception: [divbyzero]
+      variants: [sd]
+
+    - id: atanh_074
+      description: ""
+      input: [0x3FF0000000000001]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_075
+      description: ""
+      input: [0x3FEFFFFFFFFFFFFF]
+      expect: [0x4032B708872320E2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_076
+      description: ""
+      input: [0xBFF0000000000000]
+      expect: [0xFFF0000000000000]
+      expect_exception: [divbyzero]
+      variants: [sd]
+
+    - id: atanh_077
+      description: ""
+      input: [0xBFF0000000000001]
+      expect: [0xFFF8000000000000]
+      expect_exception: [invalidoperation]
+      variants: [sd]
+
+    - id: atanh_078
+      description: ""
+      input: [0xBFEFFFFFFFFFFFFF]
+      expect: [0xC032B708872320E2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_079
+      description: ""
+      input: [0x3E30000000000000]
+      expect: [0x3E30000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_080
+      description: ""
+      input: [0x3E30000000000001]
+      expect: [0x3E30000000000001]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_081
+      description: ""
+      input: [0x3E2FFFFFFFFFFFFF]
+      expect: [0x3E2FFFFFFFFFFFFF]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_082
+      description: ""
+      input: [0xBE30000000000000]
+      expect: [0xBE30000000000000]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_083
+      description: 8"
+      input: [0xBE30000000000001]
+      expect: [0xBE30000000000001]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_084
+      description: ""
+      input: [0xBE2FFFFFFFFFFFFF]
+      expect: [0xBE2FFFFFFFFFFFFF]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_085
+      description: ""
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atanh_086
+      description: ""
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atanh_087
+      description: ""
+      input: [0x3FE0000000000000]
+      expect: [0x3FE193EA7AAD030B]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_088
+      description: ""
+      input: [0x3FE0000000000001]
+      expect: [0x3FE193EA7AAD030C]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_089
+      description: ""
+      input: [0x3FDFFFFFFFFFFFFF]
+      expect: [0x3FE193EA7AAD030A]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_090
+      description: ""
+      input: [0xBFF0000000000000]
+      expect: [0xFFF0000000000000]
+      expect_exception: [divbyzero]
+      variants: [sd]
+
+    - id: atanh_091
+      description: ""
+      input: [0xBFEFE4B385B43BF8]
+      expect: [0xC009950BAE141397]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_092
+      description: ""
+      input: [0xBFEFAE1AADDD508C]
+      expect: [0xC0052CA5FD844A84]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_093
+      description: ""
+      input: [0xBFEF5C35787B3DBC]
+      expect: [0xC00261B61745D642]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_094
+      description: ""
+      input: [0xBFEEEF03E58E0387]
+      expect: [0xC0004FB5EEB96FCA]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_095
+      description: ""
+      input: [0xBFEE6685F515A1EE]
+      expect: [0xBFFD4F9B43C21DD4]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_096
+      description: ""
+      input: [0xBFEDC2BBA71218F1]
+      expect: [0xBFFA8967EC350C46]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_097
+      description: ""
+      input: [0xBFED03A4FB836890]
+      expect: [0xBFF82354D0EEE2C8]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_098
+      description: ""
+      input: [0xBFEC2941F26990CA]
+      expect: [0xBFF603CDD2FA6BBA]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_099
+      description: ""
+      input: [0xBFEB33928BC491A0]
+      expect: [0xBFF419DF826B4815]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_100
+      description: ""
+      input: [0xBFEA2296C7946B12]
+      expect: [0xBFF259ACD2280A69]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_101
+      description: ""
+      input: [0xBFE8F64EA5D91D20]
+      expect: [0xBFF0BA895BA76FF1]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_102
+      description: ""
+      input: [0xBFE7AEBA2692A7C9]
+      expect: [0xBFEE6BC1FC3B0087]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_103
+      description: ""
+      input: [0xBFE64BD949C10B0E]
+      expect: [0xBFEB8D18372F4964]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_104
+      description: ""
+      input: [0xBFE4CDAC0F6446EF]
+      expect: [0xBFE8D0C1E05308B2]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_105
+      description: ""
+      input: [0xBFE33432777C5B6C]
+      expect: [0xBFE62FD1E5540763]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_106
+      description: ""
+      input: [0xBFE17F6C82094884]
+      expect: [0xBFE3A45863232F29]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_107
+      description: ""
+      input: [0xBFDF5EB45E161C70]
+      expect: [0xBFE12914A9F90BE6]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_108
+      description: ""
+      input: [0xBFDB87F6FD035910]
+      expect: [0xBFDD72700AE83FC6]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_109
+      description: ""
+      input: [0xBFD77AA0E0DA46E7]
+      expect: [0xBFD8A0643466B05E]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_110
+      description: ""
+      input: [0xBFD336B2099AE5F6]
+      expect: [0xBFD3D302B89A6A0A]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_111
+      description: ""
+      input: [0xBFCD7854EE8A6C78]
+      expect: [0xBFCE020AD3EA9EF3]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_112
+      description: ""
+      input: [0xBFC4161453B26F74]
+      expect: [0xBFC440EC18D83B51]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_113
+      description: ""
+      input: [0xBFB48D44855BA9BD]
+      expect: [0xBFB4989D4E3E2D21]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_114
+      description: ""
+      input: [0xBF33FD76F9397000]
+      expect: [0xBF33FD7703A0251A]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_115
+      description: ""
+      input: [0x3FB53FAC83C271FF]
+      expect: [0x3FB54C37CAC5C0A4]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_116
+      description: ""
+      input: [0x3FC5B6DCB56BAC48]
+      expect: [0x3FC5ED20C459CE56]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_117
+      description: ""
+      input: [0x3FD09D8A4F915E91]
+      expect: [0x3FD1012A164150D6]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_118
+      description: ""
+      input: [0x3FD6963EFF8335C6]
+      expect: [0x3FD79A050BCB2495]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_119
+      description: ""
+      input: [0x3FDCC58C6A8B5BC4]
+      expect: [0x3FDEFC3D24EE8548]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_120
+      description: ""
+      input: [0x3FE195B94854E845]
+      expect: [0x3FE3C4397629AAFD]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_121
+      description: ""
+      input: [0x3FE4E3F8B8EF4A0C]
+      expect: [0x3FE8F77FD9370E4A]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_122
+      description: ""
+      input: [0x3FE84D848714D338]
+      expect: [0x3FEFD694F58ED670]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_123
+      description: ""
+      input: [0x3FEBD25CB2C583C8]
+      expect: [0x3FF54AB142B7C799]
+      expect_exception: [inexact]
+      variants: [sd]
+
+    - id: atanh_124
+      description: ""
+      input: [0x3FEF72813C015BBC]
+      expect: [0x4002F8F4C3896197]
+      expect_exception: [inexact]
+      variants: [sd]
+#------------------------------

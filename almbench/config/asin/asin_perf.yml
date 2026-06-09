@@ -1,0 +1,48 @@
+- test_sequence: perf_tests
+  function: asin
+  timing_enabled: true
+  test_sets:
+  - id: range-tests_01
+    tests:
+# Single Precision
+    - id: asin_001
+      description: 'Positive values: x in [SMALLEST_SUBNORMAL, 1.0], linearstep'
+      input: [[min_subnormal, 0x3f800000]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa ]
+    - id: asin_002
+      description: 'x in [[-min_subnormal, min_subnormal]], linearstep'
+      input: [[-min_subnormal, min_subnormal]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa ]
+
+    - id: asin_003
+      description: 'Negative values: x in [-1.0, -SMALLEST_SUBNORMAL], linearstep'
+      input: [[0xbf800000, -min_subnormal]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa ]
+
+# double Precision
+    - id: asin_001
+      description: 'Positive values: x in [SMALLEST_SUBNORMAL, 1.0], linearstep'
+      input: [[min_subnormal, 0x3ff0000000000000]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: asin_002
+      description: 'x in [[-min_subnormal, min_subnormal]], linearstep'
+      input: [[-min_subnormal, min_subnormal]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: asin_003
+      description: 'Negative values: x in [-1.0, -SMALLEST_SUBNORMAL], linearstep'
+      input: [[0xbff0000000000000, -min_subnormal]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]

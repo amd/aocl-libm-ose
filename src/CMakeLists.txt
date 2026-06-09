@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,6 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
 
 # Get timestamp.
 string(TIMESTAMP BUILD_DATE "%Y%m%d")
@@ -47,15 +46,18 @@ configure_file("${PROJECT_SOURCE_DIR}/CMake/buildsysinfo.hh.in"
                 "${PROJECT_SOURCE_DIR}/src/buildsysinfo.h"
                 @ONLY)
 
+get_optz_flag( optzflag )
 get_fast_flag( ffpflag )                            # ffp-contract flags
 get_warning_flags( wflags )                         # warning flags
 get_unalign_vec_move_flag( uavmflag )               # disabling alignment checking for all AVX ops
 get_pic_flag( picflag )                             # position Independent Code flags
 get_au_flag( auflag )                               # aocl-utils defination
 get_avx2fma_flag( fmaflag )                         # Fused Multiply-Add flags
+get_avx512_flag( avx512flag )                       # AVX512 ISA flags
 get_vec_flag( vecflag )                             # Vectorization flags
 
-set(LIBMCFLAGS ${ffpflag})
+set(LIBMCFLAGS ${optzflag})
+set(LIBMCFLAGS ${LIBMCFLAGS} ${ffpflag})
 set(LIBMCFLAGS ${LIBMCFLAGS} ${wflags})
 set(LIBMCFLAGS ${LIBMCFLAGS} ${uavmflag})
 set(LIBMCFLAGS ${LIBMCFLAGS} ${picflag})
@@ -77,9 +79,9 @@ if(${${PROJECT_PREFIX}_LIBM_ENABLE_COVERAGE} AND (NOT WIN32))
 endif()
 
 if(DEFINED ALM_STATIC_DISPATCH)
-  if("${ALM_STATIC_DISPATCH}" MATCHES "(AVX2|ZEN2|ZEN3|ZEN4|ZEN5|AVX512)")
+  if("${ALM_STATIC_DISPATCH}" MATCHES "(AVX2|ZEN2|ZEN3|ZEN4|ZEN5|ZEN6|AVX512)")
     # Define the architecture macros
-    add_compile_definitions(AVX2=1 ZEN2=2 ZEN3=3 ZEN4=4 ZEN5=5 AVX512=6)
+    add_compile_definitions(AVX2=1 ZEN2=2 ZEN3=3 ZEN4=4 ZEN5=5 AVX512=6 ZEN6=7)
 
     # Add the ALM_STATIC_DISPATCH definition
     add_compile_definitions(ALM_STATIC_DISPATCH=${ALM_STATIC_DISPATCH})
@@ -95,13 +97,13 @@ set(INCLUDE_PATHS
   )
 include_directories(${INCLUDE_PATHS})
 
-set(INCLUDES "${INCLUDE_PATHS}" "${AOCL_UTILS_INCLUDE_DIR}")
+set(INCLUDES "${INCLUDE_PATHS}" "${ALM_UTILS_INCLUDE_DIR}")
 
 #libmobj variable is to collect object libraries in subdirectories
 set(libmobj "")
 
-add_subdirectory(isa)
 add_subdirectory(optimized)
+add_subdirectory(isa)
 add_subdirectory(iface)
 add_subdirectory(arch)
 add_subdirectory(ref)
@@ -115,22 +117,21 @@ target_include_directories(src
                                    ${INCLUDES})
 target_compile_options(src PRIVATE ${LIBMCFLAGS} "-O1")
 
-#add src object library to libmobj
+# add src object library to libmobj
 list(APPEND libmobj $<TARGET_OBJECTS:src>)
 
-#add include headers as part of the install
+# add include headers as part of the install
 set(LIBM_PUBLIC_HEADERS ${PROJECT_SOURCE_DIR}/include/external/amdlibm.h
                         ${PROJECT_SOURCE_DIR}/include/external/amdlibm_vec.h)
 
-set(AOCL_UTILS_LIB ${AOCL_UTILS_LIB_DIR}/${AOCL_UTILS_LIB})
 if (WIN32)
   set(LIBALM libalm)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-  set(EXTRA_LIBS ${AOCL_UTILS_LIB} "msvcrt")
+  set(EXTRA_LIBS alm_utils_static "msvcrt")
   set(CMAKE_STATIC_LIBRARY_SUFFIX  "-static.lib")
 else()
   set(LIBALM alm)
-  set(EXTRA_LIBS ${AOCL_UTILS_LIB} "-Wl,-Bdynamic -lc -lstdc++")
+  set(EXTRA_LIBS alm_utils_static "-Wl,-Bdynamic -lc")
 endif()
 
 set(libm "")
@@ -144,7 +145,7 @@ set_target_properties(libm_shared PROPERTIES
 )
 target_link_libraries(libm_shared PUBLIC ${EXTRA_LIBS})
 if(NOT MSVC)
-  set_target_properties(libm_shared PROPERTIES LINK_FLAGS "-ealm_main")
+  set_target_properties(libm_shared PROPERTIES LINK_FLAGS "-Wl,-ealm_main")
 endif()
 list(APPEND libm libm_shared)
 # Static library

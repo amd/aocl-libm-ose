@@ -44,6 +44,13 @@ else()
     )
 endif()
 
+# Output to lib/ when building as part of the main project
+if(NOT ALM_UTILS_STANDALONE)
+    set_target_properties(alm_utils_static PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    )
+endif()
+
 # Compiler flags
 if(MSVC)
     target_compile_options(alm_utils_static PRIVATE /W4)

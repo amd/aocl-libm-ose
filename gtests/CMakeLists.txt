@@ -229,7 +229,7 @@ if(LIBABI STREQUAL "aocl")
         # we must also link alm_utils_static explicitly.
         if(${${PROJECT_PREFIX}_LIBM_ENABLE_ASAN} OR ${${PROJECT_PREFIX}_LIBM_ENABLE_COVERAGE})
             set(LIBALM "${CMAKE_BINARY_DIR}/src/libalm.a")
-            set(ALM_UTILS "${CMAKE_BINARY_DIR}/utils/libalm_utils.a")
+            set(ALM_UTILS "${CMAKE_BINARY_DIR}/lib/libalm_utils.a")
             list(APPEND LIBS ${LIBALM} ${ALM_UTILS})
         else()
             set(LIBALM "alm")

@@ -47,20 +47,25 @@ float ALM_PROTO_OPT(remainderf)(float x, float y)
     fax &= ~SIGNBIT_SP32;
     fay &= ~SIGNBIT_SP32;
 
-    /* If either argument is NaN, return a NaN. */
-    if(unlikely((fax > POS_INF_F32) || (fay > POS_INF_F32)))
+    /*   Check for special inputs:
+     *   x is Inf or NaN : fax >= POS_INF_F32
+     *   y is NaN        : fay >  POS_INF_F32
+     *   y is zero       : fay == 0
+     */
+    if(unlikely((fax >= POS_INF_F32) | (fay > POS_INF_F32) | (fay == 0)))
     {
-        return x * y;
-    }
-
-    /* If y == 0 or x == INF, return a qNaN and raise FE_INVALID. */
-    if(unlikely((fay == 0) || (fax == POS_INF_F32)))
-    {
+        /* NaN in either operand: return NaN. */
+        if((fax > POS_INF_F32) || (fay > POS_INF_F32))
+        {
+            return x * y;
+        }
+        /* Otherwise y == 0 or x == INF: domain error. */
         return __alm_handle_errorf(fay | QNANBITPATT_SP32, AMD_F_INVALID);
     }
 
     if(fax == fay)
     {
+        /* |x| == |y|: remainder is zero with the sign of x. */
         return (0.0f * x);
     }
 
@@ -97,7 +102,7 @@ float ALM_PROTO_OPT(remainderf)(float x, float y)
         }
         else
         {
-            adx = 0 - adx;
+            adx = -adx;
             return (float)adx;
         }
     }
@@ -151,7 +156,7 @@ float ALM_PROTO_OPT(remainderf)(float x, float y)
         adx = adx - w;
         if(dx<0)
         {
-            adx = 0.0 - adx;
+            adx = -adx;
         }
         return (float)adx;
     }
@@ -160,14 +165,14 @@ float ALM_PROTO_OPT(remainderf)(float x, float y)
     {
         if(dx<0)
         {
-            adx = 0.0 - adx;
+            adx = -adx;
         }
         return (float)adx;
     }
     adx = adx - w;
     if(dx<0)
     {
-        adx = 0.0 - adx;
+        adx = -adx;
     }
     return (float)adx;
 }

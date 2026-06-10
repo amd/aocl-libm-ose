@@ -59,21 +59,26 @@ double ALM_PROTO_OPT(remainder)(double x, double y)
     ax &= ~SIGNBIT_DP64;
     ay &= ~SIGNBIT_DP64;
 
-    /* If either argument is NaN, return a NaN. */
-    if(unlikely((ax > POS_INF_F64) || (ay > POS_INF_F64)))
+    /*   Check for special inputs:
+     *   x is Inf or NaN : ax >= POS_INF_F64
+     *   y is NaN        : ay >  POS_INF_F64
+     *   y is zero       : ay == 0
+     */
+    if(unlikely((ax >= POS_INF_F64) | (ay > POS_INF_F64) | (ay == 0)))
     {
-        return x * y;
-    }
-
-    /* If y == 0 or x == INF, return a qNaN and raise FE_INVALID. */
-    if(unlikely((ay == 0) || (ax == POS_INF_F64)))
-    {
+        /* NaN in either operand: return NaN. */
+        if((ax > POS_INF_F64) || (ay > POS_INF_F64))
+        {
+            return x * y;
+        }
+        /* Otherwise y == 0 or x == INF: domain error. */
         return __alm_handle_error(ay | QNANBITPATT_DP64, AMD_F_INVALID);
     }
 
     if(ax == ay)
     {
-        return 0.0;
+        /* |x| == |y|: remainder is zero with the sign of x. */
+        return 0.0 * x;
     }
 
     double adx = asdouble(ax);
@@ -91,13 +96,18 @@ double ALM_PROTO_OPT(remainder)(double x, double y)
             adx -= ady;
         }
 
-        if(x >= 0)
+        if(x == 0)
+        {
+            /* Preserve signed zero of the dividend. */
+            return x;
+        }
+        else if(x > 0)
         {
             return adx;
         }
         else
         {
-            return (0.0 - adx);
+            return -adx;
         }
     }
 
@@ -151,7 +161,7 @@ double ALM_PROTO_OPT(remainder)(double x, double y)
         adx = adx - w;
         if(x<0)
         {
-            adx = 0.0 - adx;
+            adx = -adx;
         }
         return adx;
     }
@@ -160,14 +170,14 @@ double ALM_PROTO_OPT(remainder)(double x, double y)
     {
         if(x<0)
         {
-            adx = 0.0 - adx;
+            adx = -adx;
         }
         return adx;
     }
     adx = adx - w;
     if(x<0)
     {
-        adx = 0.0 - adx;
+        adx = -adx;
     }
     return adx;
 }

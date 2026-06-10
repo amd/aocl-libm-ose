@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -47,23 +47,16 @@ float ALM_PROTO_OPT(remainderf)(float x, float y)
     fax &= ~SIGNBIT_SP32;
     fay &= ~SIGNBIT_SP32;
 
-    // Input value checks for NAN, INF
-    if(fay == 0)
+    /* If either argument is NaN, return a NaN. */
+    if(unlikely((fax > POS_INF_F32) || (fay > POS_INF_F32)))
     {
-        return (x*y)/(x*y);
+        return x * y;
     }
 
-    if(unlikely((fax & EXPBITS_SP32) >= EXPBITS_SP32))
+    /* If y == 0 or x == INF, return a qNaN and raise FE_INVALID. */
+    if(unlikely((fay == 0) || (fax == POS_INF_F32)))
     {
-        // X is NAN or INF
-        if( (fax & EXPBITS_SP32) == EXPBITS_SP32)
-            return __alm_handle_errorf(fay | QNANBITPATT_SP32, AMD_F_INVALID);
-        else
-           #ifdef WINDOWS
-              __alm_handle_errorf(fay | QNANBITPATT_SP32, AMD_F_INVALID);
-           #else
-              return x + x;
-           #endif
+        return __alm_handle_errorf(fay | QNANBITPATT_SP32, AMD_F_INVALID);
     }
 
     if(fax == fay)

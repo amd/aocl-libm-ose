@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -59,23 +59,16 @@ double ALM_PROTO_OPT(remainder)(double x, double y)
     ax &= ~SIGNBIT_DP64;
     ay &= ~SIGNBIT_DP64;
 
-    // Input value checks for NAN, INF
-    if(ay == 0)
+    /* If either argument is NaN, return a NaN. */
+    if(unlikely((ax > POS_INF_F64) || (ay > POS_INF_F64)))
     {
-        return __alm_handle_error(ay | QNANBITPATT_DP64, AMD_F_INVALID);
+        return x * y;
     }
 
-    if(unlikely((ax & EXPBITS_DP64) >= EXPBITS_DP64))
+    /* If y == 0 or x == INF, return a qNaN and raise FE_INVALID. */
+    if(unlikely((ay == 0) || (ax == POS_INF_F64)))
     {
-        // X is NAN or INF
-        if( (ax & EXPBITS_DP64) == EXPBITS_DP64)
-            return __alm_handle_error(ay | QNANBITPATT_DP64, AMD_F_INVALID);
-        else
-            #ifdef WINDOWS
-                __alm_handle_error(ay | QNANBITPATT_DP64, AMD_F_INVALID);
-            #else
-                return x + x;
-            #endif
+        return __alm_handle_error(ay | QNANBITPATT_DP64, AMD_F_INVALID);
     }
 
     if(ax == ay)

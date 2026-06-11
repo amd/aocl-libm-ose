@@ -33,6 +33,8 @@
 extern "C" {
 #endif
 
+typedef    long int            lint_t;
+typedef    unsigned long int   ulint_t;
 
 double   alm_mp_acosf       (float x);
 double   alm_mp_acoshf      (float x);
@@ -67,6 +69,7 @@ double   alm_mp_log1pf      (float x);
 double   alm_mp_log2f       (float x);
 double   alm_mp_logbf       (float x);
 double   alm_mp_logf        (float x);
+lint_t   alm_mp_lroundf     (float x);
 double   alm_mp_modff       (float x, float *ptr);
 double   alm_mp_powf        (float x, float y);
 double   alm_mp_remainderf  (float x, float y);
@@ -187,6 +190,7 @@ long double  alm_mp_log1p     (double x);
 long double  alm_mp_log2      (double x);
 long double  alm_mp_logb      (double x);
 long double  alm_mp_log       (double x);
+lint_t       alm_mp_lround    (double x);
 long double  alm_mp_modf      (double x, double *ptr);
 long double  alm_mp_pow       (double x, double y);
 long double  alm_mp_remainder (double x, double y);

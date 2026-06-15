@@ -102,11 +102,11 @@
  * AMD Zen Model IDs
  * MAKE_MODEL(base, ext) = ((ext) << 4) | (base)
  */
-/* Family 0x17 - Zen/Zen+/Zen2 */
+/* Family 0x17 - Zen/Zen2 (Zen+ treated as Zen per aocl-utils) */
 #define ALM_MODEL_NAPLES        0x01    /* Zen */
 #define ALM_MODEL_RAVENRIDGE    0x11    /* Zen */
 #define ALM_MODEL_PINNACLERIDGE 0x08    /* Zen+ */
-#define ALM_MODEL_PICASSO       0x18    /* Zen/Zen+ (stepping dependent) */
+#define ALM_MODEL_PICASSO       0x18    /* Zen+ (treated as Zen per aocl-utils) */
 #define ALM_MODEL_ROME          0x31    /* Zen2 */
 #define ALM_MODEL_CASTLEPEAKPRO 0x47    /* Zen2 */
 #define ALM_MODEL_RENOIR        0x60    /* Zen2 */
@@ -117,7 +117,7 @@
 /* Family 0x19 - Zen3/Zen4 */
 #define ALM_MODEL_MILAN         0x01    /* Zen3 */
 #define ALM_MODEL_CHAGALL       0x08    /* Zen3 */
-#define ALM_MODEL_VERMEER       0x21    /* Zen3 (or Zen4 Warhol if stepping==2) */
+#define ALM_MODEL_VERMEER       0x21    /* Zen3 */
 #define ALM_MODEL_REMBRANDT     0x44    /* Zen3 */
 #define ALM_MODEL_CEZANNE       0x50    /* Zen3 */
 #define ALM_MODEL_GENOA         0x11    /* Zen4 */
@@ -165,7 +165,6 @@ typedef struct {
     alm_uarch_t     uarch;
     unsigned int    family;
     unsigned int    model;
-    unsigned int    stepping;
     unsigned int    features;
 } alm_cpuid_info_t;
 
@@ -180,24 +179,21 @@ alm_uarch_t   alm_g_detected_uarch    = ALM_UARCH_UNKNOWN;
 unsigned int  alm_g_detected_features = ALM_FEATURE_NONE;
 
 /*
- * Detect AMD Zen microarchitecture from family/model/stepping/features.
+ * Detect AMD Zen microarchitecture from family/model/features.
+ * Detection is model-based to match aocl-utils behavior.
  * Structure:
  *   - switch on family (outer level)
  *   - if-else with model ranges (inner level)
  *   - feature flag fallback for unknown models
  */
 static alm_uarch_t
-alm_detect_amd_uarch(unsigned int family, unsigned int model, unsigned int stepping,
-                     unsigned int features)
+alm_detect_amd_uarch(unsigned int family, unsigned int model, unsigned int features)
 {
     switch (family) {
-        case ALM_AMD_FAMILY_ZEN_ZEN2: /* Family 0x17: Zen, Zen+, Zen2 */
+        case ALM_AMD_FAMILY_ZEN_ZEN2: /* Family 0x17: Zen/Zen2 (Zen+ treated as Zen) */
             if (model <= 0x1f) {
-                /* Zen / Zen+ range (model <= 0x1f) */
-                if (model == ALM_MODEL_PINNACLERIDGE)
-                    return ALM_UARCH_ZENPLUS;
-                if (model == ALM_MODEL_PICASSO && stepping == 1)
-                    return ALM_UARCH_ZENPLUS;
+                /* Zen / Zen+ range (model <= 0x1f)
+                 * Note: aocl-utils does not differentiate Zen+, all return Zen */
                 return ALM_UARCH_ZEN;
             } else if (model >= 0x30) {
                 /* Zen2 - Rome, Castle Peak, Renoir, Matisse, Vangogh, Mendocino */
@@ -218,11 +214,9 @@ alm_detect_amd_uarch(unsigned int family, unsigned int model, unsigned int stepp
                        || (model >= 0x60 && model <= 0xaf)) {
                 /* Zen4 - Genoa, Stormpeak, Raphael, Phoenix, Phoenixpoint */
                 return ALM_UARCH_ZEN4;
-            } else if (model == ALM_MODEL_VERMEER) {
-                /* Vermeer/Warhol: stepping == 2 -> Zen4, else -> Zen3 */
-                return (stepping == 2) ? ALM_UARCH_ZEN4 : ALM_UARCH_ZEN3;
-            } else if (model == ALM_MODEL_REMBRANDT || model == ALM_MODEL_CEZANNE) {
-                /* Other Zen3 models outside ranges */
+            } else if ((model == ALM_MODEL_VERMEER) || (model == ALM_MODEL_REMBRANDT)
+                       || (model == ALM_MODEL_CEZANNE)) {
+                /* Zen3 models outside the 0x00-0x0f range */
                 return ALM_UARCH_ZEN3;
             } else {
                 /* Unknown 0x19 models: use feature flag fallback
@@ -287,7 +281,6 @@ ALM_INITIALIZER(alm_cpuid_init)
     unsigned int regs[4];
     unsigned int family;
     unsigned int model;
-    unsigned int stepping;
     unsigned int ext_family;
     unsigned int ext_model;
     unsigned int leaf7_ebx = 0;
@@ -306,10 +299,9 @@ ALM_INITIALIZER(alm_cpuid_init)
         is_amd = 1;
     }
 
-    /* CPUID leaf 1: Family/Model/Stepping */
+    /* CPUID leaf 1: Family/Model */
     ALM_CPUID_QUERY(regs, 1);
 
-    stepping = regs[0] & 0xF;
     family = (regs[0] >> 8) & 0xF;
     model = (regs[0] >> 4) & 0xF;
     ext_family = (regs[0] >> 20) & 0xFF;
@@ -332,11 +324,10 @@ ALM_INITIALIZER(alm_cpuid_init)
     g_cpuid.is_amd   = is_amd;
     g_cpuid.family   = family;
     g_cpuid.model    = model;
-    g_cpuid.stepping = stepping;
     g_cpuid.features = features;
 
     if (is_amd)
-        g_cpuid.uarch = alm_detect_amd_uarch(family, model, stepping, features);
+        g_cpuid.uarch = alm_detect_amd_uarch(family, model, features);
     else
         g_cpuid.uarch = ALM_UARCH_UNKNOWN;
 

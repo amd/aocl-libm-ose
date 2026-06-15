@@ -1,0 +1,20 @@
+/*
+ * Generate double-double table for 2^(j/64), j = 0..63
+ *
+ * head = double(2^(j/64))          — 53-bit best double approximation
+ * tail = double(2^(j/64) - head)   — error term (bits 54-106)
+ * head + tail ≈ 2^(j/64) to ~106 bits
+ *
+ * Usage: sollya gen_exp_tbl_2field.sollya
+ */
+
+restart;
+prec = 300!;
+display = hexadecimal!;
+
+for j from 0 to 63 do {
+    val = 2^(j * (1/64));
+    h = double(val);
+    t = double(val - h);
+    print("    {" @ h @ ",  " @ t @ "},");
+};

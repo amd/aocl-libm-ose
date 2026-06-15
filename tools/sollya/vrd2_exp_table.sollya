@@ -1,0 +1,145 @@
+/*
+ * Copyright (C) 2026, Advanced Micro Devices. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+/*
+ * Minimax polynomial coefficients for vrd2_exp table-based implementation.
+ *
+ * With N=6 (64-entry table), the reduced argument r satisfies
+ *   |r| <= ln(2)/128 ≈ 0.005415
+ *
+ * We approximate exp(r) with polynomial p(r) = 1 + r + c2*r^2 + ... + cd*r^d
+ * The coefficients c0=1 and c1=1 are fixed (exp(0)=1, exp'(0)=1).
+ * We optimize c2..cd via fpminimax for relative error.
+ *
+ * Degrees evaluated: 4, 5, 6
+ */
+
+restart;
+prec = 200;   /* internal working precision */
+
+f = exp(x);
+
+/* Range for N=6 table: |r| <= ln(2)/(2*64) = ln(2)/128 */
+a = -log(2)/128;
+b = +log(2)/128;
+
+N = 10000;   /* evaluation grid */
+dx = (b - a) / (N - 1);
+xi = [||];
+for i from 0 to N-1 do { xi = xi @ [| a + i * dx |]; };
+
+/* Helper: evaluate max abs and rel error on grid */
+procedure eval_err(poly_approx, label) {
+  abs_err = [||];
+  rel_err = [||];
+  for i from 0 to N-1 do {
+    y0 = f(xi[i]);
+    y1 = poly_approx(xi[i]);
+    abs_err = abs_err @ [| abs(y1 - y0) |];
+    rel_err = rel_err @ [| abs(y1/y0 - 1) |];
+  };
+  print(label);
+  print("  max abs error:", dirtysimplify(max(abs_err)));
+  print("  max rel error:", dirtysimplify(max(rel_err)));
+  print("  rel err bits: ", -log2(dirtysimplify(max(rel_err))));
+};
+
+print("=================================================================");
+print("  Range: [", a, ",", b, "]  (ln(2)/128)");
+print("=================================================================");
+print("");
+
+/* ================================================================
+ * DEGREE 6: optimize c2..c6, fix c0=1, c1=1
+ * p(x) = 1 + x + c2*x^2 + c3*x^3 + c4*x^4 + c5*x^5 + c6*x^6
+ * ================================================================ */
+print("--- DEGREE 6 (comparison) ---");
+poly6 = fpminimax(f, [|2,3,4,5,6|], [|DD,DD,DD,DD,DD|], [a;b], floating, relative, 1+x);
+eval_err(poly6, "Degree 6 minimax:");
+print("Polynomial:");
+print(poly6);
+display = hexadecimal;
+print("Coefficients (hex):");
+print("  c0 = 1.0 (fixed)");
+print("  c1 = 1.0 (fixed)");
+for i from 2 to 6 do {
+  print("  c", i, " = ", double(coeff(poly6, i)));
+};
+display = decimal;
+print("");
+
+/* ================================================================
+ * DEGREE 5: optimize c2..c5, fix c0=1, c1=1
+ * ================================================================ */
+print("--- DEGREE 5 (target: ULP < 2) ---");
+poly5 = fpminimax(f, [|2,3,4,5|], [|DD,DD,DD,DD|], [a;b], floating, relative, 1+x);
+eval_err(poly5, "Degree 5 minimax:");
+print("Polynomial:");
+print(poly5);
+display = hexadecimal;
+print("Coefficients (hex):");
+print("  c0 = 1.0 (fixed)");
+print("  c1 = 1.0 (fixed)");
+for i from 2 to 5 do {
+  print("  c", i, " = ", double(coeff(poly5, i)));
+};
+display = decimal;
+print("");
+
+/* ================================================================
+ * DEGREE 4: optimize c2..c4, fix c0=1, c1=1
+ * ================================================================ */
+print("--- DEGREE 4 (stretch goal) ---");
+poly4 = fpminimax(f, [|2,3,4|], [|DD,DD,DD|], [a;b], floating, relative, 1+x);
+eval_err(poly4, "Degree 4 minimax:");
+print("Polynomial:");
+print(poly4);
+display = hexadecimal;
+print("Coefficients (hex):");
+print("  c0 = 1.0 (fixed)");
+print("  c1 = 1.0 (fixed)");
+for i from 2 to 4 do {
+  print("  c", i, " = ", double(coeff(poly4, i)));
+};
+display = decimal;
+print("");
+
+/* ================================================================
+ * COMPARISON: Taylor coefficients at same degrees
+ * ================================================================ */
+print("--- TAYLOR COEFFICIENTS (for comparison) ---");
+taylor6 = 1 + x + x^2/2 + x^3/6 + x^4/24 + x^5/120 + x^6/720;
+eval_err(taylor6, "Taylor degree 6:");
+
+taylor5 = 1 + x + x^2/2 + x^3/6 + x^4/24 + x^5/120;
+eval_err(taylor5, "Taylor degree 5:");
+
+taylor4 = 1 + x + x^2/2 + x^3/6 + x^4/24;
+eval_err(taylor4, "Taylor degree 4:");
+
+print("");
+print("Done.");

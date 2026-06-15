@@ -223,19 +223,15 @@ ALM_PROTO_OPT(vrd2_exp)(v_f64x2_t x)
     /* Apply 2^m by adding exponent bits to IEEE 754 representation */
     v_f64x2_t ret = as_v2_f64_u64(as_v2_u64_f64(q_result) + (v_u64x2_t)m);
 
-    /*
-     * Scalar fallback for inputs outside the fast-path range.
-     * The negated-range check also catches NaN (unordered comparison).
-     */
     for(int i = 0; i < 2; i++)
     {
         if(unlikely(!(x[i] <= EXP_MAX_POS && x[i] >= EXP_MIN_NEG))) {
             if (x[i] <= FMIN_X)
-                ret[i] = 0.0;              /* x < -745.13: full underflow */
+                ret[i] = 0.0;
             else if (x[i] <= DENORMAL_LOW)
-                ret[i] = asdouble(DENORMAL_MIN); /* x < -744.04: smallest denormal */
+                ret[i] = asdouble(DENORMAL_MIN);
             else
-                ret[i] = SCALAR_EXP(x[i]); /* overflow, denormals, NaN, ±inf */
+                ret[i] = SCALAR_EXP(x[i]);
         }
     }
 

@@ -5,12 +5,12 @@
  * Tests each if/else path against expected behavior
  *
  * This test validates:
- * 1. All Family 0x17 models (Zen, Zen+, Zen2)
+ * 1. All Family 0x17 models (Zen, Zen2) - Zen+ treated as Zen per aocl-utils
  * 2. All Family 0x19 models (Zen3, Zen4)
  * 3. All Family 0x1A models - Zen5 AND Zen6 (model-based detection within 0x1A):
  *    - Zen5: models <=0x4f, 0x60-0x77, 0xd0-0xd7
  *    - Zen6: models 0x50-0x5f, 0x80-0xcf, 0xd8-0xe7
- * 4. Stepping-based detection (Vermeer/Warhol)
+ * 4. Model-based detection (matches aocl-utils behavior)
  * 5. "At-least" semantics
  * 6. Future families (>0x1A) default to Zen6
  */
@@ -129,13 +129,12 @@ static uarch_t
 mock_detect_amd_uarch(unsigned int family, unsigned int model, 
                       unsigned int stepping, unsigned int features)
 {
+    (void)stepping; /* Stepping preserved for future use; currently unused */
+
     switch (family) {
         case AMD_FAMILY_ZEN_ZEN2:
             if (model <= 0x1f) {
-                if (model == MODEL_PINNACLERIDGE)
-                    return UARCH_ZENPLUS;
-                if (model == MODEL_PICASSO && stepping == 1)
-                    return UARCH_ZENPLUS;
+                /* Zen / Zen+ range - aocl-utils does not differentiate Zen+ */
                 return UARCH_ZEN;
             } else if (model >= 0x30) {
                 return UARCH_ZEN2;
@@ -151,9 +150,9 @@ mock_detect_amd_uarch(unsigned int family, unsigned int model,
             } else if ((model >= 0x10 && model <= 0x1f)
                        || (model >= 0x60 && model <= 0xaf)) {
                 return UARCH_ZEN4;
-            } else if (model == MODEL_VERMEER) {
-                return (stepping == 2) ? UARCH_ZEN4 : UARCH_ZEN3;
-            } else if (model == MODEL_REMBRANDT || model == MODEL_CEZANNE) {
+            } else if ((model == MODEL_VERMEER) || (model == MODEL_REMBRANDT)
+                       || (model == MODEL_CEZANNE)) {
+                /* Zen3 models outside the 0x00-0x0f range */
                 return UARCH_ZEN3;
             } else {
                 if (features & FEATURE_AVX512F)
@@ -192,12 +191,12 @@ static void test_cpu_config(const char* name, unsigned int family,
 
 static void test_family_0x17(void)
 {
-    TEST_GROUP("Family 0x17 - Zen/Zen+/Zen2");
+    TEST_GROUP("Family 0x17 - Zen/Zen2 (Zen+ treated as Zen)");
     test_cpu_config("Naples",      0x17, 0x01, 0, 0, UARCH_ZEN);
     test_cpu_config("Ravenridge",  0x17, 0x11, 0, 0, UARCH_ZEN);
-    test_cpu_config("Pinnacleridge", 0x17, 0x08, 0, 0, UARCH_ZENPLUS);
+    test_cpu_config("Pinnacleridge", 0x17, 0x08, 0, 0, UARCH_ZEN);  /* aocl-utils: no Zen+ differentiation */
     test_cpu_config("Picasso (step 0)", 0x17, 0x18, 0, 0, UARCH_ZEN);
-    test_cpu_config("Picasso (step 1)", 0x17, 0x18, 1, 0, UARCH_ZENPLUS);
+    test_cpu_config("Picasso (step 1)", 0x17, 0x18, 1, 0, UARCH_ZEN);  /* aocl-utils: no Zen+ differentiation */
     test_cpu_config("Rome",          0x17, 0x31, 0, 0, UARCH_ZEN2);
     test_cpu_config("Matisse",       0x17, 0x71, 0, 0, UARCH_ZEN2);
     
@@ -212,7 +211,7 @@ static void test_family_0x19(void)
     test_cpu_config("Milan",     0x19, 0x01, 0, 0, UARCH_ZEN3);
     test_cpu_config("Chagall",   0x19, 0x08, 0, 0, UARCH_ZEN3);
     test_cpu_config("Vermeer (step 0)", 0x19, 0x21, 0, 0, UARCH_ZEN3);
-    test_cpu_config("Warhol (step 2)",  0x19, 0x21, 2, 0, UARCH_ZEN4);
+    test_cpu_config("Vermeer (step 2)", 0x19, 0x21, 2, 0, UARCH_ZEN3);  /* No stepping-based detection */
     test_cpu_config("Genoa",     0x19, 0x11, 0, FEATURE_AVX512F, UARCH_ZEN4);
     test_cpu_config("Raphael",   0x19, 0x61, 0, FEATURE_AVX512F, UARCH_ZEN4);
     

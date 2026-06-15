@@ -45,6 +45,11 @@ REAL_L FUNC_TRUNC(REAL x)
 {
     REAL_L y;
 
+ 
+    /* If NaN, return the input value */
+    if (x != x)
+        return (REAL_L) x;
+
     mpfr_rnd_t rnd = MPFR_RNDN;
     mpfr_t mpx, mp_rop;
 
@@ -59,9 +64,9 @@ REAL_L FUNC_TRUNC(REAL x)
     mpfr_trunc(mp_rop, mpx);
 
 #if defined(FLOAT)
-    y = mpfr_get_d(mpx, rnd);
+    y = mpfr_get_d(mp_rop, rnd);
 #elif defined(DOUBLE)
-    y = mpfr_get_ld(mpx, rnd);
+    y = mpfr_get_ld(mp_rop, rnd);
 #endif
 
     mpfr_clears (mpx, mp_rop, (mpfr_ptr) 0);

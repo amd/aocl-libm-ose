@@ -40,9 +40,9 @@ gather_optimized_srcs = _mod.gather_optimized_srcs
 e = env.Clone()
 
 # ---------------------------------------------------------------------------
-# Assembly sources from avx subdirectory
+# Inline-asm C sources from avx subdirectory (fmod, remainder, remainder_piby2*)
 # ---------------------------------------------------------------------------
-avxasm_objs = SConscript('avx/SConscript',
+avxsrcs_objs = SConscript('avx/SConscript',
                          exports={'env': e},
                          duplicate=0)
 
@@ -127,6 +127,6 @@ for isa_name, isa_def, has_avx512 in isa_list:
         target = joinpath(isa_name, os.path.splitext(rel)[0])
         isa_objs.append(isa_env.StaticObject(target=target, source=src))
 
-objs = avxasm_objs + avx2asm_objs + isa_objs
+objs = avxsrcs_objs + avx2asm_objs + isa_objs
 
 Return('objs')

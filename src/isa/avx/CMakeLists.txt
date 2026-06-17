@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -25,20 +25,20 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-set(AVX_ASM
-    ${CMAKE_CURRENT_SOURCE_DIR}/gas/remainder_piby2_new.S
-    ${CMAKE_CURRENT_SOURCE_DIR}/gas/remainder_piby2f_new.S
-    ${CMAKE_CURRENT_SOURCE_DIR}/gas/remainder.S
-    ${CMAKE_CURRENT_SOURCE_DIR}/gas/fmod.S
+set(AVX_SRCS
+    ${CMAKE_CURRENT_SOURCE_DIR}/remainder_piby2.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/remainder_piby2f.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/remainder.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/fmod.c
 )
 
-add_library(avxasm OBJECT ${AVX_ASM})
-target_include_directories(avxasm
+add_library(avxsrcs OBJECT ${AVX_SRCS})
+target_include_directories(avxsrcs
                            PUBLIC  ${${PROJECT_PREFIX}_COMMON_INCLUDES}
                                    ${${PROJECT_PREFIX}_SDK_INCLUDES}
                            PRIVATE ${${PROJECT_PREFIX}_PRIVATE_INCLUDES}
                                    ${ISA_INCLUDE})
-target_compile_options(avxasm PRIVATE ${ISA_FLAGS})
+target_compile_options(avxsrcs PRIVATE ${ISA_FLAGS})
 if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set_target_properties(avxasm PROPERTIES MSVC_DEBUG_INFORMATION_FORMAT "")
+    set_target_properties(avxsrcs PROPERTIES MSVC_DEBUG_INFORMATION_FORMAT "")
 endif()

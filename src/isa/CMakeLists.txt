@@ -32,8 +32,8 @@ get_isa_flag( isaflag )
 set(ISA_FLAGS ${isaflag} ${ASAN_FLAGS} ${COVERAGE_FLAGS})
 
 add_subdirectory(avx)
-# add avxasm object library to libmobj
-list(APPEND libmobj $<TARGET_OBJECTS:avxasm>)
+# add avxsrcs object library to libmobj
+list(APPEND libmobj $<TARGET_OBJECTS:avxsrcs>)
 
 add_subdirectory(avx2)
 # add avx2asm object library to libmobj

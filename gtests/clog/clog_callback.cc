@@ -117,7 +117,11 @@ int test_s1s(test_data *data, int idx)  {
 int test_s1d(test_data *data, int idx)  {
   fc64_t *ip  = (fc64_t*)data->ip;
   fc64_t *op  = (fc64_t*)data->op;
+  /* LIBM_FUNC(clog) only for AOCL; GLIBC/SVML expand to plain clog and clash
+   * with std::clog from gtest headers. For now made this only for AOCL*/
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
   op[0] = LIBM_FUNC(clog)(ip[idx]);
+#endif
   return 0;
 }
 

@@ -111,7 +111,6 @@ static const struct {
 #define V_I32(x) x.i32x8
 #define V_F32(x) x.f32x8
 
-#define LOGF_MAX 0x7f800000
 #define SCALAR_LOGF ALM_PROTO_OPT(logf)
 
 /*
@@ -167,12 +166,29 @@ static const struct {
  *
  */
 
+static inline v_f32x8_t
+logf_specialcase(v_f32x8_t _x,
+                 v_f32x8_t result,
+                 v_u32x8_t cond)
+{
+    return call_v8_f32(SCALAR_LOGF, _x, result, cond);
+}
+
 v_f32x8_t
 ALM_PROTO_OPT(vrs8_logf)(v_f32x8_t _x)
 {
     v_f32x8_t q, r, n;
 
     v_u32x8_t vx =  as_v8_u32_f32(_x);
+
+    /* Detect special values: Zero/Subnormal/Inf/NaN/negative.
+     * As an unsigned comparison, (vx - min_normal) >= (max - min_normal) is
+     * true for all inputs outside the normal positive range. Same logic as
+     * scalar logf() and vrs4_logf().
+     */
+    v_u32x8_t min_normal = _MM256_SET1_I32(IMPBIT_SP32);
+    v_u32x8_t max_normal = _MM256_SET1_I32(PINFBITPATT_SP32);
+    v_u32x8_t cond       = (vx - min_normal >= max_normal - min_normal);
 
     vx -= V_OFF;
 
@@ -195,12 +211,13 @@ ALM_PROTO_OPT(vrs8_logf)(v_f32x8_t _x)
 
     q = n * LN2 + q;
 
-    vx =  as_v8_u32_f32(_x);
-    for(int i = 0; i < 8; i++)
-    {
-        if(unlikely(vx[i] > LOGF_MAX))
-            q[i] = SCALAR_LOGF(_x[i]);
+    /* Only the genuinely special lanes fall back to scalar logf();
+     * non-special lanes keep the fast vector result.
+     */
+    if (unlikely(_mm256_movemask_ps((__m256)cond) != 0)) {
+        return logf_specialcase(_x, q, cond);
     }
+
     return q;
 }
 

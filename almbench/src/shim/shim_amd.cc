@@ -478,6 +478,7 @@ typedef __m512 (*amd_cos_vrs16_func_t)(__m512);
 typedef __m512 (*amd_erf_vrs16_func_t)(__m512);
 typedef __m512 (*amd_erfc_vrs16_func_t)(__m512);
 typedef __m512 (*amd_exp_vrs16_func_t)(__m512);
+typedef __m512 (*amd_exp10_vrs16_func_t)(__m512);
 typedef __m512 (*amd_exp2_vrs16_func_t)(__m512);
 typedef __m512 (*amd_linearfrac_vrs16_func_t)(__m512, __m512, float, float, float, float);
 typedef __m512 (*amd_log_vrs16_func_t)(__m512);
@@ -864,6 +865,7 @@ static struct {
     amd_erf_vrs16_func_t erf_vrs16;
     amd_erfc_vrs16_func_t erfc_vrs16;
     amd_exp_vrs16_func_t exp_vrs16;
+    amd_exp10_vrs16_func_t exp10_vrs16;
     amd_exp2_vrs16_func_t exp2_vrs16;
     amd_linearfrac_vrs16_func_t linearfrac_vrs16;
     amd_log_vrs16_func_t log_vrs16;
@@ -1383,6 +1385,7 @@ static void init_amd_symbols(void) {
     amd_funcs.erf_vrs16 = load_amd_symbol<amd_erf_vrs16_func_t>(amd_core, "amd_vrs16_erff");
     amd_funcs.erfc_vrs16 = load_amd_symbol<amd_erfc_vrs16_func_t>(amd_core, "amd_vrs16_erfcf");
     amd_funcs.exp_vrs16 = load_amd_symbol<amd_exp_vrs16_func_t>(amd_core, "amd_vrs16_expf");
+    amd_funcs.exp10_vrs16 = load_amd_symbol<amd_exp10_vrs16_func_t>(amd_core, "amd_vrs16_exp10f");
     amd_funcs.exp2_vrs16 = load_amd_symbol<amd_exp2_vrs16_func_t>(amd_core, "amd_vrs16_exp2f");
     amd_funcs.linearfrac_vrs16 = load_amd_symbol<amd_linearfrac_vrs16_func_t>(amd_core, "amd_vrs16_linearfracf");
     amd_funcs.log_vrs16 = load_amd_symbol<amd_log_vrs16_func_t>(amd_core, "amd_vrs16_logf");
@@ -2842,6 +2845,10 @@ SHIM_EXPORT void shim_erfc_vrs16(InParams<libm::AlignedM512, float> *ipp) {
 
 SHIM_EXPORT void shim_exp_vrs16(InParams<libm::AlignedM512, float> *ipp) {
     ipp->op[0].data = amd_funcs.exp_vrs16(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_exp10_vrs16(InParams<libm::AlignedM512, float> *ipp) {
+    ipp->op[0].data = amd_funcs.exp10_vrs16(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_exp2_vrs16(InParams<libm::AlignedM512, float> *ipp) {

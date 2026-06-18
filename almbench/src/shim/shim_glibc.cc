@@ -494,6 +494,7 @@ typedef __m512 (*gcc_cos_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_erf_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_erfc_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_exp_vrs16_func_t)(__m512);
+typedef __m512 (*gcc_exp10_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_exp2_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_linearfrac_vrs16_func_t)(__m512, __m512, float, float, float, float);
 typedef __m512 (*gcc_log_vrs16_func_t)(__m512);
@@ -863,6 +864,7 @@ static struct {
     gcc_erf_vrs16_func_t erf_vrs16;
     gcc_erfc_vrs16_func_t erfc_vrs16;
     gcc_exp_vrs16_func_t exp_vrs16;
+    gcc_exp10_vrs16_func_t exp10_vrs16;
     gcc_exp2_vrs16_func_t exp2_vrs16;
     gcc_linearfrac_vrs16_func_t linearfrac_vrs16;
     gcc_log_vrs16_func_t log_vrs16;
@@ -1599,6 +1601,7 @@ static void init_gcc_symbols(void) {
     gcc_funcs.erf_vrs16 = nullptr;
     gcc_funcs.erfc_vrs16 = nullptr;
     gcc_funcs.exp_vrs16 = nullptr;
+    gcc_funcs.exp10_vrs16 = nullptr;
     gcc_funcs.exp2_vrs16 = nullptr;
     gcc_funcs.linearfrac_vrs16 = nullptr;
     gcc_funcs.log_vrs16 = nullptr;
@@ -1754,7 +1757,8 @@ static void init_gcc_symbols(void) {
     gcc_funcs.erfc_vrd8 = _ZGVeN8v_erfc;
     gcc_funcs.erfc_vrs16 = _ZGVeN16v_erfcf;
 
-    // EXP2, EXP10 - 512-bit (AVX512)
+    // EXP10, EXP2 - 512-bit (AVX512)
+    gcc_funcs.exp10_vrs16 = _ZGVeN16v_exp10f;
     gcc_funcs.exp2_vrd8 = _ZGVeN8v_exp2;
     gcc_funcs.exp2_vrs16 = _ZGVeN16v_exp2f;
 
@@ -3101,6 +3105,10 @@ SHIM_EXPORT void shim_erfc_vrs16(InParams<libm::AlignedM512, float> *ipp) {
 
 SHIM_EXPORT void shim_exp_vrs16(InParams<libm::AlignedM512, float> *ipp) {
     ipp->op[0].data = gcc_funcs.exp_vrs16(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_exp10_vrs16(InParams<libm::AlignedM512, float> *ipp) {
+    ipp->op[0].data = gcc_funcs.exp10_vrs16(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_exp2_vrs16(InParams<libm::AlignedM512, float> *ipp) {

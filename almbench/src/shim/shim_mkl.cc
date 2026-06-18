@@ -2611,6 +2611,10 @@ SHIM_EXPORT void shim_exp_vrs16(InParams<libm::AlignedM512, float> *ipp) {
     ipp->op[0].data = mkl_funcs.exp_vrs16(ipp->ip[0].data);
 }
 
+SHIM_EXPORT void shim_exp10_vrs16(InParams<libm::AlignedM512, float> *ipp) {
+    ipp->op[0].data = mkl_funcs.exp10_vrs16(ipp->ip[0].data);
+}
+
 SHIM_EXPORT void shim_exp2_vrs16(InParams<libm::AlignedM512, float> *ipp) {
     ipp->op[0].data = mkl_funcs.exp2_vrs16(ipp->ip[0].data);
 }

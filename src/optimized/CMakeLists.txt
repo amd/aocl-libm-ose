@@ -84,7 +84,7 @@ endforeach()
 list(REMOVE_ITEM ARCH_OPT_SRCS ${_opt_abs})
 list(REMOVE_ITEM VEC_SRCS ${_opt_abs})
 # Files without arch-suffixed prototypes (no FN_PROTOTYPE_OPT)
-list(FILTER ARCH_OPT_SRCS EXCLUDE REGEX "(log_v3|lroundf)[^/]*\\.c$")
+list(FILTER ARCH_OPT_SRCS EXCLUDE REGEX "(log_v3)[^/]*\\.c$")
 
 # For AVX512 build: keep base vec/vectormath files only if no avx512 replacement exists.
 set(_avx512_vec_names ${AVX512_VEC_SRCS})

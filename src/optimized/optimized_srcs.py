@@ -89,7 +89,7 @@ def gather_optimized_srcs(Glob):
 
     # Files without arch/ISA-suffixed prototypes (no FN_PROTOTYPE_OPT)
     opt_srcs = [f for f in opt_srcs
-                if not re.search(r'(log_v3|lroundf)[^/]*\.c$', str(f))]
+                if not re.search(r'(log_v3)[^/]*\.c$', str(f))]
 
     # Build blacklist from avx512 globs — filenames present in vec/avx512/ or
     # vectormath/avx512/ supersede their base counterparts in the AVX512 build.

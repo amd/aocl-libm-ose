@@ -226,17 +226,17 @@ int test_v8d(test_data *data, int idx)  {
 }
 
 int test_v16s(test_data *data, int idx)  {
-#if 0
-#if defined(__AVX512__)
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC) \
+    && defined(__AVX512__) \
+    && ((LIBM_PROTOTYPE != PROTOTYPE_GLIBC) || GLIBC_VERSION_CHECK(2, 35))
   float *ip = (float*)data->ip;
   float *op  = (float*)data->op;
   __m512 ip16 = _mm512_set_ps(ip[idx+15], ip[idx+14], ip[idx+13], ip[idx+12],
                               ip[idx+11], ip[idx+10], ip[idx+9], ip[idx+8],
                               ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
-                             ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
+                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m512 op16 = LIBM_FUNC_VEC(s, 16, exp10f)(ip16);
   _mm512_store_ps(&op[0], op16);
-#endif
 #endif
   return 0;
 }

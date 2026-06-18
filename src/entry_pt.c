@@ -331,6 +331,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrs16_expf);
 alm_func_t        G_ENTRY_PT_PTR(vrs16_erff);
 alm_func_t        G_ENTRY_PT_PTR(vrs16_sinf);
 alm_func_t        G_ENTRY_PT_PTR(vrs16_asinf);
+alm_func_t        G_ENTRY_PT_PTR(vrs16_exp10f);
 alm_func_t        G_ENTRY_PT_PTR(vrs16_exp2f);
 alm_func_t        G_ENTRY_PT_PTR(vrs16_tanf);
 alm_func_t        G_ENTRY_PT_PTR(vrs16_atanf);

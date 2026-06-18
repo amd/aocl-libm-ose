@@ -1049,6 +1049,13 @@ extern "C" {
    */
   __m512 amd_vrs16_exp2f (__m512 x);
 
+  /**
+   * @brief Computes 10^x for sixteen single-precision lanes.
+   * @param x Input vector.
+   * @return Vector of base-10 exponentials.
+   */
+  __m512 amd_vrs16_exp10f (__m512 x);
+
 /* Logarithmic */
   /**
    * @brief Computes natural logarithm for eight double-precision lanes.

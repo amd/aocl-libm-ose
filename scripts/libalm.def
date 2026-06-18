@@ -242,6 +242,7 @@ EXPORTS
     amd_vrs16_linearfracf
     amd_vrd8_exp2
     amd_vrs16_exp2f
+    amd_vrs16_exp10f
     amd_vrd8_log
     amd_vrs16_logf
     amd_vrs16_log10f

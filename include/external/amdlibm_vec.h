@@ -1043,6 +1043,12 @@ extern "C" {
    */
   __m512d amd_vrd8_exp2 (__m512d x);
   /**
+   * @brief Computes 10^x for eight double-precision lanes.
+   * @param x Input vector.
+   * @return Vector of base-10 exponentials.
+   */
+  __m512d amd_vrd8_exp10 (__m512d x);
+  /**
    * @brief Computes 2^x for sixteen single-precision lanes.
    * @param x Input vector.
    * @return Vector of base-2 exponentials.

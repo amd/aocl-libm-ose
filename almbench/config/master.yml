@@ -34,6 +34,7 @@
   - log2/log2_conf.yml
   - logb/logb_conf.yml
   - lround/lround_conf.yml
+  - llround/llround_conf.yml
   - nearbyint/nearbyint_conf.yml
   - nextafter/nextafter_conf.yml
   - pow/pow_conf.yml
@@ -93,6 +94,7 @@
   - log2/log2_accu.yml
   - logb/logb_accu.yml
   - lround/lround_accu.yml
+  - llround/llround_accu.yml
   - mul/mul_accu.yml
   - nearbyint/nearbyint_accu.yml
   - nextafter/nextafter_accu.yml
@@ -154,6 +156,7 @@
   - log2/log2_perf.yml
   - logb/logb_perf.yml
   - lround/lround_perf.yml
+  - llround/llround_perf.yml
   - mul/mul_perf.yml
   - nearbyint/nearbyint_perf.yml
   - nextafter/nextafter_perf.yml
@@ -350,6 +353,11 @@
   - lround/lround_accu.yml
   - lround/lround_perf.yml
 
+  llround:
+  - llround/llround_conf.yml
+  - llround/llround_accu.yml
+  - llround/llround_perf.yml
+
   mul:
   - mul/mul_accu.yml
   - mul/mul_perf.yml
@@ -426,7 +434,7 @@
   - trunc/trunc_conf.yml
   - trunc/trunc_accu.yml
   - trunc/trunc_perf.yml
-  
+
   clog:
   - clog/clog_conf.yml
   - clog/clog_accu.yml

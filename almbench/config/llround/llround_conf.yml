@@ -1,0 +1,1234 @@
+---
+- test_sequence: unit_tests_llround
+  ignore_exceptions: [underflow, inexact]
+  function: llround
+  test_sets:
+  - id: special-values
+    description: Special values (scalar); shim packs long long in float/double op[0]
+    tests:
+    - id: llround_001
+      description: "llroundf(0) = 0"
+      api_name: llround
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_002
+      description: "llroundf(-0) = 0 (packed as +0)"
+      api_name: llround
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_003
+      description: "llroundf(+inf) invalid; oracle LLONG_MIN as float"
+      api_name: llround
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0xdf000000]
+      expect_exception: [invalidoperation]
+
+    - id: llround_004
+      description: "llroundf(-inf) invalid; oracle LLONG_MIN as float"
+      api_name: llround
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0xdf000000]
+      expect_exception: [invalidoperation]
+
+    - id: llround_005
+      description: "llroundf(-qnan) invalid; oracle LLONG_MIN as float"
+      api_name: llround
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0xdf000000]
+      expect_exception: [invalidoperation]
+
+    - id: llround_006
+      description: "llroundf(+qnan) invalid; oracle LLONG_MIN as float"
+      api_name: llround
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0xdf000000]
+      expect_exception: [invalidoperation]
+
+    - id: llround_007
+      description: "llroundf(max positive subnormal) = 0"
+      api_name: llround
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_008
+      description: "llroundf(1.4) = 1"
+      api_name: llround
+      variants: [ss]
+      input: [0x3fb33333]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: llround_009
+      description: "llroundf(-1.4) = -1"
+      api_name: llround
+      variants: [ss]
+      input: [0xbfb33333]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: llround_010
+      description: "llroundf(1.6) = 2"
+      api_name: llround
+      variants: [ss]
+      input: [0x3fcccccd]
+      expect: [0x40000000]
+      expect_exception: []
+
+    - id: llround_011
+      description: "llroundf(snan) invalid"
+      api_name: llround
+      variants: [ss]
+      input: [0x7fa00000]
+      expect: [0xdf000000]
+      expect_exception: [invalidoperation]
+
+    - id: llround_012
+      description: "llroundf(+0.5) halfway away from zero → +1"
+      api_name: llround
+      variants: [ss]
+      input: [0x3f000000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: llround_013
+      description: "llroundf(nextafterf(+0.5,0)) largest float < 0.5 → 0"
+      api_name: llround
+      variants: [ss]
+      input: [0x3effffff]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_014
+      description: "llroundf(-0.5) halfway away from zero → -1"
+      api_name: llround
+      variants: [ss]
+      input: [0xbf000000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: llround_015
+      description: "llroundf(nextafterf(-0.5,+0)) smallest float > -0.5 → 0"
+      api_name: llround
+      variants: [ss]
+      input: [0xbeffffff]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_016
+      description: "llroundf(+1.5) halfway → +2"
+      api_name: llround
+      variants: [ss]
+      input: [0x3fc00000]
+      expect: [0x40000000]
+      expect_exception: []
+
+    - id: llround_017
+      description: "llroundf(-1.5) halfway → -2"
+      api_name: llround
+      variants: [ss]
+      input: [0xbfc00000]
+      expect: [0xc0000000]
+      expect_exception: []
+
+    - id: llround_018
+      description: "llroundf(2^23-0.5) float tie at large integer → 2^23"
+      api_name: llround
+      variants: [ss]
+      input: [0x4affffff]
+      expect: [0x4b000000]
+      expect_exception: []
+
+    - id: llround_019
+      description: "llroundf(-(2^23-0.5)) → -2^23"
+      api_name: llround
+      variants: [ss]
+      input: [0xcaffffff]
+      expect: [0xcb000000]
+      expect_exception: []
+
+    - id: llround_020
+      description: "Decimal 0.499999999999999999 (strtof rounds to +0.5f) → +1"
+      api_name: llround
+      variants: [ss]
+      input: [0x3f000000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: llround_021
+      description: "Decimal -0.499999999999999999 (strtof rounds to -0.5f) → -1"
+      api_name: llround
+      variants: [ss]
+      input: [0xbf000000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: llround_022
+      description: "Decimal 0.5000999999999999 (just above +0.5) → +1"
+      api_name: llround
+      variants: [ss]
+      input: [0x3f00068e]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: llround_023
+      description: "Decimal -0.5000999999999999 (more negative than -0.5) → -1"
+      api_name: llround
+      variants: [ss]
+      input: [0xbf00068e]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: llround_024
+      description: "IEEE 0x3effffff (largest float < +0.5f) → 0"
+      api_name: llround
+      variants: [ss]
+      input: [0x3effffff]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_025
+      description: "IEEE 0xbeffffff (nextafter(-0.5f, +0); smallest float > -0.5f) → 0"
+      api_name: llround
+      variants: [ss]
+      input: [0xbeffffff]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_026
+      description: "IEEE 0x3f000000 (+0.5f) halfway → +1"
+      api_name: llround
+      variants: [ss]
+      input: [0x3f000000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: llround_027
+      description: "IEEE 0xbf000000 (-0.5f) halfway → -1"
+      api_name: llround
+      variants: [ss]
+      input: [0xbf000000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: llround_028
+      description: "IEEE 0x3f000001 (nextafter(+0.5f, +∞)) → +1"
+      api_name: llround
+      variants: [ss]
+      input: [0x3f000001]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: llround_029
+      description: "IEEE 0xbf000001 (nextafter(-0.5f, -∞)) → -1"
+      api_name: llround
+      variants: [ss]
+      input: [0xbf000001]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: llround_030
+      description: "llround(+2.3) = +2"
+      api_name: llround
+      variants: [ss]
+      input: [0x40133333]
+      expect: [0x40000000]
+      expect_exception: []
+
+    - id: llround_031
+      description: "llround(+2.5) = +3 (half away from zero)"
+      api_name: llround
+      variants: [ss]
+      input: [0x40200000]
+      expect: [0x40400000]
+      expect_exception: []
+
+    - id: llround_032
+      description: "llround(+2.7) = +3"
+      api_name: llround
+      variants: [ss]
+      input: [0x402ccccd]
+      expect: [0x40400000]
+      expect_exception: []
+
+    - id: llround_033
+      description: "llround(-2.3) = -2"
+      api_name: llround
+      variants: [ss]
+      input: [0xc0133333]
+      expect: [0xc0000000]
+      expect_exception: []
+
+    - id: llround_034
+      description: "llround(-2.5) = -3 (half away from zero)"
+      api_name: llround
+      variants: [ss]
+      input: [0xc0200000]
+      expect: [0xc0400000]
+      expect_exception: []
+
+    - id: llround_035
+      description: "llround(-2.7) = -3"
+      api_name: llround
+      variants: [ss]
+      input: [0xc02ccccd]
+      expect: [0xc0400000]
+      expect_exception: []
+
+    - id: llround_036
+      description: "llround(-0.0) = +0 (packed +0.0f)"
+      api_name: llround
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_037
+      description: "llround(-Inf) invalid; oracle LLONG_MIN as float (domain)"
+      api_name: llround
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0xdf000000]
+      expect_exception: [invalidoperation]
+
+    - id: llround_038
+      description: "llround((float)((double)LONG_MAX+1.5)) invalid; LLONG_MIN as float"
+      api_name: llround
+      variants: [ss]
+      input: [0x5f000000]
+      expect: [0xdf000000]
+      expect_exception: [invalidoperation]
+
+
+    - id: llround_039
+      description: "llroundf(1.0) = 1"
+      api_name: llround
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: llround_040
+      description: "llroundf(-1.0) = -1"
+      api_name: llround
+      variants: [ss]
+      input: [0xbf800000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: llround_041
+      description: "llroundf(4.5) = 5 (half away from zero)"
+      api_name: llround
+      variants: [ss]
+      input: [0x40900000]
+      expect: [0x40a00000]
+      expect_exception: []
+
+    - id: llround_042
+      description: "llroundf(-4.5) = -5 (half away from zero)"
+      api_name: llround
+      variants: [ss]
+      input: [0xc0900000]
+      expect: [0xc0a00000]
+      expect_exception: []
+
+    - id: llround_043
+      description: "llroundf(0.125) = 0"
+      api_name: llround
+      variants: [ss]
+      input: [0x3e000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_044
+      description: "llroundf(0.25) = 0"
+      api_name: llround
+      variants: [ss]
+      input: [0x3e800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_045
+      description: "llroundf(0.375) = 0"
+      api_name: llround
+      variants: [ss]
+      input: [0x3ec00000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_046
+      description: "llroundf(-0.125) = 0"
+      api_name: llround
+      variants: [ss]
+      input: [0xbe000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_047
+      description: "llroundf(-0.25) = 0"
+      api_name: llround
+      variants: [ss]
+      input: [0xbe800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_048
+      description: "llroundf(-0.375) = 0"
+      api_name: llround
+      variants: [ss]
+      input: [0xbec00000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_049
+      description: "llroundf(0.625) = 1"
+      api_name: llround
+      variants: [ss]
+      input: [0x3f200000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: llround_050
+      description: "llroundf(0.75) = 1"
+      api_name: llround
+      variants: [ss]
+      input: [0x3f400000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: llround_051
+      description: "llroundf(-0.625) = -1"
+      api_name: llround
+      variants: [ss]
+      input: [0xbf200000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: llround_052
+      description: "llroundf(-0.75) = -1"
+      api_name: llround
+      variants: [ss]
+      input: [0xbf400000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: llround_053
+      description: "llroundf(pi) = 3"
+      api_name: llround
+      variants: [ss]
+      input: [0x40490fd8]
+      expect: [0x40400000]
+      expect_exception: []
+
+    - id: llround_054
+      description: "llroundf(-pi) = -3"
+      api_name: llround
+      variants: [ss]
+      input: [0xc0490fd8]
+      expect: [0xc0400000]
+      expect_exception: []
+
+    - id: llround_055
+      description: "llroundf(2.0) = 2"
+      api_name: llround
+      variants: [ss]
+      input: [0x40000000]
+      expect: [0x40000000]
+      expect_exception: []
+
+    - id: llround_056
+      description: "llroundf(4.0) = 4"
+      api_name: llround
+      variants: [ss]
+      input: [0x40800000]
+      expect: [0x40800000]
+      expect_exception: []
+
+    - id: llround_057
+      description: "llroundf(8.0) = 8"
+      api_name: llround
+      variants: [ss]
+      input: [0x41000000]
+      expect: [0x41000000]
+      expect_exception: []
+
+    - id: llround_058
+      description: "llroundf(16.0) = 16"
+      api_name: llround
+      variants: [ss]
+      input: [0x41800000]
+      expect: [0x41800000]
+      expect_exception: []
+
+    - id: llround_059
+      description: "llroundf(100.0) = 100"
+      api_name: llround
+      variants: [ss]
+      input: [0x42c80000]
+      expect: [0x42c80000]
+      expect_exception: []
+
+    - id: llround_060
+      description: "llroundf(-100.0) = -100"
+      api_name: llround
+      variants: [ss]
+      input: [0xc2c80000]
+      expect: [0xc2c80000]
+      expect_exception: []
+
+    - id: llround_061
+      description: "llroundf(8.25) = 8"
+      api_name: llround
+      variants: [ss]
+      input: [0x41040000]
+      expect: [0x41000000]
+      expect_exception: []
+
+    - id: llround_062
+      description: "llroundf(9.0) = 9"
+      api_name: llround
+      variants: [ss]
+      input: [0x41100000]
+      expect: [0x41100000]
+      expect_exception: []
+
+    - id: llround_063
+      description: "llroundf(5.0) = 5"
+      api_name: llround
+      variants: [ss]
+      input: [0x40a00000]
+      expect: [0x40a00000]
+      expect_exception: []
+
+    - id: llround_064
+      description: "llroundf(7.0) = 7"
+      api_name: llround
+      variants: [ss]
+      input: [0x40e00000]
+      expect: [0x40e00000]
+      expect_exception: []
+
+    - id: llround_065
+      description: "llroundf(2^23) exact integer"
+      api_name: llround
+      variants: [ss]
+      input: [0x4b000000]
+      expect: [0x4b000000]
+      expect_exception: []
+
+    - id: llround_066
+      description: "llroundf(2^24) exact integer"
+      api_name: llround
+      variants: [ss]
+      input: [0x4b800000]
+      expect: [0x4b800000]
+      expect_exception: []
+
+    - id: llround_067
+      description: "llroundf(-2^23) exact integer"
+      api_name: llround
+      variants: [ss]
+      input: [0xcb000000]
+      expect: [0xcb000000]
+      expect_exception: []
+
+    - id: llround_068
+      description: "llroundf(-2^24) exact integer"
+      api_name: llround
+      variants: [ss]
+      input: [0xcb800000]
+      expect: [0xcb800000]
+      expect_exception: []
+
+    - id: llround_069
+      description: "llroundf(5.96e-8) very small = 0"
+      api_name: llround
+      variants: [ss]
+      input: [0x33800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_070
+      description: "llroundf(-5.96e-8) very small = 0"
+      api_name: llround
+      variants: [ss]
+      input: [0xb3800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_071
+      description: "llroundf(FLT_MIN) = 0"
+      api_name: llround
+      variants: [ss]
+      input: [0x00800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_072
+      description: "llroundf(-FLT_MIN) = 0"
+      api_name: llround
+      variants: [ss]
+      input: [0x80800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_073
+      description: "llroundf(smallest positive subnormal) = 0"
+      api_name: llround
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_074
+      description: "llroundf(-smallest subnormal) = 0"
+      api_name: llround
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: llround_075
+      description: "llroundf(-snan) invalid; oracle LLONG_MIN as float"
+      api_name: llround
+      variants: [ss]
+      input: [0xffb00000]
+      expect: [0xdf000000]
+      expect_exception: [invalidoperation]
+
+
+# Double precision
+    - id: llround_001
+      description: "llround(0) = 0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_002
+      description: "llround(-0) = 0 (packed as +0)"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_003
+      description: "llround(+inf) invalid; oracle LLONG_MIN as double"
+      api_name: llround
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0xc3e0000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: llround_004
+      description: "llround(-inf) invalid; oracle LLONG_MIN as double"
+      api_name: llround
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xc3e0000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: llround_005
+      description: "llround(-qnan) invalid; oracle LLONG_MIN as double"
+      api_name: llround
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0xc3e0000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: llround_006
+      description: "llround(+qnan) invalid; oracle LLONG_MIN as double"
+      api_name: llround
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0xc3e0000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: llround_007
+      description: "llround(max positive subnormal) = 0"
+      api_name: llround
+      variants: [sd]
+      input: [0x000fffffffffffff]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_008
+      description: "llround(1.4) = 1"
+      api_name: llround
+      variants: [sd]
+      input: [0x3ff6666666666666]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: llround_009
+      description: "llround(-1.4) = -1"
+      api_name: llround
+      variants: [sd]
+      input: [0xbff6666666666666]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: llround_010
+      description: "llround(1.6) = 2"
+      api_name: llround
+      variants: [sd]
+      input: [0x3ff999999999999a]
+      expect: [0x4000000000000000]
+      expect_exception: []
+
+    - id: llround_011
+      description: "llround(snan) invalid"
+      api_name: llround
+      variants: [sd]
+      input: [0x7ff4000000000001]
+      expect: [0xc3e0000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: llround_012
+      description: "llround(+0.5) halfway away from zero → +1"
+      api_name: llround
+      variants: [sd]
+      input: [0x3fe0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: llround_013
+      description: "llround(nextafter(+0.5,0)) largest double < 0.5 → 0"
+      api_name: llround
+      variants: [sd]
+      input: [0x3fdfffffffffffff]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_014
+      description: "llround(-0.5) halfway away from zero → -1"
+      api_name: llround
+      variants: [sd]
+      input: [0xbfe0000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: llround_015
+      description: "llround(nextafter(-0.5,+0)) smallest double > -0.5 → 0"
+      api_name: llround
+      variants: [sd]
+      input: [0xbfdfffffffffffff]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_016
+      description: "llround(+1.5) halfway → +2"
+      api_name: llround
+      variants: [sd]
+      input: [0x3ff8000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: []
+
+    - id: llround_017
+      description: "llround(-2.5) halfway → -3"
+      api_name: llround
+      variants: [sd]
+      input: [0xc004000000000000]
+      expect: [0xc008000000000000]
+      expect_exception: []
+
+    - id: llround_018
+      description: "llround(nextafter(-2.5,+0)) just above -2.5 → -2"
+      api_name: llround
+      variants: [sd]
+      input: [0xc003ffffffffffff]
+      expect: [0xc000000000000000]
+      expect_exception: []
+
+    - id: llround_019
+      description: "llround(2^53-1) last odd integer exactly representable in double"
+      api_name: llround
+      variants: [sd]
+      input: [0x433fffffffffffff]
+      expect: [0x433fffffffffffff]
+      expect_exception: []
+
+    - id: llround_020
+      description: "Decimal 0.499999999999999999 (strtod rounds to +0.5) → +1"
+      api_name: llround
+      variants: [sd]
+      input: [0x3fe0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: llround_021
+      description: "Decimal -0.499999999999999999 (strtod rounds to -0.5) → -1"
+      api_name: llround
+      variants: [sd]
+      input: [0xbfe0000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: llround_022
+      description: "Decimal 0.5000999999999999 (just above +0.5) → +1"
+      api_name: llround
+      variants: [sd]
+      input: [0x3fe000d1b71758e1]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: llround_023
+      description: "Decimal -0.5000999999999999 (more negative than -0.5) → -1"
+      api_name: llround
+      variants: [sd]
+      input: [0xbfe000d1b71758e1]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: llround_024
+      description: "IEEE 0x3fdfffffffffffff (largest double < +0.5) → 0"
+      api_name: llround
+      variants: [sd]
+      input: [0x3fdfffffffffffff]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_025
+      description: "IEEE 0xbfdfffffffffffff (nextafter(-0.5, +0); smallest double > -0.5) → 0"
+      api_name: llround
+      variants: [sd]
+      input: [0xbfdfffffffffffff]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_026
+      description: "IEEE 0x3fe0000000000000 (+0.5) halfway → +1"
+      api_name: llround
+      variants: [sd]
+      input: [0x3fe0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: llround_027
+      description: "IEEE 0xbfe0000000000000 (-0.5) halfway → -1"
+      api_name: llround
+      variants: [sd]
+      input: [0xbfe0000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: llround_028
+      description: "IEEE 0x3fe0000000000001 (nextafter(+0.5, +∞)) → +1"
+      api_name: llround
+      variants: [sd]
+      input: [0x3fe0000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: llround_029
+      description: "IEEE 0xbfe0000000000001 (nextafter(-0.5, -∞)) → -1"
+      api_name: llround
+      variants: [sd]
+      input: [0xbfe0000000000001]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: llround_030
+      description: "llround(+2.3) = +2"
+      api_name: llround
+      variants: [sd]
+      input: [0x4002666666666666]
+      expect: [0x4000000000000000]
+      expect_exception: []
+
+    - id: llround_031
+      description: "llround(+2.5) = +3 (half away from zero)"
+      api_name: llround
+      variants: [sd]
+      input: [0x4004000000000000]
+      expect: [0x4008000000000000]
+      expect_exception: []
+
+    - id: llround_032
+      description: "llround(+2.7) = +3"
+      api_name: llround
+      variants: [sd]
+      input: [0x400599999999999a]
+      expect: [0x4008000000000000]
+      expect_exception: []
+
+    - id: llround_033
+      description: "llround(-2.3) = -2"
+      api_name: llround
+      variants: [sd]
+      input: [0xc002666666666666]
+      expect: [0xc000000000000000]
+      expect_exception: []
+
+    - id: llround_034
+      description: "llround(-2.5) = -3 (half away from zero)"
+      api_name: llround
+      variants: [sd]
+      input: [0xc004000000000000]
+      expect: [0xc008000000000000]
+      expect_exception: []
+
+    - id: llround_035
+      description: "llround(-2.7) = -3"
+      api_name: llround
+      variants: [sd]
+      input: [0xc00599999999999a]
+      expect: [0xc008000000000000]
+      expect_exception: []
+
+    - id: llround_036
+      description: "llround(-0.0) = +0 (packed +0.0)"
+      api_name: llround
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_037
+      description: "llround(-Inf) invalid; oracle LLONG_MIN as double (domain)"
+      api_name: llround
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xc3e0000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: llround_038
+      description: "llround((double)LONG_MAX+1.5) invalid; LLONG_MIN as double; FE_INVALID"
+      api_name: llround
+      variants: [sd]
+      input: [0x43e0000000000000]
+      expect: [0xc3e0000000000000]
+      expect_exception: [invalidoperation]
+
+
+    - id: llround_039
+      description: "llround(1.0) = 1"
+      api_name: llround
+      variants: [sd]
+      input: [0x3ff0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: llround_040
+      description: "llround(-1.0) = -1"
+      api_name: llround
+      variants: [sd]
+      input: [0xbff0000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: llround_041
+      description: "llround(-1.5) = -2 (half away from zero)"
+      api_name: llround
+      variants: [sd]
+      input: [0xbff8000000000000]
+      expect: [0xc000000000000000]
+      expect_exception: []
+
+    - id: llround_042
+      description: "llround(4.5) = 5 (half away from zero)"
+      api_name: llround
+      variants: [sd]
+      input: [0x4012000000000000]
+      expect: [0x4014000000000000]
+      expect_exception: []
+
+    - id: llround_043
+      description: "llround(-4.5) = -5 (half away from zero)"
+      api_name: llround
+      variants: [sd]
+      input: [0xc012000000000000]
+      expect: [0xc014000000000000]
+      expect_exception: []
+
+    - id: llround_044
+      description: "llround(0.125) = 0"
+      api_name: llround
+      variants: [sd]
+      input: [0x3fc0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_045
+      description: "llround(0.25) = 0"
+      api_name: llround
+      variants: [sd]
+      input: [0x3fd0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_046
+      description: "llround(0.375) = 0"
+      api_name: llround
+      variants: [sd]
+      input: [0x3fd8000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_047
+      description: "llround(-0.125) = 0"
+      api_name: llround
+      variants: [sd]
+      input: [0xbfc0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_048
+      description: "llround(-0.25) = 0"
+      api_name: llround
+      variants: [sd]
+      input: [0xbfd0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_049
+      description: "llround(-0.375) = 0"
+      api_name: llround
+      variants: [sd]
+      input: [0xbfd8000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_050
+      description: "llround(0.625) = 1"
+      api_name: llround
+      variants: [sd]
+      input: [0x3fe4000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: llround_051
+      description: "llround(0.75) = 1"
+      api_name: llround
+      variants: [sd]
+      input: [0x3fe8000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: llround_052
+      description: "llround(-0.625) = -1"
+      api_name: llround
+      variants: [sd]
+      input: [0xbfe4000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: llround_053
+      description: "llround(-0.75) = -1"
+      api_name: llround
+      variants: [sd]
+      input: [0xbfe8000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: llround_054
+      description: "llround(pi) = 3"
+      api_name: llround
+      variants: [sd]
+      input: [0x400921fb54442d18]
+      expect: [0x4008000000000000]
+      expect_exception: []
+
+    - id: llround_055
+      description: "llround(-pi) = -3"
+      api_name: llround
+      variants: [sd]
+      input: [0xc00921fb54442d18]
+      expect: [0xc008000000000000]
+      expect_exception: []
+
+    - id: llround_056
+      description: "llround(2.0) = 2"
+      api_name: llround
+      variants: [sd]
+      input: [0x4000000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: []
+
+    - id: llround_057
+      description: "llround(4.0) = 4"
+      api_name: llround
+      variants: [sd]
+      input: [0x4010000000000000]
+      expect: [0x4010000000000000]
+      expect_exception: []
+
+    - id: llround_058
+      description: "llround(8.0) = 8"
+      api_name: llround
+      variants: [sd]
+      input: [0x4020000000000000]
+      expect: [0x4020000000000000]
+      expect_exception: []
+
+    - id: llround_059
+      description: "llround(16.0) = 16"
+      api_name: llround
+      variants: [sd]
+      input: [0x4030000000000000]
+      expect: [0x4030000000000000]
+      expect_exception: []
+
+    - id: llround_060
+      description: "llround(100.0) = 100"
+      api_name: llround
+      variants: [sd]
+      input: [0x4059000000000000]
+      expect: [0x4059000000000000]
+      expect_exception: []
+
+    - id: llround_061
+      description: "llround(-100.0) = -100"
+      api_name: llround
+      variants: [sd]
+      input: [0xc059000000000000]
+      expect: [0xc059000000000000]
+      expect_exception: []
+
+    - id: llround_062
+      description: "llround(8.25) = 8"
+      api_name: llround
+      variants: [sd]
+      input: [0x4020800000000000]
+      expect: [0x4020000000000000]
+      expect_exception: []
+
+    - id: llround_063
+      description: "llround(9.0) = 9"
+      api_name: llround
+      variants: [sd]
+      input: [0x4022000000000000]
+      expect: [0x4022000000000000]
+      expect_exception: []
+
+    - id: llround_064
+      description: "llround(5.0) = 5"
+      api_name: llround
+      variants: [sd]
+      input: [0x4014000000000000]
+      expect: [0x4014000000000000]
+      expect_exception: []
+
+    - id: llround_065
+      description: "llround(7.0) = 7"
+      api_name: llround
+      variants: [sd]
+      input: [0x401c000000000000]
+      expect: [0x401c000000000000]
+      expect_exception: []
+
+    - id: llround_066
+      description: "llround(2^52) exact integer"
+      api_name: llround
+      variants: [sd]
+      input: [0x4330000000000000]
+      expect: [0x4330000000000000]
+      expect_exception: []
+
+    - id: llround_067
+      description: "llround(2^53) exact integer"
+      api_name: llround
+      variants: [sd]
+      input: [0x4340000000000000]
+      expect: [0x4340000000000000]
+      expect_exception: []
+
+    - id: llround_068
+      description: "llround(-2^52) exact integer"
+      api_name: llround
+      variants: [sd]
+      input: [0xc330000000000000]
+      expect: [0xc330000000000000]
+      expect_exception: []
+
+    - id: llround_069
+      description: "llround(-2^53) exact integer"
+      api_name: llround
+      variants: [sd]
+      input: [0xc340000000000000]
+      expect: [0xc340000000000000]
+      expect_exception: []
+
+    - id: llround_070
+      description: "llround(5.96e-8) very small = 0"
+      api_name: llround
+      variants: [sd]
+      input: [0x3e70000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_071
+      description: "llround(-5.96e-8) very small = 0"
+      api_name: llround
+      variants: [sd]
+      input: [0xbe70000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_072
+      description: "llround(DBL_MIN) = 0"
+      api_name: llround
+      variants: [sd]
+      input: [0x0010000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_073
+      description: "llround(-DBL_MIN) = 0"
+      api_name: llround
+      variants: [sd]
+      input: [0x8010000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_074
+      description: "llround(smallest positive subnormal) = 0"
+      api_name: llround
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_075
+      description: "llround(-smallest subnormal) = 0"
+      api_name: llround
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: llround_076
+      description: "llround(100000000.0) = 100000000"
+      api_name: llround
+      variants: [sd]
+      input: [0x4197d78400000000]
+      expect: [0x4197d78400000000]
+      expect_exception: []
+
+    - id: llround_077
+      description: "llround(-100000000.0) = -100000000"
+      api_name: llround
+      variants: [sd]
+      input: [0xc197d78400000000]
+      expect: [0xc197d78400000000]
+      expect_exception: []
+
+    - id: llround_078
+      description: "llround(-snan) invalid; oracle LLONG_MIN as double"
+      api_name: llround
+      variants: [sd]
+      input: [0xfff2000000000000]
+      expect: [0xc3e0000000000000]
+      expect_exception: [invalidoperation]
+

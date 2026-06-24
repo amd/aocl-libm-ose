@@ -57,8 +57,10 @@ typedef    float  _Complex     fc32_t;
 typedef    double _Complex     fc64_t;
 #endif
 
-typedef    long int              lint_t;
-typedef    unsigned long int     ulint_t;
+typedef    long int                 lint_t;
+typedef    unsigned long int        ulint_t;
+typedef    long long int            llint_t;
+typedef    unsigned long long int   ullint_t;
 
 #ifdef  HAVE_NATIVE_LONG_LONG_DOUBLE
 typedef    long long double    f128_t;

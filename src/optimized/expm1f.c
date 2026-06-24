@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -106,6 +106,12 @@ ALM_PROTO_OPT(expm1f)(float x)
      * cancellation
      */
     if (unlikely (x <= FTHRESH_HI && (double)x >= FTHRESH_LO)) {
+
+        /* ±0: all magnitude bits zero -> return x to preserve sign of zero.
+         * Bitwise test (DAZ-immune); computed only on this unlikely near-0 path. */
+        if ((asuint32(x) & POS_BITSET_F32) == 0U)
+            return x;
+
         double dx2;
 
         dx  = (double)x;

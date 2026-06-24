@@ -119,6 +119,7 @@
          return INFINITY;
      if (aop != T(0) && ref != T(0) && std::signbit(aop) != std::signbit(ref))
          return INFINITY;
+     /* +0 vs −0: ULP stays 0 (same as gtests getUlp); scalar conformance in update_ulp */
      if (aop == T(0) && ref == T(0))
          return 0.0;
      if (std::isinf(aop) && std::isinf(ref))
@@ -142,6 +143,8 @@
   *   B — Finite sign:       sign mismatch guard returns INFINITY
   *   C — Overflow formula:  fractional overshoot past T_MAX, not hardcoded +1
   *   D — Binade cast:       floor_cast guarantees correct binade for ref
+  *   E — Signed zero:       compute_ulp returns 0 for ±0 pairs; update_ulp fails
+  *                          on scalar types when signs differ
   */
  template <typename S, typename L>
  double compute_ulp(S aop, L ref)
@@ -260,7 +263,10 @@
   * smallest normal number of type L so that subnormal ref values
   * do not inflate the ratio (IEEE 754-2008 §5.11 convention).
   *
-  * Returns 0 when both are zero, INFINITY for NaN/Inf or ref==0 mismatches.
+  * Returns 0 when both are zero (including +0 vs −0); scalar signed-zero is
+  * enforced in update_ulp. Complex (fc32/fc64) omits that gate like gtests
+  * ConfVerifyComplex* on amd-main.
+  * INFINITY for NaN/Inf or ref==0 mismatches (non-zero actual).
   */
  template <typename S, typename L>
  double compute_relative_error(S aop, L ref)
@@ -430,6 +436,29 @@
      return compute_relative_error_components(aop, ref).linf();
  }
 
+/*
+ * signed_zero_bits_mismatch:
+ * Scalar +0 vs −0: treat as conformance failure while compute_ulp reports 0.
+ * Used only for non-complex update_ulp (gtests scalar ConfVerify*).
+ */
+ template <typename S, typename L>
+ static inline bool signed_zero_bits_mismatch(S aop, L ref)
+ {
+     return aop == S(0) && ref == L(0) && std::signbit(aop) != std::signbit(ref);
+ }
+
+template <typename S, typename L>
+static inline bool signed_zero_mismatch(S aop, L ref)
+{
+    if constexpr (std::is_same_v<S, fc32_t> || std::is_same_v<S, fc64_t>) {
+        (void)aop;
+        (void)ref;
+        return false;
+    } else {
+        return signed_zero_bits_mismatch(aop, ref);
+    }
+}
+
  /*
   * update_ulp:
   * Updates the maximum ULP / relative error, classifies the test point
@@ -439,6 +468,7 @@
  int update_ulp(S aop, L mpfrop, struct ulp_data &udata, double &ulp)
  {
      ulp = compute_ulp(aop, mpfrop);
+     const bool sz_fail = signed_zero_mismatch(aop, mpfrop);
      int res = TESTCASE_PASS;
 
      if (std::isinf(ulp) || std::isnan(ulp)) {
@@ -449,17 +479,24 @@
          if (ulp > udata.max_ulp_err)
              udata.max_ulp_err = ulp;
 
-         if (ulp == 0.0)
-             udata.exact_count++;
-         else if (ulp <= 0.5)
-             udata.rounded_count++;
-         else
-             udata.inaccurate_count++;
+        if (sz_fail) {
+            /* ULP is 0 like gtests; still fail conformance on sign of zero.
+             * Bucket by ulp_data: exact_count for ulp==0, not inaccurate_count (ulp > 0.5). */
+            res = TESTCASE_FAIL;
+            udata.exact_count++;
+        } else {
+            if (ulp == 0.0)
+                udata.exact_count++;
+            else if (ulp <= 0.5)
+                udata.rounded_count++;
+            else
+                udata.inaccurate_count++;
 
-         if (ulp > udata.ulp_threshold) {
-             res = TESTCASE_FAIL;
-             udata.ulp_exceed_count++;
-         }
+            if (ulp > udata.ulp_threshold) {
+                res = TESTCASE_FAIL;
+                udata.ulp_exceed_count++;
+            }
+        }
      }
 
      double relerr = compute_relative_error(aop, mpfrop);

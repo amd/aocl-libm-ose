@@ -184,6 +184,36 @@ YAML::Node serialize_yaml_outputs(const struct YamlOutputs<S> *yop)
                 std::string key = "op" + std::to_string(i + 1);
                 node[key] = op_node;
             }
+        } else if (!yop->op_hex_str[i].empty()) {
+            /* Integer output: pre-formatted hex string (unit/range tests). */
+            YAML::Node op_node;
+            if (yop->config.utflag) {
+                op_node.push_back(yop->op_hex_str[i]);
+                op_node.SetStyle(YAML::EmitterStyle::Flow);
+            } else if (yop->opstr) {
+                YAML::Node inner_list;
+                for (uint64_t j = 0; j < yop->n[0]; ++j) {
+                    inner_list.push_back(yop->opstr[j]);
+                }
+                inner_list.SetStyle(YAML::EmitterStyle::Flow);
+                op_node.push_back(inner_list);
+            } else {
+                op_node.push_back(yop->op_hex_str[i]);
+                op_node.SetStyle(YAML::EmitterStyle::Flow);
+            }
+            std::string key = "op" + std::to_string(i + 1);
+            node[key] = op_node;
+        } else if (i == 0 && yop->opstr) {
+            /* Integer output: per-element hex strings (VRA tests). */
+            YAML::Node op_node;
+            YAML::Node inner_list;
+            for (uint64_t j = 0; j < yop->n[0]; ++j) {
+                inner_list.push_back(yop->opstr[j]);
+            }
+            inner_list.SetStyle(YAML::EmitterStyle::Flow);
+            op_node.push_back(inner_list);
+            std::string key = "op" + std::to_string(i + 1);
+            node[key] = op_node;
         }
     }
 

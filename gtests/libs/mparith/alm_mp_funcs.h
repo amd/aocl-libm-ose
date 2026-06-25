@@ -33,8 +33,10 @@
 extern "C" {
 #endif
 
+#ifndef __cplusplus
 typedef    long int            lint_t;
 typedef    unsigned long int   ulint_t;
+#endif
 
 double   alm_mp_acosf       (float x);
 double   alm_mp_acoshf      (float x);

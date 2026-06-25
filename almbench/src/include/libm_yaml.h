@@ -87,6 +87,8 @@ struct YamlOutputs {
     uint64_t    n[MAX_IPPTR];                 /* Number of elements in each input arguments*/
     S          *iptr[MAX_IPPTR];             /* Input pointers */
     S          *optr[MAX_OPPTR];             /* Output pointers */
+    std::string op_hex_str[MAX_OPPTR];       /* Pre-formatted hex for integer outputs */
+    std::string *opstr;                      /* Pre-formatted hex for integer outputs ptr */
     double     *ulp;                         /* ULP error values */
     int        *status;                     /* Status flags for each input */
     int         exception_raised;            /* Raised exceptions */
@@ -98,7 +100,7 @@ struct YamlOutputs {
 
     /* Constructor */
     YamlOutputs(std::string &var)
-        : variant(var), ulp(nullptr), status(nullptr),
+        : variant(var), opstr(nullptr), ulp(nullptr), status(nullptr),
           exception_raised(0),
           duration(0.0),
           vendor("amd"), outfile("amd_api_ut_ss.yaml")

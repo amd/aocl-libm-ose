@@ -57,6 +57,12 @@ FuncType load_function(DL_HANDLE lib, const std::string &name)
 template double (*load_function(DL_HANDLE, const std::string&))(float);
 template long double (*load_function(DL_HANDLE, const std::string&))(double);
 
+template lint_t (*load_function(DL_HANDLE, const std::string&))(float);
+template lint_t (*load_function(DL_HANDLE, const std::string&))(double);
+
+template llint_t (*load_function(DL_HANDLE, const std::string&))(float);
+template llint_t (*load_function(DL_HANDLE, const std::string&))(double);
+
 template double (*load_function(DL_HANDLE, const std::string&))(float, float);
 template long double (*load_function(DL_HANDLE, const std::string&))(double, double);
 

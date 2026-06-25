@@ -254,6 +254,18 @@
      return iulp + fulp;
  }
 
+ /* Integer-integer ULP: 0 if equal, absolute error otherwise.
+  * Subtract in double to avoid signed-integer overflow UB. */
+ static inline double compute_ulp(lint_t aop, lint_t ref)
+ {
+     return std::fabs(static_cast<double>(aop) - static_cast<double>(ref));
+ }
+
+ static inline double compute_ulp(llint_t aop, llint_t ref)
+ {
+     return std::fabs(static_cast<double>(aop) - static_cast<double>(ref));
+ }
+
  /*
   * compute_relative_error:
   * Computes |aop - ref| / max(|ref|, MIN_NORMAL).
@@ -293,6 +305,15 @@
      return static_cast<double>(
          std::fabs(static_cast<L>(aop) - ref) / denom);
  }
+
+template <typename T, typename = typename std::enable_if<std::is_integral<T>::value>::type>
+static inline double compute_relative_error(T aop, T ref)
+{
+    if (ref == 0)
+        return (aop == 0) ? 0.0 : INFINITY;
+
+    return std::abs(static_cast<double>(aop) - static_cast<double>(ref)) / std::abs(static_cast<double>(ref));
+}
 
  /* ═══════════════════════════════════════════════════════════════════
   *  Complex ULP
@@ -520,6 +541,11 @@ static inline bool signed_zero_mismatch(S aop, L ref)
                                                struct ulp_data &udata, double &ulp);
  template int update_ulp<double, long double>(double amdop, long double mpfrop,
                                                struct ulp_data &udata, double &ulp);
+
+template int update_ulp<lint_t, lint_t>(lint_t amdop, lint_t mpfrop,
+                                        struct ulp_data &udata, double &ulp);
+template int update_ulp<llint_t, llint_t>(llint_t amdop, llint_t mpfrop,
+                                            struct ulp_data &udata, double &ulp);
 
  template int update_ulp<fc32_t, fc32_t>(fc32_t amdop, fc32_t mpfrop,
                                                struct ulp_data &udata, double &ulp);

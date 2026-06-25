@@ -63,6 +63,12 @@
    typedef    _Dcomplex            fc64_t;
    typedef    _Lcomplex            fc128_t;
 
+   typedef    long int                lint_t;
+   typedef    unsigned long int       ulint_t;
+   typedef    long long int           llint_t;
+   typedef    unsigned long long int  ullint_t;
+
+
    /* Portable component accessors for MSVC complex types */
    static inline float       fc_real(fc32_t  z) { return z._Val[0]; }
    static inline float       fc_imag(fc32_t  z) { return z._Val[1]; }
@@ -85,6 +91,10 @@
    typedef    float __complex__       fc32_t;
    typedef    double __complex__      fc64_t;
    typedef    long double __complex__ fc128_t;
+   typedef    long int                lint_t;
+   typedef    unsigned long int       ulint_t;
+   typedef    long long int           llint_t;
+   typedef    unsigned long long int  ullint_t;
    #if defined(__clang__)
      #pragma clang diagnostic pop
    #endif
@@ -189,10 +199,10 @@ struct TestConfig {
 /*
  * Bit-level type-punning helpers.
  */
-static inline uint32_t asuint32(float f)   { valf v = {.f = f}; return v.u; }
-static inline float    asfloat(uint32_t u) { valf v = {.u = u}; return v.f; }
-static inline uint64_t asuint64(double d)  { val  v = {.d = d}; return v.u; }
-static inline double   asdouble(uint64_t u){ val  v = {.u = u}; return v.d; }
+static inline uint32_t asuint32(float f)    { valf v; v.f = f; return v.u; }
+static inline float    asfloat(uint32_t u)  { valf v; v.u = u; return v.f; }
+static inline uint64_t asuint64(double d)   { val v; v.d = d; return v.u; }
+static inline double   asdouble(uint64_t u) { val v; v.u = u; return v.d; }
 
  namespace libm {
      /* SIMD wrapper types */
@@ -319,6 +329,12 @@ struct DerivedConfig {
      std::optional<DerivedConfig<U>> derived; /* Config for derived generation (used when type == E_Derived) */
 };
 
+union IntOp {
+    int        i;
+    lint_t     l;
+    llint_t    ll;
+};
+
  /*
   * InParams:
   * Templated structure to hold input parameters for validation.
@@ -330,6 +346,7 @@ struct DerivedConfig {
      uint64_t   count;                       /* Number of elements */
      T          ip[MAX_IPPTR];               /* Single input values */
      T          op[MAX_OPPTR];               /* Single output values */
+     IntOp      iop;                         /* Single output integer values */
      U          xv;                          /* Expected output value */
      int        xxv;                         /* Expected exception */
      std::vector<InpRng<U>> range;           /* Input ranges */

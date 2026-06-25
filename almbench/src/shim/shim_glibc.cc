@@ -195,14 +195,14 @@ typedef float (*gcc_hypot_ss_func_t)(float, float);
 typedef int (*gcc_ilogb_ss_func_t)(float);
 typedef float (*gcc_ldexp_ss_func_t)(float, int);
 typedef long long (*gcc_llrint_ss_func_t)(float);
-typedef long long (*gcc_llround_ss_func_t)(float);
+typedef llint_t (*gcc_llround_ss_func_t)(float);
 typedef float (*gcc_log_ss_func_t)(float);
 typedef float (*gcc_log10_ss_func_t)(float);
 typedef float (*gcc_log1p_ss_func_t)(float);
 typedef float (*gcc_log2_ss_func_t)(float);
 typedef float (*gcc_logb_ss_func_t)(float);
 typedef long (*gcc_lrint_ss_func_t)(float);
-typedef long (*gcc_lround_ss_func_t)(float);
+typedef lint_t (*gcc_lround_ss_func_t)(float);
 typedef float (*gcc_modf_ss_func_t)(float, float*);
 typedef float (*gcc_nearbyint_ss_func_t)(float);
 typedef float (*gcc_nextafter_ss_func_t)(float, float);
@@ -260,14 +260,14 @@ typedef double (*gcc_hypot_sd_func_t)(double, double);
 typedef int (*gcc_ilogb_sd_func_t)(double);
 typedef double (*gcc_ldexp_sd_func_t)(double, int);
 typedef long long (*gcc_llrint_sd_func_t)(double);
-typedef long long (*gcc_llround_sd_func_t)(double);
+typedef llint_t (*gcc_llround_sd_func_t)(double);
 typedef double (*gcc_log_sd_func_t)(double);
 typedef double (*gcc_log10_sd_func_t)(double);
 typedef double (*gcc_log1p_sd_func_t)(double);
 typedef double (*gcc_log2_sd_func_t)(double);
 typedef double (*gcc_logb_sd_func_t)(double);
 typedef long (*gcc_lrint_sd_func_t)(double);
-typedef long (*gcc_lround_sd_func_t)(double);
+typedef lint_t (*gcc_lround_sd_func_t)(double);
 typedef double (*gcc_modf_sd_func_t)(double, double*);
 typedef double (*gcc_nearbyint_sd_func_t)(double);
 typedef double (*gcc_nextafter_sd_func_t)(double, double);
@@ -1919,7 +1919,7 @@ SHIM_EXPORT void shim_llrint_ss(InParams<float, float> *ipp) {
 }
 
 SHIM_EXPORT void shim_llround_ss(InParams<float, float> *ipp) {
-    ipp->op[0] = static_cast<float>(gcc_funcs.llroundf(ipp->ip[0]));
+    ipp->iop.ll = gcc_funcs.llroundf(ipp->ip[0]);
 }
 
 SHIM_EXPORT void shim_log_ss(InParams<float, float> *ipp) {
@@ -1947,7 +1947,7 @@ SHIM_EXPORT void shim_lrint_ss(InParams<float, float> *ipp) {
 }
 
 SHIM_EXPORT void shim_lround_ss(InParams<float, float> *ipp) {
-    ipp->op[0] = static_cast<float>(gcc_funcs.lroundf(ipp->ip[0]));
+    ipp->iop.l = gcc_funcs.lroundf(ipp->ip[0]);
 }
 
 SHIM_EXPORT void shim_modf_ss(InParams<float, float> *ipp) {
@@ -2180,7 +2180,7 @@ SHIM_EXPORT void shim_llrint_sd(InParams<double, double> *ipp) {
 }
 
 SHIM_EXPORT void shim_llround_sd(InParams<double, double> *ipp) {
-    ipp->op[0] = static_cast<double>(gcc_funcs.llround(ipp->ip[0]));
+    ipp->iop.ll = gcc_funcs.llround(ipp->ip[0]);
 }
 
 SHIM_EXPORT void shim_log_sd(InParams<double, double> *ipp) {
@@ -2208,7 +2208,7 @@ SHIM_EXPORT void shim_lrint_sd(InParams<double, double> *ipp) {
 }
 
 SHIM_EXPORT void shim_lround_sd(InParams<double, double> *ipp) {
-    ipp->op[0] = static_cast<double>(gcc_funcs.lround(ipp->ip[0]));
+    ipp->iop.l = gcc_funcs.lround(ipp->ip[0]);
 }
 
 SHIM_EXPORT void shim_modf_sd(InParams<double, double> *ipp) {

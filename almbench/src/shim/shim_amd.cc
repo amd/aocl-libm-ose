@@ -152,14 +152,14 @@ typedef float (*amd_hypot_ss_func_t)(float, float);
 typedef int (*amd_ilogb_ss_func_t)(float);
 typedef float (*amd_ldexp_ss_func_t)(float, int);
 typedef long long (*amd_llrint_ss_func_t)(float);
-typedef long long (*amd_llround_ss_func_t)(float);
+typedef llint_t (*amd_llround_ss_func_t)(float);
 typedef float (*amd_log_ss_func_t)(float);
 typedef float (*amd_log10_ss_func_t)(float);
 typedef float (*amd_log1p_ss_func_t)(float);
 typedef float (*amd_log2_ss_func_t)(float);
 typedef float (*amd_logb_ss_func_t)(float);
 typedef long (*amd_lrint_ss_func_t)(float);
-typedef long (*amd_lround_ss_func_t)(float);
+typedef lint_t (*amd_lround_ss_func_t)(float);
 typedef float (*amd_modf_ss_func_t)(float, float*);
 typedef float (*amd_nearbyint_ss_func_t)(float);
 typedef float (*amd_nextafter_ss_func_t)(float, float);
@@ -222,14 +222,14 @@ typedef double (*amd_hypot_sd_func_t)(double, double);
 typedef int (*amd_ilogb_sd_func_t)(double);
 typedef double (*amd_ldexp_sd_func_t)(double, int);
 typedef long long (*amd_llrint_sd_func_t)(double);
-typedef long long (*amd_llround_sd_func_t)(double);
+typedef llint_t (*amd_llround_sd_func_t)(double);
 typedef double (*amd_log_sd_func_t)(double);
 typedef double (*amd_log10_sd_func_t)(double);
 typedef double (*amd_log1p_sd_func_t)(double);
 typedef double (*amd_log2_sd_func_t)(double);
 typedef double (*amd_logb_sd_func_t)(double);
 typedef long (*amd_lrint_sd_func_t)(double);
-typedef long (*amd_lround_sd_func_t)(double);
+typedef lint_t (*amd_lround_sd_func_t)(double);
 typedef double (*amd_modf_sd_func_t)(double, double*);
 typedef double (*amd_nearbyint_sd_func_t)(double);
 typedef double (*amd_nextafter_sd_func_t)(double, double);
@@ -1584,7 +1584,7 @@ SHIM_EXPORT void shim_llrint_ss(InParams<float, float> *ipp) {
 }
 
 SHIM_EXPORT void shim_llround_ss(InParams<float, float> *ipp) {
-    ipp->op[0] = static_cast<float>(amd_funcs.llroundf(ipp->ip[0]));
+    ipp->iop.ll = amd_funcs.llroundf(ipp->ip[0]);
 }
 
 SHIM_EXPORT void shim_log_ss(InParams<float, float> *ipp) {
@@ -1612,7 +1612,7 @@ SHIM_EXPORT void shim_lrint_ss(InParams<float, float> *ipp) {
 }
 
 SHIM_EXPORT void shim_lround_ss(InParams<float, float> *ipp) {
-    ipp->op[0] = static_cast<float>(amd_funcs.lroundf(ipp->ip[0]));
+    ipp->iop.l = amd_funcs.lroundf(ipp->ip[0]);
 }
 
 SHIM_EXPORT void shim_modf_ss(InParams<float, float> *ipp) {
@@ -1861,7 +1861,7 @@ SHIM_EXPORT void shim_llrint_sd(InParams<double, double> *ipp) {
 }
 
 SHIM_EXPORT void shim_llround_sd(InParams<double, double> *ipp) {
-    ipp->op[0] = static_cast<double>(amd_funcs.llround(ipp->ip[0]));
+    ipp->iop.ll = amd_funcs.llround(ipp->ip[0]);
 }
 
 SHIM_EXPORT void shim_log_sd(InParams<double, double> *ipp) {
@@ -1889,7 +1889,7 @@ SHIM_EXPORT void shim_lrint_sd(InParams<double, double> *ipp) {
 }
 
 SHIM_EXPORT void shim_lround_sd(InParams<double, double> *ipp) {
-    ipp->op[0] = static_cast<double>(amd_funcs.lround(ipp->ip[0]));
+    ipp->iop.l = amd_funcs.lround(ipp->ip[0]);
 }
 
 SHIM_EXPORT void shim_modf_sd(InParams<double, double> *ipp) {

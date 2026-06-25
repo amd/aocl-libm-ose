@@ -92,6 +92,18 @@ void SetGlobalUlpThreshold(double threshold);
          using mopt = long double;
      };
 
+     /* Specialization for lint_t */
+     template <>
+     struct op_type<lint_t> {
+         using mopt = lint_t;
+     };
+
+      /* Specialization for llint_t */
+     template <>
+     struct op_type<llint_t> {
+         using mopt = llint_t;
+     };
+
      /* C complex — reference from mparith matches cexp/clog (promoted result type). */
      template <>
      struct op_type<fc32_t> {

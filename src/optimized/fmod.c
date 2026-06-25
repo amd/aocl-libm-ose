@@ -86,7 +86,7 @@ double ALM_PROTO_OPT(fmod)(double x, double y)
     /* Check if x is INF */
     if(unlikely(ax == POS_INF_F64))
     {
-        return _fmod_special(x, asdouble(ay | QNANBITPATT_DP64), FMOD_X_INF);
+        return _fmod_special(x, asdouble(ax | QNANBITPATT_DP64), FMOD_X_INF);
     }
 
     if(ax == ay)

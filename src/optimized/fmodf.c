@@ -61,11 +61,7 @@ float ALM_PROTO_OPT(fmodf)(float x, float y)
     /* Check x for NaN. If yes, return qnan/snan as applicable. */
     if(unlikely(fax > POS_INF_F32))
     {
-    #ifdef WINDOWS
-        __alm_handle_errorf(fay | QNANBITPATT_SP32, AMD_F_INVALID);
-    #else
         return x + x;
-    #endif
     }
 
     /* Check if y is Zero. If yes, return NaN and raise exception*/
@@ -77,7 +73,7 @@ float ALM_PROTO_OPT(fmodf)(float x, float y)
     /* Check if x is INF */
     if(unlikely(fax == POS_INF_F32))
     {
-        return _fmodf_special(x, asfloat(fay | QNANBITPATT_SP32), FMOD_X_INF);
+        return _fmodf_special(x, asfloat(fax | QNANBITPATT_SP32), FMOD_X_INF);
     }
 
     if(fax == fay)

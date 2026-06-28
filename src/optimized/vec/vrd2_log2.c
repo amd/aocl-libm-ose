@@ -71,7 +71,7 @@ static struct {
     .inf = _MM_SET1_I64x2(0xfff0000000000000),
     .ln2 = _MM_SET1_PD2(0x1.62e42fefa39efp-1),
     .ln2_head = _MM_SET1_PD2(1.44269180297851562500E+00),
-    .ln2_tail = _MM_SET1_PD2(3.23791044778235969970E-06),
+    .ln2_tail = _MM_SET1_PD2(0x1.b295c17f0bbbfp-19),
     .v_max = _MM_SET1_I64x2(0x7ff0000000000000),
     .v_min = _MM_SET1_I64x2(0x0010000000000000),
     /* Polynomial coefficients obtained using fpminimax algorithm from Sollya */

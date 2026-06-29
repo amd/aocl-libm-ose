@@ -34,7 +34,6 @@ avx2_asm = [
     'gas/fmaf_fma3.S',
     'gas/fma_fma3.S',
     'gas/log_fma3.S',
-    'gas/log1p_fma3.S',
     'gas/vrs4_cbrtf_fma3.S',
     'gas/vrs4_exp10f_fma3.S',
     'gas/vrs4_expm1f_fma3.S',

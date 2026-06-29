@@ -44,6 +44,7 @@ _OPT_TARGET_SRCS = [
     'nearbyintf.c',
     'sqrt.c',
     'sqrtf.c',
+    'log1p_fma3.c',
 ]
 
 _OPT_COMMON_SRCS = [

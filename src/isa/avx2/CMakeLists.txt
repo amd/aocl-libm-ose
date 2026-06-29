@@ -29,7 +29,6 @@ set(AVX2_ASM
     ${CMAKE_CURRENT_SOURCE_DIR}/gas/fmaf_fma3.S
     ${CMAKE_CURRENT_SOURCE_DIR}/gas/fma_fma3.S
     ${CMAKE_CURRENT_SOURCE_DIR}/gas/log_fma3.S
-    ${CMAKE_CURRENT_SOURCE_DIR}/gas/log1p_fma3.S
     ${CMAKE_CURRENT_SOURCE_DIR}/gas/vrs4_cbrtf_fma3.S
     ${CMAKE_CURRENT_SOURCE_DIR}/gas/vrs4_exp10f_fma3.S
     ${CMAKE_CURRENT_SOURCE_DIR}/gas/vrs4_expm1f_fma3.S

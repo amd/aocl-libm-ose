@@ -32,6 +32,7 @@ set(OPTSRC
     nearbyintf.c
     sqrt.c
     sqrtf.c
+    log1p_fma3.c
 )
 
 set(COMMONSRC

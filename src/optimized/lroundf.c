@@ -78,7 +78,7 @@ lint_t ALM_PROTO_OPT(lroundf)(float x)
      * -2^(w-1) == LONG_MIN is representable and returned without raising.
      */
     if (unlikely(exp >= LROUND_MAXEXP_SP32)) {
-         if (!sign || x < LONG_MIN_AS_FLOAT)
+         if (!sign || !(x >= LONG_MIN_AS_FLOAT))
              __alm_handle_errorf(ux, AMD_F_INVALID);
          return (lint_t)LONG_MIN;
      }

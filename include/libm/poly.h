@@ -194,6 +194,14 @@
                         q;                                      \
                 })
 
+/*
+ * poly = c0 + c1*x + c2*x^2 + c3*x^3   (Horner)
+ */
+#define POLY_EVAL_HORNER_4(x, c0, c1, c2, c3) ({                \
+        __typeof(x) q = (((c3 * x + c2) * x + c1) * x + c0);    \
+         q;                                                     \
+         })
+
 #define POLY_EVAL_HORNER_5(x, c0, c1, c2, c3, c4) ({            \
         __typeof(x) q = (((( c4 * x + c3)* x + c2) * x + c1) *  \
                         x + c0);                                \

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -31,68 +31,37 @@
  *   float cosf(float x)
  *
  * Spec:
- *   cos(0)    = 1
- *   cos(-0)   = -1
- *   cos(inf)  = NaN
- *   cos(-inf) = NaN
- *
+ *   cosf(0)    = 1
+ *   cosf(-0)   = 1
+ *   cosf(inf)  = NaN
+ *   cosf(-inf) = NaN
  *
  ******************************************
  * Implementation Notes
  * ---------------------
  *
- * Checks for special cases
- * if ( ux = infinity) raise overflow exception and return x
- * if x is NaN then raise invalid FP operation exception and return x.
+ * cos is EVEN, so cos(x) = cos(|x|).  All arithmetic is carried out in double
+ * precision; the reduced argument is evaluated with minimax sin/cos polynomials
+ * and the result is rounded to float on return.
  *
- * 1. Argument reduction
- * if |x| > 5e5 then
- *      __amd_remainder_piby2d2f((uint64_t)x, &r, &region)
- * else
- *      Argument reduction
- *      Let z = |x| * 2/pi
- *      z = dn + r, where dn = round(z)
- *      rhead =  dn * pi/2_head
- *      rtail = dn * pi/2_tail
- *      r = z – dn = |x| - rhead – rtail
- *      expdiff = exp(dn) – exp(r)
- *      if(expdiff) > 15)
- *      rtail = |x| - dn*pi/2_tail2
- *      r = |x| -  dn*pi/2_head -  dn*pi/2_tail1
- *          -  dn*pi/2_tail2  - (((rhead + rtail) – rhead )-rtail)
+ *   |x| <= pi/4 : direct evaluation (x*x is sign-independent).
+ *       |x| < 2^-13          : cosf(x) = 1 - x^2/2
+ *       2^-13 <= |x| <= pi/4 : cos minimax polynomial
  *
- * 2. Polynomial approximation
- * if(dn is even)
- *       x4 = x2 * x2;
- *       s = 0.5 * x2;
- *       t =  1.0 - s;
- *       poly = x4 * (C1 + x2 * (C2 + x2 * (C3 + x2 * C4 )))
- *       r = t + poly
- * else
- *       x3 = x2 * r
- *       poly = x3 * (S1 + x2 * (S2 + x2 * (S3 + x2 * S4)))
- *       r = r + poly
- * if((sign + 1) & 2)
- *       return r
- * else
- *       return -r;
+ *   pi/4 < |x| < pi/2 : cosf(x) = sin(pi/2 - |x|).
+ *       q = pi/2_hi - |x| is exact (Sterbenz) and lies in (0, pi/4).
  *
- * if |x| < pi/4 && |x| > 2.0^(-13)
- *   r = 0.5 * x2;
- *   t = 1 - r;
- *   cos(x) = t + ((1.0 - t) - r) + (x*x * (x*x * C1 + C2*x*x + C3*x*x
- *             + C4*x*x +x*x*C5 + x*x*C6)))
- *
- * if |x| < 2.0^(-13) && |x| > 2.0^(-27)
- *   cos(x) = 1.0 - x*x*0.5;;
- *
- * else return 1.0
+ *   |x| >= pi/2 : reduce |x| = k*(pi/2) + r, region = k & 3, then
+ *       region 0 :  cos(r)      region 2 : -cos(r)
+ *       region 1 : -sin(r)      region 3 :  sin(r)
+ *     pi/2 <= |x| < 2^25 : two-piece Cody-Waite reduction.
+ *     |x| >= 2^25        : Payne-Hanek reduction.
  ******************************************
  */
 
 #include <stdint.h>
+#include <math.h>
 #include <libm_util_amd.h>
-#include <libm/alm_special.h>
 #include <libm/alm_special.h>
 #include <libm_macros.h>
 #include <libm/types.h>
@@ -101,206 +70,105 @@
 #include <libm/compiler.h>
 #include <libm/poly.h>
 
-static struct {
-                const double piby2_1, piby2_1tail;
-                const double piby2_2, piby2_2tail;
-                const double twobypi, alm_shift;
-                double poly_sin[4];
-                double poly_cos[4];
-                } cosf_data = {
-                                .alm_shift = 0x1.8p+52,
-                                .twobypi = 0x1.45f306dc9c883p-1,
-                                .piby2_1 = 0x1.921fb54400000p0,
-                                .piby2_1tail = 0x1.0b4611a626331p-34,
-                                .piby2_2 = 0x1.0b4611a600000p-34,
-                                .piby2_2tail = 0x1.3198a2e037073p-69,
-                                /*
-                                 * Polynomial coefficients
-                                 */
-                                .poly_sin = {
-                                                -0x1.5555555555555p-3,
-                                                0x1.1111111110bb3p-7,
-                                                -0x1.a01a019e83e5cp-13,
-                                                0x1.71de3796cde01p-19,
-                                            },
+#include "remainder_piby2_f.h"   /* Payne-Hanek mod-pi/2 reduction (cold path) */
 
-                                .poly_cos = {
-                                                0x1.5555555555555p-5,
-                                                -0x1.6c16c16c16967p-10,
-                                                0x1.A01A019F4EC91p-16,
-                                                -0x1.27E4FA17F667Bp-22,
-                                            },
-                };
+/* Reduction constants. */
+#define INV_PI_2    0x1.45f306dc9c883p-1    /* 2/pi                          */
+#define PI2_HI      0x1.921fb54442d18p+0    /* pi/2 (nearest double)         */
+#define PI2_HI_CW   0x1.921fb54400000p+0    /* pi/2 high part (24 low zeros) */
+#define PI2_MID     0x1.0b4611a626331p-34   /* pi/2 mid part                 */
+#define ALM_SHIFT   0x1.8p52                /* round-to-integer shifter      */
 
+/* Minimax coefficients on [0, pi/4]:
+ *   sin(r) = r + r^3 * (S1 + S2 r^2 + S3 r^4)
+ *   cos(r) = 1 - r^2/2 + r^4 * (C1 + C2 r^2 + C3 r^4)
+ */
+static const double S1 = -0x1.5555529be884fp-3;
+static const double S2 =  0x1.110c219cff89cp-7;
+static const double S3 = -0x1.9ac6d7159dfebp-13;
+static const double C1 =  0x1.5555543f4680cp-5;
+static const double C2 = -0x1.6c12cf63bdbe5p-10;
+static const double C3 =  0x1.9bd72c760e1a5p-16;
 
-void __amd_remainder_piby2d2f(uint64_t x, double *r, int *region);
+#define PIBY4_BITS  0x3F490FDBu     /* pi/4  as a float bit-pattern */
+#define PIBY2_BITS  0x3FC90FDBu     /* pi/2  as a float bit-pattern */
+#define COS_SMALL   0x3C000000u     /* 2^-13 */
+#define COLD_BITS   0x4C000000u     /* 2^25 : Cody-Waite <-> Payne-Hanek cut */
+#define INF_BITS    0x7F800000u
 
-#define COSF_PIBY2_1     cosf_data.piby2_1
-#define COSF_PIBY2_1TAIL cosf_data.piby2_1tail
-#define COSF_PIBY2_2     cosf_data.piby2_2
-#define COSF_PIBY2_2TAIL cosf_data.piby2_2tail
-#define COSF_TWO_BY_PI   cosf_data.twobypi
-#define COSF_ALM_SHIFT   cosf_data.alm_shift
+/* sin(r) ~= r + r^3 * (S1 + S2 r^2 + S3 r^4) -- takes the reduced r. */
+static inline double sin_poly(double r)
+{
+    double r2 = r * r;
+    double x3 = r * r2;
+    double p  = POLY_EVAL_3(r2, S1, S2, S3, 0.0);
+    return _LIBM_POLY_FMA(x3, p, r);
+}
 
-#define COSF_PIBY4       0x3F490FDB
-#define COSF_FIVE_E6     0x4A989680
-
-#define S1  cosf_data.poly_sin[0]
-#define S2  cosf_data.poly_sin[1]
-#define S3  cosf_data.poly_sin[2]
-#define S4  cosf_data.poly_sin[3]
-
-#define C1  cosf_data.poly_cos[0]
-#define C2  cosf_data.poly_cos[1]
-#define C3  cosf_data.poly_cos[2]
-#define C4  cosf_data.poly_cos[3]
-
-#define SIGN_MASK32  0x7FFFFFFF
-#define COSF_SMALL   0x3C000000 /* 2.0^(-13) */
-#define COSF_SMALLER 0x39000000 /* 2.0^(-27) */
-
+/* cos(r) ~= 1 - r^2/2 + r^4 * (C1 + C2 r^2 + C3 r^4) -- takes the reduced r.
+ * The leading 1 - r^2/2 and the inner poly are evaluated so the independent
+ * sub-expressions can issue in parallel; one final FMA folds the high term. */
+static inline double cos_poly(double r)
+{
+    double r2 = r * r;
+    double x4 = r2 * r2;
+    double cp = POLY_EVAL_3(r2, C1, C2, C3, 0.0); /* (C1 + C2 r^2) + C3 r^4 */
+    double t  = _LIBM_POLY_FMA(-0.5, r2, 1.0);  /* 1 - r^2/2            */
+    return _LIBM_POLY_FMA(x4, cp, t);
+}
 
 float
 ALM_PROTO_OPT(cosf)(float x)
 {
+    uint32_t axf = asuint32(x) & 0x7FFFFFFFu;   /* cos even -> work on |x| */
 
-    double r, rhead, rtail;
-    double xd, x2, x3, x4;
-    double poly, t, s;
-    uint64_t uy;
-    int32_t region;
-
-    /* cos(inf) = cos(-inf) = cos(NaN) = NaN */
-
-    /* Get absolute value of input x */
-    uint32_t ux = asuint32(x);
-    ux = ux & SIGN_MASK32;
-
-    if(unlikely(ux >= PINFBITPATT_SP32)) {
-        /* infinity or NaN */
+    /* cosf(inf) = cosf(-inf) = cosf(NaN) = NaN */
+    if (unlikely(axf >= INF_BITS))
         return _cosf_special(x);
+
+    /* |x| <= pi/4 : direct cos polynomial (x*x is sign-independent). */
+    if (axf <= PIBY4_BITS) {
+        if (unlikely(axf < COS_SMALL)) {
+            double xd = (double)x;
+            return (float)_LIBM_POLY_FMA(-0.5 * xd, xd, 1.0);
+        }
+        return (float)cos_poly((double)x);
     }
 
-    /* ux > pi/4 */
-    if(ux > COSF_PIBY4){
-
-        float ax = asfloat(ux);
-
-        /* Convert input to double precision */
-        xd = (double)ax;
-
-        if(ux < COSF_FIVE_E6){
-            /* reduce  the argument to be in a range from -pi/4 to +pi/4
-                by subtracting multiples of pi/2 */
-
-            /* |x| * 2/pi */
-            r = COSF_TWO_BY_PI * xd;
-
-            /* Get the exponent part */
-            int32_t xexp = (int32_t)(ux >> 23);
-
-            /* dn = int(|x| * 2/pi) */
-            double npi2d = r + COSF_ALM_SHIFT;
-            uint64_t npi2 = asuint64(npi2d);
-            npi2d -= COSF_ALM_SHIFT;
-
-            /* rhead = x - dn * pi/2_head */
-            rhead  = xd - npi2d * COSF_PIBY2_1;
-
-            /* rtail = dn * pi/2_tail */
-            rtail  = npi2d * COSF_PIBY2_1TAIL;
-
-            /* r = |x| * 2/pi - dn */
-            r = rhead - rtail;
-
-            uy = asuint64(r);
-
-            /* expdiff = exponent(dn) – exponent(r) */
-            int64_t expdiff = xexp - (int32_t)((uy << 1) >> 53);
-
-            region = (int32_t)npi2;
-
-            if (expdiff  > 15) {
-
-                t = rhead;
-
-                /* rtail = |x| - dn*pi/2_tail2 */
-                rtail =  npi2d * COSF_PIBY2_2;
-
-                /* r = |x| -  dn*pi/2_head -  dn*pi/2_tail1
-                 *     -  dn*pi/2_tail2  - (((rhead + rtail)
-                 *     – rhead )-rtail)
-                 */
-                rhead = t - rtail;
-                rtail  = npi2d * COSF_PIBY2_2TAIL - ((t - rhead) - rtail);
-                r = rhead - rtail;
-            }
-
-        }
-        else {
-
-            /* Reduce x into range [-pi/4,pi/4] */
-            __amd_remainder_piby2d2f(asuint64(xd), &r, &region);
-        }
-
-        x2 = r * r;
-
-        if(region & 1) {
-
-            /*if region 1 or 3 then sin region */
-            x3 = x2 * r;
-
-            /* poly = x3 * (S1 + x2 * (S2 + x2 * (S3 + x2 * S4))) */
-            r +=  x3 * POLY_EVAL_3(x2, S1, S2, S3, S4);
-
-        }
-        else {
-
-            /* region 0 or 2 do a cos calculation */
-            x4 = x2 * x2;
-            s = 0.5 * x2;
-            t =  1.0 - s;
-
-            /* poly = x4 * (C1 + x2 * (C2 + x2 * (C3 + x2 * C4))) */
-            poly = x4 * POLY_EVAL_3(x2, C1, C2, C3, C4);
-            r = t + poly;
-
-        }
-
-        region += 1;
-
-        if(region & 2) {
-
-            /* If region is 2 or 3, sign is -ve */
-            return (float)-r;
-
-        }
-
-        return (float)(r);
-    }
-    /* if |x| < 2.0^(-13) && |x| > 2.0^(-27) */
-    else if(ux >= COSF_SMALLER) {
-
-         /* if |x| < pi/4 && |x| > 2.0^(-13) */
-         if(ux >= COSF_SMALL) {
-
-            /* r = 0.5 * x2 */
-            x2 = x * x;
-            r = 0.5 * x2;
-
-            t = 1 - r;
-
-            /* cos(x) = t + ((1.0 - t) - r) + (x2 * (x2 * C1 + C2 * x2 + C3 * x2
-             *          + C4 * x2 ))
-             */
-            s = t + ((1.0 - t) - r);
-            return (float)(s + (x2 * (x2 * POLY_EVAL_4(x2, C1, C2, C3, C4))));
-
-        }
-
-        /* cos(x) = 1.0 - x * x* 0.5 */
-        return 1.0f - (x * x * 0.5f);
+    /* pi/4 < |x| < pi/2 : cos(x) = sin(pi/2 - |x|), q exact (Sterbenz). */
+    if (axf < PIBY2_BITS) {
+        double q = PI2_HI - (double)asfloat(axf);
+        return (float)sin_poly(q);
     }
 
-    return 1.0f;
+    /* |x| >= pi/2 : reduce mod pi/2 -> (region, r). */
+    int    region;
+    double r;
+
+    if (axf >= COLD_BITS) {
+        /* Payne-Hanek reduction on the |x| bit-pattern. */
+        remainder_piby2_f(axf, &region, &r);
+    } else {
+        /* Two-piece Cody-Waite reduction mod pi/2. */
+        double absxd = (double)asfloat(axf);
+        double dn = _LIBM_POLY_FMA(absxd, INV_PI_2, ALM_SHIFT);
+        uint64_t nm = asuint64(dn);
+        region = (int)(nm & 0x3);
+        dn -= ALM_SHIFT;
+        double rh = _LIBM_POLY_FMA(-dn, PI2_HI_CW, absxd);
+        r = _LIBM_POLY_FMA(-dn, PI2_MID, rh);
+    }
+
+    /* Reconstruction (cos is even -> no input sign):
+     *   region 0 :  cos(r) ; 1 : -sin(r) ; 2 : -cos(r) ; 3 : sin(r). */
+    double result;
+    if ((region & 1) == 0) {
+        result = cos_poly(r);
+        if (region == 2) result = -result;
+    } else {
+        result = sin_poly(r);
+        if (region == 1) result = -result;
+    }
+
+    return (float)result;
 }

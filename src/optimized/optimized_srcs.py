@@ -50,6 +50,7 @@ _OPT_COMMON_SRCS = [
     'exp_tables.c',
     'log_tables.c',
     'pow_data.c',
+    'sincos_tbl.c',
     'sinh_data.c',
     'vec/alm_special.c',
 ]

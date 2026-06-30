@@ -494,6 +494,10 @@ LIBM_DECL_FN_MAP(vrd2_asin);
 LIBM_DECL_FN_MAP(vrd4_asin);
 LIBM_DECL_FN_MAP(vrda_asin);
 
+/* Stable Sort (Keep this section isolated from other libm content) */
+LIBM_DECL_FN_MAP(stablesort_getsize_64f);
+LIBM_DECL_FN_MAP(stablesort_ascend_64f);
+
 /*
  * WEAK_LIBM_ALIAS is used to map "amd_<func_name>" to "<func_name>".
  * This will enable applications to call AOCL-Libm functions directly without using the "amd_" prefix.
@@ -951,3 +955,7 @@ WEAK_LIBM_ALIAS(__vrs4_log2f, FN_PROTOTYPE(vrs4_log2f));
 WEAK_LIBM_ALIAS(__vrs4_log10f, FN_PROTOTYPE(vrs4_log10f));
 
 WEAK_LIBM_ALIAS(__vrs4_powf, FN_PROTOTYPE(vrs4_powf));
+
+/* Stable Sort (Keep this section isolated from other libm content) */
+WEAK_LIBM_ALIAS(stablesort_getsize_64f, FN_PROTOTYPE(stablesort_getsize_64f));
+WEAK_LIBM_ALIAS(stablesort_ascend_64f, FN_PROTOTYPE(stablesort_ascend_64f));

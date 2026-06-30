@@ -436,6 +436,10 @@ alm_func_t        G_ENTRY_PT_PTR(vrd2_asin);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_asin);
 alm_func_t        G_ENTRY_PT_PTR(vrda_asin);
 
+/* Stable Sort (Keep this section isolated from other libm content) */
+alm_func_t        G_ENTRY_PT_PTR(stablesort_getsize_64f);
+alm_func_t        G_ENTRY_PT_PTR(stablesort_ascend_64f);
+
 #ifdef __cplusplus
 }
 #endif

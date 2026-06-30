@@ -356,3 +356,5 @@ EXPORTS
     amd_vrda_cdfnorm
     amd_vrda_cdfnorminv
     amd_vrda_erfcinv
+    amd_stablesort_getsize_64f
+    amd_stablesort_ascend_64f

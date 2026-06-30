@@ -437,6 +437,11 @@ __m128d FN_PROTOTYPE(vrd2_asin)(__m128d x);
 __m256d FN_PROTOTYPE(vrd4_asin)(__m256d x);
 void FN_PROTOTYPE(vrda_asin)(int n, const double *x, double *y);
 
+/* Stable Sort (Keep this section isolated from other libm content) */
+int FN_PROTOTYPE(stablesort_getsize_64f)(int len, int *workspace_size);
+int FN_PROTOTYPE(stablesort_ascend_64f)(const double *src, int src_stride_bytes,
+                                        int *dst_index, int len, void *workspace);
+
 #ifdef __cplusplus
 }
 #endif

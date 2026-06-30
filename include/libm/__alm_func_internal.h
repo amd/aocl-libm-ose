@@ -448,6 +448,10 @@ extern void      ALM_PROTO_INTERNAL(vrda_asin)     (int n, const double *x, doub
 extern void      ALM_PROTO_INTERNAL(vrda_round)     (int n, const double *x, double *y);
 extern void      ALM_PROTO_INTERNAL(vrsa_roundf)    (int n, const float *x, float *y);
 
+/* Stable Sort (Keep this section isolated from other libm content) */
+extern int       ALM_PROTO_INTERNAL(stablesort_getsize_64f)  (int len, int *workspace_size);
+extern int       ALM_PROTO_INTERNAL(stablesort_ascend_64f)   (const double *src, int src_stride_bytes, int *dst_index, int len, void *workspace);
+
 #ifdef __cplusplus
 }
 #endif

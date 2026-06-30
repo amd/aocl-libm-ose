@@ -435,4 +435,8 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd2_asin);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_asin);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrda_asin);
 
+/* Stable Sort (Keep this section isolated from other libm content) */
+extern alm_ep_func_t        G_ENTRY_PT_PTR(stablesort_getsize_64f);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(stablesort_ascend_64f);
+
 #endif	/* __AMD_LIBM_ENTRY_PT_PTR_H__ */

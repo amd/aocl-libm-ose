@@ -126,6 +126,10 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_FMINI]      = {LIBM_IFACE_PROTO(fmini), NULL},
 
     [C_AMD_LINEARFRAC]      = {LIBM_IFACE_PROTO(linearfrac), NULL},
+
+    /* Stable Sort (Keep this section isolated from other libm content) */
+    [C_AMD_STABLESORT_GETSIZE_64F] = {LIBM_IFACE_PROTO(stablesort_getsize_64f), NULL},
+    [C_AMD_STABLESORT_ASCEND_64F]  = {LIBM_IFACE_PROTO(stablesort_ascend_64f), NULL},
 };
 
 #ifndef ARRAY_SIZE

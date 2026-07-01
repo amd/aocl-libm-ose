@@ -38,7 +38,7 @@ target_include_directories(avxsrcs
                                    ${${PROJECT_PREFIX}_SDK_INCLUDES}
                            PRIVATE ${${PROJECT_PREFIX}_PRIVATE_INCLUDES}
                                    ${ISA_INCLUDE})
-target_compile_options(avxsrcs PRIVATE ${ISA_FLAGS})
+target_compile_options(avxsrcs PRIVATE ${ISA_FLAGS} -mavx)
 if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     set_target_properties(avxsrcs PROPERTIES MSVC_DEBUG_INFORMATION_FORMAT "")
 endif()

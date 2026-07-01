@@ -346,10 +346,14 @@ void process_libm(struct AlmLibs *alibs, const std::vector<struct YamlInputs> &p
     reset_console_reports();
 
     typedef const char* (*get_vendor_name_t)();
-    get_vendor_name_t get_vendor_string = (get_vendor_name_t)DL_SYM(alibs->pshimlib, "get_vendor_name");
-    const char *vendor_cstr = get_vendor_string();
-    std::cout << "Vendor: " << vendor_cstr << std::endl;
-    std::string vendor(vendor_cstr);
+    auto get_vendor_sym = DL_SYM(alibs->pshimlib, "get_vendor_name");
+    std::string vendor = "unknown";
+    if (get_vendor_sym) {
+        get_vendor_name_t get_vendor_string = reinterpret_cast<get_vendor_name_t>(reinterpret_cast<void(*)()>(get_vendor_sym));
+        const char *vendor_cstr = get_vendor_string();
+        vendor = vendor_cstr;
+    }
+    std::cout << "Vendor: " << vendor << std::endl;
     std::transform(vendor.begin(), vendor.end(), vendor.begin(), ::tolower);
 
     for (const auto &param : params) {

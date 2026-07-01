@@ -268,52 +268,58 @@
 
  /*
   * compute_relative_error:
-  * Computes |aop - ref| / max(|ref|, MIN_NORMAL).
+  * Computes |aop - ref| / |ref| as a double, selecting one of two code
+  * paths at compile time via if constexpr:
   *
-  * The subtraction is done in L precision so that no bits are lost
-  * when S is narrower than L.  The denominator is clamped to the
-  * smallest normal number of type L so that subnormal ref values
-  * do not inflate the ratio (IEEE 754-2008 §5.11 convention).
+  * Integral path (S and L both integral):
+  *   Both operands are widened to double and the ratio |aop - ref| / |ref|
+  *   is computed directly. Returns 0 when ref == 0 and aop == 0, and
+  *   INFINITY when ref == 0 but aop != 0. No MIN_NORMAL clamp or NaN/Inf
+  *   handling applies, since integral types have no such values.
   *
-  * Returns 0 when both are zero (including +0 vs −0); scalar signed-zero is
-  * enforced in update_ulp. Complex (fc32/fc64) omits that gate like gtests
-  * ConfVerifyComplex* on amd-main.
-  * INFINITY for NaN/Inf or ref==0 mismatches (non-zero actual).
+  * Floating-point path (S and L both floating-point):
+  *   Computes |aop - ref| / max(|ref|, MIN_NORMAL). The subtraction is
+  *   done in L precision so that no bits are lost when S is narrower than
+  *   L. The denominator is clamped to the smallest normal number of type L
+  *   so that subnormal ref values do not inflate the ratio. Returns 0 when
+  *   both are zero (including +0 vs −0). scalar signed-zero is enforced in
+  *   update_ulp. Returns INFINITY for NaN/Inf or ref==0 mismatches (non-zero actual).
   */
  template <typename S, typename L>
  double compute_relative_error(S aop, L ref)
  {
-     static_assert(std::is_floating_point<S>::value, "S must be floating-point");
-     static_assert(std::is_floating_point<L>::value, "L must be floating-point");
+     if constexpr (std::is_integral<S>::value && std::is_integral<L>::value) {
+         if (ref == L(0))
+             return (aop == S(0)) ? 0.0 : INFINITY;
 
-     if (std::isnan(aop) && std::isnan(ref))
-         return (std::signbit(aop) == std::signbit(ref)) ? 0.0 : INFINITY;
-     if (std::isnan(aop) || std::isnan(ref))
-         return INFINITY;
-     if (std::isinf(aop) && std::isinf(ref))
-         return (std::signbit(aop) == std::signbit(ref)) ? 0.0 : INFINITY;
-     if (std::isinf(aop) || std::isinf(ref))
-         return INFINITY;
-     if (aop == S(0) && ref == L(0))
-         return 0.0;
-     if (ref == L(0))
-         return INFINITY;
+         return std::abs(static_cast<double>(aop) - static_cast<double>(ref)) /
+                std::abs(static_cast<double>(ref));
+     }
+     else {
+         static_assert(std::is_floating_point<S>::value, "S must be floating-point");
+         static_assert(std::is_floating_point<L>::value, "L must be floating-point");
 
-     L abs_ref = std::fabs(ref);
-     L denom   = std::fmax(abs_ref, std::numeric_limits<L>::min());
+         if (std::isnan(aop) && std::isnan(ref))
+             return (std::signbit(aop) == std::signbit(ref)) ? 0.0 : INFINITY;
+         if (std::isnan(aop) || std::isnan(ref))
+             return INFINITY;
+         if (std::isinf(aop) && std::isinf(ref))
+             return (std::signbit(aop) == std::signbit(ref)) ? 0.0 : INFINITY;
+         if (std::isinf(aop) || std::isinf(ref))
+             return INFINITY;
+         if (aop == S(0) && ref == L(0))
+             return 0.0;
+         if (ref == L(0))
+             return INFINITY;
 
-     return static_cast<double>(
-         std::fabs(static_cast<L>(aop) - ref) / denom);
+         L abs_ref = std::fabs(ref);
+         L denom   = std::fmax(abs_ref, std::numeric_limits<L>::min());
+
+         return static_cast<double>(
+             std::fabs(static_cast<L>(aop) - ref) / denom);
+     }
  }
 
-template <typename T, typename = typename std::enable_if<std::is_integral<T>::value>::type>
-static inline double compute_relative_error(T aop, T ref)
-{
-    if (ref == 0)
-        return (aop == 0) ? 0.0 : INFINITY;
-
-    return std::abs(static_cast<double>(aop) - static_cast<double>(ref)) / std::abs(static_cast<double>(ref));
-}
 
  /* ═══════════════════════════════════════════════════════════════════
   *  Complex ULP
@@ -457,6 +463,16 @@ static inline double compute_relative_error(T aop, T ref)
      return compute_relative_error_components(aop, ref).linf();
  }
 
+/* Sign-bit test  */
+template <typename T>
+static inline bool alm_signbit(T x)
+{
+    if constexpr (std::is_floating_point<T>::value)
+        return std::signbit(x);
+    else
+        return x < T(0);
+}
+
 /*
  * signed_zero_bits_mismatch:
  * Scalar +0 vs −0: treat as conformance failure while compute_ulp reports 0.
@@ -465,7 +481,7 @@ static inline double compute_relative_error(T aop, T ref)
  template <typename S, typename L>
  static inline bool signed_zero_bits_mismatch(S aop, L ref)
  {
-     return aop == S(0) && ref == L(0) && std::signbit(aop) != std::signbit(ref);
+     return aop == S(0) && ref == L(0) && alm_signbit(aop) != alm_signbit(ref);
  }
 
 template <typename S, typename L>

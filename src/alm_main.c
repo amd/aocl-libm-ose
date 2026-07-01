@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,7 +26,6 @@
  */
 
 #include <stdio.h>
-#include <string.h>
 #if defined (_WIN32) || defined (_WIN64)
   #include <Windows.h>
 #else
@@ -46,12 +45,11 @@ void
 NORETURN
 alm_main(void)
 {
-	char ver_string[150] = "AOCL-LibM ";
-	strcat(ver_string, alm_get_version());
-	strcat(ver_string, " ");
-	strcat(ver_string, alm_get_build());
-	strcat(ver_string, "\n");
-	strcat(ver_string, build_sys_info);
+	char ver_string[150];
+
+	snprintf(ver_string, sizeof(ver_string),
+	         "AOCL-LibM %s %s\n%s",
+	         alm_get_version(), alm_get_build(), build_sys_info);
 	puts(ver_string);
 	_exit(0);
 }

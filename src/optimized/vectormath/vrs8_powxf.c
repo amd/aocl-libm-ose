@@ -277,9 +277,9 @@ ALM_PROTO_OPT(vrs8_powxf)(__m256 x,float y)
 
     v_i32x4_t index_array[2];
 
-    exponent_array[0] = _mm256_extractf128_si256(int_exponent, 0);
+    exponent_array[0] = _mm256_extractf128_si256((__m256i)int_exponent, 0);
 
-    exponent_array[1] = _mm256_extractf128_si256(int_exponent, 1);
+    exponent_array[1] = _mm256_extractf128_si256((__m256i)int_exponent, 1);
 
     v_u32x8_t mant  = ((u & MANTISSA_BITS) | HALF);
 
@@ -297,15 +297,15 @@ ALM_PROTO_OPT(vrs8_powxf)(__m256 x,float y)
 
     _f[1] = _mm256_extractf128_ps(f, 1);
 
-    index_array[0] = _mm256_extractf128_si256(index, 0);
+    index_array[0] = _mm256_extractf128_si256((__m256i)index, 0);
 
-    index_array[1] = _mm256_extractf128_si256(index, 1);
+    index_array[1] = _mm256_extractf128_si256((__m256i)index, 1);
 
     v_f64x4_t yd = _MM_SET1_PD4((double)y);
 
     for(uint32_t lane = 0; lane < 2; lane++) {
 
-        v_f64x4_t exponent =  _mm256_cvtepi32_pd (exponent_array[lane]);
+        v_f64x4_t exponent = _mm256_cvtepi32_pd((__m128i)exponent_array[lane]);
 
         v_f64x4_t fd = _mm256_cvtps_pd(_f[lane]);
 

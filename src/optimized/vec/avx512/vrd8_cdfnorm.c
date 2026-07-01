@@ -152,7 +152,7 @@ ALM_PROTO_OPT(vrd8_cdfnorm)(v_f64x8_t a) {
      * Create masks using AVX-512 mask registers directly.
      * This is more efficient than vector comparisons + helper functions.
      */
-    __mmask8 k_inf_nan = _mm512_cmp_epu64_mask(ua_abs, INF_MASK, _MM_CMPINT_NLT);
+    __mmask8 k_inf_nan = _mm512_cmp_epu64_mask((__m512i)ua_abs, (__m512i)INF_MASK, _MM_CMPINT_NLT);
     __mmask8 k_sat_one = _mm512_cmp_pd_mask(a, HI_CUT, _CMP_GE_OQ);
     __mmask8 k_sat_zero = _mm512_cmp_pd_mask(a, LO_CUT, _CMP_LE_OQ);
 

@@ -319,6 +319,14 @@ if (${${PROJECT_PREFIX}_LIBM_BUILD_DOCS})
   add_subdirectory(docs/src EXCLUDE_FROM_ALL)
 endif ()
 
+#----------------------------------------------------------
+# Stable Sort (Keep this section isolated from other libm content)
+# Add the stablesort tester (bench + unit tests) if SORT_BUILD_TESTS is enabled
+#----------------------------------------------------------
+if (${${PROJECT_PREFIX}_SORT_BUILD_TESTS})
+    add_subdirectory(tools/stablesort_tester)
+endif()
+
 add_custom_target(distclean
     COMMAND ${CMAKE_MAKE_PROGRAM} clean
     COMMAND ${CMAKE_COMMAND} -E remove "${${PROJECT_PREFIX}_SOURCE_DIR}/src/buildsysinfo.h"

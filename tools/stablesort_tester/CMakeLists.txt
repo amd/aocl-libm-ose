@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -25,18 +25,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-# Build both shared and static libraries by default
-option(BUILD_SHARED_LIBS "Build shared libraries." ON)
-option(BUILD_STATIC_LIBS "Build static libraries." ON)
+#
+# stablesort tester: standalone benchmark (and, in a later milestone, gtests)
+# for the aocl-libm stablesort API. Built only when aocl_SORT_BUILD_TESTS=ON.
+# Kept isolated from the rest of the aocl-libm test infrastructure - the
+# stablesort API is deliberately absent from almbench / gtests.
+#
 
-option(LIBM_BUILD_LIBRARY "Enable Building libraries." ON)
-option(LIBM_ENABLE_AVX512 "Enable AVX-512 support." ON)
-option(LIBM_BUILD_TESTS "Enable Building tests." OFF)
-option(LIBM_BUILD_EXAMPLES "Enable Building examples." OFF)
-option(LIBM_BUILD_DOCS "LibM Doc build with DOXYGEN/Sphinx" OFF)
-option(LIBM_BUILD_TESTSUITE "Enable Building LibM-Testsuite." OFF)
-option(LIBM_ENABLE_ASAN "Enable AddressSanitizer." OFF)
-option(LIBM_ENABLE_COVERAGE "Enable code coverage." OFF)
-
-# Stable Sort (Keep this section isolated from other libm content)
-option(SORT_BUILD_TESTS "Enable building the stablesort tester (bench + unit tests)." OFF)
+add_subdirectory(bench)

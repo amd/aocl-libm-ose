@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -25,18 +25,34 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-# Build both shared and static libraries by default
-option(BUILD_SHARED_LIBS "Build shared libraries." ON)
-option(BUILD_STATIC_LIBS "Build static libraries." ON)
+#
+# stablesort benchmark.
+#
+# A standalone executable that measures the built-in aocl-libm stablesort 64f
+# indexed sort (side A) and, optionally, an external dlopen'd shim (side B). It
+# links the aocl-libm shared library (which carries the amd_stablesort_*
+# symbols) and libdl; no third-party sort enters this build.
+#
 
-option(LIBM_BUILD_LIBRARY "Enable Building libraries." ON)
-option(LIBM_ENABLE_AVX512 "Enable AVX-512 support." ON)
-option(LIBM_BUILD_TESTS "Enable Building tests." OFF)
-option(LIBM_BUILD_EXAMPLES "Enable Building examples." OFF)
-option(LIBM_BUILD_DOCS "LibM Doc build with DOXYGEN/Sphinx" OFF)
-option(LIBM_BUILD_TESTSUITE "Enable Building LibM-Testsuite." OFF)
-option(LIBM_ENABLE_ASAN "Enable AddressSanitizer." OFF)
-option(LIBM_ENABLE_COVERAGE "Enable code coverage." OFF)
+add_executable(stablesort_bench src/bench.cpp)
 
-# Stable Sort (Keep this section isolated from other libm content)
-option(SORT_BUILD_TESTS "Enable building the stablesort tester (bench + unit tests)." OFF)
+# Include library's external header and bench's own headers
+target_include_directories(stablesort_bench PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${${PROJECT_PREFIX}_SDK_INCLUDES}/external
+)
+
+# std::filesystem (used for --data) needs C++17 regardless of the library's
+# default C++ standard.
+set_target_properties(stablesort_bench PROPERTIES
+  CXX_STANDARD 17
+  CXX_STANDARD_REQUIRED ON)
+
+if(TARGET libm_shared)
+  # At run time, point LD_LIBRARY_PATH at the intended libalm.so
+  target_link_libraries(stablesort_bench PRIVATE libm_shared ${CMAKE_DL_LIBS})
+else()
+  message(FATAL_ERROR
+    "stablesort_bench requires the aocl-libm shared library target "
+    "(libm_shared). Enable LIBM_BUILD_LIBRARY.")
+endif()

@@ -148,30 +148,74 @@ static inline uint64_t alm_sort_strided_load(const uint8_t *base,
 
 /* ============================================================
  * Sortedness probe: detects nearly-sorted / reverse / structured input
- * ============================================================ */
+ * ============================================================
+ * Sample input data randomly.
+ * Count ascending/descending pairs among these.
+ * If count is high enough, input is considered structured.
+ */
+
+#define ALM_SORT_STRUCT_MIN_SAMPLES 16
+#define ALM_SORT_STRUCT_SAMPLE_RATE 256   /* ~1 sample per 256 adjacent pairs */
+#define ALM_SORT_STRUCT_GATE_NUM    17    /* 17/20 == 85% threshold */
+#define ALM_SORT_STRUCT_GATE_DEN    20
+
+static inline size_t alm_sort_struct_sample_count(size_t n)
+{
+    if (n < 2)
+        return 0;
+    const size_t pairs  = n - 1;
+    const size_t scaled = (pairs + ALM_SORT_STRUCT_SAMPLE_RATE - 1) / ALM_SORT_STRUCT_SAMPLE_RATE;
+    size_t c = scaled < (size_t)ALM_SORT_STRUCT_MIN_SAMPLES
+                 ? (size_t)ALM_SORT_STRUCT_MIN_SAMPLES : scaled;
+    return c < pairs ? c : pairs;
+}
+
+/* Steele, Lea & Bagwell, "Fast Splittable Pseudorandom Number Generators"
+ * David Stafford, "Better Bit Mixing - Improving on MurmurHash3's 64-bit
+ * Finalizer." */
+static inline uint64_t alm_sort_splitmix64(uint64_t *state)
+{
+    *state += 0x9e3779b97f4a7c15ULL;
+    uint64_t z = *state;
+    z = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9ULL;
+    z = (z ^ (z >> 27)) * 0x94d049bb133111ebULL;
+    return z ^ (z >> 31);
+}
+
+/* Sample count = alm_sort_struct_sample_count(n) random adjacent pairs; 
+ * returns the count that are ascending (a[i] <= a[i+1]) 
+ * and writes the number sampled to *out_total. */
+static inline size_t alm_sort_sample_ascending_pairs(const uint8_t *keys_base,
+                                                      int32_t stride, size_t n,
+                                                      size_t *out_total)
+{
+    const size_t count = alm_sort_struct_sample_count(n);
+    *out_total = count;
+    if (count == 0)
+        return 0;
+    /* Seed on n to ensure deterministic sampling. */
+    uint64_t state = 0x9e3779b97f4a7c15ULL ^ (n * 0xbf58476d1ce4e5b9ULL);
+    size_t asc = 0;
+    for (size_t s = 0; s < count; ++s) {
+        size_t i = (size_t)(alm_sort_splitmix64(&state) % (n - 1));
+        uint64_t a = alm_sort_strided_load(keys_base, stride, i);
+        uint64_t b = alm_sort_strided_load(keys_base, stride, i + 1);
+        if (a <= b)
+            ++asc;
+    }
+    return asc;
+}
 
 static inline bool alm_sort_is_structured(const uint8_t *keys_base,
                                           int32_t stride, size_t n)
 {
-    const int samples = 32;
-    size_t step = n / (size_t)(samples + 1);
-    if (step < 1)
-        step = 1;
-
-    int asc = 0;
-    int total = 0;
-    for (size_t i = 0; i + step < n && total < samples; i += step, ++total) {
-        uint64_t a = alm_sort_strided_load(keys_base, stride, i);
-        uint64_t b = alm_sort_strided_load(keys_base, stride, i + step);
-        if (a <= b)
-            ++asc;
-    }
+    size_t total = 0;
+    const size_t asc = alm_sort_sample_ascending_pairs(keys_base, stride, n, &total);
     if (total == 0)
         return false;
-    /* 85% gate: route to Shivers only when the data is strongly run-ordered
-     * (genuinely sorted/reverse sit at 100%/0%). Weakly-monotone real data
-     * falls through to the LSD/radix gate, where it is parity-or-better. */
-    return (asc * 20 >= total * 17) || ((total - asc) * 20 >= total * 17);
+    const size_t desc = total - asc;
+    return (asc  * ALM_SORT_STRUCT_GATE_DEN >= total * ALM_SORT_STRUCT_GATE_NUM) ||
+           (desc * ALM_SORT_STRUCT_GATE_DEN >= total * ALM_SORT_STRUCT_GATE_NUM);
 }
 
 /* ============================================================

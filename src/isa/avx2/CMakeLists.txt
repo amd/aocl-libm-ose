@@ -25,30 +25,35 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-set(AVX2_ASM
-    ${CMAKE_CURRENT_SOURCE_DIR}/gas/fmaf_fma3.S
-    ${CMAKE_CURRENT_SOURCE_DIR}/gas/fma_fma3.S
-    ${CMAKE_CURRENT_SOURCE_DIR}/gas/log_fma3.S
-    ${CMAKE_CURRENT_SOURCE_DIR}/gas/vrs4_cbrtf_fma3.S
-    ${CMAKE_CURRENT_SOURCE_DIR}/gas/vrs4_exp10f_fma3.S
-    ${CMAKE_CURRENT_SOURCE_DIR}/gas/vrs4_expm1f_fma3.S
-    ${CMAKE_CURRENT_SOURCE_DIR}/gas/vrs4_log1pf_fma3.S
-    ${CMAKE_CURRENT_SOURCE_DIR}/gas/vrd2_cbrt_fma3.S
-    ${CMAKE_CURRENT_SOURCE_DIR}/gas/vrd2_exp10_fma3.S
-    ${CMAKE_CURRENT_SOURCE_DIR}/gas/vrd2_log10_fma3.S
-    ${CMAKE_CURRENT_SOURCE_DIR}/gas/vrd2_log1p_fma3.S
-    ${CMAKE_CURRENT_SOURCE_DIR}/gas/vrda_expm1_fma3.S
+set(AVX2_CSRCS
+    ${CMAKE_CURRENT_SOURCE_DIR}/fmaf_fma3.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/fma_fma3.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/log_fma3.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/vrs4_cbrtf_fma3.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/vrs4_exp10f_fma3.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/vrs4_expm1f_fma3.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/vrs4_log1pf_fma3.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/vrd2_cbrt_fma3.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/vrd2_exp10_fma3.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/vrd2_log10_fma3.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/vrd2_log1p_fma3.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/vrda_expm1_fma3.c
 )
 
-set(AVX2_INCLUDE ${ISA_INCLUDE}   "${CMAKE_CURRENT_SOURCE_DIR}/include"
-                                  "${CMAKE_CURRENT_SOURCE_DIR}/gas/include" )
-add_library(avx2asm OBJECT ${AVX2_ASM})
-target_include_directories(avx2asm
+set(AVX2_INCLUDE ${ISA_INCLUDE}   "${CMAKE_CURRENT_SOURCE_DIR}/include")
+add_library(avx2srcs OBJECT ${AVX2_CSRCS})
+target_include_directories(avx2srcs
                            PUBLIC  ${${PROJECT_PREFIX}_COMMON_INCLUDES}
                                    ${${PROJECT_PREFIX}_SDK_INCLUDES}
                            PRIVATE ${${PROJECT_PREFIX}_PRIVATE_INCLUDES}
                                    ${AVX2_INCLUDE})
-target_compile_options(avx2asm PRIVATE ${ISA_FLAGS})
+target_compile_options(avx2srcs PRIVATE ${ISA_FLAGS} ${fmaflag})
+# These naked kernels are direct ports of hand-written asm that had no CET
+# endbr64 landing pad; -fcf-protection=none matches the asm and drops the
+# per-call endbr64 (measurable on tiny hot kernels such as vrd2_exp10).
+if(NOT WIN32)
+    target_compile_options(avx2srcs PRIVATE -fcf-protection=none)
+endif()
 if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set_target_properties(avx2asm PROPERTIES MSVC_DEBUG_INFORMATION_FORMAT "")
+    set_target_properties(avx2srcs PROPERTIES MSVC_DEBUG_INFORMATION_FORMAT "")
 endif()

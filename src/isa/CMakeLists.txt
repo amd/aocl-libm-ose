@@ -36,8 +36,8 @@ add_subdirectory(avx)
 list(APPEND libmobj $<TARGET_OBJECTS:avxsrcs>)
 
 add_subdirectory(avx2)
-# add avx2asm object library to libmobj
-list(APPEND libmobj $<TARGET_OBJECTS:avx2asm>)
+# add avx2srcs object library to libmobj
+list(APPEND libmobj $<TARGET_OBJECTS:avx2srcs>)
 
 # ---------------------------------------------------------------------------
 # ISA-specific compilation using -include to inject ISA header.

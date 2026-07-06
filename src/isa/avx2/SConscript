@@ -29,20 +29,20 @@ from os.path import join as joinpath
 
 e = env.Clone()
 
-# AVX2 assembly sources
-avx2_asm = [
-    'gas/fmaf_fma3.S',
-    'gas/fma_fma3.S',
-    'gas/log_fma3.S',
-    'gas/vrs4_cbrtf_fma3.S',
-    'gas/vrs4_exp10f_fma3.S',
-    'gas/vrs4_expm1f_fma3.S',
-    'gas/vrs4_log1pf_fma3.S',
-    'gas/vrd2_cbrt_fma3.S',
-    'gas/vrd2_exp10_fma3.S',
-    'gas/vrd2_log10_fma3.S',
-    'gas/vrd2_log1p_fma3.S',
-    'gas/vrda_expm1_fma3.S',
+# Inline-asm C sources
+avx2_srcs = [
+    'fmaf_fma3.c',
+    'fma_fma3.c',
+    'log_fma3.c',
+    'vrs4_cbrtf_fma3.c',
+    'vrs4_exp10f_fma3.c',
+    'vrs4_expm1f_fma3.c',
+    'vrs4_log1pf_fma3.c',
+    'vrd2_cbrt_fma3.c',
+    'vrd2_exp10_fma3.c',
+    'vrd2_log10_fma3.c',
+    'vrd2_log1p_fma3.c',
+    'vrda_expm1_fma3.c',
 ]
 
 # Set up include paths
@@ -50,35 +50,26 @@ p = joinpath(Dir('.').srcnode().path)
 incpaths = [
     '#' + p,
     '#' + joinpath(p, 'include'),
-    '#' + joinpath(p, 'gas', 'include'),
     '#include',
     '#include/libm',
     '#src/isa/include',
 ]
 
-isa_flags = [ ]
-
 if e['HOST_OS'] != 'win32':
-    isa_flags.extend(['-O3', '-fPIC', '-mavx2', '-mfma', '-flax-vector-conversions'])
-
-# On Windows, clang-cl does not pass CPPPATH to the assembler for .S files,
-# so we add explicit -I flags to ASFLAGS.
-if e['HOST_OS'] == 'win32':
-    isa_flags.extend(['/c',
-                      '-I' + Dir('#include').abspath,
-                      '-I' + Dir('#include/libm').abspath,
-                      '-I' + Dir('#' + p).abspath,
-                      '-I' + Dir('#' + joinpath(p, 'include')).abspath,
-                      '-I' + Dir('#' + joinpath(p, 'gas', 'include')).abspath,
-                      '-I' + Dir('#src/isa/include').abspath])
+    # -fcf-protection=none: these naked kernels are direct ports of hand-written
+    # asm that had no CET endbr64 landing pad. Dropping the pad matches the asm
+    # and avoids a per-call instruction on tiny hot kernels (e.g. vrd2_exp10).
+    isa_flags = ['-mavx2', '-mfma', '-O3', '-fPIC', '-flax-vector-conversions',
+                 '-fcf-protection=none']
+else:
+    isa_flags = ['-mavx2', '-mfma', '-O3']
 
 e.Append(
     CPPPATH = incpaths,
-    ASFLAGS = isa_flags,
     CCFLAGS = isa_flags,
 )
 
-# Build assembly objects
-objs = e.StaticObject(avx2_asm)
+# Build inline-asm C objects
+objs = e.StaticObject(avx2_srcs)
 
 Return('objs')

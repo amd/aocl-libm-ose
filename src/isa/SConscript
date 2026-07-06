@@ -44,16 +44,16 @@ AVX512_VRSA_TEMPLATE = _mod.AVX512_VRSA_TEMPLATE
 e = env.Clone()
 
 # ---------------------------------------------------------------------------
-# Inline-asm C sources from avx subdirectory (fmod, remainder, remainder_piby2*)
+# Inline-asm C sources from avx subdirectory
 # ---------------------------------------------------------------------------
 avxsrcs_objs = SConscript('avx/SConscript',
                          exports={'env': e},
                          duplicate=0)
 
 # ---------------------------------------------------------------------------
-# Assembly sources from avx2 subdirectory
+# Inline-asm C sources from avx2 subdirectory
 # ---------------------------------------------------------------------------
-avx2asm_objs = SConscript('avx2/SConscript',
+avx2srcs_objs = SConscript('avx2/SConscript',
                           exports={'env': e},
                           duplicate=0)
 
@@ -179,6 +179,6 @@ for prefix, template_src, func_list in template_configs:
         target = joinpath('avx512', prefix + '_' + func)
         isa_objs.append(tpl_env.StaticObject(target=target, source=template_src))
 
-objs = avxsrcs_objs + avx2asm_objs + isa_objs
+objs = avxsrcs_objs + avx2srcs_objs + isa_objs
 
 Return('objs')

@@ -147,6 +147,34 @@ static inline uint64_t alm_sort_strided_load(const uint8_t *base,
 }
 
 /* ============================================================
+ * Sortedness probe: detects nearly-sorted / reverse / structured input
+ * ============================================================ */
+
+static inline bool alm_sort_is_structured(const uint8_t *keys_base,
+                                          int32_t stride, size_t n)
+{
+    const int samples = 32;
+    size_t step = n / (size_t)(samples + 1);
+    if (step < 1)
+        step = 1;
+
+    int asc = 0;
+    int total = 0;
+    for (size_t i = 0; i + step < n && total < samples; i += step, ++total) {
+        uint64_t a = alm_sort_strided_load(keys_base, stride, i);
+        uint64_t b = alm_sort_strided_load(keys_base, stride, i + step);
+        if (a <= b)
+            ++asc;
+    }
+    if (total == 0)
+        return false;
+    /* 85% gate: route to Shivers only when the data is strongly run-ordered
+     * (genuinely sorted/reverse sit at 100%/0%). Weakly-monotone real data
+     * falls through to the LSD/radix gate, where it is parity-or-better. */
+    return (asc * 20 >= total * 17) || ((total - asc) * 20 >= total * 17);
+}
+
+/* ============================================================
  * (A) Shivers adaptive merge sort (TimSort family)
  * ============================================================ */
 
@@ -1150,6 +1178,34 @@ int ALM_PROTO_OPT(stablesort_ascend_64f)(const double *src, int src_stride_bytes
     /* The caller's workspace may be unaligned; align the working base to 64. */
     uint8_t *base = (uint8_t *)workspace;
     base = (uint8_t *)ALM_SORT_ALIGN64((uintptr_t)base);
+
+    /* The Shivers run-stack (2 * ALM_SORT_RUN_STACK_CAP ints) lives in the
+     * workspace, carved from the region the radix path uses for the leaf pool --
+     * unused by the Shivers path, so no extra N and no stack scratch. */
+    int32_t *merge_tmp = ALM_SORT_MERGE_TMP_PTR(base, n);
+    int *run_base = ALM_SORT_RUN_BASE_PTR(base, n);
+    int *run_len  = ALM_SORT_RUN_LEN_PTR(base, n);
+
+    /* Planner: delegates to different kernels based on the size and distribution
+     * of the input. A second planner is present within the radix kernel. */
+    if (n <= 2048) {
+        alm_sort_shivers(keys_base, stride, dst_idx, n,
+                         merge_tmp, run_base, run_len, 16);
+        return AOCLSORT_STS_OK;
+    }
+
+    if (alm_sort_is_structured(keys_base, stride, n)) {
+        alm_sort_shivers(keys_base, stride, dst_idx, n,
+                         merge_tmp, run_base, run_len, 16);
+        return AOCLSORT_STS_OK;
+    }
+
+    /* Mid sizes (non-structured): flat 11-bit LSD, gated by n (overhead) and by
+     * key-gather footprint stride*n vs L3 (cache residency). */
+    if (n >= ALM_SORT_LSD_MIN_N && (size_t)stride * n <= ALM_SORT_LSD_MAX_FOOTPRINT) {
+        alm_sort_lsd(keys_base, stride, dst_idx, n, base);
+        return AOCLSORT_STS_OK;
+    }
 
     alm_sort_radix(keys_base, stride, dst_idx, n, base);
     return AOCLSORT_STS_OK;

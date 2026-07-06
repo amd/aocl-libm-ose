@@ -24,8 +24,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
- 
- /*
+
+/*
  * TimSort implementation with Shivers merge policy derived from :
  * C++ implementation of timsort from cpp-sort project:
  *      cpp-sort/include/cpp-sort/detail/timsort.h
@@ -52,9 +52,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- *
- * Note : Timsort will be included as part of the input-aware dispatch planned 
- * in subsequent commits
  */
 
 /*
@@ -71,16 +68,23 @@
  *   owns the scratch (workspace); amd_stablesort_getsize_64f reports how many
  *   bytes it must provide for a given len.
  *
- *   In this first version, every input is sorted with a flat, index
- *   only LSD radix sort; input-aware dispatch planned in subsequent commits.
- *
  *   Ordering is by IEEE-754 total order: each key's bits are mapped to an
  *   unsigned "sortable" form (flip all bits for negatives, flip only the sign
  *   bit for positives) so that an unsigned radix sort yields ascending double
  *   order, with -0.0 < +0.0 and NaNs ordered by their bit patterns.
+ *
+ *   Input-aware dispatch (planner). Exactly one kernel runs per call:
+ *     (A) Shivers adaptive merge sort (TimSort family) for small len (<= 2048)
+ *         or structured (nearly-sorted / reverse) input.
+ *     (B) Flat 11-bit LSD radix for mid sizes whose key-gather footprint stays
+ *         L3-cache resident.
+ *     (C) MSD-LSD hybrid radix (size-targeted MSD partition + insertion / 8-bit
+ *         dense LSD leaf / strided-LSD fallback) for large random input.
  */
 
+#include <assert.h>
 #include <limits.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -88,16 +92,40 @@
 #include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
 
-/* Flat 11-bit LSD over a 64-bit key: 5 x 11-bit digits + 1 x 9-bit digit. */
-#define LSD_BITS    11
-#define LSD_NB      (1 << LSD_BITS)                 /* 2048 buckets per pass */
-#define LSD_PASSES  6
-#define LSD_PF_DIST 16                              /* key-gather prefetch distance */
+/*
+ * Return-code contract for the APIs. Internal to this
+ * translation unit and not part of the public amdlibm.h.
+ */
+typedef enum {
+    AOCLSORT_STS_OK            =  0,  /* success                                */
+    AOCLSORT_STS_NULL_PTR      = -1,  /* a required pointer argument was NULL    */
+    AOCLSORT_STS_LENGTH_ERR    = -2,  /* len <= 0                                */
+    AOCLSORT_STS_STRIDE_ERR    = -3,  /* src_stride_bytes < (int)sizeof(double)  */
+    AOCLSORT_STS_SIZE_OVERFLOW = -4,  /* required workspace size exceeds INT_MAX */
+} aoclsort_status;
 
-static inline size_t alm_sort_align64(size_t x)
-{
-    return (x + 63) & ~(size_t)63;
-}
+/* ============================================================
+ * Shared utilities
+ * ============================================================ */
+
+#define ALM_SORT_ALIGN64(x) (((x) + (size_t)63) & ~(size_t)63)
+
+/*
+ *   ALM_SORT_STATIC_ASSERT(cond, msg) -- compile-time check.
+ *   ALM_SORT_ASSERT(cond, msg)        -- runtime check
+ *   ALM_SORT_PREFETCH(addr, rw, loc)  -- rw: 0 read / 1 write; loc: 0..3 temporal.
+ */
+#define ALM_SORT_STATIC_ASSERT(cond, msg) _Static_assert((cond), msg)
+#define ALM_SORT_ASSERT(cond, msg)        assert((cond) && (msg))
+#define ALM_SORT_PREFETCH(addr, rw, loc)  __builtin_prefetch((addr), (rw), (loc))
+
+/*
+ * Platform assumption made explicit here so it fails at compile time rather
+ * than corrupt memory at runtime: the public API's `int` indices are
+ * reinterpreted as int32_t (dst_index is cast to int32_t*).
+ */
+ALM_SORT_STATIC_ASSERT(sizeof(int) == sizeof(int32_t),
+    "public API uses `int` indices that are reinterpreted as int32_t");
 
 /*
  * Map an IEEE-754 bit pattern to an unsigned key whose natural order matches
@@ -118,40 +146,490 @@ static inline uint64_t alm_sort_strided_load(const uint8_t *base,
     return alm_sort_to_sortable(u);
 }
 
-/*
- * Flat 11-bit LSD over the whole array (index-only, IPP-style). `base` holds
- * the 4N index scratch (id_a); `pDstIdx` is the ping-pong partner. Histograms
- * and offsets are carved from `base` past the index scratch. Keys are re-read
- * from the strided source each pass. Stable; result lands in pDstIdx.
- */
-static void alm_sort_do_lsd(const uint8_t *keys_base, int32_t stride,
-                            int32_t *pDstIdx, size_t n, uint8_t *base)
-{
-    int32_t  *id_a    = (int32_t *)base;
-    uint32_t *hist    = (uint32_t *)(base + alm_sort_align64(n * sizeof(int32_t)));
-    uint32_t *offsets = hist + (size_t)LSD_PASSES * LSD_NB;
+/* ============================================================
+ * (C) MSD-LSD hybrid radix
+ * ============================================================ */
 
-    static const int      pass_sh[LSD_PASSES] = {0, 11, 22, 33, 44, 55};
-    static const uint64_t pass_mk[LSD_PASSES] = {0x7ff, 0x7ff, 0x7ff, 0x7ff, 0x7ff, 0x1ff};
-    static const int      pass_nb[LSD_PASSES] = {LSD_NB, LSD_NB, LSD_NB, LSD_NB, LSD_NB, 1 << 9};
+#define ALM_SORT_RADIX_BITS 11
+#define ALM_SORT_RADIX      (1 << ALM_SORT_RADIX_BITS)
+
+/*
+ * Leaf / partition tuning.
+ *   len <= ALM_SORT_INSERTION_THRESHOLD -> stable insertion sort
+ *   len <= ALM_SORT_LEAF_CAP            -> 8-bit dense LSD leaf
+ *   else                                -> size-targeted MSD partition + recurse
+ */
+#define ALM_SORT_INSERTION_THRESHOLD ((size_t)32)
+#define ALM_SORT_TARGET_LEAF         ((size_t)1024)  /* partition aims for ~this bucket size */
+#define ALM_SORT_LEAF_CAP            ((size_t)2048)
+#define ALM_SORT_SUBL2_GATE          ((size_t)32768)
+#define ALM_SORT_COARSE_DEPTH        2               /* depth >= this forced to full radix bits */
+
+/*
+ * Bounded MSD frames + strided-LSD overflow fallback. Only ALM_SORT_MAX_MSD_FRAMES
+ * cached frames are allocated; any bucket recursing past the last frame finishes in
+ * alm_sort_lsd_fallback() (pool-free), so any value >= 1 is correct for any input.
+ */
+#define ALM_SORT_MAX_MSD_FRAMES 3
+ALM_SORT_STATIC_ASSERT(ALM_SORT_MAX_MSD_FRAMES >= 1, "need at least one MSD frame");
+
+#define ALM_SORT_SMALL_RADIX_BITS 8
+#define ALM_SORT_SMALL_RADIX      (1 << ALM_SORT_SMALL_RADIX_BITS)
+
+/*
+ * Leaf pool: dense (tkey, idx) ping-pong sized for ALM_SORT_LEAF_CAP + an 8-bit
+ * histogram/offsets pair (256 entries each). One leaf is live at a time.
+ */
+#define ALM_SORT_LEAF_TKEY_BYTES (ALM_SORT_LEAF_CAP * sizeof(uint64_t))
+#define ALM_SORT_LEAF_IDX_BYTES  (ALM_SORT_LEAF_CAP * sizeof(int32_t))
+#define ALM_SORT_LEAF_HIST_BYTES ((size_t)ALM_SORT_SMALL_RADIX * sizeof(uint32_t))
+#define ALM_SORT_LEAF_POOL_BYTES \
+    (2 * ALM_SORT_LEAF_TKEY_BYTES + 2 * ALM_SORT_LEAF_IDX_BYTES + 2 * ALM_SORT_LEAF_HIST_BYTES)
+
+#define ALM_SORT_LEAF_TKEY_A_OFF  ((size_t)0)
+#define ALM_SORT_LEAF_TKEY_B_OFF  (ALM_SORT_LEAF_TKEY_A_OFF + ALM_SORT_LEAF_TKEY_BYTES)
+#define ALM_SORT_LEAF_IDX_A_OFF   (ALM_SORT_LEAF_TKEY_B_OFF + ALM_SORT_LEAF_TKEY_BYTES)
+#define ALM_SORT_LEAF_IDX_B_OFF   (ALM_SORT_LEAF_IDX_A_OFF  + ALM_SORT_LEAF_IDX_BYTES)
+#define ALM_SORT_LEAF_HIST_OFF    (ALM_SORT_LEAF_IDX_B_OFF  + ALM_SORT_LEAF_IDX_BYTES)
+#define ALM_SORT_LEAF_OFFSETS_OFF (ALM_SORT_LEAF_HIST_OFF   + ALM_SORT_LEAF_HIST_BYTES)
+#define ALM_SORT_LEAF_PF_DIST     16  /* leaf key-gather prefetch distance */
+
+/*
+ * MSD frame (W2'): a SINGLE reused hist[ALM_SORT_RADIX] array per depth.
+ * counts -> constant-check -> in-place prefix into cursors -> scatter mutates it
+ * into bucket ends -> recursion recovers bounds from a running cursor.
+ */
+#define ALM_SORT_HIST_BYTES      ((size_t)ALM_SORT_RADIX * sizeof(uint32_t))
+#define ALM_SORT_MSD_FRAME_BYTES ALM_SORT_ALIGN64(ALM_SORT_HIST_BYTES)
+#define ALM_SORT_MSD_POOL_BYTES  (ALM_SORT_MSD_FRAME_BYTES * ALM_SORT_MAX_MSD_FRAMES)
+#define ALM_SORT_MSD_HIST_OFF    ((size_t)0)
+
+/*
+ * Flat 11-bit LSD for mid sizes. Pure index-only LSD: indices live in
+ * the 4N scratch + dst_idx ping-pong (NO dense key copy -- keys are re-read from
+ * the strided source each pass). All six digit histograms (5x11 + 1x9 bits) are
+ * fused into a single counting sweep; the histograms REUSE the leaf+msd pool
+ * region, idle on this path. Gated by ALM_SORT_LSD_MIN_N and the L3 footprint cap.
+ */
+#define ALM_SORT_LSD_PF_DIST       16
+#define ALM_SORT_LSD_MIN_N         ((size_t)65536)
+#define ALM_SORT_LSD_L3_BYTES      (32ull * 1024 * 1024)  /* 32 MiB L3 / CCX */
+#define ALM_SORT_LSD_MAX_FOOTPRINT ALM_SORT_LSD_L3_BYTES
+#define ALM_SORT_LSD_BITS          11
+#define ALM_SORT_LSD_NB            (1 << ALM_SORT_LSD_BITS)                          /* 2048 */
+#define ALM_SORT_LSD_PASSES        ((64 + ALM_SORT_LSD_BITS - 1) / ALM_SORT_LSD_BITS) /* 6 */
+ALM_SORT_STATIC_ASSERT(ALM_SORT_LSD_BITS == 11 && ALM_SORT_LSD_PASSES == 6,
+               "fused count below hard-codes 6 immediate 11-bit shifts");
+#define ALM_SORT_LSD_HIST_BYTES    ((size_t)ALM_SORT_LSD_PASSES * ALM_SORT_LSD_NB * sizeof(uint32_t)) /* 48 KiB */
+#define ALM_SORT_LSD_OFFSETS_BYTES ((size_t)ALM_SORT_LSD_NB * sizeof(uint32_t))                       /*  8 KiB */
+ALM_SORT_STATIC_ASSERT(ALM_SORT_LSD_HIST_BYTES + ALM_SORT_LSD_OFFSETS_BYTES
+                   <= ALM_SORT_LEAF_POOL_BYTES + ALM_SORT_MSD_POOL_BYTES,
+               "LSD histograms must fit in the reused leaf+msd pool region");
+
+/* ============================================================
+ * Shared workspace layout (single source of truth)
+ *
+ * The caller's scratch (aligned to 64 -> `base`) is partitioned into two
+ * top-level regions:
+ *   region 0 @ 0                   : the N-element int32 index scratch
+ *                                    (ping-pong partner of dst_idx).
+ *   region 1 @ ALM_SORT_POOL_OFF(n): the "pool", reused by whichever single
+ *                                    kernel runs (they never coexist):
+ *       radix   -> leaf pool, then the MSD frame pool
+ *       lsd     -> fused histograms, then the scatter offsets
+ *       shivers -> the run-stack (run_base then run_len); merge_tmp aliases
+ *                  region 0.
+ *
+ * Offsets grow downward; the three region-1 rows are mutually-exclusive
+ * overlays of the same bytes (only one kernel runs per call):
+ *
+ *   byte offset                                                 accessor
+ *   -----------  +---------------------------------------------+
+ *   0            | region 0: index scratch                     |  INDEX_PTR
+ *                |   N x int32   (== merge_tmp for shivers)    |  MERGE_TMP_PTR
+ *   POOL_OFF(n)  +====================== region 1: pool =======+
+ *                | radix   | leaf pool          | MSD frames   |  LEAF_POOL_PTR
+ *                |         |                    |              |  MSD_POOL_PTR
+ *                |---------+--------------------+--------------|
+ *                | lsd     | histograms         | offsets      |  LSD_HIST_PTR
+ *                |         | PASSES x NB x u32  |              |  LSD_OFFSETS_PTR
+ *                |---------+--------------------+--------------|
+ *                | shivers | run_base           | run_len      |  RUN_BASE_PTR
+ *                |         | RUN_STACK_CAP x int| ... x int    |  RUN_LEN_PTR
+ *   WORKSPACE_   +---------------------------------------------+
+ *   BYTES(n)-64
+ *   (+64 alignment slack precedes `base` inside the caller's buffer)
+ *
+ * Every region pointer is derived ONLY through the macros below (the code does
+ * plain `PTR(base, n)` lookups, never ad-hoc base+offset arithmetic), so the
+ * regions cannot accidentally overlap or be misread, and getsize() sizes the
+ * buffer through the very same expressions.
+ * ============================================================ */
+#define ALM_SORT_INDEX_BYTES(n)  ALM_SORT_ALIGN64((size_t)(n) * sizeof(int32_t))
+#define ALM_SORT_POOL_OFF(n)     ALM_SORT_INDEX_BYTES(n)
+
+#define ALM_SORT_WORKSPACE_BYTES(n)                                          \
+    ((size_t)64 + ALM_SORT_INDEX_BYTES(n)                                    \
+     + ALM_SORT_LEAF_POOL_BYTES + ALM_SORT_MSD_POOL_BYTES)
+
+/* Region 0 -- N int32 index scratch (radix/lsd) and Shivers merge_tmp alias. */
+#define ALM_SORT_INDEX_PTR(base, n)       ((int32_t *)(base))
+#define ALM_SORT_MERGE_TMP_PTR(base, n)   ((int32_t *)(base))
+
+/* Start of region 1 (the shared pool). Each kernel anchors its region-1 view
+ * here and reinterprets the same bytes.
+ * Region 1's size is set by the radix path (the largest consumer); the lsd and
+ * shivers footprints are asserted above to fit within it. */
+#define ALM_SORT_POOL_PTR(base, n)        ((uint8_t *)(base) + ALM_SORT_POOL_OFF(n))
+
+/* Region 1 -- radix view: leaf pool (at pool start) then the MSD frame pool. */
+#define ALM_SORT_LEAF_POOL_PTR(base, n)   ALM_SORT_POOL_PTR(base, n)
+#define ALM_SORT_MSD_POOL_PTR(base, n)    (ALM_SORT_POOL_PTR(base, n) + ALM_SORT_LEAF_POOL_BYTES)
+
+/* Region 1 -- lsd view: fused histograms (at pool start) then scatter offsets. */
+#define ALM_SORT_LSD_HIST_PTR(base, n)    ((uint32_t *)ALM_SORT_POOL_PTR(base, n))
+#define ALM_SORT_LSD_OFFSETS_PTR(base, n) \
+    (ALM_SORT_LSD_HIST_PTR(base, n) + (size_t)ALM_SORT_LSD_PASSES * ALM_SORT_LSD_NB)
+
+
+/*
+ * Stable linear insertion sort of a small index slice on the full 64-bit key.
+ *
+ * STABILITY CONTRACT: this is a stability-PRESERVING sort, not a
+ * stability-ESTABLISHING one. It shifts only on a strict key inversion and stops
+ * on equality, so it keeps the incoming relative order of equal-key elements. The
+ * caller MUST therefore pass a slice in which equal-key elements are already in
+ * ascending original-index order. Every current caller satisfies this: the index
+ * array starts as the ascending identity and every MSD/LSD pass that can precede
+ * a leaf is a stable forward-scan counting scatter.
+ */
+static void alm_sort_insertion(const uint8_t *keys_base, int32_t stride,
+                               const int32_t *slice_curr,
+                               int32_t *dst_idx,
+                               size_t start, size_t end)
+{
+    const size_t n_slice = end - start;
+    if (n_slice == 0)
+        return;
+
+    int32_t *dst = dst_idx + start;
+    if (slice_curr + start != dst)
+        memcpy(dst, slice_curr + start, n_slice * sizeof(int32_t));
+
+    for (size_t i = 1; i < n_slice; ++i) {
+        const int32_t cur_idx = dst[i];
+        const uint64_t cur_key = alm_sort_strided_load(keys_base, stride, (size_t)cur_idx);
+        size_t j = i;
+        while (j > 0) {
+            const int32_t prev_idx = dst[j - 1];
+            const uint64_t prev_key = alm_sort_strided_load(keys_base, stride, (size_t)prev_idx);
+            /* Strict inversion only; stop on equality (see STABILITY CONTRACT). */
+            if (prev_key > cur_key) {
+                dst[j] = prev_idx;
+                --j;
+            } else {
+                break;
+            }
+        }
+        dst[j] = cur_idx;
+    }
+}
+
+/*
+ * Dense LSD leaf for a single MSD bucket. Caller contract (guaranteed by both
+ * call sites in alm_sort_msd):
+ *   * ALM_SORT_INSERTION_THRESHOLD < n_slice <= ALM_SORT_LEAF_CAP
+ *   * bits_hi > 0
+ * The gather is prefetched (the random strided load dominates; the index stream
+ * slice_curr[] is sequential). Result lands stably in dst_idx[start, end).
+ */
+static void alm_sort_leaf_lsd8(const uint8_t *keys_base, int32_t stride,
+                               const int32_t *slice_curr,
+                               int32_t *dst_idx,
+                               uint8_t *leaf_pool,
+                               size_t start, size_t end,
+                               int bits_hi)
+{
+    const size_t n_slice = end - start;
+    ALM_SORT_ASSERT(n_slice > ALM_SORT_INSERTION_THRESHOLD && n_slice <= ALM_SORT_LEAF_CAP && bits_hi > 0,
+           "alm_sort_leaf_lsd8 contract: INSERTION_THRESHOLD < n_slice <= LEAF_CAP, bits_hi > 0");
+
+    uint64_t *tkey_a  = (uint64_t *)(leaf_pool + ALM_SORT_LEAF_TKEY_A_OFF);
+    uint64_t *tkey_b  = (uint64_t *)(leaf_pool + ALM_SORT_LEAF_TKEY_B_OFF);
+    int32_t  *idx_a   = (int32_t *) (leaf_pool + ALM_SORT_LEAF_IDX_A_OFF);
+    int32_t  *idx_b   = (int32_t *) (leaf_pool + ALM_SORT_LEAF_IDX_B_OFF);
+    uint32_t *hist    = (uint32_t *)(leaf_pool + ALM_SORT_LEAF_HIST_OFF);
+    uint32_t *offsets = (uint32_t *)(leaf_pool + ALM_SORT_LEAF_OFFSETS_OFF);
+
+    /* Gather keys once from the strided source, prefetching LEAF_PF_DIST ahead.
+     * Split loop hoists the bound check out of the body. */
+    const size_t lim = n_slice > ALM_SORT_LEAF_PF_DIST ? n_slice - ALM_SORT_LEAF_PF_DIST : 0;
+    for (size_t j = 0; j < lim; ++j) {
+        ALM_SORT_PREFETCH(keys_base +
+            (intptr_t)slice_curr[start + j + ALM_SORT_LEAF_PF_DIST] * (intptr_t)stride, 0, 0);
+        int32_t i = slice_curr[start + j];
+        tkey_a[j] = alm_sort_strided_load(keys_base, stride, (size_t)i);
+        idx_a[j]  = i;
+    }
+    for (size_t j = lim; j < n_slice; ++j) {
+        int32_t i = slice_curr[start + j];
+        tkey_a[j] = alm_sort_strided_load(keys_base, stride, (size_t)i);
+        idx_a[j]  = i;
+    }
+
+    uint64_t *tk_src = tkey_a; uint64_t *tk_dst = tkey_b;
+    int32_t  *id_src = idx_a;  int32_t  *id_dst = idx_b;
+
+    const int n_passes = (bits_hi + ALM_SORT_SMALL_RADIX_BITS - 1) / ALM_SORT_SMALL_RADIX_BITS;
+
+    for (int p = 0; p < n_passes; ++p) {
+        const int shift = p * ALM_SORT_SMALL_RADIX_BITS;
+        const int rem   = bits_hi - shift;
+        const int bb    = rem < ALM_SORT_SMALL_RADIX_BITS ? rem : ALM_SORT_SMALL_RADIX_BITS;
+        const uint64_t mask = ((uint64_t)1 << bb) - 1;
+        const int nb = 1 << bb;
+
+        memset(hist, 0, (size_t)nb * sizeof(uint32_t));
+        for (size_t j = 0; j < n_slice; ++j) {
+            uint32_t d = (uint32_t)((tk_src[j] >> shift) & mask);
+            ++hist[d];
+        }
+
+        const uint32_t d0 = (uint32_t)((tk_src[0] >> shift) & mask);
+        if (hist[d0] == (uint32_t)n_slice)
+            continue;
+
+        uint32_t s = 0;
+        for (int d = 0; d < nb; ++d) { offsets[d] = s; s += hist[d]; }
+
+        for (size_t j = 0; j < n_slice; ++j) {
+            uint32_t d   = (uint32_t)((tk_src[j] >> shift) & mask);
+            uint32_t off = offsets[d]++;
+            tk_dst[off] = tk_src[j];
+            id_dst[off] = id_src[j];
+        }
+
+        { uint64_t *t = tk_src; tk_src = tk_dst; tk_dst = t; }
+        { int32_t  *t = id_src; id_src = id_dst; id_dst = t; }
+    }
+
+    memcpy(dst_idx + start, id_src, n_slice * sizeof(int32_t));
+}
+
+/*
+ * n_slice <= 32K (L1d resident): radix-11, 1 MSD pass -> ~16 elem/bucket -> insertion
+ * leaves. n_slice > 32K: pick a narrower digit so one pass lands buckets under
+ * LEAF_CAP in few passes.
+ */
+static inline int alm_sort_choose_bits(size_t n_slice, int bits_hi, int frame_idx)
+{
+    int avail = bits_hi < ALM_SORT_RADIX_BITS ? bits_hi : ALM_SORT_RADIX_BITS;
+    if (n_slice <= ALM_SORT_SUBL2_GATE || frame_idx >= ALM_SORT_COARSE_DEPTH)
+        return avail;
+    int need = 0;
+    while ((n_slice >> need) > ALM_SORT_TARGET_LEAF) ++need;
+    if (need < 1)     need = 1;
+    if (need > avail) need = avail;
+    return need;
+}
+
+/*
+ * Uncached strided LSD fallback. Sorts [start,end) by the low bits_hi bits once
+ * ALM_SORT_MAX_MSD_FRAMES MSD frames are exhausted. Borrows the leaf pool's
+ * 256-entry hist/offsets regions + the two global index buffers. No stack
+ * allocation. Stable. Caller contract: n_slice > ALM_SORT_LEAF_CAP and bits_hi > 0.
+ */
+static void alm_sort_lsd_fallback(const uint8_t *keys_base, int32_t stride,
+                                  int32_t *slice_curr, int32_t *slice_alt,
+                                  int32_t *dst_idx, uint8_t *leaf_pool,
+                                  size_t start, size_t end, int bits_hi)
+{
+    const size_t n_slice = end - start;
+    ALM_SORT_ASSERT(n_slice > ALM_SORT_LEAF_CAP && bits_hi > 0,
+           "alm_sort_lsd_fallback contract: n_slice > LEAF_CAP, bits_hi > 0");
+    uint32_t *hist    = (uint32_t *)(leaf_pool + ALM_SORT_LEAF_HIST_OFF);
+    uint32_t *offsets = (uint32_t *)(leaf_pool + ALM_SORT_LEAF_OFFSETS_OFF);
+    int32_t *src = slice_curr;
+    int32_t *dst = slice_alt;
+    const int n_passes = (bits_hi + ALM_SORT_SMALL_RADIX_BITS - 1) / ALM_SORT_SMALL_RADIX_BITS;
+    for (int p = 0; p < n_passes; ++p) {
+        const int shift = p * ALM_SORT_SMALL_RADIX_BITS;
+        const int rem   = bits_hi - shift;
+        const int bb    = rem < ALM_SORT_SMALL_RADIX_BITS ? rem : ALM_SORT_SMALL_RADIX_BITS;
+        const uint64_t mask = ((uint64_t)1 << bb) - 1;
+        const int nb = 1 << bb;
+        memset(hist, 0, (size_t)nb * sizeof(uint32_t));
+        for (size_t j = start; j < end; ++j) {
+            uint64_t k = alm_sort_strided_load(keys_base, stride, (size_t)src[j]);
+            ++hist[(uint32_t)((k >> shift) & mask)];
+        }
+        uint64_t k0 = alm_sort_strided_load(keys_base, stride, (size_t)src[start]);
+        const uint32_t d0 = (uint32_t)((k0 >> shift) & mask);
+        if (hist[d0] == (uint32_t)n_slice)
+            continue;
+        uint32_t s = (uint32_t)start;
+        for (int d = 0; d < nb; ++d) { offsets[d] = s; s += hist[d]; }
+        for (size_t j = start; j < end; ++j) {
+            int32_t  i = src[j];
+            uint64_t k = alm_sort_strided_load(keys_base, stride, (size_t)i);
+            uint32_t d = (uint32_t)((k >> shift) & mask);
+            dst[offsets[d]++] = i;
+        }
+        { int32_t *t = src; src = dst; dst = t; }
+    }
+    if (src != dst_idx)
+        memcpy(dst_idx + start, src + start, n_slice * sizeof(int32_t));
+}
+
+static void alm_sort_msd(const uint8_t *keys_base, int32_t stride,
+                         int32_t *slice_curr, int32_t *slice_alt,
+                         int32_t *dst_idx,
+                         uint8_t *leaf_pool, uint8_t *msd_pool, int frame_idx,
+                         size_t start, size_t end, int bits_hi)
+{
+    while (true) {
+        const size_t n_slice = end - start;
+
+        if (bits_hi <= 0 || n_slice <= 1) {
+            if (n_slice && slice_curr != dst_idx)
+                memcpy(dst_idx + start, slice_curr + start, n_slice * sizeof(int32_t));
+            return;
+        }
+
+        if (n_slice <= ALM_SORT_INSERTION_THRESHOLD) {
+            alm_sort_insertion(keys_base, stride, slice_curr, dst_idx, start, end);
+            return;
+        }
+
+        if (n_slice <= ALM_SORT_LEAF_CAP) {
+            alm_sort_leaf_lsd8(keys_base, stride, slice_curr, dst_idx, leaf_pool, start, end, bits_hi);
+            return;
+        }
+
+        /* Frame budget exhausted: finish this oversized bucket with the pool-free
+         * strided LSD fallback instead of recursing. */
+        if (frame_idx >= ALM_SORT_MAX_MSD_FRAMES) {
+            alm_sort_lsd_fallback(keys_base, stride, slice_curr, slice_alt,
+                                  dst_idx, leaf_pool, start, end, bits_hi);
+            return;
+        }
+        ALM_SORT_ASSERT(frame_idx >= 0 && frame_idx < ALM_SORT_MAX_MSD_FRAMES,
+               "frame_idx must index a valid MSD frame after the fallback gate");
+
+        const int      b     = alm_sort_choose_bits(n_slice, bits_hi, frame_idx);
+        const int      shift = bits_hi - b;
+        const uint64_t mask  = ((uint64_t)1 << b) - 1;
+        const int      nb    = 1 << b;
+
+        uint8_t *frame = msd_pool + (size_t)frame_idx * ALM_SORT_MSD_FRAME_BYTES;
+        /* Single reused array: counts -> cursors -> bucket ends (W2'). */
+        uint32_t *hist_cur = (uint32_t *)(frame + ALM_SORT_MSD_HIST_OFF);
+
+        memset(hist_cur, 0, (size_t)nb * sizeof(uint32_t));
+        for (size_t j = start; j < end; ++j) {
+            int32_t  i = slice_curr[j];
+            uint64_t k = alm_sort_strided_load(keys_base, stride, (size_t)i);
+            uint32_t d = (uint32_t)((k >> shift) & mask);
+            ++hist_cur[d];
+        }
+
+        /* skip: all in same bucket. Hence no scatter, no swap. */
+        const uint64_t k0 = alm_sort_strided_load(keys_base, stride, (size_t)slice_curr[start]);
+        const uint32_t d0 = (uint32_t)((k0 >> shift) & mask);
+        if (hist_cur[d0] == (uint32_t)n_slice) {
+            bits_hi -= b;
+            continue;
+        }
+
+        /* In-place prefix sum: counts -> per-bucket scatter cursors. */
+        {
+            uint32_t s = (uint32_t)start;
+            for (int d = 0; d < nb; ++d) {
+                uint32_t c = hist_cur[d];
+                hist_cur[d] = s;
+                s += c;
+            }
+        }
+
+        for (size_t j = start; j < end; ++j) {
+            int32_t  i = slice_curr[j];
+            uint64_t k = alm_sort_strided_load(keys_base, stride, (size_t)i);
+            uint32_t d = (uint32_t)((k >> shift) & mask);
+            slice_alt[hist_cur[d]++] = i;
+        }
+        /* After the scatter hist_cur[d] == end of bucket d. Recover bounds from a
+         * running cursor over those ends (W2', no bucket_starts array). */
+
+        const int next_bits  = bits_hi - b;
+        const int next_frame = frame_idx + 1;
+        uint32_t prev = (uint32_t)start;
+        for (int d = 0; d < nb; ++d) {
+            const uint32_t bend = hist_cur[d];
+            const uint32_t cnt  = bend - prev;
+            if (cnt) {
+                /* Inline the child's base-case dispatch (its slice_curr ==
+                 * slice_alt here) to skip a recursive call for buckets that would
+                 * immediately bottom out. */
+                if (cnt == 1) {
+                    dst_idx[prev] = slice_alt[prev];
+                } else if (next_bits <= 0) {
+                    memcpy(dst_idx + prev, slice_alt + prev, cnt * sizeof(int32_t));
+                } else if (cnt <= ALM_SORT_INSERTION_THRESHOLD) {
+                    alm_sort_insertion(keys_base, stride, slice_alt, dst_idx, prev, bend);
+                } else if (cnt <= ALM_SORT_LEAF_CAP) {
+                    alm_sort_leaf_lsd8(keys_base, stride, slice_alt, dst_idx, leaf_pool,
+                                       prev, bend, next_bits);
+                } else {
+                    alm_sort_msd(keys_base, stride,
+                                 slice_alt, slice_curr,
+                                 dst_idx,
+                                 leaf_pool, msd_pool, next_frame,
+                                 prev, bend, next_bits);
+                }
+            }
+            prev = bend;
+        }
+        return;
+    }
+}
+
+/* ============================================================
+ * (B) Flat LSD radix
+ * ============================================================ */
+/*
+ * Flat 11-bit LSD over the whole array. `base` holds the
+ * 4N index scratch (id_a); `dst_idx` is the ping-pong partner. Histograms reuse
+ * the leaf+msd pool region. Keys are re-read from the strided source each pass.
+ * Stable; result lands in dst_idx.
+ */
+static void alm_sort_lsd(const uint8_t *keys_base, int32_t stride,
+                         int32_t *dst_idx, size_t n, uint8_t *base)
+{
+    int32_t  *id_a    = ALM_SORT_INDEX_PTR(base, n);
+    uint32_t *hist    = ALM_SORT_LSD_HIST_PTR(base, n);
+    uint32_t *offsets = ALM_SORT_LSD_OFFSETS_PTR(base, n);
+
+    static const int      pass_sh[ALM_SORT_LSD_PASSES] = {0, 11, 22, 33, 44, 55};
+    static const uint64_t pass_mk[ALM_SORT_LSD_PASSES] = {0x7ff, 0x7ff, 0x7ff, 0x7ff, 0x7ff, 0x1ff};
+    static const int      pass_nb[ALM_SORT_LSD_PASSES] = {ALM_SORT_LSD_NB, ALM_SORT_LSD_NB, ALM_SORT_LSD_NB, ALM_SORT_LSD_NB, ALM_SORT_LSD_NB, 1 << 9};
 
     /* Fused count: one sequential sweep reads each key once and bumps all six
      * digit histograms with immediate 11-bit shifts. */
-    memset(hist, 0, (size_t)LSD_PASSES * LSD_NB * sizeof(uint32_t));
+    memset(hist, 0, ALM_SORT_LSD_HIST_BYTES);
     for (size_t i = 0; i < n; ++i) {
         uint64_t k = alm_sort_strided_load(keys_base, stride, i);
-        ++hist[0 * LSD_NB + (uint32_t)( k        & 0x7ff)];
-        ++hist[1 * LSD_NB + (uint32_t)((k >> 11) & 0x7ff)];
-        ++hist[2 * LSD_NB + (uint32_t)((k >> 22) & 0x7ff)];
-        ++hist[3 * LSD_NB + (uint32_t)((k >> 33) & 0x7ff)];
-        ++hist[4 * LSD_NB + (uint32_t)((k >> 44) & 0x7ff)];
-        ++hist[5 * LSD_NB + (uint32_t)((k >> 55) & 0x1ff)];
+        ++hist[0 * ALM_SORT_LSD_NB + (uint32_t)( k        & 0x7ff)];
+        ++hist[1 * ALM_SORT_LSD_NB + (uint32_t)((k >> 11) & 0x7ff)];
+        ++hist[2 * ALM_SORT_LSD_NB + (uint32_t)((k >> 22) & 0x7ff)];
+        ++hist[3 * ALM_SORT_LSD_NB + (uint32_t)((k >> 33) & 0x7ff)];
+        ++hist[4 * ALM_SORT_LSD_NB + (uint32_t)((k >> 44) & 0x7ff)];
+        ++hist[5 * ALM_SORT_LSD_NB + (uint32_t)((k >> 55) & 0x1ff)];
     }
 
     /* Pass 0: scatter identity positions by digit 0 (keys read sequentially). */
     {
         uint32_t s = 0;
-        for (int d = 0; d < LSD_NB; ++d) { offsets[d] = s; s += hist[d]; }
+        for (int d = 0; d < ALM_SORT_LSD_NB; ++d) { offsets[d] = s; s += hist[d]; }
         for (size_t i = 0; i < n; ++i) {
             uint64_t k = alm_sort_strided_load(keys_base, stride, i);
             uint32_t d = (uint32_t)(k & 0x7ff);
@@ -159,32 +637,29 @@ static void alm_sort_do_lsd(const uint8_t *keys_base, int32_t stride,
         }
     }
     int32_t *id_src = id_a;
-    int32_t *id_dst = pDstIdx;
+    int32_t *id_dst = dst_idx;
 
-    /* Passes 1..5: read indices in order, re-read each key (random access into
-     * the strided source), scatter. Per-pass constant-digit skip (order
-     * preserving). */
-    for (int p = 1; p < LSD_PASSES; ++p) {
+    /* Passes 1..5: read indices in order, re-read each key (random access into the
+     * strided source), scatter. Per-pass constant-digit skip (order-preserving). */
+    for (int p = 1; p < ALM_SORT_LSD_PASSES; ++p) {
         const int      shift = pass_sh[p];
         const uint64_t mask  = pass_mk[p];
         const int      nb    = pass_nb[p];
-        uint32_t *hp = hist + (size_t)p * LSD_NB;
+        uint32_t *hp = hist + (size_t)p * ALM_SORT_LSD_NB;
 
-        const uint64_t k0 = alm_sort_strided_load(keys_base, stride,
-                                                  (size_t)id_src[0]);
+        const uint64_t k0 = alm_sort_strided_load(keys_base, stride, (size_t)id_src[0]);
         const uint32_t d0 = (uint32_t)((k0 >> shift) & mask);
-        if (hp[d0] == (uint32_t)n) continue;   /* all in same bucket: no scatter, no swap */
+        if (hp[d0] == (uint32_t)n)
+            continue;   /* all in same bucket: no scatter, no swap */
 
         uint32_t s = 0;
         for (int d = 0; d < nb; ++d) { offsets[d] = s; s += hp[d]; }
-
-        /* The key gather keys_base[id_src[j]] is random; id_src is streamed in
-         * order, so prefetch the key LSD_PF_DIST iterations ahead to overlap
-         * the gather latency. Split so the bounds check is hoisted out of the
-         * body: the main loop prefetches unconditionally, the tail does not. */
-        const size_t lim = n > LSD_PF_DIST ? n - LSD_PF_DIST : 0;
+        /* The key gather is random; id_src is streamed in order, so prefetch the
+         * key LSD_PF_DIST iterations ahead to overlap the gather latency. Split so
+         * the bounds check is hoisted out of the body. */
+        const size_t lim = n > ALM_SORT_LSD_PF_DIST ? n - ALM_SORT_LSD_PF_DIST : 0;
         for (size_t j = 0; j < lim; ++j) {
-            __builtin_prefetch(keys_base + (intptr_t)id_src[j + LSD_PF_DIST]
+            ALM_SORT_PREFETCH(keys_base + (intptr_t)id_src[j + ALM_SORT_LSD_PF_DIST]
                                           * (intptr_t)stride, 0, 0);
             int32_t  i = id_src[j];
             uint64_t k = alm_sort_strided_load(keys_base, stride, (size_t)i);
@@ -197,74 +672,98 @@ static void alm_sort_do_lsd(const uint8_t *keys_base, int32_t stride,
             uint32_t d = (uint32_t)((k >> shift) & mask);
             id_dst[offsets[d]++] = i;
         }
-        int32_t *tmp = id_src; id_src = id_dst; id_dst = tmp;
+        { int32_t *t = id_src; id_src = id_dst; id_dst = t; }
     }
 
-    if (id_src != pDstIdx)
-        memcpy(pDstIdx, id_src, n * sizeof(int32_t));
+    if (id_src != dst_idx)
+        memcpy(dst_idx, id_src, n * sizeof(int32_t));
 }
+
+static void alm_sort_radix(const uint8_t *keys_base, int32_t stride,
+                           int32_t *dst_idx, size_t n, uint8_t *base)
+{
+    int32_t *scratch   = ALM_SORT_INDEX_PTR(base, n);
+    uint8_t *leaf_pool = ALM_SORT_LEAF_POOL_PTR(base, n);
+    uint8_t *msd_pool  = ALM_SORT_MSD_POOL_PTR(base, n);
+
+    for (size_t i = 0; i < n; ++i)
+        scratch[i] = (int32_t)i;
+
+    alm_sort_msd(keys_base, stride,
+                 scratch, dst_idx, dst_idx,
+                 leaf_pool, msd_pool, 0,
+                 0, n, 64);
+}
+
+/* ============================================================
+ * Public API
+ * ============================================================ */
 
 /*
  * Report the scratch size (bytes) needed by amd_stablesort_ascend_64f for the
- * given len. Layout mirrors the LSD kernel: 64 bytes of alignment slack, the
- * 4N (aligned) index scratch, then the fused histogram and offset tables.
- * Returns 0 on success, -1 on invalid arguments.
+ * given len. Layout: 64 bytes of alignment slack, the 4N (aligned) index
+ * scratch, then the leaf pool and the MSD frame pool.
+ *
+ * Returns an aoclsort_status: AOCLSORT_STS_OK (0) on success;
+ *   AOCLSORT_STS_NULL_PTR      if workspace_size is NULL,
+ *   AOCLSORT_STS_LENGTH_ERR    if len <= 0,
+ *   AOCLSORT_STS_SIZE_OVERFLOW if the required size would exceed INT_MAX.
  */
 int ALM_PROTO_OPT(stablesort_getsize_64f)(int len, int *workspace_size)
 {
     if (workspace_size == NULL)
-        return -1;
+        return AOCLSORT_STS_NULL_PTR;
 
-    if (len < 0) {
+    if (len <= 0) {
         *workspace_size = 0;
-        return -1;
+        return AOCLSORT_STS_LENGTH_ERR;
     }
 
-    size_t n = (size_t)len;
-    size_t bytes = (size_t)64 // alignment slack for aligning the caller's base up to 64 bytes
-                 + alm_sort_align64(n * sizeof(int32_t))
-                 + (size_t)LSD_PASSES * LSD_NB * sizeof(uint32_t)
-                 + (size_t)LSD_NB * sizeof(uint32_t);
+    size_t bytes = ALM_SORT_WORKSPACE_BYTES((size_t)len);
 
-    if (bytes > (size_t)INT_MAX) { // too large for int
+    if (bytes > (size_t)INT_MAX) {
         *workspace_size = 0;
-        return -1;
+        return AOCLSORT_STS_SIZE_OVERFLOW;
     }
 
     *workspace_size = (int)bytes;
-    return 0;
+    return AOCLSORT_STS_OK;
 }
 
 /*
  * Stable ascending argsort of the strided double-precision keys in src.
- * dst_index receives a permutation of [0, len). Returns 0 on success, -1 on
- * invalid arguments.
+ * dst_index receives a permutation of [0, len).
+ *
+ * Returns an aoclsort_status: AOCLSORT_STS_OK (0) on success;
+ *   AOCLSORT_STS_NULL_PTR   if src, dst_index, or workspace is NULL,
+ *   AOCLSORT_STS_LENGTH_ERR if len <= 0,
+ *   AOCLSORT_STS_STRIDE_ERR if src_stride_bytes < (int)sizeof(double)
+ *                           (rejects 0 and negative strides).
  */
 int ALM_PROTO_OPT(stablesort_ascend_64f)(const double *src, int src_stride_bytes,
                                          int *dst_index, int len, void *workspace)
 {
     if (src == NULL || dst_index == NULL)
-        return -1;
+        return AOCLSORT_STS_NULL_PTR;
 
-    if (len < 0)
-        return -1;
+    if (len <= 0)
+        return AOCLSORT_STS_LENGTH_ERR;
 
-    if (len == 0)
-        return 0;
+    if (src_stride_bytes < (int)sizeof(double))
+        return AOCLSORT_STS_STRIDE_ERR;
 
     if (workspace == NULL)
-        return -1;
+        return AOCLSORT_STS_NULL_PTR;
 
-    size_t        n         = (size_t)len;
-    int32_t       stride    = (int32_t)src_stride_bytes;
+    size_t         n         = (size_t)len;
+    int32_t        stride    = (int32_t)src_stride_bytes;
     const uint8_t *keys_base = (const uint8_t *)src;
-    int32_t       *pDstIdx   = (int32_t *)dst_index;
+    int32_t       *dst_idx   = (int32_t *)dst_index;
 
     /* The caller's workspace may be unaligned; align the working base to 64. */
     uint8_t *base = (uint8_t *)workspace;
-    base = (uint8_t *)alm_sort_align64((uintptr_t)base);
+    base = (uint8_t *)ALM_SORT_ALIGN64((uintptr_t)base);
 
-    alm_sort_do_lsd(keys_base, stride, pDstIdx, n, base);
-
-    return 0;
+    alm_sort_radix(keys_base, stride, dst_idx, n, base);
+    return AOCLSORT_STS_OK;
 }

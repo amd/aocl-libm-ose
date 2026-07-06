@@ -118,6 +118,7 @@ typedef enum {
 #define ALM_SORT_STATIC_ASSERT(cond, msg) _Static_assert((cond), msg)
 #define ALM_SORT_ASSERT(cond, msg)        assert((cond) && (msg))
 #define ALM_SORT_PREFETCH(addr, rw, loc)  __builtin_prefetch((addr), (rw), (loc))
+#define ALM_SORT_UNLIKELY(x)              __builtin_expect(!!(x), 0)
 
 /*
  * Platform assumption made explicit here so it fails at compile time rather
@@ -262,14 +263,14 @@ static inline int alm_sort_gallop_left(uint64_t key, const int32_t *arr,
     if (key > alm_sort_key_at(keys, (size_t)arr[base + hint])) {
         int max_ofs = len - hint;
         while (ofs < max_ofs && key > alm_sort_key_at(keys, (size_t)arr[base + hint + ofs])) {
-            last_ofs = ofs; ofs = (ofs << 1) + 1; if (ofs <= 0) ofs = max_ofs;
+            last_ofs = ofs; ofs = (ofs << 1) + 1; if (ALM_SORT_UNLIKELY(ofs <= 0) /* defensive guard */) ofs = max_ofs;
         }
         if (ofs > max_ofs) ofs = max_ofs;
         last_ofs += hint; ofs += hint;
     } else {
         int max_ofs = hint + 1;
         while (ofs < max_ofs && key <= alm_sort_key_at(keys, (size_t)arr[base + hint - ofs])) {
-            last_ofs = ofs; ofs = (ofs << 1) + 1; if (ofs <= 0) ofs = max_ofs;
+            last_ofs = ofs; ofs = (ofs << 1) + 1; if (ALM_SORT_UNLIKELY(ofs <= 0) /* defensive guard */) ofs = max_ofs;
         }
         if (ofs > max_ofs) ofs = max_ofs;
         int t = last_ofs; last_ofs = hint - ofs; ofs = hint - t;
@@ -299,14 +300,14 @@ static inline int alm_sort_gallop_right(uint64_t key, const int32_t *arr,
     if (key < alm_sort_key_at(keys, (size_t)arr[base + hint])) {
         int max_ofs = hint + 1;
         while (ofs < max_ofs && key < alm_sort_key_at(keys, (size_t)arr[base + hint - ofs])) {
-            last_ofs = ofs; ofs = (ofs << 1) + 1; if (ofs <= 0) ofs = max_ofs;
+            last_ofs = ofs; ofs = (ofs << 1) + 1; if (ALM_SORT_UNLIKELY(ofs <= 0) /* defensive guard */) ofs = max_ofs;
         }
         if (ofs > max_ofs) ofs = max_ofs;
         int t = last_ofs; last_ofs = hint - ofs; ofs = hint - t;
     } else {
         int max_ofs = len - hint;
         while (ofs < max_ofs && key >= alm_sort_key_at(keys, (size_t)arr[base + hint + ofs])) {
-            last_ofs = ofs; ofs = (ofs << 1) + 1; if (ofs <= 0) ofs = max_ofs;
+            last_ofs = ofs; ofs = (ofs << 1) + 1; if (ALM_SORT_UNLIKELY(ofs <= 0) /* defensive guard */) ofs = max_ofs;
         }
         if (ofs > max_ofs) ofs = max_ofs;
         last_ofs += hint; ofs += hint;
@@ -375,6 +376,8 @@ static void alm_sort_shivers_binary_sort(alm_sort_shivers_t *ts, int lo, int hi,
 
 static void alm_sort_shivers_push_run(alm_sort_shivers_t *ts, int base, int len)
 {
+    ALM_SORT_ASSERT(ts->stack_size < ALM_SORT_RUN_STACK_CAP,
+           "Shivers run-stack overflow: stack_size reached RUN_STACK_CAP");
     ts->run_base[ts->stack_size] = base;
     ts->run_len[ts->stack_size]  = len;
     ++ts->stack_size;
@@ -1254,3 +1257,154 @@ int ALM_PROTO_OPT(stablesort_ascend_64f)(const double *src, int src_stride_bytes
     alm_sort_radix(keys_base, stride, dst_idx, n, base);
     return AOCLSORT_STS_OK;
 }
+
+/* ============================================================
+ * Unit-test wrappers
+ *
+ * Compiled ONLY into the gtest target (-DALM_SORT_UNIT_TEST); absent from the
+ * shipped library. Each wrapper is a thin adapter over an internal kernel
+ * ============================================================ */
+#ifdef ALM_SORT_UNIT_TEST
+#include <stdlib.h>
+#include "stablesort_testapi.h"
+
+void alm_sort_test_get_consts(alm_sort_test_consts *out)
+{
+    out->insertion_threshold = (int)ALM_SORT_INSERTION_THRESHOLD;
+    out->leaf_cap            = (int)ALM_SORT_LEAF_CAP;
+    out->radix_bits          = ALM_SORT_RADIX_BITS;
+    out->small_radix_bits    = ALM_SORT_SMALL_RADIX_BITS;
+    out->subl2_gate          = (int)ALM_SORT_SUBL2_GATE;
+    out->coarse_depth        = ALM_SORT_COARSE_DEPTH;
+    out->target_leaf         = (int)ALM_SORT_TARGET_LEAF;
+    out->max_msd_frames      = ALM_SORT_MAX_MSD_FRAMES;
+    out->run_stack_cap       = ALM_SORT_RUN_STACK_CAP;
+    out->lsd_min_n           = (int)ALM_SORT_LSD_MIN_N;
+    out->min_merge           = 16;
+    out->struct_min_samples  = ALM_SORT_STRUCT_MIN_SAMPLES;
+    out->struct_sample_rate  = ALM_SORT_STRUCT_SAMPLE_RATE;
+}
+
+/* Aligned workspace matching ALM_SORT_WORKSPACE_BYTES; caller frees *raw. 
+ * Kernels needing scratch allocate a workspace here and mirror the production
+ * layout (index scratch as slice_curr, out_idx doubling as slice_alt/dst_idx,
+ * exactly as alm_sort_radix does).
+*/
+static uint8_t *alm_sort_test_ws(size_t n, void **raw)
+{
+    void *p = malloc(ALM_SORT_WORKSPACE_BYTES(n));
+    *raw = p;
+    return (uint8_t *)ALM_SORT_ALIGN64((uintptr_t)p);
+}
+
+static void alm_sort_test_fill_identity(int32_t *a, size_t n)
+{
+    for (size_t i = 0; i < n; ++i)
+        a[i] = (int32_t)i;
+}
+
+uint64_t alm_sort_test_to_sortable(uint64_t u)
+{
+    return alm_sort_to_sortable(u);
+}
+
+size_t alm_sort_test_struct_sample_count(size_t n)
+{
+    return alm_sort_struct_sample_count(n);
+}
+
+size_t alm_sort_test_sample_ascending_pairs(const void *keys_base,
+                                            int32_t stride, size_t n,
+                                            size_t *out_total)
+{
+    return alm_sort_sample_ascending_pairs((const uint8_t *)keys_base, stride, n,
+                                           out_total);
+}
+
+int alm_sort_test_is_structured(const void *keys_base, int32_t stride, size_t n)
+{
+    return alm_sort_is_structured((const uint8_t *)keys_base, stride, n) ? 1 : 0;
+}
+
+int alm_sort_test_choose_bits(size_t n_slice, int bits_hi, int frame_idx)
+{
+    return alm_sort_choose_bits(n_slice, bits_hi, frame_idx);
+}
+
+int alm_sort_test_gallop_left(uint64_t key, const int32_t *arr,
+                              const void *keys_base, int32_t stride,
+                              int base, int len, int hint)
+{
+    alm_sort_keys_t k = { (const uint8_t *)keys_base, stride };
+    return alm_sort_gallop_left(key, arr, k, base, len, hint);
+}
+
+int alm_sort_test_gallop_right(uint64_t key, const int32_t *arr,
+                               const void *keys_base, int32_t stride,
+                               int base, int len, int hint)
+{
+    alm_sort_keys_t k = { (const uint8_t *)keys_base, stride };
+    return alm_sort_gallop_right(key, arr, k, base, len, hint);
+}
+
+void alm_sort_test_insertion(const void *keys_base, int32_t stride,
+                             int32_t *out_idx, size_t n)
+{
+    void *raw;
+    uint8_t *ws = alm_sort_test_ws(n, &raw);
+    int32_t *scratch = ALM_SORT_INDEX_PTR(ws, n);
+    alm_sort_test_fill_identity(scratch, n);
+    alm_sort_insertion((const uint8_t *)keys_base, stride, scratch, out_idx, 0, n);
+    free(raw);
+}
+
+void alm_sort_test_leaf_lsd8(const void *keys_base, int32_t stride,
+                             int32_t *out_idx, size_t n, int bits_hi)
+{
+    void *raw;
+    uint8_t *ws = alm_sort_test_ws(n, &raw);
+    int32_t *scratch = ALM_SORT_INDEX_PTR(ws, n);
+    uint8_t *leaf = ALM_SORT_LEAF_POOL_PTR(ws, n);
+    alm_sort_test_fill_identity(scratch, n);
+    alm_sort_leaf_lsd8((const uint8_t *)keys_base, stride, scratch, out_idx, leaf,
+                       0, n, bits_hi);
+    free(raw);
+}
+
+void alm_sort_test_lsd_fallback(const void *keys_base, int32_t stride,
+                                int32_t *out_idx, size_t n, int bits_hi)
+{
+    void *raw;
+    uint8_t *ws = alm_sort_test_ws(n, &raw);
+    int32_t *scratch = ALM_SORT_INDEX_PTR(ws, n);
+    uint8_t *leaf = ALM_SORT_LEAF_POOL_PTR(ws, n);
+    alm_sort_test_fill_identity(scratch, n);
+    alm_sort_lsd_fallback((const uint8_t *)keys_base, stride, scratch, out_idx,
+                          out_idx, leaf, 0, n, bits_hi);
+    free(raw);
+}
+
+void alm_sort_test_msd(const void *keys_base, int32_t stride,
+                       int32_t *out_idx, size_t n, int bits_hi)
+{
+    void *raw;
+    uint8_t *ws = alm_sort_test_ws(n, &raw);
+    int32_t *scratch = ALM_SORT_INDEX_PTR(ws, n);
+    uint8_t *leaf = ALM_SORT_LEAF_POOL_PTR(ws, n);
+    uint8_t *msd  = ALM_SORT_MSD_POOL_PTR(ws, n);
+    alm_sort_test_fill_identity(scratch, n);
+    alm_sort_msd((const uint8_t *)keys_base, stride, scratch, out_idx, out_idx,
+                 leaf, msd, 0, 0, n, bits_hi);
+    free(raw);
+}
+
+void alm_sort_test_lsd(const void *keys_base, int32_t stride,
+                       int32_t *out_idx, size_t n)
+{
+    void *raw;
+    uint8_t *ws = alm_sort_test_ws(n, &raw);
+    alm_sort_lsd((const uint8_t *)keys_base, stride, out_idx, n, ws);
+    free(raw);
+}
+
+#endif /* ALM_SORT_UNIT_TEST */

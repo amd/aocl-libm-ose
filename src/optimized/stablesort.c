@@ -147,6 +147,381 @@ static inline uint64_t alm_sort_strided_load(const uint8_t *base,
 }
 
 /* ============================================================
+ * (A) Shivers adaptive merge sort (TimSort family)
+ * ============================================================ */
+
+#define ALM_SORT_MIN_GALLOP    7
+#define ALM_SORT_RUN_STACK_CAP 128
+
+typedef struct {
+    const uint8_t *base;
+    int32_t        stride;
+} alm_sort_keys_t;
+
+typedef struct {
+    int32_t         *a;
+    int32_t         *tmp;
+    alm_sort_keys_t  keys;
+    int              min_gallop;
+    int              stack_size;
+    int              min_merge;
+    int             *run_base;   /* [ALM_SORT_RUN_STACK_CAP], from workspace */
+    int             *run_len;    /* [ALM_SORT_RUN_STACK_CAP], from workspace */
+} alm_sort_shivers_t;
+
+static inline uint64_t alm_sort_key_at(alm_sort_keys_t keys, size_t idx)
+{
+    uint64_t u;
+    memcpy(&u, keys.base + (intptr_t)idx * (intptr_t)keys.stride, sizeof(u));
+    return alm_sort_to_sortable(u);
+}
+
+static inline void alm_sort_acopy(const int32_t *src, int sp,
+                                  int32_t *dst, int dp, int len)
+{
+    memmove(dst + dp, src + sp, (size_t)len * sizeof(int32_t));
+}
+
+static inline int alm_sort_gallop_left(uint64_t key, const int32_t *arr,
+                                       alm_sort_keys_t keys,
+                                       int base, int len, int hint)
+{
+    int last_ofs = 0, ofs = 1;
+    if (key > alm_sort_key_at(keys, (size_t)arr[base + hint])) {
+        int max_ofs = len - hint;
+        while (ofs < max_ofs && key > alm_sort_key_at(keys, (size_t)arr[base + hint + ofs])) {
+            last_ofs = ofs; ofs = (ofs << 1) + 1; if (ofs <= 0) ofs = max_ofs;
+        }
+        if (ofs > max_ofs) ofs = max_ofs;
+        last_ofs += hint; ofs += hint;
+    } else {
+        int max_ofs = hint + 1;
+        while (ofs < max_ofs && key <= alm_sort_key_at(keys, (size_t)arr[base + hint - ofs])) {
+            last_ofs = ofs; ofs = (ofs << 1) + 1; if (ofs <= 0) ofs = max_ofs;
+        }
+        if (ofs > max_ofs) ofs = max_ofs;
+        int t = last_ofs; last_ofs = hint - ofs; ofs = hint - t;
+    }
+    ++last_ofs;
+    while (last_ofs < ofs) {
+        int m = last_ofs + ((ofs - last_ofs) >> 1);
+        if (key > alm_sort_key_at(keys, (size_t)arr[base + m])) last_ofs = m + 1; else ofs = m;
+    }
+    return ofs;
+}
+
+/* Goal : return the count of elements <= K in arr[base, base+len)
+ * i.e. the rightmost insertion point for K (equal keys land to its left).
+ * Instead of a pure binary search, we leverage 'hint'.
+ * Expectation is the element we are looking for is close to hint.
+ * So we do an exponential search starting at hint
+ * and stepping by 2x each time until we find the
+ * range where the element is, and then binary search within it.
+ * (ofs << 1) + 1 ensures [last_ofs, ofs) is power of 2 and gap free.
+ */
+static inline int alm_sort_gallop_right(uint64_t key, const int32_t *arr,
+                                        alm_sort_keys_t keys,
+                                        int base, int len, int hint)
+{
+    int ofs = 1, last_ofs = 0;
+    if (key < alm_sort_key_at(keys, (size_t)arr[base + hint])) {
+        int max_ofs = hint + 1;
+        while (ofs < max_ofs && key < alm_sort_key_at(keys, (size_t)arr[base + hint - ofs])) {
+            last_ofs = ofs; ofs = (ofs << 1) + 1; if (ofs <= 0) ofs = max_ofs;
+        }
+        if (ofs > max_ofs) ofs = max_ofs;
+        int t = last_ofs; last_ofs = hint - ofs; ofs = hint - t;
+    } else {
+        int max_ofs = len - hint;
+        while (ofs < max_ofs && key >= alm_sort_key_at(keys, (size_t)arr[base + hint + ofs])) {
+            last_ofs = ofs; ofs = (ofs << 1) + 1; if (ofs <= 0) ofs = max_ofs;
+        }
+        if (ofs > max_ofs) ofs = max_ofs;
+        last_ofs += hint; ofs += hint;
+    }
+    /* arr[base + last_ofs] <= key < arr[base + ofs] now; find exact point. */
+    ++last_ofs;
+    while (last_ofs < ofs) {
+        int m = last_ofs + ((ofs - last_ofs) >> 1);
+        if (key < alm_sort_key_at(keys, (size_t)arr[base + m])) ofs = m; else last_ofs = m + 1;
+    }
+    return ofs;
+}
+
+static inline uint64_t alm_sort_shivers_key(const alm_sort_shivers_t *ts, int v)
+{
+    return alm_sort_key_at(ts->keys, (size_t)v);
+}
+
+static void alm_sort_shivers_reverse_range(alm_sort_shivers_t *ts, int lo, int hi)
+{
+    --hi;
+    while (lo < hi) {
+        int32_t t = ts->a[lo]; ts->a[lo] = ts->a[hi]; ts->a[hi] = t;
+        ++lo; --hi;
+    }
+}
+
+/* ascending : non-strict (>=) as its a left-to-right pass and ensures stability
+ * descending : strict (<) as its a right-to-left pass and reverse will break stability
+ * if arr starts with equal keys -> take ascending branch */
+static int alm_sort_shivers_count_run(alm_sort_shivers_t *ts, int lo, int hi)
+{
+    int run_hi = lo + 1;
+    if (run_hi == hi)
+        return 1;
+    if (alm_sort_shivers_key(ts, ts->a[run_hi++]) < alm_sort_shivers_key(ts, ts->a[lo])) {
+        while (run_hi < hi && alm_sort_shivers_key(ts, ts->a[run_hi]) < alm_sort_shivers_key(ts, ts->a[run_hi - 1]))
+            ++run_hi;
+        alm_sort_shivers_reverse_range(ts, lo, run_hi);
+    } else {
+        while (run_hi < hi && !(alm_sort_shivers_key(ts, ts->a[run_hi]) < alm_sort_shivers_key(ts, ts->a[run_hi - 1])))
+            ++run_hi;
+    }
+    return run_hi - lo;
+}
+
+/* If strictly (<) pivot, search in left half, else right half. This ensures stability by
+ * placing equal keys in input order. */
+static void alm_sort_shivers_binary_sort(alm_sort_shivers_t *ts, int lo, int hi, int start)
+{
+    if (start == lo)
+        ++start; /* first element is trivially sorted */
+    for (; start < hi; ++start) {
+        int32_t pivot = ts->a[start];
+        uint64_t pk = alm_sort_shivers_key(ts, pivot);
+        int left = lo, right = start;
+        while (left < right) {
+            int mid = (left + right) >> 1;
+            if (pk < alm_sort_shivers_key(ts, ts->a[mid])) right = mid; else left = mid + 1;
+        }
+        for (int k = start; k > left; --k)
+            ts->a[k] = ts->a[k - 1];
+        ts->a[left] = pivot;
+    }
+}
+
+static void alm_sort_shivers_push_run(alm_sort_shivers_t *ts, int base, int len)
+{
+    ts->run_base[ts->stack_size] = base;
+    ts->run_len[ts->stack_size]  = len;
+    ++ts->stack_size;
+}
+
+static void alm_sort_shivers_merge_lo(alm_sort_shivers_t *ts, int base1, int len1,
+                                      int base2, int len2)
+{
+    alm_sort_acopy(ts->a, base1, ts->tmp, 0, len1);
+    int cursor1 = 0, cursor2 = base2, dest = base1;
+    ts->a[dest++] = ts->a[cursor2++];
+    if (--len2 == 0) { alm_sort_acopy(ts->tmp, cursor1, ts->a, dest, len1); return; }
+    if (len1 == 1)  { alm_sort_acopy(ts->a, cursor2, ts->a, dest, len2); ts->a[dest + len2] = ts->tmp[cursor1]; return; }
+
+    int mg = ts->min_gallop;
+    while (true) {
+        int count1 = 0, count2 = 0;
+        do {
+            if (alm_sort_shivers_key(ts, ts->a[cursor2]) < alm_sort_shivers_key(ts, ts->tmp[cursor1])) {
+                ts->a[dest++] = ts->a[cursor2++]; ++count2; count1 = 0;
+                if (--len2 == 0) goto done;
+            } else {
+                ts->a[dest++] = ts->tmp[cursor1++]; ++count1; count2 = 0;
+                if (--len1 == 1) goto done;
+            }
+        } while ((count1 | count2) < mg);
+        do {
+            count1 = alm_sort_gallop_right(alm_sort_shivers_key(ts, ts->a[cursor2]), ts->tmp, ts->keys, cursor1, len1, 0);
+            if (count1 != 0) {
+                alm_sort_acopy(ts->tmp, cursor1, ts->a, dest, count1);
+                dest += count1; cursor1 += count1; len1 -= count1;
+                if (len1 <= 1) goto done;
+            }
+            ts->a[dest++] = ts->a[cursor2++];
+            if (--len2 == 0) goto done;
+            count2 = alm_sort_gallop_left(alm_sort_shivers_key(ts, ts->tmp[cursor1]), ts->a, ts->keys, cursor2, len2, 0);
+            if (count2 != 0) {
+                alm_sort_acopy(ts->a, cursor2, ts->a, dest, count2);
+                dest += count2; cursor2 += count2; len2 -= count2;
+                if (len2 == 0) goto done;
+            }
+            ts->a[dest++] = ts->tmp[cursor1++];
+            if (--len1 == 1) goto done;
+            --mg;
+        } while (count1 >= ALM_SORT_MIN_GALLOP || count2 >= ALM_SORT_MIN_GALLOP);
+        if (mg < 0) mg = 0;
+        mg += 2;
+    }
+done:
+    ts->min_gallop = mg < 1 ? 1 : mg;
+    if (len1 == 1) { alm_sort_acopy(ts->a, cursor2, ts->a, dest, len2); ts->a[dest + len2] = ts->tmp[cursor1]; }
+    else           { alm_sort_acopy(ts->tmp, cursor1, ts->a, dest, len1); }
+}
+
+static void alm_sort_shivers_merge_hi(alm_sort_shivers_t *ts, int base1, int len1,
+                                      int base2, int len2)
+{
+    alm_sort_acopy(ts->a, base2, ts->tmp, 0, len2);
+    int cursor1 = base1 + len1 - 1, cursor2 = len2 - 1, dest = base2 + len2 - 1;
+    ts->a[dest--] = ts->a[cursor1--];
+    if (--len1 == 0) { alm_sort_acopy(ts->tmp, 0, ts->a, dest - (len2 - 1), len2); return; }
+    if (len2 == 1) {
+        dest -= len1; cursor1 -= len1;
+        alm_sort_acopy(ts->a, cursor1 + 1, ts->a, dest + 1, len1);
+        ts->a[dest] = ts->tmp[cursor2];
+        return;
+    }
+
+    int mg = ts->min_gallop;
+    while (true) {
+        int count1 = 0, count2 = 0;
+        do {
+            if (alm_sort_shivers_key(ts, ts->tmp[cursor2]) < alm_sort_shivers_key(ts, ts->a[cursor1])) {
+                ts->a[dest--] = ts->a[cursor1--]; ++count1; count2 = 0;
+                if (--len1 == 0) goto done;
+            } else {
+                ts->a[dest--] = ts->tmp[cursor2--]; ++count2; count1 = 0;
+                if (--len2 == 1) goto done;
+            }
+        } while ((count1 | count2) < mg);
+        do {
+            count1 = len1 - alm_sort_gallop_right(alm_sort_shivers_key(ts, ts->tmp[cursor2]), ts->a, ts->keys, base1, len1, len1 - 1);
+            if (count1 != 0) {
+                dest -= count1; cursor1 -= count1; len1 -= count1;
+                alm_sort_acopy(ts->a, cursor1 + 1, ts->a, dest + 1, count1);
+                if (len1 == 0) goto done;
+            }
+            ts->a[dest--] = ts->tmp[cursor2--];
+            if (--len2 == 1) goto done;
+            count2 = len2 - alm_sort_gallop_left(alm_sort_shivers_key(ts, ts->a[cursor1]), ts->tmp, ts->keys, 0, len2, len2 - 1);
+            if (count2 != 0) {
+                dest -= count2; cursor2 -= count2; len2 -= count2;
+                alm_sort_acopy(ts->tmp, cursor2 + 1, ts->a, dest + 1, count2);
+                if (len2 <= 1) goto done;
+            }
+            ts->a[dest--] = ts->a[cursor1--];
+            if (--len1 == 0) goto done;
+            --mg;
+        } while (count1 >= ALM_SORT_MIN_GALLOP || count2 >= ALM_SORT_MIN_GALLOP);
+        if (mg < 0) mg = 0;
+        mg += 2;
+    }
+done:
+    ts->min_gallop = mg < 1 ? 1 : mg;
+    if (len2 == 1) {
+        dest -= len1; cursor1 -= len1;
+        alm_sort_acopy(ts->a, cursor1 + 1, ts->a, dest + 1, len1);
+        ts->a[dest] = ts->tmp[cursor2];
+    } else {
+        alm_sort_acopy(ts->tmp, 0, ts->a, dest - (len2 - 1), len2);
+    }
+}
+
+static void alm_sort_shivers_merge_at(alm_sort_shivers_t *ts, int i)
+{
+    int base1 = ts->run_base[i], len1 = ts->run_len[i];
+    int base2 = ts->run_base[i + 1], len2 = ts->run_len[i + 1];
+    ts->run_len[i] = len1 + len2;
+    if (i == ts->stack_size - 3) {
+        ts->run_base[i + 1] = ts->run_base[i + 2];
+        ts->run_len[i + 1]  = ts->run_len[i + 2];
+    }
+    --ts->stack_size;
+
+    int k = alm_sort_gallop_right(alm_sort_shivers_key(ts, ts->a[base2]), ts->a, ts->keys, base1, len1, 0);
+    base1 += k; len1 -= k;
+    if (len1 == 0)
+        return;
+    len2 = alm_sort_gallop_left(alm_sort_shivers_key(ts, ts->a[base1 + len1 - 1]), ts->a, ts->keys, base2, len2, len2 - 1);
+    if (len2 == 0)
+        return;
+    if (len1 <= len2) alm_sort_shivers_merge_lo(ts, base1, len1, base2, len2);
+    else              alm_sort_shivers_merge_hi(ts, base1, len1, base2, len2);
+}
+
+static void alm_sort_shivers_merge_collapse(alm_sort_shivers_t *ts)
+{
+    while (ts->stack_size > 1) {
+        int n = ts->stack_size - 3;
+        int x = ts->run_len[n + 1] | ts->run_len[n + 2];
+        /* Keep the stack alone iff the 3rd-from-top run's MSB is above BOTH top
+         * runs'; otherwise merge it with its neighbour and re-check. Enforces
+         * geometric growth top-to-bottom => O(log n) stack depth. */
+        if (n < 0 || x <= (ts->run_len[n] & ~x))
+            break;
+        alm_sort_shivers_merge_at(ts, n);
+    }
+}
+
+static void alm_sort_shivers_force_collapse(alm_sort_shivers_t *ts)
+{
+    while (ts->stack_size > 1) {
+        int n = ts->stack_size - 2;
+        if (n > 0 && ts->run_len[n - 1] < ts->run_len[n + 1])
+            --n;
+        alm_sort_shivers_merge_at(ts, n);
+    }
+}
+
+static int alm_sort_shivers_min_run_length(alm_sort_shivers_t *ts, int n)
+{
+    int r = 0;
+    while (n >= ts->min_merge) { r |= (n & 1); n >>= 1; }
+    return n + r;
+}
+
+/*
+ * Run-stack depth bound: merge_collapse keeps run lengths growing at least
+ * geometrically from top to bottom, so k stacked runs imply total >= c^k <= n,
+ * i.e. k = O(log n). n fits in int32_t, so worst-case depth is a small multiple
+ * of log2(n) ~ 31, comfortably under ALM_SORT_RUN_STACK_CAP (128).
+ */
+static void alm_sort_shivers_run(alm_sort_shivers_t *ts, int n)
+{
+    if (n < 2)
+        return;
+    if (n < ts->min_merge) {
+        int init_run_len = alm_sort_shivers_count_run(ts, 0, n);
+        alm_sort_shivers_binary_sort(ts, 0, n, init_run_len);
+        return;
+    }
+    int lo = 0, n_remaining = n;
+    int min_run = alm_sort_shivers_min_run_length(ts, n);
+    do {
+        int run_len_cur = alm_sort_shivers_count_run(ts, lo, n);
+        if (run_len_cur < min_run) {
+            int force = n_remaining <= min_run ? n_remaining : min_run;
+            alm_sort_shivers_binary_sort(ts, lo, lo + force, lo + run_len_cur);
+            run_len_cur = force;
+        }
+        alm_sort_shivers_push_run(ts, lo, run_len_cur);
+        alm_sort_shivers_merge_collapse(ts);
+        lo += run_len_cur;
+        n_remaining -= run_len_cur;
+    } while (n_remaining != 0);
+    alm_sort_shivers_force_collapse(ts);
+}
+
+static void alm_sort_shivers(const uint8_t *keys_base, int32_t stride,
+                             int32_t *dst_idx, size_t n, int32_t *merge_tmp,
+                             int *run_base, int *run_len, int min_merge)
+{
+    for (size_t i = 0; i < n; ++i)
+        dst_idx[i] = (int32_t)i;
+
+    alm_sort_shivers_t ts;
+    ts.a = dst_idx;
+    ts.tmp = merge_tmp;
+    ts.keys.base = keys_base;
+    ts.keys.stride = stride;
+    ts.min_merge = min_merge < 16 ? 16 : min_merge;
+    ts.min_gallop = ALM_SORT_MIN_GALLOP;
+    ts.stack_size = 0;
+    ts.run_base = run_base;
+    ts.run_len  = run_len;
+    alm_sort_shivers_run(&ts, (int)n);
+}
+
+/* ============================================================
  * (C) MSD-LSD hybrid radix
  * ============================================================ */
 
@@ -226,6 +601,15 @@ ALM_SORT_STATIC_ASSERT(ALM_SORT_LSD_HIST_BYTES + ALM_SORT_LSD_OFFSETS_BYTES
                    <= ALM_SORT_LEAF_POOL_BYTES + ALM_SORT_MSD_POOL_BYTES,
                "LSD histograms must fit in the reused leaf+msd pool region");
 
+/*
+ * The Shivers path overlays its scratch on the radix path's regions (safe ONLY
+ * because exactly one kernel runs per call). merge_tmp aliases the N-int32
+ * scratch; the run-stack (run_base + run_len, ALM_SORT_RUN_STACK_CAP each) is
+ * carved at the START of the leaf pool, so it must fit in the leaf pool.
+ */
+ALM_SORT_STATIC_ASSERT(2u * (size_t)ALM_SORT_RUN_STACK_CAP * sizeof(int) <= ALM_SORT_LEAF_POOL_BYTES,
+               "Shivers run-stack must fit in the leaf pool region it overlays");
+
 /* ============================================================
  * Shared workspace layout (single source of truth)
  *
@@ -291,6 +675,9 @@ ALM_SORT_STATIC_ASSERT(ALM_SORT_LSD_HIST_BYTES + ALM_SORT_LSD_OFFSETS_BYTES
 #define ALM_SORT_LSD_OFFSETS_PTR(base, n) \
     (ALM_SORT_LSD_HIST_PTR(base, n) + (size_t)ALM_SORT_LSD_PASSES * ALM_SORT_LSD_NB)
 
+/* Region 1 -- shivers view: run-stack at pool start (run_base then run_len). */
+#define ALM_SORT_RUN_BASE_PTR(base, n)    ((int *)ALM_SORT_POOL_PTR(base, n))
+#define ALM_SORT_RUN_LEN_PTR(base, n)     (ALM_SORT_RUN_BASE_PTR(base, n) + ALM_SORT_RUN_STACK_CAP)
 
 /*
  * Stable linear insertion sort of a small index slice on the full 64-bit key.

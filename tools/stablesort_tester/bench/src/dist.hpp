@@ -125,6 +125,8 @@ inline void fill_reverse(double *p, std::size_t n) {
 
 inline void fill_nearly_sorted(double *p, std::size_t n, std::mt19937_64 &rng) {
   fill_sorted(p, n);
+  if (n < 2)
+    return; // 0/1-element arrays are trivially nearly sorted; avoids OOB below
   std::size_t swaps = std::max<std::size_t>(1, n / 100); // 1% of the array
   std::uniform_int_distribution<std::size_t> d(0, n ? n - 1 : 0);
   for (std::size_t i = 0; i < swaps; ++i) {

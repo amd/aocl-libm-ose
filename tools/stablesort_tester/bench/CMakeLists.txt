@@ -29,9 +29,9 @@
 # stablesort benchmark.
 #
 # A standalone executable that measures the built-in aocl-libm stablesort 64f
-# indexed sort (side A) and, optionally, an external dlopen'd shim (side B). It
-# links the aocl-libm shared library (which carries the amd_stablesort_*
-# symbols) and libdl; no third-party sort enters this build.
+# indexed sort (side A) and, optionally, an external dynamically loaded shim
+# (side B). It links the aocl-libm shared library (which carries the
+# amd_stablesort_* symbols); no third-party sort enters this build.
 #
 
 add_executable(stablesort_bench src/bench.cpp)
@@ -49,8 +49,12 @@ set_target_properties(stablesort_bench PROPERTIES
   CXX_STANDARD_REQUIRED ON)
 
 if(TARGET libm_shared)
-  # At run time, point LD_LIBRARY_PATH at the intended libalm.so
-  target_link_libraries(stablesort_bench PRIVATE libm_shared ${CMAKE_DL_LIBS})
+  if(WIN32)
+    target_link_libraries(stablesort_bench PRIVATE libm_shared)
+  else()
+    # At run time, point LD_LIBRARY_PATH at the intended libalm.so
+    target_link_libraries(stablesort_bench PRIVATE libm_shared ${CMAKE_DL_LIBS})
+  endif()
 else()
   message(FATAL_ERROR
     "stablesort_bench requires the aocl-libm shared library target "

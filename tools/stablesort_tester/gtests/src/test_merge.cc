@@ -108,7 +108,7 @@ AOCLSORT_TEST(Gallop, HintSelfCorrection)
         AOCLSORT_EXPECT_EQ(gleft(r, probe, hint), 38);
         AOCLSORT_EXPECT_EQ(gright(r, probe, hint), 38);
     }
-    // Exact-hit probe (left/right assymetry) -> expect 37/38
+    // Exact-hit probe (left/right asymmetry) -> expect 37/38
     const double hit = 2.0 * 37;
     for (int hint : {0, len - 1, 37, 10}) {
         AOCLSORT_EXPECT_EQ(gleft(r, hit, hint), 37);

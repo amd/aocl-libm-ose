@@ -98,6 +98,8 @@ AOCLSORT_TEST(ApiGetsize, InvalidAndValid)
     AOCLSORT_EXPECT_EQ(amd_opt_stablesort_getsize_64f(INT_MAX, &wss), STS_OVERFLOW); // len = INT_MAX
     AOCLSORT_EXPECT_EQ(amd_opt_stablesort_getsize_64f(1000, &wss), STS_OK); // valid
     AOCLSORT_EXPECT_LT(0, wss);
+    AOCLSORT_EXPECT_EQ(amd_opt_stablesort_getsize_64f(536851936, &wss), STS_OK); // largest len (workspace INT_MAX - 63)
+    AOCLSORT_EXPECT_EQ(amd_opt_stablesort_getsize_64f(536851937, &wss), STS_OVERFLOW); // one past largest len
 }
 
 // Key embedded at a non-zero field offset in a record (strided)

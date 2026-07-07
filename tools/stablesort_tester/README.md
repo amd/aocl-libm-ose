@@ -26,8 +26,16 @@ option (it builds against the aocl-libm shared library, `libalm.so`):
 ```bash
 cmake -S . -B <build-dir> -DSORT_BUILD_TESTS=ON
 cmake --build <build-dir> --target stablesort_bench
+```
+
+On Linux, point the loader at the built library:
+
+```bash
 LD_LIBRARY_PATH=<build-dir>/src ./<build-dir>/tools/stablesort_tester/bench/stablesort_bench --help
 ```
+
+On Windows, ensure `libalm.dll` is on `PATH` (or in the same directory as the
+benchmark executable) before running `stablesort_bench.exe`.
 
 ## Benchmark (`stablesort_bench`)
 
@@ -41,7 +49,7 @@ also verifies each result (see the `ok` column under [Output](#output)).
 | `--dists <list>` | Distributions: `uniform,sorted,reverse,nearly_sorted,few_unique,zipf,sparse_high`. |
 | `--strides <list>` | `src_stride_bytes` values, `>= 8` (default `8`, i.e. dense). |
 | `--data <paths>` | Benchmark real `.f64` files/directories instead of generated input. |
-| `--shim <path.so>` | A/B-compare against an external shim (see below). |
+| `--shim <path>` | A/B-compare against an external shim (`.so` on Linux, `.dll` on Windows; see below). |
 | `--dump <path>` | Append per-cell results to a CSV. |
 | `--iterations <n>` | Timed iterations per cell (default `11`). |
 | `--seed <n>` | RNG seed for generated input (default `12345`). |
@@ -82,7 +90,8 @@ rows to a CSV:
 
 Side B is any other sort you want to compare against (e.g. Intel IPP). The
 benchmark doesn't bundle it: you build a tiny shared library that implements the
-shim ABI, and the benchmark `dlopen`'s it at runtime via `--shim`.
+shim ABI, and the benchmark loads it at runtime via `--shim` (dlopen on Linux,
+LoadLibrary on Windows).
 
 The shim should export two required C functions (and one optional label), mirroring
 the public stablesort API. Full contract is in
@@ -117,6 +126,7 @@ const char *aoclsort_shim_name(void) { return "mysort"; }
 Build it against the shim header and pass it with `--shim`:
 
 ```bash
+# Linux
 g++ -O2 -shared -fPIC -I tools/stablesort_tester/bench/include \
     my_shim.cpp -o libmy_shim.so
 
@@ -124,10 +134,32 @@ LD_LIBRARY_PATH=<build-dir>/src ./<build-dir>/tools/stablesort_tester/bench/stab
     --sizes 1M --dists uniform --shim ./libmy_shim.so
 ```
 
+```bat
+REM Windows (MSVC)
+cl /LD /O2 /I tools\stablesort_tester\bench\include my_shim.cpp /Fe:my_shim.dll
+
+set PATH=<build-dir>\src;%PATH%
+<build-dir>\tools\stablesort_tester\bench\stablesort_bench.exe ^
+    --sizes 1M --dists uniform --shim my_shim.dll
+```
+
 The benchmark then prints one row per side for each cell. The `ok` column
 reports whether each side produced a correct stable ascending permutation, so
 A/B runs double as a cross-check.
 
-## Tests
+## Tests (`stablesort_gtest`)
 
-Unit/API tests (gtest-based, reusing the vendored framework) to be added later.
+Unit/API tests (gtest-based, reusing the vendored framework under `gtests/gapi`).
+
+```bash
+cmake -S . -B <build-dir> -DSORT_BUILD_TESTS=ON
+cmake --build <build-dir> --target stablesort_gtest
+./<build-dir>/tools/stablesort_tester/gtests/stablesort_gtest
+```
+
+Optional gcov coverage report (GCC, non-Windows only):
+
+```bash
+cmake ... -DSTABLESORT_TESTS_COVERAGE=ON -DSTABLESORT_TESTS_ASAN=OFF
+cmake --build <build-dir> --target stablesort_coverage
+```

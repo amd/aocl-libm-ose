@@ -30,7 +30,8 @@
  *
  * Side A is always the built-in stablesort implementation (linked via
  * libalm). Side B is optional: an external shim shared library, loaded at
- * runtime with dlopen() (see aoclsort_shim.h). This keeps any third-party sort
+ * runtime via a platform dynamic loader (see aoclsort_shim.h). This keeps any
+ * third-party sort
  * (e.g. IPP) entirely outside the aocl-libm build - you build the shim
  * separately and pass it with --shim.
  *
@@ -43,9 +44,8 @@
 #include <amdlibm.h>
 
 #include "aoclsort_shim.h"
+#include "dl_load.h"
 #include "dist.hpp"
-
-#include <dlfcn.h>
 
 #include <algorithm>
 #include <chrono>
@@ -87,15 +87,15 @@ void usage() {
       stderr,
       "Usage: stablesort_bench [options]\n"
       "  --sizes <list>       Comma-separated element counts (K/M/G suffix "
-      "OK). Default: 16K,256K,1M\n"
+      "OK). Default: 512,100K,1M\n"
       "  --dists <list>       Comma-separated distributions: uniform,sorted,"
       "reverse,nearly_sorted,few_unique,zipf,sparse_high\n"
       "  --strides <list>     Comma-separated src strides in BYTES (>= 8). "
       "Default: 8 (dense)\n"
       "  --data <paths>       Comma-separated .f64 files or directories; "
       "benchmarks real data instead of generated input\n"
-      "  --shim <path.so>     External side-B shim to A/B compare against "
-      "(dlopen'd at runtime; see aoclsort_shim.h)\n"
+      "  --shim <path>        External side-B shim (.so/.dll) to A/B compare "
+      "against (loaded at runtime; see aoclsort_shim.h)\n"
       "  --dump <path>        Append per-cell results to a CSV file\n"
       "  --iterations <n>     Timed iterations per cell. Default: 11\n"
       "  --seed <n>           RNG seed for generated input. Default: 12345\n"
@@ -179,17 +179,22 @@ bool parse_args(int argc, char **argv, Args &a) {
       return false;
     }
   }
+  if (a.iterations < 1) {
+    std::fprintf(stderr, "--iterations must be >= 1 (got %d)\n", a.iterations);
+    usage();
+    return false;
+  }
   return true;
 }
 
 // ---------------------------------------------------------------------------
-// Sort implementation handle (side A built-in, or side B dlopen'd shim).
+// Sort implementation handle (side A built-in, or side B dynamically loaded shim).
 
 struct SortApi {
   std::string name;
   int (*get_size)(int, int *);
   int (*sort)(const double *, int, int *, int, void *);
-  void *handle; // dlopen handle for a shim; nullptr for the built-in.
+  DL_HANDLE handle; // shared-library handle for a shim; nullptr for the built-in.
 };
 
 // Thin forwarders so the built-in is invoked through exactly the same one-extra
@@ -210,15 +215,15 @@ SortApi make_builtin() {
 
 // Returns false on failure (message already printed).
 bool load_shim(const std::string &path, SortApi &out) {
-  void *h = dlopen(path.c_str(), RTLD_NOW | RTLD_LOCAL);
+  DL_HANDLE h = DL_LOAD(path.c_str());
   if (h == nullptr) {
-    std::fprintf(stderr, "failed to dlopen shim '%s': %s\n", path.c_str(),
-                 dlerror());
+    std::fprintf(stderr, "failed to load shim '%s': %s\n", path.c_str(),
+                 DL_ERROR());
     return false;
   }
   auto gs =
-      (int (*)(int, int *))dlsym(h, "aoclsort_shim_get_size_64f");
-  auto st = (int (*)(const double *, int, int *, int, void *))dlsym(
+      (int (*)(int, int *))DL_SYM(h, "aoclsort_shim_get_size_64f");
+  auto st = (int (*)(const double *, int, int *, int, void *))DL_SYM(
       h, "aoclsort_shim_sort_indexed_ascend_64f");
   if (gs == nullptr || st == nullptr) {
     std::fprintf(stderr,
@@ -226,10 +231,10 @@ bool load_shim(const std::string &path, SortApi &out) {
                  "(aoclsort_shim_get_size_64f / "
                  "aoclsort_shim_sort_indexed_ascend_64f)\n",
                  path.c_str());
-    dlclose(h);
+    DL_CLOSE(h);
     return false;
   }
-  auto nm = (const char *(*)())dlsym(h, "aoclsort_shim_name");
+  auto nm = (const char *(*)())DL_SYM(h, "aoclsort_shim_name");
   std::string name =
       nm != nullptr ? std::string(nm()) : fs::path(path).stem().string();
   out = {name, gs, st, h};
@@ -257,8 +262,17 @@ double key_at(const std::uint8_t *base, int stride, int i) {
   return v;
 }
 
+// Matches alm_sort_to_sortable() in stablesort.c (IEEE-754 total order).
+std::uint64_t sortable_key(double d) {
+  std::uint64_t u;
+  std::memcpy(&u, &d, sizeof(u));
+  std::int64_t s = -(std::int64_t)(u >> 63);
+  return u ^ ((std::uint64_t)s | 0x8000000000000000ULL);
+}
+
 // Checks idx is a permutation of [0, n) and that keys read through it are
-// non-decreasing with stability (equal keys keep ascending original index).
+// non-decreasing in the library's total order with stability (equal keys keep
+// ascending original index).
 bool verify(const std::uint8_t *base, int stride, const int *idx,
             std::size_t n) {
   std::vector<char> seen(n, 0);
@@ -270,8 +284,8 @@ bool verify(const std::uint8_t *base, int stride, const int *idx,
     seen[(std::size_t)v] = 1;
   }
   for (std::size_t i = 1; i < n; ++i) {
-    double a = key_at(base, stride, idx[i - 1]);
-    double b = key_at(base, stride, idx[i]);
+    std::uint64_t a = sortable_key(key_at(base, stride, idx[i - 1]));
+    std::uint64_t b = sortable_key(key_at(base, stride, idx[i]));
     if (a > b) {
       return false;
     }
@@ -416,7 +430,11 @@ std::vector<fs::path> collect_data_files(const std::vector<std::string> &data) {
                      entry.c_str());
       }
     } else if (fs::exists(p, ec)) {
-      files.push_back(p);
+      if (p.extension() != ".f64") {
+        std::fprintf(stderr, "skipping non-.f64 file: %s\n", entry.c_str());
+      } else {
+        files.push_back(p);
+      }
     } else {
       std::fprintf(stderr, "data path does not exist: %s\n", entry.c_str());
     }
@@ -537,7 +555,7 @@ int main(int argc, char **argv) {
 
   for (auto &api : apis) {
     if (api.handle != nullptr) {
-      dlclose(api.handle);
+      DL_CLOSE(api.handle);
     }
   }
   return 0;

@@ -26,10 +26,10 @@
 #
 
 #
-# stablesort tester: standalone benchmark (and, in a later milestone, gtests)
-# for the aocl-libm stablesort API. Built only when aocl_SORT_BUILD_TESTS=ON.
-# Kept isolated from the rest of the aocl-libm test infrastructure - the
-# stablesort API is deliberately absent from almbench / gtests.
+# stablesort tester: standalone benchmark and gtests for the aocl-libm
+# stablesort API. Built only when SORT_BUILD_TESTS=ON. Kept isolated from the
+# rest of the aocl-libm test infrastructure - the stablesort API is deliberately
+# absent from almbench / gtests.
 #
 
 add_subdirectory(bench)

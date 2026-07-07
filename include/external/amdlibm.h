@@ -1075,6 +1075,9 @@ extern "C" {
    * @param len Number of elements to be sorted.
    * @param workspace_size Output: required workspace size in bytes.
    * @return 0 on success, negative on invalid input.
+   * @note The workspace size is returned as an int, so len is bounded: the
+   *       largest supported len is 536851936 (its workspace is INT_MAX - 63
+   *       bytes). Any larger len returns negative without setting a usable size.
    */
   int amd_stablesort_getsize_64f (int len, int *workspace_size);
 

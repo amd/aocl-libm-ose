@@ -67,12 +67,11 @@ set_source_files_properties(${_ss_root}/src/optimized/stablesort.c
 # The vendored gtest is third-party: don't police its warnings.
 set_source_files_properties(${_ss_gtest}/src/gtest_all.cc PROPERTIES COMPILE_OPTIONS "-w")
 
-# Match the GTEST_HAS_PTHREAD=1 + pthread link used by gtests/gapi/CMakeLists.txt
-set_source_files_properties(${_ss_gtest}/src/gtest_all.cc
-  PROPERTIES COMPILE_DEFINITIONS "GTEST_HAS_PTHREAD=1")
-
-# Keep debug asserts (ALM_SORT_ASSERT, run-stack guard) live even in Release.
-target_compile_options(stablesort_gtest PRIVATE -UNDEBUG)
+# Match gtests/gapi/CMakeLists.txt: pthread gtest only on non-Windows.
+if(NOT WIN32)
+  set_source_files_properties(${_ss_gtest}/src/gtest_all.cc
+    PROPERTIES COMPILE_DEFINITIONS "GTEST_HAS_PTHREAD=1")
+endif()
 
 if(NOT WIN32)
   target_link_libraries(stablesort_gtest PRIVATE pthread)
@@ -80,7 +79,7 @@ else()
   target_link_libraries(stablesort_gtest PRIVATE msvcrt Shlwapi)
 endif()
 
-if(STABLESORT_TESTS_ASAN)
+if(STABLESORT_TESTS_ASAN AND NOT WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "GNU")
   target_compile_options(stablesort_gtest PRIVATE -fsanitize=address -fno-omit-frame-pointer)
   target_link_options(stablesort_gtest PRIVATE -fsanitize=address)
 endif()

@@ -51,12 +51,24 @@ if(WIN32)
 else()
   set(FASTLIBMDEPS "libm_shared")
 endif()
-add_library(libmfast_shared SHARED $<TARGET_OBJECTS:libmfast_obj>)
+# Compile alm_main.c into the shared fast library so it gets the same
+# direct-execution entry point (version banner) as libalm.so. Without this the
+# shared object has entry point 0x0 and no PT_INTERP, so running
+# ./libalmfast.so jumps into the ELF header and segfaults.
+add_library(libmfast_shared SHARED
+    $<TARGET_OBJECTS:libmfast_obj>
+    ${${PROJECT_PREFIX}_SOURCE_DIR}/src/alm_main.c)
 set_target_properties(libmfast_shared PROPERTIES
     POSITION_INDEPENDENT_CODE ON
     OUTPUT_NAME ${ALMFAST}
 )
+target_include_directories(libmfast_shared PRIVATE ${FAST_INCLUDE})
 target_link_libraries(libmfast_shared PRIVATE ${FASTLIBMDEPS})
+# Set alm_main as the ELF entry point so ./libalmfast.so self-executes (skipped for MSVC).
+if(NOT MSVC)
+  set_target_properties(libmfast_shared PROPERTIES
+      LINK_FLAGS "-Wl,-ealm_main -Wl,-z,noexecstack")
+endif()
 list(APPEND libm libmfast_shared)
 
 add_library(libmfast_static STATIC $<TARGET_OBJECTS:libmfast_obj>)

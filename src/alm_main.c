@@ -37,10 +37,25 @@
 
 #define NORETURN __attribute__((noreturn))
 
-void alm_main(void);
+/*
+ * alm_main is the raw ELF entry point (-Wl,-ealm_main) when the library is run
+ * directly (e.g. ./libalm.so). The kernel enters with a 16-byte-aligned stack,
+ * but the x86-64 SysV ABI assumes rsp % 16 == 8 on function entry, so aligned
+ * SSE stores (movaps) into locals fault. force_align_arg_pointer emits a
+ * stack-realigning prologue so alm_main is safe as an entry point at any -O
+ * level. This fixes direct-run segfaults in both libalm.so and libalmfast.so.
+ */
+#if defined(__i386__) || defined(__x86_64__)
+  #define ALM_ENTRY __attribute__((force_align_arg_pointer))
+#else
+  #define ALM_ENTRY
+#endif
+
+ALM_ENTRY void alm_main(void);
 
 const char service_interp[] __attribute__((section(".interp"))) = "/lib64/ld-linux-x86-64.so.2";
 
+ALM_ENTRY
 void
 NORETURN
 alm_main(void)

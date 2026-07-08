@@ -78,7 +78,15 @@ fast_objs = e.StaticObject(fast_srcs)
 
 if e['HOST_OS'] != 'win32':
     almfast = e.StaticLibrary('almfast', fast_objs)
-    almfastso = e.SharedLibrary('almfast', fast_objs)
+    # Build the shared fast library with the same direct-execution entry point
+    # as libalm.so. alm_main.c provides the .interp section and the version
+    # banner routine; -Wl,-ealm_main sets it as the ELF entry point. Without
+    # this the shared object has entry point 0x0 and running ./libalmfast.so
+    # jumps into the ELF header and segfaults.
+    eso = e.Clone()
+    eso.Append(LINKFLAGS = ['-Wl,-ealm_main', '-Wl,-z,noexecstack'])
+    alm_main_obj = eso.SharedObject(target='alm_main', source=joinpath('#src', 'alm_main.c'))
+    almfastso = eso.SharedLibrary('almfast', fast_objs + alm_main_obj)
 else:
     almfast = e.StaticLibrary('almfast-static', fast_objs)
     e['WINDOWS_INSERT_DEF']=1

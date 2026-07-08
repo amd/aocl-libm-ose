@@ -64,7 +64,7 @@ set(LIBMCFLAGS ${LIBMCFLAGS} ${picflag})
 set(LIBMCFLAGS ${LIBMCFLAGS} ${auflag})
 
 # ---------------------------------------------------------------------------
-# AVX-512 template-based array wrapper generation
+# Template-based array wrapper generation (AVX2 and AVX-512)
 #
 # Instead of maintaining individual vrda_*.c / vrsa_*.c files for each math
 # function, we use a single template file that is compiled multiple times
@@ -73,14 +73,49 @@ set(LIBMCFLAGS ${LIBMCFLAGS} ${auflag})
 #   - Makes maintenance easier (fix once, apply everywhere)
 #   - Keeps behavior consistent across all array wrappers
 #
-# The template files (vrda_unary_avx512.c, vrsa_unary_avx512.c) use the
-# PASTE macro to construct function names from ALM_FUNC at compile time.
+# The template files use the PASTE macro to construct function names from
+# ALM_FUNC at compile time.
 #
 # These variables are defined here so they are available to both
 # src/optimized/ (for filtering) and src/isa/, src/arch/ (for compilation).
 # ---------------------------------------------------------------------------
 
-# List of unary double functions for vrda template.
+# ---------------------------------------------------------------------------
+# AVX2 template lists
+# ---------------------------------------------------------------------------
+
+# List of unary double functions for vrda AVX2 template.
+# Each function generates a vrda_<name> wrapper (e.g., vrda_sin, vrda_cos).
+# The wrapper calls the corresponding vrd4_<name> 4-wide vector function.
+# NOTE: Keep in sync with VRDA_UNARY_AVX2_FUNCS in optimized_srcs.py (SCons).
+# NOTE: fabs, acos excluded - standalone wrappers kept (no AVX-512 kernels exist).
+set(VRDA_UNARY_AVX2_FUNCS
+    sin cos tan exp exp2 log log2
+    asin atan sqrt round
+    erf erfc erfinv erfcinv
+    cdfnorm cdfnorminv
+)
+
+# List of unary float functions for vrsa AVX2 template.
+# Each function generates a vrsa_<name> wrapper (e.g., vrsa_sinf, vrsa_cosf).
+# The wrapper calls the corresponding vrs8_<name> 8-wide vector function.
+# NOTE: Keep in sync with VRSA_UNARY_AVX2_FUNCS in optimized_srcs.py (SCons).
+# NOTE: fabsf, coshf, cbrtf excluded - standalone wrappers kept (no AVX-512 kernels exist).
+set(VRSA_UNARY_AVX2_FUNCS
+    sinf cosf tanf expf exp2f exp10f logf log2f log10f
+    asinf atanf acosf sqrtf roundf
+    erff erfcf tanhf
+)
+
+# Template file paths for AVX2 array wrappers
+set(AVX2_VRDA_TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/optimized/vec/avx2/vrda_unary_avx2.c")
+set(AVX2_VRSA_TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/optimized/vec/avx2/vrsa_unary_avx2.c")
+
+# ---------------------------------------------------------------------------
+# AVX-512 template lists
+# ---------------------------------------------------------------------------
+
+# List of unary double functions for vrda AVX-512 template.
 # Each function generates a vrda_<name> wrapper (e.g., vrda_sin, vrda_cos).
 # The wrapper calls the corresponding vrd8_<name> 8-wide vector function.
 # NOTE: Keep in sync with VRDA_UNARY_AVX512_FUNCS in optimized_srcs.py (SCons).
@@ -91,12 +126,12 @@ set(VRDA_UNARY_AVX512_FUNCS
     cdfnorm cdfnorminv
 )
 
-# List of unary float functions for vrsa template.
+# List of unary float functions for vrsa AVX-512 template.
 # Each function generates a vrsa_<name> wrapper (e.g., vrsa_sinf, vrsa_cosf).
 # The wrapper calls the corresponding vrs16_<name> 16-wide vector function.
 # NOTE: Keep in sync with VRSA_UNARY_AVX512_FUNCS in optimized_srcs.py (SCons).
 set(VRSA_UNARY_AVX512_FUNCS
-    sinf cosf tanf expf exp2f logf log2f log10f
+    sinf cosf tanf expf exp2f exp10f logf log2f log10f
     asinf atanf acosf sqrtf roundf
     erff erfcf tanhf
 )

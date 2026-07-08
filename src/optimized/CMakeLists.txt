@@ -79,10 +79,14 @@ file(GLOB AVX512_VECMATH_SRCS CONFIGURE_DEPENDS "${OPT_DIR}/vectormath/avx512/*.
 
 # Exclude template files from the glob — they are compiled separately in the
 # foreach loops in src/isa/ and src/arch/, not as part of the regular source list.
-# The function lists (VRDA_UNARY_AVX512_FUNCS, VRSA_UNARY_AVX512_FUNCS) and
-# template paths are defined in src/CMakeLists.txt and inherited here.
+# The function lists and template paths are defined in src/CMakeLists.txt.
 list(FILTER AVX512_VEC_SRCS EXCLUDE REGEX "vrda_unary_avx512\\.c$")
 list(FILTER AVX512_VEC_SRCS EXCLUDE REGEX "vrsa_unary_avx512\\.c$")
+
+# Get AVX2 sources (for filtering out template files)
+file(GLOB AVX2_VEC_SRCS CONFIGURE_DEPENDS "${OPT_DIR}/vec/avx2/*.c")
+list(FILTER AVX2_VEC_SRCS EXCLUDE REGEX "vrda_unary_avx2\\.c$")
+list(FILTER AVX2_VEC_SRCS EXCLUDE REGEX "vrsa_unary_avx2\\.c$")
 
 # Exclude files already compiled by the opt target to avoid duplicate symbols.
 # Files in common/ and data/ are not picked up by the top-level glob, so only
@@ -96,17 +100,41 @@ list(REMOVE_ITEM VEC_SRCS ${_opt_abs})
 # Files without arch-suffixed prototypes (no FN_PROTOTYPE_OPT)
 list(FILTER ARCH_OPT_SRCS EXCLUDE REGEX "(log_v3)[^/]*\\.c$")
 
-# For AVX512 build: keep base vec/vectormath files only if no avx512 replacement exists.
-# Also exclude files that are replaced by template compilation.
+# ---------------------------------------------------------------------------
+# AVX2 build: filter out standalone vrda_*/vrsa_* files that conflict with
+# template-generated symbols.
+# ---------------------------------------------------------------------------
+set(_avx2_vec_names ${AVX2_VEC_SRCS})
+list(TRANSFORM _avx2_vec_names REPLACE ".+/" "")
+
+# Add AVX2 template-based function names to the exclusion list.
+set(_AVX2_EXCL_LIST "vrda:VRDA_UNARY_AVX2_FUNCS" "vrsa:VRSA_UNARY_AVX2_FUNCS")
+foreach(_entry IN LISTS _AVX2_EXCL_LIST)
+    string(REPLACE ":" ";" _parts "${_entry}")
+    list(GET _parts 0 _prefix)
+    list(GET _parts 1 _funcs_var)
+    foreach(func IN LISTS ${_funcs_var})
+        list(APPEND _avx2_vec_names "${_prefix}_${func}.c")
+    endforeach()
+endforeach()
+
+set(FILTERED_VEC_SRCS_AVX2 "")
+foreach(_f ${VEC_SRCS})
+    get_filename_component(_name "${_f}" NAME)
+    if(NOT _name IN_LIST _avx2_vec_names)
+        list(APPEND FILTERED_VEC_SRCS_AVX2 "${_f}")
+    endif()
+endforeach()
+
+# ---------------------------------------------------------------------------
+# AVX-512 build: filter out files replaced by AVX-512 kernels or templates.
+# ---------------------------------------------------------------------------
 set(_avx512_vec_names ${AVX512_VEC_SRCS})
 list(TRANSFORM _avx512_vec_names REPLACE ".+/" "")
 
-# Add template-based function names to the exclusion list.
-# These files (e.g., vrda_sin.c, vrsa_sinf.c) would conflict with the template-
-# generated symbols if they exist in the base vec/ directory. We filter them
-# out to ensure only the template-compiled versions are used.
-set(_EXCL_LIST "vrda:VRDA_UNARY_AVX512_FUNCS" "vrsa:VRSA_UNARY_AVX512_FUNCS")
-foreach(_entry IN LISTS _EXCL_LIST)
+# Add AVX-512 template-based function names to the exclusion list.
+set(_AVX512_EXCL_LIST "vrda:VRDA_UNARY_AVX512_FUNCS" "vrsa:VRSA_UNARY_AVX512_FUNCS")
+foreach(_entry IN LISTS _AVX512_EXCL_LIST)
     string(REPLACE ":" ";" _parts "${_entry}")
     list(GET _parts 0 _prefix)
     list(GET _parts 1 _funcs_var)
@@ -115,11 +143,11 @@ foreach(_entry IN LISTS _EXCL_LIST)
     endforeach()
 endforeach()
 
-set(FILTERED_VEC_SRCS "")
+set(FILTERED_VEC_SRCS_AVX512 "")
 foreach(_f ${VEC_SRCS})
     get_filename_component(_name "${_f}" NAME)
     if(NOT _name IN_LIST _avx512_vec_names)
-        list(APPEND FILTERED_VEC_SRCS "${_f}")
+        list(APPEND FILTERED_VEC_SRCS_AVX512 "${_f}")
     endif()
 endforeach()
 
@@ -133,8 +161,11 @@ foreach(_f ${VECMATH_SRCS})
     endif()
 endforeach()
 
-set(AVX2_SRCS   ${ARCH_OPT_SRCS} ${CMPLX_SRCS} ${VEC_SRCS} ${VECMATH_SRCS})
-set(AVX512_SRCS ${ARCH_OPT_SRCS} ${CMPLX_SRCS} ${FILTERED_VEC_SRCS} ${FILTERED_VECMATH_SRCS}
+# AVX2: use filtered VEC_SRCS (without template-replaced files) + AVX2 kernels
+set(AVX2_SRCS   ${ARCH_OPT_SRCS} ${CMPLX_SRCS} ${FILTERED_VEC_SRCS_AVX2} ${VECMATH_SRCS}
+                ${AVX2_VEC_SRCS})
+# AVX-512: use filtered VEC_SRCS + AVX-512 kernels
+set(AVX512_SRCS ${ARCH_OPT_SRCS} ${CMPLX_SRCS} ${FILTERED_VEC_SRCS_AVX512} ${FILTERED_VECMATH_SRCS}
                 ${AVX512_VEC_SRCS} ${AVX512_VECMATH_SRCS})
 
 set(AVX2_SRCS   ${AVX2_SRCS}   PARENT_SCOPE)

@@ -104,22 +104,22 @@ foreach(ARCH_ENTRY IN LISTS ALM_WRAPPER_ARCH_LIST)
 endforeach()
 
 # ---------------------------------------------------------------------------
-# AVX-512 template-based array wrapper compilation for zen4/zen5/zen6
+# Unified template-based array wrapper compilation for all architectures
 #
-# This three-level nested loop compiles the vrda/vrsa templates for each
-# combination of:
-#   - Architecture (zen4, zen5, zen6 — all support AVX-512)
+# This unified loop compiles both AVX2 and AVX-512 array wrappers for each
+# architecture. The loop iterates over:
+#   - Architecture (zen, zen2, zen3, zen4, zen5, zen6)
 #   - Template type (vrda for double, vrsa for float)
 #   - Function (sin, cos, exp, etc.)
 #
-# Each compilation receives arch-specific flags (-march=znver4, -DALM_BUILD_ZEN4)
+# AVX2 templates are used for zen/zen2/zen3 (no AVX-512 support).
+# AVX-512 templates are used for zen4/zen5/zen6.
+#
+# Each compilation receives arch-specific flags (-march=znverX, -DALM_BUILD_ZENX)
 # plus the function-specific -DALM_FUNC=<name>. This generates separate object
-# files like zen4_vrda_sin.o, zen5_vrda_sin.o, etc., allowing the dispatcher
+# files like zen_vrda_sin.o, zen4_vrda_sin.o, etc., allowing the dispatcher
 # to select the optimal implementation at runtime.
 # ---------------------------------------------------------------------------
-if(CONFIG_COMPILER_HAS_AVX512)
-# Reuse ALM_WRAPPER_ARCH_LIST and filter for AVX-512 architectures (ARCH_HAS_AVX512=1)
-# to avoid maintaining a separate list that could drift.
 foreach(ARCH_ENTRY IN LISTS ALM_WRAPPER_ARCH_LIST)
     string(REPLACE ":" ";" _PARTS "${ARCH_ENTRY}")
     list(GET _PARTS 0 ARCH_DIR)
@@ -127,16 +127,24 @@ foreach(ARCH_ENTRY IN LISTS ALM_WRAPPER_ARCH_LIST)
     list(GET _PARTS 2 ARCH_MARCH)
     list(GET _PARTS 3 ARCH_HAS_AVX512)
 
-    # Only compile templates for AVX-512 capable architectures
-    if(NOT ARCH_HAS_AVX512)
+    # Determine ISA and compiler flags based on architecture.
+    # Skip template compilation if the compiler doesn't support the required ISA.
+    if(ARCH_HAS_AVX512 AND CONFIG_COMPILER_HAS_AVX512)
+        set(_ISA "AVX512")
+        set(_ISA_FLAGS ${avx512flag})
+    elseif(CONFIG_COMPILER_HAS_AVX2)
+        set(_ISA "AVX2")
+        set(_ISA_FLAGS ${fmaflag})
+    else()
+        # Compiler supports neither AVX-512 nor AVX2 - skip template compilation
         continue()
     endif()
 
-    # Compile both vrda (double) and vrsa (float) templates
+    # Template configurations for this architecture
     # Format: "prefix:template_var:funcs_list_var"
     set(_TEMPLATE_LIST
-        "vrda:AVX512_VRDA_TEMPLATE:VRDA_UNARY_AVX512_FUNCS"
-        "vrsa:AVX512_VRSA_TEMPLATE:VRSA_UNARY_AVX512_FUNCS"
+        "vrda:${_ISA}_VRDA_TEMPLATE:VRDA_UNARY_${_ISA}_FUNCS"
+        "vrsa:${_ISA}_VRSA_TEMPLATE:VRSA_UNARY_${_ISA}_FUNCS"
     )
 
     # Middle loop: iterate over template configurations (vrda, vrsa)
@@ -155,13 +163,12 @@ foreach(ARCH_ENTRY IN LISTS ALM_WRAPPER_ARCH_LIST)
                 -DALM_BUILD_${ARCH_DEF}=1
                 -DALM_FUNC=${func}
                 -march=${ARCH_MARCH}
-                ${ZEN_FLAGS} ${avx512flag}
+                ${ZEN_FLAGS} ${_ISA_FLAGS}
             )
             target_include_directories(${tgt} PRIVATE ${ZEN_INCLUDES})
             list(APPEND libmobj $<TARGET_OBJECTS:${tgt}>)
         endforeach()
     endforeach()
 endforeach()
-endif() # CONFIG_COMPILER_HAS_AVX512
 
 set(libmobj ${libmobj} PARENT_SCOPE)

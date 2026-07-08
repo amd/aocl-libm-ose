@@ -100,28 +100,46 @@ foreach(ISA_ENTRY IN LISTS ALM_ISA_LIST)
 endforeach()
 
 # ---------------------------------------------------------------------------
-# AVX-512 template-based array wrapper compilation
+# Unified template-based array wrapper compilation (AVX2 and AVX-512)
 #
-# This loop compiles the vrda/vrsa template files multiple times, once for
-# each function in the function lists. Each compilation receives:
-#   -DALM_FUNC=<name>  : The function name (sin, cos, sinf, etc.)
-#   -DALM_BUILD_AVX512=1 : Enables AVX-512 code paths in headers
+# This unified loop compiles both AVX2 and AVX-512 array wrappers using a
+# single parameterized configuration. Each ISA (avx2, avx512) has its own:
+#   - Build flag (ALM_BUILD_AVX2, ALM_BUILD_AVX512)
+#   - Compiler flags (fmaflag, avx512flag)
+#   - Function lists and template files
 #
 # The template file uses PASTE(vrda_, ALM_FUNC) to construct the function
 # name at compile time. For example, with -DALM_FUNC=sin, the template
-# generates vrda_sin() which calls vrd8_sin() internally.
+# generates vrda_sin() which calls vrd4_sin (AVX2) or vrd8_sin (AVX-512).
 #
-# This produces one object file per function (e.g., isa_vrda_sin_avx512.o).
+# This produces one object file per function per ISA (e.g., isa_vrda_sin_avx2.o).
 # ---------------------------------------------------------------------------
+
+# Unified ISA template configuration
+# Format: "isa:build_flag:compiler_flag_var:has_compiler_check"
+set(_ISA_TEMPLATE_CONFIGS)
+if(CONFIG_COMPILER_HAS_AVX2)
+    list(APPEND _ISA_TEMPLATE_CONFIGS "avx2:AVX2:fmaflag:CONFIG_COMPILER_HAS_AVX2")
+endif()
 if(CONFIG_COMPILER_HAS_AVX512)
-    # Compile both vrda (double) and vrsa (float) templates
+    list(APPEND _ISA_TEMPLATE_CONFIGS "avx512:AVX512:avx512flag:CONFIG_COMPILER_HAS_AVX512")
+endif()
+
+foreach(_ISA_CONFIG IN LISTS _ISA_TEMPLATE_CONFIGS)
+    string(REPLACE ":" ";" _ISA_PARTS "${_ISA_CONFIG}")
+    list(GET _ISA_PARTS 0 _ISA)           # avx2 or avx512
+    list(GET _ISA_PARTS 1 _BUILD_FLAG)    # AVX2 or AVX512
+    list(GET _ISA_PARTS 2 _CFLAGS_VAR)    # fmaflag or avx512flag
+
+    # Template configurations for this ISA
     # Format: "prefix:template_var:funcs_list_var"
+    string(TOUPPER "${_ISA}" _ISA_UPPER)
     set(_TEMPLATE_LIST
-        "vrda:AVX512_VRDA_TEMPLATE:VRDA_UNARY_AVX512_FUNCS"
-        "vrsa:AVX512_VRSA_TEMPLATE:VRSA_UNARY_AVX512_FUNCS"
+        "vrda:${_ISA_UPPER}_VRDA_TEMPLATE:VRDA_UNARY_${_ISA_UPPER}_FUNCS"
+        "vrsa:${_ISA_UPPER}_VRSA_TEMPLATE:VRSA_UNARY_${_ISA_UPPER}_FUNCS"
     )
 
-    # Outer loop: iterate over template configurations (vrda, vrsa)
+    # Middle loop: iterate over template configurations (vrda, vrsa)
     foreach(_TMPL_ENTRY IN LISTS _TEMPLATE_LIST)
         string(REPLACE ":" ";" _TMPL_PARTS "${_TMPL_ENTRY}")
         list(GET _TMPL_PARTS 0 _PREFIX)       # vrda or vrsa
@@ -130,18 +148,18 @@ if(CONFIG_COMPILER_HAS_AVX512)
 
         # Inner loop: compile template once per function
         foreach(func IN LISTS ${_FUNCS_VAR})
-            set(tgt isa_${_PREFIX}_${func}_avx512)
+            set(tgt isa_${_PREFIX}_${func}_${_ISA})
             add_library(${tgt} OBJECT ${${_TEMPLATE_VAR}})
             target_compile_options(${tgt} PRIVATE
                 ${ISA_FORCE_INCLUDE}
-                -DALM_BUILD_AVX512=1
+                -DALM_BUILD_${_BUILD_FLAG}=1
                 -DALM_FUNC=${func}
-                ${ISA_CFLAGS} ${avx512flag}
+                ${ISA_CFLAGS} ${${_CFLAGS_VAR}}
             )
             target_include_directories(${tgt} PRIVATE ${ISA_INCLUDES})
             list(APPEND libmobj $<TARGET_OBJECTS:${tgt}>)
         endforeach()
     endforeach()
-endif()
+endforeach()
 
 set(libmobj ${libmobj} PARENT_SCOPE)

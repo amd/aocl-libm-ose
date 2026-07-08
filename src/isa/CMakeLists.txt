@@ -116,13 +116,13 @@ endforeach()
 # ---------------------------------------------------------------------------
 
 # Unified ISA template configuration
-# Format: "isa:build_flag:compiler_flag_var:has_compiler_check"
+# Format: "isa:build_flag:compiler_flag_var"
 set(_ISA_TEMPLATE_CONFIGS)
 if(CONFIG_COMPILER_HAS_AVX2)
-    list(APPEND _ISA_TEMPLATE_CONFIGS "avx2:AVX2:fmaflag:CONFIG_COMPILER_HAS_AVX2")
+    list(APPEND _ISA_TEMPLATE_CONFIGS "avx2:AVX2:fmaflag")
 endif()
 if(CONFIG_COMPILER_HAS_AVX512)
-    list(APPEND _ISA_TEMPLATE_CONFIGS "avx512:AVX512:avx512flag:CONFIG_COMPILER_HAS_AVX512")
+    list(APPEND _ISA_TEMPLATE_CONFIGS "avx512:AVX512:avx512flag")
 endif()
 
 foreach(_ISA_CONFIG IN LISTS _ISA_TEMPLATE_CONFIGS)

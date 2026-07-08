@@ -36,6 +36,12 @@ _spec = importlib.util.spec_from_file_location(
 _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)
 gather_optimized_srcs = _mod.gather_optimized_srcs
+# AVX2 template variables
+VRDA_UNARY_AVX2_FUNCS = _mod.VRDA_UNARY_AVX2_FUNCS
+VRSA_UNARY_AVX2_FUNCS = _mod.VRSA_UNARY_AVX2_FUNCS
+AVX2_VRDA_TEMPLATE = _mod.AVX2_VRDA_TEMPLATE
+AVX2_VRSA_TEMPLATE = _mod.AVX2_VRSA_TEMPLATE
+# AVX-512 template variables
 VRDA_UNARY_AVX512_FUNCS = _mod.VRDA_UNARY_AVX512_FUNCS
 VRSA_UNARY_AVX512_FUNCS = _mod.VRSA_UNARY_AVX512_FUNCS
 AVX512_VRDA_TEMPLATE = _mod.AVX512_VRDA_TEMPLATE
@@ -156,34 +162,46 @@ for arch_name, arch_def, preferred_march, has_avx512 in arch_list:
         arch_objs.append(arch_env.StaticObject(target=target, source=src))
 
 # ---------------------------------------------------------------------------
-# AVX-512 template-based array wrapper compilation for zen4/zen5/zen6
+# Unified template-based array wrapper compilation for all architectures
 #
-# This three-level nested loop compiles the vrda/vrsa templates for each
-# combination of:
-#   - Architecture (zen4, zen5, zen6 — all support AVX-512)
+# This unified loop compiles both AVX2 and AVX-512 array wrappers for each
+# architecture. The loop iterates over:
+#   - Architecture (zen, zen2, zen3, zen4, zen5, zen6)
 #   - Template type (vrda for double, vrsa for float)
 #   - Function (sin, cos, exp, etc.)
 #
-# Each compilation receives arch-specific flags (-march=znver4, -DALM_BUILD_ZEN4)
+# AVX2 templates are used for zen/zen2/zen3 (no AVX-512 support).
+# AVX-512 templates are used for zen4/zen5/zen6.
+#
+# Each compilation receives arch-specific flags (-march=znverX, -DALM_BUILD_ZENX)
 # plus the function-specific -DALM_FUNC=<name>. This generates separate object
-# files like zen4/vrda_sin.o, zen5/vrda_sin.o, etc., allowing the dispatcher
+# files like zen/vrda_sin.o, zen4/vrda_sin.o, etc., allowing the dispatcher
 # to select the optimal implementation at runtime.
 # ---------------------------------------------------------------------------
-vrda_template_src = File(joinpath('#src/optimized', AVX512_VRDA_TEMPLATE))
-vrsa_template_src = File(joinpath('#src/optimized', AVX512_VRSA_TEMPLATE))
 
-# Reuse arch_list and filter for AVX-512 architectures (has_avx512=True)
-# to avoid maintaining a separate list that could drift.
+# Reuse arch_list and select ISA based on has_avx512 flag
 for arch_name, arch_def, preferred_march, has_avx512 in arch_list:
-    if not has_avx512:
-        continue
     arch_march = _resolve_march(e, preferred_march)
 
-    # Compile vrda (double) and vrsa (float) templates for each function
+    # Select ISA-specific templates and function lists based on architecture
+    if has_avx512:
+        vrda_template_src = File(joinpath('#src/optimized', AVX512_VRDA_TEMPLATE))
+        vrsa_template_src = File(joinpath('#src/optimized', AVX512_VRSA_TEMPLATE))
+        vrda_funcs = VRDA_UNARY_AVX512_FUNCS
+        vrsa_funcs = VRSA_UNARY_AVX512_FUNCS
+        isa_flags = ['-mavx512f', '-mavx512dq']
+    else:
+        vrda_template_src = File(joinpath('#src/optimized', AVX2_VRDA_TEMPLATE))
+        vrsa_template_src = File(joinpath('#src/optimized', AVX2_VRSA_TEMPLATE))
+        vrda_funcs = VRDA_UNARY_AVX2_FUNCS
+        vrsa_funcs = VRSA_UNARY_AVX2_FUNCS
+        isa_flags = ['-mavx2']
+
+    # Template configurations for this architecture
     # Format: (prefix, template_source, function_list)
     template_configs = [
-        ('vrda', vrda_template_src, VRDA_UNARY_AVX512_FUNCS),
-        ('vrsa', vrsa_template_src, VRSA_UNARY_AVX512_FUNCS),
+        ('vrda', vrda_template_src, vrda_funcs),
+        ('vrsa', vrsa_template_src, vrsa_funcs),
     ]
 
     # Middle loop: iterate over template configurations (vrda, vrsa)
@@ -200,7 +218,7 @@ for arch_name, arch_def, preferred_march, has_avx512 in arch_list:
             else:
                 tpl_cflags.extend(['/FI' + arch_header, '-march=' + arch_march])
             tpl_cflags.extend(arch_common_flags)
-            tpl_cflags.extend(['-mavx512f', '-mavx512dq'])
+            tpl_cflags.extend(isa_flags)
 
             tpl_env.Append(
                 CFLAGS = tpl_cflags,

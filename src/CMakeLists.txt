@@ -131,7 +131,7 @@ set(VRDA_UNARY_AVX512_FUNCS
 # The wrapper calls the corresponding vrs16_<name> 16-wide vector function.
 # NOTE: Keep in sync with VRSA_UNARY_AVX512_FUNCS in optimized_srcs.py (SCons).
 set(VRSA_UNARY_AVX512_FUNCS
-    sinf cosf tanf expf exp2f exp10f logf log2f log10f
+    sinf cosf tanf expf exp2f logf log2f log10f
     asinf atanf acosf sqrtf roundf
     erff erfcf tanhf
 )

@@ -105,10 +105,10 @@ for isa_name, isa_def, has_avx512 in isa_list:
     # Select source files and ISA-specific flags
     if has_avx512:
         srcs = avx512_srcs
-        isa_flags = ['-mavx512f', '-mavx512dq']
+        isa_flags = ['-mavx512f', '-mavx512dq', '-mfma']
     else:
         srcs = avx2_srcs
-        isa_flags = ['-mavx2']
+        isa_flags = ['-mavx2', '-mfma']
 
     # Set up compiler flags
     isa_cflags = ['-DALM_BUILD_' + isa_def + '=1']

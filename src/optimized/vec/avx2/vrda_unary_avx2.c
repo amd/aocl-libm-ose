@@ -60,6 +60,13 @@
 void ALM_PROTO_OPT(ALM_PASTE(vrda_, ALM_FUNC))(int length, const double* input, double* result)
 {
     /*
+     * Early exit for zero-length or negative length to avoid undefined behavior
+     * when callers pass NULL pointers for zero-length operations.
+     */
+    if (unlikely(length <= 0))
+        return;
+
+    /*
      * TWO CODE PATHS:
      * 1. length >= 4 (DOUBLE_ELEMENTS_256_BIT): Process full vectors in a loop,
      *    handle remainder by overlapping the last vector.

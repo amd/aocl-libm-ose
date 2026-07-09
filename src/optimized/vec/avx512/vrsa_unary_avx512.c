@@ -60,6 +60,13 @@
 void ALM_PROTO_OPT(ALM_PASTE(vrsa_, ALM_FUNC))(int length, const float* input, float* result)
 {
     /*
+     * Early exit for zero-length or negative length to avoid undefined behavior
+     * when callers pass NULL pointers for zero-length operations.
+     */
+    if (unlikely(length <= 0))
+        return;
+
+    /*
      * TWO CODE PATHS:
      * 1. length >= 16 (FLOAT_ELEMENTS_512_BIT): Process full vectors in a loop,
      *    handle remainder by overlapping the last vector.

@@ -79,7 +79,7 @@ _OPT_COMMON_SRCS = [
 # Each function generates a vrda_<name> wrapper (e.g., vrda_sin, vrda_cos).
 # The wrapper calls the corresponding vrd4_<name> 4-wide vector function.
 # NOTE: Keep in sync with VRDA_UNARY_AVX2_FUNCS in CMakeLists.txt (CMake).
-# NOTE: fabs, acos excluded - standalone wrappers kept (no vrd8_* wide kernels exist).
+# NOTE: fabs, acos excluded - standalone (no AVX-512 vrd8_* kernels for unified template).
 VRDA_UNARY_AVX2_FUNCS = [
     'sin', 'cos', 'tan', 'exp', 'exp2', 'log', 'log2',
     'asin', 'atan', 'sqrt', 'round',
@@ -91,7 +91,7 @@ VRDA_UNARY_AVX2_FUNCS = [
 # Each function generates a vrsa_<name> wrapper (e.g., vrsa_sinf, vrsa_cosf).
 # The wrapper calls the corresponding vrs8_<name> 8-wide vector function.
 # NOTE: Keep in sync with VRSA_UNARY_AVX2_FUNCS in CMakeLists.txt (CMake).
-# NOTE: fabsf, coshf, cbrtf excluded - standalone wrappers kept (no vrs16_* wide kernels exist).
+# NOTE: fabsf, coshf, cbrtf excluded - standalone (no AVX-512 vrs16_* kernels for unified template).
 VRSA_UNARY_AVX2_FUNCS = [
     'sinf', 'cosf', 'tanf', 'expf', 'exp2f', 'exp10f', 'logf', 'log2f', 'log10f',
     'asinf', 'atanf', 'acosf', 'sqrtf', 'roundf',
@@ -123,7 +123,7 @@ VRDA_UNARY_AVX512_FUNCS = [
 # The wrapper calls the corresponding vrs16_<name> 16-wide vector function.
 # NOTE: Keep in sync with VRSA_UNARY_AVX512_FUNCS in CMakeLists.txt (CMake).
 VRSA_UNARY_AVX512_FUNCS = [
-    'sinf', 'cosf', 'tanf', 'expf', 'exp2f', 'logf', 'log2f', 'log10f',
+    'sinf', 'cosf', 'tanf', 'expf', 'exp2f', 'exp10f', 'logf', 'log2f', 'log10f',
     'asinf', 'atanf', 'acosf', 'sqrtf', 'roundf',
     'erff', 'erfcf', 'tanhf',
 ]

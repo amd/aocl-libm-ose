@@ -378,7 +378,7 @@ const map<ApiTypes, vector<string>> libm_api_names = {
                         "rint", "round", "trunc", "clog", "cexp",
                         "cdfnorm", "cdfnorminv", "erfcinv", "erfinv"}},
     {API_PROTOTYPE_02, {"add", "sub", "mul", "pow", "cpow", "fmax", "fmin", "fdim", "fmod",
-                        "remainder", "atan2", "hypot", "copysign", "nextafter", "ldexp"}},
+                        "remainder", "atan2", "hypot", "copysign", "nextafter"}},
     {API_PROTOTYPE_03, {"powx"}},
     {API_PROTOTYPE_04, {"sincos"}},
     {API_PROTOTYPE_05, {"linearfrac"}},

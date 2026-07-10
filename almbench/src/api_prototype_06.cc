@@ -26,10 +26,7 @@
  */
 
 #include <iostream>
-#include <chrono>
 #include <vector>
-#include <algorithm>
-#include <numeric>
 #include "dll_utils.h"
 
 #include "alm_test.h"
@@ -47,7 +44,7 @@
  */
 template <typename T, typename U, typename UL>
 static void unit_test(struct InParams<T, U> *ipp,
-                      UL (*ref_func)(U, U),
+                      UL (*ref_func)(U, int),
                       void (*shim_func)(struct InParams<T, U> *),
                       struct YamlOutputs<U> *yop,
                       YamlBatchWriter<U> *writer)
@@ -57,7 +54,8 @@ static void unit_test(struct InParams<T, U> *ipp,
     U* ip = reinterpret_cast<U*>(&ipp->ip[0]);
     U* op = reinterpret_cast<U*>(&ipp->op[0]);
 
-    UL mpfrop = ref_func(ip[0], ip[1]);
+    int exp = static_cast<int>(ip[1]);
+    UL mpfrop = ref_func(ip[0], exp);
     double ulp;
     int uflag = update_ulp(op[0], mpfrop, writer->stats().udata, ulp);
 
@@ -79,7 +77,7 @@ static void unit_test(struct InParams<T, U> *ipp,
  */
 template <typename T, typename U, typename UL>
 static void range_test(struct InParams<T, U>* ipp,
-                       UL (*ref_func)(U, U),
+                       UL (*ref_func)(U, int),
                        void (*shim_func)(struct InParams<T, U> *),
                        struct YamlOutputs<U> *yop,
                        YamlBatchWriter<U> *writer)
@@ -114,7 +112,7 @@ static void range_test(struct InParams<T, U>* ipp,
 
         U* op = reinterpret_cast<U*>(&ipp->op[0]);
         for (uint64_t j = 0; j < elem; ++j) {
-            int exp   = static_cast<int>(std::round(ip2[j]));
+            int exp   = static_cast<int>(ip2[j]);
             UL mpfrop = ref_func(ip1[j], exp);
             status[j]  = update_ulp(op[j], mpfrop, writer->stats().udata, ulp);
             max_ulp[j] = ulp;
@@ -134,7 +132,7 @@ static void range_test(struct InParams<T, U>* ipp,
  */
 template <typename T, typename U, typename UL>
 static void range_test_vra(struct InParams<T, U>* ipp,
-                           UL (*ref_func)(U, U),
+                           UL (*ref_func)(U, int),
                            void (*shim_func)(struct InParams<T, U> *),
                            struct YamlOutputs<U> *yop,
                            YamlBatchWriter<U> *writer)
@@ -173,7 +171,7 @@ static void range_test_vra(struct InParams<T, U>* ipp,
         yop->duration = runner.run(ipp);
 
         for (uint64_t j = 0; j < count; ++j) {
-            int exp = static_cast<int>(std::round(ip2[j]));
+            int exp = static_cast<int>(ip2[j]);
             UL mpfrop = ref_func(ip1[j], exp);
             status[j] = update_ulp(op[j], mpfrop, writer->stats().udata, ulp);
             max_ulp[j] = ulp;
@@ -201,7 +199,7 @@ int api_prototype_06(struct AlmLibs* alibs,
     using UL = typename mpfr::op_type<U>::mopt;
 
     auto shim_func = load_function<void (*)(struct InParams<T, U> *)>(alibs->pshimlib, libapi);
-    auto ref_func  = load_function<UL (*)(U, U)>(alibs->preflib, refapi);
+    auto ref_func  = load_function<UL (*)(U, int)>(alibs->preflib, refapi);
 
     if (ipp->range.empty()) {
         unit_test<T, U, UL>(ipp, ref_func, shim_func, yop, writer);

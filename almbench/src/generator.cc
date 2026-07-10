@@ -231,8 +231,7 @@ S *IntegerRandomGenerator<S>::next()
 template <typename S>
 bool IntegerRandomGenerator<S>::has_next() const
 {
-    return (i < mxiter) &&
-           std::abs(value - rmax) > std::numeric_limits<S>::epsilon();
+    return i < mxiter;
 }
 
 template <typename S>

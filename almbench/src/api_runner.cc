@@ -66,6 +66,9 @@ template llint_t (*load_function(DL_HANDLE, const std::string&))(double);
 template double (*load_function(DL_HANDLE, const std::string&))(float, float);
 template long double (*load_function(DL_HANDLE, const std::string&))(double, double);
 
+template double (*load_function(DL_HANDLE, const std::string&))(float, int);
+template long double (*load_function(DL_HANDLE, const std::string&))(double, int);
+
 template void (*load_function(DL_HANDLE, const std::string&))(float, double*, double*);
 template void (*load_function(DL_HANDLE, const std::string&))(double, long double*, long double*);
 

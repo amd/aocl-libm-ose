@@ -98,6 +98,18 @@ project("${PROJECT_PREFIX}-${PROJECT_NAME}"
 
 message(DEBUG "Project with name \"${PROJECT_PREFIX}\" with version ${${PROJECT_PREFIX}_VERSION} registered")
 set(${PROJECT_PREFIX}_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+
+# Windows builds use single-config generators with external sub-builds (gapi, mparith).
+if(WIN32)
+    if(NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
+        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type (Debug or Release)" FORCE)
+        message(STATUS "CMAKE_BUILD_TYPE not specified, defaulting to Release")
+    endif()
+    if(NOT CMAKE_BUILD_TYPE MATCHES "^(Debug|Release)$")
+        message(FATAL_ERROR "CMAKE_BUILD_TYPE must be Debug or Release on Windows (got: '${CMAKE_BUILD_TYPE}')")
+    endif()
+endif()
+
 #------------------------------
 # Configure archiver to use 'rc' flags instead of 'qc'
 #------------------------------

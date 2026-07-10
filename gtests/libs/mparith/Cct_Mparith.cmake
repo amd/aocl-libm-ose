@@ -45,7 +45,13 @@ function(library_exists lib libpath)
 endfunction()
 
 set(MPFR_SRC_DIR        "${CMAKE_CURRENT_LIST_DIR}")
-set(MPARITH_DIR         "${${PROJECT_PREFIX}_SOURCE_DIR}/build/external/mparith")
+if(WIN32)
+    # CMAKE_BUILD_TYPE is validated in the root CMakeLists.txt.
+    # Windows-only: scope by build type so Debug/Release do not reuse cached libs.
+    set(MPARITH_DIR     "${${PROJECT_PREFIX}_SOURCE_DIR}/build/external/mparith/${CMAKE_BUILD_TYPE}")
+else()
+    set(MPARITH_DIR     "${${PROJECT_PREFIX}_SOURCE_DIR}/build/external/mparith")
+endif()
 
 # Installation directories
 set(MPARITH_LIB_DIR     ${MPARITH_DIR}/lib)
@@ -78,19 +84,56 @@ else()
     set(MPARITH_BINARY_DIR "${CMAKE_BINARY_DIR}")
     message(STATUS "mparith library not-found, building library...")
 
-    # Execute a custom command during configuration time
-    execute_process(COMMAND ${CMAKE_COMMAND} -G${CMAKE_GENERATOR} -S ${MPFR_SRC_DIR} -B ${MPARITH_BINARY_DIR}
-                            -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-                            -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-                            -DCMAKE_BUILD_TYPE=Release
-                            -DMPARITH_DIR=${MPARITH_DIR}
-                    RESULTS_VARIABLE  result_mparith
-                    OUTPUT_VARIABLE   config_mparith
-                    WORKING_DIRECTORY ${MPFR_SRC_DIR}
-    )
+    if(WIN32)
+        # libalm and gtests link msvcrt (release CRT) on Windows; pin /MD for all
+        # configs so mparith objects stay CRT-consistent with the parent gtests link.
+        if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|MSVC")
+            set(MPARITH_RUNTIME_CONFIG -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL)
+        else()
+            set(MPARITH_RUNTIME_CONFIG "")
+        endif()
 
-    execute_process(COMMAND ${CMAKE_COMMAND} --build ${MPARITH_BINARY_DIR} --config Release
-                    OUTPUT_VARIABLE   output_mparith
-                    WORKING_DIRECTORY ${MPFR_SRC_DIR}
-    )
+        execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}"
+                                -S "${MPFR_SRC_DIR}" -B "${MPARITH_BINARY_DIR}"
+                                -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+                                -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+                                -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                                -DMPARITH_DIR=${MPARITH_DIR}
+                                ${MPARITH_RUNTIME_CONFIG}
+                        RESULT_VARIABLE  result_mparith
+                        OUTPUT_VARIABLE   config_mparith
+                        ERROR_VARIABLE    error_mparith
+                        WORKING_DIRECTORY "${MPFR_SRC_DIR}"
+        )
+
+        if(NOT result_mparith EQUAL 0)
+            message(FATAL_ERROR "Failed to configure mparith build:\n${error_mparith}")
+        endif()
+
+        execute_process(COMMAND ${CMAKE_COMMAND} --build "${MPARITH_BINARY_DIR}" --config ${CMAKE_BUILD_TYPE}
+                        RESULT_VARIABLE  build_result_mparith
+                        OUTPUT_VARIABLE   output_mparith
+                        ERROR_VARIABLE    error_build_mparith
+                        WORKING_DIRECTORY "${MPFR_SRC_DIR}"
+        )
+
+        if(NOT build_result_mparith EQUAL 0)
+            message(FATAL_ERROR "Failed to build mparith:\n${error_build_mparith}")
+        endif()
+    else()
+        execute_process(COMMAND ${CMAKE_COMMAND} -G${CMAKE_GENERATOR} -S ${MPFR_SRC_DIR} -B ${MPARITH_BINARY_DIR}
+                                -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+                                -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+                                -DCMAKE_BUILD_TYPE=Release
+                                -DMPARITH_DIR=${MPARITH_DIR}
+                        RESULTS_VARIABLE  result_mparith
+                        OUTPUT_VARIABLE   config_mparith
+                        WORKING_DIRECTORY ${MPFR_SRC_DIR}
+        )
+
+        execute_process(COMMAND ${CMAKE_COMMAND} --build ${MPARITH_BINARY_DIR} --config Release
+                        OUTPUT_VARIABLE   output_mparith
+                        WORKING_DIRECTORY ${MPFR_SRC_DIR}
+        )
+    endif()
 endif()

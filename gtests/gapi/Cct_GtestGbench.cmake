@@ -50,12 +50,21 @@ endfunction()
 function(build_gapi source_dir binary_dir)
     message(STATUS "Building gapi from: ${source_dir}")
 
+    set(GAPI_RUNTIME_CONFIG "")
+    if(WIN32)
+        if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|MSVC")
+            set(GAPI_RUNTIME_CONFIG -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL)
+        endif()
+    endif()
+
     # Configure gapi build
-    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" -S "${source_dir}" -B "${binary_dir}"
+    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}"
+                            -S "${source_dir}" -B "${binary_dir}"
                             -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
                             -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
                             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                             -DBUILD_SHARED_LIBS=${GTBM_SHARED}
+                            ${GAPI_RUNTIME_CONFIG}
                     RESULT_VARIABLE gapi_configure_result
                     OUTPUT_VARIABLE gapi_configure_output
                     ERROR_VARIABLE gapi_configure_error
@@ -96,7 +105,12 @@ set(GTBM_SHARED OFF CACHE BOOL "Build shared libraries for Google Test and Googl
 
 # Set directory paths
 set(GAPI_SOURCE_DIR   "${CMAKE_CURRENT_LIST_DIR}")
-set(GAPI_BINARY_DIR   "${${PROJECT_PREFIX}_SOURCE_DIR}/build/external/gapi")
+if(WIN32)
+    # Windows-only: scope by build type so Debug/Release do not reuse cached libs.
+    set(GAPI_BINARY_DIR   "${${PROJECT_PREFIX}_SOURCE_DIR}/build/external/gapi/${CMAKE_BUILD_TYPE}")
+else()
+    set(GAPI_BINARY_DIR   "${${PROJECT_PREFIX}_SOURCE_DIR}/build/external/gapi")
+endif()
 set(GAPI_LIB_PATH     "${GAPI_BINARY_DIR}")
 
 # Platform-specific library names

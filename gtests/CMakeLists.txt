@@ -26,6 +26,14 @@
 #
 
 cmake_minimum_required(VERSION ${CMAKE_MIN_REQ_VERSION})
+
+# libalm and mparith link msvcrt (release CRT) on Windows; use /MD for all gtest
+# configs so Debug/Release objects and external deps stay CRT-consistent.
+# Debug uses /MD (not /MDd) to match libalm; full MSVC debug CRT checking is traded off.
+if(WIN32)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+endif()
+
 project(gtest-testsuite-libm LANGUAGES C CXX)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/gapi")

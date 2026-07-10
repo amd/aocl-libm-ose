@@ -218,12 +218,13 @@ $ cmake --build --preset {presetName} -j %NUMBER_OF_PROCESSORS%
 
 #### **4.4 Installation**
 
-Only when building in release mode (for example, using a `*-release-*` preset), the compiled library will be installed in the `build/{presetName}` directory or user specified prefix path.
+Both release and debug builds run the `install` step automatically when using the provided build presets.
+The compiled library will be installed in the `build/{presetName}` directory or user specified prefix path.
 
 **Note:**
-- In release mode, libraries are automatically installed to `build/{presetName}/lib` and header files to `build/{presetName}/include`.
-- In debug mode, the library is built but not installed automatically. Libraries are found in `build/{presetName}/src` and header files in `include/external`.
-  To explicitly install libraries and headers in debug mode, run:
+- In both release and debug modes, libraries are automatically installed to `build/{presetName}/lib` and header files to `build/{presetName}/include`.
+- If the `install` step is disabled, libraries can be found in `build/{presetName}/src` and header files in `include/external`.
+  To explicitly install libraries and headers, run:
 
   ```console
   $ cmake --build --preset {presetName} --target install
@@ -439,7 +440,7 @@ $ LD_PRELOAD=${PWD}/build/{presetName}/lib/libalmfast.so
 
 To build examples along with aocl-libm, configure CMake using `-DLIBM_BUILD_EXAMPLES=ON`. This is **OFF by default**.
 
-**Note:** Building examples is supported only in release mode (e.g., `*-release-*` presets).
+**Note:** Building examples is supported in both debug and release modes when the `install` target is run (provided build presets do this automatically).
 
 ---
 

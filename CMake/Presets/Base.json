@@ -44,6 +44,7 @@
             "name": "build-debug",
             "displayName": "Build Debug",
             "configurePreset": "base-config-debug",
+            "targets": ["install"],
             "hidden": true
         },
         {

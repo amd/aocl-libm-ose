@@ -16,10 +16,11 @@ This comprehensive guide provides instructions for building, testing, and instal
    - 4.4 [Installation](#44-installation)
    - 4.5 [Building and Executing gtests (Libm Test Framework)](#45-building-and-executing-gtests-libm-test-framework)
       - 4.5.1 [Building gtests](#451-building-gtests)
-      - 4.5.2 [Executing gtests](#452-executing-gtests)
-      - 4.5.3 [Building with Alternative Library ABIs (Linux Only)](#453-building-with-alternative-library-abis-linux-only)
-      - 4.5.4 [Building with Intel Math (OneAPI) Libraries (Linux Only)](#454-building-with-intel-math-oneapi-libraries-linux-only)
-      - 4.5.5 [Using Preloadable Libraries (Linux Only)](#455-using-preloadable-libraries-linux-only)
+      - 4.5.2 [Windows gtests build notes](#452-windows-gtests-build-notes)
+      - 4.5.3 [Executing gtests](#453-executing-gtests)
+      - 4.5.4 [Building with Alternative Library ABIs (Linux Only)](#454-building-with-alternative-library-abis-linux-only)
+      - 4.5.5 [Building with Intel Math (OneAPI) Libraries (Linux Only)](#455-building-with-intel-math-oneapi-libraries-linux-only)
+      - 4.5.6 [Using Preloadable Libraries (Linux Only)](#456-using-preloadable-libraries-linux-only)
    - 4.6 [Building Examples](#46-building-examples)
    - 4.7 [Clean Build Files](#47-clean-build-files)
    - 4.8 [Static Dispatch Configuration (Linux Only)](#48-static-dispatch-configuration-linux-only)
@@ -263,10 +264,40 @@ $ cmake --build --preset dev-release-gcc --target gtests
 
 **Windows:**
 ```console
+# Debug
+$ cmake --preset dev-win-llvm --fresh
+$ cmake --build --preset dev-win-llvm --target gtests
+
+# Release
+$ cmake --preset dev-win-release-llvm --fresh
 $ cmake --build --preset dev-win-release-llvm --target gtests
 ```
 
-##### **4.5.2 Executing gtests**
+##### **4.5.2 Windows gtests build notes**
+
+On Windows, gtests links against libalm and external dependencies (Google Test/Google Benchmark and mparith). These must use a consistent MSVC C runtime (CRT) and separate cached artifacts per build type to avoid link failures (for example, `_ITERATOR_DEBUG_LEVEL` mismatch when mixing Debug and Release objects).
+
+**Windows presets:** Use `dev-win-llvm` for Debug gtests and `dev-win-release-llvm` for Release gtests.
+
+**External dependency cache layout:**
+
+| Dependency | Role | Windows path | Linux path |
+|------------|------|--------------|------------|
+| gapi (gtest/gbench) | Source | `gtests/gapi/` | `gtests/gapi/` |
+| gapi (gtest/gbench) | Nested CMake build dir (`-B`) + libs | `build/external/gapi/{Debug|Release}/` | `build/external/gapi/` |
+| mparith | Source | `gtests/libs/mparith/` | `gtests/libs/mparith/` |
+| mparith | Nested CMake build dir (`-B`) | `build/{presetName}/` (gtests binary dir) | `build/{presetName}/` (gtests binary dir) |
+| mparith | Install cache (libs/headers) | `build/external/mparith/{Debug|Release}/` | `build/external/mparith/` |
+
+gapi and mparith install caches are scoped by `CMAKE_BUILD_TYPE` on Windows. gapi also uses its scoped path as the nested CMake `-B` directory; mparith uses the gtests preset binary directory for `-B` and installs artifacts into `MPARITH_DIR` via `-DMPARITH_DIR`.
+
+On Linux, mparith is always built as `Release` regardless of the parent gtests build type. On Windows, mparith is built with the same `CMAKE_BUILD_TYPE` as the parent gtests configure.
+
+**MSVC runtime:** Windows gtests and their external dependencies are built with `/MD` (`MultiThreadedDLL`) for all configurations, matching libalm. Debug gtests therefore use `/MD` (not `/MDd`). This avoids CRT mismatch at link time but does not enable full MSVC debug CRT/STL checking (`_ITERATOR_DEBUG_LEVEL=2`).
+
+**Switching Debug and Release on Windows:** Use the appropriate preset and reconfigure with `--fresh` when switching. Debug and Release maintain separate cached gapi and mparith artifacts under the paths above; one configuration does not reuse the other's cached libraries.
+
+##### **4.5.3 Executing gtests**
 
 Before running tests, you need to add the library's directory to your environment:
 
@@ -327,7 +358,7 @@ $ build\{presetName}\aocl_gtests\test_exp.exe -t conf
 $ build\{presetName}\aocl_gtests\test_exp.exe -e 32 -t inplace -r -79.0,79.0,simple -c 1000
 ```
 
-##### **4.5.3 Building with Alternative Library ABIs (Linux Only)**
+##### **4.5.4 Building with Alternative Library ABIs (Linux Only)**
 
 **Available Library ABI Options:**
 | ABI Option | Description                 | Test Directory  | Function Prefix  |
@@ -347,7 +378,7 @@ $ ./build/{presetName}/glibc_gtests/test_<function> <Test parameters>
 ```
 With this, the tests will be compiled to call _libm_ functions without the amd specific prefix.
 
-##### **4.5.4 Building with Intel Math (OneAPI) Libraries (Linux Only)**
+##### **4.5.5 Building with Intel Math (OneAPI) Libraries (Linux Only)**
 
 To build tests to exercise Intel math libraries:
 
@@ -371,7 +402,7 @@ $ export LD_LIBRARY_PATH=<intel OneAPI path>/lib:$LD_LIBRARY_PATH
 $ ./build/{presetName}/svml_gtests/test_<function> <Test parameters>
 ```
 
-##### **4.5.5 Using Preloadable Libraries (Linux Only)**
+##### **4.5.6 Using Preloadable Libraries (Linux Only)**
 
 **Available Preloadable Libraries:**
 | Library Name  | File Name           | Purpose                        | Accuracy          | Platform |

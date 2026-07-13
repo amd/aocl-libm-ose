@@ -458,6 +458,7 @@ typedef __m512d (*amd_erfcinv_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_erfinv_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_exp_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_exp2_vrd8_func_t)(__m512d);
+typedef __m512d (*amd_exp10_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_linearfrac_vrd8_func_t)(__m512d, __m512d, double, double, double, double);
 typedef __m512d (*amd_log_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_log2_vrd8_func_t)(__m512d);
@@ -845,6 +846,7 @@ static struct {
     amd_erfinv_vrd8_func_t erfinv_vrd8;
     amd_exp_vrd8_func_t exp_vrd8;
     amd_exp2_vrd8_func_t exp2_vrd8;
+    amd_exp10_vrd8_func_t exp10_vrd8;
     amd_linearfrac_vrd8_func_t linearfrac_vrd8;
     amd_log_vrd8_func_t log_vrd8;
     amd_log2_vrd8_func_t log2_vrd8;
@@ -1366,6 +1368,7 @@ static void init_amd_symbols(void) {
     amd_funcs.erfinv_vrd8 = load_amd_symbol<amd_erfinv_vrd8_func_t>(amd_core, "amd_vrd8_erfinv");
     amd_funcs.exp_vrd8 = load_amd_symbol<amd_exp_vrd8_func_t>(amd_core, "amd_vrd8_exp");
     amd_funcs.exp2_vrd8 = load_amd_symbol<amd_exp2_vrd8_func_t>(amd_core, "amd_vrd8_exp2");
+    amd_funcs.exp10_vrd8 = load_amd_symbol<amd_exp10_vrd8_func_t>(amd_core, "amd_vrd8_exp10");
     amd_funcs.linearfrac_vrd8 = load_amd_symbol<amd_linearfrac_vrd8_func_t>(amd_core, "amd_vrd8_linearfrac");
     amd_funcs.log_vrd8 = load_amd_symbol<amd_log_vrd8_func_t>(amd_core, "amd_vrd8_log");
     amd_funcs.log2_vrd8 = load_amd_symbol<amd_log2_vrd8_func_t>(amd_core, "amd_vrd8_log2");
@@ -2772,6 +2775,10 @@ SHIM_EXPORT void shim_exp_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
 
 SHIM_EXPORT void shim_exp2_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
     ipp->op[0].data = amd_funcs.exp2_vrd8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_exp10_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.exp10_vrd8(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_linearfrac_vrd8(InParams<libm::AlignedM512d, double> *ipp) {

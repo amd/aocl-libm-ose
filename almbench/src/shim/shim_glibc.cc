@@ -353,6 +353,7 @@ typedef __m256d (*gcc_erf_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_erfc_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_exp_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_exp2_vrd4_func_t)(__m256d);
+typedef __m256d (*gcc_exp10_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_fabs_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_linearfrac_vrd4_func_t)(__m256d, __m256d, double, double, double, double);
 typedef __m256d (*gcc_log_vrd4_func_t)(__m256d);
@@ -715,6 +716,7 @@ static struct {
     gcc_erfc_vrd4_func_t erfc_vrd4;
     gcc_exp_vrd4_func_t exp_vrd4;
     gcc_exp2_vrd4_func_t exp2_vrd4;
+    gcc_exp10_vrd4_func_t exp10_vrd4;
     gcc_fabs_vrd4_func_t fabs_vrd4;
     gcc_linearfrac_vrd4_func_t linearfrac_vrd4;
     gcc_log_vrd4_func_t log_vrd4;
@@ -1465,6 +1467,7 @@ static void init_gcc_symbols(void) {
     gcc_funcs.erfc_vrd4 = nullptr;
     gcc_funcs.exp_vrd4 = nullptr;
     gcc_funcs.exp2_vrd4 = nullptr;
+    gcc_funcs.exp10_vrd4 = nullptr;
     gcc_funcs.fabs_vrd4 = nullptr;
     gcc_funcs.linearfrac_vrd4 = nullptr;
     gcc_funcs.log_vrd4 = nullptr;
@@ -1733,6 +1736,7 @@ static void init_gcc_symbols(void) {
     gcc_funcs.exp2_vrs8 = _ZGVdN8v_exp2f;
 
     // EXP10 - 256-bit (AVX2)
+    gcc_funcs.exp10_vrd4 = _ZGVdN4v_exp10;
     gcc_funcs.exp10_vrs8 = _ZGVdN8v_exp10f;
 
     // LOG2, LOG10 - 256-bit (AVX2)
@@ -2556,6 +2560,10 @@ SHIM_EXPORT void shim_exp_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
 
 SHIM_EXPORT void shim_exp2_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = gcc_funcs.exp2_vrd4(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_exp10_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
+    ipp->op[0].data = gcc_funcs.exp10_vrd4(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_fabs_vrd4(InParams<libm::AlignedM256d, double> *ipp) {

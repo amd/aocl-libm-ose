@@ -29,16 +29,16 @@
       input: [[min_subnormal, max]]
       type: [linearstep]
       steps: [10000]
-      variants : [ sd, vrd2, vrd8, vrda]
+      variants : [ sd, vrd2, vrd4, vrd8, vrda]
     - id: exp10_002
       description: 'x in [-min_subnormal, min_subnormal], linearstep'
       input: [[-min_subnormal, min_subnormal]]
       type: [linearstep]
       steps: [10000]
-      variants : [ sd, vrd2, vrd8, vrda]
+      variants : [ sd, vrd2, vrd4, vrd8, vrda]
     - id: exp10_003
       description: 'Negative values: x in [-DBL_MAX, -SMALLEST_SUBNORMAL], linearstep'
       input: [[-max, -min_subnormal]]
       type: [linearstep]
       steps: [10000]
-      variants : [ sd, vrd2, vrd8, vrda]
+      variants : [ sd, vrd2, vrd4, vrd8, vrda]

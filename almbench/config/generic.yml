@@ -139,7 +139,7 @@
       - [-10.0, 35.0 ]
       type: [linearstep]
       steps: [1000]
-      variants : [ss, vrs4, vrs16, vrsa, sd, vrd2, vrd8, vrda]
+      variants : [ss, vrs4, vrs16, vrsa, sd, vrd2, vrd4, vrd8, vrda]
 
     - id: accu_expm1
       description: 'x in [MIN, MAX] linearstep'

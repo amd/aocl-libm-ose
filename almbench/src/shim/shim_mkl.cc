@@ -245,6 +245,7 @@ typedef __m256d (*mkl_erf_vrd4_func_t)(__m256d);
 typedef __m256d (*mkl_erfc_vrd4_func_t)(__m256d);
 typedef __m256d (*mkl_exp_vrd4_func_t)(__m256d);
 typedef __m256d (*mkl_exp2_vrd4_func_t)(__m256d);
+typedef __m256d (*mkl_exp10_vrd4_func_t)(__m256d);
 typedef __m256d (*mkl_fabs_vrd4_func_t)(int, double*, double*);
 typedef __m256d (*mkl_linearfrac_vrd4_func_t)(int, const double*, const double*, double, double, double, double, double*);
 typedef __m256d (*mkl_log_vrd4_func_t)(__m256d);
@@ -607,6 +608,7 @@ static struct {
     mkl_erfc_vrd4_func_t erfc_vrd4;
     mkl_exp_vrd4_func_t exp_vrd4;
     mkl_exp2_vrd4_func_t exp2_vrd4;
+    mkl_exp10_vrd4_func_t exp10_vrd4;
     mkl_fabs_vrd4_func_t fabs_vrd4;
     mkl_linearfrac_vrd4_func_t linearfrac_vrd4;
     mkl_log_vrd4_func_t log_vrd4;
@@ -1065,6 +1067,7 @@ static void init_mkl_symbols(void) {
     mkl_funcs.erfc_vrd4 = load_mkl_symbol<mkl_erfc_vrd4_func_t>(mkl_vml, "__svml_erfc4");
     mkl_funcs.exp_vrd4 = load_mkl_symbol<mkl_exp_vrd4_func_t>(mkl_vml, "__svml_exp4");
     mkl_funcs.exp2_vrd4 = load_mkl_symbol<mkl_exp2_vrd4_func_t>(mkl_vml, "__svml_exp24");
+    mkl_funcs.exp10_vrd4 = load_mkl_symbol<mkl_exp10_vrd4_func_t>(mkl_vml, "__svml_exp104");
     mkl_funcs.fabs_vrd4 = load_mkl_symbol<mkl_fabs_vrd4_func_t>(mkl_vma, "vdAbs");
     mkl_funcs.linearfrac_vrd4 = load_mkl_symbol<mkl_linearfrac_vrd4_func_t>(mkl_vma, "vdLinearFrac");
     mkl_funcs.log_vrd4 = load_mkl_symbol<mkl_log_vrd4_func_t>(mkl_vml, "__svml_log4");
@@ -2046,6 +2049,10 @@ SHIM_EXPORT void shim_exp_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
 
 SHIM_EXPORT void shim_exp2_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = mkl_funcs.exp2_vrd4(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_exp10_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
+    ipp->op[0].data = mkl_funcs.exp10_vrd4(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_fabs_vrd4(InParams<libm::AlignedM256d, double> *ipp) {

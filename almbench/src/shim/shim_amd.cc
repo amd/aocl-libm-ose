@@ -324,6 +324,7 @@ typedef __m256d (*amd_erfcinv_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_erfinv_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_exp_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_exp2_vrd4_func_t)(__m256d);
+typedef __m256d (*amd_exp10_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_fabs_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_linearfrac_vrd4_func_t)(__m256d, __m256d, double, double, double, double);
 typedef __m256d (*amd_log_vrd4_func_t)(__m256d);
@@ -709,6 +710,7 @@ static struct {
     amd_erfinv_vrd4_func_t erfinv_vrd4;
     amd_exp_vrd4_func_t exp_vrd4;
     amd_exp2_vrd4_func_t exp2_vrd4;
+    amd_exp10_vrd4_func_t exp10_vrd4;
     amd_fabs_vrd4_func_t fabs_vrd4;
     amd_linearfrac_vrd4_func_t linearfrac_vrd4;
     amd_log_vrd4_func_t log_vrd4;
@@ -1232,6 +1234,7 @@ static void init_amd_symbols(void) {
     amd_funcs.erfinv_vrd4 = load_amd_symbol<amd_erfinv_vrd4_func_t>(amd_core, "amd_vrd4_erfinv");
     amd_funcs.exp_vrd4 = load_amd_symbol<amd_exp_vrd4_func_t>(amd_core, "amd_vrd4_exp");
     amd_funcs.exp2_vrd4 = load_amd_symbol<amd_exp2_vrd4_func_t>(amd_core, "amd_vrd4_exp2");
+    amd_funcs.exp10_vrd4 = load_amd_symbol<amd_exp10_vrd4_func_t>(amd_core, "amd_vrd4_exp10");
     amd_funcs.fabs_vrd4 = load_amd_symbol<amd_fabs_vrd4_func_t>(amd_core, "amd_vrd4_fabs");
     amd_funcs.linearfrac_vrd4 = load_amd_symbol<amd_linearfrac_vrd4_func_t>(amd_core, "amd_vrd4_linearfrac");
     amd_funcs.log_vrd4 = load_amd_symbol<amd_log_vrd4_func_t>(amd_core, "amd_vrd4_log");
@@ -2266,6 +2269,10 @@ SHIM_EXPORT void shim_exp_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
 
 SHIM_EXPORT void shim_exp2_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = amd_funcs.exp2_vrd4(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_exp10_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.exp10_vrd4(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_fabs_vrd4(InParams<libm::AlignedM256d, double> *ipp) {

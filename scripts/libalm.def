@@ -142,6 +142,7 @@ EXPORTS
     amd_vrd4_cos
     amd_vrd4_exp
     amd_vrd4_exp2
+    amd_vrd4_exp10
     amd_vrd4_log
     amd_vrd4_log2
     amd_vrd4_pow

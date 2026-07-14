@@ -370,6 +370,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd2_erfcinv) = (alm_func_t)&ALM_PROTO_ARCH_AVX
 alm_func_t        G_ENTRY_PT_PTR(vrd4_cos) = (alm_func_t)&ALM_PROTO_ARCH_AVX2(vrd4_cos);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_exp) = (alm_func_t)&ALM_PROTO_ARCH_AVX2(vrd4_exp);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_exp2) = (alm_func_t)&ALM_PROTO_ARCH_AVX2(vrd4_exp2);
+alm_func_t        G_ENTRY_PT_PTR(vrd4_exp10) = (alm_func_t)&ALM_PROTO_ARCH_AVX2(vrd4_exp10);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_log) = (alm_func_t)&ALM_PROTO_ARCH_AVX2(vrd4_log);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_log2) = (alm_func_t)&ALM_PROTO_ARCH_AVX2(vrd4_log2);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_pow) = (alm_func_t)&ALM_PROTO_ARCH_AVX2(vrd4_pow);

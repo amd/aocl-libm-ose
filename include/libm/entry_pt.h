@@ -351,6 +351,7 @@ extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd2_erfcinv);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_cos);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_exp);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_exp2);
+extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_exp10);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_log);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_log2);
 extern alm_ep_func_t        G_ENTRY_PT_PTR(vrd4_pow);

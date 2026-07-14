@@ -728,6 +728,13 @@ extern "C" {
   __m256 amd_vrs8_exp2f (__m256 x);
 
   /**
+   * @brief Computes 10^x for four double-precision lanes.
+   * @param x Input vector.
+   * @return Vector of base-10 exponentials.
+   */
+  __m256d amd_vrd4_exp10 (__m256d x);
+
+  /**
    * @brief Computes 10^x for eight single-precision lanes.
    * @param x Input vector.
    * @return Vector of base-10 exponentials.

@@ -39,6 +39,7 @@ set(COMMONSRC
     exp_tables.c
     log_tables.c
     sincos_tbl.c
+    tanf_tbl.c
     pow_data.c
     sinh_data.c
     vec/alm_special.c

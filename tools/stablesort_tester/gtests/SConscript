@@ -1,0 +1,98 @@
+#
+# Copyright (C) 2026 Advanced Micro Devices, Inc. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without modification,
+# are permitted provided that the following conditions are met:
+# 1. Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+# 3. Neither the name of the copyright holder nor the names of its contributors
+#    may be used to endorse or promote products derived from this software without
+#    specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+# OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+#
+# stablesort unit tests (scons mirror of gtests/CMakeLists.txt).
+#
+# stablesort.c is compiled a SECOND time here with -DALM_SORT_UNIT_TEST, which
+# exposes thin wrappers over the file-local static kernels (stablesort_testapi.h).
+# The shipped library never defines that macro, so production symbol hiding is
+# untouched. Uses the repo's vendored fused GoogleTest. Inherits the parent
+# env's flags (minus -Werror) and adds C++17 + ASAN (opt-in via --use_asan=1,
+# following the repo-wide scons convention).
+#
+
+Import('env', 'almenv')
+
+e = env.Clone()
+
+ss_src    = '#src/optimized/stablesort.c'
+gtest_all = '#gtests/gapi/gtest/src/gtest_all.cc'
+test_srcs = Glob('src/*.cc')
+
+incpath = ['#tools/stablesort_tester/gtests/include',   # stablesort_testapi.h, *.hpp
+           '#include',                                  # libm_macros.h, libm/*
+           '#gtests/gapi/gtest']                        # fused gtest.h
+
+use_asan = e['use_asan']
+
+# Inherit the parent env's flags (as the cmake target inherits the project
+# flags). The parent only carries the C warning wall (in CFLAGS, i.e. C-only),
+# so the C++ gtest sources are untouched.
+# -Werror dropped so that warnings from test block dont show up as errors.
+e['CFLAGS'] = [f for f in e.get('CFLAGS', []) if f != '-Werror']
+
+if e['HOST_OS'] != 'win32':
+    # C++ standard for the test/gtest sources; -O2 to exercise the kernel
+    # optimized (base env carries no -O). CCFLAGS applies to both C and C++.
+    e.Append(CCFLAGS=['-O2'], CXXFLAGS=['-std=c++17'], CPPPATH=[incpath])
+    liblist = ['pthread', 'm', 'stdc++']
+    if use_asan == 1:
+        e.Append(CCFLAGS=['-fsanitize=address', '-fno-omit-frame-pointer'],
+                 LINKFLAGS=['-fsanitize=address', '-static-libasan'])
+    # Mixed C + C++ objects: link with the C++ driver.
+    e['LINK'] = almenv.compiler.CxxCmd()
+else:
+    e.Append(CCFLAGS=['/O2', '/EHsc'], CXXFLAGS=['-std:c++17'], CPPPATH=[incpath],
+             LINKFLAGS=['/SUBSYSTEM:CONSOLE'])
+    liblist = ['msvcrt', 'Shlwapi']
+
+base_defs = e.get('CPPDEFINES') or []
+if not isinstance(base_defs, list):
+    base_defs = [base_defs]
+
+# (1) stablesort.c, recompiled with the unit-test hook macro exposed.
+# On Windows, give this recompile the same CPU target as the library so the
+# compiler enables the SIMD types the libm headers reference (-march=native;
+# -D__AVX2__ mirrors src/SConscript). Linux compilers (gcc/aocc) declare these
+# types regardless.
+if e['HOST_OS'] != 'win32':
+    ss_lib_ccflags = []
+else:
+    ss_lib_ccflags = ['-march=native', '-D__AVX2__']
+ss_obj = e.Object(target='stablesort_ut', source=ss_src,
+                  CCFLAGS=e['CCFLAGS'] + ss_lib_ccflags,
+                  CPPDEFINES=base_defs + ['ALM_SORT_UNIT_TEST'])
+
+# (2) vendored fused gtest: third-party -> silence warnings; pthread on POSIX.
+gtest_defs = base_defs + (['GTEST_HAS_PTHREAD=1'] if e['HOST_OS'] != 'win32' else [])
+gtest_obj = e.Object(target='gtest_all', source=gtest_all,
+                     CCFLAGS=e['CCFLAGS'] + ['-w'], CPPDEFINES=gtest_defs)
+
+sorttests = e.Program('stablesort_gtest',
+                      [ss_obj, gtest_obj] + test_srcs,
+                      LIBS=liblist)
+
+Return('sorttests')

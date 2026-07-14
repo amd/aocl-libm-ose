@@ -61,8 +61,19 @@ set_target_properties(stablesort_gtest PROPERTIES
   CXX_STANDARD_REQUIRED ON)
 
 # Expose the internal test wrappers when compiling this copy of stablesort.c.
-set_source_files_properties(${_ss_root}/src/optimized/stablesort.c
-  PROPERTIES COMPILE_DEFINITIONS "ALM_SORT_UNIT_TEST")
+# On Windows, give this recompile the same CPU target as the library so the
+# compiler enables the SIMD types the libm headers reference (-march=native;
+# -D__AVX2__ mirrors src/CMakeLists.txt).Linux compilers (gcc/aocc) declare these
+# types regardless.
+set(_ss_ut_defs ALM_SORT_UNIT_TEST)
+set(_ss_ut_opts )
+if(WIN32)
+  list(APPEND _ss_ut_defs __AVX2__)
+  list(APPEND _ss_ut_opts -march=native)
+endif()
+set_source_files_properties(${_ss_root}/src/optimized/stablesort.c PROPERTIES
+  COMPILE_DEFINITIONS "${_ss_ut_defs}"
+  COMPILE_OPTIONS "${_ss_ut_opts}")
 
 # The vendored gtest is third-party: don't police its warnings.
 set_source_files_properties(${_ss_gtest}/src/gtest_all.cc PROPERTIES COMPILE_OPTIONS "-w")

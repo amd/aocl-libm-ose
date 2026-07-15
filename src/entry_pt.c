@@ -401,6 +401,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd8_pow) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrd
 alm_func_t        G_ENTRY_PT_PTR(vrd8_powx) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrd8_powx);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_sin) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrd8_sin);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_asin) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrd8_asin);
+alm_func_t        G_ENTRY_PT_PTR(vrd8_acos) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrd8_acos);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_tan) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrd8_tan);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_atan) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrd8_atan);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_atan2) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrd8_atan2);

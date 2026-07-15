@@ -1011,6 +1011,12 @@ extern "C" {
    */
   __m512d amd_vrd8_asin (__m512d x);
   /**
+   * @brief Computes arc-cosine for eight double-precision lanes.
+   * @param x Input vector.
+   * @return Vector of arc-cosines in radians.
+   */
+  __m512d amd_vrd8_acos (__m512d x);
+  /**
    * @brief Computes arc-sine for sixteen single-precision lanes.
    * @param x Input vector.
    * @return Vector of arc-sines in radians.

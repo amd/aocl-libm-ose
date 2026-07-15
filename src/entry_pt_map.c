@@ -125,9 +125,6 @@ LIBM_DECL_FN_MAP(scalblnf);
 LIBM_DECL_FN_MAP(scalbn);
 LIBM_DECL_FN_MAP(scalbnf);
 
-LIBM_DECL_FN_MAP(remainder_piby2);
-LIBM_DECL_FN_MAP(remainder_piby2d2f);
-
 
 /* Scalar Exponential Functions */
 

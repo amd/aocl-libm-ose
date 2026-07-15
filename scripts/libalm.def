@@ -88,8 +88,6 @@ EXPORTS
     amd_pow
     amd_powf
     amd_remainder
-    amd_remainder_piby2
-    amd_remainder_piby2d2f
     amd_remainderf
     amd_remquo
     amd_remquof

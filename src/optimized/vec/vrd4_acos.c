@@ -139,7 +139,7 @@ static struct {
 static inline bool
 all_v4_u64_loop(v_u64x4_t cond)
 {
-    return !!(cond[0] & cond[1] & cond[2] & cond[3]);
+    return _mm256_testc_si256((__m256i)cond, _mm256_set1_epi32(-1));
 }
 
 static inline v_f64x4_t

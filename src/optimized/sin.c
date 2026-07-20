@@ -167,8 +167,8 @@ ALM_PROTO_OPT(sin)(double x)
     if (unlikely(ax >= INF_BITS))
         return _sin_special(x);
 
-    int    m;
-    double r, rr;
+    int    m = 0;
+    double r = 0.0, rr = 0.0;
 
     if (ax < COLD_BITS) {
         /* pi/2 <= |x| < 2^18 : inline Cody-Waite reduction mod pi/32.  The

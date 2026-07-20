@@ -196,8 +196,8 @@ ALM_PROTO_OPT(sincos)(double x, double *sin, double *cos)
 
     /* ===== |x| >= pi/2 : N=64 table reduction of |x| (once) ============= */
     uint64_t sign = ux >> 63;                 /* sin is odd; cos is even */
-    int      m;
-    double   r, rr;
+    int      m = 0;
+    double   r = 0.0, rr = 0.0;
 
     if (ax >= COLD_BITS) {
         /* |x| >= 2^18 : Payne-Hanek reduction of |x| (no sign fold). */

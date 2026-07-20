@@ -149,8 +149,8 @@ ALM_PROTO_OPT(sincosf)(float x, float *sin, float *cos)
     }
 
     /* ===== |x| >= pi/2 : reduce |x| mod pi/2 -> (region, r), ONCE ======= */
-    int    region;
-    double r;
+    int    region = 0;
+    double r = 0.0;
 
     if (axf >= COLD_BITS) {
         /* |x| >= 2^25 : Payne-Hanek reduction (region for |x|). */

@@ -141,8 +141,8 @@ float ALM_PROTO_OPT(tanf)(float x)
         return tan_kernel(sx);
     }
 
-    int    m;
-    double r;
+    int    m = 0;
+    double r = 0.0;
 
     if (unlikely(axf >= ALM_TANF_COLD)) {
         remainder_piby32_f(axf, &m, &r);

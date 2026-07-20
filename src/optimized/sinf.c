@@ -153,8 +153,8 @@ ALM_PROTO_OPT(sinf)(float x)
     }
 
     /* |x| >= pi/2 : reduce mod pi/2 -> (region, r). */
-    int    region;
-    double r;
+    int    region = 0;
+    double r = 0.0;
 
     if (axf >= COLD_BITS) {
         /* Payne-Hanek reduction on the |x| bit-pattern. */

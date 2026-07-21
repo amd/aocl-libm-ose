@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -122,6 +122,13 @@ int test_s1d(test_data *data, int idx)  {
 extern "C" {
 #endif
 
+/* GLIBC vector function symbols need to be re-defined accordingly */
+#if (LIBM_PROTOTYPE == PROTOTYPE_GLIBC)
+# if defined(__AVX512__)
+#  define _ZGVdN8v_acos _ZGVeN8v_acos
+# endif
+#endif
+
 /*vector routines*/
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
 __m128 LIBM_FUNC_VEC(s, 4, acosf)(__m128);
@@ -130,9 +137,17 @@ __m128d LIBM_FUNC_VEC(d, 2, acos)(__m128d);
 __m256d LIBM_FUNC_VEC(d, 4, acos)(__m256d);
 /*avx512*/
 # if defined(__AVX512__)
-//__m512d LIBM_FUNC_VEC(d, 8, acos) (__m512d);
 __m512 LIBM_FUNC_VEC(s, 16, acosf) (__m512);
 # endif
+#endif
+
+/*
+ * 8-lane double acos is provided by every non-MSVC backend: AOCL exports
+ * amd_vrd8_acos, SVML exports __svml_acos8 and GLIBC libmvec exports
+ * _ZGVeN8v_acos from 2.35 onwards.
+ */
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC) && defined(__AVX512__)
+__m512d LIBM_FUNC_VEC(d, 8, acos) (__m512d);
 #endif
 
 int test_v2d(test_data *data, int idx)  {
@@ -186,16 +201,13 @@ int test_v8s(test_data *data, int idx)  {
 }
 
 int test_v8d(test_data *data, int idx)  {
-//#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
-//  #if defined(__AVX512__)
-#if 0
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC) && defined(__AVX512__) && ((LIBM_PROTOTYPE != PROTOTYPE_GLIBC) || GLIBC_VERSION_CHECK(2, 35))
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m512d ip8 = _mm512_set_pd(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m512d op8 = LIBM_FUNC_VEC(d, 8, acos)(ip8);
   _mm512_store_pd(&op[0], op8);
-//  #endif
 #endif
   return 0;
 }

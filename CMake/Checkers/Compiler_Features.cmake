@@ -25,11 +25,23 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+include_guard(GLOBAL)
+
 include(CheckCCompilerFlag)
+
+# Only Windows with the Visual Studio (MSVC) generator using the ClangCL
+# toolset is treated as clang-cl.
+set(msvc_clang_cl FALSE)
+if(WIN32 AND CMAKE_GENERATOR MATCHES "Visual Studio")
+    if((DEFINED CMAKE_VS_PLATFORM_TOOLSET AND CMAKE_VS_PLATFORM_TOOLSET MATCHES "ClangCL")
+       OR (DEFINED CMAKE_GENERATOR_TOOLSET AND CMAKE_GENERATOR_TOOLSET MATCHES "ClangCL"))
+        set(msvc_clang_cl TRUE)
+    endif()
+endif()
 
 if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
   include(Gcc)
-elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
+elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR msvc_clang_cl)
   include(Clang)
 else()
   message(WARNING "Unsupported compiler .")
@@ -58,7 +70,14 @@ set(archlist znver6 znver5 znver4 znver3 znver2 znver1)
 set(archdetect_code "
   #include <stdio.h>
   int main() { return 0; } ")
-file(WRITE "${PROJECT_BINARY_DIR}/arch.c" "${archdetect_code}")
+set(_alm_arch_c "${PROJECT_BINARY_DIR}/arch.c")
+set(_alm_arch_existing "")
+if(EXISTS "${_alm_arch_c}")
+    file(READ "${_alm_arch_c}" _alm_arch_existing)
+endif()
+if(NOT "${_alm_arch_existing}" STREQUAL "${archdetect_code}")
+    file(WRITE "${_alm_arch_c}" "${archdetect_code}")
+endif()
 set(maxarch "X86_64")
 foreach(arch ${archlist})
   try_run(RUNRESULT COMPILERESULT "${PROJECT_BINARY_DIR}/temp" SOURCES  "${PROJECT_BINARY_DIR}/arch.c"

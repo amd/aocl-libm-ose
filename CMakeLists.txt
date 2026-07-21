@@ -100,14 +100,17 @@ message(DEBUG "Project with name \"${PROJECT_PREFIX}\" with version ${${PROJECT_
 set(${PROJECT_PREFIX}_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Windows builds use single-config generators with external sub-builds (gapi, mparith).
-if(WIN32)
-    if(NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
+if (WIN32)
+    if(NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
         set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type (Debug or Release)" FORCE)
         message(STATUS "CMAKE_BUILD_TYPE not specified, defaulting to Release")
     endif()
     if(NOT CMAKE_BUILD_TYPE MATCHES "^(Debug|Release)$")
-        message(FATAL_ERROR "CMAKE_BUILD_TYPE must be Debug or Release on Windows (got: '${CMAKE_BUILD_TYPE}')")
+        message(FATAL_ERROR "CMAKE_BUILD_TYPE must be Debug or Release (got: '${CMAKE_BUILD_TYPE}')")
     endif()
+    # Restrict multi-config generators to the selected build type
+    set(CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}" CACHE STRING "" FORCE)
+    message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 endif()
 
 #------------------------------
@@ -135,13 +138,6 @@ include(GNUInstallDirs)
 
 if (NOT DEFINED ${${PROJECT_PREFIX}_GENERATED})
     set(${PROJECT_PREFIX}_GENERATED "${PROJECT_BINARY_DIR}/generated")
-endif()
-
-if(WIN32)
-    set(CMAKE_COMPILE_WARNING_AS_ERROR FALSE)
-    if("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
-        message(FATAL_ERROR  "CMAKE for ${PROJECT_NAME} not supported on ${CMAKE_C_COMPILER_ID}")
-    endif()
 endif()
 
 #------------------------------
@@ -173,10 +169,38 @@ if(DEFINED ALM_STATIC_DISPATCH)
   endif()
 endif()
 
+include(Compiler_Features)
 if(WIN32)
+    # Block pure MSVC (cl.exe); ClangCL reports as "Clang" and is supported.
+    if(NOT msvc_clang_cl
+       AND (CMAKE_C_COMPILER_ID STREQUAL "MSVC" OR CMAKE_CXX_COMPILER_ID STREQUAL "MSVC"))
+        message(FATAL_ERROR
+            "MSVC (cl.exe) is not supported; use clang-cl.exe or '-T ClangCL'.")
+    endif()
+
     # Use AT&T assembly syntax on Windows (required for Clang 19+ compatibility)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -masm=att")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -masm=att")
+
+    # Normalize /GS for bit-identical output; C/C++ only so the assembler
+    # is unaffected. Gated on MSVC (satisfied by clang-cl) since /GS- is an
+    # MSVC-style flag rejected by clang in GNU mode.
+    if(MSVC)
+        add_compile_options($<$<COMPILE_LANGUAGE:C,CXX>:/GS->)
+    endif()
+
+    if(CMAKE_GENERATOR MATCHES "Visual Studio")
+        # Strip only the /fp:precise flag that MSBuild injects by default
+        # (clang-cl already defaults to precise, so it is redundant). Any
+        # explicitly requested mode such as /fp:fast or /fp:strict is preserved.
+        foreach(lang C CXX)
+            foreach(config "" _DEBUG _RELEASE)
+                if(DEFINED CMAKE_${lang}_FLAGS${config})
+                    string(REGEX REPLACE "/fp:precise" "" CMAKE_${lang}_FLAGS${config} "${CMAKE_${lang}_FLAGS${config}}")
+                endif()
+            endforeach()
+        endforeach()
+    endif()
 else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fmacro-prefix-map=${${PROJECT_PREFIX}_SOURCE_DIR}/=.")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmacro-prefix-map=${${PROJECT_PREFIX}_SOURCE_DIR}/=.")
@@ -234,7 +258,6 @@ endif()
 #------------------------------------
 # Check compiler support for different ISAs
 #------------------------------------
-include(Compiler_Features)
 configure_file("${${PROJECT_PREFIX}_SOURCE_DIR}/CMake/Config.hh.in"
             "${${PROJECT_PREFIX}_CONFIG_OUTPUT_FILE}"
             @ONLY)

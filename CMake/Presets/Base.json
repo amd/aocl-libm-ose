@@ -20,6 +20,7 @@
             "displayName": "Configure Release",
             "inherits": "base-config",
             "cacheVariables": {
+                "CMAKE_CONFIGURATION_TYPES": "Release",
                 "CMAKE_BUILD_TYPE": "Release",
                 "CMAKE_COMPILE_WARNING_AS_ERROR": true,
                 "CMAKE_EXPORT_COMPILE_COMMANDS": true,
@@ -32,6 +33,7 @@
             "displayName": "Configure Debug",
             "inherits": "base-config",
             "cacheVariables": {
+                "CMAKE_CONFIGURATION_TYPES": "Debug",
                 "CMAKE_BUILD_TYPE": "Debug",
                 "CMAKE_COMPILE_WARNING_AS_ERROR": true,
                 "CMAKE_EXPORT_COMPILE_COMMANDS": true,

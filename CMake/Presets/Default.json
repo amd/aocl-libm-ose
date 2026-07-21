@@ -6,6 +6,7 @@
         "Os/Windows.json",
         "Generators/Make.json",
         "Generators/Ninja.json",
+        "Generators/Msvc.json",
         "x64-linux-gcc.json",
         "x64-linux-llvm.json",
         "x64-windows-llvm.json"
@@ -32,14 +33,24 @@
             "inherits": [ "make", "base-config-release","x64-linux-llvm-release"]
         },
         {
-            "name": "dev-win-llvm",
-            "displayName": "Developer Config with LLVM-Debug",
+            "name": "dev-win-llvm-ninja",
+            "displayName": "Developer Config with Ninja Generator (LLVM)-Debug",
             "inherits": [ "ninja","base-config-debug","x64-win-llvm-debug"]
         },
         {
-            "name": "dev-win-release-llvm",
-            "displayName": "Developer Config with LLVM-Release",
+            "name": "dev-win-release-llvm-ninja",
+            "displayName": "Developer Config with Ninja Generator (LLVM)-Release",
             "inherits": [ "ninja","base-config-release","x64-win-llvm-release"]
+        },
+        {
+            "name": "dev-win-llvm-msvc",
+            "displayName": "Developer Config with MSVC Generator (LLVM)-Debug",
+            "inherits": [ "msvc", "base-config-debug", "x64", "win" ]
+        },
+        {
+            "name": "dev-win-release-llvm-msvc",
+            "displayName": "Developer Config with MSVC Generator (LLVM)-Release",
+            "inherits": [ "msvc", "base-config-release", "x64", "win" ]
         }
     ],
     "buildPresets": [
@@ -68,16 +79,30 @@
             "configurePreset": "dev-release-clang"
         },
         {
-            "name": "dev-win-llvm",
-            "displayName": "Developer Build with LLVM-Debug",
+            "name": "dev-win-llvm-ninja",
+            "displayName": "Developer Build with Ninja Generator (LLVM)-Debug",
             "inherits": ["win","build-debug"],
-            "configurePreset": "dev-win-llvm"
+            "configurePreset": "dev-win-llvm-ninja"
         },
         {
-            "name": "dev-win-release-llvm",
-            "displayName": "Developer Build with LLVM-Release",
+            "name": "dev-win-release-llvm-ninja",
+            "displayName": "Developer Build with Ninja Generator (LLVM)-Release",
             "inherits": ["win","build-release"],
-            "configurePreset": "dev-win-release-llvm"
+            "configurePreset": "dev-win-release-llvm-ninja"
+        },
+        {
+            "name": "dev-win-llvm-msvc",
+            "displayName": "Developer Build with MSVC Generator (LLVM)-Debug",
+            "inherits": ["win","build-debug"],
+            "configuration": "Debug",
+            "configurePreset": "dev-win-llvm-msvc"
+        },
+        {
+            "name": "dev-win-release-llvm-msvc",
+            "displayName": "Developer Build with MSVC Generator (LLVM)-Release",
+            "inherits": ["win","build-release"],
+            "configuration": "Release",
+            "configurePreset": "dev-win-release-llvm-msvc"
         }
     ]
 }

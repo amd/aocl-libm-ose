@@ -1,0 +1,18 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "msvc",
+            "hidden": true,
+            "generator": "Visual Studio 17 2022",
+            "architecture": {
+                "value": "x64",
+                "strategy": "set"
+            },
+            "toolset": {
+                "value": "ClangCL,host=x64",
+                "strategy": "set"
+            }
+        }
+    ]
+}

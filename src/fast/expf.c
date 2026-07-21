@@ -68,7 +68,6 @@
 #include <libm/compiler.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/poly.h>
-#include "alm_special.c"
 
 #define EXPF_N 6
 #define EXPF_TABLE_SIZE (1 << EXPF_N)

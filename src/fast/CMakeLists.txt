@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,9 @@ endif()
 
 get_fastmath_flag( fmflag )
 
-file(GLOB FAST_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.c")
+set(ALM   "${${PROJECT_PREFIX}_SOURCE_DIR}/src/alm_special.c")
+file(GLOB FAST_SRC RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.c")
+list(APPEND FAST_SRC "${ALM}")
 set(FAST_INCLUDE "${INCLUDE_PATHS}")
 set(FAST_FLAGS  ${ffpflag} ${fmflag} ${wflags} ${picflag} ${winflag} ${fmaflag})
 
@@ -47,9 +49,6 @@ target_compile_options(libmfast_obj PRIVATE ${FAST_FLAGS})
 
 if(WIN32)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-  set(FASTLIBMDEPS "${PROJECT_BINARY_DIR}/src/libalm.lib")
-else()
-  set(FASTLIBMDEPS "libm_shared")
 endif()
 # Compile alm_main.c into the shared fast library so it gets the same
 # direct-execution entry point (version banner) as libalm.so. Without this the
@@ -63,7 +62,6 @@ set_target_properties(libmfast_shared PROPERTIES
     OUTPUT_NAME ${ALMFAST}
 )
 target_include_directories(libmfast_shared PRIVATE ${FAST_INCLUDE})
-target_link_libraries(libmfast_shared PRIVATE ${FASTLIBMDEPS})
 # Set alm_main as the ELF entry point so ./libalmfast.so self-executes (skipped for MSVC).
 if(NOT MSVC)
   set_target_properties(libmfast_shared PROPERTIES

@@ -470,6 +470,7 @@ typedef void (*gcc_tan_vrda_func_t)(int, const double*, double*);
 
 #ifdef __AVX512F__
 // --- Double Precision 512-bit Vector (vrd8) Functions ---
+typedef __m512d (*gcc_acos_vrd8_func_t)(__m512d);
 typedef __m512d (*gcc_asin_vrd8_func_t)(__m512d);
 typedef __m512d (*gcc_atan_vrd8_func_t)(__m512d);
 typedef __m512d (*gcc_cos_vrd8_func_t)(__m512d);
@@ -840,6 +841,7 @@ static struct {
     // ============================================================================
     // DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
     // ============================================================================
+    gcc_acos_vrd8_func_t acos_vrd8;
     gcc_asin_vrd8_func_t asin_vrd8;
     gcc_atan_vrd8_func_t atan_vrd8;
     gcc_cos_vrd8_func_t cos_vrd8;
@@ -1582,6 +1584,7 @@ static void init_gcc_symbols(void) {
 
 #ifdef __AVX512F__
     // AVX512 variants (512-bit)
+    gcc_funcs.acos_vrd8 = nullptr;
     gcc_funcs.asin_vrd8 = nullptr;
     gcc_funcs.atan_vrd8 = nullptr;
     gcc_funcs.cos_vrd8 = nullptr;
@@ -1752,6 +1755,7 @@ static void init_gcc_symbols(void) {
     gcc_funcs.atan_vrs16 = _ZGVeN16v_atanf;
 
     // ACOS, TAN - 512-bit (AVX512)
+    gcc_funcs.acos_vrd8 = _ZGVeN8v_acos;
     gcc_funcs.acos_vrs16 = _ZGVeN16v_acosf;
     gcc_funcs.tan_vrd8 = _ZGVeN8v_tan;
     gcc_funcs.tan_vrs16 = _ZGVeN16v_tanf;
@@ -3017,6 +3021,10 @@ SHIM_EXPORT void shim_tan_vrda(InParams<double, double> *ipp) {
 // ============================================================================
 // DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
 // ============================================================================
+SHIM_EXPORT void shim_acos_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = gcc_funcs.acos_vrd8(ipp->ip[0].data);
+}
+
 SHIM_EXPORT void shim_asin_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
     ipp->op[0].data = gcc_funcs.asin_vrd8(ipp->ip[0].data);
 }

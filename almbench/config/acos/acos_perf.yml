@@ -32,20 +32,20 @@
       input: [[min_subnormal, 0x3ff0000000000000]]
       type: [linearstep]
       steps: [10000]
-      variants : [sd, vrd2, vrd4, vrda]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
 
     - id: acos_002
       description: ' x in [[-min_subnormal, min_subnormal]], linearstep'
       input: [[-min_subnormal, min_subnormal]]
       type: [linearstep]
       steps: [10000]
-      variants : [sd, vrd2, vrd4, vrda]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
 
     - id: acos_003
       description: 'Negative values: x in [-1.0, -SMALLEST_SUBNORMAL], linearstep'
       input: [[0xbff0000000000000, -min_subnormal]]
       type: [linearstep]
       steps: [10000]
-      variants : [sd, vrd2, vrd4, vrda]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
 
 

@@ -450,6 +450,7 @@ typedef void (*amd_tan_vrda_func_t)(int, const double*, double*);
 // ============================================================================
 // DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
 // ============================================================================
+typedef __m512d (*amd_acos_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_asin_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_atan_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_atan2_vrd8_func_t)(__m512d, __m512d);
@@ -842,6 +843,7 @@ static struct {
     // ============================================================================
     // DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
     // ============================================================================
+    amd_acos_vrd8_func_t acos_vrd8;
     amd_asin_vrd8_func_t asin_vrd8;
     amd_atan_vrd8_func_t atan_vrd8;
     amd_atan2_vrd8_func_t atan2_vrd8;
@@ -1368,6 +1370,7 @@ static void init_amd_symbols(void) {
     // ============================================================================
     // DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
     // ============================================================================
+    amd_funcs.acos_vrd8 = load_amd_symbol<amd_acos_vrd8_func_t>(amd_core, "amd_vrd8_acos");
     amd_funcs.asin_vrd8 = load_amd_symbol<amd_asin_vrd8_func_t>(amd_core, "amd_vrd8_asin");
     amd_funcs.atan_vrd8 = load_amd_symbol<amd_atan_vrd8_func_t>(amd_core, "amd_vrd8_atan");
     amd_funcs.atan2_vrd8 = load_amd_symbol<amd_atan2_vrd8_func_t>(amd_core, "amd_vrd8_atan2");
@@ -2757,6 +2760,10 @@ SHIM_EXPORT void shim_tan_vrda(InParams<double, double> *ipp) {
 // ============================================================================
 // DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
 // ============================================================================
+SHIM_EXPORT void shim_acos_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.acos_vrd8(ipp->ip[0].data);
+}
+
 SHIM_EXPORT void shim_asin_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
     ipp->op[0].data = amd_funcs.asin_vrd8(ipp->ip[0].data);
 }

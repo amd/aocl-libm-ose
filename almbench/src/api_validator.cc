@@ -125,7 +125,7 @@ string api_prototype_to_string(ApiTypes type)
  */
 static const map<string, vector<string>> api_table_amd = {
     // { function_name, { supported_variants } }
-    {"acos",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrsa", "vrda"}},
+    {"acos",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
     {"acosh",     {"sd", "ss"}},
     {"add",       {"vrsa", "vrda"}},
     {"asin",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
@@ -192,7 +192,7 @@ static const map<string, vector<string>> api_table_glibc = {
     // { function_name, { supported_variants } }
 #if GLIBC_VERSION_CHECK(2,35)
     // All functions with full vector support in 2.42+
-    {"acos",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4"}},
+    {"acos",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8"}},
     {"acosh",     {"sd", "ss"}},
     {"add",       {}},
     {"asin",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8"}},

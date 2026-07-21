@@ -365,6 +365,7 @@ typedef void (*mkl_tan_vrda_func_t)(int, const double*, double*);
 
 #ifdef __AVX512F__
 // --- Double Precision 512-bit Vector (vrd8) Functions ---
+typedef __m512d (*mkl_acos_vrd8_func_t)(__m512d);
 typedef __m512d (*mkl_asin_vrd8_func_t)(__m512d);
 typedef __m512d (*mkl_atan_vrd8_func_t)(__m512d);
 typedef __m512d (*mkl_atan2_vrd8_func_t)(__m512d, __m512d);
@@ -737,6 +738,7 @@ static struct {
     // ============================================================================
     // DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
     // ============================================================================
+    mkl_acos_vrd8_func_t acos_vrd8;
     mkl_asin_vrd8_func_t asin_vrd8;
     mkl_atan_vrd8_func_t atan_vrd8;
     mkl_atan2_vrd8_func_t atan2_vrd8;
@@ -1208,6 +1210,7 @@ static void init_mkl_symbols(void) {
     mkl_funcs.sincos_vrd8 = load_mkl_symbol<mkl_sincos_vrd8_func_t>(mkl_vml, "__svml_sincos8");
     mkl_funcs.sqrt_vrd8 = load_mkl_symbol<mkl_sqrt_vrd8_func_t>(mkl_vml, "__svml_sqrt8");
     mkl_funcs.linearfrac_vrd8 = load_mkl_symbol<mkl_linearfrac_vrd8_func_t>(mkl_vma, "vdLinearFrac");
+    mkl_funcs.acos_vrd8 = load_mkl_symbol<mkl_acos_vrd8_func_t>(mkl_vml, "__svml_acos8");
     mkl_funcs.asin_vrd8 = load_mkl_symbol<mkl_asin_vrd8_func_t>(mkl_vml, "__svml_asin8");
     mkl_funcs.atan_vrd8 = load_mkl_symbol<mkl_atan_vrd8_func_t>(mkl_vml, "__svml_atan8");
     mkl_funcs.atan2_vrd8 = load_mkl_symbol<mkl_atan2_vrd8_func_t>(mkl_vml, "__svml_atan28");
@@ -2533,6 +2536,10 @@ SHIM_EXPORT void shim_tan_vrda(InParams<double, double> *ipp) {
 // ============================================================================
 // DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
 // ============================================================================
+SHIM_EXPORT void shim_acos_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = mkl_funcs.acos_vrd8(ipp->ip[0].data);
+}
+
 SHIM_EXPORT void shim_asin_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
     ipp->op[0].data = mkl_funcs.asin_vrd8(ipp->ip[0].data);
 }

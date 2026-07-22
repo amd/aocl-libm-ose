@@ -321,7 +321,14 @@
 #define jz(t)  JMP_(jz, t)
 
 /* --- Control transfer: call / return ----------------------------- */
-#define call_fn(fn)   INSTR_(call, SYM_(fn))
+/* ELF: call externals via @PLT (R_X86_64_PLT32); a bare PC32 call to a
+ * preemptible global can't link into a .so. */
+#if defined(__ELF__)
+#  define call_fn(fn)   INSTR_(call, SYM_(fn) "@PLT")
+#else
+#  define call_fn(fn)   INSTR_(call, SYM_(fn))
+#endif
+
 /* INSTR_(ret) would pass empty __VA_ARGS__ to GET_MACRO_; use INSTR_0_. */
 #define ret           INSTR_0_(ret)
 

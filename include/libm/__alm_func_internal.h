@@ -220,9 +220,7 @@ extern __m256    ALM_PROTO_INTERNAL(vrs8_acosf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_exp10f)          (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_exp2f)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_expf)            (__m256 x);
-extern __m256    ALM_PROTO_INTERNAL(vrs8_expm1f)          (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_log10f)          (__m256 x);
-extern __m256    ALM_PROTO_INTERNAL(vrs8_log1pf)          (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_log2f)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_logf)            (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_powf)            (__m256 x, __m256 y);
@@ -243,15 +241,12 @@ extern __m256    ALM_PROTO_INTERNAL(vrs8_roundf)          (__m256 x);
 /*
  * Vector Single precision, 16 elements
  */
-extern __m512    ALM_PROTO_INTERNAL(vrs16_cbrtf)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_cosf)            (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_acosf)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_exp10f)          (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_exp2f)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_expf)            (__m512 x);
-extern __m512    ALM_PROTO_INTERNAL(vrs16_expm1f)          (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_log10f)          (__m512 x);
-extern __m512    ALM_PROTO_INTERNAL(vrs16_log1pf)          (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_log2f)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_logf)            (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_powf)            (__m512 x, __m512 y);
@@ -260,7 +255,6 @@ extern __m512    ALM_PROTO_INTERNAL(vrs16_sinf)            (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_asinf)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_tanf)            (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_atanf)           (__m512 x);
-extern __m512    ALM_PROTO_INTERNAL(vrs16_coshf)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_tanhf)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_erff)            (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_sqrtf)           (__m512 x);
@@ -277,7 +271,6 @@ extern __m128d   ALM_PROTO_INTERNAL(vrd2_cos)      (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_exp10)    (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_exp2)     (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_exp)      (__m128d x);
-extern __m128d   ALM_PROTO_INTERNAL(vrd2_expm1)    (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_log10)    (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_log1p)    (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_log2)     (__m128d x);
@@ -301,14 +294,10 @@ extern __m128d   ALM_PROTO_INTERNAL(vrd2_erfcinv)  (__m128d x);
 /*
  * Vector double precision, 4 element
  */
-extern __m256d   ALM_PROTO_INTERNAL(vrd4_cbrt)     (__m256d x);
-extern __m256d   ALM_PROTO_INTERNAL(vrd4_cosh)     (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_cos)      (__m256d x);
-extern __m256d   ALM_PROTO_INTERNAL(vrd4_exp10)    (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_exp2)     (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_exp)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_expm1)    (__m256d x);
-extern __m256d   ALM_PROTO_INTERNAL(vrd4_log1p)    (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_log2)     (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_log)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_pow)      (__m256d x, __m256d y);
@@ -330,15 +319,10 @@ extern __m256d   ALM_PROTO_INTERNAL(vrd4_erfcinv)   (__m256d x);
 /*
  * Vector double precision, 8 elements
  */
-extern __m512d   ALM_PROTO_INTERNAL(vrd8_cbrt)     (__m512d x);
-extern __m512d   ALM_PROTO_INTERNAL(vrd8_cosh)     (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_cos)      (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_exp10)    (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_exp2)     (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_exp)      (__m512d x);
-extern __m512d   ALM_PROTO_INTERNAL(vrd8_expm1)    (__m512d x);
-extern __m512d   ALM_PROTO_INTERNAL(vrd8_log10)    (__m512d x);
-extern __m512d   ALM_PROTO_INTERNAL(vrd8_log1p)    (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_log2)     (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_log)      (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_pow)      (__m512d x, __m512d y);

@@ -79,10 +79,10 @@ _OPT_COMMON_SRCS = [
 # Each function generates a vrda_<name> wrapper (e.g., vrda_sin, vrda_cos).
 # The wrapper calls the corresponding vrd4_<name> 4-wide vector function.
 # NOTE: Keep in sync with VRDA_UNARY_AVX2_FUNCS in CMakeLists.txt (CMake).
-# NOTE: fabs, acos excluded - standalone (no AVX-512 vrd8_* kernels for unified template).
+# NOTE: fabs excluded - standalone (no AVX-512 vrd8_* kernels for unified template).
 VRDA_UNARY_AVX2_FUNCS = [
     'sin', 'cos', 'tan', 'exp', 'exp2', 'exp10', 'log', 'log2',
-    'asin', 'atan', 'sqrt', 'round',
+    'asin', 'acos', 'atan', 'sqrt', 'round',
     'erf', 'erfc', 'erfinv', 'erfcinv',
     'cdfnorm', 'cdfnorminv',
 ]
@@ -113,7 +113,7 @@ AVX2_VRSA_TEMPLATE = 'vec/avx2/vrsa_unary_avx2.c'
 # NOTE: Keep in sync with VRDA_UNARY_AVX512_FUNCS in CMakeLists.txt (CMake).
 VRDA_UNARY_AVX512_FUNCS = [
     'sin', 'cos', 'tan', 'exp', 'exp2', 'exp10', 'log', 'log2',
-    'asin', 'atan', 'sqrt', 'round',
+    'asin', 'acos', 'atan', 'sqrt', 'round',
     'erf', 'erfc', 'erfinv', 'erfcinv',
     'cdfnorm', 'cdfnorminv',
 ]

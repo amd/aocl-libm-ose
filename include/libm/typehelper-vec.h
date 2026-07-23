@@ -909,5 +909,23 @@ any_v8_u32_loop(v_u32x8_t cond)
 
 #endif /* __AVX512F__ */
 
+/* 256-bit (4-lane) counterparts for AVX2 targets. */
+#if defined(__AVX2__)
+
+/* elementwise min/max */
+#define min_v4_f64(a, b)    (v_f64x4_t)_mm256_min_pd((__m256d)(a), (__m256d)(b))
+#define max_v4_f64(a, b)    (v_f64x4_t)_mm256_max_pd((__m256d)(a), (__m256d)(b))
+
+/* per-lane blend: result = m ? a : b */
+#define blend_v4_f64(m, a, b)                                           \
+    (v_f64x4_t)_mm256_blendv_pd((__m256d)(b), (__m256d)(a), (__m256d)(m))
+
+/* merge-masked arithmetic: result = m ? (op) : src (compute-then-blend) */
+#define mask_mov_v4_f64(src, m, a)      blend_v4_f64((m), (a), (src))
+#define mask_add_v4_f64(src, m, a, b)   blend_v4_f64((m), (a) + (b), (src))
+#define mask_mul_v4_f64(src, m, a, b)   blend_v4_f64((m), (a) * (b), (src))
+
+#endif /* __AVX2__ */
+
 #endif  /* TYPEHELPER_H_ */
 

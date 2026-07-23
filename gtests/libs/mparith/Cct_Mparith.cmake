@@ -25,6 +25,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+include(Cct_ExternalProject)
+
 # Function to check if a directory exists
 function(directory_exists dir)
     if(EXISTS ${dir} AND IS_DIRECTORY ${dir})
@@ -81,59 +83,45 @@ if(MPARITH_LIB_DIR_EXISTS AND MPARITH_LIB_EXISTS)
         message(STATUS "mparith library found, skipping build...")
     endif()
 else()
-    set(MPARITH_BINARY_DIR "${CMAKE_BINARY_DIR}")
+    set(MPARITH_BINARY_DIR "${CMAKE_BINARY_DIR}/mparith")
     message(STATUS "mparith library not-found, building library...")
 
-    if(WIN32)
-        # libalm and gtests link msvcrt (release CRT) on Windows; pin /MD for all
-        # configs so mparith objects stay CRT-consistent with the parent gtests link.
-        if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|MSVC")
-            set(MPARITH_RUNTIME_CONFIG -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL)
-        else()
-            set(MPARITH_RUNTIME_CONFIG "")
-        endif()
+    # Pin the release CRT (/MD) on Windows so mparith objects stay CRT-consistent
+    # with the parent gtests link. (No effect on non-MSVC-like compilers.)
+    set(MPARITH_EXTRA_ARGS -DMPARITH_DIR=${MPARITH_DIR})
+    if(WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang|MSVC")
+        list(APPEND MPARITH_EXTRA_ARGS -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL)
+    endif()
 
-        execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}"
-                                -S "${MPFR_SRC_DIR}" -B "${MPARITH_BINARY_DIR}"
-                                -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-                                -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-                                -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                                -DMPARITH_DIR=${MPARITH_DIR}
-                                ${MPARITH_RUNTIME_CONFIG}
-                        RESULT_VARIABLE  result_mparith
-                        OUTPUT_VARIABLE   config_mparith
-                        ERROR_VARIABLE    error_mparith
-                        WORKING_DIRECTORY "${MPFR_SRC_DIR}"
-        )
+    # Centralized configure/build args handle Visual Studio (multi-config, -A/-T
+    # ClangCL toolset) vs single-config (compiler paths + build type) generators.
+    alm_external_cmake_args(_mparith_cmake_args
+        SOURCE_DIR "${MPFR_SRC_DIR}"
+        BINARY_DIR "${MPARITH_BINARY_DIR}"
+        EXTRA_ARGS ${MPARITH_EXTRA_ARGS}
+    )
 
-        if(NOT result_mparith EQUAL 0)
-            message(FATAL_ERROR "Failed to configure mparith build:\n${error_mparith}")
-        endif()
+    execute_process(COMMAND ${CMAKE_COMMAND} ${_mparith_cmake_args}
+                    RESULT_VARIABLE  result_mparith
+                    OUTPUT_VARIABLE  config_mparith
+                    ERROR_VARIABLE   error_mparith
+                    WORKING_DIRECTORY "${MPFR_SRC_DIR}"
+    )
 
-        execute_process(COMMAND ${CMAKE_COMMAND} --build "${MPARITH_BINARY_DIR}" --config ${CMAKE_BUILD_TYPE}
-                        RESULT_VARIABLE  build_result_mparith
-                        OUTPUT_VARIABLE   output_mparith
-                        ERROR_VARIABLE    error_build_mparith
-                        WORKING_DIRECTORY "${MPFR_SRC_DIR}"
-        )
+    if(NOT result_mparith EQUAL 0)
+        message(FATAL_ERROR "Failed to configure mparith build:\n${error_mparith}")
+    endif()
 
-        if(NOT build_result_mparith EQUAL 0)
-            message(FATAL_ERROR "Failed to build mparith:\n${error_build_mparith}")
-        endif()
-    else()
-        execute_process(COMMAND ${CMAKE_COMMAND} -G${CMAKE_GENERATOR} -S ${MPFR_SRC_DIR} -B ${MPARITH_BINARY_DIR}
-                                -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-                                -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-                                -DCMAKE_BUILD_TYPE=Release
-                                -DMPARITH_DIR=${MPARITH_DIR}
-                        RESULTS_VARIABLE  result_mparith
-                        OUTPUT_VARIABLE   config_mparith
-                        WORKING_DIRECTORY ${MPFR_SRC_DIR}
-        )
+    alm_external_build_args(_mparith_build_args "${MPARITH_BINARY_DIR}")
 
-        execute_process(COMMAND ${CMAKE_COMMAND} --build ${MPARITH_BINARY_DIR} --config Release
-                        OUTPUT_VARIABLE   output_mparith
-                        WORKING_DIRECTORY ${MPFR_SRC_DIR}
-        )
+    execute_process(COMMAND ${CMAKE_COMMAND} ${_mparith_build_args}
+                    RESULT_VARIABLE  build_result_mparith
+                    OUTPUT_VARIABLE  output_mparith
+                    ERROR_VARIABLE   error_build_mparith
+                    WORKING_DIRECTORY "${MPFR_SRC_DIR}"
+    )
+
+    if(NOT build_result_mparith EQUAL 0)
+        message(FATAL_ERROR "Failed to build mparith:\n${error_build_mparith}")
     endif()
 endif()

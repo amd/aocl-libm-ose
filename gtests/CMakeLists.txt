@@ -35,9 +35,11 @@ if(WIN32)
 endif()
 
 project(gtest-testsuite-libm LANGUAGES C CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/gapi")
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/libs/mparith")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/gapi")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/libs/mparith")
 
 # Define prototypes
 set(PROTOTYPE_GLIBC 0xf1)
@@ -60,26 +62,26 @@ set(GTEST_LIBS      "${GTEST_PATH}" "${GBENCH_PATH}")
 
 # Get common test sources excluding the excluded list
 file(GLOB COMMON_SRCS
-    ${PROJECT_SOURCE_DIR}/almtesttype.cc
-    ${PROJECT_SOURCE_DIR}/cmdline.cc
-    ${PROJECT_SOURCE_DIR}/filter.cc
-    ${PROJECT_SOURCE_DIR}/func_var_existence.cc
-    ${PROJECT_SOURCE_DIR}/gbench_main.cc
-    ${PROJECT_SOURCE_DIR}/gtest_main.cc
-    ${PROJECT_SOURCE_DIR}/main.cc
-    ${PROJECT_SOURCE_DIR}/random.cc
-    ${PROJECT_SOURCE_DIR}/ulp.cc
-    ${PROJECT_SOURCE_DIR}/verify.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/almtesttype.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/filter.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/func_var_existence.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/gbench_main.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/gtest_main.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/main.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/random.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/ulp.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/verify.cc
 )
 
 set(VR_SRC_FILES
-    ${PROJECT_SOURCE_DIR}/Gtest_srcs/gtest_accu.cc
-    ${PROJECT_SOURCE_DIR}/Gtest_srcs/gbench_perf.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Gtest_srcs/gtest_accu.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Gtest_srcs/gbench_perf.cc
 )
 
 set(VRA_SRC_FILES
-    ${PROJECT_SOURCE_DIR}/Gtest_srcs/gbench_main_vec_arr.cc
-    ${PROJECT_SOURCE_DIR}/Gtest_srcs/gtest_main_vec_arr.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Gtest_srcs/gbench_main_vec_arr.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Gtest_srcs/gtest_main_vec_arr.cc
 )
 
 # Compiler flags
@@ -217,9 +219,9 @@ endif()
 
 # Include and library paths
 include_directories(${ALM_INCLUDE_DIR}
-                    ${PROJECT_SOURCE_DIR}
-                    ${PROJECT_SOURCE_DIR}/include
-                    ${PROJECT_SOURCE_DIR}/include/almtest
+                    ${CMAKE_CURRENT_SOURCE_DIR}
+                    ${CMAKE_CURRENT_SOURCE_DIR}/include
+                    ${CMAKE_CURRENT_SOURCE_DIR}/include/almtest
                     ${MPARITH_INCLUDE_DIR}
                     ${GTEST_INCLUDE_DIR}
                     ${GBENCH_INCLUDE_DIR})
@@ -293,7 +295,7 @@ add_library(gtest_vra OBJECT ${VRA_SRC_FILES})
 target_compile_options(gtest_vra PUBLIC ${TEST_CFLAGS})
 
 # Add test executables
-file(GLOB TEST_DIRS RELATIVE ${PROJECT_SOURCE_DIR} "*")
+file(GLOB TEST_DIRS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*")
 list(REMOVE_ITEM TEST_DIRS "include" "gapi" "libs")
 add_custom_target(common_target ALL DEPENDS common)
 
@@ -330,8 +332,8 @@ foreach(api ${ALL_TEST_DIRS})
     list(APPEND tests test_${api})
 endforeach()
 
-add_custom_target(gtests ALL)
-add_dependencies(gtests ${tests})
+add_custom_target(gtests_suite ALL)
+add_dependencies(gtests_suite ${tests})
 
 if(NOT WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "GNU" AND (${${PROJECT_PREFIX}_LIBM_ENABLE_COVERAGE}))
     add_custom_target(coverage

@@ -307,11 +307,19 @@ if(${${PROJECT_PREFIX}_LIBM_BUILD_LIBRARY})
     set(ALM_INCLUDE_DIR "${${PROJECT_PREFIX}_SOURCE_DIR}/include")
 endif()
 
+
+#------------------------------
+# External sub-build helpers
+#------------------------------
+include(Cct_ExternalProject)
+
 #----------------------------------------------------------
 # Add libm_testsuite if LIBM_BUILD_TESTSUITE is enabled
 #----------------------------------------------------------
 if (${${PROJECT_PREFIX}_LIBM_BUILD_TESTSUITE})
+    enable_testing()
     add_subdirectory(almbench EXCLUDE_FROM_ALL)
+    alm_add_config_wrapper_target(almbench "${CMAKE_BINARY_DIR}/almbench" libm_runner)
 endif()
 
 #------------------------------
@@ -322,6 +330,7 @@ endif()
 if (${${PROJECT_PREFIX}_LIBM_BUILD_TESTS})
     enable_testing()
     add_subdirectory(gtests EXCLUDE_FROM_ALL)
+    alm_add_config_wrapper_target(gtests "${CMAKE_BINARY_DIR}/gtests" gtests_suite)
 endif()
 
 #----------------------------------------------
@@ -330,6 +339,7 @@ endif()
 if (${${PROJECT_PREFIX}_LIBM_BUILD_EXAMPLES})
     enable_testing()
     add_subdirectory(examples EXCLUDE_FROM_ALL)
+    alm_add_config_wrapper_target(examples "${CMAKE_BINARY_DIR}/examples" test_libm)
 endif()
 
 #----------------------------------------------------------

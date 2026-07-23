@@ -29,7 +29,7 @@
 # Enables Caching variables
 #--------------------------
 if(NOT DEFINED CUST_PROJ_CXX_STD)
-  set(CUST_PROJ_CXX_STD "14")
+  set(CUST_PROJ_CXX_STD "17")
 endif()
 
 set(PROJECT_NAME "libm" CACHE STRING "${CUST_PROJ_NAME}")

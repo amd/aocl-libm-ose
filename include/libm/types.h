@@ -197,6 +197,12 @@ typedef f64_t    v_f64x8_t  VEC(64) MAY_ALIAS;
 typedef int64_t  v_i64x8_t  VEC(64) MAY_ALIAS;
 typedef uint64_t v_u64x8_t  VEC(64) MAY_ALIAS;
 
+/* mask registers */
+#if defined(__AVX512F__)
+typedef __mmask8  v_mask8_t;   /* pairs with v_*x8_t types  */
+typedef __mmask16 v_mask16_t;  /* pairs with v_*x16_t types */
+#endif
+
 /*
  * Generic 32-bit, 4-element types
  */

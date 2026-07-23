@@ -1,10 +1,59 @@
+/*
+ * Copyright (C) 2026 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
+#ifndef ATAN2_DATA_H
+#define ATAN2_DATA_H
+
+#ifdef ATAN2_VRD
+/* Shared constants for vrd2/vrd4/vrd8 atan2 kernels. */
+#define ATAN2_VRD_SUBNORM_LIM 0x0010000000000000UL
+#define ATAN2_VRD_SQRT3       0x1.bb67ae8584caap0   /* sqrt(3)     */
+#define ATAN2_VRD_RANGE       0x1.126145e9ecd56p-2  /* 2 - sqrt(3) */
+#define ATAN2_VRD_PI6         0x1.0c152382d7366p-1  /* pi/6        */
+#define ATAN2_VRD_PI2         0x1.921fb54442d18p0   /* pi/2        */
+#define ATAN2_VRD_PI          0x1.921fb54442d18p1   /* pi          */
+#define ATAN2_VRD_SCALE_UP    0x1p54
+/* atan(rr) = rr + rr^3*(C0 + C1*rr^2 + ...) : coeffs of rr^3..rr^17 */
+#define ATAN2_VRD_POLY_C0    (-0x1.55555555553a5p-2)
+#define ATAN2_VRD_POLY_C1     0x1.999999993b043p-3
+#define ATAN2_VRD_POLY_C2    (-0x1.249248eb994b7p-3)
+#define ATAN2_VRD_POLY_C3     0x1.c71c506f7a87ep-4
+#define ATAN2_VRD_POLY_C4    (-0x1.7457ab2dfd3d2p-4)
+#define ATAN2_VRD_POLY_C5     0x1.3a8f4b097ef8dp-4
+#define ATAN2_VRD_POLY_C6    (-0x1.09a744e6dd6ap-4)
+#define ATAN2_VRD_POLY_C7     0x1.6c4e437d4b353p-5
+#endif /* ATAN2_VRD */
+
+#ifdef ATAN2_JBY256
   /* Arrays atan_jby256_lead and atan_jby256_tail contain
      leading and trailing parts respectively of precomputed
      values of atan(j/256), for j = 16, 17, ..., 256.
      atan_jby256_lead contains the first 21 bits of precision,
      and atan_jby256_tail contains a further 53 bits precision. */
-
 static struct {
     double head;
     double tail;
@@ -254,3 +303,6 @@ static struct {
 
 };
 
+#endif /* ATAN2_JBY256 */
+
+#endif /* ATAN2_DATA_H */

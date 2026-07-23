@@ -869,5 +869,45 @@ any_v8_u32_loop(v_u32x8_t cond)
     return ret;
 }
 
+/*
+ * Masked / predicated instructions
+ *
+ * GNU C vector extensions do not support mask extraction, nor masked 
+ * instructions. Wrappers are provided here over direct AVX-512 intrinsics.
+ */
+#if defined(__AVX512F__)
+
+/* k-mask producers (return __mmask8) */
+#define cmplt_v8_u64(a, b)                                              \
+    _mm512_cmplt_epu64_mask((__m512i)(a), (__m512i)(b))
+
+#define cmpeq_v8_u64(a, b)                                              \
+    _mm512_cmpeq_epu64_mask((__m512i)(a), (__m512i)(b))
+
+#define cmpgt_v8_f64(a, b)                                              \
+    _mm512_cmp_pd_mask((__m512d)(a), (__m512d)(b), _CMP_GT_OQ)
+
+#define movepi_v8_u64(a)   _mm512_movepi64_mask((__m512i)(a))
+
+/* elementwise min/max */
+#define min_v8_f64(a, b)    _mm512_min_pd((__m512d)(a), (__m512d)(b))
+#define max_v8_f64(a, b)    _mm512_max_pd((__m512d)(a), (__m512d)(b))
+
+/* per-lane blend: result = k ? a : b */
+#define blend_v8_f64(k, a, b)                                           \
+    _mm512_mask_blend_pd((k), (__m512d)(b), (__m512d)(a))
+
+/* merge-masked arithmetic: result = k ? (op) : src */
+#define mask_mov_v8_f64(src, k, a)                                      \
+    _mm512_mask_mov_pd((__m512d)(src), (k), (__m512d)(a))
+
+#define mask_add_v8_f64(src, k, a, b)                                   \
+    _mm512_mask_add_pd((__m512d)(src), (k), (__m512d)(a), (__m512d)(b))
+    
+#define mask_mul_v8_f64(src, k, a, b)                                   \
+    _mm512_mask_mul_pd((__m512d)(src), (k), (__m512d)(a), (__m512d)(b))
+
+#endif /* __AVX512F__ */
+
 #endif  /* TYPEHELPER_H_ */
 

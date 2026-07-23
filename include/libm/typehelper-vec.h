@@ -927,5 +927,20 @@ any_v8_u32_loop(v_u32x8_t cond)
 
 #endif /* __AVX2__ */
 
+/* 128-bit (2-lane) counterparts for SSE targets. */
+
+/* elementwise min/max */
+#define min_v2_f64(a, b)    (v_f64x2_t)_mm_min_pd((__m128d)(a), (__m128d)(b))
+#define max_v2_f64(a, b)    (v_f64x2_t)_mm_max_pd((__m128d)(a), (__m128d)(b))
+
+/* per-lane blend: result = m ? a : b */
+#define blend_v2_f64(m, a, b)                                           \
+    (v_f64x2_t)_mm_blendv_pd((__m128d)(b), (__m128d)(a), (__m128d)(m))
+
+/* merge-masked arithmetic: result = m ? (op) : src (compute-then-blend) */
+#define mask_mov_v2_f64(src, m, a)      blend_v2_f64((m), (a), (src))
+#define mask_add_v2_f64(src, m, a, b)   blend_v2_f64((m), (a) + (b), (src))
+#define mask_mul_v2_f64(src, m, a, b)   blend_v2_f64((m), (a) * (b), (src))
+
 #endif  /* TYPEHELPER_H_ */
 

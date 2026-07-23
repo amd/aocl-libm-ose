@@ -139,20 +139,26 @@ extern "C" {
 #endif
 
 /*vector routines*/
-#if 0
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
 __m128d LIBM_FUNC_VEC(d, 2, atan2)(__m128d, __m128d);
 __m256d LIBM_FUNC_VEC(d, 4, atan2)(__m256d, __m256d);
-__m128 LIBM_FUNC_VEC(s, 4, atan2f)(__m128, __m128);
-__m256 LIBM_FUNC_VEC(s, 8, atan2f)(__m256, __m256);
 /*avx512*/
 #if defined(__AVX512__)
-__m512d LIBM_FUNC_VEC(d, 8, atan2) (__m512d, __m512d);
+__m512d LIBM_FUNC_VEC(d, 8, atan2)(__m512d, __m512d);
+#endif
+#endif
+
+#if 0
+/* no AOCL vrs* atan2f implementations */
+__m128 LIBM_FUNC_VEC(s, 4, atan2f)(__m128, __m128);
+__m256 LIBM_FUNC_VEC(s, 8, atan2f)(__m256, __m256);
+#if defined(__AVX512__)
 __m512 LIBM_FUNC_VEC(s, 16, atan2f)(__m512, __m512);
 #endif
 #endif
 
 int test_v2d(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   double *ip1  = (double*)data->ip;
   double *ip2 = (double*)data->ip1;
   double *op  = (double*)data->op;
@@ -178,7 +184,7 @@ int test_v4s(test_data *data, int idx)  {
 }
 
 int test_v4d(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   double *ip1  = (double*)data->ip;
   double *ip2 = (double*)data->ip1;
   double *op  = (double*)data->op;
@@ -206,7 +212,7 @@ int test_v8s(test_data *data, int idx)  {
 }
 
 int test_v8d(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
 #if defined(__AVX512__)
   double *ip1 = (double*)data->ip;
   double *ip2 = (double*)data->ip1;

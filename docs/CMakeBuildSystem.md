@@ -45,17 +45,17 @@ This comprehensive guide provides instructions for building, testing, and instal
 | Component         | Version/Requirement    | Linux | Windows | Notes                                  |
 |-------------------|------------------------|:-----:|:-------:|----------------------------------------|
 | CMake             | ≥ 3.26                 |   ✓   |    ✓    | Required                               |
-| GCC               | ≥ 9.2 and ≤ 14.1.0     |   ✓   |    ✗    | Linux compiler option                  |
-| Clang             | ≥ 9.0 and ≤ 18.1.0     |   ✓   |    ✗    | Linux compiler option                  |
-| LLVM (Clang-CL)   | ≥ 9.0 and ≤ 18.1.0     |   ✗   |    ✓    | Windows compiler (clang-cl.exe)        |
+| GCC               | ≥ 9.2.0 and < 16.1.0   |   ✓   |    ✗    | Linux compiler option                  |
+| Clang             | ≥ 9.0.0 and < 21.1.8   |   ✓   |    ✗    | Linux compiler option                  |
+| LLVM (Clang-CL)   | ≥ 9.0.0 and < 21.1.8   |   ✗   |    ✓    | Windows compiler (clang-cl.exe)        |
 | MPFR              | Latest                 |   ✓   |    ✓    | Path must be set (especially Windows)  |
 | GMP               | Latest                 |   ✓   |    ✓    | Dependency of MPFR                     |
 | MPC               | Latest                 |   ✓   |    ✓    | Dependency of MPFR                     |
-| Visual Studio     | 2019 or later          |   ✗   |    ✓    | Provides Ninja build tool              |
+| Visual Studio     | 2022                   |   ✗   |    ✓    | Provides Ninja and MSBuild generators  |
 
 **Note:**
   * AOCL-LibM includes an internal CPUID utilities module (`utils/`) that provides CPU detection functionality. No external aocl-utils dependency is required.
-  * On Windows, the build system uses the inbuilt Ninja tool provided by Visual Studio
+  * On Windows, the build system supports both the Ninja generator (default) and the Visual Studio 17 2022 generator with the ClangCL toolset.
 
 ---
 
@@ -94,15 +94,21 @@ $ cmake --preset dev-release-gcc --fresh
 $ cmake --build --preset dev-release-gcc -j
 ```
 
-**Windows:**
+**Windows (Ninja generator):**
 ```console
-$ cmake --preset dev-win-release-llvm --fresh
-$ cmake --build --preset dev-win-release-llvm -j
+$ cmake --preset dev-win-release-llvm-ninja --fresh
+$ cmake --build --preset dev-win-release-llvm-ninja -j
+```
+
+**Windows (Visual Studio generator):**
+```console
+$ cmake --preset dev-win-release-llvm-msvc --fresh
+$ cmake --build --preset dev-win-release-llvm-msvc -j
 ```
 
 ---
 
-## **4. Building With CMake presets**
+## **4. Building With CMake Presets**
 
 **Step-by-Step Build and Test Guide**
 
@@ -114,14 +120,16 @@ $ cmake --list-presets
 
 **Available Presets:**
 
-| Preset Name             | Platform | Compiler | Build Type | Description                           |
-|-------------------------|----------|----------|------------|---------------------------------------|
-| `dev-gcc`               | Linux    | GCC      | Debug      | Developer Config with GCC-Debug       |
-| `dev-clang`             | Linux    | Clang    | Debug      | Developer Config with Clang-Debug     |
-| `dev-release-gcc`       | Linux    | GCC      | Release    | Developer Config with GCC-Release     |
-| `dev-release-clang`     | Linux    | Clang    | Release    | Developer Config with Clang-Release   |
-| `dev-win-llvm`          | Windows  | LLVM     | Debug      | Developer Config with LLVM-Debug      |
-| `dev-win-release-llvm`  | Windows  | LLVM     | Release    | Developer Config with LLVM-Release    |
+| Preset Name                    | Platform | Compiler | Build Type | Generator   | Description                             |
+|--------------------------------|----------|----------|------------|-------------|-----------------------------------------|
+| `dev-gcc`                      | Linux    | GCC      | Debug      | Unix Make   | Developer Config with GCC-Debug         |
+| `dev-clang`                    | Linux    | Clang    | Debug      | Unix Make   | Developer Config with Clang-Debug       |
+| `dev-release-gcc`              | Linux    | GCC      | Release    | Unix Make   | Developer Config with GCC-Release       |
+| `dev-release-clang`            | Linux    | Clang    | Release    | Unix Make   | Developer Config with Clang-Release     |
+| `dev-win-llvm-ninja`           | Windows  | LLVM     | Debug      | Ninja       | Developer Config with LLVM-Debug        |
+| `dev-win-release-llvm-ninja`   | Windows  | LLVM     | Release    | Ninja       | Developer Config with LLVM-Release      |
+| `dev-win-llvm-msvc`            | Windows  | LLVM     | Debug      | VS 2022     | Developer Config with LLVM-Debug (VS)   |
+| `dev-win-release-llvm-msvc`    | Windows  | LLVM     | Release    | VS 2022     | Developer Config with LLVM-Release (VS) |
 
 #### **4.2 Configure CMake**
 
@@ -150,19 +158,30 @@ $ cmake --preset dev-release-gcc --fresh
 $ cmake --preset dev-release-gcc -DCMAKE_INSTALL_PREFIX=<user_specified_path> --fresh
 ```
 
-**Windows:**
+**Windows (Ninja generator):**
 ```console
 # CMake configure library
-$ cmake --preset dev-win-release-llvm --fresh
+$ cmake --preset dev-win-release-llvm-ninja --fresh
 
 # Custom configure library with install prefix
-$ cmake --preset dev-win-release-llvm -DCMAKE_INSTALL_PREFIX=<user_specified_path> --fresh
+$ cmake --preset dev-win-release-llvm-ninja -DCMAKE_INSTALL_PREFIX=<user_specified_path> --fresh
+
+```
+
+**Windows (Visual Studio generator):**
+```console
+# CMake configure library
+$ cmake --preset dev-win-release-llvm-msvc --fresh
+
+# Custom configure library with install prefix
+$ cmake --preset dev-win-release-llvm-msvc -DCMAKE_INSTALL_PREFIX=<user_specified_path> --fresh
 
 ```
 
 **Note:**
 - **Linux:** Use presets with `gcc` (dev-gcc, dev-release-gcc) or `clang` (dev-clang, dev-release-clang)
-- **Windows:** Use presets with `clang-cl/LLVM` (dev-win-llvm, dev-win-release-llvm)
+- **Windows (Ninja):** Use presets with `-ninja` suffix (dev-win-llvm-ninja, dev-win-release-llvm-ninja)
+- **Windows (Visual Studio):** Use presets with `-msvc` suffix (dev-win-llvm-msvc, dev-win-release-llvm-msvc)
 - **AddressSanitizer (ASAN):** Only supported with GCC compiler and requires static library build
 - **Code Coverage:** Only supported with GCC compiler and requires static library build
 - The `--fresh` flag ensures a clean configuration by removing any cached CMake data.
@@ -185,9 +204,14 @@ $ cmake --build --preset {presetName}
 $ cmake --build --preset dev-release-gcc
 ```
 
-**Windows:**
+**Windows (Ninja generator):**
 ```console
-$ cmake --build --preset dev-win-release-llvm
+$ cmake --build --preset dev-win-release-llvm-ninja
+```
+
+**Windows (Visual Studio generator):**
+```console
+$ cmake --build --preset dev-win-release-llvm-msvc
 ```
 
 One can also build in **verbose mode** using `-v`:
@@ -263,34 +287,34 @@ $ cmake --build --preset {presetName} --target test_<function>
 $ cmake --build --preset dev-release-gcc --target gtests
 ```
 
-**Windows:**
+**Windows (Ninja generator):**
 ```console
-# Debug
-$ cmake --preset dev-win-llvm --fresh
-$ cmake --build --preset dev-win-llvm --target gtests
+$ cmake --build --preset dev-win-release-llvm-ninja --target gtests
+```
 
-# Release
-$ cmake --preset dev-win-release-llvm --fresh
-$ cmake --build --preset dev-win-release-llvm --target gtests
+**Windows (Visual Studio generator):**
+```console
+$ cmake --build --preset dev-win-release-llvm-msvc --target gtests
 ```
 
 ##### **4.5.2 Windows gtests build notes**
 
 On Windows, gtests links against libalm and external dependencies (Google Test/Google Benchmark and mparith). These must use a consistent MSVC C runtime (CRT) and separate cached artifacts per build type to avoid link failures (for example, `_ITERATOR_DEBUG_LEVEL` mismatch when mixing Debug and Release objects).
 
-**Windows presets:** Use `dev-win-llvm` for Debug gtests and `dev-win-release-llvm` for Release gtests.
+**Windows presets:** Use `dev-win-llvm-ninja`/`dev-win-llvm-msvc` for Debug gtests and `dev-win-release-llvm-ninja`/`dev-win-release-llvm-msvc` for Release gtests.
 
 **External dependency cache layout:**
 
 | Dependency | Role | Windows path | Linux path |
 |------------|------|--------------|------------|
 | gapi (gtest/gbench) | Source | `gtests/gapi/` | `gtests/gapi/` |
-| gapi (gtest/gbench) | Nested CMake build dir (`-B`) + libs | `build/external/gapi/{Debug|Release}/` | `build/external/gapi/` |
+| gapi (gtest/gbench) | Nested CMake build dir (`-B`) | `build/{presetName}/gapi/` | `build/{presetName}/gapi/` |
+| gapi (gtest/gbench) | Install cache (libs) | `build/external/gapi/{Debug\|Release}/` | `build/external/gapi/` |
 | mparith | Source | `gtests/libs/mparith/` | `gtests/libs/mparith/` |
 | mparith | Nested CMake build dir (`-B`) | `build/{presetName}/` (gtests binary dir) | `build/{presetName}/` (gtests binary dir) |
-| mparith | Install cache (libs/headers) | `build/external/mparith/{Debug|Release}/` | `build/external/mparith/` |
+| mparith | Install cache (libs/headers) | `build/external/mparith/{Debug\|Release}/` | `build/external/mparith/` |
 
-gapi and mparith install caches are scoped by `CMAKE_BUILD_TYPE` on Windows. gapi also uses its scoped path as the nested CMake `-B` directory; mparith uses the gtests preset binary directory for `-B` and installs artifacts into `MPARITH_DIR` via `-DMPARITH_DIR`.
+gapi and mparith install caches are scoped by `CMAKE_BUILD_TYPE` on Windows. Both use the gtests preset binary directory for the nested CMake `-B` directory (`build/{presetName}/gapi` and `build/{presetName}/mparith` respectively); gapi flattens its built libraries into the scoped `build/external/gapi/{Debug|Release}` cache, while mparith installs artifacts into `MPARITH_DIR` via `-DMPARITH_DIR`.
 
 On Linux, mparith is always built as `Release` regardless of the parent gtests build type. On Windows, mparith is built with the same `CMAKE_BUILD_TYPE` as the parent gtests configure.
 
@@ -642,10 +666,23 @@ Run CMake with your desired options. Here are common configuration examples:
 $ cmake .. -DCMAKE_BUILD_TYPE=<Debug/Release> -DCMAKE_C_COMPILER=<gcc/clang> -DCMAKE_CXX_COMPILER=<g++/clang++> -DCMAKE_INSTALL_PREFIX=<user_specified_prefix_path>
 ```
 
-**Windows with LLVM:**
+**Windows (Ninja generator):**
+
+Pass the `clang-cl.exe` compiler paths explicitly (single-config generator):
 ```console
 $ cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=<Debug/Release> -DCMAKE_C_COMPILER=<path_to_llvm>\bin\clang-cl.exe -DCMAKE_CXX_COMPILER=<path_to_llvm>\bin\clang-cl.exe -DCMAKE_INSTALL_PREFIX=<user_specified_prefix_path>
 ```
+
+**Windows (Visual Studio generator):**
+
+Select the ClangCL toolset with `-T` and the target architecture with `-A` instead of passing compiler paths (multi-config generator):
+```console
+$ cmake .. -G "Visual Studio 17 2022" -A x64 -T ClangCL,host=x64 -DCMAKE_BUILD_TYPE=<Debug/Release> -DCMAKE_INSTALL_PREFIX=<user_specified_prefix_path>
+```
+
+**Note:**
+- For the Visual Studio (multi-config) generator, specify the build type at build time with `--config <Debug/Release>` (see section 6.3). `CMAKE_BUILD_TYPE` is also honored on Windows to restrict the generated configuration.
+- Pure MSVC (`cl.exe`) is not supported; use the ClangCL toolset (`-T ClangCL,host=x64`) or `clang-cl.exe`.
 
 You can customize the build with these additional options:
 

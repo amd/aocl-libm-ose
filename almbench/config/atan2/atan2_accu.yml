@@ -215,7 +215,7 @@
       - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
       type: [expstep, expstep]
       steps: [400, 400]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_002
       description: 'y in [SMALLEST_SUBNORMAL, +DBL_MAX ], x in [-DBL_MAX , -SMALLEST_SUBNORMAL]'
@@ -224,7 +224,7 @@
       - [0xFFeFFFFFFFFFFFFF, -min_subnormal]
       type: [expstep, expstep]
       steps: [400, 400]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_003
       description: 'y in [-DBL_MAX , -SMALLEST_SUBNORMAL], x in [SMALLEST_SUBNORMAL, +DBL_MAX ]'
@@ -233,7 +233,7 @@
       - [min_subnormal, max]
       type: [expstep, expstep]
       steps: [400, 400]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_004
       description: 'Full value distribution range tests: y in [SMALLEST_SUBNORMAL, +DBL_MAX ], x in [SMALLEST_SUBNORMAL, +DBL_MAX ]'
@@ -242,7 +242,7 @@
       - [min_subnormal, max]
       type: [expstep, expstep]
       steps: [400, 400]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_005
       description: 'Common value usage range tests: y, x in [-1, 0] linearstep'
@@ -251,7 +251,7 @@
       - [-1.0, 0.0]
       type: [linearstep, linearstep]
       steps: [1000, 1000]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
   - id: normal-range
     description: 'Common value usage range tests'
@@ -263,7 +263,7 @@
       - [-0.0, 1.0]
       type: [linearstep, linearstep]
       steps: [1000, 1000]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_007
       description: 'y in [0, +1], x in [-1, 0] linearstep'
@@ -272,7 +272,7 @@
       - [-1.0, 0.0]
       type: [linearstep, linearstep]
       steps: [1000, 1000]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_008
       description: 'y, x in [0, +1] linearstep'
@@ -281,7 +281,7 @@
       - [-0.0, 1.0]
       type: [linearstep, linearstep]
       steps: [1000, 1000]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
   - id: subnormal-range
     description: 'Subnormal values range test'
@@ -293,7 +293,7 @@
       - [0x800FFFFFFFFFFFFF, 0x000FFFFFFFFFFFFF]
       type: [linearstep, linearstep]
       steps: [10, 10]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_010
       description: 'x in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL], y in [1, 100] linearstep'
@@ -302,7 +302,7 @@
       - [0x800FFFFFFFFFFFFF, 0x000FFFFFFFFFFFFF]
       type: [linearstep, linearstep]
       steps: [10, 10]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_011
       description: 'x in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL], y in [-100, -1] linearstep'
@@ -311,7 +311,7 @@
       - [0x800FFFFFFFFFFFFF, 0x000FFFFFFFFFFFFF]
       type: [linearstep, linearstep]
       steps: [10, 10]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_012
       description: 'x in [1, 100], y in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL] linearstep'
@@ -320,7 +320,7 @@
       - [1.0, 100.0]
       type: [linearstep, linearstep]
       steps: [10, 10]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_013
       description: 'x in [-100, -1], y in [-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL] linearstep'
@@ -329,7 +329,7 @@
       - [-100.0, 1.0]
       type: [linearstep, linearstep]
       steps: [10, 10]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_014
       description: Test around 0, x is negativ, y is negative
@@ -338,7 +338,7 @@
       - [-0.0, 0x8000000000000FFF]
       type: [bitstep, bitstep]
       steps: [256, 256]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_015
       description: Test around 0, x is positive, y is negative
@@ -347,7 +347,7 @@
       - [0.0, 0x0000000000000FFF]
       type: [bitstep, bitstep]
       steps: [256, 256]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_016
       description: Test around 0, x is negativ, y is positive
@@ -356,7 +356,7 @@
       - [-0.0, 0x8000000000000FFF]
       type: [bitstep, bitstep]
       steps: [256, 256]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_017
       description: Test around 0, x is positive, y is positive
@@ -365,7 +365,7 @@
       - [0.0, 0x0000000000000FFF]
       type: [bitstep, bitstep]
       steps: [256, 256]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_018
       description: Test around (-LARGEST_SUBNORMAL, -LARGEST_SUBNORMAL)
@@ -374,7 +374,7 @@
       - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
       type: [bitstep, bitstep]
       steps: [256, 256]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_019
       description: Test around (-LARGEST_SUBNORMAL, LARGEST_SUBNORMAL)
@@ -383,7 +383,7 @@
       - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
       type: [bitstep, bitstep]
       steps: [256, 256]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_020
       description: Test around (LARGEST_SUBNORMAL, -LARGEST_SUBNORMAL)
@@ -392,7 +392,7 @@
       - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
       type: [bitstep, bitstep]
       steps: [256, 256]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_021
       description: Test around (LARGEST_SUBNORMAL, LARGEST_SUBNORMAL)
@@ -401,7 +401,7 @@
       - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
       type: [bitstep, bitstep]
       steps: [256, 256]
-      variants : [sd]
+      variants : [sd, vrd2, vrd4, vrd8]
 
 
 

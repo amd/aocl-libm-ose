@@ -412,28 +412,28 @@
       input: [0x0000000000000000, 0x3ff0000000000000]
       expect: [0x0000000000000000]
       expect_exception: []
-      variants: [sd]
+      variants: [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_002
       description: "atan2(-0, 1) = -0"
       input: [0x8000000000000000, 0x3ff0000000000000]
       expect: [0x8000000000000000]
       expect_exception: []
-      variants: [sd]
+      variants: [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_003
       description: "atan2(inf, 1) = π/2"
       input: [0x7ff0000000000000, 0x3ff0000000000000]
       expect: [0x3ff921fb54442d18]
       expect_exception: []
-      variants: [sd]
+      variants: [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_004
       description: "atan2(-inf, 1) = -π/2"
       input: [0xfff0000000000000, 0x3ff0000000000000]
       expect: [0xbff921fb54442d18]
       expect_exception: []
-      variants: [sd]
+      variants: [sd, vrd2, vrd4, vrd8]
 
     - id: atan2_005
       description: "atan2(-nan, 1) = nan"

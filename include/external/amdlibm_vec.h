@@ -273,6 +273,13 @@ extern "C" {
    */
   __m128d amd_vrd2_atan (__m128d x);
   /**
+   * @brief Computes two-argument arc-tangent for two double-precision lanes.
+   * @param y Vector of numerator:y coordinates.
+   * @param x Vector of denominator:x coordinates.
+   * @return Vector of angles in radians.
+   */
+  __m128d amd_vrd2_atan2 (__m128d y, __m128d x);
+  /**
    * @brief Computes arc-tangent for four single-precision lanes.
    * @param x Input vector.
    * @return Vector of arc-tangents in radians.
@@ -678,6 +685,15 @@ extern "C" {
    * @return Vector of arc-tangents in radians.
    */
   __m256d amd_vrd4_atan (__m256d x);
+
+  /**
+   * @brief Computes two-argument arc-tangent for four double-precision lanes.
+   * @param y Vector of numerator:y coordinates.
+   * @param x Vector of denominator:x coordinates.
+   * @return Vector of angles in radians.
+   */
+  __m256d amd_vrd4_atan2 (__m256d y, __m256d x);
+
   /**
    * @brief Computes arc-tangent for eight single-precision lanes.
    * @param x Input vector.
@@ -1014,6 +1030,15 @@ extern "C" {
    * @return Vector of arc-tangents in radians.
    */
   __m512d amd_vrd8_atan (__m512d x);
+
+  /**
+   * @brief Computes two-argument arc-tangent for eight double-precision lanes.
+   * @param y Vector of numerator:y coordinates.
+   * @param x Vector of denominator:x coordinates.
+   * @return Vector of angles in radians.
+   */
+  __m512d amd_vrd8_atan2 (__m512d y, __m512d x);
+
   /**
    * @brief Computes arc-tangent for sixteen single-precision lanes.
    * @param x Input vector.

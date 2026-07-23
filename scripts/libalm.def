@@ -231,8 +231,10 @@ EXPORTS
     amd_vrsa_sincosf
     amd_vrs8_log10f
     amd_vrd4_atan
+    amd_vrd4_atan2
     amd_vrd8_exp
     amd_vrd8_atan
+    amd_vrd8_atan2
     amd_vrs16_atanf
     amd_vrs16_erff
     amd_vrs16_erfcf
@@ -268,6 +270,7 @@ EXPORTS
     amd_vrs8_asinf
     amd_vrs8_atanf
     amd_vrd2_atan
+    amd_vrd2_atan2
     amd_cexp
     amd_cexpf
     amd_clogf

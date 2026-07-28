@@ -234,13 +234,12 @@ set(LIBS ${GTEST_LIB} ${GBENCH_LIB} ${LIBMPARITH} ${MPFR_LIB} ${MPC_LIB} ${GMP_L
 if(LIBABI STREQUAL "aocl")
     add_definitions(-DLIBM_PROTOTYPE=${PROTOTYPE_AOCL})
     if(NOT WIN32)
-        # Use static library when ASAN or coverage is enabled to avoid gcov symbol conflicts
-        # CPU detection is built into libalm. When linking by path to libalm.a,
-        # we must also link alm_utils_static explicitly.
+        # Use static library when ASAN or coverage is enabled to avoid gcov symbol conflicts.
+        # CPU detection is embedded directly into libalm, so libalm.a is
+        # self-contained and no separate utils archive needs to be linked.
         if(${${PROJECT_PREFIX}_LIBM_ENABLE_ASAN} OR ${${PROJECT_PREFIX}_LIBM_ENABLE_COVERAGE})
             set(LIBALM "${CMAKE_BINARY_DIR}/src/libalm.a")
-            set(ALM_UTILS "${CMAKE_BINARY_DIR}/lib/libalm_utils.a")
-            list(APPEND LIBS ${LIBALM} ${ALM_UTILS})
+            list(APPEND LIBS ${LIBALM})
         else()
             set(LIBALM "alm")
             list(APPEND LIBS ${LIBALM})

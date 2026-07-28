@@ -49,6 +49,7 @@ scons -j32
 | `--debug_mode=all/libs/gtests` | Build with debug info |
 | `--developer=1` | Developer mode |
 | `--use_asan=1` | Build with AddressSanitizer (set `ASAN_OPTIONS=verify_asan_link_order=0` first) |
+| `--fp-contract=fast/on/off` | Floating-point contraction (FMA fusion) mode; applies to both gcc and clang. Controls whether the compiler may fuse operations such as a multiply and add into a single FMA instruction. The default `fast` favors performance; choose mode when you need **bit-reproducible** results across different builds or machines.<br><table><thead><tr><th>Option Value</th><th>Compiler Flag</th><th>Description</th></tr></thead><tbody><tr><td><code>fast</code> (default)</td><td><code>-ffp-contract=fast</code></td><td>Allow FMA contraction (best performance)</td></tr><tr><td><code>on</code></td><td><code>-ffp-contract=on</code></td><td>Contraction only within a source expression</td></tr><tr><td><code>off</code></td><td><code>-ffp-contract=off</code></td><td>Disable contraction (bit-reproducible builds)</td></tr></tbody></table> |
 
 #### 2.2.4 Build Test Framework
 

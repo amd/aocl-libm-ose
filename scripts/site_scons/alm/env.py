@@ -157,6 +157,24 @@ class AlmEnvironment(object):
 
         self.compiler.Setup()
 
+        # ------------------------------------------------------------------
+        # Floating-point contraction (FMA fusion) control (gcc + llvm).
+        #   fast (default) -> -ffp-contract=fast
+        #   on             -> -ffp-contract=on
+        #   off            -> -ffp-contract=off  (bit-reproducible builds)
+        # ------------------------------------------------------------------
+        fp_contract = (self.opts.GetOption('fp-contract') or 'fast').lower()
+        if fp_contract not in ('fast', 'on', 'off'):
+            print("WARNING: --fp-contract='%s' is invalid; expected one of "
+                  "fast/on/off. Falling back to 'fast'." % fp_contract)
+            fp_contract = 'fast'
+        if self.env['HOST_OS'] == 'win32' and 'clang-cl' in cc_env:
+            fp_contract_flag = '/clang:-ffp-contract=' + fp_contract
+        else:
+            fp_contract_flag = '-ffp-contract=' + fp_contract
+        self.compiler.UpdateCFlags([fp_contract_flag])
+        print("Set ffp-contract=%s" % fp_contract)
+
     def __configure_builddir(self):
         """
         Figure out build and install dirs

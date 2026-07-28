@@ -109,6 +109,13 @@ class AlmOptions(object):
                         help    = 'Configure for avx512'
         )
 
+        self.add_option('fp-contract',
+                        nargs   = 1,
+                        default = 'fast',
+                        type    = 'str',
+                        help    = 'FP contraction: fast/on/off (off for bit-reproducible builds)'
+        )
+
         #address sanitizer usage
         self.add_option('use_asan',
                         nargs = 1,

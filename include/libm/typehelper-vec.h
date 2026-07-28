@@ -54,12 +54,7 @@
 /* TODO: check if _MM_SET1_I64x2 is used */
 #define _MM_SET1_I64x2(x) {(x), (x)}
 
-#define _MM_SET1_I64x4(x)                    \
-    _Generic((x),                            \
-             int64_t : {(x), (x), (x), (x)}, \
-             uint64_t: {(x), (x), (x), (x)}, \
-             int:      {(x), (x), (x), (x)}, \
-             uint32_t: {(x), (x), (x), (x)})
+#define _MM_SET1_I64x4(x) {(x), (x), (x), (x)}
 
 
 #define _MM_SET1_I32(x) {(x), (x), (x), (x)}

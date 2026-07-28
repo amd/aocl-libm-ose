@@ -57,6 +57,7 @@ This comprehensive guide provides instructions for building, testing, and instal
 | Visual Studio     | 2022                   |   ✗   |    ✓    | Provides Ninja and MSBuild generators  |
 
 **Note:**
+  * AOCL-LibM includes an internal CPUID utilities module (`src/utils/`) that provides CPU detection functionality. No external aocl-utils dependency is required.
   * On Windows, the build system supports both the Ninja generator (default) and the Visual Studio 17 2022 generator with the ClangCL toolset.
 
 ---
@@ -749,7 +750,7 @@ The following table lists all available CMake configuration options for building
 
 *Legend:* ✓ = Supported, ✗ = Not Supported
 
-**Note:** CPU detection functionality is provided by the internal utils module (`utils/`). No external dependencies need to be downloaded or configured.
+**Note:** CPU detection functionality is provided by the internal utils module (`src/utils/`). No external dependencies need to be downloaded or configured.
 
 **Note:** For details on the LibM test suite (`LIBM_BUILD_TESTSUITE`), see the
 [almbench test suite guide](almbench/libm_testsuiteReadMe.md).

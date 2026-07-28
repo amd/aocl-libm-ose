@@ -5,10 +5,10 @@ external aocl-utils dependency with a self-contained, pure C implementation.
 
 ## API
 
-The module provides CPU detection via `alci/arch.h`:
+The module provides CPU detection via `alm_arch.h`:
 
 ```c
-#include "alci/arch.h"
+#include "alm_arch.h"
 
 // Type definition
 typedef uint32_t alm_cpu_num_t;
@@ -61,7 +61,9 @@ both libraries used the same symbol names.
 
 ### As part of AOCL-LibM (automatic)
 
-The module is built automatically when building AOCL-LibM:
+The CPU-detection source is built as a dedicated object library
+(`alm_utils_obj`) under `src/utils` and embedded directly into libalm (both the
+static and shared libraries), so no separate utils archive is produced:
 
 ```bash
 # CMake
@@ -71,12 +73,17 @@ cmake -B build && cmake --build build
 scons
 ```
 
-### Standalone (for testing)
+### Running the unit tests
+
+The tests are gated on the `UTILS_BUILD_TESTS` option (distinct from
+`LIBM_BUILD_TESTS`, which controls the gtests suite). Tests that exercise the
+public detection API link the self-contained libalm; the branch-coverage test
+is standalone.
 
 ```bash
-cd utils
-cmake -B build && cmake --build build
-ctest --test-dir build
+cmake --preset dev-release-gcc -DUTILS_BUILD_TESTS=ON
+cmake --build --preset dev-release-gcc --target cpuid_tests_all
+ctest --test-dir build/dev-release-gcc/cpuid_tests
 ```
 
 ## Supported Features

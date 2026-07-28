@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the design of the internal CPU detection module (`utils/`) that replaces the external `aocl-utils` dependency in AOCL-LibM.
+This document describes the design of the internal CPU detection module (`src/utils/`) that replaces the external `aocl-utils` dependency in AOCL-LibM.
 
 ## Motivation
 
@@ -17,18 +17,17 @@ The internal utils module addresses these issues by providing a self-contained, 
 ## Architecture
 
 ```
-utils/
-├── include/
-│   └── alci/
-│       └── arch.h          # Public API header (matches aocl-utils API)
+src/utils/
+├── alm_arch.h              # Public API header (matches aocl-utils API)
 ├── src/
-│   └── cpuid.c             # CPUID implementation
-├── tests/
-│   ├── CMakeLists.txt
-│   └── test_cpuid.c        # Unit tests
-├── CMakeLists.txt          # Standalone CMake build
+│   └── alm_cpuid.c         # CPUID implementation
+├── CMakeLists.txt          # Builds the alm_utils_obj object library
 ├── SConscript              # SCons build integration
 └── README.md               # Module documentation
+
+cpuid_tests/                # Unit tests (top-level; gated on UTILS_BUILD_TESTS)
+├── CMakeLists.txt
+└── test_cpuid.c            # Unit tests
 ```
 
 ## API Compatibility
@@ -36,7 +35,7 @@ utils/
 The module provides the **exact same API** as aocl-utils (`alci/arch.h`):
 
 ```c
-#include "alci/arch.h"
+#include "alm_arch.h"
 
 // Type definitions matching aocl-utils
 typedef uint32_t au_cpu_num_t;
@@ -62,20 +61,27 @@ This API compatibility means `src/iface.c` requires **no changes** to switch bet
 
 ### 1. Single CPUID Query (Latency Optimization)
 
-CPUID instructions are executed **exactly once** during program startup via constructor:
+CPUID instructions are executed **exactly once** during library startup by an
+explicit call to `alm_cpuid_init()`:
 
 ```c
 static cpuid_info_t g_cpuid = {0};  // Global cached state
 
-/* Runs before main() via constructor attribute */
-INITIALIZER(cpuid_init)
+/* Normal function - NOT an auto-run constructor */
+void alm_cpuid_init(void)
 {
     // Query CPUID leaves 0, 1, 7
     // ... populate g_cpuid ...
 }
 ```
 
-The `INITIALIZER` macro uses `__attribute__((constructor))` on GCC/Clang or `.CRT$XCU` section on MSVC to ensure initialization runs before `main()`. All subsequent calls (`au_cpuid_arch_is_zen4()`, `au_cpuid_has_flags()`, etc.) simply read from the cached global state.
+`alm_cpuid_init()` is a plain function (no `__attribute__((constructor))`). The
+library invokes it explicitly as the first statement of `init_map_entry_points()`
+(the init-map constructor in `src/entry_pt.c`), before `libm_iface_init()` runs
+the dispatch fixup. This guarantees CPU detection completes before dispatch
+selection, independent of static-constructor link order. All subsequent calls
+(`au_cpuid_arch_is_zen4()`, `au_cpuid_has_flags()`, etc.) simply read from the
+cached global state.
 
 ### 2. Global Structure with Enums
 
@@ -189,20 +195,28 @@ eliminates any concurrent initialization concerns.
 
 ### CMake
 
-```cmake
-# Top-level CMakeLists.txt
-add_subdirectory(utils)
-set(AOCL_UTILS_INCLUDE_DIR ${ALM_UTILS_INCLUDE_DIR})
+The CPU-detection source is compiled into a dedicated OBJECT library
+(`alm_utils_obj`) whose objects are appended to `${libmobj}`, so the code is
+embedded directly into both the static and shared libalm (self-contained). This
+follows the same per-folder object-library convention as `src/isa`, `src/arch`,
+etc.
 
+```cmake
 # src/CMakeLists.txt
-set(EXTRA_LIBS alm_utils_static)  # Link internal utils
+add_subdirectory(utils)                                # builds alm_utils_obj
+list(APPEND libmobj $<TARGET_OBJECTS:alm_utils_obj>)   # embed into libalm
+
+# src/utils/CMakeLists.txt
+add_library(alm_utils_obj OBJECT ${ALM_UTILS_SOURCES})
+target_compile_options(alm_utils_obj PRIVATE ${LIBMCFLAGS})
+target_include_directories(alm_utils_obj PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 ```
 
 ### SCons
 
 ```python
 # src/SConscript
-utils_objs, utils_inc = SConscript('#utils/SConscript', ...)
+utils_objs, utils_inc = SConscript('#src/utils/SConscript', ...)
 alm_objs += utils_objs
 almenv.Append(CPPPATH=[utils_inc])
 ```
@@ -219,9 +233,20 @@ Unit tests verify:
 - Feature flag detection (single and combined)
 - Consistency of repeated calls (caching)
 
+The tests that exercise the public detection API link the self-contained
+libalm; only the branch-coverage test is standalone. They are gated on the
+`UTILS_BUILD_TESTS` option (exposed as `${PROJECT_PREFIX}_UTILS_BUILD_TESTS`)
+and grouped under the `cpuid_tests_all` target. The tests live at the top-level
+`cpuid_tests/` directory (wired via `add_subdirectory(cpuid_tests)`), so
+`src/utils` carries only the build-required object sources. Note that
+`LIBM_BUILD_TESTS` is the option for the gtests suite; the utils module has its
+own `UTILS_BUILD_TESTS` option.
+
 ```bash
-# Run tests (standalone build)
-cd utils && cmake -B build && cmake --build build && ctest --test-dir build
+# Configure with the utils tests enabled and build/run them
+cmake --preset dev-release-gcc -DUTILS_BUILD_TESTS=ON
+cmake --build --preset dev-release-gcc --target cpuid_tests_all
+ctest --test-dir build/dev-release-gcc/cpuid_tests
 ```
 
 ## Migration from External aocl-utils

@@ -91,7 +91,7 @@ set(LIBMCFLAGS ${LIBMCFLAGS} ${auflag})
 # NOTE: fabs excluded - standalone (no AVX-512 vrd8_* kernels for unified template).
 set(VRDA_UNARY_AVX2_FUNCS
     sin cos tan tanh exp exp2 exp10 log log2
-    asin acos atan sqrt round
+    asin acos atan sqrt round cosh
     erf erfc erfinv erfcinv
     cdfnorm cdfnorminv
 )
@@ -121,7 +121,7 @@ set(AVX2_VRSA_TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/optimized/vec/avx2/vrsa_unar
 # NOTE: Keep in sync with VRDA_UNARY_AVX512_FUNCS in optimized_srcs.py (SCons).
 set(VRDA_UNARY_AVX512_FUNCS
     sin cos tan tanh exp exp2 exp10 log log2
-    asin acos atan sqrt round
+    asin acos atan sqrt round cosh
     erf erfc erfinv erfcinv
     cdfnorm cdfnorminv
 )

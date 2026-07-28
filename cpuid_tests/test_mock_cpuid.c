@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "alci/arch.h"
+#include "alm_arch.h"
 
 /* Test result tracking */
 static int tests_passed = 0;
@@ -448,7 +448,14 @@ int main(void)
     printf("AOCL-LibM Internal Utils - Mock CPUID\n");
     printf("Comprehensive Test Suite\n");
     printf("======================================\n");
-    
+
+    /*
+     * Detection is no longer an auto-run constructor. A static libalm link only
+     * pulls in the CPU-detection object (not the libm entry points that would
+     * otherwise run detection), so run detection explicitly first.
+     */
+    alm_cpuid_init();
+
     /* Run all tests */
     test_arch_detection_at_least_semantics();
     test_feature_detection_single();

@@ -349,6 +349,16 @@ if (${${PROJECT_PREFIX}_LIBM_BUILD_TESTS})
     alm_add_config_wrapper_target(gtests "${CMAKE_BINARY_DIR}/gtests" gtests_suite)
 endif()
 
+#------------------------------
+# Add internal CPU-detection utils tests if UTILS_BUILD_TESTS is enabled.
+# These link the self-contained libalm and live at the top level (cpuid_tests)
+# rather than under src/utils, which carries only the build-required objects.
+#------------------------------
+if(${${PROJECT_PREFIX}_LIBM_BUILD_LIBRARY} AND ${${PROJECT_PREFIX}_UTILS_BUILD_TESTS})
+    enable_testing()
+    add_subdirectory(cpuid_tests EXCLUDE_FROM_ALL)
+endif()
+
 #----------------------------------------------
 # Add Examples if LIBM_BUILD_EXAMPLES is enabled
 #---------------------------------------------

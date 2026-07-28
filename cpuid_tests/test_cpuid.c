@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "alci/arch.h"
+#include "alm_arch.h"
 
 static void print_usage(const char* prog)
 {
@@ -35,6 +35,14 @@ int main(int argc, char* argv[])
 {
     int result = 0;
     const char* expected_arch = NULL;
+
+    /*
+     * Detection is no longer an auto-run constructor. When this test links
+     * libalm statically it only pulls in the CPU-detection object (not the
+     * libm entry points that would otherwise run detection), so it must run
+     * detection itself before querying the API.
+     */
+    alm_cpuid_init();
 
     if (argc > 1) {
         if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {

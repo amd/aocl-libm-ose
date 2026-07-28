@@ -124,7 +124,7 @@ static int is_zen6_model(unsigned int model)
            (model >= 0xd8 && model <= 0xe7);
 }
 
-/* Mock detection function - mirrors cpuid.c logic */
+/* Mock detection function - mirrors alm_cpuid.c logic */
 static uarch_t
 mock_detect_amd_uarch(unsigned int family, unsigned int model, 
                       unsigned int stepping, unsigned int features)

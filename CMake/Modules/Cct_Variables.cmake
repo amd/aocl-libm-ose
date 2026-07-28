@@ -62,6 +62,7 @@ endmacro()
 
 propagate_option(LIBM_BUILD_LIBRARY)
 propagate_option(LIBM_BUILD_TESTS)
+propagate_option(UTILS_BUILD_TESTS)
 propagate_option(LIBM_ENABLE_AVX512)
 
 propagate_option(LIBM_BUILD_EXAMPLES)

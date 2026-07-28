@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "alci/arch.h"
+#include "alm_arch.h"
 
 /* Colors for terminal output */
 #define RED     "\033[31m"
@@ -348,7 +348,14 @@ int main(void)
     printf("============================================\n");
     printf("AOCL-LibM Dispatch Verification Test Suite\n");
     printf("============================================\n");
-    
+
+    /*
+     * Detection is no longer an auto-run constructor. A static libalm link only
+     * pulls in the CPU-detection object (not the libm entry points that would
+     * otherwise run detection), so run detection explicitly first.
+     */
+    alm_cpuid_init();
+
     /* Print CPU report first */
     print_cpu_report();
     

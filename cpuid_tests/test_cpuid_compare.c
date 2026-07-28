@@ -36,7 +36,7 @@
  *
  * Build and run:
  *   # Internal utils version:
- *   gcc -I../include test_cpuid_compare.c -L.. -lalm_utils -o test_cpuid_internal
+ *   gcc -I../src/utils test_cpuid_compare.c -L.. -lalm -o test_cpuid_internal
  *   ./test_cpuid_internal > internal.txt
  *
  *   # External aocl-utils version:
@@ -61,8 +61,10 @@
     #define CPUID_ARCH_IS_ZEN6(cpu)  au_cpuid_arch_is_zen6(cpu)
     #define CPUID_HAS_FLAGS(cpu, flags, count) au_cpuid_has_flags(cpu, flags, count)
     #define CURRENT_CPU_NUM AU_CURRENT_CPU_NUM
+    /* External aocl-utils auto-detects; no explicit init entry point needed. */
+    #define CPUID_INIT() ((void)0)
 #else
-    #include "alci/arch.h"
+    #include "alm_arch.h"
     #define UTILS_SOURCE "internal alm_utils"
     #define CPUID_ARCH_IS_ZEN(cpu)   alm_cpuid_arch_is_zen(cpu)
     #define CPUID_ARCH_IS_ZEN2(cpu)  alm_cpuid_arch_is_zen2(cpu)
@@ -72,10 +74,18 @@
     #define CPUID_ARCH_IS_ZEN6(cpu)  alm_cpuid_arch_is_zen6(cpu)
     #define CPUID_HAS_FLAGS(cpu, flags, count) alm_cpuid_has_flags(cpu, flags, count)
     #define CURRENT_CPU_NUM ALM_CURRENT_CPU_NUM
+    /*
+     * Detection is no longer an auto-run constructor. A static libalm link only
+     * pulls in the CPU-detection object (not the libm entry points that would
+     * otherwise run detection), so run detection explicitly first.
+     */
+    #define CPUID_INIT() alm_cpuid_init()
 #endif
 
 int main(void)
 {
+    CPUID_INIT();
+
     printf("# CPUID comparison output (%s)\n", UTILS_SOURCE);
     printf("# Format: function_name: result\n");
     printf("#\n");

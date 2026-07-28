@@ -20,14 +20,14 @@
 #   mkdir -p build && cd build
 #   cmake .. -DALM_TEST_AGAINST_AOCLUTILS=ON
 #   make test_cpuid_compare_internal test_cpuid_compare_external
-#   cd ../utils/tests
-#   ./compare_utils.sh ../../build
+#   cd ../cpuid_tests
+#   ./compare_utils.sh ../build
 #
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BUILD_DIR="${1:-${SCRIPT_DIR}/../../build}"
+BUILD_DIR="${1:-${SCRIPT_DIR}/../build}"
 
 # Output files
 INTERNAL_OUTPUT="${SCRIPT_DIR}/cpuid_internal.txt"
@@ -42,8 +42,8 @@ echo ""
 # Find internal utils test executable
 INTERNAL_EXE=""
 for path in \
+    "${BUILD_DIR}/cpuid_tests/test_cpuid_compare_internal" \
     "${BUILD_DIR}/tests/test_cpuid_compare_internal" \
-    "${BUILD_DIR}/utils/tests/test_cpuid_compare_internal" \
     "${BUILD_DIR}/test_cpuid_compare_internal"; do
     if [ -x "$path" ]; then
         INTERNAL_EXE="$path"
@@ -71,8 +71,8 @@ echo "  Output saved to: ${INTERNAL_OUTPUT}"
 # Find external aocl-utils test executable
 EXTERNAL_EXE=""
 for path in \
+    "${BUILD_DIR}/cpuid_tests/test_cpuid_compare_external" \
     "${BUILD_DIR}/tests/test_cpuid_compare_external" \
-    "${BUILD_DIR}/utils/tests/test_cpuid_compare_external" \
     "${BUILD_DIR}/test_cpuid_compare_external"; do
     if [ -x "$path" ]; then
         EXTERNAL_EXE="$path"

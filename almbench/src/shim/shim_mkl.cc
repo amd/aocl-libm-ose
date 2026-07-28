@@ -244,6 +244,7 @@ typedef __m256d (*mkl_asin_vrd4_func_t)(__m256d);
 typedef __m256d (*mkl_atan_vrd4_func_t)(__m256d);
 typedef __m256d (*mkl_atan2_vrd4_func_t)(__m256d, __m256d);
 typedef __m256d (*mkl_cos_vrd4_func_t)(__m256d);
+typedef __m256d (*mkl_cosh_vrd4_func_t)(__m256d);
 typedef __m256d (*mkl_erf_vrd4_func_t)(__m256d);
 typedef __m256d (*mkl_erfc_vrd4_func_t)(__m256d);
 typedef __m256d (*mkl_tanh_vrd4_func_t)(__m256d);
@@ -373,6 +374,7 @@ typedef __m512d (*mkl_asin_vrd8_func_t)(__m512d);
 typedef __m512d (*mkl_atan_vrd8_func_t)(__m512d);
 typedef __m512d (*mkl_atan2_vrd8_func_t)(__m512d, __m512d);
 typedef __m512d (*mkl_cos_vrd8_func_t)(__m512d);
+typedef __m512d (*mkl_cosh_vrd8_func_t)(__m512d);
 typedef __m512d (*mkl_erf_vrd8_func_t)(__m512d);
 typedef __m512d (*mkl_erfc_vrd8_func_t)(__m512d);
 typedef __m512d (*mkl_tanh_vrd8_func_t)(__m512d);
@@ -615,6 +617,7 @@ static struct {
     mkl_atan_vrd4_func_t atan_vrd4;
     mkl_atan2_vrd4_func_t atan2_vrd4;
     mkl_cos_vrd4_func_t cos_vrd4;
+    mkl_cosh_vrd4_func_t cosh_vrd4;
     mkl_erf_vrd4_func_t erf_vrd4;
     mkl_erfc_vrd4_func_t erfc_vrd4;
     mkl_tanh_vrd4_func_t tanh_vrd4;
@@ -750,6 +753,7 @@ static struct {
     mkl_atan_vrd8_func_t atan_vrd8;
     mkl_atan2_vrd8_func_t atan2_vrd8;
     mkl_cos_vrd8_func_t cos_vrd8;
+    mkl_cosh_vrd8_func_t cosh_vrd8;
     mkl_erf_vrd8_func_t erf_vrd8;
     mkl_erfc_vrd8_func_t erfc_vrd8;
     mkl_tanh_vrd8_func_t tanh_vrd8;
@@ -1082,6 +1086,7 @@ static void init_mkl_symbols(void) {
     mkl_funcs.atan_vrd4 = load_mkl_symbol<mkl_atan_vrd4_func_t>(mkl_vml, "__svml_atan4");
     mkl_funcs.atan2_vrd4 = load_mkl_symbol<mkl_atan2_vrd4_func_t>(mkl_vml, "__svml_atan24");
     mkl_funcs.cos_vrd4 = load_mkl_symbol<mkl_cos_vrd4_func_t>(mkl_vml, "__svml_cos4");
+    mkl_funcs.cosh_vrd4 = load_mkl_symbol<mkl_cosh_vrd4_func_t>(mkl_vml, "__svml_cosh4");
     mkl_funcs.erf_vrd4 = load_mkl_symbol<mkl_erf_vrd4_func_t>(mkl_vml, "__svml_erf4");
     mkl_funcs.erfc_vrd4 = load_mkl_symbol<mkl_erfc_vrd4_func_t>(mkl_vml, "__svml_erfc4");
     mkl_funcs.tanh_vrd4 = load_mkl_symbol<mkl_tanh_vrd4_func_t>(mkl_vml, "__svml_tanh4");
@@ -1216,6 +1221,7 @@ static void init_mkl_symbols(void) {
     mkl_funcs.exp_vrd8 = load_mkl_symbol<mkl_exp_vrd8_func_t>(mkl_vml, "__svml_exp8");
     mkl_funcs.sin_vrd8 = load_mkl_symbol<mkl_sin_vrd8_func_t>(mkl_vml, "__svml_sin8");
     mkl_funcs.cos_vrd8 = load_mkl_symbol<mkl_cos_vrd8_func_t>(mkl_vml, "__svml_cos8");
+    mkl_funcs.cosh_vrd8 = load_mkl_symbol<mkl_cosh_vrd8_func_t>(mkl_vml, "__svml_cosh8");
     mkl_funcs.tan_vrd8 = load_mkl_symbol<mkl_tan_vrd8_func_t>(mkl_vml, "__svml_tan8");
     mkl_funcs.pow_vrd8 = load_mkl_symbol<mkl_pow_vrd8_func_t>(mkl_vml, "__svml_pow8");
     mkl_funcs.powx_vrd8 = load_mkl_symbol<mkl_powx_vrd8_func_t>(mkl_vma, "vdPowx");
@@ -2071,6 +2077,10 @@ SHIM_EXPORT void shim_cos_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = mkl_funcs.cos_vrd4(ipp->ip[0].data);
 }
 
+SHIM_EXPORT void shim_cosh_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
+    ipp->op[0].data = mkl_funcs.cosh_vrd4(ipp->ip[0].data);
+}
+
 SHIM_EXPORT void shim_erf_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = mkl_funcs.erf_vrd4(ipp->ip[0].data);
 }
@@ -2578,6 +2588,10 @@ SHIM_EXPORT void shim_atan2_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
 
 SHIM_EXPORT void shim_cos_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
     ipp->op[0].data = mkl_funcs.cos_vrd8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_cosh_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = mkl_funcs.cosh_vrd8(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_erf_vrd8(InParams<libm::AlignedM512d, double> *ipp) {

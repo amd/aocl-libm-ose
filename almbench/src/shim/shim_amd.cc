@@ -319,6 +319,7 @@ typedef __m256d (*amd_asin_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_atan_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_atan2_vrd4_func_t)(__m256d, __m256d);
 typedef __m256d (*amd_cos_vrd4_func_t)(__m256d);
+typedef __m256d (*amd_cosh_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_cdfnorm_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_cdfnorminv_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_erf_vrd4_func_t)(__m256d);
@@ -458,6 +459,7 @@ typedef __m512d (*amd_asin_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_atan_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_atan2_vrd8_func_t)(__m512d, __m512d);
 typedef __m512d (*amd_cos_vrd8_func_t)(__m512d);
+typedef __m512d (*amd_cosh_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_cdfnorm_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_cdfnorminv_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_erf_vrd8_func_t)(__m512d);
@@ -713,6 +715,7 @@ static struct {
     amd_atan_vrd4_func_t atan_vrd4;
     amd_atan2_vrd4_func_t atan2_vrd4;
     amd_cos_vrd4_func_t cos_vrd4;
+    amd_cosh_vrd4_func_t cosh_vrd4;
     amd_cdfnorm_vrd4_func_t cdfnorm_vrd4;
     amd_cdfnorminv_vrd4_func_t cdfnorminv_vrd4;
     amd_erf_vrd4_func_t erf_vrd4;
@@ -855,6 +858,7 @@ static struct {
     amd_atan_vrd8_func_t atan_vrd8;
     amd_atan2_vrd8_func_t atan2_vrd8;
     amd_cos_vrd8_func_t cos_vrd8;
+    amd_cosh_vrd8_func_t cosh_vrd8;
     amd_cdfnorm_vrd8_func_t cdfnorm_vrd8;
     amd_cdfnorminv_vrd8_func_t cdfnorminv_vrd8;
     amd_erf_vrd8_func_t erf_vrd8;
@@ -1245,6 +1249,7 @@ static void init_amd_symbols(void) {
     amd_funcs.atan_vrd4 = load_amd_symbol<amd_atan_vrd4_func_t>(amd_core, "amd_vrd4_atan");
     amd_funcs.atan2_vrd4 = load_amd_symbol<amd_atan2_vrd4_func_t>(amd_core, "amd_vrd4_atan2");
     amd_funcs.cos_vrd4 = load_amd_symbol<amd_cos_vrd4_func_t>(amd_core, "amd_vrd4_cos");
+    amd_funcs.cosh_vrd4 = load_amd_symbol<amd_cosh_vrd4_func_t>(amd_core, "amd_vrd4_cosh");
     amd_funcs.cdfnorm_vrd4 = load_amd_symbol<amd_cdfnorm_vrd4_func_t>(amd_core, "amd_vrd4_cdfnorm");
     amd_funcs.cdfnorminv_vrd4 = load_amd_symbol<amd_cdfnorminv_vrd4_func_t>(amd_core, "amd_vrd4_cdfnorminv");
     amd_funcs.erf_vrd4 = load_amd_symbol<amd_erf_vrd4_func_t>(amd_core, "amd_vrd4_erf");
@@ -1386,6 +1391,7 @@ static void init_amd_symbols(void) {
     amd_funcs.atan_vrd8 = load_amd_symbol<amd_atan_vrd8_func_t>(amd_core, "amd_vrd8_atan");
     amd_funcs.atan2_vrd8 = load_amd_symbol<amd_atan2_vrd8_func_t>(amd_core, "amd_vrd8_atan2");
     amd_funcs.cos_vrd8 = load_amd_symbol<amd_cos_vrd8_func_t>(amd_core, "amd_vrd8_cos");
+    amd_funcs.cosh_vrd8 = load_amd_symbol<amd_cosh_vrd8_func_t>(amd_core, "amd_vrd8_cosh");
     amd_funcs.cdfnorm_vrd8 = load_amd_symbol<amd_cdfnorm_vrd8_func_t>(amd_core, "amd_vrd8_cdfnorm");
     amd_funcs.cdfnorminv_vrd8 = load_amd_symbol<amd_cdfnorminv_vrd8_func_t>(amd_core, "amd_vrd8_cdfnorminv");
     amd_funcs.erf_vrd8 = load_amd_symbol<amd_erf_vrd8_func_t>(amd_core, "amd_vrd8_erf");
@@ -2275,6 +2281,10 @@ SHIM_EXPORT void shim_cos_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = amd_funcs.cos_vrd4(ipp->ip[0].data);
 }
 
+SHIM_EXPORT void shim_cosh_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.cosh_vrd4(ipp->ip[0].data);
+}
+
 SHIM_EXPORT void shim_cdfnorm_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = amd_funcs.cdfnorm_vrd4(ipp->ip[0].data);
 }
@@ -2802,6 +2812,10 @@ SHIM_EXPORT void shim_atan2_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
 
 SHIM_EXPORT void shim_cos_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
     ipp->op[0].data = amd_funcs.cos_vrd8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_cosh_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.cosh_vrd8(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_cdfnorm_vrd8(InParams<libm::AlignedM512d, double> *ipp) {

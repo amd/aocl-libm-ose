@@ -349,6 +349,7 @@ typedef __m256d (*gcc_acos_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_asin_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_atan_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_cos_vrd4_func_t)(__m256d);
+typedef __m256d (*gcc_cosh_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_erf_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_erfc_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_exp_vrd4_func_t)(__m256d);
@@ -474,6 +475,7 @@ typedef __m512d (*gcc_acos_vrd8_func_t)(__m512d);
 typedef __m512d (*gcc_asin_vrd8_func_t)(__m512d);
 typedef __m512d (*gcc_atan_vrd8_func_t)(__m512d);
 typedef __m512d (*gcc_cos_vrd8_func_t)(__m512d);
+typedef __m512d (*gcc_cosh_vrd8_func_t)(__m512d);
 typedef __m512d (*gcc_erf_vrd8_func_t)(__m512d);
 typedef __m512d (*gcc_erfc_vrd8_func_t)(__m512d);
 typedef __m512d (*gcc_exp_vrd8_func_t)(__m512d);
@@ -713,6 +715,7 @@ static struct {
     gcc_asin_vrd4_func_t asin_vrd4;
     gcc_atan_vrd4_func_t atan_vrd4;
     gcc_cos_vrd4_func_t cos_vrd4;
+    gcc_cosh_vrd4_func_t cosh_vrd4;
     gcc_erf_vrd4_func_t erf_vrd4;
     gcc_erfc_vrd4_func_t erfc_vrd4;
     gcc_exp_vrd4_func_t exp_vrd4;
@@ -845,6 +848,7 @@ static struct {
     gcc_asin_vrd8_func_t asin_vrd8;
     gcc_atan_vrd8_func_t atan_vrd8;
     gcc_cos_vrd8_func_t cos_vrd8;
+    gcc_cosh_vrd8_func_t cosh_vrd8;
     gcc_erf_vrd8_func_t erf_vrd8;
     gcc_erfc_vrd8_func_t erfc_vrd8;
     gcc_exp_vrd8_func_t exp_vrd8;
@@ -1465,6 +1469,7 @@ static void init_gcc_symbols(void) {
     gcc_funcs.asin_vrd4 = nullptr;
     gcc_funcs.atan_vrd4 = nullptr;
     gcc_funcs.cos_vrd4 = nullptr;
+    gcc_funcs.cosh_vrd4 = nullptr;
     gcc_funcs.erf_vrd4 = nullptr;
     gcc_funcs.erfc_vrd4 = nullptr;
     gcc_funcs.exp_vrd4 = nullptr;
@@ -1588,6 +1593,7 @@ static void init_gcc_symbols(void) {
     gcc_funcs.asin_vrd8 = nullptr;
     gcc_funcs.atan_vrd8 = nullptr;
     gcc_funcs.cos_vrd8 = nullptr;
+    gcc_funcs.cosh_vrd8 = nullptr;
     gcc_funcs.erf_vrd8 = nullptr;
     gcc_funcs.erfc_vrd8 = nullptr;
     gcc_funcs.exp_vrd8 = nullptr;
@@ -1731,6 +1737,7 @@ static void init_gcc_symbols(void) {
     gcc_funcs.erfc_vrs8 = _ZGVdN8v_erfcf;
 
     // COSH - 256-bit (AVX2)
+    gcc_funcs.cosh_vrd4 = _ZGVdN4v_cosh;
     gcc_funcs.cosh_vrs8 = _ZGVdN8v_coshf;
     gcc_funcs.tanh_vrs8 = _ZGVdN8v_tanhf;
 
@@ -1761,6 +1768,9 @@ static void init_gcc_symbols(void) {
     gcc_funcs.tan_vrs16 = _ZGVeN16v_tanf;
 
     gcc_funcs.tanh_vrs16 = _ZGVeN16v_tanhf;
+
+    // COSH - 512-bit (AVX512)
+    gcc_funcs.cosh_vrd8 = _ZGVeN8v_cosh;
 
     // ERF, ERFC - 512-bit (AVX512)
     gcc_funcs.erf_vrd8 = _ZGVeN8v_erf;
@@ -2550,6 +2560,10 @@ SHIM_EXPORT void shim_cos_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = gcc_funcs.cos_vrd4(ipp->ip[0].data);
 }
 
+SHIM_EXPORT void shim_cosh_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
+    ipp->op[0].data = gcc_funcs.cosh_vrd4(ipp->ip[0].data);
+}
+
 SHIM_EXPORT void shim_erf_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = gcc_funcs.erf_vrd4(ipp->ip[0].data);
 }
@@ -3035,6 +3049,10 @@ SHIM_EXPORT void shim_atan_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
 
 SHIM_EXPORT void shim_cos_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
     ipp->op[0].data = gcc_funcs.cos_vrd8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_cosh_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = gcc_funcs.cosh_vrd8(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_erf_vrd8(InParams<libm::AlignedM512d, double> *ipp) {

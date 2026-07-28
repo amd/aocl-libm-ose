@@ -31,19 +31,19 @@
       input: [[min_subnormal, max]]
       type: [linearstep]
       steps: [10000]
-      variants : [sd, vrd2, vrda]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
 
     - id: cosh_002
       description: 'x in [-min_subnormal, min_subnormal], linearstep'
       input: [[-min_subnormal, min_subnormal]]
       type: [linearstep]
       steps: [10000]
-      variants : [sd, vrd2, vrda]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
 
     - id: cosh_003
       description: 'Negative inputs: x in [-DBL_MAX, -SMALLEST_SUBNORMAL], linearstep'
       input: [[-max, -min_subnormal]]
       type: [linearstep]
       steps: [10000]
-      variants : [sd, vrd2, vrda]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
 

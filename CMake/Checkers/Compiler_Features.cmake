@@ -169,7 +169,13 @@ macro(get_optz_flag optzflag)
 endmacro()
 
 macro(get_fast_flag ffpflag)
-  set(${ffpflag} -ffp-contract=fast)
+  # ALM_FP_CONTRACT_MODE is derived in the top-level CMakeLists.txt from the
+  # ALM_FP_CONTRACT cache variable (fast | on | off).
+  if(CMAKE_C_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC")
+    set(${ffpflag} /clang:-ffp-contract=${ALM_FP_CONTRACT_MODE})
+  else()
+    set(${ffpflag} -ffp-contract=${ALM_FP_CONTRACT_MODE})
+  endif()
 endmacro()
 
 macro(get_win_flag winflag)

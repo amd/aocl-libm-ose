@@ -40,11 +40,6 @@ macro(CHECK_COMPILER_VERSION GCC_VERSION)
   set(${GCC_VERSION}  "gcc-${CMAKE_C_COMPILER_VERSION}")
 endmacro()
 
-#LIBM FLAGS abd CFLAGS Flags Macroes
-macro(get_fast_flag ffpflag)
-  set(${ffpflag} -ffp-contract=fast)
-endmacro()
-
 macro(get_warning_flags wflags)
   #Set gcc-compiler flags for aocl-libm
   set(w1 -Wall -Wextra -Wcast-qual -Wconversion -Wdisabled-optimization -Wdouble-promotion)

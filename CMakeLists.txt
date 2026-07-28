@@ -170,6 +170,22 @@ if(DEFINED ALM_STATIC_DISPATCH)
 endif()
 
 include(Compiler_Features)
+# ------------------------------------------------------------------
+# Floating-point contraction (FMA fusion) control.
+#   fast (default) -> -ffp-contract=fast
+#   on             -> -ffp-contract=on
+#   off            -> -ffp-contract=off  (bit-reproducible builds)
+# ------------------------------------------------------------------
+set(ALM_FP_CONTRACT "fast" CACHE STRING "ffp-contract=on/off/fast")
+set_property(CACHE ALM_FP_CONTRACT PROPERTY STRINGS fast on off)
+string(TOLOWER "${ALM_FP_CONTRACT}" ALM_FP_CONTRACT_MODE)
+if(NOT ALM_FP_CONTRACT_MODE MATCHES "^(fast|on|off)$")
+  message(WARNING "ALM_FP_CONTRACT='${ALM_FP_CONTRACT}' is invalid; expected one of fast/on/off. Falling back to default 'fast'.")
+  set(ALM_FP_CONTRACT_MODE fast)
+endif()
+get_fast_flag(FFP)
+message(STATUS "Set Compiler flag: ${FFP}")
+
 if(WIN32)
     # Block pure MSVC (cl.exe); ClangCL reports as "Clang" and is supported.
     if(NOT msvc_clang_cl

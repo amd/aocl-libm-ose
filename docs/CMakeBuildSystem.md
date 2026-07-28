@@ -28,6 +28,7 @@ This comprehensive guide provides instructions for building, testing, and instal
       - 4.9.1 [AddressSanitizer (ASAN)](#491-addresssanitizer-asan)
       - 4.9.2 [Code Coverage](#492-code-coverage)
       - 4.9.3 [Building Documentation](#493-building-documentation)
+   - 4.10 [Floating-Point Contraction (FMA) Control](#410-floating-point-contraction-fma-control)
 5. [CMake Configuration Options](#5-cmake-configuration-options)
 6. [Manually Building Without Presets](#6-manually-building-without-presets)
    - 6.1 [Create a Build Directory](#61-create-a-build-directory)
@@ -612,6 +613,30 @@ Note: LibM documentation is found here: **<build>/aocl_docs/html/index.html**
 
 ---
 
+#### **4.10 Floating-Point Contraction (FMA) Control**
+
+By default AOCL-LIBM is compiled with `-ffp-contract=fast`, which allows the
+compiler to contract floating-point expressions (e.g. fusing a multiply and an
+add into a single FMA instruction) for best performance. If your workload
+requires **bit-reproducible** results across different builds/machines, you must
+disable this contraction using the `ALM_FP_CONTRACT` option:
+
+| Option Value | Compiler Flag           | Description                                   |
+|--------------|-------------------------|-----------------------------------------------|
+| `fast` (default) | `-ffp-contract=fast` | Allow FMA contraction (best performance)      |
+| `on`         | `-ffp-contract=on`      | Contraction only within a source expression   |
+| `off`        | `-ffp-contract=off`     | Disable contraction (bit-reproducible builds) |
+
+The value is case-insensitive; any other value emits a warning and falls back to the default `fast`.
+
+To build for bit-reproducibility (contraction disabled), use:
+```console
+$ cmake --preset {presetName} -DALM_FP_CONTRACT=off --fresh
+```
+
+
+---
+
 ## **5. CMake Configuration Options**
 
 The following table lists all available CMake configuration options for building AOCL-LIBM:
@@ -626,6 +651,7 @@ The following table lists all available CMake configuration options for building
 | **Library**   | `BUILD_STATIC_LIBS`         | Build static libraries                   | ON             |   ✓   |    ✓    | `ON`, `OFF`                                         |
 | **Library**   | `LIBM_BUILD_LIBRARY`        | Enable building libraries                | ON             |   ✓   |    ✓    | `ON`, `OFF`                                         |
 | **Dispatch**  | `ALM_STATIC_DISPATCH`       | Static CPU architecture dispatch         | OFF            |   ✓   |    ✗    | `AVX2`, `ZEN2`, `ZEN3`, `ZEN4`, `ZEN5`, `ZEN6`, `AVX512` |
+| **Compiler**  | `ALM_FP_CONTRACT`           | Floating-point contraction (FMA) mode     | `fast`         |   ✓   |    ✓    | `fast`, `on`, `off`                                    |
 | **Testing**   | `LIBM_BUILD_TESTS`          | Enable building tests                    | OFF            |   ✓   |    ✓    | `ON`, `OFF`                                         |
 | **Testing**   | `LIBM_ENABLE_AVX512`        | Enable AVX-512 support                   | ON             |   ✓   |    ✗    | `ON`, `OFF`                                         |
 | **Testing**   | `LIBABI`                    | Library ABI compatibility                | `aocl`         |   ✓   |    ✗    | `aocl`, `glibc`, `svml`                             |

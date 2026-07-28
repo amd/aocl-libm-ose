@@ -31,6 +31,7 @@
 #include <libm/iface.h>
 #include <libm/entry_pt.h>
 #include <libm/arch/all.h>   /* default-arch impls for non-NULL dispatch init */
+#include "alm_arch.h"        /* alm_cpuid_init() - CPU detection */
 
 #ifdef __cplusplus
 extern "C"
@@ -439,5 +440,13 @@ alm_func_t        G_ENTRY_PT_PTR(stablesort_ascend_64f) = (alm_func_t)&ALM_PROTO
 static void CONSTRUCTOR
 init_map_entry_points(void)
 {
+    /*
+     * Detect the CPU microarchitecture BEFORE the dispatch fixup runs. Both
+     * steps used to rely on separate __attribute__((constructor)) functions
+     * whose relative order was decided by link order, so the fixup could run
+     * before detection and leave dispatch stuck on the AVX2 default. Calling
+     * detection explicitly here makes the ordering deterministic.
+     */
+    alm_cpuid_init();
     libm_iface_init();
 }

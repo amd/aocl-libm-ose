@@ -230,13 +230,6 @@ else()
 endif()
 
 #------------------------------
-# AOCL_Utils CPUID_library requirements
-#------------------------------
-
-# Internal utils (replaces external aocl-utils)
-add_subdirectory(utils)
-
-#------------------------------
 # Setup Project Includes
 #------------------------------
 set(${PROJECT_PREFIX}_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}")

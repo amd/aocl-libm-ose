@@ -9,7 +9,7 @@ Import('env')
 utils_env = env.Clone()
 
 utils_srcs = Glob('src/*.c')
-utils_inc = Dir('include').srcnode().abspath
+utils_inc = Dir('.').srcnode().abspath
 
 utils_env.Append(CPPPATH=[utils_inc])
 

@@ -29,27 +29,16 @@
  * AOCL-LibM Internal Utils - CPUID Implementation
  *
  * This module provides runtime CPU detection using CPUID instructions.
- * CPUID is queried exactly once at program startup via constructor initialization.
+ * Detection is performed by alm_cpuid_init(), which the caller must invoke
+ * once before querying the detection state. libm calls it from its dispatch
+ * fixup constructor (src/entry_pt.c) so that detection is guaranteed to run
+ * before dispatch selection, independent of static-constructor link order.
  *
  * This file defines the global state variables and initialization logic.
- * The API functions are static inline in arch.h to eliminate symbol exports.
+ * The API functions are static inline in alm_arch.h to eliminate symbol exports.
  */
 
-#include "alci/arch.h"
-
-/* Constructor attribute for initialization functions */
-#if defined(__GNUC__) || defined(__clang__)
-#define ALM_UTILS_CONSTRUCTOR __attribute__((constructor))
-#define ALM_INITIALIZER(f) static void f(void) ALM_UTILS_CONSTRUCTOR; static void f(void)
-#elif defined(_MSC_VER)
-#pragma section(".CRT$XCU", read)
-#define ALM_INITIALIZER(f) \
-    static void __cdecl f(void); \
-    static __declspec(allocate(".CRT$XCU")) void (__cdecl*f##_)(void) = f; \
-    static void __cdecl f(void)
-#else
-#error "Unsupported compiler - need constructor attribute"
-#endif
+#include "alm_arch.h"
 
 /* Compiler-specific CPUID intrinsics */
 #if defined(_MSC_VER)
@@ -172,8 +161,7 @@ static alm_cpuid_info_t g_cpuid = {0};
 
 /*
  * Global CPU detection state (exported for static inline API)
- * Initialized before main() via constructor attribute.
- * After initialization, all access is read-only.
+ * Populated by alm_cpuid_init(); read-only after initialization.
  */
 alm_uarch_t   alm_g_detected_uarch    = ALM_UARCH_UNKNOWN;
 unsigned int  alm_g_detected_features = ALM_FEATURE_NONE;
@@ -274,9 +262,17 @@ alm_detect_features(unsigned int leaf7_ebx)
 
 /*
  * Initialize the global CPU detection state.
- * Runs before main() via constructor attribute.
+ *
+ * This is a normal function (not an auto-run constructor): the caller must
+ * invoke it before reading the detection state. libm's dispatch fixup
+ * constructor calls it first (see src/entry_pt.c), which makes CPU detection
+ * happen before dispatch selection regardless of static-constructor ordering.
+ *
+ * Calling it more than once is safe: it simply re-runs CPUID and rewrites the
+ * same results.
  */
-ALM_INITIALIZER(alm_cpuid_init)
+void
+alm_cpuid_init(void)
 {
     unsigned int regs[4];
     unsigned int family;

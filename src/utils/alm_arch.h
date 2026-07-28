@@ -35,16 +35,17 @@
  *   - All types/enums use ALM_ prefix to avoid conflicts with external aocl-utils
  *   - Static inline functions are not exported - no symbol table entries
  *   - Each translation unit gets its own copy of the inline functions
- *   - Global state is defined once in cpuid.c, accessed via extern
+ *   - Global state is defined once in alm_cpuid.c, accessed via extern
  *
  * Design:
- *   - CPUID is queried exactly once at program startup via constructor initialization
- *   - All CPU information is cached in global structures (defined in cpuid.c)
+ *   - CPUID is queried exactly once at program startup via an explicit
+ *     alm_cpuid_init() call (see below), not an auto-run constructor
+ *   - All CPU information is cached in global structures (defined in alm_cpuid.c)
  *   - Feature flags use efficient bitmask operations internally
  */
 
-#ifndef ALCI_ARCH_H
-#define ALCI_ARCH_H
+#ifndef ALM_ARCH_H
+#define ALM_ARCH_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -94,11 +95,25 @@ typedef enum {
 } alm_feature_t;
 
 /*
- * Global CPU detection state (defined in cpuid.c, initialized before main)
- * These are the only symbols exported from the utils object file.
+ * Global CPU detection state (defined in alm_cpuid.c, populated by
+ * alm_cpuid_init()). These are the only data symbols exported from the utils
+ * object file.
  */
 extern alm_uarch_t   alm_g_detected_uarch;
 extern unsigned int  alm_g_detected_features;
+
+/*
+ * Run CPU detection and populate the global detection state above.
+ *
+ * This is a normal function, not an auto-run constructor: the caller must
+ * invoke it once before using the detection API below. libm calls it from its
+ * dispatch fixup constructor (src/entry_pt.c) so detection is guaranteed to
+ * run before dispatch selection, independent of static-constructor link order.
+ * Callers that link libalm statically and only use the detection API (without
+ * pulling in the libm entry points) must call it themselves. Calling it more
+ * than once is safe.
+ */
+void alm_cpuid_init(void);
 
 /*
  * Architecture detection functions - static inline.
@@ -207,4 +222,4 @@ static inline bool alm_cpuid_has_flags(alm_cpu_num_t cpu_num,
 }
 #endif
 
-#endif  /* ALCI_ARCH_H */
+#endif  /* ALM_ARCH_H */

@@ -28,10 +28,10 @@
 #include <stddef.h>                     /* for NULL */
 
 /*
- * CPU detection via internal utils module (alci/arch.h)
+ * CPU detection via internal utils module (alm_arch.h)
  * Provides alm_cpuid_* functions for architecture and feature detection.
  */
-#include "alci/arch.h"
+#include "alm_arch.h"
 
 #include <libm/entry_pt.h>
 #include <libm/iface.h>

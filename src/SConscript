@@ -115,7 +115,7 @@ else:
 
 # CPU detection: internal utils module (pure C, no C++ runtime dependency)
 print("Using internal utils module for CPU detection")
-utils_objs, utils_inc = SConscript('#utils/SConscript',
+utils_objs, utils_inc = SConscript('#src/utils/SConscript',
                                    exports = {'env': almenv},
                                    duplicate = 0)
 alm_objs += utils_objs

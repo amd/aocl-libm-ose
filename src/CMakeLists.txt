@@ -175,7 +175,7 @@ set(INCLUDE_PATHS
   )
 include_directories(${INCLUDE_PATHS})
 
-set(INCLUDES "${INCLUDE_PATHS}" "${ALM_UTILS_INCLUDE_DIR}")
+set(INCLUDES "${INCLUDE_PATHS}" "${${PROJECT_PREFIX}_SOURCE_DIR}/src/utils")
 
 #libmobj variable is to collect object libraries in subdirectories
 set(libmobj "")
@@ -185,6 +185,12 @@ add_subdirectory(isa)
 add_subdirectory(iface)
 add_subdirectory(arch)
 add_subdirectory(ref)
+
+# Internal CPU-detection utils, built as a dedicated object library and embedded
+# directly into libalm (self-contained), matching the SCons build. The subdir
+# appends its objects to libmobj and propagates them via PARENT_SCOPE, like the
+# other src/ subdirectories above.
+add_subdirectory(utils)
 
 file(GLOB SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.c")
 add_library(src OBJECT ${SRCS})
@@ -205,11 +211,11 @@ set(LIBM_PUBLIC_HEADERS "${${PROJECT_PREFIX}_SOURCE_DIR}/include/external/amdlib
 if (WIN32)
   set(LIBALM libalm)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-  set(EXTRA_LIBS alm_utils_static "msvcrt")
+  set(EXTRA_LIBS "msvcrt")
   set(CMAKE_STATIC_LIBRARY_SUFFIX  "-static.lib")
 else()
   set(LIBALM alm)
-  set(EXTRA_LIBS alm_utils_static "-Wl,-Bdynamic -lc")
+  set(EXTRA_LIBS "-Wl,-Bdynamic -lc")
 endif()
 
 set(libm "")

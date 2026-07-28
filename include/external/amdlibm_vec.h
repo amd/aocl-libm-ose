@@ -1089,6 +1089,12 @@ extern "C" {
    * @return Vector of hyperbolic cosines.
    */
   __m512d amd_vrd8_cosh (__m512d x);
+  /**
+   * @brief Computes hyperbolic cosine for sixteen single-precision lanes.
+   * @param x Input vector.
+   * @return Vector of hyperbolic cosines.
+   */
+  __m512 amd_vrs16_coshf (__m512 x);
 
 /* Exponential */
   /**

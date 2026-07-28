@@ -333,6 +333,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrs16_atanf) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(
 alm_func_t        G_ENTRY_PT_PTR(vrs16_cosf) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrs16_cosf);
 alm_func_t        G_ENTRY_PT_PTR(vrs16_acosf) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrs16_acosf);
 alm_func_t        G_ENTRY_PT_PTR(vrs16_tanhf) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrs16_tanhf);
+alm_func_t        G_ENTRY_PT_PTR(vrs16_coshf) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrs16_coshf);
 alm_func_t        G_ENTRY_PT_PTR(vrs16_powf) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrs16_powf);
 alm_func_t        G_ENTRY_PT_PTR(vrs16_powxf) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrs16_powxf);
 alm_func_t        G_ENTRY_PT_PTR(vrs16_log2f) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrs16_log2f);

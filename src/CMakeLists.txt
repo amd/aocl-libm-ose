@@ -100,11 +100,11 @@ set(VRDA_UNARY_AVX2_FUNCS
 # Each function generates a vrsa_<name> wrapper (e.g., vrsa_sinf, vrsa_cosf).
 # The wrapper calls the corresponding vrs8_<name> 8-wide vector function.
 # NOTE: Keep in sync with VRSA_UNARY_AVX2_FUNCS in optimized_srcs.py (SCons).
-# NOTE: fabsf, coshf, cbrtf excluded - standalone (no AVX-512 vrs16_* kernels for unified template).
+# NOTE: fabsf, cbrtf excluded - standalone (no AVX-512 vrs16_* kernels for unified template).
 set(VRSA_UNARY_AVX2_FUNCS
     sinf cosf tanf expf exp2f exp10f logf log2f log10f
     asinf atanf acosf sqrtf roundf
-    erff erfcf tanhf
+    erff erfcf tanhf coshf
 )
 
 # Template file paths for AVX2 array wrappers
@@ -133,7 +133,7 @@ set(VRDA_UNARY_AVX512_FUNCS
 set(VRSA_UNARY_AVX512_FUNCS
     sinf cosf tanf expf exp2f exp10f logf log2f log10f
     asinf atanf acosf sqrtf roundf
-    erff erfcf tanhf
+    erff erfcf tanhf coshf
 )
 
 # Template file paths for AVX-512 array wrappers

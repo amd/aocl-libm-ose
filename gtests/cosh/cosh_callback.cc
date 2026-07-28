@@ -174,7 +174,7 @@ int test_v4s(test_data *data, int idx)  {
 }
 
 int test_v4d(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC) && ((LIBM_PROTOTYPE != PROTOTYPE_GLIBC) || GLIBC_VERSION_CHECK(2, 35))
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
@@ -197,13 +197,15 @@ int test_v8s(test_data *data, int idx)  {
 }
 
 int test_v8d(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE != PROTOTYPE_MSVC) && ((LIBM_PROTOTYPE != PROTOTYPE_GLIBC) || GLIBC_VERSION_CHECK(2, 35))
+  #if defined(__AVX512__)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m512d ip8 = _mm512_set_pd(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m512d op8 = LIBM_FUNC_VEC(d, 8, cosh)(ip8);
   _mm512_store_pd(&op[0], op8);
+  #endif
 #endif
   return 0;
 }

@@ -402,6 +402,7 @@ LIBM_DECL_FN_MAP(vrd8_sin);
 LIBM_DECL_FN_MAP(vrd8_cos);
 LIBM_DECL_FN_MAP(vrd8_tan);
 LIBM_DECL_FN_MAP(vrd8_acos);
+LIBM_DECL_FN_MAP(vrd8_cosh);
 LIBM_DECL_FN_MAP(vrd8_asin);
 LIBM_DECL_FN_MAP(vrd8_atan);
 LIBM_DECL_FN_MAP(vrd8_atan2);
@@ -496,6 +497,8 @@ LIBM_DECL_FN_MAP(vrs16_roundf);
 LIBM_DECL_FN_MAP(vrd2_acos);
 LIBM_DECL_FN_MAP(vrd4_acos);
 LIBM_DECL_FN_MAP(vrda_acos);
+
+LIBM_DECL_FN_MAP(vrd4_cosh);
 
 LIBM_DECL_FN_MAP(vrd2_asin);
 LIBM_DECL_FN_MAP(vrd4_asin);
@@ -846,6 +849,7 @@ WEAK_LIBM_ALIAS(vrd8_sin, FN_PROTOTYPE(vrd8_sin));
 WEAK_LIBM_ALIAS(vrd8_cos, FN_PROTOTYPE(vrd8_cos));
 WEAK_LIBM_ALIAS(vrd8_tan, FN_PROTOTYPE(vrd8_tan));
 WEAK_LIBM_ALIAS(vrd8_acos, FN_PROTOTYPE(vrd8_acos));
+WEAK_LIBM_ALIAS(vrd8_cosh, FN_PROTOTYPE(vrd8_cosh));
 WEAK_LIBM_ALIAS(vrd8_asin, FN_PROTOTYPE(vrd8_asin));
 WEAK_LIBM_ALIAS(vrd8_atan, FN_PROTOTYPE(vrd8_atan));
 WEAK_LIBM_ALIAS(vrd8_atan2, FN_PROTOTYPE(vrd8_atan2));
@@ -940,6 +944,8 @@ WEAK_LIBM_ALIAS(vrs16_roundf, FN_PROTOTYPE(vrs16_roundf));
 WEAK_LIBM_ALIAS(vrd2_acos, FN_PROTOTYPE(vrd2_acos));
 WEAK_LIBM_ALIAS(vrd4_acos, FN_PROTOTYPE(vrd4_acos));
 WEAK_LIBM_ALIAS(vrda_acos, FN_PROTOTYPE(vrda_acos));
+
+WEAK_LIBM_ALIAS(vrd4_cosh, FN_PROTOTYPE(vrd4_cosh));
 
 WEAK_LIBM_ALIAS(vrd2_asin, FN_PROTOTYPE(vrd2_asin));
 WEAK_LIBM_ALIAS(vrd4_asin, FN_PROTOTYPE(vrd4_asin));

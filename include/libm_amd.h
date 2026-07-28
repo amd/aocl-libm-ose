@@ -283,6 +283,7 @@ __m256d FN_PROTOTYPE(vrd4_cos)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_sin)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_tan)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_tanh)(__m256d x);
+__m256d FN_PROTOTYPE(vrd4_cosh)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_atan)(__m256d x);
 __m256d FN_PROTOTYPE(vrd4_atan2)(__m256d y, __m256d x);
 __m256d FN_PROTOTYPE(vrd4_pow)(__m256d x, __m256d y);

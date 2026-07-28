@@ -679,6 +679,12 @@ extern "C" {
    */
   __m256d amd_vrd4_acos (__m256d x);
   /**
+   * @brief Computes hyperbolic cosine for four double-precision lanes.
+   * @param x Input vector.
+   * @return Vector of hyperbolic cosines.
+   */
+  __m256d amd_vrd4_cosh (__m256d x);
+  /**
    * @brief Computes arc-cosine for eight single-precision lanes.
    * @param x Input vector.
    * @return Vector of arc-cosines in radians.
@@ -1077,6 +1083,12 @@ extern "C" {
    * @return Vector of tanh values.
    */
   __m512d amd_vrd8_tanh (__m512d x);
+  /**
+   * @brief Computes hyperbolic cosine for eight double-precision lanes.
+   * @param x Input vector.
+   * @return Vector of hyperbolic cosines.
+   */
+  __m512d amd_vrd8_cosh (__m512d x);
 
 /* Exponential */
   /**

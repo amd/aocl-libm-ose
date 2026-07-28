@@ -345,7 +345,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrs16_roundf) = (alm_func_t)&ALM_PROTO_ARCH_ZN4
 
 alm_func_t        G_ENTRY_PT_PTR(vrd2_cbrt) = (alm_func_t)&ALM_PROTO_FMA3(vrd2_cbrt);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_cos) = (alm_func_t)&ALM_PROTO_ARCH_AVX2(vrd2_cos);
-alm_func_t        G_ENTRY_PT_PTR(vrd2_cosh) = (alm_func_t)&ALM_PROTO_REF(vrd2_cosh);
+alm_func_t        G_ENTRY_PT_PTR(vrd2_cosh) = (alm_func_t)&ALM_PROTO_ARCH_AVX2(vrd2_cosh);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_exp) = (alm_func_t)&ALM_PROTO_ARCH_AVX2(vrd2_exp);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_exp2) = (alm_func_t)&ALM_PROTO_ARCH_AVX2(vrd2_exp2);
 alm_func_t        G_ENTRY_PT_PTR(vrd2_exp10) = (alm_func_t)&ALM_PROTO_FMA3(vrd2_exp10);
@@ -408,6 +408,7 @@ alm_func_t        G_ENTRY_PT_PTR(vrd8_asin) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vr
 alm_func_t        G_ENTRY_PT_PTR(vrd8_acos) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrd8_acos);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_tan) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrd8_tan);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_tanh) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrd8_tanh);
+alm_func_t        G_ENTRY_PT_PTR(vrd8_cosh) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrd8_cosh);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_atan) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrd8_atan);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_atan2) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrd8_atan2);
 alm_func_t        G_ENTRY_PT_PTR(vrd8_erf) = (alm_func_t)&ALM_PROTO_ARCH_ZN4(vrd8_erf);
@@ -424,6 +425,8 @@ alm_func_t        G_ENTRY_PT_PTR(vrd8_erfcinv) = (alm_func_t)&ALM_PROTO_ARCH_ZN4
 alm_func_t        G_ENTRY_PT_PTR(vrd2_acos) = (alm_func_t)&ALM_PROTO_ARCH_AVX2(vrd2_acos);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_acos) = (alm_func_t)&ALM_PROTO_ARCH_AVX2(vrd4_acos);
 alm_func_t        G_ENTRY_PT_PTR(vrda_acos) = (alm_func_t)&ALM_PROTO_ARCH_AVX2(vrda_acos);
+
+alm_func_t        G_ENTRY_PT_PTR(vrd4_cosh) = (alm_func_t)&ALM_PROTO_ARCH_AVX2(vrd4_cosh);
 
 alm_func_t        G_ENTRY_PT_PTR(vrd2_asin) = (alm_func_t)&ALM_PROTO_ARCH_AVX2(vrd2_asin);
 alm_func_t        G_ENTRY_PT_PTR(vrd4_asin) = (alm_func_t)&ALM_PROTO_ARCH_AVX2(vrd4_asin);

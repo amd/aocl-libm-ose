@@ -298,6 +298,7 @@ extern __m128d   ALM_PROTO_INTERNAL(vrd2_erfcinv)  (__m128d x);
 /*
  * Vector double precision, 4 element
  */
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_cosh)     (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_cos)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_exp2)     (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_exp10)    (__m256d x);
@@ -325,6 +326,7 @@ extern __m256d   ALM_PROTO_INTERNAL(vrd4_erfcinv)   (__m256d x);
 /*
  * Vector double precision, 8 elements
  */
+extern __m512d   ALM_PROTO_INTERNAL(vrd8_cosh)     (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_cos)      (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_exp10)    (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_exp2)     (__m512d x);

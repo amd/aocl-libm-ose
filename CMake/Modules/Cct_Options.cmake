@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -40,3 +40,10 @@ option(LIBM_ENABLE_COVERAGE "Enable code coverage." OFF)
 
 # Stable Sort (Keep this section isolated from other libm content)
 option(SORT_BUILD_TESTS "Enable building the stablesort tester (bench + unit tests)." OFF)
+
+# LIBM_TESTS is a convenience switch that turns on both the tests and testsuite builds.
+option(LIBM_TESTS "Enable tests." OFF)
+if(LIBM_TESTS)
+    set(LIBM_BUILD_TESTS ${LIBM_TESTS})
+    set(LIBM_BUILD_TESTSUITE ${LIBM_TESTS})
+endif()

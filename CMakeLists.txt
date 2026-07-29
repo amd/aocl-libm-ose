@@ -346,7 +346,7 @@ if (${${PROJECT_PREFIX}_LIBM_BUILD_TESTSUITE})
 endif()
 
 #------------------------------
-# Add Tests if ENABLE_TESTS is defined
+# Add Tests if LIBM_BUILD_TESTS is enabled
 # These are Integration Tests,
 # Unit tests are expected to be in respective source folder
 #------------------------------
@@ -357,7 +357,7 @@ if (${${PROJECT_PREFIX}_LIBM_BUILD_TESTS})
 endif()
 
 #----------------------------------------------
-# Add Examples if LIBM_ENABLE_TESTS is defined
+# Add Examples if LIBM_BUILD_EXAMPLES is enabled
 #---------------------------------------------
 if (${${PROJECT_PREFIX}_LIBM_BUILD_EXAMPLES})
     enable_testing()

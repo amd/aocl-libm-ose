@@ -10,20 +10,20 @@
       input: [[min_subnormal, max]]
       type: [linearstep]
       steps: [10000]
-      variants : [ss, vrs4, vrs8, vrsa]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
     - id: cosh_002
       description: 'x in [-min_subnormal, min_subnormal], linearstep'
       input: [[-min_subnormal, min_subnormal]]
       type: [linearstep]
       steps: [10000]
-      variants : [ss, vrs4, vrs8, vrsa]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
 
     - id: cosh_003
       description: 'Negative inputs: x in [-FLT_MAX, -SMALLEST_SUBNORMAL], linearstep'
       input: [[-max, -min_subnormal]]
       type: [linearstep]
       steps: [10000]
-      variants : [ss, vrs4, vrs8, vrsa]
+      variants : [ss, vrs4, vrs8, vrs16, vrsa]
 
 #Double precision
     - id: cosh_001

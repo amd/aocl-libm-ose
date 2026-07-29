@@ -396,6 +396,7 @@ typedef __m512 (*mkl_acos_vrs16_func_t)(__m512);
 typedef __m512 (*mkl_asin_vrs16_func_t)(__m512);
 typedef __m512 (*mkl_atan_vrs16_func_t)(__m512);
 typedef __m512 (*mkl_cos_vrs16_func_t)(__m512);
+typedef __m512 (*mkl_cosh_vrs16_func_t)(__m512);
 typedef __m512 (*mkl_erf_vrs16_func_t)(__m512);
 typedef __m512 (*mkl_erfc_vrs16_func_t)(__m512);
 typedef __m512 (*mkl_exp_vrs16_func_t)(__m512);
@@ -777,6 +778,7 @@ static struct {
     mkl_asin_vrs16_func_t asin_vrs16;
     mkl_atan_vrs16_func_t atan_vrs16;
     mkl_cos_vrs16_func_t cos_vrs16;
+    mkl_cosh_vrs16_func_t cosh_vrs16;
     mkl_erf_vrs16_func_t erf_vrs16;
     mkl_erfc_vrs16_func_t erfc_vrs16;
     mkl_exp_vrs16_func_t exp_vrs16;
@@ -1247,6 +1249,7 @@ static void init_mkl_symbols(void) {
     mkl_funcs.cos_vrs16 = load_mkl_symbol<mkl_cos_vrs16_func_t>(mkl_vml, "__svml_cosf16");
     mkl_funcs.tan_vrs16 = load_mkl_symbol<mkl_tan_vrs16_func_t>(mkl_vml, "__svml_tanf16");
     mkl_funcs.tanh_vrs16 = load_mkl_symbol<mkl_tanh_vrs16_func_t>(mkl_vml, "__svml_tanhf16");
+    mkl_funcs.cosh_vrs16 = load_mkl_symbol<mkl_cosh_vrs16_func_t>(mkl_vml, "__svml_coshf16");
     mkl_funcs.pow_vrs16 = load_mkl_symbol<mkl_pow_vrs16_func_t>(mkl_vml, "__svml_powf16");
     mkl_funcs.powx_vrs16 = load_mkl_symbol<mkl_powx_vrs16_func_t>(mkl_vma, "vsPowx");
     mkl_funcs.sincos_vrs16 = load_mkl_symbol<mkl_sincos_vrs16_func_t>(mkl_vml, "__svml_sincosf16");
@@ -2681,6 +2684,10 @@ SHIM_EXPORT void shim_atan_vrs16(InParams<libm::AlignedM512, float> *ipp) {
 
 SHIM_EXPORT void shim_cos_vrs16(InParams<libm::AlignedM512, float> *ipp) {
     ipp->op[0].data = mkl_funcs.cos_vrs16(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_cosh_vrs16(InParams<libm::AlignedM512, float> *ipp) {
+    ipp->op[0].data = mkl_funcs.cosh_vrs16(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_erf_vrs16(InParams<libm::AlignedM512, float> *ipp) {

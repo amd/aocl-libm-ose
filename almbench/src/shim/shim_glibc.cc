@@ -496,6 +496,7 @@ typedef __m512 (*gcc_acos_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_asin_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_atan_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_cos_vrs16_func_t)(__m512);
+typedef __m512 (*gcc_cosh_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_erf_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_erfc_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_exp_vrs16_func_t)(__m512);
@@ -871,6 +872,7 @@ static struct {
     gcc_asin_vrs16_func_t asin_vrs16;
     gcc_atan_vrs16_func_t atan_vrs16;
     gcc_cos_vrs16_func_t cos_vrs16;
+    gcc_cosh_vrs16_func_t cosh_vrs16;
     gcc_erf_vrs16_func_t erf_vrs16;
     gcc_erfc_vrs16_func_t erfc_vrs16;
     gcc_exp_vrs16_func_t exp_vrs16;
@@ -1613,6 +1615,7 @@ static void init_gcc_symbols(void) {
     gcc_funcs.asin_vrs16 = nullptr;
     gcc_funcs.atan_vrs16 = nullptr;
     gcc_funcs.cos_vrs16 = nullptr;
+    gcc_funcs.cosh_vrs16 = nullptr;
     gcc_funcs.erf_vrs16 = nullptr;
     gcc_funcs.erfc_vrs16 = nullptr;
     gcc_funcs.exp_vrs16 = nullptr;
@@ -1771,6 +1774,7 @@ static void init_gcc_symbols(void) {
 
     // COSH - 512-bit (AVX512)
     gcc_funcs.cosh_vrd8 = _ZGVeN8v_cosh;
+    gcc_funcs.cosh_vrs16 = _ZGVeN16v_coshf;
 
     // ERF, ERFC - 512-bit (AVX512)
     gcc_funcs.erf_vrd8 = _ZGVeN8v_erf;
@@ -3135,6 +3139,10 @@ SHIM_EXPORT void shim_atan_vrs16(InParams<libm::AlignedM512, float> *ipp) {
 
 SHIM_EXPORT void shim_cos_vrs16(InParams<libm::AlignedM512, float> *ipp) {
     ipp->op[0].data = gcc_funcs.cos_vrs16(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_cosh_vrs16(InParams<libm::AlignedM512, float> *ipp) {
+    ipp->op[0].data = gcc_funcs.cosh_vrs16(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_erf_vrs16(InParams<libm::AlignedM512, float> *ipp) {

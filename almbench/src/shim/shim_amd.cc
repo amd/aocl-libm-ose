@@ -487,6 +487,7 @@ typedef __m512 (*amd_acos_vrs16_func_t)(__m512);
 typedef __m512 (*amd_asin_vrs16_func_t)(__m512);
 typedef __m512 (*amd_atan_vrs16_func_t)(__m512);
 typedef __m512 (*amd_cos_vrs16_func_t)(__m512);
+typedef __m512 (*amd_cosh_vrs16_func_t)(__m512);
 typedef __m512 (*amd_erf_vrs16_func_t)(__m512);
 typedef __m512 (*amd_erfc_vrs16_func_t)(__m512);
 typedef __m512 (*amd_exp_vrs16_func_t)(__m512);
@@ -886,6 +887,7 @@ static struct {
     amd_asin_vrs16_func_t asin_vrs16;
     amd_atan_vrs16_func_t atan_vrs16;
     amd_cos_vrs16_func_t cos_vrs16;
+    amd_cosh_vrs16_func_t cosh_vrs16;
     amd_erf_vrs16_func_t erf_vrs16;
     amd_erfc_vrs16_func_t erfc_vrs16;
     amd_exp_vrs16_func_t exp_vrs16;
@@ -1418,6 +1420,7 @@ static void init_amd_symbols(void) {
     amd_funcs.asin_vrs16 = load_amd_symbol<amd_asin_vrs16_func_t>(amd_core, "amd_vrs16_asinf");
     amd_funcs.atan_vrs16 = load_amd_symbol<amd_atan_vrs16_func_t>(amd_core, "amd_vrs16_atanf");
     amd_funcs.cos_vrs16 = load_amd_symbol<amd_cos_vrs16_func_t>(amd_core, "amd_vrs16_cosf");
+    amd_funcs.cosh_vrs16 = load_amd_symbol<amd_cosh_vrs16_func_t>(amd_core, "amd_vrs16_coshf");
     amd_funcs.erf_vrs16 = load_amd_symbol<amd_erf_vrs16_func_t>(amd_core, "amd_vrs16_erff");
     amd_funcs.erfc_vrs16 = load_amd_symbol<amd_erfc_vrs16_func_t>(amd_core, "amd_vrs16_erfcf");
     amd_funcs.exp_vrs16 = load_amd_symbol<amd_exp_vrs16_func_t>(amd_core, "amd_vrs16_expf");
@@ -2917,6 +2920,10 @@ SHIM_EXPORT void shim_atan_vrs16(InParams<libm::AlignedM512, float> *ipp) {
 
 SHIM_EXPORT void shim_cos_vrs16(InParams<libm::AlignedM512, float> *ipp) {
     ipp->op[0].data = amd_funcs.cos_vrs16(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_cosh_vrs16(InParams<libm::AlignedM512, float> *ipp) {
+    ipp->op[0].data = amd_funcs.cosh_vrs16(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_erf_vrs16(InParams<libm::AlignedM512, float> *ipp) {

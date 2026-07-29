@@ -288,13 +288,13 @@ export AMD_LIBM_LIBRARY=libalmfast.so
 **Run tests:**
 
 ```sh
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/generic.yml
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/generic.yml
 ```
 
 **Example:**
 
 ```sh
-./libm_runner.x external/shim/libshimamd.so ../config/generic.yml
+./libm_runner.x external/shim/libshimamd.so almbench/config/generic.yml
 ```
 
 #### GLIBC Shim
@@ -302,7 +302,7 @@ export AMD_LIBM_LIBRARY=libalmfast.so
 **Run tests:**
 
 ```sh
-./libm_runner.x ../path/to/shim/libshimglibc.so ../config/generic.yml
+./libm_runner.x ../path/to/shim/libshimglibc.so almbench/config/generic.yml
 ```
 
 #### Intel MKL Shim
@@ -316,7 +316,7 @@ export LD_LIBRARY_PATH=/path/to/mkl/lib:$LD_LIBRARY_PATH
 **Run tests:**
 
 ```sh
-./libm_runner.x ../path/to/shim/libshimmkl.so ../config/generic.yml
+./libm_runner.x ../path/to/shim/libshimmkl.so almbench/config/generic.yml
 ```
 
 ---
@@ -503,13 +503,13 @@ Use **`--verbose-mode`** to write per-test YAML files under `build/libm_testsuit
 To test the accuracy of all mathematical functions, use the `generic.yml` configuration:
 
 ```sh
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/generic.yml
-# Optional: ./libm_runner.x ... ../config/generic.yml --verbose-mode
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/generic.yml
+# Optional: ./libm_runner.x ... almbench/config/generic.yml --verbose-mode
 ```
 
 #### Testing Individual APIs
 
-For targeted testing of specific functions, use the corresponding YAML configuration files located in the `config/` directory.
+For targeted testing of specific functions, use the corresponding YAML configuration files located in the `almbench/config/` directory.
 
 **Available test types:**
 
@@ -521,13 +521,13 @@ For targeted testing of specific functions, use the corresponding YAML configura
 
 ```sh
 # Test sine function accuracy
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/sin/sin_accu.yml
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/sin/sin_accu.yml
 
 # Test sine function conformance
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/sin/sin_conf.yml
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/sin/sin_conf.yml
 
 # Benchmark sine function performance
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/sin/sin_perf.yml
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/sin/sin_perf.yml
 ```
 
 #### Using Master Configuration
@@ -537,26 +537,26 @@ The `master.yml` file provides flexible test execution across multiple APIs and 
 **Syntax:**
 
 ```sh
-./libm_runner.x <shim_library> ../config/master.yml [API] [TEST_TYPE]
+./libm_runner.x <shim_library> almbench/config/master.yml [API] [TEST_TYPE]
 ```
 
 **Examples:**
 
 ```sh
 # Run all tests for acos function
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/master.yml acos
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/master.yml acos
 
 # Run accuracy tests for acos function
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/master.yml acos ACCU
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/master.yml acos ACCU
 
 # Run accuracy tests for acos function (lowercase)
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/master.yml acos accu
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/master.yml acos accu
 
 # Run conformance tests across all APIs
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/master.yml CONF
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/master.yml CONF
 
 # Run all tests for acos function and also write per-test YAML files (for CI or offline analysis)
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/master.yml acos --verbose-mode
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/master.yml acos --verbose-mode
 ```
 
 ---

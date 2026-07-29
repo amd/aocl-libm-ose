@@ -9,6 +9,8 @@ This comprehensive guide provides instructions for building, testing, and instal
 1. [Requirements](#1-requirements)
 2. [Platform-Specific Setup](#2-platform-specific-setup)
 3. [Quick Start Commands](#3-quick-start-commands)
+   - 3.1 [Build the library only](#31-build-the-library-only)
+   - 3.2 [Build the library and its tests](#32-build-the-library-and-its-tests)
 4. [Building With CMake Presets](#4-building-with-cmake-presets)
    - 4.1 [List Presets](#41-list-presets)
    - 4.2 [Configure CMake](#42-configure-cmake)
@@ -49,13 +51,12 @@ This comprehensive guide provides instructions for building, testing, and instal
 | GCC               | ≥ 9.2.0 and < 16.1.0   |   ✓   |    ✗    | Linux compiler option                  |
 | Clang             | ≥ 9.0.0 and < 21.1.8   |   ✓   |    ✗    | Linux compiler option                  |
 | LLVM (Clang-CL)   | ≥ 9.0.0 and < 21.1.8   |   ✗   |    ✓    | Windows compiler (clang-cl.exe)        |
-| MPFR              | Latest                 |   ✓   |    ✓    | Path must be set (especially Windows)  |
-| GMP               | Latest                 |   ✓   |    ✓    | Dependency of MPFR                     |
-| MPC               | Latest                 |   ✓   |    ✓    | Dependency of MPFR                     |
+| MPFR              | Latest                 |   ✓   |    ✓    | Test framework only; path must be set on Windows |
+| GMP               | Latest                 |   ✓   |    ✓    | Test framework only; dependency of MPFR |
+| MPC               | Latest                 |   ✓   |    ✓    | Test framework only; dependency of MPFR |
 | Visual Studio     | 2022                   |   ✗   |    ✓    | Provides Ninja and MSBuild generators  |
 
 **Note:**
-  * AOCL-LibM includes an internal CPUID utilities module (`utils/`) that provides CPU detection functionality. No external aocl-utils dependency is required.
   * On Windows, the build system supports both the Ninja generator (default) and the Visual Studio 17 2022 generator with the ClangCL toolset.
 
 ---
@@ -70,7 +71,7 @@ This comprehensive guide provides instructions for building, testing, and instal
 "<path_to_visualstudio>\VC\Auxiliary\Build\vcvarsall.bat" x64
 ```
 
-3.  Set the `MPFR_PATH` environment variable.
+3.  (Test framework only) Set the `MPFR_PATH` environment variable.
 
 AOCL LibM test framework uses the following libraries:
 - GNU MPFR (an open source multi-precision floating point library)
@@ -88,6 +89,13 @@ No specific setup required.
 ---
 
 ## **3. Quick Start Commands**
+
+Building the library alone requires only CMake and a C/C++ compiler. The
+multi-precision libraries (MPFR, GMP, MPC) are needed only for the test
+framework, so the default preset build works without them
+(`LIBM_BUILD_TESTS` defaults to `OFF`).
+
+### **3.1 Build the library only**
 
 **Linux:**
 ```console
@@ -107,6 +115,46 @@ $ cmake --preset dev-win-release-llvm-msvc --fresh
 $ cmake --build --preset dev-win-release-llvm-msvc -j
 ```
 
+### **3.2 Build the library and its tests**
+
+The tests are **off by default**, so enable them at configure time with
+`-DLIBM_BUILD_TESTS=ON`. Always build the library
+first, then the `gtests` target, then run a test. The full, copy-pasteable
+sequence is:
+
+**Linux:**
+```console
+# 1. Configure with tests enabled
+$ cmake --preset dev-release-gcc -DLIBM_BUILD_TESTS=ON --fresh
+# 2. Build the library
+$ cmake --build --preset dev-release-gcc -j
+# 3. Build the tests (library must already be built)
+$ cmake --build --preset dev-release-gcc --target gtests
+# 4. Run a test
+$ export LD_LIBRARY_PATH=${PWD}/build/dev-release-gcc/lib:$LD_LIBRARY_PATH
+$ ./build/dev-release-gcc/aocl_gtests/test_exp -i f -e 1 -t accu -r -79.0,79.0,simple -c 1000
+```
+
+**Windows (Ninja generator):**
+```console
+# i.  Set up the Visual Studio x64 build environment (provides Ninja and clang-cl)
+$ "<path_to_visualstudio>\VC\Auxiliary\Build\vcvarsall.bat" x64
+# ii. Set MPFR path (test framework dependency)
+$ set MPFR_PATH=<path_to_mpfr>\mpfr
+# 1. Configure with tests enabled
+$ cmake --preset dev-win-release-llvm-ninja -DLIBM_BUILD_TESTS=ON --fresh
+# 2. Build the library
+$ cmake --build --preset dev-win-release-llvm-ninja -j
+# 3. Build the tests (library must already be built)
+$ cmake --build --preset dev-win-release-llvm-ninja --target gtests
+# 4. Run a test
+$ set PATH=%PATH%;%CD%\build\dev-win-release-llvm-ninja\lib;<path_to_mpfr>\mpfr\mpfr_x64-windows\bin;<path_to_mpfr>\gmp\gmp_x64-windows\bin;<path_to_mpfr>\mpc\mpc_x64-windows\bin
+$ build\dev-win-release-llvm-ninja\aocl_gtests\test_exp.exe -i f -e 1 -t accu -r -79.0,79.0,simple -c 1000
+```
+
+For the full list of targets, test parameters and other options, see
+[Building and Executing gtests](#45-building-and-executing-gtests-libm-test-framework).
+
 ---
 
 ## **4. Building With CMake Presets**
@@ -121,16 +169,35 @@ $ cmake --list-presets
 
 **Available Presets:**
 
-| Preset Name                    | Platform | Compiler | Build Type | Generator   | Description                             |
-|--------------------------------|----------|----------|------------|-------------|-----------------------------------------|
-| `dev-gcc`                      | Linux    | GCC      | Debug      | Unix Make   | Developer Config with GCC-Debug         |
-| `dev-clang`                    | Linux    | Clang    | Debug      | Unix Make   | Developer Config with Clang-Debug       |
-| `dev-release-gcc`              | Linux    | GCC      | Release    | Unix Make   | Developer Config with GCC-Release       |
-| `dev-release-clang`            | Linux    | Clang    | Release    | Unix Make   | Developer Config with Clang-Release     |
-| `dev-win-llvm-ninja`           | Windows  | LLVM     | Debug      | Ninja       | Developer Config with LLVM-Debug        |
-| `dev-win-release-llvm-ninja`   | Windows  | LLVM     | Release    | Ninja       | Developer Config with LLVM-Release      |
-| `dev-win-llvm-msvc`            | Windows  | LLVM     | Debug      | VS 2022     | Developer Config with LLVM-Debug (VS)   |
-| `dev-win-release-llvm-msvc`    | Windows  | LLVM     | Release    | VS 2022     | Developer Config with LLVM-Release (VS) |
+The presets configure the **library only** by default. To build any additional
+component (tests, examples, documentation, ...), the general workflow is:
+
+1. **Configure** with the preset and enable the component's option from the
+   [CMake Configuration Options](#5-cmake-configuration-options) table, for example
+   `-DLIBM_BUILD_TESTS=ON`, `-DLIBM_BUILD_EXAMPLES=ON`, or `-DLIBM_BUILD_TESTSUITE=ON`.
+2. **Build the library** with the same preset (`cmake --build --preset {presetName}`).
+3. **Build the component** with `--target <targetName>`.
+
+| Component     | Enable Option (configure step) | Build Target                 |
+|---------------|--------------------------------|------------------------------|
+| Library       | (default, always built)        | (default)                    |
+| gtests        | `-DLIBM_BUILD_TESTS=ON`        | `gtests` / `test_<function>` |
+| Examples      | `-DLIBM_BUILD_EXAMPLES=ON`     | `test_libm`                  |
+| almbench      | `-DLIBM_BUILD_TESTSUITE=ON`    | `libm_runner`                |
+| gtests and almbench | `-DLIBM_TESTS=ON`        | `gtests` / `libm_runner`     |
+
+For more configuration options, refer to the [CMake Configuration Options](#5-cmake-configuration-options) section.
+
+| Preset Name                  | Platform | Compiler | Generator | Build Type | Description                                          |
+|------------------------------|----------|----------|-----------|------------|------------------------------------------------------|
+| `dev-gcc`                    | Linux    | GCC      | Make      | Debug      | Developer Config with GCC-Debug                      |
+| `dev-clang`                  | Linux    | Clang    | Make      | Debug      | Developer Config with Clang-Debug                    |
+| `dev-release-gcc`            | Linux    | GCC      | Make      | Release    | Developer Config with GCC-Release                    |
+| `dev-release-clang`          | Linux    | Clang    | Make      | Release    | Developer Config with Clang-Release                  |
+| `dev-win-llvm-ninja`         | Windows  | LLVM     | Ninja     | Debug      | Developer Config with Ninja Generator (LLVM)-Debug   |
+| `dev-win-release-llvm-ninja` | Windows  | LLVM     | Ninja     | Release    | Developer Config with Ninja Generator (LLVM)-Release |
+| `dev-win-llvm-msvc`          | Windows  | LLVM     | MSVC      | Debug      | Developer Config with MSVC Generator (LLVM)-Debug    |
+| `dev-win-release-llvm-msvc`  | Windows  | LLVM     | MSVC      | Release    | Developer Config with MSVC Generator (LLVM)-Release  |
 
 #### **4.2 Configure CMake**
 
@@ -260,7 +327,14 @@ The compiled library will be installed in the `build/{presetName}` directory or 
 
 ##### **4.5.1 Building gtests**
 
-To build the gtests, use the same preset name used in Configure CMake with the `--target gtests` command:
+The test framework is disabled by default, so first (re)configure the preset with
+`-DLIBM_BUILD_TESTS=ON` to make the `gtests` targets available (this requires the
+MPFR/GMP/MPC dependencies), then build them with the same preset.
+
+**Important:** The LibM library must be built **before** building the gtests.
+The `gtests` (and `test_<function>`) targets link against libalm, so run a plain
+`cmake --build --preset {presetName}` first; building the `--target gtests`
+without the library present will fail at link time.
 
 **Available Build Targets:**
 
@@ -272,12 +346,16 @@ To build the gtests, use the same preset name used in Configure CMake with the `
 To build all the APIs for testing:
 
 ```console
+# Build the LibM library first, then the gtests
+$ cmake --build --preset {presetName}
 $ cmake --build --preset {presetName} --target gtests
 ```
 
 To build and test a **single API**, use the specific target name:
 
 ```console
+# Build the LibM library first, then the single API test
+$ cmake --build --preset {presetName}
 $ cmake --build --preset {presetName} --target test_<function>
 ```
 
@@ -285,24 +363,27 @@ $ cmake --build --preset {presetName} --target test_<function>
 
 **Linux:**
 ```console
+$ cmake --preset dev-release-gcc -DLIBM_BUILD_TESTS=ON --fresh
+$ cmake --build --preset dev-release-gcc
 $ cmake --build --preset dev-release-gcc --target gtests
 ```
 
 **Windows (Ninja generator):**
 ```console
-$ cmake --build --preset dev-win-release-llvm-ninja --target gtests
-```
+# Debug
+$ cmake --preset dev-win-llvm-ninja -DLIBM_BUILD_TESTS=ON --fresh
+$ cmake --build --preset dev-win-llvm-ninja
+$ cmake --build --preset dev-win-llvm-ninja --target gtests
 
-**Windows (Visual Studio generator):**
-```console
-$ cmake --build --preset dev-win-release-llvm-msvc --target gtests
+# Release
+$ cmake --preset dev-win-release-llvm-ninja -DLIBM_BUILD_TESTS=ON --fresh
+$ cmake --build --preset dev-win-release-llvm-ninja
+$ cmake --build --preset dev-win-release-llvm-ninja --target gtests
 ```
 
 ##### **4.5.2 Windows gtests build notes**
 
 On Windows, gtests links against libalm and external dependencies (Google Test/Google Benchmark and mparith). These must use a consistent MSVC C runtime (CRT) and separate cached artifacts per build type to avoid link failures (for example, `_ITERATOR_DEBUG_LEVEL` mismatch when mixing Debug and Release objects).
-
-**Windows presets:** Use `dev-win-llvm-ninja`/`dev-win-llvm-msvc` for Debug gtests and `dev-win-release-llvm-ninja`/`dev-win-release-llvm-msvc` for Release gtests.
 
 **External dependency cache layout:**
 
@@ -312,7 +393,7 @@ On Windows, gtests links against libalm and external dependencies (Google Test/G
 | gapi (gtest/gbench) | Nested CMake build dir (`-B`) | `build/{presetName}/gapi/` | `build/{presetName}/gapi/` |
 | gapi (gtest/gbench) | Install cache (libs) | `build/external/gapi/{Debug\|Release}/` | `build/external/gapi/` |
 | mparith | Source | `gtests/libs/mparith/` | `gtests/libs/mparith/` |
-| mparith | Nested CMake build dir (`-B`) | `build/{presetName}/` (gtests binary dir) | `build/{presetName}/` (gtests binary dir) |
+| mparith | Nested CMake build dir (`-B`) | `build/{presetName}/mparith/` | `build/{presetName}/mparith/` |
 | mparith | Install cache (libs/headers) | `build/external/mparith/{Debug\|Release}/` | `build/external/mparith/` |
 
 gapi and mparith install caches are scoped by `CMAKE_BUILD_TYPE` on Windows. Both use the gtests preset binary directory for the nested CMake `-B` directory (`build/{presetName}/gapi` and `build/{presetName}/mparith` respectively); gapi flattens its built libraries into the scoped `build/external/gapi/{Debug|Release}` cache, while mparith installs artifacts into `MPARITH_DIR` via `-DMPARITH_DIR`.
@@ -397,7 +478,7 @@ $ build\{presetName}\aocl_gtests\test_exp.exe -e 32 -t inplace -r -79.0,79.0,sim
 
 Configure CMake build tests with glibc compatibility API:
 ```console
-$ cmake --preset {presetName} -DLIBABI=glibc --fresh
+$ cmake --preset {presetName} -DLIBM_BUILD_TESTS=ON -DLIBABI=glibc --fresh
 $ cmake --build --preset {presetName}
 $ cmake --build --preset {presetName} --target gtests
 $ ./build/{presetName}/glibc_gtests/test_<function> <Test parameters>
@@ -419,7 +500,7 @@ To build tests to exercise Intel math libraries:
 
 $ export INTEL_PATH=<intel OneAPI path>
 
-$ cmake --preset {presetName} -DLIBABI=svml --fresh
+$ cmake --preset {presetName} -DLIBM_BUILD_TESTS=ON -DLIBABI=svml --fresh
 $ cmake --build --preset {presetName}
 $ cmake --build --preset {presetName} --target gtests
 
@@ -615,17 +696,17 @@ Note: LibM documentation is found here: **<build>/aocl_docs/html/index.html**
 
 #### **4.10 Floating-Point Contraction (FMA) Control**
 
-By default AOCL-LIBM is compiled with `-ffp-contract=fast`, which allows the
+By default AOCL-LIBM is compiled with `ALM_FP_CONTRACT=fast`, which allows the
 compiler to contract floating-point expressions (e.g. fusing a multiply and an
 add into a single FMA instruction) for best performance. If your workload
 requires **bit-reproducible** results across different builds/machines, you must
 disable this contraction using the `ALM_FP_CONTRACT` option:
 
-| Option Value | Compiler Flag           | Description                                   |
-|--------------|-------------------------|-----------------------------------------------|
-| `fast` (default) | `-ffp-contract=fast` | Allow FMA contraction (best performance)      |
-| `on`         | `-ffp-contract=on`      | Contraction only within a source expression   |
-| `off`        | `-ffp-contract=off`     | Disable contraction (bit-reproducible builds) |
+| Option Value     | Compiler-time Flag     | Description                                   |
+|------------------|-----------------------|-----------------------------------------------|
+| `fast` (default) | `-ffp-contract=fast`  | Allow FMA contraction (best performance)      |
+| `on`             | `-ffp-contract=on`    | Contraction only within a source expression   |
+| `off`            | `-ffp-contract=off`   | Disable contraction (bit-reproducible builds) |
 
 The value is case-insensitive; any other value emits a warning and falls back to the default `fast`.
 
@@ -644,6 +725,7 @@ The following table lists all available CMake configuration options for building
 | Category      | Option                      | Description                              | Default        | Linux | Windows | Valid Values                                        |
 |---------------|-----------------------------|------------------------------------------|----------------|:-----:|:-------:|-----------------------------------------------------|
 | **CMake**     | `CMAKE_BUILD_TYPE`          | Build type configuration                 | `Debug`        |   ✓   |    ✓    | `Debug`, `Release`                                  |
+| **CMake**     | `CMAKE_CONFIGURATION_TYPES` | Build configuration for MSVC             | `Debug`        |   ✗   |    ✓    | `Debug`, `Release`                                  |
 | **CMake**     | `CMAKE_C_COMPILER`          | C compiler to use                        | System default |   ✓   |    ✓    | `gcc`, `clang` (Linux); `clang-cl.exe` (Windows)    |
 | **CMake**     | `CMAKE_CXX_COMPILER`        | C++ compiler to use                      | System default |   ✓   |    ✓    | `g++`, `clang++` (Linux); `clang-cl.exe` (Windows)  |
 | **CMake**     | `CMAKE_INSTALL_PREFIX`      | Installation directory path              | System default |   ✓   |    ✓    | Any valid path                                      |
@@ -652,20 +734,25 @@ The following table lists all available CMake configuration options for building
 | **Library**   | `LIBM_BUILD_LIBRARY`        | Enable building libraries                | ON             |   ✓   |    ✓    | `ON`, `OFF`                                         |
 | **Dispatch**  | `ALM_STATIC_DISPATCH`       | Static CPU architecture dispatch         | OFF            |   ✓   |    ✗    | `AVX2`, `ZEN2`, `ZEN3`, `ZEN4`, `ZEN5`, `ZEN6`, `AVX512` |
 | **Compiler**  | `ALM_FP_CONTRACT`           | Floating-point contraction (FMA) mode     | `fast`         |   ✓   |    ✓    | `fast`, `on`, `off`                                    |
+| **Testing**   | `LIBM_TESTS`                | Convenience switch that enables both `LIBM_BUILD_TESTS` and `LIBM_BUILD_TESTSUITE` | OFF            |   ✓   |    ✓    | `ON`, `OFF`                                         |
 | **Testing**   | `LIBM_BUILD_TESTS`          | Enable building tests                    | OFF            |   ✓   |    ✓    | `ON`, `OFF`                                         |
-| **Testing**   | `LIBM_ENABLE_AVX512`        | Enable AVX-512 support                   | ON             |   ✓   |    ✗    | `ON`, `OFF`                                         |
+| **Testing**   | `LIBM_ENABLE_AVX512`        | Enable AVX-512 support                   | ON             |   ✓   |    ✓    | `ON`, `OFF`                                         |
 | **Testing**   | `LIBABI`                    | Library ABI compatibility                | `aocl`         |   ✓   |    ✗    | `aocl`, `glibc`, `svml`                             |
-| **Examples**  | `LIBM_BUILD_EXAMPLES`       | Build example programs                   | OFF            |   ✓   |    ✓    | `ON`, `OFF`                                         |
-| **Examples**  | `USE_STATIC_LIB`            | Link examples with static library        | OFF            |   ✓   |    ✓    | `ON`, `OFF`                                         |
-| **Examples**  | `AOCL_LIBM`                 | Path to AOCL LibM package                | Build dir      |   ✓   |    ✓    | Any valid path                                      |
+| **Testing**   | `LIBM_BUILD_TESTSUITE`      | Enable building LibM testsuite (almbench)| OFF            |   ✓   |    ✓    | `ON`, `OFF`                                         |
 | **Developer** | `LIBM_ENABLE_ASAN`          | Enable AddressSanitizer (GCC only)       | OFF            |   ✓   |    ✗    | `ON`, `OFF`                                         |
 | **Developer** | `LIBM_ENABLE_COVERAGE`      | Enable code coverage (GCC only)          | OFF            |   ✓   |    ✗    | `ON`, `OFF`                                         |
 | **Developer** | `LIBM_BUILD_DOCS`           | Build Sphinx/Doxygen documentation       | OFF            |   ✓   |    ✗    | `ON`, `OFF`                                         |
 | **Developer** | `CMAKE_VERBOSE_MAKEFILE`    | Enable verbose build output              | OFF            |   ✓   |    ✓    | `ON`, `OFF`                                         |
+| **Examples**  | `LIBM_BUILD_EXAMPLES`       | Build example programs                   | OFF            |   ✓   |    ✓    | `ON`, `OFF`                                         |
+| **Examples**  | `USE_STATIC_LIB`            | Link examples with static library        | OFF            |   ✓   |    ✓    | `ON`, `OFF`                                         |
+| **Examples**  | `AOCL_LIBM`                 | Path to AOCL LibM package                | Build dir      |   ✓   |    ✓    | Any valid path                                      |
 
 *Legend:* ✓ = Supported, ✗ = Not Supported
 
 **Note:** CPU detection functionality is provided by the internal utils module (`utils/`). No external dependencies need to be downloaded or configured.
+
+**Note:** For details on the LibM test suite (`LIBM_BUILD_TESTSUITE`), see the
+[almbench test suite guide](almbench/libm_testsuiteReadMe.md).
 
 ---
 

@@ -112,6 +112,13 @@ if (WIN32)
     set(CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}" CACHE STRING "" FORCE)
     message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 endif()
+# Single-config generators (e.g. Ninja, Unix Makefiles) ignore
+# CMAKE_CONFIGURATION_TYPES. Reference the value supplied via CMake presets
+# so it is not reported as an unused manually-specified variable.
+if(DEFINED CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}")
+endif()
+
 
 #------------------------------
 # Configure archiver to use 'rc' flags instead of 'qc'

@@ -33,55 +33,10 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/poly-vec.h>
 
-static const struct {
-    v_f64x8_t tblsz_ln2;
-    v_f64x8_t ln2_tblsz_head, ln2_tblsz_tail;
-    v_f64x8_t huge;
-    v_i64x8_t exp_bias;
-    v_u64x8_t exp_max, mask;
-    v_f64x8_t poly[12];
-    } exp_data = {
-    .tblsz_ln2      = _MM512_SET1_PD8(0x1.71547652b82fep+0),
-    .ln2_tblsz_head = _MM512_SET1_PD8(0x1.63p-1),
-    .ln2_tblsz_tail = _MM512_SET1_PD8(-0x1.bd0105c610ca8p-13),
-    .huge           = _MM512_SET1_PD8(0x1.8000000000000p+52),
-    .exp_bias       = _MM512_SET1_I64x8((int64_t)EXPBIAS_DP64),
-    .exp_max        = _MM512_SET1_U64x8(0x4086200000000000UL),
-    .mask           = _MM512_SET1_U64x8(0x7fffffffffffffffUL),
-    .poly           = {
-        _MM512_SET1_PD8(0x1.0p0),
-        _MM512_SET1_PD8(0x1.000000000001p-1),
-        _MM512_SET1_PD8(0x1.55555555554a2p-3),
-        _MM512_SET1_PD8(0x1.555555554f37p-5),
-        _MM512_SET1_PD8(0x1.1111111130dd6p-7),
-        _MM512_SET1_PD8(0x1.6c16c1878111dp-10),
-        _MM512_SET1_PD8(0x1.a01a011057479p-13),
-        _MM512_SET1_PD8(0x1.a01992d0fe581p-16),
-        _MM512_SET1_PD8(0x1.71df4520705a4p-19),
-        _MM512_SET1_PD8(0x1.28b311c80e499p-22),
-        _MM512_SET1_PD8(0x1.ad661ce7af3e3p-26),
-    },
-};
+#include "../../vrd8_exp_kernel.h"
 
-#define DP64_BIAS        exp_data.exp_bias
-#define LN2_HEAD         exp_data.ln2_tblsz_head
-#define LN2_TAIL         exp_data.ln2_tblsz_tail
-#define INVLN2           exp_data.tblsz_ln2
-#define EXP_HUGE         exp_data.huge
-#define ARG_MAX          exp_data.exp_max
-#define MASK             exp_data.mask
-
-#define C1  exp_data.poly[0]
-#define C3  exp_data.poly[1]
-#define C4  exp_data.poly[2]
-#define C5  exp_data.poly[3]
-#define C6  exp_data.poly[4]
-#define C7  exp_data.poly[5]
-#define C8  exp_data.poly[6]
-#define C9  exp_data.poly[7]
-#define C10 exp_data.poly[8]
-#define C11 exp_data.poly[9]
-#define C12 exp_data.poly[10]
+#define ARG_MAX          v8_exp_kernel_data.exp_max
+#define MASK             v8_exp_kernel_data.mask
 
 #define SCALAR_EXP ALM_PROTO_OPT(exp)
 
@@ -132,40 +87,8 @@ ALM_PROTO_OPT(vrd8_exp)(v_f64x8_t x)
     // Check if -709 < vx < 709
     v_u64x8_t cond = (vx > ARG_MAX );
 
-    // x * (64.0/ln(2))
-    v_f64x8_t z = x * INVLN2;
-
-    v_f64x8_t dn = z + EXP_HUGE;
-
-    // n = int (z)
-    v_i64x8_t n = as_v8_i64_f64(dn);
-
-    // dn = double(n)
-    dn = dn - EXP_HUGE;
-
-    // r = x - (dn * (ln(2)/64))
-    // where ln(2)/64 is split into Head and Tail values
-    v_f64x8_t r1 = x - ( dn * LN2_HEAD);
-
-    v_f64x8_t r2 = dn * LN2_TAIL;
-
-    v_f64x8_t r = r1 - r2;
-
-    // m = (n - j)/64
-    // Calculate 2^m
-    v_i64x8_t m = (n + DP64_BIAS) << 52;
-
-    // Compute polynomial
-    /* poly = C1 + C2*r + C3*r^2 + C4*r^3 + C5*r^4 + C6*r^5 +
-              C7*r^6 + C8*r^7 + C9*r^8 + C10*r^9 + C11*r^10 + C12*r^11
-            = (C1 + C2*r) + r^2(C3 + C4*r) + r^8(C5 + C6*r) +
-              r^6(C7 + C8*r) + r^8(C9 + C10*r) + r^10(C11 + C12*r)
-    */
-    v_f64x8_t poly = POLY_EVAL_11(r, C1, C1, C3, C4, C5, C6,
-                                  C7, C8, C9, C10, C11, C12);
-
-    // result = poly * 2^m
-    v_f64x8_t ret = poly * as_v8_f64_i64(m);
+    // Branch-free, domain-check-free reconstruction
+    v_f64x8_t ret = vrd8_exp_fastpath(x);
 
     if(unlikely(any_v8_u64_avx512(cond))) {
 

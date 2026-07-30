@@ -63,112 +63,31 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/poly-vec.h>
 
-static const struct {
-    v_f32x16_t   tblsz_byln2;
-    v_f32x16_t   ln2_tbl_head, ln2_tbl_tail;
-    v_f32x16_t   huge;
-    v_u32x16_t   arg_max;
-    v_u32x16_t   mask;
-    v_i32x16_t   expf_bias;
-    v_f32x16_t   poly_expf_5[5];
-    v_f32x16_t   poly_expf_7[7];
-} v_expf_data ={
-    .tblsz_byln2  =  _MM512_SET1_PS16(0x1.71547652b82fep+0f),
-    .ln2_tbl_head =  _MM512_SET1_PS16(0x1.63p-1f),
-    .ln2_tbl_tail =  _MM512_SET1_PS16(-0x1.bd0104p-13f),
-    .huge         =  _MM512_SET1_PS16(0x1.8p+23f) ,
-    .arg_max      =  _MM512_SET1_U32x16((uint32_t)0x42AE0000),
-    .mask         =  _MM512_SET1_U32x16((uint32_t)0x7FFFFFFF),
-    .expf_bias    =  _MM512_SET1_I32x16(127),
+#include "vrs16_expf.h"
 
-    // Polynomial coefficients obtained using Remez algorithm
-    .poly_expf_5 = {
-        _MM512_SET1_PS16(0x1p0f),
-        _MM512_SET1_PS16(0x1.fffdc4p-2f),
-        _MM512_SET1_PS16(0x1.55543cp-3f),
-        _MM512_SET1_PS16(0x1.573aecp-5f),
-        _MM512_SET1_PS16(0x1.126bb6p-7f),
-    },
-
-    .poly_expf_7 = {
-        _MM512_SET1_PS16(0x1p0f),
-        _MM512_SET1_PS16(0x1p-1f),
-        _MM512_SET1_PS16(0x1.555554p-3f),
-        _MM512_SET1_PS16(0x1.555468p-5f),
-        _MM512_SET1_PS16(0x1.1112fap-7f),
-        _MM512_SET1_PS16(0x1.6da4acp-10f),
-        _MM512_SET1_PS16(0x1.9eb724p-13f),
-    },
-
+/*
+ * Single definition of the vrs16 expf degree-5 coefficient table (declared
+ * extern in vrs16_expf.h).  Defining it here once avoids a duplicate copy in
+ * every translation unit that includes the header (e.g. vrs16_coshf.c).
+ * Coefficients obtained using the Remez algorithm.
+ */
+const v_f32x16_t ALM_PROTO_OPT(v16_expf_poly)[5] = {
+    _MM512_SET1_PS16(0x1p0f),
+    _MM512_SET1_PS16(0x1.fffdc4p-2f),
+    _MM512_SET1_PS16(0x1.55543cp-3f),
+    _MM512_SET1_PS16(0x1.573aecp-5f),
+    _MM512_SET1_PS16(0x1.126bb6p-7f),
 };
-
-
-#define V16_TBL_LN2         v_expf_data.tblsz_byln2
-#define V16_LN2_TBL_H       v_expf_data.ln2_tbl_head
-#define V16_LN2_TBL_T       v_expf_data.ln2_tbl_tail
-#define V16_EXPF_BIAS       v_expf_data.expf_bias
-#define V16_EXP_HUGE        v_expf_data.huge
-#define V16_ARG_MAX         v_expf_data.arg_max
-#define V16_MASK            v_expf_data.mask
-
-// Coefficients for 5-degree polynomial
-#define A0 v_expf_data.poly_expf_5[0]
-#define A1 v_expf_data.poly_expf_5[1]
-#define A2 v_expf_data.poly_expf_5[2]
-#define A3 v_expf_data.poly_expf_5[3]
-#define A4 v_expf_data.poly_expf_5[4]
-
-// Coefficients for 7-degree polynomial
-#define C0 v_expf_data.poly_expf_7[0]
-#define C1 v_expf_data.poly_expf_7[1]
-#define C2 v_expf_data.poly_expf_7[2]
-#define C3 v_expf_data.poly_expf_7[3]
-#define C4 v_expf_data.poly_expf_7[4]
-#define C5 v_expf_data.poly_expf_7[5]
-#define C6 v_expf_data.poly_expf_7[6]
 
 #define SCALAR_EXPF ALM_PROTO_OPT(expf)
 
 v_f32x16_t
 ALM_PROTO_OPT(vrs16_expf)(v_f32x16_t _x)
 {
-    v_f32x16_t z, dn;
-    v_u32x16_t vx, n;
-    // vx = int(x)
-    vx = as_v16_u32_f32(_x);
+    /* Lanes outside the valid range are fixed up with scalar expf below. */
+    v_u32x16_t cond = vrs16_expf_special_mask(_x);
 
-    vx = vx & V16_MASK;
-
-    /* Check if -103 < vx < 88 */
-    v_u32x16_t cond = (vx > V16_ARG_MAX);
-
-    /* x * (64.0/ln(2)) */
-    z   = _x * V16_TBL_LN2;
-
-    dn  = z + V16_EXP_HUGE;
-
-    /* n = int(z) */
-    n   = as_v16_u32_f32(dn);
-
-    /* dn = double(n) */
-    dn  = dn - V16_EXP_HUGE;
-
-    /* r = x - (dn * (ln(2)/64)) */
-    v_f32x16_t r1, r2, r;
-    r1  = _x - ( dn * V16_LN2_TBL_H);
-    r2  = dn * V16_LN2_TBL_T;
-    r   = r1 - r2;
-
-    /* m = (n - j)/64, Calculating 2^m */
-    v_u32x16_t m = (n + V16_EXPF_BIAS) << 23;
-
-    /* poly = A1 + A2*r + A3*r^2 + A4*r^3 + A5*r^4 + A6*r^5
-     *      = (A1 + A2*r) + r^2(A3 + A4*r) + r^4(A5 + A6*r)
-     */
-    v_f32x16_t poly = POLY_EVAL_5(r, A0, A0, A1, A2, A3, A4);
-
-    // result = polynomial * 2^m
-    v_f32x16_t result = poly * as_v16_f32_u32(m);
+    v_f32x16_t result = vrs16_expf_fastpath(_x);
 
     /*
      * If input value is outside valid range, call scalar expf(value)

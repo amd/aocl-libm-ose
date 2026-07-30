@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -22,6 +22,7 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 
 /*
@@ -31,14 +32,22 @@
  * ---------------------------------------------------------------------------
  * Math (what we compute)
  * ---------------------------------------------------------------------------
- *   10^x = 2^(x * log2(10)) = 2^n * 2^f,   n = round(x * log2(10)),
- *                                            f = x*log2(10) - n,  |f| <= 1/2
+ *   10^x = 2^m * 2^(j/8) * 10^r
+ *
+ *   n = round(8 * x * log2(10)),  j = n & 7,  m = n >> 3,
+ *   r = x - (n/8) * log10(2),     |r| <= log10(2)/16.
  *
  * Fast path (see vrd8_exp10_fastpath below):
- *   1. Split x*log2(10) into integer n and small fraction f (|f| <= 1/2).
- *   2. Approximate 2^f with a degree-11 minimax poly in f (ln2 folded into
- *      the coefficients) evaluates C0 + f * POLY_EVAL_HORNER_10(f, C1..C11).
- *   3. Fold 2^n into the polynomial result's biased exponent (n << 52).
+ *   1. n = round(8 * x * log2_10_hi) via (x * 8log2_10_hi + HUGE) - HUGE
+ *      (lo omitted; equivalent to round(8*x*log2(10)) for |x| <= ARG_MAX);
+ *      then j = n & 7 and m = n >> 3.
+ *   2. Form r = x - (n/8)*log10(2) (|r| <= log10(2)/16) using a hi/lo
+ *      split of log10(2) for accurate cancellation; dn8 = dn * 1/8 is exact.
+ *   3. Look up 2^(j/8) (one vpermpd) before the poly so shuffle can overlap
+ *      the Horner FMA chain.
+ *   4. Approximate 10^r with a degree-7 minimax poly (10^r = 1 + r*poly6(r)),
+ *      Horner via POLY_EVAL_HORNER_7_0; then H*(1+q) = fma(H,q,H) and 2^m
+ *      via exponent bump.
  *
  * ---------------------------------------------------------------------------
  * Control flow
@@ -48,6 +57,8 @@
  *   3. Always run the vector fast path on all 8 lanes.
  *   4. If any lane was marked, replace only those lanes with scalar exp10.
  */
+
+#include <immintrin.h>
 
 #include <libm_util_amd.h>
 #include <libm_macros.h>
@@ -62,51 +73,63 @@
 
 static const struct {
     v_u64x8_t abs_mask;
-    v_u64x8_t arg_max;        /* |x| bits above this -> scalar (overflow/underflow/inf/nan) */
-    v_f64x8_t log2_10_hi;
-    v_f64x8_t log2_10_lo;
+    v_u64x8_t arg_max;        /* |x| above 307 -> scalar (overflow band / inf / nan) */
+    v_u64x8_t huge_bits;      /* bit pattern of HUGE, to recover integer n */
+    v_i64x8_t seven_mask;     /* 7, for n & 7 */
+    v_u64x8_t head;           /* 2^(j/8), j=0..7, for vpermpd */
+    v_f64x8_t eight_log2_10;  /* 8 * log2_10_hi */
+    v_f64x8_t neg_log10_2_hi; /* -log10(2)_hi */
+    v_f64x8_t neg_log10_2_lo; /* -(log10(2)_lo); positive word (log10(2)_lo < 0) */
+    v_f64x8_t eighth;
     v_f64x8_t huge;
-    v_f64x8_t poly[12];       /* 2^f minimax coeffs C0..C11, degree-11 in f */
+    v_f64x8_t poly[7];        /* 10^r minimax T1..T7: 10^r = 1 + r*poly6(r) */
 } v8_exp10_data = {
-    .abs_mask   = _MM512_SET1_U64x8(0x7fffffffffffffffUL),
-    .arg_max    = _MM512_SET1_U64x8(0x4073300000000000UL),  /* 307.0 */
-    .log2_10_hi = _MM512_SET1_PD8(0x1.a934f0979a370p+1),   /* 3.321928095  */
-    .log2_10_lo = _MM512_SET1_PD8(0x1.5fc9257edfe9bp-51),  /* 6.10251e-16  */
-    .huge       = _MM512_SET1_PD8(0x1.8p+52),
-    /* Degree-11 minimax coeffs for 2^f, |f| <= 1/2. */
+    .abs_mask      = _MM512_SET1_U64x8((uint64_t)0x7FFFFFFFFFFFFFFFULL),
+    .arg_max       = _MM512_SET1_U64x8((uint64_t)0x4073300000000000ULL),  /* 307.0 */
+    .huge_bits     = _MM512_SET1_U64x8((uint64_t)0x4338000000000000ULL),
+    .seven_mask    = _MM512_SET1_I64x8((int64_t)7),
+    .head          = { 0x3ff0000000000000ULL, 0x3ff172b83c7d517bULL,
+                       0x3ff306fe0a31b715ULL, 0x3ff4bfdad5362a27ULL,
+                       0x3ff6a09e667f3bcdULL, 0x3ff8ace5422aa0dbULL,
+                       0x3ffae89f995ad3adULL, 0x3ffd5818dcfba487ULL },
+    .eight_log2_10 = _MM512_SET1_PD8(0x1.a934f0979a371p+4),   /* 8*log2_10_hi  */
+    .neg_log10_2_hi = _MM512_SET1_PD8(-0x1.34413509f79ffp-2),
+    .neg_log10_2_lo = _MM512_SET1_PD8(0x1.9dc1da994fd21p-59),
+    .eighth        = _MM512_SET1_PD8(0.125),
+    .huge          = _MM512_SET1_PD8(0x1.8p+52),
+    /*
+     * Degree-7 minimax for 10^r, |r| <= log10(2)/16:  10^r = 1 + r*poly6(r).
+     * poly6(r) for 10^r = e^(r*ln(10)); T1 = ln(10) exactly; T2..T7 fpminimax
+     * (near Taylor ln(10)^k/k!).
+     */
     .poly = {
-        _MM512_SET1_PD8(0x1p0),                /* C0:  1.0           */
-        _MM512_SET1_PD8(0x1.62e42fefa39efp-1), /* C1:  0.693147181  */
-        _MM512_SET1_PD8(0x1.ebfbdff82c5adp-3), /* C2:  0.240226507  */
-        _MM512_SET1_PD8(0x1.c6b08d7049fd1p-5), /* C3:  0.055504109  */
-        _MM512_SET1_PD8(0x1.3b2ab6fb9f413p-7), /* C4:  0.009618129  */
-        _MM512_SET1_PD8(0x1.5d87fe78cf26ep-10),/* C5:  0.001333356  */
-        _MM512_SET1_PD8(0x1.43091310bf6c4p-13),/* C6:  0.000154035  */
-        _MM512_SET1_PD8(0x1.ffcbfba7b847p-17),/* C7:  1.525273e-05  */
-        _MM512_SET1_PD8(0x1.62bfc3c1c57ddp-20),/* C8:  1.321543e-06  */
-        _MM512_SET1_PD8(0x1.b526788bf2853p-24),/* C9:  1.017820e-07  */
-        _MM512_SET1_PD8(0x1.e620fb7baec71p-28),/* C10: 7.074106e-09  */
-        _MM512_SET1_PD8(0x1.e7aa0e43a8875p-32),/* C11: 4.435281e-10  */
+        _MM512_SET1_PD8(0x1.26bb1bbb55516p1),  /* T1 = ln(10) */
+        _MM512_SET1_PD8(0x1.53524c73cebd7p1), /* T2 ≈ ln(10)^2/2 */
+        _MM512_SET1_PD8(0x1.0470591de0a62p1), /* T3 ≈ ln(10)^3/6 */
+        _MM512_SET1_PD8(0x1.2bd76093fe2fdp0), /* T4 ≈ ln(10)^4/24 */
+        _MM512_SET1_PD8(0x1.142a0076a696bp-1),/* T5 ≈ ln(10)^5/120 */
+        _MM512_SET1_PD8(0x1.a7f473b908176p-3),/* T6 ≈ ln(10)^6/720 */
+        _MM512_SET1_PD8(0x1.16c8fec759c72p-4),/* T7 ≈ ln(10)^7/5040 */
     },
 };
 
 #define V8_EXP10_ABS_MASK     v8_exp10_data.abs_mask
 #define V8_EXP10_ARG_MAX      v8_exp10_data.arg_max
-#define V8_EXP10_LOG2_10_HI   v8_exp10_data.log2_10_hi
-#define V8_EXP10_LOG2_10_LO   v8_exp10_data.log2_10_lo
+#define V8_EXP10_HUGE_BITS    v8_exp10_data.huge_bits
+#define V8_EXP10_SEVEN_MASK   v8_exp10_data.seven_mask
+#define V8_EXP10_HEAD         v8_exp10_data.head
+#define V8_EXP10_8LOG2_10     v8_exp10_data.eight_log2_10
+#define V8_EXP10_NEG_LOG10_2_HI   v8_exp10_data.neg_log10_2_hi
+#define V8_EXP10_NEG_LOG10_2_LO   v8_exp10_data.neg_log10_2_lo
+#define V8_EXP10_EIGHTH       v8_exp10_data.eighth
 #define V8_EXP10_HUGE         v8_exp10_data.huge
-#define V8_EXP10_C0           v8_exp10_data.poly[0]
-#define V8_EXP10_C1           v8_exp10_data.poly[1]
-#define V8_EXP10_C2           v8_exp10_data.poly[2]
-#define V8_EXP10_C3           v8_exp10_data.poly[3]
-#define V8_EXP10_C4           v8_exp10_data.poly[4]
-#define V8_EXP10_C5           v8_exp10_data.poly[5]
-#define V8_EXP10_C6           v8_exp10_data.poly[6]
-#define V8_EXP10_C7           v8_exp10_data.poly[7]
-#define V8_EXP10_C8           v8_exp10_data.poly[8]
-#define V8_EXP10_C9           v8_exp10_data.poly[9]
-#define V8_EXP10_C10          v8_exp10_data.poly[10]
-#define V8_EXP10_C11          v8_exp10_data.poly[11]
+#define V8_EXP10_T1           v8_exp10_data.poly[0]
+#define V8_EXP10_T2           v8_exp10_data.poly[1]
+#define V8_EXP10_T3           v8_exp10_data.poly[2]
+#define V8_EXP10_T4           v8_exp10_data.poly[3]
+#define V8_EXP10_T5           v8_exp10_data.poly[4]
+#define V8_EXP10_T6           v8_exp10_data.poly[5]
+#define V8_EXP10_T7           v8_exp10_data.poly[6]
 
 /*
  * Lanes needing scalar fallback: |x| larger than the normal-output threshold,
@@ -126,51 +149,57 @@ vrd8_exp10_special_mask(v_f64x8_t x)
  * lanes to scalar.
  *
  * Identity:
- *   10^x = 2^(x*log2(10)) = 2^n * 2^f
- * where n = round(x*log2(10)) is an integer and f = x*log2(10) - n, |f| <= 1/2.
- * n is applied by the biased exponent of the polynomial result; 2^f is handled
- * by a degree-11 minimax polynomial in f.
+ *   10^x = 2^m * 2^(j/8) * 10^r,  n = round(8*x*log2_10_hi), j = n&7, m = n>>3,
+ *   r = x - (n/8)*log10(2), |r| <= log10(2)/16.  Step 1 uses 8*log2_10_hi
+ *   only; step 2 uses log10(2) hi+lo; table lookup (vpermpd) before Horner;
+ *   step 3 is POLY_EVAL_HORNER_7_0; 2^m via exponent bump.
  */
 static inline ALM_ALWAYS_INLINE v_f64x8_t
 vrd8_exp10_fastpath(v_f64x8_t x)
 {
     /*
-     * Step 1: base-2 exponent estimate x*log2(10), split into HI and LO parts
-     * for accuracy.  phi uses the HI half; e recovers the rounding error of
-     * phi, and tail = x*LO + e holds the low-order bits dropped from phi.
+     * Step 1: n = round(8 * x * log2_10_hi) via (x * 8log2_10_hi + HUGE) - HUGE.
+     * Recover signed n from the low bits.
      */
-    v_f64x8_t phi  = x * V8_EXP10_LOG2_10_HI;
-    v_f64x8_t e    = mul_add(x, V8_EXP10_LOG2_10_HI, -phi);  /* rounding error of phi */
-    v_f64x8_t tail = mul_add(x, V8_EXP10_LOG2_10_LO, e);     /* x*lo + error */
+    v_f64x8_t qd = mul_add(x, V8_EXP10_8LOG2_10, V8_EXP10_HUGE);
+    v_i64x8_t n  = as_v8_i64_f64(qd) - (v_i64x8_t)V8_EXP10_HUGE_BITS;
+    v_f64x8_t dn = qd - V8_EXP10_HUGE;          /* n as a double */
 
     /*
-     * Step 2: round to integer n = nearest(x*log2(10)) via (s + HUGE) - HUGE.
-     * Use the full value s = phi+tail, not phi alone, or n can be wrong by 1
-     * near half-integers.  n becomes the 2^n exponent.
+     * Table lookup depends only on n; issue before r/poly so vpermpd can
+     * overlap the Horner FMA chain.
      */
-    v_f64x8_t s  = phi + tail;
-    v_f64x8_t t  = s + V8_EXP10_HUGE;
-    v_u64x8_t n  = as_v8_u64_f64(t);
-    v_f64x8_t dn = t - V8_EXP10_HUGE;   /* n as a double */
+    v_i64x8_t j = n & V8_EXP10_SEVEN_MASK;
+    v_f64x8_t H = _mm512_permutexvar_pd((__m512i)j, as_v8_f64_u64(V8_EXP10_HEAD));
 
     /*
-     * Step 3: f = x*log2(10) - n,  |f| <= 1/2.
-     * Compute as (phi-dn)+tail to avoid losing the tail in cancellation.
+     * Step 2: r = x - (n/8)*log10(2), |r| <= log10(2)/16.  Form with -log10(2)
+     * hi/lo via mul_add (dn8*(-log10(2)) + x); dn8 = dn * 1/8 is exact.
      */
-    v_f64x8_t f = (phi - dn) + tail;
+    v_f64x8_t dn8 = dn * V8_EXP10_EIGHTH;
+    v_f64x8_t r   = mul_add(dn8, V8_EXP10_NEG_LOG10_2_HI, x);
+    r             = mul_add(dn8, V8_EXP10_NEG_LOG10_2_LO, r);
 
     /*
-     * Step 4: approximate 2^f with a degree-11 Horner minimax polynomial in f.
-     * C0 = 1, so factor out f: 1 + f * POLY_EVAL_HORNER_10(f, C1..C11).
+     * Step 3: 10^r = 1 + q with q = r * poly6(r).  Horner (POLY_EVAL_HORNER_7_0):
+     *   q = r * (T1 + r * (T2 + r * (... + r * T7)))
      */
-    v_f64x8_t poly = V8_EXP10_C0 + f * POLY_EVAL_HORNER_10(f,
-            V8_EXP10_C1, V8_EXP10_C2, V8_EXP10_C3,
-            V8_EXP10_C4, V8_EXP10_C5, V8_EXP10_C6, V8_EXP10_C7,
-            V8_EXP10_C8, V8_EXP10_C9, V8_EXP10_C10, V8_EXP10_C11);
+    v_f64x8_t q = POLY_EVAL_HORNER_7_0(r,
+            V8_EXP10_T1, V8_EXP10_T2, V8_EXP10_T3, V8_EXP10_T4,
+            V8_EXP10_T5, V8_EXP10_T6, V8_EXP10_T7);
+
+    v_f64x8_t Hq = mul_add(H, q, H);
+
     /*
-     * Step 5: result = poly * 2^n.
+     * Step 4: result = Hq * 2^(n>>3).  bits(double(n>>3) + HUGE) equals
+     * HUGE_BITS + (n>>3); m = (HUGE_BITS + (n>>3)) << 52, same as vrd8_exp2.
      */
-    return as_v8_f64_u64(as_v8_u64_f64(poly) + (n << 52));
+    v_u64x8_t m = ((v_u64x8_t)V8_EXP10_HUGE_BITS + (v_u64x8_t)(n >> 3)) << 52;
+
+    /* result = Hq * 2^(n>>3) */
+    v_f64x8_t result = as_v8_f64_u64(as_v8_u64_f64(Hq) + m);
+
+    return result;
 }
 
 #define SCALAR_EXP10 ALM_PROTO_OPT(exp10)
@@ -192,7 +221,7 @@ ALM_PROTO_OPT(vrd8_exp10)(v_f64x8_t x)
     v_u64x8_t need_scalar = vrd8_exp10_special_mask(x);
     int any_need_scalar = any_v8_u64_avx512(need_scalar);
 
-    /* Fast path: 10^x = 2^(x * log2(10)) */
+    /* Fast path: 10^x = 2^m * 2^(j/8) * 10^r */
     v_f64x8_t result = vrd8_exp10_fastpath(x);
 
     if (unlikely(any_need_scalar)) {

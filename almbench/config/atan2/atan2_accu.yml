@@ -403,6 +403,312 @@
       steps: [256, 256]
       variants : [sd, vrd2, vrd4, vrd8]
 
+  - id: binade-zone-tests
+    description: 'Binade zone accuracy tests (double precision, Q1: +y, +x)'
+    tests:
+    # Z0: subnormal ratio (0, 2^-1022)  subnormal scaling + linear path
+    - id: atan2_z00
+      description: 'Z0 subnormal ratio, x in [1, 10000]'
+      input:
+      - [derived, derived]
+      - [1.0, 10000.0]
+      type: [derived, expstep]
+      steps: [500, 500]
+      variants: [sd, vrd2, vrd4, vrd8]
+      uth: ["2.5"]
+      derived:
+        range: [0x0000000000000001, 0x000FFFFFFFFFFFFF]
+        type: linearstep
+        steps: 500
+        func: mul
+
+    # Z1: ratio [2^-1022, 2^-768)  linear path (poly = r), 254 binades
+    - id: atan2_z01
+      description: 'Z1: ratio [2^-1022, 2^-768), x in [1, 10000]'
+      input:
+      - [derived, derived]
+      - [1.0, 10000.0]
+      type: [derived, expstep]
+      steps: [500, 500]
+      variants: [sd, vrd2, vrd4, vrd8]
+      uth: ["2.5"]
+      derived:
+        range: [0x0010000000000000, 0x0FF0000000000000]
+        type: expstep
+        steps: 500
+        func: mul
+
+    # Z2: ratio [2^-768, 2^-512)  linear path (poly = r), 256 binades
+    - id: atan2_z02
+      description: 'Z2: ratio [2^-768, 2^-512), x in [1, 10000]'
+      input:
+      - [derived, derived]
+      - [1.0, 10000.0]
+      type: [derived, expstep]
+      steps: [500, 500]
+      variants: [sd, vrd2, vrd4, vrd8]
+      uth: ["2.5"]
+      derived:
+        range: [0x0FF0000000000000, 0x1FF0000000000000]
+        type: expstep
+        steps: 500
+        func: mul
+
+    # Z3: ratio [2^-512, 2^-256)  linear path (poly = r), 256 binades
+    - id: atan2_z03
+      description: 'Z3: ratio [2^-512, 2^-256), x in [1, 10000]'
+      input:
+      - [derived, derived]
+      - [1.0, 10000.0]
+      type: [derived, expstep]
+      steps: [500, 500]
+      variants: [sd, vrd2, vrd4, vrd8]
+      uth: ["2.5"]
+      derived:
+        range: [0x1FF0000000000000, 0x2FF0000000000000]
+        type: expstep
+        steps: 500
+        func: mul
+
+    # Z4: ratio [2^-256, 2^-128)  linear path (poly = r), 128 binades
+    - id: atan2_z04
+      description: 'Z4: ratio [2^-256, 2^-128), x in [1, 10000]'
+      input:
+      - [derived, derived]
+      - [1.0, 10000.0]
+      type: [derived, expstep]
+      steps: [500, 500]
+      variants: [sd, vrd2, vrd4, vrd8]
+      uth: ["2.5"]
+      derived:
+        range: [0x2FF0000000000000, 0x37F0000000000000]
+        type: expstep
+        steps: 500
+        func: mul
+
+    # Z5: ratio [2^-128, 2^-64)  linear path (poly = r), 64 binades
+    - id: atan2_z05
+      description: 'Z5: ratio [2^-128, 2^-64), x in [1, 10000]'
+      input:
+      - [derived, derived]
+      - [1.0, 10000.0]
+      type: [derived, expstep]
+      steps: [500, 500]
+      variants: [sd, vrd2, vrd4, vrd8]
+      uth: ["2.5"]
+      derived:
+        range: [0x37F0000000000000, 0x3BF0000000000000]
+        type: expstep
+        steps: 500
+        func: mul
+
+    # Z6: ratio [2^-64, 2^-32)  straddles tiny_r boundary, 32 binades
+    - id: atan2_z06
+      description: 'Z6: ratio [2^-64, 2^-32), x in [1, 10000]'
+      input:
+      - [derived, derived]
+      - [1.0, 10000.0]
+      type: [derived, expstep]
+      steps: [500, 500]
+      variants: [sd, vrd2, vrd4, vrd8]
+      uth: ["2.5"]
+      derived:
+        range: [0x3BF0000000000000, 0x3DF0000000000000]
+        type: expstep
+        steps: 500
+        func: mul
+
+    # Z7: ratio [2^-32, 2^-16)  poly j=0, above tiny_r, 16 binades
+    - id: atan2_z07
+      description: 'Z7: ratio [2^-32, 2^-16), x in [1, 10000]'
+      input:
+      - [derived, derived]
+      - [1.0, 10000.0]
+      type: [derived, expstep]
+      steps: [500, 500]
+      variants: [sd, vrd2, vrd4, vrd8]
+      uth: ["2.5"]
+      derived:
+        range: [0x3DF0000000000000, 0x3EF0000000000000]
+        type: expstep
+        steps: 500
+        func: mul
+
+    # Z8: ratio [2^-16, 2^-8)  poly j=0, 8 binades
+    - id: atan2_z08
+      description: 'Z8: ratio [2^-16, 2^-8), x in [1, 10000]'
+      input:
+      - [derived, derived]
+      - [1.0, 10000.0]
+      type: [derived, expstep]
+      steps: [500, 500]
+      variants: [sd, vrd2, vrd4, vrd8]
+      uth: ["2.5"]
+      derived:
+        range: [0x3EF0000000000000, 0x3F70000000000000]
+        type: expstep
+        steps: 500
+        func: mul
+
+    # Z9: ratio [2^-8, 2^-4)  poly j=0..3
+    - id: atan2_z09
+      description: 'Z9: ratio [2^-8, 2^-4), x in [1, 10000]'
+      input:
+      - [derived, derived]
+      - [1.0, 10000.0]
+      type: [derived, expstep]
+      steps: [500, 500]
+      variants: [sd, vrd2, vrd4, vrd8]
+      uth: ["2.5"]
+      derived:
+        range: [0x3F70000000000000, 0x3FB0000000000000]
+        type: expstep
+        steps: 500
+        func: mul
+
+    # Z10: ratio [2^-4, 1.0)  polynomial path, no swap, j=4..63
+    - id: atan2_z10
+      description: 'Z10: ratio [2^-4, 1.0), poly no-swap, x in [1, 10000]'
+      input:
+      - [derived, derived]
+      - [1.0, 10000.0]
+      type: [derived, expstep]
+      steps: [500, 500]
+      variants: [sd, vrd2, vrd4, vrd8]
+      uth: ["2.5"]
+      derived:
+        range: [0x3FB0000000000000, 0x3FF0000000000000]
+        type: expstep
+        steps: 500
+        func: mul
+
+    # Z11: ratio [1.0, 2.0)  swap boundary, poly+swap, j=32..63
+    - id: atan2_z11
+      description: 'Z11: ratio [1.0, 2.0), swap boundary, x in [1, 5000]'
+      input:
+      - [derived, derived]
+      - [1.0, 5000.0]
+      type: [derived, expstep]
+      steps: [500, 500]
+      variants: [sd, vrd2, vrd4, vrd8]
+      uth: ["2.5"]
+      derived:
+        range: [1.0, 2.0]
+        type: expstep
+        steps: 500
+        func: mul
+
+    # Z12: ratio [2.0, 8.0)  polynomial path + swap, j=8..32
+    - id: atan2_z12
+      description: 'Z12: ratio [2.0, 8.0), poly+swap, x in [1, 1250]'
+      input:
+      - [derived, derived]
+      - [1.0, 1250.0]
+      type: [derived, expstep]
+      steps: [500, 500]
+      variants: [sd, vrd2, vrd4, vrd8]
+      uth: ["2.5"]
+      derived:
+        range: [2.0, 8.0]
+        type: expstep
+        steps: 500
+        func: mul
+
+  # ====================================================================
+  # Quadrant coverage tests
+  # z sampled across all zones [subnormal, 2.0] in one sweep.
+  # ====================================================================
+  - id: quadrant-tests
+    description: 'Quadrant coverage accuracy tests (double precision)'
+    tests:
+    # Q4: atan2(-y, +x)  — +x, neg_mul gives -y
+    - id: atan2_q4
+      description: 'Q4: y=-(x*z)<0, x>0, z in [subnormal, 2]'
+      input:
+      - [derived, derived]
+      - [1.0, 10000.0]
+      type: [derived, random]
+      steps: [500, 500]
+      variants: [sd, vrd2, vrd4, vrd8]
+      uth: ["2.5"]
+      derived:
+        range: [0x0000000000000001, 2.0]
+        type: expstep
+        steps: 500
+        func: neg_mul
+
+    # Q3: atan2(-y, -x)  — -x, mul gives -y (since x<0, z>0)
+    - id: atan2_q3
+      description: 'Q3: y=x*z<0 (x<0), x<0, z in [subnormal, 2]'
+      input:
+      - [derived, derived]
+      - [-10000.0, -1.0]
+      type: [derived, random]
+      steps: [500, 500]
+      variants: [sd, vrd2, vrd4, vrd8]
+      uth: ["2.5"]
+      derived:
+        range: [0x0000000000000001, 2.0]
+        type: expstep
+        steps: 500
+        func: mul
+
+    # Q2: atan2(+y, -x)  — -x, neg_mul gives +y (negate of negative)
+    - id: atan2_q2
+      description: 'Q2: y=-(x*z)>0 (x<0), x<0, z in [subnormal, 2]'
+      input:
+      - [derived, derived]
+      - [-10000.0, -1.0]
+      type: [derived, random]
+      steps: [500, 500]
+      variants: [sd, vrd2, vrd4, vrd8]
+      uth: ["2.5"]
+      derived:
+        range: [0x0000000000000001, 2.0]
+        type: expstep
+        steps: 500
+        func: neg_mul
+
+  # ====================================================================
+  # Sensitive-zone tests for the reduced-region scaling.
+  # ====================================================================
+  - id: sensitive-zone-tests
+    description: 'Overflow and small-limit accuracy tests (double precision)'
+    tests:
+    # Reduced region at magnitudes where den*sqrt3 + num would overflow. The
+    # ratio starts below 2-sqrt3 so the branch boundary itself is crossed.
+    - id: atan2_ovf
+      description: 'OVF: ratio [0.125, 1) across 2-sqrt3, x in [DBL_MAX/(1+sqrt3), DBL_MAX]'
+      input:
+      - [derived, derived]
+      - [0x7FD76CF5D0B09954, 0x7FEFFFFFFFFFFFFF]
+      type: [derived, expstep]
+      steps: [500, 500]
+      variants: [sd, vrd2, vrd4, vrd8]
+      uth: ["2.5"]
+      derived:
+        range: [0x3FC0000000000000, 0x3FF0000000000000]
+        type: expstep
+        steps: 500
+        func: mul
+
+    # Reduced region from subnormal up through 2^-1010.
+    # Subnormal path, the widened upscale band, and the lanes just above SMALL_LIM.
+    - id: atan2_und
+      description: 'UND: ratio [0.25, 1), x in [2^-1074, 2^-1010] across SMALL_LIM'
+      input:
+      - [derived, derived]
+      - [0x0000000000000001, 0x00D0000000000000]
+      type: [derived, expstep]
+      steps: [500, 500]
+      variants: [sd, vrd2, vrd4, vrd8]
+      uth: ["2.5"]
+      derived:
+        range: [0x3FD0000000000000, 0x3FF0000000000000]
+        type: expstep
+        steps: 500
+        func: mul
+
 
 
 

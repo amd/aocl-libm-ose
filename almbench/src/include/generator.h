@@ -254,6 +254,7 @@
  private:
      S rmin, rmax, value, step;
      uint64_t mxiter, i;
+     bool negate; // end point sign
  };
 
  /*

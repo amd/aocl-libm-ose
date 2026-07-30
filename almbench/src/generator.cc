@@ -148,14 +148,21 @@ ExponentialGenerator<S>::ExponentialGenerator(S rmn, S rmx, uint64_t mxiter)
       value(rmin),
       step((rmax - rmin) / (S)mxiter),
       mxiter(mxiter + 1),
-      i(0) {}
+      i(0),
+      negate(std::signbit(rmx)) {}
 
+/* 
+ * Note: Known limitation: 
+ * expstep works only when ranges are all -ve or all +ve
+ * [-a, -b] or [+a, +b]. 0 cross-overs are not supported.
+*/
 template <typename S>
 S *ExponentialGenerator<S>::next()
 {
-    value = std::exp(rmin + (i * step));
+    const uint64_t k = (i < mxiter) ? i : (mxiter - 1); // Saturate at the last index, don't extrapolate beyond.
+    value = std::exp(rmin + (k * step));
     i++;
-    if (std::signbit(rmax)) {
+    if (negate) {
         value = -value;
     }
     return &value;

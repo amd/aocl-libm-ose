@@ -22,12 +22,18 @@ set(UTILS_TEST_INCLUDE ${${PROJECT_PREFIX}_SOURCE_DIR}/src/utils)
 # The shared variant sets BUILD_RPATH to the libalm.so output dir so ctest can
 # resolve the shared library at run time without LD_LIBRARY_PATH.
 function(alm_add_cpuid_test base src)
+    # libalm pulls in libm math symbols (e.g. cabs); link the system math
+    # library so the shared object's references resolve at link time. The Unix
+    # math library "m" does not exist on Windows/MSVC (math lives in the CRT),
+    # so guard it the same way the rest of the tree links "m".
+    set(ALM_CPUID_MATH_LIB "")
+    if(NOT WIN32)
+        set(ALM_CPUID_MATH_LIB m)
+    endif()
     if(TARGET libm_shared)
         add_executable(${base}_shared ${src})
         target_include_directories(${base}_shared PRIVATE ${UTILS_TEST_INCLUDE})
-        # libalm pulls in libm math symbols (e.g. cabs); link the system math
-        # library so the shared object's references resolve at link time.
-        target_link_libraries(${base}_shared PRIVATE libm_shared m)
+        target_link_libraries(${base}_shared PRIVATE libm_shared ${ALM_CPUID_MATH_LIB})
         set_target_properties(${base}_shared PROPERTIES
             BUILD_RPATH "$<TARGET_FILE_DIR:libm_shared>")
         add_test(NAME ${base}_shared COMMAND ${base}_shared)
@@ -35,7 +41,7 @@ function(alm_add_cpuid_test base src)
     if(TARGET libm_static)
         add_executable(${base}_static ${src})
         target_include_directories(${base}_static PRIVATE ${UTILS_TEST_INCLUDE})
-        target_link_libraries(${base}_static PRIVATE libm_static m)
+        target_link_libraries(${base}_static PRIVATE libm_static ${ALM_CPUID_MATH_LIB})
         add_test(NAME ${base}_static COMMAND ${base}_static)
     endif()
 endfunction()

@@ -55,6 +55,8 @@
 #include <stdint.h>
 
 #include <libm/amd_funcs_internal.h>
+#include <libm/compiler.h>
+#include <libm/constants.h>
 #include <libm/poly.h>
 #include <libm/typehelper-vec.h>
 
@@ -62,10 +64,11 @@
 #include "../atan2_data.h"
 
 static struct {
-    double    sqrt3, range, pi6, pi2, pi, scale_up;
+    double    sqrt3_ps, prescale, range, pi6, pi2, pi, scale_up;
     v_f64x4_t poly_atan[8];
 } v4_atan2_data = {
-    .sqrt3    = ATAN2_VRD_SQRT3,
+    .sqrt3_ps = ATAN2_VRD_SQRT3_PS,
+    .prescale = ATAN2_VRD_PRESCALE,
     .range    = ATAN2_VRD_RANGE,
     .pi6      = ATAN2_VRD_PI6,
     .pi2      = ATAN2_VRD_PI2,
@@ -83,7 +86,8 @@ static struct {
     },
 };
 
-#define SQRT3    v4_atan2_data.sqrt3
+#define SQRT3_PS v4_atan2_data.sqrt3_ps
+#define PRESCALE v4_atan2_data.prescale
 #define RANGE    v4_atan2_data.range
 #define PI6      v4_atan2_data.pi6
 #define PI2      v4_atan2_data.pi2
@@ -113,37 +117,56 @@ ALM_PROTO_OPT(vrd4_atan2)(v_f64x4_t y, v_f64x4_t x)
     /* sign of y for the final copysign */
     v_u64x4_t ysign = uyi & sign_bit;
 
-    /* |x|, |y| and their raw magnitudes */
+    /* raw magnitudes |x|, |y| */
     v_u64x4_t auxi = uxi & abs_mask;
     v_u64x4_t auyi = uyi & abs_mask;
+
+    /*
+     * Special case handling for :
+     *   both magnitudes 0  the 0/0 case, there is no ratio to form;
+     *   either >= INF      that operand is Inf or NaN.
+     * Check intentionally placed here as vector compute
+     * for lanes with these values raise undesired exceptions
+     * and accounting for them adds compute overhead.
+     *
+     * Constraint: _mm256_cmp_epu64_mask which is the equivalent for vrd8 
+     * solution is available via AVX512VL (currently flag not used in libm)
+     * Hence instead of max_v8_u64(auxi, auyi), we compare auxi, auyi independently
+     */
+    const v_i64x4_t inf_lim = _MM_SET1_I64((int64_t)ALM_F64_INF - 1);
+    v_u64x4_t special = (v_u64x4_t)(((v_i64x4_t)auxi > inf_lim) |
+                                    ((v_i64x4_t)auyi > inf_lim)); // INF case
+    special |= (v_u64x4_t)((auxi | auyi) == (uint64_t)0); // 0/0 case
+    if (unlikely(any_v4_u64((v_i64x4_t)special))) {
+        return call2_v4_f64(ALM_PROTO_OPT(atan2), y, x, y,
+                            (v_i64x4_t)_MM_SET1_I64(-1));
+    }
+
+    /* num = min(|x|,|y|), den = max(|x|,|y|), swapped when |y| > |x|; */
     v_f64x4_t ax = as_v4_f64_u64(auxi);
     v_f64x4_t ay = as_v4_f64_u64(auyi);
-    v_u64x4_t orv = auxi | auyi;
-
-    /* scale subnormal lanes up so that rr compute keeps full precision;
-     * proportional scaling; done only when both x, y are subnormal */
-    v_u64x4_t sub = (v_u64x4_t)(orv < ATAN2_VRD_SUBNORM_LIM);
-    ax = mask_mul_v4_f64(ax, sub, ax, SCALE_UP);
-    ay = mask_mul_v4_f64(ay, sub, ay, SCALE_UP);
-
-    /* num = min(|x|,|y|), den = max(|x|,|y|), swapped when |y| > |x| */
     v_f64x4_t num = min_v4_f64(ax, ay);
     v_f64x4_t den = max_v4_f64(ax, ay);
     v_u64x4_t swapped = (v_u64x4_t)(ay > ax);
+    v_u64x4_t amax = as_v4_u64_f64(den);
 
-    /* fold the all-zero case (0/0) to rr = 0 (den forced to 1). Ensuring rr = 0
-     * for this case produces correct results for all +/- 0 input combinations*/
-    v_u64x4_t zero = (v_u64x4_t)(orv == (uint64_t)0);
-    den = mask_mov_v4_f64(den, zero, _MM_SET1_PD4(1.0));
-    num = mask_mov_v4_f64(num, zero, _MM_SET1_PD4(0.0));
+    /* scale small lanes up so that rr compute keeps full precision;
+     * proportional scaling; done only when both x, y are below SMALL_LIM. */
+    v_u64x4_t sub = (v_u64x4_t)(amax < ATAN2_VRD_SMALL_LIM);
+    v_f64x4_t scale = blend_v4_f64(sub, _MM_SET1_PD4(SCALE_UP),
+                                   _MM_SET1_PD4(1.0));
+    num = num * scale;
+    den = den * scale;
 
     /* r = num/den > RANGE  <=>  num > RANGE*den */
     v_u64x4_t red = (v_u64x4_t)(num > RANGE * den);
 
     /* single divide feeding the odd polynomial:
-     *   rr = red ? (num*sqrt3 - den)/(den*sqrt3 + num) : num/den */
-    v_f64x4_t pnum = blend_v4_f64(red, num * SQRT3 - den, num);
-    v_f64x4_t pden = blend_v4_f64(red, den * SQRT3 + num, den);
+     *   rr = red ? (num*sqrt3 - den)/(den*sqrt3 + num) : num/den
+     * the reduced terms carry an exact 1/4 so that den*sqrt3 + num stays
+     * finite for operands near DBL_MAX; rr is unaffected by the scale */
+    v_f64x4_t pnum = blend_v4_f64(red, num * SQRT3_PS - den * PRESCALE, num);
+    v_f64x4_t pden = blend_v4_f64(red, den * SQRT3_PS + num * PRESCALE, den);
     v_f64x4_t rr = pnum / pden;
 
     /* atan(rr) in [0, pi/12] via the degree-17 odd minimax polynomial */

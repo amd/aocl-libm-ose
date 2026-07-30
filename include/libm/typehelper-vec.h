@@ -487,15 +487,13 @@ any_v16_u32(v_i32x16_t cond)
 static inline int
 any_v4_u64(v_i64x4_t cond)
 {
-    const v_i64x4_t zero = _MM_SET1_I64(0);
-    return ! _mm256_testz_si256((__m256i)cond, (__m256i)zero);
+    return ! _mm256_testz_si256((__m256i)cond, (__m256i)cond);
 }
 
 static inline int
 any_v2_u64(v_i64x2_t cond)
 {
-    const v_i64x2_t zero = _MM_SET1_I64x2(0);
-    return ! _mm_testz_si128((__m128i)cond, (__m128i)zero);
+    return ! _mm_testz_si128((__m128i)cond, (__m128i)cond);
 }
 
 // Condition check with for loop for better performance
@@ -884,14 +882,26 @@ any_v8_u32_loop(v_u32x8_t cond)
 #define cmpeq_v8_u64(a, b)                                              \
     _mm512_cmpeq_epu64_mask((__m512i)(a), (__m512i)(b))
 
+#define cmpge_v8_u64(a, b)                                              \
+    _mm512_cmp_epu64_mask((__m512i)(a), (__m512i)(b), _MM_CMPINT_NLT)
+
+#define cmpgt_v8_u64(a, b)                                              \
+    _mm512_cmpgt_epu64_mask((__m512i)(a), (__m512i)(b))
+
 #define cmpgt_v8_f64(a, b)                                              \
     _mm512_cmp_pd_mask((__m512d)(a), (__m512d)(b), _CMP_GT_OQ)
 
+#if defined(__AVX512DQ__)
 #define movepi_v8_u64(a)   _mm512_movepi64_mask((__m512i)(a))
+#endif /* __AVX512DQ__ */
 
 /* elementwise min/max */
 #define min_v8_f64(a, b)    _mm512_min_pd((__m512d)(a), (__m512d)(b))
 #define max_v8_f64(a, b)    _mm512_max_pd((__m512d)(a), (__m512d)(b))
+#define min_v8_u64(a, b)                                                \
+    (v_u64x8_t)_mm512_min_epu64((__m512i)(a), (__m512i)(b))
+#define max_v8_u64(a, b)                                                \
+    (v_u64x8_t)_mm512_max_epu64((__m512i)(a), (__m512i)(b))
 
 /* per-lane blend: result = k ? a : b */
 #define blend_v8_f64(k, a, b)                                           \

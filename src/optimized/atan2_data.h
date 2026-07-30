@@ -30,8 +30,18 @@
 
 #ifdef ATAN2_VRD
 /* Shared constants for vrd2/vrd4/vrd8 atan2 kernels. */
-#define ATAN2_VRD_SUBNORM_LIM 0x0010000000000000UL
-#define ATAN2_VRD_SQRT3       0x1.bb67ae8584caap0   /* sqrt(3)     */
+/*
+ * Scaling to handle overflow / underflow :
+ * The reduced-region terms are pre-scaled by 1/4. rr is a ratio, so an exact
+ * power-of-two scale leaves it bit-identical, but it keeps den*sqrt3 + num
+ * from overflowing once max(|x|,|y|) passes DBL_MAX/(1+sqrt3) ~ 6.58e307.
+ * SMALL_LIM is the matching lower guard: below it the operands are scaled up
+ * first, otherwise the 1/4 would push the reduced-region terms subnormal.
+ */
+#define ATAN2_VRD_SMALL_LIM   0x0050000000000000UL  /* 2^-1018     */
+#define ATAN2_VRD_PRESCALE    0x1p-2                /* 1/4         */
+#define ATAN2_VRD_SQRT3_PS    0x1.bb67ae8584caap-2  /* sqrt(3)/4   */
+
 #define ATAN2_VRD_RANGE       0x1.126145e9ecd56p-2  /* 2 - sqrt(3) */
 #define ATAN2_VRD_PI6         0x1.0c152382d7366p-1  /* pi/6        */
 #define ATAN2_VRD_PI2         0x1.921fb54442d18p0   /* pi/2        */

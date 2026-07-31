@@ -193,6 +193,7 @@ typedef __m128d (*mkl_cos_vrd2_func_t)(__m128d);
 typedef __m128d (*mkl_cosh_vrd2_func_t)(__m128d);
 typedef __m128d (*mkl_erf_vrd2_func_t)(__m128d);
 typedef __m128d (*mkl_erfc_vrd2_func_t)(__m128d);
+typedef __m128d (*mkl_tanh_vrd2_func_t)(__m128d);
 typedef __m128d (*mkl_exp_vrd2_func_t)(__m128d);
 typedef __m128d (*mkl_exp10_vrd2_func_t)(__m128d);
 typedef __m128d (*mkl_exp2_vrd2_func_t)(__m128d);
@@ -245,6 +246,7 @@ typedef __m256d (*mkl_atan2_vrd4_func_t)(__m256d, __m256d);
 typedef __m256d (*mkl_cos_vrd4_func_t)(__m256d);
 typedef __m256d (*mkl_erf_vrd4_func_t)(__m256d);
 typedef __m256d (*mkl_erfc_vrd4_func_t)(__m256d);
+typedef __m256d (*mkl_tanh_vrd4_func_t)(__m256d);
 typedef __m256d (*mkl_exp_vrd4_func_t)(__m256d);
 typedef __m256d (*mkl_exp2_vrd4_func_t)(__m256d);
 typedef __m256d (*mkl_exp10_vrd4_func_t)(__m256d);
@@ -362,6 +364,7 @@ typedef void (*mkl_sqrt_vrda_func_t)(int, const double*, double*);
 typedef void (*mkl_sub_vrda_func_t)(int, const double*, const double*, double*);
 typedef void (*mkl_subi_vrda_func_t)(int, const double*, double, double*);
 typedef void (*mkl_tan_vrda_func_t)(int, const double*, double*);
+typedef void (*mkl_tanh_vrda_func_t)(int, const double*, double*);
 
 #ifdef __AVX512F__
 // --- Double Precision 512-bit Vector (vrd8) Functions ---
@@ -372,6 +375,7 @@ typedef __m512d (*mkl_atan2_vrd8_func_t)(__m512d, __m512d);
 typedef __m512d (*mkl_cos_vrd8_func_t)(__m512d);
 typedef __m512d (*mkl_erf_vrd8_func_t)(__m512d);
 typedef __m512d (*mkl_erfc_vrd8_func_t)(__m512d);
+typedef __m512d (*mkl_tanh_vrd8_func_t)(__m512d);
 typedef __m512d (*mkl_exp_vrd8_func_t)(__m512d);
 typedef __m512d (*mkl_exp10_vrd8_func_t)(__m512d);
 typedef __m512d (*mkl_exp2_vrd8_func_t)(__m512d);
@@ -557,6 +561,7 @@ static struct {
     mkl_cosh_vrd2_func_t cosh_vrd2;
     mkl_erf_vrd2_func_t erf_vrd2;
     mkl_erfc_vrd2_func_t erfc_vrd2;
+    mkl_tanh_vrd2_func_t tanh_vrd2;
     mkl_exp_vrd2_func_t exp_vrd2;
     mkl_exp10_vrd2_func_t exp10_vrd2;
     mkl_exp2_vrd2_func_t exp2_vrd2;
@@ -612,6 +617,7 @@ static struct {
     mkl_cos_vrd4_func_t cos_vrd4;
     mkl_erf_vrd4_func_t erf_vrd4;
     mkl_erfc_vrd4_func_t erfc_vrd4;
+    mkl_tanh_vrd4_func_t tanh_vrd4;
     mkl_exp_vrd4_func_t exp_vrd4;
     mkl_exp2_vrd4_func_t exp2_vrd4;
     mkl_exp10_vrd4_func_t exp10_vrd4;
@@ -733,6 +739,7 @@ static struct {
     mkl_sub_vrda_func_t sub_vrda;
     mkl_subi_vrda_func_t subi_vrda;
     mkl_tan_vrda_func_t tan_vrda;
+    mkl_tanh_vrda_func_t tanh_vrda;
 
 #ifdef __AVX512F__
     // ============================================================================
@@ -745,6 +752,7 @@ static struct {
     mkl_cos_vrd8_func_t cos_vrd8;
     mkl_erf_vrd8_func_t erf_vrd8;
     mkl_erfc_vrd8_func_t erfc_vrd8;
+    mkl_tanh_vrd8_func_t tanh_vrd8;
     mkl_exp_vrd8_func_t exp_vrd8;
     mkl_exp10_vrd8_func_t exp10_vrd8;
     mkl_exp2_vrd8_func_t exp2_vrd8;
@@ -1020,6 +1028,7 @@ static void init_mkl_symbols(void) {
     mkl_funcs.cosh_vrd2 = load_mkl_symbol<mkl_cosh_vrd2_func_t>(mkl_vml, "__svml_cosh2");
     mkl_funcs.erf_vrd2 = load_mkl_symbol<mkl_erf_vrd2_func_t>(mkl_vml, "__svml_erf2");
     mkl_funcs.erfc_vrd2 = load_mkl_symbol<mkl_erfc_vrd2_func_t>(mkl_vml, "__svml_erfc2");
+    mkl_funcs.tanh_vrd2 = load_mkl_symbol<mkl_tanh_vrd2_func_t>(mkl_vml, "__svml_tanh2");
     mkl_funcs.exp_vrd2 = load_mkl_symbol<mkl_exp_vrd2_func_t>(mkl_vml, "__svml_exp2");
     mkl_funcs.exp10_vrd2 = load_mkl_symbol<mkl_exp10_vrd2_func_t>(mkl_vml, "__svml_exp102");
     mkl_funcs.exp2_vrd2 = load_mkl_symbol<mkl_exp2_vrd2_func_t>(mkl_vml, "__svml_exp22");
@@ -1075,6 +1084,7 @@ static void init_mkl_symbols(void) {
     mkl_funcs.cos_vrd4 = load_mkl_symbol<mkl_cos_vrd4_func_t>(mkl_vml, "__svml_cos4");
     mkl_funcs.erf_vrd4 = load_mkl_symbol<mkl_erf_vrd4_func_t>(mkl_vml, "__svml_erf4");
     mkl_funcs.erfc_vrd4 = load_mkl_symbol<mkl_erfc_vrd4_func_t>(mkl_vml, "__svml_erfc4");
+    mkl_funcs.tanh_vrd4 = load_mkl_symbol<mkl_tanh_vrd4_func_t>(mkl_vml, "__svml_tanh4");
     mkl_funcs.exp_vrd4 = load_mkl_symbol<mkl_exp_vrd4_func_t>(mkl_vml, "__svml_exp4");
     mkl_funcs.exp2_vrd4 = load_mkl_symbol<mkl_exp2_vrd4_func_t>(mkl_vml, "__svml_exp24");
     mkl_funcs.exp10_vrd4 = load_mkl_symbol<mkl_exp10_vrd4_func_t>(mkl_vml, "__svml_exp104");
@@ -1196,11 +1206,13 @@ static void init_mkl_symbols(void) {
     mkl_funcs.sub_vrda = load_mkl_symbol<mkl_sub_vrda_func_t>(mkl_vma, "vdSub");
     mkl_funcs.subi_vrda = load_mkl_symbol<mkl_subi_vrda_func_t>(mkl_vma, "vdSub"); // No separate _i function in VML
     mkl_funcs.tan_vrda = load_mkl_symbol<mkl_tan_vrda_func_t>(mkl_vma, "vdTan");
+    mkl_funcs.tanh_vrda = load_mkl_symbol<mkl_tanh_vrda_func_t>(mkl_vma, "vdTanh");
 
 #ifdef __AVX512F__
     // ============================================================================
     // DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
     // ============================================================================
+    mkl_funcs.tanh_vrd8 = load_mkl_symbol<mkl_tanh_vrd8_func_t>(mkl_vml, "__svml_tanh8");
     mkl_funcs.exp_vrd8 = load_mkl_symbol<mkl_exp_vrd8_func_t>(mkl_vml, "__svml_exp8");
     mkl_funcs.sin_vrd8 = load_mkl_symbol<mkl_sin_vrd8_func_t>(mkl_vml, "__svml_sin8");
     mkl_funcs.cos_vrd8 = load_mkl_symbol<mkl_cos_vrd8_func_t>(mkl_vml, "__svml_cos8");
@@ -1845,6 +1857,10 @@ SHIM_EXPORT void shim_erfc_vrd2(InParams<libm::AlignedM128d, double> *ipp) {
     ipp->op[0].data = mkl_funcs.erfc_vrd2(ipp->ip[0].data);
 }
 
+SHIM_EXPORT void shim_tanh_vrd2(InParams<libm::AlignedM128d, double> *ipp) {
+    ipp->op[0].data = mkl_funcs.tanh_vrd2(ipp->ip[0].data);
+}
+
 SHIM_EXPORT void shim_exp_vrd2(InParams<libm::AlignedM128d, double> *ipp) {
     ipp->op[0].data = mkl_funcs.exp_vrd2(ipp->ip[0].data);
 }
@@ -2061,6 +2077,10 @@ SHIM_EXPORT void shim_erf_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
 
 SHIM_EXPORT void shim_erfc_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = mkl_funcs.erfc_vrd4(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_tanh_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
+    ipp->op[0].data = mkl_funcs.tanh_vrd4(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_exp_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
@@ -2532,6 +2552,10 @@ SHIM_EXPORT void shim_tan_vrda(InParams<double, double> *ipp) {
     mkl_funcs.tan_vrda(ipp->count, ipp->iptr[0], ipp->optr[0]);
 }
 
+SHIM_EXPORT void shim_tanh_vrda(InParams<double, double> *ipp) {
+    mkl_funcs.tanh_vrda(ipp->count, ipp->iptr[0], ipp->optr[0]);
+}
+
 #ifdef __AVX512F__
 // ============================================================================
 // DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
@@ -2562,6 +2586,10 @@ SHIM_EXPORT void shim_erf_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
 
 SHIM_EXPORT void shim_erfc_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
     ipp->op[0].data = mkl_funcs.erfc_vrd8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_tanh_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = mkl_funcs.tanh_vrd8(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_exp_vrd8(InParams<libm::AlignedM512d, double> *ipp) {

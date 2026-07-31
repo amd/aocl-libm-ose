@@ -179,7 +179,7 @@ static const map<string, vector<string>> api_table_amd = {
     {"sub",       {"vrsa", "vrda"}},
     {"sqrt",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
     {"tan",       {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
-    {"tanh",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrsa"}},
+    {"tanh",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
     {"trunc",     {"sd", "ss"}},
     {"clog",      {"sc", "sz"}},
     {"cpow",      {"sc", "sz"}},

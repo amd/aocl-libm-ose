@@ -306,6 +306,12 @@ extern "C" {
    * @return Vector of tanh values.
    */
   __m128 amd_vrs4_tanhf (__m128 x);
+  /**
+   * @brief Computes tanh(x) for two double-precision lanes.
+   * @param x Input vector.
+   * @return Vector of tanh values.
+   */
+  __m128d amd_vrd2_tanh (__m128d x);
 
 /* Exponential */
   /**
@@ -715,6 +721,12 @@ extern "C" {
    * @return Vector of tanh values.
    */
   __m256 amd_vrs8_tanhf (__m256 x);
+  /**
+   * @brief Computes tanh(x) for four double-precision lanes.
+   * @param x Input vector.
+   * @return Vector of tanh values.
+   */
+  __m256d amd_vrd4_tanh (__m256d x);
 
 /* Exponential */
   /**
@@ -1059,6 +1071,12 @@ extern "C" {
    * @return Vector of tanh values.
    */
   __m512 amd_vrs16_tanhf (__m512 x);
+  /**
+   * @brief Computes tanh(x) for eight double-precision lanes.
+   * @param x Input vector.
+   * @return Vector of tanh values.
+   */
+  __m512d amd_vrd8_tanh (__m512d x);
 
 /* Exponential */
   /**
@@ -1427,6 +1445,13 @@ extern "C" {
    * @param dst Output array for tanh values.
    */
   void amd_vrsa_tanhf (int len, const float *src, float *dst);
+  /**
+   * @brief Computes hyperbolic tangent elementwise for double array.
+   * @param len Number of elements.
+   * @param src Input array.
+   * @param dst Output array for tanh values.
+   */
+  void amd_vrda_tanh (int len, const double *src, double *dst);
 #endif
 
 

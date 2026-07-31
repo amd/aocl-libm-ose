@@ -269,6 +269,7 @@ typedef __m128d (*amd_erf_vrd2_func_t)(__m128d);
 typedef __m128d (*amd_erfc_vrd2_func_t)(__m128d);
 typedef __m128d (*amd_erfcinv_vrd2_func_t)(__m128d);
 typedef __m128d (*amd_erfinv_vrd2_func_t)(__m128d);
+typedef __m128d (*amd_tanh_vrd2_func_t)(__m128d);
 typedef __m128d (*amd_exp_vrd2_func_t)(__m128d);
 typedef __m128d (*amd_exp10_vrd2_func_t)(__m128d);
 typedef __m128d (*amd_exp2_vrd2_func_t)(__m128d);
@@ -324,6 +325,7 @@ typedef __m256d (*amd_erf_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_erfc_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_erfcinv_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_erfinv_vrd4_func_t)(__m256d);
+typedef __m256d (*amd_tanh_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_exp_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_exp2_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_exp10_vrd4_func_t)(__m256d);
@@ -445,6 +447,7 @@ typedef void (*amd_sqrt_vrda_func_t)(int, const double*, double*);
 typedef void (*amd_sub_vrda_func_t)(int, const double*, const double*, double*);
 typedef void (*amd_subi_vrda_func_t)(int, const double*, double, double*);
 typedef void (*amd_tan_vrda_func_t)(int, const double*, double*);
+typedef void (*amd_tanh_vrda_func_t)(int, const double*, double*);
 
 #ifdef __AVX512F__
 // ============================================================================
@@ -461,6 +464,7 @@ typedef __m512d (*amd_erf_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_erfc_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_erfcinv_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_erfinv_vrd8_func_t)(__m512d);
+typedef __m512d (*amd_tanh_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_exp_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_exp2_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_exp10_vrd8_func_t)(__m512d);
@@ -655,6 +659,7 @@ static struct {
     amd_erfc_vrd2_func_t erfc_vrd2;
     amd_erfcinv_vrd2_func_t erfcinv_vrd2;
     amd_erfinv_vrd2_func_t erfinv_vrd2;
+    amd_tanh_vrd2_func_t tanh_vrd2;
     amd_exp_vrd2_func_t exp_vrd2;
     amd_exp10_vrd2_func_t exp10_vrd2;
     amd_exp2_vrd2_func_t exp2_vrd2;
@@ -714,6 +719,7 @@ static struct {
     amd_erfc_vrd4_func_t erfc_vrd4;
     amd_erfcinv_vrd4_func_t erfcinv_vrd4;
     amd_erfinv_vrd4_func_t erfinv_vrd4;
+    amd_tanh_vrd4_func_t tanh_vrd4;
     amd_exp_vrd4_func_t exp_vrd4;
     amd_exp2_vrd4_func_t exp2_vrd4;
     amd_exp10_vrd4_func_t exp10_vrd4;
@@ -838,6 +844,7 @@ static struct {
     amd_sub_vrda_func_t sub_vrda;
     amd_subi_vrda_func_t subi_vrda;
     amd_tan_vrda_func_t tan_vrda;
+    amd_tanh_vrda_func_t tanh_vrda;
 
 #ifdef __AVX512F__
     // ============================================================================
@@ -854,6 +861,7 @@ static struct {
     amd_erfc_vrd8_func_t erfc_vrd8;
     amd_erfcinv_vrd8_func_t erfcinv_vrd8;
     amd_erfinv_vrd8_func_t erfinv_vrd8;
+    amd_tanh_vrd8_func_t tanh_vrd8;
     amd_exp_vrd8_func_t exp_vrd8;
     amd_exp2_vrd8_func_t exp2_vrd8;
     amd_exp10_vrd8_func_t exp10_vrd8;
@@ -1183,6 +1191,7 @@ static void init_amd_symbols(void) {
     amd_funcs.erfc_vrd2 = load_amd_symbol<amd_erfc_vrd2_func_t>(amd_core, "amd_vrd2_erfc");
     amd_funcs.erfcinv_vrd2 = load_amd_symbol<amd_erfcinv_vrd2_func_t>(amd_core, "amd_vrd2_erfcinv");
     amd_funcs.erfinv_vrd2 = load_amd_symbol<amd_erfinv_vrd2_func_t>(amd_core, "amd_vrd2_erfinv");
+    amd_funcs.tanh_vrd2 = load_amd_symbol<amd_tanh_vrd2_func_t>(amd_core, "amd_vrd2_tanh");
     amd_funcs.exp_vrd2 = load_amd_symbol<amd_exp_vrd2_func_t>(amd_core, "amd_vrd2_exp");
     amd_funcs.exp10_vrd2 = load_amd_symbol<amd_exp10_vrd2_func_t>(amd_core, "amd_vrd2_exp10");
     amd_funcs.exp2_vrd2 = load_amd_symbol<amd_exp2_vrd2_func_t>(amd_core, "amd_vrd2_exp2");
@@ -1242,6 +1251,7 @@ static void init_amd_symbols(void) {
     amd_funcs.erfc_vrd4 = load_amd_symbol<amd_erfc_vrd4_func_t>(amd_core, "amd_vrd4_erfc");
     amd_funcs.erfcinv_vrd4 = load_amd_symbol<amd_erfcinv_vrd4_func_t>(amd_core, "amd_vrd4_erfcinv");
     amd_funcs.erfinv_vrd4 = load_amd_symbol<amd_erfinv_vrd4_func_t>(amd_core, "amd_vrd4_erfinv");
+    amd_funcs.tanh_vrd4 = load_amd_symbol<amd_tanh_vrd4_func_t>(amd_core, "amd_vrd4_tanh");
     amd_funcs.exp_vrd4 = load_amd_symbol<amd_exp_vrd4_func_t>(amd_core, "amd_vrd4_exp");
     amd_funcs.exp2_vrd4 = load_amd_symbol<amd_exp2_vrd4_func_t>(amd_core, "amd_vrd4_exp2");
     amd_funcs.exp10_vrd4 = load_amd_symbol<amd_exp10_vrd4_func_t>(amd_core, "amd_vrd4_exp10");
@@ -1366,6 +1376,7 @@ static void init_amd_symbols(void) {
     amd_funcs.sub_vrda = load_amd_symbol<amd_sub_vrda_func_t>(amd_core, "amd_vrda_sub");
     amd_funcs.subi_vrda = load_amd_symbol<amd_subi_vrda_func_t>(amd_core, "amd_vrda_subi");
     amd_funcs.tan_vrda = load_amd_symbol<amd_tan_vrda_func_t>(amd_core, "amd_vrda_tan");
+    amd_funcs.tanh_vrda = load_amd_symbol<amd_tanh_vrda_func_t>(amd_core, "amd_vrda_tanh");
 #ifdef __AVX512F__
     // ============================================================================
     // DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
@@ -1381,6 +1392,7 @@ static void init_amd_symbols(void) {
     amd_funcs.erfc_vrd8 = load_amd_symbol<amd_erfc_vrd8_func_t>(amd_core, "amd_vrd8_erfc");
     amd_funcs.erfcinv_vrd8 = load_amd_symbol<amd_erfcinv_vrd8_func_t>(amd_core, "amd_vrd8_erfcinv");
     amd_funcs.erfinv_vrd8 = load_amd_symbol<amd_erfinv_vrd8_func_t>(amd_core, "amd_vrd8_erfinv");
+    amd_funcs.tanh_vrd8 = load_amd_symbol<amd_tanh_vrd8_func_t>(amd_core, "amd_vrd8_tanh");
     amd_funcs.exp_vrd8 = load_amd_symbol<amd_exp_vrd8_func_t>(amd_core, "amd_vrd8_exp");
     amd_funcs.exp2_vrd8 = load_amd_symbol<amd_exp2_vrd8_func_t>(amd_core, "amd_vrd8_exp2");
     amd_funcs.exp10_vrd8 = load_amd_symbol<amd_exp10_vrd8_func_t>(amd_core, "amd_vrd8_exp10");
@@ -2061,6 +2073,10 @@ SHIM_EXPORT void shim_erfinv_vrd2(InParams<libm::AlignedM128d, double> *ipp) {
     ipp->op[0].data = amd_funcs.erfinv_vrd2(ipp->ip[0].data);
 }
 
+SHIM_EXPORT void shim_tanh_vrd2(InParams<libm::AlignedM128d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.tanh_vrd2(ipp->ip[0].data);
+}
+
 SHIM_EXPORT void shim_exp_vrd2(InParams<libm::AlignedM128d, double> *ipp) {
     ipp->op[0].data = amd_funcs.exp_vrd2(ipp->ip[0].data);
 }
@@ -2281,6 +2297,10 @@ SHIM_EXPORT void shim_erfcinv_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
 
 SHIM_EXPORT void shim_erfinv_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = amd_funcs.erfinv_vrd4(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_tanh_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.tanh_vrd4(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_exp_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
@@ -2756,6 +2776,10 @@ SHIM_EXPORT void shim_tan_vrda(InParams<double, double> *ipp) {
     amd_funcs.tan_vrda(ipp->count, ipp->iptr[0], ipp->optr[0]);
 }
 
+SHIM_EXPORT void shim_tanh_vrda(InParams<double, double> *ipp) {
+    amd_funcs.tanh_vrda(ipp->count, ipp->iptr[0], ipp->optr[0]);
+}
+
 #ifdef __AVX512F__
 // ============================================================================
 // DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
@@ -2802,6 +2826,10 @@ SHIM_EXPORT void shim_erfcinv_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
 
 SHIM_EXPORT void shim_erfinv_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
     ipp->op[0].data = amd_funcs.erfinv_vrd8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_tanh_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.tanh_vrd8(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_exp_vrd8(InParams<libm::AlignedM512d, double> *ipp) {

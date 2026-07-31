@@ -267,6 +267,10 @@ EXPORTS
     amd_vrd8_cos
     amd_vrd8_sin
     amd_vrs16_tanhf
+    amd_vrd2_tanh
+    amd_vrd4_tanh
+    amd_vrd8_tanh
+    amd_vrda_tanh
     amd_vrs8_asinf
     amd_vrs8_atanf
     amd_vrd2_atan

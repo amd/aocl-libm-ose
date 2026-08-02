@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -17,161 +17,86 @@
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
  * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
  * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
- * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
+ *
+ * Signature: float atanf(float y)
+ *
+ * Algorithm: specialization of atan2f(y, 1.0f) -- see atan2f.c.
+ *   With denominator fixed at 1.0, all computation in double for accuracy:
+ *   - ratio = yabs  (no division needed for table index)
+ *   - r = (yabs - c) / (1.0 + c*yabs)  -- one vdivsd, no overflow possible
+ *   - No quadrant adjustment (x = 1.0 > 0 always)
+ *   - Sign applied via copysignf(fresult, fy)
  */
-/* Contains implementation of float atanf(float x)
- *
- * sign = sign(x)
- * x = abs(x)
- *
- * Argument reduction to range [-7/16,7/16]
- * Use the following identities
- * x = (x-t)/(1+t*x); where t=0,1/2,1,3/2 based on x values within range
- * then use core approximation: Remez(2,2) on [-7/16,7/16]
- */
+
+#include <stdint.h>
 #include <libm_util_amd.h>
-#include <libm/typehelper.h>
-#include <libm/amd_funcs_internal.h>
 #include <libm/alm_special.h>
-#include <libm/poly.h>
+#include <libm_macros.h>
+#include <libm/amd_funcs_internal.h>
+#include <libm/types.h>
+#include <libm/typehelper.h>
+#include <libm/compiler.h>
 
-static struct {
-    double range[6],value[5], poly_atanf[6], piby2;
-} atanf_data = {
-    // Values of absolute inputs for different x values in comments
-    .range = {
-        0x3ec0000000000000,  /* 2.0^(-19) */
-        0x3fdc000000000000,  /* 7./16. */
-        0x3fe6000000000000,  /* 11./16. */
-        0x3ff3000000000000,  /* 19./16. */
-        0x4003800000000000,  /* 39./16. */
-        0x4190000000000000,  /* 2^26  */
-    },
-    // Values of different arctan inputs
-    .value = {
-        0.0,/*arctan(0.0)*/
-        4.63647609000806093515e-01,/*arctan(0.5)*/
-        7.85398163397448278999e-01,/*arctan(1.0)*/
-        9.82793723247329054082e-01,/*arctan(1.5)*/
-        1.57079632679489655800e+00,/*arctan(infinity)*/
-    },
-    .poly_atanf = {
-        0.296528598819239217902158651186e0,
-        0.192324546402108583211697690500e0,
-        0.470677934286149214138357545549e-2,
-        0.889585796862432286486651434570e0,
-        0.111072499995399550138837673349e1,
-        0.299309699959659728404442796915e0,
-    },
-    .piby2 = 1.5707963267948966e+00,
-};
-#define RANGE atanf_data.range
-#define VALUE atanf_data.value
-#define PIBY2 atanf_data.piby2
-#define C0 atanf_data.poly_atanf[0]
-#define C1 atanf_data.poly_atanf[1]
-#define C2 atanf_data.poly_atanf[2]
-#define C3 atanf_data.poly_atanf[3]
-#define C4 atanf_data.poly_atanf[4]
-#define C5 atanf_data.poly_atanf[5]
-/*
- ********************************************
- * Implementation Notes
- * ---------------------
- * sign = sign(xi)
- * xi = |xi|
- *
- * Argument reduction: Use the following identities
- *
- * 1. If xi < 2.0^(-19),
- *   atanf(xi)= xi
- *
- * 2. If x < 7/16,
- *      t=0
- * 3. If x < 11/16,
- *      t=1/2
- * 4. If x < 19/16,
- *      t=1
- * 5. If x < 39/16,
- *      t=3/2
- * 6. If x < 2^26),
- *      x=-1/x
- * x = (x-t)/(1+t*x);
- * Core approximation: Remez(2,2) on [-7/16,7/16]
- */
-float
-ALM_PROTO_OPT(atanf)(float fx)
+#include "atan2_data.h"
+
+float ALM_PROTO_OPT(atanf)(float fy)
 {
-    uint32_t fux = asuint32(fx);
-    double x = fx;
-    uint64_t ux = asuint64(x);
-    /* Find properties of argument fx. */
-    uint64_t aux = ux & ~SIGNBIT_DP64;
-    uint64_t xneg = ux & SIGNBIT_DP64;
+    uint32_t  uy  = asuint32(fy);
+    uint32_t  fay = uy & POS_BITSET_F32;
+    uint32_t yexp = fay >> EXPSHIFTBITS_SP32;
+    float fresult;
 
-    if (unlikely(aux > PINFBITPATT_DP64)){
-    /* fx is NaN */
-        #ifdef WINDOWS
-        return  __alm_handle_errorf(fux|0x00400000, 0);
-        #else
-        return fx; /* Raise invalid if it's a signalling NaN */
-        #endif
-    }
-
-    double c;
-    if (xneg) x = -x;
-    /* Argument reduction to range [-7/16,7/16] */
-
-    if (aux < RANGE[0]){
-      /* x is a good approximation to atan(x) */
-        if (aux == 0x0000000000000000)
-            return fx;
-        else
-        #ifdef WINDOWS
-            return fx ; //valf_with_flags(fx, AMD_F_INEXACT);
-        #else
-            return  __alm_handle_errorf(fux, AMD_F_UNDERFLOW|AMD_F_INEXACT);
-        #endif
-    }
-    else if (aux < RANGE[1]){
-        c = VALUE[0];
-    }else if (aux < RANGE[2]){
-        x = (2.0 * x - 1.0) / (2.0 + x);
-        c = VALUE[1];
-    }
-    else if (aux < RANGE[3]){
-        x = (x - 1.0) / (1.0 + x);
-        c = VALUE[2];
-    }
-    else if (aux < RANGE[4]){
-        x = (x - 1.5) / (1.0 + 1.5 * x);
-        c = VALUE[3];
-    }
-    else{
-        if (aux > RANGE[5]){
-            float f = xneg ? (float)-PIBY2 : (float)PIBY2;
-            return _atanf_special_overflow(f);
+    // Single unlikely gate: catches zero, Inf, and NaN for y.
+    // yexp-1 wraps to ~0 for zero or subnormal; >= BIASEDEMAX_SP32 for Inf or NaN.
+    if (unlikely(yexp - 1 >= BIASEDEMAX_SP32)) {
+        if (fay > POS_INF_F32) {
+            // y is NaN; raises FE_INVALID for sNaN
+            fresult = fy + fy;
+        } else if (yexp != 0) {
+            // |y|==Inf: atanf(+/-Inf) = +/-pi/2
+            fresult = copysignf((float)atan2_piby2, fy);
+        } else {
+            // y==0 or y subnormal: atanf(fy ~= 0) = fy
+            fresult = fy;
         }
-        x = -1.0 / x;
-        c = VALUE[4];
-    }
-    if(x == 0.0)
-        return xneg ? -(float)c : (float)c;
+    } else {
+        // ratio = |y| / 1.0 = |y|: table index from |y| bits directly.
+        double   yabs = (double)asfloat(fay);
+        uint64_t   rb = asuint64(yabs);
+        int         b = (int)(rb >> EXPSHIFTBITS_DP64) - EXPBIAS_DP64 + ATAN2_LOG2SIZE - 1;
+        double result = 0.0;
 
-    double p1 = POLY_EVAL_ODD_7(x, C0, C1, C2);
-    double p2 = POLY_EVAL_ODD_7(x, C3, C4, C5);
-    double s = x * x;
-    double p = x * s * (p1 - x) / (p2 - x);
-    double z;
-    if (xneg){
-        z = (p - x) - c;
-    }else{
-        z = c - (p - x);
+        if (likely((unsigned)b < 8)) {
+            int k = (int)((rb >> (EXPSHIFTBITS_DP64 - ATAN2_LOG2SIZE)) & ((1u << ATAN2_LOG2SIZE) - 1));
+            double tbl_head = atan2_log_table[b * (1u << ATAN2_LOG2SIZE) + k].head;
+
+            // c = 2^(b-4)*(2k+65)/64, exact from bit pattern
+            double c = asdouble(((uint64_t)(EXPBIAS_DP64 - ATAN2_LOG2SIZE + 1 + b) << EXPSHIFTBITS_DP64) |
+                                ((uint64_t)(2*k + 1) << (EXPSHIFTBITS_DP64 - ATAN2_LOG2SIZE - 1)));
+
+            // r = (|y| - c) / (1 + c*|y|): x=1.0, no overflow possible.
+            double r = (yabs - c) / (1.0 + c * yabs);
+            double s = r * r;
+            result = tbl_head + r * (1.0 + s * (ATAN2_A0 + s * ATAN2_A1));
+        } else {
+            // |y| < 1/16 (b < 0): atanf(y) ~ y via polynomial
+            // |y| > 16  (b > 7): atanf(y) = pi/2 - atanf(1/y)
+            double z = (b >= 0) ? 1.0 / yabs : yabs;
+            double s = z * z;
+            result = z * (1.0 + s * (ATAN2_B0 + s * (ATAN2_B1 +
+                  s * (ATAN2_B2 + s * (ATAN2_B3 + s * (ATAN2_B4 + s * ATAN2_B5))))));
+            if (b >= 0) result = atan2_piby2 - result;
+        }
+
+        // Round result to float and apply the sign of y
+        fresult = copysignf((float)result, fy);
     }
-    return (float)z;
+
+    return fresult;
 }

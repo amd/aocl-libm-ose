@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -23,119 +23,80 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
+ *
+ * Signature: double atan(double y)
+ *
+ * Algorithm: specialization of atan2(y, 1.0) -- see atan2.c.
+ *   With denominator fixed at 1.0:
+ *   - ratio = yabs  (no division needed for table index)
+ *   - r = (yabs - c) / (1.0 + c*yabs)  -- one vdivsd, no overflow possible
+ *   - No quadrant adjustment (x = 1.0 > 0 always)
+ *   - Sign applied via copysign(result, y)
  */
 
-#include "libm_util_amd.h"
+#include <stdint.h>
+#include <libm_util_amd.h>
 #include <libm/alm_special.h>
+#include <libm_macros.h>
 #include <libm/amd_funcs_internal.h>
+#include <libm/types.h>
+#include <libm/typehelper.h>
+#include <libm/compiler.h>
 
+#include "atan2_data.h"
 
-double ALM_PROTO_OPT(atan)(double x)
+double ALM_PROTO_OPT(atan)(double y)
 {
+    uint64_t  uy  = asuint64(y);
+    uint64_t  fay = uy & POS_BITSET_DP64;
+    uint64_t yexp = fay >> EXPSHIFTBITS_DP64;
+    double result;
 
-  /* Some constants and split constants. */
-
-  static double piby2 = 1.5707963267948966e+00; /* 0x3ff921fb54442d18 */
-  double chi, clo, v, s, q, z;
-
-  /* Find properties of argument x. */
-
-  unsigned long long ux, aux, xneg;
-  GET_BITS_DP64(x, ux);
-  aux = ux & ~SIGNBIT_DP64;
-  xneg = (ux != aux);
-
-  if (xneg) v = -x;
-  else v = x;
-
-  /* Argument reduction to range [-7/16,7/16] */
-
-  if (aux < 0x3e50000000000000) /* v < 2.0^(-26) */
-    {
-      /* x is a good approximation to atan(x) and avoids working on
-         intermediate denormal numbers */
-      if (aux == 0x0000000000000000)
-        return x;
-      else
-#ifdef WINDOWS
-        return x ; //val_with_flags(x, AMD_F_INEXACT);
-#else
-	return  __alm_handle_error(ux, AMD_F_UNDERFLOW|AMD_F_INEXACT);
-#endif
-    }
-  else if (aux > 0x4003800000000000) /* v > 39./16. */
-    {
-
-      if (aux > PINFBITPATT_DP64)
-        {
-          /* x is NaN */
-#ifdef WINDOWS
-		return  __alm_handle_error(ux|0x0008000000000000, AMD_F_NONE);
-#else
-          return x + x; /* Raise invalid if it's a signalling NaN */
-#endif
+    // Single unlikely gate: catches zero, subnormal, Inf, and NaN for y.
+    // yexp-1 wraps to ~0 for zero or subnormal; >= BIASEDEMAX_DP64 for Inf or NaN.
+    if (unlikely(yexp - 1 >= BIASEDEMAX_DP64)) {
+        if (fay > POS_INF_F64) {
+            // y is NaN; raises FE_INVALID for sNaN
+            result = y + y;
+        } else if (yexp != 0) {
+            // |y|==Inf: atan(+/-Inf) = +/-pi/2
+            result = copysign(atan2_piby2, y);
+        } else {
+            // y==0 or y subnormal: atan(y ~= 0) = y
+            result = y;
         }
-      else if (aux > 0x4370000000000000)
-	{ /* abs(x) > 2^56 => arctan(1/x) is
-	     insignificant compared to piby2 */
-	  if (xneg)
-            return -piby2;//val_with_flags(-piby2, AMD_F_INEXACT);
-	  else
-            return piby2;//val_with_flags(piby2, AMD_F_INEXACT);
-	}
+    } else {
+        // ratio = |y| / 1.0 = |y|: table index from |y| bits directly.
+        double yabs = asdouble(fay);
+        uint64_t rb = fay;
+        int b = (int)(rb >> EXPSHIFTBITS_DP64) - EXPBIAS_DP64 + ATAN2_LOG2SIZE - 1;
 
-      x = -1.0/v;
-      /* (chi + clo) = arctan(infinity) */
-      chi = 1.57079632679489655800e+00; /* 0x3ff921fb54442d18 */
-      clo = 6.12323399573676480327e-17; /* 0x3c91a62633145c06 */
-    }
-  else if (aux > 0x3ff3000000000000) /* 39./16. > v > 19./16. */
-    {
-      x = (v-1.5)/(1.0+1.5*v);
-      /* (chi + clo) = arctan(1.5) */
-      chi = 9.82793723247329054082e-01; /* 0x3fef730bd281f69b */
-      clo = 1.39033110312309953701e-17; /* 0x3c7007887af0cbbc */
-    }
-  else if (aux > 0x3fe6000000000000) /* 19./16. > v > 11./16. */
-    {
-      x = (v-1.0)/(1.0+v);
-      /* (chi + clo) = arctan(1.) */
-      chi = 7.85398163397448278999e-01; /* 0x3fe921fb54442d18 */
-      clo = 3.06161699786838240164e-17; /* 0x3c81a62633145c06 */
-    }
-  else if (aux > 0x3fdc000000000000) /* 11./16. > v > 7./16. */
-    {
-      x = (2.0*v-1.0)/(2.0+v);
-      /* (chi + clo) = arctan(0.5) */
-      chi = 4.63647609000806093515e-01; /* 0x3fddac670561bb4f */
-      clo = 2.26987774529616809294e-17; /* 0x3c7a2b7f222f65e0 */
-    }
-  else  /* v < 7./16. */
-    {
-      x = v;
-      chi = 0.0;
-      clo = 0.0;
+        if (likely((unsigned)b < 8)) {
+            int k = (int)((rb >> (EXPSHIFTBITS_DP64 - ATAN2_LOG2SIZE)) & ((1u << ATAN2_LOG2SIZE) - 1));
+            Atan2LogData tbl = atan2_log_table[b * (1u << ATAN2_LOG2SIZE) + k];
+
+            // c = 2^(b-4)*(2k+65)/64, exact from bit pattern
+            double c = asdouble(((uint64_t)(EXPBIAS_DP64 - ATAN2_LOG2SIZE + 1 + b) << EXPSHIFTBITS_DP64) |
+                                ((uint64_t)(2*k + 1) << (EXPSHIFTBITS_DP64 - ATAN2_LOG2SIZE - 1)));
+
+            // r = (|y| - c) / (1 + c*|y|): x=1.0, no overflow possible.
+            double r = (yabs - c) / (1.0 + c * yabs);
+            double s = r * r;
+            double poly = tbl.tail + r * (1.0 + s * (ATAN2_A0 + s * (ATAN2_A1 + s * ATAN2_A2)));
+            result = tbl.head + poly;
+        } else {
+            // |y| < 1/16 (b < 0): atan(y) ~ y via polynomial
+            // |y| > 16  (b > 7): atan(y) = pi/2 - atan(1/y)
+            double z = (b >= 0) ? 1.0 / yabs : yabs;
+            double s = z * z;
+            result = z * (1.0 + s * (ATAN2_B0 + s * (ATAN2_B1 +
+                  s * (ATAN2_B2 + s * (ATAN2_B3 + s * (ATAN2_B4 + s * ATAN2_B5))))));
+            if (b >= 0) result = atan2_piby2 - result;
+        }
+
+        // Apply the sign of y
+        result = copysign(result, y);
     }
 
-  /* Core approximation: Remez(4,4) on [-7/16,7/16] */
-
-  s = x*x;
-  q = x*s*
-       (0.268297920532545909e0 +
-	(0.447677206805497472e0 +
-	 (0.220638780716667420e0 +
-	  (0.304455919504853031e-1 +
-	    0.142316903342317766e-3*s)*s)*s)*s)/
-       (0.804893761597637733e0 +
-	(0.182596787737507063e1 +
-	 (0.141254259931958921e1 +
-	  (0.424602594203847109e0 +
-	    0.389525873944742195e-1*s)*s)*s)*s);
-
-  z = chi - ((q - clo) - x);
-
-  if (xneg) z = -z;
-  return z;
+    return result;
 }
-
-

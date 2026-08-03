@@ -194,6 +194,18 @@ within that mathematical domain.
    ag/linearfrac_api.rst
 
 
+Sort Functions
+==============
+
+AOCL-LibM also provides a stable sorting utility for double-precision data.
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Sort Functions
+
+   ag/sort_api.rst
+
+
 * AOCL-LibM is developed and maintained by AMD.
 * For support, send an email to* toolchainsupport@amd.com
 

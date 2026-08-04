@@ -46,6 +46,10 @@ Implementation notes:
 
 void ALM_PROTO_OPT(vrda_powx)(int length, const double *x, double y, double *result)
 {
+    /* Empty/negative length */
+    if (unlikely(length <= 0))
+        return;
+
     int j = 0;
     int remainder = length % DOUBLE_ELEMENTS_256_BIT;
 

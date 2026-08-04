@@ -55,9 +55,9 @@ REAL_L FUNC_FMA(REAL x, REAL y, REAL z)
     mpfr_set_d(mpy, y, rnd);
     mpfr_set_d(mpz, z, rnd);
 #elif defined(DOUBLE)
-    ALM_MPFR_SET_REAL(mpx, x, rnd);
-    ALM_MPFR_SET_REAL(mpy, y, rnd);
-    ALM_MPFR_SET_REAL(mpz, z, rnd);
+    mpfr_set_d(mpx, x, rnd);
+    mpfr_set_d(mpy, y, rnd);
+    mpfr_set_d(mpz, z, rnd);
 #endif
 
     mpfr_fma(mp_rop, mpx, mpy, mpz, rnd);
@@ -65,7 +65,7 @@ REAL_L FUNC_FMA(REAL x, REAL y, REAL z)
 #if defined(FLOAT)
     r = mpfr_get_d(mp_rop, rnd);
 #elif defined(DOUBLE)
-    r = ALM_MPFR_GET_REAL(mp_rop, rnd);
+    r = mpfr_get_d(mp_rop, rnd);
 #endif
 
     mpfr_clears (mpx, mpy, mpz, mp_rop, (mpfr_ptr) 0);

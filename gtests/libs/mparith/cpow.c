@@ -95,8 +95,8 @@ COMPLEX_L FUNC_CPOW(COMPLEX x, COMPLEX y)
             double temp[2] = {real_val, imag_val};
             memcpy(&rop, temp, sizeof(temp));
         #else
-            long double real_val = ALM_MPFR_GET_REAL(mpfr_real, mpfr_rnd);
-            long double imag_val = ALM_MPFR_GET_REAL(mpfr_imag, mpfr_rnd);
+            long double real_val = mpfr_get_d(mpfr_real, mpfr_rnd);
+            long double imag_val = mpfr_get_d(mpfr_imag, mpfr_rnd);
             __real__ rop = real_val;
             __imag__ rop = imag_val;
         #endif

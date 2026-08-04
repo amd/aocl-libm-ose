@@ -54,7 +54,7 @@ REAL_L FUNC_CDFNORM(REAL x)
     mpfr_set_d(half, 0.5, rnd);
     mpfr_sqrt_ui(sqrt2, 2u, rnd);                 /* sqrt2 = sqrt(2) */
 #elif defined(DOUBLE)
-    ALM_MPFR_SET_REAL(mpx, x, rnd);
+    mpfr_set_d(mpx, x, rnd);
     mpfr_set_ui(one, 1u, rnd);
     mpfr_set_d(half, 0.5, rnd);
     mpfr_sqrt_ui(sqrt2, 2u, rnd);                 /* sqrt2 = sqrt(2) */
@@ -79,7 +79,7 @@ REAL_L FUNC_CDFNORM(REAL x)
     y = mpfr_get_d(mp_rop, rnd);
 #elif defined(DOUBLE)
     /* Return a correctly-rounded double directly to avoid double rounding via long double */
-    y = ALM_MPFR_GET_REAL(mp_rop, rnd);
+    y = mpfr_get_d(mp_rop, rnd);
 #endif
 
     mpfr_clears(mpx, mp_rop, mpx_div, one, sqrt2, half, erf, add, (mpfr_ptr) 0);

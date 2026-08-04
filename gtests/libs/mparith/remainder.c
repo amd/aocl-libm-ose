@@ -55,8 +55,8 @@ REAL_L FUNC_REMAINDER(REAL x, REAL y)
     mpfr_set_d(mpx, x, rnd);
     mpfr_set_d(mpy, y, rnd);
 #elif defined(DOUBLE)
-    ALM_MPFR_SET_REAL(mpx, x, rnd);
-    ALM_MPFR_SET_REAL(mpy, y, rnd);
+    mpfr_set_d(mpx, x, rnd);
+    mpfr_set_d(mpy, y, rnd);
 #endif
 
     mpfr_remainder(mp_rop, mpx, mpy, rnd);
@@ -64,7 +64,7 @@ REAL_L FUNC_REMAINDER(REAL x, REAL y)
 #if defined(FLOAT)
     y1 = mpfr_get_d(mp_rop, rnd);
 #elif defined(DOUBLE)
-    y1 = ALM_MPFR_GET_REAL(mp_rop, rnd);
+    y1 = mpfr_get_d(mp_rop, rnd);
 #endif
 
     mpfr_clears (mpx, mpy, mp_rop, (mpfr_ptr) 0);

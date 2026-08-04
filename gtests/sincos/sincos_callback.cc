@@ -71,7 +71,10 @@ void getExpected(float *data, double *op) {
 }
 
 void getExpected(double *data, long double *op) {
-  alm_mp_sincos(data[0], &op[0], &op[1]);
+  double s, c;
+  alm_mp_sincos(data[0], &s, &c);
+  op[0] = s;
+  op[1] = c;
 }
 
 /**********************

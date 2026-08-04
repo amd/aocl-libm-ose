@@ -103,8 +103,8 @@ COMPLEX_L FUNC_CEXP(COMPLEX x)
             memcpy(&y, temp, sizeof(temp));
         #else
             // Linux: long double is 80/128-bit, use mpfr_get_ld for full precision
-            long double real_val = ALM_MPFR_GET_REAL(mpfr_real, mpfr_rnd);
-            long double imag_val = ALM_MPFR_GET_REAL(mpfr_imag, mpfr_rnd);
+            long double real_val = mpfr_get_d(mpfr_real, mpfr_rnd);
+            long double imag_val = mpfr_get_d(mpfr_imag, mpfr_rnd);
             // Linux GCC/Clang approach
             __real__ y = real_val;
             __imag__ y = imag_val;

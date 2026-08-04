@@ -53,7 +53,7 @@ REAL_L FUNC_MODF(REAL x, REAL *p)
 #if defined(FLOAT)
     mpfr_set_d(mpx, x, rnd);
 #elif defined(DOUBLE)
-    ALM_MPFR_SET_REAL(mpx, x, rnd);
+    mpfr_set_d(mpx, x, rnd);
 #endif
 
     mpfr_modf(mp_rop, mpy, mpx, rnd);
@@ -62,7 +62,7 @@ REAL_L FUNC_MODF(REAL x, REAL *p)
     y = mpfr_get_d(mp_rop, rnd);
     *p = mpfr_get_flt(mpy, rnd);
 #elif defined(DOUBLE)
-    y = ALM_MPFR_GET_REAL(mp_rop, rnd);
+    y = mpfr_get_d(mp_rop, rnd);
     *p = mpfr_get_d(mpy, rnd);
 #endif
 

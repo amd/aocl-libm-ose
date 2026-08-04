@@ -33,12 +33,9 @@
 extern "C" {
 #endif
 
-/* On Windows, long double == double (64-bit), so use double for double-function return types. */
-#if defined(_WIN32) || defined(_WIN64)
+/* Use double (not long double) for reference return types: rounding the 256-bit MPFR result
+   directly to double in one step avoids spurious 1-ULP errors from independent rounding. */
 #define ALM_REAL_L double
-#else
-#define ALM_REAL_L long double
-#endif
 
 #ifndef __cplusplus
 typedef    long int                lint_t;
@@ -228,7 +225,7 @@ ALM_REAL_L  alm_mp_add       (double x, double y);
 ALM_REAL_L  alm_mp_sub       (double x, double y);
 ALM_REAL_L  alm_mp_mul       (double x, double y);
 ALM_REAL_L  alm_mp_nextafter (double x, double y);
-void         alm_mp_sincos    (double x, long double* y1, long double* y2);
+void         alm_mp_sincos    (double x, ALM_REAL_L* y1, ALM_REAL_L* y2);
 ALM_REAL_L  alm_mp_nearbyint (double x);
 ALM_REAL_L  alm_mp_cdfnorm   (double x);
 ALM_REAL_L  alm_mp_cdfnorminv(double x);

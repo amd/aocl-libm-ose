@@ -92,8 +92,8 @@ COMPLEX_L FUNC_CLOG(COMPLEX x)
             double temp[2] = {real_val, imag_val};
             memcpy(&y, temp, sizeof(temp));
         #else
-            long double real_val = ALM_MPFR_GET_REAL(mpfr_real, mpfr_rnd);
-            long double imag_val = ALM_MPFR_GET_REAL(mpfr_imag, mpfr_rnd);
+            long double real_val = mpfr_get_d(mpfr_real, mpfr_rnd);
+            long double imag_val = mpfr_get_d(mpfr_imag, mpfr_rnd);
             __real__ y = real_val;
             __imag__ y = imag_val;
         #endif

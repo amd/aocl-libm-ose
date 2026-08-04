@@ -58,7 +58,7 @@ REAL_L FUNC_TRUNC(REAL x)
 #if defined(FLOAT)
     mpfr_set_d(mpx, x, rnd);
 #elif defined(DOUBLE)
-    ALM_MPFR_SET_REAL(mpx, x, rnd);
+    mpfr_set_d(mpx, x, rnd);
 #endif
 
     mpfr_trunc(mp_rop, mpx);
@@ -66,7 +66,7 @@ REAL_L FUNC_TRUNC(REAL x)
 #if defined(FLOAT)
     y = mpfr_get_d(mp_rop, rnd);
 #elif defined(DOUBLE)
-    y = ALM_MPFR_GET_REAL(mp_rop, rnd);
+    y = mpfr_get_d(mp_rop, rnd);
 #endif
 
     mpfr_clears (mpx, mp_rop, (mpfr_ptr) 0);

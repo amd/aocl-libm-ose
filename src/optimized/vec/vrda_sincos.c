@@ -62,6 +62,10 @@
 
 void ALM_PROTO_OPT(vrda_sincos)(int length, const double *x, double *sin, double *cos)
 {
+    /* Empty/negative length */
+    if (unlikely(length <= 0))
+        return;
+
     int j = 0;
     __m256d opsin, opcos;
 

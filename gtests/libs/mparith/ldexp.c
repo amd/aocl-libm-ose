@@ -54,7 +54,7 @@ REAL_L FUNC_LDEXP(REAL x, int expn)
     mpfr_set_d(mpx, x, rnd);
 
     #elif defined(DOUBLE)
-    mpfr_set_ld(mpx, x, rnd);
+    ALM_MPFR_SET_REAL(mpx, x, rnd);
 
     #endif
 
@@ -65,7 +65,7 @@ REAL_L FUNC_LDEXP(REAL x, int expn)
     #if defined(FLOAT)
     y1 = mpfr_get_d(mp_rop, rnd);
     #elif defined(DOUBLE)
-    y1 = mpfr_get_ld(mp_rop, rnd);
+    y1 = ALM_MPFR_GET_REAL(mp_rop, rnd);
     #endif
 
     mpfr_clears (mpx, mp_rop, (mpfr_ptr) 0);

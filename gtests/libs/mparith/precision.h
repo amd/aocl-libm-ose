@@ -46,7 +46,19 @@
 
 #elif defined(DOUBLE)
 #define REAL double
+// On Windows, long double == double (64-bit), so mpfr_get_ld gives no extra precision.
+// Use REAL_L = double and ALM_MPFR_GET_REAL / ALM_MPFR_SET_REAL wrappers so that each
+// mparith/*.c file gets a correctly-rounded double reference, giving ULP = 0 for correct
+// implementations rather than spurious 1-ULP failures from independent rounding.
+#if defined(_WIN32) || defined(_WIN64)
+#define REAL_L double
+#define ALM_MPFR_GET_REAL(op, rnd) mpfr_get_d(op, rnd)
+#define ALM_MPFR_SET_REAL(rop, op, rnd) mpfr_set_d(rop, op, rnd)
+#else
 #define REAL_L long double
+#define ALM_MPFR_GET_REAL(op, rnd) mpfr_get_ld(op, rnd)
+#define ALM_MPFR_SET_REAL(rop, op, rnd) mpfr_set_ld(rop, op, rnd)
+#endif
 
 #define COMPLEX double _Complex
 #define COMPLEX_L long double _Complex

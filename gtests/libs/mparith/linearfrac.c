@@ -59,12 +59,12 @@ REAL_L FUNC_LINEARFRAC(REAL x, REAL y, REAL scale_x, REAL shift_x, REAL scale_y,
     mpfr_set_d(mpscale_y, scale_y, rnd);
     mpfr_set_d(mpshift_y, shift_y, rnd);
 #elif defined(DOUBLE)
-    mpfr_set_ld(mpx, x, rnd);
-    mpfr_set_ld(mpy, y, rnd);
-    mpfr_set_ld(mpscale_x, scale_x, rnd);
-    mpfr_set_ld(mpshift_x, shift_x, rnd);
-    mpfr_set_ld(mpscale_y, scale_y, rnd);
-    mpfr_set_ld(mpshift_y, shift_y, rnd);
+    ALM_MPFR_SET_REAL(mpx, x, rnd);
+    ALM_MPFR_SET_REAL(mpy, y, rnd);
+    ALM_MPFR_SET_REAL(mpscale_x, scale_x, rnd);
+    ALM_MPFR_SET_REAL(mpshift_x, shift_x, rnd);
+    ALM_MPFR_SET_REAL(mpscale_y, scale_y, rnd);
+    ALM_MPFR_SET_REAL(mpshift_y, shift_y, rnd);
 #endif
 
     mpfr_fma(mp_numerator, mpx, mpscale_x, mpshift_x, rnd);
@@ -74,7 +74,7 @@ REAL_L FUNC_LINEARFRAC(REAL x, REAL y, REAL scale_x, REAL shift_x, REAL scale_y,
 #if defined(FLOAT)
     y1 = mpfr_get_d(mp_rop, rnd);
 #elif defined(DOUBLE)
-    y1 = mpfr_get_ld(mp_rop, rnd);
+    y1 = ALM_MPFR_GET_REAL(mp_rop, rnd);
 #endif
 
     mpfr_clears(mpx, mpy, mpscale_x, mpshift_x, mpscale_y, mpshift_y, mp_rop, mp_numerator, mp_denominator, (mpfr_ptr) 0);

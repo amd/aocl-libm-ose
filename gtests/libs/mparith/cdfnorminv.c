@@ -343,7 +343,7 @@ REAL_L FUNC_CDFNORMINV(REAL x)
 #if defined(FLOAT)
     mpfr_set_d(mpx, x, rnd);
 #elif defined(DOUBLE)
-    mpfr_set_ld(mpx, x, rnd);
+    ALM_MPFR_SET_REAL(mpx, x, rnd);
 #endif
 
     mpfr_cdfnorminv(mp_rop, mpx, rnd);
@@ -351,7 +351,7 @@ REAL_L FUNC_CDFNORMINV(REAL x)
 #if defined(FLOAT)
     y = mpfr_get_d(mp_rop, rnd);
 #elif defined(DOUBLE)
-    y = mpfr_get_ld(mp_rop, rnd);
+    y = ALM_MPFR_GET_REAL(mp_rop, rnd);
 #endif
 
     mpfr_clears (mpx, mp_rop, (mpfr_ptr) 0);

@@ -60,13 +60,11 @@ COMPLEX_L FUNC_CLOG(COMPLEX x)
     mpfr_init2(mpfr_imag, ALM_MP_PRECI_BITS);
 
 #if defined(FLOAT)
-    mpc_set_dc(mpc_x, x, rnd);
+    { float parts[2]; memcpy(parts, &x, sizeof(parts));
+      mpc_set_d_d(mpc_x, parts[0], parts[1], rnd); }
 #elif defined(DOUBLE)
-    #if (defined _WIN32 || defined _WIN64)
-        mpc_set_dc(mpc_x, x, rnd);
-    #else
-        mpc_set_ldc(mpc_x, x, rnd);
-    #endif
+    { double parts[2]; memcpy(parts, &x, sizeof(parts));
+      mpc_set_d_d(mpc_x, parts[0], parts[1], rnd); }
 #endif
 
     mpc_log(mpc_rop, mpc_x, rnd);
@@ -94,8 +92,8 @@ COMPLEX_L FUNC_CLOG(COMPLEX x)
             double temp[2] = {real_val, imag_val};
             memcpy(&y, temp, sizeof(temp));
         #else
-            long double real_val = mpfr_get_ld(mpfr_real, mpfr_rnd);
-            long double imag_val = mpfr_get_ld(mpfr_imag, mpfr_rnd);
+            long double real_val = ALM_MPFR_GET_REAL(mpfr_real, mpfr_rnd);
+            long double imag_val = ALM_MPFR_GET_REAL(mpfr_imag, mpfr_rnd);
             __real__ y = real_val;
             __imag__ y = imag_val;
         #endif

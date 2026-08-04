@@ -41,32 +41,26 @@
 
 #include <mpfr.h>
 
-void FUNC_SINCOS(REAL x, REAL_L *sin, REAL_L *cos) {
+#if defined(FLOAT)
+void FUNC_SINCOS(REAL x, double *sin, double *cos) {
     mpfr_rnd_t rnd = MPFR_RNDN;
     mpfr_t mpx, mp_sin, mp_cos;
-
-    // Initialize MPFR variables with specified precision
     mpfr_inits2(ALM_MP_PRECI_BITS, mpx, mp_sin, mp_cos, (mpfr_ptr) 0);
-
-    // Convert input to MPFR format based on defined type
-    #if defined(FLOAT)
     mpfr_set_d(mpx, x, rnd);
-    #elif defined(DOUBLE)
-    mpfr_set_ld(mpx, x, rnd);
-    #endif
-
-    // Compute sine and cosine
     mpfr_sin_cos(mp_sin, mp_cos, mpx, rnd);
-
-    // Convert results back to appropriate type
-    #if defined(FLOAT)
     *sin = mpfr_get_d(mp_sin, rnd);
     *cos = mpfr_get_d(mp_cos, rnd);
-    #elif defined(DOUBLE)
-    *sin = mpfr_get_ld(mp_sin, rnd);
-    *cos = mpfr_get_ld(mp_cos, rnd);
-    #endif
-
-    // Clear MPFR variables
     mpfr_clears(mpx, mp_sin, mp_cos, (mpfr_ptr) 0);
 }
+#elif defined(DOUBLE)
+void FUNC_SINCOS(REAL x, long double *sin, long double *cos) {
+    mpfr_rnd_t rnd = MPFR_RNDN;
+    mpfr_t mpx, mp_sin, mp_cos;
+    mpfr_inits2(ALM_MP_PRECI_BITS, mpx, mp_sin, mp_cos, (mpfr_ptr) 0);
+    ALM_MPFR_SET_REAL(mpx, x, rnd);
+    mpfr_sin_cos(mp_sin, mp_cos, mpx, rnd);
+    *sin = (long double)ALM_MPFR_GET_REAL(mp_sin, rnd);
+    *cos = (long double)ALM_MPFR_GET_REAL(mp_cos, rnd);
+    mpfr_clears(mpx, mp_sin, mp_cos, (mpfr_ptr) 0);
+}
+#endif

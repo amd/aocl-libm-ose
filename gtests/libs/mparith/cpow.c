@@ -61,16 +61,13 @@ COMPLEX_L FUNC_CPOW(COMPLEX x, COMPLEX y)
     mpfr_init2(mpfr_imag, ALM_MP_PRECI_BITS);
 
 #if defined(FLOAT)
-    mpc_set_dc(mpc_x, x, rnd);
-    mpc_set_dc(mpc_y, y, rnd);
+    { float px[2], py[2]; memcpy(px, &x, sizeof(px)); memcpy(py, &y, sizeof(py));
+      mpc_set_d_d(mpc_x, px[0], px[1], rnd);
+      mpc_set_d_d(mpc_y, py[0], py[1], rnd); }
 #elif defined(DOUBLE)
-    #if (defined _WIN32 || defined _WIN64)
-        mpc_set_dc(mpc_x, x, rnd);
-        mpc_set_dc(mpc_y, y, rnd);
-    #else
-        mpc_set_ldc(mpc_x, x, rnd);
-        mpc_set_ldc(mpc_y, y, rnd);
-    #endif
+    { double px[2], py[2]; memcpy(px, &x, sizeof(px)); memcpy(py, &y, sizeof(py));
+      mpc_set_d_d(mpc_x, px[0], px[1], rnd);
+      mpc_set_d_d(mpc_y, py[0], py[1], rnd); }
 #endif
 
     mpc_pow(mpc_rop, mpc_x, mpc_y, rnd);
@@ -98,8 +95,8 @@ COMPLEX_L FUNC_CPOW(COMPLEX x, COMPLEX y)
             double temp[2] = {real_val, imag_val};
             memcpy(&rop, temp, sizeof(temp));
         #else
-            long double real_val = mpfr_get_ld(mpfr_real, mpfr_rnd);
-            long double imag_val = mpfr_get_ld(mpfr_imag, mpfr_rnd);
+            long double real_val = ALM_MPFR_GET_REAL(mpfr_real, mpfr_rnd);
+            long double imag_val = ALM_MPFR_GET_REAL(mpfr_imag, mpfr_rnd);
             __real__ rop = real_val;
             __imag__ rop = imag_val;
         #endif

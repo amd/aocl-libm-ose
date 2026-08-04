@@ -33,6 +33,13 @@
 extern "C" {
 #endif
 
+/* On Windows, long double == double (64-bit), so use double for double-function return types. */
+#if defined(_WIN32) || defined(_WIN64)
+#define ALM_REAL_L double
+#else
+#define ALM_REAL_L long double
+#endif
+
 #ifndef __cplusplus
 typedef    long int                lint_t;
 typedef    unsigned long int       ulint_t;
@@ -164,67 +171,67 @@ float   alm_mp_nextafterf_ULP(float x, float y, float z, double *, double *);
 float   alm_mp_cdfnormf_ULP  (float x,float z,double *, double *);
 float   alm_mp_cdfnorminvf_ULP(float x,float z,double *, double *);
 
-long double  alm_mp_acos      (double x);
-long double  alm_mp_acosh     (double x);
-long double  alm_mp_asin      (double x);
-long double  alm_mp_asinh     (double x);
-long double  alm_mp_atan2     (double x, double y);
-long double  alm_mp_atan      (double x);
-long double  alm_mp_atanh     (double x);
-long double  alm_mp_cbrt      (double x);
-long double  alm_mp_ceil      (double x);
-long double  alm_mp_copysign  (double x, double y);
-long double  alm_mp_cos       (double x);
-long double  alm_mp_cosh      (double x);
-long double  alm_mp_cospi     (double x);
-long double  alm_mp_exp10     (double x);
-long double  alm_mp_exp2      (double x);
-long double  alm_mp_exp       (double x);
-long double  alm_mp_expm1     (double x);
-long double  alm_mp_fabs      (double x);
-long double  alm_mp_fdim      (double x, double y);
-long double  alm_mp_floor     (double x);
-long double  alm_mp_fma       (double x, double y, double z);
-long double  alm_mp_fmax      (double x, double y);
-long double  alm_mp_fmin      (double x, double y);
-long double  alm_mp_fmod      (double x, double y);
-long double  alm_mp_frexp     (double x, int *ptr);
-long double  alm_mp_hypot     (double x, double y);
-long double  alm_mp_ldexp     (double x, int expn);
-long double  alm_mp_log10     (double x);
-long double  alm_mp_log1p     (double x);
-long double  alm_mp_log2      (double x);
-long double  alm_mp_logb      (double x);
-long double  alm_mp_log       (double x);
+ALM_REAL_L  alm_mp_acos      (double x);
+ALM_REAL_L  alm_mp_acosh     (double x);
+ALM_REAL_L  alm_mp_asin      (double x);
+ALM_REAL_L  alm_mp_asinh     (double x);
+ALM_REAL_L  alm_mp_atan2     (double x, double y);
+ALM_REAL_L  alm_mp_atan      (double x);
+ALM_REAL_L  alm_mp_atanh     (double x);
+ALM_REAL_L  alm_mp_cbrt      (double x);
+ALM_REAL_L  alm_mp_ceil      (double x);
+ALM_REAL_L  alm_mp_copysign  (double x, double y);
+ALM_REAL_L  alm_mp_cos       (double x);
+ALM_REAL_L  alm_mp_cosh      (double x);
+ALM_REAL_L  alm_mp_cospi     (double x);
+ALM_REAL_L  alm_mp_exp10     (double x);
+ALM_REAL_L  alm_mp_exp2      (double x);
+ALM_REAL_L  alm_mp_exp       (double x);
+ALM_REAL_L  alm_mp_expm1     (double x);
+ALM_REAL_L  alm_mp_fabs      (double x);
+ALM_REAL_L  alm_mp_fdim      (double x, double y);
+ALM_REAL_L  alm_mp_floor     (double x);
+ALM_REAL_L  alm_mp_fma       (double x, double y, double z);
+ALM_REAL_L  alm_mp_fmax      (double x, double y);
+ALM_REAL_L  alm_mp_fmin      (double x, double y);
+ALM_REAL_L  alm_mp_fmod      (double x, double y);
+ALM_REAL_L  alm_mp_frexp     (double x, int *ptr);
+ALM_REAL_L  alm_mp_hypot     (double x, double y);
+ALM_REAL_L  alm_mp_ldexp     (double x, int expn);
+ALM_REAL_L  alm_mp_log10     (double x);
+ALM_REAL_L  alm_mp_log1p     (double x);
+ALM_REAL_L  alm_mp_log2      (double x);
+ALM_REAL_L  alm_mp_logb      (double x);
+ALM_REAL_L  alm_mp_log       (double x);
 lint_t       alm_mp_lround    (double x);
 llint_t      alm_mp_llround   (double x);
-long double  alm_mp_modf      (double x, double *ptr);
-long double  alm_mp_pow       (double x, double y);
-long double  alm_mp_remainder (double x, double y);
-long double  alm_mp_remquo    (double x, double y, int* quotient);
-long double  alm_mp_rint      (double x);
-long double  alm_mp_round     (double x);
-long double  alm_mp_sin       (double x);
-long double  alm_mp_sinh      (double x);
-long double  alm_mp_sinpi     (double x);
-long double  alm_mp_sqrt      (double x);
-long double  alm_mp_tan       (double x);
-long double  alm_mp_tanh      (double x);
-long double  alm_mp_tanpi     (double x);
-long double  alm_mp_trunc     (double x);
-long double  alm_mp_erf       (double x);
-long double  alm_mp_erfc      (double x);
-long double  alm_mp_erfinv    (double x);
-long double  alm_mp_erfcinv   (double x);
-long double  alm_mp_linearfrac (double x, double y, double sc_x, double sh_x, double sc_y, double sh_y);
-long double  alm_mp_add       (double x, double y);
-long double  alm_mp_sub       (double x, double y);
-long double  alm_mp_mul       (double x, double y);
-long double  alm_mp_nextafter (double x, double y);
+ALM_REAL_L  alm_mp_modf      (double x, double *ptr);
+ALM_REAL_L  alm_mp_pow       (double x, double y);
+ALM_REAL_L  alm_mp_remainder (double x, double y);
+ALM_REAL_L  alm_mp_remquo    (double x, double y, int* quotient);
+ALM_REAL_L  alm_mp_rint      (double x);
+ALM_REAL_L  alm_mp_round     (double x);
+ALM_REAL_L  alm_mp_sin       (double x);
+ALM_REAL_L  alm_mp_sinh      (double x);
+ALM_REAL_L  alm_mp_sinpi     (double x);
+ALM_REAL_L  alm_mp_sqrt      (double x);
+ALM_REAL_L  alm_mp_tan       (double x);
+ALM_REAL_L  alm_mp_tanh      (double x);
+ALM_REAL_L  alm_mp_tanpi     (double x);
+ALM_REAL_L  alm_mp_trunc     (double x);
+ALM_REAL_L  alm_mp_erf       (double x);
+ALM_REAL_L  alm_mp_erfc      (double x);
+ALM_REAL_L  alm_mp_erfinv    (double x);
+ALM_REAL_L  alm_mp_erfcinv   (double x);
+ALM_REAL_L  alm_mp_linearfrac (double x, double y, double sc_x, double sh_x, double sc_y, double sh_y);
+ALM_REAL_L  alm_mp_add       (double x, double y);
+ALM_REAL_L  alm_mp_sub       (double x, double y);
+ALM_REAL_L  alm_mp_mul       (double x, double y);
+ALM_REAL_L  alm_mp_nextafter (double x, double y);
 void         alm_mp_sincos    (double x, long double* y1, long double* y2);
-long double  alm_mp_nearbyint (double x);
-long double  alm_mp_cdfnorm   (double x);
-long double  alm_mp_cdfnorminv(double x);
+ALM_REAL_L  alm_mp_nearbyint (double x);
+ALM_REAL_L  alm_mp_cdfnorm   (double x);
+ALM_REAL_L  alm_mp_cdfnorminv(double x);
 
 double  alm_mp_acosh_ULP     (double x,double z, double *, double *);
 double  alm_mp_acos_ULP      (double x,double z, double *, double *);

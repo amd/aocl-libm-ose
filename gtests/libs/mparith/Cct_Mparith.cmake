@@ -75,7 +75,7 @@ if(MPARITH_LIB_DIR_EXISTS AND MPARITH_LIB_EXISTS)
         message(STATUS "mparith library found, skipping build...")
     endif()
 else()
-    set(MPARITH_BINARY_DIR "${CMAKE_BINARY_DIR}")
+    set(MPARITH_BINARY_DIR "${MPARITH_DIR}/build")
     message(STATUS "mparith library not-found, building library...")
 
     # Execute a custom command during configuration time
@@ -84,13 +84,22 @@ else()
                             -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
                             -DCMAKE_BUILD_TYPE=Release
                             -DMPARITH_DIR=${MPARITH_DIR}
-                    RESULTS_VARIABLE  result_mparith
+                    RESULT_VARIABLE   result_mparith
                     OUTPUT_VARIABLE   config_mparith
+                    ERROR_VARIABLE    config_mparith_err
                     WORKING_DIRECTORY ${MPFR_SRC_DIR}
     )
+    if(NOT result_mparith EQUAL 0)
+        message(FATAL_ERROR "mparith cmake configure failed:\n${config_mparith}\n${config_mparith_err}")
+    endif()
 
     execute_process(COMMAND ${CMAKE_COMMAND} --build ${MPARITH_BINARY_DIR} --config Release
+                    RESULT_VARIABLE   result_mparith_build
                     OUTPUT_VARIABLE   output_mparith
+                    ERROR_VARIABLE    output_mparith_err
                     WORKING_DIRECTORY ${MPFR_SRC_DIR}
     )
+    if(NOT result_mparith_build EQUAL 0)
+        message(FATAL_ERROR "mparith build failed:\n${output_mparith}\n${output_mparith_err}")
+    endif()
 endif()

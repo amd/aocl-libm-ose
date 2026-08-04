@@ -74,6 +74,10 @@ void ALM_PROTO_OPT(vrsa_powf)(int length, const float *input1, const float *inpu
 {
     int j = 0;
 
+    /* Empty/negative length */
+    if (unlikely(length <= 0))
+        return;
+
     if (likely(length >= FLOAT_ELEMENTS_256_BIT))
     {
         /* Save the last 8 elements from both input arrays before processing.

@@ -70,6 +70,10 @@
 
 void ALM_PROTO_OPT(vrda_fabs)(int length, const double *input, double *result)
 {
+    /* Empty/negative length */
+    if (unlikely(length <= 0))
+        return;
+
     if (likely(length >= DOUBLE_ELEMENTS_256_BIT))
     {
         /* Save the last 4 elements before processing. This avoids errors when the

@@ -72,6 +72,10 @@
 
 void ALM_PROTO_OPT(vrsa_cbrtf)(int length, const float *input, float *result)
 {
+     /* Empty/negative length */
+     if (unlikely(length <= 0))
+        return;
+     
     if (likely(length >= FLOAT_ELEMENTS_256_BIT))
     {
         /* Save the last 8 elements before processing. This avoids errors when the

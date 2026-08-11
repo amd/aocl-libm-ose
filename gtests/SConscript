@@ -84,6 +84,10 @@ if env['HOST_OS'] != 'win32':
     if 'gcc' in env['CC']:
         testcflags.append('-fext-numeric-literals')
 
+    # gtests compiles .c sources with the C++ driver; name the language
+    # explicitly for all C++ drivers (g++/clang++/aoc++) so newer LLVM
+    # doesn't warn about implicitly treating 'c' input as 'c++'.
+    testcflags += ['-x', 'c++']
 
 else:
     testcflags = ['/Wall',

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -143,18 +143,31 @@ class AlmEnvironment(object):
         except KeyError as k:
             cc_env = self.env['CC']
 
-        if 'clang' in cc_env:
+        # Match the compiler keyword against the basename only
+        cc_base = os.path.basename(cc_env)
+        is_win = self.env['HOST_OS'] == 'win32'
+
+        # LLVM family: clang-cl on Windows, clang/aoc(AOCC) on Linux.
+        if (is_win and 'clang-cl' in cc_base) or \
+           (not is_win and ('clang' in cc_base or 'aoc' in cc_base)):
             print('Found LLVM compiler in CC variable')
             cc_opt = 'llvm'
             self.compiler = llvm.LLVM(buildtype)
             self.env['compiler'] = 'aocc'
 
-        elif 'gcc' in cc_env:
+        elif 'gcc' in cc_base:
             print ('Found GCC Compiler in CC variable')
             cc_opt = 'gcc'
             self.compiler = gcc.Gcc(buildtype)
             self.env['compiler'] = 'gcc'
 
+        else:
+            Exit("Unsupported compiler in CC='%s'; expected gcc, clang or "
+                 "aoc (AOCC)." % cc_env)
+
+        # Hand the requested driver name to the compiler so the
+        # LLVM family can pick aoc/aoc++ vs clang/clang++.
+        self.compiler.SetCmd(cc_env)
         self.compiler.Setup()
 
         # ------------------------------------------------------------------
@@ -168,7 +181,7 @@ class AlmEnvironment(object):
             print("WARNING: --fp-contract='%s' is invalid; expected one of "
                   "fast/on/off. Falling back to 'fast'." % fp_contract)
             fp_contract = 'fast'
-        if self.env['HOST_OS'] == 'win32' and 'clang-cl' in cc_env:
+        if is_win and 'clang-cl' in cc_base:
             fp_contract_flag = '/clang:-ffp-contract=' + fp_contract
         else:
             fp_contract_flag = '-ffp-contract=' + fp_contract

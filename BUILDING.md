@@ -44,7 +44,7 @@ scons -j32
 
 | Flag | Description |
 |------|-------------|
-| `ALM_CC=<path>` `ALM_CXX=<path>` | Select compiler (gcc/clang) |
+| `ALM_CC=<path>` `ALM_CXX=<path>` | Select compiler (gcc/clang/aocc). For AOCC, pass the `aoc`/`aoc++` drivers (symlinks to `clang`/`clang++`), e.g. `ALM_CC=aoc ALM_CXX=aoc++` |
 | `--verbose=1` | Build with verbosity |
 | `--debug_mode=all/libs/gtests` | Build with debug info |
 | `--developer=1` | Developer mode |

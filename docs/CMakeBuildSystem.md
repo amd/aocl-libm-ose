@@ -50,6 +50,7 @@ This comprehensive guide provides instructions for building, testing, and instal
 | CMake             | ≥ 3.26                 |   ✓   |    ✓    | Required                               |
 | GCC               | ≥ 9.2.0 and < 16.1.0   |   ✓   |    ✗    | Linux compiler option                  |
 | Clang             | ≥ 9.0.0 and < 21.1.8   |   ✓   |    ✗    | Linux compiler option                  |
+| AOCC (aoc/aoc++)  | ≥ 6.0.0                |   ✓   |    ✗    | Linux compiler option; `aoc`/`aoc++` are symlinks to `clang`/`clang++` |
 | LLVM (Clang-CL)   | ≥ 9.0.0 and < 21.1.8   |   ✗   |    ✓    | Windows compiler (clang-cl.exe)        |
 | MPFR              | Latest                 |   ✓   |    ✓    | Test framework only; path must be set on Windows |
 | GMP               | Latest                 |   ✓   |    ✓    | Test framework only; dependency of MPFR |
@@ -727,8 +728,8 @@ The following table lists all available CMake configuration options for building
 |---------------|-----------------------------|------------------------------------------|----------------|:-----:|:-------:|-----------------------------------------------------|
 | **CMake**     | `CMAKE_BUILD_TYPE`          | Build type configuration                 | `Debug`        |   ✓   |    ✓    | `Debug`, `Release`                                  |
 | **CMake**     | `CMAKE_CONFIGURATION_TYPES` | Build configuration for MSVC             | `Debug`        |   ✗   |    ✓    | `Debug`, `Release`                                  |
-| **CMake**     | `CMAKE_C_COMPILER`          | C compiler to use                        | System default |   ✓   |    ✓    | `gcc`, `clang` (Linux); `clang-cl.exe` (Windows)    |
-| **CMake**     | `CMAKE_CXX_COMPILER`        | C++ compiler to use                      | System default |   ✓   |    ✓    | `g++`, `clang++` (Linux); `clang-cl.exe` (Windows)  |
+| **CMake**     | `CMAKE_C_COMPILER`          | C compiler to use                        | System default |   ✓   |    ✓    | `gcc`, `clang`, `aoc` (Linux); `clang-cl.exe` (Windows)    |
+| **CMake**     | `CMAKE_CXX_COMPILER`        | C++ compiler to use                      | System default |   ✓   |    ✓    | `g++`, `clang++`, `aoc++` (Linux); `clang-cl.exe` (Windows)  |
 | **CMake**     | `CMAKE_INSTALL_PREFIX`      | Installation directory path              | System default |   ✓   |    ✓    | Any valid path                                      |
 | **Library**   | `BUILD_SHARED_LIBS`         | Build shared libraries                   | ON             |   ✓   |    ✓    | `ON`, `OFF`                                         |
 | **Library**   | `BUILD_STATIC_LIBS`         | Build static libraries                   | ON             |   ✓   |    ✓    | `ON`, `OFF`                                         |
@@ -777,7 +778,7 @@ Run CMake with your desired options. Here are common configuration examples:
 
 **Linux:**
 ```console
-$ cmake .. -DCMAKE_BUILD_TYPE=<Debug/Release> -DCMAKE_C_COMPILER=<gcc/clang> -DCMAKE_CXX_COMPILER=<g++/clang++> -DCMAKE_INSTALL_PREFIX=<user_specified_prefix_path>
+$ cmake .. -DCMAKE_BUILD_TYPE=<Debug/Release> -DCMAKE_C_COMPILER=<gcc/clang/aoc> -DCMAKE_CXX_COMPILER=<g++/clang++/aoc++> -DCMAKE_INSTALL_PREFIX=<user_specified_prefix_path>
 ```
 
 **Windows (Ninja generator):**

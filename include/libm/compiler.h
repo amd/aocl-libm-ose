@@ -141,10 +141,12 @@ To check that this is gcc compiler version 5.1 or greater:
 #endif
 
 #if (defined(__clang__) && defined(__linux__))
+#undef CMPLXF
 #define CMPLXF(X, Y) __builtin_complex ((float) (X), (float) (Y))
 #endif
 
 #if (defined(__clang__) && defined(__linux__))
+#undef CMPLX
 #define CMPLX(X, Y) __builtin_complex ((double) (X), (double) (Y))
 #endif
 

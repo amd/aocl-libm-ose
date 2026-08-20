@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@
  *      If y = 0.5, then pow(x,y) = sqrt(x)
  *      If x = 0, then pow(x,y) = 0
  *      If y = 0, then pow(x,y) = 1
- * 
+ *
  * 2. For other values, pow is calculated as:
  *      x^y = e^(y*ln(x))
  *
@@ -56,8 +56,8 @@
 #include <libm/typehelper.h>
 #include <libm/poly.h>
 #include <libm/amd_funcs_internal.h>
-
 #include "../optimized/pow_data.c"
+#include "kern/sqrt_pos.c"
 
 #define L__exp_bias 0x00000000000003ff /* 1023 */
 #define L__mant_mask 0x000fffffffffffff
@@ -510,7 +510,7 @@ ALM_PROTO_FAST(pow)(double x, double y) {
             uint32_t yint = checkint (uy);
 
              if (yint == 0)
-                return sqrt(x);
+                return ALM_PROTO_KERN(sqrt)(x);
 
              if (yint == 1)
                 result_sign = SIGNBIT_DP64;

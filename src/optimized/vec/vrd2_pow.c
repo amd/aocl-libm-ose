@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2024, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2018-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -34,6 +34,7 @@
 #include <libm/typehelper.h>
 #include <libm/typehelper-vec.h>
 #include <libm/compiler.h>
+#include <libm/constants.h>
 
 #define AMD_LIBM_FMA_USABLE 1           /* needed for poly-vec.h */
 #include <libm/poly-vec.h>
@@ -94,6 +95,7 @@ static struct {
     v_f64x2_t tblsz_byln2;
     v_f64x2_t ln2_by_n_head, ln2_by_n_tail;
     v_i64x2_t one;
+    v_u64x2_t inf_val;
     v_f64x2_t poly[4];
 } v_exp_data  = {
     .ln2_tblsz_head = _MM_SET1_PD2(0x1.63p-1),
@@ -102,6 +104,7 @@ static struct {
     .ln2_by_n_head = _MM_SET1_PD2(0x1.62e42f0000000p-11),
     .ln2_by_n_tail = _MM_SET1_PD2(0x1.DF473DE6AF279p-36),
     .one =  _MM_SET1_I64x2(0x3ff0000000000000ULL),
+    .inf_val = _MM_SET1_I64x2(ALM_F64_INF),
     .Huge = _MM_SET1_PD2(0x1.8000000000000p+52),
     .poly = {
 		_MM_SET1_PD2(0x1.0000000000000p-1),
@@ -125,6 +128,7 @@ static struct {
 #define INVLN2          v_exp_data.tblsz_byln2
 #define EXP_HUGE        v_exp_data.Huge
 #define ONE             v_exp_data.one
+#define INF_VAL         v_exp_data.inf_val
 
 /*
  * Short names for polynomial coefficients
@@ -141,7 +145,8 @@ static struct {
 #define B4  v_exp_data.poly[3]
 
 #define EXP_MAX 0x4086200000000000
-#define SCALAR_POW ALM_PROTO(pow)
+#define SCALAR_POW ALM_PROTO_OPT(pow)
+
 /*
  *   __m128d ALM_PROTO_OPT(vrd2_pow)(__m128d, __m128d);
  *
@@ -166,6 +171,8 @@ ALM_PROTO_OPT(vrd2_pow)(__m128d _x,__m128d _y)
     __m128d result;
 
     v_u64x2_t ux = as_v2_u64_f64(_x);
+
+    v_i64x2_t condition = (v_i64x2_t)(ux >= INF_VAL);
 
     /* This portion of the code is a vectorized version of the scalar log.c, with some checks removed */
 
@@ -251,6 +258,11 @@ ALM_PROTO_OPT(vrd2_pow)(__m128d _x,__m128d _y)
 
     v_u64x2_t v = as_v2_u64_f64(ylogx_h) & SIGN_MASK;
 
+    /* check if y*log(x) > 1024*ln(2) */
+    v_i64x2_t condition2 = (v_i64x2_t)(v >= EXP_MAX);
+
+    condition = condition | condition2;
+
     z = ylogx_h * INVLN2;
 
     v_f64x2_t dn = z + EXP_HUGE;
@@ -287,13 +299,8 @@ ALM_PROTO_OPT(vrd2_pow)(__m128d _x,__m128d _y)
 
     result = z * as_v2_f64_i64(m);
 
-    /* Check for special cases */
-    /* If y*log(x) is outside valid range, call scalar pow(value) */
-    /* Otherwise, return the above computed result */
-    for(int i = 0; i < VECTOR_LENGTH; i++) {
-        if(unlikely(v[i] >= EXP_MAX)){
-            result[i] = SCALAR_POW(_x[i], _y[i]);
-         }
+    if (unlikely(any_v2_u64_loop((v_u64x2_t)condition))) {
+        return call2_v2_f64(SCALAR_POW, _x, _y, result, condition);
     }
 
     return result;

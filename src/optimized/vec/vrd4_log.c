@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2024, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2018-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -98,8 +98,7 @@ static struct {
     },
 };
 
-#define LOG_ARG_MAX 0x7ff0000000000000
-#define SCALAR_LOG ALM_PROTO(log)
+#define SCALAR_LOG ALM_PROTO_OPT(log)
 
 #define EXPSHIFTBITS_SP64 52
 #define ln2 log_data.ln2
@@ -129,6 +128,14 @@ static struct {
 #define C19 _MM_SET1_PD4(log_data.poly_log[18])
 #define C20 _MM_SET1_PD4(log_data.poly_log[19])
 
+static inline v_f64x4_t
+v4_log_specialcase(v_f64x4_t _x,
+                   v_f64x4_t result,
+                   v_u64x4_t cond)
+{
+    return call_v4_f64(SCALAR_LOG, _x, result, cond);
+}
+
 __m256d
 ALM_PROTO_OPT(vrd4_log) (__m256d x)
 {
@@ -138,6 +145,17 @@ ALM_PROTO_OPT(vrd4_log) (__m256d x)
     v_i64x4_t ix;
 
     ix = as_v4_i64_f64(x);
+
+    v_u64x4_t ux = as_v4_u64_f64(x);
+
+    /* Detect special values: Zero/Subnormal/Inf/NaN/negative.
+     * As an unsigned comparison, (ux - min_normal) >= (max - min_normal) is
+     * true for all inputs outside the normal positive range. Same logic as
+     * scalar log() and vrd4_log2().
+     */
+    v_u64x4_t min_normal = _MM_SET1_I64(IMPBIT_DP64);
+    v_u64x4_t max_normal = _MM_SET1_I64(PINFBITPATT_DP64);
+    v_u64x4_t condition  = (ux - min_normal >= max_normal - min_normal);
 
     ix = (ix - TWO_BY_THREE) & INF;
 
@@ -155,7 +173,7 @@ ALM_PROTO_OPT(vrd4_log) (__m256d x)
 
     /* Reduce the mantissa, m to [2/3, 4/3] */
 
-    m = as_v4_f64_u64(as_v4_u64_f64(x) - ix);
+    m = as_v4_f64_u64(ux - ix);
 
     f = m - C1;			/* f is in [-1/3,+1/3] */
 
@@ -173,18 +191,12 @@ ALM_PROTO_OPT(vrd4_log) (__m256d x)
 
     r = n * ln2_head + (n * ln2_tail + r);
 
-    v_u64x4_t ux = as_v4_u64_f64(x);
-
-    /* Check for special cases */
-    /* If input value is outside valid range, call scalar log(value) */
-    /* Otherwise, return the above computed result */
-    for(int i = 0; i < 4; i++)
-    {
-        if(unlikely(ux[i] > LOG_ARG_MAX))
-            r[i] = SCALAR_LOG(x[i]);
+    /* Only the genuinely special lanes fall back to scalar log();
+     * non-special lanes keep the fast vector result.
+     */
+    if (unlikely(_mm256_movemask_pd((__m256d)condition) != 0)) {
+        return v4_log_specialcase(x, r, condition);
     }
 
     return r;
 }
-
-

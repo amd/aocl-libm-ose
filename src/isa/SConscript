@@ -26,65 +26,179 @@
 # Inherit global environment
 Import('env')
 from os.path import join as joinpath
+import importlib.util
+import os
 
-builddir = joinpath(env['BUILDROOT'], 'src')
-
-p = joinpath(Dir('.').srcnode().path)
-incpaths = [
-    '#' + p,
-    '#' + joinpath(p, 'include')
-]
+# Load optimized_srcs without polluting sys.path
+_spec = importlib.util.spec_from_file_location(
+    'optimized_srcs',
+    File('#src/optimized/optimized_srcs.py').abspath)
+_mod = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_mod)
+gather_optimized_srcs = _mod.gather_optimized_srcs
+# AVX2 template variables
+VRDA_UNARY_AVX2_FUNCS = _mod.VRDA_UNARY_AVX2_FUNCS
+VRSA_UNARY_AVX2_FUNCS = _mod.VRSA_UNARY_AVX2_FUNCS
+AVX2_VRDA_TEMPLATE = _mod.AVX2_VRDA_TEMPLATE
+AVX2_VRSA_TEMPLATE = _mod.AVX2_VRSA_TEMPLATE
+# AVX-512 template variables
+VRDA_UNARY_AVX512_FUNCS = _mod.VRDA_UNARY_AVX512_FUNCS
+VRSA_UNARY_AVX512_FUNCS = _mod.VRSA_UNARY_AVX512_FUNCS
+AVX512_VRDA_TEMPLATE = _mod.AVX512_VRDA_TEMPLATE
+AVX512_VRSA_TEMPLATE = _mod.AVX512_VRSA_TEMPLATE
 
 e = env.Clone()
 
+# ---------------------------------------------------------------------------
+# Inline-asm C sources from avx subdirectory
+# ---------------------------------------------------------------------------
+avxsrcs_objs = SConscript('avx/SConscript',
+                         exports={'env': e},
+                         duplicate=0)
+
+# ---------------------------------------------------------------------------
+# Inline-asm C sources from avx2 subdirectory
+# ---------------------------------------------------------------------------
+avx2srcs_objs = SConscript('avx2/SConscript',
+                          exports={'env': e},
+                          duplicate=0)
+
+# ---------------------------------------------------------------------------
+# ISA-specific compilation using -include to inject ISA header.
+# Mirrors the pattern in src/isa/CMakeLists.txt.
+#   avx2  (ISA_HAS_AVX512=0): COMMON_SRCS compiled with fma/avx2 flags
+#   avx512(ISA_HAS_AVX512=1): COMMON_SRCS + AVX512_SRCS compiled with avx512 flags
+# ---------------------------------------------------------------------------
+
+avx2_srcs, avx512_srcs = gather_optimized_srcs(Glob)
+
+isa_includes = [
+    '#include',
+    '#include/libm'
+]
+
+# ISA list: (name, define, has_avx512) — mirrors ALM_ISA_LIST in CMakeLists.txt
+isa_list = [
+    ('avx2',   'AVX2',   False),
+    ('avx512', 'AVX512', True),
+]
+
+isa_header = joinpath(Dir('#src/isa').abspath, 'x86_isa.h')
 if e['HOST_OS'] != 'win32':
-    asflags = ['-Wall', '-W', '-fPIC']
+    isa_common_flags = ['-mfma', '-O3', '-fPIC', '-flax-vector-conversions']
 else:
-    asflags = ['-DAVX_XOP_FMA4_FMA3',
-           '-DDEBUG=0',
-           '-DENABLE_AMDLIBM_API=1',
-           '-DLIBABI=aocl', '-D__AVX2__',
-           '-Dlibalm_EXPORTS',
-           #'/showIncludes',
-           '/Iinclude',
-           '/Isrc\\isa',
-           '/Isrc\\isa\\include',
-           '/c'
-           ]
-e.Append(
-    ASFLAGS = asflags,
-    CPPPATH = incpaths,
-    CPPDEFINES = ['AVX_XOP_FMA4_FMA3' ],
-)
+    isa_common_flags = ['-mfma', '-O3']
 
-asm_list = ['avx/gas', 'fma4/gas']
-asm_objs = []
+isa_objs = []
 
-for asm_path in asm_list:
-    new_env = e.Clone()
-    srcs = Glob(joinpath(asm_path, '*.[cS]'))
-    #print(joinpath(Dir('.').srcnode().path, asm_path, 'include'))
-    incpath = '#' + joinpath(Dir('.').srcnode().path, asm_path, 'include')
-    new_env.Append(
-        CPPPATH = incpath,
+for isa_name, isa_def, has_avx512 in isa_list:
+    isa_env = e.Clone()
+
+    # These rearrangements are not value-safe:
+    #   (a ⊕ b) ⊕ c ⇒ a ⊕ (b ⊕ c)
+    #   a ⊗ (b ⊕ c) ⇒ (a ⊗ b) ⊕ (a ⊕ c)
+    # Strip -ffast-math (may be inherited from -Ofast) to prevent
+    # unsafe floating-point reassociation in math library code.
+    if '-ffast-math' in isa_env['CFLAGS']:
+        isa_env['CFLAGS'].remove('-ffast-math')
+
+    # Select source files and ISA-specific flags
+    if has_avx512:
+        srcs = avx512_srcs
+        isa_flags = ['-mavx512f', '-mavx512dq', '-mfma']
+    else:
+        srcs = avx2_srcs
+        isa_flags = ['-mavx2', '-mfma']
+
+    # Set up compiler flags
+    isa_cflags = ['-DALM_BUILD_' + isa_def + '=1']
+    if e['HOST_OS'] != 'win32':
+        isa_cflags.extend(['-include', isa_header])
+    else:
+        isa_cflags.extend(['/FI' + isa_header])
+
+    isa_cflags.extend(isa_common_flags)
+    isa_cflags.extend(isa_flags)
+
+    isa_env.Append(
+        CFLAGS = isa_cflags,
+        CPPPATH = isa_includes,
     )
-    asm_objs += new_env.StaticObject(srcs)
 
-avx2_objs = SConscript('avx2/SConscript',
-                       exports = {'env' : e},
-                       duplicate = 0,
-                       src_dir = '#src/isa/avx2',
-                       variant_dir = joinpath(builddir, 'optimized'))
+    # Build objects into ISA-specific subdirectory to avoid target conflicts
+    for src in srcs:
+        src_str = str(src)
+        src_norm_path = os.path.normpath(src_str).replace('\\', '/')
+        idx = src_norm_path.find('src/optimized/')
+        if idx >= 0:
+            rel = src_norm_path[idx + len('src/optimized/'):]
+        else:
+            rel = os.path.basename(src_norm_path)
+        target = joinpath(isa_name, os.path.splitext(rel)[0])
+        isa_objs.append(isa_env.StaticObject(target=target, source=src))
 
-# AVX-512 ISA wrappers.
-avx512_objs = SConscript('avx512/SConscript',
-                            exports    = {'env' : e},
-                            duplicate  = 0,
-                            src_dir    = '#src/isa/avx512',
-                            variant_dir = joinpath(builddir, 'avx512'))
+# ---------------------------------------------------------------------------
+# Unified template-based array wrapper compilation (AVX2 and AVX-512)
+#
+# This unified loop compiles both AVX2 and AVX-512 array wrappers using a
+# single parameterized configuration. Each ISA (avx2, avx512) has its own:
+#   - Build flag (ALM_BUILD_AVX2, ALM_BUILD_AVX512)
+#   - Compiler flags (-mavx2, -mavx512f/-mavx512dq)
+#   - Function lists and template files
+#
+# The template file uses PASTE(vrda_, ALM_FUNC) to construct the function
+# name at compile time. For example, with -DALM_FUNC=sin, the template
+# generates vrda_sin() which calls vrd4_sin (AVX2) or vrd8_sin (AVX-512).
+#
+# This produces one object file per function per ISA (e.g., avx2/vrda_sin.o).
+# ---------------------------------------------------------------------------
 
-objs = asm_objs + avx2_objs + avx512_objs
+# Unified ISA template configuration
+# Format: (isa_name, build_flag, isa_flags, vrda_template, vrsa_template, vrda_funcs, vrsa_funcs)
+isa_template_configs = [
+    ('avx2', 'AVX2', ['-mavx2'],
+     AVX2_VRDA_TEMPLATE, AVX2_VRSA_TEMPLATE,
+     VRDA_UNARY_AVX2_FUNCS, VRSA_UNARY_AVX2_FUNCS),
+    ('avx512', 'AVX512', ['-mavx512f', '-mavx512dq'],
+     AVX512_VRDA_TEMPLATE, AVX512_VRSA_TEMPLATE,
+     VRDA_UNARY_AVX512_FUNCS, VRSA_UNARY_AVX512_FUNCS),
+]
 
-#print('asm sources', list(asm_objs))
+for isa_name, build_flag, isa_flags, vrda_tpl, vrsa_tpl, vrda_funcs, vrsa_funcs in isa_template_configs:
+    tpl_base_env = e.Clone()
+    if '-ffast-math' in tpl_base_env['CFLAGS']:
+        tpl_base_env['CFLAGS'].remove('-ffast-math')
+
+    tpl_base_cflags = ['-DALM_BUILD_' + build_flag + '=1']
+    if e['HOST_OS'] != 'win32':
+        tpl_base_cflags.extend(['-include', isa_header])
+    else:
+        tpl_base_cflags.extend(['/FI' + isa_header])
+    tpl_base_cflags.extend(isa_common_flags)
+    tpl_base_cflags.extend(isa_flags)
+
+    vrda_template_src = File(joinpath('#src/optimized', vrda_tpl))
+    vrsa_template_src = File(joinpath('#src/optimized', vrsa_tpl))
+
+    # Template configurations for this ISA
+    # Format: (prefix, template_source, function_list)
+    template_configs = [
+        ('vrda', vrda_template_src, vrda_funcs),
+        ('vrsa', vrsa_template_src, vrsa_funcs),
+    ]
+
+    # Middle loop: iterate over template configurations (vrda, vrsa)
+    for prefix, template_src, func_list in template_configs:
+        # Inner loop: compile template once per function
+        for func in func_list:
+            tpl_env = tpl_base_env.Clone()
+            tpl_env.Append(
+                CFLAGS = tpl_base_cflags + ['-DALM_FUNC=' + func],
+                CPPPATH = isa_includes,
+            )
+            target = joinpath(isa_name, prefix + '_' + func)
+            isa_objs.append(tpl_env.StaticObject(target=target, source=template_src))
+
+objs = avxsrcs_objs + avx2srcs_objs + isa_objs
+
 Return('objs')
-

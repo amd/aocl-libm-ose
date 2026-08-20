@@ -175,7 +175,7 @@ ALM_PROTO_OPT(cexpf)(fc32_t z)
                     zy_re = POS_ZERO_F32;
                     zy_im = im;  /* Preserve sign of zero */
                 } else {
-                    ALM_PROTO(sincosf)(im, &sin_im, &cos_im);
+                    ALM_PROTO_OPT(sincosf)(im, &sin_im, &cos_im);
                     zy_re = POS_ZERO_F32 * cos_im;
                     zy_im = POS_ZERO_F32 * sin_im;
                 }
@@ -185,7 +185,7 @@ ALM_PROTO_OPT(cexpf)(fc32_t z)
                     zy_re = asfloat(POS_INF_F32);
                     zy_im = im;  /* Preserve sign of zero */
                 } else {
-                    ALM_PROTO(sincosf)(im, &sin_im, &cos_im);
+                    ALM_PROTO_OPT(sincosf)(im, &sin_im, &cos_im);
                     zy_re = asfloat(POS_INF_F32) * cos_im;
                     zy_im = asfloat(POS_INF_F32) * sin_im;
                 }
@@ -204,11 +204,11 @@ ALM_PROTO_OPT(cexpf)(fc32_t z)
                 zy_im = im;
             } else {
                 /* (±0, y) -> cis(y) */
-                ALM_PROTO(sincosf)(im, &zy_im, &zy_re);
+                ALM_PROTO_OPT(sincosf)(im, &zy_im, &zy_re);
             }
         } else if (im_is_zero) {
             /* (x, ±0) -> (expf(x), ±0) - preserve sign of zero */
-            zy_re = ALM_PROTO(expf)(re);
+            zy_re = ALM_PROTO_OPT(expf)(re);
             zy_im = im;
 
             /* Check for overflow or underflow */
@@ -236,8 +236,8 @@ ALM_PROTO_OPT(cexpf)(fc32_t z)
             if (re > CEXPF_MAX_ARG) {
                 /* Potential overflow case - split computation to avoid premature overflow */
                 float t = re - CEXPF_MAX_ARG;
-                ALM_PROTO(sincosf)(im, &sin_im, &cos_im);
-                float r = ALM_PROTO(expf)(t);
+                ALM_PROTO_OPT(sincosf)(im, &sin_im, &cos_im);
+                float r = ALM_PROTO_OPT(expf)(t);
 
                 zy_re = r * cos_im * CEXPF_EXP_MAX_ARG;
                 zy_im = r * sin_im * CEXPF_EXP_MAX_ARG;
@@ -256,9 +256,9 @@ ALM_PROTO_OPT(cexpf)(fc32_t z)
                 }
             } else if (re < CEXPF_UNDERFLOW_THRESHOLD) {
                 /* Potential underflow case */
-                float exp_re = ALM_PROTO(expf)(re);
+                float exp_re = ALM_PROTO_OPT(expf)(re);
                 if (exp_re == 0.0f) {
-                    ALM_PROTO(sincosf)(im, &sin_im, &cos_im);
+                    ALM_PROTO_OPT(sincosf)(im, &sin_im, &cos_im);
                     zy_re = exp_re * cos_im;
                     zy_im = exp_re * sin_im;
                     #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
@@ -267,14 +267,14 @@ ALM_PROTO_OPT(cexpf)(fc32_t z)
                         return alm_cexpf_special(CMPLXF(zy_re, zy_im), ALM_E_UNDERFLOW);
                     #endif
                 } else {
-                    ALM_PROTO(sincosf)(im, &sin_im, &cos_im);
+                    ALM_PROTO_OPT(sincosf)(im, &sin_im, &cos_im);
                     zy_re = exp_re * cos_im;
                     zy_im = exp_re * sin_im;
                 }
             } else {
                 /* Normal computation */
-                float exp_re = ALM_PROTO(expf)(re);
-                ALM_PROTO(sincosf)(im, &sin_im, &cos_im);
+                float exp_re = ALM_PROTO_OPT(expf)(re);
+                ALM_PROTO_OPT(sincosf)(im, &sin_im, &cos_im);
 
                 zy_re = exp_re * cos_im;
                 zy_im = exp_re * sin_im;

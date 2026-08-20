@@ -72,13 +72,13 @@ if (LIBM_BUILD_DOCS)
   set (LIBM_DOC_VER ${${PROJECT_PREFIX}_VERSION})
   string(TIMESTAMP COPYRIGHT_YEAR "%Y")
   set (HTML_INDEX_FILE  ${CMAKE_CURRENT_BINARY_DIR}/html/index.html)
-  set (DOXY_INPUT_FILES "${PROJECT_SOURCE_DIR}/include/external")
+  set (DOXY_INPUT_FILES "${${PROJECT_PREFIX}_SOURCE_DIR}/include/external")
 
 
   ##List of files used to generate documentation
   set (SPHINX_INPUT_FILES_HEADERS
-       ${PROJECT_SOURCE_DIR}/include/external/amdlibm.h
-       ${PROJECT_SOURCE_DIR}/include/external/amdlibm_vec.h
+       ${${PROJECT_PREFIX}_SOURCE_DIR}/include/external/amdlibm.h
+       ${${PROJECT_PREFIX}_SOURCE_DIR}/include/external/amdlibm_vec.h
   )
 
   set (SPHINX_INPUT_FILES_APIGUIDE

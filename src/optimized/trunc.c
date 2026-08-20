@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -45,15 +45,16 @@ double ALM_PROTO_OPT(trunc)(double x)
 
     /*  if NAN or INF */
     if (unlikely((ux & EXPBITS_DP64) == EXPBITS_DP64)) {
-        #ifdef WINDOWS
-            return __alm_handle_error(ux |= QNAN_MASK_64, 0);
-        #else
-            /* If NaN, raise exception, no exception for Infinity */
-            if (x != x) {
-                return __alm_handle_error(ux, AMD_F_INVALID);
-            }
+        /* Infinity has a zero mantissa; trunc(+/-Inf) = +/-Inf, no exception */
+        if ((ux & MANTBITS_DP64) == 0) {
             return x;
-        #endif
+        }
+        /* If QNaN, return the input value, no exception */
+        if (ux & QNAN_MASK_64) {
+            return x;
+        }
+        /* If SNaN, return QNaN with invalid flag set */
+        return __alm_handle_error(ux | QNAN_MASK_64, AMD_F_INVALID);
     }
 
     /*Get the exponent of the input*/

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2023, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2019-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -121,7 +121,8 @@ log2_near_one(double x)
         double   log2e_lead, log2e_tail;
     } near_one_data = {
         .log2e_lead = 0x1.7000000000000p+0,
-        .log2e_tail = 0x1.547652b82fd9cp-8,
+        /* correctly-rounded log2(e) - 1.4375 */
+        .log2e_tail = 0x1.547652b82fe17p-8,
     };
 
 #define LOG2E_LEAD near_one_data.log2e_lead

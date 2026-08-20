@@ -97,6 +97,28 @@ project("${PROJECT_PREFIX}-${PROJECT_NAME}"
    LANGUAGES      C CXX ASM)
 
 message(DEBUG "Project with name \"${PROJECT_PREFIX}\" with version ${${PROJECT_PREFIX}_VERSION} registered")
+set(${PROJECT_PREFIX}_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+
+# Windows builds use single-config generators with external sub-builds (gapi, mparith).
+if (WIN32)
+    if(NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
+        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type (Debug or Release)" FORCE)
+        message(STATUS "CMAKE_BUILD_TYPE not specified, defaulting to Release")
+    endif()
+    if(NOT CMAKE_BUILD_TYPE MATCHES "^(Debug|Release)$")
+        message(FATAL_ERROR "CMAKE_BUILD_TYPE must be Debug or Release (got: '${CMAKE_BUILD_TYPE}')")
+    endif()
+    # Restrict multi-config generators to the selected build type
+    set(CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}" CACHE STRING "" FORCE)
+    message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+endif()
+# Single-config generators (e.g. Ninja, Unix Makefiles) ignore
+# CMAKE_CONFIGURATION_TYPES. Reference the value supplied via CMake presets
+# so it is not reported as an unused manually-specified variable.
+if(DEFINED CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}")
+endif()
+
 
 #------------------------------
 # Configure archiver to use 'rc' flags instead of 'qc'
@@ -125,19 +147,12 @@ if (NOT DEFINED ${${PROJECT_PREFIX}_GENERATED})
     set(${PROJECT_PREFIX}_GENERATED "${PROJECT_BINARY_DIR}/generated")
 endif()
 
-if(WIN32)
-    set(CMAKE_COMPILE_WARNING_AS_ERROR FALSE)
-    if("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
-        message(FATAL_ERROR  "CMAKE for ${PROJECT_NAME} not supported on ${CMAKE_C_COMPILER_ID}")
-    endif()
-endif()
-
 #------------------------------
 # Setup Project Includes
 #------------------------------
 set(${PROJECT_PREFIX}_COMMON_INCLUDES "${${PROJECT_PREFIX}_GENERATED}")
-set(${PROJECT_PREFIX}_SDK_INCLUDES "${PROJECT_SOURCE_DIR}/include")
-set(${PROJECT_PREFIX}_PRIVATE_INCLUDES "${PROJECT_SOURCE_DIR}/include")
+set(${PROJECT_PREFIX}_SDK_INCLUDES "${${PROJECT_PREFIX}_SOURCE_DIR}/include")
+set(${PROJECT_PREFIX}_PRIVATE_INCLUDES "${${PROJECT_PREFIX}_SOURCE_DIR}/include")
 
 message(DEBUG "common includes ${${PROJECT_PREFIX}_COMMON_INCLUDES}")
 message(DEBUG "sdk include " "${${PROJECT_PREFIX}_SDK_INCLUDES}")
@@ -150,34 +165,68 @@ if(DEFINED ALM_STATIC_DISPATCH)
       OR ("${ALM_STATIC_DISPATCH}" STREQUAL "ZEN3")
       OR ("${ALM_STATIC_DISPATCH}" STREQUAL "ZEN4")
       OR ("${ALM_STATIC_DISPATCH}" STREQUAL "ZEN5")
+      OR ("${ALM_STATIC_DISPATCH}" STREQUAL "ZEN6")
       OR ("${ALM_STATIC_DISPATCH}" STREQUAL "AVX512") )
     # Set the ALM_STATIC_DISPATCH macro based on user input
     # default set to AVX2 if ALM_STATIC_DISPATCH is defined during cmake configured.
     set(ALM_STATIC_DISPATCH "AVX2" CACHE STRING "Set the static dispatch architecture")
     message(STATUS "ALM_STATIC_DISPATCH set to ${ALM_STATIC_DISPATCH}")
   else()
-    message(FATAL_ERROR "Valid option for ALM_STATIC_DISPATCH is set to any of the AVX2/ZEN2/ZEN3/ZEN4/ZEN5/AVX512")
+    message(FATAL_ERROR "Valid option for ALM_STATIC_DISPATCH is set to any of the AVX2/ZEN2/ZEN3/ZEN4/ZEN5/ZEN6/AVX512")
   endif()
 endif()
 
+include(Compiler_Features)
+# ------------------------------------------------------------------
+# Floating-point contraction (FMA fusion) control.
+#   fast (default) -> -ffp-contract=fast
+#   on             -> -ffp-contract=on
+#   off            -> -ffp-contract=off  (bit-reproducible builds)
+# ------------------------------------------------------------------
+set(ALM_FP_CONTRACT "fast" CACHE STRING "ffp-contract=on/off/fast")
+set_property(CACHE ALM_FP_CONTRACT PROPERTY STRINGS fast on off)
+string(TOLOWER "${ALM_FP_CONTRACT}" ALM_FP_CONTRACT_MODE)
+if(NOT ALM_FP_CONTRACT_MODE MATCHES "^(fast|on|off)$")
+  message(WARNING "ALM_FP_CONTRACT='${ALM_FP_CONTRACT}' is invalid; expected one of fast/on/off. Falling back to default 'fast'.")
+  set(ALM_FP_CONTRACT_MODE fast)
+endif()
+get_fast_flag(FFP)
+message(STATUS "Set Compiler flag: ${FFP}")
+
 if(WIN32)
+    # Block pure MSVC (cl.exe); ClangCL reports as "Clang" and is supported.
+    if(NOT msvc_clang_cl
+       AND (CMAKE_C_COMPILER_ID STREQUAL "MSVC" OR CMAKE_CXX_COMPILER_ID STREQUAL "MSVC"))
+        message(FATAL_ERROR
+            "MSVC (cl.exe) is not supported; use clang-cl.exe or '-T ClangCL'.")
+    endif()
+
     # Use AT&T assembly syntax on Windows (required for Clang 19+ compatibility)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -masm=att")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -masm=att")
-else()
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=.")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmacro-prefix-map=${PROJECT_SOURCE_DIR}/=.")
-endif()
 
-#------------------------------
-# AOCL_Utils CPUID_library requirements
-#------------------------------
-# Check if the necessary includes and libraries are present before including Cct_Libaoclutils
-if (NOT (EXISTS "${AOCL_UTILS_INCLUDE_DIR}" AND EXISTS "${AOCL_UTILS_LIB}"))
-    include(Cct_Libaoclutils)
-    link_directories(${AOCL_UTILS_LIB_DIR})
-    set(CMAKE_SKIP_RPATH TRUE)
-    set(CMAKE_SKIP_INSTALL_RPATH TRUE)
+    # Normalize /GS for bit-identical output; C/C++ only so the assembler
+    # is unaffected. Gated on MSVC (satisfied by clang-cl) since /GS- is an
+    # MSVC-style flag rejected by clang in GNU mode.
+    if(MSVC)
+        add_compile_options($<$<COMPILE_LANGUAGE:C,CXX>:/GS->)
+    endif()
+
+    if(CMAKE_GENERATOR MATCHES "Visual Studio")
+        # Strip only the /fp:precise flag that MSBuild injects by default
+        # (clang-cl already defaults to precise, so it is redundant). Any
+        # explicitly requested mode such as /fp:fast or /fp:strict is preserved.
+        foreach(lang C CXX)
+            foreach(config "" _DEBUG _RELEASE)
+                if(DEFINED CMAKE_${lang}_FLAGS${config})
+                    string(REGEX REPLACE "/fp:precise" "" CMAKE_${lang}_FLAGS${config} "${CMAKE_${lang}_FLAGS${config}}")
+                endif()
+            endforeach()
+        endforeach()
+    endif()
+else()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fmacro-prefix-map=${${PROJECT_PREFIX}_SOURCE_DIR}/=.")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmacro-prefix-map=${${PROJECT_PREFIX}_SOURCE_DIR}/=.")
 endif()
 
 #------------------------------
@@ -210,7 +259,7 @@ if (NOT DEFINED ${PROJECT_PREFIX}_CONFIG_OUTPUT_FILE)
     set(${PROJECT_PREFIX}_CONFIG_OUTPUT_FILE
             ${${PROJECT_PREFIX}_GENERATED}/Config.hh)
 endif()
-if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CONFIG_BUILD_TYPE_DEBUG    1)
 else()
     set(CONFIG_BUILD_TYPE_RELEASE  1)
@@ -225,8 +274,7 @@ endif()
 #------------------------------------
 # Check compiler support for different ISAs
 #------------------------------------
-include(Compiler_Features)
-configure_file("${PROJECT_SOURCE_DIR}/CMake/Config.hh.in"
+configure_file("${${PROJECT_PREFIX}_SOURCE_DIR}/CMake/Config.hh.in"
             "${${PROJECT_PREFIX}_CONFIG_OUTPUT_FILE}"
             @ONLY)
 
@@ -236,7 +284,7 @@ configure_file("${PROJECT_SOURCE_DIR}/CMake/Config.hh.in"
 if (NOT DEFINED ${PROJECT_PREFIX}_VERSION_OUTPUT_FILE)
     set(${PROJECT_PREFIX}_VERSION_OUTPUT_FILE ${${PROJECT_PREFIX}_GENERATED}/Version.hh)
 endif()
-configure_file("${PROJECT_SOURCE_DIR}/CMake/Version.hh.in"
+configure_file("${${PROJECT_PREFIX}_SOURCE_DIR}/CMake/Version.hh.in"
                 "${${PROJECT_PREFIX}_VERSION_OUTPUT_FILE}"
                 @ONLY)
 
@@ -272,35 +320,52 @@ endif()
 if(${${PROJECT_PREFIX}_LIBM_BUILD_LIBRARY})
     add_subdirectory(src)
     set(ALM_PATH        "${CMAKE_BINARY_DIR}/src")
-    set(ALM_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
-    if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
-        set(ALM_PATH        "${${PROJECT_PREFIX}_INSTALL_DIR}/lib")
-    endif()
+    set(ALM_INCLUDE_DIR "${${PROJECT_PREFIX}_SOURCE_DIR}/include")
 endif()
+
+
+#------------------------------
+# External sub-build helpers
+#------------------------------
+include(Cct_ExternalProject)
 
 #----------------------------------------------------------
 # Add libm_testsuite if LIBM_BUILD_TESTSUITE is enabled
 #----------------------------------------------------------
 if (${${PROJECT_PREFIX}_LIBM_BUILD_TESTSUITE})
+    enable_testing()
     add_subdirectory(almbench EXCLUDE_FROM_ALL)
+    alm_add_config_wrapper_target(almbench "${CMAKE_BINARY_DIR}/almbench" libm_runner)
 endif()
 
 #------------------------------
-# Add Tests if ENABLE_TESTS is defined
+# Add Tests if LIBM_BUILD_TESTS is enabled
 # These are Integration Tests,
 # Unit tests are expected to be in respective source folder
 #------------------------------
 if (${${PROJECT_PREFIX}_LIBM_BUILD_TESTS})
     enable_testing()
     add_subdirectory(gtests EXCLUDE_FROM_ALL)
+    alm_add_config_wrapper_target(gtests "${CMAKE_BINARY_DIR}/gtests" gtests_suite)
+endif()
+
+#------------------------------
+# Add internal CPU-detection utils tests if UTILS_BUILD_TESTS is enabled.
+# These link the self-contained libalm and live at the top level (cpuid_tests)
+# rather than under src/utils, which carries only the build-required objects.
+#------------------------------
+if(${${PROJECT_PREFIX}_LIBM_BUILD_LIBRARY} AND ${${PROJECT_PREFIX}_UTILS_BUILD_TESTS})
+    enable_testing()
+    add_subdirectory(cpuid_tests EXCLUDE_FROM_ALL)
 endif()
 
 #----------------------------------------------
-# Add Examples if LIBM_ENABLE_TESTS is defined
+# Add Examples if LIBM_BUILD_EXAMPLES is enabled
 #---------------------------------------------
 if (${${PROJECT_PREFIX}_LIBM_BUILD_EXAMPLES})
     enable_testing()
     add_subdirectory(examples EXCLUDE_FROM_ALL)
+    alm_add_config_wrapper_target(examples "${CMAKE_BINARY_DIR}/examples" test_libm)
 endif()
 
 #----------------------------------------------------------
@@ -310,10 +375,22 @@ if (${${PROJECT_PREFIX}_LIBM_BUILD_DOCS})
   add_subdirectory(docs/src EXCLUDE_FROM_ALL)
 endif ()
 
+#----------------------------------------------------------
+# Stable Sort (Keep this section isolated from other libm content)
+# Add the stablesort tester (bench + unit tests) if SORT_BUILD_TESTS is enabled
+#----------------------------------------------------------
+if (${${PROJECT_PREFIX}_SORT_BUILD_TESTS})
+    add_subdirectory(tools/stablesort_tester)
+endif()
+
 add_custom_target(distclean
     COMMAND ${CMAKE_MAKE_PROGRAM} clean
-    COMMAND ${CMAKE_COMMAND} -E remove "${PROJECT_SOURCE_DIR}/src/buildsysinfo.h"
-    COMMAND ${CMAKE_COMMAND} -E remove "${PROJECT_SOURCE_DIR}/src/version.build.h"
+    COMMAND ${CMAKE_COMMAND} -E remove "${${PROJECT_PREFIX}_SOURCE_DIR}/src/buildsysinfo.h"
+    COMMAND ${CMAKE_COMMAND} -E remove "${${PROJECT_PREFIX}_SOURCE_DIR}/src/version.build.h"
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     COMMENT "Remove cmake_generated files and directories"
 )
+
+if(${${PROJECT_PREFIX}_LIBM_BUILD_LIBRARY} AND ENABLE_AOCL_LIBM)
+    set(libmobj ${libmobj} PARENT_SCOPE)
+endif()

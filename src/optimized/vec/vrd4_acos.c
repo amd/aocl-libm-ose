@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -139,13 +139,13 @@ static struct {
 static inline bool
 all_v4_u64_loop(v_u64x4_t cond)
 {
-    return !!(cond[0] & cond[1] & cond[2] & cond[3]);
+    return _mm256_testc_si256((__m256i)cond, _mm256_set1_epi32(-1));
 }
 
 static inline v_f64x4_t
 acos_specialcase(v_f64x4_t _x, v_f64x4_t result, v_u64x4_t cond)
 {
-    return call_v4_f64(ALM_PROTO(acos), _x, result, cond);
+    return call_v4_f64(ALM_PROTO_OPT(acos), _x, result, cond);
 }
 
 v_f64x4_t

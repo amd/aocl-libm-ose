@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2024, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2018-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -99,7 +99,7 @@ static struct {
     },
 };
 
-#define SCALAR_LOG ALM_PROTO(log)
+#define SCALAR_LOG ALM_PROTO_OPT(log)
 
 #define EXPSHIFTBITS_SP64 52
 #define ln2 log_data.ln2
@@ -128,8 +128,6 @@ static struct {
 #define C18 _MM_SET1_PD2(log_data.poly_logf[17])
 #define C19 _MM_SET1_PD2(log_data.poly_logf[18])
 #define C20 _MM_SET1_PD2(log_data.poly_logf[19])
-
-#define LOG_ARG_MAX 0x7ff0000000000000
 
 __m128d
 ALM_PROTO_OPT(vrd2_log) (__m128d x)
@@ -170,15 +168,16 @@ ALM_PROTO_OPT(vrd2_log) (__m128d x)
 
     ux = as_v2_u64_f64(x);
 
-    /* Check for special cases */
-    /* If input value is outside valid range, call scalar log(value) */
-    /* Otherwise, return the above computed result */
-    for(int i = 0; i < 2; i++)
+    /* Detect special values: Zero/Subnormal/Inf/NaN/negative.
+     * As an unsigned comparison, (ux - min_normal) >= (max - min_normal) is
+     * true for all inputs outside the normal positive range. Same logic as
+     * scalar log() and vrd2_log2(). Done per-lane on scalar (GPR) ports so it
+     * runs in parallel with the vector polynomial chain.
+     */
+    for(int i = 0; i < VECTOR_SIZE; i++)
     {
-        if(unlikely(ux[i] > LOG_ARG_MAX))
+        if(unlikely((ux[i] - IMPBIT_DP64) >= (PINFBITPATT_DP64 - IMPBIT_DP64)))
             r[i] = SCALAR_LOG(x[i]);
     }
     return r;
 }
-
-

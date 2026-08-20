@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -114,7 +114,7 @@ static struct {
 #define D4 v4_asin_data.poly_asin_deno[3]
 #define D5 v4_asin_data.poly_asin_deno[4]
 
-#define SCALAR_ASIN ALM_PROTO(asin)
+#define SCALAR_ASIN ALM_PROTO_OPT(asin)
 
 v_f64x4_t
 ALM_PROTO_OPT(vrd4_asin)(v_f64x4_t x)

@@ -333,7 +333,7 @@ ALM_PROTO_OPT(vrd8_erfcinv)(v_f64x8_t _x) {
     if(test_condition_for_all(cond1_or_4)) {
         /* For Range1: log_arg = _x, For Range4: log_arg = TWO - _x */
         v_f64x8_t log_arg = _mm512_mask_blend_pd(to_mask8(cond1), TWO - _x, _x);
-        v_f64x8_t z = ONE / ALM_PROTO(vrd8_sqrt)(-ALM_PROTO(vrd8_log)(log_arg));
+        v_f64x8_t z = ONE / ALM_PROTO_OPT(vrd8_sqrt)(-ALM_PROTO_OPT(vrd8_log)(log_arg));
 
         v_f64x8_t P = POLY_EVAL_ESTRIN_11_TAIL_2(z, P20, P20T, P21, P21T,
             P22, P23, P24, P25, P26, P27, P28, P29, P210);

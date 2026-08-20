@@ -36,9 +36,8 @@ class LLVM(Compiler):
         else:
             common_ld_flags = []
 
+        # NOTE: -ffp-contract is applied uniformly (gcc + llvm)
         self.compile_flags_release += [
-                # ffp-contract is needed to generate FMA instr for vectors
-            '-ffp-contract=fast',
                 # '-Ofast',
                 # '-fipa-pta',
                 # '-funsafe-loop-optimizations',

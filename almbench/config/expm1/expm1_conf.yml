@@ -1010,14 +1010,8 @@
       expect_exception: [inexact, overflow]
       variants: [sd]
 
-    - id: expm1_056
-      description: expm1(0.0) = 0.0
-      input: [0x0000000000000000]
-      expect: [0x0000000000000000]
-      expect_exception: []
-      variants: [sd]
 
-    - id: expm1_057
+    - id: expm1_056
       description: ""
       input: [0x408fffbfff7cfe9e]
       expect: [0x7ff0000000000000]

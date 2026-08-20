@@ -58,14 +58,18 @@ class Runner {
 public:
     using RunnerFunc = double (Runner::*)(InParams<T, U>*);
 
-    Runner(void (*shim)(InParams<T, U>*), TestMode mode, uint64_t iterations = 10);
+    Runner(void (*shim)(InParams<T, U>*), const TestConfig &config, uint64_t iterations = 10);
     double run(InParams<T, U>* ipp);
 
 private:
     void (*shim_func)(InParams<T, U>*);
     uint64_t iterations;
+    uint64_t warmup_count;
+    uint64_t batch_size;
+    bool is_vra;
     RunnerFunc run_libm_api;
 
     double run_perf(InParams<T, U>* ipp);
+    double run_perf_latency(InParams<T, U>* ipp);
     double run_accu(InParams<T, U>* ipp);
 };

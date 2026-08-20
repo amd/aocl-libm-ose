@@ -70,7 +70,7 @@
 #include <libm/compiler.h>
 #include <libm/poly.h>
 #include "erfinv_data.h"
-
+#include "kern/sqrt_pos.c"
 
 static const struct
 {
@@ -309,7 +309,7 @@ double ALM_PROTO_OPT(erfinv)(double x)
     absx = asdouble(ux);
 
     /* Use log1p for better accuracy: log(1-absx) = log1p(-absx) */
-    y = ALM_PROTO(sqrt)(-1.0 * ALM_PROTO(log1p)(-absx));
+    y = ALM_PROTO_KERN(sqrt)(-1.0 * ALM_PROTO_OPT(log1p)(-absx));
     z = 1.0 / y;
 
     /* Evaluate rational approximation P(z)/Q(z) */

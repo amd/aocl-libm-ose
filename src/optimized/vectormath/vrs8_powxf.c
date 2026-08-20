@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -237,7 +237,7 @@ powf_specialcase(v_f32x8_t _x,
                  v_f32x8_t result,
                  v_i32x8_t cond)
 {
-    return call2_v8_f32_spl(ALM_PROTO(powf), _x, _y, result, cond);
+    return call2_v8_f32_spl(ALM_PROTO_OPT(powf), _x, _y, result, cond);
 }
 
 static inline v_f64x4_t
@@ -277,9 +277,9 @@ ALM_PROTO_OPT(vrs8_powxf)(__m256 x,float y)
 
     v_i32x4_t index_array[2];
 
-    exponent_array[0] = _mm256_extractf128_si256(int_exponent, 0);
+    exponent_array[0] = _mm256_extractf128_si256((__m256i)int_exponent, 0);
 
-    exponent_array[1] = _mm256_extractf128_si256(int_exponent, 1);
+    exponent_array[1] = _mm256_extractf128_si256((__m256i)int_exponent, 1);
 
     v_u32x8_t mant  = ((u & MANTISSA_BITS) | HALF);
 
@@ -297,15 +297,15 @@ ALM_PROTO_OPT(vrs8_powxf)(__m256 x,float y)
 
     _f[1] = _mm256_extractf128_ps(f, 1);
 
-    index_array[0] = _mm256_extractf128_si256(index, 0);
+    index_array[0] = _mm256_extractf128_si256((__m256i)index, 0);
 
-    index_array[1] = _mm256_extractf128_si256(index, 1);
+    index_array[1] = _mm256_extractf128_si256((__m256i)index, 1);
 
     v_f64x4_t yd = _MM_SET1_PD4((double)y);
 
     for(uint32_t lane = 0; lane < 2; lane++) {
 
-        v_f64x4_t exponent =  _mm256_cvtepi32_pd (exponent_array[lane]);
+        v_f64x4_t exponent = _mm256_cvtepi32_pd((__m128i)exponent_array[lane]);
 
         v_f64x4_t fd = _mm256_cvtps_pd(_f[lane]);
 

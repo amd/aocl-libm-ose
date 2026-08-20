@@ -1,0 +1,99 @@
+- test_sequence: unit_tests_atan2_fast
+  ignore_exceptions: [underflow, inexact]
+  function: atan2
+  test_sets:
+  - id: special-values
+    description: Special case tests for atan2 fast
+    tests:
+    #
+    # atan2(±0, ±0) — both args zero
+    #
+    - id: atan2_001
+      description: "atan2(+0, +0) = +0"
+      input: [0x0000000000000000, 0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_002
+      description: "atan2(-0, +0) = -0"
+      input: [0x8000000000000000, 0x0000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_003
+      description: "atan2(+0, -0) = +pi"
+      input: [0x0000000000000000, 0x8000000000000000]
+      expect: [0x400921fb54442d18]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_004
+      description: "atan2(-0, -0) = -pi"
+      input: [0x8000000000000000, 0x8000000000000000]
+      expect: [0xc00921fb54442d18]
+      expect_exception: []
+      variants: [sd]
+
+    #
+    # atan2(±0, x) — y is zero, x is nonzero
+    #
+    - id: atan2_005
+      description: "atan2(+0, +x) = +0"
+      input: [0x0000000000000000, 0x3ff0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_006
+      description: "atan2(-0, +x) = -0"
+      input: [0x8000000000000000, 0x3ff0000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_007
+      description: "atan2(+0, -x) = +pi"
+      input: [0x0000000000000000, 0xbff0000000000000]
+      expect: [0x400921fb54442d18]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_008
+      description: "atan2(-0, -x) = -pi"
+      input: [0x8000000000000000, 0xbff0000000000000]
+      expect: [0xc00921fb54442d18]
+      expect_exception: []
+      variants: [sd]
+
+    #
+    # atan2(y, ±0) — x is zero, y is nonzero
+    #
+    - id: atan2_009
+      description: "atan2(+y, +0) = +pi/2"
+      input: [0x3ff0000000000000, 0x0000000000000000]
+      expect: [0x3ff921fb54442d18]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_010
+      description: "atan2(-y, +0) = -pi/2"
+      input: [0xbff0000000000000, 0x0000000000000000]
+      expect: [0xbff921fb54442d18]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_011
+      description: "atan2(+y, -0) = +pi/2"
+      input: [0x3ff0000000000000, 0x8000000000000000]
+      expect: [0x3ff921fb54442d18]
+      expect_exception: []
+      variants: [sd]
+
+    - id: atan2_012
+      description: "atan2(-y, -0) = -pi/2"
+      input: [0xbff0000000000000, 0x8000000000000000]
+      expect: [0xbff921fb54442d18]
+      expect_exception: []
+      variants: [sd]

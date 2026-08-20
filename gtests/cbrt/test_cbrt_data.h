@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -92,8 +92,8 @@ test_cbrtf_conformance_data[] = {
    {0x41980000, 0x4caa36c8,  0}, //small_threshold - 1 = 19
 
     //cbrt special exception checks
-   {POS_ZERO_F32, 0x3f800000,0 },  //0
-   {NEG_ZERO_F32, 0x3f800000,0 },  //0
+   {POS_ZERO_F32, POS_ZERO_F32, 0 },  // +0
+   {NEG_ZERO_F32, NEG_ZERO_F32, 0 },  // -0
    {POS_INF_F32,  POS_INF_F32,0 },
    {NEG_INF_F32,  NEG_INF_F32,0 },
    {POS_SNAN_F32, POS_SNAN_F32, FE_INVALID },  //
@@ -131,11 +131,11 @@ test_cbrtf_conformance_data[] = {
    {0x402DF853, 0x40f38620,  0},  // e --
    {0x402DF854, 0x40f38624,  0},  // e
    {0x402DF855, 0x40f38628,  0},  // e ++
-   {0x00000000, 0x3f800000,  0},  // 0
+   {0x00000000, 0x00000000,  0},  // 0
    {0x37C0F01F, 0x3f800000,  0},  // 0.000023
    {0x3EFFFEB0, 0x3f9055e0,  0},  // 0.49999
    {0x3F0000C9, 0x3f905641,  0},  // 0.500012
-   {0x80000000, 0x3f800000,  0},  // -0
+   {0x80000000, 0x80000000,  0},  // -0
    {0xb7C0F01F, 0x3f800000,  0},  // -0.000023
    {0xbEFFFEB0, 0x3f9055e0,  0},  // -0.49999
    {0xbF0000C9, 0x3f905641,  0},  // -0.500012

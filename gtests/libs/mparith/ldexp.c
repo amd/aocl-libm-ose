@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -40,10 +40,19 @@
 #endif
 
 #include <mpfr.h>
+#include <math.h>
 
 REAL_L FUNC_LDEXP(REAL x, int expn)
 {
    REAL_L y1;
+
+    /*
+     * IEEE-754 leaves the sign of a NaN result unspecified, but MPFR
+     * collapses every NaN to a single canonical (negative) NaN through
+     * mpfr_get_d/_ld.
+     */
+    if (isnan((double)x))
+        return (REAL_L)x;
 
     mpfr_rnd_t rnd = MPFR_RNDN;
     mpfr_t mpx, mp_rop;

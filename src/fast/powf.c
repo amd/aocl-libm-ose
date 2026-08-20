@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2020 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -47,6 +47,7 @@
 #include <libm/typehelper.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
+#include "kern/sqrtf_pos.c"
 
 extern uint64_t log_256[];
 #define N 8
@@ -216,7 +217,7 @@ calculate_log(float x)
     uint32_t mant_n = ux & 0x007F8000;
 
     /*
-     * Step needed for better accuracy 
+     * Step needed for better accuracy
     uint32_t mant_n1 = ux & 0x00004000;
     uint32_t j = (mant_n) + (mant_n1 << 1);
     */
@@ -313,7 +314,7 @@ float ALM_PROTO_FAST(powf)(float x, float y)
 
     uint64_t sign_bias = 0;
 
-    /* The following line relies on (ux - 0x00800000) underflowing if x is 0 or denormal, 
+    /* The following line relies on (ux - 0x00800000) underflowing if x is 0 or denormal,
        which would make the equality true for this case, as well as for x being inf or NaN. */
     if (unlikely (((ux - 0x00800000) >= (0x7f800000 - 0x00800000)) || zeroinfnan (uy))) {
 
@@ -340,7 +341,7 @@ float ALM_PROTO_FAST(powf)(float x, float y)
             }
 
             if (2 * ux == 0 && uy & 0x80000000) {
-            
+
                 x = 1.0f / 0.0f;
 
                 ux = asuint32(x);
@@ -353,12 +354,12 @@ float ALM_PROTO_FAST(powf)(float x, float y)
 
         /* x and y are non-zero finite  */
         if (ux & 0x80000000) { /* x is negative */
- 
+
             /* Finite x < 0 */
             int yint = checkint (uy);
 
             if (yint == 0)
-                return (float)amd_sqrt(x);
+                return (float)ALM_PROTO_KERN(sqrtf)(x);
 
             if (yint == 1)
                 sign_bias = SIGN_BIAS;

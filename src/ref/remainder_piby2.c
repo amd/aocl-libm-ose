@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -48,8 +48,8 @@ void __amd_remainder_2dfpiby2(__m128d x, __m128d *r, __m128d *rr, __m128i *regio
 
 	XMMREGTYP inpx;
 	XMMREGTYP resr,resrr,resregion;
-	int reg,reg1;
-	double irr,irr1,ir,ir1;
+	int reg = 0,reg1 = 0;
+	double irr = 0.0,irr1 = 0.0,ir = 0.0,ir1 = 0.0;
 
 
 

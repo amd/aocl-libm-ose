@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -35,7 +35,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include(CheckCCompilerFlag)
 
 # Include directories
-include_directories("${CMAKE_SOURCE_DIR}/../../include" "inc")
+if(DEFINED ${PROJECT_PREFIX}_SOURCE_DIR)
+    include_directories("${${PROJECT_PREFIX}_SOURCE_DIR}/include" "inc")
+else()
+    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../../include" "inc")
+endif()
 
 # Collect source files
 file(GLOB DYNAMIC_SRCS "src/*.c")

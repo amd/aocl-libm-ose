@@ -115,14 +115,14 @@ sin_specialcase(v_f64x8_t _x,
                 v_u64x8_t cond)
 {
     return (v_f64x8_t) {
-            (cond[0]) ? ALM_PROTO(sin)(_x[0]):result[0],
-            (cond[1]) ? ALM_PROTO(sin)(_x[1]):result[1],
-            (cond[2]) ? ALM_PROTO(sin)(_x[2]):result[2],
-            (cond[3]) ? ALM_PROTO(sin)(_x[3]):result[3],
-            (cond[4]) ? ALM_PROTO(sin)(_x[4]):result[4],
-            (cond[5]) ? ALM_PROTO(sin)(_x[5]):result[5],
-            (cond[6]) ? ALM_PROTO(sin)(_x[6]):result[6],
-            (cond[7]) ? ALM_PROTO(sin)(_x[7]):result[7],
+            (cond[0]) ? ALM_PROTO_OPT(sin)(_x[0]):result[0],
+            (cond[1]) ? ALM_PROTO_OPT(sin)(_x[1]):result[1],
+            (cond[2]) ? ALM_PROTO_OPT(sin)(_x[2]):result[2],
+            (cond[3]) ? ALM_PROTO_OPT(sin)(_x[3]):result[3],
+            (cond[4]) ? ALM_PROTO_OPT(sin)(_x[4]):result[4],
+            (cond[5]) ? ALM_PROTO_OPT(sin)(_x[5]):result[5],
+            (cond[6]) ? ALM_PROTO_OPT(sin)(_x[6]):result[6],
+            (cond[7]) ? ALM_PROTO_OPT(sin)(_x[7]):result[7],
         };
 }
 
@@ -132,14 +132,14 @@ cos_specialcase(v_f64x8_t _x,
                 v_u64x8_t cond)
 {
     return (v_f64x8_t) {
-            (cond[0]) ? ALM_PROTO(cos)(_x[0]):result[0],
-            (cond[1]) ? ALM_PROTO(cos)(_x[1]):result[1],
-            (cond[2]) ? ALM_PROTO(cos)(_x[2]):result[2],
-            (cond[3]) ? ALM_PROTO(cos)(_x[3]):result[3],
-            (cond[4]) ? ALM_PROTO(cos)(_x[4]):result[4],
-            (cond[5]) ? ALM_PROTO(cos)(_x[5]):result[5],
-            (cond[6]) ? ALM_PROTO(cos)(_x[6]):result[6],
-            (cond[7]) ? ALM_PROTO(cos)(_x[7]):result[7],
+            (cond[0]) ? ALM_PROTO_OPT(cos)(_x[0]):result[0],
+            (cond[1]) ? ALM_PROTO_OPT(cos)(_x[1]):result[1],
+            (cond[2]) ? ALM_PROTO_OPT(cos)(_x[2]):result[2],
+            (cond[3]) ? ALM_PROTO_OPT(cos)(_x[3]):result[3],
+            (cond[4]) ? ALM_PROTO_OPT(cos)(_x[4]):result[4],
+            (cond[5]) ? ALM_PROTO_OPT(cos)(_x[5]):result[5],
+            (cond[6]) ? ALM_PROTO_OPT(cos)(_x[6]):result[6],
+            (cond[7]) ? ALM_PROTO_OPT(cos)(_x[7]):result[7],
 	};
 }
 
@@ -194,7 +194,7 @@ ALM_PROTO_OPT(vrd8_sincos)(v_f64x8_t x, v_f64x8_t *result_sin, v_f64x8_t *result
     *result_sin = as_v8_f64_u64(as_v8_u64_f64(poly_sin) ^ sign ^ odd_sin);
     *result_cos = as_v8_f64_u64(as_v8_u64_f64(poly_cos) ^ odd_cos);
 
-    if(unlikely(any_v8_u64_loop(cmp))) {
+    if(unlikely(any_v8_u64_avx512(cmp))) {
       *result_sin = sin_specialcase(x, *result_sin, cmp);
       *result_cos = cos_specialcase(x, *result_cos, cmp);
     }

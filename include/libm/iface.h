@@ -123,6 +123,10 @@ enum {
     C_AMD_CPOW,
     C_AMD_CLOG,
 
+    /* Stable Sort (Keep this section isolated from other libm content) */
+    C_AMD_STABLESORT_GETSIZE_64F,
+    C_AMD_STABLESORT_ASCEND_64F,
+
     /*
      * This one needs to be last one, REALLY !!!
      */
@@ -220,6 +224,10 @@ extern void LIBM_IFACE_PROTO(linearfrac)(void *arg);
 extern void LIBM_IFACE_PROTO(cdfnorm)(void *arg);
 extern void LIBM_IFACE_PROTO(cdfnorminv)(void *arg);
 
+/* Stable Sort (Keep this section isolated from other libm content) */
+extern void LIBM_IFACE_PROTO(stablesort_getsize_64f)(void *arg);
+extern void LIBM_IFACE_PROTO(stablesort_ascend_64f)(void *arg);
+
 struct entry_pt_interface {
     void (*epi_init)(void *arg);
     void *epi_arg;
@@ -269,6 +277,7 @@ enum ALM_UARCH_VERSIONS {
     ALM_UARCH_VER_ZEN3,
     ALM_UARCH_VER_ZEN4,
     ALM_UARCH_VER_ZEN5,
+    ALM_UARCH_VER_ZEN6,
 
     ALM_UARCH_MAX,                       /* should be last, always */
 };

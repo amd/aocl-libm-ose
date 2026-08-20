@@ -259,13 +259,22 @@ ALM_PROTO_OPT(vrs8_expf)(v_f32x8_t _x)
     // result = polynomial * 2^m
     v_f32x8_t result = poly * as_v8_f32_u32(m);
 
-    // If input value is outside valid range, call scalar expf(value)
-    // Else, return the above computed result
-    for(int i = 0 ; i < 8 ; i++)
-    {
-        if(unlikely(vx[i]) > ARG_MAX)
-            result[i] = SCALAR_EXPF(_x[i]);
+    // Check if -103 < vx < 88
+    v_u32x8_t cond = (vx > ARG_MAX);
+
+    if(unlikely(any_v8_u32_loop(cond))) {
+        return (v_f32x8_t) {
+            cond[0] ? SCALAR_EXPF(_x[0]) : result[0],
+            cond[1] ? SCALAR_EXPF(_x[1]) : result[1],
+            cond[2] ? SCALAR_EXPF(_x[2]) : result[2],
+            cond[3] ? SCALAR_EXPF(_x[3]) : result[3],
+            cond[4] ? SCALAR_EXPF(_x[4]) : result[4],
+            cond[5] ? SCALAR_EXPF(_x[5]) : result[5],
+            cond[6] ? SCALAR_EXPF(_x[6]) : result[6],
+            cond[7] ? SCALAR_EXPF(_x[7]) : result[7],
+        };
     }
+
     return result;
 
 }

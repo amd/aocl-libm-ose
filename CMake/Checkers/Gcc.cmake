@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@
 
 
 set(GCC_VERSION_MIN   "9.2.0")
-set(GCC_VERSION_MAX   "15.3.0")
+set(GCC_VERSION_MAX   "16.2.0")
 
 if ((CMAKE_C_COMPILER_VERSION VERSION_LESS ${GCC_VERSION_MIN}) OR
     (CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL ${GCC_VERSION_MAX}))
@@ -38,11 +38,6 @@ set(CONFIG_COMPILER_IS_GCC   1)
 
 macro(CHECK_COMPILER_VERSION GCC_VERSION)
   set(${GCC_VERSION}  "gcc-${CMAKE_C_COMPILER_VERSION}")
-endmacro()
-
-#LIBM FLAGS abd CFLAGS Flags Macroes
-macro(get_fast_flag ffpflag)
-  set(${ffpflag} -ffp-contract=fast)
 endmacro()
 
 macro(get_warning_flags wflags)

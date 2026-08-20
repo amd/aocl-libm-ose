@@ -1,0 +1,1230 @@
+---
+- test_sequence: unit_tests_lround
+  ignore_exceptions: [underflow, inexact]
+  function: lround
+  test_sets:
+  - id: special-values
+    description: Special values (scalar);
+    tests:
+    - id: lround_001
+      description: "lroundf(0) = 0"
+      api_name: lround
+      variants: [ss]
+      input: [0x00000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_002
+      description: "lroundf(-0) = 0 (packed as +0)"
+      api_name: lround
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_003
+      description: "lroundf(+inf) invalid; oracle LONG_MIN as float"
+      api_name: lround
+      variants: [ss]
+      input: [0x7f800000]
+      expect: [0xdf000000]
+      expect_exception: [invalidoperation]
+
+    - id: lround_004
+      description: "lroundf(-inf) invalid; oracle LONG_MIN as float"
+      api_name: lround
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0xdf000000]
+      expect_exception: [invalidoperation]
+
+    - id: lround_005
+      description: "lroundf(-qnan) invalid; oracle LONG_MIN as float"
+      api_name: lround
+      variants: [ss]
+      input: [0xffc00000]
+      expect: [0xdf000000]
+      expect_exception: [invalidoperation]
+
+    - id: lround_006
+      description: "lroundf(+qnan) invalid; oracle LONG_MIN as float"
+      api_name: lround
+      variants: [ss]
+      input: [0x7fc00000]
+      expect: [0xdf000000]
+      expect_exception: [invalidoperation]
+
+    - id: lround_007
+      description: "lroundf(max positive subnormal) = 0"
+      api_name: lround
+      variants: [ss]
+      input: [0x007fffff]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_008
+      description: "lroundf(1.4) = 1"
+      api_name: lround
+      variants: [ss]
+      input: [0x3fb33333]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: lround_009
+      description: "lroundf(-1.4) = -1"
+      api_name: lround
+      variants: [ss]
+      input: [0xbfb33333]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: lround_010
+      description: "lroundf(1.6) = 2"
+      api_name: lround
+      variants: [ss]
+      input: [0x3fcccccd]
+      expect: [0x40000000]
+      expect_exception: []
+
+    - id: lround_011
+      description: "lroundf(snan) invalid"
+      api_name: lround
+      variants: [ss]
+      input: [0x7fa00000]
+      expect: [0xdf000000]
+      expect_exception: [invalidoperation]
+
+    - id: lround_012
+      description: "lroundf(+0.5) halfway away from zero → +1"
+      api_name: lround
+      variants: [ss]
+      input: [0x3f000000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: lround_013
+      description: "lroundf(nextafterf(+0.5,0)) largest float < 0.5 → 0"
+      api_name: lround
+      variants: [ss]
+      input: [0x3effffff]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_014
+      description: "lroundf(-0.5) halfway away from zero → -1"
+      api_name: lround
+      variants: [ss]
+      input: [0xbf000000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: lround_015
+      description: "lroundf(nextafterf(-0.5,+0)) smallest float > -0.5 → 0"
+      api_name: lround
+      variants: [ss]
+      input: [0xbeffffff]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_016
+      description: "lroundf(+1.5) halfway → +2"
+      api_name: lround
+      variants: [ss]
+      input: [0x3fc00000]
+      expect: [0x40000000]
+      expect_exception: []
+
+    - id: lround_017
+      description: "lroundf(-1.5) halfway → -2"
+      api_name: lround
+      variants: [ss]
+      input: [0xbfc00000]
+      expect: [0xc0000000]
+      expect_exception: []
+
+    - id: lround_018
+      description: "lroundf(2^23-0.5) float tie at large integer → 2^23"
+      api_name: lround
+      variants: [ss]
+      input: [0x4affffff]
+      expect: [0x4b000000]
+      expect_exception: []
+
+    - id: lround_019
+      description: "lroundf(-(2^23-0.5)) → -2^23"
+      api_name: lround
+      variants: [ss]
+      input: [0xcaffffff]
+      expect: [0xcb000000]
+      expect_exception: []
+
+    - id: lround_020
+      description: "Decimal 0.499999999999999999 (strtof rounds to +0.5f) → +1"
+      api_name: lround
+      variants: [ss]
+      input: [0x3f000000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: lround_021
+      description: "Decimal -0.499999999999999999 (strtof rounds to -0.5f) → -1"
+      api_name: lround
+      variants: [ss]
+      input: [0xbf000000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: lround_022
+      description: "Decimal 0.5000999999999999 (just above +0.5) → +1"
+      api_name: lround
+      variants: [ss]
+      input: [0x3f00068e]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: lround_023
+      description: "Decimal -0.5000999999999999 (more negative than -0.5) → -1"
+      api_name: lround
+      variants: [ss]
+      input: [0xbf00068e]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: lround_024
+      description: "IEEE 0x3effffff (largest float < +0.5f) → 0"
+      api_name: lround
+      variants: [ss]
+      input: [0x3effffff]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_025
+      description: "IEEE 0xbeffffff (nextafter(-0.5f, +0); smallest float > -0.5f) → 0"
+      api_name: lround
+      variants: [ss]
+      input: [0xbeffffff]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_026
+      description: "IEEE 0x3f000000 (+0.5f) halfway → +1"
+      api_name: lround
+      variants: [ss]
+      input: [0x3f000000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: lround_027
+      description: "IEEE 0xbf000000 (-0.5f) halfway → -1"
+      api_name: lround
+      variants: [ss]
+      input: [0xbf000000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: lround_028
+      description: "IEEE 0x3f000001 (nextafter(+0.5f, +∞)) → +1"
+      api_name: lround
+      variants: [ss]
+      input: [0x3f000001]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: lround_029
+      description: "IEEE 0xbf000001 (nextafter(-0.5f, -∞)) → -1"
+      api_name: lround
+      variants: [ss]
+      input: [0xbf000001]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: lround_030
+      description: "lround(+2.3) = +2"
+      api_name: lround
+      variants: [ss]
+      input: [0x40133333]
+      expect: [0x40000000]
+      expect_exception: []
+
+    - id: lround_031
+      description: "lround(+2.5) = +3 (half away from zero)"
+      api_name: lround
+      variants: [ss]
+      input: [0x40200000]
+      expect: [0x40400000]
+      expect_exception: []
+
+    - id: lround_032
+      description: "lround(+2.7) = +3"
+      api_name: lround
+      variants: [ss]
+      input: [0x402ccccd]
+      expect: [0x40400000]
+      expect_exception: []
+
+    - id: lround_033
+      description: "lround(-2.3) = -2"
+      api_name: lround
+      variants: [ss]
+      input: [0xc0133333]
+      expect: [0xc0000000]
+      expect_exception: []
+
+    - id: lround_034
+      description: "lround(-2.5) = -3 (half away from zero)"
+      api_name: lround
+      variants: [ss]
+      input: [0xc0200000]
+      expect: [0xc0400000]
+      expect_exception: []
+
+    - id: lround_035
+      description: "lround(-2.7) = -3"
+      api_name: lround
+      variants: [ss]
+      input: [0xc02ccccd]
+      expect: [0xc0400000]
+      expect_exception: []
+
+    - id: lround_036
+      description: "lround(-0.0) = +0 (packed +0.0f)"
+      api_name: lround
+      variants: [ss]
+      input: [0x80000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_037
+      description: "lround(-Inf) invalid; oracle LONG_MIN as float (domain)"
+      api_name: lround
+      variants: [ss]
+      input: [0xff800000]
+      expect: [0xdf000000]
+      expect_exception: [invalidoperation]
+
+    - id: lround_038
+      description: "lround((float)((double)LONG_MAX+1.5)) invalid; LONG_MIN as float"
+      api_name: lround
+      variants: [ss]
+      input: [0x5f000000]
+      expect: [0xdf000000]
+      expect_exception: [invalidoperation]
+
+    - id: lround_039
+      description: "lroundf(1.0) = 1"
+      api_name: lround
+      variants: [ss]
+      input: [0x3f800000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: lround_040
+      description: "lroundf(-1.0) = -1"
+      api_name: lround
+      variants: [ss]
+      input: [0xbf800000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: lround_041
+      description: "lroundf(4.5) = 5 (half away from zero)"
+      api_name: lround
+      variants: [ss]
+      input: [0x40900000]
+      expect: [0x40a00000]
+      expect_exception: []
+
+    - id: lround_042
+      description: "lroundf(-4.5) = -5 (half away from zero)"
+      api_name: lround
+      variants: [ss]
+      input: [0xc0900000]
+      expect: [0xc0a00000]
+      expect_exception: []
+
+    - id: lround_043
+      description: "lroundf(0.125) = 0"
+      api_name: lround
+      variants: [ss]
+      input: [0x3e000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_044
+      description: "lroundf(0.25) = 0"
+      api_name: lround
+      variants: [ss]
+      input: [0x3e800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_045
+      description: "lroundf(0.375) = 0"
+      api_name: lround
+      variants: [ss]
+      input: [0x3ec00000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_046
+      description: "lroundf(-0.125) = 0"
+      api_name: lround
+      variants: [ss]
+      input: [0xbe000000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_047
+      description: "lroundf(-0.25) = 0"
+      api_name: lround
+      variants: [ss]
+      input: [0xbe800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_048
+      description: "lroundf(-0.375) = 0"
+      api_name: lround
+      variants: [ss]
+      input: [0xbec00000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_049
+      description: "lroundf(0.625) = 1"
+      api_name: lround
+      variants: [ss]
+      input: [0x3f200000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: lround_050
+      description: "lroundf(0.75) = 1"
+      api_name: lround
+      variants: [ss]
+      input: [0x3f400000]
+      expect: [0x3f800000]
+      expect_exception: []
+
+    - id: lround_051
+      description: "lroundf(-0.625) = -1"
+      api_name: lround
+      variants: [ss]
+      input: [0xbf200000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: lround_052
+      description: "lroundf(-0.75) = -1"
+      api_name: lround
+      variants: [ss]
+      input: [0xbf400000]
+      expect: [0xbf800000]
+      expect_exception: []
+
+    - id: lround_053
+      description: "lroundf(pi) = 3"
+      api_name: lround
+      variants: [ss]
+      input: [0x40490fd8]
+      expect: [0x40400000]
+      expect_exception: []
+
+    - id: lround_054
+      description: "lroundf(-pi) = -3"
+      api_name: lround
+      variants: [ss]
+      input: [0xc0490fd8]
+      expect: [0xc0400000]
+      expect_exception: []
+
+    - id: lround_055
+      description: "lroundf(2.0) = 2"
+      api_name: lround
+      variants: [ss]
+      input: [0x40000000]
+      expect: [0x40000000]
+      expect_exception: []
+
+    - id: lround_056
+      description: "lroundf(4.0) = 4"
+      api_name: lround
+      variants: [ss]
+      input: [0x40800000]
+      expect: [0x40800000]
+      expect_exception: []
+
+    - id: lround_057
+      description: "lroundf(8.0) = 8"
+      api_name: lround
+      variants: [ss]
+      input: [0x41000000]
+      expect: [0x41000000]
+      expect_exception: []
+
+    - id: lround_058
+      description: "lroundf(16.0) = 16"
+      api_name: lround
+      variants: [ss]
+      input: [0x41800000]
+      expect: [0x41800000]
+      expect_exception: []
+
+    - id: lround_059
+      description: "lroundf(100.0) = 100"
+      api_name: lround
+      variants: [ss]
+      input: [0x42c80000]
+      expect: [0x42c80000]
+      expect_exception: []
+
+    - id: lround_060
+      description: "lroundf(-100.0) = -100"
+      api_name: lround
+      variants: [ss]
+      input: [0xc2c80000]
+      expect: [0xc2c80000]
+      expect_exception: []
+
+    - id: lround_061
+      description: "lroundf(8.25) = 8"
+      api_name: lround
+      variants: [ss]
+      input: [0x41040000]
+      expect: [0x41000000]
+      expect_exception: []
+
+    - id: lround_062
+      description: "lroundf(9.0) = 9"
+      api_name: lround
+      variants: [ss]
+      input: [0x41100000]
+      expect: [0x41100000]
+      expect_exception: []
+
+    - id: lround_063
+      description: "lroundf(5.0) = 5"
+      api_name: lround
+      variants: [ss]
+      input: [0x40a00000]
+      expect: [0x40a00000]
+      expect_exception: []
+
+    - id: lround_064
+      description: "lroundf(7.0) = 7"
+      api_name: lround
+      variants: [ss]
+      input: [0x40e00000]
+      expect: [0x40e00000]
+      expect_exception: []
+
+    - id: lround_065
+      description: "lroundf(2^23) exact integer"
+      api_name: lround
+      variants: [ss]
+      input: [0x4b000000]
+      expect: [0x4b000000]
+      expect_exception: []
+
+    - id: lround_066
+      description: "lroundf(2^24) exact integer"
+      api_name: lround
+      variants: [ss]
+      input: [0x4b800000]
+      expect: [0x4b800000]
+      expect_exception: []
+
+    - id: lround_067
+      description: "lroundf(-2^23) exact integer"
+      api_name: lround
+      variants: [ss]
+      input: [0xcb000000]
+      expect: [0xcb000000]
+      expect_exception: []
+
+    - id: lround_068
+      description: "lroundf(-2^24) exact integer"
+      api_name: lround
+      variants: [ss]
+      input: [0xcb800000]
+      expect: [0xcb800000]
+      expect_exception: []
+
+    - id: lround_069
+      description: "lroundf(5.96e-8) very small = 0"
+      api_name: lround
+      variants: [ss]
+      input: [0x33800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_070
+      description: "lroundf(-5.96e-8) very small = 0"
+      api_name: lround
+      variants: [ss]
+      input: [0xb3800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_071
+      description: "lroundf(FLT_MIN) = 0"
+      api_name: lround
+      variants: [ss]
+      input: [0x00800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_072
+      description: "lroundf(-FLT_MIN) = 0"
+      api_name: lround
+      variants: [ss]
+      input: [0x80800000]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_073
+      description: "lroundf(smallest positive subnormal) = 0"
+      api_name: lround
+      variants: [ss]
+      input: [0x00000001]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_074
+      description: "lroundf(-smallest subnormal) = 0"
+      api_name: lround
+      variants: [ss]
+      input: [0x80000001]
+      expect: [0x00000000]
+      expect_exception: []
+
+    - id: lround_075
+      description: "lroundf(-snan) invalid; oracle LONG_MIN as float"
+      api_name: lround
+      variants: [ss]
+      input: [0xffb00000]
+      expect: [0xdf000000]
+      expect_exception: [invalidoperation]
+
+# Double precision
+    - id: lround_001
+      description: "lround(0) = 0"
+      variants: [sd]
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_002
+      description: "lround(-0) = 0 (packed as +0)"
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_003
+      description: "lround(+inf) invalid; oracle LONG_MIN as double"
+      api_name: lround
+      variants: [sd]
+      input: [0x7ff0000000000000]
+      expect: [0xc3e0000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: lround_004
+      description: "lround(-inf) invalid; oracle LONG_MIN as double"
+      api_name: lround
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xc3e0000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: lround_005
+      description: "lround(-qnan) invalid; oracle LONG_MIN as double"
+      api_name: lround
+      variants: [sd]
+      input: [0xfff8000000000000]
+      expect: [0xc3e0000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: lround_006
+      description: "lround(+qnan) invalid; oracle LONG_MIN as double"
+      api_name: lround
+      variants: [sd]
+      input: [0x7ff8000000000000]
+      expect: [0xc3e0000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: lround_007
+      description: "lround(max positive subnormal) = 0"
+      api_name: lround
+      variants: [sd]
+      input: [0x000fffffffffffff]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_008
+      description: "lround(1.4) = 1"
+      api_name: lround
+      variants: [sd]
+      input: [0x3ff6666666666666]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: lround_009
+      description: "lround(-1.4) = -1"
+      api_name: lround
+      variants: [sd]
+      input: [0xbff6666666666666]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: lround_010
+      description: "lround(1.6) = 2"
+      api_name: lround
+      variants: [sd]
+      input: [0x3ff999999999999a]
+      expect: [0x4000000000000000]
+      expect_exception: []
+
+    - id: lround_011
+      description: "lround(snan) invalid"
+      api_name: lround
+      variants: [sd]
+      input: [0x7ff4000000000001]
+      expect: [0xc3e0000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: lround_012
+      description: "lround(+0.5) halfway away from zero → +1"
+      api_name: lround
+      variants: [sd]
+      input: [0x3fe0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: lround_013
+      description: "lround(nextafter(+0.5,0)) largest double < 0.5 → 0"
+      api_name: lround
+      variants: [sd]
+      input: [0x3fdfffffffffffff]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_014
+      description: "lround(-0.5) halfway away from zero → -1"
+      api_name: lround
+      variants: [sd]
+      input: [0xbfe0000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: lround_015
+      description: "lround(nextafter(-0.5,+0)) smallest double > -0.5 → 0"
+      api_name: lround
+      variants: [sd]
+      input: [0xbfdfffffffffffff]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_016
+      description: "lround(+1.5) halfway → +2"
+      api_name: lround
+      variants: [sd]
+      input: [0x3ff8000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: []
+
+    - id: lround_017
+      description: "lround(-2.5) halfway → -3"
+      api_name: lround
+      variants: [sd]
+      input: [0xc004000000000000]
+      expect: [0xc008000000000000]
+      expect_exception: []
+
+    - id: lround_018
+      description: "lround(nextafter(-2.5,+0)) just above -2.5 → -2"
+      api_name: lround
+      variants: [sd]
+      input: [0xc003ffffffffffff]
+      expect: [0xc000000000000000]
+      expect_exception: []
+
+    - id: lround_019
+      description: "lround(2^53-1) last odd integer exactly representable in double"
+      api_name: lround
+      variants: [sd]
+      input: [0x433fffffffffffff]
+      expect: [0x433fffffffffffff]
+      expect_exception: []
+
+    - id: lround_020
+      description: "Decimal 0.499999999999999999 (strtod rounds to +0.5) → +1"
+      api_name: lround
+      variants: [sd]
+      input: [0x3fe0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: lround_021
+      description: "Decimal -0.499999999999999999 (strtod rounds to -0.5) → -1"
+      api_name: lround
+      variants: [sd]
+      input: [0xbfe0000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: lround_022
+      description: "Decimal 0.5000999999999999 (just above +0.5) → +1"
+      api_name: lround
+      variants: [sd]
+      input: [0x3fe000d1b71758e1]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: lround_023
+      description: "Decimal -0.5000999999999999 (more negative than -0.5) → -1"
+      api_name: lround
+      variants: [sd]
+      input: [0xbfe000d1b71758e1]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: lround_024
+      description: "IEEE 0x3fdfffffffffffff (largest double < +0.5) → 0"
+      api_name: lround
+      variants: [sd]
+      input: [0x3fdfffffffffffff]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_025
+      description: "IEEE 0xbfdfffffffffffff (nextafter(-0.5, +0); smallest double > -0.5) → 0"
+      api_name: lround
+      variants: [sd]
+      input: [0xbfdfffffffffffff]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_026
+      description: "IEEE 0x3fe0000000000000 (+0.5) halfway → +1"
+      api_name: lround
+      variants: [sd]
+      input: [0x3fe0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: lround_027
+      description: "IEEE 0xbfe0000000000000 (-0.5) halfway → -1"
+      api_name: lround
+      variants: [sd]
+      input: [0xbfe0000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: lround_028
+      description: "IEEE 0x3fe0000000000001 (nextafter(+0.5, +∞)) → +1"
+      api_name: lround
+      variants: [sd]
+      input: [0x3fe0000000000001]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: lround_029
+      description: "IEEE 0xbfe0000000000001 (nextafter(-0.5, -∞)) → -1"
+      api_name: lround
+      variants: [sd]
+      input: [0xbfe0000000000001]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: lround_030
+      description: "lround(+2.3) = +2"
+      api_name: lround
+      variants: [sd]
+      input: [0x4002666666666666]
+      expect: [0x4000000000000000]
+      expect_exception: []
+
+    - id: lround_031
+      description: "lround(+2.5) = +3 (half away from zero)"
+      api_name: lround
+      variants: [sd]
+      input: [0x4004000000000000]
+      expect: [0x4008000000000000]
+      expect_exception: []
+
+    - id: lround_032
+      description: "lround(+2.7) = +3"
+      api_name: lround
+      variants: [sd]
+      input: [0x400599999999999a]
+      expect: [0x4008000000000000]
+      expect_exception: []
+
+    - id: lround_033
+      description: "lround(-2.3) = -2"
+      api_name: lround
+      variants: [sd]
+      input: [0xc002666666666666]
+      expect: [0xc000000000000000]
+      expect_exception: []
+
+    - id: lround_034
+      description: "lround(-2.5) = -3 (half away from zero)"
+      api_name: lround
+      variants: [sd]
+      input: [0xc004000000000000]
+      expect: [0xc008000000000000]
+      expect_exception: []
+
+    - id: lround_035
+      description: "lround(-2.7) = -3"
+      api_name: lround
+      variants: [sd]
+      input: [0xc00599999999999a]
+      expect: [0xc008000000000000]
+      expect_exception: []
+
+    - id: lround_036
+      description: "lround(-0.0) = +0 (packed +0.0)"
+      api_name: lround
+      variants: [sd]
+      input: [0x8000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_037
+      description: "lround(-Inf) invalid; oracle LONG_MIN as double (domain)"
+      api_name: lround
+      variants: [sd]
+      input: [0xfff0000000000000]
+      expect: [0xc3e0000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: lround_038
+      description: "lround((double)LONG_MAX+1.5) invalid; LONG_MIN as double; FE_INVALID"
+      api_name: lround
+      variants: [sd]
+      input: [0x43e0000000000000]
+      expect: [0xc3e0000000000000]
+      expect_exception: [invalidoperation]
+
+    - id: lround_039
+      description: "lround(1.0) = 1"
+      api_name: lround
+      variants: [sd]
+      input: [0x3ff0000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: lround_040
+      description: "lround(-1.0) = -1"
+      api_name: lround
+      variants: [sd]
+      input: [0xbff0000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: lround_041
+      description: "lround(-1.5) = -2 (half away from zero)"
+      api_name: lround
+      variants: [sd]
+      input: [0xbff8000000000000]
+      expect: [0xc000000000000000]
+      expect_exception: []
+
+    - id: lround_042
+      description: "lround(4.5) = 5 (half away from zero)"
+      api_name: lround
+      variants: [sd]
+      input: [0x4012000000000000]
+      expect: [0x4014000000000000]
+      expect_exception: []
+
+    - id: lround_043
+      description: "lround(-4.5) = -5 (half away from zero)"
+      api_name: lround
+      variants: [sd]
+      input: [0xc012000000000000]
+      expect: [0xc014000000000000]
+      expect_exception: []
+
+    - id: lround_044
+      description: "lround(0.125) = 0"
+      api_name: lround
+      variants: [sd]
+      input: [0x3fc0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_045
+      description: "lround(0.25) = 0"
+      api_name: lround
+      variants: [sd]
+      input: [0x3fd0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_046
+      description: "lround(0.375) = 0"
+      api_name: lround
+      variants: [sd]
+      input: [0x3fd8000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_047
+      description: "lround(-0.125) = 0"
+      api_name: lround
+      variants: [sd]
+      input: [0xbfc0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_048
+      description: "lround(-0.25) = 0"
+      api_name: lround
+      variants: [sd]
+      input: [0xbfd0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_049
+      description: "lround(-0.375) = 0"
+      api_name: lround
+      variants: [sd]
+      input: [0xbfd8000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_050
+      description: "lround(0.625) = 1"
+      api_name: lround
+      variants: [sd]
+      input: [0x3fe4000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: lround_051
+      description: "lround(0.75) = 1"
+      api_name: lround
+      variants: [sd]
+      input: [0x3fe8000000000000]
+      expect: [0x3ff0000000000000]
+      expect_exception: []
+
+    - id: lround_052
+      description: "lround(-0.625) = -1"
+      api_name: lround
+      variants: [sd]
+      input: [0xbfe4000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: lround_053
+      description: "lround(-0.75) = -1"
+      api_name: lround
+      variants: [sd]
+      input: [0xbfe8000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+
+    - id: lround_054
+      description: "lround(pi) = 3"
+      api_name: lround
+      variants: [sd]
+      input: [0x400921fb54442d18]
+      expect: [0x4008000000000000]
+      expect_exception: []
+
+    - id: lround_055
+      description: "lround(-pi) = -3"
+      api_name: lround
+      variants: [sd]
+      input: [0xc00921fb54442d18]
+      expect: [0xc008000000000000]
+      expect_exception: []
+
+    - id: lround_056
+      description: "lround(2.0) = 2"
+      api_name: lround
+      variants: [sd]
+      input: [0x4000000000000000]
+      expect: [0x4000000000000000]
+      expect_exception: []
+
+    - id: lround_057
+      description: "lround(4.0) = 4"
+      api_name: lround
+      variants: [sd]
+      input: [0x4010000000000000]
+      expect: [0x4010000000000000]
+      expect_exception: []
+
+    - id: lround_058
+      description: "lround(8.0) = 8"
+      api_name: lround
+      variants: [sd]
+      input: [0x4020000000000000]
+      expect: [0x4020000000000000]
+      expect_exception: []
+
+    - id: lround_059
+      description: "lround(16.0) = 16"
+      api_name: lround
+      variants: [sd]
+      input: [0x4030000000000000]
+      expect: [0x4030000000000000]
+      expect_exception: []
+
+    - id: lround_060
+      description: "lround(100.0) = 100"
+      api_name: lround
+      variants: [sd]
+      input: [0x4059000000000000]
+      expect: [0x4059000000000000]
+      expect_exception: []
+
+    - id: lround_061
+      description: "lround(-100.0) = -100"
+      api_name: lround
+      variants: [sd]
+      input: [0xc059000000000000]
+      expect: [0xc059000000000000]
+      expect_exception: []
+
+    - id: lround_062
+      description: "lround(8.25) = 8"
+      api_name: lround
+      variants: [sd]
+      input: [0x4020800000000000]
+      expect: [0x4020000000000000]
+      expect_exception: []
+
+    - id: lround_063
+      description: "lround(9.0) = 9"
+      api_name: lround
+      variants: [sd]
+      input: [0x4022000000000000]
+      expect: [0x4022000000000000]
+      expect_exception: []
+
+    - id: lround_064
+      description: "lround(5.0) = 5"
+      api_name: lround
+      variants: [sd]
+      input: [0x4014000000000000]
+      expect: [0x4014000000000000]
+      expect_exception: []
+
+    - id: lround_065
+      description: "lround(7.0) = 7"
+      api_name: lround
+      variants: [sd]
+      input: [0x401c000000000000]
+      expect: [0x401c000000000000]
+      expect_exception: []
+
+    - id: lround_066
+      description: "lround(2^52) exact integer"
+      api_name: lround
+      variants: [sd]
+      input: [0x4330000000000000]
+      expect: [0x4330000000000000]
+      expect_exception: []
+
+    - id: lround_067
+      description: "lround(2^53) exact integer"
+      api_name: lround
+      variants: [sd]
+      input: [0x4340000000000000]
+      expect: [0x4340000000000000]
+      expect_exception: []
+
+    - id: lround_068
+      description: "lround(-2^52) exact integer"
+      api_name: lround
+      variants: [sd]
+      input: [0xc330000000000000]
+      expect: [0xc330000000000000]
+      expect_exception: []
+
+    - id: lround_069
+      description: "lround(-2^53) exact integer"
+      api_name: lround
+      variants: [sd]
+      input: [0xc340000000000000]
+      expect: [0xc340000000000000]
+      expect_exception: []
+
+    - id: lround_070
+      description: "lround(5.96e-8) very small = 0"
+      api_name: lround
+      variants: [sd]
+      input: [0x3e70000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_071
+      description: "lround(-5.96e-8) very small = 0"
+      api_name: lround
+      variants: [sd]
+      input: [0xbe70000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_072
+      description: "lround(DBL_MIN) = 0"
+      api_name: lround
+      variants: [sd]
+      input: [0x0010000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_073
+      description: "lround(-DBL_MIN) = 0"
+      api_name: lround
+      variants: [sd]
+      input: [0x8010000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_074
+      description: "lround(smallest positive subnormal) = 0"
+      api_name: lround
+      variants: [sd]
+      input: [0x0000000000000001]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_075
+      description: "lround(-smallest subnormal) = 0"
+      api_name: lround
+      variants: [sd]
+      input: [0x8000000000000001]
+      expect: [0x0000000000000000]
+      expect_exception: []
+
+    - id: lround_076
+      description: "lround(100000000.0) = 100000000"
+      api_name: lround
+      variants: [sd]
+      input: [0x4197d78400000000]
+      expect: [0x4197d78400000000]
+      expect_exception: []
+
+    - id: lround_077
+      description: "lround(-100000000.0) = -100000000"
+      api_name: lround
+      variants: [sd]
+      input: [0xc197d78400000000]
+      expect: [0xc197d78400000000]
+      expect_exception: []
+
+    - id: lround_078
+      description: "lround(-snan) invalid; oracle LONG_MIN as double"
+      api_name: lround
+      variants: [sd]
+      input: [0xfff2000000000000]
+      expect: [0xc3e0000000000000]
+      expect_exception: [invalidoperation]

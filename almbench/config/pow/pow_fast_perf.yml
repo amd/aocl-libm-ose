@@ -1,0 +1,296 @@
+---
+- test_sequence: perf_tests_pow_fast
+  function: pow
+  timing_enabled: true
+  test_sets:
+  - id: double-precision-tests
+    description: 'Curve-region performance tests for fast pow (double precision)'
+    tests:
+    # Base near 1, small exponent: pow(1+ε,y) ≈ 1+εy, fast path
+    - id: pow_d01
+      description: 'Base near 1, small exp: fast-path linear approx'
+      input:
+      - [0x3fee000000000000, 0x3ff1000000000000]
+      - [0x3f847ae147ae147b, 0x3ff0000000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Base near 1, moderate exponent
+    - id: pow_d02
+      description: 'Base near 1, moderate exp: y·log(x) small'
+      input:
+      - [0x3fee000000000000, 0x3ff1000000000000]
+      - [0x3ff0000000000000, 0x4059000000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Small base, small exponent
+    - id: pow_d03
+      description: 'Small base, small exp: log(x) moderately negative'
+      input:
+      - [0x3f847ae147ae147b, 0x3fe0000000000000]
+      - [0x3f847ae147ae147b, 0x4000000000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Moderate base and exponent: typical usage
+    - id: pow_d04
+      description: 'Moderate base × exp, typical usage region'
+      input:
+      - [0x3fe0000000000000, 0x4000000000000000]
+      - [0x3f847ae147ae147b, 0x4000000000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Moderate-large base and exponent
+    - id: pow_d05
+      description: 'Moderate-large base × exp'
+      input:
+      - [0x4000000000000000, 0x4024000000000000]
+      - [0x4000000000000000, 0x4024000000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Large base, small exponent
+    - id: pow_d06
+      description: 'Large base, small exp: large log(x) × small y'
+      input:
+      - [0x4024000000000000, 0x408f400000000000]
+      - [0x3fb999999999999a, 0x4000000000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative exponent: reciprocal path
+    - id: pow_d07
+      description: 'Negative exponent, reciprocal: pow(x,−y) = 1/pow(x,y)'
+      input:
+      - [0x3ff0000000000000, 0x4059000000000000]
+      - [0xc024000000000000, 0xbfb999999999999a]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near overflow combinations
+    - id: pow_d08
+      description: 'Near overflow: moderate base, large exp'
+      input:
+      - [0x4000000000000000, 0x4024000000000000]
+      - [0x4059000000000000, 0x4072c00000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Subnormal base
+    - id: pow_d09
+      description: 'Subnormal base, small exp'
+      input:
+      - [0x0000000000000001, 0x000fffffffffffff]
+      - [0x3f847ae147ae147b, 0x3ff0000000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very large base, tiny exponent
+    - id: pow_d10
+      description: 'Very large base, tiny exp'
+      input:
+      - [0x54b249ad2594c37d, 0x7e37e43c8800759c]
+      - [0x3f50624dd2f1a9fc, 0x3f847ae147ae147b]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Base near 2, moderate exp (common in scientific computing)
+    - id: pow_d11
+      description: 'Base near 2, moderate exp (common usage)'
+      input:
+      - [0x3ff8000000000000, 0x4004000000000000]
+      - [0x3ff0000000000000, 0x4049000000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Tiny base, large exponent (result near zero)
+    - id: pow_d12
+      description: 'Tiny base, large exp: result approaching 0'
+      input:
+      - [0x3f50624dd2f1a9fc, 0x3fb999999999999a]
+      - [0x4024000000000000, 0x4059000000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+  - id: single-precision-tests
+    description: 'Curve-region performance tests for fast powf (single precision)'
+    tests:
+    # Base near 1, small exponent
+    - id: pow_s01
+      description: 'Base near 1, small exp: fast-path'
+      input:
+      - [0x3fee000000000000, 0x3ff1000000000000]
+      - [0x3f847ae147ae147b, 0x3ff0000000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Base near 1, moderate exponent
+    - id: pow_s02
+      description: 'Base near 1, moderate exp'
+      input:
+      - [0x3fee000000000000, 0x3ff1000000000000]
+      - [0x3ff0000000000000, 0x4049000000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Small base
+    - id: pow_s03
+      description: 'Small base, small exp'
+      input:
+      - [0x3f847ae147ae147b, 0x3fe0000000000000]
+      - [0x3f847ae147ae147b, 0x4000000000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Moderate
+    - id: pow_s04
+      description: 'Moderate base × exp'
+      input:
+      - [0x3fe0000000000000, 0x4000000000000000]
+      - [0x3f847ae147ae147b, 0x4000000000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Moderate-large
+    - id: pow_s05
+      description: 'Moderate-large base × exp'
+      input:
+      - [0x4000000000000000, 0x4024000000000000]
+      - [0x4000000000000000, 0x4024000000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Large base
+    - id: pow_s06
+      description: 'Large base, small exp'
+      input:
+      - [0x4024000000000000, 0x408f400000000000]
+      - [0x3fb999999999999a, 0x4000000000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative exponent
+    - id: pow_s07
+      description: 'Negative exponent, reciprocal path'
+      input:
+      - [0x3ff0000000000000, 0x4059000000000000]
+      - [0xc024000000000000, 0xbfb999999999999a]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Subnormal base
+    - id: pow_s08
+      description: 'Subnormal float base, small exp'
+      input:
+      - [0x36a0000000000000, 0x380fffffc0000000]
+      - [0x3f847ae147ae147b, 0x3ff0000000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near float overflow
+    - id: pow_s09
+      description: 'Near float overflow: moderate base, large exp'
+      input:
+      - [0x4000000000000000, 0x4024000000000000]
+      - [0x4024000000000000, 0x403e000000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Tiny base, large exponent
+    - id: pow_s10
+      description: 'Tiny base, large exp: result near 0'
+      input:
+      - [0x3f50624dd2f1a9fc, 0x3fb999999999999a]
+      - [0x4014000000000000, 0x4049000000000000]
+      type: [expstep, expstep]
+      steps: [500, 500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000

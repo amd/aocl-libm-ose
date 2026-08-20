@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -104,7 +104,7 @@ static struct {
 #define C14 v4_sin_data.poly_sin[7]
 
 #define SIN_ARG_MAX 0x4160000000000000
-#define SCALAR_SIN ALM_PROTO(sin)
+#define SCALAR_SIN ALM_PROTO_OPT(sin)
 
 v_f64x4_t
 ALM_PROTO_OPT(vrd4_sin)(v_f64x4_t x)

@@ -27,9 +27,12 @@
 
 #include <stddef.h>                     /* for NULL */
 
-#ifdef USE_AOCL_UTILS
-#include "alci/arch.h"
-#endif
+/*
+ * CPU detection via internal utils module (alm_arch.h)
+ * Provides alm_cpuid_* functions for architecture and feature detection.
+ */
+#include "alm_arch.h"
+
 #include <libm/entry_pt.h>
 #include <libm/iface.h>
 
@@ -123,6 +126,10 @@ struct entry_pt_interface entry_pt_initializers[C_AMD_LAST_ENTRY] = {
     [C_AMD_FMINI]      = {LIBM_IFACE_PROTO(fmini), NULL},
 
     [C_AMD_LINEARFRAC]      = {LIBM_IFACE_PROTO(linearfrac), NULL},
+
+    /* Stable Sort (Keep this section isolated from other libm content) */
+    [C_AMD_STABLESORT_GETSIZE_64F] = {LIBM_IFACE_PROTO(stablesort_getsize_64f), NULL},
+    [C_AMD_STABLESORT_ASCEND_64F]  = {LIBM_IFACE_PROTO(stablesort_ascend_64f), NULL},
 };
 
 #ifndef ARRAY_SIZE
@@ -190,8 +197,10 @@ alm_get_uach(void)
     return ALM_UARCH_VER_ZEN4;
 #elif ALM_STATIC_DISPATCH==ZEN5
     return ALM_UARCH_VER_ZEN5;
+#elif ALM_STATIC_DISPATCH==ZEN6
+    return ALM_UARCH_VER_ZEN6;
 #else
-    printf("Please set ALM_STATIC_DISPATCH to one of AVX2, ZEN2, ZEN3, ZEN4, ZEN5, AVX512 \n");
+    printf("Please set ALM_STATIC_DISPATCH to one of AVX2, ZEN2, ZEN3, ZEN4, ZEN5, ZEN6, AVX512 \n");
 #endif
 }
 #else
@@ -200,31 +209,41 @@ alm_get_uach(void)
 {
     alm_uarch_ver_t arch_ver;
 
-    if (au_cpuid_arch_is_zen5(AU_CURRENT_CPU_NUM))
+    if (alm_cpuid_arch_is_zen6(ALM_CURRENT_CPU_NUM))
     {
         const char* const flags_array[] = {"avx512f"};
 
-        if (au_cpuid_has_flags(AU_CURRENT_CPU_NUM, flags_array, 1))
+        if (alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, flags_array, 1))
+            arch_ver = ALM_UARCH_VER_ZEN6;
+        else
+            arch_ver = ALM_UARCH_VER_ZEN3;
+
+    }
+    else if (alm_cpuid_arch_is_zen5(ALM_CURRENT_CPU_NUM))
+    {
+        const char* const flags_array[] = {"avx512f"};
+
+        if (alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, flags_array, 1))
             arch_ver = ALM_UARCH_VER_ZEN5;
         else
             arch_ver = ALM_UARCH_VER_ZEN3;
 
     }
-    else if (au_cpuid_arch_is_zen4(AU_CURRENT_CPU_NUM))
+    else if (alm_cpuid_arch_is_zen4(ALM_CURRENT_CPU_NUM))
     {
         const char* const flags_array[] = {"avx512f"};
 
-        if (au_cpuid_has_flags(AU_CURRENT_CPU_NUM, flags_array, 1))
+        if (alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, flags_array, 1))
             arch_ver = ALM_UARCH_VER_ZEN4;
         else
             arch_ver = ALM_UARCH_VER_ZEN3;
 
     }
-    else if (au_cpuid_arch_is_zen3(AU_CURRENT_CPU_NUM))
+    else if (alm_cpuid_arch_is_zen3(ALM_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN3;
-    else if (au_cpuid_arch_is_zen2(AU_CURRENT_CPU_NUM))
+    else if (alm_cpuid_arch_is_zen2(ALM_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN2;
-    else if (au_cpuid_arch_is_zen(AU_CURRENT_CPU_NUM))
+    else if (alm_cpuid_arch_is_zen(ALM_CURRENT_CPU_NUM))
         arch_ver = ALM_UARCH_VER_ZEN;
     else
     {
@@ -233,7 +252,7 @@ alm_get_uach(void)
 
         /* Select AVX512 ISA code-path */
         const char* const flags_array[] = {"avx512f", "avx512dq"};
-        if (au_cpuid_has_flags(AU_CURRENT_CPU_NUM, flags_array, 2))
+        if (alm_cpuid_has_flags(ALM_CURRENT_CPU_NUM, flags_array, 2))
             arch_ver = ALM_UARCH_VER_AVX512;
     }
     return arch_ver;

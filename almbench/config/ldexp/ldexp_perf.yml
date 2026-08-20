@@ -4,47 +4,35 @@
   test_sets:
   - id: range-tests_01
     tests:
-# Single Precision
-    - id: ldexp_001
+# Single Precision (exponent kept within the float binary-exponent range)
+    - id: ldexp_ss_001
       description: 'Positive values: [SMALLEST_SUBNORMAL, FLT_MAX]'
-      input: [[min_subnormal, max], [-50000, 50000]]
-      type: [linearstep, linearstep]
+      input: [[min_subnormal, max], [-126, 127]]
+      type: [linearstep, integer]
       steps: [200, 200]
       variants : [ss]
 
-    - id: ldexp_002
-      description: ' Between tests [-max, -min_subnormal], [-max, -min_subnormal]'
-      input: [[-max, -min_subnormal], [-max, -min_subnormal]]
-      type: [linearstep, linearstep]
-      steps: [200, 200]
-      variants : [ss]
-
-    - id: ldexp_003
+    - id: ldexp_ss_002
       description: 'Negative values: [-FLT_MAX, -SMALLEST_SUBNORMAL]'
-      input: [[-max, -min_subnormal], [-50000, 50000]]
-      type: [linearstep, linearstep]
+      input: [[-max, -min_subnormal], [-126, 127]]
+      type: [linearstep, integer]
       steps: [200, 200]
       variants : [ss]
 
-#Double precision
-    - id: ldexp_001
+
+#Double precision (exponent kept within the double binary-exponent range)
+    - id: ldexp_sd_001
       description: 'Positive values: [SMALLEST_SUBNORMAL, DBL_MAX]'
-      input: [[min_subnormal, max], [-50000, 50000]]
-      type: [linearstep, linearstep]
+      input: [[min_subnormal, max], [-1022, 1023]]
+      type: [linearstep, integer]
       steps: [200, 200]
       variants : [sd]
 
-    - id: ldexp_002
-      description: '[[-max, -min_subnormal], [-max, -min_subnormal]]'
-      input: [[-max, -min_subnormal], [-max, -min_subnormal]]
-      type: [linearstep, linearstep]
+    - id: ldexp_sd_002
+      description: 'Negative values: [-DBL_MAX, -SMALLEST_SUBNORMAL]'
+      input: [[-max, -min_subnormal], [-1022, 1023]]
+      type: [linearstep, integer]
       steps: [200, 200]
       variants : [sd]
 
-    - id: ldexp_003
-      description: 'Negative range tests: [-DBL_MAX, -SMALLEST_SUBNORMAL]'
-      input: [[-max, -min_subnormal], [-50000, 50000]]
-      type: [linearstep, linearstep]
-      steps: [200, 200]
-      variants : [sd]
 

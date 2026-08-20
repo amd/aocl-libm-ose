@@ -1,0 +1,225 @@
+- test_sequence: unit_tests_cdfnorminv
+  ignore_exceptions: [underflow, inexact]
+  function: cdfnorminv
+  test_sets:
+  - id: special-values
+    description: Special boundary values for cdfnorminv function
+    tests:
+    # Double Precision Tests - Special boundary values
+    - id: cdfnorminv_001
+      description: "cdfnorminv(0) = -inf"
+      input: [0x0000000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cdfnorminv_002
+      description: "cdfnorminv(-0) = -inf"
+      input: [0x8000000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cdfnorminv_003
+      description: "cdfnorminv(1) = +inf"
+      input: [0x3FF0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cdfnorminv_004
+      description: "cdfnorminv(0.5) = 0"
+      input: [0x3FE0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+  - id: nan-invalid-inputs
+    description: NaN and invalid inputs for cdfnorminv function
+    tests:
+    - id: cdfnorminv_005
+      description: "cdfnorminv(+QNAN) = QNAN"
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cdfnorminv_006
+      description: "cdfnorminv(-QNAN) = -QNAN"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cdfnorminv_007
+      description: "cdfnorminv(+SNAN) = QNAN"
+      input: [0x7FF4001000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cdfnorminv_008
+      description: "cdfnorminv(-SNAN) = -QNAN"
+      input: [0xfff2000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cdfnorminv_009
+      description: "cdfnorminv(+inf) = -QNAN"
+      input: [0x7ff0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cdfnorminv_010
+      description: "cdfnorminv(-inf) = -QNAN"
+      input: [0xfff0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+  - id: out-of-domain
+    description: Out of domain values for cdfnorminv function
+    tests:
+    - id: cdfnorminv_011
+      description: "cdfnorminv(-min_denormal) = -QNAN"
+      input: [0x8000000000000001]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cdfnorminv_012
+      description: "cdfnorminv(-1) = -QNAN"
+      input: [0xBFF0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cdfnorminv_013
+      description: "cdfnorminv(2) = -QNAN"
+      input: [0x4000000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+  - id: denormal-small-values
+    description: cdfnorminv(x) for denormals/small values
+    tests:
+    - id: cdfnorminv_014
+      description: "cdfnorminv(min_denormal)"
+      input: [0x0000000000000001]
+      expect: [0xC0433BD3F27FCD03]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cdfnorminv_015
+      description: "cdfnorminv(max_denormal)"
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0xC042C27B05BF1A0B]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cdfnorminv_016
+      description: "cdfnorminv(min_normal)"
+      input: [0x0010000000000000]
+      expect: [0xC042C27B05BF1A0B]
+      expect_exception: []
+      variants: [sd]
+
+  - id: around-half
+    description: cdfnorminv(x) around 0.5
+    tests:
+    - id: cdfnorminv_017
+      description: "cdfnorminv(0.5 - 1 ULP)"
+      input: [0x3FDFFFFFFFFFFFFF]
+      expect: [0xBCA40D931FF62706]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cdfnorminv_018
+      description: "cdfnorminv(0.5) = 0"
+      input: [0x3FE0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cdfnorminv_019
+      description: "cdfnorminv(0.5 + 1 ULP)"
+      input: [0x3FE0000000000001]
+      expect: [0x3CB40D931FF62706]
+      expect_exception: []
+      variants: [sd]
+
+  - id: around-one
+    description: cdfnorminv(x) around 1
+    tests:
+    - id: cdfnorminv_020
+      description: "cdfnorminv(value just before 1.0)"
+      input: [0x3FEFFFFFFFFFFFFF]
+      expect: [0x40206B48528CEA52]
+      expect_exception: []
+      variants: [sd]
+
+  - id: transition-points
+    description: Test cases around the transition points between approximation intervals
+    tests:
+    # Central/Tail boundary: p ≈ 0.075
+    - id: cdfnorminv_021
+      description: "p just below 0.075 (tail region)"
+      input: [0x3FB3333333333332]
+      expect: [0xBFF7085226D3E525]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cdfnorminv_022
+      description: "p = 0.075 (boundary - central region)"
+      input: [0x3FB3333333333333]
+      expect: [0xBFF7085226D3E524]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cdfnorminv_023
+      description: "p just above 0.075 (central region)"
+      input: [0x3FB3333333333334]
+      expect: [0xBFF7085226D3E524]
+      expect_exception: []
+      variants: [sd]
+
+    # Central/Tail boundary: p ≈ 0.925
+    - id: cdfnorminv_024
+      description: "p just below 0.925 (central region)"
+      input: [0x3FED999999999999]
+      expect: [0x3FF7085226D3E522]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cdfnorminv_025
+      description: "p = 0.925 (boundary - central region)"
+      input: [0x3FED99999999999A]
+      expect: [0x3FF7085226D3E525]
+      expect_exception: []
+      variants: [sd]
+
+    - id: cdfnorminv_026
+      description: "p just above 0.925 (tail region)"
+      input: [0x3FED99999999999B]
+      expect: [0x3FF7085226D3E529]
+      expect_exception: []
+      variants: [sd]
+
+    # Lower Tail/Extreme boundary: p = exp(-25)
+    - id: cdfnorminv_027
+      description: "p = exp(-25) (tail/extreme boundary)"
+      input: [0x3DAE8A37A45FC32E]
+      expect: [0xC01AA1B1C13EE526]
+      expect_exception: []
+      variants: [sd]
+
+    # Upper tail/extreme boundary: p = 1 - exp(-25)
+    - id: cdfnorminv_028
+      description: "p = 1-exp(-25) (tail/extreme boundary)"
+      input: [0x3FEFFFFFFFFE175D]
+      expect: [0x401AA1B1E6EAB81F]
+      expect_exception: []
+      variants: [sd]

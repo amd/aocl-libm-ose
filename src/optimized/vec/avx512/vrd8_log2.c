@@ -72,7 +72,7 @@ static struct {
     .inf = _MM512_SET1_U64x8(0xfff0000000000000UL),
     .ln2 = _MM512_SET1_PD8(0x1.62e42fefa39efp-1),
     .ln2_head = _MM512_SET1_PD8(1.44269180297851562500E+00),
-    .ln2_tail = _MM512_SET1_PD8(3.23791044778235969970E-06),
+    .ln2_tail = _MM512_SET1_PD8(0x1.b295c17f0bbbfp-19),
     .v_max = _MM512_SET1_U64x8(0x7ff0000000000000UL),
     .v_min = _MM512_SET1_U64x8(0x0010000000000000UL),
     /* Polynomial coefficients obtained using fpminimax algorithm from Sollya */
@@ -100,7 +100,7 @@ static struct {
     },
 };
 
-#define SCALAR_LOG2 ALM_PROTO(log2)
+#define SCALAR_LOG2 ALM_PROTO_OPT(log2)
 
 #define EXPSHIFTBITS_SP64 52
 #define ln2 vrd8_log2_data.ln2
@@ -176,7 +176,7 @@ ALM_PROTO_OPT(vrd8_log2) (__m512d x)
 
     r = (n + ln2_tail * r) + r * ln2_head ;
 
-    if (unlikely(any_v8_u64_loop(condition))) {
+    if (unlikely(any_v8_u64_avx512(condition))) {
 
         return (v_f64x8_t) {
 

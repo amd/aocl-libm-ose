@@ -26,8 +26,6 @@
 Import('env')
 from os.path import join as joinpath
 
-builddir = joinpath(env['BUILDROOT'], 'src', 'optimized')
-
 e = env.Clone()
 if e['HOST_OS'] != 'win32':
     cflags = ['-O3', '-fPIC', '-mavx2', '-mfma', '-flax-vector-conversions']
@@ -38,42 +36,29 @@ e.Append(
     CFLAGS = cflags,
 )
 
-experiment_src=[
-	]
+source = [
+    'fdim.c',
+    'fdimf.c',
+    'nearbyint.c',
+    'nearbyintf.c',
+    'sqrt.c',
+    'sqrtf.c',
+    'log1p_fma3.c',
+]
 
-source = Glob('*.c', exclude=experiment_src)
+common = [
+    'exp_tables.c',
+    'log_tables.c',
+    'pow_data.c',
+    'sincos_tbl.c',
+    'tanf_tbl.c',
+    'sinh_data.c',
+    'vec/alm_special.c',
+]
+
 source += Glob('data/*.c')
+source += common
 
-vec_objs   = SConscript('vec/SConscript',
-                        exports    = {'env' : e},
-                        duplicate  = 0,
-                        src_dir    = '#src/optimized/vec',
-			            variant_dir= joinpath(builddir, 'vec'))
-
-vectormath_objs   = SConscript('vectormath/SConscript',
-                        exports    = {'env' : e},
-                        duplicate  = 0,
-                        src_dir    = '#src/optimized/vectormath',
-                        variant_dir= joinpath(builddir, 'vectormath'))
-
-cmplx_objs   = SConscript('cmplx/SConscript',
-                        exports    = {'env' : e},
-                        duplicate  = 0,
-                        src_dir    = '#src/optimized/cmplx',
-                        variant_dir= joinpath(builddir, 'cmplx'))
-
-avx512_vec_objs = SConscript('vec/avx512/SConscript',
-                            exports    = {'env' : e},
-                            duplicate  = 0,
-                            src_dir    = '#src/optimized/vec/avx512',
-                            variant_dir= joinpath(builddir, 'vec', 'avx512'))
-
-avx512_vectormath_objs = SConscript('vectormath/avx512/SConscript',
-                            exports    = {'env' : e},
-                            duplicate  = 0,
-                            src_dir    = '#src/optimized/vectormath/avx512',
-                            variant_dir= joinpath(builddir, 'vectormath', 'avx512'))
-
-objs = e.StaticObject(source) + vec_objs + cmplx_objs + vectormath_objs + avx512_vec_objs + avx512_vectormath_objs
+objs = e.StaticObject(source)
 
 Return('objs')

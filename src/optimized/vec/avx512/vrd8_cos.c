@@ -132,14 +132,14 @@ cos_specialcase(v_f64x8_t _x, v_f64x8_t result,
                               v_u64x8_t cond)
 {
     return (v_f64x8_t) {
-            (cond[0]) ? ALM_PROTO(cos)(_x[0]):result[0],
-            (cond[1]) ? ALM_PROTO(cos)(_x[1]):result[1],
-            (cond[2]) ? ALM_PROTO(cos)(_x[2]):result[2],
-            (cond[3]) ? ALM_PROTO(cos)(_x[3]):result[3],
-            (cond[4]) ? ALM_PROTO(cos)(_x[4]):result[4],
-            (cond[5]) ? ALM_PROTO(cos)(_x[5]):result[5],
-            (cond[6]) ? ALM_PROTO(cos)(_x[6]):result[6],
-            (cond[7]) ? ALM_PROTO(cos)(_x[7]):result[7],
+            (cond[0]) ? ALM_PROTO_OPT(cos)(_x[0]):result[0],
+            (cond[1]) ? ALM_PROTO_OPT(cos)(_x[1]):result[1],
+            (cond[2]) ? ALM_PROTO_OPT(cos)(_x[2]):result[2],
+            (cond[3]) ? ALM_PROTO_OPT(cos)(_x[3]):result[3],
+            (cond[4]) ? ALM_PROTO_OPT(cos)(_x[4]):result[4],
+            (cond[5]) ? ALM_PROTO_OPT(cos)(_x[5]):result[5],
+            (cond[6]) ? ALM_PROTO_OPT(cos)(_x[6]):result[6],
+            (cond[7]) ? ALM_PROTO_OPT(cos)(_x[7]):result[7],
 
         };
 }
@@ -184,7 +184,7 @@ ALM_PROTO_OPT(vrd8_cos)(v_f64x8_t x)
     /* If n is odd, result is negative */
     result = as_v8_f64_u64( as_v8_u64_f64(poly) ^ odd);
 
-    if(unlikely(any_v8_u64_loop(cond))) {
+    if(unlikely(any_v8_u64_avx512(cond))) {
         return cos_specialcase(x, result,cond);
     }
 

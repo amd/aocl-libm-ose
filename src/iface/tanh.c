@@ -41,64 +41,105 @@ struct alm_arch_funcs __arch_funcs_tanh = {
         [ALM_UARCH_VER_DEFAULT] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(tanhf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(tanh),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_AVX2(vrd2_tanh),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_AVX2(vrd4_tanh),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_AVX2(vrs4_tanhf), /* v4s */
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_AVX2(vrs8_tanhf), /* v8s ? */
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_tanhf), /* v16s */
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_AVX2(vrsa_tanhf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_AVX2(vrda_tanh),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_tanh),
         },
 
         [ALM_UARCH_VER_AVX512] = {
             [ALM_FUNC_SCAL_SP]      = &ALM_PROTO_ARCH_AVX512(tanhf),
             [ALM_FUNC_SCAL_DP]      = &ALM_PROTO_ARCH_AVX512(tanh),
+            [ALM_FUNC_VECT_DP_2]    = &ALM_PROTO_ARCH_AVX512(vrd2_tanh),
+            [ALM_FUNC_VECT_DP_4]    = &ALM_PROTO_ARCH_AVX512(vrd4_tanh),
             [ALM_FUNC_VECT_SP_4]    = &ALM_PROTO_ARCH_AVX512(vrs4_tanhf),
             [ALM_FUNC_VECT_SP_8]    = &ALM_PROTO_ARCH_AVX512(vrs8_tanhf),
             [ALM_FUNC_VECT_SP_16]   = &ALM_PROTO_ARCH_AVX512(vrs16_tanhf),
             [ALM_FUNC_VECT_SP_ARR]  = &ALM_PROTO_ARCH_AVX512(vrsa_tanhf),
+            [ALM_FUNC_VECT_DP_ARR]  = &ALM_PROTO_ARCH_AVX512(vrda_tanh),
+            [ALM_FUNC_VECT_DP_8]    = &ALM_PROTO_ARCH_AVX512(vrd8_tanh),
         },
 
         [ALM_UARCH_VER_ZEN] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(tanhf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(tanh),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN(vrd2_tanh),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN(vrd4_tanh),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN(vrs4_tanhf),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN(vrs8_tanhf),
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_tanhf), /* v16s */
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN(vrsa_tanhf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN(vrda_tanh),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_tanh),
         },
 
         [ALM_UARCH_VER_ZEN2] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(tanhf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(tanh),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN2(vrd2_tanh),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN2(vrd4_tanh),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN2(vrs4_tanhf),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN2(vrs8_tanhf),
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_tanhf), /* v16s */
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN2(vrsa_tanhf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN2(vrda_tanh),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_tanh),
         },
 
         [ALM_UARCH_VER_ZEN3] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(tanhf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(tanh),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN3(vrd2_tanh),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN3(vrd4_tanh),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN3(vrs4_tanhf),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN3(vrs8_tanhf),
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_tanhf), /* v16s */
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN3(vrsa_tanhf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN3(vrda_tanh),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_tanh),
         },
 
         [ALM_UARCH_VER_ZEN4] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(tanhf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(tanh),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN4(vrd2_tanh),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN4(vrd4_tanh),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN4(vrs4_tanhf),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN4(vrs8_tanhf),
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN4(vrs16_tanhf),
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN4(vrsa_tanhf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN4(vrda_tanh),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN4(vrd8_tanh),
         },
 
         [ALM_UARCH_VER_ZEN5] = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN5(tanhf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN5(tanh),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN5(vrd2_tanh),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN5(vrd4_tanh),
             [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN5(vrs4_tanhf),
             [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN5(vrs8_tanhf),
             [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN5(vrs16_tanhf),
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN5(vrsa_tanhf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN5(vrda_tanh),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN5(vrd8_tanh),
+        },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN6(tanhf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN6(tanh),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN6(vrd2_tanh),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN6(vrd4_tanh),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN6(vrs4_tanhf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN6(vrs8_tanhf),
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN6(vrs16_tanhf),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN6(vrsa_tanhf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN6(vrda_tanh),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN6(vrd8_tanh),
         },
 
     },
@@ -114,9 +155,12 @@ LIBM_IFACE_PROTO(tanh)(void *arg) {
           [ALM_FUNC_VECT_SP_8] = &G_ENTRY_PT_PTR(vrs8_tanhf),
           [ALM_FUNC_VECT_SP_16] = &G_ENTRY_PT_PTR(vrs16_tanhf),
           [ALM_FUNC_VECT_SP_ARR] = &G_ENTRY_PT_PTR(vrsa_tanhf),
+          [ALM_FUNC_VECT_DP_8] = &G_ENTRY_PT_PTR(vrd8_tanh),
+          [ALM_FUNC_VECT_DP_2] = &G_ENTRY_PT_PTR(vrd2_tanh),
+          [ALM_FUNC_VECT_DP_4] = &G_ENTRY_PT_PTR(vrd4_tanh),
+          [ALM_FUNC_VECT_DP_ARR] = &G_ENTRY_PT_PTR(vrda_tanh),
         },
     };
 
     alm_iface_fixup(&g_entry_tanh, &__arch_funcs_tanh);
 }
-

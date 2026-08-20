@@ -182,7 +182,7 @@ logf_specialcase(v_f32x16_t _x,
 
         v_f32x4_t _res1 = {result[i], result[i+1], result[i+2], result[i+3]};
 
-        _res1 = call_v4_f32(ALM_PROTO(logf), _x1, _res1, _cond1);
+        _res1 = call_v4_f32(ALM_PROTO_OPT(logf), _x1, _res1, _cond1);
 
         ret[i]   = _res1[0];
 

@@ -43,6 +43,7 @@ EXPORTS
     alm_mp_fmax
     alm_mp_fdim
     alm_mpc_cexp
+    alm_mpc_clog
     alm_mp_linearfrac
     alm_mp_add
     alm_mp_sub

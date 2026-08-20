@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -42,6 +42,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <immintrin.h>
 #include "alm_test.h"
 
@@ -151,14 +152,14 @@ typedef float (*amd_hypot_ss_func_t)(float, float);
 typedef int (*amd_ilogb_ss_func_t)(float);
 typedef float (*amd_ldexp_ss_func_t)(float, int);
 typedef long long (*amd_llrint_ss_func_t)(float);
-typedef long long (*amd_llround_ss_func_t)(float);
+typedef llint_t (*amd_llround_ss_func_t)(float);
 typedef float (*amd_log_ss_func_t)(float);
 typedef float (*amd_log10_ss_func_t)(float);
 typedef float (*amd_log1p_ss_func_t)(float);
 typedef float (*amd_log2_ss_func_t)(float);
 typedef float (*amd_logb_ss_func_t)(float);
 typedef long (*amd_lrint_ss_func_t)(float);
-typedef long (*amd_lround_ss_func_t)(float);
+typedef lint_t (*amd_lround_ss_func_t)(float);
 typedef float (*amd_modf_ss_func_t)(float, float*);
 typedef float (*amd_nearbyint_ss_func_t)(float);
 typedef float (*amd_nextafter_ss_func_t)(float, float);
@@ -180,6 +181,10 @@ typedef float (*amd_tanh_ss_func_t)(float);
 typedef float (*amd_tanpi_ss_func_t)(float);
 typedef float (*amd_trunc_ss_func_t)(float);
 
+typedef fc32_t (*amd_clogf_func_t)(fc32_t);
+typedef fc32_t (*amd_cexpf_func_t)(fc32_t);
+typedef fc32_t (*amd_cpowf_func_t)(fc32_t, fc32_t);
+
 // --- Double Precision Scalar (sd) Functions ---
 typedef double (*amd_acos_sd_func_t)(double);
 typedef double (*amd_acosh_sd_func_t)(double);
@@ -189,6 +194,8 @@ typedef double (*amd_atan_sd_func_t)(double);
 typedef double (*amd_atan2_sd_func_t)(double, double);
 typedef double (*amd_atanh_sd_func_t)(double);
 typedef double (*amd_cbrt_sd_func_t)(double);
+typedef double (*amd_cdfnorm_sd_func_t)(double);
+typedef double (*amd_cdfnorminv_sd_func_t)(double);
 typedef double (*amd_ceil_sd_func_t)(double);
 typedef double (*amd_copysign_sd_func_t)(double, double);
 typedef double (*amd_cos_sd_func_t)(double);
@@ -196,6 +203,8 @@ typedef double (*amd_cosh_sd_func_t)(double);
 typedef double (*amd_cospi_sd_func_t)(double);
 typedef double (*amd_erf_sd_func_t)(double);
 typedef double (*amd_erfc_sd_func_t)(double);
+typedef double (*amd_erfcinv_sd_func_t)(double);
+typedef double (*amd_erfinv_sd_func_t)(double);
 typedef double (*amd_exp_sd_func_t)(double);
 typedef double (*amd_exp10_sd_func_t)(double);
 typedef double (*amd_exp2_sd_func_t)(double);
@@ -213,14 +222,14 @@ typedef double (*amd_hypot_sd_func_t)(double, double);
 typedef int (*amd_ilogb_sd_func_t)(double);
 typedef double (*amd_ldexp_sd_func_t)(double, int);
 typedef long long (*amd_llrint_sd_func_t)(double);
-typedef long long (*amd_llround_sd_func_t)(double);
+typedef llint_t (*amd_llround_sd_func_t)(double);
 typedef double (*amd_log_sd_func_t)(double);
 typedef double (*amd_log10_sd_func_t)(double);
 typedef double (*amd_log1p_sd_func_t)(double);
 typedef double (*amd_log2_sd_func_t)(double);
 typedef double (*amd_logb_sd_func_t)(double);
 typedef long (*amd_lrint_sd_func_t)(double);
-typedef long (*amd_lround_sd_func_t)(double);
+typedef lint_t (*amd_lround_sd_func_t)(double);
 typedef double (*amd_modf_sd_func_t)(double, double*);
 typedef double (*amd_nearbyint_sd_func_t)(double);
 typedef double (*amd_nextafter_sd_func_t)(double, double);
@@ -242,15 +251,25 @@ typedef double (*amd_tanh_sd_func_t)(double);
 typedef double (*amd_tanpi_sd_func_t)(double);
 typedef double (*amd_trunc_sd_func_t)(double);
 
+typedef fc64_t (*amd_clog_func_t)(fc64_t);
+typedef fc64_t (*amd_cexp_func_t)(fc64_t);
+typedef fc64_t (*amd_cpow_func_t)(fc64_t, fc64_t);
+
 // --- Double Precision 128-bit Vector (vrd2) Functions ---
 typedef __m128d (*amd_acos_vrd2_func_t)(__m128d);
 typedef __m128d (*amd_asin_vrd2_func_t)(__m128d);
 typedef __m128d (*amd_atan_vrd2_func_t)(__m128d);
+typedef __m128d (*amd_atan2_vrd2_func_t)(__m128d, __m128d);
 typedef __m128d (*amd_cbrt_vrd2_func_t)(__m128d);
+typedef __m128d (*amd_cdfnorm_vrd2_func_t)(__m128d);
+typedef __m128d (*amd_cdfnorminv_vrd2_func_t)(__m128d);
 typedef __m128d (*amd_cos_vrd2_func_t)(__m128d);
 typedef __m128d (*amd_cosh_vrd2_func_t)(__m128d);
 typedef __m128d (*amd_erf_vrd2_func_t)(__m128d);
 typedef __m128d (*amd_erfc_vrd2_func_t)(__m128d);
+typedef __m128d (*amd_erfcinv_vrd2_func_t)(__m128d);
+typedef __m128d (*amd_erfinv_vrd2_func_t)(__m128d);
+typedef __m128d (*amd_tanh_vrd2_func_t)(__m128d);
 typedef __m128d (*amd_exp_vrd2_func_t)(__m128d);
 typedef __m128d (*amd_exp10_vrd2_func_t)(__m128d);
 typedef __m128d (*amd_exp2_vrd2_func_t)(__m128d);
@@ -298,11 +317,19 @@ typedef __m128 (*amd_tanh_vrs4_func_t)(__m128);
 typedef __m256d (*amd_acos_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_asin_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_atan_vrd4_func_t)(__m256d);
+typedef __m256d (*amd_atan2_vrd4_func_t)(__m256d, __m256d);
 typedef __m256d (*amd_cos_vrd4_func_t)(__m256d);
+typedef __m256d (*amd_cosh_vrd4_func_t)(__m256d);
+typedef __m256d (*amd_cdfnorm_vrd4_func_t)(__m256d);
+typedef __m256d (*amd_cdfnorminv_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_erf_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_erfc_vrd4_func_t)(__m256d);
+typedef __m256d (*amd_erfcinv_vrd4_func_t)(__m256d);
+typedef __m256d (*amd_erfinv_vrd4_func_t)(__m256d);
+typedef __m256d (*amd_tanh_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_exp_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_exp2_vrd4_func_t)(__m256d);
+typedef __m256d (*amd_exp10_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_fabs_vrd4_func_t)(__m256d);
 typedef __m256d (*amd_linearfrac_vrd4_func_t)(__m256d, __m256d, double, double, double, double);
 typedef __m256d (*amd_log_vrd4_func_t)(__m256d);
@@ -320,6 +347,7 @@ typedef __m256 (*amd_asin_vrs8_func_t)(__m256);
 typedef __m256 (*amd_atan_vrs8_func_t)(__m256);
 typedef __m256 (*amd_cos_vrs8_func_t)(__m256);
 typedef __m256 (*amd_cosh_vrs8_func_t)(__m256);
+typedef __m256 (*amd_cbrt_vrs8_func_t)(__m256);
 typedef __m256 (*amd_erf_vrs8_func_t)(__m256);
 typedef __m256 (*amd_erfc_vrs8_func_t)(__m256);
 typedef __m256 (*amd_exp_vrs8_func_t)(__m256);
@@ -336,6 +364,7 @@ typedef void (*amd_sincos_vrs8_func_t)(__m256, __m256*, __m256*);
 typedef __m256 (*amd_sqrt_vrs8_func_t)(__m256);
 typedef __m256 (*amd_tan_vrs8_func_t)(__m256);
 typedef __m256 (*amd_tanh_vrs8_func_t)(__m256);
+typedef __m256 (*amd_exp10_vrs8_func_t)(__m256);
 
 // --- Single Precision Array (vrsa) Functions ---
 typedef void (*amd_acos_vrsa_func_t)(int, const float*, float*);
@@ -384,12 +413,16 @@ typedef void (*amd_addi_vrda_func_t)(int, const double*, double, double*);
 typedef void (*amd_asin_vrda_func_t)(int, const double*, double*);
 typedef void (*amd_atan_vrda_func_t)(int, const double*, double*);
 typedef void (*amd_cbrt_vrda_func_t)(int, const double*, double*);
+typedef void (*amd_cdfnorm_vrda_func_t)(int, const double*, double*);
+typedef void (*amd_cdfnorminv_vrda_func_t)(int, const double*, double*);
 typedef void (*amd_cos_vrda_func_t)(int, const double*, double*);
 typedef void (*amd_cosh_vrda_func_t)(int, const double*, double*);
 typedef void (*amd_div_vrda_func_t)(int, const double*, const double*, double*);
 typedef void (*amd_divi_vrda_func_t)(int, const double*, double, double*);
 typedef void (*amd_erf_vrda_func_t)(int, const double*, double*);
 typedef void (*amd_erfc_vrda_func_t)(int, const double*, double*);
+typedef void (*amd_erfcinv_vrda_func_t)(int, const double*, double*);
+typedef void (*amd_erfinv_vrda_func_t)(int, const double*, double*);
 typedef void (*amd_exp_vrda_func_t)(int, const double*, double*);
 typedef void (*amd_exp10_vrda_func_t)(int, const double*, double*);
 typedef void (*amd_exp2_vrda_func_t)(int, const double*, double*);
@@ -415,16 +448,28 @@ typedef void (*amd_sqrt_vrda_func_t)(int, const double*, double*);
 typedef void (*amd_sub_vrda_func_t)(int, const double*, const double*, double*);
 typedef void (*amd_subi_vrda_func_t)(int, const double*, double, double*);
 typedef void (*amd_tan_vrda_func_t)(int, const double*, double*);
+typedef void (*amd_tanh_vrda_func_t)(int, const double*, double*);
 
 #ifdef __AVX512F__
-// --- Double Precision 512-bit Vector (vrd8) Functions ---
+// ============================================================================
+// DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
+// ============================================================================
+typedef __m512d (*amd_acos_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_asin_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_atan_vrd8_func_t)(__m512d);
+typedef __m512d (*amd_atan2_vrd8_func_t)(__m512d, __m512d);
 typedef __m512d (*amd_cos_vrd8_func_t)(__m512d);
+typedef __m512d (*amd_cosh_vrd8_func_t)(__m512d);
+typedef __m512d (*amd_cdfnorm_vrd8_func_t)(__m512d);
+typedef __m512d (*amd_cdfnorminv_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_erf_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_erfc_vrd8_func_t)(__m512d);
+typedef __m512d (*amd_erfcinv_vrd8_func_t)(__m512d);
+typedef __m512d (*amd_erfinv_vrd8_func_t)(__m512d);
+typedef __m512d (*amd_tanh_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_exp_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_exp2_vrd8_func_t)(__m512d);
+typedef __m512d (*amd_exp10_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_linearfrac_vrd8_func_t)(__m512d, __m512d, double, double, double, double);
 typedef __m512d (*amd_log_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_log2_vrd8_func_t)(__m512d);
@@ -435,14 +480,18 @@ typedef void (*amd_sincos_vrd8_func_t)(__m512d, __m512d*, __m512d*);
 typedef __m512d (*amd_sqrt_vrd8_func_t)(__m512d);
 typedef __m512d (*amd_tan_vrd8_func_t)(__m512d);
 
-// --- Single Precision 512-bit Vector (vrs16) Functions ---
+// ============================================================================
+// SINGLE PRECISION 512-BIT VECTOR (vrs16) VARIANTS
+// ============================================================================
 typedef __m512 (*amd_acos_vrs16_func_t)(__m512);
 typedef __m512 (*amd_asin_vrs16_func_t)(__m512);
 typedef __m512 (*amd_atan_vrs16_func_t)(__m512);
 typedef __m512 (*amd_cos_vrs16_func_t)(__m512);
+typedef __m512 (*amd_cosh_vrs16_func_t)(__m512);
 typedef __m512 (*amd_erf_vrs16_func_t)(__m512);
 typedef __m512 (*amd_erfc_vrs16_func_t)(__m512);
 typedef __m512 (*amd_exp_vrs16_func_t)(__m512);
+typedef __m512 (*amd_exp10_vrs16_func_t)(__m512);
 typedef __m512 (*amd_exp2_vrs16_func_t)(__m512);
 typedef __m512 (*amd_linearfrac_vrs16_func_t)(__m512, __m512, float, float, float, float);
 typedef __m512 (*amd_log_vrs16_func_t)(__m512);
@@ -522,6 +571,9 @@ static struct {
     amd_tanh_ss_func_t tanhf;
     amd_tanpi_ss_func_t tanpif;
     amd_trunc_ss_func_t truncf;
+    amd_clogf_func_t clogf;
+    amd_cexpf_func_t cexpf;
+    amd_cpowf_func_t cpowf;
 
     // ============================================================================
     // DOUBLE PRECISION SCALAR (sd) VARIANTS
@@ -534,6 +586,8 @@ static struct {
     amd_atan2_sd_func_t atan2;
     amd_atanh_sd_func_t atanh;
     amd_cbrt_sd_func_t cbrt;
+    amd_cdfnorm_sd_func_t cdfnorm;
+    amd_cdfnorminv_sd_func_t cdfnorminv;
     amd_ceil_sd_func_t ceil;
     amd_copysign_sd_func_t copysign;
     amd_cos_sd_func_t cos;
@@ -541,6 +595,8 @@ static struct {
     amd_cospi_sd_func_t cospi;
     amd_erf_sd_func_t erf;
     amd_erfc_sd_func_t erfc;
+    amd_erfcinv_sd_func_t erfcinv;
+    amd_erfinv_sd_func_t erfinv;
     amd_exp_sd_func_t exp;
     amd_exp10_sd_func_t exp10;
     amd_exp2_sd_func_t exp2;
@@ -586,6 +642,9 @@ static struct {
     amd_tanh_sd_func_t tanh;
     amd_tanpi_sd_func_t tanpi;
     amd_trunc_sd_func_t trunc;
+    amd_clog_func_t clog;
+    amd_cexp_func_t cexp;
+    amd_cpow_func_t cpow;
 
     // ============================================================================
     // DOUBLE PRECISION 128-BIT VECTOR (vrd2) VARIANTS
@@ -593,11 +652,17 @@ static struct {
     amd_acos_vrd2_func_t acos_vrd2;
     amd_asin_vrd2_func_t asin_vrd2;
     amd_atan_vrd2_func_t atan_vrd2;
+    amd_atan2_vrd2_func_t atan2_vrd2;
     amd_cbrt_vrd2_func_t cbrt_vrd2;
+    amd_cdfnorm_vrd2_func_t cdfnorm_vrd2;
+    amd_cdfnorminv_vrd2_func_t cdfnorminv_vrd2;
     amd_cos_vrd2_func_t cos_vrd2;
     amd_cosh_vrd2_func_t cosh_vrd2;
     amd_erf_vrd2_func_t erf_vrd2;
     amd_erfc_vrd2_func_t erfc_vrd2;
+    amd_erfcinv_vrd2_func_t erfcinv_vrd2;
+    amd_erfinv_vrd2_func_t erfinv_vrd2;
+    amd_tanh_vrd2_func_t tanh_vrd2;
     amd_exp_vrd2_func_t exp_vrd2;
     amd_exp10_vrd2_func_t exp10_vrd2;
     amd_exp2_vrd2_func_t exp2_vrd2;
@@ -649,11 +714,19 @@ static struct {
     amd_acos_vrd4_func_t acos_vrd4;
     amd_asin_vrd4_func_t asin_vrd4;
     amd_atan_vrd4_func_t atan_vrd4;
+    amd_atan2_vrd4_func_t atan2_vrd4;
     amd_cos_vrd4_func_t cos_vrd4;
+    amd_cosh_vrd4_func_t cosh_vrd4;
+    amd_cdfnorm_vrd4_func_t cdfnorm_vrd4;
+    amd_cdfnorminv_vrd4_func_t cdfnorminv_vrd4;
     amd_erf_vrd4_func_t erf_vrd4;
     amd_erfc_vrd4_func_t erfc_vrd4;
+    amd_erfcinv_vrd4_func_t erfcinv_vrd4;
+    amd_erfinv_vrd4_func_t erfinv_vrd4;
+    amd_tanh_vrd4_func_t tanh_vrd4;
     amd_exp_vrd4_func_t exp_vrd4;
     amd_exp2_vrd4_func_t exp2_vrd4;
+    amd_exp10_vrd4_func_t exp10_vrd4;
     amd_fabs_vrd4_func_t fabs_vrd4;
     amd_linearfrac_vrd4_func_t linearfrac_vrd4;
     amd_log_vrd4_func_t log_vrd4;
@@ -664,7 +737,6 @@ static struct {
     amd_sincos_vrd4_func_t sincos_vrd4;
     amd_sqrt_vrd4_func_t sqrt_vrd4;
     amd_tan_vrd4_func_t tan_vrd4;
-
     // ============================================================================
     // SINGLE PRECISION 256-BIT VECTOR (vrs8) VARIANTS
     // ============================================================================
@@ -673,6 +745,7 @@ static struct {
     amd_atan_vrs8_func_t atan_vrs8;
     amd_cos_vrs8_func_t cos_vrs8;
     amd_cosh_vrs8_func_t cosh_vrs8;
+    amd_cbrt_vrs8_func_t cbrt_vrs8;
     amd_erf_vrs8_func_t erf_vrs8;
     amd_erfc_vrs8_func_t erfc_vrs8;
     amd_exp_vrs8_func_t exp_vrs8;
@@ -689,6 +762,7 @@ static struct {
     amd_sqrt_vrs8_func_t sqrt_vrs8;
     amd_tan_vrs8_func_t tan_vrs8;
     amd_tanh_vrs8_func_t tanh_vrs8;
+    amd_exp10_vrs8_func_t exp10_vrs8;
 
     // ============================================================================
     // SINGLE PRECISION ARRAY (vrsa) VARIANTS
@@ -740,12 +814,16 @@ static struct {
     amd_asin_vrda_func_t asin_vrda;
     amd_atan_vrda_func_t atan_vrda;
     amd_cbrt_vrda_func_t cbrt_vrda;
+    amd_cdfnorm_vrda_func_t cdfnorm_vrda;
+    amd_cdfnorminv_vrda_func_t cdfnorminv_vrda;
     amd_cos_vrda_func_t cos_vrda;
     amd_cosh_vrda_func_t cosh_vrda;
     amd_div_vrda_func_t div_vrda;
     amd_divi_vrda_func_t divi_vrda;
     amd_erf_vrda_func_t erf_vrda;
     amd_erfc_vrda_func_t erfc_vrda;
+    amd_erfcinv_vrda_func_t erfcinv_vrda;
+    amd_erfinv_vrda_func_t erfinv_vrda;
     amd_exp_vrda_func_t exp_vrda;
     amd_exp10_vrda_func_t exp10_vrda;
     amd_exp2_vrda_func_t exp2_vrda;
@@ -770,18 +848,28 @@ static struct {
     amd_sub_vrda_func_t sub_vrda;
     amd_subi_vrda_func_t subi_vrda;
     amd_tan_vrda_func_t tan_vrda;
+    amd_tanh_vrda_func_t tanh_vrda;
 
 #ifdef __AVX512F__
     // ============================================================================
     // DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
     // ============================================================================
+    amd_acos_vrd8_func_t acos_vrd8;
     amd_asin_vrd8_func_t asin_vrd8;
     amd_atan_vrd8_func_t atan_vrd8;
+    amd_atan2_vrd8_func_t atan2_vrd8;
     amd_cos_vrd8_func_t cos_vrd8;
+    amd_cosh_vrd8_func_t cosh_vrd8;
+    amd_cdfnorm_vrd8_func_t cdfnorm_vrd8;
+    amd_cdfnorminv_vrd8_func_t cdfnorminv_vrd8;
     amd_erf_vrd8_func_t erf_vrd8;
     amd_erfc_vrd8_func_t erfc_vrd8;
+    amd_erfcinv_vrd8_func_t erfcinv_vrd8;
+    amd_erfinv_vrd8_func_t erfinv_vrd8;
+    amd_tanh_vrd8_func_t tanh_vrd8;
     amd_exp_vrd8_func_t exp_vrd8;
     amd_exp2_vrd8_func_t exp2_vrd8;
+    amd_exp10_vrd8_func_t exp10_vrd8;
     amd_linearfrac_vrd8_func_t linearfrac_vrd8;
     amd_log_vrd8_func_t log_vrd8;
     amd_log2_vrd8_func_t log2_vrd8;
@@ -799,9 +887,11 @@ static struct {
     amd_asin_vrs16_func_t asin_vrs16;
     amd_atan_vrs16_func_t atan_vrs16;
     amd_cos_vrs16_func_t cos_vrs16;
+    amd_cosh_vrs16_func_t cosh_vrs16;
     amd_erf_vrs16_func_t erf_vrs16;
     amd_erfc_vrs16_func_t erfc_vrs16;
     amd_exp_vrs16_func_t exp_vrs16;
+    amd_exp10_vrs16_func_t exp10_vrs16;
     amd_exp2_vrs16_func_t exp2_vrs16;
     amd_linearfrac_vrs16_func_t linearfrac_vrs16;
     amd_log_vrs16_func_t log_vrs16;
@@ -840,34 +930,117 @@ static T load_amd_symbol(LIB_HANDLE lib, const char* name) {
 #ifndef _WIN32
 static void check_amd_installation() {
     const char* ld_library_path = getenv("LD_LIBRARY_PATH");
-    std::cout << "LD_LIBRARY_PATH: " << ld_library_path << std::endl;
-    if (!ld_library_path) {
-        printf("LD_LIBRARY_PATH does not contain AMD paths\n");
-    }
+    printf("Diagnostic: LD_LIBRARY_PATH = %s\n", ld_library_path ? ld_library_path : "(not set)");
 }
 #endif
+
+// Helper function to validate and trim library name from environment variable
+// Returns a pointer to a static buffer containing the trimmed string, or nullptr if invalid
+// Handles null, empty, and whitespace-only strings
+static const char* is_valid_library_name(const char* str) {
+    static char trimmed[512];  // Static buffer for trimmed string
+
+    if (!str || str[0] == '\0') {
+        return nullptr;  // null or empty string
+    }
+
+    // Skip leading whitespace
+    while (*str && isspace((unsigned char)*str)) {
+        str++;
+    }
+
+    // If string is all whitespace or empty after trimming
+    if (*str == '\0') {
+        return nullptr;
+    }
+
+    // Copy to buffer and find end
+    size_t len = 0;
+    while (*str && len < sizeof(trimmed) - 1) {
+        trimmed[len++] = *str++;
+    }
+    trimmed[len] = '\0';
+
+    // Trim trailing whitespace
+    while (len > 0 && isspace((unsigned char)trimmed[len - 1])) {
+        trimmed[--len] = '\0';
+    }
+
+    return trimmed;
+}
 
 // Automatic initialization at library load time
 static void init_amd_symbols(void) {
 
-    // Try to load Intel MKL libraries in order of preference
     LIB_HANDLE amd_core = nullptr;
+    const char* loaded_lib = nullptr;
 
+    // Platform-specific constants
 #ifdef _WIN32
-    // Windows AMD library names
-    amd_core = LOAD_LIBRARY("libalm.dll");
-    if (!amd_core) {
-        printf("Error: Failed to load AMD Math Function library (libalm.dll)\n");
-    }
+    const char* default_lib = "libalm.dll";
+    const char* env_var_name = "PATH";
 #else
-    check_amd_installation();
-
-    // Linux MKL library loading
-    amd_core = LOAD_LIBRARY("libalm.so");
-    if (!amd_core) {
-        printf("Error: Failed to load AMD Math Function library (libalm.so)\n");
-    }
+    const char* default_lib = "libalm.so";
+    const char* env_var_name = "LD_LIBRARY_PATH";
 #endif
+
+#if AMD_SHIM_DEBUG && !defined(_WIN32)
+    check_amd_installation();
+#endif
+
+    // Check for user-specified library via environment variable (runtime flexibility)
+    // This allows loading alternative libraries like libalmfast.so/libalmfast.dll
+    const char* env_lib = is_valid_library_name(getenv("AMD_LIBM_LIBRARY"));
+
+    // Try to load user-specified library first
+    if (env_lib) {
+        DEBUG_PRINT("Loading user-specified library: %s\n", env_lib);
+        amd_core = LOAD_LIBRARY(env_lib);
+        if (!amd_core) {
+            #ifdef _WIN32
+                DWORD error = GetLastError();
+                printf("Warning: Failed to load library '%s' (Error code: %lu)\n", env_lib, error);
+            #else
+                const char* error = dlerror();
+                printf("Warning: Failed to load library '%s' (%s)\n", env_lib, error ? error : "unknown error");
+            #endif
+            printf("Ensure the library path is set in %s environment variable\n", env_var_name);
+            printf("Falling back to default library...\n");
+        } else {
+            loaded_lib = env_lib;
+            DEBUG_PRINT("Successfully loaded %s\n", loaded_lib);
+        }
+    }
+
+    // Load default library if no custom library specified or custom load failed
+    if (!amd_core) {
+        DEBUG_PRINT("Loading default library: %s\n", default_lib);
+        amd_core = LOAD_LIBRARY(default_lib);
+        if (!amd_core) {
+            #ifdef _WIN32
+                DWORD error = GetLastError();
+                printf("Error: Failed to load AMD Math library (%s) (Error code: %lu)\n", default_lib, error);
+            #else
+                const char* error = dlerror();
+                printf("Error: Failed to load AMD Math library (%s) (%s)\n", default_lib, error ? error : "unknown error");
+                check_amd_installation();
+            #endif
+            printf("Ensure the library path is set in %s environment variable\n", env_var_name);
+            exit(EXIT_FAILURE);
+        }
+        loaded_lib = default_lib;
+        DEBUG_PRINT("Successfully loaded %s\n", loaded_lib);
+    }
+
+    // Verify we have a valid library handle before proceeding with symbol loading
+    // This should never happen due to the exit() calls above, but serves as a safeguard
+    if (!amd_core) {
+        printf("Fatal error: No AMD Math library could be loaded\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Print which library was loaded
+    printf("Loaded AMD Math library: %s\n", loaded_lib);
 
     // Load symbols organized by variant
     // ============================================================================
@@ -933,6 +1106,9 @@ static void init_amd_symbols(void) {
     amd_funcs.tanhf = load_amd_symbol<amd_tanh_ss_func_t>(amd_core, "amd_tanhf");
     amd_funcs.tanpif = load_amd_symbol<amd_tanpi_ss_func_t>(amd_core, "amd_tanpif");
     amd_funcs.truncf = load_amd_symbol<amd_trunc_ss_func_t>(amd_core, "amd_truncf");
+    amd_funcs.clogf = load_amd_symbol<amd_clogf_func_t>(amd_core, "amd_clogf");
+    amd_funcs.cexpf = load_amd_symbol<amd_cexpf_func_t>(amd_core, "amd_cexpf");
+    amd_funcs.cpowf = load_amd_symbol<amd_cpowf_func_t>(amd_core, "amd_cpowf");
 
     // ============================================================================
     // DOUBLE PRECISION SCALAR (sd) VARIANTS
@@ -945,6 +1121,8 @@ static void init_amd_symbols(void) {
     amd_funcs.atan2 = load_amd_symbol<amd_atan2_sd_func_t>(amd_core, "amd_atan2");
     amd_funcs.atanh = load_amd_symbol<amd_atanh_sd_func_t>(amd_core, "amd_atanh");
     amd_funcs.cbrt = load_amd_symbol<amd_cbrt_sd_func_t>(amd_core, "amd_cbrt");
+    amd_funcs.cdfnorm = load_amd_symbol<amd_cdfnorm_sd_func_t>(amd_core, "amd_cdfnorm");
+    amd_funcs.cdfnorminv = load_amd_symbol<amd_cdfnorminv_sd_func_t>(amd_core, "amd_cdfnorminv");
     amd_funcs.ceil = load_amd_symbol<amd_ceil_sd_func_t>(amd_core, "amd_ceil");
     amd_funcs.copysign = load_amd_symbol<amd_copysign_sd_func_t>(amd_core, "amd_copysign");
     amd_funcs.cos = load_amd_symbol<amd_cos_sd_func_t>(amd_core, "amd_cos");
@@ -952,6 +1130,8 @@ static void init_amd_symbols(void) {
     amd_funcs.cospi = load_amd_symbol<amd_cospi_sd_func_t>(amd_core, "amd_cospi");
     amd_funcs.erf = load_amd_symbol<amd_erf_sd_func_t>(amd_core, "amd_erf");
     amd_funcs.erfc = load_amd_symbol<amd_erfc_sd_func_t>(amd_core, "amd_erfc");
+    amd_funcs.erfcinv = load_amd_symbol<amd_erfcinv_sd_func_t>(amd_core, "amd_erfcinv");
+    amd_funcs.erfinv = load_amd_symbol<amd_erfinv_sd_func_t>(amd_core, "amd_erfinv");
     amd_funcs.exp = load_amd_symbol<amd_exp_sd_func_t>(amd_core, "amd_exp");
     amd_funcs.exp10 = load_amd_symbol<amd_exp10_sd_func_t>(amd_core, "amd_exp10");
     amd_funcs.exp2 = load_amd_symbol<amd_exp2_sd_func_t>(amd_core, "amd_exp2");
@@ -997,6 +1177,9 @@ static void init_amd_symbols(void) {
     amd_funcs.tanh = load_amd_symbol<amd_tanh_sd_func_t>(amd_core, "amd_tanh");
     amd_funcs.tanpi = load_amd_symbol<amd_tanpi_sd_func_t>(amd_core, "amd_tanpi");
     amd_funcs.trunc = load_amd_symbol<amd_trunc_sd_func_t>(amd_core, "amd_trunc");
+    amd_funcs.clog = load_amd_symbol<amd_clog_func_t>(amd_core, "amd_clog");
+    amd_funcs.cexp = load_amd_symbol<amd_cexp_func_t>(amd_core, "amd_cexp");
+    amd_funcs.cpow = load_amd_symbol<amd_cpow_func_t>(amd_core, "amd_cpow");
 
     // ============================================================================
     // DOUBLE PRECISION 128-BIT VECTOR (vrd2) VARIANTS
@@ -1004,11 +1187,17 @@ static void init_amd_symbols(void) {
     amd_funcs.acos_vrd2 = load_amd_symbol<amd_acos_vrd2_func_t>(amd_core, "amd_vrd2_acos");
     amd_funcs.asin_vrd2 = load_amd_symbol<amd_asin_vrd2_func_t>(amd_core, "amd_vrd2_asin");
     amd_funcs.atan_vrd2 = load_amd_symbol<amd_atan_vrd2_func_t>(amd_core, "amd_vrd2_atan");
+    amd_funcs.atan2_vrd2 = load_amd_symbol<amd_atan2_vrd2_func_t>(amd_core, "amd_vrd2_atan2");
     amd_funcs.cbrt_vrd2 = load_amd_symbol<amd_cbrt_vrd2_func_t>(amd_core, "amd_vrd2_cbrt");
+    amd_funcs.cdfnorm_vrd2 = load_amd_symbol<amd_cdfnorm_vrd2_func_t>(amd_core, "amd_vrd2_cdfnorm");
+    amd_funcs.cdfnorminv_vrd2 = load_amd_symbol<amd_cdfnorminv_vrd2_func_t>(amd_core, "amd_vrd2_cdfnorminv");
     amd_funcs.cos_vrd2 = load_amd_symbol<amd_cos_vrd2_func_t>(amd_core, "amd_vrd2_cos");
     amd_funcs.cosh_vrd2 = load_amd_symbol<amd_cosh_vrd2_func_t>(amd_core, "amd_vrd2_cosh");
     amd_funcs.erf_vrd2 = load_amd_symbol<amd_erf_vrd2_func_t>(amd_core, "amd_vrd2_erf");
     amd_funcs.erfc_vrd2 = load_amd_symbol<amd_erfc_vrd2_func_t>(amd_core, "amd_vrd2_erfc");
+    amd_funcs.erfcinv_vrd2 = load_amd_symbol<amd_erfcinv_vrd2_func_t>(amd_core, "amd_vrd2_erfcinv");
+    amd_funcs.erfinv_vrd2 = load_amd_symbol<amd_erfinv_vrd2_func_t>(amd_core, "amd_vrd2_erfinv");
+    amd_funcs.tanh_vrd2 = load_amd_symbol<amd_tanh_vrd2_func_t>(amd_core, "amd_vrd2_tanh");
     amd_funcs.exp_vrd2 = load_amd_symbol<amd_exp_vrd2_func_t>(amd_core, "amd_vrd2_exp");
     amd_funcs.exp10_vrd2 = load_amd_symbol<amd_exp10_vrd2_func_t>(amd_core, "amd_vrd2_exp10");
     amd_funcs.exp2_vrd2 = load_amd_symbol<amd_exp2_vrd2_func_t>(amd_core, "amd_vrd2_exp2");
@@ -1060,11 +1249,19 @@ static void init_amd_symbols(void) {
     amd_funcs.acos_vrd4 = load_amd_symbol<amd_acos_vrd4_func_t>(amd_core, "amd_vrd4_acos");
     amd_funcs.asin_vrd4 = load_amd_symbol<amd_asin_vrd4_func_t>(amd_core, "amd_vrd4_asin");
     amd_funcs.atan_vrd4 = load_amd_symbol<amd_atan_vrd4_func_t>(amd_core, "amd_vrd4_atan");
+    amd_funcs.atan2_vrd4 = load_amd_symbol<amd_atan2_vrd4_func_t>(amd_core, "amd_vrd4_atan2");
     amd_funcs.cos_vrd4 = load_amd_symbol<amd_cos_vrd4_func_t>(amd_core, "amd_vrd4_cos");
+    amd_funcs.cosh_vrd4 = load_amd_symbol<amd_cosh_vrd4_func_t>(amd_core, "amd_vrd4_cosh");
+    amd_funcs.cdfnorm_vrd4 = load_amd_symbol<amd_cdfnorm_vrd4_func_t>(amd_core, "amd_vrd4_cdfnorm");
+    amd_funcs.cdfnorminv_vrd4 = load_amd_symbol<amd_cdfnorminv_vrd4_func_t>(amd_core, "amd_vrd4_cdfnorminv");
     amd_funcs.erf_vrd4 = load_amd_symbol<amd_erf_vrd4_func_t>(amd_core, "amd_vrd4_erf");
     amd_funcs.erfc_vrd4 = load_amd_symbol<amd_erfc_vrd4_func_t>(amd_core, "amd_vrd4_erfc");
+    amd_funcs.erfcinv_vrd4 = load_amd_symbol<amd_erfcinv_vrd4_func_t>(amd_core, "amd_vrd4_erfcinv");
+    amd_funcs.erfinv_vrd4 = load_amd_symbol<amd_erfinv_vrd4_func_t>(amd_core, "amd_vrd4_erfinv");
+    amd_funcs.tanh_vrd4 = load_amd_symbol<amd_tanh_vrd4_func_t>(amd_core, "amd_vrd4_tanh");
     amd_funcs.exp_vrd4 = load_amd_symbol<amd_exp_vrd4_func_t>(amd_core, "amd_vrd4_exp");
     amd_funcs.exp2_vrd4 = load_amd_symbol<amd_exp2_vrd4_func_t>(amd_core, "amd_vrd4_exp2");
+    amd_funcs.exp10_vrd4 = load_amd_symbol<amd_exp10_vrd4_func_t>(amd_core, "amd_vrd4_exp10");
     amd_funcs.fabs_vrd4 = load_amd_symbol<amd_fabs_vrd4_func_t>(amd_core, "amd_vrd4_fabs");
     amd_funcs.linearfrac_vrd4 = load_amd_symbol<amd_linearfrac_vrd4_func_t>(amd_core, "amd_vrd4_linearfrac");
     amd_funcs.log_vrd4 = load_amd_symbol<amd_log_vrd4_func_t>(amd_core, "amd_vrd4_log");
@@ -1075,7 +1272,6 @@ static void init_amd_symbols(void) {
     amd_funcs.sincos_vrd4 = load_amd_symbol<amd_sincos_vrd4_func_t>(amd_core, "amd_vrd4_sincos");
     amd_funcs.sqrt_vrd4 = load_amd_symbol<amd_sqrt_vrd4_func_t>(amd_core, "amd_vrd4_sqrt");
     amd_funcs.tan_vrd4 = load_amd_symbol<amd_tan_vrd4_func_t>(amd_core, "amd_vrd4_tan");
-
     // ============================================================================
     // SINGLE PRECISION 256-BIT VECTOR (vrs8) VARIANTS
     // ============================================================================
@@ -1084,6 +1280,7 @@ static void init_amd_symbols(void) {
     amd_funcs.atan_vrs8 = load_amd_symbol<amd_atan_vrs8_func_t>(amd_core, "amd_vrs8_atanf");
     amd_funcs.cos_vrs8 = load_amd_symbol<amd_cos_vrs8_func_t>(amd_core, "amd_vrs8_cosf");
     amd_funcs.cosh_vrs8 = load_amd_symbol<amd_cosh_vrs8_func_t>(amd_core, "amd_vrs8_coshf");
+    amd_funcs.cbrt_vrs8 = load_amd_symbol<amd_cbrt_vrs8_func_t>(amd_core, "amd_vrs8_cbrtf");
     amd_funcs.erf_vrs8 = load_amd_symbol<amd_erf_vrs8_func_t>(amd_core, "amd_vrs8_erff");
     amd_funcs.erfc_vrs8 = load_amd_symbol<amd_erfc_vrs8_func_t>(amd_core, "amd_vrs8_erfcf");
     amd_funcs.exp_vrs8 = load_amd_symbol<amd_exp_vrs8_func_t>(amd_core, "amd_vrs8_expf");
@@ -1100,6 +1297,7 @@ static void init_amd_symbols(void) {
     amd_funcs.sqrt_vrs8 = load_amd_symbol<amd_sqrt_vrs8_func_t>(amd_core, "amd_vrs8_sqrtf");
     amd_funcs.tan_vrs8 = load_amd_symbol<amd_tan_vrs8_func_t>(amd_core, "amd_vrs8_tanf");
     amd_funcs.tanh_vrs8 = load_amd_symbol<amd_tanh_vrs8_func_t>(amd_core, "amd_vrs8_tanhf");
+    amd_funcs.exp10_vrs8 = load_amd_symbol<amd_exp10_vrs8_func_t>(amd_core, "amd_vrs8_exp10f");
 
     // ============================================================================
     // SINGLE PRECISION ARRAY (vrsa) VARIANTS
@@ -1151,12 +1349,16 @@ static void init_amd_symbols(void) {
     amd_funcs.asin_vrda = load_amd_symbol<amd_asin_vrda_func_t>(amd_core, "amd_vrda_asin");
     amd_funcs.atan_vrda = load_amd_symbol<amd_atan_vrda_func_t>(amd_core, "amd_vrda_atan");
     amd_funcs.cbrt_vrda = load_amd_symbol<amd_cbrt_vrda_func_t>(amd_core, "amd_vrda_cbrt");
+    amd_funcs.cdfnorm_vrda = load_amd_symbol<amd_cdfnorm_vrda_func_t>(amd_core, "amd_vrda_cdfnorm");
+    amd_funcs.cdfnorminv_vrda = load_amd_symbol<amd_cdfnorminv_vrda_func_t>(amd_core, "amd_vrda_cdfnorminv");
     amd_funcs.cos_vrda = load_amd_symbol<amd_cos_vrda_func_t>(amd_core, "amd_vrda_cos");
     amd_funcs.cosh_vrda = load_amd_symbol<amd_cosh_vrda_func_t>(amd_core, "amd_vrda_cosh");
     amd_funcs.div_vrda = load_amd_symbol<amd_div_vrda_func_t>(amd_core, "amd_vrda_div");
     amd_funcs.divi_vrda = load_amd_symbol<amd_divi_vrda_func_t>(amd_core, "amd_vrda_divi");
     amd_funcs.erf_vrda = load_amd_symbol<amd_erf_vrda_func_t>(amd_core, "amd_vrda_erf");
     amd_funcs.erfc_vrda = load_amd_symbol<amd_erfc_vrda_func_t>(amd_core, "amd_vrda_erfc");
+    amd_funcs.erfcinv_vrda = load_amd_symbol<amd_erfcinv_vrda_func_t>(amd_core, "amd_vrda_erfcinv");
+    amd_funcs.erfinv_vrda = load_amd_symbol<amd_erfinv_vrda_func_t>(amd_core, "amd_vrda_erfinv");
     amd_funcs.exp_vrda = load_amd_symbol<amd_exp_vrda_func_t>(amd_core, "amd_vrda_exp");
     amd_funcs.exp10_vrda = load_amd_symbol<amd_exp10_vrda_func_t>(amd_core, "amd_vrda_exp10");
     amd_funcs.exp2_vrda = load_amd_symbol<amd_exp2_vrda_func_t>(amd_core, "amd_vrda_exp2");
@@ -1181,18 +1383,27 @@ static void init_amd_symbols(void) {
     amd_funcs.sub_vrda = load_amd_symbol<amd_sub_vrda_func_t>(amd_core, "amd_vrda_sub");
     amd_funcs.subi_vrda = load_amd_symbol<amd_subi_vrda_func_t>(amd_core, "amd_vrda_subi");
     amd_funcs.tan_vrda = load_amd_symbol<amd_tan_vrda_func_t>(amd_core, "amd_vrda_tan");
-
+    amd_funcs.tanh_vrda = load_amd_symbol<amd_tanh_vrda_func_t>(amd_core, "amd_vrda_tanh");
 #ifdef __AVX512F__
     // ============================================================================
     // DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
     // ============================================================================
+    amd_funcs.acos_vrd8 = load_amd_symbol<amd_acos_vrd8_func_t>(amd_core, "amd_vrd8_acos");
     amd_funcs.asin_vrd8 = load_amd_symbol<amd_asin_vrd8_func_t>(amd_core, "amd_vrd8_asin");
     amd_funcs.atan_vrd8 = load_amd_symbol<amd_atan_vrd8_func_t>(amd_core, "amd_vrd8_atan");
+    amd_funcs.atan2_vrd8 = load_amd_symbol<amd_atan2_vrd8_func_t>(amd_core, "amd_vrd8_atan2");
     amd_funcs.cos_vrd8 = load_amd_symbol<amd_cos_vrd8_func_t>(amd_core, "amd_vrd8_cos");
+    amd_funcs.cosh_vrd8 = load_amd_symbol<amd_cosh_vrd8_func_t>(amd_core, "amd_vrd8_cosh");
+    amd_funcs.cdfnorm_vrd8 = load_amd_symbol<amd_cdfnorm_vrd8_func_t>(amd_core, "amd_vrd8_cdfnorm");
+    amd_funcs.cdfnorminv_vrd8 = load_amd_symbol<amd_cdfnorminv_vrd8_func_t>(amd_core, "amd_vrd8_cdfnorminv");
     amd_funcs.erf_vrd8 = load_amd_symbol<amd_erf_vrd8_func_t>(amd_core, "amd_vrd8_erf");
     amd_funcs.erfc_vrd8 = load_amd_symbol<amd_erfc_vrd8_func_t>(amd_core, "amd_vrd8_erfc");
+    amd_funcs.erfcinv_vrd8 = load_amd_symbol<amd_erfcinv_vrd8_func_t>(amd_core, "amd_vrd8_erfcinv");
+    amd_funcs.erfinv_vrd8 = load_amd_symbol<amd_erfinv_vrd8_func_t>(amd_core, "amd_vrd8_erfinv");
+    amd_funcs.tanh_vrd8 = load_amd_symbol<amd_tanh_vrd8_func_t>(amd_core, "amd_vrd8_tanh");
     amd_funcs.exp_vrd8 = load_amd_symbol<amd_exp_vrd8_func_t>(amd_core, "amd_vrd8_exp");
     amd_funcs.exp2_vrd8 = load_amd_symbol<amd_exp2_vrd8_func_t>(amd_core, "amd_vrd8_exp2");
+    amd_funcs.exp10_vrd8 = load_amd_symbol<amd_exp10_vrd8_func_t>(amd_core, "amd_vrd8_exp10");
     amd_funcs.linearfrac_vrd8 = load_amd_symbol<amd_linearfrac_vrd8_func_t>(amd_core, "amd_vrd8_linearfrac");
     amd_funcs.log_vrd8 = load_amd_symbol<amd_log_vrd8_func_t>(amd_core, "amd_vrd8_log");
     amd_funcs.log2_vrd8 = load_amd_symbol<amd_log2_vrd8_func_t>(amd_core, "amd_vrd8_log2");
@@ -1202,7 +1413,6 @@ static void init_amd_symbols(void) {
     amd_funcs.sincos_vrd8 = load_amd_symbol<amd_sincos_vrd8_func_t>(amd_core, "amd_vrd8_sincos");
     amd_funcs.sqrt_vrd8 = load_amd_symbol<amd_sqrt_vrd8_func_t>(amd_core, "amd_vrd8_sqrt");
     amd_funcs.tan_vrd8 = load_amd_symbol<amd_tan_vrd8_func_t>(amd_core, "amd_vrd8_tan");
-
     // ============================================================================
     // SINGLE PRECISION 512-BIT VECTOR (vrs16) VARIANTS
     // ============================================================================
@@ -1210,9 +1420,11 @@ static void init_amd_symbols(void) {
     amd_funcs.asin_vrs16 = load_amd_symbol<amd_asin_vrs16_func_t>(amd_core, "amd_vrs16_asinf");
     amd_funcs.atan_vrs16 = load_amd_symbol<amd_atan_vrs16_func_t>(amd_core, "amd_vrs16_atanf");
     amd_funcs.cos_vrs16 = load_amd_symbol<amd_cos_vrs16_func_t>(amd_core, "amd_vrs16_cosf");
+    amd_funcs.cosh_vrs16 = load_amd_symbol<amd_cosh_vrs16_func_t>(amd_core, "amd_vrs16_coshf");
     amd_funcs.erf_vrs16 = load_amd_symbol<amd_erf_vrs16_func_t>(amd_core, "amd_vrs16_erff");
     amd_funcs.erfc_vrs16 = load_amd_symbol<amd_erfc_vrs16_func_t>(amd_core, "amd_vrs16_erfcf");
     amd_funcs.exp_vrs16 = load_amd_symbol<amd_exp_vrs16_func_t>(amd_core, "amd_vrs16_expf");
+    amd_funcs.exp10_vrs16 = load_amd_symbol<amd_exp10_vrs16_func_t>(amd_core, "amd_vrs16_exp10f");
     amd_funcs.exp2_vrs16 = load_amd_symbol<amd_exp2_vrs16_func_t>(amd_core, "amd_vrs16_exp2f");
     amd_funcs.linearfrac_vrs16 = load_amd_symbol<amd_linearfrac_vrs16_func_t>(amd_core, "amd_vrs16_linearfracf");
     amd_funcs.log_vrs16 = load_amd_symbol<amd_log_vrs16_func_t>(amd_core, "amd_vrs16_logf");
@@ -1411,7 +1623,7 @@ SHIM_EXPORT void shim_llrint_ss(InParams<float, float> *ipp) {
 }
 
 SHIM_EXPORT void shim_llround_ss(InParams<float, float> *ipp) {
-    ipp->op[0] = static_cast<float>(amd_funcs.llroundf(ipp->ip[0]));
+    ipp->iop.ll = amd_funcs.llroundf(ipp->ip[0]);
 }
 
 SHIM_EXPORT void shim_log_ss(InParams<float, float> *ipp) {
@@ -1439,7 +1651,7 @@ SHIM_EXPORT void shim_lrint_ss(InParams<float, float> *ipp) {
 }
 
 SHIM_EXPORT void shim_lround_ss(InParams<float, float> *ipp) {
-    ipp->op[0] = static_cast<float>(amd_funcs.lroundf(ipp->ip[0]));
+    ipp->iop.l = amd_funcs.lroundf(ipp->ip[0]);
 }
 
 SHIM_EXPORT void shim_modf_ss(InParams<float, float> *ipp) {
@@ -1526,6 +1738,18 @@ SHIM_EXPORT void shim_trunc_ss(InParams<float, float> *ipp) {
     ipp->op[0] = amd_funcs.truncf(ipp->ip[0]);
 }
 
+SHIM_EXPORT void shim_clog_sc(InParams<fc32_t, fc32_t> *ipp) {
+    ipp->op[0] = amd_funcs.clogf(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cexp_sc(InParams<fc32_t, fc32_t> *ipp) {
+    ipp->op[0] = amd_funcs.cexpf(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cpow_sc(InParams<fc32_t, fc32_t> *ipp) {
+    ipp->op[0] = amd_funcs.cpowf(ipp->ip[0], ipp->ip[1]);
+}
+
 // ============================================================================
 // DOUBLE PRECISION SCALAR (sd) VARIANTS
 // ============================================================================
@@ -1561,6 +1785,14 @@ SHIM_EXPORT void shim_cbrt_sd(InParams<double, double> *ipp) {
     ipp->op[0] = amd_funcs.cbrt(ipp->ip[0]);
 }
 
+SHIM_EXPORT void shim_cdfnorm_sd(InParams<double, double> *ipp) {
+    ipp->op[0] = amd_funcs.cdfnorm(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cdfnorminv_sd(InParams<double, double> *ipp) {
+    ipp->op[0] = amd_funcs.cdfnorminv(ipp->ip[0]);
+}
+
 SHIM_EXPORT void shim_ceil_sd(InParams<double, double> *ipp) {
     ipp->op[0] = amd_funcs.ceil(ipp->ip[0]);
 }
@@ -1587,6 +1819,14 @@ SHIM_EXPORT void shim_erf_sd(InParams<double, double> *ipp) {
 
 SHIM_EXPORT void shim_erfc_sd(InParams<double, double> *ipp) {
     ipp->op[0] = amd_funcs.erfc(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_erfcinv_sd(InParams<double, double> *ipp) {
+    ipp->op[0] = amd_funcs.erfcinv(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_erfinv_sd(InParams<double, double> *ipp) {
+    ipp->op[0] = amd_funcs.erfinv(ipp->ip[0]);
 }
 
 SHIM_EXPORT void shim_exp_sd(InParams<double, double> *ipp) {
@@ -1660,7 +1900,7 @@ SHIM_EXPORT void shim_llrint_sd(InParams<double, double> *ipp) {
 }
 
 SHIM_EXPORT void shim_llround_sd(InParams<double, double> *ipp) {
-    ipp->op[0] = static_cast<double>(amd_funcs.llround(ipp->ip[0]));
+    ipp->iop.ll = amd_funcs.llround(ipp->ip[0]);
 }
 
 SHIM_EXPORT void shim_log_sd(InParams<double, double> *ipp) {
@@ -1688,7 +1928,7 @@ SHIM_EXPORT void shim_lrint_sd(InParams<double, double> *ipp) {
 }
 
 SHIM_EXPORT void shim_lround_sd(InParams<double, double> *ipp) {
-    ipp->op[0] = static_cast<double>(amd_funcs.lround(ipp->ip[0]));
+    ipp->iop.l = amd_funcs.lround(ipp->ip[0]);
 }
 
 SHIM_EXPORT void shim_modf_sd(InParams<double, double> *ipp) {
@@ -1775,6 +2015,18 @@ SHIM_EXPORT void shim_trunc_sd(InParams<double, double> *ipp) {
     ipp->op[0] = amd_funcs.trunc(ipp->ip[0]);
 }
 
+SHIM_EXPORT void shim_clog_sz(InParams<fc64_t, fc64_t> *ipp) {
+    ipp->op[0] = amd_funcs.clog(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cexp_sz(InParams<fc64_t, fc64_t> *ipp) {
+    ipp->op[0] = amd_funcs.cexp(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cpow_sz(InParams<fc64_t, fc64_t> *ipp) {
+    ipp->op[0] = amd_funcs.cpow(ipp->ip[0], ipp->ip[1]);
+}
+
 // ============================================================================
 // DOUBLE PRECISION 128-BIT VECTOR (vrd2) VARIANTS
 // ============================================================================
@@ -1790,8 +2042,20 @@ SHIM_EXPORT void shim_atan_vrd2(InParams<libm::AlignedM128d, double> *ipp) {
     ipp->op[0].data = amd_funcs.atan_vrd2(ipp->ip[0].data);
 }
 
+SHIM_EXPORT void shim_atan2_vrd2(InParams<libm::AlignedM128d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.atan2_vrd2(ipp->ip[0].data, ipp->ip[1].data);
+}
+
 SHIM_EXPORT void shim_cbrt_vrd2(InParams<libm::AlignedM128d, double> *ipp) {
     ipp->op[0].data = amd_funcs.cbrt_vrd2(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_cdfnorm_vrd2(InParams<libm::AlignedM128d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.cdfnorm_vrd2(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_cdfnorminv_vrd2(InParams<libm::AlignedM128d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.cdfnorminv_vrd2(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_cos_vrd2(InParams<libm::AlignedM128d, double> *ipp) {
@@ -1808,6 +2072,18 @@ SHIM_EXPORT void shim_erf_vrd2(InParams<libm::AlignedM128d, double> *ipp) {
 
 SHIM_EXPORT void shim_erfc_vrd2(InParams<libm::AlignedM128d, double> *ipp) {
     ipp->op[0].data = amd_funcs.erfc_vrd2(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_erfcinv_vrd2(InParams<libm::AlignedM128d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.erfcinv_vrd2(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_erfinv_vrd2(InParams<libm::AlignedM128d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.erfinv_vrd2(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_tanh_vrd2(InParams<libm::AlignedM128d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.tanh_vrd2(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_exp_vrd2(InParams<libm::AlignedM128d, double> *ipp) {
@@ -2000,8 +2276,24 @@ SHIM_EXPORT void shim_atan_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = amd_funcs.atan_vrd4(ipp->ip[0].data);
 }
 
+SHIM_EXPORT void shim_atan2_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.atan2_vrd4(ipp->ip[0].data, ipp->ip[1].data);
+}
+
 SHIM_EXPORT void shim_cos_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = amd_funcs.cos_vrd4(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_cosh_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.cosh_vrd4(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_cdfnorm_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.cdfnorm_vrd4(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_cdfnorminv_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.cdfnorminv_vrd4(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_erf_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
@@ -2012,12 +2304,28 @@ SHIM_EXPORT void shim_erfc_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = amd_funcs.erfc_vrd4(ipp->ip[0].data);
 }
 
+SHIM_EXPORT void shim_erfcinv_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.erfcinv_vrd4(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_erfinv_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.erfinv_vrd4(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_tanh_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.tanh_vrd4(ipp->ip[0].data);
+}
+
 SHIM_EXPORT void shim_exp_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = amd_funcs.exp_vrd4(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_exp2_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = amd_funcs.exp2_vrd4(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_exp10_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.exp10_vrd4(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_fabs_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
@@ -2089,6 +2397,10 @@ SHIM_EXPORT void shim_cosh_vrs8(InParams<libm::AlignedM256, float> *ipp) {
     ipp->op[0].data = amd_funcs.cosh_vrs8(ipp->ip[0].data);
 }
 
+SHIM_EXPORT void shim_cbrt_vrs8(InParams<libm::AlignedM256, float> *ipp) {
+    ipp->op[0].data = amd_funcs.cbrt_vrs8(ipp->ip[0].data);
+}
+
 SHIM_EXPORT void shim_erf_vrs8(InParams<libm::AlignedM256, float> *ipp) {
     ipp->op[0].data = amd_funcs.erf_vrs8(ipp->ip[0].data);
 }
@@ -2157,6 +2469,10 @@ SHIM_EXPORT void shim_tan_vrs8(InParams<libm::AlignedM256, float> *ipp) {
 
 SHIM_EXPORT void shim_tanh_vrs8(InParams<libm::AlignedM256, float> *ipp) {
     ipp->op[0].data = amd_funcs.tanh_vrs8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_exp10_vrs8(InParams<libm::AlignedM256, float> *ipp) {
+    ipp->op[0].data = amd_funcs.exp10_vrs8(ipp->ip[0].data);
 }
 
 // ============================================================================
@@ -2337,6 +2653,14 @@ SHIM_EXPORT void shim_cbrt_vrda(InParams<double, double> *ipp) {
     amd_funcs.cbrt_vrda(ipp->count, ipp->iptr[0], ipp->optr[0]);
 }
 
+SHIM_EXPORT void shim_cdfnorm_vrda(InParams<double, double> *ipp) {
+    amd_funcs.cdfnorm_vrda(ipp->count, ipp->iptr[0], ipp->optr[0]);
+}
+
+SHIM_EXPORT void shim_cdfnorminv_vrda(InParams<double, double> *ipp) {
+    amd_funcs.cdfnorminv_vrda(ipp->count, ipp->iptr[0], ipp->optr[0]);
+}
+
 SHIM_EXPORT void shim_cos_vrda(InParams<double, double> *ipp) {
     amd_funcs.cos_vrda(ipp->count, ipp->iptr[0], ipp->optr[0]);
 }
@@ -2359,6 +2683,14 @@ SHIM_EXPORT void shim_erf_vrda(InParams<double, double> *ipp) {
 
 SHIM_EXPORT void shim_erfc_vrda(InParams<double, double> *ipp) {
     amd_funcs.erfc_vrda(ipp->count, ipp->iptr[0], ipp->optr[0]);
+}
+
+SHIM_EXPORT void shim_erfcinv_vrda(InParams<double, double> *ipp) {
+    amd_funcs.erfcinv_vrda(ipp->count, ipp->iptr[0], ipp->optr[0]);
+}
+
+SHIM_EXPORT void shim_erfinv_vrda(InParams<double, double> *ipp) {
+    amd_funcs.erfinv_vrda(ipp->count, ipp->iptr[0], ipp->optr[0]);
 }
 
 SHIM_EXPORT void shim_exp_vrda(InParams<double, double> *ipp) {
@@ -2457,10 +2789,18 @@ SHIM_EXPORT void shim_tan_vrda(InParams<double, double> *ipp) {
     amd_funcs.tan_vrda(ipp->count, ipp->iptr[0], ipp->optr[0]);
 }
 
+SHIM_EXPORT void shim_tanh_vrda(InParams<double, double> *ipp) {
+    amd_funcs.tanh_vrda(ipp->count, ipp->iptr[0], ipp->optr[0]);
+}
+
 #ifdef __AVX512F__
 // ============================================================================
 // DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
 // ============================================================================
+SHIM_EXPORT void shim_acos_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.acos_vrd8(ipp->ip[0].data);
+}
+
 SHIM_EXPORT void shim_asin_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
     ipp->op[0].data = amd_funcs.asin_vrd8(ipp->ip[0].data);
 }
@@ -2469,8 +2809,24 @@ SHIM_EXPORT void shim_atan_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
     ipp->op[0].data = amd_funcs.atan_vrd8(ipp->ip[0].data);
 }
 
+SHIM_EXPORT void shim_atan2_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.atan2_vrd8(ipp->ip[0].data, ipp->ip[1].data);
+}
+
 SHIM_EXPORT void shim_cos_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
     ipp->op[0].data = amd_funcs.cos_vrd8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_cosh_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.cosh_vrd8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_cdfnorm_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.cdfnorm_vrd8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_cdfnorminv_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.cdfnorminv_vrd8(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_erf_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
@@ -2481,12 +2837,28 @@ SHIM_EXPORT void shim_erfc_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
     ipp->op[0].data = amd_funcs.erfc_vrd8(ipp->ip[0].data);
 }
 
+SHIM_EXPORT void shim_erfcinv_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.erfcinv_vrd8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_erfinv_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.erfinv_vrd8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_tanh_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.tanh_vrd8(ipp->ip[0].data);
+}
+
 SHIM_EXPORT void shim_exp_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
     ipp->op[0].data = amd_funcs.exp_vrd8(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_exp2_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
     ipp->op[0].data = amd_funcs.exp2_vrd8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_exp10_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = amd_funcs.exp10_vrd8(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_linearfrac_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
@@ -2550,6 +2922,10 @@ SHIM_EXPORT void shim_cos_vrs16(InParams<libm::AlignedM512, float> *ipp) {
     ipp->op[0].data = amd_funcs.cos_vrs16(ipp->ip[0].data);
 }
 
+SHIM_EXPORT void shim_cosh_vrs16(InParams<libm::AlignedM512, float> *ipp) {
+    ipp->op[0].data = amd_funcs.cosh_vrs16(ipp->ip[0].data);
+}
+
 SHIM_EXPORT void shim_erf_vrs16(InParams<libm::AlignedM512, float> *ipp) {
     ipp->op[0].data = amd_funcs.erf_vrs16(ipp->ip[0].data);
 }
@@ -2560,6 +2936,10 @@ SHIM_EXPORT void shim_erfc_vrs16(InParams<libm::AlignedM512, float> *ipp) {
 
 SHIM_EXPORT void shim_exp_vrs16(InParams<libm::AlignedM512, float> *ipp) {
     ipp->op[0].data = amd_funcs.exp_vrs16(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_exp10_vrs16(InParams<libm::AlignedM512, float> *ipp) {
+    ipp->op[0].data = amd_funcs.exp10_vrs16(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_exp2_vrs16(InParams<libm::AlignedM512, float> *ipp) {

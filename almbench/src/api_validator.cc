@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -35,12 +35,18 @@
 #include "api_template.h"
 #include "alm_mp_funcs.h"
 #include "ulp.h"
+#include "console_report.h"
+#include "yaml_batch_writer.h"
 
 using namespace std;
 
 /*Ensure the output directory exists and set the output file name based on test mode*/
 template <typename S>
 void check_outfile_dir(struct YamlOutputs<S> *yop) {
+    if (!is_verbose_mode_enabled()) {
+        return;
+    }
+
     /* * Ensure the output directory exists.
      * If the directory does not exist, create it.
      */
@@ -63,11 +69,11 @@ void check_outfile_dir(struct YamlOutputs<S> *yop) {
      * If utflag is true, use "ut" prefix; otherwise, use "acc" or "perf" based on test_mode.
      */
     std::string outfile = "";
-    if (yop->utflag) {
+    if (yop->config.utflag) {
         outfile  = yop->vendor + "_conf_" + yop->api_name + "_" + yop->variant;
-    } else if (yop->test_mode == TestMode::E_ACCURACY) {
+    } else if (yop->config.test_mode == TestMode::E_ACCURACY) {
         outfile  = yop->vendor + "_accu_" + yop->api_name + "_" + yop->variant;
-    } else if (yop->test_mode == TestMode::E_PERFORMANCE) {
+    } else if (yop->config.test_mode == TestMode::E_PERFORMANCE) {
         outfile  = yop->vendor + "_perf_" + yop->api_name + "_" + yop->variant;
     } else {
         outfile  = yop->vendor + "_" + yop->api_name + "_" + yop->variant;
@@ -91,7 +97,7 @@ void header_metadata(const struct InParams<T, S> *ipp,
     metadata->variant = yop->variant;
     metadata->test_type = yop->test_type;
     metadata->range = ipp->input_range;
-    metadata->threshold = yop->ulp_threshold;
+    metadata->threshold = yop->config.ulp_threshold;
 }
 
 /*
@@ -107,6 +113,7 @@ string api_prototype_to_string(ApiTypes type)
     case API_PROTOTYPE_04: return "API_PROTOTYPE_04";
     case API_PROTOTYPE_05: return "API_PROTOTYPE_05";
     case API_PROTOTYPE_06: return "API_PROTOTYPE_06";
+    case API_PROTOTYPE_07: return "API_PROTOTYPE_07";
     default: return "Unknown";
     }
 }
@@ -118,24 +125,28 @@ string api_prototype_to_string(ApiTypes type)
  */
 static const map<string, vector<string>> api_table_amd = {
     // { function_name, { supported_variants } }
-    {"acos",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrsa", "vrda"}},
+    {"acos",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
     {"acosh",     {"sd", "ss"}},
     {"add",       {"vrsa", "vrda"}},
     {"asin",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
     {"asinh",     {"sd", "ss"}},
     {"atan",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
-    {"atan2",     {"sd", "ss"}},
+    {"atan2",     {"sd", "ss", "vrd2", "vrd4", "vrd8"}},
     {"atanh",     {"sd", "ss"}},
-    {"cbrt",      {"sd", "ss", "vrs4", "vrd2", "vrsa", "vrda"}},
+    {"cbrt",      {"sd", "ss", "vrs4", "vrs8", "vrd2", "vrsa", "vrda"}},
+    {"cdfnorm",   {"sd", "vrd2", "vrd4", "vrd8", "vrda"}},
+    {"cdfnorminv",{"sd", "vrd2", "vrd4", "vrd8", "vrda"}},
     {"ceil",      {"sd", "ss"}},
-    {"cexp",      {"sd", "ss"}},
+    {"cexp",      {"sc", "sz"}},
     {"copysign",  {"sd", "ss"}},
     {"cos",       {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
-    {"cosh",      {"sd", "ss", "vrs4", "vrs8", "vrd2", "vrsa", "vrda"}},
+    {"cosh",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
     {"erf",       {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
     {"erfc",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
+    {"erfcinv",   {"sd", "vrd2", "vrd4", "vrd8", "vrda"}},
+    {"erfinv",    {"sd", "vrd2", "vrd4", "vrd8", "vrda"}},
     {"exp",       {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
-    {"exp10",     {"sd", "ss", "vrs4", "vrd2", "vrsa", "vrda"}},
+    {"exp10",     {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
     {"exp2",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
     {"expm1",     {"sd", "ss", "vrs4", "vrsa", "vrda"}},
     {"fabs",      {"sd", "ss", "vrs4", "vrs8", "vrd2", "vrd4", "vrsa", "vrda"}},
@@ -152,6 +163,8 @@ static const map<string, vector<string>> api_table_amd = {
     {"log10",     {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrsa", "vrda"}},
     {"log2",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
     {"logb",      {"sd", "ss"}},
+    {"lround",    {"sd", "ss"}},
+    {"llround",   {"sd", "ss"}},
     {"mul",       {"vrsa", "vrda"}},
     {"nextafter", {"sd", "ss"}},
     {"nearbyint", {"sd", "ss"}},
@@ -166,8 +179,10 @@ static const map<string, vector<string>> api_table_amd = {
     {"sub",       {"vrsa", "vrda"}},
     {"sqrt",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
     {"tan",       {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
-    {"tanh",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrsa"}},
+    {"tanh",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8", "vrsa", "vrda"}},
     {"trunc",     {"sd", "ss"}},
+    {"clog",      {"sc", "sz"}},
+    {"cpow",      {"sc", "sz"}},
 };
 
 static const map<string, vector<string>> api_table_glibc = {
@@ -177,7 +192,7 @@ static const map<string, vector<string>> api_table_glibc = {
     // { function_name, { supported_variants } }
 #if GLIBC_VERSION_CHECK(2,35)
     // All functions with full vector support in 2.42+
-    {"acos",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4"}},
+    {"acos",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8"}},
     {"acosh",     {"sd", "ss"}},
     {"add",       {}},
     {"asin",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8"}},
@@ -185,16 +200,16 @@ static const map<string, vector<string>> api_table_glibc = {
     {"atan",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8"}},
     {"atan2",     {"sd", "ss"}},
     {"atanh",     {"sd", "ss"}},
-    {"cbrt",      {"sd", "ss", "vrs4", "vrd2"}},
+    {"cbrt",      {"sd", "ss", "vrs4", "vrs8", "vrd2"}},
     {"ceil",      {"sd", "ss"}},
-    {"cexp",      {"sd", "ss"}},
+    {"cexp",      {"sc", "sz"}},
     {"copysign",  {"sd", "ss"}},
     {"cos",       {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8"}},
-    {"cosh",      {"sd", "ss", "vrs4", "vrs8", "vrd2"}},
+    {"cosh",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8"}},
     {"erf",       {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8"}},
     {"erfc",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8"}},
     {"exp",       {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8"}},
-    {"exp10",     {"sd", "ss", "vrs4", "vrd2"}},
+    {"exp10",     {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8"}},
     {"exp2",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8"}},
     {"expm1",     {"sd", "ss", "vrs4"}},
     {"fabs",      {"sd", "ss"}},
@@ -211,6 +226,8 @@ static const map<string, vector<string>> api_table_glibc = {
     {"log10",     {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2"}},
     {"log2",      {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8"}},
     {"logb",      {"sd", "ss"}},
+    {"lround",    {"sd", "ss"}},
+    {"llround",   {"sd", "ss"}},
     {"mul",       {}},
     {"nextafter", {"sd", "ss"}},
     {"nearbyint", {"sd", "ss"}},
@@ -227,6 +244,8 @@ static const map<string, vector<string>> api_table_glibc = {
     {"tan",       {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8"}},
     {"tanh",      {"sd", "ss", "vrs4", "vrs8", "vrs16"}},
     {"trunc",     {"sd", "ss"}},
+    {"clog",      {"sc", "sz"}},
+    {"cpow",      {"sc", "sz"}},
 
 #elif GLIBC_VERSION_CHECK(2,22)
     // Basic vector support functions (available in 2.22+)
@@ -240,7 +259,7 @@ static const map<string, vector<string>> api_table_glibc = {
     {"atanh",     {"sd", "ss"}},
     {"cbrt",      {"sd", "ss"}},
     {"ceil",      {"sd", "ss"}},
-    {"cexp",      {"sd", "ss"}},
+    {"cexp",      {"sc", "sz"}},
     {"copysign",  {"sd", "ss"}},
     {"cos",       {"sd", "ss", "vrs4", "vrs8", "vrs16", "vrd2", "vrd4", "vrd8"}},
     {"cosh",      {"sd", "ss"}},
@@ -264,6 +283,8 @@ static const map<string, vector<string>> api_table_glibc = {
     {"log10",     {"sd", "ss"}},
     {"log2",      {"sd", "ss"}},
     {"logb",      {"sd", "ss"}},
+    {"lround",    {"sd", "ss"}},
+    {"llround",   {"sd", "ss"}},
     {"mul",       {"sd", "ss"}},
     {"nextafter", {"sd", "ss"}},
     {"nearbyint", {"sd", "ss"}},
@@ -280,6 +301,8 @@ static const map<string, vector<string>> api_table_glibc = {
     {"tan",       {"sd", "ss"}},
     {"tanh",      {"sd", "ss"}},
     {"trunc",     {"sd", "ss"}},
+    {"clog",      {"sc", "sz"}},
+    {"cpow",      {"sc", "sz"}},
 
 #else
     // Minimal scalar-only support for older GLIBC versions
@@ -293,7 +316,7 @@ static const map<string, vector<string>> api_table_glibc = {
     {"atanh",     {"sd", "ss"}},
     {"cbrt",      {"sd", "ss"}},
     {"ceil",      {"sd", "ss"}},
-    {"cexp",      {"sd", "ss"}},
+    {"cexp",      {"sc", "sz"}},
     {"copysign",  {"sd", "ss"}},
     {"cos",       {"sd", "ss"}},
     {"cosh",      {"sd", "ss"}},
@@ -317,6 +340,8 @@ static const map<string, vector<string>> api_table_glibc = {
     {"log2",      {"sd", "ss"}},
     {"log10",     {"sd", "ss"}},
     {"logb",      {"sd", "ss"}},
+    {"lround",    {"sd", "ss"}},
+    {"llround",   {"sd", "ss"}},
     {"mul",       {"sd", "ss"}},
     {"nextafter", {"sd", "ss"}},
     {"nearbyint", {"sd", "ss"}},
@@ -333,6 +358,8 @@ static const map<string, vector<string>> api_table_glibc = {
     {"tan",       {"sd", "ss"}},
     {"tanh",      {"sd", "ss"}},
     {"trunc",     {"sd", "ss"}},
+    {"clog",      {"sc", "sz"}},
+    {"cpow",      {"sc", "sz"}},
 
 #endif
 };
@@ -348,13 +375,15 @@ const map<ApiTypes, vector<string>> libm_api_names = {
                         "log", "log1p", "log2", "log10",
                         "logb", "cbrt", "ceil", "sqrt", "fabs",
                         "erf", "floor", "nearbyint",
-                        "rint", "round", "trunc"}},
-    {API_PROTOTYPE_02, {"add", "sub", "mul", "pow", "fmax", "fmin", "fdim", "fmod",
-                        "remainder", "atan2", "hypot", "copysign", "nextafter", "ldexp"}},
+                        "rint", "round", "trunc", "clog", "cexp",
+                        "cdfnorm", "cdfnorminv", "erfcinv", "erfinv"}},
+    {API_PROTOTYPE_02, {"add", "sub", "mul", "pow", "cpow", "fmax", "fmin", "fdim", "fmod",
+                        "remainder", "atan2", "hypot", "copysign", "nextafter"}},
     {API_PROTOTYPE_03, {"powx"}},
     {API_PROTOTYPE_04, {"sincos"}},
     {API_PROTOTYPE_05, {"linearfrac"}},
-    {API_PROTOTYPE_06, {"ldexp"}}
+    {API_PROTOTYPE_06, {"ldexp"}},
+    {API_PROTOTYPE_07, {"lround", "llround"}}
 };
 
 /*
@@ -445,6 +474,16 @@ string deduce_shimapi(const string &apitype, string &variant)
  */
 string deduce_refapi(const string &apiname, string &variant)
 {
+    /* Scalar complex (mparith alm_mpc_*), same naming as cexp.c / clog.c / cpow.c */
+    if (apiname == "clog" || apiname == "cexp" || apiname == "cpow") {
+        if (variant == "sc") {
+            return std::string("alm_mpc_") + apiname + "f";
+        }
+        if (variant == "sz") {
+            return std::string("alm_mpc_") + apiname;
+        }
+    }
+
     string ref_api = apiname;
     if (apiname == "powx") {
          ref_api = "pow";
@@ -480,38 +519,167 @@ int validate_api(struct AlmLibs *alibs,
         return -1;
     }
 
-    yop->is_vra = is_vrarr(yop->variant);
+    yop->config.is_vra = is_vrarr(yop->variant);
 
     string shimapi = deduce_shimapi(yop->api_name, yop->variant);
     string refapi = deduce_refapi(yop->api_name, yop->variant);
 
     check_outfile_dir(yop);
-    set_global_ulp_threshold(yop->ulp_threshold);
+    SetGlobalUlpThreshold(yop->config.ulp_threshold);
+
+    YamlBatchWriter<U> writer(yop->outfile);
+    writer.emit_yaml_file = is_verbose_mode_enabled();
+
+    if (ipp->multi_range.has_value() &&
+        api_type != API_PROTOTYPE_01 && api_type != API_PROTOTYPE_02) {
+        std::cerr << "multi_range is only supported for api_prototype_01 and "
+                     "api_prototype_02; skipping test '"
+                  << yop->api_name << "'.\n";
+        return -1;
+    }
 
     switch (api_type) {
         case API_PROTOTYPE_01:
-            api_prototype_01<T, U>(alibs, ipp, shimapi, refapi, yop);
+            api_prototype_01<T, U>(alibs, ipp, shimapi, refapi, yop, &writer);
             break;
         case API_PROTOTYPE_02:
-            api_prototype_02<T, U>(alibs, ipp, shimapi, refapi, yop);
+            api_prototype_02<T, U>(alibs, ipp, shimapi, refapi, yop, &writer);
             break;
         case API_PROTOTYPE_03:
-            api_prototype_03<T, U>(alibs, ipp, shimapi, refapi, yop);
+            api_prototype_03<T, U>(alibs, ipp, shimapi, refapi, yop, &writer);
             break;
         case API_PROTOTYPE_04:
-            api_prototype_04<T, U>(alibs, ipp, shimapi, refapi, yop);
+            api_prototype_04<T, U>(alibs, ipp, shimapi, refapi, yop, &writer);
             break;
         case API_PROTOTYPE_05:
-            api_prototype_05<T, U>(alibs, ipp, shimapi, refapi, yop);
+            api_prototype_05<T, U>(alibs, ipp, shimapi, refapi, yop, &writer);
             break;
         case API_PROTOTYPE_06:
-            api_prototype_06<T, U>(alibs, ipp, shimapi, refapi, yop);
+            api_prototype_06<T, U>(alibs, ipp, shimapi, refapi, yop, &writer);
+            break;
+        case API_PROTOTYPE_07:
+            api_prototype_07<T, U>(alibs, ipp, shimapi, refapi, yop, &writer);
             break;
         default:
             cerr << "Unknown API type." << endl;
             return -1;
     }
 
+    /* Conformance (utflag): per-case rows already reported in unit_test(). */
+    if (!yop->config.utflag) {
+        auto &s = writer.stats();
+        if (yop->config.test_mode == TestMode::E_PERFORMANCE) {
+            report_perf_results<U>(yop, s.min_duration, yop->n[0],
+                                   s.udata, s.total_tests, s.fail_count);
+        } else {
+            report_accuracy_results<U>(yop, s.udata, s.total_tests, s.fail_count);
+        }
+    }
+
+    return 0;
+}
+
+/*
+ * Full specializations for C complex scalars (fc32_t / fc64_t):
+ * Instantiating the primary validate_api<> would pull in api_prototype_02…06,
+ * whose implementations assume real floating-point types.  Complex APIs
+ * (clog, cexp, …) use API_PROTOTYPE_01; two-argument complex (cpow) uses API_PROTOTYPE_02.
+ */
+template <>
+int validate_api<fc32_t, fc32_t>(struct AlmLibs *alibs,
+                                 struct InParams<fc32_t, fc32_t> *ipp,
+                                 struct YamlOutputs<fc32_t> *yop)
+{
+    ApiTypes api_type = check_api_type(yop->api_name, yop->variant);
+    if (!check_api(yop->api_name, yop->variant, yop->vendor)) {
+        return -1;
+    }
+
+    yop->config.is_vra = is_vrarr(yop->variant);
+
+    string shimapi = deduce_shimapi(yop->api_name, yop->variant);
+    string refapi = deduce_refapi(yop->api_name, yop->variant);
+
+    check_outfile_dir(yop);
+    SetGlobalUlpThreshold(yop->config.ulp_threshold);
+
+    YamlBatchWriter<fc32_t> writer(yop->outfile);
+    writer.emit_yaml_file = is_verbose_mode_enabled();
+
+    if (yop->api_name == "cpow") {
+        if (api_type == API_PROTOTYPE_02) {
+            api_prototype_02<fc32_t, fc32_t>(alibs, ipp, shimapi, refapi, yop, &writer);
+        } else {
+            cerr << "cpow requires API_PROTOTYPE_02 (got "
+                 << api_prototype_to_string(api_type) << ")." << endl;
+            return -1;
+        }
+    } else if (api_type == API_PROTOTYPE_01) {
+        api_prototype_01<fc32_t, fc32_t>(alibs, ipp, shimapi, refapi, yop, &writer);
+    } else {
+        cerr << "Complex scalar APIs only support API_PROTOTYPE_01 (got "
+             << api_prototype_to_string(api_type) << ")." << endl;
+        return -1;
+    }
+
+    if (!yop->config.utflag) {
+        auto &s = writer.stats();
+        if (yop->config.test_mode == TestMode::E_PERFORMANCE) {
+            report_perf_results<fc32_t>(yop, s.min_duration, 1,
+                                        s.udata, s.total_tests, s.fail_count);
+        } else {
+            report_accuracy_results<fc32_t>(yop, s.udata, s.total_tests, s.fail_count);
+        }
+    }
+    return 0;
+}
+
+template <>
+int validate_api<fc64_t, fc64_t>(struct AlmLibs *alibs,
+                                 struct InParams<fc64_t, fc64_t> *ipp,
+                                 struct YamlOutputs<fc64_t> *yop)
+{
+    ApiTypes api_type = check_api_type(yop->api_name, yop->variant);
+    if (!check_api(yop->api_name, yop->variant, yop->vendor)) {
+        return -1;
+    }
+
+    yop->config.is_vra = is_vrarr(yop->variant);
+
+    string shimapi = deduce_shimapi(yop->api_name, yop->variant);
+    string refapi = deduce_refapi(yop->api_name, yop->variant);
+
+    check_outfile_dir(yop);
+    SetGlobalUlpThreshold(yop->config.ulp_threshold);
+
+    YamlBatchWriter<fc64_t> writer(yop->outfile);
+    writer.emit_yaml_file = is_verbose_mode_enabled();
+
+    if (yop->api_name == "cpow") {
+        if (api_type == API_PROTOTYPE_02) {
+            api_prototype_02<fc64_t, fc64_t>(alibs, ipp, shimapi, refapi, yop, &writer);
+        } else {
+            cerr << "cpow requires API_PROTOTYPE_02 (got "
+                 << api_prototype_to_string(api_type) << ")." << endl;
+            return -1;
+        }
+    } else if (api_type == API_PROTOTYPE_01) {
+        api_prototype_01<fc64_t, fc64_t>(alibs, ipp, shimapi, refapi, yop, &writer);
+    } else {
+        cerr << "Complex scalar APIs only support API_PROTOTYPE_01 (got "
+             << api_prototype_to_string(api_type) << ")." << endl;
+        return -1;
+    }
+
+    if (!yop->config.utflag) {
+        auto &s = writer.stats();
+        if (yop->config.test_mode == TestMode::E_PERFORMANCE) {
+            report_perf_results<fc64_t>(yop, s.min_duration, 1,
+                                        s.udata, s.total_tests, s.fail_count);
+        } else {
+            report_accuracy_results<fc64_t>(yop, s.udata, s.total_tests, s.fail_count);
+        }
+    }
     return 0;
 }
 

@@ -1,0 +1,223 @@
+---
+- test_sequence: validation_tests_cpow
+  function: cpow
+  test_sets:
+  - id: cpow_range-tests_01
+    tests:
+#Single Precision
+    - id: cpow_001
+      description: 'Base: full value distribution range tests: [+SMALLEST_SUBNORMAL, DBL-MAX] expstep; Exponent: normal value; REQ-ML-7500'
+      input:
+      - ["min_subnormal+ i min_subnormal", "max+ i max"]
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      type: [expstep, linearstep]
+      steps: [100, 4]
+      variants: [sc]
+
+    - id: cpow_002
+      description: 'Base: full value distribution range tests: [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep; Exponent: normal value; REQ-ML-7500'
+      input:
+      - ["-max+ i -max", "-min_subnormal+ i -min_subnormal"]
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      type: [expstep, linearstep]
+      steps: [100, 4]
+      variants: [sc]
+
+    - id: cpow_003
+      description: 'Base: normal value; Exponent: full value distribution range tests: [+SMALLEST_SUBNORMAL, DBL-MAX] expstep; REQ-ML-7500'
+      input:
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      - ["min_subnormal+ i min_subnormal", "max+ i max"]
+      type: [linearstep, expstep]
+      steps: [4, 100]
+      variants: [sc]
+
+    - id: cpow_004
+      description: 'Base: normal value; Exponent: full value distribution range tests: [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep; REQ-ML-7500'
+      input:
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      - ["-max+ i -max", "-min_subnormal+ i -min_subnormal"]
+      type: [linearstep, expstep]
+      steps: [4, 100]
+      variants: [sc]
+
+    - id: cpow_005
+      description: 'Base: subnormal values range tests: [0, LARGEST_SUBNORMAL] linearstep; Exponent: normal value; REQ-ML-7500'
+      input:
+      - ["0.0+ i 0.0", "max_subnormal+ i max_subnormal"]
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      type: [linearstep, linearstep]
+      steps: [100, 4]
+      variants: [sc]
+
+    - id: cpow_006
+      description: 'Base: normal value; Exponent: subnormal values range tests: [0, LARGEST_SUBNORMAL] linearstep; REQ-ML-7500'
+      input:
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      - ["0.0+ i 0.0", "max_subnormal+ i max_subnormal"]
+      type: [linearstep, linearstep]
+      steps: [4, 100]
+      variants: [sc]
+
+    - id: cpow_007
+      description: 'Base: around 0; Exponent: normal value REQ-ML-7500'
+      input:
+      - ["0.0+ i 0.0", "0x00000032+ i 0x00000032"]
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      type: [bitstep, linearstep]
+      steps: [1, 4]
+      variants: [sc]
+
+    - id: cpow_008
+      description: 'Base: normal value; Exponent: around 0; REQ-ML-7500'
+      input:
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      - ["0.0+ i 0.0", "0x00000032+ i 0x00000032"]
+      type: [linearstep, bitstep]
+      steps: [4, 1]
+      variants: [sc]
+
+    - id: cpow_009
+      description: 'Base: around LARGEST_SUBNORMAL; Exponent: normal value; REQ-ML-7500'
+      input:
+      - ["0x007FFFCE+ i 0x007FFFCE", "0x00800032+ i 0x00800032"]
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      type: [bitstep, linearstep]
+      steps: [1, 4]
+      variants: [sc]
+
+    - id: cpow_010
+      description: 'Base: normal value; Exponent: around LARGEST_SUBNORMAL; REQ-ML-7500'
+      input:
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      - ["0x007FFFCE+ i 0x007FFFCE", "0x00800032+ i 0x00800032"]
+      type: [linearstep, bitstep]
+      steps: [4, 1]
+      variants: [sc]
+
+    - id: cpow_011
+      description: 'Base: Test around 1, Exponent: normal value REQ-ML-7500'
+      input:
+      - ["0x3F7FFFCE+ i 0x3F7FFFCE", "0x3F800032+ i 0x3F800032"]
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      type: [bitstep, linearstep]
+      steps: [1, 4]
+      variants: [sc]
+
+    - id: cpow_012
+      description: 'Base: Test around 1, Exponent: normal value REQ-ML-7500'
+      input:
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      - ["0x3F7FFFCE+ i 0x3F7FFFCE", "0x3F800032+ i 0x3F800032"]
+      type: [linearstep, bitstep]
+      steps: [4, 1]
+      variants: [sc]
+
+#Double precision
+    - id: cpow_001
+      description: 'Base: full value distribution range tests: [+SMALLEST_SUBNORMAL, DBL-MAX] expstep; Exponent: normal value; REQ-ML-7500'
+      input:
+      - ["min_subnormal+ i min_subnormal", "max+ i max"]
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      type: [expstep, linearstep]
+      steps: [100, 4]
+      variants: [sz]
+
+    - id: cpow_002
+      description: 'Base: full value distribution range tests: [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep; Exponent: normal value; REQ-ML-7500'
+      input:
+      - ["-max+ i -max", "-min_subnormal+ i -min_subnormal"]
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      type: [expstep, linearstep]
+      steps: [100, 4]
+      variants: [sz]
+
+    - id: cpow_003
+      description: 'Base: normal value; Exponent: full value distribution range tests: [+SMALLEST_SUBNORMAL, DBL-MAX] expstep; REQ-ML-7500'
+      input:
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      - ["min_subnormal+ i min_subnormal", "max+ i max"]
+      type: [linearstep, expstep]
+      steps: [4, 100]
+      variants: [sz]
+
+    - id: cpow_004
+      description: 'Base: normal value; Exponent: full value distribution range tests: [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep; REQ-ML-7500'
+      input:
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      - ["-max+ i -max", "-min_subnormal+ i -min_subnormal"]
+      type: [linearstep, expstep]
+      steps: [4, 100]
+      variants: [sz]
+
+    - id: cpow_005
+      description: 'Base: subnormal values range tests: [0, LARGEST_SUBNORMAL] linearstep; Exponent: normal value; REQ-ML-7500'
+      input:
+      - ["0.0+ i 0.0", "0x000FFFFFFFFFFFFF+ i 0x000FFFFFFFFFFFFF"]
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      type: [linearstep, linearstep]
+      steps: [100, 4]
+      variants: [sz]
+
+    - id: cpow_006
+      description: 'Base: normal value; Exponent: subnormal values range tests: [0, LARGEST_SUBNORMAL] linearstep; REQ-ML-7500'
+      input:
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      - ["0.0+ i 0.0", "0x000FFFFFFFFFFFFF+ i 0x000FFFFFFFFFFFFF"]
+      type: [linearstep, linearstep]
+      steps: [4, 100]
+      variants: [sz]
+
+    - id: cpow_007
+      description: 'Base: around 0; Exponent: normal value REQ-ML-7500'
+      input:
+      - ["0.0+ i 0.0", "0x0000000000000032+ i 0x0000000000000032"]
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      type: [bitstep, linearstep]
+      steps: [1, 4]
+      variants: [sz]
+
+    - id: cpow_008
+      description: 'Base: normal value; Exponent: around 0; REQ-ML-7500'
+      input:
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      - ["0.0+ i 0.0", "0x0000000000000032+ i 0x0000000000000032"]
+      type: [linearstep, bitstep]
+      steps: [4, 1]
+      variants: [sz]
+
+    - id: cpow_009
+      description: 'Base: around LARGEST_SUBNORMAL; Exponent: normal value; REQ-ML-7500'
+      input:
+      - ["0x000FFFFFFFFFFFCE+ i 0x000FFFFFFFFFFFCE", "0x0010000000000032+ i 0x0010000000000032"]
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      type: [bitstep, linearstep]
+      steps: [1, 4]
+      variants: [sz]
+
+    - id: cpow_010
+      description: 'Base: normal value; Exponent: around LARGEST_SUBNORMAL; REQ-ML-7500'
+      input:
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      - ["0x000FFFFFFFFFFFCE+ i 0x000FFFFFFFFFFFCE", "0x0010000000000032+ i 0x0010000000000032"]
+      type: [linearstep, bitstep]
+      steps: [4, 1]
+      variants: [sz]
+
+    - id: cpow_011
+      description: 'Base: Test around 1, Exponent: normal value REQ-ML-7500'
+      input:
+      - ["0x3FEFFFFFFFFFFFCE+ i 0x3FEFFFFFFFFFFFCE", "0x3FF0000000000032+ i 0x3FF0000000000032"]
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      type: [bitstep, linearstep]
+      steps: [1, 4]
+      variants: [sz]
+
+    - id: cpow_012
+      description: 'Base: Test around 1, Exponent: normal value REQ-ML-7500'
+      input:
+      - ["-2000.0+ i -2000.0", "2000.0+ i 2000.0"]
+      - ["0x3FEFFFFFFFFFFFCE+ i 0x3FEFFFFFFFFFFFCE", "0x3FF0000000000032+ i 0x3FF0000000000032"]
+      type: [linearstep, bitstep]
+      steps: [4, 1]
+      variants: [sz]

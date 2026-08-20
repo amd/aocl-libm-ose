@@ -57,45 +57,44 @@ static int mpfr_erfinv(mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
     return 0;
   }
 
-  mpfr_t one, neg_one, zero;
+  mpfr_t one, neg_one;
   mpfr_init2(one, mpfr_get_prec(x));
   mpfr_init2(neg_one, mpfr_get_prec(x));
-  mpfr_init2(zero, mpfr_get_prec(x));
   mpfr_set_d(one, 1.0, MPFR_RNDN);
   mpfr_set_d(neg_one, -1.0, MPFR_RNDN);
-  mpfr_set_d(zero, 0.0, MPFR_RNDN);
 
   /* Check domain: x must be in (-1, 1)
    * erfinv(0) = 0
    */
   if (mpfr_zero_p(x)) {
-    mpfr_set_d(y, 0.0, MPFR_RNDN);
-    mpfr_clear(one); mpfr_clear(neg_one); mpfr_clear(zero);
+    /* erfinv(±0) = ±0; do not use mpfr_set_d(..., 0.0) — it drops the sign of -0 */
+    mpfr_set(y, x, rnd);
+    mpfr_clear(one); mpfr_clear(neg_one);
     return 0;
   }
 
   /* erfinv(1) = +inf */
   if (mpfr_cmp(x, one) == 0) {
     mpfr_set_inf(y, 1);  /* +infinity */
-    mpfr_clear(one); mpfr_clear(neg_one); mpfr_clear(zero);
+    mpfr_clear(one); mpfr_clear(neg_one);
     return 0;
   }
 
   /* erfinv(-1) = -inf */
   if (mpfr_cmp(x, neg_one) == 0) {
     mpfr_set_inf(y, -1);  /* -infinity */
-    mpfr_clear(one); mpfr_clear(neg_one); mpfr_clear(zero);
+    mpfr_clear(one); mpfr_clear(neg_one);
     return 0;
   }
 
   /* erfinv(|x| > 1) = NaN  with invalid exception */
   if (mpfr_cmp(x, one) > 0 || mpfr_cmp(x, neg_one) < 0) {
     mpfr_set_nan(y);  /* +NaN  (default) */
-    mpfr_clear(one); mpfr_clear(neg_one); mpfr_clear(zero);
+    mpfr_clear(one); mpfr_clear(neg_one);
     return -1;  /* Domain error */
   }
 
-  mpfr_clear(one); mpfr_clear(neg_one); mpfr_clear(zero);
+  mpfr_clear(one); mpfr_clear(neg_one);
 
   /* Working precision: use at least the precision of y, or 256 bits minimum */
   mpfr_prec_t PREC = mpfr_get_prec(y);

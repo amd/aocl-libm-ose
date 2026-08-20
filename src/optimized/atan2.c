@@ -75,6 +75,7 @@
 #include <libm/compiler.h>
 #include "libm_inlines_amd.h"
 
+#define ATAN2_JBY256
 #include "atan2_data.h"
 static struct {
     double pi, piby2, piby4, three_piby4;

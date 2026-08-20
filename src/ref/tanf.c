@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -60,8 +60,8 @@ static inline double tanf_piby4(double x, int recip)
 
 float ALM_PROTO_REF(tanf)(float x)
 {
-  double r, dx;
-  int region, xneg;
+  double r = 0.0, dx;
+  int region = 0, xneg;
   unsigned int fux;
   unsigned long long ux, ax;
   GET_BITS_SP32(x, fux);

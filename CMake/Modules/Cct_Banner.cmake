@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -51,7 +51,7 @@ function(cct_display_banner)
     message("Check AVX-512:")
     message(" - Enabled? :              \"${${PROJECT_PREFIX}_LIBM_ENABLE_AVX512}\"")
     message("LibM-Testsuite settings:")
-    message(" - Enabled? :              \"${${PROJECT_PREFIX}_ENABLE_LIBM_TESTSUITE}\"")
+    message(" - Enabled? :              \"${${PROJECT_PREFIX}_LIBM_BUILD_TESTSUITE}\"")
     message("Address Sanatizer Settings:")
     message(" - Enabled? :              \"${${PROJECT_PREFIX}_LIBM_ENABLE_ASAN}\"")
     message("Code Coverage Settings:")

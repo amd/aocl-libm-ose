@@ -157,6 +157,24 @@ class AlmEnvironment(object):
 
         self.compiler.Setup()
 
+        # ------------------------------------------------------------------
+        # Floating-point contraction (FMA fusion) control (gcc + llvm).
+        #   fast (default) -> -ffp-contract=fast
+        #   on             -> -ffp-contract=on
+        #   off            -> -ffp-contract=off  (bit-reproducible builds)
+        # ------------------------------------------------------------------
+        fp_contract = (self.opts.GetOption('fp-contract') or 'fast').lower()
+        if fp_contract not in ('fast', 'on', 'off'):
+            print("WARNING: --fp-contract='%s' is invalid; expected one of "
+                  "fast/on/off. Falling back to 'fast'." % fp_contract)
+            fp_contract = 'fast'
+        if self.env['HOST_OS'] == 'win32' and 'clang-cl' in cc_env:
+            fp_contract_flag = '/clang:-ffp-contract=' + fp_contract
+        else:
+            fp_contract_flag = '-ffp-contract=' + fp_contract
+        self.compiler.UpdateCFlags([fp_contract_flag])
+        print("Set ffp-contract=%s" % fp_contract)
+
     def __configure_builddir(self):
         """
         Figure out build and install dirs
@@ -169,8 +187,6 @@ class AlmEnvironment(object):
         abi   = opts.GetOption('libabi')
         arch_config  = opts.GetOption('arch_config')
         use_asan = opts.GetOption('use_asan')
-        aocl_utils_install_path = opts.GetOption('aocl_utils_install_path')
-        aocl_utils_link = opts.GetOption('aocl_utils_link')
 
         # fix the debug, it is set to 'none' instead of None
         # due to the way options are handled
@@ -235,8 +251,6 @@ class AlmEnvironment(object):
         abi        = opts.GetOption('libabi')
         arch_config = opts.GetOption('arch_config')
         use_asan    = opts.GetOption('use_asan')
-        aocl_utils_install_path = opts.GetOption('aocl_utils_install_path')
-        aocl_utils_link = opts.GetOption('aocl_utils_link')
 
         abi_dict = {
             'acml' : 'LIBABI_ACML',
@@ -259,8 +273,6 @@ class AlmEnvironment(object):
         env['libabi'] = abi
         env['arch_config'] = arch_config
         env['use_asan'] = use_asan
-        env['aocl_utils_install_path'] = aocl_utils_install_path
-        env['aocl_utils_link'] = aocl_utils_link
 
     def CheckDefault(self):
         '''

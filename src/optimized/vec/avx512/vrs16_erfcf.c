@@ -334,8 +334,8 @@ ALM_PROTO_OPT(vrs16_erfcf)(v_f32x16_t _x) {
         v_f32x16_t path2_result = HALF - r_temp;
 
         // Select based on conditions
-        __mmask16 sub2_mask = _mm512_cmp_epi32_mask(sub2_cond, _mm512_set1_epi32(-1), _MM_CMPINT_EQ);
-        __mmask16 sub1_mask = _mm512_cmp_epi32_mask(sub1_cond, _mm512_set1_epi32(-1), _MM_CMPINT_EQ);
+        __mmask16 sub2_mask = _mm512_cmp_epi32_mask((__m512i)sub2_cond, _mm512_set1_epi32(-1), _MM_CMPINT_EQ);
+        __mmask16 sub1_mask = _mm512_cmp_epi32_mask((__m512i)sub1_cond, _mm512_set1_epi32(-1), _MM_CMPINT_EQ);
         result = _mm512_mask_blend_ps(sub2_mask, path2_result, path1_result);
         result = _mm512_mask_blend_ps(sub1_mask, result, small_result);
         return result;
@@ -354,7 +354,7 @@ ALM_PROTO_OPT(vrs16_erfcf)(v_f32x16_t _x) {
         v_f32x16_t pos_result = (ONE - ERX) - P / Q;
         v_f32x16_t neg_result = ONE + (ERX + P / Q);
 
-        __mmask16 pos_mask = _mm512_cmp_epi32_mask(pos_cond, _mm512_set1_epi32(-1), _MM_CMPINT_EQ);
+        __mmask16 pos_mask = _mm512_cmp_epi32_mask((__m512i)pos_cond, _mm512_set1_epi32(-1), _MM_CMPINT_EQ);
         result = _mm512_mask_blend_ps(pos_mask, neg_result, pos_result);
         return result;
     }
@@ -417,7 +417,7 @@ ALM_PROTO_OPT(vrs16_erfcf)(v_f32x16_t _x) {
         v_f32x16_t pos_result = final_result;
         v_f32x16_t neg_result = TWO - final_result;
 
-        __mmask16 pos_mask = _mm512_cmp_epi32_mask(pos_cond, _mm512_set1_epi32(-1), _MM_CMPINT_EQ);
+        __mmask16 pos_mask = _mm512_cmp_epi32_mask((__m512i)pos_cond, _mm512_set1_epi32(-1), _MM_CMPINT_EQ);
         result = _mm512_mask_blend_ps(pos_mask, neg_result, pos_result);
         return result;
     }
@@ -428,7 +428,7 @@ ALM_PROTO_OPT(vrs16_erfcf)(v_f32x16_t _x) {
         v_u32x16_t pos_cond = ~(hx & SIGN_BIT_MASK); // Check if positive
         v_f32x16_t pos_result = TINY * TINY;  // Underflow
         v_f32x16_t neg_result = TWO - TINY;
-        __mmask16 pos_mask = _mm512_cmp_epi32_mask(pos_cond, _mm512_set1_epi32(-1), _MM_CMPINT_EQ);
+        __mmask16 pos_mask = _mm512_cmp_epi32_mask((__m512i)pos_cond, _mm512_set1_epi32(-1), _MM_CMPINT_EQ);
         result = _mm512_mask_blend_ps(pos_mask, neg_result, pos_result);
         return result;
     }

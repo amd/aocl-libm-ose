@@ -581,11 +581,11 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
 
   template <typename T>
   bool ConfVerifyFlt(int nargs, T input, T input2, T input3, T input4, T input5, T input6, T actual_output, T expected_output, int raised_exception, int expected_exception, int *nfail) {
-    int output_match = 0, exception_match = 0;
+    int output_mismatch = 0, exception_mismatch = 0;
     /* check if exceptions match */
     if (raised_exception != expected_exception) {
         if (raised_exception < expected_exception)
-            exception_match=1;
+            exception_mismatch=1;
     }
     val e = {.f = expected_output};
     val a = {.f = actual_output};
@@ -607,9 +607,13 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
 
     /* if both are nans, output will always match, regardless of the sign bit */
     if (((e.u ^ a.u) && (ulp > SCALAR_ULPTHD)) && (both_nans == false))
-        output_match=1;
+        output_mismatch=1;
 
-    if (output_match==1 || exception_match==1) {
+    /* Fail if both are ±0 in value but +0 vs -0 in bits (ULP can be 0). output_mismatch=1 => fail. */
+    if (a.f == 0.0f && e.f == 0.0f && (e.u ^ a.u))
+        output_mismatch = 1;
+
+    if (output_mismatch==1 || exception_mismatch==1) {
         (*nfail)++;
         printf ("Input: 0x%x (%f) ", ip.u, ip.f);
         if (nargs == 2)
@@ -709,7 +713,7 @@ class SpecTestFixtureFloatArray : public ::testing::TestWithParam<SpecParams> {
 
   template <typename T>
   bool ConfVerifyFlt(int nargs, T input, T input2, T actual_output, T expected_output, int *nfail) {
-    int output_match = 0;
+    int output_mismatch = 0;
 
     val e = {.f = expected_output};
     val a = {.f = actual_output};
@@ -727,9 +731,13 @@ class SpecTestFixtureFloatArray : public ::testing::TestWithParam<SpecParams> {
 
     /* if both are nans, output will always match, regardless of the sign bit */
     if (((e.u ^ a.u) && (ulp > VECTOR_ULPTHD)) && (both_nans == false))
-        output_match=1;
+        output_mismatch=1;
 
-    if (output_match==1) {
+    /* Fail if both are ±0 in value but +0 vs -0 in bits (ULP can be 0). output_mismatch=1 => fail. */
+    if (a.f == 0.0f && e.f == 0.0f && (e.u ^ a.u))
+        output_mismatch = 1;
+
+    if (output_mismatch==1) {
         (*nfail)++;
         printf ("Input: 0x%x (%f) ", ip.u, ip.f);
         if (nargs == 2)
@@ -801,11 +809,11 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
   /* verify double */
   template <typename T>
   bool ConfVerifyDbl(int nargs, T input, T input2, T input3, T input4, T input5, T input6, T actual_output, T expected_output, int raised_exception, int expected_exception, int *nfail) {
-    int output_match = 0, exception_match = 0;
+    int output_mismatch = 0, exception_mismatch = 0;
     /* check if exceptions match */
     if (raised_exception != expected_exception) {
       if (raised_exception < expected_exception)
-        exception_match=1;
+        exception_mismatch=1;
     }
     val e = {.d = expected_output};
     val a = {.d = actual_output};
@@ -823,9 +831,13 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
 
     /* if both are nans, output will always match, regardless of the sign bit */
     if (((e.lu ^ a.lu) && (ulp > SCALAR_ULPTHD)) && (both_nans == false))
-        output_match=1;
+        output_mismatch=1;
 
-    if (output_match==1 || exception_match==1) {
+    /* Fail if both are ±0 in value but +0 vs -0 in bits (ULP can be 0). output_mismatch=1 => fail. */
+    if (a.d == 0.0 && e.d == 0.0 && (e.lu ^ a.lu))
+        output_mismatch = 1;
+
+    if (output_mismatch==1 || exception_mismatch==1) {
         (*nfail)++;
         printf ("Input: 0x%lx (%lf) ", ip.lu, ip.d);
         if (nargs == 2)
@@ -927,7 +939,7 @@ class SpecTestFixtureDoubleArray : public ::testing::TestWithParam<SpecParams> {
 
   template <typename T>
   bool ConfVerifyDbl(int nargs, T input, T input2, T actual_output, T expected_output, int *nfail) {
-    int output_match = 0;
+    int output_mismatch = 0;
 
     val e = {.d = expected_output};
     val a = {.d = actual_output};
@@ -941,9 +953,13 @@ class SpecTestFixtureDoubleArray : public ::testing::TestWithParam<SpecParams> {
 
     /* if both are nans, output will always match, regardless of the sign bit */
     if (((e.lu ^ a.lu) && (ulp > VECTOR_ULPTHD)) && (both_nans == false))
-        output_match=1;
+        output_mismatch=1;
 
-    if (output_match==1) {
+    /* Fail if both are ±0 in value but +0 vs -0 in bits (ULP can be 0). output_mismatch=1 => fail. */
+    if (a.d == 0.0 && e.d == 0.0 && (e.lu ^ a.lu))
+        output_mismatch = 1;
+
+    if (output_mismatch==1) {
         (*nfail)++;
         printf ("Input: 0x%lx (%lf) ", ip.lu, ip.d);
         if (nargs == 2)
@@ -1011,11 +1027,11 @@ class SpecTestFixtureComplexFloat : public ::testing::TestWithParam<SpecParams> 
 
   template <typename T>
   bool ConfVerifyComplexFlt(int nargs, T input, T input2, T actual_output, T expected_output, int raised_exception, int expected_exception, int *nfail) {
-    int output_match = 0, exception_match = 0;
+    int output_mismatch = 0, exception_mismatch = 0;
     /* check if exceptions match */
     if (raised_exception != expected_exception) {
         if (raised_exception < expected_exception)
-            exception_match=1;
+            exception_mismatch=1;
     }
     val e_real = {.f = (float) (__real__ expected_output)};
     val e_imag = {.f = (float) (__imag__ expected_output)};
@@ -1037,9 +1053,9 @@ class SpecTestFixtureComplexFloat : public ::testing::TestWithParam<SpecParams> 
 
     /* if both are nans, output will always match, regardless of the sign bit */
     if (((e_real.u ^ a_real.u) && (e_imag.u ^ a_imag.u) && (ulp > SCALAR_ULPTHD)) && (both_nans == false))
-        output_match=1;
+        output_mismatch=1;
 
-    if (output_match==1 || exception_match==1) {
+    if (output_mismatch==1 || exception_mismatch==1) {
         (*nfail)++;
         printf ("Input:    0x%x +i 0x%x   (%f +i %f)\n", ip_real.u, ip_imag.u, ip_real.f, ip_imag.f);
         if (nargs == 2)
@@ -1108,11 +1124,11 @@ class SpecTestFixtureComplexDouble : public ::testing::TestWithParam<SpecParams>
 //   }
   template <typename T>
   bool ConfVerifyComplexDbl(int nargs, T input, T input2, T actual_output, T expected_output, int raised_exception, int expected_exception, int *nfail) {
-    int output_match = 0, exception_match = 0;
+    int output_mismatch = 0, exception_mismatch = 0;
     /* check if exceptions match */
     if (raised_exception != expected_exception) {
         if (raised_exception < expected_exception)
-            exception_match=1;
+            exception_mismatch=1;
     }
     val e_real = {.d = (double) (__real__ expected_output)};
     val e_imag = {.d = (double) (__imag__ expected_output)};
@@ -1134,9 +1150,9 @@ class SpecTestFixtureComplexDouble : public ::testing::TestWithParam<SpecParams>
 
     /* if both are nans, output will always match, regardless of the sign bit */
     if (((e_real.lu ^ a_real.lu) && (e_imag.lu ^ a_imag.lu) && (ulp > SCALAR_ULPTHD)) && (both_nans == false))
-        output_match=1;
+        output_mismatch=1;
 
-    if (output_match==1 || exception_match==1) {
+    if (output_mismatch==1 || exception_mismatch==1) {
         (*nfail)++;
         printf ("Input:    0x%lx +i 0x%lx   (%lf +i %lf)\n", ip_real.lu, ip_imag.lu, ip_real.d, ip_imag.d);
         if (nargs == 2)

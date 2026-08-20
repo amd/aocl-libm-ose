@@ -125,17 +125,18 @@ extern "C" {
   /*vector routines*/
 /*glibc doesn't have these vector variants. Only intel and amd have*/
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
-//__m128d LIBM_FUNC_VEC(d, 2, tanh)(__m128d);
-//__m256d LIBM_FUNC_VEC(d, 4, tanh)(__m256d);
+__m128d LIBM_FUNC_VEC(d, 2, tanh)(__m128d);
+__m256d LIBM_FUNC_VEC(d, 4, tanh)(__m256d);
 __m128 LIBM_FUNC_VEC(s, 4, tanhf)(__m128);
 __m256 LIBM_FUNC_VEC(s, 8, tanhf)(__m256);
 #if defined(__AVX512__)
 __m512  LIBM_FUNC_VEC(s, 16, tanhf)(__m512);
+__m512d LIBM_FUNC_VEC(d, 8, tanh)(__m512d);
 #endif
 #endif
 
 int test_v2d(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m128d ip2 = _mm_set_pd(ip[idx+1], ip[idx]);
@@ -161,7 +162,7 @@ int test_v4s(test_data *data, int idx)  {
 }
 
 int test_v4d(test_data *data, int idx)  {
-#if 0
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m256d ip4 = _mm256_set_pd(ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
@@ -184,14 +185,15 @@ int test_v8s(test_data *data, int idx)  {
 }
 
 int test_v8d(test_data *data, int idx)  {
-/* later change this to #if defined(__AVX512__)*/
-#if 0
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
+#if defined(__AVX512__)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
   __m512d ip8 = _mm512_set_pd(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
                              ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);
   __m512d op8 = LIBM_FUNC_VEC(d, 8, tanh)(ip8);
   _mm512_store_pd(&op[0], op8);
+#endif
 #endif
   return 0;
 }
@@ -227,15 +229,13 @@ int test_vas(test_data *data, int count)  {
 }
 
 int test_vad(test_data *data, int count)  {
-#if 0 //Enable when support is added for vrda
-#if (LIBM_PROTOTYPE != PROTOTYPE_GLIBC)
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
   double *ip  = (double*)data->ip;
   double *op  = (double*)data->op;
 #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
   amd_vrda_tanh(count, ip, op);
 #elif (LIBM_PROTOTYPE == PROTOTYPE_SVML)
   vdTanh(count, ip, op);
-#endif
 #endif
 #endif
   return 0;

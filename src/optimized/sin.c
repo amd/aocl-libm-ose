@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -36,58 +36,36 @@
  *   sin(inf)  = NaN
  *   sin(-inf) = NaN
  *
- *
  ******************************************
  * Implementation Notes
  * ---------------------
  *
- * checks for special cases
- * if ( ux = infinity) raise overflow exception and return x
- * if x is NaN then raise invalid FP operation exception and return x.
+ *   |x| < pi/2 : direct evaluation, no reduction.
+ *       |x| < 2^-27          : sin(x) = x
+ *       2^-27 <= |x| < 2^-13 : sin(x) = x - x^3/6
+ *       2^-13 <= |x| < pi/4  : sin minimax polynomial
+ *       pi/4 <= |x| < pi/2   : sin(x) = sign(x) * cos(pi/2 - |x|), q exact
  *
- * 1. Argument reduction
- * if |x| > 5e5 then
- *      __amd_remainder_piby2(x, &r, &rr, &region)
- * else
- *      Argument reduction
- *      Let z = |x| * 2/pi
- *      z = dn + r, where dn = round(z)
- *      rhead =  dn * pi/2_head
- *      rtail = dn * pi/2_tail
- *      r = z – dn = |x| - rhead – rtail
- *      expdiff = exp(dn) – exp(r)
- *      if(expdiff) > 15)
- *      rtail = |x| - dn*pi/2_tail2
- *      r = |x| -  dn*pi/2_head -  dn*pi/2_tail1 -  dn*pi/2_tail2  - (((rhead + rtail) – rhead )-rtail)
- * rr = (|x| – rhead) – r + rtail
+ *   |x| >= pi/2 : reduce modulo pi/32 to an index m (0..63) and a
+ *       double-double residual (r, rr), then reconstruct
+ *           sin(x) = sin(m*pi/32 + r)
+ *                  = sin(m*pi/32)*cos(r) + cos(m*pi/32)*sin(r)
+ *       from a 64-entry double-double table of {cos, sin} at m*pi/32.
  *
- * 2. Polynomial approximation
- * if(dn is odd)
- *       rr = rr * r;
- *       x4 = x2 * x2;
- *       s = 0.5 * x2;
- *       t =  s - 1.0;
- *       poly = x4 * (C1 + x2 * (C2 + x2 * (C3 + x2 * (C4 + x2 * (C5 + x2 * x6)))))
- *       r = (((1.0 + t) - s) - rr) + poly – t
- * else
- *       x3 = x2 * r
- *       poly = S2 + (r2 * (S3 + (r2 * (S4 + (r2 * (S5 + S6 * r2))))))
- *       r = r - ((x2 * (0.5*rr - x3 * poly)) - rr) - S1 * x3
- * if(((sign & region) | ((~sign) & (~region))) & 1)
- *       return r
- * else
- *       return -r;
-
- * if |x| < pi/4 && |x| > 2.0^(-13)
- *   sin(x) = x + (x * (r2 * (S1 + r2 * (S2 + r2 * (S3 + r2 * (S4 + r2 * (S5 + r2 * S6)))))))
- * if |x| < 2.0^(-13) && |x| > 2.0^(-27)
- *   sin(x) = x - (x * x * x * (1/6));
+ *       The mod-pi/32 reduction uses a Cody-Waite split whose pi/32 chunks
+ *       carry 24 trailing zero bits in their heads (so each dn*chunk is exact)
+ *       and tails seated low enough that the leftover rr -- which is the result
+ *       near a sin zero (where r collapses to 0) -- retains its low bits.  This
+ *       keeps the near-zero worst cases below 1 ULP without a heavier reducer.
  *
- *
+ *       pi/2 <= |x| < 2^18 : two/three-piece Cody-Waite (escalates on deep
+ *                            cancellation).
+ *       |x| >= 2^18        : Payne-Hanek reduction.
  ******************************************
-*/
+ */
 
 #include <stdint.h>
+#include <math.h>
 #include <libm_util_amd.h>
 #include <libm/alm_special.h>
 #include <libm_macros.h>
@@ -96,215 +74,135 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
-#include <libm/alm_special.h>
 
-static struct {
-    const double twobypi, piby2_1, piby2_1tail, invpi, pi, pi1, pi2;
-    const double piby2_2, piby2_2tail, ALM_SHIFT;
-    const double one_by_six;
-    double poly_sin[7];
-    double poly_cos[6];
- } sin_data = {
-     .ALM_SHIFT = 0x1.8p+52,
-     .one_by_six = 0.1666666666666666666,
-     .twobypi = 0x1.45f306dc9c883p-1,
-     .piby2_1 = 0x1.921fb54400000p0,
-     .piby2_1tail = 0x1.0b4611a626331p-34,
-     .piby2_2 = 0x1.0b4611a600000p-34,
-     .piby2_2tail = 0x1.3198a2e037073p-69,
-     .pi = 0x1.921fb54442d18p1,
-     .pi1 = 0x1.921fb50000000p1,
-     .pi2 = 0x1.110b4611a6263p-25,
-     .invpi = 0x1.45f306dc9c883p-2,
-     /*
-      * Polynomial coefficients
-      */
-     .poly_sin = {
-         -0x1.5555555555555p-3,
-         0x1.1111111110bb3p-7,
-         -0x1.a01a019e83e5cp-13,
-         0x1.71de3796cde01p-19,
-         -0x1.ae600b42fdfa7p-26,
-         0x1.5e0b2f9a43bb8p-33
-     },
+#include "sincos_tbl.h"         /* N=64 double-double cos/sin table at m*pi/32 */
+#include "remainder_piby32.h"   /* Payne-Hanek mod-pi/32 reduction (cold path) */
 
-     .poly_cos = {
-         0x1.5555555555555p-5,   /* 0.0416667 */
-         -0x1.6c16c16c16967p-10, /* -0.00138889 */
-         0x1.A01A019F4EC91p-16,  /* 2.48016e-005 */
-         -0x1.27E4FA17F667Bp-22, /* -2.75573e-007 */
-         0x1.1EEB690382EECp-29,  /* 2.08761e-009 */
-         -0x1.907DB47258AA7p-37  /* -1.13826e-011 */
-     },
-};
+/* Reduction constants. */
+#define INV_PIBY32   0x1.45f306dc9c883p+3   /* 1/(pi/32) = 32/pi : k=round(x/(pi/32)) */
+#define ALM_SHIFT    0x1.8p52               /* round-to-integer shifter      */
+#define PI2_HI       0x1.921fb54442d18p+0   /* pi/2 (nearest double)         */
+#define PI2_LO       0x1.1a62633145c07p-54  /* pi/2 - PI2_HI                 */
+#define PI32_1       0x1.921fb54400000p-4   /* pi/32 head (24 trailing zeros)*/
+#define PI32_1TAIL   0x1.0b4611a626331p-38  /* pi/32 tail 1                  */
+#define PI32_2       0x1.0b4611a600000p-38  /* pi/32 head 2 (24 trailing zeros) */
+#define PI32_2TAIL   0x1.3198a2e037073p-73  /* pi/32 tail 2 (deep)           */
+#define ONE_BY_SIX   0.16666666666666666
 
-void __amd_remainder_piby2(double x, double *r, double *rr, int *region);
+/* Minimax sin/cos coefficients on [0, pi/4] (direct, |x| < pi/4). */
+static const double S1 = -0x1.5555555555555p-3;
+static const double S2 =  0x1.1111111110bb3p-7;
+static const double S3 = -0x1.a01a019e83e5cp-13;
+static const double S4 =  0x1.71de3796cde01p-19;
+static const double S5 = -0x1.ae600b42fdfa7p-26;
+static const double S6 =  0x1.5e0b2f9a43bb8p-33;
+static const double C1 =  0x1.5555555555555p-5;
+static const double C2 = -0x1.6c16c16c16967p-10;
+static const double C3 =  0x1.A01A019F4EC91p-16;
+static const double C4 = -0x1.27E4FA17F667Bp-22;
+static const double C5 =  0x1.1EEB690382EECp-29;
+static const double C6 = -0x1.907DB47258AA7p-37;
 
-#define pi          sin_data.pi
-#define pi1         sin_data.pi1
-#define pi2         sin_data.pi2
-#define invpi       sin_data.invpi
-#define TwobyPI     sin_data.twobypi
-#define PIby2_1     sin_data.piby2_1
-#define PIby2_1tail sin_data.piby2_1tail
-#define PIby2_2     sin_data.piby2_2
-#define PIby2_2tail sin_data.piby2_2tail
-#define PIby4       0x3fe921fb54442d18
-#define FiveE6      0x415312d000000000
-#define ONE_BY_SIX  sin_data.one_by_six
-#define ALM_SHIFT   sin_data.ALM_SHIFT
+/* Inner (table-reduction) minimax coefficients on [-pi/64, pi/64]. */
+static const double MS1 = -0x1.5555555555451p-3;
+static const double MS2 =  0x1.111111072c563p-7;
+static const double MS3 = -0x1.a01321c02ff64p-13;
+static const double MC1 = -0x1.fffffffffff3dp-2;
+static const double MC2 =  0x1.5555554a3495ap-5;
+static const double MC3 = -0x1.6c10bd9b0d3bp-10;
 
-#define S1  sin_data.poly_sin[0]
-#define S2  sin_data.poly_sin[1]
-#define S3  sin_data.poly_sin[2]
-#define S4  sin_data.poly_sin[3]
-#define S5  sin_data.poly_sin[4]
-#define S6  sin_data.poly_sin[5]
+#define PIBY4_BITS  0x3FE921FB54442D18ULL   /* |x| at pi/4   */
+#define PIBY2_BITS  0x3FF921FB54442D18ULL   /* |x| at pi/2   */
+#define SIN_SMALL   0x3F20000000000000ULL   /* 2^-13         */
+#define SIN_SMALLER 0x3E40000000000000ULL   /* 2^-27         */
+#define COLD_BITS   0x4110000000000000ULL   /* 2^18 : Cody-Waite <-> Payne-Hanek cut */
+#define ESC_BITS    25                      /* 2-CW -> 3-CW escalation depth */
+#define INF_BITS    0x7FF0000000000000ULL
 
-#define C1  sin_data.poly_cos[0]
-#define C2  sin_data.poly_cos[1]
-#define C3  sin_data.poly_cos[2]
-#define C4  sin_data.poly_cos[3]
-#define C5  sin_data.poly_cos[4]
-#define C6  sin_data.poly_cos[5]
-
-#define SIGN_MASK   0x7FFFFFFFFFFFFFFF /* Infinity */
-#define INF         0x7ff0000000000000
-#define SIGN_MASK32 0x7FFFFFFF
-#define SIN_SMALL   0x3f20000000000000  /* 2.0^(-13) */
-#define SIN_SMALLER 0X3e40000000000000  /* 2.0^(-27) */
-
+/* Reconstruct sin(m*pi/32 + (r + rr)) from the double-double table entry. */
+static inline double sin_compose(int m, double r, double rr)
+{
+    double T_cos = sincos_tbl[m].c,  T_sin = sincos_tbl[m].s;
+    double T_cl  = sincos_tbl[m].cl, T_sl  = sincos_tbl[m].sl;
+    double r2 = r * r;
+    double cp = POLY_EVAL_3(r2, MC1, MC2, MC3, 0.0);
+    double sp = POLY_EVAL_3(r2, MS1, MS2, MS3, 0.0);
+    double big   = _LIBM_POLY_FMA(r, T_cos, T_sin);
+    double bigE  = _LIBM_POLY_FMA(r, T_cos, T_sin - big);
+    double spoly = _LIBM_POLY_FMA(T_cos, r * sp, T_sin * cp);
+    double tail  = _LIBM_POLY_FMA(r, T_cl, T_sl);
+    double cor   = _LIBM_POLY_FMA(rr, _LIBM_POLY_FMA(-r, T_sin, T_cos), bigE);
+    return big + _LIBM_POLY_FMA(r2, spoly, tail + cor);
+}
 
 double
 ALM_PROTO_OPT(sin)(double x)
 {
+    uint64_t ux = asuint64(x);
+    uint64_t ax = ux & 0x7FFFFFFFFFFFFFFFULL;
 
-    double r, rr, poly, x2, s;
-    double rhead, rtail, x3, x4;
-    uint64_t uy;
-    uint64_t sign = 0;
-    int32_t region;
+    /* |x| < pi/2 : direct evaluation. */
+    if (ax < PIBY2_BITS) {
+        if (ax > PIBY4_BITS) {
+            /* pi/4 <= |x| < pi/2 : sin(x) = sign(x) * cos(pi/2 - |x|). */
+            double r  = PI2_HI - asdouble(ax);     /* exact (Sterbenz) */
+            double q2 = r * r, x4 = q2 * q2;
+            double s  = 0.5 * q2;
+            double t  = s - 1.0;
+            double p  = POLY_EVAL_6(q2, C1, C2, C3, C4, C5, C6) * x4;
+            double res = _LIBM_POLY_FMA(-r, PI2_LO, ((1.0 + t) - s)) + p - t;
+            return __builtin_copysign(res, x);
+        }
+        if (ax >= SIN_SMALL) {
+            double x2 = x * x;
+            double s  = POLY_EVAL_6(x2, S1, S2, S3, S4, S5, S6);
+            return _LIBM_POLY_FMA(x * x2, s, x);
+        }
+        if (ax > SIN_SMALLER)
+            return _LIBM_POLY_FMA(-x * x * x, ONE_BY_SIX, x);
+        return x;
+    }
 
     /* sin(inf) = sin(-inf) = sin(NaN) = NaN */
+    if (unlikely(ax >= INF_BITS))
+        return _sin_special(x);
 
-    uint64_t ux = asuint64(x);
+    int    m = 0;
+    double r = 0.0, rr = 0.0;
 
-    sign = ux >> 63;
+    if (ax < COLD_BITS) {
+        /* pi/2 <= |x| < 2^18 : inline Cody-Waite reduction mod pi/32.  The
+         * 24-trailing-zero heads make each dn*chunk exact; the deep tails seat
+         * the leftover (rr) low enough to stay sub-ULP at the sin zeros. */
+        double dn = _LIBM_POLY_FMA(x, INV_PIBY32, ALM_SHIFT);
+        uint64_t nm = asuint64(dn);
+        dn -= ALM_SHIFT;
+        m = (int)(nm & 0x3F);
 
-    ux = ux & SIGN_MASK;
+        double rh = _LIBM_POLY_FMA(-dn, PI32_1, x);
+        double rt = dn * PI32_1TAIL;
+        r = rh - rt;
 
-    if(unlikely((ux  & SIGN_MASK) >= INF)) {
-        /* infinity or NaN */
-        return _sinf_special((float)x);
+        int32_t xe = (int32_t)(ax >> 52);
+        uint64_t uy = asuint64(r);
+        int32_t edif = xe - (int32_t)((uy << 1) >> 53);
+        if (edif > ESC_BITS) {
+            double tv = rh;
+            rt = dn * PI32_2;
+            rh = tv - rt;
+            rt = _LIBM_POLY_FMA(dn, PI32_2TAIL, -((tv - rh) - rt));
+            r  = rh - rt;
+        }
+        rr = (rh - r) - rt;
+        return sin_compose(m, r, rr);
     }
 
-    if(ux > PIby4){
-
-        x = asdouble(ux);
-        /* ux > pi/4 */
-        if(ux < FiveE6){
-            /* reduce  the argument to be in a range from -pi/4 to +pi/4
-                by subtracting multiples of pi/2 */
-
-            r = TwobyPI * x; /* x * two_by_pi*/
-
-            int32_t xexp = (int32_t)(ux >> 52);
-
-            double npi2d = r + ALM_SHIFT;
-
-            uint64_t npi2 = asuint64(npi2d);
-
-            npi2d -= ALM_SHIFT;
-
-            rhead  = x - npi2d * PIby2_1;
-
-            rtail  = npi2d * PIby2_1tail;
-
-            r = rhead - rtail;
-
-            uy = asuint64(r);
-
-            int64_t expdiff = xexp - (int32_t)((uy << 1) >> 53);
-
-            region = (int32_t)npi2;
-
-            if (expdiff  > 15) {
-
-                double t = rhead;
-
-                rtail =  npi2d * PIby2_2;
-
-                rhead = t- rtail;
-
-                rtail  = npi2d * PIby2_2tail - ((t - rhead) - rtail);
-
-                r = rhead - rtail;
-            }
-
-            rr = (rhead - r) - rtail;
-        }
-        else {
-            // Reduce x into range [-pi/4,pi/4]
-            __amd_remainder_piby2(x, &r, &rr, &region);
-        }
-
-        x2 = r * r;
-
-        if(region & 1) {
-
-            /*cos region */
-            rr = rr * r;
-
-            x4 = x2 * x2;
-
-            s = 0.5 * x2;
-
-            double t =  s - 1.0;
-
-            /* poly = x4 * (C1 + x2 * (C2 + x2 * (C3 + x2 * (C4 + x2 * (C5 + x2 * x6))))) */
-            poly = x4 * POLY_EVAL_6(x2, C1, C2, C3, C4, C5, C6);
-
-            r = (((1.0 + t) - s) - rr) + poly;
-
-            r -= t;
-        }
-        else {
-            /* region 0 or 2 do a sin calculation */
-            x3 = x2 * r;
-
-            /* poly = S2 + (r2 * (S3 + (r2 * (S4 + (r2 * (S5 + S6 * r2)))))) */
-            poly = POLY_EVAL_5(x2, S2, S3, S4, S5, S6);
-
-            s = 0.5 * rr;
-
-            poly = ((x2 * (s - x3 * poly)) - rr) - S1 * x3;
-
-            r -= poly; /* r - ((r2 * (0.5 * rr - x3 * poly) - rr) - S1*r3 */
-        }
-
-        region >>= 1;
-
-        if(((sign & (uint64_t)region) | ((~sign) & (~(uint64_t)region))) & 1) {
-
-            return r;
-
-        }
-
-        return -r;
+    /* |x| >= 2^18 : Payne-Hanek mod-pi/32 reduction. */
+    remainder_piby32(ax, &m, &r, &rr);
+    if (ux >> 63) {
+        r  = -r;
+        rr = -rr;
+        m  = (int)(((uint32_t)(64 - m)) & 0x3Fu);
     }
-    else if(ux >= SIN_SMALL) {
-        /* x > 2.0^(-13) */
-        x2 = x * x;
-
-        /* x + (x * (r2 * (S1 + r2 * (S2 + r2 * (S3 + r2 * (S4 + r2 * (S5 + r2 * S6))))))) */
-        return x + (x * (x2 * POLY_EVAL_6(x2, S1, S2, S3, S4, S5, S6)));
-
-    }
-    else if(ux > SIN_SMALLER){
-        /* if x > 2.0^(-27) */
-        return x - (x * x * x * ONE_BY_SIX);
-
-    }
-
-    return x;
+    return sin_compose(m, r, rr);
 }

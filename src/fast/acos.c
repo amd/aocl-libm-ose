@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -72,7 +72,7 @@
 #include <libm/compiler.h>
 #include <libm/poly.h>
 #include <libm/alm_special.h>
-
+#include "kern/sqrt_pos.c"
 
 static struct {
                 double const piby2, pi;
@@ -163,7 +163,7 @@ ALM_PROTO_FAST(acos)(double x)
 
     if (y > ALM_ACOS_HALF) {
         z = ALM_ACOS_HALF * (1.0 - y);
-        y = -2.0 * sqrt(z);
+        y = -2.0 * ALM_PROTO_KERN(sqrt)(z);
     }
     else {
         n = 1;

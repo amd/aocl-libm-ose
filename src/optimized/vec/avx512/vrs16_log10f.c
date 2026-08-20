@@ -157,7 +157,7 @@ log10f_specialcase(v_f32x16_t _x,
                  v_f32x16_t result,
                  v_u32x16_t cond)
 {
-    return call_v16_f32(ALM_PROTO(log10f), _x, result, cond);
+    return call_v16_f32(ALM_PROTO_OPT(log10f), _x, result, cond);
 }
 
 

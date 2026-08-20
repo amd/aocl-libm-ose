@@ -33,6 +33,13 @@
 extern "C" {
 #endif
 
+#ifndef __cplusplus
+typedef    long int                lint_t;
+typedef    unsigned long int       ulint_t;
+typedef    long long int           llint_t;
+typedef    unsigned long long int  ullint_t;
+#endif
+
 
 double   alm_mp_acosf       (float x);
 double   alm_mp_acoshf      (float x);
@@ -67,6 +74,8 @@ double   alm_mp_log1pf      (float x);
 double   alm_mp_log2f       (float x);
 double   alm_mp_logbf       (float x);
 double   alm_mp_logf        (float x);
+lint_t   alm_mp_lroundf     (float x);
+llint_t  alm_mp_llroundf    (float x);
 double   alm_mp_modff       (float x, float *ptr);
 double   alm_mp_powf        (float x, float y);
 double   alm_mp_remainderf  (float x, float y);
@@ -187,6 +196,8 @@ long double  alm_mp_log1p     (double x);
 long double  alm_mp_log2      (double x);
 long double  alm_mp_logb      (double x);
 long double  alm_mp_log       (double x);
+lint_t       alm_mp_lround    (double x);
+llint_t      alm_mp_llround   (double x);
 long double  alm_mp_modf      (double x, double *ptr);
 long double  alm_mp_pow       (double x, double y);
 long double  alm_mp_remainder (double x, double y);
@@ -276,6 +287,10 @@ double  alm_mp_cdfnorminv_ULP  (double x,double z,double *, double *);
 // Complex Variants
 double _Complex    alm_mpc_cexpf      (float _Complex x);
 long double _Complex   alm_mpc_cexp       (double _Complex x);
+double _Complex    alm_mpc_clogf      (float _Complex x);
+long double _Complex   alm_mpc_clog       (double _Complex x);
+double _Complex    alm_mpc_cpowf     (float _Complex x, float _Complex y);
+long double _Complex   alm_mpc_cpow      (double _Complex x, double _Complex y);
 
 #ifdef __cplusplus
 }

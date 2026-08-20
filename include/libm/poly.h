@@ -30,6 +30,19 @@
 
 #include <libm/typehelper.h>
 #include <libm/poly-common.h>
+
+/*
+ * Explicit fma primitive (allows keeping rounding errors in check)
+ */
+ #if !defined(_LIBM_POLY_FMA)
+ #if defined(__GNUC__) || defined(__clang__)
+ #  define _LIBM_POLY_FMA(a, b, c)  __builtin_fma((a), (b), (c))
+ #else
+ #  include <math.h>
+ #  define _LIBM_POLY_FMA(a, b, c)  fma((a), (b), (c))
+ #endif
+ #endif
+
 /*
 * poly = C0*r^0 + C1*r^1 + c2*r^2
 */
@@ -115,6 +128,26 @@
         })
 
 /*
+ * Degree-7 Estrin (depth 3).
+ * p(r) = c0 + c1*r + c2*r^2 + c3*r^3 + c4*r^4 + c5*r^5 + c6*r^6 + c7*r^7
+ *       = (c0+c1*r) + r^2*(c2+c3*r) + r^4*((c4+c5*r) + r^2*(c6+c7*r))
+ */
+#define POLY_EVAL_ESTRIN_8(r, c0, c1, c2, c3, c4, c5, c6, c7) ({  \
+            __typeof(r) _r2, _r4;                              \
+            __typeof(r) _p0, _p1, _p2, _p3;                    \
+            __typeof(r) _q0, _q1;                              \
+            _r2 = (r) * (r);                                   \
+            _r4 = _r2 * _r2;                                   \
+            _p0 = (c1) * (r) + (c0);                           \
+            _p1 = (c3) * (r) + (c2);                           \
+            _p2 = (c5) * (r) + (c4);                           \
+            _p3 = (c7) * (r) + (c6);                           \
+            _q0 = _p1 * _r2 + _p0;                             \
+            _q1 = _p3 * _r2 + _p2;                             \
+            _q1 * _r4 + _q0;                                   \
+        })
+
+/*
     This function returns a polynomial:
     p(r) = c0*r^0 + c1*r^1 + c2*r^2 + c3r^3 + c4*r^4 + c5*r^5 +
             c6*r^6 + c7*r^7
@@ -160,6 +193,14 @@
                         q = b1*r4 + b2;                         \
                         q;                                      \
                 })
+
+/*
+ * poly = c0 + c1*x + c2*x^2 + c3*x^3   (Horner)
+ */
+#define POLY_EVAL_HORNER_4(x, c0, c1, c2, c3) ({                \
+        __typeof(x) q = (((c3 * x + c2) * x + c1) * x + c0);    \
+         q;                                                     \
+         })
 
 #define POLY_EVAL_HORNER_5(x, c0, c1, c2, c3, c4) ({            \
         __typeof(x) q = (((( c4 * x + c3)* x + c2) * x + c1) *  \
@@ -412,6 +453,29 @@
                 })
 
 /*
+ * Polynomial of degree 17, odd terms only, leading term x (coeff = 1):
+ * p(x) = x + c1*x^3 + c2*x^5 + ... + c8*x^17
+ *      = x + x^3 * ( c1 + c2*x^2 + ... + c8*x^14 )
+ * Balanced Estrin on x^2 (powers r2,r4,r8) for instruction-level parallelism.
+ */
+#define POLY_EVAL_ODD_17_BAL(r, c1, c2, c3, c4, c5, c6, c7, c8) ({  \
+        __typeof(r) r2, r4, r8;                                     \
+        __typeof(r) a1, a2, a3, a4, b1, b2, q;                      \
+        r2 = r * r;                                                 \
+        r4 = r2 * r2;                                               \
+        r8 = r4 * r4;                                               \
+        a1 = c1 + c2 * r2;                                          \
+        a2 = c3 + c4 * r2;                                          \
+        a3 = c5 + c6 * r2;                                          \
+        a4 = c7 + c8 * r2;                                          \
+        b1 = a1 + a2 * r4;                                          \
+        b2 = a3 + a4 * r4;                                          \
+        q  = b1 + b2 * r8;                                          \
+        q = r + ((q * r2) * r);                                     \
+        q;                                                          \
+    })
+
+/*
  *  poly = x + C1*x^3 + C2*x^5 + C3*x^7 + C4*x^9 + C5*x^11 + \
  *          C6*x^13 + C7*x^15 + C8*x^17 + C9*x^19 +											\
  *          C10*x^21 + C11*x^23 + C12*x^25 + C13*x^27 + C14*x^29;
@@ -571,7 +635,31 @@
                                                                              \
          q = (b0 + b1 * x4 ) + b2 * x8;                                      \
          q;                                                                  \
-         })
+})
+
+
+/*
+ * Estrin-FMA 12-coefficient evaluation (degree-11 polynomial):
+ *   poly = c1 + c2*x + c3*x^2 + c4*x^3 + ... + c12*x^11
+ *        = (c1+c2*x) + x^2*(c3+c4*x) + x^4*(c5+c6*x + x^2*(c7+c8*x))
+ *            + x^8*((c9+c10*x) + x^2*(c11+c12*x))
+ */
+#define POLY_EVAL_12_ESTRIN_FMA(x, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12) ({ \
+    __typeof(x) _x2  = (x) * (x);                                     \
+    __typeof(x) _x4  = _x2 * _x2;                                     \
+    __typeof(x) _x8  = _x4 * _x4;                                     \
+    __typeof(x) _p01 = _LIBM_POLY_FMA((c2),  (x), (c1));              \
+    __typeof(x) _p23 = _LIBM_POLY_FMA((c4),  (x), (c3));              \
+    __typeof(x) _p45 = _LIBM_POLY_FMA((c6),  (x), (c5));              \
+    __typeof(x) _p67 = _LIBM_POLY_FMA((c8),  (x), (c7));              \
+    __typeof(x) _p89 = _LIBM_POLY_FMA((c10), (x), (c9));              \
+    __typeof(x) _pab = _LIBM_POLY_FMA((c12), (x), (c11));             \
+    __typeof(x) _q01 = _LIBM_POLY_FMA(_x2, _p23, _p01);               \
+    __typeof(x) _q23 = _LIBM_POLY_FMA(_x2, _p67, _p45);               \
+    __typeof(x) _q45 = _LIBM_POLY_FMA(_x2, _pab, _p89);               \
+    __typeof(x) _r01 = _LIBM_POLY_FMA(_x4, _q23, _q01);               \
+    _LIBM_POLY_FMA(_x8, _q45, _r01);                                  \
+})
 
 
 /*

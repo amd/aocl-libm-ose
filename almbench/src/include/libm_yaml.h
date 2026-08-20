@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -28,9 +28,23 @@
 #pragma once
 
 #include <iostream>
+#include <yaml-cpp/yaml.h>
 #include "alm_test.h"
 #include <string>
 #include <vector>
+#include <optional>
+/*
+ * DerivedGenConfig:
+ * String-based configuration for derived input generation, parsed from YAML.
+ */
+struct DerivedGenConfig {
+    std::string z_srt;    /* Start value for derived sub-generator */
+    std::string z_stp;    /* Stop value for derived sub-generator */
+    std::string z_type;   /* Range type for derived sub-generator */
+    std::string z_count;  /* Step count for derived sub-generator */
+    std::string func;     /* Name of combining function (e.g. "mul") */
+};
+
 /*
  * InputRange:
  * Represents a numeric input range for range-based tests.
@@ -40,6 +54,28 @@ struct InputRange {
     std::string stp;     /* Stop value */
     std::string type;    /* Range generation type (e.g., linear, expstep) */
     std::string count;   /* Number of values to generate */
+    std::optional<DerivedGenConfig> derived; /* Config for derived generation */
+};
+
+/*
+ * MultiRangeRef:
+ * One referenced test inside a multi_range block, resolved at parse time.
+ * Co-locates the referenced test's id (for diagnostics) with its full
+ * range[] recipe copied out of the referenced test's YamlInputs.
+ */
+struct MultiRangeRef {
+    std::string             ref_id;   /* Referenced test id */
+    std::vector<InputRange> ranges;   /* Resolved range list from that test */
+};
+
+/*
+ * MultiRangeGenConfig:
+ * String-stage config for a multi_range test. Stores the resolved per-ref
+ * range recipes in YAML-declaration order; this order determines the
+ * deterministic nCr combination enumeration downstream.
+ */
+struct MultiRangeGenConfig {
+    std::vector<MultiRangeRef> refs;
 };
 
 /*
@@ -56,6 +92,10 @@ struct YamlInputs {
     std::string xxv;                     /* Expected floating-point exception */
     std::string ulp_threshold;           /* ULP threshold for accuracy tests */
     std::vector<InputRange> range;       /* Input ranges for range tests */
+    std::string warmup_count;            /* Number of warmup iterations before measurement */
+    std::string batch_size;              /* Number of API calls per timed batch */
+    std::string steps_mr;                /* Total outer iterations for multi_range tests */
+    std::optional<MultiRangeGenConfig> multi_range; /* Multi-range mix config (refs to other tests) */
 };
 
 /*
@@ -70,23 +110,22 @@ struct YamlOutputs {
     uint64_t    n[MAX_IPPTR];                 /* Number of elements in each input arguments*/
     S          *iptr[MAX_IPPTR];             /* Input pointers */
     S          *optr[MAX_OPPTR];             /* Output pointers */
+    std::string op_hex_str[MAX_OPPTR];       /* Pre-formatted hex for integer outputs */
+    std::string *opstr;                      /* Pre-formatted hex for integer outputs ptr */
     double     *ulp;                         /* ULP error values */
     int        *status;                     /* Status flags for each input */
-    bool        utflag;                      /* Unit test flag */
     int         exception_raised;            /* Raised exceptions */
-    double      ulp_threshold;               /* ULP threshold for accuracy tests */
     double      duration;                    /* Execution duration */
-    bool        is_vra;                      /* Vectorized real array flag */
-    TestMode    test_mode;                   /* Test mode (accuracy or performance) */
     std::string vendor;                      /* Vendor name */
     std::string outfile;                     /* Output yaml file name */
+    TestConfig  config;                      /* Test execution configuration */
 
 
     /* Constructor */
     YamlOutputs(std::string &var)
-        : variant(var), ulp(nullptr), status(nullptr),
-          utflag(false), exception_raised(0),
-          duration(0.0), is_vra(false), test_mode(TestMode::E_ACCURACY),
+        : variant(var), opstr(nullptr), ulp(nullptr), status(nullptr),
+          exception_raised(0),
+          duration(0.0),
           vendor("amd"), outfile("amd_api_ut_ss.yaml")
     {
         std::fill(std::begin(n), std::end(n), 0);
@@ -153,6 +192,12 @@ void set_type_filter(const std::string& type);
 int read_yaml_file(const std::string &filename, std::vector<struct YamlInputs> &params);
 
 template <typename S>
+YAML::Node serialize_yaml_outputs(const struct YamlOutputs<S> *yop);
+
+template <typename S>
+void emit_yaml_stdout(const struct YamlOutputs<S> *yop);
+
+template <typename S>
 void write_yaml_output(const struct YamlOutputs<S> *yop);
 
 template <typename S>
@@ -176,6 +221,7 @@ struct PrintMetrics {
     uint64_t     tcnt;                                 // Total number of test cases executed
     uint64_t     fcnt;                                 // Number of failed test cases
     double       max_ulp_err;                          // Maximum ULP (Units in the Last Place) error observed
+    double       max_relative_err;                     // Maximum relative error observed
     double       min_time;                             // Minimum execution time recorded
     double       max_time;                             // Maximum execution time recorded
     double       median_time;                          // Median execution time
@@ -187,9 +233,10 @@ struct PrintMetrics {
 
     // Constructor to initialize the structure with a reference to the variant name
     PrintMetrics(std::string& var)
-        : variant(var), utflag(false), tcnt(0), fcnt(0), max_ulp_err(0.0),
-          min_time(0.0), max_time(0.0), median_time(0.0), mean_time(0.0),
-          stddev(0.0), cov(0.0), mops(0.0), count_above_avg(0) {}
+        : variant(var), utflag(false), exception_raised(0), tcnt(0), fcnt(0),
+          max_ulp_err(0.0), max_relative_err(0.0), min_time(0.0), max_time(0.0),
+          median_time(0.0), mean_time(0.0), stddev(0.0), cov(0.0), mops(0.0),
+          count_above_avg(0) {}
 };
 
 void print_table_header(bool nutflag);

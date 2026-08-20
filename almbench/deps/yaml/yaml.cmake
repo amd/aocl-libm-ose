@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+#  Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
 #
 #  Redistribution and use in source and binary forms, with or without
 #  modification, are permitted provided that the following conditions are met:
@@ -24,6 +24,8 @@
 #  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 #  POSSIBILITY OF SUCH DAMAGE.
 #
+
+include(Cct_ExternalProject)
 
 # === Utility Functions ===
 
@@ -53,10 +55,14 @@ set(YAML_REPO         "https://github.com/jbeder/yaml-cpp.git")
 set(YAML_TAG          "yaml-cpp-0.7.0")
 
 # Paths for source and build directories
-set(YAML_SOURCE_DIR   "${CMAKE_SOURCE_DIR}/build/external/yaml/yaml-cpp")
-set(YAML_BINARY_DIR   "${CMAKE_SOURCE_DIR}/build/external/yaml/yaml-cpp/build")
-set(YAML_LIB_PATH     "${YAML_BINARY_DIR}")
-
+set(YAML_SOURCE_DIR   "${${PROJECT_PREFIX}_SOURCE_DIR}/build/external/yaml/yaml-cpp")
+set(YAML_BINARY_DIR   "${CMAKE_BINARY_DIR}/yaml")
+if(WIN32)
+    set(YAML_OUTPUT_DIR "${${PROJECT_PREFIX}_SOURCE_DIR}/build/external/yaml/${CMAKE_BUILD_TYPE}")
+else()
+    set(YAML_OUTPUT_DIR "${${PROJECT_PREFIX}_SOURCE_DIR}/build/external/yaml")
+endif()
+set(YAML_LIB_PATH     "${YAML_OUTPUT_DIR}")
 
 # Option to build shared libraries (OFF by default)
 set(YAML_SHARED_LIBS  OFF CACHE BOOL "Build shared libraries")
@@ -73,11 +79,10 @@ else()
   if(YAML_SHARED_LIBS)
     set(YAML_LIB_NAME      libyaml-cpp.so)
   else()
-    set(YAML_LIB_NAME      libyaml-cpp.a)
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
-	  set(YAML_LIB_NAME      libyaml-cppd.a)
+          set(YAML_LIB_NAME      libyaml-cppd.a)
     else()
-	  set(YAML_LIB_NAME      libyaml-cpp.a)
+          set(YAML_LIB_NAME      libyaml-cpp.a)
     endif()
   endif()
 endif()
@@ -90,9 +95,11 @@ directory_exists(${YAML_SOURCE_DIR} YAML_DIR_EXISTS)
 # Check if the compiled library already exists in the build path
 library_exists(${YAML_LIB_NAME} ${YAML_LIB_PATH} YAML_LIB_EXISTS)
 
+directory_exists("${YAML_SOURCE_DIR}/include" YAML_INCLUDE_EXISTS)
+
 # === Clone and Build if Needed ===
 
-if(NOT YAML_LIB_EXISTS)
+if(NOT YAML_LIB_EXISTS OR NOT YAML_INCLUDE_EXISTS)
     message(STATUS "yaml-cpp not found. Preparing to build...")
 
     # Clone the repository if the source directory doesn't exist
@@ -112,16 +119,13 @@ if(NOT YAML_LIB_EXISTS)
 
     message(STATUS "Configuring and building yaml-cpp...")
 
-    # Configure and build yaml-cpp in a single execute_process call
     # Prepare runtime library configuration
     if(WIN32)
         if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-            # For Clang on Windows, use CMake's portable runtime library setting
             set(RUNTIME_CONFIG
                 -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded$<$<CONFIG:Debug>:Debug>DLL
                 -DYAML_MSVC_SHARED_RT=ON)
         elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-            # For MSVC, use both the property and explicit flags
             set(RUNTIME_CONFIG
                 -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded$<$<CONFIG:Debug>:Debug>DLL
                 -DCMAKE_CXX_FLAGS_RELEASE="/MD"
@@ -129,20 +133,29 @@ if(NOT YAML_LIB_EXISTS)
                 -DYAML_MSVC_SHARED_RT=ON)
         endif()
     else()
-        # Linux/Unix - no special runtime library configuration needed
         set(RUNTIME_CONFIG "")
     endif()
 
-    execute_process(COMMAND ${CMAKE_COMMAND} -G${CMAKE_GENERATOR} -S ${YAML_SOURCE_DIR} -B ${YAML_BINARY_DIR}
-                           -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-                           -DYAML_CPP_BUILD_TOOLS=OFF
-                           -DYAML_CPP_BUILD_TESTS=OFF
-                           -DBUILD_TESTING=OFF
-                           -DYAML_CPP_INSTALL=OFF
-                           -DBUILD_SHARED_LIBS=${YAML_SHARED_LIBS}
-                           -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                           -DCMAKE_PREFIX_PATH=${YAML_LIB_PATH}
-                           ${RUNTIME_CONFIG}
+    # Yaml-cpp artifacts into YAML_OUTPUT_DIR on every generator so the
+    # search path (YAML_LIB_PATH) is generator-independent.
+    alm_external_output_dir_args(_yaml_output_args "${YAML_OUTPUT_DIR}")
+
+    # Use centralized helpers for cmake configure and build arguments
+    alm_external_cmake_args(_yaml_cmake_args
+        SOURCE_DIR "${YAML_SOURCE_DIR}"
+        BINARY_DIR "${YAML_BINARY_DIR}"
+        EXTRA_ARGS
+            -DYAML_CPP_BUILD_TOOLS=OFF
+            -DYAML_CPP_BUILD_TESTS=OFF
+            -DBUILD_TESTING=OFF
+            -DYAML_CPP_INSTALL=OFF
+            -DBUILD_SHARED_LIBS=${YAML_SHARED_LIBS}
+            -DCMAKE_PREFIX_PATH=${YAML_LIB_PATH}
+            ${_yaml_output_args}
+            ${RUNTIME_CONFIG}
+    )
+
+    execute_process(COMMAND ${CMAKE_COMMAND} ${_yaml_cmake_args}
                     RESULT_VARIABLE  config_result
                     OUTPUT_VARIABLE  config_output
                     ERROR_VARIABLE   config_error
@@ -153,7 +166,9 @@ if(NOT YAML_LIB_EXISTS)
         message(FATAL_ERROR "Failed to configure yaml-cpp: ${config_error}")
     endif()
 
-    execute_process(COMMAND ${CMAKE_COMMAND} --build ${YAML_BINARY_DIR} --config ${CMAKE_BUILD_TYPE}
+    alm_external_build_args(_yaml_build_args "${YAML_BINARY_DIR}")
+
+    execute_process(COMMAND ${CMAKE_COMMAND} ${_yaml_build_args}
                     RESULT_VARIABLE  build_result
                     OUTPUT_VARIABLE  build_output
                     ERROR_VARIABLE   build_error
@@ -175,12 +190,7 @@ set(YAML_INCLUDE_DIR "${YAML_SOURCE_DIR}/include")
 # === Library Configuration ===
 
 # Set the full path to the yaml-cpp library
-if(WIN32)
-    set(YAML_LIB "${YAML_BINARY_DIR}/${YAML_LIB_NAME}")
-else()
-    # For Linux, use the full path to the library
-    set(YAML_LIB "${YAML_BINARY_DIR}/${YAML_LIB_NAME}")
-endif()
+set(YAML_LIB "${YAML_LIB_PATH}/${YAML_LIB_NAME}")
 
 # Check if the library file exists
 if(EXISTS "${YAML_LIB}")

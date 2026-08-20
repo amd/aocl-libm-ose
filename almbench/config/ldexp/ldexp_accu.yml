@@ -3,112 +3,258 @@
   test_sets:
   - id: accu_range-tests_01
     tests:
-     - id: ldexp_001
-       description: 'Full value distribution range tests: [+SMALLEST_SUBNORMAL, FLT_MAX] expstep'
+# Single Precision - valid exponent range [-126, 127]
+     - id: ldexp_ss_001
+       description: 'Full value distribution range tests: [+SMALLEST_SUBNORMAL, FLT_MAX], valid exponent'
        input:
        - [min_subnormal, max]
-       - [1, 2]
-       type: [expstep, bitstep]
-       steps: [10000, 1]
+       - [-126, 127]
+       type: [expstep, integer]
+       steps: [10000, 100]
        variants : [ss]
 
-     - id: ldexp_002
-       description: 'Full value distribution range tests: [-FLT_MAX, -SMALLEST_SUBNORMAL] expstep'
+     - id: ldexp_ss_002
+       description: 'Full value distribution range tests: [-FLT_MAX, -SMALLEST_SUBNORMAL], valid exponent'
        input:
        - [-max, -min_subnormal]
-       - [1, 2]
-       type: [expstep, bitstep]
-       steps: [1000, 1]
+       - [-126, 127]
+       type: [expstep, integer]
+       steps: [1000, 100]
        variants : [ss]
 
-     - id: ldexp_003
-       description: 'Subnormal values range tests: [0, LARGEST_SUBNORMAL] linearstep'
+     - id: ldexp_ss_003
+       description: 'Subnormal values range tests: [0, LARGEST_SUBNORMAL], valid exponent'
        input:
        - [0.0, max_subnormal]
-       - [1, 2]
-       type: [linearstep, bitstep]
-       steps: [5000, 1]
+       - [-126, 127]
+       type: [linearstep, integer]
+       steps: [5000, 100]
        variants : [ss]
 
-     - id: ldexp_004
-       description: 'Test around 0'
+     - id: ldexp_ss_004
+       description: 'Test around 0, valid exponent'
        input:
        - [0.0, 0x00000FFF]
-       - [1, 2]
-       type: [bitstep, bitstep]
-       steps: [1, 1]
+       - [-126, 127]
+       type: [bitstep, integer]
+       steps: [1, 100]
        variants : [ss]
 
-     - id: ldexp_005
-       description: 'Test around LARGEST_SUBNORMAL'
+     - id: ldexp_ss_005
+       description: 'Test around LARGEST_SUBNORMAL, valid exponent'
        input:
        - [0x007FF000, 0x00800fff]
-       - [1, 2]
-       type: [bitstep, bitstep]
-       steps: [1, 1]
+       - [-126, 127]
+       type: [bitstep, integer]
+       steps: [1, 100]
        variants : [ss]
 
-     - id: ldexp_006
-       description: 'Test around 1'
+     - id: ldexp_ss_006
+       description: 'Test around 1, valid exponent'
        input:
        - [0x3F7FF000, 0x3F800FFF]
-       - [1, 2]
-       type: [bitstep, bitstep]
-       steps: [1, 1]
+       - [-126, 127]
+       type: [bitstep, integer]
+       steps: [1, 100]
        variants : [ss]
 
-#Double precision
-     - id: ldexp_001
-       description: 'Full value distribution range tests: [+SMALLEST_SUBNORMAL, DBL-MAX] expstep'
+# Single Precision - invalid/out-of-range exponent (saturation cases)
+     - id: ldexp_ss_007
+       description: 'Invalid (overflow) exponent: [+SMALLEST_SUBNORMAL, FLT_MAX] * 2^[300,1000] -> +Inf'
        input:
        - [min_subnormal, max]
-       - [1, 2]
-       type: [expstep, bitstep]
-       steps: [10000, 1]
-       variants : [sd]
+       - [300, 1000]
+       type: [expstep, integer]
+       steps: [5000, 100]
+       variants : [ss]
 
-     - id: ldexp_002
-       description: 'Full value distribution range tests: [-DBL-MAX, -SMALLEST_SUBNORMAL] expstep'
+     - id: ldexp_ss_008
+       description: 'Invalid (underflow) exponent: [+SMALLEST_SUBNORMAL, FLT_MAX] * 2^[-1000,-300] -> 0'
+       input:
+       - [min_subnormal, max]
+       - [-1000, -300]
+       type: [expstep, integer]
+       steps: [5000, 100]
+       variants : [ss]
+
+     - id: ldexp_ss_009
+       description: 'Invalid (overflow) exponent: [-FLT_MAX, -SMALLEST_SUBNORMAL] * 2^[300,1000] -> -Inf'
        input:
        - [-max, -min_subnormal]
-       - [1, 2]
-       type: [expstep, bitstep]
-       steps: [1000, 1]
+       - [300, 1000]
+       type: [expstep, integer]
+       steps: [5000, 100]
+       variants : [ss]
+
+     - id: ldexp_ss_010
+       description: 'Invalid (underflow) exponent: [-FLT_MAX, -SMALLEST_SUBNORMAL] * 2^[-1000,-300] -> -0'
+       input:
+       - [-max, -min_subnormal]
+       - [-1000, -300]
+       type: [expstep, integer]
+       steps: [5000, 100]
+       variants : [ss]
+
+     - id: ldexp_ss_011
+       description: 'Subnormal values range tests: [-LARGEST_SUBNORMAL, 0], valid exponent'
+       input:
+       - [-max_subnormal, 0.0]
+       - [-126, 127]
+       type: [linearstep, integer]
+       steps: [5000, 100]
+       variants : [ss]
+
+     - id: ldexp_ss_012
+       description: 'Test around -0, valid exponent'
+       input:
+       - [0x80000000, 0x80000FFF]
+       - [-126, 127]
+       type: [bitstep, integer]
+       steps: [1, 100]
+       variants : [ss]
+
+     - id: ldexp_ss_013
+       description: 'Test around -LARGEST_SUBNORMAL, valid exponent'
+       input:
+       - [0x807FF000, 0x80800FFF]
+       - [-126, 127]
+       type: [bitstep, integer]
+       steps: [1, 100]
+       variants : [ss]
+
+     - id: ldexp_ss_014
+       description: 'Test around -1, valid exponent'
+       input:
+       - [0xBF7FF000, 0xBF800FFF]
+       - [-126, 127]
+       type: [bitstep, integer]
+       steps: [1, 100]
+       variants : [ss]
+
+#Double precision - valid exponent range [-1022, 1023]
+     - id: ldexp_sd_001
+       description: 'Full value distribution range tests: [+SMALLEST_SUBNORMAL, DBL_MAX], valid exponent'
+       input:
+       - [min_subnormal, max]
+       - [-1022, 1023]
+       type: [expstep, integer]
+       steps: [10000, 100]
        variants : [sd]
 
-     - id: ldexp_003
-       description: 'Subnormal values range tests: [0, LARGEST_SUBNORMAL] linearstep'
+     - id: ldexp_sd_002
+       description: 'Full value distribution range tests: [-DBL_MAX, -SMALLEST_SUBNORMAL], valid exponent'
+       input:
+       - [-max, -min_subnormal]
+       - [-1022, 1023]
+       type: [expstep, integer]
+       steps: [1000, 100]
+       variants : [sd]
+
+     - id: ldexp_sd_003
+       description: 'Subnormal values range tests: [0, LARGEST_SUBNORMAL], valid exponent'
        input:
        - [0.0, 0x000FFFFFFFFFFFFF]
-       - [1, 2]
-       type: [linearstep, bitstep]
-       steps: [5000, 1]
+       - [-1022, 1023]
+       type: [linearstep, integer]
+       steps: [5000, 100]
        variants : [sd]
 
-     - id: ldexp_004
-       description: 'Test around 0'
+     - id: ldexp_sd_004
+       description: 'Test around 0, valid exponent'
        input:
        - [0.0, 0x0000000000000FFF]
-       - [1, 2]
-       type: [bitstep, bitstep]
-       steps: [1, 1]
+       - [-1022, 1023]
+       type: [bitstep, integer]
+       steps: [1, 10]
        variants : [sd]
 
-     - id: ldexp_005
-       description: 'Test around LARGEST_SUBNORMAL'
+     - id: ldexp_sd_005
+       description: 'Test around LARGEST_SUBNORMAL, valid exponent'
        input:
        - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
-       - [1, 2]
-       type: [bitstep, bitstep]
-       steps: [1, 1]
+       - [-1022, 1023]
+       type: [bitstep, integer]
+       steps: [1, 10]
        variants : [sd]
 
-     - id: ldexp_006
-       description: 'Test around 1'
+     - id: ldexp_sd_006
+       description: 'Test around 1, valid exponent'
        input:
        - [0x3FEFFFFFFFFFF000, 0x3FF0000000000FFF]
-       - [1, 2]
-       type: [bitstep, bitstep]
-       steps: [1, 1]
+       - [-1022, 1023]
+       type: [bitstep, integer]
+       steps: [1, 10]
        variants : [sd]
 
+#Double precision - invalid/out-of-range exponent (saturation cases)
+     - id: ldexp_sd_007
+       description: 'Invalid (overflow) exponent: [+SMALLEST_SUBNORMAL, DBL_MAX] * 2^[2100,5000] -> +Inf'
+       input:
+       - [min_subnormal, max]
+       - [2100, 5000]
+       type: [expstep, integer]
+       steps: [5000, 100]
+       variants : [sd]
+
+     - id: ldexp_sd_008
+       description: 'Invalid (underflow) exponent: [+SMALLEST_SUBNORMAL, DBL_MAX] * 2^[-5000,-2100] -> 0'
+       input:
+       - [min_subnormal, max]
+       - [-5000, -2100]
+       type: [expstep, integer]
+       steps: [5000, 100]
+       variants : [sd]
+
+     - id: ldexp_sd_009
+       description: 'Invalid (overflow) exponent: [-DBL_MAX, -SMALLEST_SUBNORMAL] * 2^[2100,5000] -> -Inf'
+       input:
+       - [-max, -min_subnormal]
+       - [2100, 5000]
+       type: [expstep, integer]
+       steps: [5000, 100]
+       variants : [sd]
+
+     - id: ldexp_sd_010
+       description: 'Invalid (underflow) exponent: [-DBL_MAX, -SMALLEST_SUBNORMAL] * 2^[-5000,-2100] -> -0'
+       input:
+       - [-max, -min_subnormal]
+       - [-5000, -2100]
+       type: [expstep, integer]
+       steps: [5000, 100]
+       variants : [sd]
+
+     - id: ldexp_sd_011
+       description: 'Subnormal values range tests: [-LARGEST_SUBNORMAL, 0], valid exponent'
+       input:
+       - [-max_subnormal, 0.0]
+       - [-1022, 1023]
+       type: [linearstep, integer]
+       steps: [5000, 100]
+       variants : [sd]
+
+     - id: ldexp_sd_012
+       description: 'Test around -0, valid exponent'
+       input:
+       - [0x8000000000000000, 0x8000000000000FFF]
+       - [-1022, 1023]
+       type: [bitstep, integer]
+       steps: [1, 10]
+       variants : [sd]
+
+     - id: ldexp_sd_013
+       description: 'Test around -LARGEST_SUBNORMAL, valid exponent'
+       input:
+       - [0x800FFFFFFFFFF000, 0x8010000000000FFF]
+       - [-1022, 1023]
+       type: [bitstep, integer]
+       steps: [1, 10]
+       variants : [sd]
+
+     - id: ldexp_sd_014
+       description: 'Test around -1, valid exponent'
+       input:
+       - [0xBFEFFFFFFFFFF000, 0xBFF0000000000FFF]
+       - [-1022, 1023]
+       type: [bitstep, integer]
+       steps: [1, 10]
+       variants : [sd]

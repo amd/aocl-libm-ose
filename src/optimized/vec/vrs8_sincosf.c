@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -105,14 +105,14 @@ sin_specialcase(v_f32x8_t _x,
                 v_u32x8_t cond)
 {
     return (v_f32x8_t) {
-            (cond[0]) ? ALM_PROTO(sinf)(_x[0]):result[0],
-            (cond[1]) ? ALM_PROTO(sinf)(_x[1]):result[1],
-            (cond[2]) ? ALM_PROTO(sinf)(_x[2]):result[2],
-            (cond[3]) ? ALM_PROTO(sinf)(_x[3]):result[3],
-            (cond[4]) ? ALM_PROTO(sinf)(_x[4]):result[4],
-            (cond[5]) ? ALM_PROTO(sinf)(_x[5]):result[5],
-            (cond[6]) ? ALM_PROTO(sinf)(_x[6]):result[6],
-            (cond[7]) ? ALM_PROTO(sinf)(_x[7]):result[7],
+            (cond[0]) ? ALM_PROTO_OPT(sinf)(_x[0]):result[0],
+            (cond[1]) ? ALM_PROTO_OPT(sinf)(_x[1]):result[1],
+            (cond[2]) ? ALM_PROTO_OPT(sinf)(_x[2]):result[2],
+            (cond[3]) ? ALM_PROTO_OPT(sinf)(_x[3]):result[3],
+            (cond[4]) ? ALM_PROTO_OPT(sinf)(_x[4]):result[4],
+            (cond[5]) ? ALM_PROTO_OPT(sinf)(_x[5]):result[5],
+            (cond[6]) ? ALM_PROTO_OPT(sinf)(_x[6]):result[6],
+            (cond[7]) ? ALM_PROTO_OPT(sinf)(_x[7]):result[7],
         };
 }
 
@@ -122,14 +122,14 @@ cos_specialcase(v_f32x8_t _x,
                 v_u32x8_t cond)
 {
     return (v_f32x8_t) {
-            (cond[0]) ? ALM_PROTO(cosf)(_x[0]):result[0],
-            (cond[1]) ? ALM_PROTO(cosf)(_x[1]):result[1],
-            (cond[2]) ? ALM_PROTO(cosf)(_x[2]):result[2],
-            (cond[3]) ? ALM_PROTO(cosf)(_x[3]):result[3],
-            (cond[4]) ? ALM_PROTO(cosf)(_x[4]):result[4],
-            (cond[5]) ? ALM_PROTO(cosf)(_x[5]):result[5],
-            (cond[6]) ? ALM_PROTO(cosf)(_x[6]):result[6],
-            (cond[7]) ? ALM_PROTO(cosf)(_x[7]):result[7],
+            (cond[0]) ? ALM_PROTO_OPT(cosf)(_x[0]):result[0],
+            (cond[1]) ? ALM_PROTO_OPT(cosf)(_x[1]):result[1],
+            (cond[2]) ? ALM_PROTO_OPT(cosf)(_x[2]):result[2],
+            (cond[3]) ? ALM_PROTO_OPT(cosf)(_x[3]):result[3],
+            (cond[4]) ? ALM_PROTO_OPT(cosf)(_x[4]):result[4],
+            (cond[5]) ? ALM_PROTO_OPT(cosf)(_x[5]):result[5],
+            (cond[6]) ? ALM_PROTO_OPT(cosf)(_x[6]):result[6],
+            (cond[7]) ? ALM_PROTO_OPT(cosf)(_x[7]):result[7],
         };
 }
 

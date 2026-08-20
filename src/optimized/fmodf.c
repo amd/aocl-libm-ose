@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -58,29 +58,22 @@ float ALM_PROTO_OPT(fmodf)(float x, float y)
         return x * y;
     }
 
+    /* Check x for NaN. If yes, return qnan/snan as applicable. */
+    if(unlikely(fax > POS_INF_F32))
+    {
+        return x + x;
+    }
+
     /* Check if y is Zero. If yes, return NaN and raise exception*/
     if(unlikely(fay == 0))
     {
         return _fmodf_special(x, asfloat(fay | QNANBITPATT_SP32), FMOD_Y_ZERO);
     }
 
-    /* Check if x is NaN or INF */
-    if(unlikely((fax & EXPBITS_SP32) >= EXPBITS_SP32))
+    /* Check if x is INF */
+    if(unlikely(fax == POS_INF_F32))
     {
-       /* x is NaN. Return NaN. Raise exception for Windows */
-       if(fax > POS_INF_F32)
-       {
-        #ifdef WINDOWS
-            __alm_handle_errorf(fay | QNANBITPATT_SP32, AMD_F_INVALID);
-        #else
-            return x + x;
-        #endif
-       }
-       /* x is INF. Return NaN and raise exception */
-       else
-       {
-         return _fmodf_special(x, asfloat(fay | QNANBITPATT_SP32), FMOD_X_INF);
-       }
+        return _fmodf_special(x, asfloat(fax | QNANBITPATT_SP32), FMOD_X_INF);
     }
 
     if(fax == fay)
@@ -151,7 +144,8 @@ float ALM_PROTO_OPT(fmodf)(float x, float y)
 
     if(dx<0)
     {
-        adx = 0.0 - adx;
+        /* Negate to apply x's sign. */
+        adx = -adx;
     }
 
     return (float)adx;

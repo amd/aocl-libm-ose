@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -60,26 +60,47 @@
  */
 #include <math.h>
 #include <libm_macros.h>
+#include <libm_util_amd.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/types.h>
 #include <libm/constants.h>
 #include <libm/typehelper.h>
-#include <stdio.h>
 
 fc32_t
 ALM_PROTO_OPT(clogf)(fc32_t x) {
 
-    float theta, p;
+    float a = crealf(x);
+    float b = cimagf(x);
 
-    double abs_x;
+    /* Get absolute value of real and imaginary parts */
+    uint32_t abs_re = asuint32(a) & 0x7FFFFFFFU;
+    uint32_t abs_im = asuint32(b) & 0x7FFFFFFFU;
 
-    abs_x = (double)cabsf(x);
+    /* Compute imaginary part of the logarithm */
+    float theta = ALM_PROTO_REF(atan2f)(b, a);
 
-    p = (float)log(abs_x);
+    /* If either component is infinite, return (+inf, theta) */
+    if (abs_re == POS_INF_F32 || abs_im == POS_INF_F32)
+        return CMPLXF(asfloat(POS_INF_F32), theta);
 
-    theta = atan2f(cimagf(x), crealf(x));
+    /* Switch to double precision for the rest of the computation */
+    double da   = (double)a;
+    double db   = (double)b;
+    double b_sq = db * db;
+    double abs2 = da * da + b_sq;
 
-    return CMPLXF(p, theta);
+    /* Compute z^2 - 1 in double precision for the log1p branch 
+       To avoid catastrophic cancellation, we use log1p when |z|^2 is in (1/2, 2)
+       |z|^2 - 1 is computed as (a-1)(a+1) + b^2 */
+    double p_d;
+    if (abs2 > 0.5 && abs2 < 2.0) {
+        double abs2_m1 = (da - 1.0) * (da + 1.0) + b_sq;
+        p_d = 0.5 * ALM_PROTO_OPT(log1p)(abs2_m1);
+    } else {
+        p_d = 0.5 * ALM_PROTO_OPT(log)(abs2);
+    }
+
+    return CMPLXF((float)p_d, theta);
 
 }
 

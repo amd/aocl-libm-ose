@@ -63,6 +63,11 @@ struct alm_arch_funcs __arch_funcs_fmini = {
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN5(vrsa_fminfi),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN5(vrda_fmini),
         },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN6(vrsa_fminfi),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN6(vrda_fmini),
+        },
     },
 };
 void

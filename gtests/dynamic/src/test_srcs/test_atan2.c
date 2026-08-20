@@ -39,7 +39,20 @@ int test_atan2(void* handle) {
             .s1d_2 = (func_2)dlsym(handle, "amd_atan2"),
         #endif
     };
-    if (data.s1f_2 == NULL || data.s1d_2 == NULL) {
+
+    data.v2d_2 = (func_v2d_2)FUNC_LOAD(handle, "amd_vrd2_atan2");
+    data.v4d_2 = (func_v4d_2)FUNC_LOAD(handle, "amd_vrd4_atan2");
+
+    #if defined(__AVX512__)
+    data.v8d_2 = (func_v8d_2)FUNC_LOAD(handle, "amd_vrd8_atan2");
+    #endif
+
+    if (data.s1f_2 == NULL || data.s1d_2 == NULL || data.v2d_2 == NULL ||
+        data.v4d_2 == NULL
+        #if defined(__AVX512__)
+        || data.v8d_2 == NULL
+        #endif
+        ) {
         printf ("Uninitialized variant in %s\n", func_name);
         exit(1);
     }

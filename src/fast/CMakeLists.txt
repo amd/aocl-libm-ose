@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,9 @@ endif()
 
 get_fastmath_flag( fmflag )
 
-file(GLOB FAST_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.c")
+set(ALM   "${${PROJECT_PREFIX}_SOURCE_DIR}/src/alm_special.c")
+file(GLOB FAST_SRC RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.c")
+list(APPEND FAST_SRC "${ALM}")
 set(FAST_INCLUDE "${INCLUDE_PATHS}")
 set(FAST_FLAGS  ${ffpflag} ${fmflag} ${wflags} ${picflag} ${winflag} ${fmaflag})
 
@@ -47,16 +49,24 @@ target_compile_options(libmfast_obj PRIVATE ${FAST_FLAGS})
 
 if(WIN32)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-  set(FASTLIBMDEPS "${PROJECT_BINARY_DIR}/src/libalm.lib")
-else()
-  set(FASTLIBMDEPS "libm_shared")
 endif()
-add_library(libmfast_shared SHARED $<TARGET_OBJECTS:libmfast_obj>)
+# Compile alm_main.c into the shared fast library so it gets the same
+# direct-execution entry point (version banner) as libalm.so. Without this the
+# shared object has entry point 0x0 and no PT_INTERP, so running
+# ./libalmfast.so jumps into the ELF header and segfaults.
+add_library(libmfast_shared SHARED
+    $<TARGET_OBJECTS:libmfast_obj>
+    ${${PROJECT_PREFIX}_SOURCE_DIR}/src/alm_main.c)
 set_target_properties(libmfast_shared PROPERTIES
     POSITION_INDEPENDENT_CODE ON
     OUTPUT_NAME ${ALMFAST}
 )
-target_link_libraries(libmfast_shared PRIVATE ${FASTLIBMDEPS})
+target_include_directories(libmfast_shared PRIVATE ${FAST_INCLUDE})
+# Set alm_main as the ELF entry point so ./libalmfast.so self-executes (skipped for MSVC).
+if(NOT MSVC)
+  set_target_properties(libmfast_shared PROPERTIES
+      LINK_FLAGS "-Wl,-ealm_main -Wl,-z,noexecstack")
+endif()
 list(APPEND libm libmfast_shared)
 
 add_library(libmfast_static STATIC $<TARGET_OBJECTS:libmfast_obj>)

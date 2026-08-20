@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+include(Cct_ExternalProject)
+
 # Function to check if a directory exists
 function(directory_exists dir result_var)
     if(EXISTS "${dir}" AND IS_DIRECTORY "${dir}")
@@ -47,15 +49,33 @@ function(library_exists lib libpath result_var)
 endfunction()
 
 # Function to build gapi
-function(build_gapi source_dir binary_dir)
+function(build_gapi source_dir binary_dir output_dir)
     message(STATUS "Building gapi from: ${source_dir}")
 
+    set(GAPI_RUNTIME_CONFIG "")
+    if(WIN32)
+        if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|MSVC")
+            set(GAPI_RUNTIME_CONFIG -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL)
+        endif()
+    endif()
+
+    #Gapi build artifacts into output_dir on every generator so the
+    # layout assumed by GAPI_LIB_PATH holds for single- and multi-config
+    # generators.
+    alm_external_output_dir_args(_gapi_output_args "${output_dir}")
+    set(_gapi_extra_args
+        -DBUILD_SHARED_LIBS=${GTBM_SHARED} ${GAPI_RUNTIME_CONFIG} ${_gapi_output_args})
+
+    # Centralized configure args handle Visual Studio (multi-config, -A/-T
+    # ClangCL toolset) vs single-config (compiler paths + build type) generators.
+    alm_external_cmake_args(_gapi_cmake_args
+        SOURCE_DIR "${source_dir}"
+        BINARY_DIR "${binary_dir}"
+        EXTRA_ARGS ${_gapi_extra_args}
+    )
+
     # Configure gapi build
-    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" -S "${source_dir}" -B "${binary_dir}"
-                            -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-                            -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-                            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                            -DBUILD_SHARED_LIBS=${GTBM_SHARED}
+    execute_process(COMMAND ${CMAKE_COMMAND} ${_gapi_cmake_args}
                     RESULT_VARIABLE gapi_configure_result
                     OUTPUT_VARIABLE gapi_configure_output
                     ERROR_VARIABLE gapi_configure_error
@@ -66,8 +86,11 @@ function(build_gapi source_dir binary_dir)
         message(FATAL_ERROR "Failed to configure gapi build:\n${gapi_configure_error}")
     endif()
 
+    # Use centralized helper for cmake build arguments
+    alm_external_build_args(_gapi_build_args "${binary_dir}")
+
     # Build gapi
-    execute_process(COMMAND ${CMAKE_COMMAND} --build "${binary_dir}"  --config ${CMAKE_BUILD_TYPE}
+    execute_process(COMMAND ${CMAKE_COMMAND} ${_gapi_build_args}
                     RESULT_VARIABLE gapi_build_result
                     OUTPUT_VARIABLE gapi_build_output
                     ERROR_VARIABLE  gapi_build_error
@@ -82,8 +105,8 @@ function(build_gapi source_dir binary_dir)
 endfunction()
 
 # Function to configure and build gapi
-function(configure_build gapi_source_dir gapi_binary_dir)
-    build_gapi("${gapi_source_dir}" "${gapi_binary_dir}")
+function(configure_build gapi_source_dir gapi_binary_dir gapi_output_dir)
+    build_gapi("${gapi_source_dir}" "${gapi_binary_dir}" "${gapi_output_dir}")
 endfunction()
 
 # Validate required variables
@@ -96,8 +119,13 @@ set(GTBM_SHARED OFF CACHE BOOL "Build shared libraries for Google Test and Googl
 
 # Set directory paths
 set(GAPI_SOURCE_DIR   "${CMAKE_CURRENT_LIST_DIR}")
-set(GAPI_BINARY_DIR   "${CMAKE_SOURCE_DIR}/build/external/gapi")
-set(GAPI_LIB_PATH     "${GAPI_BINARY_DIR}")
+set(GAPI_BINARY_DIR   "${CMAKE_BINARY_DIR}/gapi")
+if(WIN32)
+    set(GAPI_OUTPUT_DIR   "${${PROJECT_PREFIX}_SOURCE_DIR}/build/external/gapi/${CMAKE_BUILD_TYPE}")
+else()
+    set(GAPI_OUTPUT_DIR   "${${PROJECT_PREFIX}_SOURCE_DIR}/build/external/gapi")
+endif()
+set(GAPI_LIB_PATH     "${GAPI_OUTPUT_DIR}")
 
 # Platform-specific library names
 if(WIN32)
@@ -134,7 +162,7 @@ if(GTEST_LIB_EXISTS AND BENCHMARK_LIB_EXISTS)
     message(STATUS "Google Benchmark library: ${GAPI_LIB_PATH}/${GBENCH_LIB}")
 
 else()
-    configure_build("${GAPI_SOURCE_DIR}" "${GAPI_BINARY_DIR}")
+    configure_build("${GAPI_SOURCE_DIR}" "${GAPI_BINARY_DIR}" "${GAPI_OUTPUT_DIR}")
 
     # Verify the libraries were built successfully
     library_exists("${GTEST_LIB}" "${GAPI_LIB_PATH}" GTEST_LIB_BUILT)
@@ -175,7 +203,6 @@ if(NOT EXISTS "${GAPI_LIB_PATH}")
     message(WARNING "GAPI library path does not exist: ${GAPI_LIB_PATH}")
 endif()
 
-# Set library paths for both gtest and gbench (they're in the same directory)
+# Set library paths for both gtest and gbench (they are in the same directory)
 set(GTEST_LIB_PATH "${GAPI_LIB_PATH}")
 set(GBENCH_LIB_PATH "${GAPI_LIB_PATH}")
-

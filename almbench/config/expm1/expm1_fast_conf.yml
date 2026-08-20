@@ -1,0 +1,40 @@
+- test_sequence: unit_tests_expm1_fast
+  ignore_exceptions: [underflow, inexact]
+  function: expm1
+  test_sets:
+  - id: special-values
+    description: Special case tests for expm1 fast (double precision)
+    tests:
+    #
+    # expm1(±0) — zero preserves sign
+    #
+    - id: expm1_001
+      description: "expm1(+0) = +0"
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: expm1_002
+      description: "expm1(-0) = -0"
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    #
+    # expm1(±inf) — defined limits
+    #
+    - id: expm1_003
+      description: "expm1(+inf) = +inf"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: expm1_004
+      description: "expm1(-inf) = -1"
+      input: [0xfff0000000000000]
+      expect: [0xbff0000000000000]
+      expect_exception: []
+      variants: [sd]

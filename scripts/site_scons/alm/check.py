@@ -34,10 +34,10 @@ from SCons.SConf import *
 from os.path import join as joinpath
 
 toolchain_versions = {
-    #Toolchain : {preferred_version, min_version}
-    'GCC' :     {'max':'15.2' ,  'min':'9.2'},
-    'CLANG':    {'max':'19.9',   'min':'9.0'},
-    'AOCC':     {'max':'19.9',   'min':'9.0'},
+    #Toolchain : {max_version, min_version}
+    'GCC' :     {'max':'16.1' ,  'min':'9.2'},
+    'CLANG':    {'max':'21.1',   'min':'9.0'},
+    'AOCC':     {'max':'21.1',   'min':'9.0'},
     'MSVC':     {'max':'12.0',   'min':'2.2'},
 }
 
@@ -88,19 +88,6 @@ def CheckPathDir(context, mydir):
         print ("Invalid/Empty directory: %s" % mydir)
         return False
     return True
-
-def CheckCPUIDInstall(context):
-    res = False
-    env = context.env
-    aocl_utils_install_path = env['aocl_utils_install_path']
-
-    context.Message ("Checking for valid AOCL UTILS install path")
-
-    # check if path exists, else exit error
-    if CheckPathDir(context, aocl_utils_install_path):
-        res = True
-    context.Result(res)
-    return res
 
 def CheckLibAbi(context):
     # If ABI is SVML, check for OneAPI library path in INTEL_LIB_PATH variable
@@ -156,14 +143,14 @@ def All(almenv):
     env = almenv.env
 
     def CheckZenVer(ctx):
-        for f in ['znver5', 'znver4', 'znver3', 'znver2', 'znver1']:
+        for f in ['znver6', 'znver5', 'znver4', 'znver3', 'znver2', 'znver1']:
             ret = CheckCompilerFlag(ctx, '-march='+f)
             if ret :
                 ctx.env['ALM_MAX_ARCH'] = f
                 return ret
 
         ctx.Message("Unable to detect compiler support for Zen architecture\n")
-        ctx.env['ALM_MAX_ARCH'] = 'x86_64'
+        ctx.env['ALM_MAX_ARCH'] = 'x86-64'
         return None
 
     def CheckUnalignedVectorMove(ctx):
@@ -179,7 +166,6 @@ def All(almenv):
             'CheckForToolchain' : CheckForToolchain,
             'CheckForOS'        : CheckForOS,
             'CheckLibAbi'       : CheckLibAbi,
-            'CheckCPUIDInstall' :   CheckCPUIDInstall,
             'CheckZenVer'       : lambda ctx : CheckZenVer(ctx),
             'CheckUnalignedVectorMove' : lambda ctx : CheckUnalignedVectorMove(ctx),
         },
@@ -205,9 +191,6 @@ def All(almenv):
     conf.CheckZenVer()
 
     conf.CheckUnalignedVectorMove()
-
-    if not conf.CheckCPUIDInstall():
-        Exit(1)
 
     return conf
 

@@ -90,6 +90,9 @@ extern int use_atan_avx512();
 extern int use_erf_avx512();
 #endif
 
+/* stable sort */
+extern int use_stablesort();
+
 int main()  {
     printf("Illustration of AOCL LibM functions\n");
     /* arithmetic */
@@ -165,5 +168,8 @@ int main()  {
     use_erf_avx512();
     #endif
 
+    /* stable sort */
+    use_stablesort();
+    
     return 0;
 }

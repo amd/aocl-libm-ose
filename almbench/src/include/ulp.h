@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,131 +25,170 @@
  *
  */
 
-#pragma once
+ #pragma once
 
-#include <iostream>
+ #include <iostream>
+ #include <cmath>
+ #include "alm_test.h"
 
-/*
- * set_global_ulp_threshold:
+ /*
+ * SetGlobalUlpThreshold:
  * Sets a global default ULP threshold for new ulp_data instances.
  * This affects the default constructor of ulp_data.
  */
-void set_global_ulp_threshold(double threshold);
+void SetGlobalUlpThreshold(double threshold);
 
-/*
- * get_global_ulp_threshold:
- * Gets the current global default ULP threshold.
- */
-double get_global_ulp_threshold();
+ /*
+  * GetGlobalUlpThreshold:
+  * Gets the current global default ULP threshold.
+  */
+ double GetGlobalUlpThreshold();
 
 
-/*
- * ulp_data:
- * Holds ULP error metrics for a test case.
- */
-struct ulp_data {
-    double max_ulp_err;     /* Maximum ULP error observed */
-    double ulp_threshold;   /* Acceptable ULP threshold */
+ /*
+  * ulp_data:
+  * Holds ULP error metrics for a test case.
+  *
+  */
+ struct ulp_data {
+     double   max_ulp_err;        /* Maximum ULP error observed */
+     double   max_relative_err;   /* Maximum relative error observed */
+     double   ulp_threshold;      /* Acceptable ULP threshold */
+     uint64_t ulp_exceed_count;   /* Count of test points where ulp > ulp_threshold */
+     uint64_t exact_count;        /* Count of test points where ulp == 0 */
+     uint64_t rounded_count;      /* Count of test points where 0 < ulp <= 0.5 */
+     uint64_t inaccurate_count;   /* Count of test points where ulp > 0.5 */
 
-    ulp_data()
-        : max_ulp_err(0.0), ulp_threshold(get_global_ulp_threshold()) {}
+     ulp_data()
+         : max_ulp_err(0.0), max_relative_err(0.0),
+           ulp_threshold(GetGlobalUlpThreshold()),
+           ulp_exceed_count(0),
+           exact_count(0), rounded_count(0), inaccurate_count(0) {}
 
-    ulp_data(double threshold)
-        : max_ulp_err(0.0), ulp_threshold(threshold) {}
-};
+     ulp_data(double threshold)
+         : max_ulp_err(0.0), max_relative_err(0.0),
+           ulp_threshold(threshold),
+           ulp_exceed_count(0),
+           exact_count(0), rounded_count(0), inaccurate_count(0) {}
+ };
 
-/*
- * mpfr::op_type:
- * Type traits to map float/double to higher-precision types for MPFR comparison.
- */
-namespace mpfr {
-    template <typename T>
-    struct op_type;
+ /*
+  * mpfr::op_type:
+  * Type traits to map float/double to higher-precision types for MPFR comparison.
+  */
+ namespace mpfr {
+     template <typename T>
+     struct op_type;
 
-    /* Specialization for float */
-    template <>
-    struct op_type<float> {
-        using mopt = double;
-    };
+     /* Specialization for float */
+     template <>
+     struct op_type<float> {
+         using mopt = double;
+     };
 
-    /* Specialization for double */
-    template <>
-    struct op_type<double> {
-        using mopt = long double;
-    };
-} /* namespace mpfr */
+     /* Specialization for double */
+     template <>
+     struct op_type<double> {
+         using mopt = long double;
+     };
 
-/* ULP threshold management utilities */
+     /* Specialization for lint_t */
+     template <>
+     struct op_type<lint_t> {
+         using mopt = lint_t;
+     };
 
-/*
- * set_ulp_threshold:
- * Sets the ULP threshold for a ulp_data structure.
- */
-inline void set_ulp_threshold(struct ulp_data &udata, double threshold) {
-    udata.ulp_threshold = threshold;
-}
+      /* Specialization for llint_t */
+     template <>
+     struct op_type<llint_t> {
+         using mopt = llint_t;
+     };
 
-/*
- * get_ulp_threshold:
- * Gets the current ULP threshold from a ulp_data structure.
- */
-inline double get_ulp_threshold(const struct ulp_data &udata) {
-    return udata.ulp_threshold;
-}
+     /* C complex — reference from mparith matches cexp/clog (promoted result type). */
+     template <>
+     struct op_type<fc32_t> {
+         using mopt = fc64_t;
+     };
 
-/*
- * reset_ulp_threshold:
- * Resets ULP threshold to the default value (0.5).
- */
-inline void reset_ulp_threshold(struct ulp_data &udata) {
-    udata.ulp_threshold = 0.5;
-}
+     template <>
+     struct op_type<fc64_t> {
+         using mopt = fc128_t;
+     };
+ } /* namespace mpfr */
 
-/*
- * is_ulp_acceptable:
- * Checks if a ULP error is within the acceptable threshold.
- */
-inline bool is_ulp_acceptable(const struct ulp_data &udata, double ulp_error) {
-    return ulp_error <= udata.ulp_threshold;
-}
+ /* ULP threshold management utilities */
 
-/*
- * compare_ulp_thresholds:
- * Compares two ULP thresholds and returns:
- * -1 if first < second, 0 if equal, 1 if first > second
- */
-inline int compare_ulp_thresholds(double threshold1, double threshold2) {
-    const double epsilon = 1e-15;
-    if (std::abs(threshold1 - threshold2) < epsilon) return 0;
-    return (threshold1 < threshold2) ? -1 : 1;
-}
+ /*
+  * set_ulp_threshold:
+  * Sets the ULP threshold for a ulp_data structure.
+  */
+ inline void set_ulp_threshold(struct ulp_data &udata, double threshold) {
+     udata.ulp_threshold = threshold;
+ }
 
-/* ULP comparison and reporting utilities */
+ /*
+  * get_ulp_threshold:
+  * Gets the current ULP threshold from a ulp_data structure.
+  */
+ inline double get_ulp_threshold(const struct ulp_data &udata) {
+     return udata.ulp_threshold;
+ }
 
-/*
- * update_ulp:
- * Updates ULP error data based on actual and expected values.
- */
-template <typename S, typename L>
-int update_ulp(S actual, L expected, struct ulp_data &udata, double &ulp);
+ /*
+  * reset_ulp_threshold:
+  * Resets ULP threshold to the default value (0.5).
+  */
+ inline void reset_ulp_threshold(struct ulp_data &udata) {
+     udata.ulp_threshold = 0.5;
+ }
 
-/*
- * PrintUlpResults01:
- * Prints ULP results for single-input functions.
- */
-template <typename S, typename L>
-void PrintUlpResults01(S ip, S op, L mpfrop, double ulp);
+ /*
+  * is_ulp_acceptable:
+  * Checks if a ULP error is within the acceptable threshold.
+  */
+ inline bool is_ulp_acceptable(const struct ulp_data &udata, double ulp_error) {
+     return ulp_error <= udata.ulp_threshold;
+ }
 
-/*
- * PrintUlpResults02:
- * Prints ULP results for two-input functions.
- */
-template <typename S, typename L>
-void PrintUlpResults02(S inp1, S inp2, S ap, L xp, double ulp);
+ /*
+  * compare_ulp_thresholds:
+  * Compares two ULP thresholds and returns:
+  * -1 if first < second, 0 if equal, 1 if first > second
+  */
+ inline int compare_ulp_thresholds(double threshold1, double threshold2) {
+     const double epsilon = 1e-15;
+     if (std::abs(threshold1 - threshold2) < epsilon) {
+        return 0;
+    }
+     return (threshold1 < threshold2) ? -1 : 1;
+ }
 
-/*
- * PrintUlpResults:
- * Prints ULP results for variadic input functions.
- */
-template <typename S, typename L, typename... Args>
-void PrintUlpResults(S ap, L xp, double ulp, Args... inps);
+ /* ULP comparison and reporting utilities */
+
+ /*
+  * update_ulp:
+  * Updates ULP error data based on actual and expected values.
+  */
+ template <typename S, typename L>
+ int update_ulp(S actual, L expected, struct ulp_data &udata, double &ulp);
+
+ /*
+  * PrintUlpResults01:
+  * Prints ULP results for single-input functions.
+  */
+ template <typename S, typename L>
+ void PrintUlpResults01(S ip, S op, L mpfrop, double ulp);
+
+ /*
+  * PrintUlpResults02:
+  * Prints ULP results for two-input functions.
+  */
+ template <typename S, typename L>
+ void PrintUlpResults02(S inp1, S inp2, S ap, L xp, double ulp);
+
+ /*
+  * PrintUlpResults:
+  * Prints ULP results for variadic input functions.
+  */
+ template <typename S, typename L, typename... Args>
+ void PrintUlpResults(S ap, L xp, double ulp, Args... inps);

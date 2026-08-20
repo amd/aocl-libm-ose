@@ -347,7 +347,7 @@ v_f64x8_t ALM_PROTO_OPT(vrd8_erfinv)(v_f64x8_t x)
     v_f64x8_t neg_absx = as_v8_f64_u64(SIGN_MASK | ux_abs);
     v_f64x8_t log_val;
     for (uint64_t i = 0; i < 8; i++) {
-      log_val[i] = ALM_PROTO(log1p)(neg_absx[i]);
+      log_val[i] = ALM_PROTO_OPT(log1p)(neg_absx[i]);
     }
     v_f64x8_t neg_log = as_v8_f64_u64(as_v8_u64_f64(log_val) ^ SIGN_MASK);
     v_f64x8_t y = _mm512_sqrt_pd(neg_log);

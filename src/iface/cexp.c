@@ -69,6 +69,11 @@ struct alm_arch_funcs __arch_funcs_cexp = {
             [ALM_FUNC_SCAL_SP_CMPLX] = &ALM_PROTO_ARCH_ZN5(cexpf),
             [ALM_FUNC_SCAL_DP_CMPLX] = &ALM_PROTO_ARCH_ZN5(cexp),
         },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP_CMPLX] = &ALM_PROTO_ARCH_ZN6(cexpf),
+            [ALM_FUNC_SCAL_DP_CMPLX] = &ALM_PROTO_ARCH_ZN6(cexp),
+        },
     },
 };
 

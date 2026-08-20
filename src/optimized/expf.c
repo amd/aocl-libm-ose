@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -96,26 +96,23 @@ static const struct expf_data expf_v2_data = {
     },
 };
 
-#define C1	expf_v2_data.poly[0]
-#define C2	expf_v2_data.poly[1]
+#define C1      expf_v2_data.poly[0]
+#define C2      expf_v2_data.poly[1]
 #define C3  expf_v2_data.poly[2]
 #define C4  expf_v2_data.poly[3]
 
 #define EXPF_LN2_BY_TBLSZ  expf_v2_data.ln2by_tblsz
 #define EXPF_TBLSZ_BY_LN2  expf_v2_data.tblsz_byln2
-#define EXPF_HUGE	   expf_v2_data.Huge
+#define EXPF_HUGE          expf_v2_data.Huge
 #define EXPF_TABLE         expf_v2_data.table_v3
 
-#define EXPF_FARG_MIN -0x1.9fe368p6f    /* log(0x1p-150) ~= -103.97 */
-#define EXPF_FARG_MAX  0x1.62e42ep6f    /* log(0x1p128)  ~=   88.72  */
+#define EXPF_FARG_MIN  -0x1.9fe368p6f   /* log(2^-150) ~= -103.97 */
+#define EXPF_FARG_MAX   0x1.62e42ep6f   /* log(2^128)  ~=   88.72 */
 
+/* Bit patterns for sign/infinity checks. */
+#define EXPF_ABS_MASK       (~SIGNBIT_SP32)   /* strip sign bit */
+#define EXPF_NEG_INF_BITS   NINFBITPATT_SP32  /* -infinity */
 
-static uint32_t
-top12f(float x)
-{
-    flt32_t f = {.f = x};
-    return f.u >> 20;
-}
 
 /******************************************
 * Implementation Notes
@@ -136,62 +133,56 @@ ALM_PROTO_OPT(expf)(float x)
 {
     double_t  q, dn, r, z;
     uint64_t n, j;
+    float_t result;
 
-    uint32_t top = top12f(x);
+    uint32_t ix = asuint32(x);
 
-    if (unlikely (top > top12f(88.0f))) {
-        if(x != x)
-            return x;
-
-        if (asuint32(x) == asuint32(-INFINITY))
-            return 0.0f;
-
-        if (x > EXPF_FARG_MAX){
-            if(asuint32(x) == PINFBITPATT_SP32)
-                return asfloat(PINFBITPATT_SP32);
-
-            /* Raise FE_OVERFLOW, FE_INEXACT */
-            return alm_expf_special(asfloat(PINFBITPATT_SP32),  ALM_E_IN_X_INF);
+    if (unlikely(((ix & EXPF_ABS_MASK) > PINFBITPATT_SP32) ||
+                 (x > EXPF_FARG_MAX) || (x < EXPF_FARG_MIN))) {
+        if ((ix & EXPF_ABS_MASK) > PINFBITPATT_SP32) {    /* NaN */
+            result = __alm_handle_errorf(ix | QNAN_MASK_32,
+                                         (ix & QNAN_MASK_32) ? AMD_F_NONE
+                                                             : AMD_F_INVALID);
+        } else if (ix == EXPF_NEG_INF_BITS) {  /* -inf: exp(-inf) = 0 */
+            result = 0.0f;
+        } else if (x > EXPF_FARG_MAX) {
+            if (ix == PINFBITPATT_SP32) {
+                result = INFINITY;
+            } else {
+                /* Raise FE_OVERFLOW, FE_INEXACT */
+                result = alm_expf_special(INFINITY, ALM_E_IN_X_INF);
+            }
+        } else {
+            result = alm_expf_special(0.0, ALM_E_IN_X_ZERO);
         }
+    } else {
+        z = (double_t)x * EXPF_TBLSZ_BY_LN2;
 
-        if (x < EXPF_FARG_MIN){
-            return alm_expf_special(0.0, ALM_E_IN_X_ZERO);
-        }
-    }
-
-    z = (double_t)x * EXPF_TBLSZ_BY_LN2;
-
-    /*
-     * n  = (int) scale(x)
-     * dn = (double) n
-     */
+        /*
+         * n  = (int) scale(x)
+         * dn = (double) n
+         */
 #undef FAST_INTEGER_CONVERSION
 #define FAST_INTEGER_CONVERSION 1
 #if FAST_INTEGER_CONVERSION
-    dn = z + EXPF_HUGE;
-
-    n    = asuint64(dn);
-
-    dn  -=  EXPF_HUGE;
+        dn = z + EXPF_HUGE;
+        n    = asuint64(dn);
+        dn  -=  EXPF_HUGE;
 #else
-    n = z;
-    dn = cast_i32_to_float(n);
-
+        n = z;
+        dn = cast_i32_to_float(n);
 #endif
 
-    r  = (double_t)x - dn * EXPF_LN2_BY_TBLSZ;
+        r  = fma(dn, -EXPF_LN2_BY_TBLSZ, (double_t)x);
+        j  = n % EXPF_TABLE_SIZE;
+        {
+            double_t qtmp  = fma(C3, r, C2);
+            double_t r2 = r * r;
+            double_t tbl = asdouble(asuint64(EXPF_TABLE[j]) + (n << (52 - EXPF_N)));
+            q  = fma(r2, qtmp, r);
+            result = (float_t)fma(tbl, q, tbl);
+        }
+    }
 
-    j  = n % EXPF_TABLE_SIZE;
-
-    double_t qtmp  = C2 + (C3 * r);
-
-    double_t r2 = r * r;
-
-    double_t tbl = asdouble(asuint64(EXPF_TABLE[j]) + (n << (52 - EXPF_N)));
-
-    q  = r  + (r2 * qtmp);
-
-    double_t result = tbl + tbl* q;
-
-    return (float_t)(result);
+    return result;
 }

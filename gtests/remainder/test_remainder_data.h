@@ -124,7 +124,7 @@ test_remainder_conformance_data[] = {
     {POS_HDENORM_F64, 0x8000000000000001LL, 0, POS_LNORMAL_F64},
     {NEG_LDENORM_F64, 0x8000000000000001LL, 0, NEG_HNORMAL_F64},
     {POS_LDENORM_F64, 0x0000000000000001LL, 0, NEG_HNORMAL_F64},
-    {POS_HNORMAL_F64, 0x0000000000000000LL, 0, POS_LDENORM_F64}, // Error
+    {POS_HNORMAL_F64, 0x0000000000000000LL, 0, POS_LDENORM_F64},
     {POS_LNORMAL_F64, 0x0000000000000001LL, 0, NEG_HDENORM_F64},
     {POS_HDENORM_F64, 0x000fffffffffffffLL, 0, POS_ONE_F64},
     {POS_LDENORM_F64, 0x0000000000000001LL, 0, NEG_ONE_F64},
@@ -140,9 +140,15 @@ test_remainder_conformance_data[] = {
     // remainder(x, inf}
     {POS_ONE_F64, POS_ONE_F64, 0, POS_INF_F64},
     {NEG_ONE_F64, NEG_ONE_F64, 0, POS_INF_F64},
+    {POS_HNORMAL_F64, POS_HNORMAL_F64, 0, POS_INF_F64},  // remainder(max_double, +Inf) = max_double
+    {NEG_HNORMAL_F64, NEG_HNORMAL_F64, 0, POS_INF_F64},  // remainder(-max_double, +Inf) = -max_double
     {0x8000000000000000LL, 0x8000000000000000LL, 0, 0xa8117a2e00000000LL},
     // Signed zero: result is exactly zero, must carry sign of x
     {0xC010000000000000LL, 0x8000000000000000LL, 0, 0x4000000000000000LL}, // remainder(-4.0, 2.0) = -0.0
     // qNaN as x with y == 0: returns qNaN, must NOT raise FE_INVALID
     {POS_QNAN_F64, POS_QNAN_F64, 0, POS_ZERO_F64}, // remainder(qNaN, 0) = qNaN, no exception
+    // half_ady boundary: 3*min_subnormal / 2*min_subnormal -> n=2, result=-min_subnormal
+    {0x0000000000000003LL, 0x8000000000000001LL, 0, 0x0000000000000002LL},
+    // half_ady boundary: 5*min_subnormal / 4*min_subnormal -> n=1, result=+min_subnormal
+    {0x0000000000000005LL, 0x0000000000000001LL, 0, 0x0000000000000004LL},
 };

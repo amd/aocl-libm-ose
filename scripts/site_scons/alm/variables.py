@@ -27,11 +27,10 @@ from SCons.Variables import Variables
 from SCons.Script import ARGUMENTS, PathVariable, GetOption
 
 import shlex
-import platform
+from .platform import is_running_os
 
 def variable_shlex_splitter(val):
-    parse_mode = 'other' if platform.is_running_os('windows') else 'posix'
-    return shlex.split(val, posix=(parse_mode == 'posix'))
+    return shlex.split(val, posix=not is_running_os('windows'))
 
 class AlmVariables(Variables):
     def __init__(self):

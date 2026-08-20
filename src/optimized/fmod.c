@@ -27,21 +27,31 @@
 
 /******************************************
  * Implementation Notes:
- * This is a literal translation of ASM routine for fmod + optimizations
  *
  * Prototype:
  * double fmod(double x, double y)
  *
  * Algorithm:
- * As designed in the ASM fmod double variant routine.
- * The same algorithm is extended into C,
- * with optimizations wherever possible.
+ * fmod(x, y) = x - n*y, where n = trunc(x/y).
+ *
+ * Integer fast path (both normal, exponent difference shift <= MAXSHIFT):
+ *   Extract 53-bit double significands Mx, My directly from bit patterns.
+ *   Compute rem = Mx * 2^shift mod My via Rem128, a 128-bit-by-64-bit integer
+ *   division.  Pack rem back into a double.  No floating-point operations are
+ *   performed, so no exceptions are raised.  MAXSHIFT is 63 for the divq and
+ *   _udiv128 implementations (limited by divq overflow: hi < My requires
+ *   shift <= 63 since My has its implicit bit set), and 75 for __uint128_t.
+ *
+ * Slow path (subnormals, or exponent difference > MAXSHIFT):
+ *   Extract significands and exponents via F64Extract (handles subnormals with
+ *   CLZ64).  Pure integer iterative reduction: rem = Rem128(rem, My, MAXSHIFT),
+ *   repeated until shift <= MAXSHIFT, then one final Rem128(rem, My, shift).
+ *   Invariant: rem < My < 2^53, so Rem128 never overflows.  No floating-point
+ *   operations are performed, so no exceptions are raised.
  *
  */
 
 #include <stdint.h>
-#include <math.h>
-#include <float.h>
 
 #include "libm_macros.h"
 #include "libm_util_amd.h"
@@ -50,109 +60,178 @@
 #include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
 
-#define BIT_MASK_27_BITS 0xfffffffff8000000
+#if defined(__GNUC__) || defined(__clang__)
 
-#define FMOD_X_NAN   1
-#define FMOD_Y_ZERO  2
-#define FMOD_X_INF   3
+#define CLZ64(x) __builtin_clzll(x)
+
+#elif defined(_MSC_VER)
+
+#include <intrin.h>
+static inline int alm_clz64(uint64_t x)
+{
+    unsigned long idx;
+    _BitScanReverse64(&idx, x);
+    return 63 - (int)idx;
+}
+#define CLZ64(x) alm_clz64(x)
+
+#else
+
+#error "Intrinsic for counting leading zeroes not found"
+
+#endif
+
+typedef struct
+{
+    uint64_t m;  // 53-bit significand (including implicit 1)
+    int e;       // biased exponent
+} F64ExpMan;
+
+// Extract a double precision value into a mantissa and biased exponent
+// Handles subnormal values
+static inline F64ExpMan F64Extract(uint64_t fax)
+{
+    int lz;
+    return unlikely(fax < POS_LNORMAL_F64) ?
+        lz = CLZ64(fax),
+        (F64ExpMan) {  // Subnormal values; shift leftmost 1 into implied bit
+            .m = fax << (lz - (64 - MANTLENGTH_DP64)),
+            .e = (64 - MANTLENGTH_DP64 + 1) - lz
+        } :
+        (F64ExpMan) {  // Normal values
+            .m = (fax & MANTBITS_DP64) | IMPBIT_DP64,
+            .e = (int)(fax >> EXPSHIFTBITS_DP64)
+        };
+}
+
+#if defined(__x86_64__) && (defined(__GNUC__) || defined(__clang__))
+
+/* hi = Mx >> (64-d) < 2^52 <= My for d in [0,63] when My has implicit bit */
+#define MAXSHIFT 63
+
+static inline uint64_t Rem128(uint64_t Mx, uint64_t My, int d)
+{
+    uint64_t quot;
+    uint64_t rem;
+    uint64_t hi = (d != 0) ? Mx >> (64 - d) : 0;
+    uint64_t lo = Mx << d;
+    __asm__ volatile("divq %[divisor]"
+            : "=a"(quot), "=d"(rem)
+            : "0"(lo), "1"(hi), [divisor] "r"(My)
+            : "cc");
+    return rem;
+}
+
+#elif defined(__SIZEOF_INT128__)
+
+/* (Mx << d) < 2^128 for d <= 75 since Mx < 2^53; remainder fits in uint64_t */
+#define MAXSHIFT (128 - MANTLENGTH_DP64)
+
+static inline uint64_t Rem128(uint64_t Mx, uint64_t My, int d)
+{
+    return (uint64_t)(((__uint128_t)Mx << d) % My);
+}
+
+#elif defined(_MSC_VER) && defined(_M_X64)
+
+/* hi = Mx >> (64-d) < 2^52 <= My for d in [0,63] when My has implicit bit.
+ * Note: _udiv128 is unresolved at link time with clang-cl + lld-link due to
+ * a known open bug (https://github.com/llvm/llvm-project/issues/59168).
+ * This branch is only reachable with MSVC link.exe. */
+#define MAXSHIFT 63
+
+#include <intrin.h>
+static inline uint64_t Rem128(uint64_t Mx, uint64_t My, int d)
+{
+    uint64_t rem;
+    uint64_t hi = (d != 0) ? Mx >> (64 - d) : 0;
+    uint64_t lo = Mx << d;
+    _udiv128(hi, lo, My, &rem);
+    return rem;
+}
+
+#else
+
+#error "128-bit integer division not available"
+
+#endif
 
 double ALM_PROTO_OPT(fmod)(double x, double y)
 {
-    uint64_t ax, ay;
+    uint64_t  fax = asuint64(x) & POS_BITSET_DP64;  // |x| bit pattern
+    uint64_t  fay = asuint64(y) & POS_BITSET_DP64;  // |y| bit pattern
+    double result = x;  // Default result value = x; saves sign bit for later
 
-    ax = asuint64(x);
-    ay = asuint64(y);
-
-    ax &= ~SIGNBIT_DP64;
-    ay &= ~SIGNBIT_DP64;
-
-    /* Check if y is NaN. If yes return NaN */
-    if(unlikely(ay > POS_INF_F64))
+    // All error conditions are caught by one predicted-untaken branch
+    if (unlikely(((fay - 1) | fax) >= POS_INF_F64))
     {
-        return x * y;
+        if (fay > POS_INF_F64)
+        {   // |y| NaN
+            result = x * y;
+        }
+        else if (fax > POS_INF_F64)
+        {   // |x| NaN
+            result = x + x;
+        }
+        else if ((fax == POS_INF_F64) || (fay == 0))
+        {   // |x| == Inf || y == 0
+            result = __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
+        }
+        else
+        {   // False positive ((fay-1) | fax) >= POS_INF_F64; continue normally
+            goto noerror;
+        }
     }
+    else noerror: if (likely(fax >= fay))
+    {   // |x| >= |y|
+        int xe = (int)(fax >> EXPSHIFTBITS_DP64);  // Biased exponent of x
+        int ye = (int)(fay >> EXPSHIFTBITS_DP64);  // Biased exponent of y
+        int shift = xe - ye;  // result = (x * 2^shift) mod y
+        uint64_t rem;
+        F64ExpMan fpy;
 
-    /* Check x for NaN. If yes, return qnan/snan as applicable. */
-    if(unlikely(ax > POS_INF_F64))
-    {
-        return x + x;
+        // The (xe != 0) test is logically redundant since fax >= fay,
+        // so (ye != 0) implies (xe != 0). But Clang fuses consecutive
+        // side-effect-free equality tests into parallelizable setX
+        // instructions, and if you remove (xe != 0), it falls back on
+        // using multiple branches instead, and loses 11 Mcalls/sec.
+        if (likely((ye != 0) && (xe != 0) && (shift <= MAXSHIFT)))
+        {
+            // Fast path: both normal, small shift
+            rem = (fax & MANTBITS_DP64) | IMPBIT_DP64;
+            fpy = (F64ExpMan) { .m = (fay & MANTBITS_DP64) | IMPBIT_DP64, .e = ye };
+        }
+        else
+        {
+            // Slow path: subnormals or large shift
+            F64ExpMan fpx = F64Extract(fax);
+            fpy = F64Extract(fay);
+            rem = fpx.m;
+            shift = fpx.e - fpy.e;
+
+            // While shift > MAXSHIFT, compute (x * 2^MAXSHIFT) mod y
+            while (shift > MAXSHIFT) {
+                rem = Rem128(rem, fpy.m, MAXSHIFT);
+                shift -= MAXSHIFT;
+            }
+        }
+
+        // Compute (x * 2^shift) mod y
+        rem = Rem128(rem, fpy.m, shift);
+
+        if (likely(rem != 0)) {
+            // k = number of bits to shift rem left to position implied bit
+            int k = CLZ64(rem) - (64 - MANTLENGTH_DP64);
+
+            // k < fpy.e for normals, where fpy.e - k is biased result exponent
+            // For k >= fpy.e, result is subnormal and shifted in mantissa bits
+            rem = (k < fpy.e) ? ((uint64_t)(fpy.e - k) << EXPSHIFTBITS_DP64)
+                | ((rem << k) & MANTBITS_DP64) :
+                likely(fpy.e > 0) ? rem << (fpy.e - 1) : rem >> (1 - fpy.e);
+        }
+
+        // Result is same sign as original x with exponent and mantissa in rem
+        result = asdouble(rem | (asuint64(result) & SIGNBIT_DP64));
     }
-
-    /* Check if y is Zero. If yes, return NaN and raise exception*/
-    if(unlikely(ay == 0))
-    {
-        return _fmod_special(x, asdouble(ay | QNANBITPATT_DP64), FMOD_Y_ZERO);
-    }
-    /* Check if x is INF */
-    if(unlikely(ax == POS_INF_F64))
-    {
-        return _fmod_special(x, asdouble(ax | QNANBITPATT_DP64), FMOD_X_INF);
-    }
-
-    if(ax == ay)
-    {
-        /* Return 0.0 with the sign of x */
-        return 0.0 * x;
-    }
-
-    double adx = asdouble(ax);
-    double ady = asdouble(ay);
-
-    // Exponents of x and y
-    uint64_t xe = (EXPBITS_DP64 & ax) >> 52;
-    uint64_t ye = (EXPBITS_DP64 & ay) >> 52;
-
-    if(adx < ady)
-    {
-        return x;
-    }
-
-    int64_t diff_exp = (int64_t)(xe - ye);
-    if(xe == 0 || ye == 0 || diff_exp > 52)
-    {
-        /* This is a special case of fmod function applicable only for double variant.
-         * The x87 assembly instruction FPREM1 (Floating Point Partial fmod) has to be used for accurate calculation.
-         * Since its equivalent intrinsic is not available in C, the assembly variant is called here directly instead.
-         */
-        double result = __amd_bas64_fmod(x, y);
-        return result;
-    }
-
-    double r = adx/ady;
-    uint64_t temp = (uint64_t)r;
-    r = (double)(temp);
-
-    // Quad-Precision Multiplication of r and y
-    uint64_t ur = asuint64(r);
-    uint64_t uhy = ay & BIT_MASK_27_BITS;
-    uint64_t uhr = ur & BIT_MASK_27_BITS;
-
-    double hy = asdouble(uhy);
-    double hr = asdouble(uhr);
-    double ty = ady - hy;
-    double tr = r - hr;
-
-    double cc = (((((hy*hr) - (r*ady)) + (hy*tr)) + (ty*hr)) + (tr*ty));
-
-    double c = r*ady;
-    double v = adx - c;
-
-    double w = (((adx - v) - c) - cc);
-
-    w += v;
-
-    if(w < 0)
-    {
-        w = w + ady;
-    }
-
-    if(x > 0)
-    {
-        return w;
-    }
-
-    /* Negate to apply x's sign.*/
-    w = -w;
-
-    return w;
+    return result;
 }

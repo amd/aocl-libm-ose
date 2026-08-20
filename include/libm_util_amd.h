@@ -224,9 +224,12 @@ static const float VAL_2PMMULTIPLIER_SP = 5.9604645e-8F;
 #define AMD_F_RC_UP      0x00004000
 #define AMD_F_RC_ZERO    0x00006000
 
+#ifndef INT_MIN
 #define INT_MIN     (-2147483647 - 1) /* minimum (signed) int value */
+#endif
+#ifndef INT_MAX
 #define INT_MAX       2147483647    /* maximum (signed) int value */
-
+#endif
 
 
 /* Alternatives to the above functions which don't have

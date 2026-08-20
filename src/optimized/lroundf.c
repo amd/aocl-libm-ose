@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,104 +25,83 @@
  *
  */
 
-/* Implementation notes
-    long int amd_lroundf (float x);
-    when x = NAN, return x, raise FE_INVALID
-    when x is QNAN, return x
-    when x is INF, return x.
-*/
-
 #include "libm_util_amd.h"
 #include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/typehelper.h>
+#include <libm/types.h>
+#include <limits.h>
 
-long int ALM_PROTO_OPT(lroundf)(float x)
+/*
+ *  long int lroundf(float x)
+ *
+ * Special values:
+ *   - FE_INEXACT is never raised; current rounding mode has no effect.
+ *   - x = +-0                                  -> 0
+ *   - x = NaN / +-Inf / result out of 'long'   -> FE_INVALID raised, value
+ *                                                 unspecified.  errno is not set.
+ *
+ * The in-range threshold uses 8*sizeof(lint_t), so it adapts automatically:
+ *   - Windows LLP64 : sizeof(long) == 4  (range exponent < 31)
+ *   - Linux   LP64  : sizeof(long) == 8  (range exponent < 63)
+ *
+ * IEEE 754 single precision: x = (-1)^s * 2^(exp) * 1.f
+ *   - |x| >= 2^23 : already an integer (no fractional bits) -> shift only.
+ *   - |x| <  2^23 : add 0.5 ULP (0x00400000 >> exp) to the significand, then
+ *                   truncate -> ties away from zero.  A float < 2^23 always
+ *                   rounds to < 2^23, so this can never overflow 'long'.
+ */
+
+#define INTEGERBITS_SP32        23
+#define HALF_MANTISSA_BIT_SP32  0x00400000U
+
+#if LONG_MAX == 0x7FFFFFFF   /* 32-bit long */
+#define LROUND_MAXEXP_SP32   31     /* ((int32_t)(8 * sizeof(lint_t)) - 1)  */
+#define LONG_MIN_AS_FLOAT    asfloat(0xCF000000U)
+#else                        /* 64-bit long */
+#define LROUND_MAXEXP_SP32   63     /* ((int32_t)(8 * sizeof(lint_t)) - 1)  */
+#define LONG_MIN_AS_FLOAT asfloat(0xDF000000U)
+#endif
+
+lint_t ALM_PROTO_OPT(lroundf)(float x)
 {
-    uint32_t ux, ux_temp, uresult, sign;
-    int intexp, shift;
-    long int result;
-    float r;
+    uint32_t ux   = asuint32(x);            /* Bit representation of x   */
+    uint32_t uax  = ux & ~SIGNBIT_SP32;     /* |x| bits                  */
+    int32_t  exp   = (int32_t)(uax >> EXPSHIFTBITS_SP32) - EXPBIAS_SP32;
+    lint_t   sign = (lint_t)((int32_t)ux >> 31);  /* 0 (pos) / -1 (neg) */
+    uint32_t i;
+    lint_t   result;
 
-    ux = ux_temp = asuint32(x);
+    /*
+     * Cold path: |x| too large for 'long', or x is NaN / +-Inf (exp == 128).
+     * The result is unspecified and FE_INVALID is raised; exactly
+     * -2^(w-1) == LONG_MIN is representable and returned without raising.
+     */
+    if (unlikely(exp >= LROUND_MAXEXP_SP32)) {
+         if (!sign || !(x >= LONG_MIN_AS_FLOAT))
+             __alm_handle_errorf(ux, AMD_F_INVALID);
+         return (lint_t)LONG_MIN;
+     }
 
-    if (unlikely((ux & POS_INF_F32) == POS_INF_F32))
-    {
-        /*else the number is infinity*/
-        //Raise range or domain error
-        #ifdef WIN64
-            return (long)__alm_handle_errorf(SIGNBIT_SP32, AMD_F_NONE);
-        #else
-            if((ux & POS_BITSET_F32) == POS_INF_F32)
-                return (long)SIGNBIT_DP64;
-            if((ux & POS_BITSET_F32) >= QNANBITPATT_SP32)
-                return (long)__alm_handle_errorf(SIGNBIT_DP64, AMD_F_NONE);
-            else
-                return (long)__alm_handle_errorf(SIGNBIT_DP64, AMD_F_INVALID);
-        #endif
+    /* |x| < 1.0 : 0.5 <= |x| < 1 rounds away to +-1, |x| < 0.5 -> 0. */
+    if (exp < 0)
+        return (lint_t)((exp < -1) ? 0 : (sign | 1));  /* -1 or +1 */
+
+    i = (uax & MANTBITS_SP32) | IMPBIT_SP32;    /* 1 + 23 stored bits => 24-bit significand */
+
+    if (exp >= INTEGERBITS_SP32) {
+        /* |x| >= 2^23 is already an exact integer: shift into place only. */
+        result = (lint_t)i << (exp - INTEGERBITS_SP32);
+    } else {
+        /* Add 0.5 ULP at this exponent, then truncate (ties away from zero). */
+        i += HALF_MANTISSA_BIT_SP32 >> exp;
+        result = (lint_t)(i >> (INTEGERBITS_SP32 - exp));
     }
 
-    ux_temp &= POS_BITSET_F32;
-    intexp = (ux & POS_INF_F32) >> 23;
-    sign = ux & SIGNBIT_SP32;
-    intexp -= 0x7F;
-
-    /* 1.0 x 2^-1 is the smallest number which can be rounded to 1 */
-    if (intexp < -1)
-        return (0);
-
-
-#ifdef WIN64
-    /* 1.0 x 2^31 is already too large */
-    if (intexp >= 31)
-    {
-        result = NEG_ZERO_F32;
-        return (long)__alm_handle_errorf(result, AMD_F_NONE);
-    }
-
-#else
-    /* 1.0 x 2^31 (or 2^63) is already too large */
-    if (intexp >= 63)
-    {
-        result = (long)NEG_ZERO_F64;
-        return (long)__alm_handle_errorf((unsigned long long)result, AMD_F_NONE);
-    }
- #endif
-
-    r = asfloat(ux_temp);
-
-    /* >= 2^23 is already an exact integer */
-    if (intexp < 23)
-    {
-        /* add 0.5, extraction below will truncate */
-        r = asfloat(ux_temp) + 0.5F;
-    }
-    uresult = asuint32(r);
-    intexp = (uresult & POS_INF_F32) >> 23;
-    intexp -= 0x7F;
-    uresult &= MANTBITS_SP32; // store all mantissa bits ONLY of the result
-    uresult |= IMPBIT_SP32; // set the last bit of exp as 1
-
-    result = uresult; // All original bits of mantissa and last bit of exp is set!
-
-    #ifdef WIN64
-    shift = intexp - 23;
-    #else
-
-    /*Since float is only 32 bit for higher accuracy we shift the result by 32 bits
-     * In the next step we shift an extra 32 bits in the reverse direction based
-     * on the value of intexp*/
-    result = result << 32;
-    shift = intexp - 55; /* 55= 23 +32 */
-    #endif
-
-    if(shift < 0)
-        result = result >> (-shift);
-    if(shift > 0)
-        result = result << (shift);
-
-    if (sign)
-        result = -result;
-
-    return result;
+    /*
+     * Branchless conditional negate via XOR-negate idiom:
+     *   sign =  0 :  result       (positive)
+     *   sign = -1 : -result       (two's complement negate)
+     */
+    return (result ^ sign) - sign;
 }

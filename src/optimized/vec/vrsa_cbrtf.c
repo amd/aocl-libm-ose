@@ -42,27 +42,28 @@
  * The implementation uses a unified approach that handles both in-place
  * and out-of-place operations:
  *
- *     If length is greater than or equal to 4:
- *         Save the last 4 elements from input array before processing
- *         Process elements in chunks of 4 (n*4 complete elements):
- *             Load 4 elements from input array into a 128-bit register
- *             Call vrs4_cbrtf()
+ *     If length is greater than or equal to 8:
+ *         Save the last 8 elements from input array before processing
+ *         Process elements in chunks of 8 (n*8 complete elements):
+ *             Load 8 elements from input array into a 256-bit register
+ *             Call vrs8_cbrtf()
  *             Store the output into result array
  *         Repeat until all complete chunks are processed
  *
  *         For the remaining elements (if any):
- *             Use the pre-saved last 4 elements
- *             Call vrs4_cbrtf()
- *             Store the output at the last 4 positions in result array
+ *             Use the pre-saved last 8 elements
+ *             Call vrs8_cbrtf()
+ *             Store the output at the last 8 positions in result array
  *     Return
  *
- *     If length is less than 4:
- *         Fallback to scalar: for each element call cbrtf()
+ *     If length is less than 8:
+ *         Create a mask for the actual number of elements
+ *         Load elements using masked load
+ *         Call vrs8_cbrtf()
+ *         Store the output using masked store
  *     Return
  *
- * TODO: The above mentioned logic can be enhanced with vrs8_cbrtf() API, once it is implemented.
  */
-
 #include <libm_macros.h>
 #include <immintrin.h>
 #include <libm/amd_funcs_internal.h>
@@ -71,35 +72,34 @@
 
 void ALM_PROTO_OPT(vrsa_cbrtf)(int length, const float *input, float *result)
 {
-
-    if (likely(length >= FLOAT_ELEMENTS_128_BIT))
+    if (likely(length >= FLOAT_ELEMENTS_256_BIT))
     {
-        /* Save the last 4 elements before processing. This avoids errors when the
+        /* Save the last 8 elements before processing. This avoids errors when the
            operation is in-place */
-        __m128 last_ip4 = _mm_loadu_ps(&input[length - FLOAT_ELEMENTS_128_BIT]);
+        __m256 last_ip8 = _mm256_loadu_ps(&input[length - FLOAT_ELEMENTS_256_BIT]);
 
         int j = 0;
 
-        // Process complete chunks of 4 (n*4 elements)
-        for (j = 0; j <= length - FLOAT_ELEMENTS_128_BIT; j += FLOAT_ELEMENTS_128_BIT)
+        // Process complete chunks of 8 (n*8 elements)
+        for (j = 0; j <= length - FLOAT_ELEMENTS_256_BIT; j += FLOAT_ELEMENTS_256_BIT)
         {
-            __m128 ip4 = _mm_loadu_ps(&input[j]);
-            __m128 op4 = ALM_PROTO(vrs4_cbrtf)(ip4);
-            _mm_storeu_ps(&result[j], op4);
+            __m256 ip8 = _mm256_loadu_ps(&input[j]);
+            __m256 op8 = ALM_PROTO_OPT(vrs8_cbrtf)(ip8);
+            _mm256_storeu_ps(&result[j], op8);
         }
 
-        // Handle remaining elements using the pre-saved last 4 elements
+        // Handle remaining elements using the pre-saved last 8 elements
         if (length - j)
         {
-            __m128 op4 = ALM_PROTO(vrs4_cbrtf)(last_ip4);
-            _mm_storeu_ps(&result[length - FLOAT_ELEMENTS_128_BIT], op4);
+            __m256 op8 = ALM_PROTO_OPT(vrs8_cbrtf)(last_ip8);
+            _mm256_storeu_ps(&result[length - FLOAT_ELEMENTS_256_BIT], op8);
         }
         return;
     }
 
-    // For length < 4, fallback to scalar
-    for (int j = 0; j < length; ++j)
-    {
-        result[j] = ALM_PROTO(cbrtf)(input[j]);
-    }
+    // For length < 8, use masked operations
+    __m256i mask = GET_MASK_FLOAT_256_BIT(length);
+    __m256 ip8 = _mm256_maskload_ps(&input[0], mask);
+    __m256 op8 = ALM_PROTO_OPT(vrs8_cbrtf)(ip8);
+    _mm256_maskstore_ps(&result[0], mask, op8);
 }

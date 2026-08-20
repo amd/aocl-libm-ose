@@ -10,20 +10,20 @@
       input: [[min_subnormal, max]]
       type: [linearstep]
       steps: [10000]
-      variants : [ss, vrs4, vrsa]
+      variants : [ss, vrs4, vrs8,  vrsa]
     - id: cbrt_002
       description: ' x in [[-min_subnormal, min_subnormal]], linearstep'
       input: [[-min_subnormal, min_subnormal]]
       type: [linearstep]
       steps: [10000]
-      variants : [ss, vrs4, vrsa]
+      variants : [ss, vrs4, vrs8,  vrsa]
 
     - id: cbrt_003
       description: 'Negative values: x in [-FLT_MAX, -SMALLEST_SUBNORMAL], linearstep'
       input: [[-max, -min_subnormal]]
       type: [linearstep]
       steps: [10000]
-      variants : [ss, vrs4, vrsa]
+      variants : [ss, vrs4, vrs8,  vrsa]
 
 # double Precision
     - id: cbrt_001

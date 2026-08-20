@@ -70,6 +70,11 @@ struct alm_arch_funcs __arch_funcs_nearbyint = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_OPT(nearbyintf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_OPT(nearbyint),
         },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_OPT(nearbyintf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_OPT(nearbyint),
+        },
     },
 };
 

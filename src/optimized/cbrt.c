@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -138,7 +138,7 @@ ALM_PROTO_OPT(cbrt)(double x) {
     {
         // denormal number;
         if (ixm == 0) // is zero
-            return 0.0;
+            return x; /* IEEE expected: cbrt(±0) = ±0 */
 
         /******************************************************** */
         /* Subnormal number                                       */

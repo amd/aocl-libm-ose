@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2026, Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -54,12 +54,7 @@
 /* TODO: check if _MM_SET1_I64x2 is used */
 #define _MM_SET1_I64x2(x) {(x), (x)}
 
-#define _MM_SET1_I64x4(x)                    \
-    _Generic((x),                            \
-             int64_t : {(x), (x), (x), (x)}, \
-             uint64_t: {(x), (x), (x), (x)}, \
-             int:      {(x), (x), (x), (x)}, \
-             uint32_t: {(x), (x), (x), (x)})
+#define _MM_SET1_I64x4(x) {(x), (x), (x), (x)}
 
 
 #define _MM_SET1_I32(x) {(x), (x), (x), (x)}
@@ -94,6 +89,23 @@
     _Generic((x),                                                       \
              uint64_t: (v_u64x8_t){(x), (x), (x), (x), (x), (x), (x), (x)})
 
+/*
+ * AVX-512 all-ones constants for mask test intrinsics
+ * Used with _mm512_test_epi64_mask() and _mm512_test_epi32_mask()
+ */
+#define V8_ALL_ONES_U64   _MM512_SET1_U64x8(UINT64_MAX)
+#define V16_ALL_ONES_U32  _MM512_SET1_U32x16(UINT32_MAX)
+
+/*
+ * AVX-512 optimized condition checks using mask test intrinsics.
+ * Returns non-zero if any lane in cond is set (non-zero).
+ * These are faster than loop-based versions for AVX-512 targets.
+ */
+#define any_v8_u64_avx512(cond) \
+    _mm512_test_epi64_mask((__m512i)(cond), (__m512i)V8_ALL_ONES_U64)
+
+#define any_v16_u32_avx512(cond) \
+    _mm512_test_epi32_mask((__m512i)(cond), (__m512i)V16_ALL_ONES_U32)
 
 /*
  * Naming convention
@@ -470,15 +482,13 @@ any_v16_u32(v_i32x16_t cond)
 static inline int
 any_v4_u64(v_i64x4_t cond)
 {
-    const v_i64x4_t zero = _MM_SET1_I64(0);
-    return ! _mm256_testz_si256((__m256i)cond, (__m256i)zero);
+    return ! _mm256_testz_si256((__m256i)cond, (__m256i)cond);
 }
 
 static inline int
 any_v2_u64(v_i64x2_t cond)
 {
-    const v_i64x2_t zero = _MM_SET1_I64x2(0);
-    return ! _mm_testz_si128((__m128i)cond, (__m128i)zero);
+    return ! _mm_testz_si128((__m128i)cond, (__m128i)cond);
 }
 
 // Condition check with for loop for better performance
@@ -851,6 +861,91 @@ any_v8_u32_loop(v_u32x8_t cond)
 
     return ret;
 }
+
+/*
+ * Masked / predicated instructions
+ *
+ * GNU C vector extensions do not support mask extraction, nor masked 
+ * instructions. Wrappers are provided here over direct AVX-512 intrinsics.
+ */
+#if defined(__AVX512F__)
+
+/* k-mask producers (return __mmask8) */
+#define cmplt_v8_u64(a, b)                                              \
+    _mm512_cmplt_epu64_mask((__m512i)(a), (__m512i)(b))
+
+#define cmpeq_v8_u64(a, b)                                              \
+    _mm512_cmpeq_epu64_mask((__m512i)(a), (__m512i)(b))
+
+#define cmpge_v8_u64(a, b)                                              \
+    _mm512_cmp_epu64_mask((__m512i)(a), (__m512i)(b), _MM_CMPINT_NLT)
+
+#define cmpgt_v8_u64(a, b)                                              \
+    _mm512_cmpgt_epu64_mask((__m512i)(a), (__m512i)(b))
+
+#define cmpgt_v8_f64(a, b)                                              \
+    _mm512_cmp_pd_mask((__m512d)(a), (__m512d)(b), _CMP_GT_OQ)
+
+#if defined(__AVX512DQ__)
+#define movepi_v8_u64(a)   _mm512_movepi64_mask((__m512i)(a))
+#endif /* __AVX512DQ__ */
+
+/* elementwise min/max */
+#define min_v8_f64(a, b)    _mm512_min_pd((__m512d)(a), (__m512d)(b))
+#define max_v8_f64(a, b)    _mm512_max_pd((__m512d)(a), (__m512d)(b))
+#define min_v8_u64(a, b)                                                \
+    (v_u64x8_t)_mm512_min_epu64((__m512i)(a), (__m512i)(b))
+#define max_v8_u64(a, b)                                                \
+    (v_u64x8_t)_mm512_max_epu64((__m512i)(a), (__m512i)(b))
+
+/* per-lane blend: result = k ? a : b */
+#define blend_v8_f64(k, a, b)                                           \
+    _mm512_mask_blend_pd((k), (__m512d)(b), (__m512d)(a))
+
+/* merge-masked arithmetic: result = k ? (op) : src */
+#define mask_mov_v8_f64(src, k, a)                                      \
+    _mm512_mask_mov_pd((__m512d)(src), (k), (__m512d)(a))
+
+#define mask_add_v8_f64(src, k, a, b)                                   \
+    _mm512_mask_add_pd((__m512d)(src), (k), (__m512d)(a), (__m512d)(b))
+    
+#define mask_mul_v8_f64(src, k, a, b)                                   \
+    _mm512_mask_mul_pd((__m512d)(src), (k), (__m512d)(a), (__m512d)(b))
+
+#endif /* __AVX512F__ */
+
+/* 256-bit (4-lane) counterparts for AVX2 targets. */
+#if defined(__AVX2__)
+
+/* elementwise min/max */
+#define min_v4_f64(a, b)    (v_f64x4_t)_mm256_min_pd((__m256d)(a), (__m256d)(b))
+#define max_v4_f64(a, b)    (v_f64x4_t)_mm256_max_pd((__m256d)(a), (__m256d)(b))
+
+/* per-lane blend: result = m ? a : b */
+#define blend_v4_f64(m, a, b)                                           \
+    (v_f64x4_t)_mm256_blendv_pd((__m256d)(b), (__m256d)(a), (__m256d)(m))
+
+/* merge-masked arithmetic: result = m ? (op) : src (compute-then-blend) */
+#define mask_mov_v4_f64(src, m, a)      blend_v4_f64((m), (a), (src))
+#define mask_add_v4_f64(src, m, a, b)   blend_v4_f64((m), (a) + (b), (src))
+#define mask_mul_v4_f64(src, m, a, b)   blend_v4_f64((m), (a) * (b), (src))
+
+#endif /* __AVX2__ */
+
+/* 128-bit (2-lane) counterparts for SSE targets. */
+
+/* elementwise min/max */
+#define min_v2_f64(a, b)    (v_f64x2_t)_mm_min_pd((__m128d)(a), (__m128d)(b))
+#define max_v2_f64(a, b)    (v_f64x2_t)_mm_max_pd((__m128d)(a), (__m128d)(b))
+
+/* per-lane blend: result = m ? a : b */
+#define blend_v2_f64(m, a, b)                                           \
+    (v_f64x2_t)_mm_blendv_pd((__m128d)(b), (__m128d)(a), (__m128d)(m))
+
+/* merge-masked arithmetic: result = m ? (op) : src (compute-then-blend) */
+#define mask_mov_v2_f64(src, m, a)      blend_v2_f64((m), (a), (src))
+#define mask_add_v2_f64(src, m, a, b)   blend_v2_f64((m), (a) + (b), (src))
+#define mask_mul_v2_f64(src, m, a, b)   blend_v2_f64((m), (a) * (b), (src))
 
 #endif  /* TYPEHELPER_H_ */
 

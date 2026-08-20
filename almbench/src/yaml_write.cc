@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,9 +26,12 @@
  */
 
 
+#include <iostream>
 #include <sstream>
 #include <iomanip>
 #include <cstdint>
+#include <cstring>
+#include <type_traits>
 
 #include <yaml-cpp/yaml.h>
 #include <fstream>
@@ -55,6 +58,8 @@
 
 #include "alm_test.h"
 #include "libm_yaml.h"
+#include "yaml_batch_writer.h"
+#include "console_report.h"
 
 #ifdef _WIN32
     #pragma warning(pop)  // Restore warnings
@@ -93,16 +98,28 @@ static std::string exception_to_string(int raised_exception)
 template <typename S>
 static std::string to_hex(const S &value)
 {
-    std::stringstream ss;
-    ss << "0x" << std::hex << std::uppercase << std::setfill('0');
-    if (sizeof(S) == sizeof(uint32_t)) {
-        uint32_t bits = *(reinterpret_cast<const uint32_t *>(&value));
-        ss << std::setw(8) << bits;
-    } else if (sizeof(S) == sizeof(uint64_t)) {
-        uint64_t bits = *(reinterpret_cast<const uint64_t *>(&value));
-        ss << std::setw(16) << bits;
+    if constexpr (std::is_same_v<S, fc32_t>) {
+        float re = fc_real(value);
+        float im = fc_imag(value);
+        return std::string("[") + to_hex(re) + "," + to_hex(im) + "]";
+    } else if constexpr (std::is_same_v<S, fc64_t>) {
+        double re = fc_real(value);
+        double im = fc_imag(value);
+        return std::string("[") + to_hex(re) + "," + to_hex(im) + "]";
+    } else {
+        std::stringstream ss;
+        ss << "0x" << std::hex << std::uppercase << std::setfill('0');
+        if (sizeof(S) == sizeof(uint32_t)) {
+            uint32_t bits;
+            std::memcpy(&bits, &value, sizeof(bits));
+            ss << std::setw(8) << bits;
+        } else if (sizeof(S) == sizeof(uint64_t)) {
+            uint64_t bits;
+            std::memcpy(&bits, &value, sizeof(bits));
+            ss << std::setw(16) << bits;
+        }
+        return ss.str();
     }
-    return ss.str();
 }
 
 /*
@@ -125,7 +142,7 @@ YAML::Node serialize_yaml_outputs(const struct YamlOutputs<S> *yop)
     // Serialize input pointers
     for (int i = 0; i < MAX_IPPTR; ++i) {
         if (yop->iptr[i]) {
-            if (yop->utflag) {
+            if (yop->config.utflag) {
                 // Unit test mode: only serialize the first element
                 YAML::Node ip_node;
                 ip_node.push_back(to_hex(yop->iptr[i][0]));
@@ -150,7 +167,7 @@ YAML::Node serialize_yaml_outputs(const struct YamlOutputs<S> *yop)
     // Serialize yop pointers
     for (int i = 0; i < MAX_OPPTR; ++i) {
         if (yop->optr[i]) {
-            if (yop->utflag) {
+            if (yop->config.utflag) {
                 YAML::Node op_node;
                 op_node.push_back(to_hex(yop->optr[i][0]));
                 op_node.SetStyle(YAML::EmitterStyle::Flow);
@@ -167,12 +184,41 @@ YAML::Node serialize_yaml_outputs(const struct YamlOutputs<S> *yop)
                 std::string key = "op" + std::to_string(i + 1);
                 node[key] = op_node;
             }
+        } else if (!yop->op_hex_str[i].empty()) {
+            /* Integer output: pre-formatted hex string (unit/range tests). */
+            YAML::Node op_node;
+            if (yop->config.utflag) {
+                op_node.push_back(yop->op_hex_str[i]);
+                op_node.SetStyle(YAML::EmitterStyle::Flow);
+            } else if (yop->opstr) {
+                YAML::Node inner_list;
+                for (uint64_t j = 0; j < yop->n[0]; ++j) {
+                    inner_list.push_back(yop->opstr[j]);
+                }
+                inner_list.SetStyle(YAML::EmitterStyle::Flow);
+                op_node.push_back(inner_list);
+            } else {
+                op_node.push_back(yop->op_hex_str[i]);
+                op_node.SetStyle(YAML::EmitterStyle::Flow);
+            }
+            std::string key = "op" + std::to_string(i + 1);
+            node[key] = op_node;
+        } else if (i == 0 && yop->opstr) {
+            /* Integer output: per-element hex strings (VRA tests). */
+            YAML::Node op_node;
+            YAML::Node inner_list;
+            for (uint64_t j = 0; j < yop->n[0]; ++j) {
+                inner_list.push_back(yop->opstr[j]);
+            }
+            inner_list.SetStyle(YAML::EmitterStyle::Flow);
+            op_node.push_back(inner_list);
+            std::string key = "op" + std::to_string(i + 1);
+            node[key] = op_node;
         }
     }
 
-    // Serialize ULP (Unit in Last Place) values
     if (yop->ulp) {
-        if (yop->utflag) {
+        if (yop->config.utflag) {
             YAML::Node ulp_node;
             ulp_node.push_back(to_hex(yop->ulp[0]));
             ulp_node.SetStyle(YAML::EmitterStyle::Flow);
@@ -189,10 +235,8 @@ YAML::Node serialize_yaml_outputs(const struct YamlOutputs<S> *yop)
         }
     }
 
-
-    // Serialize ULP (Unit in Last Place) values
     if (yop->status) {
-        if (yop->utflag) {
+        if (yop->config.utflag) {
             YAML::Node status_node;
             status_node.push_back(yop->status[0]==TESTCASE_PASS ?"PASS":"FAIL");
             status_node.SetStyle(YAML::EmitterStyle::Flow);
@@ -210,14 +254,14 @@ YAML::Node serialize_yaml_outputs(const struct YamlOutputs<S> *yop)
     }
 
     // Serialize either raised exceptions or duration depending on mode
-    if (yop->utflag) {
+    if (yop->config.utflag) {
         std::string except = exception_to_string(yop->exception_raised);
         YAML::Node expt_node;
         expt_node.push_back(except);
         expt_node.SetStyle(YAML::EmitterStyle::Flow);
         node["exception_raised"] = expt_node;
     } else {
-        if(yop->test_mode == TestMode::E_PERFORMANCE) {
+        if(yop->config.test_mode == TestMode::E_PERFORMANCE) {
             YAML::Node duration_node;
             duration_node.push_back(yop->duration);
             duration_node.SetStyle(YAML::EmitterStyle::Flow);
@@ -225,39 +269,47 @@ YAML::Node serialize_yaml_outputs(const struct YamlOutputs<S> *yop)
         }
     }
 
-    // Print YAML to stdout in unit test mode
-    if (yop->utflag) {
-        YAML::Emitter out;
-        out << node;
-        std::cout << out.c_str() << std::endl;
-    }
-
     return node;
 }
 
+template <typename S>
+void emit_yaml_stdout(const struct YamlOutputs<S> *yop)
+{
+    YAML::Node node = serialize_yaml_outputs<S>(yop);
+    YAML::Emitter out;
+    out << node;
+    std::cout << out.c_str() << std::endl;
+}
+
 /*
- * Writes the serialized YAML output to a file.
- * Appends to the file if it already exists.
+ * Legacy API: hot path uses YamlBatchWriter::push() from validate_api.
+ * Writes per-case YAML files only when --verbose-mode is enabled; conformance
+ * stdout in default mode is handled inside push() (utflag && !verbose).
+ * No in-tree callers; kept for external compatibility.
  */
 template <typename S>
 void write_yaml_output(const struct YamlOutputs<S> *yop)
 {
-    YAML::Node node = serialize_yaml_outputs<S>(yop);
-
-    std::ofstream fout(yop->outfile, std::ios::app);
-    if (!fout.is_open()) {
-        std::cerr << "Error: Could not open file " << yop->outfile << " for writing." << std::endl;
-        return;
-    }
-
-    fout << node << "\n";
-    fout.close();
+    YamlBatchWriter<S> writer(yop->outfile);
+    writer.emit_yaml_file = is_verbose_mode_enabled();
+    writer.push(yop);
 }
 
-
 // Explicit template instantiations for float and double types
+template YAML::Node serialize_yaml_outputs<float>(const struct YamlOutputs<float> *yop);
+template YAML::Node serialize_yaml_outputs<double>(const struct YamlOutputs<double> *yop);
+template YAML::Node serialize_yaml_outputs<fc32_t>(const struct YamlOutputs<fc32_t> *yop);
+template YAML::Node serialize_yaml_outputs<fc64_t>(const struct YamlOutputs<fc64_t> *yop);
+
+template void emit_yaml_stdout<float>(const struct YamlOutputs<float> *yop);
+template void emit_yaml_stdout<double>(const struct YamlOutputs<double> *yop);
+template void emit_yaml_stdout<fc32_t>(const struct YamlOutputs<fc32_t> *yop);
+template void emit_yaml_stdout<fc64_t>(const struct YamlOutputs<fc64_t> *yop);
+
 template void write_yaml_output<float>(const struct YamlOutputs<float> *yop);
 template void write_yaml_output<double>(const struct YamlOutputs<double> *yop);
+template void write_yaml_output<fc32_t>(const struct YamlOutputs<fc32_t> *yop);
+template void write_yaml_output<fc64_t>(const struct YamlOutputs<fc64_t> *yop);
 
 #if 0
 template void populate_system_metadata<float>(struct TestMetadata<float> *metadata);

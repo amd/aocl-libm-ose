@@ -33,6 +33,8 @@
   - log1p/log1p_conf.yml
   - log2/log2_conf.yml
   - logb/logb_conf.yml
+  - lround/lround_conf.yml
+  - llround/llround_conf.yml
   - nearbyint/nearbyint_conf.yml
   - nextafter/nextafter_conf.yml
   - pow/pow_conf.yml
@@ -46,6 +48,13 @@
   - tan/tan_conf.yml
   - tanh/tanh_conf.yml
   - trunc/trunc_conf.yml
+  - clog/clog_conf.yml
+  - cexp/cexp_conf.yml
+  - cpow/cpow_conf.yml
+  - cdfnorm/cdfnorm_conf.yml
+  - cdfnorminv/cdfnorminv_conf.yml
+  - erfcinv/erfcinv_conf.yml
+  - erfinv/erfinv_conf.yml
 
 # ===========================================
 # VERIFICATION TESTS (VT/vt)
@@ -84,6 +93,8 @@
   - log1p/log1p_accu.yml
   - log2/log2_accu.yml
   - logb/logb_accu.yml
+  - lround/lround_accu.yml
+  - llround/llround_accu.yml
   - mul/mul_accu.yml
   - nearbyint/nearbyint_accu.yml
   - nextafter/nextafter_accu.yml
@@ -100,6 +111,13 @@
   - tan/tan_accu.yml
   - tanh/tanh_accu.yml
   - trunc/trunc_accu.yml
+  - clog/clog_accu.yml
+  - cexp/cexp_accu.yml
+  - cpow/cpow_accu.yml
+  - cdfnorm/cdfnorm_accu.yml
+  - cdfnorminv/cdfnorminv_accu.yml
+  - erfcinv/erfcinv_accu.yml
+  - erfinv/erfinv_accu.yml
 
   # ===========================================
   # PERFORMANCE TESTS (PERF/perf)
@@ -137,6 +155,8 @@
   - log1p/log1p_perf.yml
   - log2/log2_perf.yml
   - logb/logb_perf.yml
+  - lround/lround_perf.yml
+  - llround/llround_perf.yml
   - mul/mul_perf.yml
   - nearbyint/nearbyint_perf.yml
   - nextafter/nextafter_perf.yml
@@ -153,6 +173,13 @@
   - tan/tan_perf.yml
   - tanh/tanh_perf.yml
   - trunc/trunc_perf.yml
+  - clog/clog_perf.yml
+  - cexp/cexp_perf.yml
+  - cpow/cpow_perf.yml
+  - cdfnorm/cdfnorm_perf.yml
+  - cdfnorminv/cdfnorminv_perf.yml
+  - erfcinv/erfcinv_perf.yml
+  - erfinv/erfinv_perf.yml
 
 #================================================================================================
 # When API name comes as command line aargument, then specific API yaml files should get executed.
@@ -321,6 +348,16 @@
   - logb/logb_accu.yml
   - logb/logb_perf.yml
 
+  lround:
+  - lround/lround_conf.yml
+  - lround/lround_accu.yml
+  - lround/lround_perf.yml
+
+  llround:
+  - llround/llround_conf.yml
+  - llround/llround_accu.yml
+  - llround/llround_perf.yml
+
   mul:
   - mul/mul_accu.yml
   - mul/mul_perf.yml
@@ -397,3 +434,39 @@
   - trunc/trunc_conf.yml
   - trunc/trunc_accu.yml
   - trunc/trunc_perf.yml
+
+  clog:
+  - clog/clog_conf.yml
+  - clog/clog_accu.yml
+  - clog/clog_perf.yml
+
+  cexp:
+  - cexp/cexp_conf.yml
+  - cexp/cexp_accu.yml
+  - cexp/cexp_perf.yml
+
+  cpow:
+  - cpow/cpow_conf.yml
+  - cpow/cpow_accu.yml
+  - cpow/cpow_perf.yml
+
+  cdfnorm:
+  - cdfnorm/cdfnorm_conf.yml
+  - cdfnorm/cdfnorm_accu.yml
+  - cdfnorm/cdfnorm_perf.yml
+
+  cdfnorminv:
+  - cdfnorminv/cdfnorminv_conf.yml
+  - cdfnorminv/cdfnorminv_accu.yml
+  - cdfnorminv/cdfnorminv_perf.yml
+
+  erfcinv:
+  - erfcinv/erfcinv_conf.yml
+  - erfcinv/erfcinv_accu.yml
+  - erfcinv/erfcinv_perf.yml
+
+  erfinv:
+  - erfinv/erfinv_conf.yml
+  - erfinv/erfinv_accu.yml
+  - erfinv/erfinv_perf.yml
+

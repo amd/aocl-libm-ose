@@ -170,13 +170,15 @@ void PrintUlpResultsDouble(int nargs, double input1, double input2, long double 
 
 
 void PrintUlpResultsComplexFloat(int nargs, float _Complex input1, float _Complex input2, double _Complex expected, float _Complex actual, double ulp) {
-  printf ("Input1:   %f +i %f\n", (float)(__real__ input1), (float)(__imag__ input1));
+  /* %.9g round-trips IEEE-754 float; %.17g round-trips double. Without this
+   * a failing row's input cannot be replayed bit-exactly. */
+  printf ("Input1:   %.9g +i %.9g\n", (float)(__real__ input1), (float)(__imag__ input1));
   if (nargs == 2) {
-    printf ("Input2:   %f +i %f\n", (float)(__real__ input2), (float)(__imag__ input2));
+    printf ("Input2:   %.9g +i %.9g\n", (float)(__real__ input2), (float)(__imag__ input2));
   }
-  printf ("Expected: %lf +i %lf\n", (double)(__real__ expected), (double)(__imag__ expected));
-  printf ("Actual:   %f +i %f\n", (float)(__real__ actual), (float)(__imag__ actual));
-  printf ("ULP:      %lf\n\n", ulp);
+  printf ("Expected: %.17g +i %.17g\n", (double)(__real__ expected), (double)(__imag__ expected));
+  printf ("Actual:   %.9g +i %.9g\n", (float)(__real__ actual), (float)(__imag__ actual));
+  printf ("ULP:      %.6f\n\n", ulp);
 }
 
 #if (defined _WIN32 || defined _WIN64)
@@ -184,13 +186,13 @@ void PrintUlpResultsComplexDouble(int nargs, double _Complex input1, double _Com
 #else
 void PrintUlpResultsComplexDouble(int nargs, double _Complex input1, double _Complex input2, long double _Complex expected, double _Complex actual, double ulp) {
 #endif
-  printf ("Input1:   %lf +i %lf\n", (double)(__real__ input1), (double)(__imag__ input1));
+  printf ("Input1:   %.17g +i %.17g\n", (double)(__real__ input1), (double)(__imag__ input1));
   if (nargs == 2) {
-    printf ("Input2:   %lf +i %lf\n", (double)(__real__ input2), (double)(__imag__ input2));
+    printf ("Input2:   %.17g +i %.17g\n", (double)(__real__ input2), (double)(__imag__ input2));
   }
-  printf ("Expected: %Lf +i %Lf\n", (long double)(__real__ expected), (long double)(__imag__ expected));
-  printf ("Actual:   %lf +i %lf\n", (double)(__real__ actual), (double)(__imag__ actual));
-  printf ("ULP:      %lf\n\n", ulp);
+  printf ("Expected: %.21Lg +i %.21Lg\n", (long double)(__real__ expected), (long double)(__imag__ expected));
+  printf ("Actual:   %.17g +i %.17g\n", (double)(__real__ actual), (double)(__imag__ actual));
+  printf ("ULP:      %.6f\n\n", ulp);
 }
 
 }  // namespace Test

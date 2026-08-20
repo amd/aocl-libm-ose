@@ -31,6 +31,7 @@
 #include <algorithm>
 #include "generator.h"
 #include "libm_yaml.h"
+#include "yaml_batch_writer.h"
 #include "alm_test.h"
 
 
@@ -45,11 +46,13 @@ enum ApiTypes {
     API_PROTOTYPE_03,      /* Two inputs (one scalar), one output (e.g., powx) */
     API_PROTOTYPE_04,      /* One input, two outputs (e.g., sincos) */
     API_PROTOTYPE_05,      /* Six inputs, one output (e.g., LinearFrac) */
-    API_PROTOTYPE_06       /* Two inputs(one is integer), one output (e.g., ldexp) */
+    API_PROTOTYPE_06,      /* Two inputs(one is integer), one output (e.g., ldexp) */
+    API_PROTOTYPE_07       /* One input (float/double), one integer output (e.g., lround, llround) */
 };
 
 
-void process_libm(struct AlmLibs *alibs, const std::vector<struct YamlInputs> &params, TestMode test_mode );
+void process_libm(struct AlmLibs *alibs, const std::vector<struct YamlInputs> &params,
+                  BenchArgs bench_args = BenchArgs{});
 
 template <typename T, typename U>
 int validate_api(struct AlmLibs *alibs, struct InParams<T, U> *ipp, struct YamlOutputs<U> *yop);
@@ -66,39 +69,53 @@ int api_prototype_01(struct AlmLibs *alibs,
                      struct InParams<T, U> *ipp,
                      const std::string &libapi,
                      const std::string &refapi,
-                     struct YamlOutputs<U> *yop);
+                     struct YamlOutputs<U> *yop,
+                     YamlBatchWriter<U> *writer);
 
 template <typename T, typename U>
 int api_prototype_02(struct AlmLibs *alibs,
                      struct InParams<T, U> *ipp,
                      const std::string &libapi,
                      const std::string &refapi,
-                     struct YamlOutputs<U> *yop);
+                     struct YamlOutputs<U> *yop,
+                     YamlBatchWriter<U> *writer);
 
 template <typename T, typename U>
 int api_prototype_03(struct AlmLibs *alibs,
                      struct InParams<T, U> *ipp,
                      const std::string &libapi,
                      const std::string &refapi,
-                     struct YamlOutputs<U> *yop);
+                     struct YamlOutputs<U> *yop,
+                     YamlBatchWriter<U> *writer);
 
 template <typename T, typename U>
 int api_prototype_04(struct AlmLibs *alibs,
                      struct InParams<T, U> *ipp,
                      const std::string &libapi,
                      const std::string &refapi,
-                     struct YamlOutputs<U> *yop);
+                     struct YamlOutputs<U> *yop,
+                     YamlBatchWriter<U> *writer);
 
 template <typename T, typename U>
 int api_prototype_05(struct AlmLibs *alibs,
                      struct InParams<T, U> *ipp,
                      const std::string &libapi,
                      const std::string &refapi,
-                     struct YamlOutputs<U> *yop);
+                     struct YamlOutputs<U> *yop,
+                     YamlBatchWriter<U> *writer);
 
 template <typename T, typename U>
 int api_prototype_06(struct AlmLibs *alibs,
                      struct InParams<T, U> *ipp,
                      const std::string &libapi,
                      const std::string &refapi,
-                     struct YamlOutputs<U> *yop);
+                     struct YamlOutputs<U> *yop,
+                     YamlBatchWriter<U> *writer);
+
+template <typename T, typename U>
+int api_prototype_07(struct AlmLibs *alibs,
+                     struct InParams<T, U> *ipp,
+                     const std::string &libapi,
+                     const std::string &refapi,
+                     struct YamlOutputs<U> *yop,
+                     YamlBatchWriter<U> *writer);

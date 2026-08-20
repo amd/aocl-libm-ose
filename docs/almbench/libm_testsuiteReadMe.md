@@ -19,6 +19,7 @@ This document provides comprehensive build, execution, and troubleshooting instr
 
 ## Table of Contents
 
+- [Test Output and Command-Line Options](#test-output-and-command-line-options)
 - [Building LibM Testsuite with AOCL-LIBM](#building-libm-testsuite-with-aocl-libm)
 - [Standalone Build](#standalone-build)
 - [Linux Build & Run](#linux--build--run)
@@ -26,6 +27,127 @@ This document provides comprehensive build, execution, and troubleshooting instr
 - [Troubleshooting](#troubleshooting)
 - [Notes & Known Issues](#notes--known-issues)
 - [Roadmap](#roadmap)
+
+---
+
+## Test Output and Command-Line Options
+
+### Default behavior
+
+By default, `libm_runner` prints **summary tables to the console** and writes an **HTML summary report** when a run finishes:
+
+- **Conformance** — unit/conformance tests (`*_conf.yml`, fixed inputs)
+- **Accuracy** — range/accuracy tests (`*_accu.yml`)
+- **Performance** — benchmark timing, MOPS, and aggregated ULP pass/fail over the perf range (`*_perf.yml`)
+
+Per-test YAML result **files** are **not** written unless you pass **`--verbose-mode`**.
+
+**Per-case YAML destinations (default, no `--verbose-mode`):**
+
+| Test kind | Per-case YAML | End-of-run summary table |
+|-----------|---------------|---------------------------|
+| Conformance (`*_conf.yml`) | **stdout** (one line per test case) | Conformance section |
+| Accuracy / Performance | not written | Accuracy or Performance section |
+
+### Console summary tables
+
+Summary tables are printed at the end of every run (default and `--verbose-mode`). **MAX ULP ERR** is shown as a **decimal** value on the console.
+
+**Conformance and Accuracy** sections share the same columns:
+
+| Column | Meaning |
+|--------|---------|
+| TEST | Scalar, Vector, or VecArr |
+| TYPE | Conformance or Accuracy |
+| API / DATATYPE | Function and variant (for example `acos`, `s1s`) |
+| No.Tests | Total element-level checks |
+| > ULP threshold | Fail count (ULP above threshold or non-comparable) |
+| MAX ULP ERR | Worst ULP error seen (decimal) |
+
+**Performance** section columns:
+
+| Column | Meaning |
+|--------|---------|
+| Benchmark | Library, datatype, and API (for example `AoclLibm_s1s(acos)`) |
+| time_ns | Best (minimum) nanoseconds per shim call over the range sweep |
+| Elements | Elements processed per call (`n` for that variant) |
+| MOPS | Million operations per second: `elements × 1000 / time_ns` |
+| No.Tests / > ULP threshold | Full-range ULP checks during the perf sweep (same semantics as accuracy) |
+| MAX ULP ERR | Worst ULP error over the perf range (decimal) |
+
+Performance runs measure timing on every range point and also compare each result against the reference (ULP). Large perf YAMLs therefore take longer than timing-only measurement.
+
+### HTML summary reports
+
+Every run also writes an HTML file with the same summary tables as the console output (Conformance, Accuracy, and Performance sections). The file is created under `build/libm_testsuite_reports/` relative to the current working directory:
+
+| Mode | HTML file |
+|------|-----------|
+| Default | `build/libm_testsuite_reports/almbench_default_console.html` |
+| `--verbose-mode` | `build/libm_testsuite_reports/almbench_verbose_mode.html` |
+
+The HTML report uses the same column layout and decimal **MAX ULP ERR** values as the console tables. Rows with ULP failures are highlighted. In `--verbose-mode`, the report also lists the path to the per-test YAML directory (`build/libm_testsuite_results/`).
+
+### Command-line syntax
+
+```console
+$ ./libm_runner.x <path_to_shim> <path_to_yml> [API] [TEST_TYPE] [options]
+```
+
+**Optional arguments:**
+
+| Argument | Description |
+|----------|-------------|
+| `API` | When using `master.yml`, filter to one function (for example `acos`, `sin`). |
+| `TEST_TYPE` | With `master.yml`: `accu`, `conf`, or `perf` (case-insensitive). |
+| `--type <test_type>` / `-t <test_type>` | Force accuracy (`accu`) or performance (`perf`) mode. |
+| `--perf-mode <mode>` | Performance measurement: `throughput` (default) or `latency`. |
+| `--verbose-mode` | Write per-test YAML **files** under `build/libm_testsuite_results/<api>/` (see below). Conformance per-case YAML goes to **files only**, not stdout. Summary tables are still printed. |
+
+### Verbose mode (`--verbose-mode`)
+
+When `--verbose-mode` is set, each API variant **appends** per-case YAML to a file such as:
+
+```text
+build/libm_testsuite_results/<api>/amd_conf_<api>_<variant>.yaml
+build/libm_testsuite_results/<api>/amd_accu_<api>_<variant>.yaml
+build/libm_testsuite_results/<api>/amd_perf_<api>_<variant>.yaml
+```
+
+The prefix (`amd`, `glibc`, `mkl`, etc.) matches the shim vendor. The results directory is created as needed.
+
+Per-case **performance** YAML records include **`duration`** (nanoseconds per call for that input), **`ulp`** (hex-encoded double), and **`status`** (`PASS` / `FAIL`), in addition to inputs and outputs. Accuracy YAML includes **`ulp`** and **`status`**; conformance YAML includes **`exception_raised`** where applicable.
+
+**Per-case YAML destinations with `--verbose-mode`:**
+
+| Test kind | Per-case YAML | End-of-run summary table |
+|-----------|---------------|---------------------------|
+| Conformance | **file** (`*_conf_*.yaml`); **not** stdout | Conformance section |
+| Accuracy / Performance | **file** (`*_accu_*.yaml`, `*_perf_*.yaml`) | Accuracy or Performance section |
+
+Without `--verbose-mode`, those files are not created; conformance per-case YAML is emitted to **stdout** instead.
+
+### Examples
+
+**Console and HTML summaries only (default):**
+
+```console
+$ ./build/{presetName}/almbench/libm_runner.x build/external/shim/libshimamd.so almbench/config/master.yml acos
+```
+
+Open `build/libm_testsuite_reports/almbench_default_console.html` in a browser after the run.
+
+**Console/HTML summaries and per-test YAML files:**
+
+```console
+$ ./build/{presetName}/almbench/libm_runner.x build/external/shim/libshimamd.so almbench/config/master.yml acos --verbose-mode
+```
+
+**Performance run with latency mode:**
+
+```console
+$ ./libm_runner.x <path_to_shim> almbench/config/sin/sin_perf.yml --perf-mode latency
+```
 
 ---
 
@@ -59,6 +181,20 @@ $ export LD_LIBRARY_PATH=/path/to/amd/library:$LD_LIBRARY_PATH
 $ export LD_LIBRARY_PATH=/path/to/mparith/library:$LD_LIBRARY_PATH
 ```
 
+**Note: Load Alternative AMD Library**
+
+By default, the AMD shim loads `libalm.so` (Linux) or `libalm.dll` (Windows). To test alternative AMD libraries like `libalmfast`, set the `AMD_LIBM_LIBRARY` environment variable:
+
+```console
+# Linux
+$ export AMD_LIBM_LIBRARY=libalmfast.so
+
+# Windows
+set AMD_LIBM_LIBRARY=libalmfast.dll
+```
+
+If the specified library cannot be loaded, the shim automatically falls back to the default library.
+
 on windows
 ```sh
 set PATH=C:\path\to\mparith\lib;%PATH%
@@ -67,10 +203,10 @@ set PATH=C:\path\to\aocl_libm\build\{dev-win-release-llvm}\lib;%PATH%
 
 **Step 4: Execute Tests**
 
-Run the test suite with the following syntax:
+Run the test suite with the following syntax (see [Test Output and Command-Line Options](#test-output-and-command-line-options) for flags such as `--verbose-mode`):
 
 ```console
-$ ./libm_runner.x <path_to_shim> <path_to_yml>
+$ ./libm_runner.x <path_to_shim> <path_to_yml> [--verbose-mode]
 ```
 
 **Example:**
@@ -78,6 +214,8 @@ $ ./libm_runner.x <path_to_shim> <path_to_yml>
 ```console
 $ ./build/{presetName}/almbench/libm_runner.x build/external/shim/libshimamd.so almbench/config/generic.yml
 ```
+
+To also write per-test YAML under `build/libm_testsuite_results/`, add `--verbose-mode`.
 
 ---
 
@@ -139,16 +277,24 @@ export LD_LIBRARY_PATH=/path/to/amd/library:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=/path/to/mparith/library:$LD_LIBRARY_PATH
 ```
 
+**Optional: Specify alternative AMD library (e.g., libalmfast):**
+
+```sh
+export AMD_LIBM_LIBRARY=libalmfast.so
+```
+
+> **Note:** By default, the AMD shim loads `libalm.so`. Use `AMD_LIBM_LIBRARY` to test alternative libraries like `libalmfast.so`. The shim will automatically fall back to `libalm.so` if the specified library fails to load.
+
 **Run tests:**
 
 ```sh
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/generic.yml
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/generic.yml
 ```
 
 **Example:**
 
 ```sh
-./libm_runner.x external/shim/libshimamd.so ../config/generic.yml
+./libm_runner.x external/shim/libshimamd.so almbench/config/generic.yml
 ```
 
 #### GLIBC Shim
@@ -156,7 +302,7 @@ export LD_LIBRARY_PATH=/path/to/mparith/library:$LD_LIBRARY_PATH
 **Run tests:**
 
 ```sh
-./libm_runner.x ../path/to/shim/libshimglibc.so ../config/generic.yml
+./libm_runner.x ../path/to/shim/libshimglibc.so almbench/config/generic.yml
 ```
 
 #### Intel MKL Shim
@@ -170,7 +316,7 @@ export LD_LIBRARY_PATH=/path/to/mkl/lib:$LD_LIBRARY_PATH
 **Run tests:**
 
 ```sh
-./libm_runner.x ../path/to/shim/libshimmkl.so ../config/generic.yml
+./libm_runner.x ../path/to/shim/libshimmkl.so almbench/config/generic.yml
 ```
 
 ---
@@ -245,6 +391,14 @@ cmake --build . --config Debug
 set PATH=C:\path\to\mparith\lib;%PATH%
 set PATH=C:\path\to\aocl_libm\build\{dev-win-release-llvm}\lib;%PATH%
 ```
+
+**Optional: Specify alternative AMD library (e.g., libalmfast):**
+
+```cmd
+set AMD_LIBM_LIBRARY=libalmfast.dll
+```
+
+> **Note:** By default, the AMD shim loads `libalm.dll`. Use `AMD_LIBM_LIBRARY` to test alternative libraries like `libalmfast.dll`. The shim will automatically fall back to `libalm.dll` if the specified library fails to load.
 
 **Run tests:**
 ```cmd
@@ -342,17 +496,20 @@ set PATH=C:\path\to\mkl\bin;%PATH%
 
 ### Test Configuration Guide
 
+Use **`--verbose-mode`** to write per-test YAML files under `build/libm_testsuite_results/` (conformance, accuracy, and performance). Without it, only console summary tables are produced for accuracy/performance; conformance per-case YAML still goes to stdout. Performance runs still compute ULP over the full range for the console summary even when YAML files are not written.
+
 #### Testing All APIs
 
 To test the accuracy of all mathematical functions, use the `generic.yml` configuration:
 
 ```sh
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/generic.yml
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/generic.yml
+# Optional: ./libm_runner.x ... almbench/config/generic.yml --verbose-mode
 ```
 
 #### Testing Individual APIs
 
-For targeted testing of specific functions, use the corresponding YAML configuration files located in the `config/` directory.
+For targeted testing of specific functions, use the corresponding YAML configuration files located in the `almbench/config/` directory.
 
 **Available test types:**
 
@@ -364,13 +521,13 @@ For targeted testing of specific functions, use the corresponding YAML configura
 
 ```sh
 # Test sine function accuracy
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/sin/sin_accu.yml
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/sin/sin_accu.yml
 
 # Test sine function conformance
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/sin/sin_conf.yml
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/sin/sin_conf.yml
 
 # Benchmark sine function performance
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/sin/sin_perf.yml
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/sin/sin_perf.yml
 ```
 
 #### Using Master Configuration
@@ -380,23 +537,26 @@ The `master.yml` file provides flexible test execution across multiple APIs and 
 **Syntax:**
 
 ```sh
-./libm_runner.x <shim_library> ../config/master.yml [API] [TEST_TYPE]
+./libm_runner.x <shim_library> almbench/config/master.yml [API] [TEST_TYPE]
 ```
 
 **Examples:**
 
 ```sh
 # Run all tests for acos function
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/master.yml acos
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/master.yml acos
 
 # Run accuracy tests for acos function
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/master.yml acos ACCU
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/master.yml acos ACCU
 
 # Run accuracy tests for acos function (lowercase)
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/master.yml acos accu
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/master.yml acos accu
 
 # Run conformance tests across all APIs
-./libm_runner.x ../path/to/shim/libshimamd.so ../config/master.yml CONF
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/master.yml CONF
+
+# Run all tests for acos function and also write per-test YAML files (for CI or offline analysis)
+./libm_runner.x ../path/to/shim/libshimamd.so almbench/config/master.yml acos --verbose-mode
 ```
 
 ---

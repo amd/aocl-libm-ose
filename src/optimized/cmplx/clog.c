@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -28,94 +28,110 @@
  * Implementation Notes
  * --------------------
  * Signature:
- *   double complex clog(double complex x)
+ *   double complex clog(double complex z)
  *
- *   High ULP errors for values where absolute value of the complex input is close to 1.
+ *   IEEE/C99 SPEC:
+ *   If z is (-0,+0), the result is (-inf,+pi)   and FE_DIVBYZERO is raised
+ *   If z is (+0,+0), the result is (-inf,+0)    and FE_DIVBYZERO is raised
+ *   If z is (x,+inf)   (any finite x), the result is (+inf, pi/2)
+ *   If z is (x,NaN)    (any finite x), the result is (NaN,NaN), FE_INVALID may be raised
+ *   If z is (-inf,y)   (any finite positive y), the result is (+inf, pi)
+ *   If z is (+inf,y)   (any finite positive y), the result is (+inf, +0)
+ *   If z is (-inf,+inf),                        the result is (+inf, 3*pi/4)
+ *   If z is (+inf,+inf),                        the result is (+inf, pi/4)
+ *   If z is (+/-inf,NaN),                       the result is (+inf, NaN)
+ *   If z is (NaN,y)    (any finite y), the result is (NaN,NaN), FE_INVALID may be raised
+ *   If z is (NaN,+inf),                         the result is (+inf, NaN)
+ *   If z is (NaN,NaN),                          the result is (NaN,NaN)
  *
- *   IEEE SPEC:
+ *   Algorithm:
+ *     clog(a + i*b) = log|z| + i*atan2(b, a),   |z| = sqrt(a^2 + b^2)
  *
- *   If z = -0 + 0i, the result is -INFINITY + πi and FE_DIVBYZERO is raised
- *   If z =  0 + 0i, the result is -INFINITY + 0i and FE_DIVBYZERO is raised
- *   IF z =  x + INFINITYi (for any finite x), the result is INFINITY + πi/2
- *   If z =  x + NaNi (for any finite x), the result is NaN + NaNi and FE_INVALID may be raised
- *   If z = -INFINITY + yi (for any finite positive y), the result is INFINITY + πi
- *   If z = +INFINITY + yi (for any finite positive y), the result is INFINITY + 0i
- *   If z = -INFINITY + INFINITYi, the result is INFINITY + 3πi/4
- *   If z = INFINITY + INFINITYi, the result is INFINITY + πi/4
- *   If z = +/-INFINITY + NaNi, the result is INFINITY + NaNi
- *   If z = NaN + yi (for any finite y), the result is NaN + NaNi and FE_INVALID may be raised
- *   If z = NaN + INFINITYi, the result is INFINITY + NaNi
- *   If z = NaN + NaNi, the result is NaN + NaNi
+ *   theta = atan2(b, a) handles every C99 special case above; it is computed
+ *   locally in each return path so the finite path skips it until needed and
+ *   the non-finite path avoids any of the magnitude work below.  For
+ *   log|z| we sort |larger| >= |smaller| and pick one of three paths:
  *
- *   Algorithm
+ *   (1) inf/NaN input -> bit-pattern return per the C99 table.
  *
- *   Let x = a + I*b
+ *   (2) |larger| > 2^500 or 0 < |larger| < 2^-500  (larger*larger would
+ *       over/underflow):
+ *           log|z| = log(|larger|) + 0.5 * log1p((smaller/larger)^2),
+ *                                              |smaller/larger| <= 1
  *
- *   x in polar form = r * e^(i*theta)
- *
- *   r is the magnitude or the absolute value or x.
- *
- *   theta = atan2(y/x)
- *
- *   log(x) = log(r) + (I * theta)
- *
- *
+ *   (3) Normal path: form |z|^2 as a double-double (h, t) via FMA-based
+ *       Two-Product + DD-add (dd_two_prod, dd_add), then
+ *           0.5*log1p((h-1) + t)   if 0.5 < h < 2   (h-1 exact by Sterbenz)
+ *           0.5*log(h + t)         otherwise
+ *       The DD pair avoids the catastrophic cancellation in the
+ *       unit-circle band
  */
-#include <libm_util_amd.h>
-#include <libm/alm_special.h>
-#include <libm_macros.h>
-#include <libm/types.h>
-#include <libm/typehelper.h>
-#include <libm/amd_funcs_internal.h>
-#include <libm/compiler.h>
-#include <libm/poly.h>
 #include <math.h>
+#include <libm_macros.h>
+#include <libm_util_amd.h>
+#include <libm/amd_funcs_internal.h>
+#include <libm/types.h>
+#include <libm/constants.h>
+#include <libm/typehelper.h>
+
+#define CLOG_WIDE_HI_EXP  (1023u + 500u)  /* biased exp of 2^500  = 1523 */
+#define CLOG_WIDE_LO_EXP  (1023u - 500u)  /* biased exp of 2^-500 =  523 */
+
 
 fc64_t
-ALM_PROTO_OPT(clog)(fc64_t x) {
+ALM_PROTO_OPT(clog)(fc64_t z) {
+    double a = creal(z);
+    double b = cimag(z);
 
-    double theta, p, a, b, ah, al, bh, bl;
+    /* Get absolute value of real and imaginary parts */
+    uint64_t abs_re = asuint64(a) & POS_BITSET_DP64;
+    uint64_t abs_im = asuint64(b) & POS_BITSET_DP64;
 
-    double asquare, bsquare, abs_h, abs_t;
-
-    a = creal(x);
-
-    b = cimag(x);
-
-    if(a < b) {
-
-        double t = a;
-        a = b;
-        b = t;
-
+    /* Special-case handling for the REAL part.
+     *  - If either component is +/-inf  -> Re(clog z) = +inf
+     *  - Otherwise, if either is NaN    -> Re(clog z) = NaN
+     *  - Otherwise fall through to the finite path below..
+     */
+    if (abs_re >= POS_INF_F64 || abs_im >= POS_INF_F64) {
+        double theta = ALM_PROTO_OPT(atan2)(b, a);
+        if (abs_re == POS_INF_F64 || abs_im == POS_INF_F64)
+            return CMPLX(asdouble(POS_INF_F64), theta);
+        return CMPLX(asdouble(POS_QNAN_F64), theta);
     }
 
-    /*FIRST split a and b */
+    /* Sort by magnitude */
+    double larger  = (abs_re >= abs_im) ? a : b;
+    double smaller = (abs_re >= abs_im) ? b : a;
 
-    ah = asdouble(asuint64(a) & 0xfffffffff8000000UL);
+    /* Wide-magnitude path: log|z| = log(|larger|) + 0.5*log1p((smaller/larger)^2).
+     * Triggered only when |larger| is so large that larger*larger would
+     * overflow, or so small that it would underflow below the min normal. */
+    uint64_t abs_larger_bits = asuint64(larger) & POS_BITSET_DP64;
+    uint32_t larger_exp      = (uint32_t)(abs_larger_bits >> 52);
+    if (abs_larger_bits != 0 &&
+        (larger_exp > CLOG_WIDE_HI_EXP || larger_exp < CLOG_WIDE_LO_EXP)) {
+        double r = smaller / larger;     /* |r| <= 1 because of the sort */
+        double p = ALM_PROTO_OPT(log)(asdouble(abs_larger_bits))
+                 + 0.5 * ALM_PROTO_OPT(log1p)(r * r);
+        return CMPLX(p, ALM_PROTO_OPT(atan2)(b, a));
+    }
 
-    al = a - ah;
+    /* Build |z|^2 as a double-double (abs_h, abs_t)*/
+    dd_t a2_dd = dd_two_prod(larger,  larger);
+    dd_t b2_dd = dd_two_prod(smaller, smaller);
+    dd_t sum   = dd_add(a2_dd, b2_dd);
+    double abs_h = sum.hi;
+    double abs_t = sum.lo;
 
-    bh = asdouble(asuint64(b) & 0xfffffffff8000000UL);
+    /* Near |z|=1 use log1p on (|z|^2 - 1): abs_h-1 is exact by Sterbenz
+     * for 0.5 <= abs_h <= 2.0, preserving abs_t. Elsewhere log is fine. */
+    double p;
+    if (abs_h > 0.5 && abs_h < 2.0) {
+        double um1 = (abs_h - 1.0) + abs_t;
+        p = 0.5 * ALM_PROTO_OPT(log1p)(um1);
+    } else {
+        p = 0.5 * ALM_PROTO_OPT(log)(abs_h + abs_t);
+    }
 
-    bl = b - bh;
-
-    /*compute a * a + b * b using high precision two double word numbers */
-
-    asquare = a * a;
-
-    bsquare = b * b;
-
-    abs_h = asquare + bsquare;
-
-    abs_t = (((asquare - abs_h) + bsquare) + ((ah * ah - asquare) + 2 * ah * al) + al * al) +
-            ((bh * bh - bsquare) + 2 * bh * bl) + bl * bl;
-
-    p= 0.5 * log(abs_h + abs_t);
-
-    theta = atan2(cimag(x), creal(x));
-
-    return CMPLX(p, theta);
-
+    return CMPLX(p, ALM_PROTO_OPT(atan2)(b, a));
 }
-

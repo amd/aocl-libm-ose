@@ -273,6 +273,13 @@ extern "C" {
    */
   __m128d amd_vrd2_atan (__m128d x);
   /**
+   * @brief Computes two-argument arc-tangent for two double-precision lanes.
+   * @param y Vector of numerator:y coordinates.
+   * @param x Vector of denominator:x coordinates.
+   * @return Vector of angles in radians.
+   */
+  __m128d amd_vrd2_atan2 (__m128d y, __m128d x);
+  /**
    * @brief Computes arc-tangent for four single-precision lanes.
    * @param x Input vector.
    * @return Vector of arc-tangents in radians.
@@ -299,6 +306,12 @@ extern "C" {
    * @return Vector of tanh values.
    */
   __m128 amd_vrs4_tanhf (__m128 x);
+  /**
+   * @brief Computes tanh(x) for two double-precision lanes.
+   * @param x Input vector.
+   * @return Vector of tanh values.
+   */
+  __m128d amd_vrd2_tanh (__m128d x);
 
 /* Exponential */
   /**
@@ -458,6 +471,12 @@ extern "C" {
    */
   __m128 amd_vrs4_cbrtf (__m128 x);
 
+  /**
+   * @brief Computes cube root per-lane for eight single-precision elements.
+   * @param x Input vector.
+   * @return Vector of cube roots.
+   */
+  __m256 amd_vrs8_cbrtf (__m256 x);
 
 /* Error */
   /**
@@ -660,6 +679,12 @@ extern "C" {
    */
   __m256d amd_vrd4_acos (__m256d x);
   /**
+   * @brief Computes hyperbolic cosine for four double-precision lanes.
+   * @param x Input vector.
+   * @return Vector of hyperbolic cosines.
+   */
+  __m256d amd_vrd4_cosh (__m256d x);
+  /**
    * @brief Computes arc-cosine for eight single-precision lanes.
    * @param x Input vector.
    * @return Vector of arc-cosines in radians.
@@ -672,6 +697,15 @@ extern "C" {
    * @return Vector of arc-tangents in radians.
    */
   __m256d amd_vrd4_atan (__m256d x);
+
+  /**
+   * @brief Computes two-argument arc-tangent for four double-precision lanes.
+   * @param y Vector of numerator:y coordinates.
+   * @param x Vector of denominator:x coordinates.
+   * @return Vector of angles in radians.
+   */
+  __m256d amd_vrd4_atan2 (__m256d y, __m256d x);
+
   /**
    * @brief Computes arc-tangent for eight single-precision lanes.
    * @param x Input vector.
@@ -693,6 +727,12 @@ extern "C" {
    * @return Vector of tanh values.
    */
   __m256 amd_vrs8_tanhf (__m256 x);
+  /**
+   * @brief Computes tanh(x) for four double-precision lanes.
+   * @param x Input vector.
+   * @return Vector of tanh values.
+   */
+  __m256d amd_vrd4_tanh (__m256d x);
 
 /* Exponential */
   /**
@@ -720,6 +760,20 @@ extern "C" {
    * @return Vector of base-2 exponentials.
    */
   __m256 amd_vrs8_exp2f (__m256 x);
+
+  /**
+   * @brief Computes 10^x for four double-precision lanes.
+   * @param x Input vector.
+   * @return Vector of base-10 exponentials.
+   */
+  __m256d amd_vrd4_exp10 (__m256d x);
+
+  /**
+   * @brief Computes 10^x for eight single-precision lanes.
+   * @param x Input vector.
+   * @return Vector of base-10 exponentials.
+   */
+  __m256 amd_vrs8_exp10f (__m256 x);
 
 /* Logarithmic */
   /**
@@ -975,6 +1029,12 @@ extern "C" {
    */
   __m512d amd_vrd8_asin (__m512d x);
   /**
+   * @brief Computes arc-cosine for eight double-precision lanes.
+   * @param x Input vector.
+   * @return Vector of arc-cosines in radians.
+   */
+  __m512d amd_vrd8_acos (__m512d x);
+  /**
    * @brief Computes arc-sine for sixteen single-precision lanes.
    * @param x Input vector.
    * @return Vector of arc-sines in radians.
@@ -994,6 +1054,15 @@ extern "C" {
    * @return Vector of arc-tangents in radians.
    */
   __m512d amd_vrd8_atan (__m512d x);
+
+  /**
+   * @brief Computes two-argument arc-tangent for eight double-precision lanes.
+   * @param y Vector of numerator:y coordinates.
+   * @param x Vector of denominator:x coordinates.
+   * @return Vector of angles in radians.
+   */
+  __m512d amd_vrd8_atan2 (__m512d y, __m512d x);
+
   /**
    * @brief Computes arc-tangent for sixteen single-precision lanes.
    * @param x Input vector.
@@ -1008,6 +1077,24 @@ extern "C" {
    * @return Vector of tanh values.
    */
   __m512 amd_vrs16_tanhf (__m512 x);
+  /**
+   * @brief Computes tanh(x) for eight double-precision lanes.
+   * @param x Input vector.
+   * @return Vector of tanh values.
+   */
+  __m512d amd_vrd8_tanh (__m512d x);
+  /**
+   * @brief Computes hyperbolic cosine for eight double-precision lanes.
+   * @param x Input vector.
+   * @return Vector of hyperbolic cosines.
+   */
+  __m512d amd_vrd8_cosh (__m512d x);
+  /**
+   * @brief Computes hyperbolic cosine for sixteen single-precision lanes.
+   * @param x Input vector.
+   * @return Vector of hyperbolic cosines.
+   */
+  __m512 amd_vrs16_coshf (__m512 x);
 
 /* Exponential */
   /**
@@ -1030,11 +1117,24 @@ extern "C" {
    */
   __m512d amd_vrd8_exp2 (__m512d x);
   /**
+   * @brief Computes 10^x for eight double-precision lanes.
+   * @param x Input vector.
+   * @return Vector of base-10 exponentials.
+   */
+  __m512d amd_vrd8_exp10 (__m512d x);
+  /**
    * @brief Computes 2^x for sixteen single-precision lanes.
    * @param x Input vector.
    * @return Vector of base-2 exponentials.
    */
   __m512 amd_vrs16_exp2f (__m512 x);
+
+  /**
+   * @brief Computes 10^x for sixteen single-precision lanes.
+   * @param x Input vector.
+   * @return Vector of base-10 exponentials.
+   */
+  __m512 amd_vrs16_exp10f (__m512 x);
 
 /* Logarithmic */
   /**
@@ -1363,6 +1463,13 @@ extern "C" {
    * @param dst Output array for tanh values.
    */
   void amd_vrsa_tanhf (int len, const float *src, float *dst);
+  /**
+   * @brief Computes hyperbolic tangent elementwise for double array.
+   * @param len Number of elements.
+   * @param src Input array.
+   * @param dst Output array for tanh values.
+   */
+  void amd_vrda_tanh (int len, const double *src, double *dst);
 #endif
 
 

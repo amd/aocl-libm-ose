@@ -14,13 +14,8 @@ CMake is the recommended build system for AOCL-LibM. For detailed CMake build in
 
 ### 2.1 Dependencies
 
-Clone and build the libaoclutils library:
+No external dependencies required. CPU detection is handled by the internal utils module.
 
-```sh
-git clone git@github.amd.com:AOCL/aocl-utils.git -b amd-main
-```
-
-Follow the steps in `aocl-utils/README.md` to compile and install.
 
 ### 2.2 Linux
 
@@ -42,7 +37,7 @@ export PATH=`pwd`/.venv3/bin:$PATH
 #### 2.2.2 Build Library
 
 ```sh
-scons -j32 --aocl_utils_install_path=<libaoclutils library path>
+scons -j32
 ```
 
 #### 2.2.3 Build Options
@@ -54,7 +49,7 @@ scons -j32 --aocl_utils_install_path=<libaoclutils library path>
 | `--debug_mode=all/libs/gtests` | Build with debug info |
 | `--developer=1` | Developer mode |
 | `--use_asan=1` | Build with AddressSanitizer (set `ASAN_OPTIONS=verify_asan_link_order=0` first) |
-| `--aocl_utils_link=0/1` | Dynamic (0) or static (1, default) linking of libaoclutils |
+| `--fp-contract=fast/on/off` | Floating-point contraction (FMA fusion) mode; applies to both gcc and clang. Controls whether the compiler may fuse operations such as a multiply and add into a single FMA instruction. The default `fast` favors performance; choose mode when you need **bit-reproducible** results across different builds or machines.<br><table><thead><tr><th>Option Value</th><th>Compiler Flag</th><th>Description</th></tr></thead><tbody><tr><td><code>fast</code> (default)</td><td><code>-ffp-contract=fast</code></td><td>Allow FMA contraction (best performance)</td></tr><tr><td><code>on</code></td><td><code>-ffp-contract=on</code></td><td>Contraction only within a source expression</td></tr><tr><td><code>off</code></td><td><code>-ffp-contract=off</code></td><td>Disable contraction (bit-reproducible builds)</td></tr></tbody></table> |
 
 #### 2.2.4 Build Test Framework
 
@@ -75,7 +70,7 @@ sudo zypper install mpfr-devel mpc-devel
 scons <build options> gtests
 
 # With AVX-512:
-scons <build options> gtests -j32 --arch_config=avx512 --aocl_utils_install_path=<path>
+scons <build options> gtests -j32 --arch_config=avx512
 ```
 
 #### 2.2.5 Run Tests
@@ -164,11 +159,8 @@ Use 8.3 short path for LLVM to avoid quoting issues:
 scons ALM_CC="C:\PROGRA~1\LLVM\bin\clang-cl.exe" ^
       ALM_CXX="C:\PROGRA~1\LLVM\bin\clang-cl.exe" ^
       --cache-disable -j32 ^
-      --aocl_utils_install_path="C:\path\to\aocl-utils-install" ^
-      --aocl_utils_link=1
 ```
 
-Where `aocl-utils-install` is the directory containing `include/` and `lib/` from your aocl-utils build.
 
 #### 2.3.3 Build Options
 
@@ -177,8 +169,6 @@ Where `aocl-utils-install` is the directory containing `include/` and `lib/` fro
 | `ALM_CC=<path>` `ALM_CXX=<path>` | Select compiler (clang-cl) |
 | `--verbose=1` | Build with verbosity |
 | `--debug_mode=all` | Build with debug info |
-| `--use_asan=1` | ASAN (link aocl_utils dynamically: `--aocl_utils_link=0`) |
-| `--aocl_utils_link=0/1` | Dynamic (0) or static (1, default) linking |
 | `--libabi=msvc` | Test against Microsoft default math library |
 
 #### 2.3.4 Build Test Framework
@@ -200,8 +190,6 @@ If you encounter MPFR errors, see the [Troubleshooting (Windows)](#4-troubleshoo
 scons ALM_CC="C:\PROGRA~1\LLVM\bin\clang-cl.exe" ^
       ALM_CXX="C:\PROGRA~1\LLVM\bin\clang-cl.exe" ^
       --cache-disable -j32 gtests ^
-      --aocl_utils_install_path="C:\path\to\aocl-utils-install" ^
-      --aocl_utils_link=1
 ```
 
 With AVX-512:
@@ -210,8 +198,6 @@ With AVX-512:
 scons ALM_CC="C:\PROGRA~1\LLVM\bin\clang-cl.exe" ^
       ALM_CXX="C:\PROGRA~1\LLVM\bin\clang-cl.exe" ^
       --cache-disable -j32 gtests ^
-      --aocl_utils_install_path="C:\path\to\aocl-utils-install" ^
-      --aocl_utils_link=1 --arch_config=avx512
 ```
 
 #### 2.3.5 Run Tests

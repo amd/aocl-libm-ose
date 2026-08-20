@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -59,28 +59,26 @@ double ALM_PROTO_OPT(remainder)(double x, double y)
     ax &= ~SIGNBIT_DP64;
     ay &= ~SIGNBIT_DP64;
 
-    // Input value checks for NAN, INF
-    if(ay == 0)
+    /*   Check for special inputs:
+     *   x is Inf or NaN : ax >= POS_INF_F64
+     *   y is NaN        : ay >  POS_INF_F64
+     *   y is zero       : ay == 0
+     */
+    if(unlikely((ax >= POS_INF_F64) | (ay > POS_INF_F64) | (ay == 0)))
     {
+        /* NaN in either operand: return NaN. */
+        if((ax > POS_INF_F64) || (ay > POS_INF_F64))
+        {
+            return x * y;
+        }
+        /* Otherwise y == 0 or x == INF: domain error. */
         return __alm_handle_error(ay | QNANBITPATT_DP64, AMD_F_INVALID);
-    }
-
-    if(unlikely((ax & EXPBITS_DP64) >= EXPBITS_DP64))
-    {
-        // X is NAN or INF
-        if( (ax & EXPBITS_DP64) == EXPBITS_DP64)
-            return __alm_handle_error(ay | QNANBITPATT_DP64, AMD_F_INVALID);
-        else
-            #ifdef WINDOWS
-                __alm_handle_error(ay | QNANBITPATT_DP64, AMD_F_INVALID);
-            #else
-                return x + x;
-            #endif
     }
 
     if(ax == ay)
     {
-        return 0.0;
+        /* |x| == |y|: remainder is zero with the sign of x. */
+        return 0.0 * x;
     }
 
     double adx = asdouble(ax);
@@ -98,13 +96,18 @@ double ALM_PROTO_OPT(remainder)(double x, double y)
             adx -= ady;
         }
 
-        if(x >= 0)
+        if(x == 0)
+        {
+            /* Preserve signed zero of the dividend. */
+            return x;
+        }
+        else if(x > 0)
         {
             return adx;
         }
         else
         {
-            return (0.0 - adx);
+            return -adx;
         }
     }
 
@@ -158,7 +161,7 @@ double ALM_PROTO_OPT(remainder)(double x, double y)
         adx = adx - w;
         if(x<0)
         {
-            adx = 0.0 - adx;
+            adx = -adx;
         }
         return adx;
     }
@@ -167,14 +170,14 @@ double ALM_PROTO_OPT(remainder)(double x, double y)
     {
         if(x<0)
         {
-            adx = 0.0 - adx;
+            adx = -adx;
         }
         return adx;
     }
     adx = adx - w;
     if(x<0)
     {
-        adx = 0.0 - adx;
+        adx = -adx;
     }
     return adx;
 }

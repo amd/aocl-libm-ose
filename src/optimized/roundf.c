@@ -128,7 +128,7 @@ float ALM_PROTO_OPT(roundf)(float x)
 
     /* Handle medium values: 1.0 <= |x| < 2^23 */
     /* Calculate fractional bit mask */
-    uint32_t mantissa = MANTBITS_SP32 >> intexp;
+    uint32_t mantissa = (uint32_t)(MANTBITS_SP32 >> (uint32_t)intexp);
 
     /* Check if already integral - avoid unnecessary computation */
     if (unlikely((ux & mantissa) == 0)) {
@@ -136,7 +136,7 @@ float ALM_PROTO_OPT(roundf)(float x)
     }
 
     /* Add 0.5 ULP at the current exponent for rounding */
-    ux = ux + (HALF_MANTISSA_BIT_SP32 >> intexp);
+    ux = ux + (uint32_t)(HALF_MANTISSA_BIT_SP32 >> intexp);
 
     /* Clear fractional bits */
     ux = ux & ~mantissa;

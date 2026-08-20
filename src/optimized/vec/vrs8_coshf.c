@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  */
 
@@ -58,7 +58,6 @@ static struct {
 #define LOGV      v8_coshf_data.logV
 #define INVV2     v8_coshf_data.invV2
 #define ONE       v8_coshf_data.one
-#define HALFVM1   v8_coshf_data.halfVm1
 #define HALFV     v8_coshf_data.halfV
 #define ARG_MAX   v8_coshf_data.arg_max
 
@@ -66,7 +65,7 @@ static struct {
 static inline v_f32x8_t
 coshf_specialcase(v_f32x8_t _x, v_f32x8_t result, v_u32x8_t cond)
 {
-    return call_v8_f32(ALM_PROTO(coshf), _x, result, cond);
+    return call_v8_f32(ALM_PROTO_OPT(coshf), _x, result, cond);
 }
 
 
@@ -81,9 +80,9 @@ v_f32x8_t ALM_PROTO_OPT(vrs8_coshf)(v_f32x8_t x)
 
     v_u32x8_t cond = ux > ARG_MAX;
 
-    z = ALM_PROTO(vrs8_expf)(y - LOGV);
+    z = ALM_PROTO_OPT(vrs8_expf)(y - LOGV);
 
-    result = HALFV * (z + INVV2 * ONE / z);
+    result = HALFV * (z + INVV2 / z);
 
     if(unlikely(any_v8_u32_loop(cond))) {
 

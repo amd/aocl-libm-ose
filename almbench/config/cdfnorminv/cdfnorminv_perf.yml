@@ -1,0 +1,48 @@
+- test_sequence: perf_tests
+  function: cdfnorminv
+  timing_enabled: true
+  test_sets:
+  - id: range-tests_01
+    tests:
+# Double Precision
+    - id: cdfnorminv_001
+      description: 'Full domain: x in [SMALLEST_SUBNORMAL, 1.0), linearstep'
+      input: [[min_subnormal, 0x3FEFFFFFFFFFFFFF]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_002
+      description: 'Main domain: x in [0.0, 1.0], linearstep'
+      input: [[0.0, 1.0]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_003
+      description: 'Central region: x in [0.1, 0.9], linearstep'
+      input: [[0.1, 0.9]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_004
+      description: 'Around 0.5: x in [0.4, 0.6], linearstep'
+      input: [[0.4, 0.6]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_005
+      description: 'Lower tail: x in [0.001, 0.1], linearstep'
+      input: [[0.001, 0.1]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_006
+      description: 'Upper tail: x in [0.9, 0.999], linearstep'
+      input: [[0.9, 0.999]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -86,14 +86,14 @@ void ALM_PROTO_OPT(vrsa_powf)(int length, const float *input1, const float *inpu
         {
             __m256 ip18 = _mm256_loadu_ps(&input1[j]);
             __m256 ip28 = _mm256_loadu_ps(&input2[j]);
-            __m256 op8 = ALM_PROTO(vrs8_powf)(ip18, ip28);
+            __m256 op8 = ALM_PROTO_OPT(vrs8_powf)(ip18, ip28);
             _mm256_storeu_ps(&result[j], op8);
         }
         
         // Handle remaining elements using the pre-saved last 8 elements
         if (length - j)
         {
-            __m256 op8 = ALM_PROTO(vrs8_powf)(last_ip18, last_ip28);
+            __m256 op8 = ALM_PROTO_OPT(vrs8_powf)(last_ip18, last_ip28);
             _mm256_storeu_ps(&result[length - FLOAT_ELEMENTS_256_BIT], op8);
         }
         return;
@@ -103,6 +103,6 @@ void ALM_PROTO_OPT(vrsa_powf)(int length, const float *input1, const float *inpu
     __m256i mask = GET_MASK_FLOAT_256_BIT(length);
     __m256 ip18 = _mm256_maskload_ps(&input1[j], mask);
     __m256 ip28 = _mm256_maskload_ps(&input2[j], mask);
-    __m256 op8 = ALM_PROTO(vrs8_powf)(ip18, ip28);
+    __m256 op8 = ALM_PROTO_OPT(vrs8_powf)(ip18, ip28);
     _mm256_maskstore_ps(&result[j], mask, op8);
 }

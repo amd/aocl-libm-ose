@@ -475,10 +475,10 @@ double alm_nextafter_special(double y, U32 code) {
         __alm_handle_error(ym.u | QNAN_MASK_64, AMD_F_INVALID);
         break;
     case ALM_E_OVERFLOW:
-        __alm_handle_error(PINFBITPATT_DP64, AMD_F_OVERFLOW);
+        __alm_handle_error(ym.u, AMD_F_OVERFLOW | AMD_F_INEXACT);
         break;
     case ALM_F_INEXACT_UNDERFLOW:
-        __alm_handle_error(PINFBITPATT_DP64, AMD_F_INEXACT | AMD_F_UNDERFLOW);
+        __alm_handle_error(ym.u, AMD_F_INEXACT | AMD_F_UNDERFLOW);
         break;
 
     default:
@@ -501,10 +501,10 @@ float alm_nextafterf_special(float y, U32 code) {
         __alm_handle_errorf(ym.u | QNAN_MASK_32, AMD_F_INVALID);
         break;
     case ALM_E_OVERFLOW:
-        __alm_handle_errorf(PINFBITPATT_SP32, AMD_F_OVERFLOW);
+        __alm_handle_errorf(ym.u, AMD_F_OVERFLOW | AMD_F_INEXACT);
         break;
     case ALM_F_INEXACT_UNDERFLOW:
-        __alm_handle_errorf(PINFBITPATT_SP32, AMD_F_INEXACT | AMD_F_UNDERFLOW);
+        __alm_handle_errorf(ym.u, AMD_F_INEXACT | AMD_F_UNDERFLOW);
         break;
 
     default:

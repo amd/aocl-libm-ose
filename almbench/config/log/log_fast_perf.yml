@@ -1,0 +1,274 @@
+---
+- test_sequence: perf_tests_log_fast
+  function: log
+  timing_enabled: true
+  test_sets:
+  - id: double-precision-tests
+    description: 'Curve-region performance tests for fast log (double precision)'
+    tests:
+    # Subnormal inputs: log(subnormal) is very large negative
+    - id: log_d01
+      description: 'Subnormal inputs, log gives very large negative values'
+      input:
+      - [0x0000000000000001, 0x000fffffffffffff]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Tiny positive: log(x) ≈ −700 to −230
+    - id: log_d02
+      description: 'Tiny positive, deep negative log values'
+      input:
+      - [0x000fffffffffffff, 0x2b2bff2ee48e0530]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Small: log(x) moderately negative
+    - id: log_d03
+      description: 'Small positive, moderately negative log'
+      input:
+      - [0x2b2bff2ee48e0530, 0x3ddb7cdfd9d7bdbb]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Below 1: approaching log(1) = 0 from below
+    - id: log_d04
+      description: 'Moderate below 1, log approaching 0 from negative'
+      input:
+      - [0x3ddb7cdfd9d7bdbb, 0x3fe0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near 1 below: polynomial fast-path region
+    - id: log_d05
+      description: 'Near 1 from below, polynomial fast path'
+      input:
+      - [0x3fe0000000000000, 0x3fee000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very near 1: log(x) ≈ x − 1, linear approximation region
+    - id: log_d06
+      description: 'Very near 1, log(x) ≈ x−1 linear region'
+      input:
+      - [0x3fee000000000000, 0x3ff1000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near 1 above: polynomial fast-path region
+    - id: log_d07
+      description: 'Near 1 from above, polynomial fast path'
+      input:
+      - [0x3ff1000000000000, 0x4000000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Small above 1: standard reduction path
+    - id: log_d08
+      description: 'Small above 1, standard mantissa reduction'
+      input:
+      - [0x4000000000000000, 0x4024000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Moderate
+    - id: log_d09
+      description: 'Moderate, log growing slowly'
+      input:
+      - [0x4024000000000000, 0x408f400000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Large
+    - id: log_d10
+      description: 'Large inputs, high exponent extraction'
+      input:
+      - [0x408f400000000000, 0x54b249ad2594c37d]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very large
+    - id: log_d11
+      description: 'Very large inputs, log approaching 690'
+      input:
+      - [0x54b249ad2594c37d, 0x7e37e43c8800759c]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near DBL_MAX
+    - id: log_d12
+      description: 'Near DBL_MAX, log approaching 709.78'
+      input:
+      - [0x7e37e43c8800759c, 0x7fefffffffffffff]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+  - id: single-precision-tests
+    description: 'Curve-region performance tests for fast logf (single precision)'
+    tests:
+    # Subnormal float inputs
+    - id: log_s01
+      description: 'Subnormal float inputs'
+      input:
+      - [0x36a0000000000000, 0x380fffffc0000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Tiny
+    - id: log_s02
+      description: 'Tiny positive, deep negative log'
+      input:
+      - [0x380fffffc0000000, 0x3ddb7cdfd9d7bdbb]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Below 1
+    - id: log_s03
+      description: 'Below 1, log approaching 0 from negative'
+      input:
+      - [0x3ddb7cdfd9d7bdbb, 0x3fe0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near 1 below
+    - id: log_s04
+      description: 'Near 1 from below'
+      input:
+      - [0x3fe0000000000000, 0x3fee000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very near 1
+    - id: log_s05
+      description: 'Very near 1, log ≈ x−1'
+      input:
+      - [0x3fee000000000000, 0x3ff1000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near 1 above
+    - id: log_s06
+      description: 'Near 1 from above'
+      input:
+      - [0x3ff1000000000000, 0x4000000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Moderate
+    - id: log_s07
+      description: 'Moderate, standard mantissa reduction'
+      input:
+      - [0x4000000000000000, 0x4059000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Large
+    - id: log_s08
+      description: 'Large inputs'
+      input:
+      - [0x4059000000000000, 0x4415af1d78b58c40]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very large
+    - id: log_s09
+      description: 'Very large, log approaching 87.3'
+      input:
+      - [0x4415af1d78b58c40, 0x47d2ced32a16a1b1]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near FLT_MAX
+    - id: log_s10
+      description: 'Near FLT_MAX'
+      input:
+      - [0x47d2ced32a16a1b1, 0x47efffffe0000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000

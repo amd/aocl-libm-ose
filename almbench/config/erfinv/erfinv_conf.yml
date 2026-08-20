@@ -1,0 +1,505 @@
+- test_sequence: unit_tests_erfinv
+  ignore_exceptions: [underflow, inexact]
+  function: erfinv
+  test_sets:
+  - id: special-ieee754-values
+    description: Special IEEE 754 Values for erfinv function
+    tests:
+    # Double Precision Tests
+    - id: erfinv_001
+      description: "erfinv(+0) = +0"
+      input: [0x0000000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_002
+      description: "erfinv(-0) = -0"
+      input: [0x8000000000000000]
+      expect: [0x8000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_003
+      description: "erfinv(+1) = +Inf, raises DIVBYZERO"
+      input: [0x3FF0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_004
+      description: "erfinv(-1) = -Inf, raises DIVBYZERO"
+      input: [0xBFF0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+  - id: nan-infinity
+    description: NaN and Infinity inputs for erfinv function
+    tests:
+    - id: erfinv_005
+      description: "erfinv(+Inf) = QNaN, raises INVALID"
+      input: [0x7ff0000000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_006
+      description: "erfinv(-Inf) = QNaN, raises INVALID"
+      input: [0xfff0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_007
+      description: "erfinv(+QNaN) = +QNaN"
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_008
+      description: "erfinv(-QNaN) = -QNaN"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+  - id: out-of-range
+    description: Out of Range |x| > 1 for erfinv function
+    tests:
+    - id: erfinv_009
+      description: "erfinv(1 + eps) = QNaN, |x| > 1"
+      input: [0x3FF0000000000001]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_010
+      description: "erfinv(-1 - eps) = QNaN, |x| > 1"
+      input: [0xBFF0000000000001]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_011
+      description: "erfinv(1.1) = QNaN"
+      input: [0x3FF199999999999A]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_012
+      description: "erfinv(-1.1) = QNaN"
+      input: [0xBFF199999999999A]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_013
+      description: "erfinv(2.0) = QNaN"
+      input: [0x4000000000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_014
+      description: "erfinv(-2.0) = QNaN"
+      input: [0xC000000000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+  - id: range1-small-values
+    description: "Range 1: |x| <= 0.75 - Small values near zero"
+    tests:
+    - id: erfinv_015
+      description: "erfinv(1e-8) ≈ 8.86e-9"
+      input: [0x3E45798EE2308C3A]
+      expect: [0x3E45798EE2308C3A]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_016
+      description: "erfinv(-1e-8) ≈ -8.86e-9"
+      input: [0xBE45798EE2308C3A]
+      expect: [0xBE45798EE2308C3A]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_017
+      description: "erfinv(0.01) ≈ 0.00886"
+      input: [0x3F847AE147AE147B]
+      expect: [0x3F822680C94CADD4]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_018
+      description: "erfinv(-0.01) ≈ -0.00886"
+      input: [0xBF847AE147AE147B]
+      expect: [0xBF822680C94CADD4]
+      expect_exception: []
+      variants: [sd]
+
+  - id: range1-mid-values
+    description: "Range 1: |x| <= 0.75 - Mid-range values"
+    tests:
+    - id: erfinv_019
+      description: "erfinv(0.1) ≈ 0.0889"
+      input: [0x3FB999999999999A]
+      expect: [0x3FB6BF442539FD74]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_020
+      description: "erfinv(-0.1) ≈ -0.0889"
+      input: [0xBFB999999999999A]
+      expect: [0xBFB6BF442539FD74]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_021
+      description: "erfinv(0.25) ≈ 0.225"
+      input: [0x3FD0000000000000]
+      expect: [0x3FCCD70681D5FF70]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_022
+      description: "erfinv(-0.25) ≈ -0.225"
+      input: [0xBFD0000000000000]
+      expect: [0xBFCCD70681D5FF70]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_023
+      description: "erfinv(0.5) ≈ 0.477"
+      input: [0x3FE0000000000000]
+      expect: [0x3FDE861FBB24C00A]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_024
+      description: "erfinv(-0.5) ≈ -0.477"
+      input: [0xBFE0000000000000]
+      expect: [0xBFDE861FBB24C00A]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_025
+      description: "erfinv(0.7) ≈ 0.7329"
+      input: [0x3FE6666666666666]
+      expect: [0x3FE773A9DA42B44F]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_026
+      description: "erfinv(-0.7) ≈ -0.7329"
+      input: [0xBFE6666666666666]
+      expect: [0xBFE773A9DA42B44F]
+      expect_exception: []
+      variants: [sd]
+
+  - id: range1-2-boundary
+    description: "Range 1/2 Boundary: |x| = 0.75"
+    tests:
+    - id: erfinv_027
+      description: "erfinv(0.75) ≈ 0.8134"
+      input: [0x3FE8000000000000]
+      expect: [0x3FEA07890F6B2BA1]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_028
+      description: "erfinv(-0.75) ≈ -0.8134"
+      input: [0xBFE8000000000000]
+      expect: [0xBFEA07890F6B2BA1]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_029
+      description: "erfinv(0.75 - ulp) ≈ 0.8134"
+      input: [0x3FE7FFFFFFFFFFFE]
+      expect: [0x3FEA07890F6B2B9E]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_030
+      description: "erfinv(0.75 + ulp) ≈ 0.8134"
+      input: [0x3FE8000000000001]
+      expect: [0x3FEA07890F6B2BA3]
+      expect_exception: []
+      variants: [sd]
+
+  - id: range2
+    description: "Range 2: 0.75 < |x| <= 0.9375"
+    tests:
+    - id: erfinv_031
+      description: "erfinv(0.8) ≈ 0.9062"
+      input: [0x3FE999999999999A]
+      expect: [0x3FECFF8A2529BAB5]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_032
+      description: "erfinv(-0.8) ≈ -0.9062"
+      input: [0xBFE999999999999A]
+      expect: [0xBFECFF8A2529BAB5]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_033
+      description: "erfinv(0.85) ≈ 1.018"
+      input: [0x3FEB333333333333]
+      expect: [0x3FF04954184F8AA5]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_034
+      description: "erfinv(-0.85) ≈ -1.018"
+      input: [0xBFEB333333333333]
+      expect: [0xBFF04954184F8AA5]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_035
+      description: "erfinv(0.9) ≈ 1.163"
+      input: [0x3FECCCCCCCCCCCCD]
+      expect: [0x3FF29C0146770651]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_036
+      description: "erfinv(-0.9) ≈ -1.163"
+      input: [0xBFECCCCCCCCCCCCD]
+      expect: [0xBFF29C0146770651]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_037
+      description: "erfinv(0.93) ≈ 1.287"
+      input: [0x3FEDCCCCCCCCCCCD]
+      expect: [0x3FF497744F536BCC]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_038
+      description: "erfinv(-0.93) ≈ -1.287"
+      input: [0xBFEDCCCCCCCCCCCD]
+      expect: [0xBFF497744F536BCC]
+      expect_exception: []
+      variants: [sd]
+
+  - id: range2-3-boundary
+    description: "Range 2/3 Boundary: |x| = 0.9375"
+    tests:
+    - id: erfinv_039
+      description: "erfinv(0.9375) ≈ 1.317"
+      input: [0x3FEE000000000000]
+      expect: [0x3FF5130C3ACAE4DE]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_040
+      description: "erfinv(-0.9375) ≈ -1.317"
+      input: [0xBFEE000000000000]
+      expect: [0xBFF5130C3ACAE4DE]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_041
+      description: "erfinv(0.9375 - ulp) = 1.317"
+      input: [0x3FEDFFFFFFFFFFFF]
+      expect: [0x3FF5130C3ACAE4DC]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_042
+      description: "erfinv(0.9375 + ulp) = 1.317"
+      input: [0x3FEE000000000001]
+      expect: [0x3FF5130C3ACAE4E1]
+      expect_exception: []
+      variants: [sd]
+
+  - id: range3-tail
+    description: "Range 3: 0.9375 < |x| < 1 (Tail Region)"
+    tests:
+    - id: erfinv_043
+      description: "erfinv(0.95) ≈ 1.386"
+      input: [0x3FEE666666666666]
+      expect: [0x3FF62CA97D0FBB2A]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_044
+      description: "erfinv(-0.95) ≈ -1.386"
+      input: [0xBFEE666666666666]
+      expect: [0xBFF62CA97D0FBB2A]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_045
+      description: "erfinv(0.98) ≈ 1.645"
+      input: [0x3FEF5C28F5C28F5C]
+      expect: [0x3FFA51D2BA8948B8]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_046
+      description: "erfinv(-0.98) ≈ -1.645"
+      input: [0xBFEF5C28F5C28F5C]
+      expect: [0xBFFA51D2BA8948B8]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_047
+      description: "erfinv(0.99) ≈ 1.8214"
+      input: [0x3FEFAE147AE147AE]
+      expect: [0x3FFD2466082BB20E]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_048
+      description: "erfinv(-0.99) ≈ -1.8214"
+      input: [0xBFEFAE147AE147AE]
+      expect: [0xBFFD2466082BB20E]
+      expect_exception: []
+      variants: [sd]
+
+  - id: extreme-tail
+    description: "Extreme Tail: Very Close to ±1"
+    tests:
+    - id: erfinv_049
+      description: "erfinv(0.999) ≈ 2.327"
+      input: [0x3FEFF7CED916872B]
+      expect: [0x40029D311405CDB4]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_050
+      description: "erfinv(-0.999) ≈ -2.327"
+      input: [0xBFEFF7CED916872B]
+      expect: [0xC0029D311405CDB4]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_051
+      description: "erfinv(0.9999) ≈ 2.751"
+      input: [0x3FEFFF2E48E8A71E]
+      expect: [0x4006022DCB01EA50]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_052
+      description: "erfinv(-0.9999) ≈ -2.751"
+      input: [0xBFEFFF2E48E8A71E]
+      expect: [0xC006022DCB01EA50]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_053
+      description: "erfinv(0.99999) ≈ 3.123"
+      input: [0x3FEFFFEB074A771D]
+      expect: [0x4008FCC0194983BC]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_054
+      description: "erfinv(-0.99999) ≈ -3.123"
+      input: [0xBFEFFFEB074A771D]
+      expect: [0xC008FCC0194983BC]
+      expect_exception: []
+      variants: [sd]
+
+  - id: near-bound3
+    description: "Near BOUND3 (1-1e-100) Region"
+    tests:
+    - id: erfinv_055
+      description: "erfinv(0.9999998807907104) ≈ 3.7439"
+      input: [0x3FEFFFFFC0000000]
+      expect: [0x400DF38CF0476DDE]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_056
+      description: "erfinv(-0.9999998807907104) ≈ -3.7439"
+      input: [0xBFEFFFFFC0000000]
+      expect: [0xC00DF38CF0476DDE]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_057
+      description: "erfinv(0.9999998956918716) ≈ 3.761"
+      input: [0x3FEFFFFFC8000000]
+      expect: [0x400E16D027B5D198]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_058
+      description: "erfinv(nextafter(1.0, 0.0)) ≈ 5.8636"
+      input: [0x3FEFFFFFFFFFFFFF]
+      expect: [0x4017744F8F74E94A]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_059
+      description: "erfinv(-0.9999998956918716) ≈ -3.761"
+      input: [0xBFEFFFFFC8000000]
+      expect: [0xC00E16D027B5D198]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_060
+      description: "erfinv(-nextafter(1.0, 0.0)) ≈ -5.864"
+      input: [0xBFEFFFFFFFFFFFFF]
+      expect: [0xC017744F8F74E94A]
+      expect_exception: []
+      variants: [sd]
+
+  - id: denormal-small
+    description: "Denormal and Very Small Values"
+    tests:
+    - id: erfinv_061
+      description: "erfinv(min_denorm) = min_denorm"
+      input: [0x0000000000000001]
+      expect: [0x0000000000000001]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_062
+      description: "erfinv(-min_denorm) = -min_denorm"
+      input: [0x8000000000000001]
+      expect: [0x8000000000000001]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_063
+      description: "erfinv(max_denorm)"
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x000E2DFC48DA77B4]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_064
+      description: "erfinv(-max_denorm)"
+      input: [0x800FFFFFFFFFFFFF]
+      expect: [0x800E2DFC48DA77B4]
+      expect_exception: []
+      variants: [sd]
+
+  - id: additional-edge
+    description: "Additional Edge Cases"
+    tests:
+    - id: erfinv_065
+      description: "erfinv(0.9999999998835847) ≈ 4.5566"
+      input: [0x3FEFFFFFFFF00000]
+      expect: [0x401239E830EBA467]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfinv_066
+      description: "erfinv(0.9999999999990905) ≈ 5.0513"
+      input: [0x3FEFFFFFFFFFE000]
+      expect: [0x4014347BF36FBAE8]
+      expect_exception: []
+      variants: [sd]

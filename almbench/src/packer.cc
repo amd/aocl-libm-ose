@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -117,3 +117,6 @@ template class FloatPacker<libm::AlignedM256d>;
 template class FloatPacker<libm::AlignedM512>;
 template class FloatPacker<libm::AlignedM512d>;
 #endif
+
+template class FloatPacker<fc32_t, fc32_t>;
+template class FloatPacker<fc64_t, fc64_t>;

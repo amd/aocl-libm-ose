@@ -1,0 +1,41 @@
+- test_sequence: perf_tests
+  function: cdfnorm
+  timing_enabled: true
+  test_sets:
+  - id: range-tests_01
+    tests:
+# Double Precision
+    - id: cdfnorm_001
+      description: 'x in max and min supported values: [-39.0, 37.5], linearstep'
+      input: [[-39.0, 37.5]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorm_002
+      description: 'x in [[-min_subnormal, min_subnormal]], linearstep'
+      input: [[-min_subnormal, min_subnormal]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorm_003
+      description: 'Main CDF range: x in [-6, 6], linearstep'
+      input: [[-6.0, 6.0]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorm_004
+      description: 'Extended range: x in [-10, 10], linearstep'
+      input: [[-10.0, 10.0]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorm_005
+      description: 'Common range: x in [0, 1], linearstep'
+      input: [[0.0, 1.0]]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]

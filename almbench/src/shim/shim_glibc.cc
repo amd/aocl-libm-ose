@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -195,14 +195,14 @@ typedef float (*gcc_hypot_ss_func_t)(float, float);
 typedef int (*gcc_ilogb_ss_func_t)(float);
 typedef float (*gcc_ldexp_ss_func_t)(float, int);
 typedef long long (*gcc_llrint_ss_func_t)(float);
-typedef long long (*gcc_llround_ss_func_t)(float);
+typedef llint_t (*gcc_llround_ss_func_t)(float);
 typedef float (*gcc_log_ss_func_t)(float);
 typedef float (*gcc_log10_ss_func_t)(float);
 typedef float (*gcc_log1p_ss_func_t)(float);
 typedef float (*gcc_log2_ss_func_t)(float);
 typedef float (*gcc_logb_ss_func_t)(float);
 typedef long (*gcc_lrint_ss_func_t)(float);
-typedef long (*gcc_lround_ss_func_t)(float);
+typedef lint_t (*gcc_lround_ss_func_t)(float);
 typedef float (*gcc_modf_ss_func_t)(float, float*);
 typedef float (*gcc_nearbyint_ss_func_t)(float);
 typedef float (*gcc_nextafter_ss_func_t)(float, float);
@@ -223,6 +223,9 @@ typedef float (*gcc_tan_ss_func_t)(float);
 typedef float (*gcc_tanh_ss_func_t)(float);
 typedef float (*gcc_tanpi_ss_func_t)(float);
 typedef float (*gcc_trunc_ss_func_t)(float);
+typedef fc32_t (*gcc_clog_sc_func_t)(fc32_t);
+typedef fc32_t (*gcc_cexp_sc_func_t)(fc32_t);
+typedef fc32_t (*gcc_cpow_sc_func_t)(fc32_t, fc32_t);
 
 // --- Double Precision Scalar (sd) Functions ---
 typedef double (*gcc_acos_sd_func_t)(double);
@@ -257,14 +260,14 @@ typedef double (*gcc_hypot_sd_func_t)(double, double);
 typedef int (*gcc_ilogb_sd_func_t)(double);
 typedef double (*gcc_ldexp_sd_func_t)(double, int);
 typedef long long (*gcc_llrint_sd_func_t)(double);
-typedef long long (*gcc_llround_sd_func_t)(double);
+typedef llint_t (*gcc_llround_sd_func_t)(double);
 typedef double (*gcc_log_sd_func_t)(double);
 typedef double (*gcc_log10_sd_func_t)(double);
 typedef double (*gcc_log1p_sd_func_t)(double);
 typedef double (*gcc_log2_sd_func_t)(double);
 typedef double (*gcc_logb_sd_func_t)(double);
 typedef long (*gcc_lrint_sd_func_t)(double);
-typedef long (*gcc_lround_sd_func_t)(double);
+typedef lint_t (*gcc_lround_sd_func_t)(double);
 typedef double (*gcc_modf_sd_func_t)(double, double*);
 typedef double (*gcc_nearbyint_sd_func_t)(double);
 typedef double (*gcc_nextafter_sd_func_t)(double, double);
@@ -285,6 +288,9 @@ typedef double (*gcc_tan_sd_func_t)(double);
 typedef double (*gcc_tanh_sd_func_t)(double);
 typedef double (*gcc_tanpi_sd_func_t)(double);
 typedef double (*gcc_trunc_sd_func_t)(double);
+typedef fc64_t (*gcc_clog_sz_func_t)(fc64_t);
+typedef fc64_t (*gcc_cexp_sz_func_t)(fc64_t);
+typedef fc64_t (*gcc_cpow_sz_func_t)(fc64_t, fc64_t);
 
 // --- Double Precision 128-bit Vector (vrd2) Functions ---
 typedef __m128d (*gcc_acos_vrd2_func_t)(__m128d);
@@ -343,10 +349,12 @@ typedef __m256d (*gcc_acos_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_asin_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_atan_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_cos_vrd4_func_t)(__m256d);
+typedef __m256d (*gcc_cosh_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_erf_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_erfc_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_exp_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_exp2_vrd4_func_t)(__m256d);
+typedef __m256d (*gcc_exp10_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_fabs_vrd4_func_t)(__m256d);
 typedef __m256d (*gcc_linearfrac_vrd4_func_t)(__m256d, __m256d, double, double, double, double);
 typedef __m256d (*gcc_log_vrd4_func_t)(__m256d);
@@ -364,10 +372,12 @@ typedef __m256 (*gcc_asin_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_atan_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_cos_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_cosh_vrs8_func_t)(__m256);
+typedef __m256 (*gcc_cbrt_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_erf_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_erfc_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_exp_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_exp2_vrs8_func_t)(__m256);
+typedef __m256 (*gcc_exp10_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_fabs_vrs8_func_t)(__m256);
 typedef __m256 (*gcc_linearfrac_vrs8_func_t)(__m256, __m256, float, float, float, float);
 typedef __m256 (*gcc_log_vrs8_func_t)(__m256);
@@ -461,12 +471,15 @@ typedef void (*gcc_tan_vrda_func_t)(int, const double*, double*);
 
 #ifdef __AVX512F__
 // --- Double Precision 512-bit Vector (vrd8) Functions ---
+typedef __m512d (*gcc_acos_vrd8_func_t)(__m512d);
 typedef __m512d (*gcc_asin_vrd8_func_t)(__m512d);
 typedef __m512d (*gcc_atan_vrd8_func_t)(__m512d);
 typedef __m512d (*gcc_cos_vrd8_func_t)(__m512d);
+typedef __m512d (*gcc_cosh_vrd8_func_t)(__m512d);
 typedef __m512d (*gcc_erf_vrd8_func_t)(__m512d);
 typedef __m512d (*gcc_erfc_vrd8_func_t)(__m512d);
 typedef __m512d (*gcc_exp_vrd8_func_t)(__m512d);
+typedef __m512d (*gcc_exp10_vrd8_func_t)(__m512d);
 typedef __m512d (*gcc_exp2_vrd8_func_t)(__m512d);
 typedef __m512d (*gcc_linearfrac_vrd8_func_t)(__m512d, __m512d, double, double, double, double);
 typedef __m512d (*gcc_log_vrd8_func_t)(__m512d);
@@ -483,9 +496,11 @@ typedef __m512 (*gcc_acos_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_asin_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_atan_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_cos_vrs16_func_t)(__m512);
+typedef __m512 (*gcc_cosh_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_erf_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_erfc_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_exp_vrs16_func_t)(__m512);
+typedef __m512 (*gcc_exp10_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_exp2_vrs16_func_t)(__m512);
 typedef __m512 (*gcc_linearfrac_vrs16_func_t)(__m512, __m512, float, float, float, float);
 typedef __m512 (*gcc_log_vrs16_func_t)(__m512);
@@ -567,6 +582,9 @@ static struct {
     gcc_tanh_ss_func_t tanhf;
     gcc_tanpi_ss_func_t tanpif;
     gcc_trunc_ss_func_t truncf;
+    gcc_clog_sc_func_t clogf;
+    gcc_cexp_sc_func_t cexpf;
+    gcc_cpow_sc_func_t cpowf;
 
     // ============================================================================
     // DOUBLE PRECISION SCALAR (sd) VARIANTS
@@ -631,6 +649,9 @@ static struct {
     gcc_tanh_sd_func_t tanh;
     gcc_tanpi_sd_func_t tanpi;
     gcc_trunc_sd_func_t trunc;
+    gcc_clog_sz_func_t clog;
+    gcc_cexp_sz_func_t cexp;
+    gcc_cpow_sz_func_t cpow;
 
     // ============================================================================
     // DOUBLE PRECISION 128-BIT VECTOR (vrd2) VARIANTS
@@ -695,10 +716,12 @@ static struct {
     gcc_asin_vrd4_func_t asin_vrd4;
     gcc_atan_vrd4_func_t atan_vrd4;
     gcc_cos_vrd4_func_t cos_vrd4;
+    gcc_cosh_vrd4_func_t cosh_vrd4;
     gcc_erf_vrd4_func_t erf_vrd4;
     gcc_erfc_vrd4_func_t erfc_vrd4;
     gcc_exp_vrd4_func_t exp_vrd4;
     gcc_exp2_vrd4_func_t exp2_vrd4;
+    gcc_exp10_vrd4_func_t exp10_vrd4;
     gcc_fabs_vrd4_func_t fabs_vrd4;
     gcc_linearfrac_vrd4_func_t linearfrac_vrd4;
     gcc_log_vrd4_func_t log_vrd4;
@@ -718,10 +741,12 @@ static struct {
     gcc_atan_vrs8_func_t atan_vrs8;
     gcc_cos_vrs8_func_t cos_vrs8;
     gcc_cosh_vrs8_func_t cosh_vrs8;
+    gcc_cbrt_vrs8_func_t cbrt_vrs8;
     gcc_erf_vrs8_func_t erf_vrs8;
     gcc_erfc_vrs8_func_t erfc_vrs8;
     gcc_exp_vrs8_func_t exp_vrs8;
     gcc_exp2_vrs8_func_t exp2_vrs8;
+    gcc_exp10_vrs8_func_t exp10_vrs8;
     gcc_fabs_vrs8_func_t fabs_vrs8;
     gcc_linearfrac_vrs8_func_t linearfrac_vrs8;
     gcc_log_vrs8_func_t log_vrs8;
@@ -820,12 +845,15 @@ static struct {
     // ============================================================================
     // DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
     // ============================================================================
+    gcc_acos_vrd8_func_t acos_vrd8;
     gcc_asin_vrd8_func_t asin_vrd8;
     gcc_atan_vrd8_func_t atan_vrd8;
     gcc_cos_vrd8_func_t cos_vrd8;
+    gcc_cosh_vrd8_func_t cosh_vrd8;
     gcc_erf_vrd8_func_t erf_vrd8;
     gcc_erfc_vrd8_func_t erfc_vrd8;
     gcc_exp_vrd8_func_t exp_vrd8;
+    gcc_exp10_vrd8_func_t exp10_vrd8;
     gcc_exp2_vrd8_func_t exp2_vrd8;
     gcc_linearfrac_vrd8_func_t linearfrac_vrd8;
     gcc_log_vrd8_func_t log_vrd8;
@@ -844,9 +872,11 @@ static struct {
     gcc_asin_vrs16_func_t asin_vrs16;
     gcc_atan_vrs16_func_t atan_vrs16;
     gcc_cos_vrs16_func_t cos_vrs16;
+    gcc_cosh_vrs16_func_t cosh_vrs16;
     gcc_erf_vrs16_func_t erf_vrs16;
     gcc_erfc_vrs16_func_t erfc_vrs16;
     gcc_exp_vrs16_func_t exp_vrs16;
+    gcc_exp10_vrs16_func_t exp10_vrs16;
     gcc_exp2_vrs16_func_t exp2_vrs16;
     gcc_linearfrac_vrs16_func_t linearfrac_vrs16;
     gcc_log_vrs16_func_t log_vrs16;
@@ -902,6 +932,12 @@ extern "C" {
     float powf(float, float); double pow(double, double);
     float sqrtf(float); double sqrt(double);
     float cbrtf(float); double cbrt(double);
+    fc32_t clogf(fc32_t);
+    fc64_t clog(fc64_t);
+    fc32_t cexpf(fc32_t);
+    fc64_t cexp(fc64_t);
+    fc32_t cpowf(fc32_t, fc32_t);
+    fc64_t cpow(fc64_t, fc64_t);
 
     // Error functions
     float erff(float); double erf(double);
@@ -1288,6 +1324,9 @@ static void init_gcc_symbols(void) {
     gcc_funcs.tanf = tanf;
     gcc_funcs.tanhf = tanhf;
     gcc_funcs.truncf = truncf;
+    gcc_funcs.clogf = clogf;
+    gcc_funcs.cexpf = cexpf;
+    gcc_funcs.cpowf = cpowf;
     gcc_funcs.sinpif = nullptr;
     gcc_funcs.cospif = nullptr;
     gcc_funcs.tanpif = nullptr;
@@ -1358,6 +1397,9 @@ static void init_gcc_symbols(void) {
     gcc_funcs.tan = tan;
     gcc_funcs.tanh = tanh;
     gcc_funcs.trunc = trunc;
+    gcc_funcs.clog = clog;
+    gcc_funcs.cexp = cexp;
+    gcc_funcs.cpow = cpow;
     gcc_funcs.sinpi = nullptr;
     gcc_funcs.cospi = nullptr;
     gcc_funcs.tanpi = nullptr;
@@ -1429,10 +1471,12 @@ static void init_gcc_symbols(void) {
     gcc_funcs.asin_vrd4 = nullptr;
     gcc_funcs.atan_vrd4 = nullptr;
     gcc_funcs.cos_vrd4 = nullptr;
+    gcc_funcs.cosh_vrd4 = nullptr;
     gcc_funcs.erf_vrd4 = nullptr;
     gcc_funcs.erfc_vrd4 = nullptr;
     gcc_funcs.exp_vrd4 = nullptr;
     gcc_funcs.exp2_vrd4 = nullptr;
+    gcc_funcs.exp10_vrd4 = nullptr;
     gcc_funcs.fabs_vrd4 = nullptr;
     gcc_funcs.linearfrac_vrd4 = nullptr;
     gcc_funcs.log_vrd4 = nullptr;
@@ -1450,10 +1494,12 @@ static void init_gcc_symbols(void) {
     gcc_funcs.atan_vrs8 = nullptr;
     gcc_funcs.cos_vrs8 = nullptr;
     gcc_funcs.cosh_vrs8 = nullptr;
+    gcc_funcs.cbrt_vrs8 = nullptr;
     gcc_funcs.erf_vrs8 = nullptr;
     gcc_funcs.erfc_vrs8 = nullptr;
     gcc_funcs.exp_vrs8 = nullptr;
     gcc_funcs.exp2_vrs8 = nullptr;
+    gcc_funcs.exp10_vrs8 = nullptr;
     gcc_funcs.fabs_vrs8 = nullptr;
     gcc_funcs.linearfrac_vrs8 = nullptr;
     gcc_funcs.log_vrs8 = nullptr;
@@ -1545,12 +1591,15 @@ static void init_gcc_symbols(void) {
 
 #ifdef __AVX512F__
     // AVX512 variants (512-bit)
+    gcc_funcs.acos_vrd8 = nullptr;
     gcc_funcs.asin_vrd8 = nullptr;
     gcc_funcs.atan_vrd8 = nullptr;
     gcc_funcs.cos_vrd8 = nullptr;
+    gcc_funcs.cosh_vrd8 = nullptr;
     gcc_funcs.erf_vrd8 = nullptr;
     gcc_funcs.erfc_vrd8 = nullptr;
     gcc_funcs.exp_vrd8 = nullptr;
+    gcc_funcs.exp10_vrd8 = nullptr;
     gcc_funcs.exp2_vrd8 = nullptr;
     gcc_funcs.linearfrac_vrd8 = nullptr;
     gcc_funcs.log_vrd8 = nullptr;
@@ -1566,9 +1615,11 @@ static void init_gcc_symbols(void) {
     gcc_funcs.asin_vrs16 = nullptr;
     gcc_funcs.atan_vrs16 = nullptr;
     gcc_funcs.cos_vrs16 = nullptr;
+    gcc_funcs.cosh_vrs16 = nullptr;
     gcc_funcs.erf_vrs16 = nullptr;
     gcc_funcs.erfc_vrs16 = nullptr;
     gcc_funcs.exp_vrs16 = nullptr;
+    gcc_funcs.exp10_vrs16 = nullptr;
     gcc_funcs.exp2_vrs16 = nullptr;
     gcc_funcs.linearfrac_vrs16 = nullptr;
     gcc_funcs.log_vrs16 = nullptr;
@@ -1679,21 +1730,27 @@ static void init_gcc_symbols(void) {
     gcc_funcs.atan_vrd4 = _ZGVdN4v_atan;
     gcc_funcs.atan_vrs8 = _ZGVdN8v_atanf;
 
-    // TAN, ERF, ERFC - 256-bit (AVX2)
+    // TAN, CBRT, ERF, ERFC - 256-bit (AVX2)
     gcc_funcs.tan_vrd4 = _ZGVdN4v_tan;
     gcc_funcs.tan_vrs8 = _ZGVdN8v_tanf;
+    gcc_funcs.cbrt_vrs8 = _ZGVdN8v_cbrtf;
     gcc_funcs.erf_vrd4 = _ZGVdN4v_erf;
     gcc_funcs.erf_vrs8 = _ZGVdN8v_erff;
     gcc_funcs.erfc_vrd4 = _ZGVdN4v_erfc;
     gcc_funcs.erfc_vrs8 = _ZGVdN8v_erfcf;
 
     // COSH - 256-bit (AVX2)
+    gcc_funcs.cosh_vrd4 = _ZGVdN4v_cosh;
     gcc_funcs.cosh_vrs8 = _ZGVdN8v_coshf;
     gcc_funcs.tanh_vrs8 = _ZGVdN8v_tanhf;
 
     // EXP2 - 256-bit (AVX2)
     gcc_funcs.exp2_vrd4 = _ZGVdN4v_exp2;
     gcc_funcs.exp2_vrs8 = _ZGVdN8v_exp2f;
+
+    // EXP10 - 256-bit (AVX2)
+    gcc_funcs.exp10_vrd4 = _ZGVdN4v_exp10;
+    gcc_funcs.exp10_vrs8 = _ZGVdN8v_exp10f;
 
     // LOG2, LOG10 - 256-bit (AVX2)
     gcc_funcs.log2_vrd4 = _ZGVdN4v_log2;
@@ -1708,11 +1765,16 @@ static void init_gcc_symbols(void) {
     gcc_funcs.atan_vrs16 = _ZGVeN16v_atanf;
 
     // ACOS, TAN - 512-bit (AVX512)
+    gcc_funcs.acos_vrd8 = _ZGVeN8v_acos;
     gcc_funcs.acos_vrs16 = _ZGVeN16v_acosf;
     gcc_funcs.tan_vrd8 = _ZGVeN8v_tan;
     gcc_funcs.tan_vrs16 = _ZGVeN16v_tanf;
 
     gcc_funcs.tanh_vrs16 = _ZGVeN16v_tanhf;
+
+    // COSH - 512-bit (AVX512)
+    gcc_funcs.cosh_vrd8 = _ZGVeN8v_cosh;
+    gcc_funcs.cosh_vrs16 = _ZGVeN16v_coshf;
 
     // ERF, ERFC - 512-bit (AVX512)
     gcc_funcs.erf_vrd8 = _ZGVeN8v_erf;
@@ -1720,7 +1782,9 @@ static void init_gcc_symbols(void) {
     gcc_funcs.erfc_vrd8 = _ZGVeN8v_erfc;
     gcc_funcs.erfc_vrs16 = _ZGVeN16v_erfcf;
 
-    // EXP2, EXP10 - 512-bit (AVX512)
+    // EXP10, EXP2 - 512-bit (AVX512)
+    gcc_funcs.exp10_vrd8 = _ZGVeN8v_exp10;
+    gcc_funcs.exp10_vrs16 = _ZGVeN16v_exp10f;
     gcc_funcs.exp2_vrd8 = _ZGVeN8v_exp2;
     gcc_funcs.exp2_vrs16 = _ZGVeN16v_exp2f;
 
@@ -1881,7 +1945,7 @@ SHIM_EXPORT void shim_llrint_ss(InParams<float, float> *ipp) {
 }
 
 SHIM_EXPORT void shim_llround_ss(InParams<float, float> *ipp) {
-    ipp->op[0] = static_cast<float>(gcc_funcs.llroundf(ipp->ip[0]));
+    ipp->iop.ll = gcc_funcs.llroundf(ipp->ip[0]);
 }
 
 SHIM_EXPORT void shim_log_ss(InParams<float, float> *ipp) {
@@ -1909,7 +1973,7 @@ SHIM_EXPORT void shim_lrint_ss(InParams<float, float> *ipp) {
 }
 
 SHIM_EXPORT void shim_lround_ss(InParams<float, float> *ipp) {
-    ipp->op[0] = static_cast<float>(gcc_funcs.lroundf(ipp->ip[0]));
+    ipp->iop.l = gcc_funcs.lroundf(ipp->ip[0]);
 }
 
 SHIM_EXPORT void shim_modf_ss(InParams<float, float> *ipp) {
@@ -1994,6 +2058,18 @@ SHIM_EXPORT void shim_tanpi_ss(InParams<float, float> *ipp) {
 
 SHIM_EXPORT void shim_trunc_ss(InParams<float, float> *ipp) {
     ipp->op[0] = gcc_funcs.truncf(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_clog_sc(InParams<fc32_t, fc32_t> *ipp) {
+    ipp->op[0] = gcc_funcs.clogf(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cexp_sc(InParams<fc32_t, fc32_t> *ipp) {
+    ipp->op[0] = gcc_funcs.cexpf(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cpow_sc(InParams<fc32_t, fc32_t> *ipp) {
+    ipp->op[0] = gcc_funcs.cpowf(ipp->ip[0], ipp->ip[1]);
 }
 
 // ============================================================================
@@ -2130,7 +2206,7 @@ SHIM_EXPORT void shim_llrint_sd(InParams<double, double> *ipp) {
 }
 
 SHIM_EXPORT void shim_llround_sd(InParams<double, double> *ipp) {
-    ipp->op[0] = static_cast<double>(gcc_funcs.llround(ipp->ip[0]));
+    ipp->iop.ll = gcc_funcs.llround(ipp->ip[0]);
 }
 
 SHIM_EXPORT void shim_log_sd(InParams<double, double> *ipp) {
@@ -2158,7 +2234,7 @@ SHIM_EXPORT void shim_lrint_sd(InParams<double, double> *ipp) {
 }
 
 SHIM_EXPORT void shim_lround_sd(InParams<double, double> *ipp) {
-    ipp->op[0] = static_cast<double>(gcc_funcs.lround(ipp->ip[0]));
+    ipp->iop.l = gcc_funcs.lround(ipp->ip[0]);
 }
 
 SHIM_EXPORT void shim_modf_sd(InParams<double, double> *ipp) {
@@ -2243,6 +2319,18 @@ SHIM_EXPORT void shim_tanpi_sd(InParams<double, double> *ipp) {
 
 SHIM_EXPORT void shim_trunc_sd(InParams<double, double> *ipp) {
     ipp->op[0] = gcc_funcs.trunc(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_clog_sz(InParams<fc64_t, fc64_t> *ipp) {
+    ipp->op[0] = gcc_funcs.clog(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cexp_sz(InParams<fc64_t, fc64_t> *ipp) {
+    ipp->op[0] = gcc_funcs.cexp(ipp->ip[0]);
+}
+
+SHIM_EXPORT void shim_cpow_sz(InParams<fc64_t, fc64_t> *ipp) {
+    ipp->op[0] = gcc_funcs.cpow(ipp->ip[0], ipp->ip[1]);
 }
 
 // ============================================================================
@@ -2476,6 +2564,10 @@ SHIM_EXPORT void shim_cos_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = gcc_funcs.cos_vrd4(ipp->ip[0].data);
 }
 
+SHIM_EXPORT void shim_cosh_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
+    ipp->op[0].data = gcc_funcs.cosh_vrd4(ipp->ip[0].data);
+}
+
 SHIM_EXPORT void shim_erf_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = gcc_funcs.erf_vrd4(ipp->ip[0].data);
 }
@@ -2490,6 +2582,10 @@ SHIM_EXPORT void shim_exp_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
 
 SHIM_EXPORT void shim_exp2_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
     ipp->op[0].data = gcc_funcs.exp2_vrd4(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_exp10_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
+    ipp->op[0].data = gcc_funcs.exp10_vrd4(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_fabs_vrd4(InParams<libm::AlignedM256d, double> *ipp) {
@@ -2562,6 +2658,10 @@ SHIM_EXPORT void shim_cosh_vrs8(InParams<libm::AlignedM256, float> *ipp) {
     ipp->op[0].data = gcc_funcs.cosh_vrs8(ipp->ip[0].data);
 }
 
+SHIM_EXPORT void shim_cbrt_vrs8(InParams<libm::AlignedM256, float> *ipp) {
+    ipp->op[0].data = gcc_funcs.cbrt_vrs8(ipp->ip[0].data);
+}
+
 SHIM_EXPORT void shim_erf_vrs8(InParams<libm::AlignedM256, float> *ipp) {
     ipp->op[0].data = gcc_funcs.erf_vrs8(ipp->ip[0].data);
 }
@@ -2576,6 +2676,10 @@ SHIM_EXPORT void shim_exp_vrs8(InParams<libm::AlignedM256, float> *ipp) {
 
 SHIM_EXPORT void shim_exp2_vrs8(InParams<libm::AlignedM256, float> *ipp) {
     ipp->op[0].data = gcc_funcs.exp2_vrs8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_exp10_vrs8(InParams<libm::AlignedM256, float> *ipp) {
+    ipp->op[0].data = gcc_funcs.exp10_vrs8(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_fabs_vrs8(InParams<libm::AlignedM256, float> *ipp) {
@@ -2935,6 +3039,10 @@ SHIM_EXPORT void shim_tan_vrda(InParams<double, double> *ipp) {
 // ============================================================================
 // DOUBLE PRECISION 512-BIT VECTOR (vrd8) VARIANTS
 // ============================================================================
+SHIM_EXPORT void shim_acos_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = gcc_funcs.acos_vrd8(ipp->ip[0].data);
+}
+
 SHIM_EXPORT void shim_asin_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
     ipp->op[0].data = gcc_funcs.asin_vrd8(ipp->ip[0].data);
 }
@@ -2945,6 +3053,10 @@ SHIM_EXPORT void shim_atan_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
 
 SHIM_EXPORT void shim_cos_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
     ipp->op[0].data = gcc_funcs.cos_vrd8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_cosh_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = gcc_funcs.cosh_vrd8(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_erf_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
@@ -2961,6 +3073,10 @@ SHIM_EXPORT void shim_exp_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
 
 SHIM_EXPORT void shim_exp2_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
     ipp->op[0].data = gcc_funcs.exp2_vrd8(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_exp10_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
+    ipp->op[0].data = gcc_funcs.exp10_vrd8(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_linearfrac_vrd8(InParams<libm::AlignedM512d, double> *ipp) {
@@ -3025,6 +3141,10 @@ SHIM_EXPORT void shim_cos_vrs16(InParams<libm::AlignedM512, float> *ipp) {
     ipp->op[0].data = gcc_funcs.cos_vrs16(ipp->ip[0].data);
 }
 
+SHIM_EXPORT void shim_cosh_vrs16(InParams<libm::AlignedM512, float> *ipp) {
+    ipp->op[0].data = gcc_funcs.cosh_vrs16(ipp->ip[0].data);
+}
+
 SHIM_EXPORT void shim_erf_vrs16(InParams<libm::AlignedM512, float> *ipp) {
     ipp->op[0].data = gcc_funcs.erf_vrs16(ipp->ip[0].data);
 }
@@ -3035,6 +3155,10 @@ SHIM_EXPORT void shim_erfc_vrs16(InParams<libm::AlignedM512, float> *ipp) {
 
 SHIM_EXPORT void shim_exp_vrs16(InParams<libm::AlignedM512, float> *ipp) {
     ipp->op[0].data = gcc_funcs.exp_vrs16(ipp->ip[0].data);
+}
+
+SHIM_EXPORT void shim_exp10_vrs16(InParams<libm::AlignedM512, float> *ipp) {
+    ipp->op[0].data = gcc_funcs.exp10_vrs16(ipp->ip[0].data);
 }
 
 SHIM_EXPORT void shim_exp2_vrs16(InParams<libm::AlignedM512, float> *ipp) {

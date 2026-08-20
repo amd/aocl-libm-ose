@@ -115,7 +115,7 @@ sin_specialcase(v_f64x8_t _x,
                  v_u64x8_t cond)
 {
 
-    return call_v8_f64(ALM_PROTO(sin), _x, result, cond);
+    return call_v8_f64(ALM_PROTO_OPT(sin), _x, result, cond);
 
 }
 
@@ -163,7 +163,7 @@ ALM_PROTO_OPT(vrd8_sin)(v_f64x8_t x)
 
     result = as_v8_f64_u64(as_v8_u64_f64(poly) ^ sign ^ odd);
 
-    if(unlikely(any_v8_u64_loop(cmp))) {
+    if(unlikely(any_v8_u64_avx512(cmp))) {
 
         return sin_specialcase(x, result, cmp);
 

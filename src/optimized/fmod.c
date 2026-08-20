@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -72,30 +72,27 @@ double ALM_PROTO_OPT(fmod)(double x, double y)
         return x * y;
     }
 
+    /* Check x for NaN. If yes, return qnan/snan as applicable. */
+    if(unlikely(ax > POS_INF_F64))
+    {
+        return x + x;
+    }
+
     /* Check if y is Zero. If yes, return NaN and raise exception*/
     if(unlikely(ay == 0))
     {
         return _fmod_special(x, asdouble(ay | QNANBITPATT_DP64), FMOD_Y_ZERO);
     }
-    /* Check if x is NaN or INF */
-    if(unlikely((ax & EXPBITS_DP64) >= EXPBITS_DP64))
+    /* Check if x is INF */
+    if(unlikely(ax == POS_INF_F64))
     {
-        /* X is NaN. Return NaN */
-        if(ax > POS_INF_F64)
-        {
-            return x;
-
-        }
-        /* X is INF. Return NaN and raise exception */
-        else
-        {
-            return _fmod_special(x, asdouble(ay | QNANBITPATT_DP64), FMOD_X_INF);
-        }
+        return _fmod_special(x, asdouble(ax | QNANBITPATT_DP64), FMOD_X_INF);
     }
 
     if(ax == ay)
     {
-        return 0.0;
+        /* Return 0.0 with the sign of x */
+        return 0.0 * x;
     }
 
     double adx = asdouble(ax);
@@ -153,7 +150,9 @@ double ALM_PROTO_OPT(fmod)(double x, double y)
     {
         return w;
     }
-    w = 0.0 - w;
+
+    /* Negate to apply x's sign.*/
+    w = -w;
 
     return w;
 }

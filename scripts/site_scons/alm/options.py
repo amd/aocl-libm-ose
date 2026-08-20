@@ -109,29 +109,19 @@ class AlmOptions(object):
                         help    = 'Configure for avx512'
         )
 
+        self.add_option('fp-contract',
+                        nargs   = 1,
+                        default = 'fast',
+                        type    = 'str',
+                        help    = 'FP contraction: fast/on/off (off for bit-reproducible builds)'
+        )
+
         #address sanitizer usage
         self.add_option('use_asan',
                         nargs = 1,
                         default = 0,
                         type =  int,
                         help = "Compile to use address sanitizer"
-        )
-
-        #provide libau_cpuid install path
-        self.add_option('aocl_utils_install_path',
-                        nargs = 1,
-                        default = '/usr/local/',
-                        type = str,
-                        metavar = 'DIR',
-                        help = 'Provide AOCL UTILS install path',
-        )
-
-        #link libau_cpuid static/dynamic library, default is static linking
-        self.add_option('aocl_utils_link',
-                        nargs = 1,
-                        default = 1,
-                        type = int,
-                        help = 'libau_cpuid static/dynamic linking',
         )
 
         self.add_option('developer',

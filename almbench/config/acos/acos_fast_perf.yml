@@ -1,0 +1,250 @@
+---
+- test_sequence: perf_tests_acos_fast
+  function: acos
+  timing_enabled: true
+  test_sets:
+  - id: double-precision-tests
+    description: 'Curve-region performance tests for fast acos (double precision)'
+    tests:
+    # Subnormal: acos(x) ≈ π/2
+    - id: acos_d01
+      description: 'Subnormal inputs, acos(x) ≈ π/2'
+      input:
+      - [0x0000000000000001, 0x000fffffffffffff]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Tiny positive: acos(x) ≈ π/2 − x
+    - id: acos_d02
+      description: 'Tiny positive, acos(x) ≈ π/2 − x'
+      input:
+      - [0x000fffffffffffff, 0x3e45798ee2308c3a]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Small: slight deviation from π/2
+    - id: acos_d03
+      description: 'Small positive, slight curvature'
+      input:
+      - [0x3e45798ee2308c3a, 0x3fc0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Moderate: direct polynomial path (|x| ≤ 0.5)
+    - id: acos_d04
+      description: 'Moderate, direct polynomial path, |x| ≤ 0.5'
+      input:
+      - [0x3fc0000000000000, 0x3fe0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Above split: sqrt-based path begins (|x| > 0.5)
+    - id: acos_d05
+      description: 'Above 0.5 split, sqrt path, acos(x) = 2·asin(√((1−x)/2))'
+      input:
+      - [0x3fe0000000000000, 0x3fe8000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near 1: steep descent toward 0
+    - id: acos_d06
+      description: 'Near 1, steep descent, acos(x) ≈ √(2(1−x))'
+      input:
+      - [0x3fe8000000000000, 0x3fef000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very near 1: approaching 0
+    - id: acos_d07
+      description: 'Very near 1, acos(x) → 0'
+      input:
+      - [0x3fef000000000000, 0x3ff0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative: near-zero through polynomial path
+    - id: acos_d08
+      description: 'Negative, [−0.5, −min_normal], near-zero + polynomial'
+      input:
+      - [0xbfe0000000000000, 0x8010000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative above split: sqrt path
+    - id: acos_d09
+      description: 'Negative above split, [−0.75, −0.5], sqrt path'
+      input:
+      - [0xbfe8000000000000, 0xbfe0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near −1: acos(x) → π
+    - id: acos_d10
+      description: 'Near −1, [−1.0, −0.75], acos(x) approaching π'
+      input:
+      - [0xbff0000000000000, 0xbfe8000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+  - id: single-precision-tests
+    description: 'Curve-region performance tests for fast acosf (single precision)'
+    tests:
+    # Subnormal float inputs
+    - id: acos_s01
+      description: 'Subnormal inputs, acosf(x) ≈ π/2'
+      input:
+      - [0x36a0000000000000, 0x380fffffc0000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Tiny
+    - id: acos_s02
+      description: 'Tiny positive, acosf(x) ≈ π/2 − x'
+      input:
+      - [0x380fffffc0000000, 0x3f1a36e2eb1c432d]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Small to moderate: polynomial path
+    - id: acos_s03
+      description: 'Small to moderate, polynomial path'
+      input:
+      - [0x3f1a36e2eb1c432d, 0x3fe0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Above split: sqrt path
+    - id: acos_s04
+      description: 'Above 0.5 split, sqrt path'
+      input:
+      - [0x3fe0000000000000, 0x3fe8000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near 1
+    - id: acos_s05
+      description: 'Near 1, steep descent'
+      input:
+      - [0x3fe8000000000000, 0x3fef000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very near 1
+    - id: acos_s06
+      description: 'Very near 1, acos → 0'
+      input:
+      - [0x3fef000000000000, 0x3ff0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative: near-zero through polynomial
+    - id: acos_s07
+      description: 'Negative, [−0.5, −flt_sub_min], near-zero + polynomial'
+      input:
+      - [0xbfe0000000000000, 0xb6a0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative above split
+    - id: acos_s08
+      description: 'Negative above split, [−0.75, −0.5], sqrt path'
+      input:
+      - [0xbfe8000000000000, 0xbfe0000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near −1
+    - id: acos_s09
+      description: 'Near −1, [−0.96875, −0.75]'
+      input:
+      - [0xbfef000000000000, 0xbfe8000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very near −1
+    - id: acos_s10
+      description: 'Very near −1, [−1.0, −0.96875]'
+      input:
+      - [0xbff0000000000000, 0xbfef000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000

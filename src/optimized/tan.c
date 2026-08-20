@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -247,8 +247,8 @@ static inline double tan_piby4(double x, double xx, int32_t recip)
 
 double ALM_PROTO_OPT(tan)(double x)
 {
-    double r, rr, t, rhead, rtail, npi2d;
-    int32_t npi2, region, xneg;
+    double r = 0.0, rr = 0.0, t, rhead, rtail, npi2d;
+    int32_t npi2, region = 0, xneg;
     uint64_t ux, uy, ax, xexp, expdiff;
 
     ux = asuint64(x);

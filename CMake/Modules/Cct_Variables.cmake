@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@
 # Enables Caching variables
 #--------------------------
 if(NOT DEFINED CUST_PROJ_CXX_STD)
-  set(CUST_PROJ_CXX_STD "14")
+  set(CUST_PROJ_CXX_STD "17")
 endif()
 
 set(PROJECT_NAME "libm" CACHE STRING "${CUST_PROJ_NAME}")
@@ -44,23 +44,35 @@ set(${PROJECT_PREFIX}_VENDOR_CONTACT ${VENDOR_CONTACT})
 set(${PROJECT_PREFIX}_PROJ_URL ${CUST_PROJ_URL})
 set(${PROJECT_PREFIX}_PROJ_BUGREPORT ${CUST_PROJ_BUGREPORT})
 
-set(${PROJECT_PREFIX}_AU_GIT_REPO_URL ${AU_GIT_REPO_URL})
 set(${PROJECT_PREFIX}_GTEST_GIT_REPO_URL ${GTEST_GIT_REPO_URL})
 set(${PROJECT_PREFIX}_GBENCH_GIT_REPO_URL ${GBENCH_GIT_REPO_URL})
 
-set(${PROJECT_PREFIX}_AU_GIT_TAG ${AU_GIT_TAG})
 set(${PROJECT_PREFIX}_GTEST_GIT_TAG ${GTEST_GIT_TAG})
 set(${PROJECT_PREFIX}_GBENCH_GIT_TAG ${GBENCH_GIT_TAG})
 
-set(${PROJECT_PREFIX}_LIBM_BUILD_LIBRARY ${LIBM_BUILD_LIBRARY})
-set(${PROJECT_PREFIX}_LIBM_BUILD_TESTS ${LIBM_BUILD_TESTS})
-set(${PROJECT_PREFIX}_LIBM_ENABLE_AVX512 ${LIBM_ENABLE_AVX512})
+# Mirror each user-facing option into its project-prefixed guard variable.
+# A value passed explicitly as -D${PROJECT_PREFIX}_<OPTION> must take precedence,
+# so only propagate the unprefixed option when the prefixed guard is not already
+# set; an unconditional set() would shadow the cache entry the user supplied.
+macro(propagate_option _name)
+  if(NOT DEFINED ${PROJECT_PREFIX}_${_name})
+    set(${PROJECT_PREFIX}_${_name} ${${_name}})
+  endif()
+endmacro()
 
-set(${PROJECT_PREFIX}_LIBM_BUILD_EXAMPLES ${LIBM_BUILD_EXAMPLES})
-set(${PROJECT_PREFIX}_LIBM_BUILD_DOCS ${LIBM_BUILD_DOCS})
-set(${PROJECT_PREFIX}_LIBM_BUILD_TESTSUITE ${LIBM_BUILD_TESTSUITE})
-set(${PROJECT_PREFIX}_LIBM_ENABLE_ASAN ${LIBM_ENABLE_ASAN})
-set(${PROJECT_PREFIX}_LIBM_ENABLE_COVERAGE ${LIBM_ENABLE_COVERAGE})
+propagate_option(LIBM_BUILD_LIBRARY)
+propagate_option(LIBM_BUILD_TESTS)
+propagate_option(UTILS_BUILD_TESTS)
+propagate_option(LIBM_ENABLE_AVX512)
+
+propagate_option(LIBM_BUILD_EXAMPLES)
+propagate_option(LIBM_BUILD_DOCS)
+propagate_option(LIBM_BUILD_TESTSUITE)
+propagate_option(LIBM_ENABLE_ASAN)
+propagate_option(LIBM_ENABLE_COVERAGE)
+
+# Stable Sort (Keep this section isolated from other libm content)
+propagate_option(SORT_BUILD_TESTS)
 
 set(${PROJECT_PREFIX}_LIBM_ENABLE_ASSERTIONS ${LIBM_ENABLE_ASSERTIONS})
 #--------------------------

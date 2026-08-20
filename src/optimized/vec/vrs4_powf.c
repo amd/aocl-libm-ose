@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2018-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -342,12 +342,12 @@ ALM_PROTO_OPT(vrs4_powf)(__m128 _x,__m128 _y)
         v_u32x4_t negative = (v_u32x4_t)(_x < ZERO);
 
         /*call scalar powf for all inputs */
-        if(any_v4_u32_loop(negative)) {
+        if(unlikely(any_v4_u32_loop(negative))) {
 
-            return (v_f32x4_t) {powf(_x[0], _y[0]),
-                                powf(_x[1], _y[1]),
-                                powf(_x[2], _y[2]),
-                                powf(_x[3], _y[3])};
+            return (v_f32x4_t) {ALM_PROTO_OPT(powf)(_x[0], _y[0]),
+                                ALM_PROTO_OPT(powf)(_x[1], _y[1]),
+                                ALM_PROTO_OPT(powf)(_x[2], _y[2]),
+                                ALM_PROTO_OPT(powf)(_x[3], _y[3])};
 
         }
 

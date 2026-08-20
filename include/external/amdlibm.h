@@ -1068,6 +1068,33 @@ extern "C" {
    */
   fc32_t amd_cpowf (fc32_t x, fc32_t y);
 
+/* Stable Sort (Keep this section isolated from other libm content) */
+  /**
+   * @brief Queries the scratch workspace size (in bytes) required by
+   *        amd_stablesort_ascend_64f for a given number of elements.
+   * @param len Number of elements to be sorted.
+   * @param workspace_size Output: required workspace size in bytes.
+   * @return 0 on success, negative on invalid input.
+   * @note The workspace size is returned as an int, so len is bounded: the
+   *       largest supported len is 536851936 (its workspace is INT_MAX - 63
+   *       bytes). Any larger len returns negative without setting a usable size.
+   */
+  int amd_stablesort_getsize_64f (int len, int *workspace_size);
+
+  /**
+   * @brief Computes a stable ascending sort permutation of a double-precision
+   *        array. The input is read-only; the result is an index permutation.
+   * @param src Input array of double-precision values.
+   * @param src_stride_bytes Byte stride between consecutive input elements.
+   * @param dst_index Output array of len indices describing the sorted order.
+   * @param len Number of elements to be sorted.
+   * @param workspace Caller-owned scratch buffer of at least the size returned
+   *        by amd_stablesort_getsize_64f(len, ...).
+   * @return 0 on success, negative on invalid input.
+   */
+  int amd_stablesort_ascend_64f (const double *src, int src_stride_bytes,
+                                 int *dst_index, int len, void *workspace);
+
 #ifdef __cplusplus
 }
 #endif
@@ -1420,6 +1447,13 @@ extern "C" {
   #define cexp amd_cexp
   #undef cexpf
   #define cexpf amd_cexpf
+
+/* Stable Sort (Keep this section isolated from other libm content) */
+  #undef stablesort_getsize_64f
+  #define stablesort_getsize_64f amd_stablesort_getsize_64f
+
+  #undef stablesort_ascend_64f
+  #define stablesort_ascend_64f amd_stablesort_ascend_64f
 
 #endif /* REPLACE_WITH_AMDLIBM */
 

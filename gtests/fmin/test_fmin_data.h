@@ -40,10 +40,10 @@
 
 static libm_test_special_data_f32
 test_fminf_conformance_data[] = {
-      {POS_ZERO_F32, NEG_ZERO_F32, 0, NEG_ZERO_F32},  //0
-      {NEG_ZERO_F32, NEG_ZERO_F32, 0, NEG_ZERO_F32},  //0
-      {POS_ZERO_F32, POS_ZERO_F32, 0, POS_ZERO_F32},  //0
-      {NEG_ZERO_F32, NEG_ZERO_F32, 0, POS_ZERO_F32},  //0
+      {POS_ZERO_F32, NEG_ZERO_F32, 0, NEG_ZERO_F32},  // fminf(+0, -0) -> -0
+      {NEG_ZERO_F32, NEG_ZERO_F32, 0, POS_ZERO_F32},  // fminf(-0, +0) -> -0
+      {NEG_ZERO_F32, NEG_ZERO_F32, 0, NEG_ZERO_F32},  // fminf(-0, -0) -> -0
+      {POS_ZERO_F32, POS_ZERO_F32, 0, POS_ZERO_F32},  // fminf(+0, +0) -> +0
       {POS_ZERO_F32, 0xBF800000, 0, 0xBF800000},  //0,-1
       {NEG_ZERO_F32, 0xBF800000, 0, 0xBF800000},  //0,-1
       {POS_ZERO_F32, POS_ZERO_F32, 0, 0x3F800000},  //0,1
@@ -83,10 +83,10 @@ test_fminf_conformance_data[] = {
 
 static libm_test_special_data_f64
 test_fmin_conformance_data[] = {
-      {POS_ZERO_F64,NEG_ZERO_F64, 0, NEG_ZERO_F64},  //0
-      {NEG_ZERO_F64,NEG_ZERO_F64, 0, NEG_ZERO_F64},  //0
-      {POS_ZERO_F64,POS_ZERO_F64, 0, POS_ZERO_F64},  //0
-      {NEG_ZERO_F64, NEG_ZERO_F64, 0, POS_ZERO_F64},  //0
+      {POS_ZERO_F64,NEG_ZERO_F64, 0, NEG_ZERO_F64},  // fmin(+0, -0) -> -0
+      {NEG_ZERO_F64,NEG_ZERO_F64, 0, POS_ZERO_F64},  // fmin(-0, +0) -> -0
+      {NEG_ZERO_F64,NEG_ZERO_F64, 0, NEG_ZERO_F64},  // fmin(-0, -0) -> -0
+      {POS_ZERO_F64,POS_ZERO_F64, 0, POS_ZERO_F64},  // fmin(+0, +0) -> +0
       {POS_ZERO_F64,0xBFF0000000000000, 0, 0xBFF0000000000000},  //0,-1
       {NEG_ZERO_F64,0xBFF0000000000000, 0, 0xBFF0000000000000},  //0,-1
       {POS_ZERO_F64, POS_ZERO_F64, 0, 0x3FF0000000000000},  //0,1

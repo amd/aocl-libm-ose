@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2024-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -32,8 +32,19 @@ option(BUILD_STATIC_LIBS "Build static libraries." ON)
 option(LIBM_BUILD_LIBRARY "Enable Building libraries." ON)
 option(LIBM_ENABLE_AVX512 "Enable AVX-512 support." ON)
 option(LIBM_BUILD_TESTS "Enable Building tests." OFF)
+option(UTILS_BUILD_TESTS "Build internal utils module tests." OFF)
 option(LIBM_BUILD_EXAMPLES "Enable Building examples." OFF)
 option(LIBM_BUILD_DOCS "LibM Doc build with DOXYGEN/Sphinx" OFF)
 option(LIBM_BUILD_TESTSUITE "Enable Building LibM-Testsuite." OFF)
 option(LIBM_ENABLE_ASAN "Enable AddressSanitizer." OFF)
 option(LIBM_ENABLE_COVERAGE "Enable code coverage." OFF)
+
+# Stable Sort (Keep this section isolated from other libm content)
+option(SORT_BUILD_TESTS "Enable building the stablesort tester (bench + unit tests)." OFF)
+
+# LIBM_TESTS is a convenience switch that turns on both the tests and testsuite builds.
+option(LIBM_TESTS "Enable tests." OFF)
+if(LIBM_TESTS)
+    set(LIBM_BUILD_TESTS ${LIBM_TESTS})
+    set(LIBM_BUILD_TESTSUITE ${LIBM_TESTS})
+endif()

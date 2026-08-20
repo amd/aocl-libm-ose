@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -96,7 +96,7 @@ ALM_PROTO_OPT(cpowf)(fc32_t x, fc32_t y) {
 
     arg_x = cargf(x);
 
-    r = powf(abs_x, y_re);
+    r = ALM_PROTO_OPT(powf)(abs_x, y_re);
 
     theta = y_re * arg_x;
 
@@ -104,9 +104,9 @@ ALM_PROTO_OPT(cpowf)(fc32_t x, fc32_t y) {
 
         /*compute only if imaginary part of y is not zero */
 
-        r = r * expf(-y_im * arg_x);
+        r = r * ALM_PROTO_OPT(expf)(-y_im * arg_x);
 
-        theta = theta + y_im * logf(abs_x);
+        theta = theta + y_im * ALM_PROTO_OPT(logf)(abs_x);
 
     }
 
@@ -127,9 +127,9 @@ ALM_PROTO_OPT(cpowf)(fc32_t x, fc32_t y) {
         #endif
     }
     #if ((defined (_WIN64) || defined (_WIN32)) && defined(__clang__))
-        w = (fc32_t) {r * cosf(theta), r * sinf(theta)};
+        w = (fc32_t) {r * ALM_PROTO_OPT(cosf)(theta), r * ALM_PROTO_OPT(sinf)(theta)};
     #else
-        w = CMPLXF(r * cosf(theta), r * sinf(theta));
+        w = CMPLXF(r * ALM_PROTO_OPT(cosf)(theta), r * ALM_PROTO_OPT(sinf)(theta));
     #endif
 
     return w;

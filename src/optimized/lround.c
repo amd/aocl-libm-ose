@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -25,103 +25,97 @@
  *
  */
 
-/* Implementation notes
-    long int amd_lround (double x);
-    when x = NAN, return x, raise FE_INVALID
-    when x is QNAN, return x
-    when x is INF, return x.
-*/
-
 #include "libm_util_amd.h"
 #include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/typehelper.h>
+#include <libm/types.h>
+#include <limits.h>
 
-long int ALM_PROTO_OPT(lround)(double x)
+/*
+ * long int lround(double x)
+ *
+ * Special values:
+ *   - FE_INEXACT is never raised; current rounding mode has no effect.
+ *   - x = +-0                                  -> 0
+ *   - x = NaN / +-Inf / result out of 'long'   -> FE_INVALID raised, value
+ *                                                 unspecified.  errno is not set.
+ *
+ * The in-range threshold uses 8*sizeof(lint_t), so it adapts automatically:
+ *   - Windows LLP64 : sizeof(long) == 4  (range exponent < 31)
+ *   - Linux   LP64  : sizeof(long) == 8  (range exponent < 63)
+ *
+ * IEEE 754 double precision: x = (-1)^s * 2^(exp) * 1.f
+ *   - |x| >= 2^52 : already an integer (no fractional bits) -> shift only.
+ *   - |x| <  2^52 : add 0.5 ULP (0x0008000000000000 >> exp) to the significand,
+ *                   then truncate -> ties away from zero.  The addition cannot
+ *                   overflow the 53-bit significand.  A post-rounding range
+ *                   check catches values that exceed LONG_MAX.
+ */
+
+#define INTEGERBITS_DP64        52
+#define HALF_MANTISSA_BIT_DP64  0x0008000000000000ULL
+#if LONG_MAX == 0x7FFFFFFF  /* 32-bit long (Windows LLP64) */
+#define LROUND_MAXEXP_DP64      31     /* ((int32_t)(8 * sizeof(lint_t)) - 1)  */
+#define LONG_MIN_AS_DOUBLE      asdouble(0xC1E0000000000000ULL)  /* -2^31           */
+#define LONG_MIN_MINUS_HALF     asdouble(0xC1E0000000100000ULL)  /* (double)(-2^31) - 0.5 */
+#define NEGATIVE_LONG_MIN_IN_RANGE(x)  ((x) > LONG_MIN_MINUS_HALF)
+#else                        /* 64-bit long (Linux LP64)    */
+#define LROUND_MAXEXP_DP64      63     /* ((int32_t)(8 * sizeof(lint_t)) - 1)  */
+#define LONG_MIN_AS_DOUBLE      asdouble(0xC3E0000000000000ULL)  /* -2^63           */
+#define LONG_MIN_MINUS_HALF     asdouble(0xC3E0000000000000ULL)  /* (double)(-2^63) - 0.5 */
+#define NEGATIVE_LONG_MIN_IN_RANGE(x)  ((x) >= LONG_MIN_AS_DOUBLE)
+#endif
+
+lint_t ALM_PROTO_OPT(lround)(double x)
 {
-    uint64_t ux, ax, uresult, sign;
-    int intexp, shift;
-    long int result;
-    double r;
+    uint64_t ux   = asuint64(x);            /* Bit representation of x   */
+    uint64_t uax  = ux & ~SIGNBIT_DP64;     /* |x| bits                  */
+    int32_t  exp   = (int32_t)(uax >> EXPSHIFTBITS_DP64) - EXPBIAS_DP64;
+    lint_t   sign = (lint_t)((int64_t)ux >> 63); /* 0 (pos) / -1 (neg) */
+    uint64_t i, mag;
 
-    ux = ax = asuint64(x);
-
-    /*  if NAN or INF */
-    if (unlikely((ux & EXPBITS_DP64) == EXPBITS_DP64)) {
-        #ifdef WIN64
-            return (long)__alm_handle_error(ux |= QNAN_MASK_64, 0);
-        #else
-            /* If NaN, raise exception, no exception for Infinity */
-            if (x != x) {
-                return (long)__alm_handle_error(ux, AMD_F_INVALID);
-            }
-            return (long)x;
-        #endif
+    /*
+     * Cold path: |x| too large for 'long', or x is NaN / +-Inf (exp == 1024).
+     * The result is unspecified and FE_INVALID is raised -- *except* negative
+     * inputs that still round to exactly -2^(w-1) == LONG_MIN, which are in
+     * range and must not raise.
+     */
+    if (unlikely(exp >= LROUND_MAXEXP_DP64)) {
+        if (!sign || !NEGATIVE_LONG_MIN_IN_RANGE(x))
+            __alm_handle_error(ux, AMD_F_INVALID);
+        return (lint_t)LONG_MIN;
     }
 
-    ax &= ~SIGNBIT_DP64;
+    /* |x| < 1.0 : 0.5 <= |x| < 1 rounds away to +-1, |x| < 0.5 -> 0. */
+    if (exp < 0)
+        return (lint_t)((exp < -1) ? 0 : (sign | 1));  /* -1 or +1 */
 
-    sign = ux & SIGNBIT_DP64;
-    intexp = (ux & EXPBITS_DP64) >> 52;
-    intexp -= 0x3FF;
+    i = (uax & MANTBITS_DP64) | IMPBIT_DP64;    /* 53-bit significand */
 
-    /* 1.0 x 2^-1 is the smallest number which can be rounded to 1 */
-    if (intexp < -1)
-        return (0);
-
-#ifdef WIN64
-    /* 1.0 x 2^31 (or 2^63) is already too large */
-    if (intexp >= 31) {
-        /*Based on the sign of the input value return the MAX and MIN*/
-        result = NEG_ZERO_F64; /*Return LONG MIN*/
-        return (long)__alm_handle_error(result, AMD_F_NONE);
+    if (exp >= INTEGERBITS_DP64) {
+        /* |x| >= 2^52 is already an exact integer: shift into place only. */
+        mag = i << (exp - INTEGERBITS_DP64);
+    } else {
+        /* Add 0.5 ULP at this exponent, then truncate (ties away from zero). */
+        i += HALF_MANTISSA_BIT_DP64 >> exp;
+        mag = i >> (INTEGERBITS_DP64 - exp);
     }
 
-#else
-    /* 1.0 x 2^31 (or 2^63) is already too large */
-    if (intexp >= 63) {
-        /*Based on the sign of the input value return the MAX and MIN*/
-        result = (long)NEG_ZERO_F64; /*Return LONG MIN*/
-        return (long)__alm_handle_error((unsigned long long)result, AMD_F_NONE);
+    /*
+     * The ties-away carry can push |x| up one binade; in the top in-range
+     * binade that reaches exactly 2^(w-1), which only fits as -LONG_MIN.
+     */
+    if (unlikely(mag > (uint64_t)LONG_MAX)) {
+        if (!sign || mag != (uint64_t)LONG_MAX + 1)
+            __alm_handle_error(ux, AMD_F_INVALID);
+        return (lint_t)LONG_MIN;
     }
 
-#endif
-
-    r = asdouble(ax);
-    /* >= 2^52 is already an exact integer */
-#ifdef WIN64
-    if (intexp < 23)
-#else
-    if (intexp < 52)
-#endif
-    {
-        /* add 0.5, extraction below will truncate */
-        r = asdouble(ax) + 0.5;
-    }
-
-    uresult = asuint64(r);
-    intexp = (uresult & EXPBITS_DP64) >> 52;
-    intexp -= 0x3FF;
-    uresult &= MANTBITS_DP64; // store all mantissa bits ONLY of the result
-    uresult |= IMPBIT_DP64; // set the last bit of exp as 1
-    shift = intexp - 52;
-
-#ifdef WIN64
-    /*The shift value will always be negative.*/
-    uresult = uresult >> (-shift);
-    /*Result will be stored in the lower word due to the shift being performed*/
-    result = uresult;
-#else
-     if(shift < 0)
-        uresult = uresult >> (-shift);
-    if(shift > 0)
-        uresult = uresult << (shift);
-
-    result = (long)uresult;
-#endif
-
-    if (sign)
-        result = -result;
-
-    return result;
+    /*
+     * Branchless conditional negate via XOR-negate idiom:
+     *   sign =  0 :  mag          (positive)
+     *   sign = -1 : -mag          (two's complement negate)
+     */
+    return ((lint_t)mag ^ sign) - sign;
 }

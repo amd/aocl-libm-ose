@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -125,7 +125,7 @@ static struct {
 #define V4_ALM_HUGE      v4_cos_data.alm_huge
 
 #define COS_MAX 0x4160000000000000
-#define SCALAR_COS ALM_PROTO(cos)
+#define SCALAR_COS ALM_PROTO_OPT(cos)
 
 v_f64x4_t
 ALM_PROTO_OPT(vrd4_cos)(v_f64x4_t x)
@@ -164,13 +164,14 @@ ALM_PROTO_OPT(vrd4_cos)(v_f64x4_t x)
     /* If n is odd, result is negative */
     result = as_v4_f64_u64( as_v4_u64_f64(poly) ^ odd);
 
-    /* Check for special cases */
-    /* If input value is outside valid range, call scalar cos(value) */
-    /* Otherwise, return the above computed result */
-    for(int i = 0; i < 4; i++)
     {
-        if(unlikely(ixd[i] > COS_MAX))
-            result[i] = SCALAR_COS(x[i]);
+        int any_special = 0;
+        for(int i = 0; i < 4; i++) any_special |= (ixd[i] > COS_MAX);
+        if(unlikely(any_special)) {
+            for(int i = 0; i < 4; i++) {
+                if(ixd[i] > COS_MAX) result[i] = SCALAR_COS(x[i]);
+            }
+        }
     }
     return result;
 

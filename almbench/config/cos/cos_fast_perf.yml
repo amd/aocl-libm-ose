@@ -1,0 +1,274 @@
+---
+- test_sequence: perf_tests_cos_fast
+  function: cos
+  timing_enabled: true
+  test_sets:
+  - id: double-precision-tests
+    description: 'Curve-region performance tests for fast cos (double precision)'
+    tests:
+    # Subnormal: cos(x) = 1 exactly
+    - id: cos_d01
+      description: 'Subnormal inputs, cos(x) = 1'
+      input:
+      - [0x0000000000000001, 0x000fffffffffffff]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Tiny: cos(x) ≈ 1 − x²/2
+    - id: cos_d02
+      description: 'Tiny positive, cos(x) ≈ 1 − x²/2'
+      input:
+      - [0x000fffffffffffff, 0x3ddb7cdfd9d7bdbb]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Small: first terms of Taylor series
+    - id: cos_d03
+      description: 'Small, Taylor series few terms'
+      input:
+      - [0x3ddb7cdfd9d7bdbb, 0x3f1a36e2eb1c432d]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Core lower: [1e-4, π/8], full polynomial
+    - id: cos_d04
+      description: 'Core range lower, [1e-4, π/8]'
+      input:
+      - [0x3f1a36e2eb1c432d, 0x3fd921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Core upper: [π/8, π/4]
+    - id: cos_d05
+      description: 'Core range upper, [π/8, π/4]'
+      input:
+      - [0x3fd921fb54442d18, 0x3fe921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # First reduction through full period: [π/4, 2π]
+    - id: cos_d06
+      description: 'First reduction, [π/4, 2π], uses sin polynomial via identity'
+      input:
+      - [0x3fe921fb54442d18, 0x401921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Few periods: [2π, 20π]
+    - id: cos_d07
+      description: 'Few periods, [2π, 20π]'
+      input:
+      - [0x401921fb54442d18, 0x404f6a7a2955385e]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Many periods: [20π, 2000π]
+    - id: cos_d08
+      description: 'Many periods, [20π, 2000π]'
+      input:
+      - [0x404f6a7a2955385e, 0x40b88b2f704a9409]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Large: standard range reduction
+    - id: cos_d09
+      description: 'Large, [2000π, 10^16], standard reduction'
+      input:
+      - [0x40b88b2f704a9409, 0x4341c37937e08000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very large: Payne-Hanek through DBL_MAX
+    - id: cos_d10
+      description: 'Very large, [10^16, DBL_MAX], Payne-Hanek reduction'
+      input:
+      - [0x4341c37937e08000, 0x7fefffffffffffff]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative core (even function, but tests reduction path with sign)
+    - id: cos_d11
+      description: 'Negative, [−π, −1e-10]'
+      input:
+      - [0xc00921fb54442d18, 0xbddb7cdfd9d7bdbb]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative large through -DBL_MAX
+    - id: cos_d12
+      description: 'Negative large, [−DBL_MAX, −π]'
+      input:
+      - [0xffefffffffffffff, 0xc00921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+  - id: single-precision-tests
+    description: 'Curve-region performance tests for fast cosf (single precision)'
+    tests:
+    # Subnormal float inputs
+    - id: cos_s01
+      description: 'Subnormal inputs, cosf(x) = 1'
+      input:
+      - [0x36a0000000000000, 0x380fffffc0000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Tiny
+    - id: cos_s02
+      description: 'Tiny positive, cosf(x) ≈ 1 − x²/2'
+      input:
+      - [0x380fffffc0000000, 0x3eb0c6f7a0b5ed8d]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Core lower
+    - id: cos_s03
+      description: 'Core range lower, [1e-6, π/8]'
+      input:
+      - [0x3eb0c6f7a0b5ed8d, 0x3fd921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Core upper
+    - id: cos_s04
+      description: 'Core range upper, [π/8, π/4]'
+      input:
+      - [0x3fd921fb54442d18, 0x3fe921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # First reduction through full period: [π/4, 2π]
+    - id: cos_s05
+      description: 'First reduction, [π/4, 2π]'
+      input:
+      - [0x3fe921fb54442d18, 0x401921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Few periods: [2π, 200π]
+    - id: cos_s06
+      description: 'Few periods, [2π, 200π]'
+      input:
+      - [0x401921fb54442d18, 0x4083a28c59d5433b]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Large
+    - id: cos_s07
+      description: 'Large, [200π, 10^16], standard reduction'
+      input:
+      - [0x4083a28c59d5433b, 0x4341c37937e08000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very large through FLT_MAX
+    - id: cos_s08
+      description: 'Very large, [10^16, FLT_MAX], extended reduction'
+      input:
+      - [0x4341c37937e08000, 0x47efffffe0000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative core
+    - id: cos_s09
+      description: 'Negative, [−π, −1e-6]'
+      input:
+      - [0xc00921fb54442d18, 0xbeb0c6f7a0b5ed8d]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Negative large through -FLT_MAX
+    - id: cos_s10
+      description: 'Negative large, [−FLT_MAX, −π]'
+      input:
+      - [0xc7efffffe0000000, 0xc00921fb54442d18]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000

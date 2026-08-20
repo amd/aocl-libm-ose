@@ -25,11 +25,23 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+include_guard(GLOBAL)
+
 include(CheckCCompilerFlag)
+
+# Only Windows with the Visual Studio (MSVC) generator using the ClangCL
+# toolset is treated as clang-cl.
+set(msvc_clang_cl FALSE)
+if(WIN32 AND CMAKE_GENERATOR MATCHES "Visual Studio")
+    if((DEFINED CMAKE_VS_PLATFORM_TOOLSET AND CMAKE_VS_PLATFORM_TOOLSET MATCHES "ClangCL")
+       OR (DEFINED CMAKE_GENERATOR_TOOLSET AND CMAKE_GENERATOR_TOOLSET MATCHES "ClangCL"))
+        set(msvc_clang_cl TRUE)
+    endif()
+endif()
 
 if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
   include(Gcc)
-elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
+elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR msvc_clang_cl)
   include(Clang)
 else()
   message(WARNING "Unsupported compiler .")
@@ -46,6 +58,7 @@ check_c_compiler_flag("-march=znver2"    CONFIG_COMPILER_HAS_ZEN2)
 check_c_compiler_flag("-march=znver3"    CONFIG_COMPILER_HAS_ZEN3)
 check_c_compiler_flag("-march=znver4"    CONFIG_COMPILER_HAS_ZEN4)
 check_c_compiler_flag("-march=znver5"    CONFIG_COMPILER_HAS_ZEN5)
+check_c_compiler_flag("-march=znver6"    CONFIG_COMPILER_HAS_ZEN6)
 
 check_c_compiler_flag("-mavx2"           CONFIG_TARGET_IS_AVX2)
 check_c_compiler_flag("-march=x86-64"    CONFIG_TARGET_IS_X86_64)
@@ -53,11 +66,18 @@ check_c_compiler_flag("-march=x86-64-v2" CONFIG_TARGET_IS_X86_64_v2)
 check_c_compiler_flag("-march=x86-64-v3" CONFIG_TARGET_IS_X86_64_v3)
 check_c_compiler_flag("-march=x86-64-v4" CONFIG_TARGET_IS_X86_64_v4)
 
-set(archlist znver5 znver4 znver3 znver2 znver1)
+set(archlist znver6 znver5 znver4 znver3 znver2 znver1)
 set(archdetect_code "
   #include <stdio.h>
   int main() { return 0; } ")
-file(WRITE "${PROJECT_BINARY_DIR}/arch.c" "${archdetect_code}")
+set(_alm_arch_c "${PROJECT_BINARY_DIR}/arch.c")
+set(_alm_arch_existing "")
+if(EXISTS "${_alm_arch_c}")
+    file(READ "${_alm_arch_c}" _alm_arch_existing)
+endif()
+if(NOT "${_alm_arch_existing}" STREQUAL "${archdetect_code}")
+    file(WRITE "${_alm_arch_c}" "${archdetect_code}")
+endif()
 set(maxarch "X86_64")
 foreach(arch ${archlist})
   try_run(RUNRESULT COMPILERESULT "${PROJECT_BINARY_DIR}/temp" SOURCES  "${PROJECT_BINARY_DIR}/arch.c"
@@ -108,34 +128,38 @@ endmacro()
 macro(get_zen1_arch_flags zen1)
   set(arch znver1 x86-64)
   get_arch(res arch)
-  set(${zen1} -march=${res})
+  set(${zen1} ${res})
 endmacro()
 
 macro(get_zen2_arch_flags zen2)
   set(arch znver2 znver1 x86-64)
   get_arch(res arch)
-  set(${zen2} -march=${res})
+  set(${zen2} ${res})
 endmacro()
 
 macro(get_zen3_arch_flags zen3)
   set(arch znver3 znver2 znver1 x86-64)
   get_arch(res arch)
-  set(${zen3} -march=${res})
+  set(${zen3} ${res})
 endmacro()
 
 macro(get_zen4_arch_flags zen4)
   set(arch znver4 znver3 znver2 znver1 x86-64)
   get_arch(res arch)
-  set(${zen4} -march=${res})
+  set(${zen4} ${res})
 endmacro()
 
 macro(get_zen5_arch_flags zen5)
   set(arch znver5 znver4 znver3 znver2 znver1 x86-64)
   get_arch(res arch)
-  set(${zen5} -march=${res})
+  set(${zen5} ${res})
 endmacro()
 
-
+macro(get_zen6_arch_flags zen6)
+  set(arch znver6 znver5 znver4 znver3 znver2 znver1 x86-64)
+  get_arch(res arch)
+  set(${zen6} ${res})
+endmacro()
 
 
 
@@ -145,7 +169,13 @@ macro(get_optz_flag optzflag)
 endmacro()
 
 macro(get_fast_flag ffpflag)
-  set(${ffpflag} -ffp-contract=fast)
+  # ALM_FP_CONTRACT_MODE is derived in the top-level CMakeLists.txt from the
+  # ALM_FP_CONTRACT cache variable (fast | on | off).
+  if(CMAKE_C_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC")
+    set(${ffpflag} /clang:-ffp-contract=${ALM_FP_CONTRACT_MODE})
+  else()
+    set(${ffpflag} -ffp-contract=${ALM_FP_CONTRACT_MODE})
+  endif()
 endmacro()
 
 macro(get_win_flag winflag)

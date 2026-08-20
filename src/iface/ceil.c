@@ -68,6 +68,11 @@ static const struct alm_arch_funcs __arch_funcs_ceil = {
             [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN5(ceilf),
             [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN5(ceil),
         },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN6(ceilf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN6(ceil),
+        },
     },
 };
 

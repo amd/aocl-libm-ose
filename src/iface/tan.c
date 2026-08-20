@@ -130,6 +130,20 @@ struct alm_arch_funcs __arch_funcs_tan = {
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN5(vrsa_tanf),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN5(vrda_tan),
         },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN6(tanf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN6(tan),
+            [ALM_FUNC_VECT_SP_4] = &ALM_PROTO_ARCH_ZN6(vrs4_tanf),
+            [ALM_FUNC_VECT_SP_8] = &ALM_PROTO_ARCH_ZN6(vrs8_tanf),
+            [ALM_FUNC_VECT_DP_2] = &ALM_PROTO_ARCH_ZN6(vrd2_tan),
+            [ALM_FUNC_VECT_DP_4] = &ALM_PROTO_ARCH_ZN6(vrd4_tan),
+
+            [ALM_FUNC_VECT_SP_16] = &ALM_PROTO_ARCH_ZN6(vrs16_tanf),
+            [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN6(vrd8_tan),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN6(vrsa_tanf),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN6(vrda_tan),
+        },
     },
 };
 

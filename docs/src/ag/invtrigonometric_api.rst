@@ -169,4 +169,10 @@ Atan
 See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for atan vector variants documentation.
 
 
+Atan2
+-----
+
+See :ref:`vector_avx_api`, :ref:`vector_avx2_api`, :ref:`vector_avx512_api`, or :ref:`vector_array_api` for atan2 vector variants documentation.
+
+
 .. End of Doc

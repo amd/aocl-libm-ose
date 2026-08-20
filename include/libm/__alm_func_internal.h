@@ -220,9 +220,7 @@ extern __m256    ALM_PROTO_INTERNAL(vrs8_acosf)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_exp10f)          (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_exp2f)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_expf)            (__m256 x);
-extern __m256    ALM_PROTO_INTERNAL(vrs8_expm1f)          (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_log10f)          (__m256 x);
-extern __m256    ALM_PROTO_INTERNAL(vrs8_log1pf)          (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_log2f)           (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_logf)            (__m256 x);
 extern __m256    ALM_PROTO_INTERNAL(vrs8_powf)            (__m256 x, __m256 y);
@@ -243,15 +241,12 @@ extern __m256    ALM_PROTO_INTERNAL(vrs8_roundf)          (__m256 x);
 /*
  * Vector Single precision, 16 elements
  */
-extern __m512    ALM_PROTO_INTERNAL(vrs16_cbrtf)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_cosf)            (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_acosf)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_exp10f)          (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_exp2f)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_expf)            (__m512 x);
-extern __m512    ALM_PROTO_INTERNAL(vrs16_expm1f)          (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_log10f)          (__m512 x);
-extern __m512    ALM_PROTO_INTERNAL(vrs16_log1pf)          (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_log2f)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_logf)            (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_powf)            (__m512 x, __m512 y);
@@ -262,6 +257,9 @@ extern __m512    ALM_PROTO_INTERNAL(vrs16_tanf)            (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_atanf)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_coshf)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_tanhf)           (__m512 x);
+extern __m512d   ALM_PROTO_INTERNAL(vrd8_tanh)             (__m512d x);
+extern __m128d   ALM_PROTO_INTERNAL(vrd2_tanh)             (__m128d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_tanh)             (__m256d x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_erff)            (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_sqrtf)           (__m512 x);
 extern __m512    ALM_PROTO_INTERNAL(vrs16_linearfracf)     (__m512 x, __m512 y, float sca, float sha, float scb, float shb);
@@ -277,7 +275,6 @@ extern __m128d   ALM_PROTO_INTERNAL(vrd2_cos)      (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_exp10)    (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_exp2)     (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_exp)      (__m128d x);
-extern __m128d   ALM_PROTO_INTERNAL(vrd2_expm1)    (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_log10)    (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_log1p)    (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_log2)     (__m128d x);
@@ -287,6 +284,7 @@ extern __m128d   ALM_PROTO_INTERNAL(vrd2_powx)     (__m128d x, double y);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_sin)      (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_tan)      (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_atan)     (__m128d x);
+extern __m128d   ALM_PROTO_INTERNAL(vrd2_atan2)    (__m128d y, __m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_erf)      (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_erfinv)   (__m128d x);
 extern __m128d   ALM_PROTO_INTERNAL(vrd2_sqrt)     (__m128d);
@@ -301,14 +299,12 @@ extern __m128d   ALM_PROTO_INTERNAL(vrd2_erfcinv)  (__m128d x);
 /*
  * Vector double precision, 4 element
  */
-extern __m256d   ALM_PROTO_INTERNAL(vrd4_cbrt)     (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_cosh)     (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_cos)      (__m256d x);
-extern __m256d   ALM_PROTO_INTERNAL(vrd4_exp10)    (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_exp2)     (__m256d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_exp10)    (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_exp)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_expm1)    (__m256d x);
-extern __m256d   ALM_PROTO_INTERNAL(vrd4_log1p)    (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_log2)     (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_log)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_pow)      (__m256d x, __m256d y);
@@ -316,6 +312,7 @@ extern __m256d   ALM_PROTO_INTERNAL(vrd4_powx)     (__m256d x, double y);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_sin)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_tan)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_atan)     (__m256d x);
+extern __m256d   ALM_PROTO_INTERNAL(vrd4_atan2)    (__m256d y, __m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_erf)      (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_erfinv)   (__m256d x);
 extern __m256d   ALM_PROTO_INTERNAL(vrd4_sqrt)     (__m256d x);
@@ -330,15 +327,11 @@ extern __m256d   ALM_PROTO_INTERNAL(vrd4_erfcinv)   (__m256d x);
 /*
  * Vector double precision, 8 elements
  */
-extern __m512d   ALM_PROTO_INTERNAL(vrd8_cbrt)     (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_cosh)     (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_cos)      (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_exp10)    (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_exp2)     (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_exp)      (__m512d x);
-extern __m512d   ALM_PROTO_INTERNAL(vrd8_expm1)    (__m512d x);
-extern __m512d   ALM_PROTO_INTERNAL(vrd8_log10)    (__m512d x);
-extern __m512d   ALM_PROTO_INTERNAL(vrd8_log1p)    (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_log2)     (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_log)      (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_pow)      (__m512d x, __m512d y);
@@ -346,7 +339,9 @@ extern __m512d   ALM_PROTO_INTERNAL(vrd8_powx)     (__m512d x, double y);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_sin)      (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_asin)     (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_tan)      (__m512d x);
+extern __m512d   ALM_PROTO_INTERNAL(vrd8_acos)     (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_atan)     (__m512d x);
+extern __m512d   ALM_PROTO_INTERNAL(vrd8_atan2)    (__m512d y, __m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_erf)      (__m512d x);
 extern __m512d   ALM_PROTO_INTERNAL(vrd8_sqrt)     (__m512d x);
 extern void      ALM_PROTO_INTERNAL(vrd8_sincos)   (__m512d x, __m512d *s, __m512d *c);
@@ -420,6 +415,7 @@ extern void      ALM_PROTO_INTERNAL(vrsa_tanf)    (int n, const float *x, float 
 extern void      ALM_PROTO_INTERNAL(vrda_atan)     (int n, const double *x, double *y);
 extern void      ALM_PROTO_INTERNAL(vrda_erf)      (int n, const double *x, double *y);
 extern void      ALM_PROTO_INTERNAL(vrda_tan)      (int n, const double *x, double *y);
+extern void      ALM_PROTO_INTERNAL(vrda_tanh)     (int n, const double *x, double *y);
 extern void      ALM_PROTO_INTERNAL(vrda_cosh)     (int n, const double *x, double *y);
 extern void      ALM_PROTO_INTERNAL(vrda_addi)     (int len, const double *lhs, int inc_a, const double *rhs, int inc_b, double *dst, int inc_res);
 extern void      ALM_PROTO_INTERNAL(vrda_subi)     (int len, const double *lhs, int inc_a, const double *rhs, int inc_b, double *dst, int inc_res);
@@ -447,6 +443,10 @@ extern void      ALM_PROTO_INTERNAL(vrda_asin)     (int n, const double *x, doub
 
 extern void      ALM_PROTO_INTERNAL(vrda_round)     (int n, const double *x, double *y);
 extern void      ALM_PROTO_INTERNAL(vrsa_roundf)    (int n, const float *x, float *y);
+
+/* Stable Sort (Keep this section isolated from other libm content) */
+extern int       ALM_PROTO_INTERNAL(stablesort_getsize_64f)  (int len, int *workspace_size);
+extern int       ALM_PROTO_INTERNAL(stablesort_ascend_64f)   (const double *src, int src_stride_bytes, int *dst_index, int len, void *workspace);
 
 #ifdef __cplusplus
 }

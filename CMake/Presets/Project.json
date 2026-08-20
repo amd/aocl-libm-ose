@@ -12,9 +12,7 @@
                 "VENDOR_CONTACT" : "Nimmy Krishnan <Nimmy.Krishnan@amd.com>",
                 "CUST_PROJ_BUGREPORT": "aocl@amd.com",
                 "CUST_PROJ_PREFIX": "aocl",
-                "CUST_PROJ_CXX_STD": "17",
-                "AU_GIT_REPO_URL" : "https://github.com/amd/aocl-utils.git",
-                "AU_GIT_TAG": "main"
+                "CUST_PROJ_CXX_STD": "17"
             }
         },
         {
@@ -22,7 +20,7 @@
             "hidden": true,
             "cacheVariables": {
                 "LIBM_BUILD_LIBRARY": "ON",
-                "LIBM_BUILD_TESTS": "ON",
+                "LIBM_BUILD_TESTS": "OFF",
                 "LIBM_BUILD_TESTSUITE": "OFF",
                 "LIBM_ENABLE_AVX512": "ON",
                 "LIBM_BUILD_EXAMPLES": "OFF",

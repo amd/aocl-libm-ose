@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -72,17 +72,16 @@ double ALM_PROTO_REF(nextafter)(double x, double y)
         return dy;
     }
 
+    /* When x is 0, return the smallest positive subnormal with the sign of the direction y */
     if( x == 0.0)
     {
-        if( dy > 0.0 )
-            return alm_nextafter_special(x, ALM_F_INEXACT_UNDERFLOW);
-        else
-            return alm_nextafter_special(-x, ALM_F_INEXACT_UNDERFLOW);
+        /* Generate smallest positive subnormal with appropriate sign */
+        checkbits.u64 = (dy > 0.0) ? 1ULL : (1ULL | SIGNBIT_DP64);
+        return alm_nextafter_special(checkbits.f64, ALM_F_INEXACT_UNDERFLOW);
     }
 
 
-    /* compute the next heigher or lower value */
-
+    /* compute the next higher or lower value */
     if(((x>0.0) ^ (dy>x)) == 0)
     {
         checkbits.u64++;
@@ -92,13 +91,10 @@ double ALM_PROTO_REF(nextafter)(double x, double y)
         checkbits.u64--;
     }
 
-    /* check if the result is nan or inf */
+    /* If the result reached +/-Inf, return the result with sign bit. */
     if(((checkbits.u64 & ~SIGNBIT_DP64) >= EXPBITS_DP64 ))
     {
-        if((checkbits.u64 & ~SIGNBIT_DP64) == PINFBITPATT_DP64)
-            return alm_nextafter_special(asdouble(PINFBITPATT_DP64), ALM_E_OVERFLOW);
-        else
-            return alm_nextafter_special(asdouble(checkbits.u64), ALM_E_OUT_NAN);
+        return alm_nextafter_special(asdouble(checkbits.u64), ALM_E_OVERFLOW);
     }
 
     return checkbits.f64;

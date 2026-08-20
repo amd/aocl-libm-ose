@@ -111,6 +111,9 @@ Atan
 .. doxygenfunction:: amd_vrd8_atan
   :project: libm
 
+.. doxygenfunction:: amd_vrd8_atan2
+  :project: libm
+
 
 Hyperbolic Functions
 ====================

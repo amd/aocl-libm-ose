@@ -101,6 +101,11 @@ struct alm_arch_funcs __arch_funcs_remainder = {
             [ALM_FUNC_VECT_DP_8] = &ALM_PROTO_ARCH_ZN5(vrd8_remainder),
 #endif
         },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN6(remainderf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN6(remainder),
+        },
     },
 };
 

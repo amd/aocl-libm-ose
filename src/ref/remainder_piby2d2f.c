@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ void __amd_remainder_piby2d2f_4f(unsigned long long  *x, double *r, unsigned lon
 {
 
 
-	int region1[4];
+	int region1[4] = {0};
      __amd_remainder_piby2d2f(x[0],r,region1);
 	 __amd_remainder_piby2d2f(x[1],&r[1],&region1[1]);
      __amd_remainder_piby2d2f(x[2],&r[2],&region1[2]);

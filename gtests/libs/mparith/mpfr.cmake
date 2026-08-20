@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,8 @@
 
 if (WIN32)
     if(NOT DEFINED ENV{MPFR_PATH})
-        message(FATAL_ERROR "MPFR_PATH environment variable is not set(set MPFR_PATH=path/to/mpfr)")
+        message(FATAL_ERROR "MPFR_PATH environment variable is not set (set MPFR_PATH=path/to/mpfr). "
+            "MPFR, MPC and GMP are required only to build the test framework.")
     endif()
     set(MPFR_PATH $ENV{MPFR_PATH})
     file(TO_NATIVE_PATH "${MPFR_PATH}" MPFR_PATH)
@@ -68,7 +69,7 @@ if (MPFR_FOUND)
   set(MPFR_LIBRARY_DIR ${MPFR_LIBRARY_DIR})
   message(STATUS "MPFR configured: ${MPFR_LIB}")
 else()
-  message(FATAL_ERROR "MPFR not found!")
+  message(FATAL_ERROR "MPFR not found! MPFR is required only to build the test framework.")
 endif()
 
 #------------------------------------------------------------------------------
@@ -86,7 +87,7 @@ if (MPC_FOUND)
   set(MPC_LIBRARY_DIR ${MPC_LIBRARY_DIR})
   message(STATUS "MPC configured: ${MPC_LIB}")
 else()
-  message(FATAL_ERROR "MPC not found!")
+  message(FATAL_ERROR "MPC not found! MPC is required only to build the test framework.")
 endif()
 
 #------------------------------------------------------------------------------
@@ -104,5 +105,5 @@ if (GMP_FOUND)
   set(GMP_LIBRARY_DIR ${GMP_LIBRARY_DIR})
   message(STATUS "GMP configured: ${GMP_LIB}")
 else()
-  message(FATAL_ERROR "GMP not found!")
+  message(FATAL_ERROR "GMP not found! GMP is required only to build the test framework.")
 endif()

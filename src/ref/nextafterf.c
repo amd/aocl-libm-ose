@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -75,17 +75,14 @@ float ALM_PROTO_REF(nextafterf)(float x, float y)
         return  dy;
     }
 
+    /* When x is 0, return the smallest positive subnormal with the sign of the direction y */
     if(x == 0.0f)
     {
-        checkbits.u32 = 1;
-        if(dy > 0.0f)
-            return alm_nextafterf_special(x, ALM_F_INEXACT_UNDERFLOW);
-        else
-            return alm_nextafterf_special(-x, ALM_F_INEXACT_UNDERFLOW);
-
+        checkbits.u32 = (dy > 0.0f) ? 1U : (1U | SIGNBIT_SP32);
+        return alm_nextafterf_special(checkbits.f32, ALM_F_INEXACT_UNDERFLOW);
     }
 
-    /* compute the next heigher or lower value */
+    /* compute the next higher or lower value */
     if(((x>0.0F) ^ (dy>x)) == 0)
     {
         checkbits.u32++;
@@ -95,13 +92,10 @@ float ALM_PROTO_REF(nextafterf)(float x, float y)
         checkbits.u32--;
     }
 
-    /* check if the result is nan or inf */
+    /* If the result reached +/-Inf, return the result with sign bit. */
     if(((checkbits.u32 & ~SIGNBIT_SP32) >= EXPBITS_SP32 ))
     {
-        if((checkbits.u32 & ~SIGNBIT_SP32) == PINFBITPATT_SP32)
-            return alm_nextafterf_special(asfloat(PINFBITPATT_SP32), ALM_E_OVERFLOW);
-        else
-            return alm_nextafterf_special(asfloat(checkbits.u32), ALM_E_OVERFLOW);
+        return alm_nextafterf_special(asfloat(checkbits.u32), ALM_E_OVERFLOW);
     }
 
 

@@ -1,0 +1,296 @@
+---
+- test_sequence: perf_tests_exp_fast
+  function: exp
+  timing_enabled: true
+  test_sets:
+  - id: double-precision-tests
+    description: 'Curve-region performance tests for fast exp (double precision)'
+    tests:
+    # Subnormal inputs: exp(x) ≈ 1, negligible deviation
+    - id: exp_d01
+      description: 'Subnormal inputs, exp(x) ≈ 1'
+      input:
+      - [0x0000000000000001, 0x000fffffffffffff]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Tiny positive: exp(x) ≈ 1 + x, no range reduction needed
+    - id: exp_d02
+      description: 'Tiny positive, exp(x) ≈ 1+x, no reduction'
+      input:
+      - [0x000fffffffffffff, 0x3ddb7cdfd9d7bdbb]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Small positive: within one range-reduction step (< ln(2)/2 ≈ 0.3466)
+    - id: exp_d03
+      description: 'Small positive, within single range-reduction step'
+      input:
+      - [0x3ddb7cdfd9d7bdbb, 0x3fd62e42fefa39ef]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Crosses range-reduction boundary at ln(2)/2
+    - id: exp_d04
+      description: 'Crosses ln(2)/2 boundary, first multi-step reduction'
+      input:
+      - [0x3fd62e42fefa39ef, 0x4000000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Moderate positive: multiple range-reduction steps
+    - id: exp_d05
+      description: 'Moderate positive, multiple reduction steps'
+      input:
+      - [0x4000000000000000, 0x4024000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Large positive
+    - id: exp_d06
+      description: 'Large positive, many reduction steps'
+      input:
+      - [0x4024000000000000, 0x4059000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Very large positive
+    - id: exp_d07
+      description: 'Very large positive, result approaching overflow'
+      input:
+      - [0x4059000000000000, 0x407f400000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near overflow through DBL_MAX (overflow at ~709.78)
+    - id: exp_d08
+      description: 'Near overflow through DBL_MAX'
+      input:
+      - [0x407f400000000000, 0x7fefffffffffffff]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Small negative: within one range-reduction step
+    - id: exp_d09
+      description: 'Small negative, within single reduction step'
+      input:
+      - [0xbfd62e42fefa39ef, 0x8010000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Moderate negative
+    - id: exp_d10
+      description: 'Moderate negative, exponential decay'
+      input:
+      - [0xc024000000000000, 0xbfd62e42fefa39ef]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Large negative
+    - id: exp_d11
+      description: 'Large negative, result approaching zero'
+      input:
+      - [0xc059000000000000, 0xc024000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near underflow through -DBL_MAX (underflow at ~-745.13)
+    - id: exp_d12
+      description: 'Near underflow through -DBL_MAX'
+      input:
+      - [0xffefffffffffffff, 0xc059000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [sd]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Multi-range mix: all regions
+    - id: exp_mr_all
+      description: 'simd lanes cycle over all exp_d01..exp_d12 ranges'
+      multi_range:
+        refs: [exp_d01, exp_d02, exp_d03, exp_d04, exp_d05, exp_d06, exp_d07, exp_d08, exp_d09, exp_d10, exp_d11, exp_d12]
+      variants: [vrd2, vrd4, vrd8]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+      steps_mr: 5000
+
+    # Multi-range mix: non-extreme regions only
+    - id: exp_mr_mid
+      description: 'simd lanes cycle over exp_d03..d06 and d09..d11'
+      multi_range:
+        refs: [exp_d03, exp_d04, exp_d05, exp_d06, exp_d09, exp_d10, exp_d11]
+      variants: [vrd2, vrd4, vrd8]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+      steps_mr: 5000
+
+  - id: single-precision-tests
+    description: 'Curve-region performance tests for fast expf (single precision)'
+    tests:
+    # Subnormal float inputs
+    - id: exp_s01
+      description: 'Subnormal inputs, expf(x) ≈ 1'
+      input:
+      - [0x36a0000000000000, 0x380fffffc0000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Tiny positive
+    - id: exp_s02
+      description: 'Tiny positive, expf(x) ≈ 1+x'
+      input:
+      - [0x380fffffc0000000, 0x3eb0c6f7a0b5ed8d]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Small positive, within single reduction step
+    - id: exp_s03
+      description: 'Small positive, within single reduction step'
+      input:
+      - [0x3eb0c6f7a0b5ed8d, 0x3fd62e42fefa39ef]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Crosses range-reduction boundary
+    - id: exp_s04
+      description: 'Crosses ln(2)/2 boundary'
+      input:
+      - [0x3fd62e42fefa39ef, 0x4000000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Moderate positive
+    - id: exp_s05
+      description: 'Moderate positive, multiple reduction steps'
+      input:
+      - [0x4000000000000000, 0x4024000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near float overflow through FLT_MAX (overflow at ~88.72)
+    - id: exp_s06
+      description: 'Large to FLT_MAX, includes overflow region'
+      input:
+      - [0x4024000000000000, 0x47efffffe0000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Small negative
+    - id: exp_s07
+      description: 'Small negative, within single reduction step'
+      input:
+      - [0xbfd62e42fefa39ef, 0xbeb0c6f7a0b5ed8d]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Moderate negative
+    - id: exp_s08
+      description: 'Moderate negative, exponential decay'
+      input:
+      - [0xc024000000000000, 0xbfd62e42fefa39ef]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Large negative
+    - id: exp_s09
+      description: 'Large negative, result near zero'
+      input:
+      - [0xc049000000000000, 0xc024000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000
+
+    # Near float underflow through -FLT_MAX (underflow at ~-103.97)
+    - id: exp_s10
+      description: 'Near underflow through -FLT_MAX'
+      input:
+      - [0xc7efffffe0000000, 0xc049000000000000]
+      type: [expstep]
+      steps: [500]
+      variants: [ss]
+      uth: ["2.0"]
+      warmup: 1000
+      batch_size: 10000

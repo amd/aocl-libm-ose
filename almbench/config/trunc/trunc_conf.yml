@@ -127,10 +127,10 @@
 
     # Test case 16: snan
     - id: trunc_016
-      description: "truncf(snan) = snan"
+      description: "truncf(snan) = qnan (signaling NaN is quieted)"
       variants: [ss]
       input: [0x7fa00000]
-      expect: [0x7fa00000]
+      expect: [0x7fe00000]
       expect_exception: [invalidoperation]
 # Test cases from gtests test_trunc_data.h
 #-------------------------------
@@ -584,10 +584,10 @@
 
     # Test case 16: snan
     - id: trunc_016
-      description: "trunc(snan) = snan"
+      description: "trunc(snan) = qnan (signaling NaN is quieted)"
       variants: [sd]
       input: [0x7ff4000000000001]
-      expect: [0x7ff4000000000001]
+      expect: [0x7ffc000000000001]
       expect_exception: [invalidoperation]
 # Test cases from gtests test_trunc_data.h
 #-------------------------------

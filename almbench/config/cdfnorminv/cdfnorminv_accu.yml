@@ -1,0 +1,211 @@
+---
+- test_sequence: validation_tests_cdfnorminv
+  function: cdfnorminv
+  test_sets:
+#Double precision (cdfnorminv is double-precision only: sd, vrd2, vrd4, vrd8, vrda)
+  - id: range-tests_01
+    tests:
+
+# ============================================================================
+# Whole-domain sweeps (valid input domain is [0, 1])
+# ============================================================================
+    - id: cdfnorminv_001
+      description: 'Full valid domain: x in [+SMALLEST_SUBNORMAL, 1.0) expstep (covers extreme-tail through central)'
+      input:
+      - [min_subnormal, 1.0]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_002
+      description: 'Full valid domain: x in (0, 1) linearstep'
+      input:
+      - [0.0, 1.0]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Central region  |q| <= 0.425   <=>   x in [0.075, 0.925]
+#   r = 0.180625 - q^2
+#   val = q * P1(r) / Q1(r)   (POLY_EVAL_ESTRIN_8_TAIL_2 with head/tail splits)
+# ============================================================================
+    - id: cdfnorminv_003
+      description: 'Central region (ESTRIN head/tail poly): x in [0.075, 0.925] linearstep'
+      input:
+      - [0.075, 0.925]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_004
+      description: 'Central region lower half (q < 0): x in [0.075, 0.5] linearstep'
+      input:
+      - [0.075, 0.5]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_005
+      description: 'Central region upper half (q > 0): x in [0.5, 0.925] linearstep'
+      input:
+      - [0.5, 0.925]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_006
+      description: 'Central region: dense sweep around symmetry point x = 0.5 (q -> 0)'
+      input:
+      - [0.4, 0.6]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Tail region  r = sqrt(-log(min(x, 1-x))) <= 5
+#   <=>  min(x, 1-x) >= exp(-25) ~= 1.3888e-11
+#   Lower-tail branch  (sign=true,  q<0):   x in [exp(-25), 0.075)     ; r = x
+#   Upper-tail branch  (sign=false, q>=0):  x in (0.925, 1 - exp(-25)] ; r = 1 - x
+#   After r -= 1.6, uses P2/Q2 Horner-8 polynomial, result negated for sign branch.
+# ============================================================================
+    - id: cdfnorminv_007
+      description: 'Tail lower (sign branch, r=x path): x in [exp(-25), 0.075) linearstep'
+      input:
+      - [1.3888e-11, 0.075]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_008
+      description: 'Tail upper (non-sign branch, r=1-x path): x in (0.925, 1 - exp(-25)] linearstep'
+      input:
+      - [0.925, 0.99999999998611]
+      type: [linearstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_009
+      description: 'Tail lower: expstep across the wide dynamic range of x in [exp(-25), 0.075)'
+      input:
+      - [1.3888e-11, 0.075]
+      type: [expstep]
+      steps: [5000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_010
+      description: 'Tail upper: reversed-expstep across x in (0.925, 1 - exp(-25)]'
+      input:
+      - [0.925, 0.99999999998611]
+      type: [expstep]
+      steps: [5000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Extreme tail region  r = sqrt(-log(min(x, 1-x))) > 5
+#   <=>  min(x, 1-x) < exp(-25) ~= 1.3888e-11
+#   Lower extreme tail  (sign=true):   x in (0, exp(-25))               ; r = x
+#   Upper extreme tail  (sign=false):  x in (1 - exp(-25), 1)           ; r = 1 - x
+#   After r -= 5.0, uses P3/Q3 Horner-8 polynomial, result negated for sign branch.
+# ============================================================================
+    - id: cdfnorminv_011
+      description: 'Extreme tail lower: x in (0, exp(-25)) expstep (spans many decades)'
+      input:
+      - [min_subnormal, 1.3888e-11]
+      type: [expstep]
+      steps: [10000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_012
+      description: 'Extreme tail upper: x in (1 - exp(-25), 1) linearstep across last ULPs'
+      input:
+      - [0.99999999998611, 0.9999999999999999]
+      type: [linearstep]
+      steps: [5000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_013
+      description: 'Extreme tail lower: dense linearstep near 0 in [0, 1e-50]'
+      input:
+      - [0.0, 1.0e-50]
+      type: [linearstep]
+      steps: [5000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_014
+      description: 'Extreme tail lower: x in subnormal range [+SMALLEST_SUBNORMAL, +LARGEST_SUBNORMAL]'
+      input:
+      - [min_subnormal, max_subnormal]
+      type: [linearstep]
+      steps: [5000]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Bit-level stress at domain endpoints  (x = 0 and x = 1 return +/-Inf)
+# ============================================================================
+    - id: cdfnorminv_015
+      description: 'Test around +0.0 (x=0 returns -Inf; subnormals route to extreme tail)'
+      input:
+      - [0x0000000000000000, 0x0000000000000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_016
+      description: 'Test around +LARGEST_SUBNORMAL (subnormal/normal boundary, extreme tail)'
+      input:
+      - [0x000FFFFFFFFFF000, 0x0010000000000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_017
+      description: 'Test around x = 1.0 (x=1 returns +Inf; just-below-one hits extreme tail)'
+      input:
+      - [0x3FEFFFFFFFFFF000, 0x3FF0000000000FFF]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+# ============================================================================
+# Bit-level stress at each internal branch boundary
+# ============================================================================
+    - id: cdfnorminv_018
+      description: 'Boundary central / lower tail at x = 0.075 (|q| crosses 0.425)'
+      input:
+      - [0x3FB3333333332333, 0x3FB3333333334333]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_019
+      description: 'Boundary central / upper tail at x = 0.925 (|q| crosses 0.425)'
+      input:
+      - [0x3FED99999999899A, 0x3FED99999999A99A]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_020
+      description: 'Boundary tail / extreme tail at x = exp(-25) ~= 1.3888e-11 (r crosses 5)'
+      input:
+      - [0x3DAE8A37A45FB32E, 0x3DAE8A37A45FD32E]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_021
+      description: 'Boundary tail / extreme tail at x = 1 - exp(-25) (r crosses 5)'
+      input:
+      - [0x3FEFFFFFFFFE075D, 0x3FEFFFFFFFFE275D]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]
+
+    - id: cdfnorminv_022
+      description: 'Boundary lower tail / upper tail at q = 0 (x = 0.5)'
+      input:
+      - [0x3FDFFFFFFFFFF000, 0x3FE0000000001000]
+      type: [bitstep]
+      steps: [1]
+      variants : [sd, vrd2, vrd4, vrd8, vrda]

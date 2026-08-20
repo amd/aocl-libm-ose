@@ -1,0 +1,189 @@
+- test_sequence: unit_tests_erfcinv
+  ignore_exceptions: [underflow, inexact]
+  function: erfcinv
+  test_sets:
+  - id: special-values
+    description: Special boundary values for erfcinv function
+    tests:
+    # Double Precision Tests - Special boundary values
+    - id: erfcinv_001
+      description: "erfcinv(-0) = +inf"
+      input: [0x8000000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfcinv_002
+      description: "erfcinv(0) = +inf"
+      input: [0x0000000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfcinv_003
+      description: "erfcinv(1) = 0"
+      input: [0x3FF0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfcinv_004
+      description: "erfcinv(2) = -inf"
+      input: [0x4000000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: []
+      variants: [sd]
+
+  - id: invalid-inputs
+    description: Invalid inputs for erfcinv function
+    tests:
+    - id: erfcinv_005
+      description: "erfcinv(-1) = -QNAN"
+      input: [0xBFF0000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfcinv_006
+      description: "erfcinv(3) = -QNAN"
+      input: [0x4008000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+  - id: nan-inputs
+    description: NaN inputs for erfcinv function
+    tests:
+    - id: erfcinv_007
+      description: "erfcinv(+SNAN) = QNAN"
+      input: [0x7FF4001000000000]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfcinv_008
+      description: "erfcinv(-SNAN) = -QNAN"
+      input: [0xfff2000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfcinv_009
+      description: "erfcinv(+QNAN) = QNAN"
+      input: [0x7ff87ff7fdedffff]
+      expect: [0x7ff87ff7fdedffff]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfcinv_010
+      description: "erfcinv(-QNAN) = -QNAN"
+      input: [0xfff8000000000000]
+      expect: [0xfff8000000000000]
+      expect_exception: []
+      variants: [sd]
+
+  - id: denormal-values
+    description: erfcinv(x) for denormals/small values
+    tests:
+    - id: erfcinv_011
+      description: "erfcinv(min_denormal)"
+      input: [0x0000000000000001]
+      expect: [0x403B369A6244E684]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfcinv_012
+      description: "erfcinv(max_denormal)"
+      input: [0x000FFFFFFFFFFFFF]
+      expect: [0x403A8B12FC6E4892]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfcinv_013
+      description: "erfcinv(min_normal)"
+      input: [0x0010000000000000]
+      expect: [0x403A8B12FC6E4892]
+      expect_exception: []
+      variants: [sd]
+
+  - id: around-one
+    description: erfcinv(x) around 1
+    tests:
+    - id: erfcinv_014
+      description: "erfcinv(1 - 1 ULP)"
+      input: [0x3FEFFFFFFFFFFFFF]
+      expect: [0x3C9C5BF891B4EF6B]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfcinv_015
+      description: "erfcinv(1) = 0"
+      input: [0x3FF0000000000000]
+      expect: [0x0000000000000000]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfcinv_016
+      description: "erfcinv(1 + 1 ULP)"
+      input: [0x3FF0000000000001]
+      expect: [0xBCAC5BF891B4EF6B]
+      expect_exception: []
+      variants: [sd]
+
+  - id: around-two
+    description: erfcinv(x) around 2
+    tests:
+    - id: erfcinv_017
+      description: "erfcinv(2 - 1 ULP)"
+      input: [0x3FFFFFFFFFFFFFFF]
+      expect: [0xC0173856D153F081]
+      expect_exception: []
+      variants: [sd]
+
+  - id: transition-points
+    description: Test cases around the transition points between approximation intervals
+    tests:
+    - id: erfcinv_018
+      description: "erfcinv(1e-100)"
+      input: [0x2B2BFF2EE48E0530]
+      expect: [0x402E219301E62922]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfcinv_019
+      description: "erfcinv(0.0625)"
+      input: [0x3FB0000000000000]
+      expect: [0x3FF5130C3ACAE4DE]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfcinv_020
+      description: "erfcinv(0.75)"
+      input: [0x3FE8000000000000]
+      expect: [0x3FCCD70681D5FF70]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfcinv_021
+      description: "erfcinv(0.9375)"
+      input: [0x3FEE000000000000]
+      expect: [0x3FAC636951597E17]
+      expect_exception: []
+      variants: [sd]
+
+  - id: symmetry-tests
+    description: Test symmetry around one
+    tests:
+    - id: erfcinv_022
+      description: "erfcinv(0.5)"
+      input: [0x3FE0000000000000]
+      expect: [0x3FDE861FBB24C00A]
+      expect_exception: []
+      variants: [sd]
+
+    - id: erfcinv_023
+      description: "erfcinv(1.5)"
+      input: [0x3FF8000000000000]
+      expect: [0xBFDE861FBB24C00A]
+      expect_exception: []
+      variants: [sd]

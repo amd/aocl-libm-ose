@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -162,7 +162,7 @@ ALM_PROTO_OPT(coshf)(float x)
             return HALFV * z;
         }
         /* x in (8.5, EXP_MAX] Call exp() as expf() will return infintiy for y > logf(FLT_MAX)*/
-        double t   = exp((double)y);
+        double t   = ALM_PROTO_OPT(exp)((double)y);
         res =  (float)(0.5 * t);
     }
     else {                              /* x in (VERY_SMALL_X, 8.5] */
@@ -180,4 +180,3 @@ ALM_PROTO_OPT(coshf)(float x)
 
     return res;
 }
-

@@ -2,7 +2,7 @@
 
 ** Skeleton (top level)
 
-- doc - All relevant documentation should go here
+- docs - All relevant documentation should go here
 - include - All headers relevant for sources
 - src - All sources
 - gtests - All tests
@@ -12,11 +12,11 @@
 
 ** Documentation
 
-Mostly resides under 'doc/' folder.
+Mostly resides under 'docs/' folder.
 
-doc/internal - is internal reference only.
+docs/internal - is internal reference only.
 
-doc/user - User manual, software developers manual etc. Released externally
+docs/user - User manual, software developers manual etc. Released externally
 
 ** Source
 

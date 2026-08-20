@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -58,6 +58,10 @@ float ALM_PROTO_OPT(fminf)(float x, float y)
         /* NaN */
         return _fminf_special(x, y);
     }
+
+    /* Signed-zero: fminf(+0.0f, -0.0f) returns -0.0f. */
+    if (unlikely(fux == 0U && ((fuy ^ SIGNBIT_SP32) == 0U)))
+        return -0.0f;
 
     if (x<=y)
         return x;

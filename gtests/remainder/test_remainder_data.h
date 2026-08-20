@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -47,7 +47,7 @@ test_remainderf_conformance_data[] = {
     {POS_INF_F32, POS_QNAN_F32, FE_INVALID, POS_INF_F32},
     {NEG_INF_F32, POS_QNAN_F32, FE_INVALID, NEG_INF_F32},
     {NEG_INF_F32, POS_QNAN_F32, FE_INVALID, NEG_SNAN_F32},
-    {NEG_INF_F32, POS_QNAN_F32, FE_INVALID, NEG_QNAN_F32},
+    {NEG_INF_F32, POS_QNAN_F32, 0, NEG_QNAN_F32},
     {POS_INF_F32, POS_QNAN_F32, FE_INVALID, POS_ONE_F32},
     {NEG_INF_F32, POS_QNAN_F32, FE_INVALID, NEG_ONE_F32},
     {POS_INF_F32, POS_QNAN_F32, FE_INVALID, POS_ZERO_F32},
@@ -84,6 +84,10 @@ test_remainderf_conformance_data[] = {
     {POS_ONE_F32, POS_ONE_F32, 0, POS_INF_F32},
     {NEG_ONE_F32, NEG_ONE_F32, 0, POS_INF_F32},
     {0x80000000, 0x80000000, 0, 0xa8117a2e},
+    // Signed zero: result is exactly zero, must carry sign of x
+    {0xC0800000, 0x80000000, 0, 0x40000000}, // remainderf(-4.0f, 2.0f) = -0.0f
+    // qNaN as x with y == 0: returns qNaN, must NOT raise FE_INVALID
+    {POS_QNAN_F32, POS_QNAN_F32, 0, POS_ZERO_F32}, // remainderf(qNaN, 0) = qNaN, no exception
 };
 
 static libm_test_special_data_f64
@@ -124,12 +128,12 @@ test_remainder_conformance_data[] = {
     {POS_LNORMAL_F64, 0x0000000000000001LL, 0, NEG_HDENORM_F64},
     {POS_HDENORM_F64, 0x000fffffffffffffLL, 0, POS_ONE_F64},
     {POS_LDENORM_F64, 0x0000000000000001LL, 0, NEG_ONE_F64},
-    {POS_HDENORM_F64, 0xfff8000000000000LL, FE_INVALID, POS_ZERO_F64},
-    {POS_LDENORM_F64, 0xfff8000000000000LL, FE_INVALID, NEG_ZERO_F64},
+    {POS_HDENORM_F64, 0x7ff8000000000000LL, FE_INVALID, POS_ZERO_F64},
+    {POS_LDENORM_F64, 0x7ff8000000000000LL, FE_INVALID, NEG_ZERO_F64},
     {POS_HNORMAL_F64, 0x0000000000000000LL, 0, POS_ONE_F64},
     {POS_LNORMAL_F64, 0x0010000000000000LL, 0, NEG_ONE_F64},
-    {POS_HNORMAL_F64, 0xfff8000000000000LL, FE_INVALID, POS_ZERO_F64},
-    {POS_LNORMAL_F64, 0xfff8000000000000LL, FE_INVALID, NEG_ZERO_F64},
+    {POS_HNORMAL_F64, 0x7ff8000000000000LL, FE_INVALID, POS_ZERO_F64},
+    {POS_LNORMAL_F64, 0x7ff8000000000000LL, FE_INVALID, NEG_ZERO_F64},
     {POS_PI_F64, 0x0000000000000000LL, 0, NEG_PI_F64},
     {NEG_PI_BY2_F64, 0x8000000000000000LL, 0, POS_PI_BY2_F64},
     // Special cases in IEEE doc
@@ -137,4 +141,8 @@ test_remainder_conformance_data[] = {
     {POS_ONE_F64, POS_ONE_F64, 0, POS_INF_F64},
     {NEG_ONE_F64, NEG_ONE_F64, 0, POS_INF_F64},
     {0x8000000000000000LL, 0x8000000000000000LL, 0, 0xa8117a2e00000000LL},
+    // Signed zero: result is exactly zero, must carry sign of x
+    {0xC010000000000000LL, 0x8000000000000000LL, 0, 0x4000000000000000LL}, // remainder(-4.0, 2.0) = -0.0
+    // qNaN as x with y == 0: returns qNaN, must NOT raise FE_INVALID
+    {POS_QNAN_F64, POS_QNAN_F64, 0, POS_ZERO_F64}, // remainder(qNaN, 0) = qNaN, no exception
 };

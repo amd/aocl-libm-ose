@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -68,7 +68,7 @@ static struct {
 } log10_data = {
     .log10_2_head = 0x1.344135p-2,
     .log10_2_tail = 0x1.3ef3fde623e25p-31,
-    .log10_e      = 0x1.bcb7b1526e50fp-2,
+    .log10_e      = 0x1.bcb7b1526e50ep-2,
     .poly         = {
         1.0,
         0x1.0000000000000p-1,          /* 1/2 */

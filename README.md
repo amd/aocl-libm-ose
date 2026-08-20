@@ -55,7 +55,79 @@ For example:
 
 ## INSTALLATION
 
-Please refer to the file BUILDING-ose.txt.
+The recommended build system is CMake. See `BUILDING.md` for scons reference and
+`docs/CMakeBuildSystem.md` for the cmake reference.
+
+> **Note (changed in this release):** AOCL-LibM no longer depends on the external
+> `aocl-utils` library. Runtime CPU detection is now handled by an internal, pure-C
+> module, so building/installing `aocl-utils` and its related build flags
+> (`--aocl_utils_install_path`, `--aocl_utils_link`, `-DAOCL_UTILS_INCLUDE_DIR`,
+> `-DAOCL_UTILS_LIB`) are no longer required. If you are upgrading from a previous
+> release, you can drop any `aocl-utils` configuration; see
+> `docs/design/InternalUtilsDesign.md` for migration details.
+
+### Quick start
+
+Building the library alone needs only CMake and a C/C++ compiler; the
+multi-precision packages (MPFR, GMP, MPC) are required only for the test
+framework. All optional components (tests and examples) are off by default.
+
+#### Build the library
+
+**Linux:**
+
+```sh
+cmake --preset dev-release-gcc --fresh
+cmake --build --preset dev-release-gcc -j
+```
+
+**Windows:**
+
+```bat
+cmake --preset dev-win-release-llvm-ninja --fresh
+cmake --build --preset dev-win-release-llvm-ninja -j
+```
+
+The built libraries are placed under `build/<presetName>/lib`.
+
+#### Build the library and examples
+
+The examples are off by default, so enable them at configure time with
+`-DLIBM_BUILD_EXAMPLES=ON`. Always build the library first, then the `test_libm`
+target, then run the example. The full, copy-pasteable sequence is:
+
+**Linux:**
+
+```sh
+# 1. Configure with examples enabled
+cmake --preset dev-release-gcc -DLIBM_BUILD_EXAMPLES=ON --fresh
+# 2. Build the library
+cmake --build --preset dev-release-gcc
+# 3. Build the example (library must already be built)
+cmake --build --preset dev-release-gcc --target test_libm
+# 4. Run the example
+export LD_LIBRARY_PATH=${PWD}/build/dev-release-gcc/lib:$LD_LIBRARY_PATH
+./build/dev-release-gcc/examples/test_libm
+```
+
+**Windows (Ninja generator):**
+
+```bat
+REM i.  Set up the Visual Studio x64 build environment (provides Ninja and clang-cl)
+"<path_to_visualstudio>\VC\Auxiliary\Build\vcvarsall.bat" x64
+REM 1. Configure with examples enabled
+cmake --preset dev-win-release-llvm-ninja -DLIBM_BUILD_EXAMPLES=ON --fresh
+REM 2. Build the library
+cmake --build --preset dev-win-release-llvm-ninja
+REM 3. Build the example (library must already be built)
+cmake --build --preset dev-win-release-llvm-ninja --target test_libm
+REM 4. Run the example
+set PATH=%PATH%;%CD%\build\dev-win-release-llvm-ninja\lib
+build\dev-win-release-llvm-ninja\examples\test_libm.exe
+```
+
+For the full list of targets, build options and other details, see
+`docs/CMakeBuildSystem.md`.
 
 ## CONTACTS
 

@@ -57,6 +57,11 @@ typedef    float  _Complex     fc32_t;
 typedef    double _Complex     fc64_t;
 #endif
 
+typedef    long int                 lint_t;
+typedef    unsigned long int        ulint_t;
+typedef    long long int            llint_t;
+typedef    unsigned long long int   ullint_t;
+
 #ifdef  HAVE_NATIVE_LONG_LONG_DOUBLE
 typedef    long long double    f128_t;
 #else
@@ -191,6 +196,12 @@ typedef uint32_t v_u32x16_t VEC(64) MAY_ALIAS;
 typedef f64_t    v_f64x8_t  VEC(64) MAY_ALIAS;
 typedef int64_t  v_i64x8_t  VEC(64) MAY_ALIAS;
 typedef uint64_t v_u64x8_t  VEC(64) MAY_ALIAS;
+
+/* mask registers */
+#if defined(__AVX512F__)
+typedef __mmask8  v_mask8_t;   /* pairs with v_*x8_t types  */
+typedef __mmask16 v_mask16_t;  /* pairs with v_*x16_t types */
+#endif
 
 /*
  * Generic 32-bit, 4-element types

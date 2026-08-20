@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -110,7 +110,7 @@ static struct {
 #define C4 v8_cosf_data.poly_cosf[4]
 
 #define COSF_ARG_MAX 0x4A989680
-#define SCALAR_COSF ALM_PROTO(cosf)
+#define SCALAR_COSF ALM_PROTO_OPT(cosf)
 
 v_f32x8_t
 ALM_PROTO_OPT(vrs8_cosf)(v_f32x8_t x)

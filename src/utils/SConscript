@@ -1,0 +1,23 @@
+#
+# Copyright (C) 2026 Advanced Micro Devices, Inc. All rights reserved.
+#
+# AOCL-LibM Internal Utils Module - SCons Build
+#
+
+Import('env')
+
+utils_env = env.Clone()
+
+utils_srcs = Glob('src/*.c')
+utils_inc = Dir('.').srcnode().abspath
+
+utils_env.Append(CPPPATH=[utils_inc])
+
+if env['HOST_OS'] != 'win32':
+    utils_env.Append(CCFLAGS=['-Wall', '-Wextra', '-fPIC'])
+else:
+    utils_env.Append(CCFLAGS=['/W4'])
+
+utils_objs = utils_env.StaticObject(utils_srcs)
+
+Return('utils_objs', 'utils_inc')

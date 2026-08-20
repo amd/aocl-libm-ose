@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -75,9 +75,17 @@ ALM_PROTO_KERN(log1p)(double x, double head, double tail)
 
     double s = poly + u_low;
 
-    double ans  = (s * tail) + (u_high * tail);
-    ans        += (s * head) + (u_high * head);
+    /*
+     * Reconstruct (u_high + s) * (head + tail). u_high*head is exact by
+     * construction, so it is the leading term; the remaining cross-products
+     * are folded in with FMA so their low halves survive until the single
+     * final rounding.
+     */
+    double hi = u_high * head;        /* exact */
+    double lo = s * tail;             /* smallest term */
+    lo = _LIBM_POLY_FMA(u_high, tail, lo);
+    lo = _LIBM_POLY_FMA(s, head, lo);
 
-    return ans;
+    return hi + lo;
 }
 

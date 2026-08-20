@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020, Advanced Micro Devices. All rights reserved.
+ * Copyright (C) 2018-2026, Advanced Micro Devices. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -71,7 +71,7 @@ static struct {
     .inf = _MM_SET1_I64x2(0xfff0000000000000),
     .ln2 = _MM_SET1_PD2(0x1.62e42fefa39efp-1),
     .ln2_head = _MM_SET1_PD2(1.44269180297851562500E+00),
-    .ln2_tail = _MM_SET1_PD2(3.23791044778235969970E-06),
+    .ln2_tail = _MM_SET1_PD2(0x1.b295c17f0bbbfp-19),
     .v_max = _MM_SET1_I64x2(0x7ff0000000000000),
     .v_min = _MM_SET1_I64x2(0x0010000000000000),
     /* Polynomial coefficients obtained using fpminimax algorithm from Sollya */
@@ -99,7 +99,7 @@ static struct {
     },
 };
 
-#define SCALAR_LOG2 ALM_PROTO(log2)
+#define SCALAR_LOG2 ALM_PROTO_OPT(log2)
 
 #define EXPSHIFTBITS_SP64 52
 #define ln2 vrd2_log2_data.ln2

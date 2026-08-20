@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -54,7 +54,7 @@ void ALM_PROTO_OPT(vrda_powx)(int length, const double *x, double y, double *res
         for (j = 0; j <= length - DOUBLE_ELEMENTS_256_BIT; j += DOUBLE_ELEMENTS_256_BIT)
         {
             __m256d ip41 = _mm256_loadu_pd(&x[j]);
-            __m256d op4 = ALM_PROTO(vrd4_powx)(ip41, y);
+            __m256d op4 = ALM_PROTO_OPT(vrd4_powx)(ip41, y);
             _mm256_storeu_pd(&result[j], op4);
         }
     }
@@ -64,7 +64,7 @@ void ALM_PROTO_OPT(vrda_powx)(int length, const double *x, double y, double *res
     {
         __m256i mask = GET_MASK_DOUBLE_256_BIT(remainder);
         __m256d ip41 = _mm256_maskload_pd(&x[j], mask);
-        __m256d op4 = ALM_PROTO(vrd4_powx)(ip41, y);
+        __m256d op4 = ALM_PROTO_OPT(vrd4_powx)(ip41, y);
         _mm256_maskstore_pd(&result[j], mask, op4);
     }
 }

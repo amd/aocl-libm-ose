@@ -1,16 +1,14 @@
 - test_sequence: unit_tests_nextafter
-  ignore_exceptions: [underflow, inexact]
   function: nextafter
   test_sets:
   - id: special-values
     description: Special values
     tests:
-    # Test case 1: 0
     - id: nextafter_001
       description: "nextafterf(0, 1) = +min_subnormal"
       variants: [ss]
       input: [0x00000000, 0x3f800000]
-      expect: [0x00000000]
+      expect: [0x00000001]
       expect_exception: [inexact, underflow]
 
     # Test case 2: -0
@@ -18,7 +16,7 @@
       description: "nextafterf(-0, 1) = +min_subnormal"
       variants: [ss]
       input: [0x80000000, 0x3f800000]
-      expect: [0x80000000]
+      expect: [0x00000001]
       expect_exception: [inexact, underflow]
 
     # Test case 3: inf
@@ -160,10 +158,10 @@
       expect_exception: []
       variants: [ss]
     - id: nextafter_005
-      description: "nextafter(0, 1) (x==0, y+ve)"
-      input: [0x00000000, 0x00000000]
+      description: "nextafterf(0, 1) (x==0, y+ve)"
+      input: [0x00000000, 0x3f800000]
       expect: [0x00000001]
-      expect_exception: []
+      expect_exception: [inexact, underflow]
       variants: [ss]
     - id: nextafter_006
       description: "nextafter(+inf,5.4)"
@@ -172,20 +170,31 @@
       expect_exception: []
       variants: [ss]
     - id: nextafter_007
-      description: "nextafter(-0,-1) (x==-0, y-ve)"
-      input: [0x80000000, 0x00000000]
+      description: "nextafterf(-0,-1) (x==-0, y-ve)"
+      input: [0x80000000, 0xbf800000]
       expect: [0x80000001]
-      expect_exception: []
+      expect_exception: [inexact, underflow]
+      variants: [ss]
+    - id: nextafter_008
+      description: "nextafterf(-FLT_MAX, -inf) -> -inf"
+      input: [0xff7fffff, 0xff800000]
+      expect: [0xff800000]
+      expect_exception: [overflow, inexact]
+      variants: [ss]
+    - id: nextafter_009
+      description: "nextafterf(+FLT_MAX, +inf) -> +inf"
+      input: [0x7f7fffff, 0x7f800000]
+      expect: [0x7f800000]
+      expect_exception: [overflow, inexact]
       variants: [ss]
 
 #-------------------------------------------
     # Double precision tests
-    # Test case 1: 0
     - id: nextafter_001
       description: "nextafter(0, 1) = +min_subnormal"
       variants: [sd]
       input: [0x0000000000000000, 0x3ff0000000000000]
-      expect: [0x0000000000000000]
+      expect: [0x0000000000000001]
       expect_exception: [inexact, underflow]
 
     # Test case 2: -0
@@ -193,7 +202,7 @@
       description: "nextafter(-0, 1) = +min_subnormal"
       variants: [sd]
       input: [0x8000000000000000, 0x3ff0000000000000]
-      expect: [0x8000000000000000]
+      expect: [0x0000000000000001]
       expect_exception: [inexact, underflow]
 
     # Test case 3: inf
@@ -335,10 +344,10 @@
       expect_exception: []
       variants: [sd]
     - id: nextafter_005
-      description: "// nextafter(0,1) (x==0 & y+ve)"
-      input: [0x0000000000000000, 0x0000000000000000]
+      description: "nextafter(0,1) (x==0 & y+ve)"
+      input: [0x0000000000000000, 0x3ff0000000000000]
       expect: [0x0000000000000001]
-      expect_exception: []
+      expect_exception: [inexact, underflow]
       variants: [sd]
     - id: nextafter_006
       description: "nextafter(+inf,88.2)"
@@ -347,9 +356,21 @@
       expect_exception: []
       variants: [sd]
     - id: nextafter_007
-      description: "// nextafter(-0, -1) (x==-0 & y-ve)"
-      input: [0x8000000000000000, 0x0000000000000000]
+      description: "nextafter(-0, -1) (x==-0 & y-ve)"
+      input: [0x8000000000000000, 0xbff0000000000000]
       expect: [0x8000000000000001]
-      expect_exception: []
+      expect_exception: [inexact, underflow]
+      variants: [sd]
+    - id: nextafter_008
+      description: "nextafter(-DBL_MAX, -inf) -> -inf"
+      input: [0xffefffffffffffff, 0xfff0000000000000]
+      expect: [0xfff0000000000000]
+      expect_exception: [overflow, inexact]
+      variants: [sd]
+    - id: nextafter_009
+      description: "nextafter(+DBL_MAX, +inf) -> +inf"
+      input: [0x7fefffffffffffff, 0x7ff0000000000000]
+      expect: [0x7ff0000000000000]
+      expect_exception: [overflow, inexact]
       variants: [sd]
 #-------------------------------------------

@@ -181,7 +181,7 @@ ALM_PROTO_OPT(cexp)(fc64_t z)
                     zy_re = POS_ZERO_F64;
                     zy_im = im;  /* Preserve sign of zero */
                 } else {
-                    ALM_PROTO(sincos)(im, &sin_im, &cos_im);
+                    ALM_PROTO_OPT(sincos)(im, &sin_im, &cos_im);
                     zy_re = POS_ZERO_F64 * cos_im;
                     zy_im = POS_ZERO_F64 * sin_im;
                 }
@@ -191,7 +191,7 @@ ALM_PROTO_OPT(cexp)(fc64_t z)
                     zy_re = asdouble(POS_INF_F64);
                     zy_im = im;  /* Preserve sign of zero */
                 } else {
-                    ALM_PROTO(sincos)(im, &sin_im, &cos_im);
+                    ALM_PROTO_OPT(sincos)(im, &sin_im, &cos_im);
                     zy_re = asdouble(POS_INF_F64) * cos_im;
                     zy_im = asdouble(POS_INF_F64) * sin_im;
                 }
@@ -210,11 +210,11 @@ ALM_PROTO_OPT(cexp)(fc64_t z)
                 zy_im = im;
             } else {
                 /* (±0, y) -> cis(y) */
-                ALM_PROTO(sincos)(im, &zy_im, &zy_re);
+                ALM_PROTO_OPT(sincos)(im, &zy_im, &zy_re);
             }
         } else if (im_is_zero) {
             /* (x, ±0) -> (exp(x), ±0) - preserve sign of zero */
-            zy_re = ALM_PROTO(exp)(re);
+            zy_re = ALM_PROTO_OPT(exp)(re);
             zy_im = im;
 
             /* Check for overflow or underflow */
@@ -242,8 +242,8 @@ ALM_PROTO_OPT(cexp)(fc64_t z)
             if (re > CEXP_MAX_ARG) {
                 /* Potential overflow case - split computation to avoid premature overflow */
                 double t = re - CEXP_MAX_ARG;
-                ALM_PROTO(sincos)(im, &sin_im, &cos_im);
-                double r = ALM_PROTO(exp)(t);
+                ALM_PROTO_OPT(sincos)(im, &sin_im, &cos_im);
+                double r = ALM_PROTO_OPT(exp)(t);
 
                 zy_re = r * cos_im * CEXP_EXP_MAX_ARG;
                 zy_im = r * sin_im * CEXP_EXP_MAX_ARG;
@@ -262,8 +262,8 @@ ALM_PROTO_OPT(cexp)(fc64_t z)
                 }
             } else if (re < CEXP_UNDERFLOW_THRESHOLD) {
                 /* Potential underflow case */
-                double exp_re = ALM_PROTO(exp)(re);
-                ALM_PROTO(sincos)(im, &sin_im, &cos_im);
+                double exp_re = ALM_PROTO_OPT(exp)(re);
+                ALM_PROTO_OPT(sincos)(im, &sin_im, &cos_im);
                 zy_re = exp_re * cos_im;
                 zy_im = exp_re * sin_im;
                 if (exp_re == 0.0) {
@@ -275,8 +275,8 @@ ALM_PROTO_OPT(cexp)(fc64_t z)
                 }
             } else {
                 /* Normal computation */
-                double exp_re = ALM_PROTO(exp)(re);
-                ALM_PROTO(sincos)(im, &sin_im, &cos_im);
+                double exp_re = ALM_PROTO_OPT(exp)(re);
+                ALM_PROTO_OPT(sincos)(im, &sin_im, &cos_im);
 
                 zy_re = exp_re * cos_im;
                 zy_im = exp_re * sin_im;

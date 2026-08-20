@@ -59,7 +59,7 @@
 #include <libm/typehelper.h>
 #include <libm/compiler.h>
 #include <libm/poly.h>
-
+#include "kern/sqrt_pos.c"
 
 static const struct
 {
@@ -74,7 +74,7 @@ static const struct
     double poly_bound_1[12];   // 6 num, 6 den - central region [0.075, 0.925]
     double poly_bound_1_H[4]; // head parts (P10H, P11H, Q10H, Q11H)
     double poly_bound_1_T[4]; // tail parts (P10T, P11T, Q10T, Q11T)
-    
+
     double poly_bound_2[16];   // 8 num, 8 den - tail region
     double poly_bound_3[16];   // 8 num, 8 den - extreme tail region
 
@@ -323,7 +323,7 @@ double ALM_PROTO_OPT(cdfnorminv)(double x) {
      * For Nan : ix >= INF_NAN (hence ix > ONEU32)
      * For x < 0 : sign is true
      * For x > 1 : ix > ONEU32
-     * For x = -0 : sign is true and ix == 0 
+     * For x = -0 : sign is true and ix == 0
     */
     if (unlikely(sign || ix > ONEU32))
     {
@@ -331,7 +331,7 @@ double ALM_PROTO_OPT(cdfnorminv)(double x) {
             return asdouble(NEG_INF_F64);
         if (ux > POS_INF_F64) // propagate NaN
             return x - x;
-        else 
+        else
             return alm_cdfnorminv_special(asdouble(NEG_QNAN_F64));
     }
 
@@ -364,7 +364,7 @@ double ALM_PROTO_OPT(cdfnorminv)(double x) {
     } else {
         // Tail regions: p in (0, 0.075) or (0.925, 1.0)
         r = sign ? p_ : (ONE - p_);
-        r = ALM_PROTO(sqrt)(-ALM_PROTO(log)(r));
+        r = ALM_PROTO_KERN(sqrt)(-ALM_PROTO_OPT(log)(r));
         /*
          * Tail region:
          * sqrt(-log(min(p, 1-p))) <= 5

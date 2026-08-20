@@ -49,9 +49,9 @@
    5. For x in (1.9375, 2],
        erfcinv(x) = -(1/y) * P2(y)/Q2(y), where y = 1/sqrt(-ln(2 - x))
 
-    Polynomials are based on paper: 
-        "Rational Chebyshev approximations for the inverse of the error function" 
-        J.M. Blair, C.A. Edwards, and J.H. Johnson. 
+    Polynomials are based on paper:
+        "Rational Chebyshev approximations for the inverse of the error function"
+        J.M. Blair, C.A. Edwards, and J.H. Johnson.
         Mathematics of Computation, 30(136):827–830, 1976.
  */
 
@@ -63,14 +63,14 @@
  #include <libm/typehelper.h>
  #include <libm/compiler.h>
  #include <libm/poly.h>
- 
- 
+#include "kern/sqrt_pos.c"
+
  static struct
  {
      const double one;   // 1.0
      const double exp_offset3; // 0.5625
      const double exp_offset4; // 0.87890625
- 
+
      double poly_bound_1_H[18]; //  9 num, 9 den, Table 82 Blair et al
      double poly_bound_1_T[18];
      double poly_bound_2_H[19]; // 11 num, 8 den, Table 58 Blair et al
@@ -78,13 +78,13 @@
      double poly_bound_3[18];   //  9 num, 9 den, Table 22 Blair et al
      double poly_bound_4_H[15]; //  8 num, 7 den, Table 37 Blair et al
      double poly_bound_4_T[15];
- 
+
  } erfcinv_data = {
- 
+
      .one = 0x1.0000000000000p+0, // 1.0
      .exp_offset3 = 0x1.2p-1,     // 0.5625
      .exp_offset4 = 0x1.c2p-1,    // 0.87890625
- 
+
      .poly_bound_1_H =
      {
          // Numerator
@@ -97,7 +97,7 @@
          0x1.a7fcc3824eeedp-1,
          0x1.f36523ebcb622p+0,
          0x1.6628c8aa4b50ap-1,
- 
+
          // Denominator
          0x1.3f15ba1424e32p-38,
          0x1.3d2e865de9b05p-28,
@@ -109,7 +109,7 @@
          0x1.0fd978bf81eb7p+1,
          0x1.93c2dedc938d3p+0
      },
- 
+
      .poly_bound_1_T =
      {
          // Numerator
@@ -122,7 +122,7 @@
          -0x1.a3d41c0339492p-55,
          -0x1.c2cb3489f98eep-55,
          0x1.0a162d4c24a89p-55,
- 
+
          // Denominator
          0x1.6870e62ddc803p-93,
          0x1.6b4f6aee9c5e5p-82,
@@ -134,7 +134,7 @@
          -0x1.316d772ee0c65p-53,
          -0x1.b2db12e479d09p-58
      },
- 
+
      .poly_bound_2_H =
      {
          // Numerator
@@ -149,7 +149,7 @@
          0x1.11ae803f200b1p-4,
          -0x1.237ce1b409b07p-6,
          0x1.25db922abee60p-9,
- 
+
          // Denominator
          0x1.d98d1a3412e13p-15,
          0x1.5ea77aa937936p-8,
@@ -160,7 +160,7 @@
          0x1.f06bab8543d1ap+1,
          0x1.04c46273c9ec0p+1
      },
- 
+
      .poly_bound_2_T =
      {
          // Numerator
@@ -175,7 +175,7 @@
          -0x1.ca2692d33b42ap-58,
          -0x1.381d744016ce4p-61,
          0x1.be910b13800c0p-64,
- 
+
          // Denominator
          -0x1.2d837f1682e6ap-70,
          0x1.5fbb45bed5641p-62,
@@ -186,7 +186,7 @@
          -0x1.3d74c3d939c1bp-55,
          0x1.ce4b02cb50838p-56
      },
- 
+
      .poly_bound_3 =
      {
          // Numerator
@@ -199,7 +199,7 @@
          -0x1.1c278c101bc75p+13,
          0x1.fed4e855def62p+9,
          -0x1.f8ca50679dd18p+4,
- 
+
          // Denominator
          -0x1.566bf73b936f7p+10,
          0x1.766e6c8610465p+13,
@@ -211,7 +211,7 @@
          0x1.394139cc04100p+11,
          -0x1.0cfb9cdf1ef00p+7
      },
- 
+
      .poly_bound_4_H =
      {
          // Numerator
@@ -223,7 +223,7 @@
          0x1.31f0fc5613142p+4,
          -0x1.5ea6c007d4dbbp+2,
          0x1.e66f265ce9e50p-3,
- 
+
          // Denominator
          -0x1.636b2dcf4edbep-7,
          0x1.0b5411e2acf29p-2,
@@ -233,7 +233,7 @@
          0x1.8a3e174e05ddcp+4,
          -0x1.4075c56404eecp+3
      },
- 
+
      .poly_bound_4_T =
      {
          // Numerator
@@ -245,7 +245,7 @@
          -0x1.180206d4fb9c7p-52,
          0x1.de980ce3e3850p-53,
          -0x1.4b084098b5ceap-59,
- 
+
          // Denominator
          -0x1.8907cbccf0337p-62,
          -0x1.9070eaf055b4ep-56,
@@ -256,11 +256,11 @@
          -0x1.b937f050132f8p-52
      }
  };
- 
+
  #define ONE        erfcinv_data.one
  #define EXP_OFFSET_3 erfcinv_data.exp_offset3
  #define EXP_OFFSET_4 erfcinv_data.exp_offset4
- 
+
  // poly_bound_1: 18 elements (9 numerator, 9 denominator)
  #define P10H erfcinv_data.poly_bound_1_H[0]
  #define P11H erfcinv_data.poly_bound_1_H[1]
@@ -298,7 +298,7 @@
  #define Q16T erfcinv_data.poly_bound_1_T[15]
  #define Q17T erfcinv_data.poly_bound_1_T[16]
  #define Q18T erfcinv_data.poly_bound_1_T[17]
- 
+
  // poly_bound_2: 19 elements (11 numerator, 8 denominator)
  #define P20H erfcinv_data.poly_bound_2_H[0]
  #define P21H erfcinv_data.poly_bound_2_H[1]
@@ -338,7 +338,7 @@
  #define Q25T erfcinv_data.poly_bound_2_T[16]
  #define Q26T erfcinv_data.poly_bound_2_T[17]
  #define Q27T erfcinv_data.poly_bound_2_T[18]
- 
+
  // poly_bound_3: 18 elements (9 numerator, 9 denominator)
  #define P30 erfcinv_data.poly_bound_3[0]
  #define P31 erfcinv_data.poly_bound_3[1]
@@ -358,7 +358,7 @@
  #define Q36 erfcinv_data.poly_bound_3[15]
  #define Q37 erfcinv_data.poly_bound_3[16]
  #define Q38 erfcinv_data.poly_bound_3[17]
- 
+
  // poly_bound_4: 15 elements (8 numerator, 7 denominator)
  #define P40H erfcinv_data.poly_bound_4_H[0]
  #define P41H erfcinv_data.poly_bound_4_H[1]
@@ -390,21 +390,21 @@
  #define Q44T erfcinv_data.poly_bound_4_T[12]
  #define Q45T erfcinv_data.poly_bound_4_T[13]
  #define Q46T erfcinv_data.poly_bound_4_T[14]
- 
+
  #define UPPER32_MASK      0x7fffffff
- 
+
  /* Boundary values for intervals */
  #define BOUND1 0x3fb00000 /* 0.0625 */
  #define BOUND2 0x3fe80000 /* 0.75 */
  #define BOUND3 0x3fee0000 /* 0.9375 */
  #define BOUND4 0x40000000 /* 2.0 */
  #define ONEU   0x3FF0000000000000 /* 1.0 */
- 
+
  /* Boundary values for sub-intervals */
  #define B1_SUB1 0x2b2bff2ee48e0530/* 1e-100 */
- 
+
  double ALM_PROTO_OPT(erfcinv)(double x) {
- 
+
     double P, Q;
     uint64_t ux;
     uint32_t ix;
@@ -419,7 +419,7 @@
      * For Nan : ix >= INF_NAN (hence ix > BOUND4)
      * For x < 0 : sign is true
      * For x > 2 : ix > BOUND4
-     * For x = -0 : sign is true and ix == 0 
+     * For x = -0 : sign is true and ix == 0
     */
     if (unlikely(sign || ix > BOUND4))
     {
@@ -427,16 +427,16 @@
             return asdouble(POS_INF_F64);
         if (ux > POS_INF_F64) // propagate NaN
             return x - x;
-        else 
+        else
             return alm_erfcinv_special(asdouble(NEG_QNAN_F64));
     }
-    
-    if (ix <= BOUND1) 
+
+    if (ix <= BOUND1)
     { /* erfcinv */
-        double z = 1.0 / ALM_PROTO(sqrt)(-ALM_PROTO(log)(x));
-        if (ux <= B1_SUB1) 
+        double z = 1.0 / ALM_PROTO_KERN(sqrt)(-ALM_PROTO_OPT(log)(x));
+        if (ux <= B1_SUB1)
         {
-            P = POLY_EVAL_ESTRIN_9_TAIL_4(z, P10H, P10T, P11H, P11T, P12H, P12T, P13H, P13T, 
+            P = POLY_EVAL_ESTRIN_9_TAIL_4(z, P10H, P10T, P11H, P11T, P12H, P12T, P13H, P13T,
                 P14H, P15H, P16H, P17H, P18H);
             Q = POLY_EVAL_ESTRIN_10_TAIL_4(z, Q10H, Q10T, Q11H, Q11T, Q12H, Q12T, Q13H, Q13T,
                 Q14H, Q15H, Q16H, Q17H, Q18H, ONE);
@@ -453,7 +453,7 @@
             return P / Q;
         }
     }
-    else 
+    else
     { /* erfinv */
         double z = 1.0 - x;
         uint64_t ua;
@@ -478,7 +478,7 @@
         }
         else
         {
-            double y = 1.0 / ALM_PROTO(sqrt)(-ALM_PROTO(log)(2.0 - x));
+            double y = 1.0 / ALM_PROTO_KERN(sqrt)(-ALM_PROTO_OPT(log)(2.0 - x));
             P = POLY_EVAL_ESTRIN_11_TAIL_1(y, P20H, P20T,
                 P21H, P22H, P23H, P24H, P25H, P26H, P27H, P28H, P29H, P210H);
             Q = POLY_EVAL_ESTRIN_9_TAIL_1(y, Q20H, Q20T,

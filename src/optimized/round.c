@@ -128,7 +128,7 @@ double ALM_PROTO_OPT(round)(double x)
 
     /* Handle medium values: 1.0 <= |x| < 2^52 */
     /* Calculate fractional bit mask */
-    uint64_t mantissa = MANTBITS_DP64 >> intexp;
+    uint64_t mantissa = (uint64_t)(MANTBITS_DP64 >> intexp);
 
     /* Check if already integral - avoid unnecessary computation */
     if (unlikely((ux & mantissa) == 0)) {
@@ -136,7 +136,7 @@ double ALM_PROTO_OPT(round)(double x)
     }
 
     /* Add 0.5 ULP at the current exponent for rounding */
-    ux = ux + (HALF_MANTISSA_BIT_DP64 >> intexp);
+    ux = ux + (uint64_t)(HALF_MANTISSA_BIT_DP64 >> (uint64_t)intexp);
 
     /* Clear fractional bits */
     ux = ux & ~mantissa;

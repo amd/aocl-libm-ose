@@ -87,6 +87,13 @@ struct alm_arch_funcs __arch_funcs_expm1 = {
             [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN5(vrsa_expm1f),
             [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN5(vrda_expm1),
         },
+
+        [ALM_UARCH_VER_ZEN6] = {
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN6(expm1f),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN6(expm1),
+            [ALM_FUNC_VECT_SP_ARR] = &ALM_PROTO_ARCH_ZN6(vrsa_expm1f),
+            [ALM_FUNC_VECT_DP_ARR] = &ALM_PROTO_ARCH_ZN6(vrda_expm1),
+        },
     },
 };
 

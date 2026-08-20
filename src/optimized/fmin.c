@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -58,6 +58,10 @@ double ALM_PROTO_OPT(fmin)(double x, double y)
         /* NaN */
         return _fmin_special(x, y);
     }
+
+    /* Signed-zero: fmin(+0.0, -0.0) returns -0.0. */
+    if (unlikely(ux == 0ULL && ((uy ^ SIGNBIT_DP64) == 0ULL)))
+        return -0.0;
 
     if (x<=y)
         return x;

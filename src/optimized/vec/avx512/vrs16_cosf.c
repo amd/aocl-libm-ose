@@ -116,7 +116,7 @@ static struct {
 static inline v_f32x16_t
 cosf_specialcase(v_f32x16_t _x, v_f32x16_t result, v_u32x16_t cond)
 {
-    return call_v16_f32(ALM_PROTO(cosf), _x, result, cond);
+    return call_v16_f32(ALM_PROTO_OPT(cosf), _x, result, cond);
 }
 
 

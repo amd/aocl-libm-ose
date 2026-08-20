@@ -88,10 +88,6 @@ makedirs(build_root, exist_ok=True)
 # alm libs will be generated here
 alm_lib_path='#'+joinpath(build_root,'src')
 
-# Fetch absolute path of libaoclutils library
-aocl_utils_install_path = joinpath('#', aenv['aocl_utils_install_path'])
-Export('aocl_utils_install_path')
-
 # These targets are not the .obj files or .o files, instead
 # class targets or build objectw
 targets = []
@@ -146,6 +142,20 @@ if 'tests' in COMMAND_LINE_TARGETS or ('gtests' in COMMAND_LINE_TARGETS) :
 if gtest_objs:
     Requires(gtest_objs, alm_libs)
     targets += gtest_objs
+
+# stablesort unit tests: opt-in 'sorttests' target. Mirrors the SORT_BUILD_TESTS cmake target.
+sorttest_objs = []
+if 'sorttests' in COMMAND_LINE_TARGETS:
+    sortenv = aenv.Clone()
+    sorttest_objs += SConscript('tools/stablesort_tester/SConscript',
+                   exports = {'env': sortenv, 'almenv': __almenv},
+                   duplicate = 0,
+                   src_dir    = 'tools/stablesort_tester',
+                   variant_dir = joinpath(build_root, 'tools/stablesort_tester'))
+    Alias('sorttests', sorttest_objs)
+
+if sorttest_objs:
+    targets += sorttest_objs
 
 Default(targets)
 

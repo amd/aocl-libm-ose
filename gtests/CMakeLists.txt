@@ -26,10 +26,20 @@
 #
 
 cmake_minimum_required(VERSION ${CMAKE_MIN_REQ_VERSION})
-project(gtest-testsuite-libm LANGUAGES C CXX)
 
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/gapi")
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/libs/mparith")
+# libalm and mparith link msvcrt (release CRT) on Windows; use /MD for all gtest
+# configs so Debug/Release objects and external deps stay CRT-consistent.
+# Debug uses /MD (not /MDd) to match libalm; full MSVC debug CRT checking is traded off.
+if(WIN32)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+endif()
+
+project(gtest-testsuite-libm LANGUAGES C CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/gapi")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/libs/mparith")
 
 # Define prototypes
 set(PROTOTYPE_GLIBC 0xf1)
@@ -49,30 +59,29 @@ set(MPARITH_PATH    "${MPARITH_LIB_DIR}")
 set(GTEST_PATH      "${GTEST_LIB_PATH}")
 set(GBENCH_PATH     "${GBENCH_LIB_PATH}")
 set(GTEST_LIBS      "${GTEST_PATH}" "${GBENCH_PATH}")
-set(AOCL_UTILS_PATH "${AOCL_UTILS_LIB_DIR}")
 
 # Get common test sources excluding the excluded list
 file(GLOB COMMON_SRCS
-    ${PROJECT_SOURCE_DIR}/almtesttype.cc
-    ${PROJECT_SOURCE_DIR}/cmdline.cc
-    ${PROJECT_SOURCE_DIR}/filter.cc
-    ${PROJECT_SOURCE_DIR}/func_var_existence.cc
-    ${PROJECT_SOURCE_DIR}/gbench_main.cc
-    ${PROJECT_SOURCE_DIR}/gtest_main.cc
-    ${PROJECT_SOURCE_DIR}/main.cc
-    ${PROJECT_SOURCE_DIR}/random.cc
-    ${PROJECT_SOURCE_DIR}/ulp.cc
-    ${PROJECT_SOURCE_DIR}/verify.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/almtesttype.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/filter.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/func_var_existence.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/gbench_main.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/gtest_main.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/main.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/random.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/ulp.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/verify.cc
 )
 
 set(VR_SRC_FILES
-    ${PROJECT_SOURCE_DIR}/Gtest_srcs/gtest_accu.cc
-    ${PROJECT_SOURCE_DIR}/Gtest_srcs/gbench_perf.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Gtest_srcs/gtest_accu.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Gtest_srcs/gbench_perf.cc
 )
 
 set(VRA_SRC_FILES
-    ${PROJECT_SOURCE_DIR}/Gtest_srcs/gbench_main_vec_arr.cc
-    ${PROJECT_SOURCE_DIR}/Gtest_srcs/gtest_main_vec_arr.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Gtest_srcs/gbench_main_vec_arr.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Gtest_srcs/gtest_main_vec_arr.cc
 )
 
 # Compiler flags
@@ -210,14 +219,14 @@ endif()
 
 # Include and library paths
 include_directories(${ALM_INCLUDE_DIR}
-                    ${PROJECT_SOURCE_DIR}
-                    ${PROJECT_SOURCE_DIR}/include
-                    ${PROJECT_SOURCE_DIR}/include/almtest
+                    ${CMAKE_CURRENT_SOURCE_DIR}
+                    ${CMAKE_CURRENT_SOURCE_DIR}/include
+                    ${CMAKE_CURRENT_SOURCE_DIR}/include/almtest
                     ${MPARITH_INCLUDE_DIR}
                     ${GTEST_INCLUDE_DIR}
                     ${GBENCH_INCLUDE_DIR})
 
-link_directories(${ALM_PATH} ${AOCL_UTILS_PATH} ${MPARITH_PATH} ${GTEST_LIBS})
+link_directories(${ALM_PATH} ${MPARITH_PATH} ${GTEST_LIBS})
 
 # Libraries to link
 set(LIBS ${GTEST_LIB} ${GBENCH_LIB} ${LIBMPARITH} ${MPFR_LIB} ${MPC_LIB} ${GMP_LIB})
@@ -225,15 +234,12 @@ set(LIBS ${GTEST_LIB} ${GBENCH_LIB} ${LIBMPARITH} ${MPFR_LIB} ${MPC_LIB} ${GMP_L
 if(LIBABI STREQUAL "aocl")
     add_definitions(-DLIBM_PROTOTYPE=${PROTOTYPE_AOCL})
     if(NOT WIN32)
-        # Use static library when ASAN or coverage is enabled to avoid gcov symbol conflicts
+        # Use static library when ASAN or coverage is enabled to avoid gcov symbol conflicts.
+        # CPU detection is embedded directly into libalm, so libalm.a is
+        # self-contained and no separate utils archive needs to be linked.
         if(${${PROJECT_PREFIX}_LIBM_ENABLE_ASAN} OR ${${PROJECT_PREFIX}_LIBM_ENABLE_COVERAGE})
             set(LIBALM "${CMAKE_BINARY_DIR}/src/libalm.a")
-            if(DEFINED AOCL_UTILS_LIB)
-                list(APPEND LIBS ${LIBALM} ${AOCL_UTILS_LIB})
-            else()
-                message(WARNING "AOCL_UTILS_LIB is not defined. AOCL utils must be available when coverage or ASAN is enabled.")
-                list(APPEND LIBS ${LIBALM})
-            endif()
+            list(APPEND LIBS ${LIBALM})
         else()
             set(LIBALM "alm")
             list(APPEND LIBS ${LIBALM})
@@ -288,7 +294,7 @@ add_library(gtest_vra OBJECT ${VRA_SRC_FILES})
 target_compile_options(gtest_vra PUBLIC ${TEST_CFLAGS})
 
 # Add test executables
-file(GLOB TEST_DIRS RELATIVE ${PROJECT_SOURCE_DIR} "*")
+file(GLOB TEST_DIRS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*")
 list(REMOVE_ITEM TEST_DIRS "include" "gapi" "libs")
 add_custom_target(common_target ALL DEPENDS common)
 
@@ -296,7 +302,7 @@ set(tests "")
 
 # Define test directories with their linking requirements
 set(SPECIAL_TEST_DIRS "powx" "linearfrac" "sincos")
-set(VR_TEST_DIRS "acosh" "asinh" "atan2" "atanh" "cexp" "sinh" "ceil" "copysign" "fdim" "floor" "fmod" "hypot" "logb" "remainder" "rint" "trunc" "nearbyint")
+set(VR_TEST_DIRS "acosh" "asinh" "atan2" "atanh" "cexp" "clog" "sinh" "ceil" "copysign" "fdim" "floor" "fmod" "hypot" "logb" "remainder" "rint" "trunc" "nearbyint")
 set(VRA_TEST_DIRS "exp" "cos" "acos" "add" "asin" "atan" "cosh" "sin" "tan" "tanh" "cbrt" "erf" "erfinv" "erfc" "erfcinv" "cdfnorm" "cdfnorminv" "exp10" "exp2" "expm1" "fabs" "fmax" "fmin" "ldexp" "log" "log10" "log1p" "log2" "mul" "nextafter" "pow" "round" "sqrt" "sub")
 
 # Combine all test directories
@@ -325,8 +331,8 @@ foreach(api ${ALL_TEST_DIRS})
     list(APPEND tests test_${api})
 endforeach()
 
-add_custom_target(gtests ALL)
-add_dependencies(gtests ${tests})
+add_custom_target(gtests_suite ALL)
+add_dependencies(gtests_suite ${tests})
 
 if(NOT WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "GNU" AND (${${PROJECT_PREFIX}_LIBM_ENABLE_COVERAGE}))
     add_custom_target(coverage
@@ -334,7 +340,7 @@ if(NOT WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "GNU" AND (${${PROJECT_PREFIX}_LIB
         COMMAND lcov --remove "coverage.info" --output-file "coverage_filtered.info"
                 '/usr/*' '/*/_deps/*' '*/_deps/*'
         COMMAND lcov --remove "coverage_filtered.info" --output-file "coverage_final.info"
-                "*/gtests/*" "*gtests/*" "${CMAKE_SOURCE_DIR}/gtests/*" "${CMAKE_BINARY_DIR}/gtests/*"
+                "*/gtests/*" "*gtests/*" "${${PROJECT_PREFIX}_SOURCE_DIR}/gtests/*" "${CMAKE_BINARY_DIR}/gtests/*"
                 "${CMAKE_BINARY_DIR}/external/*" "*/external/*" "*external/*"
         COMMAND genhtml "coverage_final.info" --output-directory "html_coverage_report"
         COMMAND ${CMAKE_COMMAND} -E rm -f "coverage.info" "coverage_filtered.info" "coverage_final.info"

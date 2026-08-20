@@ -26,6 +26,25 @@
 
 # Get timestamp.
 string(TIMESTAMP BUILD_DATE "%Y%m%d")
+# Get git commit hash for embedding in the library as a separate constant
+# (GIT_COMMIT_STRING in version.build.h) so build identification tools can
+# report exactly which source was built.  Kept separate from VERSION_STRING
+# to avoid breaking any existing parsers of the "Build YYYYMMDD" format.
+find_package(Git QUIET)
+set(GIT_COMMIT_HASH "unknown")
+if(GIT_FOUND)
+    execute_process(
+        COMMAND "${GIT_EXECUTABLE}" rev-parse HEAD
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+        OUTPUT_VARIABLE GIT_COMMIT_HASH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+        RESULT_VARIABLE GIT_RESULT
+    )
+    if(NOT GIT_RESULT EQUAL 0)
+        set(GIT_COMMIT_HASH "unknown")
+    endif()
+endif()
 # Update using the timestamp.
 set(VERSION_STRING_BUILD_DATE "Build ${BUILD_DATE}")
 set(LIBALM_VERSION_STRING "${VERSION_STRING_BUILD_DATE}")

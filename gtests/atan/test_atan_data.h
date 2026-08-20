@@ -41,7 +41,7 @@ test_atanf_conformance_data[] = {
    {0x38800001, 0x3f800000,  0}, //min + 1 bit
    {0xF149F2C9, 0x7f800000,  FE_INEXACT}, //lambda + x = 1, x = -9.9999994e+29
    {0xF149F2C8, 0x7f800000,  FE_INEXACT}, //lambda + x < 1
-   {0xF149F2CA, 0x7f800000,  FE_OVERFLOW}, //lambda + x > 1
+   {0xF149F2CA, 0xbfc90fdb,  FE_INEXACT},  //lambda + x > 1
    {0x42B2D4FC, 0x7f7fffec,  0}, //max arg, x = 89.41598629223294,max atanf arg
    {0x42B2D4FB, 0x7f7fff6c,  0}, //max arg - 1 bit
    {0x42B2D4FD, 0x7f800000,  FE_INEXACT}, //max arg + 1 bit
@@ -60,22 +60,22 @@ test_atanf_conformance_data[] = {
    {NEG_SNAN_F32, NEG_SNAN_F32, FE_INVALID },  //
    {POS_QNAN_F32, POS_QNAN_F32, 0 },  //
    {NEG_QNAN_F32, NEG_QNAN_F32, 0 },  //
-   {POS_INF_F32,  POS_INF_F32,  FE_OVERFLOW },  //95
+   {POS_INF_F32,  0x3fc90fdb,   0           },  //95: atanf(+Inf) = pi/2, no exception
 
-   {0x00000001, 0x3f800000,  0},  // denormal min
-   {0x0005fde6, 0x3f800000,  0},  // denormal intermediate
-   {0x007fffff, 0x3f800000,  0},  // denormal max
-   {0x80000001, 0x3f800000,  0},  // -denormal min
-   {0x805def12, 0x3f800000,  0},  // -denormal intermediate
-   {0x807FFFFF, 0x3f800000,  0},  // -denormal max
+   {0x00000001, 0x00000001,  FE_INEXACT},  // denormal min
+   {0x0005fde6, 0x0005fde6,  FE_INEXACT},  // denormal intermediate
+   {0x007fffff, 0x007fffff,  FE_INEXACT},  // denormal max
+   {0x80000001, 0x80000001,  FE_INEXACT},  // -denormal min
+   {0x805def12, 0x805def12,  FE_INEXACT},  // -denormal intermediate
+   {0x807FFFFF, 0x807fffff,  FE_INEXACT},  // -denormal max
    {0x00800000, 0x3f800000,  0},  // normal min
    {0x43b3c4ea, 0x7f800000,  FE_INEXACT},  // normal intermediate
-   {0x7f7fffff, 0x7f800000,  FE_OVERFLOW},  // normal max
+   {0x7f7fffff, 0x3fc90fdb,  FE_INEXACT},   // normal max
    {0x80800000, 0x3f800000,  0},  // -normal min
    {0xc5812e71, 0x7f800000,  FE_INEXACT},  // -normal intermediate
-   {0xFF7FFFFF, 0x7f800000,  FE_OVERFLOW},  // -normal max
-   {0x7F800000, 0x7f800000,  0},  // inf
-   {0xfF800000, 0x7f800000,  0},  // -inf
+   {0xFF7FFFFF, 0xbfc90fdb,  FE_INEXACT},   // -normal max
+   {0x7F800000, 0x3fc90fdb,  0},  // inf
+   {0xfF800000, 0xbfc90fdb,  0},  // -inf
    {0x7Fc00000, 0x7fc00000,  0},  // qnan min
    {0x7Fe1a570, 0x7fe1a570,  0},  // qnan intermediate
    {0x7FFFFFFF, 0x7fffffff,  0},  // qnan max
@@ -153,12 +153,44 @@ test_atanf_conformance_data[] = {
    {0x4d000000, 0x3fc90fdb,  0}, // 2^27     > 2^26,      1.570796319344E+00
    {0xcd000000, 0xbfc90fdb,  0}, //-2^27     > 2^26,     -1.570796319344E+00
 
+   // band coverage: one positive, one with nonzero mantissa, one negative per band
+   {0x3d7faade, 0x3d800000, FE_INEXACT},  // b=0: ratio in [1/16, 1/8)
+   {0x3da37de7, 0x3da3d70a, FE_INEXACT},  // b=0: nonzero mantissa
+   {0xbd7faade, 0xbd800000, FE_INEXACT},  // b=0: negative
+   {0x3dfeadd5, 0x3e000000, FE_INEXACT},  // b=1: ratio in [1/8, 1/4)
+   {0x3e365dff, 0x3e3851ec, FE_INEXACT},  // b=1: nonzero mantissa
+   {0xbdfeadd5, 0xbe000000, FE_INEXACT},  // b=1: negative
+   {0x3e7adbb0, 0x3e800000, FE_INEXACT},  // b=2: ratio in [1/4, 1/2)
+   {0x3ec2d1bc, 0x3ecccccd, FE_INEXACT},  // b=2: nonzero mantissa
+   {0xbe7adbb0, 0xbe800000, FE_INEXACT},  // b=2: negative
+   {0x3fb924fd, 0x41000000, FE_INEXACT},  // b=7: ratio in [8, 16)
+   {0x3fbe6b7b, 0x41400000, FE_INEXACT},  // b=7: nonzero mantissa
+   {0xbfb924fd, 0xc1000000, FE_INEXACT},  // b=7: negative
+
+   // white-box tests near EMIN (b=-49) and EMAX (b=30) shortcut cutoffs
+   // For small y: atanf(y)=y exactly (below 0.5 ulp correction), raises FE_INEXACT
+   // For large y: atanf(y) rounds to pi/2 or one ulp below (b=29 boundary ties-to-even)
+   {0x24800000, 0x24800000, FE_INEXACT},  // 2^-54: shortcut (y+1)*y = y
+   {0xa4800000, 0xa4800000, FE_INEXACT},  // -2^-54
+   {0x25000000, 0x25000000, FE_INEXACT},  // 2^-53: polynomial boundary
+   {0x25400000, 0x25400000, FE_INEXACT},  // 1.5*2^-53: polynomial
+   {0xa5000000, 0xa5000000, FE_INEXACT},  // -2^-53
+   {0x25800000, 0x25800000, FE_INEXACT},  // 2^-52: polynomial
+   {0xa5800000, 0xa5800000, FE_INEXACT},  // -2^-52
+   {0x3fc90fda, 0x4b800000, FE_INEXACT},  // 2^24: polynomial, pi/2 - 2^-24 rounds down
+   {0x3fc90fda, 0x4bc00000, FE_INEXACT},  // 1.5*2^24: polynomial
+   {0xbfc90fda, 0xcb800000, FE_INEXACT},  // -2^24
+   {0x3fc90fda, 0x4c000000, FE_INEXACT},  // 2^25: polynomial boundary, pi/2 - 2^-25 ties-to-even -> below pi/2
+   {0x3fc90fda, 0x4c400000, FE_INEXACT},  // 1.5*2^25: polynomial boundary
+   {0xbfc90fda, 0xcc000000, FE_INEXACT},  // -2^25
+   {0x3fc90fdb, 0x4c800000, FE_INEXACT},  // 2^26: shortcut -> pi/2
+   {0xbfc90fdb, 0xcc800000, FE_INEXACT},  // -2^26
 };
 
 static libm_test_special_data_f64
 test_atan_conformance_data[] = {
     #if defined(_WIN64) || defined(_WIN32)
-        {0x23d, 0x23d, 3},
+        {0x23d, 0x23d, FE_INEXACT},  // subnormal: result = y, FE_INEXACT only
         {0xC32FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 1}, // -(2^52 -1 + 0.5)
         {0xC330000000000001LL, 0x7ff0000000000000LL, 1}, // -(2^52 + 1)
         {0xC330000000000000LL, 0x7ff0000000000000LL, 1}, // -2^52
@@ -176,7 +208,7 @@ test_atan_conformance_data[] = {
         {0x408633ce8fb9f87fLL, 0x7ff0000000000000LL, 1}, //max arg + 1 bit
         {0x408633ce8fb9f8ffLL, 0x7ff0000000000000LL, 1}, // > max
     #else
-        {0x23d, 0x23d, 48},
+        {0x23d, 0x23d, FE_INEXACT},  // subnormal: result = y, FE_INEXACT only
         {0xC32FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, 32}, // -(2^52 -1 + 0.5)
         {0xC330000000000001LL, 0x7ff0000000000000LL, 32}, // -(2^52 + 1)
         {0xC330000000000000LL, 0x7ff0000000000000LL, 32}, // -2^52
@@ -335,4 +367,46 @@ test_atan_conformance_data[] = {
     {0x54e57b4e03dbe9b3LL, 0x3ff921fb54442d18LL, 0},
     {0xea96be922b1706c5LL, 0xbff921fb54442d18LL, 0},
     {0x655e883346944823LL, 0x3ff921fb54442d18LL, 0},
+
+    // band coverage: two values per band b=0..7 plus negatives
+    {0x3faff55bb72cfdeaLL, 0x3fb0000000000000LL, FE_INEXACT, 0},  // b=0
+    {0xbfaff55bb72cfdeaLL, 0xbfb0000000000000LL, FE_INEXACT, 0},  // b=0
+    {0x3fb6fa6446b1cb54LL, 0x3fb70a3d70a3d70aLL, FE_INEXACT, 0},  // b=0
+    {0x3fbfd5ba9aac2f6eLL, 0x3fc0000000000000LL, FE_INEXACT, 0},  // b=1
+    {0xbfbfd5ba9aac2f6eLL, 0xbfc0000000000000LL, FE_INEXACT, 0},  // b=1
+    {0x3fc6cbbfd8acff50LL, 0x3fc70a3d70a3d70aLL, FE_INEXACT, 0},  // b=1
+    {0x3fcf5b75f92c80ddLL, 0x3fd0000000000000LL, FE_INEXACT, 0},  // b=2
+    {0xbfcf5b75f92c80ddLL, 0xbfd0000000000000LL, FE_INEXACT, 0},  // b=2
+    {0x3fd85a376b677dc0LL, 0x3fd999999999999aLL, FE_INEXACT, 0},  // b=2
+    {0x3fe14b1dd5f90ce1LL, 0x3fe3333333333333LL, FE_INEXACT, 0},  // b=3
+    {0xbfe14b1dd5f90ce1LL, 0xbfe3333333333333LL, FE_INEXACT, 0},  // b=3
+    {0x3fef730bd281f69bLL, 0x3ff8000000000000LL, FE_INEXACT, 0},  // b=4
+    {0xbfef730bd281f69bLL, 0xbff8000000000000LL, FE_INEXACT, 0},  // b=4
+    {0x3ff30b6d796a4da8LL, 0x4004000000000000LL, FE_INEXACT, 0},  // b=5
+    {0xbff30b6d796a4da8LL, 0xc004000000000000LL, FE_INEXACT, 0},  // b=5
+    {0x3ff5f97315254857LL, 0x4014000000000000LL, FE_INEXACT, 0},  // b=6
+    {0xbff5f97315254857LL, 0xc014000000000000LL, FE_INEXACT, 0},  // b=6
+    {0x3ff789bd2c160054LL, 0x4024000000000000LL, FE_INEXACT, 0},  // b=7
+    {0xbff789bd2c160054LL, 0xc024000000000000LL, FE_INEXACT, 0},  // b=7
+    {0x3ff7fde80870c2a0LL, 0x402c000000000000LL, FE_INEXACT, 0},  // b=7
+
+    // white-box tests near EMIN (b=-49) and EMAX (b=58) shortcut cutoffs
+    // Small y: atan(y)=y exactly (below 0.5 ulp correction), raises FE_INEXACT
+    // Large y: atan(y)=pi/2 exactly (correction below ulp(pi/2)/2), raises FE_INEXACT
+    {0x3c90000000000000LL, 0x3c90000000000000LL, FE_INEXACT},  // 2^-54: shortcut (y+1)*y = y
+    {0x3c98000000000000LL, 0x3c98000000000000LL, FE_INEXACT},  // 1.5*2^-54: shortcut
+    {0xbc90000000000000LL, 0xbc90000000000000LL, FE_INEXACT},  // -2^-54: shortcut
+    {0x3ca0000000000000LL, 0x3ca0000000000000LL, FE_INEXACT},  // 2^-53: polynomial boundary
+    {0x3ca8000000000000LL, 0x3ca8000000000000LL, FE_INEXACT},  // 1.5*2^-53: polynomial
+    {0xbca0000000000000LL, 0xbca0000000000000LL, FE_INEXACT},  // -2^-53: polynomial boundary
+    {0x3cb0000000000000LL, 0x3cb0000000000000LL, FE_INEXACT},  // 2^-52: polynomial
+    {0xbcb0000000000000LL, 0xbcb0000000000000LL, FE_INEXACT},  // -2^-52: polynomial
+    {0x3ff921fb54442d18LL, 0x4340000000000000LL, FE_INEXACT},  // 2^53: polynomial, pi/2-2^-53 rounds to pi/2
+    {0x3ff921fb54442d18LL, 0x4348000000000000LL, FE_INEXACT},  // 1.5*2^53: polynomial
+    {0xbff921fb54442d18LL, 0xc340000000000000LL, FE_INEXACT},  // -2^53: polynomial
+    {0x3ff921fb54442d18LL, 0x4350000000000000LL, FE_INEXACT},  // 2^54: shortcut -> pi/2
+    {0x3ff921fb54442d18LL, 0x4358000000000000LL, FE_INEXACT},  // 1.5*2^54: shortcut
+    {0xbff921fb54442d18LL, 0xc350000000000000LL, FE_INEXACT},  // -2^54: shortcut
+    {0x3ff921fb54442d18LL, 0x4360000000000000LL, FE_INEXACT},  // 2^55: shortcut
+    {0xbff921fb54442d18LL, 0xc360000000000000LL, FE_INEXACT},  // -2^55: shortcut
 };

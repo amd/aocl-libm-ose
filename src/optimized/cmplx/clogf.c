@@ -77,7 +77,7 @@ ALM_PROTO_OPT(clogf)(fc32_t x) {
     uint32_t abs_im = asuint32(b) & 0x7FFFFFFFU;
 
     /* Compute imaginary part of the logarithm */
-    float theta = ALM_PROTO_REF(atan2f)(b, a);
+    float theta = ALM_PROTO_OPT(atan2f)(b, a);
 
     /* If either component is infinite, return (+inf, theta) */
     if (abs_re == POS_INF_F32 || abs_im == POS_INF_F32)

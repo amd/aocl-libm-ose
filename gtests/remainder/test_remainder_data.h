@@ -83,11 +83,11 @@ test_remainderf_conformance_data[] = {
     // remainder(x,,, inf) for finite normal x},
     {POS_ONE_F32, POS_ONE_F32, 0, POS_INF_F32},
     {NEG_ONE_F32, NEG_ONE_F32, 0, POS_INF_F32},
+    {POS_HNORMAL_F32, POS_HNORMAL_F32, 0, POS_INF_F32},  // remainderf(max_float, +Inf) = max_float
+    {NEG_HNORMAL_F32, NEG_HNORMAL_F32, 0, POS_INF_F32},  // remainderf(-max_float, +Inf) = -max_float
     {0x80000000, 0x80000000, 0, 0xa8117a2e},
-    // Signed zero: result is exactly zero, must carry sign of x
-    {0xC0800000, 0x80000000, 0, 0x40000000}, // remainderf(-4.0f, 2.0f) = -0.0f
-    // qNaN as x with y == 0: returns qNaN, must NOT raise FE_INVALID
-    {POS_QNAN_F32, POS_QNAN_F32, 0, POS_ZERO_F32}, // remainderf(qNaN, 0) = qNaN, no exception
+    {0xC0800000, 0x80000000, 0, 0x40000000},  // remainderf(-4.0f, 2.0f) = -0.0f (signed zero)
+    {POS_QNAN_F32, POS_QNAN_F32, 0, POS_ZERO_F32},  // remainderf(qNaN, 0) = qNaN, no FE_INVALID
 };
 
 static libm_test_special_data_f64

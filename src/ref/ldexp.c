@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -27,99 +27,73 @@
 
 #include "fn_macros.h"
 #include "libm_util_amd.h"
-#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
-#include "limits.h"
 #include <libm/typehelper.h>
+#include <libm/compiler.h>
 
-double ALM_PROTO_REF(ldexp)(double x, int n)
+#define EMAX_DP64_VAL 0x1p1023
+#define EMIN_DP64_VAL 0x1p-1022
+#define LDEXP_MIN_EXP -55
+#define LDEXP_MAX_EXP 52
+
+/*
+ * ldexp(x, exp) = x * 2^exp
+ *
+ * Fast path: when exp is in [EMIN_DP64, EMAX_DP64], construct 2^exp as
+ * (EXPBIAS_DP64 + exp) << EXPSHIFTBITS_DP64.  Using EXPBIAS_DP64 + exp
+ * directly avoids a 64-bit immediate (movabsq).  IEEE 754 multiplication
+ * correctly handles x = 0, +-Inf, NaN, and subnormal x, and naturally
+ * raises FE_OVERFLOW or FE_UNDERFLOW.
+ *
+ * Else path: exp outside [EMIN_DP64, EMAX_DP64].  Peel off up to two
+ * EMAX_DP64 or EMIN_DP64 steps by multiplying by 2^EMAX or 2^EMIN, then
+ * finish with the remaining exp in the fast-path range.  This handles
+ * exp in [-(BIASEDEMAX_DP64 + EXPSHIFTBITS_DP64 + 1),
+ *          BIASEDEMAX_DP64 + EXPSHIFTBITS_DP64]
+ * = [-2099, 2098], covering all inputs that don't overflow or underflow
+ * to infinity/zero before the final multiply.
+ */
+double ALM_PROTO_REF(ldexp)(double x, int exp)
 {
-    UT64 val,val_x;
-    unsigned int sign;
-    int exponent;
-    val.f64 = x;
-    val_x.f64 = x;
-    sign = val.u32[1] & 0x80000000;
-    val.u32[1] = val.u32[1] & 0x7fffffff; /* remove the sign bit */
+    // Unlikely branch only taken if exp is outside of [EMIN_DP64, EMAX_DP64]
+    if (unlikely((unsigned)(exp - EMIN_DP64) >= BIASEDEMAX_DP64)) {
+        if (exp >= 0) {
+            // exp > 1023; multiply x by 2^1023 and subtract 1023 from exp
+            x *= EMAX_DP64_VAL;
+            exp -= EMAX_DP64;
 
-    if (val.u64 > 0x7ff0000000000000)     /* x is NaN */
-        #ifdef WINDOWS
-            return val_x.u64|0x0008000000000000;
-        #else
-        {
-        if(!(val.u64 & 0x0008000000000000))// x is snan
-           return alm_ldexp_special(asdouble(val_x.u64|0x0008000000000000), ALM_E_IN_X_NAN);
-        else
-           return x;
+            if (unlikely(exp > EMAX_DP64)) {
+                // exp > 1023; multiply x by 2^1023 and subtract 1023 from exp
+                x *= EMAX_DP64_VAL;
+                exp -= EMAX_DP64;
+
+                // If remaining exp > 52, clip exp at 52 since exp >= 52 is
+                // sufficient to cause overflow and raise FE_OVERFLOW.
+                if (exp > LDEXP_MAX_EXP) {
+                    exp = LDEXP_MAX_EXP;
+                }
+            }
+        } else {
+            // exp < -1022; multiply x by 2^-1022 and add 1022 to exp
+            x *= EMIN_DP64_VAL;
+            exp -= EMIN_DP64;
+
+            if (unlikely(exp < EMIN_DP64)) {
+                // exp < -1022; multiply x by 2^-1022 and add 1022 to exp
+                x *= EMIN_DP64_VAL;
+                exp -= EMIN_DP64;
+
+                // If remaining exp < -55, clip exp at -55 since exp <= -55
+                // is sufficient to cause underflow and raise FE_UNDERFLOW.
+                if (exp < LDEXP_MIN_EXP) {
+                    exp = LDEXP_MIN_EXP;
+                }
+            }
         }
-        #endif
-
-    if(val.u64 == 0x7ff0000000000000)/* x = +-inf*/
-        return x;
-
-    if((val.u64 == 0x0000000000000000) || (n==0))
-        return x; /* x= +-0 or n= 0*/
-
-    exponent = (int)(val.u32[1] >> 20); /* get the exponent */
-
-    if(exponent == 0)/*x is denormal*/
-    {
-        val.f64 = val.f64 * VAL_2PMULTIPLIER_DP;/*multiply by 2^53 to bring it to the normal range*/
-        exponent = (int)(val.u32[1] >> 20); /* get the exponent */
-        exponent = exponent + n - MULTIPLIER_DP;
-        if(exponent < -MULTIPLIER_DP)/*underflow*/
-        {
-            val.u32[1] = sign | 0x00000000;
-            val.u32[0] = 0x00000000;
-            return alm_ldexp_special(val.f64, ALM_E_UNDERFLOW);
-        }
-        if(exponent > 2046)/*overflow*/
-        {
-            val.u32[1] = sign | 0x7ff00000;
-            val.u32[0] = 0x00000000;
-            return alm_ldexp_special(val.f64, ALM_E_OVERFLOW);
-        }
-
-        exponent += MULTIPLIER_DP;
-        val.u32[1] = sign | ((unsigned int)exponent << 20) | (val.u32[1] & 0x000fffff);
-        val.f64 = val.f64 * VAL_2PMMULTIPLIER_DP;
-        return val.f64;
     }
 
-    /* Overflow check before calculating exponent
-       Without this check, when n is a very large positive number
-       close to INT_MAX, exponent+n results in a very small number
-       and the code path ends up in Underflow case */
-    if((n>=0) && (exponent > (INT_MAX - n)))
-    {
-        return alm_ldexp_special(asdouble(PINFBITPATT_DP64), ALM_E_OVERFLOW);
-    }
+    // exp is in [EMIN_DP64, EMAX_DP64]. Compute x * 2^exp.
+    x *= asdouble((uint64_t)(exp + EXPBIAS_DP64) << EXPSHIFTBITS_DP64);
 
-    exponent += n;
-
-    if(exponent < -MULTIPLIER_DP)/*underflow*/
-    {
-        val.u32[1] = sign | 0x00000000;
-        val.u32[0] = 0x00000000;
-        return alm_ldexp_special(val.f64, ALM_E_UNDERFLOW);
-
-    }
-
-    if(exponent < 1)/*x is normal but output is debnormal*/
-    {
-        exponent += MULTIPLIER_DP;
-        val.u32[1] = sign | ((unsigned int)exponent << 20) | (val.u32[1] & 0x000fffff);
-        val.f64 = val.f64 * VAL_2PMMULTIPLIER_DP;
-        return val.f64;
-    }
-
-    if(exponent > 2046)/*overflow*/
-    {
-        val.u32[1] = sign | 0x7ff00000;
-        val.u32[0] = 0x00000000;
-        return alm_ldexp_special(val.f64, ALM_E_OVERFLOW);
-    }
-
-    val.u32[1] = sign | ((unsigned int)exponent << 20) | (val.u32[1] & 0x000fffff);
-    return val.f64;
+    return x;
 }

@@ -46,7 +46,7 @@ test_log1pf_conformance_data[] = {
     {NEG_ZERO_F32,NEG_ZERO_F32,0}, //
     {POS_ZERO_F32,POS_ZERO_F32,0}, //
 
-    {POS_PI_F32,0x3fb5e5f7,0}, //
+    {POS_PI_F32,0x3fb5e5f5,0}, //
     {NEG_PI_F32,NEG_QNAN_F32,FE_INVALID}, //
 
 
@@ -165,7 +165,7 @@ test_log1p_conformance_data[] = {
     //{F64_POS_LNORMAL,F64_POS_LNORMAL,0}, //
     //{F64_NEG_LNORMAL,F64_NEG_LNORMAL,0}, //
 
-    {POS_PI_F64,0x3ff6bcbed6499138LL,0}, //
+    {POS_PI_F64,0x3ff6bcbed09f00afLL,0}, //
     {NEG_PI_F64,0xfff8000000000000LL,FE_INVALID}, //
     //{POS_PI_F64BY2,0x3fee3703e42b92e4LL,0}, //
     //{NEG_PI_F64BY2,0xfff8000000000000LL,FE_INVALID}, //

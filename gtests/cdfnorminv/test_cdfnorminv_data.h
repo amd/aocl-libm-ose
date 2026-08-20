@@ -62,10 +62,10 @@ test_cdfnorminv_conformance_data[] = {
     {0xBFF0000000000000ULL, NEG_QNAN_F64, FE_INVALID},     // cdfnorminv(-1) = -QNAN
     {0x4000000000000000ULL, NEG_QNAN_F64, FE_INVALID},     // cdfnorminv(2) = -QNAN
 
-    /* cdfnorminv(x) for denormals/small values */
-    {0x0000000000000001ULL, 0xC0433BD3F27FCD03ULL, 0},  // cdfnorminv(min_denormal)
-    {0x000FFFFFFFFFFFFFULL, 0xC042C27B05BF1A0BULL, 0},  // cdfnorminv(max_denormal)
-    {0x0010000000000000ULL, 0xC042C27B05BF1A0BULL, 0},  // cdfnorminv(min_normal)
+    /* cdfnorminv(x) for tiny x: result is large finite negative */
+    {0x0000000000000001ULL, 0xC0433BD3F27FCD03ULL, 0},  // cdfnorminv(min_denormal) ~= -38.4674
+    {0x000FFFFFFFFFFFFFULL, 0xC042C27B05BF1A0BULL, 0},  // cdfnorminv(max_denormal) ~= -37.5194
+    {0x0010000000000000ULL, 0xC042C27B05BF1A0BULL, 0},  // cdfnorminv(min_normal)   ~= -37.5194
 
     /* cdfnorminv(x) ≈ 0.5 */
     {0x3FDFFFFFFFFFFFFFULL, 0xBCA40D931FF62706ULL, 0},     // cdfnorminv(0.5 - 1 ULP)

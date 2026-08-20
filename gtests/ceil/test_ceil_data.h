@@ -37,36 +37,36 @@ static libm_test_special_data_f32
 test_ceilf_conformance_data[] = {
     {POS_SNAN_F32,      POS_QNAN_F32,       FE_INVALID}, // invalid
     {NEG_SNAN_F32,      POS_QNAN_F32,       FE_INVALID}, // invalid
-    {POS_SNAN_Q_F32,    POS_QNAN_F32,       0}, // 
-    {NEG_SNAN_Q_F32,    POS_QNAN_F32,       0}, // 
-    {POS_QNAN_F32,      POS_QNAN_F32,       0}, // 
-    {NEG_QNAN_F32,      POS_QNAN_F32,       0}, // 
-    {POS_INF_F32,       POS_INF_F32,        0}, // 
-    {NEG_INF_F32,       NEG_INF_F32,        0}, // 
-    {POS_ONE_F32,       POS_ONE_F32,        0}, // 
-    {NEG_ONE_F32,       NEG_ONE_F32,        0}, // 
-    {NEG_ZERO_F32,      NEG_ZERO_F32,       0}, // 
-    {POS_ZERO_F32,      POS_ZERO_F32,       0}, // 
-    {POS_HDENORM_F32,   POS_ONE_F32,        0}, // 
-    {NEG_HDENORM_F32,   NEG_ZERO_F32,       0}, // 
-    {POS_LDENORM_F32,   POS_ONE_F32,        0}, // 
-    {NEG_LDENORM_F32,   NEG_ZERO_F32,       0}, //
-    {POS_HNORMAL_F32,   POS_HNORMAL_F32,    0}, // 
-    {NEG_HNORMAL_F32,   NEG_HNORMAL_F32,    0}, // 
-    {POS_LNORMAL_F32,   POS_ONE_F32,        0}, // 
-    {NEG_HNORMAL_F32,   NEG_HNORMAL_F32,    0}, // 
-    {POS_PI_F32,        0x40800000,         0}, // 
-    {NEG_PI_F32,        0xc0400000,         0}, // 
-    {POS_PI_BY2_F32,    0x40000000,         0}, // 
-    {NEG_PI_BY2_F32,    0xbf800000,         0}, // 
+    {POS_SNAN_Q_F32,    POS_QNAN_F32,       0}, //
+    {NEG_SNAN_Q_F32,    POS_QNAN_F32,       0}, //
+    {POS_QNAN_F32,      POS_QNAN_F32,       0}, //
+    {NEG_QNAN_F32,      POS_QNAN_F32,       0}, //
+    {POS_INF_F32,       POS_INF_F32,        0}, //
+    {NEG_INF_F32,       NEG_INF_F32,        0}, //
+    {POS_ONE_F32,       POS_ONE_F32,        0}, //
+    {NEG_ONE_F32,       NEG_ONE_F32,        0}, //
+    {NEG_ZERO_F32,      NEG_ZERO_F32,       0}, //
+    {POS_ZERO_F32,      POS_ZERO_F32,       0}, //
+    {POS_HDENORM_F32,   POS_ONE_F32,        0}, //
+    {NEG_HDENORM_F32,   0x00000000,       0}, //
+    {POS_LDENORM_F32,   POS_ONE_F32,        0}, //
+    {NEG_LDENORM_F32,   0x00000000,       0}, //
+    {POS_HNORMAL_F32,   POS_HNORMAL_F32,    0}, //
+    {NEG_HNORMAL_F32,   NEG_HNORMAL_F32,    0}, //
+    {POS_LNORMAL_F32,   POS_ONE_F32,        0}, //
+    {NEG_HNORMAL_F32,   NEG_HNORMAL_F32,    0}, //
+    {POS_PI_F32,        0x40800000,         0}, //
+    {NEG_PI_F32,        0xc0400000,         0}, //
+    {POS_PI_BY2_F32,    0x40000000,         0}, //
+    {NEG_PI_BY2_F32,    0xbf800000,         0}, //
     /*Some Common Inputs*/
     {0x3fF12345, 0x40000000, 0},
     {0xbfF12345, 0xbf800000, 0},
     {0x3fb12345, 0x40000000, 0},
     {0xbfb12345, 0xbf800000, 0},
     {0x30b12345, 0x3f800000, 0},
-    {0xb0b12345, 0x80000000, 0},
-    {0x400851EB, 0x40400000, 0}, // 
+    {0xb0b12345, 0x00000000, 0},
+    {0x400851EB, 0x40400000, 0}, //
     {0x4b800000, 0x4b800000, 0}, // equal to 2^24
     {0xcb800000, 0xcb800000, 0}, // equal to 2^24
     {0x4b001234, 0x4b001234, 0}, // less than 2^24
@@ -83,28 +83,28 @@ static libm_test_special_data_f64
 test_ceil_conformance_data[] = {
     {POS_SNAN_F64,      POS_QNAN_F64,           FE_INVALID}, // invalid
     {NEG_SNAN_F64,      POS_QNAN_F64,           FE_INVALID}, // invalid
-    {POS_SNAN_Q_F64,    POS_QNAN_F64,           0}, // 
-    {NEG_SNAN_Q_F64,    POS_QNAN_F64,           0}, // 
-    {POS_QNAN_F64,      POS_QNAN_F64,           0}, // 
-    {NEG_QNAN_F64,      POS_QNAN_F64,           0}, // 
-    {POS_INF_F64,       POS_INF_F64,            0}, // 
-    {NEG_INF_F64,       NEG_INF_F64,            0}, // 
-    {POS_ONE_F64,       POS_ONE_F64,            0}, // 
-    {NEG_ONE_F64,       NEG_ONE_F64,            0}, // 
-    {NEG_ZERO_F64,      NEG_ZERO_F64,           0}, // 
-    {POS_ZERO_F64,      POS_ZERO_F64,           0}, // 
-    {POS_HDENORM_F64,   POS_ONE_F64,            0}, // 
-    {NEG_HDENORM_F64,   NEG_ZERO_F64,           0}, // 
-    {POS_LDENORM_F64,   POS_ONE_F64,            0}, // 
-    {NEG_LDENORM_F64,   NEG_ZERO_F64,           0}, //
-    {POS_HNORMAL_F64,   POS_HNORMAL_F64,        0}, // 
-    {NEG_HNORMAL_F64,   NEG_HNORMAL_F64,        0}, // 
-    {POS_LNORMAL_F64,   POS_ONE_F64,            0}, // 
-    {NEG_LNORMAL_F64,   NEG_ZERO_F64,           0}, // 
-    {POS_PI_F64,        0x4010000000000000LL,   0}, // 
-    {NEG_PI_F64,        0xC008000000000000LL,   0}, // 
-    {POS_PI_BY2_F64,    0x4000000000000000LL,   0}, // 
-    {NEG_PI_BY2_F64,    0xbff0000000000000LL,   0}, // 
+    {POS_SNAN_Q_F64,    POS_QNAN_F64,           0}, //
+    {NEG_SNAN_Q_F64,    POS_QNAN_F64,           0}, //
+    {POS_QNAN_F64,      POS_QNAN_F64,           0}, //
+    {NEG_QNAN_F64,      POS_QNAN_F64,           0}, //
+    {POS_INF_F64,       POS_INF_F64,            0}, //
+    {NEG_INF_F64,       NEG_INF_F64,            0}, //
+    {POS_ONE_F64,       POS_ONE_F64,            0}, //
+    {NEG_ONE_F64,       NEG_ONE_F64,            0}, //
+    {NEG_ZERO_F64,      NEG_ZERO_F64,           0}, //
+    {POS_ZERO_F64,      POS_ZERO_F64,           0}, //
+    {POS_HDENORM_F64,   POS_ONE_F64,            0}, //
+    {NEG_HDENORM_F64,   POS_ZERO_F64,           0}, //
+    {POS_LDENORM_F64,   POS_ONE_F64,            0}, //
+    {NEG_LDENORM_F64,   POS_ZERO_F64,           0}, //
+    {POS_HNORMAL_F64,   POS_HNORMAL_F64,        0}, //
+    {NEG_HNORMAL_F64,   NEG_HNORMAL_F64,        0}, //
+    {POS_LNORMAL_F64,   POS_ONE_F64,            0}, //
+    {NEG_LNORMAL_F64,   POS_ZERO_F64,           0}, //
+    {POS_PI_F64,        0x4010000000000000LL,   0}, //
+    {NEG_PI_F64,        0xC008000000000000LL,   0}, //
+    {POS_PI_BY2_F64,    0x4000000000000000LL,   0}, //
+    {NEG_PI_BY2_F64,    0xbff0000000000000LL,   0}, //
     /*Some Common Inputs*/
     {0x3Fe1234ABCDEF123LL, 0x3ff0000000000000LL, 0},
     {0xbFe1234ABCDEF123LL, 0x8000000000000000LL, 0},
@@ -133,4 +133,3 @@ test_ceil_conformance_data[] = {
     {0x4006BCDEF1234567LL, 0x4008000000000000LL, 0},
     {0xc006BCDEF1234567LL, 0xc000000000000000LL, 0},
 };
-

@@ -79,8 +79,8 @@ test_erfinv_conformance_data[] = {
 
     /* ===== Range 1: |x| <= 0.75 ===== */
     /* Small values near zero */
-    { 0x3E45798EE2308C3A,  0x3E45798EE2308C3A, AMD_F_NONE },  /* erfinv(1e-8) ≈ 8.86e-9 */
-    { 0xBE45798EE2308C3A,  0xBE45798EE2308C3A, AMD_F_NONE },  /* erfinv(-1e-8) ≈ -8.86e-9 */
+    { 0x3E45798EE2308C3A,  0x3e4308158419499a, AMD_F_NONE },  /* erfinv(1e-8) ≈ 8.86e-9 */
+    { 0xBE45798EE2308C3A,  0xbe4308158419499a, AMD_F_NONE },  /* erfinv(-1e-8) ≈ -8.86e-9 */
     { 0x3F847AE147AE147B,  0x3F822680C94CADD4, AMD_F_NONE },  /* erfinv(0.01) ≈ 0.00886 */
     { 0xBF847AE147AE147B,  0xBF822680C94CADD4, AMD_F_NONE },  /* erfinv(-0.01) ≈ -0.00886 */
 

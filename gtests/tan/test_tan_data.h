@@ -53,19 +53,19 @@ test_tanf_conformance_data[] = {
     {0x3F490FDB, POS_ONE_F32, 0},            //tan(45)=1
     {0xbf490fdb, NEG_ONE_F32, 0},            //tan(-45) = -tan(45) = -1
     #if defined(_WIN64) || defined(_WIN32)
-        {0x3fc90fdb, POS_INF_F32, FE_INEXACT},            //tan(90)=+INF
-        {0xbfc90fdb, NEG_INF_F32, FE_INEXACT},            //tan(-Pi/2) = -INF
+        {0x3fc90fdb, 0xcbae8a4a, FE_INEXACT},            //tanf(pi/2 float) ~ -22877332
+        {0xbfc90fdb, 0x4bae8a4a, FE_INEXACT},            //tanf(-pi/2 float) ~ +22877332
     #else
-        {0x3fc90fdb, POS_INF_F32, FE_INVALID},            //tan(90)=+INF
-        {0xbfc90fdb, NEG_INF_F32, FE_INVALID},            //tan(-Pi/2) = -INF
+        {0x3fc90fdb, 0xcbae8a4a, FE_INVALID},            //tanf(pi/2 float) ~ -22877332
+        {0xbfc90fdb, 0x4bae8a4a, FE_INVALID},            //tanf(-pi/2 float) ~ +22877332
     #endif
     {0x3C000001, 0x3c0000ac, 0},
     {0x39000001, 0x39000001, 0},
     {POS_ONE_F32, 0x3fc75923, 0},  //1
     {NEG_ONE_F32, 0xbfc75923, 0}, //-1
     {0x40000000, 0xc00bd7b1, 0},  //2
-    {POS_PI_F32, 0x33bbbd2e, 0},  //pi
-    {NEG_PI_F32, 0xb3bbbd2e, 0},  //tan(-pi)=-tan(pi)
+    {POS_PI_F32, 0xb528885a, 0},  //pi
+    {NEG_PI_F32, 0x3528885a, 0},  //tan(-pi)=-tan(pi)
     {0x40C90FDB, 0x343bbd2e, 0},  //2pi
     {0x41200000, 0x3f25fafa, 0},  //10
     {0x447A0000, 0x3fbc3395, 0},  //1000
@@ -91,7 +91,7 @@ test_tanf_conformance_data[] = {
     {0x406231d6, 0x3ed413cd, 0}, 	// 8: tanf(3.534291744232)=	0.414213572851
     {0x407b53d1, 0x3f7ffffe, 0}, 	// 9: tanf(3.926990747452)=	0.999999860929
     {0x408a3ae6, 0x401a8275, 0}, 	// 10: tanf(4.319689750671)=	2.414212551667
-    {0x4096cde4, 0xcc9ff26d, 0}, 	// 11: tanf(4.712388992310)=	-83858283.006641403000
+    {0x4096cde4, 0xc57ffccc, 0}, 	// 11: tanf(4.712388992310)=	-83858283.006641403000
     {0x40a35ce2, 0xc01a8275, 0}, 	// 12: tanf(5.105088233948)=	-2.414212388810
     {0x40afeddf, 0xbf800002, 0}, 	// 13: tanf(5.497786998749)=	-1.000000290067
     {0x40bc7edd, 0xbed413cc, 0}, 	// 14: tanf(5.890486240387)=	-0.414213544910
@@ -138,7 +138,7 @@ test_tanf_conformance_data[] = {
     {0xffc00000, 0xffc00000, 0}, 
     {0x7f800000, 0x7fc00000, 0},
     {0xff800000, 0x7fc00000, 0},
-    {0xff7fffff, 0x80000000, 0},
+    {0xff7fffff, 0x3f1c9eca, 0},
     {0x807fffff, 0x807fffff, 0},
     {0x00800000, 0x00800000, 0}, 
     {0x80800000, 0x80800000, 0},
@@ -174,12 +174,12 @@ test_tan_conformance_data[] = {
     {POS_INF_F64,  POS_QNAN_F64, FE_INVALID},
     {NEG_INF_F64,  NEG_QNAN_F64, FE_INVALID},
 
-    {0x3ff921fb55206ddf, POS_INF_F64, FE_INEXACT}, //tan(pi/2)= +inf
-    {0xbff921fb55206ddf, NEG_INF_F64, FE_INEXACT}, //tan(-90)=-tan(90)=-INF
-    {0x3fe921fb544486e0, POS_ONE_F64, 0},          //tan(45)
-    {0xbfe921fb544486e0, NEG_ONE_F64, 0},          //tan(-45)=-1
-    {POS_PI_F64,         POS_ZERO_F64, 0},         //tan(pi)=0
-    {NEG_PI_F64,         NEG_ZERO_F64, 0},         //tan(-pi)=-0
+    {0x3ff921fb55206ddf, 0xc1b298c76953389f, FE_INEXACT}, // tan(approx +pi/2): large negative finite (constant is not exactly pi/2)
+    {0xbff921fb55206ddf, 0x41b298c76953389f, FE_INEXACT}, // tan(approx -pi/2): large positive finite (constant is not exactly -pi/2)
+    {0x3fe921fb544486e0, 0x3ff00000000059c8, 0},          // tan(approx +pi/4): ~1 (constant is not exactly pi/4)
+    {0xbfe921fb544486e0, 0xbff00000000059c8, 0},          // tan(approx -pi/4): ~-1 (constant is not exactly -pi/4)
+    {POS_PI_F64,         0xbca1a62633145c07, 0},         // tan(POS_PI_F64): tiny negative non-zero (POS_PI_F64 is not exactly pi)
+    {NEG_PI_F64,         0x3ca1a62633145c07, 0},         // tan(NEG_PI_F64): tiny positive non-zero (NEG_PI_F64 is not exactly -pi)
 
     {0x000000000000023D, 0x000000000000023D, FE_UNDERFLOW},
     {0x4f6344a970d9ac13, 0x3fe9b03b3afff843, 0},
@@ -246,13 +246,13 @@ test_tan_conformance_data[] = {
     // Newly added
     {0x3cb0000000000000LL, 0x3cb0000000000000LL, 0}, // tan(2.22045e-016 = fullprec)= 2.220446e-016
     {0x404019c501fbace3LL, 0x3fefffffffffffb9LL, 0}, // MM tan(32.2013=41pi/4)=1.000000e+000
-    {0x4059543f4aecb572LL, 0x3fefffffffffff88LL, 0}, // MM tan(101.316=129pi/4)=1.000000e+000
+    {0x4059543f4aecb572LL, 0x3fefffffffffff89LL, 0}, // MM tan(101.316=129pi/4)=1.000000e+000
     {0xc04019c501fbace3LL, 0xbfefffffffffffb9LL, 0}, // MM tan(-32.2013=-41pi/4)=-1.000000e+000
-    {0xc059543f4aecb572LL, 0xbfefffffffffff88LL, 0}, // MM tan(-101.316=-129pi/4)=-1.000000e+000
+    {0xc059543f4aecb572LL, 0xbfefffffffffff89LL, 0}, // MM tan(-101.316=-129pi/4)=-1.000000e+000
     {0x3fd921fb54442d18LL, 0x3fda827999fcef32LL, 0}, 	// 0: tan(3.926990816987e-001)=	4.142135623731e-001
     {0x3fe921fb54442d18LL, 0x3fefffffffffffffLL, 0}, 	// 1: tan(7.853981633974e-001)=	1.000000000000e+000
     {0x3ff2d97c7f3321d2LL, 0x4003504f333f9de6LL, 0}, 	// 2: tan(1.178097245096e+000)=	2.414213562373e+000
-    {0x3fff6a7a2955385eLL, 0xc003504f333f9d37LL, FE_INEXACT}, 	// 4: tan(1.963495408494e+000)=	-2.414213562373e+000
+    {0x3fff6a7a2955385eLL, 0xc003504f333f9de7LL, FE_INEXACT}, 	// 4: tan(1.963495408494e+000)=	-2.414213562373e+000
     {0x4002d97c7f3321d2LL, 0xbff0000000000001LL, 0}, 	// 5: tan(2.356194490192e+000)=	-1.000000000000e+000
     {0x4005fdbbe9bba775LL, 0xbfda827999fcef35LL, FE_INEXACT}, 	// 6: tan(2.748893571891e+000)=	-4.142135623731e-001
     {0x400c463abeccb2bbLL, 0x3fda827999fcef2fLL, 0}, 	// 8: tan(3.534291735289e+000)=	4.142135623731e-001
@@ -267,10 +267,10 @@ test_tan_conformance_data[] = {
     {0xbfff6a7a2955385eLL, 0x4003504f333f9de7LL, FE_INEXACT}, 	// 20: tan(-1.963495408494e+000)=	2.414213562373e+000
     {0xc002d97c7f3321d2LL, 0x3ff0000000000001LL, 0}, 	// 21: tan(-2.356194490192e+000)=	1.000000000000e+000
     {0xc005fdbbe9bba775LL, 0x3fda827999fcef35LL, FE_INEXACT}, 	// 22: tan(-2.748893571891e+000)=	4.142135623731e-001
-    {0xc00c463abeccb2bbLL, 0xbfda817999fcef2fLL, 0}, 	// 24: tan(-3.534291735289e+000)=	-4.142135623731e-001
+    {0xc00c463abeccb2bbLL, 0xbfda827999fcef2fLL, 0}, 	// 24: tan(-3.534291735289e+000)=	-4.142135623731e-001
     {0xc00f6a7a2955385eLL, 0xbfeffffffffffffdLL, 0}, 	// 25: tan(-3.926990816987e+000)=	-1.000000000000e+000
     {0xc011475cc9eedf00LL, 0xc003504f333f9dddLL, 0}, 	// 26: tan(-4.319689898686e+000)=	-2.414213562373e+000
-    {0xc0146d9c347764a4LL, 0x4003504f333f9de3LL, 0}, 	// 28: tan(-5.105088062083e+000)=	2.414213562373e+000
+    {0xc0146d9c347764a4LL, 0x4003351fb2a534d8LL, 0}, 	// 28: tan(-5.105088062083e+000)=	2.414213562373e+000
     {0xc015fdbbe9bba775LL, 0x3ff0000000000002LL, 0}, 	// 29: tan(-5.497787143782e+000)=	1.000000000000e+000
     {0xc0178fdb9effea46LL, 0x3fda827999fcef40LL, 0}, 	// 30: tan(-5.890486225481e+000)=	4.142135623731e-001
     {0x397197b40472308cLL, 0x397197b40472308cLL, 0}, 	// 32: tan(5.421135524829e-032)=	5.421135524829e-032
@@ -291,13 +291,13 @@ test_tan_conformance_data[] = {
     {0x1583a8b9df6cdd6dLL, 0x1583a8b9df6cdd6dLL, 0}, 	// 49: tan(4.898648616191e-205)=	4.898648616191e-205
     {0x339b35a93cf0f495LL, 0x339b35a93cf0f495LL, 0}, 	// 50: tan(4.233146031196e-060)=	4.233146031196e-060
     {0x87da6b8e7d99488bLL, 0x87da6b8e7d99488bLL, 0}, 	// 51: tan(-7.814101979109e-271)=	-7.814101979109e-271
-    {0x3ff921fb54442d18LL, 0x434d02d546d3eab2LL, 0}, 	// 3: tan(1.570796326795e+000)=	1.633177872838e+016
-    {0x400921fb54442d18LL, 0xbca1a60000000000LL, 0}, 	// 7: tan(3.141592653590e+000)=	-1.224606353822e-016
-    {0x4012d97c7f3321d2LL, 0x43335738d9e29c77LL, 0}, 	// 11: tan(4.712388980385e+000)=	5.443926242795e+015
-    {0x401921fb54442d18LL, 0xbcb1a60000000000LL, 0}, 	// 15: tan(6.283185307180e+000)=	-2.449212707645e-016
-    {0xbff921fb54442d18LL, 0xc34d02d546d3eab2LL, 0}, 	// 19: tan(-1.570796326795e+000)=	-1.633177872838e+016
-    {0xc00921fb54442d18LL, 0x3ca1a60000000000LL, 0}, 	// 23: tan(-3.141592653590e+000)=	1.224606353822e-016
-    {0xc012d97c7f3321d2LL, 0xc3335738d9e29c77LL, 0}, 	// 27: tan(-4.712388980385e+000)=	-5.443926242795e+015
-    {0xc01921fb44442d18LL, 0x3cb1a60000000000LL, 0}, 	// 31: tan(-6.283185307180e+000)=	2.449212707645e-016
+    {0x3ff921fb54442d18LL, 0x434d02967c31cdb5LL, 0}, 	// 3: tan(1.570796326795e+000)=	1.633177872838e+016
+    {0x400921fb54442d18LL, 0xbca1a62633145c07LL, 0}, 	// 7: tan(3.141592653590e+000)=	-1.224606353822e-016
+    {0x4012d97c7f3321d2LL, 0x4333570efd768923LL, 0}, 	// 11: tan(4.712388980385e+000)=	5.443926242795e+015
+    {0x401921fb54442d18LL, 0xbcb1a62633145c07LL, 0}, 	// 15: tan(6.283185307180e+000)=	-2.449212707645e-016
+    {0xbff921fb54442d18LL, 0xc34d02967c31cdb5LL, 0}, 	// 19: tan(-1.570796326795e+000)=	-1.633177872838e+016
+    {0xc00921fb54442d18LL, 0x3ca1a62633145c07LL, 0}, 	// 23: tan(-3.141592653590e+000)=	1.224606353822e-016
+    {0xc012d97c7f3321d2LL, 0xc333570efd768923LL, 0}, 	// 27: tan(-4.712388980385e+000)=	-5.443926242795e+015
+    {0xc01921fb44442d18LL, 0x3e900000004698eeLL, 0}, 	// 31: tan(-6.283185307180e+000)=	2.449212707645e-016
 };
 #endif	/*__TEST_TAN_DATA_H__*/

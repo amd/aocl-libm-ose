@@ -39,7 +39,7 @@
  */
 static libm_test_special_data_f32
 test_cosf_conformance_data[] = {
-    {0x3fc8f5c3, 0x0, 0},
+    {0x3fc8f5c3, 0x3a50bd10, 0},
     {POS_ZERO_F32, POS_ONE_F32, 0,}, //cos (0)=1
     {NEG_ZERO_F32, POS_ONE_F32, 0},  //cos(-x) = cos(x)
     {0x3F000000, 0x3f60a940, 0,},//0.5
@@ -61,7 +61,7 @@ test_cosf_conformance_data[] = {
     {0x39000001,0x3f800000,0},
     {POS_ONE_F32, 0x3f0a5140,0},  //1
     {0x40000000, 0xbed51133,0},  //2
-    {POS_PI_F32, NEG_PI_F32,0},  //pi
+    {POS_PI_F32, 0xbf800000,0},  //pi
     {0x40C90FDB, POS_ONE_F32,0},  //2pi
     {0x41200000, 0xbf56cd64,0},  //10
     {0x447A0000, 0x3f0ff813,0},  //1000
@@ -248,19 +248,19 @@ test_cos_conformance_data[] = {
 	{0x400921fb56442d18,0xbfefffffffffffff, 0},  // 3.1415926684909543 close to pi
 	{0x4012d98c7f3321d2,0x3f0fffffffaa40c6, 0},  // 4.71245001554094 close to 3pi/2
 	//newly added
-	{0x3cb0000000000000,0x3fefffffffffffff, 0}, // cos(2.22045e-016 = min_prec) = 1.000000e+000
+	{0x3cb0000000000000,0x3ff0000000000000, 0}, // cos(2.22045e-016 = min_prec) = 1.000000e+000
 	{0x0000000000000001,0x3ff0000000000000, 0}, // cos(4.94066e-324 = smallest) = 1.000000e+000
 	{0xc012d97c7f3321d2,0xbcaa79394c9e8a0a, 0}, // cos(-4.71239 = -3pi/2) = -1.836970e-016
 	{0x40407e4cef4cbd97,0x3cfdca8488c2ae32, 0}, // cos(32.9867 = +21pi/2) = 6.614950e-015
 	{0x4059868341953dcc,0x3d04f65f65f056bb, 0}, // cos(102.102 = +65pi/2) = 9.309173e-015
 	{0xc0407e4cef4cbd97,0x3cfdca8488c2ae32, 0}, // cos(-32.9867 = -21pi/2) = 6.614950e-015
-	{0xc059868341953dcc,0x3d04f6f565f056bb, 0}, // cos(-102.102 = -65pi/2) = 9.309173e-015
-	{0x403f6a7a2955385e,0x3fefffffffffffff, 0}, // cos(31.4159 = +10pi)=1.000000e+000
-	{0x405921fb54442d18,0x3fefffffffffffff, 0}, // cos(100.531 = +32pi)=1.000000e+000
-	{0xc03f6a7a2955385e,0x3fefffffffffffff, 0}, // cos(-31.4159 = -10pi)=1.000000e+000
-	{0xc05921fb54442d18,0x3fefffffffffffff, 0}, // cos(-100.531 = -32pi)=1.000000e+000
+	{0xc059868341953dcc,0x3d04f65f65f056bb, 0}, // cos(-102.102 = -65pi/2) = 9.309173e-015
+	{0x403f6a7a2955385e,0x3ff0000000000000, 0}, // cos(31.4159 = +10pi)=1.000000e+000
+	{0x405921fb54442d18,0x3ff0000000000000, 0}, // cos(100.531 = +32pi)=1.000000e+000
+	{0xc03f6a7a2955385e,0x3ff0000000000000, 0}, // cos(-31.4159 = -10pi)=1.000000e+000
+	{0xc05921fb54442d18,0x3ff0000000000000, 0}, // cos(-100.531 = -32pi)=1.000000e+000
 	{0x7fe0000000000001,0xbfcbc6a1978019b9, 0}, // cos(8.9884657412464672e+307 = very close to max double)=-0.216999
-	{0x3fd921fb54442d18,0x3fed906dcf328d46, 0}, 	// 0: cos(3.926990816987e-001)=	9.238795325113e-001
+	{0x3fd921fb54442d18,0x3fed906bcf328d46, 0}, 	// 0: cos(3.926990816987e-001)=	9.238795325113e-001
 	{0x3fe921fb54442d18,0x3fe6a09e667f3bcd, 0}, 	// 1: cos(7.853981633974e-001)=	7.071067811865e-001
 	{0x3ff2d97c7f3321d2,0x3fd87de2a6aea964, 0}, 	// 2: cos(1.178097245096e+000)=	3.826834323651e-001
 	{0x3fff6a7a2955385e,0xbfd87de2a6aea962, 0}, 	// 4: cos(1.963495408494e+000)=	-3.826834323651e-001
@@ -270,7 +270,7 @@ test_cos_conformance_data[] = {
 	{0x400c463abeccb2bb,0xbfed906bcf328d47, 0}, 	// 8: cos(3.534291735289e+000)=	-9.238795325113e-001
 	{0x400f6a7a2955385e,0xbfe6a09e667f3bce, 0}, 	// 9: cos(3.926990816987e+000)=	-7.071067811865e-001
 	{0x4011475cc9eedf00,0xbfd87de2a6aea96d, 0}, 	// 10: cos(4.319689898686e+000)=	-3.826834323651e-001
-	{0x40146b9c347764a4,0x3fd87de3a6aea967, 0}, 	// 12: cos(5.105088062083e+000)=	3.826834323651e-001
+	{0x40146b9c347764a4,0x3fd87de2a6aea967, 0}, 	// 12: cos(5.105088062083e+000)=	3.826834323651e-001
 	{0x4015fdbbe9bba775,0x3fe6a09e667f3bcb, 0}, 	// 13: cos(5.497787143782e+000)=	7.071067811865e-001
 	{0x40178fdb9effea46,0x3fed906bcf328d44, 0}, 	// 14: cos(5.890486225481e+000)=	9.238795325113e-001
 	{0x401921fb54442d18,0x3ff0000000000000, 0}, 	// 15: cos(6.283185307180e+000)=	1.000000000000e+000
@@ -336,7 +336,7 @@ test_cos_conformance_data[] = {
 	//integer
 #ifdef acceptable
 	//ms & gcc answer for the following case 0x3fe14a280fb5068c
-	{0x3ff0000000000000, 0x3fe14a280fb5068b, 0},  // 1
+	{0x3ff0000000000000, 0x3fe14a280fb5068c, 0},  // 1
 #else
 	{0x3ff0000000000000, 0x3fe14a280fb5068c, 0},  // 1
 #endif
@@ -344,7 +344,7 @@ test_cos_conformance_data[] = {
 	//ms & gcc answer for the following case 0xbe47fffffdcb3b39
 
 
-	{0x000000000000dead, 0x000000000000beef, 0},  // end
+	{0x000000000000dead, 0x3ff0000000000000, 0},  // tiny subnormal; cos rounds to 1
 	{0xBFE83DCA43349085, 0x3FE73FB4E2E7A5BA, 0},
 	{0xBFE6EF49DAE5CECE, 0x3FE82087D3F96825, 0},
 

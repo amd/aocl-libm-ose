@@ -59,7 +59,7 @@ test_expm1f_conformance_data[] = {
     {NEG_HNORMAL_F32, NEG_ONE_F32,     0},
     {POS_LNORMAL_F32, POS_LNORMAL_F32, FE_INEXACT},
     {NEG_LNORMAL_F32, NEG_LNORMAL_F32, FE_INEXACT},
-    {POS_PI_F32,      0x41b12025,      0},            // pi
+    {POS_PI_F32,      0x41b1201c,      0},            // pi
     {POS_PI_BY2_F32,  0x4073dedd,      0},            // pi/2
     {0x3c000000,      0x3c008056,      0},            // 0.0078125
     {0x3c7fffff,      0x3c810156,      0},            // 0.0156249991
@@ -131,7 +131,7 @@ test_expm1_conformance_data[] = {
     {NEG_HNORMAL_F64,      NEG_ONE_F64,          0},
     {POS_LNORMAL_F64,      POS_LNORMAL_F64,      FE_UNDERFLOW},
     {NEG_LNORMAL_F64,      NEG_LNORMAL_F64,      FE_UNDERFLOW},
-    {POS_PI_F64,           0x4036240490a16562LL, 0},            // pi
+    {POS_PI_F64,           0x403624046eb09339LL, 0},            // pi
     {POS_PI_BY2_F64,       0x400e7bdbace4109aLL, 0},            // pi/2
     {0x3EE0624DD2F1A9FCLL, 0x3ee0625204b0496aLL, 0},            // 0.0000078125
     {0x3EF0624DC31C6CA1LL, 0x3ef06256269b09c8LL, 0},            // 0.0000156249991
@@ -142,7 +142,7 @@ test_expm1_conformance_data[] = {
     {0x401921FB54442D18LL, 0x4080b3eee9177e18LL, 0},            // 2pi
     {0x4024000000000000LL, 0x40d5825dcf950560LL, 0},            // 10
     {0x408F400000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW},  // 1000
-    {0x4060000000000000LL, 0x4b795e54c5dd4218LL, 0},            // 128
+    {0x4060000000000000LL, 0x4b795e54c5dd4217LL, 0},            // 128
     {0x4086240000000000LL, 0x7fd1bf058bc994adLL, 0},            // 708.5
     {0x4086280000000000LL, 0x7fdd422d2be5dc9bLL, 0},            // 709
     {0x408C000000000000LL, 0x7ff0000000000000LL, FE_OVERFLOW},  // 896

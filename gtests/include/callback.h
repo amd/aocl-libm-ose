@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -30,6 +30,7 @@
 #define __CALLBACK_H__
 
 #undef max
+#include <mpfr.h>
 #include "benchmark.h"
 #include "almtestperf.h"
 #include <external/amdlibm.h>
@@ -67,6 +68,21 @@ uint32_t GetnIpArgs( void );
 
 bool getSpecialCase(void);
 
+/* Getter/setter for the per-function ULP accuracy threshold.
+ * The threshold is stored as a static variable in gtest_main.cc.
+ * Default is 0.5 (correctly-rounded standard); functions targeting 1-ULP
+ * accuracy call setUlpThreshold(1.0) from their GetnIpArgs() callback.
+ * The new value is picked up by gtest_main after callback setup completes. */
+void   setUlpThreshold(double t);
+double getUlpThreshold(void);
+
+/* Per-function ULP pass/fail threshold for accuracy tests.
+ * Default is 0.5 (correctly-rounded standard).  A callback for a function
+ * that targets 1-ULP accuracy overrides this by defining its own
+ * setUlpThreshold() that writes a different value through the pointer. */
+inline void setUlpThreshold(double *threshold) { (void)threshold; }
+
+
 float getFuncOp(float *);
 double getFuncOp(double *);
 
@@ -74,11 +90,30 @@ double getFuncOp(double *);
 double _Complex getExpected(float _Complex *);
 long double _Complex getExpected(double _Complex *);
 
-double getExpected(float *);
-long double getExpected(double *);
-
 void getExpected(float *data, double *op);
 void getExpected(double *data, long double *op);
+
+void getExpected(float *data, mpfr_t result);
+void getExpected(double *data, mpfr_t result);
+
+/* Scalar-returning wrappers for use in conformance tests and legacy callers. */
+inline double getExpected(float *data) {
+  mpfr_t result;
+  mpfr_init2(result, 128);
+  getExpected(data, result);
+  double val = mpfr_get_d(result, MPFR_RNDN);
+  mpfr_clear(result);
+  return val;
+}
+
+inline long double getExpected(double *data) {
+  mpfr_t result;
+  mpfr_init2(result, 256);
+  getExpected(data, result);
+  long double val = mpfr_get_ld(result, MPFR_RNDN);
+  mpfr_clear(result);
+  return val;
+}
 
 float getGlibcOp(float *);
 double getGlibcOp(double *);

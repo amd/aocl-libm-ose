@@ -40,7 +40,7 @@
 
 #include <mpfr.h>
 
-REAL_L FUNC_LINEARFRAC(REAL x, REAL y, REAL scale_x, REAL shift_x, REAL scale_y, REAL shift_y){
+void FUNC_LINEARFRAC(REAL x, REAL y, REAL scale_x, REAL shift_x, REAL scale_y, REAL shift_y, mpfr_t result){
 
      REAL_L y1;
 
@@ -52,33 +52,76 @@ REAL_L FUNC_LINEARFRAC(REAL x, REAL y, REAL scale_x, REAL shift_x, REAL scale_y,
      mpfr_inits2(ALM_MP_PRECI_BITS, mpx, mpy, mpscale_x, mpshift_x, mpscale_y, mpshift_y, mp_rop, mp_numerator, mp_denominator, (mpfr_ptr) 0);
 
      #if defined(FLOAT)
+#if defined(FLOAT)
+    mpfr_set_flt(mpx, x, rnd);
+#else
     mpfr_set_d(mpx, x, rnd);
+#endif
+#if defined(FLOAT)
+    mpfr_set_flt(mpy, y, rnd);
+#else
     mpfr_set_d(mpy, y, rnd);
+#endif
+#if defined(FLOAT)
+    mpfr_set_flt(mpscale_x, scale_x, rnd);
+#else
     mpfr_set_d(mpscale_x, scale_x, rnd);
+#endif
+#if defined(FLOAT)
+    mpfr_set_flt(mpshift_x, shift_x, rnd);
+#else
     mpfr_set_d(mpshift_x, shift_x, rnd);
+#endif
+#if defined(FLOAT)
+    mpfr_set_flt(mpscale_y, scale_y, rnd);
+#else
     mpfr_set_d(mpscale_y, scale_y, rnd);
+#endif
+#if defined(FLOAT)
+    mpfr_set_flt(mpshift_y, shift_y, rnd);
+#else
     mpfr_set_d(mpshift_y, shift_y, rnd);
+#endif
 #elif defined(DOUBLE)
-    mpfr_set_ld(mpx, x, rnd);
-    mpfr_set_ld(mpy, y, rnd);
-    mpfr_set_ld(mpscale_x, scale_x, rnd);
-    mpfr_set_ld(mpshift_x, shift_x, rnd);
-    mpfr_set_ld(mpscale_y, scale_y, rnd);
-    mpfr_set_ld(mpshift_y, shift_y, rnd);
+#if defined(FLOAT)
+    mpfr_set_flt(mpx, x, rnd);
+#else
+    mpfr_set_d(mpx, x, rnd);
+#endif
+#if defined(FLOAT)
+    mpfr_set_flt(mpy, y, rnd);
+#else
+    mpfr_set_d(mpy, y, rnd);
+#endif
+#if defined(FLOAT)
+    mpfr_set_flt(mpscale_x, scale_x, rnd);
+#else
+    mpfr_set_d(mpscale_x, scale_x, rnd);
+#endif
+#if defined(FLOAT)
+    mpfr_set_flt(mpshift_x, shift_x, rnd);
+#else
+    mpfr_set_d(mpshift_x, shift_x, rnd);
+#endif
+#if defined(FLOAT)
+    mpfr_set_flt(mpscale_y, scale_y, rnd);
+#else
+    mpfr_set_d(mpscale_y, scale_y, rnd);
+#endif
+#if defined(FLOAT)
+    mpfr_set_flt(mpshift_y, shift_y, rnd);
+#else
+    mpfr_set_d(mpshift_y, shift_y, rnd);
+#endif
 #endif
 
     mpfr_fma(mp_numerator, mpx, mpscale_x, mpshift_x, rnd);
     mpfr_fma(mp_denominator, mpy, mpscale_y, mpshift_y, rnd);
     mpfr_div(mp_rop, mp_numerator, mp_denominator, rnd);
 
-#if defined(FLOAT)
-    y1 = mpfr_get_d(mp_rop, rnd);
-#elif defined(DOUBLE)
-    y1 = mpfr_get_ld(mp_rop, rnd);
-#endif
+    mpfr_set(result, mp_rop, rnd);
 
     mpfr_clears(mpx, mpy, mpscale_x, mpshift_x, mpscale_y, mpshift_y, mp_rop, mp_numerator, mp_denominator, (mpfr_ptr) 0);
 
-    return y1;
 
 }

@@ -83,14 +83,12 @@ double getFuncOp(double *data) {
 #endif
 }
 
-double getExpected(float *data) {
-  auto val = alm_mp_erfcinvf(data[0]);
-  return val;
+void getExpected(float *data, mpfr_t result) {
+  alm_mp_erfcinvf(data[0], result);
 }
 
-long double getExpected(double *data) {
-  auto val = alm_mp_erfcinv(data[0]);
-  return val;
+void getExpected(double *data, mpfr_t result) {
+  alm_mp_erfcinv(data[0], result);
 }
 
 // Used by the Complex Number Functions only!
@@ -185,7 +183,7 @@ int test_v8d(test_data *data, int idx)  {
   #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL || LIBM_PROTOTYPE == PROTOTYPE_SVML)
     #if defined(__AVX512__)
       double *ip  = (double*)data->ip;
-      double *op  = (double*)data->op;  
+      double *op  = (double*)data->op;
       #if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
         __m512d ip8 = _mm512_set_pd(ip[idx+7], ip[idx+6], ip[idx+5], ip[idx+4],
                                     ip[idx+3], ip[idx+2], ip[idx+1], ip[idx]);

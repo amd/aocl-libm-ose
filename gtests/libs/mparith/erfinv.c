@@ -54,7 +54,6 @@ static int mpfr_erfinv(mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
   if (mpfr_nan_p(x)) {
     mpfr_set(y, x, rnd); /* NaN propagation */
-    return 0;
   }
 
   mpfr_t one, neg_one;
@@ -70,21 +69,18 @@ static int mpfr_erfinv(mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
     /* erfinv(±0) = ±0; do not use mpfr_set_d(..., 0.0) — it drops the sign of -0 */
     mpfr_set(y, x, rnd);
     mpfr_clear(one); mpfr_clear(neg_one);
-    return 0;
   }
 
   /* erfinv(1) = +inf */
   if (mpfr_cmp(x, one) == 0) {
     mpfr_set_inf(y, 1);  /* +infinity */
     mpfr_clear(one); mpfr_clear(neg_one);
-    return 0;
   }
 
   /* erfinv(-1) = -inf */
   if (mpfr_cmp(x, neg_one) == 0) {
     mpfr_set_inf(y, -1);  /* -infinity */
     mpfr_clear(one); mpfr_clear(neg_one);
-    return 0;
   }
 
   /* erfinv(|x| > 1) = NaN  with invalid exception */
@@ -170,16 +166,15 @@ static int mpfr_erfinv(mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 }
 
 
-REAL_L FUNC_ERFINV(REAL x)
+void FUNC_ERFINV(REAL x, mpfr_t result)
 {
-  REAL_L y;
-
   /* NaN handling outside MPFR:
    * mpfr_get_d/mpfr_get_ld may return an implementation-defined NaN
    * (sign/payload can change). Returning input preserves sign/payload.
    */
   if (isnan(x)) {
-    return (REAL_L)x;
+    mpfr_set_d(result, x, MPFR_RNDN);
+    return;
   }
 
   mpfr_rnd_t rnd = MPFR_RNDN;
@@ -190,17 +185,16 @@ REAL_L FUNC_ERFINV(REAL x)
 #if defined(FLOAT)
   mpfr_set_d(mpx, x, rnd);
 #elif defined(DOUBLE)
-  mpfr_set_ld(mpx, x, rnd);
+  mpfr_set_d(mpx, x, rnd);
 #endif
 
   mpfr_erfinv(mp_rop, mpx, rnd);
 
 #if defined(FLOAT)
-  y = mpfr_get_d(mp_rop, rnd);
+  mpfr_set(result, mp_rop, rnd);
 #elif defined(DOUBLE)
-  y = mpfr_get_ld(mp_rop, rnd);
+  mpfr_set(result, mp_rop, rnd);
 #endif
 
   mpfr_clears (mpx, mp_rop, (mpfr_ptr) 0);
-  return y;
 }

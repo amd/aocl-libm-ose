@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -41,34 +41,22 @@
 
 #include <mpfr.h>
 
-REAL_L FUNC_LDEXP(REAL x, int expn)
+void FUNC_LDEXP(REAL x, int expn, mpfr_t result)
 {
-   REAL_L y1;
-
     mpfr_rnd_t rnd = MPFR_RNDN;
     mpfr_t mpx, mp_rop;
 
     mpfr_inits2(ALM_MP_PRECI_BITS, mpx, mp_rop, (mpfr_ptr) 0);
 
-    #if defined(FLOAT)
+#if defined(FLOAT)
+    mpfr_set_flt(mpx, x, rnd);
+#else
     mpfr_set_d(mpx, x, rnd);
+#endif
 
-    #elif defined(DOUBLE)
-    mpfr_set_ld(mpx, x, rnd);
-
-    #endif
-
-   //Normal case: ldexp(x, exp) = x * 2^exp
-   // Let MPFR handle special cases efficiently!
     mpfr_mul_2si(mp_rop, mpx, (long)expn, rnd);
 
-    #if defined(FLOAT)
-    y1 = mpfr_get_d(mp_rop, rnd);
-    #elif defined(DOUBLE)
-    y1 = mpfr_get_ld(mp_rop, rnd);
-    #endif
+    mpfr_set(result, mp_rop, rnd);
 
-    mpfr_clears (mpx, mp_rop, (mpfr_ptr) 0);
-
-    return y1;
+    mpfr_clears(mpx, mp_rop, (mpfr_ptr) 0);
 }

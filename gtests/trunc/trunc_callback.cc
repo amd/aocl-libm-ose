@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -74,14 +74,12 @@ double getFuncOp(double *data) {
   return LIBM_FUNC(trunc)(data[0]);
 }
 
-double getExpected(float *data) {
-  auto val = trunc(data[0]);
-  return val;
+void getExpected(float *data, mpfr_t result) {
+  mpfr_set_flt(result, (float)(trunc(data[0])), MPFR_RNDN);
 }
 
-long double getExpected(double *data) {
-  auto val = truncl(data[0]);
-  return val;
+void getExpected(double *data, mpfr_t result) {
+  mpfr_set_d(result, (double)(truncl(data[0])), MPFR_RNDN);
 }
 
 // Used by the Complex Number Functions only!

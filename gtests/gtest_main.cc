@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -46,6 +46,10 @@
 extern vector<AccuParams> accuData;
 extern vector<SpecParams> specData;
 
+static double g_ulp_threshold;
+void   setUlpThreshold(double t) { g_ulp_threshold = t; }
+double getUlpThreshold(void)     { return g_ulp_threshold; }
+
 /*****************************************************************************/
 /***                            INSTANTIATE_TEST_SUITE_P                   ***/
 /*****************************************************************************/
@@ -91,10 +95,11 @@ int gtest_main(int argc, char **argv, InputParams *inparams) {
 
   memset(inData, 0, sizeof(InputData));
   inData->max_ulp_err = 0.0;
-  inData->ulp_threshold = 0.5;
+  g_ulp_threshold = 0.5;
 
   memset(ptr, 0, sizeof(PrintTstRes));
-  almTest.AlmTestType(inparams, inData, ptr);
+  almTest.AlmTestType(inparams, inData, ptr);  /* may call setUlpThreshold() */
+  inData->ulp_threshold = getUlpThreshold();
   almTest.CreateGtestFilters(inparams, filter_data);
 
   if (inparams->ttype == ALM::TestType::E_Accuracy)

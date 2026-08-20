@@ -63,23 +63,21 @@ static int mpfr_erfcinv(mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd) {
     if (mpfr_zero_p(x)) {
         mpfr_set_inf(y, 1);  // +infinity
         mpfr_clear(one); mpfr_clear(two); mpfr_clear(zero);
-        return 0;
-    }
-    
+        }
+
     /* erfcinv(x < 0) = NaN with invalid exception */
     if (mpfr_sgn(x) < 0) {
         mpfr_set_nan(y);  // +NaN (default)
         mpfr_clear(one); mpfr_clear(two); mpfr_clear(zero);
         return -1;  // Domain error
     }
-    
+
     /* erfcinv(2) = -inf */
     if (mpfr_cmp(x, two) == 0) {
         mpfr_set_inf(y, -1);  // -infinity
         mpfr_clear(one); mpfr_clear(two); mpfr_clear(zero);
-        return 0;
-    }
-    
+        }
+
     /* erfcinv(x > 2) = NaN with invalid exception */
     if (mpfr_cmp(x, two) > 0) {
         mpfr_set_nan(y);  // +NaN (default)
@@ -91,15 +89,14 @@ static int mpfr_erfcinv(mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd) {
     if (mpfr_cmp(x, one) == 0) {
         mpfr_set_d(y, 0.0, MPFR_RNDN);
         mpfr_clear(one); mpfr_clear(two); mpfr_clear(zero);
-        return 0;
-    }
+        }
 
     mpfr_clear(one); mpfr_clear(two); mpfr_clear(zero);
 
     /* Working precision: use at least the precision of y, or 256 bits minimum */
     mpfr_prec_t PREC = mpfr_get_prec(y);
     if (PREC < 256) PREC = 256;
-    
+
     const int MAX_ITERS = 25;
 
     mpfr_t my, mf, md, mtmp, two_over_sqrtpi, delta;
@@ -121,7 +118,7 @@ static int mpfr_erfcinv(mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd) {
 
     /* Store previous double-precision value for convergence check */
     double y_prev_double = 0.0;
-    
+
     /* Newton-Raphson iteration */
     for (int iter = 0; iter < MAX_ITERS; ++iter) {
         /* mf = erfc(my) - x */
@@ -148,7 +145,7 @@ static int mpfr_erfcinv(mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd) {
 
         /* y = y - delta */
         mpfr_sub(my, my, delta, MPFR_RNDN);
-        
+
         /* Check for overflow/inf */
         if (mpfr_inf_p(my)) {
             break;
@@ -159,21 +156,23 @@ static int mpfr_erfcinv(mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd) {
     mpfr_set(y, my, rnd);
 
     mpfr_clear(my); mpfr_clear(mf); mpfr_clear(md);
-    mpfr_clear(mtmp); mpfr_clear(two_over_sqrtpi); 
+    mpfr_clear(mtmp); mpfr_clear(two_over_sqrtpi);
     mpfr_clear(delta);
-    
+
     return 0;
 }
 
-REAL_L FUNC_ERFCINV(REAL x)
+void FUNC_ERFCINV(REAL x, mpfr_t result)
 {
-    REAL_L y;
 
     /* NaN handling outside MPFR:
      * mpfr_get_d/mpfr_get_ld may return an implementation-defined NaN
      * (sign/payload can change). Returning input preserves sign/payload. */
     if (isnan(x)) {
-        return (REAL_L)x;
+    #if defined(FLOAT)
+    mpfr_set_d(result, x, MPFR_RNDN);
+    return;
+#endif
     }
 
     mpfr_rnd_t rnd = MPFR_RNDN;
@@ -181,20 +180,11 @@ REAL_L FUNC_ERFCINV(REAL x)
 
     mpfr_inits2(ALM_MP_PRECI_BITS, mpx, mp_rop, (mpfr_ptr) 0);
 
-#if defined(FLOAT)
     mpfr_set_d(mpx, x, rnd);
-#elif defined(DOUBLE)
-    mpfr_set_ld(mpx, x, rnd);
-#endif
 
     mpfr_erfcinv(mp_rop, mpx, rnd);
 
-#if defined(FLOAT)
-    y = mpfr_get_d(mp_rop, rnd);
-#elif defined(DOUBLE)
-    y = mpfr_get_ld(mp_rop, rnd);
-#endif
+    mpfr_set(result, mp_rop, rnd);
 
     mpfr_clears (mpx, mp_rop, (mpfr_ptr) 0);
-    return y;
 }

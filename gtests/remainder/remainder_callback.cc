@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -74,14 +74,12 @@ double getFuncOp(double *data) {
   return LIBM_FUNC(remainder)(data[0], data[1]);
 }
 
-double getExpected(float *data) {
-  auto val = alm_mp_remainderf(data[0], data[1]);
-  return val;
+void getExpected(float *data, mpfr_t result) {
+  alm_mp_remainderf(data[0], data[1], result);
 }
 
-long double getExpected(double *data) {
-  auto val = alm_mp_remainder(data[0], data[1]);
-  return val;
+void getExpected(double *data, mpfr_t result) {
+  alm_mp_remainder(data[0], data[1], result);
 }
 
 // Used by the Complex Number Functions only!

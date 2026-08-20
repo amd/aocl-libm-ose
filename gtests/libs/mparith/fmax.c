@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -40,9 +40,8 @@
 
 #include <mpfr.h>
 
-REAL_L FUNC_FMAX(REAL x, REAL y)
+void FUNC_FMAX(REAL x, REAL y, mpfr_t result)
 {
-    REAL_L y1;
 
     mpfr_rnd_t rnd = MPFR_RNDN;
     mpfr_t mpx, mpy, mp_rop;
@@ -53,19 +52,18 @@ REAL_L FUNC_FMAX(REAL x, REAL y)
         mpfr_set_d(mpx, x, rnd);
         mpfr_set_d(mpy, y, rnd);
     #elif defined(DOUBLE)
-        mpfr_set_ld(mpx, x, rnd);
-        mpfr_set_ld(mpy, y, rnd);
+        mpfr_set_d(mpx, x, rnd);
+        mpfr_set_d(mpy, y, rnd);
     #endif
 
     mpfr_max(mp_rop, mpx, mpy, rnd);
 
     #if defined(FLOAT)
-        y1 = mpfr_get_d(mp_rop, rnd);
+        mpfr_set(result, mp_rop, rnd);
     #elif defined(DOUBLE)
-        y1 = mpfr_get_ld(mp_rop, rnd);
+        mpfr_set(result, mp_rop, rnd);
     #endif
 
     mpfr_clears (mpx, mpy, mp_rop, (mpfr_ptr) 0);
 
-    return y1;
 }

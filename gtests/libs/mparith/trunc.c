@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -41,35 +41,27 @@
 
 #include <mpfr.h>
 
-REAL_L FUNC_TRUNC(REAL x)
+void FUNC_TRUNC(REAL x, mpfr_t result)
 {
-    REAL_L y;
 
  
     /* If NaN, return the input value */
-    if (x != x)
-        return (REAL_L) x;
+    if (x != x) {
+        mpfr_set_d(result, x, MPFR_RNDN);
+        return;
+    }
 
     mpfr_rnd_t rnd = MPFR_RNDN;
     mpfr_t mpx, mp_rop;
 
     mpfr_inits2(ALM_MP_PRECI_BITS, mpx, mp_rop, (mpfr_ptr) 0);
 
-#if defined(FLOAT)
     mpfr_set_d(mpx, x, rnd);
-#elif defined(DOUBLE)
-    mpfr_set_ld(mpx, x, rnd);
-#endif
 
     mpfr_trunc(mp_rop, mpx);
 
-#if defined(FLOAT)
-    y = mpfr_get_d(mp_rop, rnd);
-#elif defined(DOUBLE)
-    y = mpfr_get_ld(mp_rop, rnd);
-#endif
+    mpfr_set(result, mp_rop, rnd);
 
     mpfr_clears (mpx, mp_rop, (mpfr_ptr) 0);
-    return y;
 }
 

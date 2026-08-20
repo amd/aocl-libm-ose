@@ -33,6 +33,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include <mpfr.h>
 #include "args.h"
 #include "almstruct.h"
 #include "defs.h"
@@ -139,6 +140,8 @@ int PopulateComplexInputSamples(U *complex_inpbuff, T *inpbuff, uint32_t len) {
 
 double getUlp(float aop, double exptd);
 double getUlp(double aop, long double exptd);
+double getUlp(float aop, mpfr_t exptd);
+double getUlp(double aop, mpfr_t exptd);
 double getUlp(float _Complex aop, double _Complex exptd);
 #if (defined _WIN32 || defined _WIN64)
 double getUlp(double _Complex aop, double _Complex exptd);

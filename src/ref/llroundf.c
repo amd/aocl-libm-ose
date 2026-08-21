@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,95 +26,44 @@
  */
 
 #include "libm_util_amd.h"
-#include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
+#include <libm/typehelper.h>
+#include <limits.h>
 
-#ifdef WINDOWS
-/*In windows llong long int is 64 bit and long int is 32 bit.
-  In Linux long long int and long int both are of size 64 bit*/
-long long int ALM_PROTO_REF(llroundf)(float f)
+#define MAXEXP ((int)(sizeof(llint_t) * CHAR_BIT - 1))
+
+llint_t ALM_PROTO_REF(llroundf)(float x)
 {
-    UT32 u32d;
-    UT32 u32Temp,u32result;
-    int intexp, shift;
-    U32 sign;
-    long long int  result;
+    uint32_t ux = asuint32(x);
+    int     exp = (int)((ux >> EXPSHIFTBITS_SP32) &
+                        (EXPBITS_SP32 >> EXPSHIFTBITS_SP32)) - EXPBIAS_SP32;
+    llint_t result;
 
-    u32d.f32 = u32Temp.f32 = f;
-    if ((u32d.u32 & 0X7F800000) == 0x7F800000)
-    {
-        /*else the number is infinity*/
-		//Got to raise range or domain error
-        {
-			__alm_handle_errorf("llroundf", __amd_lround, SIGNBIT_SP32, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
-			return SIGNBIT_DP64; /*GCC returns this when the number is out of range*/
+    if (unlikely(exp >= MAXEXP)) {
+        // Cold path: |x| too large for 'long long', or x is NaN / +-Inf.
+        // The result is unspecified and FE_INVALID is raised -- *except*
+        // negative inputs that still round to exactly -2^(w-1) == LLONG_MIN,
+        // which are in range and must not raise.
+        if (unlikely((ux ^ SIGNBIT_SP32) >
+                     ((uint32_t)(EXPBIAS_SP32 + MAXEXP) << EXPSHIFTBITS_SP32))) {
+            ALM_RAISE_FE_INVALID();
+        }
+        result = LLONG_MIN;
+    } else {
+        if (likely((unsigned)exp <= 64 - MANTLENGTH_SP32)) {
+            uint64_t mant = (uint64_t)((ux & MANTBITS_SP32) | IMPBIT_SP32);
+            // Unified rounding: (mant<<exp) fits in uint64_t, add 0.5 ULP then truncate
+            result = (llint_t)(((mant << exp) + QNAN_MASK_32) >> EXPSHIFTBITS_SP32);
+        } else if (likely(exp >= 0)) {
+            uint64_t mant = (uint64_t)((ux & MANTBITS_SP32) | IMPBIT_SP32);
+            // |x| >= 2^41: already an exact integer, shift left only
+            result = (llint_t)(mant << (exp - EXPSHIFTBITS_SP32));
+        } else {
+            //  0 if |x|<0.5, 1 if 0.5<=|x|<1
+            result = (exp == -1);
         }
 
+        if ((ux >> 31) != 0) result = -result;
     }
-
-    u32Temp.u32 &= 0x7FFFFFFF;
-    intexp = (u32d.u32 & 0x7F800000) >> 23;
-    sign = u32d.u32 & 0x80000000;
-    intexp -= 0x7F;
-
-
-    /* 1.0 x 2^-1 is the smallest number which can be rounded to 1 */
-    if (intexp < -1)
-        return (0);
-
-
-    /* 1.0 x 2^31 (or 2^63) is already too large */
-    if (intexp >= 63)
-    {
-        result = 0x8000000000000000;
-		__alm_handle_errorf("llroundf", __amd_lround, SIGNBIT_SP32, _DOMAIN, AMD_F_NONE, EDOM, f, 0.0, 1);
-        return result;
-    }
-
-    u32result.f32 = u32Temp.f32;
-
-    /* >= 2^52 is already an exact integer */
-    if (intexp < 23)
-    {
-        /* add 0.5, extraction below will truncate */
-        u32result.f32 = u32Temp.f32 + 0.5F;
-    }
-
-    intexp = (u32result.u32 & 0x7f800000) >> 23;
-    intexp -= 0x7f;
-    u32result.u32 &= 0x7fffff;
-    u32result.u32 |= 0x00800000;
-
-    result = u32result.u32;
-
-    /*Since float is only 32 bit for higher accuracy we shift the result by 32 bits
-     * In the next step we shift an extra 32 bits in the reverse direction based
-     * on the value of intexp*/
-    result = result << 32;
-    shift = intexp - 55; /*55= 23 +32*/
-
-
-	if(shift < 0)
-		result = result >> (-shift);
-	if(shift > 0)
-        result = result << (shift);
-
-    if (sign)
-        result = -result;
     return result;
-
 }
-
-#else //WINDOWS
-/*llroundf is equivalent to the linux implementation of 
-  lroundf. Both long int and long long int are of the same size*/
-long long int ALM_PROTO_REF(llroundf)(float f)
-{
-    long long int result;
-    result = FN_PROTOTYPE(lroundf)(f);
-    return result;
-
-}
-
-#endif
-

@@ -31,48 +31,17 @@
 #include <libm/entry_pt.h>
 #include <libm/arch/all.h>
 
+/*
+ * llround/llroundf have no architecture-optimized implementations; all variants
+ * dispatch to the REF implementations.
+ */
 static const
 struct alm_arch_funcs __arch_funcs_llround = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(llroundf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(llround),
-        },
-
-        [ALM_UARCH_VER_AVX512] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX512(llroundf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX512(llround),
-        },
-
-        [ALM_UARCH_VER_ZEN] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(llroundf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(llround),
-        },
-
-        [ALM_UARCH_VER_ZEN2] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(llroundf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(llround),
-        },
-
-        [ALM_UARCH_VER_ZEN3] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(llroundf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(llround),
-        },
-
-        [ALM_UARCH_VER_ZEN4] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(llroundf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(llround),
-        },
-
-        [ALM_UARCH_VER_ZEN5] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN5(llroundf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN5(llround),
-        },
-
-        [ALM_UARCH_VER_ZEN6] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN6(llroundf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN6(llround),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_REF(llroundf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_REF(llround),
         },
     },
 };

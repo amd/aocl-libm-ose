@@ -76,6 +76,23 @@ struct LlroundF32Data {
  * Double bit-pattern constants.
  */
 #define R_D_POS_ZERO    0x0000000000000000ULL  /* +0.0  */
+/* Largest double strictly below 0.5: old FP-add algorithm rounded this to 1 */
+#define R_D_BELOW_HALF     0x3FDFFFFFFFFFFFFFull  /* +0.49999999999999994 */
+#define R_D_NEG_BELOW_HALF 0xBFDFFFFFFFFFFFFFull  /* -0.49999999999999994 */
+#define R_D_JUST_ABOVE_HALF 0x3FE0000000000001ull /* +0.5000000000000001 */
+#define R_D_0P25           0x3FD0000000000000ull  /* +0.25 */
+#define R_D_NEG_0P25       0xBFD0000000000000ull  /* -0.25 */
+#define R_D_0P75           0x3FE8000000000000ull  /* +0.75 */
+#define R_D_NEG_0P75       0xBFE8000000000000ull  /* -0.75 */
+#define R_D_DBL_MIN        0x0010000000000000ull  /* DBL_MIN */
+#define R_D_TINY           0x0000000000000001ull  /* smallest subnormal */
+#define R_D_NEG_TINY       0x8000000000000001ull  /* -smallest subnormal */
+#define R_D_2P3            0x4002666666666666ull  /* 2.3 */
+#define R_D_2P7            0x400599999999999Aull  /* 2.7 */
+#define R_D_NEG_2P3        0xC002666666666666ull  /* -2.3 */
+#define R_D_NEG_2P7        0xC00599999999999Aull  /* -2.7 */
+#define R_D_100P49         0x40591F5C28F5C28Full  /* 100.49 */
+#define R_D_1E15           0x430C6BF526340000ull  /* 1e15 (exact integer) */
 #define R_D_NEG_ZERO    0x8000000000000000ULL  /* -0.0  */
 #define R_D_POS_HALF    0x3FE0000000000000ULL  /* +0.5  */
 #define R_D_NEG_HALF    0xBFE0000000000000ULL  /* -0.5  */
@@ -117,6 +134,19 @@ struct LlroundF32Data {
 #define R_F_POS_4P5     0x40900000U  /* +4.5f  */
 #define R_F_NEG_4P5     0xC0900000U  /* -4.5f  */
 #define R_F_2P23        0x4B000000U  /* 2^23   */
+#define R_F_2P31        0x4F000000U  /* +2^31 (overflows 32-bit long) */
+#define R_F_NEG_2P31    0xCF000000U  /* -2^31 = LONG_MIN on 32-bit long */
+/* Largest float strictly below 0.5: old FP-add algorithm rounded this to 1 */
+#define R_F_BELOW_HALF     0x3EFFFFFFu  /* +0.49999997 */
+#define R_F_NEG_BELOW_HALF 0xBEFFFFFFu  /* -0.49999997 */
+#define R_F_JUST_ABOVE_HALF 0x3F000001u /* +0.50000006 */
+#define R_F_0P25           0x3E800000u  /* +0.25f */
+#define R_F_0P75           0x3F400000u  /* +0.75f */
+#define R_F_FLT_MIN        0x00800000u  /* FLT_MIN */
+#define R_F_TINY           0x00000001u  /* smallest subnormal float */
+#define R_F_2P3            0x40133333u  /* 2.3f */
+#define R_F_2P7            0x402CCCCDu  /* 2.7f */
+#define R_F_NEG_2P7        0xC02CCCCDu  /* -2.7f */
 /* largest float < 2^63 = 9223371487098961920 */
 #define R_F_LLONG_MAX_F 0x5EFFFFFFU
 #define R_F_2P63        0x5F000000U  /* +2^63 (overflows long long) */
@@ -139,6 +169,19 @@ static const struct LroundF64Data LroundF64Cases[] = {
     { R_D_NEG_ONE,      -1L,          0 },
     { R_D_TWO,           2L,          0 },
     { R_D_THREE,         3L,          0 },
+    /* largest double below 0.5: old FP-add impl returned 1 (bug) */
+    { R_D_BELOW_HALF,    0L,          0 },
+    { R_D_NEG_BELOW_HALF, 0L,         0 },
+    /* values below 0.5 in magnitude -> 0 */
+    { R_D_0P25,          0L,          0 },
+    { R_D_NEG_0P25,      0L,          0 },
+    { R_D_DBL_MIN,       0L,          0 },
+    { R_D_TINY,          0L,          0 },
+    { R_D_NEG_TINY,      0L,          0 },
+    /* values above 0.5 in magnitude */
+    { R_D_0P75,          1L,          0 },
+    { R_D_NEG_0P75,     -1L,          0 },
+    { R_D_JUST_ABOVE_HALF, 1L,        0 },
     /* half-integers round away from zero */
     { R_D_POS_HALF,      1L,          0 },   /* +0.5 -> 1 */
     { R_D_NEG_HALF,     -1L,          0 },   /* -0.5 -> -1 */
@@ -148,6 +191,18 @@ static const struct LroundF64Data LroundF64Cases[] = {
     { R_D_NEG_2P5,      -3L,          0 },   /* -2.5 -> -3 */
     { R_D_POS_4P5,       5L,          0 },   /* +4.5 -> 5 */
     { R_D_NEG_4P5,      -5L,          0 },   /* -4.5 -> -5 */
+    /* non-half fractional values */
+    { R_D_2P3,           2L,          0 },
+    { R_D_2P7,           3L,          0 },
+    { R_D_NEG_2P3,      -2L,          0 },
+    { R_D_NEG_2P7,      -3L,          0 },
+    { R_D_100P49,        100L,        0 },
+#if LONG_MAX > 0x7fffffffL
+    /* -2^63 = LONG_MIN on LP64: valid, no exception */
+    { R_D_NEG_2P63,      LONG_MIN,    0 },
+    /* 1e15: exact integer, fits in 64-bit long only */
+    { R_D_1E15,          1000000000000000L, 0 },
+#endif
     /* finite overflow (+2^63 > LONG_MAX on all platforms): FE_INVALID */
     { R_D_2P63,          LONG_MIN,    FE_INVALID },
     /* NaN and Inf: FE_INVALID, return LONG_MIN */
@@ -168,6 +223,20 @@ static const struct LlroundF64Data LlroundF64Cases[] = {
     { R_D_NEG_ZERO,        0LL,                      0 },
     { R_D_ONE,             1LL,                      0 },
     { R_D_NEG_ONE,        -1LL,                      0 },
+    /* largest double below 0.5: old FP-add impl returned 1 (bug) */
+    { R_D_BELOW_HALF,      0LL,                      0 },
+    { R_D_NEG_BELOW_HALF,  0LL,                      0 },
+    /* values below 0.5 in magnitude -> 0 */
+    { R_D_0P25,            0LL,                      0 },
+    { R_D_NEG_0P25,        0LL,                      0 },
+    { R_D_DBL_MIN,         0LL,                      0 },
+    { R_D_TINY,            0LL,                      0 },
+    { R_D_NEG_TINY,        0LL,                      0 },
+    /* values above 0.5 in magnitude */
+    { R_D_0P75,            1LL,                      0 },
+    { R_D_NEG_0P75,       -1LL,                      0 },
+    { R_D_JUST_ABOVE_HALF, 1LL,                      0 },
+    /* half-integers round away from zero */
     { R_D_POS_HALF,        1LL,                      0 },
     { R_D_NEG_HALF,       -1LL,                      0 },
     { R_D_POS_1P5,         2LL,                      0 },
@@ -176,6 +245,13 @@ static const struct LlroundF64Data LlroundF64Cases[] = {
     { R_D_NEG_2P5,        -3LL,                      0 },
     { R_D_POS_4P5,         5LL,                      0 },
     { R_D_NEG_4P5,        -5LL,                      0 },
+    /* non-half fractional values */
+    { R_D_2P3,             2LL,                      0 },
+    { R_D_2P7,             3LL,                      0 },
+    { R_D_NEG_2P3,        -2LL,                      0 },
+    { R_D_NEG_2P7,        -3LL,                      0 },
+    { R_D_100P49,          100LL,                    0 },
+    { R_D_1E15,            1000000000000000LL,       0 },
     /* 2^52: exact integral double, fits in long long */
     { R_D_2P52,            4503599627370496LL,        0 },
     { R_D_2P52P1,          4503599627370497LL,        0 },
@@ -201,6 +277,16 @@ static const struct LroundF32Data LroundF32Cases[] = {
     { R_F_NEG_ZERO,      0L,          0 },
     { R_F_ONE,           1L,          0 },
     { R_F_NEG_ONE,      -1L,          0 },
+    /* largest float below 0.5: old FP-add impl returned 1 (bug) */
+    { R_F_BELOW_HALF,    0L,          0 },
+    { R_F_NEG_BELOW_HALF, 0L,         0 },
+    /* values below 0.5 in magnitude -> 0 */
+    { R_F_0P25,          0L,          0 },
+    { R_F_FLT_MIN,       0L,          0 },
+    { R_F_TINY,          0L,          0 },
+    /* values above 0.5 in magnitude */
+    { R_F_0P75,          1L,          0 },
+    { R_F_JUST_ABOVE_HALF, 1L,        0 },
     /* half-integers round away from zero */
     { R_F_POS_HALF,      1L,          0 },
     { R_F_NEG_HALF,     -1L,          0 },
@@ -210,8 +296,20 @@ static const struct LroundF32Data LroundF32Cases[] = {
     { R_F_NEG_2P5,      -3L,          0 },
     { R_F_POS_4P5,       5L,          0 },
     { R_F_NEG_4P5,      -5L,          0 },
+    /* non-half fractional values */
+    { R_F_2P3,           2L,          0 },
+    { R_F_2P7,           3L,          0 },
+    { R_F_NEG_2P7,      -3L,          0 },
     /* 2^23: exact integral float, fits in long everywhere */
     { R_F_2P23,          8388608L,    0 },
+#if LONG_MAX <= 0x7fffffffL
+    /* On 32-bit long: +2^31 overflows, -2^31 = LONG_MIN is exact */
+    { R_F_2P31,          LONG_MIN,    FE_INVALID },
+    { R_F_NEG_2P31,      LONG_MIN,    0 },
+#else
+    /* On 64-bit long: -2^63 = LONG_MIN is valid */
+    { R_F_NEG_2P63,      LONG_MIN,    0 },
+#endif
     /* finite overflow (+2^63 > LONG_MAX on all platforms): FE_INVALID */
     { R_F_2P63,          LONG_MIN,    FE_INVALID },
     /* NaN and Inf: FE_INVALID, return LONG_MIN */
@@ -230,6 +328,17 @@ static const struct LlroundF32Data LlroundF32Cases[] = {
     { R_F_NEG_ZERO,        0LL,                      0 },
     { R_F_ONE,             1LL,                      0 },
     { R_F_NEG_ONE,        -1LL,                      0 },
+    /* largest float below 0.5: old FP-add impl returned 1 (bug) */
+    { R_F_BELOW_HALF,      0LL,                      0 },
+    { R_F_NEG_BELOW_HALF,  0LL,                      0 },
+    /* values below 0.5 in magnitude -> 0 */
+    { R_F_0P25,            0LL,                      0 },
+    { R_F_FLT_MIN,         0LL,                      0 },
+    { R_F_TINY,            0LL,                      0 },
+    /* values above 0.5 in magnitude */
+    { R_F_0P75,            1LL,                      0 },
+    { R_F_JUST_ABOVE_HALF, 1LL,                      0 },
+    /* half-integers round away from zero */
     { R_F_POS_HALF,        1LL,                      0 },
     { R_F_NEG_HALF,       -1LL,                      0 },
     { R_F_POS_1P5,         2LL,                      0 },
@@ -238,6 +347,10 @@ static const struct LlroundF32Data LlroundF32Cases[] = {
     { R_F_NEG_2P5,        -3LL,                      0 },
     { R_F_POS_4P5,         5LL,                      0 },
     { R_F_NEG_4P5,        -5LL,                      0 },
+    /* non-half fractional values */
+    { R_F_2P3,             2LL,                      0 },
+    { R_F_2P7,             3LL,                      0 },
+    { R_F_NEG_2P7,        -3LL,                      0 },
     /* 2^23: exact integral float */
     { R_F_2P23,            8388608LL,                0 },
     /* largest float < 2^63 */

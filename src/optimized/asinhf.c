@@ -137,8 +137,8 @@ ALM_PROTO_OPT(asinhf)(float x)
         result = x + x;
     } else if (unlikely(ax < ASINHF_TINY_THRESHOLD)) {
         // Tiny: |x| < 2^-12; asinhf(x) ~= x
-        volatile float inexactZero = (x + 0x1p64f) - 0x1p64f; // raise FE_INEXACT
-        result = x + inexactZero;
+        ALM_RAISE_FE_INEXACT();
+        result = x;
     } else if (ax <= ASINHF_SMALL_LIMIT) {
         // Small-x path: |x| <= 1.094f
         double xd = (double)x;

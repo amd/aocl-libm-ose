@@ -176,6 +176,8 @@ double ALM_PROTO_OPT(remainder)(double x, double y)
     uint64_t fay = asuint64(y) & POS_BITSET_DP64;
     double result = x;
 
+    // Single predicted-untaken branch for all error cases
+    // All cases of x NaN, Inf and all cases of y Zero, NaN, Inf
     if (unlikely(((fay - 1) | fax) >= POS_INF_F64))
     {
         if (fay > POS_INF_F64)
@@ -183,15 +185,19 @@ double ALM_PROTO_OPT(remainder)(double x, double y)
             result = x * y;
         }
         else if (fax > POS_INF_F64)
-        {   // |x| NaN: propagate x; raise FE_INVALID if x is sNaN
+        {   // |x| NaN: propagate NaN; raise FE_INVALID if x is sNaN
             result = x + x;
         }
         else if ((fax == POS_INF_F64) || (fay == 0))
         {   // |x| == Inf || y == 0
-            result = __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
+            ALM_RAISE_FE_INVALID(); // Raise FE_INVALID exception
+            result = asdouble(INDEFBITPATT_DP64); // Return Indefinite NaN
         }
         else
         {   // False positive ((fay-1) | fax) >= POS_INF_F64; continue normally
+            // goto may be considered harmful, but this is much simpler and
+            // faster than the alternatives, and mimics assembly code branch
+            // optimization.
             goto noerror;
         }
     }

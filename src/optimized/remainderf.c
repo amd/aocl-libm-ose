@@ -133,7 +133,8 @@ float ALM_PROTO_OPT(remainderf)(float x, float y)
     uint32_t fay = asuint32(y) & POS_BITSET_F32;  // |y| bit pattern
     float result = x;  // Default result value = x; saves sign bit for later
 
-    // All error conditions are caught by one predicted-untaken branch
+    // Single predicted-untaken branch for all error cases
+    // All cases of x NaN, Inf and all cases of y Zero, NaN, Inf
     if (unlikely(((fay - 1) | fax) >= POS_INF_F32))
     {
         if (fay > POS_INF_F32)
@@ -146,10 +147,14 @@ float ALM_PROTO_OPT(remainderf)(float x, float y)
         }
         else if ((fax == POS_INF_F32) || (fay == 0u))
         {   // |x| == Inf || y == 0
-            result = __alm_handle_errorf(INDEFBITPATT_SP32, AMD_F_INVALID);
+            ALM_RAISE_FE_INVALID(); // Raise FE_INVALID exception
+            result = asfloat(INDEFBITPATT_SP32); // Return Indefinite NaN
         }
         else
         {   // False positive ((fay-1) | fax) >= POS_INF_F32; continue normally
+            // goto may be considered harmful, but this is much simpler and
+            // faster than the alternatives, and mimics assembly code branch
+            // optimization.
             goto noerror;
         }
     }

@@ -52,10 +52,7 @@
  */
 
 #include <stdint.h>
-
-#include "libm_macros.h"
 #include "libm_util_amd.h"
-#include <libm/alm_special.h>
 #include <libm/typehelper.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
@@ -89,6 +86,7 @@ typedef struct
 
 // Extract a double precision value into a mantissa and biased exponent
 // Handles subnormal values
+// Note: fax must not be zero or negative (excluded before this is called)
 static inline F64ExpMan F64Extract(uint64_t fax)
 {
     int lz;
@@ -163,11 +161,12 @@ double ALM_PROTO_OPT(fmod)(double x, double y)
     double result = x;  // Default result value = x; saves sign bit for later
 
     // All error conditions are caught by one predicted-untaken branch
+    // x is Inf or NaN, or y is Zero, Inf or NaN
     if (unlikely(((fay - 1) | fax) >= POS_INF_F64))
     {
         if (fay > POS_INF_F64)
         {   // |y| NaN
-            result = x * y;
+            result = x * y;  // Raise FE_INVALID if x or y sNaN
         }
         else if (fax > POS_INF_F64)
         {   // |x| NaN
@@ -175,10 +174,14 @@ double ALM_PROTO_OPT(fmod)(double x, double y)
         }
         else if ((fax == POS_INF_F64) || (fay == 0))
         {   // |x| == Inf || y == 0
-            result = __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
+            ALM_RAISE_FE_INVALID();  // Raise FE_INVALID exception
+            result = asdouble(INDEFBITPATT_DP64);  // Indefinite NaN
         }
         else
         {   // False positive ((fay-1) | fax) >= POS_INF_F64; continue normally
+            // goto may be considered harmful, but this is much simpler and
+            // faster than the alternatives, and mimics assembly code branch
+            // optimization.
             goto noerror;
         }
     }

@@ -41,20 +41,11 @@
  *   FE_UNDERFLOW is raised explicitly for subnormal results on Linux.
  */
 
-#include <float.h>
-#include <math.h>
-#include <stdint.h>
-
-#ifdef __linux__
-#include <fenv.h>
-#endif
-
-#include "libm_macros.h"
 #include "libm_util_amd.h"
-#include <libm/alm_special.h>
 #include <libm/typehelper.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
+#include <stdint.h>
 
 #if defined(__GNUC__) || defined(__clang__)
 
@@ -87,6 +78,7 @@ typedef struct
 
 // Extract a single precision value into a mantissa and biased exponent
 // Handles subnormal values
+// Note: fax must not be zero or negative (excluded before this is called)
 static inline F32ExpMan F32Extract(uint32_t fax)
 {
     int lz;
@@ -109,6 +101,7 @@ float ALM_PROTO_OPT(fmodf)(float x, float y)
     float result = x;  // Default result value = x; saves sign bit for later
 
     // All error conditions are caught by one predicted-untaken branch
+    // x is Inf or NaN, or y is Zero, Inf or NaN
     if (unlikely(((fay - 1) | fax) >= POS_INF_F32))
     {
         if (fay > POS_INF_F32)
@@ -121,10 +114,14 @@ float ALM_PROTO_OPT(fmodf)(float x, float y)
         }
         else if ((fax == POS_INF_F32) || (fay == 0))
         {   // |x| == Inf || y == 0
-            result = __alm_handle_errorf(INDEFBITPATT_SP32, AMD_F_INVALID);
+            ALM_RAISE_FE_INVALID();  // Raise FE_INVALID exception
+            result = asfloat(INDEFBITPATT_SP32);  // Indefinite NaN
         }
         else
         {   // False positive ((fay-1) | fax) >= POS_INF_F32; continue normally
+            // goto may be considered harmful, but this is much simpler and
+            // faster than the alternatives, and mimics assembly code branch
+            // optimization.
             goto noerror;
         }
     }
@@ -158,7 +155,7 @@ float ALM_PROTO_OPT(fmodf)(float x, float y)
                 rem = likely(fpy.e > 0) ? rem << (fpy.e - 1) : rem >> (1 - fpy.e);
 #ifdef __linux__
                 // On Linux, raise FE_UNDERFLOW for glibc compatibility
-                feraiseexcept(FE_UNDERFLOW);
+                ALM_RAISE_FE_UNDERFLOW();
 #endif
             }
         }

@@ -150,4 +150,7 @@ test_fmod_conformance_data[] = {
     {0x8000000000000000LL, 0x8000000000000000LL, 0, 0xa8117a2e00000000LL},
     // fmod(qNaN, 0): qNaN takes precedence; must return qNaN without raising FE_INVALID
     {POS_QNAN_F64, POS_QNAN_F64, 0, POS_ZERO_F64},
+    // fmod(max_double, 1.0): exponent diff=1023>52, uses the slow path (F64Extract + iterative Rem128);
+    // max_double is an exact integer so result=0
+    {POS_HNORMAL_F64, POS_ONE_F64, 0, POS_ZERO_F64},
 };

@@ -88,6 +88,45 @@ test_atan2f_conformance_data[] = {
     {0x40F00000, 0x3fd19529,   0,            0xBF000000}, // y>x, x<0 and |x|/|y|>0.0625
     {0x459C4800, 0x3fc91321,   0,            0xBF000000}, // y>x, x<0 and |x|/|y|<10^-4
     {0x400aabcd, 0x3fc92fdb,   0,            0xbb0aabcd}, // y>x, x<0 and 10^-4<|x|/|y|<0.0625
+
+    // band coverage b=0..7: atan2f(y, 1.0f), one positive + negative + x<0 per band
+    {0x3d7faade, 0x3f800000, FE_INEXACT, 0x3d800000},  // b=0
+    {0xbd7faade, 0x3f800000, FE_INEXACT, 0xbd800000},  // b=0
+    {0x4045112f, 0xbf800000, FE_INEXACT, 0x3d800000},  // b=0 x<0
+    {0x3dfeadd5, 0x3f800000, FE_INEXACT, 0x3e000000},  // b=1
+    {0xbdfeadd5, 0x3f800000, FE_INEXACT, 0xbe000000},  // b=1
+    {0x40411a6c, 0xbf800000, FE_INEXACT, 0x3e000000},  // b=1 x<0
+    {0x3e7adbb0, 0x3f800000, FE_INEXACT, 0x3e800000},  // b=2
+    {0xbe7adbb0, 0x3f800000, FE_INEXACT, 0xbe800000},  // b=2
+    {0x40396220, 0xbf800000, FE_INEXACT, 0x3e800000},  // b=2 x<0
+    {0x3f0a58ef, 0x3f800000, FE_INEXACT, 0x3f19999a},  // b=3
+    {0xbf0a58ef, 0x3f800000, FE_INEXACT, 0xbf19999a},  // b=3
+    {0x3f7b985f, 0x3f800000, FE_INEXACT, 0x3fc00000},  // b=4
+    {0xbf7b985f, 0x3f800000, FE_INEXACT, 0xbfc00000},  // b=4
+    {0x400a29c3, 0xbf800000, FE_INEXACT, 0x3fc00000},  // b=4 x<0
+    {0x3f985b6c, 0x3f800000, FE_INEXACT, 0x40200000},  // b=5
+    {0xbf985b6c, 0x3f800000, FE_INEXACT, 0xc0200000},  // b=5
+    {0x3fafcb99, 0x3f800000, FE_INEXACT, 0x40a00000},  // b=6
+    {0xbfafcb99, 0x3f800000, FE_INEXACT, 0xc0a00000},  // b=6
+    {0x3fbc4de9, 0x3f800000, FE_INEXACT, 0x41200000},  // b=7
+    {0xbfbc4de9, 0x3f800000, FE_INEXACT, 0xc1200000},  // b=7
+    {0x3fd5d1cc, 0xbf800000, FE_INEXACT, 0x41200000},  // b=7 x<0
+
+    // cutoff boundary tests (EMIN=-53, EMAX=25)
+    {0x24800000, 0x3f800000, 0,          0x24800000},  // b=-50 shortcut
+    {0xa4800000, 0x3f800000, 0,          0xa4800000},  // b=-50
+    {0x25000000, 0x3f800000, FE_INEXACT, 0x25000000},  // b=-49 polynomial
+    {0x25400000, 0x3f800000, FE_INEXACT, 0x25400000},  // b=-49
+    {0xa5000000, 0x3f800000, FE_INEXACT, 0xa5000000},  // b=-49
+    {0x3fc90fda, 0x3f800000, FE_INEXACT, 0x4b800000},  // b=28 polynomial
+    {0xbfc90fda, 0x3f800000, FE_INEXACT, 0xcb800000},  // b=28
+    {0x3fc90fda, 0x3f800000, FE_INEXACT, 0x4c000000},  // b=29 polynomial (ties-even -> below pi/2)
+    {0x3fc90fda, 0x3f800000, FE_INEXACT, 0x4c400000},  // b=29
+    {0xbfc90fda, 0x3f800000, FE_INEXACT, 0xcc000000},  // b=29
+    {0x3fc90fdb, 0x3f800000, FE_INEXACT, 0x4c800000},  // b=30 shortcut -> pi/2
+    {0xbfc90fdb, 0x3f800000, FE_INEXACT, 0xcc800000},  // b=30
+    {0x40490fdb, 0xbf800000, FE_INEXACT, 0x24800000},  // b=-50 x<0
+    {0x3fc90fdb, 0xbf800000, FE_INEXACT, 0x4c800000},  // b=30 x<0
 };
 
 /* Test cases to check the conformance of the atan2() routine. */
@@ -155,9 +194,9 @@ test_atan2_conformance_data[] = {
     {0x31DB0D2835C40259LL, POS_ZERO_F64,       FE_UNDERFLOW, 0x7FE1CCF385EBC8A0LL},
     {0x405fffffffffffffLL, 0x3ff911fb59997f3a, 0,            0x3fe0000000000000LL},
     {0xbfcabcdabcdabcdfLL, 0x80040000001cb936, 0,            0x7fcabcdabc1abcdfLL},
-    {0xbfcabcdabcdabcdfLL, 0xc002d97c7f16689d, 0,            0xbfcabcdabc1abcdfLL},
-    {0xbfcabcdabcdabcdfLL, 0xc002d97c7f3321d2, 0,            0xbfcabcdabcdabcdfLL},
-    {0x3fcabcdabcdabcdfLL, 0x4002d97c7f3321d2, 0,            0xbfcabcdabcdabcdfLL},
+    {0xc0086ce3ca3803e2LL, 0xc002d97c7f16689d, 0,            0xbfcabcdabc1abcdfLL},
+    {0xc0086ce3ca3408c5LL, 0xc002d97c7f3321d2, 0,            0xbfcabcdabcdabcdfLL},
+    {0xbfb6a2f142048a70LL, 0x4002d97c7f3321d2, 0,            0xbfcabcdabcdabcdfLL},
     {0x032000a000000000LL, 0x4c9b8ce7d92d8,    0,            0x431abcdabcdabcdfLL},
     {0x6210000000000000LL, 0x3ff921fb54442d18, 0,            0x41aabcdabcdabcdfLL},
     {0x6210000000000000LL, 0x3ff921fb54442d18, 0,            0xc1aabcdabcdabcdfLL},
@@ -174,6 +213,45 @@ test_atan2_conformance_data[] = {
 
     /* The following is the error case identified by Paul Zimmermann */
     {0x80000000000039a2LL, 0xbe4d0ce6fac85de8, 0, 0x000000fdf0200000LL},
+
+    // band coverage b=0..7: atan2(y, 1.0) = atan(y), one positive + one negative per band
+    {0x3faff55bb72cfdeaLL, 0x3ff0000000000000LL, FE_INEXACT, 0x3fb0000000000000LL},  // b=0
+    {0xbfaff55bb72cfdeaLL, 0x3ff0000000000000LL, FE_INEXACT, 0xbfb0000000000000LL},  // b=0
+    {0x4008a225e5677921LL, 0xbff0000000000000LL, FE_INEXACT, 0x3fb0000000000000LL},  // b=0 x<0
+    {0x3fbfd5ba9aac2f6eLL, 0x3ff0000000000000LL, FE_INEXACT, 0x3fc0000000000000LL},  // b=1
+    {0xbfbfd5ba9aac2f6eLL, 0x3ff0000000000000LL, FE_INEXACT, 0xbfc0000000000000LL},  // b=1
+    {0x4008234d7f6ecb9dLL, 0xbff0000000000000LL, FE_INEXACT, 0x3fc0000000000000LL},  // b=1 x<0
+    {0x3fcf5b75f92c80ddLL, 0x3ff0000000000000LL, FE_INEXACT, 0x3fd0000000000000LL},  // b=2
+    {0xbfcf5b75f92c80ddLL, 0x3ff0000000000000LL, FE_INEXACT, 0xbfd0000000000000LL},  // b=2
+    {0x40072c43f4b1650aLL, 0xbff0000000000000LL, FE_INEXACT, 0x3fd0000000000000LL},  // b=2 x<0
+    {0x3fe14b1dd5f90ce1LL, 0x3ff0000000000000LL, FE_INEXACT, 0x3fe3333333333333LL},  // b=3
+    {0xbfe14b1dd5f90ce1LL, 0x3ff0000000000000LL, FE_INEXACT, 0xbfe3333333333333LL},  // b=3
+    {0x3fef730bd281f69bLL, 0x3ff0000000000000LL, FE_INEXACT, 0x3ff8000000000000LL},  // b=4
+    {0xbfef730bd281f69bLL, 0x3ff0000000000000LL, FE_INEXACT, 0xbff8000000000000LL},  // b=4
+    {0x400145385fa3af71LL, 0xbff0000000000000LL, FE_INEXACT, 0x3ff8000000000000LL},  // b=4 x<0
+    {0x3ff30b6d796a4da8LL, 0x3ff0000000000000LL, FE_INEXACT, 0x4004000000000000LL},  // b=5
+    {0xbff30b6d796a4da8LL, 0x3ff0000000000000LL, FE_INEXACT, 0xc004000000000000LL},  // b=5
+    {0x3ff5f97315254857LL, 0x3ff0000000000000LL, FE_INEXACT, 0x4014000000000000LL},  // b=6
+    {0xbff5f97315254857LL, 0x3ff0000000000000LL, FE_INEXACT, 0xc014000000000000LL},  // b=6
+    {0x3ff789bd2c160054LL, 0x3ff0000000000000LL, FE_INEXACT, 0x4024000000000000LL},  // b=7
+    {0xbff789bd2c160054LL, 0x3ff0000000000000LL, FE_INEXACT, 0xc024000000000000LL},  // b=7
+    {0x3ffaba397c7259ddLL, 0xbff0000000000000LL, FE_INEXACT, 0x4024000000000000LL},  // b=7 x<0
+
+    // cutoff boundary tests (EMIN=-53, EMAX=53)
+    {0x3c90000000000000LL, 0x3ff0000000000000LL, 0,          0x3c90000000000000LL},  // b=-50 shortcut
+    {0x3c98000000000000LL, 0x3ff0000000000000LL, 0,          0x3c98000000000000LL},  // b=-50
+    {0xbc90000000000000LL, 0x3ff0000000000000LL, 0,          0xbc90000000000000LL},  // b=-50
+    {0x3ca0000000000000LL, 0x3ff0000000000000LL, FE_INEXACT, 0x3ca0000000000000LL},  // b=-49 polynomial
+    {0x3ca8000000000000LL, 0x3ff0000000000000LL, FE_INEXACT, 0x3ca8000000000000LL},  // b=-49
+    {0xbca0000000000000LL, 0x3ff0000000000000LL, FE_INEXACT, 0xbca0000000000000LL},  // b=-49
+    {0x3ff921fb54442d18LL, 0x3ff0000000000000LL, FE_INEXACT, 0x4340000000000000LL},  // b=57 polynomial
+    {0x3ff921fb54442d18LL, 0x3ff0000000000000LL, FE_INEXACT, 0x4348000000000000LL},  // b=57
+    {0xbff921fb54442d18LL, 0x3ff0000000000000LL, FE_INEXACT, 0xc340000000000000LL},  // b=57
+    {0x3ff921fb54442d18LL, 0x3ff0000000000000LL, FE_INEXACT, 0x4350000000000000LL},  // b=58 shortcut
+    {0x3ff921fb54442d18LL, 0x3ff0000000000000LL, FE_INEXACT, 0x4358000000000000LL},  // b=58
+    {0xbff921fb54442d18LL, 0x3ff0000000000000LL, FE_INEXACT, 0xc350000000000000LL},  // b=58
+    {0x400921fb54442d18LL, 0xbff0000000000000LL, FE_INEXACT, 0x3c90000000000000LL},  // b=-50 x<0
+    {0x3ff921fb54442d19LL, 0xbff0000000000000LL, FE_INEXACT, 0x4350000000000000LL},  // b=58 x<0
 };
 
 #endif /* __TEST_ATAN2_DATA_H__ */

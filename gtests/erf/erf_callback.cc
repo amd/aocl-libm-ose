@@ -79,7 +79,7 @@ void getExpected(float *data, mpfr_t result) {
 }
 
 void getExpected(double *data, mpfr_t result) {
-  mpfr_set_d(result, (double)(erfl(data[0])), MPFR_RNDN);
+  alm_mp_erf(data[0], result);
 }
 
 // Used by the Complex Number Functions only!

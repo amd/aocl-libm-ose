@@ -30,7 +30,7 @@
 #define __LIBM_TESTS_H__
 
 #include <stdio.h>
-#include <stdint.h>
+#include <inttypes.h>
 
 #include <fenv.h>
 

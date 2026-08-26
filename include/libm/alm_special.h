@@ -28,7 +28,7 @@
 #ifndef _ALM_SPECIAL_H_
 #define _ALM_SPECIAL_H_
 
-#include <stdint.h>
+#include <inttypes.h>
 #include <math.h>
 
 #include <libm_errno_amd.h>

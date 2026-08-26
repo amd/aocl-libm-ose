@@ -29,6 +29,7 @@
 #ifndef __ALMTEST_H__
 #define __ALMTEST_H__
 
+#include <inttypes.h>
 #include <iostream>
 #include <string>
 #include <tuple>
@@ -618,18 +619,18 @@ class SpecTestFixtureFloat : public ::testing::TestWithParam<SpecParams> {
 
     if (output_mismatch==1 || exception_mismatch==1) {
         (*nfail)++;
-        printf ("Input: 0x%x (%f) ", ip.u, ip.f);
+        printf ("Input: 0x%08" PRIx32 " (%f) ", ip.u, ip.f);
         if (nargs == 2)
-            printf ("Input2: 0x%x (%f) ", ip2.u, ip2.f);
+            printf ("Input2: 0x%08" PRIx32 " (%f) ", ip2.u, ip2.f);
         if (nargs == 6)
         {
-          printf ("Input2: 0x%x (%f) ", ip2.u, ip2.f);
-          printf ("Input3: 0x%x (%f) ", ip3.u, ip3.f);
-          printf ("Input4: 0x%x (%f) ", ip4.u, ip4.f);
-          printf ("Input5: 0x%x (%f) ", ip5.u, ip5.f);
-          printf ("Input6: 0x%x (%f) ", ip6.u, ip6.f);
+          printf ("Input2: 0x%08" PRIx32 " (%f) ", ip2.u, ip2.f);
+          printf ("Input3: 0x%08" PRIx32 " (%f) ", ip3.u, ip3.f);
+          printf ("Input4: 0x%08" PRIx32 " (%f) ", ip4.u, ip4.f);
+          printf ("Input5: 0x%08" PRIx32 " (%f) ", ip5.u, ip5.f);
+          printf ("Input6: 0x%08" PRIx32 " (%f) ", ip6.u, ip6.f);
         }
-        printf ("Expected: 0x%x (%f) Actual: 0x%x (%f) ULP: %f\n", e.u, e.f, a.u, a.f, ulp);
+        printf ("Expected: 0x%08" PRIx32 " (%f) Actual: 0x%08" PRIx32 " (%f) ULP: %f\n", e.u, e.f, a.u, a.f, ulp);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);
         return false;
@@ -742,10 +743,10 @@ class SpecTestFixtureFloatArray : public ::testing::TestWithParam<SpecParams> {
 
     if (output_mismatch==1) {
         (*nfail)++;
-        printf ("Input: 0x%x (%f) ", ip.u, ip.f);
+        printf ("Input: 0x%08" PRIx32 " (%f) ", ip.u, ip.f);
         if (nargs == 2)
-            printf ("Input2: 0x%x (%f) ", ip2.u, ip2.f);
-        printf ("Expected: 0x%x (%f) Actual: 0x%x (%f) ULP: %f\n", e.u, e.f, a.u, a.f, ulp);
+            printf ("Input2: 0x%08" PRIx32 " (%f) ", ip2.u, ip2.f);
+        printf ("Expected: 0x%08" PRIx32 " (%f) Actual: 0x%08" PRIx32 " (%f) ULP: %f\n", e.u, e.f, a.u, a.f, ulp);
         return false;
     }
     return true;
@@ -842,18 +843,18 @@ class SpecTestFixtureDouble : public ::testing::TestWithParam<SpecParams> {
 
     if (output_mismatch==1 || exception_mismatch==1) {
         (*nfail)++;
-        printf ("Input: 0x%lx (%lf) ", ip.lu, ip.d);
+        printf ("Input: 0x%016" PRIx64 " (%f) ", ip.lu, ip.d);
         if (nargs == 2)
-            printf ("Input2: 0x%lx (%lf) ", ip2.lu, ip2.d);
+            printf ("Input2: 0x%016" PRIx64 " (%f) ", ip2.lu, ip2.d);
         if (nargs == 6)
         {
-            printf ("Input2: 0x%lx (%lf) ", ip2.lu, ip2.d);
-            printf ("Input3: 0x%lx (%lf) ", ip3.lu, ip3.d);
-            printf ("Input4: 0x%lx (%lf) ", ip4.lu, ip4.d);
-            printf ("Input5: 0x%lx (%lf) ", ip5.lu, ip5.d);
-            printf ("Input6: 0x%lx (%lf) ", ip6.lu, ip6.d);
+            printf ("Input2: 0x%016" PRIx64 " (%f) ", ip2.lu, ip2.d);
+            printf ("Input3: 0x%016" PRIx64 " (%f) ", ip3.lu, ip3.d);
+            printf ("Input4: 0x%016" PRIx64 " (%f) ", ip4.lu, ip4.d);
+            printf ("Input5: 0x%016" PRIx64 " (%f) ", ip5.lu, ip5.d);
+            printf ("Input6: 0x%016" PRIx64 " (%f) ", ip6.lu, ip6.d);
         }
-        printf ("Expected: 0x%lx (%lf) Actual: 0x%lx (%lf) ULP: %lf\n", e.lu, e.d, a.lu, a.d, ulp);
+        printf ("Expected: 0x%016" PRIx64 " (%f) Actual: 0x%016" PRIx64 " (%f) ULP: %f\n", e.lu, e.d, a.lu, a.d, ulp);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);
         return false;
@@ -964,10 +965,10 @@ class SpecTestFixtureDoubleArray : public ::testing::TestWithParam<SpecParams> {
 
     if (output_mismatch==1) {
         (*nfail)++;
-        printf ("Input: 0x%lx (%lf) ", ip.lu, ip.d);
+        printf ("Input: 0x%016" PRIx64 " (%f) ", ip.lu, ip.d);
         if (nargs == 2)
-            printf ("Input2: 0x%lx (%lf) ", ip2.lu, ip2.d);
-        printf ("Expected: 0x%lx (%lf) Actual: 0x%lx (%lf) ULP: %lf\n", e.lu, e.d, a.lu, a.d, ulp);
+            printf ("Input2: 0x%016" PRIx64 " (%f) ", ip2.lu, ip2.d);
+        printf ("Expected: 0x%016" PRIx64 " (%f) Actual: 0x%016" PRIx64 " (%f) ULP: %f\n", e.lu, e.d, a.lu, a.d, ulp);
         return false;
     }
     return true;
@@ -1060,11 +1061,11 @@ class SpecTestFixtureComplexFloat : public ::testing::TestWithParam<SpecParams> 
 
     if (output_mismatch==1 || exception_mismatch==1) {
         (*nfail)++;
-        printf ("Input:    0x%x +i 0x%x   (%f +i %f)\n", ip_real.u, ip_imag.u, ip_real.f, ip_imag.f);
+        printf ("Input:    0x%08" PRIx32 " +i 0x%08" PRIx32 "   (%f +i %f)\n", ip_real.u, ip_imag.u, ip_real.f, ip_imag.f);
         if (nargs == 2)
-            printf ("Input2:   0x%x +i 0x%x   (%f +i %f)\n", ip2_real.u, ip2_imag.u, ip2_real.f, ip2_imag.f);
-        printf ("Expected: 0x%x +i 0x%x   (%f +i %f)\n", e_real.u, e_imag.u, e_real.f, e_imag.f);
-        printf ("Actual:   0x%x +i 0x%x   (%f +i %f)\n", a_real.u, a_imag.u, a_real.f, a_imag.f);
+            printf ("Input2:   0x%08" PRIx32 " +i 0x%08" PRIx32 "   (%f +i %f)\n", ip2_real.u, ip2_imag.u, ip2_real.f, ip2_imag.f);
+        printf ("Expected: 0x%08" PRIx32 " +i 0x%08" PRIx32 "   (%f +i %f)\n", e_real.u, e_imag.u, e_real.f, e_imag.f);
+        printf ("Actual:   0x%08" PRIx32 " +i 0x%08" PRIx32 "   (%f +i %f)\n", a_real.u, a_imag.u, a_real.f, a_imag.f);
         printf ("ULP:      %f\n", ulp);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);
@@ -1157,11 +1158,11 @@ class SpecTestFixtureComplexDouble : public ::testing::TestWithParam<SpecParams>
 
     if (output_mismatch==1 || exception_mismatch==1) {
         (*nfail)++;
-        printf ("Input:    0x%lx +i 0x%lx   (%lf +i %lf)\n", ip_real.lu, ip_imag.lu, ip_real.d, ip_imag.d);
+        printf ("Input:    0x%016" PRIx64 " +i 0x%016" PRIx64 "   (%f +i %f)\n", ip_real.lu, ip_imag.lu, ip_real.d, ip_imag.d);
         if (nargs == 2)
-            printf ("Input2:   0x%lx +i 0x%lx   (%lf +i %lf)\n", ip2_real.lu, ip2_imag.lu, ip2_real.d, ip2_imag.d);
-        printf ("Expected: 0x%lx +i 0x%lx   (%lf +i %lf)\n", e_real.lu, e_imag.lu, e_real.d, e_imag.d);
-        printf ("Actual:   0x%lx +i 0x%lx   (%lf +i %lf)\n", a_real.lu, a_imag.lu, a_real.d, a_imag.d);
+            printf ("Input2:   0x%016" PRIx64 " +i 0x%016" PRIx64 "   (%f +i %f)\n", ip2_real.lu, ip2_imag.lu, ip2_real.d, ip2_imag.d);
+        printf ("Expected: 0x%016" PRIx64 " +i 0x%016" PRIx64 "   (%f +i %f)\n", e_real.lu, e_imag.lu, e_real.d, e_imag.d);
+        printf ("Actual:   0x%016" PRIx64 " +i 0x%016" PRIx64 "   (%f +i %f)\n", a_real.lu, a_imag.lu, a_real.d, a_imag.d);
         printf ("ULP:      %lf\n", ulp);
         /* print exceptions */
         PrintConfExpections(raised_exception, expected_exception);

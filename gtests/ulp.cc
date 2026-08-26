@@ -29,6 +29,7 @@
 #include <cmath>
 #include <cstring>
 #include <type_traits>
+#include <mpfr.h>
 #include "almstruct.h"
 #include "almtest.h"
 #include "defs.h"
@@ -370,6 +371,75 @@ double getUlp(float aop, double exptd) {
 
 double getUlp(double aop, long double exptd) {
   return CheckAndReportUlp(aop, exptd, getUlpr(aop, exptd));
+}
+
+/* Compute true fractional ULP error against a full-precision MPFR reference.
+ * mantissa_bits: 24 for float, 53 for double.
+ * The result is a real number in [0, 0.5] for correctly rounded, (0.5, 1.0]
+ * for faithfully rounded, >1.0 for worse.  This avoids rounding the reference
+ * to double before comparison, which would force the error to be an integer. */
+static double computeUlpMpfr(mpfr_t mp_aop, mpfr_t exptd, int mantissa_bits) {
+    mpfr_t mp_diff, mp_ulp;
+    mpfr_inits2(256, mp_diff, mp_ulp, (mpfr_ptr)0);
+
+    mpfr_sub(mp_diff, mp_aop, exptd, MPFR_RNDN);
+    mpfr_abs(mp_diff, mp_diff, MPFR_RNDN);
+
+    // ulp(aop) = 2^(binade_exponent - mantissa_bits)
+    mpfr_exp_t e = mpfr_get_exp(mp_aop);  // binade exponent: mp_aop in [2^(e-1), 2^e)
+    // For subnormals/zero mpfr_get_exp is undefined; use minimum ULP.
+    if (mpfr_zero_p(mp_aop) || mpfr_number_p(mp_aop) == 0) {
+        mpfr_set_ui_2exp(mp_ulp, 1, -(mantissa_bits - 1) - (mantissa_bits == 24 ? 126 : 1022), MPFR_RNDN);
+    } else {
+        mpfr_set_ui_2exp(mp_ulp, 1, e - mantissa_bits, MPFR_RNDN);
+    }
+    mpfr_div(mp_diff, mp_diff, mp_ulp, MPFR_RNDN);
+
+    double result = mpfr_get_d(mp_diff, MPFR_RNDN);
+    mpfr_clears(mp_diff, mp_ulp, (mpfr_ptr)0);
+    return result;
+}
+
+double getUlp(float aop, mpfr_t exptd) {
+    if (std::isnan(aop)) return mpfr_nan_p(exptd) ? 0.0 : std::numeric_limits<double>::infinity();
+    if (mpfr_nan_p(exptd)) return std::numeric_limits<double>::infinity();
+    if (std::isinf(aop) && mpfr_inf_p(exptd))
+        return (aop > 0) == (mpfr_sgn(exptd) > 0) ? 0.0 : std::numeric_limits<double>::infinity();
+    // MPFR may hold a finite value > FLT_MAX that rounds to Inf when converted
+    // to float. If our result is Inf and mpfr_get_flt also gives Inf with the
+    // same sign, both round to the same nearest float: ULP = 0.
+    if (std::isinf(aop)) {
+        float exptd_f = mpfr_get_flt(exptd, MPFR_RNDN);
+        if (std::isinf(exptd_f) && (aop > 0) == (exptd_f > 0))
+            return 0.0;
+    }
+    mpfr_t mp_aop;
+    mpfr_init2(mp_aop, 256);
+    mpfr_set_flt(mp_aop, aop, MPFR_RNDN);  // exact
+    double result = computeUlpMpfr(mp_aop, exptd, 24);
+    mpfr_clear(mp_aop);
+    return result;
+}
+
+double getUlp(double aop, mpfr_t exptd) {
+    if (std::isnan(aop)) return mpfr_nan_p(exptd) ? 0.0 : std::numeric_limits<double>::infinity();
+    if (mpfr_nan_p(exptd)) return std::numeric_limits<double>::infinity();
+    if (std::isinf(aop) && mpfr_inf_p(exptd))
+        return (aop > 0) == (mpfr_sgn(exptd) > 0) ? 0.0 : std::numeric_limits<double>::infinity();
+    // MPFR may hold a finite value > DBL_MAX that rounds to Inf when converted
+    // to double. If our result is Inf and mpfr_get_d also gives Inf with the
+    // same sign, both round to the same nearest double: ULP = 0.
+    if (std::isinf(aop)) {
+        double exptd_d = mpfr_get_d(exptd, MPFR_RNDN);
+        if (std::isinf(exptd_d) && (aop > 0) == (exptd_d > 0))
+            return 0.0;
+    }
+    mpfr_t mp_aop;
+    mpfr_init2(mp_aop, 256);
+    mpfr_set_d(mp_aop, aop, MPFR_RNDN);  // exact
+    double result = computeUlpMpfr(mp_aop, exptd, 53);
+    mpfr_clear(mp_aop);
+    return result;
 }
 
 double getUlp(float _Complex aop, double _Complex exptd) {

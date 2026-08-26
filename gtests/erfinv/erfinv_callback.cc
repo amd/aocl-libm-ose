@@ -82,16 +82,14 @@ double getFuncOp(double *data) {
 #endif
 }
 
-double getExpected(float *data) {
+void getExpected(float *data, mpfr_t result) {
   /* Not implemented now */
-  /* auto val = alm_mp_erfinvf(data[0]); */
-  double val=0;
-  return val;
+  /* alm_mp_erfinvf(data[0], result); */
+  mpfr_set_d(result, 0.0, MPFR_RNDN);
 }
 
-long double getExpected(double *data) {
-  auto val = alm_mp_erfinv(data[0]);
-  return val;
+void getExpected(double *data, mpfr_t result) {
+  alm_mp_erfinv(data[0], result);
 }
 
 // Used by the Complex Number Functions only!
@@ -229,4 +227,3 @@ int test_vad(test_data *data, int count)  {
 #ifdef __cplusplus
 }
 #endif
-

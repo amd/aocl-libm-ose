@@ -81,7 +81,7 @@ if(MPARITH_LIB_DIR_EXISTS AND MPARITH_LIB_EXISTS)
         message(STATUS "mparith library found, skipping build...")
     endif()
 else()
-    set(MPARITH_BINARY_DIR "${CMAKE_BINARY_DIR}")
+    set(MPARITH_BINARY_DIR "${MPARITH_DIR}/build")
     message(STATUS "mparith library not-found, building library...")
 
     if(WIN32)

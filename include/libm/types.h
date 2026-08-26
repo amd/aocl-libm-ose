@@ -28,7 +28,7 @@
 #ifndef __LIBM_TYPES_H__
 #define __LIBM_TYPES_H__
 
-#include <stdint.h>
+#include <inttypes.h>
 #include <float.h>
 #include <complex.h>
 #include <immintrin.h>

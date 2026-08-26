@@ -60,15 +60,11 @@ COMPLEX_L FUNC_CEXP(COMPLEX x)
     mpfr_init2(mpfr_imag, ALM_MP_PRECI_BITS);
 
 #if defined(FLOAT)
-    mpc_set_dc(mpc_x, x, rnd);
+    { float parts[2]; memcpy(parts, &x, sizeof(parts));
+      mpc_set_d_d(mpc_x, parts[0], parts[1], rnd); }
 #elif defined(DOUBLE)
-    #if (defined _WIN32 || defined _WIN64)
-        // Windows: long double == double, use mpc_set_dc for double _Complex input
-        mpc_set_dc(mpc_x, x, rnd);
-    #else
-        // Linux: use mpc_set_ldc for long double _Complex
-        mpc_set_ldc(mpc_x, x, rnd);
-    #endif
+    { double parts[2]; memcpy(parts, &x, sizeof(parts));
+      mpc_set_d_d(mpc_x, parts[0], parts[1], rnd); }
 #endif
 
     // Note: To print MPC variable as string, below printf statement is useful:

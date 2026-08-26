@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -60,14 +60,12 @@ void ConfSetupf32(SpecParams *specp) {
   specp->countf = ARRAY_SIZE(test_linearfracf_conformance_data);
 }
 
-long double getExpected(double *data) {
-  auto val = alm_mp_linearfrac(data[0], data[1], data[2], data[3], data[4], data[5]);
-  return val;
+void getExpected(double *data, mpfr_t result) {
+  alm_mp_linearfrac(data[0], data[1], data[2], data[3], data[4], data[5], result);
 }
 
-double getExpected(float *data) {
-  auto val = alm_mp_linearfracf(data[0], data[1], data[2], data[3], data[4], data[5]);
-  return val;
+void getExpected(float *data, mpfr_t result) {
+  alm_mp_linearfracf(data[0], data[1], data[2], data[3], data[4], data[5], result);
 }
 
 double _Complex getExpected(float _Complex *data) {

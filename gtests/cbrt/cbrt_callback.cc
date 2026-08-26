@@ -48,7 +48,9 @@ bool special_case = false;
 
 uint32_t GetnIpArgs( void )
 {
-	return ipargs;
+    /* cbrt targets 1-ULP accuracy for double; override the default 0.5 threshold. */
+    setUlpThreshold(1.0);
+    return ipargs;
 }
 
 bool getSpecialCase(void)
@@ -75,14 +77,12 @@ double getFuncOp(double *data) {
   return LIBM_FUNC(cbrt)(data[0]);
 }
 
-double getExpected(float *data) {
-  auto val = alm_mp_cbrtf(data[0]);
-  return val;
+void getExpected(float *data, mpfr_t result) {
+  alm_mp_cbrtf(data[0], result);
 }
 
-long double getExpected(double *data) {
-  auto val = alm_mp_cbrt(data[0]);
-  return val;
+void getExpected(double *data, mpfr_t result) {
+  alm_mp_cbrt(data[0], result);
 }
 
 // Used by the Complex Number Functions only!

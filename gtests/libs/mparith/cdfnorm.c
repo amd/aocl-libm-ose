@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -39,9 +39,8 @@
 
 #include <mpfr.h>
 
-REAL_L FUNC_CDFNORM(REAL x)
+void FUNC_CDFNORM(REAL x, mpfr_t result)
 {
-    REAL_L y;
 
     mpfr_rnd_t rnd = MPFR_RNDN;
     mpfr_t mpx, mpx_div, one, sqrt2, half, erf, add, mp_rop;
@@ -49,12 +48,20 @@ REAL_L FUNC_CDFNORM(REAL x)
     mpfr_inits2(ALM_MP_PRECI_BITS, mpx, mp_rop, mpx_div, one, sqrt2, half, erf, add, (mpfr_ptr) 0);
 
 #if defined(FLOAT)
+#if defined(FLOAT)
+    mpfr_set_flt(mpx, x, rnd);
+#else
     mpfr_set_d(mpx, x, rnd);
+#endif
     mpfr_set_ui(one, 1u, rnd);
     mpfr_set_d(half, 0.5, rnd);
     mpfr_sqrt_ui(sqrt2, 2u, rnd);                 /* sqrt2 = sqrt(2) */
 #elif defined(DOUBLE)
-    mpfr_set_ld(mpx, x, rnd);
+#if defined(FLOAT)
+    mpfr_set_flt(mpx, x, rnd);
+#else
+    mpfr_set_d(mpx, x, rnd);
+#endif
     mpfr_set_ui(one, 1u, rnd);
     mpfr_set_d(half, 0.5, rnd);
     mpfr_sqrt_ui(sqrt2, 2u, rnd);                 /* sqrt2 = sqrt(2) */
@@ -76,12 +83,11 @@ REAL_L FUNC_CDFNORM(REAL x)
     }
 
 #if defined(FLOAT)
-    y = mpfr_get_d(mp_rop, rnd);
+    mpfr_set(result, mp_rop, rnd);
 #elif defined(DOUBLE)
     /* Return a correctly-rounded double directly to avoid double rounding via long double */
-    y = mpfr_get_ld(mp_rop, rnd);
+    mpfr_set(result, mp_rop, rnd);
 #endif
 
     mpfr_clears(mpx, mp_rop, mpx_div, one, sqrt2, half, erf, add, (mpfr_ptr) 0);
-    return y;
 }

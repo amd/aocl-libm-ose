@@ -52,9 +52,8 @@
 #  define ALM_MP_NEXTAFTER_EMAX   1024
 #endif
 
-REAL_L FUNC_NEXTAFTER(REAL x, REAL y)
+void FUNC_NEXTAFTER(REAL x, REAL y, mpfr_t result)
 {
-    REAL_L y1;
 
     mpfr_rnd_t rnd = MPFR_RNDN;
     mpfr_t mpx, mpy;
@@ -70,11 +69,14 @@ REAL_L FUNC_NEXTAFTER(REAL x, REAL y)
     mpfr_inits2(ALM_MP_NEXTAFTER_PREC, mpx, mpy, (mpfr_ptr) 0);
 
 #if defined(FLOAT)
+    mpfr_set_flt(mpx, x, rnd);
+#else
     mpfr_set_d(mpx, x, rnd);
+#endif
+#if defined(FLOAT)
+    mpfr_set_flt(mpy, y, rnd);
+#else
     mpfr_set_d(mpy, y, rnd);
-#elif defined(DOUBLE)
-    mpfr_set_ld(mpx, x, rnd);
-    mpfr_set_ld(mpy, y, rnd);
 #endif
 
     mpfr_nexttoward(mpx, mpy);
@@ -82,15 +84,10 @@ REAL_L FUNC_NEXTAFTER(REAL x, REAL y)
      * to the subnormal/zero range of the target IEEE format. */
     mpfr_subnormalize(mpx, 0, rnd);
 
-#if defined(FLOAT)
-    y1 = mpfr_get_d(mpx, rnd);
-#elif defined(DOUBLE)
-    y1 = mpfr_get_ld(mpx, rnd);
-#endif
+    mpfr_set(result, mpx, rnd);
 
     mpfr_clears(mpx, mpy, (mpfr_ptr) 0);
     mpfr_set_emin(saved_emin);
     mpfr_set_emax(saved_emax);
 
-    return y1;
 }

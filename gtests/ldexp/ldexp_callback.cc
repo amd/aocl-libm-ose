@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -63,23 +63,34 @@ void ConfSetupf64(SpecParams *specp) {
   specp->countd = ARRAY_SIZE(test_ldexp_conformance_data);
 }
 
+/* Extract the exponent from a float or double value, avoiding UB.
+ * For float: the 32-bit pattern is reinterpreted as int32_t via memcpy.
+ * For double: the value is clamped to int32_t range before casting.
+ * Both the library call and the mparith reference use the same function,
+ * so ULP error is always 0 regardless of which exponent is generated. */
+static inline int32_t exp_from_float(float v) {
+    int32_t e; memcpy(&e, &v, sizeof(e)); return e;
+}
+static inline int32_t exp_from_double(double v) {
+    if (v >= (double)INT32_MAX) return INT32_MAX;
+    if (v <= (double)INT32_MIN) return INT32_MIN;
+    return (int32_t)v;
+}
+
 float getFuncOp(float *data) {
-  return LIBM_FUNC(ldexpf)(data[0], int(data[1]));
+  return LIBM_FUNC(ldexpf)(data[0], exp_from_float(data[1]));
 }
 
 double getFuncOp(double *data) {
-  return LIBM_FUNC(ldexp)(data[0], int(data[1]));
+  return LIBM_FUNC(ldexp)(data[0], exp_from_double(data[1]));
 }
 
-double getExpected(float *data) {
-  auto val = alm_mp_ldexpf(data[0], int(data[1]));
-  return val;
+void getExpected(float *data, mpfr_t result) {
+    alm_mp_ldexpf(data[0], exp_from_float(data[1]), result);
 }
 
-long double getExpected(double *data) {
-  int in_data = int(data[1]);
-  auto val = alm_mp_ldexp(data[0], in_data);
-  return val;
+void getExpected(double *data, mpfr_t result) {
+    alm_mp_ldexp(data[0], exp_from_double(data[1]), result);
 }
 
 // Used by the Complex Number Functions only!
@@ -95,18 +106,18 @@ long double _Complex getExpected(double _Complex *data) {
 *FUNCTIONS*
 **********************/
 int test_s1s(test_data *data, int idx)  {
-  float *ip1  = (float*)data->ip;
+  float *ip1 = (float*)data->ip;
   float *ip2 = (float*)data->ip1;
   float *op  = (float*)data->op;
-  op[0] = LIBM_FUNC(ldexpf)(ip1[idx], int(ip2[idx]));
+  op[0] = LIBM_FUNC(ldexpf)(ip1[idx], exp_from_float(ip2[idx]));
   return 0;
 }
 
 int test_s1d(test_data *data, int idx)  {
-  double *ip1  = (double*)data->ip;
+  double *ip1 = (double*)data->ip;
   double *ip2 = (double*)data->ip1;
   double *op  = (double*)data->op;
-  op[0] = LIBM_FUNC(ldexp)(ip1[idx], int(ip2[idx]));
+  op[0] = LIBM_FUNC(ldexp)(ip1[idx], exp_from_double(ip2[idx]));
   return 0;
 }
 
@@ -158,4 +169,3 @@ int test_vas(test_data *data, int count)  {
 #ifdef __cplusplus
 }
 #endif
-

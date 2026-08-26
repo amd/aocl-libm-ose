@@ -238,6 +238,8 @@ static map<string, vector<string>> libm_funcs = {
     {"log2",      {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"log10",     {"s1d", "s1f", "vrd2", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"logb",      {"s1d", "s1f"}},
+    {"lrint",     {"s1d", "s1f"}},
+    {"lround",    {"s1d", "s1f"}},
     {"nearbyint", {"s1d", "s1f"}},
     {"pow",       {"s1d", "s1f", "vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrda", "vrsa"}},
     {"powx",      {"vrd2", "vrd4", "vrd8", "vrs4", "vrs8", "vrs16", "vrsa", "vrda"}},

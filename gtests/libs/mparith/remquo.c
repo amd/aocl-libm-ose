@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -41,9 +41,8 @@
 
 #include <mpfr.h>
 
-REAL_L FUNC_REMQUO(REAL x, REAL y, int *quo)
+void FUNC_REMQUO(REAL x, REAL y, int *quo, mpfr_t result)
 {
-    REAL_L y1;
 
     long l;
     mpfr_rnd_t rnd = MPFR_RNDN;
@@ -52,24 +51,22 @@ REAL_L FUNC_REMQUO(REAL x, REAL y, int *quo)
     mpfr_inits2(ALM_MP_PRECI_BITS, mpx, mpy, mp_rop, (mpfr_ptr) 0);
 
 #if defined(FLOAT)
+    mpfr_set_flt(mpx, x, rnd);
+#else
     mpfr_set_d(mpx, x, rnd);
+#endif
+#if defined(FLOAT)
+    mpfr_set_flt(mpy, y, rnd);
+#else
     mpfr_set_d(mpy, y, rnd);
-#elif defined(DOUBLE)
-    mpfr_set_ld(mpx, x, rnd);
-    mpfr_set_ld(mpy, y, rnd);
 #endif
 
     mpfr_remquo(mp_rop, &l, mpx, mpy, rnd);
 
-#if defined(FLOAT)
-    y1 = mpfr_get_d(mp_rop, rnd);
-#elif defined(DOUBLE)
-    y1 = mpfr_get_ld(mp_rop, rnd);
-#endif
+    mpfr_set(result, mp_rop, rnd);
 
     *quo = (int)l;
 
     mpfr_clears (mpx, mpy, mp_rop, (mpfr_ptr) 0);
-    return y1;
 }
 

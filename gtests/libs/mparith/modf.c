@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -41,9 +41,8 @@
 
 #include <mpfr.h>
 
-REAL_L FUNC_MODF(REAL x, REAL *p)
+void FUNC_MODF(REAL x, REAL *p, mpfr_t result)
 {
-    REAL_L y;
 
     mpfr_rnd_t rnd = MPFR_RNDN;
     mpfr_t mpx, mpy, mp_rop;
@@ -51,23 +50,21 @@ REAL_L FUNC_MODF(REAL x, REAL *p)
     mpfr_inits2(ALM_MP_PRECI_BITS, mpx, mpy, mp_rop, (mpfr_ptr) 0);
 
 #if defined(FLOAT)
+    mpfr_set_flt(mpx, x, rnd);
+#else
     mpfr_set_d(mpx, x, rnd);
-#elif defined(DOUBLE)
-    mpfr_set_ld(mpx, x, rnd);
 #endif
 
     mpfr_modf(mp_rop, mpy, mpx, rnd);
 
+    mpfr_set(result, mp_rop, rnd);
 #if defined(FLOAT)
-    y = mpfr_get_d(mp_rop, rnd);
     *p = mpfr_get_flt(mpy, rnd);
 #elif defined(DOUBLE)
-    y = mpfr_get_ld(mp_rop, rnd);
     *p = mpfr_get_d(mpy, rnd);
 #endif
 
     mpfr_clears(mpx, mpy, mp_rop, (mpfr_ptr) 0);
 
-    return y;
 }
 

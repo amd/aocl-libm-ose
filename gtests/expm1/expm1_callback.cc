@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -74,14 +74,12 @@ double getFuncOp(double *data) {
   return LIBM_FUNC(expm1)(data[0]);
 }
 
-double getExpected(float *data) {
-  auto val = alm_mp_expm1f(data[0]);
-  return val;
+void getExpected(float *data, mpfr_t result) {
+  alm_mp_expm1f(data[0], result);
 }
 
-long double getExpected(double *data) {
-  auto val = alm_mp_expm1(data[0]);
-  return val;
+void getExpected(double *data, mpfr_t result) {
+  alm_mp_expm1(data[0], result);
 }
 
 // Used by the Complex Number Functions only!

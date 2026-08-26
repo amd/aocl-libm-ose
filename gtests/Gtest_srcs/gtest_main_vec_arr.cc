@@ -27,6 +27,7 @@
 
 #include <cstring>
 #include <iomanip>
+#include <mpfr.h>
 #include "almtest.h"
 #include "callback.h"
 
@@ -41,6 +42,8 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_ARRAY_FLOATS) {
   if(nargs == 2)
     data.ip1 = (void *)inpbuff1;
 
+  mpfr_t exptd;
+  mpfr_init2(exptd, 256);
   test_vas(&data, count);
   for (uint32_t i = 0; i < count; i++)
   {
@@ -48,7 +51,7 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_ARRAY_FLOATS) {
     if(nargs == 2)
       ip[1] = inpbuff1[i];
 
-    double exptd = getExpected(ip);
+    getExpected(ip, exptd);
     double ulp = getUlp(aop[i], exptd);
     if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold))
     {
@@ -56,8 +59,9 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_ARRAY_FLOATS) {
     }
 
     if ((vflag == 1) && (ulp > inData->ulp_threshold))
-        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[i], ulp);
+        PrintUlpResultsFloat(nargs, ip[0], ip[1], mpfr_get_d(exptd, MPFR_RNDN), aop[i], ulp);
   }
+  mpfr_clear(exptd);
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
   "Vec_Array","Accuracy","vas",count,(count-nfail), nfail, max_ulp_err);
   ptr->tstcnt++;
@@ -74,6 +78,8 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_ARRAY_DOUBLES) {
   if(nargs == 2)
     data.ip1 = (void *)inpbuff1;
 
+  mpfr_t exptd;
+  mpfr_init2(exptd, 256);
   test_vad(&data, count);
   for (uint32_t i = 0; i < count; i++)
   {
@@ -81,7 +87,7 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_ARRAY_DOUBLES) {
     if(nargs == 2)
       ip[1] = inpbuff1[i];
 
-    long double exptd = getExpected(ip);
+    getExpected(ip, exptd);
     double ulp = getUlp(aop[i], exptd);
     if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold))
     {
@@ -89,8 +95,9 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_ARRAY_DOUBLES) {
     }
 
     if ((vflag == 1) && (ulp > inData->ulp_threshold))
-        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[i], ulp);
+        PrintUlpResultsDouble(nargs, ip[0], ip[1], mpfr_get_ld(exptd, MPFR_RNDN), aop[i], ulp);
   }
+  mpfr_clear(exptd);
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
   "Vec_Array","Accuracy","vad",count,(count-nfail), nfail, max_ulp_err);
   ptr->tstcnt++;
@@ -346,14 +353,24 @@ void TestInPlaceVectorArray(
   ptr->tstcnt++;
 }
 
-// Wrapper for getExpected with double return type
+// Wrappers for getExpected that extract a scalar value from the mpfr_t result.
+// Used by TestInPlaceVectorArray which passes these as scalar-returning function pointers.
 static double getExpectedDouble(float* ip) {
-  return getExpected(ip);
+  mpfr_t result;
+  mpfr_init2(result, 256);
+  getExpected(ip, result);
+  double val = mpfr_get_d(result, MPFR_RNDN);
+  mpfr_clear(result);
+  return val;
 }
 
-// Wrapper for getExpected with long double return type
 static long double getExpectedLongDouble(double* ip) {
-  return getExpected(ip);
+  mpfr_t result;
+  mpfr_init2(result, 256);
+  getExpected(ip, result);
+  long double val = mpfr_get_ld(result, MPFR_RNDN);
+  mpfr_clear(result);
+  return val;
 }
 
 /*

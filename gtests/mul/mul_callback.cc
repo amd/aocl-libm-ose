@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -51,14 +51,12 @@ bool getSpecialCase(void)
   return special_case;
 }
 
-double getExpected(float *data) {
-  auto val = alm_mp_mulf(data[0], data[1]);
-  return val;
+void getExpected(float *data, mpfr_t result) {
+  alm_mp_mulf(data[0], data[1], result);
 }
 
-long double getExpected(double *data) {
-  auto val = alm_mp_mul(data[0], data[1]);
-  return val;
+void getExpected(double *data, mpfr_t result) {
+  alm_mp_mul(data[0], data[1], result);
 }
 
 // FIXME: To be used by the Complex Number Functions only!

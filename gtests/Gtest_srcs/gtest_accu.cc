@@ -28,6 +28,7 @@
 
 #include <cstdio>
 #include <iostream>
+#include <mpfr.h>
 #include <string>
 #include <stdio.h>
 #include <float.h>
@@ -56,6 +57,8 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_SCALAR_FLOAT) {
   if(nargs == 2)
     data.ip1 = (void *)inpbuff1;
 
+  mpfr_t exptd;
+  mpfr_init2(exptd, 256);
   for (uint32_t i = 0; i < count; i++) {
     test_s1s(&data, i);
 
@@ -63,17 +66,18 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_SCALAR_FLOAT) {
     if(nargs == 2)
       ip[1] = inpbuff1[i];
 
-    double exptd = getExpected(ip);
+    getExpected(ip, exptd);
     double ulp = getUlp(aop[0], exptd);
     if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
       nfail++;
     }
 
     if ((vflag == 1) && (ulp > inData->ulp_threshold))
-        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[0], ulp);
+        PrintUlpResultsFloat(nargs, ip[0], ip[1], mpfr_get_d(exptd, MPFR_RNDN), aop[0], ulp);
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
   "Scalar","Accuracy","s1s",count,(count-nfail), nfail, max_ulp_err);
+  mpfr_clear(exptd);
   ptr->tstcnt++;
 }
 
@@ -88,6 +92,8 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_4FLOATS) {
   if(nargs == 2)
     data.ip1 = (void *)inpbuff1;
 
+  mpfr_t exptd;
+  mpfr_init2(exptd, 256);
   for (uint32_t i = 0; i < count; i += 4) {
     test_v4s(&data, i);
 
@@ -102,18 +108,19 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_4FLOATS) {
           ip[1] = inpbuff1[i + j];
       }
 
-      double exptd = getExpected(ip);
+    getExpected(ip, exptd);
       double ulp = getUlp(aop[j], exptd);
       if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
         nfail++;
       }
 
       if ((vflag == 1) && (ulp > inData->ulp_threshold))
-        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[j], ulp);
+        PrintUlpResultsFloat(nargs, ip[0], ip[1], mpfr_get_d(exptd, MPFR_RNDN), aop[j], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
   "Vector","Accuracy","v4s",count,(count-nfail), nfail, max_ulp_err);
+  mpfr_clear(exptd);
   ptr->tstcnt++;
 }
 
@@ -128,6 +135,8 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_8FLOATS) {
   if(nargs == 2)
     data.ip1 = (void *)inpbuff1;
 
+  mpfr_t exptd;
+  mpfr_init2(exptd, 256);
   for (uint32_t i = 0; i < count; i += 8) {
     test_v8s(&data, i);
 
@@ -142,18 +151,19 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_8FLOATS) {
           ip[1] = inpbuff1[i + j];
       }
 
-      double exptd = getExpected(ip);
+    getExpected(ip, exptd);
       double ulp = getUlp(aop[j], exptd);
       if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
         nfail++;
       }
 
       if ((vflag == 1) && (ulp > inData->ulp_threshold))
-        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[j], ulp);
+        PrintUlpResultsFloat(nargs, ip[0], ip[1], mpfr_get_d(exptd, MPFR_RNDN), aop[j], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
   "Vector","Accuracy","v8s",count,(count-nfail), nfail, max_ulp_err);
+  mpfr_clear(exptd);
   ptr->tstcnt++;
 }
 
@@ -168,6 +178,8 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_16FLOATS) {
   if(nargs == 2)
     data.ip1 = (void *)inpbuff1;
 
+  mpfr_t exptd;
+  mpfr_init2(exptd, 256);
   for (uint32_t i = 0; i < count; i += 16) {
     test_v16s(&data, i);
 
@@ -182,18 +194,19 @@ TEST_P(AccuTestFixtureFloat, ACCURACY_VECTOR_16FLOATS) {
           ip[1] = inpbuff1[i + j];
       }
 
-      double exptd = getExpected(ip);
+    getExpected(ip, exptd);
       double ulp = getUlp(aop[j], exptd);
       if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
         nfail++;
       }
 
       if ((vflag == 1) && (ulp > inData->ulp_threshold))
-        PrintUlpResultsFloat(nargs, ip[0], ip[1], exptd, aop[j], ulp);
+        PrintUlpResultsFloat(nargs, ip[0], ip[1], mpfr_get_d(exptd, MPFR_RNDN), aop[j], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
   "Vector","Accuracy","v16s",count,(count-nfail), nfail, max_ulp_err);
+  mpfr_clear(exptd);
   ptr->tstcnt++;
 }
 
@@ -208,6 +221,8 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_SCALAR_DOUBLE) {
   if(nargs == 2)
     data.ip1 = (void *)inpbuff1;
 
+  mpfr_t exptd;
+  mpfr_init2(exptd, 256);
   for (uint32_t i = 0; i < count; i++) {
     test_s1d(&data, i);
 
@@ -215,18 +230,19 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_SCALAR_DOUBLE) {
     if(nargs == 2)
       ip[1] = inpbuff1[i];
 
-    long double exptd = getExpected(ip);
+    getExpected(ip, exptd);
     double ulp = getUlp(aop[0], exptd);
     if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
       nfail++;
     }
 
     if ((vflag == 1) && (ulp > inData->ulp_threshold))
-        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[0], ulp);
+        PrintUlpResultsDouble(nargs, ip[0], ip[1], mpfr_get_ld(exptd, MPFR_RNDN), aop[0], ulp);
   }
 
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
   "Scalar","Accuracy","s1d",count,(count-nfail), nfail, max_ulp_err);
+  mpfr_clear(exptd);
   ptr->tstcnt++;
 }
 
@@ -241,6 +257,8 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_2DOUBLES) {
   if(nargs == 2)
     data.ip1 = (void *)inpbuff1;
 
+  mpfr_t exptd;
+  mpfr_init2(exptd, 256);
   for (uint32_t i = 0; i < count; i += 2) {
     test_v2d(&data, i);
 
@@ -254,18 +272,19 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_2DOUBLES) {
         else
           ip[1] = inpbuff1[i + j];
       }
-      long double exptd = getExpected(ip);
+    getExpected(ip, exptd);
       double ulp = getUlp(aop[j], exptd);
       if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
         nfail++;
       }
 
       if ((vflag == 1) && (ulp > inData->ulp_threshold))
-        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[j], ulp);
+        PrintUlpResultsDouble(nargs, ip[0], ip[1], mpfr_get_ld(exptd, MPFR_RNDN), aop[j], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
   "Vector","Accuracy","v2d",count,(count-nfail), nfail, max_ulp_err);
+  mpfr_clear(exptd);
   ptr->tstcnt++;
 }
 
@@ -280,6 +299,8 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_4DOUBLES) {
   if(nargs == 2)
     data.ip1 = (void *)inpbuff1;
 
+  mpfr_t exptd;
+  mpfr_init2(exptd, 256);
   for (uint32_t i = 0; i < count; i += 4) {
     test_v4d(&data, i);
 
@@ -294,18 +315,19 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_4DOUBLES) {
             ip[1] = inpbuff1[i + j];
         }
 
-      long double exptd = getExpected(ip);
+    getExpected(ip, exptd);
       double ulp = getUlp(aop[j], exptd);
       if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
         nfail++;
       }
 
       if ((vflag == 1) && (ulp > inData->ulp_threshold))
-        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[j], ulp);
+        PrintUlpResultsDouble(nargs, ip[0], ip[1], mpfr_get_ld(exptd, MPFR_RNDN), aop[j], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
   "Vector","Accuracy","v4d",count,(count-nfail), nfail, max_ulp_err);
+  mpfr_clear(exptd);
   ptr->tstcnt++;
 }
 
@@ -320,6 +342,8 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_8DOUBLES) {
   if(nargs == 2)
     data.ip1 = (void *)inpbuff1;
 
+  mpfr_t exptd;
+  mpfr_init2(exptd, 256);
   for (uint32_t i = 0; i < count; i += 8) {
     test_v8d(&data, i);
 
@@ -328,18 +352,19 @@ TEST_P(AccuTestFixtureDouble, ACCURACY_VECTOR_8DOUBLES) {
       if(nargs == 2)
         ip[1] = inpbuff1[i + j];
 
-      long double exptd = getExpected(ip);
+    getExpected(ip, exptd);
       double ulp = getUlp(aop[j], exptd);
       if(!update_ulp(ulp, max_ulp_err, inData->ulp_threshold)) {
         nfail++;
       }
 
       if ((vflag == 1) && (ulp > inData->ulp_threshold))
-        PrintUlpResultsDouble(nargs, ip[0], ip[1], exptd, aop[j], ulp);
+        PrintUlpResultsDouble(nargs, ip[0], ip[1], mpfr_get_ld(exptd, MPFR_RNDN), aop[j], ulp);
     }
   }
   sprintf(ptr->print[ptr->tstcnt], "%-12s %-12s %-12s %-12d %-12d %-12d %-12g",
   "Vector","Accuracy","v8d",count,(count-nfail), nfail, max_ulp_err);
+  mpfr_clear(exptd);
   ptr->tstcnt++;
 }
 

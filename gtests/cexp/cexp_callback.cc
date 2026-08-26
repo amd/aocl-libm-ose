@@ -82,13 +82,13 @@ long double _Complex getExpected(double _Complex *data) {
 }
 
 // Used by the Real Number Functions only!
-double getExpected(float *data) {
-  return 0;
+void getExpected(float *data, mpfr_t result) {
+  mpfr_set_d(result, 0.0, MPFR_RNDN);
 }
 
 // Used by the Real Number Functions only!
-long double getExpected(double *data) {
-  return 0;
+void getExpected(double *data, mpfr_t result) {
+  mpfr_set_d(result, 0.0, MPFR_RNDN);
 }
 
 fc32_t getGlibcOp(fc32_t *data) {
@@ -220,5 +220,3 @@ int test_v16s(test_data *data, int idx)  {
 #ifdef __cplusplus
 }
 #endif
-
-

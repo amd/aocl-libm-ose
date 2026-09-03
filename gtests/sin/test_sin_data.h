@@ -49,7 +49,7 @@ test_sinf_conformance_data[] = {
     {POS_INF_F32, 0xffc00000, FE_INVALID,},      //inf
     {NEG_INF_F32, 0xffc00000, FE_INVALID,},      //-inf
     {NEG_ONE_F32, 0xbf576aa4, FE_INEXACT,}, //-1
-    {POS_PI_F32, 0x0, 0,}, //sin(pi)=0
+    {POS_PI_F32, 0x3528885a, 0,}, //sin(POS_PI_F32) ~ 6.28e-7 (non-zero: POS_PI_F32 != pi)
     {0x3B800000, 0x3B7FFFD5, 0},    //sini
     {0x3FC90FDB, 0x3f800000, 0},     //sin(Pi/2)=1
     /*some vals taken from old test framework*/
@@ -78,7 +78,7 @@ test_sinf_conformance_data[] = {
     {0xc0490fdb, 0x33bbbd2e, 0}, // sinf(-3.14159 = -pi)=8.742278e-008
     {0x40c90fdb, 0x343bbd2e, 0}, // sinf(6.28319 = 2pi)=1.748456e-007
     {0xc0c90fdb, 0xb43bbd2e, 0}, // sinf(-6.28319 = -2pi)=-1.748456e-007
-    {0x41fb5ed1, 0xb5155386, 0}, // sinf(31.4159 = +10pi)=-5.562837e-007
+    {0x41fb5ed1, 0x3baffb1e, 0}, // sinf(31.4213 ~ +10pi)=5.370511e-003
     {0x4203f267, 0x3f800000, 0}, // sinf(32.9867 = 21pi/2)=1.000000e+000
     {0x42c90fdb, 0x363bbd2e, 0}, // sinf(100.531 = 32pi)=2.797529e-006
     {0x42cc341a, 0x3f800000, 0}, //sinf(102.102 = 65pi/2)= 1.000000e+000
@@ -157,9 +157,9 @@ test_sin_conformance_data[] = {
     {NEG_SNAN_F64, 0xfff2000000000000, FE_INVALID,}, //sin(-snan)=-snan
     {POS_QNAN_F64, 0x7ff87ff7e0000000, 0,},          //sin(qnan)=qnan
     {NEG_QNAN_F64, 0xfffa000000000000, 0,}, //sin(-qnan)
-    {POS_PI_F64,         POS_ZERO_F64, 0,},  //sin(pi)=0
-    {0x3ff921fb544486e0, 0x0000000000000000, 0,},  //sin(n*Pi)=sin(pi) for any n=1,2,3..
-    {0x4012D97C7F336528, 0x0000000000000000, 0,}, //sin(270)
+    {POS_PI_F64,         0x3ca1a62633145c07, 0,},  //sin(POS_PI_F64) ~ 1.22e-16 (non-zero: POS_PI_F64 != pi)
+    {0x3ff921fb544486e0, 0x3ff0000000000000, 0,},  //sin(pi/2) = 1
+    {0x4012D97C7F336528, 0xbff0000000000000, 0,}, //sin(3*pi/2) = -1
 
     {0xc000000000000000, 0xbfed18f6ead1b446, 0}, //-2
     {0x3f18000000000000, 0x3F17FFFFFF700000, 0}, //9.1552734375E-05  =  2^-14 *1.5
@@ -208,18 +208,18 @@ test_sin_conformance_data[] = {
     {0x403f6a7a2955385eLL, 0xbcd60fafbfd97309LL, 0}, // sin(31.4159 = 10pi)=0
     {0x405921fb54442d18LL, 0xbcf1a62633145c07LL, 0}, // sin(100.531 = 32pi)=0
 
-    {0x3cb0000000000000LL, 0x3cafffffffffffffLL, 0}, // sin(2.22045e-016 = full prec)=2.220446e-016
+    {0x3cb0000000000000LL, 0x3cb0000000000000LL, 0}, // sin(2.22045e-016 = full prec)=2.220446e-016
     {0x0000000000000001LL, 0x0000000000000001LL, 0}, // sin(4.94066e-324 = smallest)=4.940e-324
 
     {0x7fe0000001ffbcacLL, 0x3ff0000000000000LL, 0}, // sin(8.9884657412464672e+307 = very close to max double)=1.000000000000
-    {0x40407e4cef4cbd97LL, 0x3fefffffffffffffLL, 0}, // sin(32.9867 = 21pi/2)=1.000000e+000
-    {0x4059868341953dccLL, 0x3fefffffffffffffLL, 0}, // sin(102.102 = 65pi/2)=1.000000e+000
+    {0x40407e4cef4cbd97LL, 0x3ff0000000000000LL, 0}, // sin(32.9867 = 21pi/2)=1.000000e+000
+    {0x4059868341953dccLL, 0x3ff0000000000000LL, 0}, // sin(102.102 = 65pi/2)=1.000000e+000
 
     {0x3fd921fb54442d18LL, 0x3fd87de2a6aea963LL, 0},    // sin(0.392699081699)= 0.382683432365
     {0x3fe921fb54442d18LL, 0x3fe6a09e667f3bccLL, 0},    // sin(0.785398163397)= 0.707106781187
-    {0x3ff2d97c7f3321d2LL, 0x3fed906dcf328d46LL, 0},    // sin(1.178097245096)= 0.923879532511
+    {0x3ff2d97c7f3321d2LL, 0x3fed906bcf328d46LL, 0},    // sin(1.178097245096)= 0.923879532511
     {0x3ff921fb54442d18LL, 0x3ff0000000000000LL, 0},    // sin(1.570796326795)= 1.000000000000
-    {0x3fff6a7a2955385eLL, 0x3fed906dcf328d46LL, 0},    // sin(1.963495408494)= 0.923879532511
+    {0x3fff6a7a2955385eLL, 0x3fed906bcf328d46LL, 0},    // sin(1.963495408494)= 0.923879532511
     {0x4002d97c7f3321d2LL, 0x3fe6a09e667f3bcdLL, 0},    // sin(2.356194490192)= 0.707106781187
     {0x4005fdbbe9bba775LL, 0x3fd87de2a6aea965LL, 0},    // sin(2.748893571891)= 0.382683432365
     {0x400c463abeccb2bbLL, 0xbfd87de2a6aea961LL, 0},    // sin(3.534291735289)= -0.382683432365

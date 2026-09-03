@@ -48,10 +48,10 @@ test_erfcf_conformance_data[] = {
     {NEG_QNAN_F32, NEG_QNAN_F32, 0},            // erfc(-QNAN) = -QNAN
 
     // erfc(x) = 0, for x > 4.0 (large positive values for single precision)
-    {0x40800000, POS_ZERO_F32, 0},              // erfc(4.0)
-    {0x40A00000, POS_ZERO_F32, 0},              // erfc(5.0)
-    {0x40C00000, POS_ZERO_F32, 0},              // erfc(6.0)
-    {0x41200000, POS_ZERO_F32, 0},              // erfc(10.0)
+    {0x40800000, 0x32846ee9, 0},              // erfc(4.0)
+    {0x40A00000, 0x2bd860d4, 0},              // erfc(5.0)
+    {0x40C00000, 0x23c67c0b, 0},              // erfc(6.0)
+    {0x41200000, 0x00000001, 0},              // erfc(10.0)
     {0x41A00000, POS_ZERO_F32, 0},              // erfc(20.0)
 
     // erfc(x) = 2, for x < -4.0 (large negative values for single precision)
@@ -63,32 +63,32 @@ test_erfcf_conformance_data[] = {
 
     // Additional test cases from core-math worst case values
     // For tiny positive values: erfc(x) ≈ 1 - x*(2/√π)
-    {0x00000001, 0x3F7FFFFF, 0},                // erfc(tiny) ≈ 1
-    {0x80000001, 0x3F800001, 0},                // erfc(-tiny) ≈ 1
+    {0x00000001, 0x3f800000, 0},                // erfc(tiny) ≈ 1
+    {0x80000001, 0x3f800000, 0},                // erfc(-tiny) ≈ 1
 
     // For small denormal values
-    {0x007FFFFF, 0x3F65A9F8, 0},                // erfc(max_denormal)
-    {0x807FFFFF, 0x3F9A5608, 0},                // erfc(-max_denormal)
+    {0x007FFFFF, 0x3f800000, 0},                // erfc(max_denormal)
+    {0x807FFFFF, 0x3f800000, 0},                // erfc(-max_denormal)
 
     // For smallest normal values
-    {0x00800000, 0x3F65A9F8, 0},                // erfc(min_normal)
-    {0x80800000, 0x3F9A5608, 0},                // erfc(-min_normal)
+    {0x00800000, 0x3f800000, 0},                // erfc(min_normal)
+    {0x80800000, 0x3f800000, 0},                // erfc(-min_normal)
 
     // Special boundary cases near x = 1
-    {0x3F800000, 0x3E427FA0, 0},                // erfc(1) ≈ 0.157299...
-    {0xBF800000, 0x3FF285F7, 0},                // erfc(-1) ≈ 1.842700...
+    {0x3F800000, 0x3e21130b, 0},                // erfc(1) ≈ 0.157299...
+    {0xBF800000, 0x3febdd9f, 0},                // erfc(-1) ≈ 1.842700...
 
     // Test cases around the transition points between approximation intervals
-    {0x3F580000, 0x3EA64220, 0},                // erfc(0.84375)
-    {0x3FA00000, 0x3D37CE00, 0},                // erfc(1.25)
-    {0x40300000, 0x3C297900, 0},                // erfc(2.75)
+    {0x3F580000, 0x3e6e5c65, 0},                // erfc(0.84375)
+    {0x3FA00000, 0x3d9de68a, 0},                // erfc(1.25)
+    {0x40300000, 0x38d304fc, 0},                // erfc(2.75)
 
     // Very small positive value that would cause underflow
     {0x41900000, 0x00000000, 0},                // erfc(18) = 0 (underflow)
 
     // Test symmetry around zero
-    {0x3F000000, 0x3F1B4DC0, 0},                // erfc(0.5)
-    {0xBF000000, 0x3FCCE4B1, 0},                // erfc(-0.5)
+    {0x3F000000, 0x3ef5810a, 0},                // erfc(0.5)
+    {0xBF000000, 0x3fc29fbd, 0},                // erfc(-0.5)
 };
 
 static libm_test_special_data_f64
@@ -103,9 +103,9 @@ test_erfc_conformance_data[] = {
     {NEG_QNAN_F64, NEG_QNAN_F64, 0},            // erfc(-QNAN) = -QNAN
 
     // erfc(x) = 0, for x > 5.921875 (large positive values)
-    {0x4017B000C9539B89, POS_ZERO_F64, 0},
-    {0x402499999999999A, POS_ZERO_F64, 0},
-    {0x4036800000000000, POS_ZERO_F64, 0},
+    {0x4017B000C9539B89, 0x3c8fe371ab089e9d, 0},
+    {0x402499999999999A, 0x361adc6b03471c57, 0},
+    {0x4036800000000000, 0x11f3ed2c02828af5, 0},
     {0x407B000000000000, POS_ZERO_F64, 0},
     {0x4090000000000000, POS_ZERO_F64, 0},
 
@@ -118,32 +118,32 @@ test_erfc_conformance_data[] = {
 
     // Additional test cases from core-math worst case values
     // For tiny positive values: erfc(x) ≈ 1 - x*(2/√π)
-    {0x0000000000000001, 0x3FEFFFFFFFFFFFFF, 0},  // erfc(tiny) ≈ 1
-    {0x8000000000000001, 0x3FF0000000000001, 0},  // erfc(-tiny) ≈ 1
+    {0x0000000000000001, 0x3ff0000000000000, 0},  // erfc(tiny) ≈ 1
+    {0x8000000000000001, 0x3ff0000000000000, 0},  // erfc(-tiny) ≈ 1
 
     // For small denormal values
-    {0x000FFFFFFFFFFFFF, 0x3FEDEF2289BD643A, 0},  // erfc(max_denormal)
-    {0x800FFFFFFFFFFFFF, 0x3FF120DD750429B6, 0},  // erfc(-max_denormal)
+    {0x000FFFFFFFFFFFFF, 0x3ff0000000000000, 0},  // erfc(max_denormal)
+    {0x800FFFFFFFFFFFFF, 0x3ff0000000000000, 0},  // erfc(-max_denormal)
 
     // For smallest normal values
-    {0x0010000000000000, 0x3FEDEF2289BD6439, 0},  // erfc(min_normal)
-    {0x8010000000000000, 0x3FF120DD750429B7, 0},  // erfc(-min_normal)
+    {0x0010000000000000, 0x3ff0000000000000, 0},  // erfc(min_normal)
+    {0x8010000000000000, 0x3ff0000000000000, 0},  // erfc(-min_normal)
 
     // Special boundary cases near x = 1
-    {0x3FF0000000000000, 0x3FC84FD8F81F0DC4, 0},  // erfc(1) ≈ 0.157299...
-    {0xBFF0000000000000, 0x3FFE50E2B7BEFEED, 0},  // erfc(-1) ≈ 1.842700...
+    {0x3FF0000000000000, 0x3fc4226162fbddd5, 0},  // erfc(1) ≈ 0.157299...
+    {0xBFF0000000000000, 0x3ffd7bb3d3a08445, 0},  // erfc(-1) ≈ 1.842700...
 
     // Test cases around the transition points between approximation intervals
-    {0x3FEB000000000000, 0x3FD4C8A1F7E93E02, 0},  // erfc(0.84375)
-    {0x3FF4000000000000, 0x3FA6F9D5DC41CF5A, 0},  // erfc(1.25)
-    {0x4006000000000000, 0x3F84F2E2B26FB3A6, 0},  // erfc(2.75)
+    {0x3FEB000000000000, 0x3fcdcb8cae2d747f, 0},  // erfc(0.84375)
+    {0x3FF4000000000000, 0x3fb3bcd133aa0ffc, 0},  // erfc(1.25)
+    {0x4006000000000000, 0x3f1a609f7584d32b, 0},  // erfc(2.75)
 
     // Very small positive value that would cause underflow
     {0x4062000000000000, 0x0000000000000000, 0},  // erfc(144) = 0 (underflow)
 
     // Test symmetry around zero
-    {0x3FE0000000000000, 0x3FE369D036CE7A1D, 0},  // erfc(0.5)
-    {0xBFE0000000000000, 0x3FF9C962FC9463B4, 0},  // erfc(-0.5)
+    {0x3FE0000000000000, 0x3fdeb02147ce245c, 0},  // erfc(0.5)
+    {0xBFE0000000000000, 0x3ff853f7ae0c76e9, 0},  // erfc(-0.5)
 };
 
 #endif  /*__TEST_ERFC_DATA_H___*/

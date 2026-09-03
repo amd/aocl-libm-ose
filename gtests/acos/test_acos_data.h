@@ -36,9 +36,9 @@
 static libm_test_special_data_f32
 test_acosf_conformance_data[] = {
    // special accuracy tests
-   {0x38800000, 0x3f800000,  0},  //min= 0.00006103515625, small enough that acos(x) = 1
-   {0x387FFFFF, 0x3f800000,  0}, //min - 1 bit
-   {0x38800001, 0x3f800000,  0}, //min + 1 bit
+   {0x38800000, 0x3fc90ddb,  0}, //min= 0.00006103515625
+   {0x387FFFFF, 0x3fc90ddb,  0}, //min - 1 bit
+   {0x38800001, 0x3fc90ddb,  0}, //min + 1 bit
    {0xF149F2C9, 0x7f800000,  FE_INVALID}, //lambda + x = 1, x = -9.9999994e+29
    {0xF149F2C8, 0x7f800000,  FE_INVALID}, //lambda + x < 1
    {0xF149F2CA, 0x7f800000,  FE_INVALID}, //lambda + x > 1
@@ -60,16 +60,16 @@ test_acosf_conformance_data[] = {
    {POS_QNAN_F32, POS_QNAN_F32, 0 },  //
    {POS_INF_F32,  POS_INF_F32, FE_INVALID},  //95
 
-   {0x00000001, 0x3f800000,  0},  // denormal min
-   {0x0005fde6, 0x3f800000,  0},  // denormal intermediate
-   {0x007fffff, 0x3f800000,  0},  // denormal max
-   {0x80000001, 0x3f800000,  0},  // -denormal min
-   {0x805def12, 0x3f800000,  0},  // -denormal intermediate
-   {0x807FFFFF, 0x3f800000,  0},  // -denormal max
-   {0x00800000, 0x3f800000,  0},  // normal min
+   {0x00000001, 0x3fc90fdb,  0},  // denormal min
+   {0x0005fde6, 0x3fc90fdb,  0},  // denormal intermediate
+   {0x007fffff, 0x3fc90fdb,  0},  // denormal max
+   {0x80000001, 0x3fc90fdb,  0},  // -denormal min
+   {0x805def12, 0x3fc90fdb,  0},  // -denormal intermediate
+   {0x807FFFFF, 0x3fc90fdb,  0},  // -denormal max
+   {0x00800000, 0x3fc90fdb,  0},  // normal min
    {0x43b3c4ea, 0x7f800000,  FE_INVALID},  // normal intermediate
    {0x7f7fffff, 0x7f800000,  FE_INVALID},  // normal max
-   {0x80800000, 0x3f800000,  0},  // -normal min
+   {0x80800000, 0x3fc90fdb,  0},  // -normal min
    {0xc5812e71, 0x7f800000,  FE_INVALID},  // -normal intermediate
    {0xFF7FFFFF, 0x7f800000,  FE_INVALID},  // -normal max
    {0x7F800000, 0x7f800000,  0},  // inf
@@ -94,20 +94,20 @@ test_acosf_conformance_data[] = {
    {0x402DF854, 0x40f38624,  0},  // e
    {0x402DF855, 0x40f38628,  0},  // e ++
    {0x00000000, 0x3f800000,  0},  // 0
-   {0x37C0F01F, 0x3f800000,  0},  // 0.000023
-   {0x3EFFFEB0, 0x3f9055e0,  0},  // 0.49999
-   {0x3F0000C9, 0x3f905641,  0},  // 0.500012
+   {0x37C0F01F, 0x3fc90f1a,  0},  // 0.000023
+   {0x3EFFFEB0, 0x3f860af3,  0},  // 0.49999
+   {0x3F0000C9, 0x3f860a1e,  0},  // 0.500012
    {0x80000000, 0x3f800000,  0},  // -0
-   {0xb7C0F01F, 0x3f800000,  0},  // -0.000023
-   {0xbEFFFEB0, 0x3f9055e0,  0},  // -0.49999
-   {0xbF0000C9, 0x3f905641,  0},  // -0.500012
-   {0x3f800000, 0x3fc583ab,  0},  // 1
-   {0x3f700001, 0x3fbc7e14,  0},  // 0.93750006
+   {0xb7C0F01F, 0x3fc9109c,  0},  // -0.000023
+   {0xbEFFFEB0, 0x40060a61,  0},  // -0.49999
+   {0xbF0000C9, 0x40060acc,  0},  // -0.500012
+   {0x3f800000, 0x00000000,  0},  // 1
+   {0x3f700001, 0x3eb5f9bf,  0},  // 0.93750006
    {0x3F87FFFE, 0x3fcf4ed3,  0},  // 1.0624998
    {0x3FBFFFAC, 0x40168d88,  0},  // 1.49999
    {0x3FC00064, 0x40168e4c,  0},  // 1.500012
-   {0xbf800000, 0x3fc583ab,  0},  // -1
-   {0xbf700001, 0x3fbc7e14,  0},  // -0.93750006
+   {0xbf800000, 0x40490fdb,  0},  // -1
+   {0xbf700001, 0x403250a3,  0},  // -0.93750006
    {0xbF87FFFE, 0x3fcf4ed3,  0},  // -1.0624998
    {0xbFBFFFAC, 0x40168d88,  0},  // -1.49999
    {0xbFC00064, 0x40168e4c,  0},  // -1.500012
@@ -137,18 +137,18 @@ test_acosf_conformance_data[] = {
    {0x3f200000,0X3f200000}, // 0.625
    {0x3e800000,0X3e800000}, // 0.25
    {0x3f400000,0X3f400000}, // 0.75
-   {0x3f000000,0X3f000000}, // 0.5 
+   {0x3f000000,0X3f000000}, // 0.5
    {0x3f800000,0X3f800000}, // 1
    {0x3fa00000,0X3fa00000}, // 1.25
-   {0x3fc00000,0X3fc00000}, // 1.5 
+   {0x3fc00000,0X3fc00000}, // 1.5
    {0x40100000,0X40100000}, // 2.25
-   {0x40200000,0X40200000}, // 2.5 
+   {0x40200000,0X40200000}, // 2.5
    {0x40800000,0X40800000}, // 4
    {0x40880000,0X40880000}, // 4.25
-   {0x40900000,0X40900000}, // 4.5 
+   {0x40900000,0X40900000}, // 4.5
    {0x41000000,0X41000000}, // 8
    {0x41040000,0X41040000}, // 8.25
-   {0x41080000,0X41080000}, // 8.5 
+   {0x41080000,0X41080000}, // 8.5
    {0x41800000,0X41800000}, // 16
    {0x41820000,0X41820000}, // 16.25
    {0x41840000,0X41840000}, // 16.5
@@ -158,13 +158,13 @@ test_acosf_conformance_data[] = {
    {0x42800000,0X42800000}, // 64
    {0x42808000,0X42808000}, // 64.25
    {0x42810000,0X42810000}, // 64.5
-   {0x43000000,0X43000000}, // 128 
+   {0x43000000,0X43000000}, // 128
    {0x43004000,0X43004000}, // 128.25
    {0x43008000,0X43008000}, // 128.5
-   {0x43800000,0X43800000}, // 256 
+   {0x43800000,0X43800000}, // 256
    {0x43802000,0X43802000}, // 256.25
    {0x43804000,0X43804000}, // 256.5
-   {0x44000000,0X44000000}, // 512 
+   {0x44000000,0X44000000}, // 512
    {0x44001000,0X44001000}, // 512.25
    {0x44002000,0X44002000}, // 512.5
    {0x44800000,0X44800000}, // 1024
@@ -295,7 +295,7 @@ test_acosf_conformance_data[] = {
    {0x50a3e87f, 0x50a3e87f },  //2.19993846E+10, close to pi/2
    {0x49486fa2, 0x49486fa2 },  //8.20986125E+05, close to 0
    {0x3F000000, 0x3F000000 },  //0.5
-   {0xC07AE148, 0x407AE148 },  //-3.92	
+   {0xC07AE148, 0x407AE148 },  //-3.92
    {0xc7f12000, 0x47f12000 },  //-123456
    {0xC8C35000, 0x48C35000 },  //-4e5
 
@@ -305,9 +305,9 @@ test_acosf_conformance_data[] = {
 static libm_test_special_data_f64
 test_acos_conformance_data[] = {
     // special accuracy tests
-    {0x3e30000000000000LL, 0x3ff0000000000000LL, 0},  //min, small enough that acos(x) = 1 //
-    {0x3E2FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, //min - 1 bit
-    {0x3e30000000000001LL, 0x3ff0000000000000LL, 0}, //min + 1 bit
+    {0x3e30'0000'0000'0000LL, 0x3ff9'21fb'5344'2d18LL, 0},  //min
+    {0x3E2F'FFFF'FFFF'FFFFLL, 0x3ff9'21fb'5344'2d18LL, 0},  //min - 1 bit
+    {0x3e30'0000'0000'0001LL, 0x3ff9'21fb'5344'2d18LL, 0},  //min + 1 bit
     {0xFE37E43C8800759CLL, 0x7ff0000000000000LL, FE_INVALID}, //lambda + x = 1, x = -1.0000000000000000e+300
     {0xFE37E43C8800758CLL, 0x7ff0000000000000LL, FE_INVALID}, //lambda + x < 1
     {0xFE37E43C880075ACLL, 0x7ff0000000000000LL, FE_INVALID}, //lambda + x > 1
@@ -330,16 +330,16 @@ test_acos_conformance_data[] = {
     {POS_QNAN_F64, POS_QNAN_F64, 0 },  //
     {NEG_QNAN_F64, NEG_QNAN_F64, 0 },  //
     {0x4086340000000000LL, POS_INF_F64, FE_INVALID},  // 710.5
-    {0x0000000000000001LL, 0x3ff0000000000000LL, 0}, // denormal min
-    {0x0005fde623545abcLL, 0x3ff0000000000000LL, 0}, // denormal intermediate
-    {0x000FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, // denormal max
-    {0x8000000000000001LL, 0x3ff0000000000000LL, 0}, // -denormal min
-    {0x8002344ade5def12LL, 0x3ff0000000000000LL, 0}, // -denormal intermediate
-    {0x800FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, // -denormal max
-    {0x0010000000000000LL, 0x3ff0000000000000LL, 0}, // normal min
+    {0x0000000000000001LL, 0x3ff921fb54442d18LL, 0}, // denormal min
+    {0x0005fde623545abcLL, 0x3ff921fb54442d18LL, 0}, // denormal intermediate
+    {0x000FFFFFFFFFFFFFLL, 0x3ff921fb54442d18LL, 0}, // denormal max
+    {0x8000000000000001LL, 0x3ff921fb54442d18LL, 0}, // -denormal min
+    {0x8002344ade5def12LL, 0x3ff921fb54442d18LL, 0}, // -denormal intermediate
+    {0x800FFFFFFFFFFFFFLL, 0x3ff921fb54442d18LL, 0}, // -denormal max
+    {0x0010000000000000LL, 0x3ff921fb54442d18LL, 0}, // normal min
     {0x43b3c4eafedcab02LL, 0x7ff0000000000000LL, FE_INVALID}, // normal intermediate
     {0x7FEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_INVALID}, // normal max
-    {0x8010000000000000LL, 0x3ff0000000000000LL, 0}, // -normal min
+    {0x8010000000000000LL, 0x3ff921fb54442d18LL, 0}, // -normal min
     {0xc5812e71245acfdbLL, 0x7ff0000000000000LL, FE_INVALID}, // -normal intermediate
     {0xFFEFFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_INVALID}, // -normal max
     {0x7FF0000000000000LL, 0x7ff0000000000000LL, 0}, // inf
@@ -364,20 +364,20 @@ test_acos_conformance_data[] = {
     {0x4005BF0A8B145769LL, 0x401e70c4a4f41684LL, 0}, // e
     {0x400DBF0A8B145769LL, 0x40349be1e586228dLL, 0}, // e ++
     {0x0000000000000000LL, 0x3ff0000000000000LL, 0}, // 0
-    {0x3C4536B8B14B676CLL, 0x3ff0000000000000LL, 0}, // 0.0000000000000000023
-    {0x3FDFFFFBCE4217D3LL, 0x3ff20ac0fa498d2cLL, 0}, // 0.4999989999999999999
-    {0x3FE000000000006CLL, 0x3ff20ac1862ae8edLL, 0}, // 0.500000000000012
+    {0x3C4536B8B14B676CLL, 0x3ff921fb54442d18LL, 0}, // 0.0000000000000000023
+    {0x3FDFFFFBCE4217D3LL, 0x3ff0c1536e23d752LL, 0}, // 0.4999989999999999999
+    {0x3FE000000000006CLL, 0x3ff0c152382d7327LL, 0}, // 0.500000000000012
     {0x8000000000000000LL, 0x3ff0000000000000LL, 0}, // -0
-    {0xBBDB2752CE74FF42LL, 0x3ff0000000000000LL, 0}, // -0.000000000000000000023
-    {0xBFDFFFFBCE4217D3LL, 0x3ff20ac0fa498d2cLL, 0}, // -0.4999989999999999999
-    {0xBFE000000000006CLL, 0x3ff20ac1862ae8edLL, 0}, // -0.500000000000012
-    {0x3FF0000000000000LL, 0x3ff8b07551d9f550LL, 0}, // 1
-    {0x3FEFFFFFC49BD0DCLL, 0x3ff8b0752ef3f8a2LL, 0}, // 0.9999998893750006
+    {0xBBDB2752CE74FF42LL, 0x3ff921fb54442d18LL, 0}, // -0.000000000000000000023
+    {0xBFDFFFFBCE4217D3LL, 0x4000c1519d32416fLL, 0}, // -0.4999989999999999999
+    {0xBFE000000000006CLL, 0x4000c152382d7385LL, 0}, // -0.500000000000012
+    {0x3FF0000000000000LL, 0x0000000000000000LL, 0}, // 1
+    {0x3FEFFFFFC49BD0DCLL, 0x3f3ed38932f91feeLL, 0}, // 0.9999998893750006
     {0x3FF0000000000119LL, 0x3ff8b07551d9f69bLL, 0}, // 1.0000000000000624998
     {0x3FF7FFFEF39085F4LL, 0x4002d1bb0418ae52LL, 0}, // 1.499998999999999967
     {0x3FF8000000000001LL, 0x4002d1bc21e22023LL, 0}, // 1.50000000000000012
-    {0xBFF0000000000000LL, 0x3ff8b07551d9f550LL, 0}, // -1
-    {0xBFEFFFFFC49BD0DCLL, 0x3ff8b0752ef3f8a2LL, 0}, // -0.9999998893750006
+    {0xBFF0000000000000LL, 0x400921fb54442d18LL, 0}, // -1
+    {0xBFEFFFFFC49BD0DCLL, 0x40092104b7fa954fLL, 0}, // -0.9999998893750006
     {0xBFF0000000000119LL, 0x3ff8b07551d9f69bLL, 0}, // -1.0000000000000624998
     {0xBFF7FFFEF39085F4LL, 0x4002d1bb0418ae52LL, 0}, // -1.499998999999999967
     {0xBFF8000000000001LL, 0x4002d1bc21e22023LL, 0}, // -1.50000000000000012
@@ -465,4 +465,3 @@ test_acos_conformance_data[] = {
 
 
 };
-

@@ -36,8 +36,8 @@
 static libm_test_special_data_f32
 test_sinhf_conformance_data[] = {
     // special accuracy tests
-    {0x38800000, 0x38800000,  0},  //min= 0.00006103515625, small enough that sinh(x) = 1
-    {0x387FFFFF, 0x38800000,  FE_UNDERFLOW}, //min - 1 bit
+    {0x38800000, 0x38800000,  0}, //min= 0.00006103515625
+    {0x387FFFFF, 0x387fffff,  FE_UNDERFLOW}, //min - 1 bit
     {0x38800001, 0x38800001,  0}, //min + 1 bit
     {0xF149F2C9, 0xff800000,  FE_OVERFLOW}, //lambda + x = 1, x = -9.9999994e+29
     {0xF149F2C8, 0xff800000,  FE_OVERFLOW}, //lambda + x < 1
@@ -157,7 +157,7 @@ test_sinhf_conformance_data[] = {
     {0x7fc00000, 0x7fc00000,  0},
     {0xffc00000, 0xffc00000,  0},
 
-    //answer from NAG test tool  
+    //answer from NAG test tool
     {0x38000000, 0x38000000,  0}, // 2^(-15), < 2 ^(-14), x
     {0xb8000000, 0xb8000000,  0}, //-2^(-15), < 2 ^(-14), x
     {0x42b40000, 0x7f800000,  0}, // 90, > max_sinh_arg, +inf
@@ -175,7 +175,7 @@ test_sinhf_conformance_data[] = {
 static libm_test_special_data_f64
 test_sinh_conformance_data[] = {
     // special accuracy tests
-    {0x3e30000000000000LL, 0x3e30000000000000LL, 0},  //min, small enough that sinh(x) = 1 //
+    {0x3e30000000000000LL, 0x3e30000000000000LL, 0}, //min
     {0x3E2FFFFFFFFFFFFFLL, 0x3e2fffffffffffffLL, FE_UNDERFLOW}, //min - 1 bit
     {0x3e30000000000001LL, 0x3e30000000000001LL, 0}, //min + 1 bit
     {0xFE37E43C8800759CLL, 0xfff0000000000000LL, FE_OVERFLOW}, //lambda + x = 1, x = -1.0000000000000000e+300

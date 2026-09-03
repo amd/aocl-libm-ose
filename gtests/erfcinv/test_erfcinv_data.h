@@ -56,10 +56,10 @@ test_erfcinv_conformance_data[] = {
     {POS_QNAN_F64, POS_QNAN_F64, 0},            // erfcinv(+QNAN) = QNAN
     {NEG_QNAN_F64, NEG_QNAN_F64, 0},            // erfcinv(-QNAN) = -QNAN
 
-    // erfcinv(x) ≈ 0
-    {0x0000000000000001, 0x403B369A6244E684, 0},  // erfcinv(min_denormal)
-    {0x000FFFFFFFFFFFFF, 0x403A8B12FC6E4892, 0},  // erfcinv(max_denormal)
-    {0x0010000000000000, 0x403A8B12FC6E4892, 0},  // erfcinv(min_normal)
+    // erfcinv(x) ≈ 27: correctly-rounded finite results for tiny x
+    {0x0000000000000001, 0x403B369A6244E684, 0},  // erfcinv(min_denormal) ≈ 27.2133
+    {0x000FFFFFFFFFFFFF, 0x403A8B12FC6E4892, 0},  // erfcinv(max_denormal) ≈ 26.5433
+    {0x0010000000000000, 0x403A8B12FC6E4892, 0},  // erfcinv(min_normal)   ≈ 26.5433
 
     // erfcinv(x) ≈ 1
     {0x3FEFFFFFFFFFFFFF, 0x3C9C5BF891B4EF6B, 0},
@@ -70,7 +70,7 @@ test_erfcinv_conformance_data[] = {
     {0x3FFFFFFFFFFFFFFF, 0xC0173856D153F081, 0},
 
     // Test cases around the transition points between approximation intervals
-    {0x2B2BFF2EE48E0530, 0x402E219301E62922, 0},  // erfcinv(1e-100)
+    {0x2B2BFF2EE48E0530, 0x402E219301E62922, 0},  // erfcinv(1e-100) ≈ 15.0656
     {0x3FB0000000000000, 0x3FF5130C3ACAE4DE, 0},  // erfcinv(0.0625)
     {0x3FE8000000000000, 0x3FCCD70681D5FF70, 0},  // erfcinv(0.75)
     {0x3FEE000000000000, 0x3FAC636951597E17, 0},  // erfcinv(0.9375)

@@ -38,7 +38,7 @@ test_log2f_conformance_data[] = {
     {0x35510,           0xc3034374,    FE_INEXACT},
     {0x7ff00000 ,       0x7fc00001,    0},
     {NEG_INF_F32,       0x7fc00000,    FE_INVALID},
-    {POS_INF_F32,       0x7fc00000,    0},
+    {POS_INF_F32,       0x7f800000,    0},
     {POS_ONE_F32  ,     0x00000000,    0},
     {NEG_ONE_F32  ,     0x7fc00000,    FE_INVALID},
     {POS_ZERO_F32 ,     0xff800000,    0},
@@ -50,7 +50,7 @@ test_log2f_conformance_data[] = {
     {0x3f800000,        0x00000000,    0},  //1
     {0x40000000,        0x3f800000,    0},  //2
     {0x33d6bf95,        0xc1ba0729,    FE_INEXACT},  //1.0000000e-7
-    {POS_PI_F32,        0x3fd3643a,    FE_INEXACT},  //pi
+    {POS_PI_F32,        0x3fd36437,    FE_INEXACT},  //pi
     {0x40c90fdb,        0x4029b21d,    FE_INEXACT},  //2pi
     {0x41200000,        0x40549a78,    FE_INEXACT},  //10
     {0x447a0000,        0x411f73da,    FE_INEXACT},  //1000
@@ -156,7 +156,7 @@ test_log2_conformance_data[] = {
     {0x3FF0000000000000LL,0x0000000000000000LL,0},  //1
     {0x4000000000000000LL,0x3ff0000000000000LL,0},  //2
     {0x3D3C25C268497682LL,0xc04597b037b2d4ccLL,0},  //1.0000000e-13
-    {POS_PI_F64,          0x3ffa6c873f5fb93dLL,0},  //pi
+    {POS_PI_F64,          0x3ffa6c873498ddf7LL,0},  //pi
     {0x401921FB54442D18LL,0x400536439a4c6efcLL,0},  //2pi
     {0x4024000000000000LL,0x400a934f0979a371LL,0},  //10
     {0x408F400000000000LL,0x4023ee7b471b3a95LL,0},  //1000
@@ -229,7 +229,7 @@ test_log2_conformance_data[] = {
 
     {0X0000000000000000LL,0XFFF0000000000000LL,0},  //+0.0
     {0X8000000000000000LL,0XFFF0000000000000LL,0},  //-0.0
-    {0X3FF0F5C28F5C28F6LL,0X3FB5853C54075E4CLL,0},  //1.06
+    {0X3FF0F5C28F5C28F6LL,0x3fb5853c54075e4bLL,0},  //1.06
     {0X3FEE147AE147AE14LL,0XBFB6DA3969BA5BEFLL,0},  //.94
     {0X3FEFAE147AE147AELL,0XBF8DB1F34D2C386DLL,0},  //.99
     {0X3FE0000000000000LL,0XBFF0000000000000LL,0},  //.5

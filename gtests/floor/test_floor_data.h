@@ -87,7 +87,7 @@ test_floor_conformance_data[] = {
     {POS_HNORMAL_F64,   POS_HNORMAL_F64,        0},
     {NEG_HNORMAL_F64,   NEG_HNORMAL_F64,        0},
     {POS_LNORMAL_F64,   POS_ZERO_F64,           0},
-    {NEG_LNORMAL_F64,   NEG_ZERO_F64,           0},
+    {NEG_LNORMAL_F64,   0xbff0000000000000,           0},
     {POS_PI_F64,        0x4008000000000000LL,   0},
     {NEG_PI_F64,        0xC010000000000000LL,   0},
     {POS_PI_BY2_F64,    0x3fF0000000000000LL,   0},

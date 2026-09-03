@@ -47,15 +47,15 @@ test_cdfnormf_conformance_data[] = {
     {NEG_QNAN_F32, NEG_QNAN_F32, 0},           // cdfnorm(-QNAN) = -QNAN
 
     // cdfnorm(x) → 1, for large positive x (>8 for single precision)
-    {0x40800000, 0x3F800000, 0},              // cdfnorm(4.0) ≈ 0.99997
-    {0x40A00000, 0x3F800000, 0},              // cdfnorm(5.0) ≈ 1.0 (saturates)
+    {0x40800000, 0x3f7ffded, 0},              // cdfnorm(4.0) ≈ 0.99997
+    {0x40A00000, 0x3f7ffffb, 0},              // cdfnorm(5.0) ≈ 1.0 (saturates)
     {0x40C00000, 0x3F800000, 0},              // cdfnorm(6.0) ≈ 1.0
     {0x41200000, 0x3F800000, 0},              // cdfnorm(10.0) = 1.0
     {0x41A00000, 0x3F800000, 0},              // cdfnorm(20.0) = 1.0
 
     // cdfnorm(x) → 0, for large negative x (<-8 for single precision)
-    {0xC0800000, 0x00000000, 0},              // cdfnorm(-4.0) ≈ 3.17e-5
-    {0xC1200000, 0x00000000, 0},              // cdfnorm(-10.0) = 0 (underflow)
+    {0xC0800000, 0x3804d6bd, 0},              // cdfnorm(-4.0) ≈ 3.17e-5
+    {0xC1200000, 0x191363af, 0},              // cdfnorm(-10.0) = 0 (underflow)
     {0xC1700000, 0x00000000, 0},              // cdfnorm(-15.0) = 0
     {0xC1A00000, 0x00000000, 0},              // cdfnorm(-20.0) = 0
     {0xC1C80000, 0x00000000, 0},              // cdfnorm(-25.0) = 0
@@ -74,20 +74,20 @@ test_cdfnormf_conformance_data[] = {
     {0x80800000, 0x3F000000, 0},              // cdfnorm(-min_normal) ≈ 0.5
 
     // Special boundary cases near x = 1
-    {0x3F800000, 0x3F578BC6, 0},              // cdfnorm(1) ≈ 0.841345
-    {0xBF800000, 0x3E220439, 0},              // cdfnorm(-1) ≈ 0.158655
+    {0x3F800000, 0x3f57625f, 0},              // cdfnorm(1) ≈ 0.841345
+    {0xBF800000, 0x3e227686, 0},              // cdfnorm(-1) ≈ 0.158655
 
     // Test cases around the transition points between approximation intervals
-    {0x3F580000, 0x3F445DB0, 0},              // cdfnorm(0.84375) ≈ 0.800
-    {0x3FA00000, 0x3F6AE5A0, 0},              // cdfnorm(1.25) ≈ 0.894350
-    {0x40300000, 0x3F7FCA00, 0},              // cdfnorm(2.75) ≈ 0.997020
+    {0x3F580000, 0x3f4cf3d3, 0},              // cdfnorm(0.84375) ≈ 0.800
+    {0x3FA00000, 0x3f64f423, 0},              // cdfnorm(1.25) ≈ 0.894350
+    {0x40300000, 0x3f7f3cb8, 0},              // cdfnorm(2.75) ≈ 0.997020
 
     // Very small positive value near saturation
     {0x41900000, 0x3F800000, 0},              // cdfnorm(18) = 1.0 (saturates)
 
     // Test symmetry around zero
-    {0x3F000000, 0x3F198880, 0},              // cdfnorm(0.5) ≈ 0.691462
-    {0xBF000000, 0x3ECC7780, 0},              // cdfnorm(-0.5) ≈ 0.308538
+    {0x3F000000, 0x3f3103af, 0},              // cdfnorm(0.5) ≈ 0.691462
+    {0xBF000000, 0x3e9df8a2, 0},              // cdfnorm(-0.5) ≈ 0.308538
 };
 
 static libm_test_special_data_f64
@@ -102,18 +102,18 @@ test_cdfnorm_conformance_data[] = {
     {NEG_QNAN_F64, NEG_QNAN_F64, 0},                   // cdfnorm(-QNAN) = -QNAN
 
     // cdfnorm(x) → 1, for large positive x (>37.5 saturates to 1.0)
-    {0x4017B000C9539B89, 0x3FEFFFFFFFFFFFFF, 0},       // cdfnorm(5.921875) ≈ 0.999999999
+    {0x4017B000C9539B89, 0x3fefffffff254696, 0},       // cdfnorm(5.921875) ≈ 0.999999999
     {0x402499999999999A, 0x3FF0000000000000, 0},       // cdfnorm(10.3) = 1.0
     {0x4036800000000000, 0x3FF0000000000000, 0},       // cdfnorm(22.5) = 1.0
     {0x407B000000000000, 0x3FF0000000000000, 0},       // cdfnorm(432.0) = 1.0
     {0x4090000000000000, 0x3FF0000000000000, 0},       // cdfnorm(1024.0) = 1.0
 
     // cdfnorm(x) → 0, for large negative x (<-39 underflows to 0.0)
-    {0xC017B000C9539B89, 0x0000000000000000, 0},       // cdfnorm(-5.921875) ≈ tiny
+    {0xC017B000C9539B89, 0x3e1b572d4d495b5d, 0},       // cdfnorm(-5.921875) ≈ tiny
     {0xC090000000000000, 0x0000000000000000, 0},       // cdfnorm(-1024.0) = 0
     {0xC063C00000000000, 0x0000000000000000, 0},       // cdfnorm(-159.0) = 0
     {0xC054800000000000, 0x0000000000000000, 0},       // cdfnorm(-82.0) = 0
-    {0xC037AE147AE147AE, 0x0000000000000000, 0},       // cdfnorm(-23.68) = 0
+    {0xC037AE147AE147AE, 0x26488568a8239f68, 0},       // cdfnorm(-23.68) = 0
 
     // Additional test cases
     // For tiny positive values: cdfnorm(x) ≈ 0.5 + x/√(2π)
@@ -129,20 +129,20 @@ test_cdfnorm_conformance_data[] = {
     {0x8010000000000000, 0x3FE0000000000000, 0},       // cdfnorm(-min_normal) ≈ 0.5
 
     // Special boundary cases near x = 1
-    {0x3FF0000000000000, 0x3FEAED548F090CEE, 0},       // cdfnorm(1) ≈ 0.841344746
-    {0xBFF0000000000000, 0x3FC44F52E979BAE8, 0},       // cdfnorm(-1) ≈ 0.158655254
+    {0x3FF0000000000000, 0x3feaec4bd120d37d, 0},       // cdfnorm(1) ≈ 0.841344746
+    {0xBFF0000000000000, 0x3fc44ed0bb7cb20b, 0},       // cdfnorm(-1) ≈ 0.158655254
 
     // Test cases around the transition points between approximation intervals
-    {0x3FEB000000000000, 0x3FE888B618EAA88C, 0},       // cdfnorm(0.84375) ≈ 0.8006
-    {0x3FF4000000000000, 0x3FED5CB7ACFF59C0, 0},       // cdfnorm(1.25) ≈ 0.894350
-    {0x4006000000000000, 0x3FEFF94FAC4B8300, 0},       // cdfnorm(2.75) ≈ 0.997020
+    {0x3FEB000000000000, 0x3fe99e7a53c34538, 0},       // cdfnorm(0.84375) ≈ 0.8006
+    {0x3FF4000000000000, 0x3fec9e845da8ac7b, 0},       // cdfnorm(1.25) ≈ 0.894350
+    {0x4006000000000000, 0x3fefe796fbcb6138, 0},       // cdfnorm(2.75) ≈ 0.997020
 
     // Very small positive value near saturation
     {0x4062000000000000, 0x3FF0000000000000, 0},       // cdfnorm(144) = 1.0 (saturates)
 
     // Test symmetry around zero: cdfnorm(-x) = 1 - cdfnorm(x)
-    {0x3FE0000000000000, 0x3FE6310FA4B3C6C4, 0},       // cdfnorm(0.5) ≈ 0.691462461
-    {0xBFE0000000000000, 0x3FD398EF0956C64A, 0},       // cdfnorm(-0.5) ≈ 0.308537539
+    {0x3FE0000000000000, 0x3fe62075e232ac77, 0},       // cdfnorm(0.5) ≈ 0.691462461
+    {0xBFE0000000000000, 0x3fd3bf143b9aa712, 0},       // cdfnorm(-0.5) ≈ 0.308537539
 };
 
 #endif  /*__TEST_CDFNORM_DATA_H___*/

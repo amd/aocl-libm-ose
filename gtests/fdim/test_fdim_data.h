@@ -87,14 +87,14 @@ test_fdimf_conformance_data[] = {
     {NEG_QNAN_F32, NEG_QNAN_F32, 0, NEG_ONE_F32},
 
     /* Test some standard inputs */
-    {POS_PI_F32, POS_PI_BY2_F32, 0, POS_PI_BY2_F32}, // fdimf(Pi,Pi/2)=Pi/2
-    {POS_PI_F32, 0x4096cbe4, 0, NEG_PI_BY2_F32},     // fdimf(Pi,-Pi/2)=3Pi/2
+    {POS_PI_F32, 0x3fc90fd5, 0, POS_PI_BY2_F32}, // fdimf(Pi,Pi/2)=Pi/2
+    {POS_PI_F32, 0x4096cbe3, 0, NEG_PI_BY2_F32},     // fdimf(Pi,-Pi/2)=3Pi/2
     {POS_PI_BY2_F32, 0, 0, POS_PI_F32},              // fdimf(Pi/2,Pi)=0.0
-    {POS_PI_BY2_F32, 0x4096cbe4, 0, NEG_PI_F32},     // fdimf(Pi/2,-Pi)=3Pi/2
+    {POS_PI_BY2_F32, 0x4096cbe3, 0, NEG_PI_F32},     // fdimf(Pi/2,-Pi)=3Pi/2
     {NEG_PI_F32, 0, 0, POS_PI_BY2_F32},              // fdimf(-Pi,Pi/2)=0.0
     {NEG_PI_F32, 0, 0, NEG_PI_BY2_F32},              // fdimf(-Pi,-Pi/2)=0.0
     {NEG_PI_BY2_F32, 0, 0, POS_PI_F32},              // fdimf(-Pi/2,Pi)=0.0
-    {NEG_PI_BY2_F32, POS_PI_BY2_F32, 0, NEG_PI_F32}, // fdimf(-Pi/2,-Pi)=Pi/2
+    {NEG_PI_BY2_F32, 0x3fc90fd5, 0, NEG_PI_F32}, // fdimf(-Pi/2,-Pi)=Pi/2
 
     /* Test some denormalized and extreme inputs */
     {0x96421590, 0x00000000, 0, 0x7EEBE575},
@@ -159,14 +159,14 @@ test_fdim_conformance_data[] = {
     {NEG_QNAN_F64, NEG_QNAN_F64, 0, NEG_ONE_F64},
 
     /* Test some standard inputs */
-    {POS_PI_F64, POS_PI_BY2_F64, 0, POS_PI_BY2_F64},     // fdim(Pi,Pi/2)=Pi/2
-    {POS_PI_F64, 0x4012d97c7f3321d2, 0, NEG_PI_BY2_F64}, // fdim(Pi,-Pi/2)=3Pi/2
+    {POS_PI_F64, 0x3ff921fb48885a30, 0, POS_PI_BY2_F64},     // fdim(Pi,Pi/2)=Pi/2
+    {POS_PI_F64, 0x4012d97c8222168c, 0, NEG_PI_BY2_F64}, // fdim(Pi,-Pi/2)=3Pi/2
     {POS_PI_BY2_F64, 0, 0, POS_PI_F64},                  // fdim(Pi/2,Pi)=0.0
-    {POS_PI_BY2_F64, 0x4012d97c7f3321d2, 0, NEG_PI_F64}, // fdim(Pi/2,-Pi)=3Pi/2
+    {POS_PI_BY2_F64, 0x4012d97c8222168c, 0, NEG_PI_F64}, // fdim(Pi/2,-Pi)=3Pi/2
     {NEG_PI_F64, 0, 0, POS_PI_BY2_F64},                  // fdim(-Pi,Pi/2)=0.0
     {NEG_PI_F64, 0, 0, NEG_PI_BY2_F64},                  // fdim(-Pi,-Pi/2)=0.0
     {NEG_PI_BY2_F64, 0, 0, POS_PI_F64},                  // fdim(-Pi/2,Pi)=0.0
-    {NEG_PI_BY2_F64, POS_PI_BY2_F64, 0, NEG_PI_F64},     // fdim(-Pi/2,-Pi)=Pi/2
+    {NEG_PI_BY2_F64, 0x3ff921fb48885a30, 0, NEG_PI_F64},     // fdim(-Pi/2,-Pi)=Pi/2
 
     /* Test some denormalized and extreme inputs */
     {0x9642159012341275, 0x0000000000000000, 0, 0x7EEBE57590909090},

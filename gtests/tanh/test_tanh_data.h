@@ -107,7 +107,7 @@ test_tanhf_conformance_data[] = {
    {0xcAFFFFFF, 0xbf800000,  0},  // -(2^23 -1 + 0.5)
 
    // special accuracy tests
-   {0x38800000, 0x38800000,  FE_UNDERFLOW},  //min= 0.00006103515625, small enough that cosh=1 or sinh(x) = 0
+   {0x38800000, 0x38800000,  FE_UNDERFLOW}, //min= 0.00006103515625
    {0x387FFFFF, 0x387fffff,  FE_UNDERFLOW}, //min - 1 bit
    {0x38800001, 0x38800001,  FE_UNDERFLOW}, //min + 1 bit
    {0xF149F2C9, 0xbf800000,  0}, //lambda + x = 1, x = -9.9999994e+29
@@ -143,7 +143,7 @@ test_tanhf_conformance_data[] = {
    {POS_QNAN_F32, POS_QNAN_F32,0 },  //
    {NEG_QNAN_F32, NEG_QNAN_F32,0 },  //
    {0x42BE0000,   0x3f800000,0 },  //95
-   //answer from NAG test tool  
+   //answer from NAG test tool
    {0x38000000, 0x38000000,  0}, // 2^(-15), < 2 ^(-13), x
    {0xb8000000, 0xb8000000,  0}, //-2^(-15), < 2 ^(-13), x
    {0x41300000, 0x3f800000,  0}, // 11, > large_threshold, +1
@@ -152,7 +152,7 @@ test_tanhf_conformance_data[] = {
    {0xc0a00000, 0xbf7ffa0d,  0}, //-5, > 1
    {0x3f800000, 0x3f42f7d6,  0}, // 1, > 0.9
    {0xbf800000, 0xbf42f7d6,  0}, //-1, > 0.9
-   {0x3f733333, 0x3f3d626c,  0}, // 0.95, > 0.9 
+   {0x3f733333, 0x3f3d626c,  0}, // 0.95, > 0.9
    {0xbf6c49ba, 0xbf3a3138,  0}, // -0.923, > 0.9
    {0x3dcccccd, 0x3dcc1ebc,  0}, // 0.1, < 0.9
    {0xb951b717, 0xb951b717,  0}, //-0.0002, < 0.9
@@ -267,4 +267,3 @@ test_tanh_conformance_data[] = {
     {0x4086340000000000LL,0x3ff0000000000000LL,0}  // 710.5
 
 };
-

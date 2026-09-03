@@ -344,7 +344,7 @@ test_roundf_conformance_data[] = {
 static libm_test_special_data_f64
 test_round_conformance_data[] = {
     // special accuracy tests
-    {0x3e30000000000000LL, 0x0000000000000000LL, 0},  //min, small enough that round(x) = 0 //
+    {0x3e30000000000000LL, 0x0000000000000000LL, 0}, //min
     {0x3E2FFFFFFFFFFFFFLL, 0x0000000000000000LL, 0}, //min - 1 bit
     {0x3e30000000000001LL, 0x0000000000000000LL, 0}, //min + 1 bit
     {0xFE37E43C8800759CLL, 0xFE37E43C8800759CLL, 0}, //lambda + x = 1, x = -1.0000000000000000e+300

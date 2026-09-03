@@ -36,8 +36,8 @@
 static libm_test_special_data_f32
 test_coshf_conformance_data[] = {
    // special accuracy tests
-   {0xc9b60000, 0xff800000,  0}, //-0x1.6cp+20 = -inf
-   {0x38800000, 0x3f800000,  0},  //min= 0.00006103515625, small enough that cosh(x) = 1
+   {0xc9b60000, 0x7f800000,  0}, //-0x1.6cp+20 => +inf (cosh is even and non-negative)
+   {0x38800000, 0x3f800000,  0}, //min= 0.00006103515625
    {0x387FFFFF, 0x3f800000,  0}, //min - 1 bit
    {0x38800001, 0x3f800000,  0}, //min + 1 bit
    {0xF149F2C9, 0x7f800000,  FE_OVERFLOW}, //lambda + x = 1, x = -9.9999994e+29
@@ -56,7 +56,7 @@ test_coshf_conformance_data[] = {
    {POS_ZERO_F32, 0x3f800000,0 },  //0
    {NEG_ZERO_F32, 0x3f800000,0 },  //0
    {POS_INF_F32,  POS_INF_F32,0 },
-   {NEG_INF_F32,  NEG_INF_F32,0 },
+   {NEG_INF_F32,  0x7f800000,0 },
    {POS_SNAN_F32, POS_SNAN_F32, FE_INVALID },  //
    {NEG_SNAN_F32, NEG_SNAN_F32, FE_INVALID },  //
    {POS_QNAN_F32, POS_QNAN_F32, 0 },  //
@@ -155,7 +155,7 @@ test_coshf_conformance_data[] = {
 static libm_test_special_data_f64
 test_cosh_conformance_data[] = {
     // special accuracy tests
-    {0x3e30000000000000LL, 0x3ff0000000000000LL, 0},  //min, small enough that cosh(x) = 1 //
+    {0x3e30000000000000LL, 0x3ff0000000000000LL, 0}, //min
     {0x3E2FFFFFFFFFFFFFLL, 0x3ff0000000000000LL, 0}, //min - 1 bit
     {0x3e30000000000001LL, 0x3ff0000000000000LL, 0}, //min + 1 bit
     {0xFE37E43C8800759CLL, 0x7ff0000000000000LL, FE_OVERFLOW}, //lambda + x = 1, x = -1.0000000000000000e+300
@@ -254,4 +254,3 @@ test_cosh_conformance_data[] = {
     {0xC32FFFFFFFFFFFFFLL, 0x7ff0000000000000LL, FE_OVERFLOW}, // -(2^52 -1 + 0.5)
 
 };
-

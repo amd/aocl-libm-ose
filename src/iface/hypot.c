@@ -38,43 +38,8 @@ struct alm_arch_funcs __arch_funcs_hypot = {
     .def_arch = ALM_UARCH_VER_DEFAULT,
     .funcs = {
         [ALM_UARCH_VER_DEFAULT] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX2(hypotf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX2(hypot),
-        },
-
-        [ALM_UARCH_VER_AVX512] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_AVX512(hypotf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_AVX512(hypot),
-        },
-
-        [ALM_UARCH_VER_ZEN] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN(hypotf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN(hypot),
-        },
-
-        [ALM_UARCH_VER_ZEN2] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN2(hypotf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN2(hypot),
-        },
-
-        [ALM_UARCH_VER_ZEN3] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN3(hypotf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN3(hypot),
-        },
-
-        [ALM_UARCH_VER_ZEN4] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN4(hypotf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN4(hypot),
-        },
-
-        [ALM_UARCH_VER_ZEN5] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN5(hypotf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN5(hypot),
-        },
-
-        [ALM_UARCH_VER_ZEN6] = {
-            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_ARCH_ZN6(hypotf),
-            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_ARCH_ZN6(hypot),
+            [ALM_FUNC_SCAL_SP] = &ALM_PROTO_REF(hypotf),
+            [ALM_FUNC_SCAL_DP] = &ALM_PROTO_REF(hypot),
         },
     }
 };

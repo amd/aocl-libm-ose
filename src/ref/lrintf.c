@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -28,29 +28,51 @@
 #include "libm_util_amd.h"
 #include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
+#include <libm/compiler.h>
+#include <limits.h>
+#if defined(__SSE2__) && (defined(__x86_64__) || defined(_M_X64))
+#include <emmintrin.h>
+#endif
 
-
-long int ALM_PROTO_REF(lrintf)(float x)
+long ALM_PROTO_REF(lrintf)(float x)
 {
+    long result = 0;
 
-    UT32 checkbits,val_2p23;
-    checkbits.f32=x;
-
-    /* Clear the sign bit and check if the value can be rounded */
-
-    if( (checkbits.u32 & 0x7FFFFFFF) > 0x4B000000)
-    {
-        /* number cant be rounded raise an exception */
-        /* Number exceeds the representable range could be nan or inf also*/
-        __alm_handle_errorf((unsigned long long) x, 0);
-        return (long)x;
+#if defined(__SSE2__) && (defined(__x86_64__) || defined(_M_X64))
+#if LONG_MAX > 0x7fffffffL
+    /* CVTSS2SI raises FE_INVALID for -2^63 (= LONG_MIN) on some x86 CPUs, even
+     * though it is exactly representable as long. */
+    if (unlikely(x == -0x1p63f)) {
+        result = LONG_MIN;
+    } else {
+        result = (long)_mm_cvtss_si64(_mm_set_ss(x));
     }
+#else
+    result = (long)_mm_cvtss_si32(_mm_set_ss(x));
+#endif
+#else
+    /* Threshold: 2^(CHAR_BIT*sizeof(long)-1), the long overflow boundary as a float bit-pattern. */
+    static const uint32_t OvfThreshold =
+        (uint32_t)(CHAR_BIT * sizeof(long) - 1 + 127) << 23;
 
+    UT32 checkbits   = { .f32 = x };
+    uint32_t absbits = checkbits.u32 & POS_BITSET_F32;
 
-    val_2p23.u32 = (checkbits.u32 & 0x80000000) | 0x4B000000;
+    if ((absbits > OvfThreshold) ||
+        ((absbits == OvfThreshold) && ((checkbits.u32 & SIGNBIT_SP32) == 0))) {
+        /* NaN, Inf, x > LONG_MAX, or x < LONG_MIN: out of long range.
+           x = -2^(N-1) (LONG_MIN) has absbits == OvfThreshold with sign set,
+           so it is excluded here and handled by the else-if branch below. */
+        __alm_handle_errorf(INDEFBITPATT_SP32, AMD_F_INVALID);
+        result = LONG_MIN;
+    } else if (absbits > EXP_VAL_23_F32) {
+        /* 2^23 < |x| < overflow threshold: already integral in float, cast directly. */
+        result = (long)x;
+    } else {
+        UT32 val_2p23 = { .u32 = (checkbits.u32 & SIGNBIT_SP32) | EXP_VAL_23_F32 };
+        result = (long)((x + val_2p23.f32) - val_2p23.f32);
+    }
+#endif
 
-   /* Add and sub 2^23 to round the number according to the current rounding direction */
-
-    return (long int) ((x + val_2p23.f32) - val_2p23.f32);
+    return result;
 }
-

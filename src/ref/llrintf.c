@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -29,29 +29,40 @@
 #include "libm_util_amd.h"
 #include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
+#include <libm/compiler.h>
+#include <limits.h>
+#if defined(__SSE2__) && (defined(__x86_64__) || defined(_M_X64))
+#include <emmintrin.h>
+#endif
 
-
-long long int ALM_PROTO_REF(llrintf)(float x)
+long long ALM_PROTO_REF(llrintf)(float x)
 {
+    long long result = 0;
 
-    UT32 checkbits,val_2p23;
-    checkbits.f32=x;
+#if defined(__SSE2__) && (defined(__x86_64__) || defined(_M_X64))
+    result = _mm_cvtss_si64(_mm_set_ss(x));
+#else
+    /* Threshold: 2^63, the long long overflow boundary as a float bit-pattern (0x5F000000). */
+    static const uint32_t OvfThreshold = (uint32_t)(63 + 127) << 23;
 
-    /* Clear the sign bit and check if the value can be rounded */
+    UT32 checkbits   = { .f32 = x };
+    uint32_t absbits = checkbits.u32 & POS_BITSET_F32;
 
-    if( (checkbits.u32 & 0x7FFFFFFF) > 0x4B000000)
-    {
-        /* number cant be rounded raise an exception */
-        /* Number exceeds the representable range could be nan or inf also*/
-        __alm_handle_errorf((unsigned long long) x, 0);
-        return (long long int) x;
+    if ((absbits > OvfThreshold) ||
+        ((absbits == OvfThreshold) && ((checkbits.u32 & SIGNBIT_SP32) == 0))) {
+        /* NaN, Inf, x > LLONG_MAX, or x < LLONG_MIN: out of long long range.
+           x = -2^63 (LLONG_MIN) has absbits == OvfThreshold with sign set,
+           so it is excluded here and handled by the else-if branch below. */
+        __alm_handle_errorf(INDEFBITPATT_SP32, AMD_F_INVALID);
+        result = LLONG_MIN;
+    } else if (absbits > EXP_VAL_23_F32) {
+        /* 2^23 < |x| < 2^63: already integral in float, cast directly. */
+        result = (long long)x;
+    } else {
+        UT32 val_2p23 = { .u32 = (checkbits.u32 & SIGNBIT_SP32) | EXP_VAL_23_F32 };
+        result = (long long)((x + val_2p23.f32) - val_2p23.f32);
     }
+#endif
 
-
-    val_2p23.u32 = (checkbits.u32 & 0x80000000) | 0x4B000000;
-
-   /* Add and sub 2^23 to round the number according to the current rounding direction */
-
-    return (long long int) ((x + val_2p23.f32) - val_2p23.f32);
+    return result;
 }
-

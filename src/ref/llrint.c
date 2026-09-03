@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -29,31 +29,40 @@
 #include "libm_util_amd.h"
 #include <libm/alm_special.h>
 #include <libm/amd_funcs_internal.h>
+#include <libm/compiler.h>
+#include <limits.h>
+#if defined(__SSE2__) && (defined(__x86_64__) || defined(_M_X64))
+#include <emmintrin.h>
+#endif
 
-
-long long int ALM_PROTO_REF(llrint)(double x)
+long long ALM_PROTO_REF(llrint)(double x)
 {
-    UT64 checkbits,val_2p52;
-    checkbits.f64=x;
+    long long result = 0;
 
+#if defined(__SSE2__) && (defined(__x86_64__) || defined(_M_X64))
+    result = _mm_cvtsd_si64(_mm_set_sd(x));
+#else
+    /* Threshold: 2^63, the long long overflow boundary as a double bit-pattern (0x43E0000000000000). */
+    static const uint64_t OvfThreshold = (uint64_t)(63 + EXPBIAS_DP64) << EXPSHIFTBITS_DP64;
 
-    /* Clear the sign bit and check if the value can be rounded */
+    UT64 checkbits = { .f64 = x };
+    uint64_t absbits = checkbits.u64 & POS_BITSET_DP64;
 
-    if( (checkbits.u64 & 0x7FFFFFFFFFFFFFFF) > 0x4330000000000000)
-    {
-        /* number cant be rounded raise an exception */
-        /* Number exceeds the representable range could be nan or inf also*/
-       // __alm_handle_error(DOMAIN, EDOM, "llrint", x,0.0 ,(double)x);
-	    __alm_handle_error((unsigned long long int)x, 0);
-	    return (long long int) x;
+    if ((absbits > OvfThreshold) ||
+        ((absbits == OvfThreshold) && ((checkbits.u64 & SIGNBIT_DP64) == 0))) {
+        /* NaN, Inf, x > LLONG_MAX, or x < LLONG_MIN: out of long long range.
+           x = -2^63 (LLONG_MIN) has absbits == OvfThreshold with sign set,
+           so it is excluded here and handled by the else-if branch below. */
+        __alm_handle_error(INDEFBITPATT_DP64, AMD_F_INVALID);
+        result = LLONG_MIN;
+    } else if (absbits > EXP_VAL_52_DP64) {
+        /* 2^52 < |x| < 2^63: already integral in double, cast directly. */
+        result = (long long)x;
+    } else {
+        UT64 val_2p52 = { .u64 = (checkbits.u64 & SIGNBIT_DP64) | EXP_VAL_52_DP64 };
+        result = (long long)((x + val_2p52.f64) - val_2p52.f64);
     }
+#endif
 
-    val_2p52.u32[1] = (checkbits.u32[1] & 0x80000000) | 0x43300000;
-    val_2p52.u32[0] = 0;
-
-
-	/* Add and sub 2^52 to round the number according to the current rounding direction */
-
-    return (long long int) ((x + val_2p52.f64) - val_2p52.f64);
+    return result;
 }
-

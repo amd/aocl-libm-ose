@@ -48,10 +48,10 @@ This comprehensive guide provides instructions for building, testing, and instal
 | Component         | Version/Requirement    | Linux | Windows | Notes                                  |
 |-------------------|------------------------|:-----:|:-------:|----------------------------------------|
 | CMake             | ≥ 3.26                 |   ✓   |    ✓    | Required                               |
-| GCC               | ≥ 9.2.0 and < 16.1.0   |   ✓   |    ✗    | Linux compiler option                  |
-| Clang             | ≥ 9.0.0 and < 21.1.8   |   ✓   |    ✗    | Linux compiler option                  |
-| AOCC (aoc/aoc++)  | ≥ 6.0.0                |   ✓   |    ✗    | Linux compiler option; `aoc`/`aoc++` are symlinks to `clang`/`clang++` |
-| LLVM (Clang-CL)   | ≥ 9.0.0 and < 21.1.8   |   ✗   |    ✓    | Windows compiler (clang-cl.exe)        |
+| GCC               | ≥ 9.2.0                |   ✓   |    ✗    | Linux compiler option                  |
+| Clang             | ≥ 9.0.0                |   ✓   |    ✗    | Linux compiler option                  |
+| AOCC (aoc/aoc++)  | ≥ 3.0.0                |   ✓   |    ✗    | Linux compiler option; `aoc`/`aoc++` are symlinks to `clang`/`clang++` |
+| LLVM (Clang-CL)   | ≥ 9.0.0                |   ✗   |    ✓    | Windows compiler (clang-cl.exe)        |
 | MPFR              | Latest                 |   ✓   |    ✓    | Test framework only; path must be set on Windows |
 | GMP               | Latest                 |   ✓   |    ✓    | Test framework only; dependency of MPFR |
 | MPC               | Latest                 |   ✓   |    ✓    | Test framework only; dependency of MPFR |

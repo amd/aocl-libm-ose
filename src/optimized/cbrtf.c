@@ -30,30 +30,23 @@
  * Signature:
  *   float cbrtf(float x)
  *
- * Spec:
- * To calculate (x)^1/3
- * step 1) Extract exponent and mentissa from input.
- * step 2) Convert input form float to double.
- * step 3) Reduce the input [1, 2)
-            3.1) Replace expnent with 3ff i.e 1
-            3.2) Or with the metissa
- * step 4) Scaling factor <= exponent/3 and Cuberoot2Index <= remineder (exponent % 3)
- * step 5) Polynomial approximation on reduced input
- * step 6) Multiply result of Polynomial approximation to cube-root reminder and scale factor
- * step 7) Return : Check for proper sign  and return the result
+ * Algorithm:
+ *   cbrtf(x) = cbrt(m * 2^n)
+ *            = cbrt(2^rem * m_k) * cbrt(1 + r) * 2^quotient
  *
- * Mathmatical Explanation
- * (x)^(1/3) = (x_d * 2^n)^(1/3)
- *           =  x_d^(1/3) * 2^(n/3)
- *           =  x_d^(1/3) * 2^(Quotient) * 2^(Reminder/3), where x_d is reduced input between [1,2)
+ * where n = expn = 3*quotient + rem, rem in {-2,-1,0,1,2},
+ * m_k = 1/recip[k], k = top 8 bits of mantissa,
+ * r = m * recip[k] - 1 in [-1/256, 1/256).
  *
- *
-*/
+ * CbrtfTable[rem+2] stores {recip[k], cbrt(2^rem * m_k)} interleaved
+ * as uint64 bit patterns, correctly rounded to nearest double.
+ * cbrt(1+r) ~ 1 + r/3 - r^2/9 + 5*r^3/81  (3-term Taylor).
+ * All intermediate arithmetic is double; only the final cast rounds.
+ */
 
 #include <stdint.h>
 #include <libm_util_amd.h>
 #include <libm/alm_special.h>
-#include <immintrin.h>
 
 #include <libm_macros.h>
 #include <libm/types.h>
@@ -61,113 +54,56 @@
 #include <libm/typehelper.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
-#include <libm/alm_special.h>
 #include <cbrtf_data.h>
 
-#define MANTISSA_MASK_64 0x000FFFFFFFFFFFFF
-#define SIGN_MASK_64 0x7FFFFFFFFFFFFFFF
-#define ONE_MASK_64 0x3FF0000000000000
-#define DENORMAL_FACTOR 0.00492156660115184840104118
-#define TWOPOW23 8388608.0f
-
-#define CBRT2 1.2599210498948731648		/* 2^(1/3) */
-#define SQR_CBRT2 1.5874010519681994748		/* 2^(2/3) */
-#define CBRT2_RECIP 0.7937005259840997374  /* 2 ^ (-1/3) */
-#define SQR_CBRT2_RECIP 0.6299605249474365823 /*  2 ^ (-2/3) */
-
-static const double cuberoot[5] = {
-    SQR_CBRT2_RECIP, //  2 ^ (-2/3)
-    CBRT2_RECIP, // 2 ^ (-1/3)
-    1.0, // 2 ^ (0/3)
-    CBRT2, // 2 ^ (1/3)
-    SQR_CBRT2 // 2 ^ (2/3)
-};
-
 float
-ALM_PROTO_OPT(cbrtf)(float x){
-    float_t xf = x;
-    double_t xd = 0.0;
-    double_t xdRed = 0.0;
-    uint64_t uix64;
-    uint64_t sign = 0;
-    uint32_t ix = 0;
-    int32_t ixe = 0;
-    int32_t ixm = 0;
-    int32_t denornmal = 0;
+ALM_PROTO_OPT(cbrtf)(float x)
+{
+    uint32_t ix  = asuint32(x);
+    uint32_t ixe = (EXPBITS_SP32 & ix) >> EXPSHIFTBITS_SP32;
+    uint32_t ixm = MANTBITS_SP32 & ix;
+    int32_t expn = (int32_t)ixe - EXPBIAS_SP32;
 
-    ix =  asuint32(xf);
-
-    ixe = EXPBITS_SP32 & ix; // exponent extactor
-    ixm = MANTBITS_SP32 & ix; // mentissa extactor
-
-    if ( ixe == PINFBITPATT_SP32 ){
-        if (ixm == 0)
-            __alm_handle_errorf(ix, AMD_F_OVERFLOW);
-        else
-            __alm_handle_errorf(ix|QNAN_MASK_32, AMD_F_INVALID);
-
-        return x + x;
+    if (unlikely(ixe - 1 >= BIASEDEMAX_SP32)) {
+        // Zero, Inf, or NaN: x+x quiets sNaN and raises FE_INVALID
+        if (unlikely((ix & POS_BITSET_F32) - 1 >= POS_INF_F32 - 1))
+            return x + x;
+        // Subnormal: multiply by 2^24 (= 8^8, a multiple of 3) to normalize
+        // Subtract 24 from expn to compensate
+        ix   = asuint32(x * 0x1p24f);
+        ixe  = (EXPBITS_SP32 & ix) >> EXPSHIFTBITS_SP32;
+        ixm  = MANTBITS_SP32 & ix;
+        expn = (int32_t)ixe - EXPBIAS_SP32 - 24;
     }
 
-    if ( ixe == 0 ) { // denormal number
-        denornmal = 1;
-        if (ixm == 0)  return x; /* IEEE expected: cbrtf(±0) = ±0 */
-        xf = xf * TWOPOW23;
+    int32_t quotient = expn / 3;
+    int32_t rem      = expn - quotient * 3;
 
-        ix = asuint32(xf);
+    // 8-bit table index from top 8 bits of the 23-bit mantissa
+    uint32_t k     = ixm >> 15;
+    uint32_t tidx  = k * 2;
 
-        ixe = EXPBITS_SP32 & ix; // exponent extactor
-        ixm = MANTBITS_SP32 & ix; // mentissa extactor
-    }
+    // Select the table row for this remainder; load recip and cbrt(2^rem*m_k)
+    const uint64_t *row = CbrtfTable[rem + 2];
+    double recip = asdouble(row[tidx]);
+    double cbrtEntry = asdouble(row[tidx + 1]);
 
-    xd = (double)xf;
+    // Scale = 2^quotient, built from integer quotient
+    float  scale_f = asfloat((uint32_t)(quotient + EXPBIAS_SP32) << EXPSHIFTBITS_SP32);
 
-    uix64 = asuint64(xd);
+    // Mantissa m in [1, 2) as double
+    double m = asdouble((uint64_t)ixm << 29 | 0x3FF0000000000000ULL);
 
-    sign = uix64 >> 63;//SIGN_MASK_64; // extract sign bit
+    // r = m * recip - 1, small residual in [-1/256, 1/256)
+    double r  = fma(m, recip, -1.0);
 
-    ixe = ixe >> 23; // shr 23 bits for exponent value only
-    ixm = ixm >> 15; // index for the reciprocal, only 8 bits left
+    // 3-term Taylor: cbrt(1+r) - 1 ~= r/3 - r^2/9 + 5*r^3/81
+    double r2 = r * r;
+    double t  = r * fma(r, -0x1.c71c71c71c71cp-4, 0x1.5555555555555p-2);
+    t = fma(r2 * r, 0x1.f9add3c0ca458p-5, t);
 
-    ixe = ixe - 0x7F; //exponent - 0x7F, bias removal
-    int32_t quotient = (int32_t)(ixe / 3); // quotient, scale factor
+    // Result = cbrtEntry * (1 + t) * 2^quotient
+    double result = fma(t, cbrtEntry, cbrtEntry) * scale_f;
 
-    // remainder. Possible remainder are [-2 -1 0 1 2] + 2
-    int32_t remainder = (ixe % 3) + 2 ; // [0 1 2 3 4]
-
-    quotient += 1023;
-    uint64_t exponDouble = (uint64_t)quotient << 52;
-
-    uix64 = uix64 & MANTISSA_MASK_64; //0x000FFFFFFFFFFFFF;
-    uix64 = uix64 | ONE_MASK_64; //0x3FF0000000000000
-
-    // Reduced input
-    uix64 = SIGN_MASK_64 & uix64;
-
-    // set double form i64 reduced input
-    xdRed = asdouble(uix64);
-
-    double_t xd3biasOnly;
-
-    xd3biasOnly = asdouble(exponDouble);
-    xdRed = xdRed * DoubleReciprocalTable[ixm];
-
-    xdRed = xdRed - 1;
-
-    double_t  t = xdRed * xdRed * -0.1111111111111111 +
-                    xdRed * 0.3333333333333333;
-
-    t = t + 1.0;
-
-    t = t * xd3biasOnly; // mul: 2 ^ Quotient
-    t = t * cuberoot[remainder]; // mul : 2 ^ Remainder
-    t = t * CubeRootTable[ixm]; // [1 , 2) ^ (1 / 3)
-
-    if ( denornmal )
-        t = t * DENORMAL_FACTOR;
-
-    if ( sign )
-        t *= -1.0;
-
-    return (float)t;
+    return copysignf((float)result, x);
 }

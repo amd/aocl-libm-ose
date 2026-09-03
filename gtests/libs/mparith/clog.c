@@ -60,13 +60,11 @@ COMPLEX_L FUNC_CLOG(COMPLEX x)
     mpfr_init2(mpfr_imag, ALM_MP_PRECI_BITS);
 
 #if defined(FLOAT)
-    mpc_set_dc(mpc_x, x, rnd);
+    { float parts[2]; memcpy(parts, &x, sizeof(parts));
+      mpc_set_d_d(mpc_x, parts[0], parts[1], rnd); }
 #elif defined(DOUBLE)
-    #if (defined _WIN32 || defined _WIN64)
-        mpc_set_dc(mpc_x, x, rnd);
-    #else
-        mpc_set_ldc(mpc_x, x, rnd);
-    #endif
+    { double parts[2]; memcpy(parts, &x, sizeof(parts));
+      mpc_set_d_d(mpc_x, parts[0], parts[1], rnd); }
 #endif
 
     mpc_log(mpc_rop, mpc_x, rnd);

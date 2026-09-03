@@ -25,128 +25,143 @@
  *
  */
 
-#include <stdint.h>
-#include <math.h>
-#include <float.h>
+/******************************************
+ * Implementation Notes:
+ *
+ * Prototype:
+ * float fmodf(float x, float y)
+ *
+ * Algorithm:
+ * fmodf(x, y) = x - n*y, where n = trunc(x/y).
+ *
+ * Integer fast path (exponent difference shift <= 40):
+ *   Extract 24-bit float significands Mx, My.  Compute rem = Mx * 2^d mod My
+ *   using 64-bit arithmetic (Mx < 2^24 and shift <= 40, so Mx * 2^d < 2^64).
+ *   No floating-point operations, so no exceptions are raised.
+ *   FE_UNDERFLOW is raised explicitly for subnormal results on Linux.
+ */
 
-#include "libm_macros.h"
 #include "libm_util_amd.h"
-#include <libm/alm_special.h>
 #include <libm/typehelper.h>
 #include <libm/amd_funcs_internal.h>
 #include <libm/compiler.h>
+#include <stdint.h>
 
-#include <stdio.h>
+#if defined(__GNUC__) || defined(__clang__)
 
-#define FMOD_X_NAN   1
-#define FMOD_Y_ZERO  2
-#define FMOD_X_INF   3
+#define CLZ32(x) __builtin_clz(x)
+
+#elif defined(_MSC_VER)
+
+#include <intrin.h>
+static inline int alm_clz32(uint32_t x)
+{
+    unsigned long idx;
+    _BitScanReverse(&idx, x);
+    return 31 - (int)idx;
+}
+#define CLZ32(x) alm_clz32(x)
+
+#else
+
+#error "Intrinsic for counting leading zeroes not found"
+
+#endif
+
+#define MAXSHIFT (64 - MANTLENGTH_SP32)   // 40
+
+typedef struct
+{
+    uint32_t m;  // 24-bit significand (including implicit 1)
+    int e;       // biased exponent
+} F32ExpMan;
+
+// Extract a single precision value into a mantissa and biased exponent
+// Handles subnormal values
+// Note: fax must not be zero or negative (excluded before this is called)
+static inline F32ExpMan F32Extract(uint32_t fax)
+{
+    int lz;
+    return unlikely(fax < POS_LNORMAL_F32) ?
+        lz = CLZ32(fax),
+        (F32ExpMan) {  // Subnormal values; shift leftmost 1 into implied bit
+            .m = fax << (lz - (32 - MANTLENGTH_SP32)),
+            .e = (32 - MANTLENGTH_SP32 + 1) - lz
+        } :
+        (F32ExpMan) {  // Normal values
+            .m = (fax & MANTBITS_SP32) | IMPBIT_SP32,
+            .e = (int)(fax >> EXPSHIFTBITS_SP32)
+        };
+}
 
 float ALM_PROTO_OPT(fmodf)(float x, float y)
 {
-    uint32_t fax, fay;
+    uint32_t fax = asuint32(x) & POS_BITSET_F32;  // |x| bit pattern
+    uint32_t fay = asuint32(y) & POS_BITSET_F32;  // |y| bit pattern
+    float result = x;  // Default result value = x; saves sign bit for later
 
-    fax = asuint32(x);
-    fay = asuint32(y);
-
-    fax &= ~SIGNBIT_SP32;
-    fay &= ~SIGNBIT_SP32;
-
-    /*Check if y in NaN. If yes, return NaN */
-    if(unlikely(fay > POS_INF_F32))
+    // All error conditions are caught by one predicted-untaken branch
+    // x is Inf or NaN, or y is Zero, Inf or NaN
+    if (unlikely(((fay - 1) | fax) >= POS_INF_F32))
     {
-        return x * y;
+        if (fay > POS_INF_F32)
+        {   // |y| NaN
+            result = x * y;
+        }
+        else if (fax > POS_INF_F32)
+        {   // |x| NaN
+            result = x + x;
+        }
+        else if ((fax == POS_INF_F32) || (fay == 0))
+        {   // |x| == Inf || y == 0
+            ALM_RAISE_FE_INVALID();  // Raise FE_INVALID exception
+            result = asfloat(INDEFBITPATT_SP32);  // Indefinite NaN
+        }
+        else
+        {   // False positive ((fay-1) | fax) >= POS_INF_F32; continue normally
+            // goto may be considered harmful, but this is much simpler and
+            // faster than the alternatives, and mimics assembly code branch
+            // optimization.
+            goto noerror;
+        }
     }
+    else noerror: if (likely(fax >= fay))
+    {   // |x| >= |y|
+        F32ExpMan fpx = F32Extract(fax);  // Mantissa and biased exponent of x
+        F32ExpMan fpy = F32Extract(fay);  // Mantissa and biased exponent of y
+        int     shift = fpx.e - fpy.e;    // result = (x * 2^shift) mod y
+        uint32_t  rem = fpx.m;
 
-    /* Check x for NaN. If yes, return qnan/snan as applicable. */
-    if(unlikely(fax > POS_INF_F32))
-    {
-        return x + x;
-    }
-
-    /* Check if y is Zero. If yes, return NaN and raise exception*/
-    if(unlikely(fay == 0))
-    {
-        return _fmodf_special(x, asfloat(fay | QNANBITPATT_SP32), FMOD_Y_ZERO);
-    }
-
-    /* Check if x is INF */
-    if(unlikely(fax == POS_INF_F32))
-    {
-        return _fmodf_special(x, asfloat(fax | QNANBITPATT_SP32), FMOD_X_INF);
-    }
-
-    if(fax == fay)
-    {
-        return (0.0f * x);
-    }
-
-    double dx = (double)x;
-    double dy = (double)y;
-
-    uint64_t ax = asuint64(dx);
-    uint64_t ay = asuint64(dy);
-
-    ax &= POS_BITSET_DP64;
-    ay &= POS_BITSET_DP64;
-
-    double adx = asdouble(ax);
-    double ady = asdouble(ay);
-
-    uint64_t xe = (EXPBITS_DP64 & ax) >> 52;
-    uint64_t ye = (EXPBITS_DP64 & ay) >> 52;
-
-    if(adx < ady)
-    {
-        return x;
-    }
-
-    int64_t scale = 0x3FF0000000000000;
-    int64_t quo = 0;
-
-    if(ye < xe)
-    {
-        int64_t diff_exp = (int64_t)(xe - ye);
-        quo = diff_exp / 24;
-
-        scale = 24 * quo;
-        scale += 1023;
-        scale = scale << 52;
-    }
-
-    double w = asdouble((uint64_t)scale) * ady;
-    double two_p_MINUS_24 = asdouble(0x3E70000000000000);
-    double t=0, temp2=0;
-
-    while(1)
-    {
-        quo--;
-        if(quo < 0)
-        {
-            break;
+        // While shift > 40, compute (x * 2^40) mod y
+        while (unlikely(shift > MAXSHIFT)) {
+            rem = (uint32_t)(((uint64_t)rem << MAXSHIFT) % fpy.m);
+            shift -= MAXSHIFT;
         }
 
-        t = adx / w;
-        uint64_t tu = (uint64_t)t;
-        t = (double)(tu);
+        // Compute (x * 2^shift) mod y
+        rem = (uint32_t)(((uint64_t)rem << shift) % fpy.m);
 
-        t *= w;
-        w *= two_p_MINUS_24;
-        adx -= t;
+        if (likely(rem != 0)) {
+            // k = number of bits to shift rem left to position implied bit
+            int k = CLZ32(rem) - (32 - MANTLENGTH_SP32);
+
+            if (k < fpy.e)
+            {
+                // k < fpy.e for normals, where fpy.e - k is biased result exponent
+                rem = ((uint32_t)(fpy.e - k) << EXPSHIFTBITS_SP32)
+                    | ((rem << k) & MANTBITS_SP32);
+            } else {
+                // For k >= fpy.e, result is subnormal and shifted in mantissa bits
+                rem = likely(fpy.e > 0) ? rem << (fpy.e - 1) : rem >> (1 - fpy.e);
+#ifdef __linux__
+                // On Linux, raise FE_UNDERFLOW for glibc compatibility
+                ALM_RAISE_FE_UNDERFLOW();
+#endif
+            }
+        }
+
+        // Result is same sign as original x with exponent and mantissa in rem
+        result = asfloat(rem | (asuint32(result) & SIGNBIT_SP32));
     }
-
-    temp2 = adx / w;
-    uint64_t tu = (uint64_t)temp2;
-    temp2 = (double)(tu);
-
-    double temp3 = temp2 * w;
-    adx -= temp3;
-
-    if(dx<0)
-    {
-        /* Negate to apply x's sign. */
-        adx = -adx;
-    }
-
-    return (float)adx;
+    return result;
 }

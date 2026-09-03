@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -91,5 +91,63 @@
 // enable or disable exceptions in linux
 #define __enable_IEEE_exceptions 1
 
+// Prevent contraction of FMAs for precise control of FP operations
+#if defined(__clang__) || defined(_MSC_VER)
+#define ALM_FP_CONTRACT_OFF _Pragma("float_control(precise, on)")
+#elif defined(__GNUC__)
+#define ALM_FP_CONTRACT_OFF _Pragma("GCC optimize(\"fp-contract=off\")")
+#else
+#define ALM_FP_CONTRACT_OFF _Pragma("STDC FP_CONTRACT OFF")
+#endif
+
+// Passing a value to an empty inline assembly which uses it as both an input
+// and output, or storing it in a volatile variable whose address is taken,
+// prevents the compiler from optimizing away the computation of the value as a
+// dead value, preserving FP exception generation. The inline asm form avoids
+// allocating and storing the value on the stack.
+#if (defined(__GNUC__) || defined(__clang__)) && (defined(__x86_64__) || defined(__i386__))
+
+// GCC/Clang with XMM registers
+#define ALM_KEEP_ALIVE_SP32(x) do { float  tX = (x); __asm__ volatile("" : "+x"(tX)); } while(0)
+#define ALM_KEEP_ALIVE_DP64(x) do { double tX = (x); __asm__ volatile("" : "+x"(tX)); } while(0)
+
+#else
+
+// C/C++
+#define ALM_KEEP_ALIVE_SP32(x) do { volatile float  tX = (x); (void)&tX; } while(0)
+#define ALM_KEEP_ALIVE_DP64(x) do { volatile double tX = (x); (void)&tX; } while(0)
+
+#endif
+
+// Constructs to generate FP exceptions without feraiseexcept()
+#define ALM_RAISE_FE_OVERFLOW() do {                    \
+        static const volatile float x = 0x1p96f;        \
+        ALM_KEEP_ALIVE_SP32(x * x);                     \
+    } while(0)
+
+#define ALM_RAISE_FE_UNDERFLOW() do {                   \
+        static const volatile float x = 0x1p-96f;       \
+        ALM_KEEP_ALIVE_SP32(x * x);                     \
+    } while(0)
+
+#define ALM_RAISE_FE_INEXACT() do {                     \
+        static const volatile float x = 0x1p96f;        \
+        ALM_KEEP_ALIVE_SP32(x + 1.0f);                  \
+    } while(0)
+
+#define ALM_RAISE_FE_DIVBYZERO() do {           \
+        static const volatile float x = 0.0f;   \
+        ALM_KEEP_ALIVE_SP32(1.0f / x);          \
+    } while(0)
+
+// The ((0x7f800000u << 16) << 16) | 0x7f800000u is a portable
+// endian-independent way of generating 32-bit IEEE float
+// Infinity, regardless of whether unsigned is 32- or 64-bit
+#define ALM_RAISE_FE_INVALID() do {                             \
+        static const volatile union {                           \
+            unsigned u; float f;                                \
+        } inf = { ((0x7f800000u << 16) << 16) | 0x7f800000u };  \
+        ALM_KEEP_ALIVE_SP32(0.0f * inf.f);                      \
+    } while(0)
 
 #endif  /* __LIBM_MACROS_H__ */

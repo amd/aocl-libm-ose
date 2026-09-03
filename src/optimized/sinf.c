@@ -122,34 +122,43 @@ static inline double cos_poly(double r, double r2)
 float
 ALM_PROTO_OPT(sinf)(float x)
 {
+    /* Use fabsf for threshold comparisons in the fast path: a single vandps
+     * avoids the FP->GPR domain crossing (vmovd) that would otherwise be on
+     * the critical path before the polynomial. The integer axf is only
+     * computed in the large-|x| path where it is genuinely needed. */
+    float absx = fabsf(x);
+
+    /* |x| <= pi/4 : direct evaluation on the signed value.
+     * sin_poly is the common case; small-x approximations branch away so
+     * the polynomial is inline (matching cosf's code layout). */
+    if (absx <= asfloat(PIBY4_BITS)) {
+        double xd = (double)x;
+        if (likely(absx >= asfloat(SIN_SMALL))) {
+            double x2 = xd * xd;
+            return (float)sin_poly(xd, x2);
+        }
+        if (absx >= asfloat(SIN_SMALLER))
+            return (float)_LIBM_POLY_FMA(-xd * xd * xd, ONE_BY_SIX, xd);
+        return x;
+    }
+
+    /* |x| > pi/4 : NaN/Inf check, then sign folded at the end (sin is odd).
+     * axf is computed here, off the fast-path critical path. */
     uint32_t uxf = asuint32(x);
     uint32_t axf = uxf & 0x7FFFFFFFu;
 
-    /* sinf(inf) = sinf(-inf) = sinf(NaN) = NaN */
     if (unlikely(axf >= INF_BITS))
         return _sinf_special(x);
 
-    /* |x| <= pi/4 : direct evaluation on the signed value. */
-    if (axf <= PIBY4_BITS) {
-        if (axf < SIN_SMALLER) return x;
-        if (axf < SIN_SMALL) {
-            double xd = (double)x;
-            return (float)_LIBM_POLY_FMA(-xd * xd * xd, ONE_BY_SIX, xd);
-        }
-        double xd = (double)x, x2 = xd * xd;
-        return (float)sin_poly(xd, x2);
-    }
-
-    /* |x| > pi/4 : sign folded at the end (sin is odd); work on |x|. */
-    uint32_t sign  = uxf >> 31;
     double   absxd = (double)asfloat(axf);
 
     /* pi/4 < |x| < pi/2 : sin(x) = sign(x) * cos(pi/2 - |x|). */
     if (axf < PIBY2_BITS) {
         double r  = PI2_HI - absxd;          /* exact (Sterbenz) */
         double r2 = r * r;
-        float  res = (float)cos_poly(r, r2);
-        return sign ? -res : res;
+        float res = (float)cos_poly(r, r2);
+        // This form generates optimal code with XOR to generate 0.0f and no loads
+        return x < 0.0f ? 0.0f - res : res;
     }
 
     /* |x| >= pi/2 : reduce mod pi/2 -> (region, r). */
@@ -182,5 +191,7 @@ ALM_PROTO_OPT(sinf)(float x)
     }
 
     float res = (float)result;
-    return sign ? -res : res;
+
+    // This form generates optimal code with XOR to generate 0.0f and no loads
+    return x < 0.0f ? 0.0f - res : res;
 }

@@ -129,6 +129,8 @@ build\dev-win-release-llvm-ninja\examples\test_libm.exe
 For the full list of targets, build options and other details, see
 `docs/CMakeBuildSystem.md`.
 
+## HELP
+
 ## CONTACTS
 
 AOCL-LibM is developed and maintained by AMD. For support of these libraries and the other tools of AMD Zen Software Studio, see https://www.amd.com/en/developer/aocc/compiler-technical-support.html

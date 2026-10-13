@@ -244,16 +244,16 @@ ALM_PROTO_OPT(vrs8_erff)(v_f32x8_t _x) {
 
     /* x now contains only positive values */
 
-    /* vectorized code to find max values */
+    /* Use unsigned bit patterns so NaNs cannot hide finite extrema. */
 
-    v_f32x8_t x2 = _mm256_permute_ps(x, _MM_SHUFFLE(1, 0, 3, 2));
-    v_f32x8_t x3 = _mm256_max_ps(x, x2);
-    v_f32x8_t x4 = _mm256_permute_ps(x3, _MM_SHUFFLE(2, 3, 0, 1));
-    v_f32x8_t x5 = _mm256_max_ps(x3, x4);
-    v_f32x4_t x6 = _mm256_extractf128_ps(x5, 1);
-    v_f32x4_t x7 = _mm_max_ps(_mm256_castps256_ps128(x5), x6); 
-    
-    uint32_t uxmax = asuint32(x7[0]);
+    v_u32x8_t u2 = _mm256_shuffle_epi32(uvx, _MM_SHUFFLE(1, 0, 3, 2));
+    v_u32x8_t u3 = _mm256_max_epu32(uvx, u2);
+    v_u32x8_t u4 = _mm256_shuffle_epi32(u3, _MM_SHUFFLE(2, 3, 0, 1));
+    v_u32x8_t u5 = _mm256_max_epu32(u3, u4);
+    v_u32x4_t u6 = _mm256_extracti128_si256(u5, 1);
+    v_u32x4_t u7 = _mm_max_epu32(_mm256_castsi256_si128(u5), u6);
+
+    uint32_t uxmax = u7[0];
 
     v_f32x8_t result;
     
@@ -277,13 +277,13 @@ ALM_PROTO_OPT(vrs8_erff)(v_f32x8_t _x) {
     
     /* Need to find min too now */
 
-    x3 = _mm256_min_ps(x, x2);
-    x4 = _mm256_permute_ps(x3, _MM_SHUFFLE(2, 3, 0, 1));
-    x5 = _mm256_min_ps(x3, x4);
-    x6 = _mm256_extractf128_ps(x5, 1);
-    x7 = _mm_min_ps(_mm256_castps256_ps128(x5), x6); 
-    
-    uint32_t uxmin = asuint32(x7[0]);
+    u3 = _mm256_min_epu32(uvx, u2);
+    u4 = _mm256_shuffle_epi32(u3, _MM_SHUFFLE(2, 3, 0, 1));
+    u5 = _mm256_min_epu32(u3, u4);
+    u6 = _mm256_extracti128_si256(u5, 1);
+    u7 = _mm_min_epu32(_mm256_castsi256_si128(u5), u6);
+
+    uint32_t uxmin = u7[0];
 
     v_u32x8_t sign;
 

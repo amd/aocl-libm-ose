@@ -27,6 +27,7 @@
 
 
 #include <cmath>
+#include <limits>
 #include "libm_tests.h"
 #include <libm_macros.h>
 
@@ -242,3 +243,50 @@ int test_vad(test_data *data, int count)  {
 }
 #endif
 
+#if (LIBM_PROTOTYPE == PROTOTYPE_AOCL)
+TEST(ErffRegression, ACCURACY_VECTOR_ARRAY_FLOATS_NAN_LANE) {
+  const struct {
+    int width;
+    int (*run)(test_data *, int);
+    bool array;
+  } variants[] = {
+    {8, test_v8s, false},
+#if defined(__AVX512__)
+    {16, test_v16s, false},
+#endif
+    {8, test_vas, true},
+    {16, test_vas, true},
+  };
+  alignas(64) float input[16], output[16];
+  test_data data = {};
+  data.ip = input;
+  data.op = output;
+
+  for (const auto &variant : variants) {
+    for (int nan_lane = 0; nan_lane < variant.width; nan_lane++) {
+      for (int finite_lane = 0; finite_lane < variant.width; finite_lane++) {
+        if (finite_lane == nan_lane)
+          continue;
+        for (float finite : {5.0f, -5.0f}) {
+          SCOPED_TRACE(::testing::Message() << "width=" << variant.width
+                       << " array=" << variant.array << " NaN lane=" << nan_lane
+                       << " finite lane=" << finite_lane << " input=" << finite);
+          for (int lane = 0; lane < variant.width; lane++) {
+            input[lane] = 0.25f;
+            output[lane] = 0.0f;
+          }
+          input[finite_lane] = finite;
+          input[nan_lane] = std::numeric_limits<float>::quiet_NaN();
+          variant.run(&data, variant.array ? variant.width : 0);
+          for (int lane = 0; lane < variant.width; lane++) {
+            if (lane == nan_lane)
+              EXPECT_TRUE(std::isnan(output[lane]));
+            else
+              EXPECT_FLOAT_EQ(std::erf(input[lane]), output[lane]);
+          }
+        }
+      }
+    }
+  }
+}
+#endif

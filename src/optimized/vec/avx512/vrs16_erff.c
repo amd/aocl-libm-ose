@@ -240,7 +240,8 @@ ALM_PROTO_OPT(vrs16_erff)(v_f32x16_t _x) {
 
     /* x now contains only positive values */
 
-    uint32_t uxmax = asuint32(_mm512_reduce_max_ps(x));
+    /* Use unsigned bit patterns so NaNs cannot hide finite extrema. */
+    uint32_t uxmax = _mm512_reduce_max_epu32(uvx);
 
     v_f32x16_t result = _mm512_set1_ps(0.0f);
 
@@ -271,7 +272,7 @@ ALM_PROTO_OPT(vrs16_erff)(v_f32x16_t _x) {
 
     /* Need to find min too now */
 
-    uint32_t uxmin = asuint32(_mm512_reduce_min_ps(x));
+    uint32_t uxmin = _mm512_reduce_min_epu32(uvx);
 
     v_u32x16_t sign;
 

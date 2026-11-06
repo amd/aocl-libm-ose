@@ -136,6 +136,9 @@ Tanh
 .. doxygenfunction:: amd_vrs4_tanhf
   :project: libm
 
+.. doxygenfunction:: amd_vrd2_tanh
+  :project: libm
+
 
 Inverse Hyperbolic Functions
 =============================

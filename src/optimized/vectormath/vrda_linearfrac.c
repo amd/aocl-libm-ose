@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2024-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -118,6 +118,10 @@
 
 void ALM_PROTO_OPT(vrda_linearfrac)(int length, const double *a, const double *b, double scalea, double shifta, double scaleb, double shiftb, double *result)
 {
+    /* Empty/negative length */
+    if (unlikely(length <= 0))
+        return;
+
     int j = 0;
     uint64_t scaleb_u = asuint64(scaleb);
     uint64_t shiftb_u = asuint64(shiftb);

@@ -43,10 +43,9 @@
  * ---------------------------------------------------------------------------
  * Control flow
  * ---------------------------------------------------------------------------
- *   1. Check |x| for each lane (one unsigned compare on the float bits).
- *   2. If |x| is too large, or the lane is inf/NaN, mark it for scalar exp10f.
- *   3. Always run the vector fast path on all 8 lanes.
- *   4. If any lane was marked, replace only those lanes with scalar exp10f.
+ *   1. Run the vector fast path on all lanes.
+ *   2. Route x < -37.93, x >= 38.53, NaN, and +/-Inf lanes to scalar exp10f.
+ *   3. Replace only marked lanes with scalar exp10f.
  */
 
 #include <libm_util_amd.h>
@@ -64,21 +63,21 @@
 #include "../vrs8_exp10f_data.h"
 
 /*
- * Lanes needing scalar fallback: |x| larger than the normal-output threshold,
- * +/-inf or NaN.  A single unsigned compare on the abs bit pattern catches all
- * three (inf/nan bit patterns are numerically larger than any finite value).
+ * Lanes that need scalar exp10f: x < -37.93 and x >= 38.53, which cover
+ * exp10f(x) going to subnormal, underflow, overflow, NaN, +/-Inf.
  */
 static inline ALM_ALWAYS_INLINE v_u32x8_t
-vrs8_exp10f_special_mask(v_f32x8_t x)
+vrs8_exp10f_scalar_mask(v_f32x8_t x)
 {
-    v_u32x8_t ax = as_v8_u32_f32(x) & V8_EXP10F_ABS_MASK;
-    return (ax > as_v8_u32_f32(V8_EXP10F_ARG_MAX));
+    return as_v8_u32_f32(_mm256_cmp_ps(x, -V8_EXP10F_NEG_ARG_MAX, _CMP_LT_OQ))
+         | as_v8_u32_f32(_mm256_cmp_ps(x, V8_EXP10F_POS_ARG_MAX, _CMP_NLT_UQ));
 }
 
 /*
- * Branch-free fast path, no domain checks.  Valid only when 10^x is a normal
- * float (|x| <= ARG_MAX); the caller must route subnormal/overflow/inf/nan
- * lanes to scalar.
+ * Branch-free fast path, no domain checks.  Best accuracy when
+ * -neg_arg_max <= x <= neg_arg_max; still used for neg_arg_max < x < pos_arg_max
+ * (large normals).  Caller routes x < -neg_arg_max, x >= pos_arg_max, NaN,
+ * and +/-Inf to scalar.
  *
  * Identity:
  *   10^x = 2^(x*log2(10)) = 2^n * 2^f
@@ -126,23 +125,14 @@ vrs8_exp10f_fastpath(v_f32x8_t x)
 
 #define SCALAR_EXP10F ALM_PROTO_OPT(exp10f)
 
-static inline v_f32x8_t
-exp10f_specialcase(v_f32x8_t x, v_f32x8_t result, v_u32x8_t cond)
-{
-    return call_v8_f32(SCALAR_EXP10F, x, result, cond);
-}
-
 v_f32x8_t
 ALM_PROTO_OPT(vrs8_exp10f)(v_f32x8_t x)
 {
-    v_u32x8_t need_scalar = vrs8_exp10f_special_mask(x);
-    int any_need_scalar = any_v8_u32_loop(need_scalar);
-
-    /* Fast path: 10^x = 2^(x * log2(10)) */
     v_f32x8_t result = vrs8_exp10f_fastpath(x);
+    v_u32x8_t k_scalar = vrs8_exp10f_scalar_mask(x);
 
-    if (unlikely(any_need_scalar)) {
-        return exp10f_specialcase(x, result, need_scalar);
+    if (unlikely(any_v8_u32_loop(k_scalar))) {
+        return call_v8_f32(SCALAR_EXP10F, x, result, k_scalar);
     }
 
     return result;

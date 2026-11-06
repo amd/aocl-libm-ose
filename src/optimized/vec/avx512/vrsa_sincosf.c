@@ -63,6 +63,10 @@
 
 void ALM_PROTO_OPT(vrsa_sincosf)(int length, const float *x, float *sin, float *cos)
 {
+    /* Empty/negative length */
+    if (unlikely(length <= 0))
+        return;
+
     int j = 0;
     __m512 opsin, opcos;
 

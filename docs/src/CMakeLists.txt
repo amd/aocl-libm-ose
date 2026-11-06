@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025, Advanced Micro Devices. All rights reserved.
+# Copyright (C) 2025-2026, Advanced Micro Devices. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -98,6 +98,7 @@ if (LIBM_BUILD_DOCS)
        ${CMAKE_CURRENT_SOURCE_DIR}/ag/trigonometric_api.rst
        ${CMAKE_CURRENT_SOURCE_DIR}/ag/complex_api.rst
        ${CMAKE_CURRENT_SOURCE_DIR}/ag/min_max_diff.rst
+       ${CMAKE_CURRENT_SOURCE_DIR}/ag/sort_api.rst
   )
 
   set (SPHINX_INPUT_FILES

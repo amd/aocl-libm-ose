@@ -52,6 +52,10 @@ Implementation notes:
 
 void ALM_PROTO_OPT(vrsa_linearfracf)(int length, const float *a, const float *b, float scalea, float shifta, float scaleb, float shiftb, float *result)
 {
+    /* Empty/negative length */
+    if (unlikely(length <= 0))
+        return;
+
     int remainder, j = 0;
     uint32_t scaleb_u = asuint32(scaleb);
     uint32_t shiftb_u = asuint32(shiftb);

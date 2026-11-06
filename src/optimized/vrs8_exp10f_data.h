@@ -29,7 +29,7 @@
  * Constants for vrs8_exp10f (8-wide exp10f).
  *
  * Include before this file (order matters for macros and vector types):
- *   libm_util_amd.h      // POS_BITSET_F32
+ *   libm_util_amd.h
  *   libm_macros.h
  *   libm/types.h
  *   libm/typehelper-vec.h
@@ -39,20 +39,19 @@
 #define VRS8_EXP10F_DATA_H
 
 static const struct {
-    v_u32x8_t abs_mask;
-    v_f32x8_t arg_max;        /* |x| above this -> scalar (also catches inf/nan) */
+    v_f32x8_t neg_arg_max;    /* ~37.93: scalar when x < -neg_arg_max */
+    v_f32x8_t pos_arg_max;    /* ~38.53: scalar when x >= pos_arg_max */
     v_f32x8_t log2_10_hi;     /* high part of log2(10) */
     v_f32x8_t log2_10_lo;     /* tail   part of log2(10) */
     v_f32x8_t huge;
     v_f32x8_t poly[8];        /* 2^f coefficients, D0..D7  (Dk = ln2^k / k!) */
 } v8_exp10f_data = {
-    .abs_mask    = _MM256_SET1_I32(POS_BITSET_F32),
     /*
-     * Normal-output boundary: 10^x is a normal float only for
-     * x in (~-37.93, ~38.53).  A single symmetric abs compare at 37.9
-     * routes subnormal/underflow/overflow (and inf/nan) lanes to scalar.
+     * Vector fast-path domain: -neg_arg_max <= x < pos_arg_max
+     * (pos_arg_max matches scalar EXP10F_FARG_MAX / log10(FLT_MAX)).
      */
-    .arg_max     = _MM256_SET1_PS8(37.9f),
+    .neg_arg_max = _MM256_SET1_PS8(0x1.2f703p+5f),     /* ~37.93 */
+    .pos_arg_max = _MM256_SET1_PS8(0x1.344136p5f),    /* ~38.53 = log10(FLT_MAX) */
     .log2_10_hi  = _MM256_SET1_PS8(0x1.a934fp+1f),    /* 3.321928024  */
     .log2_10_lo  = _MM256_SET1_PS8(0x1.2f346ep-24f),  /* 7.05954e-08  */
     .huge        = _MM256_SET1_PS8(0x1.8p+23f),
@@ -73,8 +72,8 @@ static const struct {
     },
 };
 
-#define V8_EXP10F_ABS_MASK     v8_exp10f_data.abs_mask
-#define V8_EXP10F_ARG_MAX      v8_exp10f_data.arg_max
+#define V8_EXP10F_NEG_ARG_MAX  v8_exp10f_data.neg_arg_max
+#define V8_EXP10F_POS_ARG_MAX  v8_exp10f_data.pos_arg_max
 #define V8_EXP10F_LOG2_10_HI   v8_exp10f_data.log2_10_hi
 #define V8_EXP10F_LOG2_10_LO   v8_exp10f_data.log2_10_lo
 #define V8_EXP10F_HUGE         v8_exp10f_data.huge

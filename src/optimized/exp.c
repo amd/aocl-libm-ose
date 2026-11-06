@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2008-2026 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -78,7 +78,6 @@
 #include <stdint.h>
 #include <libm_util_amd.h>
 #include <libm/alm_special.h>
-#include <libm/alm_special.h>
 
 #if !defined(__clang__) && !defined(ENABLE_DEBUG)
 #pragma GCC push_options
@@ -112,6 +111,72 @@ static inline uint32_t top12(double x)
 #define DENORMAL_LOW    -0x1.74046dfefd9d0p+9
 #define DENORMAL_MIN     0x0000000000000001
 
+/*
+ * Local copies of __amd_raise_fp_exc(), __alm_handle_error() and
+ * alm_exp_special() from src/alm_special.c.
+ *
+ * With some compiler versions the SCons build does not inline the call into
+ * alm_special.c, due to configuration differences between the SCons and CMake
+ * builds, which costs scalar and vector exp performance. These copies are a
+ * temporary measure until the two build configurations are brought in sync.
+ * Keep them in step with the originals in src/alm_special.c.
+ */
+static inline void
+amd_raise_fp_exc_local(int flags)
+{
+    if ((flags & AMD_F_INEXACT) == AMD_F_INEXACT) {
+        double a = 1.0, b = 10.0;
+        __asm __volatile("divsd %1, %0":"+x"(a):"x"(b));
+    }
+    if ((flags & AMD_F_UNDERFLOW) == AMD_F_UNDERFLOW) {
+        double a = 0x1.0p-1022;
+        __asm __volatile("mulsd %1, %0":"+x"(a):"x"(a));
+    }
+    if ((flags & AMD_F_OVERFLOW) == AMD_F_OVERFLOW) {
+        double a = 0x1.fffffffffffffp1023;
+        __asm __volatile("mulsd %1, %0":"+x"(a):"x"(a));
+    }
+    if ((flags & AMD_F_DIVBYZERO) == AMD_F_DIVBYZERO) {
+        double a = 1.0, b = 0.0;
+        __asm __volatile("divsd %1, %0":"+x"(a):"x"(b));
+    }
+    if ((flags & AMD_F_INVALID) == AMD_F_INVALID) {
+        double a = 0.0;
+        __asm __volatile("divsd %1, %0":"+x"(a):"x"(a));
+    }
+}
+
+static inline double
+alm_handle_error_local(uint64_t value, int flags)
+{
+    double z;
+
+    PUT_BITS_DP64(value, z);
+    amd_raise_fp_exc_local(flags);
+    return z;
+}
+
+static NOINLINE double
+alm_exp_special_local(double y, U32 code)
+{
+    flt64_t ym = {.d = y};
+
+    switch (code) {
+    case ALM_E_IN_X_NAN:
+        alm_handle_error_local(ym.u, 0);
+        break;
+    case ALM_E_IN_X_ZERO:
+        alm_handle_error_local(ym.u, AMD_F_INEXACT | AMD_F_UNDERFLOW);
+        break;
+    case ALM_E_IN_X_INF:
+        alm_handle_error_local(ym.u, AMD_F_INEXACT | AMD_F_OVERFLOW);
+        break;
+    default:
+        break;
+    }
+    return y;
+}
+
 double
 ALM_PROTO_OPT(exp)(double x)
 {
@@ -135,23 +200,26 @@ ALM_PROTO_OPT(exp)(double x)
 
         if (x > FMAX_X) {
             if (x != x)  /* check if x is a NAN */
-                return  alm_exp_special(asdouble(QNANBITPATT_DP64), ALM_E_IN_X_NAN);
+                return alm_exp_special_local(asdouble(QNANBITPATT_DP64),
+                                             ALM_E_IN_X_NAN);
 
             if(asuint64(x) == PINFBITPATT_DP64)
                 return x; /* No exception to be raised */
 
-            return  alm_exp_special(asdouble(PINFBITPATT_DP64),  ALM_E_IN_X_INF);
+            return alm_exp_special_local(asdouble(PINFBITPATT_DP64),
+                                         ALM_E_IN_X_INF);
         }
 
         if (x <= FMIN_X) {
             if (asuint64(x) == NINFBITPATT_DP64)
                 return  0.0; /* No exception to be raised */
 
-            return alm_exp_special(0.0, ALM_E_IN_X_ZERO);
+            return alm_exp_special_local(0.0, ALM_E_IN_X_ZERO);
         }
 
         if (x <= DENORMAL_LOW)
-            return alm_exp_special(asdouble(DENORMAL_MIN), ALM_E_IN_X_ZERO);
+            return alm_exp_special_local(asdouble(DENORMAL_MIN),
+                                         ALM_E_IN_X_ZERO);
 
         exponent = 0xfff;
 

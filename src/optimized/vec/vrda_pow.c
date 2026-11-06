@@ -73,6 +73,10 @@ void ALM_PROTO_OPT(vrda_pow)(int length, const double *input1, const double *inp
 {
     int j = 0;
 
+    /* Empty/negative length */
+    if (unlikely(length <= 0))
+        return;
+
     if (likely(length >= DOUBLE_ELEMENTS_256_BIT))
     {
         /* Save the last 4 elements from both input arrays before processing.

@@ -126,11 +126,17 @@ Cosh
 .. doxygenfunction:: amd_vrs8_coshf
   :project: libm
 
+.. doxygenfunction:: amd_vrd4_cosh
+  :project: libm
+
 
 Tanh
 ----
 
 .. doxygenfunction:: amd_vrs8_tanhf
+  :project: libm
+
+.. doxygenfunction:: amd_vrd4_tanh
   :project: libm
 
 
@@ -157,6 +163,16 @@ Exp2
   :project: libm
 
 .. doxygenfunction:: amd_vrd4_exp2
+  :project: libm
+
+
+Exp10
+-----
+
+.. doxygenfunction:: amd_vrs8_exp10f
+  :project: libm
+
+.. doxygenfunction:: amd_vrd4_exp10
   :project: libm
 
 
@@ -220,6 +236,13 @@ Sqrt
   :project: libm
 
 .. doxygenfunction:: amd_vrd4_sqrt
+  :project: libm
+
+
+Cbrt
+----
+
+.. doxygenfunction:: amd_vrs8_cbrtf
   :project: libm
 
 

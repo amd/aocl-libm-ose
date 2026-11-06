@@ -45,8 +45,12 @@ Implementation notes:
 
 void ALM_PROTO_OPT(vrsa_powxf)(int length, const float *x, float y, float *result)
 {
+    /* Empty/negative length */
+    if (unlikely(length <= 0))
+        return;
+
     int j = 0;
-    int remainder = length % DOUBLE_ELEMENTS_512_BIT;
+    int remainder = length % FLOAT_ELEMENTS_512_BIT;
 
     if(likely(length >= FLOAT_ELEMENTS_512_BIT))
     {

@@ -141,6 +141,9 @@ Tanh
 .. doxygenfunction:: amd_vrsa_tanhf
   :project: libm
 
+.. doxygenfunction:: amd_vrda_tanh
+  :project: libm
+
 
 Exponential Functions
 =====================

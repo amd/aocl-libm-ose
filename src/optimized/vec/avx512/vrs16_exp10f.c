@@ -43,10 +43,9 @@
  * ---------------------------------------------------------------------------
  * Control flow
  * ---------------------------------------------------------------------------
- *   1. Check |x| for each lane (one unsigned compare on the float bits).
- *   2. If |x| is too large, or the lane is inf/NaN, mark it for scalar exp10f.
- *   3. Always run the vector fast path on all 16 lanes.
- *   4. If any lane was marked, replace only those lanes with scalar exp10f.
+ *   1. Run the vector fast path on all lanes.
+ *   2. Route x < -37.93, x >= 38.53, NaN, and +/-Inf lanes to scalar exp10f.
+ *   3. Replace only marked lanes with scalar exp10f.
  */
 
 #include <libm_util_amd.h>
@@ -62,21 +61,19 @@
 #include <libm/poly-vec.h>
 
 static const struct {
-    v_u32x16_t abs_mask;
-    v_f32x16_t arg_max;        /* |x| above this -> scalar (also catches inf/nan) */
+    v_f32x16_t neg_arg_max;    /* ~37.93: scalar when x < -neg_arg_max */
+    v_f32x16_t pos_arg_max;    /* ~38.53: scalar when x >= pos_arg_max */
     v_f32x16_t log2_10_hi;     /* high part of log2(10) */
     v_f32x16_t log2_10_lo;     /* tail   part of log2(10) */
     v_f32x16_t huge;
     v_f32x16_t poly[8];        /* 2^f coefficients, E0..E7  (Dk = ln2^k / k!) */
 } v16_exp10f_data = {
-    .abs_mask    = _MM512_SET1_U32x16((uint32_t)POS_BITSET_F32),
     /*
-     * Fast-path limit: largest |x| with a normal 10^x result.
-     * |x| <= arg_max -> vector; |x| > arg_max -> scalar
-     * (subnormal, overflow, inf, nan).  The first float beyond arg_max
-     * already makes 10^x subnormal, where the error jumps significantly.
+     * Vector fast-path domain: -neg_arg_max <= x < pos_arg_max
+     * (pos_arg_max matches scalar EXP10F_FARG_MAX / log10(FLT_MAX)).
      */
-    .arg_max     = _MM512_SET1_PS16(0x1.2f703p+5f),   /* = 37.9297791, the largest |x| whose 10^x is still a normal float.*/
+    .neg_arg_max = _MM512_SET1_PS16(0x1.2f703p+5f),     /* ~37.93 */
+    .pos_arg_max = _MM512_SET1_PS16(0x1.344136p5f),    /* ~38.53 = log10(FLT_MAX) */
     .log2_10_hi  = _MM512_SET1_PS16(0x1.a934fp+1f),    /* 3.321928024  */
     .log2_10_lo  = _MM512_SET1_PS16(0x1.2f346ep-24f),  /* 7.05954e-08  */
     .huge        = _MM512_SET1_PS16(0x1.8p+23f),
@@ -97,8 +94,8 @@ static const struct {
     },
 };
 
-#define V16_EXP10F_ABS_MASK     v16_exp10f_data.abs_mask
-#define V16_EXP10F_ARG_MAX      v16_exp10f_data.arg_max
+#define V16_EXP10F_NEG_ARG_MAX  v16_exp10f_data.neg_arg_max
+#define V16_EXP10F_POS_ARG_MAX  v16_exp10f_data.pos_arg_max
 #define V16_EXP10F_LOG2_10_HI   v16_exp10f_data.log2_10_hi
 #define V16_EXP10F_LOG2_10_LO   v16_exp10f_data.log2_10_lo
 #define V16_EXP10F_HUGE         v16_exp10f_data.huge
@@ -112,21 +109,21 @@ static const struct {
 #define V16_EXP10F_E7           v16_exp10f_data.poly[7]
 
 /*
- * Lanes needing scalar fallback: |x| larger than the normal-output threshold,
- * +/-inf or NaN.  A single unsigned compare on the abs bit pattern catches all
- * three (inf/nan bit patterns are numerically larger than any finite value).
+ * Lanes that need scalar exp10f: x < -37.93 and x >= 38.53, which cover
+ * exp10f(x) going to subnormal, underflow, overflow, NaN, +/-Inf.
  */
-static inline ALM_ALWAYS_INLINE v_u32x16_t
-vrs16_exp10f_special_mask(v_f32x16_t x)
+static inline ALM_ALWAYS_INLINE __mmask16
+vrs16_exp10f_scalar_mask(v_f32x16_t x)
 {
-    v_u32x16_t ax = as_v16_u32_f32(x) & V16_EXP10F_ABS_MASK;
-    return (ax > as_v16_u32_f32(V16_EXP10F_ARG_MAX));
+    return _mm512_cmp_ps_mask(x, -V16_EXP10F_NEG_ARG_MAX, _CMP_LT_OQ)
+         | _mm512_cmp_ps_mask(x, V16_EXP10F_POS_ARG_MAX, _CMP_NLT_UQ);
 }
 
 /*
- * Branch-free fast path, no domain checks.  Valid only when 10^x is a normal
- * float (|x| <= ARG_MAX); the caller must route subnormal/overflow/inf/nan
- * lanes to scalar.
+ * Branch-free fast path, no domain checks.  Best accuracy when
+ * -neg_arg_max <= x <= neg_arg_max; still used for neg_arg_max < x < pos_arg_max
+ * (large normals).  Caller routes x < -neg_arg_max, x >= pos_arg_max, NaN,
+ * and +/-Inf to scalar.
  *
  * Identity:
  * 10^x = 2^(x*log2(10)) = 2^n * 2^f
@@ -174,22 +171,16 @@ vrs16_exp10f_fastpath(v_f32x16_t x)
 
 #define SCALAR_EXP10F ALM_PROTO_OPT(exp10f)
 
-static inline v_f32x16_t
-exp10f_specialcase(v_f32x16_t x, v_f32x16_t result, v_u32x16_t cond)
-{
-    return call_v16_f32(SCALAR_EXP10F, x, result, cond);
-}
-
 v_f32x16_t
 ALM_PROTO_OPT(vrs16_exp10f)(v_f32x16_t x)
 {
-    v_u32x16_t need_scalar = vrs16_exp10f_special_mask(x);
-
-    /* Fast path: 10^x = 2^(x * log2(10)) */
     v_f32x16_t result = vrs16_exp10f_fastpath(x);
+    __mmask16 k_scalar = vrs16_exp10f_scalar_mask(x);
 
-    if (unlikely(any_v16_u32_avx512(need_scalar))) {
-        return exp10f_specialcase(x, result, need_scalar);
+    if (unlikely(k_scalar != 0)) {
+        v_u32x16_t cond = (v_u32x16_t)_mm512_movm_epi32(k_scalar);
+
+        return call_v16_f32(SCALAR_EXP10F, x, result, cond);
     }
 
     return result;

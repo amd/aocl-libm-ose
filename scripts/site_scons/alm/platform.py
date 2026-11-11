@@ -49,8 +49,8 @@ def is_os(tgt_os, os_list):
 
     return False
 
-def is_running_os(*oslist):
-    is_os(get_os_name(), os_list)
+def is_running_os(*os_list):
+    return is_os(get_os_name(), os_list)
 
 class AlmPlatform(object):
     def __init__(self):

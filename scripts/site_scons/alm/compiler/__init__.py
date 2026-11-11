@@ -129,7 +129,7 @@ class Compiler:
         env['CC']        = self.Cmd()
         env['CXX']       = self.CxxCmd()
         env['CFLAGS']    = self.CFlags()
-        env['LINKFLAGS'] = self.LDFlags()
+        env['LDFLAGS'] = self.LDFlags()
 
         env['CCVERSION'] = self.Version()
         env['CXXVERSION'] = self.Version()
@@ -153,8 +153,8 @@ class Compiler:
         if 'ALM_CFLAGS' in keys:
             self.UpdateCFlags(env['ALM_CFLAGS'])
 
-        if 'ALM_LINKFLAGS' in keys:
-            self.UpdateLDFlags(env['ALM_LINKFLAGS'])
+        if 'ALM_LDFLAGS' in keys:
+            self.UpdateLDFlags(env['ALM_LDFLAGS'])
 
     def __fixup_from_env(self):
         '''
